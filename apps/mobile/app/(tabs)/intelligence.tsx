@@ -5,8 +5,10 @@ import {
   StyleSheet,
   ScrollView,
   Platform,
+  Pressable,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import { useRouter } from 'expo-router';
 import StateSwitcher from '../../components/StateSwitcher';
 import { TELANGANA_CONSTITUENCIES, type ConstituencySeed } from '../../../../data/seed/telangana-constituencies';
 import { TELANGANA_ELECTION_HISTORY } from '../../../../data/seed/telangana-election-history';
@@ -84,6 +86,7 @@ function useElectionAnalytics() {
 }
 
 export default function IntelligenceScreen() {
+  const router = useRouter();
   const analytics = useElectionAnalytics();
 
   return (
@@ -96,7 +99,16 @@ export default function IntelligenceScreen() {
       <View style={styles.header}>
         <View style={styles.headerTop}>
           <Text style={styles.headerTitle}>Intelligence</Text>
-          <StateSwitcher />
+          <View style={styles.headerActions}>
+            <Pressable
+              style={styles.aiButton}
+              onPress={() => router.push('/ai-chat')}
+            >
+              <Ionicons name="sparkles" size={16} color="#4F8EF7" />
+              <Text style={styles.aiButtonText}>AI</Text>
+            </Pressable>
+            <StateSwitcher />
+          </View>
         </View>
         <Text style={styles.headerSubtitle}>
           Telangana 2023 · Assembly Elections
@@ -324,6 +336,25 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
+  },
+  headerActions: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+  },
+  aiButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#4F8EF720',
+    borderRadius: 8,
+    paddingHorizontal: 10,
+    paddingVertical: 6,
+    gap: 4,
+  },
+  aiButtonText: {
+    fontSize: 13,
+    fontWeight: '700',
+    color: '#4F8EF7',
   },
   headerTitle: {
     fontSize: 28,

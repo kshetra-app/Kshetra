@@ -3,6 +3,7 @@ import cors from '@fastify/cors';
 import helmet from '@fastify/helmet';
 import { constituencyRoutes } from './routes/constituencies';
 import { healthRoutes } from './routes/health';
+import { aiRoutes } from './routes/ai';
 
 const envToLogger: Record<string, object | boolean> = {
   development: {
@@ -33,6 +34,7 @@ export async function buildApp() {
 
   await app.register(healthRoutes, { prefix: '/api' });
   await app.register(constituencyRoutes, { prefix: '/api/v1' });
+  await app.register(aiRoutes);
 
   return app;
 }

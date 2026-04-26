@@ -20,6 +20,7 @@
 | Phase 3C: Supabase + Auth | ✅ Complete | 2026-04-27 | 2026-04-27 |
 | Phase 3D: EAS Build + CI/CD | ✅ Complete | 2026-04-27 | 2026-04-27 |
 | Phase 4A: Multi-State Architecture | ✅ Complete | 2026-04-27 | 2026-04-27 |
+| Phase 4B: AI/LLM Integration | ✅ Complete | 2026-04-27 | 2026-04-27 |
 
 ---
 
@@ -91,6 +92,7 @@
 | 2026-04-27 | `feat: Supabase + Auth integration` | Supabase client, SecureStore adapter, auth Zustand store, sign-in/sign-up screen, Profile auth UI, DB schema + migrations, RLS policies, ADR-010, build fix (91/91 pass) |
 | 2026-04-27 | `feat: EAS Build + CI/CD pipeline` | eas.json (dev/preview/prod profiles), GitHub Actions (ci.yml, eas-build.yml, eas-update.yml), OTA updates, ADR-011 |
 | 2026-04-27 | `feat: multi-state architecture` | State registry, active state store, StateSwitcher UI (Map/Explore/Intelligence), KA+MH state configs, SUPPORTED_STATES, 5 new tests (96/96 pass) |
+| 2026-04-27 | `feat: AI/LLM integration` | OpenAI service, chat/analyze API endpoints, AI chat screen, context-injected prompts, honesty guardrails, 6 new tests (102/102 pass) |
 
 ---
 
@@ -512,3 +514,45 @@ The app works fully offline without Supabase credentials. To activate:
 | `@kshetra/api` — all | ✅ Pass | 17 | 17 | Unchanged |
 | `data/seed` — all | ✅ Pass | 20 | 20 | Unchanged |
 | **Total** | **✅ All Pass** | **96** | **96** | +5 from previous |
+
+---
+
+## Milestone 13: AI/LLM Integration
+
+**Date**: 2026-04-27
+**Goal**: AI-powered political analysis and conversational Q&A
+
+### Completed
+
+- [x] `apps/api/src/services/ai.ts` — AI service layer
+  - OpenAI client with gpt-4o-mini
+  - Context injection: seed data + election history in system prompt
+  - Honesty guardrails: AI instructed to not fabricate data
+  - Graceful fallback when no API key
+- [x] `apps/api/src/routes/ai.ts` — 4 API endpoints
+  - `POST /ai/chat` — conversational chat
+  - `GET /ai/analyze/constituency/:acNo` — constituency analysis
+  - `GET /ai/analyze/trends` — election trends summary
+  - `GET /ai/status` — configuration check
+- [x] `apps/mobile/app/ai-chat.tsx` — full chat UI
+  - Suggested questions, typing indicator, message bubbles
+  - Session-based conversation history
+- [x] Intelligence tab: AI button in header
+- [x] Root layout: AI chat route registered as modal
+- [x] ADR-012: AI Integration Architecture
+- [x] `.env.example` files for both API and mobile
+
+### Activation
+
+1. Set `OPENAI_API_KEY` in `apps/api/.env`
+2. Start the API server
+3. Tap the ✨ AI button on Intelligence tab
+
+### Tests — Milestone 13
+
+| Test Suite | Status | Passed | Total | Notes |
+|---|---|---|---|---|
+| `@kshetra/shared` — all | ✅ Pass | 59 | 59 | Unchanged |
+| `@kshetra/api` — all | ✅ Pass | 23 | 23 | +6: AI status, chat validation, graceful fallback, AC validation |
+| `data/seed` — all | ✅ Pass | 20 | 20 | Unchanged |
+| **Total** | **✅ All Pass** | **102** | **102** | +6 from previous |
