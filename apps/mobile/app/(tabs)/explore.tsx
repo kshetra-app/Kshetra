@@ -12,11 +12,10 @@ import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import { getPartyColor } from '@/lib/constants';
 import { useFavoritesStore } from '../../stores/favorites';
-
-import {
-  TELANGANA_CONSTITUENCIES,
-  type ConstituencySeed,
-} from '../../../../data/seed/telangana-constituencies';
+import { useActiveStateStore } from '../../stores/activeState';
+import { getStateData } from '@/lib/stateRegistry';
+import StateSwitcher from '../../components/StateSwitcher';
+import type { ConstituencySeed } from '../../../../data/seed/telangana-constituencies';
 
 export default function ExploreScreen() {
   const router = useRouter();
@@ -24,9 +23,12 @@ export default function ExploreScreen() {
   const [showFavoritesOnly, setShowFavoritesOnly] = useState(false);
   const favoriteIds = useFavoritesStore((s) => s.favoriteIds);
   const isFavorite = useFavoritesStore((s) => s.isFavorite);
+  const stateCode = useActiveStateStore((s) => s.stateCode);
+  const stateData = getStateData(stateCode);
+  const allConstituencies = stateData?.constituencies ?? [];
 
   const filtered = useMemo(() => {
-    let results = TELANGANA_CONSTITUENCIES;
+    let results = allConstituencies;
 
     if (showFavoritesOnly) {
       results = results.filter((c) => favoriteIds.includes(c.acNo));
@@ -45,7 +47,7 @@ export default function ExploreScreen() {
     }
 
     return results;
-  }, [query, showFavoritesOnly, favoriteIds]);
+  }, [query, showFavoritesOnly, favoriteIds, allConstituencies]);
 
   const renderItem = ({ item }: { item: ConstituencySeed }) => (
     <Pressable
@@ -82,10 +84,13 @@ export default function ExploreScreen() {
     <View style={styles.container}>
       <View style={styles.header}>
         <View style={styles.headerRow}>
-          <View>
-            <Text style={styles.title}>Explore</Text>
+          <View style={styles.headerLeft}>
+            <View style={styles.titleRow}>
+              <Text style={styles.title}>Explore</Text>
+              <StateSwitcher />
+            </View>
             <Text style={styles.subtitle}>
-              {filtered.length} of 119 constituencies
+              {filtered.length} of {allConstituencies.length} constituencies
               {showFavoritesOnly ? ' (favourites)' : ''}
             </Text>
           </View>
@@ -148,6 +153,14 @@ const styles = StyleSheet.create({
     paddingTop: Platform.OS === 'ios' ? 60 : 40,
     paddingHorizontal: 16,
     paddingBottom: 8,
+  },
+  headerLeft: {
+    flex: 1,
+  },
+  titleRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 10,
   },
   headerRow: {
     flexDirection: 'row',

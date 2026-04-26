@@ -19,6 +19,7 @@
 | Phase 3B: Historical Election Data (2014–2023) | ✅ Complete | 2026-04-26 | 2026-04-26 |
 | Phase 3C: Supabase + Auth | ✅ Complete | 2026-04-27 | 2026-04-27 |
 | Phase 3D: EAS Build + CI/CD | ✅ Complete | 2026-04-27 | 2026-04-27 |
+| Phase 4A: Multi-State Architecture | ✅ Complete | 2026-04-27 | 2026-04-27 |
 
 ---
 
@@ -89,6 +90,7 @@
 | 2026-04-26 | `feat: historical election data 2014–2023` | State-level aggregate results (2014/2018/2023), election history API, history UI on detail + Intelligence, 12 new tests (91/91 pass) |
 | 2026-04-27 | `feat: Supabase + Auth integration` | Supabase client, SecureStore adapter, auth Zustand store, sign-in/sign-up screen, Profile auth UI, DB schema + migrations, RLS policies, ADR-010, build fix (91/91 pass) |
 | 2026-04-27 | `feat: EAS Build + CI/CD pipeline` | eas.json (dev/preview/prod profiles), GitHub Actions (ci.yml, eas-build.yml, eas-update.yml), OTA updates, ADR-011 |
+| 2026-04-27 | `feat: multi-state architecture` | State registry, active state store, StateSwitcher UI (Map/Explore/Intelligence), KA+MH state configs, SUPPORTED_STATES, 5 new tests (96/96 pass) |
 
 ---
 
@@ -472,3 +474,41 @@ The app works fully offline without Supabase credentials. To activate:
 2. Replace `EAS_PROJECT_ID_PLACEHOLDER` in `app.json`
 3. Add `EXPO_TOKEN` secret to GitHub repo settings
 4. Push to main — CI + builds trigger automatically
+
+---
+
+## Milestone 12: Multi-State Architecture
+
+**Date**: 2026-04-27
+**Goal**: State-switching infrastructure for expanding beyond Telangana
+
+### Completed
+
+- [x] `packages/shared/src/constants/states.ts` — added KA (224 seats), MH (288 seats)
+  - `SUPPORTED_STATES` array tracks which states have data
+- [x] `apps/mobile/stores/activeState.ts` — Zustand store for selected state (persisted)
+- [x] `apps/mobile/lib/stateRegistry.ts` — central registry mapping state codes to data
+  - `getStateData()`, `getSupportedStateCodes()`, `isStateSupported()`
+- [x] `apps/mobile/components/StateSwitcher.tsx` — modal state picker
+  - Shows all states, marks supported vs "Coming Soon"
+  - Active state highlighted with checkmark
+- [x] Wired StateSwitcher into Map header, Explore header, Intelligence header
+- [x] Explore tab uses state registry for dynamic constituency list
+- [x] 5 new tests: KA, MH, state count, SUPPORTED_STATES validation
+
+### Adding a New State
+
+1. Add state config to `STATES` in `packages/shared/src/constants/states.ts`
+2. Create seed data file `data/seed/{state}-constituencies.ts`
+3. Add GeoJSON boundaries to `apps/mobile/data/`
+4. Register in `apps/mobile/lib/stateRegistry.ts`
+5. Add state code to `SUPPORTED_STATES`
+
+### Tests — Milestone 12
+
+| Test Suite | Status | Passed | Total | Notes |
+|---|---|---|---|---|
+| `@kshetra/shared` — all | ✅ Pass | 59 | 59 | +5: KA, MH, state count, SUPPORTED_STATES |
+| `@kshetra/api` — all | ✅ Pass | 17 | 17 | Unchanged |
+| `data/seed` — all | ✅ Pass | 20 | 20 | Unchanged |
+| **Total** | **✅ All Pass** | **96** | **96** | +5 from previous |

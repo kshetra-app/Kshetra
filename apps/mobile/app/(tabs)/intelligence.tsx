@@ -7,6 +7,7 @@ import {
   Platform,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import StateSwitcher from '../../components/StateSwitcher';
 import { TELANGANA_CONSTITUENCIES, type ConstituencySeed } from '../../../../data/seed/telangana-constituencies';
 import { TELANGANA_ELECTION_HISTORY } from '../../../../data/seed/telangana-election-history';
 import { PARTY_COLORS, getPartyColor } from '@/lib/constants';
@@ -93,7 +94,10 @@ export default function IntelligenceScreen() {
     >
       {/* Header */}
       <View style={styles.header}>
-        <Text style={styles.headerTitle}>Intelligence</Text>
+        <View style={styles.headerTop}>
+          <Text style={styles.headerTitle}>Intelligence</Text>
+          <StateSwitcher />
+        </View>
         <Text style={styles.headerSubtitle}>
           Telangana 2023 · Assembly Elections
         </Text>
@@ -315,6 +319,11 @@ const styles = StyleSheet.create({
   },
   header: {
     marginBottom: 20,
+  },
+  headerTop: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
   },
   headerTitle: {
     fontSize: 28,

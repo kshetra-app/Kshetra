@@ -1,4 +1,4 @@
-import { STATES, INDIA_CENTER, INDIA_ZOOM } from '../constants/states';
+import { STATES, INDIA_CENTER, INDIA_ZOOM, SUPPORTED_STATES } from '../constants/states';
 
 describe('State Configuration', () => {
   describe('STATES', () => {
@@ -18,6 +18,26 @@ describe('State Configuration', () => {
       expect(ap.parliamentarySeats).toBe(25);
     });
 
+    it('should have Karnataka configured', () => {
+      const ka = STATES.KA;
+      expect(ka).toBeDefined();
+      expect(ka.name).toBe('Karnataka');
+      expect(ka.assemblySeats).toBe(224);
+      expect(ka.parliamentarySeats).toBe(28);
+    });
+
+    it('should have Maharashtra configured', () => {
+      const mh = STATES.MH;
+      expect(mh).toBeDefined();
+      expect(mh.name).toBe('Maharashtra');
+      expect(mh.assemblySeats).toBe(288);
+      expect(mh.parliamentarySeats).toBe(48);
+    });
+
+    it('should have at least 4 states configured', () => {
+      expect(Object.keys(STATES).length).toBeGreaterThanOrEqual(4);
+    });
+
     it('should have valid centroid coordinates for all states', () => {
       Object.values(STATES).forEach((state) => {
         expect(state.centroid.latitude).toBeGreaterThanOrEqual(-90);
@@ -32,6 +52,18 @@ describe('State Configuration', () => {
         expect(state.zoom).toBeGreaterThan(0);
         expect(state.zoom).toBeLessThanOrEqual(20);
       });
+    });
+  });
+
+  describe('SUPPORTED_STATES', () => {
+    it('should include TS', () => {
+      expect(SUPPORTED_STATES).toContain('TS');
+    });
+
+    it('should only list states present in STATES', () => {
+      for (const code of SUPPORTED_STATES) {
+        expect(STATES[code]).toBeDefined();
+      }
     });
   });
 

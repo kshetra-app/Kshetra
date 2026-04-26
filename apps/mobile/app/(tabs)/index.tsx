@@ -20,8 +20,9 @@ import {
   getPartyColor,
 } from '@/lib/constants';
 import { useUserLocation } from '@/lib/useUserLocation';
-import { findConstituencyAtPoint } from '@kshetra/shared';
+import { findConstituencyAtPoint, STATES } from '@kshetra/shared';
 import { enrichGeoJSON } from '@/lib/enrichGeoJSON';
+import StateSwitcher from '../../components/StateSwitcher';
 import telanganaAssemblyGeo from '@/data/telangana-assembly.json';
 import {
   TELANGANA_CONSTITUENCIES,
@@ -241,9 +242,12 @@ export default function MapScreen() {
 
       {/* Header overlay */}
       <View style={styles.header}>
-        <Text style={styles.headerTitle}>KSHETRA</Text>
+        <View style={styles.headerTop}>
+          <Text style={styles.headerTitle}>KSHETRA</Text>
+          <StateSwitcher />
+        </View>
         <Text style={styles.headerSubtitle}>
-          Telangana · 119 Constituencies
+          {STATES.TS.name} · {STATES.TS.assemblySeats} Constituencies
         </Text>
       </View>
 
@@ -353,7 +357,11 @@ const styles = StyleSheet.create({
     top: Platform.OS === 'ios' ? 60 : 40,
     left: 16,
     right: 16,
+  },
+  headerTop: {
+    flexDirection: 'row',
     alignItems: 'center',
+    justifyContent: 'space-between',
   },
   headerTitle: {
     fontSize: 18,
