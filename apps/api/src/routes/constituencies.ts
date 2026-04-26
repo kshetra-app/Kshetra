@@ -6,6 +6,9 @@ import {
   TELANGANA_CONSTITUENCIES,
   type ConstituencySeed,
 } from '../../../../data/seed/telangana-constituencies';
+import {
+  TELANGANA_ELECTION_HISTORY,
+} from '../../../../data/seed/telangana-election-history';
 import * as fs from 'fs';
 import * as path from 'path';
 
@@ -176,6 +179,23 @@ export async function constituencyRoutes(app: FastifyInstance) {
     return {
       state: 'TS',
       ...analytics,
+    };
+  });
+
+  app.get('/states/:stateCode/elections', async (request, reply) => {
+    const { stateCode } = request.params as { stateCode: string };
+
+    if (stateCode.toUpperCase() !== 'TS') {
+      return reply.code(404).send({
+        error: 'Not Found',
+        message: `State ${stateCode} not supported yet`,
+      });
+    }
+
+    return {
+      state: 'TS',
+      count: TELANGANA_ELECTION_HISTORY.length,
+      elections: TELANGANA_ELECTION_HISTORY,
     };
   });
 

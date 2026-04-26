@@ -4,6 +4,7 @@ import { useLocalSearchParams, Stack } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { getPartyColor } from '@/lib/constants';
 import { TELANGANA_CONSTITUENCIES } from '../../../../data/seed/telangana-constituencies';
+import { TELANGANA_ELECTION_HISTORY } from '../../../../data/seed/telangana-election-history';
 import { useFavoritesStore } from '../../stores/favorites';
 import { useRecentsStore } from '../../stores/recents';
 
@@ -146,13 +147,64 @@ export default function ConstituencyDetailScreen() {
         </View>
 
         <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Historical Trends</Text>
-          <View style={styles.placeholder}>
-            <Ionicons name="trending-up" size={32} color="#4B5563" />
-            <Text style={styles.placeholderText}>
-              Election history from 2009–2023 — coming soon
-            </Text>
-          </View>
+          <Text style={styles.sectionTitle}>Telangana Election History</Text>
+          {TELANGANA_ELECTION_HISTORY.map((election) => {
+            const winnerParty = election.partyResults.reduce(
+              (prev, curr) => (curr.seatsWon > prev.seatsWon ? curr : prev),
+            );
+            return (
+              <View key={election.year} style={styles.historyCard}>
+                <View style={styles.historyHeader}>
+                  <Text style={styles.historyYear}>{election.year}</Text>
+                  <View
+                    style={[
+                      styles.historyWinnerBadge,
+                      { backgroundColor: getPartyColor(winnerParty.party) + '30' },
+                    ]}
+                  >
+                    <Text
+                      style={[
+                        styles.historyWinnerText,
+                        { color: getPartyColor(winnerParty.party) },
+                      ]}
+                    >
+                      {winnerParty.party} {winnerParty.seatsWon}
+                    </Text>
+                  </View>
+                </View>
+                {election.notes && (
+                  <Text style={styles.historyNotes}>{election.notes}</Text>
+                )}
+                <View style={styles.historyBars}>
+                  {election.partyResults
+                    .filter((p) => p.seatsWon > 0)
+                    .sort((a, b) => b.seatsWon - a.seatsWon)
+                    .map((p) => (
+                      <View key={p.party} style={styles.historyBarRow}>
+                        <Text style={styles.historyBarLabel}>{p.party}</Text>
+                        <View style={styles.historyBarTrack}>
+                          <View
+                            style={[
+                              styles.historyBarFill,
+                              {
+                                width: `${(p.seatsWon / 119) * 100}%`,
+                                backgroundColor: getPartyColor(p.party),
+                              },
+                            ]}
+                          />
+                        </View>
+                        <Text style={styles.historyBarValue}>{p.seatsWon}</Text>
+                      </View>
+                    ))}
+                </View>
+                {election.turnout && (
+                  <Text style={styles.historyTurnout}>
+                    Turnout: {election.turnout}%
+                  </Text>
+                )}
+              </View>
+            );
+          })}
         </View>
       </ScrollView>
     </View>
@@ -314,5 +366,75 @@ const styles = StyleSheet.create({
     color: '#6B7280',
     textAlign: 'center',
     marginTop: 8,
+  },
+  historyCard: {
+    backgroundColor: '#111827',
+    borderRadius: 14,
+    padding: 16,
+    marginBottom: 12,
+  },
+  historyHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 8,
+  },
+  historyYear: {
+    fontSize: 20,
+    fontWeight: '800',
+    color: '#FFFFFF',
+  },
+  historyWinnerBadge: {
+    paddingHorizontal: 10,
+    paddingVertical: 4,
+    borderRadius: 8,
+  },
+  historyWinnerText: {
+    fontSize: 13,
+    fontWeight: '700',
+  },
+  historyNotes: {
+    fontSize: 12,
+    color: '#6B7280',
+    marginBottom: 12,
+    lineHeight: 16,
+  },
+  historyBars: {
+    gap: 6,
+  },
+  historyBarRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  historyBarLabel: {
+    fontSize: 12,
+    fontWeight: '700',
+    color: '#9CA3AF',
+    width: 44,
+  },
+  historyBarTrack: {
+    flex: 1,
+    height: 8,
+    backgroundColor: '#1F2937',
+    borderRadius: 4,
+    overflow: 'hidden',
+    marginHorizontal: 8,
+  },
+  historyBarFill: {
+    height: 8,
+    borderRadius: 4,
+  },
+  historyBarValue: {
+    fontSize: 12,
+    fontWeight: '700',
+    color: '#6B7280',
+    width: 28,
+    textAlign: 'right',
+  },
+  historyTurnout: {
+    fontSize: 11,
+    color: '#4B5563',
+    marginTop: 10,
+    textAlign: 'right',
   },
 });

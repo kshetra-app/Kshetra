@@ -8,6 +8,7 @@ import {
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { TELANGANA_CONSTITUENCIES, type ConstituencySeed } from '../../../../data/seed/telangana-constituencies';
+import { TELANGANA_ELECTION_HISTORY } from '../../../../data/seed/telangana-election-history';
 import { PARTY_COLORS, getPartyColor } from '@/lib/constants';
 
 /** Compute analytics from seed data once */
@@ -249,9 +250,53 @@ export default function IntelligenceScreen() {
         </View>
       </View>
 
+      {/* Election History Timeline */}
+      <View style={styles.section}>
+        <Text style={styles.sectionTitle}>Election Timeline</Text>
+        {TELANGANA_ELECTION_HISTORY.map((election) => {
+          const top3 = [...election.partyResults]
+            .sort((a, b) => b.seatsWon - a.seatsWon)
+            .slice(0, 3);
+          return (
+            <View key={election.year} style={styles.timelineCard}>
+              <View style={styles.timelineHeader}>
+                <Text style={styles.timelineYear}>{election.year}</Text>
+                {election.turnout && (
+                  <Text style={styles.timelineTurnout}>
+                    {election.turnout}% turnout
+                  </Text>
+                )}
+              </View>
+              <View style={styles.timelineParties}>
+                {top3.map((p) => (
+                  <View key={p.party} style={styles.timelinePartyItem}>
+                    <View
+                      style={[
+                        styles.timelinePartyDot,
+                        { backgroundColor: getPartyColor(p.party) },
+                      ]}
+                    />
+                    <Text style={styles.timelinePartyName}>{p.party}</Text>
+                    <Text style={styles.timelinePartySeats}>{p.seatsWon}</Text>
+                    {p.voteShare != null && (
+                      <Text style={styles.timelineVoteShare}>
+                        {p.voteShare}%
+                      </Text>
+                    )}
+                  </View>
+                ))}
+              </View>
+              {election.notes && (
+                <Text style={styles.timelineNotes}>{election.notes}</Text>
+              )}
+            </View>
+          );
+        })}
+      </View>
+
       <View style={styles.footer}>
         <Text style={styles.footerText}>
-          Data: Telangana State Election Commission · 2023 Results
+          Data: Telangana State Election Commission · 2014–2023
         </Text>
       </View>
     </ScrollView>
@@ -437,6 +482,65 @@ const styles = StyleSheet.create({
   footer: {
     marginTop: 8,
     alignItems: 'center',
+  },
+  timelineCard: {
+    backgroundColor: '#111827',
+    borderRadius: 14,
+    padding: 16,
+    marginBottom: 10,
+  },
+  timelineHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 10,
+  },
+  timelineYear: {
+    fontSize: 20,
+    fontWeight: '800',
+    color: '#FFFFFF',
+  },
+  timelineTurnout: {
+    fontSize: 12,
+    color: '#6B7280',
+    fontWeight: '600',
+  },
+  timelineParties: {
+    gap: 8,
+  },
+  timelinePartyItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  timelinePartyDot: {
+    width: 10,
+    height: 10,
+    borderRadius: 5,
+    marginRight: 8,
+  },
+  timelinePartyName: {
+    fontSize: 13,
+    fontWeight: '700',
+    color: '#FFFFFF',
+    width: 48,
+  },
+  timelinePartySeats: {
+    fontSize: 14,
+    fontWeight: '800',
+    color: '#FFFFFF',
+    width: 30,
+    textAlign: 'right',
+  },
+  timelineVoteShare: {
+    fontSize: 12,
+    color: '#6B7280',
+    marginLeft: 8,
+  },
+  timelineNotes: {
+    fontSize: 11,
+    color: '#4B5563',
+    marginTop: 10,
+    lineHeight: 15,
   },
   footerText: {
     fontSize: 11,

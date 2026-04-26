@@ -16,7 +16,7 @@
 | Phase 2A: API Endpoints + Navigation + District Analytics | ✅ Complete | 2026-04-26 | 2026-04-26 |
 | Phase 2B: Shared Analytics + ADR + DRY Refactor | ✅ Complete | 2026-04-26 | 2026-04-26 |
 | Phase 3A: Offline Persistence (MMKV + Zustand) | ✅ Complete | 2026-04-26 | 2026-04-26 |
-| Phase 3B: Historical Election Data | ⬜ Not Started | — | — |
+| Phase 3B: Historical Election Data (2014–2023) | ✅ Complete | 2026-04-26 | 2026-04-26 |
 | Phase 3C: Supabase + Auth | ⬜ Not Started | — | — |
 | Phase 3D: EAS Build + CI/CD | ⬜ Not Started | — | — |
 
@@ -86,6 +86,7 @@
 | 2026-04-26 | `feat: search + analytics API, navigation, district breakdown` | Search endpoint (q/party/district/type), analytics endpoint, Explore→Detail navigation, district breakdown in Intelligence, tests (65/65 pass) |
 | 2026-04-26 | `refactor: shared analytics + ADR-009 + DRY` | Extracted computeElectionAnalytics to @kshetra/shared, API uses shared util, 13 new analytics tests, name-based lookup test, ADR-009, tests (79/79 pass) |
 | 2026-04-26 | `feat: offline persistence — MMKV + Zustand stores` | Preferences (theme/notifications/haptics/language), favorites with heart toggle, recently viewed (last 20), Explore favorites filter, Profile activity section, tests (79/79 pass) |
+| 2026-04-26 | `feat: historical election data 2014–2023` | State-level aggregate results (2014/2018/2023), election history API, history UI on detail + Intelligence, 12 new tests (91/91 pass) |
 
 ---
 
@@ -356,3 +357,36 @@
 | `@kshetra/api` — all | ✅ Pass | 15 | 15 | Unchanged |
 | `data/seed` — telangana | ✅ Pass | 10 | 10 | Unchanged |
 | **Total** | **✅ All Pass** | **79** | **79** | No regressions (stores are runtime-only, tested via app) |
+
+---
+
+## Milestone 9: Historical Election Data (2014–2023)
+
+**Date**: 2026-04-26
+**Goal**: State-level election history with aggregate results, API, and UI
+
+### Completed
+
+- [x] `data/seed/telangana-election-history.ts` — verified state-level aggregate data
+  - 2023: INC 64, BRS 39, BJP 8, AIMIM 7 (64.23% turnout)
+  - 2018: BRS 88, INC 19, AIMIM 7, TDP 2, BJP 1 (73.20% turnout)
+  - 2014: BRS 63, INC 21, TDP 15, AIMIM 7, BJP 5 (69.16% turnout)
+  - Includes vote share, seats contested, turnout, contextual notes
+- [x] API: `GET /states/TS/elections` — returns all 3 election histories
+- [x] Constituency detail: historical trends section with bar charts per election year
+- [x] Intelligence tab: election timeline showing top 3 parties per year + turnout
+- [x] 10 new seed tests + 2 new API tests
+
+### Honesty Note
+
+Only **state-level aggregate** results are included. Per-constituency historical results (who won which AC in 2014/2018) are NOT fabricated — they require verified ECI data and will be added when sourced.
+
+### Tests — Milestone 9
+
+| Test Suite | Status | Passed | Total | Notes |
+|---|---|---|---|---|
+| `@kshetra/shared` — all | ✅ Pass | 54 | 54 | Unchanged |
+| `@kshetra/api` — all | ✅ Pass | 17 | 17 | +2: elections endpoint |
+| `data/seed` — constituencies | ✅ Pass | 10 | 10 | Unchanged |
+| `data/seed` — election history | ✅ Pass | 10 | 10 | **NEW** |
+| **Total** | **✅ All Pass** | **91** | **91** | +12 from previous |

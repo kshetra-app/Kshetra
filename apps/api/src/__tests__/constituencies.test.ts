@@ -193,6 +193,44 @@ describe('Constituency Routes', () => {
     expect(response.statusCode).toBe(404);
   });
 
+  // ─── ELECTIONS HISTORY ───
+
+  it('GET /states/TS/elections should return 3 elections', async () => {
+    const response = await app.inject({
+      method: 'GET',
+      url: '/api/v1/states/TS/elections',
+    });
+
+    expect(response.statusCode).toBe(200);
+    const body = JSON.parse(response.payload);
+    expect(body.state).toBe('TS');
+    expect(body.count).toBe(3);
+    expect(body.elections).toHaveLength(3);
+
+    const years = body.elections.map((e: any) => e.year);
+    expect(years).toContain(2014);
+    expect(years).toContain(2018);
+    expect(years).toContain(2023);
+
+    // Each election should have seats summing to 119
+    for (const election of body.elections) {
+      const totalWon = election.partyResults.reduce(
+        (s: number, p: any) => s + p.seatsWon,
+        0,
+      );
+      expect(totalWon).toBe(119);
+    }
+  });
+
+  it('GET /states/KA/elections should return 404', async () => {
+    const response = await app.inject({
+      method: 'GET',
+      url: '/api/v1/states/KA/elections',
+    });
+
+    expect(response.statusCode).toBe(404);
+  });
+
   // ─── LOCATE ───
 
   it('GET /constituencies/locate should require lat and lng', async () => {
