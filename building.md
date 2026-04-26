@@ -18,7 +18,7 @@
 | Phase 3A: Offline Persistence (MMKV + Zustand) | ✅ Complete | 2026-04-26 | 2026-04-26 |
 | Phase 3B: Historical Election Data (2014–2023) | ✅ Complete | 2026-04-26 | 2026-04-26 |
 | Phase 3C: Supabase + Auth | ✅ Complete | 2026-04-27 | 2026-04-27 |
-| Phase 3D: EAS Build + CI/CD | ⬜ Not Started | — | — |
+| Phase 3D: EAS Build + CI/CD | ✅ Complete | 2026-04-27 | 2026-04-27 |
 
 ---
 
@@ -88,6 +88,7 @@
 | 2026-04-26 | `feat: offline persistence — MMKV + Zustand stores` | Preferences (theme/notifications/haptics/language), favorites with heart toggle, recently viewed (last 20), Explore favorites filter, Profile activity section, tests (79/79 pass) |
 | 2026-04-26 | `feat: historical election data 2014–2023` | State-level aggregate results (2014/2018/2023), election history API, history UI on detail + Intelligence, 12 new tests (91/91 pass) |
 | 2026-04-27 | `feat: Supabase + Auth integration` | Supabase client, SecureStore adapter, auth Zustand store, sign-in/sign-up screen, Profile auth UI, DB schema + migrations, RLS policies, ADR-010, build fix (91/91 pass) |
+| 2026-04-27 | `feat: EAS Build + CI/CD pipeline` | eas.json (dev/preview/prod profiles), GitHub Actions (ci.yml, eas-build.yml, eas-update.yml), OTA updates, ADR-011 |
 
 ---
 
@@ -438,3 +439,36 @@ The app works fully offline without Supabase credentials. To activate:
 | `@kshetra/api` — all | ✅ Pass | 17 | 17 | Unchanged |
 | `data/seed` — all | ✅ Pass | 20 | 20 | Unchanged |
 | **Total** | **✅ All Pass** | **91** | **91** | No regressions |
+
+---
+
+## Milestone 11: EAS Build + CI/CD
+
+**Date**: 2026-04-27
+**Goal**: Automated build, test, and deployment pipeline
+
+### Completed
+
+- [x] `apps/mobile/eas.json` — three build profiles
+  - `development`: dev client, internal distribution
+  - `preview`: internal testing (TestFlight / Internal Track)
+  - `production`: store-ready, auto-increment version
+- [x] `app.json` — EAS project ID placeholder, OTA updates URL, runtime version policy
+- [x] `.github/workflows/ci.yml` — CI on PR/push
+  - Node 20, npm ci, build shared, test shared + API + seed, typecheck
+  - Concurrency group prevents duplicate runs
+- [x] `.github/workflows/eas-build.yml` — native builds
+  - Auto on push to main (mobile/shared/seed changes)
+  - Manual dispatch with platform + profile selection
+  - Tests run before build
+- [x] `.github/workflows/eas-update.yml` — OTA updates
+  - JS-only changes publish instantly, no store review
+  - Targets production branch
+- [x] `docs/architecture/ADR-011-eas-build-cicd.md`
+
+### Activation
+
+1. Run `npx eas init` in `apps/mobile/` to get a project ID
+2. Replace `EAS_PROJECT_ID_PLACEHOLDER` in `app.json`
+3. Add `EXPO_TOKEN` secret to GitHub repo settings
+4. Push to main — CI + builds trigger automatically

@@ -50,6 +50,17 @@
     ],
     "experiments": {
       "typedRoutes": true
+    },
+    "extra": {
+      "eas": {
+        "projectId": "EAS_PROJECT_ID_PLACEHOLDER"
+      }
+    },
+    "updates": {
+      "url": "https://u.expo.dev/EAS_PROJECT_ID_PLACEHOLDER"
+    },
+    "runtimeVersion": {
+      "policy": "appVersion"
     }
   }
 }
