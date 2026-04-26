@@ -26,7 +26,7 @@ import telanganaAssemblyGeo from '@/data/telangana-assembly.json';
 import {
   TELANGANA_CONSTITUENCIES,
   type ConstituencySeed,
-} from '../../../data/seed/telangana-constituencies';
+} from '../../../../data/seed/telangana-constituencies';
 
 MapboxGL.setAccessToken(process.env.EXPO_PUBLIC_MAPBOX_TOKEN ?? '');
 

@@ -12,7 +12,8 @@
 | Phase 1B: Interactive Map | ✅ Complete | 2026-04-26 | 2026-04-26 |
 | Phase 1C: Find My Constituency | ✅ Complete | 2026-04-26 | 2026-04-26 |
 | Phase 1D: Real Data + Party Map + Bottom Sheet | ✅ Complete | 2026-04-26 | 2026-04-26 |
-| Phase 2: Intelligence Layer | ⬜ Not Started | — | — |
+| Phase 1E: Intelligence Dashboard + Profile | ✅ Complete | 2026-04-26 | 2026-04-26 |
+| Phase 2: Backend + Database | ⬜ Not Started | — | — |
 
 ---
 
@@ -76,6 +77,7 @@
 | 2026-04-26 | `feat: interactive Telangana map + constituency data` | GeoJSON boundaries, seed data (119 ACs), Mapbox map screen, Explore list, detail screen, tests (28/28 pass) |
 | 2026-04-26 | `feat: find my constituency — GPS + point-in-polygon` | Offline geolocation, ray-casting algorithm, expo-location, user marker, integration tests (56/56 pass) |
 | 2026-04-26 | `feat: party-colored map + real API data + bottom sheet` | Party-colored polygons, API serves 119 ACs with election data, locate endpoint with PIP, @gorhom/bottom-sheet, AIMIM support, tests (59/59 pass) |
+| 2026-04-26 | `feat: intelligence dashboard + profile screen` | Party seat distribution bars, reservation breakdown, key insights (biggest/closest victory), profile screen with settings, fixed import paths (59/59 pass) |
 
 ---
 
@@ -201,3 +203,38 @@
 | `@kshetra/api` — constituencies | ✅ Pass | 7 | 7 | +3: 119 ACs list, detail with election data, locate with PIP |
 | `data/seed` — telangana constituencies | ✅ Pass | 10 | 10 | Unchanged |
 | **Total** | **✅ All Pass** | **59** | **59** | — |
+
+---
+
+## Milestone 5: Intelligence Dashboard + Profile Screen
+
+**Date**: 2026-04-26
+**Goal**: Replace placeholder tabs with real content — analytics dashboard and user profile
+
+### Completed
+
+- [x] Intelligence tab: party-wise seat distribution with animated bars
+  - INC, BRS, BJP, AIMIM, TDP breakdown with percentage bars
+  - 3 summary cards: 119 constituencies, district count, parties won
+  - Reservation breakdown: GEN/SC/ST counts with colored cards
+  - Key insights: biggest victory, closest contest, majority party
+  - All data computed from seed in `useMemo` (offline, zero API calls)
+- [x] Profile tab: guest user UI with sign-in button
+  - App info section: version, state, constituency count, data source
+  - Preferences: notifications (coming soon), theme (dark), language (English)
+  - About: privacy policy, terms, source code links
+  - KSHETRA branded footer
+- [x] Fixed import paths in `(tabs)/` files (4 levels up to root, not 3)
+
+### Tests — Milestone 5
+
+| Test Suite | Status | Passed | Total | Notes |
+|---|---|---|---|---|
+| `@kshetra/shared` — parties | ✅ Pass | 7 | 7 | Unchanged |
+| `@kshetra/shared` — states | ✅ Pass | 7 | 7 | Unchanged |
+| `@kshetra/shared` — point-in-polygon | ✅ Pass | 18 | 18 | Unchanged |
+| `@kshetra/shared` — geolocation integration | ✅ Pass | 10 | 10 | Unchanged |
+| `@kshetra/api` — health | ✅ Pass | 1 | 1 | Unchanged |
+| `@kshetra/api` — constituencies | ✅ Pass | 7 | 7 | Unchanged |
+| `data/seed` — telangana constituencies | ✅ Pass | 10 | 10 | Unchanged |
+| **Total** | **✅ All Pass** | **59** | **59** | No regressions |
