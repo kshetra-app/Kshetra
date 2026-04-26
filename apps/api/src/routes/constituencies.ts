@@ -100,6 +100,119 @@ export async function constituencyRoutes(app: FastifyInstance) {
     },
   );
 
+  app.get('/states/:stateCode/constituencies/search', async (request, reply) => {
+    const { stateCode } = request.params as { stateCode: string };
+    const { q, party, district, type } = request.query as {
+      q?: string;
+      party?: string;
+      district?: string;
+      type?: string;
+    };
+
+    if (stateCode.toUpperCase() !== 'TS') {
+      return { state: stateCode.toUpperCase(), count: 0, data: [] };
+    }
+
+    let results = TELANGANA_CONSTITUENCIES;
+
+    if (q) {
+      const lower = q.toLowerCase();
+      results = results.filter(
+        (c) =>
+          c.name.toLowerCase().includes(lower) ||
+          c.district.toLowerCase().includes(lower) ||
+          c.winnerName2023.toLowerCase().includes(lower) ||
+          String(c.acNo).includes(lower),
+      );
+    }
+    if (party) {
+      const p = party.toUpperCase();
+      results = results.filter((c) => c.winner2023 === p);
+    }
+    if (district) {
+      const d = district.toLowerCase();
+      results = results.filter((c) => c.district.toLowerCase() === d);
+    }
+    if (type) {
+      const t = type.toUpperCase();
+      results = results.filter((c) => c.type === t);
+    }
+
+    return {
+      state: 'TS',
+      count: results.length,
+      data: results.map(seedToBrief),
+    };
+  });
+
+  app.get('/states/:stateCode/analytics', async (request, reply) => {
+    const { stateCode } = request.params as { stateCode: string };
+
+    if (stateCode.toUpperCase() !== 'TS') {
+      return reply.code(404).send({
+        error: 'Not Found',
+        message: `State ${stateCode} not supported yet`,
+      });
+    }
+
+    const partySeats: Record<string, number> = {};
+    const districtMap: Record<string, Record<string, number>> = {};
+    let closestMargin = Infinity;
+    let closestAC = '';
+    let biggestMargin = 0;
+    let biggestAC = '';
+
+    for (const c of TELANGANA_CONSTITUENCIES) {
+      partySeats[c.winner2023] = (partySeats[c.winner2023] || 0) + 1;
+
+      if (!districtMap[c.district]) districtMap[c.district] = {};
+      districtMap[c.district][c.winner2023] =
+        (districtMap[c.district][c.winner2023] || 0) + 1;
+
+      if (c.margin2023 < closestMargin) {
+        closestMargin = c.margin2023;
+        closestAC = c.name;
+      }
+      if (c.margin2023 > biggestMargin) {
+        biggestMargin = c.margin2023;
+        biggestAC = c.name;
+      }
+    }
+
+    const partySummary = Object.entries(partySeats)
+      .sort(([, a], [, b]) => b - a)
+      .map(([party, seats]) => ({
+        party,
+        seats,
+        percentage: parseFloat(((seats / 119) * 100).toFixed(1)),
+      }));
+
+    const districts = Object.entries(districtMap)
+      .map(([name, parties]) => {
+        const total = Object.values(parties).reduce((a, b) => a + b, 0);
+        const dominant = Object.entries(parties).sort(([, a], [, b]) => b - a)[0];
+        return {
+          name,
+          totalSeats: total,
+          dominantParty: dominant[0],
+          parties,
+        };
+      })
+      .sort((a, b) => b.totalSeats - a.totalSeats);
+
+    return {
+      state: 'TS',
+      totalConstituencies: 119,
+      totalDistricts: districts.length,
+      partySummary,
+      districts,
+      margins: {
+        closest: { constituency: closestAC, margin: closestMargin },
+        biggest: { constituency: biggestAC, margin: biggestMargin },
+      },
+    };
+  });
+
   app.get('/constituencies/locate', async (request, reply) => {
     const { lat, lng } = request.query as { lat: string; lng: string };
 

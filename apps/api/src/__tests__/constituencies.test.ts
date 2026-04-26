@@ -82,6 +82,104 @@ describe('Constituency Routes', () => {
     expect(body.error).toBe('Not Found');
   });
 
+  // ─── SEARCH ───
+
+  it('GET /states/TS/constituencies/search?q=charminar should find Charminar', async () => {
+    const response = await app.inject({
+      method: 'GET',
+      url: '/api/v1/states/TS/constituencies/search?q=charminar',
+    });
+
+    expect(response.statusCode).toBe(200);
+    const body = JSON.parse(response.payload);
+    expect(body.count).toBeGreaterThanOrEqual(1);
+    expect(body.data[0].name).toBe('Charminar');
+  });
+
+  it('GET /states/TS/constituencies/search?party=AIMIM should return 7 seats', async () => {
+    const response = await app.inject({
+      method: 'GET',
+      url: '/api/v1/states/TS/constituencies/search?party=AIMIM',
+    });
+
+    expect(response.statusCode).toBe(200);
+    const body = JSON.parse(response.payload);
+    expect(body.count).toBe(7);
+    body.data.forEach((c: any) => {
+      expect(c.currentParty).toBe('AIMIM');
+    });
+  });
+
+  it('GET /states/TS/constituencies/search?district=hyderabad should return Hyd ACs', async () => {
+    const response = await app.inject({
+      method: 'GET',
+      url: '/api/v1/states/TS/constituencies/search?district=hyderabad',
+    });
+
+    expect(response.statusCode).toBe(200);
+    const body = JSON.parse(response.payload);
+    expect(body.count).toBeGreaterThan(0);
+    body.data.forEach((c: any) => {
+      expect(c.district).toBe('Hyderabad');
+    });
+  });
+
+  it('GET /states/TS/constituencies/search?type=ST should return ST reserved seats', async () => {
+    const response = await app.inject({
+      method: 'GET',
+      url: '/api/v1/states/TS/constituencies/search?type=ST',
+    });
+
+    expect(response.statusCode).toBe(200);
+    const body = JSON.parse(response.payload);
+    expect(body.count).toBeGreaterThan(0);
+    body.data.forEach((c: any) => {
+      expect(c.reservationStatus).toBe('ST');
+    });
+  });
+
+  // ─── ANALYTICS ───
+
+  it('GET /states/TS/analytics should return party summary and districts', async () => {
+    const response = await app.inject({
+      method: 'GET',
+      url: '/api/v1/states/TS/analytics',
+    });
+
+    expect(response.statusCode).toBe(200);
+    const body = JSON.parse(response.payload);
+
+    expect(body.state).toBe('TS');
+    expect(body.totalConstituencies).toBe(119);
+    expect(body.totalDistricts).toBeGreaterThan(0);
+
+    expect(body.partySummary).toBeInstanceOf(Array);
+    expect(body.partySummary.length).toBeGreaterThan(0);
+    const inc = body.partySummary.find((p: any) => p.party === 'INC');
+    expect(inc).toBeDefined();
+    expect(inc.seats).toBeGreaterThan(50);
+    expect(inc.percentage).toBeGreaterThan(40);
+
+    expect(body.districts).toBeInstanceOf(Array);
+    expect(body.districts.length).toBe(body.totalDistricts);
+    expect(body.districts[0].name).toBeDefined();
+    expect(body.districts[0].totalSeats).toBeGreaterThan(0);
+    expect(body.districts[0].dominantParty).toBeDefined();
+    expect(body.districts[0].parties).toBeDefined();
+
+    expect(body.margins.closest.margin).toBeGreaterThan(0);
+    expect(body.margins.biggest.margin).toBeGreaterThan(body.margins.closest.margin);
+  });
+
+  it('GET /states/KA/analytics should return 404', async () => {
+    const response = await app.inject({
+      method: 'GET',
+      url: '/api/v1/states/KA/analytics',
+    });
+
+    expect(response.statusCode).toBe(404);
+  });
+
   // ─── LOCATE ───
 
   it('GET /constituencies/locate should require lat and lng', async () => {

@@ -13,7 +13,8 @@
 | Phase 1C: Find My Constituency | ✅ Complete | 2026-04-26 | 2026-04-26 |
 | Phase 1D: Real Data + Party Map + Bottom Sheet | ✅ Complete | 2026-04-26 | 2026-04-26 |
 | Phase 1E: Intelligence Dashboard + Profile | ✅ Complete | 2026-04-26 | 2026-04-26 |
-| Phase 2: Backend + Database | ⬜ Not Started | — | — |
+| Phase 2A: API Endpoints + Navigation + District Analytics | ✅ Complete | 2026-04-26 | 2026-04-26 |
+| Phase 2B: Backend + Database (Supabase) | ⬜ Not Started | — | — |
 
 ---
 
@@ -78,6 +79,7 @@
 | 2026-04-26 | `feat: find my constituency — GPS + point-in-polygon` | Offline geolocation, ray-casting algorithm, expo-location, user marker, integration tests (56/56 pass) |
 | 2026-04-26 | `feat: party-colored map + real API data + bottom sheet` | Party-colored polygons, API serves 119 ACs with election data, locate endpoint with PIP, @gorhom/bottom-sheet, AIMIM support, tests (59/59 pass) |
 | 2026-04-26 | `feat: intelligence dashboard + profile screen` | Party seat distribution bars, reservation breakdown, key insights (biggest/closest victory), profile screen with settings, fixed import paths (59/59 pass) |
+| 2026-04-26 | `feat: search + analytics API, navigation, district breakdown` | Search endpoint (q/party/district/type), analytics endpoint, Explore→Detail navigation, district breakdown in Intelligence, tests (65/65 pass) |
 
 ---
 
@@ -238,3 +240,41 @@
 | `@kshetra/api` — constituencies | ✅ Pass | 7 | 7 | Unchanged |
 | `data/seed` — telangana constituencies | ✅ Pass | 10 | 10 | Unchanged |
 | **Total** | **✅ All Pass** | **59** | **59** | No regressions |
+
+---
+
+## Milestone 6: Search + Analytics API, Navigation, District Breakdown
+
+**Date**: 2026-04-26
+**Goal**: Full search/filter API, analytics endpoint, complete navigation, district-level intelligence
+
+### Completed
+
+- [x] API: `GET /states/TS/constituencies/search` — multi-filter search
+  - `?q=` — text search across name, district, candidate, AC number
+  - `?party=` — filter by winning party (e.g. AIMIM → 7 results)
+  - `?district=` — filter by district (e.g. Hyderabad → 15 results)
+  - `?type=` — filter by reservation status (GEN, SC, ST)
+  - All filters composable
+- [x] API: `GET /states/TS/analytics` — full analytics endpoint
+  - Party summary (seats, percentage per party)
+  - District breakdown (seats per district, dominant party, party split)
+  - Margin extremes (closest/biggest victory)
+- [x] Explore tab: card tap now navigates to `/constituency/[acNo]`
+- [x] Intelligence tab: district breakdown section (top 10 districts)
+  - Each district shows total seats + party chip breakdown
+  - Sorted by seat count, party chips color-coded
+- [x] 6 new API tests for search filters and analytics
+
+### Tests — Milestone 6
+
+| Test Suite | Status | Passed | Total | Notes |
+|---|---|---|---|---|
+| `@kshetra/shared` — parties | ✅ Pass | 7 | 7 | Unchanged |
+| `@kshetra/shared` — states | ✅ Pass | 7 | 7 | Unchanged |
+| `@kshetra/shared` — point-in-polygon | ✅ Pass | 18 | 18 | Unchanged |
+| `@kshetra/shared` — geolocation integration | ✅ Pass | 10 | 10 | Unchanged |
+| `@kshetra/api` — health | ✅ Pass | 1 | 1 | Unchanged |
+| `@kshetra/api` — constituencies | ✅ Pass | 13 | 13 | +6: search (q, party, district, type), analytics, analytics 404 |
+| `data/seed` — telangana constituencies | ✅ Pass | 10 | 10 | Unchanged |
+| **Total** | **✅ All Pass** | **65** | **65** | — |

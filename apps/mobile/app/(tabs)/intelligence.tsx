@@ -49,6 +49,24 @@ function useElectionAnalytics() {
 
     const districts = new Set(TELANGANA_CONSTITUENCIES.map((c: ConstituencySeed) => c.district));
 
+    // District-wise: count seats per party per district, find dominant party
+    const districtPartyMap: Record<string, Record<string, number>> = {};
+    for (const c of TELANGANA_CONSTITUENCIES) {
+      if (!districtPartyMap[c.district]) districtPartyMap[c.district] = {};
+      districtPartyMap[c.district][c.winner2023] =
+        (districtPartyMap[c.district][c.winner2023] || 0) + 1;
+    }
+
+    const districtBreakdown = Object.entries(districtPartyMap)
+      .map(([district, parties]) => {
+        const totalSeats = Object.values(parties).reduce((a, b) => a + b, 0);
+        const [dominantParty, dominantCount] = Object.entries(parties).sort(
+          ([, a], [, b]) => b - a,
+        )[0];
+        return { district, totalSeats, dominantParty, dominantCount, parties };
+      })
+      .sort((a, b) => b.totalSeats - a.totalSeats);
+
     return {
       partyBreakdown: sorted,
       totalVotes,
@@ -58,6 +76,7 @@ function useElectionAnalytics() {
       biggestAC,
       reservationCounts,
       districtCount: districts.size,
+      districtBreakdown,
     };
   }, []);
 }
@@ -152,6 +171,43 @@ export default function IntelligenceScreen() {
             </View>
           ))}
         </View>
+      </View>
+
+      {/* District Breakdown — Top 10 */}
+      <View style={styles.section}>
+        <Text style={styles.sectionTitle}>District Breakdown</Text>
+        {analytics.districtBreakdown.slice(0, 10).map((d) => (
+          <View key={d.district} style={styles.districtRow}>
+            <View style={styles.districtInfo}>
+              <Text style={styles.districtName}>{d.district}</Text>
+              <Text style={styles.districtSeats}>
+                {d.totalSeats} seat{d.totalSeats !== 1 ? 's' : ''}
+              </Text>
+            </View>
+            <View style={styles.districtParties}>
+              {Object.entries(d.parties)
+                .sort(([, a], [, b]) => b - a)
+                .map(([party, count]) => (
+                  <View
+                    key={party}
+                    style={[
+                      styles.districtPartyChip,
+                      { backgroundColor: getPartyColor(party) + '30' },
+                    ]}
+                  >
+                    <Text
+                      style={[
+                        styles.districtPartyText,
+                        { color: getPartyColor(party) },
+                      ]}
+                    >
+                      {party} {count}
+                    </Text>
+                  </View>
+                ))}
+            </View>
+          </View>
+        ))}
       </View>
 
       {/* Key Insights */}
@@ -342,6 +398,41 @@ const styles = StyleSheet.create({
     color: '#FFFFFF',
     fontWeight: '600',
     marginTop: 2,
+  },
+  districtRow: {
+    backgroundColor: '#111827',
+    borderRadius: 12,
+    padding: 14,
+    marginBottom: 8,
+  },
+  districtInfo: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 8,
+  },
+  districtName: {
+    fontSize: 15,
+    fontWeight: '700',
+    color: '#FFFFFF',
+  },
+  districtSeats: {
+    fontSize: 13,
+    color: '#6B7280',
+  },
+  districtParties: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 6,
+  },
+  districtPartyChip: {
+    paddingHorizontal: 8,
+    paddingVertical: 3,
+    borderRadius: 6,
+  },
+  districtPartyText: {
+    fontSize: 12,
+    fontWeight: '700',
   },
   footer: {
     marginTop: 8,

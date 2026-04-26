@@ -9,6 +9,7 @@ import {
 } from 'react-native';
 import { FlashList } from '@shopify/flash-list';
 import { Ionicons } from '@expo/vector-icons';
+import { useRouter } from 'expo-router';
 import { getPartyColor } from '@/lib/constants';
 
 import {
@@ -17,6 +18,7 @@ import {
 } from '../../../../data/seed/telangana-constituencies';
 
 export default function ExploreScreen() {
+  const router = useRouter();
   const [query, setQuery] = useState('');
 
   const filtered = useMemo(() => {
@@ -33,7 +35,10 @@ export default function ExploreScreen() {
   }, [query]);
 
   const renderItem = ({ item }: { item: ConstituencySeed }) => (
-    <Pressable style={styles.card}>
+    <Pressable
+      style={styles.card}
+      onPress={() => router.push(`/constituency/${item.acNo}`)}
+    >
       <View style={styles.cardLeft}>
         <View
           style={[
