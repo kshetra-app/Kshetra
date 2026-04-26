@@ -13,6 +13,7 @@ import { useRouter } from 'expo-router';
 import { usePreferencesStore } from '../../stores/preferences';
 import { useFavoritesStore } from '../../stores/favorites';
 import { useRecentsStore } from '../../stores/recents';
+import { useAuthStore } from '../../stores/auth';
 import { getPartyColor } from '@/lib/constants';
 
 interface SettingRowProps {
@@ -44,6 +45,9 @@ export default function ProfileScreen() {
   const favoriteCount = useFavoritesStore((s) => s.favoriteIds.length);
   const recents = useRecentsStore((s) => s.recents);
   const clearRecents = useRecentsStore((s) => s.clearRecents);
+  const user = useAuthStore((s) => s.user);
+  const signOut = useAuthStore((s) => s.signOut);
+  const loading = useAuthStore((s) => s.loading);
 
   return (
     <ScrollView
@@ -54,15 +58,40 @@ export default function ProfileScreen() {
       {/* Header */}
       <View style={styles.header}>
         <View style={styles.avatar}>
-          <Ionicons name="person" size={32} color="#4F8EF7" />
+          <Ionicons
+            name={user ? 'person-circle' : 'person'}
+            size={32}
+            color={user ? '#10B981' : '#4F8EF7'}
+          />
         </View>
-        <Text style={styles.headerTitle}>Guest User</Text>
-        <Text style={styles.headerSubtitle}>
-          Sign in to save favourites and get alerts
-        </Text>
-        <Pressable style={styles.signInButton}>
-          <Text style={styles.signInText}>Sign In</Text>
-        </Pressable>
+        {user ? (
+          <>
+            <Text style={styles.headerTitle}>{user.email}</Text>
+            <Text style={styles.headerSubtitle}>Signed in</Text>
+            <Pressable
+              style={[styles.signInButton, styles.signOutButton]}
+              onPress={signOut}
+              disabled={loading}
+            >
+              <Text style={styles.signInText}>
+                {loading ? 'Signing out...' : 'Sign Out'}
+              </Text>
+            </Pressable>
+          </>
+        ) : (
+          <>
+            <Text style={styles.headerTitle}>Guest User</Text>
+            <Text style={styles.headerSubtitle}>
+              Sign in to sync favourites across devices
+            </Text>
+            <Pressable
+              style={styles.signInButton}
+              onPress={() => router.push('/auth/sign-in')}
+            >
+              <Text style={styles.signInText}>Sign In</Text>
+            </Pressable>
+          </>
+        )}
       </View>
 
       {/* App Info */}
@@ -248,6 +277,9 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     paddingVertical: 12,
     paddingHorizontal: 32,
+  },
+  signOutButton: {
+    backgroundColor: '#EF4444',
   },
   signInText: {
     fontSize: 15,

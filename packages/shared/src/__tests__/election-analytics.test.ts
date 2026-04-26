@@ -2,47 +2,46 @@ import {
   computeElectionAnalytics,
   type ConstituencyRecord,
 } from '../analytics/election-analytics';
-import {
-  TELANGANA_CONSTITUENCIES,
-} from '../../../../data/seed/telangana-constituencies';
 
-/** Map seed data to the generic ConstituencyRecord interface */
-function seedToRecord(c: typeof TELANGANA_CONSTITUENCIES[0]): ConstituencyRecord {
-  return {
-    acNo: c.acNo,
-    name: c.name,
-    district: c.district,
-    type: c.type,
-    winner: c.winner2023,
-    winnerVotes: c.winnerVotes2023,
-    runnerUp: c.runnerUp2023,
-    margin: c.margin2023,
-  };
-}
+/**
+ * Inline test fixtures — avoids importing from data/seed which is
+ * outside @kshetra/shared rootDir and breaks tsc build.
+ */
+const MOCK_RECORDS: ConstituencyRecord[] = [
+  { acNo: 1, name: 'Sirpur', district: 'Adilabad', type: 'GEN', winner: 'INC', winnerVotes: 82415, runnerUp: 'BRS', margin: 15234 },
+  { acNo: 2, name: 'Chennur', district: 'Adilabad', type: 'SC', winner: 'INC', winnerVotes: 89764, runnerUp: 'BRS', margin: 21456 },
+  { acNo: 3, name: 'Bellampalle', district: 'Adilabad', type: 'SC', winner: 'INC', winnerVotes: 78543, runnerUp: 'BRS', margin: 12345 },
+  { acNo: 4, name: 'Mancherial', district: 'Adilabad', type: 'GEN', winner: 'BRS', winnerVotes: 92345, runnerUp: 'INC', margin: 8765 },
+  { acNo: 5, name: 'Adilabad', district: 'Adilabad', type: 'ST', winner: 'INC', winnerVotes: 75432, runnerUp: 'BRS', margin: 18765 },
+  { acNo: 6, name: 'Hyderabad Central', district: 'Hyderabad', type: 'GEN', winner: 'AIMIM', winnerVotes: 95000, runnerUp: 'INC', margin: 40000 },
+  { acNo: 7, name: 'Hyderabad South', district: 'Hyderabad', type: 'GEN', winner: 'AIMIM', winnerVotes: 91000, runnerUp: 'INC', margin: 35000 },
+  { acNo: 8, name: 'Warangal', district: 'Warangal', type: 'GEN', winner: 'BRS', winnerVotes: 88000, runnerUp: 'INC', margin: 5000 },
+  { acNo: 9, name: 'Nalgonda', district: 'Nalgonda', type: 'GEN', winner: 'INC', winnerVotes: 79000, runnerUp: 'BRS', margin: 22000 },
+  { acNo: 10, name: 'Goshamahal', district: 'Hyderabad', type: 'GEN', winner: 'BJP', winnerVotes: 98000, runnerUp: 'INC', margin: 18000 },
+];
 
 describe('computeElectionAnalytics', () => {
-  const records = TELANGANA_CONSTITUENCIES.map(seedToRecord);
-  const analytics = computeElectionAnalytics(records);
+  const analytics = computeElectionAnalytics(MOCK_RECORDS);
 
-  it('should report 119 total constituencies', () => {
-    expect(analytics.totalConstituencies).toBe(119);
+  it('should report 10 total constituencies', () => {
+    expect(analytics.totalConstituencies).toBe(10);
   });
 
   it('should have at least 1 district', () => {
     expect(analytics.totalDistricts).toBeGreaterThan(0);
   });
 
-  it('should have INC as the dominant party with >50 seats', () => {
+  it('should have INC as the dominant party with 5 seats', () => {
     const inc = analytics.partySummary.find((p) => p.party === 'INC');
     expect(inc).toBeDefined();
-    expect(inc!.seats).toBeGreaterThan(50);
-    expect(inc!.percentage).toBeGreaterThan(40);
+    expect(inc!.seats).toBe(5);
+    expect(inc!.percentage).toBe(50);
   });
 
-  it('should have AIMIM with exactly 7 seats', () => {
+  it('should have AIMIM with exactly 2 seats', () => {
     const aimim = analytics.partySummary.find((p) => p.party === 'AIMIM');
     expect(aimim).toBeDefined();
-    expect(aimim!.seats).toBe(7);
+    expect(aimim!.seats).toBe(2);
   });
 
   it('should sort partySummary by seats descending', () => {
@@ -53,9 +52,9 @@ describe('computeElectionAnalytics', () => {
     }
   });
 
-  it('should sum reservation counts to 119', () => {
+  it('should sum reservation counts to 10', () => {
     const { GEN, SC, ST } = analytics.reservationCounts;
-    expect(GEN + SC + ST).toBe(119);
+    expect(GEN + SC + ST).toBe(10);
   });
 
   it('should have valid reservation counts (no negatives)', () => {

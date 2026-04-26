@@ -26,7 +26,10 @@
         "backgroundColor": "#0A0A1A"
       },
       "package": "in.kshetra.app",
-      "permissions": ["ACCESS_FINE_LOCATION", "ACCESS_COARSE_LOCATION"]
+      "permissions": [
+        "ACCESS_FINE_LOCATION",
+        "ACCESS_COARSE_LOCATION"
+      ]
     },
     "web": {
       "bundler": "metro",
@@ -42,7 +45,8 @@
         {
           "RNMapboxMapsDownloadToken": "MAPBOX_TOKEN_PLACEHOLDER"
         }
-      ]
+      ],
+      "expo-secure-store"
     ],
     "experiments": {
       "typedRoutes": true

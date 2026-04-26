@@ -3,13 +3,17 @@ import { Stack } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import * as SplashScreen from 'expo-splash-screen';
+import { useAuthStore } from '../stores/auth';
 
 SplashScreen.preventAutoHideAsync();
 
 export default function RootLayout() {
+  const initializeAuth = useAuthStore((s) => s.initialize);
+
   useEffect(() => {
+    initializeAuth();
     SplashScreen.hideAsync();
-  }, []);
+  }, [initializeAuth]);
 
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
@@ -29,6 +33,16 @@ export default function RootLayout() {
             headerStyle: { backgroundColor: '#0A0A1A' },
             headerTintColor: '#FFFFFF',
             animation: 'slide_from_right',
+          }}
+        />
+        <Stack.Screen
+          name="auth/sign-in"
+          options={{
+            headerShown: true,
+            headerStyle: { backgroundColor: '#0A0A1A' },
+            headerTintColor: '#FFFFFF',
+            animation: 'slide_from_bottom',
+            presentation: 'modal',
           }}
         />
       </Stack>

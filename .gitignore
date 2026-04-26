@@ -10,6 +10,10 @@ build/
 .expo/
 android/
 ios/
+*.js.map
+*.d.ts.map
+data/seed/*.js
+data/seed/*.d.ts
 
 # Environment
 .env

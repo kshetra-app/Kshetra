@@ -17,7 +17,7 @@
 | Phase 2B: Shared Analytics + ADR + DRY Refactor | ✅ Complete | 2026-04-26 | 2026-04-26 |
 | Phase 3A: Offline Persistence (MMKV + Zustand) | ✅ Complete | 2026-04-26 | 2026-04-26 |
 | Phase 3B: Historical Election Data (2014–2023) | ✅ Complete | 2026-04-26 | 2026-04-26 |
-| Phase 3C: Supabase + Auth | ⬜ Not Started | — | — |
+| Phase 3C: Supabase + Auth | ✅ Complete | 2026-04-27 | 2026-04-27 |
 | Phase 3D: EAS Build + CI/CD | ⬜ Not Started | — | — |
 
 ---
@@ -87,6 +87,7 @@
 | 2026-04-26 | `refactor: shared analytics + ADR-009 + DRY` | Extracted computeElectionAnalytics to @kshetra/shared, API uses shared util, 13 new analytics tests, name-based lookup test, ADR-009, tests (79/79 pass) |
 | 2026-04-26 | `feat: offline persistence — MMKV + Zustand stores` | Preferences (theme/notifications/haptics/language), favorites with heart toggle, recently viewed (last 20), Explore favorites filter, Profile activity section, tests (79/79 pass) |
 | 2026-04-26 | `feat: historical election data 2014–2023` | State-level aggregate results (2014/2018/2023), election history API, history UI on detail + Intelligence, 12 new tests (91/91 pass) |
+| 2026-04-27 | `feat: Supabase + Auth integration` | Supabase client, SecureStore adapter, auth Zustand store, sign-in/sign-up screen, Profile auth UI, DB schema + migrations, RLS policies, ADR-010, build fix (91/91 pass) |
 
 ---
 
@@ -390,3 +391,50 @@ Only **state-level aggregate** results are included. Per-constituency historical
 | `data/seed` — constituencies | ✅ Pass | 10 | 10 | Unchanged |
 | `data/seed` — election history | ✅ Pass | 10 | 10 | **NEW** |
 | **Total** | **✅ All Pass** | **91** | **91** | +12 from previous |
+
+---
+
+## Milestone 10: Supabase + Auth
+
+**Date**: 2026-04-27
+**Goal**: Database schema, authentication, and cloud-ready infrastructure
+
+### Completed
+
+- [x] `apps/mobile/lib/supabase.ts` — Supabase client with SecureStore adapter
+  - Platform-aware: expo-secure-store on native, localStorage on web
+  - Auto-refresh tokens, persistent sessions
+- [x] `apps/mobile/stores/auth.ts` — Zustand store for auth state
+  - `initialize()`, `signInWithEmail()`, `signUpWithEmail()`, `signOut()`
+  - Session listener for auth state changes
+- [x] `apps/mobile/app/auth/sign-in.tsx` — Sign In / Sign Up modal
+  - Email + password form, toggle between sign in/up
+  - Loading states, error alerts, keyboard avoiding
+- [x] Profile tab: auth-aware header (guest vs signed-in), sign out button
+- [x] Root layout: auth initialization on app start, auth route registered
+- [x] `supabase/migrations/001_initial_schema.sql` — full DB schema
+  - states, constituencies (PostGIS), elections, election_results, user_favourites
+  - RLS policies: public read for data, user-scoped for favourites
+  - Indexes on state, district, party, spatial (GIST)
+- [x] `supabase/migrations/002_seed_telangana.sql` — state + elections seed
+- [x] `docs/architecture/ADR-010-supabase-auth.md` — architecture decision record
+- [x] `.env.example` for Supabase credentials
+- [x] Fixed `@kshetra/shared` build: inlined test fixtures to avoid rootDir violation
+- [x] Updated `.gitignore` for tsc build artifacts
+
+### Activation
+
+The app works fully offline without Supabase credentials. To activate:
+1. Create a Supabase project at https://supabase.com
+2. Copy URL + anon key to `apps/mobile/.env`
+3. Run migrations against your Supabase DB
+4. Auth features become live
+
+### Tests — Milestone 10
+
+| Test Suite | Status | Passed | Total | Notes |
+|---|---|---|---|---|
+| `@kshetra/shared` — all | ✅ Pass | 54 | 54 | Build fixed (inlined test fixtures) |
+| `@kshetra/api` — all | ✅ Pass | 17 | 17 | Unchanged |
+| `data/seed` — all | ✅ Pass | 20 | 20 | Unchanged |
+| **Total** | **✅ All Pass** | **91** | **91** | No regressions |
