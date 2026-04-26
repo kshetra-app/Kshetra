@@ -1,13 +1,30 @@
-import { View, Text, StyleSheet, ScrollView, Platform } from 'react-native';
+import { useEffect } from 'react';
+import { View, Text, StyleSheet, ScrollView, Platform, Pressable } from 'react-native';
 import { useLocalSearchParams, Stack } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { getPartyColor } from '@/lib/constants';
 import { TELANGANA_CONSTITUENCIES } from '../../../../data/seed/telangana-constituencies';
+import { useFavoritesStore } from '../../stores/favorites';
+import { useRecentsStore } from '../../stores/recents';
 
 export default function ConstituencyDetailScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const acNo = parseInt(id, 10);
   const constituency = TELANGANA_CONSTITUENCIES.find((c) => c.acNo === acNo);
+  const isFavorite = useFavoritesStore((s) => s.isFavorite(acNo));
+  const toggleFavorite = useFavoritesStore((s) => s.toggleFavorite);
+  const addRecent = useRecentsStore((s) => s.addRecent);
+
+  useEffect(() => {
+    if (constituency) {
+      addRecent({
+        acNo: constituency.acNo,
+        name: constituency.name,
+        district: constituency.district,
+        party: constituency.winner2023,
+      });
+    }
+  }, [constituency, addRecent]);
 
   if (!constituency) {
     return (
@@ -43,8 +60,21 @@ export default function ConstituencyDetailScreen() {
           <Text style={styles.acNumber}>AC #{constituency.acNo}</Text>
           <Text style={styles.name}>{constituency.name}</Text>
           <Text style={styles.district}>{constituency.district} District</Text>
-          <View style={styles.typeBadge}>
-            <Text style={styles.typeBadgeText}>{constituency.type}</Text>
+          <View style={styles.heroActions}>
+            <View style={styles.typeBadge}>
+              <Text style={styles.typeBadgeText}>{constituency.type}</Text>
+            </View>
+            <Pressable
+              style={styles.favoriteButton}
+              onPress={() => toggleFavorite(acNo)}
+              hitSlop={8}
+            >
+              <Ionicons
+                name={isFavorite ? 'heart' : 'heart-outline'}
+                size={22}
+                color={isFavorite ? '#EF4444' : '#6B7280'}
+              />
+            </Pressable>
           </View>
         </View>
 
@@ -174,13 +204,25 @@ const styles = StyleSheet.create({
     color: '#9CA3AF',
     marginTop: 4,
   },
+  heroActions: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    marginTop: 12,
+  },
   typeBadge: {
-    alignSelf: 'flex-start',
     backgroundColor: '#1F2937',
     borderRadius: 6,
     paddingHorizontal: 10,
     paddingVertical: 4,
-    marginTop: 12,
+  },
+  favoriteButton: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    backgroundColor: '#1F2937',
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   typeBadgeText: {
     fontSize: 12,

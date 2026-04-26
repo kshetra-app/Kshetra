@@ -11,6 +11,7 @@ import { FlashList } from '@shopify/flash-list';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import { getPartyColor } from '@/lib/constants';
+import { useFavoritesStore } from '../../stores/favorites';
 
 import {
   TELANGANA_CONSTITUENCIES,
@@ -20,19 +21,31 @@ import {
 export default function ExploreScreen() {
   const router = useRouter();
   const [query, setQuery] = useState('');
+  const [showFavoritesOnly, setShowFavoritesOnly] = useState(false);
+  const favoriteIds = useFavoritesStore((s) => s.favoriteIds);
+  const isFavorite = useFavoritesStore((s) => s.isFavorite);
 
   const filtered = useMemo(() => {
-    if (!query.trim()) return TELANGANA_CONSTITUENCIES;
-    const q = query.toLowerCase();
-    return TELANGANA_CONSTITUENCIES.filter(
-      (c) =>
-        c.name.toLowerCase().includes(q) ||
-        c.district.toLowerCase().includes(q) ||
-        c.winnerName2023.toLowerCase().includes(q) ||
-        c.winner2023.toLowerCase().includes(q) ||
-        String(c.acNo).includes(q),
-    );
-  }, [query]);
+    let results = TELANGANA_CONSTITUENCIES;
+
+    if (showFavoritesOnly) {
+      results = results.filter((c) => favoriteIds.includes(c.acNo));
+    }
+
+    if (query.trim()) {
+      const q = query.toLowerCase();
+      results = results.filter(
+        (c) =>
+          c.name.toLowerCase().includes(q) ||
+          c.district.toLowerCase().includes(q) ||
+          c.winnerName2023.toLowerCase().includes(q) ||
+          c.winner2023.toLowerCase().includes(q) ||
+          String(c.acNo).includes(q),
+      );
+    }
+
+    return results;
+  }, [query, showFavoritesOnly, favoriteIds]);
 
   const renderItem = ({ item }: { item: ConstituencySeed }) => (
     <Pressable
@@ -58,6 +71,9 @@ export default function ExploreScreen() {
           {item.winnerName2023} · Margin: {item.margin2023.toLocaleString()}
         </Text>
       </View>
+      {isFavorite(item.acNo) && (
+        <Ionicons name="heart" size={14} color="#EF4444" style={{ marginRight: 6 }} />
+      )}
       <Ionicons name="chevron-forward" size={18} color="#4B5563" />
     </Pressable>
   );
@@ -65,10 +81,28 @@ export default function ExploreScreen() {
   return (
     <View style={styles.container}>
       <View style={styles.header}>
-        <Text style={styles.title}>Explore</Text>
-        <Text style={styles.subtitle}>
-          {filtered.length} of 119 constituencies
-        </Text>
+        <View style={styles.headerRow}>
+          <View>
+            <Text style={styles.title}>Explore</Text>
+            <Text style={styles.subtitle}>
+              {filtered.length} of 119 constituencies
+              {showFavoritesOnly ? ' (favourites)' : ''}
+            </Text>
+          </View>
+          <Pressable
+            style={[
+              styles.favFilterButton,
+              showFavoritesOnly && styles.favFilterActive,
+            ]}
+            onPress={() => setShowFavoritesOnly((v) => !v)}
+          >
+            <Ionicons
+              name={showFavoritesOnly ? 'heart' : 'heart-outline'}
+              size={18}
+              color={showFavoritesOnly ? '#EF4444' : '#6B7280'}
+            />
+          </Pressable>
+        </View>
       </View>
 
       <View style={styles.searchContainer}>
@@ -114,6 +148,22 @@ const styles = StyleSheet.create({
     paddingTop: Platform.OS === 'ios' ? 60 : 40,
     paddingHorizontal: 16,
     paddingBottom: 8,
+  },
+  headerRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
+  favFilterButton: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    backgroundColor: '#111827',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  favFilterActive: {
+    backgroundColor: '#EF444420',
   },
   title: {
     fontSize: 28,

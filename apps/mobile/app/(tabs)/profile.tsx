@@ -6,8 +6,14 @@ import {
   Platform,
   Pressable,
   Linking,
+  Switch,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import { useRouter } from 'expo-router';
+import { usePreferencesStore } from '../../stores/preferences';
+import { useFavoritesStore } from '../../stores/favorites';
+import { useRecentsStore } from '../../stores/recents';
+import { getPartyColor } from '@/lib/constants';
 
 interface SettingRowProps {
   icon: keyof typeof Ionicons.glyphMap;
@@ -33,6 +39,12 @@ function SettingRow({ icon, label, value, onPress, color = '#4F8EF7' }: SettingR
 }
 
 export default function ProfileScreen() {
+  const router = useRouter();
+  const prefs = usePreferencesStore();
+  const favoriteCount = useFavoritesStore((s) => s.favoriteIds.length);
+  const recents = useRecentsStore((s) => s.recents);
+  const clearRecents = useRecentsStore((s) => s.clearRecents);
+
   return (
     <ScrollView
       style={styles.container}
@@ -64,26 +76,98 @@ export default function ProfileScreen() {
         </View>
       </View>
 
+      {/* Activity */}
+      <View style={styles.section}>
+        <Text style={styles.sectionTitle}>Activity</Text>
+        <View style={styles.card}>
+          <SettingRow
+            icon="heart"
+            label="Favourites"
+            value={`${favoriteCount} saved`}
+            color="#EF4444"
+          />
+          <SettingRow
+            icon="time"
+            label="Recently Viewed"
+            value={`${recents.length} visited`}
+            color="#F59E0B"
+          />
+        </View>
+      </View>
+
+      {/* Recently Viewed */}
+      {recents.length > 0 && (
+        <View style={styles.section}>
+          <View style={styles.sectionHeaderRow}>
+            <Text style={styles.sectionTitle}>Recent</Text>
+            <Pressable onPress={clearRecents} hitSlop={8}>
+              <Text style={styles.clearText}>Clear</Text>
+            </Pressable>
+          </View>
+          <View style={styles.card}>
+            {recents.slice(0, 5).map((r) => (
+              <Pressable
+                key={r.acNo}
+                style={styles.recentRow}
+                onPress={() => router.push(`/constituency/${r.acNo}`)}
+              >
+                <View
+                  style={[
+                    styles.recentDot,
+                    { backgroundColor: getPartyColor(r.party) },
+                  ]}
+                />
+                <View style={styles.recentInfo}>
+                  <Text style={styles.recentName}>{r.name}</Text>
+                  <Text style={styles.recentMeta}>
+                    #{r.acNo} · {r.district}
+                  </Text>
+                </View>
+                <Ionicons name="chevron-forward" size={14} color="#374151" />
+              </Pressable>
+            ))}
+          </View>
+        </View>
+      )}
+
       {/* Preferences */}
       <View style={styles.section}>
         <Text style={styles.sectionTitle}>Preferences</Text>
         <View style={styles.card}>
-          <SettingRow
-            icon="notifications"
-            label="Notifications"
-            value="Coming Soon"
-            color="#F59E0B"
-          />
+          <View style={styles.settingRow}>
+            <View style={[styles.settingIcon, { backgroundColor: '#F59E0B20' }]}>
+              <Ionicons name="notifications" size={18} color="#F59E0B" />
+            </View>
+            <Text style={styles.settingLabel}>Notifications</Text>
+            <Switch
+              value={prefs.notificationsEnabled}
+              onValueChange={prefs.setNotificationsEnabled}
+              trackColor={{ false: '#374151', true: '#4F8EF7' }}
+              thumbColor="#FFFFFF"
+            />
+          </View>
+          <View style={styles.settingRow}>
+            <View style={[styles.settingIcon, { backgroundColor: '#8B5CF620' }]}>
+              <Ionicons name="phone-portrait" size={18} color="#8B5CF6" />
+            </View>
+            <Text style={styles.settingLabel}>Haptic Feedback</Text>
+            <Switch
+              value={prefs.hapticFeedback}
+              onValueChange={prefs.setHapticFeedback}
+              trackColor={{ false: '#374151', true: '#4F8EF7' }}
+              thumbColor="#FFFFFF"
+            />
+          </View>
           <SettingRow
             icon="moon"
             label="Theme"
-            value="Dark"
+            value={prefs.theme.charAt(0).toUpperCase() + prefs.theme.slice(1)}
             color="#8B5CF6"
           />
           <SettingRow
             icon="language"
             label="Language"
-            value="English"
+            value={prefs.language === 'en' ? 'English' : prefs.language === 'hi' ? 'Hindi' : 'Telugu'}
             color="#10B981"
           />
         </View>
@@ -213,6 +297,46 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: '#6B7280',
     marginRight: 4,
+  },
+  sectionHeaderRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 10,
+    marginLeft: 4,
+    marginRight: 4,
+  },
+  clearText: {
+    fontSize: 13,
+    color: '#4F8EF7',
+    fontWeight: '600',
+  },
+  recentRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingVertical: 12,
+    paddingHorizontal: 16,
+    borderBottomWidth: 0.5,
+    borderBottomColor: '#1F2937',
+  },
+  recentDot: {
+    width: 10,
+    height: 10,
+    borderRadius: 5,
+    marginRight: 12,
+  },
+  recentInfo: {
+    flex: 1,
+  },
+  recentName: {
+    fontSize: 15,
+    color: '#FFFFFF',
+    fontWeight: '600',
+  },
+  recentMeta: {
+    fontSize: 12,
+    color: '#6B7280',
+    marginTop: 1,
   },
   footer: {
     alignItems: 'center',

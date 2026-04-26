@@ -15,7 +15,10 @@
 | Phase 1E: Intelligence Dashboard + Profile | ✅ Complete | 2026-04-26 | 2026-04-26 |
 | Phase 2A: API Endpoints + Navigation + District Analytics | ✅ Complete | 2026-04-26 | 2026-04-26 |
 | Phase 2B: Shared Analytics + ADR + DRY Refactor | ✅ Complete | 2026-04-26 | 2026-04-26 |
-| Phase 3: Backend + Database (Supabase) | ⬜ Not Started | — | — |
+| Phase 3A: Offline Persistence (MMKV + Zustand) | ✅ Complete | 2026-04-26 | 2026-04-26 |
+| Phase 3B: Historical Election Data | ⬜ Not Started | — | — |
+| Phase 3C: Supabase + Auth | ⬜ Not Started | — | — |
+| Phase 3D: EAS Build + CI/CD | ⬜ Not Started | — | — |
 
 ---
 
@@ -82,6 +85,7 @@
 | 2026-04-26 | `feat: intelligence dashboard + profile screen` | Party seat distribution bars, reservation breakdown, key insights (biggest/closest victory), profile screen with settings, fixed import paths (59/59 pass) |
 | 2026-04-26 | `feat: search + analytics API, navigation, district breakdown` | Search endpoint (q/party/district/type), analytics endpoint, Explore→Detail navigation, district breakdown in Intelligence, tests (65/65 pass) |
 | 2026-04-26 | `refactor: shared analytics + ADR-009 + DRY` | Extracted computeElectionAnalytics to @kshetra/shared, API uses shared util, 13 new analytics tests, name-based lookup test, ADR-009, tests (79/79 pass) |
+| 2026-04-26 | `feat: offline persistence — MMKV + Zustand stores` | Preferences (theme/notifications/haptics/language), favorites with heart toggle, recently viewed (last 20), Explore favorites filter, Profile activity section, tests (79/79 pass) |
 
 ---
 
@@ -316,3 +320,39 @@
 | `@kshetra/api` — constituencies | ✅ Pass | 14 | 14 | +1: detail by name |
 | `data/seed` — telangana constituencies | ✅ Pass | 10 | 10 | Unchanged |
 | **Total** | **✅ All Pass** | **79** | **79** | +14 from previous |
+
+---
+
+## Milestone 8: Offline Persistence — MMKV + Zustand
+
+**Date**: 2026-04-26
+**Goal**: Local persistence layer for user preferences, favourites, and recently viewed constituencies
+
+### Completed
+
+- [x] `lib/storage.ts` — MMKV instance + Zustand-compatible StateStorage adapter
+- [x] `stores/preferences.ts` — Zustand store (theme, language, notifications, haptic feedback)
+  - Persisted to disk via MMKV, survives app restart
+  - Type-safe: `ThemeMode`, `AppLanguage` enums
+- [x] `stores/favorites.ts` — Zustand store (favorite constituency AC numbers)
+  - `isFavorite()`, `toggleFavorite()`, `clearFavorites()`
+  - Persisted to MMKV
+- [x] `stores/recents.ts` — Zustand store (last 20 viewed constituencies)
+  - Deduplicates, prepends most recent, caps at 20
+  - Each entry: acNo, name, district, party, viewedAt timestamp
+- [x] Constituency detail: heart toggle button in hero + auto-track recently viewed on mount
+- [x] Explore tab: heart filter button (toggle favourites-only view) + heart icons on cards
+- [x] Profile tab:
+  - Activity section (favourites count, recently viewed count)
+  - Recently Viewed list (top 5, tappable, with Clear button)
+  - Live Switch toggles for Notifications and Haptic Feedback
+  - Theme and Language display from preferences store
+
+### Tests — Milestone 8
+
+| Test Suite | Status | Passed | Total | Notes |
+|---|---|---|---|---|
+| `@kshetra/shared` — all | ✅ Pass | 54 | 54 | Unchanged |
+| `@kshetra/api` — all | ✅ Pass | 15 | 15 | Unchanged |
+| `data/seed` — telangana | ✅ Pass | 10 | 10 | Unchanged |
+| **Total** | **✅ All Pass** | **79** | **79** | No regressions (stores are runtime-only, tested via app) |
