@@ -10,7 +10,7 @@
 |---|---|---|---|
 | Phase 1A: Project Scaffold | ✅ Complete | 2026-04-26 | 2026-04-26 |
 | Phase 1B: Interactive Map | ✅ Complete | 2026-04-26 | 2026-04-26 |
-| Phase 1C: Find My Constituency | ⬜ Not Started | — | — |
+| Phase 1C: Find My Constituency | ✅ Complete | 2026-04-26 | 2026-04-26 |
 | Phase 2: Intelligence Layer | ⬜ Not Started | — | — |
 
 ---
@@ -73,6 +73,7 @@
 |---|---|---|
 | 2026-04-26 | `chore: initial project scaffold` | Monorepo, shared types, API server, mobile app shell, tests (18/18 pass) |
 | 2026-04-26 | `feat: interactive Telangana map + constituency data` | GeoJSON boundaries, seed data (119 ACs), Mapbox map screen, Explore list, detail screen, tests (28/28 pass) |
+| 2026-04-26 | `feat: find my constituency — GPS + point-in-polygon` | Offline geolocation, ray-casting algorithm, expo-location, user marker, integration tests (56/56 pass) |
 
 ---
 
@@ -114,3 +115,50 @@
 | `@kshetra/api` — constituencies | ✅ Pass | 4 | 4 | Unchanged |
 | `data/seed` — telangana constituencies | ✅ Pass | 10 | 10 | 119 ACs, unique names/numbers, valid parties |
 | **Total** | **✅ All Pass** | **28** | **28** | — |
+
+---
+
+## Milestone 3: Find My Constituency (GPS Geolocation)
+
+**Date**: 2026-04-26
+**Goal**: GPS-based offline constituency detection using point-in-polygon
+
+### Completed
+
+- [x] Ray-casting point-in-polygon algorithm in `@kshetra/shared/geo/`
+  - `pointInRing()` — core ray-casting for a single ring
+  - `pointInPolygon()` — handles exterior ring + holes
+  - `pointInMultiPolygon()` — handles split constituencies (e.g. Bhadrachalam)
+  - `findConstituencyAtPoint()` — scans FeatureCollection, returns matching feature
+- [x] Unit tests: 18 tests covering squares, triangles, holes, multi-polygons, mock GeoJSON
+- [x] Integration tests against real Telangana GeoJSON:
+  - Goshamahal (near Charminar monument)
+  - Charminar (at polygon centroid)
+  - Secunderabad (railway station area)
+  - Sircilla (KTR constituency)
+  - Gajwel (KCR constituency)
+  - Kodangal (Revanth Reddy constituency)
+  - Karnataka + Maharashtra (outside Telangana → null)
+  - Performance: <50ms per lookup
+- [x] `useUserLocation` hook using `expo-location`
+  - Permission request flow with settings redirect
+  - High-accuracy GPS one-shot (no continuous tracking)
+  - Loading/error states
+- [x] Map screen GPS button (blue navigate icon)
+  - Shows user location marker (blue pulsing dot)
+  - Auto-selects constituency via point-in-polygon
+  - Zooms to constituency with animation
+  - Reset button clears marker + selection
+
+### Tests — Milestone 3
+
+| Test Suite | Status | Passed | Total | Notes |
+|---|---|---|---|---|
+| `@kshetra/shared` — parties | ✅ Pass | 6 | 6 | Unchanged |
+| `@kshetra/shared` — states | ✅ Pass | 7 | 7 | Unchanged |
+| `@kshetra/shared` — point-in-polygon | ✅ Pass | 18 | 18 | Ray-casting, holes, multi-polygon, mock GeoJSON |
+| `@kshetra/shared` — geolocation integration | ✅ Pass | 10 | 10 | Real Telangana data, known constituencies, performance |
+| `@kshetra/api` — health | ✅ Pass | 1 | 1 | Unchanged |
+| `@kshetra/api` — constituencies | ✅ Pass | 4 | 4 | Unchanged |
+| `data/seed` — telangana constituencies | ✅ Pass | 10 | 10 | Unchanged |
+| **Total** | **✅ All Pass** | **56** | **56** | — |

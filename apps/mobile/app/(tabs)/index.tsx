@@ -1,5 +1,12 @@
 import { useCallback, useRef, useState } from 'react';
-import { View, Text, StyleSheet, Pressable, Platform } from 'react-native';
+import {
+  View,
+  Text,
+  StyleSheet,
+  Pressable,
+  Platform,
+  ActivityIndicator,
+} from 'react-native';
 import MapboxGL from '@rnmapbox/maps';
 import { Ionicons } from '@expo/vector-icons';
 import {
@@ -9,6 +16,8 @@ import {
   MAP_STYLE,
   getPartyColor,
 } from '@/lib/constants';
+import { useUserLocation } from '@/lib/useUserLocation';
+import { findConstituencyAtPoint } from '@kshetra/shared';
 import telanganaAssemblyGeo from '@/data/telangana-assembly.json';
 
 MapboxGL.setAccessToken(process.env.EXPO_PUBLIC_MAPBOX_TOKEN ?? '');
@@ -23,6 +32,8 @@ interface SelectedConstituency {
 export default function MapScreen() {
   const cameraRef = useRef<MapboxGL.Camera>(null);
   const [selected, setSelected] = useState<SelectedConstituency | null>(null);
+  const [userMarker, setUserMarker] = useState<[number, number] | null>(null);
+  const { loading: locating, requestLocation } = useUserLocation();
 
   const handlePress = useCallback((event: any) => {
     const feature = event?.features?.[0];
@@ -45,12 +56,48 @@ export default function MapScreen() {
 
   const handleReset = useCallback(() => {
     setSelected(null);
+    setUserMarker(null);
     cameraRef.current?.setCamera({
       centerCoordinate: TELANGANA_CENTER,
       zoomLevel: TELANGANA_ZOOM,
       animationDuration: 600,
     });
   }, []);
+
+  const handleLocateMe = useCallback(async () => {
+    const loc = await requestLocation();
+    if (!loc) return;
+
+    const coord: [number, number] = [loc.longitude, loc.latitude];
+    setUserMarker(coord);
+
+    const found = findConstituencyAtPoint(
+      loc.longitude,
+      loc.latitude,
+      telanganaAssemblyGeo as GeoJSON.FeatureCollection,
+    );
+
+    if (found) {
+      setSelected({
+        acNo: found.properties.AC_NO,
+        name: found.properties.AC_NAME,
+        district: found.properties.DIST_NAME,
+        winner: 'INC', // TODO: merge with seed data
+      });
+      cameraRef.current?.setCamera({
+        centerCoordinate: coord,
+        zoomLevel: CONSTITUENCY_ZOOM,
+        animationDuration: 800,
+      });
+    } else {
+      setSelected(null);
+      cameraRef.current?.setCamera({
+        centerCoordinate: coord,
+        zoomLevel: 8,
+        animationDuration: 800,
+      });
+    }
+  }, [requestLocation]);
 
   return (
     <View style={styles.container}>
@@ -105,6 +152,19 @@ export default function MapScreen() {
             }}
           />
         </MapboxGL.ShapeSource>
+
+        {/* User location marker */}
+        {userMarker && (
+          <MapboxGL.PointAnnotation
+            id="user-location"
+            coordinate={userMarker}
+            anchor={{ x: 0.5, y: 0.5 }}
+          >
+            <View style={styles.userMarker}>
+              <View style={styles.userMarkerInner} />
+            </View>
+          </MapboxGL.PointAnnotation>
+        )}
       </MapboxGL.MapView>
 
       {/* Header overlay */}
@@ -113,12 +173,29 @@ export default function MapScreen() {
         <Text style={styles.headerSubtitle}>Telangana · 119 Constituencies</Text>
       </View>
 
-      {/* Reset button */}
-      {selected && (
-        <Pressable style={styles.resetButton} onPress={handleReset}>
-          <Ionicons name="locate" size={22} color="#FFFFFF" />
+      {/* Action buttons */}
+      <View style={styles.actionButtons}>
+        {selected && (
+          <Pressable style={styles.actionButton} onPress={handleReset}>
+            <Ionicons name="resize" size={20} color="#FFFFFF" />
+          </Pressable>
+        )}
+        <Pressable
+          style={[
+            styles.actionButton,
+            styles.locateButton,
+            locating && styles.actionButtonDisabled,
+          ]}
+          onPress={handleLocateMe}
+          disabled={locating}
+        >
+          {locating ? (
+            <ActivityIndicator size="small" color="#FFFFFF" />
+          ) : (
+            <Ionicons name="navigate" size={20} color="#FFFFFF" />
+          )}
         </Pressable>
-      )}
+      </View>
 
       {/* Bottom card */}
       {selected && (
@@ -176,10 +253,13 @@ const styles = StyleSheet.create({
     color: '#9CA3AF',
     marginTop: 2,
   },
-  resetButton: {
+  actionButtons: {
     position: 'absolute',
-    top: Platform.OS === 'ios' ? 120 : 100,
+    top: Platform.OS === 'ios' ? 110 : 90,
     right: 16,
+    gap: 10,
+  },
+  actionButton: {
     backgroundColor: '#1F2937',
     borderRadius: 24,
     width: 44,
@@ -191,6 +271,28 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.3,
     shadowRadius: 4,
     elevation: 4,
+  },
+  locateButton: {
+    backgroundColor: '#4F8EF7',
+  },
+  actionButtonDisabled: {
+    opacity: 0.5,
+  },
+  userMarker: {
+    width: 24,
+    height: 24,
+    borderRadius: 12,
+    backgroundColor: 'rgba(79, 142, 247, 0.3)',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  userMarkerInner: {
+    width: 12,
+    height: 12,
+    borderRadius: 6,
+    backgroundColor: '#4F8EF7',
+    borderWidth: 2,
+    borderColor: '#FFFFFF',
   },
   card: {
     position: 'absolute',
