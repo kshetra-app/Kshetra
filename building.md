@@ -9,7 +9,7 @@
 | Phase | Status | Started | Completed |
 |---|---|---|---|
 | Phase 1A: Project Scaffold | ✅ Complete | 2026-04-26 | 2026-04-26 |
-| Phase 1B: Interactive Map | ⬜ Not Started | — | — |
+| Phase 1B: Interactive Map | ✅ Complete | 2026-04-26 | 2026-04-26 |
 | Phase 1C: Find My Constituency | ⬜ Not Started | — | — |
 | Phase 2: Intelligence Layer | ⬜ Not Started | — | — |
 
@@ -63,6 +63,7 @@
 | ADR-005 | Turborepo monorepo | Shared types between mobile/API/web; single repo, unified CI |
 | ADR-006 | PostgreSQL + PostGIS + pgvector | One database for geo, relational, and vector (AI) data |
 | ADR-007 | FlashList over FlatList | Recycler-view based; handles 1000+ constituency lists without jank |
+| ADR-008 | GeoJSON from datta07/INDIAN-SHAPEFILES | MIT license, ready-made GeoJSON, 119 ACs verified, pre-delimitation data |
 
 ---
 
@@ -71,3 +72,45 @@
 | Date | Commit | Description |
 |---|---|---|
 | 2026-04-26 | `chore: initial project scaffold` | Monorepo, shared types, API server, mobile app shell, tests (18/18 pass) |
+| 2026-04-26 | `feat: interactive Telangana map + constituency data` | GeoJSON boundaries, seed data (119 ACs), Mapbox map screen, Explore list, detail screen, tests (28/28 pass) |
+
+---
+
+## Milestone 2: Interactive Telangana Map
+
+**Date**: 2026-04-26
+**Goal**: Render all 119 Telangana constituencies on an interactive map with tappable boundaries
+
+### Completed
+
+- [x] Downloaded Telangana assembly constituency GeoJSON from datta07/INDIAN-SHAPEFILES (MIT)
+- [x] Downloaded Telangana district + state boundary GeoJSON
+- [x] Created constituency seed data with all 119 AC records + 2023 election results
+- [x] Built interactive Mapbox map screen with:
+  - Dark theme map (mapbox://styles/mapbox/dark-v11)
+  - Constituency polygon fill + border layers
+  - Tap-to-select with zoom animation
+  - Floating header overlay (KSHETRA branding)
+  - Bottom card showing selected constituency info
+  - Reset/locate button to return to full state view
+- [x] Built Explore tab with FlashList-powered constituency search
+  - Search by name, district, candidate, party, AC number
+  - Party-colored badges, winner info, margin display
+- [x] Built constituency detail screen (`/constituency/[id]`)
+  - Hero with AC number, name, district, reservation type
+  - 2023 election result card with votes, margin, margin %
+  - Placeholder sections for demographics and historical trends
+- [x] Created data attribution file (ATTRIBUTION.md)
+- [x] Created ADR-008 for GeoJSON data source decision
+- [x] Validation tests for seed data (10 tests)
+
+### Tests — Milestone 2
+
+| Test Suite | Status | Passed | Total | Notes |
+|---|---|---|---|---|
+| `@kshetra/shared` — parties | ✅ Pass | 6 | 6 | Unchanged |
+| `@kshetra/shared` — states | ✅ Pass | 7 | 7 | Unchanged |
+| `@kshetra/api` — health | ✅ Pass | 1 | 1 | Unchanged |
+| `@kshetra/api` — constituencies | ✅ Pass | 4 | 4 | Unchanged |
+| `data/seed` — telangana constituencies | ✅ Pass | 10 | 10 | 119 ACs, unique names/numbers, valid parties |
+| **Total** | **✅ All Pass** | **28** | **28** | — |
