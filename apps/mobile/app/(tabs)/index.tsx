@@ -1,4 +1,4 @@
-import { useCallback, useRef, useState } from 'react';
+import { useCallback, useMemo, useRef, useState } from 'react';
 import {
   View,
   Text,
@@ -9,54 +9,112 @@ import {
 } from 'react-native';
 import MapboxGL from '@rnmapbox/maps';
 import { Ionicons } from '@expo/vector-icons';
+import { useRouter } from 'expo-router';
+import BottomSheet, { BottomSheetView } from '@gorhom/bottom-sheet';
 import {
   TELANGANA_CENTER,
   TELANGANA_ZOOM,
   CONSTITUENCY_ZOOM,
   MAP_STYLE,
+  PARTY_COLORS,
   getPartyColor,
 } from '@/lib/constants';
 import { useUserLocation } from '@/lib/useUserLocation';
 import { findConstituencyAtPoint } from '@kshetra/shared';
+import { enrichGeoJSON } from '@/lib/enrichGeoJSON';
 import telanganaAssemblyGeo from '@/data/telangana-assembly.json';
+import {
+  TELANGANA_CONSTITUENCIES,
+  type ConstituencySeed,
+} from '../../../data/seed/telangana-constituencies';
 
 MapboxGL.setAccessToken(process.env.EXPO_PUBLIC_MAPBOX_TOKEN ?? '');
+
+/** Enrich once at module level (offline, ~2ms) */
+const enrichedGeo = enrichGeoJSON(
+  telanganaAssemblyGeo as GeoJSON.FeatureCollection,
+);
+
+/** Quick lookup from AC_NO */
+const seedMap = new Map<number, ConstituencySeed>(
+  TELANGANA_CONSTITUENCIES.map((c) => [c.acNo, c]),
+);
+
+/** Mapbox expression: color each polygon by WINNER_PARTY */
+const partyFillColor: any = [
+  'match',
+  ['get', 'WINNER_PARTY'],
+  'INC', PARTY_COLORS.INC,
+  'BRS', PARTY_COLORS.BRS,
+  'BJP', PARTY_COLORS.BJP,
+  'AIMIM', PARTY_COLORS.AIMIM,
+  'TDP', PARTY_COLORS.TDP,
+  PARTY_COLORS.IND, // fallback
+];
 
 interface SelectedConstituency {
   acNo: number;
   name: string;
   district: string;
   winner: string;
+  winnerName: string;
+  runnerUp: string;
+  margin: number;
+  votes: number;
+  type: string;
 }
 
 export default function MapScreen() {
+  const router = useRouter();
   const cameraRef = useRef<MapboxGL.Camera>(null);
+  const bottomSheetRef = useRef<BottomSheet>(null);
   const [selected, setSelected] = useState<SelectedConstituency | null>(null);
   const [userMarker, setUserMarker] = useState<[number, number] | null>(null);
   const { loading: locating, requestLocation } = useUserLocation();
 
-  const handlePress = useCallback((event: any) => {
-    const feature = event?.features?.[0];
-    if (!feature?.properties) return;
+  const snapPoints = useMemo(() => ['28%', '55%'], []);
 
-    const { AC_NO, AC_NAME, DIST_NAME } = feature.properties;
-    setSelected({
-      acNo: AC_NO,
-      name: AC_NAME,
-      district: DIST_NAME,
-      winner: 'INC', // TODO: merge with seed data
-    });
+  const selectConstituency = useCallback(
+    (acNo: number, acName: string, distName: string) => {
+      const seed = seedMap.get(acNo);
+      setSelected({
+        acNo,
+        name: acName,
+        district: distName,
+        winner: seed?.winner2023 ?? 'IND',
+        winnerName: seed?.winnerName2023 ?? '',
+        runnerUp: seed?.runnerUp2023 ?? '',
+        margin: seed?.margin2023 ?? 0,
+        votes: seed?.winnerVotes2023 ?? 0,
+        type: seed?.type ?? 'GEN',
+      });
+      bottomSheetRef.current?.snapToIndex(0);
+    },
+    [],
+  );
 
-    cameraRef.current?.setCamera({
-      centerCoordinate: event.coordinates ?? feature.geometry?.coordinates?.[0]?.[0],
-      zoomLevel: CONSTITUENCY_ZOOM,
-      animationDuration: 600,
-    });
-  }, []);
+  const handlePress = useCallback(
+    (event: any) => {
+      const feature = event?.features?.[0];
+      if (!feature?.properties) return;
+
+      const { AC_NO, AC_NAME, DIST_NAME } = feature.properties;
+      selectConstituency(AC_NO, AC_NAME, DIST_NAME);
+
+      cameraRef.current?.setCamera({
+        centerCoordinate:
+          event.coordinates ?? feature.geometry?.coordinates?.[0]?.[0],
+        zoomLevel: CONSTITUENCY_ZOOM,
+        animationDuration: 600,
+      });
+    },
+    [selectConstituency],
+  );
 
   const handleReset = useCallback(() => {
     setSelected(null);
     setUserMarker(null);
+    bottomSheetRef.current?.close();
     cameraRef.current?.setCamera({
       centerCoordinate: TELANGANA_CENTER,
       zoomLevel: TELANGANA_ZOOM,
@@ -74,16 +132,15 @@ export default function MapScreen() {
     const found = findConstituencyAtPoint(
       loc.longitude,
       loc.latitude,
-      telanganaAssemblyGeo as GeoJSON.FeatureCollection,
+      enrichedGeo,
     );
 
     if (found) {
-      setSelected({
-        acNo: found.properties.AC_NO,
-        name: found.properties.AC_NAME,
-        district: found.properties.DIST_NAME,
-        winner: 'INC', // TODO: merge with seed data
-      });
+      selectConstituency(
+        found.properties.AC_NO,
+        found.properties.AC_NAME,
+        found.properties.DIST_NAME,
+      );
       cameraRef.current?.setCamera({
         centerCoordinate: coord,
         zoomLevel: CONSTITUENCY_ZOOM,
@@ -97,7 +154,13 @@ export default function MapScreen() {
         animationDuration: 800,
       });
     }
-  }, [requestLocation]);
+  }, [requestLocation, selectConstituency]);
+
+  const handleViewDetail = useCallback(() => {
+    if (selected) {
+      router.push(`/constituency/${selected.acNo}`);
+    }
+  }, [selected, router]);
 
   return (
     <View style={styles.container}>
@@ -123,7 +186,7 @@ export default function MapScreen() {
 
         <MapboxGL.ShapeSource
           id="constituencies"
-          shape={telanganaAssemblyGeo as GeoJSON.FeatureCollection}
+          shape={enrichedGeo}
           onPress={handlePress}
         >
           <MapboxGL.FillLayer
@@ -133,22 +196,31 @@ export default function MapScreen() {
                 'case',
                 ['==', ['get', 'AC_NO'], selected?.acNo ?? -1],
                 '#FFD700',
-                '#19AAED33',
+                partyFillColor,
               ],
-              fillOpacity: 0.6,
+              fillOpacity: [
+                'case',
+                ['==', ['get', 'AC_NO'], selected?.acNo ?? -1],
+                0.8,
+                0.5,
+              ],
             }}
           />
           <MapboxGL.LineLayer
             id="constituency-border"
             style={{
-              lineColor: '#FFFFFF',
+              lineColor: [
+                'case',
+                ['==', ['get', 'AC_NO'], selected?.acNo ?? -1],
+                '#FFD700',
+                'rgba(255,255,255,0.4)',
+              ],
               lineWidth: [
                 'case',
                 ['==', ['get', 'AC_NO'], selected?.acNo ?? -1],
                 2.5,
-                0.8,
+                0.6,
               ],
-              lineOpacity: 0.7,
             }}
           />
         </MapboxGL.ShapeSource>
@@ -170,7 +242,9 @@ export default function MapScreen() {
       {/* Header overlay */}
       <View style={styles.header}>
         <Text style={styles.headerTitle}>KSHETRA</Text>
-        <Text style={styles.headerSubtitle}>Telangana · 119 Constituencies</Text>
+        <Text style={styles.headerSubtitle}>
+          Telangana · 119 Constituencies
+        </Text>
       </View>
 
       {/* Action buttons */}
@@ -197,32 +271,71 @@ export default function MapScreen() {
         </Pressable>
       </View>
 
-      {/* Bottom card */}
-      {selected && (
-        <View style={styles.card}>
-          <View style={styles.cardHeader}>
-            <View
-              style={[
-                styles.partyDot,
-                { backgroundColor: getPartyColor(selected.winner) },
-              ]}
-            />
-            <View style={styles.cardTitleGroup}>
-              <Text style={styles.cardTitle}>{selected.name}</Text>
-              <Text style={styles.cardSubtitle}>
-                AC #{selected.acNo} · {selected.district}
-              </Text>
+      {/* Bottom Sheet */}
+      <BottomSheet
+        ref={bottomSheetRef}
+        index={-1}
+        snapPoints={snapPoints}
+        enablePanDownToClose
+        backgroundStyle={styles.sheetBackground}
+        handleIndicatorStyle={styles.sheetHandle}
+        onClose={() => setSelected(null)}
+      >
+        {selected && (
+          <BottomSheetView style={styles.sheetContent}>
+            {/* Sheet header */}
+            <View style={styles.sheetHeader}>
+              <View
+                style={[
+                  styles.partyBadge,
+                  { backgroundColor: getPartyColor(selected.winner) },
+                ]}
+              >
+                <Text style={styles.partyBadgeText}>{selected.winner}</Text>
+              </View>
+              <View style={styles.sheetTitleGroup}>
+                <Text style={styles.sheetTitle}>{selected.name}</Text>
+                <Text style={styles.sheetSubtitle}>
+                  AC #{selected.acNo} · {selected.district} · {selected.type}
+                </Text>
+              </View>
             </View>
-            <Pressable onPress={handleReset} hitSlop={12}>
-              <Ionicons name="close-circle" size={24} color="#6B7280" />
+
+            {/* Election result */}
+            <View style={styles.resultSection}>
+              <Text style={styles.resultLabel}>2023 Winner</Text>
+              <Text style={styles.resultValue}>{selected.winnerName}</Text>
+            </View>
+
+            <View style={styles.statsRow}>
+              <View style={styles.statBox}>
+                <Text style={styles.statValue}>
+                  {selected.votes.toLocaleString()}
+                </Text>
+                <Text style={styles.statLabel}>Winner Votes</Text>
+              </View>
+              <View style={styles.statBox}>
+                <Text style={styles.statValue}>
+                  {selected.margin.toLocaleString()}
+                </Text>
+                <Text style={styles.statLabel}>Margin</Text>
+              </View>
+              <View style={styles.statBox}>
+                <Text style={styles.statValue}>{selected.runnerUp}</Text>
+                <Text style={styles.statLabel}>Runner-up</Text>
+              </View>
+            </View>
+
+            {/* View detail button */}
+            <Pressable style={styles.detailButton} onPress={handleViewDetail}>
+              <Text style={styles.detailButtonText}>
+                View Full Profile
+              </Text>
+              <Ionicons name="arrow-forward" size={16} color="#FFFFFF" />
             </Pressable>
-          </View>
-          <View style={styles.cardDivider} />
-          <Text style={styles.cardHint}>
-            Tap to view full constituency details →
-          </Text>
-        </View>
-      )}
+          </BottomSheetView>
+        )}
+      </BottomSheet>
     </View>
   );
 }
@@ -294,51 +407,100 @@ const styles = StyleSheet.create({
     borderWidth: 2,
     borderColor: '#FFFFFF',
   },
-  card: {
-    position: 'absolute',
-    bottom: 24,
-    left: 16,
-    right: 16,
+  // ─── Bottom Sheet ───
+  sheetBackground: {
     backgroundColor: '#111827',
-    borderRadius: 16,
-    padding: 16,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: -4 },
-    shadowOpacity: 0.3,
-    shadowRadius: 8,
-    elevation: 8,
+    borderTopLeftRadius: 20,
+    borderTopRightRadius: 20,
   },
-  cardHeader: {
+  sheetHandle: {
+    backgroundColor: '#4B5563',
+    width: 40,
+  },
+  sheetContent: {
+    paddingHorizontal: 20,
+    paddingBottom: 24,
+  },
+  sheetHeader: {
     flexDirection: 'row',
     alignItems: 'center',
+    marginBottom: 16,
   },
-  partyDot: {
-    width: 12,
-    height: 12,
-    borderRadius: 6,
-    marginRight: 12,
+  partyBadge: {
+    paddingHorizontal: 10,
+    paddingVertical: 6,
+    borderRadius: 8,
+    marginRight: 14,
   },
-  cardTitleGroup: {
-    flex: 1,
-  },
-  cardTitle: {
-    fontSize: 18,
-    fontWeight: '700',
+  partyBadgeText: {
+    fontSize: 13,
+    fontWeight: '800',
     color: '#FFFFFF',
   },
-  cardSubtitle: {
+  sheetTitleGroup: {
+    flex: 1,
+  },
+  sheetTitle: {
+    fontSize: 22,
+    fontWeight: '800',
+    color: '#FFFFFF',
+  },
+  sheetSubtitle: {
     fontSize: 13,
     color: '#9CA3AF',
     marginTop: 2,
   },
-  cardDivider: {
-    height: 1,
-    backgroundColor: '#1F2937',
-    marginVertical: 12,
+  resultSection: {
+    marginBottom: 14,
   },
-  cardHint: {
-    fontSize: 13,
-    color: '#4F8EF7',
+  resultLabel: {
+    fontSize: 12,
+    color: '#6B7280',
     fontWeight: '600',
+    textTransform: 'uppercase',
+    letterSpacing: 1,
+  },
+  resultValue: {
+    fontSize: 16,
+    color: '#FFFFFF',
+    fontWeight: '600',
+    marginTop: 4,
+  },
+  statsRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginBottom: 18,
+  },
+  statBox: {
+    flex: 1,
+    backgroundColor: '#1F2937',
+    borderRadius: 12,
+    padding: 12,
+    marginHorizontal: 4,
+    alignItems: 'center',
+  },
+  statValue: {
+    fontSize: 15,
+    fontWeight: '700',
+    color: '#FFFFFF',
+  },
+  statLabel: {
+    fontSize: 11,
+    color: '#6B7280',
+    marginTop: 4,
+  },
+  detailButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: '#4F8EF7',
+    borderRadius: 12,
+    paddingVertical: 14,
+    gap: 8,
+  },
+  detailButtonText: {
+    fontSize: 15,
+    fontWeight: '700',
+    color: '#FFFFFF',
   },
 });

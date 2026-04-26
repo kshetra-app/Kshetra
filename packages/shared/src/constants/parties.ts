@@ -37,6 +37,13 @@ export const PARTY_CONFIG: Record<PartyCode, PartyInfo> = {
     color: '#FFCD00',
     secondaryColor: '#FFE066',
   },
+  AIMIM: {
+    code: 'AIMIM',
+    name: 'All India Majlis-e-Ittehadul Muslimeen',
+    shortName: 'AIMIM',
+    color: '#008000',
+    secondaryColor: '#33B333',
+  },
   YSRCP: {
     code: 'YSRCP',
     name: 'YSR Congress Party',

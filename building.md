@@ -11,6 +11,7 @@
 | Phase 1A: Project Scaffold | ✅ Complete | 2026-04-26 | 2026-04-26 |
 | Phase 1B: Interactive Map | ✅ Complete | 2026-04-26 | 2026-04-26 |
 | Phase 1C: Find My Constituency | ✅ Complete | 2026-04-26 | 2026-04-26 |
+| Phase 1D: Real Data + Party Map + Bottom Sheet | ✅ Complete | 2026-04-26 | 2026-04-26 |
 | Phase 2: Intelligence Layer | ⬜ Not Started | — | — |
 
 ---
@@ -74,6 +75,7 @@
 | 2026-04-26 | `chore: initial project scaffold` | Monorepo, shared types, API server, mobile app shell, tests (18/18 pass) |
 | 2026-04-26 | `feat: interactive Telangana map + constituency data` | GeoJSON boundaries, seed data (119 ACs), Mapbox map screen, Explore list, detail screen, tests (28/28 pass) |
 | 2026-04-26 | `feat: find my constituency — GPS + point-in-polygon` | Offline geolocation, ray-casting algorithm, expo-location, user marker, integration tests (56/56 pass) |
+| 2026-04-26 | `feat: party-colored map + real API data + bottom sheet` | Party-colored polygons, API serves 119 ACs with election data, locate endpoint with PIP, @gorhom/bottom-sheet, AIMIM support, tests (59/59 pass) |
 
 ---
 
@@ -162,3 +164,40 @@
 | `@kshetra/api` — constituencies | ✅ Pass | 4 | 4 | Unchanged |
 | `data/seed` — telangana constituencies | ✅ Pass | 10 | 10 | Unchanged |
 | **Total** | **✅ All Pass** | **56** | **56** | — |
+
+---
+
+## Milestone 4: Real Data + Party-Colored Map + Bottom Sheet
+
+**Date**: 2026-04-26
+**Goal**: Wire real data end-to-end, color-code map by party, and add bottom sheet constituency detail
+
+### Completed
+
+- [x] API wired to seed data — `GET /states/TS/constituencies` returns 119 ACs with full metadata
+- [x] API detail endpoint — `GET /states/TS/constituencies/:id` returns constituency + election2023 results
+- [x] API locate endpoint — `GET /constituencies/locate?lat=&lng=` uses point-in-polygon against real GeoJSON
+- [x] Unsupported states gracefully return empty with informative message
+- [x] Updated `ConstituencyBrief` type to match Phase 1 reality (acNo, district, reservationStatus, currentMLA)
+- [x] Added AIMIM to PartyCode and PARTY_CONFIG (Hyderabad Old City constituencies)
+- [x] Party-colored map polygons — Mapbox `match` expression colors by WINNER_PARTY (INC blue, BRS pink, BJP orange, AIMIM green, TDP yellow)
+- [x] GeoJSON enrichment module — merges seed election data into GeoJSON properties at import time
+- [x] Replaced floating card with `@gorhom/bottom-sheet` — 2-snap-point sheet with:
+  - Party badge, constituency name, AC#, district, type
+  - Winner name, votes, margin, runner-up
+  - "View Full Profile" button navigating to detail screen
+- [x] Added `GestureHandlerRootView` wrapper in root layout
+- [x] Selected constituency highlights in gold (#FFD700) with 0.8 opacity
+
+### Tests — Milestone 4
+
+| Test Suite | Status | Passed | Total | Notes |
+|---|---|---|---|---|
+| `@kshetra/shared` — parties | ✅ Pass | 7 | 7 | +1: AIMIM added |
+| `@kshetra/shared` — states | ✅ Pass | 7 | 7 | Unchanged |
+| `@kshetra/shared` — point-in-polygon | ✅ Pass | 18 | 18 | Unchanged |
+| `@kshetra/shared` — geolocation integration | ✅ Pass | 10 | 10 | Unchanged |
+| `@kshetra/api` — health | ✅ Pass | 1 | 1 | Unchanged |
+| `@kshetra/api` — constituencies | ✅ Pass | 7 | 7 | +3: 119 ACs list, detail with election data, locate with PIP |
+| `data/seed` — telangana constituencies | ✅ Pass | 10 | 10 | Unchanged |
+| **Total** | **✅ All Pass** | **59** | **59** | — |

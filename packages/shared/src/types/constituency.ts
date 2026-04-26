@@ -5,6 +5,7 @@ export type PartyCode =
   | 'INC'
   | 'BRS'
   | 'TDP'
+  | 'AIMIM'
   | 'YSRCP'
   | 'AAP'
   | 'DMK'
@@ -26,26 +27,24 @@ export interface GeoCoordinate {
   longitude: number;
 }
 
+export type ReservationStatus = 'GEN' | 'SC' | 'ST';
+
 export interface ConstituencyBrief {
   id: string;
   name: string;
+  acNo: number;
   stateCode: string;
-  type: ConstituencyType;
-  number: number;
-  currentParty: PartyCode;
-  currentRepresentative: string;
-  totalVoters: number;
-  lastMargin: number;
-  lastTurnout: number;
+  district: string;
+  reservationStatus: ReservationStatus;
+  currentParty: string;
+  currentMLA: string;
 }
 
 export interface ConstituencyDetail extends ConstituencyBrief {
-  district: string;
-  reservationStatus: 'GENERAL' | 'SC' | 'ST';
-  demographics: ConstituencyDemographics;
+  demographics?: ConstituencyDemographics;
   elections: ElectionResult[];
-  neighbours: string[];
-  centroid: GeoCoordinate;
+  neighbours?: string[];
+  centroid?: GeoCoordinate;
 }
 
 export interface ConstituencyDemographics {
