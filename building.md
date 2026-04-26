@@ -14,7 +14,8 @@
 | Phase 1D: Real Data + Party Map + Bottom Sheet | ✅ Complete | 2026-04-26 | 2026-04-26 |
 | Phase 1E: Intelligence Dashboard + Profile | ✅ Complete | 2026-04-26 | 2026-04-26 |
 | Phase 2A: API Endpoints + Navigation + District Analytics | ✅ Complete | 2026-04-26 | 2026-04-26 |
-| Phase 2B: Backend + Database (Supabase) | ⬜ Not Started | — | — |
+| Phase 2B: Shared Analytics + ADR + DRY Refactor | ✅ Complete | 2026-04-26 | 2026-04-26 |
+| Phase 3: Backend + Database (Supabase) | ⬜ Not Started | — | — |
 
 ---
 
@@ -80,6 +81,7 @@
 | 2026-04-26 | `feat: party-colored map + real API data + bottom sheet` | Party-colored polygons, API serves 119 ACs with election data, locate endpoint with PIP, @gorhom/bottom-sheet, AIMIM support, tests (59/59 pass) |
 | 2026-04-26 | `feat: intelligence dashboard + profile screen` | Party seat distribution bars, reservation breakdown, key insights (biggest/closest victory), profile screen with settings, fixed import paths (59/59 pass) |
 | 2026-04-26 | `feat: search + analytics API, navigation, district breakdown` | Search endpoint (q/party/district/type), analytics endpoint, Explore→Detail navigation, district breakdown in Intelligence, tests (65/65 pass) |
+| 2026-04-26 | `refactor: shared analytics + ADR-009 + DRY` | Extracted computeElectionAnalytics to @kshetra/shared, API uses shared util, 13 new analytics tests, name-based lookup test, ADR-009, tests (79/79 pass) |
 
 ---
 
@@ -278,3 +280,39 @@
 | `@kshetra/api` — constituencies | ✅ Pass | 13 | 13 | +6: search (q, party, district, type), analytics, analytics 404 |
 | `data/seed` — telangana constituencies | ✅ Pass | 10 | 10 | Unchanged |
 | **Total** | **✅ All Pass** | **65** | **65** | — |
+
+---
+
+## Milestone 7: Shared Analytics + DRY Refactor
+
+**Date**: 2026-04-26
+**Goal**: Deduplicate analytics logic, improve test coverage, document API design
+
+### Completed
+
+- [x] Created `@kshetra/shared` analytics module: `computeElectionAnalytics()`
+  - Pure function: party summary, district breakdown, reservation counts, margin extremes
+  - Generic `ConstituencyRecord` interface decoupled from seed format
+  - Handles empty input gracefully
+- [x] API analytics endpoint now delegates to `computeElectionAnalytics()` (60 lines → 4)
+- [x] 13 new tests for `computeElectionAnalytics`:
+  - 119 constituencies, INC >50 seats, AIMIM exactly 7, sorted descending
+  - Reservation counts sum to 119, all positive
+  - Margins valid, districts sorted, percentages sum to ~100
+  - Empty input edge case
+- [x] New API test: constituency detail by name (`/constituencies/charminar`)
+- [x] ADR-009: API design — RESTful, seed-backed, versioned, offline-first
+
+### Tests — Milestone 7
+
+| Test Suite | Status | Passed | Total | Notes |
+|---|---|---|---|---|
+| `@kshetra/shared` — parties | ✅ Pass | 7 | 7 | Unchanged |
+| `@kshetra/shared` — states | ✅ Pass | 7 | 7 | Unchanged |
+| `@kshetra/shared` — point-in-polygon | ✅ Pass | 18 | 18 | Unchanged |
+| `@kshetra/shared` — geolocation integration | ✅ Pass | 10 | 10 | Unchanged |
+| `@kshetra/shared` — election analytics | ✅ Pass | 13 | 13 | **NEW**: full coverage of shared analytics |
+| `@kshetra/api` — health | ✅ Pass | 1 | 1 | Unchanged |
+| `@kshetra/api` — constituencies | ✅ Pass | 14 | 14 | +1: detail by name |
+| `data/seed` — telangana constituencies | ✅ Pass | 10 | 10 | Unchanged |
+| **Total** | **✅ All Pass** | **79** | **79** | +14 from previous |

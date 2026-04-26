@@ -71,6 +71,19 @@ describe('Constituency Routes', () => {
     expect(body.election2023.marginPercent).toBeGreaterThan(0);
   });
 
+  it('GET /states/TS/constituencies/charminar should return Charminar by name', async () => {
+    const response = await app.inject({
+      method: 'GET',
+      url: '/api/v1/states/TS/constituencies/charminar',
+    });
+
+    expect(response.statusCode).toBe(200);
+    const body = JSON.parse(response.payload);
+    expect(body.name).toBe('Charminar');
+    expect(body.acNo).toBe(66);
+    expect(body.election2023.winner).toBe('AIMIM');
+  });
+
   it('GET /states/TS/constituencies/999 should return 404', async () => {
     const response = await app.inject({
       method: 'GET',

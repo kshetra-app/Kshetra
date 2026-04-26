@@ -1,6 +1,7 @@
 import type { FastifyInstance } from 'fastify';
 import type { ConstituencyBrief } from '@kshetra/shared';
-import { findConstituencyAtPoint } from '@kshetra/shared';
+import { findConstituencyAtPoint, computeElectionAnalytics } from '@kshetra/shared';
+import type { ConstituencyRecord } from '@kshetra/shared';
 import {
   TELANGANA_CONSTITUENCIES,
   type ConstituencySeed,
@@ -19,6 +20,20 @@ function seedToBrief(c: ConstituencySeed): ConstituencyBrief {
     reservationStatus: c.type,
     currentParty: c.winner2023,
     currentMLA: c.winnerName2023,
+  };
+}
+
+/** Map seed data to generic ConstituencyRecord for analytics */
+function seedToRecord(c: ConstituencySeed): ConstituencyRecord {
+  return {
+    acNo: c.acNo,
+    name: c.name,
+    district: c.district,
+    type: c.type,
+    winner: c.winner2023,
+    winnerVotes: c.winnerVotes2023,
+    runnerUp: c.runnerUp2023,
+    margin: c.margin2023,
   };
 }
 
@@ -155,61 +170,12 @@ export async function constituencyRoutes(app: FastifyInstance) {
       });
     }
 
-    const partySeats: Record<string, number> = {};
-    const districtMap: Record<string, Record<string, number>> = {};
-    let closestMargin = Infinity;
-    let closestAC = '';
-    let biggestMargin = 0;
-    let biggestAC = '';
-
-    for (const c of TELANGANA_CONSTITUENCIES) {
-      partySeats[c.winner2023] = (partySeats[c.winner2023] || 0) + 1;
-
-      if (!districtMap[c.district]) districtMap[c.district] = {};
-      districtMap[c.district][c.winner2023] =
-        (districtMap[c.district][c.winner2023] || 0) + 1;
-
-      if (c.margin2023 < closestMargin) {
-        closestMargin = c.margin2023;
-        closestAC = c.name;
-      }
-      if (c.margin2023 > biggestMargin) {
-        biggestMargin = c.margin2023;
-        biggestAC = c.name;
-      }
-    }
-
-    const partySummary = Object.entries(partySeats)
-      .sort(([, a], [, b]) => b - a)
-      .map(([party, seats]) => ({
-        party,
-        seats,
-        percentage: parseFloat(((seats / 119) * 100).toFixed(1)),
-      }));
-
-    const districts = Object.entries(districtMap)
-      .map(([name, parties]) => {
-        const total = Object.values(parties).reduce((a, b) => a + b, 0);
-        const dominant = Object.entries(parties).sort(([, a], [, b]) => b - a)[0];
-        return {
-          name,
-          totalSeats: total,
-          dominantParty: dominant[0],
-          parties,
-        };
-      })
-      .sort((a, b) => b.totalSeats - a.totalSeats);
+    const records = TELANGANA_CONSTITUENCIES.map(seedToRecord);
+    const analytics = computeElectionAnalytics(records);
 
     return {
       state: 'TS',
-      totalConstituencies: 119,
-      totalDistricts: districts.length,
-      partySummary,
-      districts,
-      margins: {
-        closest: { constituency: closestAC, margin: closestMargin },
-        biggest: { constituency: biggestAC, margin: biggestMargin },
-      },
+      ...analytics,
     };
   });
 
