@@ -7,6 +7,8 @@ import { TELANGANA_CONSTITUENCIES } from '../../../../data/seed/telangana-consti
 import { TELANGANA_ELECTION_HISTORY } from '../../../../data/seed/telangana-election-history';
 import { useFavoritesStore } from '../../stores/favorites';
 import { useRecentsStore } from '../../stores/recents';
+import { getMLAProfile } from '../../../../data/seed/telangana-mla-profiles';
+import MLACard from '../../components/MLACard';
 
 export default function ConstituencyDetailScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
@@ -134,6 +136,17 @@ export default function ConstituencyDetailScreen() {
             </View>
           </View>
         </View>
+
+        {/* MLA Profile */}
+        {(() => {
+          const mla = getMLAProfile(acNo);
+          return mla ? (
+            <View style={styles.section}>
+              <Text style={styles.sectionTitle}>Current MLA</Text>
+              <MLACard profile={mla} />
+            </View>
+          ) : null;
+        })()}
 
         {/* Placeholder sections for future */}
         <View style={styles.section}>

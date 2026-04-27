@@ -9,6 +9,10 @@ import {
 import {
   TELANGANA_ELECTION_HISTORY,
 } from '../../../../data/seed/telangana-election-history';
+import {
+  TELANGANA_MLA_PROFILES,
+  getMLAProfile,
+} from '../../../../data/seed/telangana-mla-profiles';
 import * as fs from 'fs';
 import * as path from 'path';
 
@@ -206,6 +210,51 @@ export async function constituencyRoutes(app: FastifyInstance) {
     return {
       state: 'TS',
       ...analytics,
+    };
+  });
+
+  // ─── MLA PROFILES ───
+
+  app.get('/states/:stateCode/mla/:acNo', async (request, reply) => {
+    const { stateCode, acNo } = request.params as { stateCode: string; acNo: string };
+
+    if (stateCode.toUpperCase() !== 'TS') {
+      return reply.code(404).send({
+        error: 'Not Found',
+        message: `State ${stateCode} not supported yet`,
+      });
+    }
+
+    const num = parseInt(acNo, 10);
+    if (isNaN(num) || num < 1 || num > 119) {
+      return reply.code(400).send({ error: 'Invalid AC number' });
+    }
+
+    const profile = getMLAProfile(num);
+    if (!profile) {
+      return reply.code(404).send({
+        error: 'Not Found',
+        message: `MLA profile for AC #${num} not available yet`,
+      });
+    }
+
+    return { state: 'TS', acNo: num, profile };
+  });
+
+  app.get('/states/:stateCode/mla', async (request, reply) => {
+    const { stateCode } = request.params as { stateCode: string };
+
+    if (stateCode.toUpperCase() !== 'TS') {
+      return reply.code(404).send({
+        error: 'Not Found',
+        message: `State ${stateCode} not supported yet`,
+      });
+    }
+
+    return {
+      state: 'TS',
+      count: TELANGANA_MLA_PROFILES.length,
+      profiles: TELANGANA_MLA_PROFILES,
     };
   });
 

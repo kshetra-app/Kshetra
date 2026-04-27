@@ -231,6 +231,56 @@ describe('Constituency Routes', () => {
     expect(response.statusCode).toBe(404);
   });
 
+  // ─── MLA PROFILES ───
+
+  it('GET /states/TS/mla should return all profiles', async () => {
+    const response = await app.inject({
+      method: 'GET',
+      url: '/api/v1/states/TS/mla',
+    });
+
+    expect(response.statusCode).toBe(200);
+    const body = JSON.parse(response.payload);
+    expect(body.state).toBe('TS');
+    expect(body.count).toBe(20);
+    expect(body.profiles).toHaveLength(20);
+    expect(body.profiles[0]).toHaveProperty('name');
+    expect(body.profiles[0]).toHaveProperty('party');
+    expect(body.profiles[0]).toHaveProperty('terms');
+  });
+
+  it('GET /states/TS/mla/29 should return KTR profile', async () => {
+    const response = await app.inject({
+      method: 'GET',
+      url: '/api/v1/states/TS/mla/29',
+    });
+
+    expect(response.statusCode).toBe(200);
+    const body = JSON.parse(response.payload);
+    expect(body.acNo).toBe(29);
+    expect(body.profile.name).toBe('KT Rama Rao');
+    expect(body.profile.party).toBe('BRS');
+    expect(body.profile.terms).toBe(3);
+  });
+
+  it('GET /states/TS/mla/2 should return 404 for missing profile', async () => {
+    const response = await app.inject({
+      method: 'GET',
+      url: '/api/v1/states/TS/mla/2',
+    });
+
+    expect(response.statusCode).toBe(404);
+  });
+
+  it('GET /states/TS/mla/abc should return 400', async () => {
+    const response = await app.inject({
+      method: 'GET',
+      url: '/api/v1/states/TS/mla/abc',
+    });
+
+    expect(response.statusCode).toBe(400);
+  });
+
   // ─── SEARCH: MARGIN RANGE ───
 
   it('GET /states/TS/constituencies/search?maxMargin=5000 should return close contests', async () => {
