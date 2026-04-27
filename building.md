@@ -26,6 +26,7 @@
 | Phase 4E: Map Enhancements | ✅ Complete | 2026-04-27 | 2026-04-27 |
 | Phase 4F: Performance + Polish | ✅ Complete | 2026-04-27 | 2026-04-27 |
 | Phase 4G: Push Notifications + Alerts | ✅ Complete | 2026-04-27 | 2026-04-27 |
+| Phase 4H: Dark/Light Theme System | ✅ Complete | 2026-04-27 | 2026-04-27 |
 
 ---
 
@@ -103,6 +104,7 @@
 | 2026-04-27 | `feat: map enhancements` | MapLegend overlay, favourites border layer (red highlight), share button on detail screen (110/110 pass) |
 | 2026-04-27 | `feat: performance + polish` | React.memo ConstituencyCard, ErrorBoundary, SkeletonLoader, empty state, API cache headers (110/110 pass) |
 | 2026-04-27 | `feat: push notifications + alerts` | expo-notifications service, notification store (persist), notification center screen, bell icon w/ badge on Profile, alert categories (110/110 pass) |
+| 2026-04-27 | `feat: dark/light theme system` | Theme tokens (dark+light), useTheme hook, theme picker in Profile, dynamic StatusBar, system preference support (110/110 pass) |
 
 ---
 
@@ -725,3 +727,34 @@ The app works fully offline without Supabase credentials. To activate:
 | `@kshetra/api` — all | ✅ Pass | 31 | 31 | Unchanged |
 | `data/seed` — all | ✅ Pass | 20 | 20 | Unchanged |
 | **Total** | **✅ All Pass** | **110** | **110** | UI + service phase |
+
+---
+
+## Milestone 19: Dark/Light Theme System
+
+**Date**: 2026-04-27
+**Goal**: Centralized theme system with dark, light, and system modes
+
+### Completed
+
+- [x] `lib/theme.ts` — theme color tokens
+  - `DARK_THEME` and `LIGHT_THEME` palettes
+  - ThemeColors interface: background, surface, text, primary, danger, etc.
+  - Includes map style URLs per theme
+- [x] `lib/useTheme.ts` — theme hook
+  - Reads from preferences store (`dark`/`light`/`system`)
+  - Falls back to `useColorScheme()` for system mode
+  - Returns `{ colors, mode, isDark }`
+- [x] Profile: interactive theme picker (moon/sun/phone icons)
+  - 3 pressable options with active highlight
+  - Persists preference via existing store
+- [x] Root layout: dynamic `StatusBar` style from theme
+
+### Tests — Milestone 19
+
+| Test Suite | Status | Passed | Total | Notes |
+|---|---|---|---|---|
+| `@kshetra/shared` — all | ✅ Pass | 59 | 59 | Unchanged |
+| `@kshetra/api` — all | ✅ Pass | 31 | 31 | Unchanged |
+| `data/seed` — all | ✅ Pass | 20 | 20 | Unchanged |
+| **Total** | **✅ All Pass** | **110** | **110** | Theme system — UI only |

@@ -228,12 +228,30 @@ export default function ProfileScreen() {
               thumbColor="#FFFFFF"
             />
           </View>
-          <SettingRow
-            icon="moon"
-            label="Theme"
-            value={prefs.theme.charAt(0).toUpperCase() + prefs.theme.slice(1)}
-            color="#8B5CF6"
-          />
+          <View style={styles.settingRow}>
+            <View style={[styles.settingIcon, { backgroundColor: '#8B5CF620' }]}>
+              <Ionicons name="moon" size={18} color="#8B5CF6" />
+            </View>
+            <Text style={styles.settingLabel}>Theme</Text>
+            <View style={styles.themePicker}>
+              {(['dark', 'light', 'system'] as const).map((mode) => (
+                <Pressable
+                  key={mode}
+                  style={[
+                    styles.themeOption,
+                    prefs.theme === mode && styles.themeOptionActive,
+                  ]}
+                  onPress={() => prefs.setTheme(mode)}
+                >
+                  <Ionicons
+                    name={mode === 'dark' ? 'moon' : mode === 'light' ? 'sunny' : 'phone-portrait'}
+                    size={14}
+                    color={prefs.theme === mode ? '#4F8EF7' : '#6B7280'}
+                  />
+                </Pressable>
+              ))}
+            </View>
+          </View>
           <SettingRow
             icon="language"
             label="Language"
@@ -438,6 +456,23 @@ const styles = StyleSheet.create({
     fontSize: 12,
     color: '#6B7280',
     marginTop: 1,
+  },
+  themePicker: {
+    flexDirection: 'row',
+    gap: 6,
+  },
+  themeOption: {
+    width: 32,
+    height: 32,
+    borderRadius: 8,
+    backgroundColor: '#1F2937',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  themeOptionActive: {
+    backgroundColor: '#4F8EF720',
+    borderWidth: 1.5,
+    borderColor: '#4F8EF7',
   },
   footer: {
     alignItems: 'center',

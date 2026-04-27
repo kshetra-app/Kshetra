@@ -5,11 +5,13 @@ import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import * as SplashScreen from 'expo-splash-screen';
 import { useAuthStore } from '../stores/auth';
 import ErrorBoundary from '../components/ErrorBoundary';
+import { useTheme } from '../lib/useTheme';
 
 SplashScreen.preventAutoHideAsync();
 
 export default function RootLayout() {
   const initializeAuth = useAuthStore((s) => s.initialize);
+  const { colors, isDark } = useTheme();
 
   useEffect(() => {
     initializeAuth();
@@ -19,7 +21,7 @@ export default function RootLayout() {
   return (
     <ErrorBoundary fallbackMessage="Kshetra encountered an error. Please restart the app.">
     <GestureHandlerRootView style={{ flex: 1 }}>
-      <StatusBar style="light" />
+      <StatusBar style={colors.statusBar} />
       <Stack
         screenOptions={{
           headerShown: false,
