@@ -48,6 +48,15 @@ export default function RootLayout() {
           }}
         />
         <Stack.Screen
+          name="notifications"
+          options={{
+            headerShown: true,
+            headerStyle: { backgroundColor: '#0A0A1A' },
+            headerTintColor: '#FFFFFF',
+            animation: 'slide_from_right',
+          }}
+        />
+        <Stack.Screen
           name="ai-chat"
           options={{
             headerShown: true,

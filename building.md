@@ -25,6 +25,7 @@
 | Phase 4D: Candidate Profiles + MLA Cards | ✅ Complete | 2026-04-27 | 2026-04-27 |
 | Phase 4E: Map Enhancements | ✅ Complete | 2026-04-27 | 2026-04-27 |
 | Phase 4F: Performance + Polish | ✅ Complete | 2026-04-27 | 2026-04-27 |
+| Phase 4G: Push Notifications + Alerts | ✅ Complete | 2026-04-27 | 2026-04-27 |
 
 ---
 
@@ -101,6 +102,7 @@
 | 2026-04-27 | `feat: candidate profiles + MLA cards` | MLA profile seed data (20 key MLAs), MLACard component, detail screen integration, MLA API endpoints, 4 new tests (110/110 pass) |
 | 2026-04-27 | `feat: map enhancements` | MapLegend overlay, favourites border layer (red highlight), share button on detail screen (110/110 pass) |
 | 2026-04-27 | `feat: performance + polish` | React.memo ConstituencyCard, ErrorBoundary, SkeletonLoader, empty state, API cache headers (110/110 pass) |
+| 2026-04-27 | `feat: push notifications + alerts` | expo-notifications service, notification store (persist), notification center screen, bell icon w/ badge on Profile, alert categories (110/110 pass) |
 
 ---
 
@@ -686,3 +688,40 @@ The app works fully offline without Supabase credentials. To activate:
 | `@kshetra/api` — all | ✅ Pass | 31 | 31 | Unchanged |
 | `data/seed` — all | ✅ Pass | 20 | 20 | Unchanged |
 | **Total** | **✅ All Pass** | **110** | **110** | Performance phase, no new unit tests |
+
+---
+
+## Milestone 18: Push Notifications + Alerts
+
+**Date**: 2026-04-27
+**Goal**: Notification infrastructure, in-app notification center, alert preferences
+
+### Completed
+
+- [x] `lib/notifications.ts` — expo-notifications service
+  - Foreground handler, permission request, push token
+  - Local notification scheduling + cancel
+  - Alert categories: election_results, constituency_updates, new_state_added, app_updates
+- [x] `stores/notifications.ts` — persisted Zustand store
+  - In-app notification inbox (max 50 items)
+  - Per-category toggles, global enable/disable
+  - Unread count, mark read/all, clear all
+- [x] `app/notifications.tsx` — notification center screen
+  - Category icons, time-ago formatting
+  - Unread indicator (blue left border + dot)
+  - Mark all read / Clear all actions
+  - Empty state
+- [x] Profile tab integration:
+  - Bell icon with unread badge count
+  - Notification toggle switch
+  - Notification Center link with unread count
+- [x] Root layout: notifications route registered
+
+### Tests — Milestone 18
+
+| Test Suite | Status | Passed | Total | Notes |
+|---|---|---|---|---|
+| `@kshetra/shared` — all | ✅ Pass | 59 | 59 | Unchanged |
+| `@kshetra/api` — all | ✅ Pass | 31 | 31 | Unchanged |
+| `data/seed` — all | ✅ Pass | 20 | 20 | Unchanged |
+| **Total** | **✅ All Pass** | **110** | **110** | UI + service phase |

@@ -14,6 +14,7 @@ import { usePreferencesStore } from '../../stores/preferences';
 import { useFavoritesStore } from '../../stores/favorites';
 import { useRecentsStore } from '../../stores/recents';
 import { useAuthStore } from '../../stores/auth';
+import { useNotificationsStore } from '../../stores/notifications';
 import { getPartyColor } from '@/lib/constants';
 
 interface SettingRowProps {
@@ -48,6 +49,9 @@ export default function ProfileScreen() {
   const user = useAuthStore((s) => s.user);
   const signOut = useAuthStore((s) => s.signOut);
   const loading = useAuthStore((s) => s.loading);
+  const unreadCount = useNotificationsStore((s) => s.unreadCount);
+  const notifEnabled = useNotificationsStore((s) => s.enabled);
+  const toggleNotif = useNotificationsStore((s) => s.toggleEnabled);
 
   return (
     <ScrollView
@@ -57,6 +61,17 @@ export default function ProfileScreen() {
     >
       {/* Header */}
       <View style={styles.header}>
+        <Pressable
+          style={styles.bellButton}
+          onPress={() => router.push('/notifications')}
+        >
+          <Ionicons name="notifications-outline" size={22} color="#9CA3AF" />
+          {unreadCount > 0 && (
+            <View style={styles.bellBadge}>
+              <Text style={styles.bellBadgeText}>{unreadCount > 9 ? '9+' : unreadCount}</Text>
+            </View>
+          )}
+        </Pressable>
         <View style={styles.avatar}>
           <Ionicons
             name={user ? 'person-circle' : 'person'}
@@ -92,6 +107,32 @@ export default function ProfileScreen() {
             </Pressable>
           </>
         )}
+      </View>
+
+      {/* Notifications */}
+      <View style={styles.section}>
+        <Text style={styles.sectionTitle}>Notifications</Text>
+        <View style={styles.card}>
+          <View style={styles.settingRow}>
+            <View style={[styles.settingIcon, { backgroundColor: '#4F8EF720' }]}>
+              <Ionicons name="notifications" size={18} color="#4F8EF7" />
+            </View>
+            <Text style={styles.settingLabel}>Push Notifications</Text>
+            <Switch
+              value={notifEnabled}
+              onValueChange={toggleNotif}
+              trackColor={{ false: '#374151', true: '#4F8EF760' }}
+              thumbColor={notifEnabled ? '#4F8EF7' : '#6B7280'}
+            />
+          </View>
+          <SettingRow
+            icon="mail"
+            label="Notification Center"
+            value={unreadCount > 0 ? `${unreadCount} unread` : 'None'}
+            onPress={() => router.push('/notifications')}
+            color="#F59E0B"
+          />
+        </View>
       </View>
 
       {/* App Info */}
@@ -251,6 +292,34 @@ const styles = StyleSheet.create({
   header: {
     alignItems: 'center',
     marginBottom: 28,
+  },
+  bellButton: {
+    position: 'absolute',
+    top: 0,
+    right: 0,
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    backgroundColor: '#111827',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  bellBadge: {
+    position: 'absolute',
+    top: 2,
+    right: 2,
+    backgroundColor: '#EF4444',
+    borderRadius: 8,
+    minWidth: 16,
+    height: 16,
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingHorizontal: 3,
+  },
+  bellBadgeText: {
+    fontSize: 10,
+    fontWeight: '800',
+    color: '#FFFFFF',
   },
   avatar: {
     width: 72,
