@@ -1,7 +1,20 @@
 import { View, Text, StyleSheet } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { getPartyColor } from '@/lib/constants';
-import type { MLAProfile } from '../../../../data/seed/telangana-mla-profiles';
+export interface MLAProfile {
+  acNo: number;
+  name: string;
+  party: string;
+  age?: number;
+  gender: 'M' | 'F';
+  education?: string;
+  profession?: string;
+  terms: number;
+  criminalCases: number;
+  totalAssets?: number;
+  phone?: string;
+  email?: string;
+}
 
 /** Format INR amounts in lakhs/crores */
 function formatINR(amount: number): string {

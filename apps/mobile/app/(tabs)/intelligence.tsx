@@ -10,8 +10,7 @@ import {
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import StateSwitcher from '../../components/StateSwitcher';
-import { TELANGANA_CONSTITUENCIES, type ConstituencySeed } from '../../../../data/seed/telangana-constituencies';
-import { TELANGANA_ELECTION_HISTORY } from '../../../../data/seed/telangana-election-history';
+import { TELANGANA_CONSTITUENCIES, TELANGANA_ELECTION_HISTORY, type ConstituencySeed } from '@/lib/data';
 import { PARTY_COLORS, getPartyColor } from '@/lib/constants';
 
 /** Compute analytics from seed data once */

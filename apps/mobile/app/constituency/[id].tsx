@@ -3,11 +3,9 @@ import { View, Text, StyleSheet, ScrollView, Platform, Pressable, Share } from '
 import { useLocalSearchParams, Stack } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { getPartyColor } from '@/lib/constants';
-import { TELANGANA_CONSTITUENCIES } from '../../../../data/seed/telangana-constituencies';
-import { TELANGANA_ELECTION_HISTORY } from '../../../../data/seed/telangana-election-history';
+import { TELANGANA_CONSTITUENCIES, TELANGANA_ELECTION_HISTORY, getMLAProfile } from '@/lib/data';
 import { useFavoritesStore } from '../../stores/favorites';
 import { useRecentsStore } from '../../stores/recents';
-import { getMLAProfile } from '../../../../data/seed/telangana-mla-profiles';
 import MLACard from '../../components/MLACard';
 
 export default function ConstituencyDetailScreen() {

@@ -1,0 +1,58 @@
+﻿node.exe : ΓÜá∩╕Å WARNING: RNMapboxMapsDownloadToken is deprecated. Use RNMAPBOX_MAPS_DOWNLOAD_TOKEN environment variable instead.
+At line:1 char:1
++ & "C:\Program Files\nodejs/node.exe" "C:\Program Files\nodejs/node_mo ...
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (ΓÜá∩╕Å WARNING:...riable instead.:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+ΓÜá∩╕Å WARNING: This token will be part of your gradle.properties. Be careful about committing it to source control.
+ΓÜá∩╕Å WARNING: RNMapboxMapsDownloadToken is deprecated. Use RNMAPBOX_MAPS_DOWNLOAD_TOKEN environment variable instead.
+ΓÜá∩╕Å WARNING: This token will be part of your gradle.properties. Be careful about committing it to source control.
+ΓÜá∩╕Å WARNING: RNMapboxMapsDownloadToken is deprecated. Use RNMAPBOX_MAPS_DOWNLOAD_TOKEN environment variable instead.
+ΓÜá∩╕Å WARNING: This token will be part of your gradle.properties. Be careful about committing it to source control.
+ΓÜá∩╕Å WARNING: RNMapboxMapsDownloadToken is deprecated. Use RNMAPBOX_MAPS_DOWNLOAD_TOKEN environment variable instead.
+ΓÜá∩╕Å WARNING: This token will be part of your gradle.properties. Be careful about committing it to source control.
+Starting Metro Bundler
+Android node_modules\expo-router\entry.js ΓûæΓûæΓûæΓûæΓûæΓûæΓûæΓûæΓûæΓûæΓûæΓûæΓûæΓûæΓûæΓûæ  0.0% (0/1)
+Android node_modules\expo-router\entry.js ΓûôΓûôΓûæΓûæΓûæΓûæΓûæΓûæΓûæΓûæΓûæΓûæΓûæΓûæΓûæΓûæ 16.0% ( 17/123)
+Android node_modules\expo-router\entry.js ΓûôΓûôΓûæΓûæΓûæΓûæΓûæΓûæΓûæΓûæΓûæΓûæΓûæΓûæΓûæΓûæ 16.0% ( 45/187)
+Android node_modules\expo-router\entry.js ΓûôΓûôΓûæΓûæΓûæΓûæΓûæΓûæΓûæΓûæΓûæΓûæΓûæΓûæΓûæΓûæ 17.7% (112/281)
+Android node_modules\expo-router\entry.js ΓûôΓûôΓûôΓûæΓûæΓûæΓûæΓûæΓûæΓûæΓûæΓûæΓûæΓûæΓûæΓûæ 23.1% (185/385)
+Android node_modules\expo-router\entry.js ΓûôΓûôΓûôΓûôΓûæΓûæΓûæΓûæΓûæΓûæΓûæΓûæΓûæΓûæΓûæΓûæ 28.7% (239/447)
+Android node_modules\expo-router\entry.js ΓûôΓûôΓûôΓûôΓûôΓûôΓûôΓûæΓûæΓûæΓûæΓûæΓûæΓûæΓûæΓûæ 46.8% (344/503)
+Android node_modules\expo-router\entry.js ΓûôΓûôΓûôΓûôΓûôΓûôΓûôΓûôΓûæΓûæΓûæΓûæΓûæΓûæΓûæΓûæ 54.7% (397/537)
+Android node_modules\expo-router\entry.js ΓûôΓûôΓûôΓûôΓûôΓûôΓûôΓûôΓûæΓûæΓûæΓûæΓûæΓûæΓûæΓûæ 54.9% (398/537)
+Android node_modules\expo-router\entry.js ΓûôΓûôΓûôΓûôΓûôΓûôΓûôΓûôΓûæΓûæΓûæΓûæΓûæΓûæΓûæΓûæ 54.9% (403/571)
+Android node_modules\expo-router\entry.js ΓûôΓûôΓûôΓûôΓûôΓûôΓûôΓûôΓûæΓûæΓûæΓûæΓûæΓûæΓûæΓûæ 54.9% (404/571)
+Android node_modules\expo-router\entry.js ΓûôΓûôΓûôΓûôΓûôΓûôΓûôΓûôΓûæΓûæΓûæΓûæΓûæΓûæΓûæΓûæ 54.9% (434/641)
+Android node_modules\expo-router\entry.js ΓûôΓûôΓûôΓûôΓûôΓûôΓûôΓûôΓûæΓûæΓûæΓûæΓûæΓûæΓûæΓûæ 54.9% (450/655)
+Android node_modules\expo-router\entry.js ΓûôΓûôΓûôΓûôΓûôΓûôΓûôΓûôΓûæΓûæΓûæΓûæΓûæΓûæΓûæΓûæ 54.9% (464/661)
+Android node_modules\expo-router\entry.js ΓûôΓûôΓûôΓûôΓûôΓûôΓûôΓûôΓûæΓûæΓûæΓûæΓûæΓûæΓûæΓûæ 54.9% (545/801)
+Android node_modules\expo-router\entry.js ΓûôΓûôΓûôΓûôΓûôΓûôΓûôΓûôΓûæΓûæΓûæΓûæΓûæΓûæΓûæΓûæ 54.9% (559/812)
+Android node_modules\expo-router\entry.js ΓûôΓûôΓûôΓûôΓûôΓûôΓûôΓûôΓûôΓûæΓûæΓûæΓûæΓûæΓûæΓûæ 56.3% (724/965)
+Android node_modules\expo-router\entry.js ΓûôΓûôΓûôΓûôΓûôΓûôΓûôΓûôΓûôΓûôΓûæΓûæΓûæΓûæΓûæΓûæ 64.2% (781/975)
+Android node_modules\expo-router\entry.js ΓûôΓûôΓûôΓûôΓûôΓûôΓûôΓûôΓûôΓûôΓûôΓûæΓûæΓûæΓûæΓûæ 73.4% ( 862/1006)
+Android node_modules\expo-router\entry.js ΓûôΓûôΓûôΓûôΓûôΓûôΓûôΓûôΓûôΓûôΓûôΓûôΓûôΓûæΓûæΓûæ 83.3% ( 938/1028)
+Android node_modules\expo-router\entry.js ΓûôΓûôΓûôΓûôΓûôΓûôΓûôΓûôΓûôΓûôΓûôΓûôΓûôΓûôΓûæΓûæ 88.5% ( 998/1061)
+Android node_modules\expo-router\entry.js ΓûôΓûôΓûôΓûôΓûôΓûôΓûôΓûôΓûôΓûôΓûôΓûôΓûôΓûôΓûæΓûæ 91.8% (1078/1125)
+Android node_modules\expo-router\entry.js ΓûôΓûôΓûôΓûôΓûôΓûôΓûôΓûôΓûôΓûôΓûôΓûôΓûôΓûôΓûæΓûæ 93.6% (1169/1236)
+Android node_modules\expo-router\entry.js ΓûôΓûôΓûôΓûôΓûôΓûôΓûôΓûôΓûôΓûôΓûôΓûôΓûôΓûôΓûæΓûæ 93.6% (1204/1306)
+Android node_modules\expo-router\entry.js ΓûôΓûôΓûôΓûôΓûôΓûôΓûôΓûôΓûôΓûôΓûôΓûôΓûôΓûôΓûæΓûæ 93.6% (1264/1331)
+Android node_modules\expo-router\entry.js ΓûôΓûôΓûôΓûôΓûôΓûôΓûôΓûôΓûôΓûôΓûôΓûôΓûôΓûôΓûæΓûæ 93.6% (1345/1394)
+Android node_modules\expo-router\entry.js ΓûôΓûôΓûôΓûôΓûôΓûôΓûôΓûôΓûôΓûôΓûôΓûôΓûôΓûôΓûôΓûæ 98.9% (1418/1432)
+Android Bundling failed 148942ms node_modules\expo-router\entry.js (1432 modules)
+Error: Unable to resolve module ../../../../data/seed/telangana-constituencies from C:\Users\Laven\OneDrive\Desktop\Kshetra\apps\mobile\app\(tabs)\index.tsx: 
+
+None of these files exist:
+  * ..\..\data\seed\telangana-constituencies(.android.ts|.native.ts|.ts|.android.tsx|.native.tsx|.tsx|.android.mjs|.native.mjs|.mjs|.android.js|.native.js|.js|.
+android.jsx|.native.jsx|.jsx|.android.json|.native.json|.json|.android.cjs|.native.cjs|.cjs|.android.scss|.native.scss|.scss|.android.sass|.native.sass|.sass|.a
+ndroid.css|.native.css|.css)
+  * ..\..\data\seed\telangana-constituencies
+[0m [90m 30 |[39m   [33mTELANGANA_CONSTITUENCIES[39m[33m,[39m
+ [90m 31 |[39m   type [33mConstituencySeed[39m[33m,[39m
+[31m[1m>[22m[39m[90m 32 |[39m } [36mfrom[39m [32m'../../../../data/seed/telangana-constituencies'[39m[33m;[39m
+ [90m    |[39m         [31m[1m^[22m[39m
+ [90m 33 |[39m
+ [90m 34 |[39m [33mMapboxGL[39m[33m.[39msetAccessToken(process[33m.[39menv[33m.[39m[33mEXPO_PUBLIC_MAPBOX_TOKEN[39m [33m?[39m[33m?[39m 
+[32m''[39m)[33m;[39m
+ [90m 35 |[39m[0m

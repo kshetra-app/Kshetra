@@ -26,10 +26,7 @@ import StateSwitcher from '../../components/StateSwitcher';
 import MapLegend from '../../components/MapLegend';
 import { useFavoritesStore } from '../../stores/favorites';
 import telanganaAssemblyGeo from '@/data/telangana-assembly.json';
-import {
-  TELANGANA_CONSTITUENCIES,
-  type ConstituencySeed,
-} from '../../../../data/seed/telangana-constituencies';
+import { TELANGANA_CONSTITUENCIES, type ConstituencySeed } from '@/lib/data';
 
 MapboxGL.setAccessToken(process.env.EXPO_PUBLIC_MAPBOX_TOKEN ?? '');
 

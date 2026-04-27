@@ -16,7 +16,7 @@ import { useFavoritesStore } from '../../stores/favorites';
 import { useActiveStateStore } from '../../stores/activeState';
 import { getStateData } from '@/lib/stateRegistry';
 import StateSwitcher from '../../components/StateSwitcher';
-import type { ConstituencySeed } from '../../../../data/seed/telangana-constituencies';
+import type { ConstituencySeed } from '@/lib/data';
 
 type SortKey = 'acNo' | 'name' | 'margin_asc' | 'margin_desc';
 
