@@ -231,6 +231,58 @@ describe('Constituency Routes', () => {
     expect(response.statusCode).toBe(404);
   });
 
+  // ─── SEARCH: MARGIN RANGE ───
+
+  it('GET /states/TS/constituencies/search?maxMargin=5000 should return close contests', async () => {
+    const response = await app.inject({
+      method: 'GET',
+      url: '/api/v1/states/TS/constituencies/search?maxMargin=5000',
+    });
+
+    expect(response.statusCode).toBe(200);
+    const body = JSON.parse(response.payload);
+    expect(body.count).toBeGreaterThan(0);
+    expect(body.count).toBeLessThan(119);
+  });
+
+  it('GET /states/TS/constituencies/search?minMargin=50000 should return landslides', async () => {
+    const response = await app.inject({
+      method: 'GET',
+      url: '/api/v1/states/TS/constituencies/search?minMargin=50000',
+    });
+
+    expect(response.statusCode).toBe(200);
+    const body = JSON.parse(response.payload);
+    expect(body.count).toBeGreaterThan(0);
+    expect(body.count).toBeLessThan(119);
+  });
+
+  // ─── SEARCH: SORT ───
+
+  it('GET /states/TS/constituencies/search?sort=name should return alphabetically sorted', async () => {
+    const response = await app.inject({
+      method: 'GET',
+      url: '/api/v1/states/TS/constituencies/search?sort=name',
+    });
+
+    expect(response.statusCode).toBe(200);
+    const body = JSON.parse(response.payload);
+    const names = body.data.map((d: any) => d.name);
+    const sorted = [...names].sort((a: string, b: string) => a.localeCompare(b));
+    expect(names).toEqual(sorted);
+  });
+
+  it('GET /states/TS/constituencies/search?sort=margin_asc should return closest margins first', async () => {
+    const response = await app.inject({
+      method: 'GET',
+      url: '/api/v1/states/TS/constituencies/search?sort=margin_asc&party=INC',
+    });
+
+    expect(response.statusCode).toBe(200);
+    const body = JSON.parse(response.payload);
+    expect(body.count).toBeGreaterThan(1);
+  });
+
   // ─── LOCATE ───
 
   it('GET /constituencies/locate should require lat and lng', async () => {

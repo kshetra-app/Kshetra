@@ -120,11 +120,14 @@ export async function constituencyRoutes(app: FastifyInstance) {
 
   app.get('/states/:stateCode/constituencies/search', async (request, reply) => {
     const { stateCode } = request.params as { stateCode: string };
-    const { q, party, district, type } = request.query as {
+    const { q, party, district, type, minMargin, maxMargin, sort } = request.query as {
       q?: string;
       party?: string;
       district?: string;
       type?: string;
+      minMargin?: string;
+      maxMargin?: string;
+      sort?: string;
     };
 
     if (stateCode.toUpperCase() !== 'TS') {
@@ -155,11 +158,35 @@ export async function constituencyRoutes(app: FastifyInstance) {
       const t = type.toUpperCase();
       results = results.filter((c) => c.type === t);
     }
+    if (minMargin) {
+      const min = parseInt(minMargin, 10);
+      if (!isNaN(min)) results = results.filter((c) => c.margin2023 >= min);
+    }
+    if (maxMargin) {
+      const max = parseInt(maxMargin, 10);
+      if (!isNaN(max)) results = results.filter((c) => c.margin2023 <= max);
+    }
+
+    // Sort
+    const sorted = [...results];
+    switch (sort) {
+      case 'name':
+        sorted.sort((a, b) => a.name.localeCompare(b.name));
+        break;
+      case 'margin_asc':
+        sorted.sort((a, b) => a.margin2023 - b.margin2023);
+        break;
+      case 'margin_desc':
+        sorted.sort((a, b) => b.margin2023 - a.margin2023);
+        break;
+      default:
+        sorted.sort((a, b) => a.acNo - b.acNo);
+    }
 
     return {
       state: 'TS',
-      count: results.length,
-      data: results.map(seedToBrief),
+      count: sorted.length,
+      data: sorted.map(seedToBrief),
     };
   });
 

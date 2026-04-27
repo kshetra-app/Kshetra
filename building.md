@@ -21,6 +21,7 @@
 | Phase 3D: EAS Build + CI/CD | ✅ Complete | 2026-04-27 | 2026-04-27 |
 | Phase 4A: Multi-State Architecture | ✅ Complete | 2026-04-27 | 2026-04-27 |
 | Phase 4B: AI/LLM Integration | ✅ Complete | 2026-04-27 | 2026-04-27 |
+| Phase 4C: Search + Filters Enhancement | ✅ Complete | 2026-04-27 | 2026-04-27 |
 
 ---
 
@@ -93,6 +94,7 @@
 | 2026-04-27 | `feat: EAS Build + CI/CD pipeline` | eas.json (dev/preview/prod profiles), GitHub Actions (ci.yml, eas-build.yml, eas-update.yml), OTA updates, ADR-011 |
 | 2026-04-27 | `feat: multi-state architecture` | State registry, active state store, StateSwitcher UI (Map/Explore/Intelligence), KA+MH state configs, SUPPORTED_STATES, 5 new tests (96/96 pass) |
 | 2026-04-27 | `feat: AI/LLM integration` | OpenAI service, chat/analyze API endpoints, AI chat screen, context-injected prompts, honesty guardrails, 6 new tests (102/102 pass) |
+| 2026-04-27 | `feat: search + filters enhancement` | Multi-filter chips (party/district/type), sort (AC#/A-Z/margin), margin range API filter, filter toggle with badge count, 4 new API tests (106/106 pass) |
 
 ---
 
@@ -556,3 +558,32 @@ The app works fully offline without Supabase credentials. To activate:
 | `@kshetra/api` — all | ✅ Pass | 23 | 23 | +6: AI status, chat validation, graceful fallback, AC validation |
 | `data/seed` — all | ✅ Pass | 20 | 20 | Unchanged |
 | **Total** | **✅ All Pass** | **102** | **102** | +6 from previous |
+
+---
+
+## Milestone 14: Search + Filters Enhancement
+
+**Date**: 2026-04-27
+**Goal**: Multi-filter, sort, and margin range for Explore tab + API
+
+### Completed
+
+- [x] Explore tab: filter toggle button with active badge count
+- [x] Filter panel with 4 sections:
+  - **Sort**: AC #, A–Z, Closest margin, Biggest margin
+  - **Party**: dynamic chips from data with party-color dots
+  - **District**: dynamic chips from data
+  - **Type**: GEN / SC / ST
+- [x] "Clear all filters" button when filters active
+- [x] API: `minMargin` / `maxMargin` query params on search endpoint
+- [x] API: `sort` query param (name, margin_asc, margin_desc)
+- [x] 4 new API tests: margin range (close/landslide), sort by name, sort by margin
+
+### Tests — Milestone 14
+
+| Test Suite | Status | Passed | Total | Notes |
+|---|---|---|---|---|
+| `@kshetra/shared` — all | ✅ Pass | 59 | 59 | Unchanged |
+| `@kshetra/api` — all | ✅ Pass | 27 | 27 | +4: margin range, sort |
+| `data/seed` — all | ✅ Pass | 20 | 20 | Unchanged |
+| **Total** | **✅ All Pass** | **106** | **106** | +4 from previous |
