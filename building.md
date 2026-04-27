@@ -24,6 +24,7 @@
 | Phase 4C: Search + Filters Enhancement | ✅ Complete | 2026-04-27 | 2026-04-27 |
 | Phase 4D: Candidate Profiles + MLA Cards | ✅ Complete | 2026-04-27 | 2026-04-27 |
 | Phase 4E: Map Enhancements | ✅ Complete | 2026-04-27 | 2026-04-27 |
+| Phase 4F: Performance + Polish | ✅ Complete | 2026-04-27 | 2026-04-27 |
 
 ---
 
@@ -99,6 +100,7 @@
 | 2026-04-27 | `feat: search + filters enhancement` | Multi-filter chips (party/district/type), sort (AC#/A-Z/margin), margin range API filter, filter toggle with badge count, 4 new API tests (106/106 pass) |
 | 2026-04-27 | `feat: candidate profiles + MLA cards` | MLA profile seed data (20 key MLAs), MLACard component, detail screen integration, MLA API endpoints, 4 new tests (110/110 pass) |
 | 2026-04-27 | `feat: map enhancements` | MapLegend overlay, favourites border layer (red highlight), share button on detail screen (110/110 pass) |
+| 2026-04-27 | `feat: performance + polish` | React.memo ConstituencyCard, ErrorBoundary, SkeletonLoader, empty state, API cache headers (110/110 pass) |
 
 ---
 
@@ -652,3 +654,35 @@ The app works fully offline without Supabase credentials. To activate:
 | `@kshetra/api` — all | ✅ Pass | 31 | 31 | Unchanged |
 | `data/seed` — all | ✅ Pass | 20 | 20 | Unchanged |
 | **Total** | **✅ All Pass** | **110** | **110** | UI-only phase, no new unit tests |
+
+---
+
+## Milestone 17: Performance + Polish
+
+**Date**: 2026-04-27
+**Goal**: Optimize rendering, error handling, loading states, API caching
+
+### Completed
+
+- [x] `components/ErrorBoundary.tsx` — class-based error boundary
+  - Catches rendering crashes with retry button
+  - Wraps entire app in root layout
+- [x] `components/SkeletonLoader.tsx` — shimmer loading skeletons
+  - `SkeletonItem` — animated opacity pulse
+  - `ConstituencyCardSkeleton` / `ConstituencyListSkeleton`
+  - `StatCardSkeleton` for dashboard loading
+- [x] Explore tab optimizations:
+  - `ConstituencyCard` extracted as `React.memo` component
+  - `renderItem` wrapped in `useCallback`
+  - Empty state UI when no results match
+- [x] API: Cache-Control headers on static seed-data responses (5 min TTL)
+  - Applied to all GET `/api/v1/states/*` routes (excluding AI)
+
+### Tests — Milestone 17
+
+| Test Suite | Status | Passed | Total | Notes |
+|---|---|---|---|---|
+| `@kshetra/shared` — all | ✅ Pass | 59 | 59 | Unchanged |
+| `@kshetra/api` — all | ✅ Pass | 31 | 31 | Unchanged |
+| `data/seed` — all | ✅ Pass | 20 | 20 | Unchanged |
+| **Total** | **✅ All Pass** | **110** | **110** | Performance phase, no new unit tests |

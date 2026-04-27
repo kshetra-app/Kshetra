@@ -4,6 +4,7 @@ import { StatusBar } from 'expo-status-bar';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import * as SplashScreen from 'expo-splash-screen';
 import { useAuthStore } from '../stores/auth';
+import ErrorBoundary from '../components/ErrorBoundary';
 
 SplashScreen.preventAutoHideAsync();
 
@@ -16,6 +17,7 @@ export default function RootLayout() {
   }, [initializeAuth]);
 
   return (
+    <ErrorBoundary fallbackMessage="Kshetra encountered an error. Please restart the app.">
     <GestureHandlerRootView style={{ flex: 1 }}>
       <StatusBar style="light" />
       <Stack
@@ -57,5 +59,6 @@ export default function RootLayout() {
         />
       </Stack>
     </GestureHandlerRootView>
+    </ErrorBoundary>
   );
 }

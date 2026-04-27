@@ -1,4 +1,4 @@
-import { useCallback, useMemo, useState } from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
 import {
   View,
   Text,
@@ -113,35 +113,11 @@ export default function ExploreScreen() {
     return sorted;
   }, [query, showFavoritesOnly, favoriteIds, allConstituencies, partyFilter, districtFilter, typeFilter, sortKey]);
 
-  const renderItem = ({ item }: { item: ConstituencySeed }) => (
-    <Pressable
-      style={styles.card}
-      onPress={() => router.push(`/constituency/${item.acNo}`)}
-    >
-      <View style={styles.cardLeft}>
-        <View
-          style={[
-            styles.partyBadge,
-            { backgroundColor: getPartyColor(item.winner2023) },
-          ]}
-        >
-          <Text style={styles.partyBadgeText}>{item.winner2023}</Text>
-        </View>
-      </View>
-      <View style={styles.cardContent}>
-        <Text style={styles.cardName}>{item.name}</Text>
-        <Text style={styles.cardMeta}>
-          #{item.acNo} · {item.district} · {item.type}
-        </Text>
-        <Text style={styles.cardWinner}>
-          {item.winnerName2023} · Margin: {item.margin2023.toLocaleString()}
-        </Text>
-      </View>
-      {isFavorite(item.acNo) && (
-        <Ionicons name="heart" size={14} color="#EF4444" style={{ marginRight: 6 }} />
-      )}
-      <Ionicons name="chevron-forward" size={18} color="#4B5563" />
-    </Pressable>
+  const renderItem = useCallback(
+    ({ item }: { item: ConstituencySeed }) => (
+      <ConstituencyCard item={item} isFav={isFavorite(item.acNo)} onPress={() => router.push(`/constituency/${item.acNo}`)} />
+    ),
+    [isFavorite, router],
   );
 
   return (
@@ -315,16 +291,64 @@ export default function ExploreScreen() {
         </View>
       )}
 
-      <FlashList
-        data={filtered}
-        renderItem={renderItem}
-        estimatedItemSize={88}
-        keyExtractor={(item) => String(item.acNo)}
-        contentContainerStyle={styles.listContent}
-      />
+      {filtered.length === 0 ? (
+        <View style={styles.emptyState}>
+          <Ionicons name="search" size={40} color="#4B5563" />
+          <Text style={styles.emptyTitle}>No results</Text>
+          <Text style={styles.emptyText}>
+            Try adjusting your search or filters
+          </Text>
+        </View>
+      ) : (
+        <FlashList
+          data={filtered}
+          renderItem={renderItem}
+          estimatedItemSize={88}
+          keyExtractor={(item) => String(item.acNo)}
+          contentContainerStyle={styles.listContent}
+        />
+      )}
     </View>
   );
 }
+
+const ConstituencyCard = React.memo(function ConstituencyCard({
+  item,
+  isFav,
+  onPress,
+}: {
+  item: ConstituencySeed;
+  isFav: boolean;
+  onPress: () => void;
+}) {
+  return (
+    <Pressable style={styles.card} onPress={onPress}>
+      <View style={styles.cardLeft}>
+        <View
+          style={[
+            styles.partyBadge,
+            { backgroundColor: getPartyColor(item.winner2023) },
+          ]}
+        >
+          <Text style={styles.partyBadgeText}>{item.winner2023}</Text>
+        </View>
+      </View>
+      <View style={styles.cardContent}>
+        <Text style={styles.cardName}>{item.name}</Text>
+        <Text style={styles.cardMeta}>
+          #{item.acNo} · {item.district} · {item.type}
+        </Text>
+        <Text style={styles.cardWinner}>
+          {item.winnerName2023} · Margin: {item.margin2023.toLocaleString()}
+        </Text>
+      </View>
+      {isFav && (
+        <Ionicons name="heart" size={14} color="#EF4444" style={{ marginRight: 6 }} />
+      )}
+      <Ionicons name="chevron-forward" size={18} color="#4B5563" />
+    </Pressable>
+  );
+});
 
 const styles = StyleSheet.create({
   container: {
@@ -481,6 +505,23 @@ const styles = StyleSheet.create({
     fontSize: 15,
     color: '#FFFFFF',
     height: 44,
+  },
+  emptyState: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingTop: 60,
+  },
+  emptyTitle: {
+    fontSize: 18,
+    fontWeight: '700',
+    color: '#6B7280',
+    marginTop: 12,
+  },
+  emptyText: {
+    fontSize: 13,
+    color: '#4B5563',
+    marginTop: 4,
   },
   listContent: {
     paddingHorizontal: 16,

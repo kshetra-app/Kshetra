@@ -32,6 +32,20 @@ export async function buildApp() {
     contentSecurityPolicy: false,
   });
 
+  // Cache static seed-data responses (5 min)
+  app.addHook('onSend', async (request, reply, payload) => {
+    const url = request.url;
+    if (
+      url.startsWith('/api/v1/states/') &&
+      !url.includes('/ai/') &&
+      request.method === 'GET' &&
+      reply.statusCode === 200
+    ) {
+      reply.header('Cache-Control', 'public, max-age=300, s-maxage=300');
+    }
+    return payload;
+  });
+
   await app.register(healthRoutes, { prefix: '/api' });
   await app.register(constituencyRoutes, { prefix: '/api/v1' });
   await app.register(aiRoutes);
