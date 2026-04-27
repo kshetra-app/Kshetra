@@ -23,6 +23,7 @@
 | Phase 4B: AI/LLM Integration | ✅ Complete | 2026-04-27 | 2026-04-27 |
 | Phase 4C: Search + Filters Enhancement | ✅ Complete | 2026-04-27 | 2026-04-27 |
 | Phase 4D: Candidate Profiles + MLA Cards | ✅ Complete | 2026-04-27 | 2026-04-27 |
+| Phase 4E: Map Enhancements | ✅ Complete | 2026-04-27 | 2026-04-27 |
 
 ---
 
@@ -97,6 +98,7 @@
 | 2026-04-27 | `feat: AI/LLM integration` | OpenAI service, chat/analyze API endpoints, AI chat screen, context-injected prompts, honesty guardrails, 6 new tests (102/102 pass) |
 | 2026-04-27 | `feat: search + filters enhancement` | Multi-filter chips (party/district/type), sort (AC#/A-Z/margin), margin range API filter, filter toggle with badge count, 4 new API tests (106/106 pass) |
 | 2026-04-27 | `feat: candidate profiles + MLA cards` | MLA profile seed data (20 key MLAs), MLACard component, detail screen integration, MLA API endpoints, 4 new tests (110/110 pass) |
+| 2026-04-27 | `feat: map enhancements` | MapLegend overlay, favourites border layer (red highlight), share button on detail screen (110/110 pass) |
 
 ---
 
@@ -621,3 +623,32 @@ The app works fully offline without Supabase credentials. To activate:
 | `@kshetra/api` — all | ✅ Pass | 31 | 31 | +4: MLA list, profile lookup, 404, 400 |
 | `data/seed` — all | ✅ Pass | 20 | 20 | Unchanged |
 | **Total** | **✅ All Pass** | **110** | **110** | +4 from previous |
+
+---
+
+## Milestone 16: Map Enhancements
+
+**Date**: 2026-04-27
+**Goal**: Map legend, favourites layer, share functionality
+
+### Completed
+
+- [x] `components/MapLegend.tsx` — collapsible party color legend
+  - Shows all 6 major parties + selected/favourite indicators
+  - Toggle expand/collapse with smooth UI
+- [x] Favourites highlight layer on map
+  - Red border around favourite constituencies via Mapbox LineLayer
+  - Reactive: updates when favourites change
+- [x] Share button on constituency detail screen
+  - Uses React Native `Share` API
+  - Shares name, AC #, district, winner, margin
+  - Positioned next to favourite button in hero
+
+### Tests — Milestone 16
+
+| Test Suite | Status | Passed | Total | Notes |
+|---|---|---|---|---|
+| `@kshetra/shared` — all | ✅ Pass | 59 | 59 | Unchanged |
+| `@kshetra/api` — all | ✅ Pass | 31 | 31 | Unchanged |
+| `data/seed` — all | ✅ Pass | 20 | 20 | Unchanged |
+| **Total** | **✅ All Pass** | **110** | **110** | UI-only phase, no new unit tests |

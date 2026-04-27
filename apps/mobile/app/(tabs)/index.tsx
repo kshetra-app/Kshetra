@@ -23,6 +23,8 @@ import { useUserLocation } from '@/lib/useUserLocation';
 import { findConstituencyAtPoint, STATES } from '@kshetra/shared';
 import { enrichGeoJSON } from '@/lib/enrichGeoJSON';
 import StateSwitcher from '../../components/StateSwitcher';
+import MapLegend from '../../components/MapLegend';
+import { useFavoritesStore } from '../../stores/favorites';
 import telanganaAssemblyGeo from '@/data/telangana-assembly.json';
 import {
   TELANGANA_CONSTITUENCIES,
@@ -72,6 +74,7 @@ export default function MapScreen() {
   const [selected, setSelected] = useState<SelectedConstituency | null>(null);
   const [userMarker, setUserMarker] = useState<[number, number] | null>(null);
   const { loading: locating, requestLocation } = useUserLocation();
+  const favoriteIds = useFavoritesStore((s) => s.favoriteIds);
 
   const snapPoints = useMemo(() => ['28%', '55%'], []);
 
@@ -226,6 +229,22 @@ export default function MapScreen() {
           />
         </MapboxGL.ShapeSource>
 
+        {/* Favourites highlight layer */}
+        <MapboxGL.ShapeSource
+          id="favourites"
+          shape={enrichedGeo}
+        >
+          <MapboxGL.LineLayer
+            id="fav-border"
+            filter={['in', ['get', 'AC_NO'], ['literal', favoriteIds]]}
+            style={{
+              lineColor: '#EF4444',
+              lineWidth: 2.5,
+              lineOpacity: 0.9,
+            }}
+          />
+        </MapboxGL.ShapeSource>
+
         {/* User location marker */}
         {userMarker && (
           <MapboxGL.PointAnnotation
@@ -274,6 +293,9 @@ export default function MapScreen() {
           )}
         </Pressable>
       </View>
+
+      {/* Map Legend */}
+      <MapLegend />
 
       {/* Bottom Sheet */}
       <BottomSheet

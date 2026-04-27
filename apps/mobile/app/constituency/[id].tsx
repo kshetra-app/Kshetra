@@ -1,5 +1,5 @@
-import { useEffect } from 'react';
-import { View, Text, StyleSheet, ScrollView, Platform, Pressable } from 'react-native';
+import { useCallback, useEffect } from 'react';
+import { View, Text, StyleSheet, ScrollView, Platform, Pressable, Share } from 'react-native';
 import { useLocalSearchParams, Stack } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { getPartyColor } from '@/lib/constants';
@@ -67,17 +67,32 @@ export default function ConstituencyDetailScreen() {
             <View style={styles.typeBadge}>
               <Text style={styles.typeBadgeText}>{constituency.type}</Text>
             </View>
-            <Pressable
-              style={styles.favoriteButton}
-              onPress={() => toggleFavorite(acNo)}
-              hitSlop={8}
-            >
-              <Ionicons
-                name={isFavorite ? 'heart' : 'heart-outline'}
-                size={22}
-                color={isFavorite ? '#EF4444' : '#6B7280'}
-              />
-            </Pressable>
+            <View style={styles.heroButtons}>
+              <Pressable
+                style={styles.heroButton}
+                onPress={async () => {
+                  try {
+                    await Share.share({
+                      message: `${constituency.name} (AC #${constituency.acNo})\n${constituency.district} District · ${constituency.type}\nWinner: ${constituency.winnerName2023} (${constituency.winner2023})\nMargin: ${constituency.margin2023.toLocaleString()} votes\n\nExplore more on Kshetra`,
+                    });
+                  } catch (_) {}
+                }}
+                hitSlop={8}
+              >
+                <Ionicons name="share-outline" size={20} color="#6B7280" />
+              </Pressable>
+              <Pressable
+                style={styles.heroButton}
+                onPress={() => toggleFavorite(acNo)}
+                hitSlop={8}
+              >
+                <Ionicons
+                  name={isFavorite ? 'heart' : 'heart-outline'}
+                  size={22}
+                  color={isFavorite ? '#EF4444' : '#6B7280'}
+                />
+              </Pressable>
+            </View>
           </View>
         </View>
 
@@ -281,7 +296,11 @@ const styles = StyleSheet.create({
     paddingHorizontal: 10,
     paddingVertical: 4,
   },
-  favoriteButton: {
+  heroButtons: {
+    flexDirection: 'row',
+    gap: 8,
+  },
+  heroButton: {
     width: 40,
     height: 40,
     borderRadius: 20,
