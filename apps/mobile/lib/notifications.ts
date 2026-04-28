@@ -2,15 +2,19 @@ import * as Notifications from 'expo-notifications';
 import { Platform } from 'react-native';
 
 /** Configure notification handler for foreground */
-Notifications.setNotificationHandler({
-  handleNotification: async () => ({
-    shouldShowAlert: true,
-    shouldPlaySound: true,
-    shouldSetBadge: true,
-    shouldShowBanner: true,
-    shouldShowList: true,
-  }),
-});
+try {
+  Notifications.setNotificationHandler({
+    handleNotification: async () => ({
+      shouldShowAlert: true,
+      shouldPlaySound: true,
+      shouldSetBadge: true,
+      shouldShowBanner: true,
+      shouldShowList: true,
+    }),
+  });
+} catch {
+  // Notification handler setup may fail in Expo Go
+}
 
 export type AlertCategory =
   | 'election_results'

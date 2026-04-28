@@ -1,10 +1,13 @@
 import 'react-native-url-polyfill/auto';
-import { createClient } from '@supabase/supabase-js';
+import { createClient, type SupabaseClient } from '@supabase/supabase-js';
 import * as SecureStore from 'expo-secure-store';
 import { Platform } from 'react-native';
 
 const supabaseUrl = process.env.EXPO_PUBLIC_SUPABASE_URL ?? '';
 const supabaseAnonKey = process.env.EXPO_PUBLIC_SUPABASE_ANON_KEY ?? '';
+
+/** Whether Supabase credentials are configured */
+export const isSupabaseConfigured = !!(supabaseUrl && supabaseAnonKey);
 
 /**
  * Secure storage adapter for Supabase Auth.
@@ -33,11 +36,20 @@ const SecureStoreAdapter = {
   },
 };
 
-export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
-  auth: {
-    storage: SecureStoreAdapter,
-    autoRefreshToken: true,
-    persistSession: true,
-    detectSessionInUrl: false,
+/**
+ * Supabase client — works when credentials are configured.
+ * When credentials are missing, createClient gets a dummy URL so it
+ * won't crash at construction, but auth calls will fail gracefully.
+ */
+export const supabase: SupabaseClient = createClient(
+  supabaseUrl || 'https://placeholder.supabase.co',
+  supabaseAnonKey || 'placeholder-anon-key',
+  {
+    auth: {
+      storage: SecureStoreAdapter,
+      autoRefreshToken: isSupabaseConfigured,
+      persistSession: isSupabaseConfigured,
+      detectSessionInUrl: false,
+    },
   },
-});
+);

@@ -3,10 +3,12 @@ import { View, Text, StyleSheet, ScrollView, Platform, Pressable, Share } from '
 import { useLocalSearchParams, Stack } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { getPartyColor } from '@/lib/constants';
-import { TELANGANA_CONSTITUENCIES, TELANGANA_ELECTION_HISTORY, getMLAProfile } from '@/lib/data';
+import { TELANGANA_CONSTITUENCIES, TELANGANA_ELECTION_HISTORY, getMLAProfile, getTriviaForConstituency, getConstituencyHistory, isPartyStronghold } from '@/lib/data';
 import { useFavoritesStore } from '../../stores/favorites';
 import { useRecentsStore } from '../../stores/recents';
 import MLACard from '../../components/MLACard';
+import TriviaCard from '../../components/TriviaCard';
+import DefectionBadge from '../../components/DefectionBadge';
 
 export default function ConstituencyDetailScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
@@ -161,19 +163,114 @@ export default function ConstituencyDetailScreen() {
           ) : null;
         })()}
 
-        {/* Placeholder sections for future */}
-        <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Demographics</Text>
-          <View style={styles.placeholder}>
-            <Ionicons name="people" size={32} color="#4B5563" />
-            <Text style={styles.placeholderText}>
-              Population, literacy, urban/rural split — coming soon
-            </Text>
+        {/* Defection Alert */}
+        {constituency.currentParty && constituency.currentParty !== constituency.winner2023 && (
+          <View style={styles.section}>
+            <DefectionBadge
+              electedParty={constituency.winner2023}
+              currentParty={constituency.currentParty}
+            />
           </View>
-        </View>
+        )}
 
+        {/* Trivia */}
+        {(() => {
+          const triviaItems = getTriviaForConstituency(acNo).filter(
+            (t) => !t.contexts.every((c) => c.type === 'GLOBAL'),
+          );
+          return triviaItems.length > 0 ? (
+            <View style={styles.section}>
+              <Text style={styles.sectionTitle}>Did You Know?</Text>
+              <TriviaCard items={triviaItems} rotateInterval={0} />
+            </View>
+          ) : null;
+        })()}
+
+        {/* Per-Constituency Election History — 2014 / 2018 / 2023 */}
+        {(() => {
+          const history = getConstituencyHistory(acNo);
+          const currentParty = constituency.currentParty ?? constituency.winner2023;
+          const stronghold = isPartyStronghold(acNo, currentParty);
+          const normalize = (p: string) => (p === 'TRS' ? 'BRS' : p);
+
+          const elections = [
+            history.ac2014 ? { year: 2014, winner: history.ac2014.winner, party: history.ac2014.party } : null,
+            history.ac2018 ? { year: 2018, winner: history.ac2018.winner, party: history.ac2018.party } : null,
+            { year: 2023, winner: constituency.winnerName2023, party: constituency.winner2023 },
+          ].filter(Boolean) as { year: number; winner: string; party: string }[];
+
+          // Check if party changed between elections
+          const partyChanged = elections.length >= 2 &&
+            normalize(elections[elections.length - 1].party) !== normalize(elections[elections.length - 2].party);
+
+          return (
+            <View style={styles.section}>
+              <View style={styles.histSectionHeader}>
+                <Text style={styles.sectionTitle}>Constituency History</Text>
+                {stronghold && (
+                  <View style={styles.strongholdBadge}>
+                    <Ionicons name="shield-checkmark" size={12} color="#10B981" />
+                    <Text style={styles.strongholdText}>Stronghold</Text>
+                  </View>
+                )}
+                {partyChanged && !stronghold && (
+                  <View style={styles.swingBadge}>
+                    <Ionicons name="swap-horizontal" size={12} color="#F59E0B" />
+                    <Text style={styles.swingText}>Swing Seat</Text>
+                  </View>
+                )}
+              </View>
+
+              {elections.map((e, idx) => {
+                const isCurrent = idx === elections.length - 1;
+                const prevParty = idx > 0 ? normalize(elections[idx - 1].party) : null;
+                const flipped = prevParty !== null && normalize(e.party) !== prevParty;
+
+                return (
+                  <View
+                    key={e.year}
+                    style={[
+                      styles.histCard,
+                      isCurrent && styles.histCardCurrent,
+                    ]}
+                  >
+                    <View style={styles.histCardLeft}>
+                      <Text style={[styles.histYear, isCurrent && styles.histYearCurrent]}>
+                        {e.year}
+                      </Text>
+                      {isCurrent && (
+                        <Text style={styles.histCurrentLabel}>Current</Text>
+                      )}
+                    </View>
+                    <View style={styles.histCardCenter}>
+                      <View style={styles.histPartyRow}>
+                        <View
+                          style={[
+                            styles.histPartyDot,
+                            { backgroundColor: getPartyColor(e.party === 'TRS' ? 'BRS' : e.party) },
+                          ]}
+                        />
+                        <Text style={styles.histPartyName}>{e.party}</Text>
+                        {flipped && (
+                          <View style={styles.histFlipBadge}>
+                            <Ionicons name="arrow-forward" size={10} color="#F59E0B" />
+                          </View>
+                        )}
+                      </View>
+                      <Text style={styles.histWinnerName} numberOfLines={1}>
+                        {e.winner}
+                      </Text>
+                    </View>
+                  </View>
+                );
+              })}
+            </View>
+          );
+        })()}
+
+        {/* State-level election overview */}
         <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Telangana Election History</Text>
+          <Text style={styles.sectionTitle}>Telangana Assembly Overview</Text>
           {TELANGANA_ELECTION_HISTORY.map((election) => {
             const winnerParty = election.partyResults.reduce(
               (prev, curr) => (curr.seatsWon > prev.seatsWon ? curr : prev),
@@ -231,6 +328,17 @@ export default function ConstituencyDetailScreen() {
               </View>
             );
           })}
+        </View>
+
+        {/* Demographics placeholder */}
+        <View style={styles.section}>
+          <Text style={styles.sectionTitle}>Demographics</Text>
+          <View style={styles.placeholder}>
+            <Ionicons name="people" size={32} color="#4B5563" />
+            <Text style={styles.placeholderText}>
+              Population, literacy, urban/rural split — coming soon
+            </Text>
+          </View>
         </View>
       </ScrollView>
     </View>
@@ -466,5 +574,102 @@ const styles = StyleSheet.create({
     color: '#4B5563',
     marginTop: 10,
     textAlign: 'right',
+  },
+  // ─── Per-constituency history ───
+  histSectionHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    marginBottom: 12,
+  },
+  strongholdBadge: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4,
+    backgroundColor: '#10B98120',
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+    borderRadius: 8,
+  },
+  strongholdText: {
+    fontSize: 11,
+    fontWeight: '700',
+    color: '#10B981',
+  },
+  swingBadge: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4,
+    backgroundColor: '#F59E0B20',
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+    borderRadius: 8,
+  },
+  swingText: {
+    fontSize: 11,
+    fontWeight: '700',
+    color: '#F59E0B',
+  },
+  histCard: {
+    flexDirection: 'row',
+    backgroundColor: '#111827',
+    borderRadius: 12,
+    padding: 14,
+    marginBottom: 8,
+    alignItems: 'center',
+  },
+  histCardCurrent: {
+    borderWidth: 1,
+    borderColor: '#4F8EF740',
+    backgroundColor: '#111827',
+  },
+  histCardLeft: {
+    width: 54,
+    marginRight: 14,
+    alignItems: 'center',
+  },
+  histYear: {
+    fontSize: 16,
+    fontWeight: '800',
+    color: '#6B7280',
+  },
+  histYearCurrent: {
+    color: '#4F8EF7',
+  },
+  histCurrentLabel: {
+    fontSize: 9,
+    fontWeight: '700',
+    color: '#4F8EF7',
+    textTransform: 'uppercase',
+    letterSpacing: 0.5,
+    marginTop: 2,
+  },
+  histCardCenter: {
+    flex: 1,
+  },
+  histPartyRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+    marginBottom: 4,
+  },
+  histPartyDot: {
+    width: 10,
+    height: 10,
+    borderRadius: 5,
+  },
+  histPartyName: {
+    fontSize: 14,
+    fontWeight: '800',
+    color: '#FFFFFF',
+  },
+  histFlipBadge: {
+    backgroundColor: '#F59E0B20',
+    borderRadius: 4,
+    padding: 2,
+  },
+  histWinnerName: {
+    fontSize: 13,
+    color: '#9CA3AF',
   },
 });

@@ -27,6 +27,9 @@
 | Phase 4F: Performance + Polish | ✅ Complete | 2026-04-27 | 2026-04-27 |
 | Phase 4G: Push Notifications + Alerts | ✅ Complete | 2026-04-27 | 2026-04-27 |
 | Phase 4H: Dark/Light Theme System | ✅ Complete | 2026-04-27 | 2026-04-27 |
+| Phase 5A: Political Ledger + Trivia Engine | ✅ Complete | 2026-04-28 | 2026-04-28 |
+| Phase 5B: Historical Data + MLA Profiles (119) | ✅ Complete | 2026-04-28 | 2026-04-28 |
+| Phase 5C: Map Modes + Per-Constituency History | ✅ Complete | 2026-04-28 | 2026-04-28 |
 
 ---
 
@@ -758,3 +761,87 @@ The app works fully offline without Supabase credentials. To activate:
 | `@kshetra/api` — all | ✅ Pass | 31 | 31 | Unchanged |
 | `data/seed` — all | ✅ Pass | 20 | 20 | Unchanged |
 | **Total** | **✅ All Pass** | **110** | **110** | Theme system — UI only |
+
+---
+
+## Milestone 20: Political Ledger + Trivia Engine
+
+**Date**: 2026-04-28
+**Goal**: Double-entry political ledger system and context-aware trivia engine
+
+### Completed
+
+- [x] `data/seed/telangana-political-timeline.ts` — double-entry bookkeeping ledger
+  - Every defection, by-election, death, merger is a debit/credit transaction
+  - Total ALWAYS = 119 seats (invariant enforced by audit)
+  - 3 assemblies covered: 2014–2018, 2018–2023, 2023–present
+  - Events: general elections, TDP→TRS merger (12 MLAs), INC→TRS merger (12 MLAs), Etela→BJP, TRS→BRS rename, 10 BRS→INC defections (2024)
+  - Utility functions: `computePartyStrength`, `auditLedger`, `generateTimeline`, `getDefectionSummary`, `getConstituencyTimeline`, `getMLAPartyTrail`
+- [x] `data/seed/telangana-trivia.ts` — 18 curated + 4 derived trivia items
+  - Categories: DEFECTION, RECORD, COINCIDENCE, HISTORICAL, DYNASTY, GEOGRAPHY, LEGAL, ELECTION
+  - Context-aware queries: by constituency, party, MLA, election year
+  - Derived trivia auto-computed from political ledger at runtime
+- [x] `apps/mobile/components/TriviaCard.tsx` — full + compact modes, auto-rotate, shuffle
+- [x] `apps/mobile/components/DefectionBadge.tsx` — full (elected→current) + compact (inline)
+- [x] Integrated trivia on map idle state, bottom sheet, and constituency detail page
+- [x] `apps/mobile/lib/data.ts` — centralized re-exports for trivia + ledger utilities
+- [x] 21 ledger tests + 18 trivia tests (all pass)
+
+---
+
+## Milestone 21: Historical Data + MLA Profiles (All 119)
+
+**Date**: 2026-04-28
+**Goal**: Per-constituency 2014/2018 election results and complete MLA profiles
+
+### Completed
+
+- [x] `data/seed/telangana-historical-results.ts` — per-constituency 2014 + 2018 results
+  - Winner name + party for all 119 constituencies in both elections
+  - Verified party tallies: 2014 (TRS 63 + INC 21 + TDP 15 + ... = 119), 2018 (TRS 88 + INC 19 + ... = 119)
+  - Utility functions: `getConstituencyHistory`, `isPartyStronghold`, `getPartyTally`, `getSwingConstituencies`
+  - TRS/BRS alias handling for cross-election comparison
+- [x] `data/seed/telangana-mla-profiles.ts` — expanded from 20 → 119 MLAs
+  - All names/parties cross-validated against `telangana-constituencies.ts`
+  - 10 defectors tagged with `electedParty` field (BRS→INC)
+  - Terms calculated from 2014/2018 historical data (Telangana assembly only)
+  - 10 female MLAs identified, veteran MLAs tagged (3+ terms)
+  - New interface: added `electedParty?` field, made `criminalCases`/`totalAssets` optional (no fabrication)
+  - New utility functions: `getMLAsByParty`, `getDefectedMLAs`, `getFemaleMLAs`, `getVeteranMLAs`
+- [x] `apps/mobile/components/MLACard.tsx` — updated to use canonical `MLAProfile` type, handles optional fields
+- [x] 22 historical results tests + 18 MLA profile tests (all pass)
+
+### Tests — Milestones 20–21
+
+| Test Suite | Status | Passed | Total | Notes |
+|---|---|---|---|---|
+| `data/seed` — constituencies | ✅ Pass | 10 | 10 | Unchanged |
+| `data/seed` — election history | ✅ Pass | 10 | 10 | Unchanged |
+| `data/seed` — political timeline | ✅ Pass | 21 | 21 | **Phase 5A** |
+| `data/seed` — trivia | ✅ Pass | 18 | 18 | **Phase 5A** |
+| `data/seed` — historical results | ✅ Pass | 22 | 22 | **Phase 5B** |
+| `data/seed` — MLA profiles | ✅ Pass | 18 | 18 | **Phase 5B** |
+| **Seed data total** | **✅ All Pass** | **100** | **100** | +80 from previous |
+
+---
+
+## Milestone 22: Map Modes + Per-Constituency History
+
+**Date**: 2026-04-28
+**Goal**: Map color mode switching and per-constituency historical results on detail page
+
+### Completed
+
+- [x] `apps/mobile/components/MapColorToggle.tsx` — 3-mode toggle pill
+  - **Party**: constituencies colored by winning party (INC blue, BRS pink, BJP orange, etc.)
+  - **Margin**: heatmap from red (razor thin) → amber → green → blue → purple (landslide)
+  - **Type**: reservation categories — GEN (indigo), SC (amber), ST (emerald)
+- [x] Map screen: integrated `MapColorToggle`, Mapbox expressions switch dynamically via `useMemo`
+- [x] Map bottom sheet: historical mini-cards showing 2014 / 2018 / 2023 winner parties
+- [x] Constituency detail: per-constituency election history (replaces state-level)
+  - 2014 / 2018 / 2023 winner cards with party dot + name
+  - Stronghold badge (shield) when same party won all 3 elections
+  - Swing Seat badge (arrow) when party flipped in latest election
+  - Party flip indicator on individual election cards
+  - State-level overview retained below per-constituency section
+- [x] `apps/mobile/lib/data.ts` — added historical results exports

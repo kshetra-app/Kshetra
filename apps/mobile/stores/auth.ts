@@ -1,6 +1,6 @@
 import { create } from 'zustand';
 import type { Session, User } from '@supabase/supabase-js';
-import { supabase } from '../lib/supabase';
+import { supabase, isSupabaseConfigured } from '../lib/supabase';
 
 interface AuthState {
   session: Session | null;
@@ -21,6 +21,11 @@ export const useAuthStore = create<AuthState>()((set, get) => ({
   initialized: false,
 
   initialize: async () => {
+    if (!isSupabaseConfigured) {
+      set({ initialized: true });
+      return;
+    }
+
     try {
       const {
         data: { session },

@@ -28,7 +28,9 @@
       "package": "in.kshetra.app",
       "permissions": [
         "ACCESS_FINE_LOCATION",
-        "ACCESS_COARSE_LOCATION"
+        "ACCESS_COARSE_LOCATION",
+        "android.permission.ACCESS_COARSE_LOCATION",
+        "android.permission.ACCESS_FINE_LOCATION"
       ]
     },
     "web": {
@@ -43,7 +45,7 @@
       [
         "@rnmapbox/maps",
         {
-          "RNMapboxMapsDownloadToken": "MAPBOX_TOKEN_PLACEHOLDER"
+          "RNMapboxMapsImpl": "maplibre"
         }
       ],
       "expo-secure-store"
@@ -52,15 +54,11 @@
       "typedRoutes": true
     },
     "extra": {
+      "router": {},
       "eas": {
-        "projectId": "EAS_PROJECT_ID_PLACEHOLDER"
+        "projectId": "42370bcb-74ca-4988-9d4d-ab5d53818218"
       }
     },
-    "updates": {
-      "url": "https://u.expo.dev/EAS_PROJECT_ID_PLACEHOLDER"
-    },
-    "runtimeVersion": {
-      "policy": "appVersion"
-    }
+    "owner": "9553795538"
   }
 }

@@ -1,4 +1,4 @@
-import { useCallback, useMemo, useRef, useState } from 'react';
+import { useCallback, useMemo, useRef, useState, useEffect } from 'react';
 import {
   View,
   Text,
@@ -7,7 +7,6 @@ import {
   Platform,
   ActivityIndicator,
 } from 'react-native';
-import MapboxGL from '@rnmapbox/maps';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import BottomSheet, { BottomSheetView } from '@gorhom/bottom-sheet';
@@ -24,11 +23,29 @@ import { findConstituencyAtPoint, STATES } from '@kshetra/shared';
 import { enrichGeoJSON } from '@/lib/enrichGeoJSON';
 import StateSwitcher from '../../components/StateSwitcher';
 import MapLegend from '../../components/MapLegend';
+import MapFallback from '../../components/MapFallback';
+import TriviaCard from '../../components/TriviaCard';
+import DefectionBadge from '../../components/DefectionBadge';
+import MapColorToggle, { type MapColorMode } from '../../components/MapColorToggle';
 import { useFavoritesStore } from '../../stores/favorites';
 import telanganaAssemblyGeo from '@/data/telangana-assembly.json';
-import { TELANGANA_CONSTITUENCIES, type ConstituencySeed } from '@/lib/data';
+import { TELANGANA_CONSTITUENCIES, type ConstituencySeed, getTriviaForConstituency, getRandomTriviaSet, getConstituencyHistory } from '@/lib/data';
 
-MapboxGL.setAccessToken(process.env.EXPO_PUBLIC_MAPBOX_TOKEN ?? '');
+/**
+ * Dynamically load map engine — native module not available in Expo Go.
+ * Works with both MapLibre (free) and Mapbox (premium) backends.
+ * Falls back to MapFallback component when unavailable.
+ */
+let MapboxGL: any = null;
+let mapboxAvailable = false;
+try {
+  MapboxGL = require('@rnmapbox/maps').default;
+  // MapLibre doesn't need a token. If switching to Mapbox backend,
+  // uncomment: MapboxGL.setAccessToken(process.env.EXPO_PUBLIC_MAPBOX_TOKEN ?? '');
+  mapboxAvailable = true;
+} catch {
+  // Native map module not available (Expo Go / web)
+}
 
 /** Enrich once at module level (offline, ~2ms) */
 const enrichedGeo = enrichGeoJSON(
@@ -52,6 +69,28 @@ const partyFillColor: any = [
   PARTY_COLORS.IND, // fallback
 ];
 
+/** Mapbox expression: color by winning margin (heatmap) */
+const marginFillColor: any = [
+  'interpolate',
+  ['linear'],
+  ['get', 'MARGIN'],
+  0,    '#EF4444',   // red  = razor thin
+  5000, '#F59E0B',   // amber = competitive
+  20000, '#10B981',  // green = comfortable
+  50000, '#3B82F6',  // blue  = landslide
+  100000, '#8B5CF6', // purple = massive
+];
+
+/** Mapbox expression: color by reservation type */
+const reservationFillColor: any = [
+  'match',
+  ['get', 'RESERVATION'],
+  'GEN', '#6366F1',  // indigo
+  'SC',  '#F59E0B',  // amber
+  'ST',  '#10B981',  // emerald
+  '#6B7280',         // fallback
+];
+
 interface SelectedConstituency {
   acNo: number;
   name: string;
@@ -62,16 +101,35 @@ interface SelectedConstituency {
   margin: number;
   votes: number;
   type: string;
+  currentParty?: string;
 }
 
+/** Pre-compute a set of random trivia for idle map state */
+const idleTrivia = getRandomTriviaSet(8);
+
 export default function MapScreen() {
+  if (!mapboxAvailable) return <MapFallback />;
+  return <FullMapScreen />;
+}
+
+function FullMapScreen() {
   const router = useRouter();
-  const cameraRef = useRef<MapboxGL.Camera>(null);
+  const cameraRef = useRef<any>(null);
   const bottomSheetRef = useRef<BottomSheet>(null);
   const [selected, setSelected] = useState<SelectedConstituency | null>(null);
   const [userMarker, setUserMarker] = useState<[number, number] | null>(null);
+  const [colorMode, setColorMode] = useState<MapColorMode>('party');
   const { loading: locating, requestLocation } = useUserLocation();
   const favoriteIds = useFavoritesStore((s) => s.favoriteIds);
+
+  /** Compute fill color expression based on current color mode */
+  const activeFillColor = useMemo(() => {
+    switch (colorMode) {
+      case 'margin': return marginFillColor;
+      case 'reservation': return reservationFillColor;
+      default: return partyFillColor;
+    }
+  }, [colorMode]);
 
   const snapPoints = useMemo(() => ['28%', '55%'], []);
 
@@ -88,6 +146,7 @@ export default function MapScreen() {
         margin: seed?.margin2023 ?? 0,
         votes: seed?.winnerVotes2023 ?? 0,
         type: seed?.type ?? 'GEN',
+        currentParty: seed?.currentParty,
       });
       bottomSheetRef.current?.snapToIndex(0);
     },
@@ -197,7 +256,7 @@ export default function MapScreen() {
                 'case',
                 ['==', ['get', 'AC_NO'], selected?.acNo ?? -1],
                 '#FFD700',
-                partyFillColor,
+                activeFillColor,
               ],
               fillOpacity: [
                 'case',
@@ -294,6 +353,18 @@ export default function MapScreen() {
       {/* Map Legend */}
       <MapLegend />
 
+      {/* Color mode toggle */}
+      <View style={styles.colorToggleContainer}>
+        <MapColorToggle mode={colorMode} onModeChange={setColorMode} />
+      </View>
+
+      {/* Idle trivia — shown when no constituency is selected */}
+      {!selected && (
+        <View style={styles.idleTriviaContainer}>
+          <TriviaCard items={idleTrivia} compact rotateInterval={5000} />
+        </View>
+      )}
+
       {/* Bottom Sheet */}
       <BottomSheet
         ref={bottomSheetRef}
@@ -348,6 +419,55 @@ export default function MapScreen() {
                 <Text style={styles.statLabel}>Runner-up</Text>
               </View>
             </View>
+
+            {/* Defection badge */}
+            {selected.currentParty && selected.currentParty !== selected.winner && (
+              <View style={styles.defectionRow}>
+                <DefectionBadge
+                  electedParty={selected.winner}
+                  currentParty={selected.currentParty}
+                  compact
+                />
+              </View>
+            )}
+
+            {/* Contextual trivia */}
+            {(() => {
+              const items = getTriviaForConstituency(selected.acNo).filter(
+                (t) => !t.contexts.every((c) => c.type === 'GLOBAL'),
+              );
+              return items.length > 0 ? (
+                <View style={styles.triviaRow}>
+                  <TriviaCard items={items} compact rotateInterval={6000} />
+                </View>
+              ) : null;
+            })()}
+
+            {/* Historical snapshot */}
+            {(() => {
+              const hist = getConstituencyHistory(selected.acNo);
+              if (!hist.ac2014 && !hist.ac2018) return null;
+              return (
+                <View style={styles.histRow}>
+                  {hist.ac2014 && (
+                    <View style={styles.histMiniCard}>
+                      <Text style={styles.histMiniYear}>2014</Text>
+                      <Text style={styles.histMiniParty}>{hist.ac2014.party}</Text>
+                    </View>
+                  )}
+                  {hist.ac2018 && (
+                    <View style={styles.histMiniCard}>
+                      <Text style={styles.histMiniYear}>2018</Text>
+                      <Text style={styles.histMiniParty}>{hist.ac2018.party}</Text>
+                    </View>
+                  )}
+                  <View style={[styles.histMiniCard, styles.histMiniCardCurrent]}>
+                    <Text style={styles.histMiniYear}>2023</Text>
+                    <Text style={styles.histMiniParty}>{selected.winner}</Text>
+                  </View>
+                </View>
+              );
+            })()}
 
             {/* View detail button */}
             <Pressable style={styles.detailButton} onPress={handleViewDetail}>
@@ -516,6 +636,23 @@ const styles = StyleSheet.create({
     color: '#6B7280',
     marginTop: 4,
   },
+  defectionRow: {
+    marginBottom: 14,
+  },
+  triviaRow: {
+    marginBottom: 14,
+  },
+  colorToggleContainer: {
+    position: 'absolute',
+    top: Platform.OS === 'ios' ? 110 : 90,
+    left: 16,
+  },
+  idleTriviaContainer: {
+    position: 'absolute',
+    bottom: 20,
+    left: 12,
+    right: 12,
+  },
   detailButton: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -529,5 +666,35 @@ const styles = StyleSheet.create({
     fontSize: 15,
     fontWeight: '700',
     color: '#FFFFFF',
+  },
+  // ─── Historical mini-cards ───
+  histRow: {
+    flexDirection: 'row',
+    gap: 6,
+    marginBottom: 14,
+  },
+  histMiniCard: {
+    flex: 1,
+    backgroundColor: '#1F2937',
+    borderRadius: 8,
+    paddingVertical: 8,
+    alignItems: 'center',
+  },
+  histMiniCardCurrent: {
+    borderWidth: 1,
+    borderColor: '#4F8EF740',
+  },
+  histMiniYear: {
+    fontSize: 10,
+    fontWeight: '700',
+    color: '#6B7280',
+    textTransform: 'uppercase',
+    letterSpacing: 0.5,
+  },
+  histMiniParty: {
+    fontSize: 13,
+    fontWeight: '800',
+    color: '#FFFFFF',
+    marginTop: 2,
   },
 });

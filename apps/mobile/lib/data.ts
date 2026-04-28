@@ -12,6 +12,37 @@ export {
 } from '../../../data/seed/telangana-election-history';
 
 export {
+  getConstituencyHistory,
+  isPartyStronghold,
+  getPartyTally,
+  getSwingConstituencies,
+  TRS_BRS_ALIAS,
+  type HistoricalResult,
+} from '../../../data/seed/telangana-historical-results';
+
+export {
   TELANGANA_MLA_PROFILES,
   getMLAProfile,
+  getMLAsByParty,
+  getDefectedMLAs,
+  getFemaleMLAs,
+  getVeteranMLAs,
+  type MLAProfile,
 } from '../../../data/seed/telangana-mla-profiles';
+
+export {
+  getAllTrivia,
+  getTriviaForConstituency,
+  getTriviaForParty,
+  getTriviaForMLA,
+  getRandomTrivia,
+  getRandomTriviaSet,
+  type TriviaItem,
+} from '../../../data/seed/telangana-trivia';
+
+export {
+  getConstituencyTimeline,
+  computePartyStrength,
+  getDefectionSummary,
+  type PoliticalLedgerEntry,
+} from '../../../data/seed/telangana-political-timeline';

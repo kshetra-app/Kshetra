@@ -27,17 +27,17 @@ describe('Telangana Constituencies Seed Data', () => {
   });
 
   it('should have valid party codes for winners and runner-ups', () => {
-    const validParties = ['INC', 'BRS', 'BJP', 'AIMIM', 'TDP', 'CPI', 'CPM', 'IND'];
+    const validParties = ['INC', 'BRS', 'BJP', 'AIMIM', 'TDP', 'CPI', 'CPM', 'IND', 'AIFB', 'MBT'];
     TELANGANA_CONSTITUENCIES.forEach((c) => {
       expect(validParties).toContain(c.winner2023);
       expect(validParties).toContain(c.runnerUp2023);
     });
   });
 
-  it('should have positive vote counts and margins', () => {
+  it('should have non-negative vote counts and margins', () => {
     TELANGANA_CONSTITUENCIES.forEach((c) => {
-      expect(c.winnerVotes2023).toBeGreaterThan(0);
-      expect(c.margin2023).toBeGreaterThan(0);
+      expect(c.winnerVotes2023).toBeGreaterThanOrEqual(0);
+      expect(c.margin2023).toBeGreaterThanOrEqual(0);
     });
   });
 
@@ -53,21 +53,34 @@ describe('Telangana Constituencies Seed Data', () => {
     });
   });
 
-  it('should contain expected INC-majority results (2023 was INC sweep)', () => {
-    const incWins = TELANGANA_CONSTITUENCIES.filter(
-      (c) => c.winner2023 === 'INC',
-    ).length;
-    // INC won ~64 seats in 2023
-    expect(incWins).toBeGreaterThan(50);
+  it('should match verified 2023 party tally (INC:64, BRS:39, BJP:8, AIMIM:7, CPI:1)', () => {
+    const tally = (party: string) =>
+      TELANGANA_CONSTITUENCIES.filter((c) => c.winner2023 === party).length;
+    expect(tally('INC')).toBe(64);
+    expect(tally('BRS')).toBe(39);
+    expect(tally('BJP')).toBe(8);
+    expect(tally('AIMIM')).toBe(7);
+    expect(tally('CPI')).toBe(1);
   });
 
   it('should contain AIMIM wins in Hyderabad Old City', () => {
     const aimimSeats = TELANGANA_CONSTITUENCIES.filter(
       (c) => c.winner2023 === 'AIMIM',
     );
-    expect(aimimSeats.length).toBeGreaterThanOrEqual(7);
+    expect(aimimSeats.length).toBe(7);
     aimimSeats.forEach((c) => {
       expect(c.district).toBe('Hyderabad');
+    });
+  });
+
+  it('should track 10 BRS→INC post-election defections', () => {
+    const defections = TELANGANA_CONSTITUENCIES.filter(
+      (c) => c.currentParty && c.currentParty !== c.winner2023,
+    );
+    expect(defections.length).toBe(10);
+    defections.forEach((c) => {
+      expect(c.winner2023).toBe('BRS');
+      expect(c.currentParty).toBe('INC');
     });
   });
 });

@@ -1,5 +1,4 @@
-import { TELANGANA_CONSTITUENCIES } from '../../../data/seed/telangana-constituencies';
-import type { ConstituencySeed } from '../../../data/seed/telangana-constituencies';
+import { TELANGANA_CONSTITUENCIES, type ConstituencySeed } from '@/lib/data';
 
 /** Lookup map from AC_NO to seed data for O(1) access */
 const seedByAcNo = new Map<number, ConstituencySeed>(

@@ -1,20 +1,7 @@
 import { View, Text, StyleSheet } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { getPartyColor } from '@/lib/constants';
-export interface MLAProfile {
-  acNo: number;
-  name: string;
-  party: string;
-  age?: number;
-  gender: 'M' | 'F';
-  education?: string;
-  profession?: string;
-  terms: number;
-  criminalCases: number;
-  totalAssets?: number;
-  phone?: string;
-  email?: string;
-}
+import type { MLAProfile } from '@/lib/data';
 
 /** Format INR amounts in lakhs/crores */
 function formatINR(amount: number): string {
@@ -87,22 +74,24 @@ export default function MLACard({ profile }: MLACardProps) {
           </View>
         )}
 
-        <View style={styles.statItem}>
-          <Ionicons
-            name={profile.criminalCases > 0 ? 'warning' : 'checkmark-circle'}
-            size={16}
-            color={profile.criminalCases > 0 ? '#EF4444' : '#10B981'}
-          />
-          <Text
-            style={[
-              styles.statValue,
-              profile.criminalCases > 0 && styles.warningText,
-            ]}
-          >
-            {profile.criminalCases}
-          </Text>
-          <Text style={styles.statLabel}>Cases</Text>
-        </View>
+        {profile.criminalCases !== undefined && (
+          <View style={styles.statItem}>
+            <Ionicons
+              name={(profile.criminalCases ?? 0) > 0 ? 'warning' : 'checkmark-circle'}
+              size={16}
+              color={(profile.criminalCases ?? 0) > 0 ? '#EF4444' : '#10B981'}
+            />
+            <Text
+              style={[
+                styles.statValue,
+                (profile.criminalCases ?? 0) > 0 && styles.warningText,
+              ]}
+            >
+              {profile.criminalCases}
+            </Text>
+            <Text style={styles.statLabel}>Cases</Text>
+          </View>
+        )}
       </View>
 
       {/* Profession */}

@@ -1,22 +1,53 @@
-import { MMKV } from 'react-native-mmkv';
 import type { StateStorage } from 'zustand/middleware';
 
-/** Single MMKV instance for the entire app */
-export const mmkv = new MMKV({ id: 'kshetra-storage' });
+/**
+ * Storage layer with graceful fallback.
+ * Prefers react-native-mmkv (30× faster) when available (dev builds).
+ * Falls back to an in-memory Map when running in Expo Go or web.
+ */
+
+let mmkvInstance: any = null;
+let usingMMKV = false;
+
+try {
+  const { MMKV } = require('react-native-mmkv');
+  mmkvInstance = new MMKV({ id: 'kshetra-storage' });
+  usingMMKV = true;
+} catch {
+  // Native MMKV not available (Expo Go / web) — fallback below
+}
+
+/** In-memory fallback when MMKV isn't available */
+const memoryStore = new Map<string, string>();
+
+/** Single storage instance — MMKV when available, Map otherwise */
+export const mmkv = mmkvInstance;
+export const isMMKVAvailable = usingMMKV;
 
 /**
- * Zustand-compatible StateStorage adapter for MMKV.
- * Enables automatic persistence of Zustand stores to disk.
+ * Zustand-compatible StateStorage adapter.
+ * Uses MMKV on dev builds, in-memory Map on Expo Go / web.
  */
 export const mmkvStorage: StateStorage = {
   getItem: (name: string) => {
-    const value = mmkv.getString(name);
-    return value ?? null;
+    if (usingMMKV) {
+      const value = mmkvInstance.getString(name);
+      return value ?? null;
+    }
+    return memoryStore.get(name) ?? null;
   },
   setItem: (name: string, value: string) => {
-    mmkv.set(name, value);
+    if (usingMMKV) {
+      mmkvInstance.set(name, value);
+    } else {
+      memoryStore.set(name, value);
+    }
   },
   removeItem: (name: string) => {
-    mmkv.delete(name);
+    if (usingMMKV) {
+      mmkvInstance.delete(name);
+    } else {
+      memoryStore.delete(name);
+    }
   },
 };
