@@ -45,7 +45,7 @@
       [
         "@rnmapbox/maps",
         {
-          "RNMapboxMapsImpl": "maplibre"
+          "RNMapboxMapsImpl": "mapbox"
         }
       ],
       "expo-secure-store"

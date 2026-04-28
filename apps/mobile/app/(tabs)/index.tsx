@@ -32,19 +32,17 @@ import telanganaAssemblyGeo from '@/data/telangana-assembly.json';
 import { TELANGANA_CONSTITUENCIES, type ConstituencySeed, getTriviaForConstituency, getRandomTriviaSet, getConstituencyHistory } from '@/lib/data';
 
 /**
- * Dynamically load map engine — native module not available in Expo Go.
- * Works with both MapLibre (free) and Mapbox (premium) backends.
+ * Dynamically load Mapbox — native module not available in Expo Go.
  * Falls back to MapFallback component when unavailable.
  */
 let MapboxGL: any = null;
 let mapboxAvailable = false;
 try {
   MapboxGL = require('@rnmapbox/maps').default;
-  // MapLibre doesn't need a token. If switching to Mapbox backend,
-  // uncomment: MapboxGL.setAccessToken(process.env.EXPO_PUBLIC_MAPBOX_TOKEN ?? '');
+  MapboxGL.setAccessToken(process.env.EXPO_PUBLIC_MAPBOX_TOKEN ?? '');
   mapboxAvailable = true;
 } catch {
-  // Native map module not available (Expo Go / web)
+  // Native Mapbox module not available (Expo Go / web)
 }
 
 /** Enrich once at module level (offline, ~2ms) */

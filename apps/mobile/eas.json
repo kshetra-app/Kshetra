@@ -9,21 +9,24 @@
       "distribution": "internal",
       "channel": "development",
       "env": {
-        "APP_ENV": "development"
+        "APP_ENV": "development",
+        "RNMAPBOX_MAPS_DOWNLOAD_TOKEN": "${MAPBOX_DOWNLOADS_TOKEN}"
       }
     },
     "preview": {
       "distribution": "internal",
       "channel": "preview",
       "env": {
-        "APP_ENV": "preview"
+        "APP_ENV": "preview",
+        "RNMAPBOX_MAPS_DOWNLOAD_TOKEN": "${MAPBOX_DOWNLOADS_TOKEN}"
       }
     },
     "production": {
       "channel": "production",
       "autoIncrement": true,
       "env": {
-        "APP_ENV": "production"
+        "APP_ENV": "production",
+        "RNMAPBOX_MAPS_DOWNLOAD_TOKEN": "${MAPBOX_DOWNLOADS_TOKEN}"
       }
     }
   },

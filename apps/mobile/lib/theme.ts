@@ -51,7 +51,7 @@ export const DARK_THEME: ThemeColors = {
   success: '#10B981',
   warning: '#F59E0B',
   border: '#1F2937',
-  mapStyle: 'https://basemaps.cartocdn.com/gl/dark-matter-gl-style/style.json',
+  mapStyle: 'mapbox://styles/mapbox/dark-v11',
   statusBar: 'light',
 };
 
@@ -68,6 +68,6 @@ export const LIGHT_THEME: ThemeColors = {
   success: '#059669',
   warning: '#D97706',
   border: '#E5E7EB',
-  mapStyle: 'https://basemaps.cartocdn.com/gl/positron-gl-style/style.json',
+  mapStyle: 'mapbox://styles/mapbox/light-v11',
   statusBar: 'dark',
 };
