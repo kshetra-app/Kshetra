@@ -3,7 +3,7 @@ import { View, Text, StyleSheet, ScrollView, Platform, Pressable, Share } from '
 import { useLocalSearchParams, Stack } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { getPartyColor } from '@/lib/constants';
-import { TELANGANA_CONSTITUENCIES, TELANGANA_ELECTION_HISTORY, getMLAProfile, getTriviaForConstituency, getConstituencyHistory, isPartyStronghold } from '@/lib/data';
+import { TELANGANA_CONSTITUENCIES, TELANGANA_ELECTION_HISTORY, getMLAProfile, getTriviaForConstituency, getConstituencyHistory, isPartyStronghold, getConstituencyDemographics } from '@/lib/data';
 import { useFavoritesStore } from '../../stores/favorites';
 import { useRecentsStore } from '../../stores/recents';
 import MLACard from '../../components/MLACard';
@@ -330,16 +330,90 @@ export default function ConstituencyDetailScreen() {
           })}
         </View>
 
-        {/* Demographics placeholder */}
-        <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Demographics</Text>
-          <View style={styles.placeholder}>
-            <Ionicons name="people" size={32} color="#4B5563" />
-            <Text style={styles.placeholderText}>
-              Population, literacy, urban/rural split — coming soon
-            </Text>
-          </View>
-        </View>
+        {/* Demographics */}
+        {(() => {
+          const demo = getConstituencyDemographics(acNo);
+          if (!demo) return null;
+          return (
+            <View style={styles.section}>
+              <Text style={styles.sectionTitle}>Demographics</Text>
+              <View style={styles.demoCard}>
+                <View style={styles.demoRow}>
+                  <View style={styles.demoItem}>
+                    <Ionicons name="people" size={18} color="#4F8EF7" />
+                    <Text style={styles.demoValue}>{(demo.population / 1000).toFixed(0)}K</Text>
+                    <Text style={styles.demoLabel}>Population</Text>
+                  </View>
+                  <View style={styles.demoItem}>
+                    <Ionicons name="document-text" size={18} color="#10B981" />
+                    <Text style={styles.demoValue}>{demo.literacy}%</Text>
+                    <Text style={styles.demoLabel}>Literacy</Text>
+                  </View>
+                  <View style={styles.demoItem}>
+                    <Ionicons name="business" size={18} color="#F59E0B" />
+                    <Text style={styles.demoValue}>{demo.urbanPercent}%</Text>
+                    <Text style={styles.demoLabel}>Urban</Text>
+                  </View>
+                  <View style={styles.demoItem}>
+                    <Ionicons name="map" size={18} color="#8B5CF6" />
+                    <Text style={styles.demoValue}>{demo.areaSqKm}</Text>
+                    <Text style={styles.demoLabel}>km²</Text>
+                  </View>
+                </View>
+
+                <View style={styles.demoDivider} />
+
+                <Text style={styles.demoSubTitle}>Voter Profile (2023)</Text>
+                <View style={styles.demoRow}>
+                  <View style={styles.demoItem}>
+                    <Text style={styles.demoValue}>{(demo.totalVoters / 1000).toFixed(0)}K</Text>
+                    <Text style={styles.demoLabel}>Total Voters</Text>
+                  </View>
+                  <View style={styles.demoItem}>
+                    <Text style={styles.demoValue}>{demo.turnout2023}%</Text>
+                    <Text style={styles.demoLabel}>Turnout</Text>
+                  </View>
+                  <View style={styles.demoItem}>
+                    <Text style={styles.demoValue}>{(demo.maleVoters / 1000).toFixed(0)}K</Text>
+                    <Text style={styles.demoLabel}>Male</Text>
+                  </View>
+                  <View style={styles.demoItem}>
+                    <Text style={styles.demoValue}>{(demo.femaleVoters / 1000).toFixed(0)}K</Text>
+                    <Text style={styles.demoLabel}>Female</Text>
+                  </View>
+                </View>
+
+                <View style={styles.demoDivider} />
+
+                <Text style={styles.demoSubTitle}>Social Composition</Text>
+                <View style={styles.demoBarGroup}>
+                  <View style={styles.demoBarRow}>
+                    <Text style={styles.demoBarLabel}>SC</Text>
+                    <View style={styles.demoBarTrack}>
+                      <View style={[styles.demoBarFill, { width: `${demo.scPercent}%`, backgroundColor: '#F59E0B' }]} />
+                    </View>
+                    <Text style={styles.demoBarValue}>{demo.scPercent}%</Text>
+                  </View>
+                  <View style={styles.demoBarRow}>
+                    <Text style={styles.demoBarLabel}>ST</Text>
+                    <View style={styles.demoBarTrack}>
+                      <View style={[styles.demoBarFill, { width: `${demo.stPercent}%`, backgroundColor: '#10B981' }]} />
+                    </View>
+                    <Text style={styles.demoBarValue}>{demo.stPercent}%</Text>
+                  </View>
+                  <View style={styles.demoBarRow}>
+                    <Text style={styles.demoBarLabel}>Urban</Text>
+                    <View style={styles.demoBarTrack}>
+                      <View style={[styles.demoBarFill, { width: `${demo.urbanPercent}%`, backgroundColor: '#4F8EF7' }]} />
+                    </View>
+                    <Text style={styles.demoBarValue}>{demo.urbanPercent}%</Text>
+                  </View>
+                </View>
+              </View>
+              <Text style={styles.demoDisclaimer}>Source: Census 2011 · ECI 2023 voter rolls</Text>
+            </View>
+          );
+        })()}
       </ScrollView>
     </View>
   );
@@ -493,16 +567,82 @@ const styles = StyleSheet.create({
     color: '#6B7280',
     marginTop: 4,
   },
-  placeholder: {
+  demoCard: {
     backgroundColor: '#111827',
     borderRadius: 16,
-    padding: 24,
+    padding: 16,
+  },
+  demoRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+  },
+  demoItem: {
+    alignItems: 'center',
+    flex: 1,
+    paddingVertical: 8,
+  },
+  demoValue: {
+    fontSize: 16,
+    fontWeight: '700',
+    color: '#FFFFFF',
+    marginTop: 4,
+  },
+  demoLabel: {
+    fontSize: 10,
+    color: '#6B7280',
+    marginTop: 2,
+    textTransform: 'uppercase',
+  },
+  demoDivider: {
+    height: 1,
+    backgroundColor: '#1F2937',
+    marginVertical: 12,
+  },
+  demoSubTitle: {
+    fontSize: 12,
+    fontWeight: '700',
+    color: '#9CA3AF',
+    textTransform: 'uppercase',
+    letterSpacing: 1,
+    marginBottom: 8,
+  },
+  demoBarGroup: {
+    gap: 8,
+  },
+  demoBarRow: {
+    flexDirection: 'row',
     alignItems: 'center',
   },
-  placeholderText: {
-    fontSize: 13,
+  demoBarLabel: {
+    fontSize: 12,
+    fontWeight: '700',
+    color: '#9CA3AF',
+    width: 44,
+  },
+  demoBarTrack: {
+    flex: 1,
+    height: 8,
+    backgroundColor: '#1F2937',
+    borderRadius: 4,
+    overflow: 'hidden',
+    marginHorizontal: 8,
+  },
+  demoBarFill: {
+    height: 8,
+    borderRadius: 4,
+  },
+  demoBarValue: {
+    fontSize: 12,
+    fontWeight: '700',
     color: '#6B7280',
-    textAlign: 'center',
+    width: 40,
+    textAlign: 'right',
+  },
+  demoDisclaimer: {
+    fontSize: 10,
+    color: '#4B5563',
+    fontStyle: 'italic',
+    textAlign: 'right',
     marginTop: 8,
   },
   historyCard: {

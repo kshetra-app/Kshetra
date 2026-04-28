@@ -157,14 +157,35 @@ function FullMapScreen() {
       if (!feature?.properties) return;
 
       const { AC_NO, AC_NAME, DIST_NAME } = feature.properties;
-      selectConstituency(AC_NO, AC_NAME, DIST_NAME);
+      selectConstituency(Number(AC_NO), AC_NAME, DIST_NAME);
 
-      cameraRef.current?.setCamera({
-        centerCoordinate:
-          event.coordinates ?? feature.geometry?.coordinates?.[0]?.[0],
-        zoomLevel: CONSTITUENCY_ZOOM,
-        animationDuration: 600,
-      });
+      // @rnmapbox/maps returns {latitude, longitude} — convert to [lng, lat]
+      let coord: [number, number] | undefined;
+      if (event.coordinates) {
+        const c = event.coordinates;
+        if (Array.isArray(c)) {
+          coord = c as [number, number];
+        } else if (c.longitude != null && c.latitude != null) {
+          coord = [c.longitude, c.latitude];
+        }
+      }
+      // Fallback: compute rough centroid from polygon ring
+      if (!coord && feature.geometry?.coordinates?.[0]) {
+        const ring = feature.geometry.coordinates[0];
+        if (Array.isArray(ring) && ring.length > 0) {
+          let sumLng = 0, sumLat = 0;
+          for (const pt of ring) { sumLng += pt[0]; sumLat += pt[1]; }
+          coord = [sumLng / ring.length, sumLat / ring.length];
+        }
+      }
+
+      if (coord) {
+        cameraRef.current?.setCamera({
+          centerCoordinate: coord,
+          zoomLevel: CONSTITUENCY_ZOOM,
+          animationDuration: 600,
+        });
+      }
     },
     [selectConstituency],
   );
@@ -237,6 +258,7 @@ function FullMapScreen() {
           defaultSettings={{
             centerCoordinate: TELANGANA_CENTER,
             zoomLevel: TELANGANA_ZOOM,
+            padding: { paddingTop: 80, paddingBottom: 40, paddingLeft: 16, paddingRight: 16 },
           }}
           minZoomLevel={5}
           maxZoomLevel={14}

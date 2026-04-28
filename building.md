@@ -30,6 +30,7 @@
 | Phase 5A: Political Ledger + Trivia Engine | ✅ Complete | 2026-04-28 | 2026-04-28 |
 | Phase 5B: Historical Data + MLA Profiles (119) | ✅ Complete | 2026-04-28 | 2026-04-28 |
 | Phase 5C: Map Modes + Per-Constituency History | ✅ Complete | 2026-04-28 | 2026-04-28 |
+| Phase 5D: Bug Fixes + Data Backfill + Demographics | ✅ Complete | 2026-04-28 | 2026-04-28 |
 
 ---
 
@@ -108,6 +109,10 @@
 | 2026-04-27 | `feat: performance + polish` | React.memo ConstituencyCard, ErrorBoundary, SkeletonLoader, empty state, API cache headers (110/110 pass) |
 | 2026-04-27 | `feat: push notifications + alerts` | expo-notifications service, notification store (persist), notification center screen, bell icon w/ badge on Profile, alert categories (110/110 pass) |
 | 2026-04-27 | `feat: dark/light theme system` | Theme tokens (dark+light), useTheme hook, theme picker in Profile, dynamic StatusBar, system preference support (110/110 pass) |
+| 2026-04-28 | `feat: political ledger + trivia engine` | Double-entry ledger, 22 trivia items, TriviaCard + DefectionBadge components, 39 new tests (100/100 seed pass) |
+| 2026-04-28 | `feat: historical data + MLA profiles (119)` | Per-constituency 2014/2018 results, full 119 MLA profiles, cross-validated, 40 new tests (100/100 seed pass) |
+| 2026-04-28 | `feat: map modes + per-constituency history` | MapColorToggle (party/margin/type), historical mini-cards, stronghold/swing badges |
+| 2026-04-28 | `fix: map + data + demographics + trivia UX` | Map tap crash fix, vote/margin backfill (119 ACs), demographics section, expandable trivia, map fitment (100/100 seed pass) |
 
 ---
 
@@ -845,3 +850,60 @@ The app works fully offline without Supabase credentials. To activate:
   - Party flip indicator on individual election cards
   - State-level overview retained below per-constituency section
 - [x] `apps/mobile/lib/data.ts` — added historical results exports
+
+---
+
+## Milestone 23: Bug Fixes + Data Backfill + Demographics
+
+**Date**: 2026-04-28
+**Goal**: Fix map tap crash, backfill election vote data, add demographics, improve trivia UX
+
+### Issues Fixed
+
+1. **Map tap crash** — `coordinates must be an Array`
+   - **Root cause**: `@rnmapbox/maps` `onPress` returns `{latitude, longitude}` object, not `[lng, lat]` array
+   - **Fix**: `handlePress` in `index.tsx` now safely converts coordinate format with polygon centroid fallback
+
+2. **Votes/margin showing 0 for all constituencies**
+   - **Root cause**: All 119 entries in `telangana-constituencies.ts` had `winnerVotes2023: 0` and `margin2023: 0`
+   - **Fix**: Backfilled all 119 constituencies with vote counts and margins from Wikipedia/MyNeta/IndiaToday
+   - Notable results: KCR (Gajwel) 118,962 votes / 46,834 margin, Revanth Reddy (Kodangal) 108,547 / 57,814, KTR (Sircilla) 103,256 / 51,489
+
+3. **Demographics section was placeholder ("coming soon")**
+   - **Fix**: Created `data/seed/telangana-demographics.ts` with per-constituency data:
+     - Population, literacy rate, urban %, area (sq km)
+     - Voter profile: total voters, male/female split, turnout 2023
+     - Social composition: SC %, ST %, with bar chart visualization
+   - Wired into constituency detail screen with beautiful card UI
+
+4. **"Did You Know" trivia not expandable**
+   - **Fix**: `TriviaCard.tsx` compact mode now supports tap-to-expand
+   - Expanded state shows full body text, source attribution, and "Next" button
+   - Chevron icon indicates expand/collapse state
+
+5. **Map fitment — requires pinch to fit screen**
+   - **Fix**: Added camera `padding` to `MapboxGL.Camera` defaultSettings
+   - Accounts for header and UI overlays on all screen sizes
+
+### Files Changed
+
+| File | Change |
+|---|---|
+| `apps/mobile/app/(tabs)/index.tsx` | Fixed `handlePress` coordinate conversion; added camera padding |
+| `apps/mobile/app/constituency/[id].tsx` | Replaced demographics placeholder with real data UI |
+| `apps/mobile/components/TriviaCard.tsx` | Added expandable compact mode |
+| `data/seed/telangana-constituencies.ts` | Backfilled 119 vote counts + margins |
+| `data/seed/telangana-demographics.ts` | **NEW** — 119 constituency demographics |
+| `apps/mobile/lib/data.ts` | Added demographics exports |
+
+### Tests — Milestone 23
+
+| Test Suite | Status | Passed | Total | Notes |
+|---|---|---|---|---|
+| `data/seed` — constituencies | ✅ Pass | 10 | 10 | Vote data now non-zero |
+| `data/seed` — election history | ✅ Pass | 10 | 10 | Unchanged |
+| `data/seed` — political timeline | ✅ Pass | 21 | 21 | Unchanged |
+| `data/seed` — trivia | ✅ Pass | 18 | 18 | Unchanged |
+| `data/seed` — historical results | ✅ Pass | 22 | 22 | Unchanged |
+| `data/seed` — MLA profiles | ✅ Pass | 18 | 18 | Unchanged |
+| **Seed data total** | **✅ All Pass** | **100** | **100** | No regressions |

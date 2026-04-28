@@ -46,3 +46,9 @@ export {
   getDefectionSummary,
   type PoliticalLedgerEntry,
 } from '../../../data/seed/telangana-political-timeline';
+
+export {
+  TELANGANA_DEMOGRAPHICS,
+  getConstituencyDemographics,
+  type ConstituencyDemographics,
+} from '../../../data/seed/telangana-demographics';

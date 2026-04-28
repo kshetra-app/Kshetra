@@ -18,6 +18,7 @@ export default function TriviaCard({
   rotateInterval = 8000,
 }: TriviaCardProps) {
   const [index, setIndex] = useState(0);
+  const [expanded, setExpanded] = useState(false);
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
   const current = items[index % items.length];
@@ -39,21 +40,43 @@ export default function TriviaCard({
 
   if (compact) {
     return (
-      <Pressable style={styles.compactContainer} onPress={next}>
-        <View style={styles.compactHeader}>
-          <Text style={styles.compactEmoji}>{current.emoji}</Text>
-          <Text style={styles.compactLabel}>Did You Know?</Text>
-          {items.length > 1 && (
-            <Text style={styles.compactCounter}>
-              {(index % items.length) + 1}/{items.length}
+      <View style={styles.compactContainer}>
+        <Pressable onPress={() => setExpanded((e) => !e)}>
+          <View style={styles.compactHeader}>
+            <Text style={styles.compactEmoji}>{current.emoji}</Text>
+            <Text style={styles.compactLabel}>Did You Know?</Text>
+            <Ionicons
+              name={expanded ? 'chevron-down' : 'chevron-up'}
+              size={14}
+              color="#6B7280"
+            />
+            {items.length > 1 && (
+              <Text style={styles.compactCounter}>
+                {(index % items.length) + 1}/{items.length}
+              </Text>
+            )}
+          </View>
+          <Text style={styles.compactHeadline}>{current.headline}</Text>
+        </Pressable>
+        {expanded ? (
+          <View>
+            <Text style={styles.compactBodyFull}>{current.body}</Text>
+            <Text style={styles.compactSource}>{current.source}</Text>
+            {items.length > 1 && (
+              <Pressable style={styles.compactNextButton} onPress={next}>
+                <Ionicons name="shuffle" size={14} color="#9CA3AF" />
+                <Text style={styles.compactNextText}>Next</Text>
+              </Pressable>
+            )}
+          </View>
+        ) : (
+          <Pressable onPress={() => setExpanded(true)}>
+            <Text style={styles.compactBody} numberOfLines={2}>
+              {current.body}
             </Text>
-          )}
-        </View>
-        <Text style={styles.compactHeadline}>{current.headline}</Text>
-        <Text style={styles.compactBody} numberOfLines={2}>
-          {current.body}
-        </Text>
-      </Pressable>
+          </Pressable>
+        )}
+      </View>
     );
   }
 
@@ -191,5 +214,33 @@ const styles = StyleSheet.create({
     fontSize: 11,
     color: '#9CA3AF',
     lineHeight: 16,
+  },
+  compactBodyFull: {
+    fontSize: 12,
+    color: '#D1D5DB',
+    lineHeight: 18,
+    marginTop: 4,
+  },
+  compactSource: {
+    fontSize: 10,
+    color: '#4B5563',
+    fontStyle: 'italic' as const,
+    marginTop: 6,
+  },
+  compactNextButton: {
+    flexDirection: 'row' as const,
+    alignItems: 'center' as const,
+    alignSelf: 'flex-end' as const,
+    gap: 4,
+    marginTop: 8,
+    backgroundColor: '#1F2937',
+    paddingHorizontal: 10,
+    paddingVertical: 5,
+    borderRadius: 8,
+  },
+  compactNextText: {
+    fontSize: 11,
+    color: '#9CA3AF',
+    fontWeight: '600' as const,
   },
 });
