@@ -70,52 +70,56 @@ export function usePushNotifications() {
 
   // Listen for incoming notifications (foreground)
   useEffect(() => {
-    notificationListener.current = Notifications.addNotificationReceivedListener(
-      (notification) => {
-        const { title, body, data } = notification.request.content;
-        if (title && body) {
-          addNotification({
-            title,
-            body,
-            category: (data?.category as AlertCategory) ?? 'app_updates',
-            data: data as Record<string, unknown> | undefined,
-          });
-        }
-      },
-    );
+    try {
+      notificationListener.current = Notifications.addNotificationReceivedListener(
+        (notification) => {
+          const { title, body, data } = notification.request.content;
+          if (title && body) {
+            addNotification({
+              title,
+              body,
+              category: (data?.category as AlertCategory) ?? 'app_updates',
+              data: data as Record<string, unknown> | undefined,
+            });
+          }
+        },
+      );
+    } catch {
+      // expo-notifications native module may not be available
+    }
 
     return () => {
-      if (notificationListener.current) {
-        Notifications.removeNotificationSubscription(notificationListener.current);
-      }
+      try { notificationListener.current?.remove(); } catch {}
     };
   }, [addNotification]);
 
   // Listen for notification taps (background → foreground)
   useEffect(() => {
-    responseListener.current = Notifications.addNotificationResponseReceivedListener(
-      (response) => {
-        const data = response.notification.request.content.data;
-        if (data?.route && typeof data.route === 'string') {
-          // Deep link: navigate to the specified route
-          router.push(data.route as any);
-        } else if (data?.postId && typeof data.postId === 'string') {
-          // Navigate to feed (future: specific post)
-          router.push('/(tabs)/feed');
-        } else if (data?.issueId && typeof data.issueId === 'string') {
-          // Navigate to dashboard issues
-          router.push('/(tabs)/dashboard');
-        } else if (data?.constituencyId && typeof data.constituencyId === 'string') {
-          // Navigate to constituency detail
-          router.push(`/constituency/${data.constituencyId}` as any);
-        }
-      },
-    );
+    try {
+      responseListener.current = Notifications.addNotificationResponseReceivedListener(
+        (response) => {
+          const data = response.notification.request.content.data;
+          if (data?.route && typeof data.route === 'string') {
+            // Deep link: navigate to the specified route
+            router.push(data.route as any);
+          } else if (data?.postId && typeof data.postId === 'string') {
+            // Navigate to feed (future: specific post)
+            router.push('/(tabs)/feed');
+          } else if (data?.issueId && typeof data.issueId === 'string') {
+            // Navigate to dashboard issues
+            router.push('/(tabs)/dashboard');
+          } else if (data?.constituencyId && typeof data.constituencyId === 'string') {
+            // Navigate to constituency detail
+            router.push(`/constituency/${data.constituencyId}` as any);
+          }
+        },
+      );
+    } catch {
+      // expo-notifications native module may not be available
+    }
 
     return () => {
-      if (responseListener.current) {
-        Notifications.removeNotificationSubscription(responseListener.current);
-      }
+      try { responseListener.current?.remove(); } catch {}
     };
   }, [router]);
 
