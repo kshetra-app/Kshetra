@@ -16,17 +16,19 @@ import PollCard from '../../components/PollCard';
 import ComposeSheet from '../../components/ComposeSheet';
 import TrendingHashtags from '../../components/TrendingHashtags';
 import type { Post, PostType } from '../../lib/feedTypes';
+import { useTranslation } from 'react-i18next';
 
-const FILTER_TABS: { key: PostType | 'all'; label: string; icon: string }[] = [
-  { key: 'all', label: 'All', icon: 'grid' },
-  { key: 'discussion', label: 'Discuss', icon: 'chatbubbles' },
-  { key: 'news', label: 'News', icon: 'newspaper' },
-  { key: 'question', label: 'Q&A', icon: 'help-circle' },
-  { key: 'poll', label: 'Polls', icon: 'stats-chart' },
-  { key: 'opinion', label: 'Opinion', icon: 'megaphone' },
+const FILTER_TAB_KEYS: { key: PostType | 'all'; tKey: string; icon: string }[] = [
+  { key: 'all', tKey: 'feed.filters.all', icon: 'grid' },
+  { key: 'discussion', tKey: 'feed.filters.discussion', icon: 'chatbubbles' },
+  { key: 'news', tKey: 'feed.filters.news', icon: 'newspaper' },
+  { key: 'question', tKey: 'feed.filters.question', icon: 'help-circle' },
+  { key: 'poll', tKey: 'feed.filters.poll', icon: 'stats-chart' },
+  { key: 'opinion', tKey: 'feed.filters.opinion', icon: 'megaphone' },
 ];
 
 export default function FeedScreen() {
+  const { t } = useTranslation();
   const [composeVisible, setComposeVisible] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
 
@@ -83,7 +85,7 @@ export default function FeedScreen() {
     <View style={styles.container}>
       {/* Header */}
       <View style={styles.header}>
-        <Text style={styles.headerTitle}>Feed</Text>
+        <Text style={styles.headerTitle}>{t('feed.title')}</Text>
         <Pressable
           style={styles.composeButton}
           onPress={() => {
@@ -100,7 +102,7 @@ export default function FeedScreen() {
       {/* Filter tabs */}
       <View style={styles.filterRow}>
         <FlatList
-          data={FILTER_TABS}
+          data={FILTER_TAB_KEYS}
           keyExtractor={(item) => item.key}
           horizontal
           showsHorizontalScrollIndicator={false}
@@ -118,7 +120,7 @@ export default function FeedScreen() {
                   color={active ? '#FFFFFF' : '#6B7280'}
                 />
                 <Text style={[styles.filterLabel, active && styles.filterLabelActive]}>
-                  {tab.label}
+                  {t(tab.tKey)}
                 </Text>
               </Pressable>
             );
@@ -154,9 +156,9 @@ export default function FeedScreen() {
         ListEmptyComponent={
           <View style={styles.emptyState}>
             <Ionicons name="chatbubbles-outline" size={48} color="#1F2937" />
-            <Text style={styles.emptyTitle}>No posts yet</Text>
+            <Text style={styles.emptyTitle}>{t('feed.emptyFeed')}</Text>
             <Text style={styles.emptySubtitle}>
-              Be the first to start a discussion!
+              {t('feed.compose')}
             </Text>
           </View>
         }

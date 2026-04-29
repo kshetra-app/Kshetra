@@ -39,6 +39,7 @@
 | Sprint 7: AI Enhancement + Constituency Insights | ✅ Complete | 2026-04-29 | 2026-04-29 |
 | Sprint 8: User Profile + Settings + Onboarding | ✅ Complete | 2026-04-29 | 2026-04-29 |
 | Sprint 9: Multi-State Foundation | ✅ Complete | 2026-04-29 | 2026-04-29 |
+| Sprint 10: Multilingual (i18n) | ✅ Complete | 2026-04-29 | 2026-04-29 |
 
 ---
 
@@ -129,6 +130,7 @@
 | 2026-04-29 | `feat: sprint 7 — AI enhancement` | Enhanced AI service with full data injection (MLA, demographics, defections, timeline), smart search, issue summarizer, AIAnalysisCard on detail page, AISmartSearch on Explore, AIDashboardSummary on Dashboard, constituency context picker in AI chat (100/100 seed pass) |
 | 2026-04-29 | `feat: sprint 8 — user profile + settings` | UserProfile store (Zustand+AsyncStorage), EditProfile screen (name/bio/role/interests), NotificationSettings screen (per-category toggles), UserProfileCard component (full+compact), Onboarding flow (6-step: welcome/name/role/constituency/interests/done), Profile tab integration (100/100 seed pass) |
 | 2026-04-29 | `feat: sprint 9 — multi-state foundation` | AP (25 stub) + KA (25 stub) seed data, JSP/JDS party codes, stateDataAdapter, multi-state API (stateData service + states routes), Supabase 003_multi_state migration, StateSwitcher data badges, state-scoped feed + civic stores, SUPPORTED_STATES expanded (100/100 seed pass) |
+| 2026-04-29 | `feat: sprint 10 — multilingual (i18n)` | 4 languages (en/te/hi/kn), i18next + expo-localization, LanguageSwitcher component, all screens wired (tabs, feed, dashboard, explore, onboarding, profile), AsyncStorage persistence, device locale auto-detect (100/100 seed pass) |
 
 ---
 
@@ -1425,3 +1427,66 @@ The app works fully offline without Supabase credentials. To activate:
 | `data/seed` — all | ✅ Pass | 100 | 100 | No regressions |
 | `packages/shared` — tsc | ✅ Pass | — | — | Clean compile with JSP/JDS |
 | **Total** | **✅ All Pass** | **100** | **100** | Multi-state arch ready; AP/KA stubs functional |
+
+---
+
+## Sprint 10: Multilingual (i18n)
+
+**Date**: 2026-04-29
+**Goal**: Make the app feel native in Telugu, Hindi, Kannada — not just translated, but culturally fluent
+
+### Completed
+
+- [x] **i18n Infrastructure** — `i18next` + `react-i18next` + `expo-localization`
+  - AsyncStorage-backed language persistence (`kshetra-language` key)
+  - Device locale auto-detection with fallback to English
+  - `LANGUAGES` config: en, te, hi, kn with native labels and script names
+  - `STATE_LANGUAGE_MAP`: TS→te, AP→te, KA→kn, MH→hi
+- [x] **English Base** — ~300 translation keys across 18 namespaces
+  - common, tabs, map, explore, constituency, feed, compose, dashboard, reportIssue, profile, editProfile, notificationSettings, onboarding, ai, stateSwitcher, moderation, verification, language
+- [x] **Telugu (తెలుగు)** — Native-quality political Telugu
+  - Standard media conventions: నియోజకవర్గం, ఎమ్మెల్యే, ఎన్నికలు
+  - Party names in Telugu script: బీజేపీ, కాంగ్రెస్, జనసేన
+- [x] **Hindi (हिन्दी)** — Standard Hindi political terminology
+  - निर्वाचन क्षेत्र, विधायक, मतदान
+- [x] **Kannada (ಕನ್ನಡ)** — Native Kannada translations
+  - ಕ್ಷೇತ್ರ, ಶಾಸಕ, ಚುನಾವಣೆ
+- [x] **LanguageSwitcher** — Modal picker on Profile tab
+  - Shows native script name + English fallback
+  - Checkmark on active language, blue highlight
+  - Persists choice to AsyncStorage
+- [x] **Screens Wired** — Tab bar, Feed, Dashboard, Explore, Onboarding, Profile
+  - Filter tabs, sort options, status filters, empty states all translated
+  - Onboarding flow fully localized (welcome → done)
+
+### Files Created / Modified
+
+| File | Action | Description |
+|---|---|---|
+| `i18n/index.ts` | **Created** | i18next init, language config, persistence |
+| `i18n/locales/en.ts` | **Created** | English base (~300 keys) + TranslationKeys type |
+| `i18n/locales/te.ts` | **Created** | Telugu translations |
+| `i18n/locales/hi.ts` | **Created** | Hindi translations |
+| `i18n/locales/kn.ts` | **Created** | Kannada translations |
+| `components/LanguageSwitcher.tsx` | **Created** | Language picker modal |
+| `app/_layout.tsx` | Modified | Import `../i18n` for initialization |
+| `app/(tabs)/_layout.tsx` | Modified | Tab labels via `t('tabs.*')` |
+| `app/(tabs)/feed.tsx` | Modified | Header, filters, empty state translated |
+| `app/(tabs)/dashboard.tsx` | Modified | Header, tabs, status filters translated |
+| `app/(tabs)/explore.tsx` | Modified | Header, search, sort translated |
+| `app/(tabs)/profile.tsx` | Modified | LanguageSwitcher + translated labels |
+| `app/onboarding.tsx` | Modified | All 6 steps fully translated |
+
+### Architecture Notes
+
+- **Type safety**: `TranslationKeys` type exported from `en.ts`, other locales must match
+- **Fallback**: Missing keys fall back to English (never blank UI)
+- **No suspense**: `useSuspense: false` prevents flickers during language switch
+- **State→Language mapping**: `STATE_LANGUAGE_MAP` allows auto-suggesting language when user switches state
+
+### Tests — Sprint 10
+
+| Test Suite | Status | Passed | Total | Notes |
+|---|---|---|---|---|
+| `data/seed` — all | ✅ Pass | 100 | 100 | No regressions |
+| **Total** | **✅ All Pass** | **100** | **100** | i18n is UI-only; no backend changes |

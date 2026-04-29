@@ -7,6 +7,7 @@ import { useAuthStore } from '../stores/auth';
 import ErrorBoundary from '../components/ErrorBoundary';
 import { useTheme } from '../lib/useTheme';
 import { usePushNotifications } from '../lib/usePushNotifications';
+import '../i18n';
 
 SplashScreen.preventAutoHideAsync();
 

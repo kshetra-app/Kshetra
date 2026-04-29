@@ -1,5 +1,6 @@
 import { Tabs } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
+import { useTranslation } from 'react-i18next';
 
 const ACTIVE_COLOR = '#4F8EF7';
 const INACTIVE_COLOR = '#6B7280';
@@ -16,6 +17,8 @@ function TabIcon({ name, color, size }: TabIconProps) {
 }
 
 export default function TabLayout() {
+  const { t } = useTranslation();
+
   return (
     <Tabs
       screenOptions={{
@@ -39,7 +42,7 @@ export default function TabLayout() {
       <Tabs.Screen
         name="index"
         options={{
-          title: 'Map',
+          title: t('tabs.map'),
           tabBarIcon: ({ color, size }) => (
             <TabIcon name="map" color={color} size={size} />
           ),
@@ -48,7 +51,7 @@ export default function TabLayout() {
       <Tabs.Screen
         name="explore"
         options={{
-          title: 'Explore',
+          title: t('tabs.explore'),
           tabBarIcon: ({ color, size }) => (
             <TabIcon name="search" color={color} size={size} />
           ),
@@ -57,7 +60,7 @@ export default function TabLayout() {
       <Tabs.Screen
         name="feed"
         options={{
-          title: 'Feed',
+          title: t('tabs.feed'),
           tabBarIcon: ({ color, size }) => (
             <TabIcon name="chatbubbles" color={color} size={size} />
           ),
@@ -66,7 +69,7 @@ export default function TabLayout() {
       <Tabs.Screen
         name="dashboard"
         options={{
-          title: 'Dashboard',
+          title: t('tabs.dashboard'),
           tabBarIcon: ({ color, size }) => (
             <TabIcon name="pulse" color={color} size={size} />
           ),
@@ -81,7 +84,7 @@ export default function TabLayout() {
       <Tabs.Screen
         name="profile"
         options={{
-          title: 'Profile',
+          title: t('tabs.profile'),
           tabBarIcon: ({ color, size }) => (
             <TabIcon name="person" color={color} size={size} />
           ),

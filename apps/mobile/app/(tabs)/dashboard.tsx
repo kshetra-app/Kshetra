@@ -18,24 +18,26 @@ import HeadlineCard from '../../components/HeadlineCard';
 import { ISSUE_CATEGORY_CONFIG } from '../../lib/civicTypes';
 import AIDashboardSummary from '../../components/AIDashboardSummary';
 import type { IssueCategory, IssueStatus } from '../../lib/civicTypes';
+import { useTranslation } from 'react-i18next';
 
 type DashboardTab = 'issues' | 'sentiment' | 'headlines';
 
-const TABS: { key: DashboardTab; label: string; icon: string }[] = [
-  { key: 'issues', label: 'Issues', icon: 'alert-circle' },
-  { key: 'sentiment', label: 'Sentiment', icon: 'pulse' },
-  { key: 'headlines', label: 'Headlines', icon: 'newspaper' },
+const TAB_KEYS: { key: DashboardTab; tKey: string; icon: string }[] = [
+  { key: 'issues', tKey: 'dashboard.tabs.issues', icon: 'alert-circle' },
+  { key: 'sentiment', tKey: 'dashboard.tabs.sentiment', icon: 'pulse' },
+  { key: 'headlines', tKey: 'dashboard.tabs.headlines', icon: 'newspaper' },
 ];
 
-const STATUS_FILTERS: { key: IssueStatus | 'all'; label: string }[] = [
-  { key: 'all', label: 'All' },
-  { key: 'open', label: 'Open' },
-  { key: 'acknowledged', label: 'Ack' },
-  { key: 'in_progress', label: 'In Progress' },
-  { key: 'resolved', label: 'Resolved' },
+const STATUS_FILTER_KEYS: { key: IssueStatus | 'all'; tKey: string }[] = [
+  { key: 'all', tKey: 'dashboard.statusFilters.all' },
+  { key: 'open', tKey: 'dashboard.statusFilters.open' },
+  { key: 'acknowledged', tKey: 'dashboard.statusFilters.acknowledged' },
+  { key: 'in_progress', tKey: 'dashboard.statusFilters.inProgress' },
+  { key: 'resolved', tKey: 'dashboard.statusFilters.resolved' },
 ];
 
 export default function DashboardScreen() {
+  const { t } = useTranslation();
   const router = useRouter();
   const [activeTab, setActiveTab] = useState<DashboardTab>('issues');
   const [reportVisible, setReportVisible] = useState(false);
@@ -64,14 +66,14 @@ export default function DashboardScreen() {
     <View style={styles.container}>
       {/* Header */}
       <View style={styles.header}>
-        <Text style={styles.headerTitle}>Dashboard</Text>
+        <Text style={styles.headerTitle}>{t('dashboard.title')}</Text>
         <View style={styles.headerActions}>
           <Pressable
             style={styles.analyticsButton}
             onPress={() => router.push('/(tabs)/intelligence')}
           >
             <Ionicons name="bar-chart" size={15} color="#4F8EF7" />
-            <Text style={styles.analyticsButtonText}>Analytics</Text>
+            <Text style={styles.analyticsButtonText}>{t('dashboard.analytics')}</Text>
           </Pressable>
           {activeTab === 'issues' && (
             <Pressable style={styles.reportButton} onPress={() => setReportVisible(true)}>
@@ -83,7 +85,7 @@ export default function DashboardScreen() {
 
       {/* Tab bar */}
       <View style={styles.tabRow}>
-        {TABS.map((tab) => {
+        {TAB_KEYS.map((tab) => {
           const active = activeTab === tab.key;
           return (
             <Pressable
@@ -92,7 +94,7 @@ export default function DashboardScreen() {
               onPress={() => setActiveTab(tab.key)}
             >
               <Ionicons name={tab.icon as any} size={16} color={active ? '#FFFFFF' : '#6B7280'} />
-              <Text style={[styles.tabLabel, active && styles.tabLabelActive]}>{tab.label}</Text>
+              <Text style={[styles.tabLabel, active && styles.tabLabelActive]}>{t(tab.tKey)}</Text>
             </Pressable>
           );
         })}
@@ -146,7 +148,7 @@ export default function DashboardScreen() {
 
           {/* Status filter */}
           <View style={styles.statusRow}>
-            {STATUS_FILTERS.map((sf) => {
+            {STATUS_FILTER_KEYS.map((sf) => {
               const active = statusFilter === sf.key;
               return (
                 <Pressable
@@ -155,7 +157,7 @@ export default function DashboardScreen() {
                   onPress={() => setStatusFilter(sf.key)}
                 >
                   <Text style={[styles.statusChipText, active && styles.statusChipTextActive]}>
-                    {sf.label}
+                    {t(sf.tKey)}
                   </Text>
                 </Pressable>
               );
@@ -166,7 +168,7 @@ export default function DashboardScreen() {
           {issues.length === 0 ? (
             <View style={styles.emptyState}>
               <Ionicons name="checkmark-circle-outline" size={48} color="#1F2937" />
-              <Text style={styles.emptyTitle}>No issues found</Text>
+              <Text style={styles.emptyTitle}>{t('dashboard.noIssues')}</Text>
               <Text style={styles.emptySubtitle}>Try changing filters or report a new issue</Text>
             </View>
           ) : (

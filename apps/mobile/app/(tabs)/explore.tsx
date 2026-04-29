@@ -18,17 +18,19 @@ import { getStateData } from '@/lib/stateRegistry';
 import StateSwitcher from '../../components/StateSwitcher';
 import AISmartSearch from '../../components/AISmartSearch';
 import type { ConstituencySeed } from '@/lib/data';
+import { useTranslation } from 'react-i18next';
 
 type SortKey = 'acNo' | 'name' | 'margin_asc' | 'margin_desc';
 
-const SORT_OPTIONS: { key: SortKey; label: string }[] = [
-  { key: 'acNo', label: 'AC #' },
-  { key: 'name', label: 'A–Z' },
-  { key: 'margin_asc', label: 'Closest' },
-  { key: 'margin_desc', label: 'Biggest' },
+const SORT_OPTION_KEYS: { key: SortKey; tKey: string }[] = [
+  { key: 'acNo', tKey: 'explore.sort.acNo' },
+  { key: 'name', tKey: 'explore.sort.name' },
+  { key: 'margin_asc', tKey: 'explore.sort.marginAsc' },
+  { key: 'margin_desc', tKey: 'explore.sort.marginDesc' },
 ];
 
 export default function ExploreScreen() {
+  const { t } = useTranslation();
   const router = useRouter();
   const [query, setQuery] = useState('');
   const [showFavoritesOnly, setShowFavoritesOnly] = useState(false);
@@ -128,7 +130,7 @@ export default function ExploreScreen() {
         <View style={styles.headerRow}>
           <View style={styles.headerLeft}>
             <View style={styles.titleRow}>
-              <Text style={styles.title}>Explore</Text>
+              <Text style={styles.title}>{t('explore.title')}</Text>
               <StateSwitcher />
             </View>
             <Text style={styles.subtitle}>
@@ -181,7 +183,7 @@ export default function ExploreScreen() {
           />
           <TextInput
             style={styles.searchInput}
-            placeholder="Search by name, district, candidate..."
+            placeholder={t('explore.searchPlaceholder')}
             placeholderTextColor="#6B7280"
             value={query}
             onChangeText={setQuery}
@@ -211,17 +213,17 @@ export default function ExploreScreen() {
         <View style={styles.filtersPanel}>
           {/* Sort */}
           <View style={styles.filterSection}>
-            <Text style={styles.filterLabel}>Sort</Text>
+            <Text style={styles.filterLabel}>{t('explore.sortBy')}</Text>
             <ScrollView horizontal showsHorizontalScrollIndicator={false}>
               <View style={styles.chipRow}>
-                {SORT_OPTIONS.map((opt) => (
+                {SORT_OPTION_KEYS.map((opt) => (
                   <Pressable
                     key={opt.key}
                     style={[styles.chip, sortKey === opt.key && styles.chipActive]}
                     onPress={() => setSortKey(opt.key)}
                   >
                     <Text style={[styles.chipText, sortKey === opt.key && styles.chipTextActive]}>
-                      {opt.label}
+                      {t(opt.tKey)}
                     </Text>
                   </Pressable>
                 ))}
@@ -231,7 +233,7 @@ export default function ExploreScreen() {
 
           {/* Party filter */}
           <View style={styles.filterSection}>
-            <Text style={styles.filterLabel}>Party</Text>
+            <Text style={styles.filterLabel}>{t('explore.party')}</Text>
             <ScrollView horizontal showsHorizontalScrollIndicator={false}>
               <View style={styles.chipRow}>
                 <Pressable

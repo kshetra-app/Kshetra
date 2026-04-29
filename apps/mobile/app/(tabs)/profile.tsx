@@ -18,6 +18,8 @@ import { useNotificationsStore } from '../../stores/notifications';
 import { useUserProfileStore } from '../../stores/userProfile';
 import { getPartyColor } from '@/lib/constants';
 import UserProfileCard from '../../components/UserProfileCard';
+import LanguageSwitcher from '../../components/LanguageSwitcher';
+import { useTranslation } from 'react-i18next';
 
 interface SettingRowProps {
   icon: keyof typeof Ionicons.glyphMap;
@@ -44,6 +46,7 @@ function SettingRow({ icon, label, value, onPress, color = '#4F8EF7' }: SettingR
 
 export default function ProfileScreen() {
   const router = useRouter();
+  const { t } = useTranslation();
   const prefs = usePreferencesStore();
   const favoriteCount = useFavoritesStore((s) => s.favoriteIds.length);
   const recents = useRecentsStore((s) => s.recents);
@@ -169,13 +172,23 @@ export default function ProfileScreen() {
         </View>
       )}
 
+      {/* Language */}
+      <View style={styles.section}>
+        <Text style={styles.sectionTitle}>{t('profile.language')}</Text>
+        <View style={styles.card}>
+          <View style={styles.languageRow}>
+            <LanguageSwitcher />
+          </View>
+        </View>
+      </View>
+
       {/* App Info */}
       <View style={styles.section}>
-        <Text style={styles.sectionTitle}>App</Text>
+        <Text style={styles.sectionTitle}>{t('profile.about')}</Text>
         <View style={styles.card}>
-          <SettingRow icon="information-circle" label="Version" value="0.1.0" />
-          <SettingRow icon="map" label="State" value="Telangana" />
-          <SettingRow icon="people" label="Constituencies" value="119" />
+          <SettingRow icon="information-circle" label={t('profile.version')} value="0.1.0" />
+          <SettingRow icon="map" label={t('profile.settings')} value="Telangana" />
+          <SettingRow icon="people" label={t('explore.constituencies')} value="119" />
           <SettingRow icon="server" label="Data" value="2023 Elections" />
         </View>
       </View>
@@ -542,5 +555,9 @@ const styles = StyleSheet.create({
     fontSize: 14,
     fontWeight: '600',
     color: '#4F8EF7',
+  },
+  languageRow: {
+    paddingVertical: 8,
+    paddingHorizontal: 12,
   },
 });

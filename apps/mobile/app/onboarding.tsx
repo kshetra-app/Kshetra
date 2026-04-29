@@ -15,26 +15,37 @@ import { useUserProfileStore } from '../stores/userProfile';
 import { useMyConstituencyStore } from '../stores/myConstituency';
 import { TELANGANA_CONSTITUENCIES } from '../lib/data';
 import { ROLE_CONFIG, type UserRole } from '../lib/moderationTypes';
+import { useTranslation } from 'react-i18next';
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
 
-const ROLE_OPTIONS: { key: UserRole; label: string; desc: string }[] = [
-  { key: 'citizen', label: 'Citizen', desc: 'Regular voter and community member' },
-  { key: 'journalist', label: 'Journalist', desc: 'Media professional' },
-  { key: 'activist', label: 'Activist', desc: 'Social/political activist' },
-  { key: 'politician', label: 'Politician', desc: 'Political leader' },
+const ROLE_KEYS: { key: UserRole; tLabel: string; tDesc: string }[] = [
+  { key: 'citizen', tLabel: 'editProfile.roles.citizen', tDesc: 'editProfile.roleDescriptions.citizen' },
+  { key: 'journalist', tLabel: 'editProfile.roles.journalist', tDesc: 'editProfile.roleDescriptions.journalist' },
+  { key: 'activist', tLabel: 'editProfile.roles.activist', tDesc: 'editProfile.roleDescriptions.activist' },
+  { key: 'politician', tLabel: 'editProfile.roles.politician', tDesc: 'editProfile.roleDescriptions.politician' },
 ];
 
-const INTEREST_OPTIONS = [
-  'Elections', 'Local Governance', 'Infrastructure', 'Education',
-  'Healthcare', 'Agriculture', 'Law & Order', 'Environment',
-  'Economy', 'Technology', 'Women\'s Issues', 'Youth Politics',
+const INTEREST_KEYS: { key: string; tKey: string }[] = [
+  { key: 'elections', tKey: 'onboarding.interests.elections' },
+  { key: 'governance', tKey: 'onboarding.interests.governance' },
+  { key: 'infrastructure', tKey: 'onboarding.interests.infrastructure' },
+  { key: 'education', tKey: 'onboarding.interests.education' },
+  { key: 'healthcare', tKey: 'onboarding.interests.healthcare' },
+  { key: 'agriculture', tKey: 'onboarding.interests.agriculture' },
+  { key: 'law', tKey: 'onboarding.interests.law' },
+  { key: 'environment', tKey: 'onboarding.interests.environment' },
+  { key: 'economy', tKey: 'onboarding.interests.economy' },
+  { key: 'technology', tKey: 'onboarding.interests.technology' },
+  { key: 'womensRights', tKey: 'onboarding.interests.womensRights' },
+  { key: 'youthPolitics', tKey: 'onboarding.interests.youthPolitics' },
 ];
 
 type OnboardingStep = 'welcome' | 'name' | 'role' | 'constituency' | 'interests' | 'done';
 const STEPS: OnboardingStep[] = ['welcome', 'name', 'role', 'constituency', 'interests', 'done'];
 
 export default function OnboardingScreen() {
+  const { t } = useTranslation();
   const router = useRouter();
   const flatListRef = useRef<FlatList>(null);
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -110,11 +121,10 @@ export default function OnboardingScreen() {
             <View style={styles.logoContainer}>
               <Ionicons name="earth" size={64} color="#4F8EF7" />
             </View>
-            <Text style={styles.welcomeTitle}>Welcome to</Text>
-            <Text style={styles.brandTitle}>KSHETRA</Text>
+            <Text style={styles.welcomeTitle}>{t('onboarding.welcome')}</Text>
+            <Text style={styles.brandTitle}>{t('common.appName')}</Text>
             <Text style={styles.welcomeSubtitle}>
-              India's first constituency intelligence platform.{'\n'}
-              Track elections, engage with your community, and stay informed.
+              {t('onboarding.welcomeSubtitle')}
             </Text>
           </View>
         );
@@ -123,12 +133,12 @@ export default function OnboardingScreen() {
         return (
           <View style={styles.step}>
             <Ionicons name="person-circle-outline" size={48} color="#4F8EF7" />
-            <Text style={styles.stepTitle}>What should we call you?</Text>
+            <Text style={styles.stepTitle}>{t('onboarding.nameStep')}</Text>
             <TextInput
               style={styles.nameInput}
               value={displayName}
               onChangeText={setDisplayName}
-              placeholder="Your display name"
+              placeholder={t('onboarding.namePlaceholder')}
               placeholderTextColor="#4B5563"
               maxLength={50}
               autoCapitalize="words"
@@ -141,9 +151,9 @@ export default function OnboardingScreen() {
         return (
           <View style={styles.step}>
             <Ionicons name="ribbon-outline" size={48} color="#8B5CF6" />
-            <Text style={styles.stepTitle}>I am a...</Text>
+            <Text style={styles.stepTitle}>{t('onboarding.roleStep')}</Text>
             <View style={styles.roleGrid}>
-              {ROLE_OPTIONS.map((opt) => {
+              {ROLE_KEYS.map((opt) => {
                 const config = ROLE_CONFIG[opt.key];
                 const active = role === opt.key;
                 return (
@@ -153,8 +163,8 @@ export default function OnboardingScreen() {
                     onPress={() => setRole(opt.key)}
                   >
                     <Ionicons name={config.icon as any} size={22} color={active ? config.color : '#6B7280'} />
-                    <Text style={[styles.roleLabel, active && { color: config.color }]}>{opt.label}</Text>
-                    <Text style={styles.roleDesc}>{opt.desc}</Text>
+                    <Text style={[styles.roleLabel, active && { color: config.color }]}>{t(opt.tLabel)}</Text>
+                    <Text style={styles.roleDesc}>{t(opt.tDesc)}</Text>
                   </Pressable>
                 );
               })}
@@ -166,13 +176,13 @@ export default function OnboardingScreen() {
         return (
           <View style={styles.step}>
             <Ionicons name="location-outline" size={48} color="#10B981" />
-            <Text style={styles.stepTitle}>Your Home Constituency</Text>
-            <Text style={styles.stepHint}>Search and select (optional)</Text>
+            <Text style={styles.stepTitle}>{t('onboarding.constituencyStep')}</Text>
+            <Text style={styles.stepHint}>{t('onboarding.constituencySearch')}</Text>
             <TextInput
               style={styles.searchInput}
               value={acSearch}
               onChangeText={setAcSearch}
-              placeholder="Search by name, district, or AC number..."
+              placeholder={t('onboarding.constituencySearch')}
               placeholderTextColor="#4B5563"
             />
             {filteredConstituencies.map((c) => {
@@ -207,19 +217,19 @@ export default function OnboardingScreen() {
         return (
           <View style={styles.step}>
             <Ionicons name="heart-outline" size={48} color="#EF4444" />
-            <Text style={styles.stepTitle}>What interests you?</Text>
-            <Text style={styles.stepHint}>Select topics you care about</Text>
+            <Text style={styles.stepTitle}>{t('onboarding.interestsStep')}</Text>
+            <Text style={styles.stepHint}>{t('onboarding.interestsSubtitle')}</Text>
             <View style={styles.interestGrid}>
-              {INTEREST_OPTIONS.map((interest) => {
-                const active = interests.includes(interest);
+              {INTEREST_KEYS.map((interest) => {
+                const active = interests.includes(interest.key);
                 return (
                   <Pressable
-                    key={interest}
+                    key={interest.key}
                     style={[styles.interestChip, active && styles.interestChipActive]}
-                    onPress={() => toggleInterest(interest)}
+                    onPress={() => toggleInterest(interest.key)}
                   >
                     <Text style={[styles.interestText, active && styles.interestTextActive]}>
-                      {interest}
+                      {t(interest.tKey)}
                     </Text>
                   </Pressable>
                 );
@@ -234,10 +244,9 @@ export default function OnboardingScreen() {
             <View style={styles.doneIcon}>
               <Ionicons name="checkmark-circle" size={64} color="#10B981" />
             </View>
-            <Text style={styles.doneTitle}>You're all set!</Text>
+            <Text style={styles.doneTitle}>{t('onboarding.doneStep')}</Text>
             <Text style={styles.doneSubtitle}>
-              Start exploring Telangana's 119 constituencies, engage with your community,
-              and stay informed with AI-powered insights.
+              {t('onboarding.doneSubtitle')}
             </Text>
           </View>
         );
@@ -284,13 +293,13 @@ export default function OnboardingScreen() {
         {currentIndex > 0 && currentStep !== 'done' && (
           <Pressable style={styles.backButton} onPress={goBack}>
             <Ionicons name="arrow-back" size={20} color="#6B7280" />
-            <Text style={styles.backText}>Back</Text>
+            <Text style={styles.backText}>{t('common.back')}</Text>
           </Pressable>
         )}
 
         {currentStep === 'welcome' && (
           <Pressable style={styles.primaryButton} onPress={goNext}>
-            <Text style={styles.primaryText}>Get Started</Text>
+            <Text style={styles.primaryText}>{t('onboarding.getStarted')}</Text>
             <Ionicons name="arrow-forward" size={18} color="#FFFFFF" />
           </Pressable>
         )}
@@ -301,21 +310,21 @@ export default function OnboardingScreen() {
             onPress={goNext}
             disabled={!displayName.trim()}
           >
-            <Text style={styles.primaryText}>Continue</Text>
+            <Text style={styles.primaryText}>{t('common.next')}</Text>
           </Pressable>
         )}
 
         {(currentStep === 'role' || currentStep === 'constituency' || currentStep === 'interests') && (
           <Pressable style={styles.primaryButton} onPress={goNext}>
             <Text style={styles.primaryText}>
-              {currentStep === 'constituency' && !selectedAcNo ? 'Skip' : 'Continue'}
+              {currentStep === 'constituency' && !selectedAcNo ? t('onboarding.skip') : t('common.next')}
             </Text>
           </Pressable>
         )}
 
         {currentStep === 'done' && (
           <Pressable style={styles.primaryButton} onPress={finish}>
-            <Text style={styles.primaryText}>Start Exploring</Text>
+            <Text style={styles.primaryText}>{t('onboarding.finish')}</Text>
             <Ionicons name="arrow-forward" size={18} color="#FFFFFF" />
           </Pressable>
         )}
