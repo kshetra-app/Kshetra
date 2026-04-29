@@ -510,12 +510,14 @@ function FullMapScreen() {
         />
       )}
 
-      {/* Compare sheet */}
-      <CompareSheet
-        visible={showCompare}
-        initialAcNo={selected?.acNo}
-        onClose={() => setShowCompare(false)}
-      />
+      {/* Compare sheet — mount only when needed to avoid Fabric Modal crash */}
+      {showCompare && (
+        <CompareSheet
+          visible={showCompare}
+          initialAcNo={selected?.acNo}
+          onClose={() => setShowCompare(false)}
+        />
+      )}
 
       {/* Bottom Sheet */}
       <BottomSheet

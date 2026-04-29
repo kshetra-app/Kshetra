@@ -227,12 +227,14 @@ export default function DashboardScreen() {
         </ScrollView>
       )}
 
-      {/* Report Issue Sheet */}
-      <ReportIssueSheet
-        visible={reportVisible}
-        onClose={() => setReportVisible(false)}
-        onSubmit={(issue) => addIssue(issue)}
-      />
+      {/* Report Issue Sheet — mount only when needed to avoid Fabric Modal crash */}
+      {reportVisible && (
+        <ReportIssueSheet
+          visible={reportVisible}
+          onClose={() => setReportVisible(false)}
+          onSubmit={(issue) => addIssue(issue)}
+        />
+      )}
     </View>
   );
 }

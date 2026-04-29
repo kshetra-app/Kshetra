@@ -164,12 +164,14 @@ export default function FeedScreen() {
         }
       />
 
-      {/* Compose sheet */}
-      <ComposeSheet
-        visible={composeVisible}
-        onClose={() => setComposeVisible(false)}
-        onSubmit={(post) => addPost(post)}
-      />
+      {/* Compose sheet — mount only when needed to avoid Fabric Modal crash */}
+      {composeVisible && (
+        <ComposeSheet
+          visible={composeVisible}
+          onClose={() => setComposeVisible(false)}
+          onSubmit={(post) => addPost(post)}
+        />
+      )}
     </View>
   );
 }
