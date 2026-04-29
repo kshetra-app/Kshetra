@@ -1,19 +1,104 @@
 import { useState } from 'react';
 import { View, Text, StyleSheet, Pressable } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { PARTY_COLORS, getPartyColor } from '@/lib/constants';
+import { getPartyColor } from '@/lib/constants';
+import type { MapColorMode } from './MapColorToggle';
 
-const LEGEND_ITEMS = [
+const PARTY_LEGEND = [
   { party: 'INC', label: 'Indian National Congress' },
   { party: 'BRS', label: 'Bharat Rashtra Samithi' },
   { party: 'BJP', label: 'Bharatiya Janata Party' },
-  { party: 'AIMIM', label: 'All India Majlis-e-Ittehadul Muslimeen' },
+  { party: 'AIMIM', label: 'AIMIM' },
   { party: 'TDP', label: 'Telugu Desam Party' },
   { party: 'IND', label: 'Independent' },
 ];
 
-export default function MapLegend() {
+const MARGIN_LEGEND = [
+  { color: '#14532D', label: '> 50,000' },
+  { color: '#22C55E', label: '20,000 – 50,000' },
+  { color: '#FDE047', label: '5,000 – 20,000' },
+  { color: '#F97316', label: '1,000 – 5,000' },
+  { color: '#EF4444', label: '< 1,000 (razor thin)' },
+];
+
+const RESERVATION_LEGEND = [
+  { color: '#4F8EF7', label: 'General (GEN)' },
+  { color: '#F59E0B', label: 'Scheduled Caste (SC)' },
+  { color: '#10B981', label: 'Scheduled Tribe (ST)' },
+];
+
+const GRADIENT_LEGENDS: Record<string, { title: string; low: string; high: string; lowLabel: string; highLabel: string }> = {
+  population: { title: 'Population Density', low: '#1E3A5F', high: '#4F8EF7', lowLabel: 'Low', highLabel: 'High' },
+  literacy:   { title: 'Literacy Rate', low: '#7F1D1D', high: '#22C55E', lowLabel: 'Low', highLabel: 'High' },
+  turnout:    { title: 'Voter Turnout', low: '#374151', high: '#8B5CF6', lowLabel: 'Low', highLabel: 'High' },
+};
+
+interface MapLegendProps {
+  colorMode?: MapColorMode;
+}
+
+export default function MapLegend({ colorMode = 'party' }: MapLegendProps) {
   const [expanded, setExpanded] = useState(false);
+
+  const renderContent = () => {
+    if (colorMode === 'margin') {
+      return (
+        <>
+          <Text style={styles.panelTitle}>Victory Margin</Text>
+          {MARGIN_LEGEND.map((item) => (
+            <View key={item.label} style={styles.row}>
+              <View style={[styles.colorDot, { backgroundColor: item.color }]} />
+              <Text style={styles.partyName}>{item.label}</Text>
+            </View>
+          ))}
+        </>
+      );
+    }
+
+    if (colorMode === 'reservation') {
+      return (
+        <>
+          <Text style={styles.panelTitle}>Constituency Type</Text>
+          {RESERVATION_LEGEND.map((item) => (
+            <View key={item.label} style={styles.row}>
+              <View style={[styles.colorDot, { backgroundColor: item.color }]} />
+              <Text style={styles.partyName}>{item.label}</Text>
+            </View>
+          ))}
+        </>
+      );
+    }
+
+    const gradient = GRADIENT_LEGENDS[colorMode];
+    if (gradient) {
+      return (
+        <>
+          <Text style={styles.panelTitle}>{gradient.title}</Text>
+          <View style={styles.gradientRow}>
+            <Text style={styles.gradientLabel}>{gradient.lowLabel}</Text>
+            <View style={[styles.gradientBar, { backgroundColor: gradient.low }]}>
+              <View style={[styles.gradientBarHalf, { backgroundColor: gradient.high }]} />
+            </View>
+            <Text style={styles.gradientLabel}>{gradient.highLabel}</Text>
+          </View>
+        </>
+      );
+    }
+
+    // Default: party legend
+    return (
+      <>
+        <Text style={styles.panelTitle}>Party Colors</Text>
+        {PARTY_LEGEND.map((item) => (
+          <View key={item.party} style={styles.row}>
+            <View style={[styles.colorDot, { backgroundColor: getPartyColor(item.party) }]} />
+            <Text style={styles.partyCode}>{item.party}</Text>
+            <Text style={styles.partyName} numberOfLines={1}>{item.label}</Text>
+          </View>
+        ))}
+      </>
+    );
+  };
 
   return (
     <View style={styles.container}>
@@ -27,21 +112,7 @@ export default function MapLegend() {
 
       {expanded && (
         <View style={styles.panel}>
-          <Text style={styles.panelTitle}>Party Colors</Text>
-          {LEGEND_ITEMS.map((item) => (
-            <View key={item.party} style={styles.row}>
-              <View
-                style={[
-                  styles.colorDot,
-                  { backgroundColor: getPartyColor(item.party) },
-                ]}
-              />
-              <Text style={styles.partyCode}>{item.party}</Text>
-              <Text style={styles.partyName} numberOfLines={1}>
-                {item.label}
-              </Text>
-            </View>
-          ))}
+          {renderContent()}
           <View style={styles.divider} />
           <View style={styles.row}>
             <View style={[styles.colorDot, styles.selectedDot]} />
@@ -123,6 +194,31 @@ const styles = StyleSheet.create({
     fontSize: 11,
     color: '#6B7280',
     flex: 1,
+  },
+  gradientRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+    marginTop: 4,
+  },
+  gradientBar: {
+    flex: 1,
+    height: 12,
+    borderRadius: 6,
+    overflow: 'hidden',
+  },
+  gradientBarHalf: {
+    position: 'absolute',
+    right: 0,
+    top: 0,
+    bottom: 0,
+    width: '50%',
+    borderRadius: 6,
+  },
+  gradientLabel: {
+    fontSize: 10,
+    color: '#9CA3AF',
+    fontWeight: '600',
   },
   divider: {
     height: 1,

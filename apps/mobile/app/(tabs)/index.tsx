@@ -203,7 +203,15 @@ function FullMapScreen() {
       if (!feature?.properties) return;
 
       const { AC_NO, AC_NAME, DIST_NAME } = feature.properties;
-      selectConstituency(Number(AC_NO), AC_NAME, DIST_NAME);
+      const acNo = Number(AC_NO);
+
+      // If tapping the already-selected constituency, go straight to detail
+      if (selected?.acNo === acNo) {
+        router.push(`/constituency/${acNo}`);
+        return;
+      }
+
+      selectConstituency(acNo, AC_NAME, DIST_NAME);
 
       // @rnmapbox/maps returns {latitude, longitude} — convert to [lng, lat]
       let coord: [number, number] | undefined;
@@ -233,7 +241,7 @@ function FullMapScreen() {
         });
       }
     },
-    [selectConstituency],
+    [selectConstituency, selected, router],
   );
 
   const handleReset = useCallback(() => {
@@ -429,7 +437,7 @@ function FullMapScreen() {
       </View>
 
       {/* Map Legend */}
-      <MapLegend />
+      <MapLegend colorMode={colorMode} />
 
       {/* Color mode toggle */}
       <View style={styles.colorToggleContainer}>
