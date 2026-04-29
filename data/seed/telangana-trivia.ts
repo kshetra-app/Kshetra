@@ -47,7 +47,7 @@ export type TriviaContext =
   | { type: 'CONSTITUENCY'; acNo: number }
   | { type: 'PARTY'; party: string }
   | { type: 'MLA'; name: string }
-  | { type: 'ELECTION'; year: 2014 | 2018 | 2023 }
+  | { type: 'ELECTION'; year: number }
   | { type: 'GLOBAL' };
 
 export interface TriviaItem {
@@ -563,7 +563,7 @@ export function getTriviaForMLA(name: string): TriviaItem[] {
 /**
  * Get trivia for an election year.
  */
-export function getTriviaForElection(year: 2014 | 2018 | 2023): TriviaItem[] {
+export function getTriviaForElection(year: number): TriviaItem[] {
   return getAllTrivia().filter((t) =>
     t.contexts.some(
       (c) =>
