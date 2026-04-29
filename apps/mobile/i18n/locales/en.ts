@@ -55,6 +55,7 @@ const en = {
       population: 'Population',
       literacy: 'Literacy',
       turnout: 'Turnout',
+      data: 'Data',
     },
     compare: 'Compare',
     setAsHome: 'Set as My Constituency',
@@ -62,6 +63,41 @@ const en = {
     myConstituency: 'My Constituency',
     didYouKnow: 'Did You Know?',
     legend: 'Legend',
+  },
+
+  // ── Map Legend ─────────────────────────────────────────────
+  mapLegend: {
+    legend: 'Legend',
+    partyColors: 'Party Colors',
+    victoryMargin: 'Victory Margin',
+    constituencyType: 'Constituency Type',
+    populationDensity: 'Population Density',
+    literacyRate: 'Literacy Rate',
+    voterTurnout: 'Voter Turnout',
+    low: 'Low',
+    high: 'High',
+    razorThin: 'razor thin',
+    selected: 'Selected',
+    favourite: 'Favourite',
+    gen: 'General (GEN)',
+    sc: 'Scheduled Caste (SC)',
+    st: 'Scheduled Tribe (ST)',
+  },
+
+  // ── Map Search ────────────────────────────────────────────
+  mapSearch: {
+    placeholder: 'Search constituency, MLA, district...',
+    cancel: 'Cancel',
+    noResults: 'No constituencies found',
+  },
+
+  // ── Map Bottom Sheet ───────────────────────────────────────
+  mapSheet: {
+    winner2023: '2023 Winner',
+    winnerVotes: 'Winner Votes',
+    margin: 'Margin',
+    runnerUp: 'Runner-up',
+    viewFullProfile: 'View Full Profile',
   },
 
   // ── Explore Screen ──────────────────────────────────────────
@@ -119,6 +155,32 @@ const en = {
     aiAnalysis: 'AI Analysis',
     generateAnalysis: 'Generate AI Analysis',
     analyzing: 'Analyzing…',
+    electionResult: '2023 Election Result',
+    currentMlaSection: 'Current MLA',
+    districtLabel: 'District',
+    notFound: 'Not Found',
+    notFoundMsg: 'Constituency #{{id}} not found',
+    myHome: 'My Home Constituency',
+    setAsHome: 'Set as My Constituency',
+    constituencyHistory: 'Constituency History',
+    stronghold: 'Stronghold',
+    swingSeat: 'Swing Seat',
+    current: 'Current',
+    assemblyOverview: 'Telangana Assembly Overview',
+    turnout: 'Turnout',
+    voters: 'voters',
+    demographicsSection: 'Demographics',
+    populationLabel: 'Population',
+    literacyLabel: 'Literacy',
+    urbanLabel: 'Urban',
+    areaSqKm: 'km²',
+    voterProfile: 'Voter Profile (2023)',
+    totalVoters: 'Total Voters',
+    turnoutLabel: 'Turnout',
+    male: 'Male',
+    female: 'Female',
+    socialComposition: 'Social Composition',
+    demoDisclaimer: 'Source: Census 2011 · ECI 2023 voter rolls',
   },
 
   // ── Feed Screen ─────────────────────────────────────────────
@@ -141,6 +203,26 @@ const en = {
     reply: 'Reply',
     replies: 'replies',
     writeReply: 'Write a reply…',
+  },
+
+  // ── Post Card ──────────────────────────────────────────────
+  postCard: {
+    pinned: 'Pinned',
+    justNow: 'just now',
+    discussion: 'Discussion',
+    news: 'News',
+    opinion: 'Opinion',
+    question: 'Question',
+    alert: 'Alert',
+    poll: 'Poll',
+  },
+
+  // ── Poll Card ─────────────────────────────────────────────
+  pollCard: {
+    votes: 'votes',
+    vote: 'vote',
+    closed: 'Closed',
+    ends: 'Ends',
   },
 
   // ── Compose ─────────────────────────────────────────────────
@@ -368,6 +450,146 @@ const en = {
     JDS: 'JD(S)',
     IND: 'Independent',
     OTH: 'Other',
+  },
+
+  // ── MLA Card ───────────────────────────────────────────────
+  mla: {
+    age: 'Age',
+    male: 'Male',
+    female: 'Female',
+    terms: 'Terms',
+    education: 'Education',
+    assets: 'Assets',
+    cases: 'Cases',
+    term_1: '1st term',
+    term_2: '2nd term',
+    term_3: '3rd term',
+    term_n: '{{n}}th term',
+  },
+
+  // ── Defection Badge ────────────────────────────────────────
+  defection: {
+    title: 'Post-Election Defection',
+    elected: 'Elected',
+    current: 'Current',
+    note: 'This MLA switched parties after the 2023 election. Anti-defection proceedings may be pending.',
+  },
+
+  // ── Content: Seed data translations ────────────────────────
+  content: {
+    issueCategories: {
+      roads: 'Roads',
+      water: 'Water',
+      electricity: 'Electricity',
+      sanitation: 'Sanitation',
+      healthcare: 'Healthcare',
+      education: 'Education',
+      public_safety: 'Safety',
+      transport: 'Transport',
+      housing: 'Housing',
+      environment: 'Environment',
+      corruption: 'Corruption',
+      other: 'Other',
+    },
+    issueSeverity: {
+      low: 'Low',
+      medium: 'Medium',
+      high: 'High',
+      critical: 'Critical',
+    },
+    issueStatus: {
+      open: 'Open',
+      acknowledged: 'Acknowledged',
+      in_progress: 'In Progress',
+      resolved: 'Resolved',
+      closed: 'Closed',
+    },
+    headlineCategories: {
+      politics: 'Politics',
+      governance: 'Governance',
+      development: 'Development',
+      law_and_order: 'Law & Order',
+      economy: 'Economy',
+      education: 'Education',
+      health: 'Health',
+      environment: 'Environment',
+      opinion: 'Opinion',
+    },
+    sentimentLabels: {
+      positive: 'positive',
+      negative: 'negative',
+      neutral: 'neutral',
+      posts: 'posts',
+      moodIndex: 'Constituency Mood Index',
+    },
+    issues: {
+      'issue-1': {
+        title: 'ORR service road construction stalled for 3 months',
+        description: 'The road widening work near Gachibowli junction has been abandoned mid-construction. Barricades left on road causing daily traffic jams during peak hours. Multiple complaints to GHMC and NHAI with no response.',
+      },
+      'issue-2': {
+        title: 'Irregular water supply in Old City areas',
+        description: 'Water tankers not arriving on schedule. HMWSSB helpline busy. Residents in Falaknuma, Shalibanda, Yakutpura affected. Some areas getting water once in 3 days.',
+      },
+      'issue-3': {
+        title: 'Frequent power cuts in Attapur area',
+        description: 'Daily power cuts of 2-3 hours during evening peak. Transformer at colony entrance has been faulty for weeks. TSSPDCL complaint number given but no action taken.',
+      },
+      'issue-4': {
+        title: 'PHC in Kompally running without doctor for 2 weeks',
+        description: 'Primary Health Centre in Kompally has had no doctor for 14 days. Patients being turned away. Nearest alternative is 8km away in Secunderabad. Critical for elderly and pregnant women.',
+      },
+      'issue-5': {
+        title: 'Open drainage near Vinayak Nagar school',
+        description: 'Uncovered drain running alongside the school wall. Children exposed to contaminated water. Mosquito breeding ground. Municipality notified thrice.',
+      },
+      'issue-6': {
+        title: 'Bus service to Shamshabad reduced without notice',
+        description: 'TSRTC cut 4 bus routes connecting Maheshwaram to Shamshabad airport. Commuters stranded, forced to use expensive autos. No alternative public transport.',
+      },
+      'issue-7': {
+        title: 'Government school building roof leaking since monsoon',
+        description: 'ZP High School main building roof has multiple leaks. Students sitting in wet classrooms. One classroom declared unsafe. Renovation funds sanctioned but work not started.',
+      },
+      'issue-8': {
+        title: 'Streetlights not working on MJ Market to Abids stretch',
+        description: 'Multiple streetlights out between MJ Market and Abids road. Dark stretch at night creating safety concerns especially for women. Reported to GHMC but no repair.',
+      },
+    },
+    headlines: {
+      'hl-1': {
+        title: 'CM Revanth Reddy announces Rs 2,000 crore for urban road upgrades across Hyderabad',
+        summary: 'Major road infrastructure push targeting 500km of roads in Greater Hyderabad. Focus on ORR service roads and colony internal roads.',
+      },
+      'hl-2': {
+        title: 'BRS MLAs demand special assembly session on farm loan waiver implementation',
+        summary: 'Opposition alleges Rs 31,000 crore promise yet to reach 70% of eligible farmers. Government says Phase 2 disbursement starting next month.',
+      },
+      'hl-3': {
+        title: 'Old City water crisis: HMWSSB to deploy 50 additional tankers',
+        summary: 'Emergency measure after widespread complaints. Summer heat and pipeline work causing supply disruption in Charminar, Yakutpura, Karwan constituencies.',
+      },
+      'hl-4': {
+        title: 'Telangana achieves 95% household tap water coverage under Mission Bhagiratha',
+        summary: 'State ranks among top 5 nationally. Remaining 5% in remote tribal mandals to be covered by June 2026.',
+      },
+      'hl-5': {
+        title: 'Anti-Defection Law: Supreme Court to hear Telangana BRS petitions next week',
+        summary: '10 BRS-to-INC defection cases pending. Court will examine Speaker\'s delayed disqualification proceedings.',
+      },
+      'hl-6': {
+        title: 'TSRTC records highest revenue in April, but rural routes still loss-making',
+        summary: 'Urban routes profitable but 40% of rural routes running at loss. Union demands route rationalization instead of cuts.',
+      },
+      'hl-7': {
+        title: 'Telangana Inter Board results: Pass percentage rises to 68.4%',
+        summary: 'Improvement of 3.2% over previous year. Medak district tops with 74% pass rate.',
+      },
+      'hl-8': {
+        title: 'Musi riverfront cleanup: Phase 1 demolitions face legal challenge',
+        summary: 'High Court issues notices on petitions challenging demolition of encroachments. Government argues pollution cleanup is priority.',
+      },
+    },
   },
 
   // ── Language ────────────────────────────────────────────────

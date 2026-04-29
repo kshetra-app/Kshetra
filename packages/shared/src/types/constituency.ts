@@ -20,6 +20,10 @@ export type PartyCode =
   | 'SP'
   | 'JSP'
   | 'JDS'
+  | 'JMM'
+  | 'JKNC'
+  | 'SHSUBT'
+  | 'NCPSP'
   | 'NOTA'
   | 'IND'
   | 'OTH';

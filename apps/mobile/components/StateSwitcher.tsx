@@ -1,10 +1,11 @@
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import {
   View,
   Text,
   StyleSheet,
   Pressable,
   Modal,
+  ScrollView,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { STATES } from '@kshetra/shared';
@@ -39,55 +40,58 @@ export default function StateSwitcher() {
         <Pressable style={styles.overlay} onPress={() => setVisible(false)}>
           <View style={styles.sheet}>
             <Text style={styles.sheetTitle}>Select State</Text>
-            {Object.values(STATES).map((state) => {
-              const supported = isStateSupported(state.code);
-              const isActive = state.code === stateCode;
-              return (
-                <Pressable
-                  key={state.code}
-                  style={[
-                    styles.stateRow,
-                    isActive && styles.stateRowActive,
-                    !supported && styles.stateRowDisabled,
-                  ]}
-                  onPress={() => supported && handleSelect(state.code)}
-                  disabled={!supported}
-                >
-                  <View style={styles.stateInfo}>
-                    <Text
-                      style={[
-                        styles.stateName,
-                        isActive && styles.stateNameActive,
-                        !supported && styles.stateNameDisabled,
-                      ]}
-                    >
-                      {state.name}
-                    </Text>
-                    <Text style={styles.stateSeats}>
-                      {state.assemblySeats} constituencies
-                    </Text>
-                  </View>
-                  {isActive && (
-                    <Ionicons name="checkmark-circle" size={20} color="#4F8EF7" />
-                  )}
-                  {supported && !isActive && (
-                    <View style={[
-                      styles.statusBadge,
-                      getStateData(state.code)?.hasFullData
-                        ? styles.statusFull
-                        : styles.statusStub,
-                    ]}>
-                      <Text style={styles.statusText}>
-                        {getStateData(state.code)?.hasFullData ? 'Full' : `${getStateData(state.code)?.loadedCount}/${state.assemblySeats}`}
+            <ScrollView style={styles.scrollArea} showsVerticalScrollIndicator={false}>
+              {Object.values(STATES).map((state) => {
+                const supported = isStateSupported(state.code);
+                const isActive = state.code === stateCode;
+                const data = supported ? getStateData(state.code) : null;
+                return (
+                  <Pressable
+                    key={state.code}
+                    style={[
+                      styles.stateRow,
+                      isActive && styles.stateRowActive,
+                      !supported && styles.stateRowDisabled,
+                    ]}
+                    onPress={() => supported && handleSelect(state.code)}
+                    disabled={!supported}
+                  >
+                    <View style={styles.stateInfo}>
+                      <Text
+                        style={[
+                          styles.stateName,
+                          isActive && styles.stateNameActive,
+                          !supported && styles.stateNameDisabled,
+                        ]}
+                      >
+                        {state.name}
+                      </Text>
+                      <Text style={styles.stateSeats}>
+                        {state.assemblySeats} constituencies
                       </Text>
                     </View>
-                  )}
-                  {!supported && (
-                    <Text style={styles.comingSoon}>Coming Soon</Text>
-                  )}
-                </Pressable>
-              );
-            })}
+                    {isActive && (
+                      <Ionicons name="checkmark-circle" size={20} color="#4F8EF7" />
+                    )}
+                    {supported && !isActive && (
+                      <View style={[
+                        styles.statusBadge,
+                        data?.hasFullData
+                          ? styles.statusFull
+                          : styles.statusStub,
+                      ]}>
+                        <Text style={styles.statusText}>
+                          {data?.hasFullData ? 'Full' : `${data?.loadedCount}/${state.assemblySeats}`}
+                        </Text>
+                      </View>
+                    )}
+                    {!supported && (
+                      <Text style={styles.comingSoon}>Coming Soon</Text>
+                    )}
+                  </Pressable>
+                );
+              })}
+            </ScrollView>
           </View>
         </Pressable>
       </Modal>
@@ -123,6 +127,10 @@ const styles = StyleSheet.create({
     padding: 20,
     width: '100%',
     maxWidth: 360,
+    maxHeight: '80%',
+  },
+  scrollArea: {
+    maxHeight: 480,
   },
   sheetTitle: {
     fontSize: 18,

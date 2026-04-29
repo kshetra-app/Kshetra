@@ -1,5 +1,6 @@
 import { View, Text, StyleSheet, Pressable } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import { useTranslation } from 'react-i18next';
 import type { Poll } from '../lib/feedTypes';
 
 interface PollCardProps {
@@ -10,6 +11,7 @@ interface PollCardProps {
 const BAR_COLORS = ['#4F8EF7', '#8B5CF6', '#10B981', '#F59E0B', '#EF4444'];
 
 export default function PollCard({ poll, onVote }: PollCardProps) {
+  const { t } = useTranslation();
   const hasVoted = !!poll.userVotedOptionId;
   const showResults = hasVoted || poll.isClosed;
 
@@ -72,19 +74,19 @@ export default function PollCard({ poll, onVote }: PollCardProps) {
       {/* Footer */}
       <View style={styles.footer}>
         <Text style={styles.footerText}>
-          {poll.totalVotes.toLocaleString()} vote{poll.totalVotes !== 1 ? 's' : ''}
+          {poll.totalVotes.toLocaleString()} {poll.totalVotes !== 1 ? t('pollCard.votes') : t('pollCard.vote')}
         </Text>
         {poll.isClosed && (
           <>
             <Text style={styles.footerDot}>·</Text>
-            <Text style={styles.closedText}>Closed</Text>
+            <Text style={styles.closedText}>{t('pollCard.closed')}</Text>
           </>
         )}
         {poll.expiresAt && !poll.isClosed && (
           <>
             <Text style={styles.footerDot}>·</Text>
             <Text style={styles.footerText}>
-              Ends {new Date(poll.expiresAt).toLocaleDateString('en-IN', { month: 'short', day: 'numeric' })}
+              {t('pollCard.ends')} {new Date(poll.expiresAt).toLocaleDateString(undefined, { month: 'short', day: 'numeric' })}
             </Text>
           </>
         )}
@@ -105,7 +107,6 @@ const styles = StyleSheet.create({
   questionRow: {
     flexDirection: 'row',
     alignItems: 'flex-start',
-    gap: 8,
     marginBottom: 12,
   },
   question: {
@@ -116,7 +117,6 @@ const styles = StyleSheet.create({
     lineHeight: 20,
   },
   options: {
-    gap: 6,
   },
   option: {
     backgroundColor: '#1F2937',
@@ -146,7 +146,6 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     flex: 1,
-    gap: 8,
   },
   radio: {
     width: 16,

@@ -1,5 +1,6 @@
 import { View, Text, StyleSheet } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import { useTranslation } from 'react-i18next';
 import { getPartyColor } from '@/lib/constants';
 import type { MLAProfile } from '@/lib/data';
 
@@ -19,7 +20,13 @@ interface MLACardProps {
 }
 
 export default function MLACard({ profile }: MLACardProps) {
+  const { t } = useTranslation();
   const partyColor = getPartyColor(profile.party);
+
+  const termLabel = profile.terms === 1 ? t('mla.term_1')
+    : profile.terms === 2 ? t('mla.term_2')
+    : profile.terms === 3 ? t('mla.term_3')
+    : t('mla.term_n', { n: profile.terms });
 
   return (
     <View style={styles.card}>
@@ -35,10 +42,10 @@ export default function MLACard({ profile }: MLACardProps) {
               <Text style={styles.partyText}>{profile.party}</Text>
             </View>
             {profile.age && (
-              <Text style={styles.metaText}>Age {profile.age}</Text>
+              <Text style={styles.metaText}>{t('mla.age')} {profile.age}</Text>
             )}
             <Text style={styles.metaText}>
-              {profile.gender === 'F' ? 'Female' : 'Male'}
+              {profile.gender === 'F' ? t('mla.female') : t('mla.male')}
             </Text>
           </View>
         </View>
@@ -49,9 +56,9 @@ export default function MLACard({ profile }: MLACardProps) {
         <View style={styles.statItem}>
           <Ionicons name="ribbon" size={16} color="#4F8EF7" />
           <Text style={styles.statValue}>
-            {profile.terms}{profile.terms === 1 ? 'st' : profile.terms === 2 ? 'nd' : profile.terms === 3 ? 'rd' : 'th'} term
+            {termLabel}
           </Text>
-          <Text style={styles.statLabel}>Terms</Text>
+          <Text style={styles.statLabel}>{t('mla.terms')}</Text>
         </View>
 
         {profile.education && (
@@ -60,7 +67,7 @@ export default function MLACard({ profile }: MLACardProps) {
             <Text style={styles.statValue} numberOfLines={1}>
               {profile.education}
             </Text>
-            <Text style={styles.statLabel}>Education</Text>
+            <Text style={styles.statLabel}>{t('mla.education')}</Text>
           </View>
         )}
 
@@ -70,7 +77,7 @@ export default function MLACard({ profile }: MLACardProps) {
             <Text style={styles.statValue}>
               {formatINR(profile.totalAssets)}
             </Text>
-            <Text style={styles.statLabel}>Assets</Text>
+            <Text style={styles.statLabel}>{t('mla.assets')}</Text>
           </View>
         )}
 
@@ -89,7 +96,7 @@ export default function MLACard({ profile }: MLACardProps) {
             >
               {profile.criminalCases}
             </Text>
-            <Text style={styles.statLabel}>Cases</Text>
+            <Text style={styles.statLabel}>{t('mla.cases')}</Text>
           </View>
         )}
       </View>
@@ -137,7 +144,6 @@ const styles = StyleSheet.create({
   partyRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 8,
   },
   partyBadge: {
     paddingHorizontal: 8,
@@ -164,7 +170,6 @@ const styles = StyleSheet.create({
   statItem: {
     alignItems: 'center',
     flex: 1,
-    gap: 4,
   },
   statValue: {
     fontSize: 13,
@@ -183,7 +188,6 @@ const styles = StyleSheet.create({
   professionRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 6,
   },
   professionText: {
     fontSize: 13,

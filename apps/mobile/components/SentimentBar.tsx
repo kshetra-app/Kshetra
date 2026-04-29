@@ -1,5 +1,6 @@
 import { View, Text, StyleSheet } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import { useTranslation } from 'react-i18next';
 import type { ConstituencySentiment } from '../lib/civicTypes';
 
 interface SentimentBarProps {
@@ -32,6 +33,7 @@ function scoreToLabel(score: number): string {
 }
 
 export default function SentimentBar({ item, maxPosts = 50 }: SentimentBarProps) {
+  const { t } = useTranslation();
   const color = scoreToColor(item.score);
   const icon = scoreToEmoji(item.score);
   const label = scoreToLabel(item.score);
@@ -48,7 +50,7 @@ export default function SentimentBar({ item, maxPosts = 50 }: SentimentBarProps)
     <View style={styles.container}>
       <View style={styles.headerRow}>
         <View style={styles.nameRow}>
-          <Ionicons name={icon as any} size={16} color={color} />
+          <Ionicons name={icon as any} size={16} color={color} style={{ marginRight: 6 }} />
           <Text style={styles.name} numberOfLines={1}>{item.constituencyName}</Text>
         </View>
         <Text style={[styles.scoreLabel, { color }]}>{label}</Text>
@@ -67,17 +69,17 @@ export default function SentimentBar({ item, maxPosts = 50 }: SentimentBarProps)
 
       {/* Stats row */}
       <View style={styles.statsRow}>
-        <Text style={styles.statPositive}>{item.positiveCount} positive</Text>
-        <Text style={styles.statNeutral}>{item.neutralCount} neutral</Text>
-        <Text style={styles.statNegative}>{item.negativeCount} negative</Text>
-        <Text style={styles.statTotal}>{item.totalPosts} posts</Text>
+        <Text style={[styles.statPositive, { marginRight: 10 }]}>{item.positiveCount} {t('content.sentimentLabels.positive')}</Text>
+        <Text style={[styles.statNeutral, { marginRight: 10 }]}>{item.neutralCount} {t('content.sentimentLabels.neutral')}</Text>
+        <Text style={[styles.statNegative, { marginRight: 10 }]}>{item.negativeCount} {t('content.sentimentLabels.negative')}</Text>
+        <Text style={styles.statTotal}>{item.totalPosts} {t('content.sentimentLabels.posts')}</Text>
       </View>
 
       {/* Top issues */}
       {item.topIssues.length > 0 && (
         <View style={styles.issuesRow}>
           {item.topIssues.map((issue) => (
-            <Text key={issue} style={styles.issueBadge}>{issue.replace('_', ' ')}</Text>
+            <Text key={issue} style={[styles.issueBadge, { marginRight: 4 }]}>{t(`content.issueCategories.${issue}`, issue.replace('_', ' '))}</Text>
           ))}
         </View>
       )}
@@ -101,7 +103,6 @@ const styles = StyleSheet.create({
   nameRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 6,
     flex: 1,
   },
   name: {
@@ -133,7 +134,6 @@ const styles = StyleSheet.create({
   },
   statsRow: {
     flexDirection: 'row',
-    gap: 10,
     marginBottom: 4,
   },
   statPositive: {
@@ -159,7 +159,6 @@ const styles = StyleSheet.create({
   },
   issuesRow: {
     flexDirection: 'row',
-    gap: 4,
     marginTop: 4,
   },
   issueBadge: {

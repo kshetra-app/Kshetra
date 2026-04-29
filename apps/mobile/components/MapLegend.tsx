@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { View, Text, StyleSheet, Pressable } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import { useTranslation } from 'react-i18next';
 import { getPartyColor } from '@/lib/constants';
 import type { MapColorMode } from './MapColorToggle';
 
@@ -38,13 +39,14 @@ interface MapLegendProps {
 }
 
 export default function MapLegend({ colorMode = 'party' }: MapLegendProps) {
+  const { t } = useTranslation();
   const [expanded, setExpanded] = useState(false);
 
   const renderContent = () => {
     if (colorMode === 'margin') {
       return (
         <>
-          <Text style={styles.panelTitle}>Victory Margin</Text>
+          <Text style={styles.panelTitle}>{t('mapLegend.victoryMargin')}</Text>
           {MARGIN_LEGEND.map((item) => (
             <View key={item.label} style={styles.row}>
               <View style={[styles.colorDot, { backgroundColor: item.color }]} />
@@ -58,7 +60,7 @@ export default function MapLegend({ colorMode = 'party' }: MapLegendProps) {
     if (colorMode === 'reservation') {
       return (
         <>
-          <Text style={styles.panelTitle}>Constituency Type</Text>
+          <Text style={styles.panelTitle}>{t('mapLegend.constituencyType')}</Text>
           {RESERVATION_LEGEND.map((item) => (
             <View key={item.label} style={styles.row}>
               <View style={[styles.colorDot, { backgroundColor: item.color }]} />
@@ -88,7 +90,7 @@ export default function MapLegend({ colorMode = 'party' }: MapLegendProps) {
     // Default: party legend
     return (
       <>
-        <Text style={styles.panelTitle}>Party Colors</Text>
+        <Text style={styles.panelTitle}>{t('mapLegend.partyColors')}</Text>
         {PARTY_LEGEND.map((item) => (
           <View key={item.party} style={styles.row}>
             <View style={[styles.colorDot, { backgroundColor: getPartyColor(item.party) }]} />
@@ -107,7 +109,7 @@ export default function MapLegend({ colorMode = 'party' }: MapLegendProps) {
         onPress={() => setExpanded((v) => !v)}
       >
         <Ionicons name="color-palette" size={16} color="#FFFFFF" />
-        {!expanded && <Text style={styles.toggleText}>Legend</Text>}
+        {!expanded && <Text style={styles.toggleText}>{t('mapLegend.legend')}</Text>}
       </Pressable>
 
       {expanded && (
@@ -116,11 +118,11 @@ export default function MapLegend({ colorMode = 'party' }: MapLegendProps) {
           <View style={styles.divider} />
           <View style={styles.row}>
             <View style={[styles.colorDot, styles.selectedDot]} />
-            <Text style={styles.partyCode}>Selected</Text>
+            <Text style={styles.partyCode}>{t('mapLegend.selected')}</Text>
           </View>
           <View style={styles.row}>
             <View style={[styles.colorDot, styles.favDot]} />
-            <Text style={styles.partyCode}>Favourite</Text>
+            <Text style={styles.partyCode}>{t('mapLegend.favourite')}</Text>
           </View>
         </View>
       )}
@@ -141,7 +143,7 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     paddingHorizontal: 10,
     paddingVertical: 8,
-    gap: 6,
+    marginRight: 6,
   },
   toggleText: {
     fontSize: 12,

@@ -9,6 +9,7 @@ import {
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
+import { useTranslation } from 'react-i18next';
 import BottomSheet, { BottomSheetView } from '@gorhom/bottom-sheet';
 import {
   TELANGANA_CENTER,
@@ -151,6 +152,7 @@ export default function MapScreen() {
 
 function FullMapScreen() {
   const router = useRouter();
+  const { t } = useTranslation();
   const cameraRef = useRef<any>(null);
   const bottomSheetRef = useRef<BottomSheet>(null);
   const [selected, setSelected] = useState<SelectedConstituency | null>(null);
@@ -555,7 +557,7 @@ function FullMapScreen() {
 
             {/* Election result */}
             <View style={styles.resultSection}>
-              <Text style={styles.resultLabel}>2023 Winner</Text>
+              <Text style={styles.resultLabel}>{t('mapSheet.winner2023')}</Text>
               <Text style={styles.resultValue}>{selected.winnerName}</Text>
             </View>
 
@@ -564,17 +566,17 @@ function FullMapScreen() {
                 <Text style={styles.statValue}>
                   {selected.votes.toLocaleString()}
                 </Text>
-                <Text style={styles.statLabel}>Winner Votes</Text>
+                <Text style={styles.statLabel}>{t('mapSheet.winnerVotes')}</Text>
               </View>
               <View style={styles.statBox}>
                 <Text style={styles.statValue}>
                   {selected.margin.toLocaleString()}
                 </Text>
-                <Text style={styles.statLabel}>Margin</Text>
+                <Text style={styles.statLabel}>{t('mapSheet.margin')}</Text>
               </View>
               <View style={styles.statBox}>
                 <Text style={styles.statValue}>{selected.runnerUp}</Text>
-                <Text style={styles.statLabel}>Runner-up</Text>
+                <Text style={styles.statLabel}>{t('mapSheet.runnerUp')}</Text>
               </View>
             </View>
 
@@ -630,7 +632,7 @@ function FullMapScreen() {
             {/* View detail button */}
             <Pressable style={styles.detailButton} onPress={handleViewDetail}>
               <Text style={styles.detailButtonText}>
-                View Full Profile
+                {t('mapSheet.viewFullProfile')}
               </Text>
               <Ionicons name="arrow-forward" size={16} color="#FFFFFF" />
             </Pressable>

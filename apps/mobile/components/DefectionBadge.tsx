@@ -1,5 +1,6 @@
 import { View, Text, StyleSheet } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import { useTranslation } from 'react-i18next';
 import { getPartyColor } from '@/lib/constants';
 
 interface DefectionBadgeProps {
@@ -13,6 +14,7 @@ export default function DefectionBadge({
   currentParty,
   compact = false,
 }: DefectionBadgeProps) {
+  const { t } = useTranslation();
   if (electedParty === currentParty) return null;
 
   if (compact) {
@@ -30,25 +32,25 @@ export default function DefectionBadge({
     <View style={styles.container}>
       <View style={styles.header}>
         <Ionicons name="swap-horizontal-outline" size={18} color="#F59E0B" />
-        <Text style={styles.title}>Post-Election Defection</Text>
+        <Text style={styles.title}>{t('defection.title')}</Text>
       </View>
       <View style={styles.flow}>
         <View style={[styles.partyBox, { borderColor: getPartyColor(electedParty) }]}>
           <Text style={[styles.partyText, { color: getPartyColor(electedParty) }]}>
             {electedParty}
           </Text>
-          <Text style={styles.partyLabel}>Elected</Text>
+          <Text style={styles.partyLabel}>{t('defection.elected')}</Text>
         </View>
         <Ionicons name="arrow-forward" size={20} color="#6B7280" />
         <View style={[styles.partyBox, { borderColor: getPartyColor(currentParty) }]}>
           <Text style={[styles.partyText, { color: getPartyColor(currentParty) }]}>
             {currentParty}
           </Text>
-          <Text style={styles.partyLabel}>Current</Text>
+          <Text style={styles.partyLabel}>{t('defection.current')}</Text>
         </View>
       </View>
       <Text style={styles.note}>
-        This MLA switched parties after the 2023 election. Anti-defection proceedings may be pending.
+        {t('defection.note')}
       </Text>
     </View>
   );
@@ -65,7 +67,6 @@ const styles = StyleSheet.create({
   header: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 8,
     marginBottom: 12,
   },
   title: {
@@ -77,7 +78,6 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    gap: 16,
     marginBottom: 12,
   },
   partyBox: {
@@ -108,7 +108,6 @@ const styles = StyleSheet.create({
   compactBadge: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 4,
     backgroundColor: 'rgba(245, 158, 11, 0.15)',
     paddingHorizontal: 8,
     paddingVertical: 3,

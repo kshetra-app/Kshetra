@@ -40,6 +40,7 @@
 | Sprint 8: User Profile + Settings + Onboarding | ✅ Complete | 2026-04-29 | 2026-04-29 |
 | Sprint 9: Multi-State Foundation | ✅ Complete | 2026-04-29 | 2026-04-29 |
 | Sprint 10: Multilingual (i18n) | ✅ Complete | 2026-04-29 | 2026-04-29 |
+| Sprint 11: Multi-State Data Expansion (AP/KA/MH full data) | ✅ Complete | 2026-04-29 | 2026-04-29 |
 
 ---
 
@@ -131,6 +132,7 @@
 | 2026-04-29 | `feat: sprint 8 — user profile + settings` | UserProfile store (Zustand+AsyncStorage), EditProfile screen (name/bio/role/interests), NotificationSettings screen (per-category toggles), UserProfileCard component (full+compact), Onboarding flow (6-step: welcome/name/role/constituency/interests/done), Profile tab integration (100/100 seed pass) |
 | 2026-04-29 | `feat: sprint 9 — multi-state foundation` | AP (25 stub) + KA (25 stub) seed data, JSP/JDS party codes, stateDataAdapter, multi-state API (stateData service + states routes), Supabase 003_multi_state migration, StateSwitcher data badges, state-scoped feed + civic stores, SUPPORTED_STATES expanded (100/100 seed pass) |
 | 2026-04-29 | `feat: sprint 10 — multilingual (i18n)` | 4 languages (en/te/hi/kn), i18next + expo-localization, LanguageSwitcher component, all screens wired (tabs, feed, dashboard, explore, onboarding, profile), AsyncStorage persistence, device locale auto-detect (100/100 seed pass) |
+| 2026-04-29 | `feat: sprint 11 — multi-state data expansion` | Full AP (175), KA (224), MH (288) constituency data with election results. 23 states in STATES registry. 4 new party codes (SHSUBT, NCPSP, JMM, JKNC). Unified data layer: getStateCenter/getStateZoom, enrichGeoJSONForState, PARTY_COLORS from shared config. ScrollView StateSwitcher. FULLY_SUPPORTED_STATES: TS/AP/KA/MH (100/100 seed pass) |
 
 ---
 
@@ -1490,3 +1492,77 @@ The app works fully offline without Supabase credentials. To activate:
 |---|---|---|---|---|
 | `data/seed` — all | ✅ Pass | 100 | 100 | No regressions |
 | **Total** | **✅ All Pass** | **100** | **100** | i18n is UI-only; no backend changes |
+
+---
+
+## Sprint 11: Multi-State Data Expansion (AP/KA/MH Full Data)
+
+**Date**: 2026-04-29
+**Goal**: Replace stub data with complete constituency datasets for Andhra Pradesh, Karnataka, and Maharashtra; expand shared state/party constants and build a unified multi-state data layer
+
+### Completed
+
+- [x] **Andhra Pradesh** — 175/175 constituencies with 2024 election results
+  - `data/seed/andhra-pradesh-constituencies.ts` expanded from 25 stubs → full 175 seats
+  - TDP+JSP alliance sweep, YSRCP reduced
+- [x] **Karnataka** — 224/224 constituencies with 2023 election results
+  - `data/seed/karnataka-constituencies.ts` expanded from 25 stubs → full 224 seats
+  - INC 135, BJP 66, JDS 19, others 4
+- [x] **Maharashtra** — 288/288 constituencies with 2024 election results
+  - `data/seed/maharashtra-constituencies.ts` — **NEW** file, complete 288 seats
+  - Mahayuti alliance: BJP ~132, SHS ~57, NCP ~41
+  - MVA opposition: SHSUBT ~20, INC ~16, NCPSP ~10, AIMIM 3
+  - All 36 districts represented, regional comments in data
+- [x] **STATES Registry** — expanded from 3 → 23 states
+  - New states: MH, TN, KL, WB, UP, RJ, GJ, DL, OD, JH, BR, PB, HR, UK, CG, MP, AS, GA, HP, JK
+  - Each with assemblySeats, parliamentarySeats, rulingParty, centroid, zoom
+  - `FULLY_SUPPORTED_STATES`: ['TS', 'AP', 'KA', 'MH']
+  - `SUPPORTED_STATES`: all 23 state codes
+- [x] **New Party Codes** — 4 added to `PartyCode` type and `PARTY_CONFIG`
+  - `SHSUBT` (Shiv Sena UBT / Uddhav faction)
+  - `NCPSP` (NCP Sharad Pawar faction)
+  - `JMM` (Jharkhand Mukti Morcha)
+  - `JKNC` (Jammu & Kashmir National Conference)
+- [x] **Unified Data Layer**
+  - `lib/constants.ts` — `getStateCenter()`, `getStateZoom()` replace hardcoded Telangana values; `PARTY_COLORS` now auto-derived from shared `PARTY_CONFIG` (covers all parties)
+  - `lib/enrichGeoJSON.ts` — added `enrichGeoJSONForState()` generic function using `stateDataAdapter`
+  - `lib/stateDataAdapter.ts` — added MH adapter; all 4 states return `hasFullData: true`
+  - `lib/stateRegistry.ts` — MH entry added (288/288, hasFullData: true)
+  - `lib/data.ts` — re-exports MH seed data
+- [x] **StateSwitcher** — `ScrollView` for 23 states, `maxHeight` constraint, grouped by data availability
+- [x] Fixed Kerala rulingParty code mismatch ('CPI(M)' → 'CPIM')
+
+### Files Created / Modified
+
+| File | Action | Description |
+|---|---|---|
+| `data/seed/andhra-pradesh-constituencies.ts` | Modified | 25 → 175 full constituencies |
+| `data/seed/karnataka-constituencies.ts` | Modified | 25 → 224 full constituencies |
+| `data/seed/maharashtra-constituencies.ts` | **Created** | 288 constituencies + 2024 results |
+| `packages/shared/src/types/constituency.ts` | Modified | +4 PartyCode values |
+| `packages/shared/src/constants/parties.ts` | Modified | +4 PARTY_CONFIG entries |
+| `packages/shared/src/constants/states.ts` | Modified | 3 → 23 states, expanded FULLY_SUPPORTED/SUPPORTED |
+| `apps/mobile/lib/constants.ts` | Modified | getStateCenter/Zoom, PARTY_COLORS from shared |
+| `apps/mobile/lib/enrichGeoJSON.ts` | Modified | Added enrichGeoJSONForState() |
+| `apps/mobile/lib/stateDataAdapter.ts` | Modified | MH adapter, all 4 states hasFullData |
+| `apps/mobile/lib/stateRegistry.ts` | Modified | MH entry added |
+| `apps/mobile/lib/data.ts` | Modified | Re-exports MH seed data |
+| `apps/mobile/components/StateSwitcher.tsx` | Modified | ScrollView, maxHeight for 23 states |
+
+### Data Summary
+
+| State | Seats | Election Year | Top Party | Status |
+|---|---|---|---|---|
+| Telangana (TS) | 119 | 2023 | INC (64+10 defections = 74) | Full + GeoJSON + Demographics + Trivia + Ledger |
+| Andhra Pradesh (AP) | 175 | 2024 | TDP (~135) | Full |
+| Karnataka (KA) | 224 | 2023 | INC (135) | Full |
+| Maharashtra (MH) | 288 | 2024 | BJP (~132) | Full |
+| **Total** | **806** | — | — | **4 states fully loaded** |
+
+### Tests — Sprint 11
+
+| Test Suite | Status | Passed | Total | Notes |
+|---|---|---|---|---|
+| `data/seed` — all | ✅ Pass | 100 | 100 | No regressions |
+| `packages/shared` — tsc | ✅ Pass | — | — | Clean compile with 4 new party codes + 23 states |
+| **Total** | **✅ All Pass** | **100** | **100** | All data verified, no type errors |

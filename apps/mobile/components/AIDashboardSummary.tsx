@@ -54,7 +54,7 @@ export default function AIDashboardSummary({ constituencyName, issues }: AIDashb
   return (
     <View style={styles.container}>
       <View style={styles.header}>
-        <Ionicons name="sparkles" size={16} color="#F59E0B" />
+        <Ionicons name="sparkles" size={16} color="#F59E0B" style={{ marginRight: 6 }} />
         <Text style={styles.title}>AI Insights</Text>
       </View>
 
@@ -78,7 +78,7 @@ export default function AIDashboardSummary({ constituencyName, issues }: AIDashb
               {loading === 'issues' ? (
                 <ActivityIndicator size="small" color="#F59E0B" />
               ) : (
-                <Ionicons name="flash" size={14} color="#F59E0B" />
+                <Ionicons name="flash" size={14} color="#F59E0B" style={{ marginRight: 6 }} />
               )}
               <Text style={styles.actionButtonText}>
                 {loading === 'issues' ? 'Analyzing...' : `Summarize ${issues.length} issues`}
@@ -107,7 +107,7 @@ export default function AIDashboardSummary({ constituencyName, issues }: AIDashb
             {loading === 'trends' ? (
               <ActivityIndicator size="small" color="#F59E0B" />
             ) : (
-              <Ionicons name="trending-up" size={14} color="#F59E0B" />
+              <Ionicons name="trending-up" size={14} color="#F59E0B" style={{ marginRight: 6 }} />
             )}
             <Text style={styles.actionButtonText}>
               {loading === 'trends' ? 'Analyzing 3 elections...' : 'Analyze election trends'}
@@ -136,7 +136,6 @@ const styles = StyleSheet.create({
   header: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 6,
     marginBottom: 10,
   },
   title: {
@@ -176,7 +175,6 @@ const styles = StyleSheet.create({
     backgroundColor: '#F59E0B10',
     borderRadius: 10,
     paddingVertical: 12,
-    gap: 6,
   },
   actionButtonDisabled: {
     opacity: 0.6,

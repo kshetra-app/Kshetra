@@ -1,7 +1,10 @@
-/** Telangana centroid — default map center */
+import { STATES } from '@kshetra/shared';
+import { PARTY_CONFIG } from '@kshetra/shared';
+
+/** Telangana centroid — default map center (kept for backward compat) */
 export const TELANGANA_CENTER: [number, number] = [79.0193, 17.8495];
 
-/** Default zoom level showing full Telangana */
+/** Default zoom level showing full Telangana (kept for backward compat) */
 export const TELANGANA_ZOOM = 6.8;
 
 /** Zoom level for constituency detail */
@@ -15,20 +18,24 @@ export const MAP_STYLE_LIGHT = 'mapbox://styles/mapbox/light-v11';
 export const API_BASE_URL =
   process.env.EXPO_PUBLIC_API_URL ?? 'http://localhost:3001';
 
-/** Party colors matching @kshetra/shared */
-export const PARTY_COLORS: Record<string, string> = {
-  INC: '#19AAED',
-  BRS: '#E91E8C',
-  BJP: '#FF6B00',
-  AIMIM: '#008000',
-  TDP: '#FFCD00',
-  CPI: '#FF0000',
-  CPM: '#CC0000',
-  IND: '#808080',
-  NOTA: '#333333',
-};
+/** Get [lng, lat] center for any state code */
+export function getStateCenter(stateCode: string): [number, number] {
+  const s = STATES[stateCode];
+  if (s) return [s.centroid.longitude, s.centroid.latitude];
+  return TELANGANA_CENTER;
+}
+
+/** Get default zoom for any state code */
+export function getStateZoom(stateCode: string): number {
+  return STATES[stateCode]?.zoom ?? 6.8;
+}
+
+/** Party colors — derived from shared PARTY_CONFIG for all parties */
+export const PARTY_COLORS: Record<string, string> = Object.fromEntries(
+  Object.values(PARTY_CONFIG).map((p) => [p.code, p.color]),
+);
 
 /** Get party color with fallback */
 export function getPartyColor(party: string): string {
-  return PARTY_COLORS[party] ?? PARTY_COLORS.IND;
+  return PARTY_COLORS[party] ?? '#808080';
 }

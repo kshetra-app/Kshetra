@@ -64,3 +64,9 @@ export {
   getKAConstituency,
   type KAConstituencySeed,
 } from '../../../data/seed/karnataka-constituencies';
+
+export {
+  MH_CONSTITUENCIES,
+  getMHConstituency,
+  type MHConstituencySeed,
+} from '../../../data/seed/maharashtra-constituencies';

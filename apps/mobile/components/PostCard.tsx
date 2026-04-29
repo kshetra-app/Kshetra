@@ -1,15 +1,16 @@
 import { useMemo } from 'react';
 import { View, Text, StyleSheet, Pressable } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import { useTranslation } from 'react-i18next';
 import type { Post, ReactionType } from '../lib/feedTypes';
 
-const TYPE_CONFIG: Record<string, { icon: string; color: string; label: string }> = {
-  discussion: { icon: 'chatbubbles', color: '#6366F1', label: 'Discussion' },
-  news: { icon: 'newspaper', color: '#3B82F6', label: 'News' },
-  opinion: { icon: 'megaphone', color: '#F59E0B', label: 'Opinion' },
-  question: { icon: 'help-circle', color: '#10B981', label: 'Question' },
-  alert: { icon: 'alert-circle', color: '#EF4444', label: 'Alert' },
-  poll: { icon: 'stats-chart', color: '#8B5CF6', label: 'Poll' },
+const TYPE_CONFIG: Record<string, { icon: string; color: string; tKey: string }> = {
+  discussion: { icon: 'chatbubbles', color: '#6366F1', tKey: 'postCard.discussion' },
+  news: { icon: 'newspaper', color: '#3B82F6', tKey: 'postCard.news' },
+  opinion: { icon: 'megaphone', color: '#F59E0B', tKey: 'postCard.opinion' },
+  question: { icon: 'help-circle', color: '#10B981', tKey: 'postCard.question' },
+  alert: { icon: 'alert-circle', color: '#EF4444', tKey: 'postCard.alert' },
+  poll: { icon: 'stats-chart', color: '#8B5CF6', tKey: 'postCard.poll' },
 };
 
 function timeAgo(dateStr: string): string {
@@ -17,7 +18,7 @@ function timeAgo(dateStr: string): string {
   const then = new Date(dateStr).getTime();
   const diffMs = now - then;
   const mins = Math.floor(diffMs / 60000);
-  if (mins < 1) return 'just now';
+  if (mins < 1) return '{{justNow}}';
   if (mins < 60) return `${mins}m`;
   const hours = Math.floor(mins / 60);
   if (hours < 24) return `${hours}h`;
@@ -43,6 +44,7 @@ export default function PostCard({
   onShare,
   compact = false,
 }: PostCardProps) {
+  const { t } = useTranslation();
   const typeInfo = TYPE_CONFIG[post.type] ?? TYPE_CONFIG.discussion;
   const isReacted = !!post.userReaction;
 
@@ -52,7 +54,7 @@ export default function PostCard({
       {post.isPinned && (
         <View style={styles.pinnedRow}>
           <Ionicons name="pin" size={12} color="#F59E0B" />
-          <Text style={styles.pinnedText}>Pinned</Text>
+          <Text style={styles.pinnedText}>{t('postCard.pinned')}</Text>
         </View>
       )}
 
@@ -73,7 +75,7 @@ export default function PostCard({
             )}
           </View>
           <View style={styles.metaRow}>
-            <Text style={styles.timeText}>{timeAgo(post.createdAt)}</Text>
+            <Text style={styles.timeText}>{timeAgo(post.createdAt).replace('{{justNow}}', t('postCard.justNow'))}</Text>
             {post.constituencyName && (
               <>
                 <Text style={styles.metaDot}>·</Text>
@@ -87,7 +89,7 @@ export default function PostCard({
         <View style={[styles.typeBadge, { backgroundColor: typeInfo.color + '20' }]}>
           <Ionicons name={typeInfo.icon as any} size={12} color={typeInfo.color} />
           {!compact && (
-            <Text style={[styles.typeLabel, { color: typeInfo.color }]}>{typeInfo.label}</Text>
+            <Text style={[styles.typeLabel, { color: typeInfo.color }]}>{t(typeInfo.tKey)}</Text>
           )}
         </View>
       </View>
@@ -153,7 +155,6 @@ const styles = StyleSheet.create({
   pinnedRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 4,
     marginBottom: 8,
   },
   pinnedText: {
@@ -165,7 +166,6 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     marginBottom: 10,
-    gap: 10,
   },
   avatar: {
     width: 36,

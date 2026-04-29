@@ -12,6 +12,8 @@ import {
   type APConstituencySeed,
   KA_CONSTITUENCIES,
   type KAConstituencySeed,
+  MH_CONSTITUENCIES,
+  type MHConstituencySeed,
 } from './data';
 
 /** Adapt Telangana seed → ConstituencyBrief */
@@ -56,6 +58,20 @@ function kaAdapter(c: KAConstituencySeed): ConstituencyBrief {
   };
 }
 
+/** Adapt MH seed → ConstituencyBrief */
+function mhAdapter(c: MHConstituencySeed): ConstituencyBrief {
+  return {
+    id: `MH-AC-${c.acNo}`,
+    name: c.name,
+    acNo: c.acNo,
+    stateCode: 'MH',
+    district: c.district,
+    reservationStatus: c.type,
+    currentParty: c.winner2024,
+    currentMLA: c.winnerName2024,
+  };
+}
+
 /** Get all constituencies for a given state code as ConstituencyBrief[] */
 export function getConstituenciesForState(stateCode: string): ConstituencyBrief[] {
   switch (stateCode.toUpperCase()) {
@@ -65,6 +81,8 @@ export function getConstituenciesForState(stateCode: string): ConstituencyBrief[
       return AP_CONSTITUENCIES.map(apAdapter);
     case 'KA':
       return KA_CONSTITUENCIES.map(kaAdapter);
+    case 'MH':
+      return MH_CONSTITUENCIES.map(mhAdapter);
     default:
       return [];
   }
@@ -82,6 +100,7 @@ export function getLoadedConstituencyCount(stateCode: string): number {
     case 'TS': return TELANGANA_CONSTITUENCIES.length;
     case 'AP': return AP_CONSTITUENCIES.length;
     case 'KA': return KA_CONSTITUENCIES.length;
+    case 'MH': return MH_CONSTITUENCIES.length;
     default: return 0;
   }
 }
@@ -90,8 +109,9 @@ export function getLoadedConstituencyCount(stateCode: string): number {
 export function hasFullData(stateCode: string): boolean {
   switch (stateCode.toUpperCase()) {
     case 'TS': return true;   // 119/119
-    case 'AP': return false;  // 25/175 stub
-    case 'KA': return false;  // 25/224 stub
+    case 'AP': return true;   // 175/175
+    case 'KA': return true;   // 224/224
+    case 'MH': return true;   // 288/288
     default: return false;
   }
 }

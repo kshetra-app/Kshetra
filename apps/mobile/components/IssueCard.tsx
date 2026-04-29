@@ -1,5 +1,6 @@
 import { View, Text, StyleSheet, Pressable } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import { useTranslation } from 'react-i18next';
 import type { CivicIssue } from '../lib/civicTypes';
 import {
   ISSUE_CATEGORY_CONFIG,
@@ -28,33 +29,41 @@ interface IssueCardProps {
 }
 
 export default function IssueCard({ issue, onUpvote, onPress }: IssueCardProps) {
+  const { t } = useTranslation();
   const catConfig = ISSUE_CATEGORY_CONFIG[issue.category];
   const sevConfig = SEVERITY_CONFIG[issue.severity];
   const statusConfig = STATUS_CONFIG[issue.status];
+
+  // Translated content (falls back to original English)
+  const catLabel = t(`content.issueCategories.${issue.category}`, catConfig.label);
+  const sevLabel = t(`content.issueSeverity.${issue.severity}`, sevConfig.label);
+  const statusLabel = t(`content.issueStatus.${issue.status}`, statusConfig.label);
+  const issueTitle = t(`content.issues.${issue.id}.title`, issue.title);
+  const issueDesc = issue.description ? t(`content.issues.${issue.id}.description`, issue.description) : undefined;
 
   return (
     <Pressable style={styles.card} onPress={onPress}>
       {/* Category + Severity header */}
       <View style={styles.topRow}>
-        <View style={[styles.categoryBadge, { backgroundColor: catConfig.color + '20' }]}>
-          <Ionicons name={catConfig.icon as any} size={12} color={catConfig.color} />
-          <Text style={[styles.categoryText, { color: catConfig.color }]}>{catConfig.label}</Text>
+        <View style={[styles.categoryBadge, { backgroundColor: catConfig.color + '20', marginRight: 6 }]}>
+          <Ionicons name={catConfig.icon as any} size={12} color={catConfig.color} style={{ marginRight: 4 }} />
+          <Text style={[styles.categoryText, { color: catConfig.color }]}>{catLabel}</Text>
         </View>
-        <View style={[styles.severityBadge, { backgroundColor: sevConfig.color + '20' }]}>
-          <Text style={[styles.severityText, { color: sevConfig.color }]}>{sevConfig.label}</Text>
+        <View style={[styles.severityBadge, { backgroundColor: sevConfig.color + '20', marginRight: 6 }]}>
+          <Text style={[styles.severityText, { color: sevConfig.color }]}>{sevLabel}</Text>
         </View>
         <View style={[styles.statusBadge, { backgroundColor: statusConfig.color + '20' }]}>
-          <Ionicons name={statusConfig.icon as any} size={11} color={statusConfig.color} />
-          <Text style={[styles.statusText, { color: statusConfig.color }]}>{statusConfig.label}</Text>
+          <Ionicons name={statusConfig.icon as any} size={11} color={statusConfig.color} style={{ marginRight: 3 }} />
+          <Text style={[styles.statusText, { color: statusConfig.color }]}>{statusLabel}</Text>
         </View>
       </View>
 
       {/* Title */}
-      <Text style={styles.title} numberOfLines={2}>{issue.title}</Text>
+      <Text style={styles.title} numberOfLines={2}>{issueTitle}</Text>
 
       {/* Description preview */}
-      {issue.description && (
-        <Text style={styles.description} numberOfLines={2}>{issue.description}</Text>
+      {issueDesc && (
+        <Text style={styles.description} numberOfLines={2}>{issueDesc}</Text>
       )}
 
       {/* Meta row */}
@@ -78,13 +87,13 @@ export default function IssueCard({ issue, onUpvote, onPress }: IssueCardProps) 
             size={20}
             color={issue.userUpvoted ? '#10B981' : '#6B7280'}
           />
-          <Text style={[styles.upvoteText, issue.userUpvoted && styles.upvoteTextActive]}>
+          <Text style={[styles.upvoteText, issue.userUpvoted && styles.upvoteTextActive, { marginLeft: 4 }]}>
             {issue.upvoteCount}
           </Text>
         </Pressable>
-        <View style={styles.commentCount}>
+        <View style={[styles.commentCount, { marginLeft: 16 }]}>
           <Ionicons name="chatbubble-outline" size={14} color="#6B7280" />
-          <Text style={styles.commentCountText}>{issue.commentCount}</Text>
+          <Text style={[styles.commentCountText, { marginLeft: 4 }]}>{issue.commentCount}</Text>
         </View>
       </View>
     </Pressable>
@@ -102,7 +111,6 @@ const styles = StyleSheet.create({
   topRow: {
     flexDirection: 'row',
     flexWrap: 'wrap',
-    gap: 6,
     marginBottom: 8,
   },
   categoryBadge: {
@@ -111,7 +119,6 @@ const styles = StyleSheet.create({
     paddingHorizontal: 8,
     paddingVertical: 3,
     borderRadius: 8,
-    gap: 4,
   },
   categoryText: {
     fontSize: 11,
@@ -132,7 +139,6 @@ const styles = StyleSheet.create({
     paddingHorizontal: 8,
     paddingVertical: 3,
     borderRadius: 8,
-    gap: 3,
   },
   statusText: {
     fontSize: 11,
@@ -155,13 +161,11 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     flexWrap: 'wrap',
-    gap: 4,
     marginBottom: 10,
   },
   metaItem: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 3,
     marginRight: 4,
   },
   metaLocationText: {
@@ -187,12 +191,10 @@ const styles = StyleSheet.create({
     borderTopWidth: 0.5,
     borderTopColor: '#1F2937',
     paddingTop: 10,
-    gap: 16,
   },
   upvoteButton: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 4,
   },
   upvoteText: {
     fontSize: 14,
@@ -205,7 +207,6 @@ const styles = StyleSheet.create({
   commentCount: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 4,
   },
   commentCountText: {
     fontSize: 13,

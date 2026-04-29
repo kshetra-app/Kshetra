@@ -1,5 +1,6 @@
 import { View, Text, StyleSheet, Pressable, Linking } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import { useTranslation } from 'react-i18next';
 import type { Headline } from '../lib/civicTypes';
 
 const CATEGORY_COLORS: Record<string, string> = {
@@ -30,8 +31,11 @@ interface HeadlineCardProps {
 }
 
 export default function HeadlineCard({ headline }: HeadlineCardProps) {
+  const { t } = useTranslation();
   const catColor = CATEGORY_COLORS[headline.category] ?? '#6B7280';
-  const catLabel = headline.category.replace(/_/g, ' ');
+  const catLabel = t(`content.headlineCategories.${headline.category}`, headline.category.replace(/_/g, ' '));
+  const hlTitle = t(`content.headlines.${headline.id}.title`, headline.title);
+  const hlSummary = headline.summary ? t(`content.headlines.${headline.id}.summary`, headline.summary) : undefined;
 
   return (
     <Pressable
@@ -45,14 +49,14 @@ export default function HeadlineCard({ headline }: HeadlineCardProps) {
         <Text style={styles.timeText}>{timeAgo(headline.publishedAt)}</Text>
       </View>
 
-      <Text style={styles.title} numberOfLines={3}>{headline.title}</Text>
+      <Text style={styles.title} numberOfLines={3}>{hlTitle}</Text>
 
-      {headline.summary && (
-        <Text style={styles.summary} numberOfLines={2}>{headline.summary}</Text>
+      {hlSummary && (
+        <Text style={styles.summary} numberOfLines={2}>{hlSummary}</Text>
       )}
 
       <View style={styles.sourceRow}>
-        <Ionicons name="newspaper-outline" size={12} color="#6B7280" />
+        <Ionicons name="newspaper-outline" size={12} color="#6B7280" style={{ marginRight: 4 }} />
         <Text style={styles.sourceName}>{headline.sourceName}</Text>
         <Ionicons name="open-outline" size={12} color="#4F8EF7" style={styles.externalIcon} />
       </View>
@@ -104,7 +108,6 @@ const styles = StyleSheet.create({
   sourceRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 4,
   },
   sourceName: {
     fontSize: 12,

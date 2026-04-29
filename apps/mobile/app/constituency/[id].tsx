@@ -2,6 +2,7 @@ import { useCallback, useEffect } from 'react';
 import { View, Text, StyleSheet, ScrollView, Platform, Pressable, Share } from 'react-native';
 import { useLocalSearchParams, Stack } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
+import { useTranslation } from 'react-i18next';
 import { getPartyColor } from '@/lib/constants';
 import { TELANGANA_CONSTITUENCIES, TELANGANA_ELECTION_HISTORY, getMLAProfile, getTriviaForConstituency, getConstituencyHistory, isPartyStronghold, getConstituencyDemographics } from '@/lib/data';
 import { useFavoritesStore } from '../../stores/favorites';
@@ -13,6 +14,7 @@ import DefectionBadge from '../../components/DefectionBadge';
 import AIAnalysisCard from '../../components/AIAnalysisCard';
 
 export default function ConstituencyDetailScreen() {
+  const { t } = useTranslation();
   const { id } = useLocalSearchParams<{ id: string }>();
   const acNo = parseInt(id, 10);
   const constituency = TELANGANA_CONSTITUENCIES.find((c) => c.acNo === acNo);
@@ -38,11 +40,11 @@ export default function ConstituencyDetailScreen() {
   if (!constituency) {
     return (
       <View style={styles.container}>
-        <Stack.Screen options={{ title: 'Not Found' }} />
+        <Stack.Screen options={{ title: t('constituency.notFound') }} />
         <View style={styles.center}>
           <Ionicons name="alert-circle" size={48} color="#EF4444" />
           <Text style={styles.errorText}>
-            Constituency #{id} not found
+            {t('constituency.notFoundMsg', { id })}
           </Text>
         </View>
       </View>
@@ -68,7 +70,7 @@ export default function ConstituencyDetailScreen() {
         <View style={styles.hero}>
           <Text style={styles.acNumber}>AC #{constituency.acNo}</Text>
           <Text style={styles.name}>{constituency.name}</Text>
-          <Text style={styles.district}>{constituency.district} District</Text>
+          <Text style={styles.district}>{constituency.district} {t('constituency.districtLabel')}</Text>
           <View style={styles.heroActions}>
             <View style={styles.typeBadge}>
               <Text style={styles.typeBadgeText}>{constituency.type}</Text>
@@ -127,13 +129,13 @@ export default function ConstituencyDetailScreen() {
             color={isMyHome ? '#10B981' : '#6B7280'}
           />
           <Text style={[styles.homeButtonText, isMyHome && styles.homeButtonTextActive]}>
-            {isMyHome ? 'My Home Constituency' : 'Set as My Constituency'}
+            {isMyHome ? t('constituency.myHome') : t('constituency.setAsHome')}
           </Text>
         </Pressable>
 
         {/* 2023 Result Card */}
         <View style={styles.section}>
-          <Text style={styles.sectionTitle}>2023 Election Result</Text>
+          <Text style={styles.sectionTitle}>{t('constituency.electionResult')}</Text>
           <View style={styles.resultCard}>
             <View style={styles.resultRow}>
               <View style={styles.resultLeft}>
@@ -153,7 +155,7 @@ export default function ConstituencyDetailScreen() {
                 <Text style={styles.resultVotes}>
                   {constituency.winnerVotes2023.toLocaleString()}
                 </Text>
-                <Text style={styles.resultLabel}>votes</Text>
+                <Text style={styles.resultLabel}>{t('constituency.votes')}</Text>
               </View>
             </View>
 
@@ -164,13 +166,13 @@ export default function ConstituencyDetailScreen() {
                 <Text style={styles.statValue}>
                   {constituency.margin2023.toLocaleString()}
                 </Text>
-                <Text style={styles.statLabel}>Margin</Text>
+                <Text style={styles.statLabel}>{t('constituency.margin')}</Text>
               </View>
               <View style={styles.statItem}>
                 <Text style={styles.statValue}>
                   {constituency.runnerUp2023}
                 </Text>
-                <Text style={styles.statLabel}>Runner-up</Text>
+                <Text style={styles.statLabel}>{t('constituency.runnerUp')}</Text>
               </View>
               <View style={styles.statItem}>
                 <Text style={styles.statValue}>
@@ -181,7 +183,7 @@ export default function ConstituencyDetailScreen() {
                   ).toFixed(1)}
                   %
                 </Text>
-                <Text style={styles.statLabel}>Margin %</Text>
+                <Text style={styles.statLabel}>{t('constituency.margin')} %</Text>
               </View>
             </View>
           </View>
@@ -192,7 +194,7 @@ export default function ConstituencyDetailScreen() {
           const mla = getMLAProfile(acNo);
           return mla ? (
             <View style={styles.section}>
-              <Text style={styles.sectionTitle}>Current MLA</Text>
+              <Text style={styles.sectionTitle}>{t('constituency.currentMlaSection')}</Text>
               <MLACard profile={mla} />
             </View>
           ) : null;
@@ -215,7 +217,7 @@ export default function ConstituencyDetailScreen() {
           );
           return triviaItems.length > 0 ? (
             <View style={styles.section}>
-              <Text style={styles.sectionTitle}>Did You Know?</Text>
+              <Text style={styles.sectionTitle}>{t('constituency.trivia')}</Text>
               <TriviaCard items={triviaItems} rotateInterval={0} />
             </View>
           ) : null;
@@ -241,17 +243,17 @@ export default function ConstituencyDetailScreen() {
           return (
             <View style={styles.section}>
               <View style={styles.histSectionHeader}>
-                <Text style={styles.sectionTitle}>Constituency History</Text>
+                <Text style={styles.sectionTitle}>{t('constituency.constituencyHistory')}</Text>
                 {stronghold && (
                   <View style={styles.strongholdBadge}>
                     <Ionicons name="shield-checkmark" size={12} color="#10B981" />
-                    <Text style={styles.strongholdText}>Stronghold</Text>
+                    <Text style={styles.strongholdText}>{t('constituency.stronghold')}</Text>
                   </View>
                 )}
                 {partyChanged && !stronghold && (
                   <View style={styles.swingBadge}>
                     <Ionicons name="swap-horizontal" size={12} color="#F59E0B" />
-                    <Text style={styles.swingText}>Swing Seat</Text>
+                    <Text style={styles.swingText}>{t('constituency.swingSeat')}</Text>
                   </View>
                 )}
               </View>
@@ -274,7 +276,7 @@ export default function ConstituencyDetailScreen() {
                         {e.year}
                       </Text>
                       {isCurrent && (
-                        <Text style={styles.histCurrentLabel}>Current</Text>
+                        <Text style={styles.histCurrentLabel}>{t('constituency.current')}</Text>
                       )}
                     </View>
                     <View style={styles.histCardCenter}>
@@ -305,7 +307,7 @@ export default function ConstituencyDetailScreen() {
 
         {/* State-level election overview */}
         <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Telangana Assembly Overview</Text>
+          <Text style={styles.sectionTitle}>{t('constituency.assemblyOverview')}</Text>
           {TELANGANA_ELECTION_HISTORY.map((election) => {
             const winnerParty = election.partyResults.reduce(
               (prev, curr) => (curr.seatsWon > prev.seatsWon ? curr : prev),
@@ -357,7 +359,7 @@ export default function ConstituencyDetailScreen() {
                 </View>
                 {election.turnout && (
                   <Text style={styles.historyTurnout}>
-                    Turnout: {election.turnout}%
+                    {t('constituency.turnout')}: {election.turnout}%
                   </Text>
                 )}
               </View>
@@ -371,56 +373,56 @@ export default function ConstituencyDetailScreen() {
           if (!demo) return null;
           return (
             <View style={styles.section}>
-              <Text style={styles.sectionTitle}>Demographics</Text>
+              <Text style={styles.sectionTitle}>{t('constituency.demographicsSection')}</Text>
               <View style={styles.demoCard}>
                 <View style={styles.demoRow}>
                   <View style={styles.demoItem}>
                     <Ionicons name="people" size={18} color="#4F8EF7" />
                     <Text style={styles.demoValue}>{(demo.population / 1000).toFixed(0)}K</Text>
-                    <Text style={styles.demoLabel}>Population</Text>
+                    <Text style={styles.demoLabel}>{t('constituency.populationLabel')}</Text>
                   </View>
                   <View style={styles.demoItem}>
                     <Ionicons name="document-text" size={18} color="#10B981" />
                     <Text style={styles.demoValue}>{demo.literacy}%</Text>
-                    <Text style={styles.demoLabel}>Literacy</Text>
+                    <Text style={styles.demoLabel}>{t('constituency.literacyLabel')}</Text>
                   </View>
                   <View style={styles.demoItem}>
                     <Ionicons name="business" size={18} color="#F59E0B" />
                     <Text style={styles.demoValue}>{demo.urbanPercent}%</Text>
-                    <Text style={styles.demoLabel}>Urban</Text>
+                    <Text style={styles.demoLabel}>{t('constituency.urbanLabel')}</Text>
                   </View>
                   <View style={styles.demoItem}>
                     <Ionicons name="map" size={18} color="#8B5CF6" />
                     <Text style={styles.demoValue}>{demo.areaSqKm}</Text>
-                    <Text style={styles.demoLabel}>km²</Text>
+                    <Text style={styles.demoLabel}>{t('constituency.areaSqKm')}</Text>
                   </View>
                 </View>
 
                 <View style={styles.demoDivider} />
 
-                <Text style={styles.demoSubTitle}>Voter Profile (2023)</Text>
+                <Text style={styles.demoSubTitle}>{t('constituency.voterProfile')}</Text>
                 <View style={styles.demoRow}>
                   <View style={styles.demoItem}>
                     <Text style={styles.demoValue}>{(demo.totalVoters / 1000).toFixed(0)}K</Text>
-                    <Text style={styles.demoLabel}>Total Voters</Text>
+                    <Text style={styles.demoLabel}>{t('constituency.totalVoters')}</Text>
                   </View>
                   <View style={styles.demoItem}>
                     <Text style={styles.demoValue}>{demo.turnout2023}%</Text>
-                    <Text style={styles.demoLabel}>Turnout</Text>
+                    <Text style={styles.demoLabel}>{t('constituency.turnoutLabel')}</Text>
                   </View>
                   <View style={styles.demoItem}>
                     <Text style={styles.demoValue}>{(demo.maleVoters / 1000).toFixed(0)}K</Text>
-                    <Text style={styles.demoLabel}>Male</Text>
+                    <Text style={styles.demoLabel}>{t('constituency.male')}</Text>
                   </View>
                   <View style={styles.demoItem}>
                     <Text style={styles.demoValue}>{(demo.femaleVoters / 1000).toFixed(0)}K</Text>
-                    <Text style={styles.demoLabel}>Female</Text>
+                    <Text style={styles.demoLabel}>{t('constituency.female')}</Text>
                   </View>
                 </View>
 
                 <View style={styles.demoDivider} />
 
-                <Text style={styles.demoSubTitle}>Social Composition</Text>
+                <Text style={styles.demoSubTitle}>{t('constituency.socialComposition')}</Text>
                 <View style={styles.demoBarGroup}>
                   <View style={styles.demoBarRow}>
                     <Text style={styles.demoBarLabel}>SC</Text>
@@ -445,7 +447,7 @@ export default function ConstituencyDetailScreen() {
                   </View>
                 </View>
               </View>
-              <Text style={styles.demoDisclaimer}>Source: Census 2011 · ECI 2023 voter rolls</Text>
+              <Text style={styles.demoDisclaimer}>{t('constituency.demoDisclaimer')}</Text>
             </View>
           );
         })()}

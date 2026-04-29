@@ -1,4 +1,6 @@
 import { TELANGANA_CONSTITUENCIES, type ConstituencySeed, TELANGANA_DEMOGRAPHICS, type ConstituencyDemographics } from '@/lib/data';
+import type { ConstituencyBrief } from '@kshetra/shared';
+import { getConstituenciesForState } from './stateDataAdapter';
 
 /** Lookup map from AC_NO to seed data for O(1) access */
 const seedByAcNo = new Map<number, ConstituencySeed>(
@@ -15,6 +17,8 @@ const demoByAcNo = new Map<number, ConstituencyDemographics>(
  * Adds WINNER_PARTY, WINNER_NAME, MARGIN, TYPE properties to each feature.
  * Also merges demographics data for heatmap overlays.
  * This is done once at import time (offline, no API call).
+ * NOTE: This function is Telangana-specific (uses demographics). For other
+ * states, use enrichGeoJSONForState() below.
  */
 export function enrichGeoJSON(
   geojson: GeoJSON.FeatureCollection,
@@ -40,6 +44,46 @@ export function enrichGeoJSON(
           TURNOUT: demo?.turnout2023 ?? 0,
           URBAN_PCT: demo?.urbanPercent ?? 0,
           TOTAL_VOTERS: demo?.totalVoters ?? 0,
+        },
+      };
+    }),
+  };
+}
+
+/**
+ * Generic enrichment for any state.
+ * Uses ConstituencyBrief from stateDataAdapter to add party/MLA/reservation
+ * properties to GeoJSON features by matching on AC_NO.
+ */
+export function enrichGeoJSONForState(
+  geojson: GeoJSON.FeatureCollection,
+  stateCode: string,
+): GeoJSON.FeatureCollection {
+  const constituencies = getConstituenciesForState(stateCode);
+  const briefByAcNo = new Map<number, ConstituencyBrief>(
+    constituencies.map((c) => [c.acNo, c]),
+  );
+
+  return {
+    ...geojson,
+    features: geojson.features.map((feature) => {
+      const acNo = feature.properties?.AC_NO;
+      const brief = acNo != null ? briefByAcNo.get(acNo) : undefined;
+
+      return {
+        ...feature,
+        properties: {
+          ...feature.properties,
+          WINNER_PARTY: brief?.currentParty ?? 'IND',
+          WINNER_NAME: brief?.currentMLA ?? '',
+          RESERVATION: brief?.reservationStatus ?? 'GEN',
+          MARGIN: 0,
+          RUNNER_UP: '',
+          POPULATION: 0,
+          LITERACY: 0,
+          TURNOUT: 0,
+          URBAN_PCT: 0,
+          TOTAL_VOTERS: 0,
         },
       };
     }),

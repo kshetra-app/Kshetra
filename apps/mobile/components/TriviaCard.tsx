@@ -1,6 +1,7 @@
 import { View, Text, StyleSheet, Pressable } from 'react-native';
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { Ionicons } from '@expo/vector-icons';
+import { useTranslation } from 'react-i18next';
 import type { TriviaItem } from '@/lib/data';
 
 interface TriviaCardProps {
@@ -17,6 +18,7 @@ export default function TriviaCard({
   compact = false,
   rotateInterval = 8000,
 }: TriviaCardProps) {
+  const { t } = useTranslation();
   const [index, setIndex] = useState(0);
   const [expanded, setExpanded] = useState(false);
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
@@ -44,7 +46,7 @@ export default function TriviaCard({
         <Pressable onPress={() => setExpanded((e) => !e)}>
           <View style={styles.compactHeader}>
             <Text style={styles.compactEmoji}>{current.emoji}</Text>
-            <Text style={styles.compactLabel}>Did You Know?</Text>
+            <Text style={styles.compactLabel}>{t('map.didYouKnow')}</Text>
             <Ionicons
               name={expanded ? 'chevron-down' : 'chevron-up'}
               size={14}
@@ -65,7 +67,7 @@ export default function TriviaCard({
             {items.length > 1 && (
               <Pressable style={styles.compactNextButton} onPress={next}>
                 <Ionicons name="shuffle" size={14} color="#9CA3AF" />
-                <Text style={styles.compactNextText}>Next</Text>
+                <Text style={styles.compactNextText}>{t('common.next')}</Text>
               </Pressable>
             )}
           </View>
@@ -86,7 +88,7 @@ export default function TriviaCard({
         <View style={styles.headerLeft}>
           <Text style={styles.emoji}>{current.emoji}</Text>
           <View>
-            <Text style={styles.label}>Did You Know?</Text>
+            <Text style={styles.label}>{t('map.didYouKnow')}</Text>
             <Text style={styles.categoryBadge}>
               {current.category.replace('_', ' ')}
             </Text>
@@ -126,7 +128,7 @@ const styles = StyleSheet.create({
   headerLeft: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 10,
+    marginRight: 10,
   },
   emoji: {
     fontSize: 28,

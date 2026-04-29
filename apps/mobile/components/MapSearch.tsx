@@ -9,6 +9,7 @@ import {
   Keyboard,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import { useTranslation } from 'react-i18next';
 import { getPartyColor } from '@/lib/constants';
 import type { ConstituencySeed } from '@/lib/data';
 
@@ -19,6 +20,7 @@ interface MapSearchProps {
 }
 
 export default function MapSearch({ constituencies, onSelect, onClose }: MapSearchProps) {
+  const { t } = useTranslation();
   const [query, setQuery] = useState('');
   const inputRef = useRef<TextInput>(null);
 
@@ -57,7 +59,7 @@ export default function MapSearch({ constituencies, onSelect, onClose }: MapSear
         <TextInput
           ref={inputRef}
           style={styles.input}
-          placeholder="Search constituency, MLA, district..."
+          placeholder={t('mapSearch.placeholder')}
           placeholderTextColor="#4B5563"
           value={query}
           onChangeText={setQuery}
@@ -71,7 +73,7 @@ export default function MapSearch({ constituencies, onSelect, onClose }: MapSear
           </Pressable>
         )}
         <Pressable onPress={onClose} style={styles.closeButton} hitSlop={8}>
-          <Text style={styles.closeText}>Cancel</Text>
+          <Text style={styles.closeText}>{t('mapSearch.cancel')}</Text>
         </Pressable>
       </View>
 
@@ -108,7 +110,7 @@ export default function MapSearch({ constituencies, onSelect, onClose }: MapSear
       {query.trim().length > 0 && results.length === 0 && (
         <View style={styles.noResults}>
           <Ionicons name="search" size={24} color="#374151" />
-          <Text style={styles.noResultsText}>No constituencies found</Text>
+          <Text style={styles.noResultsText}>{t('mapSearch.noResults')}</Text>
         </View>
       )}
     </View>
@@ -134,7 +136,6 @@ const styles = StyleSheet.create({
     marginHorizontal: 16,
     paddingHorizontal: 12,
     height: 48,
-    gap: 8,
   },
   input: {
     flex: 1,
@@ -165,7 +166,6 @@ const styles = StyleSheet.create({
     paddingHorizontal: 14,
     borderBottomWidth: 0.5,
     borderBottomColor: '#1F2937',
-    gap: 10,
   },
   partyDot: {
     width: 10,
@@ -188,7 +188,6 @@ const styles = StyleSheet.create({
   noResults: {
     alignItems: 'center',
     marginTop: 40,
-    gap: 8,
   },
   noResultsText: {
     fontSize: 14,
