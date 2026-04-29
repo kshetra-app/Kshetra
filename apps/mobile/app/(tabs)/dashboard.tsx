@@ -1,11 +1,10 @@
-import { useState, useCallback, useMemo } from 'react';
+import { useState, useMemo } from 'react';
 import {
   View,
   Text,
   StyleSheet,
   ScrollView,
   Pressable,
-  FlatList,
   Platform,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
@@ -100,132 +99,130 @@ export default function DashboardScreen() {
         })}
       </View>
 
-      {/* Content */}
-      {activeTab === 'issues' && (
-        <ScrollView style={styles.scroll} showsVerticalScrollIndicator={false}>
-          {/* Stats summary */}
-          <View style={styles.statsRow}>
-            <View style={[styles.statCard, { borderLeftColor: '#3B82F6' }]}>
-              <Text style={styles.statValue}>{issueStats.open}</Text>
-              <Text style={styles.statLabel}>Open</Text>
+      {/* Single ScrollView — avoids Fabric crash from conditional ScrollView mount/unmount */}
+      <ScrollView style={styles.scroll} showsVerticalScrollIndicator={false}>
+        {activeTab === 'issues' && (
+          <>
+            {/* Stats summary */}
+            <View style={styles.statsRow}>
+              <View style={[styles.statCard, { borderLeftColor: '#3B82F6' }]}>
+                <Text style={styles.statValue}>{issueStats.open}</Text>
+                <Text style={styles.statLabel}>Open</Text>
+              </View>
+              <View style={[styles.statCard, { borderLeftColor: '#F59E0B' }]}>
+                <Text style={styles.statValue}>{issueStats.inProgress}</Text>
+                <Text style={styles.statLabel}>In Progress</Text>
+              </View>
+              <View style={[styles.statCard, { borderLeftColor: '#10B981' }]}>
+                <Text style={styles.statValue}>{issueStats.resolved}</Text>
+                <Text style={styles.statLabel}>Resolved</Text>
+              </View>
+              <View style={[styles.statCard, { borderLeftColor: '#EF4444' }]}>
+                <Text style={styles.statValue}>{issueStats.critical}</Text>
+                <Text style={styles.statLabel}>Critical</Text>
+              </View>
             </View>
-            <View style={[styles.statCard, { borderLeftColor: '#F59E0B' }]}>
-              <Text style={styles.statValue}>{issueStats.inProgress}</Text>
-              <Text style={styles.statLabel}>In Progress</Text>
+
+            {/* Top issue categories */}
+            <View style={styles.topCategoriesRow}>
+              {topCategories.slice(0, 5).map(({ category, count }) => {
+                const config = ISSUE_CATEGORY_CONFIG[category];
+                const active = issueFilter === category;
+                return (
+                  <Pressable
+                    key={category}
+                    style={[
+                      styles.categoryChip,
+                      active && { backgroundColor: config.color + '20', borderColor: config.color + '40' },
+                    ]}
+                    onPress={() => setIssueFilter(active ? 'all' : category)}
+                  >
+                    <Ionicons name={config.icon as any} size={12} color={active ? config.color : '#6B7280'} />
+                    <Text style={[styles.categoryChipText, active && { color: config.color }]}>
+                      {config.label} ({count})
+                    </Text>
+                  </Pressable>
+                );
+              })}
             </View>
-            <View style={[styles.statCard, { borderLeftColor: '#10B981' }]}>
-              <Text style={styles.statValue}>{issueStats.resolved}</Text>
-              <Text style={styles.statLabel}>Resolved</Text>
+
+            {/* Status filter */}
+            <View style={styles.statusRow}>
+              {STATUS_FILTER_KEYS.map((sf) => {
+                const active = statusFilter === sf.key;
+                return (
+                  <Pressable
+                    key={sf.key}
+                    style={[styles.statusChip, active && styles.statusChipActive]}
+                    onPress={() => setStatusFilter(sf.key)}
+                  >
+                    <Text style={[styles.statusChipText, active && styles.statusChipTextActive]}>
+                      {t(sf.tKey)}
+                    </Text>
+                  </Pressable>
+                );
+              })}
             </View>
-            <View style={[styles.statCard, { borderLeftColor: '#EF4444' }]}>
-              <Text style={styles.statValue}>{issueStats.critical}</Text>
-              <Text style={styles.statLabel}>Critical</Text>
+
+            {/* Issue list */}
+            {issues.length === 0 ? (
+              <View style={styles.emptyState}>
+                <Ionicons name="checkmark-circle-outline" size={48} color="#1F2937" />
+                <Text style={styles.emptyTitle}>{t('dashboard.noIssues')}</Text>
+                <Text style={styles.emptySubtitle}>Try changing filters or report a new issue</Text>
+              </View>
+            ) : (
+              issues.map((issue) => (
+                <IssueCard
+                  key={issue.id}
+                  issue={issue}
+                  onUpvote={() => toggleUpvote(issue.id)}
+                />
+              ))
+            )}
+          </>
+        )}
+
+        {activeTab === 'sentiment' && (
+          <>
+            <View style={styles.sentimentHeader}>
+              <Ionicons name="pulse" size={18} color="#8B5CF6" />
+              <Text style={styles.sentimentTitle}>Constituency Mood Index</Text>
             </View>
-          </View>
+            <Text style={styles.sentimentSubtitle}>
+              Sorted by sentiment score (most negative first). Based on community post analysis.
+            </Text>
 
-          {/* Top issue categories */}
-          <View style={styles.topCategoriesRow}>
-            {topCategories.slice(0, 5).map(({ category, count }) => {
-              const config = ISSUE_CATEGORY_CONFIG[category];
-              const active = issueFilter === category;
-              return (
-                <Pressable
-                  key={category}
-                  style={[
-                    styles.categoryChip,
-                    active && { backgroundColor: config.color + '20', borderColor: config.color + '40' },
-                  ]}
-                  onPress={() => setIssueFilter(active ? 'all' : category)}
-                >
-                  <Ionicons name={config.icon as any} size={12} color={active ? config.color : '#6B7280'} />
-                  <Text style={[styles.categoryChipText, active && { color: config.color }]}>
-                    {config.label} ({count})
-                  </Text>
-                </Pressable>
-              );
-            })}
-          </View>
+            {sentimentSorted.map((item) => (
+              <SentimentBar key={item.constituencyId} item={item} />
+            ))}
 
-          {/* Status filter */}
-          <View style={styles.statusRow}>
-            {STATUS_FILTER_KEYS.map((sf) => {
-              const active = statusFilter === sf.key;
-              return (
-                <Pressable
-                  key={sf.key}
-                  style={[styles.statusChip, active && styles.statusChipActive]}
-                  onPress={() => setStatusFilter(sf.key)}
-                >
-                  <Text style={[styles.statusChipText, active && styles.statusChipTextActive]}>
-                    {t(sf.tKey)}
-                  </Text>
-                </Pressable>
-              );
-            })}
-          </View>
+            {/* AI Insights */}
+            <AIDashboardSummary
+              constituencyName={sentimentSorted[0]?.constituencyName}
+              issues={allIssues.map((i) => `${i.title} (${i.category}, ${i.severity})`)}
+            />
+          </>
+        )}
 
-          {/* Issue list */}
-          {issues.length === 0 ? (
-            <View style={styles.emptyState}>
-              <Ionicons name="checkmark-circle-outline" size={48} color="#1F2937" />
-              <Text style={styles.emptyTitle}>{t('dashboard.noIssues')}</Text>
-              <Text style={styles.emptySubtitle}>Try changing filters or report a new issue</Text>
+        {activeTab === 'headlines' && (
+          <>
+            <View style={styles.headlinesHeader}>
+              <Ionicons name="newspaper" size={18} color="#3B82F6" />
+              <Text style={styles.headlinesTitle}>Latest Headlines</Text>
             </View>
-          ) : (
-            issues.map((issue) => (
-              <IssueCard
-                key={issue.id}
-                issue={issue}
-                onUpvote={() => toggleUpvote(issue.id)}
-              />
-            ))
-          )}
+            <Text style={styles.headlinesSubtitle}>
+              Telangana political and governance news
+            </Text>
 
-          <View style={styles.bottomPadding} />
-        </ScrollView>
-      )}
+            {headlines.map((hl) => (
+              <HeadlineCard key={hl.id} headline={hl} />
+            ))}
+          </>
+        )}
 
-      {activeTab === 'sentiment' && (
-        <ScrollView style={styles.scroll} showsVerticalScrollIndicator={false}>
-          <View style={styles.sentimentHeader}>
-            <Ionicons name="pulse" size={18} color="#8B5CF6" />
-            <Text style={styles.sentimentTitle}>Constituency Mood Index</Text>
-          </View>
-          <Text style={styles.sentimentSubtitle}>
-            Sorted by sentiment score (most negative first). Based on community post analysis.
-          </Text>
-
-          {sentimentSorted.map((item) => (
-            <SentimentBar key={item.constituencyId} item={item} />
-          ))}
-
-          {/* AI Insights */}
-          <AIDashboardSummary
-            constituencyName={sentimentSorted[0]?.constituencyName}
-            issues={allIssues.map((i) => `${i.title} (${i.category}, ${i.severity})`)}
-          />
-
-          <View style={styles.bottomPadding} />
-        </ScrollView>
-      )}
-
-      {activeTab === 'headlines' && (
-        <ScrollView style={styles.scroll} showsVerticalScrollIndicator={false}>
-          <View style={styles.headlinesHeader}>
-            <Ionicons name="newspaper" size={18} color="#3B82F6" />
-            <Text style={styles.headlinesTitle}>Latest Headlines</Text>
-          </View>
-          <Text style={styles.headlinesSubtitle}>
-            Telangana political and governance news
-          </Text>
-
-          {headlines.map((hl) => (
-            <HeadlineCard key={hl.id} headline={hl} />
-          ))}
-
-          <View style={styles.bottomPadding} />
-        </ScrollView>
-      )}
+        <View style={styles.bottomPadding} />
+      </ScrollView>
 
       {/* Report Issue Sheet — mount only when needed to avoid Fabric Modal crash */}
       {reportVisible && (

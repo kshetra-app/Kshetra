@@ -36,40 +36,42 @@ export default function LanguageSwitcher() {
         <Ionicons name="chevron-down" size={12} color="#6B7280" />
       </Pressable>
 
-      <Modal
-        visible={visible}
-        transparent
-        animationType="fade"
-        onRequestClose={() => setVisible(false)}
-      >
-        <Pressable style={styles.overlay} onPress={() => setVisible(false)}>
-          <View style={styles.sheet}>
-            <Text style={styles.sheetTitle}>{t('language.title')}</Text>
-            <Text style={styles.sheetSubtitle}>{t('language.subtitle')}</Text>
+      {visible && (
+        <Modal
+          visible={visible}
+          transparent
+          animationType="fade"
+          onRequestClose={() => setVisible(false)}
+        >
+          <Pressable style={styles.overlay} onPress={() => setVisible(false)}>
+            <View style={styles.sheet}>
+              <Text style={styles.sheetTitle}>{t('language.title')}</Text>
+              <Text style={styles.sheetSubtitle}>{t('language.subtitle')}</Text>
 
-            {LANGUAGES.map((lang) => {
-              const isActive = lang.code === current;
-              return (
-                <Pressable
-                  key={lang.code}
-                  style={[styles.langRow, isActive && styles.langRowActive]}
-                  onPress={() => handleSelect(lang.code)}
-                >
-                  <View style={styles.langInfo}>
-                    <Text style={[styles.langNative, isActive && styles.langNativeActive]}>
-                      {lang.nativeLabel}
-                    </Text>
-                    <Text style={styles.langEnglish}>{lang.label}</Text>
-                  </View>
-                  {isActive && (
-                    <Ionicons name="checkmark-circle" size={22} color="#4F8EF7" />
-                  )}
-                </Pressable>
-              );
-            })}
-          </View>
-        </Pressable>
-      </Modal>
+              {LANGUAGES.map((lang) => {
+                const isActive = lang.code === current;
+                return (
+                  <Pressable
+                    key={lang.code}
+                    style={[styles.langRow, isActive && styles.langRowActive]}
+                    onPress={() => handleSelect(lang.code)}
+                  >
+                    <View style={styles.langInfo}>
+                      <Text style={[styles.langNative, isActive && styles.langNativeActive]}>
+                        {lang.nativeLabel}
+                      </Text>
+                      <Text style={styles.langEnglish}>{lang.label}</Text>
+                    </View>
+                    {isActive && (
+                      <Ionicons name="checkmark-circle" size={22} color="#4F8EF7" />
+                    )}
+                  </Pressable>
+                );
+              })}
+            </View>
+          </Pressable>
+        </Modal>
+      )}
     </>
   );
 }

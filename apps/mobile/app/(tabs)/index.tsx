@@ -154,6 +154,7 @@ function FullMapScreen() {
   const cameraRef = useRef<any>(null);
   const bottomSheetRef = useRef<BottomSheet>(null);
   const [selected, setSelected] = useState<SelectedConstituency | null>(null);
+  const selectedRef = useRef<SelectedConstituency | null>(null);
   const [userMarker, setUserMarker] = useState<[number, number] | null>(null);
   const [colorMode, setColorMode] = useState<MapColorMode>('party');
   const { loading: locating, requestLocation } = useUserLocation();
@@ -176,6 +177,9 @@ function FullMapScreen() {
   }, [colorMode]);
 
   const snapPoints = useMemo(() => ['28%', '55%'], []);
+
+  // Keep ref in sync so handlePress always sees latest selected
+  selectedRef.current = selected;
 
   const selectConstituency = useCallback(
     (acNo: number, acName: string, distName: string) => {
@@ -206,7 +210,7 @@ function FullMapScreen() {
       const acNo = Number(AC_NO);
 
       // If tapping the already-selected constituency, go straight to detail
-      if (selected?.acNo === acNo) {
+      if (selectedRef.current?.acNo === acNo) {
         router.push(`/constituency/${acNo}`);
         return;
       }
@@ -241,7 +245,7 @@ function FullMapScreen() {
         });
       }
     },
-    [selectConstituency, selected, router],
+    [selectConstituency, router],
   );
 
   const handleReset = useCallback(() => {
