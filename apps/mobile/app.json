@@ -48,7 +48,8 @@
           "RNMapboxMapsImpl": "mapbox"
         }
       ],
-      "expo-secure-store"
+      "expo-secure-store",
+      "expo-localization"
     ],
     "experiments": {
       "typedRoutes": true
