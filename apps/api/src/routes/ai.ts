@@ -3,6 +3,8 @@ import {
   chatWithAI,
   analyzeConstituency,
   analyzeElectionTrends,
+  smartSearch,
+  summarizeIssues,
   type ChatMessage,
 } from '../services/ai';
 
@@ -62,6 +64,50 @@ export async function aiRoutes(app: FastifyInstance) {
     try {
       const analysis = await analyzeElectionTrends();
       return { analysis };
+    } catch (error: any) {
+      app.log.error(error);
+      return reply.status(500).send({
+        error: 'AI service error',
+        message: error.message,
+      });
+    }
+  });
+
+  /** POST /api/v1/ai/smart-search — natural language constituency search */
+  app.post('/api/v1/ai/smart-search', async (request, reply) => {
+    const body = request.body as { query?: string };
+
+    if (!body.query || typeof body.query !== 'string' || body.query.trim().length < 3) {
+      return reply.status(400).send({
+        error: 'query string is required (min 3 characters)',
+      });
+    }
+
+    try {
+      const results = await smartSearch(body.query.trim());
+      return { results };
+    } catch (error: any) {
+      app.log.error(error);
+      return reply.status(500).send({
+        error: 'AI search error',
+        message: error.message,
+      });
+    }
+  });
+
+  /** POST /api/v1/ai/summarize-issues — summarize civic issues */
+  app.post('/api/v1/ai/summarize-issues', async (request, reply) => {
+    const body = request.body as { constituencyName?: string; issues?: string[] };
+
+    if (!body.constituencyName || !body.issues) {
+      return reply.status(400).send({
+        error: 'constituencyName and issues array required',
+      });
+    }
+
+    try {
+      const summary = await summarizeIssues(body.constituencyName, body.issues);
+      return { summary };
     } catch (error: any) {
       app.log.error(error);
       return reply.status(500).send({

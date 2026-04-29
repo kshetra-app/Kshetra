@@ -4,6 +4,9 @@ import helmet from '@fastify/helmet';
 import { constituencyRoutes } from './routes/constituencies';
 import { healthRoutes } from './routes/health';
 import { aiRoutes } from './routes/ai';
+import { notificationRoutes } from './routes/notifications';
+import { moderationRoutes } from './routes/moderation';
+import { stateRoutes } from './routes/states';
 
 const envToLogger: Record<string, object | boolean> = {
   development: {
@@ -49,6 +52,9 @@ export async function buildApp() {
   await app.register(healthRoutes, { prefix: '/api' });
   await app.register(constituencyRoutes, { prefix: '/api/v1' });
   await app.register(aiRoutes);
+  await app.register(notificationRoutes);
+  await app.register(moderationRoutes);
+  await app.register(stateRoutes);
 
   return app;
 }

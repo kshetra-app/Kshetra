@@ -10,9 +10,10 @@ import {
   KeyboardAvoidingView,
   ActivityIndicator,
 } from 'react-native';
-import { Stack } from 'expo-router';
+import { Stack, useLocalSearchParams } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { API_BASE_URL } from '@/lib/constants';
+import { TELANGANA_CONSTITUENCIES } from '@/lib/data';
 
 interface Message {
   id: string;
@@ -21,20 +22,39 @@ interface Message {
   timestamp: number;
 }
 
-const SUGGESTED_QUESTIONS = [
+const GENERAL_QUESTIONS = [
   'What were the key takeaways from Telangana 2023?',
   'Which party has been most consistent across elections?',
   'Explain the AIMIM stronghold in Hyderabad',
   'What caused BRS to lose in 2023?',
   'Compare turnout across 2014, 2018, and 2023',
+  'Which constituencies saw the biggest defections?',
+  'Analyze the BRS→INC mass defection of 2024',
 ];
 
 export default function AIChatScreen() {
+  const params = useLocalSearchParams<{ acNo?: string }>();
+  const initialAcNo = params.acNo ? parseInt(params.acNo, 10) : undefined;
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState('');
   const [loading, setLoading] = useState(false);
   const [aiConfigured, setAiConfigured] = useState<boolean | null>(null);
+  const [selectedAcNo, setSelectedAcNo] = useState<number | undefined>(initialAcNo);
   const flatListRef = useRef<FlatList>(null);
+
+  const selectedConstituency = selectedAcNo
+    ? TELANGANA_CONSTITUENCIES.find((c) => c.acNo === selectedAcNo)
+    : undefined;
+
+  const suggestedQuestions = selectedConstituency
+    ? [
+        `Analyze ${selectedConstituency.name} constituency`,
+        `What's the political history of ${selectedConstituency.name}?`,
+        `Tell me about the MLA of ${selectedConstituency.name}`,
+        `How did demographics affect ${selectedConstituency.name}'s result?`,
+        `Were there any defections in ${selectedConstituency.name}?`,
+      ]
+    : GENERAL_QUESTIONS;
 
   const sendMessage = useCallback(
     async (text: string) => {
@@ -60,7 +80,10 @@ export default function AIChatScreen() {
         const res = await fetch(`${API_BASE_URL}/api/v1/ai/chat`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ messages: allMessages }),
+          body: JSON.stringify({
+            messages: allMessages,
+            ...(selectedAcNo ? { constituencyAcNo: selectedAcNo } : {}),
+          }),
         });
 
         const data = await res.json();
@@ -148,9 +171,33 @@ export default function AIChatScreen() {
               Ask me anything about Telangana elections, constituencies, or political trends
             </Text>
 
+            {/* Constituency context picker */}
+            {selectedConstituency ? (
+              <Pressable
+                style={styles.contextBadge}
+                onPress={() => setSelectedAcNo(undefined)}
+              >
+                <Ionicons name="location" size={12} color="#10B981" />
+                <Text style={styles.contextBadgeText}>
+                  Context: #{selectedConstituency.acNo} {selectedConstituency.name}
+                </Text>
+                <Ionicons name="close-circle" size={14} color="#6B7280" />
+              </Pressable>
+            ) : (
+              <Pressable
+                style={styles.contextPicker}
+                onPress={() => setSelectedAcNo(1)}
+              >
+                <Ionicons name="location-outline" size={14} color="#6B7280" />
+                <Text style={styles.contextPickerText}>
+                  Tap to set constituency context
+                </Text>
+              </Pressable>
+            )}
+
             <View style={styles.suggestions}>
               <Text style={styles.suggestionsTitle}>Try asking:</Text>
-              {SUGGESTED_QUESTIONS.map((q, i) => (
+              {suggestedQuestions.map((q, i) => (
                 <Pressable
                   key={i}
                   style={styles.suggestionChip}
@@ -369,5 +416,36 @@ const styles = StyleSheet.create({
   },
   sendDisabled: {
     opacity: 0.4,
+  },
+  contextBadge: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+    marginTop: 16,
+    paddingHorizontal: 12,
+    paddingVertical: 8,
+    backgroundColor: '#10B98120',
+    borderRadius: 20,
+    borderWidth: 1,
+    borderColor: '#10B98140',
+  },
+  contextBadgeText: {
+    fontSize: 12,
+    fontWeight: '600',
+    color: '#10B981',
+  },
+  contextPicker: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+    marginTop: 16,
+    paddingHorizontal: 12,
+    paddingVertical: 8,
+    backgroundColor: '#111827',
+    borderRadius: 20,
+  },
+  contextPickerText: {
+    fontSize: 12,
+    color: '#6B7280',
   },
 });

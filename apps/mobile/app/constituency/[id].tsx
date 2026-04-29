@@ -6,9 +6,11 @@ import { getPartyColor } from '@/lib/constants';
 import { TELANGANA_CONSTITUENCIES, TELANGANA_ELECTION_HISTORY, getMLAProfile, getTriviaForConstituency, getConstituencyHistory, isPartyStronghold, getConstituencyDemographics } from '@/lib/data';
 import { useFavoritesStore } from '../../stores/favorites';
 import { useRecentsStore } from '../../stores/recents';
+import { useMyConstituencyStore } from '../../stores/myConstituency';
 import MLACard from '../../components/MLACard';
 import TriviaCard from '../../components/TriviaCard';
 import DefectionBadge from '../../components/DefectionBadge';
+import AIAnalysisCard from '../../components/AIAnalysisCard';
 
 export default function ConstituencyDetailScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
@@ -17,6 +19,10 @@ export default function ConstituencyDetailScreen() {
   const isFavorite = useFavoritesStore((s) => s.isFavorite(acNo));
   const toggleFavorite = useFavoritesStore((s) => s.toggleFavorite);
   const addRecent = useRecentsStore((s) => s.addRecent);
+  const myHome = useMyConstituencyStore((s) => s.home);
+  const setHome = useMyConstituencyStore((s) => s.setHome);
+  const clearHome = useMyConstituencyStore((s) => s.clearHome);
+  const isMyHome = myHome?.acNo === acNo;
 
   useEffect(() => {
     if (constituency) {
@@ -95,6 +101,35 @@ export default function ConstituencyDetailScreen() {
             </View>
           </View>
         </View>
+
+        {/* Set as My Constituency */}
+        <Pressable
+          style={[
+            styles.homeButton,
+            isMyHome && styles.homeButtonActive,
+          ]}
+          onPress={() => {
+            if (isMyHome) {
+              clearHome();
+            } else {
+              setHome({
+                acNo: constituency.acNo,
+                name: constituency.name,
+                district: constituency.district,
+                party: constituency.winner2023,
+              });
+            }
+          }}
+        >
+          <Ionicons
+            name={isMyHome ? 'home' : 'home-outline'}
+            size={18}
+            color={isMyHome ? '#10B981' : '#6B7280'}
+          />
+          <Text style={[styles.homeButtonText, isMyHome && styles.homeButtonTextActive]}>
+            {isMyHome ? 'My Home Constituency' : 'Set as My Constituency'}
+          </Text>
+        </Pressable>
 
         {/* 2023 Result Card */}
         <View style={styles.section}>
@@ -414,6 +449,11 @@ export default function ConstituencyDetailScreen() {
             </View>
           );
         })()}
+
+        {/* AI Analysis */}
+        <View style={styles.section}>
+          <AIAnalysisCard acNo={acNo} constituencyName={constituency.name} />
+        </View>
       </ScrollView>
     </View>
   );
@@ -492,6 +532,31 @@ const styles = StyleSheet.create({
     fontSize: 12,
     fontWeight: '700',
     color: '#9CA3AF',
+  },
+  homeButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginHorizontal: 20,
+    marginTop: 12,
+    paddingVertical: 12,
+    borderRadius: 12,
+    backgroundColor: '#1F2937',
+    borderWidth: 1,
+    borderColor: '#374151',
+    gap: 8,
+  },
+  homeButtonActive: {
+    backgroundColor: '#10B98120',
+    borderColor: '#10B98140',
+  },
+  homeButtonText: {
+    fontSize: 14,
+    fontWeight: '700',
+    color: '#6B7280',
+  },
+  homeButtonTextActive: {
+    color: '#10B981',
   },
   section: {
     paddingHorizontal: 20,

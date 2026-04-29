@@ -27,7 +27,10 @@ import MapFallback from '../../components/MapFallback';
 import TriviaCard from '../../components/TriviaCard';
 import DefectionBadge from '../../components/DefectionBadge';
 import MapColorToggle, { type MapColorMode } from '../../components/MapColorToggle';
+import MapSearch from '../../components/MapSearch';
+import CompareSheet from '../../components/CompareSheet';
 import { useFavoritesStore } from '../../stores/favorites';
+import { useMyConstituencyStore } from '../../stores/myConstituency';
 import telanganaAssemblyGeo from '@/data/telangana-assembly.json';
 import { TELANGANA_CONSTITUENCIES, type ConstituencySeed, getTriviaForConstituency, getRandomTriviaSet, getConstituencyHistory } from '@/lib/data';
 
@@ -89,6 +92,42 @@ const reservationFillColor: any = [
   '#6B7280',         // fallback
 ];
 
+/** Mapbox expression: color by population density */
+const populationFillColor: any = [
+  'interpolate',
+  ['linear'],
+  ['get', 'POPULATION'],
+  200000, '#DBEAFE',   // light blue — sparse
+  250000, '#60A5FA',   // blue
+  280000, '#3B82F6',   // medium
+  310000, '#2563EB',   // dense
+  350000, '#1D4ED8',   // very dense
+];
+
+/** Mapbox expression: color by literacy rate */
+const literacyFillColor: any = [
+  'interpolate',
+  ['linear'],
+  ['get', 'LITERACY'],
+  40,  '#EF4444',   // red — very low
+  50,  '#F59E0B',   // amber — low
+  60,  '#FBBF24',   // yellow — moderate
+  70,  '#10B981',   // green — good
+  80,  '#059669',   // dark green — high
+];
+
+/** Mapbox expression: color by voter turnout */
+const turnoutFillColor: any = [
+  'interpolate',
+  ['linear'],
+  ['get', 'TURNOUT'],
+  60,  '#EF4444',   // red — low turnout
+  68,  '#F59E0B',   // amber
+  72,  '#FBBF24',   // yellow
+  76,  '#10B981',   // green
+  82,  '#059669',   // dark green — high turnout
+];
+
 interface SelectedConstituency {
   acNo: number;
   name: string;
@@ -120,11 +159,18 @@ function FullMapScreen() {
   const { loading: locating, requestLocation } = useUserLocation();
   const favoriteIds = useFavoritesStore((s) => s.favoriteIds);
 
+  const [showSearch, setShowSearch] = useState(false);
+  const [showCompare, setShowCompare] = useState(false);
+  const myHome = useMyConstituencyStore((s) => s.home);
+
   /** Compute fill color expression based on current color mode */
   const activeFillColor = useMemo(() => {
     switch (colorMode) {
       case 'margin': return marginFillColor;
       case 'reservation': return reservationFillColor;
+      case 'population': return populationFillColor;
+      case 'literacy': return literacyFillColor;
+      case 'turnout': return turnoutFillColor;
       default: return partyFillColor;
     }
   }, [colorMode]);
@@ -348,6 +394,18 @@ function FullMapScreen() {
 
       {/* Action buttons */}
       <View style={styles.actionButtons}>
+        <Pressable
+          style={styles.actionButton}
+          onPress={() => setShowSearch(true)}
+        >
+          <Ionicons name="search" size={20} color="#FFFFFF" />
+        </Pressable>
+        <Pressable
+          style={[styles.actionButton, styles.compareButton]}
+          onPress={() => setShowCompare(true)}
+        >
+          <Ionicons name="git-compare" size={20} color="#FFFFFF" />
+        </Pressable>
         {selected && (
           <Pressable style={styles.actionButton} onPress={handleReset}>
             <Ionicons name="resize" size={20} color="#FFFFFF" />
@@ -378,12 +436,78 @@ function FullMapScreen() {
         <MapColorToggle mode={colorMode} onModeChange={setColorMode} />
       </View>
 
+      {/* My Constituency home marker — shown above trivia when no selection */}
+      {myHome && !selected && (
+        <Pressable
+          style={styles.homeIndicator}
+          onPress={() => {
+            selectConstituency(myHome.acNo, myHome.name, myHome.district);
+            const feature = enrichedGeo.features.find(
+              (f) => f.properties?.AC_NO === myHome.acNo,
+            );
+            if (feature?.geometry?.type === 'Polygon' || feature?.geometry?.type === 'MultiPolygon') {
+              const coords = feature.geometry.type === 'Polygon'
+                ? feature.geometry.coordinates[0]
+                : feature.geometry.coordinates[0][0];
+              if (coords?.length > 0) {
+                let sumLng = 0, sumLat = 0;
+                for (const pt of coords) { sumLng += pt[0]; sumLat += pt[1]; }
+                cameraRef.current?.setCamera({
+                  centerCoordinate: [sumLng / coords.length, sumLat / coords.length],
+                  zoomLevel: CONSTITUENCY_ZOOM,
+                  animationDuration: 600,
+                });
+              }
+            }
+          }}
+        >
+          <Ionicons name="home" size={14} color="#10B981" />
+          <Text style={styles.homeText}>{myHome.name}</Text>
+        </Pressable>
+      )}
+
       {/* Idle trivia — shown when no constituency is selected */}
       {!selected && (
         <View style={styles.idleTriviaContainer}>
           <TriviaCard items={idleTrivia} compact rotateInterval={5000} />
         </View>
       )}
+
+      {/* Search overlay */}
+      {showSearch && (
+        <MapSearch
+          constituencies={TELANGANA_CONSTITUENCIES}
+          onSelect={(acNo, name, district) => {
+            setShowSearch(false);
+            selectConstituency(acNo, name, district);
+            const feature = enrichedGeo.features.find(
+              (f) => f.properties?.AC_NO === acNo,
+            );
+            if (feature?.geometry?.type === 'Polygon' || feature?.geometry?.type === 'MultiPolygon') {
+              const coords = feature.geometry.type === 'Polygon'
+                ? feature.geometry.coordinates[0]
+                : feature.geometry.coordinates[0][0];
+              if (coords?.length > 0) {
+                let sumLng = 0, sumLat = 0;
+                for (const pt of coords) { sumLng += pt[0]; sumLat += pt[1]; }
+                cameraRef.current?.setCamera({
+                  centerCoordinate: [sumLng / coords.length, sumLat / coords.length],
+                  zoomLevel: CONSTITUENCY_ZOOM,
+                  animationDuration: 600,
+                });
+              }
+            }
+          }}
+          onClose={() => setShowSearch(false)}
+        />
+      )}
+
+      {/* Compare sheet */}
+      <CompareSheet
+        visible={showCompare}
+        initialAcNo={selected?.acNo}
+        onClose={() => setShowCompare(false)}
+      />
 
       {/* Bottom Sheet */}
       <BottomSheet
@@ -554,6 +678,28 @@ const styles = StyleSheet.create({
   },
   locateButton: {
     backgroundColor: '#4F8EF7',
+  },
+  compareButton: {
+    backgroundColor: '#8B5CF6',
+  },
+  homeIndicator: {
+    position: 'absolute',
+    bottom: 20,
+    left: 12,
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#10B98120',
+    borderRadius: 8,
+    paddingHorizontal: 10,
+    paddingVertical: 6,
+    gap: 6,
+    borderWidth: 1,
+    borderColor: '#10B98140',
+  },
+  homeText: {
+    fontSize: 12,
+    fontWeight: '700',
+    color: '#10B981',
   },
   actionButtonDisabled: {
     opacity: 0.5,

@@ -15,7 +15,9 @@ import { useFavoritesStore } from '../../stores/favorites';
 import { useRecentsStore } from '../../stores/recents';
 import { useAuthStore } from '../../stores/auth';
 import { useNotificationsStore } from '../../stores/notifications';
+import { useUserProfileStore } from '../../stores/userProfile';
 import { getPartyColor } from '@/lib/constants';
+import UserProfileCard from '../../components/UserProfileCard';
 
 interface SettingRowProps {
   icon: keyof typeof Ionicons.glyphMap;
@@ -52,6 +54,7 @@ export default function ProfileScreen() {
   const unreadCount = useNotificationsStore((s) => s.unreadCount);
   const notifEnabled = useNotificationsStore((s) => s.enabled);
   const toggleNotif = useNotificationsStore((s) => s.toggleEnabled);
+  const userProfile = useUserProfileStore((s) => s.profile);
 
   return (
     <ScrollView
@@ -132,8 +135,39 @@ export default function ProfileScreen() {
             onPress={() => router.push('/notifications')}
             color="#F59E0B"
           />
+          <SettingRow
+            icon="settings"
+            label="Notification Settings"
+            onPress={() => router.push('/notification-settings')}
+            color="#8B5CF6"
+          />
         </View>
       </View>
+
+      {/* User Profile Card */}
+      {userProfile && (
+        <View style={styles.section}>
+          <UserProfileCard
+            displayName={userProfile.displayName}
+            role={userProfile.role}
+            isVerified={userProfile.isVerified}
+            avatarUrl={userProfile.avatarUrl}
+            bio={userProfile.bio}
+            reputation={userProfile.reputation}
+            constituencyName={userProfile.homeConstituencyName}
+            postsCount={userProfile.postsCount}
+            followersCount={userProfile.followersCount}
+            followingCount={userProfile.followingCount}
+          />
+          <Pressable
+            style={styles.editProfileButton}
+            onPress={() => router.push('/edit-profile')}
+          >
+            <Ionicons name="create-outline" size={16} color="#4F8EF7" />
+            <Text style={styles.editProfileText}>Edit Profile</Text>
+          </Pressable>
+        </View>
+      )}
 
       {/* App Info */}
       <View style={styles.section}>
@@ -493,5 +527,20 @@ const styles = StyleSheet.create({
     fontSize: 11,
     color: '#1F2937',
     marginTop: 2,
+  },
+  editProfileButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 6,
+    marginTop: 10,
+    paddingVertical: 10,
+    backgroundColor: '#4F8EF710',
+    borderRadius: 12,
+  },
+  editProfileText: {
+    fontSize: 14,
+    fontWeight: '600',
+    color: '#4F8EF7',
   },
 });

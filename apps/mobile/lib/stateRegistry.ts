@@ -5,16 +5,24 @@
  * Add new states here as they become available.
  */
 import { STATES } from '@kshetra/shared';
-import type { StateInfo } from '@kshetra/shared';
+import type { StateInfo, ConstituencyBrief } from '@kshetra/shared';
 import {
   TELANGANA_CONSTITUENCIES,
   type ConstituencySeed,
 } from '@/lib/data';
+import { getConstituenciesForState, hasFullData as checkFullData } from './stateDataAdapter';
 
 export interface StateData {
   info: StateInfo;
+  /** Raw seed data (Telangana only — other states use adapter) */
   constituencies: ConstituencySeed[];
   hasGeoJSON: boolean;
+  /** Whether this state has full data or just stubs */
+  hasFullData: boolean;
+  /** Total assembly seats for the state */
+  totalSeats: number;
+  /** Currently loaded constituency count */
+  loadedCount: number;
 }
 
 const registry: Record<string, StateData> = {
@@ -22,8 +30,26 @@ const registry: Record<string, StateData> = {
     info: STATES.TS,
     constituencies: TELANGANA_CONSTITUENCIES,
     hasGeoJSON: true,
+    hasFullData: true,
+    totalSeats: 119,
+    loadedCount: TELANGANA_CONSTITUENCIES.length,
   },
-  // AP, KA, MH — add here when seed data is available
+  AP: {
+    info: STATES.AP,
+    constituencies: [], // Use stateDataAdapter for AP
+    hasGeoJSON: false,
+    hasFullData: false,
+    totalSeats: 175,
+    loadedCount: 25,
+  },
+  KA: {
+    info: STATES.KA,
+    constituencies: [], // Use stateDataAdapter for KA
+    hasGeoJSON: false,
+    hasFullData: false,
+    totalSeats: 224,
+    loadedCount: 25,
+  },
 };
 
 /** Get state data by code. Returns null if not yet supported. */

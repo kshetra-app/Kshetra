@@ -55,12 +55,27 @@ export default function TabLayout() {
         }}
       />
       <Tabs.Screen
+        name="feed"
+        options={{
+          title: 'Feed',
+          tabBarIcon: ({ color, size }) => (
+            <TabIcon name="chatbubbles" color={color} size={size} />
+          ),
+        }}
+      />
+      <Tabs.Screen
+        name="dashboard"
+        options={{
+          title: 'Dashboard',
+          tabBarIcon: ({ color, size }) => (
+            <TabIcon name="pulse" color={color} size={size} />
+          ),
+        }}
+      />
+      <Tabs.Screen
         name="intelligence"
         options={{
-          title: 'Intelligence',
-          tabBarIcon: ({ color, size }) => (
-            <TabIcon name="bar-chart" color={color} size={size} />
-          ),
+          href: null, // hidden from tab bar, accessible via navigation
         }}
       />
       <Tabs.Screen

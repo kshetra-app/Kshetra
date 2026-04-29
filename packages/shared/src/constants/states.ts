@@ -39,8 +39,12 @@ export const STATES: Record<string, StateInfo> = {
   },
 };
 
-/** States that have constituency data available */
-export const SUPPORTED_STATES = ['TS'] as const;
+/** States that have full constituency data available */
+export const FULLY_SUPPORTED_STATES = ['TS'] as const;
+export type FullySupportedStateCode = (typeof FULLY_SUPPORTED_STATES)[number];
+
+/** States that have at least stub/partial data available */
+export const SUPPORTED_STATES = ['TS', 'AP', 'KA'] as const;
 export type SupportedStateCode = (typeof SUPPORTED_STATES)[number];
 
 export const INDIA_CENTER = { latitude: 22.5937, longitude: 78.9629 };

@@ -16,6 +16,7 @@ import { useFavoritesStore } from '../../stores/favorites';
 import { useActiveStateStore } from '../../stores/activeState';
 import { getStateData } from '@/lib/stateRegistry';
 import StateSwitcher from '../../components/StateSwitcher';
+import AISmartSearch from '../../components/AISmartSearch';
 import type { ConstituencySeed } from '@/lib/data';
 
 type SortKey = 'acNo' | 'name' | 'margin_asc' | 'margin_desc';
@@ -31,6 +32,7 @@ export default function ExploreScreen() {
   const router = useRouter();
   const [query, setQuery] = useState('');
   const [showFavoritesOnly, setShowFavoritesOnly] = useState(false);
+  const [showAISearch, setShowAISearch] = useState(false);
   const [showFilters, setShowFilters] = useState(false);
   const [partyFilter, setPartyFilter] = useState<string | null>(null);
   const [districtFilter, setDistrictFilter] = useState<string | null>(null);
@@ -149,6 +151,25 @@ export default function ExploreScreen() {
           </Pressable>
         </View>
       </View>
+
+      {/* AI Smart Search toggle */}
+      <View style={styles.aiSearchToggleRow}>
+        <Pressable
+          style={[styles.aiSearchToggle, showAISearch && styles.aiSearchToggleActive]}
+          onPress={() => setShowAISearch((v) => !v)}
+        >
+          <Ionicons name="sparkles" size={14} color={showAISearch ? '#8B5CF6' : '#6B7280'} />
+          <Text style={[styles.aiSearchToggleText, showAISearch && styles.aiSearchToggleTextActive]}>
+            AI Search
+          </Text>
+        </Pressable>
+      </View>
+
+      {showAISearch && (
+        <View style={styles.aiSearchContainer}>
+          <AISmartSearch onSelect={(acNo) => router.push(`/constituency/${acNo}` as any)} />
+        </View>
+      )}
 
       <View style={styles.searchRow}>
         <View style={styles.searchContainer}>
@@ -567,5 +588,34 @@ const styles = StyleSheet.create({
     fontSize: 12,
     color: '#6B7280',
     marginTop: 2,
+  },
+  aiSearchToggleRow: {
+    paddingHorizontal: 16,
+    paddingVertical: 4,
+  },
+  aiSearchToggle: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    alignSelf: 'flex-start',
+    gap: 4,
+    paddingHorizontal: 10,
+    paddingVertical: 6,
+    borderRadius: 8,
+    backgroundColor: '#111827',
+  },
+  aiSearchToggleActive: {
+    backgroundColor: '#8B5CF620',
+  },
+  aiSearchToggleText: {
+    fontSize: 12,
+    fontWeight: '600',
+    color: '#6B7280',
+  },
+  aiSearchToggleTextActive: {
+    color: '#8B5CF6',
+  },
+  aiSearchContainer: {
+    paddingHorizontal: 16,
+    paddingBottom: 4,
   },
 });

@@ -128,6 +128,20 @@ export const PARTY_CONFIG: Record<PartyCode, PartyInfo> = {
     color: '#FF2222',
     secondaryColor: '#FF6666',
   },
+  JSP: {
+    code: 'JSP',
+    name: 'Jana Sena Party',
+    shortName: 'JSP',
+    color: '#FF0000',
+    secondaryColor: '#FF4D4D',
+  },
+  JDS: {
+    code: 'JDS',
+    name: 'Janata Dal (Secular)',
+    shortName: 'JD(S)',
+    color: '#006633',
+    secondaryColor: '#009944',
+  },
   NOTA: {
     code: 'NOTA',
     name: 'None of the Above',

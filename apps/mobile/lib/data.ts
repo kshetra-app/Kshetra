@@ -52,3 +52,15 @@ export {
   getConstituencyDemographics,
   type ConstituencyDemographics,
 } from '../../../data/seed/telangana-demographics';
+
+export {
+  AP_CONSTITUENCIES,
+  getAPConstituency,
+  type APConstituencySeed,
+} from '../../../data/seed/andhra-pradesh-constituencies';
+
+export {
+  KA_CONSTITUENCIES,
+  getKAConstituency,
+  type KAConstituencySeed,
+} from '../../../data/seed/karnataka-constituencies';

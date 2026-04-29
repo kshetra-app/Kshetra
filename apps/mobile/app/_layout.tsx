@@ -6,12 +6,14 @@ import * as SplashScreen from 'expo-splash-screen';
 import { useAuthStore } from '../stores/auth';
 import ErrorBoundary from '../components/ErrorBoundary';
 import { useTheme } from '../lib/useTheme';
+import { usePushNotifications } from '../lib/usePushNotifications';
 
 SplashScreen.preventAutoHideAsync();
 
 export default function RootLayout() {
   const initializeAuth = useAuthStore((s) => s.initialize);
   const { colors, isDark } = useTheme();
+  usePushNotifications();
 
   useEffect(() => {
     initializeAuth();

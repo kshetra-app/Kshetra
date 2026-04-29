@@ -18,6 +18,8 @@ export type PartyCode =
   | 'RJD'
   | 'BSP'
   | 'SP'
+  | 'JSP'
+  | 'JDS'
   | 'NOTA'
   | 'IND'
   | 'OTH';

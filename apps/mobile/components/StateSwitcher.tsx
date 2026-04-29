@@ -9,7 +9,7 @@ import {
 import { Ionicons } from '@expo/vector-icons';
 import { STATES } from '@kshetra/shared';
 import { useActiveStateStore } from '../stores/activeState';
-import { isStateSupported } from '../lib/stateRegistry';
+import { isStateSupported, getStateData } from '../lib/stateRegistry';
 
 export default function StateSwitcher() {
   const [visible, setVisible] = useState(false);
@@ -69,6 +69,18 @@ export default function StateSwitcher() {
                   </View>
                   {isActive && (
                     <Ionicons name="checkmark-circle" size={20} color="#4F8EF7" />
+                  )}
+                  {supported && !isActive && (
+                    <View style={[
+                      styles.statusBadge,
+                      getStateData(state.code)?.hasFullData
+                        ? styles.statusFull
+                        : styles.statusStub,
+                    ]}>
+                      <Text style={styles.statusText}>
+                        {getStateData(state.code)?.hasFullData ? 'Full' : `${getStateData(state.code)?.loadedCount}/${state.assemblySeats}`}
+                      </Text>
+                    </View>
                   )}
                   {!supported && (
                     <Text style={styles.comingSoon}>Coming Soon</Text>
@@ -157,5 +169,21 @@ const styles = StyleSheet.create({
     fontSize: 11,
     color: '#F59E0B',
     fontWeight: '600',
+  },
+  statusBadge: {
+    paddingHorizontal: 8,
+    paddingVertical: 3,
+    borderRadius: 6,
+  },
+  statusFull: {
+    backgroundColor: '#10B98120',
+  },
+  statusStub: {
+    backgroundColor: '#F59E0B20',
+  },
+  statusText: {
+    fontSize: 10,
+    fontWeight: '700',
+    color: '#9CA3AF',
   },
 });
