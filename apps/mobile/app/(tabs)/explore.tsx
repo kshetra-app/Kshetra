@@ -134,8 +134,8 @@ export default function ExploreScreen() {
               <StateSwitcher />
             </View>
             <Text style={styles.subtitle}>
-              {filtered.length} of {allConstituencies.length} constituencies
-              {showFavoritesOnly ? ' (favourites)' : ''}
+              {filtered.length} / {allConstituencies.length} {t('explore.constituencies')}
+              {showFavoritesOnly ? ` (${t('explore.favoritesOnly')})` : ''}
             </Text>
           </View>
           <Pressable
@@ -162,7 +162,7 @@ export default function ExploreScreen() {
         >
           <Ionicons name="sparkles" size={14} color={showAISearch ? '#8B5CF6' : '#6B7280'} />
           <Text style={[styles.aiSearchToggleText, showAISearch && styles.aiSearchToggleTextActive]}>
-            AI Search
+            {t('explore.aiSearch')}
           </Text>
         </Pressable>
       </View>
@@ -240,7 +240,7 @@ export default function ExploreScreen() {
                   style={[styles.chip, !partyFilter && styles.chipActive]}
                   onPress={() => setPartyFilter(null)}
                 >
-                  <Text style={[styles.chipText, !partyFilter && styles.chipTextActive]}>All</Text>
+                  <Text style={[styles.chipText, !partyFilter && styles.chipTextActive]}>{t('common.all')}</Text>
                 </Pressable>
                 {parties.map((p) => (
                   <Pressable
@@ -261,14 +261,14 @@ export default function ExploreScreen() {
 
           {/* District filter */}
           <View style={styles.filterSection}>
-            <Text style={styles.filterLabel}>District</Text>
+            <Text style={styles.filterLabel}>{t('explore.district')}</Text>
             <ScrollView horizontal showsHorizontalScrollIndicator={false}>
               <View style={styles.chipRow}>
                 <Pressable
                   style={[styles.chip, !districtFilter && styles.chipActive]}
                   onPress={() => setDistrictFilter(null)}
                 >
-                  <Text style={[styles.chipText, !districtFilter && styles.chipTextActive]}>All</Text>
+                  <Text style={[styles.chipText, !districtFilter && styles.chipTextActive]}>{t('common.all')}</Text>
                 </Pressable>
                 {districts.map((d) => (
                   <Pressable
@@ -285,21 +285,21 @@ export default function ExploreScreen() {
 
           {/* Reservation type filter */}
           <View style={styles.filterSection}>
-            <Text style={styles.filterLabel}>Type</Text>
+            <Text style={styles.filterLabel}>{t('explore.type')}</Text>
             <View style={styles.chipRow}>
               <Pressable
                 style={[styles.chip, !typeFilter && styles.chipActive]}
                 onPress={() => setTypeFilter(null)}
               >
-                <Text style={[styles.chipText, !typeFilter && styles.chipTextActive]}>All</Text>
+                <Text style={[styles.chipText, !typeFilter && styles.chipTextActive]}>{t('common.all')}</Text>
               </Pressable>
-              {['GEN', 'SC', 'ST'].map((t) => (
+              {['GEN', 'SC', 'ST'].map((tp) => (
                 <Pressable
-                  key={t}
-                  style={[styles.chip, typeFilter === t && styles.chipActive]}
-                  onPress={() => setTypeFilter(typeFilter === t ? null : t)}
+                  key={tp}
+                  style={[styles.chip, typeFilter === tp && styles.chipActive]}
+                  onPress={() => setTypeFilter(typeFilter === tp ? null : tp)}
                 >
-                  <Text style={[styles.chipText, typeFilter === t && styles.chipTextActive]}>{t}</Text>
+                  <Text style={[styles.chipText, typeFilter === tp && styles.chipTextActive]}>{tp}</Text>
                 </Pressable>
               ))}
             </View>
@@ -308,7 +308,7 @@ export default function ExploreScreen() {
           {activeFilterCount > 0 && (
             <Pressable style={styles.clearButton} onPress={clearAllFilters}>
               <Ionicons name="close" size={14} color="#EF4444" />
-              <Text style={styles.clearButtonText}>Clear all filters</Text>
+              <Text style={styles.clearButtonText}>{t('explore.clearFilters')}</Text>
             </Pressable>
           )}
         </View>
@@ -317,9 +317,9 @@ export default function ExploreScreen() {
       {filtered.length === 0 ? (
         <View style={styles.emptyState}>
           <Ionicons name="search" size={40} color="#4B5563" />
-          <Text style={styles.emptyTitle}>No results</Text>
+          <Text style={styles.emptyTitle}>{t('common.noResults')}</Text>
           <Text style={styles.emptyText}>
-            Try adjusting your search or filters
+            {t('explore.noResultsHint')}
           </Text>
         </View>
       ) : (

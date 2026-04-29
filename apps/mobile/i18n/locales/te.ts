@@ -119,6 +119,7 @@ const te: TranslationKeys = {
     district: 'జిల్లా',
     type: 'రకం',
     clearFilters: 'ఫిల్టర్లు తీసివేయండి',
+    noResultsHint: 'మీ వెతుకుడు లేదా ఫిల్టర్లను సవరించి ప్రయత్నించండి',
     favoritesOnly: 'ఇష్టమైనవి మాత్రమే',
     aiSearch: 'AI వెతుకు',
     constituencies: 'నియోజకవర్గాలు',
@@ -201,6 +202,7 @@ const te: TranslationKeys = {
     },
     emptyFeed: 'ఇంకా పోస్ట్‌లు లేవు. మొదటివారు కండి!',
     trending: 'ట్రెండింగ్',
+    trendingIn: '{{state}}లో ట్రెండింగ్',
     share: 'ఈ పోస్ట్‌ను షేర్ చేయండి',
     react: 'రియాక్ట్',
     reply: 'జవాబు',
@@ -231,10 +233,17 @@ const te: TranslationKeys = {
   // ── Compose ─────────────────────────────────────────────────
   compose: {
     title: 'కొత్త పోస్ట్',
+    replyTo: '{{name}}కు జవాబు',
     placeholder: 'మీ ఆలోచనలు ఏమిటి?',
+    pollPlaceholder: 'మీ సర్వే ప్రశ్నను రాయండి…',
+    replyPlaceholder: 'మీ జవాబు రాయండి…',
+    constituencyPlaceholder: 'మీ నియోజకవర్గంలో ఏం జరుగుతోంది?',
     postType: 'పోస్ట్ రకం',
     addHashtags: 'హ్యాష్‌ట్యాగ్‌లు జోడించండి',
     submit: 'పోస్ట్ చేయండి',
+    postingIn: '{{name}}లో పోస్ట్ చేస్తున్నారు',
+    pollOptions: 'సర్వే ఎంపికలు',
+    addOption: 'ఎంపిక జోడించండి',
     selectConstituency: 'నియోజకవర్గాన్ని ట్యాగ్ చేయండి',
   },
 

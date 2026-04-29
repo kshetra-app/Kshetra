@@ -1,6 +1,9 @@
 import { useMemo } from 'react';
 import { View, Text, StyleSheet, Pressable, FlatList } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import { useTranslation } from 'react-i18next';
+import { STATES } from '@kshetra/shared';
+import { useActiveStateStore } from '../stores/activeState';
 import type { Post, TrendingHashtag } from '../lib/feedTypes';
 
 interface TrendingHashtagsProps {
@@ -14,6 +17,9 @@ export default function TrendingHashtags({
   onTagPress,
   maxTags = 10,
 }: TrendingHashtagsProps) {
+  const { t } = useTranslation();
+  const stateCode = useActiveStateStore((s) => s.stateCode);
+  const stateName = STATES[stateCode]?.name ?? stateCode;
   const trending = useMemo((): TrendingHashtag[] => {
     const counts = new Map<string, number>();
     for (const post of posts) {
@@ -35,7 +41,7 @@ export default function TrendingHashtags({
     <View style={styles.container}>
       <View style={styles.header}>
         <Ionicons name="trending-up" size={18} color="#F59E0B" />
-        <Text style={styles.title}>Trending in Telangana</Text>
+        <Text style={styles.title}>{t('feed.trendingIn', { state: stateName })}</Text>
       </View>
       <FlatList
         data={trending}
@@ -52,7 +58,7 @@ export default function TrendingHashtags({
             <View>
               <Text style={styles.tagName}>#{item.tag}</Text>
               <Text style={styles.tagCount}>
-                {item.postCount} post{item.postCount !== 1 ? 's' : ''}
+                {item.postCount} {t('content.sentimentLabels.posts')}
               </Text>
             </View>
           </Pressable>

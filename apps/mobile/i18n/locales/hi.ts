@@ -114,6 +114,7 @@ const hi: TranslationKeys = {
     district: 'जिला',
     type: 'प्रकार',
     clearFilters: 'फ़िल्टर हटाएँ',
+    noResultsHint: 'अपनी खोज या फ़िल्टर बदलकर देखें',
     favoritesOnly: 'केवल पसंदीदा',
     aiSearch: 'AI खोज',
     constituencies: 'निर्वाचन क्षेत्र',
@@ -194,6 +195,7 @@ const hi: TranslationKeys = {
     },
     emptyFeed: 'अभी तक कोई पोस्ट नहीं। पहले बनें!',
     trending: 'ट्रेंडिंग',
+    trendingIn: '{{state}} में ट्रेंडिंग',
     share: 'यह पोस्ट साझा करें',
     react: 'प्रतिक्रिया',
     reply: 'जवाब',
@@ -223,10 +225,17 @@ const hi: TranslationKeys = {
 
   compose: {
     title: 'नई पोस्ट',
+    replyTo: '{{name}} को जवाब',
     placeholder: 'आपके विचार क्या हैं?',
+    pollPlaceholder: 'अपना सर्वे प्रश्न लिखें…',
+    replyPlaceholder: 'अपना जवाब लिखें…',
+    constituencyPlaceholder: 'आपके निर्वाचन क्षेत्र में क्या हो रहा है?',
     postType: 'पोस्ट प्रकार',
     addHashtags: 'हैशटैग जोड़ें',
     submit: 'पोस्ट करें',
+    postingIn: '{{name}} में पोस्ट कर रहे हैं',
+    pollOptions: 'सर्वे विकल्प',
+    addOption: 'विकल्प जोड़ें',
     selectConstituency: 'निर्वाचन क्षेत्र टैग करें',
   },
 

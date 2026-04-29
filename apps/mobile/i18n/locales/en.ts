@@ -116,6 +116,7 @@ const en = {
     district: 'District',
     type: 'Type',
     clearFilters: 'Clear Filters',
+    noResultsHint: 'Try adjusting your search or filters',
     favoritesOnly: 'Favorites Only',
     aiSearch: 'AI Search',
     constituencies: 'constituencies',
@@ -198,6 +199,7 @@ const en = {
     },
     emptyFeed: 'No posts yet. Be the first to share!',
     trending: 'Trending',
+    trendingIn: 'Trending in {{state}}',
     share: 'Share this post',
     react: 'React',
     reply: 'Reply',
@@ -228,10 +230,17 @@ const en = {
   // ── Compose ─────────────────────────────────────────────────
   compose: {
     title: 'New Post',
+    replyTo: 'Reply to {{name}}',
     placeholder: "What's on your mind?",
+    pollPlaceholder: 'Write your poll question…',
+    replyPlaceholder: 'Write your reply…',
+    constituencyPlaceholder: "What's happening in your constituency?",
     postType: 'Post Type',
     addHashtags: 'Add hashtags',
     submit: 'Post',
+    postingIn: 'Posting in {{name}}',
+    pollOptions: 'Poll Options',
+    addOption: 'Add option',
     selectConstituency: 'Tag a constituency',
   },
 

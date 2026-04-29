@@ -12,6 +12,7 @@ import {
   Alert,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import { useTranslation } from 'react-i18next';
 import type { PostType, Post, PollOption } from '../lib/feedTypes';
 import { useAuthStore } from '../stores/auth';
 import { useMyConstituencyStore } from '../stores/myConstituency';
@@ -23,18 +24,19 @@ interface ComposeSheetProps {
   replyTo?: { postId: string; authorName: string };
 }
 
-const POST_TYPES: { key: PostType; icon: string; label: string; color: string }[] = [
-  { key: 'discussion', icon: 'chatbubbles', label: 'Discussion', color: '#6366F1' },
-  { key: 'news', icon: 'newspaper', label: 'News', color: '#3B82F6' },
-  { key: 'opinion', icon: 'megaphone', label: 'Opinion', color: '#F59E0B' },
-  { key: 'question', icon: 'help-circle', label: 'Question', color: '#10B981' },
-  { key: 'poll', icon: 'stats-chart', label: 'Poll', color: '#8B5CF6' },
+const POST_TYPES: { key: PostType; icon: string; tKey: string; color: string }[] = [
+  { key: 'discussion', icon: 'chatbubbles', tKey: 'postCard.discussion', color: '#6366F1' },
+  { key: 'news', icon: 'newspaper', tKey: 'postCard.news', color: '#3B82F6' },
+  { key: 'opinion', icon: 'megaphone', tKey: 'postCard.opinion', color: '#F59E0B' },
+  { key: 'question', icon: 'help-circle', tKey: 'postCard.question', color: '#10B981' },
+  { key: 'poll', icon: 'stats-chart', tKey: 'postCard.poll', color: '#8B5CF6' },
 ];
 
 const MAX_CONTENT_LENGTH = 2000;
 const MAX_POLL_OPTIONS = 4;
 
 export default function ComposeSheet({ visible, onClose, onSubmit, replyTo }: ComposeSheetProps) {
+  const { t } = useTranslation();
   const [content, setContent] = useState('');
   const [postType, setPostType] = useState<PostType>(replyTo ? 'discussion' : 'discussion');
   const [pollOptions, setPollOptions] = useState<string[]>(['', '']);
@@ -117,14 +119,14 @@ export default function ComposeSheet({ visible, onClose, onSubmit, replyTo }: Co
             <Ionicons name="close" size={24} color="#9CA3AF" />
           </Pressable>
           <Text style={styles.headerTitle}>
-            {replyTo ? `Reply to ${replyTo.authorName}` : 'New Post'}
+            {replyTo ? t('compose.replyTo', { name: replyTo.authorName }) : t('compose.title')}
           </Text>
           <Pressable
             style={[styles.submitButton, (!canSubmit || !canSubmitPoll) && styles.submitDisabled]}
             onPress={handleSubmit}
             disabled={!canSubmit || !canSubmitPoll}
           >
-            <Text style={styles.submitText}>Post</Text>
+            <Text style={styles.submitText}>{t('compose.submit')}</Text>
           </Pressable>
         </View>
 
@@ -132,17 +134,17 @@ export default function ComposeSheet({ visible, onClose, onSubmit, replyTo }: Co
           {/* Type selector */}
           {!replyTo && (
             <View style={styles.typeRow}>
-              {POST_TYPES.map((t) => {
-                const active = postType === t.key;
+              {POST_TYPES.map((pt) => {
+                const active = postType === pt.key;
                 return (
                   <Pressable
-                    key={t.key}
-                    style={[styles.typeChip, active && { backgroundColor: t.color + '20', borderColor: t.color + '40' }]}
-                    onPress={() => setPostType(t.key)}
+                    key={pt.key}
+                    style={[styles.typeChip, active && { backgroundColor: pt.color + '20', borderColor: pt.color + '40' }]}
+                    onPress={() => setPostType(pt.key)}
                   >
-                    <Ionicons name={t.icon as any} size={14} color={active ? t.color : '#6B7280'} />
-                    <Text style={[styles.typeChipText, active && { color: t.color }]}>
-                      {t.label}
+                    <Ionicons name={pt.icon as any} size={14} color={active ? pt.color : '#6B7280'} />
+                    <Text style={[styles.typeChipText, active && { color: pt.color }]}>
+                      {t(pt.tKey)}
                     </Text>
                   </Pressable>
                 );
@@ -155,7 +157,7 @@ export default function ComposeSheet({ visible, onClose, onSubmit, replyTo }: Co
             <View style={styles.constituencyBadge}>
               <Ionicons name="location" size={14} color="#4F8EF7" />
               <Text style={styles.constituencyBadgeText}>
-                Posting in {myHome.name}
+                {t('compose.postingIn', { name: myHome.name })}
               </Text>
             </View>
           )}
@@ -166,10 +168,10 @@ export default function ComposeSheet({ visible, onClose, onSubmit, replyTo }: Co
             style={styles.input}
             placeholder={
               isPoll
-                ? 'Write your poll question...'
+                ? t('compose.pollPlaceholder')
                 : replyTo
-                  ? 'Write your reply...'
-                  : "What's happening in your constituency?"
+                  ? t('compose.replyPlaceholder')
+                  : t('compose.constituencyPlaceholder')
             }
             placeholderTextColor="#4B5563"
             value={content}
@@ -192,7 +194,7 @@ export default function ComposeSheet({ visible, onClose, onSubmit, replyTo }: Co
           {/* Poll options */}
           {isPoll && (
             <View style={styles.pollSection}>
-              <Text style={styles.pollSectionTitle}>Poll Options</Text>
+              <Text style={styles.pollSectionTitle}>{t('compose.pollOptions')}</Text>
               {pollOptions.map((opt, idx) => (
                 <View key={idx} style={styles.pollOptionRow}>
                   <TextInput
@@ -223,7 +225,7 @@ export default function ComposeSheet({ visible, onClose, onSubmit, replyTo }: Co
                   onPress={() => setPollOptions([...pollOptions, ''])}
                 >
                   <Ionicons name="add-circle" size={18} color="#4F8EF7" />
-                  <Text style={styles.addOptionText}>Add option</Text>
+                  <Text style={styles.addOptionText}>{t('compose.addOption')}</Text>
                 </Pressable>
               )}
             </View>

@@ -114,6 +114,7 @@ const kn: TranslationKeys = {
     district: 'ಜಿಲ್ಲೆ',
     type: 'ಪ್ರಕಾರ',
     clearFilters: 'ಫಿಲ್ಟರ್‌ಗಳನ್ನು ತೆಗೆಯಿರಿ',
+    noResultsHint: 'ನಿಮ್ಮ ಹುಡುಕಾಟ ಅಥವಾ ಫಿಲ್ಟರ್ ಬದಲಿಸಿ ನೋಡಿ',
     favoritesOnly: 'ಮೆಚ್ಚಿನವು ಮಾತ್ರ',
     aiSearch: 'AI ಹುಡುಕಾಟ',
     constituencies: 'ಕ್ಷೇತ್ರಗಳು',
@@ -194,6 +195,7 @@ const kn: TranslationKeys = {
     },
     emptyFeed: 'ಇನ್ನೂ ಪೋಸ್ಟ್‌ಗಳಿಲ್ಲ. ಮೊದಲಿಗರಾಗಿ!',
     trending: 'ಟ್ರೆಂಡಿಂಗ್',
+    trendingIn: '{{state}}ನಲ್ಲಿ ಟ್ರೆಂಡಿಂಗ್',
     share: 'ಈ ಪೋಸ್ಟ್ ಹಂಚಿಕೊಳ್ಳಿ',
     react: 'ಪ್ರತಿಕ್ರಿಯೆ',
     reply: 'ಉತ್ತರ',
@@ -223,10 +225,17 @@ const kn: TranslationKeys = {
 
   compose: {
     title: 'ಹೊಸ ಪೋಸ್ಟ್',
+    replyTo: '{{name}} ಅವರಿಗೆ ಉತ್ತರ',
     placeholder: 'ನಿಮ್ಮ ಆಲೋಚನೆಗಳೇನು?',
+    pollPlaceholder: 'ನಿಮ್ಮ ಸಮೀಕ್ಷೆ ಪ್ರಶ್ನೆ ಬರೆಯಿರಿ…',
+    replyPlaceholder: 'ನಿಮ್ಮ ಉತ್ತರ ಬರೆಯಿರಿ…',
+    constituencyPlaceholder: 'ನಿಮ್ಮ ಕ್ಷೇತ್ರದಲ್ಲಿ ಏನಾಗುತ್ತಿದೆ?',
     postType: 'ಪೋಸ್ಟ್ ಪ್ರಕಾರ',
     addHashtags: 'ಹ್ಯಾಶ್‌ಟ್ಯಾಗ್ ಸೇರಿಸಿ',
     submit: 'ಪೋಸ್ಟ್ ಮಾಡಿ',
+    postingIn: '{{name}}ನಲ್ಲಿ ಪೋಸ್ಟ್ ಮಾಡುತ್ತಿದ್ದೀರಿ',
+    pollOptions: 'ಸಮೀಕ್ಷೆ ಆಯ್ಕೆಗಳು',
+    addOption: 'ಆಯ್ಕೆ ಸೇರಿಸಿ',
     selectConstituency: 'ಕ್ಷೇತ್ರವನ್ನು ಟ್ಯಾಗ್ ಮಾಡಿ',
   },
 
