@@ -4,7 +4,7 @@
  * Initializes i18next with:
  * - expo-localization for device locale detection
  * - AsyncStorage-backed language persistence
- * - 4 languages: English, Telugu, Hindi, Kannada
+ * - 5 languages: English, Telugu, Hindi, Kannada, Marathi
  * - Fallback to English for missing keys
  */
 import i18n from 'i18next';
@@ -15,12 +15,14 @@ import en from './locales/en';
 import te from './locales/te';
 import hi from './locales/hi';
 import kn from './locales/kn';
+import mr from './locales/mr';
 
 export const LANGUAGES = [
   { code: 'en', label: 'English', nativeLabel: 'English', script: 'Latin' },
   { code: 'te', label: 'Telugu', nativeLabel: 'తెలుగు', script: 'Telugu' },
   { code: 'hi', label: 'Hindi', nativeLabel: 'हिन्दी', script: 'Devanagari' },
   { code: 'kn', label: 'Kannada', nativeLabel: 'ಕನ್ನಡ', script: 'Kannada' },
+  { code: 'mr', label: 'Marathi', nativeLabel: 'मराठी', script: 'Devanagari' },
 ] as const;
 
 export type LanguageCode = (typeof LANGUAGES)[number]['code'];
@@ -77,7 +79,7 @@ export const STATE_LANGUAGE_MAP: Record<string, LanguageCode> = {
   TS: 'te',
   AP: 'te',
   KA: 'kn',
-  MH: 'hi',
+  MH: 'mr',
 };
 
 // Initialize i18next
@@ -87,6 +89,7 @@ i18n.use(initReactI18next).init({
     te: { translation: te },
     hi: { translation: hi },
     kn: { translation: kn },
+    mr: { translation: mr },
   },
   lng: getDeviceLanguage(), // sync fallback — async override below
   fallbackLng: 'en',

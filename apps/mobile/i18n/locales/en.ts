@@ -609,6 +609,7 @@ const en = {
     te: 'తెలుగు',
     hi: 'हिन्दी',
     kn: 'ಕನ್ನಡ',
+    mr: 'मराठी',
     systemDefault: 'System Default',
     changeConfirm: 'Change language to {{language}}?',
   },

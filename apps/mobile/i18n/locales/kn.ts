@@ -592,6 +592,7 @@ const kn: TranslationKeys = {
     te: 'తెలుగు',
     hi: 'हिन्दी',
     kn: 'ಕನ್ನಡ',
+    mr: 'मराठी',
     systemDefault: 'ಸಿಸ್ಟಂ ಡೀಫಾಲ್ಟ್',
     changeConfirm: 'ಭಾಷೆಯನ್ನು {{language}} ಆಗಿ ಬದಲಾಯಿಸಬೇಕೇ?',
   },
