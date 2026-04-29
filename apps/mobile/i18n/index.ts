@@ -9,7 +9,6 @@
  */
 import i18n from 'i18next';
 import { initReactI18next } from 'react-i18next';
-import { getLocales } from 'expo-localization';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 import en from './locales/en';
@@ -33,15 +32,18 @@ const STORAGE_KEY = 'kshetra-language';
 /** Get the device's preferred language if we support it, else 'en' */
 function getDeviceLanguage(): LanguageCode {
   try {
+    // Dynamic require — expo-localization needs a native module that may not
+    // be present in every dev-client build. Gracefully fall back to 'en'.
+    const { getLocales } = require('expo-localization');
     const locales = getLocales();
-    if (locales.length > 0) {
+    if (locales && locales.length > 0) {
       const deviceLang = locales[0].languageCode;
       if (deviceLang && SUPPORTED_LANGUAGE_CODES.includes(deviceLang as LanguageCode)) {
         return deviceLang as LanguageCode;
       }
     }
   } catch {
-    // getLocales() can throw in some environments
+    // Native module unavailable or getLocales() threw — use fallback
   }
   return 'en';
 }
