@@ -11,14 +11,15 @@ import {
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { getPartyColor } from '@/lib/constants';
-import type { ConstituencySeed, ConstituencyDemographics, MLAProfile } from '@/lib/data';
 import {
-  TELANGANA_CONSTITUENCIES,
-  getMLAProfile,
-  getConstituencyDemographics,
-  getConstituencyHistory,
-  isPartyStronghold,
-} from '@/lib/data';
+  getMLAProfileForState,
+  getDemographicsForState,
+  getHistoryForState,
+  isStrongholdForState,
+  hasFullDataForState,
+} from '@/lib/stateDataDispatcher';
+import { getUnifiedConstituenciesForState, type UnifiedConstituency } from '@/lib/stateDataAdapter';
+import { useActiveStateStore } from '../stores/activeState';
 
 interface CompareSheetProps {
   visible: boolean;
@@ -65,8 +66,8 @@ function ConstituencyPicker({
   constituencies,
   onSelect,
 }: {
-  constituencies: ConstituencySeed[];
-  onSelect: (c: ConstituencySeed) => void;
+  constituencies: UnifiedConstituency[];
+  onSelect: (c: UnifiedConstituency) => void;
 }) {
   const [q, setQ] = useState('');
 
@@ -103,7 +104,7 @@ function ConstituencyPicker({
         style={styles.pickerList}
         renderItem={({ item }) => (
           <Pressable style={styles.pickerItem} onPress={() => onSelect(item)}>
-            <View style={[styles.pickerDot, { backgroundColor: getPartyColor(item.winner2023) }]} />
+            <View style={[styles.pickerDot, { backgroundColor: getPartyColor(item.winnerParty) }]} />
             <Text style={styles.pickerName}>{item.name}</Text>
             <Text style={styles.pickerAc}>#{item.acNo}</Text>
           </Pressable>
@@ -114,28 +115,35 @@ function ConstituencyPicker({
 }
 
 export default function CompareSheet({ visible, initialAcNo, onClose }: CompareSheetProps) {
+  const stateCode = useActiveStateStore((s) => s.stateCode);
+  const hasFull = hasFullDataForState(stateCode);
+  const stateConstituencies = useMemo(
+    () => getUnifiedConstituenciesForState(stateCode),
+    [stateCode],
+  );
+
   const [leftAcNo, setLeftAcNo] = useState<number | null>(initialAcNo ?? null);
   const [rightAcNo, setRightAcNo] = useState<number | null>(null);
   const [pickingSide, setPickingSide] = useState<'left' | 'right' | null>(null);
 
   const left = useMemo(
-    () => (leftAcNo ? TELANGANA_CONSTITUENCIES.find((c) => c.acNo === leftAcNo) : undefined),
-    [leftAcNo],
+    () => (leftAcNo ? stateConstituencies.find((c) => c.acNo === leftAcNo) : undefined),
+    [leftAcNo, stateConstituencies],
   );
   const right = useMemo(
-    () => (rightAcNo ? TELANGANA_CONSTITUENCIES.find((c) => c.acNo === rightAcNo) : undefined),
-    [rightAcNo],
+    () => (rightAcNo ? stateConstituencies.find((c) => c.acNo === rightAcNo) : undefined),
+    [rightAcNo, stateConstituencies],
   );
 
-  const leftDemo = leftAcNo ? getConstituencyDemographics(leftAcNo) : null;
-  const rightDemo = rightAcNo ? getConstituencyDemographics(rightAcNo) : null;
-  const leftMLA = leftAcNo ? getMLAProfile(leftAcNo) : null;
-  const rightMLA = rightAcNo ? getMLAProfile(rightAcNo) : null;
-  const leftHist = leftAcNo ? getConstituencyHistory(leftAcNo) : null;
-  const rightHist = rightAcNo ? getConstituencyHistory(rightAcNo) : null;
+  const leftDemo = hasFull && leftAcNo ? getDemographicsForState(stateCode, leftAcNo) : null;
+  const rightDemo = hasFull && rightAcNo ? getDemographicsForState(stateCode, rightAcNo) : null;
+  const leftMLA = hasFull && leftAcNo ? getMLAProfileForState(stateCode, leftAcNo) : null;
+  const rightMLA = hasFull && rightAcNo ? getMLAProfileForState(stateCode, rightAcNo) : null;
+  const leftHistory = hasFull && leftAcNo ? getHistoryForState(stateCode, leftAcNo) : [];
+  const rightHistory = hasFull && rightAcNo ? getHistoryForState(stateCode, rightAcNo) : [];
 
   const handlePick = useCallback(
-    (c: ConstituencySeed) => {
+    (c: UnifiedConstituency) => {
       if (pickingSide === 'left') setLeftAcNo(c.acNo);
       else setRightAcNo(c.acNo);
       setPickingSide(null);
@@ -164,7 +172,7 @@ export default function CompareSheet({ visible, initialAcNo, onClose }: CompareS
           <Pressable style={styles.selector} onPress={() => setPickingSide('left')}>
             {left ? (
               <>
-                <View style={[styles.selectorDot, { backgroundColor: getPartyColor(left.winner2023) }]} />
+                <View style={[styles.selectorDot, { backgroundColor: getPartyColor(left.winnerParty) }]} />
                 <Text style={styles.selectorName} numberOfLines={1}>{left.name}</Text>
               </>
             ) : (
@@ -179,7 +187,7 @@ export default function CompareSheet({ visible, initialAcNo, onClose }: CompareS
           <Pressable style={styles.selector} onPress={() => setPickingSide('right')}>
             {right ? (
               <>
-                <View style={[styles.selectorDot, { backgroundColor: getPartyColor(right.winner2023) }]} />
+                <View style={[styles.selectorDot, { backgroundColor: getPartyColor(right.winnerParty) }]} />
                 <Text style={styles.selectorName} numberOfLines={1}>{right.name}</Text>
               </>
             ) : (
@@ -200,7 +208,7 @@ export default function CompareSheet({ visible, initialAcNo, onClose }: CompareS
               </Pressable>
             </View>
             <ConstituencyPicker
-              constituencies={TELANGANA_CONSTITUENCIES}
+              constituencies={stateConstituencies}
               onSelect={handlePick}
             />
           </View>
@@ -211,32 +219,32 @@ export default function CompareSheet({ visible, initialAcNo, onClose }: CompareS
           <ScrollView style={styles.scroll} contentContainerStyle={styles.scrollContent}>
             {/* Party headers */}
             <View style={styles.partyRow}>
-              <View style={[styles.partyBadge, { backgroundColor: getPartyColor(left.winner2023) }]}>
-                <Text style={styles.partyText}>{left.winner2023}</Text>
+              <View style={[styles.partyBadge, { backgroundColor: getPartyColor(left.winnerParty) }]}>
+                <Text style={styles.partyText}>{left.winnerParty}</Text>
               </View>
               <Text style={styles.vsText}>vs</Text>
-              <View style={[styles.partyBadge, { backgroundColor: getPartyColor(right.winner2023) }]}>
-                <Text style={styles.partyText}>{right.winner2023}</Text>
+              <View style={[styles.partyBadge, { backgroundColor: getPartyColor(right.winnerParty) }]}>
+                <Text style={styles.partyText}>{right.winnerParty}</Text>
               </View>
             </View>
 
             {/* MLA names */}
             <View style={styles.statRow}>
-              <Text style={styles.mlaName} numberOfLines={1}>{left.winnerName2023}</Text>
+              <Text style={styles.mlaName} numberOfLines={1}>{left.winnerName}</Text>
               <Text style={styles.statLabel}>MLA</Text>
-              <Text style={styles.mlaName} numberOfLines={1}>{right.winnerName2023}</Text>
+              <Text style={styles.mlaName} numberOfLines={1}>{right.winnerName}</Text>
             </View>
 
             {/* Election stats */}
             <View style={styles.sectionDivider}>
-              <Text style={styles.sectionLabel}>2023 Election</Text>
+              <Text style={styles.sectionLabel}>{left.electionYear ?? ''} Election</Text>
             </View>
-            <StatCompare label="Winner Votes" leftValue={left.winnerVotes2023} rightValue={right.winnerVotes2023} format="compact" />
-            <StatCompare label="Margin" leftValue={left.margin2023} rightValue={right.margin2023} format="compact" />
+            <StatCompare label="Winner Votes" leftValue={left.winnerVotes} rightValue={right.winnerVotes} format="compact" />
+            <StatCompare label="Margin" leftValue={left.margin} rightValue={right.margin} format="compact" />
             <StatCompare
               label="Margin %"
-              leftValue={parseFloat(((left.margin2023 / Math.max(left.winnerVotes2023, 1)) * 100).toFixed(1))}
-              rightValue={parseFloat(((right.margin2023 / Math.max(right.winnerVotes2023, 1)) * 100).toFixed(1))}
+              leftValue={parseFloat(((left.margin / Math.max(left.winnerVotes, 1)) * 100).toFixed(1))}
+              rightValue={parseFloat(((right.margin / Math.max(right.winnerVotes, 1)) * 100).toFixed(1))}
               format="pct"
             />
 
@@ -273,22 +281,22 @@ export default function CompareSheet({ visible, initialAcNo, onClose }: CompareS
             )}
 
             {/* History */}
-            {leftHist && rightHist && (
+            {leftHistory.length > 0 && rightHistory.length > 0 && (
               <>
                 <View style={styles.sectionDivider}>
                   <Text style={styles.sectionLabel}>Historical Comparison</Text>
                 </View>
-                {([2014, 2018] as const).map((yr) => {
-                  const lh = yr === 2014 ? leftHist.ac2014 : leftHist.ac2018;
-                  const rh = yr === 2014 ? rightHist.ac2014 : rightHist.ac2018;
-                  if (!lh || !rh) return null;
+                {leftHistory.map((lh) => {
+                  const rh = rightHistory.find((r) => r.year === lh.year);
+                  if (!rh) return null;
+                  const normalize = (p: string) => (p === 'TRS' ? 'BRS' : p);
                   return (
-                    <View key={yr} style={styles.statRow}>
-                      <Text style={[styles.statValue, { color: getPartyColor(lh.party === 'TRS' ? 'BRS' : lh.party) }]}>
+                    <View key={lh.year} style={styles.statRow}>
+                      <Text style={[styles.statValue, { color: getPartyColor(normalize(lh.party)) }]}>
                         {lh.party}
                       </Text>
-                      <Text style={styles.statLabel}>{yr} Winner</Text>
-                      <Text style={[styles.statValue, { color: getPartyColor(rh.party === 'TRS' ? 'BRS' : rh.party) }]}>
+                      <Text style={styles.statLabel}>{lh.year} Winner</Text>
+                      <Text style={[styles.statValue, { color: getPartyColor(normalize(rh.party)) }]}>
                         {rh.party}
                       </Text>
                     </View>
@@ -296,7 +304,7 @@ export default function CompareSheet({ visible, initialAcNo, onClose }: CompareS
                 })}
                 <View style={styles.statRow}>
                   <View style={styles.badgeWrap}>
-                    {leftAcNo && isPartyStronghold(leftAcNo, left.winner2023) ? (
+                    {leftAcNo && isStrongholdForState(stateCode, leftAcNo, left.winnerParty) ? (
                       <View style={styles.strongholdBadge}>
                         <Ionicons name="shield-checkmark" size={12} color="#10B981" />
                         <Text style={styles.strongholdText}>Stronghold</Text>
@@ -310,7 +318,7 @@ export default function CompareSheet({ visible, initialAcNo, onClose }: CompareS
                   </View>
                   <Text style={styles.statLabel}>Loyalty</Text>
                   <View style={styles.badgeWrap}>
-                    {rightAcNo && isPartyStronghold(rightAcNo, right.winner2023) ? (
+                    {rightAcNo && isStrongholdForState(stateCode, rightAcNo, right.winnerParty) ? (
                       <View style={styles.strongholdBadge}>
                         <Ionicons name="shield-checkmark" size={12} color="#10B981" />
                         <Text style={styles.strongholdText}>Stronghold</Text>

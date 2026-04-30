@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect, useCallback } from 'react';
 import {
   View,
   Text,
@@ -9,12 +9,18 @@ import {
   KeyboardAvoidingView,
   Platform,
   ScrollView,
+  Alert,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import { Image } from 'expo-image';
+import * as ImagePicker from 'expo-image-picker';
 import type { IssueCategory, IssueSeverity, CivicIssue } from '../lib/civicTypes';
 import { ISSUE_CATEGORY_CONFIG, SEVERITY_CONFIG } from '../lib/civicTypes';
 import { useAuthStore } from '../stores/auth';
 import { useMyConstituencyStore } from '../stores/myConstituency';
+import { useActiveStateStore } from '../stores/activeState';
+
+const MAX_MEDIA = 5;
 
 interface ReportIssueSheetProps {
   visible: boolean;
@@ -30,9 +36,11 @@ export default function ReportIssueSheet({ visible, onClose, onSubmit }: ReportI
   const [description, setDescription] = useState('');
   const [category, setCategory] = useState<IssueCategory>('roads');
   const [severity, setSeverity] = useState<IssueSeverity>('medium');
+  const [mediaUris, setMediaUris] = useState<string[]>([]);
   const titleRef = useRef<TextInput>(null);
   const user = useAuthStore((s) => s.user);
   const myHome = useMyConstituencyStore((s) => s.home);
+  const stateCode = useActiveStateStore((s) => s.stateCode);
 
   useEffect(() => {
     if (visible) {
@@ -42,8 +50,52 @@ export default function ReportIssueSheet({ visible, onClose, onSubmit }: ReportI
       setDescription('');
       setCategory('roads');
       setSeverity('medium');
+      setMediaUris([]);
     }
   }, [visible]);
+
+  const pickFromGallery = useCallback(async () => {
+    if (mediaUris.length >= MAX_MEDIA) {
+      Alert.alert('Limit reached', `You can add up to ${MAX_MEDIA} photos.`);
+      return;
+    }
+    const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
+    if (status !== 'granted') {
+      Alert.alert('Permission needed', 'Please allow photo access to add evidence.');
+      return;
+    }
+    const result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ['images'],
+      quality: 0.7,
+      allowsMultipleSelection: true,
+      selectionLimit: MAX_MEDIA - mediaUris.length,
+    });
+    if (!result.canceled && result.assets.length > 0) {
+      setMediaUris((prev) => [...prev, ...result.assets.map((a) => a.uri)].slice(0, MAX_MEDIA));
+    }
+  }, [mediaUris]);
+
+  const takePhoto = useCallback(async () => {
+    if (mediaUris.length >= MAX_MEDIA) {
+      Alert.alert('Limit reached', `You can add up to ${MAX_MEDIA} photos.`);
+      return;
+    }
+    const { status } = await ImagePicker.requestCameraPermissionsAsync();
+    if (status !== 'granted') {
+      Alert.alert('Permission needed', 'Please allow camera access to capture evidence.');
+      return;
+    }
+    const result = await ImagePicker.launchCameraAsync({
+      quality: 0.7,
+    });
+    if (!result.canceled && result.assets.length > 0) {
+      setMediaUris((prev) => [...prev, result.assets[0].uri].slice(0, MAX_MEDIA));
+    }
+  }, [mediaUris]);
+
+  const removeMedia = useCallback((index: number) => {
+    setMediaUris((prev) => prev.filter((_, i) => i !== index));
+  }, []);
 
   const canSubmit = title.trim().length >= 5 && title.length <= 200;
 
@@ -56,8 +108,8 @@ export default function ReportIssueSheet({ visible, onClose, onSubmit }: ReportI
       id: `issue-local-${Date.now()}`,
       reporterId: user?.id ?? 'anon',
       reporterName: authorName,
-      stateCode: 'TS',
-      constituencyId: myHome ? `TS-AC-${myHome.acNo}` : undefined,
+      stateCode,
+      constituencyId: myHome ? `${stateCode}-AC-${myHome.acNo}` : undefined,
       constituencyName: myHome?.name,
       title: title.trim(),
       description: description.trim() || undefined,
@@ -66,6 +118,8 @@ export default function ReportIssueSheet({ visible, onClose, onSubmit }: ReportI
       status: 'open',
       upvoteCount: 0,
       commentCount: 0,
+      mediaUrls: mediaUris.length > 0 ? mediaUris : undefined,
+      evidenceCount: mediaUris.length > 0 ? mediaUris.length : undefined,
       createdAt: now,
       updatedAt: now,
     };
@@ -152,6 +206,34 @@ export default function ReportIssueSheet({ visible, onClose, onSubmit }: ReportI
               );
             })}
           </View>
+
+          {/* Media Evidence */}
+          <Text style={styles.fieldLabel}>Evidence (photos)</Text>
+          <View style={styles.mediaRow}>
+            {mediaUris.map((uri, idx) => (
+              <View key={uri} style={styles.mediaThumbnailWrap}>
+                <Image source={{ uri }} style={styles.mediaThumbnail} contentFit="cover" />
+                <Pressable style={styles.mediaRemove} onPress={() => removeMedia(idx)} hitSlop={6}>
+                  <Ionicons name="close-circle" size={18} color="#EF4444" />
+                </Pressable>
+              </View>
+            ))}
+            {mediaUris.length < MAX_MEDIA && (
+              <>
+                <Pressable style={styles.mediaAddButton} onPress={pickFromGallery}>
+                  <Ionicons name="images" size={22} color="#4F8EF7" />
+                  <Text style={styles.mediaAddText}>Gallery</Text>
+                </Pressable>
+                <Pressable style={styles.mediaAddButton} onPress={takePhoto}>
+                  <Ionicons name="camera" size={22} color="#10B981" />
+                  <Text style={styles.mediaAddText}>Camera</Text>
+                </Pressable>
+              </>
+            )}
+          </View>
+          {mediaUris.length > 0 && (
+            <Text style={styles.charHint}>{mediaUris.length}/{MAX_MEDIA} photos added</Text>
+          )}
 
           {/* Severity */}
           <Text style={styles.fieldLabel}>Severity</Text>
@@ -300,6 +382,46 @@ const styles = StyleSheet.create({
   },
   severityChipText: {
     fontSize: 13,
+    fontWeight: '700',
+    color: '#6B7280',
+  },
+  mediaRow: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 8,
+  },
+  mediaThumbnailWrap: {
+    position: 'relative',
+    width: 72,
+    height: 72,
+    borderRadius: 10,
+    overflow: 'hidden',
+  },
+  mediaThumbnail: {
+    width: 72,
+    height: 72,
+    borderRadius: 10,
+  },
+  mediaRemove: {
+    position: 'absolute',
+    top: 2,
+    right: 2,
+    backgroundColor: '#0A0A1A99',
+    borderRadius: 10,
+  },
+  mediaAddButton: {
+    width: 72,
+    height: 72,
+    borderRadius: 10,
+    borderWidth: 1.5,
+    borderColor: '#374151',
+    borderStyle: 'dashed',
+    justifyContent: 'center',
+    alignItems: 'center',
+    gap: 2,
+  },
+  mediaAddText: {
+    fontSize: 10,
     fontWeight: '700',
     color: '#6B7280',
   },

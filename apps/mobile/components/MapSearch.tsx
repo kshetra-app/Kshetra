@@ -11,10 +11,10 @@ import {
 import { Ionicons } from '@expo/vector-icons';
 import { useTranslation } from 'react-i18next';
 import { getPartyColor } from '@/lib/constants';
-import type { ConstituencySeed } from '@/lib/data';
+import type { UnifiedConstituency } from '@/lib/stateDataAdapter';
 
 interface MapSearchProps {
-  constituencies: ConstituencySeed[];
+  constituencies: UnifiedConstituency[];
   onSelect: (acNo: number, name: string, district: string) => void;
   onClose: () => void;
 }
@@ -37,15 +37,15 @@ export default function MapSearch({ constituencies, onSelect, onClose }: MapSear
         (c) =>
           c.name.toLowerCase().includes(q) ||
           c.district.toLowerCase().includes(q) ||
-          c.winnerName2023.toLowerCase().includes(q) ||
-          c.winner2023.toLowerCase().includes(q) ||
+          c.winnerName.toLowerCase().includes(q) ||
+          c.winnerParty.toLowerCase().includes(q) ||
           String(c.acNo).includes(q),
       )
       .slice(0, 15);
   }, [query, constituencies]);
 
   const handleSelect = useCallback(
-    (item: ConstituencySeed) => {
+    (item: UnifiedConstituency) => {
       Keyboard.dismiss();
       onSelect(item.acNo, item.name, item.district);
     },
@@ -91,13 +91,13 @@ export default function MapSearch({ constituencies, onSelect, onClose }: MapSear
                 <View
                   style={[
                     styles.partyDot,
-                    { backgroundColor: getPartyColor(item.winner2023) },
+                    { backgroundColor: getPartyColor(item.winnerParty) },
                   ]}
                 />
                 <View style={styles.resultText}>
                   <Text style={styles.resultName}>{item.name}</Text>
                   <Text style={styles.resultMeta}>
-                    AC #{item.acNo} · {item.district} · {item.winnerName2023} ({item.winner2023})
+                    AC #{item.acNo} · {item.district} · {item.winnerName} ({item.winnerParty})
                   </Text>
                 </View>
                 <Ionicons name="navigate" size={16} color="#4F8EF7" />

@@ -1,5 +1,5 @@
 import { create } from 'zustand';
-import type { Post, Comment, ReactionType, PostType } from '../lib/feedTypes';
+import type { Post, Comment, ReactionType, PostType, PostMedia } from '../lib/feedTypes';
 
 /**
  * Seed posts for offline-first demo feed.
@@ -177,6 +177,9 @@ interface FeedState {
   getFilteredPosts: () => Post[];
   getComments: (postId: string) => Comment[];
   addPost: (post: Post) => void;
+  editPost: (postId: string, content: string) => void;
+  deletePost: (postId: string) => void;
+  addMediaToPost: (postId: string, media: PostMedia) => void;
   toggleReaction: (postId: string, reaction: ReactionType) => void;
   votePoll: (postId: string, optionId: string) => void;
   addComment: (postId: string, comment: Comment) => void;
@@ -209,6 +212,36 @@ export const useFeedStore = create<FeedState>()((set, get) => ({
   addPost: (post) =>
     set((state) => ({
       posts: [post, ...state.posts],
+    })),
+
+  editPost: (postId, content) =>
+    set((state) => ({
+      posts: state.posts.map((p) =>
+        p.id === postId
+          ? {
+              ...p,
+              content,
+              updatedAt: new Date().toISOString(),
+              hashtags: content.match(/#(\w+)/g)?.map((h) => h.slice(1).toLowerCase()) ?? p.hashtags,
+            }
+          : p,
+      ),
+    })),
+
+  deletePost: (postId) =>
+    set((state) => ({
+      posts: state.posts.map((p) =>
+        p.id === postId ? { ...p, isDeleted: true, content: '[Deleted]' } : p,
+      ),
+    })),
+
+  addMediaToPost: (postId, media) =>
+    set((state) => ({
+      posts: state.posts.map((p) =>
+        p.id === postId
+          ? { ...p, media: [...(p.media ?? []), media] }
+          : p,
+      ),
     })),
 
   toggleReaction: (postId, reaction) =>

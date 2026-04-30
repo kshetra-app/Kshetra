@@ -41,6 +41,7 @@
 | Sprint 9: Multi-State Foundation | ✅ Complete | 2026-04-29 | 2026-04-29 |
 | Sprint 10: Multilingual (i18n) | ✅ Complete | 2026-04-29 | 2026-04-29 |
 | Sprint 11: Multi-State Data Expansion (AP/KA/MH full data) | ✅ Complete | 2026-04-29 | 2026-04-29 |
+| Sprint 12: Civic Dashboard — Scope Filter, Media Evidence, Export + Monetization | ✅ Complete | 2026-04-30 | 2026-04-30 |
 
 ---
 
@@ -133,6 +134,7 @@
 | 2026-04-29 | `feat: sprint 9 — multi-state foundation` | AP (25 stub) + KA (25 stub) seed data, JSP/JDS party codes, stateDataAdapter, multi-state API (stateData service + states routes), Supabase 003_multi_state migration, StateSwitcher data badges, state-scoped feed + civic stores, SUPPORTED_STATES expanded (100/100 seed pass) |
 | 2026-04-29 | `feat: sprint 10 — multilingual (i18n)` | 4 languages (en/te/hi/kn), i18next + expo-localization, LanguageSwitcher component, all screens wired (tabs, feed, dashboard, explore, onboarding, profile), AsyncStorage persistence, device locale auto-detect (100/100 seed pass) |
 | 2026-04-29 | `feat: sprint 11 — multi-state data expansion` | Full AP (175), KA (224), MH (288) constituency data with election results. 23 states in STATES registry. 4 new party codes (SHSUBT, NCPSP, JMM, JKNC). Unified data layer: getStateCenter/getStateZoom, enrichGeoJSONForState, PARTY_COLORS from shared config. ScrollView StateSwitcher. FULLY_SUPPORTED_STATES: TS/AP/KA/MH (100/100 seed pass) |
+| 2026-04-30 | `feat: sprint 12 — civic scope filter, media evidence, export + monetization` | Scope-level filter (constituency/state/national), media evidence picker (camera+gallery) in ReportIssueSheet, IssueCard media thumbnails + evidence badge, ExportSheet (CSV/Excel/PDF) with 3-tier subscription gate (Free/Pro/Institutional), subscription store, export utility using new expo-file-system SDK 54 API, 0 type errors |
 
 ---
 
@@ -1566,3 +1568,107 @@ The app works fully offline without Supabase credentials. To activate:
 | `data/seed` — all | ✅ Pass | 100 | 100 | No regressions |
 | `packages/shared` — tsc | ✅ Pass | — | — | Clean compile with 4 new party codes + 23 states |
 | **Total** | **✅ All Pass** | **100** | **100** | All data verified, no type errors |
+
+---
+
+## Sprint 12: Civic Dashboard — Scope Filter, Media Evidence, Export + Monetization
+
+**Date**: 2026-04-30
+**Goal**: Enhance civic dashboard with geographic scope filtering, media evidence support in issue reporting, and a monetized export system for civic data.
+
+### Feature 1: Scope-Level Filter (Constituency → State → National)
+
+- [x] `lib/civicTypes.ts` — added `CivicScope` type: `'constituency' | 'state' | 'national'`
+- [x] `stores/civic.ts` — added `scopeFilter` state, `setScopeFilter()` action, `getFilteredByScope(stateCode, constituencyId?)` method
+  - Filters all three data types (issues, headlines, sentiment) by scope
+  - Constituency: matches `constituencyId`; State: matches `stateCode`; National: returns all
+- [x] `app/(tabs)/dashboard.tsx` — 3-button scope toggle row with icons
+  - "My Constituency" (disabled if no home set), "My State" (shows state name), "National"
+  - Scope indicator: "Showing Telangana · 5 issues"
+  - All data (stats, categories, issue list, headlines, sentiment) wired through scope filter
+
+### Feature 2: Media Evidence in Issue Reporting
+
+- [x] Installed `expo-image-picker` + added to `app.json` plugins with camera/gallery permission strings
+- [x] `lib/civicTypes.ts` — extended `CivicIssue` with `mediaUrls?: string[]` and `evidenceCount?: number`
+- [x] `components/ReportIssueSheet.tsx` — full media picker UI
+  - Gallery picker (multi-select, up to 5 images) via `ImagePicker.launchImageLibraryAsync`
+  - Camera capture via `ImagePicker.launchCameraAsync`
+  - Thumbnail strip with per-image remove button (red close-circle)
+  - Counter: "3/5 photos added"
+  - `mediaUrls` and `evidenceCount` attached to submitted issue
+- [x] `components/IssueCard.tsx` — media evidence display
+  - Horizontal thumbnail strip (up to 4 images) with "+N" overflow badge
+  - Amber camera icon + count in actions row when evidence present
+- [x] `stores/civic.ts` — 7 seed issues across 4 states enriched with placeholder media URLs (picsum.photos)
+
+### Feature 3: Export Dashboard with Monetization
+
+- [x] **`stores/subscription.ts`** — 3-tier subscription store (Zustand + AsyncStorage)
+  - `free`: CSV only, 10 issues/export, 3 exports/month
+  - `pro` (₹99/mo): CSV + Excel + PDF, 50 issues/export, 10 exports/month, PDF branding
+  - `institutional` (₹499/mo): all formats, unlimited exports, API access
+  - `canExport(format)` — gating check with monthly quota auto-reset
+  - `recordExport()` — increments monthly counter
+- [x] **`lib/exportCivicData.ts`** — export engine (3 formats)
+  - **CSV**: Issues + headlines in comma-separated format with metadata header
+  - **Excel (XLSX)**: Multi-sheet workbook (Issues, Headlines, Sentiment) via `xlsx` library
+  - **PDF**: Formatted HTML report with stats grid, color-coded badges, tables, Kshetra branding
+  - Uses new `expo-file-system` SDK 54 API (`File`, `Paths.cache`) — future-proof
+  - Shares via native share sheet (`expo-sharing` + `expo-print`)
+- [x] **`components/ExportSheet.tsx`** — bottom sheet modal UI
+  - Scope picker: "Current View" (filtered) vs "All Data" with live counts
+  - Format cards: CSV (free), Excel (pro), PDF (pro) — locked formats show 🔒 + PRO tag
+  - Free tier limit notice when issue count exceeds cap
+  - Summary row: issues/headlines/sentiment/remaining export counts
+  - Upgrade banner for free users with Pro pricing + upgrade CTA
+  - Format-aware gating: tapping locked format shows upgrade alert
+- [x] **`app/(tabs)/dashboard.tsx`** — green download button in header, wired with filtered + all data
+
+### Subscription Tiers
+
+| | Free | Pro (₹99/mo) | Institutional (₹499/mo) |
+|---|---|---|---|
+| **Formats** | CSV | CSV, Excel, PDF | CSV, Excel, PDF |
+| **Issues/export** | 10 | 50 | Unlimited |
+| **Exports/month** | 3 | 10 | Unlimited |
+| **PDF branding** | ✗ | ✓ | ✓ |
+| **API access** | ✗ | ✗ | ✓ |
+
+> **Note**: Payment gateway integration (Razorpay/Stripe) deferred to a dedicated sprint alongside other paid features. Subscription store and tier gating are ready for plug-in.
+
+### Packages Installed
+
+- `expo-image-picker` — camera + gallery photo selection
+- `expo-sharing` — native share sheet
+- `expo-print` — HTML → PDF generation
+- `expo-file-system` (SDK 54 new API) — file creation for CSV/XLSX
+- `xlsx` — Excel workbook generation
+
+### Files Created
+
+| File | Description |
+|---|---|
+| `stores/subscription.ts` | 3-tier subscription store with monthly quota tracking |
+| `lib/exportCivicData.ts` | Export engine: CSV, Excel (multi-sheet), PDF (formatted report) |
+| `components/ExportSheet.tsx` | Export modal with format/scope picker + monetization gate |
+
+### Files Modified
+
+| File | Changes |
+|---|---|
+| `lib/civicTypes.ts` | Added `CivicScope` type, `mediaUrls`, `evidenceCount` on `CivicIssue`, `corruption` in `HeadlineCategory` |
+| `stores/civic.ts` | Added `scopeFilter`, `setScopeFilter`, `getFilteredByScope()`, media URLs in 7 seed issues |
+| `app/(tabs)/dashboard.tsx` | Scope toggle UI, scope indicator, export button, ExportSheet wiring |
+| `components/ReportIssueSheet.tsx` | Media picker (gallery + camera), thumbnail strip, dynamic state/constituency |
+| `components/IssueCard.tsx` | Media thumbnail strip, evidence count badge in actions row |
+| `supabase/migrations/004_civic_dashboard.sql` | Added `corruption` to headlines category constraint |
+| `app.json` | Added `expo-image-picker` plugin with permission strings |
+
+### Tests — Sprint 12
+
+| Test Suite | Status | Passed | Total | Notes |
+|---|---|---|---|---|
+| TypeScript compile | ✅ Pass | — | — | 0 errors across all files |
+| `data/seed` — all | ✅ Pass | 100 | 100 | No regressions |
+| **Total** | **✅ All Pass** | **100** | **100** | Clean compile, no type errors |

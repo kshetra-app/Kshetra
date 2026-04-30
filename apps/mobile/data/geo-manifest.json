@@ -1,0 +1,112 @@
+{
+  "AP": {
+    "file": "ap-assembly.json",
+    "count": 175,
+    "hasPolygons": true
+  },
+  "KA": {
+    "file": "ka-assembly.json",
+    "count": 225,
+    "hasPolygons": true
+  },
+  "MH": {
+    "file": "mh-assembly.json",
+    "count": 288,
+    "hasPolygons": true
+  },
+  "TN": {
+    "file": "tn-assembly.json",
+    "count": 235,
+    "hasPolygons": true
+  },
+  "KL": {
+    "file": "kl-assembly.json",
+    "count": 141,
+    "hasPolygons": true
+  },
+  "WB": {
+    "file": "wb-assembly.json",
+    "count": 294,
+    "hasPolygons": true
+  },
+  "UP": {
+    "file": "up-assembly.json",
+    "count": 403,
+    "hasPolygons": true
+  },
+  "RJ": {
+    "file": "rj-assembly.json",
+    "count": 201,
+    "hasPolygons": true
+  },
+  "GJ": {
+    "file": "gj-assembly.json",
+    "count": 165,
+    "hasPolygons": true
+  },
+  "DL": {
+    "file": "dl-assembly.json",
+    "count": 70,
+    "hasPolygons": true
+  },
+  "OD": {
+    "file": "od-assembly.json",
+    "count": 147,
+    "hasPolygons": true
+  },
+  "JH": {
+    "file": "jh-assembly.json",
+    "count": 95,
+    "hasPolygons": true
+  },
+  "BR": {
+    "file": "br-assembly.json",
+    "count": 243,
+    "hasPolygons": true
+  },
+  "PB": {
+    "file": "pb-assembly.json",
+    "count": 117,
+    "hasPolygons": true
+  },
+  "HR": {
+    "file": "hr-assembly.json",
+    "count": 90,
+    "hasPolygons": true
+  },
+  "CG": {
+    "file": "cg-assembly.json",
+    "count": 90,
+    "hasPolygons": true
+  },
+  "MP": {
+    "file": "mp-assembly.json",
+    "count": 226,
+    "hasPolygons": true
+  },
+  "AS": {
+    "file": "as-assembly.json",
+    "count": 133,
+    "hasPolygons": true
+  },
+  "GA": {
+    "file": "ga-assembly.json",
+    "count": 40,
+    "hasPolygons": true
+  },
+  "HP": {
+    "file": "hp-assembly.json",
+    "count": 68,
+    "hasPolygons": true
+  },
+  "JK": {
+    "file": "jk-assembly.json",
+    "count": 107,
+    "hasPolygons": true
+  },
+  "TS": {
+    "file": "telangana-assembly.json",
+    "count": 119,
+    "hasPolygons": true
+  }
+}

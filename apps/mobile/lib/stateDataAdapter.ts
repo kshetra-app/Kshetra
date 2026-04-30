@@ -16,6 +16,97 @@ import {
   type MHConstituencySeed,
 } from './data';
 
+// ─── Unified Constituency ─────────────────────────────────────────────────
+
+/** State-agnostic constituency shape used by Explore, Map, and Search UIs */
+export interface UnifiedConstituency {
+  acNo: number;
+  name: string;
+  district: string;
+  type: 'GEN' | 'SC' | 'ST';
+  stateCode: string;
+  /** Winning party in the most recent election */
+  winnerParty: string;
+  winnerName: string;
+  winnerVotes: number;
+  runnerUp: string;
+  margin: number;
+  /** Current party (may differ from winnerParty due to defections) */
+  currentParty: string;
+  /** Year of the election result data */
+  electionYear: number;
+}
+
+/** Normalize all 4 states' seed data into UnifiedConstituency[] */
+export function getUnifiedConstituenciesForState(stateCode: string): UnifiedConstituency[] {
+  switch (stateCode.toUpperCase()) {
+    case 'TS':
+      return TELANGANA_CONSTITUENCIES.map((c) => ({
+        acNo: c.acNo,
+        name: c.name,
+        district: c.district,
+        type: c.type,
+        stateCode: 'TS',
+        winnerParty: c.winner2023,
+        winnerName: c.winnerName2023,
+        winnerVotes: c.winnerVotes2023,
+        runnerUp: c.runnerUp2023,
+        margin: c.margin2023,
+        currentParty: c.currentParty ?? c.winner2023,
+        electionYear: 2023,
+      }));
+    case 'AP':
+      return AP_CONSTITUENCIES.map((c) => ({
+        acNo: c.acNo,
+        name: c.name,
+        district: c.district,
+        type: c.type,
+        stateCode: 'AP',
+        winnerParty: c.winner2024,
+        winnerName: c.winnerName2024,
+        winnerVotes: c.winnerVotes2024,
+        runnerUp: c.runnerUp2024,
+        margin: c.margin2024,
+        currentParty: c.currentParty ?? c.winner2024,
+        electionYear: 2024,
+      }));
+    case 'KA':
+      return KA_CONSTITUENCIES.map((c) => ({
+        acNo: c.acNo,
+        name: c.name,
+        district: c.district,
+        type: c.type,
+        stateCode: 'KA',
+        winnerParty: c.winner2023,
+        winnerName: c.winnerName2023,
+        winnerVotes: c.winnerVotes2023,
+        runnerUp: c.runnerUp2023,
+        margin: c.margin2023,
+        currentParty: c.currentParty ?? c.winner2023,
+        electionYear: 2023,
+      }));
+    case 'MH':
+      return MH_CONSTITUENCIES.map((c) => ({
+        acNo: c.acNo,
+        name: c.name,
+        district: c.district,
+        type: c.type,
+        stateCode: 'MH',
+        winnerParty: c.winner2024,
+        winnerName: c.winnerName2024,
+        winnerVotes: c.winnerVotes2024,
+        runnerUp: c.runnerUp2024,
+        margin: c.margin2024,
+        currentParty: c.currentParty ?? c.winner2024,
+        electionYear: 2024,
+      }));
+    default:
+      return [];
+  }
+}
+
+// ─── ConstituencyBrief adapters (for shared types) ───────────────────────
+
 /** Adapt Telangana seed → ConstituencyBrief */
 function tsAdapter(c: ConstituencySeed): ConstituencyBrief {
   return {

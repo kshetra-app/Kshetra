@@ -18,9 +18,12 @@ import {
   MAP_STYLE,
   PARTY_COLORS,
   getPartyColor,
+  getStateCenter,
+  getStateZoom,
 } from '@/lib/constants';
 import { useUserLocation } from '@/lib/useUserLocation';
 import { findConstituencyAtPoint, STATES } from '@kshetra/shared';
+import { useActiveStateStore } from '../../stores/activeState';
 import { enrichGeoJSON } from '@/lib/enrichGeoJSON';
 import StateSwitcher from '../../components/StateSwitcher';
 import MapLegend from '../../components/MapLegend';
@@ -32,8 +35,10 @@ import MapSearch from '../../components/MapSearch';
 import CompareSheet from '../../components/CompareSheet';
 import { useFavoritesStore } from '../../stores/favorites';
 import { useMyConstituencyStore } from '../../stores/myConstituency';
-import telanganaAssemblyGeo from '@/data/telangana-assembly.json';
-import { TELANGANA_CONSTITUENCIES, type ConstituencySeed, getTriviaForConstituency, getRandomTriviaSet, getConstituencyHistory } from '@/lib/data';
+import { getStateGeoJSON } from '@/lib/geoLoader';
+import { getConstituencyHistory } from '@/lib/data';
+import { getUnifiedConstituenciesForState, type UnifiedConstituency } from '@/lib/stateDataAdapter';
+import { getRandomTriviaSetForState, getTriviaForConstituencyInState } from '@/lib/stateTriviaAdapter';
 
 /**
  * Dynamically load Mapbox — native module not available in Expo Go.
@@ -49,26 +54,38 @@ try {
   // Native Mapbox module not available (Expo Go / web)
 }
 
-/** Enrich once at module level (offline, ~2ms) */
-const enrichedGeo = enrichGeoJSON(
-  telanganaAssemblyGeo as GeoJSON.FeatureCollection,
-);
+/** Cache for TS enriched geo (demographics + seed data) */
+let _enrichedTSGeo: GeoJSON.FeatureCollection | null = null;
+function getEnrichedTSGeo(): GeoJSON.FeatureCollection {
+  if (!_enrichedTSGeo) {
+    const raw = getStateGeoJSON('TS');
+    _enrichedTSGeo = raw ? enrichGeoJSON(raw) : { type: 'FeatureCollection', features: [] };
+  }
+  return _enrichedTSGeo;
+}
 
-/** Quick lookup from AC_NO */
-const seedMap = new Map<number, ConstituencySeed>(
-  TELANGANA_CONSTITUENCIES.map((c) => [c.acNo, c]),
-);
+// seedMap is now computed per-state inside FullMapScreen
 
 /** Mapbox expression: color each polygon by WINNER_PARTY */
 const partyFillColor: any = [
   'match',
   ['get', 'WINNER_PARTY'],
-  'INC', PARTY_COLORS.INC,
-  'BRS', PARTY_COLORS.BRS,
-  'BJP', PARTY_COLORS.BJP,
-  'AIMIM', PARTY_COLORS.AIMIM,
-  'TDP', PARTY_COLORS.TDP,
-  PARTY_COLORS.IND, // fallback
+  'INC', PARTY_COLORS.INC ?? '#19AA4F',
+  'BRS', PARTY_COLORS.BRS ?? '#E91E63',
+  'BJP', PARTY_COLORS.BJP ?? '#FF9933',
+  'AIMIM', PARTY_COLORS.AIMIM ?? '#388E3C',
+  'TDP', PARTY_COLORS.TDP ?? '#FFEB3B',
+  'YSRCP', PARTY_COLORS.YSRCP ?? '#1565C0',
+  'JSP', PARTY_COLORS.JSP ?? '#D32F2F',
+  'JDS', PARTY_COLORS.JDS ?? '#4CAF50',
+  'SHSUBT', PARTY_COLORS.SHSUBT ?? '#FF5722',
+  'SHS', PARTY_COLORS.SHS ?? '#FF9800',
+  'NCP', PARTY_COLORS.NCP ?? '#00BCD4',
+  'NCPSP', PARTY_COLORS.NCPSP ?? '#0097A7',
+  'AAP', PARTY_COLORS.AAP ?? '#0288D1',
+  'CPI', PARTY_COLORS.CPI ?? '#F44336',
+  'CPIM', PARTY_COLORS.CPIM ?? '#B71C1C',
+  '#808080', // fallback — IND / others
 ];
 
 /** Mapbox expression: color by winning margin (heatmap) */
@@ -140,10 +157,10 @@ interface SelectedConstituency {
   votes: number;
   type: string;
   currentParty?: string;
+  electionYear: number;
 }
 
-/** Pre-compute a set of random trivia for idle map state */
-const idleTrivia = getRandomTriviaSet(8);
+// idleTrivia is now computed per-state inside FullMapScreen
 
 export default function MapScreen() {
   if (!mapboxAvailable) return <MapFallback />;
@@ -161,10 +178,35 @@ function FullMapScreen() {
   const [colorMode, setColorMode] = useState<MapColorMode>('party');
   const { loading: locating, requestLocation } = useUserLocation();
   const favoriteIds = useFavoritesStore((s) => s.favoriteIds);
+  const stateCode = useActiveStateStore((s) => s.stateCode);
+  const currentState = STATES[stateCode];
+  const isTS = stateCode === 'TS';
 
   const [showSearch, setShowSearch] = useState(false);
   const [showCompare, setShowCompare] = useState(false);
   const myHome = useMyConstituencyStore((s) => s.home);
+
+  /** Unified constituency list + lookup map for the active state */
+  const stateConstituencies = useMemo(
+    () => getUnifiedConstituenciesForState(stateCode),
+    [stateCode],
+  );
+  const seedMap = useMemo(
+    () => new Map<number, UnifiedConstituency>(stateConstituencies.map((c) => [c.acNo, c])),
+    [stateConstituencies],
+  );
+
+  /** GeoJSON for the active state (enriched for TS, raw for others) */
+  const activeGeoJSON = useMemo(
+    () => isTS ? getEnrichedTSGeo() : getStateGeoJSON(stateCode),
+    [stateCode, isTS],
+  );
+
+  /** Random trivia for idle map — re-fetched when state changes */
+  const stateIdleTrivia = useMemo(
+    () => getRandomTriviaSetForState(stateCode, 8),
+    [stateCode],
+  );
 
   /** Compute fill color expression based on current color mode */
   const activeFillColor = useMemo(() => {
@@ -190,17 +232,18 @@ function FullMapScreen() {
         acNo,
         name: acName,
         district: distName,
-        winner: seed?.winner2023 ?? 'IND',
-        winnerName: seed?.winnerName2023 ?? '',
-        runnerUp: seed?.runnerUp2023 ?? '',
-        margin: seed?.margin2023 ?? 0,
-        votes: seed?.winnerVotes2023 ?? 0,
+        winner: seed?.winnerParty ?? 'IND',
+        winnerName: seed?.winnerName ?? '',
+        runnerUp: seed?.runnerUp ?? '',
+        margin: seed?.margin ?? 0,
+        votes: seed?.winnerVotes ?? 0,
         type: seed?.type ?? 'GEN',
         currentParty: seed?.currentParty,
+        electionYear: seed?.electionYear ?? 2023,
       });
       bottomSheetRef.current?.snapToIndex(0);
     },
-    [],
+    [seedMap],
   );
 
   const handlePress = useCallback(
@@ -229,13 +272,18 @@ function FullMapScreen() {
           coord = [c.longitude, c.latitude];
         }
       }
-      // Fallback: compute rough centroid from polygon ring
-      if (!coord && feature.geometry?.coordinates?.[0]) {
-        const ring = feature.geometry.coordinates[0];
-        if (Array.isArray(ring) && ring.length > 0) {
-          let sumLng = 0, sumLat = 0;
-          for (const pt of ring) { sumLng += pt[0]; sumLat += pt[1]; }
-          coord = [sumLng / ring.length, sumLat / ring.length];
+      // Fallback: extract coord from geometry
+      if (!coord && feature.geometry) {
+        if (feature.geometry.type === 'Point' && feature.geometry.coordinates) {
+          coord = feature.geometry.coordinates as [number, number];
+        } else if (feature.geometry.coordinates?.[0]) {
+          // Polygon: compute rough centroid from ring
+          const ring = feature.geometry.coordinates[0];
+          if (Array.isArray(ring) && ring.length > 0) {
+            let sumLng = 0, sumLat = 0;
+            for (const pt of ring) { sumLng += pt[0]; sumLat += pt[1]; }
+            coord = [sumLng / ring.length, sumLat / ring.length];
+          }
         }
       }
 
@@ -250,16 +298,27 @@ function FullMapScreen() {
     [selectConstituency, router],
   );
 
+  // Fly camera to new state when state switcher changes
+  useEffect(() => {
+    setSelected(null);
+    bottomSheetRef.current?.close();
+    cameraRef.current?.setCamera({
+      centerCoordinate: getStateCenter(stateCode),
+      zoomLevel: getStateZoom(stateCode),
+      animationDuration: 800,
+    });
+  }, [stateCode]);
+
   const handleReset = useCallback(() => {
     setSelected(null);
     setUserMarker(null);
     bottomSheetRef.current?.close();
     cameraRef.current?.setCamera({
-      centerCoordinate: TELANGANA_CENTER,
-      zoomLevel: TELANGANA_ZOOM,
+      centerCoordinate: getStateCenter(stateCode),
+      zoomLevel: getStateZoom(stateCode),
       animationDuration: 600,
     });
-  }, []);
+  }, [stateCode]);
 
   const handleLocateMe = useCallback(async () => {
     const loc = await requestLocation();
@@ -268,11 +327,11 @@ function FullMapScreen() {
     const coord: [number, number] = [loc.longitude, loc.latitude];
     setUserMarker(coord);
 
-    const found = findConstituencyAtPoint(
+    const found = activeGeoJSON ? findConstituencyAtPoint(
       loc.longitude,
       loc.latitude,
-      enrichedGeo,
-    );
+      activeGeoJSON,
+    ) : null;
 
     if (found) {
       selectConstituency(
@@ -293,7 +352,7 @@ function FullMapScreen() {
         animationDuration: 800,
       });
     }
-  }, [requestLocation, selectConstituency]);
+  }, [requestLocation, selectConstituency, activeGeoJSON]);
 
   const handleViewDetail = useCallback(() => {
     if (selected) {
@@ -316,70 +375,75 @@ function FullMapScreen() {
         <MapboxGL.Camera
           ref={cameraRef}
           defaultSettings={{
-            centerCoordinate: TELANGANA_CENTER,
-            zoomLevel: TELANGANA_ZOOM,
+            centerCoordinate: getStateCenter(stateCode),
+            zoomLevel: getStateZoom(stateCode),
             padding: { paddingTop: 80, paddingBottom: 40, paddingLeft: 16, paddingRight: 16 },
           }}
           minZoomLevel={5}
           maxZoomLevel={14}
         />
 
-        <MapboxGL.ShapeSource
-          id="constituencies"
-          shape={enrichedGeo}
-          onPress={handlePress}
-        >
-          <MapboxGL.FillLayer
-            id="constituency-fill"
-            style={{
-              fillColor: [
-                'case',
-                ['==', ['get', 'AC_NO'], selected?.acNo ?? -1],
-                '#FFD700',
-                activeFillColor,
-              ],
-              fillOpacity: [
-                'case',
-                ['==', ['get', 'AC_NO'], selected?.acNo ?? -1],
-                0.8,
-                0.5,
-              ],
-            }}
-          />
-          <MapboxGL.LineLayer
-            id="constituency-border"
-            style={{
-              lineColor: [
-                'case',
-                ['==', ['get', 'AC_NO'], selected?.acNo ?? -1],
-                '#FFD700',
-                'rgba(255,255,255,0.4)',
-              ],
-              lineWidth: [
-                'case',
-                ['==', ['get', 'AC_NO'], selected?.acNo ?? -1],
-                2.5,
-                0.6,
-              ],
-            }}
-          />
-        </MapboxGL.ShapeSource>
+        {/* ── Constituency polygon layers (uniform for all states) ── */}
+        {activeGeoJSON && (
+          <>
+            <MapboxGL.ShapeSource
+              id="constituencies"
+              shape={activeGeoJSON}
+              onPress={handlePress}
+            >
+              <MapboxGL.FillLayer
+                id="constituency-fill"
+                style={{
+                  fillColor: [
+                    'case',
+                    ['==', ['get', 'AC_NO'], selected?.acNo ?? -1],
+                    '#FFD700',
+                    activeFillColor,
+                  ],
+                  fillOpacity: [
+                    'case',
+                    ['==', ['get', 'AC_NO'], selected?.acNo ?? -1],
+                    0.8,
+                    0.5,
+                  ],
+                }}
+              />
+              <MapboxGL.LineLayer
+                id="constituency-border"
+                style={{
+                  lineColor: [
+                    'case',
+                    ['==', ['get', 'AC_NO'], selected?.acNo ?? -1],
+                    '#FFD700',
+                    'rgba(255,255,255,0.4)',
+                  ],
+                  lineWidth: [
+                    'case',
+                    ['==', ['get', 'AC_NO'], selected?.acNo ?? -1],
+                    2.5,
+                    0.6,
+                  ],
+                }}
+              />
+            </MapboxGL.ShapeSource>
 
-        {/* Favourites highlight layer */}
-        <MapboxGL.ShapeSource
-          id="favourites"
-          shape={enrichedGeo}
-        >
-          <MapboxGL.LineLayer
-            id="fav-border"
-            filter={['in', ['get', 'AC_NO'], ['literal', favoriteIds]]}
-            style={{
-              lineColor: '#EF4444',
-              lineWidth: 2.5,
-              lineOpacity: 0.9,
-            }}
-          />
-        </MapboxGL.ShapeSource>
+            {/* Favourites highlight layer */}
+            <MapboxGL.ShapeSource
+              id="favourites"
+              shape={activeGeoJSON}
+            >
+              <MapboxGL.LineLayer
+                id="fav-border"
+                filter={['in', ['get', 'AC_NO'], ['literal', favoriteIds]]}
+                style={{
+                  lineColor: '#EF4444',
+                  lineWidth: 2.5,
+                  lineOpacity: 0.9,
+                }}
+              />
+            </MapboxGL.ShapeSource>
+          </>
+        )}
 
         {/* User location marker */}
         {userMarker && (
@@ -402,7 +466,7 @@ function FullMapScreen() {
           <StateSwitcher />
         </View>
         <Text style={styles.headerSubtitle}>
-          {STATES.TS.name} · {STATES.TS.assemblySeats} Constituencies
+          {currentState?.name ?? stateCode} · {currentState?.assemblySeats ?? '?'} {t('explore.constituencies')}
         </Text>
       </View>
 
@@ -443,7 +507,7 @@ function FullMapScreen() {
       </View>
 
       {/* Map Legend */}
-      <MapLegend colorMode={colorMode} />
+      <MapLegend colorMode={colorMode} stateCode={stateCode} />
 
       {/* Color mode toggle */}
       <View style={styles.colorToggleContainer}>
@@ -456,13 +520,19 @@ function FullMapScreen() {
           style={styles.homeIndicator}
           onPress={() => {
             selectConstituency(myHome.acNo, myHome.name, myHome.district);
-            const feature = enrichedGeo.features.find(
+            const feature = activeGeoJSON?.features.find(
               (f) => f.properties?.AC_NO === myHome.acNo,
             );
-            if (feature?.geometry?.type === 'Polygon' || feature?.geometry?.type === 'MultiPolygon') {
+            if (feature?.geometry?.type === 'Point') {
+              cameraRef.current?.setCamera({
+                centerCoordinate: (feature.geometry as GeoJSON.Point).coordinates as [number, number],
+                zoomLevel: CONSTITUENCY_ZOOM,
+                animationDuration: 600,
+              });
+            } else if (feature?.geometry?.type === 'Polygon' || feature?.geometry?.type === 'MultiPolygon') {
               const coords = feature.geometry.type === 'Polygon'
-                ? feature.geometry.coordinates[0]
-                : feature.geometry.coordinates[0][0];
+                ? (feature.geometry as GeoJSON.Polygon).coordinates[0]
+                : (feature.geometry as GeoJSON.MultiPolygon).coordinates[0][0];
               if (coords?.length > 0) {
                 let sumLng = 0, sumLat = 0;
                 for (const pt of coords) { sumLng += pt[0]; sumLat += pt[1]; }
@@ -480,27 +550,33 @@ function FullMapScreen() {
         </Pressable>
       )}
 
-      {/* Idle trivia — shown when no constituency is selected */}
-      {!selected && (
+      {/* Idle trivia — state-specific, shown when no constituency is selected */}
+      {!selected && stateIdleTrivia.length > 0 && (
         <View style={styles.idleTriviaContainer}>
-          <TriviaCard items={idleTrivia} compact rotateInterval={5000} />
+          <TriviaCard items={stateIdleTrivia} compact rotateInterval={5000} />
         </View>
       )}
 
       {/* Search overlay */}
       {showSearch && (
         <MapSearch
-          constituencies={TELANGANA_CONSTITUENCIES}
+          constituencies={stateConstituencies}
           onSelect={(acNo, name, district) => {
             setShowSearch(false);
             selectConstituency(acNo, name, district);
-            const feature = enrichedGeo.features.find(
+            const feature = activeGeoJSON?.features.find(
               (f) => f.properties?.AC_NO === acNo,
             );
-            if (feature?.geometry?.type === 'Polygon' || feature?.geometry?.type === 'MultiPolygon') {
+            if (feature?.geometry?.type === 'Point') {
+              cameraRef.current?.setCamera({
+                centerCoordinate: (feature.geometry as GeoJSON.Point).coordinates as [number, number],
+                zoomLevel: CONSTITUENCY_ZOOM,
+                animationDuration: 600,
+              });
+            } else if (feature?.geometry?.type === 'Polygon' || feature?.geometry?.type === 'MultiPolygon') {
               const coords = feature.geometry.type === 'Polygon'
-                ? feature.geometry.coordinates[0]
-                : feature.geometry.coordinates[0][0];
+                ? (feature.geometry as GeoJSON.Polygon).coordinates[0]
+                : (feature.geometry as GeoJSON.MultiPolygon).coordinates[0][0];
               if (coords?.length > 0) {
                 let sumLng = 0, sumLat = 0;
                 for (const pt of coords) { sumLng += pt[0]; sumLat += pt[1]; }
@@ -557,7 +633,7 @@ function FullMapScreen() {
 
             {/* Election result */}
             <View style={styles.resultSection}>
-              <Text style={styles.resultLabel}>{t('mapSheet.winner2023')}</Text>
+              <Text style={styles.resultLabel}>{t('mapSheet.winnerYear', { year: selected.electionYear })}</Text>
               <Text style={styles.resultValue}>{selected.winnerName}</Text>
             </View>
 
@@ -593,7 +669,7 @@ function FullMapScreen() {
 
             {/* Contextual trivia */}
             {(() => {
-              const items = getTriviaForConstituency(selected.acNo).filter(
+              const items = getTriviaForConstituencyInState(stateCode, selected.acNo).filter(
                 (t) => !t.contexts.every((c) => c.type === 'GLOBAL'),
               );
               return items.length > 0 ? (
@@ -603,8 +679,8 @@ function FullMapScreen() {
               ) : null;
             })()}
 
-            {/* Historical snapshot */}
-            {(() => {
+            {/* Historical snapshot — only Telangana has multi-election history */}
+            {isTS && (() => {
               const hist = getConstituencyHistory(selected.acNo);
               if (!hist.ac2014 && !hist.ac2018) return null;
               return (
@@ -622,7 +698,7 @@ function FullMapScreen() {
                     </View>
                   )}
                   <View style={[styles.histMiniCard, styles.histMiniCardCurrent]}>
-                    <Text style={styles.histMiniYear}>2023</Text>
+                    <Text style={styles.histMiniYear}>{selected.electionYear}</Text>
                     <Text style={styles.histMiniParty}>{selected.winner}</Text>
                   </View>
                 </View>

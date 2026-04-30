@@ -7,6 +7,7 @@ import {
   Pressable,
   Share,
   RefreshControl,
+  Alert,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useFeedStore } from '../../stores/feed';
@@ -15,7 +16,7 @@ import PostCard from '../../components/PostCard';
 import PollCard from '../../components/PollCard';
 import ComposeSheet from '../../components/ComposeSheet';
 import TrendingHashtags from '../../components/TrendingHashtags';
-import type { Post, PostType } from '../../lib/feedTypes';
+import type { Post, PostType, PostMedia } from '../../lib/feedTypes';
 import { useTranslation } from 'react-i18next';
 
 const FILTER_TAB_KEYS: { key: PostType | 'all'; tKey: string; icon: string }[] = [
@@ -31,14 +32,18 @@ export default function FeedScreen() {
   const { t } = useTranslation();
   const [composeVisible, setComposeVisible] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
+  const [editingPost, setEditingPost] = useState<Post | undefined>(undefined);
 
   const feedFilter = useFeedStore((s) => s.feedFilter);
   const setFilter = useFeedStore((s) => s.setFilter);
   const getFilteredPosts = useFeedStore((s) => s.getFilteredPosts);
   const addPost = useFeedStore((s) => s.addPost);
+  const editPostAction = useFeedStore((s) => s.editPost);
+  const deletePost = useFeedStore((s) => s.deletePost);
   const toggleReaction = useFeedStore((s) => s.toggleReaction);
   const votePoll = useFeedStore((s) => s.votePoll);
   const user = useAuthStore((s) => s.user);
+  const userId = user?.id ?? 'anon';
 
   const posts = getFilteredPosts();
   const allPosts = useFeedStore((s) => s.posts);
@@ -57,28 +62,57 @@ export default function FeedScreen() {
     } catch (_) {}
   }, []);
 
+  const handleEdit = useCallback((post: Post) => {
+    setEditingPost(post);
+    setComposeVisible(true);
+  }, []);
+
+  const handleDelete = useCallback((post: Post) => {
+    Alert.alert(
+      t('postCard.deleteConfirm'),
+      t('postCard.deleteConfirmBody'),
+      [
+        { text: t('postCard.cancel'), style: 'cancel' },
+        { text: t('postCard.delete'), style: 'destructive', onPress: () => deletePost(post.id) },
+      ],
+    );
+  }, [deletePost, t]);
+
+  const handleEditSubmit = useCallback(
+    (postId: string, content: string, media?: PostMedia[]) => {
+      editPostAction(postId, content);
+    },
+    [editPostAction],
+  );
+
   const renderPost = useCallback(
-    ({ item }: { item: Post }) => (
-      <View>
-        <PostCard
-          post={item}
-          onReact={(reaction) => toggleReaction(item.id, reaction)}
-          onReply={() => {
-            // TODO: open reply compose
-          }}
-          onShare={() => handleShare(item)}
-        />
-        {item.poll && (
-          <View style={styles.pollContainer}>
-            <PollCard
-              poll={item.poll}
-              onVote={(optionId) => votePoll(item.id, optionId)}
-            />
-          </View>
-        )}
-      </View>
-    ),
-    [toggleReaction, votePoll, handleShare],
+    ({ item }: { item: Post }) => {
+      const isOwner = item.author.id === userId;
+      return (
+        <View>
+          <PostCard
+            post={item}
+            isOwner={isOwner}
+            onReact={(reaction) => toggleReaction(item.id, reaction)}
+            onReply={() => {
+              // TODO: open reply compose
+            }}
+            onShare={() => handleShare(item)}
+            onEdit={() => handleEdit(item)}
+            onDelete={() => handleDelete(item)}
+          />
+          {item.poll && (
+            <View style={styles.pollContainer}>
+              <PollCard
+                poll={item.poll}
+                onVote={(optionId) => votePoll(item.id, optionId)}
+              />
+            </View>
+          )}
+        </View>
+      );
+    },
+    [toggleReaction, votePoll, handleShare, handleEdit, handleDelete, userId],
   );
 
   return (
@@ -168,8 +202,13 @@ export default function FeedScreen() {
       {composeVisible && (
         <ComposeSheet
           visible={composeVisible}
-          onClose={() => setComposeVisible(false)}
+          onClose={() => {
+            setComposeVisible(false);
+            setEditingPost(undefined);
+          }}
           onSubmit={(post) => addPost(post)}
+          onEditSubmit={handleEditSubmit}
+          editPost={editingPost}
         />
       )}
     </View>

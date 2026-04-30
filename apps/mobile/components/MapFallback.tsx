@@ -1,10 +1,11 @@
 import { View, Text, StyleSheet, Pressable, ScrollView, Platform } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
-import { TELANGANA_CONSTITUENCIES, type ConstituencySeed } from '@/lib/data';
 import { PARTY_COLORS, getPartyColor } from '@/lib/constants';
 import { STATES } from '@kshetra/shared';
 import StateSwitcher from './StateSwitcher';
+import { getUnifiedConstituenciesForState } from '@/lib/stateDataAdapter';
+import { useActiveStateStore } from '../stores/activeState';
 
 /**
  * Fallback map screen shown when Mapbox native module is not available
@@ -13,10 +14,13 @@ import StateSwitcher from './StateSwitcher';
  */
 export default function MapFallback() {
   const router = useRouter();
+  const stateCode = useActiveStateStore((s) => s.stateCode);
+  const currentState = STATES[stateCode];
+  const constituencies = getUnifiedConstituenciesForState(stateCode);
 
-  const partySummary = TELANGANA_CONSTITUENCIES.reduce<Record<string, number>>(
+  const partySummary = constituencies.reduce<Record<string, number>>(
     (acc, c) => {
-      const p = c.winner2023;
+      const p = c.winnerParty;
       acc[p] = (acc[p] ?? 0) + 1;
       return acc;
     },
@@ -36,7 +40,7 @@ export default function MapFallback() {
           <StateSwitcher />
         </View>
         <Text style={styles.headerSubtitle}>
-          {STATES.TS.name} · {STATES.TS.assemblySeats} Constituencies
+          {currentState?.name ?? stateCode} · {constituencies.length} Constituencies
         </Text>
       </View>
 
@@ -58,7 +62,7 @@ export default function MapFallback() {
         </View>
 
         {/* Party seat overview */}
-        <Text style={styles.sectionTitle}>2023 Election — Party Seats</Text>
+        <Text style={styles.sectionTitle}>Election — Party Seats</Text>
         <View style={styles.partyGrid}>
           {sortedParties.map(([party, seats]) => (
             <View key={party} style={styles.partyCard}>
@@ -78,8 +82,8 @@ export default function MapFallback() {
         <Text style={styles.sectionTitle}>
           Top Constituencies by Margin
         </Text>
-        {[...TELANGANA_CONSTITUENCIES]
-          .sort((a, b) => b.margin2023 - a.margin2023)
+        {[...constituencies]
+          .sort((a, b) => b.margin - a.margin)
           .slice(0, 15)
           .map((c) => (
             <Pressable
@@ -90,10 +94,10 @@ export default function MapFallback() {
               <View
                 style={[
                   styles.rowBadge,
-                  { backgroundColor: getPartyColor(c.winner2023) },
+                  { backgroundColor: getPartyColor(c.winnerParty) },
                 ]}
               >
-                <Text style={styles.rowBadgeText}>{c.winner2023}</Text>
+                <Text style={styles.rowBadgeText}>{c.winnerParty}</Text>
               </View>
               <View style={styles.rowInfo}>
                 <Text style={styles.rowName}>{c.name}</Text>
@@ -103,9 +107,9 @@ export default function MapFallback() {
               </View>
               <View style={styles.rowRight}>
                 <Text style={styles.rowMargin}>
-                  +{c.margin2023.toLocaleString()}
+                  +{c.margin.toLocaleString()}
                 </Text>
-                <Text style={styles.rowWinner}>{c.winnerName2023}</Text>
+                <Text style={styles.rowWinner}>{c.winnerName}</Text>
               </View>
             </Pressable>
           ))}

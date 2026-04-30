@@ -5,9 +5,9 @@
  * Every string must feel natural to a Telugu speaker — not machine-translated.
  * Political terminology uses standard Telugu media conventions.
  */
-import type { TranslationKeys } from './en';
+import type { PartialTranslationKeys } from './en';
 
-const te: TranslationKeys = {
+const te: PartialTranslationKeys = {
   // ── Common ──────────────────────────────────────────────────
   common: {
     appName: 'క్షేత్ర',
@@ -66,6 +66,7 @@ const te: TranslationKeys = {
     myConstituency: 'నా నియోజకవర్గం',
     didYouKnow: 'మీకు తెలుసా?',
     legend: 'సూచిక',
+    boundariesComingSoon: 'సరిహద్దులు త్వరలో వస్తాయి',
   },
 
   // ── Map Legend ─────────────────────────────────────────────
@@ -602,6 +603,50 @@ const te: TranslationKeys = {
         summary: 'ఆక్రమణల కూల్చివేతను సవాలు చేస్తూ పిటిషన్‌లపై హైకోర్టు నోటీసులు. కాలుష్య నియంత్రణ ప్రాధాన్యమని ప్రభుత్వ వాదన.',
       },
     },
+  },
+
+  // ── Trivia (Did You Know) ───────────────────────────────────
+  trivia: {
+    // Telangana
+    'TRV-DEF-001': { headline: '4 పార్టీల వ్యక్తి', body: 'టి. ప్రకాష్ గౌడ్ (రాజేంద్రనగర్) 10 సంవత్సరాల్లో 4 పార్టీల్లో ఉన్నారు: TDP (2014) → TRS విలీనం (2016) → BRS పేరు మార్పు (2022) → INC ఫిరాయింపు (2024).' },
+    'TRV-DEF-002': { headline: 'అద్దం విలీనాలు', body: '2016లో 12 TDP MLAలు TRSలో విలీనమయ్యారు, 2019లో 12 INC MLAలు TRSలో విలీనమయ్యారు. రెండూ 2/3 మెజారిటీ నిబంధనను వాడుకున్నాయి.' },
+    'TRV-DEF-003': { headline: 'ఆపరేషన్ ఆకర్ష్: సీక్వెల్', body: '2016లో TRS 12 TDP MLAలను లాక్కుంది. 2024లో INC 10 BRS MLAలను లాక్కుంది — మీడియా దీన్ని "ఆపరేషన్ ఆకర్ష్ 2.0" అని పిలిచింది.' },
+    'TRV-DEF-004': { headline: 'తండ్రి లాగే కొడుకు', body: 'నాగార్జునసాగర్ MLA నోముల నరసింహయ్య (TRS) 2021లో మరణించినప్పుడు, ఆయన కొడుకు నోముల భగత్ అదే టికెట్‌పై ఉప ఎన్నికలో గెలిచాడు.' },
+    'TRV-DEF-005': { headline: 'ఫిరాయింపు బూమరాంగ్', body: 'అరేకపూడి గాంధీ నియోజకవర్గం ఒక్క ఉప ఎన్నిక లేకుండా 4 పార్టీల ద్వారా "ప్రాతినిధ్యం" పొందింది.' },
+    'TRV-REC-001': { headline: 'అచేదించలేని కోట', body: 'AIMIM హైదరాబాద్ పాత నగరంలోని 7 సీట్లను వరుసగా 3 ఎన్నికల్లో నిలబెట్టుకుంది — 21/21 పరిపూర్ణ రికార్డు.' },
+    'TRV-REC-002': { headline: 'అతిగొప్ప కంబ్యాక్', body: 'INC 6 సీట్ల నుండి 2023 ఎన్నికల్లో 64 సీట్లకు — 967% పెరుగుదల, తెలంగాణ చరిత్రలో అతిపెద్ద మార్పు.' },
+    'TRV-REC-003': { headline: '9 సంవత్సరాల్లో MLA నుండి CM', body: 'రేవంత్ రెడ్డి: TDP MLA (2014) → INC చేరిక (2017) → ఓటమి (2018) → TPCC అధ్యక్షుడు → CM (2023).' },
+    'TRV-REC-004': { headline: 'సిరిసిల్ల కింగ్', body: 'KTR తెలంగాణ 3 ఎన్నికల్లో సిరిసిల్లలో గెలిచాడు — 2014, 2018, 2023.' },
+    'TRV-REC-005': { headline: 'హరీశ్ రావు సిద్దిపేట స్ట్రీక్', body: 'టి. హరీశ్ రావు 2004 నుండి సిద్దిపేట ప్రాతినిధ్యం — వరుసగా 5 ఎన్నికల్లో విజయం.' },
+    'TRV-ELE-001': { headline: 'ముందస్తు రద్దు జూదం', body: 'KCR 2018లో అసెంబ్లీని 9 నెలల ముందు రద్దు చేశారు. TRS 88/119 సీట్లు గెలిచింది. 2023లో పూర్తి కాలం 39 సీట్లు మాత్రమే.' },
+    'TRV-ELE-002': { headline: 'ఒకే ఓట్లు, భిన్నమైన సీట్లు', body: '2023లో INC 39.4% ఓట్లు → 64 సీట్లు, BRS 37.4% → 39 సీట్లు. 2% తేడా = 25 సీట్ల తేడా.' },
+    'TRV-ELE-003': { headline: 'ఎరుపు కోట', body: 'రామగుండం తెలంగాణలో ఏకైక వామపక్ష నియోజకవర్గం. బొగ్గు గనుల ప్రాంతం వామపక్ష రాజకీయాలను బతికిస్తోంది.' },
+    'TRV-HIS-001': { headline: 'అతి చిన్న రాష్ట్రం మొదటి ఓటు', body: '2014 జూన్ 2న రాష్ట్ర ఏర్పాటు తర్వాత తెలంగాణలో మొదటి అసెంబ్లీ ఎన్నిక.' },
+    'TRV-HIS-002': { headline: 'పేరులో ఏముంది?', body: 'TRS 2022 అక్టోబర్‌లో BRS గా మారింది — "తెలంగాణ" స్థానంలో "భారత్" జాతీయ ఆశయాలకు.' },
+    // Andhra Pradesh
+    'AP-T-001': { headline: 'చంద్రబాబు నాయుడు — కంబ్యాక్ కింగ్', body: 'నాయుడు 2024లో కుప్పంలో 72,000+ ఓట్ల మార్జిన్‌తో గెలిచారు. 74 ఏళ్ల వయసులో 4వ సారి CM అయ్యారు.' },
+    'AP-T-002': { headline: 'పవన్ కళ్యాణ్ — రీల్ నుండి రియల్', body: 'JSP చీఫ్ పవన్ కళ్యాణ్ పిఠాపురంలో 67,890 మార్జిన్‌తో గెలిచారు. JSP 100% స్ట్రైక్ రేట్ — 21/21 సీట్లు.' },
+    'AP-T-003': { headline: 'YSRCP: 151 నుండి 11కు', body: '2019లో YSRCP 151/175 సీట్లు గెలిచింది. 2024లో కేవలం 11కు — ఒక్క ఎన్నికలో 140 సీట్లు కోల్పోయింది.' },
+    'AP-T-004': { headline: 'NDA ట్రిపుల్ అలయన్స్ స్వీప్', body: 'TDP-JSP-BJP 2024లో 164/175 సీట్లు — 93.7% సీట్లు, APలో బైఫర్కేషన్ తర్వాత అతిపెద్ద విజయం.' },
+    'AP-T-005': { headline: 'పులివెందుల — జగన్ చివరి కోట', body: '2024 వైఫల్యంలోనూ జగన్ పులివెందులలో 45,678 ఓట్లతో గెలిచారు. ఆయన కుటుంబం 40+ సంవత్సరాలుగా ఈ సీట్‌ను నిలబెట్టుకుంటోంది.' },
+    'AP-T-006': { headline: 'ఆపరేషన్ ఆకర్ష్ 2.0', body: '2024 ఎన్నికల ముందు 6 YSRCP MLAలు TDPలోకి ఫిరాయింపు — 2017 "ఆపరేషన్ ఆకర్ష్" ప్రతిబింబం.' },
+    // Karnataka — keep English (not a Telugu-speaking state)
+    'KA-T-001': { headline: 'Operation Kamala — The Biggest Defection Drama', body: '17 JDS-INC MLAs resigned in July 2019. 12 won by-elections on BJP tickets months later.' },
+    'KA-T-002': { headline: 'Siddaramaiah — The Guarantee Man', body: 'Siddaramaiah won Badami with 42,567 margin. His 5 guarantee schemes drove INC\'s 135-seat landslide.' },
+    // Maharashtra — keep English (not a Telugu-speaking state)
+    'MH-T-001': { headline: 'The Great Shiv Sena Split', body: 'Eknath Shinde led 40 of 56 Shiv Sena MLAs in rebellion (June 2022). ECI awarded the name to Shinde faction.' },
+    'MH-T-002': { headline: 'Pawar vs Pawar — Uncle vs Nephew', body: 'Ajit Pawar split NCP taking 40+ MLAs to BJP. Uncle Sharad Pawar (83) founded NCP(SP).' },
+  },
+
+  // ── Seed Posts (Feed) ─────────────────────────────────────
+  seedPosts: {
+    'seed-1': { content: 'క్షేత్రకు స్వాగతం! తెలంగాణలో రాజకీయ చర్చల కోసం కమ్యూనిటీ ఫీడ్. స్థానిక పాలనపై మీ అభిప్రాయాలు పంచుకోండి, మీ నియోజకవర్గం గురించి ప్రశ్నలు అడగండి.' },
+    'seed-2': { content: 'గచ్చిబౌలి దగ్గర ORR సర్వీస్ రోడ్ నిర్మాణం 3 నెలలుగా ఆగిపోయింది. ఏ శాఖకు ఫిర్యాదు చేయాలి? MLA ఆఫీస్ GHMC అంటుంది, GHMC NHAI అంటుంది. #infrastructure #serilingampally' },
+    'seed-3': { content: 'నేడు నియోజకవర్గ స్థాయి సమీక్ష సమావేశానికి హాజరయ్యాను. ఈ నెల 43 కొత్త రేషన్ కార్డులు, 12 పెండింగ్ పెన్షన్ కేసులు క్లియర్. పురోగతి నెమ్మదిగా కానీ కనిపిస్తోంది. #goshamahal #governance' },
+    'seed-4': { content: '10 BRS→INC ఫిరాయింపులు ఆ నియోజకవర్గాల్లో క్షేత్ర స్థాయి పాలనను మార్చాయని మీరు భావిస్తున్నారా?' },
+    'seed-5': { content: 'సిరిసిల్లలో KTR మార్జిన్ — 51,489 ఓట్లు — 2023 ఎన్నికల్లో అతిపెద్దది. BRS మొత్తంగా ఓడినా ఈ నియోజకవర్గం విధేయంగా ఉంది. సిరిసిల్ల ఏమి భిన్నం? #sircilla #brs #ktr' },
+    'seed-6': { content: 'పాత నగరంలో నీటి సరఫరా సమస్య మరింత తీవ్రమవుతోంది. ట్యాంకర్లు షెడ్యూల్ ప్రకారం రావడం లేదు, HMWSSB హెల్ప్‌లైన్ నిరంతరం బిజీ. #charminar #watersupply #hyderabad' },
+    'seed-7': { content: 'కొత్తగా ఎన్నికైన INC MLAలలో ఎవరు తమ నియోజకవర్గంలో అత్యంత చురుకుగా ఉన్నారు?' },
   },
 
   // ── Language ────────────────────────────────────────────────

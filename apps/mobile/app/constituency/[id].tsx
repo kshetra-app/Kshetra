@@ -1,10 +1,20 @@
-import { useCallback, useEffect } from 'react';
+import { useCallback, useEffect, useMemo } from 'react';
 import { View, Text, StyleSheet, ScrollView, Platform, Pressable, Share } from 'react-native';
 import { useLocalSearchParams, Stack } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { useTranslation } from 'react-i18next';
 import { getPartyColor } from '@/lib/constants';
-import { TELANGANA_CONSTITUENCIES, TELANGANA_ELECTION_HISTORY, getMLAProfile, getTriviaForConstituency, getConstituencyHistory, isPartyStronghold, getConstituencyDemographics } from '@/lib/data';
+import {
+  getMLAProfileForState,
+  getDemographicsForState,
+  getHistoryForState,
+  isStrongholdForState,
+  getElectionHistoryForState,
+  hasFullDataForState,
+} from '@/lib/stateDataDispatcher';
+import { getTriviaForConstituencyInState } from '@/lib/stateTriviaAdapter';
+import { getUnifiedConstituenciesForState, type UnifiedConstituency } from '@/lib/stateDataAdapter';
+import { useActiveStateStore } from '../../stores/activeState';
 import { useFavoritesStore } from '../../stores/favorites';
 import { useRecentsStore } from '../../stores/recents';
 import { useMyConstituencyStore } from '../../stores/myConstituency';
@@ -17,7 +27,19 @@ export default function ConstituencyDetailScreen() {
   const { t } = useTranslation();
   const { id } = useLocalSearchParams<{ id: string }>();
   const acNo = parseInt(id, 10);
-  const constituency = TELANGANA_CONSTITUENCIES.find((c) => c.acNo === acNo);
+  const stateCode = useActiveStateStore((s) => s.stateCode);
+  const hasFull = hasFullDataForState(stateCode);
+
+  /** Look up constituency from the active state's unified data */
+  const stateConstituencies = useMemo(
+    () => getUnifiedConstituenciesForState(stateCode),
+    [stateCode],
+  );
+  const constituency = useMemo(
+    () => stateConstituencies.find((c) => c.acNo === acNo) ?? null,
+    [stateConstituencies, acNo],
+  );
+
   const isFavorite = useFavoritesStore((s) => s.isFavorite(acNo));
   const toggleFavorite = useFavoritesStore((s) => s.toggleFavorite);
   const addRecent = useRecentsStore((s) => s.addRecent);
@@ -32,7 +54,7 @@ export default function ConstituencyDetailScreen() {
         acNo: constituency.acNo,
         name: constituency.name,
         district: constituency.district,
-        party: constituency.winner2023,
+        party: constituency.winnerParty,
       });
     }
   }, [constituency, addRecent]);
@@ -51,7 +73,7 @@ export default function ConstituencyDetailScreen() {
     );
   }
 
-  const partyColor = getPartyColor(constituency.winner2023);
+  const partyColor = getPartyColor(constituency.winnerParty);
 
   return (
     <View style={styles.container}>
@@ -81,7 +103,7 @@ export default function ConstituencyDetailScreen() {
                 onPress={async () => {
                   try {
                     await Share.share({
-                      message: `${constituency.name} (AC #${constituency.acNo})\n${constituency.district} District · ${constituency.type}\nWinner: ${constituency.winnerName2023} (${constituency.winner2023})\nMargin: ${constituency.margin2023.toLocaleString()} votes\n\nExplore more on Kshetra`,
+                      message: `${constituency.name} (AC #${constituency.acNo})\n${constituency.district} District · ${constituency.type}\nWinner: ${constituency.winnerName} (${constituency.winnerParty})\nMargin: ${constituency.margin.toLocaleString()} votes\n\nExplore more on Kshetra`,
                     });
                   } catch (_) {}
                 }}
@@ -118,7 +140,7 @@ export default function ConstituencyDetailScreen() {
                 acNo: constituency.acNo,
                 name: constituency.name,
                 district: constituency.district,
-                party: constituency.winner2023,
+                party: constituency.winnerParty,
               });
             }
           }}
@@ -144,16 +166,16 @@ export default function ConstituencyDetailScreen() {
                 />
                 <View>
                   <Text style={styles.resultParty}>
-                    {constituency.winner2023}
+                    {constituency.winnerParty}
                   </Text>
                   <Text style={styles.resultCandidate}>
-                    {constituency.winnerName2023}
+                    {constituency.winnerName}
                   </Text>
                 </View>
               </View>
               <View style={styles.resultRight}>
                 <Text style={styles.resultVotes}>
-                  {constituency.winnerVotes2023.toLocaleString()}
+                  {constituency.winnerVotes.toLocaleString()}
                 </Text>
                 <Text style={styles.resultLabel}>{t('constituency.votes')}</Text>
               </View>
@@ -164,21 +186,21 @@ export default function ConstituencyDetailScreen() {
             <View style={styles.statsRow}>
               <View style={styles.statItem}>
                 <Text style={styles.statValue}>
-                  {constituency.margin2023.toLocaleString()}
+                  {constituency.margin.toLocaleString()}
                 </Text>
                 <Text style={styles.statLabel}>{t('constituency.margin')}</Text>
               </View>
               <View style={styles.statItem}>
                 <Text style={styles.statValue}>
-                  {constituency.runnerUp2023}
+                  {constituency.runnerUp}
                 </Text>
                 <Text style={styles.statLabel}>{t('constituency.runnerUp')}</Text>
               </View>
               <View style={styles.statItem}>
                 <Text style={styles.statValue}>
                   {(
-                    (constituency.margin2023 /
-                      constituency.winnerVotes2023) *
+                    (constituency.margin /
+                      (constituency.winnerVotes || 1)) *
                     100
                   ).toFixed(1)}
                   %
@@ -190,8 +212,8 @@ export default function ConstituencyDetailScreen() {
         </View>
 
         {/* MLA Profile */}
-        {(() => {
-          const mla = getMLAProfile(acNo);
+        {hasFull && (() => {
+          const mla = getMLAProfileForState(stateCode, acNo);
           return mla ? (
             <View style={styles.section}>
               <Text style={styles.sectionTitle}>{t('constituency.currentMlaSection')}</Text>
@@ -201,19 +223,19 @@ export default function ConstituencyDetailScreen() {
         })()}
 
         {/* Defection Alert */}
-        {constituency.currentParty && constituency.currentParty !== constituency.winner2023 && (
+        {constituency.currentParty && constituency.currentParty !== constituency.winnerParty && (
           <View style={styles.section}>
             <DefectionBadge
-              electedParty={constituency.winner2023}
+              electedParty={constituency.winnerParty}
               currentParty={constituency.currentParty}
             />
           </View>
         )}
 
         {/* Trivia */}
-        {(() => {
-          const triviaItems = getTriviaForConstituency(acNo).filter(
-            (t) => !t.contexts.every((c) => c.type === 'GLOBAL'),
+        {hasFull && (() => {
+          const triviaItems = getTriviaForConstituencyInState(stateCode, acNo).filter(
+            (ti) => !ti.contexts.every((c) => c.type === 'GLOBAL'),
           );
           return triviaItems.length > 0 ? (
             <View style={styles.section}>
@@ -223,18 +245,17 @@ export default function ConstituencyDetailScreen() {
           ) : null;
         })()}
 
-        {/* Per-Constituency Election History — 2014 / 2018 / 2023 */}
-        {(() => {
-          const history = getConstituencyHistory(acNo);
-          const currentParty = constituency.currentParty ?? constituency.winner2023;
-          const stronghold = isPartyStronghold(acNo, currentParty);
+        {/* Per-Constituency Election History */}
+        {hasFull && (() => {
+          const pastElections = getHistoryForState(stateCode, acNo);
+          const currentParty = constituency.currentParty ?? constituency.winnerParty;
+          const stronghold = isStrongholdForState(stateCode, acNo, currentParty);
           const normalize = (p: string) => (p === 'TRS' ? 'BRS' : p);
 
           const elections = [
-            history.ac2014 ? { year: 2014, winner: history.ac2014.winner, party: history.ac2014.party } : null,
-            history.ac2018 ? { year: 2018, winner: history.ac2018.winner, party: history.ac2018.party } : null,
-            { year: 2023, winner: constituency.winnerName2023, party: constituency.winner2023 },
-          ].filter(Boolean) as { year: number; winner: string; party: string }[];
+            ...pastElections,
+            { year: constituency.electionYear, winner: constituency.winnerName, party: constituency.winnerParty },
+          ];
 
           // Check if party changed between elections
           const partyChanged = elections.length >= 2 &&
@@ -306,70 +327,76 @@ export default function ConstituencyDetailScreen() {
         })()}
 
         {/* State-level election overview */}
-        <View style={styles.section}>
-          <Text style={styles.sectionTitle}>{t('constituency.assemblyOverview')}</Text>
-          {TELANGANA_ELECTION_HISTORY.map((election) => {
-            const winnerParty = election.partyResults.reduce(
-              (prev, curr) => (curr.seatsWon > prev.seatsWon ? curr : prev),
-            );
-            return (
-              <View key={election.year} style={styles.historyCard}>
-                <View style={styles.historyHeader}>
-                  <Text style={styles.historyYear}>{election.year}</Text>
-                  <View
-                    style={[
-                      styles.historyWinnerBadge,
-                      { backgroundColor: getPartyColor(winnerParty.party) + '30' },
-                    ]}
-                  >
-                    <Text
-                      style={[
-                        styles.historyWinnerText,
-                        { color: getPartyColor(winnerParty.party) },
-                      ]}
-                    >
-                      {winnerParty.party} {winnerParty.seatsWon}
-                    </Text>
-                  </View>
-                </View>
-                {election.notes && (
-                  <Text style={styles.historyNotes}>{election.notes}</Text>
-                )}
-                <View style={styles.historyBars}>
-                  {election.partyResults
-                    .filter((p) => p.seatsWon > 0)
-                    .sort((a, b) => b.seatsWon - a.seatsWon)
-                    .map((p) => (
-                      <View key={p.party} style={styles.historyBarRow}>
-                        <Text style={styles.historyBarLabel}>{p.party}</Text>
-                        <View style={styles.historyBarTrack}>
-                          <View
-                            style={[
-                              styles.historyBarFill,
-                              {
-                                width: `${(p.seatsWon / 119) * 100}%`,
-                                backgroundColor: getPartyColor(p.party),
-                              },
-                            ]}
-                          />
-                        </View>
-                        <Text style={styles.historyBarValue}>{p.seatsWon}</Text>
+        {hasFull && (() => {
+          const stateHistory = getElectionHistoryForState(stateCode);
+          if (stateHistory.length === 0) return null;
+          return (
+            <View style={styles.section}>
+              <Text style={styles.sectionTitle}>{t('constituency.assemblyOverview')}</Text>
+              {stateHistory.map((election) => {
+                const winnerParty = election.partyResults.reduce(
+                  (prev, curr) => (curr.seatsWon > prev.seatsWon ? curr : prev),
+                );
+                return (
+                  <View key={election.year} style={styles.historyCard}>
+                    <View style={styles.historyHeader}>
+                      <Text style={styles.historyYear}>{election.year}</Text>
+                      <View
+                        style={[
+                          styles.historyWinnerBadge,
+                          { backgroundColor: getPartyColor(winnerParty.party) + '30' },
+                        ]}
+                      >
+                        <Text
+                          style={[
+                            styles.historyWinnerText,
+                            { color: getPartyColor(winnerParty.party) },
+                          ]}
+                        >
+                          {winnerParty.party} {winnerParty.seatsWon}
+                        </Text>
                       </View>
-                    ))}
-                </View>
-                {election.turnout && (
-                  <Text style={styles.historyTurnout}>
-                    {t('constituency.turnout')}: {election.turnout}%
-                  </Text>
-                )}
-              </View>
-            );
-          })}
-        </View>
+                    </View>
+                    {election.notes && (
+                      <Text style={styles.historyNotes}>{election.notes}</Text>
+                    )}
+                    <View style={styles.historyBars}>
+                      {election.partyResults
+                        .filter((p) => p.seatsWon > 0)
+                        .sort((a, b) => b.seatsWon - a.seatsWon)
+                        .map((p) => (
+                          <View key={p.party} style={styles.historyBarRow}>
+                            <Text style={styles.historyBarLabel}>{p.party}</Text>
+                            <View style={styles.historyBarTrack}>
+                              <View
+                                style={[
+                                  styles.historyBarFill,
+                                  {
+                                    width: `${(p.seatsWon / (election.totalSeats || 1)) * 100}%`,
+                                    backgroundColor: getPartyColor(p.party),
+                                  },
+                                ]}
+                              />
+                            </View>
+                            <Text style={styles.historyBarValue}>{p.seatsWon}</Text>
+                          </View>
+                        ))}
+                    </View>
+                    {election.turnout && (
+                      <Text style={styles.historyTurnout}>
+                        {t('constituency.turnout')}: {election.turnout}%
+                      </Text>
+                    )}
+                  </View>
+                );
+              })}
+            </View>
+          );
+        })()}
 
         {/* Demographics */}
-        {(() => {
-          const demo = getConstituencyDemographics(acNo);
+        {hasFull && (() => {
+          const demo = getDemographicsForState(stateCode, acNo);
           if (!demo) return null;
           return (
             <View style={styles.section}>

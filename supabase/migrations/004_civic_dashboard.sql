@@ -61,7 +61,7 @@ CREATE TABLE IF NOT EXISTS headlines (
   image_url TEXT,
   category TEXT NOT NULL DEFAULT 'politics' CHECK (category IN (
     'politics', 'governance', 'development', 'law_and_order',
-    'economy', 'education', 'health', 'environment', 'opinion'
+    'economy', 'education', 'health', 'environment', 'corruption', 'opinion'
   )),
   published_at TIMESTAMPTZ NOT NULL,
   created_at TIMESTAMPTZ NOT NULL DEFAULT now()

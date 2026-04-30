@@ -14,10 +14,9 @@ import { useRouter } from 'expo-router';
 import { getPartyColor } from '@/lib/constants';
 import { useFavoritesStore } from '../../stores/favorites';
 import { useActiveStateStore } from '../../stores/activeState';
-import { getStateData } from '@/lib/stateRegistry';
 import StateSwitcher from '../../components/StateSwitcher';
 import AISmartSearch from '../../components/AISmartSearch';
-import type { ConstituencySeed } from '@/lib/data';
+import { getUnifiedConstituenciesForState, type UnifiedConstituency } from '@/lib/stateDataAdapter';
 import { useTranslation } from 'react-i18next';
 
 type SortKey = 'acNo' | 'name' | 'margin_asc' | 'margin_desc';
@@ -43,15 +42,17 @@ export default function ExploreScreen() {
   const favoriteIds = useFavoritesStore((s) => s.favoriteIds);
   const isFavorite = useFavoritesStore((s) => s.isFavorite);
   const stateCode = useActiveStateStore((s) => s.stateCode);
-  const stateData = getStateData(stateCode);
-  const allConstituencies = stateData?.constituencies ?? [];
+  const allConstituencies = useMemo(
+    () => getUnifiedConstituenciesForState(stateCode),
+    [stateCode],
+  );
 
   /** Derive unique parties and districts from data */
   const { parties, districts } = useMemo(() => {
     const pSet = new Set<string>();
     const dSet = new Set<string>();
     for (const c of allConstituencies) {
-      pSet.add(c.winner2023);
+      pSet.add(c.winnerParty);
       dSet.add(c.district);
     }
     return {
@@ -82,14 +83,14 @@ export default function ExploreScreen() {
         (c) =>
           c.name.toLowerCase().includes(q) ||
           c.district.toLowerCase().includes(q) ||
-          c.winnerName2023.toLowerCase().includes(q) ||
-          c.winner2023.toLowerCase().includes(q) ||
+          c.winnerName.toLowerCase().includes(q) ||
+          c.winnerParty.toLowerCase().includes(q) ||
           String(c.acNo).includes(q),
       );
     }
 
     if (partyFilter) {
-      results = results.filter((c) => c.winner2023 === partyFilter);
+      results = results.filter((c) => c.winnerParty === partyFilter);
     }
     if (districtFilter) {
       results = results.filter((c) => c.district === districtFilter);
@@ -105,10 +106,10 @@ export default function ExploreScreen() {
         sorted.sort((a, b) => a.name.localeCompare(b.name));
         break;
       case 'margin_asc':
-        sorted.sort((a, b) => a.margin2023 - b.margin2023);
+        sorted.sort((a, b) => a.margin - b.margin);
         break;
       case 'margin_desc':
-        sorted.sort((a, b) => b.margin2023 - a.margin2023);
+        sorted.sort((a, b) => b.margin - a.margin);
         break;
       default: // acNo
         sorted.sort((a, b) => a.acNo - b.acNo);
@@ -118,7 +119,7 @@ export default function ExploreScreen() {
   }, [query, showFavoritesOnly, favoriteIds, allConstituencies, partyFilter, districtFilter, typeFilter, sortKey]);
 
   const renderItem = useCallback(
-    ({ item }: { item: ConstituencySeed }) => (
+    ({ item }: { item: UnifiedConstituency }) => (
       <ConstituencyCard item={item} isFav={isFavorite(item.acNo)} onPress={() => router.push(`/constituency/${item.acNo}`)} />
     ),
     [isFavorite, router],
@@ -339,7 +340,7 @@ const ConstituencyCard = React.memo(function ConstituencyCard({
   isFav,
   onPress,
 }: {
-  item: ConstituencySeed;
+  item: UnifiedConstituency;
   isFav: boolean;
   onPress: () => void;
 }) {
@@ -349,10 +350,10 @@ const ConstituencyCard = React.memo(function ConstituencyCard({
         <View
           style={[
             styles.partyBadge,
-            { backgroundColor: getPartyColor(item.winner2023) },
+            { backgroundColor: getPartyColor(item.winnerParty) },
           ]}
         >
-          <Text style={styles.partyBadgeText}>{item.winner2023}</Text>
+          <Text style={styles.partyBadgeText}>{item.winnerParty}</Text>
         </View>
       </View>
       <View style={styles.cardContent}>
@@ -361,7 +362,7 @@ const ConstituencyCard = React.memo(function ConstituencyCard({
           #{item.acNo} · {item.district} · {item.type}
         </Text>
         <Text style={styles.cardWinner}>
-          {item.winnerName2023} · Margin: {item.margin2023.toLocaleString()}
+          {item.winnerName} · Margin: {item.margin.toLocaleString()}
         </Text>
       </View>
       {isFav && (

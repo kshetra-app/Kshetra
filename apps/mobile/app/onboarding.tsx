@@ -13,7 +13,8 @@ import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { useUserProfileStore } from '../stores/userProfile';
 import { useMyConstituencyStore } from '../stores/myConstituency';
-import { TELANGANA_CONSTITUENCIES } from '../lib/data';
+import { getUnifiedConstituenciesForState } from '../lib/stateDataAdapter';
+import { useActiveStateStore } from '../stores/activeState';
 import { ROLE_CONFIG, type UserRole } from '../lib/moderationTypes';
 import { useTranslation } from 'react-i18next';
 
@@ -74,9 +75,12 @@ export default function OnboardingScreen() {
     }
   };
 
+  const stateCode = useActiveStateStore((s) => s.stateCode);
+  const stateConstituencies = getUnifiedConstituenciesForState(stateCode);
+
   const finish = () => {
     const selected = selectedAcNo
-      ? TELANGANA_CONSTITUENCIES.find((c) => c.acNo === selectedAcNo)
+      ? stateConstituencies.find((c) => c.acNo === selectedAcNo)
       : null;
 
     updateProfile({
@@ -89,7 +93,7 @@ export default function OnboardingScreen() {
     });
 
     if (selected) {
-      setHome({ acNo: selected.acNo, name: selected.name, district: selected.district, party: selected.winner2023 });
+      setHome({ acNo: selected.acNo, name: selected.name, district: selected.district, party: selected.winnerParty });
     }
 
     setOnboarded(true);
@@ -103,7 +107,7 @@ export default function OnboardingScreen() {
   };
 
   const filteredConstituencies = acSearch.trim()
-    ? TELANGANA_CONSTITUENCIES.filter(
+    ? stateConstituencies.filter(
         (c) =>
           c.name.toLowerCase().includes(acSearch.toLowerCase()) ||
           c.district.toLowerCase().includes(acSearch.toLowerCase()) ||
@@ -206,7 +210,7 @@ export default function OnboardingScreen() {
                 <Ionicons name="checkmark-circle" size={16} color="#10B981" />
                 <Text style={styles.selectedAcText}>
                   Selected: #{selectedAcNo}{' '}
-                  {TELANGANA_CONSTITUENCIES.find((c) => c.acNo === selectedAcNo)?.name}
+                  {stateConstituencies.find((c) => c.acNo === selectedAcNo)?.name}
                 </Text>
               </View>
             )}

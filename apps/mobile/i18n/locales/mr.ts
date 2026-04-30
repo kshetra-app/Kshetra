@@ -4,9 +4,9 @@
  * Native-quality Marathi translations for Kshetra.
  * Uses standard Marathi political terminology as used in Maharashtra media.
  */
-import type { TranslationKeys } from './en';
+import type { PartialTranslationKeys } from './en';
 
-const mr: TranslationKeys = {
+const mr: PartialTranslationKeys = {
   common: {
     appName: 'क्षेत्र',
     loading: 'लोड होत आहे…',
@@ -62,6 +62,7 @@ const mr: TranslationKeys = {
     myConstituency: 'माझा मतदारसंघ',
     didYouKnow: 'तुम्हाला माहीत आहे का?',
     legend: 'संकेत',
+    boundariesComingSoon: 'सीमा लवकरच येत आहेत',
   },
 
   mapLegend: {
@@ -575,6 +576,34 @@ const mr: TranslationKeys = {
         summary: 'अतिक्रमण पाडकामाला आव्हान देणाऱ्या याचिकांवर उच्च न्यायालयाने नोटीस बजावली. प्रदूषण स्वच्छता हे प्राधान्य: सरकार.',
       },
     },
+  },
+
+  trivia: {
+    // Maharashtra — fully in Marathi
+    'MH-T-001': { headline: 'शिवसेनेचे महाविभाजन', body: 'एकनाथ शिंदे यांनी जून 2022 मध्ये 56 पैकी 40 शिवसेना आमदारांचे नेतृत्व करून बंड केले. ECI ने शिंदे गटाला नाव दिले.' },
+    'MH-T-002': { headline: 'पवार वि. पवार — काका वि. पुतण्या', body: 'अजित पवारांनी NCP फोडून 40+ आमदारांना BJP कडे नेले. काका शरद पवार (83) यांनी NCP(SP) स्थापन केली.' },
+    'MH-T-003': { headline: 'फडणवीस — कमबॅक मॅन', body: 'फडणवीसांनी नागपूर दक्षिण पश्चिम मोठ्या फरकाने जिंकले. 3 व्यांदा मुख्यमंत्री झाले.' },
+    'MH-T-004': { headline: 'काँग्रेस: 44 वरून 16', body: 'काँग्रेसची महाराष्ट्रातील सर्वात वाईट कामगिरी — 44 जागा (2019) ते फक्त 16 (2024).' },
+    'MH-T-005': { headline: 'आदित्य ठाकरे — वरळीचा राजकुमार', body: 'वडिलांच्या गटाचा राज्यभर पराभव होऊनही आदित्यने वरळी टिकवली.' },
+    'MH-T-006': { headline: 'महायुती सुनामी — 230/288', body: 'BJP-SHS-NCP (महायुती) ने 2024 मध्ये 230/288 जागा जिंकल्या — MH इतिहासातील सर्वात एकतर्फी निकाल.' },
+    'MH-T-007': { headline: 'दोन पक्ष, एकच नाव', body: 'शिवसेना आणि NCP दोन्ही दोन गटांत विभागले, प्रत्येकाने मूळ नावावर दावा केला. न्यायालयांना निर्णय करावा लागला.' },
+    'MH-T-008': { headline: 'मुंबई — 36 जागा, BJP चे वर्चस्व', body: 'BJP ने 2024 मध्ये मुंबईतील 36 विधानसभा जागांपैकी बहुसंख्य जिंकल्या.' },
+    // Telangana — key items in Marathi
+    'TRV-DEF-001': { headline: '4 पक्षांचा माणूस', body: 'टी. प्रकाश गौड 10 वर्षांत 4 पक्षांत: TDP → TRS → BRS → INC.' },
+    'TRV-REC-002': { headline: 'सर्वात मोठे पुनरागमन', body: 'INC 6 जागांवरून 2023 निवडणुकीत 64 — 967% वाढ.' },
+    // AP/KA — keep English
+    'AP-T-001': { headline: 'Chandrababu Naidu — The Comeback King', body: 'Naidu won Kuppam in 2024 with the highest margin — over 72,000 votes.' },
+    'KA-T-001': { headline: 'Operation Kamala — The Biggest Defection Drama', body: '17 JDS-INC MLAs resigned in July 2019. 12 won by-elections on BJP tickets.' },
+  },
+
+  seedPosts: {
+    'seed-1': { content: 'क्षेत्रात स्वागत! तेलंगणातील राजकीय चर्चांसाठी समुदाय फीड. स्थानिक प्रशासनावर तुमची मते शेअर करा, तुमच्या मतदारसंघाबद्दल प्रश्न विचारा.' },
+    'seed-2': { content: 'गच्चीबोवली जवळ ORR सर्व्हिस रोड बांधकाम 3 महिन्यांपासून रखडले. कोणत्या विभागाकडे तक्रार करायची? MLA कार्यालय GHMC म्हणते, GHMC NHAI म्हणते. #infrastructure #serilingampally' },
+    'seed-3': { content: 'आज मतदारसंघ स्तरावरील आढावा बैठकीला उपस्थित राहिलो. या महिन्यात 43 नवीन शिधापत्रिका, 12 प्रलंबित निवृत्तिवेतन प्रकरणे निकाली. प्रगती संथ पण दिसते. #goshamahal #governance' },
+    'seed-4': { content: '10 BRS→INC पक्षांतरांनी त्या मतदारसंघांतील जमिनी स्तरावरील प्रशासन बदलले असे तुम्हाला वाटते का?' },
+    'seed-5': { content: 'सिरसिल्लामध्ये KTR चा फरक — 51,489 मते — 2023 निवडणुकीतील सर्वात मोठा. BRS एकंदरीत हरला तरी हा मतदारसंघ निष्ठावान राहिला. #sircilla #brs #ktr' },
+    'seed-6': { content: 'जुन्या शहरात पाणी पुरवठ्याची समस्या अधिकच बिकट. टँकर वेळेवर येत नाहीत, HMWSSB हेल्पलाइन सतत व्यस्त. #charminar #watersupply #hyderabad' },
+    'seed-7': { content: 'नव्याने निवडून आलेल्या INC आमदारांपैकी कोण आपल्या मतदारसंघात सर्वात सक्रिय आहेत?' },
   },
 
   language: {

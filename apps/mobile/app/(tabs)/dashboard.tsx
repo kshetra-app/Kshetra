@@ -12,12 +12,22 @@ import { useRouter } from 'expo-router';
 import { useCivicStore } from '../../stores/civic';
 import IssueCard from '../../components/IssueCard';
 import ReportIssueSheet from '../../components/ReportIssueSheet';
+import ExportSheet from '../../components/ExportSheet';
 import SentimentBar from '../../components/SentimentBar';
 import HeadlineCard from '../../components/HeadlineCard';
 import { ISSUE_CATEGORY_CONFIG } from '../../lib/civicTypes';
 import AIDashboardSummary from '../../components/AIDashboardSummary';
-import type { IssueCategory, IssueStatus } from '../../lib/civicTypes';
+import type { IssueCategory, IssueStatus, CivicScope } from '../../lib/civicTypes';
 import { useTranslation } from 'react-i18next';
+import { useActiveStateStore } from '../../stores/activeState';
+import { useMyConstituencyStore } from '../../stores/myConstituency';
+import { STATES } from '@kshetra/shared';
+
+const SCOPE_OPTIONS: { key: CivicScope; icon: string; label: string }[] = [
+  { key: 'constituency', icon: 'location', label: 'My Constituency' },
+  { key: 'state', icon: 'map', label: 'My State' },
+  { key: 'national', icon: 'globe', label: 'National' },
+];
 
 // ─── Error Boundary to prevent Fabric native crashes ───
 class DashboardErrorBoundary extends Component<
@@ -77,44 +87,58 @@ function DashboardContent() {
   const router = useRouter();
   const [activeTab, setActiveTab] = useState<DashboardTab>('issues');
   const [reportVisible, setReportVisible] = useState(false);
+  const [exportVisible, setExportVisible] = useState(false);
 
-  // Use proper selectors — select raw data, compute in useMemo
-  const allIssues = useCivicStore((s) => s.issues);
-  const headlines = useCivicStore((s) => s.headlines);
-  const sentiment = useCivicStore((s) => s.sentiment);
+  // Stores
+  const stateCode = useActiveStateStore((s) => s.stateCode);
+  const myHome = useMyConstituencyStore((s) => s.home);
+  const scopeFilter = useCivicStore((s) => s.scopeFilter);
+  const setScopeFilter = useCivicStore((s) => s.setScopeFilter);
   const issueFilter = useCivicStore((s) => s.issueFilter);
   const statusFilter = useCivicStore((s) => s.statusFilter);
+  const allIssues = useCivicStore((s) => s.issues);
+  const allHeadlines = useCivicStore((s) => s.headlines);
+  const allSentiment = useCivicStore((s) => s.sentiment);
   const toggleUpvote = useCivicStore((s) => s.toggleUpvote);
   const addIssue = useCivicStore((s) => s.addIssue);
   const setIssueFilter = useCivicStore((s) => s.setIssueFilter);
   const setStatusFilter = useCivicStore((s) => s.setStatusFilter);
+  const getFilteredByScope = useCivicStore((s) => s.getFilteredByScope);
 
-  // Derive filtered issues in component (stable references via useMemo)
-  const issues = useMemo(() => {
-    return allIssues.filter((i) => {
-      if (issueFilter !== 'all' && i.category !== issueFilter) return false;
-      if (statusFilter !== 'all' && i.status !== statusFilter) return false;
-      return true;
-    });
-  }, [allIssues, issueFilter, statusFilter]);
+  const constituencyId = myHome ? `${stateCode}-AC-${myHome.acNo}` : undefined;
+
+  // Scope-filtered data (issues, headlines, sentiment all respect the scope)
+  const { issues: scopedIssues, headlines, sentiment } = useMemo(
+    () => getFilteredByScope(stateCode, constituencyId),
+    [getFilteredByScope, stateCode, constituencyId, scopeFilter, issueFilter, statusFilter],
+  );
+
+  // Scope label for header
+  const scopeLabel = useMemo(() => {
+    if (scopeFilter === 'constituency' && myHome) return myHome.name;
+    if (scopeFilter === 'state') return (STATES as Record<string, { name: string }>)[stateCode]?.name ?? stateCode;
+    return 'All India';
+  }, [scopeFilter, stateCode, myHome]);
+
+  const issues = scopedIssues;
 
   const issueStats = useMemo(() => {
-    const open = allIssues.filter((i) => i.status === 'open').length;
-    const inProgress = allIssues.filter((i) => i.status === 'in_progress' || i.status === 'acknowledged').length;
-    const resolved = allIssues.filter((i) => i.status === 'resolved' || i.status === 'closed').length;
-    const critical = allIssues.filter((i) => i.severity === 'critical').length;
+    const open = issues.filter((i) => i.status === 'open').length;
+    const inProgress = issues.filter((i) => i.status === 'in_progress' || i.status === 'acknowledged').length;
+    const resolved = issues.filter((i) => i.status === 'resolved' || i.status === 'closed').length;
+    const critical = issues.filter((i) => i.severity === 'critical').length;
     return { open, inProgress, resolved, critical };
-  }, [allIssues]);
+  }, [issues]);
 
   const topCategories = useMemo(() => {
     const counts = new Map<IssueCategory, number>();
-    for (const issue of allIssues) {
+    for (const issue of issues) {
       counts.set(issue.category, (counts.get(issue.category) ?? 0) + 1);
     }
     return Array.from(counts.entries())
       .map(([category, count]) => ({ category, count }))
       .sort((a, b) => b.count - a.count);
-  }, [allIssues]);
+  }, [issues]);
 
   const sentimentSorted = useMemo(() => {
     return [...sentiment].sort((a, b) => a.score - b.score);
@@ -133,12 +157,47 @@ function DashboardContent() {
             <Ionicons name="bar-chart" size={15} color="#4F8EF7" />
             <Text style={styles.analyticsButtonText}>{t('dashboard.analytics')}</Text>
           </Pressable>
+          <Pressable style={styles.exportButton} onPress={() => setExportVisible(true)}>
+            <Ionicons name="download-outline" size={18} color="#10B981" />
+          </Pressable>
           {activeTab === 'issues' && (
             <Pressable style={styles.reportButton} onPress={() => setReportVisible(true)}>
               <Ionicons name="add-circle" size={20} color="#FFFFFF" />
             </Pressable>
           )}
         </View>
+      </View>
+
+      {/* Scope toggle */}
+      <View style={styles.scopeRow}>
+        {SCOPE_OPTIONS.map((opt) => {
+          const active = scopeFilter === opt.key;
+          const disabled = opt.key === 'constituency' && !myHome;
+          return (
+            <Pressable
+              key={opt.key}
+              style={[styles.scopeChip, active && styles.scopeChipActive, disabled && styles.scopeChipDisabled]}
+              onPress={() => !disabled && setScopeFilter(opt.key)}
+            >
+              <Ionicons name={opt.icon as any} size={13} color={active ? '#FFFFFF' : disabled ? '#374151' : '#9CA3AF'} />
+              <Text style={[styles.scopeChipText, active && styles.scopeChipTextActive, disabled && { color: '#374151' }]}>
+                {opt.key === 'state'
+                  ? (STATES as Record<string, { name: string }>)[stateCode]?.name ?? stateCode
+                  : opt.key === 'constituency' && myHome
+                    ? myHome.name
+                    : opt.label}
+              </Text>
+            </Pressable>
+          );
+        })}
+      </View>
+
+      {/* Scope indicator */}
+      <View style={styles.scopeIndicator}>
+        <Ionicons name="funnel" size={12} color="#6B7280" />
+        <Text style={styles.scopeIndicatorText}>
+          Showing {scopeLabel} • {issues.length} issue{issues.length !== 1 ? 's' : ''}
+        </Text>
       </View>
 
       {/* Tab bar */}
@@ -256,7 +315,7 @@ function DashboardContent() {
 
             <AIDashboardSummary
               constituencyName={sentimentSorted[0]?.constituencyName}
-              issues={allIssues.map((i) => `${i.title} (${i.category}, ${i.severity})`)}
+              issues={issues.map((i) => `${i.title} (${i.category}, ${i.severity})`)}
             />
           </View>
         )}
@@ -268,9 +327,16 @@ function DashboardContent() {
               <Text style={styles.sectionTitle}>{t('dashboard.tabs.headlines')}</Text>
             </View>
 
-            {headlines.map((hl) => (
-              <HeadlineCard key={hl.id} headline={hl} />
-            ))}
+            {headlines.length === 0 ? (
+              <View style={styles.emptyState}>
+                <Ionicons name="newspaper-outline" size={48} color="#1F2937" />
+                <Text style={styles.emptyTitle}>No headlines at this scope</Text>
+              </View>
+            ) : (
+              headlines.map((hl) => (
+                <HeadlineCard key={hl.id} headline={hl} />
+              ))
+            )}
           </View>
         )}
 
@@ -285,6 +351,19 @@ function DashboardContent() {
           onSubmit={(issue) => addIssue(issue)}
         />
       )}
+
+      {/* Export Sheet */}
+      <ExportSheet
+        visible={exportVisible}
+        onClose={() => setExportVisible(false)}
+        filteredIssues={issues}
+        allIssues={allIssues}
+        filteredHeadlines={headlines}
+        allHeadlines={allHeadlines}
+        filteredSentiment={sentiment}
+        allSentiment={allSentiment}
+        scopeLabel={scopeLabel}
+      />
     </View>
   );
 }
@@ -325,6 +404,15 @@ const styles = StyleSheet.create({
     fontWeight: '700',
     color: '#4F8EF7',
     marginLeft: 4,
+  },
+  exportButton: {
+    width: 36,
+    height: 36,
+    borderRadius: 18,
+    backgroundColor: '#10B98120',
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginRight: 6,
   },
   reportButton: {
     width: 40,
@@ -468,5 +556,47 @@ const styles = StyleSheet.create({
   },
   bottomPadding: {
     height: 100,
+  },
+  scopeRow: {
+    flexDirection: 'row',
+    marginHorizontal: 16,
+    marginBottom: 6,
+    gap: 6,
+  },
+  scopeChip: {
+    flex: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingVertical: 8,
+    borderRadius: 10,
+    backgroundColor: '#111827',
+    gap: 4,
+  },
+  scopeChipActive: {
+    backgroundColor: '#4F8EF7',
+  },
+  scopeChipDisabled: {
+    opacity: 0.4,
+  },
+  scopeChipText: {
+    fontSize: 11,
+    fontWeight: '700',
+    color: '#9CA3AF',
+  },
+  scopeChipTextActive: {
+    color: '#FFFFFF',
+  },
+  scopeIndicator: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginHorizontal: 16,
+    marginBottom: 8,
+    gap: 4,
+  },
+  scopeIndicatorText: {
+    fontSize: 11,
+    color: '#6B7280',
+    fontWeight: '600',
   },
 });

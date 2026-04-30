@@ -10,12 +10,17 @@ import {
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import StateSwitcher from '../../components/StateSwitcher';
-import { TELANGANA_CONSTITUENCIES, TELANGANA_ELECTION_HISTORY, type ConstituencySeed } from '@/lib/data';
 import { PARTY_COLORS, getPartyColor } from '@/lib/constants';
+import { getElectionHistoryForState, hasFullDataForState } from '@/lib/stateDataDispatcher';
+import { getUnifiedConstituenciesForState, type UnifiedConstituency } from '@/lib/stateDataAdapter';
+import { useActiveStateStore } from '../../stores/activeState';
+import { STATES } from '@kshetra/shared';
 
-/** Compute analytics from seed data once */
-function useElectionAnalytics() {
+/** Compute analytics from seed data — recomputed when state changes */
+function useElectionAnalytics(stateCode: string) {
   return useMemo(() => {
+    const constituencies = getUnifiedConstituenciesForState(stateCode);
+    const totalConstituencies = constituencies.length;
     const partySeats: Record<string, number> = {};
     const partyVotes: Record<string, number> = {};
     let totalVotes = 0;
@@ -25,19 +30,19 @@ function useElectionAnalytics() {
     let biggestAC = '';
     const reservationCounts: Record<'GEN' | 'SC' | 'ST', number> = { GEN: 0, SC: 0, ST: 0 };
 
-    for (const c of TELANGANA_CONSTITUENCIES) {
-      partySeats[c.winner2023] = (partySeats[c.winner2023] || 0) + 1;
-      partyVotes[c.winner2023] =
-        (partyVotes[c.winner2023] || 0) + c.winnerVotes2023;
-      totalVotes += c.winnerVotes2023;
-      reservationCounts[c.type]++;
+    for (const c of constituencies) {
+      partySeats[c.winnerParty] = (partySeats[c.winnerParty] || 0) + 1;
+      partyVotes[c.winnerParty] =
+        (partyVotes[c.winnerParty] || 0) + c.winnerVotes;
+      totalVotes += c.winnerVotes;
+      if (c.type in reservationCounts) reservationCounts[c.type as 'GEN' | 'SC' | 'ST']++;
 
-      if (c.margin2023 < closestMargin) {
-        closestMargin = c.margin2023;
+      if (c.margin < closestMargin) {
+        closestMargin = c.margin;
         closestAC = c.name;
       }
-      if (c.margin2023 > biggestMargin) {
-        biggestMargin = c.margin2023;
+      if (c.margin > biggestMargin) {
+        biggestMargin = c.margin;
         biggestAC = c.name;
       }
     }
@@ -47,17 +52,17 @@ function useElectionAnalytics() {
       .map(([party, seats]) => ({
         party,
         seats,
-        pct: parseFloat(((seats / 119) * 100).toFixed(1)),
+        pct: parseFloat(((seats / (totalConstituencies || 1)) * 100).toFixed(1)),
       }));
 
-    const districts = new Set(TELANGANA_CONSTITUENCIES.map((c: ConstituencySeed) => c.district));
+    const districts = new Set(constituencies.map((c) => c.district));
 
     // District-wise: count seats per party per district, find dominant party
     const districtPartyMap: Record<string, Record<string, number>> = {};
-    for (const c of TELANGANA_CONSTITUENCIES) {
+    for (const c of constituencies) {
       if (!districtPartyMap[c.district]) districtPartyMap[c.district] = {};
-      districtPartyMap[c.district][c.winner2023] =
-        (districtPartyMap[c.district][c.winner2023] || 0) + 1;
+      districtPartyMap[c.district][c.winnerParty] =
+        (districtPartyMap[c.district][c.winnerParty] || 0) + 1;
     }
 
     const districtBreakdown = Object.entries(districtPartyMap)
@@ -71,6 +76,7 @@ function useElectionAnalytics() {
       .sort((a, b) => b.totalSeats - a.totalSeats);
 
     return {
+      totalConstituencies,
       partyBreakdown: sorted,
       totalVotes,
       closestMargin,
@@ -81,12 +87,20 @@ function useElectionAnalytics() {
       districtCount: districts.size,
       districtBreakdown,
     };
-  }, []);
+  }, [stateCode]);
 }
 
 export default function IntelligenceScreen() {
   const router = useRouter();
-  const analytics = useElectionAnalytics();
+  const stateCode = useActiveStateStore((s) => s.stateCode);
+  const currentState = STATES[stateCode];
+  const hasFull = hasFullDataForState(stateCode);
+  const analytics = useElectionAnalytics(stateCode);
+
+  // Determine election year for the active state
+  const electionYear = analytics.partyBreakdown.length > 0
+    ? (stateCode === 'AP' || stateCode === 'MH' ? 2024 : 2023)
+    : '';
 
   return (
     <ScrollView
@@ -110,7 +124,7 @@ export default function IntelligenceScreen() {
           </View>
         </View>
         <Text style={styles.headerSubtitle}>
-          Telangana 2023 · Assembly Elections
+          {currentState?.name ?? stateCode} {electionYear} · Assembly Elections
         </Text>
       </View>
 
@@ -118,7 +132,7 @@ export default function IntelligenceScreen() {
       <View style={styles.summaryRow}>
         <View style={styles.summaryCard}>
           <Ionicons name="people" size={20} color="#4F8EF7" />
-          <Text style={styles.summaryValue}>119</Text>
+          <Text style={styles.summaryValue}>{analytics.totalConstituencies}</Text>
           <Text style={styles.summaryLabel}>Constituencies</Text>
         </View>
         <View style={styles.summaryCard}>
@@ -266,9 +280,12 @@ export default function IntelligenceScreen() {
       </View>
 
       {/* Election History Timeline */}
-      <View style={styles.section}>
-        <Text style={styles.sectionTitle}>Election Timeline</Text>
-        {TELANGANA_ELECTION_HISTORY.map((election) => {
+      {hasFull && (() => {
+        const stateHistory = getElectionHistoryForState(stateCode);
+        if (stateHistory.length === 0) return null;
+        return <View style={styles.section}>
+          <Text style={styles.sectionTitle}>Election Timeline</Text>
+          {stateHistory.map((election) => {
           const top3 = [...election.partyResults]
             .sort((a, b) => b.seatsWon - a.seatsWon)
             .slice(0, 3);
@@ -306,12 +323,13 @@ export default function IntelligenceScreen() {
               )}
             </View>
           );
-        })}
-      </View>
+          })}
+        </View>;
+      })()}
 
       <View style={styles.footer}>
         <Text style={styles.footerText}>
-          Data: Telangana State Election Commission · 2014–2023
+          Data: {currentState?.name ?? stateCode} State Election Commission
         </Text>
       </View>
     </ScrollView>

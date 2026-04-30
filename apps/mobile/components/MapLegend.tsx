@@ -1,18 +1,32 @@
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { View, Text, StyleSheet, Pressable } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useTranslation } from 'react-i18next';
 import { getPartyColor } from '@/lib/constants';
+import { PARTY_CONFIG } from '@kshetra/shared';
+import { getUnifiedConstituenciesForState } from '@/lib/stateDataAdapter';
 import type { MapColorMode } from './MapColorToggle';
 
-const PARTY_LEGEND = [
-  { party: 'INC', label: 'Indian National Congress' },
-  { party: 'BRS', label: 'Bharat Rashtra Samithi' },
-  { party: 'BJP', label: 'Bharatiya Janata Party' },
-  { party: 'AIMIM', label: 'AIMIM' },
-  { party: 'TDP', label: 'Telugu Desam Party' },
-  { party: 'IND', label: 'Independent' },
-];
+/** Build party legend dynamically from a state's seed data, sorted by seat count */
+function buildPartyLegend(stateCode: string): { party: string; label: string; seats: number }[] {
+  const constituencies = getUnifiedConstituenciesForState(stateCode);
+  if (constituencies.length === 0) return [];
+
+  const counts = new Map<string, number>();
+  for (const c of constituencies) {
+    const p = c.currentParty || c.winnerParty;
+    counts.set(p, (counts.get(p) ?? 0) + 1);
+  }
+
+  return Array.from(counts.entries())
+    .sort((a, b) => b[1] - a[1])
+    .slice(0, 8) // top 8 parties max
+    .map(([party, seats]) => ({
+      party,
+      label: (PARTY_CONFIG as Record<string, { name: string }>)[party]?.name ?? party,
+      seats,
+    }));
+}
 
 const MARGIN_LEGEND = [
   { color: '#14532D', label: '> 50,000' },
@@ -36,11 +50,13 @@ const GRADIENT_LEGENDS: Record<string, { title: string; low: string; high: strin
 
 interface MapLegendProps {
   colorMode?: MapColorMode;
+  stateCode?: string;
 }
 
-export default function MapLegend({ colorMode = 'party' }: MapLegendProps) {
+export default function MapLegend({ colorMode = 'party', stateCode = 'TS' }: MapLegendProps) {
   const { t } = useTranslation();
   const [expanded, setExpanded] = useState(false);
+  const partyLegend = useMemo(() => buildPartyLegend(stateCode), [stateCode]);
 
   const renderContent = () => {
     if (colorMode === 'margin') {
@@ -87,15 +103,15 @@ export default function MapLegend({ colorMode = 'party' }: MapLegendProps) {
       );
     }
 
-    // Default: party legend
+    // Default: party legend (dynamic per state)
     return (
       <>
         <Text style={styles.panelTitle}>{t('mapLegend.partyColors')}</Text>
-        {PARTY_LEGEND.map((item) => (
+        {partyLegend.map((item) => (
           <View key={item.party} style={styles.row}>
             <View style={[styles.colorDot, { backgroundColor: getPartyColor(item.party) }]} />
             <Text style={styles.partyCode}>{item.party}</Text>
-            <Text style={styles.partyName} numberOfLines={1}>{item.label}</Text>
+            <Text style={styles.partyName} numberOfLines={1}>{item.label} ({item.seats})</Text>
           </View>
         ))}
       </>

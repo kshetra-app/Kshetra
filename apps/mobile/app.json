@@ -49,7 +49,14 @@
         }
       ],
       "expo-secure-store",
-      "expo-localization"
+      "expo-localization",
+      [
+        "expo-image-picker",
+        {
+          "photosPermission": "Kshetra uses your photos to attach evidence to civic issue reports.",
+          "cameraPermission": "Kshetra uses your camera to capture evidence for civic issue reports."
+        }
+      ]
     ],
     "experiments": {
       "typedRoutes": true

@@ -38,6 +38,10 @@ export default function TriviaCard({
     }
   }, [next, rotateInterval, items.length]);
 
+  // Resolve translated text — falls back to raw seed text if no i18n key exists
+  const headline = t(`trivia.${current?.id}.headline`, { defaultValue: current?.headline ?? '' });
+  const body = t(`trivia.${current?.id}.body`, { defaultValue: current?.body ?? '' });
+
   if (!current || items.length === 0) return null;
 
   if (compact) {
@@ -58,11 +62,11 @@ export default function TriviaCard({
               </Text>
             )}
           </View>
-          <Text style={styles.compactHeadline}>{current.headline}</Text>
+          <Text style={styles.compactHeadline}>{headline}</Text>
         </Pressable>
         {expanded ? (
           <View>
-            <Text style={styles.compactBodyFull}>{current.body}</Text>
+            <Text style={styles.compactBodyFull}>{body}</Text>
             <Text style={styles.compactSource}>{current.source}</Text>
             {items.length > 1 && (
               <Pressable style={styles.compactNextButton} onPress={next}>
@@ -74,7 +78,7 @@ export default function TriviaCard({
         ) : (
           <Pressable onPress={() => setExpanded(true)}>
             <Text style={styles.compactBody} numberOfLines={2}>
-              {current.body}
+              {body}
             </Text>
           </Pressable>
         )}
@@ -103,8 +107,8 @@ export default function TriviaCard({
           </Pressable>
         )}
       </View>
-      <Text style={styles.headline}>{current.headline}</Text>
-      <Text style={styles.body}>{current.body}</Text>
+      <Text style={styles.headline}>{headline}</Text>
+      <Text style={styles.body}>{body}</Text>
       <Text style={styles.source}>{current.source}</Text>
     </View>
   );

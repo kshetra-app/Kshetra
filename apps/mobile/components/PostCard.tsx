@@ -33,6 +33,9 @@ interface PostCardProps {
   onReact?: (reaction: ReactionType) => void;
   onReply?: () => void;
   onShare?: () => void;
+  onEdit?: () => void;
+  onDelete?: () => void;
+  isOwner?: boolean;
   compact?: boolean;
 }
 
@@ -42,6 +45,9 @@ export default function PostCard({
   onReact,
   onReply,
   onShare,
+  onEdit,
+  onDelete,
+  isOwner = false,
   compact = false,
 }: PostCardProps) {
   const { t } = useTranslation();
@@ -94,10 +100,33 @@ export default function PostCard({
         </View>
       </View>
 
-      {/* Content */}
+      {/* Content — seed posts use i18n keys, user posts render raw text */}
       <Text style={styles.content} numberOfLines={compact ? 3 : undefined}>
-        {post.content}
+        {post.id.startsWith('seed-')
+          ? t(`seedPosts.${post.id}.content`, { defaultValue: post.content })
+          : post.content}
       </Text>
+
+      {/* Edited indicator */}
+      {post.updatedAt !== post.createdAt && !post.isDeleted && (
+        <Text style={styles.editedText}>{t('postCard.edited')}</Text>
+      )}
+
+      {/* Media thumbnails */}
+      {post.media && post.media.length > 0 && !compact && (
+        <View style={styles.mediaRow}>
+          {post.media.map((m) => (
+            <View key={m.id} style={styles.mediaThumbnail}>
+              <Ionicons
+                name={m.mediaType === 'image' ? 'image' : m.mediaType === 'video' ? 'videocam' : 'link'}
+                size={20}
+                color="#4F8EF7"
+              />
+              {m.altText && <Text style={styles.mediaAlt} numberOfLines={1}>{m.altText}</Text>}
+            </View>
+          ))}
+        </View>
+      )}
 
       {/* Hashtags */}
       {post.hashtags && post.hashtags.length > 0 && !compact && (
@@ -135,6 +164,17 @@ export default function PostCard({
         <Pressable style={styles.actionButton} onPress={onShare} hitSlop={8}>
           <Ionicons name="share-outline" size={16} color="#6B7280" />
         </Pressable>
+
+        {isOwner && !post.isDeleted && (
+          <>
+            <Pressable style={styles.actionButton} onPress={onEdit} hitSlop={8}>
+              <Ionicons name="create-outline" size={16} color="#F59E0B" />
+            </Pressable>
+            <Pressable style={styles.actionButton} onPress={onDelete} hitSlop={8}>
+              <Ionicons name="trash-outline" size={16} color="#EF4444" />
+            </Pressable>
+          </>
+        )}
       </View>
     </Pressable>
   );
@@ -262,5 +302,31 @@ const styles = StyleSheet.create({
   },
   actionTextActive: {
     color: '#EF4444',
+  },
+  editedText: {
+    fontSize: 11,
+    color: '#6B7280',
+    fontStyle: 'italic',
+    marginBottom: 6,
+  },
+  mediaRow: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 8,
+    marginBottom: 10,
+  },
+  mediaThumbnail: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#1F2937',
+    borderRadius: 8,
+    paddingHorizontal: 10,
+    paddingVertical: 6,
+    gap: 6,
+  },
+  mediaAlt: {
+    fontSize: 11,
+    color: '#9CA3AF',
+    maxWidth: 80,
   },
 });

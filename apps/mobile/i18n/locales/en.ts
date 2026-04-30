@@ -63,6 +63,7 @@ const en = {
     myConstituency: 'My Constituency',
     didYouKnow: 'Did You Know?',
     legend: 'Legend',
+    boundariesComingSoon: 'Boundaries coming soon',
   },
 
   // ── Map Legend ─────────────────────────────────────────────
@@ -94,6 +95,7 @@ const en = {
   // ── Map Bottom Sheet ───────────────────────────────────────
   mapSheet: {
     winner2023: '2023 Winner',
+    winnerYear: '{{year}} Winner',
     winnerVotes: 'Winner Votes',
     margin: 'Margin',
     runnerUp: 'Runner-up',
@@ -217,6 +219,11 @@ const en = {
     question: 'Question',
     alert: 'Alert',
     poll: 'Poll',
+    edited: '(edited)',
+    deleteConfirm: 'Delete this post?',
+    deleteConfirmBody: 'This action cannot be undone.',
+    delete: 'Delete',
+    cancel: 'Cancel',
   },
 
   // ── Poll Card ─────────────────────────────────────────────
@@ -238,10 +245,17 @@ const en = {
     postType: 'Post Type',
     addHashtags: 'Add hashtags',
     submit: 'Post',
+    editTitle: 'Edit Post',
+    save: 'Save',
     postingIn: 'Posting in {{name}}',
     pollOptions: 'Poll Options',
     addOption: 'Add option',
     selectConstituency: 'Tag a constituency',
+    addMedia: 'Add media',
+    addImage: 'Add image',
+    addLink: 'Add link',
+    linkPlaceholder: 'Paste URL…',
+    linkAdd: 'Add',
   },
 
   // ── Dashboard ───────────────────────────────────────────────
@@ -601,6 +615,61 @@ const en = {
     },
   },
 
+  // ── Trivia (Did You Know) ───────────────────────────────────
+  trivia: {
+    // Telangana
+    'TRV-DEF-001': { headline: 'The 4-Party Man', body: 'T. Prakash Goud (Rajendranagar) has been in 4 parties in just 10 years: TDP (2014) → TRS via merger (2016) → BRS by rename (2022) → INC by defection (2024).' },
+    'TRV-DEF-002': { headline: 'The Mirror Mergers', body: '12 TDP MLAs merged with TRS in 2016, and then 12 INC MLAs merged with TRS in 2019. Both used the same 2/3 threshold loophole.' },
+    'TRV-DEF-003': { headline: 'Operation Akarsh: The Sequel', body: 'In 2016, TRS pulled 12 TDP MLAs. In 2024, INC pulled 10 BRS MLAs — the media called it "Operation Akarsh 2.0."' },
+    'TRV-DEF-004': { headline: 'Like Father, Like Son', body: 'When Nagarjuna Sagar MLA Nomula Narsimhaiah (TRS) died in 2021, his son Nomula Bhagath won the by-election on the same ticket.' },
+    'TRV-DEF-005': { headline: 'The Defection Boomerang', body: 'Arekapudi Gandhi\'s constituency has been "represented" by 4 parties without a single by-election.' },
+    'TRV-REC-001': { headline: 'The Unbreakable Fortress', body: 'AIMIM has held all 7 Old City Hyderabad seats for 3 consecutive elections — a perfect 21/21 record.' },
+    'TRV-REC-002': { headline: 'The Greatest Comeback', body: 'INC went from 6 seats to 64 in the 2023 election — a 967% increase, the largest swing in Telangana history.' },
+    'TRV-REC-003': { headline: 'From MLA to CM in 9 Years', body: 'Revanth Reddy: TDP MLA (2014) → joined INC (2017) → lost (2018) → TPCC president → CM (2023).' },
+    'TRV-REC-004': { headline: 'The Sircilla King', body: 'KTR has won Sircilla in all 3 Telangana elections — 2014, 2018, and 2023.' },
+    'TRV-REC-005': { headline: 'Harish Rao\'s Siddipet Streak', body: 'T. Harish Rao has represented Siddipet since 2004 — winning 5 consecutive elections.' },
+    'TRV-ELE-001': { headline: 'The Early Dissolution Gamble', body: 'KCR dissolved the Assembly 9 months early in 2018. TRS won 88/119 seats. In 2023, full term brought just 39.' },
+    'TRV-ELE-002': { headline: 'Similar Votes, Wildly Different Seats', body: 'In 2023, INC got 39.4% votes → 64 seats, BRS got 37.4% → 39 seats. 2% difference = 25 seats.' },
+    'TRV-ELE-003': { headline: 'The Red Bastion', body: 'Ramagundam is Telangana\'s sole left-party constituency. Coal belt keeps leftist politics alive.' },
+    'TRV-HIS-001': { headline: 'The Youngest State\'s First Vote', body: '2014 was the first-ever Telangana Assembly election after statehood on June 2, 2014.' },
+    'TRV-HIS-002': { headline: 'What\'s in a Name?', body: 'TRS became BRS in October 2022 — "Telangana" replaced with "Bharat" for national ambitions that flopped.' },
+    // Andhra Pradesh
+    'AP-T-001': { headline: 'Chandrababu Naidu — The Comeback King', body: 'Naidu won Kuppam in 2024 with the highest margin — over 72,000 votes. He became CM for the 4th time at 74.' },
+    'AP-T-002': { headline: 'Pawan Kalyan — From Reel to Real', body: 'JSP chief Pawan Kalyan won Pithapuram with 67,890 margin. JSP achieved 100% strike rate — 21/21 seats.' },
+    'AP-T-003': { headline: 'YSRCP: From 151 to 11', body: 'In 2019, YSRCP won 151/175 seats. In 2024, reduced to just 11 — losing 140 seats in one cycle.' },
+    'AP-T-004': { headline: 'NDA Triple Alliance Sweep', body: 'TDP-JSP-BJP won 164/175 seats in 2024 — 93.7% of all seats, most lopsided result in AP post-bifurcation.' },
+    'AP-T-005': { headline: 'Pulivendula — Jagan\'s Last Bastion', body: 'Even in the 2024 wipeout, Jagan held Pulivendula by 45,678 votes. His family has held this seat 40+ years.' },
+    'AP-T-006': { headline: 'Operation Akarsh 2.0', body: '6 YSRCP MLAs defected to TDP before 2024 elections, mirroring 2017\'s "Operation Akarsh."' },
+    // Karnataka
+    'KA-T-001': { headline: 'Operation Kamala — The Biggest Defection Drama', body: '17 JDS-INC MLAs resigned in July 2019. 12 won by-elections on BJP tickets months later.' },
+    'KA-T-002': { headline: 'Siddaramaiah — The Guarantee Man', body: 'Siddaramaiah won Badami with 42,567 margin. His 5 guarantee schemes drove INC\'s 135-seat landslide.' },
+    'KA-T-003': { headline: 'Deve Gowda Dynasty — Three Generations', body: 'H.D. Deve Gowda (PM), son Kumaraswamy (CM), grandson Prajwal — all held elected office.' },
+    'KA-T-004': { headline: 'BJP: From 104 to 66', body: 'BJP lost 38 seats (2018→2023). "40% commission" charges and 3 CMs in one term were key factors.' },
+    'KA-T-005': { headline: 'Three CMs in One Term', body: 'Karnataka had 3 BJP CMs in 2018-2023: Yediyurappa, Bommai, and brief considerations for Sadananda Gowda.' },
+    'KA-T-006': { headline: 'Jarkiholi Brothers — On Opposite Sides', body: 'Ramesh in BJP (Gokak), Balachandra in INC (Arabhavi). Political rivalry within the family!' },
+    'KA-T-007': { headline: 'Coastal Karnataka — BJP\'s Fortress', body: 'In 2023, BJP won all 8 coastal seats despite losing the state overall.' },
+    // Maharashtra
+    'MH-T-001': { headline: 'The Great Shiv Sena Split', body: 'Eknath Shinde led 40 of 56 Shiv Sena MLAs in rebellion (June 2022). ECI awarded the name to Shinde faction.' },
+    'MH-T-002': { headline: 'Pawar vs Pawar — Uncle vs Nephew', body: 'Ajit Pawar split NCP taking 40+ MLAs to BJP. Uncle Sharad Pawar (83) founded NCP(SP).' },
+    'MH-T-003': { headline: 'Fadnavis — The Comeback Man', body: 'Fadnavis won Nagpur South West with a massive margin. Became CM for the 3rd time.' },
+    'MH-T-004': { headline: 'INC: From 44 to 16', body: 'Congress decimated — from 44 seats (2019) to just 16 (2024), their worst performance in Maharashtra.' },
+    'MH-T-005': { headline: 'Aaditya Thackeray — The Worli Prince', body: 'Aaditya retained Worli even as his father\'s faction was decimated statewide.' },
+    'MH-T-006': { headline: 'Mahayuti Tsunami — 230/288', body: 'BJP-SHS-NCP (Mahayuti) won 230/288 seats in 2024 — most lopsided result in MH history.' },
+    'MH-T-007': { headline: 'Two Parties, Same Name', body: 'Both Shiv Sena and NCP split into two, each claiming the original name. Courts had to adjudicate.' },
+    'MH-T-008': { headline: 'Mumbai — 36 Seats, BJP Dominates', body: 'BJP won majority of Mumbai\'s 36 assembly seats in 2024, consolidating urban dominance.' },
+  },
+
+  // ── Seed Posts (Feed) ─────────────────────────────────────
+  seedPosts: {
+    'seed-1': { content: 'Welcome to Kshetra! This is the community feed for political discussions in Telangana. Share your views on local governance, ask questions about your constituency, and stay informed.' },
+    'seed-2': { content: 'Road construction on ORR service road near Gachibowli has been stalled for 3 months. Which department should we escalate to? The MLA office says GHMC, GHMC says NHAI. Classic runaround. #infrastructure #serilingampally' },
+    'seed-3': { content: 'Attended the constituency-level review meeting today. Some interesting stats: 43 new ration cards issued this month, 12 pending pension cases cleared. Progress is slow but visible. #goshamahal #governance' },
+    'seed-4': { content: 'Do you think the 10 BRS→INC defections have changed the ground-level governance in those constituencies?' },
+    'seed-5': { content: 'KTR\'s margin in Sircilla — 51,489 votes — was the largest in the 2023 election. Even in a year where BRS lost badly overall, this constituency stayed loyal. What makes Sircilla different? #sircilla #brs #ktr' },
+    'seed-6': { content: 'Water supply issue in Old City getting worse. Tankers not coming on schedule, HMWSSB helpline perpetually busy. Anyone else facing this? #charminar #watersupply #hyderabad' },
+    'seed-7': { content: 'Which newly elected INC MLA has been most active in their constituency so far?' },
+  },
+
   // ── Language ────────────────────────────────────────────────
   language: {
     title: 'Language',
@@ -617,3 +686,9 @@ const en = {
 
 export default en;
 export type TranslationKeys = typeof en;
+
+/** Deep-partial version for non-English locales (i18next falls back to 'en' for missing keys) */
+type DeepPartialInner<T> = {
+  [K in keyof T]?: T[K] extends object ? DeepPartialInner<T[K]> : T[K];
+};
+export type PartialTranslationKeys = DeepPartialInner<TranslationKeys>;

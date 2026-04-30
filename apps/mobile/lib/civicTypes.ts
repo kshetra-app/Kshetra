@@ -21,6 +21,9 @@ export type IssueSeverity = 'low' | 'medium' | 'high' | 'critical';
 
 export type IssueStatus = 'open' | 'acknowledged' | 'in_progress' | 'resolved' | 'closed';
 
+/** Scope level for filtering civic dashboard content */
+export type CivicScope = 'constituency' | 'state' | 'national';
+
 export type HeadlineCategory =
   | 'politics'
   | 'governance'
@@ -30,6 +33,7 @@ export type HeadlineCategory =
   | 'education'
   | 'health'
   | 'environment'
+  | 'corruption'
   | 'opinion';
 
 export interface CivicIssue {
@@ -47,6 +51,9 @@ export interface CivicIssue {
   upvoteCount: number;
   commentCount: number;
   imageUrl?: string;
+  /** Multiple media evidence URLs (photos/videos) */
+  mediaUrls?: string[];
+  evidenceCount?: number;
   latitude?: number;
   longitude?: number;
   resolvedAt?: string;

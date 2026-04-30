@@ -13,7 +13,8 @@ import {
 import { Stack, useLocalSearchParams } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { API_BASE_URL } from '@/lib/constants';
-import { TELANGANA_CONSTITUENCIES } from '@/lib/data';
+import { getUnifiedConstituenciesForState } from '@/lib/stateDataAdapter';
+import { useActiveStateStore } from '../stores/activeState';
 
 interface Message {
   id: string;
@@ -42,8 +43,10 @@ export default function AIChatScreen() {
   const [selectedAcNo, setSelectedAcNo] = useState<number | undefined>(initialAcNo);
   const flatListRef = useRef<FlatList>(null);
 
+  const stateCode = useActiveStateStore((s) => s.stateCode);
+  const stateConstituencies = getUnifiedConstituenciesForState(stateCode);
   const selectedConstituency = selectedAcNo
-    ? TELANGANA_CONSTITUENCIES.find((c) => c.acNo === selectedAcNo)
+    ? stateConstituencies.find((c) => c.acNo === selectedAcNo)
     : undefined;
 
   const suggestedQuestions = selectedConstituency

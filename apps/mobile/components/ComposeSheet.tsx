@@ -13,7 +13,7 @@ import {
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useTranslation } from 'react-i18next';
-import type { PostType, Post, PollOption } from '../lib/feedTypes';
+import type { PostType, Post, PollOption, PostMedia } from '../lib/feedTypes';
 import { useAuthStore } from '../stores/auth';
 import { useMyConstituencyStore } from '../stores/myConstituency';
 
@@ -21,6 +21,8 @@ interface ComposeSheetProps {
   visible: boolean;
   onClose: () => void;
   onSubmit: (post: Post) => void;
+  onEditSubmit?: (postId: string, content: string, media?: PostMedia[]) => void;
+  editPost?: Post;
   replyTo?: { postId: string; authorName: string };
 }
 
@@ -35,32 +37,65 @@ const POST_TYPES: { key: PostType; icon: string; tKey: string; color: string }[]
 const MAX_CONTENT_LENGTH = 2000;
 const MAX_POLL_OPTIONS = 4;
 
-export default function ComposeSheet({ visible, onClose, onSubmit, replyTo }: ComposeSheetProps) {
+export default function ComposeSheet({ visible, onClose, onSubmit, onEditSubmit, editPost, replyTo }: ComposeSheetProps) {
   const { t } = useTranslation();
   const [content, setContent] = useState('');
   const [postType, setPostType] = useState<PostType>(replyTo ? 'discussion' : 'discussion');
   const [pollOptions, setPollOptions] = useState<string[]>(['', '']);
+  const [mediaItems, setMediaItems] = useState<PostMedia[]>([]);
+  const [showLinkInput, setShowLinkInput] = useState(false);
+  const [linkUrl, setLinkUrl] = useState('');
   const inputRef = useRef<TextInput>(null);
   const user = useAuthStore((s) => s.user);
   const myHome = useMyConstituencyStore((s) => s.home);
+  const isEditMode = !!editPost;
 
   useEffect(() => {
     if (visible) {
+      if (editPost) {
+        setContent(editPost.content);
+        setPostType(editPost.type);
+        setMediaItems(editPost.media ?? []);
+      }
       setTimeout(() => inputRef.current?.focus(), 200);
     } else {
       setContent('');
       setPostType('discussion');
       setPollOptions(['', '']);
+      setMediaItems([]);
+      setShowLinkInput(false);
+      setLinkUrl('');
     }
-  }, [visible]);
+  }, [visible, editPost]);
 
   const canSubmit = content.trim().length > 0 && content.length <= MAX_CONTENT_LENGTH;
   const isPoll = postType === 'poll';
   const validPollOptions = pollOptions.filter((o) => o.trim().length > 0);
   const canSubmitPoll = isPoll ? validPollOptions.length >= 2 : true;
 
+  const addLinkMedia = () => {
+    const url = linkUrl.trim();
+    if (!url) return;
+    setMediaItems((prev) => [
+      ...prev,
+      { id: `media-${Date.now()}`, mediaType: 'link', url, altText: url.replace(/https?:\/\//, '').slice(0, 40) },
+    ]);
+    setLinkUrl('');
+    setShowLinkInput(false);
+  };
+
+  const removeMedia = (id: string) => {
+    setMediaItems((prev) => prev.filter((m) => m.id !== id));
+  };
+
   const handleSubmit = () => {
     if (!canSubmit || !canSubmitPoll) return;
+
+    if (isEditMode && editPost) {
+      onEditSubmit?.(editPost.id, content.trim(), mediaItems.length > 0 ? mediaItems : undefined);
+      onClose();
+      return;
+    }
 
     const now = new Date().toISOString();
     const authorName = user?.email?.split('@')[0] ?? 'Anonymous';
@@ -87,6 +122,7 @@ export default function ComposeSheet({ visible, onClose, onSubmit, replyTo }: Co
       createdAt: now,
       updatedAt: now,
       hashtags,
+      media: mediaItems.length > 0 ? mediaItems : undefined,
       poll: isPoll
         ? {
             id: `poll-local-${Date.now()}`,
@@ -119,14 +155,18 @@ export default function ComposeSheet({ visible, onClose, onSubmit, replyTo }: Co
             <Ionicons name="close" size={24} color="#9CA3AF" />
           </Pressable>
           <Text style={styles.headerTitle}>
-            {replyTo ? t('compose.replyTo', { name: replyTo.authorName }) : t('compose.title')}
+            {isEditMode
+              ? t('compose.editTitle')
+              : replyTo
+                ? t('compose.replyTo', { name: replyTo.authorName })
+                : t('compose.title')}
           </Text>
           <Pressable
             style={[styles.submitButton, (!canSubmit || !canSubmitPoll) && styles.submitDisabled]}
             onPress={handleSubmit}
             disabled={!canSubmit || !canSubmitPoll}
           >
-            <Text style={styles.submitText}>{t('compose.submit')}</Text>
+            <Text style={styles.submitText}>{isEditMode ? t('compose.save') : t('compose.submit')}</Text>
           </Pressable>
         </View>
 
@@ -190,6 +230,58 @@ export default function ComposeSheet({ visible, onClose, onSubmit, replyTo }: Co
           >
             {content.length}/{MAX_CONTENT_LENGTH}
           </Text>
+
+          {/* Media attachments */}
+          {mediaItems.length > 0 && (
+            <View style={styles.mediaList}>
+              {mediaItems.map((m) => (
+                <View key={m.id} style={styles.mediaItem}>
+                  <Ionicons
+                    name={m.mediaType === 'image' ? 'image' : m.mediaType === 'video' ? 'videocam' : 'link'}
+                    size={16}
+                    color="#4F8EF7"
+                  />
+                  <Text style={styles.mediaItemText} numberOfLines={1}>{m.altText || m.url}</Text>
+                  <Pressable onPress={() => removeMedia(m.id)} hitSlop={8}>
+                    <Ionicons name="close-circle" size={18} color="#EF4444" />
+                  </Pressable>
+                </View>
+              ))}
+            </View>
+          )}
+
+          {/* Media toolbar */}
+          {!isPoll && (
+            <View style={styles.mediaToolbar}>
+              <Pressable style={styles.mediaButton} onPress={() => setShowLinkInput(!showLinkInput)} hitSlop={8}>
+                <Ionicons name="link" size={18} color="#6B7280" />
+                <Text style={styles.mediaButtonText}>{t('compose.addLink')}</Text>
+              </Pressable>
+            </View>
+          )}
+
+          {/* Link input */}
+          {showLinkInput && (
+            <View style={styles.linkInputRow}>
+              <TextInput
+                style={styles.linkInput}
+                placeholder={t('compose.linkPlaceholder')}
+                placeholderTextColor="#4B5563"
+                value={linkUrl}
+                onChangeText={setLinkUrl}
+                autoCapitalize="none"
+                autoCorrect={false}
+                keyboardType="url"
+              />
+              <Pressable
+                style={[styles.linkAddButton, !linkUrl.trim() && styles.submitDisabled]}
+                onPress={addLinkMedia}
+                disabled={!linkUrl.trim()}
+              >
+                <Text style={styles.linkAddText}>{t('compose.linkAdd')}</Text>
+              </Pressable>
+            </View>
+          )}
 
           {/* Poll options */}
           {isPoll && (
@@ -363,5 +455,69 @@ const styles = StyleSheet.create({
     fontSize: 13,
     color: '#4F8EF7',
     fontWeight: '600',
+  },
+  mediaList: {
+    marginTop: 10,
+    gap: 6,
+  },
+  mediaItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#1F2937',
+    borderRadius: 8,
+    paddingHorizontal: 10,
+    paddingVertical: 8,
+    gap: 8,
+  },
+  mediaItemText: {
+    flex: 1,
+    fontSize: 13,
+    color: '#9CA3AF',
+  },
+  mediaToolbar: {
+    flexDirection: 'row',
+    gap: 12,
+    marginTop: 12,
+    paddingTop: 12,
+    borderTopWidth: 0.5,
+    borderTopColor: '#1F2937',
+  },
+  mediaButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+  },
+  mediaButtonText: {
+    fontSize: 13,
+    color: '#6B7280',
+    fontWeight: '600',
+  },
+  linkInputRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+    marginTop: 8,
+  },
+  linkInput: {
+    flex: 1,
+    backgroundColor: '#1F2937',
+    borderRadius: 10,
+    paddingHorizontal: 14,
+    paddingVertical: 10,
+    fontSize: 14,
+    color: '#FFFFFF',
+    borderWidth: 1,
+    borderColor: '#374151',
+  },
+  linkAddButton: {
+    backgroundColor: '#4F8EF7',
+    borderRadius: 10,
+    paddingHorizontal: 14,
+    paddingVertical: 10,
+  },
+  linkAddText: {
+    fontSize: 13,
+    fontWeight: '700',
+    color: '#FFFFFF',
   },
 });

@@ -4,9 +4,9 @@
  * Native-quality Kannada translations for Kshetra.
  * Uses standard Kannada political terminology.
  */
-import type { TranslationKeys } from './en';
+import type { PartialTranslationKeys } from './en';
 
-const kn: TranslationKeys = {
+const kn: PartialTranslationKeys = {
   common: {
     appName: 'ಕ್ಷೇತ್ರ',
     loading: 'ಲೋಡ್ ಆಗುತ್ತಿದೆ…',
@@ -62,6 +62,7 @@ const kn: TranslationKeys = {
     myConstituency: 'ನನ್ನ ಕ್ಷೇತ್ರ',
     didYouKnow: 'ನಿಮಗೆ ಗೊತ್ತೇ?',
     legend: 'ಸೂಚಕ',
+    boundariesComingSoon: 'ಗಡಿಗಳು ಶೀಘ್ರದಲ್ಲಿ ಬರಲಿವೆ',
   },
 
   // ── Map Legend ─────────────────────────────────────────────
@@ -583,6 +584,33 @@ const kn: TranslationKeys = {
         summary: 'ಅತಿಕ್ರಮಣ ಕೆಡವುವಿಕೆ ಪ್ರಶ್ನಿಸುವ ಅರ್ಜಿಗಳ ಮೇಲೆ ಹೈಕೋರ್ಟ್ ನೋಟಿಸ್.',
       },
     },
+  },
+
+  trivia: {
+    // Karnataka — fully in Kannada
+    'KA-T-001': { headline: 'ಆಪರೇಷನ್ ಕಮಲ — ಅತಿದೊಡ್ಡ ಪಕ್ಷಾಂತರ ನಾಟಕ', body: '17 JDS-INC ಶಾಸಕರು ಜುಲೈ 2019 ರಲ್ಲಿ ರಾಜೀನಾಮೆ ನೀಡಿದರು. 12 ಮಂದಿ BJP ಟಿಕೆಟ್‌ನಲ್ಲಿ ಉಪಚುನಾವಣೆ ಗೆದ್ದರು.' },
+    'KA-T-002': { headline: 'ಸಿದ್ದರಾಮಯ್ಯ — ಗ್ಯಾರಂಟಿ ಮನುಷ್ಯ', body: 'ಸಿದ್ದರಾಮಯ್ಯ ಬಾದಾಮಿಯಲ್ಲಿ 42,567 ಅಂತರದಿಂದ ಗೆದ್ದರು. ಅವರ 5 ಗ್ಯಾರಂಟಿ ಯೋಜನೆಗಳು INC ಗೆ 135 ಸ್ಥಾನಗಳನ್ನು ತಂದವು.' },
+    'KA-T-003': { headline: 'ದೇವೇಗೌಡ ವಂಶ — ಮೂರು ತಲೆಮಾರುಗಳು', body: 'ಎಚ್.ಡಿ. ದೇವೇಗೌಡ (PM), ಮಗ ಕುಮಾರಸ್ವಾಮಿ (CM), ಮೊಮ್ಮಗ ಪ್ರಜ್ವಲ್ — ಎಲ್ಲರೂ ಚುನಾಯಿತ ಹುದ್ದೆ ಹೊಂದಿದ್ದಾರೆ.' },
+    'KA-T-004': { headline: 'BJP: 104 ರಿಂದ 66 ಕ್ಕೆ', body: 'BJP 38 ಸ್ಥಾನಗಳನ್ನು ಕಳೆದುಕೊಂಡಿತು (2018→2023). "40% ಕಮಿಷನ್" ಆರೋಪಗಳು ಮತ್ತು ಒಂದೇ ಅವಧಿಯಲ್ಲಿ 3 CM ಪ್ರಮುಖ ಕಾರಣಗಳು.' },
+    'KA-T-005': { headline: 'ಒಂದೇ ಅವಧಿಯಲ್ಲಿ ಮೂರು CM', body: 'ಕರ್ನಾಟಕದಲ್ಲಿ 2018-2023 ರಲ್ಲಿ 3 BJP CM: ಯಡಿಯೂರಪ್ಪ, ಬೊಮ್ಮಾಯಿ, ಮತ್ತು ಸದಾನಂದ ಗೌಡ ಪರಿಗಣನೆ.' },
+    'KA-T-006': { headline: 'ಜಾರಕಿಹೊಳಿ ಸಹೋದರರು — ವಿರುದ್ಧ ಬದಿಗಳಲ್ಲಿ', body: 'ರಮೇಶ್ BJP (ಗೋಕಾಕ್), ಬಾಲಚಂದ್ರ INC (ಅರಭಾವಿ). ಕುಟುಂಬದಲ್ಲೇ ರಾಜಕೀಯ ಪೈಪೋಟಿ!' },
+    'KA-T-007': { headline: 'ಕರಾವಳಿ ಕರ್ನಾಟಕ — BJP ಕೋಟೆ', body: '2023 ರಲ್ಲಿ BJP ರಾಜ್ಯ ಕಳೆದುಕೊಂಡರೂ 8 ಕರಾವಳಿ ಸ್ಥಾನಗಳನ್ನು ಗೆದ್ದಿತು.' },
+    // Telangana — key items in Kannada
+    'TRV-DEF-001': { headline: '4 ಪಕ್ಷಗಳ ವ್ಯಕ್ತಿ', body: 'ಟಿ. ಪ್ರಕಾಶ್ ಗೌಡ್ 10 ವರ್ಷಗಳಲ್ಲಿ 4 ಪಕ್ಷಗಳಲ್ಲಿ: TDP → TRS → BRS → INC.' },
+    'TRV-REC-002': { headline: 'ಅತ್ಯಂತ ದೊಡ್ಡ ವಾಪಸಿ', body: 'INC 6 ಸ್ಥಾನಗಳಿಂದ 2023 ಚುನಾವಣೆಯಲ್ಲಿ 64 ಕ್ಕೆ — 967% ಹೆಚ್ಚಳ.' },
+    // AP/MH — keep English
+    'AP-T-001': { headline: 'Chandrababu Naidu — The Comeback King', body: 'Naidu won Kuppam in 2024 with the highest margin — over 72,000 votes.' },
+    'MH-T-001': { headline: 'The Great Shiv Sena Split', body: 'Eknath Shinde led 40 of 56 Shiv Sena MLAs in rebellion (June 2022).' },
+  },
+
+  seedPosts: {
+    'seed-1': { content: 'ಕ್ಷೇತ್ರಕ್ಕೆ ಸ್ವಾಗತ! ತೆಲಂಗಾಣದಲ್ಲಿ ರಾಜಕೀಯ ಚರ್ಚೆಗಳಿಗೆ ಸಮುದಾಯ ಫೀಡ್. ಸ್ಥಳೀಯ ಆಡಳಿತದ ಬಗ್ಗೆ ನಿಮ್ಮ ಅಭಿಪ್ರಾಯ ಹಂಚಿಕೊಳ್ಳಿ.' },
+    'seed-2': { content: 'ಗಚ್ಚಿಬೌಲಿ ಬಳಿ ORR ಸರ್ವಿಸ್ ರಸ್ತೆ ನಿರ್ಮಾಣ 3 ತಿಂಗಳಿಂದ ನಿಂತಿದೆ. ಯಾವ ಇಲಾಖೆಗೆ ದೂರು? #infrastructure #serilingampally' },
+    'seed-3': { content: 'ಇಂದು ಕ್ಷೇತ್ರ ಮಟ್ಟದ ಪರಿಶೀಲನಾ ಸಭೆಗೆ ಹಾಜರಾದೆ. ಈ ತಿಂಗಳು 43 ಹೊಸ ಪಡಿತರ ಚೀಟಿ, 12 ಬಾಕಿ ಪಿಂಚಣಿ ಪ್ರಕರಣಗಳು ಬಗೆಹರಿಸಲಾಗಿದೆ. #goshamahal #governance' },
+    'seed-4': { content: '10 BRS→INC ಪಕ್ಷಾಂತರಗಳು ಆ ಕ್ಷೇತ್ರಗಳಲ್ಲಿ ನೆಲಮಟ್ಟದ ಆಡಳಿತವನ್ನು ಬದಲಾಯಿಸಿವೆ ಎಂದು ನೀವು ಭಾವಿಸುತ್ತೀರಾ?' },
+    'seed-5': { content: 'ಸಿರಿಸಿಲ್ಲದಲ್ಲಿ KTR ಅಂತರ — 51,489 ಮತಗಳು — 2023 ಚುನಾವಣೆಯಲ್ಲಿ ಅತಿದೊಡ್ಡ. BRS ಒಟ್ಟಾರೆ ಸೋತರೂ ಈ ಕ್ಷೇತ್ರ ನಿಷ್ಠಾವಂತವಾಗಿ ಉಳಿಯಿತು. #sircilla #brs #ktr' },
+    'seed-6': { content: 'ಹಳೆ ನಗರದಲ್ಲಿ ನೀರಿನ ಪೂರೈಕೆ ಸಮಸ್ಯೆ ಇನ್ನಷ್ಟು ಹದಗೆಡುತ್ತಿದೆ. ಟ್ಯಾಂಕರ್‌ಗಳು ವೇಳಾಪಟ್ಟಿ ಪ್ರಕಾರ ಬರುತ್ತಿಲ್ಲ. #charminar #watersupply #hyderabad' },
+    'seed-7': { content: 'ಹೊಸದಾಗಿ ಆಯ್ಕೆಯಾದ INC ಶಾಸಕರಲ್ಲಿ ಯಾರು ತಮ್ಮ ಕ್ಷೇತ್ರದಲ್ಲಿ ಹೆಚ್ಚು ಸಕ್ರಿಯರಾಗಿದ್ದಾರೆ?' },
   },
 
   language: {

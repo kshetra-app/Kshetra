@@ -1,5 +1,6 @@
-import { View, Text, StyleSheet, Pressable } from 'react-native';
+import { View, Text, StyleSheet, Pressable, ScrollView } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import { Image } from 'expo-image';
 import { useTranslation } from 'react-i18next';
 import type { CivicIssue } from '../lib/civicTypes';
 import {
@@ -66,6 +67,20 @@ export default function IssueCard({ issue, onUpvote, onPress }: IssueCardProps) 
         <Text style={styles.description} numberOfLines={2}>{issueDesc}</Text>
       )}
 
+      {/* Media evidence thumbnails */}
+      {issue.mediaUrls && issue.mediaUrls.length > 0 && (
+        <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.mediaStrip}>
+          {issue.mediaUrls.slice(0, 4).map((url, idx) => (
+            <Image key={url} source={{ uri: url }} style={styles.mediaThumb} contentFit="cover" />
+          ))}
+          {issue.mediaUrls.length > 4 && (
+            <View style={styles.mediaMoreBadge}>
+              <Text style={styles.mediaMoreText}>+{issue.mediaUrls.length - 4}</Text>
+            </View>
+          )}
+        </ScrollView>
+      )}
+
       {/* Meta row */}
       <View style={styles.metaRow}>
         {issue.constituencyName && (
@@ -95,6 +110,12 @@ export default function IssueCard({ issue, onUpvote, onPress }: IssueCardProps) 
           <Ionicons name="chatbubble-outline" size={14} color="#6B7280" />
           <Text style={[styles.commentCountText, { marginLeft: 4 }]}>{issue.commentCount}</Text>
         </View>
+        {(issue.evidenceCount ?? 0) > 0 && (
+          <View style={[styles.commentCount, { marginLeft: 16 }]}>
+            <Ionicons name="camera-outline" size={14} color="#F59E0B" />
+            <Text style={[styles.commentCountText, { marginLeft: 4, color: '#F59E0B' }]}>{issue.evidenceCount}</Text>
+          </View>
+        )}
       </View>
     </Pressable>
   );
@@ -212,5 +233,28 @@ const styles = StyleSheet.create({
     fontSize: 13,
     color: '#6B7280',
     fontWeight: '600',
+  },
+  mediaStrip: {
+    marginBottom: 10,
+    marginTop: 4,
+  },
+  mediaThumb: {
+    width: 56,
+    height: 56,
+    borderRadius: 8,
+    marginRight: 6,
+  },
+  mediaMoreBadge: {
+    width: 56,
+    height: 56,
+    borderRadius: 8,
+    backgroundColor: '#1F2937',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  mediaMoreText: {
+    fontSize: 14,
+    fontWeight: '700',
+    color: '#9CA3AF',
   },
 });

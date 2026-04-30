@@ -37,7 +37,7 @@ const registry: Record<string, StateData> = {
   AP: {
     info: STATES.AP,
     constituencies: [], // Use stateDataAdapter for AP
-    hasGeoJSON: false,
+    hasGeoJSON: true,
     hasFullData: true,
     totalSeats: 175,
     loadedCount: 175,
@@ -45,7 +45,7 @@ const registry: Record<string, StateData> = {
   KA: {
     info: STATES.KA,
     constituencies: [], // Use stateDataAdapter for KA
-    hasGeoJSON: false,
+    hasGeoJSON: true,
     hasFullData: true,
     totalSeats: 224,
     loadedCount: 224,
@@ -53,7 +53,7 @@ const registry: Record<string, StateData> = {
   MH: {
     info: STATES.MH,
     constituencies: [], // Use stateDataAdapter for MH
-    hasGeoJSON: false,
+    hasGeoJSON: true,
     hasFullData: true,
     totalSeats: 288,
     loadedCount: 288,
