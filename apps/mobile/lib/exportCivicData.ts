@@ -35,8 +35,8 @@ function escapeCSV(val: string | number | undefined): string {
 function issuesToCSV(issues: CivicIssue[]): string {
   const headers = [
     'ID', 'Title', 'Category', 'Severity', 'Status', 'Constituency',
-    'State', 'Reporter', 'Upvotes', 'Comments', 'Evidence',
-    'Created', 'Updated',
+    'State', 'Reporter', 'Upvotes', 'Comments', 'Followers', 'Evidence',
+    'Disputes', 'MLA Tagged', 'MLA Responded', 'Created', 'Updated',
   ];
   const rows = issues.map((i) => [
     i.id,
@@ -49,7 +49,11 @@ function issuesToCSV(issues: CivicIssue[]): string {
     i.reporterName,
     i.upvoteCount,
     i.commentCount,
-    i.evidenceCount ?? 0,
+    i.followCount,
+    i.evidenceCount,
+    i.disputeCount,
+    i.mlaTagged ? 'Yes' : 'No',
+    i.mlaResponded ? 'Yes' : 'No',
     i.createdAt,
     i.updatedAt,
   ]);
@@ -82,7 +86,11 @@ function generateExcelBuffer(payload: ExportPayload): string {
     Reporter: i.reporterName,
     Upvotes: i.upvoteCount,
     Comments: i.commentCount,
-    'Evidence Count': i.evidenceCount ?? 0,
+    Followers: i.followCount,
+    Evidence: i.evidenceCount,
+    Disputes: i.disputeCount,
+    'MLA Tagged': i.mlaTagged ? 'Yes' : 'No',
+    'MLA Responded': i.mlaResponded ? 'Yes' : 'No',
     Created: i.createdAt,
     Updated: i.updatedAt,
   }));
@@ -171,7 +179,9 @@ function generatePDFHtml(payload: ExportPayload): string {
     resolved: issues.filter((i) => i.status === 'resolved' || i.status === 'closed').length,
     critical: issues.filter((i) => i.severity === 'critical').length,
     totalUpvotes: issues.reduce((sum, i) => sum + i.upvoteCount, 0),
-    totalEvidence: issues.reduce((sum, i) => sum + (i.evidenceCount ?? 0), 0),
+    totalEvidence: issues.reduce((sum, i) => sum + i.evidenceCount, 0),
+    mlaTagged: issues.filter((i) => i.mlaTagged).length,
+    mlaResponded: issues.filter((i) => i.mlaResponded).length,
   };
 
   return `<!DOCTYPE html>
@@ -220,6 +230,10 @@ function generatePDFHtml(payload: ExportPayload): string {
     <div class="stat-card"><div class="value" style="color:#EF4444">${stats.critical}</div><div class="label">Critical</div></div>
     <div class="stat-card"><div class="value">${stats.totalUpvotes}</div><div class="label">Total Upvotes</div></div>
     <div class="stat-card"><div class="value">${stats.totalEvidence}</div><div class="label">Evidence Attached</div></div>
+  </div>
+  <div class="stats-grid" style="grid-template-columns: repeat(2, 1fr);">
+    <div class="stat-card"><div class="value" style="color:#F59E0B">${stats.mlaTagged}</div><div class="label">MLA Tagged</div></div>
+    <div class="stat-card"><div class="value" style="color:#10B981">${stats.mlaResponded}</div><div class="label">MLA Responded</div></div>
   </div>
 
   <h2>Civic Issues (${issues.length})</h2>

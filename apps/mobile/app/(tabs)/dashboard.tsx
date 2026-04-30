@@ -6,6 +6,7 @@ import {
   ScrollView,
   Pressable,
   Platform,
+  Share,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
@@ -100,6 +101,8 @@ function DashboardContent() {
   const allHeadlines = useCivicStore((s) => s.headlines);
   const allSentiment = useCivicStore((s) => s.sentiment);
   const toggleUpvote = useCivicStore((s) => s.toggleUpvote);
+  const toggleFollow = useCivicStore((s) => s.toggleFollow);
+  const shareIssue = useCivicStore((s) => s.shareIssue);
   const addIssue = useCivicStore((s) => s.addIssue);
   const setIssueFilter = useCivicStore((s) => s.setIssueFilter);
   const setStatusFilter = useCivicStore((s) => s.setStatusFilter);
@@ -294,6 +297,12 @@ function DashboardContent() {
                   key={issue.id}
                   issue={issue}
                   onUpvote={() => toggleUpvote(issue.id)}
+                  onFollow={() => toggleFollow(issue.id)}
+                  onShare={async () => {
+                    const text = shareIssue(issue.id);
+                    try { await Share.share({ message: text }); } catch (_) {}
+                  }}
+                  onPress={() => router.push(`/issue/${issue.id}`)}
                 />
               ))
             )}

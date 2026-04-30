@@ -27,9 +27,11 @@ interface IssueCardProps {
   issue: CivicIssue;
   onUpvote?: () => void;
   onPress?: () => void;
+  onFollow?: () => void;
+  onShare?: () => void;
 }
 
-export default function IssueCard({ issue, onUpvote, onPress }: IssueCardProps) {
+export default function IssueCard({ issue, onUpvote, onPress, onFollow, onShare }: IssueCardProps) {
   const { t } = useTranslation();
   const catConfig = ISSUE_CATEGORY_CONFIG[issue.category];
   const sevConfig = SEVERITY_CONFIG[issue.severity];
@@ -94,6 +96,19 @@ export default function IssueCard({ issue, onUpvote, onPress }: IssueCardProps) 
         <Text style={styles.metaReporterText}>{issue.reporterName}</Text>
       </View>
 
+      {/* MLA Response indicator */}
+      {issue.mlaTagged && (
+        <View style={styles.mlaRow}>
+          <Ionicons name="megaphone" size={12} color="#F59E0B" />
+          <Text style={styles.mlaText}>
+            {issue.mlaResponded ? 'MLA Responded' : 'MLA Tagged — Awaiting Response'}
+          </Text>
+          {issue.mlaResponded && (
+            <Ionicons name="checkmark-circle" size={12} color="#10B981" style={{ marginLeft: 4 }} />
+          )}
+        </View>
+      )}
+
       {/* Actions */}
       <View style={styles.actions}>
         <Pressable style={styles.upvoteButton} onPress={onUpvote} hitSlop={8}>
@@ -106,16 +121,35 @@ export default function IssueCard({ issue, onUpvote, onPress }: IssueCardProps) 
             {issue.upvoteCount}
           </Text>
         </Pressable>
-        <View style={[styles.commentCount, { marginLeft: 16 }]}>
+        <View style={[styles.commentCount, { marginLeft: 12 }]}>
           <Ionicons name="chatbubble-outline" size={14} color="#6B7280" />
           <Text style={[styles.commentCountText, { marginLeft: 4 }]}>{issue.commentCount}</Text>
         </View>
-        {(issue.evidenceCount ?? 0) > 0 && (
-          <View style={[styles.commentCount, { marginLeft: 16 }]}>
+        <Pressable style={[styles.commentCount, { marginLeft: 12 }]} onPress={onFollow} hitSlop={8}>
+          <Ionicons
+            name={issue.userFollowing ? 'notifications' : 'notifications-outline'}
+            size={14}
+            color={issue.userFollowing ? '#3B82F6' : '#6B7280'}
+          />
+          <Text style={[styles.commentCountText, { marginLeft: 4, color: issue.userFollowing ? '#3B82F6' : '#6B7280' }]}>
+            {issue.followCount}
+          </Text>
+        </Pressable>
+        {issue.evidenceCount > 0 && (
+          <View style={[styles.commentCount, { marginLeft: 12 }]}>
             <Ionicons name="camera-outline" size={14} color="#F59E0B" />
             <Text style={[styles.commentCountText, { marginLeft: 4, color: '#F59E0B' }]}>{issue.evidenceCount}</Text>
           </View>
         )}
+        {issue.disputeCount > 0 && (
+          <View style={[styles.commentCount, { marginLeft: 12 }]}>
+            <Ionicons name="flag" size={13} color="#EF4444" />
+            <Text style={[styles.commentCountText, { marginLeft: 3, color: '#EF4444' }]}>{issue.disputeCount}</Text>
+          </View>
+        )}
+        <Pressable style={[styles.commentCount, { marginLeft: 'auto' }]} onPress={onShare} hitSlop={8}>
+          <Ionicons name="share-outline" size={15} color="#6B7280" />
+        </Pressable>
       </View>
     </Pressable>
   );
@@ -256,5 +290,23 @@ const styles = StyleSheet.create({
     fontSize: 14,
     fontWeight: '700',
     color: '#9CA3AF',
+  },
+  mlaRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+    paddingVertical: 6,
+    paddingHorizontal: 8,
+    marginBottom: 8,
+    backgroundColor: '#1C191720',
+    borderRadius: 8,
+    borderWidth: 0.5,
+    borderColor: '#F59E0B30',
+  },
+  mlaText: {
+    fontSize: 11,
+    fontWeight: '600',
+    color: '#F59E0B',
+    flex: 1,
   },
 });

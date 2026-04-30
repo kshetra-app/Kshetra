@@ -19,7 +19,7 @@ export type IssueCategory =
 
 export type IssueSeverity = 'low' | 'medium' | 'high' | 'critical';
 
-export type IssueStatus = 'open' | 'acknowledged' | 'in_progress' | 'resolved' | 'closed';
+export type IssueStatus = 'open' | 'acknowledged' | 'in_progress' | 'resolved' | 'closed' | 'reopened';
 
 /** Scope level for filtering civic dashboard content */
 export type CivicScope = 'constituency' | 'state' | 'national';
@@ -50,17 +50,74 @@ export interface CivicIssue {
   status: IssueStatus;
   upvoteCount: number;
   commentCount: number;
+  followCount: number;
+  evidenceCount: number;
+  disputeCount: number;
   imageUrl?: string;
   /** Multiple media evidence URLs (photos/videos) */
   mediaUrls?: string[];
-  evidenceCount?: number;
   latitude?: number;
   longitude?: number;
   resolvedAt?: string;
+  resolutionNote?: string;
+  resolvedBy?: string;
+  mlaTagged: boolean;
+  mlaResponded: boolean;
+  mlaResponseNote?: string;
+  isVerifiedReport: boolean;
   createdAt: string;
   updatedAt: string;
+  // Client-side state
   userUpvoted?: boolean;
+  userFollowing?: boolean;
+  userDisputed?: boolean;
 }
+
+export interface IssueComment {
+  id: string;
+  issueId: string;
+  userId: string;
+  userName: string;
+  body: string;
+  imageUrl?: string;
+  isOfficial: boolean;
+  createdAt: string;
+}
+
+export interface IssueEvidence {
+  id: string;
+  issueId: string;
+  userId: string;
+  userName: string;
+  imageUrl: string;
+  caption?: string;
+  createdAt: string;
+}
+
+export interface IssueStatusChange {
+  id: string;
+  issueId: string;
+  fromStatus: IssueStatus;
+  toStatus: IssueStatus;
+  changedBy?: string;
+  changedByName?: string;
+  note?: string;
+  createdAt: string;
+}
+
+export interface IssueDispute {
+  id: string;
+  issueId: string;
+  userId: string;
+  reason?: string;
+  createdAt: string;
+}
+
+/** Upvote milestones that trigger notifications */
+export const MILESTONE_THRESHOLDS = [10, 50, 100, 500] as const;
+
+/** Auto-promote to headlines at this threshold */
+export const HEADLINE_PROMOTION_THRESHOLD = 500;
 
 export interface Headline {
   id: string;
@@ -115,4 +172,30 @@ export const STATUS_CONFIG: Record<IssueStatus, { color: string; label: string; 
   in_progress: { color: '#F59E0B', label: 'In Progress', icon: 'hammer' },
   resolved: { color: '#10B981', label: 'Resolved', icon: 'checkmark-circle' },
   closed: { color: '#6B7280', label: 'Closed', icon: 'close-circle' },
+  reopened: { color: '#EF4444', label: 'Reopened', icon: 'refresh-circle' },
+};
+
+/** Valid status transitions with who can perform them */
+export const STATUS_TRANSITIONS: Record<IssueStatus, { to: IssueStatus; actor: string }[]> = {
+  open: [
+    { to: 'acknowledged', actor: 'moderator' },
+    { to: 'closed', actor: 'admin' },
+  ],
+  acknowledged: [
+    { to: 'in_progress', actor: 'official' },
+    { to: 'closed', actor: 'admin' },
+  ],
+  in_progress: [
+    { to: 'resolved', actor: 'official' },
+    { to: 'closed', actor: 'admin' },
+  ],
+  resolved: [
+    { to: 'closed', actor: 'auto' },
+    { to: 'reopened', actor: 'community' },
+  ],
+  closed: [],
+  reopened: [
+    { to: 'acknowledged', actor: 'moderator' },
+    { to: 'in_progress', actor: 'official' },
+  ],
 };

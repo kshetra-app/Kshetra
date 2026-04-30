@@ -5,8 +5,12 @@ import type {
   ConstituencySentiment,
   IssueCategory,
   IssueStatus,
+  IssueComment,
+  IssueEvidence,
+  IssueStatusChange,
   CivicScope,
 } from '../lib/civicTypes';
+import { MILESTONE_THRESHOLDS, HEADLINE_PROMOTION_THRESHOLD } from '../lib/civicTypes';
 
 // ─── Seed Issues (multi-state, full lifecycle showcase) ───
 
@@ -26,8 +30,13 @@ const SEED_ISSUES: CivicIssue[] = [
     status: 'open',
     upvoteCount: 87,
     commentCount: 14,
-    mediaUrls: ['https://picsum.photos/seed/orr1/400/300', 'https://picsum.photos/seed/orr2/400/300'],
+    followCount: 32,
     evidenceCount: 2,
+    disputeCount: 0,
+    mediaUrls: ['https://picsum.photos/seed/orr1/400/300', 'https://picsum.photos/seed/orr2/400/300'],
+    mlaTagged: true,
+    mlaResponded: false,
+    isVerifiedReport: false,
     createdAt: '2026-04-28T06:00:00Z',
     updatedAt: '2026-04-28T06:00:00Z',
   },
@@ -45,6 +54,13 @@ const SEED_ISSUES: CivicIssue[] = [
     status: 'acknowledged',
     upvoteCount: 134,
     commentCount: 28,
+    followCount: 56,
+    evidenceCount: 4,
+    disputeCount: 0,
+    mlaTagged: true,
+    mlaResponded: true,
+    mlaResponseNote: 'HMWSSB has been directed to restore daily supply. Additional 20 tankers deployed to Old City starting tomorrow. — MLA Office',
+    isVerifiedReport: true,
     createdAt: '2026-04-27T08:00:00Z',
     updatedAt: '2026-04-28T14:00:00Z',
   },
@@ -62,6 +78,12 @@ const SEED_ISSUES: CivicIssue[] = [
     status: 'in_progress',
     upvoteCount: 45,
     commentCount: 7,
+    followCount: 12,
+    evidenceCount: 0,
+    disputeCount: 0,
+    mlaTagged: false,
+    mlaResponded: false,
+    isVerifiedReport: false,
     createdAt: '2026-04-26T10:00:00Z',
     updatedAt: '2026-04-29T05:00:00Z',
   },
@@ -79,8 +101,13 @@ const SEED_ISSUES: CivicIssue[] = [
     status: 'open',
     upvoteCount: 112,
     commentCount: 19,
-    mediaUrls: ['https://picsum.photos/seed/phc1/400/300'],
+    followCount: 45,
     evidenceCount: 1,
+    disputeCount: 0,
+    mediaUrls: ['https://picsum.photos/seed/phc1/400/300'],
+    mlaTagged: true,
+    mlaResponded: false,
+    isVerifiedReport: true,
     createdAt: '2026-04-28T12:00:00Z',
     updatedAt: '2026-04-28T12:00:00Z',
   },
@@ -98,9 +125,42 @@ const SEED_ISSUES: CivicIssue[] = [
     status: 'resolved',
     upvoteCount: 29,
     commentCount: 4,
+    followCount: 8,
+    evidenceCount: 0,
+    disputeCount: 0,
     resolvedAt: '2026-04-28T20:00:00Z',
+    resolutionNote: 'GHMC replaced all faulty streetlights on the Abids-MJ Market stretch. 18 new LED lights installed.',
+    mlaTagged: false,
+    mlaResponded: false,
+    isVerifiedReport: false,
     createdAt: '2026-04-22T15:00:00Z',
     updatedAt: '2026-04-28T20:00:00Z',
+  },
+  // ── Telangana (reopened — dispute showcase) ──
+  {
+    id: 'issue-6',
+    reporterId: 'demo-15',
+    reporterName: 'Harish Chandra',
+    constituencyId: 'TS-AC-67',
+    constituencyName: 'Serilingampally',
+    stateCode: 'TS',
+    title: 'GHMC marked pothole-filling as complete — potholes still there',
+    description: 'GHMC closed complaint #GH-2026-44521 claiming road repaired. Ground reality: only 3 of 12 potholes filled, and those with loose gravel that washed away in one rain. Community disputed the resolution.',
+    category: 'roads',
+    severity: 'high',
+    status: 'reopened',
+    upvoteCount: 76,
+    commentCount: 18,
+    followCount: 28,
+    evidenceCount: 6,
+    disputeCount: 7,
+    mediaUrls: ['https://picsum.photos/seed/dispute1/400/300', 'https://picsum.photos/seed/dispute2/400/300'],
+    mlaTagged: true,
+    mlaResponded: false,
+    isVerifiedReport: false,
+    createdAt: '2026-04-15T10:00:00Z',
+    updatedAt: '2026-04-29T16:00:00Z',
+    userDisputed: false,
   },
   // ── Andhra Pradesh ──
   {
@@ -117,6 +177,13 @@ const SEED_ISSUES: CivicIssue[] = [
     status: 'open',
     upvoteCount: 203,
     commentCount: 41,
+    followCount: 78,
+    evidenceCount: 0,
+    disputeCount: 0,
+    mlaTagged: true,
+    mlaResponded: true,
+    mlaResponseNote: 'Have written to Union Fisheries Ministry requesting urgent release of Central funds. State matching share will be released within 15 days. — MLA K. Rammohan Naidu',
+    isVerifiedReport: true,
     createdAt: '2026-04-27T04:00:00Z',
     updatedAt: '2026-04-27T04:00:00Z',
   },
@@ -134,8 +201,14 @@ const SEED_ISSUES: CivicIssue[] = [
     status: 'in_progress',
     upvoteCount: 567,
     commentCount: 89,
+    followCount: 234,
+    evidenceCount: 12,
+    disputeCount: 0,
     mediaUrls: ['https://picsum.photos/seed/flood1/400/300', 'https://picsum.photos/seed/flood2/400/300'],
-    evidenceCount: 2,
+    mlaTagged: true,
+    mlaResponded: true,
+    mlaResponseNote: 'Rs 50,000 disbursement resumed. Remaining 140 families to receive within 2 weeks. Personal supervision. — MLA Kesineni Srinivas',
+    isVerifiedReport: true,
     createdAt: '2026-04-20T08:00:00Z',
     updatedAt: '2026-04-29T10:00:00Z',
   },
@@ -153,6 +226,12 @@ const SEED_ISSUES: CivicIssue[] = [
     status: 'acknowledged',
     upvoteCount: 312,
     commentCount: 52,
+    followCount: 120,
+    evidenceCount: 3,
+    disputeCount: 0,
+    mlaTagged: true,
+    mlaResponded: false,
+    isVerifiedReport: false,
     createdAt: '2026-04-26T06:30:00Z',
     updatedAt: '2026-04-28T09:00:00Z',
   },
@@ -171,8 +250,13 @@ const SEED_ISSUES: CivicIssue[] = [
     status: 'open',
     upvoteCount: 478,
     commentCount: 67,
+    followCount: 189,
+    evidenceCount: 15,
+    disputeCount: 0,
     mediaUrls: ['https://picsum.photos/seed/pothole1/400/300', 'https://picsum.photos/seed/pothole2/400/300', 'https://picsum.photos/seed/pothole3/400/300'],
-    evidenceCount: 3,
+    mlaTagged: true,
+    mlaResponded: false,
+    isVerifiedReport: false,
     createdAt: '2026-04-25T05:00:00Z',
     updatedAt: '2026-04-25T05:00:00Z',
   },
@@ -190,6 +274,12 @@ const SEED_ISSUES: CivicIssue[] = [
     status: 'in_progress',
     upvoteCount: 189,
     commentCount: 34,
+    followCount: 67,
+    evidenceCount: 0,
+    disputeCount: 0,
+    mlaTagged: false,
+    mlaResponded: false,
+    isVerifiedReport: false,
     createdAt: '2026-04-23T07:00:00Z',
     updatedAt: '2026-04-29T12:00:00Z',
   },
@@ -207,8 +297,14 @@ const SEED_ISSUES: CivicIssue[] = [
     status: 'acknowledged',
     upvoteCount: 621,
     commentCount: 103,
+    followCount: 310,
+    evidenceCount: 22,
+    disputeCount: 0,
     mediaUrls: ['https://picsum.photos/seed/foam1/400/300', 'https://picsum.photos/seed/foam2/400/300', 'https://picsum.photos/seed/foam3/400/300', 'https://picsum.photos/seed/foam4/400/300', 'https://picsum.photos/seed/foam5/400/300'],
-    evidenceCount: 5,
+    mlaTagged: true,
+    mlaResponded: true,
+    mlaResponseNote: 'BBMP has been directed to fast-track STP commissioning. Rs 200 crore emergency fund released. Monthly progress review mandated. — MLA Aravind Limbavali',
+    isVerifiedReport: true,
     createdAt: '2026-04-22T08:30:00Z',
     updatedAt: '2026-04-28T16:00:00Z',
   },
@@ -226,7 +322,15 @@ const SEED_ISSUES: CivicIssue[] = [
     status: 'resolved',
     upvoteCount: 156,
     commentCount: 22,
+    followCount: 45,
+    evidenceCount: 0,
+    disputeCount: 2,
     resolvedAt: '2026-04-29T08:00:00Z',
+    resolutionNote: '4 additional doctors posted. OPD hours extended to 8pm. New token system reduces wait to <1 hour.',
+    mlaTagged: true,
+    mlaResponded: true,
+    mlaResponseNote: 'Met Health Secretary. 4 doctors posted within 48 hours. Will monitor weekly. — MLA Suresh Kumar',
+    isVerifiedReport: false,
     createdAt: '2026-04-18T09:00:00Z',
     updatedAt: '2026-04-29T08:00:00Z',
   },
@@ -245,6 +349,12 @@ const SEED_ISSUES: CivicIssue[] = [
     status: 'open',
     upvoteCount: 344,
     commentCount: 56,
+    followCount: 134,
+    evidenceCount: 8,
+    disputeCount: 0,
+    mlaTagged: false,
+    mlaResponded: false,
+    isVerifiedReport: false,
     createdAt: '2026-04-29T02:00:00Z',
     updatedAt: '2026-04-29T02:00:00Z',
   },
@@ -262,8 +372,14 @@ const SEED_ISSUES: CivicIssue[] = [
     status: 'acknowledged',
     upvoteCount: 892,
     commentCount: 145,
+    followCount: 567,
+    evidenceCount: 28,
+    disputeCount: 0,
     mediaUrls: ['https://picsum.photos/seed/kurla1/400/300', 'https://picsum.photos/seed/kurla2/400/300', 'https://picsum.photos/seed/kurla3/400/300'],
-    evidenceCount: 3,
+    mlaTagged: true,
+    mlaResponded: true,
+    mlaResponseNote: 'Raised the matter in Parliament. Railway Minister has ordered structural audit of all Mumbai suburban stations. Report expected in 30 days. — MP Varsha Gaikwad',
+    isVerifiedReport: true,
     createdAt: '2026-04-24T04:00:00Z',
     updatedAt: '2026-04-28T18:00:00Z',
   },
@@ -281,6 +397,12 @@ const SEED_ISSUES: CivicIssue[] = [
     status: 'open',
     upvoteCount: 445,
     commentCount: 78,
+    followCount: 201,
+    evidenceCount: 3,
+    disputeCount: 0,
+    mlaTagged: true,
+    mlaResponded: false,
+    isVerifiedReport: true,
     createdAt: '2026-04-26T06:00:00Z',
     updatedAt: '2026-04-26T06:00:00Z',
   },
@@ -298,9 +420,43 @@ const SEED_ISSUES: CivicIssue[] = [
     status: 'resolved',
     upvoteCount: 267,
     commentCount: 33,
+    followCount: 89,
+    evidenceCount: 0,
+    disputeCount: 1,
     resolvedAt: '2026-04-27T14:00:00Z',
+    resolutionNote: 'MSRDC restored all 6 FASTag lanes. Additional staff deployed during 7-10am and 5-9pm peak. Average passage time reduced to 3 minutes.',
+    mlaTagged: false,
+    mlaResponded: false,
+    isVerifiedReport: false,
     createdAt: '2026-04-19T05:00:00Z',
     updatedAt: '2026-04-27T14:00:00Z',
+  },
+  // ── Maharashtra (closed — full lifecycle) ──
+  {
+    id: 'issue-mh-5',
+    reporterId: 'demo-mh-5',
+    reporterName: 'Nandini Kulkarni',
+    constituencyId: 'MH-AC-207',
+    constituencyName: 'Pune City',
+    stateCode: 'MH',
+    title: 'Illegal hawker encroachment on FC Road footpath cleared',
+    description: 'After 6 months of citizen reports, PMC anti-encroachment squad cleared unauthorized stalls from FC Road footpath. Pedestrians can walk safely again.',
+    category: 'public_safety',
+    severity: 'low',
+    status: 'closed',
+    upvoteCount: 156,
+    commentCount: 22,
+    followCount: 45,
+    evidenceCount: 4,
+    disputeCount: 0,
+    resolvedAt: '2026-04-20T10:00:00Z',
+    resolutionNote: 'PMC conducted anti-encroachment drive. Designated hawker zone created 200m away with proper stalls.',
+    mlaTagged: true,
+    mlaResponded: true,
+    mlaResponseNote: 'Coordinated with PMC Commissioner. Permanent hawker zone established to balance livelihoods and pedestrian access. — MLA Girish Bapat',
+    isVerifiedReport: false,
+    createdAt: '2026-04-01T08:00:00Z',
+    updatedAt: '2026-04-27T10:00:00Z',
   },
 ];
 
@@ -471,39 +627,110 @@ const SEED_SENTIMENT: ConstituencySentiment[] = [
   { constituencyId: 'MH-AC-181', constituencyName: 'Andheri West', positiveCount: 16, negativeCount: 20, neutralCount: 8, totalPosts: 44, score: -0.09, topIssues: ['environment', 'roads'] },
 ];
 
+// ─── Seed Comments (showcase threaded discussion) ───
+
+const SEED_COMMENTS: IssueComment[] = [
+  // issue-2 (Charminar water crisis — MLA responded, active discussion)
+  { id: 'cmt-1', issueId: 'issue-2', userId: 'demo-5', userName: 'Fatima Begum', body: 'Day 3 without water. My elderly mother-in-law is diabetic and needs regular hydration. This is a health emergency now.', isOfficial: false, createdAt: '2026-04-27T10:00:00Z' },
+  { id: 'cmt-2', issueId: 'issue-2', userId: 'demo-20', userName: 'Syed Naser', body: 'Same situation in Shalibanda. The tanker came once in 3 days and the queue was 200+ families.', imageUrl: 'https://picsum.photos/seed/tanker1/400/300', isOfficial: false, createdAt: '2026-04-27T14:30:00Z' },
+  { id: 'cmt-3', issueId: 'issue-2', userId: 'official-1', userName: 'HMWSSB Helpdesk', body: 'Complaint #HYD-W-2026-8812 registered. 20 additional tankers being deployed to Old City starting 29 April. Daily schedule: 6am-8am, 5pm-7pm.', isOfficial: true, createdAt: '2026-04-28T09:00:00Z' },
+  { id: 'cmt-4', issueId: 'issue-2', userId: 'demo-21', userName: 'Mohammed Imran', body: 'The MLA responded! First time we are seeing any action. Let\u2019s keep the pressure on.', isOfficial: false, createdAt: '2026-04-28T16:00:00Z' },
+  // issue-ka-3 (Bellandur foam — high engagement)
+  { id: 'cmt-5', issueId: 'issue-ka-3', userId: 'demo-ka-3', userName: 'Divya S', body: 'Posted new photos today. The foam is worse than last month. Schools nearby are complaining about respiratory issues in children.', imageUrl: 'https://picsum.photos/seed/foam6/400/300', isOfficial: false, createdAt: '2026-04-28T08:00:00Z' },
+  { id: 'cmt-6', issueId: 'issue-ka-3', userId: 'demo-ka-10', userName: 'Dr. Anil Kumar (Environmentalist)', body: 'I have tested water samples. BOD levels are 8x the safe limit. This is carcinogenic. Sharing lab report.', imageUrl: 'https://picsum.photos/seed/labtest/400/300', isOfficial: false, createdAt: '2026-04-28T12:00:00Z' },
+  { id: 'cmt-7', issueId: 'issue-ka-3', userId: 'official-ka-1', userName: 'BBMP Ward Office — Bommanahalli', body: 'STP Phase-2 commissioning expedited to July 2026. Daily foam dispersal crew deployed. Citizen monitoring committee meeting scheduled for 5 May.', isOfficial: true, createdAt: '2026-04-28T18:00:00Z' },
+  // issue-mh-2 (Kurla station — safety critical)
+  { id: 'cmt-8', issueId: 'issue-mh-2', userId: 'demo-mh-10', userName: 'Prashant Naik', body: 'I commute through Platform 5 daily. Today I saw new cracks near pillar 7. This is genuinely terrifying.', imageUrl: 'https://picsum.photos/seed/crack1/400/300', isOfficial: false, createdAt: '2026-04-28T06:00:00Z' },
+  { id: 'cmt-9', issueId: 'issue-mh-2', userId: 'official-mh-1', userName: 'Western Railway PRO', body: 'Structural audit team from IIT Bombay will inspect Platform 5 on 1 May. Temporary speed restriction applied. Alternative routing being explored.', isOfficial: true, createdAt: '2026-04-28T20:00:00Z' },
+  // issue-6 (Reopened — dispute showcase)
+  { id: 'cmt-10', issueId: 'issue-6', userId: 'demo-15', userName: 'Harish Chandra', body: 'They marked it resolved but look at these photos from today. Only 3 of 12 potholes filled and those are already crumbling.', imageUrl: 'https://picsum.photos/seed/dispute3/400/300', isOfficial: false, createdAt: '2026-04-29T10:00:00Z' },
+  { id: 'cmt-11', issueId: 'issue-6', userId: 'demo-16', userName: 'Anjali Sharma', body: 'I filed a dispute too. My car\u2019s suspension broke on this road yesterday. Attaching repair bill as evidence.', isOfficial: false, createdAt: '2026-04-29T14:00:00Z' },
+  // issue-ka-4 (Resolved — success story)
+  { id: 'cmt-12', issueId: 'issue-ka-4', userId: 'demo-ka-4', userName: 'Prasad K', body: 'Incredible! 4 new doctors started today. Wait time dropped to 40 minutes. Thank you to everyone who upvoted and to the MLA for acting.', isOfficial: false, createdAt: '2026-04-29T10:00:00Z' },
+  { id: 'cmt-13', issueId: 'issue-ka-4', userId: 'demo-ka-11', userName: 'Kavitha R', body: 'I was there today. The new token system is working well. They even have a separate queue for elderly. A real win for the community.', isOfficial: false, createdAt: '2026-04-29T14:00:00Z' },
+  // issue-1 (ORR — newly tagged MLA)
+  { id: 'cmt-14', issueId: 'issue-1', userId: 'demo-1', userName: 'Priya Reddy', body: 'Tagged the MLA 3 days ago. No response yet. The traffic jams are getting worse during monsoon prep. NHAI contractor has vanished.', isOfficial: false, createdAt: '2026-04-29T08:00:00Z' },
+];
+
+// ─── Seed Status History ───
+
+const SEED_STATUS_HISTORY: IssueStatusChange[] = [
+  // issue-2 lifecycle
+  { id: 'sh-1', issueId: 'issue-2', fromStatus: 'open', toStatus: 'acknowledged', changedByName: 'Moderator', note: 'Verified by 4 independent reports from Old City area', createdAt: '2026-04-28T09:00:00Z' },
+  // issue-3 lifecycle
+  { id: 'sh-2', issueId: 'issue-3', fromStatus: 'open', toStatus: 'acknowledged', changedByName: 'TSSPDCL Officer', note: 'Complaint forwarded to Rajendranagar sub-station', createdAt: '2026-04-27T12:00:00Z' },
+  { id: 'sh-3', issueId: 'issue-3', fromStatus: 'acknowledged', toStatus: 'in_progress', changedByName: 'TSSPDCL Officer', note: 'Transformer replacement approved. Parts ordered.', createdAt: '2026-04-29T05:00:00Z' },
+  // issue-5 lifecycle (resolved)
+  { id: 'sh-4', issueId: 'issue-5', fromStatus: 'open', toStatus: 'acknowledged', changedByName: 'GHMC Ward Office', note: 'Inspection scheduled', createdAt: '2026-04-23T10:00:00Z' },
+  { id: 'sh-5', issueId: 'issue-5', fromStatus: 'acknowledged', toStatus: 'in_progress', changedByName: 'GHMC Ward Office', note: 'LED replacement crew deployed', createdAt: '2026-04-26T08:00:00Z' },
+  { id: 'sh-6', issueId: 'issue-5', fromStatus: 'in_progress', toStatus: 'resolved', changedByName: 'GHMC Ward Office', note: '18 new LED lights installed on Abids-MJ Market stretch', createdAt: '2026-04-28T20:00:00Z' },
+  // issue-6 lifecycle (reopened via dispute)
+  { id: 'sh-7', issueId: 'issue-6', fromStatus: 'open', toStatus: 'acknowledged', changedByName: 'Moderator', createdAt: '2026-04-16T10:00:00Z' },
+  { id: 'sh-8', issueId: 'issue-6', fromStatus: 'acknowledged', toStatus: 'in_progress', changedByName: 'GHMC Road Dept', createdAt: '2026-04-20T08:00:00Z' },
+  { id: 'sh-9', issueId: 'issue-6', fromStatus: 'in_progress', toStatus: 'resolved', changedByName: 'GHMC Road Dept', note: 'Potholes filled with hot-mix', createdAt: '2026-04-25T14:00:00Z' },
+  { id: 'sh-10', issueId: 'issue-6', fromStatus: 'resolved', toStatus: 'reopened', note: 'Auto-reopened: 7 community disputes. Ground verification shows incomplete repair.', createdAt: '2026-04-29T16:00:00Z' },
+  // issue-ka-4 lifecycle (resolved successfully)
+  { id: 'sh-11', issueId: 'issue-ka-4', fromStatus: 'open', toStatus: 'acknowledged', changedByName: 'Health Department', createdAt: '2026-04-19T10:00:00Z' },
+  { id: 'sh-12', issueId: 'issue-ka-4', fromStatus: 'acknowledged', toStatus: 'in_progress', changedByName: 'MLA Suresh Kumar', note: 'Met Health Secretary. Action initiated.', createdAt: '2026-04-22T14:00:00Z' },
+  { id: 'sh-13', issueId: 'issue-ka-4', fromStatus: 'in_progress', toStatus: 'resolved', changedByName: 'Health Department', note: '4 doctors posted, OPD hours extended, token system deployed', createdAt: '2026-04-29T08:00:00Z' },
+  // issue-mh-5 lifecycle (closed — full lifecycle)
+  { id: 'sh-14', issueId: 'issue-mh-5', fromStatus: 'open', toStatus: 'acknowledged', changedByName: 'PMC Ward Officer', createdAt: '2026-04-05T10:00:00Z' },
+  { id: 'sh-15', issueId: 'issue-mh-5', fromStatus: 'acknowledged', toStatus: 'in_progress', changedByName: 'PMC Anti-Encroachment', createdAt: '2026-04-12T08:00:00Z' },
+  { id: 'sh-16', issueId: 'issue-mh-5', fromStatus: 'in_progress', toStatus: 'resolved', changedByName: 'PMC Anti-Encroachment', note: 'Drive completed. Hawker zone established.', createdAt: '2026-04-20T10:00:00Z' },
+  { id: 'sh-17', issueId: 'issue-mh-5', fromStatus: 'resolved', toStatus: 'closed', note: 'Auto-closed after 7 days with no disputes', createdAt: '2026-04-27T10:00:00Z' },
+];
+
 // ─── Civic Store ───
 
 interface CivicState {
   issues: CivicIssue[];
   headlines: Headline[];
   sentiment: ConstituencySentiment[];
+  comments: IssueComment[];
+  statusHistory: IssueStatusChange[];
   issueFilter: IssueCategory | 'all';
   statusFilter: IssueStatus | 'all';
   stateFilter: string | null;
   scopeFilter: CivicScope;
   loading: boolean;
 
+  // Setters
   setIssueFilter: (f: IssueCategory | 'all') => void;
   setStatusFilter: (f: IssueStatus | 'all') => void;
   setStateFilter: (stateCode: string | null) => void;
   setScopeFilter: (scope: CivicScope) => void;
-  /** Filter issues by scope + stateCode + optional constituencyId */
+
+  // Queries
   getFilteredByScope: (stateCode: string, constituencyId?: string) => {
     issues: CivicIssue[];
     headlines: Headline[];
     sentiment: ConstituencySentiment[];
   };
   getFilteredIssues: () => CivicIssue[];
-  toggleUpvote: (issueId: string) => void;
-  addIssue: (issue: CivicIssue) => void;
+  getIssueById: (id: string) => CivicIssue | undefined;
+  getCommentsForIssue: (issueId: string) => IssueComment[];
+  getStatusHistoryForIssue: (issueId: string) => IssueStatusChange[];
   getTopIssueCategories: () => { category: IssueCategory; count: number }[];
   getSentimentSorted: () => ConstituencySentiment[];
+
+  // Actions — issue lifecycle
+  addIssue: (issue: CivicIssue) => void;
+  toggleUpvote: (issueId: string) => void;
+  toggleFollow: (issueId: string) => void;
+  addComment: (issueId: string, body: string, userName: string, imageUrl?: string) => void;
+  addEvidence: (issueId: string, imageUrl: string, userName: string, caption?: string) => void;
+  tagMLA: (issueId: string) => void;
+  disputeResolution: (issueId: string, reason?: string) => void;
+  updateIssueStatus: (issueId: string, newStatus: IssueStatus, note?: string, changedByName?: string) => void;
+  shareIssue: (issueId: string) => string; // returns share text
 }
 
 export const useCivicStore = create<CivicState>()((set, get) => ({
   issues: SEED_ISSUES,
   headlines: SEED_HEADLINES,
   sentiment: SEED_SENTIMENT,
+  comments: SEED_COMMENTS,
+  statusHistory: SEED_STATUS_HISTORY,
   issueFilter: 'all',
   statusFilter: 'all',
   stateFilter: null,
@@ -521,8 +748,7 @@ export const useCivicStore = create<CivicState>()((set, get) => ({
     const matchScope = (itemState: string, itemConstituencyId?: string) => {
       if (scopeFilter === 'national') return true;
       if (scopeFilter === 'state') return itemState === stateCode;
-      // constituency
-      if (!constituencyId) return itemState === stateCode; // fallback to state if no constituency set
+      if (!constituencyId) return itemState === stateCode;
       return itemConstituencyId === constituencyId;
     };
 
@@ -552,21 +778,161 @@ export const useCivicStore = create<CivicState>()((set, get) => ({
     });
   },
 
+  getIssueById: (id) => get().issues.find((i) => i.id === id),
+
+  getCommentsForIssue: (issueId) =>
+    get().comments
+      .filter((c) => c.issueId === issueId)
+      .sort((a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()),
+
+  getStatusHistoryForIssue: (issueId) =>
+    get().statusHistory
+      .filter((h) => h.issueId === issueId)
+      .sort((a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()),
+
+  // ─── Actions ───
+
   toggleUpvote: (issueId) =>
     set((state) => ({
       issues: state.issues.map((i) => {
         if (i.id !== issueId) return i;
         const wasUpvoted = i.userUpvoted;
+        const newCount = i.upvoteCount + (wasUpvoted ? -1 : 1);
         return {
           ...i,
           userUpvoted: !wasUpvoted,
-          upvoteCount: i.upvoteCount + (wasUpvoted ? -1 : 1),
+          upvoteCount: newCount,
         };
       }),
     })),
 
+  toggleFollow: (issueId) =>
+    set((state) => ({
+      issues: state.issues.map((i) => {
+        if (i.id !== issueId) return i;
+        const wasFollowing = i.userFollowing;
+        return {
+          ...i,
+          userFollowing: !wasFollowing,
+          followCount: i.followCount + (wasFollowing ? -1 : 1),
+        };
+      }),
+    })),
+
+  addComment: (issueId, body, userName, imageUrl) => {
+    const comment: IssueComment = {
+      id: `cmt-${Date.now()}`,
+      issueId,
+      userId: 'current-user',
+      userName,
+      body,
+      imageUrl,
+      isOfficial: false,
+      createdAt: new Date().toISOString(),
+    };
+    set((state) => ({
+      comments: [...state.comments, comment],
+      issues: state.issues.map((i) =>
+        i.id === issueId ? { ...i, commentCount: i.commentCount + 1 } : i,
+      ),
+    }));
+  },
+
+  addEvidence: (issueId, imageUrl, userName, caption) => {
+    set((state) => ({
+      issues: state.issues.map((i) =>
+        i.id === issueId
+          ? {
+              ...i,
+              evidenceCount: i.evidenceCount + 1,
+              mediaUrls: [...(i.mediaUrls ?? []), imageUrl],
+            }
+          : i,
+      ),
+    }));
+  },
+
+  tagMLA: (issueId) =>
+    set((state) => ({
+      issues: state.issues.map((i) =>
+        i.id === issueId ? { ...i, mlaTagged: true } : i,
+      ),
+    })),
+
+  disputeResolution: (issueId, reason) => {
+    set((state) => {
+      const updatedIssues = state.issues.map((i) => {
+        if (i.id !== issueId) return i;
+        const newDisputeCount = i.disputeCount + 1;
+        // Auto-reopen if 5+ disputes on a resolved issue
+        if (newDisputeCount >= 5 && i.status === 'resolved') {
+          return {
+            ...i,
+            disputeCount: newDisputeCount,
+            userDisputed: true,
+            status: 'reopened' as IssueStatus,
+            resolvedAt: undefined,
+          };
+        }
+        return { ...i, disputeCount: newDisputeCount, userDisputed: true };
+      });
+
+      // Add status history entry if auto-reopened
+      const issue = state.issues.find((i) => i.id === issueId);
+      const newHistory = [...state.statusHistory];
+      if (issue && issue.disputeCount + 1 >= 5 && issue.status === 'resolved') {
+        newHistory.push({
+          id: `sh-${Date.now()}`,
+          issueId,
+          fromStatus: 'resolved',
+          toStatus: 'reopened',
+          note: `Auto-reopened: ${issue.disputeCount + 1} community disputes`,
+          createdAt: new Date().toISOString(),
+        });
+      }
+
+      return { issues: updatedIssues, statusHistory: newHistory };
+    });
+  },
+
+  updateIssueStatus: (issueId, newStatus, note, changedByName) => {
+    set((state) => {
+      const issue = state.issues.find((i) => i.id === issueId);
+      if (!issue) return state;
+
+      const historyEntry: IssueStatusChange = {
+        id: `sh-${Date.now()}`,
+        issueId,
+        fromStatus: issue.status,
+        toStatus: newStatus,
+        changedByName,
+        note,
+        createdAt: new Date().toISOString(),
+      };
+
+      return {
+        issues: state.issues.map((i) => {
+          if (i.id !== issueId) return i;
+          return {
+            ...i,
+            status: newStatus,
+            updatedAt: new Date().toISOString(),
+            ...(newStatus === 'resolved' ? { resolvedAt: new Date().toISOString(), resolutionNote: note } : {}),
+          };
+        }),
+        statusHistory: [...state.statusHistory, historyEntry],
+      };
+    });
+  },
+
   addIssue: (issue) =>
     set((state) => ({ issues: [issue, ...state.issues] })),
+
+  shareIssue: (issueId) => {
+    const issue = get().issues.find((i) => i.id === issueId);
+    if (!issue) return '';
+    return `🚨 ${issue.title}\n📍 ${issue.constituencyName ?? issue.stateCode}\n👥 ${issue.upvoteCount} citizens supporting\n\nReport civic issues on Kshetra — https://kshetra.app/issue/${issue.id}`;
+  },
 
   getTopIssueCategories: () => {
     const counts = new Map<IssueCategory, number>();

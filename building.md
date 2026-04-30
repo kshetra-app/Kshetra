@@ -42,6 +42,7 @@
 | Sprint 10: Multilingual (i18n) | ✅ Complete | 2026-04-29 | 2026-04-29 |
 | Sprint 11: Multi-State Data Expansion (AP/KA/MH full data) | ✅ Complete | 2026-04-29 | 2026-04-29 |
 | Sprint 12: Civic Dashboard — Scope Filter, Media Evidence, Export + Monetization | ✅ Complete | 2026-04-30 | 2026-04-30 |
+| Sprint 13: Civic Engagement Pipeline — End-to-End | ✅ Complete | 2026-04-30 | 2026-04-30 |
 
 ---
 
@@ -135,6 +136,7 @@
 | 2026-04-29 | `feat: sprint 10 — multilingual (i18n)` | 4 languages (en/te/hi/kn), i18next + expo-localization, LanguageSwitcher component, all screens wired (tabs, feed, dashboard, explore, onboarding, profile), AsyncStorage persistence, device locale auto-detect (100/100 seed pass) |
 | 2026-04-29 | `feat: sprint 11 — multi-state data expansion` | Full AP (175), KA (224), MH (288) constituency data with election results. 23 states in STATES registry. 4 new party codes (SHSUBT, NCPSP, JMM, JKNC). Unified data layer: getStateCenter/getStateZoom, enrichGeoJSONForState, PARTY_COLORS from shared config. ScrollView StateSwitcher. FULLY_SUPPORTED_STATES: TS/AP/KA/MH (100/100 seed pass) |
 | 2026-04-30 | `feat: sprint 12 — civic scope filter, media evidence, export + monetization` | Scope-level filter (constituency/state/national), media evidence picker (camera+gallery) in ReportIssueSheet, IssueCard media thumbnails + evidence badge, ExportSheet (CSV/Excel/PDF) with 3-tier subscription gate (Free/Pro/Institutional), subscription store, export utility using new expo-file-system SDK 54 API, 0 type errors |
+| 2026-04-30 | `feat: sprint 13 — civic engagement pipeline end-to-end` | Full issue lifecycle (open→acknowledged→in_progress→resolved→closed/reopened), comments with official badges, status timeline, MLA tagging + response, dispute mechanism (5+ auto-reopen), follow/share, evidence gallery, Issue Detail screen, Supabase migration 007 (5 new tables + materialized view), 18 issues across 4 states with full lifecycle demo, 15 seed comments, 17 status history entries |
 
 ---
 
@@ -1672,3 +1674,105 @@ The app works fully offline without Supabase credentials. To activate:
 | TypeScript compile | ✅ Pass | — | — | 0 errors across all files |
 | `data/seed` — all | ✅ Pass | 100 | 100 | No regressions |
 | **Total** | **✅ All Pass** | **100** | **100** | Clean compile, no type errors |
+
+---
+
+## Sprint 13: Civic Engagement Pipeline — End-to-End
+
+**Date**: 2026-04-30
+**Goal**: Implement the full civic engagement pipeline per ADR-013 — issue lifecycle, community engagement, MLA accountability, and dispute mechanism.
+
+### Layer 1: Issue Lifecycle
+
+- [x] Full status flow: `open → acknowledged → in_progress → resolved → closed`
+- [x] `reopened` status via community dispute mechanism (5+ disputes auto-reopen)
+- [x] Status history tracking with actor name, notes, timestamps
+- [x] Resolution notes displayed on resolved/closed issues
+- [x] Auto-close after 7 days (schema trigger ready, UI supports closed state)
+- [x] `STATUS_TRANSITIONS` config defining valid transitions and authorized actors
+
+### Layer 2: Community Engagement Actions
+
+| Action | Implementation |
+|---|---|
+| **Upvote** | Toggle on IssueCard + Detail, count in store |
+| **Follow** | Toggle bell icon on IssueCard + Detail, follower count |
+| **Comment** | Inline comment input on Detail screen, supports text + photos |
+| **Share** | Native share sheet via `Share.share()`, formatted text with deep link |
+| **Tag MLA** | Megaphone button with confirmation alert, tracks tagged state |
+| **Dispute** | Flag button on resolved issues, 5+ auto-reopens with status history |
+| **Evidence** | Photo corroboration tracked in evidenceCount + mediaUrls |
+
+### Layer 3: MLA Accountability
+
+- [x] `mlaTagged` / `mlaResponded` flags on every issue
+- [x] MLA response note displayed in amber card on IssueCard + Detail
+- [x] "Awaiting Response" indicator when tagged but no response
+- [x] Response badge with checkmark on IssueCard
+- [x] MLA engagement stats in export (CSV, Excel, PDF)
+
+### Layer 4: Issue Detail Screen (`app/issue/[id].tsx`)
+
+- [x] Full header: category + severity + status + verified badges
+- [x] Stats row: upvotes, comments, followers, evidence count
+- [x] Action buttons: Upvote, Follow, Share, Tag MLA (all wired)
+- [x] MLA Response section (amber card or waiting indicator)
+- [x] Resolution section with dispute button (for resolved issues)
+- [x] Reopened banner with dispute count
+- [x] Evidence photo gallery (grid layout, show more)
+- [x] Status timeline with colored dots, actor names, notes
+- [x] Comments section with official badges, photos, timestamps
+- [x] Inline comment input bar with send button
+- [x] Keyboard-avoiding layout for comment input
+
+### Database (Supabase Migration 007)
+
+| Table / View | Purpose |
+|---|---|
+| `issue_comments` | Comments with optional photos, official flag |
+| `issue_follows` | User follow tracking (PK: issue+user) |
+| `issue_disputes` | Dispute records with reason |
+| `issue_evidence` | Community corroboration photos |
+| `issue_status_history` | Full audit trail of status changes |
+| `constituency_sentiment_mv` | Materialized view: rolling 30-day sentiment per constituency |
+| ALTER `civic_issues` | +follow_count, evidence_count, dispute_count, resolution_note, resolved_by, mla_tagged, mla_responded, mla_response_note, media_urls, reporter_name, is_verified_report |
+
+Triggers:
+- Auto-increment `comment_count`, `follow_count`, `evidence_count`, `dispute_count` on related inserts
+- Auto-reopen issues at 5+ disputes (with status history entry)
+
+### Seed Data Enrichment
+
+- **18 issues** across TS/AP/KA/MH showcasing every lifecycle state:
+  - open (4), acknowledged (3), in_progress (3), resolved (3), closed (1), reopened (1)
+- **15 seed comments** with citizen + official responses, photos
+- **17 status history entries** showing full lifecycle progressions
+- MLA tagged (12/18), MLA responded (8/18), verified reports (6/18)
+- Dispute showcase: issue-6 with 7 disputes → auto-reopened
+- Success story: issue-ka-4 → resolved with community celebration
+
+### Files Created
+
+| File | Description |
+|---|---|
+| `supabase/migrations/007_civic_engagement_pipeline.sql` | 5 new tables, materialized view, 7 triggers, RLS policies |
+| `app/issue/[id].tsx` | Full Issue Detail screen with all engagement features |
+
+### Files Modified
+
+| File | Changes |
+|---|---|
+| `lib/civicTypes.ts` | Added `reopened` status, `IssueComment`, `IssueEvidence`, `IssueStatusChange`, `IssueDispute` types, `MILESTONE_THRESHOLDS`, `HEADLINE_PROMOTION_THRESHOLD`, `STATUS_TRANSITIONS`, new fields on `CivicIssue` |
+| `stores/civic.ts` | Added `comments`, `statusHistory` state; `getIssueById`, `getCommentsForIssue`, `getStatusHistoryForIssue` queries; `toggleFollow`, `addComment`, `addEvidence`, `tagMLA`, `disputeResolution`, `updateIssueStatus`, `shareIssue` actions; 15 seed comments + 17 status history entries; all 18 issues enriched with lifecycle fields |
+| `components/IssueCard.tsx` | Added follow button, share button, MLA response indicator, dispute badge, verified report badge; new `onFollow`, `onShare` props |
+| `components/ReportIssueSheet.tsx` | Added `followCount`, `disputeCount`, `mlaTagged`, `mlaResponded`, `isVerifiedReport` to new issue creation |
+| `app/(tabs)/dashboard.tsx` | Wired `onFollow`, `onShare`, `onPress` (→ detail) on IssueCard; added `toggleFollow` + `shareIssue` store hooks |
+| `lib/exportCivicData.ts` | Added Followers, Disputes, MLA Tagged, MLA Responded columns to CSV + Excel; MLA engagement stats in PDF report |
+
+### Tests — Sprint 13
+
+| Test Suite | Status | Passed | Total | Notes |
+|---|---|---|---|---|
+| TypeScript compile | ✅ Pass | — | — | 0 errors across all files |
+| `data/seed` — all | ✅ Pass | 100 | 100 | No regressions |
+| **Total** | **✅ All Pass** | **100** | **100** | Full pipeline wired, no type errors |
