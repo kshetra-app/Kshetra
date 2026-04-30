@@ -263,6 +263,7 @@ const en = {
     title: 'Civic Dashboard',
     tabs: {
       issues: 'Issues',
+      promises: 'Promises',
       sentiment: 'Sentiment',
       headlines: 'Headlines',
     },

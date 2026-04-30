@@ -256,7 +256,7 @@ function FullMapScreen() {
 
       // If tapping the already-selected constituency, go straight to detail
       if (selectedRef.current?.acNo === acNo) {
-        router.push(`/constituency/${acNo}`);
+        router.push(`/constituency/${acNo}` as any);
         return;
       }
 
@@ -356,7 +356,7 @@ function FullMapScreen() {
 
   const handleViewDetail = useCallback(() => {
     if (selected) {
-      router.push(`/constituency/${selected.acNo}`);
+      router.push(`/constituency/${selected.acNo}` as any);
     }
   }, [selected, router]);
 

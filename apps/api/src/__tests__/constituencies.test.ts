@@ -32,9 +32,9 @@ describe('Constituency Routes', () => {
     expect(first.name).toBe('Sirpur');
     expect(first.acNo).toBe(1);
     expect(first.stateCode).toBe('TS');
-    expect(first.district).toBe('Adilabad');
+    expect(first.district).toBe('Kumuram Bheem Asifabad');
     expect(first.reservationStatus).toBe('ST');
-    expect(first.currentParty).toBe('INC');
+    expect(first.currentParty).toBe('BJP');
     expect(first.currentMLA).toBeDefined();
   });
 
@@ -65,7 +65,7 @@ describe('Constituency Routes', () => {
     expect(body.name).toBe('Sirpur');
     expect(body.acNo).toBe(1);
     expect(body.election2023).toBeDefined();
-    expect(body.election2023.winner).toBe('INC');
+    expect(body.election2023.winner).toBe('BJP');
     expect(body.election2023.winnerVotes).toBeGreaterThan(0);
     expect(body.election2023.margin).toBeGreaterThan(0);
     expect(body.election2023.marginPercent).toBeGreaterThan(0);
@@ -242,8 +242,8 @@ describe('Constituency Routes', () => {
     expect(response.statusCode).toBe(200);
     const body = JSON.parse(response.payload);
     expect(body.state).toBe('TS');
-    expect(body.count).toBe(20);
-    expect(body.profiles).toHaveLength(20);
+    expect(body.count).toBe(119);
+    expect(body.profiles).toHaveLength(119);
     expect(body.profiles[0]).toHaveProperty('name');
     expect(body.profiles[0]).toHaveProperty('party');
     expect(body.profiles[0]).toHaveProperty('terms');
@@ -258,18 +258,21 @@ describe('Constituency Routes', () => {
     expect(response.statusCode).toBe(200);
     const body = JSON.parse(response.payload);
     expect(body.acNo).toBe(29);
-    expect(body.profile.name).toBe('KT Rama Rao');
+    expect(body.profile.name).toBe('K. T. Rama Rao');
     expect(body.profile.party).toBe('BRS');
     expect(body.profile.terms).toBe(3);
   });
 
-  it('GET /states/TS/mla/2 should return 404 for missing profile', async () => {
+  it('GET /states/TS/mla/2 should return profile for AC 2', async () => {
     const response = await app.inject({
       method: 'GET',
       url: '/api/v1/states/TS/mla/2',
     });
 
-    expect(response.statusCode).toBe(404);
+    expect(response.statusCode).toBe(200);
+    const body = JSON.parse(response.payload);
+    expect(body.acNo).toBe(2);
+    expect(body.profile.name).toBeDefined();
   });
 
   it('GET /states/TS/mla/abc should return 400', async () => {

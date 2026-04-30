@@ -253,6 +253,7 @@ const te: PartialTranslationKeys = {
     title: 'పౌర డాష్‌బోర్డ్',
     tabs: {
       issues: 'సమస్యలు',
+      promises: 'హామీలు',
       sentiment: 'సెంటిమెంట్',
       headlines: 'శీర్షికలు',
     },

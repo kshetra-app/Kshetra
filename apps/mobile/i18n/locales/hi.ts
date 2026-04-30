@@ -244,6 +244,7 @@ const hi: PartialTranslationKeys = {
     title: 'नागरिक डैशबोर्ड',
     tabs: {
       issues: 'समस्याएँ',
+      promises: 'वादे',
       sentiment: 'जनभावना',
       headlines: 'शीर्षक',
     },

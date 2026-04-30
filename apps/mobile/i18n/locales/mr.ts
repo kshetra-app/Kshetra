@@ -239,6 +239,7 @@ const mr: PartialTranslationKeys = {
     title: 'नागरिक डॅशबोर्ड',
     tabs: {
       issues: 'समस्या',
+      promises: 'आश्वासने',
       sentiment: 'जनभावना',
       headlines: 'मथळे',
     },

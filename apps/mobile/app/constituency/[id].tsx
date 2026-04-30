@@ -22,6 +22,7 @@ import MLACard from '../../components/MLACard';
 import TriviaCard from '../../components/TriviaCard';
 import DefectionBadge from '../../components/DefectionBadge';
 import AIAnalysisCard from '../../components/AIAnalysisCard';
+import AffidavitCard from '../../components/AffidavitCard';
 
 export default function ConstituencyDetailScreen() {
   const { t } = useTranslation();
@@ -478,6 +479,12 @@ export default function ConstituencyDetailScreen() {
             </View>
           );
         })()}
+
+        {/* Candidate Transparency — Affidavit */}
+        <View style={styles.section}>
+          <Text style={styles.sectionTitle}>Candidate Transparency</Text>
+          <AffidavitCard stateCode={stateCode} acNo={acNo} electionYear={constituency.electionYear} />
+        </View>
 
         {/* AI Analysis */}
         <View style={styles.section}>

@@ -244,6 +244,7 @@ const kn: PartialTranslationKeys = {
     title: 'ನಾಗರಿಕ ಡ್ಯಾಶ್‌ಬೋರ್ಡ್',
     tabs: {
       issues: 'ಸಮಸ್ಯೆಗಳು',
+      promises: 'ಭರವಸೆಗಳು',
       sentiment: 'ಜನಾಭಿಪ್ರಾಯ',
       headlines: 'ಶೀರ್ಷಿಕೆಗಳು',
     },

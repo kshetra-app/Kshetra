@@ -89,7 +89,7 @@ export default function MapFallback() {
             <Pressable
               key={c.acNo}
               style={styles.row}
-              onPress={() => router.push(`/constituency/${c.acNo}`)}
+              onPress={() => router.push(`/constituency/${c.acNo}` as any)}
             >
               <View
                 style={[

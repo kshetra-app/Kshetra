@@ -193,6 +193,25 @@ export default function ProfileScreen() {
         </View>
       </View>
 
+      {/* Civic Participation */}
+      <View style={styles.section}>
+        <Text style={styles.sectionTitle}>Civic Participation</Text>
+        <View style={styles.card}>
+          <SettingRow
+            icon="school"
+            label="Leadership Academy"
+            onPress={() => router.push('/leadership-academy' as any)}
+            color="#8B5CF6"
+          />
+          <SettingRow
+            icon="rocket"
+            label="Become an Aspirant"
+            onPress={() => router.push('/leadership-academy' as any)}
+            color="#06B6D4"
+          />
+        </View>
+      </View>
+
       {/* Activity */}
       <View style={styles.section}>
         <Text style={styles.sectionTitle}>Activity</Text>
@@ -226,7 +245,7 @@ export default function ProfileScreen() {
               <Pressable
                 key={r.acNo}
                 style={styles.recentRow}
-                onPress={() => router.push(`/constituency/${r.acNo}`)}
+                onPress={() => router.push(`/constituency/${r.acNo}` as any)}
               >
                 <View
                   style={[

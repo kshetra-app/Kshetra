@@ -18,10 +18,14 @@ import SentimentBar from '../../components/SentimentBar';
 import HeadlineCard from '../../components/HeadlineCard';
 import { ISSUE_CATEGORY_CONFIG } from '../../lib/civicTypes';
 import AIDashboardSummary from '../../components/AIDashboardSummary';
+import PromiseCard from '../../components/PromiseCard';
+import GovernmentReportCard from '../../components/GovernmentReportCard';
 import type { IssueCategory, IssueStatus, CivicScope } from '../../lib/civicTypes';
 import { useTranslation } from 'react-i18next';
 import { useActiveStateStore } from '../../stores/activeState';
 import { useMyConstituencyStore } from '../../stores/myConstituency';
+import { usePromiseStore } from '../../stores/promises';
+import { PROMISE_STATUS_CONFIG, type PromiseStatus as PStatus } from '../../lib/promiseTypes';
 import { STATES } from '@kshetra/shared';
 
 const SCOPE_OPTIONS: { key: CivicScope; icon: string; label: string }[] = [
@@ -59,10 +63,11 @@ class DashboardErrorBoundary extends Component<
   }
 }
 
-type DashboardTab = 'issues' | 'sentiment' | 'headlines';
+type DashboardTab = 'issues' | 'sentiment' | 'headlines' | 'promises';
 
 const TAB_KEYS: { key: DashboardTab; tKey: string; icon: string }[] = [
   { key: 'issues', tKey: 'dashboard.tabs.issues', icon: 'alert-circle' },
+  { key: 'promises', tKey: 'dashboard.tabs.promises', icon: 'ribbon' },
   { key: 'sentiment', tKey: 'dashboard.tabs.sentiment', icon: 'pulse' },
   { key: 'headlines', tKey: 'dashboard.tabs.headlines', icon: 'newspaper' },
 ];
@@ -107,6 +112,11 @@ function DashboardContent() {
   const setIssueFilter = useCivicStore((s) => s.setIssueFilter);
   const setStatusFilter = useCivicStore((s) => s.setStatusFilter);
   const getFilteredByScope = useCivicStore((s) => s.getFilteredByScope);
+
+  // Promise store
+  const statePromises = usePromiseStore((s) => s.getPromisesForState)(stateCode);
+  const toggleFollowPromise = usePromiseStore((s) => s.toggleFollowPromise);
+  const getReportCard = usePromiseStore((s) => s.getReportCard);
 
   const constituencyId = myHome ? `${stateCode}-AC-${myHome.acNo}` : undefined;
 
@@ -302,7 +312,45 @@ function DashboardContent() {
                     const text = shareIssue(issue.id);
                     try { await Share.share({ message: text }); } catch (_) {}
                   }}
-                  onPress={() => router.push(`/issue/${issue.id}`)}
+                  onPress={() => router.push(`/issue/${issue.id}` as any)}
+                />
+              ))
+            )}
+          </View>
+        )}
+
+        {activeTab === 'promises' && (
+          <View style={styles.tabContent}>
+            <View style={styles.sectionHeader}>
+              <Ionicons name="ribbon" size={18} color="#F59E0B" />
+              <Text style={styles.sectionTitle}>Promise Tracker</Text>
+            </View>
+
+            {/* Report Card (top party) */}
+            {statePromises.length > 0 && (() => {
+              const topParty = statePromises.reduce((acc, p) => {
+                acc[p.party] = (acc[p.party] ?? 0) + 1;
+                return acc;
+              }, {} as Record<string, number>);
+              const party = Object.entries(topParty).sort((a, b) => b[1] - a[1])[0]?.[0];
+              if (!party) return null;
+              const year = statePromises.find((p) => p.party === party)?.electionYear ?? 2023;
+              const card = getReportCard(stateCode, party, year);
+              return <GovernmentReportCard data={card} />;
+            })()}
+
+            {/* Promise list */}
+            {statePromises.length === 0 ? (
+              <View style={styles.emptyState}>
+                <Ionicons name="ribbon-outline" size={48} color="#1F2937" />
+                <Text style={styles.emptyTitle}>No promises tracked yet</Text>
+              </View>
+            ) : (
+              statePromises.map((promise) => (
+                <PromiseCard
+                  key={promise.id}
+                  promise={promise}
+                  onFollow={() => toggleFollowPromise(promise.id)}
                 />
               ))
             )}

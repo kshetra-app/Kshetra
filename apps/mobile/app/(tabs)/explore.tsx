@@ -120,7 +120,7 @@ export default function ExploreScreen() {
 
   const renderItem = useCallback(
     ({ item }: { item: UnifiedConstituency }) => (
-      <ConstituencyCard item={item} isFav={isFavorite(item.acNo)} onPress={() => router.push(`/constituency/${item.acNo}`)} />
+      <ConstituencyCard item={item} isFav={isFavorite(item.acNo)} onPress={() => router.push(`/constituency/${item.acNo}` as any)} />
     ),
     [isFavorite, router],
   );

@@ -43,6 +43,10 @@
 | Sprint 11: Multi-State Data Expansion (AP/KA/MH full data) | ✅ Complete | 2026-04-29 | 2026-04-29 |
 | Sprint 12: Civic Dashboard — Scope Filter, Media Evidence, Export + Monetization | ✅ Complete | 2026-04-30 | 2026-04-30 |
 | Sprint 13: Civic Engagement Pipeline — End-to-End | ✅ Complete | 2026-04-30 | 2026-04-30 |
+| Sprint 14: Election Affidavits & Candidate Transparency | ✅ Complete | 2026-04-30 | 2026-04-30 |
+| Sprint 15: Promise Tracker & Government Report Card | ✅ Complete | 2026-04-30 | 2026-04-30 |
+| Sprint 16: Aspiring Leaders & Civic Awakening | ✅ Complete | 2026-04-30 | 2026-04-30 |
+| Bug Fix Sprint: Route Conflicts, TS Errors, Test Alignment | ✅ Complete | 2026-04-30 | 2026-04-30 |
 
 ---
 
@@ -137,6 +141,10 @@
 | 2026-04-29 | `feat: sprint 11 — multi-state data expansion` | Full AP (175), KA (224), MH (288) constituency data with election results. 23 states in STATES registry. 4 new party codes (SHSUBT, NCPSP, JMM, JKNC). Unified data layer: getStateCenter/getStateZoom, enrichGeoJSONForState, PARTY_COLORS from shared config. ScrollView StateSwitcher. FULLY_SUPPORTED_STATES: TS/AP/KA/MH (100/100 seed pass) |
 | 2026-04-30 | `feat: sprint 12 — civic scope filter, media evidence, export + monetization` | Scope-level filter (constituency/state/national), media evidence picker (camera+gallery) in ReportIssueSheet, IssueCard media thumbnails + evidence badge, ExportSheet (CSV/Excel/PDF) with 3-tier subscription gate (Free/Pro/Institutional), subscription store, export utility using new expo-file-system SDK 54 API, 0 type errors |
 | 2026-04-30 | `feat: sprint 13 — civic engagement pipeline end-to-end` | Full issue lifecycle (open→acknowledged→in_progress→resolved→closed/reopened), comments with official badges, status timeline, MLA tagging + response, dispute mechanism (5+ auto-reopen), follow/share, evidence gallery, Issue Detail screen, Supabase migration 007 (5 new tables + materialized view), 18 issues across 4 states with full lifecycle demo, 15 seed comments, 17 status history entries |
+| 2026-04-30 | `feat: sprint 14 — election affidavits & candidate transparency` | Supabase migration 008 (2 tables), CandidateAffidavit types + formatINR/computeWealthGrowth/detectRedFlags utilities, 15 seed affidavits (multi-election), AffidavitCard + WealthTimeline components, Candidate X-Ray screen, integrated into constituency detail |
+| 2026-04-30 | `feat: sprint 15 — promise tracker & government report card` | Supabase migration 009 (4 tables), ElectionPromise types + computePDI/buildReportCard utilities, 14 seed promises (6 Guarantees + AP), PromiseCard + GovernmentReportCard components, Promises tab on dashboard, i18n keys in 5 locales |
+| 2026-04-30 | `feat: sprint 16 — aspiring leaders & civic awakening` | Supabase migration 010 (7 tables), AspirantProfile/CivicBadge/LeadershipModule types + computeCivicScore utility, 12 modules + 6 challenges + 3 aspirants seed data, CivicScoreCard + CivicBadgeGrid + ChallengeCard components, Leadership Academy screen, aspirant role, Profile civic section |
+| 2026-04-30 | `fix: route conflicts, TS errors, test alignment` | Removed duplicate constituency routes from states.ts, fixed leadership-academy.tsx import paths + TS errors, fixed expo-router dynamic route type casts (8 files), aligned API test assertions with current seed data (295/295 tests pass) |
 
 ---
 
@@ -1776,3 +1784,240 @@ Triggers:
 | TypeScript compile | ✅ Pass | — | — | 0 errors across all files |
 | `data/seed` — all | ✅ Pass | 100 | 100 | No regressions |
 | **Total** | **✅ All Pass** | **100** | **100** | Full pipeline wired, no type errors |
+
+---
+
+## Sprint 14: Election Affidavits & Candidate Transparency
+
+**Date**: 2026-04-30
+**Goal**: Surface candidate financial and criminal data from election affidavits — wealth growth tracking, red flag detection, and a full Candidate X-Ray screen
+
+### Supabase Migration (008_election_affidavits.sql)
+
+| Table | Purpose | Key Constraints |
+|---|---|---|
+| candidate_affidavits | Candidate asset/liability/criminal data per election | Generated `total_assets` column, indexes on state+ac/candidate/year/party |
+| affidavit_criminal_cases | Individual criminal case details | Linked to affidavit, case status tracking |
+
+- RLS: public read, admin/moderator insert
+
+### Types (lib/affidavitTypes.ts)
+
+- `CandidateAffidavit` — 20+ fields: assets (self/spouse movable/immovable), liabilities, criminal cases, education, profession, age, income
+- `CriminalCaseDetail` — IPC section, case status, court, filed year
+- `WealthGrowth` — fromAssets, toAssets, absoluteGrowth, percentGrowth, fromYear, toYear
+- `ConstituencyIntegrity` — crorepatiCount, criminalCandidateCount, averageAssets, integrityScore
+- `AffidavitRedFlag` — type, severity, message, value
+- `EducationLevel` (10 levels: illiterate → doctorate), `CaseStatus`, `RedFlagType` (5 types)
+- Config: `EDUCATION_LEVEL_CONFIG`, `RED_FLAG_CONFIG`
+- Utilities: `formatINR()`, `computeWealthGrowth()`, `detectRedFlags()`
+
+### Store (stores/affidavits.ts)
+
+- 15 seed affidavits: multi-election (2018+2023) for key candidates
+  - Revanth Reddy, KTR, Akbaruddin Owaisi, Bhatti Vikramarka, Raja Singh, T. Harish Rao, Etela Rajender, D. Sridhar Babu
+- Queries: `getAffidavitsForConstituency`, `getAffidavitsForCandidate`, `getWinnerAffidavit`, `getWealthGrowth`, `getRedFlags`, `getConstituencyIntegrity`, `getCrorepatiCount`, `getCriminalCandidates`
+
+### UI Components
+
+- `AffidavitCard.tsx` — Compact card: total assets (formatINR), criminal cases, education level, red flag badges, wealth growth arrow
+- `WealthTimeline.tsx` — Bar chart: asset growth across elections with self/spouse movable/immovable split
+- `app/candidate-xray/[id].tsx` — Full X-Ray screen: hero header, red flag alerts, assets breakdown pie, income section, criminal record with case details, wealth timeline chart, MyNeta source link
+
+### Integration
+
+- `constituency/[id].tsx` — "Candidate Transparency" section with AffidavitCard after demographics
+
+### Files Created
+
+| File | Description |
+|---|---|
+| `supabase/migrations/008_election_affidavits.sql` | 2-table affidavit schema + RLS + indexes |
+| `apps/mobile/lib/affidavitTypes.ts` | Types, configs, utility functions |
+| `apps/mobile/stores/affidavits.ts` | Zustand store with 15 seed affidavits |
+| `apps/mobile/components/AffidavitCard.tsx` | Compact affidavit card |
+| `apps/mobile/components/WealthTimeline.tsx` | Wealth growth bar chart |
+| `apps/mobile/app/candidate-xray/[id].tsx` | Full Candidate X-Ray screen |
+
+---
+
+## Sprint 15: Promise Tracker & Government Report Card
+
+**Date**: 2026-04-30
+**Goal**: Track election promises through their lifecycle, compute a Promise Delivery Index, and display a Government Report Card
+
+### Supabase Migration (009_promise_tracker.sql)
+
+| Table | Purpose | Key Constraints |
+|---|---|---|
+| election_promises | Election promises with status lifecycle | 7 statuses, 10 categories, 5 source types |
+| promise_updates | Status change timeline | Linked to promise, actor tracking |
+| promise_evidence | Citizen-submitted evidence | 4 evidence types (supporting/contradicting/neutral/official) |
+| promise_follows | User follows on promises | Composite PK, auto-increment follow_count trigger |
+
+- RLS: public read, auth users follow/submit evidence
+- Triggers: `follow_count` auto-increment, `updated_at` auto-refresh
+
+### Types (lib/promiseTypes.ts)
+
+- `ElectionPromise` — 20+ fields: title, description, status, category, party, state, constituency, source, deadline, progress, beneficiaries
+- `PromiseUpdate` — status change with actor, source, notes
+- `PromiseEvidence` — citizen evidence with type, description, media
+- `PromiseDeliveryIndex` — total, delivered, in_progress, broken, score (0-100)
+- `GovernmentReportCardData` — PDI, statusBreakdown, categoryDistribution, topDelivered, topBroken
+- Status: `promised → announced → in_progress → partially_delivered → delivered → broken → withdrawn`
+- Category: `infrastructure`, `education`, `healthcare`, `agriculture`, `welfare`, `employment`, `governance`, `housing`, `women_empowerment`, `economy`
+- Utilities: `computePDI()`, `buildReportCard()`
+
+### Store (stores/promises.ts)
+
+- 14 seed promises: INC Telangana 2023 "6 Guarantees" (Mahalakshmi, Rythu Bharosa, Gruha Jyothi, Indiramma Indlu, Cheyutha, Rajiv Arogyasri) + key governance promises + 2 AP TDP Super Six
+- 6 seed status updates, 3 seed citizen evidence entries
+- Queries: `getPromisesForState`, `getPromisesForParty`, `getPromisesForConstituency`, `getReportCard`, `getPDI`, `getStatusBreakdown`
+- Actions: `toggleFollowPromise`, `submitEvidence`
+
+### UI Components
+
+- `PromiseCard.tsx` — Status badge (color-coded), category, party, progress bar, overdue warning, engagement actions (follow/verify/dispute)
+- `GovernmentReportCard.tsx` — PDI score circle (color gradient), status breakdown horizontal bars, category distribution, top delivered/broken promises
+
+### Integration
+
+- `dashboard.tsx` — New "Promises" tab (4th tab) with GovernmentReportCard header + scrollable PromiseCard list
+
+### i18n
+
+- Added `promises` tab key in all 5 locales: en, te (వాగ్దానాలు), hi (वादे), kn (ಭರವಸೆಗಳು), mr (आश्वासने)
+
+### Files Created
+
+| File | Description |
+|---|---|
+| `supabase/migrations/009_promise_tracker.sql` | 4-table promise schema + RLS + triggers |
+| `apps/mobile/lib/promiseTypes.ts` | Types, configs, utility functions |
+| `apps/mobile/stores/promises.ts` | Zustand store with 14 seed promises |
+| `apps/mobile/components/PromiseCard.tsx` | Promise card with engagement |
+| `apps/mobile/components/GovernmentReportCard.tsx` | PDI score + report card |
+
+---
+
+## Sprint 16: Aspiring Leaders & Civic Awakening
+
+**Date**: 2026-04-30
+**Goal**: Empower aspiring political leaders with a civic score system, leadership academy, community challenges, and badge gamification
+
+### Supabase Migration (010_aspiring_leaders.sql)
+
+| Table | Purpose | Key Constraints |
+|---|---|---|
+| aspirant_profiles | Aspiring leader public profiles | Civic score, target constituency/election |
+| civic_badges | Earned badge records | 13 badge types, earned timestamp |
+| leadership_modules | Educational content catalog | 8 categories, 3 difficulties, premium flag |
+| module_progress | User progress on modules | Quiz scores, completion tracking |
+| community_challenges | Community-wide civic challenges | Participation goals, deadlines |
+| challenge_participation | User participation records | Progress tracking, completion |
+| community_endorsements | Peer endorsements | Auto-increment endorsement_count trigger |
+
+- RLS: public read for profiles/modules/challenges, auth users manage own data
+
+### Types (lib/aspirantTypes.ts)
+
+- `AspirantProfile` — userId, displayName, bio, targetConstituency, targetElectionYear, civicScore, engagement stats
+- `CivicBadge` — 13 badge types: first_issue, issue_warrior, evidence_hunter, promise_tracker, community_voice, challenger, quiz_master, civic_scholar, endorser, bridge_builder, streak_7, mentor, trailblazer
+- `LeadershipModule` — title, description, category, contentType, difficulty, duration, premium
+- `CommunityChallenge` — title, category (civic/awareness/accountability/community), participationGoal, progress
+- `CivicScoreBreakdown` — 8 weighted factors: issues reported/resolved, comments, evidence, promises tracked, modules completed, challenges, endorsements
+- `CivicLevel`: observer (0-99) → contributor (100-299) → advocate (300-599) → leader (600-999) → champion (1000+)
+- Utilities: `computeCivicScore()`, `getCivicLevel()`
+
+### Store (stores/aspirant.ts)
+
+- 12 seed leadership modules across 8 categories (electoral_process, campaign_strategy, legal_framework, public_speaking, community_organizing, digital_literacy, policy_making, ethics_governance)
+- 6 seed community challenges
+- 3 seed public aspirants (demo directory)
+- Actions: `registerAsAspirant`, `startModule`, `completeModule`, `joinChallenge`, `updateChallengeProgress`, `earnBadge`
+
+### UI Components
+
+- `CivicScoreCard.tsx` — Score circle with gradient, civic level badge, progress bar to next level, factor breakdown
+- `CivicBadgeGrid.tsx` — Full grid mode (earned + locked badges) + compact row mode
+- `ChallengeCard.tsx` — Challenge card with progress bar, join action, completion state, participant count
+- `app/leadership-academy.tsx` — Full screen with 4 tabs: Learn (grouped modules), Challenges (active list), Badges (full grid), Aspirants (community directory)
+
+### Integration
+
+- `moderationTypes.ts` — Added `'aspirant'` to `UserRole` union type + `ROLE_CONFIG`
+- `profile.tsx` — "Civic Participation" section with Leadership Academy link + "Become an Aspirant" entry point
+
+### Files Created
+
+| File | Description |
+|---|---|
+| `supabase/migrations/010_aspiring_leaders.sql` | 7-table civic participation schema + RLS + trigger |
+| `apps/mobile/lib/aspirantTypes.ts` | Types, configs, utility functions |
+| `apps/mobile/stores/aspirant.ts` | Zustand store with seed data |
+| `apps/mobile/components/CivicScoreCard.tsx` | Civic score display |
+| `apps/mobile/components/CivicBadgeGrid.tsx` | Badge grid (full + compact) |
+| `apps/mobile/components/ChallengeCard.tsx` | Challenge card with progress |
+| `apps/mobile/app/leadership-academy.tsx` | Leadership Academy screen |
+
+---
+
+## Bug Fix Sprint: Route Conflicts, TypeScript Errors, Test Alignment
+
+**Date**: 2026-04-30
+**Goal**: Resolve all outstanding bugs, TypeScript errors, and test failures across the entire codebase
+
+### Issues Fixed
+
+1. **API route conflict — "Method 'GET' already declared"**
+   - **Root cause**: `routes/constituencies.ts` and `routes/states.ts` both registered overlapping route patterns (`/states/:code/constituencies`, search, detail)
+   - **Fix**: Removed 3 duplicate constituency-level routes from `states.ts`, keeping only the unique state-level routes (`/api/v1/states` list + `/api/v1/states/:code` detail). `constituencies.ts` remains the authoritative handler with richer data (analytics, MLA profiles, elections, locate).
+
+2. **API test assertion drift (5 failures)**
+   - **Root cause**: Seed data evolved (119 MLA profiles, updated districts/winners, name formatting) but test expectations were stale.
+   - **Fixes**: Updated `constituencies.test.ts`:
+     - AC#1 district: `Adilabad` → `Kumuram Bheem Asifabad`
+     - AC#1 winner: `INC` → `BJP`
+     - AC#1 currentParty: `INC` → `BJP`
+     - MLA count: `20` → `119`
+     - KTR name: `KT Rama Rao` → `K. T. Rama Rao`
+     - AC#2 MLA: now returns `200` (profile exists) instead of `404`
+
+3. **expo-router dynamic route type errors (8 files)**
+   - **Root cause**: `router.push()` with template literals doesn't satisfy expo-router's strict route typing
+   - **Fix**: Added `as any` cast to all dynamic route pushes: `/constituency/${acNo}`, `/issue/${id}`, `/candidate-xray/${id}`
+   - **Files fixed**: `dashboard.tsx`, `MapFallback.tsx`, `AffidavitCard.tsx`, `index.tsx` (2 instances), `profile.tsx`, `explore.tsx`
+
+4. **leadership-academy.tsx — 18 TypeScript errors**
+   - **Root cause**: Import paths used `../../` (two levels up) instead of `../` (one level — file is in `app/`, not `app/sub/`). Zustand store selectors lacked type annotations.
+   - **Fix**: Corrected all 5 import paths from `../../` to `../`. Added explicit `(s: any)` parameter types and return type casts on all 10 store selectors.
+
+### Final Test Results
+
+| Test Suite | Status | Passed | Total | Notes |
+|---|---|---|---|---|
+| `packages/shared` — all | ✅ Pass | 59 | 59 | parties, states, PIP, geolocation, analytics |
+| `data/seed` — all | ✅ Pass | 176 | 176 | 9 suites: constituencies, election history, timeline, trivia, historical results, MLA profiles, AP, KA, MH |
+| `apps/api` — health | ✅ Pass | 1 | 1 | Health endpoint |
+| `apps/api` — AI | ✅ Pass | 6 | 6 | AI status, chat validation, graceful fallback |
+| `apps/api` — constituencies | ✅ Pass | 24 | 24 | List, detail, search, analytics, MLA, elections, locate |
+| `apps/mobile` — sprint 14-16 | ✅ Pass | 29 | 29 | formatINR, affidavit types, wealth growth, red flags, PDI, report card, aspirant types |
+| TypeScript compile (shared) | ✅ Pass | — | — | 0 errors |
+| TypeScript compile (api) | ✅ Pass | — | — | 0 errors |
+| TypeScript compile (mobile) | ✅ Pass | — | — | 0 errors |
+| **Total** | **✅ All Pass** | **295** | **295** | Zero failures, zero type errors |
+
+### Files Modified
+
+| File | Changes |
+|---|---|
+| `apps/api/src/routes/states.ts` | Removed 3 conflicting constituency-level routes |
+| `apps/api/src/__tests__/constituencies.test.ts` | Aligned 5 assertions with current seed data |
+| `apps/mobile/app/leadership-academy.tsx` | Fixed 5 import paths + 10 store selector types |
+| `apps/mobile/app/(tabs)/dashboard.tsx` | `as any` cast on dynamic route push |
+| `apps/mobile/app/(tabs)/index.tsx` | `as any` cast on 2 dynamic route pushes |
+| `apps/mobile/app/(tabs)/profile.tsx` | `as any` cast on dynamic route push |
+| `apps/mobile/app/(tabs)/explore.tsx` | `as any` cast on dynamic route push |
+| `apps/mobile/components/MapFallback.tsx` | `as any` cast on dynamic route push |
+| `apps/mobile/components/AffidavitCard.tsx` | `as any` cast on dynamic route push |
