@@ -1,20 +1,46 @@
-// Minimal entry point — bypass expo-router to diagnose native crash
-import { AppRegistry, View, Text, StyleSheet } from 'react-native';
+// Custom entry point — wraps expo-router with crash diagnostics
+import { AppRegistry, View, Text, ScrollView, StyleSheet } from 'react-native';
 
-function MinimalApp() {
-  return (
-    <View style={styles.container}>
-      <Text style={styles.title}>Kshetra</Text>
-      <Text style={styles.body}>If you can see this, the native layer works!</Text>
-      <Text style={styles.body}>The crash is in expo-router or app imports.</Text>
-    </View>
-  );
+let _bootError = null;
+
+try {
+  // This is exactly what expo-router/entry-classic does:
+  require('@expo/metro-runtime');
+} catch (e) {
+  _bootError = { phase: 'metro-runtime', error: e };
 }
 
-const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#0A0A1A', justifyContent: 'center', alignItems: 'center', padding: 20 },
-  title: { fontSize: 28, fontWeight: '800', color: '#FFFFFF', marginBottom: 16 },
-  body: { fontSize: 16, color: '#9CA3AF', textAlign: 'center', lineHeight: 24 },
-});
+if (!_bootError) {
+  try {
+    const { App } = require('expo-router/build/qualified-entry');
+    const { renderRootComponent } = require('expo-router/build/renderRootComponent');
+    renderRootComponent(App);
+  } catch (e) {
+    _bootError = { phase: 'expo-router-init', error: e };
+  }
+}
 
-AppRegistry.registerComponent('main', () => MinimalApp);
+if (_bootError) {
+  function CrashApp() {
+    const err = _bootError.error;
+    return (
+      <View style={cs.container}>
+        <Text style={cs.title}>Crash in: {_bootError.phase}</Text>
+        <ScrollView style={cs.scroll}>
+          <Text style={cs.error} selectable>
+            {err?.message || String(err)}
+            {'\n\n'}
+            {err?.stack || '(no stack)'}
+          </Text>
+        </ScrollView>
+      </View>
+    );
+  }
+  const cs = StyleSheet.create({
+    container: { flex: 1, backgroundColor: '#0A0A1A', paddingTop: 60, paddingHorizontal: 16 },
+    title: { fontSize: 20, fontWeight: '800', color: '#EF4444', marginBottom: 16 },
+    scroll: { flex: 1, backgroundColor: '#111827', borderRadius: 12, padding: 12 },
+    error: { fontSize: 12, color: '#F87171', fontFamily: 'monospace', lineHeight: 18 },
+  });
+  AppRegistry.registerComponent('main', () => CrashApp);
+}
