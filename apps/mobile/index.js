@@ -4,20 +4,15 @@ import { AppRegistry, View, Text, ScrollView, StyleSheet } from 'react-native';
 let _bootError = null;
 
 try {
-  // This is exactly what expo-router/entry-classic does:
-  require('@expo/metro-runtime');
-} catch (e) {
-  _bootError = { phase: 'metro-runtime', error: e };
-}
+  // Skip @expo/metro-runtime — it's dev-only (Fast Refresh on web)
+  // and gets stripped from preview/production builds.
+  try { require('@expo/metro-runtime'); } catch (_) { /* expected in non-dev builds */ }
 
-if (!_bootError) {
-  try {
-    const { App } = require('expo-router/build/qualified-entry');
-    const { renderRootComponent } = require('expo-router/build/renderRootComponent');
-    renderRootComponent(App);
-  } catch (e) {
-    _bootError = { phase: 'expo-router-init', error: e };
-  }
+  const { App } = require('expo-router/build/qualified-entry');
+  const { renderRootComponent } = require('expo-router/build/renderRootComponent');
+  renderRootComponent(App);
+} catch (e) {
+  _bootError = { phase: 'expo-router-init', error: e };
 }
 
 if (_bootError) {
