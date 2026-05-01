@@ -3,11 +3,11 @@ module.exports = function (api) {
   return {
     presets: ['babel-preset-expo'],
     plugins: [
+      './babel-plugin-expo-router-root',
       [
         'transform-inline-environment-variables',
         {
           include: [
-            'EXPO_ROUTER_APP_ROOT',
             'EXPO_ROUTER_IMPORT_MODE',
           ],
         },
