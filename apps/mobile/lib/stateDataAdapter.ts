@@ -14,6 +14,14 @@ import {
   type KAConstituencySeed,
   MH_CONSTITUENCIES,
   type MHConstituencySeed,
+  TN_CONSTITUENCIES,
+  type TNConstituencySeed,
+  KL_CONSTITUENCIES,
+  type KLConstituencySeed,
+  WB_CONSTITUENCIES,
+  type WBConstituencySeed,
+  UP_CONSTITUENCIES,
+  type UPConstituencySeed,
 } from './data';
 
 // ─── Unified Constituency ─────────────────────────────────────────────────
@@ -37,7 +45,7 @@ export interface UnifiedConstituency {
   electionYear: number;
 }
 
-/** Normalize all 4 states' seed data into UnifiedConstituency[] */
+/** Normalize all 8 states' seed data into UnifiedConstituency[] */
 export function getUnifiedConstituenciesForState(stateCode: string): UnifiedConstituency[] {
   switch (stateCode.toUpperCase()) {
     case 'TS':
@@ -99,6 +107,66 @@ export function getUnifiedConstituenciesForState(stateCode: string): UnifiedCons
         margin: c.margin2024,
         currentParty: c.currentParty ?? c.winner2024,
         electionYear: 2024,
+      }));
+    case 'TN':
+      return TN_CONSTITUENCIES.map((c) => ({
+        acNo: c.acNo,
+        name: c.name,
+        district: c.district,
+        type: c.type,
+        stateCode: 'TN',
+        winnerParty: c.winner2021,
+        winnerName: c.winnerName2021,
+        winnerVotes: c.winnerVotes2021,
+        runnerUp: c.runnerUp2021,
+        margin: c.margin2021,
+        currentParty: c.currentParty ?? c.winner2021,
+        electionYear: 2021,
+      }));
+    case 'KL':
+      return KL_CONSTITUENCIES.map((c) => ({
+        acNo: c.acNo,
+        name: c.name,
+        district: c.district,
+        type: c.type,
+        stateCode: 'KL',
+        winnerParty: c.winner2021,
+        winnerName: c.winnerName2021,
+        winnerVotes: c.winnerVotes2021,
+        runnerUp: c.runnerUp2021,
+        margin: c.margin2021,
+        currentParty: c.currentParty ?? c.winner2021,
+        electionYear: 2021,
+      }));
+    case 'WB':
+      return WB_CONSTITUENCIES.map((c) => ({
+        acNo: c.acNo,
+        name: c.name,
+        district: c.district,
+        type: c.type,
+        stateCode: 'WB',
+        winnerParty: c.winner2021,
+        winnerName: c.winnerName2021,
+        winnerVotes: c.winnerVotes2021,
+        runnerUp: c.runnerUp2021,
+        margin: c.margin2021,
+        currentParty: c.currentParty ?? c.winner2021,
+        electionYear: 2021,
+      }));
+    case 'UP':
+      return UP_CONSTITUENCIES.map((c) => ({
+        acNo: c.acNo,
+        name: c.name,
+        district: c.district,
+        type: c.type,
+        stateCode: 'UP',
+        winnerParty: c.winner2022,
+        winnerName: c.winnerName2022,
+        winnerVotes: c.winnerVotes2022,
+        runnerUp: c.runnerUp2022,
+        margin: c.margin2022,
+        currentParty: c.currentParty ?? c.winner2022,
+        electionYear: 2022,
       }));
     default:
       return [];
@@ -163,6 +231,62 @@ function mhAdapter(c: MHConstituencySeed): ConstituencyBrief {
   };
 }
 
+/** Adapt TN seed → ConstituencyBrief */
+function tnAdapter(c: TNConstituencySeed): ConstituencyBrief {
+  return {
+    id: `TN-AC-${c.acNo}`,
+    name: c.name,
+    acNo: c.acNo,
+    stateCode: 'TN',
+    district: c.district,
+    reservationStatus: c.type,
+    currentParty: c.winner2021,
+    currentMLA: c.winnerName2021,
+  };
+}
+
+/** Adapt KL seed → ConstituencyBrief */
+function klAdapter(c: KLConstituencySeed): ConstituencyBrief {
+  return {
+    id: `KL-AC-${c.acNo}`,
+    name: c.name,
+    acNo: c.acNo,
+    stateCode: 'KL',
+    district: c.district,
+    reservationStatus: c.type,
+    currentParty: c.winner2021,
+    currentMLA: c.winnerName2021,
+  };
+}
+
+/** Adapt WB seed → ConstituencyBrief */
+function wbAdapter(c: WBConstituencySeed): ConstituencyBrief {
+  return {
+    id: `WB-AC-${c.acNo}`,
+    name: c.name,
+    acNo: c.acNo,
+    stateCode: 'WB',
+    district: c.district,
+    reservationStatus: c.type,
+    currentParty: c.winner2021,
+    currentMLA: c.winnerName2021,
+  };
+}
+
+/** Adapt UP seed → ConstituencyBrief */
+function upAdapter(c: UPConstituencySeed): ConstituencyBrief {
+  return {
+    id: `UP-AC-${c.acNo}`,
+    name: c.name,
+    acNo: c.acNo,
+    stateCode: 'UP',
+    district: c.district,
+    reservationStatus: c.type,
+    currentParty: c.winner2022,
+    currentMLA: c.winnerName2022,
+  };
+}
+
 /** Get all constituencies for a given state code as ConstituencyBrief[] */
 export function getConstituenciesForState(stateCode: string): ConstituencyBrief[] {
   switch (stateCode.toUpperCase()) {
@@ -174,6 +298,14 @@ export function getConstituenciesForState(stateCode: string): ConstituencyBrief[
       return KA_CONSTITUENCIES.map(kaAdapter);
     case 'MH':
       return MH_CONSTITUENCIES.map(mhAdapter);
+    case 'TN':
+      return TN_CONSTITUENCIES.map(tnAdapter);
+    case 'KL':
+      return KL_CONSTITUENCIES.map(klAdapter);
+    case 'WB':
+      return WB_CONSTITUENCIES.map(wbAdapter);
+    case 'UP':
+      return UP_CONSTITUENCIES.map(upAdapter);
     default:
       return [];
   }
@@ -192,6 +324,10 @@ export function getLoadedConstituencyCount(stateCode: string): number {
     case 'AP': return AP_CONSTITUENCIES.length;
     case 'KA': return KA_CONSTITUENCIES.length;
     case 'MH': return MH_CONSTITUENCIES.length;
+    case 'TN': return TN_CONSTITUENCIES.length;
+    case 'KL': return KL_CONSTITUENCIES.length;
+    case 'WB': return WB_CONSTITUENCIES.length;
+    case 'UP': return UP_CONSTITUENCIES.length;
     default: return 0;
   }
 }
@@ -203,6 +339,10 @@ export function hasFullData(stateCode: string): boolean {
     case 'AP': return true;   // 175/175
     case 'KA': return true;   // 224/224
     case 'MH': return true;   // 288/288
+    case 'TN': return true;   // 234/234
+    case 'KL': return true;   // 140/140
+    case 'WB': return true;   // 293/294
+    case 'UP': return true;   // 401/403
     default: return false;
   }
 }

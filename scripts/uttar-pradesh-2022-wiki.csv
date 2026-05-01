@@ -1,0 +1,402 @@
+ac_no,constituency,district,type,winner_name,winner_party,winner_votes,margin,runner_name,runner_party
+1,Behat,Saharanpur,GEN,Umar Ali Khan,SP,134513,37880,Naresh Saini,BJP
+2,Nakur,Saharanpur,GEN,Mukesh Choudhary,BJP,104114,315,Dharam Singh Saini,SP
+3,Saharanpur Nagar,Saharanpur,GEN,Rajiv Gumber,BJP,143195,7434,Sanjay Garg,SP
+4,Saharanpur,Saharanpur,GEN,Ashu Malik,SP,107007,30745,Jagpal Singh,BJP
+5,Deoband,Saharanpur,GEN,Th. Brijesh Singh,BJP,93890,7104,Kartikeya Rana,SP
+6,Rampur Maniharan,Saharanpur,SC,Devendra Kumar Nim,BJP,89109,20593,Ravinder Kumar Molhu,BSP
+7,Gangoh,Saharanpur,GEN,Kirat Singh,BJP,116582,23449,Inder Sain,SP
+8,Kairana,Shamli,GEN,Nahid Hasan,SP,131035,25887,Mriganka Singh,BJP
+9,Thana Bhawan,Shamli,GEN,Ashraf Ali Khan,RLD,103751,10806,Suresh Rana,BJP
+10,Shamli,Shamli,GEN,Persann Kumar Chaudhary,RLD,103070,7107,Tejendra Nirwal,BJP
+11,Budhana,Muzaffarnagar,GEN,Rajpal Singh Baliyan,RLD,131093,28310,Umesh Malik,BJP
+12,Charthawal,Muzaffarnagar,GEN,Pankaj Kumar Malik,SP,97363,5334,Sapna Kashyap,BJP
+13,Purqazi,Muzaffarnagar,SC,Anil Kumar,RLD,92672,6532,Pramod Utwal,BJP
+14,Muzaffarnagar,Muzaffarnagar,GEN,Kapil Dev Aggarwal,BJP,111794,18694,Saurabh Swaroop,RLD
+15,Khatauli,Muzaffarnagar,GEN,Vikram Singh Saini,BJP,100651,16345,Rajpal Singh Saini,RLD
+16,Meerapur,Muzaffarnagar,GEN,Chandan Chauhan,RLD,107421,27380,Prashant Chaudhary,BJP
+17,Najibabad,Bijnor,GEN,Tasleem Ahmad,SP,102675,23770,Kunwar Bharatendu Singh,BJP
+18,Nagina,Bijnor,SC,Manoj Kumar Paras,SP,97155,26451,Dr. Yashwant,BJP
+19,Barhapur,Bijnor,GEN,Kunwar Sushant Singh,BJP,100100,14345,Kapil Kumar,SP
+20,Dhampur,Bijnor,GEN,Ashok Kumar Rana,BJP,81791,203,Naeemul Hasan,SP
+21,Nehtaur,Bijnor,SC,Om Kumar,BJP,77935,258,Munshi Ram,RLD
+22,Bijnor,Bijnor,GEN,Suchi Chaudhary,BJP,97165,1445,Neeraj Chaudhary,RLD
+23,Chandpur,Bijnor,GEN,Swami Omvesh,SP,90522,234,Kamlesh Saini,BJP
+24,Noorpur,Bijnor,GEN,Ram Avatar Singh,SP,92574,6065,Chandra Prakash Singh,BJP
+25,Kanth,Moradabad,GEN,Kamal Akhtar,SP,134692,43178,Rajesh Kumar Singh,BJP
+26,Thakurdwara,Moradabad,GEN,Nawab Jan,SP,134391,19684,Ajay Pratap Singh,BJP
+27,Moradabad Rural,Moradabad,GEN,Mohd Nasir Qureshi,SP,114337,27820,Krishnakant Mishra,BJP
+28,Moradabad Nagar,Moradabad,GEN,Ritesh Kumar Gupta,BJP,148384,782,Mohd Yusuf Ansari,SP
+29,Kundarki,Moradabad,GEN,Zia ur Rahman Barq,SP,125792,43162,Kamal Prajapati,BJP
+30,Bilari,Moradabad,GEN,Mohammed Faeem,SP,95338,7610,Parmeshwar Lal Saini,BJP
+31,Chandausi,Sambhal,SC,Gulabo Devi,BJP,112890,35367,Vimlesh Kumar,SP
+32,Asmoli,Sambhal,GEN,Pinki Singh Yadav,SP,111652,25206,Harendra Kumar,BJP
+33,Sambhal,Sambhal,GEN,Iqbal Mehmood,SP,107073,41697,Rajesh Singhal,BJP
+34,Suar,Rampur,GEN,Abdullah Azam Khan,SP,126162,61103,AD(S),AD(S)
+35,Chamraua,Rampur,GEN,Naseer Ahmad Khan,SP,100976,34290,Mohan Kumar Lodhi,BJP
+36,Bilaspur,Rampur,GEN,Baldev Singh Aulakh,BJP,101998,307,Amarjit Singh,SP
+37,Rampur,Rampur,GEN,Azam Khan,SP,131225,55141,Akash Saxena,BJP
+38,Milak,Rampur,SC,Rajbala,BJP,97948,5912,Vijay Singh,SP
+39,Dhanaura,Amroha,SC,Rajeev Tarara,BJP,103054,11425,Vivek Singh,SP
+40,Naugawan Sadat,Amroha,GEN,Samarpal Singh,SP,108497,6540,Devender Nagpal,BJP
+41,Amroha,Amroha,GEN,Mehboob Ali,SP,128735,71036,Ram Singh,BJP
+42,Hasanpur,Amroha,GEN,Mahender Singh Khadakvanshi,BJP,120135,22382,Mukhya Gurjar,SP
+43,Siwalkhas,Meerut,GEN,Ghulam Mohammed,RLD,101749,9182,Maninder Pal,BJP
+44,Sardhana,Meerut,GEN,Atul Pradhan,SP,118573,18200,Sangeet Som,BJP
+45,Hastinapur,Meerut,SC,Dinesh Khatik,BJP,107587,7312,Yogesh Verma,SP
+46,Kithore,Meerut,GEN,Shahid Manzoor,SP,107104,2180,Satyavir Tyagi,BJP
+47,Meerut Cantt,Meerut,GEN,Amit Agrawal,BJP,162032,118072,Manisha Ahlawat,RLD
+48,Meerut,Meerut,GEN,Rafiq Ansari,SP,106395,26065,Kamal Dutt Sharma,BJP
+49,Meerut South,Meerut,GEN,Somendra Tomar,BJP,129667,7942,Md Adil,SP
+50,Chhaprauli,Baghpat,GEN,Ajay Kumar,RLD,111880,29508,Sahender Singh,BJP
+51,Baraut,Baghpat,GEN,Krishnapal Malik,BJP,90931,315,Chaudhary Jaiveer Singh Tomar,RLD
+52,Baghpat,Baghpat,GEN,Chaudhary Yogesh Dhama,BJP,101420,6733,Mohd Ahmed Hameed,RLD
+53,Loni,Ghaziabad,GEN,Nand Kishor Gurjar,BJP,127410,8676,Madan Bhaiya,RLD
+54,Muradnagar,Ghaziabad,GEN,Ajit Pal Tyagi,BJP,169290,97095,Surendra Kumar,RLD
+55,Sahibabad,Ghaziabad,GEN,Sunil Kumar Sharma,BJP,322882,214835,Amarpal Sharma,SP
+56,Ghaziabad,Ghaziabad,GEN,Atul Garg,BJP,150205,105537,Vishal Verma,SP
+57,Modinagar,Ghaziabad,GEN,Manju Shiwach,BJP,113349,34619,Sudesh Sharma,RLD
+58,Dhaulana,Hapur,GEN,Dharmesh Singh Tomar,BJP,125028,12628,Aslam Ali,SP
+59,Hapur,Hapur,SC,Vijay Pal Aadthi,BJP,97862,7034,Gajraj Singh,RLD
+60,Garhmukteshwar,Hapur,GEN,Harendra Singh Tewatia,BJP,104113,26306,Ravindra Chaudhary,SP
+61,Noida,Gautam Buddha Nagar,GEN,Pankaj Singh,BJP,244319,181513,Sunil Choudhary,SP
+62,Dadri,Gautam Buddha Nagar,GEN,Tejpal Singh Nagar,BJP,218068,138218,Rajkumar Bhati,SP
+63,Jewar,Gautam Buddha Nagar,GEN,Dhirendra Singh,BJP,117205,56315,Avtar Singh Bhadana,RLD
+64,Sikandrabad,Bulandshahr,GEN,Lakshmi Raj Singh,BJP,125644,29343,Rahul Yadav,SP
+65,Bulandshahr,Bulandshahr,GEN,Pradeep Kumar Chaudhary,BJP,127026,25600,Haji Yunus,RLD
+66,Syana,Bulandshahr,GEN,Devendra Singh Lodhi,BJP,149125,89657,Dilnawaj Khan,RLD
+67,Anupshahr,Bulandshahr,GEN,Sanjay Kumar Sharma,BJP,125602,77623,Rameshwar Lodhi,BSP
+68,Debai,Bulandshahr,GEN,Chandrapal Singh,BJP,128640,68025,Harish Kumar,SP
+69,Shikarpur,Bulandshahr,GEN,Anil Sharma,BJP,113855,55683,Kiran Pal Singh,RLD
+70,Khurja,Bulandshahr,SC,Meenakshi Singh,BJP,137461,67084,Banshi Singh,SP
+71,Khair,Aligarh,SC,Anoop Pradhan,BJP,139643,74341,Charu Kain,BSP
+72,Barauli,Aligarh,GEN,Thakur Jaivir Singh,BJP,147984,90645,Narendra Kumar Sharma,BSP
+73,Atrauli,Aligarh,GEN,Sandeep Kumar Singh,BJP,125691,39324,Viresh Yadav,SP
+74,Chharra,Aligarh,GEN,Ravendra Pal Singh,BJP,110928,24327,Laxmi Dhangar,SP
+75,Koil,Aligarh,GEN,Anil Parashar,BJP,108067,5028,Shaaz Ishaaq,SP
+76,Aligarh,Aligarh,GEN,Mukta Raja,BJP,120389,12786,Zafar Alam,SP
+77,Iglas,Aligarh,SC,Rajkumar Sahyogi,BJP,127209,59163,Birpal Diwakar,RLD
+78,Hathras,Hathras,SC,Anjula Singh Mahaur,BJP,154655,100856,Sanjeev Kumar,BSP
+79,Sadabad,Hathras,GEN,Pradeep Kumar Singh,RLD,104874,6437,Ramveer Upadhyay,BJP
+80,Sikandra Rao,Hathras,GEN,Birendra Singh Rana,BJP,98094,8104,Lalit Pratap Baghel,SP
+81,Chhata,Mathura,GEN,Chaudhary Laxmi Narayan Singh,BJP,124414,48948,Tejpal Singh,RLD
+82,Mant,Mathura,GEN,Rajesh Chaudhary,BJP,83958,9580,Shyam Sundar Sharma,BSP
+83,Goverdhan,Mathura,GEN,Karinda Singh,BJP,100199,42507,Rajkumar Rawat,BSP
+84,Mathura,Mathura,GEN,Shrikant Sharma,BJP,158859,109803,Pradeep Mathur,INC
+85,Baldev,Mathura,SC,Pooran Prakash,BJP,108414,25255,Babita Devi,RLD
+86,Etmadpur,Agra,GEN,Dharampal Singh,BJP,146603,47924,Praval Pratap Singh,BSP
+87,Agra Cantonment,Agra,SC,G S Dharmesh,BJP,117796,48697,Kunwar  Chand,SP
+88,Agra South,Agra,GEN,Yogendra Upadhyaya,BJP,109262,56640,Vinay Agarwal,SP
+89,Agra North,Agra,GEN,Purushottam Khandelwal,BJP,153817,112370,Shabbir Abbas,BSP
+90,Agra Rural,Agra,SC,Baby Rani Maurya,BJP,137310,76608,Kiran Prabha Keshari,BSP
+91,Fatehpur Sikri,Agra,GEN,Babulal Chaudhary,BJP,112095,47269,Brijesh Chahar,RLD
+92,Kheragarh,Agra,GEN,Bhagwan Singh Kushwaha,BJP,96574,36497,Ramnath Shikarwar,INC
+93,Fatehabad,Agra,GEN,Chotelal Verma,BJP,108811,53235,Rupali Dixit,SP
+94,Bah,Agra,GEN,Rani Pakshalika Singh,BJP,78360,24235,Madhusudan Sharma,SP
+95,Tundla,Firozabad,SC,Prempal Singh Dhangar,BJP,122881,47691,Rakesh Babu,SP
+96,Jasrana,Firozabad,GEN,Sachin Yadav,SP,108289,836,Manvendra Lodhi,BJP
+97,Firozabad,Firozabad,GEN,Manish Asiza,BJP,112509,32955,Saifur Rehman,SP
+98,Shikohabad,Firozabad,GEN,Mukesh Verma,SP,106279,9328,Omprakash Verma,BJP
+99,Sirsaganj,Firozabad,GEN,Sarvesh Singh Yadav,SP,96224,8805,Hariom Yadav,BJP
+100,Kasganj,Kasganj,GEN,Devendra Singh,BJP,123410,46265,Man Pal Singh,SP
+101,Amanpur,Kasganj,GEN,Hariom Verma,BJP,96377,43329,Satybhan Shakya,SP
+102,Patiyali,Kasganj,GEN,Nadira Sultan,SP,91545,4001,Mamtesh Shakya,BJP
+103,Aliganj,Etah,GEN,Satyapal Singh Rathore,BJP,102873,3810,Rameshwar Singh Yadav,SP
+104,Etah,Etah,GEN,Vipin Kumar David,BJP,97539,17247,Jugendra Singh Yadav,SP
+105,Marhara,Etah,GEN,Virendra Singh Lodhi,BJP,101387,17609,Amit Gaurav,SP
+106,Jalesar,Etah,GEN,Sanjeev Kumar Diwakar,BJP,91339,4441,Ranjeet Suman,SP
+107,Mainpuri,Mainpuri,GEN,Jaiveer Singh,BJP,99814,6766,Raj Kumar,SP
+108,Bhongaon,Mainpuri,GEN,Ram Naresh Agnihotri,BJP,97208,4767,Alok Shakya,SP
+109,Kishni,Mainpuri,SC,Brajesh Katheriya,SP,97070,19151,Priya Ranjan Ashu Diwakar,BJP
+110,Karhal,Mainpuri,GEN,Akhilesh Yadav,SP,148196,67504,S.P. Singh Baghel,BJP
+111,Gunnaur,Sambhal,GEN,Ramkhiladi Singh Yadav,SP,123969,29529,Ajeet Kumar Yadav,BJP
+112,Bisauli,Budaun,SC,Ashutosh Maurya,SP,110569,1834,Kushagra Sagar,BJP
+113,Sahaswan,Budaun,GEN,Brajesh Yadav,SP,83673,13945,Haji Vittan Musarrat,BSP
+114,Bilsi,Budaun,GEN,Harish Chandra Shakya,BJP,93500,25115,Chandra Prakash Maurya,SP
+115,Badaun,Budaun,GEN,Mahesh Chandra Gupta,BJP,101096,11179,Raish Ahmed,SP
+116,Shekhupur,Budaun,GEN,Himanshu Yadav,SP,105531,6100,Dharmendra Shakya,BJP
+117,Dataganj,Budaun,GEN,Rajeev Kumar Singh,BJP,107591,9476,Arjun Singh,SP
+118,Baheri,Bareilly,GEN,Ataur Rehman,SP,124145,3355,Chhatrapal Singh Gangwar,BJP
+119,Meerganj,Bareilly,GEN,DC Verma,BJP,116435,32840,Sultan Baig,SP
+120,Bhojipura,Bareilly,GEN,Shazil Islam Ansari,SP,119402,9409,Bahoran Lal Maurya,BJP
+121,Nawabganj,Bareilly,GEN,Dr. M. P. Arya Gangwar,BJP,111113,9237,Bhagwat Saran Gangwar,SP
+122,Faridpur,Bareilly,SC,Shyam Bihari Lal,BJP,92070,2921,Vijay Pal Singh,SP
+123,Bithari Chainpur,Bareilly,GEN,Raghavendra Sharma,BJP,115417,15841,Agam Maurya,SP
+124,Bareilly,Bareilly,GEN,Dr. Arun Kumar Saxena,BJP,129014,32320,Rajesh Aggarwal,SP
+125,Bareilly Cantt,Bareilly,GEN,Sanjeev Agarwal,BJP,98931,10768,Supriya Aron,SP
+126,Aonla,Bareilly,GEN,Dharampal Singh,BJP,88956,18424,Radha Krishan Sharma,SP
+127,Pilibhit,Pilibhit,GEN,Sanjay Singh Gangwar,BJP,125506,6970,Shailendra Gangwar,SP
+128,Barkhera,Pilibhit,GEN,Swami Pravaktanand,BJP,151771,81472,Hemraj Verma,SP
+129,Puranpur,Pilibhit,SC,Babu Ram Paswan,BJP,134404,26576,Ms Arti,SP
+130,Bisalpur,Pilibhit,GEN,Vivek Kumar Verma,BJP,121142,50409,Divya Gangwar,SP
+131,Katra,Shahjahanpur,GEN,Veer Vikram Singh,BJP,77800,357,Rajesh Yadav,SP
+132,Jalalabad,Shahjahanpur,GEN,Hari Prakash Verma,BJP,99609,4572,Niraj Nilinesh,SP
+133,Tilhar,Shahjahanpur,GEN,Salona Kushwaha,BJP,102307,13277,Roshan Lal Verma,SP
+134,Powayan,Shahjahanpur,SC,Chetram Pasi,BJP,129785,51578,Upendra Pal Singh,SP
+135,Shahjahanpur,Shahjahanpur,GEN,Suresh Kumar Khanna,BJP,109942,9313,Tanveer Khan,SP
+136,Dadraul,Shahjahanpur,GEN,Manvendra Singh,BJP,100957,9701,Rajesh Kumar Verma,SP
+137,Palia,Lakhimpur Kheri,GEN,Harvindar Kumar Sahani,BJP,118864,38129,Pritinder Singh Kakku,SP
+138,Nighasan,Lakhimpur Kheri,GEN,Shashank Verma,BJP,126488,41009,R S Kushwaha,SP
+139,Gola Gokrannath,Lakhimpur Kheri,GEN,Arvind Giri,BJP,126534,29294,Vinay Tiwari,SP
+140,Sri Nagar,Lakhimpur Kheri,SC,Manju Tyagi,BJP,108249,17608,Ram Sharan,SP
+141,Dhaurahra,Lakhimpur Kheri,GEN,Vinod Shankar Awasthi,BJP,113498,24610,Varun Singh,SP
+142,Lakhimpur,Lakhimpur Kheri,GEN,Yogesh Verma,BJP,127663,20578,Utkarsh Verma Madhur,SP
+143,Kasta,Lakhimpur Kheri,SC,Saurabh Singh,BJP,103315,13817,Sunil Kumar Lala,SP
+144,Mohammdi,Lakhimpur Kheri,GEN,Lokendra Pratap Singh,BJP,99377,4871,Daud Ahmad,SP
+145,Maholi,Sitapur,GEN,Shashank Trivedi,BJP,112040,12172,Anoop Kumar Gupta,SP
+146,Sitapur,Sitapur,GEN,Rakesh Rathour,BJP,99349,1253,Radhe Shyam Jaiswal,SP
+147,Hargaon,Sitapur,SC,Suresh Rahi,BJP,116691,38160,Ramhet Bharti,SP
+148,Laharpur,Sitapur,GEN,Anil Kumar Verma,SP,112987,13155,Suneel Verma,BJP
+149,Biswan,Sitapur,GEN,Nirmal Verma,BJP,106014,10478,Afzaal Kausar,SP
+150,Sevata,Sitapur,GEN,Gyan Tiwari,BJP,108057,20438,Mahendra Kumar Singh,SP
+151,Mahmoodabad,Sitapur,GEN,Asha Maurya,BJP,92091,5222,Narendra Singh Verma,SP
+152,Sidhauli,Sitapur,SC,Manish Rawat,BJP,106222,9716,Dr. Hargovind Bhargawa,SP
+153,Misrikh,Sitapur,SC,Ramkrishna Bhargava,BJP,91092,11465,Manoj Kumar Raghuvanshi,SBSP
+154,Sawayazpur,Hardoi,GEN,Madhavendra Pratap,BJP,114623,26047,Padamrag Singh Yadav,SP
+155,Shahabad,Hardoi,GEN,Rajani Tiwari,BJP,94561,6479,Asif Khan Babbu,SP
+156,Hardoi,Hardoi,GEN,Nitin Agarwal,BJP,126750,42411,Anil Verma,SP
+157,Gopamau,Hardoi,SC,Shyam Prakash,BJP,91762,7998,Rajeshwari,SP
+158,Sandi,Hardoi,SC,Prabhash Kumar,BJP,81519,9233,Usha Verma,SP
+159,Bilgram-Mallanwan,Hardoi,GEN,Ashish Kumar Singh,BJP,82075,24890,Brijesh Kumar Verma,SP
+160,Balamau,Hardoi,SC,Ram Pal Verma,BJP,81994,26424,Rambali Verma,SP
+161,Sandila,Hardoi,GEN,Alka Singh Arkvanshi,BJP,101730,37103,Abdul Mannan,BSP
+162,Bangarmau,Unnao,GEN,Shrikant Katiyar,BJP,90980,15793,Dr. Munna,SP
+163,Safipur,Unnao,SC,Bamba Lal Diwakar,BJP,102968,34132,Sudhir Kumar,SP
+164,Mohan,Unnao,SC,Brijesh Kumar Rawat,BJP,113291,43179,Dr. Anchal,SP
+165,Unnao,Unnao,GEN,Pankaj Gupta,BJP,126670,31128,Abhinav Kumar,SP
+166,Bhagwantnagar,Unnao,GEN,Ashutosh Shukla,BJP,127118,43010,Ankit Parihar,SP
+167,Purwa,Unnao,GEN,Anil Kumar Singh,BJP,133827,31061,Uday Raj,SP
+168,Malihabad,Lucknow,SC,Jai Devi,BJP,106372,7745,Surendra Kumar,SP
+169,Bakshi Kaa Talab,Lucknow,GEN,Yogesh Shukla,BJP,147922,27788,Gomti Yadav,SP
+170,Sarojini Nagar,Lucknow,GEN,Rajeshwar Singh,BJP,160626,56186,Abhishek Mishra,SP
+171,Lucknow West,Lucknow,GEN,Armaan Khan,SP,124497,8184,Anjali Kumar Srivastava,BJP
+172,Lucknow North,Lucknow,GEN,Neeraj Bora,BJP,139159,33953,Pooja Shukla,SP
+173,Lucknow East,Lucknow,GEN,Ashutosh Tandon,BJP,152928,68731,Anurag Bhadouria,SP
+174,Lucknow Central,Lucknow,GEN,Ravidas Mehotra,SP,104488,10935,Rajnish Kumar Gupta,BJP
+175,Lucknow Cantonment,Lucknow,GEN,Brajesh Pathak,BJP,108147,39512,Raju Gandhi,SP
+176,Mohanlalganj,Lucknow,SC,Amresh Kumar,BJP,107089,16548,Sushila Saroj,SP
+177,Bachhrawan,Raebareli,SC,Shyam Sunder Bharti,SP,65747,2812,AD(S),AD(S)
+178,Tiloi,Amethi,GEN,Mayankeshwar Sharan Singh,BJP,99472,27829,Mohd Naim,SP
+179,Harchandpur,Raebareli,GEN,Rahul Rajpoot,SP,92498,14489,Rakesh Singh,BJP
+180,Rae Bareli,Raebareli,GEN,Aditi Singh,BJP,102429,7175,Ram Pratap Yadav,SP
+181,Salon,Raebareli,SC,Ashok Kori,BJP,87715,1511,Jagdish Prasad,SP
+182,Sareni,Raebareli,GEN,Devendra Pratap Singh,SP,66166,3807,Dhirendra Bahadur Singh,BJP
+183,Unchahar,Raebareli,GEN,Manoj Kumar Pandey,SP,82514,6621,Amarpal Maurya,BJP
+184,Jagdishpur,Amethi,SC,Suresh Kumar,BJP,89315,22824,Vijay Kumar,INC
+185,Gauriganj,Amethi,GEN,Rakesh Pratap Singh,SP,79040,6963,Chandra Prakash Mishra Matiyari,BJP
+186,Amethi,Amethi,GEN,Maharaji Prajapati,SP,88217,18096,Sanjaya Sinh,BJP
+187,Isauli,Sultanpur,GEN,Mohammad Tahir Khan,SP,69629,269,Om Prakash Pandey,BJP
+188,Sultanpur,Sultanpur,GEN,Vinod Singh,BJP,92715,1009,Anoop Sanda,SP
+189,Sadar,Sultanpur,GEN,Raj Prasad Upadhyay,BJP,85249,15754,Arun Verma,SP
+190,Lambhua,Sultanpur,GEN,Sitaram Verma,BJP,82999,9533,Santosh Pandey,SP
+191,Kadipur,Sultanpur,SC,Rajesh Gautam,BJP,96405,25723,Bhagelu Ram,SP
+192,Kaimganj,Farrukhabad,GEN,AD(S),AD(S),114952,18543,Sarvesh Ambedkar,SP
+193,Amritpur,Farrukhabad,GEN,Sushil Kumar Shakya,BJP,98848,44686,Dr. Jitendra Singh Yadav,SP
+194,Farrukhabad,Farrukhabad,GEN,Sunil Dutt Dwivedi,BJP,112314,39326,Suman Shakya,SP
+195,Bhojpur,Farrukhabad,GEN,Nagendra Singh Rathore,BJP,99979,27468,Arshad Jamal Siddiqui,SP
+196,Chhibramau,Kannauj,GEN,Archana Pandey,BJP,124773,1111,Arvind Singh Yadav,SP
+197,Tirwa,Kannauj,GEN,Kailash Singh Rajput,BJP,106089,4608,Anil Kumar Pal,SP
+198,Kannauj,Kannauj,SC,Asim Arun,BJP,120876,6090,Anil Kumar Dohare,SP
+199,Jaswantnagar,Etawah,GEN,Shivpal Singh Yadav,SP,159718,90979,Vivek Shakya,BJP
+200,Etawah,Etawah,GEN,Sarita Bhadauria,BJP,98150,3984,Sarvesh Kumar Shakya,SP
+201,Bharthana,Etawah,SC,Raghvendra Kumar Singh,SP,103676,7559,Siddharth Shanker,BJP
+202,Bidhuna,Auraiya,GEN,Rekha Verma,SP,92757,3265,Riya Shakya,BJP
+203,Dibiyapur,Auraiya,GEN,Pradeep Kumar Yadav,SP,80865,473,Lakhan Singh Rajput,BJP
+204,Auraiya,Auraiya,SC,Gudiya Katheriya,BJP,88631,22447,Jitendra Kumar Dohare,SP
+205,Rasulabad,Kanpur Dehat,SC,Poonam Sankhwar,BJP,91783,21512,Kamlesh Chandra Diwakar,SP
+206,Akbarpur-Raniya,Kanpur Dehat,GEN,Pratibha Shukla,BJP,92827,13417,Dr. Ram Prakash Kushwaha,SP
+207,Sikandra,Kanpur Dehat,GEN,Ajit Singh Pal,BJP,89461,31567,Prabhakar Pandey,SP
+208,Bhognipur,Kanpur Dehat,GEN,Rakesh Sachan,BJP,87809,11893,Narendra Pal Singh,SP
+209,Bilhaur,Kanpur Nagar,SC,Rahul Bachha Sonkar,BJP,123094,42351,Rachna Singh,SP
+210,Bithoor,Kanpur Nagar,GEN,Abhijeet Singh Sanga,BJP,107330,21073,Munendra Shukla,SP
+211,Kalyanpur,Kanpur Nagar,GEN,Neelima Katiyar,BJP,98997,21535,Satish Kumar Nigam,SP
+212,Govindnagar,Kanpur Nagar,GEN,Surendra Maithani,BJP,117501,80896,Vikas Yadav,SP
+213,Sishamau,Kanpur Nagar,GEN,Haji Irfan Solanki,SP,79163,12266,Salil Vishnoi,BJP
+214,Arya Nagar,Kanpur Nagar,GEN,Amitabh Bajpai,SP,76897,7924,Suresh Awasthi,BJP
+215,Kidwai Nagar,Kanpur Nagar,GEN,Mahesh Trivedi,BJP,114111,37760,Ajay Kapoor,INC
+216,Kanpur Cantonment,Kanpur Nagar,GEN,Mohammed Hasan,SP,94729,19987,Raghunandan Singh Bhadauria,BJP
+217,Maharajpur,Kanpur Nagar,GEN,Satish Mahana,BJP,152883,82261,Fateh Bahadur Singh Gill,SP
+218,Ghatampur,Kanpur Nagar,SC,AD(S),AD(S),81727,14474,Bhagwati Prasad Sagar,SP
+219,Madhogarh,Jalaun,GEN,Moolchandra Singh,BJP,105231,34974,Sheetal Kushwaha,BSP
+220,Kalpi,Jalaun,GEN,Vinod Chaturvedi,SP,69782,2816,Chhote Singh,NISHAD
+221,Orai,Jalaun,SC,Gauri Shankar,BJP,128644,37648,Dayashankar Verma,SP
+222,Babina,Jhansi,GEN,Rajeev Singh Parichha,BJP,118343,44529,Yashpal Singh Yadav,SP
+223,Jhansi Nagar,Jhansi,GEN,Ravi Sharma,BJP,148262,76353,Sitaram Kushwaha,SP
+224,Mauranipur,Jhansi,SC,AD(S),AD(S),143577,58595,Tilak Chandra Ahirwar,SP
+225,Garautha,Jhansi,GEN,Jawahar Lal Rajput,BJP,114059,33662,Deep Narayan Singh,SP
+226,Lalitpur,Lalitpur,GEN,Ramratan Kushwaha,BJP,176550,107215,Chandrabhusan Singh Bundela Guddu Raja,BSP
+227,Mehroni,Lalitpur,SC,Manohar Lal Panth,BJP,184778,110451,Kiran Ramesh Khatik,BSP
+228,Hamirpur,Hamirpur,GEN,Manoj Kumar Prajapati,BJP,105432,25485,Ram Prakash Prajapati,SP
+229,Rath,Hamirpur,SC,Manisha Anuragi,BJP,139373,61979,Chandravati,SP
+230,Mahoba,Mahoba,GEN,Rakesh Kumar Goswami,BJP,94490,43447,Manoj Tiwari,SP
+231,Charkhari,Mahoba,GEN,Brijbhushan Rajpoot,BJP,102051,41881,Ramjeevan Yadav,SP
+232,Tindwari,Banda,GEN,Ramakesh Nishad,BJP,86812,28425,Brijesh Prajapati,SP
+233,Baberu,Banda,GEN,Vishambhar Singh Yadav,SP,79614,7393,Ajay Kumar,BJP
+234,Naraini,Banda,SC,Ommani Verma,BJP,83263,6719,Kiran Verma,SP
+235,Banda,Banda,GEN,Prakash Dwivedi,BJP,81557,15214,Manjula Singh,SP
+236,Chitrakoot,Chitrakoot,GEN,Anil Pradhan,SP,104771,20876,Chandrika Prasad Upadhyay,BJP
+237,Manikpur,Chitrakoot,GEN,AD(S),AD(S),73132,1048,Veer Singh Patel,SP
+238,Jahanabad,Fatehpur,GEN,Rajendra Singh Patel,BJP,78503,18192,Madan Gopal Verma,SP
+239,Bindki,Fatehpur,GEN,AD(S),AD(S),78165,3797,Rameshwar Dayal urf Dayalu Omer,SP
+240,Fatehpur,Fatehpur,GEN,Chandra Prakash Lodhi,SP,96839,8601,Vikram Singh,BJP
+241,Ayah Shah,Fatehpur,GEN,Vikas Gupta,BJP,71231,13006,Vishambhar Prasad Nishad,SP
+242,Husainganj,Fatehpur,GEN,Usha Maurya,SP,91884,25181,Ranvendra Pratap Singh,BJP
+243,Khaga,Fatehpur,SC,Krishna Paswan,BJP,83735,5509,Ramthirth Paramhans,SP
+244,Rampur Khas,Pratapgarh,GEN,Aradhana Misra Mona,INC,84334,14741,Nagesh Pratap Singh,BJP
+247,Vishwanathganj,Pratapgarh,GEN,AD(S),AD(S),86829,48052,Saurabh Singh,SP
+248,Pratapgarh,Pratapgarh,GEN,Rajendra Maurya,BJP,89762,25063,AD(K),
+249,Patti,Pratapgarh,GEN,Ram Singh Patel,SP,108070,22051,Rajendra Pratap Singh,BJP
+250,Raniganj,Pratapgarh,GEN,Rakesh Kumar Verma,SP,75583,2649,Dhiraj Ojha,BJP
+251,Sirathu,Kaushambi,GEN,Pallavi Patel,SP,106278,7337,Keshav Prasad Maurya,BJP
+252,Manjhanpur,Kaushambi,SC,Indrajit Saroj,SP,121506,23878,Lal Bahadur,BJP
+253,Chail,Kaushambi,GEN,Pooja Pal,SP,88818,13209,AD(S),AD(S)
+254,Phaphamau,Prayagraj,GEN,Guru Prasad Maurya,BJP,91186,14324,Ansar Ahmad,SP
+255,Soraon,Prayagraj,SC,Geeta Shastri,SP,91474,5590,AD(S),AD(S)
+256,Phulpur,Prayagraj,GEN,Praveen Patel,BJP,103557,2732,Mujataba Siddiqui,SP
+257,Pratappur,Prayagraj,GEN,Vijama Yadav,SP,91142,10956,AD(S),AD(S)
+258,Handia,Prayagraj,GEN,Hakim Lal Bind,SP,84417,3543,Prashant Kumar Singh Rahul,NISHAD
+259,Meja,Prayagraj,GEN,Sandeep Singh Patel,SP,78555,3439,Neelam Karwariya,BJP
+260,Karachhana,Prayagraj,GEN,Piyush Ranjan Nishad,BJP,89527,9328,Ujjwal Raman Singh,SP
+261,Allahabad West,Prayagraj,GEN,Sidharth Nath Singh,BJP,118759,29933,Richa Singh,SP
+262,Allahabad North,Prayagraj,GEN,Harshvardhan Bajpai,BJP,96890,54883,Sandeep Yadav,SP
+263,Allahabad South,Prayagraj,GEN,Nand Gopal Gupta,BJP,97864,26182,Raish Chandra Shukla,SP
+264,Bara,Prayagraj,SC,AD(S),AD(S),89203,12464,Ajay Munna,SP
+265,Koraon,Prayagraj,SC,Rajmani Kol,BJP,84587,24487,Ram Deo,SP
+266,Kursi,Barabanki,GEN,Sakendra Pratap Verma,BJP,118720,217,Rakesh Verma,SP
+267,Ramnagar,Barabanki,GEN,Fareed Mahfooz Kidwai,SP,98799,261,Sharad Kumar Awasthi,BJP
+268,Barabanki,Barabanki,GEN,Dharmraj Singh Yadav,SP,125500,35050,Dr. Ramkumari Maurya,BJP
+269,Zaidpur,Barabanki,SC,Gaurav Kumar,SP,113558,2982,Ambrish Rawat,BJP
+270,Dariyabad,Barabanki,GEN,Satish Sharma,BJP,127983,32617,Arvind Kumar Singh Gope,SP
+271,Rudauli,Ayodhya,GEN,Ram Chandra Yadav,BJP,94031,40616,Anand Sen,SP
+272,Haidergarh,Barabanki,SC,Dinesh Rawat,BJP,117113,25691,Ram Magan Rawat,SP
+273,Milkipur,Ayodhya,SC,Awadhesh Prasad,SP,103905,13338,Baba Gorakhnath,BJP
+274,Bikapur,Ayodhya,GEN,Amit Singh Chauhan,BJP,107268,5560,Firoz Khan,SP
+275,Ayodhya,Ayodhya,GEN,Ved Prakash Gupta,BJP,113414,19990,Tej Narayan Pandey,SP
+276,Goshainganj,Ayodhya,GEN,Abhay Singh,SP,105863,13079,Arti Tiwari,BJP
+277,Katehari,Ambedkar Nagar,GEN,Lalji Verma,SP,93524,7696,Avadhesh Kumar,NISHAD
+278,Tanda,Ambedkar Nagar,GEN,Ram Murti Verma,SP,95263,32097,Kapil Deo,BJP
+279,Alapur,Ambedkar Nagar,SC,Tribhuwan Dutt,SP,74165,9383,Triveniram,BJP
+280,Jalalpur,Ambedkar Nagar,GEN,Rakesh Pandey,SP,93668,13630,Dr. Rajesh Singh,BSP
+281,Akbarpur,Ambedkar Nagar,GEN,Ram Achal Rajbhar,SP,81391,12336,Dharmraj Nishad,BJP
+282,Balha,Bahraich,SC,Saroj Sonkar,BJP,100483,16573,Akshaybar Nath Kanaujiya,SP
+283,Nanpara,Bahraich,GEN,AD(S),AD(S),87689,12184,Madhuri Verma,SP
+284,Matera,Bahraich,GEN,Mariya Shah,SP,102255,10428,Arun Veer Singh,BJP
+285,Mahasi,Bahraich,GEN,Sureshwar Singh,BJP,117883,42684,Krishna Kumar Ojha,SP
+286,Bahraich,Bahraich,GEN,Anupma Jaiswal,BJP,107628,4078,Yasar Shah,SP
+287,Payagpur,Bahraich,GEN,Subhash Tripathi,BJP,110162,12056,Mukesh Srivastava,SP
+288,Kaiserganj,Bahraich,GEN,Anand Kumar,SP,103195,7771,Gaurav Verma,BJP
+289,Bhinga,Shrawasti,GEN,Indrani Devi,SP,103661,13574,Padam Sen Chaudhary,BJP
+290,Shrawasti,Shrawasti,GEN,Ram Feran Pandey,BJP,98640,1457,Mohhamad Aslam Rainee,SP
+291,Tulsipur,Balrampur,GEN,Kailash Nath Shukla,BJP,87092,35841,Zeba Rizwan,IND
+292,Gainsari,Balrampur,GEN,Shiv Pratap Yadav,SP,75345,5837,Shailesh Kumar Singh,BJP
+293,Utraula,Balrampur,GEN,Ram Pratap Verma,BJP,87162,21769,Haseeb Hasan Khan,SP
+294,Balrampur,Balrampur,SC,Paltu Ram,BJP,101146,10971,Jagram Paswan,SP
+295,Mehnaun,Gonda,GEN,Vinay Kumar Dwivedi,BJP,107237,23128,Nandita Shukla,SP
+296,Gonda,Gonda,GEN,Prateek Bhushan Singh,BJP,96528,6700,Suraj Singh,SP
+297,Katra Bazar,Gonda,GEN,Bawan Singh,BJP,112291,18457,Baijnath Dubey,SP
+298,Colonelganj,Gonda,GEN,Ajay,BJP,108109,35472,Yogesh Pratap Singh,SP
+299,Tarabganj,Gonda,GEN,Prem Narayan Pandey,BJP,125325,53690,Ram Bhajan Chaubey,SP
+300,Mankapur,Gonda,SC,Ramapati Shastri,BJP,105677,42349,Ramesh Chandra,SP
+301,Gaura,Gonda,GEN,Prabhat Kumar Verma,BJP,73545,22974,Sanjay Kumar,SP
+302,Shohratgarh,Siddharthnagar,GEN,AD(S),AD(S),71062,24463,Prem Chand Nishad,SBSP
+303,Kapilvastu,Siddharthnagar,SC,Shyam Dhani,BJP,122940,30939,Vinay Paswan,SP
+304,Bansi,Siddharthnagar,GEN,Jai Pratap Singh,BJP,84596,20340,Monu Dubey,SP
+305,Itwa,Siddharthnagar,GEN,Mata Prasad Pandey,SP,64253,1662,Satish Chandra Dwiwedi,BJP
+306,Domariyaganj,Siddharthnagar,GEN,Saiyada Khatoon,SP,85098,771,Raghvendra Pratap Singh,BJP
+307,Harraiya,Basti,GEN,Ajay Kumar Singh,BJP,88200,18329,Triyambak Pathak,SP
+308,Kaptanganj,Basti,GEN,Kavindra Chaudhary,SP,94273,24179,Chandra Prakash Shukla,BJP
+309,Rudhauli,Basti,GEN,Rajendra Prasad Chaudhary,SP,86360,15226,Sangeeta Pratap Jaiswal,BJP
+310,Basti Sadar,Basti,GEN,Mahendra Nath Yadav,SP,86029,1779,Dayaram Choudhary,BJP
+311,Mahadewa,Basti,SC,Dudhram,SBSP,83350,5495,Ravi Kumar Sonkar,BJP
+312,Menhdawal,Sant Kabir Nagar,GEN,Anil Kumar Tripathi,NISHAD,90193,5223,Jay Chand,SP
+313,Khalilabad,Sant Kabir Nagar,GEN,Ankur Raj Tiwari,BJP,76086,12262,Digvijay Narayan,SP
+314,Dhanghata,Sant Kabir Nagar,SC,Ganesh Chandra Chauhan,BJP,83241,10553,Alagu Prasad,SBSP
+315,Pharenda,Maharajganj,GEN,Virendra Chaudhary,INC,85181,1246,Bajrang Bahadur Singh,BJP
+316,Nautanwa,Maharajganj,GEN,Rishi Tripathi,NISHAD,90263,15691,Kunwar Kaushal Singh,SP
+317,Siswa,Maharajganj,GEN,Prem Sagar Patel,BJP,127673,62731,Sushil Kumar Tibrewal,SP
+318,Maharajganj,Maharajganj,SC,Jai Mangal Kanojiya,BJP,136071,76903,Nirmesh Mangal,IND
+319,Paniyara,Maharajganj,GEN,Gyanendra Singh,BJP,135463,61428,Krishnabhan Singh Sainthwar,SP
+320,Caimpiyarganj,Gorakhpur,GEN,Fateh Bahadur Singh,BJP,122032,42656,Kajal Nishad,SP
+321,Pipraich,Gorakhpur,GEN,Mahendra Pal Singh,BJP,141780,65357,Amrendra Nishad,SP
+322,Gorakhpur Urban,Gorakhpur,GEN,Yogi Adityanath,BJP,165499,103390,Subhawati Upendra Dutt Shukla,SP
+323,Gorakhpur Rural,Gorakhpur,GEN,Bipin Singh,BJP,126376,24070,Vijay Bahadur Yadav,SP
+324,Sahajanwa,Gorakhpur,GEN,Pradeep Shukla,BJP,105981,43406,Yashwant Singh Rawat,SP
+325,Khajani,Gorakhpur,SC,Sriram Chauhan,BJP,90210,37101,Rupawati Beldar,SP
+326,Chauri-Chaura,Gorakhpur,GEN,Sarvan Kumar Nishad,BJP,91958,41127,Captain Brijesh Chandra Lal Paswan,SP
+327,Bansgaon,Gorakhpur,SC,Vimlesh Paswan,BJP,87224,32209,Sanjay Kumar,SP
+328,Chillupar,Gorakhpur,GEN,Rajesh Tripathi,BJP,96777,21645,Vinay Shankar Tiwari,SP
+329,Khadda,Kushinagar,GEN,Vivekanand Pandey,NISHAD,88291,41451,Vijay Pratap Kushwaha,IND
+330,Padrauna,Kushinagar,GEN,Manish Jaiswal,BJP,114496,42008,Vikram Yadav,SP
+331,Tamkuhi Raj,Kushinagar,GEN,Asim Kumar,BJP,115123,66472,Uday Narayan,SP
+332,Fazilnagar,Kushinagar,GEN,Surendra Kumar Kushwaha,BJP,116029,45014,Swami Prasad Maurya,SP
+333,Kushinagar,Kushinagar,GEN,Panchanand Pathak,BJP,115268,34790,Rajesh Pratap Rao,SP
+334,Hata,Kushinagar,GEN,Mohan Verma,BJP,120666,59365,Ranvijay Singh,SP
+335,Ramkola,Kushinagar,SC,Vinay Prakash Gond,BJP,124792,72543,Purnmasi Dehati,SBSP
+336,Rudrapur,Deoria,GEN,Jai Prakash Nishad,BJP,78187,41936,Ram Bhuwal Nishad,SP
+337,Deoria,Deoria,GEN,Shalabh Mani Tripathi,BJP,106701,40655,Ajay Pratap Singh Sainthwar,SP
+338,Pathardeva,Deoria,GEN,Surya Pratap Shahi,BJP,93858,28681,Brahma Shankar Tripathi,SP
+339,Rampur Karkhana,Deoria,GEN,Surendra Chaurasia,BJP,90742,14670,Ghazala Lari,SP
+340,Bhatpar Rani,Deoria,GEN,Sabhakunwar Kushawaha,BJP,91282,18082,Ashutosh Upadhyay,SP
+341,Salempur,Deoria,SC,Vijay Laxmi Gautam,BJP,82047,16608,Manbodh Prasad,SBSP
+342,Barhaj,Deoria,GEN,Deepak Kumar Mishra,BJP,85758,16861,Murli Manohar Jaiswal,SP
+343,Atrauliya,Azamgarh,GEN,Sangram Yadav,SP,91502,17247,Prashant Singh,NISHAD
+344,Gopalpur,Azamgarh,GEN,Nafees Ahmad,SP,84401,24307,Satyendra Rai,BJP
+345,Sagri,Azamgarh,GEN,Hriday Narayan Singh Patel,SP,83093,22515,Smt. Vandana Singh,BJP
+346,Mubarakpur,Azamgarh,GEN,Akhilesh Yadav,SP,80726,29103,Arvind Jaiswal,BJP
+347,Azamgarh,Azamgarh,GEN,Durga Prasad Yadav,SP,100813,16036,Akhilesh Kumar Mishra,BJP
+348,Nizamabad,Azamgarh,GEN,Alambadi,SP,79835,34187,Manoj,BJP
+349,Phoolpur Pawai,Azamgarh,GEN,Ramakant Yadav,SP,81164,25306,Ramsurat Rajbhar,BJP
+350,Didarganj,Azamgarh,GEN,Kamlakant Rajbhar,SP,74342,13561,Krishna Murari Vishwakarma,BJP
+351,Lalganj,Azamgarh,SC,Bechai Saroj,SP,83767,14733,Neelam Sonkar,BJP
+352,Mehnagar,Azamgarh,SC,Puja Saroj,SP,86960,14149,Manju Saroj,BJP
+353,Madhuban,Mau,GEN,Ram Bilash Chauhan,BJP,79032,4448,Umesh Pandey,SP
+354,Ghosi,Mau,GEN,Dara Singh Chauhan,SP,108430,22216,Vijay Rajbhar,BJP
+355,Muhammadabad-Gohna,Mau,SC,Rajendra Kumar,SP,94688,26649,Smt. Poonam Saroj,BJP
+356,Mau,Mau,GEN,Abbas Ansari,SBSP,124691,38116,Ashok Singh,BJP
+357,Belthara Road,Ballia,SC,Hansu Ram,SBSP,78995,5514,Chhattu Ram,BJP
+358,Rasara,Ballia,GEN,Umashankar Singh,BSP,87887,6583,Mahendra,SBSP
+359,Sikanderpur,Ballia,GEN,Mohammed Ziauddin Rizvi,SP,75446,11855,Sanjay Yadav,BJP
+360,Phephana,Ballia,GEN,Sangram Singh,SP,92516,19354,Upendra Tiwari,BJP
+361,Ballia Nagar,Ballia,GEN,Daya Shankar Singh,BJP,103873,26239,Narad Rai,SP
+362,Bansdih,Ballia,GEN,Ketakee Singh,BJP,103305,21352,Ram Govind Chaudhary,SP
+363,Bairia,Ballia,GEN,Jai Prakash Anchal,SP,71241,12951,Anand Swarup Shukla,BJP
+364,Badlapur,Jaunpur,GEN,Ramesh Chandra Mishra,BJP,82391,1326,Baba Dubey,SP
+365,Shahganj,Jaunpur,GEN,Ramesh Singh,NISHAD,87233,719,Shailendra Yadav Lalai,SP
+366,Jaunpur,Jaunpur,GEN,Girish Chandra Yadav,BJP,97760,8052,Mohd. Arshad Khan,SP
+367,Malhani,Jaunpur,GEN,Lucky Yadav,SP,97357,17527,JD(U),JD(U)
+368,Mungra Badshahpur,Jaunpur,GEN,Pankaj Patel,SP,92048,5230,Ajay Dubey,BJP
+369,Machhlishahr,Jaunpur,SC,Ragini Sonkar,SP,91659,8484,Mihilal Gautam,BJP
+370,Mariyahu,Jaunpur,GEN,AD(S),AD(S),76007,1206,Sushma Patel,SP
+371,Zafrabad,Jaunpur,GEN,Jagdish Narayan,SBSP,90620,6292,Harendra Prasad Singh,BJP
+372,Kerakat,Jaunpur,SC,Tufani Saroj,SP,94022,9844,Dinesh Choudhary,BJP
+373,Jakhanian,Ghazipur,SC,Triveni Ram,SBSP,113378,36865,Ramraj Vanvasi,BJP
+374,Saidpur,Ghazipur,SC,Ankit Bharti,SP,109711,36635,Subhash Passi,BJP
+375,Ghazipur Sadar,Ghazipur,GEN,Jai Kishan Sahu,SP,92472,1692,Sangeeta Balwant Bind,BJP
+376,Jangipur,Ghazipur,GEN,Virendra Kumar Yadav,SP,103125,35063,Ramnaresh Kushwah,BJP
+377,Zahoorabad,Ghazipur,GEN,Om Prakash Rajbhar,SBSP,114860,45632,Kalicharan Rajbhar,BJP
+378,Mohammadabad,Ghazipur,GEN,Suhaib Ansari,SP,111443,18759,Alka Rai,BJP
+379,Zamania,Ghazipur,GEN,Omprakash Singh,SP,94695,22456,Sunita Singh,BJP
+380,Mughalsarai,Chandauli,GEN,Ramesh Jaiswal,BJP,102216,14921,Chandra Shekhar Yadav,SP
+381,Sakaldiha,Chandauli,GEN,Prabhunarayan Yadav,SP,86328,16661,Suryamuni Tiwari,BJP
+382,Saiyadraja,Chandauli,GEN,Sushil Singh,BJP,87891,10917,Manoj Kumar,SP
+383,Chakia,Chandauli,SC,Kailash Kharwar,BJP,97812,9251,Jitendra Kumar,SP
+384,Pindra,Varanasi,GEN,Awadhesh Kumar Singh,BJP,84325,35559,Babu Lal,BSP
+385,Ajagara,Varanasi,SC,Tribhuwan Ram,BJP,101088,9160,Sunil Sonkar,SBSP
+386,Shivpur,Varanasi,GEN,Anil Rajbhar,BJP,115231,27687,Arvind Rajbhar,SBSP
+387,Rohaniya,Varanasi,GEN,AD(S),AD(S),118663,46472,AD(K),
+388,Varanasi North,Varanasi,GEN,Ravindra Jaiswal,BJP,134471,40776,Ashfaque,SP
+389,Varanasi South,Varanasi,GEN,Neelkanth Tiwari,BJP,99622,10722,Kameshwar (Kishan Dixit),SP
+390,Varanasi Cantt.,Varanasi,GEN,Saurabh Srivastava,BJP,147833,86844,Pooja Yadav,SP
+391,Sevapuri,Varanasi,GEN,Neel Ratan Singh Patel,BJP,105163,22531,Surendra Singh Patel,SP
+392,Bhadohi,Bhadohi,GEN,Zahid Beg,SP,100738,4885,Ravindra Tripathi,BJP
+393,Gyanpur,Bhadohi,GEN,Vipul Dubey,NISHAD,73446,6231,Ram Kishore Bind,SP
+394,Aurai,Bhadohi,SC,Dinanath Bhashkar,BJP,93691,1647,Smt. Anjani,SP
+395,Chhanbey,Mirzapur,SC,AD(S),AD(S),102502,38113,Kirti,SP
+396,Mirzapur,Mirzapur,GEN,Ratnakar Mishra,BJP,118642,39876,Kailash Chaurasia,SP
+397,Majhawan,Mirzapur,GEN,Dr. Vinod Kumar Bind,NISHAD,103235,33587,Rohit Shukla,SP
+398,Chunar,Mirzapur,GEN,Anurag Singh,BJP,110980,47614,AD(K),
+399,Marihan,Mirzapur,GEN,Rama Shankar Singh,BJP,105377,62911,Narendra Singh Kushwaha,BSP
+400,Ghorawal,Sonbhadra,GEN,Anil Kumar Maurya,BJP,101277,23922,Ramesh Chandra Dubey,SP
+401,Robertsganj,Sonbhadra,GEN,Bhupesh Chaubey,BJP,84496,5621,Avinash Kushwaha,SP
+402,Obra,Sonbhadra,ST,Sanjeev Kumar Gond,BJP,78364,26442,Arvind Kumar,SP
+403,Duddhi,Sonbhadra,ST,Ramdular Gaur,BJP,84407,6297,Vijay Singh Gour,SP

@@ -58,6 +58,38 @@ const registry: Record<string, StateData> = {
     totalSeats: 288,
     loadedCount: 288,
   },
+  TN: {
+    info: STATES.TN,
+    constituencies: [], // Use stateDataAdapter for TN
+    hasGeoJSON: false,
+    hasFullData: true,
+    totalSeats: 234,
+    loadedCount: 234,
+  },
+  KL: {
+    info: STATES.KL,
+    constituencies: [], // Use stateDataAdapter for KL
+    hasGeoJSON: false,
+    hasFullData: true,
+    totalSeats: 140,
+    loadedCount: 140,
+  },
+  WB: {
+    info: STATES.WB,
+    constituencies: [], // Use stateDataAdapter for WB
+    hasGeoJSON: false,
+    hasFullData: true,
+    totalSeats: 294,
+    loadedCount: 293,
+  },
+  UP: {
+    info: STATES.UP,
+    constituencies: [], // Use stateDataAdapter for UP
+    hasGeoJSON: false,
+    hasFullData: true,
+    totalSeats: 403,
+    loadedCount: 401,
+  },
 };
 
 /** Get state data by code. Returns null if not yet supported. */

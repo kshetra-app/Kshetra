@@ -47,6 +47,7 @@
 | Sprint 15: Promise Tracker & Government Report Card | ✅ Complete | 2026-04-30 | 2026-04-30 |
 | Sprint 16: Aspiring Leaders & Civic Awakening | ✅ Complete | 2026-04-30 | 2026-04-30 |
 | Bug Fix Sprint: Route Conflicts, TS Errors, Test Alignment | ✅ Complete | 2026-04-30 | 2026-04-30 |
+| Sprint 29: Multi-State Election Data (TN/KL/WB/UP) | ✅ Complete | 2026-05-01 | 2026-05-01 |
 
 ---
 
@@ -145,6 +146,7 @@
 | 2026-04-30 | `feat: sprint 15 — promise tracker & government report card` | Supabase migration 009 (4 tables), ElectionPromise types + computePDI/buildReportCard utilities, 14 seed promises (6 Guarantees + AP), PromiseCard + GovernmentReportCard components, Promises tab on dashboard, i18n keys in 5 locales |
 | 2026-04-30 | `feat: sprint 16 — aspiring leaders & civic awakening` | Supabase migration 010 (7 tables), AspirantProfile/CivicBadge/LeadershipModule types + computeCivicScore utility, 12 modules + 6 challenges + 3 aspirants seed data, CivicScoreCard + CivicBadgeGrid + ChallengeCard components, Leadership Academy screen, aspirant role, Profile civic section |
 | 2026-04-30 | `fix: route conflicts, TS errors, test alignment` | Removed duplicate constituency routes from states.ts, fixed leadership-academy.tsx import paths + TS errors, fixed expo-router dynamic route type casts (8 files), aligned API test assertions with current seed data (295/295 tests pass) |
+| 2026-05-01 | `feat: sprint 29 — multi-state election data (TN/KL/WB/UP)` | 4 new state seed files from real ECI data via Wikipedia scraper. TN 234/234, KL 140/140, WB 293/294, UP 401/403 constituencies with winner, runner-up, votes, margin, district, type. FULLY_SUPPORTED_STATES: 8 states. Total 1,694 seats. 403/403 tests pass. |
 
 ---
 
@@ -2473,5 +2475,75 @@ NationalComparison — cross-state + dominant parties
 | `data/seed` — 11 suites | ✅ Pass | 205 |
 | `data/census` — 2 suites | ✅ Pass | 60 |
 | **Total** | **✅ All Pass** | **265** |
+
+### Component Count: ~46 mobile components
+
+---
+
+## Sprint 29: Multi-State Election Data (TN/KL/WB/UP)
+
+**Date:** 2026-05-01
+**Goal:** Populate constituency seed data for Tamil Nadu, Kerala, West Bengal, and Uttar Pradesh using actual verified election results.
+
+### Data Sources
+
+| State | Election | Seats | Source | Verification |
+|---|---|---|---|---|
+| Tamil Nadu | 2021 | 234/234 | ECI CSV via kracekumar GitHub | Party tally cross-verified with Wikipedia |
+| Kerala | 2021 | 140/140 | Wikipedia tables (sourced from ECI) | Party tally: CPIM 62, INC 21, CPI 17, IUML 15 ✅ |
+| West Bengal | 2021 | 293/294 | Wikipedia tables (sourced from ECI) | Party tally: AITC 215, BJP 77, ISF 1 ✅ (AC#22 Sitai by-election) |
+| Uttar Pradesh | 2022 | 401/403 | Wikipedia tables (sourced from ECI) | Party tally: BJP 255, SP 111, AD(S) 12 ✅ (AC#245-246 postponed) |
+
+### Scraper Pipeline
+
+1. `scripts/scrape-wiki-elections.py` — Python (requests + BeautifulSoup) scraper parsing Wikipedia constituency-wise results tables. Handles two formats: Kerala multi-alliance columns and WB/UP winner-runner format with district separator rows.
+2. `scripts/csv-to-ts-seed.py` — Converts scraped CSVs to TypeScript seed files matching existing format (interface, typed array, lookup function).
+3. `scripts/verify-party-tally.py` — Cross-verification of party seat counts against known totals.
+
+### Files Created
+
+| File | Description |
+|---|---|
+| `data/seed/tamil-nadu-constituencies.ts` | TNConstituencySeed, TN_CONSTITUENCIES (234 seats, 38 districts) |
+| `data/seed/kerala-constituencies.ts` | KLConstituencySeed, KL_CONSTITUENCIES (140 seats, 14 districts) |
+| `data/seed/west-bengal-constituencies.ts` | WBConstituencySeed, WB_CONSTITUENCIES (293 seats, 22 districts) |
+| `data/seed/uttar-pradesh-constituencies.ts` | UPConstituencySeed, UP_CONSTITUENCIES (401 seats, 75 districts) |
+| `data/seed/__tests__/new-states-seed.test.ts` | 41 regression tests: shape validation, party tallies, lookup functions, cross-state sanity |
+| `scripts/scrape-wiki-elections.py` | Wikipedia election results scraper |
+| `scripts/csv-to-ts-seed.py` | CSV → TypeScript seed generator |
+| `scripts/verify-party-tally.py` | Party tally cross-verification |
+
+### Files Modified
+
+| File | Changes |
+|---|---|
+| `apps/mobile/lib/data.ts` | Added re-exports for TN, KL, WB, UP seed data |
+| `apps/mobile/lib/stateDataAdapter.ts` | Added unified adapters + ConstituencyBrief adapters for TN, KL, WB, UP (8 states total) |
+| `apps/mobile/lib/stateRegistry.ts` | Added registry entries for TN (234), KL (140), WB (293), UP (401) |
+| `packages/shared/src/constants/states.ts` | FULLY_SUPPORTED_STATES expanded from 4 → 8 states |
+
+### Tests
+
+| Suite | Status | Tests |
+|---|---|---|
+| `data/seed` — 12 suites | ✅ Pass | 255 |
+| `data/census` — 2 suites | ✅ Pass | 60 |
+| `packages/shared` — 5 suites | ✅ Pass | 59 |
+| `apps/mobile` — 1 suite | ✅ Pass | 29 |
+| **Total** | **✅ All Pass** | **403** |
+
+### Constituency Coverage
+
+| State | Code | Seats | Election Year | Status |
+|---|---|---|---|---|
+| Telangana | TS | 119/119 | 2023 | ✅ Full |
+| Andhra Pradesh | AP | 175/175 | 2024 | ✅ Full |
+| Karnataka | KA | 224/224 | 2023 | ✅ Full |
+| Maharashtra | MH | 288/288 | 2024 | ✅ Full |
+| Tamil Nadu | TN | 234/234 | 2021 | ✅ Full |
+| Kerala | KL | 140/140 | 2021 | ✅ Full |
+| West Bengal | WB | 293/294 | 2021 | ✅ Full |
+| Uttar Pradesh | UP | 401/403 | 2022 | ✅ Full |
+| **Total** | — | **1,694** | — | **8 states** |
 
 ### Component Count: ~46 mobile components

@@ -191,3 +191,31 @@ export {
   getMHTriviaForElection,
   getMHRandomTrivia,
 } from '../../../data/seed/maharashtra-trivia';
+
+// ── Tamil Nadu ──────────────────────────────────────────────────────
+export {
+  TN_CONSTITUENCIES,
+  getTNConstituency,
+  type TNConstituencySeed,
+} from '../../../data/seed/tamil-nadu-constituencies';
+
+// ── Kerala ──────────────────────────────────────────────────────────
+export {
+  KL_CONSTITUENCIES,
+  getKLConstituency,
+  type KLConstituencySeed,
+} from '../../../data/seed/kerala-constituencies';
+
+// ── West Bengal ─────────────────────────────────────────────────────
+export {
+  WB_CONSTITUENCIES,
+  getWBConstituency,
+  type WBConstituencySeed,
+} from '../../../data/seed/west-bengal-constituencies';
+
+// ── Uttar Pradesh ───────────────────────────────────────────────────
+export {
+  UP_CONSTITUENCIES,
+  getUPConstituency,
+  type UPConstituencySeed,
+} from '../../../data/seed/uttar-pradesh-constituencies';

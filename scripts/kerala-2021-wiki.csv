@@ -1,0 +1,141 @@
+ac_no,constituency,district,type,winner_name,winner_party,winner_votes,margin,runner_name,runner_party
+1,Manjeshwaram,Kasaragod,GEN,A. K. M. Ashraf,IUML,65758,745,K. Surendran,BJP
+2,Kasargod,Kasaragod,GEN,N. A. Nellikkunnu,IUML,63296,12901,K. Sreekanth,BJP
+3,Udma,Kasaragod,GEN,C. H. Kunhambu,CPI(M),78664,13322,Periya Balakrishnan,INC
+4,Kanhangad,Kasaragod,GEN,E. Chandrasekharan,CPI,84615,27139,P. V. Suresh,INC
+5,Thrikkaripur,Kasaragod,GEN,M. Rajagopal,CPI(M),86151,26137,M. P. Joseph,KC
+6,Payyannur,Kannur,GEN,T. I. Madusoodhanan,CPI(M),93695,49780,M. Pradeep Kumar,INC
+7,Kalliasseri,Kannur,GEN,M. Vijin,CPI(M),88252,44393,Brijesh Kumar,INC
+8,Thaliparamba,Kannur,GEN,M. V. Govindan,CPI(M),92870,22689,Abdul Rasheed V. P.,INC
+9,Irikkur,Kannur,GEN,Sajeev Joseph,INC,76764,10010,Saji Kuttiyanimattom,KC(M)
+10,Azhikode,Kannur,GEN,K. V. Sumesh,CPI(M),65794,6141,K. M. Shaji,IUML
+11,Kannur,Kannur,GEN,Kadannappalli Ramachandran,Con(S),60313,1745,Satheeshan Pacheni,INC
+12,Dharmadom,Kannur,GEN,Pinarayi Vijayan,CPI(M),95522,50123,C. Raghunath,INC
+13,Thalassery,Kannur,GEN,A. N. Shamseer,CPI(M),81810,36801,M. P. Aravindakshan,INC
+14,Kuthuparamba,Kannur,GEN,K. P. Mohanan,LJD,70626,9541,Pottankandi Abdulla,IUML
+15,Mattannur,Kannur,GEN,K. K. Shailaja,CPI(M),96129,60963,Illikkal Agasthy,RSP
+16,Peravoor,Kannur,GEN,Sunny Joseph,INC,66706,3172,Sakeer Hussain,CPI(M)
+17,Mananthavady (ST),Wayanad,GEN,O. R. Kelu,CPI(M),74085,9282,P. K. Jayalakshmi,INC
+18,Sulthanbathery (ST),Wayanad,GEN,I. C. Balakrishnan,INC,83002,11822,M. S. Viswanathan,CPI(M)
+19,Kalpetta,Wayanad,GEN,T. Siddique,INC,71859,5470,M. V. Shreyams Kumar,LJD
+20,Vatakara,Kozhikode,GEN,K. K. Rema,RMPI,65093,7491,Manayath Chandran,LJD
+21,Kuttiady,Kozhikode,GEN,K. P. Kunhahammed Kutty,CPI(M),80143,333,Parakkal Abdulla,IUML
+22,Nadapuram,Kozhikode,GEN,E. K. Vijayan,CPI,80287,3385,K.Praveen Kumar,INC
+23,Koyilandy,Kozhikode,GEN,Kanathil Jameela,CPI(M),75628,8472,N. Subramanian,INC
+24,Perambra,Kozhikode,GEN,T. P. Ramakrishnan,CPI(M),86023,22592,C. H. Ibrahimkutty,Ind.
+25,Balusseri (SC),Kozhikode,GEN,K. M. Sachin Dev,CPI(M),91839,20372,Dharmajan Bolgatty,INC
+26,Elathur,Kozhikode,GEN,A. K. Saseendran,NCP,83639,38502,Sulfikar Mayoori,Ind.
+27,Kozhikode North,Kozhikode,GEN,Thottathil Raveendran,CPI(M),59124,12928,K. M. Abhijith,INC
+28,KozhikodebSouth,Kozhikode,GEN,Ahamed Devarkovil,INL,52557,12459,P. K. Noorbeena Rasheed,IUML
+29,Beypore,Kozhikode,GEN,P. A. Mohammed Riyas,CPI(M),82165,28747,P. M. Niyas,INC
+30,Kunnamangalam,Kozhikode,GEN,P. T. A. Rahim,Ind.,85138,10276,Dinesh Perumanna,Ind.
+31,Koduvally,Kozhikode,GEN,M. K. Muneer,IUML,72336,6344,Karat Razak,Ind.
+32,Thiruvambadi,Kozhikode,GEN,Linto Joseph,CPI(M),67867,4643,C. P. Cheriya Muhammed,IUML
+33,Kondotty,Malappuram,GEN,T. V. Ibrahim,IUML,80597,17713,Sulaiman Haji,Ind.
+34,Eranad,Malappuram,GEN,P. K. Basheer,IUML,78076,22546,K. T. Abdurahman,Ind.
+35,Nilambur,Malappuram,GEN,P. V. Anvar,Ind.,81227,2700,V. V. Prakash,INC
+36,Wandoor (SC),Malappuram,GEN,A. P. Anil Kumar,INC,87415,15563,P. Midhuna,CPI(M)
+37,Manjeri,Malappuram,GEN,U. A. Latheef,IUML,78836,14573,P. Dibona Nassar,CPI
+38,Perinthalmanna,Malappuram,GEN,Najeeb Kanthapuram,IUML,76530,38,K. P. Mustafa,Ind.
+39,Mankada,Malappuram,GEN,Manjalamkuzhi Ali,IUML,83231,6246,T. K. Rasheed Ali,CPI(M)
+40,Malappuram,Malappuram,GEN,P. Ubaidulla,IUML,93166,35208,P. Abdurahman,CPI(M)
+41,Vengara,Malappuram,GEN,P. K. Kunhalikutty,IUML,70193,30522,P. Jiji,CPI(M)
+42,Vallikunnu,Malappuram,GEN,P. Abdul Hameed,IUML,71823,14116,A. P. Abdul Wahab,INL
+43,Tirurangadi,Malappuram,GEN,K. P. A. Majeed,IUML,73499,9578,Niyas Pulikkalakath,Ind.
+44,Tanur,Malappuram,GEN,V. Abdurahman,NSC,70704,985,P. K. Firos,IUML
+45,Tirur,Malappuram,GEN,Kurukkoli Moideen,IUML,85314,7214,Ghafoor P. Lillis,CPI(M)
+46,Kottakkal,Malappuram,GEN,K. K. Abid Hussain Thangal,IUML,81700,16588,N. A. Muhammad Kutty,NCP
+47,Thavanur,Malappuram,GEN,K. T. Jaleel,Ind.,70358,2564,Firoz Kunnumparambil,INC
+48,Ponnani,Malappuram,GEN,P. Nandakumar,CPI(M),74668,17043,A. M. Rohit,INC
+49,Thrithala,Palakkad,GEN,M. B. Rajesh,CPI(M),69814,3016,V. T. Balram,INC
+50,Pattambi,Palakkad,GEN,Muhammed Muhsin,CPI,75311,17974,Riyas Mukkoli,INC
+51,Shornur,Palakkad,GEN,P. Mammikutty,CPI(M),74400,36674,T. H. Feroz Babu,INC
+52,Ottappalam,Palakkad,GEN,K. Premkumar,CPI(M),74859,15152,P. Sarin,INC
+53,Kongad (SC),Palakkad,GEN,K. Shanthakumari,CPI(M),67881,27219,U. C. Raman,IUML
+54,Mannarkkad,Palakkad,GEN,N. Shamsudheen,IUML,71657,5870,K. P. Suresh Raj,CPI
+55,Malampuzha,Palakkad,GEN,A. Prabhakaran,CPI(M),75934,25734,C. Krishnakumar,BJP
+56,Palakkad,Palakkad,GEN,Shafi Parambil,INC,54079,3859,E. Sreedharan,BJP
+57,Tarur (SC),Palakkad,GEN,P. P. Sumod,CPI(M),67744,24531,K. A. Sheeba,INC
+58,Chittur,Palakkad,GEN,K. Krishnankutty,JD(S),84672,33878,Sumesh Achuthan,INC
+59,Nenmara,Palakkad,GEN,K. Babu,CPI(M),80145,28074,C. N. Vijayakrishnan,CMP(J)
+60,Alathur,Palakkad,GEN,K. D. Prasenan,CPI(M),74653,34118,Palayam Predeep,INC
+61,Chelakkara (SC),Thrissur,GEN,K. Radhakrishnan,CPI(M),83415,39400,C. C. Sreekumar,INC
+62,Kunnamkulam,Thrissur,GEN,A. C. Moideen,CPI(M),75532,26631,K. Jayasankar,INC
+63,Guruvayoor,Thrissur,GEN,N. K. Akbar,CPI(M),77072,18268,K. N. A. Khader,IUML
+64,Manalur,Thrissur,GEN,Murali Perunelly,CPI(M),78337,29876,Vijay Hari,INC
+65,Wadakkanchery,Thrissur,GEN,Xavier Chittilappilly,CPI(M),81026,15168,Anil Akkara,INC
+66,Ollur,Thrissur,GEN,K. Rajan,CPI,76657,21506,Jose Valloor,INC
+67,Thrissur,Thrissur,GEN,P. Balachandran,CPI,44263,946,Padmaja Venugopal,INC
+68,Nattika (SC),Thrissur,GEN,C. C. Mukundan,CPI,72930,28431,Sunil Lalur,INC
+69,Kaipamangalam,Thrissur,GEN,E. T. Taison,CPI,73161,22698,Sobha Subin,INC
+70,Irinjalakuda,Thrissur,GEN,R. Bindu,CPI(M),62493,5949,Thomas Unniyadan,KC
+71,Puthukkad,Thrissur,GEN,K. K. Ramachandran,CPI(M),73365,27353,Sunil Anthikad,INC
+72,Chalakudy,Thrissur,GEN,T. J. Saneesh Kumar Joseph,INC,61888,1057,Dennis Antony,KC(M)
+73,Kodungallur,Thrissur,GEN,V. R. Sunil Kumar,CPI,71457,23893,M. P. Jackson,INC
+74,Perumbavoor,Ernakulam,GEN,Eldhose Kunnappilly,INC,53484,2899,Babu Joseph,KC(M)
+75,Angamaly,Ernakulam,GEN,Roji M. John,INC,71562,15929,Jose Thettayil,JD(S)
+76,Aluva,Ernakulam,GEN,Anwar Sadath,INC,73703,18886,Shelna Nishad,CPI(M)
+77,Kalamassery,Ernakulam,GEN,P. Rajeev,CPI(M),77141,15336,V. E. Gafoor,IUML
+78,Paravur,Ernakulam,GEN,V. D. Satheesan,INC,82264,21301,M. T. Nixon,CPI
+79,Vypin,Ernakulam,GEN,K. N. Unnikrishnan,CPI(M),53858,8201,Deepak Joy,INC
+80,Kochi,Ernakulam,GEN,K. J. Maxi,CPI(M),54632,14079,Tony Chammany,INC
+81,Thripunithura,Ernakulam,GEN,K. Babu,INC,65875,992,M. Swaraj,CPI(M)
+82,Ernakulam,Ernakulam,GEN,T. J. Vinod,INC,45390,10970,Shaji George,Ind.
+83,Thrikkakara,Ernakulam,GEN,P. T. Thomas,INC,59839,14329,J. Jacob,CPI(M)
+84,Kunnathunad (SC),Ernakulam,GEN,P. V. Sreejin,CPI(M),52351,2715,V. P. Sajeendran,INC
+85,Piravom,Ernakulam,GEN,Anoop Jacob,KC(J),85056,25364,Sindhumol Jacob,KC(M)
+86,Muvattupuzha,Ernakulam,GEN,Mathew Kuzhalnadan,INC,64425,6161,Eldo Abraham,CPI
+87,Kothamangalam,Ernakulam,GEN,Antony John,CPI(M),64234,6605,Shibu Thekkumpuram,KC
+88,Devikulam (SC),Idukki,GEN,A. Raja,CPI(M),59049,7848,D. Kumar,INC
+89,Udumbanchola,Idukki,GEN,M. M. Mani,CPI(M),77381,38305,E. M. Augusthy,INC
+90,Thodupuzha,Idukki,GEN,P. J. Joseph,KC,67495,20259,K. I. Antony,KC(M)
+91,Idukki,Idukki,GEN,Roshy Augustine,KC(M),62368,5573,Francis George,KC
+92,Peerumede,Idukki,GEN,Vazhoor Soman,CPI,60141,1835,Syriac Thomas,INC
+93,Pala,Kottayam,GEN,Mani C. Kappan,Ind.,69804,15386,Jose K. Mani,KC(M)
+94,Kaduthuruthy,Kottayam,GEN,Monce Joseph,KC,59666,4256,Stephen George,KC(M)
+95,Vaikom (SC),Kottayam,GEN,C. K. Asha,CPI,71388,29122,P. R. Sona,INC
+96,Ettumanoor,Kottayam,GEN,V. N. Vasavan,CPI(M),58289,14303,Pr INCe Lukose,KC
+97,Kottayam,Kottayam,GEN,Thiruvanchoor Radhakrishnan,INC,65401,18743,K. Anilkumar,CPI(M)
+98,Puthuppally,Kottayam,GEN,Oommen Chandy,INC,63372,9044,Jaick C. Thomas,CPI(M)
+99,Changanassery,Kottayam,GEN,Job Michael,KC(M),55425,6059,V. J. Laly,KC
+100,Kanjirappally,Kottayam,GEN,N. Jayaraj,KC(M),60299,13703,Joseph Vazhackan,INC
+101,Poonjar,Kottayam,GEN,Sebastian Kulathunkal,KC(M),58668,16817,Tomy Kallany,INC
+102,Aroor,Alappuzha,GEN,Daleema Jojo,CPI(M),73626,6802,Shanimol Usman,INC
+103,Cherthala,Alappuzha,GEN,P. Prasad,CPI,83702,6148,S. Sarath,INC
+104,Alappuzha,Alappuzha,GEN,P. P. Chitharanjan,CPI(M),73412,11644,K. S. Manoj,INC
+105,Ambalappuzha,Alappuzha,GEN,H. Salam,CPI(M),61365,11125,M. Liju,INC
+106,Kuttanad,Alappuzha,GEN,Thomas K. Thomas,NCP,57379,5516,Jacob Abraham,KC
+107,Haripad,Alappuzha,GEN,Ramesh Chennithala,INC,72768,13666,R. Sajilal,CPI
+108,Kayamkulam,Alappuzha,GEN,U. Prathibha,CPI(M),77348,6298,Aritha Babu,INC
+109,Mavelikkara (SC),Alappuzha,GEN,M. S. Arun Kumar,CPI(M),71743,24717,K. K. Shaju,INC
+110,Chengannur,Alappuzha,GEN,Saji Cheriyan,CPI(M),71293,31984,M. Murali,INC
+111,Thiruvalla,Pathanamthitta,GEN,Mathew T. Thomas,JD(S),62178,11421,Kunju Koshy Paul,KC
+112,Ranni,Pathanamthitta,GEN,Pramod Narayan,KC(M),44774,1123,Ringoo Cherian,INC
+113,Aranmula,Pathanamthitta,GEN,Veena George,CPI(M),74950,19003,K. Sivadasan Nair,INC
+114,Konni,Pathanamthitta,GEN,K. U. Jenish Kumar,CPI(M),62318,8508,Robin Peter,INC
+115,Adoor (SC),Pathanamthitta,GEN,Chittayam Gopakumar,CPI,54026,2962,M. G. Kannan,INC
+116,Karunagapally,Kollam,GEN,C. R. Mahesh,INC,93932,29096,R. Ramachandran,CPI
+117,Chavara,Kollam,GEN,Sujith Vijayanpillai,Ind.,63282,1096,Shibu Baby John,RSP
+118,Kunnathur (SC),Kollam,GEN,Kovoor Kunjumon,Ind.,69436,2790,Ullas Kovoor,RSP
+119,Kottarakkara,Kollam,GEN,K. N. Balagopal,CPI(M),68770,10814,Resmi R.,INC
+120,Pathanapuram,Kollam,GEN,K. B. Ganesh Kumar,KC(B),67078,14302,Jyothikumar Chamakkala,INC
+121,Punalur,Kollam,GEN,P. S. Supal,CPI,80428,37007,Abdul Rahman Randathani,IUML
+122,Chadayamangalam,Kollam,GEN,J. Chinchu Rani,CPI,67252,13678,M. M. Naseer,INC
+123,Kundara,Kollam,GEN,P. C. Vishnunath,INC,76341,4454,J. Mercykutty Amma,CPI(M)
+124,Kollam,Kollam,GEN,Mukesh,CPI(M),58524,2072,Bindhu Krishna,INC
+125,Eravipuram,Kollam,GEN,M. Noushad,CPI(M),71573,28121,Babu Divakaran,RSP
+126,Chathannoor,Kollam,GEN,G. S. Jayalal,CPI,59296,17206,B. B. Gopakumar,BJP
+127,Varkala,Thiruvananthapuram,GEN,V. Joy,CPI(M),68816,17821,B. R. M. Shafeer,INC
+128,Attingal (SC),Thiruvananthapuram,GEN,O. S. Ambika,CPI(M),69898,31636,P. Sudheer,BJP
+129,Chirayinkeezhu (SC),Thiruvananthapuram,GEN,V. Sasi,CPI,62634,14017,Anup B.S.,INC
+130,Nedumangad,Thiruvananthapuram,GEN,G. R. Anil,CPI,72742,23309,P. S. Prasanth,INC
+131,Vamanapuram,Thiruvananthapuram,GEN,D. K. Murali,CPI(M),73137,10242,Anad Jayan,INC
+132,Kazhakoottam,Thiruvananthapuram,GEN,Kadakampally Surendran,CPI(M),63690,23497,Shobha Surendran,BJP
+133,Vattiyoorkavu,Thiruvananthapuram,GEN,V. K. Prasanth,CPI(M),61111,21515,V. V. Rajesh,BJP
+134,Thiruvananthapuram,Thiruvananthapuram,GEN,Antony Raju,JKC,48748,7089,V. S. Sivakumar,INC
+135,Nemom,Thiruvananthapuram,GEN,V. Sivankutty,CPI(M),55837,3949,Kummanam Rajasekharan,BJP
+136,Aruvikkara,Thiruvananthapuram,GEN,G. Stephen,CPI(M),66776,5046,K. S. Sabarinathan,INC
+137,Parassala,Thiruvananthapuram,GEN,C. K. Hareendran,CPI(M),78548,25828,Ansajitha Ressal,INC
+138,Kattakada,Thiruvananthapuram,GEN,I. B. Sathish,CPI(M),66293,23231,Malayainkeezhu Venugopal,INC
+139,Kovalam,Thiruvananthapuram,GEN,M. Vinent,INC,74868,11562,Neelalohithadasan Nadar,JD(S)
+140,Neyyattinkara,Thiruvananthapuram,GEN,K. Ansalan,CPI(M),65497,14262,R. Selvaraj,INC

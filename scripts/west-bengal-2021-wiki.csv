@@ -1,0 +1,294 @@
+ac_no,constituency,district,type,winner_name,winner_party,winner_votes,margin,runner_name,runner_party
+1,Mekliganj,Cooch Behar,SC,Paresh Chandra Adhikary,AITC,99338,14685,Dadhiram Ray,BJP
+2,Mathabhanga,Cooch Behar,SC,Sushil Barman,BJP,113249,26134,Girindra Nath Barman,AITC
+3,Cooch Behar Uttar,Cooch Behar,SC,Sukumar Roy,BJP,120483,14615,Binay Krishna Barman,AITC
+4,Cooch Behar Dakshin,Cooch Behar,GEN,Nikhil Ranjan Dey,BJP,96629,4799,Avijit De Bhowmik,AITC
+5,Sitalkuchi,Cooch Behar,SC,Baren Chandra Barman,BJP,124955,17815,Partha Pratim Ray,AITC
+6,Sitai,Cooch Behar,SC,Jagadish Chandra Barma Basunia,AITC,117908,10112,Dipak Kumar Roy,BJP
+7,Dinhata,Cooch Behar,GEN,Nisith Pramanik,BJP,116035,57,Udayan Guha,AITC
+8,Natabari,Cooch Behar,GEN,Mihir Goswami,BJP,111743,23440,Rabindra Nath Ghosh,AITC
+9,Tufanganj,Cooch Behar,GEN,Malati Rava Roy,BJP,114503,31198,Pranab Kumar Dey,AITC
+10,Kumargram,Alipurduar,ST,Manoj Kumar Oraon,BJP,111974,11001,Leos Kujar,AITC
+11,Kalchini,Alipurduar,ST,Bishal Lama,BJP,103104,28576,Pasang Lama,AITC
+12,Alipurduars,Alipurduar,GEN,Suman Kanjilal,BJP,107333,16007,Sourav Chakraborty,AITC
+13,Falakata,Alipurduar,GEN,Dipak Barman,BJP,102993,3990,Subhash Chanda Roy,AITC
+14,Madarihat,Alipurduar,GEN,Manoj Tigga,BJP,90718,29685,Rajesh Lakra,AITC
+15,Dhupguri,Jalpaiguri,SC,Bishnu Pada Ray,BJP,104688,4355,Mitali Roy,AITC
+16,Maynaguri,Jalpaiguri,SC,Kaushik Roy,BJP,115306,11911,Manoj Roy,AITC
+17,Jalpaiguri,Jalpaiguri,SC,Pradip Kumar Barma,AITC,95668,941,Sujit Singha,BJP
+18,Rajganj,Jalpaiguri,SC,Khageswar Roy,AITC,104641,15773,Supen Roy,BJP
+19,Dabgram-Phulbari,Jalpaiguri,GEN,Sikha Chatteree,BJP,129088,27593,Goutam Deb,AITC
+20,Mal,Jalpaiguri,ST,Bulu Chik Baraik,AITC,99086,5465,Mahesh Bagey,BJP
+21,Nagrakata,Jalpaiguri,ST,Puna Bhengra,BJP,70945,14402,Joseph Munda,AITC
+23,Darjeeling,Darjeeling,GEN,Neeraj Zimba,BJP,68907,21726,Keshav Raj Sharma,
+24,Kurseong,Darjeeling,GEN,Bishnu Prasad Sharma,BJP,73475,15515,Tshering Lama Dahal,
+25,Matigara-Naxalbari,Darjeeling,SC,Anandamoy Barman,BJP,139785,71331,Rajen Sundas,AITC
+26,Siliguri,Darjeeling,GEN,Shankar Ghosh,BJP,89370,35586,Om Prakash Mishra,AITC
+27,Phansidewa,Darjeeling,ST,Durga Murmu,BJP,105651,27711,Choton Kisku,AITC
+28,Chopra,Uttar Dinajpur,GEN,Hamidul Rahaman,AITC,124923,65319,Md. Shahin Akhtar,BJP
+29,Islampur,Uttar Dinajpur,GEN,Abdul Karim Chowdhury,AITC,100131,37440,Saumya Roop Mandal,BJP
+30,Goalpokhar,Uttar Dinajpur,GEN,Md. Ghulam Rabbani,AITC,105649,73514,Gulam Sarwar,BJP
+31,Chakulia,Uttar Dinajpur,GEN,Minhajul Arfin Azad,AITC,86311,33837,Sachin Prasad,BJP
+32,Karandighi,Uttar Dinajpur,GEN,Goutam Pal,AITC,116594,36626,Subhash Singha,BJP
+33,Hemtabad,Uttar Dinajpur,SC,Satyajit Burman,AITC,116425,27215,Chandima Roy,BJP
+34,Kaliaganj,Uttar Dinajpur,SC,Soumen Roy,BJP,116768,21820,Tapan Dev Singha,AITC
+35,Raiganj,Uttar Dinajpur,GEN,Krishna Kalyani,BJP,79775,20748,Kanaia Lal Agarwal,AITC
+36,Itahar,Uttar Dinajpur,GEN,Mosaraf Hossain,AITC,114645,43975,Amit Kumar Kundu,BJP
+37,Kushmandi,Dakshin Dinajpur,SC,Rekha Roy,AITC,89968,12584,Ranjit Kumar Roy,BJP
+38,Kumarganj,Dakshin Dinajpur,GEN,Toraf Hossain Mondal,AITC,89117,29381,Manas Sarkar,BJP
+39,Balurghat,Dakshin Dinajpur,GEN,Ashok Lahiri,BJP,70484,12899,Sekhar Dasgupta,AITC
+40,Tapan,Dakshin Dinajpur,ST,Budhrai Tudu,BJP,84381,1650,Kalpana Kisku,AITC
+41,Gangarampur,Dakshin Dinajpur,SC,Satyendra Nath Ray,BJP,88724,4592,Goutam Das,AITC
+42,Harirampur,Dakshin Dinajpur,GEN,Biplab Mitra,AITC,96131,22672,Nilanjan Roy,BJP
+43,Habibpur,Malda,ST,Joyel Murmu,BJP,94075,19517,Prodip Baskey,AITC
+44,Gazole,Malda,SC,Chinmoy Deb Barman,BJP,100655,1798,Basanti Barman,AITC
+45,Chanchal,Malda,GEN,Nihar Ranjan Ghosh,AITC,115966,67338,Dipankar Ram,BJP
+46,Harishchandrapur,Malda,GEN,Tajmul Hossain,AITC,122527,77473,Matibur Rahaman,BJP
+47,Malatipur,Malda,GEN,Abdur Rahim Boxi,AITC,126157,91949,Mousumi Das,BJP
+48,Ratua,Malda,GEN,Samar Mukherjee,AITC,130674,75650,Abhishek Singhania,BJP
+49,Manikchak,Malda,GEN,Sabitri Mitra,AITC,110234,33878,Gour Chandra Mandal,BJP
+50,Maldaha,Malda,GEN,Gopal Chandra Saha,BJP,93398,15456,Ujjwal Kumar Chowdhury,AITC
+51,English Bazar,Malda,GEN,Sreerupa Mitra Chaudhury,BJP,107755,20099,Krishnendu Narayan Choudhury,AITC
+52,Mothabari,Malda,GEN,Yeasmin Sabina,AITC,97397,56573,Shyamchand Ghosh,BJP
+53,Sujapur,Malda,GEN,Md. Abdul Ghani,AITC,152445,130163,Isha Khan Choudhury,INC
+54,Baisnabnagar,Malda,GEN,Chandana Sarkar,AITC,83061,2471,Swadhin Kumar Sarkar,BJP
+55,Farakka,Murshidabad,GEN,Manirul Islam,AITC,102319,59945,Hemanta Ghosh,BJP
+56,Samserganj,Murshidabad,GEN,Amirul Islam,AITC,96417,26379,Zaidur Rahaman,INC
+57,Suti,Murshidabad,GEN,Emani Biswas,AITC,127351,70701,Koushik Das,BJP
+58,Jangipur,Murshidabad,GEN,Jakir Hossain,AITC,136444,92480,Sujit Das,BJP
+59,Raghunathganj,Murshidabad,GEN,Akhruzzaman,AITC,126834,98313,Golam Modaswer,BJP
+60,Sagardighi,Murshidabad,GEN,Subrata Saha,AITC,95189,50206,Mafuja Khatun,BJP
+61,Lalgola,Murshidabad,GEN,Mohammad Ali,AITC,107860,60707,Abu Hena,INC
+62,Bhagabangola,Murshidabad,GEN,Idris Ali,AITC,153795,106008,Md Kamal Hossain,CPI(M)
+63,Raninagar,Murshidabad,GEN,Abdul Soumik Hossain,AITC,134957,79702,Firoza Begam,INC
+64,Murshidabad,Murshidabad,GEN,Gouri Shankar Ghosh,BJP,95967,2491,Shaoni Singha Roy,AITC
+65,Nabagram,Murshidabad,SC,Kanai Chandra Mondal,AITC,100455,35533,Mohan Halder,BJP
+66,Khargram,Murshidabad,SC,Ashis Marjit,AITC,93255,32573,Aditya Moulik,BJP
+67,Burwan,Murshidabad,SC,Jiban Krishna Saha,AITC,81890,2749,Amiya Kumar Das,BJP
+68,Kandi,Murshidabad,GEN,Apurba Sarkar,AITC,95399,38080,Goutam Roy,BJP
+69,Bharatpur,Murshidabad,GEN,Humayun Kabir,AITC,96226,43083,Iman Kalyan Mukherjee,BJP
+70,Rejinagar,Murshidabad,GEN,Rabiul Alam Chowdhury,AITC,118494,68268,Arabinda Biswas,BJP
+71,Beldanga,Murshidabad,GEN,SK Hasanuzzaman,AITC,112862,53832,Sumit Ghosh,BJP
+72,Baharampur,Murshidabad,GEN,Subrata Maitra,BJP,89340,26852,Naru Gopal Mukherjee,AITC
+73,Hariharpara,Murshidabad,GEN,Niamot Sheikh,AITC,102660,14066,Mir Alamgir,INC
+74,Naoda,Murshidabad,GEN,Sahina Momtaz Khan,AITC,117684,74153,Anupam Mandal,BJP
+75,Domkal,Murshidabad,GEN,Jafikul Islam,AITC,127671,47229,Md Mostafizur Rahaman,CPI(M)
+76,Jalangi,Murshidabad,GEN,Abdur Razzak,AITC,123840,79276,Saiful Islam Molla,CPI(M)
+77,Karimpur,Nadia,GEN,Bimlendu Sinha Roy,AITC,110911,23575,Samarendra Nath Ghosh,BJP
+78,Tehatta,Nadia,GEN,Tapas Kumar Saha,AITC,97848,6915,Ashutosh Paul,BJP
+79,Palashipara,Nadia,GEN,Dr. Manik Bhattacharya,AITC,110274,51336,Bibhash Chandra Mandal,BJP
+80,Kaliganj,Nadia,GEN,Nasiruddin Ahamed,AITC,111696,46987,Abhijit Ghosh,BJP
+81,Nakashipara,Nadia,GEN,Kallol Khan,AITC,104812,21271,Santanu Dey,BJP
+82,Chapra,Nadia,GEN,Rukbanur Rahman,AITC,73866,12118,Jeber Sekh,IND
+83,Krishnanagar Uttar,Nadia,GEN,Mukul Roy,BJP,109357,35089,Koushani Mukherjee,AITC
+84,Nabadwip,Nadia,GEN,Pundarikakshya Saha,AITC,102170,18571,Sidhartha Shankar Naskar,BJP
+85,Krishnanagar Dakshin,Nadia,GEN,Ujjal Biswas,AITC,91738,9305,Mahadev Sarkar,BJP
+86,Santipur,Nadia,GEN,Jagannath Sarkar,BJP,109722,15878,Ajoy Dey,AITC
+87,Ranaghat Uttar Paschim,Nadia,GEN,Parthasarathi Chatterjee,BJP,113637,23128,Sankar Singha,AITC
+88,Krishnaganj,Nadia,SC,Ashis Kumar Biswas,BJP,117668,21277,Dr. Tapas Mandal,AITC
+89,Ranaghat Uttar Purba,Nadia,SC,Ashim Biswas,BJP,116786,31782,Samir Kumar Poddar,AITC
+90,Ranaghat Dakshin,Nadia,SC,Mukut Mani Adhikari,BJP,119260,16515,Barnali Dey Roy,AITC
+91,Chakdaha,Nadia,GEN,Bankim Chandra Ghosh,BJP,99368,11680,Subhankar Singha,AITC
+92,Kalyani,Nadia,SC,Ambika Roy,BJP,97026,2206,Aniruddha Biswas,AITC
+93,Haringhata,Nadia,SC,Asim Kumar Sarkar,BJP,97666,15200,Nilima Nag,AITC
+94,Bagda,North 24 Parganas,SC,Biswajit Das,BJP,108111,9792,Paritosh Kumar Saha,AITC
+95,Bangaon Uttar,North 24 Parganas,SC,Ashok Kirtania,BJP,97761,10488,Shyamal Roy,AITC
+96,Bangaon Dakshin,North 24 Parganas,SC,Swapan Majumder,BJP,97828,2004,Alo Rani Sarkar,AITC
+97,Gaighata,North 24 Parganas,SC,Subrata Thakur,BJP,100808,9578,Narottam Biswas,AITC
+98,Swarupnagar,North 24 Parganas,SC,Bina Mondal,AITC,99784,34800,Brindaban Sarkar,BJP
+99,Baduria,North 24 Parganas,GEN,Abdur Rahim Quazi,AITC,109701,56444,Sukalyan Baidya,BJP
+100,Habra,North 24 Parganas,GEN,Jyotipriya Mallick,AITC,90533,3841,Biswajit Sinha,BJP
+101,Ashoknagar,North 24 Parganas,GEN,Narayan Goswami,AITC,93587,23532,Tanuja Chakraborty,BJP
+102,Amdanga,North 24 Parganas,GEN,Rafiqur Rahaman,AITC,88935,25480,Joydev Manna,BJP
+103,Bijpur,North 24 Parganas,GEN,Subodh Adhikary,AITC,66625,13347,Subhranshu Roy,BJP
+104,Naihati,North 24 Parganas,GEN,Partha Bhowmick,AITC,77753,18855,Phalguni Patra,BJP
+105,Bhatpara,North 24 Parganas,GEN,Pawan Kumar Singh,BJP,57244,13687,Jitendra Shaw,AITC
+106,Jagatdal,North 24 Parganas,GEN,Somenath Shyam Ichini,AITC,87030,18364,Arindam Bhattacharya,BJP
+107,Noapara,North 24 Parganas,GEN,Manju Basu,AITC,94203,26710,Sunil Singh,BJP
+108,Barrackpore,North 24 Parganas,GEN,Raj Chakraborty,AITC,68887,9222,Chandramani Shukla,BJP
+109,Khardaha,North 24 Parganas,GEN,Kajal Sinha,AITC,89807,28140,Silbhadra Datta,BJP
+110,Dum Dum Uttar,North 24 Parganas,GEN,Chandrima Bhattacharya,AITC,95465,28499,Dr. Archana Majumdar,BJP
+111,Panihati,North 24 Parganas,GEN,Nirmal Ghosh,AITC,86495,25177,Sanmoy Bandyopadhyay,BJP
+112,Kamarhati,North 24 Parganas,GEN,Madan Mitra,AITC,73845,35408,Anindya Banerjee,BJP
+113,Baranagar,North 24 Parganas,GEN,Tapas Roy,AITC,85615,35147,Parno Mitra,BJP
+114,Dum Dum,North 24 Parganas,GEN,Bratya Basu,AITC,87999,26731,Bimalshankar Nanda,BJP
+115,Rajarhat New Town,North 24 Parganas,GEN,Tapash Chatterjee,AITC,127374,56432,Bhaskar Roy,BJP
+116,Bidhannagar,North 24 Parganas,GEN,Sujit Bose,AITC,75912,7997,Sabyasachi Dutta,BJP
+117,Rajarhat Gopalpur,North 24 Parganas,GEN,Aditi Munshi,AITC,87650,25296,Samik Bhattacharya,BJP
+118,Madhyamgram,North 24 Parganas,GEN,Rathin Ghosh,AITC,112741,48126,Rajasree Rajbanshi,BJP
+119,Barasat,North 24 Parganas,GEN,Chiranjeet Chakraborty,AITC,104431,23783,Sankar Chatterjee,BJP
+120,Deganga,North 24 Parganas,GEN,Rahima Mondal,AITC,100105,32537,Karim Ali,ISF
+121,Haroa,North 24 Parganas,GEN,Islam Sk Nurul (Haji),AITC,130398,80978,Kutubuddin Fathe,ISF
+122,Minakhan,North 24 Parganas,SC,Usha Rani Mondal,AITC,109818,55830,Jayanta Mondal,BJP
+123,Sandeshkhali,North 24 Parganas,ST,Sukumar Mahata,AITC,112450,39685,Dr. Bhaskar Sardar,BJP
+124,Basirhat Dakshin,North 24 Parganas,GEN,Dr. Saptarshi Banerjee,AITC,115873,24468,Tarak Nath Ghosh,BJP
+125,Basirhat Uttar,North 24 Parganas,GEN,Rafikul Islam Mondal,AITC,137216,89351,Md. Baijid Amin,ISF
+126,Hingalganj,North 24 Parganas,SC,Debes Mandal,AITC,104706,24916,Nemai Das,BJP
+127,Gosaba,South 24 Parganas,SC,Jayanta Naskar,AITC,105723,23709,Barun Pramanik (Chitta),BJP
+128,Basanti,South 24 Parganas,SC,Shyamal Mondal,AITC,111453,50642,Ramesh Majhi,BJP
+129,Kultali,South 24 Parganas,SC,Ganesh Chandra Mondal,AITC,117238,47177,Mintu Halder,BJP
+130,Patharpratima,South 24 Parganas,GEN,Samir Kumar Jana,AITC,120181,22134,Asit Kumar Haldar,BJP
+131,Kakdwip,South 24 Parganas,GEN,Manturam Pakhira,AITC,114493,25302,Dipankar Jana,BJP
+132,Sagar,South 24 Parganas,GEN,Bankim Chandra Hazra,AITC,129000,29846,Kamila Bikash,BJP
+133,Kulpi,South 24 Parganas,GEN,Jogaranjan Halder,AITC,96577,33818,Pranab Kumar Mallik,BJP
+134,Raidighi,South 24 Parganas,GEN,Aloke Jaldata,AITC,115707,35568,Santanu Bapuli,BJP
+135,Mandirbazar,South 24 Parganas,SC,Joydeb Halder,AITC,95834,23492,Dilip Kumar Jatua,BJP
+136,Jaynagar,South 24 Parganas,SC,Biswanath Das,AITC,104952,38683,Rabin Sardar,BJP
+137,Baruipur Purba,South 24 Parganas,SC,Bivas Sardar (Vobo),AITC,123243,49641,Chandan Mondal,BJP
+138,Canning Paschim,South 24 Parganas,SC,Paresh Ram Das,AITC,111059,35243,Arnab Roy,BJP
+139,Canning Purba,South 24 Parganas,GEN,Saokat Molla,AITC,122301,53007,Gazi Shahabuddin Siraji,ISF
+140,Baruipur Paschim,South 24 Parganas,GEN,Biman Banerjee,AITC,121006,61910,Debopam Chattopadhyaya (Babu),BJP
+141,Magrahat Purba,South 24 Parganas,SC,Namita Saha,AITC,110945,54079,Chandan Kumar Naskar,BJP
+142,Magrahat Paschim,South 24 Parganas,GEN,Gias Uddin Molla,AITC,97006,46941,Dhurjati Saha (Manas),BJP
+143,Diamond Harbour,South 24 Parganas,GEN,Pannalal Halder,AITC,98478,16996,Dipak Kumar Halder,BJP
+144,Falta,South 24 Parganas,GEN,Sankar Kumar Naskar,AITC,117179,40774,Bidhan Parui,BJP
+145,Satgachia,South 24 Parganas,GEN,Mohan Chandra Naskar,AITC,118635,23318,Chandan Pal,BJP
+146,Bishnupur (South 24 Parganas),South 24 Parganas,SC,Dilip Mondal,AITC,136509,58832,Agniswar Naskar,BJP
+147,Sonarpur Dakshin,South 24 Parganas,GEN,Arundhuti Maitra (Lovely),AITC,109222,26181,Anjana Basu,BJP
+148,Bhangar,South 24 Parganas,GEN,Nawsad Siddique,ISF,109237,26151,Karim Rezaul,AITC
+149,Kasba,South 24 Parganas,GEN,Javed Ahmed Khan,AITC,121372,63622,Dr. Indranil Khan,BJP
+150,Jadavpur,South 24 Parganas,GEN,Debabrata Majumdar (Malay),AITC,98100,38869,Dr. Sujan Chakraborty,CPI(M)
+151,Sonarpur Uttar,South 24 Parganas,GEN,Firdousi Begum,AITC,119957,36090,Ranjan Baidya,BJP
+152,Tollygunge,South 24 Parganas,GEN,Aroop Biswas,AITC,101440,50080,Babul Supriyo,BJP
+153,Behala Purba,South 24 Parganas,GEN,Ratna Chatterjee,AITC,110968,37428,Payel Sarkar,BJP
+154,Behala Paschim,South 24 Parganas,GEN,Partha Chatterjee,AITC,114778,50884,Srabanti Chatterjee,BJP
+155,Maheshtala,South 24 Parganas,GEN,Dulal Chandra Das,AITC,124008,57949,Umesh Das,BJP
+156,Budge Budge,South 24 Parganas,GEN,Ashok Kumar Deb,AITC,122357,44714,Dr. Tarun Kumar Adak,BJP
+157,Metiaburuz,South 24 Parganas,GEN,Abdul Khaleque Molla,AITC,151066,119604,Ramjit Prasad,BJP
+158,Kolkata Port,Kolkata,GEN,Firhad Hakim,AITC,105543,68554,Awadh Kishore Gupta,BJP
+159,Bhabanipur,Kolkata,GEN,Sobhandeb Chattopadhyay,AITC,73505,28719,Rudranil Ghosh,BJP
+160,Rashbehari,Kolkata,GEN,Debasish Kumar,AITC,65704,21414,Lt. Gen. (Dr.) Subrata Saha,BJP
+161,Ballygunge,Kolkata,GEN,Subrata Mukherjee,AITC,106585,75359,Lokenath Chatterjee,BJP
+162,Chowrangee,Kolkata,GEN,Nayna Bandyopadhyay,AITC,70101,45344,Devdutta Maji,BJP
+163,Entally,Kolkata,GEN,Swarna Kamal Saha,AITC,101709,58257,Priyanka Tibrewal,BJP
+164,Beleghata,Kolkata,GEN,Paresh Paul,AITC,103182,67140,Kashinath Biswas,BJP
+165,Jorasanko,Kolkata,GEN,Vivek Gupta,AITC,52123,12743,Meena Devi Purohit,BJP
+166,Shyampukur,Kolkata,GEN,Dr. Shashi Panja,AITC,55785,22520,Sandipan Biswas,BJP
+167,Maniktala,Kolkata,GEN,Sadhan Pande,AITC,67577,20238,Kalyan Chaubey,BJP
+168,Kashipur-Belgachia,Kolkata,GEN,Atin Ghosh,AITC,76182,35390,Sibaji Sinha Roy,BJP
+169,Bally,Howrah,GEN,Rana Chatterjee,AITC,53347,6237,Baishali Dalmiya,BJP
+170,Howrah Uttar,Howrah,GEN,Gautam Chowdhuri,AITC,71575,5522,Umesh Rai,BJP
+171,Howrah Madhya,Howrah,GEN,Arup Roy,AITC,111554,46547,Sanjay Singh,BJP
+172,Shibpur,Howrah,GEN,Manoj Tiwary,AITC,92372,32603,Rathin Chakrabarty,BJP
+173,Howrah Dakshin,Howrah,GEN,Nandita Chowdhury,AITC,116839,50569,Rantidev Sengupta,BJP
+174,Sankrail,Howrah,SC,Priya Paul,AITC,111888,40427,Probhakar Pandit,BJP
+175,Panchla,Howrah,GEN,Gulsan Mullick,AITC,104572,32751,Mohit Lal Ghanti,BJP
+176,Uluberia Purba,Howrah,GEN,Bidesh Ranjan Bose,AITC,86526,17126,Pratyush Mandal,BJP
+177,Uluberia Uttar,Howrah,SC,Dr. Nirmal Maji,AITC,91501,21003,Chiran Bera,BJP
+178,Uluberia Dakshin,Howrah,GEN,Pulak Roy,AITC,101880,28438,Papia Dey (Adhikary),BJP
+179,Shyampur,Howrah,GEN,Kalipada Mandal,AITC,114804,31511,Tanusree Chakraborty,BJP
+180,Bagnan,Howrah,GEN,Arunava Sen (Raja),AITC,106042,30120,Anupam Mallik,BJP
+181,Amta,Howrah,GEN,Sukanta Kumar Paul,AITC,102445,26205,Debtanu Bhattacharya,BJP
+182,Udaynarayanpur,Howrah,GEN,Samir Kumar Panja,AITC,101510,13998,Sumit Ranjan Karar,BJP
+183,Jagatballavpur,Howrah,GEN,Sitanath Ghosh,AITC,116562,29196,Anupam Ghosh,BJP
+184,Domjur,Howrah,GEN,Kalyan Ghosh,AITC,130499,42620,Rajib Banerjee,BJP
+185,Uttarpara,Hooghly,GEN,Kanchan Mullick,AITC,93878,35989,Prabir Kumar Ghosal,BJP
+186,Sreerampur,Hooghly,GEN,Dr. Sudipto Roy,AITC,93021,23433,Kabir Shankar Bose,BJP
+187,Champdani,Hooghly,GEN,Arindam Guin (Bubai),AITC,100972,30078,Dilip Singh,BJP
+188,Singur,Hooghly,GEN,Becharam Manna,AITC,101077,25923,Rabindranath Bhattacharya,BJP
+189,Chandannagar,Hooghly,GEN,Indranil Sen,AITC,86778,31029,Deepanjan Kumar Guha,BJP
+190,Chunchura,Hooghly,GEN,Asit Mazumder (Tapan),AITC,117104,18417,Locket Chatterjee,BJP
+191,Balagarh,Hooghly,SC,Manoranjan Byapari,AITC,100364,5784,Subhas Chandra Haldar,BJP
+192,Pandua,Hooghly,GEN,Dr. Ratna De Nag,AITC,102874,31858,Partha Sharma,BJP
+193,Saptagram,Hooghly,GEN,Tapan Dasgupta,AITC,93328,9772,Debabrata Biswas,BJP
+194,Chanditala,Hooghly,GEN,Swati Khandoker,AITC,103118,41347,Yash Dasgupta,BJP
+195,Jangipara,Hooghly,GEN,Snehasis Chakraborty,AITC,101885,17926,Debjit Sarkar,BJP
+196,Haripal,Hooghly,GEN,Dr. Karabi Manna,AITC,110215,23072,Samiran Mitra,BJP
+197,Dhanekhali,Hooghly,SC,Asima Patra,AITC,124776,30159,Tusar Kumar Majumdar,BJP
+198,Tarakeswar,Hooghly,GEN,Ramendu Sinharay,AITC,96698,7484,Dr. Swapan Dasgupta,BJP
+199,Pursurah,Hooghly,GEN,Biman Ghosh,BJP,119334,28178,Dilip Yadav,AITC
+200,Arambagh,Hooghly,SC,Madhusudan Bag,BJP,103108,7172,Sujata Mondal,AITC
+201,Goghat,Hooghly,SC,Biswanath Karak,BJP,102227,4147,Manas Majumdar,AITC
+202,Khanakul,Hooghly,GEN,Susanta Ghosh,BJP,107403,12884,Munsi Nazbul Karim,AITC
+203,Tamluk,Purba Medinipur,GEN,Saumen Kumar Mahapatra,AITC,108243,793,Hare Krishna Bera,BJP
+204,Panskura Purba,Purba Medinipur,GEN,Biplab Roy Chowdhury,AITC,91213,9660,Debabrata Pattanayek,BJP
+205,Panskura Paschim,Purba Medinipur,GEN,Phiroja Bibi,AITC,111705,8889,Sintu Senapati,BJP
+206,Moyna,Purba Medinipur,GEN,Ashoke Dinda,BJP,108109,1260,Sangram Kumar Dolai,AITC
+207,Nandakumar,Purba Medinipur,GEN,Sukumar De,AITC,108181,5406,Nilanjan Adhikary,BJP
+208,Mahisadal,Purba Medinipur,GEN,Tilak Kumar Chakraborty,AITC,101986,2386,Biswanath Banerjee,BJP
+209,Haldia,Purba Medinipur,SC,Tapasi Mondal,BJP,104126,15008,Swapan Naskar,AITC
+210,Nandigram,Purba Medinipur,GEN,Suvendu Adhikari,BJP,110764,1956,Mamata Banerjee,AITC
+211,Chandipur,Purba Medinipur,GEN,Soham Chakraborty,AITC,109770,13472,Pulak Kanti Guria,BJP
+212,Patashpur,Purba Medinipur,GEN,Uttam Barik,AITC,105299,9994,Ambujaksha Mahanti,BJP
+213,Kanthi Uttar,Purba Medinipur,GEN,Sumita Sinha,BJP,113524,9330,Tarun Kumar Jana,AITC
+214,Bhagabanpur,Purba Medinipur,GEN,Rabindranath Maity,BJP,121480,27549,Ardhendu Maity,AITC
+215,Khejuri,Purba Medinipur,SC,Santanu Pramanik,BJP,110407,17965,Partha Pratim Das,AITC
+216,Kanthi Dakshin,Purba Medinipur,GEN,Arup Kumar Das,BJP,98477,10293,Jyotirmoy Kar,AITC
+217,Ramnagar,Purba Medinipur,GEN,Akhil Giri,AITC,112622,12517,Swadesh Ranjan Nayak,BJP
+218,Egra,Purba Medinipur,GEN,Tarun Kumar Maity,AITC,125763,18491,Arup Dash,BJP
+219,Dantan,Paschim Medinipur,GEN,Bikram Chandra Pradhan,AITC,94609,775,Saktipada Nayak,BJP
+220,Nayagram,Jhargram,ST,Dulal Murmu,AITC,99825,22736,Bakul Murmu,BJP
+221,Gopiballavpur,Jhargram,GEN,Dr. Khagendra Nath Mahata,AITC,102710,23604,Sanjit Mahata,BJP
+222,Jhargram,Jhargram,GEN,Birbaha Hansda,AITC,108044,37996,Sukhamay Satpathy (Jahar),BJP
+223,Keshiary,Paschim Medinipur,ST,Paresh Murmu,AITC,106366,15330,Sonali Murmu,BJP
+224,Kharagpur Sadar,Paschim Medinipur,GEN,Hiran Chatterjee,BJP,79607,3771,Pradip Sarkar,AITC
+225,Narayangarh,Paschim Medinipur,GEN,Suryakanta Atta,AITC,100894,2416,Ramprasad Giri,BJP
+226,Sabang,Paschim Medinipur,GEN,Manas Bhunia,AITC,112098,9864,Amulya Maity,BJP
+227,Pingla,Paschim Medinipur,GEN,Ajit Maity,AITC,112435,6656,Antara Bhattacharya,BJP
+228,Kharagpur,Paschim Medinipur,GEN,Dinen Ray,AITC,109727,36230,Tapan Bhuiya,BJP
+229,Debra,Paschim Medinipur,GEN,Humayun Kabir,AITC,95850,11226,Bharati Ghosh,BJP
+230,Daspur,Paschim Medinipur,GEN,Mamata Bhunia,AITC,114753,26842,Prashanth Bera,BJP
+231,Ghatal,Paschim Medinipur,GEN,Shital Kapat,BJP,105812,966,Shankar Dolai,AITC
+232,Chandrakona,Paschim Medinipur,SC,Arup Dhara,AITC,121846,11281,Shibram Das,BJP
+233,Garbeta,Paschim Medinipur,GEN,Uttara Singha,AITC,94928,10572,Madan Ruidas,BJP
+234,Salboni,Paschim Medinipur,GEN,Srikanta Mahata,AITC,126020,32644,Rajib Kundu,BJP
+235,Keshpur,Paschim Medinipur,GEN,Siuli Saha,AITC,116992,20720,Pritish Ranjan,BJP
+236,Medinipur,Paschim Medinipur,GEN,June Malia,AITC,121175,24397,Shamit Dash,BJP
+237,Binpur,Jhargram,ST,Debnath Hansda,AITC,99786,39573,Palan Saren,BJP
+238,Bandwan,Purulia,ST,Rajib Lochan Saren,AITC,112183,18885,Parsi Murmu,BJP
+239,Balarampur,Purulia,GEN,Baneswar Mahato,BJP,88803,273,Shantiram Mahato,AITC
+240,Baghmundi,Purulia,GEN,Sushanta Mahato,AITC,75245,13735,Ashutosh Mahato,AJSU
+241,Joypur,Purulia,GEN,Narahari Mahato,BJP,73713,12102,Phanibhushan Kumar,INC
+242,Purulia,Purulia,GEN,Sudip Kumar Mukherjee,BJP,88899,6585,Sujoy Banerjee,AITC
+243,Manbazar,Purulia,ST,Sandhyarani Tudu,AITC,102169,15490,Gouri Singh Sardar,BJP
+244,Kashipur,Purulia,GEN,Kamalakanta Hansda,BJP,92061,7240,Swapan Kumar Beltharia,AITC
+245,Para,Purulia,SC,Nadiar Chand Bouri,BJP,86930,3944,Umapada Bauri,AITC
+246,Raghunathpur,Purulia,SC,Vivekananda Bauri,BJP,94994,5323,Bouri Hazari,AITC
+247,Saltora,Bankura,SC,Chandana Bauri,BJP,91648,4145,Santosh Kumar Mondal,AITC
+248,Chhatna,Bankura,GEN,Satyanarayan Mukhopadhyay,BJP,90233,7164,Subasish Batabyal,AITC
+249,Ranibandh,Bankura,ST,Jyotsna Mandi,AITC,90928,3939,Kshudiram Tudu,BJP
+250,Raipur,Bankura,ST,Mrityunjoy Murmu,AITC,101043,19398,Sudhanshu Hansda,BJP
+251,Taldangra,Bankura,GEN,Arup Chakraborty,AITC,92026,12377,Shyamal Kumar Sarkar,BJP
+252,Bankura,Bankura,GEN,Niladri Sekhar Dana,BJP,95466,1468,Sayantika Banerjee,AITC
+253,Barjora,Bankura,GEN,Alok Mukherjee,AITC,93290,3269,Supriti Chatterjee,BJP
+254,Onda,Bankura,GEN,Amarnath Shakha,BJP,104940,11551,Arup Kumar Khan,AITC
+255,Bishnupur (Bankura),Bankura,GEN,Tanmay Ghosh,BJP,88743,11133,Archita Bid,AITC
+256,Katulpur,Bankura,SC,Harakali Protiher,BJP,106022,11785,Sangeeta Malik,AITC
+257,Indas,Bankura,SC,Nirmal Kumar Dhara,BJP,104936,7220,Runu Mete,AITC
+258,Sonamukhi,Bankura,SC,Dibakar Gharami,BJP,98161,10888,Dr Shyamal Santra,AITC
+259,Khandaghosh,Purba Bardhaman,SC,Nabin Chandra Bag,AITC,104264,20886,Bijan Mandal,BJP
+260,Bardhaman Dakshin,Purba Bardhaman,GEN,Khokan Das,AITC,91015,8105,Sandip Nandi,BJP
+261,Raina,Purba Bardhaman,SC,Shampa Dhara,AITC,108752,18205,Manik Roy,BJP
+262,Jamalpur,Purba Bardhaman,SC,Alok Kumar Majhi,AITC,96999,17971,Balaram Bapari,BJP
+263,Manteswar,Purba Bardhaman,GEN,Chowdhury Siddiqullah,AITC,105460,31805,Saikat Panja,BJP
+264,Kalna,Purba Bardhaman,SC,Deboprasad Bag (Poltu),AITC,96073,7478,Biswajit Kundu,BJP
+265,Memari,Purba Bardhaman,GEN,Madhusudan Bhattacharya,AITC,104851,23078,Bhismadeb Bhattacharya,BJP
+266,Bardhaman Uttar,Purba Bardhaman,SC,Nisith Kumar Malik,AITC,111211,17268,Radha Kanta Roy,BJP
+267,Bhatar,Purba Bardhaman,GEN,Adhikari Mangobinda,AITC,108028,31741,Mahendranath Kowar,BJP
+268,Purbasthali Dakshin,Purba Bardhaman,GEN,Swapan Debnath,AITC,105698,17410,Rajib Kumar Bhowmick,BJP
+269,Purbasthali Uttar,Purba Bardhaman,GEN,Tapan Chatterjee,AITC,92421,6706,Gobardhan Das,BJP
+270,Katwa,Purba Bardhaman,GEN,Rabindranath Chatterjee,AITC,107894,9155,Shyama Majumdar,BJP
+271,Ketugram,Purba Bardhaman,GEN,Sekh Sahonawez,AITC,100226,12683,Anadi Ghosh (Mathura),BJP
+272,Mangalkot,Purba Bardhaman,GEN,Apurba Chowdhury (Achal),AITC,107596,22337,Rana Protap Goswami,BJP
+273,Ausgram,Purba Bardhaman,SC,Abhedananda Thander,AITC,100392,11815,Kalita Maji,BJP
+274,Galsi,Purba Bardhaman,SC,Nepal Ghorui,AITC,109504,19262,Bikash Biswas,BJP
+275,Pandaveswar,Paschim Bardhaman,GEN,Narendranath Chakraborty,AITC,73922,3803,Jitendra Tiwari,BJP
+276,Durgapur Purba,Paschim Bardhaman,GEN,Pradip Mazumdar,AITC,79303,3746,Colonel Diptansu Chaudhury,BJP
+277,Durgapur Paschim,Paschim Bardhaman,GEN,Lakshman Chandra Ghorui,BJP,91186,14664,Biswanath Parial,AITC
+278,Raniganj,Paschim Bardhaman,GEN,Tapas Banerjee,AITC,78164,3556,Dr. Bijan Mukherjee,BJP
+279,Jamuria,Paschim Bardhaman,GEN,Hareram Singh,AITC,71002,8051,Tapas Kumar Roy,BJP
+280,Asansol Dakshin,Paschim Bardhaman,GEN,Agnimitra Paul,BJP,87881,4487,Sayani Ghosh,AITC
+281,Asansol Uttar,Paschim Bardhaman,GEN,Moloy Ghatak,AITC,100931,21110,Krishnendu Mukherjee,BJP
+282,Kulti,Paschim Bardhaman,GEN,Ajay Kumar Poddar,BJP,81112,679,Ujjal Chatterjee,AITC
+283,Barabani,Paschim Bardhaman,GEN,Bidhan Upadhyay,AITC,88430,23457,Arijit Roy,BJP
+284,Dubrajpur,Birbhum,SC,Anup Kumar Saha,BJP,98083,3863,Debabrata Saha,AITC
+285,Suri,Birbhum,GEN,Bikash Roychoudhury,AITC,105871,7320,Jagannath Chattopadhyay,BJP
+286,Bolpur,Birbhum,GEN,Sinha Chandranath,AITC,116443,22280,Anirban Ganguly,BJP
+287,Nanoor,Birbhum,SC,Bidhan Chandra Majhi,AITC,112116,6670,Tarakeswar Saha,BJP
+288,Labpur,Birbhum,GEN,Abhijit Sinha (Rana),AITC,108423,17975,Biswajit Mondal,BJP
+289,Sainthia,Birbhum,SC,Nilabati Saha,AITC,110572,15243,Piya Saha,BJP
+290,Mayureswar,Birbhum,GEN,Abhijit Roy,AITC,100425,12075,Shyamapada Mondal,BJP
+291,Rampurhat,Birbhum,GEN,Asish Banerjee,AITC,103276,8472,Subhasis Choudhury (Khokan),BJP
+292,Hansan,Birbhum,GEN,Dr. Asok Kumar Chattopadhyay,AITC,108289,50613,Nikhil Banerjee,BJP
+293,Nalhati,Birbhum,GEN,Rajendra Prasad Singh (Raju Singh),AITC,117438,56905,Tapas Kumar Yadav (Ananda Yadav),BJP
+294,Murarai,Birbhum,GEN,Dr Mosarraf Hossain,AITC,146496,98246,Debasish Roy,BJP

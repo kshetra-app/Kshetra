@@ -211,7 +211,7 @@ export const STATES: Record<string, StateInfo> = {
 };
 
 /** States that have full constituency data available */
-export const FULLY_SUPPORTED_STATES = ['TS', 'AP', 'KA', 'MH'] as const;
+export const FULLY_SUPPORTED_STATES = ['TS', 'AP', 'KA', 'MH', 'TN', 'KL', 'WB', 'UP'] as const;
 export type FullySupportedStateCode = (typeof FULLY_SUPPORTED_STATES)[number];
 
 /** States that have at least stub/partial data available */
