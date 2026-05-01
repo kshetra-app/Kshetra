@@ -39,7 +39,7 @@
       "favicon": "./assets/favicon.png"
     },
     "plugins": [
-      "expo-router",
+      ["expo-router", { "root": "./app" }],
       "expo-location",
       "expo-sqlite",
       [
@@ -62,7 +62,7 @@
       "typedRoutes": true
     },
     "extra": {
-      "router": {},
+      "router": { "root": "./app" },
       "eas": {
         "projectId": "42370bcb-74ca-4988-9d4d-ab5d53818218"
       }
