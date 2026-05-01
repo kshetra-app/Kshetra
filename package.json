@@ -4,7 +4,8 @@
   "private": true,
   "workspaces": [
     "apps/*",
-    "packages/*"
+    "packages/*",
+    "data/*"
   ],
   "scripts": {
     "dev:mobile": "turbo run dev --filter=@kshetra/mobile",

@@ -4,7 +4,7 @@
   "version": "0.1.0",
   "description": "Census of India data for delimitation engine",
   "scripts": {
-    "test": "jest --no-cache"
+    "test": "node ../../node_modules/jest/bin/jest.js --no-cache --forceExit"
   },
   "devDependencies": {
     "jest": "^29.7.0",

@@ -40,3 +40,9 @@ yarn-error.log*
 
 # Testing
 coverage/
+
+# External cloned repos (used for data sourcing only)
+scripts/india-votes-data/
+
+# Scraper debug artifacts
+scripts/myneta-sample.html

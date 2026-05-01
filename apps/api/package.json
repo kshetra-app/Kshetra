@@ -6,8 +6,8 @@
     "dev": "tsx watch src/server.ts",
     "build": "tsc",
     "start": "node dist/server.js",
-    "test": "jest --passWithNoTests --forceExit",
-    "test:coverage": "jest --coverage",
+    "test": "node ../../node_modules/jest/bin/jest.js --passWithNoTests --forceExit",
+    "test:coverage": "node ../../node_modules/jest/bin/jest.js --coverage",
     "clean": "rm -rf dist",
     "lint": "echo lint"
   },

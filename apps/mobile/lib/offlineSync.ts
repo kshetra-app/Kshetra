@@ -113,21 +113,25 @@ export async function flushQueue(): Promise<{ processed: number; failed: number 
  */
 async function executeOp(op: SyncOperation): Promise<boolean> {
   try {
-    // In production, these would call real Supabase/API endpoints.
-    // For now, we simulate success for all operations since
-    // the actual data is managed locally by Zustand stores.
+    const svc = require('./supabaseDataService');
+    const p = op.payload;
     switch (op.type) {
       case 'upvote_issue':
+        return svc.upvoteIssue(p.issueId as string, p.userId as string);
       case 'follow_issue':
+        return svc.followIssue(p.issueId as string, p.userId as string, p.follow as boolean);
       case 'react_post':
+        return svc.reactToPost(p.postId as string, p.userId as string, p.reaction as string);
       case 'follow_promise':
+        return svc.followPromise(p.promiseId as string, p.userId as string, p.follow as boolean);
       case 'submit_evidence':
+        return svc.submitEvidence(p);
       case 'favorite_toggle':
+        return svc.toggleFavorite(p.constituencyId as string, p.userId as string, p.isFavorite as boolean);
       case 'report_issue':
+        return (await svc.reportIssue(p)).success;
       case 'compose_post':
-        // Zustand stores already applied the change locally.
-        // This would push to Supabase when backend is wired.
-        return true;
+        return (await svc.composePost(p)).success;
       default:
         return true;
     }

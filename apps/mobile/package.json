@@ -8,6 +8,7 @@
     "android": "expo run:android",
     "ios": "expo run:ios",
     "build": "echo build",
+    "test": "node ../../node_modules/jest/bin/jest.js --passWithNoTests --forceExit",
     "lint": "expo lint",
     "clean": "rm -rf .expo node_modules"
   },

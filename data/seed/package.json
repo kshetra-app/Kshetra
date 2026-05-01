@@ -3,8 +3,8 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "test": "jest --passWithNoTests --forceExit",
-    "test:coverage": "jest --coverage"
+    "test": "node ../../node_modules/jest/bin/jest.js --passWithNoTests --forceExit",
+    "test:coverage": "node ../../node_modules/jest/bin/jest.js --coverage"
   },
   "devDependencies": {
     "@types/jest": "^29.5.0",

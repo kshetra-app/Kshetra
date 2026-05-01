@@ -9,6 +9,7 @@ import { useTheme } from '../lib/useTheme';
 import { usePushNotifications } from '../lib/usePushNotifications';
 import { useNetworkStore } from '../lib/networkStatus';
 import OfflineBanner from '../components/OfflineBanner';
+import { initErrorReporting, setUser } from '../lib/errorReporting';
 import '../i18n';
 
 SplashScreen.preventAutoHideAsync();
@@ -19,12 +20,19 @@ export default function RootLayout() {
   usePushNotifications();
   const startNetworkMonitoring = useNetworkStore((s) => s.startMonitoring);
 
+  const user = useAuthStore((s) => s.user);
+
   useEffect(() => {
+    initErrorReporting();
     initializeAuth();
     SplashScreen.hideAsync();
     const stopNetwork = startNetworkMonitoring();
     return () => { if (stopNetwork) stopNetwork(); };
   }, [initializeAuth, startNetworkMonitoring]);
+
+  useEffect(() => {
+    setUser(user?.id ?? null, user?.email ?? undefined);
+  }, [user]);
 
   return (
     <ErrorBoundary fallbackMessage="Kshetra encountered an error. Please restart the app.">
