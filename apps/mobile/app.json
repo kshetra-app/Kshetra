@@ -7,7 +7,7 @@
     "icon": "./assets/icon.png",
     "scheme": "kshetra",
     "userInterfaceStyle": "automatic",
-    "newArchEnabled": false,
+    "newArchEnabled": true,
     "splash": {
       "image": "./assets/splash-icon.png",
       "resizeMode": "contain",
@@ -45,7 +45,7 @@
       [
         "@rnmapbox/maps",
         {
-          "RNMapboxMapsImpl": "mapbox"
+          "RNMapboxMapsImpl": "maplibre"
         }
       ],
       "expo-secure-store",

@@ -10,9 +10,9 @@ export const TELANGANA_ZOOM = 6.8;
 /** Zoom level for constituency detail */
 export const CONSTITUENCY_ZOOM = 10;
 
-/** Dark map style for the political map */
-export const MAP_STYLE = 'mapbox://styles/mapbox/dark-v11';
-export const MAP_STYLE_LIGHT = 'mapbox://styles/mapbox/light-v11';
+/** Dark map style for the political map (MapLibre-compatible) */
+export const MAP_STYLE = 'https://basemaps.cartocdn.com/gl/dark-matter-gl-style/style.json';
+export const MAP_STYLE_LIGHT = 'https://basemaps.cartocdn.com/gl/positron-gl-style/style.json';
 
 /** API base URL — use env var in production */
 export const API_BASE_URL =
