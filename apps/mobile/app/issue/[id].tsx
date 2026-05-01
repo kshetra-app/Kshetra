@@ -1,4 +1,4 @@
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useMemo } from 'react';
 import { View, Text, StyleSheet, ScrollView, Pressable, Alert, Share, TextInput, KeyboardAvoidingView, Platform } from 'react-native';
 import { useLocalSearchParams, useRouter, Stack } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
@@ -35,15 +35,25 @@ export default function IssueDetailScreen() {
   const router = useRouter();
   const { t } = useTranslation();
 
-  const issue = useCivicStore((s) => s.getIssueById(id));
-  const comments = useCivicStore((s) => s.getCommentsForIssue(id));
-  const statusHistory = useCivicStore((s) => s.getStatusHistoryForIssue(id));
+  const issues = useCivicStore((s) => s.issues);
+  const allComments = useCivicStore((s) => s.comments);
+  const allHistory = useCivicStore((s) => s.statusHistory);
   const toggleUpvote = useCivicStore((s) => s.toggleUpvote);
   const toggleFollow = useCivicStore((s) => s.toggleFollow);
   const tagMLA = useCivicStore((s) => s.tagMLA);
   const disputeResolution = useCivicStore((s) => s.disputeResolution);
   const addComment = useCivicStore((s) => s.addComment);
   const shareIssue = useCivicStore((s) => s.shareIssue);
+
+  const issue = useMemo(() => issues.find((i) => i.id === id), [issues, id]);
+  const comments = useMemo(
+    () => allComments.filter((c) => c.issueId === id).sort((a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()),
+    [allComments, id],
+  );
+  const statusHistory = useMemo(
+    () => allHistory.filter((h) => h.issueId === id).sort((a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()),
+    [allHistory, id],
+  );
 
   const [commentText, setCommentText] = useState('');
   const [showAllMedia, setShowAllMedia] = useState(false);

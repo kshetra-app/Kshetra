@@ -1,0 +1,15 @@
+{
+  "name": "@kshetra/census-data",
+  "private": true,
+  "version": "0.1.0",
+  "description": "Census of India data for delimitation engine",
+  "scripts": {
+    "test": "jest --no-cache"
+  },
+  "devDependencies": {
+    "jest": "^29.7.0",
+    "ts-jest": "^29.1.1",
+    "@types/jest": "^29.5.11",
+    "typescript": "^5.3.3"
+  }
+}

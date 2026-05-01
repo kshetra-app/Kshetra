@@ -20,6 +20,9 @@ import { getPartyColor } from '@/lib/constants';
 import UserProfileCard from '../../components/UserProfileCard';
 import LanguageSwitcher from '../../components/LanguageSwitcher';
 import { useTranslation } from 'react-i18next';
+import { STATES } from '@kshetra/shared';
+import { useActiveStateStore } from '../../stores/activeState';
+import { getUnifiedConstituenciesForState } from '@/lib/stateDataAdapter';
 
 interface SettingRowProps {
   icon: keyof typeof Ionicons.glyphMap;
@@ -58,6 +61,11 @@ export default function ProfileScreen() {
   const notifEnabled = useNotificationsStore((s) => s.enabled);
   const toggleNotif = useNotificationsStore((s) => s.toggleEnabled);
   const userProfile = useUserProfileStore((s) => s.profile);
+  const activeStateCode = useActiveStateStore((s) => s.stateCode);
+  const latestElectionYear = (() => {
+    const cs = getUnifiedConstituenciesForState(activeStateCode);
+    return cs.length > 0 ? cs[0].electionYear : 2023;
+  })();
 
   return (
     <ScrollView
@@ -164,7 +172,7 @@ export default function ProfileScreen() {
           />
           <Pressable
             style={styles.editProfileButton}
-            onPress={() => router.push('/edit-profile')}
+            onPress={() => router.push('/auth/edit-profile' as any)}
           >
             <Ionicons name="create-outline" size={16} color="#4F8EF7" />
             <Text style={styles.editProfileText}>Edit Profile</Text>
@@ -187,9 +195,9 @@ export default function ProfileScreen() {
         <Text style={styles.sectionTitle}>{t('profile.about')}</Text>
         <View style={styles.card}>
           <SettingRow icon="information-circle" label={t('profile.version')} value="0.1.0" />
-          <SettingRow icon="map" label={t('profile.settings')} value="Telangana" />
-          <SettingRow icon="people" label={t('explore.constituencies')} value="119" />
-          <SettingRow icon="server" label="Data" value="2023 Elections" />
+          <SettingRow icon="map" label={t('profile.settings')} value={STATES[activeStateCode]?.name ?? activeStateCode} />
+          <SettingRow icon="people" label={t('explore.constituencies')} value={String(STATES[activeStateCode]?.assemblySeats ?? '—')} />
+          <SettingRow icon="server" label="Data" value={`${latestElectionYear} Elections`} />
         </View>
       </View>
 
@@ -197,6 +205,18 @@ export default function ProfileScreen() {
       <View style={styles.section}>
         <Text style={styles.sectionTitle}>Civic Participation</Text>
         <View style={styles.card}>
+          <SettingRow
+            icon="map"
+            label="Delimitation Tracker"
+            onPress={() => router.push('/delimitation' as any)}
+            color="#F59E0B"
+          />
+          <SettingRow
+            icon="person-circle"
+            label="What Changes For You"
+            onPress={() => router.push('/delimitation/my-impact' as any)}
+            color="#EF4444"
+          />
           <SettingRow
             icon="school"
             label="Leadership Academy"

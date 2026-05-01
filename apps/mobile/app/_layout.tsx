@@ -7,6 +7,8 @@ import { useAuthStore } from '../stores/auth';
 import ErrorBoundary from '../components/ErrorBoundary';
 import { useTheme } from '../lib/useTheme';
 import { usePushNotifications } from '../lib/usePushNotifications';
+import { useNetworkStore } from '../lib/networkStatus';
+import OfflineBanner from '../components/OfflineBanner';
 import '../i18n';
 
 SplashScreen.preventAutoHideAsync();
@@ -15,16 +17,20 @@ export default function RootLayout() {
   const initializeAuth = useAuthStore((s) => s.initialize);
   const { colors, isDark } = useTheme();
   usePushNotifications();
+  const startNetworkMonitoring = useNetworkStore((s) => s.startMonitoring);
 
   useEffect(() => {
     initializeAuth();
     SplashScreen.hideAsync();
-  }, [initializeAuth]);
+    const stopNetwork = startNetworkMonitoring();
+    return () => { if (stopNetwork) stopNetwork(); };
+  }, [initializeAuth, startNetworkMonitoring]);
 
   return (
     <ErrorBoundary fallbackMessage="Kshetra encountered an error. Please restart the app.">
     <GestureHandlerRootView style={{ flex: 1 }}>
       <StatusBar style={colors.statusBar} />
+      <OfflineBanner />
       <Stack
         screenOptions={{
           headerShown: false,
@@ -59,6 +65,13 @@ export default function RootLayout() {
             headerStyle: { backgroundColor: '#0A0A1A' },
             headerTintColor: '#FFFFFF',
             animation: 'slide_from_right',
+          }}
+        />
+        <Stack.Screen
+          name="search"
+          options={{
+            headerShown: false,
+            animation: 'fade',
           }}
         />
         <Stack.Screen

@@ -95,7 +95,7 @@ function DashboardContent() {
   const [reportVisible, setReportVisible] = useState(false);
   const [exportVisible, setExportVisible] = useState(false);
 
-  // Stores
+  // Stores — select raw state, never call methods inside selectors
   const stateCode = useActiveStateStore((s) => s.stateCode);
   const myHome = useMyConstituencyStore((s) => s.home);
   const scopeFilter = useCivicStore((s) => s.scopeFilter);
@@ -111,29 +111,52 @@ function DashboardContent() {
   const addIssue = useCivicStore((s) => s.addIssue);
   const setIssueFilter = useCivicStore((s) => s.setIssueFilter);
   const setStatusFilter = useCivicStore((s) => s.setStatusFilter);
-  const getFilteredByScope = useCivicStore((s) => s.getFilteredByScope);
 
-  // Promise store
-  const statePromises = usePromiseStore((s) => s.getPromisesForState)(stateCode);
+  // Promise store — select raw arrays, derive in useMemo
+  const allPromises = usePromiseStore((s) => s.promises);
   const toggleFollowPromise = usePromiseStore((s) => s.toggleFollowPromise);
   const getReportCard = usePromiseStore((s) => s.getReportCard);
 
-  const constituencyId = myHome ? `${stateCode}-AC-${myHome.acNo}` : undefined;
-
-  // Scope-filtered data (issues, headlines, sentiment all respect the scope)
-  const { issues: scopedIssues, headlines, sentiment } = useMemo(
-    () => getFilteredByScope(stateCode, constituencyId),
-    [getFilteredByScope, stateCode, constituencyId, scopeFilter, issueFilter, statusFilter],
+  const statePromises = useMemo(
+    () => allPromises.filter((p) => p.stateCode === stateCode),
+    [allPromises, stateCode],
   );
 
-  // Scope label for header
+  const constituencyId = myHome ? `${stateCode}-AC-${myHome.acNo}` : undefined;
+
+  // Scope-filtered data — derive in useMemo from raw arrays
+  const { issues, headlines, sentiment } = useMemo(() => {
+    let filteredIssues = allIssues;
+    let filteredHeadlines = allHeadlines;
+    let filteredSentiment = allSentiment;
+
+    if (scopeFilter === 'constituency' && constituencyId) {
+      filteredIssues = allIssues.filter((i) => i.constituencyId === constituencyId);
+      filteredHeadlines = allHeadlines.filter((h) => h.constituencyId === constituencyId);
+      filteredSentiment = allSentiment.filter((s) => s.constituencyId === constituencyId);
+    } else if (scopeFilter === 'state') {
+      filteredIssues = allIssues.filter((i) => i.stateCode === stateCode);
+      filteredHeadlines = allHeadlines.filter((h) => h.stateCode === stateCode);
+      filteredSentiment = allSentiment.filter((s) => s.constituencyId.startsWith(stateCode));
+    }
+
+    // Apply issue filters
+    if (issueFilter && issueFilter !== 'all') {
+      filteredIssues = filteredIssues.filter((i) => i.category === issueFilter);
+    }
+    if (statusFilter && statusFilter !== 'all') {
+      filteredIssues = filteredIssues.filter((i) => i.status === statusFilter);
+    }
+
+    return { issues: filteredIssues, headlines: filteredHeadlines, sentiment: filteredSentiment };
+  }, [allIssues, allHeadlines, allSentiment, scopeFilter, stateCode, constituencyId, issueFilter, statusFilter]);
+
+  // Scope label
   const scopeLabel = useMemo(() => {
     if (scopeFilter === 'constituency' && myHome) return myHome.name;
     if (scopeFilter === 'state') return (STATES as Record<string, { name: string }>)[stateCode]?.name ?? stateCode;
     return 'All India';
   }, [scopeFilter, stateCode, myHome]);
-
-  const issues = scopedIssues;
 
   const issueStats = useMemo(() => {
     const open = issues.filter((i) => i.status === 'open').length;
@@ -159,30 +182,31 @@ function DashboardContent() {
 
   return (
     <View style={styles.container}>
-      {/* Header */}
+      {/* ── Compact Header ── */}
       <View style={styles.header}>
-        <Text style={styles.headerTitle}>{t('dashboard.title')}</Text>
+        <View>
+          <Text style={styles.headerTitle}>{t('dashboard.title')}</Text>
+          <View style={styles.scopeIndicator}>
+            <Ionicons name="funnel" size={10} color="#6B7280" />
+            <Text style={styles.scopeIndicatorText}>
+              {scopeLabel} · {issues.length} item{issues.length !== 1 ? 's' : ''}
+            </Text>
+          </View>
+        </View>
         <View style={styles.headerActions}>
-          <Pressable
-            style={styles.analyticsButton}
-            onPress={() => router.push('/(tabs)/intelligence')}
-          >
-            <Ionicons name="bar-chart" size={15} color="#4F8EF7" />
-            <Text style={styles.analyticsButtonText}>{t('dashboard.analytics')}</Text>
-          </Pressable>
-          <Pressable style={styles.exportButton} onPress={() => setExportVisible(true)}>
+          <Pressable style={styles.iconButton} onPress={() => setExportVisible(true)}>
             <Ionicons name="download-outline" size={18} color="#10B981" />
           </Pressable>
           {activeTab === 'issues' && (
             <Pressable style={styles.reportButton} onPress={() => setReportVisible(true)}>
-              <Ionicons name="add-circle" size={20} color="#FFFFFF" />
+              <Ionicons name="add" size={20} color="#FFFFFF" />
             </Pressable>
           )}
         </View>
       </View>
 
-      {/* Scope toggle */}
-      <View style={styles.scopeRow}>
+      {/* ── Scope Toggle (horizontal scroll) ── */}
+      <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.scopeScroll} contentContainerStyle={styles.scopeScrollContent}>
         {SCOPE_OPTIONS.map((opt) => {
           const active = scopeFilter === opt.key;
           const disabled = opt.key === 'constituency' && !myHome;
@@ -192,7 +216,7 @@ function DashboardContent() {
               style={[styles.scopeChip, active && styles.scopeChipActive, disabled && styles.scopeChipDisabled]}
               onPress={() => !disabled && setScopeFilter(opt.key)}
             >
-              <Ionicons name={opt.icon as any} size={13} color={active ? '#FFFFFF' : disabled ? '#374151' : '#9CA3AF'} />
+              <Ionicons name={opt.icon as any} size={12} color={active ? '#FFF' : disabled ? '#374151' : '#9CA3AF'} />
               <Text style={[styles.scopeChipText, active && styles.scopeChipTextActive, disabled && { color: '#374151' }]}>
                 {opt.key === 'state'
                   ? (STATES as Record<string, { name: string }>)[stateCode]?.name ?? stateCode
@@ -203,17 +227,9 @@ function DashboardContent() {
             </Pressable>
           );
         })}
-      </View>
+      </ScrollView>
 
-      {/* Scope indicator */}
-      <View style={styles.scopeIndicator}>
-        <Ionicons name="funnel" size={12} color="#6B7280" />
-        <Text style={styles.scopeIndicatorText}>
-          Showing {scopeLabel} • {issues.length} issue{issues.length !== 1 ? 's' : ''}
-        </Text>
-      </View>
-
-      {/* Tab bar */}
+      {/* ── Tab Bar ── */}
       <View style={styles.tabRow}>
         {TAB_KEYS.map((tab) => {
           const active = activeTab === tab.key;
@@ -223,77 +239,94 @@ function DashboardContent() {
               style={[styles.tab, active && styles.tabActive]}
               onPress={() => setActiveTab(tab.key)}
             >
-              <Ionicons name={tab.icon as any} size={16} color={active ? '#FFFFFF' : '#6B7280'} />
+              <Ionicons name={tab.icon as any} size={15} color={active ? '#FFF' : '#6B7280'} />
               <Text style={[styles.tabLabel, active && styles.tabLabelActive]}>{t(tab.tKey)}</Text>
             </Pressable>
           );
         })}
       </View>
 
-      {/* Single ScrollView */}
+      {/* ── Content ── */}
       <ScrollView style={styles.scroll} showsVerticalScrollIndicator={false}>
+        {/* Delimitation Hub Entry Point */}
+        <Pressable style={styles.delimBanner} onPress={() => router.push('/delimitation' as any)}>
+          <View style={styles.delimBannerLeft}>
+            <View style={styles.delimIconWrap}>
+              <Ionicons name="map" size={18} color="#F59E0B" />
+            </View>
+            <View>
+              <Text style={styles.delimBannerTitle}>Delimitation Tracker</Text>
+              <Text style={styles.delimBannerSub}>How will boundary changes affect you?</Text>
+            </View>
+          </View>
+          <Ionicons name="chevron-forward" size={16} color="#374151" />
+        </Pressable>
+
+        {/* Election Analytics Entry Point */}
+        <Pressable style={[styles.delimBanner, { borderColor: '#4F8EF730' }]} onPress={() => router.push('/analytics' as any)}>
+          <View style={styles.delimBannerLeft}>
+            <View style={[styles.delimIconWrap, { backgroundColor: '#4F8EF720' }]}>
+              <Ionicons name="stats-chart" size={18} color="#4F8EF7" />
+            </View>
+            <View>
+              <Text style={styles.delimBannerTitle}>Election Analytics</Text>
+              <Text style={styles.delimBannerSub}>Swing seats, party strength, district heatmaps</Text>
+            </View>
+          </View>
+          <Ionicons name="chevron-forward" size={16} color="#374151" />
+        </Pressable>
+
         {activeTab === 'issues' && (
           <View style={styles.tabContent}>
-            {/* Stats summary */}
+            {/* Compact stats row */}
             <View style={styles.statsRow}>
-              <View style={[styles.statCard, { borderLeftColor: '#3B82F6' }]}>
-                <Text style={styles.statValue}>{issueStats.open}</Text>
-                <Text style={styles.statLabel}>{t('dashboard.statusFilters.open')}</Text>
-              </View>
-              <View style={[styles.statCard, { borderLeftColor: '#F59E0B' }]}>
-                <Text style={styles.statValue}>{issueStats.inProgress}</Text>
-                <Text style={styles.statLabel}>{t('dashboard.statusFilters.inProgress')}</Text>
-              </View>
-              <View style={[styles.statCard, { borderLeftColor: '#10B981' }]}>
-                <Text style={styles.statValue}>{issueStats.resolved}</Text>
-                <Text style={styles.statLabel}>{t('dashboard.statusFilters.resolved')}</Text>
-              </View>
-              <View style={[styles.statCard, { borderLeftColor: '#EF4444' }]}>
-                <Text style={styles.statValue}>{issueStats.critical}</Text>
-                <Text style={styles.statLabel}>{t('reportIssue.severityLevels.critical')}</Text>
-              </View>
+              {[
+                { value: issueStats.open, label: t('dashboard.statusFilters.open'), color: '#3B82F6' },
+                { value: issueStats.inProgress, label: 'In Progress', color: '#F59E0B' },
+                { value: issueStats.resolved, label: t('dashboard.statusFilters.resolved'), color: '#10B981' },
+                { value: issueStats.critical, label: 'Critical', color: '#EF4444' },
+              ].map((stat) => (
+                <View key={stat.label} style={[styles.statCard, { borderLeftColor: stat.color }]}>
+                  <Text style={styles.statValue}>{stat.value}</Text>
+                  <Text style={styles.statLabel}>{stat.label}</Text>
+                </View>
+              ))}
             </View>
 
-            {/* Top issue categories */}
-            <View style={styles.topCategoriesRow}>
+            {/* Category + Status filters (single scrollable row) */}
+            <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.filterScroll} contentContainerStyle={styles.filterScrollContent}>
+              {STATUS_FILTER_KEYS.map((sf) => {
+                const active = statusFilter === sf.key;
+                return (
+                  <Pressable
+                    key={sf.key}
+                    style={[styles.filterChip, active && styles.filterChipActive]}
+                    onPress={() => setStatusFilter(sf.key)}
+                  >
+                    <Text style={[styles.filterChipText, active && styles.filterChipTextActive]}>
+                      {t(sf.tKey)}
+                    </Text>
+                  </Pressable>
+                );
+              })}
+              <View style={styles.filterDivider} />
               {topCategories.slice(0, 5).map(({ category, count }) => {
                 const config = ISSUE_CATEGORY_CONFIG[category];
                 const active = issueFilter === category;
                 return (
                   <Pressable
                     key={category}
-                    style={[
-                      styles.categoryChip,
-                      active && { backgroundColor: config.color + '20', borderColor: config.color + '40' },
-                    ]}
+                    style={[styles.filterChip, active && { backgroundColor: config.color + '20', borderColor: config.color + '40' }]}
                     onPress={() => setIssueFilter(active ? 'all' : category)}
                   >
-                    <Ionicons name={config.icon as any} size={12} color={active ? config.color : '#6B7280'} />
-                    <Text style={[styles.categoryChipText, active && { color: config.color }]}>
+                    <Ionicons name={config.icon as any} size={11} color={active ? config.color : '#6B7280'} />
+                    <Text style={[styles.filterChipText, active && { color: config.color }]}>
                       {config.label} ({count})
                     </Text>
                   </Pressable>
                 );
               })}
-            </View>
-
-            {/* Status filter */}
-            <View style={styles.statusRow}>
-              {STATUS_FILTER_KEYS.map((sf) => {
-                const active = statusFilter === sf.key;
-                return (
-                  <Pressable
-                    key={sf.key}
-                    style={[styles.statusChip, active && styles.statusChipActive]}
-                    onPress={() => setStatusFilter(sf.key)}
-                  >
-                    <Text style={[styles.statusChipText, active && styles.statusChipTextActive]}>
-                      {t(sf.tKey)}
-                    </Text>
-                  </Pressable>
-                );
-              })}
-            </View>
+            </ScrollView>
 
             {/* Issue list */}
             {issues.length === 0 ? (
@@ -321,11 +354,6 @@ function DashboardContent() {
 
         {activeTab === 'promises' && (
           <View style={styles.tabContent}>
-            <View style={styles.sectionHeader}>
-              <Ionicons name="ribbon" size={18} color="#F59E0B" />
-              <Text style={styles.sectionTitle}>Promise Tracker</Text>
-            </View>
-
             {/* Report Card (top party) */}
             {statePromises.length > 0 && (() => {
               const topParty = statePromises.reduce((acc, p) => {
@@ -359,11 +387,6 @@ function DashboardContent() {
 
         {activeTab === 'sentiment' && (
           <View style={styles.tabContent}>
-            <View style={styles.sectionHeader}>
-              <Ionicons name="pulse" size={18} color="#8B5CF6" />
-              <Text style={styles.sectionTitle}>{t('dashboard.sentimentScore')}</Text>
-            </View>
-
             {sentimentSorted.map((item) => (
               <View key={item.constituencyId} style={styles.sentimentItem}>
                 <SentimentBar item={item} />
@@ -379,11 +402,6 @@ function DashboardContent() {
 
         {activeTab === 'headlines' && (
           <View style={styles.tabContent}>
-            <View style={styles.sectionHeader}>
-              <Ionicons name="newspaper" size={18} color="#3B82F6" />
-              <Text style={styles.sectionTitle}>{t('dashboard.tabs.headlines')}</Text>
-            </View>
-
             {headlines.length === 0 ? (
               <View style={styles.emptyState}>
                 <Ionicons name="newspaper-outline" size={48} color="#1F2937" />
@@ -432,78 +450,105 @@ const styles = StyleSheet.create({
   },
   header: {
     flexDirection: 'row',
-    alignItems: 'center',
+    alignItems: 'flex-start',
     justifyContent: 'space-between',
-    paddingHorizontal: 20,
-    paddingTop: Platform.OS === 'ios' ? 56 : 40,
-    paddingBottom: 8,
+    paddingHorizontal: 16,
+    paddingTop: Platform.OS === 'ios' ? 54 : 38,
+    paddingBottom: 4,
   },
   headerTitle: {
-    fontSize: 28,
+    fontSize: 24,
     fontWeight: '800',
     color: '#FFFFFF',
   },
   headerActions: {
     flexDirection: 'row',
     alignItems: 'center',
+    gap: 8,
   },
-  analyticsButton: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: '#4F8EF720',
-    borderRadius: 8,
-    paddingHorizontal: 10,
-    paddingVertical: 6,
-    marginRight: 8,
-  },
-  analyticsButtonText: {
-    fontSize: 13,
-    fontWeight: '700',
-    color: '#4F8EF7',
-    marginLeft: 4,
-  },
-  exportButton: {
-    width: 36,
-    height: 36,
-    borderRadius: 18,
-    backgroundColor: '#10B98120',
+  iconButton: {
+    width: 34,
+    height: 34,
+    borderRadius: 17,
+    backgroundColor: '#10B98118',
     justifyContent: 'center',
     alignItems: 'center',
-    marginRight: 6,
   },
   reportButton: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
+    width: 34,
+    height: 34,
+    borderRadius: 17,
     backgroundColor: '#10B981',
     justifyContent: 'center',
     alignItems: 'center',
-    elevation: 4,
+    elevation: 3,
+  },
+  scopeScroll: {
+    maxHeight: 36,
+    marginBottom: 6,
+  },
+  scopeScrollContent: {
+    paddingHorizontal: 16,
+    gap: 6,
+  },
+  scopeChip: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: 12,
+    paddingVertical: 7,
+    borderRadius: 18,
+    backgroundColor: '#111827',
+    gap: 4,
+  },
+  scopeChipActive: {
+    backgroundColor: '#4F8EF7',
+  },
+  scopeChipDisabled: {
+    opacity: 0.35,
+  },
+  scopeChipText: {
+    fontSize: 12,
+    fontWeight: '700',
+    color: '#9CA3AF',
+  },
+  scopeChipTextActive: {
+    color: '#FFFFFF',
+  },
+  scopeIndicator: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 3,
+    marginTop: 2,
+  },
+  scopeIndicatorText: {
+    fontSize: 11,
+    color: '#6B7280',
+    fontWeight: '600',
   },
   tabRow: {
     flexDirection: 'row',
     marginHorizontal: 16,
-    marginBottom: 10,
+    marginBottom: 8,
     backgroundColor: '#111827',
-    borderRadius: 14,
-    padding: 4,
+    borderRadius: 12,
+    padding: 3,
   },
   tab: {
     flex: 1,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    paddingVertical: 10,
-    borderRadius: 12,
+    paddingVertical: 8,
+    borderRadius: 10,
+    gap: 4,
   },
   tabActive: {
     backgroundColor: '#4F8EF7',
   },
   tabLabel: {
-    fontSize: 13,
+    fontSize: 12,
     fontWeight: '700',
     color: '#6B7280',
-    marginLeft: 5,
   },
   tabLabelActive: {
     color: '#FFFFFF',
@@ -517,96 +562,75 @@ const styles = StyleSheet.create({
   statsRow: {
     flexDirection: 'row',
     marginHorizontal: 16,
-    marginBottom: 12,
+    marginBottom: 10,
+    gap: 6,
   },
   statCard: {
     flex: 1,
     backgroundColor: '#111827',
     borderRadius: 10,
-    padding: 10,
+    paddingVertical: 8,
+    paddingHorizontal: 6,
     alignItems: 'center',
     borderLeftWidth: 3,
-    marginRight: 6,
   },
   statValue: {
-    fontSize: 20,
+    fontSize: 18,
     fontWeight: '800',
     color: '#FFFFFF',
   },
   statLabel: {
-    fontSize: 10,
+    fontSize: 9,
     color: '#6B7280',
     fontWeight: '600',
-    marginTop: 2,
+    marginTop: 1,
   },
-  topCategoriesRow: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    marginHorizontal: 16,
-    marginBottom: 8,
+  filterScroll: {
+    maxHeight: 36,
+    marginBottom: 10,
   },
-  categoryChip: {
+  filterScrollContent: {
+    paddingHorizontal: 16,
+    gap: 6,
+    alignItems: 'center',
+  },
+  filterChip: {
     flexDirection: 'row',
     alignItems: 'center',
-    paddingHorizontal: 8,
-    paddingVertical: 5,
+    paddingHorizontal: 10,
+    paddingVertical: 6,
     borderRadius: 16,
+    backgroundColor: '#111827',
     borderWidth: 1,
-    borderColor: '#374151',
-    marginRight: 6,
-    marginBottom: 6,
+    borderColor: '#1F2937',
+    gap: 4,
   },
-  categoryChipText: {
+  filterChipActive: {
+    backgroundColor: '#4F8EF7',
+    borderColor: '#4F8EF7',
+  },
+  filterChipText: {
     fontSize: 11,
     fontWeight: '700',
     color: '#6B7280',
-    marginLeft: 4,
   },
-  statusRow: {
-    flexDirection: 'row',
-    marginHorizontal: 16,
-    marginBottom: 12,
-  },
-  statusChip: {
-    paddingHorizontal: 10,
-    paddingVertical: 6,
-    borderRadius: 14,
-    backgroundColor: '#111827',
-    marginRight: 6,
-  },
-  statusChipActive: {
-    backgroundColor: '#4F8EF7',
-  },
-  statusChipText: {
-    fontSize: 12,
-    fontWeight: '700',
-    color: '#6B7280',
-  },
-  statusChipTextActive: {
+  filterChipTextActive: {
     color: '#FFFFFF',
+  },
+  filterDivider: {
+    width: 1,
+    height: 20,
+    backgroundColor: '#374151',
   },
   emptyState: {
     alignItems: 'center',
     paddingTop: 60,
   },
   emptyTitle: {
-    fontSize: 18,
+    fontSize: 16,
     fontWeight: '700',
     color: '#374151',
     marginTop: 8,
-  },
-  sectionHeader: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginHorizontal: 16,
-    marginTop: 8,
-    marginBottom: 12,
-  },
-  sectionTitle: {
-    fontSize: 17,
-    fontWeight: '700',
-    color: '#FFFFFF',
-    marginLeft: 8,
   },
   sentimentItem: {
     marginHorizontal: 16,
@@ -614,46 +638,41 @@ const styles = StyleSheet.create({
   bottomPadding: {
     height: 100,
   },
-  scopeRow: {
+  delimBanner: {
     flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    backgroundColor: '#111827',
+    borderRadius: 12,
+    padding: 12,
     marginHorizontal: 16,
-    marginBottom: 6,
-    gap: 6,
+    marginTop: 8,
+    marginBottom: 4,
+    borderWidth: 1,
+    borderColor: '#F59E0B20',
   },
-  scopeChip: {
-    flex: 1,
+  delimBannerLeft: {
     flexDirection: 'row',
+    alignItems: 'center',
+    gap: 10,
+  },
+  delimIconWrap: {
+    width: 34,
+    height: 34,
+    borderRadius: 10,
+    backgroundColor: '#F59E0B18',
     alignItems: 'center',
     justifyContent: 'center',
-    paddingVertical: 8,
-    borderRadius: 10,
-    backgroundColor: '#111827',
-    gap: 4,
   },
-  scopeChipActive: {
-    backgroundColor: '#4F8EF7',
-  },
-  scopeChipDisabled: {
-    opacity: 0.4,
-  },
-  scopeChipText: {
-    fontSize: 11,
-    fontWeight: '700',
-    color: '#9CA3AF',
-  },
-  scopeChipTextActive: {
+  delimBannerTitle: {
+    fontSize: 13,
+    fontWeight: '800',
     color: '#FFFFFF',
   },
-  scopeIndicator: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginHorizontal: 16,
-    marginBottom: 8,
-    gap: 4,
-  },
-  scopeIndicatorText: {
+  delimBannerSub: {
     fontSize: 11,
-    color: '#6B7280',
     fontWeight: '600',
+    color: '#6B7280',
+    marginTop: 1,
   },
 });

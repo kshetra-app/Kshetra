@@ -1,0 +1,99 @@
+name: Delimitation Monitor
+
+on:
+  schedule:
+    # Run every 6 hours
+    - cron: '0 */6 * * *'
+  workflow_dispatch: # Allow manual trigger
+
+concurrency:
+  group: delimitation-monitor
+  cancel-in-progress: true
+
+env:
+  KSHETRA_API_URL: ${{ secrets.KSHETRA_API_URL }}
+  KSHETRA_MONITOR_SECRET: ${{ secrets.KSHETRA_MONITOR_SECRET }}
+
+jobs:
+  monitor:
+    name: Run Delimitation Monitors
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Install ts-node
+        run: npm install -g ts-node typescript
+
+      - name: Restore monitor state
+        uses: actions/cache@v4
+        with:
+          path: data/monitors
+          key: delimitation-monitor-state-${{ github.run_number }}
+          restore-keys: delimitation-monitor-state-
+
+      - name: Run Gazette Monitor
+        run: ts-node scripts/monitors/gazette-monitor.ts
+        continue-on-error: true
+
+      - name: Run ECI Monitor
+        run: ts-node scripts/monitors/eci-monitor.ts
+        continue-on-error: true
+
+      - name: Run Parliament Monitor
+        run: ts-node scripts/monitors/parliament-monitor.ts
+        continue-on-error: true
+
+      - name: Upload dispatch logs
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: monitor-dispatches-${{ github.run_number }}
+          path: data/monitors/*-dispatch.json
+          if-no-files-found: ignore
+          retention-days: 30
+
+      - name: Upload monitor state
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: monitor-state-${{ github.run_number }}
+          path: data/monitors/*-state.json
+          if-no-files-found: ignore
+          retention-days: 90
+
+      - name: Summary
+        if: always()
+        run: |
+          echo "## Delimitation Monitor Run" >> $GITHUB_STEP_SUMMARY
+          echo "**Time:** $(date -u)" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          if [ -f data/monitors/gazette-state.json ]; then
+            echo "### Gazette Monitor" >> $GITHUB_STEP_SUMMARY
+            echo '```json' >> $GITHUB_STEP_SUMMARY
+            cat data/monitors/gazette-state.json | head -10 >> $GITHUB_STEP_SUMMARY
+            echo '```' >> $GITHUB_STEP_SUMMARY
+          fi
+          if [ -f data/monitors/eci-state.json ]; then
+            echo "### ECI Monitor" >> $GITHUB_STEP_SUMMARY
+            echo '```json' >> $GITHUB_STEP_SUMMARY
+            cat data/monitors/eci-state.json | head -10 >> $GITHUB_STEP_SUMMARY
+            echo '```' >> $GITHUB_STEP_SUMMARY
+          fi
+          if [ -f data/monitors/parliament-state.json ]; then
+            echo "### Parliament Monitor" >> $GITHUB_STEP_SUMMARY
+            echo '```json' >> $GITHUB_STEP_SUMMARY
+            cat data/monitors/parliament-state.json | head -10 >> $GITHUB_STEP_SUMMARY
+            echo '```' >> $GITHUB_STEP_SUMMARY
+          fi

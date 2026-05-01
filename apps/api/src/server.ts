@@ -7,6 +7,7 @@ import { aiRoutes } from './routes/ai';
 import { notificationRoutes } from './routes/notifications';
 import { moderationRoutes } from './routes/moderation';
 import { stateRoutes } from './routes/states';
+import { delimitationRoutes } from './routes/delimitation';
 
 const envToLogger: Record<string, object | boolean> = {
   development: {
@@ -55,6 +56,7 @@ export async function buildApp() {
   await app.register(notificationRoutes);
   await app.register(moderationRoutes);
   await app.register(stateRoutes);
+  await app.register(delimitationRoutes);
 
   return app;
 }

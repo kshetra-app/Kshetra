@@ -1,0 +1,3 @@
+# Monitor state files (generated at runtime, cached in CI)
+*-state.json
+*-dispatch.json

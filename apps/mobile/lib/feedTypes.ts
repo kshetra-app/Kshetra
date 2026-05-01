@@ -88,3 +88,5 @@ export interface TrendingHashtag {
   tag: string;
   postCount: number;
 }
+
+export type FeedScope = 'constituency' | 'state' | 'national';

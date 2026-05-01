@@ -1,6 +1,7 @@
 import { Tabs } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { useTranslation } from 'react-i18next';
+import { useNotificationsStore } from '../../stores/notifications';
 
 const ACTIVE_COLOR = '#4F8EF7';
 const INACTIVE_COLOR = '#6B7280';
@@ -18,6 +19,7 @@ function TabIcon({ name, color, size }: TabIconProps) {
 
 export default function TabLayout() {
   const { t } = useTranslation();
+  const unreadCount = useNotificationsStore((s) => s.unreadCount);
 
   return (
     <Tabs
@@ -73,6 +75,8 @@ export default function TabLayout() {
           tabBarIcon: ({ color, size }) => (
             <TabIcon name="pulse" color={color} size={size} />
           ),
+          tabBarBadge: unreadCount > 0 ? unreadCount : undefined,
+          tabBarBadgeStyle: { backgroundColor: '#EF4444', fontSize: 10, fontWeight: '700' },
         }}
       />
       <Tabs.Screen

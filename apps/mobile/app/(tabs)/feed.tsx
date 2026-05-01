@@ -4,20 +4,25 @@ import {
   Text,
   StyleSheet,
   FlatList,
+  ScrollView,
   Pressable,
   Share,
   RefreshControl,
   Alert,
+  Platform,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useFeedStore } from '../../stores/feed';
 import { useAuthStore } from '../../stores/auth';
+import { useActiveStateStore } from '../../stores/activeState';
+import { useMyConstituencyStore } from '../../stores/myConstituency';
 import PostCard from '../../components/PostCard';
 import PollCard from '../../components/PollCard';
 import ComposeSheet from '../../components/ComposeSheet';
 import TrendingHashtags from '../../components/TrendingHashtags';
-import type { Post, PostType, PostMedia } from '../../lib/feedTypes';
+import type { Post, PostType, PostMedia, FeedScope } from '../../lib/feedTypes';
 import { useTranslation } from 'react-i18next';
+import { STATES } from '@kshetra/shared';
 
 const FILTER_TAB_KEYS: { key: PostType | 'all'; tKey: string; icon: string }[] = [
   { key: 'all', tKey: 'feed.filters.all', icon: 'grid' },
@@ -28,15 +33,24 @@ const FILTER_TAB_KEYS: { key: PostType | 'all'; tKey: string; icon: string }[] =
   { key: 'opinion', tKey: 'feed.filters.opinion', icon: 'megaphone' },
 ];
 
+const SCOPE_OPTIONS: { key: FeedScope; icon: string; label: string }[] = [
+  { key: 'constituency', icon: 'location', label: 'My Constituency' },
+  { key: 'state', icon: 'map', label: 'State' },
+  { key: 'national', icon: 'globe', label: 'National' },
+];
+
 export default function FeedScreen() {
   const { t } = useTranslation();
   const [composeVisible, setComposeVisible] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
   const [editingPost, setEditingPost] = useState<Post | undefined>(undefined);
 
+  // Raw state selectors — no derived methods (avoids Zustand snapshot loops)
+  const allPosts = useFeedStore((s) => s.posts);
   const feedFilter = useFeedStore((s) => s.feedFilter);
+  const scopeFilter = useFeedStore((s) => s.scopeFilter);
   const setFilter = useFeedStore((s) => s.setFilter);
-  const getFilteredPosts = useFeedStore((s) => s.getFilteredPosts);
+  const setScopeFilter = useFeedStore((s) => s.setScopeFilter);
   const addPost = useFeedStore((s) => s.addPost);
   const editPostAction = useFeedStore((s) => s.editPost);
   const deletePost = useFeedStore((s) => s.deletePost);
@@ -45,12 +59,44 @@ export default function FeedScreen() {
   const user = useAuthStore((s) => s.user);
   const userId = user?.id ?? 'anon';
 
-  const posts = getFilteredPosts();
-  const allPosts = useFeedStore((s) => s.posts);
+  const stateCode = useActiveStateStore((s) => s.stateCode);
+  const myHome = useMyConstituencyStore((s) => s.home);
+  const constituencyId = myHome ? `${stateCode}-AC-${myHome.acNo}` : undefined;
+
+  // Derive filtered posts with useMemo
+  const posts = useMemo(() => {
+    let filtered = allPosts.filter((p) => !p.isDeleted);
+
+    // Scope filter
+    if (scopeFilter === 'constituency' && constituencyId) {
+      filtered = filtered.filter((p) => p.constituencyId === constituencyId || (p.isPinned && p.stateCode === stateCode));
+    } else if (scopeFilter === 'state') {
+      filtered = filtered.filter((p) => p.stateCode === stateCode || p.stateCode === 'NATIONAL');
+    }
+    // 'national' → show all posts
+
+    // Type filter
+    if (feedFilter !== 'all') {
+      filtered = filtered.filter((p) => p.type === feedFilter);
+    }
+
+    // Sort: pinned first, then by date
+    return filtered.sort((a, b) => {
+      if (a.isPinned && !b.isPinned) return -1;
+      if (!a.isPinned && b.isPinned) return 1;
+      return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
+    });
+  }, [allPosts, scopeFilter, stateCode, constituencyId, feedFilter]);
+
+  // Scope label
+  const scopeLabel = useMemo(() => {
+    if (scopeFilter === 'constituency' && myHome) return myHome.name;
+    if (scopeFilter === 'state') return (STATES as Record<string, { name: string }>)[stateCode]?.name ?? stateCode;
+    return 'All India';
+  }, [scopeFilter, stateCode, myHome]);
 
   const handleRefresh = useCallback(() => {
     setRefreshing(true);
-    // Simulate refresh delay — in production, fetch from Supabase
     setTimeout(() => setRefreshing(false), 800);
   }, []);
 
@@ -94,9 +140,7 @@ export default function FeedScreen() {
             post={item}
             isOwner={isOwner}
             onReact={(reaction) => toggleReaction(item.id, reaction)}
-            onReply={() => {
-              // TODO: open reply compose
-            }}
+            onReply={() => {}}
             onShare={() => handleShare(item)}
             onEdit={() => handleEdit(item)}
             onDelete={() => handleDelete(item)}
@@ -119,48 +163,65 @@ export default function FeedScreen() {
     <View style={styles.container}>
       {/* Header */}
       <View style={styles.header}>
-        <Text style={styles.headerTitle}>{t('feed.title')}</Text>
+        <View>
+          <Text style={styles.headerTitle}>{t('feed.title')}</Text>
+          <View style={styles.scopeIndicator}>
+            <Ionicons name="funnel" size={10} color="#6B7280" />
+            <Text style={styles.scopeIndicatorText}>
+              {scopeLabel} · {posts.length} post{posts.length !== 1 ? 's' : ''}
+            </Text>
+          </View>
+        </View>
         <Pressable
           style={styles.composeButton}
-          onPress={() => {
-            if (!user) {
-              // Guest mode — still allow composing for demo
-            }
-            setComposeVisible(true);
-          }}
+          onPress={() => setComposeVisible(true)}
         >
-          <Ionicons name="create" size={20} color="#FFFFFF" />
+          <Ionicons name="create" size={18} color="#FFFFFF" />
         </Pressable>
       </View>
 
-      {/* Filter tabs */}
-      <View style={styles.filterRow}>
-        <FlatList
-          data={FILTER_TAB_KEYS}
-          keyExtractor={(item) => item.key}
-          horizontal
-          showsHorizontalScrollIndicator={false}
-          contentContainerStyle={styles.filterContent}
-          renderItem={({ item: tab }) => {
-            const active = feedFilter === tab.key;
-            return (
-              <Pressable
-                style={[styles.filterTab, active && styles.filterTabActive]}
-                onPress={() => setFilter(tab.key)}
-              >
-                <Ionicons
-                  name={tab.icon as any}
-                  size={14}
-                  color={active ? '#FFFFFF' : '#6B7280'}
-                />
-                <Text style={[styles.filterLabel, active && styles.filterLabelActive]}>
-                  {t(tab.tKey)}
-                </Text>
-              </Pressable>
-            );
-          }}
-        />
-      </View>
+      {/* Scope toggle */}
+      <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.scopeScroll} contentContainerStyle={styles.scopeScrollContent}>
+        {SCOPE_OPTIONS.map((opt) => {
+          const active = scopeFilter === opt.key;
+          const disabled = opt.key === 'constituency' && !myHome;
+          return (
+            <Pressable
+              key={opt.key}
+              style={[styles.scopeChip, active && styles.scopeChipActive, disabled && styles.scopeChipDisabled]}
+              onPress={() => !disabled && setScopeFilter(opt.key)}
+            >
+              <Ionicons name={opt.icon as any} size={12} color={active ? '#FFF' : disabled ? '#374151' : '#9CA3AF'} />
+              <Text style={[styles.scopeChipText, active && styles.scopeChipTextActive, disabled && { color: '#374151' }]}>
+                {opt.key === 'state'
+                  ? (STATES as Record<string, { name: string }>)[stateCode]?.name ?? stateCode
+                  : opt.key === 'constituency' && myHome
+                    ? myHome.name
+                    : opt.label}
+              </Text>
+            </Pressable>
+          );
+        })}
+      </ScrollView>
+
+      {/* Type filter tabs */}
+      <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.filterScroll} contentContainerStyle={styles.filterContent}>
+        {FILTER_TAB_KEYS.map((tab) => {
+          const active = feedFilter === tab.key;
+          return (
+            <Pressable
+              key={tab.key}
+              style={[styles.filterTab, active && styles.filterTabActive]}
+              onPress={() => setFilter(tab.key)}
+            >
+              <Ionicons name={tab.icon as any} size={13} color={active ? '#FFFFFF' : '#6B7280'} />
+              <Text style={[styles.filterLabel, active && styles.filterLabelActive]}>
+                {t(tab.tKey)}
+              </Text>
+            </Pressable>
+          );
+        })}
+      </ScrollView>
 
       {/* Posts list */}
       <FlatList
@@ -180,10 +241,8 @@ export default function FeedScreen() {
         ListHeaderComponent={
           feedFilter === 'all' ? (
             <TrendingHashtags
-              posts={allPosts}
-              onTagPress={(tag) => {
-                // Filter by clicking trending tag — set filter to 'all' and we could add text search later
-              }}
+              posts={posts}
+              onTagPress={(tag) => {}}
             />
           ) : null
         }
@@ -191,14 +250,12 @@ export default function FeedScreen() {
           <View style={styles.emptyState}>
             <Ionicons name="chatbubbles-outline" size={48} color="#1F2937" />
             <Text style={styles.emptyTitle}>{t('feed.emptyFeed')}</Text>
-            <Text style={styles.emptySubtitle}>
-              {t('feed.compose')}
-            </Text>
+            <Text style={styles.emptySubtitle}>{t('feed.compose')}</Text>
           </View>
         }
       />
 
-      {/* Compose sheet — mount only when needed to avoid Fabric Modal crash */}
+      {/* Compose sheet */}
       {composeVisible && (
         <ComposeSheet
           visible={composeVisible}
@@ -222,54 +279,93 @@ const styles = StyleSheet.create({
   },
   header: {
     flexDirection: 'row',
-    alignItems: 'center',
+    alignItems: 'flex-start',
     justifyContent: 'space-between',
-    paddingHorizontal: 20,
-    paddingTop: 56,
-    paddingBottom: 12,
+    paddingHorizontal: 16,
+    paddingTop: Platform.OS === 'ios' ? 54 : 38,
+    paddingBottom: 4,
   },
   headerTitle: {
-    fontSize: 28,
+    fontSize: 24,
     fontWeight: '800',
     color: '#FFFFFF',
   },
+  scopeIndicator: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 3,
+    marginTop: 2,
+  },
+  scopeIndicatorText: {
+    fontSize: 11,
+    color: '#6B7280',
+    fontWeight: '600',
+  },
   composeButton: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
+    width: 36,
+    height: 36,
+    borderRadius: 18,
     backgroundColor: '#4F8EF7',
     justifyContent: 'center',
     alignItems: 'center',
-    shadowColor: '#4F8EF7',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.3,
-    shadowRadius: 6,
-    elevation: 4,
+    elevation: 3,
   },
-  filterRow: {
+  scopeScroll: {
+    maxHeight: 36,
+    marginBottom: 6,
+  },
+  scopeScrollContent: {
+    paddingHorizontal: 16,
+    gap: 6,
+  },
+  scopeChip: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: 12,
+    paddingVertical: 7,
+    borderRadius: 18,
+    backgroundColor: '#111827',
+    gap: 4,
+  },
+  scopeChipActive: {
+    backgroundColor: '#4F8EF7',
+  },
+  scopeChipDisabled: {
+    opacity: 0.35,
+  },
+  scopeChipText: {
+    fontSize: 12,
+    fontWeight: '700',
+    color: '#9CA3AF',
+  },
+  scopeChipTextActive: {
+    color: '#FFFFFF',
+  },
+  filterScroll: {
+    maxHeight: 36,
+    marginBottom: 8,
     borderBottomWidth: 0.5,
     borderBottomColor: '#1F2937',
-    marginBottom: 8,
   },
   filterContent: {
     paddingHorizontal: 16,
-    paddingBottom: 10,
+    paddingBottom: 8,
     gap: 6,
   },
   filterTab: {
     flexDirection: 'row',
     alignItems: 'center',
-    paddingHorizontal: 12,
-    paddingVertical: 7,
-    borderRadius: 20,
+    paddingHorizontal: 10,
+    paddingVertical: 6,
+    borderRadius: 16,
     backgroundColor: '#111827',
-    gap: 5,
+    gap: 4,
   },
   filterTabActive: {
     backgroundColor: '#4F8EF7',
   },
   filterLabel: {
-    fontSize: 12,
+    fontSize: 11,
     fontWeight: '700',
     color: '#6B7280',
   },
@@ -291,12 +387,12 @@ const styles = StyleSheet.create({
     gap: 8,
   },
   emptyTitle: {
-    fontSize: 18,
+    fontSize: 16,
     fontWeight: '700',
     color: '#374151',
   },
   emptySubtitle: {
-    fontSize: 14,
+    fontSize: 13,
     color: '#4B5563',
   },
 });

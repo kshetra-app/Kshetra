@@ -2021,3 +2021,457 @@ Triggers:
 | `apps/mobile/app/(tabs)/explore.tsx` | `as any` cast on dynamic route push |
 | `apps/mobile/components/MapFallback.tsx` | `as any` cast on dynamic route push |
 | `apps/mobile/components/AffidavitCard.tsx` | `as any` cast on dynamic route push |
+
+---
+
+## Sprint 17: Delimitation Engine — Foundation Layer
+
+**Goal:** Build the foundational data structures, census data layer, prediction algorithms, and first UI for KSHETRA's Delimitation Intelligence module — positioning us as the first political tech platform to offer constituency-redrawing analysis.
+
+### Strategic Context
+
+India's next delimitation (post-Census 2026) will redraw every constituency boundary. The 84th Constitutional Amendment freeze expires after the first census post-2026. This is a once-in-a-generation political earthquake. KSHETRA aims for first-mover advantage.
+
+### Files Created
+
+| File | Description |
+|---|---|
+| `apps/mobile/lib/delimitationTypes.ts` | 8 enums, 12 interfaces, 7 config maps, 10+ utility functions |
+| `supabase/migrations/011_delimitation.sql` | 6 tables: proposals, proposed_constituencies, constituency_mapping, ward_population, delimitation_events, citizen_impact + RLS + indexes |
+| `data/census/india-district-population-2011.ts` | Census 2011 data: 13 states, 54 districts (TS/AP/KA/MH), state-level for 9 more |
+| `data/census/package.json` | Local Jest + ts-jest setup for census data tests |
+| `data/census/jest.config.js` | Jest config for census test suite |
+| `data/census/tsconfig.json` | TypeScript config for census data module |
+| `data/census/__tests__/delimitation.test.ts` | 24 tests: data integrity, projections, constants, lookups |
+| `apps/mobile/stores/delimitation.ts` | Zustand store: 15 seed timeline events, queries, actions |
+| `apps/mobile/lib/delimitation/seatCalculator.ts` | Core seat projection algorithm: all-state, per-state, district-level distribution, gainers/losers, validation |
+| `apps/mobile/lib/delimitation/constituencyMapper.ts` | Old-to-new mapping engine: overlap analysis, change classification, MLA impact, civic issue remapping |
+| `apps/mobile/components/DelimitationTimeline.tsx` | Timeline visualization (full + compact modes) |
+| `apps/mobile/components/SeatProjectionCard.tsx` | Seat projection card (full + compact modes) with reservation breakdown |
+| `apps/mobile/app/delimitation/index.tsx` | Delimitation Hub: 4 tabs (Overview/Projections/Timeline/Impact), full screen |
+
+### Data Model (011_delimitation.sql)
+
+- **delimitation_proposals** — Draft/final proposals per state with seat change tracking
+- **proposed_constituencies** — New constituency definitions with predecessor mapping
+- **constituency_mapping** — Old→new many-to-many with overlap %, population, voters
+- **ward_population** — Census ward/sub-district population with current AC linkage
+- **delimitation_events** — Timeline events (14 types, 10 sources, verification flag)
+- **citizen_impact** — Pin code → impact lookup with severity assessment
+
+### Census Data Coverage
+
+- **District-level:** TS (11 districts), AP (13), KA (15), MH (15) = 54 districts
+- **State-level:** UP, BR, WB, TN, KL, RJ, GJ, MP, DL = 9 states
+- **Total:** 13 states, Census 2011 data with population, SC/ST, literacy, urban splits
+
+### Algorithms
+
+- **Seat Calculator:** Equal-population projection, constitutional bounds, SC/ST reservation, district distribution via largest-remainder method
+- **Constituency Mapper:** Overlap classification (7 change types), reservation change detection, MLA impact with risk/opportunity analysis, civic issue remapping
+
+### Seed Timeline
+
+15 events spanning 2001–2026: constitutional amendments, commission formation, COVID census delay, parliamentary debates, expert analyses, state-specific events (TS, AP, KA), KSHETRA launch event.
+
+### Tests
+
+| Suite | Status | Tests |
+|---|---|---|
+| `data/census` — delimitation | ✅ Pass | 24 |
+| **Total New** | **✅ All Pass** | **24** |
+
+### Key Types
+
+- `DelimitationStatus` (8 states from pre_census → implemented)
+- `DelimitationEventType` (14 types)
+- `BoundaryChangeType` (7 types: unchanged → abolished)
+- `ReservationChange` (7 transitions)
+- `DelimitationProposal`, `ProposedConstituency`, `ConstituencyMapping`
+- `WardPopulation`, `DistrictPopulation`, `StatePopulationSummary`
+- `SeatAllocation`, `CitizenImpact`, `MLAImpact`, `PartyDelimitationImpact`
+
+### Component Count: ~37 mobile components (added DelimitationTimeline, SeatProjectionCard, Delimitation Hub)
+
+---
+
+## Sprint 18: Delimitation Monitoring Pipeline + Integration
+
+**Goal:** Automated government source monitors, API endpoints, push notification integration, citizen impact screen, and full integration of delimitation features into the existing app navigation.
+
+### Files Created
+
+| File | Description |
+|---|---|
+| `scripts/monitors/gazette-monitor.ts` | eGazette.gov.in scraper — keyword matching, relevance scoring, diff detection, notification dispatch |
+| `scripts/monitors/eci-monitor.ts` | ECI website monitor — content hash diffing, press release parsing, change alerts |
+| `scripts/monitors/parliament-monitor.ts` | Parliament proceedings tracker — PRS + Sansad.in, question/bill/debate detection |
+| `.github/workflows/delimitation-monitor.yml` | Cron workflow (every 6h): runs all 3 monitors, caches state, uploads artifacts |
+| `apps/api/src/routes/delimitation.ts` | 7 API endpoints: projections, state projection, timeline, status, gainers/losers, monitor webhook, citizen impact |
+| `apps/mobile/app/delimitation/my-impact.tsx` | "What Changes For You" screen — PIN code lookup, state projection, subscribe to alerts |
+| `data/monitors/.gitignore` | Ignores runtime state/dispatch files from monitors |
+
+### Files Modified
+
+| File | Changes |
+|---|---|
+| `apps/api/src/server.ts` | Registered `delimitationRoutes` |
+| `apps/api/src/services/notifications.ts` | Added `delimitation_alert` trigger type + TRIGGER_CONFIG entry |
+| `apps/mobile/app/(tabs)/dashboard.tsx` | Added Delimitation Tracker banner at top of scroll content + styles |
+| `apps/mobile/app/(tabs)/profile.tsx` | Added "Delimitation Tracker" and "What Changes For You" to Civic Participation section |
+| `apps/mobile/i18n/locales/en.ts` | 30+ delimitation i18n keys |
+| `apps/mobile/i18n/locales/hi.ts` | Hindi delimitation translations |
+| `apps/mobile/i18n/locales/te.ts` | Telugu delimitation translations |
+| `.github/workflows/ci.yml` | Added census data test step |
+
+### Monitor Architecture
+
+```
+┌──────────────────────┐
+│  GitHub Actions Cron  │  (every 6 hours)
+│  delimitation-monitor │
+└───────┬──────────────┘
+        │
+   ┌────┴────┬──────────────┐
+   │         │              │
+   ▼         ▼              ▼
+gazette   eci-monitor   parliament
+monitor   (diff detect)   monitor
+   │         │              │
+   └────┬────┴──────────────┘
+        │
+        ▼
+  data/monitors/*-state.json (cached)
+  data/monitors/*-dispatch.json → artifact
+        │
+        ▼  (if KSHETRA_API_URL set)
+  POST /api/v1/delimitation/monitor-webhook
+        │
+        ▼
+  Supabase delimitation_events + Push Notifications
+```
+
+### API Endpoints
+
+| Method | Path | Description |
+|---|---|---|
+| GET | `/api/v1/delimitation/projections` | All 13-state seat projections + summary |
+| GET | `/api/v1/delimitation/projections/:stateCode` | Single state projection |
+| GET | `/api/v1/delimitation/timeline` | Timeline events summary |
+| GET | `/api/v1/delimitation/status` | National delimitation status |
+| GET | `/api/v1/delimitation/gainers-losers` | Quick gainer/loser summary |
+| POST | `/api/v1/delimitation/monitor-webhook` | Authenticated webhook for monitors |
+| GET | `/api/v1/delimitation/impact/:pinCode` | Citizen impact by PIN code (stub) |
+
+### Tests
+
+| Suite | Status | Tests |
+|---|---|---|
+| `apps/api` — all (health, AI, constituencies) | ✅ Pass | 31 |
+| `data/census` — delimitation | ✅ Pass | 24 |
+| **Total** | **✅ All Pass** | **55** |
+
+### Component Count: ~38 mobile components (added MyImpact screen)
+
+---
+
+## Sprint 19: Delimitation Simulator Core
+
+**Goal:** Core simulation algorithms — population aggregation, boundary generation, reservation analysis — plus API simulation endpoints, comprehensive test suite, and state detail screen.
+
+### Files Created
+
+| File | Description |
+|---|---|
+| `lib/delimitation/populationAggregator.ts` | Ward-to-constituency aggregation: synthetic ward generation, greedy BFS constituency builder, district-level quick aggregation |
+| `lib/delimitation/boundarySimulator.ts` | Boundary simulation engine: 3 modes (equal_population, minimal_change, political_neutral), reservation assignment, quality scoring (0–100), national simulation |
+| `lib/delimitation/reservationAnalyzer.ts` | SC/ST reservation analysis: state profiles, district hotspot detection, reservation change tracking, political impact narrative |
+| `app/delimitation/state/[code].tsx` | State delimitation detail screen: hero stats, reservation breakdown table, district-level breakdown with deviation bars, reservation hotspots |
+| `data/census/__tests__/simulator.test.ts` | 36 tests for all 3 algorithm modules + integration tests |
+
+### Files Modified
+
+| File | Changes |
+|---|---|
+| `apps/api/src/routes/delimitation.ts` | +4 endpoints: simulate/:stateCode, reservation, reservation/:stateCode, compare |
+
+### Algorithm Architecture
+
+```
+Census 2011 Data
+    │
+    ├── Seat Calculator (Sprint 17)
+    │   └── computeAllSeatAllocations → projectedSeats per state
+    │
+    ├── Population Aggregator (NEW)
+    │   ├── generateSyntheticWards → district → ward units
+    │   ├── aggregateToConstituencies → greedy BFS grouping
+    │   ├── aggregateState → full pipeline with validation
+    │   └── quickDistrictAggregation → fast district-level
+    │
+    ├── Boundary Simulator (NEW)
+    │   ├── simulateState → full simulation + quality score
+    │   ├── simulateStateQuick → district-level quick sim
+    │   ├── simulateNational → all states summary
+    │   └── assignReservations → SC/ST seat allocation
+    │
+    └── Reservation Analyzer (NEW)
+        ├── analyzeStateReservation → full profile
+        ├── analyzeNationalReservation → cross-state summary
+        ├── identifyHotspots → SC/ST concentration districts
+        └── analyzeReservationPoliticalImpact → narrative
+```
+
+### Key Algorithm Details
+
+**Population Aggregator**
+- Synthetic ward generation: ~4 wards per constituency, population-weighted, linear + cross-linked adjacency
+- Greedy BFS: seeds from largest unassigned ward, grows to adjacent wards, targets ideal pop ±10%
+- Orphan handling: unassigned wards merged into nearest or smallest proposed AC
+- Population conservation: total ward pop === census pop (enforced by tests)
+
+**Boundary Simulator**
+- Quality scoring (0–100): population equality (40pts), within-bounds ratio (30pts), reservation accuracy (15pts), coverage (15pts)
+- Reservation assignment: ST seats first (highest ST%), then SC seats (highest SC%), rest GEN
+- Urban/rural classification: >75% urban, <25% rural, else mixed
+
+**Reservation Analyzer**
+- Threshold detection: SC ≥25% → hotspot, ST ≥15% → hotspot
+- Political impact narrative: generated per-state text summarizing reservation shift
+- National summary: top SC/ST states, most impacted states ranked
+
+### API Endpoints (New)
+
+| Method | Path | Description |
+|---|---|---|
+| GET | `/api/v1/delimitation/simulate/:stateCode` | State boundary simulation (quick mode) |
+| GET | `/api/v1/delimitation/reservation` | National reservation analysis |
+| GET | `/api/v1/delimitation/reservation/:stateCode` | State reservation detail |
+| GET | `/api/v1/delimitation/compare?states=TS,AP` | Multi-state comparison (max 4) |
+
+### Tests
+
+| Suite | Status | Tests |
+|---|---|---|
+| `data/census` — delimitation (original) | ✅ Pass | 24 |
+| `data/census` — simulator (new) | ✅ Pass | 36 |
+| `apps/api` — all | ✅ Pass | 31 |
+| **Total** | **✅ All Pass** | **91** |
+
+### Component Count: ~39 mobile components (added State Detail screen)
+
+---
+
+## Sprint 20: Interactive Simulator UI
+
+**Goal:** Wire delimitation algorithms into a touch-interactive mobile screen with seat slider, mode picker, before/after comparison, and share.
+
+### Files Created
+
+| File | Description |
+|---|---|
+| `app/delimitation/simulator.tsx` | Full simulator screen: state picker, 3 simulation modes (equal pop / minimal change / competitive), seat count slider, "Run Simulation" → before/after cards, reservation split bar, district breakdown with deviation %, SC/ST mini-bars, reservation hotspots, share results (plain text), link to full state detail |
+
+### Files Modified
+
+| File | Changes |
+|---|---|
+| `app/delimitation/index.tsx` | Added Simulator CTA card in overview tab + styles |
+
+### Dependencies Added
+- `@react-native-community/slider` — Native slider component
+
+### Component Count: ~40 mobile components
+
+---
+
+## Sprint 21: Election Analytics Dashboard
+
+**Goal:** Cross-state election analytics — party strength, swing seats, district heatmaps, anti-incumbency.
+
+### Files Created
+
+| File | Description |
+|---|---|
+| `lib/analytics/electionAnalytics.ts` | Analytics engine: `analyzeState()` (full state analysis), `compareStates()` (national comparison). Party strength (safe/comfortable/marginal/close), swing seats (<8K margin), district competitive index (0-100), reservation analysis (GEN/SC/ST per party), anti-incumbency (defections, vulnerable seats), auto-generated insights |
+| `app/analytics/index.tsx` | Analytics dashboard: 4 tabs (Overview / Parties / Districts / Swing). State picker (TS/AP/KA/MH). Hero stats, seat distribution bar, reservation split, cross-state comparison table. Party cards with safe/comfortable/marginal bars + margin stats. District heatmap with competitive index badges. Swing seats list + anti-incumbency metrics + defection flow + closest contests |
+
+### Files Modified
+
+| File | Changes |
+|---|---|
+| `app/(tabs)/dashboard.tsx` | Added Election Analytics banner card below Delimitation Tracker |
+
+### Types Defined
+
+```
+PartyStrength — seats, margins, safe/comfortable/marginal/close breakdown
+SwingSeat — acNo, margin, marginPercent, parties
+DistrictHeatmap — party breakdown, dominance, competitive index
+ReservationAnalysis — GEN/SC/ST with per-party counts
+AntiIncumbencyMetrics — defection rate, flow, vulnerable seats
+StateAnalytics — full state analysis container
+NationalComparison — cross-state + dominant parties
+```
+
+### Component Count: ~41 mobile components
+
+---
+
+## Sprint 22: Auth & Personalization
+
+**Goal:** Onboarding flow, profile editing, favorites sync, personalized feed.
+
+### Files Created
+
+| File | Description |
+|---|---|
+| `app/auth/onboarding.tsx` | 4-step onboarding: Welcome → Profile (name + bio) → Interests (8 topics) → Done. Progress dots, skip option, feature highlights |
+| `app/auth/edit-profile.tsx` | Profile editor: avatar placeholder, display name, bio (120 char), interest chips, account info (email, role, reputation, joined), sign out with confirmation |
+| `lib/favoritesSync.ts` | Bidirectional favorites sync: `pushFavoritesToCloud()` (upsert local → Supabase), `pullFavoritesFromCloud()` (union merge), `syncFavorites()` (full bidirectional). Local-first, cloud-backup strategy |
+| `lib/usePersonalizedFeed.ts` | Personalized feed hook: scores posts by interest keywords + recency + engagement, scores issues by home constituency + favorites + severity + recency. Returns sorted posts/issues + personalization status |
+
+### Files Modified
+
+| File | Changes |
+|---|---|
+| `app/(tabs)/profile.tsx` | Fixed edit profile route to `/auth/edit-profile` |
+
+### Pre-existing Auth Infrastructure (Sprint 5/6)
+- `lib/supabase.ts` — Supabase client with SecureStore adapter
+- `stores/auth.ts` — Email sign-in/up, session management, auth listener
+- `app/auth/sign-in.tsx` — Sign in/up screen
+- `stores/userProfile.ts` — Persisted user profile with AsyncStorage
+- `stores/favorites.ts` — MMKV-persisted favorites
+
+### Component Count: ~43 mobile components
+
+---
+
+## Sprint 23: Performance & Polish
+
+**Goal:** Data caching, haptic feedback, lazy loading, performance monitoring.
+
+### Files Created
+
+| File | Description |
+|---|---|
+| `lib/dataCache.ts` | MMKV-backed TTL cache: `getCached/setCache/removeCache/clearCache`, `cachedCompute()` (sync get-or-compute), `cachedFetch()` (async get-or-fetch), `getCacheStats()`. TTL presets: SHORT (5m), MEDIUM (30m), LONG (2h), DAY, WEEK. Falls back to in-memory Map |
+| `lib/haptics.ts` | Semantic haptic feedback: `tapLight/tapMedium/tapHeavy()`, `notifySuccess/notifyWarning/notifyError()`, `selectionChanged()`. Graceful no-op when expo-haptics unavailable |
+| `lib/lazyScreen.tsx` | `lazyScreen()` factory: wraps React.lazy + Suspense with branded loading spinner. Prevents heavy screens from blocking initial bundle |
+| `lib/perfMonitor.ts` | Dev-only perf tracker: `startTimer()` (returns stop fn), `measureSync/measureAsync()`, colored console logs (🟢<16ms, 🟡<50ms, 🔴>50ms), `getPerfSummary()` for debugging |
+
+### Pre-existing Performance Infrastructure
+- `lib/storage.ts` — MMKV with in-memory Map fallback
+- `components/SkeletonLoader.tsx` — Animated skeleton items + constituency/stat card skeletons
+- `@shopify/flash-list` — Already installed for virtualized lists
+
+### Tests
+
+| Suite | Status | Tests |
+|---|---|---|
+| `data/seed` — all 9 suites | ✅ Pass | 176 |
+| `data/census` — delimitation + simulator | ✅ Pass | 60 |
+| **Total** | **✅ All Pass** | **236** |
+
+### Component Count: ~43 mobile components
+
+---
+
+## Sprint 24: Notifications & Real-Time
+
+**Goal:** Smart notification triggers, expanded categories, Supabase Realtime subscriptions, badge counts.
+
+### Files Created
+
+| File | Description |
+|---|---|
+| `lib/notificationTriggers.ts` | 13 smart trigger functions: civic issues (new/status/MLA response), promises (status change/milestone), delimitation (update/gazette), elections (result/constituency update), analytics (insight), community (reply/mention). All check user category preferences before firing. |
+| `lib/realtimeService.ts` | Supabase Realtime wrapper: `subscribeToCivicIssues()`, `subscribeToFeed()`, `subscribeToPromises()`, `subscribeToDelimitation()`, `subscribeAll()`, `unsubscribeAll()`. Channel management with dedup. Graceful no-op when Supabase unconfigured. |
+
+### Files Modified
+
+| File | Changes |
+|---|---|
+| `lib/notifications.ts` | Expanded AlertCategory: +civic_issue, promise_update, delimitation_alert, analytics_insight, community_activity. Added Android notification channels for civic, promises, delimitation. |
+| `stores/notifications.ts` | Added 5 new category defaults (all enabled). |
+| `app/notification-settings.tsx` | 9 category toggles (was 4): +Civic Issues, Promise Tracker, Delimitation Alerts, Analytics Insights, Community. |
+| `app/(tabs)/_layout.tsx` | Badge count on Dashboard tab from unread notifications store. |
+
+### Component Count: ~44 mobile components
+
+---
+
+## Sprint 25: Search & Discovery
+
+**Goal:** Global search across all content types, deep linking, search suggestions.
+
+### Files Created
+
+| File | Description |
+|---|---|
+| `lib/globalSearch.ts` | Cross-content search engine: constituencies (name/district/AC#), MLAs (name), civic issues (title/category), posts (content/hashtags), promises (title/party). Relevance scoring: exact=90, starts=80, contains=60, partial=45. Returns ranked SearchResult[] with route + metadata. |
+| `app/search.tsx` | Global search screen: animated search bar, live results with type badges (Constituency/MLA/Issue/Post/Promise), recent searches from recents store, suggestion chips, search tips. Uses FlashList. |
+| `lib/deepLinks.ts` | Deep link utilities: `constituencyLink()`, `issueLink()`, `analyticsLink()`, `searchLink()`, `parseDeepLink()`, `shareableConstituencyText()`. Custom scheme (kshetra://). |
+
+### Files Modified
+
+| File | Changes |
+|---|---|
+| `app/_layout.tsx` | Added search screen to Stack navigator with fade animation. |
+
+### Component Count: ~45 mobile components
+
+---
+
+## Sprint 26: Offline & Data Sync
+
+**Goal:** Network monitoring, offline queue, connectivity indicator, auto-sync on reconnect.
+
+### Files Created
+
+| File | Description |
+|---|---|
+| `lib/networkStatus.ts` | Zustand network store wrapping @react-native-community/netinfo. Tracks isConnected, isInternetReachable, connectionType. `startMonitoring()` returns cleanup. `isOnline()` quick check. |
+| `lib/offlineSync.ts` | MMKV-persisted sync queue: `enqueue()` (immediate if online, queued if offline), `flushQueue()` (processes with retry, max 3 attempts), 8 operation types (upvote, follow, react, compose, etc.). `getQueueSize()`, `clearQueue()`. |
+| `components/OfflineBanner.tsx` | Animated banner: yellow offline warning with pending sync count, green "Back online — data synced" after reconnect. Auto-flushes queue. Polls queue size every 5s. |
+
+### Files Modified
+
+| File | Changes |
+|---|---|
+| `app/_layout.tsx` | Integrated OfflineBanner + network monitoring in root layout. |
+
+### Component Count: ~46 mobile components
+
+---
+
+## Sprint 27: Testing, CI & Release Prep
+
+**Goal:** Integration tests, CI pipeline, error reporting, store listing, release checklist.
+
+### Files Created
+
+| File | Description |
+|---|---|
+| `data/seed/__tests__/analytics-engine.test.ts` | 19 tests: state data adapter (4 states × shape/unique/count), analytics computations (party strength, swing seats, district breakdown, reservation, defections, cross-state comparison). |
+| `data/seed/__tests__/global-search.test.ts` | 10 tests: constituency search (name/AC#/district/MLA/party), cross-state search (total 806, BJP across states, no duplicate IDs), result ranking (exact > partial, AC# match). |
+| `lib/errorReporting.ts` | Sentry wrapper: `initErrorReporting()`, `captureException()`, `captureMessage()`, `setUser()`, `addBreadcrumb()`, `startTransaction()`. Graceful no-op when Sentry not installed. |
+| `STORE_LISTING.md` | Play Store metadata: app name, descriptions, category, keywords, screenshot list, feature graphic spec. |
+| `RELEASE_CHECKLIST.md` | 40+ item checklist: code quality, data integrity, security, performance, EAS build, store submission (Play + App Store), post-release monitoring. |
+
+### Files Modified
+
+| File | Changes |
+|---|---|
+| `.github/workflows/ci.yml` | Added lint job (Prettier check). 3 parallel CI jobs: Test, Typecheck, Lint. |
+
+### Tests
+
+| Suite | Status | Tests |
+|---|---|---|
+| `data/seed` — 11 suites | ✅ Pass | 205 |
+| `data/census` — 2 suites | ✅ Pass | 60 |
+| **Total** | **✅ All Pass** | **265** |
+
+### Component Count: ~46 mobile components

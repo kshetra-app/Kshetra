@@ -1,0 +1,211 @@
+import { useState, useCallback, useMemo, useRef, useEffect } from 'react';
+import {
+  View,
+  Text,
+  TextInput,
+  StyleSheet,
+  Pressable,
+  SafeAreaView,
+  StatusBar,
+  Keyboard,
+} from 'react-native';
+import { FlashList } from '@shopify/flash-list';
+import { Ionicons } from '@expo/vector-icons';
+import { useRouter } from 'expo-router';
+import { globalSearch, getSearchSuggestions, type SearchResult, type SearchResultType } from '../lib/globalSearch';
+import { useRecentsStore } from '../stores/recents';
+
+const TYPE_CONFIG: Record<SearchResultType, { icon: string; color: string; label: string }> = {
+  constituency: { icon: 'location', color: '#4F8EF7', label: 'Constituency' },
+  mla: { icon: 'person', color: '#10B981', label: 'MLA' },
+  issue: { icon: 'megaphone', color: '#EF4444', label: 'Issue' },
+  post: { icon: 'chatbubble', color: '#8B5CF6', label: 'Post' },
+  promise: { icon: 'checkmark-done', color: '#F59E0B', label: 'Promise' },
+};
+
+export default function GlobalSearchScreen() {
+  const router = useRouter();
+  const [query, setQuery] = useState('');
+  const inputRef = useRef<TextInput>(null);
+  const recents = useRecentsStore((s) => s.recents);
+  const clearRecents = useRecentsStore((s) => s.clearRecents);
+
+  useEffect(() => {
+    const timer = setTimeout(() => inputRef.current?.focus(), 150);
+    return () => clearTimeout(timer);
+  }, []);
+
+  const results = useMemo(() => globalSearch(query), [query]);
+  const suggestions = useMemo(() => getSearchSuggestions(), []);
+
+  const handleSelect = useCallback((item: SearchResult) => {
+    Keyboard.dismiss();
+    router.push(item.route as any);
+  }, [router]);
+
+  const handleSuggestion = useCallback((text: string) => {
+    setQuery(text);
+  }, []);
+
+  const renderResult = useCallback(({ item }: { item: SearchResult }) => {
+    const config = TYPE_CONFIG[item.type];
+    return (
+      <Pressable style={styles.resultCard} onPress={() => handleSelect(item)}>
+        <View style={[styles.resultIcon, { backgroundColor: config.color + '20' }]}>
+          <Ionicons name={config.icon as any} size={16} color={config.color} />
+        </View>
+        <View style={styles.resultContent}>
+          <Text style={styles.resultTitle} numberOfLines={1}>{item.title}</Text>
+          <Text style={styles.resultSub} numberOfLines={1}>{item.subtitle}</Text>
+        </View>
+        <View style={[styles.typeBadge, { backgroundColor: config.color + '15' }]}>
+          <Text style={[styles.typeBadgeText, { color: config.color }]}>{config.label}</Text>
+        </View>
+      </Pressable>
+    );
+  }, [handleSelect]);
+
+  const showResults = query.trim().length >= 2;
+
+  return (
+    <SafeAreaView style={styles.safe}>
+      <StatusBar barStyle="light-content" />
+
+      {/* Search Bar */}
+      <View style={styles.searchBar}>
+        <Pressable onPress={() => router.back()} style={styles.backBtn}>
+          <Ionicons name="arrow-back" size={20} color="#FFFFFF" />
+        </Pressable>
+        <View style={styles.inputWrap}>
+          <Ionicons name="search" size={16} color="#6B7280" />
+          <TextInput
+            ref={inputRef}
+            style={styles.input}
+            placeholder="Search constituencies, MLAs, issues..."
+            placeholderTextColor="#4B5563"
+            value={query}
+            onChangeText={setQuery}
+            autoCapitalize="none"
+            autoCorrect={false}
+            returnKeyType="search"
+          />
+          {query.length > 0 && (
+            <Pressable onPress={() => setQuery('')}>
+              <Ionicons name="close-circle" size={18} color="#4B5563" />
+            </Pressable>
+          )}
+        </View>
+      </View>
+
+      {showResults ? (
+        <View style={styles.resultsList}>
+          {results.length > 0 ? (
+            <>
+              <Text style={styles.resultCount}>{results.length} results</Text>
+              <FlashList
+                data={results}
+                renderItem={renderResult}
+                keyExtractor={(item) => item.id}
+                keyboardShouldPersistTaps="handled"
+              />
+            </>
+          ) : (
+            <View style={styles.emptyState}>
+              <Ionicons name="search" size={40} color="#374151" />
+              <Text style={styles.emptyText}>No results for "{query}"</Text>
+            </View>
+          )}
+        </View>
+      ) : (
+        <View style={styles.idleContent}>
+          {/* Recent searches */}
+          {recents.length > 0 && (
+            <View style={styles.section}>
+              <View style={styles.sectionHeader}>
+                <Text style={styles.sectionTitle}>Recent</Text>
+                <Pressable onPress={clearRecents}>
+                  <Text style={styles.clearText}>Clear</Text>
+                </Pressable>
+              </View>
+              {recents.slice(0, 5).map((r) => (
+                <Pressable
+                  key={r.acNo}
+                  style={styles.recentRow}
+                  onPress={() => router.push(`/constituency/TS-AC-${r.acNo}` as any)}
+                >
+                  <Ionicons name="time" size={14} color="#4B5563" />
+                  <Text style={styles.recentText}>{r.name}</Text>
+                  <Text style={styles.recentMeta}>{r.party}</Text>
+                </Pressable>
+              ))}
+            </View>
+          )}
+
+          {/* Suggestions */}
+          <View style={styles.section}>
+            <Text style={styles.sectionTitle}>Suggested</Text>
+            <View style={styles.suggestionsWrap}>
+              {suggestions.map((s) => (
+                <Pressable key={s} style={styles.suggestionChip} onPress={() => handleSuggestion(s)}>
+                  <Text style={styles.suggestionText}>{s}</Text>
+                </Pressable>
+              ))}
+            </View>
+          </View>
+
+          {/* Search tips */}
+          <View style={styles.section}>
+            <Text style={styles.sectionTitle}>Search Tips</Text>
+            <View style={styles.tipCard}>
+              <Text style={styles.tipText}>Try searching by:</Text>
+              <Text style={styles.tipExample}>• Constituency name: "Jubilee Hills"</Text>
+              <Text style={styles.tipExample}>• AC number: "141"</Text>
+              <Text style={styles.tipExample}>• MLA name: "Revanth Reddy"</Text>
+              <Text style={styles.tipExample}>• Party: "BJP" or "INC"</Text>
+              <Text style={styles.tipExample}>• Issue: "Water supply"</Text>
+            </View>
+          </View>
+        </View>
+      )}
+    </SafeAreaView>
+  );
+}
+
+const styles = StyleSheet.create({
+  safe: { flex: 1, backgroundColor: '#0A0A1A' },
+  searchBar: { flexDirection: 'row', alignItems: 'center', paddingHorizontal: 12, paddingVertical: 8, gap: 8 },
+  backBtn: { width: 36, height: 36, borderRadius: 18, backgroundColor: '#1F2937', alignItems: 'center', justifyContent: 'center' },
+  inputWrap: { flex: 1, flexDirection: 'row', alignItems: 'center', backgroundColor: '#111827', borderRadius: 12, paddingHorizontal: 12, gap: 8 },
+  input: { flex: 1, fontSize: 15, color: '#FFFFFF', paddingVertical: 12 },
+
+  resultsList: { flex: 1, paddingHorizontal: 12 },
+  resultCount: { fontSize: 11, color: '#6B7280', fontWeight: '600', marginBottom: 8, marginLeft: 4 },
+  resultCard: { flexDirection: 'row', alignItems: 'center', backgroundColor: '#111827', borderRadius: 10, padding: 10, marginBottom: 4, gap: 10 },
+  resultIcon: { width: 32, height: 32, borderRadius: 8, alignItems: 'center', justifyContent: 'center' },
+  resultContent: { flex: 1 },
+  resultTitle: { fontSize: 14, fontWeight: '700', color: '#FFFFFF' },
+  resultSub: { fontSize: 11, color: '#6B7280', marginTop: 1 },
+  typeBadge: { paddingHorizontal: 8, paddingVertical: 3, borderRadius: 6 },
+  typeBadgeText: { fontSize: 9, fontWeight: '800' },
+
+  emptyState: { flex: 1, justifyContent: 'center', alignItems: 'center', gap: 8 },
+  emptyText: { fontSize: 14, color: '#6B7280' },
+
+  idleContent: { flex: 1, paddingHorizontal: 16, paddingTop: 8 },
+  section: { marginBottom: 20 },
+  sectionHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 },
+  sectionTitle: { fontSize: 13, fontWeight: '700', color: '#6B7280', textTransform: 'uppercase', letterSpacing: 0.5 },
+  clearText: { fontSize: 12, color: '#EF4444', fontWeight: '600' },
+
+  recentRow: { flexDirection: 'row', alignItems: 'center', gap: 8, paddingVertical: 8, borderBottomWidth: 0.5, borderBottomColor: '#1F2937' },
+  recentText: { flex: 1, fontSize: 14, color: '#D1D5DB', fontWeight: '600' },
+  recentMeta: { fontSize: 12, color: '#6B7280', fontWeight: '600' },
+
+  suggestionsWrap: { flexDirection: 'row', flexWrap: 'wrap', gap: 6 },
+  suggestionChip: { paddingHorizontal: 12, paddingVertical: 7, borderRadius: 16, backgroundColor: '#111827', borderWidth: 1, borderColor: '#1F2937' },
+  suggestionText: { fontSize: 12, color: '#9CA3AF', fontWeight: '600' },
+
+  tipCard: { backgroundColor: '#111827', borderRadius: 10, padding: 12 },
+  tipText: { fontSize: 12, color: '#9CA3AF', fontWeight: '600', marginBottom: 6 },
+  tipExample: { fontSize: 12, color: '#6B7280', lineHeight: 20 },
+});

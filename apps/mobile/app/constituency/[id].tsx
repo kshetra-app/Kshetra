@@ -14,6 +14,7 @@ import {
 } from '@/lib/stateDataDispatcher';
 import { getTriviaForConstituencyInState } from '@/lib/stateTriviaAdapter';
 import { getUnifiedConstituenciesForState, type UnifiedConstituency } from '@/lib/stateDataAdapter';
+import { STATES } from '@kshetra/shared';
 import { useActiveStateStore } from '../../stores/activeState';
 import { useFavoritesStore } from '../../stores/favorites';
 import { useRecentsStore } from '../../stores/recents';
@@ -158,7 +159,7 @@ export default function ConstituencyDetailScreen() {
 
         {/* 2023 Result Card */}
         <View style={styles.section}>
-          <Text style={styles.sectionTitle}>{t('constituency.electionResult')}</Text>
+          <Text style={styles.sectionTitle}>{t('constituency.electionResult', { year: constituency.electionYear })}</Text>
           <View style={styles.resultCard}>
             <View style={styles.resultRow}>
               <View style={styles.resultLeft}>
@@ -333,7 +334,7 @@ export default function ConstituencyDetailScreen() {
           if (stateHistory.length === 0) return null;
           return (
             <View style={styles.section}>
-              <Text style={styles.sectionTitle}>{t('constituency.assemblyOverview')}</Text>
+              <Text style={styles.sectionTitle}>{t('constituency.assemblyOverview', { stateName: STATES[stateCode]?.name ?? stateCode })}</Text>
               {stateHistory.map((election) => {
                 const winnerParty = election.partyResults.reduce(
                   (prev, curr) => (curr.seatsWon > prev.seatsWon ? curr : prev),
@@ -428,7 +429,7 @@ export default function ConstituencyDetailScreen() {
 
                 <View style={styles.demoDivider} />
 
-                <Text style={styles.demoSubTitle}>{t('constituency.voterProfile')}</Text>
+                <Text style={styles.demoSubTitle}>{t('constituency.voterProfile', { year: constituency.electionYear })}</Text>
                 <View style={styles.demoRow}>
                   <View style={styles.demoItem}>
                     <Text style={styles.demoValue}>{(demo.totalVoters / 1000).toFixed(0)}K</Text>

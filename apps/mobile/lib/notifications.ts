@@ -20,7 +20,12 @@ export type AlertCategory =
   | 'election_results'
   | 'constituency_updates'
   | 'new_state_added'
-  | 'app_updates';
+  | 'app_updates'
+  | 'civic_issue'
+  | 'promise_update'
+  | 'delimitation_alert'
+  | 'analytics_insight'
+  | 'community_activity';
 
 /** Request notification permissions */
 export async function requestPermissions(): Promise<boolean> {
@@ -42,6 +47,20 @@ export async function requestPermissions(): Promise<boolean> {
       importance: Notifications.AndroidImportance.HIGH,
       vibrationPattern: [0, 250, 250, 250],
       lightColor: '#4F8EF7',
+    });
+    await Notifications.setNotificationChannelAsync('civic', {
+      name: 'Civic Issues',
+      importance: Notifications.AndroidImportance.DEFAULT,
+    });
+    await Notifications.setNotificationChannelAsync('promises', {
+      name: 'Promise Tracker',
+      importance: Notifications.AndroidImportance.DEFAULT,
+    });
+    await Notifications.setNotificationChannelAsync('delimitation', {
+      name: 'Delimitation Updates',
+      importance: Notifications.AndroidImportance.HIGH,
+      vibrationPattern: [0, 250, 250, 250],
+      lightColor: '#F59E0B',
     });
   }
 

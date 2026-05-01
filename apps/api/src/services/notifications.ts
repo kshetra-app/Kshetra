@@ -19,6 +19,7 @@ export type NotificationTrigger =
   | 'issue_upvote_milestone'
   | 'new_headline'
   | 'constituency_alert'
+  | 'delimitation_alert'
   | 'system';
 
 export interface NotificationPayload {
@@ -172,5 +173,6 @@ export const TRIGGER_CONFIG: Record<NotificationTrigger, { label: string; descri
   issue_upvote_milestone: { label: 'Issue Milestones', description: 'When your issue reaches upvote milestones', defaultPush: true, defaultInApp: true },
   new_headline: { label: 'Headlines', description: 'Breaking news in your state', defaultPush: false, defaultInApp: true },
   constituency_alert: { label: 'Constituency Alerts', description: 'Important updates in your constituency', defaultPush: true, defaultInApp: true },
+  delimitation_alert: { label: 'Delimitation Updates', description: 'New delimitation events, proposals, or boundary changes', defaultPush: true, defaultInApp: true },
   system: { label: 'System Updates', description: 'App updates and announcements', defaultPush: true, defaultInApp: true },
 };
