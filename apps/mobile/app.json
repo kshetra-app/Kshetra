@@ -42,12 +42,6 @@
       ["expo-router", { "root": "./app" }],
       "expo-location",
       "expo-sqlite",
-      [
-        "@rnmapbox/maps",
-        {
-          "RNMapboxMapsImpl": "maplibre"
-        }
-      ],
       "expo-secure-store",
       "expo-localization",
       [

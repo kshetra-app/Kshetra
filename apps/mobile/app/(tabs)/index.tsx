@@ -48,7 +48,7 @@ let MapboxGL: any = null;
 let mapboxAvailable = false;
 try {
   MapboxGL = require('@rnmapbox/maps').default;
-  MapboxGL.setAccessToken(null);
+  MapboxGL.setAccessToken(process.env.EXPO_PUBLIC_MAPBOX_TOKEN ?? '');
   mapboxAvailable = true;
 } catch {
   // Native Mapbox module not available (Expo Go / web)
