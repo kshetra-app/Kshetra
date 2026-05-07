@@ -4,7 +4,8 @@ import { useLocalSearchParams, Stack } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useTranslation } from 'react-i18next';
-import { getPartyColor, getCandidatePhotoUrl } from '@/lib/constants';
+import { getPartyColor } from '@/lib/constants';
+import CandidateAvatar from '@/components/CandidateAvatar';
 import {
   getMLAProfileForState,
   getDemographicsForState,
@@ -165,12 +166,11 @@ export default function ConstituencyDetailScreen() {
           <View style={styles.resultCard}>
             <View style={styles.resultRow}>
               <View style={styles.resultLeft}>
-                <View style={[styles.resultAvatarWrap, { borderColor: partyColor }]}>
-                  <Image
-                    source={{ uri: getCandidatePhotoUrl(constituency.winnerName, constituency.winnerParty, 96) }}
-                    style={styles.resultAvatar}
-                  />
-                </View>
+                <CandidateAvatar
+                  name={constituency.winnerName}
+                  party={constituency.winnerParty}
+                  size={52}
+                />
                 <View>
                   <Text style={styles.resultParty}>
                     {constituency.winnerParty}
@@ -309,12 +309,11 @@ export default function ConstituencyDetailScreen() {
                     </View>
                     <View style={styles.histCardCenter}>
                       <View style={styles.histPartyRow}>
-                        <View style={[styles.histAvatarWrap, { borderColor: getPartyColor(e.party === 'TRS' ? 'BRS' : e.party) }]}>
-                          <Image
-                            source={{ uri: getCandidatePhotoUrl(e.winner, e.party, 64) }}
-                            style={styles.histAvatar}
-                          />
-                        </View>
+                        <CandidateAvatar
+                          name={e.winner}
+                          party={e.party === 'TRS' ? 'BRS' : e.party}
+                          size={36}
+                        />
                         <View>
                           <View style={styles.histPartyInner}>
                             <View

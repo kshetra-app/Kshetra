@@ -42,13 +42,11 @@ export function getPartyColor(party: string): string {
 
 /**
  * Get a candidate photo URL.
- * If a real photoUrl is provided, it takes priority.
- * Otherwise generates a unique person-style avatar via DiceBear using candidate name as seed
- * with party-colored background so each candidate gets a distinct, recognizable face.
+ * Priority: 1) explicit photoUrl  2) professional initials via ui-avatars
+ * The CandidateAvatar component adds a third layer: real Wikipedia photos.
  */
 export function getCandidatePhotoUrl(name: string, party: string, size = 128, photoUrl?: string): string {
   if (photoUrl) return photoUrl;
   const bg = getPartyColor(party).replace('#', '');
-  const seed = encodeURIComponent(name.trim());
-  return `https://api.dicebear.com/9.x/personas/png?seed=${seed}&size=${size}&backgroundColor=${bg}`;
+  return `https://ui-avatars.com/api/?name=${encodeURIComponent(name.trim())}&size=${size}&background=${bg}&color=fff&bold=true&format=png`;
 }

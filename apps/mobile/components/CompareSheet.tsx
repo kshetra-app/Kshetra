@@ -11,7 +11,8 @@ import {
   Image,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { getPartyColor, getCandidatePhotoUrl } from '@/lib/constants';
+import { getPartyColor } from '@/lib/constants';
+import CandidateAvatar from '@/components/CandidateAvatar';
 import {
   getMLAProfileForState,
   getDemographicsForState,
@@ -232,12 +233,12 @@ export default function CompareSheet({ visible, initialAcNo, onClose }: CompareS
             {/* MLA names */}
             <View style={styles.statRow}>
               <View style={styles.mlaCol}>
-                <Image source={{ uri: getCandidatePhotoUrl(left.winnerName, left.winnerParty, 64) }} style={styles.compareAvatar} />
+                <CandidateAvatar name={left.winnerName} party={left.winnerParty} size={40} />
                 <Text style={styles.mlaName} numberOfLines={1}>{left.winnerName}</Text>
               </View>
               <Text style={styles.statLabel}>MLA</Text>
               <View style={styles.mlaCol}>
-                <Image source={{ uri: getCandidatePhotoUrl(right.winnerName, right.winnerParty, 64) }} style={styles.compareAvatar} />
+                <CandidateAvatar name={right.winnerName} party={right.winnerParty} size={40} />
                 <Text style={styles.mlaName} numberOfLines={1}>{right.winnerName}</Text>
               </View>
             </View>

@@ -1,7 +1,8 @@
-import { View, Text, StyleSheet, Image } from 'react-native';
+import { View, Text, StyleSheet } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useTranslation } from 'react-i18next';
-import { getPartyColor, getCandidatePhotoUrl } from '@/lib/constants';
+import { getPartyColor } from '@/lib/constants';
+import CandidateAvatar from '@/components/CandidateAvatar';
 import type { MLAProfile } from '@/lib/data';
 
 /** Format INR amounts in lakhs/crores */
@@ -28,18 +29,16 @@ export default function MLACard({ profile }: MLACardProps) {
     : profile.terms === 3 ? t('mla.term_3')
     : t('mla.term_n', { n: profile.terms });
 
-  const photoUri = getCandidatePhotoUrl(profile.name, profile.party, 104, profile.photoUrl);
-
   return (
     <View style={styles.card}>
       {/* Header */}
       <View style={styles.header}>
-        <View style={[styles.avatar, { borderColor: partyColor }]}>
-          <Image
-            source={{ uri: photoUri }}
-            style={styles.avatarImage}
-          />
-        </View>
+        <CandidateAvatar
+          name={profile.name}
+          party={profile.party}
+          size={52}
+          photoUrl={profile.photoUrl}
+        />
         <View style={styles.headerInfo}>
           <Text style={styles.name}>{profile.name}</Text>
           {profile.constituencyName && (

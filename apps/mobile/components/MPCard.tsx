@@ -2,9 +2,10 @@
  * MPCard — Compact card showing an MP's profile with party, house, and key stats.
  */
 import React from 'react';
-import { View, Text, StyleSheet, Image } from 'react-native';
+import { View, Text, StyleSheet } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { getPartyColor, getCandidatePhotoUrl } from '@/lib/constants';
+import { getPartyColor } from '@/lib/constants';
+import CandidateAvatar from '@/components/CandidateAvatar';
 import type { MPProfile } from '@/lib/mpTypes';
 
 interface MPCardProps {
@@ -21,8 +22,6 @@ function formatINR(val: number): string {
 export default function MPCard({ profile, compact }: MPCardProps) {
   const partyColor = getPartyColor(profile.party);
 
-  const photoUri = getCandidatePhotoUrl(profile.name, profile.party, 104, profile.photoUrl);
-
   const houseLabel = profile.house === 'lok_sabha' ? 'Lok Sabha' : 'Rajya Sabha';
   const houseColor = profile.house === 'lok_sabha' ? '#4F8EF7' : '#8B5CF6';
 
@@ -30,9 +29,12 @@ export default function MPCard({ profile, compact }: MPCardProps) {
     <View style={styles.card}>
       {/* Header */}
       <View style={styles.header}>
-        <View style={[styles.avatar, { borderColor: partyColor }]}>
-          <Image source={{ uri: photoUri }} style={styles.avatarImage} />
-        </View>
+        <CandidateAvatar
+          name={profile.name}
+          party={profile.party}
+          size={52}
+          photoUrl={profile.photoUrl}
+        />
         <View style={styles.headerInfo}>
           <Text style={styles.name} numberOfLines={1}>{profile.name}</Text>
           {profile.constituency && (

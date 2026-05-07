@@ -49,6 +49,7 @@
 | Bug Fix Sprint: Route Conflicts, TS Errors, Test Alignment | ✅ Complete | 2026-04-30 | 2026-04-30 |
 | Sprint 29: Multi-State Election Data (TN/KL/WB/UP) | ✅ Complete | 2026-05-01 | 2026-05-01 |
 | Sprint 30: MapLibre Migration + Candidate Avatars | ✅ Complete | 2026-05-06 | 2026-05-06 |
+| Sprint 31: Real Photos + Map Interactivity + Delimitation Overlay | ✅ Complete | 2026-05-07 | 2026-05-07 |
 
 ---
 
@@ -149,6 +150,7 @@
 | 2026-04-30 | `fix: route conflicts, TS errors, test alignment` | Removed duplicate constituency routes from states.ts, fixed leadership-academy.tsx import paths + TS errors, fixed expo-router dynamic route type casts (8 files), aligned API test assertions with current seed data (295/295 tests pass) |
 | 2026-05-01 | `feat: sprint 29 — multi-state election data (TN/KL/WB/UP)` | 4 new state seed files from real ECI data via Wikipedia scraper. TN 234/234, KL 140/140, WB 293/294, UP 401/403 constituencies with winner, runner-up, votes, margin, district, type. FULLY_SUPPORTED_STATES: 8 states. Total 1,694 seats. 403/403 tests pass. |
 | 2026-05-06 | `feat: sprint 30 — MapLibre migration + candidate avatars` | Replaced @rnmapbox/maps (proprietary, requires secret token) with @maplibre/maplibre-react-native (free, open-source). Switched map tiles from Mapbox to CARTO dark-matter (free). Added DiceBear Personas avatars for all candidates (unique face per name+party). Full native rebuild with expo prebuild. APK: 237 MB. |
+| 2026-05-07 | `feat: sprint 31 — real photos + map fix + delimitation overlay` | Replaced DiceBear cartoon avatars with 4-tier photo pipeline: Wikipedia REST API → MyNeta (ADR) → Official Legislature sites → party-colored initials. CandidateAvatar component across MLACard, MPCard, Explore, Constituency Detail, CompareSheet, Map BottomSheet. Fixed map interactivity: moved tap from ShapeSource.onPress (broken in MapLibre RN) to MapView.onPress + findConstituencyAtPoint() ray-casting (offline, all 23 states). Added delimitation overlay: amber dashed-border layer + hypothetical disclaimer banner + seat projection stats. Created scrape-candidate-photos.ts scraper for MyNeta + state legislature photos. |
 
 ---
 

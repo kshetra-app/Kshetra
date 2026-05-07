@@ -12,7 +12,8 @@ import {
 import { FlashList } from '@shopify/flash-list';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
-import { getPartyColor, getCandidatePhotoUrl } from '@/lib/constants';
+import { getPartyColor } from '@/lib/constants';
+import CandidateAvatar from '@/components/CandidateAvatar';
 import { useFavoritesStore } from '../../stores/favorites';
 import { useActiveStateStore } from '../../stores/activeState';
 import StateSwitcher from '../../components/StateSwitcher';
@@ -368,12 +369,11 @@ const ConstituencyCard = React.memo(function ConstituencyCard({
   return (
     <Pressable style={styles.card} onPress={onPress}>
       <View style={styles.cardLeft}>
-        <View style={[styles.candidateAvatarWrap, { borderColor: partyColor }]}>
-          <Image
-            source={{ uri: getCandidatePhotoUrl(item.winnerName, item.winnerParty, 80) }}
-            style={styles.candidateAvatar}
-          />
-        </View>
+        <CandidateAvatar
+          name={item.winnerName}
+          party={item.winnerParty}
+          size={48}
+        />
       </View>
       <View style={styles.cardContent}>
         <Text style={styles.cardName}>{item.name}</Text>

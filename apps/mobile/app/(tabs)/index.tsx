@@ -20,10 +20,10 @@ import {
   MAP_STYLE,
   PARTY_COLORS,
   getPartyColor,
-  getCandidatePhotoUrl,
   getStateCenter,
   getStateZoom,
 } from '@/lib/constants';
+import CandidateAvatar from '@/components/CandidateAvatar';
 import { useUserLocation } from '@/lib/useUserLocation';
 import { findConstituencyAtPoint, STATES } from '@kshetra/shared';
 import { useActiveStateStore } from '../../stores/activeState';
@@ -69,7 +69,7 @@ try {
   // and expose setCamera() ref method that maps to flyTo()
   const CameraCompat = React.forwardRef((props: any, outerRef: any) => {
     const { defaultSettings, minZoomLevel, maxZoomLevel, ...rest } = props;
-    const innerRef = React.useRef<any>(null);
+    const innerRef = React.useRef(null);
 
     React.useImperativeHandle(outerRef, () => ({
       setCamera: (opts: any) => {
@@ -99,9 +99,9 @@ try {
     );
   });
 
-  // ShapeSource compat: translate shape → data
+  // ShapeSource compat: translate shape → data, strip onPress (unsupported by GeoJSONSource)
   const ShapeSourceCompat = (props: any) => {
-    const { shape, ...rest } = props;
+    const { shape, onPress, ...rest } = props;
     return <ML.GeoJSONSource data={shape} {...rest} />;
   };
 
@@ -351,15 +351,51 @@ function FullMapScreen() {
     [seedMap],
   );
 
-  const handlePress = useCallback(
+  const handleMapPress = useCallback(
     (event: any) => {
-      const feature = event?.features?.[0];
-      if (!feature?.properties) return;
+      // Extract tap coordinates from MapLibre / @rnmapbox event formats
+      let lng: number | undefined;
+      let lat: number | undefined;
 
-      const { AC_NO, AC_NAME, DIST_NAME } = feature.properties;
+      // MapLibre RN: geometry.coordinates = [lng, lat]
+      if (event?.geometry?.coordinates) {
+        [lng, lat] = event.geometry.coordinates;
+      }
+      // MapLibre alternative: coordinate array
+      else if (event?.coordinate) {
+        if (Array.isArray(event.coordinate)) {
+          [lng, lat] = event.coordinate;
+        }
+      }
+      // @rnmapbox/maps legacy: {longitude, latitude}
+      else if (event?.coordinates) {
+        const c = event.coordinates;
+        if (Array.isArray(c)) { [lng, lat] = c; }
+        else if (c.longitude != null) { lng = c.longitude; lat = c.latitude; }
+      }
+      // features-based fallback
+      else if (event?.features?.[0]?.properties?.AC_NO != null) {
+        const f = event.features[0];
+        const { AC_NO, AC_NAME, DIST_NAME } = f.properties;
+        const acNo = Number(AC_NO);
+        if (selectedRef.current?.acNo === acNo) {
+          router.push(`/constituency/${acNo}` as any);
+          return;
+        }
+        selectConstituency(acNo, AC_NAME, DIST_NAME);
+        return;
+      }
+
+      if (lng == null || lat == null || !activeGeoJSON) return;
+
+      // Reliable point-in-polygon constituency detection (works offline, all states)
+      const found = findConstituencyAtPoint(lng, lat, activeGeoJSON);
+      if (!found) return;
+
+      const { AC_NO, AC_NAME, DIST_NAME } = found.properties;
       const acNo = Number(AC_NO);
 
-      // If tapping the already-selected constituency, go straight to detail
+      // If tapping already-selected → navigate to detail
       if (selectedRef.current?.acNo === acNo) {
         router.push(`/constituency/${acNo}` as any);
         return;
@@ -367,40 +403,13 @@ function FullMapScreen() {
 
       selectConstituency(acNo, AC_NAME, DIST_NAME);
 
-      // @rnmapbox/maps returns {latitude, longitude} — convert to [lng, lat]
-      let coord: [number, number] | undefined;
-      if (event.coordinates) {
-        const c = event.coordinates;
-        if (Array.isArray(c)) {
-          coord = c as [number, number];
-        } else if (c.longitude != null && c.latitude != null) {
-          coord = [c.longitude, c.latitude];
-        }
-      }
-      // Fallback: extract coord from geometry
-      if (!coord && feature.geometry) {
-        if (feature.geometry.type === 'Point' && feature.geometry.coordinates) {
-          coord = feature.geometry.coordinates as [number, number];
-        } else if (feature.geometry.coordinates?.[0]) {
-          // Polygon: compute rough centroid from ring
-          const ring = feature.geometry.coordinates[0];
-          if (Array.isArray(ring) && ring.length > 0) {
-            let sumLng = 0, sumLat = 0;
-            for (const pt of ring) { sumLng += pt[0]; sumLat += pt[1]; }
-            coord = [sumLng / ring.length, sumLat / ring.length];
-          }
-        }
-      }
-
-      if (coord) {
-        cameraRef.current?.setCamera({
-          centerCoordinate: coord,
-          zoomLevel: CONSTITUENCY_ZOOM,
-          animationDuration: 600,
-        });
-      }
+      cameraRef.current?.setCamera({
+        centerCoordinate: [lng, lat],
+        zoomLevel: CONSTITUENCY_ZOOM,
+        animationDuration: 600,
+      });
     },
-    [selectConstituency, router],
+    [selectConstituency, router, activeGeoJSON],
   );
 
   // Fly camera to new state when state switcher changes
@@ -473,6 +482,7 @@ function FullMapScreen() {
       <MapboxGL.MapView
         style={styles.map}
         styleURL={MAP_STYLE}
+        onPress={handleMapPress}
         rotateEnabled={false}
         pitchEnabled={false}
         compassEnabled={false}
@@ -497,7 +507,6 @@ function FullMapScreen() {
             <MapboxGL.ShapeSource
               id="constituencies"
               shape={activeGeoJSON}
-              onPress={handlePress}
             >
               <MapboxGL.FillLayer
                 id="constituency-fill"
@@ -550,6 +559,28 @@ function FullMapScreen() {
                 }}
               />
             </MapboxGL.ShapeSource>
+
+            {/* ── Delimitation overlay (hypothetical future boundaries) ── */}
+            {showDelimitation && (
+              <MapboxGL.ShapeSource id="delim-overlay" shape={activeGeoJSON}>
+                <MapboxGL.FillLayer
+                  id="delim-fill"
+                  style={{
+                    fillColor: '#FCD34D',
+                    fillOpacity: 0.15,
+                  }}
+                />
+                <MapboxGL.LineLayer
+                  id="delim-border"
+                  style={{
+                    lineColor: '#FCD34D',
+                    lineWidth: 1.8,
+                    lineDasharray: [4, 3],
+                    lineOpacity: 0.7,
+                  }}
+                />
+              </MapboxGL.ShapeSource>
+            )}
           </>
         )}
 
@@ -637,6 +668,12 @@ function FullMapScreen() {
           <View style={styles.delimBannerHeader}>
             <Ionicons name="resize" size={16} color="#FCD34D" />
             <Text style={styles.delimBannerTitle}>Delimitation Projection</Text>
+          </View>
+          <View style={styles.delimDisclaimer}>
+            <Ionicons name="warning" size={12} color="#F59E0B" />
+            <Text style={styles.delimDisclaimerText}>
+              HYPOTHETICAL — Based on 2011 Census population projections. Not official ECI data.
+            </Text>
           </View>
           <View style={styles.delimStatsRow}>
             <View style={styles.delimStat}>
@@ -789,12 +826,11 @@ function FullMapScreen() {
             <View style={styles.resultSection}>
               <Text style={styles.resultLabel}>{t('mapSheet.winnerYear', { year: selected.electionYear })}</Text>
               <View style={styles.resultWinnerRow}>
-                <View style={[styles.sheetAvatarWrap, { borderColor: getPartyColor(selected.winner) }]}>
-                  <Image
-                    source={{ uri: getCandidatePhotoUrl(selected.winnerName, selected.winner, 72) }}
-                    style={styles.sheetAvatar}
-                  />
-                </View>
+                <CandidateAvatar
+                  name={selected.winnerName}
+                  party={selected.winner}
+                  size={36}
+                />
                 <Text style={styles.resultValue}>{selected.winnerName}</Text>
               </View>
             </View>
@@ -1207,5 +1243,22 @@ const styles = StyleSheet.create({
     fontSize: 12,
     fontWeight: '700',
     color: '#FCD34D',
+  },
+  delimDisclaimer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+    backgroundColor: '#78350F30',
+    borderRadius: 8,
+    paddingHorizontal: 10,
+    paddingVertical: 6,
+    marginBottom: 10,
+  },
+  delimDisclaimerText: {
+    flex: 1,
+    fontSize: 10,
+    fontWeight: '600',
+    color: '#F59E0B',
+    lineHeight: 14,
   },
 });
