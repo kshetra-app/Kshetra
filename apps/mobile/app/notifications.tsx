@@ -2,6 +2,7 @@ import { View, Text, StyleSheet, Pressable, Platform } from 'react-native';
 import { FlashList } from '@shopify/flash-list';
 import { Ionicons } from '@expo/vector-icons';
 import { Stack } from 'expo-router';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useNotificationsStore, type NotificationItem } from '../stores/notifications';
 
 const CATEGORY_ICONS: Record<string, keyof typeof Ionicons.glyphMap> = {
@@ -28,6 +29,7 @@ export default function NotificationsScreen() {
   const markAllRead = useNotificationsStore((s) => s.markAllRead);
   const clearAll = useNotificationsStore((s) => s.clearAll);
   const unreadCount = useNotificationsStore((s) => s.unreadCount);
+  const insets = useSafeAreaInsets();
 
   const renderItem = ({ item }: { item: NotificationItem }) => (
     <Pressable
@@ -93,7 +95,7 @@ export default function NotificationsScreen() {
           data={items}
           renderItem={renderItem}
           keyExtractor={(item) => item.id}
-          contentContainerStyle={styles.listContent}
+          contentContainerStyle={{ ...styles.listContent, paddingBottom: Math.max(insets.bottom, 20) + 80 }}
         />
       )}
     </View>

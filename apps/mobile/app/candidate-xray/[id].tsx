@@ -6,6 +6,7 @@ import React, { useMemo } from 'react';
 import { View, Text, StyleSheet, ScrollView, Pressable, Linking } from 'react-native';
 import { useLocalSearchParams, Stack } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useAffidavitStore } from '../../stores/affidavits';
 import WealthTimeline from '../../components/WealthTimeline';
 import {
@@ -18,6 +19,7 @@ import { getPartyColor } from '../../lib/constants';
 
 export default function CandidateXRayScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
+  const insets = useSafeAreaInsets();
   const affidavits = useAffidavitStore((s) => s.affidavits);
   const getRedFlags = useAffidavitStore((s) => s.getRedFlags);
   const getWealthGrowth = useAffidavitStore((s) => s.getWealthGrowth);
@@ -63,7 +65,7 @@ export default function CandidateXRayScreen() {
           headerTintColor: '#FFFFFF',
         }}
       />
-      <ScrollView style={styles.scroll} contentContainerStyle={styles.scrollContent}>
+      <ScrollView style={styles.scroll} contentContainerStyle={[styles.scrollContent, { paddingBottom: Math.max(insets.bottom, 20) + 80 }]}>
         {/* Hero */}
         <View style={styles.hero}>
           <View style={[styles.partyStrip, { backgroundColor: partyColor }]} />

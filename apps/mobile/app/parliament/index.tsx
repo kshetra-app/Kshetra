@@ -76,7 +76,7 @@ export default function ParliamentScreen() {
         ))}
       </View>
 
-      <ScrollView style={styles.scroll} contentContainerStyle={styles.scrollContent}>
+      <ScrollView style={styles.scroll} contentContainerStyle={[styles.scrollContent, { paddingBottom: Math.max(insets.bottom, 20) + 80 }]}>
         {tab === 'overview' && (
           <>
             {/* Alliance Strength */}
@@ -234,7 +234,6 @@ const styles = StyleSheet.create({
   },
   scrollContent: {
     padding: 16,
-    paddingBottom: 100,
   },
   sectionTitle: {
     fontSize: 16,

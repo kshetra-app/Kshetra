@@ -2,6 +2,7 @@ import { useCallback, useEffect, useMemo } from 'react';
 import { View, Text, StyleSheet, ScrollView, Platform, Pressable, Share, Image } from 'react-native';
 import { useLocalSearchParams, Stack } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useTranslation } from 'react-i18next';
 import { getPartyColor, getCandidatePhotoUrl } from '@/lib/constants';
 import {
@@ -30,6 +31,7 @@ export default function ConstituencyDetailScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const acNo = parseInt(id, 10);
   const stateCode = useActiveStateStore((s) => s.stateCode);
+  const insets = useSafeAreaInsets();
   const hasFull = hasFullDataForState(stateCode);
 
   /** Look up constituency from the active state's unified data */
@@ -88,7 +90,7 @@ export default function ConstituencyDetailScreen() {
       />
       <ScrollView
         style={styles.scroll}
-        contentContainerStyle={styles.scrollContent}
+        contentContainerStyle={[styles.scrollContent, { paddingBottom: Math.max(insets.bottom, 20) + 80 }]}
       >
         {/* Hero */}
         <View style={styles.hero}>

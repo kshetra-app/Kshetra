@@ -296,7 +296,7 @@ export default function OnboardingScreen() {
       />
 
       {/* Navigation */}
-      <View style={styles.footer}>
+      <View style={[styles.footer, { paddingBottom: Math.max(insets.bottom, 16) }]}>
         {currentIndex > 0 && currentStep !== 'done' && (
           <Pressable style={styles.backButton} onPress={goBack}>
             <Ionicons name="arrow-back" size={20} color="#6B7280" />

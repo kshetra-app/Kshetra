@@ -72,6 +72,7 @@ export default function EditProfileScreen() {
     <View style={styles.container}>
       <Stack.Screen
         options={{
+          headerShown: true,
           title: 'Edit Profile',
           headerStyle: { backgroundColor: '#0A0A1A' },
           headerTintColor: '#FFFFFF',

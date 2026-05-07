@@ -11,6 +11,7 @@ import {
 } from 'react-native';
 import { Stack, useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useAuthStore } from '../../stores/auth';
 
 export default function SignInScreen() {
@@ -22,6 +23,7 @@ export default function SignInScreen() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [isSignUp, setIsSignUp] = useState(false);
+  const insets = useSafeAreaInsets();
 
   const handleSubmit = async () => {
     if (!email.trim() || !password.trim()) {
@@ -53,7 +55,7 @@ export default function SignInScreen() {
         }}
       />
       <KeyboardAvoidingView
-        style={styles.inner}
+        style={[styles.inner, { paddingBottom: Math.max(insets.bottom, 16) }]}
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
       >
         <View style={styles.logoContainer}>

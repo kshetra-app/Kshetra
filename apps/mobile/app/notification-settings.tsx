@@ -1,6 +1,7 @@
 import { View, Text, StyleSheet, ScrollView, Switch, Platform } from 'react-native';
 import { Stack } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useNotificationsStore } from '../stores/notifications';
 import type { AlertCategory } from '../lib/notifications';
 
@@ -83,11 +84,13 @@ export default function NotificationSettingsScreen() {
   const toggleEnabled = useNotificationsStore((s) => s.toggleEnabled);
   const categories = useNotificationsStore((s) => s.categories);
   const toggleCategory = useNotificationsStore((s) => s.toggleCategory);
+  const insets = useSafeAreaInsets();
 
   return (
     <View style={styles.container}>
       <Stack.Screen
         options={{
+          headerShown: true,
           title: 'Notification Settings',
           headerStyle: { backgroundColor: '#0A0A1A' },
           headerTintColor: '#FFFFFF',
@@ -156,6 +159,7 @@ export default function NotificationSettingsScreen() {
             Notification preferences are stored locally. When you sign in, they will sync to your account.
           </Text>
         </View>
+        <View style={{ height: Math.max(insets.bottom, 20) }} />
       </ScrollView>
     </View>
   );

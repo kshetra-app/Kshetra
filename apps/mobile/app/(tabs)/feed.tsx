@@ -281,6 +281,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#0A0A1A',
   },
   header: {
+    flexShrink: 0,
     flexDirection: 'row',
     alignItems: 'flex-start',
     justifyContent: 'space-between',
@@ -314,6 +315,7 @@ const styles = StyleSheet.create({
     elevation: 3,
   },
   scopeScroll: {
+    flexShrink: 0,
     marginBottom: 6,
     zIndex: 5,
   },
@@ -346,6 +348,7 @@ const styles = StyleSheet.create({
     color: '#FFFFFF',
   },
   filterScroll: {
+    flexShrink: 0,
     marginBottom: 4,
     borderBottomWidth: 0.5,
     borderBottomColor: '#1F2937',

@@ -63,7 +63,7 @@ export default function IssueDetailScreen() {
   if (!issue) {
     return (
       <View style={styles.errorContainer}>
-        <Stack.Screen options={{ title: 'Issue Not Found' }} />
+        <Stack.Screen options={{ headerShown: true, title: 'Issue Not Found' }} />
         <Ionicons name="alert-circle-outline" size={48} color="#EF4444" />
         <Text style={styles.errorText}>Issue not found</Text>
         <Pressable style={styles.backButton} onPress={() => router.back()}>
@@ -131,6 +131,7 @@ export default function IssueDetailScreen() {
     <KeyboardAvoidingView style={styles.container} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
       <Stack.Screen
         options={{
+          headerShown: true,
           title: '',
           headerStyle: { backgroundColor: '#030712' },
           headerTintColor: '#FFFFFF',

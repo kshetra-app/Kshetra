@@ -5,7 +5,7 @@
 import React, { useState, useMemo } from 'react';
 import { View, Text, StyleSheet, ScrollView, Pressable, Platform } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { Stack } from 'expo-router';
+import { Stack, useRouter } from 'expo-router';
 import { useResponsive } from '../lib/responsive';
 import { useAspirantStore } from '../stores/aspirant';
 import CivicScoreCard from '../components/CivicScoreCard';
@@ -33,6 +33,7 @@ const TABS: { key: AcademyTab; label: string; icon: string }[] = [
 ];
 
 export default function LeadershipAcademyScreen() {
+  const router = useRouter();
   const [activeTab, setActiveTab] = useState<AcademyTab>('modules');
   const profile = useAspirantStore((s: any) => s.profile) as AspirantProfile | null;
   const modules = useAspirantStore((s: any) => s.modules) as LeadershipModule[];
@@ -74,8 +75,13 @@ export default function LeadershipAcademyScreen() {
 
       {/* Header */}
       <View style={[styles.header, { paddingTop: insets.top + 8 }]}>
-        <Text style={styles.headerTitle}>Leadership Academy</Text>
-        <Text style={styles.headerSubtitle}>Learn. Engage. Lead.</Text>
+        <View style={{ flexDirection: 'row', alignItems: 'center', gap: 12 }}>
+          <Pressable onPress={() => router.back()} hitSlop={8}>
+            <Ionicons name="arrow-back" size={22} color="#FFFFFF" />
+          </Pressable>
+          <Text style={styles.headerTitle}>Leadership Academy</Text>
+        </View>
+        <Text style={[styles.headerSubtitle, { marginLeft: 34 }]}>Learn. Engage. Lead.</Text>
       </View>
 
       {/* Civic Score (if registered) */}
@@ -240,7 +246,7 @@ export default function LeadershipAcademyScreen() {
           </View>
         )}
 
-        <View style={{ height: 100 }} />
+        <View style={{ height: Math.max(insets.bottom, 20) + 40 }} />
       </ScrollView>
     </View>
   );

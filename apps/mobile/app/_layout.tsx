@@ -119,6 +119,34 @@ export default function RootLayout() {
         <Stack.Screen
           name="issue/[id]"
           options={{
+            headerShown: true,
+            headerStyle: { backgroundColor: '#030712' },
+            headerTintColor: '#FFFFFF',
+            headerShadowVisible: false,
+            animation: 'slide_from_right',
+          }}
+        />
+        <Stack.Screen
+          name="notification-settings"
+          options={{
+            headerShown: true,
+            headerStyle: { backgroundColor: '#0A0A1A' },
+            headerTintColor: '#FFFFFF',
+            animation: 'slide_from_right',
+          }}
+        />
+        <Stack.Screen
+          name="edit-profile"
+          options={{
+            headerShown: true,
+            headerStyle: { backgroundColor: '#0A0A1A' },
+            headerTintColor: '#FFFFFF',
+            animation: 'slide_from_right',
+          }}
+        />
+        <Stack.Screen
+          name="leadership-academy"
+          options={{
             headerShown: false,
             animation: 'slide_from_right',
           }}
