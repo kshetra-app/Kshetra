@@ -1,9 +1,9 @@
 import { useCallback, useEffect, useMemo } from 'react';
-import { View, Text, StyleSheet, ScrollView, Platform, Pressable, Share } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, Platform, Pressable, Share, Image } from 'react-native';
 import { useLocalSearchParams, Stack } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { useTranslation } from 'react-i18next';
-import { getPartyColor } from '@/lib/constants';
+import { getPartyColor, getCandidatePhotoUrl } from '@/lib/constants';
 import {
   getMLAProfileForState,
   getDemographicsForState,
@@ -163,9 +163,12 @@ export default function ConstituencyDetailScreen() {
           <View style={styles.resultCard}>
             <View style={styles.resultRow}>
               <View style={styles.resultLeft}>
-                <View
-                  style={[styles.partyDot, { backgroundColor: partyColor }]}
-                />
+                <View style={[styles.resultAvatarWrap, { borderColor: partyColor }]}>
+                  <Image
+                    source={{ uri: getCandidatePhotoUrl(constituency.winnerName, constituency.winnerParty, 96) }}
+                    style={styles.resultAvatar}
+                  />
+                </View>
                 <View>
                   <Text style={styles.resultParty}>
                     {constituency.winnerParty}
@@ -304,22 +307,32 @@ export default function ConstituencyDetailScreen() {
                     </View>
                     <View style={styles.histCardCenter}>
                       <View style={styles.histPartyRow}>
-                        <View
-                          style={[
-                            styles.histPartyDot,
-                            { backgroundColor: getPartyColor(e.party === 'TRS' ? 'BRS' : e.party) },
-                          ]}
-                        />
-                        <Text style={styles.histPartyName}>{e.party}</Text>
-                        {flipped && (
-                          <View style={styles.histFlipBadge}>
-                            <Ionicons name="arrow-forward" size={10} color="#F59E0B" />
+                        <View style={[styles.histAvatarWrap, { borderColor: getPartyColor(e.party === 'TRS' ? 'BRS' : e.party) }]}>
+                          <Image
+                            source={{ uri: getCandidatePhotoUrl(e.winner, e.party, 64) }}
+                            style={styles.histAvatar}
+                          />
+                        </View>
+                        <View>
+                          <View style={styles.histPartyInner}>
+                            <View
+                              style={[
+                                styles.histPartyDot,
+                                { backgroundColor: getPartyColor(e.party === 'TRS' ? 'BRS' : e.party) },
+                              ]}
+                            />
+                            <Text style={styles.histPartyName}>{e.party}</Text>
+                            {flipped && (
+                              <View style={styles.histFlipBadge}>
+                                <Ionicons name="arrow-forward" size={10} color="#F59E0B" />
+                              </View>
+                            )}
                           </View>
-                        )}
+                          <Text style={styles.histWinnerName} numberOfLines={1}>
+                            {e.winner}
+                          </Text>
+                        </View>
                       </View>
-                      <Text style={styles.histWinnerName} numberOfLines={1}>
-                        {e.winner}
-                      </Text>
                     </View>
                   </View>
                 );
@@ -489,7 +502,7 @@ export default function ConstituencyDetailScreen() {
 
         {/* AI Analysis */}
         <View style={styles.section}>
-          <AIAnalysisCard acNo={acNo} constituencyName={constituency.name} />
+          <AIAnalysisCard acNo={acNo} constituencyName={constituency.name} stateCode={stateCode} />
         </View>
       </ScrollView>
     </View>
@@ -618,6 +631,20 @@ const styles = StyleSheet.create({
   resultLeft: {
     flexDirection: 'row',
     alignItems: 'center',
+  },
+  resultAvatarWrap: {
+    width: 48,
+    height: 48,
+    borderRadius: 24,
+    borderWidth: 2,
+    overflow: 'hidden',
+    backgroundColor: '#1F2937',
+    marginRight: 12,
+  },
+  resultAvatar: {
+    width: 44,
+    height: 44,
+    borderRadius: 22,
   },
   partyDot: {
     width: 14,
@@ -892,13 +919,31 @@ const styles = StyleSheet.create({
   histPartyRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 6,
+    gap: 8,
     marginBottom: 4,
   },
+  histAvatarWrap: {
+    width: 32,
+    height: 32,
+    borderRadius: 16,
+    borderWidth: 1.5,
+    overflow: 'hidden',
+    backgroundColor: '#1F2937',
+  },
+  histAvatar: {
+    width: 29,
+    height: 29,
+    borderRadius: 14.5,
+  },
+  histPartyInner: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4,
+  },
   histPartyDot: {
-    width: 10,
-    height: 10,
-    borderRadius: 5,
+    width: 8,
+    height: 8,
+    borderRadius: 4,
   },
   histPartyName: {
     fontSize: 14,

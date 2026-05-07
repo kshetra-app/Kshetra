@@ -7,14 +7,15 @@ import {
   ActivityIndicator,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { API_BASE_URL } from '../lib/constants';
+import { getConstituencyAnalysis } from '../lib/aiService';
 
 interface AIAnalysisCardProps {
   acNo: number;
   constituencyName: string;
+  stateCode?: string;
 }
 
-export default function AIAnalysisCard({ acNo, constituencyName }: AIAnalysisCardProps) {
+export default function AIAnalysisCard({ acNo, constituencyName, stateCode = 'TS' }: AIAnalysisCardProps) {
   const [analysis, setAnalysis] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(false);
@@ -25,15 +26,14 @@ export default function AIAnalysisCard({ acNo, constituencyName }: AIAnalysisCar
     setError(false);
 
     try {
-      const res = await fetch(`${API_BASE_URL}/api/v1/ai/analyze/constituency/${acNo}`);
-      const data = await res.json();
-      setAnalysis(data.analysis ?? 'No analysis available.');
+      const result = await getConstituencyAnalysis(constituencyName, acNo, stateCode);
+      setAnalysis(result || 'No analysis available.');
     } catch {
       setError(true);
     } finally {
       setLoading(false);
     }
-  }, [acNo, loading, analysis]);
+  }, [acNo, constituencyName, loading, analysis]);
 
   if (analysis) {
     return (

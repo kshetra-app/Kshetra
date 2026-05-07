@@ -23,6 +23,7 @@ import { useTranslation } from 'react-i18next';
 import { STATES } from '@kshetra/shared';
 import { useActiveStateStore } from '../../stores/activeState';
 import { getUnifiedConstituenciesForState } from '@/lib/stateDataAdapter';
+import { useResponsive } from '../../lib/responsive';
 
 interface SettingRowProps {
   icon: keyof typeof Ionicons.glyphMap;
@@ -67,10 +68,12 @@ export default function ProfileScreen() {
     return cs.length > 0 ? cs[0].electionYear : 2023;
   })();
 
+  const { insets } = useResponsive();
+
   return (
     <ScrollView
       style={styles.container}
-      contentContainerStyle={styles.content}
+      contentContainerStyle={[styles.content, { paddingTop: insets.top + 12 }]}
       showsVerticalScrollIndicator={false}
     >
       {/* Header */}
@@ -201,15 +204,27 @@ export default function ProfileScreen() {
         </View>
       </View>
 
-      {/* Civic Participation */}
+      {/* Explore Features */}
       <View style={styles.section}>
-        <Text style={styles.sectionTitle}>Civic Participation</Text>
+        <Text style={styles.sectionTitle}>Explore Features</Text>
         <View style={styles.card}>
+          <SettingRow
+            icon="business"
+            label="Parliament — MPs & Party Strength"
+            onPress={() => router.push('/parliament' as any)}
+            color="#8B5CF6"
+          />
+          <SettingRow
+            icon="sparkles"
+            label="AI Chat — Ask Anything"
+            onPress={() => router.push('/ai-chat' as any)}
+            color="#F59E0B"
+          />
           <SettingRow
             icon="map"
             label="Delimitation Tracker"
             onPress={() => router.push('/delimitation' as any)}
-            color="#F59E0B"
+            color="#10B981"
           />
           <SettingRow
             icon="person-circle"
@@ -389,7 +404,6 @@ const styles = StyleSheet.create({
     backgroundColor: '#0A0A1A',
   },
   content: {
-    paddingTop: Platform.OS === 'ios' ? 60 : 40,
     paddingHorizontal: 16,
     paddingBottom: 40,
   },

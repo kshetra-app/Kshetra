@@ -46,3 +46,15 @@ scripts/india-votes-data/
 
 # Scraper debug artifacts
 scripts/myneta-sample.html
+
+# Build logs & temp files
+*.tmp
+build-log*.txt
+bundle-log*.txt
+prebuild-log*.txt
+fix_*.ps1
+temp_*.txt
+
+# APK / ZIP artifacts
+*.apk
+*.zip

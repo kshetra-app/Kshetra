@@ -8,9 +8,10 @@ import {
   TextInput,
   FlatList,
   Modal,
+  Image,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { getPartyColor } from '@/lib/constants';
+import { getPartyColor, getCandidatePhotoUrl } from '@/lib/constants';
 import {
   getMLAProfileForState,
   getDemographicsForState,
@@ -230,9 +231,15 @@ export default function CompareSheet({ visible, initialAcNo, onClose }: CompareS
 
             {/* MLA names */}
             <View style={styles.statRow}>
-              <Text style={styles.mlaName} numberOfLines={1}>{left.winnerName}</Text>
+              <View style={styles.mlaCol}>
+                <Image source={{ uri: getCandidatePhotoUrl(left.winnerName, left.winnerParty, 64) }} style={styles.compareAvatar} />
+                <Text style={styles.mlaName} numberOfLines={1}>{left.winnerName}</Text>
+              </View>
               <Text style={styles.statLabel}>MLA</Text>
-              <Text style={styles.mlaName} numberOfLines={1}>{right.winnerName}</Text>
+              <View style={styles.mlaCol}>
+                <Image source={{ uri: getCandidatePhotoUrl(right.winnerName, right.winnerParty, 64) }} style={styles.compareAvatar} />
+                <Text style={styles.mlaName} numberOfLines={1}>{right.winnerName}</Text>
+              </View>
             </View>
 
             {/* Election stats */}
@@ -477,11 +484,22 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     width: 90,
   },
-  mlaName: {
+  mlaCol: {
     flex: 1,
-    fontSize: 13,
+    alignItems: 'center',
+    gap: 6,
+  },
+  compareAvatar: {
+    width: 36,
+    height: 36,
+    borderRadius: 18,
+    backgroundColor: '#1F2937',
+  },
+  mlaName: {
+    fontSize: 12,
     fontWeight: '600',
     color: '#9CA3AF',
+    textAlign: 'center',
   },
   badgeWrap: {
     flex: 1,

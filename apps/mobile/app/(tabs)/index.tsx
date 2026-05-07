@@ -6,10 +6,12 @@ import {
   Pressable,
   Platform,
   ActivityIndicator,
+  Image,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import { useTranslation } from 'react-i18next';
+import { useResponsive } from '../../lib/responsive';
 import BottomSheet, { BottomSheetView } from '@gorhom/bottom-sheet';
 import {
   TELANGANA_CENTER,
@@ -18,13 +20,14 @@ import {
   MAP_STYLE,
   PARTY_COLORS,
   getPartyColor,
+  getCandidatePhotoUrl,
   getStateCenter,
   getStateZoom,
 } from '@/lib/constants';
 import { useUserLocation } from '@/lib/useUserLocation';
 import { findConstituencyAtPoint, STATES } from '@kshetra/shared';
 import { useActiveStateStore } from '../../stores/activeState';
-import { enrichGeoJSON } from '@/lib/enrichGeoJSON';
+import { enrichGeoJSON, enrichGeoJSONForState } from '@/lib/enrichGeoJSON';
 import StateSwitcher from '../../components/StateSwitcher';
 import MapLegend from '../../components/MapLegend';
 import MapFallback from '../../components/MapFallback';
@@ -36,9 +39,10 @@ import CompareSheet from '../../components/CompareSheet';
 import { useFavoritesStore } from '../../stores/favorites';
 import { useMyConstituencyStore } from '../../stores/myConstituency';
 import { getStateGeoJSON } from '@/lib/geoLoader';
-import { getConstituencyHistory } from '@/lib/data';
 import { getUnifiedConstituenciesForState, type UnifiedConstituency } from '@/lib/stateDataAdapter';
 import { getRandomTriviaSetForState, getTriviaForConstituencyInState } from '@/lib/stateTriviaAdapter';
+import { getHistoryForState } from '@/lib/stateDataDispatcher';
+import { computeAllSeatAllocations } from '@/lib/delimitation/seatCalculator';
 
 /**
  * Dynamically load Mapbox — native module not available in Expo Go.
@@ -47,11 +51,10 @@ import { getRandomTriviaSetForState, getTriviaForConstituencyInState } from '@/l
 let MapboxGL: any = null;
 let mapboxAvailable = false;
 try {
-  MapboxGL = require('@rnmapbox/maps').default;
-  MapboxGL.setAccessToken(process.env.EXPO_PUBLIC_MAPBOX_TOKEN ?? '');
+  MapboxGL = require('@maplibre/maplibre-react-native').default;
   mapboxAvailable = true;
 } catch {
-  // Native Mapbox module not available (Expo Go / web)
+  // Native module not available (Expo Go / web)
 }
 
 /** Cache for TS enriched geo (demographics + seed data) */
@@ -85,6 +88,19 @@ const partyFillColor: any = [
   'AAP', PARTY_COLORS.AAP ?? '#0288D1',
   'CPI', PARTY_COLORS.CPI ?? '#F44336',
   'CPIM', PARTY_COLORS.CPIM ?? '#B71C1C',
+  // TN / KL / WB / UP parties
+  'DMK', '#E30613',
+  'AIADMK', '#006400',
+  'AITC', '#20C646',
+  'SP', '#FF2222',
+  'BSP', '#0000FF',
+  'IUML', '#009900',
+  'KCM', '#FFD700',
+  'VCK', '#8B0000',
+  'PMK', '#FFCC00',
+  'RLD', '#228B22',
+  'AD(S)', '#FF69B4',
+  'ISF', '#00CED1',
   '#808080', // fallback — IND / others
 ];
 
@@ -184,7 +200,15 @@ function FullMapScreen() {
 
   const [showSearch, setShowSearch] = useState(false);
   const [showCompare, setShowCompare] = useState(false);
+  const [showDelimitation, setShowDelimitation] = useState(false);
   const myHome = useMyConstituencyStore((s) => s.home);
+
+  /** Delimitation seat projections (computed once) */
+  const delimitationProjections = useMemo(() => computeAllSeatAllocations(), []);
+  const stateProjection = useMemo(
+    () => delimitationProjections.find((p) => p.stateCode === stateCode),
+    [delimitationProjections, stateCode],
+  );
 
   /** Unified constituency list + lookup map for the active state */
   const stateConstituencies = useMemo(
@@ -196,11 +220,13 @@ function FullMapScreen() {
     [stateConstituencies],
   );
 
-  /** GeoJSON for the active state (enriched for TS, raw for others) */
-  const activeGeoJSON = useMemo(
-    () => isTS ? getEnrichedTSGeo() : getStateGeoJSON(stateCode),
-    [stateCode, isTS],
-  );
+  /** GeoJSON for the active state (enriched with party/election data) */
+  const activeGeoJSON = useMemo(() => {
+    if (isTS) return getEnrichedTSGeo();
+    const raw = getStateGeoJSON(stateCode);
+    if (!raw) return null;
+    return enrichGeoJSONForState(raw, stateCode);
+  }, [stateCode, isTS]);
 
   /** Random trivia for idle map — re-fetched when state changes */
   const stateIdleTrivia = useMemo(
@@ -360,6 +386,9 @@ function FullMapScreen() {
     }
   }, [selected, router]);
 
+  const { insets } = useResponsive();
+  const mapTopOffset = insets.top + 8;
+
   return (
     <View style={styles.container}>
       <MapboxGL.MapView
@@ -460,7 +489,7 @@ function FullMapScreen() {
       </MapboxGL.MapView>
 
       {/* Header overlay */}
-      <View style={styles.header}>
+      <View style={[styles.header, { top: mapTopOffset }]}>
         <View style={styles.headerTop}>
           <Text style={styles.headerTitle}>KSHETRA</Text>
           <StateSwitcher />
@@ -471,7 +500,7 @@ function FullMapScreen() {
       </View>
 
       {/* Action buttons */}
-      <View style={styles.actionButtons}>
+      <View style={[styles.actionButtons, { top: mapTopOffset + 52 }]}>
         <Pressable
           style={styles.actionButton}
           onPress={() => setShowSearch(true)}
@@ -489,6 +518,15 @@ function FullMapScreen() {
             <Ionicons name="resize" size={20} color="#FFFFFF" />
           </Pressable>
         )}
+        <Pressable
+          style={[
+            styles.actionButton,
+            showDelimitation && styles.delimButtonActive,
+          ]}
+          onPress={() => setShowDelimitation((v) => !v)}
+        >
+          <Ionicons name="resize" size={20} color={showDelimitation ? '#FCD34D' : '#FFFFFF'} />
+        </Pressable>
         <Pressable
           style={[
             styles.actionButton,
@@ -510,9 +548,46 @@ function FullMapScreen() {
       <MapLegend colorMode={colorMode} stateCode={stateCode} />
 
       {/* Color mode toggle */}
-      <View style={styles.colorToggleContainer}>
+      <View style={[styles.colorToggleContainer, { top: mapTopOffset + 52 }]}>
         <MapColorToggle mode={colorMode} onModeChange={setColorMode} />
       </View>
+
+      {/* Delimitation overlay banner */}
+      {showDelimitation && stateProjection && (
+        <View style={styles.delimBanner}>
+          <View style={styles.delimBannerHeader}>
+            <Ionicons name="resize" size={16} color="#FCD34D" />
+            <Text style={styles.delimBannerTitle}>Delimitation Projection</Text>
+          </View>
+          <View style={styles.delimStatsRow}>
+            <View style={styles.delimStat}>
+              <Text style={styles.delimStatValue}>{stateProjection.currentSeats}</Text>
+              <Text style={styles.delimStatLabel}>Current</Text>
+            </View>
+            <View style={styles.delimArrow}>
+              <Ionicons name="arrow-forward" size={18} color="#FCD34D" />
+            </View>
+            <View style={styles.delimStat}>
+              <Text style={[styles.delimStatValue, { color: '#10B981' }]}>{stateProjection.projectedSeats}</Text>
+              <Text style={styles.delimStatLabel}>Projected</Text>
+            </View>
+            <View style={styles.delimStat}>
+              <Text style={[styles.delimStatValue, { color: '#10B981' }]}>+{stateProjection.seatChange}</Text>
+              <Text style={styles.delimStatLabel}>Gain</Text>
+            </View>
+          </View>
+          <View style={styles.delimReservation}>
+            <Text style={styles.delimResLabel}>GEN {stateProjection.general} · SC {stateProjection.reservedSC} · ST {stateProjection.reservedST}</Text>
+          </View>
+          <Pressable
+            style={styles.delimDetailButton}
+            onPress={() => router.push('/delimitation' as any)}
+          >
+            <Text style={styles.delimDetailText}>View Full Analysis</Text>
+            <Ionicons name="arrow-forward" size={14} color="#FCD34D" />
+          </Pressable>
+        </View>
+      )}
 
       {/* My Constituency home marker — shown above trivia when no selection */}
       {myHome && !selected && (
@@ -634,7 +709,15 @@ function FullMapScreen() {
             {/* Election result */}
             <View style={styles.resultSection}>
               <Text style={styles.resultLabel}>{t('mapSheet.winnerYear', { year: selected.electionYear })}</Text>
-              <Text style={styles.resultValue}>{selected.winnerName}</Text>
+              <View style={styles.resultWinnerRow}>
+                <View style={[styles.sheetAvatarWrap, { borderColor: getPartyColor(selected.winner) }]}>
+                  <Image
+                    source={{ uri: getCandidatePhotoUrl(selected.winnerName, selected.winner, 72) }}
+                    style={styles.sheetAvatar}
+                  />
+                </View>
+                <Text style={styles.resultValue}>{selected.winnerName}</Text>
+              </View>
             </View>
 
             <View style={styles.statsRow}>
@@ -679,24 +762,18 @@ function FullMapScreen() {
               ) : null;
             })()}
 
-            {/* Historical snapshot — only Telangana has multi-election history */}
-            {isTS && (() => {
-              const hist = getConstituencyHistory(selected.acNo);
-              if (!hist.ac2014 && !hist.ac2018) return null;
+            {/* Historical snapshot — all states */}
+            {(() => {
+              const pastElections = getHistoryForState(stateCode, selected.acNo);
+              if (pastElections.length === 0) return null;
               return (
                 <View style={styles.histRow}>
-                  {hist.ac2014 && (
-                    <View style={styles.histMiniCard}>
-                      <Text style={styles.histMiniYear}>2014</Text>
-                      <Text style={styles.histMiniParty}>{hist.ac2014.party}</Text>
+                  {pastElections.map((e) => (
+                    <View key={e.year} style={styles.histMiniCard}>
+                      <Text style={styles.histMiniYear}>{e.year}</Text>
+                      <Text style={styles.histMiniParty}>{e.party}</Text>
                     </View>
-                  )}
-                  {hist.ac2018 && (
-                    <View style={styles.histMiniCard}>
-                      <Text style={styles.histMiniYear}>2018</Text>
-                      <Text style={styles.histMiniParty}>{hist.ac2018.party}</Text>
-                    </View>
-                  )}
+                  ))}
                   <View style={[styles.histMiniCard, styles.histMiniCardCurrent]}>
                     <Text style={styles.histMiniYear}>{selected.electionYear}</Text>
                     <Text style={styles.histMiniParty}>{selected.winner}</Text>
@@ -729,7 +806,6 @@ const styles = StyleSheet.create({
   },
   header: {
     position: 'absolute',
-    top: Platform.OS === 'ios' ? 60 : 40,
     left: 16,
     right: 16,
   },
@@ -751,7 +827,6 @@ const styles = StyleSheet.create({
   },
   actionButtons: {
     position: 'absolute',
-    top: Platform.OS === 'ios' ? 110 : 90,
     right: 16,
     gap: 10,
   },
@@ -865,11 +940,29 @@ const styles = StyleSheet.create({
     textTransform: 'uppercase',
     letterSpacing: 1,
   },
+  resultWinnerRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 10,
+    marginTop: 6,
+  },
+  sheetAvatarWrap: {
+    width: 36,
+    height: 36,
+    borderRadius: 18,
+    borderWidth: 2,
+    overflow: 'hidden',
+    backgroundColor: '#1F2937',
+  },
+  sheetAvatar: {
+    width: 32,
+    height: 32,
+    borderRadius: 16,
+  },
   resultValue: {
     fontSize: 16,
     color: '#FFFFFF',
     fontWeight: '600',
-    marginTop: 4,
   },
   statsRow: {
     flexDirection: 'row',
@@ -902,7 +995,6 @@ const styles = StyleSheet.create({
   },
   colorToggleContainer: {
     position: 'absolute',
-    top: Platform.OS === 'ios' ? 110 : 90,
     left: 16,
   },
   idleTriviaContainer: {
@@ -954,5 +1046,87 @@ const styles = StyleSheet.create({
     fontWeight: '800',
     color: '#FFFFFF',
     marginTop: 2,
+  },
+  // ─── Delimitation overlay ───
+  delimButtonActive: {
+    backgroundColor: '#78350F',
+    borderWidth: 1,
+    borderColor: '#FCD34D',
+  },
+  delimBanner: {
+    position: 'absolute',
+    bottom: 80,
+    left: 12,
+    right: 12,
+    backgroundColor: '#1C1917',
+    borderRadius: 16,
+    padding: 16,
+    borderWidth: 1,
+    borderColor: '#FCD34D40',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.4,
+    shadowRadius: 8,
+    elevation: 6,
+  },
+  delimBannerHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+    marginBottom: 12,
+  },
+  delimBannerTitle: {
+    fontSize: 14,
+    fontWeight: '800',
+    color: '#FCD34D',
+    letterSpacing: 0.5,
+  },
+  delimStatsRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-around',
+    marginBottom: 10,
+  },
+  delimStat: {
+    alignItems: 'center',
+  },
+  delimStatValue: {
+    fontSize: 22,
+    fontWeight: '800',
+    color: '#FFFFFF',
+  },
+  delimStatLabel: {
+    fontSize: 10,
+    fontWeight: '600',
+    color: '#9CA3AF',
+    textTransform: 'uppercase',
+    letterSpacing: 0.5,
+    marginTop: 2,
+  },
+  delimArrow: {
+    paddingHorizontal: 8,
+  },
+  delimReservation: {
+    alignItems: 'center',
+    marginBottom: 10,
+  },
+  delimResLabel: {
+    fontSize: 11,
+    fontWeight: '600',
+    color: '#9CA3AF',
+  },
+  delimDetailButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 6,
+    paddingVertical: 8,
+    borderTopWidth: 1,
+    borderTopColor: '#FCD34D20',
+  },
+  delimDetailText: {
+    fontSize: 12,
+    fontWeight: '700',
+    color: '#FCD34D',
   },
 });

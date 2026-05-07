@@ -29,12 +29,26 @@ export interface MLAProfile {
   gender: 'M' | 'F';
   education?: string;
   profession?: string;
-  /** Number of Telangana Assembly terms (2014, 2018, 2023) */
+  /** Number of assembly terms won */
   terms: number;
   /** Criminal cases declared (self-declaration). Undefined = unverified. */
   criminalCases?: number;
   /** Total assets declared in INR. Undefined = unverified. */
   totalAssets?: number;
+  /** Total liabilities declared in INR */
+  totalLiabilities?: number;
+  /** Marital status */
+  maritalStatus?: 'Single' | 'Married' | 'Widowed' | 'Divorced';
+  /** Photo URL (MyNeta/ECI CDN) — use placeholder if absent */
+  photoUrl?: string;
+  /** Date of birth (YYYY-MM-DD) */
+  dob?: string;
+  /** Constituency name (denormalized for convenience) */
+  constituencyName?: string;
+  /** Phone / contact */
+  phone?: string;
+  /** Email */
+  email?: string;
 }
 
 /**

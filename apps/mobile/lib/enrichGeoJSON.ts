@@ -1,6 +1,5 @@
 import { TELANGANA_CONSTITUENCIES, type ConstituencySeed, TELANGANA_DEMOGRAPHICS, type ConstituencyDemographics } from '@/lib/data';
-import type { ConstituencyBrief } from '@kshetra/shared';
-import { getConstituenciesForState } from './stateDataAdapter';
+import { getUnifiedConstituenciesForState, type UnifiedConstituency } from './stateDataAdapter';
 
 /** Lookup map from AC_NO to seed data for O(1) access */
 const seedByAcNo = new Map<number, ConstituencySeed>(
@@ -59,8 +58,8 @@ export function enrichGeoJSONForState(
   geojson: GeoJSON.FeatureCollection,
   stateCode: string,
 ): GeoJSON.FeatureCollection {
-  const constituencies = getConstituenciesForState(stateCode);
-  const briefByAcNo = new Map<number, ConstituencyBrief>(
+  const constituencies = getUnifiedConstituenciesForState(stateCode);
+  const byAcNo = new Map<number, UnifiedConstituency>(
     constituencies.map((c) => [c.acNo, c]),
   );
 
@@ -68,17 +67,17 @@ export function enrichGeoJSONForState(
     ...geojson,
     features: geojson.features.map((feature) => {
       const acNo = feature.properties?.AC_NO;
-      const brief = acNo != null ? briefByAcNo.get(acNo) : undefined;
+      const c = acNo != null ? byAcNo.get(acNo) : undefined;
 
       return {
         ...feature,
         properties: {
           ...feature.properties,
-          WINNER_PARTY: brief?.currentParty ?? 'IND',
-          WINNER_NAME: brief?.currentMLA ?? '',
-          RESERVATION: brief?.reservationStatus ?? 'GEN',
-          MARGIN: 0,
-          RUNNER_UP: '',
+          WINNER_PARTY: c?.winnerParty ?? 'IND',
+          WINNER_NAME: c?.winnerName ?? '',
+          RUNNER_UP: c?.runnerUp ?? '',
+          RESERVATION: c?.type ?? 'GEN',
+          MARGIN: c?.margin ?? 0,
           POPULATION: 0,
           LITERACY: 0,
           TURNOUT: 0,

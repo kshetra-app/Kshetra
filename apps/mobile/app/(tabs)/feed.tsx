@@ -18,6 +18,7 @@ import { useActiveStateStore } from '../../stores/activeState';
 import { useMyConstituencyStore } from '../../stores/myConstituency';
 import PostCard from '../../components/PostCard';
 import PollCard from '../../components/PollCard';
+import { useResponsive } from '../../lib/responsive';
 import ComposeSheet from '../../components/ComposeSheet';
 import TrendingHashtags from '../../components/TrendingHashtags';
 import type { Post, PostType, PostMedia, FeedScope } from '../../lib/feedTypes';
@@ -159,10 +160,12 @@ export default function FeedScreen() {
     [toggleReaction, votePoll, handleShare, handleEdit, handleDelete, userId],
   );
 
+  const { insets } = useResponsive();
+
   return (
     <View style={styles.container}>
       {/* Header */}
-      <View style={styles.header}>
+      <View style={[styles.header, { paddingTop: insets.top + 8 }]}>
         <View>
           <Text style={styles.headerTitle}>{t('feed.title')}</Text>
           <View style={styles.scopeIndicator}>
@@ -282,8 +285,8 @@ const styles = StyleSheet.create({
     alignItems: 'flex-start',
     justifyContent: 'space-between',
     paddingHorizontal: 16,
-    paddingTop: Platform.OS === 'ios' ? 54 : 38,
-    paddingBottom: 4,
+    paddingBottom: 8,
+    zIndex: 10,
   },
   headerTitle: {
     fontSize: 24,
@@ -311,8 +314,9 @@ const styles = StyleSheet.create({
     elevation: 3,
   },
   scopeScroll: {
-    maxHeight: 36,
+    maxHeight: 44,
     marginBottom: 6,
+    zIndex: 5,
   },
   scopeScrollContent: {
     paddingHorizontal: 16,
@@ -342,10 +346,11 @@ const styles = StyleSheet.create({
     color: '#FFFFFF',
   },
   filterScroll: {
-    maxHeight: 36,
+    maxHeight: 44,
     marginBottom: 8,
     borderBottomWidth: 0.5,
     borderBottomColor: '#1F2937',
+    zIndex: 5,
   },
   filterContent: {
     paddingHorizontal: 16,

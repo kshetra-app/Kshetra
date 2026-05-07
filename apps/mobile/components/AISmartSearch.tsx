@@ -9,7 +9,9 @@ import {
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
-import { API_BASE_URL } from '../lib/constants';
+import { sendAIChat } from '../lib/aiService';
+import { getUnifiedConstituenciesForState } from '../lib/stateDataAdapter';
+import { useActiveStateStore } from '../stores/activeState';
 
 interface SearchResult {
   acNo: number;
@@ -37,6 +39,7 @@ export default function AISmartSearch({ onSelect }: AISmartSearchProps) {
   const [hasSearched, setHasSearched] = useState(false);
   const router = useRouter();
   const inputRef = useRef<TextInput>(null);
+  const stateCode = useActiveStateStore((s) => s.stateCode);
 
   const search = useCallback(async (q: string) => {
     const trimmed = q.trim();
@@ -47,21 +50,28 @@ export default function AISmartSearch({ onSelect }: AISmartSearchProps) {
     setHasSearched(true);
 
     try {
-      const res = await fetch(`${API_BASE_URL}/api/v1/ai/smart-search`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ query: trimmed }),
-      });
+      const constituencies = getUnifiedConstituenciesForState(stateCode);
+      const acList = constituencies.slice(0, 50).map(c => `#${c.acNo} ${c.name} (${c.winnerParty}, margin: ${c.margin})`).join('\n');
 
-      const data = await res.json();
-      setResults(data.results ?? []);
+      const prompt = `Given these constituencies in ${stateCode}:\n${acList}\n\nUser query: "${trimmed}"\n\nReturn the top 5 most relevant constituencies as a JSON array with fields: acNo (number), name (string), reason (brief 10-word explanation). Return ONLY valid JSON array, no other text.`;
+      const result = await sendAIChat([{ role: 'user', content: prompt }]);
+
+      // Parse JSON from response
+      const text = result.response;
+      const jsonMatch = text.match(/\[\s*\{[\s\S]*\}\s*\]/);
+      if (jsonMatch) {
+        const parsed = JSON.parse(jsonMatch[0]);
+        setResults(parsed.slice(0, 5));
+      } else {
+        setResults([]);
+      }
     } catch {
       setError('Search failed. Check your connection.');
       setResults([]);
     } finally {
       setLoading(false);
     }
-  }, [loading]);
+  }, [loading, stateCode]);
 
   const handleSelect = (acNo: number) => {
     if (onSelect) {

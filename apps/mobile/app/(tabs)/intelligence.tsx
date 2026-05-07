@@ -15,6 +15,7 @@ import { getElectionHistoryForState, hasFullDataForState } from '@/lib/stateData
 import { getUnifiedConstituenciesForState, type UnifiedConstituency } from '@/lib/stateDataAdapter';
 import { useActiveStateStore } from '../../stores/activeState';
 import { STATES } from '@kshetra/shared';
+import { useResponsive } from '../../lib/responsive';
 
 /** Compute analytics from seed data — recomputed when state changes */
 function useElectionAnalytics(stateCode: string) {
@@ -102,10 +103,12 @@ export default function IntelligenceScreen() {
     ? (stateCode === 'AP' || stateCode === 'MH' ? 2024 : 2023)
     : '';
 
+  const { insets } = useResponsive();
+
   return (
     <ScrollView
       style={styles.container}
-      contentContainerStyle={styles.content}
+      contentContainerStyle={[styles.content, { paddingTop: insets.top + 12 }]}
       showsVerticalScrollIndicator={false}
     >
       {/* Header */}
@@ -113,6 +116,13 @@ export default function IntelligenceScreen() {
         <View style={styles.headerTop}>
           <Text style={styles.headerTitle}>Intelligence</Text>
           <View style={styles.headerActions}>
+            <Pressable
+              style={styles.aiButton}
+              onPress={() => router.push('/parliament' as any)}
+            >
+              <Ionicons name="business" size={16} color="#8B5CF6" />
+              <Text style={[styles.aiButtonText, { color: '#8B5CF6' }]}>MPs</Text>
+            </Pressable>
             <Pressable
               style={styles.aiButton}
               onPress={() => router.push('/ai-chat')}
@@ -342,7 +352,6 @@ const styles = StyleSheet.create({
     backgroundColor: '#0A0A1A',
   },
   content: {
-    paddingTop: Platform.OS === 'ios' ? 60 : 40,
     paddingHorizontal: 16,
     paddingBottom: 40,
   },

@@ -6,6 +6,7 @@ import React, { useState, useMemo } from 'react';
 import { View, Text, StyleSheet, ScrollView, Pressable, Platform } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { Stack } from 'expo-router';
+import { useResponsive } from '../lib/responsive';
 import { useAspirantStore } from '../stores/aspirant';
 import CivicScoreCard from '../components/CivicScoreCard';
 import CivicBadgeGrid from '../components/CivicBadgeGrid';
@@ -59,6 +60,8 @@ export default function LeadershipAcademyScreen() {
     return Array.from(groups.entries());
   }, [modules]);
 
+  const { insets } = useResponsive();
+
   return (
     <View style={styles.container}>
       <Stack.Screen
@@ -70,7 +73,7 @@ export default function LeadershipAcademyScreen() {
       />
 
       {/* Header */}
-      <View style={styles.header}>
+      <View style={[styles.header, { paddingTop: insets.top + 8 }]}>
         <Text style={styles.headerTitle}>Leadership Academy</Text>
         <Text style={styles.headerSubtitle}>Learn. Engage. Lead.</Text>
       </View>
@@ -247,7 +250,6 @@ const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: '#0A0A1A' },
   header: {
     paddingHorizontal: 20,
-    paddingTop: Platform.OS === 'ios' ? 56 : 40,
     paddingBottom: 12,
   },
   headerTitle: { fontSize: 28, fontWeight: '800', color: '#FFFFFF' },

@@ -12,6 +12,7 @@ import {
 import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { useUserProfileStore } from '../stores/userProfile';
+import { useResponsive } from '../lib/responsive';
 import { useMyConstituencyStore } from '../stores/myConstituency';
 import { getUnifiedConstituenciesForState } from '../lib/stateDataAdapter';
 import { useActiveStateStore } from '../stores/activeState';
@@ -260,8 +261,10 @@ export default function OnboardingScreen() {
     }
   };
 
+  const { insets } = useResponsive();
+
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, { paddingTop: insets.top }]}>
       {/* Progress bar */}
       <View style={styles.progressBar}>
         {STEPS.map((_, i) => (
@@ -341,7 +344,6 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#0A0A1A',
-    paddingTop: Platform.OS === 'ios' ? 60 : 40,
   },
   progressBar: {
     flexDirection: 'row',

@@ -12,7 +12,7 @@ import {
 } from 'react-native';
 import { Stack, useLocalSearchParams } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
-import { API_BASE_URL } from '@/lib/constants';
+import { sendAIChat, isAIConfigured, type AIChatMessage } from '@/lib/aiService';
 import { getUnifiedConstituenciesForState } from '@/lib/stateDataAdapter';
 import { useActiveStateStore } from '../stores/activeState';
 
@@ -75,32 +75,27 @@ export default function AIChatScreen() {
       setLoading(true);
 
       try {
-        const allMessages = [
-          ...messages.map((m) => ({ role: m.role, content: m.content })),
+        const chatMessages: AIChatMessage[] = [
+          ...messages.map((m) => ({ role: m.role as 'user' | 'assistant', content: m.content })),
           { role: 'user' as const, content: text.trim() },
         ];
 
-        const res = await fetch(`${API_BASE_URL}/api/v1/ai/chat`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            messages: allMessages,
-            ...(selectedAcNo ? { constituencyAcNo: selectedAcNo } : {}),
-          }),
+        const data = await sendAIChat(chatMessages, {
+          stateCode,
+          constituencyName: selectedConstituency?.name,
+          acNo: selectedAcNo,
         });
-
-        const data = await res.json();
 
         const assistantMsg: Message = {
           id: (Date.now() + 1).toString(),
           role: 'assistant',
-          content: data.response ?? 'No response received.',
+          content: data.response,
           timestamp: Date.now(),
         };
 
         setMessages((prev) => [...prev, assistantMsg]);
 
-        if (data.response?.includes('API key')) {
+        if (data.error === 'NO_API_KEY') {
           setAiConfigured(false);
         }
       } catch {
@@ -108,7 +103,7 @@ export default function AIChatScreen() {
           id: (Date.now() + 1).toString(),
           role: 'assistant',
           content:
-            'Unable to connect to KSHETRA AI. Please check your network connection and ensure the API server is running.',
+            'Unable to connect to KSHETRA AI. Please check your network connection.',
           timestamp: Date.now(),
         };
         setMessages((prev) => [...prev, errorMsg]);

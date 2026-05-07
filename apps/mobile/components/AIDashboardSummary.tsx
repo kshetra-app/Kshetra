@@ -7,7 +7,7 @@ import {
   ActivityIndicator,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { API_BASE_URL } from '../lib/constants';
+import { sendAIChat } from '../lib/aiService';
 
 interface AIDashboardSummaryProps {
   constituencyName?: string;
@@ -24,15 +24,11 @@ export default function AIDashboardSummary({ constituencyName, issues }: AIDashb
     setLoading('issues');
 
     try {
-      const res = await fetch(`${API_BASE_URL}/api/v1/ai/summarize-issues`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ constituencyName, issues }),
-      });
-      const data = await res.json();
-      setSummary(data.summary ?? 'Unable to generate summary.');
+      const prompt = `Summarize these ${issues.length} civic issues reported in ${constituencyName} constituency in 100 words. Identify patterns, severity, and suggest priorities:\n\n${issues.join('\n')}`;
+      const result = await sendAIChat([{ role: 'user', content: prompt }]);
+      setSummary(result.response ?? 'Unable to generate summary.');
     } catch {
-      setSummary('Failed to generate summary. Check API connection.');
+      setSummary('Failed to generate summary. Check connection.');
     } finally {
       setLoading(null);
     }
@@ -41,11 +37,11 @@ export default function AIDashboardSummary({ constituencyName, issues }: AIDashb
   const fetchTrendAnalysis = useCallback(async () => {
     setLoading('trends');
     try {
-      const res = await fetch(`${API_BASE_URL}/api/v1/ai/analyze/trends`);
-      const data = await res.json();
-      setTrendAnalysis(data.analysis ?? 'Unable to generate analysis.');
+      const prompt = 'Analyze key election trends across Indian state assemblies in 150 words. Cover anti-incumbency patterns, regional party performance, voter turnout shifts, and coalition dynamics from recent elections (2021-2024).';
+      const result = await sendAIChat([{ role: 'user', content: prompt }]);
+      setTrendAnalysis(result.response ?? 'Unable to generate analysis.');
     } catch {
-      setTrendAnalysis('Failed to connect. Check API server.');
+      setTrendAnalysis('Failed to connect. Check network.');
     } finally {
       setLoading(null);
     }
@@ -117,7 +113,7 @@ export default function AIDashboardSummary({ constituencyName, issues }: AIDashb
       </View>
 
       <Text style={styles.disclaimer}>
-        Powered by KSHETRA AI • Requires API server connection
+        Powered by KSHETRA AI • Groq LLM
       </Text>
     </View>
   );

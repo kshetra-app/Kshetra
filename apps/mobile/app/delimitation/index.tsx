@@ -112,10 +112,15 @@ export default function DelimitationHub() {
         <SeatProjectionCard key={a.stateCode} allocation={a} compact />
       ))}
 
-      <Text style={styles.sectionTitle}>Biggest Losers</Text>
-      {losers.slice(0, 3).map((a) => (
-        <SeatProjectionCard key={a.stateCode} allocation={a} compact />
-      ))}
+      <Text style={styles.sectionTitle}>Smallest Gainers</Text>
+      {[...seatAllocations]
+        .filter((a) => a.seatChange >= 0)
+        .sort((a, b) => a.seatChange - b.seatChange)
+        .slice(0, 3)
+        .map((a) => (
+          <SeatProjectionCard key={a.stateCode} allocation={a} compact />
+        ))
+      }
 
       {/* Recent timeline */}
       <Text style={styles.sectionTitle}>Recent Events</Text>

@@ -1,7 +1,7 @@
-import { View, Text, StyleSheet } from 'react-native';
+import { View, Text, StyleSheet, Image } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useTranslation } from 'react-i18next';
-import { getPartyColor } from '@/lib/constants';
+import { getPartyColor, getCandidatePhotoUrl } from '@/lib/constants';
 import type { MLAProfile } from '@/lib/data';
 
 /** Format INR amounts in lakhs/crores */
@@ -28,15 +28,23 @@ export default function MLACard({ profile }: MLACardProps) {
     : profile.terms === 3 ? t('mla.term_3')
     : t('mla.term_n', { n: profile.terms });
 
+  const photoUri = getCandidatePhotoUrl(profile.name, profile.party, 104, profile.photoUrl);
+
   return (
     <View style={styles.card}>
       {/* Header */}
       <View style={styles.header}>
-        <View style={styles.avatar}>
-          <Ionicons name="person" size={28} color="#9CA3AF" />
+        <View style={[styles.avatar, { borderColor: partyColor }]}>
+          <Image
+            source={{ uri: photoUri }}
+            style={styles.avatarImage}
+          />
         </View>
         <View style={styles.headerInfo}>
           <Text style={styles.name}>{profile.name}</Text>
+          {profile.constituencyName && (
+            <Text style={styles.constituencyLabel}>AC #{profile.acNo} · {profile.constituencyName}</Text>
+          )}
           <View style={styles.partyRow}>
             <View style={[styles.partyBadge, { backgroundColor: partyColor }]}>
               <Text style={styles.partyText}>{profile.party}</Text>
@@ -47,9 +55,36 @@ export default function MLACard({ profile }: MLACardProps) {
             <Text style={styles.metaText}>
               {profile.gender === 'F' ? t('mla.female') : t('mla.male')}
             </Text>
+            {profile.maritalStatus && (
+              <Text style={styles.metaText}>· {profile.maritalStatus}</Text>
+            )}
           </View>
         </View>
       </View>
+
+      {/* Personal Details Row */}
+      {(profile.education || profile.profession || profile.dob) && (
+        <View style={styles.detailsRow}>
+          {profile.education && (
+            <View style={styles.detailItem}>
+              <Ionicons name="school" size={13} color="#10B981" />
+              <Text style={styles.detailText}>{profile.education}</Text>
+            </View>
+          )}
+          {profile.profession && (
+            <View style={styles.detailItem}>
+              <Ionicons name="briefcase" size={13} color="#6B7280" />
+              <Text style={styles.detailText}>{profile.profession}</Text>
+            </View>
+          )}
+          {profile.dob && (
+            <View style={styles.detailItem}>
+              <Ionicons name="calendar" size={13} color="#8B5CF6" />
+              <Text style={styles.detailText}>DOB: {profile.dob}</Text>
+            </View>
+          )}
+        </View>
+      )}
 
       {/* Stats Grid */}
       <View style={styles.statsGrid}>
@@ -61,16 +96,6 @@ export default function MLACard({ profile }: MLACardProps) {
           <Text style={styles.statLabel}>{t('mla.terms')}</Text>
         </View>
 
-        {profile.education && (
-          <View style={styles.statItem}>
-            <Ionicons name="school" size={16} color="#10B981" />
-            <Text style={styles.statValue} numberOfLines={1}>
-              {profile.education}
-            </Text>
-            <Text style={styles.statLabel}>{t('mla.education')}</Text>
-          </View>
-        )}
-
         {profile.totalAssets !== undefined && (
           <View style={styles.statItem}>
             <Ionicons name="wallet" size={16} color="#F59E0B" />
@@ -78,6 +103,16 @@ export default function MLACard({ profile }: MLACardProps) {
               {formatINR(profile.totalAssets)}
             </Text>
             <Text style={styles.statLabel}>{t('mla.assets')}</Text>
+          </View>
+        )}
+
+        {profile.totalLiabilities !== undefined && (
+          <View style={styles.statItem}>
+            <Ionicons name="card" size={16} color="#F97316" />
+            <Text style={styles.statValue}>
+              {formatINR(profile.totalLiabilities)}
+            </Text>
+            <Text style={styles.statLabel}>Liabilities</Text>
           </View>
         )}
 
@@ -100,14 +135,6 @@ export default function MLACard({ profile }: MLACardProps) {
           </View>
         )}
       </View>
-
-      {/* Profession */}
-      {profile.profession && (
-        <View style={styles.professionRow}>
-          <Ionicons name="briefcase" size={14} color="#6B7280" />
-          <Text style={styles.professionText}>{profile.profession}</Text>
-        </View>
-      )}
     </View>
   );
 }
@@ -121,16 +148,27 @@ const styles = StyleSheet.create({
   header: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginBottom: 16,
+    marginBottom: 12,
   },
   avatar: {
     width: 52,
     height: 52,
     borderRadius: 26,
     backgroundColor: '#1F2937',
+    borderWidth: 2,
     justifyContent: 'center',
     alignItems: 'center',
     marginRight: 12,
+  },
+  avatarImage: {
+    width: 48,
+    height: 48,
+    borderRadius: 24,
+  },
+  avatarInitials: {
+    fontSize: 18,
+    fontWeight: '800',
+    color: '#9CA3AF',
   },
   headerInfo: {
     flex: 1,
@@ -139,11 +177,18 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: '700',
     color: '#FFFFFF',
-    marginBottom: 4,
+    marginBottom: 2,
+  },
+  constituencyLabel: {
+    fontSize: 11,
+    color: '#6B7280',
+    marginBottom: 3,
   },
   partyRow: {
     flexDirection: 'row',
     alignItems: 'center',
+    flexWrap: 'wrap',
+    gap: 6,
   },
   partyBadge: {
     paddingHorizontal: 8,
@@ -159,13 +204,28 @@ const styles = StyleSheet.create({
     fontSize: 12,
     color: '#9CA3AF',
   },
+  detailsRow: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 12,
+    marginBottom: 12,
+    paddingHorizontal: 4,
+  },
+  detailItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4,
+  },
+  detailText: {
+    fontSize: 12,
+    color: '#D1D5DB',
+  },
   statsGrid: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     backgroundColor: '#0A0A1A',
     borderRadius: 12,
     padding: 12,
-    marginBottom: 12,
   },
   statItem: {
     alignItems: 'center',
@@ -184,13 +244,5 @@ const styles = StyleSheet.create({
   },
   warningText: {
     color: '#EF4444',
-  },
-  professionRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  professionText: {
-    fontSize: 13,
-    color: '#9CA3AF',
   },
 });

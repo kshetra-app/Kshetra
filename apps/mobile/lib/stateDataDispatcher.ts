@@ -40,6 +40,22 @@ import { getMH2019Result } from '../../../data/seed/maharashtra-historical-resul
 import { MH_ELECTION_HISTORY } from '../../../data/seed/maharashtra-election-history';
 import { getMHConstituencyTimeline } from '../../../data/seed/maharashtra-political-timeline';
 
+// ── Tamil Nadu ──
+import { getTNMLAProfile } from '../../../data/seed/tamil-nadu-mla-profiles';
+import { getTN2016Result } from '../../../data/seed/tamil-nadu-historical-results';
+
+// ── Kerala ──
+import { getKLMLAProfile } from '../../../data/seed/kerala-mla-profiles';
+import { getKL2016Result } from '../../../data/seed/kerala-historical-results';
+
+// ── West Bengal ──
+import { getWBMLAProfile } from '../../../data/seed/west-bengal-mla-profiles';
+import { getWB2016Result } from '../../../data/seed/west-bengal-historical-results';
+
+// ── Uttar Pradesh ──
+import { getUPMLAProfile } from '../../../data/seed/uttar-pradesh-mla-profiles';
+import { getUP2017Result } from '../../../data/seed/uttar-pradesh-historical-results';
+
 // ═════════════════════════════════════════════════════════════════════════
 // ── MLA Profile ─────────────────────────────────────────────────────────
 // ═════════════════════════════════════════════════════════════════════════
@@ -53,6 +69,10 @@ export function getMLAProfileForState(
     case 'AP': return getAPMLAProfile(acNo);
     case 'KA': return getKAMLAProfile(acNo);
     case 'MH': return getMHMLAProfile(acNo);
+    case 'TN': return getTNMLAProfile(acNo);
+    case 'KL': return getKLMLAProfile(acNo);
+    case 'WB': return getWBMLAProfile(acNo);
+    case 'UP': return getUPMLAProfile(acNo);
     default:   return undefined;
   }
 }
@@ -113,6 +133,22 @@ export function getHistoryForState(
       const r2019 = getMH2019Result(acNo);
       return r2019 ? [{ year: 2019, winner: r2019.winner, party: r2019.party }] : [];
     }
+    case 'TN': {
+      const r2016 = getTN2016Result(acNo);
+      return r2016 ? [{ year: 2016, winner: r2016.winner, party: r2016.party }] : [];
+    }
+    case 'KL': {
+      const r2016 = getKL2016Result(acNo);
+      return r2016 ? [{ year: 2016, winner: r2016.winner, party: r2016.party }] : [];
+    }
+    case 'WB': {
+      const r2016 = getWB2016Result(acNo);
+      return r2016 ? [{ year: 2016, winner: r2016.winner, party: r2016.party }] : [];
+    }
+    case 'UP': {
+      const r2017 = getUP2017Result(acNo);
+      return r2017 ? [{ year: 2017, winner: r2017.winner, party: r2017.party }] : [];
+    }
     default:
       return [];
   }
@@ -149,6 +185,22 @@ export function isStrongholdForState(
       // Handle SHS split: SHS (2019) = SHS or SHSUBT (2024)
       const normalize = (p: string) => p;
       return normalize(r.party) === normalize(currentParty);
+    }
+    case 'TN': {
+      const r = getTN2016Result(acNo);
+      return r ? r.party === currentParty : false;
+    }
+    case 'KL': {
+      const r = getKL2016Result(acNo);
+      return r ? r.party === currentParty : false;
+    }
+    case 'WB': {
+      const r = getWB2016Result(acNo);
+      return r ? r.party === currentParty : false;
+    }
+    case 'UP': {
+      const r = getUP2017Result(acNo);
+      return r ? r.party === currentParty : false;
     }
     default:
       return false;
@@ -190,5 +242,5 @@ export function getTimelineForState(
 
 /** Whether a state has full data (MLA profiles, demographics, history, trivia) */
 export function hasFullDataForState(stateCode: string): boolean {
-  return ['TS', 'AP', 'KA', 'MH'].includes(stateCode);
+  return ['TS', 'AP', 'KA', 'MH', 'TN', 'KL', 'WB', 'UP'].includes(stateCode);
 }

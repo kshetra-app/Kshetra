@@ -2,6 +2,8 @@ import { Tabs } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { useTranslation } from 'react-i18next';
 import { useNotificationsStore } from '../../stores/notifications';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { moderateScale } from '../../lib/responsive';
 
 const ACTIVE_COLOR = '#4F8EF7';
 const INACTIVE_COLOR = '#6B7280';
@@ -20,6 +22,11 @@ function TabIcon({ name, color, size }: TabIconProps) {
 export default function TabLayout() {
   const { t } = useTranslation();
   const unreadCount = useNotificationsStore((s) => s.unreadCount);
+  const insets = useSafeAreaInsets();
+
+  // Adapt tab bar to device: bottom inset covers gesture bar / soft nav
+  const tabBarPaddingBottom = Math.max(insets.bottom, 6);
+  const tabBarHeight = 56 + tabBarPaddingBottom;
 
   return (
     <Tabs
@@ -31,12 +38,12 @@ export default function TabLayout() {
           backgroundColor: TAB_BG,
           borderTopColor: '#1F2937',
           borderTopWidth: 0.5,
-          height: 88,
-          paddingBottom: 28,
-          paddingTop: 8,
+          height: tabBarHeight,
+          paddingBottom: tabBarPaddingBottom,
+          paddingTop: 6,
         },
         tabBarLabelStyle: {
-          fontSize: 11,
+          fontSize: moderateScale(10),
           fontWeight: '600',
         },
       }}

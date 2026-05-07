@@ -199,12 +199,26 @@ export {
   type TNConstituencySeed,
 } from '../../../data/seed/tamil-nadu-constituencies';
 
+export {
+  TN_MLA_PROFILES,
+  getTNMLAProfile,
+  getTNMLAsByParty,
+  getTNFemaleMLAs,
+} from '../../../data/seed/tamil-nadu-mla-profiles';
+
 // ── Kerala ──────────────────────────────────────────────────────────
 export {
   KL_CONSTITUENCIES,
   getKLConstituency,
   type KLConstituencySeed,
 } from '../../../data/seed/kerala-constituencies';
+
+export {
+  KL_MLA_PROFILES,
+  getKLMLAProfile,
+  getKLMLAsByParty,
+  getKLFemaleMLAs,
+} from '../../../data/seed/kerala-mla-profiles';
 
 // ── West Bengal ─────────────────────────────────────────────────────
 export {
@@ -213,9 +227,37 @@ export {
   type WBConstituencySeed,
 } from '../../../data/seed/west-bengal-constituencies';
 
+export {
+  WB_MLA_PROFILES,
+  getWBMLAProfile,
+  getWBMLAsByParty,
+  getWBFemaleMLAs,
+} from '../../../data/seed/west-bengal-mla-profiles';
+
 // ── Uttar Pradesh ───────────────────────────────────────────────────
 export {
   UP_CONSTITUENCIES,
   getUPConstituency,
   type UPConstituencySeed,
 } from '../../../data/seed/uttar-pradesh-constituencies';
+
+export {
+  UP_MLA_PROFILES,
+  getUPMLAProfile,
+  getUPMLAsByParty,
+  getUPFemaleMLAs,
+} from '../../../data/seed/uttar-pradesh-mla-profiles';
+
+// ── MP Profiles (Parliament) ────────────────────────────────────────
+export {
+  ALL_MP_PROFILES,
+  NATIONAL_PARTY_STRENGTH,
+  STATE_PARLIAMENTARY_SUMMARIES,
+  getMPsByState,
+  getMPsByParty,
+  getLokSabhaMPs,
+  getRajyaSabhaMPs,
+  getMinisters,
+  getPartyStrengthForState,
+  getAllianceStrength,
+} from '../../../data/seed/mp-profiles';

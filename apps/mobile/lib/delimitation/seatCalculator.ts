@@ -82,19 +82,47 @@ function toPopulationSummary(census: CensusStateData): StatePopulationSummary {
 /**
  * Compute seat allocation for all states using Census 2011 data.
  *
+ * Uses an expansion model: the national ideal pop-per-seat is derived
+ * from the state with the LOWEST current pop-per-seat ratio, ensuring
+ * no state loses seats. This is the politically realistic scenario —
+ * India's total assembly seats will INCREASE during delimitation.
+ *
  * @param idealPopPerSeat — override national average. If not provided,
- *   uses the Census 2011 national average.
+ *   auto-computes an expansion-safe ideal.
  * @param preserveMinimum — if true, no state loses seats below constitutional minimum
  */
 export function computeAllSeatAllocations(
   idealPopPerSeat?: number,
   preserveMinimum = true,
 ): SeatAllocation[] {
-  const ideal = idealPopPerSeat ?? IDEAL_POP_PER_AC_SEAT_2011;
+  // Compute expansion-safe ideal: use the lowest pop-per-seat ratio
+  // across all states so that every state gains or stays the same.
+  let ideal: number;
+  if (idealPopPerSeat) {
+    ideal = idealPopPerSeat;
+  } else {
+    const ratios = CENSUS_2011_STATES
+      .filter((s) => s.currentAssemblySeats > 0)
+      .map((s) => s.totalPopulation / s.currentAssemblySeats);
+    // Use the minimum ratio (with a small reduction) so all states gain
+    ideal = Math.floor(Math.min(...ratios) * 0.95);
+  }
 
   return CENSUS_2011_STATES.map((census) => {
     const summary = toPopulationSummary(census);
     const allocation = computeSeatAllocation(summary, ideal);
+
+    // Guarantee no state loses seats — floor at current seats
+    if (allocation.projectedSeats < census.currentAssemblySeats) {
+      allocation.projectedSeats = census.currentAssemblySeats;
+      allocation.seatChange = 0;
+      allocation.populationPerProjectedSeat = Math.round(
+        census.totalPopulation / allocation.projectedSeats,
+      );
+      allocation.reservedSC = calculateSCReservedSeats(allocation.projectedSeats, census.scPopulation, census.totalPopulation);
+      allocation.reservedST = calculateSTReservedSeats(allocation.projectedSeats, census.stPopulation, census.totalPopulation);
+      allocation.general = allocation.projectedSeats - allocation.reservedSC - allocation.reservedST;
+    }
 
     // Apply constitutional bounds
     if (preserveMinimum) {
@@ -102,7 +130,6 @@ export function computeAllSeatAllocations(
       if (allocation.projectedSeats < minSeats) {
         allocation.projectedSeats = minSeats;
         allocation.seatChange = allocation.projectedSeats - allocation.currentSeats;
-        // Recalculate reservation
         allocation.reservedSC = calculateSCReservedSeats(allocation.projectedSeats, census.scPopulation, census.totalPopulation);
         allocation.reservedST = calculateSTReservedSeats(allocation.projectedSeats, census.stPopulation, census.totalPopulation);
         allocation.general = allocation.projectedSeats - allocation.reservedSC - allocation.reservedST;

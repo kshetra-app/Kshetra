@@ -48,6 +48,7 @@
 | Sprint 16: Aspiring Leaders & Civic Awakening | ✅ Complete | 2026-04-30 | 2026-04-30 |
 | Bug Fix Sprint: Route Conflicts, TS Errors, Test Alignment | ✅ Complete | 2026-04-30 | 2026-04-30 |
 | Sprint 29: Multi-State Election Data (TN/KL/WB/UP) | ✅ Complete | 2026-05-01 | 2026-05-01 |
+| Sprint 30: MapLibre Migration + Candidate Avatars | ✅ Complete | 2026-05-06 | 2026-05-06 |
 
 ---
 
@@ -147,6 +148,7 @@
 | 2026-04-30 | `feat: sprint 16 — aspiring leaders & civic awakening` | Supabase migration 010 (7 tables), AspirantProfile/CivicBadge/LeadershipModule types + computeCivicScore utility, 12 modules + 6 challenges + 3 aspirants seed data, CivicScoreCard + CivicBadgeGrid + ChallengeCard components, Leadership Academy screen, aspirant role, Profile civic section |
 | 2026-04-30 | `fix: route conflicts, TS errors, test alignment` | Removed duplicate constituency routes from states.ts, fixed leadership-academy.tsx import paths + TS errors, fixed expo-router dynamic route type casts (8 files), aligned API test assertions with current seed data (295/295 tests pass) |
 | 2026-05-01 | `feat: sprint 29 — multi-state election data (TN/KL/WB/UP)` | 4 new state seed files from real ECI data via Wikipedia scraper. TN 234/234, KL 140/140, WB 293/294, UP 401/403 constituencies with winner, runner-up, votes, margin, district, type. FULLY_SUPPORTED_STATES: 8 states. Total 1,694 seats. 403/403 tests pass. |
+| 2026-05-06 | `feat: sprint 30 — MapLibre migration + candidate avatars` | Replaced @rnmapbox/maps (proprietary, requires secret token) with @maplibre/maplibre-react-native (free, open-source). Switched map tiles from Mapbox to CARTO dark-matter (free). Added DiceBear Personas avatars for all candidates (unique face per name+party). Full native rebuild with expo prebuild. APK: 237 MB. |
 
 ---
 
@@ -2547,3 +2549,62 @@ NationalComparison — cross-state + dominant parties
 | **Total** | — | **1,694** | — | **8 states** |
 
 ### Component Count: ~46 mobile components
+
+---
+
+## Sprint 30: MapLibre Migration + Candidate Avatars
+
+**Date**: 2026-05-06
+**Goal**: Fix non-working maps (constituency + delimitation) and make candidate images visible everywhere
+
+### Problems Identified
+
+1. **Maps not working**: `@rnmapbox/maps` was never properly installed (empty node_modules). Mapbox SDK v10+ requires a secret download token (`sk.…`) to download native libraries during Gradle build — the public token (`pk.…`) returns 403 Forbidden from Maven.
+2. **Candidate images invisible**: `ui-avatars.com` only generates colored circles with text initials — not recognizable as "candidate images." Users expected actual person-like visuals.
+3. **Environment variables empty at runtime**: `process.env.EXPO_PUBLIC_MAPBOX_TOKEN` is always empty in bare release builds (same issue previously fixed for the Groq API key).
+
+### Solution
+
+#### Map: Migrated from Mapbox to MapLibre
+
+| Aspect | Before (Broken) | After (Working) |
+|--------|-----------------|-----------------|
+| Package | `@rnmapbox/maps` v10.3.0 | `@maplibre/maplibre-react-native` v11.0.2 |
+| Build token | Required `sk.…` secret token | None required |
+| Runtime token | Required `pk.…` public token | None required |
+| Map tiles | `mapbox://styles/mapbox/dark-v11` | `https://basemaps.cartocdn.com/gl/dark-matter-gl-style/style.json` |
+| Light tiles | `mapbox://styles/mapbox/light-v11` | `https://basemaps.cartocdn.com/gl/positron-gl-style/style.json` |
+| Cost | Free tier limits | Completely free (CARTO + OSM) |
+| API compat | Same RN components | MapView, Camera, ShapeSource, FillLayer, LineLayer all identical |
+
+#### Images: Switched to DiceBear Personas
+
+| Aspect | Before | After |
+|--------|--------|-------|
+| Service | `ui-avatars.com` | `api.dicebear.com/9.x/personas/png` |
+| Visual | Colored circle with initials | Unique cartoon-style person avatar |
+| Uniqueness | Only differs by initials | Each candidate name produces a distinct face |
+| Party color | Background color of circle | Background color of avatar |
+
+### Files Changed
+
+- `apps/mobile/package.json` — Replaced `@rnmapbox/maps` with `@maplibre/maplibre-react-native`
+- `apps/mobile/app.json` — Plugin: `@maplibre/maplibre-react-native`
+- `apps/mobile/app/(tabs)/index.tsx` — `require('@maplibre/maplibre-react-native')` (no setAccessToken needed)
+- `apps/mobile/lib/constants.ts` — MAP_STYLE/MAP_STYLE_LIGHT → CARTO tile URLs; getCandidatePhotoUrl → DiceBear
+- `apps/mobile/android/` — Full regeneration via `expo prebuild --clean`
+
+### Build Process
+
+1. `npm install @maplibre/maplibre-react-native`
+2. `npx expo prebuild --platform android --clean`
+3. Restore build customizations (bundle-skip task, ndk abiFilters arm64-v8a)
+4. `npx expo export:embed` → 2,268 modules bundled
+5. `gradlew assembleRelease` → BUILD SUCCESSFUL (7m 7s, 986 tasks)
+6. APK: ~237 MB at `C:\Users\Laven\OneDrive\Desktop\Kshetra.apk`
+
+### ADR Update
+
+| # | Decision | Rationale |
+|---|---|---|
+| ADR-002 (updated) | MapLibre GL for maps (was Mapbox GL) | Mapbox SDK requires paid secret token for native builds; MapLibre is MIT-licensed fork with identical API, free tiles via CARTO/OSM, zero vendor lock-in |

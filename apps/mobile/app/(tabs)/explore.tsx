@@ -7,17 +7,19 @@ import {
   Pressable,
   Platform,
   ScrollView,
+  Image,
 } from 'react-native';
 import { FlashList } from '@shopify/flash-list';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
-import { getPartyColor } from '@/lib/constants';
+import { getPartyColor, getCandidatePhotoUrl } from '@/lib/constants';
 import { useFavoritesStore } from '../../stores/favorites';
 import { useActiveStateStore } from '../../stores/activeState';
 import StateSwitcher from '../../components/StateSwitcher';
 import AISmartSearch from '../../components/AISmartSearch';
 import { getUnifiedConstituenciesForState, type UnifiedConstituency } from '@/lib/stateDataAdapter';
 import { useTranslation } from 'react-i18next';
+import { useResponsive } from '../../lib/responsive';
 
 type SortKey = 'acNo' | 'name' | 'margin_asc' | 'margin_desc';
 
@@ -125,9 +127,11 @@ export default function ExploreScreen() {
     [isFavorite, router],
   );
 
+  const { insets, contentPaddingBottom } = useResponsive();
+
   return (
     <View style={styles.container}>
-      <View style={styles.header}>
+      <View style={[styles.header, { paddingTop: insets.top + 8 }]}>
         <View style={styles.headerRow}>
           <View style={styles.headerLeft}>
             <View style={styles.titleRow}>
@@ -153,6 +157,22 @@ export default function ExploreScreen() {
             />
           </Pressable>
         </View>
+      </View>
+
+      {/* Quick Nav — Parliament, AI Chat, Delimitation */}
+      <View style={styles.quickNavRow}>
+        <Pressable style={styles.quickNavBtn} onPress={() => router.push('/parliament' as any)}>
+          <Ionicons name="business" size={18} color="#8B5CF6" />
+          <Text style={styles.quickNavText}>{'MPs & Parliament'}</Text>
+        </Pressable>
+        <Pressable style={styles.quickNavBtn} onPress={() => router.push('/ai-chat' as any)}>
+          <Ionicons name="sparkles" size={18} color="#F59E0B" />
+          <Text style={styles.quickNavText}>AI Chat</Text>
+        </Pressable>
+        <Pressable style={styles.quickNavBtn} onPress={() => router.push('/delimitation' as any)}>
+          <Ionicons name="resize" size={18} color="#10B981" />
+          <Text style={styles.quickNavText}>Delimitation</Text>
+        </Pressable>
       </View>
 
       {/* AI Smart Search toggle */}
@@ -344,16 +364,15 @@ const ConstituencyCard = React.memo(function ConstituencyCard({
   isFav: boolean;
   onPress: () => void;
 }) {
+  const partyColor = getPartyColor(item.winnerParty);
   return (
     <Pressable style={styles.card} onPress={onPress}>
       <View style={styles.cardLeft}>
-        <View
-          style={[
-            styles.partyBadge,
-            { backgroundColor: getPartyColor(item.winnerParty) },
-          ]}
-        >
-          <Text style={styles.partyBadgeText}>{item.winnerParty}</Text>
+        <View style={[styles.candidateAvatarWrap, { borderColor: partyColor }]}>
+          <Image
+            source={{ uri: getCandidatePhotoUrl(item.winnerName, item.winnerParty, 80) }}
+            style={styles.candidateAvatar}
+          />
         </View>
       </View>
       <View style={styles.cardContent}>
@@ -361,9 +380,14 @@ const ConstituencyCard = React.memo(function ConstituencyCard({
         <Text style={styles.cardMeta}>
           #{item.acNo} · {item.district} · {item.type}
         </Text>
-        <Text style={styles.cardWinner}>
-          {item.winnerName} · Margin: {item.margin.toLocaleString()}
-        </Text>
+        <View style={styles.cardWinnerRow}>
+          <View style={[styles.partyBadge, { backgroundColor: partyColor }]}>
+            <Text style={styles.partyBadgeText}>{item.winnerParty}</Text>
+          </View>
+          <Text style={styles.cardWinner} numberOfLines={1}>
+            {item.winnerName} · {item.margin.toLocaleString()}
+          </Text>
+        </View>
       </View>
       {isFav && (
         <Ionicons name="heart" size={14} color="#EF4444" style={{ marginRight: 6 }} />
@@ -379,7 +403,6 @@ const styles = StyleSheet.create({
     backgroundColor: '#0A0A1A',
   },
   header: {
-    paddingTop: Platform.OS === 'ios' ? 60 : 40,
     paddingHorizontal: 16,
     paddingBottom: 8,
   },
@@ -406,6 +429,30 @@ const styles = StyleSheet.create({
   },
   favFilterActive: {
     backgroundColor: '#EF444420',
+  },
+  quickNavRow: {
+    flexDirection: 'row',
+    paddingHorizontal: 16,
+    paddingVertical: 8,
+    gap: 8,
+  },
+  quickNavBtn: {
+    flex: 1,
+    flexDirection: 'column',
+    alignItems: 'center',
+    gap: 4,
+    backgroundColor: '#111827',
+    borderRadius: 12,
+    paddingVertical: 10,
+    paddingHorizontal: 6,
+    borderWidth: 1,
+    borderColor: '#1F2937',
+  },
+  quickNavText: {
+    fontSize: 10,
+    fontWeight: '700',
+    color: '#D1D5DB',
+    textAlign: 'center',
   },
   title: {
     fontSize: 28,
@@ -561,17 +608,34 @@ const styles = StyleSheet.create({
   cardLeft: {
     marginRight: 12,
   },
+  candidateAvatarWrap: {
+    width: 44,
+    height: 44,
+    borderRadius: 22,
+    borderWidth: 2,
+    overflow: 'hidden',
+    backgroundColor: '#1F2937',
+  },
+  candidateAvatar: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+  },
   partyBadge: {
-    paddingHorizontal: 8,
-    paddingVertical: 4,
-    borderRadius: 6,
-    minWidth: 44,
-    alignItems: 'center',
+    paddingHorizontal: 6,
+    paddingVertical: 2,
+    borderRadius: 4,
   },
   partyBadgeText: {
-    fontSize: 11,
+    fontSize: 10,
     fontWeight: '800',
     color: '#FFFFFF',
+  },
+  cardWinnerRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+    marginTop: 3,
   },
   cardContent: {
     flex: 1,
@@ -587,9 +651,9 @@ const styles = StyleSheet.create({
     marginTop: 2,
   },
   cardWinner: {
-    fontSize: 12,
+    fontSize: 11,
     color: '#6B7280',
-    marginTop: 2,
+    flex: 1,
   },
   aiSearchToggleRow: {
     paddingHorizontal: 16,

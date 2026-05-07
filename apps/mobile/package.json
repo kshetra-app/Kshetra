@@ -2,13 +2,12 @@
   "name": "@kshetra/mobile",
   "version": "0.1.0",
   "private": true,
-  "main": "./index.js",
+  "main": "expo-router/entry",
   "scripts": {
     "dev": "expo start",
     "android": "expo run:android",
     "ios": "expo run:ios",
     "build": "echo build",
-    "test": "node ../../node_modules/jest/bin/jest.js --passWithNoTests --forceExit",
     "lint": "expo lint",
     "clean": "rm -rf .expo node_modules"
   },
@@ -17,6 +16,7 @@
     "@expo/vector-icons": "^15.0.2",
     "@gorhom/bottom-sheet": "^5.1.0",
     "@kshetra/shared": "*",
+    "@maplibre/maplibre-react-native": "^11.0.2",
     "@react-native-async-storage/async-storage": "2.2.0",
     "@react-native-community/slider": "^5.2.0",
     "@react-navigation/bottom-tabs": "^7.15.10",
@@ -49,6 +49,7 @@
     "react-i18next": "^17.0.6",
     "react-native": "0.81.5",
     "react-native-gesture-handler": "~2.28.0",
+    "react-native-mmkv": "^3.2.0",
     "react-native-reanimated": "~4.1.1",
     "react-native-safe-area-context": "~5.6.2",
     "react-native-screens": "~4.16.0",
@@ -61,7 +62,6 @@
   "devDependencies": {
     "@babel/core": "^7.25.0",
     "@types/react": "~19.1.10",
-    "babel-plugin-transform-inline-environment-variables": "^0.4.4",
     "babel-preset-expo": "^54.0.10",
     "typescript": "^5.7.0"
   }

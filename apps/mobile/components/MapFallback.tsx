@@ -1,3 +1,4 @@
+import { useMemo } from 'react';
 import { View, Text, StyleSheet, Pressable, ScrollView, Platform } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
@@ -6,6 +7,8 @@ import { STATES } from '@kshetra/shared';
 import StateSwitcher from './StateSwitcher';
 import { getUnifiedConstituenciesForState } from '@/lib/stateDataAdapter';
 import { useActiveStateStore } from '../stores/activeState';
+import { computeAllSeatAllocations } from '@/lib/delimitation/seatCalculator';
+import { useResponsive } from '../lib/responsive';
 
 /**
  * Fallback map screen shown when Mapbox native module is not available
@@ -17,6 +20,12 @@ export default function MapFallback() {
   const stateCode = useActiveStateStore((s) => s.stateCode);
   const currentState = STATES[stateCode];
   const constituencies = getUnifiedConstituenciesForState(stateCode);
+
+  const delimitationProjections = useMemo(() => computeAllSeatAllocations(), []);
+  const stateProjection = useMemo(
+    () => delimitationProjections.find((p) => p.stateCode === stateCode),
+    [delimitationProjections, stateCode],
+  );
 
   const partySummary = constituencies.reduce<Record<string, number>>(
     (acc, c) => {
@@ -31,10 +40,12 @@ export default function MapFallback() {
     ([, a], [, b]) => b - a,
   );
 
+  const { insets } = useResponsive();
+
   return (
     <View style={styles.container}>
       {/* Header */}
-      <View style={styles.header}>
+      <View style={[styles.header, { paddingTop: insets.top + 8 }]}>
         <View style={styles.headerTop}>
           <Text style={styles.headerTitle}>KSHETRA</Text>
           <StateSwitcher />
@@ -77,6 +88,26 @@ export default function MapFallback() {
             </View>
           ))}
         </View>
+
+        {/* Delimitation Projection */}
+        {stateProjection && (
+          <Pressable
+            style={styles.delimCard}
+            onPress={() => router.push('/delimitation' as any)}
+          >
+            <View style={styles.delimHeader}>
+              <Ionicons name="resize" size={16} color="#FCD34D" />
+              <Text style={styles.delimTitle}>Delimitation Projection</Text>
+            </View>
+            <View style={styles.delimRow}>
+              <Text style={styles.delimCurrent}>{stateProjection.currentSeats} seats</Text>
+              <Ionicons name="arrow-forward" size={14} color="#FCD34D" />
+              <Text style={styles.delimProjected}>{stateProjection.projectedSeats} seats</Text>
+              <Text style={styles.delimGain}>+{stateProjection.seatChange}</Text>
+            </View>
+            <Text style={styles.delimRes}>GEN {stateProjection.general} · SC {stateProjection.reservedSC} · ST {stateProjection.reservedST}</Text>
+          </Pressable>
+        )}
 
         {/* Top constituencies */}
         <Text style={styles.sectionTitle}>
@@ -121,7 +152,6 @@ export default function MapFallback() {
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: '#0A0A1A' },
   header: {
-    paddingTop: Platform.OS === 'ios' ? 60 : 40,
     paddingHorizontal: 16,
     paddingBottom: 12,
   },
@@ -208,4 +238,34 @@ const styles = StyleSheet.create({
   rowRight: { alignItems: 'flex-end' },
   rowMargin: { fontSize: 14, fontWeight: '700', color: '#10B981' },
   rowWinner: { fontSize: 10, color: '#6B7280', marginTop: 2 },
+  // ─── Delimitation card ───
+  delimCard: {
+    backgroundColor: '#1C1917',
+    borderRadius: 12,
+    padding: 14,
+    marginBottom: 20,
+    borderWidth: 1,
+    borderColor: '#FCD34D30',
+  },
+  delimHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+    marginBottom: 8,
+  },
+  delimTitle: {
+    fontSize: 13,
+    fontWeight: '800',
+    color: '#FCD34D',
+  },
+  delimRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 10,
+    marginBottom: 6,
+  },
+  delimCurrent: { fontSize: 15, fontWeight: '700', color: '#9CA3AF' },
+  delimProjected: { fontSize: 15, fontWeight: '800', color: '#10B981' },
+  delimGain: { fontSize: 14, fontWeight: '800', color: '#10B981', marginLeft: 'auto' },
+  delimRes: { fontSize: 11, color: '#6B7280' },
 });

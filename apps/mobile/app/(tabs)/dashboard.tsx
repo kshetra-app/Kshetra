@@ -18,6 +18,7 @@ import SentimentBar from '../../components/SentimentBar';
 import HeadlineCard from '../../components/HeadlineCard';
 import { ISSUE_CATEGORY_CONFIG } from '../../lib/civicTypes';
 import AIDashboardSummary from '../../components/AIDashboardSummary';
+import { useResponsive } from '../../lib/responsive';
 import PromiseCard from '../../components/PromiseCard';
 import GovernmentReportCard from '../../components/GovernmentReportCard';
 import type { IssueCategory, IssueStatus, CivicScope } from '../../lib/civicTypes';
@@ -180,10 +181,12 @@ function DashboardContent() {
     return [...sentiment].sort((a, b) => a.score - b.score);
   }, [sentiment]);
 
+  const { insets } = useResponsive();
+
   return (
     <View style={styles.container}>
       {/* ── Compact Header ── */}
-      <View style={styles.header}>
+      <View style={[styles.header, { paddingTop: insets.top + 8 }]}>
         <View>
           <Text style={styles.headerTitle}>{t('dashboard.title')}</Text>
           <View style={styles.scopeIndicator}>
@@ -453,7 +456,6 @@ const styles = StyleSheet.create({
     alignItems: 'flex-start',
     justifyContent: 'space-between',
     paddingHorizontal: 16,
-    paddingTop: Platform.OS === 'ios' ? 54 : 38,
     paddingBottom: 4,
   },
   headerTitle: {
