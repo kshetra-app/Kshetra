@@ -45,16 +45,95 @@ import { getHistoryForState } from '@/lib/stateDataDispatcher';
 import { computeAllSeatAllocations } from '@/lib/delimitation/seatCalculator';
 
 /**
- * Dynamically load Mapbox — native module not available in Expo Go.
+ * Dynamically load MapLibre — native module not available in Expo Go.
  * Falls back to MapFallback component when unavailable.
+ *
+ * Compatibility shim: maps old @rnmapbox/maps namespace API
+ * to new @maplibre/maplibre-react-native named exports so all
+ * existing JSX (MapboxGL.MapView, .Camera, .ShapeSource, etc.) works.
  */
 let MapboxGL: any = null;
 let mapboxAvailable = false;
 try {
-  MapboxGL = require('@maplibre/maplibre-react-native').default;
+  const ML = require('@maplibre/maplibre-react-native');
+  const React = require('react');
+
+  // MapView compat: translate styleURL → mapStyle, drop unsupported props
+  const MapViewCompat = (props: any) => {
+    const { styleURL, logoEnabled, attributionEnabled, scaleBarEnabled,
+            compassEnabled, rotateEnabled, pitchEnabled, ...rest } = props;
+    return <ML.Map mapStyle={styleURL} {...rest} />;
+  };
+
+  // Camera compat: translate defaultSettings/minZoomLevel/maxZoomLevel
+  // and expose setCamera() ref method that maps to flyTo()
+  const CameraCompat = React.forwardRef((props: any, outerRef: any) => {
+    const { defaultSettings, minZoomLevel, maxZoomLevel, ...rest } = props;
+    const innerRef = React.useRef<any>(null);
+
+    React.useImperativeHandle(outerRef, () => ({
+      setCamera: (opts: any) => {
+        const { centerCoordinate, zoomLevel, animationDuration = 600 } = opts || {};
+        innerRef.current?.flyTo({
+          center: centerCoordinate,
+          zoom: zoomLevel,
+          duration: animationDuration,
+        });
+      },
+    }));
+
+    const initialViewState = defaultSettings ? {
+      center: defaultSettings.centerCoordinate,
+      zoom: defaultSettings.zoomLevel,
+      padding: defaultSettings.padding,
+    } : undefined;
+
+    return (
+      <ML.Camera
+        ref={innerRef}
+        initialViewState={initialViewState}
+        minZoom={minZoomLevel}
+        maxZoom={maxZoomLevel}
+        {...rest}
+      />
+    );
+  });
+
+  // ShapeSource compat: translate shape → data
+  const ShapeSourceCompat = (props: any) => {
+    const { shape, ...rest } = props;
+    return <ML.GeoJSONSource data={shape} {...rest} />;
+  };
+
+  // FillLayer compat: translate style → paint, inject type="fill"
+  const FillLayerCompat = (props: any) => {
+    const { style: layerStyle, ...rest } = props;
+    return <ML.Layer type="fill" paint={layerStyle} {...rest} />;
+  };
+
+  // LineLayer compat: translate style → paint, inject type="line"
+  const LineLayerCompat = (props: any) => {
+    const { style: layerStyle, ...rest } = props;
+    return <ML.Layer type="line" paint={layerStyle} {...rest} />;
+  };
+
+  // PointAnnotation compat: translate to Marker
+  const PointAnnotationCompat = (props: any) => {
+    const { coordinate, children, id } = props;
+    return <ML.Marker coordinate={coordinate} anchor="center" id={id}>{children}</ML.Marker>;
+  };
+
+  MapboxGL = {
+    MapView: MapViewCompat,
+    Camera: CameraCompat,
+    ShapeSource: ShapeSourceCompat,
+    FillLayer: FillLayerCompat,
+    LineLayer: LineLayerCompat,
+    PointAnnotation: PointAnnotationCompat,
+  };
   mapboxAvailable = true;
-} catch {
-  // Native module not available (Expo Go / web)
+} catch (e) {
+  console.warn('MapLibre native module not available:', e);
 }
 
 /** Cache for TS enriched geo (demographics + seed data) */
