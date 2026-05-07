@@ -9,9 +9,11 @@ import {
   FlatList,
   KeyboardAvoidingView,
   ActivityIndicator,
+  ScrollView,
 } from 'react-native';
 import { Stack, useLocalSearchParams } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { sendAIChat, isAIConfigured, type AIChatMessage } from '@/lib/aiService';
 import { getUnifiedConstituenciesForState } from '@/lib/stateDataAdapter';
 import { useActiveStateStore } from '../stores/activeState';
@@ -42,6 +44,7 @@ export default function AIChatScreen() {
   const [aiConfigured, setAiConfigured] = useState<boolean | null>(null);
   const [selectedAcNo, setSelectedAcNo] = useState<number | undefined>(initialAcNo);
   const flatListRef = useRef<FlatList>(null);
+  const insets = useSafeAreaInsets();
 
   const stateCode = useActiveStateStore((s) => s.stateCode);
   const stateConstituencies = getUnifiedConstituenciesForState(stateCode);
@@ -160,7 +163,7 @@ export default function AIChatScreen() {
         keyboardVerticalOffset={90}
       >
         {messages.length === 0 ? (
-          <View style={styles.emptyState}>
+          <ScrollView contentContainerStyle={styles.emptyState} showsVerticalScrollIndicator={false}>
             <View style={styles.aiLogo}>
               <Ionicons name="sparkles" size={40} color="#4F8EF7" />
             </View>
@@ -210,7 +213,7 @@ export default function AIChatScreen() {
                 </Pressable>
               ))}
             </View>
-          </View>
+          </ScrollView>
         ) : (
           <FlatList
             ref={flatListRef}
@@ -231,7 +234,7 @@ export default function AIChatScreen() {
           </View>
         )}
 
-        <View style={styles.inputBar}>
+        <View style={[styles.inputBar, { paddingBottom: Math.max(insets.bottom, 12) }]}>
           <TextInput
             style={styles.textInput}
             placeholder="Ask about elections, constituencies..."
@@ -242,6 +245,7 @@ export default function AIChatScreen() {
             maxLength={500}
             onSubmitEditing={() => sendMessage(input)}
             returnKeyType="send"
+            blurOnSubmit={false}
           />
           <Pressable
             style={[
@@ -268,10 +272,11 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   emptyState: {
-    flex: 1,
+    flexGrow: 1,
     justifyContent: 'center',
     alignItems: 'center',
     paddingHorizontal: 32,
+    paddingBottom: 40,
   },
   aiLogo: {
     width: 72,
@@ -387,8 +392,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'flex-end',
     paddingHorizontal: 12,
-    paddingVertical: 8,
-    paddingBottom: Platform.OS === 'ios' ? 24 : 8,
+    paddingTop: 8,
     borderTopWidth: 1,
     borderTopColor: '#1F2937',
     backgroundColor: '#0A0A1A',

@@ -3,6 +3,7 @@ import { View, Text, StyleSheet, ScrollView, Pressable, Alert, Share, TextInput,
 import { useLocalSearchParams, useRouter, Stack } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { Image } from 'expo-image';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useTranslation } from 'react-i18next';
 import { useCivicStore } from '../../stores/civic';
 import {
@@ -57,6 +58,7 @@ export default function IssueDetailScreen() {
 
   const [commentText, setCommentText] = useState('');
   const [showAllMedia, setShowAllMedia] = useState(false);
+  const insets = useSafeAreaInsets();
 
   if (!issue) {
     return (
@@ -376,7 +378,7 @@ export default function IssueDetailScreen() {
       </ScrollView>
 
       {/* ── Comment Input ── */}
-      <View style={styles.commentInputBar}>
+      <View style={[styles.commentInputBar, { paddingBottom: Math.max(insets.bottom, 10) }]}>
         <TextInput
           style={styles.commentInput}
           placeholder="Add a comment..."

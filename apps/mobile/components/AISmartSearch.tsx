@@ -6,6 +6,7 @@ import {
   Pressable,
   TextInput,
   ActivityIndicator,
+  ScrollView,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
@@ -13,17 +14,11 @@ import { sendAIChat } from '../lib/aiService';
 import { getUnifiedConstituenciesForState } from '../lib/stateDataAdapter';
 import { useActiveStateStore } from '../stores/activeState';
 
-interface SearchResult {
-  acNo: number;
-  name: string;
-  reason: string;
-}
-
 const EXAMPLE_QUERIES = [
-  'Which constituency has the highest literacy rate?',
+  'Who is the current CM of Telangana?',
   'BJP strongholds in Telangana',
-  'Constituencies where women MLAs won',
-  'Closest margins in 2023',
+  'Which party won the most seats in 2023?',
+  'Closest margins in the last election',
   'AIMIM seats in Hyderabad',
 ];
 
@@ -33,7 +28,7 @@ interface AISmartSearchProps {
 
 export default function AISmartSearch({ onSelect }: AISmartSearchProps) {
   const [query, setQuery] = useState('');
-  const [results, setResults] = useState<SearchResult[]>([]);
+  const [aiResponse, setAiResponse] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [hasSearched, setHasSearched] = useState(false);
@@ -48,38 +43,26 @@ export default function AISmartSearch({ onSelect }: AISmartSearchProps) {
     setLoading(true);
     setError('');
     setHasSearched(true);
+    setAiResponse('');
 
     try {
       const constituencies = getUnifiedConstituenciesForState(stateCode);
-      const acList = constituencies.slice(0, 50).map(c => `#${c.acNo} ${c.name} (${c.winnerParty}, margin: ${c.margin})`).join('\n');
+      const topConstituencies = constituencies.slice(0, 30).map(c =>
+        `#${c.acNo} ${c.name}: ${c.winnerName} (${c.winnerParty}), margin ${c.margin}`
+      ).join('\n');
 
-      const prompt = `Given these constituencies in ${stateCode}:\n${acList}\n\nUser query: "${trimmed}"\n\nReturn the top 5 most relevant constituencies as a JSON array with fields: acNo (number), name (string), reason (brief 10-word explanation). Return ONLY valid JSON array, no other text.`;
-      const result = await sendAIChat([{ role: 'user', content: prompt }]);
+      const result = await sendAIChat(
+        [{ role: 'user', content: trimmed }],
+        { stateCode },
+      );
 
-      // Parse JSON from response
-      const text = result.response;
-      const jsonMatch = text.match(/\[\s*\{[\s\S]*\}\s*\]/);
-      if (jsonMatch) {
-        const parsed = JSON.parse(jsonMatch[0]);
-        setResults(parsed.slice(0, 5));
-      } else {
-        setResults([]);
-      }
+      setAiResponse(result.response);
     } catch {
       setError('Search failed. Check your connection.');
-      setResults([]);
     } finally {
       setLoading(false);
     }
   }, [loading, stateCode]);
-
-  const handleSelect = (acNo: number) => {
-    if (onSelect) {
-      onSelect(acNo);
-    } else {
-      router.push(`/constituency/${acNo}` as any);
-    }
-  };
 
   return (
     <View style={styles.container}>
@@ -92,13 +75,13 @@ export default function AISmartSearch({ onSelect }: AISmartSearchProps) {
         <TextInput
           ref={inputRef}
           style={styles.input}
-          placeholder="Ask in natural language..."
+          placeholder="Ask anything about politics..."
           placeholderTextColor="#4B5563"
           value={query}
           onChangeText={setQuery}
           onSubmitEditing={() => search(query)}
           returnKeyType="search"
-          maxLength={200}
+          maxLength={300}
         />
         <Pressable
           style={[styles.searchButton, (query.trim().length < 3 || loading) && styles.searchButtonDisabled]}
@@ -108,7 +91,7 @@ export default function AISmartSearch({ onSelect }: AISmartSearchProps) {
           {loading ? (
             <ActivityIndicator size="small" color="#FFFFFF" />
           ) : (
-            <Ionicons name="search" size={16} color="#FFFFFF" />
+            <Ionicons name="arrow-forward" size={16} color="#FFFFFF" />
           )}
         </Pressable>
       </View>
@@ -116,7 +99,7 @@ export default function AISmartSearch({ onSelect }: AISmartSearchProps) {
       {/* Example queries */}
       {!hasSearched && (
         <View style={styles.examples}>
-          <Text style={styles.examplesLabel}>Try:</Text>
+          <Text style={styles.examplesLabel}>Try asking:</Text>
           {EXAMPLE_QUERIES.map((eq, i) => (
             <Pressable
               key={i}
@@ -134,37 +117,23 @@ export default function AISmartSearch({ onSelect }: AISmartSearchProps) {
       {loading && (
         <View style={styles.loadingRow}>
           <ActivityIndicator size="small" color="#8B5CF6" />
-          <Text style={styles.loadingText}>AI is searching constituencies...</Text>
+          <Text style={styles.loadingText}>KSHETRA AI is thinking...</Text>
         </View>
       )}
 
       {/* Error */}
       {error ? <Text style={styles.errorText}>{error}</Text> : null}
 
-      {/* Results */}
-      {results.length > 0 && !loading && (
-        <View style={styles.resultsList}>
-          {results.map((r, i) => (
-            <Pressable
-              key={`${r.acNo}-${i}`}
-              style={styles.resultRow}
-              onPress={() => handleSelect(r.acNo)}
-            >
-              <View style={styles.resultInfo}>
-                <Text style={styles.resultName}>
-                  <Text style={styles.acNo}>#{r.acNo}</Text> {r.name}
-                </Text>
-                <Text style={styles.resultReason}>{r.reason}</Text>
-              </View>
-              <Ionicons name="chevron-forward" size={16} color="#4B5563" />
-            </Pressable>
-          ))}
-        </View>
+      {/* AI Response */}
+      {aiResponse.length > 0 && !loading && (
+        <ScrollView style={styles.responseContainer} nestedScrollEnabled>
+          <Text style={styles.responseText}>{aiResponse}</Text>
+        </ScrollView>
       )}
 
       {/* Empty state */}
-      {hasSearched && !loading && results.length === 0 && !error && (
-        <Text style={styles.emptyText}>No matching constituencies found. Try a different query.</Text>
+      {hasSearched && !loading && !aiResponse && !error && (
+        <Text style={styles.emptyText}>No response received. Try a different query.</Text>
       )}
     </View>
   );
@@ -254,34 +223,17 @@ const styles = StyleSheet.create({
     color: '#EF4444',
     marginTop: 8,
   },
-  resultsList: {
-    marginTop: 10,
-    gap: 2,
-  },
-  resultRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingVertical: 10,
-    paddingHorizontal: 10,
-    borderRadius: 10,
+  responseContainer: {
+    marginTop: 12,
+    maxHeight: 250,
     backgroundColor: '#1F2937',
+    borderRadius: 12,
+    padding: 14,
   },
-  resultInfo: {
-    flex: 1,
-  },
-  resultName: {
-    fontSize: 14,
-    fontWeight: '600',
-    color: '#FFFFFF',
-  },
-  acNo: {
-    color: '#8B5CF6',
-    fontWeight: '700',
-  },
-  resultReason: {
-    fontSize: 11,
-    color: '#6B7280',
-    marginTop: 2,
+  responseText: {
+    fontSize: 13,
+    color: '#E5E7EB',
+    lineHeight: 20,
   },
   emptyText: {
     fontSize: 12,

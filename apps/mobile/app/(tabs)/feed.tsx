@@ -314,12 +314,12 @@ const styles = StyleSheet.create({
     elevation: 3,
   },
   scopeScroll: {
-    maxHeight: 44,
     marginBottom: 6,
     zIndex: 5,
   },
   scopeScrollContent: {
     paddingHorizontal: 16,
+    paddingVertical: 6,
     gap: 6,
   },
   scopeChip: {
@@ -346,15 +346,14 @@ const styles = StyleSheet.create({
     color: '#FFFFFF',
   },
   filterScroll: {
-    maxHeight: 44,
-    marginBottom: 8,
+    marginBottom: 4,
     borderBottomWidth: 0.5,
     borderBottomColor: '#1F2937',
     zIndex: 5,
   },
   filterContent: {
     paddingHorizontal: 16,
-    paddingBottom: 8,
+    paddingVertical: 8,
     gap: 6,
   },
   filterTab: {
