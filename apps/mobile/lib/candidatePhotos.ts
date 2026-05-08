@@ -126,7 +126,7 @@ export const WIKIPEDIA_ARTICLES: Record<string, string> = {
 const photoCache = new Map<string, string>();
 const failedNames = new Set<string>();
 let pendingCount = 0;
-const MAX_CONCURRENT = 4;
+const MAX_CONCURRENT = 8;
 const requestQueue: (() => void)[] = [];
 
 function processQueue() {
@@ -146,16 +146,23 @@ export function getStaticPhoto(name: string): string | undefined {
 }
 
 /**
- * Fetch the Wikipedia thumbnail for a known politician.
- * Returns the direct image URL or null if unavailable.
+ * Auto-generate a Wikipedia article title from a candidate name.
+ * Most Indian politician pages follow: "Firstname Lastname" → "Firstname_Lastname"
+ */
+function guessWikiArticle(name: string): string {
+  return name.replace(/\s+/g, '_');
+}
+
+/**
+ * Fetch the Wikipedia thumbnail for a politician.
+ * First checks the curated map, then tries auto-guessing the article title.
  * Results are cached; failed lookups are not retried.
  */
 export async function fetchWikipediaPhoto(name: string): Promise<string | null> {
   if (photoCache.has(name)) return photoCache.get(name) ?? null;
   if (failedNames.has(name)) return null;
 
-  const article = WIKIPEDIA_ARTICLES[name];
-  if (!article) return null;
+  const article = WIKIPEDIA_ARTICLES[name] ?? guessWikiArticle(name);
 
   return new Promise<string | null>((resolve) => {
     const doFetch = async () => {
@@ -168,7 +175,9 @@ export async function fetchWikipediaPhoto(name: string): Promise<string | null> 
         if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
         const data = await resp.json();
         const url = data?.thumbnail?.source;
-        if (url) {
+        // Validate: must have a thumbnail and be about a person (not disambiguation)
+        const type = data?.type;
+        if (url && type !== 'disambiguation' && type !== 'no-extract') {
           const hiRes = url.replace(/\/\d+px-/, '/300px-');
           photoCache.set(name, hiRes);
           resolve(hiRes);
@@ -223,14 +232,11 @@ export async function getCandidatePhoto(
 }
 
 /**
- * Check if a candidate has any known photo source (static map OR Wikipedia article).
+ * Check if a candidate has any known photo source.
+ * Returns true for ALL candidates — we try Wikipedia for everyone.
  */
-export function hasKnownPhoto(name: string): boolean {
-  return (
-    name in WIKIPEDIA_ARTICLES ||
-    name in STATIC_PHOTO_MAP ||
-    normaliseName(name) in STATIC_PHOTO_MAP
-  );
+export function hasKnownPhoto(_name: string): boolean {
+  return true;
 }
 
 /**

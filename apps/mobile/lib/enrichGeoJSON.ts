@@ -78,6 +78,7 @@ export function enrichGeoJSONForState(
           RUNNER_UP: c?.runnerUp ?? '',
           RESERVATION: c?.type ?? 'GEN',
           MARGIN: c?.margin ?? 0,
+          DISTRICT: c?.district ?? '',
           POPULATION: 0,
           LITERACY: 0,
           TURNOUT: 0,

@@ -43,6 +43,7 @@ import { getUnifiedConstituenciesForState, type UnifiedConstituency } from '@/li
 import { getRandomTriviaSetForState, getTriviaForConstituencyInState } from '@/lib/stateTriviaAdapter';
 import { getHistoryForState } from '@/lib/stateDataDispatcher';
 import { computeAllSeatAllocations } from '@/lib/delimitation/seatCalculator';
+import { getCensusDistricts } from '../../../../data/census/india-district-population-2011';
 
 /**
  * Dynamically load MapLibre — native module not available in Expo Go.
@@ -288,6 +289,77 @@ function FullMapScreen() {
     () => delimitationProjections.find((p) => p.stateCode === stateCode),
     [delimitationProjections, stateCode],
   );
+
+  /**
+   * District-level seat density for delimitation overlay.
+   * Computes seats per district and population-per-seat ratio,
+   * then categorises each district as gaining, losing, or stable.
+   */
+  const districtDensityMap = useMemo(() => {
+    const districts = getCensusDistricts(stateCode);
+    if (!districts.length || !stateProjection) return new Map<string, number>();
+
+    const constituencies = getUnifiedConstituenciesForState(stateCode);
+    // Count current seats per district
+    const seatsPerDistrict = new Map<string, number>();
+    for (const c of constituencies) {
+      seatsPerDistrict.set(c.district, (seatsPerDistrict.get(c.district) ?? 0) + 1);
+    }
+
+    // Compute ideal population per seat for this state
+    const totalPop = districts.reduce((s, d) => s + d.totalPopulation, 0);
+    const totalSeats = constituencies.length;
+    const idealPopPerSeat = totalPop / totalSeats;
+
+    // Build population lookup by normalised district name
+    const popByDistrict = new Map<string, number>();
+    for (const d of districts) {
+      popByDistrict.set(d.districtName.toLowerCase(), d.totalPopulation);
+    }
+
+    // For each district in seed data, compute deviation
+    const densityMap = new Map<string, number>();
+    for (const [distName, seats] of seatsPerDistrict) {
+      if (seats === 0) continue;
+      // Try exact match, then normalised match
+      const pop = popByDistrict.get(distName.toLowerCase());
+      if (!pop) continue;
+      const popPerSeat = pop / seats;
+      // deviation: positive = underrepresented, negative = overrepresented
+      const deviation = ((popPerSeat - idealPopPerSeat) / idealPopPerSeat) * 100;
+      densityMap.set(distName, deviation);
+    }
+    return densityMap;
+  }, [stateCode, stateProjection]);
+
+  /** Build delimitation GeoJSON — colours constituencies by district density */
+  const delimGeoJSON = useMemo(() => {
+    if (!activeGeoJSON || !showDelimitation || districtDensityMap.size === 0) return null;
+
+    return {
+      ...activeGeoJSON,
+      features: activeGeoJSON.features.map((f: any) => {
+        const district = f.properties?.DISTRICT || f.properties?.DIST_NAME || '';
+        const deviation = districtDensityMap.get(district) ?? 0;
+        // Bucket: -20%+ overrepresented → green, +20%+ underrepresented → red
+        let color: string;
+        if (deviation > 20) color = '#EF4444';      // Red: badly underrepresented
+        else if (deviation > 10) color = '#F97316';  // Orange: moderately underrepresented
+        else if (deviation > 0) color = '#FBBF24';   // Amber: slightly underrepresented
+        else if (deviation > -10) color = '#A3E635';  // Light green: slightly overrepresented
+        else color = '#22C55E';                        // Green: overrepresented (would lose seats)
+
+        return {
+          ...f,
+          properties: {
+            ...f.properties,
+            DELIM_COLOR: color,
+            DELIM_DEVIATION: Math.round(deviation),
+          },
+        };
+      }),
+    };
+  }, [activeGeoJSON, showDelimitation, districtDensityMap]);
 
   /** Unified constituency list + lookup map for the active state */
   const stateConstituencies = useMemo(
@@ -560,23 +632,22 @@ function FullMapScreen() {
               />
             </MapboxGL.ShapeSource>
 
-            {/* ── Delimitation overlay (hypothetical future boundaries) ── */}
-            {showDelimitation && (
-              <MapboxGL.ShapeSource id="delim-overlay" shape={activeGeoJSON}>
+            {/* ── Delimitation overlay: district-level population density ── */}
+            {showDelimitation && delimGeoJSON && (
+              <MapboxGL.ShapeSource id="delim-overlay" shape={delimGeoJSON}>
                 <MapboxGL.FillLayer
                   id="delim-fill"
                   style={{
-                    fillColor: '#FCD34D',
-                    fillOpacity: 0.15,
+                    fillColor: ['get', 'DELIM_COLOR'],
+                    fillOpacity: 0.55,
                   }}
                 />
                 <MapboxGL.LineLayer
                   id="delim-border"
                   style={{
-                    lineColor: '#FCD34D',
-                    lineWidth: 1.8,
-                    lineDasharray: [4, 3],
-                    lineOpacity: 0.7,
+                    lineColor: '#FFFFFF',
+                    lineWidth: 0.5,
+                    lineOpacity: 0.3,
                   }}
                 />
               </MapboxGL.ShapeSource>
@@ -666,14 +737,23 @@ function FullMapScreen() {
       {showDelimitation && stateProjection && (
         <View style={styles.delimBanner}>
           <View style={styles.delimBannerHeader}>
-            <Ionicons name="resize" size={16} color="#FCD34D" />
-            <Text style={styles.delimBannerTitle}>Delimitation Projection</Text>
+            <Ionicons name="analytics" size={16} color="#FCD34D" />
+            <Text style={styles.delimBannerTitle}>Seat Density Map</Text>
           </View>
           <View style={styles.delimDisclaimer}>
             <Ionicons name="warning" size={12} color="#F59E0B" />
             <Text style={styles.delimDisclaimerText}>
-              HYPOTHETICAL — Based on 2011 Census population projections. Not official ECI data.
+              PROJECTED · Census 2011 data · No official new boundaries exist yet. This shows which districts are over/under-represented based on population per seat.
             </Text>
+          </View>
+          {/* Color legend */}
+          <View style={styles.delimLegendRow}>
+            <View style={[styles.delimLegendItem, { backgroundColor: '#EF4444' }]} />
+            <Text style={styles.delimLegendLabel}>Underrepresented (needs more seats)</Text>
+          </View>
+          <View style={styles.delimLegendRow}>
+            <View style={[styles.delimLegendItem, { backgroundColor: '#22C55E' }]} />
+            <Text style={styles.delimLegendLabel}>Overrepresented (may lose seats)</Text>
           </View>
           <View style={styles.delimStatsRow}>
             <View style={styles.delimStat}>
@@ -688,12 +768,11 @@ function FullMapScreen() {
               <Text style={styles.delimStatLabel}>Projected</Text>
             </View>
             <View style={styles.delimStat}>
-              <Text style={[styles.delimStatValue, { color: '#10B981' }]}>+{stateProjection.seatChange}</Text>
-              <Text style={styles.delimStatLabel}>Gain</Text>
+              <Text style={[styles.delimStatValue, { color: stateProjection.seatChange >= 0 ? '#10B981' : '#EF4444' }]}>
+                {stateProjection.seatChange >= 0 ? '+' : ''}{stateProjection.seatChange}
+              </Text>
+              <Text style={styles.delimStatLabel}>Change</Text>
             </View>
-          </View>
-          <View style={styles.delimReservation}>
-            <Text style={styles.delimResLabel}>GEN {stateProjection.general} · SC {stateProjection.reservedSC} · ST {stateProjection.reservedST}</Text>
           </View>
           <Pressable
             style={styles.delimDetailButton}
@@ -1221,14 +1300,21 @@ const styles = StyleSheet.create({
   delimArrow: {
     paddingHorizontal: 8,
   },
-  delimReservation: {
+  delimLegendRow: {
+    flexDirection: 'row',
     alignItems: 'center',
-    marginBottom: 10,
+    gap: 8,
+    marginBottom: 4,
   },
-  delimResLabel: {
+  delimLegendItem: {
+    width: 14,
+    height: 14,
+    borderRadius: 3,
+  },
+  delimLegendLabel: {
     fontSize: 11,
-    fontWeight: '600',
-    color: '#9CA3AF',
+    fontWeight: '500',
+    color: '#D1D5DB',
   },
   delimDetailButton: {
     flexDirection: 'row',
