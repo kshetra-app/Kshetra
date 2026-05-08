@@ -59,38 +59,34 @@ try {
   const ML = require('@maplibre/maplibre-react-native');
   const React = require('react');
 
-  /**
-   * ── Compatibility shim ──────────────────────────────────────────────
-   * Maps old @rnmapbox/maps-style JSX (MapboxGL.*) to the new
-   * @maplibre/maplibre-react-native v11 named exports.
-   *
-   * Key differences in v11:
-   *  • Map.onPress → NativeSyntheticEvent<PressEvent>  (event.nativeEvent.lngLat)
-   *  • GeoJSONSource.data (not shape), GeoJSONSource supports onPress
-   *  • Layer uses deprecated `style` prop (camelCase) — still works in v11
-   *  • Marker replaces PointAnnotation
-   */
+  // ── Helper: extract [lng, lat] from any press-event shape ──
+  // Native codegen delivers lngLat as [lng, lat] array,
+  // but the TS type exposes it as LngLat = [number, number].
+  // Defensively handle both array and object forms.
+  function extractLngLat(raw: any): [number, number] | null {
+    if (!raw) return null;
+    const ne = raw.nativeEvent ?? raw;
+    const ll = ne?.lngLat;
+    if (Array.isArray(ll) && ll.length >= 2) return [ll[0], ll[1]];
+    if (ll && typeof ll.lng === 'number') return [ll.lng, ll.lat];
+    if (ll && typeof ll.longitude === 'number') return [ll.longitude, ll.latitude];
+    return null;
+  }
 
-  // MapView compat: translate styleURL → mapStyle, unwrap onPress event
+  // MapView compat
   const MapViewCompat = (props: any) => {
     const { styleURL, logoEnabled, attributionEnabled, scaleBarEnabled,
             compassEnabled, rotateEnabled, pitchEnabled, onPress, ...rest } = props;
 
-    // Unwrap NativeSyntheticEvent so handleMapPress gets {lngLat: {lng, lat}}
     const wrappedOnPress = onPress
       ? (e: any) => {
-          const data = e?.nativeEvent ?? e;
-          // Normalise to { geometry: { coordinates: [lng, lat] } } for handleMapPress
-          const lngLat = data?.lngLat;
-          const features = data?.features;
-          if (lngLat) {
+          const coords = extractLngLat(e);
+          const ne = e?.nativeEvent ?? e;
+          if (coords) {
             onPress({
-              geometry: { coordinates: [lngLat.lng, lngLat.lat] },
-              features: features ?? [],
+              geometry: { coordinates: coords },
+              features: ne?.features ?? [],
             });
-          } else {
-            // Fallback: pass through as-is
-            onPress(data);
           }
         }
       : undefined;
@@ -98,7 +94,7 @@ try {
     return <ML.Map mapStyle={styleURL} onPress={wrappedOnPress} {...rest} />;
   };
 
-  // Camera compat: translate defaultSettings/minZoomLevel/maxZoomLevel
+  // Camera compat
   const CameraCompat = React.forwardRef((props: any, outerRef: any) => {
     const { defaultSettings, minZoomLevel, maxZoomLevel, ...rest } = props;
     const innerRef = React.useRef(null);
@@ -131,32 +127,31 @@ try {
     );
   });
 
-  // ShapeSource compat: translate shape → data, KEEP onPress (GeoJSONSource supports it)
+  // ShapeSource compat — passes onPress through to GeoJSONSource
   const ShapeSourceCompat = (props: any) => {
     const { shape, onPress, ...rest } = props;
-    // GeoJSONSource.onPress delivers NativeSyntheticEvent<PressEventWithFeatures>
     const wrappedOnPress = onPress
       ? (e: any) => {
-          const data = e?.nativeEvent ?? e;
-          onPress(data);
+          const ne = e?.nativeEvent ?? e;
+          onPress(ne);
         }
       : undefined;
     return <ML.GeoJSONSource data={shape} onPress={wrappedOnPress} {...rest} />;
   };
 
-  // FillLayer compat: pass style as the deprecated `style` prop (camelCase, still works in v11)
+  // FillLayer compat — uses deprecated `style` prop (camelCase, works in v11)
   const FillLayerCompat = (props: any) => {
     const { style: layerStyle, ...rest } = props;
     return <ML.Layer type="fill" style={layerStyle} {...rest} />;
   };
 
-  // LineLayer compat: pass style as the deprecated `style` prop (camelCase, still works in v11)
+  // LineLayer compat — uses deprecated `style` prop (camelCase, works in v11)
   const LineLayerCompat = (props: any) => {
     const { style: layerStyle, ...rest } = props;
     return <ML.Layer type="line" style={layerStyle} {...rest} />;
   };
 
-  // PointAnnotation compat: translate to Marker
+  // PointAnnotation compat
   const PointAnnotationCompat = (props: any) => {
     const { coordinate, children, id } = props;
     return <ML.Marker coordinate={coordinate} anchor="center" id={id}>{children}</ML.Marker>;
@@ -392,35 +387,6 @@ function FullMapScreen() {
     return densityMap;
   }, [stateCode, stateProjection]);
 
-  /** Build delimitation GeoJSON — colours constituencies by district density */
-  const delimGeoJSON = useMemo(() => {
-    if (!activeGeoJSON || !showDelimitation || districtDensityMap.size === 0) return null;
-
-    return {
-      ...activeGeoJSON,
-      features: activeGeoJSON.features.map((f: any) => {
-        const district = f.properties?.DISTRICT || f.properties?.DIST_NAME || '';
-        const deviation = districtDensityMap.get(district) ?? 0;
-        // Bucket: -20%+ overrepresented → green, +20%+ underrepresented → red
-        let color: string;
-        if (deviation > 20) color = '#EF4444';      // Red: badly underrepresented
-        else if (deviation > 10) color = '#F97316';  // Orange: moderately underrepresented
-        else if (deviation > 0) color = '#FBBF24';   // Amber: slightly underrepresented
-        else if (deviation > -10) color = '#A3E635';  // Light green: slightly overrepresented
-        else color = '#22C55E';                        // Green: overrepresented (would lose seats)
-
-        return {
-          ...f,
-          properties: {
-            ...f.properties,
-            DELIM_COLOR: color,
-            DELIM_DEVIATION: Math.round(deviation),
-          },
-        };
-      }),
-    };
-  }, [activeGeoJSON, showDelimitation, districtDensityMap]);
-
   /** Unified constituency list + lookup map for the active state */
   const stateConstituencies = useMemo(
     () => getUnifiedConstituenciesForState(stateCode),
@@ -438,6 +404,34 @@ function FullMapScreen() {
     if (!raw) return null;
     return enrichGeoJSONForState(raw, stateCode);
   }, [stateCode, isTS]);
+
+  /** Build delimitation GeoJSON — colours constituencies by district density */
+  const delimGeoJSON = useMemo(() => {
+    if (!activeGeoJSON || !showDelimitation || districtDensityMap.size === 0) return null;
+
+    return {
+      ...activeGeoJSON,
+      features: activeGeoJSON.features.map((f: any) => {
+        const district = f.properties?.DISTRICT || f.properties?.DIST_NAME || '';
+        const deviation = districtDensityMap.get(district) ?? 0;
+        let color: string;
+        if (deviation > 20) color = '#EF4444';
+        else if (deviation > 10) color = '#F97316';
+        else if (deviation > 0) color = '#FBBF24';
+        else if (deviation > -10) color = '#A3E635';
+        else color = '#22C55E';
+
+        return {
+          ...f,
+          properties: {
+            ...f.properties,
+            DELIM_COLOR: color,
+            DELIM_DEVIATION: Math.round(deviation),
+          },
+        };
+      }),
+    };
+  }, [activeGeoJSON, showDelimitation, districtDensityMap]);
 
   /** Random trivia for idle map — re-fetched when state changes */
   const stateIdleTrivia = useMemo(
@@ -766,7 +760,7 @@ function FullMapScreen() {
           ]}
           onPress={() => setShowDelimitation((v) => !v)}
         >
-          <Ionicons name="resize" size={20} color={showDelimitation ? '#FCD34D' : '#FFFFFF'} />
+          <Ionicons name="layers" size={20} color={showDelimitation ? '#FCD34D' : '#FFFFFF'} />
         </Pressable>
         <Pressable
           style={[
@@ -793,22 +787,28 @@ function FullMapScreen() {
         <MapColorToggle mode={colorMode} onModeChange={setColorMode} />
       </View>
 
-      {/* Delimitation overlay — compact legend chip (non-obstructive) */}
+      {/* Delimitation overlay info bar */}
       {showDelimitation && stateProjection && (
-        <Pressable
-          style={styles.delimChip}
-          onPress={() => router.push('/delimitation' as any)}
-        >
-          <View style={styles.delimChipRow}>
-            <View style={[styles.delimDot, { backgroundColor: '#EF4444' }]} />
-            <Text style={styles.delimChipLabel}>+Seats</Text>
-            <View style={[styles.delimDot, { backgroundColor: '#22C55E' }]} />
-            <Text style={styles.delimChipLabel}>-Seats</Text>
-            <Text style={styles.delimChipSep}>|</Text>
-            <Text style={styles.delimChipStat}>{stateProjection.currentSeats}→{stateProjection.projectedSeats}</Text>
+        <View style={styles.delimBar}>
+          <View style={styles.delimBarTop}>
+            <Ionicons name="layers" size={14} color="#FCD34D" />
+            <Text style={styles.delimBarTitle}>Seat Density Overlay</Text>
+            <Text style={styles.delimBarBadge}>PROJECTED</Text>
           </View>
-          <Text style={styles.delimChipDisclaimer}>PROJECTED · Census 2011 · Tap for details</Text>
-        </Pressable>
+          <View style={styles.delimBarLegend}>
+            <View style={[styles.delimDot, { backgroundColor: '#EF4444' }]} />
+            <Text style={styles.delimBarLbl}>Needs seats</Text>
+            <View style={[styles.delimDot, { backgroundColor: '#22C55E' }]} />
+            <Text style={styles.delimBarLbl}>May lose</Text>
+            <View style={styles.delimBarSpacer} />
+            <Text style={styles.delimBarStat}>{stateProjection.currentSeats}</Text>
+            <Ionicons name="arrow-forward" size={12} color="#FCD34D" />
+            <Text style={[styles.delimBarStat, { color: '#10B981' }]}>{stateProjection.projectedSeats}</Text>
+          </View>
+          <Pressable onPress={() => router.push('/delimitation' as any)}>
+            <Text style={styles.delimBarLink}>View full analysis →</Text>
+          </Pressable>
+        </View>
       )}
 
       {/* My Constituency home marker — shown above trivia when no selection */}
@@ -1274,50 +1274,69 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: '#FCD34D',
   },
-  delimChip: {
+  delimBar: {
     position: 'absolute',
     bottom: 80,
-    alignSelf: 'center',
-    left: 60,
-    right: 60,
-    backgroundColor: '#1C1917E8',
-    borderRadius: 20,
+    left: 10,
+    right: 10,
+    backgroundColor: '#1C1917F0',
+    borderRadius: 14,
     paddingHorizontal: 14,
-    paddingVertical: 8,
+    paddingVertical: 10,
     borderWidth: 1,
     borderColor: '#FCD34D40',
-    alignItems: 'center',
-    elevation: 4,
+    elevation: 5,
   },
-  delimChipRow: {
+  delimBarTop: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+    marginBottom: 6,
+  },
+  delimBarTitle: {
+    fontSize: 13,
+    fontWeight: '800',
+    color: '#FCD34D',
+    flex: 1,
+  },
+  delimBarBadge: {
+    fontSize: 9,
+    fontWeight: '800',
+    color: '#F59E0B',
+    backgroundColor: '#78350F50',
+    paddingHorizontal: 6,
+    paddingVertical: 2,
+    borderRadius: 4,
+    overflow: 'hidden',
+  },
+  delimBarLegend: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: 5,
+    marginBottom: 6,
   },
   delimDot: {
     width: 10,
     height: 10,
     borderRadius: 5,
   },
-  delimChipLabel: {
+  delimBarLbl: {
+    fontSize: 11,
+    fontWeight: '600',
+    color: '#9CA3AF',
+  },
+  delimBarSpacer: {
+    flex: 1,
+  },
+  delimBarStat: {
+    fontSize: 14,
+    fontWeight: '800',
+    color: '#FFFFFF',
+  },
+  delimBarLink: {
     fontSize: 11,
     fontWeight: '700',
-    color: '#D1D5DB',
-  },
-  delimChipSep: {
-    fontSize: 11,
-    color: '#6B728060',
-    marginHorizontal: 2,
-  },
-  delimChipStat: {
-    fontSize: 11,
-    fontWeight: '800',
     color: '#FCD34D',
-  },
-  delimChipDisclaimer: {
-    fontSize: 8,
-    fontWeight: '600',
-    color: '#F59E0B80',
-    marginTop: 2,
+    textAlign: 'center',
   },
 });
