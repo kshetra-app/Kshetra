@@ -59,15 +59,46 @@ try {
   const ML = require('@maplibre/maplibre-react-native');
   const React = require('react');
 
-  // MapView compat: translate styleURL → mapStyle, drop unsupported props
+  /**
+   * ── Compatibility shim ──────────────────────────────────────────────
+   * Maps old @rnmapbox/maps-style JSX (MapboxGL.*) to the new
+   * @maplibre/maplibre-react-native v11 named exports.
+   *
+   * Key differences in v11:
+   *  • Map.onPress → NativeSyntheticEvent<PressEvent>  (event.nativeEvent.lngLat)
+   *  • GeoJSONSource.data (not shape), GeoJSONSource supports onPress
+   *  • Layer uses deprecated `style` prop (camelCase) — still works in v11
+   *  • Marker replaces PointAnnotation
+   */
+
+  // MapView compat: translate styleURL → mapStyle, unwrap onPress event
   const MapViewCompat = (props: any) => {
     const { styleURL, logoEnabled, attributionEnabled, scaleBarEnabled,
-            compassEnabled, rotateEnabled, pitchEnabled, ...rest } = props;
-    return <ML.Map mapStyle={styleURL} {...rest} />;
+            compassEnabled, rotateEnabled, pitchEnabled, onPress, ...rest } = props;
+
+    // Unwrap NativeSyntheticEvent so handleMapPress gets {lngLat: {lng, lat}}
+    const wrappedOnPress = onPress
+      ? (e: any) => {
+          const data = e?.nativeEvent ?? e;
+          // Normalise to { geometry: { coordinates: [lng, lat] } } for handleMapPress
+          const lngLat = data?.lngLat;
+          const features = data?.features;
+          if (lngLat) {
+            onPress({
+              geometry: { coordinates: [lngLat.lng, lngLat.lat] },
+              features: features ?? [],
+            });
+          } else {
+            // Fallback: pass through as-is
+            onPress(data);
+          }
+        }
+      : undefined;
+
+    return <ML.Map mapStyle={styleURL} onPress={wrappedOnPress} {...rest} />;
   };
 
   // Camera compat: translate defaultSettings/minZoomLevel/maxZoomLevel
-  // and expose setCamera() ref method that maps to flyTo()
   const CameraCompat = React.forwardRef((props: any, outerRef: any) => {
     const { defaultSettings, minZoomLevel, maxZoomLevel, ...rest } = props;
     const innerRef = React.useRef(null);
@@ -100,22 +131,29 @@ try {
     );
   });
 
-  // ShapeSource compat: translate shape → data, strip onPress (unsupported by GeoJSONSource)
+  // ShapeSource compat: translate shape → data, KEEP onPress (GeoJSONSource supports it)
   const ShapeSourceCompat = (props: any) => {
     const { shape, onPress, ...rest } = props;
-    return <ML.GeoJSONSource data={shape} {...rest} />;
+    // GeoJSONSource.onPress delivers NativeSyntheticEvent<PressEventWithFeatures>
+    const wrappedOnPress = onPress
+      ? (e: any) => {
+          const data = e?.nativeEvent ?? e;
+          onPress(data);
+        }
+      : undefined;
+    return <ML.GeoJSONSource data={shape} onPress={wrappedOnPress} {...rest} />;
   };
 
-  // FillLayer compat: translate style → paint, inject type="fill"
+  // FillLayer compat: pass style as the deprecated `style` prop (camelCase, still works in v11)
   const FillLayerCompat = (props: any) => {
     const { style: layerStyle, ...rest } = props;
-    return <ML.Layer type="fill" paint={layerStyle} {...rest} />;
+    return <ML.Layer type="fill" style={layerStyle} {...rest} />;
   };
 
-  // LineLayer compat: translate style → paint, inject type="line"
+  // LineLayer compat: pass style as the deprecated `style` prop (camelCase, still works in v11)
   const LineLayerCompat = (props: any) => {
     const { style: layerStyle, ...rest } = props;
-    return <ML.Layer type="line" paint={layerStyle} {...rest} />;
+    return <ML.Layer type="line" style={layerStyle} {...rest} />;
   };
 
   // PointAnnotation compat: translate to Marker
@@ -755,55 +793,22 @@ function FullMapScreen() {
         <MapColorToggle mode={colorMode} onModeChange={setColorMode} />
       </View>
 
-      {/* Delimitation overlay banner */}
+      {/* Delimitation overlay — compact legend chip (non-obstructive) */}
       {showDelimitation && stateProjection && (
-        <View style={styles.delimBanner}>
-          <View style={styles.delimBannerHeader}>
-            <Ionicons name="analytics" size={16} color="#FCD34D" />
-            <Text style={styles.delimBannerTitle}>Seat Density Map</Text>
+        <Pressable
+          style={styles.delimChip}
+          onPress={() => router.push('/delimitation' as any)}
+        >
+          <View style={styles.delimChipRow}>
+            <View style={[styles.delimDot, { backgroundColor: '#EF4444' }]} />
+            <Text style={styles.delimChipLabel}>+Seats</Text>
+            <View style={[styles.delimDot, { backgroundColor: '#22C55E' }]} />
+            <Text style={styles.delimChipLabel}>-Seats</Text>
+            <Text style={styles.delimChipSep}>|</Text>
+            <Text style={styles.delimChipStat}>{stateProjection.currentSeats}→{stateProjection.projectedSeats}</Text>
           </View>
-          <View style={styles.delimDisclaimer}>
-            <Ionicons name="warning" size={12} color="#F59E0B" />
-            <Text style={styles.delimDisclaimerText}>
-              PROJECTED · Census 2011 data · No official new boundaries exist yet. This shows which districts are over/under-represented based on population per seat.
-            </Text>
-          </View>
-          {/* Color legend */}
-          <View style={styles.delimLegendRow}>
-            <View style={[styles.delimLegendItem, { backgroundColor: '#EF4444' }]} />
-            <Text style={styles.delimLegendLabel}>Underrepresented (needs more seats)</Text>
-          </View>
-          <View style={styles.delimLegendRow}>
-            <View style={[styles.delimLegendItem, { backgroundColor: '#22C55E' }]} />
-            <Text style={styles.delimLegendLabel}>Overrepresented (may lose seats)</Text>
-          </View>
-          <View style={styles.delimStatsRow}>
-            <View style={styles.delimStat}>
-              <Text style={styles.delimStatValue}>{stateProjection.currentSeats}</Text>
-              <Text style={styles.delimStatLabel}>Current</Text>
-            </View>
-            <View style={styles.delimArrow}>
-              <Ionicons name="arrow-forward" size={18} color="#FCD34D" />
-            </View>
-            <View style={styles.delimStat}>
-              <Text style={[styles.delimStatValue, { color: '#10B981' }]}>{stateProjection.projectedSeats}</Text>
-              <Text style={styles.delimStatLabel}>Projected</Text>
-            </View>
-            <View style={styles.delimStat}>
-              <Text style={[styles.delimStatValue, { color: stateProjection.seatChange >= 0 ? '#10B981' : '#EF4444' }]}>
-                {stateProjection.seatChange >= 0 ? '+' : ''}{stateProjection.seatChange}
-              </Text>
-              <Text style={styles.delimStatLabel}>Change</Text>
-            </View>
-          </View>
-          <Pressable
-            style={styles.delimDetailButton}
-            onPress={() => router.push('/delimitation' as any)}
-          >
-            <Text style={styles.delimDetailText}>View Full Analysis</Text>
-            <Ionicons name="arrow-forward" size={14} color="#FCD34D" />
-          </Pressable>
-        </View>
+          <Text style={styles.delimChipDisclaimer}>PROJECTED · Census 2011 · Tap for details</Text>
+        </Pressable>
       )}
 
       {/* My Constituency home marker — shown above trivia when no selection */}
@@ -1269,104 +1274,50 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: '#FCD34D',
   },
-  delimBanner: {
+  delimChip: {
     position: 'absolute',
     bottom: 80,
-    left: 12,
-    right: 12,
-    backgroundColor: '#1C1917',
-    borderRadius: 16,
-    padding: 16,
+    alignSelf: 'center',
+    left: 60,
+    right: 60,
+    backgroundColor: '#1C1917E8',
+    borderRadius: 20,
+    paddingHorizontal: 14,
+    paddingVertical: 8,
     borderWidth: 1,
     borderColor: '#FCD34D40',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.4,
-    shadowRadius: 8,
-    elevation: 6,
+    alignItems: 'center',
+    elevation: 4,
   },
-  delimBannerHeader: {
+  delimChipRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 8,
-    marginBottom: 12,
+    gap: 5,
   },
-  delimBannerTitle: {
-    fontSize: 14,
-    fontWeight: '800',
-    color: '#FCD34D',
-    letterSpacing: 0.5,
+  delimDot: {
+    width: 10,
+    height: 10,
+    borderRadius: 5,
   },
-  delimStatsRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-around',
-    marginBottom: 10,
-  },
-  delimStat: {
-    alignItems: 'center',
-  },
-  delimStatValue: {
-    fontSize: 22,
-    fontWeight: '800',
-    color: '#FFFFFF',
-  },
-  delimStatLabel: {
-    fontSize: 10,
-    fontWeight: '600',
-    color: '#9CA3AF',
-    textTransform: 'uppercase',
-    letterSpacing: 0.5,
-    marginTop: 2,
-  },
-  delimArrow: {
-    paddingHorizontal: 8,
-  },
-  delimLegendRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 8,
-    marginBottom: 4,
-  },
-  delimLegendItem: {
-    width: 14,
-    height: 14,
-    borderRadius: 3,
-  },
-  delimLegendLabel: {
+  delimChipLabel: {
     fontSize: 11,
-    fontWeight: '500',
+    fontWeight: '700',
     color: '#D1D5DB',
   },
-  delimDetailButton: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    gap: 6,
-    paddingVertical: 8,
-    borderTopWidth: 1,
-    borderTopColor: '#FCD34D20',
+  delimChipSep: {
+    fontSize: 11,
+    color: '#6B728060',
+    marginHorizontal: 2,
   },
-  delimDetailText: {
-    fontSize: 12,
-    fontWeight: '700',
+  delimChipStat: {
+    fontSize: 11,
+    fontWeight: '800',
     color: '#FCD34D',
   },
-  delimDisclaimer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 6,
-    backgroundColor: '#78350F30',
-    borderRadius: 8,
-    paddingHorizontal: 10,
-    paddingVertical: 6,
-    marginBottom: 10,
-  },
-  delimDisclaimerText: {
-    flex: 1,
-    fontSize: 10,
+  delimChipDisclaimer: {
+    fontSize: 8,
     fontWeight: '600',
-    color: '#F59E0B',
-    lineHeight: 14,
+    color: '#F59E0B80',
+    marginTop: 2,
   },
 });
