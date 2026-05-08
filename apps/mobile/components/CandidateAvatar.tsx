@@ -105,15 +105,21 @@ export default memo(function CandidateAvatar({
       {/* Real photo overlay */}
       {imageUri && (
         <Image
-          source={{ uri: imageUri }}
-          style={[
-            styles.photo,
-            {
-              width: innerSize,
-              height: innerSize,
-              borderRadius: innerSize / 2,
+          source={{
+            uri: imageUri,
+            headers: {
+              'User-Agent': 'KshetraApp/1.0 (https://kshetra.app; contact@kshetra.app)',
             },
-          ]}
+          }}
+          style={{
+            position: 'absolute',
+            top: borderWidth,
+            left: borderWidth,
+            width: innerSize,
+            height: innerSize,
+            borderRadius: innerSize / 2,
+          }}
+          resizeMode="cover"
           onError={() => setImgError(true)}
         />
       )}

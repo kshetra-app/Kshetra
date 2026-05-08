@@ -142,7 +142,10 @@ function processQueue() {
  */
 export function getStaticPhoto(name: string): string | undefined {
   // Try exact key first, then normalised key
-  return STATIC_PHOTO_MAP[name] ?? STATIC_PHOTO_MAP[normaliseName(name)];
+  const url = STATIC_PHOTO_MAP[name] ?? STATIC_PHOTO_MAP[normaliseName(name)];
+  // Skip SVG URLs — React Native Image cannot render SVG
+  if (url && url.includes('.svg')) return undefined;
+  return url;
 }
 
 /**

@@ -499,8 +499,12 @@ function FullMapScreen() {
         if (Array.isArray(c)) { [lng, lat] = c; }
         else if (c.longitude != null) { lng = c.longitude; lat = c.latitude; }
       }
-      // features-based fallback
-      else if (event?.features?.[0]?.properties?.AC_NO != null) {
+      // GeoJSONSource onPress or features-based fallback (lngLat as array from native)
+      else if (event?.lngLat && Array.isArray(event.lngLat)) {
+        [lng, lat] = event.lngLat;
+      }
+      // features-based direct selection (when coords extraction fails)
+      if (lng == null && event?.features?.[0]?.properties?.AC_NO != null) {
         const f = event.features[0];
         const { AC_NO, AC_NAME, DIST_NAME } = f.properties;
         const acNo = Number(AC_NO);
@@ -509,6 +513,15 @@ function FullMapScreen() {
           return;
         }
         selectConstituency(acNo, AC_NAME, DIST_NAME);
+        // Try to extract centroid for camera
+        const lngLat = event.lngLat;
+        if (Array.isArray(lngLat)) {
+          cameraRef.current?.setCamera({
+            centerCoordinate: [lngLat[0], lngLat[1]],
+            zoomLevel: CONSTITUENCY_ZOOM,
+            animationDuration: 600,
+          });
+        }
         return;
       }
 
@@ -633,6 +646,7 @@ function FullMapScreen() {
             <MapboxGL.ShapeSource
               id="constituencies"
               shape={activeGeoJSON}
+              onPress={handleMapPress}
             >
               <MapboxGL.FillLayer
                 id="constituency-fill"
@@ -847,8 +861,8 @@ function FullMapScreen() {
         </Pressable>
       )}
 
-      {/* Idle trivia — state-specific, shown when no constituency is selected */}
-      {!selected && stateIdleTrivia.length > 0 && (
+      {/* Idle trivia — state-specific, hidden when delimitation overlay is active */}
+      {!selected && !showDelimitation && stateIdleTrivia.length > 0 && (
         <View style={styles.idleTriviaContainer}>
           <TriviaCard items={stateIdleTrivia} compact rotateInterval={5000} />
         </View>
@@ -933,6 +947,7 @@ function FullMapScreen() {
               <Text style={styles.resultLabel}>{t('mapSheet.winnerYear', { year: selected.electionYear })}</Text>
               <View style={styles.resultWinnerRow}>
                 <CandidateAvatar
+                  key={selected.winnerName}
                   name={selected.winnerName}
                   party={selected.winner}
                   size={36}
