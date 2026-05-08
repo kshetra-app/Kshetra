@@ -38,6 +38,7 @@ export function enrichGeoJSON(
           RUNNER_UP: seed?.runnerUp2023 ?? '',
           MARGIN: seed?.margin2023 ?? 0,
           RESERVATION: seed?.type ?? 'GEN',
+          DISTRICT: seed?.district ?? '',
           POPULATION: demo?.population ?? 0,
           LITERACY: demo?.literacy ?? 0,
           TURNOUT: demo?.turnout2023 ?? 0,

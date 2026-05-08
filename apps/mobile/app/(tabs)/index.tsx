@@ -292,42 +292,64 @@ function FullMapScreen() {
 
   /**
    * District-level seat density for delimitation overlay.
-   * Computes seats per district and population-per-seat ratio,
-   * then categorises each district as gaining, losing, or stable.
+   * Maps modern districts → census districts, computes pop-per-seat ratio,
+   * assigns deviation % to each constituency district.
+   *
+   * Census 2011 used old district boundaries (e.g. 10 in Telangana),
+   * while seed data uses current 33. This map resolves that.
    */
   const districtDensityMap = useMemo(() => {
-    const districts = getCensusDistricts(stateCode);
-    if (!districts.length || !stateProjection) return new Map<string, number>();
+    const censusDistricts = getCensusDistricts(stateCode);
+    if (!censusDistricts.length || !stateProjection) return new Map<string, number>();
 
     const constituencies = getUnifiedConstituenciesForState(stateCode);
-    // Count current seats per district
-    const seatsPerDistrict = new Map<string, number>();
-    for (const c of constituencies) {
-      seatsPerDistrict.set(c.district, (seatsPerDistrict.get(c.district) ?? 0) + 1);
-    }
-
-    // Compute ideal population per seat for this state
-    const totalPop = districts.reduce((s, d) => s + d.totalPopulation, 0);
+    const totalPop = censusDistricts.reduce((s, d) => s + d.totalPopulation, 0);
     const totalSeats = constituencies.length;
     const idealPopPerSeat = totalPop / totalSeats;
 
-    // Build population lookup by normalised district name
-    const popByDistrict = new Map<string, number>();
-    for (const d of districts) {
-      popByDistrict.set(d.districtName.toLowerCase(), d.totalPopulation);
+    // Census district pop lookup (lowercase key)
+    const censusPop = new Map<string, number>();
+    for (const d of censusDistricts) {
+      censusPop.set(d.districtName.toLowerCase(), d.totalPopulation);
     }
 
-    // For each district in seed data, compute deviation
+    // Map modern district → census parent (for reorganised states)
+    const DISTRICT_PARENT: Record<string, string> = {
+      // ── Telangana (33 → 10 census districts) ──
+      'Kumuram Bheem Asifabad': 'Adilabad', 'Mancherial': 'Adilabad', 'Nirmal': 'Adilabad',
+      'Peddapalli': 'Karimnagar', 'Rajanna Sircilla': 'Karimnagar', 'Jagtial': 'Karimnagar',
+      'Kamareddy': 'Nizamabad',
+      'Hanamkonda': 'Warangal', 'Jangaon': 'Warangal', 'Jayashankar Bhupalpally': 'Warangal',
+      'Mahabubabad': 'Warangal', 'Mulugu': 'Warangal',
+      'Bhadradri Kothagudem': 'Khammam',
+      'Suryapet': 'Nalgonda', 'Yadadri Bhuvanagiri': 'Nalgonda',
+      'Vikarabad': 'Rangareddy',
+      'Medak': 'Sangareddy', 'Siddipet': 'Sangareddy',
+      'Nagarkurnool': 'Mahbubnagar', 'Wanaparthy': 'Mahbubnagar',
+      'Narayanpet': 'Mahbubnagar', 'Jogulamba Gadwal': 'Mahbubnagar',
+      'Mahabubnagar': 'Mahbubnagar',
+    };
+
+    // Group constituencies by their census parent district
+    const seatsByCensusDistrict = new Map<string, { seats: number; children: string[] }>();
+    for (const c of constituencies) {
+      const parent = (DISTRICT_PARENT[c.district] ?? c.district).toLowerCase();
+      const entry = seatsByCensusDistrict.get(parent) ?? { seats: 0, children: [] };
+      entry.seats++;
+      if (!entry.children.includes(c.district)) entry.children.push(c.district);
+      seatsByCensusDistrict.set(parent, entry);
+    }
+
+    // Compute deviation for each census district, then fan out to children
     const densityMap = new Map<string, number>();
-    for (const [distName, seats] of seatsPerDistrict) {
-      if (seats === 0) continue;
-      // Try exact match, then normalised match
-      const pop = popByDistrict.get(distName.toLowerCase());
-      if (!pop) continue;
+    for (const [censusKey, { seats, children }] of seatsByCensusDistrict) {
+      const pop = censusPop.get(censusKey);
+      if (!pop || seats === 0) continue;
       const popPerSeat = pop / seats;
-      // deviation: positive = underrepresented, negative = overrepresented
       const deviation = ((popPerSeat - idealPopPerSeat) / idealPopPerSeat) * 100;
-      densityMap.set(distName, deviation);
+      for (const child of children) {
+        densityMap.set(child, deviation);
+      }
     }
     return densityMap;
   }, [stateCode, stateProjection]);
