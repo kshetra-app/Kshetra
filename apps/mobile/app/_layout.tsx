@@ -158,6 +158,16 @@ export default function RootLayout() {
             animation: 'slide_from_right',
           }}
         />
+        <Stack.Screen
+          name="legislator/[id]"
+          options={{
+            headerShown: true,
+            headerStyle: { backgroundColor: '#0A0A1A' },
+            headerTintColor: '#FFFFFF',
+            headerShadowVisible: false,
+            animation: 'slide_from_right',
+          }}
+        />
       </Stack>
     </GestureHandlerRootView>
     </SafeAreaProvider>

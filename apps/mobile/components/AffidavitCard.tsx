@@ -49,7 +49,7 @@ export default React.memo(function AffidavitCard({ stateCode, acNo, electionYear
   return (
     <Pressable
       style={styles.card}
-      onPress={() => router.push(`/candidate-xray/${affidavit.id}` as any)}
+      onPress={() => router.push(`/legislator/MLA_${stateCode}_${electionYear}_${affidavit.constituencyName || 'AC'}_${acNo}` as any)}
     >
       {/* Header */}
       <View style={styles.header}>
@@ -116,7 +116,7 @@ export default React.memo(function AffidavitCard({ stateCode, acNo, electionYear
 
       {/* View full X-ray link */}
       <View style={styles.footer}>
-        <Text style={styles.footerLink}>View Full Candidate X-Ray</Text>
+        <Text style={styles.footerLink}>View Complete Profile</Text>
         <Ionicons name="chevron-forward" size={14} color="#4F8EF7" />
       </View>
     </Pressable>

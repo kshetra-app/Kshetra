@@ -36,6 +36,7 @@ import DefectionBadge from '../../components/DefectionBadge';
 import MapColorToggle, { type MapColorMode } from '../../components/MapColorToggle';
 import MapSearch from '../../components/MapSearch';
 import CompareSheet from '../../components/CompareSheet';
+import PhotoViewerModal from '../../components/PhotoViewerModal';
 import { useFavoritesStore } from '../../stores/favorites';
 import { useMyConstituencyStore } from '../../stores/myConstituency';
 import { getStateGeoJSON } from '@/lib/geoLoader';
@@ -314,6 +315,7 @@ function FullMapScreen() {
   const [showSearch, setShowSearch] = useState(false);
   const [showCompare, setShowCompare] = useState(false);
   const [showDelimitation, setShowDelimitation] = useState(false);
+  const [photoViewer, setPhotoViewer] = useState<{ uri: string | null; name: string; party: string } | null>(null);
   const myHome = useMyConstituencyStore((s) => s.home);
 
   /** Delimitation seat projections (computed once) */
@@ -811,13 +813,24 @@ function FullMapScreen() {
           </View>
           <View style={styles.delimBarLegend}>
             <View style={[styles.delimDot, { backgroundColor: '#EF4444' }]} />
-            <Text style={styles.delimBarLbl}>Needs seats</Text>
+            <Text style={styles.delimBarLbl}>&gt;20%</Text>
+            <View style={[styles.delimDot, { backgroundColor: '#F97316' }]} />
+            <Text style={styles.delimBarLbl}>10-20%</Text>
+            <View style={[styles.delimDot, { backgroundColor: '#FBBF24' }]} />
+            <Text style={styles.delimBarLbl}>0-10%</Text>
+            <View style={[styles.delimDot, { backgroundColor: '#A3E635' }]} />
+            <Text style={styles.delimBarLbl}>-10-0%</Text>
             <View style={[styles.delimDot, { backgroundColor: '#22C55E' }]} />
-            <Text style={styles.delimBarLbl}>May lose</Text>
+            <Text style={styles.delimBarLbl}>&lt;-10%</Text>
+          </View>
+          <View style={styles.delimBarLegend}>
+            <Text style={[styles.delimBarLbl, { color: '#EF4444' }]}>Under-represented</Text>
             <View style={styles.delimBarSpacer} />
             <Text style={styles.delimBarStat}>{stateProjection.currentSeats}</Text>
             <Ionicons name="arrow-forward" size={12} color="#FCD34D" />
             <Text style={[styles.delimBarStat, { color: '#10B981' }]}>{stateProjection.projectedSeats}</Text>
+            <View style={styles.delimBarSpacer} />
+            <Text style={[styles.delimBarLbl, { color: '#22C55E' }]}>Over-represented</Text>
           </View>
           <Pressable onPress={() => router.push('/delimitation' as any)}>
             <Text style={styles.delimBarLink}>View full analysis →</Text>
@@ -912,6 +925,16 @@ function FullMapScreen() {
         />
       )}
 
+      {/* Photo viewer modal — tap candidate avatar to enlarge */}
+      <PhotoViewerModal
+        visible={!!photoViewer}
+        imageUri={photoViewer?.uri ?? null}
+        name={photoViewer?.name ?? ''}
+        party={photoViewer?.party ?? ''}
+        subtitle={selected ? `AC #${selected.acNo} · ${selected.district}` : undefined}
+        onClose={() => setPhotoViewer(null)}
+      />
+
       {/* Bottom Sheet */}
       <BottomSheet
         ref={bottomSheetRef}
@@ -951,6 +974,7 @@ function FullMapScreen() {
                   name={selected.winnerName}
                   party={selected.winner}
                   size={36}
+                  onPress={(uri) => setPhotoViewer({ uri, name: selected.winnerName, party: selected.winner })}
                 />
                 <Text style={styles.resultValue}>{selected.winnerName}</Text>
               </View>

@@ -50,6 +50,7 @@
 | Sprint 29: Multi-State Election Data (TN/KL/WB/UP) | ✅ Complete | 2026-05-01 | 2026-05-01 |
 | Sprint 30: MapLibre Migration + Candidate Avatars | ✅ Complete | 2026-05-06 | 2026-05-06 |
 | Sprint 31: Real Photos + Map Interactivity + Delimitation Overlay | ✅ Complete | 2026-05-07 | 2026-05-07 |
+| Sprint 32: Unified Legislator Profile — Merge X-Ray | ✅ Complete | 2026-05-14 | 2026-05-14 |
 
 ---
 
@@ -151,6 +152,7 @@
 | 2026-05-01 | `feat: sprint 29 — multi-state election data (TN/KL/WB/UP)` | 4 new state seed files from real ECI data via Wikipedia scraper. TN 234/234, KL 140/140, WB 293/294, UP 401/403 constituencies with winner, runner-up, votes, margin, district, type. FULLY_SUPPORTED_STATES: 8 states. Total 1,694 seats. 403/403 tests pass. |
 | 2026-05-06 | `feat: sprint 30 — MapLibre migration + candidate avatars` | Replaced @rnmapbox/maps (proprietary, requires secret token) with @maplibre/maplibre-react-native (free, open-source). Switched map tiles from Mapbox to CARTO dark-matter (free). Added DiceBear Personas avatars for all candidates (unique face per name+party). Full native rebuild with expo prebuild. APK: 237 MB. |
 | 2026-05-07 | `feat: sprint 31 — real photos + map fix + delimitation overlay` | Replaced DiceBear cartoon avatars with 4-tier photo pipeline: Wikipedia REST API → MyNeta (ADR) → Official Legislature sites → party-colored initials. CandidateAvatar component across MLACard, MPCard, Explore, Constituency Detail, CompareSheet, Map BottomSheet. Fixed map interactivity: moved tap from ShapeSource.onPress (broken in MapLibre RN) to MapView.onPress + findConstituencyAtPoint() ray-casting (offline, all 23 states). Added delimitation overlay: amber dashed-border layer + hypothetical disclaimer banner + seat projection stats. Created scrape-candidate-photos.ts scraper for MyNeta + state legislature photos. |
+| 2026-05-14 | `refactor: unified legislator profile — merge candidate x-ray` | Eliminated duplicate Candidate X-Ray screen by merging all affidavit content into the unified Legislator Profile. AffidavitCard now links to Legislator Profile instead of X-Ray. Old X-Ray route retained as redirect for backwards-compatible deep links. One canonical person screen (Legislator Profile) + one canonical place screen (Constituency Detail), zero duplication. |
 
 ---
 
@@ -2610,3 +2612,65 @@ NationalComparison — cross-state + dominant parties
 | # | Decision | Rationale |
 |---|---|---|
 | ADR-002 (updated) | MapLibre GL for maps (was Mapbox GL) | Mapbox SDK requires paid secret token for native builds; MapLibre is MIT-licensed fork with identical API, free tiles via CARTO/OSM, zero vendor lock-in |
+
+---
+
+## Sprint 32: Unified Legislator Profile — Merge Candidate X-Ray
+
+**Date**: 2026-05-14
+**Goal**: Eliminate duplicate person screens; one canonical profile for any MLA/MP
+
+### Problem
+
+Two separate screens were displaying ~80% identical data:
+- **Candidate X-Ray** (`app/candidate-xray/[id].tsx`) — assets, criminal, income, red flags, wealth timeline
+- **Legislator Profile** (`app/legislator/[id].tsx`) — all of the above PLUS performance, election info, data completeness, sources
+
+Both were reachable from the Constituency Detail page, creating UX confusion.
+
+### Solution
+
+| Aspect | Before | After |
+|--------|--------|-------|
+| Person screens | 2 (X-Ray + Legislator Profile) | 1 (Legislator Profile) |
+| AffidavitCard link | → `/candidate-xray/:id` | → `/legislator/MLA_:state_:year_:name_:acNo` |
+| X-Ray route | Full 410-line screen | 47-line redirect stub |
+| Deep link compat | N/A | Old X-Ray URLs auto-redirect to Legislator Profile |
+
+### Architecture After Merge
+
+```
+Constituency Detail (place-centric)
+├── Election Result Card
+├── MLACard (compact person summary)
+│   └── "View Complete Profile" → Legislator Profile
+├── Defection Badge
+├── Trivia
+├── Election History (per-AC + state-level)
+├── Demographics
+├── AffidavitCard (compact financial summary)
+│   └── "View Complete Profile" → Legislator Profile
+└── AI Analysis
+
+Legislator Profile (person-centric, canonical)
+├── ProfileHeroCard (photo, party, constituency, terms)
+├── Red Flags Banner
+├── Data Completeness bar
+├── FinancialBreakdownCard (assets, income, wealth timeline)
+├── CriminalRecordCard (cases, IPC sections)
+├── PerformanceCard (legislative activity)
+├── Education & Profession
+├── Election Info (votes, margin, runner-up)
+├── Disclaimer (affidavit sourcing)
+└── Data Sources + MyNeta link
+```
+
+### Files Changed
+
+- `apps/mobile/app/legislator/[id].tsx` — Added disclaimer section
+- `apps/mobile/components/AffidavitCard.tsx` — Link now routes to Legislator Profile
+- `apps/mobile/app/candidate-xray/[id].tsx` — Replaced with redirect stub (47 lines)
+
+### Design Principle
+
+> **One screen per entity type**: Constituency Detail = place, Legislator Profile = person. No duplicate views of the same data.

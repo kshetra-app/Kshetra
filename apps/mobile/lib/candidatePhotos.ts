@@ -137,14 +137,15 @@ function processQueue() {
 }
 
 /**
- * Look up a photo from the static scraped map (MyNeta + Legislature).
+ * Look up a photo from the static scraped map (MyNeta affidavit photos).
  * Returns the photo URL or undefined if not found.
  */
 export function getStaticPhoto(name: string): string | undefined {
   // Try exact key first, then normalised key
   const url = STATIC_PHOTO_MAP[name] ?? STATIC_PHOTO_MAP[normaliseName(name)];
+  if (!url) return undefined;
   // Skip SVG URLs — React Native Image cannot render SVG
-  if (url && url.includes('.svg')) return undefined;
+  if (url.includes('.svg')) return undefined;
   return url;
 }
 
@@ -158,14 +159,19 @@ function guessWikiArticle(name: string): string {
 
 /**
  * Fetch the Wikipedia thumbnail for a politician.
- * First checks the curated map, then tries auto-guessing the article title.
+ * ONLY fetches for candidates in the curated WIKIPEDIA_ARTICLES map.
  * Results are cached; failed lookups are not retried.
  */
 export async function fetchWikipediaPhoto(name: string): Promise<string | null> {
   if (photoCache.has(name)) return photoCache.get(name) ?? null;
   if (failedNames.has(name)) return null;
 
-  const article = WIKIPEDIA_ARTICLES[name] ?? guessWikiArticle(name);
+  // ONLY fetch for candidates in the curated list — guessing causes wrong photos
+  const article = WIKIPEDIA_ARTICLES[name];
+  if (!article) {
+    failedNames.add(name);
+    return null;
+  }
 
   return new Promise<string | null>((resolve) => {
     const doFetch = async () => {
@@ -180,10 +186,18 @@ export async function fetchWikipediaPhoto(name: string): Promise<string | null> 
         const url = data?.thumbnail?.source;
         // Validate: must have a thumbnail and be about a person (not disambiguation)
         const type = data?.type;
-        if (url && type !== 'disambiguation' && type !== 'no-extract') {
+        const desc = (data?.description || '').toLowerCase();
+        const isPolitician = /politician|minister|chief minister|mla|mp|legislat|member of|governor|cm of/i.test(desc);
+        if (url && type !== 'disambiguation' && type !== 'no-extract' && isPolitician) {
           const hiRes = url.replace(/\/\d+px-/, '/300px-');
-          photoCache.set(name, hiRes);
-          resolve(hiRes);
+          // Filter out map/logo/symbol images
+          if (hiRes.includes('Map') || hiRes.includes('map_') || hiRes.includes('Logo') || hiRes.includes('Flag') || hiRes.includes('Seal_of')) {
+            failedNames.add(name);
+            resolve(null);
+          } else {
+            photoCache.set(name, hiRes);
+            resolve(hiRes);
+          }
         } else {
           failedNames.add(name);
           resolve(null);
@@ -236,10 +250,13 @@ export async function getCandidatePhoto(
 
 /**
  * Check if a candidate has any known photo source.
- * Returns true for ALL candidates — we try Wikipedia for everyone.
+ * Only returns true for candidates in static map or curated Wikipedia list.
+ * This prevents incorrect photos from random Wikipedia articles.
  */
-export function hasKnownPhoto(_name: string): boolean {
-  return true;
+export function hasKnownPhoto(name: string): boolean {
+  if (getStaticPhoto(name)) return true;
+  if (WIKIPEDIA_ARTICLES[name]) return true;
+  return false;
 }
 
 /**

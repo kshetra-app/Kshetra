@@ -1,6 +1,6 @@
-import { useCallback, useEffect, useMemo } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { View, Text, StyleSheet, ScrollView, Platform, Pressable, Share, Image } from 'react-native';
-import { useLocalSearchParams, Stack } from 'expo-router';
+import { useLocalSearchParams, Stack, useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useTranslation } from 'react-i18next';
@@ -26,9 +26,11 @@ import TriviaCard from '../../components/TriviaCard';
 import DefectionBadge from '../../components/DefectionBadge';
 import AIAnalysisCard from '../../components/AIAnalysisCard';
 import AffidavitCard from '../../components/AffidavitCard';
+import PhotoViewerModal from '../../components/PhotoViewerModal';
 
 export default function ConstituencyDetailScreen() {
   const { t } = useTranslation();
+  const router = useRouter();
   const { id } = useLocalSearchParams<{ id: string }>();
   const acNo = parseInt(id, 10);
   const stateCode = useActiveStateStore((s) => s.stateCode);
@@ -45,6 +47,7 @@ export default function ConstituencyDetailScreen() {
     [stateConstituencies, acNo],
   );
 
+  const [photoViewer, setPhotoViewer] = useState<{ uri: string | null; name: string; party: string } | null>(null);
   const isFavorite = useFavoritesStore((s) => s.isFavorite(acNo));
   const toggleFavorite = useFavoritesStore((s) => s.toggleFavorite);
   const addRecent = useRecentsStore((s) => s.addRecent);
@@ -170,6 +173,7 @@ export default function ConstituencyDetailScreen() {
                   name={constituency.winnerName}
                   party={constituency.winnerParty}
                   size={52}
+                  onPress={(uri) => setPhotoViewer({ uri, name: constituency.winnerName, party: constituency.winnerParty })}
                 />
                 <View>
                   <Text style={styles.resultParty}>
@@ -225,6 +229,14 @@ export default function ConstituencyDetailScreen() {
             <View style={styles.section}>
               <Text style={styles.sectionTitle}>{t('constituency.currentMlaSection')}</Text>
               <MLACard profile={mla} />
+              <Pressable
+                style={styles.fullProfileBtn}
+                onPress={() => router.push(`/legislator/MLA_${stateCode}_${constituency.electionYear}_${constituency.name}_${constituency.acNo}` as any)}
+              >
+                <Ionicons name="person-circle" size={16} color="#4F8EF7" />
+                <Text style={styles.fullProfileBtnText}>View Complete Profile</Text>
+                <Ionicons name="chevron-forward" size={14} color="#4F8EF7" />
+              </Pressable>
             </View>
           ) : null;
         })()}
@@ -506,6 +518,15 @@ export default function ConstituencyDetailScreen() {
           <AIAnalysisCard acNo={acNo} constituencyName={constituency.name} stateCode={stateCode} />
         </View>
       </ScrollView>
+
+      <PhotoViewerModal
+        visible={!!photoViewer}
+        imageUri={photoViewer?.uri ?? null}
+        name={photoViewer?.name ?? ''}
+        party={photoViewer?.party ?? ''}
+        subtitle={constituency ? `${constituency.name} · ${constituency.district}` : undefined}
+        onClose={() => setPhotoViewer(null)}
+      />
     </View>
   );
 }
@@ -959,5 +980,22 @@ const styles = StyleSheet.create({
   histWinnerName: {
     fontSize: 13,
     color: '#9CA3AF',
+  },
+  fullProfileBtn: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 6,
+    marginTop: 10,
+    paddingVertical: 10,
+    backgroundColor: '#4F8EF710',
+    borderRadius: 10,
+    borderWidth: 1,
+    borderColor: '#4F8EF730',
+  },
+  fullProfileBtnText: {
+    fontSize: 13,
+    fontWeight: '600',
+    color: '#4F8EF7',
   },
 });

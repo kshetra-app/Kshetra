@@ -21,6 +21,8 @@ import AISmartSearch from '../../components/AISmartSearch';
 import { getUnifiedConstituenciesForState, type UnifiedConstituency } from '@/lib/stateDataAdapter';
 import { useTranslation } from 'react-i18next';
 import { useResponsive } from '../../lib/responsive';
+import PhotoViewerModal from '../../components/PhotoViewerModal';
+import { useAffidavitStore } from '../../stores/affidavits';
 
 type SortKey = 'acNo' | 'name' | 'margin_asc' | 'margin_desc';
 
@@ -42,6 +44,7 @@ export default function ExploreScreen() {
   const [districtFilter, setDistrictFilter] = useState<string | null>(null);
   const [typeFilter, setTypeFilter] = useState<string | null>(null);
   const [sortKey, setSortKey] = useState<SortKey>('acNo');
+  const [photoViewer, setPhotoViewer] = useState<{ uri: string | null; name: string; party: string } | null>(null);
   const favoriteIds = useFavoritesStore((s) => s.favoriteIds);
   const isFavorite = useFavoritesStore((s) => s.isFavorite);
   const stateCode = useActiveStateStore((s) => s.stateCode);
@@ -123,7 +126,12 @@ export default function ExploreScreen() {
 
   const renderItem = useCallback(
     ({ item }: { item: UnifiedConstituency }) => (
-      <ConstituencyCard item={item} isFav={isFavorite(item.acNo)} onPress={() => router.push(`/constituency/${item.acNo}` as any)} />
+      <ConstituencyCard
+        item={item}
+        isFav={isFavorite(item.acNo)}
+        onPress={() => router.push(`/constituency/${item.acNo}` as any)}
+        onAvatarPress={(uri, name, party) => setPhotoViewer({ uri, name, party })}
+      />
     ),
     [isFavorite, router],
   );
@@ -352,6 +360,14 @@ export default function ExploreScreen() {
           contentContainerStyle={styles.listContent}
         />
       )}
+
+      <PhotoViewerModal
+        visible={!!photoViewer}
+        imageUri={photoViewer?.uri ?? null}
+        name={photoViewer?.name ?? ''}
+        party={photoViewer?.party ?? ''}
+        onClose={() => setPhotoViewer(null)}
+      />
     </View>
   );
 }
@@ -360,12 +376,21 @@ const ConstituencyCard = React.memo(function ConstituencyCard({
   item,
   isFav,
   onPress,
+  onAvatarPress,
 }: {
   item: UnifiedConstituency;
   isFav: boolean;
   onPress: () => void;
+  onAvatarPress?: (uri: string | null, name: string, party: string) => void;
 }) {
   const partyColor = getPartyColor(item.winnerParty);
+
+  // Rich data badges from affidavit store
+  const winnerAffidavit = useAffidavitStore.getState().getWinnerAffidavit(item.stateCode || 'TS', item.acNo, item.electionYear || 2023);
+  const totalAssets = winnerAffidavit?.totalAssets;
+  const criminalCases = winnerAffidavit?.criminalCases;
+  const isCrorepati = totalAssets != null && totalAssets >= 1_00_00_000;
+
   return (
     <Pressable style={styles.card} onPress={onPress}>
       <View style={styles.cardLeft}>
@@ -373,6 +398,7 @@ const ConstituencyCard = React.memo(function ConstituencyCard({
           name={item.winnerName}
           party={item.winnerParty}
           size={48}
+          onPress={onAvatarPress ? (uri) => { onAvatarPress(uri, item.winnerName, item.winnerParty); } : undefined}
         />
       </View>
       <View style={styles.cardContent}>
@@ -388,6 +414,23 @@ const ConstituencyCard = React.memo(function ConstituencyCard({
             {item.winnerName} · {item.margin.toLocaleString()}
           </Text>
         </View>
+        {/* Transparency badges row */}
+        {(isCrorepati || (criminalCases != null && criminalCases > 0)) && (
+          <View style={styles.cardBadgeRow}>
+            {isCrorepati && (
+              <View style={styles.cardCrorepatiBadge}>
+                <Ionicons name="diamond" size={9} color="#F59E0B" />
+                <Text style={styles.cardCrorepatiText}>Crorepati</Text>
+              </View>
+            )}
+            {criminalCases != null && criminalCases > 0 && (
+              <View style={styles.cardCriminalBadge}>
+                <Ionicons name="alert-circle" size={9} color="#EF4444" />
+                <Text style={styles.cardCriminalText}>{criminalCases} case{criminalCases > 1 ? 's' : ''}</Text>
+              </View>
+            )}
+          </View>
+        )}
       </View>
       {isFav && (
         <Ionicons name="heart" size={14} color="#EF4444" style={{ marginRight: 6 }} />
@@ -683,5 +726,38 @@ const styles = StyleSheet.create({
   aiSearchContainer: {
     paddingHorizontal: 16,
     paddingBottom: 4,
+  },
+  cardBadgeRow: {
+    flexDirection: 'row',
+    gap: 6,
+    marginTop: 4,
+  },
+  cardCrorepatiBadge: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 3,
+    backgroundColor: '#F59E0B10',
+    paddingHorizontal: 6,
+    paddingVertical: 2,
+    borderRadius: 4,
+  },
+  cardCrorepatiText: {
+    fontSize: 9,
+    fontWeight: '700',
+    color: '#F59E0B',
+  },
+  cardCriminalBadge: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 3,
+    backgroundColor: '#EF444410',
+    paddingHorizontal: 6,
+    paddingVertical: 2,
+    borderRadius: 4,
+  },
+  cardCriminalText: {
+    fontSize: 9,
+    fontWeight: '700',
+    color: '#EF4444',
   },
 });

@@ -9,7 +9,7 @@
  *   <CandidateAvatar name="Narendra Modi" party="BJP" size={64} />
  */
 import React, { useState, useEffect, memo } from 'react';
-import { View, Image, Text, StyleSheet } from 'react-native';
+import { View, Image, Text, Pressable, StyleSheet } from 'react-native';
 import { getPartyColor } from '@/lib/constants';
 import { fetchWikipediaPhoto, getCachedPhoto, hasKnownPhoto } from '@/lib/candidatePhotos';
 
@@ -21,6 +21,8 @@ interface CandidateAvatarProps {
   photoUrl?: string;
   /** Border width (default: 2) */
   borderWidth?: number;
+  /** Called when the avatar is tapped — receives the resolved image URI */
+  onPress?: (imageUri: string | null) => void;
 }
 
 function getInitials(name: string): string {
@@ -39,17 +41,32 @@ export default memo(function CandidateAvatar({
   size,
   photoUrl,
   borderWidth = 2,
+  onPress,
 }: CandidateAvatarProps) {
   const [wikiUrl, setWikiUrl] = useState<string | null>(() => getCachedPhoto(name) ?? null);
   const [imgError, setImgError] = useState(false);
+  const [prevName, setPrevName] = useState(name);
 
   const partyColor = getPartyColor(party);
   const initials = getInitials(name);
   const innerSize = size - borderWidth * 2;
 
+  // Reset photo state when name changes (critical for FlashList view recycling)
+  if (name !== prevName) {
+    setPrevName(name);
+    setWikiUrl(getCachedPhoto(name) ?? null);
+    setImgError(false);
+  }
+
   useEffect(() => {
     if (photoUrl) return; // already have a photo
-    if (wikiUrl) return; // already fetched
+
+    // Resolve from cache first
+    const cached = getCachedPhoto(name);
+    if (cached) {
+      setWikiUrl(cached);
+      return;
+    }
 
     // Only fetch for known politicians (avoids unnecessary API calls)
     if (!hasKnownPhoto(name)) return;
@@ -62,24 +79,24 @@ export default memo(function CandidateAvatar({
       }
     });
     return () => { mounted = false; };
-  }, [name, photoUrl, wikiUrl]);
+  }, [name, photoUrl]);
 
   const imageUri = photoUrl || (wikiUrl && !imgError ? wikiUrl : null);
 
-  return (
-    <View
-      style={[
-        styles.container,
-        {
-          width: size,
-          height: size,
-          borderRadius: size / 2,
-          borderWidth,
-          borderColor: partyColor,
-          backgroundColor: '#1F2937',
-        },
-      ]}
-    >
+  const containerStyle = [
+    styles.container,
+    {
+      width: size,
+      height: size,
+      borderRadius: size / 2,
+      borderWidth,
+      borderColor: partyColor,
+      backgroundColor: '#1F2937',
+    },
+  ];
+
+  const content = (
+    <>
       {/* Initials background (always visible behind image) */}
       <View
         style={[
@@ -123,8 +140,18 @@ export default memo(function CandidateAvatar({
           onError={() => setImgError(true)}
         />
       )}
-    </View>
+    </>
   );
+
+  if (onPress) {
+    return (
+      <Pressable onPress={() => onPress(imageUri)} style={containerStyle}>
+        {content}
+      </Pressable>
+    );
+  }
+
+  return <View style={containerStyle}>{content}</View>;
 });
 
 const styles = StyleSheet.create({
