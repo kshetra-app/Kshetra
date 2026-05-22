@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { View, Text, StyleSheet, ScrollView, Platform, Pressable, Share, Image } from 'react-native';
 import { useLocalSearchParams, Stack, useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
@@ -21,12 +21,19 @@ import { useActiveStateStore } from '../../stores/activeState';
 import { useFavoritesStore } from '../../stores/favorites';
 import { useRecentsStore } from '../../stores/recents';
 import { useMyConstituencyStore } from '../../stores/myConstituency';
+import { useFeedStore } from '../../stores/feed';
+import { useCivicStore } from '../../stores/civic';
 import MLACard from '../../components/MLACard';
 import TriviaCard from '../../components/TriviaCard';
 import DefectionBadge from '../../components/DefectionBadge';
 import AIAnalysisCard from '../../components/AIAnalysisCard';
 import AffidavitCard from '../../components/AffidavitCard';
 import PhotoViewerModal from '../../components/PhotoViewerModal';
+import ConstituencyTabBar, { type ConstituencyTab } from '../../components/ConstituencyTabBar';
+import PostCard from '../../components/PostCard';
+import PollCard from '../../components/PollCard';
+import IssueCard from '../../components/IssueCard';
+import HeadlineCard from '../../components/HeadlineCard';
 
 export default function ConstituencyDetailScreen() {
   const { t } = useTranslation();
@@ -47,6 +54,7 @@ export default function ConstituencyDetailScreen() {
     [stateConstituencies, acNo],
   );
 
+  const [activeTab, setActiveTab] = useState<ConstituencyTab>('overview');
   const [photoViewer, setPhotoViewer] = useState<{ uri: string | null; name: string; party: string } | null>(null);
   const isFavorite = useFavoritesStore((s) => s.isFavorite(acNo));
   const toggleFavorite = useFavoritesStore((s) => s.toggleFavorite);
@@ -55,6 +63,53 @@ export default function ConstituencyDetailScreen() {
   const setHome = useMyConstituencyStore((s) => s.setHome);
   const clearHome = useMyConstituencyStore((s) => s.clearHome);
   const isMyHome = myHome?.acNo === acNo;
+
+  // ─── Feed / Civic store connections ───
+  const allPosts = useFeedStore((s) => s.posts);
+  const feedToggleReaction = useFeedStore((s) => s.toggleReaction);
+  const feedVotePoll = useFeedStore((s) => s.votePoll);
+  const allIssues = useCivicStore((s) => s.issues);
+  const allHeadlines = useCivicStore((s) => s.headlines);
+  const civicToggleUpvote = useCivicStore((s) => s.toggleUpvote);
+  const civicToggleFollow = useCivicStore((s) => s.toggleFollow);
+  const civicShareIssue = useCivicStore((s) => s.shareIssue);
+
+  // ─── Constituency-specific data filtering ───
+  const constituencyIdKey = `${stateCode}-AC-${acNo}`;
+
+  const constituencyPosts = useMemo(
+    () => allPosts.filter((p) =>
+      !p.isDeleted && (
+        p.constituencyId === constituencyIdKey ||
+        (constituency && p.constituencyName?.toLowerCase() === constituency.name.toLowerCase())
+      )
+    ).sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()),
+    [allPosts, constituencyIdKey, constituency],
+  );
+
+  const constituencyIssues = useMemo(
+    () => allIssues.filter((i) => i.constituencyId === constituencyIdKey)
+      .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()),
+    [allIssues, constituencyIdKey],
+  );
+
+  const constituencyHeadlines = useMemo(
+    () => allHeadlines.filter((h) =>
+      h.constituencyId === constituencyIdKey ||
+      (constituency && (
+        h.title.toLowerCase().includes(constituency.name.toLowerCase()) ||
+        h.title.toLowerCase().includes(constituency.district.toLowerCase())
+      ))
+    ).sort((a, b) => new Date(b.publishedAt).getTime() - new Date(a.publishedAt).getTime()),
+    [allHeadlines, constituencyIdKey, constituency],
+  );
+
+  // ─── Scroll ref for tab changes ───
+  const scrollRef = useRef<ScrollView>(null);
+  const handleTabChange = useCallback((tab: ConstituencyTab) => {
+    setActiveTab(tab);
+    scrollRef.current?.scrollTo({ y: 0, animated: true });
+  }, []);
 
   useEffect(() => {
     if (constituency) {
@@ -93,6 +148,7 @@ export default function ConstituencyDetailScreen() {
         }}
       />
       <ScrollView
+        ref={scrollRef}
         style={styles.scroll}
         contentContainerStyle={[styles.scrollContent, { paddingBottom: Math.max(insets.bottom, 20) + 80 }]}
       >
@@ -162,6 +218,41 @@ export default function ConstituencyDetailScreen() {
             {isMyHome ? t('constituency.myHome') : t('constituency.setAsHome')}
           </Text>
         </Pressable>
+
+        {/* Follow Constituency */}
+        <Pressable
+          style={[
+            styles.followButton,
+            isFavorite && styles.followButtonActive,
+          ]}
+          onPress={() => toggleFavorite(acNo)}
+        >
+          <Ionicons
+            name={isFavorite ? 'notifications' : 'notifications-outline'}
+            size={18}
+            color={isFavorite ? '#4F8EF7' : '#6B7280'}
+          />
+          <Text style={[styles.followButtonText, isFavorite && styles.followButtonTextActive]}>
+            {isFavorite ? 'Following Constituency' : 'Follow Constituency'}
+          </Text>
+          {isFavorite && (
+            <Ionicons name="checkmark-circle" size={16} color="#4F8EF7" />
+          )}
+        </Pressable>
+
+        {/* ═══ Tab Bar ═══ */}
+        <ConstituencyTabBar
+          activeTab={activeTab}
+          onTabChange={handleTabChange}
+          issueBadge={constituencyIssues.length}
+          pulseBadge={constituencyPosts.length}
+          newsBadge={constituencyHeadlines.length}
+        />
+
+        {/* ═══════════════════════════════════════════════════════════════ */}
+        {/* ═══ TAB: OVERVIEW ═══ */}
+        {/* ═══════════════════════════════════════════════════════════════ */}
+        {activeTab === 'overview' && (<>
 
         {/* 2023 Result Card */}
         <View style={styles.section}>
@@ -264,7 +355,221 @@ export default function ConstituencyDetailScreen() {
           ) : null;
         })()}
 
-        {/* Per-Constituency Election History */}
+        {/* Demographics */}
+        {hasFull && (() => {
+          const demo = getDemographicsForState(stateCode, acNo);
+          if (!demo) return null;
+          return (
+            <View style={styles.section}>
+              <Text style={styles.sectionTitle}>{t('constituency.demographicsSection')}</Text>
+              <View style={styles.demoCard}>
+                <View style={styles.demoRow}>
+                  <View style={styles.demoItem}>
+                    <Ionicons name="people" size={18} color="#4F8EF7" />
+                    <Text style={styles.demoValue}>{(demo.population / 1000).toFixed(0)}K</Text>
+                    <Text style={styles.demoLabel}>{t('constituency.populationLabel')}</Text>
+                  </View>
+                  <View style={styles.demoItem}>
+                    <Ionicons name="document-text" size={18} color="#10B981" />
+                    <Text style={styles.demoValue}>{demo.literacy}%</Text>
+                    <Text style={styles.demoLabel}>{t('constituency.literacyLabel')}</Text>
+                  </View>
+                  <View style={styles.demoItem}>
+                    <Ionicons name="business" size={18} color="#F59E0B" />
+                    <Text style={styles.demoValue}>{demo.urbanPercent}%</Text>
+                    <Text style={styles.demoLabel}>{t('constituency.urbanLabel')}</Text>
+                  </View>
+                  <View style={styles.demoItem}>
+                    <Ionicons name="map" size={18} color="#8B5CF6" />
+                    <Text style={styles.demoValue}>{demo.areaSqKm}</Text>
+                    <Text style={styles.demoLabel}>{t('constituency.areaSqKm')}</Text>
+                  </View>
+                </View>
+
+                <View style={styles.demoDivider} />
+
+                <Text style={styles.demoSubTitle}>{t('constituency.voterProfile', { year: constituency.electionYear })}</Text>
+                <View style={styles.demoRow}>
+                  <View style={styles.demoItem}>
+                    <Text style={styles.demoValue}>{(demo.totalVoters / 1000).toFixed(0)}K</Text>
+                    <Text style={styles.demoLabel}>{t('constituency.totalVoters')}</Text>
+                  </View>
+                  <View style={styles.demoItem}>
+                    <Text style={styles.demoValue}>{demo.turnout2023}%</Text>
+                    <Text style={styles.demoLabel}>{t('constituency.turnoutLabel')}</Text>
+                  </View>
+                  <View style={styles.demoItem}>
+                    <Text style={styles.demoValue}>{(demo.maleVoters / 1000).toFixed(0)}K</Text>
+                    <Text style={styles.demoLabel}>{t('constituency.male')}</Text>
+                  </View>
+                  <View style={styles.demoItem}>
+                    <Text style={styles.demoValue}>{(demo.femaleVoters / 1000).toFixed(0)}K</Text>
+                    <Text style={styles.demoLabel}>{t('constituency.female')}</Text>
+                  </View>
+                </View>
+
+                <View style={styles.demoDivider} />
+
+                <Text style={styles.demoSubTitle}>{t('constituency.socialComposition')}</Text>
+                <View style={styles.demoBarGroup}>
+                  <View style={styles.demoBarRow}>
+                    <Text style={styles.demoBarLabel}>SC</Text>
+                    <View style={styles.demoBarTrack}>
+                      <View style={[styles.demoBarFill, { width: `${demo.scPercent}%`, backgroundColor: '#F59E0B' }]} />
+                    </View>
+                    <Text style={styles.demoBarValue}>{demo.scPercent}%</Text>
+                  </View>
+                  <View style={styles.demoBarRow}>
+                    <Text style={styles.demoBarLabel}>ST</Text>
+                    <View style={styles.demoBarTrack}>
+                      <View style={[styles.demoBarFill, { width: `${demo.stPercent}%`, backgroundColor: '#10B981' }]} />
+                    </View>
+                    <Text style={styles.demoBarValue}>{demo.stPercent}%</Text>
+                  </View>
+                  <View style={styles.demoBarRow}>
+                    <Text style={styles.demoBarLabel}>Urban</Text>
+                    <View style={styles.demoBarTrack}>
+                      <View style={[styles.demoBarFill, { width: `${demo.urbanPercent}%`, backgroundColor: '#4F8EF7' }]} />
+                    </View>
+                    <Text style={styles.demoBarValue}>{demo.urbanPercent}%</Text>
+                  </View>
+                </View>
+              </View>
+              <Text style={styles.demoDisclaimer}>{t('constituency.demoDisclaimer')}</Text>
+            </View>
+          );
+        })()}
+
+        </>)}
+
+        {/* ═══════════════════════════════════════════════════════════════ */}
+        {/* ═══ TAB: ISSUES ═══ */}
+        {/* ═══════════════════════════════════════════════════════════════ */}
+        {activeTab === 'issues' && (
+          <View style={styles.tabContent}>
+            {constituencyIssues.length > 0 ? (
+              <>
+                <View style={styles.tabHeader}>
+                  <Text style={styles.tabHeaderTitle}>Civic Issues</Text>
+                  <Text style={styles.tabHeaderCount}>{constituencyIssues.length} {constituencyIssues.length === 1 ? 'issue' : 'issues'}</Text>
+                </View>
+                {/* Issue summary stats */}
+                <View style={styles.issueStatsRow}>
+                  {(['open', 'in_progress', 'resolved'] as const).map((status) => {
+                    const count = constituencyIssues.filter((i) => i.status === status).length;
+                    const colors = { open: '#3B82F6', in_progress: '#F59E0B', resolved: '#10B981' };
+                    const labels = { open: 'Open', in_progress: 'In Progress', resolved: 'Resolved' };
+                    return (
+                      <View key={status} style={styles.issueStatItem}>
+                        <Text style={[styles.issueStatValue, { color: colors[status] }]}>{count}</Text>
+                        <Text style={styles.issueStatLabel}>{labels[status]}</Text>
+                      </View>
+                    );
+                  })}
+                </View>
+                {constituencyIssues.map((issue) => (
+                  <IssueCard
+                    key={issue.id}
+                    issue={issue}
+                    onUpvote={() => civicToggleUpvote(issue.id)}
+                    onPress={() => router.push(`/issue/${issue.id}` as any)}
+                    onFollow={() => civicToggleFollow(issue.id)}
+                    onShare={async () => {
+                      const text = civicShareIssue(issue.id);
+                      if (text) try { await Share.share({ message: text }); } catch (_) {}
+                    }}
+                  />
+                ))}
+              </>
+            ) : (
+              <View style={styles.emptyState}>
+                <Ionicons name="checkmark-circle-outline" size={48} color="#374151" />
+                <Text style={styles.emptyTitle}>No Issues Reported</Text>
+                <Text style={styles.emptySubtitle}>No civic issues have been reported for this constituency yet. Be the first to report one!</Text>
+              </View>
+            )}
+          </View>
+        )}
+
+        {/* ═══════════════════════════════════════════════════════════════ */}
+        {/* ═══ TAB: PULSE ═══ */}
+        {/* ═══════════════════════════════════════════════════════════════ */}
+        {activeTab === 'pulse' && (
+          <View style={styles.tabContent}>
+            {constituencyPosts.length > 0 ? (
+              <>
+                <View style={styles.tabHeader}>
+                  <Text style={styles.tabHeaderTitle}>Community Pulse</Text>
+                  <Text style={styles.tabHeaderCount}>{constituencyPosts.length} {constituencyPosts.length === 1 ? 'post' : 'posts'}</Text>
+                </View>
+                {constituencyPosts.map((post) => (
+                  <View key={post.id}>
+                    <PostCard
+                      post={post}
+                      compact
+                      onReact={() => feedToggleReaction(post.id, 'like')}
+                      onShare={async () => {
+                        try {
+                          await Share.share({
+                            message: `${post.content.slice(0, 200)}${post.content.length > 200 ? '...' : ''}\n\n— via Kshetra`,
+                          });
+                        } catch (_) {}
+                      }}
+                    />
+                    {post.poll && (
+                      <View style={{ paddingHorizontal: 16, marginTop: -4, marginBottom: 10 }}>
+                        <PollCard
+                          poll={post.poll}
+                          onVote={(optId) => feedVotePoll(post.id, optId)}
+                        />
+                      </View>
+                    )}
+                  </View>
+                ))}
+              </>
+            ) : (
+              <View style={styles.emptyState}>
+                <Ionicons name="chatbubbles-outline" size={48} color="#374151" />
+                <Text style={styles.emptyTitle}>No Discussions Yet</Text>
+                <Text style={styles.emptySubtitle}>Start a conversation about this constituency on the Feed tab. Posts tagged to this area will appear here.</Text>
+              </View>
+            )}
+          </View>
+        )}
+
+        {/* ═══════════════════════════════════════════════════════════════ */}
+        {/* ═══ TAB: NEWS ═══ */}
+        {/* ═══════════════════════════════════════════════════════════════ */}
+        {activeTab === 'news' && (
+          <View style={styles.tabContent}>
+            {constituencyHeadlines.length > 0 ? (
+              <>
+                <View style={styles.tabHeader}>
+                  <Text style={styles.tabHeaderTitle}>News & Headlines</Text>
+                  <Text style={styles.tabHeaderCount}>{constituencyHeadlines.length} {constituencyHeadlines.length === 1 ? 'article' : 'articles'}</Text>
+                </View>
+                <View style={{ paddingHorizontal: 16 }}>
+                  {constituencyHeadlines.map((hl) => (
+                    <HeadlineCard key={hl.id} headline={hl} />
+                  ))}
+                </View>
+              </>
+            ) : (
+              <View style={styles.emptyState}>
+                <Ionicons name="newspaper-outline" size={48} color="#374151" />
+                <Text style={styles.emptyTitle}>No Local News</Text>
+                <Text style={styles.emptySubtitle}>No news articles are currently tagged to this constituency. Check back later or view state-level news in the Dashboard.</Text>
+              </View>
+            )}
+          </View>
+        )}
+
+        {/* ═══════════════════════════════════════════════════════════════ */}
+        {/* ═══ TAB: HISTORY ═══ */}
+        {/* ═══════════════════════════════════════════════════════════════ */}
+        {activeTab === 'history' && (<>
+
+        {/* Per-Constituency Election History (moved from overview) */}
         {hasFull && (() => {
           const pastElections = getHistoryForState(stateCode, acNo);
           const currentParty = constituency.currentParty ?? constituency.winnerParty;
@@ -276,7 +581,6 @@ export default function ConstituencyDetailScreen() {
             { year: constituency.electionYear, winner: constituency.winnerName, party: constituency.winnerParty },
           ];
 
-          // Check if party changed between elections
           const partyChanged = elections.length >= 2 &&
             normalize(elections[elections.length - 1].party) !== normalize(elections[elections.length - 2].party);
 
@@ -422,90 +726,12 @@ export default function ConstituencyDetailScreen() {
           );
         })()}
 
-        {/* Demographics */}
-        {hasFull && (() => {
-          const demo = getDemographicsForState(stateCode, acNo);
-          if (!demo) return null;
-          return (
-            <View style={styles.section}>
-              <Text style={styles.sectionTitle}>{t('constituency.demographicsSection')}</Text>
-              <View style={styles.demoCard}>
-                <View style={styles.demoRow}>
-                  <View style={styles.demoItem}>
-                    <Ionicons name="people" size={18} color="#4F8EF7" />
-                    <Text style={styles.demoValue}>{(demo.population / 1000).toFixed(0)}K</Text>
-                    <Text style={styles.demoLabel}>{t('constituency.populationLabel')}</Text>
-                  </View>
-                  <View style={styles.demoItem}>
-                    <Ionicons name="document-text" size={18} color="#10B981" />
-                    <Text style={styles.demoValue}>{demo.literacy}%</Text>
-                    <Text style={styles.demoLabel}>{t('constituency.literacyLabel')}</Text>
-                  </View>
-                  <View style={styles.demoItem}>
-                    <Ionicons name="business" size={18} color="#F59E0B" />
-                    <Text style={styles.demoValue}>{demo.urbanPercent}%</Text>
-                    <Text style={styles.demoLabel}>{t('constituency.urbanLabel')}</Text>
-                  </View>
-                  <View style={styles.demoItem}>
-                    <Ionicons name="map" size={18} color="#8B5CF6" />
-                    <Text style={styles.demoValue}>{demo.areaSqKm}</Text>
-                    <Text style={styles.demoLabel}>{t('constituency.areaSqKm')}</Text>
-                  </View>
-                </View>
+        </>)}
 
-                <View style={styles.demoDivider} />
-
-                <Text style={styles.demoSubTitle}>{t('constituency.voterProfile', { year: constituency.electionYear })}</Text>
-                <View style={styles.demoRow}>
-                  <View style={styles.demoItem}>
-                    <Text style={styles.demoValue}>{(demo.totalVoters / 1000).toFixed(0)}K</Text>
-                    <Text style={styles.demoLabel}>{t('constituency.totalVoters')}</Text>
-                  </View>
-                  <View style={styles.demoItem}>
-                    <Text style={styles.demoValue}>{demo.turnout2023}%</Text>
-                    <Text style={styles.demoLabel}>{t('constituency.turnoutLabel')}</Text>
-                  </View>
-                  <View style={styles.demoItem}>
-                    <Text style={styles.demoValue}>{(demo.maleVoters / 1000).toFixed(0)}K</Text>
-                    <Text style={styles.demoLabel}>{t('constituency.male')}</Text>
-                  </View>
-                  <View style={styles.demoItem}>
-                    <Text style={styles.demoValue}>{(demo.femaleVoters / 1000).toFixed(0)}K</Text>
-                    <Text style={styles.demoLabel}>{t('constituency.female')}</Text>
-                  </View>
-                </View>
-
-                <View style={styles.demoDivider} />
-
-                <Text style={styles.demoSubTitle}>{t('constituency.socialComposition')}</Text>
-                <View style={styles.demoBarGroup}>
-                  <View style={styles.demoBarRow}>
-                    <Text style={styles.demoBarLabel}>SC</Text>
-                    <View style={styles.demoBarTrack}>
-                      <View style={[styles.demoBarFill, { width: `${demo.scPercent}%`, backgroundColor: '#F59E0B' }]} />
-                    </View>
-                    <Text style={styles.demoBarValue}>{demo.scPercent}%</Text>
-                  </View>
-                  <View style={styles.demoBarRow}>
-                    <Text style={styles.demoBarLabel}>ST</Text>
-                    <View style={styles.demoBarTrack}>
-                      <View style={[styles.demoBarFill, { width: `${demo.stPercent}%`, backgroundColor: '#10B981' }]} />
-                    </View>
-                    <Text style={styles.demoBarValue}>{demo.stPercent}%</Text>
-                  </View>
-                  <View style={styles.demoBarRow}>
-                    <Text style={styles.demoBarLabel}>Urban</Text>
-                    <View style={styles.demoBarTrack}>
-                      <View style={[styles.demoBarFill, { width: `${demo.urbanPercent}%`, backgroundColor: '#4F8EF7' }]} />
-                    </View>
-                    <Text style={styles.demoBarValue}>{demo.urbanPercent}%</Text>
-                  </View>
-                </View>
-              </View>
-              <Text style={styles.demoDisclaimer}>{t('constituency.demoDisclaimer')}</Text>
-            </View>
-          );
-        })()}
+        {/* ═══════════════════════════════════════════════════════════════ */}
+        {/* ═══ TAB: X-RAY ═══ */}
+        {/* ═══════════════════════════════════════════════════════════════ */}
+        {activeTab === 'xray' && (<>
 
         {/* Candidate Transparency — Affidavit */}
         <View style={styles.section}>
@@ -517,6 +743,9 @@ export default function ConstituencyDetailScreen() {
         <View style={styles.section}>
           <AIAnalysisCard acNo={acNo} constituencyName={constituency.name} stateCode={stateCode} />
         </View>
+
+        </>)}
+
       </ScrollView>
 
       <PhotoViewerModal
@@ -629,6 +858,31 @@ const styles = StyleSheet.create({
   },
   homeButtonTextActive: {
     color: '#10B981',
+  },
+  followButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginHorizontal: 20,
+    marginTop: 8,
+    paddingVertical: 12,
+    borderRadius: 12,
+    backgroundColor: '#1F2937',
+    borderWidth: 1,
+    borderColor: '#374151',
+    gap: 8,
+  },
+  followButtonActive: {
+    backgroundColor: '#4F8EF715',
+    borderColor: '#4F8EF740',
+  },
+  followButtonText: {
+    fontSize: 14,
+    fontWeight: '700',
+    color: '#6B7280',
+  },
+  followButtonTextActive: {
+    color: '#4F8EF7',
   },
   section: {
     paddingHorizontal: 20,
@@ -997,5 +1251,68 @@ const styles = StyleSheet.create({
     fontSize: 13,
     fontWeight: '600',
     color: '#4F8EF7',
+  },
+  // ─── Tab content styles ───
+  tabContent: {
+    paddingTop: 16,
+  },
+  tabHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingHorizontal: 20,
+    marginBottom: 14,
+  },
+  tabHeaderTitle: {
+    fontSize: 18,
+    fontWeight: '700',
+    color: '#FFFFFF',
+  },
+  tabHeaderCount: {
+    fontSize: 13,
+    fontWeight: '600',
+    color: '#6B7280',
+  },
+  issueStatsRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+    marginHorizontal: 16,
+    marginBottom: 16,
+    backgroundColor: '#111827',
+    borderRadius: 12,
+    padding: 14,
+  },
+  issueStatItem: {
+    alignItems: 'center',
+    flex: 1,
+  },
+  issueStatValue: {
+    fontSize: 22,
+    fontWeight: '800',
+  },
+  issueStatLabel: {
+    fontSize: 11,
+    fontWeight: '600',
+    color: '#6B7280',
+    marginTop: 2,
+  },
+  emptyState: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingVertical: 60,
+    paddingHorizontal: 32,
+  },
+  emptyTitle: {
+    fontSize: 17,
+    fontWeight: '700',
+    color: '#374151',
+    marginTop: 14,
+  },
+  emptySubtitle: {
+    fontSize: 13,
+    color: '#4B5563',
+    textAlign: 'center',
+    lineHeight: 18,
+    marginTop: 6,
   },
 });

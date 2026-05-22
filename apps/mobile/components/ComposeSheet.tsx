@@ -16,6 +16,9 @@ import { useTranslation } from 'react-i18next';
 import type { PostType, Post, PollOption, PostMedia } from '../lib/feedTypes';
 import { useAuthStore } from '../stores/auth';
 import { useMyConstituencyStore } from '../stores/myConstituency';
+import { gateContentAction, logContentAction } from '../lib/contentAccountability';
+import { useContentPromotionStore } from '../stores/contentPromotion';
+import { useUserProfileStore } from '../stores/userProfile';
 
 interface ComposeSheetProps {
   visible: boolean;
@@ -92,10 +95,14 @@ export default function ComposeSheet({ visible, onClose, onSubmit, onEditSubmit,
     if (!canSubmit || !canSubmitPoll) return;
 
     if (isEditMode && editPost) {
+      if (!gateContentAction('edit_post')) return;
       onEditSubmit?.(editPost.id, content.trim(), mediaItems.length > 0 ? mediaItems : undefined);
+      logContentAction('edit_post', { type: 'post', id: editPost.id, body: content.trim(), screenName: 'compose' });
       onClose();
       return;
     }
+
+    if (!gateContentAction('create_post')) return;
 
     const now = new Date().toISOString();
     const authorName = user?.email?.split('@')[0] ?? 'Anonymous';
@@ -140,6 +147,22 @@ export default function ComposeSheet({ visible, onClose, onSubmit, onEditSubmit,
     };
 
     onSubmit(newPost);
+    logContentAction('create_post', { type: 'post', id: newPost.id, body: newPost.content, screenName: 'compose' });
+
+    // Register in Content Promotion Pipeline
+    const profile = useUserProfileStore.getState().profile;
+    useContentPromotionStore.getState().registerContent({
+      contentType: postType === 'news' ? 'news' : postType === 'opinion' ? 'opinion' : 'post',
+      contentId: newPost.id,
+      authorId: user?.id ?? 'anon',
+      constituencyId: newPost.constituencyId ?? null,
+      stateCode: newPost.stateCode ?? null,
+      postType,
+      authorRole: profile?.role ?? 'citizen',
+      authorReputation: profile?.reputation ?? 0,
+      isAuthorVerified: profile?.isVerified ?? false,
+    });
+
     onClose();
   };
 

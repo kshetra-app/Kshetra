@@ -51,6 +51,8 @@
 | Sprint 30: MapLibre Migration + Candidate Avatars | ✅ Complete | 2026-05-06 | 2026-05-06 |
 | Sprint 31: Real Photos + Map Interactivity + Delimitation Overlay | ✅ Complete | 2026-05-07 | 2026-05-07 |
 | Sprint 32: Unified Legislator Profile — Merge X-Ray | ✅ Complete | 2026-05-14 | 2026-05-14 |
+| Sprint 33: Content Creator Accountability (CCA) | ✅ Complete | 2026-05-22 | 2026-05-22 |
+| Sprint 34: Content Promotion Pipeline (CPP) | ✅ Complete | 2026-05-22 | 2026-05-22 |
 
 ---
 
@@ -153,6 +155,8 @@
 | 2026-05-06 | `feat: sprint 30 — MapLibre migration + candidate avatars` | Replaced @rnmapbox/maps (proprietary, requires secret token) with @maplibre/maplibre-react-native (free, open-source). Switched map tiles from Mapbox to CARTO dark-matter (free). Added DiceBear Personas avatars for all candidates (unique face per name+party). Full native rebuild with expo prebuild. APK: 237 MB. |
 | 2026-05-07 | `feat: sprint 31 — real photos + map fix + delimitation overlay` | Replaced DiceBear cartoon avatars with 4-tier photo pipeline: Wikipedia REST API → MyNeta (ADR) → Official Legislature sites → party-colored initials. CandidateAvatar component across MLACard, MPCard, Explore, Constituency Detail, CompareSheet, Map BottomSheet. Fixed map interactivity: moved tap from ShapeSource.onPress (broken in MapLibre RN) to MapView.onPress + findConstituencyAtPoint() ray-casting (offline, all 23 states). Added delimitation overlay: amber dashed-border layer + hypothetical disclaimer banner + seat projection stats. Created scrape-candidate-photos.ts scraper for MyNeta + state legislature photos. |
 | 2026-05-14 | `refactor: unified legislator profile — merge candidate x-ray` | Eliminated duplicate Candidate X-Ray screen by merging all affidavit content into the unified Legislator Profile. AffidavitCard now links to Legislator Profile instead of X-Ray. Old X-Ray route retained as redirect for backwards-compatible deep links. One canonical person screen (Legislator Profile) + one canonical place screen (Constituency Detail), zero duplication. |
+| 2026-05-22 | `feat: sprint 33 — content creator accountability (CCA)` | Two-tier accountability system: Tier 1 = one-time KYC (name, phone, selfie, device, GPS, terms), Tier 2 = per-action forensic fingerprint (device, network, location, content hash). Supabase migration 013 (3 tables, 3 views, RLS, triggers). TypeScript types + deviceFingerprint utility + gate logic. KYCVerificationSheet (3-step modal). Zustand store with MMKV persistence. Gating integrated into ComposeSheet, ReportIssueSheet, ReportSheet. Contributor status on Profile. |
+| 2026-05-22 | `feat: sprint 34 — content promotion pipeline (CPP)` | Community-driven content gatekeeping: content starts at constituency level, earns reach via vouches/flags/alerts. 3 risk tiers (high/medium/low). 10 flag reasons, 6 alert categories. Supabase migration 014 (6 tables, 3 views, triggers, RLS). contentPromotionTypes.ts (types + scoring utilities). contentPromotion.ts Zustand store. ContentGateActions component (vouch/flag/alert UI + FlagSheet + AlertSheet modals). Feed-level gating in feed.tsx filters state/national scope. Integrated into ComposeSheet and ReportIssueSheet. |
 
 ---
 
@@ -2674,3 +2678,138 @@ Legislator Profile (person-centric, canonical)
 ### Design Principle
 
 > **One screen per entity type**: Constituency Detail = place, Legislator Profile = person. No duplicate views of the same data.
+
+---
+
+## Sprint 33: Content Creator Accountability (CCA)
+
+**Date**: 2026-05-22
+**Goal**: Gate content creation behind verified KYC, capture forensic fingerprints per action to ensure accountability
+
+### Architecture: Two-Tier Accountability
+
+- **Tier 1: Creator KYC** (one-time) — Full name, phone, selfie, device registration, GPS, IP, terms acceptance
+- **Tier 2: Action Fingerprint** (per-action) — Device, network, location, content hash per write action
+
+### Files Created
+
+| File | Purpose |
+|------|---------|
+| `supabase/migrations/013_content_accountability.sql` | 3 tables (`creator_kyc_records`, `contributor_devices`, `action_fingerprints`), 3 views, RLS, triggers |
+| `apps/mobile/lib/contentAccountabilityTypes.ts` | KYCStatus (5 states), ContentActionType (19 actions), fingerprint interfaces, validation utils |
+| `apps/mobile/lib/deviceFingerprint.ts` | Device/network/location/app capture with dynamic imports + graceful fallback |
+| `apps/mobile/lib/contentAccountability.ts` | `gateContentAction()`, `logContentAction()`, `submitKYC()` |
+| `apps/mobile/stores/contributorVerification.ts` | Zustand + AsyncStorage persistence for KYC state |
+| `apps/mobile/components/KYCVerificationSheet.tsx` | 3-step modal: Personal Info → Selfie → Terms & Submit |
+
+### Files Modified
+
+| File | Change |
+|------|--------|
+| `components/ComposeSheet.tsx` | Gated `create_post` and `edit_post` actions |
+| `components/ReportIssueSheet.tsx` | Gated `report_issue` action |
+| `components/ReportSheet.tsx` | Gated `submit_report` action |
+| `app/_layout.tsx` | KYCVerificationSheet rendered globally |
+| `app/(tabs)/profile.tsx` | Contributor Verification status section |
+
+### Key Design Decisions
+
+- IMEI is NOT accessible on modern Android/iOS — uses `androidId`/`identifierForVendor` instead
+- High-severity actions (posts, issues, comments) get full GPS + IP snapshot
+- Low-severity actions (votes, follows, reactions) get lightweight device-only snapshot
+- Fingerprint capture failures do NOT block content actions (logged as warning)
+- Dynamic `import()` with try/catch for `expo-device`, `expo-application`, `@react-native-community/netinfo`
+- Auto-verify for demo; production requires OTP + manual review
+
+---
+
+## Sprint 34: Content Promotion Pipeline (CPP)
+
+**Date**: 2026-05-22
+**Goal**: Community-driven content gatekeeping — local-first visibility with earned reach to wider audiences
+
+### Architecture: "Local First, Earn Your Reach"
+
+```
+User creates post → CCA gate (KYC) → Post created (constituency-local)
+                                        ↓
+                              CPP registers content (risk tier)
+                                        ↓
+                              Local users: Vouch ✅ / Flag 🚩 / Alert 🔔
+                                        ↓
+              ┌───────────────────────────────────────────────────────┐
+              │ Vouches ≥ threshold + time elapsed + flags < 2        │
+              │ → AUTO-PROMOTE to state/national feeds                │
+              ├───────────────────────────────────────────────────────┤
+              │ Flags ≥ 3 → AUTO-HOLD for moderator                  │
+              │ Flags ≥ 5 or Alert → AUTO-RESTRICT                   │
+              └───────────────────────────────────────────────────────┘
+```
+
+### Risk Tiers
+
+| Tier | Content Types | Review Window | Vouch Threshold | Flag Threshold |
+|------|---------------|---------------|-----------------|----------------|
+| High | News, claims about individuals | 12 hours | 10 vouches | 3 flags |
+| Medium | Opinions, civic issues, shorts | 6 hours | 5 vouches | 3 flags |
+| Low | Polls, discussions, questions | 2 hours | 3 vouches | 5 flags |
+
+### Vouch Weight System
+
+| Role | Weight | + Reputation Bonus |
+|------|--------|--------------------|
+| Admin | 5.0x | +0.1 per 50 rep (max 2.0) |
+| Moderator | 3.0x | |
+| Journalist | 2.5x | |
+| Official | 2.0x | |
+| Politician | 1.5x | |
+| Citizen | 1.0x | |
+
+### Flag Reasons (10)
+
+`fake_news`, `defamatory`, `communally_sensitive`, `legally_problematic`, `hate_speech`, `spam`, `impersonation`, `copyright`, `explicit_content`, `incitement`
+
+### Alert Categories (6)
+
+`imminent_violence`, `doxxing`, `child_safety`, `election_interference`, `impersonation_official`, `other`
+
+### Files Created
+
+| File | Purpose |
+|------|---------|
+| `supabase/migrations/014_content_promotion_pipeline.sql` | 6 tables, 3 views, triggers for auto-increment/hold/restrict, RLS |
+| `apps/mobile/lib/contentPromotionTypes.ts` | All types, enums, configs, scoring utilities |
+| `apps/mobile/stores/contentPromotion.ts` | Zustand store: register/vouch/flag/alert/promote/restrict/auto-promote |
+| `apps/mobile/components/ContentGateActions.tsx` | Vouch/Flag/Alert action bar + FlagSheet + AlertSheet modals |
+
+### Files Modified
+
+| File | Change |
+|------|--------|
+| `components/ComposeSheet.tsx` | Registers new posts in CPP with risk tier |
+| `components/ReportIssueSheet.tsx` | Registers civic issues in CPP |
+| `components/PostCard.tsx` | Shows ContentGateActions below action bar |
+| `app/(tabs)/feed.tsx` | Filters state/national feeds by visibility level |
+
+### Auto-Promotion Criteria
+
+- Review window expired AND vouches ≥ threshold AND flags < 2
+- Score > 20 → national, > 10 → state, > 5 → district
+
+### Supabase Migrations Summary (All)
+
+| Migration | Tables | Purpose |
+|-----------|--------|---------|
+| 001_initial_schema.sql | states, constituencies, elections, favorites | Core data |
+| 002_seed_telangana.sql | — | Initial state/election seed |
+| 003_multi_state.sql | — | Multi-state support |
+| 003_posts_polls_social.sql | 10 tables | Social feed |
+| 004_civic_dashboard.sql | 3 tables | Civic issues, headlines |
+| 005_push_notifications.sql | 3 tables | Push tokens, preferences |
+| 006_trust_safety.sql | 5 tables | Moderation, verification |
+| 007_civic_engagement_pipeline.sql | 5 tables + view | Comments, disputes, evidence |
+| 008_election_affidavits.sql | 2 tables | Candidate financial/criminal |
+| 009_promise_tracker.sql | 4 tables | Election promises |
+| 010_aspiring_leaders.sql | 7 tables | Civic participation |
+| 013_content_accountability.sql | 3 tables + 3 views | KYC + forensic fingerprints |
+| 014_content_promotion_pipeline.sql | 6 tables + 3 views | Vouch/flag/alert + promotion |

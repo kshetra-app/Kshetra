@@ -16,6 +16,7 @@ import {
   type ReportReason,
   type ReportSubmission,
 } from '../lib/moderationTypes';
+import { gateContentAction, logContentAction } from '../lib/contentAccountability';
 
 interface ReportSheetProps {
   visible: boolean;
@@ -46,6 +47,7 @@ export default function ReportSheet({
 
   const handleSubmit = () => {
     if (!reason) return;
+    if (!gateContentAction('submit_report')) return;
 
     const report: ReportSubmission = {
       targetType,
@@ -58,6 +60,7 @@ export default function ReportSheet({
 
     // In production: send to API /api/v1/reports
     // For now, simulate success
+    logContentAction('submit_report', { type: targetType, id: targetId, body: reason, screenName: 'report' });
     setTimeout(() => {
       setSubmitting(false);
       Alert.alert(

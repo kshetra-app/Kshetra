@@ -24,6 +24,7 @@ import TrendingHashtags from '../../components/TrendingHashtags';
 import type { Post, PostType, PostMedia, FeedScope } from '../../lib/feedTypes';
 import { useTranslation } from 'react-i18next';
 import { STATES } from '@kshetra/shared';
+import { useContentPromotionStore } from '../../stores/contentPromotion';
 
 const FILTER_TAB_KEYS: { key: PostType | 'all'; tKey: string; icon: string }[] = [
   { key: 'all', tKey: 'feed.filters.all', icon: 'grid' },
@@ -64,6 +65,8 @@ export default function FeedScreen() {
   const myHome = useMyConstituencyStore((s) => s.home);
   const constituencyId = myHome ? `${stateCode}-AC-${myHome.acNo}` : undefined;
 
+  const getContentVisibilityLevel = useContentPromotionStore((s) => s.getContentVisibilityLevel);
+
   // Derive filtered posts with useMemo
   const posts = useMemo(() => {
     let filtered = allPosts.filter((p) => !p.isDeleted);
@@ -72,9 +75,31 @@ export default function FeedScreen() {
     if (scopeFilter === 'constituency' && constituencyId) {
       filtered = filtered.filter((p) => p.constituencyId === constituencyId || (p.isPinned && p.stateCode === stateCode));
     } else if (scopeFilter === 'state') {
-      filtered = filtered.filter((p) => p.stateCode === stateCode || p.stateCode === 'NATIONAL');
+      filtered = filtered.filter((p) => {
+        if (p.stateCode !== stateCode && p.stateCode !== 'NATIONAL') return false;
+        // Content Promotion Pipeline: only show promoted content in state feed
+        if (!p.id.startsWith('seed-') && !p.isPinned) {
+          const level = getContentVisibilityLevel(
+            p.type === 'news' ? 'news' : p.type === 'opinion' ? 'opinion' : 'post',
+            p.id,
+          );
+          if (level === 'constituency' || level === 'restricted') return false;
+        }
+        return true;
+      });
+    } else if (scopeFilter === 'national') {
+      filtered = filtered.filter((p) => {
+        // Content Promotion Pipeline: only show nationally promoted content
+        if (!p.id.startsWith('seed-') && !p.isPinned) {
+          const level = getContentVisibilityLevel(
+            p.type === 'news' ? 'news' : p.type === 'opinion' ? 'opinion' : 'post',
+            p.id,
+          );
+          if (level !== 'national' && level !== 'state') return false;
+        }
+        return true;
+      });
     }
-    // 'national' → show all posts
 
     // Type filter
     if (feedFilter !== 'all') {
@@ -87,7 +112,7 @@ export default function FeedScreen() {
       if (!a.isPinned && b.isPinned) return 1;
       return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
     });
-  }, [allPosts, scopeFilter, stateCode, constituencyId, feedFilter]);
+  }, [allPosts, scopeFilter, stateCode, constituencyId, feedFilter, getContentVisibilityLevel]);
 
   // Scope label
   const scopeLabel = useMemo(() => {

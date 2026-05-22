@@ -10,6 +10,7 @@ import { useTheme } from '../lib/useTheme';
 import { usePushNotifications } from '../lib/usePushNotifications';
 import { useNetworkStore } from '../lib/networkStatus';
 import OfflineBanner from '../components/OfflineBanner';
+import KYCVerificationSheet from '../components/KYCVerificationSheet';
 import '../i18n';
 
 SplashScreen.preventAutoHideAsync();
@@ -33,6 +34,7 @@ export default function RootLayout() {
     <GestureHandlerRootView style={{ flex: 1 }}>
       <StatusBar style={colors.statusBar} />
       <OfflineBanner />
+      <KYCVerificationSheet />
       <Stack
         screenOptions={{
           headerShown: false,

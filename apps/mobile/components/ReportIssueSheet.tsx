@@ -19,6 +19,9 @@ import { ISSUE_CATEGORY_CONFIG, SEVERITY_CONFIG } from '../lib/civicTypes';
 import { useAuthStore } from '../stores/auth';
 import { useMyConstituencyStore } from '../stores/myConstituency';
 import { useActiveStateStore } from '../stores/activeState';
+import { gateContentAction, logContentAction } from '../lib/contentAccountability';
+import { useContentPromotionStore } from '../stores/contentPromotion';
+import { useUserProfileStore } from '../stores/userProfile';
 
 const MAX_MEDIA = 5;
 
@@ -101,6 +104,7 @@ export default function ReportIssueSheet({ visible, onClose, onSubmit }: ReportI
 
   const handleSubmit = () => {
     if (!canSubmit) return;
+    if (!gateContentAction('report_issue')) return;
     const now = new Date().toISOString();
     const authorName = user?.email?.split('@')[0] ?? 'Anonymous';
 
@@ -130,6 +134,21 @@ export default function ReportIssueSheet({ visible, onClose, onSubmit }: ReportI
     };
 
     onSubmit(newIssue);
+    logContentAction('report_issue', { type: 'issue', id: newIssue.id, body: newIssue.title, screenName: 'report_issue' });
+
+    // Register in Content Promotion Pipeline
+    const profile = useUserProfileStore.getState().profile;
+    useContentPromotionStore.getState().registerContent({
+      contentType: 'civic_issue',
+      contentId: newIssue.id,
+      authorId: user?.id ?? 'anon',
+      constituencyId: newIssue.constituencyId ?? null,
+      stateCode: stateCode ?? null,
+      authorRole: profile?.role ?? 'citizen',
+      authorReputation: profile?.reputation ?? 0,
+      isAuthorVerified: profile?.isVerified ?? false,
+    });
+
     onClose();
   };
 

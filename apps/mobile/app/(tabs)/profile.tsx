@@ -24,6 +24,8 @@ import { STATES } from '@kshetra/shared';
 import { useActiveStateStore } from '../../stores/activeState';
 import { getUnifiedConstituenciesForState } from '@/lib/stateDataAdapter';
 import { useResponsive } from '../../lib/responsive';
+import { useContributorVerificationStore } from '../../stores/contributorVerification';
+import { KYC_STATUS_CONFIG } from '../../lib/contentAccountabilityTypes';
 
 interface SettingRowProps {
   icon: keyof typeof Ionicons.glyphMap;
@@ -69,6 +71,10 @@ export default function ProfileScreen() {
   })();
 
   const { insets } = useResponsive();
+  const kycRecord = useContributorVerificationStore((s) => s.kycRecord);
+  const setShowKYCSheet = useContributorVerificationStore((s) => s.setShowKYCSheet);
+  const kycStatus = kycRecord?.status ?? null;
+  const kycConfig = kycStatus ? KYC_STATUS_CONFIG[kycStatus] : null;
 
   return (
     <ScrollView
@@ -182,6 +188,47 @@ export default function ProfileScreen() {
           </Pressable>
         </View>
       )}
+
+      {/* Contributor Verification */}
+      <View style={styles.section}>
+        <Text style={styles.sectionTitle}>Contributor Status</Text>
+        <View style={styles.card}>
+          {kycConfig ? (
+            <View style={styles.settingRow}>
+              <View style={[styles.settingIcon, { backgroundColor: kycConfig.color + '20' }]}>
+                <Ionicons name={kycConfig.icon as any} size={18} color={kycConfig.color} />
+              </View>
+              <View style={{ flex: 1 }}>
+                <Text style={styles.settingLabel}>{kycConfig.label}</Text>
+                <Text style={{ fontSize: 11, color: '#6B7280', marginTop: 2 }}>
+                  {kycRecord?.fullLegalName} · {kycRecord?.phoneNumber}
+                </Text>
+              </View>
+              <View style={[{ paddingHorizontal: 8, paddingVertical: 3, borderRadius: 8, backgroundColor: kycConfig.color + '20' }]}>
+                <Text style={{ fontSize: 11, fontWeight: '700', color: kycConfig.color }}>
+                  {kycStatus?.toUpperCase()}
+                </Text>
+              </View>
+            </View>
+          ) : (
+            <Pressable
+              style={styles.settingRow}
+              onPress={() => setShowKYCSheet(true)}
+            >
+              <View style={[styles.settingIcon, { backgroundColor: '#F59E0B20' }]}>
+                <Ionicons name="finger-print" size={18} color="#F59E0B" />
+              </View>
+              <View style={{ flex: 1 }}>
+                <Text style={styles.settingLabel}>Verify to Contribute</Text>
+                <Text style={{ fontSize: 11, color: '#6B7280', marginTop: 2 }}>
+                  Required before posting, commenting, or reporting
+                </Text>
+              </View>
+              <Ionicons name="chevron-forward" size={16} color="#374151" />
+            </Pressable>
+          )}
+        </View>
+      </View>
 
       {/* Language */}
       <View style={styles.section}>

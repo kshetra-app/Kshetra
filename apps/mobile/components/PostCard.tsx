@@ -3,6 +3,7 @@ import { View, Text, StyleSheet, Pressable } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useTranslation } from 'react-i18next';
 import type { Post, ReactionType } from '../lib/feedTypes';
+import ContentGateActions from './ContentGateActions';
 
 const TYPE_CONFIG: Record<string, { icon: string; color: string; tKey: string }> = {
   discussion: { icon: 'chatbubbles', color: '#6366F1', tKey: 'postCard.discussion' },
@@ -176,6 +177,15 @@ export default function PostCard({
           </>
         )}
       </View>
+
+      {/* Content Promotion: Vouch / Flag / Alert */}
+      {!post.isDeleted && !post.id.startsWith('seed-') && (
+        <ContentGateActions
+          contentType={post.type === 'news' ? 'news' : post.type === 'opinion' ? 'opinion' : 'post'}
+          contentId={post.id}
+          compact={compact}
+        />
+      )}
     </Pressable>
   );
 }
