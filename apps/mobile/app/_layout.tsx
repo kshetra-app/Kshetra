@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, lazy, Suspense } from 'react';
 import { Stack } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
@@ -10,8 +10,10 @@ import { useTheme } from '../lib/useTheme';
 import { usePushNotifications } from '../lib/usePushNotifications';
 import { useNetworkStore } from '../lib/networkStatus';
 import OfflineBanner from '../components/OfflineBanner';
-import KYCVerificationSheet from '../components/KYCVerificationSheet';
+import { useContributorVerificationStore } from '../stores/contributorVerification';
 import '../i18n';
+
+const KYCVerificationSheet = lazy(() => import('../components/KYCVerificationSheet'));
 
 SplashScreen.preventAutoHideAsync();
 
@@ -20,6 +22,7 @@ export default function RootLayout() {
   const { colors, isDark } = useTheme();
   usePushNotifications();
   const startNetworkMonitoring = useNetworkStore((s) => s.startMonitoring);
+  const showKYCSheet = useContributorVerificationStore((s) => s.showKYCSheet);
 
   useEffect(() => {
     initializeAuth();
@@ -34,7 +37,11 @@ export default function RootLayout() {
     <GestureHandlerRootView style={{ flex: 1 }}>
       <StatusBar style={colors.statusBar} />
       <OfflineBanner />
-      <KYCVerificationSheet />
+      {showKYCSheet && (
+        <Suspense fallback={null}>
+          <KYCVerificationSheet />
+        </Suspense>
+      )}
       <Stack
         screenOptions={{
           headerShown: false,
@@ -167,6 +174,48 @@ export default function RootLayout() {
             headerStyle: { backgroundColor: '#0A0A1A' },
             headerTintColor: '#FFFFFF',
             headerShadowVisible: false,
+            animation: 'slide_from_right',
+          }}
+        />
+        <Stack.Screen
+          name="journalist/index"
+          options={{
+            headerShown: false,
+            animation: 'slide_from_right',
+          }}
+        />
+        <Stack.Screen
+          name="politician-portal/index"
+          options={{
+            headerShown: false,
+            animation: 'slide_from_right',
+          }}
+        />
+        <Stack.Screen
+          name="campaign-manager/index"
+          options={{
+            headerShown: false,
+            animation: 'slide_from_right',
+          }}
+        />
+        <Stack.Screen
+          name="civic-metrics/index"
+          options={{
+            headerShown: false,
+            animation: 'slide_from_right',
+          }}
+        />
+        <Stack.Screen
+          name="live-election/index"
+          options={{
+            headerShown: false,
+            animation: 'slide_from_right',
+          }}
+        />
+        <Stack.Screen
+          name="investor-demo/index"
+          options={{
+            headerShown: false,
             animation: 'slide_from_right',
           }}
         />

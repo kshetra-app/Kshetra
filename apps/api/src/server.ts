@@ -8,6 +8,10 @@ import { notificationRoutes } from './routes/notifications';
 import { moderationRoutes } from './routes/moderation';
 import { stateRoutes } from './routes/states';
 import { delimitationRoutes } from './routes/delimitation';
+import { journalistRoutes } from './routes/journalist';
+import { politicianRoutes } from './routes/politician';
+import { campaignRoutes } from './routes/campaign';
+import { civicRoutes } from './routes/civic';
 
 const envToLogger: Record<string, object | boolean> = {
   development: {
@@ -57,6 +61,10 @@ export async function buildApp() {
   await app.register(moderationRoutes);
   await app.register(stateRoutes);
   await app.register(delimitationRoutes);
+  await app.register(journalistRoutes);
+  await app.register(politicianRoutes);
+  await app.register(campaignRoutes);
+  await app.register(civicRoutes);
 
   return app;
 }

@@ -279,6 +279,27 @@ function DashboardContent() {
           <Ionicons name="chevron-forward" size={16} color="#374151" />
         </Pressable>
 
+        {/* Quick Nav: Gold Standard Pillars */}
+        <ScrollView horizontal showsHorizontalScrollIndicator={false} style={{ marginHorizontal: 12, marginBottom: 8 }} contentContainerStyle={{ gap: 8 }}>
+          {[
+            { label: 'Newsroom', icon: 'newspaper', color: '#3B82F6', route: '/journalist' },
+            { label: 'Politicians', icon: 'people', color: '#8B5CF6', route: '/politician-portal' },
+            { label: 'Campaigns', icon: 'flag', color: '#EF4444', route: '/campaign-manager' },
+            { label: 'Civic Metrics', icon: 'bar-chart', color: '#10B981', route: '/civic-metrics' },
+            { label: 'Live Election', icon: 'radio', color: '#F59E0B', route: '/live-election' },
+            { label: 'Investor Demo', icon: 'rocket', color: '#EC4899', route: '/investor-demo' },
+          ].map((item) => (
+            <Pressable
+              key={item.route}
+              style={{ flexDirection: 'row', alignItems: 'center', gap: 6, backgroundColor: item.color + '15', paddingHorizontal: 14, paddingVertical: 10, borderRadius: 12, borderWidth: 1, borderColor: item.color + '30' }}
+              onPress={() => router.push(item.route as any)}
+            >
+              <Ionicons name={item.icon as any} size={16} color={item.color} />
+              <Text style={{ fontSize: 12, fontWeight: '700', color: item.color }}>{item.label}</Text>
+            </Pressable>
+          ))}
+        </ScrollView>
+
         {activeTab === 'issues' && (
           <View style={styles.tabContent}>
             {/* Compact stats row */}

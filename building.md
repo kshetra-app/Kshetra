@@ -53,6 +53,7 @@
 | Sprint 32: Unified Legislator Profile — Merge X-Ray | ✅ Complete | 2026-05-14 | 2026-05-14 |
 | Sprint 33: Content Creator Accountability (CCA) | ✅ Complete | 2026-05-22 | 2026-05-22 |
 | Sprint 34: Content Promotion Pipeline (CPP) | ✅ Complete | 2026-05-22 | 2026-05-22 |
+| Sprint 35: Gold Standard — 5 Pillars + Investor Demo | ✅ Complete | 2026-05-24 | 2026-05-24 |
 
 ---
 
@@ -157,6 +158,7 @@
 | 2026-05-14 | `refactor: unified legislator profile — merge candidate x-ray` | Eliminated duplicate Candidate X-Ray screen by merging all affidavit content into the unified Legislator Profile. AffidavitCard now links to Legislator Profile instead of X-Ray. Old X-Ray route retained as redirect for backwards-compatible deep links. One canonical person screen (Legislator Profile) + one canonical place screen (Constituency Detail), zero duplication. |
 | 2026-05-22 | `feat: sprint 33 — content creator accountability (CCA)` | Two-tier accountability system: Tier 1 = one-time KYC (name, phone, selfie, device, GPS, terms), Tier 2 = per-action forensic fingerprint (device, network, location, content hash). Supabase migration 013 (3 tables, 3 views, RLS, triggers). TypeScript types + deviceFingerprint utility + gate logic. KYCVerificationSheet (3-step modal). Zustand store with MMKV persistence. Gating integrated into ComposeSheet, ReportIssueSheet, ReportSheet. Contributor status on Profile. |
 | 2026-05-22 | `feat: sprint 34 — content promotion pipeline (CPP)` | Community-driven content gatekeeping: content starts at constituency level, earns reach via vouches/flags/alerts. 3 risk tiers (high/medium/low). 10 flag reasons, 6 alert categories. Supabase migration 014 (6 tables, 3 views, triggers, RLS). contentPromotionTypes.ts (types + scoring utilities). contentPromotion.ts Zustand store. ContentGateActions component (vouch/flag/alert UI + FlagSheet + AlertSheet modals). Feed-level gating in feed.tsx filters state/national scope. Integrated into ComposeSheet and ReportIssueSheet. |
+| 2026-05-24 | `feat: sprint 35 — gold standard 5 pillars + investor demo` | Full implementation of all 5 core pillars: journalist/news platform, politician portal, campaign manager/ad engine, civic dashboard, and live election + investor demo. 6 type definition files, 5 Supabase migrations (015–019), 5 Zustand stores, 21 new components, 6 new screens, 4 API route files (~30 endpoints), navigation wiring with dashboard quick-nav pills. See Sprint 35 milestone below. |
 
 ---
 
@@ -2813,3 +2815,114 @@ User creates post → CCA gate (KYC) → Post created (constituency-local)
 | 010_aspiring_leaders.sql | 7 tables | Civic participation |
 | 013_content_accountability.sql | 3 tables + 3 views | KYC + forensic fingerprints |
 | 014_content_promotion_pipeline.sql | 6 tables + 3 views | Vouch/flag/alert + promotion |
+| 015_journalist_platform.sql | 6 tables | Articles, fact-checks, breaking news, journalist profiles |
+| 016_politician_portal.sql | 6 tables | Politician portal, events, manifestos, surveys, grievances |
+| 017_campaign_ad_engine.sql | 7 tables | Campaigns, ads, volunteers, booths, A/B tests |
+| 018_civic_metrics.sql | 8 tables | Budget, attendance, bills, schemes, projects, RTI, hearings |
+| 019_election_live.sql | 5 tables | Live election, constituency results, data pipeline |
+
+---
+
+## Sprint 35: Gold Standard — 5 Pillars + Investor Demo
+
+**Date**: 2026-05-24
+**Goal**: Complete all 5 core pillars to gold standard for investor demo — journalist/news, politician portal, campaign manager/ad engine, civic metrics dashboard, live election + investor demo.
+
+### Phase 1: Type Definitions (6 files)
+
+| File | Types | Key Exports |
+|------|-------|-------------|
+| `lib/journalistTypes.ts` | 15+ interfaces | JournalistProfile, Article, FactCheck, BreakingNewsItem, EditorialAssignment, JOURNALIST_TIER_CONFIG |
+| `lib/politicianPortalTypes.ts` | 15+ interfaces | PoliticianPortalProfile, PoliticianEvent, EManifesto, PoliticianSurvey, Grievance, POLITICIAN_TIER_CONFIG |
+| `lib/campaignTypes.ts` | 20+ interfaces | Campaign, AdCreative, BoothStrategy, Volunteer, ABTest, RevenueFlowData, AD_FORMAT_CONFIG, formatBudget |
+| `lib/civicMetricsTypes.ts` | 20+ interfaces | BudgetSummary, LegislatorAttendance, Bill, GovernmentScheme, DevelopmentProject, RTIRequest, PROJECT_CATEGORY_CONFIG |
+| `lib/electionLiveTypes.ts` | 25+ interfaces | LiveElectionState, LivePartyTally, LiveConstituencyResult, ElectionSimulation, InvestorDemoMetric, FlywheelStep, PlatformMoat, DAUMetrics, UnitEconomicsDemo |
+| `lib/contentAccountabilityTypes.ts` | (existing) | Updated with additional exports |
+
+### Phase 2: Supabase Migrations (5 files)
+
+| Migration | Tables | Purpose |
+|-----------|--------|---------|
+| `015_journalist_platform.sql` | journalist_profiles, articles, fact_checks, breaking_news, editorial_assignments, article_vouches | Full journalist/newsroom backend |
+| `016_politician_portal.sql` | politician_portal_profiles, political_events, e_manifestos, manifesto_items, politician_surveys, grievances | Politician self-service portal |
+| `017_campaign_ad_engine.sql` | campaigns, ad_creatives, booth_strategies, volunteers, ab_tests, campaign_analytics, revenue_transactions | Campaign manager + ad engine |
+| `018_civic_metrics.sql` | budget_summaries, legislator_attendance, bills, government_schemes, development_projects, rti_requests, public_hearings, constituency_dev_index | Civic transparency dashboard |
+| `019_election_live.sql` | live_elections, constituency_results, data_pipeline_status, election_simulations, investor_demo_snapshots | Live election counting + investor metrics |
+
+### Phase 3: Zustand Stores (5 files)
+
+| Store | State | Key Methods |
+|-------|-------|-------------|
+| `stores/journalist.ts` | articles, factChecks, breakingNews, journalists, assignments | getPublishedArticles, getActiveBreaking, getEditorPicks, vouchArticle, flagArticle |
+| `stores/politicianPortal.ts` | politicians, events, manifestos, surveys, grievances | getUpcomingEvents, rsvpEvent, voteManifestoItem, submitSurveyResponse |
+| `stores/campaign.ts` | campaigns, ads, booths, volunteers, abTests, revenueData | getActiveCampaigns, getActiveAds, pauseAd, getRevenueFlow, getCampaignAnalytics |
+| `stores/civicMetrics.ts` | budgetSummaries, attendance, bills, schemes, projects, rtiRequests | getBudgetSummary, getAttendanceForState, getActiveBills, supportBill, upvoteRTI |
+| `stores/electionLive.ts` | liveElection, pipelineStatus, simulation, investorMetrics, flywheelSteps, moatData, dauMetrics | getLiveElection, getPipelineHealth, getInvestorMetrics, getFlywheelSteps, getMoatData, getDAUMetrics, getUnitEconomics |
+
+### Phase 4: Components (21 new)
+
+| Component | Pillar | Description |
+|-----------|--------|-------------|
+| `ManifestoCard.tsx` | Politician | E-manifesto display with item voting, categories, priorities |
+| `CampaignDashboardCard.tsx` | Campaign | Campaign KPIs, budget bar, status, volunteer/booth coverage |
+| `AdPerformanceCard.tsx` | Campaign | Ad creative metrics, sentiment, ECI compliance, pause action |
+| `RevenueCard.tsx` | Campaign | Revenue dashboard with MRR, format breakdown, monthly trend, unit economics |
+| `BudgetCard.tsx` | Civic | State budget summary, category breakdown bars, fiscal indicators |
+| `AttendanceCard.tsx` | Civic | Legislator attendance grade badge, attendance bar, performance metrics |
+| `BillCard.tsx` | Civic | Bill type/status badges, timeline, public opinion with support/oppose |
+| `SchemeCard.tsx` | Civic | Government scheme category, coverage bar, budget, apply online link |
+| `ProjectCard.tsx` | Civic | Development project category, phase, progress bars, costs, delay, issues |
+| `LiveElectionTicker.tsx` | Election | Live pulsing badge, counting progress, party tally bars with vote share |
+| `ConstituencyResultCard.tsx` | Election | Per-constituency result with candidates, margins, upset detection |
+| `InvestorMetricCard.tsx` | Investor | KPI card with trend arrow, change %, icon, color-coded border |
+| `FlywheelVisualization.tsx` | Investor | Step-by-step flywheel with metrics, arrows, loop-back indicator |
+| `DataPipelineCard.tsx` | Election | Data source health dashboard with freshness indicators |
+| `MoatShowcase.tsx` | Investor | Platform moat cards with competitor comparisons |
+
+### Phase 5: Screens (6 new)
+
+| Screen | Route | Tabs | Description |
+|--------|-------|------|-------------|
+| `app/journalist/index.tsx` | `/journalist` | Feed, Fact Check, Breaking, Journalists | Full newsroom dashboard |
+| `app/politician-portal/index.tsx` | `/politician-portal` | Politicians, Events, Manifestos, Surveys | Politician self-service portal |
+| `app/campaign-manager/index.tsx` | `/campaign-manager` | Campaigns, Ads, Revenue, Booths | Campaign management dashboard |
+| `app/civic-metrics/index.tsx` | `/civic-metrics` | Budget, Attendance, Bills, Schemes, Projects, RTI | Civic transparency hub |
+| `app/live-election/index.tsx` | `/live-election` | Overview, Constituencies, Pipeline | Live election counting |
+| `app/investor-demo/index.tsx` | `/investor-demo` | Metrics, Flywheel, Moat, Unit Econ | Investor demo showcase |
+
+### Phase 6: API Routes (4 files, ~30 endpoints)
+
+| Route File | Endpoints | Key Routes |
+|------------|-----------|------------|
+| `routes/journalist.ts` | 8 | articles (list/detail), fact-checks, breaking, profiles, vouch, flag, tip |
+| `routes/politician.ts` | 8 | profiles, events, RSVP, manifestos, manifesto vote, surveys, respond, grievances |
+| `routes/campaign.ts` | 9 | campaigns (list/create/detail), ads (list/create/pause/resume), revenue, booths, volunteers, A/B tests |
+| `routes/civic.ts` | 9 | budget, attendance, bills, bill opinion, schemes, projects, RTI (list/create/upvote), hearings, CDI |
+
+### Phase 7: Navigation Wiring
+
+- 6 new `Stack.Screen` entries in `app/_layout.tsx`
+- Dashboard quick-nav: horizontal scroll bar with 6 color-coded pillar pills (Newsroom, Politicians, Campaigns, Civic Metrics, Live Election, Investor Demo)
+- All routes registered with `slide_from_right` animation
+
+### Phase 8: Bug Fixes
+
+| Fix | File | Issue |
+|-----|------|-------|
+| Added `PROJECT_CATEGORY_CONFIG` | `lib/civicMetricsTypes.ts` | Missing export used by ProjectCard |
+| `getActiveBreakingNews` → `getActiveBreaking` | `app/journalist/index.tsx` | Method name mismatch |
+| `PoliticianSurvey` interface | `app/politician-portal/index.tsx` | Used wrong property names (question→title, options→questions) |
+| `activeStateCode` → `stateCode` | `app/civic-metrics/index.tsx` | Property name mismatch in ActiveStateStore |
+| Added missing styles | `app/politician-portal/index.tsx` | typePill, typeText, resultsLabel styles |
+
+### Component Count Summary
+
+| Pillar | Components | Screens | API Endpoints |
+|--------|-----------|---------|---------------|
+| Journalist/News | ArticleCard, FactCheckCard, BreakingNewsBanner, JournalistProfileCard | 1 | 8 |
+| Politician Portal | PoliticianPortalCard, EventCard, ManifestoCard | 1 | 8 |
+| Campaign/Ad Engine | CampaignDashboardCard, AdPerformanceCard, RevenueCard | 1 | 9 |
+| Civic Metrics | BudgetCard, AttendanceCard, BillCard, SchemeCard, ProjectCard | 1 | 9 |
+| Live Election | LiveElectionTicker, ConstituencyResultCard, DataPipelineCard | 1 | — |
+| Investor Demo | InvestorMetricCard, FlywheelVisualization, MoatShowcase | 1 | — |
+| **Total** | **21 new** | **6 new** | **~34** |
