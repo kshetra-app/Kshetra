@@ -36,7 +36,7 @@ export interface MLAProfile {
 
 export const TN_MLA_PROFILES: MLAProfile[] = [
   {
-    acNo: 1,
+    acNo: 182,
     name: 'SIVA.V.MEYYANATHAN',
     party: 'DMK',
     age: 52,
@@ -56,7 +56,7 @@ export const TN_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/TamilNadu2021/candidate.php?candidate_id=1827',
   },
   {
-    acNo: 2,
+    acNo: 223,
     name: 'PAUL MANOJ PANDIAN',
     party: 'AIADMK',
     age: 49,
@@ -76,7 +76,7 @@ export const TN_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/TamilNadu2021/candidate.php?candidate_id=293',
   },
   {
-    acNo: 3,
+    acNo: 225,
     name: 'E.SUBAYA',
     party: 'AIADMK',
     age: 56,
@@ -96,7 +96,7 @@ export const TN_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/TamilNadu2021/candidate.php?candidate_id=349',
   },
   {
-    acNo: 4,
+    acNo: 8,
     name: 'JOSEPH SAMUEL',
     party: 'DMK',
     age: 58,
@@ -116,7 +116,7 @@ export const TN_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/TamilNadu2021/candidate.php?candidate_id=1828',
   },
   {
-    acNo: 5,
+    acNo: 48,
     name: 'VILWANATHAN.A.C',
     party: 'DMK',
     age: 61,
@@ -136,7 +136,7 @@ export const TN_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/TamilNadu2021/candidate.php?candidate_id=352',
   },
   {
-    acNo: 6,
+    acNo: 44,
     name: 'A.P.Nandakumar',
     party: 'DMK',
     age: 52,
@@ -156,7 +156,7 @@ export const TN_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/TamilNadu2021/candidate.php?candidate_id=246',
   },
   {
-    acNo: 7,
+    acNo: 198,
     name: 'A.MAHARAJAN',
     party: 'DMK',
     age: 67,
@@ -176,7 +176,7 @@ export const TN_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/TamilNadu2021/candidate.php?candidate_id=787',
   },
   {
-    acNo: 8,
+    acNo: 21,
     name: 'M.K. Mohan',
     party: 'DMK',
     age: 68,
@@ -196,7 +196,7 @@ export const TN_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/TamilNadu2021/candidate.php?candidate_id=297',
   },
   {
-    acNo: 9,
+    acNo: 38,
     name: 'S.RAVI',
     party: 'AIADMK',
     age: 57,
@@ -216,7 +216,7 @@ export const TN_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/TamilNadu2021/candidate.php?candidate_id=267',
   },
   {
-    acNo: 10,
+    acNo: 67,
     name: 'S.RAMACHANDRAN',
     party: 'AIADMK',
     age: 63,
@@ -236,7 +236,7 @@ export const TN_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/TamilNadu2021/candidate.php?candidate_id=299',
   },
   {
-    acNo: 11,
+    acNo: 134,
     name: 'ELANGO. R',
     party: 'DMK',
     age: 50,
@@ -256,7 +256,7 @@ export const TN_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/TamilNadu2021/candidate.php?candidate_id=817',
   },
   {
-    acNo: 12,
+    acNo: 42,
     name: 'J.L.Eswarappan',
     party: 'DMK',
     age: 42,
@@ -276,7 +276,7 @@ export const TN_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/TamilNadu2021/candidate.php?candidate_id=819',
   },
   {
-    acNo: 13,
+    acNo: 149,
     name: 'CHINNAPPA K',
     party: 'DMK',
     age: 73,
@@ -296,7 +296,7 @@ export const TN_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/TamilNadu2021/candidate.php?candidate_id=824',
   },
   {
-    acNo: 14,
+    acNo: 207,
     name: 'K.K.S.S.R.RAMACHANDRAN',
     party: 'DMK',
     age: 71,
@@ -316,7 +316,7 @@ export const TN_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/TamilNadu2021/candidate.php?candidate_id=306',
   },
   {
-    acNo: 15,
+    acNo: 129,
     name: 'PERIYASAMY I',
     party: 'DMK',
     age: 67,
@@ -336,7 +336,7 @@ export const TN_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/TamilNadu2021/candidate.php?candidate_id=365',
   },
   {
-    acNo: 16,
+    acNo: 6,
     name: 'Nasar S M',
     party: 'DMK',
     age: 61,
@@ -355,7 +355,7 @@ export const TN_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/TamilNadu2021/candidate.php?candidate_id=367',
   },
   {
-    acNo: 17,
+    acNo: 112,
     name: 'DHANAPAL, P',
     party: 'AIADMK',
     age: 69,
@@ -375,7 +375,7 @@ export const TN_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/TamilNadu2021/candidate.php?candidate_id=68',
   },
   {
-    acNo: 18,
+    acNo: 52,
     name: 'MATHIAZHAGAN D',
     party: 'DMK',
     age: 54,
@@ -395,7 +395,7 @@ export const TN_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/TamilNadu2021/candidate.php?candidate_id=69',
   },
   {
-    acNo: 19,
+    acNo: 104,
     name: 'KARUPPANAN.K.C',
     party: 'AIADMK',
     age: 64,
@@ -415,7 +415,7 @@ export const TN_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/TamilNadu2021/candidate.php?candidate_id=371',
   },
   {
-    acNo: 20,
+    acNo: 107,
     name: 'A.Bannari',
     party: 'AIADMK',
     age: 41,
@@ -435,7 +435,7 @@ export const TN_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/TamilNadu2021/candidate.php?candidate_id=876',
   },
   {
-    acNo: 21,
+    acNo: 157,
     name: 'Arunmozhithevan. A',
     party: 'AIADMK',
     age: 52,
@@ -455,7 +455,7 @@ export const TN_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/TamilNadu2021/candidate.php?candidate_id=271',
   },
   {
-    acNo: 22,
+    acNo: 200,
     name: 'O.PANNEERSELVAM',
     party: 'AIADMK',
     age: 71,
@@ -475,7 +475,7 @@ export const TN_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/TamilNadu2021/candidate.php?candidate_id=6',
   },
   {
-    acNo: 23,
+    acNo: 32,
     name: 'VARALAKSHMI.M',
     party: 'DMK',
     age: 47,
@@ -494,7 +494,7 @@ export const TN_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/TamilNadu2021/candidate.php?candidate_id=893',
   },
   {
-    acNo: 24,
+    acNo: 19,
     name: 'UDHAYANIDHI STALIN',
     party: 'DMK',
     age: 43,
@@ -514,7 +514,7 @@ export const TN_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/TamilNadu2021/candidate.php?candidate_id=256',
   },
   {
-    acNo: 25,
+    acNo: 68,
     name: 'JOTHI. O',
     party: 'DMK',
     age: 50,
@@ -534,7 +534,7 @@ export const TN_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/TamilNadu2021/candidate.php?candidate_id=277',
   },
   {
-    acNo: 26,
+    acNo: 34,
     name: 'K S Babu',
     party: 'VCK',
     age: 44,
@@ -554,7 +554,7 @@ export const TN_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/TamilNadu2021/candidate.php?candidate_id=928',
   },
   {
-    acNo: 27,
+    acNo: 158,
     name: 'K.A. PANDIAN',
     party: 'AIADMK',
     age: 60,
@@ -574,7 +574,7 @@ export const TN_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/TamilNadu2021/candidate.php?candidate_id=80',
   },
   {
-    acNo: 28,
+    acNo: 118,
     name: 'AMMAN K.ARJUNAN',
     party: 'AIADMK',
     age: 63,
@@ -594,7 +594,7 @@ export const TN_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/TamilNadu2021/candidate.php?candidate_id=280',
   },
   {
-    acNo: 29,
+    acNo: 120,
     name: 'VANATHI SRINIVASAN',
     party: 'BJP',
     age: 50,
@@ -614,7 +614,7 @@ export const TN_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/TamilNadu2021/candidate.php?candidate_id=282',
   },
   {
-    acNo: 30,
+    acNo: 231,
     name: 'Prince J.G.',
     party: 'INC',
     age: 64,
@@ -633,7 +633,7 @@ export const TN_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/TamilNadu2021/candidate.php?candidate_id=956',
   },
   {
-    acNo: 31,
+    acNo: 110,
     name: 'K. K. Ramachandran',
     party: 'DMK',
     age: 69,
@@ -653,7 +653,7 @@ export const TN_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/TamilNadu2021/candidate.php?candidate_id=284',
   },
   {
-    acNo: 32,
+    acNo: 201,
     name: 'N.Ramakrishnan',
     party: 'DMK',
     age: 72,
@@ -673,7 +673,7 @@ export const TN_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/TamilNadu2021/candidate.php?candidate_id=285',
   },
   {
-    acNo: 33,
+    acNo: 101,
     name: 'KAYALVIZHI N',
     party: 'DMK',
     age: 52,
@@ -692,7 +692,7 @@ export const TN_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/TamilNadu2021/candidate.php?candidate_id=4053',
   },
   {
-    acNo: 34,
+    acNo: 59,
     name: 'VENKATESHWARAN.S.P.',
     party: 'PMK',
     age: 54,
@@ -712,7 +712,7 @@ export const TN_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/TamilNadu2021/candidate.php?candidate_id=998',
   },
   {
-    acNo: 35,
+    acNo: 132,
     name: 'SREENIVASAN.C',
     party: 'AIADMK',
     age: 72,
@@ -731,7 +731,7 @@ export const TN_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/TamilNadu2021/candidate.php?candidate_id=10',
   },
   {
-    acNo: 36,
+    acNo: 11,
     name: 'EBENEZER. J.J. (@)  JOHN EBENEZER.J',
     party: 'DMK',
     age: 45,
@@ -750,7 +750,7 @@ export const TN_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/TamilNadu2021/candidate.php?candidate_id=1013',
   },
   {
-    acNo: 37,
+    acNo: 86,
     name: 'EDAPPADI PALANISWAMI. K',
     party: 'AIADMK',
     age: 67,
@@ -770,7 +770,7 @@ export const TN_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/TamilNadu2021/candidate.php?candidate_id=88',
   },
   {
-    acNo: 38,
+    acNo: 16,
     name: 'I.PARANTHAMEN',
     party: 'DMK',
     age: 44,
@@ -789,7 +789,7 @@ export const TN_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/TamilNadu2021/candidate.php?candidate_id=1025',
   },
   {
-    acNo: 39,
+    acNo: 98,
     name: 'THIRUMAHAN EVERAA,E.',
     party: 'INC',
     age: 45,
@@ -809,7 +809,7 @@ export const TN_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/TamilNadu2021/candidate.php?candidate_id=1032',
   },
   {
-    acNo: 40,
+    acNo: 98,
     name: 'Chandhirakumar. V.C',
     party: 'DMK',
     age: 57,
@@ -829,7 +829,7 @@ export const TN_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/TamilNadu2021/candidate.php?candidate_id=4388',
   },
   {
-    acNo: 41,
+    acNo: 98,
     name: 'E.V.K.S.Elangovan',
     party: 'INC',
     age: 74,
@@ -849,7 +849,7 @@ export const TN_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/TamilNadu2021/candidate.php?candidate_id=4331',
   },
   {
-    acNo: 42,
+    acNo: 178,
     name: 'M.Chinnadurai',
     party: 'CPI(M)',
     age: 58,
@@ -868,7 +868,7 @@ export const TN_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/TamilNadu2021/candidate.php?candidate_id=1851',
   },
   {
-    acNo: 43,
+    acNo: 81,
     name: 'A.Nallathambi',
     party: 'AIADMK',
     age: 56,
@@ -888,7 +888,7 @@ export const TN_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/TamilNadu2021/candidate.php?candidate_id=409',
   },
   {
-    acNo: 44,
+    acNo: 70,
     name: 'MASTHAN K S',
     party: 'DMK',
     age: 65,
@@ -908,7 +908,7 @@ export const TN_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/TamilNadu2021/candidate.php?candidate_id=413',
   },
   {
-    acNo: 45,
+    acNo: 106,
     name: 'SENGOTTAIYAN K.A',
     party: 'AIADMK',
     age: 73,
@@ -928,7 +928,7 @@ export const TN_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/TamilNadu2021/candidate.php?candidate_id=416',
   },
   {
-    acNo: 46,
+    acNo: 109,
     name: 'PON.JAYASEELAN',
     party: 'AIADMK',
     age: 48,
@@ -948,7 +948,7 @@ export const TN_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/TamilNadu2021/candidate.php?candidate_id=1075',
   },
   {
-    acNo: 47,
+    acNo: 46,
     name: 'Amalu.V',
     party: 'DMK',
     age: 39,
@@ -967,7 +967,7 @@ export const TN_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/TamilNadu2021/candidate.php?candidate_id=1852',
   },
   {
-    acNo: 48,
+    acNo: 1,
     name: 'GOVINDARAJAN T.J',
     party: 'DMK',
     age: 60,
@@ -987,7 +987,7 @@ export const TN_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/TamilNadu2021/candidate.php?candidate_id=1089',
   },
   {
-    acNo: 49,
+    acNo: 18,
     name: 'SEKARBABU. P.K',
     party: 'DMK',
     age: 58,
@@ -1007,7 +1007,7 @@ export const TN_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/TamilNadu2021/candidate.php?candidate_id=422',
   },
   {
-    acNo: 50,
+    acNo: 55,
     name: 'PRAKAASH Y',
     party: 'DMK',
     age: 56,
@@ -1027,7 +1027,7 @@ export const TN_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/TamilNadu2021/candidate.php?candidate_id=432',
   },
   {
-    acNo: 51,
+    acNo: 150,
     name: 'KANNAN KA SO KA',
     party: 'DMK',
     age: 43,
@@ -1047,7 +1047,7 @@ export const TN_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/TamilNadu2021/candidate.php?candidate_id=1692',
   },
   {
-    acNo: 52,
+    acNo: 49,
     name: 'DEVARAJI.K.',
     party: 'DMK',
     age: 64,
@@ -1067,7 +1067,7 @@ export const TN_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/TamilNadu2021/candidate.php?candidate_id=1855',
   },
   {
-    acNo: 53,
+    acNo: 221,
     name: 'C.KRISHNAMURALI',
     party: 'AIADMK',
     age: 38,
@@ -1087,7 +1087,7 @@ export const TN_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/TamilNadu2021/candidate.php?candidate_id=442',
   },
   {
-    acNo: 54,
+    acNo: 65,
     name: 'Saravanan.P.S.T',
     party: 'DMK',
     age: 52,
@@ -1107,7 +1107,7 @@ export const TN_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/TamilNadu2021/candidate.php?candidate_id=445',
   },
   {
-    acNo: 55,
+    acNo: 80,
     name: 'Senthilkumar.M',
     party: 'AIADMK',
     age: 43,
@@ -1127,7 +1127,7 @@ export const TN_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/TamilNadu2021/candidate.php?candidate_id=450',
   },
   {
-    acNo: 56,
+    acNo: 37,
     name: 'C.V.M.P. Ezhailzrasan',
     party: 'DMK',
     age: 49,
@@ -1147,7 +1147,7 @@ export const TN_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/TamilNadu2021/candidate.php?candidate_id=453',
   },
   {
-    acNo: 57,
+    acNo: 102,
     name: 'SAMINATHAN.M.P',
     party: 'DMK',
     age: 57,
@@ -1167,7 +1167,7 @@ export const TN_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/TamilNadu2021/candidate.php?candidate_id=454',
   },
   {
-    acNo: 58,
+    acNo: 184,
     name: 'S.Mangudi',
     party: 'INC',
     age: 58,
@@ -1187,7 +1187,7 @@ export const TN_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/TamilNadu2021/candidate.php?candidate_id=1211',
   },
   {
-    acNo: 59,
+    acNo: 135,
     name: 'SENTHILBALAJI V',
     party: 'DMK',
     age: 45,
@@ -1207,7 +1207,7 @@ export const TN_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/TamilNadu2021/candidate.php?candidate_id=485',
   },
   {
-    acNo: 60,
+    acNo: 40,
     name: 'DURAIMURUGAN',
     party: 'DMK',
     age: 83,
@@ -1226,7 +1226,7 @@ export const TN_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/TamilNadu2021/candidate.php?candidate_id=486',
   },
   {
-    acNo: 61,
+    acNo: 159,
     name: 'SINTHANAI SELVAN',
     party: 'VCK',
     age: 55,
@@ -1244,7 +1244,7 @@ export const TN_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/TamilNadu2021/candidate.php?candidate_id=1251',
   },
   {
-    acNo: 62,
+    acNo: 117,
     name: 'G.Arunkumar',
     party: 'AIADMK',
     age: 59,
@@ -1264,7 +1264,7 @@ export const TN_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/TamilNadu2021/candidate.php?candidate_id=491',
   },
   {
-    acNo: 63,
+    acNo: 234,
     name: 'RAJESH KUMAR  S',
     party: 'INC',
     age: 46,
@@ -1304,7 +1304,7 @@ export const TN_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/TamilNadu2021/candidate.php?candidate_id=98',
   },
   {
-    acNo: 65,
+    acNo: 45,
     name: 'M.JAGAN MOORTHY',
     party: 'AIADMK',
     age: 54,
@@ -1324,7 +1324,7 @@ export const TN_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/TamilNadu2021/candidate.php?candidate_id=1279',
   },
   {
-    acNo: 66,
+    acNo: 122,
     name: 'Damodaran.S',
     party: 'AIADMK',
     age: 69,
@@ -1343,7 +1343,7 @@ export const TN_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/TamilNadu2021/candidate.php?candidate_id=1290',
   },
   {
-    acNo: 67,
+    acNo: 13,
     name: 'M.K. STALIN',
     party: 'DMK',
     age: 68,
@@ -1362,7 +1362,7 @@ export const TN_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/TamilNadu2021/candidate.php?candidate_id=504',
   },
   {
-    acNo: 68,
+    acNo: 218,
     name: 'KADAMBUR RAJU',
     party: 'AIADMK',
     age: 61,
@@ -1382,7 +1382,7 @@ export const TN_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/TamilNadu2021/candidate.php?candidate_id=507',
   },
   {
-    acNo: 69,
+    acNo: 53,
     name: 'Ashokkumar.K',
     party: 'AIADMK',
     age: 68,
@@ -1401,7 +1401,7 @@ export const TN_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/TamilNadu2021/candidate.php?candidate_id=102',
   },
   {
-    acNo: 70,
+    acNo: 136,
     name: 'SIVAGAMA SUNDARI.K',
     party: 'DMK',
     age: 50,
@@ -1421,7 +1421,7 @@ export const TN_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/TamilNadu2021/candidate.php?candidate_id=1858',
   },
   {
-    acNo: 71,
+    acNo: 137,
     name: 'R.Manickam',
     party: 'DMK',
     age: 61,
@@ -1441,7 +1441,7 @@ export const TN_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/TamilNadu2021/candidate.php?candidate_id=1350',
   },
   {
-    acNo: 72,
+    acNo: 97,
     name: 'THANGAMANI.P',
     party: 'AIADMK',
     age: 60,
@@ -1460,7 +1460,7 @@ export const TN_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/TamilNadu2021/candidate.php?candidate_id=105',
   },
   {
-    acNo: 73,
+    acNo: 171,
     name: 'ANBALAGAN, G.',
     party: 'DMK',
     age: 72,
@@ -1480,7 +1480,7 @@ export const TN_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/TamilNadu2021/candidate.php?candidate_id=106',
   },
   {
-    acNo: 74,
+    acNo: 156,
     name: 'M.R.K.PANNEERSELVAM',
     party: 'DMK',
     age: 63,
@@ -1500,7 +1500,7 @@ export const TN_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/TamilNadu2021/candidate.php?candidate_id=516',
   },
   {
-    acNo: 75,
+    acNo: 143,
     name: 'A.SOUNDARAPANDIAN',
     party: 'DMK',
     age: 56,
@@ -1520,7 +1520,7 @@ export const TN_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/TamilNadu2021/candidate.php?candidate_id=1406',
   },
   {
-    acNo: 76,
+    acNo: 126,
     name: 'C MAHENDRAN',
     party: 'AIADMK',
     age: 49,
@@ -1540,7 +1540,7 @@ export const TN_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/TamilNadu2021/candidate.php?candidate_id=75',
   },
   {
-    acNo: 77,
+    acNo: 9,
     name: 'SUDHARSANAM. S',
     party: 'DMK',
     age: 62,
@@ -1560,7 +1560,7 @@ export const TN_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/TamilNadu2021/candidate.php?candidate_id=1427',
   },
   {
-    acNo: 78,
+    acNo: 7,
     name: 'GANAPATHY.K',
     party: 'DMK',
     age: 61,
@@ -1579,7 +1579,7 @@ export const TN_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/TamilNadu2021/candidate.php?candidate_id=533',
   },
   {
-    acNo: 79,
+    acNo: 193,
     name: 'PALANIVEL THIAGA RAJAN',
     party: 'DMK',
     age: 55,
@@ -1598,7 +1598,7 @@ export const TN_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/TamilNadu2021/candidate.php?candidate_id=1436',
   },
   {
-    acNo: 80,
+    acNo: 189,
     name: 'MOORTHY P',
     party: 'DMK',
     age: 62,
@@ -1618,7 +1618,7 @@ export const TN_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/TamilNadu2021/candidate.php?candidate_id=1443',
   },
   {
-    acNo: 81,
+    acNo: 191,
     name: 'THALAPATHI G',
     party: 'DMK',
     age: 65,
@@ -1637,7 +1637,7 @@ export const TN_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/TamilNadu2021/candidate.php?candidate_id=527',
   },
   {
-    acNo: 82,
+    acNo: 194,
     name: 'RAJU. K',
     party: 'AIADMK',
     age: 68,
@@ -1657,7 +1657,7 @@ export const TN_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/TamilNadu2021/candidate.php?candidate_id=110',
   },
   {
-    acNo: 83,
+    acNo: 35,
     name: 'Maragatham. K',
     party: 'AIADMK',
     age: 38,
@@ -1677,7 +1677,7 @@ export const TN_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/TamilNadu2021/candidate.php?candidate_id=530',
   },
   {
-    acNo: 84,
+    acNo: 71,
     name: 'SIVAKUMAR C',
     party: 'PMK',
     age: 47,
@@ -1697,7 +1697,7 @@ export const TN_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/TamilNadu2021/candidate.php?candidate_id=537',
   },
   {
-    acNo: 85,
+    acNo: 144,
     name: 'S.Kathiravan',
     party: 'DMK',
     age: 46,
@@ -1717,7 +1717,7 @@ export const TN_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/TamilNadu2021/candidate.php?candidate_id=1521',
   },
   {
-    acNo: 86,
+    acNo: 187,
     name: 'Tamilarasi A.',
     party: 'DMK',
     age: 44,
@@ -1737,7 +1737,7 @@ export const TN_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/TamilNadu2021/candidate.php?candidate_id=1540',
   },
   {
-    acNo: 87,
+    acNo: 138,
     name: 'ABDUL SAMAD P',
     party: 'DMK',
     age: 52,
@@ -1756,7 +1756,7 @@ export const TN_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/TamilNadu2021/candidate.php?candidate_id=1861',
   },
   {
-    acNo: 88,
+    acNo: 167,
     name: 'RAJAA T R B',
     party: 'DMK',
     age: 44,
@@ -1776,7 +1776,7 @@ export const TN_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/TamilNadu2021/candidate.php?candidate_id=115',
   },
   {
-    acNo: 89,
+    acNo: 161,
     name: 'S Rajakumar',
     party: 'INC',
     age: 52,
@@ -1796,7 +1796,7 @@ export const TN_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/TamilNadu2021/candidate.php?candidate_id=1862',
   },
   {
-    acNo: 90,
+    acNo: 85,
     name: 'SADHASIVAM.S',
     party: 'PMK',
     age: 54,
@@ -1816,7 +1816,7 @@ export const TN_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/TamilNadu2021/candidate.php?candidate_id=1877',
   },
   {
-    acNo: 91,
+    acNo: 100,
     name: 'SARASWATHI.C',
     party: 'BJP',
     age: 76,
@@ -1836,7 +1836,7 @@ export const TN_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/TamilNadu2021/candidate.php?candidate_id=1879',
   },
   {
-    acNo: 92,
+    acNo: 212,
     name: 'R.S.RAJAKANNAPPAN',
     party: 'DMK',
     age: 72,
@@ -1855,7 +1855,7 @@ export const TN_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/TamilNadu2021/candidate.php?candidate_id=1884',
   },
   {
-    acNo: 93,
+    acNo: 145,
     name: 'N. Thiyagarajan',
     party: 'DMK',
     age: 60,
@@ -1875,7 +1875,7 @@ export const TN_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/TamilNadu2021/candidate.php?candidate_id=1887',
   },
   {
-    acNo: 94,
+    acNo: 163,
     name: 'J. Mohamed Shanavas',
     party: 'VCK',
     age: 39,
@@ -1894,7 +1894,7 @@ export const TN_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/TamilNadu2021/candidate.php?candidate_id=1894',
   },
   {
-    acNo: 95,
+    acNo: 230,
     name: 'Gandhi M.R.',
     party: 'BJP',
     age: 76,
@@ -1913,7 +1913,7 @@ export const TN_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/TamilNadu2021/candidate.php?candidate_id=1901',
   },
   {
-    acNo: 96,
+    acNo: 94,
     name: 'RAMALINGAM P',
     party: 'DMK',
     age: 55,
@@ -1933,7 +1933,7 @@ export const TN_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/TamilNadu2021/candidate.php?candidate_id=1906',
   },
   {
-    acNo: 97,
+    acNo: 131,
     name: 'NATHAM.R.VISWANATHAN',
     party: 'AIADMK',
     age: 71,
@@ -1952,7 +1952,7 @@ export const TN_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/TamilNadu2021/candidate.php?candidate_id=1915',
   },
   {
-    acNo: 98,
+    acNo: 153,
     name: 'SABA.RAJENDRAN',
     party: 'DMK',
     age: 59,
@@ -1972,7 +1972,7 @@ export const TN_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/TamilNadu2021/candidate.php?candidate_id=561',
   },
   {
-    acNo: 99,
+    acNo: 130,
     name: 'S.Thenmozhi',
     party: 'AIADMK',
     age: 59,
@@ -1992,7 +1992,7 @@ export const TN_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/TamilNadu2021/candidate.php?candidate_id=1918',
   },
   {
-    acNo: 100,
+    acNo: 128,
     name: 'SAKKARAPANI R',
     party: 'DMK',
     age: 59,
@@ -2012,7 +2012,7 @@ export const TN_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/TamilNadu2021/candidate.php?candidate_id=222',
   },
   {
-    acNo: 101,
+    acNo: 84,
     name: 'R.MANI',
     party: 'AIADMK',
     age: 43,
@@ -2032,7 +2032,7 @@ export const TN_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/TamilNadu2021/candidate.php?candidate_id=2655',
   },
   {
-    acNo: 102,
+    acNo: 175,
     name: 'VAITHILINGAM, R.',
     party: 'AIADMK',
     age: 66,
@@ -2052,7 +2052,7 @@ export const TN_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/TamilNadu2021/candidate.php?candidate_id=1926',
   },
   {
-    acNo: 103,
+    acNo: 217,
     name: 'SHUNMUGAIAH C',
     party: 'DMK',
     age: 50,
@@ -2072,7 +2072,7 @@ export const TN_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/TamilNadu2021/candidate.php?candidate_id=1928',
   },
   {
-    acNo: 104,
+    acNo: 232,
     name: 'Mano Thangaraj, T.',
     party: 'DMK',
     age: 53,
@@ -2092,7 +2092,7 @@ export const TN_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/TamilNadu2021/candidate.php?candidate_id=216',
   },
   {
-    acNo: 105,
+    acNo: 127,
     name: 'SENTHIL KUMAR I.P',
     party: 'DMK',
     age: 42,
@@ -2112,7 +2112,7 @@ export const TN_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/TamilNadu2021/candidate.php?candidate_id=213',
   },
   {
-    acNo: 106,
+    acNo: 226,
     name: 'ABDUL WAHAB .M',
     party: 'DMK',
     age: 54,
@@ -2132,7 +2132,7 @@ export const TN_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/TamilNadu2021/candidate.php?candidate_id=1935',
   },
   {
-    acNo: 107,
+    acNo: 115,
     name: 'ANANDAN M S M',
     party: 'AIADMK',
     age: 59,
@@ -2152,7 +2152,7 @@ export const TN_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/TamilNadu2021/candidate.php?candidate_id=567',
   },
   {
-    acNo: 108,
+    acNo: 154,
     name: 'VELMURUGAN.T',
     party: 'DMK',
     age: 50,
@@ -2171,7 +2171,7 @@ export const TN_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/TamilNadu2021/candidate.php?candidate_id=1584',
   },
   {
-    acNo: 109,
+    acNo: 172,
     name: 'Dr.JAWAHIRULLAH, M.H.',
     party: 'DMK',
     age: 61,
@@ -2190,7 +2190,7 @@ export const TN_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/TamilNadu2021/candidate.php?candidate_id=1940',
   },
   {
-    acNo: 110,
+    acNo: 60,
     name: 'GOVINDASAMY.A',
     party: 'AIADMK',
     age: 49,
@@ -2210,7 +2210,7 @@ export const TN_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/TamilNadu2021/candidate.php?candidate_id=205',
   },
   {
-    acNo: 111,
+    acNo: 209,
     name: 'MURUGESAN S',
     party: 'DMK',
     age: 54,
@@ -2230,7 +2230,7 @@ export const TN_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/TamilNadu2021/candidate.php?candidate_id=1968',
   },
   {
-    acNo: 112,
+    acNo: 176,
     name: 'ANNADURAI, K.',
     party: 'DMK',
     age: 63,
@@ -2250,7 +2250,7 @@ export const TN_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/TamilNadu2021/candidate.php?candidate_id=1973',
   },
   {
-    acNo: 113,
+    acNo: 58,
     name: 'MANI. G.K',
     party: 'PMK',
     age: 69,
@@ -2269,7 +2269,7 @@ export const TN_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/TamilNadu2021/candidate.php?candidate_id=202',
   },
   {
-    acNo: 114,
+    acNo: 147,
     name: 'PRABHAHARAN, M.',
     party: 'DMK',
     age: 46,
@@ -2289,7 +2289,7 @@ export const TN_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/TamilNadu2021/candidate.php?candidate_id=201',
   },
   {
-    acNo: 115,
+    acNo: 12,
     name: 'SHEKAR. R.D',
     party: 'DMK',
     age: 54,
@@ -2309,7 +2309,7 @@ export const TN_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/TamilNadu2021/candidate.php?candidate_id=580',
   },
   {
-    acNo: 116,
+    acNo: 177,
     name: 'ASHOKKUMAR, N.',
     party: 'DMK',
     age: 63,
@@ -2329,7 +2329,7 @@ export const TN_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/TamilNadu2021/candidate.php?candidate_id=1684',
   },
   {
-    acNo: 117,
+    acNo: 199,
     name: 'K.S.SARAVANAKUMAAR',
     party: 'DMK',
     age: 49,
@@ -2349,7 +2349,7 @@ export const TN_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/TamilNadu2021/candidate.php?candidate_id=1978',
   },
   {
-    acNo: 118,
+    acNo: 103,
     name: 'JAYAKUMAR, S.',
     party: 'AIADMK',
     age: 41,
@@ -2368,7 +2368,7 @@ export const TN_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/TamilNadu2021/candidate.php?candidate_id=586',
   },
   {
-    acNo: 119,
+    acNo: 123,
     name: 'Pollachi V. Jayaraman',
     party: 'AIADMK',
     age: 67,
@@ -2388,7 +2388,7 @@ export const TN_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/TamilNadu2021/candidate.php?candidate_id=1983',
   },
   {
-    acNo: 120,
+    acNo: 2,
     name: 'DURAI. CHANDRASEKAR',
     party: 'INC',
     age: 48,
@@ -2407,7 +2407,7 @@ export const TN_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/TamilNadu2021/candidate.php?candidate_id=1985',
   },
   {
-    acNo: 121,
+    acNo: 5,
     name: 'Krishnaswamy A',
     party: 'DMK',
     age: 55,
@@ -2427,7 +2427,7 @@ export const TN_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/TamilNadu2021/candidate.php?candidate_id=599',
   },
   {
-    acNo: 122,
+    acNo: 180,
     name: 'V.Muthuraja',
     party: 'DMK',
     age: 44,
@@ -2447,7 +2447,7 @@ export const TN_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/TamilNadu2021/candidate.php?candidate_id=1991',
   },
   {
-    acNo: 123,
+    acNo: 228,
     name: 'M.Appavu',
     party: 'DMK',
     age: 69,
@@ -2467,7 +2467,7 @@ export const TN_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/TamilNadu2021/candidate.php?candidate_id=1994',
   },
   {
-    acNo: 124,
+    acNo: 211,
     name: 'KATHARBATCHA MUTHURAMALINGAM',
     party: 'DMK',
     age: 49,
@@ -2487,7 +2487,7 @@ export const TN_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/TamilNadu2021/candidate.php?candidate_id=606',
   },
   {
-    acNo: 125,
+    acNo: 41,
     name: 'R.GANDHI',
     party: 'DMK',
     age: 75,
@@ -2507,7 +2507,7 @@ export const TN_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/TamilNadu2021/candidate.php?candidate_id=189',
   },
   {
-    acNo: 126,
+    acNo: 92,
     name: 'MATHIVENTHAN M',
     party: 'DMK',
     age: 36,
@@ -2527,7 +2527,7 @@ export const TN_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/TamilNadu2021/candidate.php?candidate_id=1998',
   },
   {
-    acNo: 127,
+    acNo: 89,
     name: 'R. RAJENDRAN',
     party: 'DMK',
     age: 61,
@@ -2547,7 +2547,7 @@ export const TN_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/TamilNadu2021/candidate.php?candidate_id=184',
   },
   {
-    acNo: 128,
+    acNo: 90,
     name: 'E.Balasubramaniyan',
     party: 'AIADMK',
     age: 60,
@@ -2567,7 +2567,7 @@ export const TN_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/TamilNadu2021/candidate.php?candidate_id=179',
   },
   {
-    acNo: 129,
+    acNo: 88,
     name: 'ARUL. R',
     party: 'PMK',
     age: 49,
@@ -2587,7 +2587,7 @@ export const TN_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/TamilNadu2021/candidate.php?candidate_id=177',
   },
   {
-    acNo: 130,
+    acNo: 219,
     name: 'A. Raja',
     party: 'DMK',
     age: 35,
@@ -2606,7 +2606,7 @@ export const TN_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/TamilNadu2021/candidate.php?candidate_id=1628',
   },
   {
-    acNo: 131,
+    acNo: 79,
     name: 'UDHAYASURIYAN T',
     party: 'DMK',
     age: 57,
@@ -2626,7 +2626,7 @@ export const TN_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/TamilNadu2021/candidate.php?candidate_id=2011',
   },
   {
-    acNo: 132,
+    acNo: 87,
     name: 'SUNDARARAJAN, S.',
     party: 'AIADMK',
     age: 49,
@@ -2646,7 +2646,7 @@ export const TN_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/TamilNadu2021/candidate.php?candidate_id=175',
   },
   {
-    acNo: 133,
+    acNo: 204,
     name: 'RAGHURAMAN,  A.R.R.',
     party: 'DMK',
     age: 49,
@@ -2666,7 +2666,7 @@ export const TN_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/TamilNadu2021/candidate.php?candidate_id=2013',
   },
   {
-    acNo: 134,
+    acNo: 93,
     name: 'PONNUSAMY K',
     party: 'DMK',
     age: 69,
@@ -2686,7 +2686,7 @@ export const TN_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/TamilNadu2021/candidate.php?candidate_id=2014',
   },
   {
-    acNo: 135,
+    acNo: 27,
     name: 'S.ARAVINDRAMESH',
     party: 'DMK',
     age: 54,
@@ -2706,7 +2706,7 @@ export const TN_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/TamilNadu2021/candidate.php?candidate_id=2022',
   },
   {
-    acNo: 136,
+    acNo: 39,
     name: 'A.M.MUNIRATHINAM',
     party: 'INC',
     age: 65,
@@ -2726,7 +2726,7 @@ export const TN_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/TamilNadu2021/candidate.php?candidate_id=3695',
   },
   {
-    acNo: 137,
+    acNo: 121,
     name: 'Jayaram, K.R',
     party: 'AIADMK',
     age: 47,
@@ -2746,7 +2746,7 @@ export const TN_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/TamilNadu2021/candidate.php?candidate_id=638',
   },
   {
-    acNo: 138,
+    acNo: 160,
     name: 'PANNEERSELVAM',
     party: 'DMK',
     age: 66,
@@ -2766,7 +2766,7 @@ export const TN_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/TamilNadu2021/candidate.php?candidate_id=2025',
   },
   {
-    acNo: 139,
+    acNo: 186,
     name: 'Pr.Senthilnathan',
     party: 'AIADMK',
     age: 53,
@@ -2786,7 +2786,7 @@ export const TN_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/TamilNadu2021/candidate.php?candidate_id=646',
   },
   {
-    acNo: 140,
+    acNo: 205,
     name: 'Ashokan.G',
     party: 'INC',
     age: 62,
@@ -2806,7 +2806,7 @@ export const TN_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/TamilNadu2021/candidate.php?candidate_id=1941',
   },
   {
-    acNo: 141,
+    acNo: 29,
     name: 'SELVAPERUNTHAGAI',
     party: 'INC',
     age: 60,
@@ -2826,7 +2826,7 @@ export const TN_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/TamilNadu2021/candidate.php?candidate_id=2028',
   },
   {
-    acNo: 142,
+    acNo: 139,
     name: 'Palaniyandi.M',
     party: 'DMK',
     age: 54,
@@ -2845,7 +2845,7 @@ export const TN_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/TamilNadu2021/candidate.php?candidate_id=1651',
   },
   {
-    acNo: 143,
+    acNo: 203,
     name: 'MANRAJ, E.M.',
     party: 'AIADMK',
     age: 43,
@@ -2865,7 +2865,7 @@ export const TN_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/TamilNadu2021/candidate.php?candidate_id=166',
   },
   {
-    acNo: 144,
+    acNo: 116,
     name: 'KANDASAMY V.P.',
     party: 'AIADMK',
     age: 62,
@@ -2885,7 +2885,7 @@ export const TN_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/TamilNadu2021/candidate.php?candidate_id=165',
   },
   {
-    acNo: 145,
+    acNo: 31,
     name: 'Raja.S.R',
     party: 'DMK',
     age: 64,
@@ -2905,7 +2905,7 @@ export const TN_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/TamilNadu2021/candidate.php?candidate_id=654',
   },
   {
-    acNo: 146,
+    acNo: 56,
     name: 'RAMACHANDRAN.T',
     party: 'CPI',
     age: 53,
@@ -2924,7 +2924,7 @@ export const TN_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/TamilNadu2021/candidate.php?candidate_id=2037',
   },
   {
-    acNo: 147,
+    acNo: 174,
     name: 'NEELAMEGAM, T.K.G.',
     party: 'DMK',
     age: 57,
@@ -2944,7 +2944,7 @@ export const TN_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/TamilNadu2021/candidate.php?candidate_id=660',
   },
   {
-    acNo: 148,
+    acNo: 15,
     name: 'SIVAKUMAR.P',
     party: 'DMK',
     age: 55,
@@ -2964,7 +2964,7 @@ export const TN_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/TamilNadu2021/candidate.php?candidate_id=1556',
   },
   {
-    acNo: 149,
+    acNo: 196,
     name: 'UDHAYAKUMAR R B',
     party: 'AIADMK',
     age: 47,
@@ -2983,7 +2983,7 @@ export const TN_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/TamilNadu2021/candidate.php?candidate_id=162',
   },
   {
-    acNo: 150,
+    acNo: 181,
     name: 'S.REGUPATHY',
     party: 'DMK',
     age: 70,
@@ -3003,7 +3003,7 @@ export const TN_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/TamilNadu2021/candidate.php?candidate_id=2041',
   },
   {
-    acNo: 151,
+    acNo: 33,
     name: 'S.S.Balaji',
     party: 'VCK',
     age: 51,
@@ -3023,7 +3023,7 @@ export const TN_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/TamilNadu2021/candidate.php?candidate_id=3846',
   },
   {
-    acNo: 152,
+    acNo: 166,
     name: 'MARIMUTHU K',
     party: 'CPI',
     age: 50,
@@ -3042,7 +3042,7 @@ export const TN_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/TamilNadu2021/candidate.php?candidate_id=1677',
   },
   {
-    acNo: 153,
+    acNo: 173,
     name: 'DURAI.CHANDRASEKARAN',
     party: 'DMK',
     age: 61,
@@ -3062,7 +3062,7 @@ export const TN_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/TamilNadu2021/candidate.php?candidate_id=158',
   },
   {
-    acNo: 154,
+    acNo: 168,
     name: 'KALAIVANAN  POONDI  K.',
     party: 'DMK',
     age: 56,
@@ -3082,7 +3082,7 @@ export const TN_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/TamilNadu2021/candidate.php?candidate_id=671',
   },
   {
-    acNo: 155,
+    acNo: 142,
     name: 'ANBIL MAHESH POYYAMOZHI',
     party: 'DMK',
     age: 43,
@@ -3102,7 +3102,7 @@ export const TN_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/TamilNadu2021/candidate.php?candidate_id=2047',
   },
   {
-    acNo: 156,
+    acNo: 10,
     name: 'K.P.SHANKAR',
     party: 'DMK',
     age: 47,
@@ -3122,7 +3122,7 @@ export const TN_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/TamilNadu2021/candidate.php?candidate_id=2052',
   },
   {
-    acNo: 157,
+    acNo: 24,
     name: 'KARUNANITHI J',
     party: 'DMK',
     age: 51,
@@ -3142,7 +3142,7 @@ export const TN_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/TamilNadu2021/candidate.php?candidate_id=2054',
   },
   {
-    acNo: 158,
+    acNo: 119,
     name: 'S.P. VELUMANI',
     party: 'AIADMK',
     age: 51,
@@ -3161,7 +3161,7 @@ export const TN_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/TamilNadu2021/candidate.php?candidate_id=152',
   },
   {
-    acNo: 159,
+    acNo: 20,
     name: 'EZHILAN N',
     party: 'DMK',
     age: 41,
@@ -3181,7 +3181,7 @@ export const TN_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/TamilNadu2021/candidate.php?candidate_id=1563',
   },
   {
-    acNo: 160,
+    acNo: 146,
     name: 'S.STALINKUMAR',
     party: 'DMK',
     age: 36,
@@ -3201,7 +3201,7 @@ export const TN_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/TamilNadu2021/candidate.php?candidate_id=689',
   },
   {
-    acNo: 161,
+    acNo: 72,
     name: 'ARJUNAN P',
     party: 'AIADMK',
     age: 51,
@@ -3221,7 +3221,7 @@ export const TN_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/TamilNadu2021/candidate.php?candidate_id=692',
   },
   {
-    acNo: 162,
+    acNo: 215,
     name: 'Anitha R. Radhakrishnan',
     party: 'DMK',
     age: 68,
@@ -3241,7 +3241,7 @@ export const TN_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/TamilNadu2021/candidate.php?candidate_id=1588',
   },
   {
-    acNo: 163,
+    acNo: 96,
     name: 'ESWARAN E R',
     party: 'DMK',
     age: 60,
@@ -3261,7 +3261,7 @@ export const TN_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/TamilNadu2021/candidate.php?candidate_id=149',
   },
   {
-    acNo: 164,
+    acNo: 141,
     name: 'INIGO IRUDAYARAJ,S.',
     party: 'DMK',
     age: 48,
@@ -3281,7 +3281,7 @@ export const TN_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/TamilNadu2021/candidate.php?candidate_id=2062',
   },
   {
-    acNo: 165,
+    acNo: 140,
     name: 'Nehru, K.N.',
     party: 'DMK',
     age: 68,
@@ -3301,7 +3301,7 @@ export const TN_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/TamilNadu2021/candidate.php?candidate_id=2063',
   },
   {
-    acNo: 166,
+    acNo: 208,
     name: 'THANGAM THENARASU',
     party: 'DMK',
     age: 54,
@@ -3321,7 +3321,7 @@ export const TN_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/TamilNadu2021/candidate.php?candidate_id=702',
   },
   {
-    acNo: 167,
+    acNo: 224,
     name: 'Nainar Nagenthran',
     party: 'BJP',
     age: 60,
@@ -3341,7 +3341,7 @@ export const TN_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/TamilNadu2021/candidate.php?candidate_id=34',
   },
   {
-    acNo: 168,
+    acNo: 50,
     name: 'A. NALLATHAMBI',
     party: 'DMK',
     age: 45,
@@ -3361,7 +3361,7 @@ export const TN_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/TamilNadu2021/candidate.php?candidate_id=2070',
   },
   {
-    acNo: 169,
+    acNo: 185,
     name: 'KR.PERIYAKARUPPAN',
     party: 'DMK',
     age: 62,
@@ -3381,7 +3381,7 @@ export const TN_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/TamilNadu2021/candidate.php?candidate_id=2071',
   },
   {
-    acNo: 170,
+    acNo: 113,
     name: 'VIJEYAKUMAR.K.N',
     party: 'AIADMK',
     age: 64,
@@ -3400,7 +3400,7 @@ export const TN_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/TamilNadu2021/candidate.php?candidate_id=2075',
   },
   {
-    acNo: 171,
+    acNo: 114,
     name: 'SELVARAJ A K',
     party: 'DMK',
     age: 64,
@@ -3420,7 +3420,7 @@ export const TN_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/TamilNadu2021/candidate.php?candidate_id=144',
   },
   {
-    acNo: 172,
+    acNo: 3,
     name: 'S.Chandran',
     party: 'DMK',
     age: 57,
@@ -3440,7 +3440,7 @@ export const TN_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/TamilNadu2021/candidate.php?candidate_id=728',
   },
   {
-    acNo: 173,
+    acNo: 210,
     name: 'KARUMANICKAM',
     party: 'INC',
     age: 35,
@@ -3459,7 +3459,7 @@ export const TN_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/TamilNadu2021/candidate.php?candidate_id=2081',
   },
   {
-    acNo: 174,
+    acNo: 63,
     name: 'E V VELU',
     party: 'DMK',
     age: 71,
@@ -3479,7 +3479,7 @@ export const TN_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/TamilNadu2021/candidate.php?candidate_id=737',
   },
   {
-    acNo: 175,
+    acNo: 108,
     name: 'J N Ganesh',
     party: 'INC',
     age: 59,
@@ -3499,7 +3499,7 @@ export const TN_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/TamilNadu2021/candidate.php?candidate_id=2086',
   },
   {
-    acNo: 176,
+    acNo: 125,
     name: 'Radhakrishnan,K.',
     party: 'AIADMK',
     age: 55,
@@ -3518,7 +3518,7 @@ export const TN_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/TamilNadu2021/candidate.php?candidate_id=743',
   },
   {
-    acNo: 177,
+    acNo: 77,
     name: 'MANIKANNAN A J',
     party: 'DMK',
     age: 56,
@@ -3538,7 +3538,7 @@ export const TN_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/TamilNadu2021/candidate.php?candidate_id=2089',
   },
   {
-    acNo: 178,
+    acNo: 197,
     name: 'AYYAPPAN P',
     party: 'AIADMK',
     age: 56,
@@ -3558,7 +3558,7 @@ export const TN_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/TamilNadu2021/candidate.php?candidate_id=746',
   },
   {
-    acNo: 179,
+    acNo: 51,
     name: 'T.M.TAMILSELVAM',
     party: 'AIADMK',
     age: 47,
@@ -3577,7 +3577,7 @@ export const TN_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/TamilNadu2021/candidate.php?candidate_id=140',
   },
   {
-    acNo: 180,
+    acNo: 36,
     name: 'SUNDAR K',
     party: 'DMK',
     age: 66,
@@ -3596,7 +3596,7 @@ export const TN_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/TamilNadu2021/candidate.php?candidate_id=749',
   },
   {
-    acNo: 181,
+    acNo: 124,
     name: 'AMULKANDASAMI T K',
     party: 'AIADMK',
     age: 55,
@@ -3616,7 +3616,7 @@ export const TN_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/TamilNadu2021/candidate.php?candidate_id=1566',
   },
   {
-    acNo: 182,
+    acNo: 47,
     name: 'G.SENDHIL KUMAR',
     party: 'AIADMK',
     age: 36,
@@ -3636,7 +3636,7 @@ export const TN_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/TamilNadu2021/candidate.php?candidate_id=139',
   },
   {
-    acNo: 183,
+    acNo: 220,
     name: 'SADHAN THIRUMALAIKUMAR, DOCTOR.T',
     party: 'DMK',
     age: 68,
@@ -3656,7 +3656,7 @@ export const TN_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/TamilNadu2021/candidate.php?candidate_id=1613',
   },
   {
-    acNo: 184,
+    acNo: 133,
     name: 'GANDHIRAJAN S',
     party: 'DMK',
     age: 70,
@@ -3676,7 +3676,7 @@ export const TN_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/TamilNadu2021/candidate.php?candidate_id=2099',
   },
   {
-    acNo: 185,
+    acNo: 165,
     name: 'O.S.MANIAN',
     party: 'AIADMK',
     age: 66,
@@ -3694,7 +3694,7 @@ export const TN_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/TamilNadu2021/candidate.php?candidate_id=136',
   },
   {
-    acNo: 186,
+    acNo: 91,
     name: 'RAJAMUTHU, M.',
     party: 'AIADMK',
     age: 52,
@@ -3713,7 +3713,7 @@ export const TN_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/TamilNadu2021/candidate.php?candidate_id=2100',
   },
   {
-    acNo: 187,
+    acNo: 26,
     name: 'JMH.AASSAN MAULAANA',
     party: 'INC',
     age: 36,
@@ -3732,7 +3732,7 @@ export const TN_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/TamilNadu2021/candidate.php?candidate_id=1726',
   },
   {
-    acNo: 188,
+    acNo: 43,
     name: 'Karthikeyan .P',
     party: 'DMK',
     age: 59,
@@ -3752,7 +3752,7 @@ export const TN_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/TamilNadu2021/candidate.php?candidate_id=752',
   },
   {
-    acNo: 189,
+    acNo: 54,
     name: 'K.P.Munusamy',
     party: 'AIADMK',
     age: 68,
@@ -3772,7 +3772,7 @@ export const TN_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/TamilNadu2021/candidate.php?candidate_id=129',
   },
   {
-    acNo: 190,
+    acNo: 75,
     name: 'PUGAZHENTHI N',
     party: 'DMK',
     age: 66,
@@ -3792,7 +3792,7 @@ export const TN_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/TamilNadu2021/candidate.php?candidate_id=327',
   },
   {
-    acNo: 191,
+    acNo: 75,
     name: 'Anniyur Siva Alias Sivashanmugam. A',
     party: 'DMK',
     age: 53,
@@ -3812,7 +3812,7 @@ export const TN_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/TamilNadu2021/candidate.php?candidate_id=4359',
   },
   {
-    acNo: 192,
+    acNo: 233,
     name: 'VIJAYADHARANI S',
     party: 'INC',
     age: 51,
@@ -3832,7 +3832,7 @@ export const TN_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/TamilNadu2021/candidate.php?candidate_id=2106',
   },
   {
-    acNo: 193,
+    acNo: 233,
     name: 'Tharahai Cuthbert',
     party: 'INC',
     age: 49,
@@ -3852,7 +3852,7 @@ export const TN_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/TamilNadu2021/candidate.php?candidate_id=4349',
   },
   {
-    acNo: 194,
+    acNo: 14,
     name: 'A . Vetriazhagan',
     party: 'DMK',
     age: 42,
@@ -3872,7 +3872,7 @@ export const TN_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/TamilNadu2021/candidate.php?candidate_id=1783',
   },
   {
-    acNo: 195,
+    acNo: 74,
     name: 'LAKSHMANAN R',
     party: 'DMK',
     age: 49,
@@ -3892,7 +3892,7 @@ export const TN_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/TamilNadu2021/candidate.php?candidate_id=315',
   },
   {
-    acNo: 196,
+    acNo: 179,
     name: 'VIJAYA BASKER C',
     party: 'AIADMK',
     age: 47,
@@ -3912,7 +3912,7 @@ export const TN_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/TamilNadu2021/candidate.php?candidate_id=2109',
   },
   {
-    acNo: 197,
+    acNo: 206,
     name: 'SEENIVASAN A.R.R',
     party: 'DMK',
     age: 64,
@@ -3932,7 +3932,7 @@ export const TN_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/TamilNadu2021/candidate.php?candidate_id=314',
   },
   {
-    acNo: 198,
+    acNo: 22,
     name: 'AMV.PRABHAKARA RAJA',
     party: 'DMK',
     age: 32,
@@ -3952,7 +3952,7 @@ export const TN_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/TamilNadu2021/candidate.php?candidate_id=2112',
   },
   {
-    acNo: 199,
+    acNo: 152,
     name: 'K. Radhakrishnan',
     party: 'INC',
     age: 53,
@@ -3972,7 +3972,7 @@ export const TN_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/TamilNadu2021/candidate.php?candidate_id=2115',
   },
   {
-    acNo: 200,
+    acNo: 83,
     name: 'G. Chitra',
     party: 'AIADMK',
     age: 40,

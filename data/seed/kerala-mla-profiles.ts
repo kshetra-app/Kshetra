@@ -36,7 +36,7 @@ export interface MLAProfile {
 
 export const KL_MLA_PROFILES: MLAProfile[] = [
   {
-    acNo: 1,
+    acNo: 115,
     name: 'Chittayam Gopakumar',
     party: 'CPI',
     age: 55,
@@ -56,7 +56,7 @@ export const KL_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Kerala2021/candidate.php?candidate_id=224',
   },
   {
-    acNo: 2,
+    acNo: 104,
     name: 'P. P. Chitharanjan',
     party: 'CPI(M)',
     age: 58,
@@ -75,7 +75,7 @@ export const KL_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Kerala2021/candidate.php?candidate_id=19',
   },
   {
-    acNo: 3,
+    acNo: 60,
     name: 'K.D.Prasenan',
     party: 'CPI(M)',
     age: 55,
@@ -95,7 +95,7 @@ export const KL_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Kerala2021/candidate.php?candidate_id=20',
   },
   {
-    acNo: 4,
+    acNo: 76,
     name: 'Anwar Sadath',
     party: 'INC',
     age: 46,
@@ -115,7 +115,7 @@ export const KL_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Kerala2021/candidate.php?candidate_id=111',
   },
   {
-    acNo: 5,
+    acNo: 105,
     name: 'H.Salam',
     party: 'CPI(M)',
     age: 48,
@@ -135,7 +135,7 @@ export const KL_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Kerala2021/candidate.php?candidate_id=64',
   },
   {
-    acNo: 6,
+    acNo: 75,
     name: 'Roji M. John',
     party: 'INC',
     age: 38,
@@ -155,7 +155,7 @@ export const KL_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Kerala2021/candidate.php?candidate_id=239',
   },
   {
-    acNo: 7,
+    acNo: 113,
     name: 'Veena George',
     party: 'CPI(M)',
     age: 44,
@@ -174,7 +174,7 @@ export const KL_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Kerala2021/candidate.php?candidate_id=16',
   },
   {
-    acNo: 8,
+    acNo: 102,
     name: 'Daleema Jojo',
     party: 'CPI(M)',
     age: 55,
@@ -193,7 +193,7 @@ export const KL_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Kerala2021/candidate.php?candidate_id=65',
   },
   {
-    acNo: 9,
+    acNo: 128,
     name: 'O. S. Ambika',
     party: 'CPI(M)',
     age: 54,
@@ -232,7 +232,7 @@ export const KL_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Kerala2021/candidate.php?candidate_id=66',
   },
   {
-    acNo: 11,
+    acNo: 25,
     name: 'Adv. K.M. Sachindev',
     party: 'CPI(M)',
     age: 27,
@@ -251,7 +251,7 @@ export const KL_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Kerala2021/candidate.php?candidate_id=253',
   },
   {
-    acNo: 12,
+    acNo: 29,
     name: 'Adv. P. A Mohamed Riyas',
     party: 'CPI(M)',
     age: 45,
@@ -271,7 +271,7 @@ export const KL_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Kerala2021/candidate.php?candidate_id=119',
   },
   {
-    acNo: 13,
+    acNo: 122,
     name: 'J.Chinchurani',
     party: 'CPI',
     age: 58,
@@ -291,7 +291,7 @@ export const KL_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Kerala2021/candidate.php?candidate_id=317',
   },
   {
-    acNo: 14,
+    acNo: 99,
     name: 'Adv. Job Maichil',
     party: 'KCM',
     age: 55,
@@ -311,7 +311,7 @@ export const KL_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Kerala2021/candidate.php?candidate_id=260',
   },
   {
-    acNo: 15,
+    acNo: 126,
     name: 'G. S. Jayalal',
     party: 'CPI',
     age: 48,
@@ -331,7 +331,7 @@ export const KL_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Kerala2021/candidate.php?candidate_id=264',
   },
   {
-    acNo: 16,
+    acNo: 61,
     name: 'K. Radhakrishnan',
     party: 'CPI(M)',
     age: 57,
@@ -351,7 +351,7 @@ export const KL_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Kerala2021/candidate.php?candidate_id=124',
   },
   {
-    acNo: 17,
+    acNo: 61,
     name: 'Pradeep Jaiswal',
     party: 'CPI(M)',
     age: 51,
@@ -371,7 +371,7 @@ export const KL_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Kerala2021/candidate.php?candidate_id=1106',
   },
   {
-    acNo: 18,
+    acNo: 110,
     name: 'Saji Cherian',
     party: 'CPI(M)',
     age: 55,
@@ -391,7 +391,7 @@ export const KL_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Kerala2021/candidate.php?candidate_id=53',
   },
   {
-    acNo: 19,
+    acNo: 103,
     name: 'P. Prasad',
     party: 'CPI',
     age: 51,
@@ -410,7 +410,7 @@ export const KL_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Kerala2021/candidate.php?candidate_id=326',
   },
   {
-    acNo: 20,
+    acNo: 129,
     name: 'V. Sasi',
     party: 'CPI',
     age: 70,
@@ -430,7 +430,7 @@ export const KL_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Kerala2021/candidate.php?candidate_id=128',
   },
   {
-    acNo: 21,
+    acNo: 58,
     name: 'K. Krishnankutty',
     party: 'JD(S)',
     age: 76,
@@ -450,7 +450,7 @@ export const KL_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Kerala2021/candidate.php?candidate_id=69',
   },
   {
-    acNo: 22,
+    acNo: 88,
     name: 'A. Raja',
     party: 'CPI(M)',
     age: 35,
@@ -470,7 +470,7 @@ export const KL_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Kerala2021/candidate.php?candidate_id=130',
   },
   {
-    acNo: 23,
+    acNo: 12,
     name: 'Pinarayi Vijayan',
     party: 'CPI(M)',
     age: 77,
@@ -489,7 +489,7 @@ export const KL_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Kerala2021/candidate.php?candidate_id=12',
   },
   {
-    acNo: 24,
+    acNo: 26,
     name: 'A. K. Saseendran',
     party: 'NCP',
     age: 75,
@@ -508,7 +508,7 @@ export const KL_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Kerala2021/candidate.php?candidate_id=131',
   },
   {
-    acNo: 25,
+    acNo: 82,
     name: 'T. J. Vinod',
     party: 'INC',
     age: 57,
@@ -528,7 +528,7 @@ export const KL_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Kerala2021/candidate.php?candidate_id=281',
   },
   {
-    acNo: 26,
+    acNo: 125,
     name: 'M. Noushad',
     party: 'CPI(M)',
     age: 56,
@@ -548,7 +548,7 @@ export const KL_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Kerala2021/candidate.php?candidate_id=134',
   },
   {
-    acNo: 27,
+    acNo: 96,
     name: 'V. N. Vasavan',
     party: 'CPI(M)',
     age: 66,
@@ -567,7 +567,7 @@ export const KL_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Kerala2021/candidate.php?candidate_id=287',
   },
   {
-    acNo: 28,
+    acNo: 63,
     name: 'N.K.Akbar',
     party: 'CPI(M)',
     age: 51,
@@ -587,7 +587,7 @@ export const KL_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Kerala2021/candidate.php?candidate_id=73',
   },
   {
-    acNo: 29,
+    acNo: 107,
     name: 'Ramesh Chennithala',
     party: 'INC',
     age: 64,
@@ -607,7 +607,7 @@ export const KL_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Kerala2021/candidate.php?candidate_id=75',
   },
   {
-    acNo: 30,
+    acNo: 91,
     name: 'Roshy Augustine',
     party: 'KCM',
     age: 52,
@@ -626,7 +626,7 @@ export const KL_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Kerala2021/candidate.php?candidate_id=686',
   },
   {
-    acNo: 31,
+    acNo: 9,
     name: 'Sajeev Joseph',
     party: 'INC',
     age: 48,
@@ -646,7 +646,7 @@ export const KL_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Kerala2021/candidate.php?candidate_id=294',
   },
   {
-    acNo: 32,
+    acNo: 70,
     name: 'R. Bindu',
     party: 'CPI(M)',
     age: 53,
@@ -665,7 +665,7 @@ export const KL_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Kerala2021/candidate.php?candidate_id=139',
   },
   {
-    acNo: 33,
+    acNo: 69,
     name: 'E. T. Taison',
     party: 'CPI',
     age: 56,
@@ -683,7 +683,7 @@ export const KL_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Kerala2021/candidate.php?candidate_id=141',
   },
   {
-    acNo: 34,
+    acNo: 77,
     name: 'P. Rajeeve',
     party: 'CPI(M)',
     age: 53,
@@ -703,7 +703,7 @@ export const KL_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Kerala2021/candidate.php?candidate_id=142',
   },
   {
-    acNo: 35,
+    acNo: 7,
     name: 'M. Vijin',
     party: 'CPI(M)',
     age: 31,
@@ -723,7 +723,7 @@ export const KL_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Kerala2021/candidate.php?candidate_id=306',
   },
   {
-    acNo: 36,
+    acNo: 19,
     name: 'Adv.T Siddiqu',
     party: 'INC',
     age: 46,
@@ -743,7 +743,7 @@ export const KL_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Kerala2021/candidate.php?candidate_id=711',
   },
   {
-    acNo: 37,
+    acNo: 4,
     name: 'E Chandrashekaran',
     party: 'CPI',
     age: 72,
@@ -762,7 +762,7 @@ export const KL_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Kerala2021/candidate.php?candidate_id=78',
   },
   {
-    acNo: 38,
+    acNo: 100,
     name: 'Dr.N.Jayaraj',
     party: 'KCM',
     age: 65,
@@ -782,7 +782,7 @@ export const KL_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Kerala2021/candidate.php?candidate_id=312',
   },
   {
-    acNo: 39,
+    acNo: 11,
     name: 'Kadannappalli Ramachandran',
     party: 'Congress (',
     age: 76,
@@ -802,7 +802,7 @@ export const KL_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Kerala2021/candidate.php?candidate_id=14',
   },
   {
-    acNo: 40,
+    acNo: 116,
     name: 'N Mahesh',
     party: 'INC',
     age: 42,
@@ -822,7 +822,7 @@ export const KL_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Kerala2021/candidate.php?candidate_id=733',
   },
   {
-    acNo: 41,
+    acNo: 108,
     name: 'U. Prathibha',
     party: 'CPI(M)',
     age: 43,
@@ -842,7 +842,7 @@ export const KL_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Kerala2021/candidate.php?candidate_id=333',
   },
   {
-    acNo: 42,
+    acNo: 132,
     name: 'Kadakampally Surendran',
     party: 'CPI(M)',
     age: 68,
@@ -861,7 +861,7 @@ export const KL_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Kerala2021/candidate.php?candidate_id=149',
   },
   {
-    acNo: 43,
+    acNo: 80,
     name: 'K.J. Maxy',
     party: 'CPI(M)',
     age: 58,
@@ -881,7 +881,7 @@ export const KL_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Kerala2021/candidate.php?candidate_id=8',
   },
   {
-    acNo: 44,
+    acNo: 73,
     name: 'Adv. V. R. Sunilkumar',
     party: 'CPI',
     age: 52,
@@ -901,7 +901,7 @@ export const KL_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Kerala2021/candidate.php?candidate_id=151',
   },
   {
-    acNo: 45,
+    acNo: 31,
     name: 'M. K. Muneer',
     party: 'IUML',
     age: 58,
@@ -921,7 +921,7 @@ export const KL_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Kerala2021/candidate.php?candidate_id=346',
   },
   {
-    acNo: 46,
+    acNo: 124,
     name: 'Mukesh',
     party: 'CPI(M)',
     age: 64,
@@ -941,7 +941,7 @@ export const KL_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Kerala2021/candidate.php?candidate_id=764',
   },
   {
-    acNo: 47,
+    acNo: 33,
     name: 'T. V. Ibrahim',
     party: 'IUML',
     age: 55,
@@ -961,7 +961,7 @@ export const KL_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Kerala2021/candidate.php?candidate_id=351',
   },
   {
-    acNo: 48,
+    acNo: 53,
     name: 'Santhakumari K',
     party: 'CPI(M)',
     age: 49,
@@ -981,7 +981,7 @@ export const KL_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Kerala2021/candidate.php?candidate_id=26',
   },
   {
-    acNo: 49,
+    acNo: 87,
     name: 'Antony John',
     party: 'CPI(M)',
     age: 38,
@@ -1001,7 +1001,7 @@ export const KL_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Kerala2021/candidate.php?candidate_id=29',
   },
   {
-    acNo: 50,
+    acNo: 46,
     name: 'K. K. Abid Hussain Thangal',
     party: 'IUML',
     age: 60,
@@ -1021,7 +1021,7 @@ export const KL_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Kerala2021/candidate.php?candidate_id=359',
   },
   {
-    acNo: 51,
+    acNo: 119,
     name: 'K. N. Balagopal',
     party: 'CPI(M)',
     age: 57,
@@ -1041,7 +1041,7 @@ export const KL_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Kerala2021/candidate.php?candidate_id=56',
   },
   {
-    acNo: 52,
+    acNo: 97,
     name: 'Thiruvanchoor Radhakrishnan',
     party: 'INC',
     age: 71,
@@ -1061,7 +1061,7 @@ export const KL_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Kerala2021/candidate.php?candidate_id=790',
   },
   {
-    acNo: 53,
+    acNo: 139,
     name: 'Adv. M. Vincent',
     party: 'INC',
     age: 53,
@@ -1081,7 +1081,7 @@ export const KL_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Kerala2021/candidate.php?candidate_id=83',
   },
   {
-    acNo: 54,
+    acNo: 27,
     name: 'Thottathil Ravindran',
     party: 'CPI(M)',
     age: 73,
@@ -1101,7 +1101,7 @@ export const KL_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Kerala2021/candidate.php?candidate_id=163',
   },
   {
-    acNo: 55,
+    acNo: 28,
     name: 'Ahammad Devarkovil',
     party: 'Indian Nat',
     age: 61,
@@ -1120,7 +1120,7 @@ export const KL_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Kerala2021/candidate.php?candidate_id=369',
   },
   {
-    acNo: 56,
+    acNo: 123,
     name: 'P.C.Vishnunadh',
     party: 'INC',
     age: 43,
@@ -1140,7 +1140,7 @@ export const KL_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Kerala2021/candidate.php?candidate_id=372',
   },
   {
-    acNo: 57,
+    acNo: 62,
     name: 'A.C.Moideen',
     party: 'CPI(M)',
     age: 64,
@@ -1159,7 +1159,7 @@ export const KL_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Kerala2021/candidate.php?candidate_id=168',
   },
   {
-    acNo: 58,
+    acNo: 84,
     name: 'Adv. P.V.Sreenijin',
     party: 'CPI(M)',
     age: 45,
@@ -1179,7 +1179,7 @@ export const KL_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Kerala2021/candidate.php?candidate_id=169',
   },
   {
-    acNo: 59,
+    acNo: 118,
     name: 'Kovoor Kunjumon',
     party: 'IND',
     age: 53,
@@ -1198,7 +1198,7 @@ export const KL_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Kerala2021/candidate.php?candidate_id=822',
   },
   {
-    acNo: 60,
+    acNo: 14,
     name: 'K. P. Mohanan',
     party: 'Loktantrik',
     age: 70,
@@ -1218,7 +1218,7 @@ export const KL_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Kerala2021/candidate.php?candidate_id=170',
   },
   {
-    acNo: 61,
+    acNo: 21,
     name: 'K P Kunhammed Kutti Master',
     party: 'CPI(M)',
     age: 69,
@@ -1237,7 +1237,7 @@ export const KL_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Kerala2021/candidate.php?candidate_id=388',
   },
   {
-    acNo: 62,
+    acNo: 55,
     name: 'A. Prabhakaran',
     party: 'CPI(M)',
     age: 69,
@@ -1256,7 +1256,7 @@ export const KL_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Kerala2021/candidate.php?candidate_id=33',
   },
   {
-    acNo: 63,
+    acNo: 40,
     name: 'P. Ubaidulla',
     party: 'IUML',
     age: 61,
@@ -1276,7 +1276,7 @@ export const KL_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Kerala2021/candidate.php?candidate_id=393',
   },
   {
-    acNo: 64,
+    acNo: 17,
     name: 'O. R. Kelu',
     party: 'CPI(M)',
     age: 51,
@@ -1296,7 +1296,7 @@ export const KL_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Kerala2021/candidate.php?candidate_id=175',
   },
   {
-    acNo: 65,
+    acNo: 37,
     name: 'U. A. Latheef',
     party: 'IUML',
     age: 71,
@@ -1316,7 +1316,7 @@ export const KL_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Kerala2021/candidate.php?candidate_id=401',
   },
   {
-    acNo: 66,
+    acNo: 1,
     name: 'A. K. M. Ashraf',
     party: 'IUML',
     age: 43,
@@ -1336,7 +1336,7 @@ export const KL_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Kerala2021/candidate.php?candidate_id=405',
   },
   {
-    acNo: 67,
+    acNo: 39,
     name: 'Manjalamkuzhi Ali',
     party: 'IUML',
     age: 68,
@@ -1356,7 +1356,7 @@ export const KL_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Kerala2021/candidate.php?candidate_id=406',
   },
   {
-    acNo: 68,
+    acNo: 54,
     name: 'Advocate. N. Samsudheen',
     party: 'IUML',
     age: 51,
@@ -1375,7 +1375,7 @@ export const KL_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Kerala2021/candidate.php?candidate_id=729',
   },
   {
-    acNo: 69,
+    acNo: 15,
     name: 'K. K. Shailaja',
     party: 'CPI(M)',
     age: 64,
@@ -1415,7 +1415,7 @@ export const KL_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Kerala2021/candidate.php?candidate_id=416',
   },
   {
-    acNo: 71,
+    acNo: 86,
     name: 'Mathew Kuzhalnadan',
     party: 'INC',
     age: 43,
@@ -1435,7 +1435,7 @@ export const KL_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Kerala2021/candidate.php?candidate_id=419',
   },
   {
-    acNo: 72,
+    acNo: 68,
     name: 'C C Mukundhan',
     party: 'CPI',
     age: 62,
@@ -1454,7 +1454,7 @@ export const KL_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Kerala2021/candidate.php?candidate_id=180',
   },
   {
-    acNo: 73,
+    acNo: 130,
     name: 'G. R. Anil',
     party: 'CPI',
     age: 58,
@@ -1474,7 +1474,7 @@ export const KL_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Kerala2021/candidate.php?candidate_id=181',
   },
   {
-    acNo: 74,
+    acNo: 140,
     name: 'K. Ansalan',
     party: 'CPI(M)',
     age: 55,
@@ -1494,7 +1494,7 @@ export const KL_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Kerala2021/candidate.php?candidate_id=185',
   },
   {
-    acNo: 75,
+    acNo: 35,
     name: 'P. V. Anvar',
     party: 'IND',
     age: 53,
@@ -1514,7 +1514,7 @@ export const KL_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Kerala2021/candidate.php?candidate_id=885',
   },
   {
-    acNo: 76,
+    acNo: 35,
     name: 'Aryadan Shoukath',
     party: 'INC',
     age: 61,
@@ -1533,7 +1533,7 @@ export const KL_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Kerala2021/candidate.php?candidate_id=1117',
   },
   {
-    acNo: 77,
+    acNo: 66,
     name: 'K. Rajan',
     party: 'CPI',
     age: 47,
@@ -1553,7 +1553,7 @@ export const KL_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Kerala2021/candidate.php?candidate_id=88',
   },
   {
-    acNo: 78,
+    acNo: 93,
     name: 'K. Premkumar',
     party: 'CPI(M)',
     age: 42,
@@ -1573,7 +1573,7 @@ export const KL_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Kerala2021/candidate.php?candidate_id=38',
   },
   {
-    acNo: 79,
+    acNo: 93,
     name: 'M. M. Mani',
     party: 'IND',
     age: 64,
@@ -1593,7 +1593,7 @@ export const KL_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Kerala2021/candidate.php?candidate_id=59',
   },
   {
-    acNo: 80,
+    acNo: 137,
     name: 'C.K.Hareendran',
     party: 'CPI(M)',
     age: 64,
@@ -1613,7 +1613,7 @@ export const KL_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Kerala2021/candidate.php?candidate_id=187',
   },
   {
-    acNo: 81,
+    acNo: 78,
     name: 'V. D. Satheesan',
     party: 'INC',
     age: 56,
@@ -1632,7 +1632,7 @@ export const KL_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Kerala2021/candidate.php?candidate_id=40',
   },
   {
-    acNo: 82,
+    acNo: 120,
     name: 'K. B. Ganesh Kumar',
     party: 'KC',
     age: 54,
@@ -1652,7 +1652,7 @@ export const KL_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Kerala2021/candidate.php?candidate_id=41',
   },
   {
-    acNo: 83,
+    acNo: 50,
     name: 'Muhammed Muhassin',
     party: 'CPI',
     age: 34,
@@ -1672,7 +1672,7 @@ export const KL_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Kerala2021/candidate.php?candidate_id=189',
   },
   {
-    acNo: 84,
+    acNo: 6,
     name: 'T I Madhusoodanan',
     party: 'CPI(M)',
     age: 61,
@@ -1692,7 +1692,7 @@ export const KL_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Kerala2021/candidate.php?candidate_id=93',
   },
   {
-    acNo: 85,
+    acNo: 92,
     name: 'Vazhoor Soman',
     party: 'CPI',
     age: 68,
@@ -1712,7 +1712,7 @@ export const KL_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Kerala2021/candidate.php?candidate_id=460',
   },
   {
-    acNo: 86,
+    acNo: 24,
     name: 'T. P. Ramakrishnan',
     party: 'CPI(M)',
     age: 71,
@@ -1731,7 +1731,7 @@ export const KL_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Kerala2021/candidate.php?candidate_id=190',
   },
   {
-    acNo: 87,
+    acNo: 16,
     name: 'Sunny Joseph',
     party: 'INC',
     age: 68,
@@ -1751,7 +1751,7 @@ export const KL_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Kerala2021/candidate.php?candidate_id=923',
   },
   {
-    acNo: 88,
+    acNo: 74,
     name: 'Adv Eldose P Kunnapillil',
     party: 'INC',
     age: 42,
@@ -1771,7 +1771,7 @@ export const KL_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Kerala2021/candidate.php?candidate_id=98',
   },
   {
-    acNo: 89,
+    acNo: 85,
     name: 'Anoop Jacob',
     party: 'KC',
     age: 43,
@@ -1791,7 +1791,7 @@ export const KL_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Kerala2021/candidate.php?candidate_id=60',
   },
   {
-    acNo: 90,
+    acNo: 48,
     name: 'P. Nandakumar',
     party: 'CPI(M)',
     age: 71,
@@ -1810,7 +1810,7 @@ export const KL_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Kerala2021/candidate.php?candidate_id=193',
   },
   {
-    acNo: 91,
+    acNo: 101,
     name: 'Sebastian Kulathunkal',
     party: 'KCM',
     age: 55,
@@ -1830,7 +1830,7 @@ export const KL_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Kerala2021/candidate.php?candidate_id=195',
   },
   {
-    acNo: 92,
+    acNo: 121,
     name: 'P. S. Supal',
     party: 'CPI',
     age: 51,
@@ -1850,7 +1850,7 @@ export const KL_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Kerala2021/candidate.php?candidate_id=479',
   },
   {
-    acNo: 93,
+    acNo: 71,
     name: 'K. K. Ramachandran',
     party: 'CPI(M)',
     age: 53,
@@ -1869,7 +1869,7 @@ export const KL_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Kerala2021/candidate.php?candidate_id=196',
   },
   {
-    acNo: 94,
+    acNo: 98,
     name: 'Oommen Chandy',
     party: 'INC',
     age: 37,
@@ -1889,7 +1889,7 @@ export const KL_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Kerala2021/candidate.php?candidate_id=1094',
   },
   {
-    acNo: 95,
+    acNo: 23,
     name: 'Kanathil Jameela',
     party: 'CPI(M)',
     age: 54,
@@ -1908,7 +1908,7 @@ export const KL_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Kerala2021/candidate.php?candidate_id=101',
   },
   {
-    acNo: 96,
+    acNo: 51,
     name: 'P. Mammikutty',
     party: 'CPI(M)',
     age: 69,
@@ -1928,7 +1928,7 @@ export const KL_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Kerala2021/candidate.php?candidate_id=61',
   },
   {
-    acNo: 97,
+    acNo: 18,
     name: 'I. C. Balakrishnan',
     party: 'INC',
     age: 45,
@@ -1947,7 +1947,7 @@ export const KL_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Kerala2021/candidate.php?candidate_id=955',
   },
   {
-    acNo: 98,
+    acNo: 13,
     name: 'M. V. Govindan',
     party: 'CPI(M)',
     age: 69,
@@ -1966,7 +1966,7 @@ export const KL_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Kerala2021/candidate.php?candidate_id=102',
   },
   {
-    acNo: 99,
+    acNo: 44,
     name: 'V.Abdurahiman',
     party: 'National S',
     age: 59,
@@ -1986,7 +1986,7 @@ export const KL_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Kerala2021/candidate.php?candidate_id=965',
   },
   {
-    acNo: 100,
+    acNo: 57,
     name: 'P.P.Sumod',
     party: 'CPI(M)',
     age: 37,
@@ -2006,7 +2006,7 @@ export const KL_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Kerala2021/candidate.php?candidate_id=43',
   },
   {
-    acNo: 101,
+    acNo: 13,
     name: 'A. N. Shamseer',
     party: 'CPI(M)',
     age: 44,
@@ -2025,7 +2025,7 @@ export const KL_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Kerala2021/candidate.php?candidate_id=103',
   },
   {
-    acNo: 102,
+    acNo: 47,
     name: 'Dr.K.T.Jaleel',
     party: 'IND',
     age: 53,
@@ -2045,7 +2045,7 @@ export const KL_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Kerala2021/candidate.php?candidate_id=45',
   },
   {
-    acNo: 103,
+    acNo: 111,
     name: 'Mathew T. Thomas',
     party: 'JD(S)',
     age: 59,
@@ -2064,7 +2064,7 @@ export const KL_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Kerala2021/candidate.php?candidate_id=508',
   },
   {
-    acNo: 104,
+    acNo: 134,
     name: 'Antony Raju',
     party: 'KC',
     age: 66,
@@ -2084,7 +2084,7 @@ export const KL_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Kerala2021/candidate.php?candidate_id=47',
   },
   {
-    acNo: 105,
+    acNo: 90,
     name: 'P. J. Joseph',
     party: 'KC',
     age: 79,
@@ -2104,7 +2104,7 @@ export const KL_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Kerala2021/candidate.php?candidate_id=992',
   },
   {
-    acNo: 106,
+    acNo: 83,
     name: 'Adv.P.T.Thomas',
     party: 'INC',
     age: 70,
@@ -2124,7 +2124,7 @@ export const KL_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Kerala2021/candidate.php?candidate_id=522',
   },
   {
-    acNo: 107,
+    acNo: 83,
     name: 'P. T. Thomas',
     party: 'INC',
     age: 56,
@@ -2144,7 +2144,7 @@ export const KL_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Kerala2021/candidate.php?candidate_id=1072',
   },
   {
-    acNo: 108,
+    acNo: 81,
     name: 'K S Babu',
     party: 'INC',
     age: 70,
@@ -2163,7 +2163,7 @@ export const KL_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Kerala2021/candidate.php?candidate_id=524',
   },
   {
-    acNo: 109,
+    acNo: 67,
     name: 'P. Balachandran',
     party: 'CPI',
     age: 57,
@@ -2183,7 +2183,7 @@ export const KL_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Kerala2021/candidate.php?candidate_id=207',
   },
   {
-    acNo: 110,
+    acNo: 43,
     name: 'K. P. A. Majeed',
     party: 'IUML',
     age: 71,
@@ -2202,7 +2202,7 @@ export const KL_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Kerala2021/candidate.php?candidate_id=536',
   },
   {
-    acNo: 111,
+    acNo: 5,
     name: 'M Rajagopalan',
     party: 'CPI(M)',
     age: 60,
@@ -2222,7 +2222,7 @@ export const KL_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Kerala2021/candidate.php?candidate_id=107',
   },
   {
-    acNo: 112,
+    acNo: 3,
     name: 'C. H. Kunhambu',
     party: 'CPI(M)',
     age: 61,
@@ -2242,7 +2242,7 @@ export const KL_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Kerala2021/candidate.php?candidate_id=108',
   },
   {
-    acNo: 113,
+    acNo: 20,
     name: 'K.K.Rema',
     party: 'Revolution',
     age: 50,
@@ -2261,7 +2261,7 @@ export const KL_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Kerala2021/candidate.php?candidate_id=548',
   },
   {
-    acNo: 114,
+    acNo: 95,
     name: 'C. K. Asha',
     party: 'CPI',
     age: 44,
@@ -2281,7 +2281,7 @@ export const KL_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Kerala2021/candidate.php?candidate_id=109',
   },
   {
-    acNo: 115,
+    acNo: 42,
     name: 'P. Abdul Hameed',
     party: 'IUML',
     age: 73,
@@ -2300,7 +2300,7 @@ export const KL_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Kerala2021/candidate.php?candidate_id=552',
   },
   {
-    acNo: 116,
+    acNo: 131,
     name: 'D. K. Murali',
     party: 'CPI(M)',
     age: 59,
@@ -2319,7 +2319,7 @@ export const KL_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Kerala2021/candidate.php?candidate_id=214',
   },
   {
-    acNo: 117,
+    acNo: 127,
     name: 'V. Joy',
     party: 'CPI(M)',
     age: 55,
@@ -2339,7 +2339,7 @@ export const KL_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Kerala2021/candidate.php?candidate_id=17',
   },
   {
-    acNo: 118,
+    acNo: 133,
     name: 'Adv.V.K.Prasanth',
     party: 'CPI(M)',
     age: 39,
@@ -2358,7 +2358,7 @@ export const KL_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Kerala2021/candidate.php?candidate_id=51',
   },
   {
-    acNo: 119,
+    acNo: 41,
     name: 'P.K Kunjhalikutty',
     party: 'IUML',
     age: 69,
@@ -2377,7 +2377,7 @@ export const KL_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Kerala2021/candidate.php?candidate_id=218',
   },
   {
-    acNo: 120,
+    acNo: 79,
     name: 'K. N. Unnikrishnan',
     party: 'CPI(M)',
     age: 60,
@@ -2396,7 +2396,7 @@ export const KL_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Kerala2021/candidate.php?candidate_id=219',
   },
   {
-    acNo: 121,
+    acNo: 36,
     name: 'A P Anilkumar',
     party: 'INC',
     age: 56,

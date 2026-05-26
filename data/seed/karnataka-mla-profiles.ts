@@ -36,7 +36,7 @@ export interface MLAProfile {
 
 export const KA_MLA_PROFILES: MLAProfile[] = [
   {
-    acNo: 1,
+    acNo: 74,
     name: 'M.Y.Patil',
     party: 'INC',
     age: 82,
@@ -56,7 +56,7 @@ export const KA_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Karnataka2023/candidate.php?candidate_id=7087',
   },
   {
-    acNo: 2,
+    acNo: 213,
     name: 'Bhojaraj',
     party: 'INC',
     age: 73,
@@ -75,7 +75,7 @@ export const KA_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Karnataka2023/candidate.php?candidate_id=6761',
   },
   {
-    acNo: 3,
+    acNo: 132,
     name: 'Shivanna',
     party: 'INC',
     age: 56,
@@ -95,7 +95,7 @@ export const KA_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Karnataka2023/candidate.php?candidate_id=7817',
   },
   {
-    acNo: 4,
+    acNo: 12,
     name: 'Balachandra Jarkiholi',
     party: 'BJP',
     age: 56,
@@ -115,7 +115,7 @@ export const KA_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Karnataka2023/candidate.php?candidate_id=7778',
   },
   {
-    acNo: 5,
+    acNo: 187,
     name: 'Manju H K',
     party: 'JD(S)',
     age: 66,
@@ -135,7 +135,7 @@ export const KA_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Karnataka2023/candidate.php?candidate_id=7084',
   },
   {
-    acNo: 6,
+    acNo: 196,
     name: 'K M Shivalingegowda',
     party: 'INC',
     age: 65,
@@ -155,7 +155,7 @@ export const KA_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Karnataka2023/candidate.php?candidate_id=7824',
   },
   {
-    acNo: 7,
+    acNo: 9,
     name: 'Laxman Sangappa Savadi',
     party: 'INC',
     age: 64,
@@ -175,7 +175,7 @@ export const KA_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Karnataka2023/candidate.php?candidate_id=7828',
   },
   {
-    acNo: 8,
+    acNo: 84,
     name: 'Prabhu Chavan',
     party: 'BJP',
     age: 53,
@@ -195,7 +195,7 @@ export const KA_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Karnataka2023/candidate.php?candidate_id=7093',
   },
   {
-    acNo: 9,
+    acNo: 38,
     name: 'B.B.Chimmanakatti',
     party: 'INC',
     age: 39,
@@ -215,7 +215,7 @@ export const KA_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Karnataka2023/candidate.php?candidate_id=7110',
   },
   {
-    acNo: 10,
+    acNo: 39,
     name: 'Meti Hullappa Yamanappa',
     party: 'INC',
     age: 77,
@@ -235,7 +235,7 @@ export const KA_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Karnataka2023/candidate.php?candidate_id=7113',
   },
   {
-    acNo: 11,
+    acNo: 39,
     name: 'Umesh Hullappa Meti',
     party: 'INC',
     age: 54,
@@ -255,7 +255,7 @@ export const KA_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Karnataka2023/candidate.php?candidate_id=9595',
   },
   {
-    acNo: 12,
+    acNo: 130,
     name: 'S.N. Subbareddy (Chinnakayalapalli)',
     party: 'INC',
     age: 56,
@@ -275,7 +275,7 @@ export const KA_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Karnataka2023/candidate.php?candidate_id=7115',
   },
   {
-    acNo: 13,
+    acNo: 6,
     name: 'Koujalagi Mahantesh Shivanand',
     party: 'INC',
     age: 52,
@@ -295,7 +295,7 @@ export const KA_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Karnataka2023/candidate.php?candidate_id=7119',
   },
   {
-    acNo: 14,
+    acNo: 66,
     name: 'Gururaj Shetty Gantihole',
     party: 'BJP',
     age: 42,
@@ -314,7 +314,7 @@ export const KA_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Karnataka2023/candidate.php?candidate_id=8568',
   },
   {
-    acNo: 15,
+    acNo: 131,
     name: 'M Krishnappa',
     party: 'BJP',
     age: 61,
@@ -334,7 +334,7 @@ export const KA_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Karnataka2023/candidate.php?candidate_id=7121',
   },
   {
-    acNo: 16,
+    acNo: 204,
     name: 'Rajesh Naik',
     party: 'BJP',
     age: 64,
@@ -354,7 +354,7 @@ export const KA_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Karnataka2023/candidate.php?candidate_id=6931',
   },
   {
-    acNo: 17,
+    acNo: 86,
     name: 'Sharanu Salagar',
     party: 'BJP',
     age: 47,
@@ -374,7 +374,7 @@ export const KA_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Karnataka2023/candidate.php?candidate_id=6932',
   },
   {
-    acNo: 18,
+    acNo: 52,
     name: 'Shivanand Patil',
     party: 'INC',
     age: 61,
@@ -393,7 +393,7 @@ export const KA_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Karnataka2023/candidate.php?candidate_id=6775',
   },
   {
-    acNo: 19,
+    acNo: 135,
     name: 'Ravi Subramanya',
     party: 'BJP',
     age: 64,
@@ -413,7 +413,7 @@ export const KA_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Karnataka2023/candidate.php?candidate_id=7128',
   },
   {
-    acNo: 20,
+    acNo: 2,
     name: 'Abhay Patil',
     party: 'BJP',
     age: 54,
@@ -433,7 +433,7 @@ export const KA_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Karnataka2023/candidate.php?candidate_id=8457',
   },
   {
-    acNo: 21,
+    acNo: 3,
     name: 'Laxmi Hebbalkar',
     party: 'INC',
     age: 48,
@@ -453,7 +453,7 @@ export const KA_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Karnataka2023/candidate.php?candidate_id=7777',
   },
   {
-    acNo: 22,
+    acNo: 1,
     name: 'Asif (Raju) Sait',
     party: 'INC',
     age: 64,
@@ -473,7 +473,7 @@ export const KA_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Karnataka2023/candidate.php?candidate_id=8462',
   },
   {
-    acNo: 23,
+    acNo: 64,
     name: 'B Nagendra',
     party: 'INC',
     age: 52,
@@ -493,7 +493,7 @@ export const KA_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Karnataka2023/candidate.php?candidate_id=7134',
   },
   {
-    acNo: 24,
+    acNo: 210,
     name: 'Harish Poonja',
     party: 'BJP',
     age: 41,
@@ -513,7 +513,7 @@ export const KA_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Karnataka2023/candidate.php?candidate_id=7139',
   },
   {
-    acNo: 25,
+    acNo: 189,
     name: 'D Suresh',
     party: 'BJP',
     age: 52,
@@ -532,7 +532,7 @@ export const KA_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Karnataka2023/candidate.php?candidate_id=7140',
   },
   {
-    acNo: 26,
+    acNo: 93,
     name: 'B.K. Sanagameshwara',
     party: 'INC',
     age: 60,
@@ -592,7 +592,7 @@ export const KA_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Karnataka2023/candidate.php?candidate_id=7147',
   },
   {
-    acNo: 29,
+    acNo: 82,
     name: 'Rahim Khan',
     party: 'INC',
     age: 57,
@@ -612,7 +612,7 @@ export const KA_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Karnataka2023/candidate.php?candidate_id=7872',
   },
   {
-    acNo: 30,
+    acNo: 83,
     name: 'Dr. Shailendra Beldale',
     party: 'BJP',
     age: 49,
@@ -652,7 +652,7 @@ export const KA_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Karnataka2023/candidate.php?candidate_id=6944',
   },
   {
-    acNo: 32,
+    acNo: 133,
     name: 'Sathish Reddy M',
     party: 'BJP',
     age: 51,
@@ -672,7 +672,7 @@ export const KA_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Karnataka2023/candidate.php?candidate_id=8577',
   },
   {
-    acNo: 33,
+    acNo: 27,
     name: 'Basavaraj Neelappa Shivannanavar',
     party: 'INC',
     age: 69,
@@ -692,7 +692,7 @@ export const KA_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Karnataka2023/candidate.php?candidate_id=6789',
   },
   {
-    acNo: 34,
+    acNo: 154,
     name: 'Krishna Byregowda',
     party: 'INC',
     age: 50,
@@ -712,7 +712,7 @@ export const KA_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Karnataka2023/candidate.php?candidate_id=7160',
   },
   {
-    acNo: 35,
+    acNo: 150,
     name: 'S Raghu',
     party: 'BJP',
     age: 53,
@@ -751,7 +751,7 @@ export const KA_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Karnataka2023/candidate.php?candidate_id=7890',
   },
   {
-    acNo: 37,
+    acNo: 181,
     name: 'C Puttarangashetty',
     party: 'INC',
     age: 68,
@@ -771,7 +771,7 @@ export const KA_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Karnataka2023/candidate.php?candidate_id=7175',
   },
   {
-    acNo: 38,
+    acNo: 142,
     name: 'B Z Zameer Ahmed Khan',
     party: 'INC',
     age: 55,
@@ -791,7 +791,7 @@ export const KA_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Karnataka2023/candidate.php?candidate_id=7812',
   },
   {
-    acNo: 39,
+    acNo: 104,
     name: 'Basavaraju V Shivaganga',
     party: 'INC',
     age: 42,
@@ -811,7 +811,7 @@ export const KA_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Karnataka2023/candidate.php?candidate_id=7898',
   },
   {
-    acNo: 40,
+    acNo: 160,
     name: 'H D Kumaraswamy',
     party: 'JD(S)',
     age: 64,
@@ -831,7 +831,7 @@ export const KA_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Karnataka2023/candidate.php?candidate_id=7187',
   },
   {
-    acNo: 41,
+    acNo: 160,
     name: 'C P Yogeeshwara',
     party: 'INC',
     age: 61,
@@ -851,7 +851,7 @@ export const KA_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Karnataka2023/candidate.php?candidate_id=9526',
   },
   {
-    acNo: 42,
+    acNo: 190,
     name: 'H. D. Thammaiah',
     party: 'INC',
     age: 55,
@@ -871,7 +871,7 @@ export const KA_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Karnataka2023/candidate.php?candidate_id=7904',
   },
   {
-    acNo: 43,
+    acNo: 138,
     name: 'Uday B. Garudachar',
     party: 'BJP',
     age: 63,
@@ -891,7 +891,7 @@ export const KA_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Karnataka2023/candidate.php?candidate_id=7197',
   },
   {
-    acNo: 44,
+    acNo: 126,
     name: 'Pradeep Eshwar',
     party: 'INC',
     age: 38,
@@ -911,7 +911,7 @@ export const KA_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Karnataka2023/candidate.php?candidate_id=6960',
   },
   {
-    acNo: 45,
+    acNo: 116,
     name: 'K S Babu',
     party: 'JD(S)',
     age: 52,
@@ -931,7 +931,7 @@ export const KA_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Karnataka2023/candidate.php?candidate_id=6961',
   },
   {
-    acNo: 46,
+    acNo: 13,
     name: 'Ganesh Hukkeri',
     party: 'INC',
     age: 45,
@@ -951,7 +951,7 @@ export const KA_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Karnataka2023/candidate.php?candidate_id=7202',
   },
   {
-    acNo: 47,
+    acNo: 80,
     name: 'Avinash Jadhav',
     party: 'BJP',
     age: 34,
@@ -971,7 +971,7 @@ export const KA_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Karnataka2023/candidate.php?candidate_id=7205',
   },
   {
-    acNo: 48,
+    acNo: 105,
     name: 'K.C.Veerendra Puppy',
     party: 'INC',
     age: 47,
@@ -991,7 +991,7 @@ export const KA_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Karnataka2023/candidate.php?candidate_id=7927',
   },
   {
-    acNo: 49,
+    acNo: 214,
     name: 'Priyank Kharge',
     party: 'INC',
     age: 44,
@@ -1011,7 +1011,7 @@ export const KA_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Karnataka2023/candidate.php?candidate_id=7211',
   },
   {
-    acNo: 50,
+    acNo: 156,
     name: 'Muniraju Jr',
     party: 'BJP',
     age: 64,
@@ -1030,7 +1030,7 @@ export const KA_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Karnataka2023/candidate.php?candidate_id=7215',
   },
   {
-    acNo: 51,
+    acNo: 99,
     name: 'S.S.Mallikarjun',
     party: 'INC',
     age: 55,
@@ -1050,7 +1050,7 @@ export const KA_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Karnataka2023/candidate.php?candidate_id=6799',
   },
   {
-    acNo: 52,
+    acNo: 100,
     name: 'Shamanur Shivashankarappa',
     party: 'INC',
     age: 91,
@@ -1070,7 +1070,7 @@ export const KA_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Karnataka2023/candidate.php?candidate_id=7225',
   },
   {
-    acNo: 53,
+    acNo: 57,
     name: 'Karemma',
     party: 'JD(S)',
     age: 50,
@@ -1090,7 +1090,7 @@ export const KA_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Karnataka2023/candidate.php?candidate_id=7933',
   },
   {
-    acNo: 54,
+    acNo: 220,
     name: 'K.H.Muniyappa',
     party: 'INC',
     age: 75,
@@ -1110,7 +1110,7 @@ export const KA_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Karnataka2023/candidate.php?candidate_id=7229',
   },
   {
-    acNo: 55,
+    acNo: 51,
     name: 'Rajugouda Patil',
     party: 'JD(S)',
     age: 51,
@@ -1130,7 +1130,7 @@ export const KA_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Karnataka2023/candidate.php?candidate_id=7939',
   },
   {
-    acNo: 56,
+    acNo: 221,
     name: 'Dheeraj Muniraj',
     party: 'BJP',
     age: 31,
@@ -1150,7 +1150,7 @@ export const KA_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Karnataka2023/candidate.php?candidate_id=7237',
   },
   {
-    acNo: 57,
+    acNo: 140,
     name: 'Dinesh Gundu Rao',
     party: 'INC',
     age: 53,
@@ -1170,7 +1170,7 @@ export const KA_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Karnataka2023/candidate.php?candidate_id=7246',
   },
   {
-    acNo: 58,
+    acNo: 61,
     name: 'B C Janardhan Reddy',
     party: 'Kalyana Ra',
     age: 56,
@@ -1189,7 +1189,7 @@ export const KA_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Karnataka2023/candidate.php?candidate_id=8917',
   },
   {
-    acNo: 59,
+    acNo: 129,
     name: 'K H Puttaswamy Gowda',
     party: 'IND',
     age: 69,
@@ -1208,7 +1208,7 @@ export const KA_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Karnataka2023/candidate.php?candidate_id=8631',
   },
   {
-    acNo: 60,
+    acNo: 11,
     name: 'Ramesh Jarkiholi',
     party: 'BJP',
     age: 63,
@@ -1228,7 +1228,7 @@ export const KA_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Karnataka2023/candidate.php?candidate_id=8465',
   },
   {
-    acNo: 61,
+    acNo: 143,
     name: 'Priyakrishna',
     party: 'INC',
     age: 39,
@@ -1268,7 +1268,7 @@ export const KA_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Karnataka2023/candidate.php?candidate_id=6977',
   },
   {
-    acNo: 63,
+    acNo: 72,
     name: 'Kaneez Fatima',
     party: 'INC',
     age: 64,
@@ -1288,7 +1288,7 @@ export const KA_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Karnataka2023/candidate.php?candidate_id=9186',
   },
   {
-    acNo: 64,
+    acNo: 182,
     name: 'P. Prasad',
     party: 'INC',
     age: 39,
@@ -1308,7 +1308,7 @@ export const KA_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Karnataka2023/candidate.php?candidate_id=6811',
   },
   {
-    acNo: 65,
+    acNo: 79,
     name: 'Sharana Gowda Kandakur',
     party: 'JD(S)',
     age: 41,
@@ -1347,7 +1347,7 @@ export const KA_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Karnataka2023/candidate.php?candidate_id=7974',
   },
   {
-    acNo: 67,
+    acNo: 69,
     name: 'Nemarajanaik.K',
     party: 'JD(S)',
     age: 52,
@@ -1367,7 +1367,7 @@ export const KA_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Karnataka2023/candidate.php?candidate_id=8946',
   },
   {
-    acNo: 68,
+    acNo: 91,
     name: 'Deshpande Raghunath',
     party: 'INC',
     age: 76,
@@ -1387,7 +1387,7 @@ export const KA_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Karnataka2023/candidate.php?candidate_id=7284',
   },
   {
-    acNo: 69,
+    acNo: 30,
     name: 'Srinivas Mane',
     party: 'INC',
     age: 48,
@@ -1407,7 +1407,7 @@ export const KA_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Karnataka2023/candidate.php?candidate_id=7286',
   },
   {
-    acNo: 70,
+    acNo: 103,
     name: 'S S Mallikarjun',
     party: 'IND',
     age: 57,
@@ -1427,7 +1427,7 @@ export const KA_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Karnataka2023/candidate.php?candidate_id=8971',
   },
   {
-    acNo: 71,
+    acNo: 101,
     name: 'B P Harish',
     party: 'BJP',
     age: 62,
@@ -1447,7 +1447,7 @@ export const KA_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Karnataka2023/candidate.php?candidate_id=7799',
   },
   {
-    acNo: 72,
+    acNo: 185,
     name: 'H. P. Swaroop',
     party: 'JD(S)',
     age: 40,
@@ -1466,7 +1466,7 @@ export const KA_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Karnataka2023/candidate.php?candidate_id=7304',
   },
   {
-    acNo: 73,
+    acNo: 26,
     name: 'Rudrappa Manappa Lamani',
     party: 'INC',
     age: 64,
@@ -1486,7 +1486,7 @@ export const KA_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Karnataka2023/candidate.php?candidate_id=6817',
   },
   {
-    acNo: 74,
+    acNo: 147,
     name: 'Suresha B S',
     party: 'INC',
     age: 51,
@@ -1506,7 +1506,7 @@ export const KA_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Karnataka2023/candidate.php?candidate_id=7994',
   },
   {
-    acNo: 75,
+    acNo: 177,
     name: 'G. R. Anil',
     party: 'INC',
     age: 34,
@@ -1525,7 +1525,7 @@ export const KA_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Karnataka2023/candidate.php?candidate_id=7995',
   },
   {
-    acNo: 76,
+    acNo: 28,
     name: 'Ujaneshwar Basavannappa Banakar',
     party: 'INC',
     age: 63,
@@ -1545,7 +1545,7 @@ export const KA_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Karnataka2023/candidate.php?candidate_id=7997',
   },
   {
-    acNo: 77,
+    acNo: 106,
     name: 'D Sudakar',
     party: 'INC',
     age: 63,
@@ -1565,7 +1565,7 @@ export const KA_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Karnataka2023/candidate.php?candidate_id=7999',
   },
   {
-    acNo: 78,
+    acNo: 186,
     name: 'H D Revanna',
     party: 'JD(S)',
     age: 65,
@@ -1605,7 +1605,7 @@ export const KA_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Karnataka2023/candidate.php?candidate_id=7325',
   },
   {
-    acNo: 80,
+    acNo: 107,
     name: 'B G Govindappa',
     party: 'INC',
     age: 67,
@@ -1625,7 +1625,7 @@ export const KA_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Karnataka2023/candidate.php?candidate_id=6985',
   },
   {
-    acNo: 81,
+    acNo: 219,
     name: 'Sharath Bachegowda',
     party: 'INC',
     age: 41,
@@ -1644,7 +1644,7 @@ export const KA_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Karnataka2023/candidate.php?candidate_id=7331',
   },
   {
-    acNo: 82,
+    acNo: 19,
     name: 'N Mahesh',
     party: 'BJP',
     age: 52,
@@ -1664,7 +1664,7 @@ export const KA_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Karnataka2023/candidate.php?candidate_id=7771',
   },
   {
-    acNo: 83,
+    acNo: 19,
     name: 'Prasad Abbayya',
     party: 'INC',
     age: 54,
@@ -1684,7 +1684,7 @@ export const KA_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Karnataka2023/candidate.php?candidate_id=7334',
   },
   {
-    acNo: 84,
+    acNo: 19,
     name: 'Arvind Bellad',
     party: 'BJP',
     age: 53,
@@ -1704,7 +1704,7 @@ export const KA_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Karnataka2023/candidate.php?candidate_id=8017',
   },
   {
-    acNo: 85,
+    acNo: 18,
     name: 'Umesh Katti Jr',
     party: 'BJP',
     age: 40,
@@ -1724,7 +1724,7 @@ export const KA_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Karnataka2023/candidate.php?candidate_id=7656',
   },
   {
-    acNo: 86,
+    acNo: 43,
     name: 'Kashappanavara Vijayanand Shivashankrappa',
     party: 'INC',
     age: 51,
@@ -1744,7 +1744,7 @@ export const KA_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Karnataka2023/candidate.php?candidate_id=7344',
   },
   {
-    acNo: 87,
+    acNo: 176,
     name: 'G.D. Harish Gowda',
     party: 'JD(S)',
     age: 36,
@@ -1763,7 +1763,7 @@ export const KA_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Karnataka2023/candidate.php?candidate_id=6988',
   },
   {
-    acNo: 88,
+    acNo: 48,
     name: 'Yashavantaraygoud. Vittalagoud. Patil',
     party: 'INC',
     age: 56,
@@ -1783,7 +1783,7 @@ export const KA_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Karnataka2023/candidate.php?candidate_id=6830',
   },
   {
-    acNo: 89,
+    acNo: 102,
     name: 'B.Devendrappa',
     party: 'INC',
     age: 61,
@@ -1803,7 +1803,7 @@ export const KA_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Karnataka2023/candidate.php?candidate_id=7804',
   },
   {
-    acNo: 90,
+    acNo: 41,
     name: 'Jagadeesh Shivayya Gudagunti',
     party: 'BJP',
     age: 68,
@@ -1822,7 +1822,7 @@ export const KA_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Karnataka2023/candidate.php?candidate_id=8030',
   },
   {
-    acNo: 91,
+    acNo: 134,
     name: 'C K Ramamurthy',
     party: 'BJP',
     age: 57,
@@ -1842,7 +1842,7 @@ export const KA_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Karnataka2023/candidate.php?candidate_id=7401',
   },
   {
-    acNo: 92,
+    acNo: 75,
     name: 'Ajay Singh',
     party: 'INC',
     age: 49,
@@ -1862,7 +1862,7 @@ export const KA_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Karnataka2023/candidate.php?candidate_id=7410',
   },
   {
-    acNo: 93,
+    acNo: 153,
     name: 'B. A. Basavaraja',
     party: 'BJP',
     age: 59,
@@ -1882,7 +1882,7 @@ export const KA_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Karnataka2023/candidate.php?candidate_id=7415',
   },
   {
-    acNo: 94,
+    acNo: 10,
     name: 'Bharamgouda Alagouda Kage',
     party: 'INC',
     age: 65,
@@ -1901,7 +1901,7 @@ export const KA_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Karnataka2023/candidate.php?candidate_id=7424',
   },
   {
-    acNo: 95,
+    acNo: 23,
     name: 'Santosh S Lad',
     party: 'INC',
     age: 48,
@@ -1941,7 +1941,7 @@ export const KA_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Karnataka2023/candidate.php?candidate_id=7431',
   },
   {
-    acNo: 97,
+    acNo: 162,
     name: 'D K Shivakumar',
     party: 'INC',
     age: 60,
@@ -1961,7 +1961,7 @@ export const KA_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Karnataka2023/candidate.php?candidate_id=7433',
   },
   {
-    acNo: 98,
+    acNo: 199,
     name: 'Gurme Suresh Shetty',
     party: 'BJP',
     age: 60,
@@ -2000,7 +2000,7 @@ export const KA_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Karnataka2023/candidate.php?candidate_id=6838',
   },
   {
-    acNo: 100,
+    acNo: 87,
     name: 'Satish Krishna Sail',
     party: 'INC',
     age: 57,
@@ -2020,7 +2020,7 @@ export const KA_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Karnataka2023/candidate.php?candidate_id=7444',
   },
   {
-    acNo: 101,
+    acNo: 5,
     name: 'Babasaheb Patil',
     party: 'INC',
     age: 51,
@@ -2040,7 +2040,7 @@ export const KA_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Karnataka2023/candidate.php?candidate_id=7457',
   },
   {
-    acNo: 102,
+    acNo: 121,
     name: 'Kothur.G. Manjunatha',
     party: 'INC',
     age: 45,
@@ -2060,7 +2060,7 @@ export const KA_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Karnataka2023/candidate.php?candidate_id=8547',
   },
   {
-    acNo: 103,
+    acNo: 121,
     name: 'Roopa Kala. M',
     party: 'INC',
     age: 43,
@@ -2080,7 +2080,7 @@ export const KA_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Karnataka2023/candidate.php?candidate_id=6845',
   },
   {
-    acNo: 104,
+    acNo: 183,
     name: 'A.R.Krishnamurthy',
     party: 'INC',
     age: 62,
@@ -2099,7 +2099,7 @@ export const KA_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Karnataka2023/candidate.php?candidate_id=7468',
   },
   {
-    acNo: 105,
+    acNo: 60,
     name: 'Raghavendra Hitnal',
     party: 'INC',
     age: 44,
@@ -2119,7 +2119,7 @@ export const KA_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Karnataka2023/candidate.php?candidate_id=7470',
   },
   {
-    acNo: 106,
+    acNo: 120,
     name: 'G Parameshwara',
     party: 'INC',
     age: 72,
@@ -2139,7 +2139,7 @@ export const KA_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Karnataka2023/candidate.php?candidate_id=8090',
   },
   {
-    acNo: 107,
+    acNo: 170,
     name: 'T.S. Srivathsa',
     party: 'BJP',
     age: 56,
@@ -2159,7 +2159,7 @@ export const KA_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Karnataka2023/candidate.php?candidate_id=8092',
   },
   {
-    acNo: 108,
+    acNo: 170,
     name: 'Ravishankar D',
     party: 'INC',
     age: 47,
@@ -2199,7 +2199,7 @@ export const KA_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Karnataka2023/candidate.php?candidate_id=7485',
   },
   {
-    acNo: 110,
+    acNo: 70,
     name: 'S R Srinivas',
     party: 'INC',
     age: 47,
@@ -2219,7 +2219,7 @@ export const KA_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Karnataka2023/candidate.php?candidate_id=7490',
   },
   {
-    acNo: 111,
+    acNo: 88,
     name: 'Dinakar Keshav Shetty',
     party: 'BJP',
     age: 65,
@@ -2239,7 +2239,7 @@ export const KA_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Karnataka2023/candidate.php?candidate_id=7491',
   },
   {
-    acNo: 112,
+    acNo: 200,
     name: 'Kiran Kumar Kodgi',
     party: 'BJP',
     age: 60,
@@ -2258,7 +2258,7 @@ export const KA_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Karnataka2023/candidate.php?candidate_id=7495',
   },
   {
-    acNo: 113,
+    acNo: 24,
     name: 'M B Patil',
     party: 'BJP',
     age: 61,
@@ -2278,7 +2278,7 @@ export const KA_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Karnataka2023/candidate.php?candidate_id=7499',
   },
   {
-    acNo: 114,
+    acNo: 112,
     name: 'H D Ranganath',
     party: 'INC',
     age: 52,
@@ -2298,7 +2298,7 @@ export const KA_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Karnataka2023/candidate.php?candidate_id=7504',
   },
   {
-    acNo: 115,
+    acNo: 63,
     name: 'Doddanagouda Patil',
     party: 'BJP',
     age: 49,
@@ -2317,7 +2317,7 @@ export const KA_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Karnataka2023/candidate.php?candidate_id=7507',
   },
   {
-    acNo: 116,
+    acNo: 58,
     name: 'Manappa D Vajjal',
     party: 'BJP',
     age: 59,
@@ -2356,7 +2356,7 @@ export const KA_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Karnataka2023/candidate.php?candidate_id=7517',
   },
   {
-    acNo: 118,
+    acNo: 206,
     name: 'Dr. Mantar Gowda',
     party: 'INC',
     age: 38,
@@ -2376,7 +2376,7 @@ export const KA_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Karnataka2023/candidate.php?candidate_id=7523',
   },
   {
-    acNo: 119,
+    acNo: 151,
     name: 'Manjula Gavit',
     party: 'BJP',
     age: 48,
@@ -2396,7 +2396,7 @@ export const KA_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Karnataka2023/candidate.php?candidate_id=7526',
   },
   {
-    acNo: 120,
+    acNo: 145,
     name: 'K Gopalaiah',
     party: 'BJP',
     age: 63,
@@ -2416,7 +2416,7 @@ export const KA_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Karnataka2023/candidate.php?candidate_id=7531',
   },
   {
-    acNo: 121,
+    acNo: 165,
     name: 'P.M.Narendraswamy',
     party: 'INC',
     age: 61,
@@ -2436,7 +2436,7 @@ export const KA_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Karnataka2023/candidate.php?candidate_id=8139',
   },
   {
-    acNo: 122,
+    acNo: 146,
     name: 'Ashwath Narayan C N',
     party: 'BJP',
     age: 55,
@@ -2456,7 +2456,7 @@ export const KA_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Karnataka2023/candidate.php?candidate_id=7536',
   },
   {
-    acNo: 123,
+    acNo: 190,
     name: 'K.Y.Nanjegowda',
     party: 'INC',
     age: 56,
@@ -2476,7 +2476,7 @@ export const KA_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Karnataka2023/candidate.php?candidate_id=7541',
   },
   {
-    acNo: 124,
+    acNo: 202,
     name: 'U.T. Khader Fareed',
     party: 'INC',
     age: 54,
@@ -2496,7 +2496,7 @@ export const KA_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Karnataka2023/candidate.php?candidate_id=7545',
   },
   {
-    acNo: 125,
+    acNo: 202,
     name: 'Dr Y Bharath Shetty',
     party: 'BJP',
     age: 52,
@@ -2516,7 +2516,7 @@ export const KA_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Karnataka2023/candidate.php?candidate_id=7548',
   },
   {
-    acNo: 126,
+    acNo: 203,
     name: 'D.Vedavyasa Kamath',
     party: 'BJP',
     age: 45,
@@ -2536,7 +2536,7 @@ export const KA_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Karnataka2023/candidate.php?candidate_id=7552',
   },
   {
-    acNo: 127,
+    acNo: 56,
     name: 'G Hampayya Nayak',
     party: 'INC',
     age: 84,
@@ -2556,7 +2556,7 @@ export const KA_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Karnataka2023/candidate.php?candidate_id=8158',
   },
   {
-    acNo: 128,
+    acNo: 56,
     name: 'Basan Gouda Turvihal',
     party: 'INC',
     age: 58,
@@ -2616,7 +2616,7 @@ export const KA_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Karnataka2023/candidate.php?candidate_id=8171',
   },
   {
-    acNo: 131,
+    acNo: 109,
     name: 'N.Y.Gopalakrishna',
     party: 'INC',
     age: 71,
@@ -2635,7 +2635,7 @@ export const KA_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Karnataka2023/candidate.php?candidate_id=7565',
   },
   {
-    acNo: 132,
+    acNo: 50,
     name: 'Appaji Aliyas Channabasavaraj S/O Shankarao Nadagouda',
     party: 'INC',
     age: 65,
@@ -2655,7 +2655,7 @@ export const KA_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Karnataka2023/candidate.php?candidate_id=6867',
   },
   {
-    acNo: 133,
+    acNo: 42,
     name: 'Timmapur Ramappa Balappa',
     party: 'INC',
     age: 61,
@@ -2675,7 +2675,7 @@ export const KA_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Karnataka2023/candidate.php?candidate_id=7579',
   },
   {
-    acNo: 134,
+    acNo: 195,
     name: 'Nayana Motamma',
     party: 'INC',
     age: 43,
@@ -2695,7 +2695,7 @@ export const KA_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Karnataka2023/candidate.php?candidate_id=7580',
   },
   {
-    acNo: 135,
+    acNo: 124,
     name: 'R Manjunath',
     party: 'JD(S)',
     age: 41,
@@ -2715,7 +2715,7 @@ export const KA_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Karnataka2023/candidate.php?candidate_id=7587',
   },
   {
-    acNo: 136,
+    acNo: 167,
     name: 'N. Chaluvarayaswamy',
     party: 'INC',
     age: 62,
@@ -2754,7 +2754,7 @@ export const KA_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Karnataka2023/candidate.php?candidate_id=7596',
   },
   {
-    acNo: 138,
+    acNo: 175,
     name: 'Darshan Dhruvanarayana',
     party: 'INC',
     age: 28,
@@ -2773,7 +2773,7 @@ export const KA_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Karnataka2023/candidate.php?candidate_id=7599',
   },
   {
-    acNo: 139,
+    acNo: 172,
     name: 'Tanveer Sait',
     party: 'INC',
     age: 56,
@@ -2793,7 +2793,7 @@ export const KA_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Karnataka2023/candidate.php?candidate_id=8195',
   },
   {
-    acNo: 140,
+    acNo: 25,
     name: 'Ningaraddi Hanamaraddi Konaraddi',
     party: 'INC',
     age: 59,
@@ -2813,7 +2813,7 @@ export const KA_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Karnataka2023/candidate.php?candidate_id=7609',
   },
   {
-    acNo: 141,
+    acNo: 222,
     name: 'Shreenivasaiah N',
     party: 'INC',
     age: 37,
@@ -2833,7 +2833,7 @@ export const KA_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Karnataka2023/candidate.php?candidate_id=7619',
   },
   {
-    acNo: 142,
+    acNo: 14,
     name: 'Shashikala Jolle',
     party: 'BJP',
     age: 53,
@@ -2853,7 +2853,7 @@ export const KA_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Karnataka2023/candidate.php?candidate_id=7624',
   },
   {
-    acNo: 143,
+    acNo: 136,
     name: 'R Ashoka',
     party: 'BJP',
     age: 65,
@@ -2873,7 +2873,7 @@ export const KA_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Karnataka2023/candidate.php?candidate_id=7628',
   },
   {
-    acNo: 144,
+    acNo: 118,
     name: 'H.V.Venkatesh',
     party: 'INC',
     age: 46,
@@ -2893,7 +2893,7 @@ export const KA_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Karnataka2023/candidate.php?candidate_id=7630',
   },
   {
-    acNo: 145,
+    acNo: 179,
     name: 'V Venkatesh',
     party: 'INC',
     age: 74,
@@ -2913,7 +2913,7 @@ export const KA_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Karnataka2023/candidate.php?candidate_id=6880',
   },
   {
-    acNo: 146,
+    acNo: 148,
     name: 'A C Srinivasa',
     party: 'INC',
     age: 56,
@@ -2933,7 +2933,7 @@ export const KA_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Karnataka2023/candidate.php?candidate_id=8220',
   },
   {
-    acNo: 147,
+    acNo: 205,
     name: 'Ashok Kumar Rana',
     party: 'INC',
     age: 53,
@@ -2952,7 +2952,7 @@ export const KA_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Karnataka2023/candidate.php?candidate_id=8226',
   },
   {
-    acNo: 148,
+    acNo: 55,
     name: 'Basanagouda Daddal',
     party: 'INC',
     age: 51,
@@ -2972,7 +2972,7 @@ export const KA_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Karnataka2023/candidate.php?candidate_id=7762',
   },
   {
-    acNo: 149,
+    acNo: 141,
     name: 'S Suresh Kumar',
     party: 'BJP',
     age: 67,
@@ -2991,7 +2991,7 @@ export const KA_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Karnataka2023/candidate.php?candidate_id=8234',
   },
   {
-    acNo: 150,
+    acNo: 157,
     name: 'Munirathna',
     party: 'BJP',
     age: 59,
@@ -3011,7 +3011,7 @@ export const KA_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Karnataka2023/candidate.php?candidate_id=7760',
   },
   {
-    acNo: 151,
+    acNo: 159,
     name: 'H. A. Iqbal Hussain',
     party: 'INC',
     age: 62,
@@ -3031,7 +3031,7 @@ export const KA_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Karnataka2023/candidate.php?candidate_id=7754',
   },
   {
-    acNo: 152,
+    acNo: 7,
     name: 'Ashok Pattan',
     party: 'INC',
     age: 72,
@@ -3051,7 +3051,7 @@ export const KA_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Karnataka2023/candidate.php?candidate_id=8247',
   },
   {
-    acNo: 153,
+    acNo: 29,
     name: 'Prakash Koliwad',
     party: 'INC',
     age: 54,
@@ -3070,7 +3070,7 @@ export const KA_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Karnataka2023/candidate.php?candidate_id=7736',
   },
   {
-    acNo: 154,
+    acNo: 17,
     name: 'Aihole Duryodhan Mahalingappa',
     party: 'BJP',
     age: 65,
@@ -3090,7 +3090,7 @@ export const KA_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Karnataka2023/candidate.php?candidate_id=7731',
   },
   {
-    acNo: 155,
+    acNo: 34,
     name: 'Gurupadagouda Sanganagouda Patil',
     party: 'INC',
     age: 75,
@@ -3110,7 +3110,7 @@ export const KA_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Karnataka2023/candidate.php?candidate_id=7659',
   },
   {
-    acNo: 156,
+    acNo: 217,
     name: 'S Manjunatha',
     party: 'BJP',
     age: 41,
@@ -3130,7 +3130,7 @@ export const KA_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Karnataka2023/candidate.php?candidate_id=7810',
   },
   {
-    acNo: 157,
+    acNo: 66,
     name: 'E Tukaram',
     party: 'INC',
     age: 56,
@@ -3150,7 +3150,7 @@ export const KA_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Karnataka2023/candidate.php?candidate_id=8260',
   },
   {
-    acNo: 158,
+    acNo: 66,
     name: 'E Annapoorna',
     party: 'INC',
     age: 50,
@@ -3170,7 +3170,7 @@ export const KA_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Karnataka2023/candidate.php?candidate_id=9556',
   },
   {
-    acNo: 159,
+    acNo: 8,
     name: 'Vishwas Vasant Vaidya',
     party: 'INC',
     age: 41,
@@ -3190,7 +3190,7 @@ export const KA_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Karnataka2023/candidate.php?candidate_id=8270',
   },
   {
-    acNo: 160,
+    acNo: 81,
     name: 'Dr. Sharanprakash Rudrappa Patil',
     party: 'INC',
     age: 55,
@@ -3210,7 +3210,7 @@ export const KA_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Karnataka2023/candidate.php?candidate_id=7727',
   },
   {
-    acNo: 161,
+    acNo: 77,
     name: 'Sharanabasappa Darshanapur',
     party: 'INC',
     age: 63,
@@ -3250,7 +3250,7 @@ export const KA_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Karnataka2023/candidate.php?candidate_id=7674',
   },
   {
-    acNo: 163,
+    acNo: 31,
     name: 'Basavaraj Bommai',
     party: 'BJP',
     age: 63,
@@ -3270,7 +3270,7 @@ export const KA_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Karnataka2023/candidate.php?candidate_id=7053',
   },
   {
-    acNo: 164,
+    acNo: 31,
     name: 'Pathan Yasirahmedkhan',
     party: 'INC',
     age: 43,
@@ -3289,7 +3289,7 @@ export const KA_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Karnataka2023/candidate.php?candidate_id=9563',
   },
   {
-    acNo: 165,
+    acNo: 96,
     name: 'Vijayendra Yediyurappa',
     party: 'BJP',
     age: 47,
@@ -3309,7 +3309,7 @@ export const KA_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Karnataka2023/candidate.php?candidate_id=7692',
   },
   {
-    acNo: 166,
+    acNo: 94,
     name: 'Sharada Puryanaik',
     party: 'JD(S)',
     age: 52,
@@ -3329,7 +3329,7 @@ export const KA_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Karnataka2023/candidate.php?candidate_id=7706',
   },
   {
-    acNo: 167,
+    acNo: 36,
     name: 'Dr.Chandru Lamani',
     party: 'BJP',
     age: 34,
@@ -3349,7 +3349,7 @@ export const KA_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Karnataka2023/candidate.php?candidate_id=8292',
   },
   {
-    acNo: 168,
+    acNo: 139,
     name: 'Rizwan Arshad',
     party: 'INC',
     age: 43,
@@ -3369,7 +3369,7 @@ export const KA_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Karnataka2023/candidate.php?candidate_id=8298',
   },
   {
-    acNo: 169,
+    acNo: 76,
     name: 'Raja Venkatappa Naik',
     party: 'INC',
     age: 41,
@@ -3409,7 +3409,7 @@ export const KA_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Karnataka2023/candidate.php?candidate_id=7721',
   },
   {
-    acNo: 171,
+    acNo: 166,
     name: 'A.B. Ramesha Bandisiddegowda',
     party: 'INC',
     age: 50,
@@ -3428,7 +3428,7 @@ export const KA_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Karnataka2023/candidate.php?candidate_id=8308',
   },
   {
-    acNo: 172,
+    acNo: 128,
     name: 'B N Ravikumar',
     party: 'JD(S)',
     age: 54,
@@ -3448,7 +3448,7 @@ export const KA_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Karnataka2023/candidate.php?candidate_id=8312',
   },
   {
-    acNo: 173,
+    acNo: 49,
     name: 'Ashok Managuli',
     party: 'INC',
     age: 54,
@@ -3468,7 +3468,7 @@ export const KA_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Karnataka2023/candidate.php?candidate_id=8315',
   },
   {
-    acNo: 174,
+    acNo: 119,
     name: 'T B Jayachandra',
     party: 'INC',
     age: 74,
@@ -3488,7 +3488,7 @@ export const KA_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Karnataka2023/candidate.php?candidate_id=8325',
   },
   {
-    acNo: 175,
+    acNo: 119,
     name: 'B. M. Nagaraja',
     party: 'INC',
     age: 51,
@@ -3507,7 +3507,7 @@ export const KA_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Karnataka2023/candidate.php?candidate_id=8330',
   },
   {
-    acNo: 176,
+    acNo: 89,
     name: 'Bhimanna T. Naik',
     party: 'INC',
     age: 66,
@@ -3527,7 +3527,7 @@ export const KA_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Karnataka2023/candidate.php?candidate_id=7346',
   },
   {
-    acNo: 177,
+    acNo: 97,
     name: 'Madhu Bangarappa',
     party: 'INC',
     age: 57,
@@ -3566,7 +3566,7 @@ export const KA_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Karnataka2023/candidate.php?candidate_id=8343',
   },
   {
-    acNo: 179,
+    acNo: 125,
     name: 'G.K. Venkatashivareddy',
     party: 'JD(S)',
     age: 76,
@@ -3586,7 +3586,7 @@ export const KA_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Karnataka2023/candidate.php?candidate_id=7066',
   },
   {
-    acNo: 180,
+    acNo: 208,
     name: 'Bhagirathi Murulya',
     party: 'BJP',
     age: 48,
@@ -3606,7 +3606,7 @@ export const KA_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Karnataka2023/candidate.php?candidate_id=8347',
   },
   {
-    acNo: 181,
+    acNo: 174,
     name: 'Dr. H C Mahadevappa',
     party: 'INC',
     age: 70,
@@ -3626,7 +3626,7 @@ export const KA_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Karnataka2023/candidate.php?candidate_id=8348',
   },
   {
-    acNo: 182,
+    acNo: 44,
     name: 'Siddu Savadi',
     party: 'BJP',
     age: 63,
@@ -3646,7 +3646,7 @@ export const KA_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Karnataka2023/candidate.php?candidate_id=6909',
   },
   {
-    acNo: 183,
+    acNo: 113,
     name: 'S Shadakshari',
     party: 'INC',
     age: 74,
@@ -3666,7 +3666,7 @@ export const KA_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Karnataka2023/candidate.php?candidate_id=7360',
   },
   {
-    acNo: 184,
+    acNo: 95,
     name: 'Araga Jnanendra',
     party: 'BJP',
     age: 70,
@@ -3686,7 +3686,7 @@ export const KA_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Karnataka2023/candidate.php?candidate_id=8360',
   },
   {
-    acNo: 185,
+    acNo: 110,
     name: 'J N Ganesh',
     party: 'BJP',
     age: 47,
@@ -3706,7 +3706,7 @@ export const KA_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Karnataka2023/candidate.php?candidate_id=7367',
   },
   {
-    acNo: 186,
+    acNo: 111,
     name: 'B.Suresh Gowda',
     party: 'BJP',
     age: 58,
@@ -3726,7 +3726,7 @@ export const KA_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Karnataka2023/candidate.php?candidate_id=8373',
   },
   {
-    acNo: 187,
+    acNo: 114,
     name: 'M.T.Krishnappa',
     party: 'JD(S)',
     age: 71,
@@ -3746,7 +3746,7 @@ export const KA_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Karnataka2023/candidate.php?candidate_id=7071',
   },
   {
-    acNo: 188,
+    acNo: 198,
     name: 'Yashpal',
     party: 'BJP',
     age: 44,
@@ -3766,7 +3766,7 @@ export const KA_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Karnataka2023/candidate.php?candidate_id=8378',
   },
   {
-    acNo: 189,
+    acNo: 173,
     name: 'Siddaramaiah',
     party: 'INC',
     age: 75,
@@ -3786,7 +3786,7 @@ export const KA_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Karnataka2023/candidate.php?candidate_id=8383',
   },
   {
-    acNo: 190,
+    acNo: 134,
     name: 'H.R.Gaviyappa',
     party: 'INC',
     age: 60,
@@ -3806,7 +3806,7 @@ export const KA_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Karnataka2023/candidate.php?candidate_id=7385',
   },
   {
-    acNo: 191,
+    acNo: 207,
     name: 'A.S.Ponnanna',
     party: 'INC',
     age: 48,
@@ -3826,7 +3826,7 @@ export const KA_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Karnataka2023/candidate.php?candidate_id=8397',
   },
   {
-    acNo: 192,
+    acNo: 78,
     name: 'Channareddy Patil Tunnur',
     party: 'INC',
     age: 75,
@@ -3846,7 +3846,7 @@ export const KA_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Karnataka2023/candidate.php?candidate_id=7076',
   },
   {
-    acNo: 193,
+    acNo: 152,
     name: 'S R Vishwanath',
     party: 'BJP',
     age: 60,
@@ -3866,7 +3866,7 @@ export const KA_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Karnataka2023/candidate.php?candidate_id=8405',
   },
   {
-    acNo: 194,
+    acNo: 62,
     name: 'Basavaraj Rayareddi',
     party: 'INC',
     age: 67,
@@ -3886,7 +3886,7 @@ export const KA_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Karnataka2023/candidate.php?candidate_id=7393',
   },
   {
-    acNo: 195,
+    acNo: 90,
     name: 'Shivaram Hebbar',
     party: 'BJP',
     age: 65,
@@ -3926,7 +3926,7 @@ export const KA_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Karnataka2023/candidate.php?candidate_id=8416',
   },
   {
-    acNo: 197,
+    acNo: 155,
     name: 'S T Somashekar',
     party: 'BJP',
     age: 65,

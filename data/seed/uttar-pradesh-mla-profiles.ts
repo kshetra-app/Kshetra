@@ -55,7 +55,7 @@ export const UP_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/UttarPradesh2022/candidate.php?candidate_id=82',
   },
   {
-    acNo: 2,
+    acNo: 89,
     name: 'Purushottam Khandelwal',
     party: 'BJP',
     age: 60,
@@ -74,7 +74,7 @@ export const UP_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/UttarPradesh2022/candidate.php?candidate_id=265',
   },
   {
-    acNo: 3,
+    acNo: 90,
     name: 'Baby Rani Maurya',
     party: 'BJP',
     age: 65,
@@ -93,7 +93,7 @@ export const UP_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/UttarPradesh2022/candidate.php?candidate_id=87',
   },
   {
-    acNo: 4,
+    acNo: 88,
     name: 'Yogendra Upadhyaya',
     party: 'BJP',
     age: 66,
@@ -112,7 +112,7 @@ export const UP_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/UttarPradesh2022/candidate.php?candidate_id=193',
   },
   {
-    acNo: 5,
+    acNo: 385,
     name: 'Tribhuwan Ram',
     party: 'BJP',
     age: 73,
@@ -132,7 +132,7 @@ export const UP_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/UttarPradesh2022/candidate.php?candidate_id=4356',
   },
   {
-    acNo: 6,
+    acNo: 281,
     name: 'Ram Achal Rajbhar',
     party: 'SP',
     age: 67,
@@ -151,7 +151,7 @@ export const UP_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/UttarPradesh2022/candidate.php?candidate_id=4164',
   },
   {
-    acNo: 7,
+    acNo: 206,
     name: 'Pratibha Shukla',
     party: 'BJP',
     age: 61,
@@ -171,7 +171,7 @@ export const UP_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/UttarPradesh2022/candidate.php?candidate_id=1735',
   },
   {
-    acNo: 8,
+    acNo: 279,
     name: 'Tribhuwan Dutt',
     party: 'SP',
     age: 56,
@@ -191,7 +191,7 @@ export const UP_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/UttarPradesh2022/candidate.php?candidate_id=4238',
   },
   {
-    acNo: 9,
+    acNo: 76,
     name: 'Mukta Raja',
     party: 'BJP',
     age: 55,
@@ -211,7 +211,7 @@ export const UP_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/UttarPradesh2022/candidate.php?candidate_id=380',
   },
   {
-    acNo: 10,
+    acNo: 262,
     name: 'Harshvardhan Bajpai',
     party: 'BJP',
     age: 40,
@@ -230,7 +230,7 @@ export const UP_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/UttarPradesh2022/candidate.php?candidate_id=3453',
   },
   {
-    acNo: 11,
+    acNo: 263,
     name: 'Nand Gopal Gupta',
     party: 'BJP',
     age: 47,
@@ -249,7 +249,7 @@ export const UP_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/UttarPradesh2022/candidate.php?candidate_id=3463',
   },
   {
-    acNo: 12,
+    acNo: 261,
     name: 'Sidharth Nath Singh',
     party: 'BJP',
     age: 58,
@@ -268,7 +268,7 @@ export const UP_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/UttarPradesh2022/candidate.php?candidate_id=3443',
   },
   {
-    acNo: 13,
+    acNo: 101,
     name: 'Hariom Verma',
     party: 'BJP',
     age: 37,
@@ -288,7 +288,7 @@ export const UP_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/UttarPradesh2022/candidate.php?candidate_id=1799',
   },
   {
-    acNo: 14,
+    acNo: 186,
     name: 'Maharaji Prajapati',
     party: 'SP',
     age: 51,
@@ -308,7 +308,7 @@ export const UP_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/UttarPradesh2022/candidate.php?candidate_id=3108',
   },
   {
-    acNo: 15,
+    acNo: 193,
     name: 'Sushil Kumar Shakya',
     party: 'BJP',
     age: 72,
@@ -328,7 +328,7 @@ export const UP_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/UttarPradesh2022/candidate.php?candidate_id=1647',
   },
   {
-    acNo: 16,
+    acNo: 41,
     name: 'Mehboob Ali',
     party: 'SP',
     age: 69,
@@ -348,7 +348,7 @@ export const UP_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/UttarPradesh2022/candidate.php?candidate_id=872',
   },
   {
-    acNo: 17,
+    acNo: 126,
     name: 'Dharmpal Singh',
     party: 'BJP',
     age: 69,
@@ -367,7 +367,7 @@ export const UP_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/UttarPradesh2022/candidate.php?candidate_id=1097',
   },
   {
-    acNo: 18,
+    acNo: 214,
     name: 'Amitabh Bajpai',
     party: 'SP',
     age: 48,
@@ -387,7 +387,7 @@ export const UP_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/UttarPradesh2022/candidate.php?candidate_id=1769',
   },
   {
-    acNo: 19,
+    acNo: 32,
     name: 'Pinki Singh Yadav',
     party: 'SP',
     age: 41,
@@ -407,7 +407,7 @@ export const UP_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/UttarPradesh2022/candidate.php?candidate_id=855',
   },
   {
-    acNo: 20,
+    acNo: 343,
     name: 'Sangram Jagtap',
     party: 'SP',
     age: 51,
@@ -426,7 +426,7 @@ export const UP_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/UttarPradesh2022/candidate.php?candidate_id=4395',
   },
   {
-    acNo: 21,
+    acNo: 394,
     name: 'Dinanath Bhashkar',
     party: 'BJP',
     age: 58,
@@ -446,7 +446,7 @@ export const UP_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/UttarPradesh2022/candidate.php?candidate_id=4346',
   },
   {
-    acNo: 22,
+    acNo: 204,
     name: 'Gudiya Katheriya',
     party: 'BJP',
     age: 46,
@@ -465,7 +465,7 @@ export const UP_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/UttarPradesh2022/candidate.php?candidate_id=1603',
   },
   {
-    acNo: 23,
+    acNo: 241,
     name: 'Vikas Gupta',
     party: 'BJP',
     age: 45,
@@ -485,7 +485,7 @@ export const UP_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/UttarPradesh2022/candidate.php?candidate_id=2274',
   },
   {
-    acNo: 24,
+    acNo: 347,
     name: 'Durga Prasad Yadav',
     party: 'SP',
     age: 69,
@@ -505,7 +505,7 @@ export const UP_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/UttarPradesh2022/candidate.php?candidate_id=4291',
   },
   {
-    acNo: 25,
+    acNo: 233,
     name: 'Vishambhar Singh Yadav',
     party: 'SP',
     age: 67,
@@ -525,7 +525,7 @@ export const UP_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/UttarPradesh2022/candidate.php?candidate_id=2589',
   },
   {
-    acNo: 26,
+    acNo: 222,
     name: 'Rajeev Singh Parichha',
     party: 'BJP',
     age: 45,
@@ -545,7 +545,7 @@ export const UP_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/UttarPradesh2022/candidate.php?candidate_id=1709',
   },
   {
-    acNo: 27,
+    acNo: 177,
     name: 'Shyam Sunder Bharti',
     party: 'SP',
     age: 54,
@@ -564,7 +564,7 @@ export const UP_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/UttarPradesh2022/candidate.php?candidate_id=2316',
   },
   {
-    acNo: 28,
+    acNo: 115,
     name: 'Mahesh Chandra Gupta',
     party: 'BJP',
     age: 64,
@@ -584,7 +584,7 @@ export const UP_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/UttarPradesh2022/candidate.php?candidate_id=899',
   },
   {
-    acNo: 29,
+    acNo: 364,
     name: 'Ramesh Chandra Mishra',
     party: 'BJP',
     age: 44,
@@ -603,7 +603,7 @@ export const UP_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/UttarPradesh2022/candidate.php?candidate_id=4672',
   },
   {
-    acNo: 30,
+    acNo: 52,
     name: 'Chaudhary Yogesh Dhama',
     party: 'BJP',
     age: 46,
@@ -623,7 +623,7 @@ export const UP_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/UttarPradesh2022/candidate.php?candidate_id=511',
   },
   {
-    acNo: 31,
+    acNo: 118,
     name: 'Ataur Rehman',
     party: 'SP',
     age: 54,
@@ -641,7 +641,7 @@ export const UP_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/UttarPradesh2022/candidate.php?candidate_id=874',
   },
   {
-    acNo: 32,
+    acNo: 286,
     name: 'Anupma Jaiswal',
     party: 'BJP',
     age: 55,
@@ -661,7 +661,7 @@ export const UP_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/UttarPradesh2022/candidate.php?candidate_id=3318',
   },
   {
-    acNo: 33,
+    acNo: 363,
     name: 'Jai Prakash Anchal',
     party: 'SP',
     age: 54,
@@ -681,7 +681,7 @@ export const UP_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/UttarPradesh2022/candidate.php?candidate_id=3796',
   },
   {
-    acNo: 34,
+    acNo: 169,
     name: 'Yogesh Shukla',
     party: 'BJP',
     age: 61,
@@ -700,7 +700,7 @@ export const UP_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/UttarPradesh2022/candidate.php?candidate_id=2737',
   },
   {
-    acNo: 35,
+    acNo: 160,
     name: 'Rampal Verma',
     party: 'BJP',
     age: 63,
@@ -719,7 +719,7 @@ export const UP_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/UttarPradesh2022/candidate.php?candidate_id=2604',
   },
   {
-    acNo: 36,
+    acNo: 85,
     name: 'Puran Prakash',
     party: 'BJP',
     age: 66,
@@ -739,7 +739,7 @@ export const UP_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/UttarPradesh2022/candidate.php?candidate_id=71',
   },
   {
-    acNo: 37,
+    acNo: 282,
     name: 'Saroj Sonkar',
     party: 'BJP',
     age: 49,
@@ -759,7 +759,7 @@ export const UP_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/UttarPradesh2022/candidate.php?candidate_id=3280',
   },
   {
-    acNo: 38,
+    acNo: 361,
     name: 'Daya Shankar Singh',
     party: 'BJP',
     age: 51,
@@ -778,7 +778,7 @@ export const UP_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/UttarPradesh2022/candidate.php?candidate_id=3615',
   },
   {
-    acNo: 39,
+    acNo: 235,
     name: 'Prakash Dwivedi',
     party: 'BJP',
     age: 44,
@@ -798,7 +798,7 @@ export const UP_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/UttarPradesh2022/candidate.php?candidate_id=2257',
   },
   {
-    acNo: 40,
+    acNo: 356,
     name: 'Shrikant Katiyar',
     party: 'BJP',
     age: 51,
@@ -818,7 +818,7 @@ export const UP_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/UttarPradesh2022/candidate.php?candidate_id=2464',
   },
   {
-    acNo: 41,
+    acNo: 362,
     name: 'Ketakee Singh',
     party: 'BJP',
     age: 37,
@@ -837,7 +837,7 @@ export const UP_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/UttarPradesh2022/candidate.php?candidate_id=3780',
   },
   {
-    acNo: 42,
+    acNo: 327,
     name: 'Vimlesh Paswan',
     party: 'BJP',
     age: 41,
@@ -857,7 +857,7 @@ export const UP_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/UttarPradesh2022/candidate.php?candidate_id=3690',
   },
   {
-    acNo: 43,
+    acNo: 304,
     name: 'Jai Pratap Singh',
     party: 'BJP',
     age: 68,
@@ -876,7 +876,7 @@ export const UP_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/UttarPradesh2022/candidate.php?candidate_id=3931',
   },
   {
-    acNo: 44,
+    acNo: 264,
     name: 'Vachaspati',
     party: 'Apna Dal (',
     age: 65,
@@ -894,7 +894,7 @@ export const UP_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/UttarPradesh2022/candidate.php?candidate_id=3481',
   },
   {
-    acNo: 45,
+    acNo: 268,
     name: 'Dharmraj Singh Yadav',
     party: 'SP',
     age: 62,
@@ -913,7 +913,7 @@ export const UP_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/UttarPradesh2022/candidate.php?candidate_id=3137',
   },
   {
-    acNo: 46,
+    acNo: 72,
     name: 'Jaiveer Singh',
     party: 'BJP',
     age: 57,
@@ -933,7 +933,7 @@ export const UP_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/UttarPradesh2022/candidate.php?candidate_id=98',
   },
   {
-    acNo: 47,
+    acNo: 124,
     name: 'M. S. Arun Kumar',
     party: 'BJP',
     age: 70,
@@ -952,7 +952,7 @@ export const UP_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/UttarPradesh2022/candidate.php?candidate_id=827',
   },
   {
-    acNo: 48,
+    acNo: 125,
     name: 'Sanjeev Agarwal',
     party: 'BJP',
     age: 59,
@@ -972,7 +972,7 @@ export const UP_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/UttarPradesh2022/candidate.php?candidate_id=828',
   },
   {
-    acNo: 49,
+    acNo: 342,
     name: 'Deepak Kumar Mishra',
     party: 'BJP',
     age: 52,
@@ -991,7 +991,7 @@ export const UP_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/UttarPradesh2022/candidate.php?candidate_id=3767',
   },
   {
-    acNo: 50,
+    acNo: 19,
     name: 'Kunwar Sushant Singh',
     party: 'BJP',
     age: 33,
@@ -1011,7 +1011,7 @@ export const UP_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/UttarPradesh2022/candidate.php?candidate_id=831',
   },
   {
-    acNo: 51,
+    acNo: 128,
     name: 'Jaydrath Alias Pravaktanand',
     party: 'BJP',
     age: 49,
@@ -1031,7 +1031,7 @@ export const UP_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/UttarPradesh2022/candidate.php?candidate_id=2802',
   },
   {
-    acNo: 52,
+    acNo: 310,
     name: 'Mahendra Nath Yadav',
     party: 'SP',
     age: 45,
@@ -1050,7 +1050,7 @@ export const UP_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/UttarPradesh2022/candidate.php?candidate_id=4213',
   },
   {
-    acNo: 53,
+    acNo: 1,
     name: 'Umar Ali Khan',
     party: 'SP',
     age: 44,
@@ -1070,7 +1070,7 @@ export const UP_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/UttarPradesh2022/candidate.php?candidate_id=849',
   },
   {
-    acNo: 54,
+    acNo: 357,
     name: 'Hansu Ram',
     party: 'SBSP',
     age: 67,
@@ -1090,7 +1090,7 @@ export const UP_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/UttarPradesh2022/candidate.php?candidate_id=3572',
   },
   {
-    acNo: 55,
+    acNo: 166,
     name: 'Ashutosh Shukla',
     party: 'BJP',
     age: 56,
@@ -1110,7 +1110,7 @@ export const UP_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/UttarPradesh2022/candidate.php?candidate_id=2497',
   },
   {
-    acNo: 56,
+    acNo: 201,
     name: 'Raghvendra Kumar Singh',
     party: 'SP',
     age: 52,
@@ -1130,7 +1130,7 @@ export const UP_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/UttarPradesh2022/candidate.php?candidate_id=1638',
   },
   {
-    acNo: 57,
+    acNo: 340,
     name: 'Sabhakunwar Kushawaha',
     party: 'BJP',
     age: 67,
@@ -1150,7 +1150,7 @@ export const UP_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/UttarPradesh2022/candidate.php?candidate_id=3751',
   },
   {
-    acNo: 58,
+    acNo: 289,
     name: 'Indrani Devi',
     party: 'SP',
     age: 52,
@@ -1170,7 +1170,7 @@ export const UP_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/UttarPradesh2022/candidate.php?candidate_id=3499',
   },
   {
-    acNo: 59,
+    acNo: 208,
     name: 'Rakesh Sachan',
     party: 'BJP',
     age: 66,
@@ -1190,7 +1190,7 @@ export const UP_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/UttarPradesh2022/candidate.php?candidate_id=2197',
   },
   {
-    acNo: 60,
+    acNo: 120,
     name: 'Shazil Islam Ansari',
     party: 'SP',
     age: 47,
@@ -1210,7 +1210,7 @@ export const UP_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/UttarPradesh2022/candidate.php?candidate_id=1061',
   },
   {
-    acNo: 61,
+    acNo: 195,
     name: 'Nagendra Singh Rathore',
     party: 'BJP',
     age: 64,
@@ -1230,7 +1230,7 @@ export const UP_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/UttarPradesh2022/candidate.php?candidate_id=1655',
   },
   {
-    acNo: 62,
+    acNo: 108,
     name: 'Ram Naresh Agnihotri',
     party: 'BJP',
     age: 64,
@@ -1250,7 +1250,7 @@ export const UP_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/UttarPradesh2022/candidate.php?candidate_id=1819',
   },
   {
-    acNo: 63,
+    acNo: 22,
     name: 'Suchi Chaudhary',
     party: 'BJP',
     age: 32,
@@ -1270,7 +1270,7 @@ export const UP_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/UttarPradesh2022/candidate.php?candidate_id=1109',
   },
   {
-    acNo: 64,
+    acNo: 274,
     name: 'Amit Singh Chauhan',
     party: 'BJP',
     age: 34,
@@ -1290,7 +1290,7 @@ export const UP_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/UttarPradesh2022/candidate.php?candidate_id=3218',
   },
   {
-    acNo: 65,
+    acNo: 30,
     name: 'Mohammad Faheem Irfan',
     party: 'SP',
     age: 41,
@@ -1309,7 +1309,7 @@ export const UP_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/UttarPradesh2022/candidate.php?candidate_id=844',
   },
   {
-    acNo: 66,
+    acNo: 36,
     name: 'Baldev Singh Aulakh',
     party: 'BJP',
     age: 62,
@@ -1329,7 +1329,7 @@ export const UP_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/UttarPradesh2022/candidate.php?candidate_id=845',
   },
   {
-    acNo: 67,
+    acNo: 159,
     name: 'Ashish Kumar Singh',
     party: 'BJP',
     age: 41,
@@ -1349,7 +1349,7 @@ export const UP_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/UttarPradesh2022/candidate.php?candidate_id=2535',
   },
   {
-    acNo: 68,
+    acNo: 209,
     name: 'Mohit Sonkar',
     party: 'BJP',
     age: 32,
@@ -1368,7 +1368,7 @@ export const UP_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/UttarPradesh2022/candidate.php?candidate_id=1746',
   },
   {
-    acNo: 69,
+    acNo: 114,
     name: 'Harish Chandra Shakya',
     party: 'BJP',
     age: 44,
@@ -1388,7 +1388,7 @@ export const UP_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/UttarPradesh2022/candidate.php?candidate_id=901',
   },
   {
-    acNo: 70,
+    acNo: 239,
     name: 'Jay Kumar Singh Jaiki',
     party: 'Apna Dal (',
     age: 53,
@@ -1408,7 +1408,7 @@ export const UP_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/UttarPradesh2022/candidate.php?candidate_id=2270',
   },
   {
-    acNo: 71,
+    acNo: 112,
     name: 'Ashutosh Maurya',
     party: 'SP',
     age: 45,
@@ -1427,7 +1427,7 @@ export const UP_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/UttarPradesh2022/candidate.php?candidate_id=907',
   },
   {
-    acNo: 72,
+    acNo: 149,
     name: 'Nirmal Verma',
     party: 'BJP',
     age: 58,
@@ -1447,7 +1447,7 @@ export const UP_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/UttarPradesh2022/candidate.php?candidate_id=2414',
   },
   {
-    acNo: 73,
+    acNo: 123,
     name: 'Raghavendra Sharma',
     party: 'BJP',
     age: 50,
@@ -1467,7 +1467,7 @@ export const UP_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/UttarPradesh2022/candidate.php?candidate_id=826',
   },
   {
-    acNo: 74,
+    acNo: 210,
     name: 'Abhijeet Singh Sanga',
     party: 'BJP',
     age: 39,
@@ -1487,7 +1487,7 @@ export const UP_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/UttarPradesh2022/candidate.php?candidate_id=1753',
   },
   {
-    acNo: 75,
+    acNo: 11,
     name: 'Rajpal Singh Baliyan',
     party: 'RLD',
     age: 70,
@@ -1506,7 +1506,7 @@ export const UP_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/UttarPradesh2022/candidate.php?candidate_id=30',
   },
   {
-    acNo: 76,
+    acNo: 65,
     name: 'Pradeep Kumar Chaudhary',
     party: 'BJP',
     age: 51,
@@ -1525,7 +1525,7 @@ export const UP_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/UttarPradesh2022/candidate.php?candidate_id=290',
   },
   {
-    acNo: 77,
+    acNo: 320,
     name: 'Fateh Bahadur Singh',
     party: 'BJP',
     age: 54,
@@ -1544,7 +1544,7 @@ export const UP_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/UttarPradesh2022/candidate.php?candidate_id=3630',
   },
   {
-    acNo: 78,
+    acNo: 253,
     name: 'Pooja Pal',
     party: 'SP',
     age: 42,
@@ -1563,7 +1563,7 @@ export const UP_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/UttarPradesh2022/candidate.php?candidate_id=3201',
   },
   {
-    acNo: 79,
+    acNo: 35,
     name: 'Naseer Ahmad Khan',
     party: 'SP',
     age: 83,
@@ -1582,7 +1582,7 @@ export const UP_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/UttarPradesh2022/candidate.php?candidate_id=1190',
   },
   {
-    acNo: 80,
+    acNo: 31,
     name: 'Gulab Debi',
     party: 'BJP',
     age: 66,
@@ -1601,7 +1601,7 @@ export const UP_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/UttarPradesh2022/candidate.php?candidate_id=852',
   },
   {
-    acNo: 81,
+    acNo: 23,
     name: 'Swami Omvesh',
     party: 'SP',
     age: 71,
@@ -1621,7 +1621,7 @@ export const UP_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/UttarPradesh2022/candidate.php?candidate_id=1107',
   },
   {
-    acNo: 82,
+    acNo: 231,
     name: 'Brij Bhushan Rajput',
     party: 'BJP',
     age: 39,
@@ -1641,7 +1641,7 @@ export const UP_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/UttarPradesh2022/candidate.php?candidate_id=1811',
   },
   {
-    acNo: 83,
+    acNo: 12,
     name: 'Pankaj Kumar Malik',
     party: 'SP',
     age: 43,
@@ -1661,7 +1661,7 @@ export const UP_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/UttarPradesh2022/candidate.php?candidate_id=5',
   },
   {
-    acNo: 84,
+    acNo: 326,
     name: 'Sarvan Kumar Nishad',
     party: 'BJP',
     age: 31,
@@ -1680,7 +1680,7 @@ export const UP_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/UttarPradesh2022/candidate.php?candidate_id=3814',
   },
   {
-    acNo: 85,
+    acNo: 395,
     name: 'Rahul Prakash Kol',
     party: 'Apna Dal (',
     age: 38,
@@ -1699,7 +1699,7 @@ export const UP_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/UttarPradesh2022/candidate.php?candidate_id=4756',
   },
   {
-    acNo: 86,
+    acNo: 395,
     name: 'Rinki Kol',
     party: 'Apna Dal (',
     age: 34,
@@ -1718,7 +1718,7 @@ export const UP_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/UttarPradesh2022/candidate.php?candidate_id=4885',
   },
   {
-    acNo: 87,
+    acNo: 50,
     name: 'Ajay Kumar',
     party: 'RLD',
     age: 64,
@@ -1737,7 +1737,7 @@ export const UP_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/UttarPradesh2022/candidate.php?candidate_id=676',
   },
   {
-    acNo: 88,
+    acNo: 81,
     name: 'Chaudhary Laxmi Narayan Singh',
     party: 'BJP',
     age: 69,
@@ -1757,7 +1757,7 @@ export const UP_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/UttarPradesh2022/candidate.php?candidate_id=15',
   },
   {
-    acNo: 89,
+    acNo: 196,
     name: 'Archana Pandey',
     party: 'BJP',
     age: 62,
@@ -1776,7 +1776,7 @@ export const UP_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/UttarPradesh2022/candidate.php?candidate_id=2132',
   },
   {
-    acNo: 90,
+    acNo: 328,
     name: 'Rajesh Tripathi',
     party: 'BJP',
     age: 57,
@@ -1796,7 +1796,7 @@ export const UP_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/UttarPradesh2022/candidate.php?candidate_id=3825',
   },
   {
-    acNo: 91,
+    acNo: 398,
     name: 'Anurag Singh',
     party: 'BJP',
     age: 51,
@@ -1816,7 +1816,7 @@ export const UP_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/UttarPradesh2022/candidate.php?candidate_id=4791',
   },
   {
-    acNo: 92,
+    acNo: 298,
     name: 'Ajay',
     party: 'BJP',
     age: 39,
@@ -1836,7 +1836,7 @@ export const UP_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/UttarPradesh2022/candidate.php?candidate_id=2908',
   },
   {
-    acNo: 93,
+    acNo: 136,
     name: 'Manvendra Singh',
     party: 'BJP',
     age: 67,
@@ -1856,7 +1856,7 @@ export const UP_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/UttarPradesh2022/candidate.php?candidate_id=960',
   },
   {
-    acNo: 94,
+    acNo: 136,
     name: 'Sandeep Kumar Singh',
     party: 'BJP',
     age: 49,
@@ -1876,7 +1876,7 @@ export const UP_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/UttarPradesh2022/candidate.php?candidate_id=4914',
   },
   {
-    acNo: 95,
+    acNo: 62,
     name: 'Tejpal Singh Nagar',
     party: 'BJP',
     age: 68,
@@ -1896,7 +1896,7 @@ export const UP_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/UttarPradesh2022/candidate.php?candidate_id=304',
   },
   {
-    acNo: 96,
+    acNo: 117,
     name: 'Rajeev Singh Alias Babbu Bhaiya',
     party: 'BJP',
     age: 60,
@@ -1916,7 +1916,7 @@ export const UP_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/UttarPradesh2022/candidate.php?candidate_id=819',
   },
   {
-    acNo: 97,
+    acNo: 68,
     name: 'Chandrapal Singh',
     party: 'BJP',
     age: 58,
@@ -1935,7 +1935,7 @@ export const UP_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/UttarPradesh2022/candidate.php?candidate_id=204',
   },
   {
-    acNo: 98,
+    acNo: 5,
     name: 'Brijesh',
     party: 'BJP',
     age: 57,
@@ -1955,7 +1955,7 @@ export const UP_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/UttarPradesh2022/candidate.php?candidate_id=814',
   },
   {
-    acNo: 99,
+    acNo: 337,
     name: 'Shalabh Mani Tripathi',
     party: 'BJP',
     age: 45,
@@ -1975,7 +1975,7 @@ export const UP_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/UttarPradesh2022/candidate.php?candidate_id=3714',
   },
   {
-    acNo: 100,
+    acNo: 39,
     name: 'Rajeev Kumar Singh',
     party: 'BJP',
     age: 40,
@@ -1995,7 +1995,7 @@ export const UP_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/UttarPradesh2022/candidate.php?candidate_id=815',
   },
   {
-    acNo: 101,
+    acNo: 314,
     name: 'Ganesh Chandra Chauhan',
     party: 'BJP',
     age: 35,
@@ -2015,7 +2015,7 @@ export const UP_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/UttarPradesh2022/candidate.php?candidate_id=3896',
   },
   {
-    acNo: 102,
+    acNo: 141,
     name: 'Vinod Shankar Awasthi',
     party: 'BJP',
     age: 62,
@@ -2035,7 +2035,7 @@ export const UP_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/UttarPradesh2022/candidate.php?candidate_id=2777',
   },
   {
-    acNo: 103,
+    acNo: 350,
     name: 'Kamalkant',
     party: 'SP',
     age: 40,
@@ -2055,7 +2055,7 @@ export const UP_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/UttarPradesh2022/candidate.php?candidate_id=4420',
   },
   {
-    acNo: 104,
+    acNo: 306,
     name: 'Saiyada Khatoon',
     party: 'SP',
     age: 48,
@@ -2075,7 +2075,7 @@ export const UP_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/UttarPradesh2022/candidate.php?candidate_id=3955',
   },
   {
-    acNo: 105,
+    acNo: 403,
     name: 'Ramdular Gaur',
     party: 'BJP',
     age: 49,
@@ -2095,7 +2095,7 @@ export const UP_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/UttarPradesh2022/candidate.php?candidate_id=4835',
   },
   {
-    acNo: 106,
+    acNo: 403,
     name: 'Vijay Singh',
     party: 'SP',
     age: 67,
@@ -2115,7 +2115,7 @@ export const UP_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/UttarPradesh2022/candidate.php?candidate_id=4936',
   },
   {
-    acNo: 107,
+    acNo: 104,
     name: 'Vipin Kumar David',
     party: 'BJP',
     age: 51,
@@ -2135,7 +2135,7 @@ export const UP_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/UttarPradesh2022/candidate.php?candidate_id=1619',
   },
   {
-    acNo: 108,
+    acNo: 200,
     name: 'Sarita Bhadauria',
     party: 'BJP',
     age: 55,
@@ -2155,7 +2155,7 @@ export const UP_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/UttarPradesh2022/candidate.php?candidate_id=1636',
   },
   {
-    acNo: 109,
+    acNo: 86,
     name: 'Dr. Dharmpal Singh',
     party: 'BJP',
     age: 58,
@@ -2174,7 +2174,7 @@ export const UP_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/UttarPradesh2022/candidate.php?candidate_id=6',
   },
   {
-    acNo: 110,
+    acNo: 122,
     name: 'Shyam Bihari Lal',
     party: 'BJP',
     age: 55,
@@ -2194,7 +2194,7 @@ export const UP_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/UttarPradesh2022/candidate.php?candidate_id=881',
   },
   {
-    acNo: 111,
+    acNo: 93,
     name: 'Chhotey Lal Verma',
     party: 'BJP',
     age: 68,
@@ -2214,7 +2214,7 @@ export const UP_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/UttarPradesh2022/candidate.php?candidate_id=95',
   },
   {
-    acNo: 112,
+    acNo: 240,
     name: 'Chandra Prakash Lodhi',
     party: 'SP',
     age: 53,
@@ -2234,7 +2234,7 @@ export const UP_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/UttarPradesh2022/candidate.php?candidate_id=2827',
   },
   {
-    acNo: 113,
+    acNo: 91,
     name: 'Babulal Chaudhary',
     party: 'BJP',
     age: 69,
@@ -2254,7 +2254,7 @@ export const UP_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/UttarPradesh2022/candidate.php?candidate_id=3',
   },
   {
-    acNo: 114,
+    acNo: 332,
     name: 'Surendra Kumar Kushwaha',
     party: 'BJP',
     age: 52,
@@ -2274,7 +2274,7 @@ export const UP_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/UttarPradesh2022/candidate.php?candidate_id=4006',
   },
   {
-    acNo: 115,
+    acNo: 97,
     name: 'Manish Asija',
     party: 'BJP',
     age: 57,
@@ -2294,7 +2294,7 @@ export const UP_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/UttarPradesh2022/candidate.php?candidate_id=1668',
   },
   {
-    acNo: 116,
+    acNo: 292,
     name: 'Shiv Pratap Yadav',
     party: 'SP',
     age: 70,
@@ -2313,7 +2313,7 @@ export const UP_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/UttarPradesh2022/candidate.php?candidate_id=4136',
   },
   {
-    acNo: 117,
+    acNo: 292,
     name: 'Pradeep Kumar Yadav',
     party: 'SP',
     age: 48,
@@ -2333,7 +2333,7 @@ export const UP_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/UttarPradesh2022/candidate.php?candidate_id=4928',
   },
   {
-    acNo: 118,
+    acNo: 7,
     name: 'Kirat Singh',
     party: 'BJP',
     age: 55,
@@ -2353,7 +2353,7 @@ export const UP_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/UttarPradesh2022/candidate.php?candidate_id=939',
   },
   {
-    acNo: 119,
+    acNo: 225,
     name: 'Jawahar Lal Rajput',
     party: 'BJP',
     age: 59,
@@ -2373,7 +2373,7 @@ export const UP_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/UttarPradesh2022/candidate.php?candidate_id=1721',
   },
   {
-    acNo: 120,
+    acNo: 301,
     name: 'Prabhat Kumar Verma',
     party: 'BJP',
     age: 52,
@@ -2392,7 +2392,7 @@ export const UP_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/UttarPradesh2022/candidate.php?candidate_id=2940',
   },
   {
-    acNo: 121,
+    acNo: 185,
     name: 'Rakesh Pratap Singh',
     party: 'SP',
     age: 49,
@@ -2412,7 +2412,7 @@ export const UP_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/UttarPradesh2022/candidate.php?candidate_id=3096',
   },
   {
-    acNo: 122,
+    acNo: 218,
     name: 'Indrajit Saroj',
     party: 'Apna Dal (',
     age: 50,
@@ -2432,7 +2432,7 @@ export const UP_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/UttarPradesh2022/candidate.php?candidate_id=1910',
   },
   {
-    acNo: 123,
+    acNo: 56,
     name: 'Atul Garg',
     party: 'BJP',
     age: 64,
@@ -2452,7 +2452,7 @@ export const UP_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/UttarPradesh2022/candidate.php?candidate_id=142',
   },
   {
-    acNo: 124,
+    acNo: 375,
     name: 'Jaikishan',
     party: 'SP',
     age: 60,
@@ -2471,7 +2471,7 @@ export const UP_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/UttarPradesh2022/candidate.php?candidate_id=4507',
   },
   {
-    acNo: 125,
+    acNo: 400,
     name: 'Anil Kumar Maurya',
     party: 'BJP',
     age: 52,
@@ -2491,7 +2491,7 @@ export const UP_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/UttarPradesh2022/candidate.php?candidate_id=4814',
   },
   {
-    acNo: 126,
+    acNo: 354,
     name: 'Dara Singh Chauhan',
     party: 'SP',
     age: 63,
@@ -2511,7 +2511,7 @@ export const UP_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/UttarPradesh2022/candidate.php?candidate_id=4609',
   },
   {
-    acNo: 127,
+    acNo: 354,
     name: 'G Sudhakar',
     party: 'SP',
     age: 64,
@@ -2531,7 +2531,7 @@ export const UP_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/UttarPradesh2022/candidate.php?candidate_id=4901',
   },
   {
-    acNo: 128,
+    acNo: 139,
     name: 'Arvind Giri',
     party: 'BJP',
     age: 65,
@@ -2551,7 +2551,7 @@ export const UP_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/UttarPradesh2022/candidate.php?candidate_id=2545',
   },
   {
-    acNo: 129,
+    acNo: 139,
     name: 'Aman Giri',
     party: 'BJP',
     age: 25,
@@ -2571,7 +2571,7 @@ export const UP_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/UttarPradesh2022/candidate.php?candidate_id=4852',
   },
   {
-    acNo: 130,
+    acNo: 344,
     name: 'Nafees Ahmad',
     party: 'SP',
     age: 41,
@@ -2590,7 +2590,7 @@ export const UP_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/UttarPradesh2022/candidate.php?candidate_id=4253',
   },
   {
-    acNo: 131,
+    acNo: 157,
     name: 'Shyam Prakash',
     party: 'BJP',
     age: 61,
@@ -2610,7 +2610,7 @@ export const UP_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/UttarPradesh2022/candidate.php?candidate_id=2693',
   },
   {
-    acNo: 132,
+    acNo: 323,
     name: 'Bipin Singh',
     party: 'BJP',
     age: 56,
@@ -2630,7 +2630,7 @@ export const UP_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/UttarPradesh2022/candidate.php?candidate_id=3658',
   },
   {
-    acNo: 133,
+    acNo: 322,
     name: 'Yogi Adityanath',
     party: 'BJP',
     age: 49,
@@ -2649,7 +2649,7 @@ export const UP_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/UttarPradesh2022/candidate.php?candidate_id=3801',
   },
   {
-    acNo: 134,
+    acNo: 276,
     name: 'Abhay Singh',
     party: 'SP',
     age: 47,
@@ -2669,7 +2669,7 @@ export const UP_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/UttarPradesh2022/candidate.php?candidate_id=3258',
   },
   {
-    acNo: 135,
+    acNo: 83,
     name: 'Meghshyam',
     party: 'BJP',
     age: 56,
@@ -2688,7 +2688,7 @@ export const UP_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/UttarPradesh2022/candidate.php?candidate_id=68',
   },
   {
-    acNo: 136,
+    acNo: 212,
     name: 'Surendra Maithani',
     party: 'BJP',
     age: 56,
@@ -2708,7 +2708,7 @@ export const UP_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/UttarPradesh2022/candidate.php?candidate_id=1763',
   },
   {
-    acNo: 137,
+    acNo: 111,
     name: 'Ramkhiladi Singh Yadav',
     party: 'SP',
     age: 60,
@@ -2727,7 +2727,7 @@ export const UP_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/UttarPradesh2022/candidate.php?candidate_id=2013',
   },
   {
-    acNo: 138,
+    acNo: 272,
     name: 'Dinesh Rawat',
     party: 'BJP',
     age: 32,
@@ -2747,7 +2747,7 @@ export const UP_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/UttarPradesh2022/candidate.php?candidate_id=3161',
   },
   {
-    acNo: 139,
+    acNo: 258,
     name: 'Hakim Lal Bind',
     party: 'SP',
     age: 44,
@@ -2766,7 +2766,7 @@ export const UP_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/UttarPradesh2022/candidate.php?candidate_id=3404',
   },
   {
-    acNo: 140,
+    acNo: 59,
     name: 'Vijaypal (Aadhti)',
     party: 'BJP',
     age: 50,
@@ -2785,7 +2785,7 @@ export const UP_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/UttarPradesh2022/candidate.php?candidate_id=328',
   },
   {
-    acNo: 141,
+    acNo: 179,
     name: 'Rahul Rajpoot',
     party: 'SP',
     age: 25,
@@ -2804,7 +2804,7 @@ export const UP_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/UttarPradesh2022/candidate.php?candidate_id=2325',
   },
   {
-    acNo: 142,
+    acNo: 156,
     name: 'Nitin Agarwal',
     party: 'BJP',
     age: 39,
@@ -2824,7 +2824,7 @@ export const UP_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/UttarPradesh2022/candidate.php?candidate_id=2597',
   },
   {
-    acNo: 143,
+    acNo: 147,
     name: 'Suresh Rahi',
     party: 'BJP',
     age: 50,
@@ -2844,7 +2844,7 @@ export const UP_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/UttarPradesh2022/candidate.php?candidate_id=2397',
   },
   {
-    acNo: 144,
+    acNo: 307,
     name: 'Ajay Singh',
     party: 'BJP',
     age: 50,
@@ -2864,7 +2864,7 @@ export const UP_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/UttarPradesh2022/candidate.php?candidate_id=4171',
   },
   {
-    acNo: 145,
+    acNo: 45,
     name: 'Dinesh Khatik',
     party: 'BJP',
     age: 45,
@@ -2884,7 +2884,7 @@ export const UP_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/UttarPradesh2022/candidate.php?candidate_id=167',
   },
   {
-    acNo: 146,
+    acNo: 334,
     name: 'Mohan',
     party: 'BJP',
     age: 47,
@@ -2903,7 +2903,7 @@ export const UP_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/UttarPradesh2022/candidate.php?candidate_id=4032',
   },
   {
-    acNo: 147,
+    acNo: 78,
     name: 'Anjula Singh Mahaur',
     party: 'BJP',
     age: 52,
@@ -2922,7 +2922,7 @@ export const UP_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/UttarPradesh2022/candidate.php?candidate_id=1685',
   },
   {
-    acNo: 148,
+    acNo: 242,
     name: 'Usha Maurya',
     party: 'SP',
     age: 49,
@@ -2941,7 +2941,7 @@ export const UP_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/UttarPradesh2022/candidate.php?candidate_id=2852',
   },
   {
-    acNo: 149,
+    acNo: 77,
     name: 'Rajkumar Sahyogi',
     party: 'BJP',
     age: 56,
@@ -2960,7 +2960,7 @@ export const UP_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/UttarPradesh2022/candidate.php?candidate_id=382',
   },
   {
-    acNo: 150,
+    acNo: 187,
     name: 'Mohammad Tahir Khan',
     party: 'SP',
     age: 47,
@@ -2980,7 +2980,7 @@ export const UP_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/UttarPradesh2022/candidate.php?candidate_id=3526',
   },
   {
-    acNo: 151,
+    acNo: 305,
     name: 'Mata Prasad Pandey',
     party: 'SP',
     age: 80,
@@ -2999,7 +2999,7 @@ export const UP_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/UttarPradesh2022/candidate.php?candidate_id=3941',
   },
   {
-    acNo: 152,
+    acNo: 184,
     name: 'S Suresh Kumar',
     party: 'BJP',
     age: 40,
@@ -3019,7 +3019,7 @@ export const UP_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/UttarPradesh2022/candidate.php?candidate_id=3085',
   },
   {
-    acNo: 153,
+    acNo: 373,
     name: 'Bedi',
     party: 'SBSP',
     age: 62,
@@ -3039,7 +3039,7 @@ export const UP_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/UttarPradesh2022/candidate.php?candidate_id=4584',
   },
   {
-    acNo: 154,
+    acNo: 132,
     name: 'Hari Prakash Verma',
     party: 'BJP',
     age: 42,
@@ -3059,7 +3059,7 @@ export const UP_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/UttarPradesh2022/candidate.php?candidate_id=997',
   },
   {
-    acNo: 155,
+    acNo: 280,
     name: 'Rakesh Pandey',
     party: 'SP',
     age: 68,
@@ -3079,7 +3079,7 @@ export const UP_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/UttarPradesh2022/candidate.php?candidate_id=3858',
   },
   {
-    acNo: 156,
+    acNo: 376,
     name: 'Virendra Kumar Yadav',
     party: 'SP',
     age: 40,
@@ -3099,7 +3099,7 @@ export const UP_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/UttarPradesh2022/candidate.php?candidate_id=4533',
   },
   {
-    acNo: 157,
+    acNo: 96,
     name: 'Sachin Yadav',
     party: 'SP',
     age: 38,
@@ -3119,7 +3119,7 @@ export const UP_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/UttarPradesh2022/candidate.php?candidate_id=1670',
   },
   {
-    acNo: 158,
+    acNo: 199,
     name: 'Shivpal Singh Yadav',
     party: 'SP',
     age: 66,
@@ -3139,7 +3139,7 @@ export const UP_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/UttarPradesh2022/candidate.php?candidate_id=1628',
   },
   {
-    acNo: 159,
+    acNo: 366,
     name: 'Girish Chandra Yadav',
     party: 'BJP',
     age: 48,
@@ -3158,7 +3158,7 @@ export const UP_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/UttarPradesh2022/candidate.php?candidate_id=4657',
   },
   {
-    acNo: 160,
+    acNo: 223,
     name: 'Ravi Sharma',
     party: 'BJP',
     age: 52,
@@ -3178,7 +3178,7 @@ export const UP_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/UttarPradesh2022/candidate.php?candidate_id=1714',
   },
   {
-    acNo: 161,
+    acNo: 191,
     name: 'RAJESH KUMAR  S',
     party: 'BJP',
     age: 45,
@@ -3198,7 +3198,7 @@ export const UP_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/UttarPradesh2022/candidate.php?candidate_id=3558',
   },
   {
-    acNo: 162,
+    acNo: 192,
     name: 'Dr. Surabhi',
     party: 'Apna Dal (',
     age: 37,
@@ -3217,7 +3217,7 @@ export const UP_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/UttarPradesh2022/candidate.php?candidate_id=1860',
   },
   {
-    acNo: 163,
+    acNo: 8,
     name: 'Nahid Hasan',
     party: 'SP',
     age: 34,
@@ -3235,7 +3235,7 @@ export const UP_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/UttarPradesh2022/candidate.php?candidate_id=1',
   },
   {
-    acNo: 164,
+    acNo: 288,
     name: 'Anand Kumar',
     party: 'SP',
     age: 54,
@@ -3254,7 +3254,7 @@ export const UP_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/UttarPradesh2022/candidate.php?candidate_id=3338',
   },
   {
-    acNo: 165,
+    acNo: 220,
     name: 'Vinod Chaturvedi',
     party: 'SP',
     age: 62,
@@ -3274,7 +3274,7 @@ export const UP_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/UttarPradesh2022/candidate.php?candidate_id=1698',
   },
   {
-    acNo: 166,
+    acNo: 211,
     name: 'Neelima Katiyar',
     party: 'BJP',
     age: 49,
@@ -3294,7 +3294,7 @@ export const UP_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/UttarPradesh2022/candidate.php?candidate_id=1759',
   },
   {
-    acNo: 167,
+    acNo: 198,
     name: 'Asim Arun',
     party: 'BJP',
     age: 51,
@@ -3313,7 +3313,7 @@ export const UP_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/UttarPradesh2022/candidate.php?candidate_id=1729',
   },
   {
-    acNo: 168,
+    acNo: 25,
     name: 'Kamal Akhtar',
     party: 'SP',
     age: 51,
@@ -3333,7 +3333,7 @@ export const UP_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/UttarPradesh2022/candidate.php?candidate_id=908',
   },
   {
-    acNo: 169,
+    acNo: 303,
     name: 'Shyamdhani Rahi',
     party: 'BJP',
     age: 69,
@@ -3353,7 +3353,7 @@ export const UP_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/UttarPradesh2022/candidate.php?candidate_id=3924',
   },
   {
-    acNo: 170,
+    acNo: 308,
     name: 'Kavindra Chaudhary',
     party: 'SP',
     age: 29,
@@ -3373,7 +3373,7 @@ export const UP_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/UttarPradesh2022/candidate.php?candidate_id=4183',
   },
   {
-    acNo: 171,
+    acNo: 260,
     name: 'Piyush Ranjan Nishad',
     party: 'BJP',
     age: 49,
@@ -3392,7 +3392,7 @@ export const UP_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/UttarPradesh2022/candidate.php?candidate_id=3430',
   },
   {
-    acNo: 172,
+    acNo: 100,
     name: 'Devendra Singh',
     party: 'BJP',
     age: 57,
@@ -3411,7 +3411,7 @@ export const UP_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/UttarPradesh2022/candidate.php?candidate_id=1796',
   },
   {
-    acNo: 173,
+    acNo: 143,
     name: 'Saurabh Singh',
     party: 'BJP',
     age: 36,
@@ -3431,7 +3431,7 @@ export const UP_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/UttarPradesh2022/candidate.php?candidate_id=2624',
   },
   {
-    acNo: 174,
+    acNo: 277,
     name: 'Lalji Verma',
     party: 'SP',
     age: 66,
@@ -3451,7 +3451,7 @@ export const UP_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/UttarPradesh2022/candidate.php?candidate_id=3835',
   },
   {
-    acNo: 175,
+    acNo: 297,
     name: 'Bawan Singh',
     party: 'BJP',
     age: 64,
@@ -3471,7 +3471,7 @@ export const UP_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/UttarPradesh2022/candidate.php?candidate_id=2897',
   },
   {
-    acNo: 176,
+    acNo: 372,
     name: 'Tufani Saroj',
     party: 'SP',
     age: 65,
@@ -3491,7 +3491,7 @@ export const UP_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/UttarPradesh2022/candidate.php?candidate_id=4631',
   },
   {
-    acNo: 177,
+    acNo: 329,
     name: 'Viveka Nand Pandey',
     party: 'NISHAD',
     age: 41,
@@ -3510,7 +3510,7 @@ export const UP_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/UttarPradesh2022/candidate.php?candidate_id=3970',
   },
   {
-    acNo: 178,
+    acNo: 243,
     name: 'Krishna Paswan',
     party: 'BJP',
     age: 58,
@@ -3530,7 +3530,7 @@ export const UP_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/UttarPradesh2022/candidate.php?candidate_id=2860',
   },
   {
-    acNo: 179,
+    acNo: 71,
     name: 'Anoop Singh Alias Anoop Pradhan Valmeeki',
     party: 'BJP',
     age: 40,
@@ -3550,7 +3550,7 @@ export const UP_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/UttarPradesh2022/candidate.php?candidate_id=230',
   },
   {
-    acNo: 180,
+    acNo: 325,
     name: 'Shriram Chauhan',
     party: 'BJP',
     age: 64,
@@ -3569,7 +3569,7 @@ export const UP_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/UttarPradesh2022/candidate.php?candidate_id=3681',
   },
   {
-    acNo: 181,
+    acNo: 313,
     name: 'Ankur Raj Tiwari',
     party: 'BJP',
     age: 31,
@@ -3589,7 +3589,7 @@ export const UP_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/UttarPradesh2022/candidate.php?candidate_id=3886',
   },
   {
-    acNo: 182,
+    acNo: 15,
     name: 'Vikram Singh Saini',
     party: 'BJP',
     age: 53,
@@ -3609,7 +3609,7 @@ export const UP_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/UttarPradesh2022/candidate.php?candidate_id=357',
   },
   {
-    acNo: 183,
+    acNo: 15,
     name: 'Madan Bhaiya',
     party: 'RLD',
     age: 63,
@@ -3629,7 +3629,7 @@ export const UP_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/UttarPradesh2022/candidate.php?candidate_id=4859',
   },
   {
-    acNo: 184,
+    acNo: 70,
     name: 'Minakshi Singh',
     party: 'BJP',
     age: 32,
@@ -3649,7 +3649,7 @@ export const UP_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/UttarPradesh2022/candidate.php?candidate_id=239',
   },
   {
-    acNo: 185,
+    acNo: 215,
     name: 'Mahesh Trivedi',
     party: 'BJP',
     age: 54,
@@ -3668,7 +3668,7 @@ export const UP_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/UttarPradesh2022/candidate.php?candidate_id=1776',
   },
   {
-    acNo: 186,
+    acNo: 109,
     name: 'Brajesh Katheriya',
     party: 'SP',
     age: 51,
@@ -3688,7 +3688,7 @@ export const UP_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/UttarPradesh2022/candidate.php?candidate_id=1987',
   },
   {
-    acNo: 187,
+    acNo: 46,
     name: 'Shahid Manzoor',
     party: 'SP',
     age: 67,
@@ -3707,7 +3707,7 @@ export const UP_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/UttarPradesh2022/candidate.php?candidate_id=164',
   },
   {
-    acNo: 188,
+    acNo: 75,
     name: 'Anil Parashar',
     party: 'BJP',
     age: 50,
@@ -3727,7 +3727,7 @@ export const UP_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/UttarPradesh2022/candidate.php?candidate_id=373',
   },
   {
-    acNo: 189,
+    acNo: 265,
     name: 'M. M. Mani',
     party: 'BJP',
     age: 61,
@@ -3745,7 +3745,7 @@ export const UP_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/UttarPradesh2022/candidate.php?candidate_id=3488',
   },
   {
-    acNo: 190,
+    acNo: 29,
     name: 'Lokendra Pratap Singh',
     party: 'Jansatta D',
     age: 52,
@@ -3763,7 +3763,7 @@ export const UP_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/UttarPradesh2022/candidate.php?candidate_id=3040',
   },
   {
-    acNo: 191,
+    acNo: 29,
     name: 'Zia Ur Rehman',
     party: 'SP',
     age: 34,
@@ -3782,7 +3782,7 @@ export const UP_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/UttarPradesh2022/candidate.php?candidate_id=914',
   },
   {
-    acNo: 192,
+    acNo: 333,
     name: 'Panchanand Pathak',
     party: 'BJP',
     age: 49,
@@ -3801,7 +3801,7 @@ export const UP_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/UttarPradesh2022/candidate.php?candidate_id=4018',
   },
   {
-    acNo: 193,
+    acNo: 148,
     name: 'Anil Kumar Verma',
     party: 'SP',
     age: 57,
@@ -3821,7 +3821,7 @@ export const UP_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/UttarPradesh2022/candidate.php?candidate_id=2403',
   },
   {
-    acNo: 194,
+    acNo: 142,
     name: 'Yogesh Verma',
     party: 'BJP',
     age: 49,
@@ -3841,7 +3841,7 @@ export const UP_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/UttarPradesh2022/candidate.php?candidate_id=2788',
   },
   {
-    acNo: 195,
+    acNo: 351,
     name: 'Bechai Saroj',
     party: 'SP',
     age: 51,
@@ -3861,7 +3861,7 @@ export const UP_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/UttarPradesh2022/candidate.php?candidate_id=4318',
   },
   {
-    acNo: 196,
+    acNo: 226,
     name: 'Ramratan Kushwaha',
     party: 'BJP',
     age: 61,
@@ -3881,7 +3881,7 @@ export const UP_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/UttarPradesh2022/candidate.php?candidate_id=1804',
   },
   {
-    acNo: 197,
+    acNo: 190,
     name: 'Sitaram Verma',
     party: 'BJP',
     age: 72,
@@ -3900,7 +3900,7 @@ export const UP_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/UttarPradesh2022/candidate.php?candidate_id=3549',
   },
   {
-    acNo: 198,
+    acNo: 53,
     name: 'Nandkishor',
     party: 'BJP',
     age: 46,
@@ -3920,7 +3920,7 @@ export const UP_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/UttarPradesh2022/candidate.php?candidate_id=63',
   },
   {
-    acNo: 199,
+    acNo: 173,
     name: 'Brajesh Pathak',
     party: 'BJP',
     age: 57,
@@ -3939,7 +3939,7 @@ export const UP_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/UttarPradesh2022/candidate.php?candidate_id=2646',
   },
   {
-    acNo: 200,
+    acNo: 173,
     name: 'Ashutosh Tandon',
     party: 'BJP',
     age: 61,
@@ -3958,7 +3958,7 @@ export const UP_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/UttarPradesh2022/candidate.php?candidate_id=2668',
   },
   {
-    acNo: 201,
+    acNo: 173,
     name: 'Saurabh Srivastava',
     party: 'BJP',
     age: 67,
@@ -3978,7 +3978,7 @@ export const UP_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/UttarPradesh2022/candidate.php?candidate_id=4926',
   },
   {
-    acNo: 202,
+    acNo: 172,
     name: 'Neeraj Bora',
     party: 'BJP',
     age: 54,
@@ -3998,7 +3998,7 @@ export const UP_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/UttarPradesh2022/candidate.php?candidate_id=2752',
   },
   {
-    acNo: 203,
+    acNo: 171,
     name: 'Armaan Khan',
     party: 'SP',
     age: 49,
@@ -4017,7 +4017,7 @@ export const UP_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/UttarPradesh2022/candidate.php?candidate_id=2293',
   },
   {
-    acNo: 204,
+    acNo: 369,
     name: 'Ragini Sonkar',
     party: 'SP',
     age: 31,
@@ -4037,7 +4037,7 @@ export const UP_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/UttarPradesh2022/candidate.php?candidate_id=4722',
   },
   {
-    acNo: 205,
+    acNo: 219,
     name: 'Mool Chandra Singh',
     party: 'BJP',
     age: 60,
@@ -4057,7 +4057,7 @@ export const UP_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/UttarPradesh2022/candidate.php?candidate_id=1696',
   },
   {
-    acNo: 206,
+    acNo: 353,
     name: 'Ram Bilash Chauhan',
     party: 'BJP',
     age: 48,
@@ -4077,7 +4077,7 @@ export const UP_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/UttarPradesh2022/candidate.php?candidate_id=4624',
   },
   {
-    acNo: 207,
+    acNo: 311,
     name: 'Dudhram',
     party: 'SBSP',
     age: 61,
@@ -4097,7 +4097,7 @@ export const UP_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/UttarPradesh2022/candidate.php?candidate_id=4220',
   },
   {
-    acNo: 208,
+    acNo: 318,
     name: 'Jay Mangal',
     party: 'BJP',
     age: 48,
@@ -4117,7 +4117,7 @@ export const UP_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/UttarPradesh2022/candidate.php?candidate_id=4088',
   },
   {
-    acNo: 209,
+    acNo: 285,
     name: 'Sureshwar Singh',
     party: 'BJP',
     age: 63,
@@ -4136,7 +4136,7 @@ export const UP_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/UttarPradesh2022/candidate.php?candidate_id=3313',
   },
   {
-    acNo: 210,
+    acNo: 151,
     name: 'Asha Maurya',
     party: 'BJP',
     age: 60,
@@ -4156,7 +4156,7 @@ export const UP_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/UttarPradesh2022/candidate.php?candidate_id=2429',
   },
   {
-    acNo: 211,
+    acNo: 230,
     name: 'Rakesh Kumar Goswami',
     party: 'BJP',
     age: 68,
@@ -4175,7 +4175,7 @@ export const UP_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/UttarPradesh2022/candidate.php?candidate_id=1806',
   },
   {
-    acNo: 212,
+    acNo: 145,
     name: 'Shashank Trivedi',
     party: 'BJP',
     age: 48,
@@ -4194,7 +4194,7 @@ export const UP_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/UttarPradesh2022/candidate.php?candidate_id=2382',
   },
   {
-    acNo: 213,
+    acNo: 107,
     name: 'Jayveer Singh',
     party: 'BJP',
     age: 63,
@@ -4213,7 +4213,7 @@ export const UP_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/UttarPradesh2022/candidate.php?candidate_id=1813',
   },
   {
-    acNo: 214,
+    acNo: 397,
     name: 'Dr. Vinod Kumar Bind',
     party: 'NISHAD',
     age: 48,
@@ -4233,7 +4233,7 @@ export const UP_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/UttarPradesh2022/candidate.php?candidate_id=4775',
   },
   {
-    acNo: 215,
+    acNo: 367,
     name: 'Lucky Yadav',
     party: 'SP',
     age: 37,
@@ -4253,7 +4253,7 @@ export const UP_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/UttarPradesh2022/candidate.php?candidate_id=4697',
   },
   {
-    acNo: 216,
+    acNo: 168,
     name: 'Jai Devi',
     party: 'BJP',
     age: 57,
@@ -4272,7 +4272,7 @@ export const UP_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/UttarPradesh2022/candidate.php?candidate_id=2728',
   },
   {
-    acNo: 217,
+    acNo: 252,
     name: 'Indrajeet Saroj',
     party: 'SP',
     age: 58,
@@ -4291,7 +4291,7 @@ export const UP_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/UttarPradesh2022/candidate.php?candidate_id=3187',
   },
   {
-    acNo: 218,
+    acNo: 300,
     name: 'Ramapati Shastri',
     party: 'BJP',
     age: 72,
@@ -4310,7 +4310,7 @@ export const UP_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/UttarPradesh2022/candidate.php?candidate_id=2928',
   },
   {
-    acNo: 219,
+    acNo: 82,
     name: 'Rajesh Chaudhary',
     party: 'BJP',
     age: 55,
@@ -4330,7 +4330,7 @@ export const UP_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/UttarPradesh2022/candidate.php?candidate_id=152',
   },
   {
-    acNo: 220,
+    acNo: 105,
     name: 'Virendra Singh Lodhi',
     party: 'BJP',
     age: 51,
@@ -4350,7 +4350,7 @@ export const UP_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/UttarPradesh2022/candidate.php?candidate_id=2015',
   },
   {
-    acNo: 221,
+    acNo: 399,
     name: 'Rama Shankar Singh',
     party: 'BJP',
     age: 52,
@@ -4370,7 +4370,7 @@ export const UP_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/UttarPradesh2022/candidate.php?candidate_id=4804',
   },
   {
-    acNo: 222,
+    acNo: 370,
     name: 'Dr R.K. Patel',
     party: 'Apna Dal (',
     age: 51,
@@ -4390,7 +4390,7 @@ export const UP_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/UttarPradesh2022/candidate.php?candidate_id=4739',
   },
   {
-    acNo: 223,
+    acNo: 284,
     name: 'Mariya Shah',
     party: 'SP',
     age: 38,
@@ -4410,7 +4410,7 @@ export const UP_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/UttarPradesh2022/candidate.php?candidate_id=3304',
   },
   {
-    acNo: 224,
+    acNo: 84,
     name: 'Shrikant Sharma',
     party: 'BJP',
     age: 51,
@@ -4429,7 +4429,7 @@ export const UP_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/UttarPradesh2022/candidate.php?candidate_id=157',
   },
   {
-    acNo: 225,
+    acNo: 224,
     name: 'Rashmi Arya',
     party: 'Apna Dal (',
     age: 44,
@@ -4449,7 +4449,7 @@ export const UP_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/UttarPradesh2022/candidate.php?candidate_id=1716',
   },
   {
-    acNo: 226,
+    acNo: 16,
     name: 'Chandan Chauhan',
     party: 'RLD',
     age: 33,
@@ -4469,7 +4469,7 @@ export const UP_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/UttarPradesh2022/candidate.php?candidate_id=180',
   },
   {
-    acNo: 227,
+    acNo: 119,
     name: 'Chotelal Verma',
     party: 'BJP',
     age: 55,
@@ -4488,7 +4488,7 @@ export const UP_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/UttarPradesh2022/candidate.php?candidate_id=875',
   },
   {
-    acNo: 228,
+    acNo: 48,
     name: 'Rafiq Ansari',
     party: 'SP',
     age: 60,
@@ -4507,7 +4507,7 @@ export const UP_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/UttarPradesh2022/candidate.php?candidate_id=410',
   },
   {
-    acNo: 229,
+    acNo: 47,
     name: 'Amit Agarwal',
     party: 'BJP',
     age: 67,
@@ -4527,7 +4527,7 @@ export const UP_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/UttarPradesh2022/candidate.php?candidate_id=212',
   },
   {
-    acNo: 230,
+    acNo: 49,
     name: 'Somendra Tomar',
     party: 'BJP',
     age: 41,
@@ -4547,7 +4547,7 @@ export const UP_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/UttarPradesh2022/candidate.php?candidate_id=249',
   },
   {
-    acNo: 231,
+    acNo: 352,
     name: 'Puja Saroj',
     party: 'SP',
     age: 31,
@@ -4567,7 +4567,7 @@ export const UP_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/UttarPradesh2022/candidate.php?candidate_id=4324',
   },
   {
-    acNo: 232,
+    acNo: 295,
     name: 'Vinay Kumar Dwivedi',
     party: 'BJP',
     age: 47,
@@ -4587,7 +4587,7 @@ export const UP_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/UttarPradesh2022/candidate.php?candidate_id=2870',
   },
   {
-    acNo: 233,
+    acNo: 312,
     name: 'Anil Kumar Tripathi',
     party: 'NISHAD',
     age: 56,
@@ -4606,7 +4606,7 @@ export const UP_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/UttarPradesh2022/candidate.php?candidate_id=3875',
   },
   {
-    acNo: 234,
+    acNo: 38,
     name: 'Rajbala',
     party: 'BJP',
     age: 40,
@@ -4626,7 +4626,7 @@ export const UP_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/UttarPradesh2022/candidate.php?candidate_id=848',
   },
   {
-    acNo: 235,
+    acNo: 273,
     name: 'Awadhesh Prasad',
     party: 'SP',
     age: 77,
@@ -4646,7 +4646,7 @@ export const UP_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/UttarPradesh2022/candidate.php?candidate_id=3209',
   },
   {
-    acNo: 236,
+    acNo: 396,
     name: 'Ratnakar Mishra',
     party: 'BJP',
     age: 63,
@@ -4665,7 +4665,7 @@ export const UP_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/UttarPradesh2022/candidate.php?candidate_id=4766',
   },
   {
-    acNo: 237,
+    acNo: 153,
     name: 'Ramkrishna Bhargava',
     party: 'BJP',
     age: 59,
@@ -4684,7 +4684,7 @@ export const UP_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/UttarPradesh2022/candidate.php?candidate_id=2451',
   },
   {
-    acNo: 238,
+    acNo: 57,
     name: 'Manju Shiwach',
     party: 'BJP',
     age: 59,
@@ -4704,7 +4704,7 @@ export const UP_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/UttarPradesh2022/candidate.php?candidate_id=242',
   },
   {
-    acNo: 239,
+    acNo: 378,
     name: 'Suhaib Ansari',
     party: 'SP',
     age: 31,
@@ -4723,7 +4723,7 @@ export const UP_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/UttarPradesh2022/candidate.php?candidate_id=4542',
   },
   {
-    acNo: 240,
+    acNo: 164,
     name: 'Brajesh Kumar',
     party: 'BJP',
     age: 55,
@@ -4743,7 +4743,7 @@ export const UP_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/UttarPradesh2022/candidate.php?candidate_id=2479',
   },
   {
-    acNo: 241,
+    acNo: 176,
     name: 'Amresh Kumar',
     party: 'BJP',
     age: 47,
@@ -4761,7 +4761,7 @@ export const UP_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/UttarPradesh2022/candidate.php?candidate_id=2656',
   },
   {
-    acNo: 242,
+    acNo: 28,
     name: 'Ritesh Kumar Gupta',
     party: 'BJP',
     age: 49,
@@ -4781,7 +4781,7 @@ export const UP_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/UttarPradesh2022/candidate.php?candidate_id=913',
   },
   {
-    acNo: 243,
+    acNo: 27,
     name: 'Mohd Nasir Qureshi',
     party: 'SP',
     age: 50,
@@ -4800,7 +4800,7 @@ export const UP_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/UttarPradesh2022/candidate.php?candidate_id=812',
   },
   {
-    acNo: 244,
+    acNo: 346,
     name: 'Akhilesh Yadav',
     party: 'SP',
     age: 59,
@@ -4819,7 +4819,7 @@ export const UP_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/UttarPradesh2022/candidate.php?candidate_id=4280',
   },
   {
-    acNo: 245,
+    acNo: 380,
     name: 'Ramesh Jaiswal',
     party: 'BJP',
     age: 44,
@@ -4839,7 +4839,7 @@ export const UP_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/UttarPradesh2022/candidate.php?candidate_id=4470',
   },
   {
-    acNo: 246,
+    acNo: 368,
     name: 'Pankaj Bhoyar',
     party: 'SP',
     age: 36,
@@ -4858,7 +4858,7 @@ export const UP_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/UttarPradesh2022/candidate.php?candidate_id=4712',
   },
   {
-    acNo: 247,
+    acNo: 14,
     name: 'Kapil Dev Aggarwal',
     party: 'BJP',
     age: 58,
@@ -4878,7 +4878,7 @@ export const UP_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/UttarPradesh2022/candidate.php?candidate_id=177',
   },
   {
-    acNo: 248,
+    acNo: 18,
     name: 'Manoj Kumar Paras',
     party: 'SP',
     age: 53,
@@ -4898,7 +4898,7 @@ export const UP_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/UttarPradesh2022/candidate.php?candidate_id=896',
   },
   {
-    acNo: 249,
+    acNo: 17,
     name: 'Tasleem Ahmad',
     party: 'SP',
     age: 61,
@@ -4918,7 +4918,7 @@ export const UP_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/UttarPradesh2022/candidate.php?candidate_id=1136',
   },
   {
-    acNo: 250,
+    acNo: 2,
     name: 'Mukesh Choudhary',
     party: 'BJP',
     age: 47,
@@ -4938,7 +4938,7 @@ export const UP_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/UttarPradesh2022/candidate.php?candidate_id=851',
   },
   {
-    acNo: 251,
+    acNo: 283,
     name: 'Ram Pal Verma',
     party: 'Apna Dal (',
     age: 51,
@@ -4958,7 +4958,7 @@ export const UP_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/UttarPradesh2022/candidate.php?candidate_id=3298',
   },
   {
-    acNo: 252,
+    acNo: 234,
     name: 'Ommani Varma',
     party: 'BJP',
     age: 36,
@@ -4978,7 +4978,7 @@ export const UP_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/UttarPradesh2022/candidate.php?candidate_id=2246',
   },
   {
-    acNo: 253,
+    acNo: 40,
     name: 'Samarpal Singh',
     party: 'SP',
     age: 65,
@@ -4998,7 +4998,7 @@ export const UP_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/UttarPradesh2022/candidate.php?candidate_id=869',
   },
   {
-    acNo: 254,
+    acNo: 316,
     name: 'Rishi Tripathi',
     party: 'NISHAD',
     age: 38,
@@ -5017,7 +5017,7 @@ export const UP_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/UttarPradesh2022/candidate.php?candidate_id=4065',
   },
   {
-    acNo: 255,
+    acNo: 21,
     name: 'Omkumar',
     party: 'BJP',
     age: 53,
@@ -5037,7 +5037,7 @@ export const UP_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/UttarPradesh2022/candidate.php?candidate_id=818',
   },
   {
-    acNo: 256,
+    acNo: 138,
     name: 'Shashank Verma',
     party: 'BJP',
     age: 32,
@@ -5057,7 +5057,7 @@ export const UP_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/UttarPradesh2022/candidate.php?candidate_id=2770',
   },
   {
-    acNo: 257,
+    acNo: 348,
     name: 'Alam Badi',
     party: 'SP',
     age: 86,
@@ -5076,7 +5076,7 @@ export const UP_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/UttarPradesh2022/candidate.php?candidate_id=4303',
   },
   {
-    acNo: 258,
+    acNo: 61,
     name: 'Pankaj Singh',
     party: 'BJP',
     age: 43,
@@ -5096,7 +5096,7 @@ export const UP_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/UttarPradesh2022/candidate.php?candidate_id=56',
   },
   {
-    acNo: 259,
+    acNo: 402,
     name: 'Sanjeev Kumar Diwakar',
     party: 'BJP',
     age: 46,
@@ -5116,7 +5116,7 @@ export const UP_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/UttarPradesh2022/candidate.php?candidate_id=4847',
   },
   {
-    acNo: 260,
+    acNo: 221,
     name: 'Gauri Shankar',
     party: 'BJP',
     age: 56,
@@ -5136,7 +5136,7 @@ export const UP_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/UttarPradesh2022/candidate.php?candidate_id=1705',
   },
   {
-    acNo: 261,
+    acNo: 330,
     name: 'Manish Kumar Alias Mantu',
     party: 'BJP',
     age: 44,
@@ -5156,7 +5156,7 @@ export const UP_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/UttarPradesh2022/candidate.php?candidate_id=3979',
   },
   {
-    acNo: 262,
+    acNo: 319,
     name: 'Gyanendra Singh',
     party: 'BJP',
     age: 64,
@@ -5176,7 +5176,7 @@ export const UP_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/UttarPradesh2022/candidate.php?candidate_id=4103',
   },
   {
-    acNo: 263,
+    acNo: 338,
     name: 'Surya Pratap Shahi',
     party: 'BJP',
     age: 68,
@@ -5195,7 +5195,7 @@ export const UP_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/UttarPradesh2022/candidate.php?candidate_id=3730',
   },
   {
-    acNo: 264,
+    acNo: 102,
     name: 'Nadira Sultan',
     party: 'SP',
     age: 65,
@@ -5215,7 +5215,7 @@ export const UP_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/UttarPradesh2022/candidate.php?candidate_id=1929',
   },
   {
-    acNo: 265,
+    acNo: 249,
     name: 'Ram Avatar Singh',
     party: 'SP',
     age: 39,
@@ -5234,7 +5234,7 @@ export const UP_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/UttarPradesh2022/candidate.php?candidate_id=2995',
   },
   {
-    acNo: 266,
+    acNo: 287,
     name: 'Subhash Tripathi',
     party: 'BJP',
     age: 66,
@@ -5254,7 +5254,7 @@ export const UP_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/UttarPradesh2022/candidate.php?candidate_id=3330',
   },
   {
-    acNo: 267,
+    acNo: 254,
     name: 'Guru Prasad Maurya',
     party: 'BJP',
     age: 53,
@@ -5273,7 +5273,7 @@ export const UP_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/UttarPradesh2022/candidate.php?candidate_id=3239',
   },
   {
-    acNo: 268,
+    acNo: 315,
     name: 'Virendra Chaudhary',
     party: 'INC',
     age: 47,
@@ -5292,7 +5292,7 @@ export const UP_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/UttarPradesh2022/candidate.php?candidate_id=4055',
   },
   {
-    acNo: 269,
+    acNo: 360,
     name: 'Sangram Singh',
     party: 'SP',
     age: 71,
@@ -5312,7 +5312,7 @@ export const UP_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/UttarPradesh2022/candidate.php?candidate_id=3603',
   },
   {
-    acNo: 270,
+    acNo: 256,
     name: 'Praveen Patel',
     party: 'BJP',
     age: 43,
@@ -5332,7 +5332,7 @@ export const UP_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/UttarPradesh2022/candidate.php?candidate_id=3365',
   },
   {
-    acNo: 271,
+    acNo: 127,
     name: 'Sanjay Singh Gangwar',
     party: 'BJP',
     age: 47,
@@ -5352,7 +5352,7 @@ export const UP_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/UttarPradesh2022/candidate.php?candidate_id=2568',
   },
   {
-    acNo: 272,
+    acNo: 384,
     name: 'Awadhesh Kumar Singh',
     party: 'BJP',
     age: 67,
@@ -5372,7 +5372,7 @@ export const UP_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/UttarPradesh2022/candidate.php?candidate_id=4350',
   },
   {
-    acNo: 273,
+    acNo: 321,
     name: 'Mahendra Pal Singh',
     party: 'BJP',
     age: 58,
@@ -5392,7 +5392,7 @@ export const UP_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/UttarPradesh2022/candidate.php?candidate_id=3643',
   },
   {
-    acNo: 274,
+    acNo: 134,
     name: 'Chetram Pasi',
     party: 'BJP',
     age: 62,
@@ -5412,7 +5412,7 @@ export const UP_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/UttarPradesh2022/candidate.php?candidate_id=951',
   },
   {
-    acNo: 275,
+    acNo: 248,
     name: 'Rajendra Kumar',
     party: 'BJP',
     age: 54,
@@ -5431,7 +5431,7 @@ export const UP_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/UttarPradesh2022/candidate.php?candidate_id=3008',
   },
   {
-    acNo: 276,
+    acNo: 257,
     name: 'Vijama Yadav',
     party: 'SP',
     age: 51,
@@ -5451,7 +5451,7 @@ export const UP_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/UttarPradesh2022/candidate.php?candidate_id=3376',
   },
   {
-    acNo: 277,
+    acNo: 129,
     name: 'Baburam',
     party: 'BJP',
     age: 59,
@@ -5470,7 +5470,7 @@ export const UP_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/UttarPradesh2022/candidate.php?candidate_id=2308',
   },
   {
-    acNo: 278,
+    acNo: 167,
     name: 'Anil Kumar Singh',
     party: 'BJP',
     age: 42,
@@ -5490,7 +5490,7 @@ export const UP_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/UttarPradesh2022/candidate.php?candidate_id=2505',
   },
   {
-    acNo: 279,
+    acNo: 180,
     name: 'Aditi Singh',
     party: 'BJP',
     age: 34,
@@ -5510,7 +5510,7 @@ export const UP_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/UttarPradesh2022/candidate.php?candidate_id=2338',
   },
   {
-    acNo: 280,
+    acNo: 267,
     name: 'Fareed Mahfooz Kidwai',
     party: 'SP',
     age: 77,
@@ -5530,7 +5530,7 @@ export const UP_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/UttarPradesh2022/candidate.php?candidate_id=3126',
   },
   {
-    acNo: 281,
+    acNo: 335,
     name: 'Vinay Prakash Gond',
     party: 'BJP',
     age: 49,
@@ -5549,7 +5549,7 @@ export const UP_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/UttarPradesh2022/candidate.php?candidate_id=4044',
   },
   {
-    acNo: 282,
+    acNo: 37,
     name: 'Azam Khan',
     party: 'SP',
     age: 73,
@@ -5568,7 +5568,7 @@ export const UP_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/UttarPradesh2022/candidate.php?candidate_id=1199',
   },
   {
-    acNo: 283,
+    acNo: 37,
     name: 'Akash Saxena (Honey)',
     party: 'BJP',
     age: 47,
@@ -5588,7 +5588,7 @@ export const UP_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/UttarPradesh2022/candidate.php?candidate_id=4873',
   },
   {
-    acNo: 284,
+    acNo: 339,
     name: 'Surendra Chaurasia',
     party: 'BJP',
     age: 39,
@@ -5608,7 +5608,7 @@ export const UP_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/UttarPradesh2022/candidate.php?candidate_id=3741',
   },
   {
-    acNo: 285,
+    acNo: 244,
     name: 'Aradhana Misra Mona',
     party: 'INC',
     age: 47,
@@ -5626,7 +5626,7 @@ export const UP_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/UttarPradesh2022/candidate.php?candidate_id=3059',
   },
   {
-    acNo: 286,
+    acNo: 6,
     name: 'Devendra Kumar Nim',
     party: 'BJP',
     age: 52,
@@ -5646,7 +5646,7 @@ export const UP_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/UttarPradesh2022/candidate.php?candidate_id=821',
   },
   {
-    acNo: 287,
+    acNo: 358,
     name: 'Umashankar Singh',
     party: 'BSP',
     age: 51,
@@ -5666,7 +5666,7 @@ export const UP_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/UttarPradesh2022/candidate.php?candidate_id=3576',
   },
   {
-    acNo: 288,
+    acNo: 205,
     name: 'Poonam Sankhwar',
     party: 'BJP',
     age: 44,
@@ -5686,7 +5686,7 @@ export const UP_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/UttarPradesh2022/candidate.php?candidate_id=2060',
   },
   {
-    acNo: 289,
+    acNo: 229,
     name: 'Manisha Chaudhary',
     party: 'BJP',
     age: 40,
@@ -5705,7 +5705,7 @@ export const UP_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/UttarPradesh2022/candidate.php?candidate_id=1674',
   },
   {
-    acNo: 290,
+    acNo: 401,
     name: 'Bhupesh Chaubey',
     party: 'BJP',
     age: 46,
@@ -5725,7 +5725,7 @@ export const UP_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/UttarPradesh2022/candidate.php?candidate_id=4827',
   },
   {
-    acNo: 291,
+    acNo: 387,
     name: 'Dr. Sunil Patel',
     party: 'Apna Dal (',
     age: 48,
@@ -5745,7 +5745,7 @@ export const UP_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/UttarPradesh2022/candidate.php?candidate_id=4372',
   },
   {
-    acNo: 292,
+    acNo: 271,
     name: 'Ram Chandra Yadav',
     party: 'BJP',
     age: 53,
@@ -5765,7 +5765,7 @@ export const UP_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/UttarPradesh2022/candidate.php?candidate_id=3269',
   },
   {
-    acNo: 293,
+    acNo: 309,
     name: 'Rajendra Prasad Chaudhary',
     party: 'SP',
     age: 61,
@@ -5785,7 +5785,7 @@ export const UP_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/UttarPradesh2022/candidate.php?candidate_id=4198',
   },
   {
-    acNo: 294,
+    acNo: 336,
     name: 'Jai Prakash Nishad',
     party: 'BJP',
     age: 64,
@@ -5805,7 +5805,7 @@ export const UP_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/UttarPradesh2022/candidate.php?candidate_id=3702',
   },
   {
-    acNo: 295,
+    acNo: 189,
     name: 'Raj Prasad Upadhyay',
     party: 'BJP',
     age: 62,
@@ -5824,7 +5824,7 @@ export const UP_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/UttarPradesh2022/candidate.php?candidate_id=3541',
   },
   {
-    acNo: 296,
+    acNo: 163,
     name: 'Bamba Lal Diwakar',
     party: 'BJP',
     age: 48,
@@ -5844,7 +5844,7 @@ export const UP_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/UttarPradesh2022/candidate.php?candidate_id=2471',
   },
   {
-    acNo: 297,
+    acNo: 345,
     name: 'Hriday Narayan Singh Patel',
     party: 'SP',
     age: 52,
@@ -5864,7 +5864,7 @@ export const UP_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/UttarPradesh2022/candidate.php?candidate_id=4270',
   },
   {
-    acNo: 298,
+    acNo: 324,
     name: 'Pradeep Shukla',
     party: 'BJP',
     age: 40,
@@ -5884,7 +5884,7 @@ export const UP_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/UttarPradesh2022/candidate.php?candidate_id=3668',
   },
   {
-    acNo: 299,
+    acNo: 4,
     name: 'Ashu Malik',
     party: 'SP',
     age: 40,
@@ -5904,7 +5904,7 @@ export const UP_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/UttarPradesh2022/candidate.php?candidate_id=933',
   },
   {
-    acNo: 300,
+    acNo: 3,
     name: 'P Rajeev',
     party: 'BJP',
     age: 52,
@@ -5923,7 +5923,7 @@ export const UP_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/UttarPradesh2022/candidate.php?candidate_id=926',
   },
   {
-    acNo: 301,
+    acNo: 113,
     name: 'Brajesh Yadav',
     party: 'SP',
     age: 43,
@@ -5943,7 +5943,7 @@ export const UP_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/UttarPradesh2022/candidate.php?candidate_id=836',
   },
   {
-    acNo: 302,
+    acNo: 55,
     name: 'Sunil Kumar Sharma',
     party: 'BJP',
     age: 59,
@@ -5963,7 +5963,7 @@ export const UP_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/UttarPradesh2022/candidate.php?candidate_id=33',
   },
   {
-    acNo: 303,
+    acNo: 382,
     name: 'Sushil Singh',
     party: 'BJP',
     age: 43,
@@ -5983,7 +5983,7 @@ export const UP_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/UttarPradesh2022/candidate.php?candidate_id=4490',
   },
   {
-    acNo: 304,
+    acNo: 381,
     name: 'Prabhu Narayan Yadav',
     party: 'SP',
     age: 58,
@@ -6003,7 +6003,7 @@ export const UP_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/UttarPradesh2022/candidate.php?candidate_id=4479',
   },
   {
-    acNo: 305,
+    acNo: 341,
     name: 'Bijaylaxmi Gautam',
     party: 'BJP',
     age: 59,
@@ -6021,7 +6021,7 @@ export const UP_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/UttarPradesh2022/candidate.php?candidate_id=3759',
   },
   {
-    acNo: 306,
+    acNo: 181,
     name: 'Ashok Kumar Rana',
     party: 'BJP',
     age: 42,
@@ -6041,7 +6041,7 @@ export const UP_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/UttarPradesh2022/candidate.php?candidate_id=2971',
   },
   {
-    acNo: 307,
+    acNo: 33,
     name: 'Iqbal Mehmood',
     party: 'SP',
     age: 69,
@@ -6060,7 +6060,7 @@ export const UP_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/UttarPradesh2022/candidate.php?candidate_id=943',
   },
   {
-    acNo: 308,
+    acNo: 158,
     name: 'Prabhash Kumar',
     party: 'BJP',
     age: 46,
@@ -6080,7 +6080,7 @@ export const UP_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/UttarPradesh2022/candidate.php?candidate_id=2702',
   },
   {
-    acNo: 309,
+    acNo: 161,
     name: 'Alka Singh Arkvanshi',
     party: 'BJP',
     age: 42,
@@ -6100,7 +6100,7 @@ export const UP_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/UttarPradesh2022/candidate.php?candidate_id=2613',
   },
   {
-    acNo: 310,
+    acNo: 44,
     name: 'Atul Pradhan',
     party: 'SP',
     age: 38,
@@ -6119,7 +6119,7 @@ export const UP_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/UttarPradesh2022/candidate.php?candidate_id=168',
   },
   {
-    acNo: 311,
+    acNo: 170,
     name: 'Rajeshwar Singh',
     party: 'BJP',
     age: 48,
@@ -6138,7 +6138,7 @@ export const UP_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/UttarPradesh2022/candidate.php?candidate_id=2632',
   },
   {
-    acNo: 312,
+    acNo: 154,
     name: 'Madhavendra Pratap',
     party: 'BJP',
     age: 48,
@@ -6158,7 +6158,7 @@ export const UP_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/UttarPradesh2022/candidate.php?candidate_id=2717',
   },
   {
-    acNo: 313,
+    acNo: 391,
     name: 'Neel Ratan Singh Patel',
     party: 'BJP',
     age: 50,
@@ -6177,7 +6177,7 @@ export const UP_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/UttarPradesh2022/candidate.php?candidate_id=4385',
   },
   {
-    acNo: 314,
+    acNo: 150,
     name: 'Gyan Tiwari',
     party: 'BJP',
     age: 53,
@@ -6197,7 +6197,7 @@ export const UP_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/UttarPradesh2022/candidate.php?candidate_id=2426',
   },
   {
-    acNo: 315,
+    acNo: 155,
     name: 'Rajni Tiwari',
     party: 'BJP',
     age: 47,
@@ -6217,7 +6217,7 @@ export const UP_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/UttarPradesh2022/candidate.php?candidate_id=2685',
   },
   {
-    acNo: 316,
+    acNo: 365,
     name: 'Ramesh Babu M',
     party: 'NISHAD',
     age: 42,
@@ -6237,7 +6237,7 @@ export const UP_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/UttarPradesh2022/candidate.php?candidate_id=4686',
   },
   {
-    acNo: 317,
+    acNo: 135,
     name: 'Suresh Kumar Khanna',
     party: 'BJP',
     age: 68,
@@ -6257,7 +6257,7 @@ export const UP_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/UttarPradesh2022/candidate.php?candidate_id=953',
   },
   {
-    acNo: 318,
+    acNo: 10,
     name: 'Persann Kumar Chaudhary',
     party: 'RLD',
     age: 51,
@@ -6275,7 +6275,7 @@ export const UP_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/UttarPradesh2022/candidate.php?candidate_id=45',
   },
   {
-    acNo: 319,
+    acNo: 69,
     name: 'A. P. Anil Kumar',
     party: 'BJP',
     age: 59,
@@ -6295,7 +6295,7 @@ export const UP_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/UttarPradesh2022/candidate.php?candidate_id=9',
   },
   {
-    acNo: 320,
+    acNo: 98,
     name: 'Mukesh Verma',
     party: 'SP',
     age: 53,
@@ -6315,7 +6315,7 @@ export const UP_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/UttarPradesh2022/candidate.php?candidate_id=1664',
   },
   {
-    acNo: 321,
+    acNo: 386,
     name: 'Anil Rajbhar',
     party: 'BJP',
     age: 49,
@@ -6334,7 +6334,7 @@ export const UP_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/UttarPradesh2022/candidate.php?candidate_id=4429',
   },
   {
-    acNo: 322,
+    acNo: 302,
     name: 'Vinay Verma',
     party: 'Apna Dal (',
     age: 38,
@@ -6353,7 +6353,7 @@ export const UP_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/UttarPradesh2022/candidate.php?candidate_id=3915',
   },
   {
-    acNo: 323,
+    acNo: 290,
     name: 'Ram Feran Pandey',
     party: 'BJP',
     age: 52,
@@ -6373,7 +6373,7 @@ export const UP_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/UttarPradesh2022/candidate.php?candidate_id=3512',
   },
   {
-    acNo: 324,
+    acNo: 152,
     name: 'Manish Rawat',
     party: 'BJP',
     age: 38,
@@ -6393,7 +6393,7 @@ export const UP_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/UttarPradesh2022/candidate.php?candidate_id=2442',
   },
   {
-    acNo: 325,
+    acNo: 359,
     name: 'Ziyauddin Rizvi',
     party: 'SP',
     age: 59,
@@ -6413,7 +6413,7 @@ export const UP_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/UttarPradesh2022/candidate.php?candidate_id=3586',
   },
   {
-    acNo: 326,
+    acNo: 207,
     name: 'Ajit Singh Pal',
     party: 'BJP',
     age: 43,
@@ -6433,7 +6433,7 @@ export const UP_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/UttarPradesh2022/candidate.php?candidate_id=1739',
   },
   {
-    acNo: 327,
+    acNo: 64,
     name: 'Lakshmi Raj Singh',
     party: 'BJP',
     age: 39,
@@ -6453,7 +6453,7 @@ export const UP_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/UttarPradesh2022/candidate.php?candidate_id=233',
   },
   {
-    acNo: 328,
+    acNo: 251,
     name: 'Pallavi Patel',
     party: 'SP',
     age: 41,
@@ -6473,7 +6473,7 @@ export const UP_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/UttarPradesh2022/candidate.php?candidate_id=3169',
   },
   {
-    acNo: 329,
+    acNo: 99,
     name: 'Sarvesh Singh Yadav',
     party: 'SP',
     age: 50,
@@ -6493,7 +6493,7 @@ export const UP_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/UttarPradesh2022/candidate.php?candidate_id=1658',
   },
   {
-    acNo: 330,
+    acNo: 213,
     name: 'Haji Irfan Solanki',
     party: 'SP',
     age: 42,
@@ -6512,7 +6512,7 @@ export const UP_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/UttarPradesh2022/candidate.php?candidate_id=1764',
   },
   {
-    acNo: 331,
+    acNo: 317,
     name: 'Premsagar Patel',
     party: 'BJP',
     age: 59,
@@ -6532,7 +6532,7 @@ export const UP_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/UttarPradesh2022/candidate.php?candidate_id=4075',
   },
   {
-    acNo: 332,
+    acNo: 146,
     name: 'Rakesh Rathour',
     party: 'BJP',
     age: 49,
@@ -6552,7 +6552,7 @@ export const UP_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/UttarPradesh2022/candidate.php?candidate_id=2519',
   },
   {
-    acNo: 333,
+    acNo: 43,
     name: 'Ghulam Mohammad',
     party: 'RLD',
     age: 69,
@@ -6572,7 +6572,7 @@ export const UP_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/UttarPradesh2022/candidate.php?candidate_id=348',
   },
   {
-    acNo: 334,
+    acNo: 255,
     name: 'Geeta Shastri',
     party: 'SP',
     age: 57,
@@ -6592,7 +6592,7 @@ export const UP_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/UttarPradesh2022/candidate.php?candidate_id=3351',
   },
   {
-    acNo: 335,
+    acNo: 34,
     name: 'Abdullah Azam Khan',
     party: 'SP',
     age: 31,
@@ -6611,7 +6611,7 @@ export const UP_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/UttarPradesh2022/candidate.php?candidate_id=1188',
   },
   {
-    acNo: 336,
+    acNo: 34,
     name: 'Shafeek Ahmed Ansari',
     party: 'Apna Dal (',
     age: 47,
@@ -6630,7 +6630,7 @@ export const UP_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/UttarPradesh2022/candidate.php?candidate_id=4892',
   },
   {
-    acNo: 337,
+    acNo: 188,
     name: 'Vinod Singh',
     party: 'BJP',
     age: 64,
@@ -6649,7 +6649,7 @@ export const UP_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/UttarPradesh2022/candidate.php?candidate_id=3531',
   },
   {
-    acNo: 338,
+    acNo: 66,
     name: 'Devendra Singh Lodhi',
     party: 'BJP',
     age: 60,
@@ -6669,7 +6669,7 @@ export const UP_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/UttarPradesh2022/candidate.php?candidate_id=293',
   },
   {
-    acNo: 339,
+    acNo: 331,
     name: 'Asim Kumar',
     party: 'BJP',
     age: 60,
@@ -6688,7 +6688,7 @@ export const UP_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/UttarPradesh2022/candidate.php?candidate_id=3991',
   },
   {
-    acNo: 340,
+    acNo: 278,
     name: 'Ram Murti Verma',
     party: 'SP',
     age: 57,
@@ -6708,7 +6708,7 @@ export const UP_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/UttarPradesh2022/candidate.php?candidate_id=3848',
   },
   {
-    acNo: 341,
+    acNo: 299,
     name: 'Prem Narayan Pandey',
     party: 'BJP',
     age: 63,
@@ -6728,7 +6728,7 @@ export const UP_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/UttarPradesh2022/candidate.php?candidate_id=2919',
   },
   {
-    acNo: 342,
+    acNo: 26,
     name: 'Navab Jan',
     party: 'SP',
     age: 54,
@@ -6748,7 +6748,7 @@ export const UP_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/UttarPradesh2022/candidate.php?candidate_id=910',
   },
   {
-    acNo: 343,
+    acNo: 9,
     name: 'Ashraf Ali Khan',
     party: 'RLD',
     age: 49,
@@ -6767,7 +6767,7 @@ export const UP_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/UttarPradesh2022/candidate.php?candidate_id=215',
   },
   {
-    acNo: 344,
+    acNo: 178,
     name: 'Mayankeshwar Sharan Singh',
     party: 'BJP',
     age: 51,
@@ -6787,7 +6787,7 @@ export const UP_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/UttarPradesh2022/candidate.php?candidate_id=3074',
   },
   {
-    acNo: 345,
+    acNo: 232,
     name: 'Ramkesh Nishad',
     party: 'BJP',
     age: 47,
@@ -6806,7 +6806,7 @@ export const UP_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/UttarPradesh2022/candidate.php?candidate_id=2577',
   },
   {
-    acNo: 346,
+    acNo: 197,
     name: 'Kailash Singh Rajput',
     party: 'BJP',
     age: 63,
@@ -6826,7 +6826,7 @@ export const UP_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/UttarPradesh2022/candidate.php?candidate_id=2145',
   },
   {
-    acNo: 347,
+    acNo: 291,
     name: 'Kailash Nath Shukla',
     party: 'BJP',
     age: 62,
@@ -6846,7 +6846,7 @@ export const UP_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/UttarPradesh2022/candidate.php?candidate_id=4144',
   },
   {
-    acNo: 348,
+    acNo: 95,
     name: 'Prem Pal Singh Dhangar',
     party: 'BJP',
     age: 51,
@@ -6865,7 +6865,7 @@ export const UP_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/UttarPradesh2022/candidate.php?candidate_id=2186',
   },
   {
-    acNo: 349,
+    acNo: 183,
     name: 'Manoj Kumar Pandey',
     party: 'SP',
     age: 47,
@@ -6885,7 +6885,7 @@ export const UP_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/UttarPradesh2022/candidate.php?candidate_id=2369',
   },
   {
-    acNo: 350,
+    acNo: 165,
     name: 'Pankaj Gupta',
     party: 'BJP',
     age: 51,
@@ -6905,7 +6905,7 @@ export const UP_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/UttarPradesh2022/candidate.php?candidate_id=2490',
   },
   {
-    acNo: 351,
+    acNo: 293,
     name: 'Rampratap Verma Alias Shashikant Verma',
     party: 'BJP',
     age: 47,
@@ -6924,7 +6924,7 @@ export const UP_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/UttarPradesh2022/candidate.php?candidate_id=4126',
   },
   {
-    acNo: 352,
+    acNo: 388,
     name: 'Ravindra Jaiswal',
     party: 'BJP',
     age: 55,
@@ -6944,7 +6944,7 @@ export const UP_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/UttarPradesh2022/candidate.php?candidate_id=4380',
   },
   {
-    acNo: 353,
+    acNo: 389,
     name: 'Neelkanth Tiwari',
     party: 'BJP',
     age: 50,
@@ -6963,7 +6963,7 @@ export const UP_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/UttarPradesh2022/candidate.php?candidate_id=4438',
   },
   {
-    acNo: 354,
+    acNo: 247,
     name: 'Jeet Lal',
     party: 'Apna Dal (',
     age: 53,
@@ -6982,7 +6982,7 @@ export const UP_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/UttarPradesh2022/candidate.php?candidate_id=3032',
   },
   {
-    acNo: 355,
+    acNo: 371,
     name: 'Jagdish Narayan',
     party: 'SBSP',
     age: 66,
@@ -7002,7 +7002,7 @@ export const UP_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/UttarPradesh2022/candidate.php?candidate_id=4745',
   },
   {
-    acNo: 356,
+    acNo: 269,
     name: 'Gaurav Kumar',
     party: 'SP',
     age: 37,
@@ -7022,7 +7022,7 @@ export const UP_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/UttarPradesh2022/candidate.php?candidate_id=3146',
   },
   {
-    acNo: 357,
+    acNo: 379,
     name: 'Om Prakash Rajbhar',
     party: 'SP',
     age: 62,

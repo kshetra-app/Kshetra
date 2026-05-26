@@ -36,7 +36,7 @@ export interface MLAProfile {
 
 export const WB_MLA_PROFILES: MLAProfile[] = [
   {
-    acNo: 1,
+    acNo: 12,
     name: 'Suman Kanjilal',
     party: 'BJP',
     age: 50,
@@ -55,7 +55,7 @@ export const WB_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/WestBengal2021/candidate.php?candidate_id=788',
   },
   {
-    acNo: 2,
+    acNo: 102,
     name: 'Rafiqur Rahaman',
     party: 'AITC',
     age: 60,
@@ -75,7 +75,7 @@ export const WB_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/WestBengal2021/candidate.php?candidate_id=1482',
   },
   {
-    acNo: 3,
+    acNo: 181,
     name: 'Sukanta Kumar Paul',
     party: 'AITC',
     age: 41,
@@ -94,7 +94,7 @@ export const WB_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/WestBengal2021/candidate.php?candidate_id=476',
   },
   {
-    acNo: 4,
+    acNo: 200,
     name: 'Madhusudan Bag',
     party: 'BJP',
     age: 49,
@@ -114,7 +114,7 @@ export const WB_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/WestBengal2021/candidate.php?candidate_id=535',
   },
   {
-    acNo: 5,
+    acNo: 280,
     name: 'Agnimitra Paul',
     party: 'BJP',
     age: 48,
@@ -134,7 +134,7 @@ export const WB_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/WestBengal2021/candidate.php?candidate_id=1865',
   },
   {
-    acNo: 6,
+    acNo: 281,
     name: 'Moloy Ghatak',
     party: 'AITC',
     age: 65,
@@ -154,7 +154,7 @@ export const WB_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/WestBengal2021/candidate.php?candidate_id=1869',
   },
   {
-    acNo: 7,
+    acNo: 101,
     name: 'Narayan Goswami',
     party: 'AITC',
     age: 51,
@@ -174,7 +174,7 @@ export const WB_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/WestBengal2021/candidate.php?candidate_id=1476',
   },
   {
-    acNo: 8,
+    acNo: 273,
     name: 'Abhedananda Thander',
     party: 'AITC',
     age: 58,
@@ -193,7 +193,7 @@ export const WB_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/WestBengal2021/candidate.php?candidate_id=1588',
   },
   {
-    acNo: 9,
+    acNo: 94,
     name: 'Biswajit Das',
     party: 'BJP',
     age: 54,
@@ -213,7 +213,7 @@ export const WB_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/WestBengal2021/candidate.php?candidate_id=1419',
   },
   {
-    acNo: 10,
+    acNo: 94,
     name: 'Madhuparna Thakur',
     party: 'AITC',
     age: 25,
@@ -232,7 +232,7 @@ export const WB_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/WestBengal2021/candidate.php?candidate_id=2330',
   },
   {
-    acNo: 11,
+    acNo: 240,
     name: 'Sushanta Mahato',
     party: 'AITC',
     age: 39,
@@ -252,7 +252,7 @@ export const WB_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/WestBengal2021/candidate.php?candidate_id=92',
   },
   {
-    acNo: 12,
+    acNo: 180,
     name: 'Arunava Sen (Raja)',
     party: 'AITC',
     age: 45,
@@ -271,7 +271,7 @@ export const WB_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/WestBengal2021/candidate.php?candidate_id=439',
   },
   {
-    acNo: 13,
+    acNo: 72,
     name: 'Subrata Maitra',
     party: 'BJP',
     age: 54,
@@ -290,7 +290,7 @@ export const WB_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/WestBengal2021/candidate.php?candidate_id=1952',
   },
   {
-    acNo: 14,
+    acNo: 54,
     name: 'Chandana Sarkar',
     party: 'AITC',
     age: 40,
@@ -310,7 +310,7 @@ export const WB_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/WestBengal2021/candidate.php?candidate_id=1923',
   },
   {
-    acNo: 15,
+    acNo: 191,
     name: 'Manoranjan Bapari',
     party: 'AITC',
     age: 55,
@@ -329,7 +329,7 @@ export const WB_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/WestBengal2021/candidate.php?candidate_id=745',
   },
   {
-    acNo: 16,
+    acNo: 239,
     name: 'Baneswar Mahato',
     party: 'BJP',
     age: 48,
@@ -348,7 +348,7 @@ export const WB_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/WestBengal2021/candidate.php?candidate_id=192',
   },
   {
-    acNo: 17,
+    acNo: 169,
     name: 'Rana Chatterjee',
     party: 'AITC',
     age: 48,
@@ -368,7 +368,7 @@ export const WB_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/WestBengal2021/candidate.php?candidate_id=882',
   },
   {
-    acNo: 18,
+    acNo: 161,
     name: 'Babul Supriyo',
     party: 'AITC',
     age: 51,
@@ -388,7 +388,7 @@ export const WB_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/WestBengal2021/candidate.php?candidate_id=2286',
   },
   {
-    acNo: 19,
+    acNo: 39,
     name: 'Ashok Lahiri',
     party: 'BJP',
     age: 69,
@@ -407,7 +407,7 @@ export const WB_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/WestBengal2021/candidate.php?candidate_id=1669',
   },
   {
-    acNo: 20,
+    acNo: 238,
     name: 'Rajib Lochan Saren',
     party: 'AITC',
     age: 47,
@@ -427,7 +427,7 @@ export const WB_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/WestBengal2021/candidate.php?candidate_id=188',
   },
   {
-    acNo: 21,
+    acNo: 96,
     name: 'Swapan Majumder',
     party: 'BJP',
     age: 39,
@@ -447,7 +447,7 @@ export const WB_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/WestBengal2021/candidate.php?candidate_id=1438',
   },
   {
-    acNo: 22,
+    acNo: 95,
     name: 'Ashok Kirtania',
     party: 'BJP',
     age: 47,
@@ -467,7 +467,7 @@ export const WB_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/WestBengal2021/candidate.php?candidate_id=1430',
   },
   {
-    acNo: 23,
+    acNo: 252,
     name: 'Niladri Sekhar Dana',
     party: 'BJP',
     age: 54,
@@ -486,7 +486,7 @@ export const WB_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/WestBengal2021/candidate.php?candidate_id=334',
   },
   {
-    acNo: 24,
+    acNo: 283,
     name: 'Bidhan Upadhyay',
     party: 'AITC',
     age: 51,
@@ -506,7 +506,7 @@ export const WB_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/WestBengal2021/candidate.php?candidate_id=1877',
   },
   {
-    acNo: 25,
+    acNo: 113,
     name: 'Tapas Roy',
     party: 'AITC',
     age: 65,
@@ -526,7 +526,7 @@ export const WB_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/WestBengal2021/candidate.php?candidate_id=1115',
   },
   {
-    acNo: 26,
+    acNo: 113,
     name: 'Sayantika Banerjee',
     party: 'AITC',
     age: 38,
@@ -546,7 +546,7 @@ export const WB_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/WestBengal2021/candidate.php?candidate_id=2321',
   },
   {
-    acNo: 27,
+    acNo: 119,
     name: 'Chiranjeet Chakrabarti',
     party: 'AITC',
     age: 70,
@@ -566,7 +566,7 @@ export const WB_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/WestBengal2021/candidate.php?candidate_id=1167',
   },
   {
-    acNo: 28,
+    acNo: 266,
     name: 'Nisith Kumar Malik',
     party: 'AITC',
     age: 52,
@@ -586,7 +586,7 @@ export const WB_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/WestBengal2021/candidate.php?candidate_id=1263',
   },
   {
-    acNo: 29,
+    acNo: 253,
     name: 'Alok Mukherjee',
     party: 'AITC',
     age: 61,
@@ -605,7 +605,7 @@ export const WB_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/WestBengal2021/candidate.php?candidate_id=350',
   },
   {
-    acNo: 30,
+    acNo: 108,
     name: 'Raj Chakraborty',
     party: 'AITC',
     age: 46,
@@ -625,7 +625,7 @@ export const WB_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/WestBengal2021/candidate.php?candidate_id=1535',
   },
   {
-    acNo: 31,
+    acNo: 140,
     name: 'Biman Banerjee',
     party: 'AITC',
     age: 72,
@@ -644,7 +644,7 @@ export const WB_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/WestBengal2021/candidate.php?candidate_id=461',
   },
   {
-    acNo: 32,
+    acNo: 137,
     name: 'Bivas Sardar (Vobo)',
     party: 'AITC',
     age: 45,
@@ -664,7 +664,7 @@ export const WB_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/WestBengal2021/candidate.php?candidate_id=434',
   },
   {
-    acNo: 33,
+    acNo: 128,
     name: 'Shyamal Mondal',
     party: 'AITC',
     age: 56,
@@ -684,7 +684,7 @@ export const WB_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/WestBengal2021/candidate.php?candidate_id=450',
   },
   {
-    acNo: 34,
+    acNo: 124,
     name: 'Dr. Saptarshi Banerjee',
     party: 'AITC',
     age: 40,
@@ -704,7 +704,7 @@ export const WB_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/WestBengal2021/candidate.php?candidate_id=1193',
   },
   {
-    acNo: 35,
+    acNo: 125,
     name: 'Rafikul Islam Mondal',
     party: 'AITC',
     age: 61,
@@ -723,7 +723,7 @@ export const WB_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/WestBengal2021/candidate.php?candidate_id=1197',
   },
   {
-    acNo: 36,
+    acNo: 153,
     name: 'Ratna Chatterjee',
     party: 'AITC',
     age: 49,
@@ -743,7 +743,7 @@ export const WB_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/WestBengal2021/candidate.php?candidate_id=948',
   },
   {
-    acNo: 37,
+    acNo: 71,
     name: 'SK Hasanuzzaman',
     party: 'AITC',
     age: 47,
@@ -763,7 +763,7 @@ export const WB_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/WestBengal2021/candidate.php?candidate_id=1949',
   },
   {
-    acNo: 38,
+    acNo: 164,
     name: 'Paresh Paul',
     party: 'AITC',
     age: 75,
@@ -782,7 +782,7 @@ export const WB_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/WestBengal2021/candidate.php?candidate_id=2014',
   },
   {
-    acNo: 39,
+    acNo: 159,
     name: 'Mamata Banerjee',
     party: 'AITC',
     age: 66,
@@ -801,7 +801,7 @@ export const WB_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/WestBengal2021/candidate.php?candidate_id=2252',
   },
   {
-    acNo: 40,
+    acNo: 214,
     name: 'Rabindra Nath Maity',
     party: 'BJP',
     age: 50,
@@ -821,7 +821,7 @@ export const WB_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/WestBengal2021/candidate.php?candidate_id=137',
   },
   {
-    acNo: 41,
+    acNo: 62,
     name: 'Idris Ali',
     party: 'AITC',
     age: 70,
@@ -840,7 +840,7 @@ export const WB_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/WestBengal2021/candidate.php?candidate_id=1778',
   },
   {
-    acNo: 42,
+    acNo: 62,
     name: 'Reyat Hossain Sarkar',
     party: 'AITC',
     age: 49,
@@ -860,7 +860,7 @@ export const WB_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/WestBengal2021/candidate.php?candidate_id=2314',
   },
   {
-    acNo: 43,
+    acNo: 148,
     name: 'Nawsad Siddique',
     party: 'Rashtriya ',
     age: 28,
@@ -879,7 +879,7 @@ export const WB_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/WestBengal2021/candidate.php?candidate_id=692',
   },
   {
-    acNo: 44,
+    acNo: 105,
     name: 'Pawan Kumar Singh',
     party: 'BJP',
     age: 33,
@@ -899,7 +899,7 @@ export const WB_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/WestBengal2021/candidate.php?candidate_id=1506',
   },
   {
-    acNo: 45,
+    acNo: 116,
     name: 'Sujit Bose',
     party: 'AITC',
     age: 58,
@@ -919,7 +919,7 @@ export const WB_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/WestBengal2021/candidate.php?candidate_id=1139',
   },
   {
-    acNo: 46,
+    acNo: 103,
     name: 'Subodh Adhikary',
     party: 'AITC',
     age: 45,
@@ -939,7 +939,7 @@ export const WB_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/WestBengal2021/candidate.php?candidate_id=1491',
   },
   {
-    acNo: 47,
+    acNo: 237,
     name: 'Debnath Hansda',
     party: 'AITC',
     age: 38,
@@ -958,7 +958,7 @@ export const WB_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/WestBengal2021/candidate.php?candidate_id=184',
   },
   {
-    acNo: 48,
+    acNo: 146,
     name: 'Tanmay Ghosh',
     party: 'BJP',
     age: 42,
@@ -978,7 +978,7 @@ export const WB_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/WestBengal2021/candidate.php?candidate_id=353',
   },
   {
-    acNo: 49,
+    acNo: 146,
     name: 'Dilip Mondal',
     party: 'AITC',
     age: 54,
@@ -998,7 +998,7 @@ export const WB_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/WestBengal2021/candidate.php?candidate_id=419',
   },
   {
-    acNo: 50,
+    acNo: 286,
     name: 'Chandra Nath Sinha',
     party: 'AITC',
     age: 58,
@@ -1017,7 +1017,7 @@ export const WB_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/WestBengal2021/candidate.php?candidate_id=2064',
   },
   {
-    acNo: 51,
+    acNo: 156,
     name: 'Ashok Kumar Deb',
     party: 'AITC',
     age: 71,
@@ -1036,7 +1036,7 @@ export const WB_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/WestBengal2021/candidate.php?candidate_id=897',
   },
   {
-    acNo: 52,
+    acNo: 138,
     name: 'Paresh Ram Das',
     party: 'AITC',
     age: 43,
@@ -1056,7 +1056,7 @@ export const WB_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/WestBengal2021/candidate.php?candidate_id=427',
   },
   {
-    acNo: 53,
+    acNo: 139,
     name: 'Saokat Molla',
     party: 'AITC',
     age: 49,
@@ -1076,7 +1076,7 @@ export const WB_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/WestBengal2021/candidate.php?candidate_id=463',
   },
   {
-    acNo: 54,
+    acNo: 91,
     name: 'Bankim Chandra Ghosh',
     party: 'BJP',
     age: 62,
@@ -1096,7 +1096,7 @@ export const WB_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/WestBengal2021/candidate.php?candidate_id=1079',
   },
   {
-    acNo: 55,
+    acNo: 31,
     name: 'Minhajul Arfin Azad',
     party: 'AITC',
     age: 49,
@@ -1116,7 +1116,7 @@ export const WB_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/WestBengal2021/candidate.php?candidate_id=1273',
   },
   {
-    acNo: 56,
+    acNo: 187,
     name: 'Arindam Guin (Bubai)',
     party: 'AITC',
     age: 44,
@@ -1136,7 +1136,7 @@ export const WB_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/WestBengal2021/candidate.php?candidate_id=718',
   },
   {
-    acNo: 57,
+    acNo: 45,
     name: 'Nihar Ranjan Ghosh',
     party: 'AITC',
     age: 66,
@@ -1155,7 +1155,7 @@ export const WB_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/WestBengal2021/candidate.php?candidate_id=1703',
   },
   {
-    acNo: 58,
+    acNo: 189,
     name: 'Indranil Sen',
     party: 'AITC',
     age: 55,
@@ -1175,7 +1175,7 @@ export const WB_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/WestBengal2021/candidate.php?candidate_id=755',
   },
   {
-    acNo: 59,
+    acNo: 211,
     name: 'Soham Chakraborty',
     party: 'AITC',
     age: 37,
@@ -1195,7 +1195,7 @@ export const WB_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/WestBengal2021/candidate.php?candidate_id=319',
   },
   {
-    acNo: 60,
+    acNo: 232,
     name: 'Arup Dhara',
     party: 'AITC',
     age: 40,
@@ -1215,7 +1215,7 @@ export const WB_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/WestBengal2021/candidate.php?candidate_id=330',
   },
   {
-    acNo: 61,
+    acNo: 82,
     name: 'Rukbanur Rahman',
     party: 'AITC',
     age: 52,
@@ -1234,7 +1234,7 @@ export const WB_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/WestBengal2021/candidate.php?candidate_id=1395',
   },
   {
-    acNo: 62,
+    acNo: 248,
     name: 'Satyanarayan Mukhopadhyay',
     party: 'BJP',
     age: 51,
@@ -1254,7 +1254,7 @@ export const WB_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/WestBengal2021/candidate.php?candidate_id=110',
   },
   {
-    acNo: 63,
+    acNo: 28,
     name: 'Hamidul Rahaman',
     party: 'AITC',
     age: 61,
@@ -1274,7 +1274,7 @@ export const WB_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/WestBengal2021/candidate.php?candidate_id=1265',
   },
   {
-    acNo: 64,
+    acNo: 162,
     name: 'Nayna Bandyopadhyay',
     party: 'AITC',
     age: 52,
@@ -1294,7 +1294,7 @@ export const WB_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/WestBengal2021/candidate.php?candidate_id=1995',
   },
   {
-    acNo: 65,
+    acNo: 190,
     name: 'Asit Mazumder (Tapan)',
     party: 'AITC',
     age: 63,
@@ -1313,7 +1313,7 @@ export const WB_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/WestBengal2021/candidate.php?candidate_id=773',
   },
   {
-    acNo: 66,
+    acNo: 4,
     name: 'Nikhil Ranjan Dey',
     party: 'BJP',
     age: 63,
@@ -1333,7 +1333,7 @@ export const WB_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/WestBengal2021/candidate.php?candidate_id=962',
   },
   {
-    acNo: 67,
+    acNo: 3,
     name: 'Sukumar Roy',
     party: 'BJP',
     age: 52,
@@ -1352,7 +1352,7 @@ export const WB_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/WestBengal2021/candidate.php?candidate_id=966',
   },
   {
-    acNo: 68,
+    acNo: 219,
     name: 'Bikram Chandra Pradhan',
     party: 'AITC',
     age: 67,
@@ -1372,7 +1372,7 @@ export const WB_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/WestBengal2021/candidate.php?candidate_id=61',
   },
   {
-    acNo: 69,
+    acNo: 23,
     name: 'Neeraj Zimba',
     party: 'BJP',
     age: 39,
@@ -1391,7 +1391,7 @@ export const WB_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/WestBengal2021/candidate.php?candidate_id=1342',
   },
   {
-    acNo: 70,
+    acNo: 230,
     name: 'Mamata Bhunia',
     party: 'AITC',
     age: 59,
@@ -1410,7 +1410,7 @@ export const WB_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/WestBengal2021/candidate.php?candidate_id=326',
   },
   {
-    acNo: 71,
+    acNo: 229,
     name: 'Humayun Kabir',
     party: 'AITC',
     age: 59,
@@ -1429,7 +1429,7 @@ export const WB_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/WestBengal2021/candidate.php?candidate_id=282',
   },
   {
-    acNo: 72,
+    acNo: 120,
     name: 'Rahima Mondal',
     party: 'AITC',
     age: 51,
@@ -1447,7 +1447,7 @@ export const WB_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/WestBengal2021/candidate.php?candidate_id=1171',
   },
   {
-    acNo: 73,
+    acNo: 197,
     name: 'Asima Patra',
     party: 'AITC',
     age: 53,
@@ -1466,7 +1466,7 @@ export const WB_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/WestBengal2021/candidate.php?candidate_id=432',
   },
   {
-    acNo: 74,
+    acNo: 15,
     name: 'Bishnu Pada Ray',
     party: 'BJP',
     age: 58,
@@ -1485,7 +1485,7 @@ export const WB_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/WestBengal2021/candidate.php?candidate_id=1039',
   },
   {
-    acNo: 75,
+    acNo: 15,
     name: 'Nirmal Chandra Roy',
     party: 'AITC',
     age: 60,
@@ -1505,7 +1505,7 @@ export const WB_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/WestBengal2021/candidate.php?candidate_id=2304',
   },
   {
-    acNo: 76,
+    acNo: 143,
     name: 'Pannalal Halder',
     party: 'AITC',
     age: 70,
@@ -1524,7 +1524,7 @@ export const WB_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/WestBengal2021/candidate.php?candidate_id=407',
   },
   {
-    acNo: 77,
+    acNo: 7,
     name: 'Udayan Guha',
     party: 'AITC',
     age: 66,
@@ -1544,7 +1544,7 @@ export const WB_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/WestBengal2021/candidate.php?candidate_id=2265',
   },
   {
-    acNo: 78,
+    acNo: 184,
     name: 'Kalyan Ghosh',
     party: 'AITC',
     age: 60,
@@ -1564,7 +1564,7 @@ export const WB_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/WestBengal2021/candidate.php?candidate_id=815',
   },
   {
-    acNo: 79,
+    acNo: 75,
     name: 'Jafikul Islam',
     party: 'AITC',
     age: 45,
@@ -1584,7 +1584,7 @@ export const WB_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/WestBengal2021/candidate.php?candidate_id=1974',
   },
   {
-    acNo: 80,
+    acNo: 284,
     name: 'Anup Kumar Saha',
     party: 'BJP',
     age: 34,
@@ -1602,7 +1602,7 @@ export const WB_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/WestBengal2021/candidate.php?candidate_id=2049',
   },
   {
-    acNo: 81,
+    acNo: 114,
     name: 'Brtyabrata Basu',
     party: 'AITC',
     age: 52,
@@ -1621,7 +1621,7 @@ export const WB_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/WestBengal2021/candidate.php?candidate_id=1124',
   },
   {
-    acNo: 82,
+    acNo: 110,
     name: 'Chandrima Bhattacharya',
     party: 'AITC',
     age: 66,
@@ -1640,7 +1640,7 @@ export const WB_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/WestBengal2021/candidate.php?candidate_id=1545',
   },
   {
-    acNo: 83,
+    acNo: 277,
     name: 'Lakshman Chandra Ghorui',
     party: 'BJP',
     age: 49,
@@ -1659,7 +1659,7 @@ export const WB_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/WestBengal2021/candidate.php?candidate_id=1849',
   },
   {
-    acNo: 84,
+    acNo: 276,
     name: 'Pradip Mazumdar',
     party: 'AITC',
     age: 74,
@@ -1679,7 +1679,7 @@ export const WB_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/WestBengal2021/candidate.php?candidate_id=1840',
   },
   {
-    acNo: 85,
+    acNo: 218,
     name: 'Tarun Kumar Maity',
     party: 'AITC',
     age: 53,
@@ -1699,7 +1699,7 @@ export const WB_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/WestBengal2021/candidate.php?candidate_id=239',
   },
   {
-    acNo: 86,
+    acNo: 163,
     name: 'Swarna Kamal Saha',
     party: 'AITC',
     age: 72,
@@ -1718,7 +1718,7 @@ export const WB_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/WestBengal2021/candidate.php?candidate_id=2008',
   },
   {
-    acNo: 87,
+    acNo: 13,
     name: 'Dipak Barman',
     party: 'BJP',
     age: 46,
@@ -1738,7 +1738,7 @@ export const WB_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/WestBengal2021/candidate.php?candidate_id=784',
   },
   {
-    acNo: 88,
+    acNo: 144,
     name: 'Sankar Kumar Naskar',
     party: 'AITC',
     age: 68,
@@ -1757,7 +1757,7 @@ export const WB_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/WestBengal2021/candidate.php?candidate_id=436',
   },
   {
-    acNo: 89,
+    acNo: 55,
     name: 'Manirul Islam',
     party: 'AITC',
     age: 45,
@@ -1777,7 +1777,7 @@ export const WB_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/WestBengal2021/candidate.php?candidate_id=1728',
   },
   {
-    acNo: 90,
+    acNo: 97,
     name: 'Subrata Thakur',
     party: 'BJP',
     age: 41,
@@ -1795,7 +1795,7 @@ export const WB_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/WestBengal2021/candidate.php?candidate_id=1447',
   },
   {
-    acNo: 91,
+    acNo: 274,
     name: 'Nepal Ghorui',
     party: 'AITC',
     age: 43,
@@ -1815,7 +1815,7 @@ export const WB_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/WestBengal2021/candidate.php?candidate_id=1592',
   },
   {
-    acNo: 92,
+    acNo: 41,
     name: 'Satyendra Nath Ray',
     party: 'BJP',
     age: 64,
@@ -1834,7 +1834,7 @@ export const WB_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/WestBengal2021/candidate.php?candidate_id=1678',
   },
   {
-    acNo: 93,
+    acNo: 233,
     name: 'Uttara Singha',
     party: 'AITC',
     age: 56,
@@ -1854,7 +1854,7 @@ export const WB_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/WestBengal2021/candidate.php?candidate_id=78',
   },
   {
-    acNo: 94,
+    acNo: 231,
     name: 'Sital Kapat',
     party: 'BJP',
     age: 31,
@@ -1873,7 +1873,7 @@ export const WB_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/WestBengal2021/candidate.php?candidate_id=329',
   },
   {
-    acNo: 95,
+    acNo: 30,
     name: 'Md. Ghulam Rabbani',
     party: 'AITC',
     age: 51,
@@ -1893,7 +1893,7 @@ export const WB_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/WestBengal2021/candidate.php?candidate_id=1270',
   },
   {
-    acNo: 96,
+    acNo: 201,
     name: 'Biswanath Karak',
     party: 'BJP',
     age: 60,
@@ -1912,7 +1912,7 @@ export const WB_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/WestBengal2021/candidate.php?candidate_id=568',
   },
   {
-    acNo: 97,
+    acNo: 221,
     name: 'Dr. Khagendra Nath Mahata',
     party: 'AITC',
     age: 39,
@@ -1932,7 +1932,7 @@ export const WB_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/WestBengal2021/candidate.php?candidate_id=152',
   },
   {
-    acNo: 98,
+    acNo: 127,
     name: 'Jayanta Naskar',
     party: 'AITC',
     age: 73,
@@ -1951,7 +1951,7 @@ export const WB_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/WestBengal2021/candidate.php?candidate_id=126',
   },
   {
-    acNo: 99,
+    acNo: 127,
     name: 'Subrata Mondal',
     party: 'AITC',
     age: 46,
@@ -1971,7 +1971,7 @@ export const WB_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/WestBengal2021/candidate.php?candidate_id=2270',
   },
   {
-    acNo: 100,
+    acNo: 43,
     name: 'Joyel Murmu',
     party: 'BJP',
     age: 37,
@@ -1990,7 +1990,7 @@ export const WB_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/WestBengal2021/candidate.php?candidate_id=1689',
   },
   {
-    acNo: 101,
+    acNo: 100,
     name: 'Jyoti Priya Mallick',
     party: 'AITC',
     age: 63,
@@ -2009,7 +2009,7 @@ export const WB_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/WestBengal2021/candidate.php?candidate_id=1464',
   },
   {
-    acNo: 102,
+    acNo: 209,
     name: 'Tapasi Mondal',
     party: 'BJP',
     age: 49,
@@ -2028,7 +2028,7 @@ export const WB_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/WestBengal2021/candidate.php?candidate_id=364',
   },
   {
-    acNo: 103,
+    acNo: 73,
     name: 'Niamot Sheikh',
     party: 'AITC',
     age: 70,
@@ -2048,7 +2048,7 @@ export const WB_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/WestBengal2021/candidate.php?candidate_id=1962',
   },
   {
-    acNo: 104,
+    acNo: 93,
     name: 'Asim Kumar Sarkar',
     party: 'BJP',
     age: 60,
@@ -2068,7 +2068,7 @@ export const WB_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/WestBengal2021/candidate.php?candidate_id=1090',
   },
   {
-    acNo: 105,
+    acNo: 196,
     name: 'Dr. Karabi Manna',
     party: 'AITC',
     age: 46,
@@ -2087,7 +2087,7 @@ export const WB_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/WestBengal2021/candidate.php?candidate_id=440',
   },
   {
-    acNo: 106,
+    acNo: 42,
     name: 'Biplab Mitra',
     party: 'AITC',
     age: 69,
@@ -2107,7 +2107,7 @@ export const WB_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/WestBengal2021/candidate.php?candidate_id=1681',
   },
   {
-    acNo: 107,
+    acNo: 46,
     name: 'Tajmul Hossain',
     party: 'AITC',
     age: 63,
@@ -2126,7 +2126,7 @@ export const WB_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/WestBengal2021/candidate.php?candidate_id=1709',
   },
   {
-    acNo: 108,
+    acNo: 121,
     name: 'Islam Sk Nurul (Haji)',
     party: 'AITC',
     age: 57,
@@ -2144,7 +2144,7 @@ export const WB_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/WestBengal2021/candidate.php?candidate_id=1180',
   },
   {
-    acNo: 109,
+    acNo: 121,
     name: 'Sk Rabiul Islam',
     party: 'AITC',
     age: 39,
@@ -2164,7 +2164,7 @@ export const WB_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/WestBengal2021/candidate.php?candidate_id=2364',
   },
   {
-    acNo: 110,
+    acNo: 33,
     name: 'Satyajit Barman',
     party: 'AITC',
     age: 40,
@@ -2184,7 +2184,7 @@ export const WB_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/WestBengal2021/candidate.php?candidate_id=1631',
   },
   {
-    acNo: 111,
+    acNo: 126,
     name: 'Debes Mandal',
     party: 'AITC',
     age: 56,
@@ -2204,7 +2204,7 @@ export const WB_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/WestBengal2021/candidate.php?candidate_id=1205',
   },
   {
-    acNo: 112,
+    acNo: 171,
     name: 'Arup Roy',
     party: 'AITC',
     age: 65,
@@ -2224,7 +2224,7 @@ export const WB_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/WestBengal2021/candidate.php?candidate_id=511',
   },
   {
-    acNo: 113,
+    acNo: 170,
     name: 'Gautam Chowdhuri',
     party: 'AITC',
     age: 48,
@@ -2243,7 +2243,7 @@ export const WB_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/WestBengal2021/candidate.php?candidate_id=510',
   },
   {
-    acNo: 114,
+    acNo: 257,
     name: 'Nirmal Kumar Dhara',
     party: 'BJP',
     age: 39,
@@ -2262,7 +2262,7 @@ export const WB_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/WestBengal2021/candidate.php?candidate_id=359',
   },
   {
-    acNo: 115,
+    acNo: 29,
     name: 'Abdul Karim Chowdhury',
     party: 'AITC',
     age: 75,
@@ -2282,7 +2282,7 @@ export const WB_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/WestBengal2021/candidate.php?candidate_id=1267',
   },
   {
-    acNo: 116,
+    acNo: 36,
     name: 'Mosaraf Hussen',
     party: 'AITC',
     age: 40,
@@ -2302,7 +2302,7 @@ export const WB_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/WestBengal2021/candidate.php?candidate_id=1653',
   },
   {
-    acNo: 117,
+    acNo: 150,
     name: 'Debabrata Majumdar (Malay)',
     party: 'AITC',
     age: 56,
@@ -2321,7 +2321,7 @@ export const WB_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/WestBengal2021/candidate.php?candidate_id=710',
   },
   {
-    acNo: 118,
+    acNo: 183,
     name: 'Sitanath Ghosh',
     party: 'AITC',
     age: 67,
@@ -2340,7 +2340,7 @@ export const WB_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/WestBengal2021/candidate.php?candidate_id=421',
   },
   {
-    acNo: 119,
+    acNo: 106,
     name: 'Somenath Shyam Ichini',
     party: 'AITC',
     age: 50,
@@ -2359,7 +2359,7 @@ export const WB_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/WestBengal2021/candidate.php?candidate_id=1513',
   },
   {
-    acNo: 120,
+    acNo: 17,
     name: 'Pradip Kumar Barma',
     party: 'AITC',
     age: 66,
@@ -2379,7 +2379,7 @@ export const WB_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/WestBengal2021/candidate.php?candidate_id=1001',
   },
   {
-    acNo: 121,
+    acNo: 262,
     name: 'Alok Kumar Majhi',
     party: 'AITC',
     age: 38,
@@ -2398,7 +2398,7 @@ export const WB_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/WestBengal2021/candidate.php?candidate_id=1234',
   },
   {
-    acNo: 122,
+    acNo: 279,
     name: 'Hareram Singh',
     party: 'AITC',
     age: 67,
@@ -2417,7 +2417,7 @@ export const WB_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/WestBengal2021/candidate.php?candidate_id=1858',
   },
   {
-    acNo: 123,
+    acNo: 195,
     name: 'Snehasis Chakraborty',
     party: 'AITC',
     age: 51,
@@ -2437,7 +2437,7 @@ export const WB_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/WestBengal2021/candidate.php?candidate_id=422',
   },
   {
-    acNo: 124,
+    acNo: 58,
     name: 'Jakir Hossain',
     party: 'AITC',
     age: 48,
@@ -2457,7 +2457,7 @@ export const WB_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/WestBengal2021/candidate.php?candidate_id=1744',
   },
   {
-    acNo: 125,
+    acNo: 136,
     name: 'Biswanath Das',
     party: 'AITC',
     age: 55,
@@ -2477,7 +2477,7 @@ export const WB_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/WestBengal2021/candidate.php?candidate_id=457',
   },
   {
-    acNo: 126,
+    acNo: 222,
     name: 'Birbaha Hansda',
     party: 'AITC',
     age: 38,
@@ -2495,7 +2495,7 @@ export const WB_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/WestBengal2021/candidate.php?candidate_id=158',
   },
   {
-    acNo: 127,
+    acNo: 165,
     name: 'Vivek Gupta',
     party: 'AITC',
     age: 45,
@@ -2514,7 +2514,7 @@ export const WB_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/WestBengal2021/candidate.php?candidate_id=2026',
   },
   {
-    acNo: 128,
+    acNo: 131,
     name: 'Manturam Pakhira',
     party: 'AITC',
     age: 57,
@@ -2533,7 +2533,7 @@ export const WB_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/WestBengal2021/candidate.php?candidate_id=257',
   },
   {
-    acNo: 129,
+    acNo: 11,
     name: 'Bishal Lama',
     party: 'BJP',
     age: 39,
@@ -2553,7 +2553,7 @@ export const WB_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/WestBengal2021/candidate.php?candidate_id=757',
   },
   {
-    acNo: 130,
+    acNo: 34,
     name: 'Soumen Roy',
     party: 'BJP',
     age: 45,
@@ -2573,7 +2573,7 @@ export const WB_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/WestBengal2021/candidate.php?candidate_id=1632',
   },
   {
-    acNo: 131,
+    acNo: 80,
     name: 'Nasiruddin Ahamed',
     party: 'AITC',
     age: 67,
@@ -2592,7 +2592,7 @@ export const WB_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/WestBengal2021/candidate.php?candidate_id=1315',
   },
   {
-    acNo: 132,
+    acNo: 80,
     name: 'Alifa Ahmed',
     party: 'AITC',
     age: 38,
@@ -2632,7 +2632,7 @@ export const WB_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/WestBengal2021/candidate.php?candidate_id=991',
   },
   {
-    acNo: 134,
+    acNo: 264,
     name: 'Deboprasad Bag (Poltu)',
     party: 'AITC',
     age: 44,
@@ -2652,7 +2652,7 @@ export const WB_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/WestBengal2021/candidate.php?candidate_id=1243',
   },
   {
-    acNo: 135,
+    acNo: 92,
     name: 'Ambika Roy',
     party: 'BJP',
     age: 48,
@@ -2671,7 +2671,7 @@ export const WB_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/WestBengal2021/candidate.php?candidate_id=1085',
   },
   {
-    acNo: 136,
+    acNo: 112,
     name: 'Madan Mitra',
     party: 'AITC',
     age: 66,
@@ -2691,7 +2691,7 @@ export const WB_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/WestBengal2021/candidate.php?candidate_id=1109',
   },
   {
-    acNo: 137,
+    acNo: 216,
     name: 'Arup Kumar Das',
     party: 'BJP',
     age: 63,
@@ -2710,7 +2710,7 @@ export const WB_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/WestBengal2021/candidate.php?candidate_id=141',
   },
   {
-    acNo: 138,
+    acNo: 213,
     name: 'Sumita Sinha',
     party: 'BJP',
     age: 53,
@@ -2730,7 +2730,7 @@ export const WB_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/WestBengal2021/candidate.php?candidate_id=135',
   },
   {
-    acNo: 139,
+    acNo: 32,
     name: 'Goutam Paul',
     party: 'AITC',
     age: 42,
@@ -2749,7 +2749,7 @@ export const WB_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/WestBengal2021/candidate.php?candidate_id=1624',
   },
   {
-    acNo: 140,
+    acNo: 77,
     name: 'Bimlendu Sinha Roy',
     party: 'AITC',
     age: 63,
@@ -2769,7 +2769,7 @@ export const WB_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/WestBengal2021/candidate.php?candidate_id=1299',
   },
   {
-    acNo: 141,
+    acNo: 149,
     name: 'Javed Ahmed Khan',
     party: 'AITC',
     age: 64,
@@ -2789,7 +2789,7 @@ export const WB_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/WestBengal2021/candidate.php?candidate_id=703',
   },
   {
-    acNo: 142,
+    acNo: 244,
     name: 'Kamalakanta Hansda',
     party: 'BJP',
     age: 47,
@@ -2809,7 +2809,7 @@ export const WB_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/WestBengal2021/candidate.php?candidate_id=221',
   },
   {
-    acNo: 143,
+    acNo: 244,
     name: 'Atin Ghosh',
     party: 'AITC',
     age: 62,
@@ -2829,7 +2829,7 @@ export const WB_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/WestBengal2021/candidate.php?candidate_id=2045',
   },
   {
-    acNo: 144,
+    acNo: 256,
     name: 'Harakali Protiher',
     party: 'BJP',
     age: 40,
@@ -2849,7 +2849,7 @@ export const WB_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/WestBengal2021/candidate.php?candidate_id=357',
   },
   {
-    acNo: 145,
+    acNo: 223,
     name: 'Paresh Murmu',
     party: 'AITC',
     age: 52,
@@ -2868,7 +2868,7 @@ export const WB_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/WestBengal2021/candidate.php?candidate_id=163',
   },
   {
-    acNo: 146,
+    acNo: 235,
     name: 'Seuli Saha',
     party: 'AITC',
     age: 51,
@@ -2888,7 +2888,7 @@ export const WB_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/WestBengal2021/candidate.php?candidate_id=285',
   },
   {
-    acNo: 147,
+    acNo: 271,
     name: 'Sekh Sahonawez',
     party: 'AITC',
     age: 62,
@@ -2907,7 +2907,7 @@ export const WB_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/WestBengal2021/candidate.php?candidate_id=1578',
   },
   {
-    acNo: 148,
+    acNo: 202,
     name: 'Susanta Ghosh',
     party: 'BJP',
     age: 32,
@@ -2927,7 +2927,7 @@ export const WB_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/WestBengal2021/candidate.php?candidate_id=534',
   },
   {
-    acNo: 149,
+    acNo: 259,
     name: 'Nabin Chandra Bag',
     party: 'AITC',
     age: 45,
@@ -2946,7 +2946,7 @@ export const WB_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/WestBengal2021/candidate.php?candidate_id=1223',
   },
   {
-    acNo: 150,
+    acNo: 228,
     name: 'Dinen Roy',
     party: 'AITC',
     age: 65,
@@ -2965,7 +2965,7 @@ export const WB_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/WestBengal2021/candidate.php?candidate_id=166',
   },
   {
-    acNo: 151,
+    acNo: 224,
     name: 'Hiranmoy Chattopadhyaya',
     party: 'BJP',
     age: 45,
@@ -2985,7 +2985,7 @@ export const WB_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/WestBengal2021/candidate.php?candidate_id=385',
   },
   {
-    acNo: 152,
+    acNo: 109,
     name: 'Kajal Sinha',
     party: 'AITC',
     age: 59,
@@ -3005,7 +3005,7 @@ export const WB_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/WestBengal2021/candidate.php?candidate_id=1541',
   },
   {
-    acNo: 153,
+    acNo: 109,
     name: 'Sobhandeb Chattopadhyay',
     party: 'AITC',
     age: 77,
@@ -3024,7 +3024,7 @@ export const WB_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/WestBengal2021/candidate.php?candidate_id=2266',
   },
   {
-    acNo: 154,
+    acNo: 215,
     name: 'Santanu Pramanik',
     party: 'BJP',
     age: 36,
@@ -3044,7 +3044,7 @@ export const WB_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/WestBengal2021/candidate.php?candidate_id=139',
   },
   {
-    acNo: 155,
+    acNo: 158,
     name: 'Firhad Hakim',
     party: 'AITC',
     age: 62,
@@ -3064,7 +3064,7 @@ export const WB_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/WestBengal2021/candidate.php?candidate_id=1809',
   },
   {
-    acNo: 156,
+    acNo: 88,
     name: 'Ashis Kumar Biswas',
     party: 'BJP',
     age: 54,
@@ -3083,7 +3083,7 @@ export const WB_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/WestBengal2021/candidate.php?candidate_id=1067',
   },
   {
-    acNo: 157,
+    acNo: 85,
     name: 'Ujjal Biswas',
     party: 'AITC',
     age: 67,
@@ -3103,7 +3103,7 @@ export const WB_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/WestBengal2021/candidate.php?candidate_id=1413',
   },
   {
-    acNo: 158,
+    acNo: 83,
     name: 'Mukul Roy',
     party: 'BJP',
     age: 67,
@@ -3122,7 +3122,7 @@ export const WB_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/WestBengal2021/candidate.php?candidate_id=1404',
   },
   {
-    acNo: 159,
+    acNo: 133,
     name: 'Jogaranjan Halder',
     party: 'AITC',
     age: 67,
@@ -3142,7 +3142,7 @@ export const WB_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/WestBengal2021/candidate.php?candidate_id=453',
   },
   {
-    acNo: 160,
+    acNo: 129,
     name: 'Ganesh Chandra Mondal',
     party: 'AITC',
     age: 40,
@@ -3162,7 +3162,7 @@ export const WB_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/WestBengal2021/candidate.php?candidate_id=451',
   },
   {
-    acNo: 161,
+    acNo: 282,
     name: 'Ajay Kumar Poddar',
     party: 'BJP',
     age: 63,
@@ -3182,7 +3182,7 @@ export const WB_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/WestBengal2021/candidate.php?candidate_id=1873',
   },
   {
-    acNo: 162,
+    acNo: 10,
     name: 'Manoj Kumar Oraon',
     party: 'BJP',
     age: 41,
@@ -3201,7 +3201,7 @@ export const WB_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/WestBengal2021/candidate.php?candidate_id=727',
   },
   {
-    acNo: 163,
+    acNo: 24,
     name: 'Bishnu Prasad Sharma',
     party: 'BJP',
     age: 52,
@@ -3220,7 +3220,7 @@ export const WB_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/WestBengal2021/candidate.php?candidate_id=1347',
   },
   {
-    acNo: 164,
+    acNo: 37,
     name: 'Rekha Roy',
     party: 'AITC',
     age: 34,
@@ -3240,7 +3240,7 @@ export const WB_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/WestBengal2021/candidate.php?candidate_id=1656',
   },
   {
-    acNo: 165,
+    acNo: 288,
     name: 'Abhijit Sinha (Rana)',
     party: 'AITC',
     age: 54,
@@ -3259,7 +3259,7 @@ export const WB_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/WestBengal2021/candidate.php?candidate_id=2074',
   },
   {
-    acNo: 166,
+    acNo: 61,
     name: 'Mohammad Ali',
     party: 'AITC',
     age: 57,
@@ -3279,7 +3279,7 @@ export const WB_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/WestBengal2021/candidate.php?candidate_id=1769',
   },
   {
-    acNo: 167,
+    acNo: 14,
     name: 'Manoj Tigga',
     party: 'BJP',
     age: 48,
@@ -3299,7 +3299,7 @@ export const WB_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/WestBengal2021/candidate.php?candidate_id=776',
   },
   {
-    acNo: 168,
+    acNo: 14,
     name: 'Jayprakash Toppo',
     party: 'AITC',
     age: 48,
@@ -3319,7 +3319,7 @@ export const WB_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/WestBengal2021/candidate.php?candidate_id=2383',
   },
   {
-    acNo: 169,
+    acNo: 118,
     name: 'Rathin Ghosh',
     party: 'AITC',
     age: 63,
@@ -3339,7 +3339,7 @@ export const WB_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/WestBengal2021/candidate.php?candidate_id=1158',
   },
   {
-    acNo: 170,
+    acNo: 142,
     name: 'Gias Uddin Molla',
     party: 'AITC',
     age: 64,
@@ -3359,7 +3359,7 @@ export const WB_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/WestBengal2021/candidate.php?candidate_id=449',
   },
   {
-    acNo: 171,
+    acNo: 155,
     name: 'Dulal Chandra Das',
     party: 'AITC',
     age: 76,
@@ -3378,7 +3378,7 @@ export const WB_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/WestBengal2021/candidate.php?candidate_id=903',
   },
   {
-    acNo: 172,
+    acNo: 208,
     name: 'Tilak Kumar Chakraborty',
     party: 'AITC',
     age: 55,
@@ -3397,7 +3397,7 @@ export const WB_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/WestBengal2021/candidate.php?candidate_id=269',
   },
   {
-    acNo: 173,
+    acNo: 20,
     name: 'Bulu Chik Baraik',
     party: 'AITC',
     age: 61,
@@ -3416,7 +3416,7 @@ export const WB_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/WestBengal2021/candidate.php?candidate_id=1006',
   },
   {
-    acNo: 174,
+    acNo: 47,
     name: 'Abdur Rahim Boxi',
     party: 'AITC',
     age: 57,
@@ -3436,7 +3436,7 @@ export const WB_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/WestBengal2021/candidate.php?candidate_id=1714',
   },
   {
-    acNo: 175,
+    acNo: 50,
     name: 'Gopal Chandra Saha',
     party: 'BJP',
     age: 44,
@@ -3456,7 +3456,7 @@ export const WB_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/WestBengal2021/candidate.php?candidate_id=1892',
   },
   {
-    acNo: 176,
+    acNo: 243,
     name: 'Sandhyarani Tudu',
     party: 'AITC',
     age: 50,
@@ -3475,7 +3475,7 @@ export const WB_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/WestBengal2021/candidate.php?candidate_id=217',
   },
   {
-    acNo: 177,
+    acNo: 135,
     name: 'Joydeb Halder',
     party: 'AITC',
     age: 45,
@@ -3494,7 +3494,7 @@ export const WB_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/WestBengal2021/candidate.php?candidate_id=456',
   },
   {
-    acNo: 178,
+    acNo: 49,
     name: 'Sabitri Mitra',
     party: 'AITC',
     age: 60,
@@ -3513,7 +3513,7 @@ export const WB_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/WestBengal2021/candidate.php?candidate_id=1881',
   },
   {
-    acNo: 179,
+    acNo: 167,
     name: 'Supti Pandey',
     party: 'AITC',
     age: 66,
@@ -3533,7 +3533,7 @@ export const WB_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/WestBengal2021/candidate.php?candidate_id=2338',
   },
   {
-    acNo: 180,
+    acNo: 2,
     name: 'Sushil Barman',
     party: 'BJP',
     age: 53,
@@ -3552,7 +3552,7 @@ export const WB_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/WestBengal2021/candidate.php?candidate_id=954',
   },
   {
-    acNo: 181,
+    acNo: 25,
     name: 'Anandamay Barman',
     party: 'BJP',
     age: 38,
@@ -3572,7 +3572,7 @@ export const WB_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/WestBengal2021/candidate.php?candidate_id=1049',
   },
   {
-    acNo: 182,
+    acNo: 16,
     name: 'Kaushik Roy',
     party: 'BJP',
     age: 37,
@@ -3592,7 +3592,7 @@ export const WB_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/WestBengal2021/candidate.php?candidate_id=1324',
   },
   {
-    acNo: 183,
+    acNo: 290,
     name: 'Abhijit Roy',
     party: 'AITC',
     age: 52,
@@ -3611,7 +3611,7 @@ export const WB_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/WestBengal2021/candidate.php?candidate_id=2086',
   },
   {
-    acNo: 184,
+    acNo: 236,
     name: 'June Maliah',
     party: 'AITC',
     age: 50,
@@ -3630,7 +3630,7 @@ export const WB_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/WestBengal2021/candidate.php?candidate_id=180',
   },
   {
-    acNo: 185,
+    acNo: 236,
     name: 'Sujoy Hazra',
     party: 'AITC',
     age: 49,
@@ -3649,7 +3649,7 @@ export const WB_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/WestBengal2021/candidate.php?candidate_id=2387',
   },
   {
-    acNo: 186,
+    acNo: 1,
     name: 'Paresh Chandra Adhikary',
     party: 'AITC',
     age: 68,
@@ -3669,7 +3669,7 @@ export const WB_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/WestBengal2021/candidate.php?candidate_id=569',
   },
   {
-    acNo: 187,
+    acNo: 265,
     name: 'Madhusudan Bhattacharya',
     party: 'AITC',
     age: 71,
@@ -3688,7 +3688,7 @@ export const WB_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/WestBengal2021/candidate.php?candidate_id=1250',
   },
   {
-    acNo: 188,
+    acNo: 157,
     name: 'Abdul Khaleque Molla',
     party: 'AITC',
     age: 76,
@@ -3708,7 +3708,7 @@ export const WB_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/WestBengal2021/candidate.php?candidate_id=509',
   },
   {
-    acNo: 189,
+    acNo: 272,
     name: 'Apurba Chowdhury (Achal)',
     party: 'AITC',
     age: 55,
@@ -3727,7 +3727,7 @@ export const WB_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/WestBengal2021/candidate.php?candidate_id=1579',
   },
   {
-    acNo: 190,
+    acNo: 263,
     name: 'Chowdhury Siddiqullah',
     party: 'AITC',
     age: 71,
@@ -3747,7 +3747,7 @@ export const WB_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/WestBengal2021/candidate.php?candidate_id=1239',
   },
   {
-    acNo: 191,
+    acNo: 52,
     name: 'Yeasmin Sabina',
     party: 'AITC',
     age: 43,
@@ -3767,7 +3767,7 @@ export const WB_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/WestBengal2021/candidate.php?candidate_id=1905',
   },
   {
-    acNo: 192,
+    acNo: 206,
     name: 'Ashoke Dinda',
     party: 'BJP',
     age: 35,
@@ -3787,7 +3787,7 @@ export const WB_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/WestBengal2021/candidate.php?candidate_id=310',
   },
   {
-    acNo: 193,
+    acNo: 294,
     name: 'Dr Mosarraf Hossain',
     party: 'AITC',
     age: 58,
@@ -3807,7 +3807,7 @@ export const WB_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/WestBengal2021/candidate.php?candidate_id=2105',
   },
   {
-    acNo: 194,
+    acNo: 64,
     name: 'Gouri Shankar Ghosh',
     party: 'BJP',
     age: 48,
@@ -3826,7 +3826,7 @@ export const WB_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/WestBengal2021/candidate.php?candidate_id=1788',
   },
   {
-    acNo: 195,
+    acNo: 84,
     name: 'Pundarikakshya Saha',
     party: 'AITC',
     age: 66,
@@ -3845,7 +3845,7 @@ export const WB_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/WestBengal2021/candidate.php?candidate_id=1405',
   },
   {
-    acNo: 196,
+    acNo: 65,
     name: 'Kanai Chandra Mondal',
     party: 'AITC',
     age: 67,
@@ -3865,7 +3865,7 @@ export const WB_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/WestBengal2021/candidate.php?candidate_id=1796',
   },
   {
-    acNo: 197,
+    acNo: 104,
     name: 'Partha Bhowmick',
     party: 'AITC',
     age: 57,
@@ -3885,7 +3885,7 @@ export const WB_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/WestBengal2021/candidate.php?candidate_id=1499',
   },
   {
-    acNo: 198,
+    acNo: 104,
     name: 'Sanat Dey',
     party: 'AITC',
     age: 49,
@@ -3905,7 +3905,7 @@ export const WB_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/WestBengal2021/candidate.php?candidate_id=2361',
   },
   {
-    acNo: 199,
+    acNo: 81,
     name: 'Kallol Khan',
     party: 'AITC',
     age: 67,
@@ -3925,7 +3925,7 @@ export const WB_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/WestBengal2021/candidate.php?candidate_id=1387',
   },
   {
-    acNo: 200,
+    acNo: 293,
     name: 'Rajendra Prasad Singh (Raju Singh)',
     party: 'AITC',
     age: 48,
@@ -3945,7 +3945,7 @@ export const WB_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/WestBengal2021/candidate.php?candidate_id=2100',
   },
   {
-    acNo: 201,
+    acNo: 207,
     name: 'Sukumar De',
     party: 'AITC',
     age: 60,
@@ -3964,7 +3964,7 @@ export const WB_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/WestBengal2021/candidate.php?candidate_id=267',
   },
   {
-    acNo: 202,
+    acNo: 210,
     name: 'Suvendu Adhikari',
     party: 'BJP',
     age: 50,
@@ -3983,7 +3983,7 @@ export const WB_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/WestBengal2021/candidate.php?candidate_id=381',
   },
   {
-    acNo: 203,
+    acNo: 287,
     name: 'Bidhan Chandra Majhi',
     party: 'AITC',
     age: 40,
@@ -4003,7 +4003,7 @@ export const WB_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/WestBengal2021/candidate.php?candidate_id=2070',
   },
   {
-    acNo: 204,
+    acNo: 225,
     name: 'Atta Surja Kanta',
     party: 'AITC',
     age: 57,
@@ -4023,7 +4023,7 @@ export const WB_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/WestBengal2021/candidate.php?candidate_id=276',
   },
   {
-    acNo: 205,
+    acNo: 8,
     name: 'Mihir Goswami',
     party: 'BJP',
     age: 67,
@@ -4042,7 +4042,7 @@ export const WB_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/WestBengal2021/candidate.php?candidate_id=980',
   },
   {
-    acNo: 206,
+    acNo: 107,
     name: 'Manju Basu',
     party: 'AITC',
     age: 68,
@@ -4061,7 +4061,7 @@ export const WB_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/WestBengal2021/candidate.php?candidate_id=1528',
   },
   {
-    acNo: 207,
+    acNo: 74,
     name: 'Sahina Momtaz Khan',
     party: 'AITC',
     age: 55,
@@ -4081,7 +4081,7 @@ export const WB_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/WestBengal2021/candidate.php?candidate_id=1964',
   },
   {
-    acNo: 208,
+    acNo: 254,
     name: 'Amarnath Shakha',
     party: 'BJP',
     age: 56,
@@ -4101,7 +4101,7 @@ export const WB_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/WestBengal2021/candidate.php?candidate_id=293',
   },
   {
-    acNo: 209,
+    acNo: 79,
     name: 'Dr. Manik Bhattacharya',
     party: 'AITC',
     age: 66,
@@ -4120,7 +4120,7 @@ export const WB_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/WestBengal2021/candidate.php?candidate_id=1309',
   },
   {
-    acNo: 210,
+    acNo: 175,
     name: 'Gulsan Mullick',
     party: 'AITC',
     age: 63,
@@ -4140,7 +4140,7 @@ export const WB_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/WestBengal2021/candidate.php?candidate_id=680',
   },
   {
-    acNo: 211,
+    acNo: 275,
     name: 'Narendranath Chakraborty',
     party: 'AITC',
     age: 57,
@@ -4160,7 +4160,7 @@ export const WB_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/WestBengal2021/candidate.php?candidate_id=1831',
   },
   {
-    acNo: 212,
+    acNo: 192,
     name: 'Dr. Ratna De Nag',
     party: 'AITC',
     age: 71,
@@ -4179,7 +4179,7 @@ export const WB_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/WestBengal2021/candidate.php?candidate_id=741',
   },
   {
-    acNo: 213,
+    acNo: 111,
     name: 'Nirmal Ghosh',
     party: 'AITC',
     age: 72,
@@ -4198,7 +4198,7 @@ export const WB_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/WestBengal2021/candidate.php?candidate_id=1100',
   },
   {
-    acNo: 214,
+    acNo: 204,
     name: 'Biplab Roy Chowdhury',
     party: 'AITC',
     age: 74,
@@ -4217,7 +4217,7 @@ export const WB_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/WestBengal2021/candidate.php?candidate_id=262',
   },
   {
-    acNo: 215,
+    acNo: 245,
     name: 'Nadiar Chand Bouri',
     party: 'BJP',
     age: 43,
@@ -4237,7 +4237,7 @@ export const WB_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/WestBengal2021/candidate.php?candidate_id=224',
   },
   {
-    acNo: 216,
+    acNo: 212,
     name: 'Uttam Barik',
     party: 'AITC',
     age: 46,
@@ -4256,7 +4256,7 @@ export const WB_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/WestBengal2021/candidate.php?candidate_id=130',
   },
   {
-    acNo: 217,
+    acNo: 130,
     name: 'Samir Kumar Jana',
     party: 'AITC',
     age: 71,
@@ -4276,7 +4276,7 @@ export const WB_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/WestBengal2021/candidate.php?candidate_id=255',
   },
   {
-    acNo: 218,
+    acNo: 27,
     name: 'Durga Murmu',
     party: 'BJP',
     age: 42,
@@ -4295,7 +4295,7 @@ export const WB_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/WestBengal2021/candidate.php?candidate_id=1030',
   },
   {
-    acNo: 219,
+    acNo: 227,
     name: 'Ajit Maity',
     party: 'AITC',
     age: 67,
@@ -4314,7 +4314,7 @@ export const WB_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/WestBengal2021/candidate.php?candidate_id=280',
   },
   {
-    acNo: 220,
+    acNo: 268,
     name: 'Swapan Debnath',
     party: 'AITC',
     age: 70,
@@ -4333,7 +4333,7 @@ export const WB_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/WestBengal2021/candidate.php?candidate_id=1561',
   },
   {
-    acNo: 221,
+    acNo: 269,
     name: 'Tapan Chatterjee',
     party: 'AITC',
     age: 66,
@@ -4353,7 +4353,7 @@ export const WB_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/WestBengal2021/candidate.php?candidate_id=1567',
   },
   {
-    acNo: 222,
+    acNo: 242,
     name: 'Sudip Kumar Mukherjee',
     party: 'BJP',
     age: 51,
@@ -4372,7 +4372,7 @@ export const WB_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/WestBengal2021/candidate.php?candidate_id=211',
   },
   {
-    acNo: 223,
+    acNo: 59,
     name: 'Akhruzzaman',
     party: 'AITC',
     age: 56,
@@ -4392,7 +4392,7 @@ export const WB_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/WestBengal2021/candidate.php?candidate_id=1749',
   },
   {
-    acNo: 224,
+    acNo: 246,
     name: 'Vivekananda Bauri',
     party: 'BJP',
     age: 44,
@@ -4411,7 +4411,7 @@ export const WB_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/WestBengal2021/candidate.php?candidate_id=103',
   },
   {
-    acNo: 225,
+    acNo: 134,
     name: 'Aloke Jaldata',
     party: 'AITC',
     age: 54,
@@ -4431,7 +4431,7 @@ export const WB_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/WestBengal2021/candidate.php?candidate_id=454',
   },
   {
-    acNo: 226,
+    acNo: 35,
     name: 'Krishna Kalyani',
     party: 'AITC',
     age: 45,
@@ -4451,7 +4451,7 @@ export const WB_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/WestBengal2021/candidate.php?candidate_id=2345',
   },
   {
-    acNo: 227,
+    acNo: 261,
     name: 'Shampa Dhara',
     party: 'AITC',
     age: 29,
@@ -4470,7 +4470,7 @@ export const WB_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/WestBengal2021/candidate.php?candidate_id=1226',
   },
   {
-    acNo: 228,
+    acNo: 250,
     name: 'Mrityunjoy Murmu',
     party: 'AITC',
     age: 47,
@@ -4489,7 +4489,7 @@ export const WB_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/WestBengal2021/candidate.php?candidate_id=235',
   },
   {
-    acNo: 229,
+    acNo: 117,
     name: 'Aditi Munshi',
     party: 'AITC',
     age: 32,
@@ -4509,7 +4509,7 @@ export const WB_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/WestBengal2021/candidate.php?candidate_id=1152',
   },
   {
-    acNo: 230,
+    acNo: 18,
     name: 'Khageswar Roy',
     party: 'AITC',
     age: 69,
@@ -4529,7 +4529,7 @@ export const WB_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/WestBengal2021/candidate.php?candidate_id=1004',
   },
   {
-    acNo: 231,
+    acNo: 217,
     name: 'Akhil Giri',
     party: 'AITC',
     age: 62,
@@ -4548,7 +4548,7 @@ export const WB_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/WestBengal2021/candidate.php?candidate_id=72',
   },
   {
-    acNo: 232,
+    acNo: 291,
     name: 'Asish Banerjee',
     party: 'AITC',
     age: 69,
@@ -4567,7 +4567,7 @@ export const WB_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/WestBengal2021/candidate.php?candidate_id=2088',
   },
   {
-    acNo: 233,
+    acNo: 90,
     name: 'Mukut Mani Adhikari',
     party: 'AITC',
     age: 34,
@@ -4587,7 +4587,7 @@ export const WB_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/WestBengal2021/candidate.php?candidate_id=2356',
   },
   {
-    acNo: 234,
+    acNo: 87,
     name: 'Parthasarathi Chatterjee',
     party: 'BJP',
     age: 67,
@@ -4607,7 +4607,7 @@ export const WB_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/WestBengal2021/candidate.php?candidate_id=1062',
   },
   {
-    acNo: 235,
+    acNo: 89,
     name: 'Ashim Biswas',
     party: 'BJP',
     age: 45,
@@ -4627,7 +4627,7 @@ export const WB_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/WestBengal2021/candidate.php?candidate_id=1070',
   },
   {
-    acNo: 236,
+    acNo: 249,
     name: 'Jyotsna Mandi',
     party: 'AITC',
     age: 35,
@@ -4646,7 +4646,7 @@ export const WB_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/WestBengal2021/candidate.php?candidate_id=114',
   },
   {
-    acNo: 237,
+    acNo: 278,
     name: 'Tapas Banerjee',
     party: 'AITC',
     age: 67,
@@ -4665,7 +4665,7 @@ export const WB_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/WestBengal2021/candidate.php?candidate_id=1856',
   },
   {
-    acNo: 238,
+    acNo: 160,
     name: 'Debasish Kumar',
     party: 'AITC',
     age: 61,
@@ -4685,7 +4685,7 @@ export const WB_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/WestBengal2021/candidate.php?candidate_id=1816',
   },
   {
-    acNo: 239,
+    acNo: 48,
     name: 'Samar Mukherjee',
     party: 'AITC',
     age: 78,
@@ -4705,7 +4705,7 @@ export const WB_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/WestBengal2021/candidate.php?candidate_id=1721',
   },
   {
-    acNo: 240,
+    acNo: 70,
     name: 'Rabiul Alam Chowdhury',
     party: 'AITC',
     age: 61,
@@ -4724,7 +4724,7 @@ export const WB_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/WestBengal2021/candidate.php?candidate_id=1941',
   },
   {
-    acNo: 241,
+    acNo: 226,
     name: 'Manas Bhunia',
     party: 'AITC',
     age: 68,
@@ -4744,7 +4744,7 @@ export const WB_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/WestBengal2021/candidate.php?candidate_id=322',
   },
   {
-    acNo: 242,
+    acNo: 132,
     name: 'Bankim Chandra Hazra',
     party: 'AITC',
     age: 71,
@@ -4763,7 +4763,7 @@ export const WB_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/WestBengal2021/candidate.php?candidate_id=258',
   },
   {
-    acNo: 243,
+    acNo: 60,
     name: 'Subrata Saha',
     party: 'AITC',
     age: 71,
@@ -4783,7 +4783,7 @@ export const WB_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/WestBengal2021/candidate.php?candidate_id=1757',
   },
   {
-    acNo: 244,
+    acNo: 60,
     name: 'Bayron Biswas',
     party: 'INC',
     age: 38,
@@ -4803,7 +4803,7 @@ export const WB_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/WestBengal2021/candidate.php?candidate_id=2295',
   },
   {
-    acNo: 245,
+    acNo: 289,
     name: 'Nilabati Saha',
     party: 'AITC',
     age: 50,
@@ -4823,7 +4823,7 @@ export const WB_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/WestBengal2021/candidate.php?candidate_id=2079',
   },
   {
-    acNo: 246,
+    acNo: 234,
     name: 'Srikanta Mahata',
     party: 'AITC',
     age: 45,
@@ -4843,7 +4843,7 @@ export const WB_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/WestBengal2021/candidate.php?candidate_id=81',
   },
   {
-    acNo: 247,
+    acNo: 56,
     name: 'Amirul Islam',
     party: 'AITC',
     age: 49,
@@ -4863,7 +4863,7 @@ export const WB_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/WestBengal2021/candidate.php?candidate_id=1732',
   },
   {
-    acNo: 248,
+    acNo: 123,
     name: 'Sukumar Mahata',
     party: 'AITC',
     age: 44,
@@ -4882,7 +4882,7 @@ export const WB_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/WestBengal2021/candidate.php?candidate_id=1185',
   },
   {
-    acNo: 249,
+    acNo: 174,
     name: 'Priya Paul',
     party: 'AITC',
     age: 50,
@@ -4901,7 +4901,7 @@ export const WB_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/WestBengal2021/candidate.php?candidate_id=677',
   },
   {
-    acNo: 250,
+    acNo: 86,
     name: 'Jagannath Sarkar',
     party: 'BJP',
     age: 58,
@@ -4921,7 +4921,7 @@ export const WB_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/WestBengal2021/candidate.php?candidate_id=1055',
   },
   {
-    acNo: 251,
+    acNo: 86,
     name: 'Braja Kishor Goswami',
     party: 'AITC',
     age: 32,
@@ -4940,7 +4940,7 @@ export const WB_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/WestBengal2021/candidate.php?candidate_id=2267',
   },
   {
-    acNo: 252,
+    acNo: 193,
     name: 'Tapan Dasgupta',
     party: 'AITC',
     age: 65,
@@ -4960,7 +4960,7 @@ export const WB_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/WestBengal2021/candidate.php?candidate_id=736',
   },
   {
-    acNo: 253,
+    acNo: 145,
     name: 'Mohan Chandra Naskar',
     party: 'AITC',
     age: 60,
@@ -4979,7 +4979,7 @@ export const WB_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/WestBengal2021/candidate.php?candidate_id=430',
   },
   {
-    acNo: 254,
+    acNo: 172,
     name: 'Manoj Tiwary',
     party: 'AITC',
     age: 35,
@@ -4999,7 +4999,7 @@ export const WB_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/WestBengal2021/candidate.php?candidate_id=512',
   },
   {
-    acNo: 255,
+    acNo: 166,
     name: 'Dr. Shashi Panja',
     party: 'AITC',
     age: 58,
@@ -5018,7 +5018,7 @@ export const WB_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/WestBengal2021/candidate.php?candidate_id=2031',
   },
   {
-    acNo: 256,
+    acNo: 26,
     name: 'Sankar Ghosh',
     party: 'BJP',
     age: 48,
@@ -5038,7 +5038,7 @@ export const WB_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/WestBengal2021/candidate.php?candidate_id=1024',
   },
   {
-    acNo: 257,
+    acNo: 188,
     name: 'Becharam Manna',
     party: 'AITC',
     age: 50,
@@ -5058,7 +5058,7 @@ export const WB_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/WestBengal2021/candidate.php?candidate_id=797',
   },
   {
-    acNo: 258,
+    acNo: 6,
     name: 'Jagadish Chandra Barma Basunia',
     party: 'AITC',
     age: 57,
@@ -5077,7 +5077,7 @@ export const WB_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/WestBengal2021/candidate.php?candidate_id=685',
   },
   {
-    acNo: 259,
+    acNo: 6,
     name: 'Sangita Roy',
     party: 'AITC',
     age: 53,
@@ -5096,7 +5096,7 @@ export const WB_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/WestBengal2021/candidate.php?candidate_id=2396',
   },
   {
-    acNo: 260,
+    acNo: 5,
     name: 'Baren Chandra Barman',
     party: 'BJP',
     age: 47,
@@ -5116,7 +5116,7 @@ export const WB_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/WestBengal2021/candidate.php?candidate_id=969',
   },
   {
-    acNo: 261,
+    acNo: 258,
     name: 'Dibakar Gharami',
     party: 'BJP',
     age: 43,
@@ -5135,7 +5135,7 @@ export const WB_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/WestBengal2021/candidate.php?candidate_id=339',
   },
   {
-    acNo: 262,
+    acNo: 147,
     name: 'Arundhuti Maitra (Lovely)',
     party: 'AITC',
     age: 30,
@@ -5154,7 +5154,7 @@ export const WB_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/WestBengal2021/candidate.php?candidate_id=609',
   },
   {
-    acNo: 263,
+    acNo: 151,
     name: 'Firdousi Begum',
     party: 'AITC',
     age: 42,
@@ -5174,7 +5174,7 @@ export const WB_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/WestBengal2021/candidate.php?candidate_id=662',
   },
   {
-    acNo: 264,
+    acNo: 186,
     name: 'Dr. Sudipto Roy',
     party: 'AITC',
     age: 72,
@@ -5194,7 +5194,7 @@ export const WB_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/WestBengal2021/candidate.php?candidate_id=516',
   },
   {
-    acNo: 265,
+    acNo: 285,
     name: 'Bikash Roychoudhury',
     party: 'AITC',
     age: 68,
@@ -5213,7 +5213,7 @@ export const WB_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/WestBengal2021/candidate.php?candidate_id=2056',
   },
   {
-    acNo: 266,
+    acNo: 57,
     name: 'Emani Biswas',
     party: 'AITC',
     age: 46,
@@ -5233,7 +5233,7 @@ export const WB_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/WestBengal2021/candidate.php?candidate_id=1736',
   },
   {
-    acNo: 267,
+    acNo: 98,
     name: 'Bina Mondal',
     party: 'AITC',
     age: 45,
@@ -5252,7 +5252,7 @@ export const WB_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/WestBengal2021/candidate.php?candidate_id=1459',
   },
   {
-    acNo: 268,
+    acNo: 251,
     name: 'Arup Chakraborty',
     party: 'AITC',
     age: 65,
@@ -5272,7 +5272,7 @@ export const WB_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/WestBengal2021/candidate.php?candidate_id=333',
   },
   {
-    acNo: 269,
+    acNo: 251,
     name: 'Falguni Singhababu',
     party: 'AITC',
     age: 43,
@@ -5292,7 +5292,7 @@ export const WB_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/WestBengal2021/candidate.php?candidate_id=2403',
   },
   {
-    acNo: 270,
+    acNo: 203,
     name: 'Saumen Kumar Mahapatra',
     party: 'AITC',
     age: 65,
@@ -5312,7 +5312,7 @@ export const WB_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/WestBengal2021/candidate.php?candidate_id=260',
   },
   {
-    acNo: 271,
+    acNo: 40,
     name: 'Budhrai Tudu',
     party: 'BJP',
     age: 48,
@@ -5332,7 +5332,7 @@ export const WB_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/WestBengal2021/candidate.php?candidate_id=1673',
   },
   {
-    acNo: 272,
+    acNo: 198,
     name: 'Ramendu Sinharay',
     party: 'AITC',
     age: 54,
@@ -5352,7 +5352,7 @@ export const WB_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/WestBengal2021/candidate.php?candidate_id=441',
   },
   {
-    acNo: 273,
+    acNo: 78,
     name: 'Tapas Kumar Saha',
     party: 'AITC',
     age: 61,
@@ -5371,7 +5371,7 @@ export const WB_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/WestBengal2021/candidate.php?candidate_id=1306',
   },
   {
-    acNo: 274,
+    acNo: 9,
     name: 'Malati Rava Roy',
     party: 'BJP',
     age: 56,
@@ -5391,7 +5391,7 @@ export const WB_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/WestBengal2021/candidate.php?candidate_id=987',
   },
   {
-    acNo: 275,
+    acNo: 182,
     name: 'Samir Kumar Panja',
     party: 'AITC',
     age: 55,
@@ -5410,7 +5410,7 @@ export const WB_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/WestBengal2021/candidate.php?candidate_id=431',
   },
   {
-    acNo: 276,
+    acNo: 178,
     name: 'Pulak Roy',
     party: 'AITC',
     age: 55,
@@ -5430,7 +5430,7 @@ export const WB_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/WestBengal2021/candidate.php?candidate_id=559',
   },
   {
-    acNo: 277,
+    acNo: 176,
     name: 'Bidesh Ranjan Bose',
     party: 'AITC',
     age: 68,
@@ -5450,7 +5450,7 @@ export const WB_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/WestBengal2021/candidate.php?candidate_id=819',
   },
   {
-    acNo: 278,
+    acNo: 177,
     name: 'Dr. Nirmal Maji',
     party: 'AITC',
     age: 60,
@@ -5470,7 +5470,7 @@ export const WB_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/WestBengal2021/candidate.php?candidate_id=472',
   },
   {
-    acNo: 279,
+    acNo: 185,
     name: 'Kanchan Mullick',
     party: 'AITC',
     age: 50,

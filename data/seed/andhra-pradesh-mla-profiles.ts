@@ -56,7 +56,7 @@ export const AP_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/AndhraPradesh2024/candidate.php?candidate_id=89',
   },
   {
-    acNo: 2,
+    acNo: 151,
     name: 'Dr. Partha Sarathi Valmiki',
     party: 'BJP',
     age: 53,
@@ -76,7 +76,7 @@ export const AP_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/AndhraPradesh2024/candidate.php?candidate_id=83',
   },
   {
-    acNo: 3,
+    acNo: 174,
     name: 'Bhuma Akhila Priya',
     party: 'TDP',
     age: 36,
@@ -96,7 +96,7 @@ export const AP_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/AndhraPradesh2024/candidate.php?candidate_id=167',
   },
   {
-    acNo: 4,
+    acNo: 152,
     name: 'B. Virupakshi',
     party: 'YSRCP',
     age: 55,
@@ -116,7 +116,7 @@ export const AP_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/AndhraPradesh2024/candidate.php?candidate_id=70',
   },
   {
-    acNo: 5,
+    acNo: 7,
     name: 'Gottipati Ravi Kumar',
     party: 'TDP',
     age: 55,
@@ -136,7 +136,7 @@ export const AP_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/AndhraPradesh2024/candidate.php?candidate_id=86',
   },
   {
-    acNo: 6,
+    acNo: 50,
     name: 'Aithabathula Anandarao',
     party: 'TDP',
     age: 55,
@@ -156,7 +156,7 @@ export const AP_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/AndhraPradesh2024/candidate.php?candidate_id=54',
   },
   {
-    acNo: 7,
+    acNo: 30,
     name: 'Konathala Ramakrishna',
     party: 'Janasena Party',
     age: 67,
@@ -175,7 +175,7 @@ export const AP_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/AndhraPradesh2024/candidate.php?candidate_id=391',
   },
   {
-    acNo: 8,
+    acNo: 40,
     name: 'Nallamilli Ramakrishna Reddy',
     party: 'BJP',
     age: 58,
@@ -195,7 +195,7 @@ export const AP_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/AndhraPradesh2024/candidate.php?candidate_id=2332',
   },
   {
-    acNo: 9,
+    acNo: 28,
     name: 'Regam Matyalingam',
     party: 'YSRCP',
     age: 57,
@@ -215,7 +215,7 @@ export const AP_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/AndhraPradesh2024/candidate.php?candidate_id=171',
   },
   {
-    acNo: 10,
+    acNo: 113,
     name: 'Anam Ramanarayana Reddy',
     party: 'TDP',
     age: 71,
@@ -235,7 +235,7 @@ export const AP_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/AndhraPradesh2024/candidate.php?candidate_id=172',
   },
   {
-    acNo: 11,
+    acNo: 77,
     name: 'Buddhaprasad Mandali',
     party: 'Janasena Party',
     age: 68,
@@ -255,7 +255,7 @@ export const AP_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/AndhraPradesh2024/candidate.php?candidate_id=2662',
   },
   {
-    acNo: 12,
+    acNo: 137,
     name: 'Dasari Sudha',
     party: 'YSRCP',
     age: 51,
@@ -274,7 +274,7 @@ export const AP_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/AndhraPradesh2024/candidate.php?candidate_id=187',
   },
   {
-    acNo: 13,
+    acNo: 149,
     name: 'B C Janardhan Reddy',
     party: 'TDP',
     age: 64,
@@ -294,7 +294,7 @@ export const AP_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/AndhraPradesh2024/candidate.php?candidate_id=158',
   },
   {
-    acNo: 14,
+    acNo: 85,
     name: 'Narendra Varma Raju Vegesana',
     party: 'TDP',
     age: 55,
@@ -314,7 +314,7 @@ export const AP_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/AndhraPradesh2024/candidate.php?candidate_id=59',
   },
   {
-    acNo: 15,
+    acNo: 58,
     name: 'Pulaparthi Ramanjaneyulu',
     party: 'Janasena Party',
     age: 69,
@@ -334,7 +334,7 @@ export const AP_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/AndhraPradesh2024/candidate.php?candidate_id=2098',
   },
   {
-    acNo: 16,
+    acNo: 12,
     name: 'R.V.S.K.K.Ranga Rao @ Babynayana',
     party: 'TDP',
     age: 43,
@@ -354,7 +354,7 @@ export const AP_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/AndhraPradesh2024/candidate.php?candidate_id=192',
   },
   {
-    acNo: 17,
+    acNo: 132,
     name: 'Venkata Mani Prasad Pullivarthi',
     party: 'TDP',
     age: 52,
@@ -374,7 +374,7 @@ export const AP_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/AndhraPradesh2024/candidate.php?candidate_id=94',
   },
   {
-    acNo: 18,
+    acNo: 14,
     name: 'Kalavenkatarao Kimidi',
     party: 'TDP',
     age: 71,
@@ -393,7 +393,7 @@ export const AP_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/AndhraPradesh2024/candidate.php?candidate_id=1089',
   },
   {
-    acNo: 19,
+    acNo: 90,
     name: 'Prathipati Pullarao',
     party: 'TDP',
     age: 65,
@@ -413,7 +413,7 @@ export const AP_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/AndhraPradesh2024/candidate.php?candidate_id=312',
   },
   {
-    acNo: 20,
+    acNo: 63,
     name: 'Roshan Kumar Songa',
     party: 'TDP',
     age: 44,
@@ -432,7 +432,7 @@ export const AP_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/AndhraPradesh2024/candidate.php?candidate_id=194',
   },
   {
-    acNo: 21,
+    acNo: 88,
     name: 'Madduluri Mala Kondaiah',
     party: 'TDP',
     age: 63,
@@ -452,7 +452,7 @@ export const AP_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/AndhraPradesh2024/candidate.php?candidate_id=197',
   },
   {
-    acNo: 22,
+    acNo: 127,
     name: 'Gurajala Jagan Mohan (Gjm)',
     party: 'TDP',
     age: 41,
@@ -472,7 +472,7 @@ export const AP_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/AndhraPradesh2024/candidate.php?candidate_id=34',
   },
   {
-    acNo: 23,
+    acNo: 26,
     name: 'Surya Naga Sanyasi Raju Kalidindi',
     party: 'TDP',
     age: 57,
@@ -492,7 +492,7 @@ export const AP_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/AndhraPradesh2024/candidate.php?candidate_id=200',
   },
   {
-    acNo: 24,
+    acNo: 57,
     name: 'Chintamaneni Prabhakar',
     party: 'TDP',
     age: 55,
@@ -512,7 +512,7 @@ export const AP_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/AndhraPradesh2024/candidate.php?candidate_id=201',
   },
   {
-    acNo: 25,
+    acNo: 168,
     name: 'Pradeep Kumar Yadav',
     party: 'BJP',
     age: 52,
@@ -532,7 +532,7 @@ export const AP_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/AndhraPradesh2024/candidate.php?candidate_id=315',
   },
   {
-    acNo: 26,
+    acNo: 150,
     name: 'Kotla Jaya Surya Prakash Reddy',
     party: 'TDP',
     age: 72,
@@ -552,7 +552,7 @@ export const AP_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/AndhraPradesh2024/candidate.php?candidate_id=159',
   },
   {
-    acNo: 27,
+    acNo: 55,
     name: 'Radha Krishnayya Badeti',
     party: 'TDP',
     age: 58,
@@ -572,7 +572,7 @@ export const AP_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/AndhraPradesh2024/candidate.php?candidate_id=316',
   },
   {
-    acNo: 28,
+    acNo: 8,
     name: 'Eswara Rao Nadukuditi',
     party: 'BJP',
     age: 53,
@@ -592,7 +592,7 @@ export const AP_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/AndhraPradesh2024/candidate.php?candidate_id=1033',
   },
   {
-    acNo: 29,
+    acNo: 25,
     name: 'Palla Srinivasa Rao',
     party: 'TDP',
     age: 55,
@@ -612,7 +612,7 @@ export const AP_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/AndhraPradesh2024/candidate.php?candidate_id=454',
   },
   {
-    acNo: 30,
+    acNo: 126,
     name: 'Vadingadu Munaswamy Thomas',
     party: 'TDP',
     age: 50,
@@ -631,7 +631,7 @@ export const AP_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/AndhraPradesh2024/candidate.php?candidate_id=318',
   },
   {
-    acNo: 31,
+    acNo: 68,
     name: 'Giddi. Satyanarayana S/O Mahalakshmi',
     party: 'Janasena Party',
     age: 59,
@@ -651,7 +651,7 @@ export const AP_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/AndhraPradesh2024/candidate.php?candidate_id=2661',
   },
   {
-    acNo: 32,
+    acNo: 104,
     name: 'P Ashok Reddy',
     party: 'TDP',
     age: 55,
@@ -670,7 +670,7 @@ export const AP_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/AndhraPradesh2024/candidate.php?candidate_id=157',
   },
   {
-    acNo: 33,
+    acNo: 45,
     name: 'Maddipati Venkata Raju',
     party: 'TDP',
     age: 44,
@@ -690,7 +690,7 @@ export const AP_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/AndhraPradesh2024/candidate.php?candidate_id=41',
   },
   {
-    acNo: 34,
+    acNo: 80,
     name: 'Venigandla Ramu',
     party: 'TDP',
     age: 54,
@@ -710,7 +710,7 @@ export const AP_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/AndhraPradesh2024/candidate.php?candidate_id=204',
   },
   {
-    acNo: 35,
+    acNo: 118,
     name: 'V. R. Sunil Kumar',
     party: 'TDP',
     age: 55,
@@ -730,7 +730,7 @@ export const AP_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/AndhraPradesh2024/candidate.php?candidate_id=236',
   },
   {
-    acNo: 36,
+    acNo: 172,
     name: 'Jayaram Gummanur',
     party: 'TDP',
     age: 56,
@@ -749,7 +749,7 @@ export const AP_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/AndhraPradesh2024/candidate.php?candidate_id=309',
   },
   {
-    acNo: 37,
+    acNo: 94,
     name: 'Mohammad Naseer Ahmed',
     party: 'TDP',
     age: 44,
@@ -768,7 +768,7 @@ export const AP_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/AndhraPradesh2024/candidate.php?candidate_id=287',
   },
   {
-    acNo: 38,
+    acNo: 93,
     name: 'Galla Madhavi',
     party: 'TDP',
     age: 40,
@@ -788,7 +788,7 @@ export const AP_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/AndhraPradesh2024/candidate.php?candidate_id=101',
   },
   {
-    acNo: 39,
+    acNo: 165,
     name: 'Balakrishna Nandamuri',
     party: 'TDP',
     age: 63,
@@ -808,7 +808,7 @@ export const AP_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/AndhraPradesh2024/candidate.php?candidate_id=71',
   },
   {
-    acNo: 40,
+    acNo: 1,
     name: 'Ashok Bendalam',
     party: 'TDP',
     age: 42,
@@ -848,7 +848,7 @@ export const AP_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/AndhraPradesh2024/candidate.php?candidate_id=102',
   },
   {
-    acNo: 42,
+    acNo: 74,
     name: 'Rajagopal Sreeram (Tataiah)',
     party: 'TDP',
     age: 59,
@@ -867,7 +867,7 @@ export const AP_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/AndhraPradesh2024/candidate.php?candidate_id=45',
   },
   {
-    acNo: 43,
+    acNo: 144,
     name: 'C Adinarayana Reddy',
     party: 'BJP',
     age: 66,
@@ -887,7 +887,7 @@ export const AP_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/AndhraPradesh2024/candidate.php?candidate_id=2',
   },
   {
-    acNo: 44,
+    acNo: 136,
     name: 'Madhavi Reddappa Gari',
     party: 'TDP',
     age: 49,
@@ -906,7 +906,7 @@ export const AP_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/AndhraPradesh2024/candidate.php?candidate_id=457',
   },
   {
-    acNo: 45,
+    acNo: 169,
     name: 'Kandikunta Venkata Prasad',
     party: 'TDP',
     age: 57,
@@ -926,7 +926,7 @@ export const AP_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/AndhraPradesh2024/candidate.php?candidate_id=125',
   },
   {
-    acNo: 46,
+    acNo: 49,
     name: 'Pantam Venkateswara Rao (Pantam Nanaji)',
     party: 'Janasena Party',
     age: 61,
@@ -946,7 +946,7 @@ export const AP_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/AndhraPradesh2024/candidate.php?candidate_id=271',
   },
   {
-    acNo: 47,
+    acNo: 161,
     name: 'Amilineni Surendra Babu',
     party: 'TDP',
     age: 54,
@@ -966,7 +966,7 @@ export const AP_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/AndhraPradesh2024/candidate.php?candidate_id=103',
   },
   {
-    acNo: 48,
+    acNo: 101,
     name: 'Korada Nageswara Rao',
     party: 'TDP',
     age: 47,
@@ -986,7 +986,7 @@ export const AP_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/AndhraPradesh2024/candidate.php?candidate_id=367',
   },
   {
-    acNo: 49,
+    acNo: 105,
     name: 'Dr.Ugra Narasimha Reddy Mukku',
     party: 'TDP',
     age: 50,
@@ -1006,7 +1006,7 @@ export const AP_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/AndhraPradesh2024/candidate.php?candidate_id=326',
   },
   {
-    acNo: 50,
+    acNo: 112,
     name: 'V V Krishna Reddy',
     party: 'TDP',
     age: 58,
@@ -1026,7 +1026,7 @@ export const AP_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/AndhraPradesh2024/candidate.php?candidate_id=327',
   },
   {
-    acNo: 51,
+    acNo: 156,
     name: 'Boggula Dastagiri',
     party: 'TDP',
     age: 39,
@@ -1045,7 +1045,7 @@ export const AP_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/AndhraPradesh2024/candidate.php?candidate_id=31',
   },
   {
-    acNo: 52,
+    acNo: 142,
     name: 'Arava Sreedhar',
     party: 'Janasena Party',
     age: 27,
@@ -1085,7 +1085,7 @@ export const AP_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/AndhraPradesh2024/candidate.php?candidate_id=460',
   },
   {
-    acNo: 54,
+    acNo: 114,
     name: 'Vemireddy Prashanthi Reddy',
     party: 'TDP',
     age: 59,
@@ -1105,7 +1105,7 @@ export const AP_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/AndhraPradesh2024/candidate.php?candidate_id=3',
   },
   {
-    acNo: 55,
+    acNo: 43,
     name: 'Muppidi Venkateswara Rao',
     party: 'TDP',
     age: 54,
@@ -1125,7 +1125,7 @@ export const AP_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/AndhraPradesh2024/candidate.php?candidate_id=330',
   },
   {
-    acNo: 56,
+    acNo: 130,
     name: 'N Chandrababu Naidu',
     party: 'TDP',
     age: 74,
@@ -1145,7 +1145,7 @@ export const AP_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/AndhraPradesh2024/candidate.php?candidate_id=108',
   },
   {
-    acNo: 57,
+    acNo: 146,
     name: 'T.G. Bharath',
     party: 'TDP',
     age: 48,
@@ -1165,7 +1165,7 @@ export const AP_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/AndhraPradesh2024/candidate.php?candidate_id=357',
   },
   {
-    acNo: 58,
+    acNo: 19,
     name: 'Jagadeeswari Thoyaka',
     party: 'TDP',
     age: 39,
@@ -1185,7 +1185,7 @@ export const AP_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/AndhraPradesh2024/candidate.php?candidate_id=334',
   },
   {
-    acNo: 59,
+    acNo: 92,
     name: 'Brahmanandareddy Julakanti',
     party: 'TDP',
     age: 60,
@@ -1205,7 +1205,7 @@ export const AP_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/AndhraPradesh2024/candidate.php?candidate_id=32',
   },
   {
-    acNo: 60,
+    acNo: 76,
     name: 'Kollu Ravindra',
     party: 'TDP',
     age: 51,
@@ -1225,7 +1225,7 @@ export const AP_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/AndhraPradesh2024/candidate.php?candidate_id=461',
   },
   {
-    acNo: 61,
+    acNo: 134,
     name: 'M.Shajahan Basha',
     party: 'TDP',
     age: 54,
@@ -1245,7 +1245,7 @@ export const AP_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/AndhraPradesh2024/candidate.php?candidate_id=23',
   },
   {
-    acNo: 62,
+    acNo: 27,
     name: 'Bandaru Satyanarayana Murthy',
     party: 'TDP',
     age: 68,
@@ -1264,7 +1264,7 @@ export const AP_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/AndhraPradesh2024/candidate.php?candidate_id=2677',
   },
   {
-    acNo: 63,
+    acNo: 46,
     name: 'Jogeswara Rao.V',
     party: 'TDP',
     age: 69,
@@ -1284,7 +1284,7 @@ export const AP_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/AndhraPradesh2024/candidate.php?candidate_id=261',
   },
   {
-    acNo: 64,
+    acNo: 96,
     name: 'Nara Lokesh',
     party: 'TDP',
     age: 41,
@@ -1304,7 +1304,7 @@ export const AP_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/AndhraPradesh2024/candidate.php?candidate_id=47',
   },
   {
-    acNo: 65,
+    acNo: 153,
     name: 'Y. Balanagi Reddy',
     party: 'YSRCP',
     age: 60,
@@ -1323,7 +1323,7 @@ export const AP_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/AndhraPradesh2024/candidate.php?candidate_id=175',
   },
   {
-    acNo: 66,
+    acNo: 103,
     name: 'Kandula Narayana Reddy',
     party: 'TDP',
     age: 54,
@@ -1363,7 +1363,7 @@ export const AP_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/AndhraPradesh2024/candidate.php?candidate_id=431',
   },
   {
-    acNo: 68,
+    acNo: 140,
     name: 'G Sudhakar',
     party: 'TDP',
     age: 60,
@@ -1382,7 +1382,7 @@ export const AP_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/AndhraPradesh2024/candidate.php?candidate_id=340',
   },
   {
-    acNo: 69,
+    acNo: 125,
     name: 'G. Bhanu Prakash',
     party: 'TDP',
     age: 47,
@@ -1402,7 +1402,7 @@ export const AP_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/AndhraPradesh2024/candidate.php?candidate_id=121',
   },
   {
-    acNo: 70,
+    acNo: 73,
     name: 'Tangirala Sowmya',
     party: 'TDP',
     age: 43,
@@ -1422,7 +1422,7 @@ export const AP_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/AndhraPradesh2024/candidate.php?candidate_id=343',
   },
   {
-    acNo: 71,
+    acNo: 159,
     name: 'G Jayasurya',
     party: 'TDP',
     age: 42,
@@ -1442,7 +1442,7 @@ export const AP_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/AndhraPradesh2024/candidate.php?candidate_id=358',
   },
   {
-    acNo: 72,
+    acNo: 148,
     name: 'Nasyam Mohammed Farook',
     party: 'TDP',
     age: 73,
@@ -1461,7 +1461,7 @@ export const AP_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/AndhraPradesh2024/candidate.php?candidate_id=129',
   },
   {
-    acNo: 73,
+    acNo: 6,
     name: 'Baggu Ramanamurthy',
     party: 'TDP',
     age: 65,
@@ -1480,7 +1480,7 @@ export const AP_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/AndhraPradesh2024/candidate.php?candidate_id=153',
   },
   {
-    acNo: 74,
+    acNo: 61,
     name: 'Bommidi Narayana Nayakar',
     party: 'Janasena Party',
     age: 51,
@@ -1500,7 +1500,7 @@ export const AP_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/AndhraPradesh2024/candidate.php?candidate_id=408',
   },
   {
-    acNo: 75,
+    acNo: 89,
     name: 'Aravinda Babu Chadalavada',
     party: 'TDP',
     age: 64,
@@ -1520,7 +1520,7 @@ export const AP_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/AndhraPradesh2024/candidate.php?candidate_id=46',
   },
   {
-    acNo: 76,
+    acNo: 34,
     name: 'Ayyannapatrudu Chintakayala',
     party: 'TDP',
     age: 66,
@@ -1540,7 +1540,7 @@ export const AP_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/AndhraPradesh2024/candidate.php?candidate_id=67',
   },
   {
-    acNo: 77,
+    acNo: 115,
     name: 'Ponguru Narayana',
     party: 'TDP',
     age: 67,
@@ -1560,7 +1560,7 @@ export const AP_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/AndhraPradesh2024/candidate.php?candidate_id=240',
   },
   {
-    acNo: 78,
+    acNo: 116,
     name: 'Kotamreddy Sridhar Reddy',
     party: 'TDP',
     age: 59,
@@ -1580,7 +1580,7 @@ export const AP_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/AndhraPradesh2024/candidate.php?candidate_id=11',
   },
   {
-    acNo: 79,
+    acNo: 44,
     name: 'Kandula Durgesh',
     party: 'Janasena Party',
     age: 64,
@@ -1600,7 +1600,7 @@ export const AP_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/AndhraPradesh2024/candidate.php?candidate_id=405',
   },
   {
-    acNo: 80,
+    acNo: 67,
     name: 'Kolusu Partha Sarathy',
     party: 'TDP',
     age: 59,
@@ -1620,7 +1620,7 @@ export const AP_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/AndhraPradesh2024/candidate.php?candidate_id=355',
   },
   {
-    acNo: 81,
+    acNo: 100,
     name: 'Damacharla Janardhana Rao',
     party: 'TDP',
     age: 49,
@@ -1640,7 +1640,7 @@ export const AP_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/AndhraPradesh2024/candidate.php?candidate_id=369',
   },
   {
-    acNo: 82,
+    acNo: 29,
     name: 'Matsyarasa Visweswara Raju',
     party: 'YSRCP',
     age: 38,
@@ -1680,7 +1680,7 @@ export const AP_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/AndhraPradesh2024/candidate.php?candidate_id=406',
   },
   {
-    acNo: 84,
+    acNo: 157,
     name: 'Jayakrishna Nimmaka',
     party: 'Janasena Party',
     age: 45,
@@ -1700,7 +1700,7 @@ export const AP_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/AndhraPradesh2024/candidate.php?candidate_id=1059',
   },
   {
-    acNo: 85,
+    acNo: 2,
     name: 'Gouthu Sireesha',
     party: 'TDP',
     age: 49,
@@ -1719,7 +1719,7 @@ export const AP_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/AndhraPradesh2024/candidate.php?candidate_id=130',
   },
   {
-    acNo: 86,
+    acNo: 78,
     name: 'Kumar Raja Varla',
     party: 'TDP',
     age: 45,
@@ -1738,7 +1738,7 @@ export const AP_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/AndhraPradesh2024/candidate.php?candidate_id=20',
   },
   {
-    acNo: 87,
+    acNo: 147,
     name: 'Gowru Charitha Reddy',
     party: 'TDP',
     age: 54,
@@ -1758,7 +1758,7 @@ export const AP_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/AndhraPradesh2024/candidate.php?candidate_id=60',
   },
   {
-    acNo: 88,
+    acNo: 86,
     name: 'Yeluri Sambasiva Rao',
     party: 'TDP',
     age: 48,
@@ -1778,7 +1778,7 @@ export const AP_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/AndhraPradesh2024/candidate.php?candidate_id=373',
   },
   {
-    acNo: 89,
+    acNo: 18,
     name: 'Bonela Vijaya Chandra',
     party: 'TDP',
     age: 39,
@@ -1798,7 +1798,7 @@ export const AP_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/AndhraPradesh2024/candidate.php?candidate_id=137',
   },
   {
-    acNo: 90,
+    acNo: 4,
     name: 'Mamidi Govinda Rao',
     party: 'TDP',
     age: 47,
@@ -1818,7 +1818,7 @@ export const AP_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/AndhraPradesh2024/candidate.php?candidate_id=133',
   },
   {
-    acNo: 91,
+    acNo: 157,
     name: 'K.E. Shyam Kumar',
     party: 'TDP',
     age: 50,
@@ -1838,7 +1838,7 @@ export const AP_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/AndhraPradesh2024/candidate.php?candidate_id=126',
   },
   {
-    acNo: 92,
+    acNo: 33,
     name: 'Anitha Vangalapudi',
     party: 'TDP',
     age: 45,
@@ -1858,7 +1858,7 @@ export const AP_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/AndhraPradesh2024/candidate.php?candidate_id=388',
   },
   {
-    acNo: 93,
+    acNo: 79,
     name: 'Kagitha Krishnaprasad',
     party: 'TDP',
     age: 42,
@@ -1878,7 +1878,7 @@ export const AP_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/AndhraPradesh2024/candidate.php?candidate_id=351',
   },
   {
-    acNo: 94,
+    acNo: 39,
     name: 'China Rajappa Nimmakayala',
     party: 'TDP',
     age: 71,
@@ -1898,7 +1898,7 @@ export const AP_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/AndhraPradesh2024/candidate.php?candidate_id=269',
   },
   {
-    acNo: 95,
+    acNo: 152,
     name: 'Bode Prasad',
     party: 'TDP',
     age: 56,
@@ -1918,7 +1918,7 @@ export const AP_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/AndhraPradesh2024/candidate.php?candidate_id=348',
   },
   {
-    acNo: 96,
+    acNo: 31,
     name: 'Ramesh Babu M',
     party: 'Janasena Party',
     age: 60,
@@ -1938,7 +1938,7 @@ export const AP_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/AndhraPradesh2024/candidate.php?candidate_id=2080',
   },
   {
-    acNo: 97,
+    acNo: 166,
     name: 'S. Savitha',
     party: 'TDP',
     age: 47,
@@ -1958,7 +1958,7 @@ export const AP_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/AndhraPradesh2024/candidate.php?candidate_id=84',
   },
   {
-    acNo: 98,
+    acNo: 133,
     name: 'Nallari Kishan Kumar Reddy',
     party: 'TDP',
     age: 58,
@@ -1978,7 +1978,7 @@ export const AP_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/AndhraPradesh2024/candidate.php?candidate_id=160',
   },
   {
-    acNo: 99,
+    acNo: 37,
     name: 'Pawan Kalyan P',
     party: 'Janasena Party',
     age: 55,
@@ -1998,7 +1998,7 @@ export const AP_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/AndhraPradesh2024/candidate.php?candidate_id=272',
   },
   {
-    acNo: 100,
+    acNo: 65,
     name: 'Chirri Balaraju',
     party: 'Janasena Party',
     age: 36,
@@ -2018,7 +2018,7 @@ export const AP_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/AndhraPradesh2024/candidate.php?candidate_id=399',
   },
   {
-    acNo: 101,
+    acNo: 36,
     name: 'Varupula Satya Prabha',
     party: 'TDP',
     age: 45,
@@ -2038,7 +2038,7 @@ export const AP_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/AndhraPradesh2024/candidate.php?candidate_id=464',
   },
   {
-    acNo: 102,
+    acNo: 36,
     name: 'Burla Ramanjaneyulu',
     party: 'TDP',
     age: 65,
@@ -2058,7 +2058,7 @@ export const AP_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/AndhraPradesh2024/candidate.php?candidate_id=925',
   },
   {
-    acNo: 103,
+    acNo: 139,
     name: 'Nandyala Varadarajula Reddy',
     party: 'TDP',
     age: 82,
@@ -2078,7 +2078,7 @@ export const AP_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/AndhraPradesh2024/candidate.php?candidate_id=76',
   },
   {
-    acNo: 104,
+    acNo: 138,
     name: 'Y S Jagan Mohan Reddy',
     party: 'YSRCP',
     age: 51,
@@ -2098,7 +2098,7 @@ export const AP_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/AndhraPradesh2024/candidate.php?candidate_id=178',
   },
   {
-    acNo: 105,
+    acNo: 131,
     name: 'Chintala Ramachandra Reddy',
     party: 'YSRCP',
     age: 71,
@@ -2118,7 +2118,7 @@ export const AP_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/AndhraPradesh2024/candidate.php?candidate_id=440',
   },
   {
-    acNo: 106,
+    acNo: 128,
     name: 'D. K. Murali',
     party: 'TDP',
     age: 45,
@@ -2137,7 +2137,7 @@ export const AP_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/AndhraPradesh2024/candidate.php?candidate_id=119',
   },
   {
-    acNo: 107,
+    acNo: 42,
     name: 'Butchaiah Choudary Gorantla',
     party: 'TDP',
     age: 78,
@@ -2157,7 +2157,7 @@ export const AP_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/AndhraPradesh2024/candidate.php?candidate_id=256',
   },
   {
-    acNo: 108,
+    acNo: 141,
     name: 'Amarnath Reddy G',
     party: 'YSRCP',
     age: 64,
@@ -2177,7 +2177,7 @@ export const AP_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/AndhraPradesh2024/candidate.php?candidate_id=21',
   },
   {
-    acNo: 109,
+    acNo: 48,
     name: 'Bathula Balaramakrishna S/O Gangarao',
     party: 'Janasena Party',
     age: 49,
@@ -2216,7 +2216,7 @@ export const AP_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/AndhraPradesh2024/candidate.php?candidate_id=267',
   },
   {
-    acNo: 111,
+    acNo: 47,
     name: 'Miriyala Sirisha Devi',
     party: 'TDP',
     age: 30,
@@ -2236,7 +2236,7 @@ export const AP_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/AndhraPradesh2024/candidate.php?candidate_id=276',
   },
   {
-    acNo: 112,
+    acNo: 162,
     name: 'Paritala Sunithamma',
     party: 'TDP',
     age: 54,
@@ -2255,7 +2255,7 @@ export const AP_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/AndhraPradesh2024/candidate.php?candidate_id=248',
   },
   {
-    acNo: 113,
+    acNo: 143,
     name: 'Mandipalli Ramprasad Reddy',
     party: 'TDP',
     age: 42,
@@ -2275,7 +2275,7 @@ export const AP_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/AndhraPradesh2024/candidate.php?candidate_id=87',
   },
   {
-    acNo: 114,
+    acNo: 170,
     name: 'Kalava Srinivasulu',
     party: 'TDP',
     age: 59,
@@ -2295,7 +2295,7 @@ export const AP_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/AndhraPradesh2024/candidate.php?candidate_id=242',
   },
   {
-    acNo: 115,
+    acNo: 51,
     name: 'Deva Varaprasad',
     party: 'Janasena Party',
     age: 64,
@@ -2315,7 +2315,7 @@ export const AP_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/AndhraPradesh2024/candidate.php?candidate_id=264',
   },
   {
-    acNo: 116,
+    acNo: 17,
     name: 'Gummidi Sandhyarani',
     party: 'TDP',
     age: 51,
@@ -2335,7 +2335,7 @@ export const AP_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/AndhraPradesh2024/candidate.php?candidate_id=138',
   },
   {
-    acNo: 117,
+    acNo: 108,
     name: 'Vijay Kumar Bn',
     party: 'TDP',
     age: 56,
@@ -2355,7 +2355,7 @@ export const AP_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/AndhraPradesh2024/candidate.php?candidate_id=466',
   },
   {
-    acNo: 118,
+    acNo: 117,
     name: 'Chandra Mohan Reddy Somireddy',
     party: 'TDP',
     age: 68,
@@ -2375,7 +2375,7 @@ export const AP_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/AndhraPradesh2024/candidate.php?candidate_id=361',
   },
   {
-    acNo: 119,
+    acNo: 99,
     name: 'Kanna Lakshminarayana',
     party: 'TDP',
     age: 69,
@@ -2395,7 +2395,7 @@ export const AP_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/AndhraPradesh2024/candidate.php?candidate_id=283',
   },
   {
-    acNo: 120,
+    acNo: 124,
     name: 'Koneti Adimulam',
     party: 'TDP',
     age: 72,
@@ -2414,7 +2414,7 @@ export const AP_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/AndhraPradesh2024/candidate.php?candidate_id=444',
   },
   {
-    acNo: 121,
+    acNo: 164,
     name: 'Bandaru Sravani Sree',
     party: 'TDP',
     age: 34,
@@ -2434,7 +2434,7 @@ export const AP_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/AndhraPradesh2024/candidate.php?candidate_id=35',
   },
   {
-    acNo: 122,
+    acNo: 5,
     name: 'Gondu Shankar',
     party: 'TDP',
     age: 47,
@@ -2494,7 +2494,7 @@ export const AP_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/AndhraPradesh2024/candidate.php?candidate_id=467',
   },
   {
-    acNo: 125,
+    acNo: 119,
     name: 'Nelavala Vijayasree',
     party: 'TDP',
     age: 37,
@@ -2514,7 +2514,7 @@ export const AP_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/AndhraPradesh2024/candidate.php?candidate_id=235',
   },
   {
-    acNo: 126,
+    acNo: 54,
     name: 'S R Srinivas',
     party: 'Janasena Party',
     age: 62,
@@ -2533,7 +2533,7 @@ export const AP_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/AndhraPradesh2024/candidate.php?candidate_id=409',
   },
   {
-    acNo: 127,
+    acNo: 95,
     name: 'Tenali Sravan Kumar',
     party: 'TDP',
     age: 60,
@@ -2553,7 +2553,7 @@ export const AP_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/AndhraPradesh2024/candidate.php?candidate_id=61',
   },
   {
-    acNo: 128,
+    acNo: 173,
     name: 'J.C.Ashmit Reddy',
     party: 'TDP',
     age: 41,
@@ -2573,7 +2573,7 @@ export const AP_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/AndhraPradesh2024/candidate.php?candidate_id=58',
   },
   {
-    acNo: 129,
+    acNo: 60,
     name: 'Arimilli Radha Krishna',
     party: 'TDP',
     age: 50,
@@ -2593,7 +2593,7 @@ export const AP_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/AndhraPradesh2024/candidate.php?candidate_id=2566',
   },
   {
-    acNo: 130,
+    acNo: 3,
     name: 'K Atchannaidu',
     party: 'TDP',
     age: 55,
@@ -2613,7 +2613,7 @@ export const AP_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/AndhraPradesh2024/candidate.php?candidate_id=384',
   },
   {
-    acNo: 131,
+    acNo: 84,
     name: 'Nadendla Manohar',
     party: 'Janasena Party',
     age: 60,
@@ -2633,7 +2633,7 @@ export const AP_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/AndhraPradesh2024/candidate.php?candidate_id=802',
   },
   {
-    acNo: 132,
+    acNo: 122,
     name: 'Aranii Srenevasulu',
     party: 'Janasena Party',
     age: 72,
@@ -2653,7 +2653,7 @@ export const AP_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/AndhraPradesh2024/candidate.php?candidate_id=449',
   },
   {
-    acNo: 133,
+    acNo: 75,
     name: 'Bonthu Srinivasa Rao',
     party: 'TDP',
     age: 55,
@@ -2673,7 +2673,7 @@ export const AP_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/AndhraPradesh2024/candidate.php?candidate_id=342',
   },
   {
-    acNo: 134,
+    acNo: 35,
     name: 'Divya Yanamala',
     party: 'TDP',
     age: 40,
@@ -2693,7 +2693,7 @@ export const AP_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/AndhraPradesh2024/candidate.php?candidate_id=254',
   },
   {
-    acNo: 135,
+    acNo: 121,
     name: 'D Suresh',
     party: 'TDP',
     age: 52,
@@ -2713,7 +2713,7 @@ export const AP_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/AndhraPradesh2024/candidate.php?candidate_id=241',
   },
   {
-    acNo: 136,
+    acNo: 59,
     name: 'K Raghu Rama Raju',
     party: 'TDP',
     age: 61,
@@ -2733,7 +2733,7 @@ export const AP_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/AndhraPradesh2024/candidate.php?candidate_id=468',
   },
   {
-    acNo: 137,
+    acNo: 56,
     name: 'Dharmaraju Patsamatla',
     party: 'Janasena Party',
     age: 43,
@@ -2753,7 +2753,7 @@ export const AP_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/AndhraPradesh2024/candidate.php?candidate_id=402',
   },
   {
-    acNo: 138,
+    acNo: 171,
     name: 'Payyavula Keshav',
     party: 'TDP',
     age: 59,
@@ -2772,7 +2772,7 @@ export const AP_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/AndhraPradesh2024/candidate.php?candidate_id=14',
   },
   {
-    acNo: 139,
+    acNo: 98,
     name: 'Ananda Babu Nakka',
     party: 'TDP',
     age: 58,
@@ -2792,7 +2792,7 @@ export const AP_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/AndhraPradesh2024/candidate.php?candidate_id=296',
   },
   {
-    acNo: 140,
+    acNo: 70,
     name: 'Bonda Umamaheswara Rao',
     party: 'TDP',
     age: 58,
@@ -2812,7 +2812,7 @@ export const AP_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/AndhraPradesh2024/candidate.php?candidate_id=116',
   },
   {
-    acNo: 141,
+    acNo: 71,
     name: 'Gadde Rama Mohan',
     party: 'TDP',
     age: 67,
@@ -2831,7 +2831,7 @@ export const AP_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/AndhraPradesh2024/candidate.php?candidate_id=88',
   },
   {
-    acNo: 142,
+    acNo: 69,
     name: 'Yalamanchili Satyanarayana Chowdary (Sujana Chowdary)',
     party: 'BJP',
     age: 62,
@@ -2851,7 +2851,7 @@ export const AP_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/AndhraPradesh2024/candidate.php?candidate_id=15',
   },
   {
-    acNo: 143,
+    acNo: 166,
     name: 'Gonuguntla Venkata Siva Sita Rama Anzanneyllu',
     party: 'TDP',
     age: 58,
@@ -2871,7 +2871,7 @@ export const AP_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/AndhraPradesh2024/candidate.php?candidate_id=64',
   },
   {
-    acNo: 144,
+    acNo: 21,
     name: 'Velagapudi Ramakrishna',
     party: 'TDP',
     age: 64,
@@ -2891,7 +2891,7 @@ export const AP_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/AndhraPradesh2024/candidate.php?candidate_id=114',
   },
   {
-    acNo: 145,
+    acNo: 24,
     name: 'Penmetsa Vishnu Kumar Raju',
     party: 'BJP',
     age: 62,
@@ -2911,7 +2911,7 @@ export const AP_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/AndhraPradesh2024/candidate.php?candidate_id=2684',
   },
   {
-    acNo: 146,
+    acNo: 22,
     name: 'Ch.Vamsi Krishna Srinivas',
     party: 'Janasena Party',
     age: 50,
@@ -2931,7 +2931,7 @@ export const AP_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/AndhraPradesh2024/candidate.php?candidate_id=2262',
   },
   {
-    acNo: 147,
+    acNo: 23,
     name: 'P.G.V.R.Naidu(Ganababu)',
     party: 'TDP',
     age: 54,
@@ -2951,7 +2951,7 @@ export const AP_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/AndhraPradesh2024/candidate.php?candidate_id=469',
   },
   {
-    acNo: 148,
+    acNo: 32,
     name: 'Sundarapu Vijay Kumar',
     party: 'Janasena Party',
     age: 44,
@@ -2970,7 +2970,7 @@ export const AP_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/AndhraPradesh2024/candidate.php?candidate_id=211',
   },
   {
-    acNo: 149,
+    acNo: 155,
     name: 'B. Jayanageswara Reddy',
     party: 'TDP',
     age: 47,
@@ -2990,7 +2990,7 @@ export const AP_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/AndhraPradesh2024/candidate.php?candidate_id=163',
   },
   {
-    acNo: 150,
+    acNo: 106,
     name: 'Chandra Sekhar Tatiparthi',
     party: 'YSRCP',
     age: 44,

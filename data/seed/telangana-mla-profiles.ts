@@ -36,7 +36,7 @@ export interface MLAProfile {
 
 export const TS_MLA_PROFILES: MLAProfile[] = [
   {
-    acNo: 1,
+    acNo: 82,
     name: 'Chikkudu Vamshi Krishna',
     party: 'INC',
     age: 57,
@@ -56,7 +56,7 @@ export const TS_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Telangana2023/candidate.php?candidate_id=2293',
   },
   {
-    acNo: 2,
+    acNo: 7,
     name: 'Payal Shanker',
     party: 'BJP',
     age: 52,
@@ -76,7 +76,7 @@ export const TS_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Telangana2023/candidate.php?candidate_id=5',
   },
   {
-    acNo: 3,
+    acNo: 97,
     name: 'Beerla Ilaiah',
     party: 'INC',
     age: 48,
@@ -96,7 +96,7 @@ export const TS_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Telangana2023/candidate.php?candidate_id=9',
   },
   {
-    acNo: 4,
+    acNo: 80,
     name: 'Vijayudu',
     party: 'BRS',
     age: 46,
@@ -116,7 +116,7 @@ export const TS_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Telangana2023/candidate.php?candidate_id=853',
   },
   {
-    acNo: 5,
+    acNo: 59,
     name: 'Kaleru Venkatesh',
     party: 'BRS',
     age: 63,
@@ -136,7 +136,7 @@ export const TS_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Telangana2023/candidate.php?candidate_id=12',
   },
   {
-    acNo: 6,
+    acNo: 36,
     name: 'C. Damodar Rajanarsimha',
     party: 'INC',
     age: 64,
@@ -156,7 +156,7 @@ export const TS_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Telangana2023/candidate.php?candidate_id=359',
   },
   {
-    acNo: 7,
+    acNo: 11,
     name: 'Paidi Rakesh Reddy',
     party: 'BJP',
     age: 56,
@@ -176,7 +176,7 @@ export const TS_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Telangana2023/candidate.php?candidate_id=17',
   },
   {
-    acNo: 8,
+    acNo: 5,
     name: 'Kova Laxmi',
     party: 'BRS',
     age: 53,
@@ -196,7 +196,7 @@ export const TS_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Telangana2023/candidate.php?candidate_id=19',
   },
   {
-    acNo: 9,
+    acNo: 69,
     name: 'Mohammed Mubeen',
     party: 'AIMIM',
     age: 55,
@@ -215,7 +215,7 @@ export const TS_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Telangana2023/candidate.php?candidate_id=1442',
   },
   {
-    acNo: 10,
+    acNo: 19,
     name: 'Vemula Prashanth Reddy',
     party: 'BRS',
     age: 57,
@@ -235,7 +235,7 @@ export const TS_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Telangana2023/candidate.php?candidate_id=26',
   },
   {
-    acNo: 11,
+    acNo: 14,
     name: 'Pocharam Srinivas Reddy',
     party: 'BRS',
     age: 74,
@@ -254,7 +254,7 @@ export const TS_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Telangana2023/candidate.php?candidate_id=29',
   },
   {
-    acNo: 12,
+    acNo: 3,
     name: 'Gaddam Vinod',
     party: 'INC',
     age: 67,
@@ -274,7 +274,7 @@ export const TS_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Telangana2023/candidate.php?candidate_id=358',
   },
   {
-    acNo: 13,
+    acNo: 119,
     name: 'Tellam Venkata Rao',
     party: 'BRS',
     age: 55,
@@ -294,7 +294,7 @@ export const TS_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Telangana2023/candidate.php?candidate_id=34',
   },
   {
-    acNo: 14,
+    acNo: 94,
     name: 'Kumbam Anil Kumar Reddy',
     party: 'INC',
     age: 62,
@@ -314,7 +314,7 @@ export const TS_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Telangana2023/candidate.php?candidate_id=39',
   },
   {
-    acNo: 15,
+    acNo: 108,
     name: 'Gandra Satyanarayana Rao',
     party: 'INC',
     age: 58,
@@ -333,7 +333,7 @@ export const TS_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Telangana2023/candidate.php?candidate_id=41',
   },
   {
-    acNo: 16,
+    acNo: 8,
     name: 'Anil Jadhav',
     party: 'BRS',
     age: 49,
@@ -353,7 +353,7 @@ export const TS_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Telangana2023/candidate.php?candidate_id=43',
   },
   {
-    acNo: 17,
+    acNo: 67,
     name: 'Akbar Uddin Owaisi',
     party: 'AIMIM',
     age: 53,
@@ -373,7 +373,7 @@ export const TS_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Telangana2023/candidate.php?candidate_id=1166',
   },
   {
-    acNo: 18,
+    acNo: 66,
     name: 'Mir Zulfeqar Ali',
     party: 'AIMIM',
     age: 60,
@@ -393,7 +393,7 @@ export const TS_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Telangana2023/candidate.php?candidate_id=148',
   },
   {
-    acNo: 19,
+    acNo: 2,
     name: 'Gaddam Vivekanand',
     party: 'INC',
     age: 66,
@@ -413,7 +413,7 @@ export const TS_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Telangana2023/candidate.php?candidate_id=56',
   },
   {
-    acNo: 20,
+    acNo: 53,
     name: 'Kale Yadaiah',
     party: 'BRS',
     age: 61,
@@ -433,7 +433,7 @@ export const TS_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Telangana2023/candidate.php?candidate_id=57',
   },
   {
-    acNo: 21,
+    acNo: 27,
     name: 'Medipally Sathyam',
     party: 'INC',
     age: 44,
@@ -453,7 +453,7 @@ export const TS_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Telangana2023/candidate.php?candidate_id=62',
   },
   {
-    acNo: 22,
+    acNo: 86,
     name: 'Nenavath Balu Naik',
     party: 'INC',
     age: 51,
@@ -472,7 +472,7 @@ export const TS_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Telangana2023/candidate.php?candidate_id=65',
   },
   {
-    acNo: 23,
+    acNo: 76,
     name: 'Gavinolla Madhusudan Reddy',
     party: 'INC',
     age: 52,
@@ -492,7 +492,7 @@ export const TS_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Telangana2023/candidate.php?candidate_id=68',
   },
   {
-    acNo: 24,
+    acNo: 22,
     name: 'Adluri Laxman Kumar',
     party: 'INC',
     age: 57,
@@ -510,7 +510,7 @@ export const TS_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Telangana2023/candidate.php?candidate_id=71',
   },
   {
-    acNo: 25,
+    acNo: 41,
     name: 'J C Prabhakar Reddy',
     party: 'BRS',
     age: 60,
@@ -530,7 +530,7 @@ export const TS_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Telangana2023/candidate.php?candidate_id=75',
   },
   {
-    acNo: 26,
+    acNo: 79,
     name: 'Bandla Krishna Mohan Reddy',
     party: 'BRS',
     age: 56,
@@ -550,7 +550,7 @@ export const TS_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Telangana2023/candidate.php?candidate_id=78',
   },
   {
-    acNo: 27,
+    acNo: 42,
     name: 'K. Chandrashekar Rao',
     party: 'BRS',
     age: 69,
@@ -570,7 +570,7 @@ export const TS_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Telangana2023/candidate.php?candidate_id=81',
   },
   {
-    acNo: 28,
+    acNo: 99,
     name: 'Kadiyam Srihari',
     party: 'BRS',
     age: 73,
@@ -590,7 +590,7 @@ export const TS_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Telangana2023/candidate.php?candidate_id=84',
   },
   {
-    acNo: 29,
+    acNo: 65,
     name: 'T. Raja Singh',
     party: 'BJP',
     age: 46,
@@ -610,7 +610,7 @@ export const TS_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Telangana2023/candidate.php?candidate_id=87',
   },
   {
-    acNo: 30,
+    acNo: 32,
     name: 'Ponnam Prabhakar',
     party: 'INC',
     age: 56,
@@ -650,7 +650,7 @@ export const TS_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Telangana2023/candidate.php?candidate_id=91',
   },
   {
-    acNo: 32,
+    acNo: 89,
     name: 'Nalamada Uttam Kumar Reddy',
     party: 'INC',
     age: 59,
@@ -670,7 +670,7 @@ export const TS_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Telangana2023/candidate.php?candidate_id=96',
   },
   {
-    acNo: 33,
+    acNo: 75,
     name: 'Janampalli Anirudh Reddy',
     party: 'INC',
     age: 42,
@@ -690,7 +690,7 @@ export const TS_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Telangana2023/candidate.php?candidate_id=102',
   },
   {
-    acNo: 34,
+    acNo: 21,
     name: 'Sanjay Savkare',
     party: 'BRS',
     age: 61,
@@ -710,7 +710,7 @@ export const TS_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Telangana2023/candidate.php?candidate_id=103',
   },
   {
-    acNo: 35,
+    acNo: 98,
     name: 'Palla Rajeshwar Reddy',
     party: 'BRS',
     age: 60,
@@ -730,7 +730,7 @@ export const TS_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Telangana2023/candidate.php?candidate_id=106',
   },
   {
-    acNo: 36,
+    acNo: 61,
     name: 'Maganti Gopinath',
     party: 'BRS',
     age: 60,
@@ -750,7 +750,7 @@ export const TS_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Telangana2023/candidate.php?candidate_id=109',
   },
   {
-    acNo: 37,
+    acNo: 13,
     name: 'Thota Laxmi Kantha Rao',
     party: 'INC',
     age: 53,
@@ -770,7 +770,7 @@ export const TS_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Telangana2023/candidate.php?candidate_id=114',
   },
   {
-    acNo: 38,
+    acNo: 83,
     name: 'Kasireddy Narayan Reddy',
     party: 'INC',
     age: 59,
@@ -790,7 +790,7 @@ export const TS_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Telangana2023/candidate.php?candidate_id=117',
   },
   {
-    acNo: 39,
+    acNo: 16,
     name: 'K. V. Ramana Reddy',
     party: 'BJP',
     age: 53,
@@ -810,7 +810,7 @@ export const TS_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Telangana2023/candidate.php?candidate_id=119',
   },
   {
-    acNo: 40,
+    acNo: 26,
     name: 'Gangula Kamalakar',
     party: 'BRS',
     age: 56,
@@ -830,7 +830,7 @@ export const TS_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Telangana2023/candidate.php?candidate_id=121',
   },
   {
-    acNo: 41,
+    acNo: 60,
     name: 'Danam Nagender',
     party: 'BRS',
     age: 60,
@@ -850,7 +850,7 @@ export const TS_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Telangana2023/candidate.php?candidate_id=127',
   },
   {
-    acNo: 42,
+    acNo: 112,
     name: 'Tummala Nageswara Rao',
     party: 'INC',
     age: 71,
@@ -870,7 +870,7 @@ export const TS_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Telangana2023/candidate.php?candidate_id=131',
   },
   {
-    acNo: 43,
+    acNo: 6,
     name: 'Vedma Bhojju',
     party: 'INC',
     age: 37,
@@ -890,7 +890,7 @@ export const TS_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Telangana2023/candidate.php?candidate_id=135',
   },
   {
-    acNo: 44,
+    acNo: 90,
     name: 'Nalamada Padmavathi Reddy',
     party: 'INC',
     age: 55,
@@ -910,7 +910,7 @@ export const TS_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Telangana2023/candidate.php?candidate_id=137',
   },
   {
-    acNo: 45,
+    acNo: 72,
     name: 'Anumula Revanth Reddy',
     party: 'INC',
     age: 56,
@@ -930,7 +930,7 @@ export const TS_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Telangana2023/candidate.php?candidate_id=141',
   },
   {
-    acNo: 46,
+    acNo: 85,
     name: 'Jupally Krishna Rao',
     party: 'INC',
     age: 68,
@@ -950,7 +950,7 @@ export const TS_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Telangana2023/candidate.php?candidate_id=151',
   },
   {
-    acNo: 47,
+    acNo: 20,
     name: 'Kalvakuntla Sanjay',
     party: 'BRS',
     age: 47,
@@ -970,7 +970,7 @@ export const TS_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Telangana2023/candidate.php?candidate_id=152',
   },
   {
-    acNo: 48,
+    acNo: 117,
     name: 'Kunamneni Sambasiva Rao',
     party: 'CPI',
     age: 67,
@@ -1010,7 +1010,7 @@ export const TS_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Telangana2023/candidate.php?candidate_id=161',
   },
   {
-    acNo: 50,
+    acNo: 114,
     name: 'Mallu Bhatti Vikramarka',
     party: 'INC',
     age: 63,
@@ -1029,7 +1029,7 @@ export const TS_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Telangana2023/candidate.php?candidate_id=165',
   },
   {
-    acNo: 51,
+    acNo: 102,
     name: 'Murali Naik Bhukya',
     party: 'INC',
     age: 57,
@@ -1049,7 +1049,7 @@ export const TS_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Telangana2023/candidate.php?candidate_id=168',
   },
   {
-    acNo: 52,
+    acNo: 74,
     name: 'Yennam Srinivas Reddy',
     party: 'INC',
     age: 53,
@@ -1069,7 +1069,7 @@ export const TS_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Telangana2023/candidate.php?candidate_id=171',
   },
   {
-    acNo: 53,
+    acNo: 50,
     name: 'Sabitha Indra Reddy',
     party: 'BRS',
     age: 60,
@@ -1088,7 +1088,7 @@ export const TS_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Telangana2023/candidate.php?candidate_id=173',
   },
   {
-    acNo: 54,
+    acNo: 77,
     name: 'Vakiti Srihari',
     party: 'INC',
     age: 51,
@@ -1108,7 +1108,7 @@ export const TS_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Telangana2023/candidate.php?candidate_id=177',
   },
   {
-    acNo: 55,
+    acNo: 58,
     name: 'Ahmed Bin Abdullah Balala',
     party: 'AIMIM',
     age: 56,
@@ -1128,7 +1128,7 @@ export const TS_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Telangana2023/candidate.php?candidate_id=179',
   },
   {
-    acNo: 56,
+    acNo: 44,
     name: 'Marri Rajasekhar Reddy',
     party: 'BRS',
     age: 54,
@@ -1148,7 +1148,7 @@ export const TS_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Telangana2023/candidate.php?candidate_id=183',
   },
   {
-    acNo: 57,
+    acNo: 4,
     name: 'Kokkirala Premsagar Rao',
     party: 'INC',
     age: 63,
@@ -1168,7 +1168,7 @@ export const TS_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Telangana2023/candidate.php?candidate_id=190',
   },
   {
-    acNo: 58,
+    acNo: 24,
     name: 'Duddilla Sridhar Babu',
     party: 'INC',
     age: 54,
@@ -1188,7 +1188,7 @@ export const TS_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Telangana2023/candidate.php?candidate_id=193',
   },
   {
-    acNo: 59,
+    acNo: 34,
     name: 'Mynampally Rohith',
     party: 'INC',
     age: 26,
@@ -1207,7 +1207,7 @@ export const TS_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Telangana2023/candidate.php?candidate_id=196',
   },
   {
-    acNo: 60,
+    acNo: 43,
     name: 'Chamakura Malla Reddy',
     party: 'BRS',
     age: 70,
@@ -1227,7 +1227,7 @@ export const TS_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Telangana2023/candidate.php?candidate_id=198',
   },
   {
-    acNo: 61,
+    acNo: 88,
     name: 'Bathula Laxma Reddy',
     party: 'INC',
     age: 54,
@@ -1246,7 +1246,7 @@ export const TS_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Telangana2023/candidate.php?candidate_id=203',
   },
   {
-    acNo: 62,
+    acNo: 10,
     name: 'Rama Rao Pawar',
     party: 'BJP',
     age: 69,
@@ -1265,7 +1265,7 @@ export const TS_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Telangana2023/candidate.php?candidate_id=206',
   },
   {
-    acNo: 63,
+    acNo: 109,
     name: 'Danasari Anasuya Seethakka',
     party: 'INC',
     age: 52,
@@ -1285,7 +1285,7 @@ export const TS_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Telangana2023/candidate.php?candidate_id=208',
   },
   {
-    acNo: 64,
+    acNo: 93,
     name: 'Komatireddy Raj Gopal Reddy',
     party: 'INC',
     age: 56,
@@ -1305,7 +1305,7 @@ export const TS_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Telangana2023/candidate.php?candidate_id=211',
   },
   {
-    acNo: 65,
+    acNo: 87,
     name: 'Kunduru Jayaveer Reddy',
     party: 'INC',
     age: 41,
@@ -1325,7 +1325,7 @@ export const TS_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Telangana2023/candidate.php?candidate_id=217',
   },
   {
-    acNo: 66,
+    acNo: 81,
     name: 'Kuchkulla Rajesh Reddy',
     party: 'INC',
     age: 50,
@@ -1345,7 +1345,7 @@ export const TS_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Telangana2023/candidate.php?candidate_id=220',
   },
   {
-    acNo: 67,
+    acNo: 95,
     name: 'Vemula Veeresham',
     party: 'INC',
     age: 46,
@@ -1365,7 +1365,7 @@ export const TS_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Telangana2023/candidate.php?candidate_id=223',
   },
   {
-    acNo: 68,
+    acNo: 92,
     name: 'Komatireddy Venkat Reddy',
     party: 'INC',
     age: 60,
@@ -1385,7 +1385,7 @@ export const TS_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Telangana2023/candidate.php?candidate_id=226',
   },
   {
-    acNo: 69,
+    acNo: 63,
     name: 'Mohammad Majid Hussain',
     party: 'AIMIM',
     age: 43,
@@ -1405,7 +1405,7 @@ export const TS_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Telangana2023/candidate.php?candidate_id=231',
   },
   {
-    acNo: 70,
+    acNo: 35,
     name: 'Patlolla Sanjeeva Reddy',
     party: 'INC',
     age: 61,
@@ -1425,7 +1425,7 @@ export const TS_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Telangana2023/candidate.php?candidate_id=569',
   },
   {
-    acNo: 71,
+    acNo: 73,
     name: 'Chittem Parnika Reddy',
     party: 'INC',
     age: 30,
@@ -1445,7 +1445,7 @@ export const TS_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Telangana2023/candidate.php?candidate_id=236',
   },
   {
-    acNo: 72,
+    acNo: 103,
     name: 'Donthi Madhava Reddy',
     party: 'INC',
     age: 62,
@@ -1465,7 +1465,7 @@ export const TS_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Telangana2023/candidate.php?candidate_id=239',
   },
   {
-    acNo: 73,
+    acNo: 9,
     name: 'Alleti Maheshwar Reddy',
     party: 'BJP',
     age: 54,
@@ -1485,7 +1485,7 @@ export const TS_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Telangana2023/candidate.php?candidate_id=246',
   },
   {
-    acNo: 74,
+    acNo: 18,
     name: 'Rekulapally Bhoopathi Reddy',
     party: 'INC',
     age: 59,
@@ -1505,7 +1505,7 @@ export const TS_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Telangana2023/candidate.php?candidate_id=248',
   },
   {
-    acNo: 75,
+    acNo: 17,
     name: 'Dhanpal Suryanarayana Gupta',
     party: 'BJP',
     age: 65,
@@ -1525,7 +1525,7 @@ export const TS_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Telangana2023/candidate.php?candidate_id=252',
   },
   {
-    acNo: 76,
+    acNo: 113,
     name: 'Ponguleti Srinivasa Reddy',
     party: 'INC',
     age: 58,
@@ -1545,7 +1545,7 @@ export const TS_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Telangana2023/candidate.php?candidate_id=254',
   },
   {
-    acNo: 77,
+    acNo: 100,
     name: 'Mamidala Yashaswini Reddy',
     party: 'INC',
     age: 26,
@@ -1565,7 +1565,7 @@ export const TS_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Telangana2023/candidate.php?candidate_id=258',
   },
   {
-    acNo: 78,
+    acNo: 54,
     name: 'Tammannagari Ram Mohan Reddy',
     party: 'INC',
     age: 58,
@@ -1585,7 +1585,7 @@ export const TS_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Telangana2023/candidate.php?candidate_id=260',
   },
   {
-    acNo: 79,
+    acNo: 104,
     name: 'Revuri Prakash Reddy',
     party: 'INC',
     age: 71,
@@ -1605,7 +1605,7 @@ export const TS_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Telangana2023/candidate.php?candidate_id=263',
   },
   {
-    acNo: 80,
+    acNo: 40,
     name: 'Gudem Mahipal Reddy',
     party: 'BRS',
     age: 60,
@@ -1625,7 +1625,7 @@ export const TS_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Telangana2023/candidate.php?candidate_id=265',
   },
   {
-    acNo: 81,
+    acNo: 110,
     name: 'Payam Venkateswarlu',
     party: 'INC',
     age: 49,
@@ -1645,7 +1645,7 @@ export const TS_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Telangana2023/candidate.php?candidate_id=272',
   },
   {
-    acNo: 82,
+    acNo: 45,
     name: 'K. P. Vivekanand',
     party: 'BRS',
     age: 46,
@@ -1665,7 +1665,7 @@ export const TS_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Telangana2023/candidate.php?candidate_id=274',
   },
   {
-    acNo: 83,
+    acNo: 51,
     name: 'T. Prakash Goud',
     party: 'BRS',
     age: 64,
@@ -1685,7 +1685,7 @@ export const TS_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Telangana2023/candidate.php?candidate_id=277',
   },
   {
-    acNo: 84,
+    acNo: 23,
     name: 'Makkan Singh Raj Thakur',
     party: 'INC',
     age: 52,
@@ -1705,7 +1705,7 @@ export const TS_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Telangana2023/candidate.php?candidate_id=281',
   },
   {
-    acNo: 85,
+    acNo: 62,
     name: 'Talasani Srinivas Yadav',
     party: 'BRS',
     age: 58,
@@ -1724,7 +1724,7 @@ export const TS_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Telangana2023/candidate.php?candidate_id=283',
   },
   {
-    acNo: 86,
+    acNo: 39,
     name: 'Chinta Prabhakar',
     party: 'BRS',
     age: 63,
@@ -1744,7 +1744,7 @@ export const TS_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Telangana2023/candidate.php?candidate_id=286',
   },
   {
-    acNo: 87,
+    acNo: 116,
     name: 'Matta Ragamayee',
     party: 'INC',
     age: 52,
@@ -1763,7 +1763,7 @@ export const TS_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Telangana2023/candidate.php?candidate_id=290',
   },
   {
-    acNo: 88,
+    acNo: 70,
     name: 'T. Padma Rao Goud',
     party: 'BRS',
     age: 69,
@@ -1783,7 +1783,7 @@ export const TS_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Telangana2023/candidate.php?candidate_id=292',
   },
   {
-    acNo: 89,
+    acNo: 71,
     name: 'Sriganesh',
     party: 'INC',
     age: 45,
@@ -1803,7 +1803,7 @@ export const TS_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Telangana2023/candidate.php?candidate_id=2297',
   },
   {
-    acNo: 90,
+    acNo: 52,
     name: 'Arekapudi Gandhi',
     party: 'BRS',
     age: 62,
@@ -1823,7 +1823,7 @@ export const TS_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Telangana2023/candidate.php?candidate_id=298',
   },
   {
-    acNo: 91,
+    acNo: 84,
     name: 'K. Shankaraiah',
     party: 'INC',
     age: 54,
@@ -1843,7 +1843,7 @@ export const TS_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Telangana2023/candidate.php?candidate_id=303',
   },
   {
-    acNo: 92,
+    acNo: 33,
     name: 'Thanneeru Harish Rao',
     party: 'BRS',
     age: 52,
@@ -1863,7 +1863,7 @@ export const TS_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Telangana2023/candidate.php?candidate_id=304',
   },
   {
-    acNo: 93,
+    acNo: 29,
     name: 'K. T. Rama Rao',
     party: 'BRS',
     age: 47,
@@ -1883,7 +1883,7 @@ export const TS_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Telangana2023/candidate.php?candidate_id=309',
   },
   {
-    acNo: 94,
+    acNo: 1,
     name: 'Palvai Harish Babu',
     party: 'BJP',
     age: 44,
@@ -1903,7 +1903,7 @@ export const TS_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Telangana2023/candidate.php?candidate_id=312',
   },
   {
-    acNo: 95,
+    acNo: 91,
     name: 'Guntakandla Jagadish Reddy',
     party: 'BRS',
     age: 58,
@@ -1922,7 +1922,7 @@ export const TS_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Telangana2023/candidate.php?candidate_id=313',
   },
   {
-    acNo: 96,
+    acNo: 56,
     name: 'A S Manohar Reddy',
     party: 'INC',
     age: 58,
@@ -1942,7 +1942,7 @@ export const TS_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Telangana2023/candidate.php?candidate_id=317',
   },
   {
-    acNo: 97,
+    acNo: 96,
     name: 'Mandula Samel',
     party: 'INC',
     age: 62,
@@ -1962,7 +1962,7 @@ export const TS_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Telangana2023/candidate.php?candidate_id=320',
   },
   {
-    acNo: 98,
+    acNo: 28,
     name: 'Aadi Srinivas',
     party: 'INC',
     age: 57,
@@ -1981,7 +1981,7 @@ export const TS_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Telangana2023/candidate.php?candidate_id=326',
   },
   {
-    acNo: 99,
+    acNo: 55,
     name: 'Gaddam Prasad Kumar',
     party: 'INC',
     age: 59,
@@ -2001,7 +2001,7 @@ export const TS_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Telangana2023/candidate.php?candidate_id=329',
   },
   {
-    acNo: 100,
+    acNo: 78,
     name: 'Tudi Megha Reddy',
     party: 'INC',
     age: 51,
@@ -2021,7 +2021,7 @@ export const TS_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Telangana2023/candidate.php?candidate_id=332',
   },
   {
-    acNo: 101,
+    acNo: 107,
     name: 'K.R.Nagaraj.K',
     party: 'INC',
     age: 60,
@@ -2041,7 +2041,7 @@ export const TS_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Telangana2023/candidate.php?candidate_id=334',
   },
   {
-    acNo: 102,
+    acNo: 106,
     name: 'Konda Surekha',
     party: 'INC',
     age: 58,
@@ -2060,7 +2060,7 @@ export const TS_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Telangana2023/candidate.php?candidate_id=337',
   },
   {
-    acNo: 103,
+    acNo: 105,
     name: 'Naini Rajender Reddy',
     party: 'INC',
     age: 54,
@@ -2080,7 +2080,7 @@ export const TS_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Telangana2023/candidate.php?candidate_id=340',
   },
   {
-    acNo: 104,
+    acNo: 115,
     name: 'Ramdas Maloth',
     party: 'INC',
     age: 59,
@@ -2100,7 +2100,7 @@ export const TS_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Telangana2023/candidate.php?candidate_id=343',
   },
   {
-    acNo: 105,
+    acNo: 68,
     name: 'Jaffar Hussain',
     party: 'AIMIM',
     age: 63,
@@ -2120,7 +2120,7 @@ export const TS_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Telangana2023/candidate.php?candidate_id=347',
   },
   {
-    acNo: 106,
+    acNo: 15,
     name: 'K. Madan Mohan Rao',
     party: 'INC',
     age: 54,
@@ -2140,7 +2140,7 @@ export const TS_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Telangana2023/candidate.php?candidate_id=353',
   },
   {
-    acNo: 107,
+    acNo: 38,
     name: 'Koninty Manik Rao',
     party: 'BRS',
     age: 68,

@@ -36,7 +36,7 @@ export interface MLAProfile {
 
 export const MH_MLA_PROFILES: MLAProfile[] = [
   {
-    acNo: 1,
+    acNo: 185,
     name: 'Pravin Vasantrao Tayade',
     party: 'BJP',
     age: 51,
@@ -56,7 +56,7 @@ export const MH_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Maharashtra2024/candidate.php?candidate_id=247',
   },
   {
-    acNo: 2,
+    acNo: 180,
     name: 'Atram Dharamraobaba Bhagwantrao',
     party: 'NCP',
     age: 71,
@@ -76,7 +76,7 @@ export const MH_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Maharashtra2024/candidate.php?candidate_id=1372',
   },
   {
-    acNo: 3,
+    acNo: 45,
     name: 'Sangram Jagtap',
     party: 'NCP',
     age: 39,
@@ -96,7 +96,7 @@ export const MH_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Maharashtra2024/candidate.php?candidate_id=128',
   },
   {
-    acNo: 4,
+    acNo: 127,
     name: 'Babasaheb Patil',
     party: 'NCP',
     age: 65,
@@ -116,7 +116,7 @@ export const MH_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Maharashtra2024/candidate.php?candidate_id=127',
   },
   {
-    acNo: 5,
+    acNo: 265,
     name: 'Ganesh Naik',
     party: 'BJP',
     age: 74,
@@ -136,7 +136,7 @@ export const MH_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Maharashtra2024/candidate.php?candidate_id=1383',
   },
   {
-    acNo: 6,
+    acNo: 103,
     name: 'Sachin Kalyanshetti',
     party: 'BJP',
     age: 44,
@@ -155,7 +155,7 @@ export const MH_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Maharashtra2024/candidate.php?candidate_id=1391',
   },
   {
-    acNo: 7,
+    acNo: 1,
     name: 'Amshya Fulji Padvi',
     party: 'SHS',
     age: 56,
@@ -175,7 +175,7 @@ export const MH_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Maharashtra2024/candidate.php?candidate_id=1396',
   },
   {
-    acNo: 8,
+    acNo: 207,
     name: 'Randhir Sawarkar',
     party: 'BJP',
     age: 51,
@@ -194,7 +194,7 @@ export const MH_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Maharashtra2024/candidate.php?candidate_id=379',
   },
   {
-    acNo: 9,
+    acNo: 208,
     name: 'Dr. Kiran Yamaji Lahamate',
     party: 'NCP',
     age: 50,
@@ -214,7 +214,7 @@ export const MH_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Maharashtra2024/candidate.php?candidate_id=131',
   },
   {
-    acNo: 10,
+    acNo: 208,
     name: 'Prakash Gunwant Bharsakle',
     party: 'BJP',
     age: 72,
@@ -234,7 +234,7 @@ export const MH_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Maharashtra2024/candidate.php?candidate_id=1211',
   },
   {
-    acNo: 11,
+    acNo: 258,
     name: 'Mahendra Dalvi',
     party: 'SHS',
     age: 59,
@@ -254,7 +254,7 @@ export const MH_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Maharashtra2024/candidate.php?candidate_id=1800',
   },
   {
-    acNo: 12,
+    acNo: 15,
     name: 'Anil Patil',
     party: 'NCP',
     age: 57,
@@ -274,7 +274,7 @@ export const MH_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Maharashtra2024/candidate.php?candidate_id=133',
   },
   {
-    acNo: 13,
+    acNo: 288,
     name: 'Balaji Kinikar',
     party: 'SHS',
     age: 52,
@@ -294,7 +294,7 @@ export const MH_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Maharashtra2024/candidate.php?candidate_id=1872',
   },
   {
-    acNo: 14,
+    acNo: 50,
     name: 'Dilip Walse Patil',
     party: 'NCP',
     age: 67,
@@ -314,7 +314,7 @@ export const MH_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Maharashtra2024/candidate.php?candidate_id=134',
   },
   {
-    acNo: 15,
+    acNo: 202,
     name: 'K R Puram',
     party: 'BJP',
     age: 52,
@@ -334,7 +334,7 @@ export const MH_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Maharashtra2024/candidate.php?candidate_id=145',
   },
   {
-    acNo: 16,
+    acNo: 181,
     name: 'Sulbha Sanjay Khodke',
     party: 'NCP',
     age: 61,
@@ -354,7 +354,7 @@ export const MH_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Maharashtra2024/candidate.php?candidate_id=1232',
   },
   {
-    acNo: 17,
+    acNo: 232,
     name: 'Murji Patel (Kaka)',
     party: 'SHS',
     age: 52,
@@ -374,7 +374,7 @@ export const MH_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Maharashtra2024/candidate.php?candidate_id=1911',
   },
   {
-    acNo: 18,
+    acNo: 238,
     name: 'Sana Malik',
     party: 'NCP',
     age: 37,
@@ -394,7 +394,7 @@ export const MH_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Maharashtra2024/candidate.php?candidate_id=1562',
   },
   {
-    acNo: 19,
+    acNo: 216,
     name: 'Rajkumar Badole',
     party: 'NCP',
     age: 62,
@@ -414,7 +414,7 @@ export const MH_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Maharashtra2024/candidate.php?candidate_id=1566',
   },
   {
-    acNo: 20,
+    acNo: 179,
     name: 'Ramdas Maluji Masram',
     party: 'INC',
     age: 55,
@@ -434,7 +434,7 @@ export const MH_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Maharashtra2024/candidate.php?candidate_id=391',
   },
   {
-    acNo: 21,
+    acNo: 192,
     name: 'Raju Narayan Todsam',
     party: 'BJP',
     age: 49,
@@ -453,7 +453,7 @@ export const MH_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Maharashtra2024/candidate.php?candidate_id=1588',
   },
   {
-    acNo: 22,
+    acNo: 169,
     name: 'Sumit Wankhede',
     party: 'BJP',
     age: 40,
@@ -472,7 +472,7 @@ export const MH_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Maharashtra2024/candidate.php?candidate_id=1925',
   },
   {
-    acNo: 23,
+    acNo: 136,
     name: 'Dhas Suresh Ramchandra',
     party: 'BJP',
     age: 54,
@@ -492,7 +492,7 @@ export const MH_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Maharashtra2024/candidate.php?candidate_id=1724',
   },
   {
-    acNo: 24,
+    acNo: 111,
     name: 'Pradeep Jaiswal',
     party: 'SHS',
     age: 64,
@@ -512,7 +512,7 @@ export const MH_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Maharashtra2024/candidate.php?candidate_id=1938',
   },
   {
-    acNo: 25,
+    acNo: 112,
     name: 'Sanjay Pandurang Shirsat',
     party: 'SHS',
     age: 62,
@@ -532,7 +532,7 @@ export const MH_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Maharashtra2024/candidate.php?candidate_id=402',
   },
   {
-    acNo: 26,
+    acNo: 130,
     name: 'Abhimanyu Dattatray Pawar',
     party: 'BJP',
     age: 53,
@@ -552,7 +552,7 @@ export const MH_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Maharashtra2024/candidate.php?candidate_id=411',
   },
   {
-    acNo: 27,
+    acNo: 121,
     name: 'Narayan Kuche',
     party: 'BJP',
     age: 51,
@@ -572,7 +572,7 @@ export const MH_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Maharashtra2024/candidate.php?candidate_id=158',
   },
   {
-    acNo: 28,
+    acNo: 187,
     name: 'Ravi Rana',
     party: 'Rashtriya ',
     age: 45,
@@ -592,7 +592,7 @@ export const MH_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Maharashtra2024/candidate.php?candidate_id=1472',
   },
   {
-    acNo: 29,
+    acNo: 22,
     name: 'Dilip Borse',
     party: 'BJP',
     age: 59,
@@ -612,7 +612,7 @@ export const MH_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Maharashtra2024/candidate.php?candidate_id=3479',
   },
   {
-    acNo: 30,
+    acNo: 209,
     name: 'Nitin Bhikanrao Deshmukh',
     party: 'SHSUBT',
     age: 51,
@@ -631,7 +631,7 @@ export const MH_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Maharashtra2024/candidate.php?candidate_id=1220',
   },
   {
-    acNo: 31,
+    acNo: 173,
     name: 'Sudhir Mungantiwar Jr',
     party: 'BJP',
     age: 62,
@@ -651,7 +651,7 @@ export const MH_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Maharashtra2024/candidate.php?candidate_id=1251',
   },
   {
-    acNo: 32,
+    acNo: 55,
     name: 'Ajit Pawar',
     party: 'NCP',
     age: 65,
@@ -671,7 +671,7 @@ export const MH_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Maharashtra2024/candidate.php?candidate_id=3221',
   },
   {
-    acNo: 33,
+    acNo: 104,
     name: 'Dilip Sopal',
     party: 'SHSUBT',
     age: 75,
@@ -711,7 +711,7 @@ export const MH_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Maharashtra2024/candidate.php?candidate_id=2672',
   },
   {
-    acNo: 35,
+    acNo: 135,
     name: 'Sandeep Kshirsagar',
     party: 'NCP-Sharad',
     age: 43,
@@ -731,7 +731,7 @@ export const MH_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Maharashtra2024/candidate.php?candidate_id=1687',
   },
   {
-    acNo: 36,
+    acNo: 266,
     name: 'Manda Mhatre',
     party: 'BJP',
     age: 68,
@@ -750,7 +750,7 @@ export const MH_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Maharashtra2024/candidate.php?candidate_id=3080',
   },
   {
-    acNo: 37,
+    acNo: 211,
     name: 'Narendra Bhondekar',
     party: 'SHS',
     age: 45,
@@ -770,7 +770,7 @@ export const MH_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Maharashtra2024/candidate.php?candidate_id=984',
   },
   {
-    acNo: 38,
+    acNo: 223,
     name: 'Ashok Bada Patil',
     party: 'SHS',
     age: 64,
@@ -790,7 +790,7 @@ export const MH_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Maharashtra2024/candidate.php?candidate_id=3391',
   },
   {
-    acNo: 39,
+    acNo: 269,
     name: 'Choughule Mahesh Prabhakar',
     party: 'BJP',
     age: 50,
@@ -810,7 +810,7 @@ export const MH_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Maharashtra2024/candidate.php?candidate_id=435',
   },
   {
-    acNo: 40,
+    acNo: 270,
     name: 'Rais Shaikh',
     party: 'SP',
     age: 50,
@@ -830,7 +830,7 @@ export const MH_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Maharashtra2024/candidate.php?candidate_id=1297',
   },
   {
-    acNo: 41,
+    acNo: 146,
     name: 'Chavan Sreejaya Ashokrao',
     party: 'BJP',
     age: 32,
@@ -850,7 +850,7 @@ export const MH_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Maharashtra2024/candidate.php?candidate_id=3262',
   },
   {
-    acNo: 42,
+    acNo: 122,
     name: 'Santosh Danve',
     party: 'BJP',
     age: 40,
@@ -870,7 +870,7 @@ export const MH_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Maharashtra2024/candidate.php?candidate_id=2964',
   },
   {
-    acNo: 43,
+    acNo: 57,
     name: 'Shankar Hiraman Mandekar',
     party: 'NCP',
     age: 51,
@@ -890,7 +890,7 @@ export const MH_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Maharashtra2024/candidate.php?candidate_id=1273',
   },
   {
-    acNo: 44,
+    acNo: 61,
     name: 'Mahesh Landge',
     party: 'BJP',
     age: 48,
@@ -910,7 +910,7 @@ export const MH_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Maharashtra2024/candidate.php?candidate_id=1094',
   },
   {
-    acNo: 45,
+    acNo: 12,
     name: 'Sanjay Savkare',
     party: 'BJP',
     age: 55,
@@ -929,7 +929,7 @@ export const MH_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Maharashtra2024/candidate.php?candidate_id=445',
   },
   {
-    acNo: 46,
+    acNo: 276,
     name: 'Vilas Tare',
     party: 'SHS',
     age: 52,
@@ -948,7 +948,7 @@ export const MH_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Maharashtra2024/candidate.php?candidate_id=2129',
   },
   {
-    acNo: 47,
+    acNo: 218,
     name: 'Sanjay Upadhyay',
     party: 'BJP',
     age: 51,
@@ -968,7 +968,7 @@ export const MH_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Maharashtra2024/candidate.php?candidate_id=1283',
   },
   {
-    acNo: 48,
+    acNo: 177,
     name: 'Vijay Wadettiwar',
     party: 'INC',
     age: 61,
@@ -988,7 +988,7 @@ export const MH_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Maharashtra2024/candidate.php?candidate_id=189',
   },
   {
-    acNo: 49,
+    acNo: 250,
     name: 'Manoj Jamsutkar',
     party: 'SHSUBT',
     age: 55,
@@ -1008,7 +1008,7 @@ export const MH_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Maharashtra2024/candidate.php?candidate_id=1280',
   },
   {
-    acNo: 50,
+    acNo: 17,
     name: 'Mangesh Chavan',
     party: 'BJP',
     age: 41,
@@ -1028,7 +1028,7 @@ export const MH_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Maharashtra2024/candidate.php?candidate_id=842',
   },
   {
-    acNo: 51,
+    acNo: 91,
     name: 'Shivaji Shattupa Patil',
     party: 'IND',
     age: 55,
@@ -1048,7 +1048,7 @@ export const MH_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Maharashtra2024/candidate.php?candidate_id=194',
   },
   {
-    acNo: 52,
+    acNo: 234,
     name: 'Dilip Lande',
     party: 'SHS',
     age: 63,
@@ -1068,7 +1068,7 @@ export const MH_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Maharashtra2024/candidate.php?candidate_id=849',
   },
   {
-    acNo: 53,
+    acNo: 172,
     name: 'Kishor Jorgewar',
     party: 'BJP',
     age: 56,
@@ -1087,7 +1087,7 @@ export const MH_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Maharashtra2024/candidate.php?candidate_id=851',
   },
   {
-    acNo: 54,
+    acNo: 24,
     name: 'Rahul Aher',
     party: 'BJP',
     age: 51,
@@ -1107,7 +1107,7 @@ export const MH_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Maharashtra2024/candidate.php?candidate_id=196',
   },
   {
-    acNo: 55,
+    acNo: 227,
     name: 'Yogesh Sagar',
     party: 'BJP',
     age: 62,
@@ -1127,7 +1127,7 @@ export const MH_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Maharashtra2024/candidate.php?candidate_id=864',
   },
   {
-    acNo: 56,
+    acNo: 239,
     name: 'Tukaram Kate',
     party: 'SHS',
     age: 62,
@@ -1147,7 +1147,7 @@ export const MH_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Maharashtra2024/candidate.php?candidate_id=870',
   },
   {
-    acNo: 57,
+    acNo: 176,
     name: 'Banti Bhangdiya',
     party: 'BJP',
     age: 42,
@@ -1167,7 +1167,7 @@ export const MH_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Maharashtra2024/candidate.php?candidate_id=201',
   },
   {
-    acNo: 58,
+    acNo: 59,
     name: 'Jagtap Shankar Pandurang',
     party: 'BJP',
     age: 50,
@@ -1187,7 +1187,7 @@ export const MH_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Maharashtra2024/candidate.php?candidate_id=3029',
   },
   {
-    acNo: 59,
+    acNo: 77,
     name: 'Shekhar Govindrao Nikam',
     party: 'NCP',
     age: 58,
@@ -1207,7 +1207,7 @@ export const MH_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Maharashtra2024/candidate.php?candidate_id=880',
   },
   {
-    acNo: 60,
+    acNo: 10,
     name: 'Chandrakant Baliram Sonawane',
     party: 'SHS',
     age: 63,
@@ -1227,7 +1227,7 @@ export const MH_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Maharashtra2024/candidate.php?candidate_id=888',
   },
   {
-    acNo: 61,
+    acNo: 253,
     name: 'Rahul Narwekar',
     party: 'BJP',
     age: 47,
@@ -1247,7 +1247,7 @@ export const MH_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Maharashtra2024/candidate.php?candidate_id=460',
   },
   {
-    acNo: 62,
+    acNo: 278,
     name: 'Vinod Nikole',
     party: 'CPI(M)',
     age: 49,
@@ -1266,7 +1266,7 @@ export const MH_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Maharashtra2024/candidate.php?candidate_id=901',
   },
   {
-    acNo: 63,
+    acNo: 219,
     name: 'Manisha Chaudhary',
     party: 'BJP',
     age: 63,
@@ -1286,7 +1286,7 @@ export const MH_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Maharashtra2024/candidate.php?candidate_id=474',
   },
   {
-    acNo: 64,
+    acNo: 75,
     name: 'Kadam Yogeshdada Ramdas',
     party: 'SHS',
     age: 38,
@@ -1306,7 +1306,7 @@ export const MH_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Maharashtra2024/candidate.php?candidate_id=206',
   },
   {
-    acNo: 65,
+    acNo: 53,
     name: 'Rahul Kul',
     party: 'BJP',
     age: 47,
@@ -1326,7 +1326,7 @@ export const MH_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Maharashtra2024/candidate.php?candidate_id=909',
   },
   {
-    acNo: 66,
+    acNo: 144,
     name: 'Jitesh Antapurkar',
     party: 'BJP',
     age: 34,
@@ -1346,7 +1346,7 @@ export const MH_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Maharashtra2024/candidate.php?candidate_id=211',
   },
   {
-    acNo: 67,
+    acNo: 28,
     name: 'Ahire Saroj Babulal',
     party: 'NCP',
     age: 43,
@@ -1366,7 +1366,7 @@ export const MH_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Maharashtra2024/candidate.php?candidate_id=481',
   },
   {
-    acNo: 68,
+    acNo: 217,
     name: 'Rajesh Bakane',
     party: 'BJP',
     age: 59,
@@ -1386,7 +1386,7 @@ export const MH_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Maharashtra2024/candidate.php?candidate_id=484',
   },
   {
-    acNo: 69,
+    acNo: 279,
     name: 'Adsad Pratap Arunbhau',
     party: 'BJP',
     age: 46,
@@ -1406,7 +1406,7 @@ export const MH_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Maharashtra2024/candidate.php?candidate_id=213',
   },
   {
-    acNo: 70,
+    acNo: 244,
     name: 'Dr. Gaikwad Jyoti Eknath',
     party: 'INC',
     age: 47,
@@ -1426,7 +1426,7 @@ export const MH_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Maharashtra2024/candidate.php?candidate_id=489',
   },
   {
-    acNo: 71,
+    acNo: 7,
     name: 'Agrawal Anupbhaiyya Omprakash',
     party: 'BJP',
     age: 50,
@@ -1446,7 +1446,7 @@ export const MH_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Maharashtra2024/candidate.php?candidate_id=214',
   },
   {
-    acNo: 72,
+    acNo: 6,
     name: 'Manohar Patil',
     party: 'BJP',
     age: 31,
@@ -1466,7 +1466,7 @@ export const MH_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Maharashtra2024/candidate.php?candidate_id=2488',
   },
   {
-    acNo: 73,
+    acNo: 30,
     name: 'Narahari Sitaram Zirwal',
     party: 'NCP',
     age: 65,
@@ -1486,7 +1486,7 @@ export const MH_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Maharashtra2024/candidate.php?candidate_id=220',
   },
   {
-    acNo: 74,
+    acNo: 225,
     name: 'Sunil Prabhu',
     party: 'SHSUBT',
     age: 55,
@@ -1526,7 +1526,7 @@ export const MH_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Maharashtra2024/candidate.php?candidate_id=3064',
   },
   {
-    acNo: 76,
+    acNo: 16,
     name: 'Chimanrao Patil',
     party: 'SHS',
     age: 46,
@@ -1546,7 +1546,7 @@ export const MH_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Maharashtra2024/candidate.php?candidate_id=28',
   },
   {
-    acNo: 77,
+    acNo: 178,
     name: 'Dr. Milind Ramji Narote',
     party: 'BJP',
     age: 39,
@@ -1566,7 +1566,7 @@ export const MH_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Maharashtra2024/candidate.php?candidate_id=504',
   },
   {
-    acNo: 78,
+    acNo: 150,
     name: 'Ratnakar Gutte',
     party: 'Rashtriya ',
     age: 66,
@@ -1586,7 +1586,7 @@ export const MH_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Maharashtra2024/candidate.php?candidate_id=507',
   },
   {
-    acNo: 79,
+    acNo: 115,
     name: 'Bumb Prashant Bansilal',
     party: 'BJP',
     age: 53,
@@ -1606,7 +1606,7 @@ export const MH_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Maharashtra2024/candidate.php?candidate_id=510',
   },
   {
-    acNo: 80,
+    acNo: 124,
     name: 'Udhan Hikmat Baliram',
     party: 'SHS',
     age: 61,
@@ -1626,7 +1626,7 @@ export const MH_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Maharashtra2024/candidate.php?candidate_id=2909',
   },
   {
-    acNo: 81,
+    acNo: 235,
     name: 'Ram Kadam',
     party: 'BJP',
     age: 52,
@@ -1646,7 +1646,7 @@ export const MH_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Maharashtra2024/candidate.php?candidate_id=522',
   },
   {
-    acNo: 82,
+    acNo: 236,
     name: 'Parag Shah',
     party: 'BJP',
     age: 55,
@@ -1666,7 +1666,7 @@ export const MH_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Maharashtra2024/candidate.php?candidate_id=3410',
   },
   {
-    acNo: 83,
+    acNo: 215,
     name: 'Vinod Agrawal',
     party: 'BJP',
     age: 55,
@@ -1686,7 +1686,7 @@ export const MH_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Maharashtra2024/candidate.php?candidate_id=527',
   },
   {
-    acNo: 84,
+    acNo: 229,
     name: 'Vidya Thakur',
     party: 'BJP',
     age: 63,
@@ -1706,7 +1706,7 @@ export const MH_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Maharashtra2024/candidate.php?candidate_id=529',
   },
   {
-    acNo: 85,
+    acNo: 76,
     name: 'Bhaskar Jadhav',
     party: 'SHSUBT',
     age: 67,
@@ -1726,7 +1726,7 @@ export const MH_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Maharashtra2024/candidate.php?candidate_id=534',
   },
   {
-    acNo: 86,
+    acNo: 67,
     name: 'Chetan Tupe',
     party: 'NCP',
     age: 53,
@@ -1746,7 +1746,7 @@ export const MH_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Maharashtra2024/candidate.php?candidate_id=1086',
   },
   {
-    acNo: 87,
+    acNo: 155,
     name: 'Kohlikar Baburao Kadam',
     party: 'SHS',
     age: 56,
@@ -1766,7 +1766,7 @@ export const MH_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Maharashtra2024/candidate.php?candidate_id=536',
   },
   {
-    acNo: 88,
+    acNo: 86,
     name: 'Dalitmitra Dr.Ashokrao Mane(Bapu',
     party: 'Jan Surajy',
     age: 70,
@@ -1786,7 +1786,7 @@ export const MH_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Maharashtra2024/candidate.php?candidate_id=1265',
   },
   {
-    acNo: 89,
+    acNo: 167,
     name: 'Sameer Meghe',
     party: 'BJP',
     age: 46,
@@ -1806,7 +1806,7 @@ export const MH_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Maharashtra2024/candidate.php?candidate_id=3285',
   },
   {
-    acNo: 90,
+    acNo: 153,
     name: 'Mutkule Tanhaji Sakharamji',
     party: 'BJP',
     age: 63,
@@ -1826,7 +1826,7 @@ export const MH_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Maharashtra2024/candidate.php?candidate_id=544',
   },
   {
-    acNo: 91,
+    acNo: 87,
     name: 'Rahul Awade',
     party: 'BJP',
     age: 46,
@@ -1846,7 +1846,7 @@ export const MH_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Maharashtra2024/candidate.php?candidate_id=548',
   },
   {
-    acNo: 92,
+    acNo: 29,
     name: 'Hiraman Khoskar',
     party: 'NCP',
     age: 60,
@@ -1866,7 +1866,7 @@ export const MH_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Maharashtra2024/candidate.php?candidate_id=549',
   },
   {
-    acNo: 93,
+    acNo: 54,
     name: 'Dattatraya Vithoba Bharane',
     party: 'NCP',
     age: 56,
@@ -1906,7 +1906,7 @@ export const MH_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Maharashtra2024/candidate.php?candidate_id=2721',
   },
   {
-    acNo: 95,
+    acNo: 13,
     name: 'Sanjay Kute',
     party: 'BJP',
     age: 55,
@@ -1926,7 +1926,7 @@ export const MH_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Maharashtra2024/candidate.php?candidate_id=947',
   },
   {
-    acNo: 96,
+    acNo: 13,
     name: 'Suresh Damu Bhole (Raju Mama)',
     party: 'BJP',
     age: 59,
@@ -1946,7 +1946,7 @@ export const MH_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Maharashtra2024/candidate.php?candidate_id=1208',
   },
   {
-    acNo: 97,
+    acNo: 120,
     name: 'Arjun Khotkar',
     party: 'SHS',
     age: 62,
@@ -1966,7 +1966,7 @@ export const MH_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Maharashtra2024/candidate.php?candidate_id=122',
   },
   {
-    acNo: 98,
+    acNo: 19,
     name: 'Girish Mahajan',
     party: 'BJP',
     age: 64,
@@ -2006,7 +2006,7 @@ export const MH_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Maharashtra2024/candidate.php?candidate_id=2103',
   },
   {
-    acNo: 100,
+    acNo: 152,
     name: 'Bordikar Meghna Deepak Sakore',
     party: 'BJP',
     age: 44,
@@ -2025,7 +2025,7 @@ export const MH_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Maharashtra2024/candidate.php?candidate_id=113',
   },
   {
-    acNo: 101,
+    acNo: 224,
     name: 'Anant (Bala) B. Nar',
     party: 'SHSUBT',
     age: 59,
@@ -2045,7 +2045,7 @@ export const MH_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Maharashtra2024/candidate.php?candidate_id=1288',
   },
   {
-    acNo: 102,
+    acNo: 261,
     name: 'Sharaddada Bhimaji Sonawane',
     party: 'IND',
     age: 51,
@@ -2064,7 +2064,7 @@ export const MH_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Maharashtra2024/candidate.php?candidate_id=119',
   },
   {
-    acNo: 103,
+    acNo: 89,
     name: 'Hasan Mushrif',
     party: 'NCP',
     age: 70,
@@ -2084,7 +2084,7 @@ export const MH_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Maharashtra2024/candidate.php?candidate_id=1179',
   },
   {
-    acNo: 104,
+    acNo: 137,
     name: 'Namita Akshay Mundada',
     party: 'BJP',
     age: 35,
@@ -2104,7 +2104,7 @@ export const MH_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Maharashtra2024/candidate.php?candidate_id=1109',
   },
   {
-    acNo: 105,
+    acNo: 241,
     name: 'Sanjay Govind Potnis',
     party: 'SHSUBT',
     age: 69,
@@ -2124,7 +2124,7 @@ export const MH_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Maharashtra2024/candidate.php?candidate_id=1062',
   },
   {
-    acNo: 106,
+    acNo: 23,
     name: 'Nitinbhau Arjun (A.T.) Pawar',
     party: 'NCP',
     age: 55,
@@ -2144,7 +2144,7 @@ export const MH_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Maharashtra2024/candidate.php?candidate_id=841',
   },
   {
-    acNo: 107,
+    acNo: 285,
     name: 'Vishwanath Bhoir',
     party: 'SHS',
     age: 54,
@@ -2164,7 +2164,7 @@ export const MH_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Maharashtra2024/candidate.php?candidate_id=3059',
   },
   {
-    acNo: 108,
+    acNo: 286,
     name: 'Ganpat Gaikwad',
     party: 'BJP',
     age: 53,
@@ -2184,7 +2184,7 @@ export const MH_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Maharashtra2024/candidate.php?candidate_id=303',
   },
   {
-    acNo: 109,
+    acNo: 14,
     name: 'Rajesh Govardhan More',
     party: 'SHS',
     age: 55,
@@ -2204,7 +2204,7 @@ export const MH_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Maharashtra2024/candidate.php?candidate_id=3062',
   },
   {
-    acNo: 110,
+    acNo: 162,
     name: 'Chandrashekhar Bawankule',
     party: 'BJP',
     age: 55,
@@ -2224,7 +2224,7 @@ export const MH_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Maharashtra2024/candidate.php?candidate_id=980',
   },
   {
-    acNo: 111,
+    acNo: 226,
     name: 'Atul Bhatkhalkar',
     party: 'BJP',
     age: 59,
@@ -2244,7 +2244,7 @@ export const MH_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Maharashtra2024/candidate.php?candidate_id=301',
   },
   {
-    acNo: 112,
+    acNo: 80,
     name: 'Nitesh Rane',
     party: 'BJP',
     age: 42,
@@ -2264,7 +2264,7 @@ export const MH_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Maharashtra2024/candidate.php?candidate_id=1148',
   },
   {
-    acNo: 113,
+    acNo: 71,
     name: 'Manoj Bhimrao Ghorpade',
     party: 'BJP',
     age: 47,
@@ -2284,7 +2284,7 @@ export const MH_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Maharashtra2024/candidate.php?candidate_id=1270',
   },
   {
-    acNo: 114,
+    acNo: 72,
     name: 'Dr Atulbaba Suresh Bhosale',
     party: 'BJP',
     age: 41,
@@ -2304,7 +2304,7 @@ export const MH_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Maharashtra2024/candidate.php?candidate_id=1142',
   },
   {
-    acNo: 115,
+    acNo: 197,
     name: 'Ega Sai Prakash',
     party: 'BJP',
     age: 60,
@@ -2323,7 +2323,7 @@ export const MH_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Maharashtra2024/candidate.php?candidate_id=956',
   },
   {
-    acNo: 116,
+    acNo: 255,
     name: 'Mahendra Thorve',
     party: 'SHS',
     age: 52,
@@ -2343,7 +2343,7 @@ export const MH_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Maharashtra2024/candidate.php?candidate_id=1063',
   },
   {
-    acNo: 117,
+    acNo: 99,
     name: 'Rohit Pawar Jr',
     party: 'NCP-Sharad',
     age: 39,
@@ -2363,7 +2363,7 @@ export const MH_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Maharashtra2024/candidate.php?candidate_id=1319',
   },
   {
-    acNo: 118,
+    acNo: 107,
     name: 'Narayan Patil',
     party: 'NCP-Sharad',
     age: 58,
@@ -2383,7 +2383,7 @@ export const MH_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Maharashtra2024/candidate.php?candidate_id=3101',
   },
   {
-    acNo: 119,
+    acNo: 85,
     name: 'Chandradeep Shashikant Narake',
     party: 'SHS',
     age: 57,
@@ -2403,7 +2403,7 @@ export const MH_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Maharashtra2024/candidate.php?candidate_id=1184',
   },
   {
-    acNo: 120,
+    acNo: 65,
     name: 'Hemant Narayan Rasane',
     party: 'BJP',
     age: 54,
@@ -2442,7 +2442,7 @@ export const MH_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Maharashtra2024/candidate.php?candidate_id=1078',
   },
   {
-    acNo: 122,
+    acNo: 202,
     name: 'Akash Fundkar',
     party: 'BJP',
     age: 41,
@@ -2482,7 +2482,7 @@ export const MH_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Maharashtra2024/candidate.php?candidate_id=1175',
   },
   {
-    acNo: 124,
+    acNo: 51,
     name: 'Babaji Ramchandra Kale',
     party: 'SHSUBT',
     age: 54,
@@ -2502,7 +2502,7 @@ export const MH_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Maharashtra2024/candidate.php?candidate_id=3181',
   },
   {
-    acNo: 125,
+    acNo: 148,
     name: 'Bhimrao Keram',
     party: 'BJP',
     age: 56,
@@ -2522,7 +2522,7 @@ export const MH_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Maharashtra2024/candidate.php?candidate_id=994',
   },
   {
-    acNo: 126,
+    acNo: 83,
     name: 'Rajesh Kshirsagar',
     party: 'SHS',
     age: 55,
@@ -2542,7 +2542,7 @@ export const MH_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Maharashtra2024/candidate.php?candidate_id=1194',
   },
   {
-    acNo: 127,
+    acNo: 84,
     name: 'Amal Mahadevrao Mahadik',
     party: 'BJP',
     age: 46,
@@ -2562,7 +2562,7 @@ export const MH_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Maharashtra2024/candidate.php?candidate_id=293',
   },
   {
-    acNo: 128,
+    acNo: 37,
     name: 'Ashutosh Kale',
     party: 'NCP',
     age: 39,
@@ -2582,7 +2582,7 @@ export const MH_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Maharashtra2024/candidate.php?candidate_id=1098',
   },
   {
-    acNo: 129,
+    acNo: 70,
     name: 'Mahesh Shinde',
     party: 'SHS',
     age: 49,
@@ -2602,7 +2602,7 @@ export const MH_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Maharashtra2024/candidate.php?candidate_id=3114',
   },
   {
-    acNo: 130,
+    acNo: 81,
     name: 'Nilesh Narayan Rane',
     party: 'SHS',
     age: 43,
@@ -2622,7 +2622,7 @@ export const MH_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Maharashtra2024/candidate.php?candidate_id=1155',
   },
   {
-    acNo: 131,
+    acNo: 240,
     name: 'Mangesh Kudalkar',
     party: 'SHS',
     age: 53,
@@ -2642,7 +2642,7 @@ export const MH_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Maharashtra2024/candidate.php?candidate_id=1054',
   },
   {
-    acNo: 132,
+    acNo: 125,
     name: 'Amit Deshmukh',
     party: 'INC',
     age: 48,
@@ -2662,7 +2662,7 @@ export const MH_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Maharashtra2024/candidate.php?candidate_id=288',
   },
   {
-    acNo: 133,
+    acNo: 126,
     name: 'Ramesh Kashiram Karad',
     party: 'BJP',
     age: 57,
@@ -2702,7 +2702,7 @@ export const MH_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Maharashtra2024/candidate.php?candidate_id=1004',
   },
   {
-    acNo: 135,
+    acNo: 106,
     name: 'Dhananjay Patil',
     party: 'NCP-Sharad',
     age: 41,
@@ -2722,7 +2722,7 @@ export const MH_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Maharashtra2024/candidate.php?candidate_id=3027',
   },
   {
-    acNo: 136,
+    acNo: 260,
     name: 'Bharat Gogawale',
     party: 'SHS',
     age: 61,
@@ -2742,7 +2742,7 @@ export const MH_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Maharashtra2024/candidate.php?candidate_id=555',
   },
   {
-    acNo: 137,
+    acNo: 247,
     name: 'Mahesh Baliram Sawant',
     party: 'SHSUBT',
     age: 52,
@@ -2762,7 +2762,7 @@ export const MH_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Maharashtra2024/candidate.php?candidate_id=557',
   },
   {
-    acNo: 138,
+    acNo: 140,
     name: 'Prakash (Dada) Sunadarrao Solanke',
     party: 'NCP',
     age: 70,
@@ -2781,7 +2781,7 @@ export const MH_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Maharashtra2024/candidate.php?candidate_id=559',
   },
   {
-    acNo: 139,
+    acNo: 251,
     name: 'Mangal Prabhat Lodha',
     party: 'BJP',
     age: 69,
@@ -2801,7 +2801,7 @@ export const MH_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Maharashtra2024/candidate.php?candidate_id=562',
   },
   {
-    acNo: 140,
+    acNo: 228,
     name: 'Aslam Shaikh',
     party: 'INC',
     age: 55,
@@ -2821,7 +2821,7 @@ export const MH_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Maharashtra2024/candidate.php?candidate_id=564',
   },
   {
-    acNo: 141,
+    acNo: 26,
     name: 'Mufti Mohammad Ismail Abdul Khalique',
     party: 'AIMIM',
     age: 63,
@@ -2840,7 +2840,7 @@ export const MH_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Maharashtra2024/candidate.php?candidate_id=3478',
   },
   {
-    acNo: 142,
+    acNo: 27,
     name: 'Dadaji Dagdu Bhuse',
     party: 'SHS',
     age: 60,
@@ -2859,7 +2859,7 @@ export const MH_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Maharashtra2024/candidate.php?candidate_id=568',
   },
   {
-    acNo: 143,
+    acNo: 205,
     name: 'Chainsukh Sancheti',
     party: 'BJP',
     age: 71,
@@ -2879,7 +2879,7 @@ export const MH_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Maharashtra2024/candidate.php?candidate_id=2045',
   },
   {
-    acNo: 144,
+    acNo: 42,
     name: 'Abu Azmi',
     party: 'SP',
     age: 69,
@@ -2899,7 +2899,7 @@ export const MH_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Maharashtra2024/candidate.php?candidate_id=1044',
   },
   {
-    acNo: 145,
+    acNo: 58,
     name: 'Sunil Shelke',
     party: 'NCP',
     age: 44,
@@ -2919,7 +2919,7 @@ export const MH_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Maharashtra2024/candidate.php?candidate_id=311',
   },
   {
-    acNo: 146,
+    acNo: 273,
     name: 'Narendra Mehta',
     party: 'BJP',
     age: 52,
@@ -2939,7 +2939,7 @@ export const MH_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Maharashtra2024/candidate.php?candidate_id=838',
   },
   {
-    acNo: 147,
+    acNo: 201,
     name: 'Kharat Siddharth Rambhau',
     party: 'SHSUBT',
     age: 58,
@@ -2959,7 +2959,7 @@ export const MH_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Maharashtra2024/candidate.php?candidate_id=936',
   },
   {
-    acNo: 148,
+    acNo: 184,
     name: 'Kewalram Tulsiram Kale',
     party: 'BJP',
     age: 61,
@@ -2979,7 +2979,7 @@ export const MH_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Maharashtra2024/candidate.php?candidate_id=1237',
   },
   {
-    acNo: 149,
+    acNo: 92,
     name: 'Dr. Suresh(Bhau) Dagadu Khade',
     party: 'BJP',
     age: 66,
@@ -2999,7 +2999,7 @@ export const MH_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Maharashtra2024/candidate.php?candidate_id=1167',
   },
   {
-    acNo: 150,
+    acNo: 105,
     name: 'Khare Raju Dnyanu',
     party: 'NCP-Sharad',
     age: 48,
@@ -3019,7 +3019,7 @@ export const MH_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Maharashtra2024/candidate.php?candidate_id=1128',
   },
   {
-    acNo: 151,
+    acNo: 186,
     name: 'Umesh Alias Chandu Atmaramji Yawalkar',
     party: 'BJP',
     age: 52,
@@ -3039,7 +3039,7 @@ export const MH_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Maharashtra2024/candidate.php?candidate_id=963',
   },
   {
-    acNo: 152,
+    acNo: 20,
     name: 'Chandrakant Patil',
     party: 'SHS',
     age: 51,
@@ -3059,7 +3059,7 @@ export const MH_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Maharashtra2024/candidate.php?candidate_id=2887',
   },
   {
-    acNo: 153,
+    acNo: 221,
     name: 'Mihir Kotecha',
     party: 'BJP',
     age: 50,
@@ -3079,7 +3079,7 @@ export const MH_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Maharashtra2024/candidate.php?candidate_id=832',
   },
   {
-    acNo: 154,
+    acNo: 252,
     name: 'Amin Patel',
     party: 'INC',
     age: 61,
@@ -3119,7 +3119,7 @@ export const MH_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Maharashtra2024/candidate.php?candidate_id=1300',
   },
   {
-    acNo: 156,
+    acNo: 210,
     name: 'Harish Pimple',
     party: 'BJP',
     age: 47,
@@ -3139,7 +3139,7 @@ export const MH_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Maharashtra2024/candidate.php?candidate_id=951',
   },
   {
-    acNo: 157,
+    acNo: 159,
     name: 'Datke Pravin Prabhakarrao',
     party: 'BJP',
     age: 45,
@@ -3179,7 +3179,7 @@ export const MH_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Maharashtra2024/candidate.php?candidate_id=570',
   },
   {
-    acNo: 159,
+    acNo: 161,
     name: 'Dr Nitin Kashinath Raut',
     party: 'INC',
     age: 72,
@@ -3199,7 +3199,7 @@ export const MH_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Maharashtra2024/candidate.php?candidate_id=3299',
   },
   {
-    acNo: 160,
+    acNo: 156,
     name: 'Devendra Fadnavis',
     party: 'BJP',
     age: 54,
@@ -3219,7 +3219,7 @@ export const MH_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Maharashtra2024/candidate.php?candidate_id=577',
   },
   {
-    acNo: 161,
+    acNo: 160,
     name: 'Vikas Pandurang Thakre',
     party: 'INC',
     age: 58,
@@ -3239,7 +3239,7 @@ export const MH_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Maharashtra2024/candidate.php?candidate_id=1241',
   },
   {
-    acNo: 162,
+    acNo: 143,
     name: 'Rajesh Pawar',
     party: 'BJP',
     age: 52,
@@ -3259,7 +3259,7 @@ export const MH_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Maharashtra2024/candidate.php?candidate_id=1008',
   },
   {
-    acNo: 163,
+    acNo: 277,
     name: 'Rajan Balkrishna Naik',
     party: 'BJP',
     age: 60,
@@ -3279,7 +3279,7 @@ export const MH_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Maharashtra2024/candidate.php?candidate_id=1161',
   },
   {
-    acNo: 164,
+    acNo: 141,
     name: 'Balaji Devidasrao Kalyankar',
     party: 'SHS',
     age: 45,
@@ -3299,7 +3299,7 @@ export const MH_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Maharashtra2024/candidate.php?candidate_id=1258',
   },
   {
-    acNo: 165,
+    acNo: 142,
     name: 'Anand Shankar Tidke',
     party: 'SHS',
     age: 42,
@@ -3319,7 +3319,7 @@ export const MH_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Maharashtra2024/candidate.php?candidate_id=1001',
   },
   {
-    acNo: 166,
+    acNo: 25,
     name: 'Suhas Kande',
     party: 'SHS',
     age: 49,
@@ -3339,7 +3339,7 @@ export const MH_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Maharashtra2024/candidate.php?candidate_id=1308',
   },
   {
-    acNo: 167,
+    acNo: 3,
     name: 'Vijaykumar Gavit',
     party: 'BJP',
     age: 69,
@@ -3359,7 +3359,7 @@ export const MH_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Maharashtra2024/candidate.php?candidate_id=3294',
   },
   {
-    acNo: 168,
+    acNo: 31,
     name: 'Devyani Suhas Pharande',
     party: 'BJP',
     age: 58,
@@ -3379,7 +3379,7 @@ export const MH_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Maharashtra2024/candidate.php?candidate_id=1032',
   },
   {
-    acNo: 169,
+    acNo: 31,
     name: 'Adv.Rahul Uttamrao Dhikale',
     party: 'BJP',
     age: 45,
@@ -3399,7 +3399,7 @@ export const MH_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Maharashtra2024/candidate.php?candidate_id=1315',
   },
   {
-    acNo: 170,
+    acNo: 4,
     name: 'Shirishkumar Naik',
     party: 'INC',
     age: 52,
@@ -3419,7 +3419,7 @@ export const MH_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Maharashtra2024/candidate.php?candidate_id=2625',
   },
   {
-    acNo: 171,
+    acNo: 39,
     name: 'Vitthal Vakilrao Langhe',
     party: 'SHS',
     age: 57,
@@ -3439,7 +3439,7 @@ export const MH_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Maharashtra2024/candidate.php?candidate_id=1102',
   },
   {
-    acNo: 172,
+    acNo: 129,
     name: 'Sambhaji Patil Nilangekar',
     party: 'BJP',
     age: 47,
@@ -3458,7 +3458,7 @@ export const MH_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Maharashtra2024/candidate.php?candidate_id=1117',
   },
   {
-    acNo: 173,
+    acNo: 35,
     name: 'Bankar Diliprao Shankarrao',
     party: 'NCP',
     age: 60,
@@ -3478,7 +3478,7 @@ export const MH_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Maharashtra2024/candidate.php?candidate_id=3007',
   },
   {
-    acNo: 174,
+    acNo: 131,
     name: 'Balasaheb Patil',
     party: 'SHSUBT',
     age: 43,
@@ -3498,7 +3498,7 @@ export const MH_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Maharashtra2024/candidate.php?candidate_id=579',
   },
   {
-    acNo: 175,
+    acNo: 267,
     name: 'Pratap Sarnaik',
     party: 'SHS',
     age: 60,
@@ -3518,7 +3518,7 @@ export const MH_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Maharashtra2024/candidate.php?candidate_id=586',
   },
   {
-    acNo: 176,
+    acNo: 114,
     name: 'Bhumre Vilas Sandipanrao',
     party: 'SHS',
     age: 38,
@@ -3538,7 +3538,7 @@ export const MH_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Maharashtra2024/candidate.php?candidate_id=590',
   },
   {
-    acNo: 177,
+    acNo: 275,
     name: 'Gavit Rajendra Dhedya',
     party: 'SHS',
     age: 57,
@@ -3558,7 +3558,7 @@ export const MH_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Maharashtra2024/candidate.php?candidate_id=593',
   },
   {
-    acNo: 178,
+    acNo: 96,
     name: 'Kadam Vishwajit Patangrao',
     party: 'INC',
     age: 43,
@@ -3578,7 +3578,7 @@ export const MH_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Maharashtra2024/candidate.php?candidate_id=595',
   },
   {
-    acNo: 179,
+    acNo: 108,
     name: 'Samadhan Autade',
     party: 'BJP',
     age: 48,
@@ -3597,7 +3597,7 @@ export const MH_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Maharashtra2024/candidate.php?candidate_id=599',
   },
   {
-    acNo: 180,
+    acNo: 254,
     name: 'Prashant Thakur',
     party: 'BJP',
     age: 50,
@@ -3617,7 +3617,7 @@ export const MH_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Maharashtra2024/candidate.php?candidate_id=604',
   },
   {
-    acNo: 181,
+    acNo: 132,
     name: 'Tanaji Sawant',
     party: 'SHS',
     age: 60,
@@ -3637,7 +3637,7 @@ export const MH_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Maharashtra2024/candidate.php?candidate_id=606',
   },
   {
-    acNo: 182,
+    acNo: 149,
     name: 'Rahul Patil',
     party: 'SHSUBT',
     age: 49,
@@ -3657,7 +3657,7 @@ export const MH_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Maharashtra2024/candidate.php?candidate_id=610',
   },
   {
-    acNo: 183,
+    acNo: 138,
     name: 'Dhananjay Munde',
     party: 'NCP',
     age: 49,
@@ -3677,7 +3677,7 @@ export const MH_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Maharashtra2024/candidate.php?candidate_id=614',
   },
   {
-    acNo: 184,
+    acNo: 123,
     name: 'Babanrao Dattatray Yadav (Lonikar)',
     party: 'BJP',
     age: 65,
@@ -3697,7 +3697,7 @@ export const MH_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Maharashtra2024/candidate.php?candidate_id=617',
   },
   {
-    acNo: 185,
+    acNo: 284,
     name: 'Madhuri Misal',
     party: 'BJP',
     age: 60,
@@ -3717,7 +3717,7 @@ export const MH_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Maharashtra2024/candidate.php?candidate_id=621',
   },
   {
-    acNo: 186,
+    acNo: 73,
     name: 'Desai Shambhuraj Shivajirao',
     party: 'SHS',
     age: 58,
@@ -3737,7 +3737,7 @@ export const MH_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Maharashtra2024/candidate.php?candidate_id=622',
   },
   {
-    acNo: 187,
+    acNo: 151,
     name: 'Rajesh Uttamrao Vitekar',
     party: 'NCP',
     age: 44,
@@ -3757,7 +3757,7 @@ export const MH_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Maharashtra2024/candidate.php?candidate_id=3217',
   },
   {
-    acNo: 188,
+    acNo: 280,
     name: 'M B Patil',
     party: 'NCP',
     age: 54,
@@ -3777,7 +3777,7 @@ export const MH_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Maharashtra2024/candidate.php?candidate_id=627',
   },
   {
-    acNo: 189,
+    acNo: 119,
     name: 'Anuradha Atul Chavan',
     party: 'BJP',
     age: 52,
@@ -3797,7 +3797,7 @@ export const MH_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Maharashtra2024/candidate.php?candidate_id=630',
   },
   {
-    acNo: 190,
+    acNo: 60,
     name: 'Anna Bansode',
     party: 'NCP',
     age: 56,
@@ -3815,7 +3815,7 @@ export const MH_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Maharashtra2024/candidate.php?candidate_id=636',
   },
   {
-    acNo: 191,
+    acNo: 56,
     name: 'Vijaybapu Shivtare',
     party: 'SHS',
     age: 65,
@@ -3834,7 +3834,7 @@ export const MH_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Maharashtra2024/candidate.php?candidate_id=644',
   },
   {
-    acNo: 192,
+    acNo: 193,
     name: 'Indranil Naik',
     party: 'NCP',
     age: 42,
@@ -3854,7 +3854,7 @@ export const MH_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Maharashtra2024/candidate.php?candidate_id=649',
   },
   {
-    acNo: 193,
+    acNo: 90,
     name: 'Prakash Abitkar',
     party: 'SHS',
     age: 50,
@@ -3874,7 +3874,7 @@ export const MH_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Maharashtra2024/candidate.php?candidate_id=652',
   },
   {
-    acNo: 194,
+    acNo: 41,
     name: 'Kardile Shivaji Bhanudas',
     party: 'BJP',
     age: 66,
@@ -3894,7 +3894,7 @@ export const MH_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Maharashtra2024/candidate.php?candidate_id=656',
   },
   {
-    acNo: 195,
+    acNo: 41,
     name: 'Akshay Shivajirao Kardile',
     party: 'BJP',
     age: 30,
@@ -3914,7 +3914,7 @@ export const MH_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Maharashtra2024/candidate.php?candidate_id=4366',
   },
   {
-    acNo: 196,
+    acNo: 79,
     name: 'Kiran Alias Bhaiyya Samant',
     party: 'SHS',
     age: 51,
@@ -3933,7 +3933,7 @@ export const MH_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Maharashtra2024/candidate.php?candidate_id=660',
   },
   {
-    acNo: 197,
+    acNo: 174,
     name: 'Deorao Vithoba Bhongle',
     party: 'BJP',
     age: 46,
@@ -3953,7 +3953,7 @@ export const MH_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Maharashtra2024/candidate.php?candidate_id=661',
   },
   {
-    acNo: 198,
+    acNo: 190,
     name: 'Prof. Dr. Ashok Ramaji Wooike',
     party: 'BJP',
     age: 61,
@@ -3972,7 +3972,7 @@ export const MH_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Maharashtra2024/candidate.php?candidate_id=667',
   },
   {
-    acNo: 199,
+    acNo: 78,
     name: 'Uday Samant',
     party: 'SHS',
     age: 48,
@@ -3991,7 +3991,7 @@ export const MH_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Maharashtra2024/candidate.php?candidate_id=671',
   },
   {
-    acNo: 200,
+    acNo: 11,
     name: 'Amol Haribhau Jawale',
     party: 'BJP',
     age: 42,
@@ -4011,7 +4011,7 @@ export const MH_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Maharashtra2024/candidate.php?candidate_id=672',
   },
   {
-    acNo: 201,
+    acNo: 196,
     name: 'Ameet Subhashrao Zanak',
     party: 'INC',
     age: 39,
@@ -4031,7 +4031,7 @@ export const MH_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Maharashtra2024/candidate.php?candidate_id=673',
   },
   {
-    acNo: 202,
+    acNo: 213,
     name: 'Nanabhau Falgunrao Patole',
     party: 'INC',
     age: 61,
@@ -4051,7 +4051,7 @@ export const MH_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Maharashtra2024/candidate.php?candidate_id=314',
   },
   {
-    acNo: 203,
+    acNo: 5,
     name: 'Manjula Gavit',
     party: 'SHS',
     age: 61,
@@ -4071,7 +4071,7 @@ export const MH_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Maharashtra2024/candidate.php?candidate_id=317',
   },
   {
-    acNo: 204,
+    acNo: 93,
     name: 'Dhananjay Hari Gadgil',
     party: 'BJP',
     age: 71,
@@ -4091,7 +4091,7 @@ export const MH_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Maharashtra2024/candidate.php?candidate_id=321',
   },
   {
-    acNo: 205,
+    acNo: 48,
     name: 'Amol Dhondiba Khatal',
     party: 'SHS',
     age: 41,
@@ -4111,7 +4111,7 @@ export const MH_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Maharashtra2024/candidate.php?candidate_id=680',
   },
   {
-    acNo: 206,
+    acNo: 93,
     name: 'Dr. Babasaheb Annasaheb Deshmukh',
     party: 'Peasants A',
     age: 37,
@@ -4131,7 +4131,7 @@ export const MH_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Maharashtra2024/candidate.php?candidate_id=685',
   },
   {
-    acNo: 207,
+    acNo: 166,
     name: 'Dr Ashishrao Deshmukh',
     party: 'BJP',
     age: 49,
@@ -4151,7 +4151,7 @@ export const MH_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Maharashtra2024/candidate.php?candidate_id=3320',
   },
   {
-    acNo: 208,
+    acNo: 82,
     name: 'Deepak Kesarkar',
     party: 'SHS',
     age: 69,
@@ -4171,7 +4171,7 @@ export const MH_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Maharashtra2024/candidate.php?candidate_id=689',
   },
   {
-    acNo: 209,
+    acNo: 2,
     name: 'Rajesh Udesing Padvi',
     party: 'BJP',
     age: 55,
@@ -4191,7 +4191,7 @@ export const MH_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Maharashtra2024/candidate.php?candidate_id=335',
   },
   {
-    acNo: 210,
+    acNo: 272,
     name: 'Daulat Daroda',
     party: 'NCP',
     age: 56,
@@ -4211,7 +4211,7 @@ export const MH_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Maharashtra2024/candidate.php?candidate_id=336',
   },
   {
-    acNo: 211,
+    acNo: 88,
     name: 'Vinay Kore',
     party: 'Jan Surajy',
     age: 53,
@@ -4230,7 +4230,7 @@ export const MH_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Maharashtra2024/candidate.php?candidate_id=339',
   },
   {
-    acNo: 212,
+    acNo: 40,
     name: 'Monica Rajeev Rajale',
     party: 'BJP',
     age: 52,
@@ -4250,7 +4250,7 @@ export const MH_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Maharashtra2024/candidate.php?candidate_id=347',
   },
   {
-    acNo: 213,
+    acNo: 95,
     name: 'Deshmukh Satyajit Shivajirao',
     party: 'BJP',
     age: 51,
@@ -4270,7 +4270,7 @@ export const MH_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Maharashtra2024/candidate.php?candidate_id=693',
   },
   {
-    acNo: 214,
+    acNo: 38,
     name: 'Vikhe Patil',
     party: 'BJP',
     age: 65,
@@ -4289,7 +4289,7 @@ export const MH_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Maharashtra2024/candidate.php?candidate_id=354',
   },
   {
-    acNo: 215,
+    acNo: 9,
     name: 'Kashiram Pawara',
     party: 'BJP',
     age: 58,
@@ -4309,7 +4309,7 @@ export const MH_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Maharashtra2024/candidate.php?candidate_id=357',
   },
   {
-    acNo: 216,
+    acNo: 52,
     name: 'Dnyaneshwar Alias Mauli Aba Katke',
     party: 'NCP',
     age: 47,
@@ -4329,7 +4329,7 @@ export const MH_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Maharashtra2024/candidate.php?candidate_id=3201',
   },
   {
-    acNo: 217,
+    acNo: 249,
     name: 'Ajay Vinayak Choudhari',
     party: 'SHSUBT',
     age: 71,
@@ -4349,7 +4349,7 @@ export const MH_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Maharashtra2024/candidate.php?candidate_id=702',
   },
   {
-    acNo: 218,
+    acNo: 63,
     name: 'Siddharth Shirole',
     party: 'BJP',
     age: 45,
@@ -4369,7 +4369,7 @@ export const MH_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Maharashtra2024/candidate.php?candidate_id=704',
   },
   {
-    acNo: 219,
+    acNo: 46,
     name: 'Pachpute Vikram Babanrao',
     party: 'BJP',
     age: 39,
@@ -4389,7 +4389,7 @@ export const MH_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Maharashtra2024/candidate.php?candidate_id=2600',
   },
   {
-    acNo: 220,
+    acNo: 43,
     name: 'Ogale Hemant Bhujangrao',
     party: 'INC',
     age: 44,
@@ -4409,7 +4409,7 @@ export const MH_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Maharashtra2024/candidate.php?candidate_id=710',
   },
   {
-    acNo: 221,
+    acNo: 259,
     name: 'Sunil Tatkare',
     party: 'NCP',
     age: 36,
@@ -4428,7 +4428,7 @@ export const MH_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Maharashtra2024/candidate.php?candidate_id=711',
   },
   {
-    acNo: 222,
+    acNo: 118,
     name: 'Abdul Sattar',
     party: 'SHS',
     age: 59,
@@ -4448,7 +4448,7 @@ export const MH_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Maharashtra2024/candidate.php?candidate_id=77',
   },
   {
-    acNo: 223,
+    acNo: 8,
     name: 'Jaykumar Rawal',
     party: 'BJP',
     age: 49,
@@ -4468,7 +4468,7 @@ export const MH_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Maharashtra2024/candidate.php?candidate_id=718',
   },
   {
-    acNo: 224,
+    acNo: 34,
     name: 'Manikrao Kokate',
     party: 'NCP',
     age: 67,
@@ -4488,7 +4488,7 @@ export const MH_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Maharashtra2024/candidate.php?candidate_id=719',
   },
   {
-    acNo: 225,
+    acNo: 245,
     name: 'Captain Tamil Selvan',
     party: 'BJP',
     age: 66,
@@ -4508,7 +4508,7 @@ export const MH_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Maharashtra2024/candidate.php?candidate_id=3385',
   },
   {
-    acNo: 226,
+    acNo: 101,
     name: 'Devendra Kothe',
     party: 'BJP',
     age: 34,
@@ -4528,7 +4528,7 @@ export const MH_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Maharashtra2024/candidate.php?candidate_id=725',
   },
   {
-    acNo: 227,
+    acNo: 100,
     name: 'Deshmukh Vijay Sidramappa',
     party: 'BJP',
     age: 68,
@@ -4548,7 +4548,7 @@ export const MH_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Maharashtra2024/candidate.php?candidate_id=729',
   },
   {
-    acNo: 228,
+    acNo: 102,
     name: 'Subhash Deshmukh',
     party: 'BJP',
     age: 67,
@@ -4568,7 +4568,7 @@ export const MH_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Maharashtra2024/candidate.php?candidate_id=731',
   },
   {
-    acNo: 229,
+    acNo: 98,
     name: 'Rohit Suman R.R. Aba Patil',
     party: 'NCP-Sharad',
     age: 25,
@@ -4587,7 +4587,7 @@ export const MH_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Maharashtra2024/candidate.php?candidate_id=1850',
   },
   {
-    acNo: 230,
+    acNo: 182,
     name: 'Rajesh Shriramji Wankhade',
     party: 'BJP',
     age: 54,
@@ -4607,7 +4607,7 @@ export const MH_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Maharashtra2024/candidate.php?candidate_id=740',
   },
   {
-    acNo: 231,
+    acNo: 214,
     name: 'Vijay Rahangdale',
     party: 'BJP',
     age: 56,
@@ -4627,7 +4627,7 @@ export const MH_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Maharashtra2024/candidate.php?candidate_id=748',
   },
   {
-    acNo: 232,
+    acNo: 134,
     name: 'Ranajagjitsinha Padmasinha Patil',
     party: 'BJP',
     age: 52,
@@ -4647,7 +4647,7 @@ export const MH_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Maharashtra2024/candidate.php?candidate_id=749',
   },
   {
-    acNo: 233,
+    acNo: 212,
     name: 'Karemore Raju Manikrao',
     party: 'NCP',
     age: 53,
@@ -4667,7 +4667,7 @@ export const MH_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Maharashtra2024/candidate.php?candidate_id=752',
   },
   {
-    acNo: 234,
+    acNo: 128,
     name: 'Sanjay Baburao Bansode',
     party: 'NCP',
     age: 52,
@@ -4687,7 +4687,7 @@ export const MH_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Maharashtra2024/candidate.php?candidate_id=756',
   },
   {
-    acNo: 235,
+    acNo: 287,
     name: 'Kumar Ailani',
     party: 'BJP',
     age: 66,
@@ -4727,7 +4727,7 @@ export const MH_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Maharashtra2024/candidate.php?candidate_id=1123',
   },
   {
-    acNo: 237,
+    acNo: 194,
     name: 'Kisan Maroti Wankhede',
     party: 'BJP',
     age: 60,
@@ -4746,7 +4746,7 @@ export const MH_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Maharashtra2024/candidate.php?candidate_id=761',
   },
   {
-    acNo: 238,
+    acNo: 164,
     name: 'Sanjay Narayanrao Meshram',
     party: 'INC',
     age: 65,
@@ -4765,7 +4765,7 @@ export const MH_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Maharashtra2024/candidate.php?candidate_id=764',
   },
   {
-    acNo: 239,
+    acNo: 62,
     name: 'Bapusaheb Tukaram Pathare',
     party: 'NCP-Sharad',
     age: 65,
@@ -4785,7 +4785,7 @@ export const MH_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Maharashtra2024/candidate.php?candidate_id=771',
   },
   {
-    acNo: 240,
+    acNo: 116,
     name: 'Ramesh Bornare',
     party: 'SHS',
     age: 58,
@@ -4805,7 +4805,7 @@ export const MH_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Maharashtra2024/candidate.php?candidate_id=778',
   },
   {
-    acNo: 241,
+    acNo: 243,
     name: 'Ashish Shelar',
     party: 'BJP',
     age: 52,
@@ -4844,7 +4844,7 @@ export const MH_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Maharashtra2024/candidate.php?candidate_id=783',
   },
   {
-    acNo: 243,
+    acNo: 274,
     name: 'Sneha Dube Pandit',
     party: 'BJP',
     age: 38,
@@ -4864,7 +4864,7 @@ export const MH_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Maharashtra2024/candidate.php?candidate_id=788',
   },
   {
-    acNo: 244,
+    acNo: 230,
     name: 'Haroon Khan',
     party: 'SHSUBT',
     age: 62,
@@ -4884,7 +4884,7 @@ export const MH_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Maharashtra2024/candidate.php?candidate_id=793',
   },
   {
-    acNo: 245,
+    acNo: 222,
     name: 'Sunil Raut',
     party: 'SHSUBT',
     age: 59,
@@ -4924,7 +4924,7 @@ export const MH_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Maharashtra2024/candidate.php?candidate_id=800',
   },
   {
-    acNo: 247,
+    acNo: 246,
     name: 'Kalidas Kolambkar',
     party: 'BJP',
     age: 71,
@@ -4944,7 +4944,7 @@ export const MH_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Maharashtra2024/candidate.php?candidate_id=233',
   },
   {
-    acNo: 248,
+    acNo: 281,
     name: 'Makrand Patil',
     party: 'NCP',
     age: 59,
@@ -4963,7 +4963,7 @@ export const MH_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Maharashtra2024/candidate.php?candidate_id=809',
   },
   {
-    acNo: 249,
+    acNo: 281,
     name: 'Derkar Sanjay Nilkanthrao',
     party: 'SHSUBT',
     age: 60,
@@ -4983,7 +4983,7 @@ export const MH_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Maharashtra2024/candidate.php?candidate_id=813',
   },
   {
-    acNo: 250,
+    acNo: 168,
     name: 'Pankaj Bhoyar',
     party: 'BJP',
     age: 47,
@@ -5003,7 +5003,7 @@ export const MH_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Maharashtra2024/candidate.php?candidate_id=232',
   },
   {
-    acNo: 251,
+    acNo: 168,
     name: 'Karan Sanjay Deotale',
     party: 'BJP',
     age: 29,
@@ -5023,7 +5023,7 @@ export const MH_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Maharashtra2024/candidate.php?candidate_id=818',
   },
   {
-    acNo: 252,
+    acNo: 195,
     name: 'Shyam Ramcharan Khode',
     party: 'BJP',
     age: 58,
@@ -5043,7 +5043,7 @@ export const MH_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Maharashtra2024/candidate.php?candidate_id=820',
   },
   {
-    acNo: 253,
+    acNo: 248,
     name: 'Aditya Uddhav Thackeray',
     party: 'SHSUBT',
     age: 34,
@@ -5063,7 +5063,7 @@ export const MH_MLA_PROFILES: MLAProfile[] = [
     sourceUrl: 'https://www.myneta.info/Maharashtra2024/candidate.php?candidate_id=230',
   },
   {
-    acNo: 254,
+    acNo: 189,
     name: 'Anil Alias Balasaheb Shankarrao Mangulkar',
     party: 'INC',
     age: 65,
