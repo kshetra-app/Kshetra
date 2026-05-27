@@ -259,7 +259,7 @@ export default function SimulatorScreen() {
             {/* District Breakdown */}
             <Text style={styles.sectionTitle}>District Breakdown</Text>
             <Text style={styles.sectionSub}>
-              Ideal: {formatPopulation(quickSim.idealPopPerSeat)}/seat
+              Ideal: {formatPopulation(quickSim.totals.idealPopPerSeat)}/seat
             </Text>
 
             {quickSim.districtBreakdown
@@ -281,12 +281,19 @@ export default function SimulatorScreen() {
                         {d.deviationPercent > 0 ? '+' : ''}{d.deviationPercent}%
                       </Text>
                     </View>
-                    {/* SC/ST mini bar */}
-                    <View style={styles.miniBar}>
-                      <View style={[styles.miniSeg, { flex: d.scPercent, backgroundColor: '#F59E0B' }]} />
-                      <View style={[styles.miniSeg, { flex: d.stPercent, backgroundColor: '#10B981' }]} />
-                      <View style={[styles.miniSeg, { flex: Math.max(0.1, 100 - d.scPercent - d.stPercent), backgroundColor: '#1F293780' }]} />
-                    </View>
+                    {/* SC/ST mini bar — derived from reserved seat counts */}
+                    {(() => {
+                      const scPct = d.projectedSeats > 0 ? Math.round((d.scReserved / d.projectedSeats) * 100) : 0;
+                      const stPct = d.projectedSeats > 0 ? Math.round((d.stReserved / d.projectedSeats) * 100) : 0;
+                      const genPct = Math.max(0.1, 100 - scPct - stPct);
+                      return (
+                        <View style={styles.miniBar}>
+                          <View style={[styles.miniSeg, { flex: scPct || 0.1, backgroundColor: '#F59E0B' }]} />
+                          <View style={[styles.miniSeg, { flex: stPct || 0.1, backgroundColor: '#10B981' }]} />
+                          <View style={[styles.miniSeg, { flex: genPct, backgroundColor: '#1F293780' }]} />
+                        </View>
+                      );
+                    })()}
                   </View>
                 );
               })}

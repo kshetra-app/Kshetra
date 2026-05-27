@@ -108,5 +108,59 @@
     "file": "telangana-assembly.json",
     "count": 119,
     "hasPolygons": true
+  },
+  "MN": {
+    "file": "mn-assembly.json",
+    "count": 60,
+    "hasPolygons": false,
+    "status": "placeholder"
+  },
+  "ML": {
+    "file": "ml-assembly.json",
+    "count": 60,
+    "hasPolygons": false,
+    "status": "placeholder"
+  },
+  "MZ": {
+    "file": "mz-assembly.json",
+    "count": 40,
+    "hasPolygons": false,
+    "status": "placeholder"
+  },
+  "NL": {
+    "file": "nl-assembly.json",
+    "count": 60,
+    "hasPolygons": false,
+    "status": "placeholder"
+  },
+  "TR": {
+    "file": "tr-assembly.json",
+    "count": 60,
+    "hasPolygons": false,
+    "status": "placeholder"
+  },
+  "UK": {
+    "file": "uk-assembly.json",
+    "count": 70,
+    "hasPolygons": false,
+    "status": "placeholder"
+  },
+  "AR": {
+    "file": "ar-assembly.json",
+    "count": 60,
+    "hasPolygons": false,
+    "status": "placeholder"
+  },
+  "SK": {
+    "file": "sk-assembly.json",
+    "count": 32,
+    "hasPolygons": false,
+    "status": "placeholder"
+  },
+  "PY": {
+    "file": "py-assembly.json",
+    "count": 30,
+    "hasPolygons": false,
+    "status": "placeholder"
   }
 }

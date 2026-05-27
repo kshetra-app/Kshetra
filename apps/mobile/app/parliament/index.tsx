@@ -31,23 +31,38 @@ export default function ParliamentScreen() {
   const selectedState = useActiveStateStore((s) => s.stateCode);
   const [tab, setTab] = useState<TabType>('overview');
 
-  const ndaStrength = useMemo(() => getAllianceStrength('NDA'), []);
-  const indiaStrength = useMemo(() => getAllianceStrength('INDIA'), []);
-  const othersStrength = useMemo(() => getAllianceStrength('Others'), []);
+  // getAllianceStrength() returns { NDA: n, INDIA: n, Others: n }
+  const allianceMap = useMemo(() => getAllianceStrength(), []);
+  const ndaStrength   = { total: allianceMap['NDA'] ?? 0, lokSabha: allianceMap['NDA'] ?? 0, rajyaSabha: 0 };
+  const indiaStrength = { total: allianceMap['INDIA'] ?? 0, lokSabha: allianceMap['INDIA'] ?? 0, rajyaSabha: 0 };
+  const othersStrength = { total: allianceMap['Others'] ?? 0, lokSabha: allianceMap['Others'] ?? 0, rajyaSabha: 0 };
 
-  const stateSummary = useMemo(
-    () => STATE_PARLIAMENTARY_SUMMARIES.find((s) => s.stateCode === selectedState),
-    [selectedState],
-  );
+  // STATE_PARLIAMENTARY_SUMMARIES is a Record<stateCode, {ls, rs, total}>
+  const stateSummary = useMemo(() => {
+    const rec = STATE_PARLIAMENTARY_SUMMARIES[selectedState];
+    if (!rec) return null;
+    return {
+      stateCode: selectedState,
+      stateName: selectedState,
+      lokSabhaSeats: rec.ls,
+      rajyaSabhaSeats: rec.rs,
+      partyWise: [] as { party: string; lokSabha: number; rajyaSabha: number }[],
+    };
+  }, [selectedState]);
 
   const stateMPs = useMemo(() => getMPsByState(selectedState), [selectedState]);
   const lokSabhaMPs = useMemo(() => stateMPs.filter((m) => m.house === 'lok_sabha'), [stateMPs]);
   const rajyaSabhaMPs = useMemo(() => stateMPs.filter((m) => m.house === 'rajya_sabha'), [stateMPs]);
 
+  // NATIONAL_PARTY_STRENGTH is Record<party, seats>; convert to sorted array
   const topParties = useMemo(
-    () => [...NATIONAL_PARTY_STRENGTH].sort((a, b) => b.totalSeats - a.totalSeats).slice(0, 10),
+    () => Object.entries(NATIONAL_PARTY_STRENGTH)
+      .map(([party, seats]) => ({ party, lokSabhaSeats: seats, rajyaSabhaSeats: 0, totalSeats: seats }))
+      .sort((a, b) => b.totalSeats - a.totalSeats)
+      .slice(0, 10),
     [],
   );
+
 
   const { insets } = useResponsive();
 

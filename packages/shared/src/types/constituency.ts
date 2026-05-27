@@ -24,6 +24,11 @@ export type PartyCode =
   | 'JKNC'
   | 'SHSUBT'
   | 'NCPSP'
+  | 'NPP'
+  | 'ZPM'
+  | 'NDPP'
+  | 'SKM'
+  | 'NDA'
   | 'NOTA'
   | 'IND'
   | 'OTH';

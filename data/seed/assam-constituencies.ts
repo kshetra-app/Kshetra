@@ -1,0 +1,138 @@
+/**
+ * Assam Assembly Constituencies — 112 seats (2026)
+ *
+ * AUTO-GENERATED from MyNeta.info scrape data.
+ * Date: 2026-05-26
+ */
+
+export interface ASConstituencySeed {
+  acNo: number;
+  name: string;
+  district: string;
+  type: 'GEN' | 'SC' | 'ST';
+  winner2026: string;
+  winnerName2026: string;
+  winnerVotes2026: number;
+  runnerUp2026: string;
+  margin2026: number;
+  currentParty: string;
+}
+
+export const AS_CONSTITUENCIES: ASConstituencySeed[] = [
+  { acNo: 1, name: 'Abhayapuri', district: 'Bongaigaon', type: 'GEN', winner2026: 'BJP', winnerName2026: 'Bhupen Roy', winnerVotes2026: 0, runnerUp2026: '', margin2026: 0, currentParty: 'BJP' },
+  { acNo: 2, name: 'Algapur-Katlicherra', district: 'Hailakandi', type: 'GEN', winner2026: 'INC', winnerName2026: 'Zubair Anam Mazumder', winnerVotes2026: 0, runnerUp2026: '', margin2026: 0, currentParty: 'INC' },
+  { acNo: 3, name: 'Amri', district: 'St', type: 'GEN', winner2026: 'BJP', winnerName2026: 'Habbey Teron', winnerVotes2026: 0, runnerUp2026: '', margin2026: 0, currentParty: 'BJP' },
+  { acNo: 4, name: 'Bajali', district: 'Bajali', type: 'GEN', winner2026: 'AGP', winnerName2026: 'Dharmeswar Roy', winnerVotes2026: 0, runnerUp2026: '', margin2026: 0, currentParty: 'AGP' },
+  { acNo: 5, name: 'Baksa', district: 'St', type: 'GEN', winner2026: 'BPF', winnerName2026: 'Maneswar Brahma', winnerVotes2026: 0, runnerUp2026: '', margin2026: 0, currentParty: 'BPF' },
+  { acNo: 6, name: 'Baokhungri', district: 'Kokrajhar', type: 'GEN', winner2026: 'BPF', winnerName2026: 'Rupam Chandra Roy', winnerVotes2026: 0, runnerUp2026: '', margin2026: 0, currentParty: 'BPF' },
+  { acNo: 7, name: 'Barchalla', district: 'Sonitpur', type: 'GEN', winner2026: 'BJP', winnerName2026: 'Ritu Baran Sarmah', winnerVotes2026: 0, runnerUp2026: '', margin2026: 0, currentParty: 'BJP' },
+  { acNo: 8, name: 'Barhampur', district: 'Nagaon', type: 'GEN', winner2026: 'BJP', winnerName2026: 'Jitu Goswami', winnerVotes2026: 0, runnerUp2026: '', margin2026: 0, currentParty: 'BJP' },
+  { acNo: 9, name: 'Barpeta', district: 'Sc', type: 'GEN', winner2026: 'AGP', winnerName2026: 'Dipak Kumar Das', winnerVotes2026: 0, runnerUp2026: '', margin2026: 0, currentParty: 'AGP' },
+  { acNo: 10, name: 'Behali', district: 'Sc', type: 'GEN', winner2026: 'BJP', winnerName2026: 'Munindra Das', winnerVotes2026: 0, runnerUp2026: '', margin2026: 0, currentParty: 'BJP' },
+  { acNo: 11, name: 'Bhawanipur-Sorbhog', district: 'Bajali', type: 'GEN', winner2026: 'BJP', winnerName2026: 'Ranjeet Kumar Dass', winnerVotes2026: 0, runnerUp2026: '', margin2026: 0, currentParty: 'BJP' },
+  { acNo: 12, name: 'Bhergaon', district: 'Udalguri', type: 'GEN', winner2026: 'BPF', winnerName2026: 'Maheswar Baro', winnerVotes2026: 0, runnerUp2026: '', margin2026: 0, currentParty: 'BPF' },
+  { acNo: 13, name: 'Bihpuria', district: 'Lakhimpur', type: 'GEN', winner2026: 'BJP', winnerName2026: 'Bhupen Kumar Borah', winnerVotes2026: 0, runnerUp2026: '', margin2026: 0, currentParty: 'BJP' },
+  { acNo: 14, name: 'Bijni', district: 'Chirang', type: 'GEN', winner2026: 'BJP', winnerName2026: 'Arup Kumar Dey', winnerVotes2026: 0, runnerUp2026: '', margin2026: 0, currentParty: 'BJP' },
+  { acNo: 15, name: 'Bilasipara', district: 'Dhubri', type: 'GEN', winner2026: 'AGP', winnerName2026: 'Jibesh Roy', winnerVotes2026: 0, runnerUp2026: '', margin2026: 0, currentParty: 'AGP' },
+  { acNo: 16, name: 'Binnakandi', district: 'Hojai', type: 'GEN', winner2026: 'AITC', winnerName2026: 'Mohammed Badruddin Ajmal', winnerVotes2026: 0, runnerUp2026: '', margin2026: 0, currentParty: 'AITC' },
+  { acNo: 17, name: 'Biswanath', district: 'Biswanath', type: 'GEN', winner2026: 'BJP', winnerName2026: 'Pallab Lochan Das', winnerVotes2026: 0, runnerUp2026: '', margin2026: 0, currentParty: 'BJP' },
+  { acNo: 18, name: 'Bokajan', district: 'St', type: 'GEN', winner2026: 'BJP', winnerName2026: 'Surjya Rongphar', winnerVotes2026: 0, runnerUp2026: '', margin2026: 0, currentParty: 'BJP' },
+  { acNo: 19, name: 'Bokakhat', district: 'Golaghat', type: 'GEN', winner2026: 'AGP', winnerName2026: 'Atul Bora', winnerVotes2026: 0, runnerUp2026: '', margin2026: 0, currentParty: 'AGP' },
+  { acNo: 20, name: 'Boko-Chaygaon', district: 'St', type: 'GEN', winner2026: 'BJP', winnerName2026: 'Raju Mesh', winnerVotes2026: 0, runnerUp2026: '', margin2026: 0, currentParty: 'BJP' },
+  { acNo: 21, name: 'Bongaigaon', district: 'Bongaigaon', type: 'GEN', winner2026: 'AGP', winnerName2026: 'Diptimayee Choudhury', winnerVotes2026: 0, runnerUp2026: '', margin2026: 0, currentParty: 'AGP' },
+  { acNo: 22, name: 'Borkhola', district: 'Cachar', type: 'GEN', winner2026: 'BJP', winnerName2026: 'Kishor Nath', winnerVotes2026: 0, runnerUp2026: '', margin2026: 0, currentParty: 'BJP' },
+  { acNo: 23, name: 'Chabua-Lahowal', district: 'Dibrugarh', type: 'GEN', winner2026: 'BJP', winnerName2026: 'Binod Hazarika', winnerVotes2026: 0, runnerUp2026: '', margin2026: 0, currentParty: 'BJP' },
+  { acNo: 24, name: 'Chamaria', district: 'Kamrup', type: 'GEN', winner2026: 'INC', winnerName2026: 'Rekibuddin Ahmed', winnerVotes2026: 0, runnerUp2026: '', margin2026: 0, currentParty: 'INC' },
+  { acNo: 25, name: 'Dalgaon', district: 'Darrang', type: 'GEN', winner2026: 'AITC', winnerName2026: 'Mazibur Rahman', winnerVotes2026: 0, runnerUp2026: '', margin2026: 0, currentParty: 'AITC' },
+  { acNo: 26, name: 'Demow', district: 'Sibsagar', type: 'GEN', winner2026: 'BJP', winnerName2026: 'Susanta Borgohain', winnerVotes2026: 0, runnerUp2026: '', margin2026: 0, currentParty: 'BJP' },
+  { acNo: 27, name: 'Dergaon', district: 'Golaghat', type: 'GEN', winner2026: 'BJP', winnerName2026: 'Mridul Kumar Dutta', winnerVotes2026: 0, runnerUp2026: '', margin2026: 0, currentParty: 'BJP' },
+  { acNo: 28, name: 'Dhakuakhana', district: 'St', type: 'GEN', winner2026: 'BJP', winnerName2026: 'Shri Naba Kumar Doley', winnerVotes2026: 0, runnerUp2026: '', margin2026: 0, currentParty: 'BJP' },
+  { acNo: 29, name: 'Dhekiajuli', district: 'Sonitpur', type: 'GEN', winner2026: 'BJP', winnerName2026: 'Ashok Singhal', winnerVotes2026: 0, runnerUp2026: '', margin2026: 0, currentParty: 'BJP' },
+  { acNo: 30, name: 'Dhemaji', district: 'St', type: 'GEN', winner2026: 'BJP', winnerName2026: 'Dr. Ranoj Pegu', winnerVotes2026: 0, runnerUp2026: '', margin2026: 0, currentParty: 'BJP' },
+  { acNo: 31, name: 'Dhing', district: 'Nagaon', type: 'GEN', winner2026: 'RD', winnerName2026: 'Mehboob Muktar', winnerVotes2026: 0, runnerUp2026: '', margin2026: 0, currentParty: 'RD' },
+  { acNo: 32, name: 'Dholai', district: 'Sc', type: 'GEN', winner2026: 'BJP', winnerName2026: 'Amiya Kanti Das', winnerVotes2026: 0, runnerUp2026: '', margin2026: 0, currentParty: 'BJP' },
+  { acNo: 33, name: 'Dibrugarh', district: 'Dibrugarh', type: 'GEN', winner2026: 'BJP', winnerName2026: 'Prasanta Phukan', winnerVotes2026: 0, runnerUp2026: '', margin2026: 0, currentParty: 'BJP' },
+  { acNo: 34, name: 'Digboi', district: 'Tinsukia', type: 'GEN', winner2026: 'BJP', winnerName2026: 'Suren Phukan', winnerVotes2026: 0, runnerUp2026: '', margin2026: 0, currentParty: 'BJP' },
+  { acNo: 35, name: 'Dimoria', district: 'Sc', type: 'GEN', winner2026: 'AGP', winnerName2026: 'Dr. Tapan Das', winnerVotes2026: 0, runnerUp2026: '', margin2026: 0, currentParty: 'AGP' },
+  { acNo: 36, name: 'Diphu', district: 'St', type: 'GEN', winner2026: 'BJP', winnerName2026: 'Niso Terangpi', winnerVotes2026: 0, runnerUp2026: '', margin2026: 0, currentParty: 'BJP' },
+  { acNo: 37, name: 'Dispur', district: 'Kamrup Metro', type: 'GEN', winner2026: 'BJP', winnerName2026: 'Pradyut Bordoloi', winnerVotes2026: 0, runnerUp2026: '', margin2026: 0, currentParty: 'BJP' },
+  { acNo: 38, name: 'Doom Dooma', district: 'Tinsukia', type: 'GEN', winner2026: 'BJP', winnerName2026: 'Rupesh Gowala', winnerVotes2026: 0, runnerUp2026: '', margin2026: 0, currentParty: 'BJP' },
+  { acNo: 39, name: 'Dotma', district: 'St', type: 'GEN', winner2026: 'BPF', winnerName2026: 'Rabiram Narzary', winnerVotes2026: 0, runnerUp2026: '', margin2026: 0, currentParty: 'BPF' },
+  { acNo: 40, name: 'Dudhnoi', district: 'St', type: 'GEN', winner2026: 'BJP', winnerName2026: 'Tankeswar Rabha', winnerVotes2026: 0, runnerUp2026: '', margin2026: 0, currentParty: 'BJP' },
+  { acNo: 41, name: 'Gauripur', district: 'Dhubri', type: 'GEN', winner2026: 'INC', winnerName2026: 'Abdus Sobahan Ali Sarkar', winnerVotes2026: 0, runnerUp2026: '', margin2026: 0, currentParty: 'INC' },
+  { acNo: 42, name: 'Goalpara East', district: 'Goalpara', type: 'GEN', winner2026: 'INC', winnerName2026: 'Abul Kalam Rasheed Alam', winnerVotes2026: 0, runnerUp2026: '', margin2026: 0, currentParty: 'INC' },
+  { acNo: 43, name: 'Goalpara West', district: 'St', type: 'GEN', winner2026: 'BJP', winnerName2026: 'Pabitra Rabha', winnerVotes2026: 0, runnerUp2026: '', margin2026: 0, currentParty: 'BJP' },
+  { acNo: 44, name: 'Gohpur', district: 'Biswanath', type: 'GEN', winner2026: 'BJP', winnerName2026: 'Utpal Borah', winnerVotes2026: 0, runnerUp2026: '', margin2026: 0, currentParty: 'BJP' },
+  { acNo: 45, name: 'Golaghat', district: 'Golaghat', type: 'GEN', winner2026: 'BJP', winnerName2026: 'Ajanta Neog', winnerVotes2026: 0, runnerUp2026: '', margin2026: 0, currentParty: 'BJP' },
+  { acNo: 46, name: 'Golakganj', district: 'Dhubri', type: 'GEN', winner2026: 'BJP', winnerName2026: 'Ashwini Ray Sarkar', winnerVotes2026: 0, runnerUp2026: '', margin2026: 0, currentParty: 'BJP' },
+  { acNo: 47, name: 'Goreswar', district: 'Tamulpur', type: 'GEN', winner2026: 'BJP', winnerName2026: 'Victor Kumar Das', winnerVotes2026: 0, runnerUp2026: '', margin2026: 0, currentParty: 'BJP' },
+  { acNo: 48, name: 'Gossaigaon', district: 'Kokrajhar', type: 'GEN', winner2026: 'BPF', winnerName2026: 'Sabharam Basumatary', winnerVotes2026: 0, runnerUp2026: '', margin2026: 0, currentParty: 'BPF' },
+  { acNo: 49, name: 'Haflong', district: 'St', type: 'GEN', winner2026: 'BJP', winnerName2026: 'Rupali Langthasa', winnerVotes2026: 0, runnerUp2026: '', margin2026: 0, currentParty: 'BJP' },
+  { acNo: 50, name: 'Hailakandi', district: 'Hailakandi', type: 'GEN', winner2026: 'BJP', winnerName2026: 'Milon Das', winnerVotes2026: 0, runnerUp2026: '', margin2026: 0, currentParty: 'BJP' },
+  { acNo: 51, name: 'Hajo-Sualkuchi', district: 'Sc', type: 'GEN', winner2026: 'AGP', winnerName2026: 'Prakash Chandra Das', winnerVotes2026: 0, runnerUp2026: '', margin2026: 0, currentParty: 'AGP' },
+  { acNo: 52, name: 'Hojai', district: 'Hojai', type: 'GEN', winner2026: 'BJP', winnerName2026: 'Shiladitya Dev', winnerVotes2026: 0, runnerUp2026: '', margin2026: 0, currentParty: 'BJP' },
+  { acNo: 53, name: 'Howraghat', district: 'St', type: 'GEN', winner2026: 'BJP', winnerName2026: 'Lunsing Teron', winnerVotes2026: 0, runnerUp2026: '', margin2026: 0, currentParty: 'BJP' },
+  { acNo: 54, name: 'Jagiroad', district: 'Sc', type: 'GEN', winner2026: 'BJP', winnerName2026: 'Pijush Hazarika', winnerVotes2026: 0, runnerUp2026: '', margin2026: 0, currentParty: 'BJP' },
+  { acNo: 55, name: 'Jaleswar', district: 'Goalpara', type: 'GEN', winner2026: 'INC', winnerName2026: 'Aftab Uddin Mollah', winnerVotes2026: 0, runnerUp2026: '', margin2026: 0, currentParty: 'INC' },
+  { acNo: 56, name: 'Jalukbari', district: 'Kamrup Metro', type: 'GEN', winner2026: 'BJP', winnerName2026: 'Himanta Biswa Sarma', winnerVotes2026: 0, runnerUp2026: '', margin2026: 0, currentParty: 'BJP' },
+  { acNo: 57, name: 'Jorhat', district: 'Jorhat', type: 'GEN', winner2026: 'BJP', winnerName2026: 'Hitendra Nath Goswami', winnerVotes2026: 0, runnerUp2026: '', margin2026: 0, currentParty: 'BJP' },
+  { acNo: 58, name: 'Kaliabor', district: 'Nagaon', type: 'GEN', winner2026: 'AGP', winnerName2026: 'Keshab Mahanta', winnerVotes2026: 0, runnerUp2026: '', margin2026: 0, currentParty: 'AGP' },
+  { acNo: 59, name: 'Kamalpur', district: 'Kamrup', type: 'GEN', winner2026: 'BJP', winnerName2026: 'Diganta Kalita', winnerVotes2026: 0, runnerUp2026: '', margin2026: 0, currentParty: 'BJP' },
+  { acNo: 60, name: 'Karimganj North', district: 'Sribhumi', type: 'GEN', winner2026: 'INC', winnerName2026: 'Jakaria Ahmed', winnerVotes2026: 0, runnerUp2026: '', margin2026: 0, currentParty: 'INC' },
+  { acNo: 61, name: 'Karimganj South', district: 'Sribhumi', type: 'GEN', winner2026: 'INC', winnerName2026: 'Aminur Rashid Choudhury', winnerVotes2026: 0, runnerUp2026: '', margin2026: 0, currentParty: 'INC' },
+  { acNo: 62, name: 'Katigorah', district: 'Cachar', type: 'GEN', winner2026: 'BJP', winnerName2026: 'Kamalakhya Dey Purkayastha', winnerVotes2026: 0, runnerUp2026: '', margin2026: 0, currentParty: 'BJP' },
+  { acNo: 63, name: 'Khowang', district: 'Dibrugarh', type: 'GEN', winner2026: 'BJP', winnerName2026: 'Chakradhar Gogoi', winnerVotes2026: 0, runnerUp2026: '', margin2026: 0, currentParty: 'BJP' },
+  { acNo: 64, name: 'Khumtai', district: 'Golaghat', type: 'GEN', winner2026: 'BJP', winnerName2026: 'Mrinal Saikia', winnerVotes2026: 0, runnerUp2026: '', margin2026: 0, currentParty: 'BJP' },
+  { acNo: 65, name: 'Laharighat', district: 'Morigaon', type: 'GEN', winner2026: 'INC', winnerName2026: 'Dr Asif Mohammad Nazar', winnerVotes2026: 0, runnerUp2026: '', margin2026: 0, currentParty: 'INC' },
+  { acNo: 66, name: 'Lakhimpur', district: 'Lakhimpur', type: 'GEN', winner2026: 'BJP', winnerName2026: 'Manab Deka', winnerVotes2026: 0, runnerUp2026: '', margin2026: 0, currentParty: 'BJP' },
+  { acNo: 67, name: 'Lakhipur', district: 'Cachar', type: 'GEN', winner2026: 'BJP', winnerName2026: 'Kaushik Rai', winnerVotes2026: 0, runnerUp2026: '', margin2026: 0, currentParty: 'BJP' },
+  { acNo: 68, name: 'Lumding', district: 'Hojai', type: 'GEN', winner2026: 'BJP', winnerName2026: 'Sibu Misra', winnerVotes2026: 0, runnerUp2026: '', margin2026: 0, currentParty: 'BJP' },
+  { acNo: 69, name: 'Mahmora', district: 'Charaideo', type: 'GEN', winner2026: 'BJP', winnerName2026: 'Suruj Dehingia', winnerVotes2026: 0, runnerUp2026: '', margin2026: 0, currentParty: 'BJP' },
+  { acNo: 70, name: 'Majuli', district: 'St', type: 'GEN', winner2026: 'BJP', winnerName2026: 'Bhuban Gam', winnerVotes2026: 0, runnerUp2026: '', margin2026: 0, currentParty: 'BJP' },
+  { acNo: 71, name: 'Makum', district: 'Tinsukia', type: 'GEN', winner2026: 'BJP', winnerName2026: 'Sanjoy Kishan', winnerVotes2026: 0, runnerUp2026: '', margin2026: 0, currentParty: 'BJP' },
+  { acNo: 72, name: 'Manas', district: 'Baksa', type: 'GEN', winner2026: 'BPF', winnerName2026: 'Thaneswar Basumatary', winnerVotes2026: 0, runnerUp2026: '', margin2026: 0, currentParty: 'BPF' },
+  { acNo: 73, name: 'Mangaldai', district: 'Darrang', type: 'GEN', winner2026: 'BJP', winnerName2026: 'Nilima Devi', winnerVotes2026: 0, runnerUp2026: '', margin2026: 0, currentParty: 'BJP' },
+  { acNo: 74, name: 'Mankachar', district: 'South Salmara', type: 'GEN', winner2026: 'INC', winnerName2026: 'Mohibur Rohman', winnerVotes2026: 0, runnerUp2026: '', margin2026: 0, currentParty: 'INC' },
+  { acNo: 75, name: 'Margherita', district: 'Tinsukia', type: 'GEN', winner2026: 'BJP', winnerName2026: 'Bhaskar Sharma', winnerVotes2026: 0, runnerUp2026: '', margin2026: 0, currentParty: 'BJP' },
+  { acNo: 76, name: 'Mariani', district: 'Jorhat', type: 'GEN', winner2026: 'BJP', winnerName2026: 'Rupjyoti Kurmi', winnerVotes2026: 0, runnerUp2026: '', margin2026: 0, currentParty: 'BJP' },
+  { acNo: 77, name: 'Mazbat', district: 'Udalguri', type: 'GEN', winner2026: 'BPF', winnerName2026: 'Charan Boro', winnerVotes2026: 0, runnerUp2026: '', margin2026: 0, currentParty: 'BPF' },
+  { acNo: 78, name: 'Morigaon', district: 'Morigaon', type: 'GEN', winner2026: 'BJP', winnerName2026: 'Rama Kanta Dewri', winnerVotes2026: 0, runnerUp2026: '', margin2026: 0, currentParty: 'BJP' },
+  { acNo: 79, name: 'Naduar', district: 'Sonitpur', type: 'GEN', winner2026: 'BJP', winnerName2026: 'Padma Hazarika', winnerVotes2026: 0, runnerUp2026: '', margin2026: 0, currentParty: 'BJP' },
+  { acNo: 80, name: 'Nagaon-Batadraba', district: 'Nagaon', type: 'GEN', winner2026: 'BJP', winnerName2026: 'Rupak Sarmah', winnerVotes2026: 0, runnerUp2026: '', margin2026: 0, currentParty: 'BJP' },
+  { acNo: 81, name: 'Nalbari', district: 'Nalbari', type: 'GEN', winner2026: 'BJP', winnerName2026: 'Jayanta Malla Baruah', winnerVotes2026: 0, runnerUp2026: '', margin2026: 0, currentParty: 'BJP' },
+  { acNo: 82, name: 'Nazira', district: 'Sibsagar', type: 'GEN', winner2026: 'BJP', winnerName2026: 'Mayur Borgohain', winnerVotes2026: 0, runnerUp2026: '', margin2026: 0, currentParty: 'BJP' },
+  { acNo: 83, name: 'New Guwahati', district: 'Kamrup Metro', type: 'GEN', winner2026: 'BJP', winnerName2026: 'Diplu Ranjan Sarmah', winnerVotes2026: 0, runnerUp2026: '', margin2026: 0, currentParty: 'BJP' },
+  { acNo: 84, name: 'Nowboicha', district: 'Sc', type: 'GEN', winner2026: 'INC', winnerName2026: 'Dr. Joy Prakash Das', winnerVotes2026: 0, runnerUp2026: '', margin2026: 0, currentParty: 'INC' },
+  { acNo: 85, name: 'Pakabetbari', district: 'Barpeta', type: 'GEN', winner2026: 'INC', winnerName2026: 'Jakir Hussain Sikdar', winnerVotes2026: 0, runnerUp2026: '', margin2026: 0, currentParty: 'INC' },
+  { acNo: 86, name: 'Palasbari', district: 'Kamrup', type: 'GEN', winner2026: 'BJP', winnerName2026: 'Himangshu Shekhar Baishya', winnerVotes2026: 0, runnerUp2026: '', margin2026: 0, currentParty: 'BJP' },
+  { acNo: 87, name: 'Parbatjhora', district: 'Kokrajhar', type: 'GEN', winner2026: 'INC', winnerName2026: 'Md Ashraful Islam Sheikh', winnerVotes2026: 0, runnerUp2026: '', margin2026: 0, currentParty: 'INC' },
+  { acNo: 88, name: 'Patharkandi', district: 'Sribhumi', type: 'GEN', winner2026: 'BJP', winnerName2026: 'Krishnendu Paul', winnerVotes2026: 0, runnerUp2026: '', margin2026: 0, currentParty: 'BJP' },
+  { acNo: 89, name: 'Ram Krishna Nagar', district: 'Sc', type: 'GEN', winner2026: 'BJP', winnerName2026: 'Bijoy Malakar', winnerVotes2026: 0, runnerUp2026: '', margin2026: 0, currentParty: 'BJP' },
+  { acNo: 90, name: 'Rangapara', district: 'Sonitpur', type: 'GEN', winner2026: 'BJP', winnerName2026: 'Krishna Kamal Tanti', winnerVotes2026: 0, runnerUp2026: '', margin2026: 0, currentParty: 'BJP' },
+  { acNo: 91, name: 'Rangia', district: 'Kamrup', type: 'GEN', winner2026: 'BJP', winnerName2026: 'Bhabesh Kalita', winnerVotes2026: 0, runnerUp2026: '', margin2026: 0, currentParty: 'BJP' },
+  { acNo: 92, name: 'Rongkhang', district: 'St', type: 'GEN', winner2026: 'BJP', winnerName2026: 'Tuliram Ronghang', winnerVotes2026: 0, runnerUp2026: '', margin2026: 0, currentParty: 'BJP' },
+  { acNo: 93, name: 'Rongonadi', district: 'Lakhimpur', type: 'GEN', winner2026: 'BJP', winnerName2026: 'Rishiraj Hazarika', winnerVotes2026: 0, runnerUp2026: '', margin2026: 0, currentParty: 'BJP' },
+  { acNo: 94, name: 'Rupahihat', district: 'Nagaon', type: 'GEN', winner2026: 'INC', winnerName2026: 'Nurul Huda', winnerVotes2026: 0, runnerUp2026: '', margin2026: 0, currentParty: 'INC' },
+  { acNo: 95, name: 'Sadiya', district: 'Tinsukia', type: 'GEN', winner2026: 'BJP', winnerName2026: 'Bolin Chetia', winnerVotes2026: 0, runnerUp2026: '', margin2026: 0, currentParty: 'BJP' },
+  { acNo: 96, name: 'Samaguri', district: 'Nagaon', type: 'GEN', winner2026: 'INC', winnerName2026: 'Tanzil Hussain', winnerVotes2026: 0, runnerUp2026: '', margin2026: 0, currentParty: 'INC' },
+  { acNo: 97, name: 'Sibsagar', district: 'Sibsagar', type: 'GEN', winner2026: 'RD', winnerName2026: 'Akhil Gogoi', winnerVotes2026: 0, runnerUp2026: '', margin2026: 0, currentParty: 'RD' },
+  { acNo: 98, name: 'Sidli Chirang', district: 'St', type: 'GEN', winner2026: 'BPF', winnerName2026: 'Paniram Brahma', winnerVotes2026: 0, runnerUp2026: '', margin2026: 0, currentParty: 'BPF' },
+  { acNo: 99, name: 'Silchar', district: 'Cachar', type: 'GEN', winner2026: 'BJP', winnerName2026: 'Dr. Rajdeep Roy', winnerVotes2026: 0, runnerUp2026: '', margin2026: 0, currentParty: 'BJP' },
+  { acNo: 100, name: 'Sipajhar', district: 'Darrang', type: 'GEN', winner2026: 'BJP', winnerName2026: 'Paramananda Rajbongshi', winnerVotes2026: 0, runnerUp2026: '', margin2026: 0, currentParty: 'BJP' },
+  { acNo: 101, name: 'Sissiborgaon', district: 'Dhemaji', type: 'GEN', winner2026: 'BJP', winnerName2026: 'Jiban Gogoi', winnerVotes2026: 0, runnerUp2026: '', margin2026: 0, currentParty: 'BJP' },
+  { acNo: 102, name: 'Sonai', district: 'Cachar', type: 'GEN', winner2026: 'INC', winnerName2026: 'Aminul Haque Laskar', winnerVotes2026: 0, runnerUp2026: '', margin2026: 0, currentParty: 'INC' },
+  { acNo: 103, name: 'Sonari', district: 'Charaideo', type: 'GEN', winner2026: 'BJP', winnerName2026: 'Dhormeswar Konwar', winnerVotes2026: 0, runnerUp2026: '', margin2026: 0, currentParty: 'BJP' },
+  { acNo: 104, name: 'Srijangram', district: 'Bongaigaon', type: 'GEN', winner2026: 'INC', winnerName2026: 'Md. Nurul Islam', winnerVotes2026: 0, runnerUp2026: '', margin2026: 0, currentParty: 'INC' },
+  { acNo: 105, name: 'Tangla', district: 'Udalguri', type: 'GEN', winner2026: 'BJP', winnerName2026: 'Bikan Chandra Deka', winnerVotes2026: 0, runnerUp2026: '', margin2026: 0, currentParty: 'BJP' },
+  { acNo: 106, name: 'Teok', district: 'Jorhat', type: 'GEN', winner2026: 'AGP', winnerName2026: 'Bikash Saikia', winnerVotes2026: 0, runnerUp2026: '', margin2026: 0, currentParty: 'AGP' },
+  { acNo: 107, name: 'Tezpur', district: 'Sonitpur', type: 'GEN', winner2026: 'AGP', winnerName2026: 'Prithiraj Rava', winnerVotes2026: 0, runnerUp2026: '', margin2026: 0, currentParty: 'AGP' },
+  { acNo: 108, name: 'Tihu', district: 'Nalbari', type: 'GEN', winner2026: 'BJP', winnerName2026: 'Chandramohan Patowary', winnerVotes2026: 0, runnerUp2026: '', margin2026: 0, currentParty: 'BJP' },
+  { acNo: 109, name: 'Tingkhong', district: 'Dibrugarh', type: 'GEN', winner2026: 'BJP', winnerName2026: 'Bimal Borah', winnerVotes2026: 0, runnerUp2026: '', margin2026: 0, currentParty: 'BJP' },
+  { acNo: 110, name: 'Tinsukia', district: 'Tinsukia', type: 'GEN', winner2026: 'BJP', winnerName2026: 'Pulok Gohain', winnerVotes2026: 0, runnerUp2026: '', margin2026: 0, currentParty: 'BJP' },
+  { acNo: 111, name: 'Titabor', district: 'Jorhat', type: 'GEN', winner2026: 'BJP', winnerName2026: 'Dhiraj Gowala', winnerVotes2026: 0, runnerUp2026: '', margin2026: 0, currentParty: 'BJP' },
+  { acNo: 112, name: 'Udalguri', district: 'St', type: 'GEN', winner2026: 'BPF', winnerName2026: 'Rihon Daimari', winnerVotes2026: 0, runnerUp2026: '', margin2026: 0, currentParty: 'BPF' },
+];
+
+export function getASConstituency(acNo: number): ASConstituencySeed | undefined {
+  return AS_CONSTITUENCIES.find(c => c.acNo === acNo);
+}

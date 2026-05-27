@@ -14,10 +14,15 @@ import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import { globalSearch, getSearchSuggestions, type SearchResult, type SearchResultType } from '../lib/globalSearch';
 import { useRecentsStore } from '../stores/recents';
+import MLACard from '../components/MLACard';
+import MPCard from '../components/MPCard';
+import { getMLAProfileForState } from '../lib/stateDataDispatcher';
+import { getMPById } from '../lib/data';
 
 const TYPE_CONFIG: Record<SearchResultType, { icon: string; color: string; label: string }> = {
   constituency: { icon: 'location', color: '#4F8EF7', label: 'Constituency' },
   mla: { icon: 'person', color: '#10B981', label: 'MLA' },
+  mp: { icon: 'business', color: '#8B5CF6', label: 'MP' },
   issue: { icon: 'megaphone', color: '#EF4444', label: 'Issue' },
   post: { icon: 'chatbubble', color: '#8B5CF6', label: 'Post' },
   promise: { icon: 'checkmark-done', color: '#F59E0B', label: 'Promise' },
@@ -48,7 +53,38 @@ export default function GlobalSearchScreen() {
   }, []);
 
   const renderResult = useCallback(({ item }: { item: SearchResult }) => {
-    const config = TYPE_CONFIG[item.type];
+    // ── MLA result: render full MLACard ──────────────────────────────
+    if (item.type === 'mla' && item.meta?.stateCode && item.meta?.acNo != null) {
+      const mlaProfile = getMLAProfileForState(item.meta.stateCode, item.meta.acNo);
+      if (mlaProfile) {
+        return (
+          <Pressable style={styles.cardWrapper} onPress={() => handleSelect(item)}>
+            <MLACard profile={mlaProfile} />
+            <View style={styles.cardChevron}>
+              <Ionicons name="chevron-forward" size={14} color="#4F8EF7" />
+            </View>
+          </Pressable>
+        );
+      }
+    }
+
+    // ── MP result: render full MPCard ────────────────────────────────
+    if (item.type === 'mp' && item.meta?.mpId) {
+      const mpProfile = getMPById?.(item.meta.mpId);
+      if (mpProfile) {
+        return (
+          <Pressable style={styles.cardWrapper} onPress={() => handleSelect(item)}>
+            <MPCard profile={mpProfile} compact />
+            <View style={styles.cardChevron}>
+              <Ionicons name="chevron-forward" size={14} color="#8B5CF6" />
+            </View>
+          </Pressable>
+        );
+      }
+    }
+
+    // ── Default: flat row for constituency/issue/post/promise ────────
+    const config = TYPE_CONFIG[item.type] ?? TYPE_CONFIG.constituency;
     return (
       <Pressable style={styles.resultCard} onPress={() => handleSelect(item)}>
         <View style={[styles.resultIcon, { backgroundColor: config.color + '20' }]}>
@@ -180,6 +216,22 @@ const styles = StyleSheet.create({
 
   resultsList: { flex: 1, paddingHorizontal: 12 },
   resultCount: { fontSize: 11, color: '#6B7280', fontWeight: '600', marginBottom: 8, marginLeft: 4 },
+
+  // Rich card wrapper (MLA / MP results)
+  cardWrapper: {
+    marginBottom: 8,
+    borderRadius: 16,
+    overflow: 'hidden',
+    borderWidth: 1,
+    borderColor: '#1F2937',
+  },
+  cardChevron: {
+    position: 'absolute',
+    top: 16,
+    right: 14,
+  },
+
+  // Flat row (other result types)
   resultCard: { flexDirection: 'row', alignItems: 'center', backgroundColor: '#111827', borderRadius: 10, padding: 10, marginBottom: 4, gap: 10 },
   resultIcon: { width: 32, height: 32, borderRadius: 8, alignItems: 'center', justifyContent: 'center' },
   resultContent: { flex: 1 },

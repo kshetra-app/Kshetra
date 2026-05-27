@@ -1,0 +1,137 @@
+/**
+ * Punjab Assembly Constituencies — 111 seats (2022)
+ *
+ * AUTO-GENERATED from MyNeta.info scrape data.
+ * Date: 2026-05-26
+ */
+
+export interface PBConstituencySeed {
+  acNo: number;
+  name: string;
+  district: string;
+  type: 'GEN' | 'SC' | 'ST';
+  winner2022: string;
+  winnerName2022: string;
+  winnerVotes2022: number;
+  runnerUp2022: string;
+  margin2022: number;
+  currentParty: string;
+}
+
+export const PB_CONSTITUENCIES: PBConstituencySeed[] = [
+  { acNo: 1, name: 'Abohar', district: 'Fazilka', type: 'GEN', winner2022: 'INC', winnerName2022: 'Sandeep Jakhar', winnerVotes2022: 0, runnerUp2022: '', margin2022: 0, currentParty: 'INC' },
+  { acNo: 2, name: 'Adampur', district: 'Sc', type: 'GEN', winner2022: 'INC', winnerName2022: 'Sukhwinder Singh Kotli', winnerVotes2022: 0, runnerUp2022: '', margin2022: 0, currentParty: 'INC' },
+  { acNo: 3, name: 'Ajnala', district: 'Amritsar', type: 'GEN', winner2022: 'AAP', winnerName2022: 'Kuldeep Singh Dhaliwal', winnerVotes2022: 0, runnerUp2022: '', margin2022: 0, currentParty: 'AAP' },
+  { acNo: 4, name: 'Amargarh', district: 'Malerkotla', type: 'GEN', winner2022: 'AAP', winnerName2022: 'Prof. Jaswant Singh Gajjan Majra', winnerVotes2022: 0, runnerUp2022: '', margin2022: 0, currentParty: 'AAP' },
+  { acNo: 5, name: 'Amloh', district: 'Fatehgarh Sahib', type: 'GEN', winner2022: 'AAP', winnerName2022: 'Gurinder Singh', winnerVotes2022: 0, runnerUp2022: '', margin2022: 0, currentParty: 'AAP' },
+  { acNo: 6, name: 'Amritsar Central', district: 'Amritsar', type: 'GEN', winner2022: 'AAP', winnerName2022: 'Ajay Gupta', winnerVotes2022: 0, runnerUp2022: '', margin2022: 0, currentParty: 'AAP' },
+  { acNo: 7, name: 'Amritsar East', district: 'Amritsar', type: 'GEN', winner2022: 'AAP', winnerName2022: 'Jeevan Jyot Kaur', winnerVotes2022: 0, runnerUp2022: '', margin2022: 0, currentParty: 'AAP' },
+  { acNo: 8, name: 'Amritsar North', district: 'Amritsar', type: 'GEN', winner2022: 'AAP', winnerName2022: 'Kunwar Vijay Pratap Singh', winnerVotes2022: 0, runnerUp2022: '', margin2022: 0, currentParty: 'AAP' },
+  { acNo: 9, name: 'Amritsar West', district: 'Sc', type: 'GEN', winner2022: 'AAP', winnerName2022: 'Dr. Jasbir Singh Sandhu', winnerVotes2022: 0, runnerUp2022: '', margin2022: 0, currentParty: 'AAP' },
+  { acNo: 10, name: 'Anandpur Sahib', district: 'Rupnagar', type: 'GEN', winner2022: 'AAP', winnerName2022: 'Harjot Singh Bains', winnerVotes2022: 0, runnerUp2022: '', margin2022: 0, currentParty: 'AAP' },
+  { acNo: 11, name: 'Atam Nagar', district: 'Ludhiana', type: 'GEN', winner2022: 'AAP', winnerName2022: 'Kulwant Singh Sidhu', winnerVotes2022: 0, runnerUp2022: '', margin2022: 0, currentParty: 'AAP' },
+  { acNo: 12, name: 'Attari', district: 'Sc', type: 'GEN', winner2022: 'AAP', winnerName2022: 'Jaswinder Singh', winnerVotes2022: 0, runnerUp2022: '', margin2022: 0, currentParty: 'AAP' },
+  { acNo: 13, name: 'Baba Bakala', district: 'Sc', type: 'GEN', winner2022: 'AAP', winnerName2022: 'Dalbir Singh Tong', winnerVotes2022: 0, runnerUp2022: '', margin2022: 0, currentParty: 'AAP' },
+  { acNo: 14, name: 'Bagha Purana', district: 'Moga', type: 'GEN', winner2022: 'AAP', winnerName2022: 'Amritpal Singh Sukhanand', winnerVotes2022: 0, runnerUp2022: '', margin2022: 0, currentParty: 'AAP' },
+  { acNo: 15, name: 'Balachaur', district: 'Shaheed Bhagat Singh Nagar', type: 'GEN', winner2022: 'AAP', winnerName2022: 'Santosh Kumari Katariaa', winnerVotes2022: 0, runnerUp2022: '', margin2022: 0, currentParty: 'AAP' },
+  { acNo: 16, name: 'Balluana', district: 'Sc', type: 'GEN', winner2022: 'AAP', winnerName2022: 'Amandeep Singh Musafir', winnerVotes2022: 0, runnerUp2022: '', margin2022: 0, currentParty: 'AAP' },
+  { acNo: 17, name: 'Barnala', district: 'Barnala', type: 'GEN', winner2022: 'AAP', winnerName2022: 'Gurmeet Singh Meet Hayer', winnerVotes2022: 0, runnerUp2022: '', margin2022: 0, currentParty: 'AAP' },
+  { acNo: 18, name: 'Bassi Pathana', district: 'Sc', type: 'GEN', winner2022: 'AAP', winnerName2022: 'Rupinder Singh', winnerVotes2022: 0, runnerUp2022: '', margin2022: 0, currentParty: 'AAP' },
+  { acNo: 19, name: 'Batala', district: 'Gurdaspur', type: 'GEN', winner2022: 'AAP', winnerName2022: 'Amansher Singh', winnerVotes2022: 0, runnerUp2022: '', margin2022: 0, currentParty: 'AAP' },
+  { acNo: 20, name: 'Bathinda Rural', district: 'Sc', type: 'GEN', winner2022: 'AAP', winnerName2022: 'Amit Rattan', winnerVotes2022: 0, runnerUp2022: '', margin2022: 0, currentParty: 'AAP' },
+  { acNo: 21, name: 'Bathinda Urban', district: 'Bathinda', type: 'GEN', winner2022: 'AAP', winnerName2022: 'Jagroop Singh Gill', winnerVotes2022: 0, runnerUp2022: '', margin2022: 0, currentParty: 'AAP' },
+  { acNo: 22, name: 'Bhadaur', district: 'Sc', type: 'GEN', winner2022: 'AAP', winnerName2022: 'Labh Singh Ugoke', winnerVotes2022: 0, runnerUp2022: '', margin2022: 0, currentParty: 'AAP' },
+  { acNo: 23, name: 'Bhoa', district: 'Sc', type: 'GEN', winner2022: 'AAP', winnerName2022: 'Lal Chand', winnerVotes2022: 0, runnerUp2022: '', margin2022: 0, currentParty: 'AAP' },
+  { acNo: 24, name: 'Bholath', district: 'Kapurthala', type: 'GEN', winner2022: 'INC', winnerName2022: 'Sukhpal Singh Khaira', winnerVotes2022: 0, runnerUp2022: '', margin2022: 0, currentParty: 'INC' },
+  { acNo: 25, name: 'Budhlada', district: 'Sc', type: 'GEN', winner2022: 'AAP', winnerName2022: 'Budh Ram', winnerVotes2022: 0, runnerUp2022: '', margin2022: 0, currentParty: 'AAP' },
+  { acNo: 26, name: 'Chabbewal', district: 'Sc', type: 'GEN', winner2022: 'INC', winnerName2022: 'Dr. Raj Kumar', winnerVotes2022: 0, runnerUp2022: '', margin2022: 0, currentParty: 'INC' },
+  { acNo: 27, name: 'Chamkaur Sahib', district: 'Sc', type: 'GEN', winner2022: 'AAP', winnerName2022: 'Charanjit Singh', winnerVotes2022: 0, runnerUp2022: '', margin2022: 0, currentParty: 'AAP' },
+  { acNo: 28, name: 'Dakha', district: 'Ludhiana', type: 'GEN', winner2022: 'SAD', winnerName2022: 'Manpreet Singh Ayali', winnerVotes2022: 0, runnerUp2022: '', margin2022: 0, currentParty: 'SAD' },
+  { acNo: 29, name: 'Dasuya', district: 'Hoshiarpur', type: 'GEN', winner2022: 'AAP', winnerName2022: 'Karambir Singh', winnerVotes2022: 0, runnerUp2022: '', margin2022: 0, currentParty: 'AAP' },
+  { acNo: 30, name: 'Dera Baba Nanak', district: 'Gurdaspur', type: 'GEN', winner2022: 'INC', winnerName2022: 'Sukhjinder Singh Randhawa', winnerVotes2022: 0, runnerUp2022: '', margin2022: 0, currentParty: 'INC' },
+  { acNo: 31, name: 'Dera Bassi', district: 'Sahibzada Ajit Singh Nagar', type: 'GEN', winner2022: 'AAP', winnerName2022: 'Kuljit Singh Randhawa', winnerVotes2022: 0, runnerUp2022: '', margin2022: 0, currentParty: 'AAP' },
+  { acNo: 32, name: 'Dharamkot', district: 'Moga', type: 'GEN', winner2022: 'AAP', winnerName2022: 'Devinderjeet Singh', winnerVotes2022: 0, runnerUp2022: '', margin2022: 0, currentParty: 'AAP' },
+  { acNo: 33, name: 'Dina Nagar', district: 'Sc', type: 'GEN', winner2022: 'INC', winnerName2022: 'Aruna Chaudhary', winnerVotes2022: 0, runnerUp2022: '', margin2022: 0, currentParty: 'INC' },
+  { acNo: 34, name: 'Dirba', district: 'Sc', type: 'GEN', winner2022: 'AAP', winnerName2022: 'Harpal Singh Cheema', winnerVotes2022: 0, runnerUp2022: '', margin2022: 0, currentParty: 'AAP' },
+  { acNo: 35, name: 'Faridkot', district: 'Faridkot', type: 'GEN', winner2022: 'AAP', winnerName2022: 'Gurdit Singh Sekhon', winnerVotes2022: 0, runnerUp2022: '', margin2022: 0, currentParty: 'AAP' },
+  { acNo: 36, name: 'Fatehgarh Churian', district: 'Gurdaspur', type: 'GEN', winner2022: 'INC', winnerName2022: 'Tripat Rajinder Singh', winnerVotes2022: 0, runnerUp2022: '', margin2022: 0, currentParty: 'INC' },
+  { acNo: 37, name: 'Fatehgarh Sahib', district: 'Fatehgarh Sahib', type: 'GEN', winner2022: 'AAP', winnerName2022: 'Lakhbir Singh Rai', winnerVotes2022: 0, runnerUp2022: '', margin2022: 0, currentParty: 'AAP' },
+  { acNo: 38, name: 'Fazilka', district: 'Fazilka', type: 'GEN', winner2022: 'AAP', winnerName2022: 'Narinder Pal Singh Sawna', winnerVotes2022: 0, runnerUp2022: '', margin2022: 0, currentParty: 'AAP' },
+  { acNo: 39, name: 'Firozpur City', district: 'Firozpur', type: 'GEN', winner2022: 'AAP', winnerName2022: 'Ranbir Singh', winnerVotes2022: 0, runnerUp2022: '', margin2022: 0, currentParty: 'AAP' },
+  { acNo: 40, name: 'Firozpur Rural', district: 'Sc', type: 'GEN', winner2022: 'AAP', winnerName2022: 'Rajneesh Kumar Dahiya', winnerVotes2022: 0, runnerUp2022: '', margin2022: 0, currentParty: 'AAP' },
+  { acNo: 41, name: 'Ghanaur', district: 'Patiala', type: 'GEN', winner2022: 'AAP', winnerName2022: 'Gurlal Ghanaur', winnerVotes2022: 0, runnerUp2022: '', margin2022: 0, currentParty: 'AAP' },
+  { acNo: 42, name: 'Gidderbaha', district: 'Sri Muktsar Sahib', type: 'GEN', winner2022: 'INC', winnerName2022: 'Amrinder Singh Raja Warring', winnerVotes2022: 0, runnerUp2022: '', margin2022: 0, currentParty: 'INC' },
+  { acNo: 43, name: 'Gill', district: 'Sc', type: 'GEN', winner2022: 'AAP', winnerName2022: 'Jiwan Singh Sangowal', winnerVotes2022: 0, runnerUp2022: '', margin2022: 0, currentParty: 'AAP' },
+  { acNo: 44, name: 'Gurdaspur', district: 'Gurdaspur', type: 'GEN', winner2022: 'INC', winnerName2022: 'Barindermeet Singh Pahra', winnerVotes2022: 0, runnerUp2022: '', margin2022: 0, currentParty: 'INC' },
+  { acNo: 45, name: 'Guru Har Sahai', district: 'Firozpur', type: 'GEN', winner2022: 'AAP', winnerName2022: 'Fauja Singh', winnerVotes2022: 0, runnerUp2022: '', margin2022: 0, currentParty: 'AAP' },
+  { acNo: 46, name: 'Hoshiarpur', district: 'Hoshiarpur', type: 'GEN', winner2022: 'AAP', winnerName2022: 'Bram Shanker', winnerVotes2022: 0, runnerUp2022: '', margin2022: 0, currentParty: 'AAP' },
+  { acNo: 47, name: 'Jagraon', district: 'Sc', type: 'GEN', winner2022: 'AAP', winnerName2022: 'Sarvjit Kaur Manuke', winnerVotes2022: 0, runnerUp2022: '', margin2022: 0, currentParty: 'AAP' },
+  { acNo: 48, name: 'Jaitu', district: 'Sc', type: 'GEN', winner2022: 'AAP', winnerName2022: 'Amolak Singh', winnerVotes2022: 0, runnerUp2022: '', margin2022: 0, currentParty: 'AAP' },
+  { acNo: 49, name: 'Jalandhar Cantt', district: 'Jalandhar', type: 'GEN', winner2022: 'INC', winnerName2022: 'Pargat Singh Powar', winnerVotes2022: 0, runnerUp2022: '', margin2022: 0, currentParty: 'INC' },
+  { acNo: 50, name: 'Jalandhar Central', district: 'Jalandhar', type: 'GEN', winner2022: 'AAP', winnerName2022: 'Raman Arora', winnerVotes2022: 0, runnerUp2022: '', margin2022: 0, currentParty: 'AAP' },
+  { acNo: 51, name: 'Jalandhar North', district: 'Jalandhar', type: 'GEN', winner2022: 'INC', winnerName2022: 'Avtar Singh Junior', winnerVotes2022: 0, runnerUp2022: '', margin2022: 0, currentParty: 'INC' },
+  { acNo: 52, name: 'Jalandhar West', district: 'Sc', type: 'GEN', winner2022: 'AAP', winnerName2022: 'Sheetal Angural', winnerVotes2022: 0, runnerUp2022: '', margin2022: 0, currentParty: 'AAP' },
+  { acNo: 53, name: 'Jandiala', district: 'Sc', type: 'GEN', winner2022: 'AAP', winnerName2022: 'Harbhajan Singh', winnerVotes2022: 0, runnerUp2022: '', margin2022: 0, currentParty: 'AAP' },
+  { acNo: 54, name: 'Kapurthala', district: 'Kapurthala', type: 'GEN', winner2022: 'INC', winnerName2022: 'Rana Gurjeet Singh', winnerVotes2022: 0, runnerUp2022: '', margin2022: 0, currentParty: 'INC' },
+  { acNo: 55, name: 'Kartarpur', district: 'Sc', type: 'GEN', winner2022: 'AAP', winnerName2022: 'Balkar Singh', winnerVotes2022: 0, runnerUp2022: '', margin2022: 0, currentParty: 'AAP' },
+  { acNo: 56, name: 'Khadur Sahib', district: 'Tarn Taran', type: 'GEN', winner2022: 'AAP', winnerName2022: 'Manjinder Singh Lalpura', winnerVotes2022: 0, runnerUp2022: '', margin2022: 0, currentParty: 'AAP' },
+  { acNo: 57, name: 'Kharar', district: 'Sahibzada Ajit Singh Nagar', type: 'GEN', winner2022: 'AAP', winnerName2022: 'Anmol Gagan Maan', winnerVotes2022: 0, runnerUp2022: '', margin2022: 0, currentParty: 'AAP' },
+  { acNo: 58, name: 'Khem Karan', district: 'Tarn Taran', type: 'GEN', winner2022: 'AAP', winnerName2022: 'Sarvan Singh Dhun', winnerVotes2022: 0, runnerUp2022: '', margin2022: 0, currentParty: 'AAP' },
+  { acNo: 59, name: 'Kotkapura', district: 'Faridkot', type: 'GEN', winner2022: 'AAP', winnerName2022: 'Kultar Singh Sandhwan', winnerVotes2022: 0, runnerUp2022: '', margin2022: 0, currentParty: 'AAP' },
+  { acNo: 60, name: 'Lambi', district: 'Sri Muktsar Sahib', type: 'GEN', winner2022: 'AAP', winnerName2022: 'Gurmeet Singh Khudian', winnerVotes2022: 0, runnerUp2022: '', margin2022: 0, currentParty: 'AAP' },
+  { acNo: 61, name: 'Lehra', district: 'Sangrur', type: 'GEN', winner2022: 'AAP', winnerName2022: 'Barinder Kumar Goyal', winnerVotes2022: 0, runnerUp2022: '', margin2022: 0, currentParty: 'AAP' },
+  { acNo: 62, name: 'Ludhiana Central', district: 'Ludhiana', type: 'GEN', winner2022: 'AAP', winnerName2022: 'Ashok Parashar', winnerVotes2022: 0, runnerUp2022: '', margin2022: 0, currentParty: 'AAP' },
+  { acNo: 63, name: 'Ludhiana East', district: 'Ludhiana', type: 'GEN', winner2022: 'AAP', winnerName2022: 'Daljit Singh Grewal', winnerVotes2022: 0, runnerUp2022: '', margin2022: 0, currentParty: 'AAP' },
+  { acNo: 64, name: 'Ludhiana North', district: 'Ludhiana', type: 'GEN', winner2022: 'AAP', winnerName2022: 'Madan Lal Bagga', winnerVotes2022: 0, runnerUp2022: '', margin2022: 0, currentParty: 'AAP' },
+  { acNo: 65, name: 'Ludhiana West', district: 'Ludhiana', type: 'GEN', winner2022: 'AAP', winnerName2022: 'Gurpreet Bassi Gogi', winnerVotes2022: 0, runnerUp2022: '', margin2022: 0, currentParty: 'AAP' },
+  { acNo: 66, name: 'Majitha', district: 'Amritsar', type: 'GEN', winner2022: 'SAD', winnerName2022: 'Ganieve Kaur Majithia', winnerVotes2022: 0, runnerUp2022: '', margin2022: 0, currentParty: 'SAD' },
+  { acNo: 67, name: 'Malerkotla', district: 'Malerkotla', type: 'GEN', winner2022: 'AAP', winnerName2022: 'Mohammad Jamil Ur Rehman', winnerVotes2022: 0, runnerUp2022: '', margin2022: 0, currentParty: 'AAP' },
+  { acNo: 68, name: 'Malout', district: 'Sc', type: 'GEN', winner2022: 'AAP', winnerName2022: 'Dr. Baljit Kaur', winnerVotes2022: 0, runnerUp2022: '', margin2022: 0, currentParty: 'AAP' },
+  { acNo: 69, name: 'Mansa', district: 'Mansa', type: 'GEN', winner2022: 'AAP', winnerName2022: 'Vijay Singla', winnerVotes2022: 0, runnerUp2022: '', margin2022: 0, currentParty: 'AAP' },
+  { acNo: 70, name: 'Maur', district: 'Bathinda', type: 'GEN', winner2022: 'AAP', winnerName2022: 'Sukhveer Singh Maiserkhana', winnerVotes2022: 0, runnerUp2022: '', margin2022: 0, currentParty: 'AAP' },
+  { acNo: 71, name: 'Mehal Kalan', district: 'Sc', type: 'GEN', winner2022: 'AAP', winnerName2022: 'Kulwant Singh Pandori', winnerVotes2022: 0, runnerUp2022: '', margin2022: 0, currentParty: 'AAP' },
+  { acNo: 72, name: 'Moga', district: 'Moga', type: 'GEN', winner2022: 'AAP', winnerName2022: 'Dr. Amandeep Kaur Arora', winnerVotes2022: 0, runnerUp2022: '', margin2022: 0, currentParty: 'AAP' },
+  { acNo: 73, name: 'Muktsar', district: 'Sri Muktsar Sahib', type: 'GEN', winner2022: 'AAP', winnerName2022: 'Jagdeep Singh', winnerVotes2022: 0, runnerUp2022: '', margin2022: 0, currentParty: 'AAP' },
+  { acNo: 74, name: 'Nabha', district: 'Sc', type: 'GEN', winner2022: 'AAP', winnerName2022: 'Gurdev Singh Dev Maan', winnerVotes2022: 0, runnerUp2022: '', margin2022: 0, currentParty: 'AAP' },
+  { acNo: 75, name: 'Nakodar', district: 'Jalandhar', type: 'GEN', winner2022: 'AAP', winnerName2022: 'Inderjit Kaur Mann', winnerVotes2022: 0, runnerUp2022: '', margin2022: 0, currentParty: 'AAP' },
+  { acNo: 76, name: 'Nawan Shahr', district: 'Shaheed Bhagat Singh Nagar', type: 'GEN', winner2022: 'BSP', winnerName2022: 'Nachhatar Pal', winnerVotes2022: 0, runnerUp2022: '', margin2022: 0, currentParty: 'BSP' },
+  { acNo: 77, name: 'Nihal Singh Wala', district: 'Sc', type: 'GEN', winner2022: 'AAP', winnerName2022: 'Manjit Singh Bilaspur', winnerVotes2022: 0, runnerUp2022: '', margin2022: 0, currentParty: 'AAP' },
+  { acNo: 78, name: 'Pathankot', district: 'Pathankot', type: 'GEN', winner2022: 'BJP', winnerName2022: 'Ashwani Kumar Sharma', winnerVotes2022: 0, runnerUp2022: '', margin2022: 0, currentParty: 'BJP' },
+  { acNo: 79, name: 'Patiala', district: 'Patiala', type: 'GEN', winner2022: 'AAP', winnerName2022: 'Ajit Pal Singh Kohli', winnerVotes2022: 0, runnerUp2022: '', margin2022: 0, currentParty: 'AAP' },
+  { acNo: 80, name: 'Patiala Rural', district: 'Patiala', type: 'GEN', winner2022: 'AAP', winnerName2022: 'Balbir Singh', winnerVotes2022: 0, runnerUp2022: '', margin2022: 0, currentParty: 'AAP' },
+  { acNo: 81, name: 'Payal', district: 'Sc', type: 'GEN', winner2022: 'AAP', winnerName2022: 'Manwinder Singh Giaspura', winnerVotes2022: 0, runnerUp2022: '', margin2022: 0, currentParty: 'AAP' },
+  { acNo: 82, name: 'Phagwara', district: 'Sc', type: 'GEN', winner2022: 'INC', winnerName2022: 'Balwinder Singh Dhaliwal', winnerVotes2022: 0, runnerUp2022: '', margin2022: 0, currentParty: 'INC' },
+  { acNo: 83, name: 'Phillaur', district: 'Sc', type: 'GEN', winner2022: 'INC', winnerName2022: 'Vikramjit Singh Chaudhary', winnerVotes2022: 0, runnerUp2022: '', margin2022: 0, currentParty: 'INC' },
+  { acNo: 84, name: 'Qadian', district: 'Gurdaspur', type: 'GEN', winner2022: 'INC', winnerName2022: 'Partap Singh Bajwa', winnerVotes2022: 0, runnerUp2022: '', margin2022: 0, currentParty: 'INC' },
+  { acNo: 85, name: 'Raikot', district: 'Sc', type: 'GEN', winner2022: 'AAP', winnerName2022: 'Hakam Singh', winnerVotes2022: 0, runnerUp2022: '', margin2022: 0, currentParty: 'AAP' },
+  { acNo: 86, name: 'Raja Sansi', district: 'Amritsar', type: 'GEN', winner2022: 'INC', winnerName2022: 'Sukhbinder Singh Sarkaria', winnerVotes2022: 0, runnerUp2022: '', margin2022: 0, currentParty: 'INC' },
+  { acNo: 87, name: 'Rajpura', district: 'Patiala', type: 'GEN', winner2022: 'AAP', winnerName2022: 'Neena Mittal', winnerVotes2022: 0, runnerUp2022: '', margin2022: 0, currentParty: 'AAP' },
+  { acNo: 88, name: 'Rampura Phul', district: 'Bathinda', type: 'GEN', winner2022: 'AAP', winnerName2022: 'Balkar Singh Sidhu', winnerVotes2022: 0, runnerUp2022: '', margin2022: 0, currentParty: 'AAP' },
+  { acNo: 89, name: 'S.A.S. Nagar', district: 'Sahibzada Ajit Singh Nagar', type: 'GEN', winner2022: 'AAP', winnerName2022: 'Kulwant Singh', winnerVotes2022: 0, runnerUp2022: '', margin2022: 0, currentParty: 'AAP' },
+  { acNo: 90, name: 'Sahnewal', district: 'Ludhiana', type: 'GEN', winner2022: 'AAP', winnerName2022: 'Hardeep Singh Mundian', winnerVotes2022: 0, runnerUp2022: '', margin2022: 0, currentParty: 'AAP' },
+  { acNo: 91, name: 'Samana', district: 'Patiala', type: 'GEN', winner2022: 'AAP', winnerName2022: 'Chetan Singh Jouramajra', winnerVotes2022: 0, runnerUp2022: '', margin2022: 0, currentParty: 'AAP' },
+  { acNo: 92, name: 'Samrala', district: 'Ludhiana', type: 'GEN', winner2022: 'AAP', winnerName2022: 'Jagtar Singh', winnerVotes2022: 0, runnerUp2022: '', margin2022: 0, currentParty: 'AAP' },
+  { acNo: 93, name: 'Sangrur', district: 'Sangrur', type: 'GEN', winner2022: 'AAP', winnerName2022: 'Narinder Kaur Bharaj', winnerVotes2022: 0, runnerUp2022: '', margin2022: 0, currentParty: 'AAP' },
+  { acNo: 94, name: 'Sanour', district: 'Patiala', type: 'GEN', winner2022: 'AAP', winnerName2022: 'Harmit Singh Pathanmajra', winnerVotes2022: 0, runnerUp2022: '', margin2022: 0, currentParty: 'AAP' },
+  { acNo: 95, name: 'Sardulgarh', district: 'Mansa', type: 'GEN', winner2022: 'AAP', winnerName2022: 'Gurpreet Singh Banawali', winnerVotes2022: 0, runnerUp2022: '', margin2022: 0, currentParty: 'AAP' },
+  { acNo: 96, name: 'Shahkot', district: 'Jalandhar', type: 'GEN', winner2022: 'INC', winnerName2022: 'Hardev Singh Laddi', winnerVotes2022: 0, runnerUp2022: '', margin2022: 0, currentParty: 'INC' },
+  { acNo: 97, name: 'Shutrana', district: 'Sc', type: 'GEN', winner2022: 'AAP', winnerName2022: 'Kulwant Singh Bazigar', winnerVotes2022: 0, runnerUp2022: '', margin2022: 0, currentParty: 'AAP' },
+  { acNo: 98, name: 'Sri Hargobindpur', district: 'Sc', type: 'GEN', winner2022: 'AAP', winnerName2022: 'Amarpal Singh', winnerVotes2022: 0, runnerUp2022: '', margin2022: 0, currentParty: 'AAP' },
+  { acNo: 99, name: 'Sujanpur', district: 'Pathankot', type: 'GEN', winner2022: 'INC', winnerName2022: 'Naresh Puri', winnerVotes2022: 0, runnerUp2022: '', margin2022: 0, currentParty: 'INC' },
+  { acNo: 100, name: 'Sultanpur Lodhi', district: 'Kapurthala', type: 'GEN', winner2022: 'IND', winnerName2022: 'Rana Inder Partap Singh', winnerVotes2022: 0, runnerUp2022: '', margin2022: 0, currentParty: 'IND' },
+  { acNo: 101, name: 'Sunam', district: 'Sangrur', type: 'GEN', winner2022: 'AAP', winnerName2022: 'Aman Arora', winnerVotes2022: 0, runnerUp2022: '', margin2022: 0, currentParty: 'AAP' },
+  { acNo: 102, name: 'Talwandi Sabo', district: 'Bathinda', type: 'GEN', winner2022: 'AAP', winnerName2022: 'Prof. Baljinder Kaur', winnerVotes2022: 0, runnerUp2022: '', margin2022: 0, currentParty: 'AAP' },
+  { acNo: 103, name: 'Tarn Taran', district: 'Tarn Taran', type: 'GEN', winner2022: 'AAP', winnerName2022: 'Dr. Kashmir Singh Sohal', winnerVotes2022: 0, runnerUp2022: '', margin2022: 0, currentParty: 'AAP' },
+  { acNo: 104, name: 'Urmar', district: 'Hoshiarpur', type: 'GEN', winner2022: 'AAP', winnerName2022: 'Jasvir Singh Raja Gill', winnerVotes2022: 0, runnerUp2022: '', margin2022: 0, currentParty: 'AAP' },
+  { acNo: 105, name: 'Barnala : Bye Election On 13-11-2024', district: 'Barnala', type: 'GEN', winner2022: 'INC', winnerName2022: 'Kuldeep Singh Dhillon Kala Dhillon', winnerVotes2022: 0, runnerUp2022: '', margin2022: 0, currentParty: 'INC' },
+  { acNo: 106, name: 'Chabbewal', district: 'Sc', type: 'GEN', winner2022: 'AAP', winnerName2022: 'Dr. Ishank Kumar', winnerVotes2022: 0, runnerUp2022: '', margin2022: 0, currentParty: 'AAP' },
+  { acNo: 107, name: 'Dera Baba Nanak : Bye Election On 13-11-2024', district: 'Gurdaspur', type: 'GEN', winner2022: 'AAP', winnerName2022: 'Gurdeep Singh Randhawa', winnerVotes2022: 0, runnerUp2022: '', margin2022: 0, currentParty: 'AAP' },
+  { acNo: 108, name: 'Gidderbaha : Bye Election On 13-11-2024', district: 'Sri Muktsar Sahib', type: 'GEN', winner2022: 'AAP', winnerName2022: 'Hardeep Singh Dimpy Dhillon', winnerVotes2022: 0, runnerUp2022: '', margin2022: 0, currentParty: 'AAP' },
+  { acNo: 109, name: 'Jalandhar West', district: 'Sc', type: 'GEN', winner2022: 'AAP', winnerName2022: 'Mohinder Bhagat', winnerVotes2022: 0, runnerUp2022: '', margin2022: 0, currentParty: 'AAP' },
+  { acNo: 110, name: 'Ludhiana West : Bye Election On 19-06-2025', district: 'Ludhiana', type: 'GEN', winner2022: 'AAP', winnerName2022: 'Sanjeev Arora', winnerVotes2022: 0, runnerUp2022: '', margin2022: 0, currentParty: 'AAP' },
+  { acNo: 111, name: 'Tarn Taran : Bye Election On 11-11-2025', district: 'Tarn Taran', type: 'GEN', winner2022: 'AAP', winnerName2022: 'Harmeet Singh Sandhu', winnerVotes2022: 0, runnerUp2022: '', margin2022: 0, currentParty: 'AAP' },
+];
+
+export function getPBConstituency(acNo: number): PBConstituencySeed | undefined {
+  return PB_CONSTITUENCIES.find(c => c.acNo === acNo);
+}

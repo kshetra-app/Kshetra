@@ -15,8 +15,9 @@ import { getUnifiedConstituenciesForState, type UnifiedConstituency } from './st
 import { useCivicStore } from '../stores/civic';
 import { useFeedStore } from '../stores/feed';
 import { usePromiseStore } from '../stores/promises';
+import { searchMPs } from './data';
 
-export type SearchResultType = 'constituency' | 'issue' | 'post' | 'promise' | 'mla';
+export type SearchResultType = 'constituency' | 'issue' | 'post' | 'promise' | 'mla' | 'mp';
 
 export interface SearchResult {
   id: string;
@@ -32,6 +33,7 @@ export interface SearchResult {
     party?: string;
     stateCode?: string;
     acNo?: number;
+    mpId?: string;
     status?: string;
   };
 }
@@ -132,6 +134,21 @@ export function globalSearch(query: string, maxResults = 30): SearchResult[] {
         meta: { party: p.party, status: p.status },
       });
     }
+  }
+
+  // 5. MPs (Lok Sabha + Rajya Sabha)
+  const mpResults = searchMPs(q, 10);
+  for (const mp of mpResults) {
+    const houseLabel = mp.house === 'lok_sabha' ? 'Lok Sabha' : 'Rajya Sabha';
+    results.push({
+      id: `mp-${mp.id}`,
+      type: 'mp',
+      title: mp.name,
+      subtitle: `MP · ${houseLabel} · ${mp.constituency ?? mp.stateCode} (${mp.party})`,
+      route: `/parliament`,
+      score: mp.name.toLowerCase().startsWith(q) ? 85 : mp.name.toLowerCase().includes(q) ? 65 : 45,
+      meta: { party: mp.party, stateCode: mp.stateCode, mpId: mp.id },
+    });
   }
 
   // Sort by score, deduplicate, limit

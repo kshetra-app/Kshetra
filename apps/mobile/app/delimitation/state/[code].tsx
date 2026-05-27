@@ -77,7 +77,7 @@ export default function StateDelimitationDetail() {
           </View>
           <View style={styles.heroMeta}>
             <Text style={styles.heroMetaText}>
-              Pop: {formatPopulation(allocation.totalPopulation)} · {formatPopulation(allocation.popPerSeat)}/seat
+              Pop: {formatPopulation(allocation.totalPopulation)} · {formatPopulation(allocation.populationPerProjectedSeat)}/seat
             </Text>
             <Text style={styles.heroMetaText}>
               Deviation: {allocation.deviationPercent > 0 ? '+' : ''}{allocation.deviationPercent.toFixed(1)}%

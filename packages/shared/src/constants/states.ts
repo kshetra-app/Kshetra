@@ -208,15 +208,92 @@ export const STATES: Record<string, StateInfo> = {
     centroid: { latitude: 33.7782, longitude: 76.5762 },
     zoom: 7,
   },
+  MN: {
+    code: 'MN',
+    name: 'Manipur',
+    assemblySeats: 60,
+    parliamentarySeats: 2,
+    rulingParty: 'BJP',
+    centroid: { latitude: 24.6637, longitude: 93.9063 },
+    zoom: 8,
+  },
+  ML: {
+    code: 'ML',
+    name: 'Meghalaya',
+    assemblySeats: 60,
+    parliamentarySeats: 2,
+    rulingParty: 'NPP',
+    centroid: { latitude: 25.4670, longitude: 91.3662 },
+    zoom: 8,
+  },
+  MZ: {
+    code: 'MZ',
+    name: 'Mizoram',
+    assemblySeats: 40,
+    parliamentarySeats: 1,
+    rulingParty: 'ZPM',
+    centroid: { latitude: 23.1645, longitude: 92.9376 },
+    zoom: 8,
+  },
+  NL: {
+    code: 'NL',
+    name: 'Nagaland',
+    assemblySeats: 60,
+    parliamentarySeats: 1,
+    rulingParty: 'NDPP',
+    centroid: { latitude: 26.1584, longitude: 94.5624 },
+    zoom: 8,
+  },
+  TR: {
+    code: 'TR',
+    name: 'Tripura',
+    assemblySeats: 60,
+    parliamentarySeats: 2,
+    rulingParty: 'BJP',
+    centroid: { latitude: 23.9408, longitude: 91.9882 },
+    zoom: 8.5,
+  },
+  SK: {
+    code: 'SK',
+    name: 'Sikkim',
+    assemblySeats: 32,
+    parliamentarySeats: 1,
+    rulingParty: 'SKM',
+    centroid: { latitude: 27.5330, longitude: 88.5122 },
+    zoom: 9,
+  },
+  AR: {
+    code: 'AR',
+    name: 'Arunachal Pradesh',
+    assemblySeats: 60,
+    parliamentarySeats: 2,
+    rulingParty: 'BJP',
+    centroid: { latitude: 28.2180, longitude: 94.7278 },
+    zoom: 7.5,
+  },
+  PY: {
+    code: 'PY',
+    name: 'Puducherry',
+    assemblySeats: 30,
+    parliamentarySeats: 1,
+    rulingParty: 'NDA',
+    centroid: { latitude: 11.9416, longitude: 79.8083 },
+    zoom: 10,
+  },
 };
 
-/** States that have full constituency data available */
-export const FULLY_SUPPORTED_STATES = ['TS', 'AP', 'KA', 'MH', 'TN', 'KL', 'WB', 'UP'] as const;
+/** States that have full constituency + MLA profile data available */
+export const FULLY_SUPPORTED_STATES = [
+  'TS', 'AP', 'KA', 'MH', 'TN', 'KL', 'WB', 'UP',
+  'RJ', 'GJ', 'DL', 'PB', 'HR', 'CG', 'MP', 'JH', 'OD',
+  'BR', 'AS', 'GA', 'HP', 'MN', 'ML', 'MZ', 'NL', 'TR',
+  'SK', 'AR', 'UK', 'PY', 'JK',
+] as const;
 export type FullySupportedStateCode = (typeof FULLY_SUPPORTED_STATES)[number];
 
-/** States that have at least stub/partial data available */
-export const SUPPORTED_STATES = ['TS', 'AP', 'KA', 'MH', 'TN', 'KL', 'WB', 'UP', 'RJ', 'GJ', 'DL', 'OD', 'JH', 'BR', 'PB', 'HR', 'UK', 'CG', 'MP', 'AS', 'GA', 'HP', 'JK'] as const;
-export type SupportedStateCode = (typeof SUPPORTED_STATES)[number];
+/** States that have at least stub/partial data available (same as FULLY_SUPPORTED now) */
+export const SUPPORTED_STATES = FULLY_SUPPORTED_STATES;
+export type SupportedStateCode = FullySupportedStateCode;
 
 export const INDIA_CENTER = { latitude: 22.5937, longitude: 78.9629 };
 export const INDIA_ZOOM = 4;

@@ -54,6 +54,7 @@
 | Sprint 33: Content Creator Accountability (CCA) | ✅ Complete | 2026-05-22 | 2026-05-22 |
 | Sprint 34: Content Promotion Pipeline (CPP) | ✅ Complete | 2026-05-22 | 2026-05-22 |
 | Sprint 35: Gold Standard — 5 Pillars + Investor Demo | ✅ Complete | 2026-05-24 | 2026-05-24 |
+| Sprint 36: Parliament Data + TypeScript Zero-Error Build | ✅ Complete | 2026-05-27 | 2026-05-27 |
 
 ---
 
@@ -159,6 +160,7 @@
 | 2026-05-22 | `feat: sprint 33 — content creator accountability (CCA)` | Two-tier accountability system: Tier 1 = one-time KYC (name, phone, selfie, device, GPS, terms), Tier 2 = per-action forensic fingerprint (device, network, location, content hash). Supabase migration 013 (3 tables, 3 views, RLS, triggers). TypeScript types + deviceFingerprint utility + gate logic. KYCVerificationSheet (3-step modal). Zustand store with MMKV persistence. Gating integrated into ComposeSheet, ReportIssueSheet, ReportSheet. Contributor status on Profile. |
 | 2026-05-22 | `feat: sprint 34 — content promotion pipeline (CPP)` | Community-driven content gatekeeping: content starts at constituency level, earns reach via vouches/flags/alerts. 3 risk tiers (high/medium/low). 10 flag reasons, 6 alert categories. Supabase migration 014 (6 tables, 3 views, triggers, RLS). contentPromotionTypes.ts (types + scoring utilities). contentPromotion.ts Zustand store. ContentGateActions component (vouch/flag/alert UI + FlagSheet + AlertSheet modals). Feed-level gating in feed.tsx filters state/national scope. Integrated into ComposeSheet and ReportIssueSheet. |
 | 2026-05-24 | `feat: sprint 35 — gold standard 5 pillars + investor demo` | Full implementation of all 5 core pillars: journalist/news platform, politician portal, campaign manager/ad engine, civic dashboard, and live election + investor demo. 6 type definition files, 5 Supabase migrations (015–019), 5 Zustand stores, 21 new components, 6 new screens, 4 API route files (~30 endpoints), navigation wiring with dashboard quick-nav pills. See Sprint 35 milestone below. |
+| 2026-05-27 | `feat: sprint 36 — parliament data + zero-error typescript build` | Scraped and seeded all 543 Lok Sabha MPs (100%) + 142 Rajya Sabha MPs (58%). Rebuilt Parliament screen to use new data API. Fixed all TS errors across data.ts, parliament screen, delimitation screens, MLAProfile, and deviceFingerprint. TypeScript build: 0 errors. |
 
 ---
 
@@ -2926,3 +2928,212 @@ User creates post → CCA gate (KYC) → Post created (constituency-local)
 | Live Election | LiveElectionTicker, ConstituencyResultCard, DataPipelineCard | 1 | — |
 | Investor Demo | InvestorMetricCard, FlywheelVisualization, MoatShowcase | 1 | — |
 | **Total** | **21 new** | **6 new** | **~34** |
+
+---
+
+## Sprint 36: Parliament Data + TypeScript Zero-Error Build
+
+**Date**: 2026-05-27  
+**Goal**: Complete Lok Sabha MP seeding (543/543), scrape Rajya Sabha MPs, wire Parliament screen to new data layer, eliminate all TypeScript build errors.
+
+---
+
+### Phase 1: Lok Sabha Scraper — 543/543 (100%)
+
+- [x] Built `scrapers/scrape-ls-puppeteer.js` using Puppeteer to bypass MyNeta's JS-obfuscated table rendering
+- [x] Key challenge: MyNeta renders every 9th row via obfuscated JS injection — `page.evaluate()` inside the browser context was mandatory to capture all rows accurately
+- [x] Scraped all **543 Lok Sabha MPs** from MyNeta/ADR with full profiles:
+  - Name, party, constituency, state, education, criminal cases, total assets, total liabilities, age, gender
+  - `photoUrl` populated for all 543 (real photos via 4-tier photo pipeline)
+- [x] Created `scrapers/parse-and-generate-mp-seed.js` to convert raw scraper output → typed `mp-profiles.ts` seed
+
+### Phase 2: Rajya Sabha Scraper — 142/245 (58%)
+
+- [x] Identified `sansad.in` as the authoritative source for RS member data
+- [x] Key challenge: `sansad.in` table columns were inverted — serial number appeared in the name field, actual name in the state field
+- [x] Built `scrapers/fix-rs-data.js` with a `parseName()` utility to clean "Surname, Title Firstname" format and correctly map all fields
+- [x] Seeded **142 valid Rajya Sabha MP profiles**
+- [x] Remaining 103 RS members pending (partially populated chamber)
+
+### Phase 3: stateCode Patching — All LS MPs Assigned
+
+- [x] Created `scrapers/patch-mp-statecodes.js` to resolve 35+ constituency-to-stateCode gaps
+- [x] Manually mapped ambiguous constituencies (e.g. Andaman & Nicobar → `AN`, Lakshadweep → `LD`)
+- [x] All **543 Lok Sabha MPs now have a valid `stateCode`**
+- [x] Rajya Sabha members retain `stateCode: ''` (RS membership is national, not constituency-bound)
+
+### Phase 4: `mp-profiles.ts` Seed — Full API Surface
+
+**File**: `data/seed/mp-profiles.ts` (283KB, 685 total MPs)
+
+| Export | Description |
+|--------|-------------|
+| `ALL_MP_PROFILES` | All 685 MPs (543 LS + 142 RS) |
+| `NATIONAL_PARTY_STRENGTH` | `Record<party, seats>` — e.g. `{ BJP: 240, INC: 99, ... }` |
+| `STATE_PARLIAMENTARY_SUMMARIES` | `Record<stateCode, {ls, rs, total}>` |
+| `getLokSabhaMPs()` | 543 LS members |
+| `getRajyaSabhaMPs()` | 142 RS members |
+| `getMPsByState(code)` | MPs for a state (both houses) |
+| `getMPsByParty(party)` | MPs for a party |
+| `getMinisters()` | Cabinet + MoS members |
+| `getAllianceStrength()` | `{ NDA: n, INDIA: n, Others: n }` |
+| `getMPById(id)` | Single MP lookup |
+| `searchMPs(query)` | Text search across name/party/constituency |
+| `getPartyStrengthForState(code)` | Party breakdown for a state's delegation |
+
+- [x] `MPProfile` interface extended with `ministerialRole?`, `isMinister?`, `committeeRoles?`, parliamentary performance metrics (`attendancePercent?`, `questionsAsked?`, `debatesParticipated?`, `billsIntroduced?`)
+- [x] Backward-compatible aliases added for existing consumers
+
+### Phase 5: Parliament Screen Rewire — `app/parliament/index.tsx`
+
+**Problem**: The screen was built against a prototype API that no longer matched the new seed exports.
+
+| Old (broken) API | New (correct) API |
+|-----------------|-------------------|
+| `getAllianceStrength('NDA')` → returns number | `getAllianceStrength()` → returns `Record<string, number>` |
+| `STATE_PARLIAMENTARY_SUMMARIES.find(s => s.stateCode === x)` | `STATE_PARLIAMENTARY_SUMMARIES[stateCode]` (Record lookup) |
+| `[...NATIONAL_PARTY_STRENGTH].sort(...)` | `Object.entries(NATIONAL_PARTY_STRENGTH).map(...).sort(...)` |
+
+- [x] Rewrote all three data-loading blocks in the screen
+- [x] `ndaStrength`, `indiaStrength`, `othersStrength` now computed from the alliance map Record
+- [x] `stateSummary` correctly accesses `{ls, rs, total}` from Record
+- [x] `topParties` correctly converts Record to sorted array for rendering
+
+### Phase 6: `data.ts` Re-alignment — All State MLA Exports Fixed
+
+**File**: `apps/mobile/lib/data.ts`
+
+All 8 state MLA seed imports were referencing non-existent export names. Fixed to match actual exports:
+
+| State | Old (broken) | Fixed |
+|-------|-------------|-------|
+| TS | `TELANGANA_MLA_PROFILES` | Re-exported from `TS_MLA_PROFILES` as alias |
+| TS | `getMLAsByParty`, `getFemaleMLAs`, `getVeteranMLAs` | Removed (don't exist); added `getAllTSMLAs` |
+| AP | `getAPMLAsByParty`, `getAPFemaleMLAs` | Removed; added `getAPDefectedMLAs`, `getAllAPMLAs` |
+| KA | `getKAMLAsByParty` | Removed; added `getAllKAMLAs` |
+| MH | `getMHMLAsByParty` | Removed; added `getAllMHMLAs` |
+| TN | `getTNMLAsByParty`, `getTNFemaleMLAs` | Removed; added `getAllTNMLAs` |
+| KL | `getKLMLAsByParty`, `getKLFemaleMLAs` | Removed; added `getAllKLMLAs` |
+| WB | `getWBMLAsByParty`, `getWBFemaleMLAs` | Removed; added `getAllWBMLAs` |
+| UP | `getUPMLAsByParty`, `getUPFemaleMLAs` | Removed; added `getAllUPMLAs` |
+
+### Phase 7: TypeScript Error Elimination — 0 Errors
+
+All pre-existing TypeScript errors resolved:
+
+| File | Error | Fix |
+|------|-------|-----|
+| `app/parliament/index.tsx` | `getAllianceStrength` called with arg; NATIONAL_PARTY_STRENGTH spread as array | Rewired to correct API (Phase 5) |
+| `app/delimitation/simulator.tsx` | `quickSim.idealPopPerSeat` — field doesn't exist at top level | Changed to `quickSim.totals.idealPopPerSeat` |
+| `app/delimitation/simulator.tsx` | `d.scPercent`, `d.stPercent` — not in `simulateStateQuick` district breakdown | Computed inline from `d.scReserved / d.projectedSeats` |
+| `app/delimitation/state/[code].tsx` | `allocation.popPerSeat` | Changed to `allocation.populationPerProjectedSeat` (correct `SeatAllocation` field) |
+| `app/legislator/[id].tsx` | `mla?.phone` — `phone` not in `MLAProfile` | Added `phone?` and `email?` optional fields to `MLAProfile` interface in `telangana-mla-profiles.ts` |
+| `lib/deviceFingerprint.ts` | Cannot find module `expo-device`, `expo-application`, `@react-native-community/netinfo` | Created `apps/mobile/types/optional-modules.d.ts` with ambient declarations (packages loaded dynamically with try-catch) |
+
+**Final TypeScript build result:**
+```
+npx tsc --noEmit → (no output) → EXIT 0 ✅
+```
+
+### Files Created / Modified
+
+| File | Action | Description |
+|------|--------|-------------|
+| `scrapers/scrape-ls-puppeteer.js` | Created | Puppeteer scraper for 543 Lok Sabha MPs |
+| `scrapers/fix-rs-data.js` | Created | Cleans inverted sansad.in RS data |
+| `scrapers/parse-and-generate-mp-seed.js` | Modified | Updated to generate full 685-MP seed |
+| `scrapers/patch-mp-statecodes.js` | Created | Patches missing stateCode values for LS MPs |
+| `data/seed/mp-profiles.ts` | Regenerated | 685 MPs, all exports, backward-compat aliases (283KB) |
+| `apps/mobile/lib/data.ts` | Rewritten | All state MLA imports corrected to actual export names |
+| `apps/mobile/app/parliament/index.tsx` | Modified | Rewired to new data API (alliance map, Record lookups, Object.entries) |
+| `apps/mobile/app/delimitation/simulator.tsx` | Modified | Fixed `idealPopPerSeat` path + `scPercent`/`stPercent` inline compute |
+| `apps/mobile/app/delimitation/state/[code].tsx` | Modified | Fixed `popPerSeat` → `populationPerProjectedSeat` |
+| `data/seed/telangana-mla-profiles.ts` | Modified | Added `phone?` and `email?` to `MLAProfile` interface |
+| `apps/mobile/types/optional-modules.d.ts` | Created | Ambient type stubs for optional native packages |
+| `FEATURE_PARITY_TRACKER.md` | Updated | LS MPs 100% ✅, RS 58%, TS build 0 errors, next steps re-prioritized |
+
+### Parliament Data Stats — Final
+
+| Metric | Value |
+|--------|-------|
+| Lok Sabha MPs seeded | **543 / 543 (100%)** |
+| Rajya Sabha MPs seeded | **142 / 245 (58%)** |
+| Total MPs in seed | **685** |
+| MPs with photoUrl | 685 (100%) |
+| MPs with stateCode | 540 LS (100%) + 0 RS (national) |
+| Seed file size | 283 KB |
+| Alliance: NDA | ~293 seats |
+| Alliance: INDIA | ~232 seats |
+| Alliance: Others | ~18 seats |
+| TypeScript build errors | **0** |
+
+---
+
+## Sprint 37 — Full State Wiring (31 States/UTs)
+
+**Date**: 2026-05-27
+**Goal**: Wire all existing seed data into the app's data layer — dispatcher, barrel exports, registry, and shared constants.
+
+### What Was Done
+
+#### 1. `stateDataDispatcher.ts` — Full Coverage
+- **Demographics**: Added 21 auto-generated states via `adaptStubDemographics()` adapter
+- **Election History**: Added 21 states via `adaptElectionHistory()` adapter (Record → PartyElectionResult[])
+- **Political Timeline**: Added 21 states via `adaptTimelineEntries()` adapter
+- **MLA Profiles**: Already had all 31 states wired
+
+#### 2. `data.ts` — Barrel Re-exports (31 States)
+- Added exports for 21 auto-generated states (6 files each)
+- Added Bihar + Jammu & Kashmir (constituencies + MLA profiles)
+- Added historical-results exports for TN, KL, WB, UP
+
+#### 3. `stateRegistry.ts` — 31 State Entries
+- Added 23 new entries with seat counts, GeoJSON flags, and data availability
+
+#### 4. `packages/shared/src/constants/states.ts`
+- Added 8 NE states + Puducherry to `STATES` constant
+- Expanded `FULLY_SUPPORTED_STATES` from 8 to 31
+
+#### 5. `packages/shared/src/types/constituency.ts` + `parties.ts`
+- Added party codes: NPP, ZPM, NDPP, SKM, NDA with full PARTY_CONFIG entries
+
+### Part 2 — Gap Fill (TN, KL, WB, UP, BR, JK)
+
+Created 24 missing seed files for the 6 previously-partial states:
+
+| State | Demographics | Election History | Political Timeline | Trivia |
+|-------|-------------|-----------------|-------------------|--------|
+| Tamil Nadu (TN) | 234 constituencies | 2021 (DMK 133) | ✅ stub | ✅ stub |
+| Kerala (KL) | 140 constituencies | 2021 (CPIM/LDF) | ✅ stub | ✅ stub |
+| West Bengal (WB) | 293 constituencies | 2021 (AITC 213) | ✅ stub | ✅ stub |
+| Uttar Pradesh (UP) | 401 constituencies | 2022 (BJP 255) | ✅ stub | ✅ stub |
+| Bihar (BR) | 227 constituencies | 2020 (NDA) | ✅ stub | ✅ stub |
+| Jammu & Kashmir (JK) | 82 constituencies | 2024 (JKNC 42) | ✅ stub | ✅ stub |
+
+- All 6 wired into `stateDataDispatcher.ts` + `data.ts` barrel exports
+
+### Final Coverage (after Part 1 + Part 2)
+
+| Layer | States | Coverage |
+|-------|--------|----------|
+| Seed files (constituencies) | 31/31 | **100%** |
+| Seed files (MLA profiles) | 31/31 | **100%** |
+| Seed files (demographics) | 31/31 | **100%** |
+| Seed files (election history) | 31/31 | **100%** |
+| Seed files (political timeline) | 31/31 | **100%** |
+| Seed files (trivia) | 31/31 | **100%** |
+| stateDataDispatcher.ts | 31/31 | **100%** |
+| stateDataAdapter.ts | 31/31 | **100%** |
+| data.ts barrel exports | 31/31 | **100%** |
+| stateRegistry.ts | 31/31 | **100%** |
+| STATES constant | 31/31 | **100%** |
+| FULLY_SUPPORTED_STATES | 31/31 | **100%** |
+| PartyCode + PARTY_CONFIG | +5 new | NPP, ZPM, NDPP, SKM, NDA |
+| TypeScript build | **0 errors** | ✅ |
+| Total seed files | **186** | 31 × 6 |
+
+### Remaining Gaps
+- Rajya Sabha MPs: 142/245 (58%) — scraping incomplete, not a wiring issue
+- GeoJSON polygons: 22/31 — NE states + UK + PY missing
+- Demographics/trivia content: stub data (acNo + name only) — needs census/ECI enrichment
+

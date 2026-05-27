@@ -32,6 +32,8 @@ export interface MLAProfile {
   constituencyName?: string;
   district?: string;
   sourceUrl?: string;
+  phone?: string;
+  email?: string;
 }
 
 export const TS_MLA_PROFILES: MLAProfile[] = [
