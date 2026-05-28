@@ -16,6 +16,14 @@ import te from './locales/te';
 import hi from './locales/hi';
 import kn from './locales/kn';
 import mr from './locales/mr';
+import ta from './locales/ta';
+import ml from './locales/ml';
+import bn from './locales/bn';
+import gu from './locales/gu';
+import pa from './locales/pa';
+import or_ from './locales/or';  // 'or' is a JS reserved word, use or_
+import as_ from './locales/as';  // 'as' is a JS reserved word, use as_
+import ne from './locales/ne';
 
 export const LANGUAGES = [
   { code: 'en', label: 'English', nativeLabel: 'English', script: 'Latin' },
@@ -23,6 +31,14 @@ export const LANGUAGES = [
   { code: 'hi', label: 'Hindi', nativeLabel: 'हिन्दी', script: 'Devanagari' },
   { code: 'kn', label: 'Kannada', nativeLabel: 'ಕನ್ನಡ', script: 'Kannada' },
   { code: 'mr', label: 'Marathi', nativeLabel: 'मराठी', script: 'Devanagari' },
+  { code: 'ta', label: 'Tamil', nativeLabel: 'தமிழ்', script: 'Tamil' },
+  { code: 'ml', label: 'Malayalam', nativeLabel: 'മലയാളം', script: 'Malayalam' },
+  { code: 'bn', label: 'Bengali', nativeLabel: 'বাংলা', script: 'Bengali' },
+  { code: 'gu', label: 'Gujarati', nativeLabel: 'ગુજરાતી', script: 'Gujarati' },
+  { code: 'pa', label: 'Punjabi', nativeLabel: 'ਪੰਜਾਬੀ', script: 'Gurmukhi' },
+  { code: 'or', label: 'Odia', nativeLabel: 'ଓଡ଼ିଆ', script: 'Odia' },
+  { code: 'as', label: 'Assamese', nativeLabel: 'অসমীয়া', script: 'Assamese' },
+  { code: 'ne', label: 'Nepali', nativeLabel: 'नेपाली', script: 'Devanagari' },
 ] as const;
 
 export type LanguageCode = (typeof LANGUAGES)[number]['code'];
@@ -76,10 +92,44 @@ export function getCurrentLanguage(): LanguageCode {
 
 /** Map state codes to their recommended language */
 export const STATE_LANGUAGE_MAP: Record<string, LanguageCode> = {
+  // South India
   TS: 'te',
   AP: 'te',
   KA: 'kn',
+  TN: 'ta',
+  KL: 'ml',
+  // West India
   MH: 'mr',
+  GJ: 'gu',
+  GA: 'mr',
+  // North India (Hindi belt)
+  UP: 'hi',
+  BR: 'hi',
+  HR: 'hi',
+  RJ: 'hi',
+  MP: 'hi',
+  CG: 'hi',
+  JH: 'hi',
+  UK: 'hi',
+  DL: 'hi',
+  HP: 'hi',
+  JK: 'hi',
+  // East India
+  WB: 'bn',
+  OD: 'or',
+  // Punjab
+  PB: 'pa',
+  // Northeast
+  AS: 'as',
+  SK: 'ne',
+  TR: 'bn',
+  MN: 'en',  // Manipuri (Meitei script) not supported yet
+  ML: 'en',  // Khasi — no locale yet
+  MZ: 'en',  // Mizo — no locale yet
+  NL: 'en',  // Nagamese/English
+  AR: 'en',  // English widely used
+  // UT
+  PY: 'ta',
 };
 
 // Initialize i18next
@@ -90,6 +140,14 @@ i18n.use(initReactI18next).init({
     hi: { translation: hi },
     kn: { translation: kn },
     mr: { translation: mr },
+    ta: { translation: ta },
+    ml: { translation: ml },
+    bn: { translation: bn },
+    gu: { translation: gu },
+    pa: { translation: pa },
+    or: { translation: or_ },
+    as: { translation: as_ },
+    ne: { translation: ne },
   },
   lng: getDeviceLanguage(), // sync fallback — async override below
   fallbackLng: 'en',

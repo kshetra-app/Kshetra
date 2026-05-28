@@ -83,4 +83,12 @@ describe('Telangana Constituencies Seed Data', () => {
       expect(c.currentParty).toBe('INC');
     });
   });
+
+  it('should have a valid localName in Telugu script for all constituencies', () => {
+    TELANGANA_CONSTITUENCIES.forEach((c) => {
+      expect(c.localName).toBeDefined();
+      expect(c.localName?.length).toBeGreaterThan(0);
+      expect(c.localName).toMatch(/^[\u0c00-\u0c7f\s.]+$/);
+    });
+  });
 });

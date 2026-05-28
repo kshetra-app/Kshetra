@@ -2,10 +2,10 @@
  * Regression tests for Sprint 29 — New state seed data files.
  * Covers Tamil Nadu (234), Kerala (140), West Bengal (293), Uttar Pradesh (401).
  */
-import { TN_CONSTITUENCIES, getTNConstituency, type TNConstituencySeed } from '../tamil-nadu-constituencies';
-import { KL_CONSTITUENCIES, getKLConstituency, type KLConstituencySeed } from '../kerala-constituencies';
-import { WB_CONSTITUENCIES, getWBConstituency, type WBConstituencySeed } from '../west-bengal-constituencies';
-import { UP_CONSTITUENCIES, getUPConstituency, type UPConstituencySeed } from '../uttar-pradesh-constituencies';
+import { TN_CONSTITUENCIES, getTNConstituency } from '../tamil-nadu-constituencies';
+import { KL_CONSTITUENCIES, getKLConstituency } from '../kerala-constituencies';
+import { WB_CONSTITUENCIES, getWBConstituency } from '../west-bengal-constituencies';
+import { UP_CONSTITUENCIES, getUPConstituency } from '../uttar-pradesh-constituencies';
 
 // ── Helper ──────────────────────────────────────────────────────────────────
 function validateSeedArray(
