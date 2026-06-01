@@ -7,10 +7,12 @@
  */
 
 import type { MLAProfile } from '../../../data/seed/telangana-mla-profiles';
+import type { LegislatorProfile } from '../../../data/seed/tamil-nadu-mla-profiles';
 import type { ConstituencyDemographics } from '../../../data/seed/telangana-demographics';
 import type { HistoricalResult } from '../../../data/seed/telangana-historical-results';
 import type { ElectionHistoryEntry } from '../../../data/seed/telangana-election-history';
 import type { PoliticalLedgerEntry } from '../../../data/seed/telangana-political-timeline';
+import { getUnifiedConstituenciesForState } from './stateDataAdapter';
 
 // ── Telangana ──
 import { getMLAProfile as getTSMLA, getDefectedMLAs as getTSDefected } from '../../../data/seed/telangana-mla-profiles';
@@ -172,18 +174,82 @@ import { getPYConstituencyTimeline } from '../../../data/seed/puducherry-politic
 // ── MLA Profile ─────────────────────────────────────────────────────────
 // ═════════════════════════════════════════════════════════════════════════
 
+/** Adapt LegislatorProfile (rich 2026 schema) → MLAProfile (codebase standard) */
+function adaptLegislatorProfile(lp: LegislatorProfile | undefined): MLAProfile | undefined {
+  if (!lp) return undefined;
+  return {
+    acNo: lp.acNo,
+    name: lp.name,
+    party: lp.currentParty,
+    gender: lp.gender === 'O' ? 'M' : lp.gender,
+    terms: lp.termsServed,
+    age: lp.age,
+    dob: lp.dob,
+    dobEstimated: lp.dobEstimated,
+    education: lp.education?.educationCategory,
+    profession: lp.education?.selfProfession,
+    criminalCases: lp.criminalRecord?.totalCases,
+    totalAssets: lp.financialHistory?.[0]?.totalAssets,
+    totalLiabilities: lp.financialHistory?.[0]?.totalLiabilities,
+    maritalStatus: lp.maritalStatus,
+    photoUrl: lp.photoUrl,
+    constituencyName: lp.constituencyName,
+    district: lp.district,
+    sourceUrl: lp.mynetaUrl,
+  };
+}
+
+/** Normalize name for fuzzy comparison */
+function normalizeForCompare(name: string): string {
+  return name.toLowerCase().replace(/[^a-z\s]/g, '').replace(/\s+/g, ' ').trim();
+}
+
+/** Check if two names refer to the same person (partial match) */
+function namesMatch(a: string, b: string): boolean {
+  const na = normalizeForCompare(a);
+  const nb = normalizeForCompare(b);
+  if (na === nb) return true;
+  const aParts = na.split(' ').filter(p => p.length > 2);
+  const bParts = nb.split(' ').filter(p => p.length > 2);
+  // At least one significant name part must match
+  return aParts.some(p => bParts.some(q => q.includes(p) || p.includes(q)));
+}
+
+/**
+ * Get MLA profile with seed-data reconciliation.
+ * If the profile file has multiple entries for the same acNo (winners + losers),
+ * this returns only the one matching the seed's winnerName.
+ * If the profile name doesn't match the seed winner at all, the name field is
+ * overridden to prevent showing conflicting MLA names in the UI.
+ */
 export function getMLAProfileForState(
   stateCode: string,
   acNo: number,
 ): MLAProfile | undefined {
+  const rawProfile = getRawMLAProfile(stateCode, acNo);
+  if (!rawProfile) return undefined;
+
+  // Cross-reference with seed's winner name for consistency
+  const constituency = getUnifiedConstituenciesForState(stateCode).find(c => c.acNo === acNo);
+  if (!constituency) return rawProfile;
+
+  // If names already match, return as-is
+  if (namesMatch(rawProfile.name, constituency.winnerName)) return rawProfile;
+
+  // Override profile name with seed's winnerName to prevent "two MLAs" display
+  return { ...rawProfile, name: constituency.winnerName };
+}
+
+/** Raw lookup (first match by acNo from state file) */
+function getRawMLAProfile(stateCode: string, acNo: number): MLAProfile | undefined {
   switch (stateCode) {
     case 'TS': return getTSMLA(acNo);
     case 'AP': return getAPMLAProfile(acNo);
     case 'KA': return getKAMLAProfile(acNo);
     case 'MH': return getMHMLAProfile(acNo);
-    case 'TN': return getTNMLAProfile(acNo);
-    case 'KL': return getKLMLAProfile(acNo);
-    case 'WB': return getWBMLAProfile(acNo);
+    case 'TN': return adaptLegislatorProfile(getTNMLAProfile(acNo));
+    case 'KL': return adaptLegislatorProfile(getKLMLAProfile(acNo));
+    case 'WB': return adaptLegislatorProfile(getWBMLAProfile(acNo));
     case 'UP': return getUPMLAProfile(acNo);
     case 'RJ': return getRJMLAProfile(acNo);
     case 'GJ': return getGJMLAProfile(acNo);
@@ -195,7 +261,7 @@ export function getMLAProfileForState(
     case 'CG': return getCGMLAProfile(acNo);
     case 'MP': return getMPMLAProfile(acNo);
     case 'BR': return getBRMLAProfile(acNo);
-    case 'AS': return getASMLAProfile(acNo);
+    case 'AS': return adaptLegislatorProfile(getASMLAProfile(acNo));
     case 'GA': return getGAMLAProfile(acNo);
     case 'HP': return getHPMLAProfile(acNo);
     case 'MN': return getMNMLAProfile(acNo);
@@ -206,7 +272,7 @@ export function getMLAProfileForState(
     case 'SK': return getSKMLAProfile(acNo);
     case 'AR': return getARMLAProfile(acNo);
     case 'UK': return getUKMLAProfile(acNo);
-    case 'PY': return getPYMLAProfile(acNo);
+    case 'PY': return adaptLegislatorProfile(getPYMLAProfile(acNo));
     case 'JK': return getJKMLAProfile(acNo);
     default:   return undefined;
   }
@@ -458,12 +524,43 @@ export function getElectionHistoryForState(
  * Adapt auto-generated political timeline → PoliticalLedgerEntry[].
  * Auto-generated states use a simpler ledger format; we map to the TS-compatible shape.
  */
+function inferEventType(event: string, fromParty: string, toParty: string): string {
+  const lower = (event || '').toLowerCase();
+  if (lower.includes('by-election') || lower.includes('byelection') || lower.includes('by election'))
+    return 'BY_ELECTION';
+  if (lower.includes('demise') || lower.includes('death') || lower.includes('passed away'))
+    return 'DEATH_IN_OFFICE';
+  if (lower.includes('general election'))
+    return 'GENERAL_ELECTION';
+  if (lower.includes('disqualif'))
+    return 'DISQUALIFICATION';
+  if (lower.includes('merger') || lower.includes('merge'))
+    return 'PARTY_MERGER';
+  if (lower.includes('split'))
+    return 'SPLIT';
+  if (lower.includes('expel') || lower.includes('expul'))
+    return 'EXPULSION';
+  // Defection: check before resign — if text has resign+joined/defection, it's a defection
+  if (lower.includes('defect') || lower.includes('switch') || lower.includes('faction'))
+    return 'DEFECTION';
+  if (lower.includes('resign') && (lower.includes('joined') || lower.includes('toppl')))
+    return 'DEFECTION';
+  if (lower.includes('resign'))
+    return 'RESIGNATION';
+  if (lower.includes('joined'))
+    return 'DEFECTION';
+  // Fallback: if going to VACANT, it's a vacancy; if from VACANT, it's a by-election
+  if (toParty === 'VACANT') return 'RESIGNATION';
+  if (fromParty === 'VACANT') return 'BY_ELECTION';
+  return 'DEFECTION';
+}
+
 function adaptTimelineEntries(entries: any[]): PoliticalLedgerEntry[] {
   return entries.map((e: any, i: number) => ({
-    id: `ADAPTED-${i}`,
+    id: `ADAPTED-${e.acNo || 0}-${i}`,
     date: e.date ?? '',
     assembly: 1 as 1,
-    eventType: 'DEFECTION' as any,
+    eventType: inferEventType(e.event, e.fromParty, e.toParty) as any,
     acNos: e.acNo ? [e.acNo] : [],
     memberNames: e.legislatorName ? [e.legislatorName] : [],
     debitParty: e.fromParty ?? '',

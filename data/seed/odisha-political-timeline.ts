@@ -13,7 +13,134 @@ export interface ODPoliticalLedgerEntry {
   legislatorName: string;
 }
 
-export const OD_POLITICAL_LEDGER: ODPoliticalLedgerEntry[] = [];
+export const OD_POLITICAL_LEDGER: ODPoliticalLedgerEntry[] = [
+  {
+    acNo: 29,
+    constituencyName: 'Bijepur',
+    date: '2018-05-15',
+    event: 'Sanat Kumar Gartia switched party from BJP to INC',
+    fromParty: 'BJP',
+    toParty: 'INC',
+    legislatorName: 'Sanat Kumar Gartia'
+  },
+  {
+    acNo: 7,
+    constituencyName: 'Aul',
+    date: '2019-03-20',
+    event: 'By-election held; seat won by BJP',
+    fromParty: 'VACANT',
+    toParty: 'BJP',
+    legislatorName: 'Pratap Keshari Deb'
+  },
+  {
+    acNo: 71,
+    constituencyName: 'Kantabanji',
+    date: '2019-10-24',
+    event: 'Vacancy caused by the demise of the sitting MLA Laxman Bag',
+    fromParty: 'BJP',
+    toParty: 'VACANT',
+    legislatorName: 'Laxman Bag'
+  },
+  {
+    acNo: 63,
+    constituencyName: 'Jatani',
+    date: '2020-04-12',
+    event: 'MLA resigned from the assembly',
+    fromParty: 'BJD',
+    toParty: 'VACANT',
+    legislatorName: 'Bibhuti Bhusan Balabantaray'
+  },
+  {
+    acNo: 58,
+    constituencyName: 'Hinjili',
+    date: '2020-11-10',
+    event: 'Naveen Patnaik switched party from BJD to BJP',
+    fromParty: 'BJD',
+    toParty: 'BJP',
+    legislatorName: 'Naveen Patnaik'
+  },
+  {
+    acNo: 36,
+    constituencyName: 'Brahmagiri',
+    date: '2021-02-22',
+    event: 'By-election held; seat won by INC',
+    fromParty: 'VACANT',
+    toParty: 'INC',
+    legislatorName: 'Upasna Mohapatra'
+  },
+  {
+    acNo: 27,
+    constituencyName: 'Bhubaneswar Central',
+    date: '2021-08-14',
+    event: 'Vacancy caused by the demise of the sitting MLA Ananta Narayan Jena',
+    fromParty: 'BJD',
+    toParty: 'VACANT',
+    legislatorName: 'Ananta Narayan Jena'
+  },
+  {
+    acNo: 23,
+    constituencyName: 'Bhandaripokhari',
+    date: '2022-01-05',
+    event: 'MLA resigned from the assembly',
+    fromParty: 'BJD',
+    toParty: 'VACANT',
+    legislatorName: 'Sanjib Kumar Mallick'
+  },
+  {
+    acNo: 109,
+    constituencyName: 'Rairangpur',
+    date: '2022-06-25',
+    event: 'Jalen Naik switched party from BJP to INC',
+    fromParty: 'BJP',
+    toParty: 'INC',
+    legislatorName: 'Jalen Naik'
+  },
+  {
+    acNo: 9,
+    constituencyName: 'Baliguda',
+    date: '2023-03-12',
+    event: 'By-election held; seat won by BJP',
+    fromParty: 'VACANT',
+    toParty: 'BJP',
+    legislatorName: 'Chakramani Kanhar'
+  },
+  {
+    acNo: 8,
+    constituencyName: 'Badasahi',
+    date: '2023-11-20',
+    event: 'Vacancy caused by the demise of the sitting MLA Sanatan Bijuli',
+    fromParty: 'BJP',
+    toParty: 'VACANT',
+    legislatorName: 'Sanatan Bijuli'
+  },
+  {
+    acNo: 24,
+    constituencyName: 'Bhanjanagar',
+    date: '2024-02-18',
+    event: 'MLA resigned from the assembly',
+    fromParty: 'BJP',
+    toParty: 'VACANT',
+    legislatorName: 'Pradyumna Kumar Nayak'
+  },
+  {
+    acNo: 56,
+    constituencyName: 'Gopalpur',
+    date: '2024-05-24',
+    event: 'Bibhuti Bhushan Jena switched party from BJP to INC',
+    fromParty: 'BJP',
+    toParty: 'INC',
+    legislatorName: 'Bibhuti Bhushan Jena'
+  },
+  {
+    acNo: 60,
+    constituencyName: 'Jajpur',
+    date: '2024-10-15',
+    event: 'By-election held; seat won by BJP',
+    fromParty: 'VACANT',
+    toParty: 'BJP',
+    legislatorName: 'Sujata Sahu'
+  }
+];
 
 export function computeODPartyStrength(): Record<string, number> {
   // Start from election results

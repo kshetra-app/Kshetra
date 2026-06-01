@@ -36,13 +36,15 @@ import DefectionBadge from '../../components/DefectionBadge';
 import MapColorToggle, { type MapColorMode } from '../../components/MapColorToggle';
 import MapSearch from '../../components/MapSearch';
 import CompareSheet from '../../components/CompareSheet';
+import ChiefMinisterBadge from '../../components/ChiefMinisterBadge';
 import PhotoViewerModal from '../../components/PhotoViewerModal';
 import { useFavoritesStore } from '../../stores/favorites';
 import { useMyConstituencyStore } from '../../stores/myConstituency';
 import { getStateGeoJSON } from '@/lib/geoLoader';
 import { getUnifiedConstituenciesForState, type UnifiedConstituency } from '@/lib/stateDataAdapter';
-import { getRandomTriviaSetForState, getTriviaForConstituencyInState } from '@/lib/stateTriviaAdapter';
+import { getTriviaForConstituencyInState, getAllTriviaForState } from '@/lib/stateTriviaAdapter';
 import { getHistoryForState } from '@/lib/stateDataDispatcher';
+import { selectFreshTrivia } from '@/lib/triviaSelector';
 import { computeAllSeatAllocations } from '@/lib/delimitation/seatCalculator';
 import { getCensusDistricts } from '../../../../data/census/india-district-population-2011';
 
@@ -183,31 +185,16 @@ function getEnrichedTSGeo(): GeoJSON.FeatureCollection {
 
 // seedMap is now computed per-state inside FullMapScreen
 
-/** Mapbox expression: color each polygon by WINNER_PARTY */
+/** Mapbox expression: color each polygon by WINNER_PARTY.
+ *  Built dynamically from PARTY_COLORS so all 31-state parties get their colour. */
 const partyFillColor: any = [
   'match',
   ['get', 'WINNER_PARTY'],
-  'INC', PARTY_COLORS.INC ?? '#19AA4F',
-  'BRS', PARTY_COLORS.BRS ?? '#E91E63',
-  'BJP', PARTY_COLORS.BJP ?? '#FF9933',
-  'AIMIM', PARTY_COLORS.AIMIM ?? '#388E3C',
-  'TDP', PARTY_COLORS.TDP ?? '#FFEB3B',
-  'YSRCP', PARTY_COLORS.YSRCP ?? '#1565C0',
-  'JSP', PARTY_COLORS.JSP ?? '#D32F2F',
-  'JDS', PARTY_COLORS.JDS ?? '#4CAF50',
-  'SHSUBT', PARTY_COLORS.SHSUBT ?? '#FF5722',
-  'SHS', PARTY_COLORS.SHS ?? '#FF9800',
-  'NCP', PARTY_COLORS.NCP ?? '#00BCD4',
-  'NCPSP', PARTY_COLORS.NCPSP ?? '#0097A7',
-  'AAP', PARTY_COLORS.AAP ?? '#0288D1',
-  'CPI', PARTY_COLORS.CPI ?? '#F44336',
-  'CPIM', PARTY_COLORS.CPIM ?? '#B71C1C',
-  // TN / KL / WB / UP parties
-  'DMK', '#E30613',
+  // Generate from PARTY_COLORS (includes BJP, INC, BRS, TDP, AAP, DMK, AITC, SP, BSP,
+  // JDU, RJD, JMM, JKNC, NPP, ZPM, NDPP, SKM, SHSUBT, NCPSP, NCP, SHS, etc.)
+  ...Object.entries(PARTY_COLORS).flatMap(([code, color]) => [code, color]),
+  // Additional regional parties not in shared PARTY_CONFIG
   'AIADMK', '#006400',
-  'AITC', '#20C646',
-  'SP', '#FF2222',
-  'BSP', '#0000FF',
   'IUML', '#009900',
   'KCM', '#FFD700',
   'VCK', '#8B0000',
@@ -215,6 +202,19 @@ const partyFillColor: any = [
   'RLD', '#228B22',
   'AD(S)', '#FF69B4',
   'ISF', '#00CED1',
+  'SAD', '#0F5132',
+  'BJD', '#006B3F',
+  'GFP', '#FF4500',
+  'MG', '#800080',
+  'AJSU', '#FF8C00',
+  'AGP', '#228B22',
+  'IPFT', '#FF1493',
+  'MNF', '#4169E1',
+  'NPF', '#DAA520',
+  'SDF', '#FF6347',
+  'UDP', '#8B4513',
+  'HSPDP', '#2F4F4F',
+  'TMC(M)', '#20C646',
   '#808080', // fallback — IND / others
 ];
 
@@ -436,10 +436,10 @@ function FullMapScreen() {
   }, [activeGeoJSON, showDelimitation, districtDensityMap]);
 
   /** Random trivia for idle map — re-fetched when state changes */
-  const stateIdleTrivia = useMemo(
-    () => getRandomTriviaSetForState(stateCode, 8),
-    [stateCode],
-  );
+  const stateIdleTrivia = useMemo(() => {
+    const all = getAllTriviaForState(stateCode);
+    return selectFreshTrivia(all, 8);
+  }, [stateCode]);
 
   /** Compute fill color expression based on current color mode */
   const activeFillColor = useMemo(() => {
@@ -748,6 +748,7 @@ function FullMapScreen() {
         <Text style={styles.headerSubtitle}>
           {currentState?.name ?? stateCode} · {currentState?.assemblySeats ?? '?'} {t('explore.constituencies')}
         </Text>
+        <ChiefMinisterBadge stateCode={stateCode} compact />
       </View>
 
       {/* Action buttons */}
@@ -1012,9 +1013,10 @@ function FullMapScreen() {
 
             {/* Contextual trivia */}
             {(() => {
-              const items = getTriviaForConstituencyInState(stateCode, selected.acNo).filter(
+              const allConstituencyTrivia = getTriviaForConstituencyInState(stateCode, selected.acNo).filter(
                 (t) => !t.contexts.every((c) => c.type === 'GLOBAL'),
               );
+              const items = selectFreshTrivia(allConstituencyTrivia, 5);
               return items.length > 0 ? (
                 <View style={styles.triviaRow}>
                   <TriviaCard items={items} compact rotateInterval={6000} />

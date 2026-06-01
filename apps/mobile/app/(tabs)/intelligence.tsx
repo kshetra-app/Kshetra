@@ -11,11 +11,12 @@ import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import StateSwitcher from '../../components/StateSwitcher';
 import { PARTY_COLORS, getPartyColor } from '@/lib/constants';
-import { getElectionHistoryForState, hasFullDataForState } from '@/lib/stateDataDispatcher';
-import { getUnifiedConstituenciesForState, type UnifiedConstituency } from '@/lib/stateDataAdapter';
+import { getElectionHistoryForState, hasFullDataForState, getTimelineForState } from '../../lib/stateDataDispatcher';
+import { getUnifiedConstituenciesForState, type UnifiedConstituency } from '../../lib/stateDataAdapter';
 import { useActiveStateStore } from '../../stores/activeState';
 import { STATES } from '@kshetra/shared';
 import { useResponsive } from '../../lib/responsive';
+import PartyStrengthChart from '../../components/PartyStrengthChart';
 
 /** Compute analytics from seed data — recomputed when state changes */
 function useElectionAnalytics(stateCode: string) {
@@ -104,6 +105,48 @@ export default function IntelligenceScreen() {
     : '';
 
   const { insets } = useResponsive();
+
+  const electionSeats = useMemo(() => {
+    const seats: Record<string, number> = {};
+    const constituencies = getUnifiedConstituenciesForState(stateCode);
+    for (const c of constituencies) {
+      seats[c.winnerParty] = (seats[c.winnerParty] || 0) + 1;
+    }
+    return seats;
+  }, [stateCode]);
+
+  const currentSeats = useMemo(() => {
+    const seats: Record<string, number> = {};
+    const constituencies = getUnifiedConstituenciesForState(stateCode);
+    for (const c of constituencies) {
+      const party = c.currentParty || c.winnerParty;
+      seats[party] = (seats[party] || 0) + 1;
+    }
+    return seats;
+  }, [stateCode]);
+
+  const { defectionCount, byelectionCount } = useMemo(() => {
+    try {
+      const constituencies = getUnifiedConstituenciesForState(stateCode);
+      let defs = 0;
+      let bys = 0;
+      const seenIds = new Set<string>();
+      for (const c of constituencies) {
+        const timeline = getTimelineForState(stateCode, c.acNo);
+        for (const event of timeline) {
+          if (!seenIds.has(event.id)) {
+            seenIds.add(event.id);
+            if (event.eventType === 'DEFECTION') defs++;
+            if (event.eventType === 'BY_ELECTION') bys++;
+          }
+        }
+      }
+      return { defectionCount: defs, byelectionCount: bys };
+    } catch {
+      return { defectionCount: 0, byelectionCount: 0 };
+    }
+  }, [stateCode]);
+
 
   return (
     <ScrollView
@@ -336,6 +379,21 @@ export default function IntelligenceScreen() {
           })}
         </View>;
       })()}
+
+      {/* Defection Tracker Section */}
+      {hasFull && (
+        <View style={styles.section}>
+          <Text style={styles.sectionTitle}>Defection Tracker</Text>
+          <PartyStrengthChart
+            electionSeats={electionSeats}
+            currentSeats={currentSeats}
+            totalSeats={analytics.totalConstituencies}
+            defectionsCount={defectionCount}
+            byelectionsCount={byelectionCount}
+          />
+        </View>
+      )}
+
 
       <View style={styles.footer}>
         <Text style={styles.footerText}>

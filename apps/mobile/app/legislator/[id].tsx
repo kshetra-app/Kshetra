@@ -9,13 +9,15 @@ import { useLocalSearchParams, Stack, useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { useResponsive } from '../../lib/responsive';
 import { useAffidavitStore } from '../../stores/affidavits';
-import { getMLAProfileForState } from '../../lib/stateDataDispatcher';
+import { getMLAProfileForState, getTimelineForState } from '../../lib/stateDataDispatcher';
 import { getUnifiedConstituenciesForState } from '../../lib/stateDataAdapter';
 import ProfileHeroCard from '../../components/legislator/ProfileHeroCard';
 import FinancialBreakdownCard from '../../components/legislator/FinancialBreakdownCard';
 import CriminalRecordCard from '../../components/legislator/CriminalRecordCard';
 import PerformanceCard from '../../components/legislator/PerformanceCard';
 import RedFlagsBanner from '../../components/legislator/RedFlagsBanner';
+import DefectionJourneyCard from '../../components/legislator/DefectionJourneyCard';
+
 
 export default function LegislatorProfileScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
@@ -129,6 +131,18 @@ export default function LegislatorProfileScreen() {
   const photoUrl = mla?.photoUrl || null;
   const constType = constituency?.type || 'GEN';
 
+  const defectionEvent = useMemo(() => {
+    try {
+      const events = getTimelineForState(stateCode, acNo);
+      return events.find(e => 
+        e.memberNames.some(m => m.toLowerCase().includes(name.toLowerCase()) || name.toLowerCase().includes(m.toLowerCase()))
+      ) ?? null;
+    } catch {
+      return null;
+    }
+  }, [stateCode, acNo, name]);
+
+
   const handleShare = async () => {
     try {
       await Share.share({
@@ -195,8 +209,18 @@ export default function LegislatorProfileScreen() {
           <NavChip icon="school" label="Education" color="#10B981" />
         </ScrollView>
 
+        {/* Defection Journey Card */}
+        {constituency && (constituency.currentParty !== constituency.winnerParty || defectionEvent) && (
+          <DefectionJourneyCard
+            electedParty={constituency.winnerParty}
+            currentParty={constituency.currentParty}
+            defectionEvent={defectionEvent || undefined}
+          />
+        )}
+
         {/* Financial Disclosure */}
         <FinancialBreakdownCard records={financialRecords} />
+
 
         {/* Criminal Record */}
         <CriminalRecordCard

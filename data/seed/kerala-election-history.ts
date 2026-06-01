@@ -12,6 +12,22 @@ export interface KLElectionResult {
 
 export const KL_ELECTION_HISTORY: KLElectionResult[] = [
   {
+    year: 2026,
+    partyResults: {
+      'INC': 57,
+      'CPIM': 23,
+      'IUML': 22,
+      'KC(M)': 6,
+      'CPI': 6,
+      'BJP': 3,
+      'RSP': 2,
+      'RJD': 1,
+      'Others': 20,
+    },
+    totalSeats: 140,
+    rulingParty: 'INC',
+  },
+  {
     year: 2021,
     partyResults: {
       'CPIM': 62,

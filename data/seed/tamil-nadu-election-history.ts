@@ -12,6 +12,22 @@ export interface TNElectionResult {
 
 export const TN_ELECTION_HISTORY: TNElectionResult[] = [
   {
+    year: 2026,
+    partyResults: {
+      'TVK': 99,
+      'DMK': 52,
+      'AIADMK': 41,
+      'PMK': 4,
+      'INC': 4,
+      'IUML': 2,
+      'CPIM': 2,
+      'BJP': 1,
+      'Others': 29,
+    },
+    totalSeats: 234,
+    rulingParty: 'TVK',
+  },
+  {
     year: 2021,
     partyResults: {
       'DMK': 133,

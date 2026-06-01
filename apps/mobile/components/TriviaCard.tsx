@@ -3,6 +3,7 @@ import { useState, useEffect, useCallback, useRef } from 'react';
 import { Ionicons } from '@expo/vector-icons';
 import { useTranslation } from 'react-i18next';
 import type { TriviaItem } from '@/lib/data';
+import { useTriviaHistoryStore } from '../stores/triviaHistory';
 
 interface TriviaCardProps {
   /** Specific trivia items to cycle through */
@@ -25,9 +26,17 @@ export default function TriviaCard({
 
   const current = items[index % items.length];
 
+  const markSeen = useTriviaHistoryStore((s) => s.markSeen);
+
   const next = useCallback(() => {
-    setIndex((i) => (i + 1) % items.length);
-  }, [items.length]);
+    setIndex((i) => {
+      const nextIdx = (i + 1) % items.length;
+      if (items[nextIdx]?.id) {
+        markSeen(items[nextIdx].id);
+      }
+      return nextIdx;
+    });
+  }, [items, markSeen]);
 
   useEffect(() => {
     if (rotateInterval > 0 && items.length > 1) {
@@ -37,6 +46,13 @@ export default function TriviaCard({
       };
     }
   }, [next, rotateInterval, items.length]);
+
+  // Mark the FIRST item as seen on mount:
+  useEffect(() => {
+    if (items[0]?.id) {
+      markSeen(items[0].id);
+    }
+  }, [items[0]?.id, markSeen]);
 
   // Resolve translated text — falls back to raw seed text if no i18n key exists
   const headline = t(`trivia.${current?.id}.headline`, { defaultValue: current?.headline ?? '' });

@@ -23,6 +23,7 @@ import { useTranslation } from 'react-i18next';
 import { useResponsive } from '../../lib/responsive';
 import PhotoViewerModal from '../../components/PhotoViewerModal';
 import { useAffidavitStore } from '../../stores/affidavits';
+import ChiefMinisterBadge from '../../components/ChiefMinisterBadge';
 
 type SortKey = 'acNo' | 'name' | 'margin_asc' | 'margin_desc';
 
@@ -166,6 +167,7 @@ export default function ExploreScreen() {
             />
           </Pressable>
         </View>
+        <ChiefMinisterBadge stateCode={stateCode} />
       </View>
 
       {/* Quick Nav — Parliament, AI Chat, Delimitation */}

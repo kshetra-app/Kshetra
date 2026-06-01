@@ -51,9 +51,47 @@ export function enrichGeoJSON(
 }
 
 /**
+ * Normalize a constituency name for fuzzy matching.
+ * Strips parenthesized suffixes like "(SC)", "(ST)", "(South)", lowercases,
+ * removes punctuation/diacritics, and collapses whitespace.
+ */
+function normalizeName(raw: string): string {
+  return raw
+    .replace(/\s*\((?:SC|ST|GEN)\)?\s*/gi, '') // strip (SC)/(ST)/(GEN) — tolerates missing close paren
+    .replace(/\(/g, ' ')                        // open parens → space (handles "Gandhinagar(South)")
+    .replace(/\)/g, ' ')                        // close parens → space
+    .toLowerCase()
+    .replace(/[^a-z0-9\s]/g, '')               // remove punctuation
+    .replace(/\s+/g, ' ')
+    .trim();
+}
+
+/** Strip ALL spaces from a normalized name for ultra-fuzzy matching
+ *  e.g. "suran kote" → "surankote", "baran atru" → "baranatru" */
+function stripSpaces(normalized: string): string {
+  return normalized.replace(/\s/g, '');
+}
+
+/**
+ * Known GeoJSON→seed name aliases that can't be resolved by normalization.
+ * Key = normalized GeoJSON name, Value = normalized seed name.
+ */
+const NAME_ALIASES: Record<string, string> = {
+  // J&K
+  'kala kote': 'kalakote sunderbani',
+  // Assam (GeoJSON splits combined constituency)
+  'chabua': 'chabualahowal',
+  'lahowal': 'chabualahowal',
+};
+
+/**
  * Generic enrichment for any state.
- * Uses ConstituencyBrief from stateDataAdapter to add party/MLA/reservation
- * properties to GeoJSON features by matching on AC_NO.
+ * Matches GeoJSON features to seed data using a multi-pass strategy:
+ *   1. Normalized name match (handles case, punctuation, parens)
+ *   2. Space-stripped name match (handles "Suran Kote" ↔ "Surankote")
+ *   3. Known alias lookup (handles "Kala Kote" ↔ "Kalakote - Sunderbani")
+ *   4. AC_NO fallback (works for pre-enriched states)
+ * When matched, overrides AC_NO in output so tap handlers use seed acNo.
  */
 export function enrichGeoJSONForState(
   geojson: GeoJSON.FeatureCollection,
@@ -63,23 +101,54 @@ export function enrichGeoJSONForState(
   const byAcNo = new Map<number, UnifiedConstituency>(
     constituencies.map((c) => [c.acNo, c]),
   );
+  const byName = new Map<string, UnifiedConstituency>(
+    constituencies.map((c) => [normalizeName(c.name), c]),
+  );
+  // Space-stripped index for fuzzy matching
+  const byNameStripped = new Map<string, UnifiedConstituency>(
+    constituencies.map((c) => [stripSpaces(normalizeName(c.name)), c]),
+  );
 
   return {
     ...geojson,
     features: geojson.features.map((feature) => {
-      const acNo = feature.properties?.AC_NO;
-      const c = acNo != null ? byAcNo.get(acNo) : undefined;
+      const geoAcNo = feature.properties?.AC_NO;
+      const geoName = feature.properties?.AC_NAME ?? '';
+      const geoNorm = normalizeName(geoName);
+
+      // Strategy 1: exact normalized name match
+      let c = byName.get(geoNorm);
+
+      // Strategy 2: space-stripped match ("suran kote" → "surankote")
+      if (!c) {
+        c = byNameStripped.get(stripSpaces(geoNorm));
+      }
+
+      // Strategy 3: known alias lookup
+      if (!c && NAME_ALIASES[geoNorm]) {
+        c = byName.get(NAME_ALIASES[geoNorm]) ?? byNameStripped.get(stripSpaces(NAME_ALIASES[geoNorm]));
+      }
+
+      // Strategy 4: AC_NO fallback (only if above strategies failed)
+      if (!c && geoAcNo != null) {
+        c = byAcNo.get(geoAcNo);
+      }
+
+      // Use seed's acNo if matched (corrects the AC_NO for tap handlers)
+      const resolvedAcNo = c ? c.acNo : geoAcNo;
 
       return {
         ...feature,
         properties: {
           ...feature.properties,
+          AC_NO: resolvedAcNo,
+          AC_NAME: c?.name ?? geoName,
           WINNER_PARTY: c?.winnerParty ?? 'IND',
           WINNER_NAME: c?.winnerName ?? '',
           RUNNER_UP: c?.runnerUp ?? '',
           RESERVATION: c?.type ?? 'GEN',
           MARGIN: c?.margin ?? 0,
-          DISTRICT: c?.district ?? '',
+          DISTRICT: c?.district ?? feature.properties?.DIST_NAME ?? '',
           POPULATION: 0,
           LITERACY: 0,
           TURNOUT: 0,

@@ -4,8 +4,7 @@
  * Tests the search scoring and result ranking logic
  * by directly testing the UnifiedConstituency data it searches over.
  */
-
-const path = require('path');
+import * as path from 'path';
 
 describe('Global Search Data Layer', () => {
   const { getUnifiedConstituenciesForState } = require(

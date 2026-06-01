@@ -134,9 +134,8 @@ const ASSEMBLY_2019_EVENTS: PoliticalLedgerEntry[] = [
     sources: ['https://www.thehindu.com/', 'https://www.ndtv.com/'],
     legalStatus: 'PETITION_FILED',
     verified: true,
-  },
-];
-
+  }
+]; 
 // ─── 2024 ASSEMBLY (Nov 2024 – present) ──────────────────────────────
 
 const ASSEMBLY_2024_EVENTS: PoliticalLedgerEntry[] = [
@@ -251,16 +250,14 @@ const ASSEMBLY_2024_EVENTS: PoliticalLedgerEntry[] = [
     sources: ['https://results.eci.gov.in/'],
     legalStatus: 'NOT_APPLICABLE',
     verified: true,
-  },
-];
-
+  }
+]; 
 // ─── COMBINED TIMELINE ────────────────────────────────────────────────────
 
 export const MH_POLITICAL_LEDGER: PoliticalLedgerEntry[] = [
   ...ASSEMBLY_2019_EVENTS,
-  ...ASSEMBLY_2024_EVENTS,
-];
-
+  ...ASSEMBLY_2024_EVENTS
+]; 
 export const MH_OPENING_BALANCES: Record<1 | 2, Record<string, number>> = {
   1: { BJP: 105, SHS: 56, NCP: 54, INC: 44, IND: 29 },
   2: { BJP: 132, SHS: 57, NCP: 41, SHSUBT: 20, INC: 16, NCPSP: 10, IND: 12 },

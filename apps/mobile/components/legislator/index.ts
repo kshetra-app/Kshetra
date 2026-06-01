@@ -5,3 +5,5 @@ export { default as PerformanceCard } from './PerformanceCard';
 export { default as ElectionHistoryCard } from './ElectionHistoryCard';
 export { default as DynastyCard } from './DynastyCard';
 export { default as RedFlagsBanner } from './RedFlagsBanner';
+export { default as DefectionJourneyCard } from './DefectionJourneyCard';
+

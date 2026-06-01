@@ -13,9 +13,11 @@ import {
   isStrongholdForState,
   getElectionHistoryForState,
   hasFullDataForState,
+  getTimelineForState,
 } from '@/lib/stateDataDispatcher';
 import { getTriviaForConstituencyInState } from '@/lib/stateTriviaAdapter';
 import { getUnifiedConstituenciesForState, type UnifiedConstituency } from '@/lib/stateDataAdapter';
+import { selectFreshTrivia } from '@/lib/triviaSelector';
 import { STATES } from '@kshetra/shared';
 import { useActiveStateStore } from '../../stores/activeState';
 import { useFavoritesStore } from '../../stores/favorites';
@@ -34,6 +36,8 @@ import PostCard from '../../components/PostCard';
 import PollCard from '../../components/PollCard';
 import IssueCard from '../../components/IssueCard';
 import HeadlineCard from '../../components/HeadlineCard';
+import PoliticalTimelineCard from '../../components/PoliticalTimelineCard';
+
 
 export default function ConstituencyDetailScreen() {
   const { t } = useTranslation();
@@ -344,9 +348,10 @@ export default function ConstituencyDetailScreen() {
 
         {/* Trivia */}
         {hasFull && (() => {
-          const triviaItems = getTriviaForConstituencyInState(stateCode, acNo).filter(
+          const allTrivia = getTriviaForConstituencyInState(stateCode, acNo).filter(
             (ti) => !ti.contexts.every((c) => c.type === 'GLOBAL'),
           );
+          const triviaItems = selectFreshTrivia(allTrivia, 5);
           return triviaItems.length > 0 ? (
             <View style={styles.section}>
               <Text style={styles.sectionTitle}>{t('constituency.trivia')}</Text>
@@ -657,6 +662,21 @@ export default function ConstituencyDetailScreen() {
             </View>
           );
         })()}
+
+        {/* Political Events Timeline */}
+        {(() => {
+          const events = getTimelineForState(stateCode, acNo);
+          if (events.length === 0) return null;
+          return (
+            <View style={styles.section}>
+              <Text style={styles.sectionTitle}>{t('constituency.politicalEvents', 'Political Events')}</Text>
+              {events.map(event => (
+                <PoliticalTimelineCard key={event.id} event={event} />
+              ))}
+            </View>
+          );
+        })()}
+
 
         {/* State-level election overview */}
         {hasFull && (() => {

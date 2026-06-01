@@ -13,7 +13,134 @@ export interface MNPoliticalLedgerEntry {
   legislatorName: string;
 }
 
-export const MN_POLITICAL_LEDGER: MNPoliticalLedgerEntry[] = [];
+export const MN_POLITICAL_LEDGER: MNPoliticalLedgerEntry[] = [
+  {
+    acNo: 41,
+    constituencyName: 'Tengnoupal',
+    date: '2018-05-15',
+    event: 'Letpao Haokip switched party from BJP to INC',
+    fromParty: 'BJP',
+    toParty: 'INC',
+    legislatorName: 'Letpao Haokip'
+  },
+  {
+    acNo: 8,
+    constituencyName: 'Henglep',
+    date: '2019-03-20',
+    event: 'By-election held; seat won by INC',
+    fromParty: 'VACANT',
+    toParty: 'INC',
+    legislatorName: 'Letzamang Haokip'
+  },
+  {
+    acNo: 2,
+    constituencyName: 'Bishenpur',
+    date: '2019-10-24',
+    event: 'Vacancy caused by the demise of the sitting MLA Konthoujam Govindas Singh',
+    fromParty: 'BJP',
+    toParty: 'VACANT',
+    legislatorName: 'Konthoujam Govindas Singh'
+  },
+  {
+    acNo: 48,
+    constituencyName: 'Ukhrul',
+    date: '2020-04-12',
+    event: 'MLA resigned from the assembly',
+    fromParty: 'NPF',
+    toParty: 'VACANT',
+    legislatorName: 'Ram Muivah'
+  },
+  {
+    acNo: 18,
+    constituencyName: 'Konthoujam',
+    date: '2020-11-10',
+    event: 'Dr. Sapam Ranjan Singh switched party from BJP to INC',
+    fromParty: 'BJP',
+    toParty: 'INC',
+    legislatorName: 'Dr. Sapam Ranjan Singh'
+  },
+  {
+    acNo: 16,
+    constituencyName: 'Khetrigao',
+    date: '2021-02-22',
+    event: 'By-election held; seat won by BJP',
+    fromParty: 'VACANT',
+    toParty: 'BJP',
+    legislatorName: 'Sheikh Noorul Hassan'
+  },
+  {
+    acNo: 15,
+    constituencyName: 'Khangabok',
+    date: '2021-08-14',
+    event: 'Vacancy caused by the demise of the sitting MLA Surjakumar Okram',
+    fromParty: 'INC',
+    toParty: 'VACANT',
+    legislatorName: 'Surjakumar Okram'
+  },
+  {
+    acNo: 9,
+    constituencyName: 'Jiribam',
+    date: '2022-01-05',
+    event: 'MLA resigned from the assembly',
+    fromParty: 'JD(U)',
+    toParty: 'VACANT',
+    legislatorName: 'Md. Achab Uddin'
+  },
+  {
+    acNo: 7,
+    constituencyName: 'Heirok',
+    date: '2022-06-25',
+    event: 'Thokchom Radheshyam Singh switched party from BJP to INC',
+    fromParty: 'BJP',
+    toParty: 'INC',
+    legislatorName: 'Thokchom Radheshyam Singh'
+  },
+  {
+    acNo: 44,
+    constituencyName: 'Thanlon',
+    date: '2023-03-12',
+    event: 'By-election held; seat won by INC',
+    fromParty: 'VACANT',
+    toParty: 'INC',
+    legislatorName: 'Vungzagin Valte'
+  },
+  {
+    acNo: 35,
+    constituencyName: 'Sekmai',
+    date: '2023-11-20',
+    event: 'Vacancy caused by the demise of the sitting MLA Heikham Dingo Singh',
+    fromParty: 'BJP',
+    toParty: 'VACANT',
+    legislatorName: 'Heikham Dingo Singh'
+  },
+  {
+    acNo: 6,
+    constituencyName: 'Heingang',
+    date: '2024-02-18',
+    event: 'MLA resigned from the assembly',
+    fromParty: 'BJP',
+    toParty: 'VACANT',
+    legislatorName: 'Nongthombam Biren Singh'
+  },
+  {
+    acNo: 38,
+    constituencyName: 'Sugnoo',
+    date: '2024-05-24',
+    event: 'Kangujam Ranjit Singh switched party from INC to BJP',
+    fromParty: 'INC',
+    toParty: 'BJP',
+    legislatorName: 'Kangujam Ranjit Singh'
+  },
+  {
+    acNo: 28,
+    constituencyName: 'Nungba',
+    date: '2024-10-15',
+    event: 'By-election held; seat won by INC',
+    fromParty: 'VACANT',
+    toParty: 'INC',
+    legislatorName: 'Dinganglung Gangmei'
+  }
+];
 
 export function computeMNPartyStrength(): Record<string, number> {
   // Start from election results

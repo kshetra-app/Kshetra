@@ -497,7 +497,29 @@ const en = {
     elected: 'Elected',
     current: 'Current',
     note: 'This MLA switched parties after the 2023 election. Anti-defection proceedings may be pending.',
+    tracker_label: 'defections this term',
   },
+
+  // ── Political Timeline & Intelligence ───────────────────────
+  timeline: {
+    general_election: 'ELECTION',
+    by_election: 'BY-ELECTION',
+    death: 'VACANCY (DEATH)',
+    resignation: 'VACANCY (RESIGNATION)',
+    disqualification: 'DISQUALIFICATION',
+    merger: 'MERGER',
+    other: 'EVENT',
+    unknown_date: 'Date Unknown',
+    legal_status: 'Anti-Defection Proceeding',
+    sources: 'Sources',
+    by_elections_held: 'by-elections held',
+    politicalEvents: 'Political Events',
+  },
+
+  intelligence: {
+    party_strength_title: 'Party Strength: Current vs Election Day',
+  },
+
 
   // ── Content: Seed data translations ────────────────────────
   content: {

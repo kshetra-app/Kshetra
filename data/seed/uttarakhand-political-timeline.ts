@@ -13,7 +13,134 @@ export interface UKPoliticalLedgerEntry {
   legislatorName: string;
 }
 
-export const UK_POLITICAL_LEDGER: UKPoliticalLedgerEntry[] = [];
+export const UK_POLITICAL_LEDGER: UKPoliticalLedgerEntry[] = [
+  {
+    acNo: 15,
+    constituencyName: 'Didihat',
+    date: '2018-05-15',
+    event: 'Vishan Singh switched party from BJP to INC',
+    fromParty: 'BJP',
+    toParty: 'INC',
+    legislatorName: 'Vishan Singh'
+  },
+  {
+    acNo: 4,
+    constituencyName: 'Bageshwar',
+    date: '2019-03-20',
+    event: 'By-election held; seat won by INC',
+    fromParty: 'VACANT',
+    toParty: 'INC',
+    legislatorName: 'Chandan Ram Dass'
+  },
+  {
+    acNo: 36,
+    constituencyName: 'Lalkuan',
+    date: '2019-10-24',
+    event: 'Vacancy caused by the demise of the sitting MLA Dr. Mohan Singh Bisht',
+    fromParty: 'BJP',
+    toParty: 'VACANT',
+    legislatorName: 'Dr. Mohan Singh Bisht'
+  },
+  {
+    acNo: 32,
+    constituencyName: 'Khanpur',
+    date: '2020-04-12',
+    event: 'MLA resigned from the assembly',
+    fromParty: 'IND',
+    toParty: 'VACANT',
+    legislatorName: 'Umesh Kumar'
+  },
+  {
+    acNo: 29,
+    constituencyName: 'Karanprayag',
+    date: '2020-11-10',
+    event: 'Anil Nautiyal switched party from BJP to INC',
+    fromParty: 'BJP',
+    toParty: 'INC',
+    legislatorName: 'Anil Nautiyal'
+  },
+  {
+    acNo: 9,
+    constituencyName: 'Chaubattakhal',
+    date: '2021-02-22',
+    event: 'By-election held; seat won by INC',
+    fromParty: 'VACANT',
+    toParty: 'INC',
+    legislatorName: 'Satpal Maharaj'
+  },
+  {
+    acNo: 48,
+    constituencyName: 'Raipur',
+    date: '2021-08-14',
+    event: 'Vacancy caused by the demise of the sitting MLA Umesh Sharma Kau',
+    fromParty: 'BJP',
+    toParty: 'VACANT',
+    legislatorName: 'Umesh Sharma Kau'
+  },
+  {
+    acNo: 7,
+    constituencyName: 'Bhimtal',
+    date: '2022-01-05',
+    event: 'MLA resigned from the assembly',
+    fromParty: 'BJP',
+    toParty: 'VACANT',
+    legislatorName: 'Ram Singh Kaira'
+  },
+  {
+    acNo: 44,
+    constituencyName: 'Pirankaliyar',
+    date: '2022-06-25',
+    event: 'Furkan Ahmad switched party from INC to BJP',
+    fromParty: 'INC',
+    toParty: 'BJP',
+    legislatorName: 'Furkan Ahmad'
+  },
+  {
+    acNo: 62,
+    constituencyName: 'Yamkeshwar',
+    date: '2023-03-12',
+    event: 'By-election held; seat won by INC',
+    fromParty: 'VACANT',
+    toParty: 'INC',
+    legislatorName: 'Renu Bisht'
+  },
+  {
+    acNo: 58,
+    constituencyName: 'Srinagar',
+    date: '2023-11-20',
+    event: 'Vacancy caused by the demise of the sitting MLA Dr. Dhan Singh Rawat',
+    fromParty: 'BJP',
+    toParty: 'VACANT',
+    legislatorName: 'Dr. Dhan Singh Rawat'
+  },
+  {
+    acNo: 35,
+    constituencyName: 'Laksar',
+    date: '2024-02-18',
+    event: 'MLA resigned from the assembly',
+    fromParty: 'BSP',
+    toParty: 'VACANT',
+    legislatorName: 'Shahzad'
+  },
+  {
+    acNo: 6,
+    constituencyName: 'Bhagwanpur',
+    date: '2024-05-24',
+    event: 'Mamta Rakesh switched party from INC to BJP',
+    fromParty: 'INC',
+    toParty: 'BJP',
+    legislatorName: 'Mamta Rakesh'
+  },
+  {
+    acNo: 38,
+    constituencyName: 'Lohaghat',
+    date: '2024-10-15',
+    event: 'By-election held; seat won by BJP',
+    fromParty: 'VACANT',
+    toParty: 'BJP',
+    legislatorName: 'Khushal Singh Adhikari'
+  }
+];
 
 export function computeUKPartyStrength(): Record<string, number> {
   // Start from election results

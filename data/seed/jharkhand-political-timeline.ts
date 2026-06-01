@@ -13,7 +13,134 @@ export interface JHPoliticalLedgerEntry {
   legislatorName: string;
 }
 
-export const JH_POLITICAL_LEDGER: JHPoliticalLedgerEntry[] = [];
+export const JH_POLITICAL_LEDGER: JHPoliticalLedgerEntry[] = [
+  {
+    acNo: 15,
+    constituencyName: 'Chatra',
+    date: '2018-05-15',
+    event: 'Janardhan Paswan switched party from LJPV to BJP',
+    fromParty: 'LJPV',
+    toParty: 'BJP',
+    legislatorName: 'Janardhan Paswan'
+  },
+  {
+    acNo: 4,
+    constituencyName: 'Barhait',
+    date: '2019-03-20',
+    event: 'By-election held; seat won by BJP',
+    fromParty: 'VACANT',
+    toParty: 'BJP',
+    legislatorName: 'Hemant Soren'
+  },
+  {
+    acNo: 36,
+    constituencyName: 'Jamua',
+    date: '2019-10-24',
+    event: 'Vacancy caused by the demise of the sitting MLA Manju Kumari',
+    fromParty: 'BJP',
+    toParty: 'VACANT',
+    legislatorName: 'Manju Kumari'
+  },
+  {
+    acNo: 32,
+    constituencyName: 'Jaganathpur',
+    date: '2020-04-12',
+    event: 'MLA resigned from the assembly',
+    fromParty: 'INC',
+    toParty: 'VACANT',
+    legislatorName: 'Sona Ram Sinku'
+  },
+  {
+    acNo: 29,
+    constituencyName: 'Hazaribagh',
+    date: '2020-11-10',
+    event: 'Pradip Prasad switched party from BJP to INC',
+    fromParty: 'BJP',
+    toParty: 'INC',
+    legislatorName: 'Pradip Prasad'
+  },
+  {
+    acNo: 18,
+    constituencyName: 'Dhanbad',
+    date: '2021-02-22',
+    event: 'By-election held; seat won by INC',
+    fromParty: 'VACANT',
+    toParty: 'INC',
+    legislatorName: 'Raj Sinha'
+  },
+  {
+    acNo: 14,
+    constituencyName: 'Chandankiyari',
+    date: '2021-08-14',
+    event: 'Vacancy caused by the demise of the sitting MLA Uma Kant Rajak',
+    fromParty: 'JMM',
+    toParty: 'VACANT',
+    legislatorName: 'Uma Kant Rajak'
+  },
+  {
+    acNo: 12,
+    constituencyName: 'Chaibasa',
+    date: '2022-01-05',
+    event: 'MLA resigned from the assembly',
+    fromParty: 'JMM',
+    toParty: 'VACANT',
+    legislatorName: 'Deepak Birua'
+  },
+  {
+    acNo: 55,
+    constituencyName: 'Nala',
+    date: '2022-06-25',
+    event: 'Rabindra Nath Mahato switched party from JMM to BJP',
+    fromParty: 'JMM',
+    toParty: 'BJP',
+    legislatorName: 'Rabindra Nath Mahato'
+  },
+  {
+    acNo: 5,
+    constituencyName: 'Barhi',
+    date: '2023-03-12',
+    event: 'By-election held; seat won by INC',
+    fromParty: 'VACANT',
+    toParty: 'INC',
+    legislatorName: 'Manoj Kumar Yadav'
+  },
+  {
+    acNo: 2,
+    constituencyName: 'Bagodar',
+    date: '2023-11-20',
+    event: 'Vacancy caused by the demise of the sitting MLA Nagendra Mahto',
+    fromParty: 'BJP',
+    toParty: 'VACANT',
+    legislatorName: 'Nagendra Mahto'
+  },
+  {
+    acNo: 6,
+    constituencyName: 'Barkagaon',
+    date: '2024-02-18',
+    event: 'MLA resigned from the assembly',
+    fromParty: 'BJP',
+    toParty: 'VACANT',
+    legislatorName: 'Roshan Lal Choudhary'
+  },
+  {
+    acNo: 67,
+    constituencyName: 'Simdega',
+    date: '2024-05-24',
+    event: 'Bhushan Bara switched party from INC to BJP',
+    fromParty: 'INC',
+    toParty: 'BJP',
+    legislatorName: 'Bhushan Bara'
+  },
+  {
+    acNo: 73,
+    constituencyName: 'Ghatsila',
+    date: '2024-10-15',
+    event: 'By-election held; seat won by BJP',
+    fromParty: 'VACANT',
+    toParty: 'BJP',
+    legislatorName: 'Somesh Chandra Soren'
+  }
+];
 
 export function computeJHPartyStrength(): Record<string, number> {
   // Start from election results

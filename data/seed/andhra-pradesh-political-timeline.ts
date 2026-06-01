@@ -114,9 +114,8 @@ const ASSEMBLY_1_EVENTS: PoliticalLedgerEntry[] = [
     sources: ['https://www.thehindu.com/', 'https://www.eenadu.net/'],
     legalStatus: 'NO_PETITION',
     verified: true,
-  },
-];
-
+  }
+]; 
 // ─── 2ND ASSEMBLY (Jun 2019 – Jun 2024) ──────────────────────────────────
 
 const ASSEMBLY_2_EVENTS: PoliticalLedgerEntry[] = [
@@ -252,9 +251,8 @@ const ASSEMBLY_2_EVENTS: PoliticalLedgerEntry[] = [
     sources: ['https://www.thehindu.com/', 'https://www.eenadu.net/', 'https://www.indiatoday.in/'],
     legalStatus: 'NO_PETITION',
     verified: true,
-  },
-];
-
+  }
+]; 
 // ─── 3RD ASSEMBLY (Jun 2024 – present) ──────────────────────────────────
 
 const ASSEMBLY_3_EVENTS: PoliticalLedgerEntry[] = [
@@ -321,17 +319,15 @@ const ASSEMBLY_3_EVENTS: PoliticalLedgerEntry[] = [
     sources: ['https://results.eci.gov.in/', 'https://en.wikipedia.org/wiki/2024_Andhra_Pradesh_Legislative_Assembly_election'],
     legalStatus: 'NOT_APPLICABLE',
     verified: true,
-  },
-];
-
+  }
+]; 
 // ─── COMBINED TIMELINE ────────────────────────────────────────────────────
 
 export const AP_POLITICAL_LEDGER: PoliticalLedgerEntry[] = [
   ...ASSEMBLY_1_EVENTS,
   ...ASSEMBLY_2_EVENTS,
-  ...ASSEMBLY_3_EVENTS,
-];
-
+  ...ASSEMBLY_3_EVENTS
+]; 
 /**
  * Opening balances after each general election.
  */

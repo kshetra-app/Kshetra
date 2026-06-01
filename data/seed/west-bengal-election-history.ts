@@ -12,6 +12,19 @@ export interface WBElectionResult {
 
 export const WB_ELECTION_HISTORY: WBElectionResult[] = [
   {
+    year: 2026,
+    partyResults: {
+      'BJP': 185,
+      'AITC': 71,
+      'INC': 2,
+      'CPIM': 1,
+      'AJU': 1,
+      'Others': 34,
+    },
+    totalSeats: 294,
+    rulingParty: 'BJP',
+  },
+  {
     year: 2021,
     partyResults: {
       'AITC': 213,

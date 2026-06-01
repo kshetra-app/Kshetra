@@ -773,7 +773,12 @@ const SEED_AFFIDAVITS: CandidateAffidavit[] = [
 ];
 
 // ─── AUTO-GENERATE AFFIDAVITS from MLA profiles for all constituencies ───
-const STATES_TO_GENERATE = ['TS', 'AP', 'KA', 'MH', 'TN', 'KL', 'WB', 'UP'];
+const STATES_TO_GENERATE = [
+  'TS', 'AP', 'KA', 'MH', 'TN', 'KL', 'WB', 'UP',
+  'RJ', 'GJ', 'JH', 'OD', 'DL', 'PB', 'HR', 'CG', 'MP',
+  'BR', 'AS', 'GA', 'HP', 'MN', 'ML', 'MZ', 'NL', 'TR',
+  'SK', 'AR', 'UK', 'PY', 'JK',
+];
 
 const EDUCATION_MAP: Record<string, EducationLevel> = {
   '10th': '10th_pass',

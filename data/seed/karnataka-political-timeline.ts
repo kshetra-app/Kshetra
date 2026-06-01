@@ -100,7 +100,7 @@ const ASSEMBLY_2018_EVENTS: PoliticalLedgerEntry[] = [
     memberNames: [
       'S T Somashekar', 'Munirathna', 'Satish Reddy', 'Ramalinga Reddy',
       'Byrathi Basavaraj', 'R Roshan Baig', 'K Sudhakar', 'D C Thammanna',
-      'Dr Umesh Jadhav', 'S R Srinivas', 'B C Patil', 'Shrimant Patil', 'Pratap Gouda Patil',
+      'Dr Umesh Jadhav', 'S R Srinivas', 'B C Patil', 'Shrimant Patil', 'Pratap Gouda Patil'
     ],
     explanation: '13 INC MLAs resign as part of Operation Kamala. Coalition destabilized.',
     details: 'Mass resignations orchestrated by BJP. MLAs resign to bring down JDS-INC coalition.',
@@ -155,7 +155,7 @@ const ASSEMBLY_2018_EVENTS: PoliticalLedgerEntry[] = [
     memberNames: [
       'S T Somashekar', 'Munirathna', 'Satish Reddy', 'Ramalinga Reddy',
       'Byrathi Basavaraj', 'R Roshan Baig', 'Dr Umesh Jadhav', 'S R Srinivas',
-      'B C Patil', 'Shrimant Patil', 'Pratap Gouda Patil', 'H Nagesh',
+      'B C Patil', 'Shrimant Patil', 'Pratap Gouda Patil', 'H Nagesh'
     ],
     explanation: 'BJP wins 12 of 15 by-elections. Defectors return as BJP MLAs.',
     details: 'Rebel MLAs contest on BJP ticket and win. BJP crosses majority mark.',
@@ -282,14 +282,14 @@ const ASSEMBLY_2023_EVENTS: PoliticalLedgerEntry[] = [
     sources: ['https://results.eci.gov.in/'],
     legalStatus: 'NOT_APPLICABLE',
     verified: true,
-  },
+  }
 ];
 
 // ─── COMBINED TIMELINE ────────────────────────────────────────────────────
 
 export const KA_POLITICAL_LEDGER: PoliticalLedgerEntry[] = [
   ...ASSEMBLY_2018_EVENTS,
-  ...ASSEMBLY_2023_EVENTS,
+  ...ASSEMBLY_2023_EVENTS
 ];
 
 export const KA_OPENING_BALANCES: Record<1 | 2, Record<string, number>> = {

@@ -2,8 +2,7 @@
  * Election Analytics Engine — Integration Tests
  */
 
-// Manually resolve path since this runs outside the RN app context
-const path = require('path');
+import * as path from 'path';
 
 // We need to mock the stateDataAdapter imports used by electionAnalytics
 // The analytics engine imports from '../stateDataAdapter' (relative to lib/)

@@ -159,8 +159,8 @@ const ASSEMBLY_1_EVENTS: PoliticalLedgerEntry[] = [
     legalStatus: 'NOT_APPLICABLE',
     sources: [
       'https://en.wikipedia.org/wiki/2014_Andhra_Pradesh_Legislative_Assembly_election',
-      'https://results.eci.gov.in/',
-    ],
+      'https://results.eci.gov.in/'
+],
     verified: true,
   },
   {
@@ -178,8 +178,8 @@ const ASSEMBLY_1_EVENTS: PoliticalLedgerEntry[] = [
     legalStatus: 'NOT_APPLICABLE',
     sources: [
       'https://en.wikipedia.org/wiki/2014_Andhra_Pradesh_Legislative_Assembly_election',
-      'https://results.eci.gov.in/',
-    ],
+      'https://results.eci.gov.in/'
+],
     verified: true,
   },
   {
@@ -193,8 +193,8 @@ const ASSEMBLY_1_EVENTS: PoliticalLedgerEntry[] = [
       'R. Krishnaiah', 'Teegala Krishna Reddy', 'T. Prakash Goud', 'Arekapudi Gandhi',
       'Maganti Gopinath', 'Talasani Srinivas Yadav', 'G. Sayanna',
       'A. Revanth Reddy', 'S. Rajender Reddy', 'Errabelli Dayakar Rao',
-      'Challa Dharma Reddy', 'Sandra Venkata Veeraiah',
-    ],
+      'Challa Dharma Reddy', 'Sandra Venkata Veeraiah'
+],
     debitParty: 'VACANT',
     creditParty: 'TDP',
     seats: 15,
@@ -203,8 +203,8 @@ const ASSEMBLY_1_EVENTS: PoliticalLedgerEntry[] = [
     legalStatus: 'NOT_APPLICABLE',
     sources: [
       'https://en.wikipedia.org/wiki/2014_Andhra_Pradesh_Legislative_Assembly_election',
-      'https://results.eci.gov.in/',
-    ],
+      'https://results.eci.gov.in/'
+],
     verified: true,
   },
   {
@@ -216,8 +216,8 @@ const ASSEMBLY_1_EVENTS: PoliticalLedgerEntry[] = [
     memberNames: [
       'Ahmed Bin Abdullah Balala', 'Nampally: Jaffer Hussain', 'Kausar Mohiuddin',
       'Syed Ahmed Pasha Quadri', 'Akbaruddin Owaisi', 'Mumtaz Ahmed Khan',
-      'Mohammad Moazam Khan',
-    ],
+      'Mohammad Moazam Khan'
+],
     debitParty: 'VACANT',
     creditParty: 'AIMIM',
     seats: 7,
@@ -225,8 +225,8 @@ const ASSEMBLY_1_EVENTS: PoliticalLedgerEntry[] = [
     details: 'AIMIM dominates the Muslim-majority constituencies in Old Hyderabad under the Owaisi family leadership.',
     legalStatus: 'NOT_APPLICABLE',
     sources: [
-      'https://en.wikipedia.org/wiki/2014_Andhra_Pradesh_Legislative_Assembly_election',
-    ],
+      'https://en.wikipedia.org/wiki/2014_Andhra_Pradesh_Legislative_Assembly_election'
+],
     verified: true,
   },
   {
@@ -237,8 +237,8 @@ const ASSEMBLY_1_EVENTS: PoliticalLedgerEntry[] = [
     acNos: [47, 57, 59, 60, 66],
     memberNames: [
       'N. V. S. S. Prabhakar', 'K. Laxman', 'G. Kishan Reddy',
-      'Chintala Ramachandra Reddy', 'T. Raja Singh',
-    ],
+      'Chintala Ramachandra Reddy', 'T. Raja Singh'
+],
     debitParty: 'VACANT',
     creditParty: 'BJP',
     seats: 5,
@@ -246,8 +246,8 @@ const ASSEMBLY_1_EVENTS: PoliticalLedgerEntry[] = [
     details: 'Modi wave effect. BJP won Uppal, Musheerabad, Amberpet, Khairatabad, and Goshamahal.',
     legalStatus: 'NOT_APPLICABLE',
     sources: [
-      'https://en.wikipedia.org/wiki/2014_Andhra_Pradesh_Legislative_Assembly_election',
-    ],
+      'https://en.wikipedia.org/wiki/2014_Andhra_Pradesh_Legislative_Assembly_election'
+],
     verified: true,
   },
   {
@@ -260,8 +260,8 @@ const ASSEMBLY_1_EVENTS: PoliticalLedgerEntry[] = [
       'Koneru Konappa (BSP)', 'Allola Indrakaran Reddy (BSP)',
       'Ravindra Kumar Ramavath (CPI)', 'Sunnam Rajaiah (CPI-M)',
       'Payam Venkateswarlu (YSRCP)', 'Banoth Madanlal (YSRCP)',
-      'Thati Venkateswarlu (YSRCP)', 'Donthi Madhava Reddy (IND)',
-    ],
+      'Thati Venkateswarlu (YSRCP)', 'Donthi Madhava Reddy (IND)'
+],
     debitParty: 'VACANT',
     creditParty: 'OTHERS',
     seats: 8,
@@ -269,8 +269,8 @@ const ASSEMBLY_1_EVENTS: PoliticalLedgerEntry[] = [
     details: 'BSP: Sirpur + Nirmal; CPI: Devarakonda; CPI-M: Bhadrachalam; YSRCP: Pinapaka + Wyra + Aswaraopeta; IND: Narsampet.',
     legalStatus: 'NOT_APPLICABLE',
     sources: [
-      'https://en.wikipedia.org/wiki/2014_Andhra_Pradesh_Legislative_Assembly_election',
-    ],
+      'https://en.wikipedia.org/wiki/2014_Andhra_Pradesh_Legislative_Assembly_election'
+],
     verified: true,
   },
 
@@ -294,8 +294,8 @@ const ASSEMBLY_1_EVENTS: PoliticalLedgerEntry[] = [
       'G. Sayanna (Secunderabad Cantt.)',
       'S. Rajender Reddy (Narayanpet)',
       'Errabelli Dayakar Rao (Palakurthi)',
-      'Challa Dharma Reddy (Parkal)',
-    ],
+      'Challa Dharma Reddy (Parkal)'
+],
     debitParty: 'TDP',
     creditParty: 'TRS',
     seats: 12,
@@ -309,8 +309,8 @@ const ASSEMBLY_1_EVENTS: PoliticalLedgerEntry[] = [
     legalStatus: 'DISMISSED',
     sources: [
       'https://www.thehindu.com/news/national/telangana/12-tdp-mlas-merged-with-trs/article8341018.ece',
-      'https://en.wikipedia.org/wiki/Telangana_Legislative_Assembly',
-    ],
+      'https://en.wikipedia.org/wiki/Telangana_Legislative_Assembly'
+],
     verified: true,
   },
 
@@ -333,12 +333,11 @@ const ASSEMBLY_1_EVENTS: PoliticalLedgerEntry[] = [
     legalStatus: 'NO_PETITION',
     sources: [
       'https://en.wikipedia.org/wiki/Revanth_Reddy',
-      'https://www.thehindu.com/news/national/telangana/',
-    ],
+      'https://www.thehindu.com/news/national/telangana/'
+],
     verified: true,
-  },
-];
-
+  }
+]; 
 // ─── 2ND ASSEMBLY (Dec 2018 – Nov 2023) ──────────────────────────────────
 
 const ASSEMBLY_2_EVENTS: PoliticalLedgerEntry[] = [
@@ -359,8 +358,8 @@ const ASSEMBLY_2_EVENTS: PoliticalLedgerEntry[] = [
     legalStatus: 'NOT_APPLICABLE',
     sources: [
       'https://en.wikipedia.org/wiki/2018_Telangana_Legislative_Assembly_election',
-      'https://results.eci.gov.in/',
-    ],
+      'https://results.eci.gov.in/'
+],
     verified: true,
   },
   {
@@ -377,8 +376,8 @@ const ASSEMBLY_2_EVENTS: PoliticalLedgerEntry[] = [
     details: 'INC fought in alliance with TDP, TJS, and CPI under the "People\'s Front" banner.',
     legalStatus: 'NOT_APPLICABLE',
     sources: [
-      'https://en.wikipedia.org/wiki/2018_Telangana_Legislative_Assembly_election',
-    ],
+      'https://en.wikipedia.org/wiki/2018_Telangana_Legislative_Assembly_election'
+],
     verified: true,
   },
   {
@@ -395,8 +394,8 @@ const ASSEMBLY_2_EVENTS: PoliticalLedgerEntry[] = [
     details: 'AIMIM is a reliable TRS ally. Old City seats have remained with AIMIM since 1984.',
     legalStatus: 'NOT_APPLICABLE',
     sources: [
-      'https://en.wikipedia.org/wiki/2018_Telangana_Legislative_Assembly_election',
-    ],
+      'https://en.wikipedia.org/wiki/2018_Telangana_Legislative_Assembly_election'
+],
     verified: true,
   },
   {
@@ -413,8 +412,8 @@ const ASSEMBLY_2_EVENTS: PoliticalLedgerEntry[] = [
     details: 'Massive decline from 15 seats in 2014. The TDP merger with TRS in 2016 and Revanth Reddy\'s exit devastated the party.',
     legalStatus: 'NOT_APPLICABLE',
     sources: [
-      'https://en.wikipedia.org/wiki/2018_Telangana_Legislative_Assembly_election',
-    ],
+      'https://en.wikipedia.org/wiki/2018_Telangana_Legislative_Assembly_election'
+],
     verified: true,
   },
   {
@@ -431,8 +430,8 @@ const ASSEMBLY_2_EVENTS: PoliticalLedgerEntry[] = [
     details: 'Significant decline despite contesting 118 of 119 seats. BJP had broken alliance with TDP.',
     legalStatus: 'NOT_APPLICABLE',
     sources: [
-      'https://en.wikipedia.org/wiki/2018_Telangana_Legislative_Assembly_election',
-    ],
+      'https://en.wikipedia.org/wiki/2018_Telangana_Legislative_Assembly_election'
+],
     verified: true,
   },
   {
@@ -449,8 +448,8 @@ const ASSEMBLY_2_EVENTS: PoliticalLedgerEntry[] = [
     details: 'Unlike 2014 which had BSP/CPI/CPI-M/YSRCP wins, 2018 saw only AIFB and 1 IND outside major parties.',
     legalStatus: 'NOT_APPLICABLE',
     sources: [
-      'https://en.wikipedia.org/wiki/2018_Telangana_Legislative_Assembly_election',
-    ],
+      'https://en.wikipedia.org/wiki/2018_Telangana_Legislative_Assembly_election'
+],
     verified: true,
   },
 
@@ -470,8 +469,8 @@ const ASSEMBLY_2_EVENTS: PoliticalLedgerEntry[] = [
     details: 'As per rules, an elected member cannot hold both assembly and parliamentary seats simultaneously.',
     legalStatus: 'NOT_APPLICABLE',
     sources: [
-      'https://en.wikipedia.org/wiki/2018_Telangana_Legislative_Assembly_election',
-    ],
+      'https://en.wikipedia.org/wiki/2018_Telangana_Legislative_Assembly_election'
+],
     verified: true,
   },
 
@@ -496,8 +495,8 @@ const ASSEMBLY_2_EVENTS: PoliticalLedgerEntry[] = [
     legalStatus: 'DISMISSED',
     sources: [
       'https://timesofindia.indiatimes.com/india/12-congress-mlas-join-trs-in-telangana-speaker-recognises-merger/articleshow/69680344.cms',
-      'https://en.wikipedia.org/wiki/Telangana_Legislative_Assembly',
-    ],
+      'https://en.wikipedia.org/wiki/Telangana_Legislative_Assembly'
+],
     verified: true,
   },
 
@@ -518,8 +517,8 @@ const ASSEMBLY_2_EVENTS: PoliticalLedgerEntry[] = [
     legalStatus: 'NOT_APPLICABLE',
     sources: [
       'https://en.wikipedia.org/wiki/2018_Telangana_Legislative_Assembly_election',
-      'https://results.eci.gov.in/',
-    ],
+      'https://results.eci.gov.in/'
+],
     verified: true,
   },
 
@@ -538,8 +537,8 @@ const ASSEMBLY_2_EVENTS: PoliticalLedgerEntry[] = [
     details: 'His death triggered the Dubbak by-election which became a significant political event.',
     legalStatus: 'NOT_APPLICABLE',
     sources: [
-      'https://en.wikipedia.org/wiki/Dubbak_Assembly_constituency',
-    ],
+      'https://en.wikipedia.org/wiki/Dubbak_Assembly_constituency'
+],
     verified: true,
   },
 
@@ -561,8 +560,8 @@ const ASSEMBLY_2_EVENTS: PoliticalLedgerEntry[] = [
     legalStatus: 'NOT_APPLICABLE',
     sources: [
       'https://en.wikipedia.org/wiki/2018_Telangana_Legislative_Assembly_election',
-      'https://results.eci.gov.in/',
-    ],
+      'https://results.eci.gov.in/'
+],
     verified: true,
   },
 
@@ -581,8 +580,8 @@ const ASSEMBLY_2_EVENTS: PoliticalLedgerEntry[] = [
     details: 'His son Nomula Bhagath would later contest and win the by-election for TRS.',
     legalStatus: 'NOT_APPLICABLE',
     sources: [
-      'https://en.wikipedia.org/wiki/Nagarjuna_Sagar_Assembly_constituency',
-    ],
+      'https://en.wikipedia.org/wiki/Nagarjuna_Sagar_Assembly_constituency'
+],
     verified: true,
   },
 
@@ -602,8 +601,8 @@ const ASSEMBLY_2_EVENTS: PoliticalLedgerEntry[] = [
     details: 'Sympathy factor for the deceased MLA\'s family helped TRS retain the seat.',
     legalStatus: 'NOT_APPLICABLE',
     sources: [
-      'https://en.wikipedia.org/wiki/2018_Telangana_Legislative_Assembly_election',
-    ],
+      'https://en.wikipedia.org/wiki/2018_Telangana_Legislative_Assembly_election'
+],
     verified: true,
   },
 
@@ -625,8 +624,8 @@ const ASSEMBLY_2_EVENTS: PoliticalLedgerEntry[] = [
     legalStatus: 'NO_PETITION',
     sources: [
       'https://en.wikipedia.org/wiki/Etela_Rajender',
-      'https://www.thehindu.com/news/national/telangana/',
-    ],
+      'https://www.thehindu.com/news/national/telangana/'
+],
     verified: true,
   },
 
@@ -646,8 +645,8 @@ const ASSEMBLY_2_EVENTS: PoliticalLedgerEntry[] = [
     details: 'A rare case of an MLA resigning to re-contest from the same constituency under a new party banner.',
     legalStatus: 'NOT_APPLICABLE',
     sources: [
-      'https://en.wikipedia.org/wiki/Etela_Rajender',
-    ],
+      'https://en.wikipedia.org/wiki/Etela_Rajender'
+],
     verified: true,
   },
 
@@ -668,8 +667,8 @@ const ASSEMBLY_2_EVENTS: PoliticalLedgerEntry[] = [
     legalStatus: 'NOT_APPLICABLE',
     sources: [
       'https://en.wikipedia.org/wiki/2018_Telangana_Legislative_Assembly_election',
-      'https://results.eci.gov.in/',
-    ],
+      'https://results.eci.gov.in/'
+],
     verified: true,
   },
 
@@ -691,8 +690,8 @@ const ASSEMBLY_2_EVENTS: PoliticalLedgerEntry[] = [
       'His resignation triggered a high-stakes by-election that became a prestige battle for all parties.',
     legalStatus: 'NOT_APPLICABLE',
     sources: [
-      'https://en.wikipedia.org/wiki/2018_Telangana_Legislative_Assembly_election',
-    ],
+      'https://en.wikipedia.org/wiki/2018_Telangana_Legislative_Assembly_election'
+],
     verified: true,
   },
 
@@ -715,8 +714,8 @@ const ASSEMBLY_2_EVENTS: PoliticalLedgerEntry[] = [
     legalStatus: 'NOT_APPLICABLE',
     sources: [
       'https://en.wikipedia.org/wiki/Bharat_Rashtra_Samithi',
-      'https://www.thehindu.com/news/national/telangana/',
-    ],
+      'https://www.thehindu.com/news/national/telangana/'
+],
     verified: true,
   },
 
@@ -738,12 +737,11 @@ const ASSEMBLY_2_EVENTS: PoliticalLedgerEntry[] = [
     legalStatus: 'NOT_APPLICABLE',
     sources: [
       'https://en.wikipedia.org/wiki/2018_Telangana_Legislative_Assembly_election',
-      'https://results.eci.gov.in/',
-    ],
+      'https://results.eci.gov.in/'
+],
     verified: true,
-  },
-];
-
+  }
+]; 
 // ─── 3RD ASSEMBLY (Dec 2023 – present) ───────────────────────────────────
 
 const ASSEMBLY_3_EVENTS: PoliticalLedgerEntry[] = [
@@ -764,8 +762,8 @@ const ASSEMBLY_3_EVENTS: PoliticalLedgerEntry[] = [
     legalStatus: 'NOT_APPLICABLE',
     sources: [
       'https://en.wikipedia.org/wiki/2023_Telangana_Legislative_Assembly_election',
-      'https://results.eci.gov.in/',
-    ],
+      'https://results.eci.gov.in/'
+],
     verified: true,
   },
   {
@@ -783,8 +781,8 @@ const ASSEMBLY_3_EVENTS: PoliticalLedgerEntry[] = [
     details: 'BRS vote share: 37.4%. Despite similar vote share to INC, the first-past-the-post system delivered far fewer seats.',
     legalStatus: 'NOT_APPLICABLE',
     sources: [
-      'https://en.wikipedia.org/wiki/2023_Telangana_Legislative_Assembly_election',
-    ],
+      'https://en.wikipedia.org/wiki/2023_Telangana_Legislative_Assembly_election'
+],
     verified: true,
   },
   {
@@ -801,8 +799,8 @@ const ASSEMBLY_3_EVENTS: PoliticalLedgerEntry[] = [
     details: 'BJP vote share: 13.9%. The party consolidated its position as the third force in Telangana.',
     legalStatus: 'NOT_APPLICABLE',
     sources: [
-      'https://en.wikipedia.org/wiki/2023_Telangana_Legislative_Assembly_election',
-    ],
+      'https://en.wikipedia.org/wiki/2023_Telangana_Legislative_Assembly_election'
+],
     verified: true,
   },
   {
@@ -819,8 +817,8 @@ const ASSEMBLY_3_EVENTS: PoliticalLedgerEntry[] = [
     details: 'AIMIM\'s dominance in Hyderabad Old City remains unchallenged across 3 elections (2014, 2018, 2023).',
     legalStatus: 'NOT_APPLICABLE',
     sources: [
-      'https://en.wikipedia.org/wiki/2023_Telangana_Legislative_Assembly_election',
-    ],
+      'https://en.wikipedia.org/wiki/2023_Telangana_Legislative_Assembly_election'
+],
     verified: true,
   },
   {
@@ -837,8 +835,8 @@ const ASSEMBLY_3_EVENTS: PoliticalLedgerEntry[] = [
     details: 'Ramagundam has been a left-leaning industrial constituency (Singareni Collieries belt).',
     legalStatus: 'NOT_APPLICABLE',
     sources: [
-      'https://en.wikipedia.org/wiki/2023_Telangana_Legislative_Assembly_election',
-    ],
+      'https://en.wikipedia.org/wiki/2023_Telangana_Legislative_Assembly_election'
+],
     verified: true,
   },
 
@@ -861,8 +859,8 @@ const ASSEMBLY_3_EVENTS: PoliticalLedgerEntry[] = [
     legalStatus: 'PETITION_FILED',
     sources: [
       'https://www.thehindu.com/news/national/telangana/brs-moves-supreme-court-for-action-against-defected-mlas/article69104662.ece',
-      'https://telanganatoday.com/defected-brs-mlas-in-a-spot-of-bother',
-    ],
+      'https://telanganatoday.com/defected-brs-mlas-in-a-spot-of-bother'
+],
     verified: true,
   },
   {
@@ -880,8 +878,8 @@ const ASSEMBLY_3_EVENTS: PoliticalLedgerEntry[] = [
     details: 'Srihari was Deputy CM in 2018 TRS government. His departure was a major embarrassment for KCR.',
     legalStatus: 'PETITION_FILED',
     sources: [
-      'https://www.thehindu.com/news/national/telangana/brs-moves-supreme-court-for-action-against-defected-mlas/article69104662.ece',
-    ],
+      'https://www.thehindu.com/news/national/telangana/brs-moves-supreme-court-for-action-against-defected-mlas/article69104662.ece'
+],
     verified: true,
   },
   {
@@ -898,8 +896,8 @@ const ASSEMBLY_3_EVENTS: PoliticalLedgerEntry[] = [
     details: 'Bhadrachalam is an ST-reserved constituency in tribal Bhadradri Kothagudem district.',
     legalStatus: 'PETITION_FILED',
     sources: [
-      'https://www.thehindu.com/news/national/telangana/brs-moves-supreme-court-for-action-against-defected-mlas/article69104662.ece',
-    ],
+      'https://www.thehindu.com/news/national/telangana/brs-moves-supreme-court-for-action-against-defected-mlas/article69104662.ece'
+],
     verified: true,
   },
   {
@@ -915,8 +913,8 @@ const ASSEMBLY_3_EVENTS: PoliticalLedgerEntry[] = [
       'T. Prakash Goud (Rajendranagar)',
       'Arekapudi Gandhi (Serilingampally)',
       'Kale Yadaiah (Chevella)',
-      'Bandla Krishna Mohan Reddy (Gadwal)',
-    ],
+      'Bandla Krishna Mohan Reddy (Gadwal)'
+],
     debitParty: 'BRS',
     creditParty: 'INC',
     seats: 7,
@@ -934,20 +932,18 @@ const ASSEMBLY_3_EVENTS: PoliticalLedgerEntry[] = [
       'https://www.thehindu.com/news/national/telangana/brs-moves-supreme-court-for-action-against-defected-mlas/article69104662.ece',
       'https://www.thehindu.com/news/national/telangana/telangana-hc-serves-notices-to-speaker-eci-over-10-mlas-defection/article68674908.ece',
       'https://www.newindianexpress.com/states/telangana/2024/Jul/14/operation-akarsh-congress-eyes-greater-hyderabad-gains-after-nine-brs-mlas-jump-ship',
-      'https://telanganatoday.com/defected-brs-mlas-in-a-spot-of-bother',
-    ],
+      'https://telanganatoday.com/defected-brs-mlas-in-a-spot-of-bother'
+],
     verified: true,
-  },
-];
-
+  }
+]; 
 // ─── COMBINED TIMELINE ────────────────────────────────────────────────────
 
 export const TELANGANA_POLITICAL_LEDGER: PoliticalLedgerEntry[] = [
   ...ASSEMBLY_1_EVENTS,
   ...ASSEMBLY_2_EVENTS,
-  ...ASSEMBLY_3_EVENTS,
-];
-
+  ...ASSEMBLY_3_EVENTS
+]; 
 // ─── INITIAL BALANCES (post-election) ─────────────────────────────────────
 
 /**
