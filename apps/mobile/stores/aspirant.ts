@@ -14,6 +14,7 @@ import type {
   CivicScoreBreakdown,
 } from '../lib/aspirantTypes';
 import { computeCivicScore } from '../lib/aspirantTypes';
+import { MODULE_CONTENT } from '../data/leadershipContent';
 
 interface AspirantState {
   // Current user aspirant profile (null if not registered)
@@ -42,6 +43,8 @@ interface AspirantState {
   joinChallenge: (challengeId: string) => void;
   updateChallengeProgress: (challengeId: string, progress: number) => void;
   earnBadge: (badgeType: BadgeType) => void;
+  endorseAspirant: (aspirantId: string) => void;
+  endorsedIds: string[];
 }
 
 // ─── SEED: Leadership Academy Modules ───
@@ -335,11 +338,12 @@ const SEED_PUBLIC_ASPIRANTS: AspirantProfile[] = [
 export const useAspirantStore = create<AspirantState>()((set, get) => ({
   profile: null,
   badges: [],
-  modules: SEED_MODULES,
+  modules: SEED_MODULES.map((m) => ({ ...m, ...MODULE_CONTENT[m.id] })),
   moduleProgress: [],
   challenges: SEED_CHALLENGES,
   challengeProgress: [],
   publicAspirants: SEED_PUBLIC_ASPIRANTS,
+  endorsedIds: [],
 
   getCivicScore: () => {
     const p = get().profile;
@@ -459,6 +463,23 @@ export const useAspirantStore = create<AspirantState>()((set, get) => ({
       if (state.badges.some((b) => b.type === badgeType)) return state;
       return {
         badges: [...state.badges, { type: badgeType, earnedAt: new Date().toISOString() }],
+      };
+    }),
+
+  endorseAspirant: (aspirantId) =>
+    set((state) => {
+      if (state.endorsedIds.includes(aspirantId)) return state;
+      return {
+        endorsedIds: [...state.endorsedIds, aspirantId],
+        publicAspirants: state.publicAspirants.map((a) =>
+          a.id === aspirantId
+            ? {
+                ...a,
+                communityEndorsements: a.communityEndorsements + 1,
+                civicScore: a.civicScore + 5,
+              }
+            : a,
+        ),
       };
     }),
 }));

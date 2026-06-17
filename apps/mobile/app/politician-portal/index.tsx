@@ -1,4 +1,4 @@
-import { useState, useCallback } from 'react';
+import { useState, useMemo, useCallback } from 'react';
 import { View, Text, StyleSheet, ScrollView, Pressable, RefreshControl } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { Stack } from 'expo-router';
@@ -26,8 +26,13 @@ export default function PoliticianPortalScreen() {
   const events = usePoliticianPortalStore((s) => s.events);
   const manifestos = usePoliticianPortalStore((s) => s.manifestos);
   const surveys = usePoliticianPortalStore((s) => s.surveys);
-  const upcomingEvents = usePoliticianPortalStore((s) => s.getUpcomingEvents());
   const rsvpEvent = usePoliticianPortalStore((s) => s.rsvpEvent);
+
+  const upcomingEvents = useMemo(() => {
+    return events
+      .filter((e) => new Date(e.startTime).getTime() > Date.now() && e.status !== 'cancelled')
+      .sort((a, b) => new Date(a.startTime).getTime() - new Date(b.startTime).getTime());
+  }, [events]);
 
   const onRefresh = useCallback(() => {
     setRefreshing(true);

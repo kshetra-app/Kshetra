@@ -130,7 +130,7 @@ export const UK_CURATED_TRIVIA: TriviaItem[] = [
       "contexts": [
         {
           "type": "CONSTITUENCY",
-          "acNo": 56
+          "acNo": 49
         }
       ],
       "source": "ECI Results 2022",

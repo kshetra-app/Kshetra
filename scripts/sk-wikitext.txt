@@ -1,0 +1,995 @@
+{{short description|Election in Sikkim}}
+{{For|Lok Sabha election|2024 Indian general election in Sikkim}}
+{{Use dmy dates|date=December 2023}}
+{{Use Indian English|date=December 2023}}
+{{Infobox election
+| type = legislative
+| ongoing = No
+| country = India
+| previous_year = 2019
+| previous_election = 2019 Sikkim Legislative Assembly election
+| election_date = {{Start date|2024|04|19|df=yes}}
+| next_year = 2029
+| next_election = Next Sikkim Legislative Assembly election
+| seats_for_election = 32 seats in the [[Sikkim Legislative Assembly]]
+| majority_seats = 17
+| turnout = 79.88% ({{decrease}} 1.55%){{efn|does not include postal ballots}}
+| outgoing_members = 10th Sikkim Assembly#Members of Legislative Assembly
+| elected_members = 11th Sikkim Assembly#Members of Legislative Assembly
+<!--SKM-->| party1 = Sikkim Krantikari Morcha
+| alliance1 = [[National Democratic Alliance|NDA]]
+| image1 = {{CSS image crop|Image=Prem Singh Tamang.jpg|bSize=100|cWidth=80|cHeight=100|oLeft=10|oTop=05}}
+| leader1 = [[Prem Singh Tamang]]
+| leaders_seat1 = [[Rhenock Assembly constituency|Rhenock]] (retained),<br/>[[Soreng–Chakung Assembly constituency|Soreng–Chakung]] (vacated)
+| last_election1 = 47.03%, 17 seats
+| seat_change1 = {{increase}} 14
+<!--Map-->| party2 = Sikkim Democratic Front
+| alliance2 = <!-- Do not insert placeholder symbols for no alliance! -->
+| image2 = {{CSS image crop|Image=PawanKumarChamling.jpg|bSize=100|cWidth=80|cHeight=100|oLeft=10|oTop=03}}
+| leader2 = [[Pawan Kumar Chamling]]
+| leaders_seat2 = [[Poklok–Kamrang Assembly constituency|Poklok–Kamrang]], [[Namchaybong Assembly constituency|Namchaybong]] (both lost)
+| last_election2 = 47.63%, 15 seats
+| map_image = [[File:2024 Sikkim Legislative Assembly Election Result Map.svg|300px]]
+| map2_image = India Sikkim Legislative Assembly 2024.svg
+| map2_caption = Structure of the [[Sikkim Legislative Assembly]] after the election
+| map2_size = 300px
+| title = [[List of chief ministers of Sikkim|Chief Minister]]
+| before_election = [[Prem Singh Tamang]]
+| before_party = Sikkim Krantikari Morcha
+| posttitle = [[List of chief ministers of Sikkim|Chief Minister]] after election
+| after_election = [[Prem Singh Tamang]]
+| after_party = Sikkim Krantikari Morcha
+| seats1 = '''31'''
+| seats2 = 1
+| percentage1 = '''58.38%'''
+| percentage2 = 27.37%
+| popular_vote1 = '''225,068'''
+| popular_vote2 = 105,503
+| seat_change2 = {{decrease}} 14
+| swing1 = {{increase}} 13.35%
+| swing2 = {{decrease}} 25.26%
+}}
+'''Legislative Assembly elections''' were held in [[Elections in Sikkim|Sikkim]] on [[2024 elections in India|19 April 2024]] to elect the [[List of constituencies of the Sikkim Legislative Assembly|32 members]] of the [[11th Sikkim Assembly]]. The votes were counted and the results were declared on 2 June 2024. The incumbent [[Sikkim Krantikari Morcha]] government, led by chief minister [[Prem Singh Tamang]], won re-election to a second term.
+
+== Background ==
+The tenure of [[Sikkim Legislative Assembly]] is scheduled to end on 2 June 2024.<ref>{{Cite web |title=Terms of the Houses |url=https://eci.gov.in/elections/term-of-houses/ |archive-url=https://web.archive.org/web/20220328103956/https://eci.gov.in/elections/term-of-houses/ |archive-date=28 March 2022 |access-date=2022-02-13 |website=Election Commission of India |language=en-IN}}</ref> The [[2019 Sikkim Legislative Assembly election|previous assembly elections]] were held in April 2019. After the election, [[Sikkim Krantikari Morcha]] formed the [[Government of Sikkim|state government]], with [[Prem Singh Tamang]] becoming the [[List of chief ministers of Sikkim|Chief Minister]].<ref>{{Cite news |date=27 May 2019 |title=SKM president Prem Singh Tamang takes oath as Sikkim Chief Minister |work=Business Standard India |url=https://www.business-standard.com/article/pti-stories/p-s-golay-sworn-in-as-sikkim-cm-119052700178_1.html |access-date=25 June 2022 |archive-date=3 December 2023 |archive-url=https://web.archive.org/web/20231203223334/https://www.business-standard.com/article/pti-stories/p-s-golay-sworn-in-as-sikkim-cm-119052700178_1.html |url-status=live }}</ref>
+
+== Schedule ==
+The schedule of the election was announced by the [[Election Commission of India]] on 16 March 2024.<ref>{{Cite web |date=2024-03-16 |title=Sikkim Assembly election 2024 to be held on April 19: Here is complete schedule |url=https://www.hindustantimes.com/india-news/sikkim-assembly-election-2024-to-be-held-on-april-19-here-is-complete-schedule-101710581636706.html |access-date=2024-04-16 |website=Hindustan Times |language=en |archive-date=3 April 2024 |archive-url=https://web.archive.org/web/20240403050051/https://www.hindustantimes.com/india-news/sikkim-assembly-election-2024-to-be-held-on-april-19-here-is-complete-schedule-101710581636706.html |url-status=live }}</ref>
+
+{| class="wikitable"
+|-
+! Poll event
+! Schedule
+|-
+| Notification date
+| 20 March 2024
+|-
+| Last date for filing nomination
+| 27 March 2024
+|-
+| Scrutiny of nomination
+| 28 March 2024
+|-
+| Last date for withdrawal of nomination
+| 30 March 2024
+|-
+|''' Date of poll'''
+| '''19 April 2024'''
+|-
+| '''Date of Counting of Votes'''
+| '''2 June 2024'''
+|}
+
+== Parties and alliances ==
+{|class="wikitable defaultcenter col2left col5left" style="font-size: 100%"
+|+
+!colspan="2" |Party
+!Flag
+!Symbol
+!Leader
+!Seats contested
+|-
+|{{Full party name with color|Sikkim Krantikari Morcha}}
+|[[File:Sikkim Krantikari Morcha flag.svg|50px]]
+|[[File:Symbol SKM.png|50px]]
+|[[Prem Singh Tamang]]
+|32
+|-
+|{{Full party name with color|Sikkim Democratic Front}}
+|[[File:Sikkim-Democratic-Front-flag.svg|50px]]
+|[[File:Indian Election Symbol Umberlla.png|50px]]
+|[[Pawan Kumar Chamling|Pawan Chamling]]
+|32
+|-
+|{{Full party name with color|Bharatiya Janata Party}}
+|[[File:BJP flag.svg|50px]]
+|[[File:BJP election symbol.png|50px]]
+|[[Dilli Ram Thapa]]
+|31
+|-
+|{{Full party name with color|Indian National Congress}}
+|[[File:INC Flag Official.jpg|50px]]
+|[[File:Hand INC.svg|50px]]
+|Gopal Chettri<ref>{{cite web|title=Gopal Chettri appointed president of Congress' Sikkim unit|url=https://www.deccanherald.com/india/sikkim/gopal-chettri-appointed-president-of-congress-sikkim-unit-2698500|access-date=16 April 2024|newspaper=[[Deccan Herald]]|archive-date=3 June 2024|archive-url=https://web.archive.org/web/20240603094911/https://www.deccanherald.com/india/sikkim/gopal-chettri-appointed-president-of-congress-sikkim-unit-2698500|url-status=live}}</ref>
+|12
+|-
+|{{Full party name with color |Citizen Action Party – Sikkim}}
+|[[File:No flag.svg|50px]]
+|[[File:Indian Election Symbol Nagrik.png|50px]]
+|Ganesh Kumar Rai<ref>{{cite news|title=Ganesh Rai campaigns in Chujachen|url=https://www.sikkimexpress.com/ganesh-rai-campaigns-in-chujachen|access-date=20 April 2024|work=Sikkim Express|archive-date=3 June 2024|archive-url=https://web.archive.org/web/20240603094913/https://www.sikkimexpress.com/ganesh-rai-campaigns-in-chujachen|url-status=live}}</ref>
+|30
+|-
+|}
+
+== Candidates ==
+{| class="wikitable sortable mw-collapsible" style="line-height:20px;text-align:left;"
+|+List of candidates<ref name=":0">{{cite report|title=List of contesting candidates|url=https://ceosikkim.nic.in/UploadedFiles/NotificationCirculars/Election%20Gaz%202024.pdf|archive-url=https://web.archive.org/web/20240416024013/https://ceosikkim.nic.in/UploadedFiles/NotificationCirculars/Election%20Gaz%202024.pdf|archive-date=16 April 2024|publisher=Chief Electoral Officer, Sikkim}}</ref>
+! rowspan="2" | District
+! colspan="2" rowspan="2" | Constituency
+| colspan="3" style="background:{{party color|Sikkim Krantikari Morcha}}"|
+| colspan="3" style="background:{{party color|Sikkim Democratic Front}}"|
+| colspan="3" style="background:{{party color|Bharatiya Janata Party}}"|
+|-
+! colspan="3" | [[Sikkim Krantikari Morcha|SKM]]
+! colspan="3" | [[Sikkim Democratic Front|SDF]]
+! colspan="3" | [[Bharatiya Janata Party|BJP]]
+|-
+| rowspan="4" |[[Gyalshing district|Gyalshing]]
+!1
+|[[Yoksam–Tashiding Assembly constituency|Yoksam–Tashiding]] ({{tooltip|BL|Reserved for Bhuta-Lepcha community}})
+|{{party name with color|Sikkim Krantikari Morcha}}
+|[[Tshering Thendup Bhutia]]
+|{{party name with color|Sikkim Democratic Front}}
+|Meewang Gyatso Bhutia
+|{{party name with color|Bharatiya Janata Party}}
+|Kunzang Sherab Bhutia
+|-
+!2
+|[[Yangthang Assembly constituency|Yangthang]]
+|{{party name with color|Sikkim Krantikari Morcha}}
+|[[Bhim Hang Limboo]]
+|{{party name with color|Sikkim Democratic Front}}
+|Kesham Limboo
+|{{party name with color|Bharatiya Janata Party}}
+|Sancha Man Limboo
+|-
+!3
+|[[Maneybong–Dentam Assembly constituency|Maneybong–Dentam]]
+|{{party name with color|Sikkim Krantikari Morcha}}
+|[[Sudesh Kumar Subba]]
+|{{party name with color|Sikkim Democratic Front}}
+|Tika Ram Chettri
+|{{party name with color|Bharatiya Janata Party}}
+|[[Narendra Kumar Subba]]
+|-
+!4
+|[[Gyalshing–Barnyak Assembly constituency|Gyalshing–Barnyak]]
+|{{party name with color|Sikkim Krantikari Morcha}}
+|[[Lok Nath Sharma]]
+|{{party name with color|Sikkim Democratic Front}}
+|Tika Prasad Sharma
+|{{party name with color|Bharatiya Janata Party}}
+|Bharat Kumar Sharma
+|-
+| rowspan="4" |[[Soreng district|Soreng]]
+!5
+|[[Rinchenpong Assembly constituency|Rinchenpong]] ({{tooltip|BL|Reserved for Bhuta-Lepcha community}})
+|{{party name with color|Sikkim Krantikari Morcha}}
+|[[Erung Tenzing Lepcha]]
+|{{party name with color|Sikkim Democratic Front}}
+|Norden Bhutia
+|{{party name with color|Bharatiya Janata Party}}
+|Sancho Lepcha
+|-
+!6
+|[[Daramdin Assembly constituency|Daramdin]] ({{tooltip|BL|Reserved for Bhuta-Lepcha community}})
+|{{party name with color|Sikkim Krantikari Morcha}}
+|[[Mingma Narbu Sherpa]]
+|{{party name with color|Sikkim Democratic Front}}
+|Pem Norbu Sherpa
+|{{party name with color|Bharatiya Janata Party}}
+|Phurba Dorjee Sherpa
+|-
+!7
+|[[Soreng–Chakung Assembly constituency|Soreng–Chakung]]
+|{{party name with color|Sikkim Krantikari Morcha}}
+|[[Prem Singh Tamang]]
+|{{party name with color|Sikkim Democratic Front}}
+|Akar Dhoj Limbu
+|{{party name with color|Bharatiya Janata Party}}
+|Purna Singh Subba
+|-
+!8
+|[[Salghari–Zoom Assembly constituency|Salghari–Zoom]] ({{tooltip|SC|Reserved for Scheduled Castes}})
+|{{party name with color|Sikkim Krantikari Morcha}}
+|[[Madan Cintury]]
+|{{party name with color|Sikkim Democratic Front}}
+|Janga Bir Darnal
+|{{party name with color|Bharatiya Janata Party}}
+|Pahal Man Kami
+|-
+| rowspan="8" |[[Namchi district|Namchi]]
+!9
+|[[Barfung Assembly constituency|Barfung]] ({{tooltip|BL|Reserved for Bhuta-Lepcha community}})
+|{{party name with color|Sikkim Krantikari Morcha}}
+|[[Rikshal Dorjee Bhutia]]
+|{{party name with color|Sikkim Democratic Front}}
+|[[Bhaichung Bhutia]]
+|{{party name with color|Bharatiya Janata Party}}
+|Tashi Dadul Bhutia
+|-
+!10
+|[[Poklok–Kamrang Assembly constituency|Poklok–Kamrang]]
+|{{party name with color|Sikkim Krantikari Morcha}}
+|[[Bhoj Raj Rai]]
+|{{party name with color|Sikkim Democratic Front}}
+|[[Pawan Kumar Chamling]]
+|{{party name with color|Bharatiya Janata Party}}
+|Arjun Rai
+|-
+!11
+|[[Namchi–Singhithang Assembly constituency|Namchi–Singhithang]]
+|{{party name with color|Sikkim Krantikari Morcha}}
+|[[Krishna Kumari Rai]]
+|{{party name with color|Sikkim Democratic Front}}
+|Bimal Rai
+|{{party name with color|Bharatiya Janata Party}}
+|Aruna Manger
+|-
+!12
+|[[Melli Assembly constituency|Melli]]
+|{{party name with color|Sikkim Krantikari Morcha}}
+|[[Nar Bahadur Pradhan]]
+|{{party name with color|Sikkim Democratic Front}}
+|Nirmal Kumar Pradhan
+|{{party name with color|Bharatiya Janata Party}}
+|Yogen Rai
+|-
+!13
+|[[Namthang–Rateypani Assembly constituency|Namthang–Rateypani]]
+|{{party name with color|Sikkim Krantikari Morcha}}
+|[[Sanjit Kharel|Sanjeet Kharel]]
+|{{party name with color|Sikkim Democratic Front}}
+|Suman Pradhan
+|{{party name with color|Bharatiya Janata Party}}
+|Janak Kumar Gurung
+|-
+!14
+|[[Temi–Namphing Assembly constituency|Temi–Namphing]]
+|{{party name with color|Sikkim Krantikari Morcha}}
+|[[Bedu Singh Panth]]
+|{{party name with color|Sikkim Democratic Front}}
+|Suman Kumar Tewari
+|{{party name with color|Bharatiya Janata Party}}
+|Bhupendra Giri
+|-
+!15
+|[[Rangang–Yangang Assembly constituency|Rangang–Yangang]]
+|{{party name with color|Sikkim Krantikari Morcha}}
+|[[Raj Kumari Thapa]]
+|{{party name with color|Sikkim Democratic Front}}
+|Mani Kumar Subba
+|{{party name with color|Bharatiya Janata Party}}
+|Gopi Das Pokhrel
+|-
+!16
+|[[Tumin–Lingee Assembly constituency|Tumin–Lingee]] ({{tooltip|BL|Reserved for Bhuta-Lepcha community}})
+|{{party name with color|Sikkim Krantikari Morcha}}
+|[[Samdup Tshering Bhutia]]
+|{{party name with color|Sikkim Democratic Front}}
+|Norzong Lepcha
+|{{party name with color|Bharatiya Janata Party}}
+|Passang Gyali Sherpa
+|-
+| rowspan="1" |[[Gangtok district|Gangtok]]
+!17
+|[[Khamdong–Singtam Assembly constituency|Khamdong–Singtam]]
+|{{party name with color|Sikkim Krantikari Morcha}}
+|[[Nar Bahadur Dahal]]
+|{{party name with color|Sikkim Democratic Front}}
+|[[Mani Kumar Sharma]]
+|{{party name with color|Bharatiya Janata Party}}
+|Chetan Sapkota
+|-
+| rowspan="5" |[[Pakyong district|Pakyong]]
+!18
+|[[West Pendam Assembly constituency|West Pendam]] ({{tooltip|SC|Reserved for Scheduled Castes}})
+|{{party name with color|Sikkim Krantikari Morcha}}
+|[[Lall Bahadur Das]]
+|{{party name with color|Sikkim Democratic Front}}
+|Anup Thatal
+|{{party name with color|Bharatiya Janata Party}}
+|Bhupal Baraily
+|-
+!19
+|[[Rhenock Assembly constituency|Rhenock]]
+|{{party name with color|Sikkim Krantikari Morcha}}
+|[[Prem Singh Tamang]]
+|{{party name with color|Sikkim Democratic Front}}
+|[[Somnath Poudyal]]
+|{{party name with color|Bharatiya Janata Party}}
+|Prem Chhetri
+|-
+!20
+|[[Chujachen Assembly constituency|Chujachen]]
+|{{party name with color|Sikkim Krantikari Morcha}}
+|[[Puran Kumar Gurung]]
+|{{party name with color|Sikkim Democratic Front}}
+|Mani Kumar Gurung
+|{{party name with color|Bharatiya Janata Party}}
+|Duk Nath Nepal
+|-
+!21
+|[[Gnathang–Machong Assembly constituency|Gnathang–Machong]] ({{tooltip|BL|Reserved for Bhuta-Lepcha community}})
+|{{party name with color|Sikkim Krantikari Morcha}}
+|[[Pamin Lepcha]]
+|{{party name with color|Sikkim Democratic Front}}
+|[[Tshering Wangdi Lepcha]]
+|{{party name with color|Bharatiya Janata Party}}
+|Sangay Gyatso Bhutia
+|-
+!22
+|[[Namchaybong Assembly constituency|Namchaybong]]
+|{{party name with color|Sikkim Krantikari Morcha}}
+|[[Raju Basnet (politician)|Raju Basnet]]
+|{{party name with color|Sikkim Democratic Front}}
+|[[Pawan Kumar Chamling]]
+|{{party name with color|Bharatiya Janata Party}}
+|Pooja Sharma
+|-
+| rowspan="6" |[[Gangtok district|Gangtok]]
+!23
+|[[Shyari Assembly constituency|Shyari]]
+|{{party name with color|Sikkim Krantikari Morcha}}
+|[[Kunga Nima Lepcha]]
+|{{party name with color|Sikkim Democratic Front}}
+|Tenzing Norbu Lamtha
+|{{party name with color|Bharatiya Janata Party}}
+|Pempo Dorjee Lepcha
+|-
+!24
+|[[Martam–Rumtek Assembly constituency|Martam–Rumtek]] ({{tooltip|BL|Reserved for Bhuta-Lepcha community}})
+|{{party name with color|Sikkim Krantikari Morcha}}
+|[[Sonam Venchungpa]]
+|{{party name with color|Sikkim Democratic Front}}
+|Mechung Bhutia
+|{{party name with color|Bharatiya Janata Party}}
+|Chewang Dadul Bhutia
+|-
+!25
+|[[Upper Tadong Assembly constituency|Upper Tadong]]
+|{{party name with color|Sikkim Krantikari Morcha}}
+|[[Gay Tshering Dhungel]]
+|{{party name with color|Sikkim Democratic Front}}
+|Chandra Bahadur Chettri
+|{{party name with color|Bharatiya Janata Party}}
+|Niren Bhandari
+|-
+!26
+|[[Arithang Assembly constituency|Arithang]]
+|{{party name with color|Sikkim Krantikari Morcha}}
+|[[Arun Kumar Upreti]]
+|{{party name with color|Sikkim Democratic Front}}
+|Ashis Rai
+|{{party name with color|Bharatiya Janata Party}}
+|Udai Gurung
+|-
+!27
+|[[Gangtok Assembly constituency|Gangtok]]
+|{{party name with color|Sikkim Krantikari Morcha}}
+|[[Delay Namgyal Barfungpa]]
+|{{party name with color|Sikkim Democratic Front}}
+|Pintso Chopel Lepcha
+|{{party name with color|Bharatiya Janata Party}}
+|Pema Wangyal Rinzing
+|-
+!28
+|[[Upper Burtuk Assembly constituency|Upper Burtuk]]
+|{{party name with color|Sikkim Krantikari Morcha}}
+|[[Kala Rai]]
+|{{party name with color|Sikkim Democratic Front}}
+|Dil Bahadur Thapa Manger
+|{{party name with color|Bharatiya Janata Party}}
+|[[Dilli Ram Thapa]]
+|-
+| rowspan="3" |[[Mangan district|Mangan]]
+!29
+|[[Kabi–Lungchok Assembly constituency|Kabi–Lungchok]] ({{tooltip|BL|Reserved for Bhuta-Lepcha community}})
+|{{party name with color|Sikkim Krantikari Morcha}}
+|[[Thenlay Tshering Bhutia]]
+|{{party name with color|Sikkim Democratic Front}}
+|Gnawo Chopel Lepcha
+|{{party name with color|Bharatiya Janata Party}}
+|Ugen Nedup Bhutia
+|-
+!30
+|[[Djongu Assembly constituency|Djongu]] ({{tooltip|BL|Reserved for Bhuta-Lepcha community}})
+|{{party name with color|Sikkim Krantikari Morcha}}
+|[[Pintso Namgyal Lepcha]]
+|{{party name with color|Sikkim Democratic Front}}
+|[[Sonam Gyatso Lepcha]]
+|{{party name with color|Bharatiya Janata Party}}
+|Penzong Lepcha
+|-
+!31
+|[[Lachen–Mangan Assembly constituency|Lachen–Mangan]] ({{tooltip|BL|Reserved for Bhuta-Lepcha community}})
+|{{party name with color|Sikkim Krantikari Morcha}}
+|[[Samdup Lepcha]]
+|{{party name with color|Sikkim Democratic Front}}
+|[[Hishey Lachungpa]]
+!colspan=3|None
+|-
+|
+!32
+|[[Sangha Assembly constituency|Sangha]] ({{tooltip|BM|Reserved for Buddhist Monasteries}})
+|{{party name with color|Sikkim Krantikari Morcha}}
+|[[Sonam Lama (Sikkim politician)|Sonam Lama]]
+|{{party name with color|Sikkim Democratic Front}}
+|Tshering Lama
+|{{party name with color|Bharatiya Janata Party}}
+|Tseten Tashi Bhutia
+|-
+|}
+
+== Results ==
+=== Results by party ===
+{|class="wikitable defaultcenter col1left" style="font-size: 100%"
+|+ Results by party<ref>{{cite web|url=https://results.eci.gov.in/AcResultGen2ndJune2024/partywiseresult-S21.htm|title=Party wise results|publisher=[[Election Commission of India]]|access-date=2 June 2024|archive-date=2 June 2024|archive-url=https://web.archive.org/web/20240602085710/https://results.eci.gov.in/AcResultGen2ndJune2024/partywiseresult-S21.htm|url-status=live}}</ref><ref>{{cite news|date=2 June 2024|title=Sikkim Election Results 2024: SKM sweeps polls by winning 31 of 32 seats, SDF bags 1|url=https://www.thehindu.com/elections/sikkim-assembly/sikkim-assembly-election-results-live-updates-june-2-2024/article68239147.ece|archive-url=https://web.archive.org/web/20240602131137/https://www.thehindu.com/elections/sikkim-assembly/sikkim-assembly-election-results-live-updates-june-2-2024/article68239147.ece|archive-date=2 June 2024|access-date=2 June 2024|newspaper=[[The Hindu]]}}</ref> |[[File:India_Sikkim_Legislative_Assembly_2024.svg]]
+!colspan="2" rowspan="2"|Party
+!colspan="3"|Popular vote
+!colspan="3"|Seats
+|-
+!Votes
+!%
+!Change ([[Percentage point|pp]])
+!Contested
+!Won
+!Change
+|-
+|{{Full party name with color|Sikkim Krantikari Morcha}}
+|2,25,068
+|58.38
+|{{increase}} 11.21
+|32
+|31
+|{{increase}} 14
+|-
+|{{Full party name with color|Sikkim Democratic Front }}
+|1,05,503
+|27.37
+|{{decrease}} 20.26
+|32
+|1
+|{{decrease}} 14
+|-
+|{{Full party name with color|Citizen Action Party – Sikkim}}
+|23,261
+|6.03
+|New
+|30
+|0
+|{{steady}}
+|-
+|{{Full party name with color|Bharatiya Janata Party}}
+|19,956
+|5.18
+|{{increase}} 3.56
+|31
+|0
+|{{steady}}
+|-
+|{{Full party name with color|Indian National Congress}}
+|1,228
+|0.32
+|{{decrease}} 0.45
+|12
+|0
+|{{steady}}
+|-
+|{{Full party name with color|Independent politician}}
+|6,678
+|1.73
+|
+|9
+|0
+|{{steady}}
+|-
+|{{Party name with color|None of the above (India)}}
+|3,813
+|0.99
+|{{increase}} 0.13
+!colspan="3" style="background-color:#E9E9E9"|
+|-
+!colspan="2"|Total
+!3,85,072
+!100%
+! -
+!146
+!32
+!-
+|-
+|}
+
+=== Results by districts ===
+{{Table alignment}}
+{|class="wikitable defaultcenter col1left" style="font-size: 100%"
+|+Results by district<ref>{{cite web|url=https://results.eci.gov.in/AcResultGen2ndJune2024/statewiseS211.htm|title=State wise results|publisher=[[Election Commission of India]]|access-date=2 June 2024|archive-date=3 June 2024|archive-url=https://web.archive.org/web/20240603094913/https://results.eci.gov.in/AcResultGen2ndJune2024/statewiseS211.htm|url-status=live}}</ref>
+!District
+!Seats
+![[Sikkim Krantikari Morcha|SKM]]
+![[Sikkim Democratic Front|SDF]]
+|-
+|[[Gyalshing district|Gyalshing]]
+!4
+|style="background:{{party color|Sikkim Krantikari Morcha}} ; color:white;" |4
+|0
+|-
+|[[Soreng district|Soreng]]
+!4
+|style="background:{{party color|Sikkim Krantikari Morcha}} ; color:white;"|4
+|0
+|-
+|[[Namchi district|Namchi]]
+!8
+|style="background:{{party color|Sikkim Krantikari Morcha}} ; color:white;"|8
+|0
+|-
+|[[Gangtok district|Gangtok]]
+!7
+|style="background:{{party color|Sikkim Krantikari Morcha}} ; color:white;"|6
+|1
+|-
+|[[Pakyong district|Pakyong]]
+!5
+|style="background:{{party color|Sikkim Krantikari Morcha}} ; color:white;"|5
+|0
+|-
+|[[Mangan district|Mangan]]
+!3
+|style="background:{{party color|Sikkim Krantikari Morcha}} ; color:white;"|3
+|0
+|-
+|[[Sangha Assembly constituency|Sangha]]
+!1
+|style="background:{{party color|Sikkim Krantikari Morcha}} ; color:white;"|1
+|0
+|-
+!Total
+!32
+!31
+!1
+|}
+{{clear}}
+
+=== Results by constituency ===
+{|class="wikitable sortable" style="line-height:20px;text-align:center;white-space:nowrap;font-size:94%;"
+|+Results by constituency<ref>{{cite news|newspaper=[[The Indian Express]]|date=2 June 2024|title=Election Results 2024 Sikkim: Full list of winners on all 32 Legislative Assembly seats of Sikkim |url=https://indianexpress.com/elections/election-results-2024-sikkim-full-list-of-winners-on-all-32-legislative-assembly-seats-of-sikkim-9366829/|archive-url=https://web.archive.org/web/20240603081356/https://indianexpress.com/elections/election-results-2024-sikkim-full-list-of-winners-on-all-32-legislative-assembly-seats-of-sikkim-9366829/ |archive-date=3 June 2024|access-date=3 June 2024}}</ref><ref>{{cite news|newspaper=[[The Financial Express (India)|Financial Express]]|date=2 June 2024|title=Sikkim Assembly Election 2024 Winners List |url=https://www.financialexpress.com/india-news/sikkim-assembly-election-2024-winners-list/3509765/|archive-url=https://web.archive.org/web/20240603081540/https://www.financialexpress.com/india-news/sikkim-assembly-election-2024-winners-list/3509765/|archive-date=3 June 2024|access-date=3 June 2024}}</ref>
+! rowspan="2" |District
+! colspan="2" |Constituency
+! colspan="5" |Winner
+! colspan="5" |Runner-up
+! rowspan="2" |Margin
+|-
+! No.
+! Name
+! Candidate
+! colspan="2" |Party
+! Votes
+!%
+! Candidate
+! colspan="2" |Party
+! Votes
+!%
+|-
+| rowspan="4" |[[Gyalshing district|Gyalshing]]
+!1
+|[[Yoksam–Tashiding Assembly constituency|Yoksam–Tashiding]] ({{tooltip|BL|Reserved for Bhuta-Lepcha community}})
+|[[Tshering Thendup Bhutia]]
+|{{Party name with color|Sikkim Krantikari Morcha|full=no}}
+|8,271
+|60.8
+|Meewang Gyatso Bhutia
+|{{Party name with color|Sikkim Democratic Front|full=no}}
+|3,459
+|25.43
+|style="background:{{party color|Sikkim Krantikari Morcha}} ; color:white;" |4,812
+|-
+!2
+|[[Yangthang Assembly constituency|Yangthang]]
+|[[Bhim Hang Limboo]]
+|{{Party name with color|Sikkim Krantikari Morcha|full=no}}
+|6,621
+|54.61
+|Kesham Limboo
+|{{Party name with color|Sikkim Democratic Front|full=no}}
+|4,065
+|33.53
+|style="background:{{party color|Sikkim Krantikari Morcha}} ; color:white;" |2,556
+|-
+!3
+|[[Maneybong–Dentam Assembly constituency|Maneybong–Dentam]]
+|[[Sudesh Kumar Subba]]
+|{{Party name with color|Sikkim Krantikari Morcha|full=no}}
+|8,553
+|61.16
+|Tika Ram Chettri
+|{{Party name with color|Sikkim Democratic Front|full=no}}
+|2,514
+|17.68
+|style="background:{{party color|Sikkim Krantikari Morcha}} ; color:white;" |6,039
+|-
+!4
+|[[Gyalshing–Barnyak Assembly constituency|Gyalshing–Barnyak]]
+|[[Lok Nath Sharma]]
+|{{Party name with color|Sikkim Krantikari Morcha|full=no}}
+|5,612
+|48.1
+|Khusandra Prasad Sharma
+|{{Party name with color|Independent|shortname=IND}}
+|4,649
+|39.85
+|style="background:{{party color|Sikkim Krantikari Morcha}} ; color:white;" |963
+|-
+| rowspan="4" |[[Soreng district|Soreng]]
+!5
+|[[Rinchenpong Assembly constituency|Rinchenpong]] ({{tooltip|BL|Reserved for Bhuta-Lepcha community}})
+|[[Erung Tenzing Lepcha]]
+|{{Party name with color|Sikkim Krantikari Morcha|full=no}}
+|9,624
+|68.91
+|Norden Bhutia
+|{{Party name with color|Sikkim Democratic Front|full=no}}
+|3,224
+|23.08
+|style="background:{{party color|Sikkim Krantikari Morcha}} ; color:white;" |6,400
+|-
+!6
+|[[Daramdin Assembly constituency|Daramdin]] ({{tooltip|BL|Reserved for Bhuta-Lepcha community}})
+|[[Mingma Narbu Sherpa]]
+|{{Party name with color|Sikkim Krantikari Morcha|full=no}}
+|9,404
+|67.75
+|Pem Norbu Sherpa
+|{{Party name with color|Sikkim Democratic Front|full=no}}
+|3,429
+|24.7
+|style="background:{{party color|Sikkim Krantikari Morcha}} ; color:white;" |5,975
+|-
+!7
+|[[Soreng–Chakung Assembly constituency|Soreng–Chakung]]
+|[[Prem Singh Tamang]]
+|{{Party name with color|Sikkim Krantikari Morcha|full=no}}
+|10,480
+|71.18
+|Akar Dhoj Limbu
+|{{Party name with color|Sikkim Democratic Front|full=no}}
+|3,084
+|21.24
+|style="background:{{party color|Sikkim Krantikari Morcha}} ; color:white;" |7,396
+|-
+!8
+|[[Salghari–Zoom Assembly constituency|Salghari–Zoom]] ({{tooltip|SC|Reserved for Scheduled Castes}})
+|[[Madan Cintury]]
+|{{Party name with color|Sikkim Krantikari Morcha|full=no}}
+|5,678
+|58.69
+|Janga Bir Darnal
+|{{Party name with color|Sikkim Democratic Front|full=no}}
+|2,966
+|30.66
+|style="background:{{party color|Sikkim Krantikari Morcha}} ; color:white;" |2,712
+|-
+| rowspan="8" |[[Namchi district|Namchi]]
+!9
+|[[Barfung Assembly constituency|Barfung]] ({{tooltip|BL|Reserved for Bhuta-Lepcha community}})
+|[[Rikshal Dorjee Bhutia]]
+|{{Party name with color|Sikkim Krantikari Morcha|full=no}}
+|8,358
+|61.86
+|[[Bhaichung Bhutia]]
+|{{Party name with color|Sikkim Democratic Front|full=no}}
+|4,012
+|23.69
+|style="background:{{party color|Sikkim Krantikari Morcha}} ; color:white;" |4,346
+|-
+!10
+|[[Poklok–Kamrang Assembly constituency|Poklok–Kamrang]]
+|[[Bhoj Raj Rai]]
+|{{Party name with color|Sikkim Krantikari Morcha|full=no}}
+|8,037
+|54.99
+|[[Pawan Kumar Chamling]]
+|{{Party name with color|Sikkim Democratic Front|full=no}}
+|4,974
+|34.03
+|style="background:{{party color|Sikkim Krantikari Morcha}} ; color:white;" |3,063
+|-
+!11
+|[[Namchi–Singhithang Assembly constituency|Namchi–Singhithang]]
+|[[Krishna Kumari Rai]]
+|{{Party name with color|Sikkim Krantikari Morcha|full=no}}
+|7,907
+|71.60
+|Bimal Rai
+|{{Party name with color|Sikkim Democratic Front|full=no}}
+|2,605
+|23.59
+|style="background:{{party color|Sikkim Krantikari Morcha}} ; color:white;" |5,302
+|-
+!12
+|[[Melli Assembly constituency|Melli]]
+|[[Nar Bahadur Pradhan]]
+|{{Party name with color|Sikkim Krantikari Morcha|full=no}}
+|7,904
+|57.96
+|Ganesh Kumar Rai
+|{{Party name with color|Citizen Action Party – Sikkim|full=no|shortname=CAP}}
+|3,621
+|26.55
+|style="background:{{party color|Sikkim Krantikari Morcha}} ; color:white;" |4,283
+|-
+!13
+|[[Namthang–Rateypani Assembly constituency|Namthang–Rateypani]]
+|[[Sanjit Kharel|Sanjeet Kharel]]
+|{{Party name with color|Sikkim Krantikari Morcha|full=no}}
+|8,949
+|63.46
+|Suman Pradhan
+|{{Party name with color|Sikkim Democratic Front|full=no}}
+|3,344
+|23.71
+|style="background:{{party color|Sikkim Krantikari Morcha}} ; color:white;" |5,605
+|-
+!14
+|[[Temi–Namphing Assembly constituency|Temi–Namphing]]
+|[[Bedu Singh Panth]]
+|{{Party name with color|Sikkim Krantikari Morcha|full=no}}
+|6,759
+|51.84
+|Suman Kumar Tewari
+|{{Party name with color|Sikkim Democratic Front|full=no}}
+|3,201
+|24.55
+|style="background:{{party color|Sikkim Krantikari Morcha}} ; color:white;" |3,558
+|-
+!15
+|[[Rangang–Yangang Assembly constituency|Rangang–Yangang]]
+|[[Raj Kumari Thapa]]
+|{{Party name with color|Sikkim Krantikari Morcha|full=no}}
+|6,514
+|50.74
+|Mani Kumar Subba
+|{{Party name with color|Sikkim Democratic Front|full=no}}
+|5,313
+|41.38
+|style="background:{{party color|Sikkim Krantikari Morcha}} ; color:white;" |1,201
+|-
+!16
+|[[Tumin–Lingee Assembly constituency|Tumin–Lingee]] ({{tooltip|BL|Reserved for Bhuta-Lepcha community}})
+|[[Samdup Tshering Bhutia]]
+|{{Party name with color|Sikkim Krantikari Morcha|full=no}}
+|8,265
+|58.07
+|Norzong Lepcha
+|{{Party name with color|Sikkim Democratic Front|full=no}}
+|4,177
+|29.35
+|style="background:{{party color|Sikkim Krantikari Morcha}} ; color:white;" |4,088
+|-
+| rowspan="1" |[[Gangtok district|Gangtok]]
+!17
+|[[Khamdong–Singtam Assembly constituency|Khamdong–Singtam]]
+|[[Nar Bahadur Dahal]]
+|{{Party name with color|Sikkim Krantikari Morcha|full=no}}
+|5,882
+|52.87
+|[[Mani Kumar Sharma]]
+|{{Party name with color|Sikkim Democratic Front|full=no}}
+|4,143
+|37.24
+|style="background:{{party color|Sikkim Krantikari Morcha}} ; color:white;" |1,739
+|-
+| rowspan="5" |[[Pakyong district|Pakyong]]
+!18
+|[[West Pendam Assembly constituency|West Pendam]] ({{tooltip|SC|Reserved for Scheduled Castes}})
+|[[Lall Bahadur Das]]
+|{{Party name with color|Sikkim Krantikari Morcha|full=no}}
+|6,237
+|48.28
+|Anup Thatal
+|{{Party name with color|Sikkim Democratic Front|full=no}}
+|4,285
+|33.17
+|style="background:{{party color|Sikkim Krantikari Morcha}} ; color:white;" |1,952
+|-
+!19
+|[[Rhenock Assembly constituency|Rhenock]]
+|[[Prem Singh Tamang]]
+|{{Party name with color|Sikkim Krantikari Morcha|full=no}}
+|10,094
+|64.54
+|[[Somnath Poudyal]]
+|{{Party name with color|Sikkim Democratic Front|full=no}}
+|3,050
+|19.5
+|style="background:{{party color|Sikkim Krantikari Morcha}} ; color:white;" |7,044
+|-
+!20
+|[[Chujachen Assembly constituency|Chujachen]]
+|[[Puran Kumar Gurung]]
+|{{Party name with color|Sikkim Krantikari Morcha|full=no}}
+|8,199
+|55.66
+|Mani Kumar Gurung
+|{{Party name with color|Sikkim Democratic Front|full=no}}
+|4,865
+|33.03
+|style="background:{{party color|Sikkim Krantikari Morcha}} ; color:white;" |3,334
+|-
+!21
+|[[Gnathang–Machong Assembly constituency|Gnathang–Machong]] ({{tooltip|BL|Reserved for Bhuta-Lepcha community}})
+|[[Pamin Lepcha]]
+|{{Party name with color|Sikkim Krantikari Morcha|full=no}}
+|6,676
+|61.58
+|[[Tshering Wangdi Lepcha]]
+|{{Party name with color|Sikkim Democratic Front|full=no}}
+|2,869
+|26.46
+|style="background:{{party color|Sikkim Krantikari Morcha}} ; color:white;" |3,807
+|-
+!22
+|[[Namchaybong Assembly constituency|Namchaybong]]
+|[[Raju Basnet (politician)|Raju Basnet]]
+|{{Party name with color|Sikkim Krantikari Morcha|full=no}}
+|7,195
+|53.42
+|[[Pawan Kumar Chamling]]
+|{{Party name with color|Sikkim Democratic Front|full=no}}
+|4,939
+|36.67
+|style="background:{{party color|Sikkim Krantikari Morcha}} ; color:white;" |2,256
+|-
+| rowspan="6" |[[Gangtok district|Gangtok]]
+!23
+|[[Shyari Assembly constituency|Shyari]]
+|[[Tenzing Norbu Lamtha]]
+|{{Party name with color|Sikkim Democratic Front|full=no}}
+|6,633
+|51.84
+|[[Kunga Nima Lepcha]]
+|{{Party name with color|Sikkim Krantikari Morcha|full=no}}
+|5,319
+|41.57
+|style="background:{{party color|Sikkim Democratic Front}} ; color:black;" |1,314
+|-
+!24
+|[[Martam–Rumtek Assembly constituency|Martam–Rumtek]] ({{tooltip|BL|Reserved for Bhuta-Lepcha community}})
+|[[Sonam Venchungpa]]
+|{{Party name with color|Sikkim Krantikari Morcha|full=no}}
+|8,070
+|54.01
+|Mechung Bhutia
+|{{Party name with color|Sikkim Democratic Front|full=no}}
+|5,308
+|35.53
+|style="background:{{party color|Sikkim Krantikari Morcha}} ; color:white;" |2,762
+|-
+!25
+|[[Upper Tadong Assembly constituency|Upper Tadong]]
+|[[Gay Tshering Dhungel]]
+|{{Party name with color|Sikkim Krantikari Morcha|full=no}}
+|6,209
+|68.46
+|Chandra Bahadur Chettri
+|{{Party name with color|Sikkim Democratic Front|full=no}}
+|2,120
+|23.38
+|style="background:{{party color|Sikkim Krantikari Morcha}} ; color:white;" |4,089
+|-
+!26
+|[[Arithang Assembly constituency|Arithang]]
+|[[Arun Kumar Upreti]]
+|{{Party name with color|Sikkim Krantikari Morcha|full=no}}
+|5,356
+|61.48
+|Ashis Rai
+|{{Party name with color|Sikkim Democratic Front|full=no}}
+|2,627
+|30.15
+|style="background:{{party color|Sikkim Krantikari Morcha}} ; color:white;" |2,729
+|-
+!27
+|[[Gangtok Assembly constituency|Gangtok]]
+|[[Delay Namgyal Barfungpa]]
+|{{Party name with color|Sikkim Krantikari Morcha|full=no}}
+|4,440
+|57.44
+|Pintso Chopel Lepcha
+|{{Party name with color|Sikkim Democratic Front|full=no}}
+|1,748
+|22.61
+|style="background:{{party color|Sikkim Krantikari Morcha}} ; color:white;" |2,692
+|-
+!28
+|[[Upper Burtuk Assembly constituency|Upper Burtuk]]
+|[[Kala Rai]]
+|{{Party name with color|Sikkim Krantikari Morcha|full=no}}
+|6,323
+|50.54
+|[[Dilli Ram Thapa]]
+|{{Party name with color|Bharatiya Janata Party|full=no}}
+|3,755
+|30.01
+|style="background:{{party color|Sikkim Krantikari Morcha}} ; color:white;" |4,089
+|-
+| rowspan="3" |[[Mangan district|Mangan]]
+!29
+|[[Kabi–Lungchok Assembly constituency|Kabi–Lungchok]] ({{tooltip|BL|Reserved for Bhuta-Lepcha community}})
+|[[Thenlay Tshering Bhutia]]
+|{{Party name with color|Sikkim Krantikari Morcha|full=no}}
+|5,882
+|54.18
+|Gnawo Chopel Lepcha
+|{{Party name with color|Sikkim Democratic Front|full=no}}
+|4,189
+|38.59
+|style="background:{{party color|Sikkim Krantikari Morcha}} ; color:white;" |1,693
+|-
+!30
+|[[Djongu Assembly constituency|Djongu]] ({{tooltip|BL|Reserved for Bhuta-Lepcha community}})
+|[[Pintso Namgyal Lepcha]]
+|{{Party name with color|Sikkim Krantikari Morcha|full=no}}
+|6,402
+|69.56
+|[[Sonam Gyatso Lepcha]]
+|{{Party name with color|Sikkim Democratic Front|full=no}}
+|1,395
+|15.16
+|style="background:{{party color|Sikkim Krantikari Morcha}} ; color:white;" |5,007
+|-
+!31
+|[[Lachen–Mangan Assembly constituency|Lachen–Mangan]] ({{tooltip|BL|Reserved for Bhuta-Lepcha community}})
+|[[Samdup Lepcha]]
+|{{Party name with color|Sikkim Krantikari Morcha|full=no}}
+|3,929
+|55.37
+|[[Hishey Lachungpa]]
+|{{Party name with color|Sikkim Democratic Front|full=no}}
+|3,078
+|43.38
+|style="background:{{party color|Sikkim Krantikari Morcha}} ; color:white;" |851
+|-
+|
+!32
+|[[Sangha Assembly constituency|Sangha]] ({{tooltip|BM|Reserved for Buddhist Monasteries}})
+|[[Sonam Lama (Sikkim politician)|Sonam Lama]]
+|{{Party name with color|Sikkim Krantikari Morcha|full=no}}
+|1,919
+|60.01
+|Tseten Tashi Bhutia
+|{{Party name with color|Bharatiya Janata Party|full=no}}
+|1,054
+|32.96
+|style="background:{{party color|Sikkim Krantikari Morcha}} ; color:white;" |865
+|-
+|}
+
+== See also ==
+
+* [[Elections in Sikkim]]
+* [[2024 elections in India]]
+* [[2024 Indian general election in Sikkim]]
+
+== References ==
+{{reflist}}
+== Notes ==
+{{notelist}}
+
+{{Sikkim elections}}
+
+[[Category:2024 State Assembly elections in India|Sikkim]]
+[[Category:State Assembly elections in Sikkim]]
+[[Category:2020s in Sikkim]]
+[[Category:April 2024 in India|Sikkim Legislative Assembly election]]

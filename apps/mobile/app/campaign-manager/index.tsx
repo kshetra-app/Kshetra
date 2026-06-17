@@ -1,4 +1,4 @@
-import { useState, useCallback } from 'react';
+import { useState, useMemo, useCallback } from 'react';
 import { View, Text, StyleSheet, ScrollView, Pressable, RefreshControl } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { Stack } from 'expo-router';
@@ -23,13 +23,19 @@ export default function CampaignManagerScreen() {
   const insets = useSafeAreaInsets();
 
   const campaigns = useCampaignStore((s) => s.campaigns);
-  const activeCampaigns = useCampaignStore((s) => s.getActiveCampaigns());
-  const activeAds = useCampaignStore((s) => s.getActiveAds());
   const allAds = useCampaignStore((s) => s.ads);
-  const revenueData = useCampaignStore((s) => s.getRevenueFlow());
+  const revenueData = useCampaignStore((s) => s.revenueData);
   const booths = useCampaignStore((s) => s.booths);
   const volunteers = useCampaignStore((s) => s.volunteers);
   const pauseAd = useCampaignStore((s) => s.pauseAd);
+
+  const activeCampaigns = useMemo(() => {
+    return campaigns.filter((c) => c.status === 'active');
+  }, [campaigns]);
+
+  const activeAds = useMemo(() => {
+    return allAds.filter((ad) => ad.status === 'active');
+  }, [allAds]);
 
   const onRefresh = useCallback(() => {
     setRefreshing(true);

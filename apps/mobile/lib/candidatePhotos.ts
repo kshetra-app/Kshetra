@@ -103,6 +103,7 @@ export const WIKIPEDIA_ARTICLES: Record<string, string> = {
   // ── Kerala ──
   'Pinarayi Vijayan': 'Pinarayi_Vijayan',
   'V.D. Satheesan': 'V._D._Satheesan',
+  'V. D. Satheesan': 'V._D._Satheesan',
   'K. Sudhakaran': 'K._Sudhakaran',
   'Shashi Tharoor': 'Shashi_Tharoor',
   'E. Sreedharan': 'E._Sreedharan',
@@ -120,6 +121,9 @@ export const WIKIPEDIA_ARTICLES: Record<string, string> = {
   'Keshav Prasad Maurya': 'Keshav_Prasad_Maurya',
   'Brajesh Pathak': 'Brajesh_Pathak',
   'Azam Khan': 'Azam_Khan_(politician)',
+
+  // ── Puducherry ──
+  'N. Rangaswamy': 'N._Rangaswamy',
 };
 
 // ── In-memory caches ─────────────────────────────────────────────────

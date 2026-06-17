@@ -17,8 +17,12 @@
     "clean": "turbo run clean"
   },
   "devDependencies": {
+    "@eslint/js": "^9.17.0",
+    "@cyclonedx/cyclonedx-npm": "^1.19.3",
+    "eslint": "^9.17.0",
     "turbo": "^2.4.0",
-    "typescript": "^5.7.0"
+    "typescript": "^5.7.0",
+    "typescript-eslint": "^8.18.0"
   },
   "engines": {
     "node": ">=20.0.0"
@@ -536,7 +540,7 @@
     "yocto-queue": "^0.1.0"
   },
   "keywords": [],
-  "author": "",
-  "license": "ISC",
+  "author": "KSHETRA",
+  "license": "UNLICENSED",
   "type": "commonjs"
 }

@@ -1,0 +1,22 @@
+# KSHETRA CODEOWNERS
+# These owners are requested for review automatically on matching paths.
+# Replace the placeholder handles with real GitHub usernames/teams.
+
+# Default owner for everything
+*                       @kshetra-maintainers
+
+# Backend API
+/apps/api/              @kshetra-maintainers
+
+# Mobile app
+/apps/mobile/           @kshetra-maintainers
+
+# Shared domain logic — requires extra scrutiny
+/packages/shared/       @kshetra-maintainers
+
+# Data seeds & census — correctness-critical
+/data/                  @kshetra-maintainers
+
+# CI/CD, security and governance — restricted
+/.github/               @kshetra-maintainers
+/supabase/              @kshetra-maintainers

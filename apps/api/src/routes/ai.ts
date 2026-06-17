@@ -1,120 +1,100 @@
 import type { FastifyInstance } from 'fastify';
+import { z } from 'zod';
 import {
   chatWithAI,
   analyzeConstituency,
   analyzeElectionTrends,
   smartSearch,
   summarizeIssues,
-  type ChatMessage,
 } from '../services/ai';
+import { validate } from '../lib/validation';
+
+/** Telangana has 119 assembly constituencies (Phase 1 scope). */
+const TS_MIN_AC = 1;
+const TS_MAX_AC = 119;
+const MIN_SEARCH_QUERY_LENGTH = 3;
+
+const chatBodySchema = z.object({
+  messages: z
+    .array(
+      z.object({
+        role: z.enum(['user', 'assistant', 'system']),
+        content: z.string().min(1),
+      }),
+    )
+    .min(1, 'messages array is required and must not be empty'),
+  constituencyAcNo: z.number().int().min(TS_MIN_AC).max(TS_MAX_AC).optional(),
+});
+
+const acNoParamSchema = z.object({
+  acNo: z.coerce.number().int().min(TS_MIN_AC).max(TS_MAX_AC),
+});
+
+const smartSearchBodySchema = z.object({
+  query: z.string().trim().min(MIN_SEARCH_QUERY_LENGTH, 'query string is required (min 3 characters)'),
+});
+
+const summarizeIssuesBodySchema = z.object({
+  constituencyName: z.string().min(1, 'constituencyName and issues array required'),
+  issues: z.array(z.string()).min(1, 'constituencyName and issues array required'),
+});
 
 export async function aiRoutes(app: FastifyInstance) {
   /** POST /api/v1/ai/chat — conversational AI */
   app.post('/api/v1/ai/chat', async (request, reply) => {
-    const body = request.body as {
-      messages?: ChatMessage[];
-      constituencyAcNo?: number;
-    };
-
-    if (!body.messages || !Array.isArray(body.messages) || body.messages.length === 0) {
-      return reply.status(400).send({
-        error: 'messages array is required and must not be empty',
-      });
+    const parsed = validate(chatBodySchema, request.body);
+    if (!parsed.ok) {
+      return reply.status(400).send({ error: parsed.error });
     }
 
-    try {
-      const response = await chatWithAI({
-        messages: body.messages,
-        constituencyAcNo: body.constituencyAcNo,
-      });
-
-      return { response };
-    } catch (error: any) {
-      app.log.error(error);
-      return reply.status(500).send({
-        error: 'AI service error',
-        message: error.message,
-      });
-    }
+    const response = await chatWithAI({
+      messages: parsed.data.messages,
+      constituencyAcNo: parsed.data.constituencyAcNo,
+    });
+    return { response };
   });
 
   /** GET /api/v1/ai/analyze/constituency/:acNo — quick analysis */
   app.get('/api/v1/ai/analyze/constituency/:acNo', async (request, reply) => {
-    const { acNo } = request.params as { acNo: string };
-    const num = parseInt(acNo, 10);
-
-    if (isNaN(num) || num < 1 || num > 119) {
+    const parsed = validate(acNoParamSchema, request.params);
+    if (!parsed.ok) {
       return reply.status(400).send({ error: 'Invalid AC number' });
     }
 
-    try {
-      const analysis = await analyzeConstituency(num);
-      return { acNo: num, analysis };
-    } catch (error: any) {
-      app.log.error(error);
-      return reply.status(500).send({
-        error: 'AI service error',
-        message: error.message,
-      });
-    }
+    const num = parsed.data.acNo;
+    const analysis = await analyzeConstituency(num);
+    return { acNo: num, analysis };
   });
 
   /** GET /api/v1/ai/analyze/trends — election trends */
-  app.get('/api/v1/ai/analyze/trends', async (_request, reply) => {
-    try {
-      const analysis = await analyzeElectionTrends();
-      return { analysis };
-    } catch (error: any) {
-      app.log.error(error);
-      return reply.status(500).send({
-        error: 'AI service error',
-        message: error.message,
-      });
-    }
+  app.get('/api/v1/ai/analyze/trends', async () => {
+    const analysis = await analyzeElectionTrends();
+    return { analysis };
   });
 
   /** POST /api/v1/ai/smart-search — natural language constituency search */
   app.post('/api/v1/ai/smart-search', async (request, reply) => {
-    const body = request.body as { query?: string };
-
-    if (!body.query || typeof body.query !== 'string' || body.query.trim().length < 3) {
-      return reply.status(400).send({
-        error: 'query string is required (min 3 characters)',
-      });
+    const parsed = validate(smartSearchBodySchema, request.body);
+    if (!parsed.ok) {
+      return reply.status(400).send({ error: parsed.error });
     }
 
-    try {
-      const results = await smartSearch(body.query.trim());
-      return { results };
-    } catch (error: any) {
-      app.log.error(error);
-      return reply.status(500).send({
-        error: 'AI search error',
-        message: error.message,
-      });
-    }
+    const results = await smartSearch(parsed.data.query);
+    return { results };
   });
 
   /** POST /api/v1/ai/summarize-issues — summarize civic issues */
   app.post('/api/v1/ai/summarize-issues', async (request, reply) => {
-    const body = request.body as { constituencyName?: string; issues?: string[] };
-
-    if (!body.constituencyName || !body.issues) {
-      return reply.status(400).send({
-        error: 'constituencyName and issues array required',
-      });
+    const parsed = validate(summarizeIssuesBodySchema, request.body);
+    if (!parsed.ok) {
+      return reply.status(400).send({ error: parsed.error });
     }
 
-    try {
-      const summary = await summarizeIssues(body.constituencyName, body.issues);
-      return { summary };
-    } catch (error: any) {
-      app.log.error(error);
-      return reply.status(500).send({
-        error: 'AI service error',
-        message: error.message,
-      });
-    }
+    const summary = await summarizeIssues(
+      parsed.data.constituencyName,
+      parsed.data.issues,
+    );
+    return { summary };
   });
 
   /** GET /api/v1/ai/status — check if AI is configured */

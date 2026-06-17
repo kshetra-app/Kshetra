@@ -1,0 +1,259 @@
+{{short description|none}}
+{{Featured list}}
+{{Use dmy dates|date=January 2021}}
+{{Use Indian English|date=August 2019}}
+{{Infobox legislature 
+| name           = Sikkim Legislative Assembly
+| native_name    = 
+| legislature    = [[11th Sikkim Assembly]]
+| established    = 1974
+| house_type     = Unicameral
+| term_limits    = 5 years
+| members        = '''32'''
+| session_alt    = Palace of Assembly building, in Gangtok, India
+| voting_system1 = [[First-past-the-post voting|First past the post]]
+| last_election1 = [[2024 Sikkim Legislative Assembly election|April 2024]]
+| next_election1 = [[Next Sikkim Legislative Assembly election|April 2029]]
+| session_room   = Sikkim Assembly Gangtok.jpg
+| session_res    =
+| meeting_place  = Sikkim Legislative Assembly, [[Gangtok]], [[Sikkim]], [[India]]
+| website = [https://sikkim.gov.in/departments/sikkim-legislative-assembly/sikkim-legislative-assembly Homepage]
+}}
+[[File:IN-SK.svg|thumb|Location of Sikkim (highlighted in red) within India|alt=Location of Sikkim within India]]
+
+The [[Sikkim Legislative Assembly]] is the [[unicameral]] legislature of the state of [[Sikkim]], in [[Northeast India]]. The seat of the [[State legislative assemblies of India|Legislative Assembly]] is at [[Gangtok]],<ref name="cpa-sk">{{cite web | title=Parliament-Sikkim Legislative Assembly | publisher=[[Commonwealth Parliamentary Association]] | url=https://www.cpahq.org/directory/sikkim/ | language=en-GB | access-date=2 January 2026}}</ref> the capital of the state. The assembly sits for a term of five years, unless it is dissolved earlier.<ref name=constitution>{{Cite web|url=https://legislative.gov.in/sites/default/files/COI_1.pdf|title=The Constitution of India [As on 9th December, 2020]|website=[[Ministry of Law and Justice (India)#Legislative Department|Legislative Department]]|access-date=30 December 2023 |archive-date=26 November 2021|archive-url=https://web.archive.org/web/20211126153125/https://legislative.gov.in/sites/default/files/COI_1.pdf|url-status=dead}}</ref>{{Rp|page=72}}<ref name="Tenure">{{cite web | title=Data, Charts and Analysis | website=The Mirrority | date=1 January 2009 | url=https://www.themirrority.com/data/sikkim-pradesh-assembly | access-date=30 January 2025 | archive-date=5 November 2024 | archive-url=https://web.archive.org/web/20241105155842/https://www.themirrority.com/data/sikkim-pradesh-assembly | url-status=live }}</ref> Sikkim is the [[List of states and union territories of India by area|second-smallest state]] in India, covering {{Convert|7096|km2|sqmi|abbr=on}};<ref name="g484">{{cite web | title=TABLE 2.1- Area and population by States (Census-2011) | publisher=[[Ministry of Statistics and Programme Implementation]] | url=http://mospi.nic.in/mospi_new/upload/SYB2013/CH-2POPULATION/Table%202.1.xls | archive-url=https://web.archive.org/web/20131116020015/http://mospi.nic.in/mospi_new/upload/SYB2013/CH-2-POPULATION/Table%202.1.xls | archive-date=16 November 2013 | url-status=dead | access-date=29 December 2025}}</ref> which accounts for 0.2 per cent of the total area of [[India]].<ref name="area">{{cite web | title=About Sikkim | website=Sikkim Tourism | url=https://sikkimtourism.gov.in/Public/ExperienceSikkim/history | language=rw | access-date=5 February 2025 | archive-date=24 August 2023 | archive-url=https://web.archive.org/web/20230824195126/https://sikkimtourism.gov.in/Public/ExperienceSikkim/history | url-status=live }}</ref> The current population of Sikkim is 6.32 lakhs (630,000), making it the least populous state in India.<ref>{{cite web |title=Population and decadal change by residence : 2011 (Persons) |url=http://www.censusindia.gov.in/2011census/PCA/PCA_Highlights/pca_highlights_file/India/Chapter-1.pdf |publisher=Office of the Registrar General & Census Commissioner, India |access-date=2019-01-15 |archive-date=2016-06-24 |archive-url=https://web.archive.org/web/20160624015117/http://www.censusindia.gov.in/2011census/PCA/PCA_Highlights/pca_highlights_file/India/Chapter-1.pdf |url-status=dead }}</ref>{{rp|p=2}}<ref name="Population">{{cite web | title=Government of Sikkim, India | website=Government of Sikkim, India | date=16 May 1975 | url=https://sikkim.gov.in/departments/sikkim-information-commission | access-date=30 January 2025 | archive-date=15 January 2025 | archive-url=https://web.archive.org/web/20250115005522/https://sikkim.gov.in/departments/sikkim-information-commission | url-status=live }}</ref> Established in 1975, the Sikkim Legislative Assembly consists of 32 members [[direct elections|elected directly]]<ref name=constitution/>{{rp|at=Ch. III, Art. 170, Sect. 1}} from [[Single-member district|single-seat]] constituencies<ref name="cpa-sk"/> using the [[first-past-the-post]] system.<ref name="Establishment">{{cite web | title=Address To The Members Of The Sikkim Legislative Assembly, Gangtok | website=President of India | url=https://presidentofindia.nic.in/dr-apj-abdul-kalam/speeches/address-members-sikkim-legislative-assembly-gangtok | access-date=30 January 2025}}</ref>
+
+Since the independence of India, the [[Scheduled Tribes]] (ST) and the [[Scheduled Castes]] (SC) and have been given [[reservation in India|reservation status]], guaranteeing political representation, and the Constitution lays down the general principles of [[positive discrimination]] for SCs and STs.<ref name=constitution>{{Cite web|url=https://legislative.gov.in/sites/default/files/COI_1.pdf|title=The Constitution of India [As on 9th December, 2020]|website=[[Ministry of Law and Justice (India)#Legislative Department|Legislative Department]]|access-date=30 December 2023 |archive-date=26 November 2021|archive-url=https://web.archive.org/web/20211126153125/https://legislative.gov.in/sites/default/files/COI_1.pdf|url-status=dead}}</ref>{{Rp|pages=35,137}}<ref>{{Cite web|url=https://www.newindianexpress.com/states/karnataka/2020/feb/17/reserved-uncertainty-or-deserved-certainty-reservation-debate-back-in-mysuru-2104413.html|title=Reserved uncertainty or deserved certainty? Reservation debate back in Mysuru |website=[[The New Indian Express]] |date=17 February 2020|first=K Shiva|last=Kumar|access-date=29 November 2021|archive-date=21 November 2021|archive-url=https://web.archive.org/web/20211121184123/https://www.newindianexpress.com/states/karnataka/2020/feb/17/reserved-uncertainty-or-deserved-certainty-reservation-debate-back-in-mysuru-2104413.html|url-status=live}}</ref> In Sikkim, the Scheduled Tribes primarily include the [[Bhutia]], [[Lepcha people|Lepcha]], [[Limboo]] and [[Tamang people|Tamang]] communities. Twelve constituencies are reserved for the Scheduled Tribes.<ref name="ST Seats">{{cite web | title=Allocation of Seats and Delimitation of Constituencies | url=https://www.indiacode.nic.in/bitstream/123456789/1663/5/a1950-43.pdf | access-date=20 March 2025}}</ref><ref name="Bhutia-Lepcha">{{cite web | title=Sikkim CM will convert seats reserved for Bhutia-Lepcha community to SC if re-elected: Chamling | website=[[The Hindu]] | date=13 April 2024 | url=https://www.thehindu.com/elections/sikkim-assembly/sikkim-cm-will-convert-seats-reserved-for-bhutia-lepcha-community-to-sc-if-re-elected-chamling/article68060941.ece | access-date=30 January 2025 | archive-date=8 December 2024 | archive-url=https://web.archive.org/web/20241208194116/https://www.thehindu.com/elections/sikkim-assembly/sikkim-cm-will-convert-seats-reserved-for-bhutia-lepcha-community-to-sc-if-re-elected-chamling/article68060941.ece | url-status=live }}</ref> Among these, reservations are granted only to members of the [[Bhutia-Lepcha]] (BL) community. Despite being recognized as Scheduled Tribes in 2002, no seats have been reserved for the Limboo and Tamang communities in the Sikkim Legislative Assembly. Two constituencies ([[West Pendam Assembly constituency|West Pendam]] and [[Salghari–Zoom Assembly constituency|Salghari–Zoom]]) are reserved for people of the [[Scheduled Castes]]{{efn|In Sikkim, the Scheduled Castes primarily include Damai, Kami, Lohar, Majhi, and Sarki communities}} (SC).<ref name="SC">{{cite web | last=Singh | first=Vijaita | title=More seats for Sikkim Assembly | website=The Hindu | date=23 November 2017 | url=https://www.thehindu.com/news/national/more-seats-for-sikkim-assembly/article20724838.ece | access-date=30 January 2025 | archive-date=11 March 2023 | archive-url=https://web.archive.org/web/20230311122221/https://www.thehindu.com/news/national/more-seats-for-sikkim-assembly/article20724838.ece | url-status=live }}</ref> One constituency ([[Sangha Assembly constituency|Sangha]]) is reserved for registered [[Buddhist]] monks and nuns from the state's [[List of Buddhist monasteries in Sikkim|monasteries]].<ref name="Monk">{{cite web | author=The Hindu Bureau | title=Sangha: A Sikkim Assembly constituency not found in maps | website=[[The Hindu]] | date=28 March 2024 | url=https://www.thehindu.com/elections/sikkim-assembly/sangha-a-sikkim-assembly-constituency-not-found-in-maps/article68001601.ece | access-date=30 January 2025 | archive-date=8 December 2024 | archive-url=https://web.archive.org/web/20241208214859/https://www.thehindu.com/elections/sikkim-assembly/sangha-a-sikkim-assembly-constituency-not-found-in-maps/article68001601.ece | url-status=live }}</ref><ref name="Seat Reservation">{{cite web | title=Seat Reservation In The Legislative Assembly Of Sikkim | website=[[Sikkim Express]] | date=25 December 2024 | url=https://sikkimexpress.com/news-details/seat-reservation-in-the-legislative-assembly-of-sikkim | access-date=30 January 2025}}</ref><ref name=delimitation2008>{{cite web |url=https://upload.indiacode.nic.in/showfile?actid=AC_CEN_3_20_00030_200233_1517807324510&type=order&filename=Delimitation%20Order,2008.pdf |title=Delimitation of Parliamentary and Assembly Constituencies Order, 2008 |date=26 November 2008 |publisher=[[Election Commission of India]] |access-date= 24 June 2021 |archive-url=https://web.archive.org/web/20230718103411/https://upload.indiacode.nic.in/showfile?actid=AC_CEN_3_20_00030_200233_1517807324510&type=order&filename=Delimitation%20Order,2008.pdf |archive-date=18 July 2023 |url-status=live}}</ref>{{rp|6}}
+
+== History ==
+
+The [[State Council (Sikkim)|State Council]] was the legislature of the [[Kingdom of Sikkim]] until its merger with India in 1975. The members of the Council were deemed to be the new Legislative Assembly of the newly formed state.
+
+{| class="sortable wikitable" style="text-align:center"
+|+Changes in the constituencies of the Sikkim Legislative Assembly over time
+!scope=col rowspan=2|Year
+!scope=col rowspan=2|Event
+!scope=col rowspan=2|Explanation
+!scope=col rowspan=2|Total seats
+!scope=colgroup colspan=3|Reserved seats
+!scope=col rowspan=2|Elections
+|-
+!scope="col" |[[Bhutia-Lepcha|BL]]
+!scope="col" |[[Scheduled Castes and Scheduled Tribes|SC]] 
+!scope="col" |[[Sangha (Buddhism)|Sangha]]
+|-
+!scope=row|1979
+|[[Annexation of Sikkim]]
+| style="text-align:left"|The Kingdom of Sikkim was merged with India, becoming its 22nd state.
+|32
+|12
+|2
+|1
+|[[1979 Sikkim Legislative Assembly election|1979]],<ref name="1979 Results">{{cite web| title= 1979 General Election to the Legislative Assembly of Sikkim| url= https://ceosikkim.nic.in/UploadedFiles/Report/Statistical%20Report%201979%20Sikkim.pdf| publisher= The Government of Sikkim| access-date= 13 February 2025| archive-date= 14 July 2024| archive-url= https://web.archive.org/web/20240714012850/https://ceosikkim.nic.in/UploadedFiles/Report/Statistical%20Report%201979%20Sikkim.pdf| url-status= live}}</ref> [[1985 Sikkim Legislative Assembly election|1985]],<ref name="1985 Results">{{cite web| title= 1985 sikkim legislative assembly election results| url= https://ceosikkim.nic.in/UploadedFiles/Report/StatisticalReport%201985%20Sikkim.pdf| publisher= The Government of Sikkim| access-date= 13 February 2025| archive-date= 13 July 2024| archive-url= https://web.archive.org/web/20240713161931/https://ceosikkim.nic.in/UploadedFiles/Report/StatisticalReport%201985%20Sikkim.pdf| url-status= live}}</ref> [[1989 Sikkim Legislative Assembly election|1989]],<ref name="k520">{{cite web| title= 1989 sikkim legislative assembly election results| url= https://ceosikkim.nic.in/UploadedFiles/Report/StatREp_SK_89.pdf| publisher= The Government of Sikkim| access-date= 13 February 2025| archive-date= 12 July 2024| archive-url= https://web.archive.org/web/20240712063549/https://ceosikkim.nic.in/UploadedFiles/Report/StatREp_SK_89.pdf| url-status= live}}</ref> [[1994 Sikkim Legislative Assembly election|1994]],<ref name="f629">{{cite web | title= 1994 sikkim legislative assembly election results| url=https://ceosikkim.nic.in/UploadedFiles/Report/StatisticalReport-SK94.pdf |publisher=The Government of Sikkim | access-date=13 February 2025}}</ref> [[1999 Sikkim Legislative Assembly election|1999]],<ref name="u772">{{cite web | title= 1999 sikkim legislative assembly election results| url=https://ceosikkim.nic.in/UploadedFiles/Report/StatisticalReport-SK99.pdf |publisher=The Government of Sikkim | access-date=13 February 2025}}</ref> [[2004 Sikkim Legislative Assembly election|2004]]<ref name="a650">{{cite web | title=Sikkim Assembly Election Results in 2004 | website=Elections in India | date=5 May 2019 | url=https://www.elections.in/sikkim/assembly-constituencies/2004-election-results.html | publisher=The Government of Sikkim | access-date=13 February 2025 | archive-date=13 February 2025 | archive-url=https://web.archive.org/web/20250213150934/https://www.elections.in/sikkim/assembly-constituencies/2004-election-results.html | url-status=live }}</ref>
+|-
+!scope=row|2008
+|Delimitation Commission Order, 2008<ref name=delimitation2008/>
+|style="text-align:left"|There was a redrawing of the constituency map without a change in the number of constituencies
+|32
+|12
+|2
+|1
+|[[2009 Sikkim Legislative Assembly election|2009]],<ref name="2009 Assembly">{{cite web | title= 2009 sikkim legislative assembly election results| url=https://ceosikkim.nic.in/UploadedFiles/Report/Stats_SK_April2009.pdf | access-date=13 February 2025|publisher=Election Commission of India}}</ref> [[2014 Sikkim Legislative Assembly election|2014]],<ref name="2014 Assembly">{{cite web | title=Vital Stats | website=PRS Legislative Research | date=13 February 2025 | url=https://prsindia.org/legislatures/state/vital-stats/profile-10th-sikkim-legislative-assembly | access-date=13 February 2025}}</ref> [[2019 Sikkim Legislative Assembly election|2019]], [[2024 Sikkim Legislative Assembly election|2024]]<ref name="2024 Assembly">{{cite web | title=Vital Stats | website=PRS Legislative Research | date=13 February 2025 | url=https://prsindia.org/legislatures/state/vital-stats/profile-of-the-11th-sikkim-legislative-assembly | access-date=13 February 2025}}</ref>
+|}
+
+== Constituencies ==
+
+[[File:Vidhan Sabha constituencies in Sikkim Boundary Map.svg|thumb|upright=1.4|Constituencies of the [[Sikkim Legislative Assembly]]|alt=Map showing the constituencies of the of Sikkim]]
+
+Since its [[1975 Sikkimese monarchy referendum|integration with India]] in 1979, the total number of seats in the assembly has been 32, including 1 seat reserved for the [[Sangha (Buddhism)|Sangha]].<ref>{{Cite web |title=List of constituencies |url=https://ceosikkim.nic.in/Home/ElectionLinkDesc?EID=2 |access-date=2023-02-17 |publisher=Office of the Chief Electoral Officer, Sikkim |archive-date=6 January 2022 |archive-url=https://web.archive.org/web/20220106054541/https://ceosikkim.nic.in/Home/ElectionLinkDesc?EID=2 |url-status=live }}</ref>
+
+{{legend table|width=auto|title=Reservation
+|#a3edf4|[[Bhutia-Lepcha]] (BL)
+|#ffee6f|[[Scheduled Castes and Scheduled Tribes#SC definition|Scheduled Castes]] (SC)
+|#F4C430|Buddhist monks and nuns
+}}
+
+{{table alignment}}
+{| class="sortable wikitable col-1right" style="text-align:center"
+|+Constituencies of the Sikkim Legislative Assembly
+!scope="col"|#
+!scope="col"|Constituency<br />name
+!scope="col"|Reserved for<br/>([[Scheduled Castes|SC]]/[[Bhutia-Lepcha|BL]]/None)<ref name="Reserved">{{cite web | title=Sikkim CM will convert seats reserved for Bhutia-Lepcha community to SC if re-elected: Chamling | website=[[The Hindu]] | date=13 April 2024 | url=https://www.thehindu.com/elections/sikkim-assembly/sikkim-cm-will-convert-seats-reserved-for-bhutia-lepcha-community-to-sc-if-re-elected-chamling/article68060941.ece | access-date=5 February 2025 | archive-date=8 December 2024 | archive-url=https://web.archive.org/web/20241208194116/https://www.thehindu.com/elections/sikkim-assembly/sikkim-cm-will-convert-seats-reserved-for-bhutia-lepcha-community-to-sc-if-re-elected-chamling/article68060941.ece | url-status=live }}</ref>
+!scope="col"| [[List of districts of Sikkim|District]]<ref>{{Cite web |date=2021-12-22 |title=Sikkim gets two new districts, remaining four renamed |url=http://nenow.in/north-east-news/sikkim/sikkim-new-districts-four-renamed.html |access-date=2023-02-17 |website=Northeast Now |language=en-US |archive-date=17 February 2023 |archive-url=https://web.archive.org/web/20230217111838/https://nenow.in/north-east-news/sikkim/sikkim-new-districts-four-renamed.html |url-status=live }}</ref>
+!scope="col"|[[Lok Sabha]]<br/>constituency
+!scope="col"|Electors<br/>(2024){{efn|<ref>{{cite web|title=Form 20 {{!}} Gyalshing district|publisher=Office of The Chief Electoral Officer, Sikkim |url=https://ceosikkim.nic.in/UploadedFiles/Form20Assembly/Gyalshing%20District%20merged.pdf|access-date=12 September 2024|archive-url=https://web.archive.org/web/20240912010059/https://ceosikkim.nic.in/UploadedFiles/Form20Assembly/Gyalshing%20District%20merged.pdf|archive-date=12 September 2024|website=ceosikkim.nic.in}}</ref><ref>{{cite web|title=Form 20 {{!}} Soreng district|publisher=Office of The Chief Electoral Officer, Sikkim |url=https://ceosikkim.nic.in/UploadedFiles/Form20Assembly/Soreng%20Form20%20Merged.pdf|access-date=12 September 2024|archive-url=https://web.archive.org/web/20240912012352/https://ceosikkim.nic.in/UploadedFiles/Form20Assembly/Soreng%20Form20%20Merged.pdf|archive-date=12 September 2024|website=ceosikkim.nic.in}}</ref><ref>{{cite web|title=Form 20 {{!}} Namchi district|publisher=Office of The Chief Electoral Officer, Sikkim |url=https://ceosikkim.nic.in/UploadedFiles/Form20Assembly/Namchi%20Merged%20Form20.pdf|access-date=12 September 2024|archive-url=https://web.archive.org/web/20240912012449/https://ceosikkim.nic.in/UploadedFiles/Form20Assembly/Namchi%20Merged%20Form20.pdf|archive-date=12 September 2024|website=ceosikkim.nic.in}}</ref><ref>{{cite web|title=Form 20 {{!}} Gangtok district|publisher=Office of The Chief Electoral Officer, Sikkim |url=https://ceosikkim.nic.in/UploadedFiles/Form20Assembly/Gangtok%20Merged%20Form20.pdf|access-date=12 September 2024|archive-url=https://web.archive.org/web/20240912012452/https://ceosikkim.nic.in/UploadedFiles/Form20Assembly/Gangtok%20Merged%20Form20.pdf|archive-date=12 September 2024|website=ceosikkim.nic.in}}</ref><ref>{{cite web|title=Form 20 {{!}} Pakyong district|publisher=Office of The Chief Electoral Officer, Sikkim |url=https://ceosikkim.nic.in/UploadedFiles/Form20Assembly/Pakyong%20District%20Form20%20merged.pdf|access-date=12 September 2024|archive-url=https://web.archive.org/web/20240912012457/https://ceosikkim.nic.in/UploadedFiles/Form20Assembly/Pakyong%20District%20Form20%20merged.pdf|archive-date=12 September 2024|website=ceosikkim.nic.in}}</ref><ref>{{cite web|title=Form 20 {{!}} Mangan district|publisher=Office of The Chief Electoral Officer, Sikkim |url=https://ceosikkim.nic.in/UploadedFiles/Form20Assembly/Mangan%20merged%20Form20.pdf|access-date=12 September 2024|archive-url=https://web.archive.org/web/20240912012627/https://ceosikkim.nic.in/UploadedFiles/Form20Assembly/Mangan%20merged%20Form20.pdf|archive-date=12 September 2024|website=ceosikkim.nic.in}}</ref>}}
+|-
+| 1
+! scope="row" | [[Yoksam–Tashiding Assembly constituency|Yoksam–Tashiding]]
+| style="background:#a3edf4;" | BL
+| rowspan=4 | [[Gyalshing district|Gyalshing]]
+|rowspan=32 | [[Sikkim Lok Sabha constituency|Sikkim]]
+| {{formatnum:15524}} 
+|-
+| 2
+! scope="row" | [[Yangthang Assembly constituency|Yangthang]]
+| rowspan="3" | None
+| {{formatnum:14121}} 
+|-
+| 3
+! scope="row" | [[Maneybong–Dentam Assembly constituency|Maneybong–Dentam]]
+| {{formatnum:16403}} 
+|-
+| 4
+! scope="row" | [[Gyalshing–Barnyak Assembly constituency|Gyalshing–Barnyak]]
+| {{formatnum:13683}} 
+|-
+| 5
+! scope="row" | [[Rinchenpong Assembly constituency|Rinchenpong]]
+| rowspan="2" style="background:#a3edf4;" | BL 
+| rowspan=4 |[[Soreng district|Soreng]]<ref>{{Cite web |date=22 June 2021 |title=Soreng district status will cater to growing population, administrative needs of four constituencies: Aditya |url=http://www.sikkimexpress.com/news-details/soreng-district-status-will-cater-to-growing-population-administrative-needs-of-four-constituencies-aditya |access-date=2023-02-17 |website=[[Sikkim Express]] |language=en |archive-date=17 February 2023 |archive-url=https://web.archive.org/web/20230217112104/http://www.sikkimexpress.com/news-details/soreng-district-status-will-cater-to-growing-population-administrative-needs-of-four-constituencies-aditya |url-status=live }}</ref>
+| {{formatnum:16024}} 
+|-
+| 6
+! scope="row" | [[Daramdin Assembly constituency|Daramdin]]
+| {{formatnum:16404}} 
+|-
+| 7
+! scope="row" | [[Soreng–Chakung Assembly constituency|Soreng–Chakung]]
+| None
+| {{formatnum:16740}} 
+|-
+| 8
+! scope="row" | [[Salghari–Zoom Assembly constituency|Salghari–Zoom]]
+| style="background:#ffee6f;" | SC
+| {{formatnum:11694}} 
+|-
+| 9
+! scope="row" | [[Barfung Assembly constituency|Barfung]]
+| style="background:#a3edf4;" | BL
+| rowspan=8 | [[Namchi district|Namchi]]
+| {{formatnum:15980}} 
+|-
+| 10
+! scope="row" | [[Poklok–Kamrang Assembly constituency|Poklok–Kamrang]]
+| rowspan="6" | None
+| {{formatnum:16870}} 
+|-
+| 11
+! scope="row" | [[Namchi–Singhithang Assembly constituency|Namchi–Singhithang]]
+| {{formatnum:13251}} 
+|-
+| 12
+! scope="row" | [[Melli Assembly constituency|Melli]]
+| {{formatnum:16029}} 
+|-
+| 13
+! scope="row" | [[Namthang–Rateypani Assembly constituency|Namthang–Rateypani]]
+| {{formatnum:16455}} 
+|-
+| 14
+! scope="row" | [[Temi–Namphing Assembly constituency|Temi–Namphing]]
+| {{formatnum:15465}} 
+|-
+| 15
+! scope="row" | [[Rangang–Yangang Assembly constituency|Rangang–Yangang]]
+| {{formatnum:15261}} 
+|-
+| 16
+! scope="row" | [[Tumin–Lingee Assembly constituency|Tumin–Lingee]]
+| style="background:#a3edf4;" | BL
+| {{formatnum:16767}} 
+|-
+| 17
+! scope="row" | [[Khamdong–Singtam Assembly constituency|Khamdong–Singtam]]
+| None
+| [[Gangtok district|Gangtok]]
+| {{formatnum:14428}} 
+|-
+| 18
+! scope="row" | [[West Pendam Assembly constituency|West Pendam]]
+| style="background:#ffee6f;" | SC
+| rowspan=5 | [[Pakyong district|Pakyong]]<ref>{{cite web |url=https://www.eastmojo.com/sikkim/2021/06/21/3-sub-divisions-of-east-sikkim-to-form-sikkims-newest-district-pakyong/ |title=3 sub-divisions of East Sikkim to form Sikkim's newest district Pakyong |date=21 June 2021 |author=Pankaj Dhungel |work=East Mojo |access-date=20 September 2021 |archive-date=11 December 2023 |archive-url=https://web.archive.org/web/20231211204423/https://www.eastmojo.com/sikkim/2021/06/21/3-sub-divisions-of-east-sikkim-to-form-sikkims-newest-district-pakyong/ |url-status=live }}</ref>
+| {{formatnum:15880}} 
+|-
+| 19
+! scope="row" | [[Rhenock Assembly constituency|Rhenock]]
+| rowspan="2" | None
+| {{formatnum:18356}} 
+|-
+| 20
+! scope="row" | [[Chujachen Assembly constituency|Chujachen]]
+| {{formatnum:18749}} 
+|-
+| 21
+! scope="row" | [[Gnathang–Machong Assembly constituency|Gnathang–Machong]]
+| style="background:#a3edf4;" | BL
+| {{formatnum:12965}} 
+|-
+| 22
+! scope="row" | [[Namchaybong Assembly constituency|Namchaybong]]
+| None
+| {{formatnum:16397}} 
+|-
+| 23
+! scope="row" | [[Shyari Assembly constituency|Shyari]]
+| rowspan="2" style="background:#a3edf4;" | BL
+| rowspan=6 | [[Gangtok district|Gangtok]]
+| {{formatnum:16196}} 
+|-
+| 24
+! scope="row" | [[Martam–Rumtek Assembly constituency|Martam–Rumtek]]
+| {{formatnum:17844}} 
+|-
+| 25
+! scope="row" | [[Upper Tadong Assembly constituency|Upper Tadong]]
+| rowspan="2" | None
+| {{formatnum:12228}} 
+|-
+| 26
+! scope="row" | [[Arithang Assembly constituency|Arithang]]
+| {{formatnum:12602}} 
+|-
+| 27
+! scope="row" | [[Gangtok Assembly constituency|Gangtok]]
+| style="background:#a3edf4;" | BL
+| {{formatnum:11881}} 
+|-
+| 28
+! scope="row" | [[Upper Burtuk Assembly constituency|Upper Burtuk]]
+| None
+| {{formatnum:16236}} 
+|-
+| 29
+! scope="row" | [[Kabi–Lungchok Assembly constituency|Kabi–Lungchok]]
+| rowspan="3" style="background:#a3edf4;" | BL
+| rowspan=3 | [[Mangan district|Mangan]]
+| {{formatnum:13209}} 
+|-
+| 30
+! scope="row" | [[Djongu Assembly constituency|Djongu]]
+| {{formatnum:10523}} 
+|-
+| 31
+! scope="row" | [[Lachen–Mangan Assembly constituency|Lachen–Mangan]]
+| {{formatnum:8404}} 
+|-
+| 32
+! scope="row" | [[Sangha Assembly constituency|Sangha]]
+| style="background:#F4C430;" | [[Sangha (Buddhism)|Sangha]]<ref name="sangha">{{cite web |url=https://www.thehindu.com/elections/sikkim-assembly/32-sangha-constituency-sikkims-intangible-seat-where-only-monks-contest-and-vote/article26725831.ece |title=32-Sangha constituency: Sikkim's intangible seat, where only monks contest and vote |newspaper=The Hindu |author=Shiv Sahay Singh |date=4 April 2019 |access-date=3 January 2021 |archive-date=26 February 2021 |archive-url=https://web.archive.org/web/20210226033344/https://www.thehindu.com/elections/sikkim-assembly/32-sangha-constituency-sikkims-intangible-seat-where-only-monks-contest-and-vote/article26725831.ece |url-status=live }}</ref>
+| [[List of Buddhist monasteries in Sikkim|Buddhist Monasteries]]
+| {{formatnum:4074}} 
+|}
+
+== See also ==
+* [[Sikkim Legislative Assembly]]
+* [[List of chief ministers of Sikkim]]
+* [[State legislative assemblies of India]]
+
+== Notes ==
+{{notelist}}
+
+== References ==
+
+{{reflist}}
+
+{{Assembly constituencies of Sikkim}}
+
+[[Category:Assembly constituencies of Sikkim| ]]
+[[Category:Lists of constituencies of legislative assemblies of Indian states|Sikkim]]
+[[Category:Sikkim-related lists|Constituencies]]

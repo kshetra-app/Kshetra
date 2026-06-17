@@ -1,5 +1,6 @@
 import { TELANGANA_CONSTITUENCIES, type ConstituencySeed, TELANGANA_DEMOGRAPHICS, type ConstituencyDemographics } from '@/lib/data';
 import { getUnifiedConstituenciesForState, type UnifiedConstituency } from './stateDataAdapter';
+import { getDemographicsForState } from './stateDataDispatcher';
 
 /** Lookup map from AC_NO to seed data for O(1) access */
 const seedByAcNo = new Map<number, ConstituencySeed>(
@@ -82,6 +83,28 @@ const NAME_ALIASES: Record<string, string> = {
   // Assam (GeoJSON splits combined constituency)
   'chabua': 'chabualahowal',
   'lahowal': 'chabualahowal',
+  // Andhra Pradesh: GeoJSON uses older/variant spellings vs the official
+  // ECI constituency names in the seed. (geojsonName → officialSeedName)
+  'anakapalli': 'anakapalle',
+  'yelamanchili': 'elamanchili',
+  'payakaraopeta': 'payakaraopet',
+  'nidadavolu': 'nidadavole',
+  'palacole': 'palakollu',
+  'narsapuram': 'narasapuram',
+  'gurazala': 'gurajala',
+  'sattenapalli': 'sattenapalle',
+  'satyavedu': 'sathyavedu',
+  'pulivendula': 'pulivendla',
+  'rayachoty': 'rayachoti',
+  'patikonda': 'pattikonda',
+  'parchur pr': 'parchur',
+  'jaggaiahpeta': 'jaggayyapeta',
+  'ponnur': 'ponnuru',
+  'emmiganur': 'yemmiganur',
+  'tadpatri': 'tadipatri',
+  'gannavaram': 'gannavaram krishna',
+  'gannavaram eg': 'gannavaram konaseema',
+  'prathipadu': 'prathipadu kakinada',
 };
 
 /**
@@ -137,6 +160,12 @@ export function enrichGeoJSONForState(
       // Use seed's acNo if matched (corrects the AC_NO for tap handlers)
       const resolvedAcNo = c ? c.acNo : geoAcNo;
 
+      // Merge demographics so the map's Data overlays (population / literacy /
+      // turnout) render for every state, not just Telangana. Missing data
+      // falls back to 0 (renders at the low end of the heatmap scale).
+      const demo =
+        resolvedAcNo != null ? getDemographicsForState(stateCode, resolvedAcNo) : undefined;
+
       return {
         ...feature,
         properties: {
@@ -149,11 +178,11 @@ export function enrichGeoJSONForState(
           RESERVATION: c?.type ?? 'GEN',
           MARGIN: c?.margin ?? 0,
           DISTRICT: c?.district ?? feature.properties?.DIST_NAME ?? '',
-          POPULATION: 0,
-          LITERACY: 0,
-          TURNOUT: 0,
-          URBAN_PCT: 0,
-          TOTAL_VOTERS: 0,
+          POPULATION: demo?.population ?? 0,
+          LITERACY: demo?.literacy ?? 0,
+          TURNOUT: demo?.turnout2023 ?? 0,
+          URBAN_PCT: demo?.urbanPercent ?? 0,
+          TOTAL_VOTERS: demo?.totalVoters ?? 0,
         },
       };
     }),

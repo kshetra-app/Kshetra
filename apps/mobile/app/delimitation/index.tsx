@@ -5,11 +5,13 @@ import {
   StyleSheet,
   ScrollView,
   Pressable,
-  SafeAreaView,
   StatusBar,
+  useWindowDimensions,
 } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
+import { useTranslation } from 'react-i18next';
 import { useDelimitationStore } from '../../stores/delimitation';
 import DelimitationTimeline from '../../components/DelimitationTimeline';
 import SeatProjectionCard from '../../components/SeatProjectionCard';
@@ -18,15 +20,18 @@ import { DELIMITATION_STATUS_CONFIG } from '../../lib/delimitationTypes';
 import type { SeatAllocation, DelimitationEvent } from '../../lib/delimitationTypes';
 
 type TabKey = 'overview' | 'projections' | 'timeline' | 'impact';
-const TABS: { key: TabKey; label: string; icon: string }[] = [
-  { key: 'overview', label: 'Overview', icon: 'home' },
-  { key: 'projections', label: 'Projections', icon: 'bar-chart' },
-  { key: 'timeline', label: 'Timeline', icon: 'time' },
-  { key: 'impact', label: 'Impact', icon: 'flash' },
+const TABS: { key: TabKey; i18nKey: string; icon: string }[] = [
+  { key: 'overview', i18nKey: 'delimitation.overview', icon: 'home' },
+  { key: 'projections', i18nKey: 'delimitation.projections', icon: 'bar-chart' },
+  { key: 'timeline', i18nKey: 'delimitation.timeline', icon: 'time' },
+  { key: 'impact', i18nKey: 'delimitation.impact', icon: 'flash' },
 ];
 
 export default function DelimitationHub() {
   const router = useRouter();
+  const { t } = useTranslation();
+  const insets = useSafeAreaInsets();
+  const { width: screenWidth } = useWindowDimensions();
   const [activeTab, setActiveTab] = useState<TabKey>('overview');
   const { nationalStatus, events, setSeatAllocations, seatAllocations } = useDelimitationStore();
 
@@ -57,7 +62,7 @@ export default function DelimitationHub() {
         <View style={styles.statusHeader}>
           <Ionicons name={statusConfig.icon as any} size={24} color={statusConfig.color} />
           <View style={{ marginLeft: 10, flex: 1 }}>
-            <Text style={styles.statusLabel}>National Status</Text>
+            <Text style={styles.statusLabel}>{t('delimitation.overview')}</Text>
             <Text style={[styles.statusValue, { color: statusConfig.color }]}>
               {statusConfig.label}
             </Text>
@@ -87,7 +92,7 @@ export default function DelimitationHub() {
         <View style={styles.statCard}>
           <Ionicons name="bar-chart" size={20} color="#4F8EF7" />
           <Text style={styles.statValue}>{seatAllocations.length}</Text>
-          <Text style={styles.statLabel}>States Analyzed</Text>
+          <Text style={styles.statLabel}>{t('delimitation.projections')}</Text>
         </View>
         <View style={styles.statCard}>
           <Ionicons name="time" size={20} color="#F59E0B" />
@@ -107,12 +112,12 @@ export default function DelimitationHub() {
       </View>
 
       {/* Biggest gainers/losers */}
-      <Text style={styles.sectionTitle}>Biggest Gainers</Text>
+      <Text style={styles.sectionTitle}>{t('delimitation.gainers')}</Text>
       {gainers.slice(0, 3).map((a) => (
         <SeatProjectionCard key={a.stateCode} allocation={a} compact />
       ))}
 
-      <Text style={styles.sectionTitle}>Smallest Gainers</Text>
+      <Text style={styles.sectionTitle}>{t('delimitation.noChange')}</Text>
       {[...seatAllocations]
         .filter((a) => a.seatChange >= 0)
         .sort((a, b) => a.seatChange - b.seatChange)
@@ -130,8 +135,7 @@ export default function DelimitationHub() {
       <View style={styles.disclaimer}>
         <Ionicons name="information-circle" size={14} color="#F59E0B" />
         <Text style={styles.disclaimerText}>
-          *Projections based on Census 2011 data. Actual delimitation will use Census 2026 data
-          and may follow different methodology. These are simulations, not predictions.
+          {t('delimitation.disclaimer')}
         </Text>
       </View>
     </View>
@@ -139,7 +143,7 @@ export default function DelimitationHub() {
 
   const renderProjections = () => (
     <View>
-      <Text style={styles.sectionTitle}>Seat Projections by State</Text>
+      <Text style={styles.sectionTitle}>{t('delimitation.projections')}</Text>
       <Text style={styles.sectionSubtitle}>
         Based on equal-population principle using Census 2011 data
       </Text>
@@ -149,12 +153,12 @@ export default function DelimitationHub() {
         <View style={styles.projSumCard}>
           <Ionicons name="arrow-up" size={16} color="#10B981" />
           <Text style={[styles.projSumValue, { color: '#10B981' }]}>+{summary.totalGained}</Text>
-          <Text style={styles.projSumLabel}>Total Gained</Text>
+          <Text style={styles.projSumLabel}>{t('delimitation.gainers')}</Text>
         </View>
         <View style={styles.projSumCard}>
           <Ionicons name="arrow-down" size={16} color="#EF4444" />
           <Text style={[styles.projSumValue, { color: '#EF4444' }]}>{summary.totalLost}</Text>
-          <Text style={styles.projSumLabel}>Total Lost</Text>
+          <Text style={styles.projSumLabel}>{t('delimitation.losers')}</Text>
         </View>
       </View>
 
@@ -247,16 +251,16 @@ export default function DelimitationHub() {
   );
 
   return (
-    <SafeAreaView style={styles.safe}>
-      <StatusBar barStyle="light-content" />
+    <View style={styles.safe}>
+      <StatusBar barStyle="light-content" translucent backgroundColor="transparent" />
 
       {/* Header */}
-      <View style={styles.header}>
+      <View style={[styles.header, { paddingTop: insets.top + 8 }]}>
         <Pressable onPress={() => router.back()} style={styles.backBtn}>
           <Ionicons name="arrow-back" size={22} color="#FFFFFF" />
         </Pressable>
         <View>
-          <Text style={styles.headerTitle}>Delimitation Hub</Text>
+          <Text style={styles.headerTitle}>{t('delimitation.hubTitle')}</Text>
           <Text style={styles.headerSubtitle}>India's Constituency Redraw Tracker</Text>
         </View>
         <View style={[styles.liveBadge, { backgroundColor: statusConfig.color + '20' }]}>
@@ -281,7 +285,7 @@ export default function DelimitationHub() {
               color={activeTab === tab.key ? '#4F8EF7' : '#6B7280'}
             />
             <Text style={[styles.tabLabel, activeTab === tab.key && styles.tabLabelActive]}>
-              {tab.label}
+              {t(tab.i18nKey)}
             </Text>
           </Pressable>
         ))}
@@ -298,7 +302,7 @@ export default function DelimitationHub() {
         {activeTab === 'timeline' && renderTimeline()}
         {activeTab === 'impact' && renderImpact()}
       </ScrollView>
-    </SafeAreaView>
+    </View>
   );
 }
 
@@ -382,8 +386,9 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   scrollContent: {
-    padding: 16,
-    paddingBottom: 40,
+    paddingHorizontal: 16,
+    paddingTop: 16,
+    paddingBottom: 60,
   },
   // ─── Status card ───
   statusCard: {
@@ -423,8 +428,9 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     padding: 12,
     alignItems: 'center',
-    width: '48%',
+    flexBasis: '47%',
     flexGrow: 1,
+    flexShrink: 1,
   },
   statValue: {
     fontSize: 22,

@@ -5,6 +5,7 @@ import {
   StyleSheet,
   Pressable,
   Modal,
+  ScrollView,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useTranslation } from 'react-i18next';
@@ -48,26 +49,32 @@ export default function LanguageSwitcher() {
               <Text style={styles.sheetTitle}>{t('language.title')}</Text>
               <Text style={styles.sheetSubtitle}>{t('language.subtitle')}</Text>
 
-              {LANGUAGES.map((lang) => {
-                const isActive = lang.code === current;
-                return (
-                  <Pressable
-                    key={lang.code}
-                    style={[styles.langRow, isActive && styles.langRowActive]}
-                    onPress={() => handleSelect(lang.code)}
-                  >
-                    <View style={styles.langInfo}>
-                      <Text style={[styles.langNative, isActive && styles.langNativeActive]}>
-                        {lang.nativeLabel}
-                      </Text>
-                      <Text style={styles.langEnglish}>{lang.label}</Text>
-                    </View>
-                    {isActive && (
-                      <Ionicons name="checkmark-circle" size={22} color="#4F8EF7" />
-                    )}
-                  </Pressable>
-                );
-              })}
+              <ScrollView
+                style={styles.langList}
+                showsVerticalScrollIndicator={true}
+                bounces={false}
+              >
+                {LANGUAGES.map((lang) => {
+                  const isActive = lang.code === current;
+                  return (
+                    <Pressable
+                      key={lang.code}
+                      style={[styles.langRow, isActive && styles.langRowActive]}
+                      onPress={() => handleSelect(lang.code)}
+                    >
+                      <View style={styles.langInfo}>
+                        <Text style={[styles.langNative, isActive && styles.langNativeActive]}>
+                          {lang.nativeLabel}
+                        </Text>
+                        <Text style={styles.langEnglish}>{lang.label}</Text>
+                      </View>
+                      {isActive && (
+                        <Ionicons name="checkmark-circle" size={22} color="#4F8EF7" />
+                      )}
+                    </Pressable>
+                  );
+                })}
+              </ScrollView>
             </View>
           </Pressable>
         </Modal>
@@ -104,6 +111,11 @@ const styles = StyleSheet.create({
     padding: 24,
     width: '100%',
     maxWidth: 340,
+    maxHeight: '80%',
+  },
+  langList: {
+    maxHeight: 400,
+    flexGrow: 0,
   },
   sheetTitle: {
     fontSize: 20,

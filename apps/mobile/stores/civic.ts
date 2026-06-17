@@ -11,6 +11,9 @@ import type {
   CivicScope,
 } from '../lib/civicTypes';
 import { MILESTONE_THRESHOLDS, HEADLINE_PROMOTION_THRESHOLD } from '../lib/civicTypes';
+import * as dataService from '../lib/supabaseDataService';
+import { enqueue } from '../lib/offlineSync';
+import { useAuthStore } from './auth';
 
 // ─── Seed Issues (multi-state, full lifecycle showcase) ───
 
@@ -723,6 +726,7 @@ interface CivicState {
   disputeResolution: (issueId: string, reason?: string) => void;
   updateIssueStatus: (issueId: string, newStatus: IssueStatus, note?: string, changedByName?: string) => void;
   shareIssue: (issueId: string) => string; // returns share text
+  hydrateFromServer: (serverIssues: any[]) => void;
 }
 
 export const useCivicStore = create<CivicState>()((set, get) => ({
@@ -792,38 +796,54 @@ export const useCivicStore = create<CivicState>()((set, get) => ({
 
   // ─── Actions ───
 
-  toggleUpvote: (issueId) =>
+  toggleUpvote: (issueId) => {
+    const issue = get().issues.find((i) => i.id === issueId);
+    const wasUpvoted = issue?.userUpvoted;
     set((state) => ({
       issues: state.issues.map((i) => {
         if (i.id !== issueId) return i;
-        const wasUpvoted = i.userUpvoted;
-        const newCount = i.upvoteCount + (wasUpvoted ? -1 : 1);
         return {
           ...i,
           userUpvoted: !wasUpvoted,
-          upvoteCount: newCount,
+          upvoteCount: i.upvoteCount + (wasUpvoted ? -1 : 1),
         };
       }),
-    })),
+    }));
+    const userId = useAuthStore.getState().user?.id;
+    if (userId) {
+      if (wasUpvoted) {
+        dataService.removeUpvote(issueId, userId);
+      } else {
+        enqueue('upvote_issue', { issueId, userId });
+      }
+    }
+  },
 
-  toggleFollow: (issueId) =>
+  toggleFollow: (issueId) => {
+    const issue = get().issues.find((i) => i.id === issueId);
+    const wasFollowing = issue?.userFollowing;
     set((state) => ({
       issues: state.issues.map((i) => {
         if (i.id !== issueId) return i;
-        const wasFollowing = i.userFollowing;
         return {
           ...i,
           userFollowing: !wasFollowing,
           followCount: i.followCount + (wasFollowing ? -1 : 1),
         };
       }),
-    })),
+    }));
+    const userId = useAuthStore.getState().user?.id;
+    if (userId) {
+      enqueue('follow_issue', { issueId, userId, follow: !wasFollowing });
+    }
+  },
 
   addComment: (issueId, body, userName, imageUrl) => {
+    const userId = useAuthStore.getState().user?.id ?? 'current-user';
     const comment: IssueComment = {
       id: `cmt-${Date.now()}`,
       issueId,
-      userId: 'current-user',
+      userId,
       userName,
       body,
       imageUrl,
@@ -836,6 +856,9 @@ export const useCivicStore = create<CivicState>()((set, get) => ({
         i.id === issueId ? { ...i, commentCount: i.commentCount + 1 } : i,
       ),
     }));
+    if (userId !== 'current-user') {
+      dataService.addIssueComment(issueId, userId, userName, body, imageUrl);
+    }
   },
 
   addEvidence: (issueId, imageUrl, userName, caption) => {
@@ -852,12 +875,14 @@ export const useCivicStore = create<CivicState>()((set, get) => ({
     }));
   },
 
-  tagMLA: (issueId) =>
+  tagMLA: (issueId) => {
     set((state) => ({
       issues: state.issues.map((i) =>
         i.id === issueId ? { ...i, mlaTagged: true } : i,
       ),
-    })),
+    }));
+    dataService.tagMLAOnIssue(issueId);
+  },
 
   disputeResolution: (issueId, reason) => {
     set((state) => {
@@ -925,8 +950,23 @@ export const useCivicStore = create<CivicState>()((set, get) => ({
     });
   },
 
-  addIssue: (issue) =>
-    set((state) => ({ issues: [issue, ...state.issues] })),
+  addIssue: (issue) => {
+    set((state) => ({ issues: [issue, ...state.issues] }));
+    const userId = useAuthStore.getState().user?.id;
+    if (userId) {
+      enqueue('report_issue', {
+        title: issue.title,
+        description: issue.description ?? '',
+        category: issue.category,
+        severity: issue.severity,
+        constituencyId: issue.constituencyId ?? '',
+        stateCode: issue.stateCode,
+        reporterId: userId,
+        reporterName: issue.reporterName ?? 'Anonymous',
+        mediaUrls: issue.mediaUrls ?? [],
+      });
+    }
+  },
 
   shareIssue: (issueId) => {
     const issue = get().issues.find((i) => i.id === issueId);
@@ -946,5 +986,38 @@ export const useCivicStore = create<CivicState>()((set, get) => ({
 
   getSentimentSorted: () => {
     return [...get().sentiment].sort((a, b) => a.score - b.score);
+  },
+
+  hydrateFromServer: (serverIssues) => {
+    if (!serverIssues || serverIssues.length === 0) return;
+    const serverIds = new Set(serverIssues.map((i: any) => i.id));
+    const localOnly = SEED_ISSUES.filter((i) => !serverIds.has(i.id));
+    const transformed: CivicIssue[] = serverIssues.map((i: any) => ({
+      id: i.id,
+      reporterId: i.reporter_id,
+      reporterName: i.reporter_name ?? 'Anonymous',
+      constituencyId: i.constituency_id,
+      stateCode: i.state_code,
+      title: i.title,
+      description: i.description,
+      category: i.category as IssueCategory,
+      severity: i.severity,
+      status: i.status as IssueStatus,
+      upvoteCount: i.upvote_count ?? 0,
+      commentCount: i.comment_count ?? 0,
+      followCount: i.follow_count ?? 0,
+      evidenceCount: i.evidence_count ?? 0,
+      disputeCount: i.dispute_count ?? 0,
+      mediaUrls: i.media_urls ?? [],
+      mlaTagged: i.mla_tagged ?? false,
+      mlaResponded: i.mla_responded ?? false,
+      isVerifiedReport: i.is_verified_report ?? false,
+      createdAt: i.created_at,
+      updatedAt: i.updated_at,
+      resolvedAt: i.resolved_at,
+      userUpvoted: i.user_upvoted ?? false,
+      userFollowing: i.user_following ?? false,
+    }));
+    set({ issues: [...transformed, ...localOnly] });
   },
 }));

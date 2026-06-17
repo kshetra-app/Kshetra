@@ -15,7 +15,7 @@ export interface MLPoliticalLedgerEntry {
 
 export const ML_POLITICAL_LEDGER: MLPoliticalLedgerEntry[] = [
   {
-    acNo: 47,
+    acNo: 19,
     constituencyName: 'South Shillong',
     date: '2018-05-15',
     event: 'Sanbor Shullai switched party from BJP to INC',
@@ -24,7 +24,7 @@ export const ML_POLITICAL_LEDGER: MLPoliticalLedgerEntry[] = [
     legislatorName: 'Sanbor Shullai'
   },
   {
-    acNo: 14,
+    acNo: 30,
     constituencyName: 'Mairang',
     date: '2019-03-20',
     event: 'By-election held; seat won by BJP',
@@ -33,7 +33,7 @@ export const ML_POLITICAL_LEDGER: MLPoliticalLedgerEntry[] = [
     legislatorName: 'Metbah Lyngdoh'
   },
   {
-    acNo: 8,
+    acNo: 16,
     constituencyName: 'East Shillong',
     date: '2019-10-24',
     event: 'Vacancy caused by the demise of the sitting MLA Dr. Mazel Ampareen Lyngdoh',
@@ -42,7 +42,7 @@ export const ML_POLITICAL_LEDGER: MLPoliticalLedgerEntry[] = [
     legislatorName: 'Dr. Mazel Ampareen Lyngdoh'
   },
   {
-    acNo: 24,
+    acNo: 4,
     constituencyName: 'Mowkaiaw',
     date: '2020-04-12',
     event: 'MLA resigned from the assembly',
@@ -51,7 +51,7 @@ export const ML_POLITICAL_LEDGER: MLPoliticalLedgerEntry[] = [
     legislatorName: 'Nujorki Sungoh'
   },
   {
-    acNo: 22,
+    acNo: 31,
     constituencyName: 'Mawthadraishan',
     date: '2020-11-10',
     event: 'Shakliar Warjri switched party from HSPDP to BJP',
@@ -60,7 +60,7 @@ export const ML_POLITICAL_LEDGER: MLPoliticalLedgerEntry[] = [
     legislatorName: 'Shakliar Warjri'
   },
   {
-    acNo: 21,
+    acNo: 25,
     constituencyName: 'Mawsynram',
     date: '2021-02-22',
     event: 'By-election held; seat won by BJP',
@@ -69,7 +69,7 @@ export const ML_POLITICAL_LEDGER: MLPoliticalLedgerEntry[] = [
     legislatorName: 'Ollan Singh Suin'
   },
   {
-    acNo: 15,
+    acNo: 8,
     constituencyName: 'Mawhati',
     date: '2021-08-14',
     event: 'Vacancy caused by the demise of the sitting MLA Charles Marngar',
@@ -78,7 +78,7 @@ export const ML_POLITICAL_LEDGER: MLPoliticalLedgerEntry[] = [
     legislatorName: 'Charles Marngar'
   },
   {
-    acNo: 1,
+    acNo: 7,
     constituencyName: 'Amlarem',
     date: '2021-11-25',
     event: 'defection',
@@ -87,7 +87,7 @@ export const ML_POLITICAL_LEDGER: MLPoliticalLedgerEntry[] = [
     legislatorName: 'Lahkmen Rymbui'
   },
   {
-    acNo: 2,
+    acNo: 53,
     constituencyName: 'Ampati',
     date: '2021-11-25',
     event: 'defection',
@@ -96,7 +96,7 @@ export const ML_POLITICAL_LEDGER: MLPoliticalLedgerEntry[] = [
     legislatorName: 'Miani D. Shira'
   },
   {
-    acNo: 3,
+    acNo: 60,
     constituencyName: 'Baghmara',
     date: '2021-11-25',
     event: 'defection',
@@ -105,7 +105,7 @@ export const ML_POLITICAL_LEDGER: MLPoliticalLedgerEntry[] = [
     legislatorName: 'Kartush R. Marak'
   },
   {
-    acNo: 4,
+    acNo: 40,
     constituencyName: 'Bajengdoba',
     date: '2021-11-25',
     event: 'defection',
@@ -114,7 +114,7 @@ export const ML_POLITICAL_LEDGER: MLPoliticalLedgerEntry[] = [
     legislatorName: 'Pongseng Marak'
   },
   {
-    acNo: 5,
+    acNo: 59,
     constituencyName: 'Chokpot',
     date: '2021-11-25',
     event: 'defection',
@@ -123,7 +123,7 @@ export const ML_POLITICAL_LEDGER: MLPoliticalLedgerEntry[] = [
     legislatorName: 'Sengchim N. Sangma'
   },
   {
-    acNo: 6,
+    acNo: 49,
     constituencyName: 'Dadenggre',
     date: '2021-11-25',
     event: 'defection',
@@ -132,7 +132,7 @@ export const ML_POLITICAL_LEDGER: MLPoliticalLedgerEntry[] = [
     legislatorName: 'Rupa M. Marak'
   },
   {
-    acNo: 13,
+    acNo: 54,
     constituencyName: 'Mahendraganj',
     date: '2022-01-05',
     event: 'MLA resigned from the assembly',
@@ -141,7 +141,7 @@ export const ML_POLITICAL_LEDGER: MLPoliticalLedgerEntry[] = [
     legislatorName: 'Sanjay A. Sangma'
   },
   {
-    acNo: 41,
+    acNo: 42,
     constituencyName: 'Rongjeng',
     date: '2022-06-25',
     event: 'Jim M Sangma switched party from NPP to BJP',
@@ -150,7 +150,7 @@ export const ML_POLITICAL_LEDGER: MLPoliticalLedgerEntry[] = [
     legislatorName: 'Jim M Sangma'
   },
   {
-    acNo: 12,
+    acNo: 6,
     constituencyName: 'Khliehriat',
     date: '2023-03-12',
     event: 'By-election held; seat won by BJP',
@@ -159,7 +159,7 @@ export const ML_POLITICAL_LEDGER: MLPoliticalLedgerEntry[] = [
     legislatorName: 'Kyrmen Shylla'
   },
   {
-    acNo: 44,
+    acNo: 26,
     constituencyName: 'Shella',
     date: '2023-11-20',
     event: 'Vacancy caused by the demise of the sitting MLA Balajied Kupar Synrem',
@@ -168,7 +168,7 @@ export const ML_POLITICAL_LEDGER: MLPoliticalLedgerEntry[] = [
     legislatorName: 'Balajied Kupar Synrem'
   },
   {
-    acNo: 34,
+    acNo: 47,
     constituencyName: 'Rajabala',
     date: '2024-02-18',
     event: 'MLA resigned from the assembly',

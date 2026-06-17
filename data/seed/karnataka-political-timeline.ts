@@ -10,7 +10,9 @@
  *  2018: Hung assembly. JDS-INC coalition.
  *  2019: "Operation Kamala" — 17 MLAs defect. Coalition falls.
  *  2019-2023: BJP rules under Yediyurappa, then Bommai.
- *  2023: INC landslide — 135/224.
+ *  2023: INC landslide — 135/224. Siddaramaiah CM.
+ *  2026: INC leadership transition — Siddaramaiah resigns (28 May 2026);
+ *        D. K. Shivakumar sworn in as CM (3 Jun 2026). No seat change.
  */
 
 import type {
@@ -213,7 +215,7 @@ const ASSEMBLY_2018_EVENTS: PoliticalLedgerEntry[] = [
     verified: true,
   },
   // ── CM changes (no seat changes) ──
-  // 2021: Yediyurappa replaced by Basavaraj Bommai as CM
+  // 2021: Yediyurappa replaced by Basavaraj Bommai as CM (BJP)
 ];
 
 // ─── 2023 ASSEMBLY (May 2023 – present) ─────────────────────────────────
@@ -283,6 +285,12 @@ const ASSEMBLY_2023_EVENTS: PoliticalLedgerEntry[] = [
     legalStatus: 'NOT_APPLICABLE',
     verified: true,
   }
+  // ── CM change (no seat change) ──
+  // 2026-05-28: Siddaramaiah resigns as CM after 3 years (INC high-command
+  //             leadership-rotation understanding).
+  // 2026-06-03: D. K. Shivakumar sworn in as CM; G. Parameshwara Deputy CM.
+  //             INC retains its 2023 seat strength — no ledger transaction.
+  //   Sources: The Hindu / New Indian Express (3 Jun 2026).
 ];
 
 // ─── COMBINED TIMELINE ────────────────────────────────────────────────────

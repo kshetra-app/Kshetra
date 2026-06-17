@@ -1,6 +1,8 @@
 import Fastify from 'fastify';
+import type { FastifyError, FastifyReply, FastifyRequest } from 'fastify';
 import cors from '@fastify/cors';
 import helmet from '@fastify/helmet';
+import rateLimit from '@fastify/rate-limit';
 import { constituencyRoutes } from './routes/constituencies';
 import { healthRoutes } from './routes/health';
 import { aiRoutes } from './routes/ai';
@@ -24,6 +26,22 @@ const envToLogger: Record<string, object | boolean> = {
   test: false,
 };
 
+/**
+ * Resolve allowed CORS origins. In production an explicit allow-list is
+ * required via CORS_ORIGINS (comma-separated); dev/test reflect the origin
+ * for local convenience (Gold Standard Ch. 6 — no implicit trust in prod).
+ */
+function resolveCorsOrigin(env: string): boolean | string[] {
+  const configured = (process.env.CORS_ORIGINS ?? '')
+    .split(',')
+    .map((o) => o.trim())
+    .filter(Boolean);
+
+  if (configured.length > 0) return configured;
+  if (env === 'production') return false;
+  return true;
+}
+
 export async function buildApp() {
   const env = process.env.NODE_ENV ?? 'development';
 
@@ -32,12 +50,43 @@ export async function buildApp() {
   });
 
   await app.register(cors, {
-    origin: true,
+    origin: resolveCorsOrigin(env),
     credentials: true,
   });
 
   await app.register(helmet, {
     contentSecurityPolicy: false,
+  });
+
+  // Rate limiting — protects against abuse / brute force (Ch. 6, 9).
+  // Generous ceiling in tests to avoid flakiness; tunable via env in prod.
+  await app.register(rateLimit, {
+    max: parseInt(process.env.RATE_LIMIT_MAX ?? (env === 'test' ? '100000' : '300'), 10),
+    timeWindow: process.env.RATE_LIMIT_WINDOW ?? '1 minute',
+  });
+
+  // Global error handler — never leak internal exception detail in production.
+  app.setErrorHandler((error: FastifyError, request: FastifyRequest, reply: FastifyReply) => {
+    const statusCode = error.statusCode ?? 500;
+    if (statusCode >= 500) {
+      request.log.error(error);
+    }
+    const exposeDetail = env !== 'production';
+    reply.status(statusCode).send({
+      error: statusCode >= 500 ? 'Internal Server Error' : (error.name || 'Bad Request'),
+      message:
+        statusCode >= 500 && !exposeDetail
+          ? 'An unexpected error occurred. Please try again later.'
+          : error.message,
+    });
+  });
+
+  // Consistent 404 for unknown routes.
+  app.setNotFoundHandler((request, reply) => {
+    reply.status(404).send({
+      error: 'Not Found',
+      message: `Route ${request.method} ${request.url} not found`,
+    });
   });
 
   // Cache static seed-data responses (5 min)

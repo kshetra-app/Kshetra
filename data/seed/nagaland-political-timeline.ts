@@ -15,7 +15,7 @@ export interface NLPoliticalLedgerEntry {
 
 export const NL_POLITICAL_LEDGER: NLPoliticalLedgerEntry[] = [
   {
-    acNo: 41,
+    acNo: 43,
     constituencyName: 'Tapi',
     date: '2018-05-15',
     event: 'Noke Wangnao switched party from NDPP to BJP',
@@ -24,7 +24,7 @@ export const NL_POLITICAL_LEDGER: NLPoliticalLedgerEntry[] = [
     legislatorName: 'Noke Wangnao'
   },
   {
-    acNo: 8,
+    acNo: 32,
     constituencyName: 'Atoizu',
     date: '2019-03-20',
     event: 'By-election held; seat won by BJP',
@@ -33,7 +33,7 @@ export const NL_POLITICAL_LEDGER: NLPoliticalLedgerEntry[] = [
     legislatorName: 'Picto'
   },
   {
-    acNo: 2,
+    acNo: 34,
     constituencyName: 'Aghunato',
     date: '2019-10-24',
     event: 'Vacancy caused by the demise of the sitting MLA G Ikuto Zhimomi',
@@ -42,7 +42,7 @@ export const NL_POLITICAL_LEDGER: NLPoliticalLedgerEntry[] = [
     legislatorName: 'G Ikuto Zhimomi'
   },
   {
-    acNo: 48,
+    acNo: 54,
     constituencyName: 'Tuensang Sadar-Ii',
     date: '2020-04-12',
     event: 'MLA resigned from the assembly',
@@ -51,7 +51,7 @@ export const NL_POLITICAL_LEDGER: NLPoliticalLedgerEntry[] = [
     legislatorName: 'Imtichoba'
   },
   {
-    acNo: 18,
+    acNo: 28,
     constituencyName: 'Koridang',
     date: '2020-11-10',
     event: 'Imkong L. Imchen switched party from BJP to INC',
@@ -60,7 +60,7 @@ export const NL_POLITICAL_LEDGER: NLPoliticalLedgerEntry[] = [
     legislatorName: 'Imkong L. Imchen'
   },
   {
-    acNo: 16,
+    acNo: 23,
     constituencyName: 'Impur',
     date: '2021-02-22',
     event: 'By-election held; seat won by BJP',
@@ -69,7 +69,7 @@ export const NL_POLITICAL_LEDGER: NLPoliticalLedgerEntry[] = [
     legislatorName: 'T N Mannen'
   },
   {
-    acNo: 15,
+    acNo: 5,
     constituencyName: 'Ghaspani-Ii',
     date: '2021-08-14',
     event: 'Vacancy caused by the demise of the sitting MLA Zhaleo Rio',
@@ -78,7 +78,7 @@ export const NL_POLITICAL_LEDGER: NLPoliticalLedgerEntry[] = [
     legislatorName: 'Zhaleo Rio'
   },
   {
-    acNo: 9,
+    acNo: 18,
     constituencyName: 'Chazouba',
     date: '2022-01-05',
     event: 'MLA resigned from the assembly',
@@ -87,7 +87,7 @@ export const NL_POLITICAL_LEDGER: NLPoliticalLedgerEntry[] = [
     legislatorName: 'Kudecho Khamo'
   },
   {
-    acNo: 7,
+    acNo: 22,
     constituencyName: 'Arkakong',
     date: '2022-06-25',
     event: 'Nuklutoshi switched party from NPP to BJP',
@@ -96,7 +96,7 @@ export const NL_POLITICAL_LEDGER: NLPoliticalLedgerEntry[] = [
     legislatorName: 'Nuklutoshi'
   },
   {
-    acNo: 44,
+    acNo: 57,
     constituencyName: 'Thonoknyu',
     date: '2023-03-12',
     event: 'By-election held; seat won by BJP',
@@ -105,7 +105,7 @@ export const NL_POLITICAL_LEDGER: NLPoliticalLedgerEntry[] = [
     legislatorName: 'Benei M Lamthiu'
   },
   {
-    acNo: 35,
+    acNo: 36,
     constituencyName: 'Satakha',
     date: '2023-11-20',
     event: 'Vacancy caused by the demise of the sitting MLA G. Kaito Aye',
@@ -114,7 +114,7 @@ export const NL_POLITICAL_LEDGER: NLPoliticalLedgerEntry[] = [
     legislatorName: 'G. Kaito Aye'
   },
   {
-    acNo: 6,
+    acNo: 26,
     constituencyName: 'Aonglenden',
     date: '2024-02-18',
     event: 'MLA resigned from the assembly',
@@ -123,7 +123,7 @@ export const NL_POLITICAL_LEDGER: NLPoliticalLedgerEntry[] = [
     legislatorName: 'Sharingain Longkumer'
   },
   {
-    acNo: 38,
+    acNo: 14,
     constituencyName: 'Southern Angami-I',
     date: '2024-05-24',
     event: 'Kevipodi Sophie switched party from IND to BJP',
@@ -132,7 +132,7 @@ export const NL_POLITICAL_LEDGER: NLPoliticalLedgerEntry[] = [
     legislatorName: 'Kevipodi Sophie'
   },
   {
-    acNo: 28,
+    acNo: 11,
     constituencyName: 'Northern Angami-Ii',
     date: '2024-10-15',
     event: 'By-election held; seat won by BJP',

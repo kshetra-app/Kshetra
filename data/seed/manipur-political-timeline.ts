@@ -15,7 +15,7 @@ export interface MNPoliticalLedgerEntry {
 
 export const MN_POLITICAL_LEDGER: MNPoliticalLedgerEntry[] = [
   {
-    acNo: 41,
+    acNo: 42,
     constituencyName: 'Tengnoupal',
     date: '2018-05-15',
     event: 'Letpao Haokip switched party from BJP to INC',
@@ -24,7 +24,7 @@ export const MN_POLITICAL_LEDGER: MNPoliticalLedgerEntry[] = [
     legislatorName: 'Letpao Haokip'
   },
   {
-    acNo: 8,
+    acNo: 57,
     constituencyName: 'Henglep',
     date: '2019-03-20',
     event: 'By-election held; seat won by INC',
@@ -33,7 +33,7 @@ export const MN_POLITICAL_LEDGER: MNPoliticalLedgerEntry[] = [
     legislatorName: 'Letzamang Haokip'
   },
   {
-    acNo: 2,
+    acNo: 26,
     constituencyName: 'Bishenpur',
     date: '2019-10-24',
     event: 'Vacancy caused by the demise of the sitting MLA Konthoujam Govindas Singh',
@@ -42,7 +42,7 @@ export const MN_POLITICAL_LEDGER: MNPoliticalLedgerEntry[] = [
     legislatorName: 'Konthoujam Govindas Singh'
   },
   {
-    acNo: 48,
+    acNo: 44,
     constituencyName: 'Ukhrul',
     date: '2020-04-12',
     event: 'MLA resigned from the assembly',
@@ -60,7 +60,7 @@ export const MN_POLITICAL_LEDGER: MNPoliticalLedgerEntry[] = [
     legislatorName: 'Dr. Sapam Ranjan Singh'
   },
   {
-    acNo: 16,
+    acNo: 4,
     constituencyName: 'Khetrigao',
     date: '2021-02-22',
     event: 'By-election held; seat won by BJP',
@@ -69,7 +69,7 @@ export const MN_POLITICAL_LEDGER: MNPoliticalLedgerEntry[] = [
     legislatorName: 'Sheikh Noorul Hassan'
   },
   {
-    acNo: 15,
+    acNo: 35,
     constituencyName: 'Khangabok',
     date: '2021-08-14',
     event: 'Vacancy caused by the demise of the sitting MLA Surjakumar Okram',
@@ -78,7 +78,7 @@ export const MN_POLITICAL_LEDGER: MNPoliticalLedgerEntry[] = [
     legislatorName: 'Surjakumar Okram'
   },
   {
-    acNo: 9,
+    acNo: 40,
     constituencyName: 'Jiribam',
     date: '2022-01-05',
     event: 'MLA resigned from the assembly',
@@ -87,7 +87,7 @@ export const MN_POLITICAL_LEDGER: MNPoliticalLedgerEntry[] = [
     legislatorName: 'Md. Achab Uddin'
   },
   {
-    acNo: 7,
+    acNo: 33,
     constituencyName: 'Heirok',
     date: '2022-06-25',
     event: 'Thokchom Radheshyam Singh switched party from BJP to INC',
@@ -96,7 +96,7 @@ export const MN_POLITICAL_LEDGER: MNPoliticalLedgerEntry[] = [
     legislatorName: 'Thokchom Radheshyam Singh'
   },
   {
-    acNo: 44,
+    acNo: 56,
     constituencyName: 'Thanlon',
     date: '2023-03-12',
     event: 'By-election held; seat won by INC',
@@ -105,7 +105,7 @@ export const MN_POLITICAL_LEDGER: MNPoliticalLedgerEntry[] = [
     legislatorName: 'Vungzagin Valte'
   },
   {
-    acNo: 35,
+    acNo: 16,
     constituencyName: 'Sekmai',
     date: '2023-11-20',
     event: 'Vacancy caused by the demise of the sitting MLA Heikham Dingo Singh',
@@ -114,7 +114,7 @@ export const MN_POLITICAL_LEDGER: MNPoliticalLedgerEntry[] = [
     legislatorName: 'Heikham Dingo Singh'
   },
   {
-    acNo: 6,
+    acNo: 2,
     constituencyName: 'Heingang',
     date: '2024-02-18',
     event: 'MLA resigned from the assembly',
@@ -123,7 +123,7 @@ export const MN_POLITICAL_LEDGER: MNPoliticalLedgerEntry[] = [
     legislatorName: 'Nongthombam Biren Singh'
   },
   {
-    acNo: 38,
+    acNo: 39,
     constituencyName: 'Sugnoo',
     date: '2024-05-24',
     event: 'Kangujam Ranjit Singh switched party from INC to BJP',
@@ -132,7 +132,7 @@ export const MN_POLITICAL_LEDGER: MNPoliticalLedgerEntry[] = [
     legislatorName: 'Kangujam Ranjit Singh'
   },
   {
-    acNo: 28,
+    acNo: 54,
     constituencyName: 'Nungba',
     date: '2024-10-15',
     event: 'By-election held; seat won by INC',

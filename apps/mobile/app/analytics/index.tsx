@@ -5,10 +5,12 @@ import {
   StyleSheet,
   ScrollView,
   Pressable,
-  SafeAreaView,
   StatusBar,
   Share,
+  useWindowDimensions,
+  Platform,
 } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import {
@@ -41,6 +43,9 @@ const getPartyColor = (p: string) => PARTY_COLORS[p] ?? '#6B7280';
 
 export default function AnalyticsDashboard() {
   const router = useRouter();
+  const insets = useSafeAreaInsets();
+  const { width: screenWidth, height: screenHeight } = useWindowDimensions();
+  const isSmallScreen = screenHeight < 700;
   const [selectedState, setSelectedState] = useState<string>('TS');
   const [activeTab, setActiveTab] = useState<TabKey>('overview');
 
@@ -70,11 +75,11 @@ export default function AnalyticsDashboard() {
 
   if (!analytics) {
     return (
-      <SafeAreaView style={styles.safe}>
+      <View style={[styles.safe, { paddingTop: insets.top }]}>
         <View style={styles.center}>
           <Text style={styles.errorText}>No data for {selectedState}</Text>
         </View>
-      </SafeAreaView>
+      </View>
     );
   }
 
@@ -312,16 +317,16 @@ export default function AnalyticsDashboard() {
   );
 
   return (
-    <SafeAreaView style={styles.safe}>
+    <View style={[styles.safe, { paddingTop: insets.top }]}>
       <StatusBar barStyle="light-content" />
 
       {/* Header */}
-      <View style={styles.header}>
+      <View style={[styles.header, isSmallScreen && { paddingTop: 4, paddingBottom: 4 }]}>
         <Pressable onPress={() => router.back()} style={styles.backBtn}>
-          <Ionicons name="arrow-back" size={22} color="#FFFFFF" />
+          <Ionicons name="arrow-back" size={isSmallScreen ? 20 : 22} color="#FFFFFF" />
         </Pressable>
         <View style={{ flex: 1 }}>
-          <Text style={styles.headerTitle}>Election Analytics</Text>
+          <Text style={[styles.headerTitle, isSmallScreen && { fontSize: 16 }]}>Election Analytics</Text>
           <Text style={styles.headerSub}>Cross-State Intelligence</Text>
         </View>
         <Pressable onPress={handleShare} style={styles.shareBtn}>
@@ -330,44 +335,48 @@ export default function AnalyticsDashboard() {
       </View>
 
       {/* State Picker */}
-      <View style={styles.statePicker}>
+      <View style={[styles.statePicker, isSmallScreen && { marginBottom: 2 }]}>
         {STATES.map((code) => (
           <Pressable
             key={code}
-            style={[styles.stateChip, selectedState === code && styles.stateChipActive]}
+            style={[styles.stateChip, isSmallScreen && { paddingVertical: 6 }, selectedState === code && styles.stateChipActive]}
             onPress={() => setSelectedState(code)}
           >
-            <Text style={[styles.stateChipText, selectedState === code && styles.stateChipTextActive]}>{code}</Text>
+            <Text style={[styles.stateChipText, isSmallScreen && { fontSize: 12 }, selectedState === code && styles.stateChipTextActive]}>{code}</Text>
           </Pressable>
         ))}
       </View>
 
       {/* Tabs */}
-      <View style={styles.tabRow}>
+      <View style={[styles.tabRow, isSmallScreen && { marginBottom: 2 }]}>
         {TABS.map((tab) => (
           <Pressable
             key={tab.key}
-            style={[styles.tab, activeTab === tab.key && styles.tabActive]}
+            style={[styles.tab, isSmallScreen && { paddingVertical: 6 }, activeTab === tab.key && styles.tabActive]}
             onPress={() => setActiveTab(tab.key)}
           >
-            <Ionicons name={tab.icon as any} size={14} color={activeTab === tab.key ? '#4F8EF7' : '#6B7280'} />
-            <Text style={[styles.tabLabel, activeTab === tab.key && styles.tabLabelActive]}>{tab.label}</Text>
+            <Ionicons name={tab.icon as any} size={isSmallScreen ? 12 : 14} color={activeTab === tab.key ? '#4F8EF7' : '#6B7280'} />
+            <Text style={[styles.tabLabel, isSmallScreen && { fontSize: 10 }, activeTab === tab.key && styles.tabLabelActive]}>{tab.label}</Text>
           </Pressable>
         ))}
       </View>
 
-      <ScrollView style={styles.scroll} contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
+      <ScrollView
+        style={styles.scroll}
+        contentContainerStyle={[styles.scrollContent, { paddingBottom: insets.bottom + 40 }]}
+        showsVerticalScrollIndicator={false}
+      >
         {activeTab === 'overview' && renderOverview()}
         {activeTab === 'parties' && renderParties()}
         {activeTab === 'districts' && renderDistricts()}
         {activeTab === 'swing' && renderSwing()}
       </ScrollView>
-    </SafeAreaView>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
-  safe: { flex: 1, backgroundColor: '#0A0A1A' },
+  safe: { flex: 1, backgroundColor: '#0A0A1A', overflow: 'hidden' },
   center: { flex: 1, justifyContent: 'center', alignItems: 'center' },
   errorText: { color: '#EF4444', fontSize: 16, fontWeight: '700' },
   header: { flexDirection: 'row', alignItems: 'center', paddingHorizontal: 16, paddingTop: 8, paddingBottom: 6, gap: 10 },

@@ -1,17 +1,18 @@
 /**
  * Andhra Pradesh Constituency Demographics
  *
- * ── DATA SOURCES ─────────────────────────────────────────────────────────
- *  1. Census 2011 (AP post-bifurcation)
- *  2. AP Socio-Economic Survey 2023-24
- *  3. ECI voter roll data (2024 assembly elections)
- *  4. AP State Election Commission delimitation gazette
+ * ⚠️ DATA STATUS: INDICATIVE ESTIMATES — NOT authoritative per-constituency data.
+ * These rows are modelled approximations (district-level Census 2011 figures and
+ * typical AP averages for population, literacy, urbanisation, turnout and SC/ST
+ * share). They are keyed to the official ECI AC numbers (1–175) so every seat has
+ * a value, but the figures are NOT real per-constituency statistics and the
+ * per-row values do NOT necessarily reflect that constituency's actual profile
+ * (e.g. SC/ST % will not always align with the seat's reservation status).
  *
- * ── NOTES ─────────────────────────────────────────────────────────────────
- *  - Population figures are 2011 Census projections
- *  - Literacy, urbanisation from district-level Census 2011
- *  - Total voters from ECI 2024 final rolls
- *  - SC/ST % approximated from district-level Census proportions
+ * TODO: replace with real per-constituency data from ECI Form-20 / Census
+ * constituency tables when available. The inline "── District ──" group comments
+ * below are indicative only and may not match the official AC→district mapping in
+ * andhra-pradesh-constituencies.ts.
  */
 
 import type { ConstituencyDemographics } from './telangana-demographics';

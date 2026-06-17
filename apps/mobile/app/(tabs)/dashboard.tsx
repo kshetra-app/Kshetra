@@ -118,12 +118,23 @@ function DashboardContent() {
   const toggleFollowPromise = usePromiseStore((s) => s.toggleFollowPromise);
   const getReportCard = usePromiseStore((s) => s.getReportCard);
 
-  const statePromises = useMemo(
-    () => allPromises.filter((p) => p.stateCode === stateCode),
-    [allPromises, stateCode],
-  );
-
   const constituencyId = myHome ? `${stateCode}-AC-${myHome.acNo}` : undefined;
+
+  // Strict scope demarcation for promises: each level shows ONLY its own content.
+  const scopedPromises = useMemo(() => {
+    if (scopeFilter === 'constituency') {
+      // Constituency: strictly promises tied to this constituency.
+      return myHome
+        ? allPromises.filter((p) => p.stateCode === stateCode && p.constituencyAcNo === myHome.acNo)
+        : [];
+    }
+    if (scopeFilter === 'national') {
+      // National: strictly national-level promises.
+      return allPromises.filter((p) => p.stateCode === 'NATIONAL');
+    }
+    // State: strictly this state's promises (its constituencies + state-wide).
+    return allPromises.filter((p) => p.stateCode === stateCode);
+  }, [allPromises, scopeFilter, stateCode, myHome]);
 
   // Scope-filtered data — derive in useMemo from raw arrays
   const { issues, headlines, sentiment } = useMemo(() => {
@@ -378,27 +389,27 @@ function DashboardContent() {
 
         {activeTab === 'promises' && (
           <View style={styles.tabContent}>
-            {/* Report Card (top party) */}
-            {statePromises.length > 0 && (() => {
-              const topParty = statePromises.reduce((acc, p) => {
+            {/* Report Card (top party) — only at state scope where aggregation is meaningful */}
+            {scopeFilter === 'state' && scopedPromises.length > 0 && (() => {
+              const topParty = scopedPromises.reduce((acc, p) => {
                 acc[p.party] = (acc[p.party] ?? 0) + 1;
                 return acc;
               }, {} as Record<string, number>);
               const party = Object.entries(topParty).sort((a, b) => b[1] - a[1])[0]?.[0];
               if (!party) return null;
-              const year = statePromises.find((p) => p.party === party)?.electionYear ?? 2023;
+              const year = scopedPromises.find((p) => p.party === party)?.electionYear ?? 2023;
               const card = getReportCard(stateCode, party, year);
               return <GovernmentReportCard data={card} />;
             })()}
 
             {/* Promise list */}
-            {statePromises.length === 0 ? (
+            {scopedPromises.length === 0 ? (
               <View style={styles.emptyState}>
                 <Ionicons name="ribbon-outline" size={48} color="#1F2937" />
-                <Text style={styles.emptyTitle}>No promises tracked yet</Text>
+                <Text style={styles.emptyTitle}>No promises tracked at this scope</Text>
               </View>
             ) : (
-              statePromises.map((promise) => (
+              scopedPromises.map((promise) => (
                 <PromiseCard
                   key={promise.id}
                   promise={promise}

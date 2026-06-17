@@ -142,17 +142,26 @@ export function computeAllSeatAllocations(
 
 /**
  * Compute seat allocation for a single state.
+ *
+ * IMPORTANT: Uses the same expansion-safe ideal and floor-guard as
+ * computeAllSeatAllocations() so the overview page and state-detail
+ * page always show identical, consistent numbers.
  */
 export function computeStateSeatAllocation(
   stateCode: string,
   idealPopPerSeat?: number,
 ): SeatAllocation | null {
-  const census = CENSUS_2011_STATES.find((s) => s.stateCode === stateCode);
-  if (!census) return null;
+  if (idealPopPerSeat) {
+    // Custom ideal requested — compute standalone (advanced/simulator use)
+    const census = CENSUS_2011_STATES.find((s) => s.stateCode === stateCode);
+    if (!census) return null;
+    const summary = toPopulationSummary(census);
+    return computeSeatAllocation(summary, idealPopPerSeat);
+  }
 
-  const ideal = idealPopPerSeat ?? IDEAL_POP_PER_AC_SEAT_2011;
-  const summary = toPopulationSummary(census);
-  return computeSeatAllocation(summary, ideal);
+  // Default: delegate to the all-states calculator to guarantee consistency
+  const allAllocations = computeAllSeatAllocations();
+  return allAllocations.find((a) => a.stateCode === stateCode) ?? null;
 }
 
 /**
@@ -176,7 +185,8 @@ export function computeDistrictSeatDistribution(
   const census = CENSUS_2011_STATES.find((s) => s.stateCode === stateCode);
   if (!census || census.districts.length === 0) return [];
 
-  const seats = totalSeats ?? census.currentAssemblySeats;
+  const stateAlloc = computeStateSeatAllocation(stateCode);
+  const seats = totalSeats ?? stateAlloc?.projectedSeats ?? census.currentAssemblySeats;
   const idealPopPerSeat = Math.round(census.totalPopulation / seats);
 
   // First pass: assign seats proportionally

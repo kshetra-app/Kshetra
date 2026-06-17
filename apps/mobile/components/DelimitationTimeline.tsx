@@ -272,7 +272,8 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     padding: 10,
     marginRight: 8,
-    width: 140,
+    minWidth: 120,
+    maxWidth: 160,
     alignItems: 'center',
   },
   compactFuture: {

@@ -29,7 +29,17 @@ export type SyncOpType =
   | 'submit_evidence'
   | 'favorite_toggle'
   | 'report_issue'
-  | 'compose_post';
+  | 'compose_post'
+  | 'issue_comment'
+  | 'upload_short'
+  | 'approve_short'
+  | 'flag_short'
+  | 'register_aspirant'
+  | 'start_module'
+  | 'join_challenge'
+  | 'endorse_aspirant'
+  | 'submit_kyc'
+  | 'update_profile';
 
 export interface SyncOperation {
   id: string;
@@ -132,6 +142,26 @@ async function executeOp(op: SyncOperation): Promise<boolean> {
         return (await svc.reportIssue(p)).success;
       case 'compose_post':
         return (await svc.composePost(p)).success;
+      case 'issue_comment':
+        return (await svc.addIssueComment(p.issueId as string, p.userId as string, p.userName as string, p.body as string, p.imageUrl as string | undefined)).success;
+      case 'upload_short':
+        return (await svc.uploadShort(p as any)).success;
+      case 'approve_short':
+        return svc.approveShort(p.shortId as string, p.userId as string, p.constituencyId as string | undefined);
+      case 'flag_short':
+        return svc.flagShort(p.shortId as string, p.userId as string, p.reason as string | undefined);
+      case 'register_aspirant':
+        return (await svc.registerAspirant(p.userId as string, p as any)).success;
+      case 'start_module':
+        return svc.startModule(p.userId as string, p.moduleId as string);
+      case 'join_challenge':
+        return svc.joinChallenge(p.userId as string, p.challengeId as string);
+      case 'endorse_aspirant':
+        return svc.endorseAspirant(p.endorserId as string, p.aspirantId as string, p.message as string | undefined);
+      case 'submit_kyc':
+        return (await svc.submitKYC(p.userId as string, p as any)).success;
+      case 'update_profile':
+        return svc.updateUserProfile(p.userId as string, p as any);
       default:
         return true;
     }

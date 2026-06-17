@@ -33,7 +33,7 @@ export const CHIEF_MINISTERS: Record<string, ChiefMinisterInfo> = {
     stateCode: 'AP',
   },
   KA: {
-    name: 'Siddaramaiah',
+    name: 'D. K. Shivakumar',
     designation: 'Chief Minister of Karnataka',
     party: 'INC',
     stateCode: 'KA',
@@ -45,21 +45,21 @@ export const CHIEF_MINISTERS: Record<string, ChiefMinisterInfo> = {
     stateCode: 'MH',
   },
   TN: {
-    name: 'M. K. Stalin',
+    name: 'C. Joseph Vijay',
     designation: 'Chief Minister of Tamil Nadu',
-    party: 'DMK',
+    party: 'TVK',
     stateCode: 'TN',
   },
   KL: {
-    name: 'Pinarayi Vijayan',
+    name: 'V. D. Satheesan',
     designation: 'Chief Minister of Kerala',
-    party: 'CPIM',
+    party: 'INC',
     stateCode: 'KL',
   },
   WB: {
-    name: 'Mamata Banerjee',
+    name: 'Suvendu Adhikari',
     designation: 'Chief Minister of West Bengal',
-    party: 'AITC',
+    party: 'BJP',
     stateCode: 'WB',
   },
   UP: {
@@ -203,7 +203,7 @@ export const CHIEF_MINISTERS: Record<string, ChiefMinisterInfo> = {
   PY: {
     name: 'N. Rangaswamy',
     designation: 'Chief Minister of Puducherry',
-    party: 'NDA',
+    party: 'AINRC',
     stateCode: 'PY',
   },
 };

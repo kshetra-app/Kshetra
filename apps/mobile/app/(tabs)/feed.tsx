@@ -21,6 +21,7 @@ import PollCard from '../../components/PollCard';
 import { useResponsive } from '../../lib/responsive';
 import ComposeSheet from '../../components/ComposeSheet';
 import TrendingHashtags from '../../components/TrendingHashtags';
+import PoliticalShortsCarousel from '../../components/PoliticalShortsCarousel';
 import type { Post, PostType, PostMedia, FeedScope } from '../../lib/feedTypes';
 import { useTranslation } from 'react-i18next';
 import { STATES } from '@kshetra/shared';
@@ -71,33 +72,33 @@ export default function FeedScreen() {
   const posts = useMemo(() => {
     let filtered = allPosts.filter((p) => !p.isDeleted);
 
-    // Scope filter
-    if (scopeFilter === 'constituency' && constituencyId) {
-      filtered = filtered.filter((p) => p.constituencyId === constituencyId || (p.isPinned && p.stateCode === stateCode));
+    // Promotion level for community (non-seed, non-pinned) content.
+    // Seeds and pinned posts always sit at their native geographic level.
+    const promoLevel = (p: Post) => {
+      if (p.id.startsWith('seed-') || p.isPinned) return null;
+      return getContentVisibilityLevel(
+        p.type === 'news' ? 'news' : p.type === 'opinion' ? 'opinion' : 'post',
+        p.id,
+      );
+    };
+
+    // Strict scope demarcation: each level shows ONLY its own content.
+    if (scopeFilter === 'constituency') {
+      // Constituency: strictly this constituency's content. Nothing else.
+      filtered = constituencyId
+        ? filtered.filter((p) => p.constituencyId === constituencyId && promoLevel(p) !== 'restricted')
+        : [];
     } else if (scopeFilter === 'state') {
+      // State: strictly this state's content (its constituencies + state-wide).
+      // Never national, never another state.
+      filtered = filtered.filter(
+        (p) => p.stateCode === stateCode && promoLevel(p) !== 'restricted',
+      );
+    } else {
+      // National: strictly national content + anything promoted to national.
       filtered = filtered.filter((p) => {
-        if (p.stateCode !== stateCode && p.stateCode !== 'NATIONAL') return false;
-        // Content Promotion Pipeline: only show promoted content in state feed
-        if (!p.id.startsWith('seed-') && !p.isPinned) {
-          const level = getContentVisibilityLevel(
-            p.type === 'news' ? 'news' : p.type === 'opinion' ? 'opinion' : 'post',
-            p.id,
-          );
-          if (level === 'constituency' || level === 'restricted') return false;
-        }
-        return true;
-      });
-    } else if (scopeFilter === 'national') {
-      filtered = filtered.filter((p) => {
-        // Content Promotion Pipeline: only show nationally promoted content
-        if (!p.id.startsWith('seed-') && !p.isPinned) {
-          const level = getContentVisibilityLevel(
-            p.type === 'news' ? 'news' : p.type === 'opinion' ? 'opinion' : 'post',
-            p.id,
-          );
-          if (level !== 'national' && level !== 'state') return false;
-        }
-        return true;
+        if (p.stateCode === 'NATIONAL') return true;
+        return promoLevel(p) === 'national';
       });
     }
 
@@ -268,10 +269,13 @@ export default function FeedScreen() {
         }
         ListHeaderComponent={
           feedFilter === 'all' ? (
-            <TrendingHashtags
-              posts={posts}
-              onTagPress={(tag) => {}}
-            />
+            <>
+              <PoliticalShortsCarousel />
+              <TrendingHashtags
+                posts={posts}
+                onTagPress={(tag) => {}}
+              />
+            </>
           ) : null
         }
         ListEmptyComponent={

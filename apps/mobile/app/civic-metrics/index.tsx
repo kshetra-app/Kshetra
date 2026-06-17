@@ -1,7 +1,7 @@
-import { useState, useCallback } from 'react';
-import { View, Text, StyleSheet, ScrollView, Pressable, RefreshControl } from 'react-native';
+import { useState, useMemo, useCallback } from 'react';
+import { View, Text, StyleSheet, ScrollView, Pressable, RefreshControl, StatusBar } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { Stack } from 'expo-router';
+import { useRouter } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useCivicMetricsStore } from '../../stores/civicMetrics';
 import BudgetCard from '../../components/BudgetCard';
@@ -23,21 +23,20 @@ const TABS: { key: Tab; label: string; icon: string }[] = [
 ];
 
 export default function CivicMetricsScreen() {
+  const router = useRouter();
+  const insets = useSafeAreaInsets();
   const [activeTab, setActiveTab] = useState<Tab>('budget');
   const [refreshing, setRefreshing] = useState(false);
-  const insets = useSafeAreaInsets();
-  const activeState = useActiveStateStore((s) => s.stateCode);
+  const activeState = useActiveStateStore((s) => s.stateCode) || 'TS';
 
-  const budgetSummary = useCivicMetricsStore((s) => s.getBudgetSummary(activeState || 'TS'));
-  const attendance = useCivicMetricsStore((s) => s.getAttendanceForState(activeState || 'TS'));
-  const bills = useCivicMetricsStore((s) => s.getBillsByState(activeState || undefined));
-  const activeBills = useCivicMetricsStore((s) => s.getActiveBills());
-  const schemes = useCivicMetricsStore((s) => s.getSchemesByState(activeState || undefined));
-  const projects = useCivicMetricsStore((s) => s.getProjectsByState(activeState || 'TS'));
-  const publicRTIs = useCivicMetricsStore((s) => s.getPublicRTIs());
-  const upvoteRTI = useCivicMetricsStore((s) => s.upvoteRTI);
-  const supportBill = useCivicMetricsStore((s) => s.supportBill);
-  const opposeBill = useCivicMetricsStore((s) => s.opposeBill);
+  const store = useCivicMetricsStore();
+  const budgetSummary = useMemo(() => store.getBudgetSummary(activeState), [store, activeState]);
+  const attendance = useMemo(() => store.getAttendanceForState(activeState), [store, activeState]);
+  const bills = useMemo(() => store.getBillsByState(activeState), [store, activeState]);
+  const activeBills = useMemo(() => store.getActiveBills(), [store]);
+  const schemes = useMemo(() => store.getSchemesByState(activeState), [store, activeState]);
+  const projects = useMemo(() => store.getProjectsByState(activeState), [store, activeState]);
+  const publicRTIs = useMemo(() => store.getPublicRTIs(), [store]);
 
   const onRefresh = useCallback(() => {
     setRefreshing(true);
@@ -45,8 +44,19 @@ export default function CivicMetricsScreen() {
   }, []);
 
   return (
-    <View style={styles.container}>
-      <Stack.Screen options={{ title: 'Civic Metrics', headerShown: true, headerStyle: { backgroundColor: '#0A0A1A' }, headerTintColor: '#FFFFFF' }} />
+    <View style={[styles.container, { paddingTop: insets.top }]}>
+      <StatusBar barStyle="light-content" />
+
+      {/* Custom Header */}
+      <View style={styles.header}>
+        <Pressable onPress={() => router.back()} style={styles.backBtn}>
+          <Ionicons name="arrow-back" size={22} color="#FFFFFF" />
+        </Pressable>
+        <View style={{ flex: 1 }}>
+          <Text style={styles.headerTitle}>Civic Metrics</Text>
+          <Text style={styles.headerSub}>Budget · Attendance · Bills · Schemes</Text>
+        </View>
+      </View>
 
       {/* Tab Bar */}
       <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.tabBar} contentContainerStyle={styles.tabBarContent}>
@@ -58,7 +68,12 @@ export default function CivicMetricsScreen() {
         ))}
       </ScrollView>
 
-      <ScrollView style={styles.content} refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor="#4F8EF7" />}>
+      <ScrollView
+        style={styles.content}
+        contentContainerStyle={{ paddingBottom: insets.bottom + 40 }}
+        refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor="#4F8EF7" />}
+        showsVerticalScrollIndicator={false}
+      >
         {activeTab === 'budget' && (
           <>
             <Text style={styles.sectionTitle}>State Budget Overview</Text>
@@ -81,7 +96,7 @@ export default function CivicMetricsScreen() {
           <>
             <Text style={styles.sectionTitle}>Active Bills ({activeBills.length})</Text>
             {bills.map((b) => (
-              <BillCard key={b.id} bill={b} onSupport={() => supportBill(b.id)} onOppose={() => opposeBill(b.id)} />
+              <BillCard key={b.id} bill={b} onSupport={() => store.supportBill(b.id)} onOppose={() => store.opposeBill(b.id)} />
             ))}
           </>
         )}
@@ -119,7 +134,7 @@ export default function CivicMetricsScreen() {
                 <Text style={styles.rtiQuestion} numberOfLines={2}>{r.questionText}</Text>
                 {r.responseText && <Text style={styles.rtiResponse} numberOfLines={2}>Response: {r.responseText}</Text>}
                 <View style={styles.rtiFooter}>
-                  <Pressable style={styles.rtiUpvote} onPress={() => upvoteRTI(r.id)}>
+                  <Pressable style={styles.rtiUpvote} onPress={() => store.upvoteRTI(r.id)}>
                     <Ionicons name="arrow-up" size={14} color="#4F8EF7" />
                     <Text style={styles.rtiUpvoteText}>{r.upvotes}</Text>
                   </Pressable>
@@ -130,8 +145,6 @@ export default function CivicMetricsScreen() {
             ))}
           </>
         )}
-
-        <View style={{ height: insets.bottom + 100 }} />
       </ScrollView>
     </View>
   );
@@ -139,6 +152,10 @@ export default function CivicMetricsScreen() {
 
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: '#0A0A1A' },
+  header: { flexDirection: 'row', alignItems: 'center', paddingHorizontal: 16, paddingTop: 8, paddingBottom: 8, gap: 10 },
+  backBtn: { width: 36, height: 36, borderRadius: 18, backgroundColor: '#1F2937', alignItems: 'center', justifyContent: 'center' },
+  headerTitle: { fontSize: 18, fontWeight: '900', color: '#FFFFFF' },
+  headerSub: { fontSize: 11, color: '#6B7280', fontWeight: '600' },
   tabBar: { maxHeight: 48, borderBottomWidth: 1, borderBottomColor: '#1F2937' },
   tabBarContent: { paddingHorizontal: 12, gap: 4, alignItems: 'center' },
   tab: { flexDirection: 'row', alignItems: 'center', gap: 4, paddingHorizontal: 12, paddingVertical: 8, borderRadius: 20, backgroundColor: '#111827' },

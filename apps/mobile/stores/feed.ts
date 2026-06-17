@@ -1,5 +1,8 @@
 import { create } from 'zustand';
 import type { Post, Comment, ReactionType, PostType, PostMedia, FeedScope } from '../lib/feedTypes';
+import * as dataService from '../lib/supabaseDataService';
+import { enqueue } from '../lib/offlineSync';
+import { useAuthStore } from './auth';
 
 /**
  * Seed posts for offline-first demo feed.
@@ -137,6 +140,84 @@ const SEED_POSTS: Post[] = [
       totalVotes: 118,
       isClosed: false,
     },
+  },
+
+  // ─── Telangana · Serilingampally (TS-AC-67) — flagship constituency set ───
+  {
+    id: 'seed-ts-c1',
+    author: { id: 'demo-ts-c1', displayName: 'Harish Goud' },
+    stateCode: 'TS',
+    constituencyId: 'TS-AC-67',
+    constituencyName: 'Serilingampally',
+    content: 'Nallagandla lake bund walking track is finally getting LED lights after 2 years of resident requests. Evening walkers, this one is for us. Small win, but it shows persistence works. #serilingampally #nallagandla #civicwin',
+    type: 'discussion',
+    replyCount: 11,
+    reactionCount: 41,
+    isPinned: false,
+    isDeleted: false,
+    createdAt: '2026-04-29T09:15:00Z',
+    updatedAt: '2026-04-29T09:15:00Z',
+    hashtags: ['serilingampally', 'nallagandla', 'civicwin'],
+  },
+  {
+    id: 'seed-ts-c2',
+    author: { id: 'demo-ts-c2', displayName: 'Hindustan Times Hyderabad', isVerified: true },
+    stateCode: 'TS',
+    constituencyId: 'TS-AC-67',
+    constituencyName: 'Serilingampally',
+    content: 'GHMC sanctions ₹48 crore for stormwater drain network in Serilingampally to tackle recurring Gachibowli–Kondapur flooding. Work to begin before next monsoon, says corporation. #serilingampally #ghmc #monsoon',
+    type: 'news',
+    replyCount: 6,
+    reactionCount: 58,
+    isPinned: false,
+    isDeleted: false,
+    createdAt: '2026-04-29T08:45:00Z',
+    updatedAt: '2026-04-29T08:45:00Z',
+    hashtags: ['serilingampally', 'ghmc', 'monsoon'],
+  },
+  {
+    id: 'seed-ts-c3',
+    author: { id: 'demo-ts-c3', displayName: 'Sneha Varma' },
+    stateCode: 'TS',
+    constituencyId: 'TS-AC-67',
+    constituencyName: 'Serilingampally',
+    content: 'What should be the top priority for Serilingampally\'s development fund this year?',
+    type: 'poll',
+    replyCount: 9,
+    reactionCount: 37,
+    isPinned: false,
+    isDeleted: false,
+    createdAt: '2026-04-29T07:45:00Z',
+    updatedAt: '2026-04-29T07:45:00Z',
+    hashtags: ['serilingampally', 'devfund'],
+    poll: {
+      id: 'poll-ts-c1',
+      question: 'What should be the top priority for Serilingampally\'s development fund this year?',
+      options: [
+        { id: 'opt-tsc1a', label: 'Stormwater drains & flooding', voteCount: 71, sortOrder: 0 },
+        { id: 'opt-tsc1b', label: 'Traffic & last-mile roads', voteCount: 54, sortOrder: 1 },
+        { id: 'opt-tsc1c', label: 'Drinking water supply', voteCount: 38, sortOrder: 2 },
+        { id: 'opt-tsc1d', label: 'Parks & public spaces', voteCount: 22, sortOrder: 3 },
+      ],
+      totalVotes: 185,
+      isClosed: false,
+    },
+  },
+  {
+    id: 'seed-ts-c4',
+    author: { id: 'demo-ts-c4', displayName: 'Imran Qureshi', isVerified: true },
+    stateCode: 'TS',
+    constituencyId: 'TS-AC-67',
+    constituencyName: 'Serilingampally',
+    content: 'Serilingampally has the highest property tax collection in GHMC, yet our civic infrastructure lags behind the revenue we generate. The IT corridor pays for the city — it deserves proportional reinvestment, not just promises. #serilingampally #itcorridor #civictax',
+    type: 'opinion',
+    replyCount: 17,
+    reactionCount: 64,
+    isPinned: false,
+    isDeleted: false,
+    createdAt: '2026-04-28T23:30:00Z',
+    updatedAt: '2026-04-28T23:30:00Z',
+    hashtags: ['serilingampally', 'itcorridor', 'civictax'],
   },
 
   // ─── Andhra Pradesh ─────────────────────────────────────────
@@ -432,6 +513,34 @@ const SEED_POSTS: Post[] = [
     updatedAt: '2026-04-28T16:00:00Z',
     hashtags: ['voterturnout', 'urbanapathy'],
   },
+  {
+    id: 'seed-nat-4',
+    author: { id: 'demo-nat-4', displayName: 'Federal Frontier', isVerified: true },
+    stateCode: 'NATIONAL',
+    content: 'The 2026 delimitation debate is heating up. Southern states fear losing Lok Sabha seats for controlling their population, while northern states stand to gain. Should representation reward population growth — or should states that hit national targets be protected? #delimitation #federalism',
+    type: 'discussion',
+    replyCount: 44,
+    reactionCount: 128,
+    isPinned: false,
+    isDeleted: false,
+    createdAt: '2026-04-29T09:30:00Z',
+    updatedAt: '2026-04-29T09:30:00Z',
+    hashtags: ['delimitation', 'federalism', 'loksabha'],
+  },
+  {
+    id: 'seed-nat-5',
+    author: { id: 'demo-nat-5', displayName: 'Nidhi Kulkarni' },
+    stateCode: 'NATIONAL',
+    content: 'The One Nation One Election bill keeps coming up. For those who have read the committee report — how would simultaneous Lok Sabha and Assembly polls actually affect regional parties and local issues? Genuinely trying to understand both sides. #onenationoneelection #elections',
+    type: 'question',
+    replyCount: 38,
+    reactionCount: 84,
+    isPinned: false,
+    isDeleted: false,
+    createdAt: '2026-04-29T02:30:00Z',
+    updatedAt: '2026-04-29T02:30:00Z',
+    hashtags: ['onenationoneelection', 'elections', 'regionalparties'],
+  },
 ];
 
 const SEED_COMMENTS: Record<string, Comment[]> = {
@@ -467,6 +576,7 @@ interface FeedState {
   feedFilter: PostType | 'all';
   scopeFilter: FeedScope;
   loading: boolean;
+  isLive: boolean;
 
   setFilter: (filter: PostType | 'all') => void;
   setScopeFilter: (scope: FeedScope) => void;
@@ -477,6 +587,7 @@ interface FeedState {
   toggleReaction: (postId: string, reaction: ReactionType) => void;
   votePoll: (postId: string, optionId: string) => void;
   addComment: (postId: string, comment: Comment) => void;
+  hydrateFromServer: (serverPosts: any[]) => void;
 }
 
 export const useFeedStore = create<FeedState>()((set, get) => ({
@@ -485,16 +596,28 @@ export const useFeedStore = create<FeedState>()((set, get) => ({
   feedFilter: 'all',
   scopeFilter: 'state' as FeedScope,
   loading: false,
+  isLive: false,
 
   setFilter: (filter) => set({ feedFilter: filter }),
   setScopeFilter: (scope) => set({ scopeFilter: scope }),
 
-  addPost: (post) =>
-    set((state) => ({
-      posts: [post, ...state.posts],
-    })),
+  addPost: (post) => {
+    set((state) => ({ posts: [post, ...state.posts] }));
+    // Background sync to Supabase
+    const userId = useAuthStore.getState().user?.id;
+    if (userId) {
+      enqueue('compose_post', {
+        content: post.content,
+        type: post.type,
+        stateCode: post.stateCode,
+        authorId: userId,
+        hashtags: post.hashtags ?? [],
+        constituencyId: post.constituencyId,
+      });
+    }
+  },
 
-  editPost: (postId, content) =>
+  editPost: (postId, content) => {
     set((state) => ({
       posts: state.posts.map((p) =>
         p.id === postId
@@ -506,14 +629,20 @@ export const useFeedStore = create<FeedState>()((set, get) => ({
             }
           : p,
       ),
-    })),
+    }));
+    const userId = useAuthStore.getState().user?.id;
+    if (userId) dataService.editPost(postId, content, userId);
+  },
 
-  deletePost: (postId) =>
+  deletePost: (postId) => {
     set((state) => ({
       posts: state.posts.map((p) =>
         p.id === postId ? { ...p, isDeleted: true, content: '[Deleted]' } : p,
       ),
-    })),
+    }));
+    const userId = useAuthStore.getState().user?.id;
+    if (userId) dataService.deletePost(postId, userId);
+  },
 
   addMediaToPost: (postId, media) =>
     set((state) => ({
@@ -524,20 +653,31 @@ export const useFeedStore = create<FeedState>()((set, get) => ({
       ),
     })),
 
-  toggleReaction: (postId, reaction) =>
+  toggleReaction: (postId, reaction) => {
+    const post = get().posts.find((p) => p.id === postId);
+    const wasReacted = post?.userReaction === reaction;
     set((state) => ({
       posts: state.posts.map((p) => {
         if (p.id !== postId) return p;
-        const wasReacted = p.userReaction === reaction;
         return {
           ...p,
           userReaction: wasReacted ? undefined : reaction,
           reactionCount: p.reactionCount + (wasReacted ? -1 : 1),
         };
       }),
-    })),
+    }));
+    const userId = useAuthStore.getState().user?.id;
+    if (userId) {
+      if (wasReacted) {
+        dataService.removeReaction(postId, userId);
+      } else {
+        enqueue('react_post', { postId, userId, reaction });
+      }
+    }
+  },
 
-  votePoll: (postId, optionId) =>
+  votePoll: (postId, optionId) => {
+    const post = get().posts.find((p) => p.id === postId);
     set((state) => ({
       posts: state.posts.map((p) => {
         if (p.id !== postId || !p.poll || p.poll.userVotedOptionId) return p;
@@ -553,9 +693,14 @@ export const useFeedStore = create<FeedState>()((set, get) => ({
           },
         };
       }),
-    })),
+    }));
+    const userId = useAuthStore.getState().user?.id;
+    if (userId && post?.poll?.id) {
+      dataService.votePoll(post.poll.id, optionId, userId);
+    }
+  },
 
-  addComment: (postId, comment) =>
+  addComment: (postId, comment) => {
     set((state) => ({
       comments: {
         ...state.comments,
@@ -564,5 +709,52 @@ export const useFeedStore = create<FeedState>()((set, get) => ({
       posts: state.posts.map((p) =>
         p.id === postId ? { ...p, replyCount: p.replyCount + 1 } : p,
       ),
-    })),
+    }));
+    const userId = useAuthStore.getState().user?.id;
+    if (userId) {
+      dataService.addPostComment(postId, userId, comment.content);
+    }
+  },
+
+  hydrateFromServer: (serverPosts) => {
+    if (!serverPosts || serverPosts.length === 0) return;
+    // Merge: server posts take priority, keep seed posts that aren't on server
+    const serverIds = new Set(serverPosts.map((p: any) => p.id));
+    const localOnly = SEED_POSTS.filter((p) => !serverIds.has(p.id));
+    // Transform server format to local Post format
+    const transformed: Post[] = serverPosts.map((p: any) => ({
+      id: p.id,
+      author: {
+        id: p.author_id ?? p.author_display_name ?? 'unknown',
+        displayName: p.author_display_name ?? 'Anonymous',
+        avatarUrl: p.author_avatar_url,
+        isVerified: p.author_is_verified ?? false,
+      },
+      stateCode: p.state_code,
+      constituencyId: p.constituency_id,
+      content: p.content,
+      type: p.type ?? 'discussion',
+      replyCount: p.reply_count ?? 0,
+      reactionCount: p.reaction_count ?? 0,
+      isPinned: p.is_pinned ?? false,
+      isDeleted: p.is_deleted ?? false,
+      createdAt: p.created_at,
+      updatedAt: p.updated_at,
+      hashtags: p.hashtags ?? [],
+      userReaction: p.user_reaction,
+      poll: p.poll_id ? {
+        id: p.poll_id,
+        question: p.poll_question,
+        totalVotes: p.poll_total_votes ?? 0,
+        isClosed: p.poll_is_closed ?? false,
+        options: (p.poll_options ?? []).map((o: any) => ({
+          id: o.id, label: o.label, voteCount: o.vote_count ?? 0, sortOrder: o.sort_order ?? 0,
+        })),
+      } : undefined,
+      media: (p.media ?? []).map((m: any) => ({
+        id: m.id, type: m.media_type, url: m.url, altText: m.alt_text,
+      })),
+    }));
+    set({ posts: [...transformed, ...localOnly], isLive: true });
+  },
 }));

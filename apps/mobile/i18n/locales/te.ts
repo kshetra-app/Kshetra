@@ -98,6 +98,7 @@ const te: PartialTranslationKeys = {
   // ── Map Bottom Sheet ───────────────────────────────────────
   mapSheet: {
     winner2023: '2023 విజేత',
+    winnerYear: '{{year}} విజేత',
     winnerVotes: 'విజేత ఓట్లు',
     margin: 'మార్జిన్',
     runnerUp: 'రన్నర్-అప్',
@@ -221,6 +222,11 @@ const te: PartialTranslationKeys = {
     question: 'ప్రశ్న',
     alert: 'హెచ్చరిక',
     poll: 'సర్వే',
+    edited: '(సవరించబడింది)',
+    deleteConfirm: 'ఈ పోస్ట్‌ను తొలగించాలా?',
+    deleteConfirmBody: 'ఈ చర్యను రద్దు చేయలేరు.',
+    delete: 'తొలగించండి',
+    cancel: 'రద్దు',
   },
 
   // ── Poll Card ─────────────────────────────────────────────
@@ -246,6 +252,13 @@ const te: PartialTranslationKeys = {
     pollOptions: 'సర్వే ఎంపికలు',
     addOption: 'ఎంపిక జోడించండి',
     selectConstituency: 'నియోజకవర్గాన్ని ట్యాగ్ చేయండి',
+    addMedia: 'మీడియా జోడించండి',
+    addImage: 'చిత్రం జోడించండి',
+    addLink: 'లింక్ జోడించండి',
+    linkPlaceholder: 'URL పేస్ట్ చేయండి…',
+    linkAdd: 'జోడించు',
+    editTitle: 'పోస్ట్ మార్చండి',
+    save: 'సేవ్ చేయండి',
   },
 
   // ── Dashboard ───────────────────────────────────────────────
@@ -487,6 +500,39 @@ const te: PartialTranslationKeys = {
     elected: 'ఎన్నికైన పార్టీ',
     current: 'ప్రస్తుత పార్టీ',
     note: 'ఈ ఎమ్మెల్యే 2023 ఎన్నికల తర్వాత పార్టీ మారారు. ఫిరాయింపుల వ్యతిరేక చర్యలు పెండింగ్‌లో ఉండవచ్చు.',
+    tracker_label: 'ఈ కాలంలో ఫిరాయింపులు',
+  },
+
+  // ── Political Shorts ──────────────────────────────────────────
+  shorts: {
+    title: 'పొలిటికల్ షార్ట్స్',
+    seeAll: 'అన్నీ చూడండి',
+    views: 'వీక్షణలు',
+    likes: 'లైక్‌లు',
+    comments: 'వ్యాఖ్యలు',
+    share: 'షేర్',
+    bookmark: 'సేవ్',
+    nowPlaying: 'ఇప్పుడు ప్లే అవుతోంది',
+  },
+
+  // ── Political Timeline & Intelligence ───────────────────────
+  timeline: {
+    general_election: 'ఎన్నిక',
+    by_election: 'ఉప ఎన్నిక',
+    death: 'ఖాళీ (మరణం)',
+    resignation: 'ఖాళీ (రాజీనామా)',
+    disqualification: 'అనర్హత',
+    merger: 'విలీనం',
+    other: 'సంఘటన',
+    unknown_date: 'తేదీ తెలియదు',
+    legal_status: 'ఫిరాయింపుల వ్యతిరేక చర్య',
+    sources: 'మూలాలు',
+    by_elections_held: 'ఉప ఎన్నికలు జరిగాయి',
+    politicalEvents: 'రాజకీయ సంఘటనలు',
+  },
+
+  intelligence: {
+    party_strength_title: 'పార్టీ బలం: ప్రస్తుతం vs ఎన్నికల రోజు',
   },
 
   // ── Content: Seed data translations ────────────────────────
@@ -698,6 +744,14 @@ const te: PartialTranslationKeys = {
     hi: 'हिन्दी',
     kn: 'ಕನ್ನಡ',
     mr: 'मराठी',
+    ta: 'தமிழ்',
+    ml: 'മലയാളം',
+    bn: 'বাংলা',
+    gu: 'ગુજરાતી',
+    pa: 'ਪੰਜਾਬੀ',
+    or: 'ଓଡ଼ିଆ',
+    as: 'অসমীয়া',
+    ne: 'नेपाली',
     systemDefault: 'సిస్టమ్ డిఫాల్ట్',
     changeConfirm: 'భాషను {{language}}కు మార్చాలా?',
   },

@@ -40,7 +40,46 @@ export type ModuleCategory =
 export type ModuleDifficulty = 'beginner' | 'intermediate' | 'advanced';
 export type ContentType = 'article' | 'video' | 'quiz' | 'case_study';
 
-export interface LeadershipModule {
+/** A titled block of reading content within a module. */
+export interface ModuleSection {
+  heading: string;
+  body: string;
+}
+
+/** An embedded video with attribution to its original source. */
+export interface ModuleVideo {
+  youtubeId: string;
+  title: string;
+  channel: string;
+  sourceUrl: string;
+}
+
+/** A single multiple-choice quiz question. */
+export interface QuizQuestion {
+  id: string;
+  question: string;
+  options: string[];
+  correctIndex: number;
+  explanation: string;
+}
+
+/** A citation/source reference shown to avoid copyright/legal issues. */
+export interface ModuleCitation {
+  label: string;
+  publisher: string;
+  url: string;
+}
+
+/** Rich content attached to a module (kept separate from metadata). */
+export interface ModuleContent {
+  sections?: ModuleSection[];
+  keyTakeaways?: string[];
+  video?: ModuleVideo;
+  quiz?: QuizQuestion[];
+  citations?: ModuleCitation[];
+}
+
+export interface LeadershipModule extends ModuleContent {
   id: string;
   title: string;
   description: string;

@@ -1,6 +1,7 @@
 import { create } from 'zustand';
 import type { Session, User } from '@supabase/supabase-js';
 import { supabase, isSupabaseConfigured } from '../lib/supabase';
+import { bootstrapSupabase, teardownSupabase } from '../lib/supabaseBootstrap';
 
 interface AuthState {
   session: Session | null;
@@ -37,12 +38,22 @@ export const useAuthStore = create<AuthState>()((set, get) => ({
         initialized: true,
       });
 
+      // Bootstrap backend connection if session exists
+      if (session) {
+        bootstrapSupabase();
+      }
+
       // Listen for auth state changes
       supabase.auth.onAuthStateChange((_event, session) => {
         set({
           session,
           user: session?.user ?? null,
         });
+        if (session) {
+          bootstrapSupabase();
+        } else {
+          teardownSupabase();
+        }
       });
     } catch {
       set({ initialized: true });
@@ -56,6 +67,9 @@ export const useAuthStore = create<AuthState>()((set, get) => ({
       password,
     });
     set({ loading: false });
+    if (!error) {
+      // Auth state change listener will trigger bootstrap
+    }
     return { error: error?.message ?? null };
   },
 
@@ -71,6 +85,7 @@ export const useAuthStore = create<AuthState>()((set, get) => ({
 
   signOut: async () => {
     set({ loading: true });
+    teardownSupabase();
     await supabase.auth.signOut();
     set({ session: null, user: null, loading: false });
   },

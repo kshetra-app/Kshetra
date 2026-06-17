@@ -1,5 +1,6 @@
 import { View, Text, StyleSheet } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import { useTranslation } from 'react-i18next';
 import type { SeatAllocation } from '../lib/delimitationTypes';
 import { formatPopulation } from '../lib/delimitationTypes';
 
@@ -9,6 +10,7 @@ interface SeatProjectionCardProps {
 }
 
 export default function SeatProjectionCard({ allocation, compact = false }: SeatProjectionCardProps) {
+  const { t } = useTranslation();
   const isGainer = allocation.seatChange > 0;
   const isLoser = allocation.seatChange < 0;
   const changeColor = isGainer ? '#10B981' : isLoser ? '#EF4444' : '#6B7280';
@@ -54,12 +56,12 @@ export default function SeatProjectionCard({ allocation, compact = false }: Seat
       {/* Seat comparison */}
       <View style={styles.seatRow}>
         <View style={styles.seatBlock}>
-          <Text style={styles.seatLabel}>Current</Text>
+          <Text style={styles.seatLabel}>{t('delimitation.currentSeats')}</Text>
           <Text style={styles.seatValue}>{allocation.currentSeats}</Text>
         </View>
         <Ionicons name="arrow-forward" size={18} color="#6B7280" />
         <View style={styles.seatBlock}>
-          <Text style={styles.seatLabel}>Projected</Text>
+          <Text style={styles.seatLabel}>{t('delimitation.projectedSeats')}</Text>
           <Text style={[styles.seatValue, { color: changeColor }]}>
             {allocation.projectedSeats}
           </Text>
@@ -70,15 +72,15 @@ export default function SeatProjectionCard({ allocation, compact = false }: Seat
       <View style={styles.reservationRow}>
         <View style={styles.resBlock}>
           <View style={[styles.resDot, { backgroundColor: '#3B82F6' }]} />
-          <Text style={styles.resLabel}>GEN {allocation.general}</Text>
+          <Text style={styles.resLabel}>{t('delimitation.general')} {allocation.general}</Text>
         </View>
         <View style={styles.resBlock}>
           <View style={[styles.resDot, { backgroundColor: '#F59E0B' }]} />
-          <Text style={styles.resLabel}>SC {allocation.reservedSC}</Text>
+          <Text style={styles.resLabel}>{t('delimitation.sc')} {allocation.reservedSC}</Text>
         </View>
         <View style={styles.resBlock}>
           <View style={[styles.resDot, { backgroundColor: '#10B981' }]} />
-          <Text style={styles.resLabel}>ST {allocation.reservedST}</Text>
+          <Text style={styles.resLabel}>{t('delimitation.st')} {allocation.reservedST}</Text>
         </View>
       </View>
 
@@ -158,9 +160,11 @@ const styles = StyleSheet.create({
   reservationRow: {
     flexDirection: 'row',
     justifyContent: 'center',
-    gap: 16,
+    flexWrap: 'wrap',
+    gap: 10,
     marginBottom: 10,
     paddingVertical: 8,
+    paddingHorizontal: 6,
     backgroundColor: '#0D1117',
     borderRadius: 8,
   },
@@ -182,6 +186,8 @@ const styles = StyleSheet.create({
   statsRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
+    flexWrap: 'wrap',
+    gap: 4,
   },
   statText: {
     fontSize: 11,

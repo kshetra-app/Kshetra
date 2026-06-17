@@ -1,0 +1,473 @@
+openapi: 3.1.0
+info:
+  title: KSHETRA API
+  version: 0.1.0
+  description: >
+    Political intelligence platform API. Phase 1 serves typed seed data
+    (Telangana fully supported) over a versioned REST surface. All mutating
+    or privileged routes use header-based identity placeholders pending the
+    Supabase JWT integration (Phase 2B).
+  license:
+    name: UNLICENSED (Proprietary)
+servers:
+  - url: http://localhost:3001
+    description: Local development
+tags:
+  - name: health
+  - name: constituencies
+  - name: ai
+  - name: states
+  - name: civic
+  - name: journalist
+  - name: politician
+  - name: campaign
+  - name: delimitation
+  - name: moderation
+  - name: notifications
+
+components:
+  securitySchemes:
+    monitorBearer:
+      type: http
+      scheme: bearer
+      description: Shared secret for cron monitor webhooks (KSHETRA_MONITOR_SECRET).
+    apiKey:
+      type: apiKey
+      in: header
+      name: x-api-key
+      description: Service-to-service key (Phase-1 placeholder; Supabase JWT in Phase 2B).
+  schemas:
+    Error:
+      type: object
+      properties:
+        error: { type: string }
+        message: { type: string }
+      required: [error]
+    ConstituencyBrief:
+      type: object
+      properties:
+        id: { type: string, example: TS-AC-1 }
+        name: { type: string }
+        acNo: { type: integer }
+        stateCode: { type: string, example: TS }
+        district: { type: string }
+        reservationStatus: { type: string, enum: [GEN, SC, ST] }
+        currentParty: { type: string }
+        currentMLA: { type: string }
+      required: [id, name, acNo, stateCode]
+    ChatMessage:
+      type: object
+      properties:
+        role: { type: string, enum: [user, assistant, system] }
+        content: { type: string, minLength: 1 }
+      required: [role, content]
+  parameters:
+    StateCode:
+      name: stateCode
+      in: path
+      required: true
+      schema: { type: string, example: TS }
+    UserIdHeader:
+      name: x-user-id
+      in: header
+      required: false
+      schema: { type: string }
+    UserRoleHeader:
+      name: x-user-role
+      in: header
+      required: false
+      schema: { type: string, enum: [citizen, journalist, activist, politician, official, moderator, admin] }
+
+paths:
+  /api/health:
+    get:
+      tags: [health]
+      summary: Liveness probe
+      responses:
+        '200':
+          description: Service healthy
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status: { type: string, example: ok }
+                  service: { type: string, example: kshetra-api }
+                  version: { type: string }
+                  timestamp: { type: string, format: date-time }
+
+  /api/v1/states:
+    get:
+      tags: [states]
+      summary: List states with data-availability status
+      responses:
+        '200': { description: State list }
+  /api/v1/states/{code}:
+    get:
+      tags: [states]
+      summary: Single state info
+      parameters:
+        - { name: code, in: path, required: true, schema: { type: string } }
+      responses:
+        '200': { description: State info }
+        '404': { description: Not found, content: { application/json: { schema: { $ref: '#/components/schemas/Error' } } } }
+
+  /api/v1/states/{stateCode}/constituencies:
+    get:
+      tags: [constituencies]
+      summary: List constituencies for a state (TS supported in Phase 1)
+      parameters: [{ $ref: '#/components/parameters/StateCode' }]
+      responses:
+        '200':
+          description: Constituency list
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  state: { type: string }
+                  count: { type: integer }
+                  data:
+                    type: array
+                    items: { $ref: '#/components/schemas/ConstituencyBrief' }
+  /api/v1/states/{stateCode}/constituencies/search:
+    get:
+      tags: [constituencies]
+      summary: Filtered constituency search
+      parameters:
+        - { $ref: '#/components/parameters/StateCode' }
+        - { name: q, in: query, schema: { type: string } }
+        - { name: party, in: query, schema: { type: string } }
+        - { name: district, in: query, schema: { type: string } }
+        - { name: type, in: query, schema: { type: string, enum: [GEN, SC, ST] } }
+        - { name: minMargin, in: query, schema: { type: integer } }
+        - { name: maxMargin, in: query, schema: { type: integer } }
+        - { name: sort, in: query, schema: { type: string, enum: [name, margin_asc, margin_desc] } }
+      responses:
+        '200': { description: Search results }
+  /api/v1/states/{stateCode}/constituencies/{constituencyId}:
+    get:
+      tags: [constituencies]
+      summary: Constituency detail by AC number or name
+      parameters:
+        - { $ref: '#/components/parameters/StateCode' }
+        - { name: constituencyId, in: path, required: true, schema: { type: string } }
+      responses:
+        '200': { description: Constituency detail with 2023 result }
+        '404': { description: Not found }
+  /api/v1/states/{stateCode}/analytics:
+    get:
+      tags: [constituencies]
+      summary: Party summary, district breakdown, margin stats
+      parameters: [{ $ref: '#/components/parameters/StateCode' }]
+      responses:
+        '200': { description: Analytics }
+        '404': { description: Not supported }
+  /api/v1/states/{stateCode}/mla:
+    get:
+      tags: [constituencies]
+      summary: All MLA profiles for a state
+      parameters: [{ $ref: '#/components/parameters/StateCode' }]
+      responses:
+        '200': { description: MLA profiles }
+        '404': { description: Not supported }
+  /api/v1/states/{stateCode}/mla/{acNo}:
+    get:
+      tags: [constituencies]
+      summary: MLA profile by AC number
+      parameters:
+        - { $ref: '#/components/parameters/StateCode' }
+        - { name: acNo, in: path, required: true, schema: { type: integer, minimum: 1, maximum: 119 } }
+      responses:
+        '200': { description: MLA profile }
+        '400': { description: Invalid AC number }
+        '404': { description: Not found }
+  /api/v1/states/{stateCode}/elections:
+    get:
+      tags: [constituencies]
+      summary: Election history for a state
+      parameters: [{ $ref: '#/components/parameters/StateCode' }]
+      responses:
+        '200': { description: Election history }
+        '404': { description: Not supported }
+  /api/v1/constituencies/locate:
+    get:
+      tags: [constituencies]
+      summary: Reverse-geocode a lat/lng to a constituency (point-in-polygon)
+      parameters:
+        - { name: lat, in: query, required: true, schema: { type: number } }
+        - { name: lng, in: query, required: true, schema: { type: number } }
+      responses:
+        '200': { description: Located constituency or null }
+        '400': { description: Missing/invalid coordinates }
+
+  /api/v1/ai/chat:
+    post:
+      tags: [ai]
+      summary: Conversational political analysis (graceful without API key)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                messages:
+                  type: array
+                  minItems: 1
+                  items: { $ref: '#/components/schemas/ChatMessage' }
+                constituencyAcNo: { type: integer, minimum: 1, maximum: 119 }
+              required: [messages]
+      responses:
+        '200': { description: AI response }
+        '400': { description: Validation error, content: { application/json: { schema: { $ref: '#/components/schemas/Error' } } } }
+  /api/v1/ai/analyze/constituency/{acNo}:
+    get:
+      tags: [ai]
+      summary: Quick AI analysis for a constituency
+      parameters:
+        - { name: acNo, in: path, required: true, schema: { type: integer, minimum: 1, maximum: 119 } }
+      responses:
+        '200': { description: Analysis }
+        '400': { description: Invalid AC number }
+  /api/v1/ai/analyze/trends:
+    get:
+      tags: [ai]
+      summary: Election trend analysis
+      responses:
+        '200': { description: Trends }
+  /api/v1/ai/smart-search:
+    post:
+      tags: [ai]
+      summary: Natural-language constituency search
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                query: { type: string, minLength: 3 }
+              required: [query]
+      responses:
+        '200': { description: Ranked results }
+        '400': { description: Validation error }
+  /api/v1/ai/summarize-issues:
+    post:
+      tags: [ai]
+      summary: Summarize civic issues for a constituency
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                constituencyName: { type: string, minLength: 1 }
+                issues: { type: array, minItems: 1, items: { type: string } }
+              required: [constituencyName, issues]
+      responses:
+        '200': { description: Summary }
+        '400': { description: Validation error }
+  /api/v1/ai/status:
+    get:
+      tags: [ai]
+      summary: AI configuration status
+      responses:
+        '200': { description: Configured flag, model, provider }
+
+  /api/v1/delimitation/projections:
+    get:
+      tags: [delimitation]
+      summary: All-state Census-2011 seat projections
+      responses:
+        '200': { description: Projections with summary }
+  /api/v1/delimitation/projections/{stateCode}:
+    get:
+      tags: [delimitation]
+      parameters: [{ $ref: '#/components/parameters/StateCode' }]
+      responses:
+        '200': { description: Single-state projection }
+        '404': { description: Not found }
+  /api/v1/delimitation/status:
+    get: { tags: [delimitation], summary: National status, responses: { '200': { description: Status } } }
+  /api/v1/delimitation/timeline:
+    get: { tags: [delimitation], summary: Timeline summary, responses: { '200': { description: Timeline } } }
+  /api/v1/delimitation/gainers-losers:
+    get: { tags: [delimitation], summary: Gainers/losers, responses: { '200': { description: Summary } } }
+  /api/v1/delimitation/reservation:
+    get: { tags: [delimitation], summary: National reservation analysis, responses: { '200': { description: Reservation } } }
+  /api/v1/delimitation/reservation/{stateCode}:
+    get:
+      tags: [delimitation]
+      parameters: [{ $ref: '#/components/parameters/StateCode' }]
+      responses: { '200': { description: State reservation detail }, '404': { description: Not found } }
+  /api/v1/delimitation/simulate/{stateCode}:
+    get:
+      tags: [delimitation]
+      summary: District-level boundary simulation
+      parameters:
+        - { $ref: '#/components/parameters/StateCode' }
+        - { name: mode, in: query, schema: { type: string } }
+        - { name: seats, in: query, schema: { type: integer } }
+      responses: { '200': { description: Simulation }, '404': { description: Not found } }
+  /api/v1/delimitation/compare:
+    get:
+      tags: [delimitation]
+      summary: Compare up to 4 states
+      parameters:
+        - { name: states, in: query, required: true, schema: { type: string, example: "TS,AP" } }
+      responses: { '200': { description: Comparison }, '400': { description: Missing states }, '404': { description: No matches } }
+  /api/v1/delimitation/impact/{pinCode}:
+    get:
+      tags: [delimitation]
+      parameters:
+        - { name: pinCode, in: path, required: true, schema: { type: string, pattern: '^\d{6}$' } }
+      responses: { '200': { description: Impact (stub) }, '400': { description: Invalid PIN } }
+  /api/v1/delimitation/monitor-webhook:
+    post:
+      tags: [delimitation]
+      summary: Ingest alerts from cron monitors (Bearer-authenticated)
+      security: [{ monitorBearer: [] }]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                type: { type: string }
+                entries: { type: array, items: { type: object } }
+              required: [type, entries]
+      responses: { '200': { description: Accepted }, '400': { description: Missing fields }, '401': { description: Unauthorized } }
+
+  /api/v1/moderation/action:
+    post:
+      tags: [moderation]
+      summary: Perform a moderation action (moderator/admin)
+      parameters: [{ $ref: '#/components/parameters/UserRoleHeader' }]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                moderatorId: { type: string }
+                actionType: { type: string }
+                reason: { type: string }
+              required: [moderatorId, actionType, reason]
+      responses: { '200': { description: Executed }, '403': { description: Insufficient permissions } }
+  /api/v1/moderation/check-content:
+    post:
+      tags: [moderation]
+      summary: Keyword-based content policy check
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { type: object, properties: { content: { type: string } }, required: [content] }
+      responses: { '200': { description: Flag result } }
+  /api/v1/moderation/queue:
+    get:
+      tags: [moderation]
+      parameters: [{ $ref: '#/components/parameters/UserRoleHeader' }]
+      responses: { '200': { description: Queue }, '403': { description: Forbidden } }
+  /api/v1/moderation/audit-log:
+    get:
+      tags: [moderation]
+      parameters: [{ $ref: '#/components/parameters/UserRoleHeader' }]
+      responses: { '200': { description: Audit entries }, '403': { description: Admin only } }
+  /api/v1/moderation/actions:
+    get: { tags: [moderation], summary: Available actions, responses: { '200': { description: Action config } } }
+  /api/v1/moderation/reputation-rules:
+    get: { tags: [moderation], summary: Reputation rules, responses: { '200': { description: Rules } } }
+  /api/v1/moderation/verify-request:
+    post:
+      tags: [moderation]
+      parameters: [{ $ref: '#/components/parameters/UserIdHeader' }]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { type: object, properties: { verificationType: { type: string } }, required: [verificationType] }
+      responses: { '200': { description: Submitted }, '401': { description: Auth required } }
+  /api/v1/moderation/block:
+    post:
+      tags: [moderation]
+      parameters: [{ $ref: '#/components/parameters/UserIdHeader' }]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { type: object, properties: { blockedUserId: { type: string } }, required: [blockedUserId] }
+      responses: { '200': { description: Blocked }, '400': { description: Cannot block self }, '401': { description: Auth required } }
+  /api/v1/moderation/block/{userId}:
+    delete:
+      tags: [moderation]
+      parameters:
+        - { $ref: '#/components/parameters/UserIdHeader' }
+        - { name: userId, in: path, required: true, schema: { type: string } }
+      responses: { '200': { description: Unblocked }, '401': { description: Auth required } }
+
+  /api/v1/notifications/register-token:
+    post:
+      tags: [notifications]
+      parameters: [{ $ref: '#/components/parameters/UserIdHeader' }]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                token: { type: string }
+                platform: { type: string, enum: [ios, android, web] }
+                deviceName: { type: string }
+              required: [token, platform]
+      responses: { '200': { description: Registered }, '400': { description: Invalid platform }, '401': { description: Auth required } }
+  /api/v1/notifications/send:
+    post:
+      tags: [notifications]
+      summary: Service-to-service dispatch (x-api-key)
+      security: [{ apiKey: [] }]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                userId: { type: string }
+                trigger: { type: string }
+                title: { type: string }
+                body: { type: string }
+              required: [userId, trigger, title, body]
+      responses: { '200': { description: Dispatched }, '401': { description: API key required } }
+  /api/v1/notifications/preferences:
+    get:
+      tags: [notifications]
+      parameters: [{ $ref: '#/components/parameters/UserIdHeader' }]
+      responses: { '200': { description: Preferences }, '401': { description: Auth required } }
+    put:
+      tags: [notifications]
+      parameters: [{ $ref: '#/components/parameters/UserIdHeader' }]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                trigger: { type: string }
+                pushEnabled: { type: boolean }
+                inAppEnabled: { type: boolean }
+              required: [trigger, pushEnabled, inAppEnabled]
+      responses: { '200': { description: Updated }, '401': { description: Auth required } }
+  /api/v1/notifications/triggers:
+    get: { tags: [notifications], summary: Trigger catalogue, responses: { '200': { description: Triggers } } }
+
+  # Civic, journalist, politician and campaign expose additional list/detail
+  # endpoints (stubbed pending Supabase). See routes/{civic,journalist,
+  # politician,campaign}.ts. They follow the same { data, total, filters }
+  # envelope and are intentionally omitted here for brevity until backed by DB.

@@ -209,6 +209,18 @@ const en = {
     writeReply: 'Write a reply…',
   },
 
+  // ── Political Shorts ──────────────────────────────────────────
+  shorts: {
+    title: 'Political Shorts',
+    seeAll: 'See All',
+    views: 'views',
+    likes: 'likes',
+    comments: 'comments',
+    share: 'Share',
+    bookmark: 'Save',
+    nowPlaying: 'Now Playing',
+  },
+
   // ── Post Card ──────────────────────────────────────────────
   postCard: {
     pinned: 'Pinned',

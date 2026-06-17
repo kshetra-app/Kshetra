@@ -5,11 +5,11 @@ import {
   StyleSheet,
   ScrollView,
   Pressable,
-  SafeAreaView,
   StatusBar,
   Share,
   Platform,
 } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import Slider from '@react-native-community/slider';
@@ -41,6 +41,7 @@ const MODE_CONFIG: Record<SimMode, { label: string; icon: string; description: s
 
 export default function SimulatorScreen() {
   const router = useRouter();
+  const insets = useSafeAreaInsets();
   const allAllocations = useMemo(() => computeAllSeatAllocations(), []);
 
   // State selection
@@ -108,11 +109,11 @@ export default function SimulatorScreen() {
   const changeColor = seatChange > 0 ? '#10B981' : seatChange < 0 ? '#EF4444' : '#6B7280';
 
   return (
-    <SafeAreaView style={styles.safe}>
-      <StatusBar barStyle="light-content" />
+    <View style={styles.safe}>
+      <StatusBar barStyle="light-content" translucent backgroundColor="transparent" />
 
       {/* Header */}
-      <View style={styles.header}>
+      <View style={[styles.header, { paddingTop: insets.top + 8 }]}>
         <Pressable onPress={() => router.back()} style={styles.backBtn}>
           <Ionicons name="arrow-back" size={22} color="#FFFFFF" />
         </Pressable>
@@ -127,7 +128,7 @@ export default function SimulatorScreen() {
         )}
       </View>
 
-      <ScrollView style={styles.scroll} contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
+      <ScrollView style={styles.scroll} contentContainerStyle={[styles.scrollContent, { paddingBottom: insets.bottom + 60 }]} showsVerticalScrollIndicator={false}>
 
         {/* State Picker */}
         <Text style={styles.sectionTitle}>Select State</Text>
@@ -340,7 +341,7 @@ export default function SimulatorScreen() {
           </View>
         )}
       </ScrollView>
-    </SafeAreaView>
+    </View>
   );
 }
 
@@ -352,7 +353,7 @@ const styles = StyleSheet.create({
   headerSubtitle: { fontSize: 11, color: '#6B7280', fontWeight: '600' },
   shareBtn: { width: 36, height: 36, borderRadius: 18, backgroundColor: '#4F8EF715', alignItems: 'center', justifyContent: 'center' },
   scroll: { flex: 1 },
-  scrollContent: { padding: 16, paddingBottom: 60 },
+  scrollContent: { paddingHorizontal: 16, paddingTop: 16 },
 
   sectionTitle: { fontSize: 15, fontWeight: '800', color: '#FFFFFF', marginTop: 16, marginBottom: 8 },
   sectionSub: { fontSize: 11, color: '#6B7280', marginBottom: 8, fontWeight: '600' },

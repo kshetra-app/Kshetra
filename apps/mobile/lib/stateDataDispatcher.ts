@@ -244,7 +244,7 @@ export function getMLAProfileForState(
 function getRawMLAProfile(stateCode: string, acNo: number): MLAProfile | undefined {
   switch (stateCode) {
     case 'TS': return getTSMLA(acNo);
-    case 'AP': return getAPMLAProfile(acNo);
+    case 'AP': return adaptLegislatorProfile(getAPMLAProfile(acNo));
     case 'KA': return getKAMLAProfile(acNo);
     case 'MH': return getMHMLAProfile(acNo);
     case 'TN': return adaptLegislatorProfile(getTNMLAProfile(acNo));

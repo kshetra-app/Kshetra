@@ -6,10 +6,10 @@ import {
   ScrollView,
   Pressable,
   TextInput,
-  SafeAreaView,
   StatusBar,
   ActivityIndicator,
 } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import { useMyConstituencyStore } from '../../stores/myConstituency';
@@ -27,6 +27,7 @@ import type { CitizenImpact } from '../../lib/delimitationTypes';
 
 export default function MyImpactScreen() {
   const router = useRouter();
+  const insets = useSafeAreaInsets();
   const [pinCode, setPinCode] = useState('');
   const [searching, setSearching] = useState(false);
   const [result, setResult] = useState<CitizenImpact | null>(null);
@@ -73,11 +74,11 @@ export default function MyImpactScreen() {
   };
 
   return (
-    <SafeAreaView style={styles.safe}>
-      <StatusBar barStyle="light-content" />
+    <View style={styles.safe}>
+      <StatusBar barStyle="light-content" translucent backgroundColor="transparent" />
 
       {/* Header */}
-      <View style={styles.header}>
+      <View style={[styles.header, { paddingTop: insets.top + 8 }]}>
         <Pressable onPress={() => router.back()} style={styles.backBtn}>
           <Ionicons name="arrow-back" size={22} color="#FFFFFF" />
         </Pressable>
@@ -89,7 +90,7 @@ export default function MyImpactScreen() {
 
       <ScrollView
         style={styles.scroll}
-        contentContainerStyle={styles.scrollContent}
+        contentContainerStyle={[styles.scrollContent, { paddingBottom: insets.bottom + 60 }]}
         showsVerticalScrollIndicator={false}
       >
         {/* Hero explanation */}
@@ -275,7 +276,7 @@ export default function MyImpactScreen() {
           </Text>
         </View>
       </ScrollView>
-    </SafeAreaView>
+    </View>
   );
 }
 
@@ -297,7 +298,7 @@ const styles = StyleSheet.create({
   headerTitle: { fontSize: 18, fontWeight: '900', color: '#FFFFFF' },
   headerSubtitle: { fontSize: 11, color: '#6B7280', fontWeight: '600' },
   scroll: { flex: 1 },
-  scrollContent: { padding: 16, paddingBottom: 40 },
+  scrollContent: { paddingHorizontal: 16, paddingTop: 16 },
 
   // Hero
   heroCard: {

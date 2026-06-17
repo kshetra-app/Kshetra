@@ -35,18 +35,21 @@ jobs:
         run: npm run build -w @kshetra/shared
 
       - name: Test shared package
-        run: npm test -w @kshetra/shared -- --passWithNoTests --forceExit
+        run: npm test -w @kshetra/shared -- --forceExit
 
-      - name: Test API
-        run: npm test -w @kshetra/api -- --passWithNoTests --forceExit
+      - name: Test API (with coverage gate)
+        run: npm run test:coverage -w @kshetra/api -- --forceExit
 
       - name: Test seed data
-        run: npx jest --config jest.config.js --passWithNoTests --forceExit
+        run: npx jest --config jest.config.js --forceExit
         working-directory: data/seed
 
       - name: Test census data
-        run: npx jest --config jest.config.js --passWithNoTests --forceExit
+        run: npx jest --config jest.config.js --forceExit
         working-directory: data/census
+
+      - name: Test mobile (node-safe lib units)
+        run: npm test -w @kshetra/mobile -- --forceExit
 
   typecheck:
     name: Typecheck
@@ -72,6 +75,18 @@ jobs:
         run: npx tsc --noEmit
         working-directory: apps/api
 
+      - name: Typecheck shared
+        run: npx tsc --noEmit
+        working-directory: packages/shared
+
+      # Mobile carries pre-existing type debt; surfaced but non-blocking
+      # during the Gold Standard migration. Flip continue-on-error to false
+      # once the mobile app typechecks clean.
+      - name: Typecheck mobile
+        run: npx tsc --noEmit
+        working-directory: apps/mobile
+        continue-on-error: true
+
   lint:
     name: Lint
     runs-on: ubuntu-latest
@@ -91,3 +106,9 @@ jobs:
 
       - name: Prettier check
         run: npx prettier --check "**/*.{ts,tsx,json,md}" --ignore-path .gitignore
+
+      # ESLint enforces complexity / size budgets (Gold Standard Ch. 2-3).
+      # Non-blocking during migration; flip to blocking once the backlog clears.
+      - name: ESLint
+        run: npx eslint "apps/**/*.{ts,tsx}" "packages/**/*.{ts,tsx}" --max-warnings=0
+        continue-on-error: true

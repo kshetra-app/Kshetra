@@ -5,11 +5,12 @@ import {
   StyleSheet,
   ScrollView,
   Pressable,
-  SafeAreaView,
   StatusBar,
 } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter, useLocalSearchParams } from 'expo-router';
+import { useTranslation } from 'react-i18next';
 import { computeStateSeatAllocation, computeDistrictSeatDistribution } from '../../../lib/delimitation/seatCalculator';
 import { quickDistrictAggregation } from '../../../lib/delimitation/populationAggregator';
 import { analyzeStateReservation } from '../../../lib/delimitation/reservationAnalyzer';
@@ -17,6 +18,8 @@ import { formatPopulation } from '../../../lib/delimitationTypes';
 
 export default function StateDelimitationDetail() {
   const router = useRouter();
+  const insets = useSafeAreaInsets();
+  const { t } = useTranslation();
   const { code } = useLocalSearchParams<{ code: string }>();
   const stateCode = (code ?? '').toUpperCase();
 
@@ -26,48 +29,48 @@ export default function StateDelimitationDetail() {
 
   if (!allocation) {
     return (
-      <SafeAreaView style={styles.safe}>
-        <View style={styles.center}>
+      <View style={styles.safe}>
+        <View style={[styles.center, { paddingTop: insets.top }]}>
           <Ionicons name="alert-circle" size={40} color="#EF4444" />
-          <Text style={styles.errorText}>No data for state: {stateCode}</Text>
+          <Text style={styles.errorText}>{t('constituency.notFound')}: {stateCode}</Text>
           <Pressable style={styles.backButton} onPress={() => router.back()}>
-            <Text style={styles.backButtonText}>Go Back</Text>
+            <Text style={styles.backButtonText}>{t('common.back')}</Text>
           </Pressable>
         </View>
-      </SafeAreaView>
+      </View>
     );
   }
 
   const changeColor = allocation.seatChange > 0 ? '#10B981' : allocation.seatChange < 0 ? '#EF4444' : '#6B7280';
 
   return (
-    <SafeAreaView style={styles.safe}>
-      <StatusBar barStyle="light-content" />
+    <View style={styles.safe}>
+      <StatusBar barStyle="light-content" translucent backgroundColor="transparent" />
 
       {/* Header */}
-      <View style={styles.header}>
+      <View style={[styles.header, { paddingTop: insets.top + 8 }]}>
         <Pressable onPress={() => router.back()} style={styles.backBtn}>
           <Ionicons name="arrow-back" size={22} color="#FFFFFF" />
         </Pressable>
         <View style={{ flex: 1 }}>
           <Text style={styles.headerTitle}>{allocation.stateName}</Text>
-          <Text style={styles.headerSubtitle}>Delimitation Analysis</Text>
+          <Text style={styles.headerSubtitle}>{t('delimitation.title')}</Text>
         </View>
       </View>
 
-      <ScrollView style={styles.scroll} contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
+      <ScrollView style={styles.scroll} contentContainerStyle={[styles.scrollContent, { paddingBottom: insets.bottom + 60 }]} showsVerticalScrollIndicator={false}>
 
         {/* Hero Stats */}
         <View style={styles.heroCard}>
           <View style={styles.heroRow}>
             <View style={styles.heroStat}>
               <Text style={styles.heroValue}>{allocation.currentSeats}</Text>
-              <Text style={styles.heroLabel}>Current</Text>
+              <Text style={styles.heroLabel}>{t('delimitation.currentSeats')}</Text>
             </View>
             <Ionicons name="arrow-forward" size={20} color="#6B7280" />
             <View style={styles.heroStat}>
               <Text style={[styles.heroValue, { color: changeColor }]}>{allocation.projectedSeats}</Text>
-              <Text style={styles.heroLabel}>Projected</Text>
+              <Text style={styles.heroLabel}>{t('delimitation.projectedSeats')}</Text>
             </View>
             <View style={[styles.changeBadge, { backgroundColor: changeColor + '20' }]}>
               <Text style={[styles.changeText, { color: changeColor }]}>
@@ -88,13 +91,13 @@ export default function StateDelimitationDetail() {
         {/* Reservation Breakdown */}
         {reservation && (
           <View style={styles.section}>
-            <Text style={styles.sectionTitle}>Reservation Breakdown</Text>
+            <Text style={styles.sectionTitle}>{t('delimitation.reservation')}</Text>
             <View style={styles.card}>
               <View style={styles.resRow}>
-                <Text style={styles.resLabel}>Category</Text>
-                <Text style={styles.resHeader}>Current</Text>
-                <Text style={styles.resHeader}>Projected</Text>
-                <Text style={styles.resHeader}>Change</Text>
+                <Text style={styles.resLabel}>{t('constituency.type')}</Text>
+                <Text style={styles.resHeader}>{t('constituency.current')}</Text>
+                <Text style={styles.resHeader}>{t('delimitation.projectedSeats')}</Text>
+                <Text style={styles.resHeader}>{t('delimitation.seatChange')}</Text>
               </View>
               <View style={styles.resDivider} />
 
@@ -123,7 +126,7 @@ export default function StateDelimitationDetail() {
               {/* General */}
               <View style={styles.resRow}>
                 <View style={[styles.resDot, { backgroundColor: '#3B82F6' }]} />
-                <Text style={styles.resCategory}>General</Text>
+                <Text style={styles.resCategory}>{t('delimitation.general')}</Text>
                 <Text style={styles.resValue}>{reservation.current.general}</Text>
                 <Text style={styles.resValue}>{reservation.projected.general}</Text>
                 <Text style={[styles.resChange, { color: reservation.change.generalChange >= 0 ? '#10B981' : '#EF4444' }]}>
@@ -141,7 +144,7 @@ export default function StateDelimitationDetail() {
         {/* District Breakdown */}
         {districtAgg && (
           <View style={styles.section}>
-            <Text style={styles.sectionTitle}>District-Level Breakdown</Text>
+            <Text style={styles.sectionTitle}>{t('constituency.district')}</Text>
             <Text style={styles.sectionSubtitle}>
               {districtAgg.districts.length} districts · {districtAgg.totalSeats} seats · Ideal: {formatPopulation(districtAgg.idealPopPerSeat)}/seat
             </Text>
@@ -189,7 +192,7 @@ export default function StateDelimitationDetail() {
         {/* Hotspots */}
         {reservation && reservation.hotspots.length > 0 && (
           <View style={styles.section}>
-            <Text style={styles.sectionTitle}>Reservation Hotspots</Text>
+            <Text style={styles.sectionTitle}>{t('delimitation.reservation')}</Text>
             {reservation.hotspots.map((h, i) => (
               <View key={i} style={[styles.hotspotCard, {
                 borderLeftColor: h.significance === 'critical' ? '#EF4444' : h.significance === 'high' ? '#F59E0B' : '#3B82F6'
@@ -213,11 +216,11 @@ export default function StateDelimitationDetail() {
         <View style={styles.disclaimer}>
           <Ionicons name="information-circle" size={14} color="#F59E0B" />
           <Text style={styles.disclaimerText}>
-            Based on Census 2011. Actual delimitation will use Census 2026 data.
+            {t('delimitation.disclaimer')}
           </Text>
         </View>
       </ScrollView>
-    </SafeAreaView>
+    </View>
   );
 }
 
@@ -239,7 +242,7 @@ const styles = StyleSheet.create({
   headerTitle: { fontSize: 18, fontWeight: '900', color: '#FFFFFF' },
   headerSubtitle: { fontSize: 11, color: '#6B7280', fontWeight: '600' },
   scroll: { flex: 1 },
-  scrollContent: { padding: 16, paddingBottom: 40 },
+  scrollContent: { paddingHorizontal: 16, paddingTop: 16 },
 
   // Hero
   heroCard: { backgroundColor: '#111827', borderRadius: 14, padding: 16, marginBottom: 16 },
@@ -262,10 +265,10 @@ const styles = StyleSheet.create({
   resRow: { flexDirection: 'row', alignItems: 'center', paddingVertical: 6, gap: 6 },
   resDot: { width: 8, height: 8, borderRadius: 4 },
   resLabel: { flex: 1, fontSize: 11, fontWeight: '700', color: '#6B7280' },
-  resHeader: { width: 60, fontSize: 10, fontWeight: '700', color: '#6B7280', textAlign: 'center' },
+  resHeader: { flex: 1, fontSize: 10, fontWeight: '700', color: '#6B7280', textAlign: 'center' },
   resCategory: { flex: 1, fontSize: 13, fontWeight: '700', color: '#D1D5DB' },
-  resValue: { width: 60, fontSize: 13, fontWeight: '700', color: '#FFFFFF', textAlign: 'center' },
-  resChange: { width: 60, fontSize: 13, fontWeight: '800', textAlign: 'center' },
+  resValue: { flex: 1, fontSize: 13, fontWeight: '700', color: '#FFFFFF', textAlign: 'center' },
+  resChange: { flex: 1, fontSize: 13, fontWeight: '800', textAlign: 'center' },
   resDivider: { height: 1, backgroundColor: '#1F2937', marginVertical: 4 },
   resSummary: { fontSize: 12, color: '#9CA3AF', marginTop: 6, fontStyle: 'italic' },
 

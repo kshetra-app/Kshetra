@@ -15,7 +15,7 @@ export interface UKPoliticalLedgerEntry {
 
 export const UK_POLITICAL_LEDGER: UKPoliticalLedgerEntry[] = [
   {
-    acNo: 15,
+    acNo: 43,
     constituencyName: 'Didihat',
     date: '2018-05-15',
     event: 'Vishan Singh switched party from BJP to INC',
@@ -24,7 +24,7 @@ export const UK_POLITICAL_LEDGER: UKPoliticalLedgerEntry[] = [
     legislatorName: 'Vishan Singh'
   },
   {
-    acNo: 4,
+    acNo: 47,
     constituencyName: 'Bageshwar',
     date: '2019-03-20',
     event: 'By-election held; seat won by INC',
@@ -33,7 +33,7 @@ export const UK_POLITICAL_LEDGER: UKPoliticalLedgerEntry[] = [
     legislatorName: 'Chandan Ram Dass'
   },
   {
-    acNo: 36,
+    acNo: 56,
     constituencyName: 'Lalkuan',
     date: '2019-10-24',
     event: 'Vacancy caused by the demise of the sitting MLA Dr. Mohan Singh Bisht',
@@ -51,7 +51,7 @@ export const UK_POLITICAL_LEDGER: UKPoliticalLedgerEntry[] = [
     legislatorName: 'Umesh Kumar'
   },
   {
-    acNo: 29,
+    acNo: 6,
     constituencyName: 'Karanprayag',
     date: '2020-11-10',
     event: 'Anil Nautiyal switched party from BJP to INC',
@@ -60,7 +60,7 @@ export const UK_POLITICAL_LEDGER: UKPoliticalLedgerEntry[] = [
     legislatorName: 'Anil Nautiyal'
   },
   {
-    acNo: 9,
+    acNo: 39,
     constituencyName: 'Chaubattakhal',
     date: '2021-02-22',
     event: 'By-election held; seat won by INC',
@@ -69,7 +69,7 @@ export const UK_POLITICAL_LEDGER: UKPoliticalLedgerEntry[] = [
     legislatorName: 'Satpal Maharaj'
   },
   {
-    acNo: 48,
+    acNo: 19,
     constituencyName: 'Raipur',
     date: '2021-08-14',
     event: 'Vacancy caused by the demise of the sitting MLA Umesh Sharma Kau',
@@ -78,7 +78,7 @@ export const UK_POLITICAL_LEDGER: UKPoliticalLedgerEntry[] = [
     legislatorName: 'Umesh Sharma Kau'
   },
   {
-    acNo: 7,
+    acNo: 57,
     constituencyName: 'Bhimtal',
     date: '2022-01-05',
     event: 'MLA resigned from the assembly',
@@ -87,7 +87,7 @@ export const UK_POLITICAL_LEDGER: UKPoliticalLedgerEntry[] = [
     legislatorName: 'Ram Singh Kaira'
   },
   {
-    acNo: 44,
+    acNo: 30,
     constituencyName: 'Pirankaliyar',
     date: '2022-06-25',
     event: 'Furkan Ahmad switched party from INC to BJP',
@@ -96,7 +96,7 @@ export const UK_POLITICAL_LEDGER: UKPoliticalLedgerEntry[] = [
     legislatorName: 'Furkan Ahmad'
   },
   {
-    acNo: 62,
+    acNo: 36,
     constituencyName: 'Yamkeshwar',
     date: '2023-03-12',
     event: 'By-election held; seat won by INC',
@@ -105,7 +105,7 @@ export const UK_POLITICAL_LEDGER: UKPoliticalLedgerEntry[] = [
     legislatorName: 'Renu Bisht'
   },
   {
-    acNo: 58,
+    acNo: 38,
     constituencyName: 'Srinagar',
     date: '2023-11-20',
     event: 'Vacancy caused by the demise of the sitting MLA Dr. Dhan Singh Rawat',
@@ -114,7 +114,7 @@ export const UK_POLITICAL_LEDGER: UKPoliticalLedgerEntry[] = [
     legislatorName: 'Dr. Dhan Singh Rawat'
   },
   {
-    acNo: 35,
+    acNo: 34,
     constituencyName: 'Laksar',
     date: '2024-02-18',
     event: 'MLA resigned from the assembly',
@@ -123,7 +123,7 @@ export const UK_POLITICAL_LEDGER: UKPoliticalLedgerEntry[] = [
     legislatorName: 'Shahzad'
   },
   {
-    acNo: 6,
+    acNo: 28,
     constituencyName: 'Bhagwanpur',
     date: '2024-05-24',
     event: 'Mamta Rakesh switched party from INC to BJP',
@@ -132,7 +132,7 @@ export const UK_POLITICAL_LEDGER: UKPoliticalLedgerEntry[] = [
     legislatorName: 'Mamta Rakesh'
   },
   {
-    acNo: 38,
+    acNo: 54,
     constituencyName: 'Lohaghat',
     date: '2024-10-15',
     event: 'By-election held; seat won by BJP',

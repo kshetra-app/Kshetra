@@ -24,11 +24,24 @@ export default function JournalistDashboardScreen() {
   const insets = useSafeAreaInsets();
   const router = useRouter();
 
-  const publishedArticles = useJournalistStore((s) => s.getPublishedArticles());
+  const articles = useJournalistStore((s) => s.articles);
   const factChecks = useJournalistStore((s) => s.factChecks);
-  const breakingNews = useJournalistStore((s) => s.getActiveBreaking());
+  const breakingNewsRaw = useJournalistStore((s) => s.breakingNews);
   const journalists = useJournalistStore((s) => s.journalists);
-  const editorPicks = useJournalistStore((s) => s.getEditorPicks());
+
+  const publishedArticles = useMemo(() => {
+    return articles
+      .filter((a) => a.status === 'published')
+      .sort((a, b) => new Date(b.publishedAt!).getTime() - new Date(a.publishedAt!).getTime());
+  }, [articles]);
+
+  const editorPicks = useMemo(() => {
+    return articles.filter((a) => a.isEditorPick && a.status === 'published');
+  }, [articles]);
+
+  const breakingNews = useMemo(() => {
+    return breakingNewsRaw.filter((b) => b.isActive && new Date(b.expiresAt).getTime() > Date.now());
+  }, [breakingNewsRaw]);
 
   const onRefresh = useCallback(() => {
     setRefreshing(true);

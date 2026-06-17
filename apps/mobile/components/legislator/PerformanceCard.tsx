@@ -53,7 +53,7 @@ export default function PerformanceCard({
           <Ionicons name="bar-chart" size={18} color="#8B5CF6" />
           <Text style={styles.title}>Legislative Performance</Text>
         </View>
-        <Text style={styles.emptyText}>Performance data will be available after PRS India sync</Text>
+        <Text style={styles.emptyText}>Coming soon</Text>
       </View>
     );
   }

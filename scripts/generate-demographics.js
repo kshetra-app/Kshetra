@@ -246,7 +246,12 @@ export function get${stateCode}ConstituencyDemographics(acNo: number): Constitue
 }
 
 // ── Main ────────────────────────────────────────────────────────────────────
-console.log('Generating demographics for 27 states...\n');
-const codes = Object.keys(STATES);
+// Optional CLI arg: a single state code (e.g. `node generate-demographics.js JK`)
+// regenerates only that state. With no arg, all states are regenerated (default).
+const only = process.argv[2];
+const codes = only ? [only.toUpperCase()] : Object.keys(STATES);
+const invalid = codes.filter(c => !STATES[c]);
+if (invalid.length) { console.error(`Unknown state code(s): ${invalid.join(', ')}`); process.exit(1); }
+console.log(`Generating demographics for ${codes.length} state(s)...\n`);
 codes.forEach(writeDemoFile);
-console.log(`\nDone. Generated ${codes.length} files.`);
+console.log(`\nDone. Generated ${codes.length} file(s).`);

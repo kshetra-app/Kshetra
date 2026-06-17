@@ -11,6 +11,8 @@ import { useAspirantStore } from '../stores/aspirant';
 import CivicScoreCard from '../components/CivicScoreCard';
 import CivicBadgeGrid from '../components/CivicBadgeGrid';
 import ChallengeCard from '../components/ChallengeCard';
+import ModuleDetailModal from '../components/ModuleDetailModal';
+import RegisterAspirantModal from '../components/RegisterAspirantModal';
 import {
   MODULE_CATEGORY_CONFIG,
   CIVIC_LEVEL_CONFIG,
@@ -35,6 +37,8 @@ const TABS: { key: AcademyTab; label: string; icon: string }[] = [
 export default function LeadershipAcademyScreen() {
   const router = useRouter();
   const [activeTab, setActiveTab] = useState<AcademyTab>('modules');
+  const [selectedModule, setSelectedModule] = useState<LeadershipModule | null>(null);
+  const [registerVisible, setRegisterVisible] = useState(false);
   const profile = useAspirantStore((s: any) => s.profile) as AspirantProfile | null;
   const modules = useAspirantStore((s: any) => s.modules) as LeadershipModule[];
   const badges = useAspirantStore((s: any) => s.badges) as CivicBadge[];
@@ -42,13 +46,21 @@ export default function LeadershipAcademyScreen() {
   const getCompletedModules = useAspirantStore((s: any) => s.getCompletedModules) as () => string[];
   const getActiveChallenges = useAspirantStore((s: any) => s.getActiveChallenges) as () => CommunityChallenge[];
   const startModule = useAspirantStore((s: any) => s.startModule) as (id: string) => void;
+  const completeModule = useAspirantStore((s: any) => s.completeModule) as (id: string, quizScore?: number) => void;
   const joinChallenge = useAspirantStore((s: any) => s.joinChallenge) as (id: string) => void;
   const challengeProgress = useAspirantStore((s: any) => s.challengeProgress) as ChallengeParticipation[];
   const publicAspirants = useAspirantStore((s: any) => s.publicAspirants) as AspirantProfile[];
+  const endorseAspirant = useAspirantStore((s: any) => s.endorseAspirant) as (id: string) => void;
+  const endorsedIds = useAspirantStore((s: any) => s.endorsedIds) as string[];
 
   const civicScore = getCivicScore();
   const completedModuleIds = getCompletedModules();
   const activeChallenges = getActiveChallenges();
+
+  const openModule = (mod: LeadershipModule) => {
+    startModule(mod.id);
+    setSelectedModule(mod);
+  };
 
   // Group modules by category
   const moduleGroups = useMemo(() => {
@@ -85,10 +97,21 @@ export default function LeadershipAcademyScreen() {
       </View>
 
       {/* Civic Score (if registered) */}
-      {civicScore && (
+      {civicScore ? (
         <View style={styles.scoreSection}>
           <CivicScoreCard score={civicScore} displayName={profile?.displayName} />
         </View>
+      ) : (
+        <Pressable style={styles.registerCta} onPress={() => setRegisterVisible(true)}>
+          <View style={styles.registerIcon}>
+            <Ionicons name="rocket" size={20} color="#06B6D4" />
+          </View>
+          <View style={{ flex: 1 }}>
+            <Text style={styles.registerTitle}>Become an Aspirant</Text>
+            <Text style={styles.registerSub}>Create a civic profile, track your score & earn badges.</Text>
+          </View>
+          <Ionicons name="chevron-forward" size={18} color="#6B7280" />
+        </Pressable>
       )}
 
       {/* Tab bar */}
@@ -129,7 +152,7 @@ export default function LeadershipAcademyScreen() {
                       <Pressable
                         key={mod.id}
                         style={[styles.moduleCard, isCompleted && styles.moduleCardComplete]}
-                        onPress={() => startModule(mod.id)}
+                        onPress={() => openModule(mod)}
                       >
                         <View style={styles.moduleLeft}>
                           <Ionicons
@@ -209,36 +232,51 @@ export default function LeadershipAcademyScreen() {
                   asp.civicScore >= 300 ? 'advocate' :
                   asp.civicScore >= 100 ? 'contributor' : 'observer'
                 ];
+                const isEndorsed = endorsedIds.includes(asp.id);
                 return (
                   <View key={asp.id} style={styles.aspirantCard}>
-                    <View style={[styles.aspirantAvatar, { backgroundColor: levelConfig.color + '30' }]}>
-                      <Ionicons name={levelConfig.icon as any} size={20} color={levelConfig.color} />
-                    </View>
-                    <View style={styles.aspirantInfo}>
-                      <Text style={styles.aspirantName}>{asp.displayName}</Text>
-                      <Text style={styles.aspirantBio} numberOfLines={1}>{asp.bio}</Text>
-                      <View style={styles.aspirantMeta}>
-                        {asp.targetConstituencyName && (
-                          <Text style={styles.aspirantTarget}>
-                            {asp.targetConstituencyName} · {asp.targetElectionYear}
-                          </Text>
-                        )}
-                        <View style={[styles.levelTag, { backgroundColor: levelConfig.color + '20' }]}>
-                          <Text style={[styles.levelTagText, { color: levelConfig.color }]}>
-                            {levelConfig.label}
-                          </Text>
+                    <View style={styles.aspirantRow}>
+                      <View style={[styles.aspirantAvatar, { backgroundColor: levelConfig.color + '30' }]}>
+                        <Ionicons name={levelConfig.icon as any} size={20} color={levelConfig.color} />
+                      </View>
+                      <View style={styles.aspirantInfo}>
+                        <Text style={styles.aspirantName}>{asp.displayName}</Text>
+                        <Text style={styles.aspirantBio} numberOfLines={2}>{asp.bio}</Text>
+                        <View style={styles.aspirantMeta}>
+                          {asp.targetConstituencyName && (
+                            <Text style={styles.aspirantTarget}>
+                              {asp.targetConstituencyName} · {asp.targetElectionYear}
+                            </Text>
+                          )}
+                          <View style={[styles.levelTag, { backgroundColor: levelConfig.color + '20' }]}>
+                            <Text style={[styles.levelTagText, { color: levelConfig.color }]}>
+                              {levelConfig.label}
+                            </Text>
+                          </View>
                         </View>
                       </View>
+                      <View style={styles.aspirantScore}>
+                        <Text style={[styles.aspirantScoreValue, { color: levelConfig.color }]}>
+                          {asp.civicScore}
+                        </Text>
+                        <Text style={styles.aspirantScoreLabel}>Score</Text>
+                      </View>
                     </View>
-                    <View style={styles.aspirantScore}>
-                      <Text style={[styles.aspirantScoreValue, { color: levelConfig.color }]}>
-                        {asp.civicScore}
+                    <Pressable
+                      style={[styles.endorseBtn, isEndorsed && styles.endorseBtnDone]}
+                      onPress={() => !isEndorsed && endorseAspirant(asp.id)}
+                      disabled={isEndorsed}
+                    >
+                      <Ionicons
+                        name={isEndorsed ? 'heart' : 'heart-outline'}
+                        size={15}
+                        color={isEndorsed ? '#EF4444' : '#9CA3AF'}
+                      />
+                      <Text style={[styles.endorseText, isEndorsed && { color: '#EF4444' }]}>
+                        {isEndorsed ? 'Endorsed' : 'Endorse'}
                       </Text>
-                      <Text style={styles.aspirantScoreLabel}>Score</Text>
-                      <Text style={styles.aspirantEndorsements}>
-                        {asp.communityEndorsements} endorsements
-                      </Text>
-                    </View>
+                      <Text style={styles.endorseCount}>· {asp.communityEndorsements}</Text>
+                    </Pressable>
                   </View>
                 );
               })
@@ -248,6 +286,24 @@ export default function LeadershipAcademyScreen() {
 
         <View style={{ height: Math.max(insets.bottom, 20) + 40 }} />
       </ScrollView>
+
+      {/* Module reader */}
+      <ModuleDetailModal
+        visible={!!selectedModule}
+        module={selectedModule}
+        isCompleted={selectedModule ? completedModuleIds.includes(selectedModule.id) : false}
+        onClose={() => setSelectedModule(null)}
+        onComplete={(quizScore?: number) => {
+          if (selectedModule) completeModule(selectedModule.id, quizScore);
+          setSelectedModule(null);
+        }}
+      />
+
+      {/* Aspirant registration */}
+      <RegisterAspirantModal
+        visible={registerVisible}
+        onClose={() => setRegisterVisible(false)}
+      />
     </View>
   );
 }
@@ -322,15 +378,52 @@ const styles = StyleSheet.create({
   },
   communityTitle: { fontSize: 17, fontWeight: '700', color: '#FFFFFF' },
   aspirantCard: {
-    flexDirection: 'row',
     backgroundColor: '#111827',
     borderRadius: 12,
     padding: 12,
     marginBottom: 8,
     borderWidth: 1,
     borderColor: '#1F2937',
+  },
+  aspirantRow: { flexDirection: 'row', alignItems: 'center' },
+  endorseBtn: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 6,
+    marginTop: 10,
+    paddingVertical: 8,
+    borderRadius: 8,
+    backgroundColor: '#0A0A1A',
+    borderWidth: 1,
+    borderColor: '#1F2937',
+  },
+  endorseBtnDone: { borderColor: '#EF444455', backgroundColor: '#EF444410' },
+  endorseText: { fontSize: 12, fontWeight: '700', color: '#9CA3AF' },
+  endorseCount: { fontSize: 11, color: '#6B7280' },
+  // Register CTA
+  registerCta: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 12,
+    marginHorizontal: 16,
+    marginBottom: 12,
+    backgroundColor: '#06B6D412',
+    borderRadius: 14,
+    padding: 14,
+    borderWidth: 1,
+    borderColor: '#06B6D433',
+  },
+  registerIcon: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    backgroundColor: '#06B6D420',
+    justifyContent: 'center',
     alignItems: 'center',
   },
+  registerTitle: { fontSize: 15, fontWeight: '800', color: '#FFFFFF' },
+  registerSub: { fontSize: 12, color: '#9CA3AF', marginTop: 2 },
   aspirantAvatar: {
     width: 44,
     height: 44,

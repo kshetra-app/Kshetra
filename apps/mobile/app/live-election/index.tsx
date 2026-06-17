@@ -1,7 +1,7 @@
-import { useState, useCallback } from 'react';
-import { View, Text, StyleSheet, ScrollView, Pressable, RefreshControl } from 'react-native';
+import { useState, useMemo, useCallback } from 'react';
+import { View, Text, StyleSheet, ScrollView, Pressable, RefreshControl, StatusBar } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { Stack } from 'expo-router';
+import { useRouter } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useElectionLiveStore } from '../../stores/electionLive';
 import LiveElectionTicker from '../../components/LiveElectionTicker';
@@ -17,24 +17,42 @@ const TABS: { key: Tab; label: string; icon: string }[] = [
 ];
 
 export default function LiveElectionScreen() {
+  const router = useRouter();
+  const insets = useSafeAreaInsets();
   const [activeTab, setActiveTab] = useState<Tab>('overview');
   const [refreshing, setRefreshing] = useState(false);
-  const insets = useSafeAreaInsets();
 
-  const liveElection = useElectionLiveStore((s) => s.getLiveElection());
-  const pipeline = useElectionLiveStore((s) => s.pipelineStatus);
-  const pipelineHealth = useElectionLiveStore((s) => s.getPipelineHealth());
-  const refreshPipeline = useElectionLiveStore((s) => s.refreshPipelineStatus);
+  const store = useElectionLiveStore();
+  const liveElection = useMemo(() => store.getLiveElection(), [store]);
+  const pipeline = store.pipelineStatus;
+  const pipelineHealth = useMemo(() => store.getPipelineHealth(), [store]);
 
   const onRefresh = useCallback(() => {
     setRefreshing(true);
-    refreshPipeline();
+    store.refreshPipelineStatus();
     setTimeout(() => setRefreshing(false), 1000);
-  }, [refreshPipeline]);
+  }, [store]);
 
   return (
-    <View style={styles.container}>
-      <Stack.Screen options={{ title: 'Live Election', headerShown: true, headerStyle: { backgroundColor: '#0A0A1A' }, headerTintColor: '#FFFFFF' }} />
+    <View style={[styles.container, { paddingTop: insets.top }]}>
+      <StatusBar barStyle="light-content" />
+
+      {/* Custom Header */}
+      <View style={styles.header}>
+        <Pressable onPress={() => router.back()} style={styles.backBtn}>
+          <Ionicons name="arrow-back" size={22} color="#FFFFFF" />
+        </Pressable>
+        <View style={{ flex: 1 }}>
+          <Text style={styles.headerTitle}>Live Election</Text>
+          <Text style={styles.headerSub}>Real-Time Counting & Data Pipeline</Text>
+        </View>
+        {liveElection?.isLive && (
+          <View style={styles.liveBadge}>
+            <View style={styles.liveDotHeader} />
+            <Text style={styles.liveTextHeader}>LIVE</Text>
+          </View>
+        )}
+      </View>
 
       {/* Tab Bar */}
       <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.tabBar} contentContainerStyle={styles.tabBarContent}>
@@ -46,7 +64,12 @@ export default function LiveElectionScreen() {
         ))}
       </ScrollView>
 
-      <ScrollView style={styles.content} refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor="#4F8EF7" />}>
+      <ScrollView
+        style={styles.content}
+        contentContainerStyle={{ paddingBottom: insets.bottom + 40 }}
+        refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor="#4F8EF7" />}
+        showsVerticalScrollIndicator={false}
+      >
         {activeTab === 'overview' && (
           <>
             {liveElection ? (
@@ -68,8 +91,8 @@ export default function LiveElectionScreen() {
                     <View style={[styles.partyDot, { backgroundColor: t.partyColor }]} />
                     <Text style={styles.partyLabel}>{t.party}</Text>
                     <View style={styles.voteShareBars}>
-                      <View style={[styles.voteShareCurrent, { width: `${t.voteSharePercent * 2}%`, backgroundColor: t.partyColor }]} />
-                      <View style={[styles.voteSharePrev, { width: `${t.previousVoteShare * 2}%` }]} />
+                      <View style={[styles.voteShareCurrent, { width: `${Math.min(t.voteSharePercent * 2, 100)}%`, backgroundColor: t.partyColor }]} />
+                      <View style={[styles.voteSharePrev, { width: `${Math.min(t.previousVoteShare * 2, 100)}%` }]} />
                     </View>
                     <Text style={styles.voteSharePct}>{t.voteSharePercent}%</Text>
                     <Text style={[styles.voteShareChange, { color: t.voteShareChange >= 0 ? '#10B981' : '#EF4444' }]}>
@@ -82,12 +105,20 @@ export default function LiveElectionScreen() {
           </>
         )}
 
-        {activeTab === 'constituencies' && liveElection && (
+        {activeTab === 'constituencies' && (
           <>
-            <Text style={styles.sectionTitle}>Constituency Results ({liveElection.constituencies.length})</Text>
-            {liveElection.constituencies.map((c) => (
-              <ConstituencyResultCard key={c.acNo} result={c} />
-            ))}
+            {liveElection ? (
+              <>
+                <Text style={styles.sectionTitle}>Constituency Results ({liveElection.constituencies.length})</Text>
+                {liveElection.constituencies.map((c) => (
+                  <ConstituencyResultCard key={c.acNo} result={c} />
+                ))}
+              </>
+            ) : (
+              <View style={styles.empty}>
+                <Text style={styles.emptyText}>No constituency data available</Text>
+              </View>
+            )}
           </>
         )}
 
@@ -99,11 +130,9 @@ export default function LiveElectionScreen() {
                 System {pipelineHealth.overallStatus}: {pipelineHealth.healthy}/{pipelineHealth.total} sources healthy
               </Text>
             </View>
-            <DataPipelineCard pipeline={pipeline} onRefresh={refreshPipeline} />
+            <DataPipelineCard pipeline={pipeline} onRefresh={store.refreshPipelineStatus} />
           </>
         )}
-
-        <View style={{ height: insets.bottom + 100 }} />
       </ScrollView>
     </View>
   );
@@ -111,6 +140,13 @@ export default function LiveElectionScreen() {
 
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: '#0A0A1A' },
+  header: { flexDirection: 'row', alignItems: 'center', paddingHorizontal: 16, paddingTop: 8, paddingBottom: 8, gap: 10 },
+  backBtn: { width: 36, height: 36, borderRadius: 18, backgroundColor: '#1F2937', alignItems: 'center', justifyContent: 'center' },
+  headerTitle: { fontSize: 18, fontWeight: '900', color: '#FFFFFF' },
+  headerSub: { fontSize: 11, color: '#6B7280', fontWeight: '600' },
+  liveBadge: { flexDirection: 'row', alignItems: 'center', gap: 4, backgroundColor: '#EF444420', paddingHorizontal: 8, paddingVertical: 4, borderRadius: 8 },
+  liveDotHeader: { width: 8, height: 8, borderRadius: 4, backgroundColor: '#EF4444' },
+  liveTextHeader: { fontSize: 10, fontWeight: '900', color: '#EF4444' },
   tabBar: { maxHeight: 48, borderBottomWidth: 1, borderBottomColor: '#1F2937' },
   tabBarContent: { paddingHorizontal: 12, gap: 4, alignItems: 'center' },
   tab: { flexDirection: 'row', alignItems: 'center', gap: 5, paddingHorizontal: 14, paddingVertical: 8, borderRadius: 20, backgroundColor: '#111827' },

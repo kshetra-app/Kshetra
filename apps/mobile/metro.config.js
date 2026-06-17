@@ -16,4 +16,10 @@ config.resolver.nodeModulesPaths = [
   path.resolve(monorepoRoot, 'node_modules'),
 ];
 
+// 3. Force server root to monorepo root for correct entry-file resolution
+//    (projectRoot causes double-prefix: ./apps/mobile/node_modules/...)
+if (config.server) {
+  config.server.unstable_serverRoot = monorepoRoot;
+}
+
 module.exports = config;

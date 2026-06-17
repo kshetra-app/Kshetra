@@ -130,7 +130,7 @@ export const ML_CURATED_TRIVIA: TriviaItem[] = [
       "contexts": [
         {
           "type": "CONSTITUENCY",
-          "acNo": 51
+          "acNo": 11
         }
       ],
       "source": "ECI Results, Wikipedia",
