@@ -75,6 +75,27 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   and replaced an invalid `.catch()` on a Postgrest builder with a `try/catch` around the
   `increment_aspirant_modules` RPC. `tsc --noEmit` for `apps/mobile` now reports **0 errors**.
 
+### Added — North-East, J&K, Puducherry, Sikkim & Uttarakhand election data expansion
+- Expanded/refreshed full assembly datasets for **10 states/UTs**, each across
+  constituencies, demographics, election history, MLA profiles, political timeline, and
+  trivia seed files in `data/seed/`:
+  - **Jammu & Kashmir** — 2024 assembly election.
+  - **Tripura** — 2023.
+  - **Arunachal Pradesh** — 2024 (with 2019 history).
+  - **Manipur** — 2022.
+  - **Meghalaya** — 2023.
+  - **Mizoram** — 2023 (with 2018 history).
+  - **Nagaland** — 2023.
+  - **Sikkim** — 2024 (with 2019 history).
+  - **Puducherry** — 2026 (projected dataset, with 2021 history).
+  - **Uttarakhand** — 2022.
+- Added source assembly GeoJSON boundaries and compressed AE result CSVs under `scripts/`
+  for Arunachal Pradesh, Manipur, Meghalaya, Mizoram, Nagaland, Puducherry, Sikkim, Tripura,
+  and Uttarakhand.
+- Added build/repair tooling: `scripts/build-ne-geo.mjs`, `build-jk-geo.mjs`,
+  `build-jk-seed.mjs`, `build-py-2026.mjs`, `rekey-jk-mla.mjs`, `rekey-tripura.mjs`,
+  `jk-missing-profiles.mjs`, and `audit-tripura.mjs`; updated `apps/mobile/data/jk-assembly.json`.
+
 ### Added — Engineering Excellence (SDLC Gold Standard alignment)
 - CI: coverage-enforced test job, mobile/API typecheck, ESLint gate.
 - Security workflow: SAST (Semgrep), SCA (`npm audit` + OSV), SBOM (CycloneDX).

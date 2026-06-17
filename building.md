@@ -66,6 +66,7 @@
 | Sprint 45: Political Shorts — Upload Modal + Zustand Store + Feed Integration | ✅ Complete | 2026-06-08 | 2026-06-08 |
 | Sprint 46: Supabase Backend Foundation Hardening | ✅ Complete | 2026-06-08 | 2026-06-08 |
 | Bug Fix Sprint: Civic Dashboard Nav + Map State Switching | ✅ Complete | 2026-06-08 | 2026-06-08 |
+| Data Expansion: NE States + J&K + PY + SK + UK Assembly Datasets | ✅ Complete | 2026-06-17 | 2026-06-17 |
 | Sprint 47: Scope Demarcation + Leadership Academy + Territorial Shorts + CM Refresh | ✅ Complete | 2026-06-17 | 2026-06-17 |
 
 ---
@@ -183,6 +184,7 @@
 | 2026-06-08 | `feat: sprint 45 — political shorts full feature` | UploadShortModal with KYC gating, demo video presets, multi-step form (details → constituency → review). PoliticalShortsStore (Zustand + MMKV) with add/approve/flag/view-increment actions. Integrated carousel into Feed tab via PoliticalShortsCarousel + ShortsPlayerModal. Telugu i18n keys for shorts. |
 | 2026-06-08 | `feat: sprint 46 — supabase backend foundation hardening` | Comprehensive backend hardening: migration 020 (foundation hardening — missing tables, RPCs, materialized views, FTS indexes, triggers, RLS policies, auto-profile creation), migration 021 (production-grade seed data — 20 states, 12 headlines, 9 leadership modules, 7 challenges, 39 hashtags). supabaseBootstrap.ts (central orchestrator for profile sync, store hydration, realtime subscriptions, offline queue flush). Expanded supabaseDataService.ts from ~310 to ~1,150 lines with 40+ functions covering all features. Wired feed and civic Zustand stores to Supabase with optimistic updates + background sync + hydrateFromServer(). Auth store triggers bootstrap on sign-in and teardown on sign-out. Extended offlineSync.ts with 10 new operation types. Updated .env.example files. Created SUPABASE_SETUP.md architecture guide. |
 | 2026-06-08 | `fix: civic dashboard nav + map state switching` | Election Analytics responsive sizing (useSafeAreaInsets + useWindowDimensions). Civic Metrics & Live Election crash fix (replaced native Stack.Screen headers with custom JS headers). Map grey/dark on state switch fix (React.Fragment key={stateCode} + dynamic source/layer IDs + universal enriched GeoJSON cache for all 23 states). 4 files, ~488 lines changed. |
+| 2026-06-17 | `data: NE states + J&K + PY + SK + UK assembly datasets` | Expanded/refreshed full assembly seed datasets (constituencies, demographics, election history, MLA profiles, political timeline, trivia) for Jammu & Kashmir (2024), Tripura (2023), Arunachal Pradesh (2024), Manipur (2022), Meghalaya (2023), Mizoram (2023), Nagaland (2023), Sikkim (2024), Puducherry (2026 projected), and Uttarakhand (2022). Added source assembly GeoJSON + AE result CSVs under `scripts/` and build/repair tooling (`build-ne-geo`, `build-jk-geo`, `build-jk-seed`, `build-py-2026`, `rekey-jk-mla`, `rekey-tripura`, `jk-missing-profiles`, `audit-tripura`). Updated `apps/mobile/data/jk-assembly.json`. |
 | 2026-06-17 | `feat: sprint 47 — scope demarcation + leadership academy + territorial shorts` | Strict 3-scope (constituency/state/national) demarcation in Feed and Dashboard promises. Full Leadership Academy: extended module model + new `leadershipContent.ts` (12 modules with sections, key takeaways, attributed ECI/TEDx videos, interactive quizzes, citations), `ModuleDetailModal`, `RegisterAspirantModal` ("Become an Aspirant"), endorse action on aspirant cards. 16 real territorial Political Shorts (TS/KA/MH/AP) + store v2 migration. Seed posts (Serilingampally all-types + national) and promises (constituency + national). "Coming soon" performance placeholder across MLA/MP. CM registry aligned to 2026 dataset (KA/TN/KL/WB/PY) + photo article keys + AP MLA adapter. Fixed 3 TS errors in `supabaseDataService.ts` → mobile `tsc` 0 errors. |
 
 ---
@@ -4013,6 +4015,48 @@ Read Flow:   Seed Data (instant UI) → bootstrapSupabase() → hydrateFromServe
 | BF-001 | Custom JS headers over native Stack headers | Expo Router's `<Stack.Screen options={{ headerShown: true }}>` inside components conflicts with parent layout `headerShown: false`. All working screens already used custom headers. |
 | BF-002 | `React.Fragment key={stateCode}` for map layers | Forces React to unmount/remount all MapLibre sources on state switch, preventing stale GL data. More robust than relying on `data` prop changes alone. |
 | BF-003 | Universal enriched GeoJSON cache | Single `Map<string, FeatureCollection>` replaces TS-only singleton. Eliminates special-casing, ensures stable references, enables instant switch-back for all 23 GeoJSON states. |
+
+---
+
+## Data Expansion: North-East States + J&K + Puducherry + Sikkim + Uttarakhand
+
+**Date**: 2026-06-17
+**Goal**: Expand and refresh full assembly election datasets for the remaining small states
+and UTs so every legislator/constituency surface has complete, real data.
+
+### States/UTs covered (election year)
+
+| State/UT | Election Year | Notes |
+|---|---|---|
+| Jammu & Kashmir | 2024 | First assembly election post-reorganisation |
+| Tripura | 2023 | — |
+| Arunachal Pradesh | 2024 | + 2019 history |
+| Manipur | 2022 | — |
+| Meghalaya | 2023 | — |
+| Mizoram | 2023 | + 2018 history |
+| Nagaland | 2023 | — |
+| Sikkim | 2024 | + 2019 history |
+| Puducherry (UT) | 2026 (projected) | + 2021 history |
+| Uttarakhand | 2022 | — |
+
+### What was done
+
+- Each state/UT was expanded/refreshed across its full seed surface in `data/seed/`:
+  `*-constituencies.ts`, `*-demographics.ts`, `*-election-history.ts`, `*-mla-profiles.ts`,
+  `*-political-timeline.ts`, and `*-trivia.ts`. The MLA-profile files in particular grew
+  substantially (e.g. Uttarakhand ~1,540, Tripura ~1,335, Meghalaya ~1,321, Manipur ~1,248,
+  Nagaland ~1,246 line changes) reflecting full winner rosters.
+- **Source data** added under `scripts/`: assembly boundary GeoJSON
+  (`*_ASSEMBLY.geojson`) and compressed Assembly Election result CSVs (`*_AE.csv.gz`) for
+  Arunachal Pradesh, Manipur, Meghalaya, Mizoram, Nagaland, Puducherry, Sikkim, Tripura, and
+  Uttarakhand, plus `jk-source.geojson` and `jk-winners.html` for J&K.
+- **Build/repair tooling** added: `build-ne-geo.mjs` (NE GeoJSON), `build-jk-geo.mjs` +
+  `build-jk-seed.mjs` + `jk-missing-profiles.mjs` + `rekey-jk-mla.mjs` (J&K),
+  `build-py-2026.mjs` (Puducherry 2026), `rekey-tripura.mjs` + `audit-tripura.mjs` (Tripura).
+- `apps/mobile/data/jk-assembly.json` updated.
+
+> Note: this dataset work pre-existed in the working tree and was committed together with
+> Sprint 47 in commit `1407908`; it is logged here for completeness.
 
 ---
 
