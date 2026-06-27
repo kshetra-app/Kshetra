@@ -54,9 +54,14 @@ $bytes = [System.IO.File]::ReadAllBytes("C:\K\apps\mobile\android\app\src\main\a
 
 ---
 
-**Cause B — JS bundle missing from APK**
+**Cause B — JS bundle missing from APK (Blank / Black Screen)**
 
-The APK was built without any JS bundle inside.
+The APK was built without any JS bundle inside. When this happens, the app successfully initializes the native container and then gets stuck displaying a blank or black screen on startup (since there is no JavaScript to execute) without crashing or showing an error message.
+
+This often happens if the manual Metro bundling command failed, or if it was run with the wrong arguments (e.g. specifying an explicit entry file path on Windows that is incompatible with Expo's routing architecture).
+
+*Expo Router Entry Warning:*
+Do NOT specify `--entry-file index.js` in the `expo export:embed` command. Expo Router resolves its entry point dynamically (via `node_modules/expo-router/entry.js`). Specifying a manual entry file override will cause Metro module resolution errors, leading to an empty assets folder and a black screen.
 
 **Verify:**
 ```powershell
@@ -67,7 +72,7 @@ if ($entry) { "Found: $($entry.FullName), size: $($entry.Length) bytes" } else {
 $zip.Dispose()
 ```
 
-**Fix:** Re-run the full build recipe (see [Section 10](#10-apk-build--step-by-step-recipe)).
+**Fix:** Re-run the full build recipe (see [Section 10](#10-apk-build--step-by-step-recipe)), ensuring you do not use `--entry-file`.
 
 ---
 
@@ -193,6 +198,21 @@ This is a wrapper error. The real error is above it in the log. Run with `--info
 cmd /c "cd /d C:\K\apps\mobile\android && gradlew.bat assembleRelease --no-daemon --info 2>&1" | Out-File build-log.txt
 # Then search the log
 Select-String "error|FAILED|ConfigError" build-log.txt
+```
+
+---
+
+### `ninja: error: rebuilding 'build.ninja': subcommand failed` (Clean Phase Deadlock)
+
+**Cause:** Running `gradlew clean` deletes codegen folders that CMake/Ninja needs to run C++ clean tasks. This causes a deadlock because C++ clean tasks fail on missing autolinked JNI targets or locked dependency files (`Permission denied` on deleting `.o.d` files).
+
+**Fix:** Avoid running `gradlew clean` when the C++ build directories are out of sync. Instead, delete the `.cxx` folder manually and run the build directly:
+```powershell
+# 1. Manually clean native build folders via short path
+cmd /c "rd /s /q C:\K\apps\mobile\android\app\.cxx"
+
+# 2. Run assembleRelease directly (Gradle will auto-run React Native codegen first)
+cmd /c "cd /d C:\K\apps\mobile\android && gradlew.bat assembleRelease --no-daemon"
 ```
 
 ---
@@ -379,6 +399,18 @@ If taps aren't working, check that:
 
 ---
 
+### MapLibre Layer Expression or Style Crashes (`['and', ...]` / `symbolZElevate` Errors)
+
+- **Expression crashes:** MapLibre v11 uses `['all', ...]` instead of `['and', ...]` for logical AND operations. Using `['and']` will crash the native renderer.
+  *Fix:* Use `['all']` in expressions:
+  ```typescript
+  filter: ['all', ['==', ['get', 'state'], 'TS'], ['has', 'winner']]
+  ```
+- **Unsupported prop crashes:** Trying to set invalid or unsupported props inside layer styles (like `symbolZElevate: true` on a `SymbolLayer` style object) results in native layout crashes on Android.
+  *Fix:* Only use standard styling keys (e.g. `textSize`, `textColor`, `iconImage`, etc.) in style declarations.
+
+---
+
 ## 8. State Management & Storage
 
 ### Zustand store not persisting
@@ -397,6 +429,41 @@ persist(storeCreator, {
   version: 2,  // Increment when schema changes
   migrate: (state, version) => { /* handle migration */ },
 })
+```
+
+---
+
+### "Compare on Map" UI Lock or Crash (BottomSheet closing)
+
+**Cause:** Clicking "Compare on Map" closes the BottomSheet, which triggers `onClose` and sets `selected` to `null`. Since the comparison view requires `selected` to remain populated, this clears the state, causing the comparison panel to disappear or crash.
+
+**Fix:** Use a React Ref (`mapCompareActiveRef`) to track whether comparison is active. Check this ref in the BottomSheet `onClose` handler:
+```typescript
+onClose={() => {
+  if (!mapCompareActiveRef.current) {
+    setSelected(null);
+  }
+}}
+```
+
+---
+
+### Parameter Parsing / Route ID `NaN` Crash (composite IDs)
+
+**Cause:** Deep links or navigation paths that pass composite string IDs (like `TS-AC-1` or `AP-AC-2`) crash the constituency detail or hierarchy screens when parsed with `parseInt(id, 10)` (which returns `NaN`).
+
+**Fix:** Implement a helper function to extract both the state code and constituency number, and synchronize the active state store (`useActiveStateStore`) dynamically:
+```typescript
+const { parsedStateCode, parsedAcNo } = useMemo(() => {
+  let sCode = stateCodeStore;
+  let aNo = parseInt(id, 10);
+  if (id && id.includes('-AC-')) {
+    const parts = id.split('-AC-');
+    sCode = parts[0].toUpperCase();
+    aNo = parseInt(parts[1], 10);
+  }
+  return { parsedStateCode: sCode, parsedAcNo: aNo };
+}, [id, stateCodeStore]);
 ```
 
 ---
@@ -538,19 +605,24 @@ When something goes wrong, check in this order:
 
 | Error Message | Section | Quick Fix |
 |---|---|---|
-| App crashes instantly on open | [1A](#1-apk-crashes-on-launch) | Compile bundle to Hermes bytecode |
-| `createBundleReleaseJsAndAssets` failed | [2](#gradle-build-failures) | Add `debuggableVariants = ["release", "debug"]` |
-| `Filename longer than 260 characters` | [2](#gradle-build-failures) | Build from `C:\K` junction |
-| `configure_fingerprint.bin` not valid | [2](#gradle-build-failures) | Delete `.cxx` directory |
-| `different roots: Z:\ and C:\` | [2](#gradle-build-failures) | Remove `subst Z:`, use junction |
-| `ConfigError: expected package.json` | [2](#gradle-build-failures) | Skip Gradle bundler, pre-bundle manually |
-| `Unable to resolve module` | [3](#metro-bundler-issues) | `npm install --force` + `--reset-cache` |
-| Metro can't find expo-router | [3](#metro-bundler-issues) | Check `metro.config.js` nodeModulesPaths |
-| Native module not found at runtime | [4](#native-module-errors) | `npx expo prebuild --clean` |
-| Map blank / not rendering | [7](#map--geojson-issues) | Need dev build, not Expo Go |
-| Store data corrupted | [8](#state-management--storage) | Clear app data, add store migration |
-| Peer dependency errors | [9](#dev-server--hot-reload) | `npm install --force` |
+| App crashes instantly on open | [1A](#cause-a--raw-js-bundle-instead-of-hermes-bytecode) | Compile bundle to Hermes bytecode |
+| App opens with black screen | [1B](#cause-b--js-bundle-missing-from-apk-blank--black-screen) | Run Metro bundle without `--entry-file` override |
+| `createBundleReleaseJsAndAssets` failed | [2](#execution-failed-for-task-appcreatebundlereleasejsandassets) | Add `debuggableVariants = ["release", "debug"]` |
+| `Filename longer than 260 characters` | [2](#filename-longer-than-260-characters-cmake--ninja-error) | Build from `C:\K` junction |
+| `configure_fingerprint.bin` not valid | [2](#configurecamakerelwithdeinfo--could-not-read-configure_fingerprintbin) | Delete `.cxx` directory |
+| `different roots: Z:\ and C:\` | [2](#generatecodegenschemafromjavascript-failed--different-roots) | Remove `subst Z:`, use junction |
+| `ConfigError: expected package.json` | [2](#execution-failed-for-task-appcreatebundlereleasejsandassets) | Skip Gradle bundler, pre-bundle manually |
+| `build.ninja: subcommand failed` (clean) | [2](#ninja-error-rebuilding-buildninja-subcommand-failed-clean-phase-deadlock) | Delete `.cxx` manually, run `assembleRelease` directly |
+| `Unable to resolve module` | [3](#unable-to-resolve-module-during-bundling) | `npm install --force` + `--reset-cache` |
+| Metro can't find expo-router | [3](#metro-cant-find-expo-router) | Check `metro.config.js` nodeModulesPaths |
+| Native module not found at runtime | [4](#module-not-found-at-runtime-but-builds-fine) | `npx expo prebuild --clean` |
+| Map blank / not rendering | [7](#map-not-rendering-blank-screen) | Need dev build, not Expo Go |
+| MapLibre expression or style crash | [7](#maplibre-layer-expression-or-style-crashes-and--symbolzelevate-errors) | Use `['all']` and valid keys in styles |
+| Store data corrupted | [8](#store-rehydration-crash) | Clear app data, add store migration |
+| Compare on Map crash / UI lock | [8](#compare-on-map-ui-lock-or-crash-bottomsheet-closing) | Add `mapCompareActiveRef` check in `onClose` |
+| Route ID NaN / Constituency Not Found | [8](#parameter-parsing--route-id-nan-crash-composite-ids) | Parse composite IDs (e.g. `TS-AC-X`) |
+| Peer dependency errors | [9](#npm-install-fails-with-peer-dependency-errors) | `npm install --force` |
 
 ---
 
-*Last updated: 2026-05-24*
+*Last updated: 2026-06-27*

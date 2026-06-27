@@ -219,6 +219,15 @@ export default function RootLayout() {
             animation: 'slide_from_right',
           }}
         />
+        <Stack.Screen
+          name="hierarchy/[id]"
+          options={{
+            headerShown: true,
+            headerStyle: { backgroundColor: '#0A0A1A' },
+            headerTintColor: '#FFFFFF',
+            animation: 'slide_from_right',
+          }}
+        />
       </Stack>
     </GestureHandlerRootView>
     </SafeAreaProvider>

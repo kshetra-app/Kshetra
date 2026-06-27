@@ -31,10 +31,40 @@ try {
     return null;
   }
 
-  // MapView compat
+  // MapView compat — maps old @rnmapbox/maps prop names to v11 API
   const MapViewCompat = (props: any) => {
-    const { styleURL, logoEnabled, attributionEnabled, scaleBarEnabled,
-            compassEnabled, rotateEnabled, pitchEnabled, onPress, ...rest } = props;
+    const {
+      styleURL,
+      logoEnabled,
+      attributionEnabled,
+      scaleBarEnabled,
+      compassEnabled,
+      rotateEnabled,
+      pitchEnabled,
+      zoomEnabled,
+      scrollEnabled,
+      onRegionDidChange,
+      onPress,
+      ...rest
+    } = props;
+
+    // Wrap onRegionDidChange — MapLibre v11 fires NativeSyntheticEvent<ViewStateChangeEvent>
+    // with { nativeEvent: { zoom, center, pitch, bearing, ... } }.
+    // Old @rnmapbox code reads event.properties?.zoomLevel.
+    const wrappedOnRegionDidChange = onRegionDidChange
+      ? (e: any) => {
+          const ne = e?.nativeEvent ?? e;
+          // Provide both shapes so existing handlers work regardless
+          onRegionDidChange({
+            properties: { zoomLevel: ne?.zoom },
+            zoomLevel: ne?.zoom,
+            centerCoordinate: ne?.center,
+            pitch: ne?.pitch,
+            bearing: ne?.bearing,
+            ...ne,
+          });
+        }
+      : undefined;
 
     const wrappedOnPress = onPress
       ? (e: any) => {
@@ -49,7 +79,22 @@ try {
         }
       : undefined;
 
-    return <ML.Map mapStyle={styleURL} onPress={wrappedOnPress} {...rest} />;
+    return (
+      <ML.Map
+        mapStyle={styleURL}
+        onPress={wrappedOnPress}
+        onRegionDidChange={wrappedOnRegionDidChange}
+        logo={logoEnabled}
+        attribution={attributionEnabled}
+        scaleBar={scaleBarEnabled}
+        compass={compassEnabled}
+        touchRotate={rotateEnabled}
+        touchPitch={pitchEnabled}
+        touchZoom={zoomEnabled}
+        dragPan={scrollEnabled}
+        {...rest}
+      />
+    );
   };
 
   // Camera compat
@@ -59,12 +104,15 @@ try {
 
     React.useImperativeHandle(outerRef, () => ({
       setCamera: (opts: any) => {
-        const { centerCoordinate, zoomLevel, animationDuration = 600 } = opts || {};
-        innerRef.current?.flyTo({
-          center: centerCoordinate,
-          zoom: zoomLevel,
-          duration: animationDuration,
-        });
+        const { centerCoordinate, zoomLevel, pitch, bearing, animationDuration = 600 } = opts || {};
+        const stopOpts: any = {};
+        if (centerCoordinate !== undefined) stopOpts.center = centerCoordinate;
+        if (zoomLevel !== undefined) stopOpts.zoom = zoomLevel;
+        if (pitch !== undefined) stopOpts.pitch = pitch;
+        if (bearing !== undefined) stopOpts.bearing = bearing;
+        stopOpts.duration = animationDuration;
+        stopOpts.easing = centerCoordinate !== undefined ? 'fly' : 'ease';
+        innerRef.current?.setStop(stopOpts);
       },
     }));
 
@@ -103,10 +151,36 @@ try {
     return <ML.Layer type="fill" style={layerStyle} {...rest} />;
   };
 
+  // FillExtrusionLayer compat — fixes opacity: MapLibre v11 only allows
+  // fillExtrusionOpacity with ["zoom"] expressions, not feature-level ones.
+  // The caller uses feature-based ['get','AC_NO'] expressions which silently
+  // break the entire layer style.  We split it into a static top-level
+  // opacity (0.75) and let fillExtrusionColor handle per-feature logic.
+  const FillExtrusionLayerCompat = (props: any) => {
+    const { style: layerStyle, ...rest } = props;
+    const fixedStyle = { ...layerStyle };
+    // MapLibre GL fill-extrusion-opacity is per-layer (zoom only).
+    // Feature-level opacity control is not supported — remove it to
+    // prevent a fatal style-parse error that silently kills the layer.
+    if (fixedStyle.fillExtrusionOpacity !== undefined) {
+      // Use the default value from the expression or fall back to 0.75
+      fixedStyle.fillExtrusionOpacity = typeof fixedStyle.fillExtrusionOpacity === 'number'
+        ? fixedStyle.fillExtrusionOpacity
+        : 0.75;
+    }
+    return <ML.Layer type="fill-extrusion" style={fixedStyle} {...rest} />;
+  };
+
   // LineLayer compat — uses deprecated `style` prop (camelCase, works in v11)
   const LineLayerCompat = (props: any) => {
     const { style: layerStyle, ...rest } = props;
     return <ML.Layer type="line" style={layerStyle} {...rest} />;
+  };
+
+  // CircleLayer compat — polling booth markers require this layer type
+  const CircleLayerCompat = (props: any) => {
+    const { style: layerStyle, ...rest } = props;
+    return <ML.Layer type="circle" style={layerStyle} {...rest} />;
   };
 
   // PointAnnotation compat
@@ -115,13 +189,22 @@ try {
     return <ML.Marker coordinate={coordinate} anchor="center" id={id}>{children}</ML.Marker>;
   };
 
+  // SymbolLayer compat — uses style prop
+  const SymbolLayerCompat = (props: any) => {
+    const { style: layerStyle, ...rest } = props;
+    return <ML.Layer type="symbol" style={layerStyle} {...rest} />;
+  };
+
   MapboxGL = {
     MapView: MapViewCompat,
     Camera: CameraCompat,
     ShapeSource: ShapeSourceCompat,
     FillLayer: FillLayerCompat,
+    FillExtrusionLayer: FillExtrusionLayerCompat,
     LineLayer: LineLayerCompat,
+    CircleLayer: CircleLayerCompat,
     PointAnnotation: PointAnnotationCompat,
+    SymbolLayer: SymbolLayerCompat,
   };
   mapboxAvailable = true;
 } catch (e) {

@@ -47,16 +47,19 @@ export default memo(function CandidateAvatar({
   const [imgError, setImgError] = useState(false);
   const [prevName, setPrevName] = useState(name);
 
+  const isRecycled = name !== prevName;
+  const currentWikiUrl = isRecycled ? (getCachedPhoto(name) ?? null) : wikiUrl;
+  const currentImgError = isRecycled ? false : imgError;
+
+  if (isRecycled) {
+    setPrevName(name);
+    setWikiUrl(currentWikiUrl);
+    setImgError(currentImgError);
+  }
+
   const partyColor = getPartyColor(party);
   const initials = getInitials(name);
   const innerSize = size - borderWidth * 2;
-
-  // Reset photo state when name changes (critical for FlashList view recycling)
-  if (name !== prevName) {
-    setPrevName(name);
-    setWikiUrl(getCachedPhoto(name) ?? null);
-    setImgError(false);
-  }
 
   useEffect(() => {
     if (photoUrl) return; // already have a photo
@@ -81,7 +84,7 @@ export default memo(function CandidateAvatar({
     return () => { mounted = false; };
   }, [name, photoUrl]);
 
-  const imageUri = photoUrl || (wikiUrl && !imgError ? wikiUrl : null);
+  const imageUri = photoUrl || (currentWikiUrl && !currentImgError ? currentWikiUrl : null);
 
   const containerStyle = [
     styles.container,

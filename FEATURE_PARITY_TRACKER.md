@@ -2,8 +2,22 @@
 
 > **Purpose**: This document is the single source of truth for tracking data completeness and feature replication across all Indian states in Kshetra. The original scope (TS, AP, KA, MH) has expanded significantly — 22 states now have GeoJSON polygons, and 8 states have full scraped MLA profiles.
 
-> **Last updated: 2026-05-27**
+> **Last updated: 2026-06-22 (Sprint 52)**
 > **Status: Significantly ahead of original tracker — see Section 3 for current reality**
+
+> **⭐ SINGLE SOURCE OF TRUTH (2026-06-22):** Where this tracker disagrees with
+> `AUDIT_GOLD_STANDARD_STATUS.md` or `building.md` Sprint 52, **those win** — they are the
+> verified canonical status (`tsc` EXIT 0 + 278/278 seed tests this session). Specific
+> Sprint-52 corrections:
+> - **Constituency seeds now at full official strength with REAL votes/margins/runner-ups:**
+>   Gujarat 182, Punjab 117, Uttar Pradesh 403, Bihar 243, Goa 40 (rebuilt from authoritative TCPD).
+> - **Historical results no longer stubs** — Kerala 2016=140, West Bengal 2016=294,
+>   Uttar Pradesh 2017=403, Tamil Nadu 2016=232 (full per-AC).
+> - **AS/TN/WB/KL/PY `2026` = actual results** (June-2026 timeline), not projections.
+> - **Stale items below now done:** KL/WB/UP/TN/CompareSheet/intelligence/constituency
+>   detail are state-aware (verified); historical-results "minimal/needs-verification" rows
+>   are superseded by the full rebuild above.
+> - Still short (current election post-dates TCPD dump): AS, CG, HR, JH, MP, OD, RJ, DL.
 
 ---
 

@@ -1,0 +1,23 @@
+# Keep the Docker build context small. Exclude installed deps, native build
+# artifacts, and mobile-only outputs (the API image only needs source + npm ci).
+**/node_modules
+**/dist
+**/.turbo
+**/.expo
+**/android
+**/ios
+**/.cxx
+**/.gradle
+.git
+.github
+*.log
+**/*.log
+**/.DS_Store
+# Supabase local stack state
+supabase/.branches
+supabase/.temp
+supabase/.start.log
+supabase/.reset.log
+# Mobile build caches (not needed by the API image)
+apps/mobile/.expo
+apps/mobile/web-build

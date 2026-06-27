@@ -584,6 +584,7 @@
     "name": "100",
     "party": "BJP",
     "state": "Leishemba, Shri Maharaja Sanajaoba",
+    "stateName": "Manipur",
     "photoUrl": "https://sansad.in/getFile/newmembers/photos/P2475.jpg?source=rajyasabha",
     "source": "table"
   },
@@ -591,6 +592,7 @@
     "name": "101",
     "party": "BJP",
     "state": "Lepcha, Shri Dorjee Tshering",
+    "stateName": "Sikkim",
     "photoUrl": "https://sansad.in/getFile/newmembers/photos/P2584.jpg?source=rajyasabha",
     "source": "table"
   },
@@ -598,6 +600,7 @@
     "name": "102",
     "party": "BJP",
     "state": "Mahadik, Shri Dhananjay Bhimrao",
+    "stateName": "Maharashtra",
     "photoUrl": "https://sansad.in/getFile/newmembers/photos/P2544.jpg?source=rajyasabha",
     "source": "table"
   },
@@ -605,6 +608,7 @@
     "name": "103",
     "party": "BJP",
     "state": "Mahajan, Shri Harsh",
+    "stateName": "Himachal Pradesh",
     "photoUrl": "https://sansad.in/getFile/newmembers/photos/P2598.jpg?source=rajyasabha",
     "source": "table"
   },
@@ -612,6 +616,7 @@
     "name": "104",
     "party": "JD(U)",
     "state": "Mahto, Shri Khiru",
+    "stateName": "Bihar",
     "photoUrl": "https://sansad.in/getFile/newmembers/photos/P2561.jpg?source=rajyasabha",
     "source": "table"
   },
@@ -619,6 +624,7 @@
     "name": "105",
     "party": "JMM",
     "state": "Maji, Smt. Mahua",
+    "stateName": "Jharkhand",
     "photoUrl": "https://sansad.in/getFile/newmembers/photos/P2565.jpg?source=rajyasabha",
     "source": "table"
   },
@@ -626,6 +632,7 @@
     "name": "106",
     "party": "INC",
     "state": "Makan, Shri Ajay",
+    "stateName": "Karnataka",
     "photoUrl": "https://sansad.in/getFile/newmembers/photos/P2599.jpg?source=rajyasabha",
     "source": "table"
   },
@@ -633,6 +640,7 @@
     "name": "107",
     "party": "BJP",
     "state": "Maliwal, Ms. Swati",
+    "stateName": "National Capital Territory of Delhi",
     "photoUrl": "https://sansad.in/getFile/newmembers/photos/P2582.jpg?source=rajyasabha",
     "source": "table"
   },
@@ -640,6 +648,7 @@
     "name": "108",
     "party": "AITC",
     "state": "Mallik, Smt. Rukmini",
+    "stateName": "West Bengal",
     "photoUrl": "https://sansad.in/getFile/newmembers/photos/P2680.jpg?source=rajyasabha",
     "source": "table"
   },
@@ -647,6 +656,7 @@
     "name": "109",
     "party": "INC",
     "state": "Mandadi, Shri Anil Kumar Yadav",
+    "stateName": "Telangana",
     "photoUrl": "https://sansad.in/getFile/newmembers/photos/P2610.jpg?source=rajyasabha",
     "source": "table"
   },
@@ -654,6 +664,7 @@
     "name": "110",
     "party": "BJD",
     "state": "Mangaraj, Shri Manas Ranjan",
+    "stateName": "Odisha",
     "photoUrl": "https://sansad.in/getFile/newmembers/photos/P2540.jpg?source=rajyasabha",
     "source": "table"
   },
@@ -661,6 +672,7 @@
     "name": "111",
     "party": "KC(M)",
     "state": "Mani, Shri Jose K.",
+    "stateName": "Kerala",
     "photoUrl": "https://sansad.in/getFile/newmembers/photos/P2416.jpg?source=rajyasabha",
     "source": "table"
   },
@@ -668,6 +680,7 @@
     "name": "112",
     "party": "INC",
     "state": "Manickam, Shri Christopher",
+    "stateName": "Tamil Nadu",
     "photoUrl": "https://sansad.in/getFile/newmembers/photos/P2659.jpg?source=rajyasabha",
     "source": "table"
   },
@@ -675,6 +688,7 @@
     "name": "113",
     "party": "BJP",
     "state": "Margherita, Shri Pabitra",
+    "stateName": "Assam",
     "photoUrl": "https://sansad.in/getFile/newmembers/photos/P2510.jpg?source=rajyasabha",
     "source": "table"
   },
@@ -682,6 +696,7 @@
     "name": "114",
     "party": "BJP",
     "state": "Master, Shri C. Sadanandan",
+    "stateName": "Nominated",
     "photoUrl": "https://sansad.in/getFile/newmembers/photos/P2646.jpg?source=rajyasabha",
     "source": "table"
   },
@@ -689,6 +704,7 @@
     "name": "115",
     "party": "INC",
     "state": "Mather Hisham, Smt. Jebi",
+    "stateName": "Kerala",
     "photoUrl": "https://sansad.in/getFile/newmembers/photos/P2513.jpg?source=rajyasabha",
     "source": "table"
   },
@@ -696,6 +712,7 @@
     "name": "116",
     "party": "BJP",
     "state": "Maurya, Shri Amar Pal",
+    "stateName": "Uttar Pradesh",
     "photoUrl": "https://sansad.in/getFile/newmembers/photos/P2611.jpg?source=rajyasabha",
     "source": "table"
   },
@@ -703,6 +720,7 @@
     "name": "117",
     "party": "BJP",
     "state": "Mishra, Shri Manan Kumar",
+    "stateName": "Bihar",
     "photoUrl": "https://sansad.in/getFile/newmembers/photos/P2634.jpg?source=rajyasabha",
     "source": "table"
   },
@@ -710,6 +728,7 @@
     "name": "118",
     "party": "BJD",
     "state": "Misra, Dr. Santrupt",
+    "stateName": "Odisha",
     "photoUrl": "https://sansad.in/getFile/newmembers/photos/P2673.jpg?source=rajyasabha",
     "source": "table"
   },
@@ -717,6 +736,7 @@
     "name": "119",
     "party": "BJP",
     "state": "Mittal, Dr. Ashok Kumar",
+    "stateName": "Punjab",
     "photoUrl": "https://sansad.in/getFile/newmembers/photos/P2518.jpg?source=rajyasabha",
     "source": "table"
   },
@@ -724,6 +744,7 @@
     "name": "120",
     "party": "BJP",
     "state": "Mohan, Shri Jogen",
+    "stateName": "Assam",
     "photoUrl": "https://sansad.in/getFile/newmembers/photos/P2663.jpg?source=rajyasabha",
     "source": "table"
   },
@@ -731,6 +752,7 @@
     "name": "121",
     "party": "NOM.",
     "state": "Murty, Smt. Sudha",
+    "stateName": "Nominated",
     "photoUrl": "https://sansad.in/getFile/newmembers/photos/P2585.jpg?source=rajyasabha",
     "source": "table"
   },
@@ -738,6 +760,7 @@
     "name": "122",
     "party": "BJP",
     "state": "Murugan, Dr. L.",
+    "stateName": "Madhya Pradesh",
     "photoUrl": "https://sansad.in/getFile/newmembers/photos/P2504.jpg?source=rajyasabha",
     "source": "table"
   },
@@ -745,6 +768,7 @@
     "name": "123",
     "party": "BJP",
     "state": "Nabin, Shri Nitin",
+    "stateName": "Bihar",
     "photoUrl": "https://sansad.in/getFile/newmembers/photos/P2683.jpg?source=rajyasabha",
     "source": "table"
   },
@@ -752,6 +776,7 @@
     "name": "124",
     "party": "BJP",
     "state": "Nadda, Shri Jagat Prakash",
+    "stateName": "Gujarat",
     "photoUrl": "https://sansad.in/getFile/newmembers/photos/P2204.jpg?source=rajyasabha",
     "source": "table"
   },
@@ -759,6 +784,7 @@
     "name": "125",
     "party": "BJP",
     "state": "Nagar, Shri Surendra Singh",
+    "stateName": "Uttar Pradesh",
     "photoUrl": "https://sansad.in/getFile/newmembers/photos/P2353.jpg?source=rajyasabha",
     "source": "table"
   },
@@ -766,6 +792,7 @@
     "name": "126",
     "party": "BJP",
     "state": "Naroliya, Smt. Maya",
+    "stateName": "Madhya Pradesh",
     "photoUrl": "https://sansad.in/getFile/newmembers/photos/P2604.jpg?source=rajyasabha",
     "source": "table"
   },
@@ -773,6 +800,7 @@
     "name": "127",
     "party": "UPP(L)",
     "state": "Narzary, Shri Rwngwra",
+    "stateName": "Assam",
     "photoUrl": "https://sansad.in/getFile/newmembers/photos/P2511.jpg?source=rajyasabha",
     "source": "table"
   },
@@ -780,6 +808,7 @@
     "name": "128",
     "party": "YSRCP",
     "state": "Nathwani, Shri Parimal",
+    "stateName": "Andhra Pradesh",
     "photoUrl": "https://sansad.in/getFile/newmembers/photos/P2081.jpg?source=rajyasabha",
     "source": "table"
   },
@@ -787,6 +816,7 @@
     "name": "129",
     "party": "BJP",
     "state": "Nayak, Shri Mayankkumar",
+    "stateName": "Gujarat",
     "photoUrl": "https://sansad.in/getFile/newmembers/photos/P2596.jpg?source=rajyasabha",
     "source": "table"
   },
@@ -794,6 +824,7 @@
     "name": "130",
     "party": "INC",
     "state": "Netam, Smt. Phulo Devi",
+    "stateName": "Chhattisgarh",
     "photoUrl": "https://sansad.in/getFile/newmembers/photos/P2460.jpg?source=rajyasabha",
     "source": "table"
   },
@@ -801,6 +832,7 @@
     "name": "131",
     "party": "BJP",
     "state": "Nikam, Shri Ujjwal Deorao",
+    "stateName": "Nominated",
     "photoUrl": "https://sansad.in/getFile/newmembers/photos/P2645.jpg?source=rajyasabha",
     "source": "table"
   },
@@ -808,6 +840,7 @@
     "name": "132",
     "party": "BJP",
     "state": "Nirmala Sitharaman, Smt.",
+    "stateName": "Karnataka",
     "photoUrl": "https://sansad.in/getFile/newmembers/photos/P2288.jpg?source=rajyasabha",
     "source": "table"
   },
@@ -815,6 +848,7 @@
     "name": "133",
     "party": "BJP",
     "state": "Nishad, Shri Baburam",
+    "stateName": "Uttar Pradesh",
     "photoUrl": "https://sansad.in/getFile/newmembers/photos/P2554.jpg?source=rajyasabha",
     "source": "table"
   },
@@ -822,6 +856,7 @@
     "name": "134",
     "party": "AITC",
     "state": "O' Brien, Shri Derek",
+    "stateName": "West Bengal",
     "photoUrl": "https://sansad.in/getFile/newmembers/photos/P2181.jpg?source=rajyasabha",
     "source": "table"
   },
@@ -829,6 +864,7 @@
     "name": "135",
     "party": "J&KNC",
     "state": "Oberoi, Shri Gurwinder Singh",
+    "stateName": "Jammu & Kashmir",
     "photoUrl": "https://sansad.in/getFile/newmembers/photos/P2658.jpg?source=rajyasabha",
     "source": "table"
   },
@@ -836,6 +872,7 @@
     "name": "136",
     "party": "CPI",
     "state": "P, Shri Sandosh Kumar",
+    "stateName": "Kerala",
     "photoUrl": "https://sansad.in/getFile/newmembers/photos/P2515.jpg?source=rajyasabha",
     "source": "table"
   },
@@ -843,6 +880,7 @@
     "name": "137",
     "party": "NCP",
     "state": "Patel, Shri Praful",
+    "stateName": "Maharashtra",
     "photoUrl": "https://sansad.in/getFile/newmembers/photos/P208.jpg?source=rajyasabha",
     "source": "table"
   },
@@ -850,6 +888,7 @@
     "name": "138",
     "party": "BJP",
     "state": "Patel, Shri Shambhu Sharan",
+    "stateName": "Bihar",
     "photoUrl": "https://sansad.in/getFile/newmembers/photos/P2563.jpg?source=rajyasabha",
     "source": "table"
   },
@@ -857,6 +896,7 @@
     "name": "139",
     "party": "BJP",
     "state": "Pathak, Dr. Sandeep Kumar",
+    "stateName": "Punjab",
     "photoUrl": "https://sansad.in/getFile/newmembers/photos/P2521.jpg?source=rajyasabha",
     "source": "table"
   },
@@ -864,6 +904,7 @@
     "name": "140",
     "party": "BJP",
     "state": "Patidar, Dr. Kavita",
+    "stateName": "Madhya Pradesh",
     "photoUrl": "https://sansad.in/getFile/newmembers/photos/P2532.jpg?source=rajyasabha",
     "source": "table"
   },
@@ -871,6 +912,7 @@
     "name": "141",
     "party": "NCP",
     "state": "Patil, Shri Nitin Laxmanrao Jadhav",
+    "stateName": "Maharashtra",
     "photoUrl": "https://sansad.in/getFile/newmembers/photos/P2638.jpg?source=rajyasabha",
     "source": "table"
   },
@@ -878,6 +920,7 @@
     "name": "142",
     "party": "BJD",
     "state": "Patra, Dr. Sasmit",
+    "stateName": "Odisha",
     "photoUrl": "https://sansad.in/getFile/newmembers/photos/P2423.jpg?source=rajyasabha",
     "source": "table"
   },
@@ -885,6 +928,7 @@
     "name": "143",
     "party": "NCP",
     "state": "Pawar, Shri Parth Ajit",
+    "stateName": "Maharashtra",
     "photoUrl": "https://sansad.in/getFile/newmembers/photos/P2669.jpg?source=rajyasabha",
     "source": "table"
   },
@@ -892,6 +936,7 @@
     "name": "144",
     "party": "NCP-SCP",
     "state": "Pawar, Shri Sharadchandra",
+    "stateName": "Maharashtra",
     "photoUrl": "https://sansad.in/getFile/newmembers/photos/P2251.jpg?source=rajyasabha",
     "source": "table"
   },
@@ -899,6 +944,7 @@
     "name": "145",
     "party": "YSRCP",
     "state": "Pilli, Shri Subhas Chandra Bose",
+    "stateName": "Andhra Pradesh",
     "photoUrl": "https://sansad.in/getFile/newmembers/photos/P2466.jpg?source=rajyasabha",
     "source": "table"
   },
@@ -906,6 +952,7 @@
     "name": "146",
     "party": "BJP",
     "state": "Prakash, Shri Deepak",
+    "stateName": "Jharkhand",
     "photoUrl": "https://sansad.in/getFile/newmembers/photos/P2472.jpg?source=rajyasabha",
     "source": "table"
   },
@@ -913,6 +960,7 @@
     "name": "147",
     "party": "BJP",
     "state": "Prasad, Shri Aditya",
+    "stateName": "Jharkhand",
     "photoUrl": "https://sansad.in/getFile/newmembers/photos/P2564.jpg?source=rajyasabha",
     "source": "table"
   },
@@ -920,6 +968,7 @@
     "name": "148",
     "party": "NOM.",
     "state": "Prasad, Shri V. Vijayendra",
+    "stateName": "Nominated",
     "photoUrl": "https://sansad.in/getFile/newmembers/photos/P2569.jpg?source=rajyasabha",
     "source": "table"
   },
@@ -927,6 +976,7 @@
     "name": "149",
     "party": "INC",
     "state": "Pratapgarhi, Shri Imran",
+    "stateName": "Maharashtra",
     "photoUrl": "https://sansad.in/getFile/newmembers/photos/P2542.jpg?source=rajyasabha",
     "source": "table"
   },
@@ -934,6 +984,7 @@
     "name": "150",
     "party": "BJP",
     "state": "Puri, Shri Hardeep Singh",
+    "stateName": "Uttar Pradesh",
     "photoUrl": "https://sansad.in/getFile/newmembers/photos/P2371.jpg?source=rajyasabha",
     "source": "table"
   },
@@ -941,6 +992,7 @@
     "name": "151",
     "party": "BJP",
     "state": "Purkayastha, Shri Kanad",
+    "stateName": "Assam",
     "photoUrl": "https://sansad.in/getFile/newmembers/photos/P2644.jpg?source=rajyasabha",
     "source": "table"
   },
@@ -948,6 +1000,7 @@
     "name": "152",
     "party": "CPI(M)",
     "state": "Rahim, Shri A. A.",
+    "stateName": "Kerala",
     "photoUrl": "https://sansad.in/getFile/newmembers/photos/P2514.jpg?source=rajyasabha",
     "source": "table"
   },
@@ -955,6 +1008,7 @@
     "name": "153",
     "party": "DMK",
     "state": "Rajeshkumar, Shri K.R.N.",
+    "stateName": "Tamil Nadu",
     "photoUrl": "https://sansad.in/getFile/newmembers/photos/P2506.jpg?source=rajyasabha",
     "source": "table"
   },
@@ -962,6 +1016,7 @@
     "name": "154",
     "party": "PMK",
     "state": "Ramadoss, Dr. Anbumani",
+    "stateName": "Tamil Nadu",
     "photoUrl": "https://sansad.in/getFile/newmembers/photos/P1949.jpg?source=rajyasabha",
     "source": "table"
   },
@@ -969,6 +1024,7 @@
     "name": "155",
     "party": "BJP",
     "state": "Rambhai, Shri Mokariya",
+    "stateName": "Gujarat",
     "photoUrl": "https://sansad.in/getFile/newmembers/photos/P2497.jpg?source=rajyasabha",
     "source": "table"
   },
@@ -976,6 +1032,7 @@
     "name": "156",
     "party": "INC",
     "state": "Ramesh, Shri Jairam",
+    "stateName": "Karnataka",
     "photoUrl": "https://sansad.in/getFile/newmembers/photos/P1935.jpg?source=rajyasabha",
     "source": "table"
   },
@@ -983,6 +1040,7 @@
     "name": "157",
     "party": "BSP",
     "state": "Ramji, Shri",
+    "stateName": "Uttar Pradesh",
     "photoUrl": "https://sansad.in/getFile/newmembers/photos/P2489.jpg?source=rajyasabha",
     "source": "table"
   },
@@ -990,6 +1048,7 @@
     "name": "158",
     "party": "J&KNC",
     "state": "Ramzan, Shri Chowdry Mohammad",
+    "stateName": "Jammu & Kashmir",
     "photoUrl": "https://sansad.in/getFile/newmembers/photos/P2655.jpg?source=rajyasabha",
     "source": "table"
   },
@@ -997,6 +1056,7 @@
     "name": "159",
     "party": "INC",
     "state": "Ranjan, Smt. Ranjeet",
+    "stateName": "Chhattisgarh",
     "photoUrl": "https://sansad.in/getFile/newmembers/photos/P2531.jpg?source=rajyasabha",
     "source": "table"
   },
@@ -1004,6 +1064,7 @@
     "name": "160",
     "party": "BJP",
     "state": "Rathore, Shri Madan",
+    "stateName": "Rajasthan",
     "photoUrl": "https://sansad.in/getFile/newmembers/photos/P2625.jpg?source=rajyasabha",
     "source": "table"
   },
@@ -1011,6 +1072,7 @@
     "name": "161",
     "party": "SS-UBT",
     "state": "Raut, Shri Sanjay",
+    "stateName": "Maharashtra",
     "photoUrl": "https://sansad.in/getFile/newmembers/photos/P1945.jpg?source=rajyasabha",
     "source": "table"
   },
@@ -1018,6 +1080,7 @@
     "name": "162",
     "party": "DMK",
     "state": "Ravindran, Shri Constandine",
+    "stateName": "Tamil Nadu",
     "photoUrl": "https://sansad.in/getFile/newmembers/photos/P2672.jpg?source=rajyasabha",
     "source": "table"
   },
@@ -1025,6 +1088,7 @@
     "name": "163",
     "party": "IND.",
     "state": "Ray, Shri Dilip Kumar",
+    "stateName": "Odisha",
     "photoUrl": "https://sansad.in/getFile/newmembers/photos/P236.jpg?source=rajyasabha",
     "source": "table"
   },
@@ -1032,90 +1096,103 @@
     "name": "164",
     "party": "BJP",
     "state": "Ray, Shri Nagendra",
+    "stateName": "West Bengal",
     "photoUrl": "https://sansad.in/getFile/newmembers/photos/P2580.jpg?source=rajyasabha",
     "source": "table"
   },
   {
     "name": "165",
-    "party": "AITC",
-    "state": "Ray, Shri Sukhendu Sekhar",
-    "photoUrl": "https://sansad.in/getFile/newmembers/photos/P2184.jpg?source=rajyasabha",
-    "source": "table"
-  },
-  {
-    "name": "166",
     "party": "BJP",
     "state": "Rebia, Shri Nabam",
+    "stateName": "Arunachal Pradesh",
     "photoUrl": "https://sansad.in/getFile/newmembers/photos/P238.jpg?source=rajyasabha",
     "source": "table"
   },
   {
-    "name": "167",
+    "name": "166",
     "party": "BRS",
     "state": "Reddy, Shri B. Parthasaradhi",
+    "stateName": "Telangana",
     "photoUrl": "https://sansad.in/getFile/newmembers/photos/P2530.jpg?source=rajyasabha",
+    "source": "table"
+  },
+  {
+    "name": "167",
+    "party": "YSRCP",
+    "state": "Reddy, Shri Meda Raghunadha",
+    "stateName": "Andhra Pradesh",
+    "photoUrl": "https://sansad.in/getFile/newmembers/photos/P2587.jpg?source=rajyasabha",
     "source": "table"
   },
   {
     "name": "168",
     "party": "YSRCP",
-    "state": "Reddy, Shri Meda Raghunadha",
-    "photoUrl": "https://sansad.in/getFile/newmembers/photos/P2587.jpg?source=rajyasabha",
-    "source": "table"
-  },
-  {
-    "name": "169",
-    "party": "YSRCP",
     "state": "Reddy, Shri S Niranjan",
+    "stateName": "Andhra Pradesh",
     "photoUrl": "https://sansad.in/getFile/newmembers/photos/P2526.jpg?source=rajyasabha",
     "source": "table"
   },
   {
-    "name": "170",
+    "name": "169",
     "party": "INC",
     "state": "Reddy, Shri Vem Narendar",
+    "stateName": "Telangana",
     "photoUrl": "https://sansad.in/getFile/newmembers/photos/P2682.jpg?source=rajyasabha",
     "source": "table"
   },
   {
-    "name": "171",
+    "name": "170",
     "party": "YSRCP",
     "state": "Reddy, Shri Yerram Venkata Subba",
+    "stateName": "Andhra Pradesh",
     "photoUrl": "https://sansad.in/getFile/newmembers/photos/P2588.jpg?source=rajyasabha",
+    "source": "table"
+  },
+  {
+    "name": "171",
+    "party": "BJP",
+    "state": "Sahney, Dr. Vikramjit Singh",
+    "stateName": "Punjab",
+    "photoUrl": "https://sansad.in/getFile/newmembers/photos/P2546.jpg?source=rajyasabha",
     "source": "table"
   },
   {
     "name": "172",
     "party": "BJP",
-    "state": "Sahney, Dr. Vikramjit Singh",
-    "photoUrl": "https://sansad.in/getFile/newmembers/photos/P2546.jpg?source=rajyasabha",
+    "state": "Saini, Dr. Kalpana",
+    "stateName": "Uttarakhand",
+    "photoUrl": "https://sansad.in/getFile/newmembers/photos/P2560.jpg?source=rajyasabha",
     "source": "table"
   },
   {
     "name": "173",
     "party": "BJP",
-    "state": "Saini, Dr. Kalpana",
-    "photoUrl": "https://sansad.in/getFile/newmembers/photos/P2560.jpg?source=rajyasabha",
+    "state": "Salamsinh, Dr. Parmar Jashvantsinh",
+    "stateName": "Gujarat",
+    "photoUrl": "https://sansad.in/getFile/newmembers/photos/P2595.jpg?source=rajyasabha",
     "source": "table"
   },
   {
     "name": "174",
     "party": "BJP",
-    "state": "Salamsinh, Dr. Parmar Jashvantsinh",
-    "photoUrl": "https://sansad.in/getFile/newmembers/photos/P2595.jpg?source=rajyasabha",
+    "state": "Samal, Shri Manmohan",
+    "stateName": "Odisha",
+    "photoUrl": "https://sansad.in/getFile/newmembers/photos/P2674.jpg?source=rajyasabha",
     "source": "table"
   },
   {
     "name": "175",
     "party": "BJP",
-    "state": "Samal, Shri Manmohan",
-    "photoUrl": "https://sansad.in/getFile/newmembers/photos/P2674.jpg?source=rajyasabha",
+    "state": "Samantaray, Shri Debashish",
+    "stateName": "Odisha",
+    "photoUrl": "https://sansad.in/getFile/newmembers/photos/P2622.jpg?source=rajyasabha",
     "source": "table"
   },
   {
     "name": "176",
     "party": "BJP",
     "state": "Sandhu, Shri Satnam Singh",
+    "stateName": "Nominated",
     "photoUrl": "https://sansad.in/getFile/newmembers/photos/P2583.jpg?source=rajyasabha",
     "source": "table"
   },
@@ -1123,6 +1200,7 @@
     "name": "177",
     "party": "BJP",
     "state": "Satyanarayana, Shri Paka Venkata",
+    "stateName": "Andhra Pradesh",
     "photoUrl": "https://sansad.in/getFile/newmembers/photos/P2643.jpg?source=rajyasabha",
     "source": "table"
   },
@@ -1130,6 +1208,7 @@
     "name": "178",
     "party": "BJP",
     "state": "Selvaganabathy, Shri S.",
+    "stateName": "Puducherry",
     "photoUrl": "https://sansad.in/getFile/newmembers/photos/P2508.jpg?source=rajyasabha",
     "source": "table"
   },
@@ -1137,6 +1216,7 @@
     "name": "179",
     "party": "AITC",
     "state": "Sen, Ms. Dola",
+    "stateName": "West Bengal",
     "photoUrl": "https://sansad.in/getFile/newmembers/photos/P2307.jpg?source=rajyasabha",
     "source": "table"
   },
@@ -1144,6 +1224,7 @@
     "name": "180",
     "party": "BJP",
     "state": "Seth, Shri Sanjay",
+    "stateName": "Uttar Pradesh",
     "photoUrl": "https://sansad.in/getFile/newmembers/photos/P2351.jpg?source=rajyasabha",
     "source": "table"
   },
@@ -1151,6 +1232,7 @@
     "name": "181",
     "party": "BJP",
     "state": "Sharma, Dr. Dinesh",
+    "stateName": "Uttar Pradesh",
     "photoUrl": "https://sansad.in/getFile/newmembers/photos/P2581.jpg?source=rajyasabha",
     "source": "table"
   },
@@ -1158,6 +1240,7 @@
     "name": "182",
     "party": "INC",
     "state": "Sharma, Shri Anurag",
+    "stateName": "Himachal Pradesh",
     "photoUrl": "https://sansad.in/getFile/newmembers/photos/P2668.jpg?source=rajyasabha",
     "source": "table"
   },
@@ -1165,6 +1248,7 @@
     "name": "183",
     "party": "IND.",
     "state": "Sharma, Shri Kartikeya",
+    "stateName": "Haryana",
     "photoUrl": "https://sansad.in/getFile/newmembers/photos/P2571.jpg?source=rajyasabha",
     "source": "table"
   },
@@ -1172,6 +1256,7 @@
     "name": "184",
     "party": "BJP",
     "state": "Sharma, Shri Sat Paul",
+    "stateName": "Jammu & Kashmir",
     "photoUrl": "https://sansad.in/getFile/newmembers/photos/P2657.jpg?source=rajyasabha",
     "source": "table"
   },
@@ -1179,6 +1264,7 @@
     "name": "185",
     "party": "BJP",
     "state": "Sharma, Smt. Rekha",
+    "stateName": "Haryana",
     "photoUrl": "https://sansad.in/getFile/newmembers/photos/P2642.jpg?source=rajyasabha",
     "source": "table"
   },
@@ -1186,6 +1272,7 @@
     "name": "186",
     "party": "BJP",
     "state": "Shekhar, Shri Neeraj",
+    "stateName": "Uttar Pradesh",
     "photoUrl": "https://sansad.in/getFile/newmembers/photos/P2297.jpg?source=rajyasabha",
     "source": "table"
   },
@@ -1193,6 +1280,7 @@
     "name": "187",
     "party": "NOM.",
     "state": "Shri Harivansh",
+    "stateName": "Nominated",
     "photoUrl": "https://sansad.in/getFile/newmembers/photos/P2269.jpg?source=rajyasabha",
     "source": "table"
   },
@@ -1200,6 +1288,7 @@
     "name": "188",
     "party": "BJP",
     "state": "Shringla, Shri Harsh Vardhan",
+    "stateName": "Nominated",
     "photoUrl": "https://sansad.in/getFile/newmembers/photos/P2647.jpg?source=rajyasabha",
     "source": "table"
   },
@@ -1207,6 +1296,7 @@
     "name": "189",
     "party": "INC",
     "state": "Shukla, Shri Rajeev",
+    "stateName": "Chhattisgarh",
     "photoUrl": "https://sansad.in/getFile/newmembers/photos/P175.jpg?source=rajyasabha",
     "source": "table"
   },
@@ -1214,6 +1304,7 @@
     "name": "190",
     "party": "IND.",
     "state": "Sibal, Shri Kapil",
+    "stateName": "Uttar Pradesh",
     "photoUrl": "https://sansad.in/getFile/newmembers/photos/P74.jpg?source=rajyasabha",
     "source": "table"
   },
@@ -1221,6 +1312,7 @@
     "name": "191",
     "party": "INC",
     "state": "Singh Boudh, Shri Karamvir",
+    "stateName": "Haryana",
     "photoUrl": "https://sansad.in/getFile/newmembers/photos/P2666.jpg?source=rajyasabha",
     "source": "table"
   },
@@ -1228,6 +1320,7 @@
     "name": "192",
     "party": "BJP",
     "state": "Singh, Dr. Bhim",
+    "stateName": "Bihar",
     "photoUrl": "https://sansad.in/getFile/newmembers/photos/P2590.jpg?source=rajyasabha",
     "source": "table"
   },
@@ -1235,6 +1328,7 @@
     "name": "193",
     "party": "INC",
     "state": "Singh, Shri Akhilesh Prasad",
+    "stateName": "Bihar",
     "photoUrl": "https://sansad.in/getFile/newmembers/photos/P2377.jpg?source=rajyasabha",
     "source": "table"
   },
@@ -1242,6 +1336,7 @@
     "name": "194",
     "party": "BJP",
     "state": "Singh, Shri Arun",
+    "stateName": "Uttar Pradesh",
     "photoUrl": "https://sansad.in/getFile/newmembers/photos/P2437.jpg?source=rajyasabha",
     "source": "table"
   },
@@ -1249,6 +1344,7 @@
     "name": "195",
     "party": "INC",
     "state": "Singh, Shri Ashok",
+    "stateName": "Madhya Pradesh",
     "photoUrl": "https://sansad.in/getFile/newmembers/photos/P2601.jpg?source=rajyasabha",
     "source": "table"
   },
@@ -1256,6 +1352,7 @@
     "name": "196",
     "party": "BJP",
     "state": "Singh, Shri Devendra Pratap",
+    "stateName": "Chhattisgarh",
     "photoUrl": "https://sansad.in/getFile/newmembers/photos/P2593.jpg?source=rajyasabha",
     "source": "table"
   },
@@ -1263,6 +1360,7 @@
     "name": "197",
     "party": "INC",
     "state": "Singh, Shri Digvijaya",
+    "stateName": "Madhya Pradesh",
     "photoUrl": "https://sansad.in/getFile/newmembers/photos/P2279.jpg?source=rajyasabha",
     "source": "table"
   },
@@ -1270,6 +1368,7 @@
     "name": "198",
     "party": "BJP",
     "state": "Singh, Shri Harbhajan",
+    "stateName": "Punjab",
     "photoUrl": "https://sansad.in/getFile/newmembers/photos/P2520.jpg?source=rajyasabha",
     "source": "table"
   },
@@ -1277,6 +1376,7 @@
     "name": "199",
     "party": "BJP",
     "state": "Singh, Shri Ratanjit Pratap Narain",
+    "stateName": "Uttar Pradesh",
     "photoUrl": "https://sansad.in/getFile/newmembers/photos/P2614.jpg?source=rajyasabha",
     "source": "table"
   },
@@ -1284,6 +1384,7 @@
     "name": "200",
     "party": "BJP",
     "state": "Singh, Shri Ravneet",
+    "stateName": "Rajasthan",
     "photoUrl": "https://sansad.in/getFile/newmembers/photos/P2639.jpg?source=rajyasabha",
     "source": "table"
   },
@@ -1291,6 +1392,7 @@
     "name": "201",
     "party": "AAP",
     "state": "Singh, Shri Sanjay",
+    "stateName": "National Capital Territory of Delhi",
     "photoUrl": "https://sansad.in/getFile/newmembers/photos/P2372.jpg?source=rajyasabha",
     "source": "table"
   },
@@ -1298,6 +1400,7 @@
     "name": "202",
     "party": "AAP",
     "state": "Singh, Shri Sant Balbir",
+    "stateName": "Punjab",
     "photoUrl": "https://sansad.in/getFile/newmembers/photos/P2545.jpg?source=rajyasabha",
     "source": "table"
   },
@@ -1305,6 +1408,7 @@
     "name": "203",
     "party": "BJP",
     "state": "Singh, Shri Tejveer",
+    "stateName": "Uttar Pradesh",
     "photoUrl": "https://sansad.in/getFile/newmembers/photos/P2612.jpg?source=rajyasabha",
     "source": "table"
   },
@@ -1312,6 +1416,7 @@
     "name": "204",
     "party": "BJP",
     "state": "Singh, Smt. Darshana",
+    "stateName": "Uttar Pradesh",
     "photoUrl": "https://sansad.in/getFile/newmembers/photos/P2553.jpg?source=rajyasabha",
     "source": "table"
   },
@@ -1319,6 +1424,7 @@
     "name": "205",
     "party": "BJP",
     "state": "Singh, Smt. Sadhna",
+    "stateName": "Uttar Pradesh",
     "photoUrl": "https://sansad.in/getFile/newmembers/photos/P2616.jpg?source=rajyasabha",
     "source": "table"
   },
@@ -1326,6 +1432,7 @@
     "name": "206",
     "party": "INC",
     "state": "Singhvi, Dr. Abhishek Manu",
+    "stateName": "Telangana",
     "photoUrl": "https://sansad.in/getFile/newmembers/photos/P2029.jpg?source=rajyasabha",
     "source": "table"
   },
@@ -1333,6 +1440,7 @@
     "name": "207",
     "party": "BJP",
     "state": "Sinha (Rahul Sinha), Shri Biswajit",
+    "stateName": "West Bengal",
     "photoUrl": "https://sansad.in/getFile/newmembers/photos/P2681.jpg?source=rajyasabha",
     "source": "table"
   },
@@ -1340,6 +1448,7 @@
     "name": "208",
     "party": "BJP",
     "state": "Siroya, Shri Lahar Singh",
+    "stateName": "Karnataka",
     "photoUrl": "https://sansad.in/getFile/newmembers/photos/P2539.jpg?source=rajyasabha",
     "source": "table"
   },
@@ -1347,6 +1456,7 @@
     "name": "209",
     "party": "DMK",
     "state": "Siva, Shri Tiruchi",
+    "stateName": "Tamil Nadu",
     "photoUrl": "https://sansad.in/getFile/newmembers/photos/P177.jpg?source=rajyasabha",
     "source": "table"
   },
@@ -1354,6 +1464,7 @@
     "name": "210",
     "party": "CPI(M)",
     "state": "Sivadasan, Dr. V.",
+    "stateName": "Kerala",
     "photoUrl": "https://sansad.in/getFile/newmembers/photos/P2499.jpg?source=rajyasabha",
     "source": "table"
   },
@@ -1361,6 +1472,7 @@
     "name": "211",
     "party": "DMK",
     "state": "Sivalingam, Shri S.R.",
+    "stateName": "Tamil Nadu",
     "photoUrl": "https://sansad.in/getFile/newmembers/photos/P2651.jpg?source=rajyasabha",
     "source": "table"
   },
@@ -1368,6 +1480,7 @@
     "name": "212",
     "party": "DMK",
     "state": "Smt. Rajathi",
+    "stateName": "Tamil Nadu",
     "photoUrl": "https://sansad.in/getFile/newmembers/photos/P2650.jpg?source=rajyasabha",
     "source": "table"
   },
@@ -1375,6 +1488,7 @@
     "name": "213",
     "party": "BJP",
     "state": "Solanki, Dr. Sumer Singh",
+    "stateName": "Madhya Pradesh",
     "photoUrl": "https://sansad.in/getFile/newmembers/photos/P2474.jpg?source=rajyasabha",
     "source": "table"
   },
@@ -1382,6 +1496,7 @@
     "name": "214",
     "party": "DMDK",
     "state": "Sudhish, Shri L. K.",
+    "stateName": "Tamil Nadu",
     "photoUrl": "https://sansad.in/getFile/newmembers/photos/P2676.jpg?source=rajyasabha",
     "source": "table"
   },
@@ -1389,6 +1504,7 @@
     "name": "215",
     "party": "SP",
     "state": "Suman, Shri Ramji Lal",
+    "stateName": "Uttar Pradesh",
     "photoUrl": "https://sansad.in/getFile/newmembers/photos/P2615.jpg?source=rajyasabha",
     "source": "table"
   },
@@ -1396,6 +1512,7 @@
     "name": "216",
     "party": "CPI",
     "state": "Suneer, Shri P. P.",
+    "stateName": "Kerala",
     "photoUrl": "https://sansad.in/getFile/newmembers/photos/P2630.jpg?source=rajyasabha",
     "source": "table"
   },
@@ -1403,6 +1520,7 @@
     "name": "217",
     "party": "INC",
     "state": "Surjewala, Shri Randeep Singh",
+    "stateName": "Rajasthan",
     "photoUrl": "https://sansad.in/getFile/newmembers/photos/P2548.jpg?source=rajyasabha",
     "source": "table"
   },
@@ -1410,6 +1528,7 @@
     "name": "218",
     "party": "BJP",
     "state": "Tanavade, Shri Sadanand Mhalu Shet",
+    "stateName": "Goa",
     "photoUrl": "https://sansad.in/getFile/newmembers/photos/P2575.jpg?source=rajyasabha",
     "source": "table"
   },
@@ -1417,6 +1536,7 @@
     "name": "219",
     "party": "INC",
     "state": "Tankha, Shri Vivek K.",
+    "stateName": "Madhya Pradesh",
     "photoUrl": "https://sansad.in/getFile/newmembers/photos/P2333.jpg?source=rajyasabha",
     "source": "table"
   },
@@ -1424,6 +1544,7 @@
     "name": "220",
     "party": "BJP",
     "state": "Tawde, Shri Vinod Shridhar",
+    "stateName": "Maharashtra",
     "photoUrl": "https://sansad.in/getFile/newmembers/photos/P2662.jpg?source=rajyasabha",
     "source": "table"
   },
@@ -1431,6 +1552,7 @@
     "name": "221",
     "party": "JD(U)",
     "state": "Thakur, Shri Ram Nath",
+    "stateName": "Bihar",
     "photoUrl": "https://sansad.in/getFile/newmembers/photos/P2268.jpg?source=rajyasabha",
     "source": "table"
   },
@@ -1438,13 +1560,15 @@
     "name": "222",
     "party": "AITC",
     "state": "Thakur, Smt. Mamata",
+    "stateName": "West Bengal",
     "photoUrl": "https://sansad.in/getFile/newmembers/photos/P2619.jpg?source=rajyasabha",
     "source": "table"
   },
   {
     "name": "223",
     "party": "AIADMK",
-    "state": "Thambi Durai, Shri M.",
+    "state": "Thambi Durai, Dr. M.",
+    "stateName": "Tamil Nadu",
     "photoUrl": "https://sansad.in/getFile/newmembers/photos/P2451.jpg?source=rajyasabha",
     "source": "table"
   },
@@ -1452,6 +1576,7 @@
     "name": "224",
     "party": "BJP",
     "state": "Tiwari, Shri Ghanshyam",
+    "stateName": "Rajasthan",
     "photoUrl": "https://sansad.in/getFile/newmembers/photos/P2547.jpg?source=rajyasabha",
     "source": "table"
   },
@@ -1459,6 +1584,7 @@
     "name": "225",
     "party": "INC",
     "state": "Tiwari, Shri Pramod",
+    "stateName": "Rajasthan",
     "photoUrl": "https://sansad.in/getFile/newmembers/photos/P2245.jpg?source=rajyasabha",
     "source": "table"
   },
@@ -1466,6 +1592,7 @@
     "name": "226",
     "party": "BJP",
     "state": "Trivedi, Dr. Sudhanshu",
+    "stateName": "Uttar Pradesh",
     "photoUrl": "https://sansad.in/getFile/newmembers/photos/P2436.jpg?source=rajyasabha",
     "source": "table"
   },
@@ -1473,6 +1600,7 @@
     "name": "227",
     "party": "BJP",
     "state": "Umeshnath, Shri Balyogi",
+    "stateName": "Madhya Pradesh",
     "photoUrl": "https://sansad.in/getFile/newmembers/photos/P2602.jpg?source=rajyasabha",
     "source": "table"
   },
@@ -1480,6 +1608,7 @@
     "name": "228",
     "party": "NOM.",
     "state": "Usha, Smt. P. T.",
+    "stateName": "Nominated",
     "photoUrl": "https://sansad.in/getFile/newmembers/photos/P2568.jpg?source=rajyasabha",
     "source": "table"
   },
@@ -1487,6 +1616,7 @@
     "name": "229",
     "party": "BRS",
     "state": "Vaddiraju, Shri Ravi Chandra",
+    "stateName": "Telangana",
     "photoUrl": "https://sansad.in/getFile/newmembers/photos/P2524.jpg?source=rajyasabha",
     "source": "table"
   },
@@ -1494,6 +1624,7 @@
     "name": "230",
     "party": "BJP",
     "state": "Vaishnaw, Shri Ashwini",
+    "stateName": "Odisha",
     "photoUrl": "https://sansad.in/getFile/newmembers/photos/P2425.jpg?source=rajyasabha",
     "source": "table"
   },
@@ -1501,6 +1632,7 @@
     "name": "231",
     "party": "MNF",
     "state": "Vanlalvena, Shri K.",
+    "stateName": "Mizoram",
     "photoUrl": "https://sansad.in/getFile/newmembers/photos/P2483.jpg?source=rajyasabha",
     "source": "table"
   },
@@ -1508,6 +1640,7 @@
     "name": "232",
     "party": "BJP",
     "state": "Varma, Shri Pradip Kumar",
+    "stateName": "Jharkhand",
     "photoUrl": "https://sansad.in/getFile/newmembers/photos/P2627.jpg?source=rajyasabha",
     "source": "table"
   },
@@ -1515,6 +1648,7 @@
     "name": "233",
     "party": "BJP",
     "state": "Verma, Shri B.L.",
+    "stateName": "Uttar Pradesh",
     "photoUrl": "https://sansad.in/getFile/newmembers/photos/P2491.jpg?source=rajyasabha",
     "source": "table"
   },
@@ -1522,6 +1656,7 @@
     "name": "234",
     "party": "BJP",
     "state": "Verma, Smt. Laxmi",
+    "stateName": "Chhattisgarh",
     "photoUrl": "https://sansad.in/getFile/newmembers/photos/P2665.jpg?source=rajyasabha",
     "source": "table"
   },
@@ -1529,6 +1664,7 @@
     "name": "235",
     "party": "BJP",
     "state": "Wadkute, Shri Ramrao Sakharam",
+    "stateName": "Maharashtra",
     "photoUrl": "https://sansad.in/getFile/newmembers/photos/P2670.jpg?source=rajyasabha",
     "source": "table"
   },
@@ -1536,6 +1672,7 @@
     "name": "236",
     "party": "SS",
     "state": "Waghmare, Dr. Jyoti Nagnath",
+    "stateName": "Maharashtra",
     "photoUrl": "https://sansad.in/getFile/newmembers/photos/P2671.jpg?source=rajyasabha",
     "source": "table"
   },
@@ -1543,6 +1680,7 @@
     "name": "237",
     "party": "INC",
     "state": "Wasnik, Shri Mukul Balkrishna",
+    "stateName": "Rajasthan",
     "photoUrl": "https://sansad.in/getFile/newmembers/photos/P2549.jpg?source=rajyasabha",
     "source": "table"
   },
@@ -1550,6 +1688,7 @@
     "name": "238",
     "party": "DMK",
     "state": "Wilson, Shri P.",
+    "stateName": "Tamil Nadu",
     "photoUrl": "https://sansad.in/getFile/newmembers/photos/P2431.jpg?source=rajyasabha",
     "source": "table"
   },
@@ -1557,6 +1696,7 @@
     "name": "239",
     "party": "SP",
     "state": "Yadav, Prof. Ram Gopal",
+    "stateName": "Uttar Pradesh",
     "photoUrl": "https://sansad.in/getFile/newmembers/photos/P109.jpg?source=rajyasabha",
     "source": "table"
   },
@@ -1564,6 +1704,7 @@
     "name": "240",
     "party": "RJD",
     "state": "Yadav, Shri Sanjay",
+    "stateName": "Bihar",
     "photoUrl": "https://sansad.in/getFile/newmembers/photos/P2592.jpg?source=rajyasabha",
     "source": "table"
   },
@@ -1571,6 +1712,7 @@
     "name": "241",
     "party": "BJP",
     "state": "Yadav, Smt. Sangeeta",
+    "stateName": "Uttar Pradesh",
     "photoUrl": "https://sansad.in/getFile/newmembers/photos/P2559.jpg?source=rajyasabha",
     "source": "table"
   }

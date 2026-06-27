@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>KSHETRA — Reality Check &amp; To-Do Analysis</title>
+<style>
+  :root{
+    --bg:#0f1419; --card:#1a212b; --card2:#212a36; --ink:#e8edf2; --muted:#9fb0c0;
+    --line:#2c3a48; --accent:#4ea1ff; --green:#34d399; --amber:#fbbf24; --red:#f87171;
+    --purple:#c084fc; --blue:#60a5fa;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);font-family:-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;line-height:1.6;font-size:16px}
+  .wrap{max-width:1100px;margin:0 auto;padding:32px 22px 80px}
+  header.hero{background:linear-gradient(135deg,#16314f 0%,#1a212b 70%);border:1px solid var(--line);border-radius:16px;padding:34px 30px;margin-bottom:28px}
+  header.hero h1{margin:0 0 6px;font-size:30px;letter-spacing:.3px}
+  header.hero p{margin:4px 0;color:var(--muted)}
+  .badge{display:inline-block;padding:3px 10px;border-radius:999px;font-size:12.5px;font-weight:600;line-height:1.5}
+  .b-green{background:rgba(52,211,153,.16);color:var(--green);border:1px solid rgba(52,211,153,.35)}
+  .b-amber{background:rgba(251,191,36,.14);color:var(--amber);border:1px solid rgba(251,191,36,.35)}
+  .b-red{background:rgba(248,113,113,.14);color:var(--red);border:1px solid rgba(248,113,113,.35)}
+  .b-blue{background:rgba(96,165,250,.14);color:var(--blue);border:1px solid rgba(96,165,250,.35)}
+  .b-grey{background:rgba(159,176,192,.14);color:var(--muted);border:1px solid rgba(159,176,192,.3)}
+  h2{font-size:23px;margin:42px 0 14px;padding-bottom:8px;border-bottom:2px solid var(--line)}
+  h3{font-size:18px;margin:26px 0 10px;color:#cfe0f0}
+  section{scroll-margin-top:20px}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:18px 20px;margin:14px 0}
+  .grid{display:grid;gap:14px}
+  .g2{grid-template-columns:repeat(2,1fr)}
+  .g3{grid-template-columns:repeat(3,1fr)}
+  @media(max-width:760px){.g2,.g3{grid-template-columns:1fr}}
+  .stat{background:var(--card2);border:1px solid var(--line);border-radius:12px;padding:16px;text-align:center}
+  .stat .num{font-size:28px;font-weight:700;color:var(--accent)}
+  .stat .lbl{font-size:13px;color:var(--muted);margin-top:3px}
+  table{width:100%;border-collapse:collapse;margin:10px 0;font-size:14.5px}
+  th,td{text-align:left;padding:9px 11px;border-bottom:1px solid var(--line);vertical-align:top}
+  th{background:var(--card2);color:#cfe0f0;font-weight:600}
+  tr:hover td{background:rgba(78,161,255,.05)}
+  ul{margin:8px 0;padding-left:22px}
+  li{margin:5px 0}
+  .toc{columns:2;column-gap:30px}
+  .toc a{color:var(--accent);text-decoration:none;display:block;padding:3px 0}
+  .toc a:hover{text-decoration:underline}
+  @media(max-width:600px){.toc{columns:1}}
+  .callout{border-left:4px solid var(--accent);background:var(--card2);padding:12px 16px;border-radius:0 8px 8px 0;margin:14px 0}
+  .callout.warn{border-color:var(--amber)}
+  .callout.bad{border-color:var(--red)}
+  .callout.good{border-color:var(--green)}
+  code{background:#0b1118;border:1px solid var(--line);border-radius:5px;padding:1px 6px;font-size:13px;color:#9fe0c0}
+  .legend span{margin-right:16px;font-size:13.5px}
+  .pri{font-weight:700;border-radius:6px;padding:2px 8px;font-size:12px}
+  .p1{background:rgba(248,113,113,.18);color:var(--red)}
+  .p2{background:rgba(251,191,36,.18);color:var(--amber)}
+  .p3{background:rgba(96,165,250,.18);color:var(--blue)}
+  .muted{color:var(--muted)}
+  .check{color:var(--green)} .cross{color:var(--red)} .half{color:var(--amber)}
+  footer{margin-top:50px;color:var(--muted);font-size:13px;text-align:center;border-top:1px solid var(--line);padding-top:18px}
+  .pill-row{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header class="hero">
+  <h1>KSHETRA — Reality Check &amp; To-Do Analysis</h1>
+  <p><strong>India's Political Operating System</strong> — independent fact-check of documentation vs. actual codebase.</p>
+  <p class="muted">Audit date: 22 Jun 2026 &nbsp;|&nbsp; Scope: <code>building.md</code> (51 sprints), <code>task.md</code>, <code>CHANGELOG.md</code>, parity/audit trackers, 360° analysis, and direct source-code verification.</p>
+  <div class="pill-row">
+    <span class="badge b-green">TypeScript build: verified clean</span>
+    <span class="badge b-amber">Backend: built but not connected</span>
+    <span class="badge b-amber">Data depth: uneven across states</span>
+    <span class="badge b-blue">Stage: advanced offline prototype</span>
+  </div>
+</header>
+
+<!-- TOC -->
+<div class="card">
+  <h3 style="margin-top:4px">Contents</h3>
+  <div class="toc">
+    <a href="#tldr">1. Bottom Line (TL;DR)</a>
+    <a href="#what">2. What KSHETRA Is Meant To Be</a>
+    <a href="#verify">3. Verification Results (my own checks)</a>
+    <a href="#built">4. Feature Inventory — Built / Working / Half / Not</a>
+    <a href="#data">5. Data Coverage Reality</a>
+    <a href="#depth">6. Depth vs. "Gold Standard"</a>
+    <a href="#gaps">7. Doc-vs-Reality Discrepancies</a>
+    <a href="#evolution">8. How The Scope Evolved</a>
+    <a href="#todo">9. Prioritized To-Do List</a>
+    <a href="#risks">10. Risks &amp; Watch-outs</a>
+  </div>
+</div>
+
+<!-- 1 TLDR -->
+<section id="tldr">
+<h2>1. Bottom Line (TL;DR)</h2>
+<div class="callout good">
+KSHETRA is a <strong>genuinely large and technically solid offline mobile prototype</strong>. The code compiles with zero TypeScript errors across all three packages (mobile, API, shared), the documentation is unusually disciplined (a 4,399-line build log covering 51 sprints), and the data layer is enormous (197 seed files, 23 DB migrations, 22 states with map polygons).
+</div>
+<div class="callout warn">
+However, the project is <strong>further from "production / gold standard" than the celebratory docs suggest</strong>. Three realities stand out:
+<ul>
+<li><strong>The whole backend is built but not switched on.</strong> Supabase, the Fastify API, AI, push notifications and KYC all exist in code, but the app ships with <em>empty</em> Supabase/AI/EAS keys and runs <strong>entirely offline on bundled seed data</strong>. Social/feed/civic actions write to local device storage, not a real shared backend.</li>
+<li><strong>Data depth is very uneven.</strong> Only ~3–4 states are truly "gold". Most states have <em>short</em> constituency seeds (fewer than official seat counts) and 9 states have <em>empty placeholder maps</em>.</li>
+<li><strong>The newest feature (Sprint 51 Administrative Hierarchy) is data/backend-only</strong> — it has no UI in the app yet.</li>
+</ul>
+</div>
+<div class="grid g3">
+  <div class="stat"><div class="num">51</div><div class="lbl">Sprints / milestones logged</div></div>
+  <div class="stat"><div class="num">0</div><div class="lbl">TypeScript errors (verified)</div></div>
+  <div class="stat"><div class="num">197</div><div class="lbl">Seed data files</div></div>
+  <div class="stat"><div class="num">23</div><div class="lbl">DB migrations written</div></div>
+  <div class="stat"><div class="num">22 / 31</div><div class="lbl">States with real map polygons</div></div>
+  <div class="stat"><div class="num">3–4</div><div class="lbl">States at true "gold" depth</div></div>
+</div>
+</section>
+
+<!-- 2 WHAT -->
+<section id="what">
+<h2>2. What KSHETRA Is Meant To Be</h2>
+<p>Per <code>README.md</code> and <code>KSHETRA_360_Analysis.md</code>, the vision is to be India's political operating system for the post-delimitation era, with <strong>three product engines</strong>:</p>
+<table>
+<tr><th>Engine</th><th>Purpose</th><th>Business model</th><th>Current state</th></tr>
+<tr><td><strong>Constituency Intelligence</strong></td><td>Interactive maps, boundaries, demographics, election history</td><td>Free civic layer</td><td><span class="badge b-green">Largely built (offline)</span></td></tr>
+<tr><td><strong>Media &amp; Journalist Network</strong></td><td>Geo-tagged news, journalist verification, embeddable widgets</td><td>Freemium</td><td><span class="badge b-amber">In-app screens built; web widgets &amp; backend missing</span></td></tr>
+<tr><td><strong>Campaign Manager</strong></td><td>Content distribution, voter segmentation, field ops, analytics</td><td>Paid SaaS</td><td><span class="badge b-amber">In-app screens + store built; not live/monetized</span></td></tr>
+</table>
+<p>Plus cross-cutting bets: a <strong>Delimitation Simulator</strong> (the core strategic moat), an <strong>AI analysis layer</strong>, multilingual support, and a <strong>content-accountability / trust-and-safety</strong> framework for legal compliance.</p>
+<p class="muted"><strong>Tech stack (as documented &amp; confirmed in repo):</strong> React Native + Expo (TypeScript), MapLibre maps, Zustand state, Fastify API, Supabase (PostgreSQL + PostGIS + pgvector), Turborepo monorepo, Jest tests.</p>
+</section>
+
+<!-- 3 VERIFY -->
+<section id="verify">
+<h2>3. Verification Results (my own checks, not just the docs)</h2>
+<p>I independently ran/inspected the following rather than trusting the trackers:</p>
+<table>
+<tr><th>Check</th><th>Method</th><th>Result</th></tr>
+<tr><td>Mobile TypeScript build</td><td><code>tsc --noEmit</code> on <code>apps/mobile</code></td><td><span class="badge b-green">EXIT 0 — clean</span> (claim confirmed)</td></tr>
+<tr><td>API TypeScript build</td><td><code>tsc --noEmit</code> on <code>apps/api</code></td><td><span class="badge b-green">EXIT 0 — clean</span></td></tr>
+<tr><td>Shared package build</td><td><code>tsc --noEmit</code> on <code>packages/shared</code></td><td><span class="badge b-green">EXIT 0 — clean</span></td></tr>
+<tr><td>Backend connectivity</td><td>Inspected <code>apps/mobile/.env</code></td><td><span class="badge b-red">Supabase URL/key, AI key, EAS ID all EMPTY → app runs fully offline</span></td></tr>
+<tr><td>Sprint 51 Hierarchy wiring</td><td>Searched app/components/lib/stores for hierarchy imports</td><td><span class="badge b-amber">0 references in UI → data/backend only, no screen</span></td></tr>
+<tr><td>KL/WB/UP/TN UI wiring</td><td>Inspected <code>stateDataAdapter.ts</code></td><td><span class="badge b-green">Wired</span> (parity tracker correct; 360-doc "needs integration" is stale)</td></tr>
+<tr><td>KA / MH demographics depth</td><td>File-size comparison of all 31 demographics seeds</td><td><span class="badge b-amber">KA 5.5KB, MH 5.4KB vs peers 25–78KB → confirmed partial stubs</span></td></tr>
+<tr><td>DB migrations &amp; seeds present</td><td>Directory listing</td><td><span class="badge b-green">23 migrations, 197 seed files present</span></td></tr>
+</table>
+<div class="callout">The single most important takeaway: <strong>"0 TypeScript errors" is real and impressive, but it only proves the code <em>compiles</em> — not that features <em>run end-to-end against a live backend.</em></strong> Today they do not, because no backend is connected.</div>
+</section>
+
+<!-- 4 BUILT -->
+<section id="built">
+<h2>4. Feature Inventory — Built / Working / Half-Built / Not Built</h2>
+<p class="legend">
+  <span class="badge b-green">DONE</span> works in offline app &nbsp;
+  <span class="badge b-amber">HALF</span> UI exists, backend/data incomplete &nbsp;
+  <span class="badge b-red">NOT</span> planned, not built &nbsp;
+  <span class="badge b-blue">DATA-ONLY</span> backend/data built, no UI
+</p>
+
+<h3>Constituency Intelligence (the strong core)</h3>
+<table>
+<tr><th>Feature</th><th>Status</th><th>Notes</th></tr>
+<tr><td>Interactive India / state map (MapLibre)</td><td><span class="badge b-green">DONE</span></td><td>Zoom/pinch/tilt, party-color fills, labels, legend; 22 states have real polygons.</td></tr>
+<tr><td>Find My Constituency (GPS)</td><td><span class="badge b-green">DONE</span></td><td>Geolocation lookup implemented.</td></tr>
+<tr><td>Constituency detail (MLA, demographics, history, trivia, timeline)</td><td><span class="badge b-green">DONE</span></td><td>Large screen (1,287 lines); state-aware via dispatcher.</td></tr>
+<tr><td>Compare constituencies</td><td><span class="badge b-green">DONE</span></td><td><code>CompareSheet</code> component.</td></tr>
+<tr><td>Intelligence dashboard (aggregates, swing analysis)</td><td><span class="badge b-green">DONE</span></td><td>Election-history aggregates.</td></tr>
+<tr><td>Parliament screen (LS + RS MPs)</td><td><span class="badge b-amber">HALF</span></td><td>Built &amp; wired; 543/543 LS but only 142/245 RS MPs seeded.</td></tr>
+<tr><td>Trivia engine</td><td><span class="badge b-green">DONE</span></td><td>Curated + auto-derived, 31-state expansion.</td></tr>
+</table>
+
+<h3>Delimitation Engine (the strategic moat)</h3>
+<table>
+<tr><th>Feature</th><th>Status</th><th>Notes</th></tr>
+<tr><td>Delimitation foundation + monitoring pipeline</td><td><span class="badge b-green">DONE</span></td><td>Sprints 17–18.</td></tr>
+<tr><td>Population-balanced simulator core + UI</td><td><span class="badge b-green">DONE</span></td><td>Sprints 19–20, 44; labelled "projection, not prediction".</td></tr>
+<tr><td>Projected ("Layer B") boundary overlay</td><td><span class="badge b-amber">HALF</span></td><td>Simulator math exists; depends on Census + district polygons that are incomplete for many states.</td></tr>
+</table>
+
+<h3>Social / Civic Engagement</h3>
+<table>
+<tr><th>Feature</th><th>Status</th><th>Notes</th></tr>
+<tr><td>Feed (posts, polls, news, Q&amp;A, opinion) with scope filter</td><td><span class="badge b-amber">HALF</span></td><td>Full UI + strict constituency/state/national scoping; <strong>writes to local store, no shared backend.</strong></td></tr>
+<tr><td>Civic dashboard (issues, sentiment, headlines, report card)</td><td><span class="badge b-amber">HALF</span></td><td>Rich UI; data is local/seed, not live.</td></tr>
+<tr><td>Promise tracker &amp; Government Report Card</td><td><span class="badge b-amber">HALF</span></td><td>Built; seeded sample data only.</td></tr>
+<tr><td>Election affidavits / candidate transparency (MyNeta/ADR)</td><td><span class="badge b-amber">HALF</span></td><td>Large store (914 lines) + scrapers; depends on scraped data freshness.</td></tr>
+<tr><td>Political Shorts (upload + carousel + player)</td><td><span class="badge b-amber">HALF</span></td><td>UI + 16 curated YouTube videos; uploads are local only.</td></tr>
+<tr><td>Leadership Academy (modules, quizzes, videos, citations)</td><td><span class="badge b-green">DONE</span></td><td>12 modules with content, scored quizzes, citations (recent, well-built).</td></tr>
+<tr><td>Aspiring Leaders (register, endorse, civic score)</td><td><span class="badge b-green">DONE</span></td><td>Recently made interactive (Sprint 47).</td></tr>
+</table>
+
+<h3>Trust, Safety &amp; Monetization</h3>
+<table>
+<tr><th>Feature</th><th>Status</th><th>Notes</th></tr>
+<tr><td>Content Creator Accountability (CCA) framework</td><td><span class="badge b-amber">HALF</span></td><td>Types + store + KYC sheet built; <strong>OTP/SMS gateway not implemented</strong> (no live verification).</td></tr>
+<tr><td>Content Promotion Pipeline (CPP)</td><td><span class="badge b-amber">HALF</span></td><td>Built in-app; not backed by live infra.</td></tr>
+<tr><td>Subscriptions / paywall / content gating</td><td><span class="badge b-amber">HALF</span></td><td>Gating UI exists; no payment processor integrated.</td></tr>
+<tr><td>Journalist platform &amp; Politician portal</td><td><span class="badge b-amber">HALF</span></td><td>Screens + stores + migrations; not live.</td></tr>
+<tr><td>Campaign Manager (SaaS)</td><td><span class="badge b-amber">HALF</span></td><td>Screens + 18.9KB store + migration; not live/monetized.</td></tr>
+</table>
+
+<h3>Platform / Backend</h3>
+<table>
+<tr><th>Feature</th><th>Status</th><th>Notes</th></tr>
+<tr><td>Fastify API (12 route groups, Zod, rate-limit, CORS allow-list)</td><td><span class="badge b-amber">HALF</span></td><td>Code complete &amp; tested; <strong>not deployed / not consumed by app today.</strong></td></tr>
+<tr><td>Supabase schema (23 migrations, RLS, PostGIS, pgvector)</td><td><span class="badge b-blue">DATA-ONLY</span></td><td>Migrations written; no live project keys configured.</td></tr>
+<tr><td>AI / LLM layer</td><td><span class="badge b-amber">HALF</span></td><td>Service + chat screen built; no API key set → offline fallback.</td></tr>
+<tr><td>Push notifications</td><td><span class="badge b-amber">HALF</span></td><td>Client + backend route built; needs live Expo push + EAS project.</td></tr>
+<tr><td>Administrative Hierarchy (Booth→Panchayat→Mandal→AC)</td><td><span class="badge b-blue">DATA-ONLY</span></td><td>Sprint 51: migration, types, aggregation engine, scrapers, pilot seeds for TS &amp; AP. <strong>No app UI consumes it yet.</strong></td></tr>
+<tr><td>Web app / embeddable widgets (Next.js)</td><td><span class="badge b-red">NOT</span></td><td>Planned (360-doc step 5); <code>apps/</code> contains only <code>mobile</code> + <code>api</code>.</td></tr>
+<tr><td>Live monitoring (Sentry)</td><td><span class="badge b-red">NOT</span></td><td>Planned; DSN not configured.</td></tr>
+<tr><td>CI/CD, SAST/SCA/SBOM, ADRs, OpenAPI</td><td><span class="badge b-green">DONE</span></td><td>GitHub Actions, Semgrep, npm-audit/OSV, CycloneDX, CODEOWNERS, OpenAPI spec all present.</td></tr>
+</table>
+</section>
+
+<!-- 5 DATA -->
+<section id="data">
+<h2>5. Data Coverage Reality</h2>
+<p>Per the project's own <code>AUDIT_GOLD_STANDARD_STATUS.md</code> (dated 16 Jun 2026) — the most honest internal document — coverage is graded as follows:</p>
+<table>
+<tr><th>Tier</th><th>Count</th><th>States</th></tr>
+<tr><td><span class="badge b-green">GOLD (map + seed both clean)</span></td><td>3</td><td>Andhra Pradesh, Maharashtra, West Bengal</td></tr>
+<tr><td><span class="badge b-blue">Near-gold (seed ok, minor map issues)</span></td><td>5</td><td>Karnataka, Kerala, Telangana, Tamil Nadu, Uttar Pradesh</td></tr>
+<tr><td><span class="badge b-amber">Map OK, seed short</span></td><td>6</td><td>Bihar, Chhattisgarh, Goa, Haryana, Odisha, Punjab</td></tr>
+<tr><td><span class="badge b-amber">Map + seed both off</span></td><td>8</td><td>Assam, Gujarat, Jharkhand, J&amp;K*, MP, Rajasthan, Himachal, Delhi</td></tr>
+<tr><td><span class="badge b-red">No map (empty placeholder)</span></td><td>9</td><td>Arunachal, Meghalaya, Manipur, Mizoram, Nagaland, Puducherry, Sikkim, Tripura, Uttarakhand</td></tr>
+</table>
+<p class="muted">*J&amp;K was rebuilt to gold in a later session per the audit log, but the summary table predates that fix — itself a sign the trackers are not perfectly in sync.</p>
+<div class="callout warn"><strong>Key nuance the marketing docs blur:</strong> "31 states wired" is true at the <em>plumbing</em> level (every state appears in dispatchers and registries), but <strong>most states' seed data is short of official seat counts</strong> (e.g. Rajasthan 187/200, MP 208/230, Bihar 227/243, UP 401/403) and 9 states have <strong>no real map geometry at all</strong>. "Wired" ≠ "complete &amp; accurate".</div>
+</section>
+
+<!-- 6 DEPTH -->
+<section id="depth">
+<h2>6. Depth vs. The "Gold Standard"</h2>
+<p>The Telangana dataset defines the gold bar: 119 constituencies with 2014/2018/2023 results, full MLA profiles, full demographics, a double-entry political ledger, and a trivia engine, all test-covered. Measuring other states against it:</p>
+<table>
+<tr><th>Data dimension</th><th>Gold depth</th><th>Reality across 31 states</th></tr>
+<tr><td>Constituencies w/ real results</td><td>Full, sourced</td><td><span class="half">Uneven</span> — ~8 strong, many "short" seeds, some auto-generated/stub.</td></tr>
+<tr><td>Demographics</td><td>Per-AC, sourced</td><td><span class="half">KA &amp; MH still partial stubs</span>; several states are indicative estimates.</td></tr>
+<tr><td>Historical results (multi-cycle)</td><td>2 prior cycles per AC</td><td><span class="half">"Minimal / needs verification"</span> for KL, WB, UP, TN per parity tracker.</td></tr>
+<tr><td>Political timeline / trivia</td><td>Rich, audited ledger</td><td><span class="half">Many states are "stub"</span> auto-generated entries.</td></tr>
+<tr><td>MLA profiles (assets/cases/edu)</td><td>Full MyNeta/ADR fields</td><td><span class="check">8 states deeply scraped</span>; others identity-level only (no fabricated fields — good integrity).</td></tr>
+<tr><td>Rajya Sabha MPs</td><td>—</td><td><span class="half">142/245 (58%)</span>, 103 remaining.</td></tr>
+</table>
+<div class="callout good"><strong>Credit where due:</strong> The team's data-integrity discipline is excellent — where real data is unavailable, fields are <em>omitted rather than fabricated</em>, and estimates are explicitly labelled. That honesty is a real asset for a political-data product.</div>
+</section>
+
+<!-- 7 GAPS -->
+<section id="gaps">
+<h2>7. Documentation-vs-Reality Discrepancies</h2>
+<table>
+<tr><th>Claim in docs</th><th>Reality</th></tr>
+<tr><td>360° analysis: "A+ technical foundation… remarkably mature… sleeping giant"</td><td>True for <em>code structure &amp; data assets</em>; overstated for <em>production-readiness</em> — no live backend, no payments, no web app, no monitoring.</td></tr>
+<tr><td>"31 states 100% wired across all layers"</td><td>Accurate for code wiring; <strong>misleading on data completeness</strong> (short seeds, 9 empty maps).</td></tr>
+<tr><td>360-doc: "KL/WB/UP/TN need <code>stateDataAdapter</code> integration"</td><td><strong>Stale</strong> — they are already wired (verified). Trackers contradict each other.</td></tr>
+<tr><td>Parity tracker: constituency detail / CompareSheet / intelligence "not state-aware" (❌)</td><td><strong>Stale</strong> — these are state-aware now via the dispatcher. Tracker section 5 not updated.</td></tr>
+<tr><td>"Release APK built (142 MB)"</td><td>Built locally via manual Hermes workaround; not a store-published, CI-reproducible release. Bundle/path fragility documented in <code>TROUBLESHOOTING.md</code>.</td></tr>
+<tr><td>Sprint 51 hierarchy "framework built"</td><td>True for backend/data/tests; <strong>no app feature uses it</strong> — easy to mistake for a shipped capability.</td></tr>
+</table>
+<div class="callout bad"><strong>Process risk:</strong> There are several overlapping status documents (<code>FEATURE_PARITY_TRACKER</code>, <code>AUDIT_GOLD_STANDARD_STATUS</code>, <code>KSHETRA_360_Analysis</code>, <code>task.md</code>) that disagree with each other and with the code. Consolidate to <strong>one</strong> source of truth to avoid decisions based on stale claims.</div>
+</section>
+
+<!-- 8 EVOLUTION -->
+<section id="evolution">
+<h2>8. How The Scope Evolved (initial → added later)</h2>
+<div class="grid g2">
+<div class="card">
+<h3 style="margin-top:0">Initial scope (Milestones 1–23, v0.1.0)</h3>
+<ul>
+<li>Telangana-first interactive map + 119 profiles</li>
+<li>Find My Constituency (GPS)</li>
+<li>Intelligence dashboard, search, analytics API</li>
+<li>Offline persistence (MMKV + Zustand)</li>
+<li>Historical data, MLA profiles, demographics</li>
+<li>Supabase + Auth, EAS build, CI/CD</li>
+<li>Multi-state architecture, AI integration, i18n</li>
+<li>Trivia engine + political ledger</li>
+</ul>
+</div>
+<div class="card">
+<h3 style="margin-top:0">Added during development (Sprints 12–51)</h3>
+<ul>
+<li>Civic engagement pipeline, issues, sentiment, report cards</li>
+<li>Election affidavits &amp; candidate transparency</li>
+<li>Promise tracker, Aspiring Leaders, Leadership Academy</li>
+<li>Delimitation engine + interactive simulator</li>
+<li>Unified Legislator Profile (merged Candidate X-Ray)</li>
+<li>Content Creator Accountability + Content Promotion Pipeline</li>
+<li>Journalist platform, Politician portal, Campaign Manager</li>
+<li>Parliament data (LS/RS), 31-state expansion, full i18n</li>
+<li>Political Shorts, live-election ticker, broadcast API</li>
+<li>Map overhaul (MapLibre, gestures, multilingual labels)</li>
+<li>Administrative Hierarchy framework (Sprint 51)</li>
+</ul>
+</div>
+</div>
+<p class="muted">The pattern: the product grew from a focused Telangana map into a very broad multi-engine platform. Breadth expanded faster than depth/backend hardening — which is exactly where the current gaps sit.</p>
+</section>
+
+<!-- 9 TODO -->
+<section id="todo">
+<h2>9. Prioritized To-Do List</h2>
+<p class="legend"><span class="pri p1">P1 Critical</span> blocks real launch &nbsp; <span class="pri p2">P2 Important</span> needed for credibility &nbsp; <span class="pri p3">P3 Later</span> growth/polish</p>
+
+<h3>P1 — Make it actually live (turn the prototype into a product)</h3>
+<table>
+<tr><th>#</th><th>Task</th><th>Why</th></tr>
+<tr><td>1</td><td><span class="pri p1">P1</span> Stand up a real Supabase project; set <code>EXPO_PUBLIC_SUPABASE_URL/ANON_KEY</code>; run all 23 migrations; verify RLS.</td><td>Today the app is 100% offline; nothing is shared/persisted server-side.</td></tr>
+<tr><td>2</td><td><span class="pri p1">P1</span> Deploy the Fastify API and point the app at it; smoke-test each of the 12 route groups end-to-end.</td><td>API is code-complete but unused.</td></tr>
+<tr><td>3</td><td><span class="pri p1">P1</span> Implement the OTP/SMS KYC gateway for Content Creator Accountability.</td><td>Legal/compliance moat is incomplete without real identity verification.</td></tr>
+<tr><td>4</td><td><span class="pri p1">P1</span> Wire AI key + Expo push + EAS project; verify chat, summaries, and notifications work live.</td><td>Three "built" features silently fall back to offline stubs.</td></tr>
+<tr><td>5</td><td><span class="pri p1">P1</span> Establish a reproducible CI release build (avoid the manual Hermes/path workaround).</td><td>Current 142MB APK is hand-built and fragile per <code>TROUBLESHOOTING.md</code>.</td></tr>
+</table>
+
+<h3>P2 — Close the data &amp; depth gaps (credibility for a political-data product)</h3>
+<table>
+<tr><th>#</th><th>Task</th><th>Why</th></tr>
+<tr><td>6</td><td><span class="pri p2">P2</span> Rebuild "short" constituency seeds to full official strength (RJ 200, MP 230, BR 243, GJ 182, etc.) using the AP method.</td><td>Biggest user-visible accuracy gap; wrong seat counts undermine trust.</td></tr>
+<tr><td>7</td><td><span class="pri p2">P2</span> Source real boundaries for the 9 empty-map states (AR, ME, MN, MZ, NL, PY, SK, TR, UK).</td><td>"No map" states break the core map experience.</td></tr>
+<tr><td>8</td><td><span class="pri p2">P2</span> Complete KA (224) &amp; MH (288) demographics (currently 5.5/5.4KB stubs).</td><td>Two flagship large states have placeholder demographics.</td></tr>
+<tr><td>9</td><td><span class="pri p2">P2</span> Fix map count/dup/scatter issues (Assam +7, Gujarat −17, Jharkhand +14, J&amp;K, MP −4) and clean TN's 12 bad rings at source.</td><td>Geometry integrity for the moat asset.</td></tr>
+<tr><td>10</td><td><span class="pri p2">P2</span> Scrape remaining 103 Rajya Sabha MPs (→245/245).</td><td>Parliament tab currently incomplete.</td></tr>
+<tr><td>11</td><td><span class="pri p2">P2</span> Deepen KL/WB/UP/TN historical results + timeline + trivia beyond stubs.</td><td>These big states are "wired" but thin.</td></tr>
+<tr><td>12</td><td><span class="pri p2">P2</span> Build a UI for the Sprint 51 Administrative Hierarchy (booth/panchayat drill-down) or mark it explicitly as backend-only.</td><td>Feature is invisible to users despite being "complete".</td></tr>
+</table>
+
+<h3>P3 — Growth, monetization &amp; polish</h3>
+<table>
+<tr><th>#</th><th>Task</th><th>Why</th></tr>
+<tr><td>13</td><td><span class="pri p3">P3</span> Build the Next.js web app + embeddable map widgets for the Media engine.</td><td>Required for the B2B media revenue line; not started.</td></tr>
+<tr><td>14</td><td><span class="pri p3">P3</span> Integrate a payment processor + real subscription tiers for Campaign Manager / premium.</td><td>Monetization is UI-only today.</td></tr>
+<tr><td>15</td><td><span class="pri p3">P3</span> Connect Sentry (crash + performance) across mobile &amp; API.</td><td>No production observability yet.</td></tr>
+<tr><td>16</td><td><span class="pri p3">P3</span> Optimize/compress bundled GeoJSON to cut app download size.</td><td>Megabyte-scale maps inflate the binary.</td></tr>
+<tr><td>17</td><td><span class="pri p3">P3</span> <strong>Consolidate the status docs into one source of truth</strong> and retire stale trackers.</td><td>Multiple docs currently contradict each other and the code.</td></tr>
+<tr><td>18</td><td><span class="pri p3">P3</span> Run &amp; publish the full test suite (docs claim 268 passing) in CI with coverage gates enforced.</td><td>Verify the testing claims continuously.</td></tr>
+</table>
+</section>
+
+<!-- 10 RISKS -->
+<section id="risks">
+<h2>10. Risks &amp; Watch-outs</h2>
+<ul>
+<li><strong>"Demo-ready" mistaken for "production-ready".</strong> The offline app is great for investor demos, but go-to-market claims (SaaS, media licensing) require the P1 backend work first.</li>
+<li><strong>Data accuracy is a legal/credibility risk</strong> for a political product. Short seeds and estimated demographics must be clearly labelled until corrected.</li>
+<li><strong>Single-developer build fragility</strong> — the Windows path / Hermes manual steps suggest releases aren't yet automated or reproducible by others.</li>
+<li><strong>Doc drift</strong> — decisions made off the optimistic 360° doc could misallocate effort; trust the audit doc + code over the marketing docs.</li>
+<li><strong>Compliance features are scaffolding, not enforcement</strong> — CCA/RPA silence windows exist in code but depend on the un-implemented KYC + live backend to actually function.</li>
+</ul>
+</section>
+
+<footer>
+Generated as an independent reality-check of the KSHETRA repository.<br/>
+Based on direct inspection of source code plus <code>building.md</code>, <code>CHANGELOG.md</code>, <code>task.md</code>, <code>FEATURE_PARITY_TRACKER.md</code>, <code>AUDIT_GOLD_STANDARD_STATUS.md</code>, <code>KSHETRA_360_Analysis.md</code>, <code>RELEASE_CHECKLIST.md</code> and <code>TROUBLESHOOTING.md</code>.
+</footer>
+
+</div>
+</body>
+</html>

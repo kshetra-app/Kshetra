@@ -208,7 +208,26 @@ export const CHIEF_MINISTERS: Record<string, ChiefMinisterInfo> = {
   },
 };
 
+export interface PrimeMinisterInfo {
+  name: string;
+  designation: string;
+  party: string;
+  countryCode: string;
+}
+
+export const PRIME_MINISTER: PrimeMinisterInfo = {
+  name: 'Narendra Modi',
+  designation: 'Prime Minister of India',
+  party: 'BJP',
+  countryCode: 'IN',
+};
+
 /** Get CM info for a state code, or null if not found */
 export function getChiefMinister(stateCode: string): ChiefMinisterInfo | null {
   return CHIEF_MINISTERS[stateCode] ?? null;
+}
+
+/** Get PM info for India */
+export function getPrimeMinister(): PrimeMinisterInfo {
+  return PRIME_MINISTER;
 }

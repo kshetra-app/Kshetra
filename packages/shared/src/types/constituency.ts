@@ -1,3 +1,5 @@
+import type { ConstituencyHierarchy } from './hierarchy';
+
 export type ConstituencyType = 'ASSEMBLY' | 'PARLIAMENTARY';
 
 export type PartyCode =
@@ -125,6 +127,12 @@ export interface ConstituencyDetail extends ConstituencyBrief {
   elections: ElectionResult[];
   neighbours?: string[];
   centroid?: GeoCoordinate;
+  /**
+   * Full hierarchy breakdown (booths, panchayats, mandals, villages)
+   * beneath this constituency. Populated on detail fetch when
+   * hierarchy data is available.
+   */
+  hierarchy?: ConstituencyHierarchy;
 }
 
 export interface ConstituencyDemographics {

@@ -10,6 +10,7 @@ import {
   Platform,
   ScrollView,
   Alert,
+  StatusBar,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useTranslation } from 'react-i18next';
@@ -167,186 +168,188 @@ export default function ComposeSheet({ visible, onClose, onSubmit, onEditSubmit,
   };
 
   return (
-    <Modal visible={visible} animationType="slide" presentationStyle="pageSheet">
-      <KeyboardAvoidingView
-        style={styles.container}
-        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-      >
-        {/* Header */}
-        <View style={styles.header}>
-          <Pressable onPress={onClose} hitSlop={8}>
-            <Ionicons name="close" size={24} color="#9CA3AF" />
-          </Pressable>
-          <Text style={styles.headerTitle}>
-            {isEditMode
-              ? t('compose.editTitle')
-              : replyTo
-                ? t('compose.replyTo', { name: replyTo.authorName })
-                : t('compose.title')}
-          </Text>
-          <Pressable
-            style={[styles.submitButton, (!canSubmit || !canSubmitPoll) && styles.submitDisabled]}
-            onPress={handleSubmit}
-            disabled={!canSubmit || !canSubmitPoll}
-          >
-            <Text style={styles.submitText}>{isEditMode ? t('compose.save') : t('compose.submit')}</Text>
-          </Pressable>
-        </View>
-
-        <ScrollView style={styles.scroll} keyboardShouldPersistTaps="handled">
-          {/* Type selector */}
-          {!replyTo && (
-            <View style={styles.typeRow}>
-              {POST_TYPES.map((pt) => {
-                const active = postType === pt.key;
-                return (
-                  <Pressable
-                    key={pt.key}
-                    style={[styles.typeChip, active && { backgroundColor: pt.color + '20', borderColor: pt.color + '40' }]}
-                    onPress={() => setPostType(pt.key)}
-                  >
-                    <Ionicons name={pt.icon as any} size={14} color={active ? pt.color : '#6B7280'} />
-                    <Text style={[styles.typeChipText, active && { color: pt.color }]}>
-                      {t(pt.tKey)}
-                    </Text>
-                  </Pressable>
-                );
-              })}
-            </View>
-          )}
-
-          {/* Constituency badge */}
-          {myHome && (
-            <View style={styles.constituencyBadge}>
-              <Ionicons name="location" size={14} color="#4F8EF7" />
-              <Text style={styles.constituencyBadgeText}>
-                {t('compose.postingIn', { name: myHome.name })}
-              </Text>
-            </View>
-          )}
-
-          {/* Content input */}
-          <TextInput
-            ref={inputRef}
-            style={styles.input}
-            placeholder={
-              isPoll
-                ? t('compose.pollPlaceholder')
+    <Modal visible={visible} animationType="slide" statusBarTranslucent>
+      <View style={[styles.container, Platform.OS === 'android' && { paddingTop: StatusBar.currentHeight || 24 }]}>
+        <KeyboardAvoidingView
+          style={styles.container}
+          behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+        >
+          {/* Header */}
+          <View style={styles.header}>
+            <Pressable onPress={onClose} hitSlop={8}>
+              <Ionicons name="close" size={24} color="#9CA3AF" />
+            </Pressable>
+            <Text style={styles.headerTitle}>
+              {isEditMode
+                ? t('compose.editTitle')
                 : replyTo
-                  ? t('compose.replyPlaceholder')
-                  : t('compose.constituencyPlaceholder')
-            }
-            placeholderTextColor="#4B5563"
-            value={content}
-            onChangeText={setContent}
-            multiline
-            maxLength={MAX_CONTENT_LENGTH}
-            textAlignVertical="top"
-          />
+                  ? t('compose.replyTo', { name: replyTo.authorName })
+                  : t('compose.title')}
+            </Text>
+            <Pressable
+              style={[styles.submitButton, (!canSubmit || !canSubmitPoll) && styles.submitDisabled]}
+              onPress={handleSubmit}
+              disabled={!canSubmit || !canSubmitPoll}
+            >
+              <Text style={styles.submitText}>{isEditMode ? t('compose.save') : t('compose.submit')}</Text>
+            </Pressable>
+          </View>
 
-          {/* Character count */}
-          <Text
-            style={[
-              styles.charCount,
-              content.length > MAX_CONTENT_LENGTH * 0.9 && styles.charCountWarn,
-            ]}
-          >
-            {content.length}/{MAX_CONTENT_LENGTH}
-          </Text>
-
-          {/* Media attachments */}
-          {mediaItems.length > 0 && (
-            <View style={styles.mediaList}>
-              {mediaItems.map((m) => (
-                <View key={m.id} style={styles.mediaItem}>
-                  <Ionicons
-                    name={m.mediaType === 'image' ? 'image' : m.mediaType === 'video' ? 'videocam' : 'link'}
-                    size={16}
-                    color="#4F8EF7"
-                  />
-                  <Text style={styles.mediaItemText} numberOfLines={1}>{m.altText || m.url}</Text>
-                  <Pressable onPress={() => removeMedia(m.id)} hitSlop={8}>
-                    <Ionicons name="close-circle" size={18} color="#EF4444" />
-                  </Pressable>
-                </View>
-              ))}
-            </View>
-          )}
-
-          {/* Media toolbar */}
-          {!isPoll && (
-            <View style={styles.mediaToolbar}>
-              <Pressable style={styles.mediaButton} onPress={() => setShowLinkInput(!showLinkInput)} hitSlop={8}>
-                <Ionicons name="link" size={18} color="#6B7280" />
-                <Text style={styles.mediaButtonText}>{t('compose.addLink')}</Text>
-              </Pressable>
-            </View>
-          )}
-
-          {/* Link input */}
-          {showLinkInput && (
-            <View style={styles.linkInputRow}>
-              <TextInput
-                style={styles.linkInput}
-                placeholder={t('compose.linkPlaceholder')}
-                placeholderTextColor="#4B5563"
-                value={linkUrl}
-                onChangeText={setLinkUrl}
-                autoCapitalize="none"
-                autoCorrect={false}
-                keyboardType="url"
-              />
-              <Pressable
-                style={[styles.linkAddButton, !linkUrl.trim() && styles.submitDisabled]}
-                onPress={addLinkMedia}
-                disabled={!linkUrl.trim()}
-              >
-                <Text style={styles.linkAddText}>{t('compose.linkAdd')}</Text>
-              </Pressable>
-            </View>
-          )}
-
-          {/* Poll options */}
-          {isPoll && (
-            <View style={styles.pollSection}>
-              <Text style={styles.pollSectionTitle}>{t('compose.pollOptions')}</Text>
-              {pollOptions.map((opt, idx) => (
-                <View key={idx} style={styles.pollOptionRow}>
-                  <TextInput
-                    style={styles.pollOptionInput}
-                    placeholder={`Option ${idx + 1}`}
-                    placeholderTextColor="#4B5563"
-                    value={opt}
-                    onChangeText={(text) => {
-                      const next = [...pollOptions];
-                      next[idx] = text;
-                      setPollOptions(next);
-                    }}
-                    maxLength={200}
-                  />
-                  {pollOptions.length > 2 && (
+          <ScrollView style={styles.scroll} keyboardShouldPersistTaps="handled">
+            {/* Type selector */}
+            {!replyTo && (
+              <View style={styles.typeRow}>
+                {POST_TYPES.map((pt) => {
+                  const active = postType === pt.key;
+                  return (
                     <Pressable
-                      onPress={() => setPollOptions(pollOptions.filter((_, i) => i !== idx))}
-                      hitSlop={8}
+                      key={pt.key}
+                      style={[styles.typeChip, active && { backgroundColor: pt.color + '20', borderColor: pt.color + '40' }]}
+                      onPress={() => setPostType(pt.key)}
                     >
-                      <Ionicons name="close-circle" size={20} color="#6B7280" />
+                      <Ionicons name={pt.icon as any} size={14} color={active ? pt.color : '#6B7280'} />
+                      <Text style={[styles.typeChipText, active && { color: pt.color }]}>
+                        {t(pt.tKey)}
+                      </Text>
                     </Pressable>
-                  )}
-                </View>
-              ))}
-              {pollOptions.length < MAX_POLL_OPTIONS && (
-                <Pressable
-                  style={styles.addOptionButton}
-                  onPress={() => setPollOptions([...pollOptions, ''])}
-                >
-                  <Ionicons name="add-circle" size={18} color="#4F8EF7" />
-                  <Text style={styles.addOptionText}>{t('compose.addOption')}</Text>
+                  );
+                })}
+              </View>
+            )}
+
+            {/* Constituency badge */}
+            {myHome && (
+              <View style={styles.constituencyBadge}>
+                <Ionicons name="location" size={14} color="#4F8EF7" />
+                <Text style={styles.constituencyBadgeText}>
+                  {t('compose.postingIn', { name: myHome.name })}
+                </Text>
+              </View>
+            )}
+
+            {/* Content input */}
+            <TextInput
+              ref={inputRef}
+              style={styles.input}
+              placeholder={
+                isPoll
+                  ? t('compose.pollPlaceholder')
+                  : replyTo
+                    ? t('compose.replyPlaceholder')
+                    : t('compose.constituencyPlaceholder')
+              }
+              placeholderTextColor="#4B5563"
+              value={content}
+              onChangeText={setContent}
+              multiline
+              maxLength={MAX_CONTENT_LENGTH}
+              textAlignVertical="top"
+            />
+
+            {/* Character count */}
+            <Text
+              style={[
+                styles.charCount,
+                content.length > MAX_CONTENT_LENGTH * 0.9 && styles.charCountWarn,
+              ]}
+            >
+              {content.length}/{MAX_CONTENT_LENGTH}
+            </Text>
+
+            {/* Media attachments */}
+            {mediaItems.length > 0 && (
+              <View style={styles.mediaList}>
+                {mediaItems.map((m) => (
+                  <View key={m.id} style={styles.mediaItem}>
+                    <Ionicons
+                      name={m.mediaType === 'image' ? 'image' : m.mediaType === 'video' ? 'videocam' : 'link'}
+                      size={16}
+                      color="#4F8EF7"
+                    />
+                    <Text style={styles.mediaItemText} numberOfLines={1}>{m.altText || m.url}</Text>
+                    <Pressable onPress={() => removeMedia(m.id)} hitSlop={8}>
+                      <Ionicons name="close-circle" size={18} color="#EF4444" />
+                    </Pressable>
+                  </View>
+                ))}
+              </View>
+            )}
+
+            {/* Media toolbar */}
+            {!isPoll && (
+              <View style={styles.mediaToolbar}>
+                <Pressable style={styles.mediaButton} onPress={() => setShowLinkInput(!showLinkInput)} hitSlop={8}>
+                  <Ionicons name="link" size={18} color="#6B7280" />
+                  <Text style={styles.mediaButtonText}>{t('compose.addLink')}</Text>
                 </Pressable>
-              )}
-            </View>
-          )}
-        </ScrollView>
-      </KeyboardAvoidingView>
+              </View>
+            )}
+
+            {/* Link input */}
+            {showLinkInput && (
+              <View style={styles.linkInputRow}>
+                <TextInput
+                  style={styles.linkInput}
+                  placeholder={t('compose.linkPlaceholder')}
+                  placeholderTextColor="#4B5563"
+                  value={linkUrl}
+                  onChangeText={setLinkUrl}
+                  autoCapitalize="none"
+                  autoCorrect={false}
+                  keyboardType="url"
+                />
+                <Pressable
+                  style={[styles.linkAddButton, !linkUrl.trim() && styles.submitDisabled]}
+                  onPress={addLinkMedia}
+                  disabled={!linkUrl.trim()}
+                >
+                  <Text style={styles.linkAddText}>{t('compose.linkAdd')}</Text>
+                </Pressable>
+              </View>
+            )}
+
+            {/* Poll options */}
+            {isPoll && (
+              <View style={styles.pollSection}>
+                <Text style={styles.pollSectionTitle}>{t('compose.pollOptions')}</Text>
+                {pollOptions.map((opt, idx) => (
+                  <View key={idx} style={styles.pollOptionRow}>
+                    <TextInput
+                      style={styles.pollOptionInput}
+                      placeholder={`Option ${idx + 1}`}
+                      placeholderTextColor="#4B5563"
+                      value={opt}
+                      onChangeText={(text) => {
+                        const next = [...pollOptions];
+                        next[idx] = text;
+                        setPollOptions(next);
+                      }}
+                      maxLength={200}
+                    />
+                    {pollOptions.length > 2 && (
+                      <Pressable
+                        onPress={() => setPollOptions(pollOptions.filter((_, i) => i !== idx))}
+                        hitSlop={8}
+                      >
+                        <Ionicons name="close-circle" size={20} color="#6B7280" />
+                      </Pressable>
+                    )}
+                  </View>
+                ))}
+                {pollOptions.length < MAX_POLL_OPTIONS && (
+                  <Pressable
+                    style={styles.addOptionButton}
+                    onPress={() => setPollOptions([...pollOptions, ''])}
+                  >
+                    <Ionicons name="add-circle" size={18} color="#4F8EF7" />
+                    <Text style={styles.addOptionText}>{t('compose.addOption')}</Text>
+                  </Pressable>
+                )}
+              </View>
+            )}
+          </ScrollView>
+        </KeyboardAvoidingView>
+      </View>
     </Modal>
   );
 }

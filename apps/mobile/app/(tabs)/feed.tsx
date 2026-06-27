@@ -1,4 +1,4 @@
-import { useState, useCallback, useMemo } from 'react';
+import { useState, useCallback, useMemo, useEffect } from 'react';
 import {
   View,
   Text,
@@ -67,6 +67,14 @@ export default function FeedScreen() {
   const constituencyId = myHome ? `${stateCode}-AC-${myHome.acNo}` : undefined;
 
   const getContentVisibilityLevel = useContentPromotionStore((s) => s.getContentVisibilityLevel);
+
+  useEffect(() => {
+    if (stateCode === 'IN') {
+      if (scopeFilter === 'state' || scopeFilter === 'constituency') {
+        setScopeFilter('national');
+      }
+    }
+  }, [stateCode, scopeFilter, setScopeFilter]);
 
   // Derive filtered posts with useMemo
   const posts = useMemo(() => {
@@ -213,7 +221,7 @@ export default function FeedScreen() {
       <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.scopeScroll} contentContainerStyle={styles.scopeScrollContent}>
         {SCOPE_OPTIONS.map((opt) => {
           const active = scopeFilter === opt.key;
-          const disabled = opt.key === 'constituency' && !myHome;
+          const disabled = (opt.key === 'constituency' && !myHome) || (stateCode === 'IN' && (opt.key === 'state' || opt.key === 'constituency'));
           return (
             <Pressable
               key={opt.key}
@@ -221,7 +229,11 @@ export default function FeedScreen() {
               onPress={() => !disabled && setScopeFilter(opt.key)}
             >
               <Ionicons name={opt.icon as any} size={12} color={active ? '#FFF' : disabled ? '#374151' : '#9CA3AF'} />
-              <Text style={[styles.scopeChipText, active && styles.scopeChipTextActive, disabled && { color: '#374151' }]}>
+              <Text
+                numberOfLines={1}
+                allowFontScaling={false}
+                style={[styles.scopeChipText, active && styles.scopeChipTextActive, disabled && { color: '#374151' }]}
+              >
                 {opt.key === 'state'
                   ? (STATES as Record<string, { name: string }>)[stateCode]?.name ?? stateCode
                   : opt.key === 'constituency' && myHome
@@ -244,7 +256,11 @@ export default function FeedScreen() {
               onPress={() => setFilter(tab.key)}
             >
               <Ionicons name={tab.icon as any} size={13} color={active ? '#FFFFFF' : '#6B7280'} />
-              <Text style={[styles.filterLabel, active && styles.filterLabelActive]}>
+              <Text
+                numberOfLines={1}
+                allowFontScaling={false}
+                style={[styles.filterLabel, active && styles.filterLabelActive]}
+              >
                 {t(tab.tKey)}
               </Text>
             </Pressable>
@@ -356,8 +372,8 @@ const styles = StyleSheet.create({
   scopeChip: {
     flexDirection: 'row',
     alignItems: 'center',
+    height: 34,
     paddingHorizontal: 12,
-    paddingVertical: 7,
     borderRadius: 18,
     backgroundColor: '#111827',
     gap: 4,
@@ -391,8 +407,8 @@ const styles = StyleSheet.create({
   filterTab: {
     flexDirection: 'row',
     alignItems: 'center',
+    height: 32,
     paddingHorizontal: 10,
-    paddingVertical: 6,
     borderRadius: 16,
     backgroundColor: '#111827',
     gap: 4,

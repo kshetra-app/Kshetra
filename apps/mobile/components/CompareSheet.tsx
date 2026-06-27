@@ -9,7 +9,9 @@ import {
   FlatList,
   Modal,
   Image,
+  Dimensions,
 } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { getPartyColor } from '@/lib/constants';
 import CandidateAvatar from '@/components/CandidateAvatar';
@@ -159,8 +161,8 @@ export default function CompareSheet({ visible, initialAcNo, onClose }: CompareS
   }, [leftAcNo, rightAcNo]);
 
   return (
-    <Modal visible={visible} animationType="slide" presentationStyle="pageSheet">
-      <View style={styles.container}>
+    <Modal visible={visible} animationType="slide" presentationStyle="fullScreen">
+      <SafeAreaView style={styles.container}>
         {/* Header */}
         <View style={styles.header}>
           <Text style={styles.headerTitle}>Compare</Text>
@@ -353,7 +355,7 @@ export default function CompareSheet({ visible, initialAcNo, onClose }: CompareS
             </Text>
           </View>
         )}
-      </View>
+      </SafeAreaView>
     </Modal>
   );
 }
@@ -471,19 +473,21 @@ const styles = StyleSheet.create({
   },
   statValue: {
     flex: 1,
-    fontSize: 15,
+    fontSize: 13,
     fontWeight: '700',
     color: '#FFFFFF',
+    flexShrink: 1,
   },
   statBetter: {
     color: '#10B981',
   },
   statLabel: {
-    fontSize: 12,
+    fontSize: 11,
     fontWeight: '600',
     color: '#6B7280',
     textAlign: 'center',
-    width: 90,
+    width: 72,
+    flexShrink: 0,
   },
   mlaCol: {
     flex: 1,

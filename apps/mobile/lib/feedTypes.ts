@@ -1,6 +1,6 @@
 /**
  * Feed types for Posts, Polls, Comments, Reactions.
- * Mirrors the Supabase schema from 003_posts_polls_social.sql.
+ * Mirrors the Supabase schema from 0035_posts_polls_social.sql.
  *
  * While Supabase is optional (offline-first), these types are
  * used by UI components regardless of the data source.

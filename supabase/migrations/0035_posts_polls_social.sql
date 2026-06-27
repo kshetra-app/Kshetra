@@ -253,3 +253,13 @@ CREATE TRIGGER posts_updated_at
 CREATE TRIGGER comments_updated_at
   BEFORE UPDATE ON comments
   FOR EACH ROW EXECUTE FUNCTION update_updated_at();
+
+-- ─── STATE-SCOPED FEED VIEW (moved here from 003_multi_state.sql) ───
+-- Lives here because it depends on the posts table created above.
+CREATE OR REPLACE VIEW state_feed AS
+SELECT
+  p.*,
+  COALESCE(p.state_code, 'TS') AS feed_state
+FROM posts p
+WHERE p.is_deleted = false
+ORDER BY p.created_at DESC;

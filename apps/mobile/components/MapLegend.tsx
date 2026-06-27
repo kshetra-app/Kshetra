@@ -1,14 +1,31 @@
 import { useState, useMemo } from 'react';
-import { View, Text, StyleSheet, Pressable } from 'react-native';
+import { View, Text, StyleSheet, Pressable, ScrollView, Dimensions } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useTranslation } from 'react-i18next';
 import { getPartyColor } from '@/lib/constants';
-import { PARTY_CONFIG } from '@kshetra/shared';
+import { PARTY_CONFIG, STATES } from '@kshetra/shared';
 import { getUnifiedConstituenciesForState } from '@/lib/stateDataAdapter';
 import type { MapColorMode } from './MapColorToggle';
 
 /** Build party legend dynamically from a state's seed data, sorted by seat count */
 function buildPartyLegend(stateCode: string): { party: string; label: string; seats: number }[] {
+  if (stateCode.toUpperCase() === 'IN') {
+    const counts = new Map<string, number>();
+    for (const state of Object.values(STATES)) {
+      const p = state.rulingParty;
+      if (p) {
+        counts.set(p, (counts.get(p) ?? 0) + 1);
+      }
+    }
+    return Array.from(counts.entries())
+      .sort((a, b) => b[1] - a[1])
+      .map(([party, statesRuled]) => ({
+        party,
+        label: (PARTY_CONFIG as Record<string, { name: string }>)[party]?.name ?? party,
+        seats: statesRuled,
+      }));
+  }
+
   const constituencies = getUnifiedConstituenciesForState(stateCode);
   if (constituencies.length === 0) return [];
 
@@ -40,6 +57,18 @@ const RESERVATION_LEGEND = [
   { color: '#4F8EF7', label: 'General (GEN)' },
   { color: '#F59E0B', label: 'Scheduled Caste (SC)' },
   { color: '#10B981', label: 'Scheduled Tribe (ST)' },
+];
+
+const BATTLEGROUND_LEGEND = [
+  { color: '#DC2626', label: 'Critical Margin (< 2,000)' },
+  { color: '#F59E0B', label: 'Competitive (2,000 – 5,000)' },
+  { color: '#10B981', label: 'Safe Seat (>= 5,000)' },
+];
+
+const SWING_LEGEND = [
+  { color: '#8B5CF6', label: 'Swing Seat (Party Switched)' },
+  { color: '#10B981', label: 'Retained Seat (Same Party)' },
+  { color: '#9CA3AF', label: 'No History Available' },
 ];
 
 const GRADIENT_LEGENDS: Record<string, { title: string; low: string; high: string; lowLabel: string; highLabel: string }> = {
@@ -87,6 +116,34 @@ export default function MapLegend({ colorMode = 'party', stateCode = 'TS' }: Map
       );
     }
 
+    if (colorMode === 'battleground') {
+      return (
+        <>
+          <Text style={styles.panelTitle}>{t('mapLegend.battlegrounds', 'Battlegrounds')}</Text>
+          {BATTLEGROUND_LEGEND.map((item) => (
+            <View key={item.label} style={styles.row}>
+              <View style={[styles.colorDot, { backgroundColor: item.color }]} />
+              <Text style={styles.partyName}>{item.label}</Text>
+            </View>
+          ))}
+        </>
+      );
+    }
+
+    if (colorMode === 'swing') {
+      return (
+        <>
+          <Text style={styles.panelTitle}>{t('mapLegend.swingSeats', 'Swing Seats')}</Text>
+          {SWING_LEGEND.map((item) => (
+            <View key={item.label} style={styles.row}>
+              <View style={[styles.colorDot, { backgroundColor: item.color }]} />
+              <Text style={styles.partyName}>{item.label}</Text>
+            </View>
+          ))}
+        </>
+      );
+    }
+
     const gradient = GRADIENT_LEGENDS[colorMode];
     if (gradient) {
       return (
@@ -111,12 +168,17 @@ export default function MapLegend({ colorMode = 'party', stateCode = 'TS' }: Map
           <View key={item.party} style={styles.row}>
             <View style={[styles.colorDot, { backgroundColor: getPartyColor(item.party) }]} />
             <Text style={styles.partyCode}>{item.party}</Text>
-            <Text style={styles.partyName} numberOfLines={1}>{item.label} ({item.seats})</Text>
+            <Text style={styles.partyName} numberOfLines={1}>
+              {item.label} ({stateCode.toUpperCase() === 'IN' ? `${item.seats} ${item.seats === 1 ? 'state' : 'states'}` : item.seats})
+            </Text>
           </View>
         ))}
       </>
     );
   };
+
+  const screenHeight = Dimensions.get('window').height;
+  const maxPanelHeight = screenHeight * 0.45;
 
   return (
     <View style={styles.container}>
@@ -126,20 +188,23 @@ export default function MapLegend({ colorMode = 'party', stateCode = 'TS' }: Map
       >
         <Ionicons name="color-palette" size={16} color="#FFFFFF" />
         {!expanded && <Text style={styles.toggleText}>{t('mapLegend.legend')}</Text>}
+        {expanded && <Ionicons name="chevron-down" size={14} color="#FFFFFF" style={{ marginLeft: 4 }} />}
       </Pressable>
 
       {expanded && (
-        <View style={styles.panel}>
-          {renderContent()}
-          <View style={styles.divider} />
-          <View style={styles.row}>
-            <View style={[styles.colorDot, styles.selectedDot]} />
-            <Text style={styles.partyCode}>{t('mapLegend.selected')}</Text>
-          </View>
-          <View style={styles.row}>
-            <View style={[styles.colorDot, styles.favDot]} />
-            <Text style={styles.partyCode}>{t('mapLegend.favourite')}</Text>
-          </View>
+        <View style={[styles.panel, { maxHeight: maxPanelHeight }]}>
+          <ScrollView showsVerticalScrollIndicator={true} nestedScrollEnabled>
+            {renderContent()}
+            <View style={styles.divider} />
+            <View style={styles.row}>
+              <View style={[styles.colorDot, styles.selectedDot]} />
+              <Text style={styles.partyCode}>{t('mapLegend.selected')}</Text>
+            </View>
+            <View style={styles.row}>
+              <View style={[styles.colorDot, styles.favDot]} />
+              <Text style={styles.partyCode}>{t('mapLegend.favourite')}</Text>
+            </View>
+          </ScrollView>
         </View>
       )}
     </View>
@@ -149,8 +214,9 @@ export default function MapLegend({ colorMode = 'party', stateCode = 'TS' }: Map
 const styles = StyleSheet.create({
   container: {
     position: 'absolute',
-    bottom: 180,
+    bottom: 130,
     left: 12,
+    maxWidth: Dimensions.get('window').width * 0.65,
   },
   toggle: {
     flexDirection: 'row',

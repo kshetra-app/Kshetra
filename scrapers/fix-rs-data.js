@@ -52,7 +52,7 @@ const fixed = realMembers.map((d, i) => ({
   id: `RS_${String(i + 1).padStart(3, '0')}`,
   name: parseName(d.state),
   party: d.party,
-  state: '',      // state code will be looked up separately
+  state: d.stateName || '',      // state name from scraper
   photoUrl: d.photoUrl || '',
   rawName: d.state,   // keep original for debugging
   source: 'sansad.in/rajya-sabha/members',

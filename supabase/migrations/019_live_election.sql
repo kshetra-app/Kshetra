@@ -29,7 +29,7 @@ CREATE TABLE IF NOT EXISTS live_party_tallies (
   party TEXT NOT NULL,
   party_color TEXT DEFAULT '#6B7280',
   won INTEGER DEFAULT 0,
-  leading INTEGER DEFAULT 0,
+  "leading" INTEGER DEFAULT 0,  -- quoted: 'leading' is a reserved keyword in PostgreSQL
   total INTEGER DEFAULT 0,
   previous_election INTEGER DEFAULT 0,
   change INTEGER DEFAULT 0,

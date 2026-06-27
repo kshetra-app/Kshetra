@@ -1,166 +1,268 @@
 {
-  "AP": {
-    "file": "ap-assembly.json",
-    "count": 175,
-    "hasPolygons": true
-  },
-  "KA": {
-    "file": "ka-assembly.json",
-    "count": 225,
-    "hasPolygons": true
-  },
-  "MH": {
-    "file": "mh-assembly.json",
-    "count": 288,
-    "hasPolygons": true
-  },
-  "TN": {
-    "file": "tn-assembly.json",
-    "count": 235,
-    "hasPolygons": true
-  },
-  "KL": {
-    "file": "kl-assembly.json",
-    "count": 141,
-    "hasPolygons": true
-  },
-  "WB": {
-    "file": "wb-assembly.json",
-    "count": 294,
-    "hasPolygons": true
-  },
-  "UP": {
-    "file": "up-assembly.json",
-    "count": 403,
-    "hasPolygons": true
-  },
-  "RJ": {
-    "file": "rj-assembly.json",
-    "count": 201,
-    "hasPolygons": true
-  },
-  "GJ": {
-    "file": "gj-assembly.json",
-    "count": 165,
-    "hasPolygons": true
-  },
-  "DL": {
-    "file": "dl-assembly.json",
-    "count": 70,
-    "hasPolygons": true
-  },
-  "OD": {
-    "file": "od-assembly.json",
-    "count": 147,
-    "hasPolygons": true
-  },
-  "JH": {
-    "file": "jh-assembly.json",
-    "count": 95,
-    "hasPolygons": true
-  },
-  "BR": {
-    "file": "br-assembly.json",
-    "count": 243,
-    "hasPolygons": true
-  },
-  "PB": {
-    "file": "pb-assembly.json",
-    "count": 117,
-    "hasPolygons": true
-  },
-  "HR": {
-    "file": "hr-assembly.json",
-    "count": 90,
-    "hasPolygons": true
-  },
-  "CG": {
-    "file": "cg-assembly.json",
-    "count": 90,
-    "hasPolygons": true
-  },
-  "MP": {
-    "file": "mp-assembly.json",
-    "count": 226,
-    "hasPolygons": true
-  },
-  "AS": {
-    "file": "as-assembly.json",
-    "count": 133,
-    "hasPolygons": true
-  },
-  "GA": {
-    "file": "ga-assembly.json",
-    "count": 40,
-    "hasPolygons": true
-  },
-  "HP": {
-    "file": "hp-assembly.json",
-    "count": 68,
-    "hasPolygons": true
-  },
-  "JK": {
-    "file": "jk-assembly.json",
-    "count": 107,
-    "hasPolygons": true
+  "IN": {
+    "file": "india-states.json",
+    "count": 36,
+    "hasPolygons": true,
+    "bytes": 528670,
+    "gzipBytes": 191227,
+    "version": "28c41cd89b90",
+    "bundled": true
   },
   "TS": {
     "file": "telangana-assembly.json",
     "count": 119,
-    "hasPolygons": true
+    "hasPolygons": true,
+    "bytes": 1861739,
+    "gzipBytes": 542809,
+    "version": "a81116dce36d"
   },
-  "MN": {
-    "file": "mn-assembly.json",
-    "count": 60,
-    "hasPolygons": false,
-    "status": "placeholder"
+  "AP": {
+    "file": "ap-assembly.json",
+    "count": 175,
+    "hasPolygons": true,
+    "bytes": 858571,
+    "gzipBytes": 210117,
+    "version": "02c298342807"
   },
-  "ML": {
-    "file": "ml-assembly.json",
-    "count": 60,
-    "hasPolygons": false,
-    "status": "placeholder"
+  "KA": {
+    "file": "ka-assembly.json",
+    "count": 225,
+    "hasPolygons": true,
+    "bytes": 4259899,
+    "gzipBytes": 698551,
+    "version": "c8d251f28b3e"
   },
-  "MZ": {
-    "file": "mz-assembly.json",
-    "count": 40,
-    "hasPolygons": false,
-    "status": "placeholder"
+  "MH": {
+    "file": "mh-assembly.json",
+    "count": 288,
+    "hasPolygons": true,
+    "bytes": 3841762,
+    "gzipBytes": 688205,
+    "version": "45dca62beef1"
   },
-  "NL": {
-    "file": "nl-assembly.json",
-    "count": 60,
-    "hasPolygons": false,
-    "status": "placeholder"
+  "TN": {
+    "file": "tn-assembly.json",
+    "count": 235,
+    "hasPolygons": true,
+    "bytes": 3251088,
+    "gzipBytes": 513830,
+    "version": "0d32bb4dbbc1"
   },
-  "TR": {
-    "file": "tr-assembly.json",
-    "count": 60,
-    "hasPolygons": false,
-    "status": "placeholder"
+  "KL": {
+    "file": "kl-assembly.json",
+    "count": 141,
+    "hasPolygons": true,
+    "bytes": 1494725,
+    "gzipBytes": 246597,
+    "version": "0a54dff34503"
   },
-  "UK": {
-    "file": "uk-assembly.json",
+  "WB": {
+    "file": "wb-assembly.json",
+    "count": 294,
+    "hasPolygons": true,
+    "bytes": 3433501,
+    "gzipBytes": 541320,
+    "version": "4f44787cf838"
+  },
+  "UP": {
+    "file": "up-assembly.json",
+    "count": 403,
+    "hasPolygons": true,
+    "bytes": 6978407,
+    "gzipBytes": 1160382,
+    "version": "22ffc71914cc"
+  },
+  "RJ": {
+    "file": "rj-assembly.json",
+    "count": 201,
+    "hasPolygons": true,
+    "bytes": 3532974,
+    "gzipBytes": 649566,
+    "version": "0e520d19a99a"
+  },
+  "GJ": {
+    "file": "gj-assembly.json",
+    "count": 165,
+    "hasPolygons": true,
+    "bytes": 4565521,
+    "gzipBytes": 727653,
+    "version": "f71d8d86090e"
+  },
+  "DL": {
+    "file": "dl-assembly.json",
     "count": 70,
-    "hasPolygons": false,
-    "status": "placeholder"
+    "hasPolygons": true,
+    "bytes": 102256,
+    "gzipBytes": 16768,
+    "version": "bb19462911c6"
   },
-  "AR": {
-    "file": "ar-assembly.json",
-    "count": 60,
-    "hasPolygons": false,
-    "status": "placeholder"
+  "OD": {
+    "file": "od-assembly.json",
+    "count": 147,
+    "hasPolygons": true,
+    "bytes": 3677886,
+    "gzipBytes": 613214,
+    "version": "a996d5023df4"
   },
-  "SK": {
-    "file": "sk-assembly.json",
-    "count": 32,
-    "hasPolygons": false,
-    "status": "placeholder"
+  "JH": {
+    "file": "jh-assembly.json",
+    "count": 95,
+    "hasPolygons": true,
+    "bytes": 1188148,
+    "gzipBytes": 205076,
+    "version": "1d119bd2bde3"
+  },
+  "BR": {
+    "file": "br-assembly.json",
+    "count": 243,
+    "hasPolygons": true,
+    "bytes": 4513109,
+    "gzipBytes": 670481,
+    "version": "80b8efdaaeed"
+  },
+  "PB": {
+    "file": "pb-assembly.json",
+    "count": 117,
+    "hasPolygons": true,
+    "bytes": 1842869,
+    "gzipBytes": 306983,
+    "version": "0ac18d9da202"
+  },
+  "HR": {
+    "file": "hr-assembly.json",
+    "count": 90,
+    "hasPolygons": true,
+    "bytes": 926162,
+    "gzipBytes": 162840,
+    "version": "bcea39860b07"
+  },
+  "CG": {
+    "file": "cg-assembly.json",
+    "count": 90,
+    "hasPolygons": true,
+    "bytes": 1846546,
+    "gzipBytes": 318838,
+    "version": "5c357018acad"
+  },
+  "MP": {
+    "file": "mp-assembly.json",
+    "count": 226,
+    "hasPolygons": true,
+    "bytes": 5011521,
+    "gzipBytes": 863445,
+    "version": "0d81410a3c41"
+  },
+  "AS": {
+    "file": "as-assembly.json",
+    "count": 133,
+    "hasPolygons": true,
+    "bytes": 1127651,
+    "gzipBytes": 192107,
+    "version": "d61e0e37695c"
+  },
+  "GA": {
+    "file": "ga-assembly.json",
+    "count": 40,
+    "hasPolygons": true,
+    "bytes": 110725,
+    "gzipBytes": 19475,
+    "version": "ed8365ba5c43"
+  },
+  "HP": {
+    "file": "hp-assembly.json",
+    "count": 68,
+    "hasPolygons": true,
+    "bytes": 1316619,
+    "gzipBytes": 215904,
+    "version": "f45805d97e47"
+  },
+  "JK": {
+    "file": "jk-assembly.json",
+    "count": 107,
+    "hasPolygons": true,
+    "bytes": 330515,
+    "gzipBytes": 77528,
+    "version": "ad16db4c2da5"
   },
   "PY": {
     "file": "py-assembly.json",
     "count": 30,
     "hasPolygons": false,
-    "status": "placeholder"
+    "status": "placeholder",
+    "bytes": 118230,
+    "gzipBytes": 26563,
+    "version": "95b698524d96"
+  },
+  "TR": {
+    "file": "tr-assembly.json",
+    "count": 60,
+    "hasPolygons": false,
+    "status": "placeholder",
+    "bytes": 439942,
+    "gzipBytes": 100305,
+    "version": "bfff94b6811d"
+  },
+  "ML": {
+    "file": "ml-assembly.json",
+    "count": 60,
+    "hasPolygons": false,
+    "status": "placeholder",
+    "bytes": 431259,
+    "gzipBytes": 104740,
+    "version": "20965caea9cc"
+  },
+  "MN": {
+    "file": "mn-assembly.json",
+    "count": 60,
+    "hasPolygons": false,
+    "status": "placeholder",
+    "bytes": 895185,
+    "gzipBytes": 198163,
+    "version": "55fe20295d1b"
+  },
+  "NL": {
+    "file": "nl-assembly.json",
+    "count": 60,
+    "hasPolygons": false,
+    "status": "placeholder",
+    "bytes": 679774,
+    "gzipBytes": 153716,
+    "version": "86d3c3d8d3e0"
+  },
+  "UK": {
+    "file": "uk-assembly.json",
+    "count": 70,
+    "hasPolygons": false,
+    "status": "placeholder",
+    "bytes": 1468320,
+    "gzipBytes": 361430,
+    "version": "2180764b2d73"
+  },
+  "SK": {
+    "file": "sk-assembly.json",
+    "count": 32,
+    "hasPolygons": false,
+    "status": "placeholder",
+    "bytes": 123098,
+    "gzipBytes": 26539,
+    "version": "32d56fed56b3"
+  },
+  "AR": {
+    "file": "ar-assembly.json",
+    "count": 60,
+    "hasPolygons": false,
+    "status": "placeholder",
+    "bytes": 562417,
+    "gzipBytes": 136997,
+    "version": "f0a392cbdbc0"
+  },
+  "MZ": {
+    "file": "mz-assembly.json",
+    "count": 40,
+    "hasPolygons": false,
+    "status": "placeholder",
+    "bytes": 403168,
+    "gzipBytes": 91350,
+    "version": "462e7ffef605"
   }
 }

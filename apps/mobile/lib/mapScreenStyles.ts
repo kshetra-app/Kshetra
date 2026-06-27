@@ -2,7 +2,10 @@ import { StyleSheet } from 'react-native';
 
 /**
  * Styles for the map screen (app/(tabs)/index.tsx).
- * Extracted verbatim — values unchanged.
+ *
+ * IMPORTANT: this file lives in lib/ (NOT in app/) on purpose. Expo Router
+ * treats every file inside app/ as a navigable route, so a styles module placed
+ * there (e.g. app/(tabs)/index.styles.ts) shows up as a broken phantom tab.
  */
 export const styles = StyleSheet.create({
   container: {
@@ -205,11 +208,31 @@ export const styles = StyleSheet.create({
     position: 'absolute',
     left: 16,
   },
-  idleTriviaContainer: {
+  bottomDashboardContainer: {
     position: 'absolute',
-    bottom: 20,
+    bottom: 24,
     left: 12,
     right: 12,
+    gap: 8,
+    alignItems: 'center',
+    zIndex: 10,
+  },
+  homeIndicatorUnified: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: 'rgba(16, 185, 129, 0.15)',
+    borderRadius: 16,
+    paddingHorizontal: 12,
+    paddingVertical: 5,
+    gap: 4,
+    borderWidth: 1,
+    borderColor: 'rgba(16, 185, 129, 0.3)',
+    alignSelf: 'center',
+  },
+  homeTextUnified: {
+    fontSize: 11,
+    fontWeight: '700',
+    color: '#10B981',
   },
   detailButton: {
     flexDirection: 'row',
@@ -325,5 +348,228 @@ export const styles = StyleSheet.create({
     fontWeight: '700',
     color: '#FCD34D',
     textAlign: 'center',
+  },
+  activeButton: {
+    backgroundColor: '#78350F',
+    borderWidth: 1,
+    borderColor: '#FCD34D',
+  },
+  timeSliderWrapper: {
+    width: '100%',
+    alignItems: 'center',
+  },
+  idleTriviaWrapper: {
+    width: '100%',
+  },
+  sheetCompareButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: '#8B5CF625',
+    borderWidth: 1,
+    borderColor: '#8B5CF650',
+    borderRadius: 12,
+    paddingVertical: 10,
+    gap: 6,
+    marginBottom: 10,
+  },
+  sheetCompareText: {
+    fontSize: 13,
+    fontWeight: '700',
+    color: '#A78BFA',
+  },
+  compareCard: {
+    position: 'absolute',
+    bottom: 20,
+    left: 12,
+    right: 12,
+    backgroundColor: 'rgba(17, 24, 39, 0.95)',
+    borderRadius: 16,
+    padding: 14,
+    borderWidth: 1,
+    borderColor: '#374151',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 5,
+    elevation: 6,
+  },
+  compareHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    marginBottom: 10,
+    borderBottomWidth: 1,
+    borderBottomColor: '#374151',
+    paddingBottom: 6,
+  },
+  compareTitle: {
+    fontSize: 13,
+    fontWeight: '800',
+    color: '#F3F4F6',
+    letterSpacing: 1,
+  },
+  compareClose: {
+    padding: 4,
+  },
+  compareBody: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    gap: 12,
+  },
+  compareCol: {
+    flex: 1,
+    backgroundColor: '#1F293750',
+    borderRadius: 8,
+    padding: 10,
+  },
+  compareColLeft: {
+    borderLeftWidth: 3,
+    borderLeftColor: '#FFD700',
+  },
+  compareColRight: {
+    borderLeftWidth: 3,
+    borderLeftColor: '#00E5FF',
+  },
+  compareSeatName: {
+    fontSize: 15,
+    fontWeight: '800',
+    color: '#FFFFFF',
+    marginBottom: 4,
+  },
+  compareParty: {
+    fontSize: 12,
+    fontWeight: '700',
+    color: '#D1D5DB',
+  },
+  compareStatLabel: {
+    fontSize: 10,
+    color: '#9CA3AF',
+    marginTop: 6,
+  },
+  compareStatValue: {
+    fontSize: 12,
+    fontWeight: '700',
+    color: '#FFFFFF',
+  },
+  // ─── Spatial Hub (Map-Only Mode) ───
+  spatialHub: {
+    position: 'absolute',
+    bottom: 24,
+    left: 12,
+    right: 12,
+    backgroundColor: 'rgba(17, 24, 39, 0.95)',
+    borderRadius: 16,
+    padding: 14,
+    borderWidth: 1,
+    borderColor: '#374151',
+    maxHeight: 280,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 5,
+    elevation: 6,
+  },
+  spatialHubTabs: {
+    flexDirection: 'row',
+    borderBottomWidth: 1,
+    borderBottomColor: '#1F2937',
+    paddingBottom: 8,
+    marginBottom: 10,
+    gap: 16,
+  },
+  spatialHubTab: {
+    paddingVertical: 4,
+    paddingHorizontal: 8,
+    borderRadius: 6,
+  },
+  spatialHubTabActive: {
+    backgroundColor: '#4F8EF720',
+  },
+  spatialHubTabText: {
+    fontSize: 13,
+    fontWeight: '700',
+    color: '#9CA3AF',
+  },
+  spatialHubTabTextActive: {
+    color: '#4F8EF7',
+  },
+  spatialHubScroll: {
+    maxHeight: 200,
+  },
+  spatialHubRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingVertical: 10,
+    borderBottomWidth: 0.5,
+    borderBottomColor: '#1F2937',
+  },
+  spatialHubRowInfo: {
+    flex: 1,
+  },
+  spatialHubRowTitle: {
+    fontSize: 14,
+    fontWeight: '700',
+    color: '#FFFFFF',
+  },
+  spatialHubRowSubtitle: {
+    fontSize: 11,
+    color: '#9CA3AF',
+    marginTop: 2,
+  },
+  spatialHubDot: {
+    width: 8,
+    height: 8,
+    borderRadius: 4,
+    marginRight: 10,
+  },
+  spatialHubBadge: {
+    paddingHorizontal: 8,
+    paddingVertical: 3,
+    borderRadius: 6,
+    backgroundColor: '#374151',
+  },
+  spatialHubBadgeText: {
+    fontSize: 10,
+    fontWeight: '800',
+    color: '#FFFFFF',
+  },
+  spatialHubEmpty: {
+    textAlign: 'center',
+    color: '#6B7280',
+    fontSize: 12,
+    fontStyle: 'italic',
+    paddingVertical: 20,
+  },
+  geoOverlay: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: 'rgba(10, 10, 26, 0.35)',
+    gap: 10,
+  },
+  geoOverlayText: {
+    color: '#E5E7EB',
+    fontSize: 13,
+    fontWeight: '600',
+  },
+  geoRetryButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+    backgroundColor: '#FCD34D',
+    paddingHorizontal: 16,
+    paddingVertical: 9,
+    borderRadius: 20,
+    marginTop: 4,
+  },
+  geoRetryText: {
+    color: '#0A0A1A',
+    fontSize: 13,
+    fontWeight: '800',
   },
 });

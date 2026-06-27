@@ -11,23 +11,30 @@ import { Ionicons } from '@expo/vector-icons';
 import { STATES } from '@kshetra/shared';
 import { useActiveStateStore } from '../stores/activeState';
 import { isStateSupported, getStateData } from '../lib/stateRegistry';
+import { usePrefetchState } from '../lib/usePrefetchState';
 
 export default function StateSwitcher() {
   const [visible, setVisible] = useState(false);
   const stateCode = useActiveStateStore((s) => s.stateCode);
   const setStateCode = useActiveStateStore((s) => s.setStateCode);
   const currentState = STATES[stateCode];
+  const { prefetch } = usePrefetchState();
 
   const handleSelect = (code: string) => {
     setStateCode(code);
     setVisible(false);
   };
 
+  // Phase 4b: Prefetch on hover/focus
+  const handlePressIn = (code: string) => {
+    prefetch(code);
+  };
+
   return (
     <>
       <Pressable style={styles.trigger} onPress={() => setVisible(true)}>
         <Ionicons name="location" size={14} color="#4F8EF7" />
-        <Text style={styles.triggerText}>{currentState?.name ?? stateCode}</Text>
+        <Text style={styles.triggerText}>{stateCode === 'IN' ? 'India' : currentState?.name ?? stateCode}</Text>
         <Ionicons name="chevron-down" size={12} color="#6B7280" />
       </Pressable>
 
@@ -41,6 +48,32 @@ export default function StateSwitcher() {
           <View style={styles.sheet}>
             <Text style={styles.sheetTitle}>Select State</Text>
             <ScrollView style={styles.scrollArea} showsVerticalScrollIndicator={false}>
+              <Pressable
+                key="IN"
+                style={[
+                  styles.stateRow,
+                  stateCode === 'IN' && styles.stateRowActive,
+                ]}
+                onPress={() => handleSelect('IN')}
+              >
+                <View style={styles.stateInfo}>
+                  <Text
+                    style={[
+                      styles.stateName,
+                      stateCode === 'IN' && styles.stateNameActive,
+                    ]}
+                  >
+                    India (National View)
+                  </Text>
+                  <Text style={styles.stateSeats}>
+                    31 states & union territories
+                  </Text>
+                </View>
+                {stateCode === 'IN' && (
+                  <Ionicons name="checkmark-circle" size={20} color="#4F8EF7" />
+                )}
+              </Pressable>
+
               {Object.values(STATES).map((state) => {
                 const supported = isStateSupported(state.code);
                 const isActive = state.code === stateCode;
@@ -54,6 +87,7 @@ export default function StateSwitcher() {
                       !supported && styles.stateRowDisabled,
                     ]}
                     onPress={() => supported && handleSelect(state.code)}
+                    onPressIn={() => supported && handlePressIn(state.code)}
                     disabled={!supported}
                   >
                     <View style={styles.stateInfo}>

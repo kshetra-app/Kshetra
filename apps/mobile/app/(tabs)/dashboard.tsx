@@ -1,4 +1,4 @@
-import { useState, useMemo, Component, type ReactNode } from 'react';
+import { useState, useMemo, Component, useEffect, type ReactNode } from 'react';
 import {
   View,
   Text,
@@ -120,6 +120,14 @@ function DashboardContent() {
 
   const constituencyId = myHome ? `${stateCode}-AC-${myHome.acNo}` : undefined;
 
+  useEffect(() => {
+    if (stateCode === 'IN') {
+      if (scopeFilter === 'state' || scopeFilter === 'constituency') {
+        setScopeFilter('national');
+      }
+    }
+  }, [stateCode, scopeFilter, setScopeFilter]);
+
   // Strict scope demarcation for promises: each level shows ONLY its own content.
   const scopedPromises = useMemo(() => {
     if (scopeFilter === 'constituency') {
@@ -223,7 +231,7 @@ function DashboardContent() {
       <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.scopeScroll} contentContainerStyle={styles.scopeScrollContent}>
         {SCOPE_OPTIONS.map((opt) => {
           const active = scopeFilter === opt.key;
-          const disabled = opt.key === 'constituency' && !myHome;
+          const disabled = (opt.key === 'constituency' && !myHome) || (stateCode === 'IN' && (opt.key === 'state' || opt.key === 'constituency'));
           return (
             <Pressable
               key={opt.key}

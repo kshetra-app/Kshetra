@@ -163,7 +163,7 @@ export const usePoliticalShortsStore = create<PoliticalShortsState>()(
       name: 'kshetra-political-shorts',
       storage: createJSONStorage(() => mmkvStorage),
       // Bump when the seed catalogue changes so existing installs re-seed.
-      version: 2,
+      version: 3,
       migrate: (persisted: any) => ({
         ...(persisted ?? {}),
         shorts: POLITICAL_SHORTS,

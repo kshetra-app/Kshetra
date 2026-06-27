@@ -10,11 +10,13 @@ interface PreferencesState {
   language: AppLanguage;
   notificationsEnabled: boolean;
   hapticFeedback: boolean;
+  broadcastMode: boolean;
 
   setTheme: (theme: ThemeMode) => void;
   setLanguage: (language: AppLanguage) => void;
   setNotificationsEnabled: (enabled: boolean) => void;
   setHapticFeedback: (enabled: boolean) => void;
+  setBroadcastMode: (enabled: boolean) => void;
 }
 
 export const usePreferencesStore = create<PreferencesState>()(
@@ -24,11 +26,13 @@ export const usePreferencesStore = create<PreferencesState>()(
       language: 'en',
       notificationsEnabled: false,
       hapticFeedback: true,
+      broadcastMode: false,
 
       setTheme: (theme) => set({ theme }),
       setLanguage: (language) => set({ language }),
       setNotificationsEnabled: (enabled) => set({ notificationsEnabled: enabled }),
       setHapticFeedback: (enabled) => set({ hapticFeedback: enabled }),
+      setBroadcastMode: (enabled) => set({ broadcastMode: enabled }),
     }),
     {
       name: 'kshetra-preferences',

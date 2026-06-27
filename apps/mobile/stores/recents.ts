@@ -9,6 +9,7 @@ interface RecentItem {
   name: string;
   district: string;
   party: string;
+  stateCode: string;
   viewedAt: number; // epoch ms
 }
 

@@ -460,3 +460,24 @@ export function getAvailableStates(): string[] {
     'NL', 'TR', 'SK', 'AR', 'UK', 'PY', 'JK',
   ];
 }
+
+/** Get all available years for timeline slider (historical + current) */
+export function getAvailableYearsForState(stateCode: string): number[] {
+  switch (stateCode.toUpperCase()) {
+    case 'TS': return [2014, 2018, 2023];
+    case 'AP': return [2019, 2024];
+    case 'KA': return [2018, 2023];
+    case 'MH': return [2019, 2024];
+    case 'TN': return [2016, 2021, 2026];
+    case 'KL': return [2016, 2021, 2026];
+    case 'WB': return [2016, 2021, 2026];
+    case 'UP': return [2017, 2022];
+    default: {
+      const constituencies = getUnifiedConstituenciesForState(stateCode);
+      if (constituencies.length > 0) {
+        return [constituencies[0].electionYear];
+      }
+      return [2024]; // default fallback
+    }
+  }
+}

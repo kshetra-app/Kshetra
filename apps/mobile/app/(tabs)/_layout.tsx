@@ -4,6 +4,8 @@ import { useTranslation } from 'react-i18next';
 import { useNotificationsStore } from '../../stores/notifications';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { moderateScale } from '../../lib/responsive';
+import { usePreferencesStore } from '../../stores/preferences';
+import { useActiveStateStore } from '../../stores/activeState';
 
 const ACTIVE_COLOR = '#4F8EF7';
 const INACTIVE_COLOR = '#6B7280';
@@ -23,6 +25,8 @@ export default function TabLayout() {
   const { t } = useTranslation();
   const unreadCount = useNotificationsStore((s) => s.unreadCount);
   const insets = useSafeAreaInsets();
+  const mapOnlyMode = useActiveStateStore((s) => s.mapOnlyMode);
+  const broadcastMode = usePreferencesStore((s) => s.broadcastMode);
 
   // Adapt tab bar to device: bottom inset covers gesture bar / soft nav
   const tabBarPaddingBottom = Math.max(insets.bottom, 6);
@@ -41,6 +45,7 @@ export default function TabLayout() {
           height: tabBarHeight,
           paddingBottom: tabBarPaddingBottom,
           paddingTop: 6,
+          display: (mapOnlyMode || broadcastMode) ? 'none' : 'flex',
         },
         tabBarLabelStyle: {
           fontSize: moderateScale(10),

@@ -10,6 +10,7 @@ import {
   Platform,
   ScrollView,
   Alert,
+  StatusBar,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { Image } from 'expo-image';
@@ -153,135 +154,137 @@ export default function ReportIssueSheet({ visible, onClose, onSubmit }: ReportI
   };
 
   return (
-    <Modal visible={visible} animationType="slide" presentationStyle="pageSheet">
-      <KeyboardAvoidingView
-        style={styles.container}
-        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-      >
-        {/* Header */}
-        <View style={styles.header}>
-          <Pressable onPress={onClose} hitSlop={8}>
-            <Ionicons name="close" size={24} color="#9CA3AF" />
-          </Pressable>
-          <Text style={styles.headerTitle}>Report Issue</Text>
-          <Pressable
-            style={[styles.submitButton, !canSubmit && styles.submitDisabled]}
-            onPress={handleSubmit}
-            disabled={!canSubmit}
-          >
-            <Text style={styles.submitText}>Submit</Text>
-          </Pressable>
-        </View>
-
-        <ScrollView style={styles.scroll} keyboardShouldPersistTaps="handled">
-          {/* Constituency badge */}
-          {myHome && (
-            <View style={styles.constituencyBadge}>
-              <Ionicons name="location" size={14} color="#4F8EF7" />
-              <Text style={styles.constituencyBadgeText}>
-                Reporting in {myHome.name}
-              </Text>
-            </View>
-          )}
-
-          {/* Title */}
-          <Text style={styles.fieldLabel}>Title *</Text>
-          <TextInput
-            ref={titleRef}
-            style={styles.titleInput}
-            placeholder="Brief description of the issue"
-            placeholderTextColor="#4B5563"
-            value={title}
-            onChangeText={setTitle}
-            maxLength={200}
-          />
-          <Text style={styles.charHint}>{title.length}/200</Text>
-
-          {/* Description */}
-          <Text style={styles.fieldLabel}>Details</Text>
-          <TextInput
-            style={styles.descInput}
-            placeholder="Provide more context, location details, how long the issue has persisted..."
-            placeholderTextColor="#4B5563"
-            value={description}
-            onChangeText={setDescription}
-            multiline
-            maxLength={2000}
-            textAlignVertical="top"
-          />
-
-          {/* Category */}
-          <Text style={styles.fieldLabel}>Category *</Text>
-          <View style={styles.chipGrid}>
-            {CATEGORIES.map(([key, config]) => {
-              const active = category === key;
-              return (
-                <Pressable
-                  key={key}
-                  style={[
-                    styles.chip,
-                    active && { backgroundColor: config.color + '20', borderColor: config.color + '40' },
-                  ]}
-                  onPress={() => setCategory(key)}
-                >
-                  <Ionicons name={config.icon as any} size={14} color={active ? config.color : '#6B7280'} />
-                  <Text style={[styles.chipText, active && { color: config.color }]}>{config.label}</Text>
-                </Pressable>
-              );
-            })}
+    <Modal visible={visible} animationType="slide" statusBarTranslucent>
+      <View style={[styles.container, Platform.OS === 'android' && { paddingTop: StatusBar.currentHeight || 24 }]}>
+        <KeyboardAvoidingView
+          style={styles.container}
+          behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+        >
+          {/* Header */}
+          <View style={styles.header}>
+            <Pressable onPress={onClose} hitSlop={8}>
+              <Ionicons name="close" size={24} color="#9CA3AF" />
+            </Pressable>
+            <Text style={styles.headerTitle}>Report Issue</Text>
+            <Pressable
+              style={[styles.submitButton, !canSubmit && styles.submitDisabled]}
+              onPress={handleSubmit}
+              disabled={!canSubmit}
+            >
+              <Text style={styles.submitText}>Submit</Text>
+            </Pressable>
           </View>
 
-          {/* Media Evidence */}
-          <Text style={styles.fieldLabel}>Evidence (photos)</Text>
-          <View style={styles.mediaRow}>
-            {mediaUris.map((uri, idx) => (
-              <View key={uri} style={styles.mediaThumbnailWrap}>
-                <Image source={{ uri }} style={styles.mediaThumbnail} contentFit="cover" />
-                <Pressable style={styles.mediaRemove} onPress={() => removeMedia(idx)} hitSlop={6}>
-                  <Ionicons name="close-circle" size={18} color="#EF4444" />
-                </Pressable>
+          <ScrollView style={styles.scroll} keyboardShouldPersistTaps="handled">
+            {/* Constituency badge */}
+            {myHome && (
+              <View style={styles.constituencyBadge}>
+                <Ionicons name="location" size={14} color="#4F8EF7" />
+                <Text style={styles.constituencyBadgeText}>
+                  Reporting in {myHome.name}
+                </Text>
               </View>
-            ))}
-            {mediaUris.length < MAX_MEDIA && (
-              <>
-                <Pressable style={styles.mediaAddButton} onPress={pickFromGallery}>
-                  <Ionicons name="images" size={22} color="#4F8EF7" />
-                  <Text style={styles.mediaAddText}>Gallery</Text>
-                </Pressable>
-                <Pressable style={styles.mediaAddButton} onPress={takePhoto}>
-                  <Ionicons name="camera" size={22} color="#10B981" />
-                  <Text style={styles.mediaAddText}>Camera</Text>
-                </Pressable>
-              </>
             )}
-          </View>
-          {mediaUris.length > 0 && (
-            <Text style={styles.charHint}>{mediaUris.length}/{MAX_MEDIA} photos added</Text>
-          )}
 
-          {/* Severity */}
-          <Text style={styles.fieldLabel}>Severity</Text>
-          <View style={styles.severityRow}>
-            {SEVERITIES.map(([key, config]) => {
-              const active = severity === key;
-              return (
-                <Pressable
-                  key={key}
-                  style={[
-                    styles.severityChip,
-                    active && { backgroundColor: config.color + '20', borderColor: config.color + '40' },
-                  ]}
-                  onPress={() => setSeverity(key)}
-                >
-                  <Text style={[styles.severityChipText, active && { color: config.color }]}>
-                    {config.label}
-                  </Text>
-                </Pressable>
-              );
-            })}
-          </View>
-        </ScrollView>
-      </KeyboardAvoidingView>
+            {/* Title */}
+            <Text style={styles.fieldLabel}>Title *</Text>
+            <TextInput
+              ref={titleRef}
+              style={styles.titleInput}
+              placeholder="Brief description of the issue"
+              placeholderTextColor="#4B5563"
+              value={title}
+              onChangeText={setTitle}
+              maxLength={200}
+            />
+            <Text style={styles.charHint}>{title.length}/200</Text>
+
+            {/* Description */}
+            <Text style={styles.fieldLabel}>Details</Text>
+            <TextInput
+              style={styles.descInput}
+              placeholder="Provide more context, location details, how long the issue has persisted..."
+              placeholderTextColor="#4B5563"
+              value={description}
+              onChangeText={setDescription}
+              multiline
+              maxLength={2000}
+              textAlignVertical="top"
+            />
+
+            {/* Category */}
+            <Text style={styles.fieldLabel}>Category *</Text>
+            <View style={styles.chipGrid}>
+              {CATEGORIES.map(([key, config]) => {
+                const active = category === key;
+                return (
+                  <Pressable
+                    key={key}
+                    style={[
+                      styles.chip,
+                      active && { backgroundColor: config.color + '20', borderColor: config.color + '40' },
+                    ]}
+                    onPress={() => setCategory(key)}
+                  >
+                    <Ionicons name={config.icon as any} size={14} color={active ? config.color : '#6B7280'} />
+                    <Text style={[styles.chipText, active && { color: config.color }]}>{config.label}</Text>
+                  </Pressable>
+                );
+              })}
+            </View>
+
+            {/* Media Evidence */}
+            <Text style={styles.fieldLabel}>Evidence (photos)</Text>
+            <View style={styles.mediaRow}>
+              {mediaUris.map((uri, idx) => (
+                <View key={uri} style={styles.mediaThumbnailWrap}>
+                  <Image source={{ uri }} style={styles.mediaThumbnail} contentFit="cover" />
+                  <Pressable style={styles.mediaRemove} onPress={() => removeMedia(idx)} hitSlop={6}>
+                    <Ionicons name="close-circle" size={18} color="#EF4444" />
+                  </Pressable>
+                </View>
+              ))}
+              {mediaUris.length < MAX_MEDIA && (
+                <>
+                  <Pressable style={styles.mediaAddButton} onPress={pickFromGallery}>
+                    <Ionicons name="images" size={22} color="#4F8EF7" />
+                    <Text style={styles.mediaAddText}>Gallery</Text>
+                  </Pressable>
+                  <Pressable style={styles.mediaAddButton} onPress={takePhoto}>
+                    <Ionicons name="camera" size={22} color="#10B981" />
+                    <Text style={styles.mediaAddText}>Camera</Text>
+                  </Pressable>
+                </>
+              )}
+            </View>
+            {mediaUris.length > 0 && (
+              <Text style={styles.charHint}>{mediaUris.length}/{MAX_MEDIA} photos added</Text>
+            )}
+
+            {/* Severity */}
+            <Text style={styles.fieldLabel}>Severity</Text>
+            <View style={styles.severityRow}>
+              {SEVERITIES.map(([key, config]) => {
+                const active = severity === key;
+                return (
+                  <Pressable
+                    key={key}
+                    style={[
+                      styles.severityChip,
+                      active && { backgroundColor: config.color + '20', borderColor: config.color + '40' },
+                    ]}
+                    onPress={() => setSeverity(key)}
+                  >
+                    <Text style={[styles.severityChipText, active && { color: config.color }]}>
+                      {config.label}
+                    </Text>
+                  </Pressable>
+                );
+              })}
+            </View>
+          </ScrollView>
+        </KeyboardAvoidingView>
+      </View>
     </Modal>
   );
 }

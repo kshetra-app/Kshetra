@@ -1,9 +1,25 @@
 # Gold-Standard Audit — Project Status
 
-**Date:** 2026-06-16
+**Date:** 2026-06-16 · **Last updated: 2026-06-22 (Sprint 52)**
 **Method:** automated audit scripts (`scripts/audit-all-geojson.mjs`, seed entry counts).
 **Purpose:** persistent scorecard of data/map "gold standard" so progress isn't
 lost between sessions. Update this file as states are fixed.
+
+> **⭐ SINGLE SOURCE OF TRUTH (2026-06-22):** This file + `building.md` Sprint 52 are the
+> canonical, verified status. Earlier optimistic/contradictory claims in
+> `KSHETRA_360_Analysis.md` and the pre-2026-06-22 `FEATURE_PARITY_TRACKER.md` are
+> superseded where they disagree. Verified this session via `tsc` (EXIT 0 mobile/api/shared)
+> + 278/278 seed tests + `audit-all-geojson.mjs`.
+>
+> **Sprint 52 changes (all from authoritative TCPD/ECI data, zero fabrication):**
+> - Constituency seeds rebuilt to full official strength with REAL votes/margins/runner-ups/
+>   districts/turnout/electors: **Gujarat 182, Punjab 117, Uttar Pradesh 403, Bihar 243, Goa 40**.
+> - Historical per-AC results backfilled: **Kerala 2016=140, West Bengal 2016=294,
+>   Uttar Pradesh 2017=403, Tamil Nadu 2016=232** (2 postponed seats omitted, not fabricated).
+> - **Tamil Nadu map** source-cleaned: bad rings 12→0, duplicate acNo 2→0 (now 233/234, only
+>   AC 185 polygon missing).
+> - **Administrative Hierarchy drill-down UI** shipped (`app/hierarchy/[id].tsx`).
+> - Clarified: AS/TN/WB/KL/PY `2026` are **actual** results (June-2026 timeline), not projections.
 
 > Definitions
 > - **GOLD** = GeoJSON feature count == official seats, no acNo dup/gap/out-of-range,
@@ -52,7 +68,7 @@ nested/extra `acNo` fields; needs manual inspection). Himachal seed = 70 vs 68 (
 | Madhya Pradesh | 226/230 | 4.75 | COUNT -4, MISSING acNo 4 |
 | Rajasthan | 201/200 | 3.34 | COUNT +1, DUP acNo 1 |
 | Telangana | 120/119 | 3.49 | COUNT +1, DUP acNo 1 |
-| Tamil Nadu | 235/234 | 3.09 | COUNT +1, DUP 1, **BADRING 12** |
+| Tamil Nadu | 233/234 | 3.10 | **CLEANED (Sprint 52)** — bad rings 12→0, dup 2→0; only AC 185 polygon missing |
 | Arunachal Pradesh | 0/60 | - | **EMPTY/PLACEHOLDER** |
 | Meghalaya | 0/60 | - | EMPTY/PLACEHOLDER |
 | Manipur | 0/60 | - | EMPTY/PLACEHOLDER |
@@ -67,6 +83,14 @@ nested/extra `acNo` fields; needs manual inspection). Himachal seed = 70 vs 68 (
 exposed AP's scramble) only flags J&K now — so no other state has an AP-style
 gross geometry scramble; the rest are count/duplicate/coverage issues.
 
+> **STALE-ROW CORRECTION (2026-06-22):** The `0/60 EMPTY/PLACEHOLDER` rows for
+> Arunachal, Meghalaya, Manipur, Mizoram, Nagaland, Puducherry, Sikkim, Tripura and
+> Uttarakhand pre-date the "NE States Data Expansion" — those maps are now **populated
+> with real geometry** (most clean; AR/MN/SK/PY have only minor count/scatter issues).
+> Tamil Nadu was source-cleaned in Sprint 52. Always trust a fresh
+> `node scripts/audit-all-geojson.mjs` run (currently **10/31 fully clean**) over these
+> historical rows. Remaining real map gaps: AS/GJ/JH/MP missing-acNo polygons + TN AC 185.
+
 Notes:
 - TN `BADRING 12` is masked at runtime by `sanitizeGeoJSON()` in `geoLoader.ts`,
   but the source file should still be cleaned.
@@ -79,13 +103,17 @@ Notes:
 
 Seeds matching official seat count (drive the correct Explore-tab number):
 
-| Correct seed count | Short / wrong seed count |
+| Correct seed count (== official) | Short / wrong seed count |
 |---|---|
-| AP 175, KA 224, KL 140, MH 288, TN 234, TG 119, WB 294, HP 70(+2?) | AR 53/60, AS 112/126, BR 227/243, CG 81/90, GA 34/40, GJ 169/182, HR 80/90, JK 82/90, JH 73/81, MP 208/230, MN 54/60, ML 55/60, MZ 35/40, NL 55/60, OD 132/147, PY 27/30, PB 111/117, RJ 187/200, SK 31/32, TR 57/60, UK 68/70, UP 401/403, DL 221(anomaly) |
+| AP 175, KA 224, KL 140, MH 288, TN 234, TG 119, WB 294, HP 70, JK 90, **BR 243**, **GA 40**, **GJ 182**, **PB 117**, **UP 403**, AR 60, MN 60, ML 60, MZ 40, NL 60, PY 30, SK 32, TR 60, UK 70 | AS 112/126, CG 81/90, HR 80/90, JH 73/81, MP 208/230, OD 132/147, RJ 187/200, DL 221(anomaly) |
 
-Most states' seeds are **short of full strength** — the same root cause as AP's
-original "180 vs 175" complaint (incomplete/incorrect seed). This is the single
-biggest gap to "gold standard".
+**Sprint 52 (2026-06-22):** BR/GA/GJ/PB/UP rebuilt from authoritative TCPD data to full
+official strength **with real votes/margins/runner-ups/turnout/electors** (the old seeds
+had `winnerVotes: 0` and corrupted districts). The remaining short seeds (AS, CG, HR, JH,
+MP, OD, RJ, DL) have a CURRENT election that post-dates the TCPD public dump (2023–2026),
+so completing them needs an ECI/Wikipedia current-year source — tracked in the deferred
+queue. The earlier NE/UT entries (AR/MN/ML/MZ/NL/PY/SK/TR/UK) are in fact already at full
+seed count; the old "53/60" etc. figures were stale.
 
 ---
 
@@ -130,6 +158,10 @@ lines), to which an <800 source-code rule does not apply.
 | J&K MLA profiles re-key | **DONE (gold)** | `jammu-kashmir-mla-profiles.ts` re-keyed to official acNo 1-90, unique/contiguous, districts fixed, by-election overrides handled. 10 seats absent from MyNeta got identity-verified profiles (name/party/constituency/district/reservation only — unsourced affidavit fields omitted, not fabricated). Scripts: `rekey-jk-mla.mjs`, `jk-missing-profiles.mjs`. |
 | J&K demographics re-key | **DONE (gold)** | `jammu-kashmir-demographics.ts` regenerated to 90 entries, acNo 1-90, no gaps/dups, correct districts. Honest INDICATIVE-ESTIMATES disclaimer added (district-level Census 2011 model, matching AP). Generator gained safe single-state CLI arg: `node scripts/generate-demographics.js JK`. |
 | J&K map (current 90-AC) | **DONE (gold)** | `apps/mobile/data/jk-assembly.json` rebuilt: 90 features, AC 1-90 unique/contiguous, 0 bad rings, 0 NaN, 0 off-grid centroids, 0.30 MB (was obsolete 107-feature/87-AC+Ladakh junk). Source: `shijithpk/2024_maps_supplement` `j_and_k_assembly_new_borders.geojson` (CEO-J&K delimitation PDF + NIC map server, seat_id fixed to ECI numbering). PoK feature 9999 dropped. Matched by seat_id→acNo, seed names stamped. Script: `scripts/build-jk-geo.mjs`. Audit: J&K 90/90 OK. |
+| GJ/PB/UP/BR/GA constituency seeds (Sprint 52) | **DONE (gold)** | Rebuilt to full official strength from TCPD `<State>_AE.csv.gz` with real winner/runner-up (party+name), votes, margins, turnout, electors, correct districts. Tallies match official (GJ BJP156/INC17; PB AAP92; UP BJP255/SP111; BR RJD75/BJP74/JDU43; GA BJP20). Script: `scripts/rebuild-short-seed.mjs`. |
+| KL/WB/UP/TN historical results (Sprint 52) | **DONE (gold)** | Per-AC prior-election results backfilled from TCPD: KL 2016=140, WB 2016=294, UP 2017=403, TN 2016=232 (2 postponed seats omitted, not fabricated). Script: `scripts/build-historical-results.mjs`. |
+| Tamil Nadu map clean (Sprint 52) | **DONE (source-clean)** | `tn-assembly.json`: 12 bad rings → 0, 2 duplicate acNos → 0 (Tirupattur AC50, Nannilam AC169). Now 233/234; AC 185 polygon genuinely absent → queued for authoritative boundary. Script: `scripts/fix-tn-geo.mjs`. |
+| Administrative Hierarchy UI (Sprint 52) | **DONE** | `app/hierarchy/[id].tsx` + `lib/hierarchyData.ts` — Booth→Panchayat→Mandal→Constituency drill-down, linked from constituency screen (TS AC1–5, AP AC1–3). |
 
 ### Two-layer map architecture (resolves the "boundary" question)
 - **Layer A — CURRENT (real geometry):** authoritative open boundary GeoJSON reconciled + re-keyed to the seed (AP pipeline). Zero fabrication. This is what every "present" map uses; the pending nationwide delimitation does NOT affect current boundaries.

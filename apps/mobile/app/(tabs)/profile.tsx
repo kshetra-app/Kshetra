@@ -5,7 +5,6 @@ import {
   ScrollView,
   Platform,
   Pressable,
-  Linking,
   Switch,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
@@ -288,7 +287,7 @@ export default function ProfileScreen() {
           <SettingRow
             icon="rocket"
             label="Become an Aspirant"
-            onPress={() => router.push('/leadership-academy' as any)}
+            onPress={() => router.push('/become-aspirant' as any)}
             color="#06B6D4"
           />
         </View>
@@ -327,7 +326,7 @@ export default function ProfileScreen() {
               <Pressable
                 key={r.acNo}
                 style={styles.recentRow}
-                onPress={() => router.push(`/constituency/${r.acNo}` as any)}
+                onPress={() => router.push(`/constituency/${r.stateCode ? `${r.stateCode}-AC-${r.acNo}` : r.acNo}` as any)}
               >
                 <View
                   style={[
@@ -373,6 +372,23 @@ export default function ProfileScreen() {
               value={prefs.hapticFeedback}
               onValueChange={prefs.setHapticFeedback}
               trackColor={{ false: '#374151', true: '#4F8EF7' }}
+              thumbColor="#FFFFFF"
+            />
+          </View>
+          <View style={styles.settingRow}>
+            <View style={[styles.settingIcon, { backgroundColor: '#10B98120' }]}>
+              <Ionicons name="tv" size={18} color="#10B981" />
+            </View>
+            <View style={{ flex: 1 }}>
+              <Text style={styles.settingLabel}>Broadcast / Playout Mode</Text>
+              <Text style={{ fontSize: 11, color: '#6B7280', marginTop: 2 }}>
+                Hides all UI on map, leaving a clean feed for screen capture
+              </Text>
+            </View>
+            <Switch
+              value={prefs.broadcastMode}
+              onValueChange={prefs.setBroadcastMode}
+              trackColor={{ false: '#374151', true: '#10B981' }}
               thumbColor="#FFFFFF"
             />
           </View>
@@ -424,12 +440,6 @@ export default function ProfileScreen() {
             label="Terms of Service"
             onPress={() => {}}
             color="#6B7280"
-          />
-          <SettingRow
-            icon="logo-github"
-            label="Source Code"
-            onPress={() => Linking.openURL('https://github.com')}
-            color="#9CA3AF"
           />
         </View>
       </View>

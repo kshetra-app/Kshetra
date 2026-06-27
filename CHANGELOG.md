@@ -7,6 +7,65 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Go-Live — Supabase backend stood up + Fastify API deployable (2026-06-22, P1 Steps 1 & 2)
+- **All 24 migrations now apply cleanly** (verified via local `supabase start` /
+  `db reset`). Fixed latent defects that had never been integration-tested:
+  - `003_multi_state.sql` redefined `states`/`constituencies` incompatibly with
+    `001` (e.g. `assembly_seats` vs `total_seats`, `reservation` vs
+    `reservation_status`) and ran `ALTER`/`CREATE VIEW` against `posts`/
+    `civic_issues` that are created in *later* migrations. Rewritten to be purely
+    additive (`ALTER TABLE … ADD COLUMN IF NOT EXISTS`) with an UPSERT seed.
+  - Duplicate migration version `003` (two files) broke the version PK — the
+    social migration was renamed `003_posts_polls_social.sql` →
+    `0035_posts_polls_social.sql`; the (previously broken) `state_feed` view moved
+    here and fixed to use `is_deleted` (posts has no `status` column).
+  - `019_live_election.sql`: column `leading` (a reserved keyword) → quoted.
+  - `022_administrative_hierarchy.sql`: expression in a `UNIQUE` constraint
+    (`COALESCE(ward_number,0)`) → converted to a unique index.
+- **Added `023_data_api_grants.sql`** — grants the Data API roles
+  (`anon`/`authenticated`/`service_role`) so the app works on projects created
+  with the new no-auto-expose default. RLS still gates every row.
+- **RLS verified**: 120/120 application tables have RLS enabled (220 policies);
+  only PostGIS `spatial_ref_sys` is exempt (standard). Enforcement proven: `anon`
+  reads public tables and gets 0 rows from owner-only tables.
+- **Fastify API made runnable in production**: `start` was `node dist/server.js`
+  (wrong path; tsconfig emitted extensionless ESM that plain Node can't run). API
+  now runs via `tsx` (`apps/api/package.json`: `start`/`build` fixed, `tsx`
+  promoted to a runtime dependency). All **12 route groups smoke-tested** green
+  via new `scripts/smoke-api.mjs` (auth-gated routes return 200 with headers).
+- **Deployment artifacts**: `apps/api/Dockerfile` (+ root `.dockerignore`) for any
+  container host, and `RUNBOOK_DEPLOY.md` with step-by-step cloud Supabase + API
+  deploy instructions. Local stack tuned via `supabase/config.toml` (non-essential
+  services disabled for a minimal, healthy Windows/Docker stack).
+
+### Added — Authoritative data rebuild, historical backfill & Hierarchy UI (2026-06-22, Sprint 52)
+- **Constituency seeds rebuilt to official strength from authoritative TCPD "Lok Dhaba"
+  (ECI-sourced) data** — Gujarat (169→182), Punjab (111→117), Uttar Pradesh (401→403),
+  Bihar (227→243), Goa (34→40). Now carry **real** winner/runner-up (party + name), vote
+  counts, margins, turnout, electors, and corrected districts (the old seeds had
+  `winnerVotes: 0`, empty runner-ups, and corrupted `'Sc'/'St'` districts). Party tallies
+  match official results. New `scripts/rebuild-short-seed.mjs` (strictly validated).
+- **Per-AC historical results backfilled from stubs to full coverage** —
+  Kerala 2016 (25→140), West Bengal 2016 (→294), Uttar Pradesh 2017 (→403),
+  Tamil Nadu 2016 (→232; the 2 postponed seats omitted, not fabricated). New
+  `scripts/build-historical-results.mjs`.
+- **Administrative Hierarchy drill-down UI** (`app/hierarchy/[id].tsx` + `lib/hierarchyData.ts`):
+  Constituency → Mandal → Gram Panchayat → Booth with breadcrumbs, rollup stats, Sarpanch
+  party badges and booth voter detail. Linked from the constituency screen when data exists
+  (TS ACs 1–5, AP ACs 1–3). This makes the Sprint-51 hierarchy backend user-visible.
+
+### Fixed — Tamil Nadu map geometry (source-clean)
+- `apps/mobile/data/tn-assembly.json`: removed 12 degenerate/unclosed rings and 2 duplicate
+  acNo features (Tirupattur, Nannilam) at source — **bad rings 12→0, duplicate acNo 2→0** —
+  so the map no longer relies on the runtime `sanitizeGeoJSON()` mask. New `scripts/fix-tn-geo.mjs`.
+
+### Verified
+- `tsc --noEmit` clean across mobile/api/shared; seed test suite **278/278 passing**.
+
+### Notes — clarified (not projections)
+- Assam, Tamil Nadu, West Bengal, Kerala and Puducherry `2026` fields are **actual** results
+  (the app timeline is June 2026), not projections, and were preserved untouched.
+
 ### Added — Leadership Academy: full content, videos, quizzes & citations (2026-06-17)
 - Extended the `LeadershipModule` data model with rich content fields: `sections`,
   `keyTakeaways`, `video` (`ModuleVideo`), `quiz` (`QuizQuestion[]`), and `citations`

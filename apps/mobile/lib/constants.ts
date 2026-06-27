@@ -1,5 +1,5 @@
-import { STATES } from '@kshetra/shared';
-import { PARTY_CONFIG } from '@kshetra/shared';
+import { STATES, PARTY_CONFIG } from '@kshetra/shared';
+import { Dimensions } from 'react-native';
 
 /** Telangana centroid — default map center (kept for backward compat) */
 export const TELANGANA_CENTER: [number, number] = [79.0193, 17.8495];
@@ -20,6 +20,7 @@ export const API_BASE_URL =
 
 /** Get [lng, lat] center for any state code */
 export function getStateCenter(stateCode: string): [number, number] {
+  if (stateCode.toUpperCase() === 'IN') return [78.9629, 22.5937];
   const s = STATES[stateCode];
   if (s) return [s.centroid.longitude, s.centroid.latitude];
   return TELANGANA_CENTER;
@@ -27,6 +28,12 @@ export function getStateCenter(stateCode: string): [number, number] {
 
 /** Get default zoom for any state code */
 export function getStateZoom(stateCode: string): number {
+  if (stateCode.toUpperCase() === 'IN') {
+    const { width } = Dimensions.get('window');
+    if (width < 360) return 3.4;
+    if (width < 400) return 3.7;
+    return 4.0;
+  }
   return STATES[stateCode]?.zoom ?? 6.8;
 }
 

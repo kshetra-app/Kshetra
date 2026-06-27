@@ -17,7 +17,9 @@ import {
 } from '@/lib/stateDataDispatcher';
 import { getTriviaForConstituencyInState } from '@/lib/stateTriviaAdapter';
 import { getUnifiedConstituenciesForState, type UnifiedConstituency } from '@/lib/stateDataAdapter';
+import { hasHierarchyData } from '@/lib/hierarchyData';
 import { selectFreshTrivia } from '@/lib/triviaSelector';
+import { useSeedDataWithLoading } from '@/lib/useSeedDataWithLoading';
 import { STATES } from '@kshetra/shared';
 import { useActiveStateStore } from '../../stores/activeState';
 import { useFavoritesStore } from '../../stores/favorites';
@@ -37,16 +39,40 @@ import PollCard from '../../components/PollCard';
 import IssueCard from '../../components/IssueCard';
 import HeadlineCard from '../../components/HeadlineCard';
 import PoliticalTimelineCard from '../../components/PoliticalTimelineCard';
+import { ConstituencyCardSkeleton, TextSkeleton } from '../../components/SkeletonLoaders';
 
 
 export default function ConstituencyDetailScreen() {
   const { t } = useTranslation();
   const router = useRouter();
   const { id } = useLocalSearchParams<{ id: string }>();
-  const acNo = parseInt(id, 10);
-  const stateCode = useActiveStateStore((s) => s.stateCode);
+  const stateCodeStore = useActiveStateStore((s) => s.stateCode);
+  const setStateCode = useActiveStateStore((s) => s.setStateCode);
+
+  const { parsedStateCode, parsedAcNo } = useMemo(() => {
+    let sCode = stateCodeStore;
+    let aNo = parseInt(id, 10);
+    if (id && typeof id === 'string' && id.includes('-AC-')) {
+      const parts = id.split('-AC-');
+      sCode = parts[0].toUpperCase();
+      aNo = parseInt(parts[1], 10);
+    }
+    return { parsedStateCode: sCode, parsedAcNo: aNo };
+  }, [id, stateCodeStore]);
+
+  const stateCode = parsedStateCode;
+  const acNo = parsedAcNo;
   const insets = useSafeAreaInsets();
   const hasFull = hasFullDataForState(stateCode);
+
+  useEffect(() => {
+    if (parsedStateCode && parsedStateCode !== 'IN' && parsedStateCode !== stateCodeStore) {
+      setStateCode(parsedStateCode);
+    }
+  }, [parsedStateCode, stateCodeStore, setStateCode]);
+
+  // ─── Phase 4: Loading states for seed data ───
+  const { loading: seedDataLoading } = useSeedDataWithLoading(stateCode);
 
   /** Look up constituency from the active state's unified data */
   const stateConstituencies = useMemo(
@@ -122,6 +148,7 @@ export default function ConstituencyDetailScreen() {
         name: constituency.name,
         district: constituency.district,
         party: constituency.winnerParty,
+        stateCode: stateCode,
       });
     }
   }, [constituency, addRecent]);
@@ -151,6 +178,16 @@ export default function ConstituencyDetailScreen() {
           headerTintColor: '#FFFFFF',
         }}
       />
+      {/* Phase 4: Show skeleton while seed data loads */}
+      {seedDataLoading && hasFull && (
+        <ScrollView style={styles.scroll} contentContainerStyle={styles.scrollContent}>
+          <ConstituencyCardSkeleton />
+          <ConstituencyCardSkeleton />
+          <ConstituencyCardSkeleton />
+        </ScrollView>
+      )}
+
+      {!seedDataLoading && (
       <ScrollView
         ref={scrollRef}
         style={styles.scroll}
@@ -335,6 +372,21 @@ export default function ConstituencyDetailScreen() {
             </View>
           ) : null;
         })()}
+
+        {/* Administrative Hierarchy drill-down (Booth → Panchayat → Mandal) */}
+        {hasHierarchyData(stateCode, acNo) && (
+          <View style={styles.section}>
+            <Text style={styles.sectionTitle}>Administrative Hierarchy</Text>
+            <Pressable
+              style={styles.fullProfileBtn}
+              onPress={() => router.push(`/hierarchy/${stateCode}-AC-${acNo}` as any)}
+            >
+              <Ionicons name="git-branch" size={16} color="#4F8EF7" />
+              <Text style={styles.fullProfileBtnText}>Explore Mandals, Panchayats &amp; Booths</Text>
+              <Ionicons name="chevron-forward" size={14} color="#4F8EF7" />
+            </Pressable>
+          </View>
+        )}
 
         {/* Defection Alert */}
         {constituency.currentParty && constituency.currentParty !== constituency.winnerParty && (
@@ -767,6 +819,7 @@ export default function ConstituencyDetailScreen() {
         </>)}
 
       </ScrollView>
+      )}
 
       <PhotoViewerModal
         visible={!!photoViewer}

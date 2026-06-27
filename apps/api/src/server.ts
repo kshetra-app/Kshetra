@@ -14,6 +14,8 @@ import { journalistRoutes } from './routes/journalist';
 import { politicianRoutes } from './routes/politician';
 import { campaignRoutes } from './routes/campaign';
 import { civicRoutes } from './routes/civic';
+import { broadcastRoutes } from './routes/broadcast';
+import { geoRoutes } from './routes/geo';
 
 const envToLogger: Record<string, object | boolean> = {
   development: {
@@ -114,6 +116,8 @@ export async function buildApp() {
   await app.register(politicianRoutes);
   await app.register(campaignRoutes);
   await app.register(civicRoutes);
+  await app.register(broadcastRoutes);
+  await app.register(geoRoutes);
 
   return app;
 }

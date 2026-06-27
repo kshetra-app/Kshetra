@@ -145,6 +145,9 @@ function processQueue() {
  * Returns the photo URL or undefined if not found.
  */
 export function getStaticPhoto(name: string): string | undefined {
+  if (name === 'Narendra Modi') {
+    return 'https://upload.wikimedia.org/wikipedia/commons/thumb/5/5f/The_official_portrait_of_Shri_Narendra_Modi%2C_the_Prime_Minister_of_the_Republic_of_India.jpg/330px-The_official_portrait_of_Shri_Narendra_Modi%2C_the_Prime_Minister_of_the_Republic_of_India.jpg';
+  }
   // Try exact key first, then normalised key
   const url = STATIC_PHOTO_MAP[name] ?? STATIC_PHOTO_MAP[normaliseName(name)];
   if (!url) return undefined;
@@ -183,7 +186,12 @@ export async function fetchWikipediaPhoto(name: string): Promise<string | null> 
       try {
         const resp = await fetch(
           `https://en.wikipedia.org/api/rest_v1/page/summary/${encodeURIComponent(article)}`,
-          { headers: { 'Accept': 'application/json' } },
+          {
+            headers: {
+              'Accept': 'application/json',
+              'User-Agent': 'KshetraApp/1.0 (https://kshetra.app; contact@kshetra.app)',
+            },
+          },
         );
         if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
         const data = await resp.json();
@@ -193,14 +201,13 @@ export async function fetchWikipediaPhoto(name: string): Promise<string | null> 
         const desc = (data?.description || '').toLowerCase();
         const isPolitician = /politician|minister|chief minister|mla|mp|legislat|member of|governor|cm of/i.test(desc);
         if (url && type !== 'disambiguation' && type !== 'no-extract' && isPolitician) {
-          const hiRes = url.replace(/\/\d+px-/, '/300px-');
           // Filter out map/logo/symbol images
-          if (hiRes.includes('Map') || hiRes.includes('map_') || hiRes.includes('Logo') || hiRes.includes('Flag') || hiRes.includes('Seal_of')) {
+          if (url.includes('Map') || url.includes('map_') || url.includes('Logo') || url.includes('Flag') || url.includes('Seal_of')) {
             failedNames.add(name);
             resolve(null);
           } else {
-            photoCache.set(name, hiRes);
-            resolve(hiRes);
+            photoCache.set(name, url);
+            resolve(url);
           }
         } else {
           failedNames.add(name);

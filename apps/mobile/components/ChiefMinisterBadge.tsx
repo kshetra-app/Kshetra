@@ -8,10 +8,11 @@
  *   stateCode  — active state code (e.g. 'TS', 'KA')
  *   compact    — if true, renders a smaller inline strip (for map overlay)
  */
-import React, { memo } from 'react';
+import React, { memo, useState, useCallback } from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import CandidateAvatar from './CandidateAvatar';
-import { getChiefMinister } from '@/lib/chiefMinisters';
+import PhotoViewerModal from './PhotoViewerModal';
+import { getChiefMinister, getPrimeMinister } from '@/lib/chiefMinisters';
 import { getPartyColor } from '@/lib/constants';
 
 interface ChiefMinisterBadgeProps {
@@ -24,40 +25,61 @@ export default memo(function ChiefMinisterBadge({
   stateCode,
   compact = false,
 }: ChiefMinisterBadgeProps) {
-  const cm = getChiefMinister(stateCode);
-  if (!cm) return null;
+  const isIndia = stateCode === 'IN';
+  const person = isIndia ? getPrimeMinister() : getChiefMinister(stateCode);
+  const [viewerVisible, setViewerVisible] = useState(false);
+  const [resolvedUri, setResolvedUri] = useState<string | null>(null);
+
+  if (!person) return null;
 
   const avatarSize = compact ? 34 : 42;
-  const partyColor = getPartyColor(cm.party);
+  const partyColor = getPartyColor(person.party);
+
+  const handlePress = useCallback((uri: string | null) => {
+    setResolvedUri(uri);
+    setViewerVisible(true);
+  }, []);
 
   return (
-    <View style={[styles.container, compact && styles.containerCompact]}>
-      <CandidateAvatar
-        name={cm.name}
-        party={cm.party}
-        size={avatarSize}
-        borderWidth={2}
-      />
-      <View style={styles.info}>
-        <View style={styles.nameRow}>
+    <>
+      <View style={[styles.container, compact && styles.containerCompact]}>
+        <CandidateAvatar
+          name={person.name}
+          party={person.party}
+          size={avatarSize}
+          borderWidth={2}
+          onPress={handlePress}
+        />
+        <View style={styles.info}>
+          <View style={styles.nameRow}>
+            <Text
+              style={[styles.name, compact && styles.nameCompact]}
+              numberOfLines={1}
+            >
+              {person.name}
+            </Text>
+            <View
+              style={[styles.partyDot, { backgroundColor: partyColor }]}
+            />
+          </View>
           <Text
-            style={[styles.name, compact && styles.nameCompact]}
+            style={[styles.designation, compact && styles.designationCompact]}
             numberOfLines={1}
           >
-            {cm.name}
+            {person.designation}
           </Text>
-          <View
-            style={[styles.partyDot, { backgroundColor: partyColor }]}
-          />
         </View>
-        <Text
-          style={[styles.designation, compact && styles.designationCompact]}
-          numberOfLines={1}
-        >
-          {cm.designation}
-        </Text>
       </View>
-    </View>
+
+      <PhotoViewerModal
+        visible={viewerVisible}
+        imageUri={resolvedUri}
+        name={person.name}
+        party={person.party}
+        subtitle={person.designation}
+        onClose={() => setViewerVisible(false)}
+      />
+    </>
   );
 });
 

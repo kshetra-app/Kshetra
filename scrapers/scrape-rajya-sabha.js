@@ -62,6 +62,7 @@ async function extractMembers(page) {
         name,
         party: cells[2]?.textContent?.trim() || cells[3]?.textContent?.trim() || '',
         state: cells[1]?.textContent?.trim() || '',
+        stateName: cells[3]?.textContent?.trim() || '',
         photoUrl: img?.src || '',
         source: 'table',
       });

@@ -48,6 +48,7 @@ import { getTN2016Result } from '../../../data/seed/tamil-nadu-historical-result
 import { getTNConstituencyDemographics } from '../../../data/seed/tamil-nadu-demographics';
 import { TN_ELECTION_HISTORY } from '../../../data/seed/tamil-nadu-election-history';
 import { getTNConstituencyTimeline } from '../../../data/seed/tamil-nadu-political-timeline';
+import { TN_CONSTITUENCIES } from '../../../data/seed/tamil-nadu-constituencies';
 
 // ── Kerala ──
 import { getKLMLAProfile } from '../../../data/seed/kerala-mla-profiles';
@@ -55,6 +56,7 @@ import { getKL2016Result } from '../../../data/seed/kerala-historical-results';
 import { getKLConstituencyDemographics } from '../../../data/seed/kerala-demographics';
 import { KL_ELECTION_HISTORY } from '../../../data/seed/kerala-election-history';
 import { getKLConstituencyTimeline } from '../../../data/seed/kerala-political-timeline';
+import { KL_CONSTITUENCIES } from '../../../data/seed/kerala-constituencies';
 
 // ── West Bengal ──
 import { getWBMLAProfile } from '../../../data/seed/west-bengal-mla-profiles';
@@ -62,6 +64,7 @@ import { getWB2016Result } from '../../../data/seed/west-bengal-historical-resul
 import { getWBConstituencyDemographics } from '../../../data/seed/west-bengal-demographics';
 import { WB_ELECTION_HISTORY } from '../../../data/seed/west-bengal-election-history';
 import { getWBConstituencyTimeline } from '../../../data/seed/west-bengal-political-timeline';
+import { WB_CONSTITUENCIES } from '../../../data/seed/west-bengal-constituencies';
 
 // ── Uttar Pradesh ──
 import { getUPMLAProfile } from '../../../data/seed/uttar-pradesh-mla-profiles';
@@ -384,15 +387,27 @@ export function getHistoryForState(
     }
     case 'TN': {
       const r2016 = getTN2016Result(acNo);
-      return r2016 ? [{ year: 2016, winner: r2016.winner, party: r2016.party }] : [];
+      const c = TN_CONSTITUENCIES.find(x => x.acNo === acNo);
+      const results: ConstituencyHistoryEntry[] = [];
+      if (r2016) results.push({ year: 2016, winner: r2016.winner, party: r2016.party });
+      if (c) results.push({ year: 2021, winner: c.winnerName2021, party: c.winner2021 });
+      return results;
     }
     case 'KL': {
       const r2016 = getKL2016Result(acNo);
-      return r2016 ? [{ year: 2016, winner: r2016.winner, party: r2016.party }] : [];
+      const c = KL_CONSTITUENCIES.find(x => x.acNo === acNo);
+      const results: ConstituencyHistoryEntry[] = [];
+      if (r2016) results.push({ year: 2016, winner: r2016.winner, party: r2016.party });
+      if (c) results.push({ year: 2021, winner: c.winnerName2021, party: c.winner2021 });
+      return results;
     }
     case 'WB': {
       const r2016 = getWB2016Result(acNo);
-      return r2016 ? [{ year: 2016, winner: r2016.winner, party: r2016.party }] : [];
+      const c = WB_CONSTITUENCIES.find(x => x.acNo === acNo);
+      const results: ConstituencyHistoryEntry[] = [];
+      if (r2016) results.push({ year: 2016, winner: r2016.winner, party: r2016.party });
+      if (c) results.push({ year: 2021, winner: c.winnerName2021, party: c.winner2021 });
+      return results;
     }
     case 'UP': {
       const r2017 = getUP2017Result(acNo);

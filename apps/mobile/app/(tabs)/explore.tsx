@@ -130,7 +130,7 @@ export default function ExploreScreen() {
       <ConstituencyCard
         item={item}
         isFav={isFavorite(item.acNo)}
-        onPress={() => router.push(`/constituency/${item.acNo}` as any)}
+        onPress={() => router.push(`/constituency/${item.stateCode}-AC-${item.acNo}` as any)}
         onAvatarPress={(uri, name, party) => setPhotoViewer({ uri, name, party })}
       />
     ),
@@ -346,7 +346,15 @@ export default function ExploreScreen() {
         </View>
       )}
 
-      {filtered.length === 0 ? (
+      {stateCode === 'IN' ? (
+        <View style={styles.emptyState}>
+          <Ionicons name="map" size={48} color="#4F8EF7" style={{ marginBottom: 12 }} />
+          <Text style={styles.emptyTitle}>Select a State</Text>
+          <Text style={styles.emptyText}>
+            Please select a specific state using the selector in the header to explore constituencies and MLA profiles.
+          </Text>
+        </View>
+      ) : filtered.length === 0 ? (
         <View style={styles.emptyState}>
           <Ionicons name="search" size={40} color="#4B5563" />
           <Text style={styles.emptyTitle}>{t('common.noResults')}</Text>
@@ -356,9 +364,13 @@ export default function ExploreScreen() {
         </View>
       ) : (
         <FlashList
+          // key={stateCode} forces a fresh list when the active state changes,
+          // so recycled cells never keep another state's MLA photo.
+          key={stateCode}
           data={filtered}
+          extraData={stateCode}
           renderItem={renderItem}
-          keyExtractor={(item) => String(item.acNo)}
+          keyExtractor={(item) => `${stateCode}-${item.acNo}`}
           contentContainerStyle={styles.listContent}
         />
       )}
@@ -397,6 +409,7 @@ const ConstituencyCard = React.memo(function ConstituencyCard({
     <Pressable style={styles.card} onPress={onPress}>
       <View style={styles.cardLeft}>
         <CandidateAvatar
+          key={`${item.stateCode || ''}-${item.winnerName}`}
           name={item.winnerName}
           party={item.winnerParty}
           size={48}

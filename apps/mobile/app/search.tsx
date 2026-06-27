@@ -167,7 +167,7 @@ export default function GlobalSearchScreen() {
                 <Pressable
                   key={r.acNo}
                   style={styles.recentRow}
-                  onPress={() => router.push(`/constituency/TS-AC-${r.acNo}` as any)}
+                  onPress={() => router.push(`/constituency/${r.stateCode ? `${r.stateCode}-AC-${r.acNo}` : `TS-AC-${r.acNo}`}` as any)}
                 >
                   <Ionicons name="time" size={14} color="#4B5563" />
                   <Text style={styles.recentText}>{r.name}</Text>

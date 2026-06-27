@@ -1,6 +1,7 @@
 import { TELANGANA_CONSTITUENCIES, type ConstituencySeed, TELANGANA_DEMOGRAPHICS, type ConstituencyDemographics } from '@/lib/data';
 import { getUnifiedConstituenciesForState, type UnifiedConstituency } from './stateDataAdapter';
-import { getDemographicsForState } from './stateDataDispatcher';
+import { getDemographicsForState, getHistoryForState } from './stateDataDispatcher';
+import { STATES } from '@kshetra/shared';
 
 /** Lookup map from AC_NO to seed data for O(1) access */
 const seedByAcNo = new Map<number, ConstituencySeed>(
@@ -30,6 +31,42 @@ export function enrichGeoJSON(
       const seed = acNo != null ? seedByAcNo.get(acNo) : undefined;
       const demo = acNo != null ? demoByAcNo.get(acNo) : undefined;
 
+      const history = acNo != null ? getHistoryForState('TS', acNo) : [];
+      const historyProps: Record<string, string> = {};
+      for (const h of history) {
+        historyProps[`WINNER_PARTY_${h.year}`] = h.party;
+        historyProps[`WINNER_NAME_${h.year}`] = h.winner;
+      }
+      historyProps['WINNER_PARTY_2023'] = seed?.winner2023 ?? 'IND';
+      historyProps['WINNER_NAME_2023'] = seed?.winnerName2023 ?? '';
+
+      // Determine Battleground status
+      const margin = seed?.margin2023 ?? 0;
+      let battleground = 'safe';
+      if (margin > 0 && margin < 2000) {
+        battleground = 'critical';
+      } else if (margin >= 2000 && margin < 5000) {
+        battleground = 'competitive';
+      }
+
+      // Determine Swing status
+      let isSwing = false;
+      const hasHistory = history.length > 0;
+      if (hasHistory) {
+        const sortedHistory = [...history].sort((a, b) => b.year - a.year);
+        const prevWinnerParty = sortedHistory[0]?.party;
+        const currentWinnerParty = seed?.winner2023;
+        const normParty = (p: string) => {
+          const up = p.toUpperCase();
+          if (up === 'TRS' || up === 'BRS') return 'BRS';
+          return up;
+        };
+        if (prevWinnerParty && currentWinnerParty && normParty(prevWinnerParty) !== normParty(currentWinnerParty)) {
+          isSwing = true;
+        }
+      }
+      const swingStatus = isSwing ? 'swing' : (hasHistory ? 'retained' : 'unknown');
+
       return {
         ...feature,
         properties: {
@@ -45,6 +82,9 @@ export function enrichGeoJSON(
           TURNOUT: demo?.turnout2023 ?? 0,
           URBAN_PCT: demo?.urbanPercent ?? 0,
           TOTAL_VOTERS: demo?.totalVoters ?? 0,
+          BATTLEGROUND: battleground,
+          IS_SWING: swingStatus,
+          ...historyProps,
         },
       };
     }),
@@ -166,6 +206,43 @@ export function enrichGeoJSONForState(
       const demo =
         resolvedAcNo != null ? getDemographicsForState(stateCode, resolvedAcNo) : undefined;
 
+      const history = resolvedAcNo != null ? getHistoryForState(stateCode, resolvedAcNo) : [];
+      const historyProps: Record<string, string> = {};
+      for (const h of history) {
+        historyProps[`WINNER_PARTY_${h.year}`] = h.party;
+        historyProps[`WINNER_NAME_${h.year}`] = h.winner;
+      }
+      const currentYear = c?.electionYear ?? 2024;
+      historyProps[`WINNER_PARTY_${currentYear}`] = c?.winnerParty ?? 'IND';
+      historyProps[`WINNER_NAME_${currentYear}`] = c?.winnerName ?? '';
+
+      // Determine Battleground status
+      const margin = c?.margin ?? 0;
+      let battleground = 'safe';
+      if (margin > 0 && margin < 2000) {
+        battleground = 'critical';
+      } else if (margin >= 2000 && margin < 5000) {
+        battleground = 'competitive';
+      }
+
+      // Determine Swing status
+      let isSwing = false;
+      const hasHistory = history.length > 0;
+      if (hasHistory) {
+        const sortedHistory = [...history].sort((a, b) => b.year - a.year);
+        const prevWinnerParty = sortedHistory[0]?.party;
+        const currentWinnerParty = c?.winnerParty;
+        const normParty = (p: string) => {
+          const up = p.toUpperCase();
+          if (up === 'TRS' || up === 'BRS') return 'BRS';
+          return up;
+        };
+        if (prevWinnerParty && currentWinnerParty && normParty(prevWinnerParty) !== normParty(currentWinnerParty)) {
+          isSwing = true;
+        }
+      }
+      const swingStatus = isSwing ? 'swing' : (hasHistory ? 'retained' : 'unknown');
+
       return {
         ...feature,
         properties: {
@@ -183,6 +260,54 @@ export function enrichGeoJSONForState(
           TURNOUT: demo?.turnout2023 ?? 0,
           URBAN_PCT: demo?.urbanPercent ?? 0,
           TOTAL_VOTERS: demo?.totalVoters ?? 0,
+          BATTLEGROUND: battleground,
+          IS_SWING: swingStatus,
+          ...historyProps,
+        },
+      };
+    }),
+  };
+}
+
+/**
+ * Enrich the national India states GeoJSON.
+ * Maps state name (ST_NM) to its StateInfo registry and colors by ruling party.
+ */
+export function enrichIndiaGeoJSON(
+  geojson: GeoJSON.FeatureCollection,
+): GeoJSON.FeatureCollection {
+  // Normalize and map state names to state codes
+  const nameToCode: Record<string, string> = {};
+  for (const [code, info] of Object.entries(STATES)) {
+    const key = info.name.toLowerCase().replace(/[^a-z]/g, '');
+    nameToCode[key] = code;
+  }
+  // Custom manual mappings for variant spellings
+  nameToCode['jammuandkashmir'] = 'JK';
+  nameToCode['puducherry'] = 'PY';
+  nameToCode['delhi'] = 'DL';
+  nameToCode['nctofdelhi'] = 'DL';
+  nameToCode['odisha'] = 'OD';
+  nameToCode['orissa'] = 'OD';
+  nameToCode['uttaranchal'] = 'UK';
+  nameToCode['uttarakhand'] = 'UK';
+
+  return {
+    ...geojson,
+    features: geojson.features.map((feature) => {
+      const name = feature.properties?.ST_NM ?? '';
+      const normName = name.toLowerCase().replace(/[^a-z]/g, '');
+      const code = nameToCode[normName] ?? '';
+      const stateInfo = STATES[code];
+
+      return {
+        ...feature,
+        properties: {
+          ...feature.properties,
+          STATE_CODE: code,
+          STATE_NAME: stateInfo?.name ?? name,
+          WINNER_PARTY: stateInfo?.rulingParty ?? 'IND', // Color by ruling party of state
+          SEATS: stateInfo?.assemblySeats ?? 0,
         },
       };
     }),

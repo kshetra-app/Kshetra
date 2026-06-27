@@ -538,6 +538,8 @@ export interface MPProfile {
   maritalStatus?: 'Single' | 'Married' | 'Widowed' | 'Divorced';
   photoUrl?: string;
   sourceUrl?: string;
+  isMinister?: boolean;
+  ministerialPortfolio?: string;
 }
 
 export const LOK_SABHA_MPs: MPProfile[] = [
@@ -578,6 +580,68 @@ export function getMPsByHouse(house: HouseType): MPProfile[] {
 export function getMPsByParty(party: string): MPProfile[] {
   return ALL_MPs.filter(mp => mp.party === party);
 }
+
+// ── Backward-compatible aliases (used by apps/mobile/lib/data.ts) ───────────
+
+/** @alias ALL_MPs */
+export const ALL_MP_PROFILES = ALL_MPs;
+
+/** Returns all Lok Sabha MPs */
+export function getLokSabhaMPs(): MPProfile[] {
+  return LOK_SABHA_MPs;
+}
+
+/** Returns all Rajya Sabha MPs */
+export function getRajyaSabhaMPs(): MPProfile[] {
+  return RAJYA_SABHA_MPs;
+}
+
+/** Returns MPs who are ministers (isMinister flag or ministerialPortfolio set) */
+export function getMinisters(): MPProfile[] {
+  return ALL_MPs.filter(mp => mp.isMinister || mp.ministerialPortfolio);
+}
+
+/** Returns party seat counts for a specific state */
+export function getPartyStrengthForState(stateCode: string): Record<string, number> {
+  const stateMPs = getMPsByState(stateCode);
+  return stateMPs.reduce((acc, mp) => {
+    acc[mp.party] = (acc[mp.party] || 0) + 1;
+    return acc;
+  }, {} as Record<string, number>);
+}
+
+/** Returns alliance-level totals (NDA, INDIA, Others) */
+export function getAllianceStrength(): Record<string, number> {
+  const NDA  = ['BJP', 'JDU', 'TDP', 'SHS', 'SAD', 'LJP', 'RLTP', 'AJSU', 'AGP', 'NDPP', 'NPP', 'SKM', 'NPF'];
+  const INDIA = ['INC', 'SP', 'AITC', 'DMK', 'CPIM', 'CPI', 'RJD', 'JKNC', 'NCPSP', 'SSUBT', 'AAP', 'JMM', 'BJD', 'VCK', 'RSP', 'IUML', 'AIUDF', 'KEC', 'MDMK', 'CPI', 'FB'];
+  const result: Record<string, number> = { NDA: 0, INDIA: 0, Others: 0 };
+  for (const mp of LOK_SABHA_MPs) {
+    if (NDA.includes(mp.party)) result['NDA']++;
+    else if (INDIA.includes(mp.party)) result['INDIA']++;
+    else result['Others']++;
+  }
+  return result;
+}
+
+/** National party seat summary across LS */
+export const NATIONAL_PARTY_STRENGTH: Record<string, number> = LOK_SABHA_MPs.reduce((acc, mp) => {
+  acc[mp.party] = (acc[mp.party] || 0) + 1;
+  return acc;
+}, {} as Record<string, number>);
+
+/** Per-state MP summary */
+export const STATE_PARLIAMENTARY_SUMMARIES: Record<string, { ls: number; rs: number; total: number }> = (() => {
+  const result: Record<string, { ls: number; rs: number; total: number }> = {};
+  for (const mp of ALL_MPs) {
+    const sc = mp.stateCode;
+    if (!sc) continue;
+    if (!result[sc]) result[sc] = { ls: 0, rs: 0, total: 0 };
+    if (mp.house === 'lok_sabha') result[sc].ls++;
+    else result[sc].rs++;
+    result[sc].total++;
+  }
+  return result;
+})();
 `;
 
   fs.writeFileSync(SEED_FILE, content, 'utf8');
