@@ -477,6 +477,44 @@ function FullMapScreen() {
     };
   }, [selected, currentZoom, stateCode, activeGeoJSON]);
 
+  /** Compute the centroid [lng, lat] of a constituency polygon from activeGeoJSON. */
+  const getConstituencyCentroid = useCallback(
+    (acNo: number): [number, number] | null => {
+      if (!activeGeoJSON) return null;
+      const feature = activeGeoJSON.features.find(
+        (f: any) => Number(f.properties?.AC_NO) === acNo,
+      );
+      if (!feature?.geometry) return null;
+      let sumLng = 0;
+      let sumLat = 0;
+      let count = 0;
+      const walk = (coords: any) => {
+        if (Array.isArray(coords[0])) coords.forEach(walk);
+        else if (typeof coords[0] === 'number') {
+          sumLng += coords[0];
+          sumLat += coords[1];
+          count++;
+        }
+      };
+      walk(feature.geometry.coordinates);
+      return count > 0 ? [sumLng / count, sumLat / count] : null;
+    },
+    [activeGeoJSON],
+  );
+
+  /** Fly the camera down to booth-reveal zoom, centred on the selected AC. */
+  const flyToBooths = useCallback(() => {
+    if (!selected) return;
+    tapLight();
+    const center = getConstituencyCentroid(selected.acNo);
+    cameraRef.current?.setCamera({
+      centerCoordinate: center ?? undefined,
+      zoomLevel: BOOTH_ZOOM_THRESHOLD + 0.6,
+      pitch: is3DMode ? 55 : 0,
+      animationDuration: 900,
+    });
+  }, [selected, getConstituencyCentroid, is3DMode, BOOTH_ZOOM_THRESHOLD]);
+
   const handleMapPress = useCallback(
     (event: any) => {
       // Extract tap coordinates from MapLibre / @rnmapbox event formats
@@ -822,7 +860,9 @@ function FullMapScreen() {
                     textHaloWidth: 1.5,
                     textAnchor: 'center',
                     ...(is3DMode ? {
-                      symbolZElevate: true,
+                      // NOTE: `symbolZElevate` is a Mapbox-GL-only property and
+                      // is unsupported by MapLibre — including it broke the
+                      // layer/style parse and made 3D mode render a blank map.
                       textIgnorePlacement: true,
                       textAllowOverlap: true,
                     } : {
@@ -982,6 +1022,37 @@ function FullMapScreen() {
           </Text>
           <ChiefMinisterBadge stateCode={stateCode} compact />
         </View>
+      )}
+
+      {/* Booth-zoom discoverability hint — tells users to zoom in (or taps
+          the button to auto-fly) to reveal the polling-booth drill-down. */}
+      {!broadcastMode && selected && !selectedBooth && currentZoom < BOOTH_ZOOM_THRESHOLD && (
+        <Pressable
+          onPress={flyToBooths}
+          style={{
+            position: 'absolute',
+            top: mapTopOffset + (stateCode === 'IN' ? 70 : 130),
+            left: 16,
+            right: 16,
+            flexDirection: 'row',
+            alignItems: 'center',
+            backgroundColor: 'rgba(15,23,42,0.92)',
+            borderRadius: 14,
+            borderWidth: 1,
+            borderColor: '#4F8EF750',
+            paddingVertical: 10,
+            paddingHorizontal: 14,
+          }}
+        >
+          <Ionicons name="layers-outline" size={18} color="#4F8EF7" />
+          <Text style={{ flex: 1, color: '#E2E8F0', fontSize: 13, fontWeight: '600', marginLeft: 10 }}>
+            Zoom in to reveal polling booths
+          </Text>
+          <View style={{ flexDirection: 'row', alignItems: 'center', backgroundColor: '#4F8EF7', borderRadius: 9, paddingVertical: 5, paddingHorizontal: 10 }}>
+            <Ionicons name="scan-outline" size={13} color="#FFFFFF" />
+            <Text style={{ color: '#FFFFFF', fontSize: 12, fontWeight: '700', marginLeft: 5 }}>Show</Text>
+          </View>
+        </Pressable>
       )}
 
       {/* Floating Polling Booth Callout (Map-Based Hierarchy Zoom) */}

@@ -81,31 +81,38 @@ export default function TabLayout() {
         }}
       />
       <Tabs.Screen
-        name="dashboard"
+        name="news"
         options={{
-          title: t('tabs.dashboard'),
+          title: t('tabs.news', { defaultValue: 'News' }),
           tabBarIcon: ({ color, size }) => (
-            <TabIcon name="pulse" color={color} size={size} />
+            <TabIcon name="newspaper" color={color} size={size} />
+          ),
+        }}
+      />
+      <Tabs.Screen
+        name="shorts"
+        options={{
+          title: t('tabs.shorts', { defaultValue: 'Shorts' }),
+          tabBarIcon: ({ color, size }) => (
+            <TabIcon name="play-circle" color={color} size={size} />
+          ),
+        }}
+      />
+      <Tabs.Screen
+        name="more"
+        options={{
+          title: t('tabs.more', { defaultValue: 'More' }),
+          tabBarIcon: ({ color, size }) => (
+            <TabIcon name="grid" color={color} size={size} />
           ),
           tabBarBadge: unreadCount > 0 ? unreadCount : undefined,
           tabBarBadgeStyle: { backgroundColor: '#EF4444', fontSize: 10, fontWeight: '700' },
         }}
       />
-      <Tabs.Screen
-        name="intelligence"
-        options={{
-          href: null, // hidden from tab bar, accessible via navigation
-        }}
-      />
-      <Tabs.Screen
-        name="profile"
-        options={{
-          title: t('tabs.profile'),
-          tabBarIcon: ({ color, size }) => (
-            <TabIcon name="person" color={color} size={size} />
-          ),
-        }}
-      />
+      {/* Hidden from the bar but still reachable via the More hub / navigation */}
+      <Tabs.Screen name="dashboard" options={{ href: null }} />
+      <Tabs.Screen name="intelligence" options={{ href: null }} />
+      <Tabs.Screen name="profile" options={{ href: null }} />
     </Tabs>
   );
 }

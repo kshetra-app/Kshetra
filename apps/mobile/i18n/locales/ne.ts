@@ -31,6 +31,9 @@ const ne: PartialTranslationKeys = {
 
   // ── Tab Bar ─────────────────────────────────────────────────
   tabs: {
+    news: 'समाचार',
+    shorts: 'सर्ट्स',
+    more: 'थप',
     map: 'नक्सा',
     explore: 'अन्वेषण',
     feed: 'फिड',

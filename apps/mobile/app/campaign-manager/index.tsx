@@ -7,11 +7,13 @@ import { useCampaignStore } from '../../stores/campaign';
 import CampaignDashboardCard from '../../components/CampaignDashboardCard';
 import AdPerformanceCard from '../../components/AdPerformanceCard';
 import RevenueCard from '../../components/RevenueCard';
+import CampaignOutreachPanel from '../../components/CampaignOutreachPanel';
 
-type Tab = 'campaigns' | 'ads' | 'revenue' | 'booths';
+type Tab = 'campaigns' | 'outreach' | 'ads' | 'revenue' | 'booths';
 
 const TABS: { key: Tab; label: string; icon: string }[] = [
   { key: 'campaigns', label: 'Campaigns', icon: 'flag' },
+  { key: 'outreach', label: 'Outreach', icon: 'send' },
   { key: 'ads', label: 'Ads', icon: 'megaphone' },
   { key: 'revenue', label: 'Revenue', icon: 'cash' },
   { key: 'booths', label: 'Booths', icon: 'location' },
@@ -94,6 +96,8 @@ export default function CampaignManagerScreen() {
             )}
           </>
         )}
+
+        {activeTab === 'outreach' && <CampaignOutreachPanel />}
 
         {activeTab === 'ads' && (
           <>

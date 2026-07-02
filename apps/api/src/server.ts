@@ -16,6 +16,8 @@ import { campaignRoutes } from './routes/campaign';
 import { civicRoutes } from './routes/civic';
 import { broadcastRoutes } from './routes/broadcast';
 import { geoRoutes } from './routes/geo';
+import { newsRoutes } from './routes/news';
+import { startNewsScheduler } from './services/news/newsService';
 
 const envToLogger: Record<string, object | boolean> = {
   development: {
@@ -118,6 +120,7 @@ export async function buildApp() {
   await app.register(civicRoutes);
   await app.register(broadcastRoutes);
   await app.register(geoRoutes);
+  await app.register(newsRoutes);
 
   return app;
 }
@@ -130,6 +133,8 @@ export async function start() {
   try {
     await app.listen({ port, host });
     app.log.info(`KSHETRA API running on http://${host}:${port}`);
+    // Prime the news cache and refresh it hourly.
+    startNewsScheduler(app.log);
   } catch (err) {
     app.log.error(err);
     process.exit(1);

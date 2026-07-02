@@ -73,6 +73,7 @@
 | Sprint 49: Map Label Deduplication, State Map Color Fixes & Unified Dashboard | ✅ Complete | 2026-06-21 | 2026-06-21 |
 | Sprint 51: Administrative Hierarchy Framework (data + types + engine + scrapers) | ✅ Complete | 2026-06-22 | 2026-06-22 |
 | Sprint 52: Authoritative Seed Rebuild (TCPD), Historical Backfill, TN Geo Clean & Hierarchy UI | ✅ Complete | 2026-06-22 | 2026-06-22 |
+| Sprint 53: News Aggregator (RSS backend), In-App Reader & Campaign Outreach Panel | ✅ Complete | 2026-07-02 | 2026-07-02 |
 
 ---
 
@@ -4476,3 +4477,90 @@ projections — these were preserved untouched.
 | `apps/mobile/lib/hierarchyData.ts` | New | Hierarchy query layer |
 | `apps/mobile/app/hierarchy/[id].tsx` | New | Hierarchy drill-down screen |
 | `apps/mobile/app/constituency/[id].tsx` | Modified | Hierarchy entry point |
+
+---
+
+## Sprint 53: News Aggregator, In-App Reader & Campaign Outreach
+
+**Date**: 2026-07-02
+**Goal**: Ship a world-standard news experience (News / Shorts / More tabs), keep
+all content **inside the app** (no external browser hops), give the Campaign
+Manager a real **voter-outreach admin panel**, and stand up an **hourly RSS
+aggregation backend** to power the feed — all localized across 13 languages.
+
+### 1. News feed backend — hourly RSS aggregator (Fastify)
+- RSS-first model (the approach used by Google News / SmartNews / Inshorts):
+  pull from reputable outlets' **official RSS feeds**, store only headline,
+  summary, thumbnail, publisher and a canonical link back — never re-host bodies.
+- New `apps/api/src/services/news/sources.ts` — curated `FeedSource` registry
+  (The Hindu incl. TS/AP/TN/KA/KL editions, Indian Express, NDTV, Times of India,
+  Aaj Tak, News18 Hindi, Hindu Tamil) tagged by language / category / scope / state.
+- New `apps/api/src/services/news/rssParser.ts` — **dependency-free** RSS 2.0 +
+  Atom parser (title, link, summary, date, media thumbnail) with fetch timeout,
+  entity decoding, HTML stripping and fail-soft on malformed feeds.
+- New `apps/api/src/services/news/newsService.ts` — parallel scrape
+  (`Promise.allSettled`), dedupe by canonical link, sort by recency, cache, and an
+  **hourly `setInterval` scheduler** primed on boot + YouTube-link detection
+  (auto-tags items as `video`).
+- New `apps/api/src/routes/news.ts` — `GET /api/v1/news/feed`
+  (`lang/scope/state/category/limit` filters, 5-min CDN cache header) and
+  `POST /api/v1/news/refresh` (manual re-scrape). Registered in `server.ts`;
+  scheduler started in `start()`.
+
+### 2. In-app reader — nothing opens externally
+- New `apps/mobile/app/reader.tsx` — a bottom-sheet **modal WebView reader**.
+  Articles load in-page; **videos** play via the YouTube **IFrame Player API HTML**
+  with a neutral `baseUrl` (same proven approach as `ShortsPlayerModal`) to avoid
+  embed Error 152. Header with back/share, article load-progress bar, and a
+  publisher citation footer. Registered as a modal route in `app/_layout.tsx`.
+- `apps/mobile/components/NewsCard.tsx` — dropped `Linking.openURL`; every tap now
+  routes to `/reader`. Labels read "Read/Watch · domain".
+
+### 3. Mobile wiring + graceful fallback
+- `apps/mobile/stores/news.ts` now fetches `${API_BASE_URL}/api/v1/news/feed` and
+  **falls back to the bundled seed** feed when the API is unreachable or returns
+  zero items (offline / API not running in dev) — the feed is never empty.
+
+### 4. Campaign Manager — Outreach admin panel (UI complete; real APIs deferred)
+- New **Outreach** tab in `apps/mobile/app/campaign-manager/index.tsx` backed by
+  `components/CampaignOutreachPanel.tsx`:
+  - **Compose**: WhatsApp / SMS / Voice channel picker, audience segment selector,
+    template picker with `{variable}` insertion chips, message editor with live
+    SMS-segment + credit estimator, and send-now / scheduled delivery.
+  - **History**: broadcasts with a live delivery lifecycle (queued → sending →
+    sent) and sent/delivered/read/failed progress bars.
+  - **Templates**: create / delete reusable per-channel templates.
+- Provider seam: `lib/outreachTypes.ts` (`OutreachProvider` interface),
+  `lib/outreachProvider.ts` (`MockOutreachProvider` — **no real messages sent**),
+  `data/outreachSeed.ts`, `stores/outreach.ts` (persisted, simulated delivery).
+  Clear "Simulation mode" + DLT/consent notices. Phase-2 = implement
+  Msg91/Twilio/Exotel against the same interface with **zero UI change**.
+
+### 5. Localization
+- `news / shorts / more` tab labels added to **all 13 locales**
+  (`en, hi, te, ta, kn, ml, mr, bn, gu, pa, or, as, ne`) in native scripts.
+
+### Verification
+- `tsc --noEmit` (mobile): **EXIT 0**.
+- `tsc --noEmit` (api): **EXIT 0**.
+
+### Files Changed
+| File | Change | Description |
+|---|---|---|
+| `apps/api/src/services/news/sources.ts` | New | Curated RSS source registry |
+| `apps/api/src/services/news/rssParser.ts` | New | Dependency-free RSS/Atom parser |
+| `apps/api/src/services/news/newsService.ts` | New | Aggregator + cache + hourly scheduler |
+| `apps/api/src/routes/news.ts` | New | `GET /news/feed`, `POST /news/refresh` |
+| `apps/api/src/server.ts` | Modified | Register news routes + start scheduler |
+| `apps/mobile/app/reader.tsx` | New | In-app article/video WebView reader (modal) |
+| `apps/mobile/app/_layout.tsx` | Modified | Register `reader` modal route |
+| `apps/mobile/components/NewsCard.tsx` | New | Feed card → in-app reader (no `Linking`) |
+| `apps/mobile/stores/news.ts` | New/Wired | Live feed fetch + seed fallback |
+| `apps/mobile/lib/newsTypes.ts`, `data/newsSeed.ts` | New | News item types + seed feed |
+| `apps/mobile/app/(tabs)/{news,shorts,more}.tsx` | New | News / Shorts / More tab screens |
+| `apps/mobile/app/(tabs)/{_layout,index,feed,dashboard}.tsx` | Modified | Tab restructure for News feature |
+| `apps/mobile/components/CampaignOutreachPanel.tsx` | New | Outreach compose/history/templates UI |
+| `apps/mobile/app/campaign-manager/index.tsx` | Modified | Add Outreach tab |
+| `apps/mobile/lib/outreachTypes.ts`, `lib/outreachProvider.ts` | New | Provider adapter seam + mock |
+| `apps/mobile/data/outreachSeed.ts`, `stores/outreach.ts` | New | Seed segments/templates + store |
+| `apps/mobile/i18n/locales/*.ts` (13 files) | Modified | `news/shorts/more` translations |

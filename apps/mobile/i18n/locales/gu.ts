@@ -37,6 +37,9 @@ const gu: PartialTranslationKeys = {
 
   // ── Tab Bar ─────────────────────────────────────────────────
   tabs: {
+    news: 'સમાચાર',
+    shorts: 'શોર્ટ્સ',
+    more: 'વધુ',
     map: 'નકશો',
     explore: 'શોધો',
     feed: 'ફીડ',

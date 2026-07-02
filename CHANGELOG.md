@@ -7,6 +7,35 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added — News Aggregator, In-App Reader & Campaign Outreach (2026-07-02, Sprint 53)
+- **Hourly RSS news backend (Fastify)** — new `apps/api/src/services/news/`
+  (`sources.ts`, `rssParser.ts`, `newsService.ts`) + `routes/news.ts`. Aggregates
+  reputable outlets' **official RSS feeds** (The Hindu incl. TS/AP/TN/KA/KL, Indian
+  Express, NDTV, Times of India, Aaj Tak, News18 Hindi, Hindu Tamil), storing only
+  headline/summary/thumbnail/publisher + a canonical link (never re-hosting bodies —
+  the Google News / Inshorts model). Dependency-free RSS 2.0 + Atom parser; parallel
+  scrape with `Promise.allSettled`, dedupe, recency sort, in-memory cache and an
+  **hourly `setInterval` scheduler** primed on boot. YouTube links auto-tagged as video.
+  - `GET /api/v1/news/feed` (filters: `lang/scope/state/category/limit`, 5-min cache) +
+    `POST /api/v1/news/refresh`. Registered in `server.ts`; scheduler started in `start()`.
+- **In-app reader — no external browser hops** — new `apps/mobile/app/reader.tsx`,
+  a modal `WebView` that opens articles in-page and plays **videos** via the YouTube
+  IFrame Player API HTML (neutral `baseUrl`, avoiding embed Error 152). `NewsCard`
+  dropped `Linking.openURL`; taps now route to `/reader`. Registered as a modal route.
+- **Mobile feed wired to the live API** — `stores/news.ts` fetches
+  `${API_BASE_URL}/api/v1/news/feed` and **falls back to the bundled seed** when the
+  API is unreachable or empty (offline / dev), so the feed is never blank.
+- **Campaign Manager — Outreach admin panel** — new `Outreach` tab
+  (`components/CampaignOutreachPanel.tsx`): compose over **WhatsApp / SMS / Voice**
+  with audience segments, `{variable}` templates, SMS-segment/credit estimator and
+  send-now/scheduled delivery; broadcast **History** with live delivery progress
+  (sent/delivered/read/failed); template CRUD. Backed by a provider-adapter seam
+  (`OutreachProvider` + `MockOutreachProvider` — **simulation only, no real messages**);
+  real Msg91/Twilio/Exotel wiring is a drop-in for Phase 2. Persisted store + seed data.
+- **Localization** — `news / shorts / more` tab labels added to **all 13 locales**
+  (`en, hi, te, ta, kn, ml, mr, bn, gu, pa, or, as, ne`) in native scripts.
+- **Verified**: `tsc --noEmit` clean for both `apps/mobile` and `apps/api`.
+
 ### Go-Live — Supabase backend stood up + Fastify API deployable (2026-06-22, P1 Steps 1 & 2)
 - **All 24 migrations now apply cleanly** (verified via local `supabase start` /
   `db reset`). Fixed latent defects that had never been integration-tested:

@@ -15,7 +15,6 @@ import IssueCard from '../../components/IssueCard';
 import ReportIssueSheet from '../../components/ReportIssueSheet';
 import ExportSheet from '../../components/ExportSheet';
 import SentimentBar from '../../components/SentimentBar';
-import HeadlineCard from '../../components/HeadlineCard';
 import { ISSUE_CATEGORY_CONFIG } from '../../lib/civicTypes';
 import AIDashboardSummary from '../../components/AIDashboardSummary';
 import { useResponsive } from '../../lib/responsive';
@@ -64,13 +63,12 @@ class DashboardErrorBoundary extends Component<
   }
 }
 
-type DashboardTab = 'issues' | 'sentiment' | 'headlines' | 'promises';
+type DashboardTab = 'issues' | 'sentiment' | 'promises';
 
 const TAB_KEYS: { key: DashboardTab; tKey: string; icon: string }[] = [
   { key: 'issues', tKey: 'dashboard.tabs.issues', icon: 'alert-circle' },
   { key: 'promises', tKey: 'dashboard.tabs.promises', icon: 'ribbon' },
   { key: 'sentiment', tKey: 'dashboard.tabs.sentiment', icon: 'pulse' },
-  { key: 'headlines', tKey: 'dashboard.tabs.headlines', icon: 'newspaper' },
 ];
 
 const STATUS_FILTER_KEYS: { key: IssueStatus | 'all'; tKey: string }[] = [
@@ -270,20 +268,6 @@ function DashboardContent() {
 
       {/* ── Content ── */}
       <ScrollView style={styles.scroll} showsVerticalScrollIndicator={false}>
-        {/* Delimitation Hub Entry Point */}
-        <Pressable style={styles.delimBanner} onPress={() => router.push('/delimitation' as any)}>
-          <View style={styles.delimBannerLeft}>
-            <View style={styles.delimIconWrap}>
-              <Ionicons name="map" size={18} color="#F59E0B" />
-            </View>
-            <View>
-              <Text style={styles.delimBannerTitle}>Delimitation Tracker</Text>
-              <Text style={styles.delimBannerSub}>How will boundary changes affect you?</Text>
-            </View>
-          </View>
-          <Ionicons name="chevron-forward" size={16} color="#374151" />
-        </Pressable>
-
         {/* Election Analytics Entry Point */}
         <Pressable style={[styles.delimBanner, { borderColor: '#4F8EF730' }]} onPress={() => router.push('/analytics' as any)}>
           <View style={styles.delimBannerLeft}>
@@ -301,9 +285,6 @@ function DashboardContent() {
         {/* Quick Nav: Gold Standard Pillars */}
         <ScrollView horizontal showsHorizontalScrollIndicator={false} style={{ marginHorizontal: 12, marginBottom: 8 }} contentContainerStyle={{ gap: 8 }}>
           {[
-            { label: 'Newsroom', icon: 'newspaper', color: '#3B82F6', route: '/journalist' },
-            { label: 'Politicians', icon: 'people', color: '#8B5CF6', route: '/politician-portal' },
-            { label: 'Campaigns', icon: 'flag', color: '#EF4444', route: '/campaign-manager' },
             { label: 'Civic Metrics', icon: 'bar-chart', color: '#10B981', route: '/civic-metrics' },
             { label: 'Live Election', icon: 'radio', color: '#F59E0B', route: '/live-election' },
             { label: 'Investor Demo', icon: 'rocket', color: '#EC4899', route: '/investor-demo' },
@@ -440,21 +421,6 @@ function DashboardContent() {
               constituencyName={sentimentSorted[0]?.constituencyName}
               issues={issues.map((i) => `${i.title} (${i.category}, ${i.severity})`)}
             />
-          </View>
-        )}
-
-        {activeTab === 'headlines' && (
-          <View style={styles.tabContent}>
-            {headlines.length === 0 ? (
-              <View style={styles.emptyState}>
-                <Ionicons name="newspaper-outline" size={48} color="#1F2937" />
-                <Text style={styles.emptyTitle}>No headlines at this scope</Text>
-              </View>
-            ) : (
-              headlines.map((hl) => (
-                <HeadlineCard key={hl.id} headline={hl} />
-              ))
-            )}
           </View>
         )}
 

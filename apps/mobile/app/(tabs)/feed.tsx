@@ -21,7 +21,6 @@ import PollCard from '../../components/PollCard';
 import { useResponsive } from '../../lib/responsive';
 import ComposeSheet from '../../components/ComposeSheet';
 import TrendingHashtags from '../../components/TrendingHashtags';
-import PoliticalShortsCarousel from '../../components/PoliticalShortsCarousel';
 import type { Post, PostType, PostMedia, FeedScope } from '../../lib/feedTypes';
 import { useTranslation } from 'react-i18next';
 import { STATES } from '@kshetra/shared';
@@ -273,6 +272,7 @@ export default function FeedScreen() {
         data={posts}
         keyExtractor={(item) => item.id}
         renderItem={renderPost}
+        style={styles.list}
         contentContainerStyle={styles.listContent}
         showsVerticalScrollIndicator={false}
         refreshControl={
@@ -285,13 +285,10 @@ export default function FeedScreen() {
         }
         ListHeaderComponent={
           feedFilter === 'all' ? (
-            <>
-              <PoliticalShortsCarousel />
-              <TrendingHashtags
-                posts={posts}
-                onTagPress={(tag) => {}}
-              />
-            </>
+            <TrendingHashtags
+              posts={posts}
+              onTagPress={(tag) => {}}
+            />
           ) : null
         }
         ListEmptyComponent={
@@ -360,13 +357,17 @@ const styles = StyleSheet.create({
     elevation: 3,
   },
   scopeScroll: {
+    // Fixed height + flexGrow:0 so this row never grows/shrinks when the
+    // post list below it changes size (e.g. a single-result filter).
+    flexGrow: 0,
     flexShrink: 0,
+    height: 46,
     marginBottom: 6,
     zIndex: 5,
   },
   scopeScrollContent: {
+    alignItems: 'center',
     paddingHorizontal: 16,
-    paddingVertical: 6,
     gap: 6,
   },
   scopeChip: {
@@ -393,13 +394,18 @@ const styles = StyleSheet.create({
     color: '#FFFFFF',
   },
   filterScroll: {
+    // Fixed height + flexGrow:0 keeps the filter row visually anchored
+    // regardless of how many posts the selected filter returns.
+    flexGrow: 0,
     flexShrink: 0,
+    height: 49,
     marginBottom: 4,
     borderBottomWidth: 0.5,
     borderBottomColor: '#1F2937',
     zIndex: 5,
   },
   filterContent: {
+    alignItems: 'center',
     paddingHorizontal: 16,
     paddingVertical: 8,
     gap: 6,
@@ -424,7 +430,13 @@ const styles = StyleSheet.create({
   filterLabelActive: {
     color: '#FFFFFF',
   },
+  list: {
+    // Always fill the remaining space so a short result set (e.g. a
+    // single-post filter) can't reflow the chip rows above it.
+    flex: 1,
+  },
   listContent: {
+    flexGrow: 1,
     paddingTop: 4,
     paddingBottom: 100,
   },

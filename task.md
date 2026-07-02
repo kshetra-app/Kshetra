@@ -67,3 +67,45 @@
   (Telangana ACs 1–5, Andhra Pradesh ACs 1–3).
 - **Pending (production ingestion):** run the scraper pipeline (`run_hierarchy_ingestion.ps1`)
   to populate ALL constituencies from live LGD/CEO/SEC sources; wire Supabase persistence.
+
+---
+
+# Sprint 53 — News Aggregator, In-App Reader & Campaign Outreach (2026-07-02)
+
+## Component 1: News feed backend — hourly RSS aggregator ✅
+- `[x]` `apps/api/src/services/news/sources.ts` — curated RSS `FeedSource` registry
+- `[x]` `apps/api/src/services/news/rssParser.ts` — dependency-free RSS 2.0 + Atom parser
+- `[x]` `apps/api/src/services/news/newsService.ts` — scrape + dedupe + cache + hourly scheduler
+- `[x]` `apps/api/src/routes/news.ts` — `GET /api/v1/news/feed`, `POST /api/v1/news/refresh`
+- `[x]` Register routes + start scheduler in `apps/api/src/server.ts`
+
+## Component 2: In-app reader (no external browser) ✅
+- `[x]` `apps/mobile/app/reader.tsx` — modal WebView (articles + YouTube IFrame video)
+- `[x]` Register `reader` modal route in `apps/mobile/app/_layout.tsx`
+- `[x]` `apps/mobile/components/NewsCard.tsx` — route to `/reader` (removed `Linking.openURL`)
+
+## Component 3: Mobile feed wiring ✅
+- `[x]` `apps/mobile/stores/news.ts` — fetch live `/news/feed`, fall back to seed when empty/offline
+
+## Component 4: Campaign Manager — Outreach admin panel ✅
+- `[x]` `apps/mobile/components/CampaignOutreachPanel.tsx` — Compose / History / Templates
+  - `[x]` WhatsApp / SMS / Voice channels, audience segments, `{variable}` templates
+  - `[x]` SMS-segment + credit estimator; send-now / scheduled delivery
+  - `[x]` History with live delivery progress (sent/delivered/read/failed)
+  - `[x]` Template create / delete
+- `[x]` `lib/outreachTypes.ts` + `lib/outreachProvider.ts` (MockOutreachProvider) — provider seam
+- `[x]` `data/outreachSeed.ts` + `stores/outreach.ts` (persisted, simulated lifecycle)
+- `[x]` Add `Outreach` tab to `apps/mobile/app/campaign-manager/index.tsx`
+
+## Component 5: Localization ✅
+- `[x]` `news / shorts / more` tab labels in all 13 locales (`en, hi, te, ta, kn, ml, mr, bn, gu, pa, or, as, ne`)
+
+## Verification ✅
+- `[x]` `tsc --noEmit` EXIT 0 (mobile)
+- `[x]` `tsc --noEmit` EXIT 0 (api)
+
+### Deferred (Phase 2 — reserved as requested)
+- **Real outreach delivery:** implement Msg91/Twilio/Exotel against `OutreachProvider`
+  (credentials, DLT-approved templates, consent/opt-in ledger) — zero UI change.
+- **Feed scale-out:** persist scraped items + per-user personalization/ranking; add
+  more regional-language sources; optional CDN caching of the feed JSON.

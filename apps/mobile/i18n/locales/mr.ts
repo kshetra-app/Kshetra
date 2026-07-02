@@ -35,6 +35,9 @@ const mr: PartialTranslationKeys = {
   },
 
   tabs: {
+    news: 'बातम्या',
+    shorts: 'शॉर्ट्स',
+    more: 'अधिक',
     map: 'नकाशा',
     explore: 'शोधा',
     feed: 'फीड',

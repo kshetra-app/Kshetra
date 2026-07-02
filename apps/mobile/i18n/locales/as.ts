@@ -31,6 +31,9 @@ const as: PartialTranslationKeys = {
 
   // ── Tab Bar ─────────────────────────────────────────────────
   tabs: {
+    news: 'বাতৰি',
+    shorts: 'শ্বৰ্টছ',
+    more: 'অধিক',
     map: 'মানচিত্ৰ',
     explore: 'অন্বেষণ কৰক',
     feed: 'ফিড',

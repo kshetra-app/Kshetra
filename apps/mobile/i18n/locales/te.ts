@@ -38,6 +38,9 @@ const te: PartialTranslationKeys = {
 
   // ── Tab Bar ─────────────────────────────────────────────────
   tabs: {
+    news: 'వార్తలు',
+    shorts: 'షార్ట్స్',
+    more: 'మరిన్ని',
     map: 'మ్యాప్',
     explore: 'అన్వేషించు',
     feed: 'ఫీడ్',

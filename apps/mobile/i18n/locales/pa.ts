@@ -37,6 +37,9 @@ const pa: PartialTranslationKeys = {
 
   // ── Tab Bar ─────────────────────────────────────────────────
   tabs: {
+    news: 'ਖ਼ਬਰਾਂ',
+    shorts: 'ਸ਼ੌਰਟਸ',
+    more: 'ਹੋਰ',
     map: 'ਨਕਸ਼ਾ',
     explore: 'ਖੋਜੋ',
     feed: 'ਫੀਡ',

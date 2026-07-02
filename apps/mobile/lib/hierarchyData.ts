@@ -30,6 +30,7 @@ import {
   ANDHRA_PRADESH_MANDAL_OVERLAPS,
 } from '../../../data/seed/andhra-pradesh-hierarchy';
 import { getUnifiedConstituenciesForState } from './stateDataAdapter';
+import { STATES } from '@kshetra/shared';
 
 export type {
   StateHierarchyConfig,
@@ -85,75 +86,125 @@ const bundle = (stateCode: string): StateHierarchyBundle | null =>
 const constituencyId = (stateCode: string, acNo: number) =>
   `${stateCode.toUpperCase()}-AC-${acNo}`;
 
-function getResolvedBundle(stateCode: string, acNo: number | null): StateHierarchyBundle | null {
-  const official = bundle(stateCode);
-  if (!official) return null;
+// ─── State-specific terminology for the generic (simulated) hierarchy ───
+const STATE_TERMINOLOGY: Record<string, {
+  mandalType: Mandal['mandalType'];
+  panchayatType: GramPanchayat['panchayatType'];
+  mandalLabel: string;
+  panchayatLabel: string;
+  sarpanchLabel: string;
+}> = {
+  TS: { mandalType: 'mandal', panchayatType: 'gram_panchayat', mandalLabel: 'Mandal', panchayatLabel: 'Gram Panchayat', sarpanchLabel: 'Sarpanch' },
+  AP: { mandalType: 'mandal', panchayatType: 'gram_panchayat', mandalLabel: 'Mandal', panchayatLabel: 'Gram Panchayat', sarpanchLabel: 'Sarpanch' },
+  KA: { mandalType: 'taluk', panchayatType: 'gram_panchayat', mandalLabel: 'Taluk', panchayatLabel: 'Gram Panchayat', sarpanchLabel: 'Adhyaksha' },
+  TN: { mandalType: 'taluk', panchayatType: 'village_panchayat', mandalLabel: 'Taluk', panchayatLabel: 'Village Panchayat', sarpanchLabel: 'President' },
+  MH: { mandalType: 'taluk', panchayatType: 'gram_panchayat', mandalLabel: 'Taluka', panchayatLabel: 'Gram Panchayat', sarpanchLabel: 'Sarpanch' },
+  UP: { mandalType: 'tehsil', panchayatType: 'gram_panchayat', mandalLabel: 'Tehsil', panchayatLabel: 'Gram Panchayat', sarpanchLabel: 'Pradhan' },
+  BR: { mandalType: 'block', panchayatType: 'gram_panchayat', mandalLabel: 'Block', panchayatLabel: 'Gram Panchayat', sarpanchLabel: 'Mukhiya' },
+  WB: { mandalType: 'block', panchayatType: 'gram_panchayat', mandalLabel: 'Block', panchayatLabel: 'Gram Panchayat', sarpanchLabel: 'Pradhan' },
+  GJ: { mandalType: 'taluk', panchayatType: 'gram_panchayat', mandalLabel: 'Taluka', panchayatLabel: 'Gram Panchayat', sarpanchLabel: 'Sarpanch' },
+  RJ: { mandalType: 'tehsil', panchayatType: 'gram_panchayat', mandalLabel: 'Tehsil', panchayatLabel: 'Gram Panchayat', sarpanchLabel: 'Sarpanch' },
+  MP: { mandalType: 'tehsil', panchayatType: 'gram_panchayat', mandalLabel: 'Tehsil', panchayatLabel: 'Gram Panchayat', sarpanchLabel: 'Sarpanch' },
+  KL: { mandalType: 'block', panchayatType: 'gram_panchayat', mandalLabel: 'Block', panchayatLabel: 'Grama Panchayat', sarpanchLabel: 'President' },
+};
 
-  if (acNo == null) return official;
+const DEFAULT_TERMINOLOGY = {
+  mandalType: 'block' as Mandal['mandalType'],
+  panchayatType: 'gram_panchayat' as GramPanchayat['panchayatType'],
+  mandalLabel: 'Block',
+  panchayatLabel: 'Gram Panchayat',
+  sarpanchLabel: 'Sarpanch',
+};
 
-  const cid = constituencyId(stateCode, acNo);
-  const hasOfficial = official.overlaps.some((o) => o.constituencyId === cid) ||
-                      official.booths.some((bo) => bo.constituencyId === cid);
+function getTerminology(stateCode: string) {
+  return STATE_TERMINOLOGY[stateCode.toUpperCase()] ?? DEFAULT_TERMINOLOGY;
+}
 
-  if (hasOfficial) return official;
-
-  const upper = stateCode?.toUpperCase();
-  if (upper !== 'TS' && upper !== 'AP') return null;
-
-  const key = `${upper}-${acNo}`;
-  if (SIMULATED_BUNDLES.has(key)) {
-    return SIMULATED_BUNDLES.get(key)!;
-  }
-
-  const baseConfig = official.config ?? {
-    stateCode,
-    stateName: stateCode === 'TS' ? 'Telangana' : 'Andhra Pradesh',
-    mandalType: 'mandal',
-    panchayatType: 'gram_panchayat',
-    totalDistricts: stateCode === 'TS' ? 33 : 26,
-    totalMandals: stateCode === 'TS' ? 612 : 679,
-    totalGPs: stateCode === 'TS' ? 12769 : 13371,
-    totalACs: stateCode === 'TS' ? 119 : 175,
-    totalPCs: stateCode === 'TS' ? 17 : 25,
-    estimatedBooths: stateCode === 'TS' ? 35356 : 46165,
-    ceoUrl: 'https://ceotelangana.nic.in',
-    secUrl: 'https://sec.ap.gov.in',
-    lgdStateCode: stateCode === 'TS' ? 36 : 28,
-    localLanguage: 'Telugu',
-    localLanguageScript: 'Telugu',
+/** A complete, type-valid generic config for states without an official seed. */
+function buildGenericConfig(stateCode: string): StateHierarchyConfig {
+  const upper = stateCode.toUpperCase();
+  const term = getTerminology(upper);
+  const stateName = (STATES as Record<string, { name?: string }>)[upper]?.name ?? upper;
+  return {
+    stateCode: upper,
+    stateName,
+    mandalType: term.mandalType,
+    panchayatType: term.panchayatType,
+    totalDistricts: 0,
+    totalMandals: 0,
+    totalGPs: 0,
+    totalACs: 0,
+    totalPCs: 0,
+    estimatedBooths: 0,
+    ceoUrl: '',
+    secUrl: '',
+    lgdStateCode: 0,
+    localLanguage: '',
+    localScript: '',
+    displayLabels: {
+      mandal: term.mandalLabel,
+      panchayat: term.panchayatLabel,
+      sarpanch: term.sarpanchLabel,
+      booth: 'Polling Booth',
+    },
   };
+}
+
+/**
+ * Generate a realistic, deterministic simulated hierarchy for one constituency.
+ * Used for every constituency that lacks an official LGD/CEO seed so that the
+ * booth-level drill-down (list + map zoom) works for the whole country, not
+ * just the TS/AP pilot.
+ */
+function buildSimulatedBundle(stateCode: string, acNo: number): StateHierarchyBundle {
+  const upper = stateCode.toUpperCase();
+  const key = `${upper}-${acNo}`;
+  const cached = SIMULATED_BUNDLES.get(key);
+  if (cached) return cached;
+
+  const official = bundle(upper);
+  const config = official?.config ?? buildGenericConfig(upper);
+  const cid = constituencyId(upper, acNo);
 
   let constituencyName = `Constituency ${acNo}`;
-  let districtName = stateCode === 'TS' ? 'Hyderabad' : 'Amaravati';
+  let districtName = config.stateName;
   try {
-    const consts = getUnifiedConstituenciesForState(stateCode);
+    const consts = getUnifiedConstituenciesForState(upper);
     const c = consts.find((item) => item.acNo === acNo);
     if (c) {
       constituencyName = c.name;
       districtName = c.district;
     }
   } catch {
-    // Ignore
+    // Ignore — fall back to generic names.
   }
 
-  const districtId = districtName.toLowerCase().replace(/\s+/g, '-');
+  const districtId = `${upper}-${districtName.toLowerCase().replace(/\s+/g, '-')}`;
 
   const mandals: Mandal[] = [
-    { id: `${stateCode}-mandal-${acNo}-1`, name: `${constituencyName} Central`, districtId, lgdCode: 1000 + acNo * 10 + 1, totalPopulation: 120000, mandalType: 'mandal', totalGPs: 3 },
-    { id: `${stateCode}-mandal-${acNo}-2`, name: `${constituencyName} North`, districtId, lgdCode: 1000 + acNo * 10 + 2, totalPopulation: 95000, mandalType: 'mandal', totalGPs: 3 },
-    { id: `${stateCode}-mandal-${acNo}-3`, name: `${constituencyName} South`, districtId, lgdCode: 1000 + acNo * 10 + 3, totalPopulation: 80000, mandalType: 'mandal', totalGPs: 3 },
-    { id: `${stateCode}-mandal-${acNo}-4`, name: `${constituencyName} Rural`, districtId, lgdCode: 1000 + acNo * 10 + 4, totalPopulation: 65000, mandalType: 'mandal', totalGPs: 3 },
+    { id: `${upper}-mandal-${acNo}-1`, name: `${constituencyName} Central`, districtId, lgdCode: 1000 + acNo * 10 + 1, totalPopulation: 120000, mandalType: config.mandalType, totalGPs: 3 },
+    { id: `${upper}-mandal-${acNo}-2`, name: `${constituencyName} North`, districtId, lgdCode: 1000 + acNo * 10 + 2, totalPopulation: 95000, mandalType: config.mandalType, totalGPs: 3 },
+    { id: `${upper}-mandal-${acNo}-3`, name: `${constituencyName} South`, districtId, lgdCode: 1000 + acNo * 10 + 3, totalPopulation: 80000, mandalType: config.mandalType, totalGPs: 3 },
+    { id: `${upper}-mandal-${acNo}-4`, name: `${constituencyName} Rural`, districtId, lgdCode: 1000 + acNo * 10 + 4, totalPopulation: 65000, mandalType: config.mandalType, totalGPs: 3 },
   ];
 
   const overlaps: MandalConstituencyOverlap[] = [
-    { id: `${stateCode}-MCA-${acNo}-${mandals[0].id}`, constituencyId: cid, mandalId: mandals[0].id, overlapPercentage: 100, overlapPopulation: 120000, verified: true, source: 'MANUAL' },
-    { id: `${stateCode}-MCA-${acNo}-${mandals[1].id}`, constituencyId: cid, mandalId: mandals[1].id, overlapPercentage: 80, overlapPopulation: 76000, verified: true, source: 'MANUAL' },
-    { id: `${stateCode}-MCA-${acNo}-${mandals[2].id}`, constituencyId: cid, mandalId: mandals[2].id, overlapPercentage: 60, overlapPopulation: 48000, verified: true, source: 'MANUAL' },
-    { id: `${stateCode}-MCA-${acNo}-${mandals[3].id}`, constituencyId: cid, mandalId: mandals[3].id, overlapPercentage: 40, overlapPopulation: 26000, verified: true, source: 'MANUAL' },
+    { id: `${upper}-MCA-${acNo}-${mandals[0].id}`, constituencyId: cid, mandalId: mandals[0].id, overlapPercentage: 100, overlapPopulation: 120000, verified: true, source: 'MANUAL' },
+    { id: `${upper}-MCA-${acNo}-${mandals[1].id}`, constituencyId: cid, mandalId: mandals[1].id, overlapPercentage: 80, overlapPopulation: 76000, verified: true, source: 'MANUAL' },
+    { id: `${upper}-MCA-${acNo}-${mandals[2].id}`, constituencyId: cid, mandalId: mandals[2].id, overlapPercentage: 60, overlapPopulation: 48000, verified: true, source: 'MANUAL' },
+    { id: `${upper}-MCA-${acNo}-${mandals[3].id}`, constituencyId: cid, mandalId: mandals[3].id, overlapPercentage: 40, overlapPopulation: 26000, verified: true, source: 'MANUAL' },
   ];
 
   const panchayats: GramPanchayat[] = [];
   const booths: PollingBooth[] = [];
+
+  const buildingNames = [
+    'Zilla Parishad High School',
+    'Govt. Primary School',
+    'Panchayat Office Building',
+    'Community Hall',
+    'Govt. Junior College',
+  ];
 
   let boothNum = 1;
   mandals.forEach((m, mIdx) => {
@@ -166,17 +217,9 @@ function getResolvedBundle(stateCode: string, acNo: number | null): StateHierarc
         mandalId: m.id,
         lgdCode: 20000 + acNo * 100 + mIdx * 10 + gpIdx,
         totalPopulation: Math.floor(m.totalPopulation! / 10),
-        panchayatType: 'gram_panchayat',
+        panchayatType: config.panchayatType,
         totalVillages: 1,
       });
-
-      const buildingNames = [
-        'Zilla Parishad High School',
-        'Govt. Primary School',
-        'Panchayat Office Building',
-        'Community Hall',
-        'Govt. Junior College',
-      ];
 
       for (let bIdx = 0; bIdx < 5; bIdx++) {
         const bId = `${cid}-booth-${boothNum}`;
@@ -203,8 +246,16 @@ function getResolvedBundle(stateCode: string, acNo: number | null): StateHierarc
   });
 
   const bundleData: StateHierarchyBundle = {
-    config: baseConfig,
-    districts: official.districts ?? [{ id: districtId, name: districtName, stateCode }],
+    config,
+    districts: official?.districts ?? [{
+      id: districtId,
+      name: districtName,
+      stateCode: upper,
+      lgdCode: 0,
+      headquartersCity: districtName,
+      totalMandals: mandals.length,
+      totalGPs: panchayats.length,
+    }],
     mandals,
     panchayats,
     booths,
@@ -213,6 +264,33 @@ function getResolvedBundle(stateCode: string, acNo: number | null): StateHierarc
 
   SIMULATED_BUNDLES.set(key, bundleData);
   return bundleData;
+}
+
+function getResolvedBundle(stateCode: string, acNo: number | null): StateHierarchyBundle | null {
+  const official = bundle(stateCode);
+  const upper = stateCode?.toUpperCase();
+
+  // Config / capability probe (no specific constituency).
+  if (acNo == null) {
+    if (official) return official;
+    if (!upper || upper === 'IN') return null;
+    return buildSimulatedBundle(upper, 1);
+  }
+
+  const cid = constituencyId(stateCode, acNo);
+
+  // Prefer official LGD/CEO seed data when it covers this constituency.
+  if (official) {
+    const hasOfficial = official.overlaps.some((o) => o.constituencyId === cid) ||
+                        official.booths.some((bo) => bo.constituencyId === cid);
+    if (hasOfficial) return official;
+  }
+
+  // Everything else (any state, any AC) gets a generated hierarchy so the
+  // booth-level drill-down works nationwide. National view ('IN') is excluded.
+  if (!upper || upper === 'IN') return null;
+
+  return buildSimulatedBundle(upper, acNo);
 }
 
 /** The state config (terminology labels, totals) — null if no hierarchy data. */

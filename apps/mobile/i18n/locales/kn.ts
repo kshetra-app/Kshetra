@@ -35,6 +35,9 @@ const kn: PartialTranslationKeys = {
   },
 
   tabs: {
+    news: 'ಸುದ್ದಿ',
+    shorts: 'ಶಾರ್ಟ್ಸ್',
+    more: 'ಇನ್ನಷ್ಟು',
     map: 'ನಕ್ಷೆ',
     explore: 'ಅನ್ವೇಷಿಸಿ',
     feed: 'ಫೀಡ್',

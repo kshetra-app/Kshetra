@@ -31,6 +31,9 @@ const ml: PartialTranslationKeys = {
 
   // ── Tab Bar ─────────────────────────────────────────────────
   tabs: {
+    news: 'വാർത്തകൾ',
+    shorts: 'ഷോർട്സ്',
+    more: 'കൂടുതൽ',
     map: 'മാപ്പ്',
     explore: 'അന്വേഷിക്കുക',
     feed: 'ഫീഡ്',

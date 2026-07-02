@@ -35,6 +35,9 @@ const hi: PartialTranslationKeys = {
   },
 
   tabs: {
+    news: 'समाचार',
+    shorts: 'शॉर्ट्स',
+    more: 'और',
     map: 'मानचित्र',
     explore: 'खोजें',
     feed: 'फ़ीड',

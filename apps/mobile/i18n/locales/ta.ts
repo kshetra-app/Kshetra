@@ -31,6 +31,9 @@ const ta: PartialTranslationKeys = {
 
   // ── Tab Bar ─────────────────────────────────────────────────
   tabs: {
+    news: 'செய்திகள்',
+    shorts: 'ஷார்ட்ஸ்',
+    more: 'மேலும்',
     map: 'வரைபடம்',
     explore: 'ஆராய்க',
     feed: 'பதிவுகள்',
