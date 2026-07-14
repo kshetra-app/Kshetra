@@ -1,4 +1,5 @@
 import { useState, useCallback, useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 import {
   View,
   Text,
@@ -42,6 +43,7 @@ const DEMO_VIDEO_PRESETS = [
 ];
 
 export default function UploadShortModal({ visible, onClose }: UploadShortModalProps) {
+  const { t } = useTranslation();
   const insets = useSafeAreaInsets();
   
   // Stores
@@ -80,23 +82,23 @@ export default function UploadShortModal({ visible, onClose }: UploadShortModalP
 
   const handleSubmit = useCallback(() => {
     if (!title.trim()) {
-      Alert.alert('Error', 'Please enter a title');
+      Alert.alert(t('uploadShort.alertErrorTitle'), t('uploadShort.alertTitleRequired'));
       return;
     }
     if (!description.trim()) {
-      Alert.alert('Error', 'Please enter a description');
+      Alert.alert(t('uploadShort.alertErrorTitle'), t('uploadShort.alertDescriptionRequired'));
       return;
     }
     if (!videoUrl.trim() || !videoUrl.startsWith('http')) {
-      Alert.alert('Error', 'Please enter a valid video URL (e.g. YouTube embed URL)');
+      Alert.alert(t('uploadShort.alertErrorTitle'), t('uploadShort.alertVideoUrlRequired'));
       return;
     }
     if (!acceptedTerms) {
-      Alert.alert('Error', 'You must accept the Content Creator Accountability policy');
+      Alert.alert(t('uploadShort.alertErrorTitle'), t('uploadShort.alertTermsRequired'));
       return;
     }
     if (!myHome) {
-      Alert.alert('Error', 'Please set your home constituency in the Profile page first.');
+      Alert.alert(t('uploadShort.alertErrorTitle'), t('uploadShort.alertConstituencyRequired'));
       return;
     }
 
@@ -132,7 +134,7 @@ export default function UploadShortModal({ visible, onClose }: UploadShortModalP
       });
 
       setLoading(false);
-      Alert.alert('Success', 'Short video uploaded successfully! It is now undergoing local constituency curation.', [
+      Alert.alert(t('uploadShort.alertSuccessTitle'), t('uploadShort.alertSuccessMessage'), [
         {
           text: 'OK',
           onPress: () => {
@@ -174,7 +176,7 @@ export default function UploadShortModal({ visible, onClose }: UploadShortModalP
                 <Ionicons name="shield-checkmark" size={60} color="#F59E0B" />
               </View>
               
-              <Text style={styles.kycGateTitle}>Creator Verification Required</Text>
+              <Text style={styles.kycGateTitle}>{t('uploadShort.creatorVerification')}</Text>
               
               <Text style={styles.kycGateText}>
                 To ensure content integrity, avoid legal hassles, and build community trust, Kshetra enforces strict Content Creator Accountability (CCA) norms.
@@ -183,24 +185,24 @@ export default function UploadShortModal({ visible, onClose }: UploadShortModalP
               <View style={styles.bulletList}>
                 <View style={styles.bulletItem}>
                   <Ionicons name="finger-print" size={18} color="#F59E0B" style={styles.bulletIcon} />
-                  <Text style={styles.bulletText}>One-time identity verification (KYC/Aadhaar & Selfie check).</Text>
+                  <Text style={styles.bulletText}>{t('uploadShort.verifyBullet1')}</Text>
                 </View>
                 <View style={styles.bulletItem}>
                   <Ionicons name="phone-portrait" size={18} color="#F59E0B" style={styles.bulletIcon} />
-                  <Text style={styles.bulletText}>Binding uploads to your registered physical constituency.</Text>
+                  <Text style={styles.bulletText}>{t('uploadShort.verifyBullet2')}</Text>
                 </View>
                 <View style={styles.bulletItem}>
                   <Ionicons name="lock-closed" size={18} color="#F59E0B" style={styles.bulletIcon} />
-                  <Text style={styles.bulletText}>Forensic cryptographic logging of device, location, and IP.</Text>
+                  <Text style={styles.bulletText}>{t('uploadShort.verifyBullet3')}</Text>
                 </View>
               </View>
 
               <Pressable style={styles.kycButton} onPress={handleStartKYC}>
-                <Text style={styles.kycButtonText}>Start Creator Verification</Text>
+                <Text style={styles.kycButtonText}>{t('uploadShort.startVerification')}</Text>
               </Pressable>
 
               <Pressable style={styles.cancelBtn} onPress={onClose}>
-                <Text style={styles.cancelBtnText}>Maybe Later</Text>
+                <Text style={styles.cancelBtnText}>{t('uploadShort.maybeLater')}</Text>
               </Pressable>
             </View>
           </View>
@@ -209,7 +211,7 @@ export default function UploadShortModal({ visible, onClose }: UploadShortModalP
           <View style={styles.container}>
             {/* Header */}
             <View style={styles.header}>
-              <Text style={styles.headerTitle}>Upload Political Short</Text>
+              <Text style={styles.headerTitle}>{t('uploadShort.title')}</Text>
               <Pressable style={styles.closeBtn} onPress={onClose} hitSlop={12}>
                 <Ionicons name="close" size={22} color="#FFFFFF" />
               </Pressable>
@@ -224,7 +226,7 @@ export default function UploadShortModal({ visible, onClose }: UploadShortModalP
               <View style={styles.bindingBanner}>
                 <Ionicons name="location" size={18} color="#4F8EF7" />
                 <View style={{ flex: 1 }}>
-                  <Text style={styles.bindingTitle}>Constituency Locked</Text>
+                  <Text style={styles.bindingTitle}>{t('uploadShort.constituencyLocked')}</Text>
                   <Text style={styles.bindingText}>
                     Uploading to: <Text style={styles.bindingHighlight}>{myHome ? `${myHome.name} (${stateName})` : 'No home constituency set'}</Text>
                   </Text>
@@ -237,7 +239,7 @@ export default function UploadShortModal({ visible, onClose }: UploadShortModalP
 
               {/* Title input */}
               <View style={styles.inputGroup}>
-                <Text style={styles.inputLabel}>Title</Text>
+                <Text style={styles.inputLabel}>{t('uploadShort.inputTitle')}</Text>
                 <TextInput
                   style={styles.textInput}
                   placeholder="E.g., Reality check on local infrastructure"
@@ -251,7 +253,7 @@ export default function UploadShortModal({ visible, onClose }: UploadShortModalP
 
               {/* Description input */}
               <View style={styles.inputGroup}>
-                <Text style={styles.inputLabel}>Description</Text>
+                <Text style={styles.inputLabel}>{t('uploadShort.inputDescription')}</Text>
                 <TextInput
                   style={[styles.textInput, styles.textArea]}
                   placeholder="Explain the political context or civic issue..."
@@ -267,7 +269,7 @@ export default function UploadShortModal({ visible, onClose }: UploadShortModalP
 
               {/* Video URL input */}
               <View style={styles.inputGroup}>
-                <Text style={styles.inputLabel}>YouTube Embed / Direct Video URL</Text>
+                <Text style={styles.inputLabel}>{t('uploadShort.youtubeUrl')}</Text>
                 <TextInput
                   style={styles.textInput}
                   placeholder="E.g., https://www.youtube.com/embed/..."
@@ -281,7 +283,7 @@ export default function UploadShortModal({ visible, onClose }: UploadShortModalP
 
               {/* Presets for easy demo/testing */}
               <View style={styles.presetsContainer}>
-                <Text style={styles.presetsLabel}>Or choose a real video to test:</Text>
+                <Text style={styles.presetsLabel}>{t('uploadShort.presets')}</Text>
                 {DEMO_VIDEO_PRESETS.map((preset) => (
                   <Pressable
                     key={preset.url}
@@ -302,7 +304,7 @@ export default function UploadShortModal({ visible, onClose }: UploadShortModalP
 
               {/* Hashtags input */}
               <View style={styles.inputGroup}>
-                <Text style={styles.inputLabel}>Hashtags (comma separated)</Text>
+                <Text style={styles.inputLabel}>{t('uploadShort.hashtags')}</Text>
                 <TextInput
                   style={styles.textInput}
                   placeholder="E.g., MusiCleanup, HydMetro"
@@ -336,7 +338,7 @@ export default function UploadShortModal({ visible, onClose }: UploadShortModalP
                 ) : (
                   <>
                     <Ionicons name="cloud-upload" size={20} color="#FFFFFF" />
-                    <Text style={styles.submitButtonText}>Upload to Constituency</Text>
+                    <Text style={styles.submitButtonText}>{t('uploadShort.uploadButton')}</Text>
                   </>
                 )}
               </Pressable>

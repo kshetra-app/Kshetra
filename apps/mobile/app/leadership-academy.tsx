@@ -3,6 +3,7 @@
  * Shows modules grouped by category, civic score, badges, challenges, and aspirant directory.
  */
 import React, { useState, useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 import { View, Text, StyleSheet, ScrollView, Pressable, Platform } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { Stack, useRouter } from 'expo-router';
@@ -27,14 +28,15 @@ import {
 
 type AcademyTab = 'modules' | 'challenges' | 'badges' | 'community';
 
-const TABS: { key: AcademyTab; label: string; icon: string }[] = [
-  { key: 'modules', label: 'Learn', icon: 'school' },
-  { key: 'challenges', label: 'Challenges', icon: 'flash' },
-  { key: 'badges', label: 'Badges', icon: 'ribbon' },
-  { key: 'community', label: 'Aspirants', icon: 'people' },
+const TAB_KEYS: { key: AcademyTab; tKey: string; icon: string }[] = [
+  { key: 'modules', tKey: 'leadershipAcademy.tabs.modules', icon: 'school' },
+  { key: 'challenges', tKey: 'leadershipAcademy.tabs.challenges', icon: 'flash' },
+  { key: 'badges', tKey: 'leadershipAcademy.badges', icon: 'ribbon' },
+  { key: 'community', tKey: 'leadershipAcademy.becomeAspirant', icon: 'people' },
 ];
 
 export default function LeadershipAcademyScreen() {
+  const { t } = useTranslation();
   const router = useRouter();
   const [activeTab, setActiveTab] = useState<AcademyTab>('modules');
   const [selectedModule, setSelectedModule] = useState<LeadershipModule | null>(null);
@@ -79,7 +81,7 @@ export default function LeadershipAcademyScreen() {
     <View style={styles.container}>
       <Stack.Screen
         options={{
-          title: 'Leadership Academy',
+          title: t('leadershipAcademy.title'),
           headerStyle: { backgroundColor: '#0A0A1A' },
           headerTintColor: '#FFFFFF',
         }}
@@ -91,9 +93,9 @@ export default function LeadershipAcademyScreen() {
           <Pressable onPress={() => router.back()} hitSlop={8}>
             <Ionicons name="arrow-back" size={22} color="#FFFFFF" />
           </Pressable>
-          <Text style={styles.headerTitle}>Leadership Academy</Text>
+          <Text style={styles.headerTitle}>{t('leadershipAcademy.title')}</Text>
         </View>
-        <Text style={[styles.headerSubtitle, { marginLeft: 34 }]}>Learn. Engage. Lead.</Text>
+        <Text style={[styles.headerSubtitle, { marginLeft: 34 }]}>{t('leadershipAcademy.subtitle')}</Text>
       </View>
 
       {/* Civic Score (if registered) */}
@@ -107,8 +109,8 @@ export default function LeadershipAcademyScreen() {
             <Ionicons name="rocket" size={20} color="#06B6D4" />
           </View>
           <View style={{ flex: 1 }}>
-            <Text style={styles.registerTitle}>Become an Aspirant</Text>
-            <Text style={styles.registerSub}>Create a civic profile, track your score & earn badges.</Text>
+            <Text style={styles.registerTitle}>{t('leadershipAcademy.becomeAspirant')}</Text>
+            <Text style={styles.registerSub}>{t('leadershipAcademy.aspirantDesc')}</Text>
           </View>
           <Ionicons name="chevron-forward" size={18} color="#6B7280" />
         </Pressable>
@@ -116,7 +118,7 @@ export default function LeadershipAcademyScreen() {
 
       {/* Tab bar */}
       <View style={styles.tabRow}>
-        {TABS.map((tab) => {
+        {TAB_KEYS.map((tab) => {
           const active = activeTab === tab.key;
           return (
             <Pressable
@@ -125,7 +127,7 @@ export default function LeadershipAcademyScreen() {
               onPress={() => setActiveTab(tab.key)}
             >
               <Ionicons name={tab.icon as any} size={15} color={active ? '#FFFFFF' : '#6B7280'} />
-              <Text style={[styles.tabLabel, active && styles.tabLabelActive]}>{tab.label}</Text>
+              <Text style={[styles.tabLabel, active && styles.tabLabelActive]}>{t(tab.tKey)}</Text>
             </Pressable>
           );
         })}
@@ -144,7 +146,7 @@ export default function LeadershipAcademyScreen() {
                     <Text style={[styles.moduleGroupTitle, { color: catConfig.color }]}>
                       {catConfig.label}
                     </Text>
-                    <Text style={styles.moduleGroupCount}>{mods.length} modules</Text>
+                    <Text style={styles.moduleGroupCount}>{t('leadershipAcademy.moduleCount', { count: mods.length })}</Text>
                   </View>
                   {mods.map((mod) => {
                     const isCompleted = completedModuleIds.includes(mod.id);
@@ -164,7 +166,7 @@ export default function LeadershipAcademyScreen() {
                         <View style={styles.moduleInfo}>
                           <Text style={styles.moduleTitle}>{mod.title}</Text>
                           <Text style={styles.moduleMeta}>
-                            {mod.durationMinutes} min · {mod.contentType} · {mod.difficulty}
+                            {mod.durationMinutes} {t('leadershipAcademy.min')} · {mod.contentType} · {mod.difficulty}
                           </Text>
                         </View>
                         {mod.isPremium && (
@@ -187,7 +189,7 @@ export default function LeadershipAcademyScreen() {
             {activeChallenges.length === 0 ? (
               <View style={styles.empty}>
                 <Ionicons name="flash-outline" size={48} color="#1F2937" />
-                <Text style={styles.emptyText}>No active challenges</Text>
+                <Text style={styles.emptyText}>{t('leadershipAcademy.noActiveChallenges')}</Text>
               </View>
             ) : (
               activeChallenges.map((ch) => (
@@ -206,7 +208,7 @@ export default function LeadershipAcademyScreen() {
         {activeTab === 'badges' && (
           <View style={styles.tabContent}>
             <Text style={styles.badgeHeader}>
-              {badges.length} earned · {13 - badges.length} locked
+              {badges.length} {t('leadershipAcademy.earned')} · {13 - badges.length} {t('leadershipAcademy.locked')}
             </Text>
             <CivicBadgeGrid earned={badges} />
           </View>
@@ -217,12 +219,12 @@ export default function LeadershipAcademyScreen() {
           <View style={styles.tabContent}>
             <View style={styles.communityHeader}>
               <Ionicons name="people" size={18} color="#8B5CF6" />
-              <Text style={styles.communityTitle}>Aspiring Leaders</Text>
+              <Text style={styles.communityTitle}>{t('leadershipAcademy.aspiringLeaders')}</Text>
             </View>
             {publicAspirants.length === 0 ? (
               <View style={styles.empty}>
                 <Ionicons name="people-outline" size={48} color="#1F2937" />
-                <Text style={styles.emptyText}>No public aspirants yet</Text>
+                <Text style={styles.emptyText}>{t('leadershipAcademy.noPublicAspirants')}</Text>
               </View>
             ) : (
               publicAspirants.map((asp) => {
@@ -259,7 +261,7 @@ export default function LeadershipAcademyScreen() {
                         <Text style={[styles.aspirantScoreValue, { color: levelConfig.color }]}>
                           {asp.civicScore}
                         </Text>
-                        <Text style={styles.aspirantScoreLabel}>Score</Text>
+                        <Text style={styles.aspirantScoreLabel}>{t('leadershipAcademy.civicScore')}</Text>
                       </View>
                     </View>
                     <Pressable
@@ -273,7 +275,7 @@ export default function LeadershipAcademyScreen() {
                         color={isEndorsed ? '#EF4444' : '#9CA3AF'}
                       />
                       <Text style={[styles.endorseText, isEndorsed && { color: '#EF4444' }]}>
-                        {isEndorsed ? 'Endorsed' : 'Endorse'}
+                        {isEndorsed ? t('leadershipAcademy.endorsed') : t('leadershipAcademy.endorse')}
                       </Text>
                       <Text style={styles.endorseCount}>· {asp.communityEndorsements}</Text>
                     </Pressable>

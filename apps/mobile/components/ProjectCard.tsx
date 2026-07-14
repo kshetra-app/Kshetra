@@ -1,4 +1,5 @@
 import { View, Text, StyleSheet, Pressable } from 'react-native';
+import { useTranslation } from 'react-i18next';
 import { Ionicons } from '@expo/vector-icons';
 import type { DevelopmentProject } from '../lib/civicMetricsTypes';
 import { PROJECT_CATEGORY_CONFIG, PROJECT_PHASE_CONFIG, formatCrores } from '../lib/civicMetricsTypes';
@@ -9,6 +10,7 @@ interface ProjectCardProps {
 }
 
 export default function ProjectCard({ project, onPress }: ProjectCardProps) {
+  const { t } = useTranslation();
   const catConfig = PROJECT_CATEGORY_CONFIG[project.category];
   const phaseConfig = PROJECT_PHASE_CONFIG[project.phase];
 
@@ -32,14 +34,14 @@ export default function ProjectCard({ project, onPress }: ProjectCardProps) {
       {/* Progress bars */}
       <View style={styles.progressSection}>
         <View style={styles.progressRow}>
-          <Text style={styles.progressLabel}>Physical</Text>
+          <Text style={styles.progressLabel}>{t('civicMetrics.physicalProgress')}</Text>
           <View style={styles.progressBar}>
             <View style={[styles.progressFill, { width: `${project.physicalProgress}%`, backgroundColor: '#3B82F6' }]} />
           </View>
           <Text style={styles.progressPct}>{project.physicalProgress}%</Text>
         </View>
         <View style={styles.progressRow}>
-          <Text style={styles.progressLabel}>Financial</Text>
+          <Text style={styles.progressLabel}>{t('civicMetrics.financialProgress')}</Text>
           <View style={styles.progressBar}>
             <View style={[styles.progressFill, { width: `${project.financialProgress}%`, backgroundColor: '#10B981' }]} />
           </View>
@@ -50,17 +52,17 @@ export default function ProjectCard({ project, onPress }: ProjectCardProps) {
       {/* Cost */}
       <View style={styles.costRow}>
         <View style={styles.costItem}>
-          <Text style={styles.costLabel}>Sanctioned</Text>
+          <Text style={styles.costLabel}>{t('civicMetrics.sanctioned')}</Text>
           <Text style={styles.costValue}>{formatCrores(project.sanctionedCostCrores)}</Text>
         </View>
         {project.revisedCostCrores && (
           <View style={styles.costItem}>
-            <Text style={styles.costLabel}>Revised</Text>
+            <Text style={styles.costLabel}>{t('civicMetrics.revised')}</Text>
             <Text style={[styles.costValue, { color: '#F59E0B' }]}>{formatCrores(project.revisedCostCrores)}</Text>
           </View>
         )}
         <View style={styles.costItem}>
-          <Text style={styles.costLabel}>Spent</Text>
+          <Text style={styles.costLabel}>{t('civicMetrics.amountSpent')}</Text>
           <Text style={styles.costValue}>{formatCrores(project.expenditureCrores)}</Text>
         </View>
       </View>
@@ -69,12 +71,12 @@ export default function ProjectCard({ project, onPress }: ProjectCardProps) {
       <View style={styles.footer}>
         <View style={styles.footerItem}>
           <Ionicons name="calendar" size={12} color="#6B7280" />
-          <Text style={styles.footerText}>Due: {project.expectedCompletion}</Text>
+          <Text style={styles.footerText}>{t('civicMetrics.dueDate')}: {project.expectedCompletion}</Text>
         </View>
         {project.delayDays > 0 && (
           <View style={styles.delayBadge}>
             <Ionicons name="warning" size={12} color="#EF4444" />
-            <Text style={styles.delayText}>{project.delayDays} days delayed</Text>
+            <Text style={styles.delayText}>{t('civicMetrics.daysDelayed', { n: project.delayDays })}</Text>
           </View>
         )}
       </View>

@@ -6,6 +6,7 @@
  * pilot hierarchy seed (Telangana ACs 1–5, Andhra Pradesh ACs 1–3).
  */
 import { useEffect, useMemo, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { View, Text, StyleSheet, ScrollView, Pressable } from 'react-native';
 import { useLocalSearchParams, Stack, useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
@@ -16,6 +17,8 @@ import { useActiveStateStore } from '../../stores/activeState';
 import { getUnifiedConstituenciesForState } from '@/lib/stateDataAdapter';
 import {
   getHierarchyConfig,
+  getHierarchyLabelsConfig,
+  getConstituencyDataStatus,
   getConstituencyHierarchySummary,
   getMandalsForConstituency,
   getPanchayatsForMandal,
@@ -24,10 +27,12 @@ import {
   type MandalWithOverlap,
   type GramPanchayat,
 } from '@/lib/hierarchyData';
+import DataPendingCard from '@/components/DataPendingCard';
 
 type Level = 'mandals' | 'panchayats' | 'booths';
 
 export default function HierarchyScreen() {
+  const { t } = useTranslation();
   const router = useRouter();
   const insets = useSafeAreaInsets();
   const { colors } = useTheme();
@@ -79,20 +84,28 @@ export default function HierarchyScreen() {
 
   const labels = config?.displayLabels;
 
-  // ─── No data state ───
-  if (!config || !summary || summary.mandalCount === 0) {
+  // ─── Data-pending state (zero-fabrication) ───
+  // When no verified LGD/CEO pilot seed covers this constituency we show an
+  // explicit "Data pending" state — never synthesized drill-down data.
+  const dataStatus = getConstituencyDataStatus(stateCode, acNo);
+  if (dataStatus !== 'verified' || !config || !summary || summary.mandalCount === 0) {
+    const labelCfg = getHierarchyLabelsConfig(stateCode);
     return (
       <View style={[styles.container, { backgroundColor: colors.background }]}>
-        <Stack.Screen options={{ title: 'Administrative Hierarchy', headerBackTitle: 'Back' }} />
-        <View style={styles.empty}>
-          <Ionicons name="git-branch-outline" size={48} color={colors.textMuted} />
-          <Text style={[styles.emptyTitle, { color: colors.text }]}>No hierarchy data yet</Text>
-          <Text style={[styles.emptyBody, { color: colors.textSecondary }]}>
-            Booth → Panchayat → Mandal drill-down is currently seeded for a pilot set of
-            constituencies (Telangana ACs 1–5, Andhra Pradesh ACs 1–3). More will be added as
-            the LGD/CEO scraping pipeline ingests each state.
-          </Text>
-        </View>
+        <Stack.Screen options={{ title: t('hierarchy.screenTitle'), headerBackTitle: t('hierarchy.back') }} />
+        <ScrollView contentContainerStyle={{ padding: 16, paddingBottom: insets.bottom + 32 }}>
+          <View style={styles.pendingHeader}>
+            <Ionicons name="git-branch-outline" size={40} color={colors.textMuted} />
+            <Text style={[styles.emptyTitle, { color: colors.text }]}>
+              {constituency?.name ?? `AC ${acNo}`}
+            </Text>
+          </View>
+          <DataPendingCard
+            title={`${labelCfg.displayLabels.mandal} → ${labelCfg.displayLabels.panchayat} → ${labelCfg.displayLabels.booth} drill-down`}
+            message={`Verified booth-level structure for ${labelCfg.stateName} is being ingested from the Local Government Directory (LGD) and the Chief Electoral Officer. We only display data confirmed from official sources.`}
+            sourceNote="LGD (lgdirectory.gov.in) · CEO booth rolls · State Election Commission"
+          />
+        </ScrollView>
       </View>
     );
   }
@@ -110,7 +123,7 @@ export default function HierarchyScreen() {
   return (
     <View style={[styles.container, { backgroundColor: colors.background }]}>
       <Stack.Screen
-        options={{ title: `${constituency?.name ?? 'Constituency'} — Hierarchy`, headerBackTitle: 'Back' }}
+        options={{ title: `${constituency?.name ?? t('hierarchy.constituency')} — ${t('hierarchy.hierarchyLabel')}`, headerBackTitle: t('hierarchy.back') }}
       />
 
       {/* Breadcrumb */}
@@ -153,8 +166,8 @@ export default function HierarchyScreen() {
               <View style={{ flex: 1 }}>
                 <Text style={[styles.cardTitle, { color: colors.text }]}>{m.name}</Text>
                 <Text style={[styles.cardSub, { color: colors.textSecondary }]}>
-                  {labels?.mandal ?? 'Mandal'} · {m.totalGPs} {labels?.panchayat ?? 'GP'}s
-                  {m.totalPopulation ? ` · ${m.totalPopulation.toLocaleString('en-IN')} pop` : ''}
+                  {labels?.mandal ?? t('hierarchy.mandal')} · {m.totalGPs} {labels?.panchayat ?? t('hierarchy.gp')}s
+                  {m.totalPopulation ? ` · ${m.totalPopulation.toLocaleString('en-IN')} ${t('hierarchy.pop')}` : ''}
                 </Text>
               </View>
               <View style={[styles.pct, { backgroundColor: colors.primaryLight }]}>
@@ -169,7 +182,7 @@ export default function HierarchyScreen() {
         {level === 'panchayats' && (
           panchayats.length === 0 ? (
             <Text style={[styles.note, { color: colors.textSecondary }]}>
-              No {labels?.panchayat ?? 'panchayat'} samples seeded for this {labels?.mandal ?? 'mandal'} yet.
+              {t('hierarchy.noPanchayatSamples', { panchayat: labels?.panchayat ?? t('hierarchy.panchayat'), mandal: labels?.mandal ?? t('hierarchy.mandalLower') })}
             </Text>
           ) : panchayats.map((p) => (
             <Pressable key={p.id} onPress={() => goBooths(p)} style={[styles.card, { backgroundColor: colors.surface, borderColor: colors.border }]}>
@@ -177,8 +190,8 @@ export default function HierarchyScreen() {
                 <View style={{ flex: 1 }}>
                   <Text style={[styles.cardTitle, { color: colors.text }]}>{p.name}</Text>
                   <Text style={[styles.cardSub, { color: colors.textSecondary }]}>
-                    {p.totalVillages} villages
-                    {p.totalVoters ? ` · ${p.totalVoters.toLocaleString('en-IN')} voters` : ''}
+                    {t('hierarchy.villages', { count: p.totalVillages })}
+                    {p.totalVoters ? ` · ${p.totalVoters.toLocaleString('en-IN')} ${t('hierarchy.voters')}` : ''}
                   </Text>
                 </View>
                 {p.sarpanchParty ? (
@@ -190,7 +203,7 @@ export default function HierarchyScreen() {
               </View>
               {p.sarpanchName ? (
                 <Text style={[styles.sarpanch, { color: colors.textMuted }]}>
-                  {labels?.sarpanch ?? 'Sarpanch'}: {p.sarpanchName}
+                  {labels?.sarpanch ?? t('hierarchy.sarpanch')}: {p.sarpanchName}
                 </Text>
               ) : null}
             </Pressable>
@@ -200,7 +213,7 @@ export default function HierarchyScreen() {
         {/* BOOTHS */}
         {level === 'booths' && (
           booths.length === 0 ? (
-            <Text style={[styles.note, { color: colors.textSecondary }]}>No booth samples seeded here yet.</Text>
+            <Text style={[styles.note, { color: colors.textSecondary }]}>{t('hierarchy.noBoothSamples')}</Text>
           ) : booths.map((b) => (
             <View key={b.id} style={[styles.card, { backgroundColor: colors.surface, borderColor: colors.border }]}>
               <View style={styles.cardHead}>
@@ -212,11 +225,11 @@ export default function HierarchyScreen() {
                   {b.nameTe ? <Text style={[styles.cardSub, { color: colors.textSecondary }]}>{b.nameTe}</Text> : null}
                 </View>
                 <View style={[styles.tag, { backgroundColor: (b.isUrban ? colors.warning : colors.success) + '22' }]}>
-                  <Text style={[styles.tagText, { color: b.isUrban ? colors.warning : colors.success }]}>{b.isUrban ? 'Urban' : 'Rural'}</Text>
+                  <Text style={[styles.tagText, { color: b.isUrban ? colors.warning : colors.success }]}>{b.isUrban ? t('hierarchy.urban') : t('hierarchy.rural')}</Text>
                 </View>
               </View>
               <View style={styles.boothStats}>
-                <Text style={[styles.boothStat, { color: colors.text }]}>{b.totalVoters.toLocaleString('en-IN')} voters</Text>
+                <Text style={[styles.boothStat, { color: colors.text }]}>{b.totalVoters.toLocaleString('en-IN')} {t('hierarchy.voters')}</Text>
                 {b.maleVoters != null ? <Text style={[styles.boothStatMuted, { color: colors.textMuted }]}>M {b.maleVoters.toLocaleString('en-IN')}</Text> : null}
                 {b.femaleVoters != null ? <Text style={[styles.boothStatMuted, { color: colors.textMuted }]}>F {b.femaleVoters.toLocaleString('en-IN')}</Text> : null}
                 {b.location ? <Text style={[styles.boothStatMuted, { color: colors.textMuted }]}>{b.location.latitude.toFixed(3)}, {b.location.longitude.toFixed(3)}</Text> : null}
@@ -226,8 +239,7 @@ export default function HierarchyScreen() {
         )}
 
         <Text style={[styles.footer, { color: colors.textMuted }]}>
-          Source: LGD (lgdirectory.gov.in), CEO {config.stateName}, ECI. Pilot seed — sample
-          booths/panchayats shown per unit; full ingestion via the scraper pipeline.
+          {t('hierarchy.footer', { stateName: config.stateName })}
         </Text>
       </ScrollView>
     </View>
@@ -247,6 +259,7 @@ function Stat({ colors, value, label, icon }: { colors: any; value: number; labe
 const styles = StyleSheet.create({
   container: { flex: 1 },
   empty: { flex: 1, alignItems: 'center', justifyContent: 'center', padding: 32, gap: 12 },
+  pendingHeader: { alignItems: 'center', gap: 8, paddingVertical: 24 },
   emptyTitle: { fontSize: 18, fontWeight: '700' },
   emptyBody: { fontSize: 14, textAlign: 'center', lineHeight: 20 },
   breadcrumbContainer: { borderBottomWidth: StyleSheet.hairlineWidth },

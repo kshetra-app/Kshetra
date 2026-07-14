@@ -721,6 +721,18 @@ const as: PartialTranslationKeys = {
     systemDefault: 'চিষ্টেম ডিফ’ল্ট',
     changeConfirm: 'ভাষা {{language}}লৈ সলনি কৰিব বিচাৰেনে?',
   },
+
+  // ── Constituency Tab Bar ──────────────────────────────────
+  constituencyTabBar: { overview: 'পৰ্যালোচনা', issues: 'সমস্যা', pulse: 'নাড়ি', news: 'বাতৰি', history: 'ইতিহাস', xray: 'এক্স-ৰে' },
+  compare: { title: 'তুলনা', selectA: 'A বাছক', selectB: 'B বাছক', selectConstituency: 'সমষ্টি বাছক', election: 'নিৰ্বাচন', winnerVotes: 'বিজয়ীৰ ভোট', margin: 'ব্যৱধান', demographics: 'জনগাঁথনি', population: 'জনসংখ্যা', totalVoters: 'মুঠ ভোটাৰ', literacy: 'সাক্ষৰতা', mlaProfile: 'MLA প্ৰ\'ফাইল', gender: 'লিংগ', male: 'পুৰুষ', female: 'মহিলা', terms: 'কাৰ্যকাল', historical: 'ঐতিহাসিক তুলনা' },
+  export: { title: 'ৰপ্তানি ডেছব\'ৰ্ড', dataScope: 'তথ্য পৰিসৰ', currentView: 'বৰ্তমান দৃশ্য', allData: 'সকলো তথ্য', upgradeRequired: 'আপগ্ৰেড প্ৰয়োজন', failed: 'ৰপ্তানি বিফল', errorOccurred: 'এটা ত্ৰুটি হ\'ল।' },
+  aspirantReg: { title: 'আকাংক্ষী হওক', publicName: 'ৰাজহুৱা নাম', nameRequired: 'নাম প্ৰয়োজন', standFor: 'আপুনি কিহৰ বাবে থিয় দিছে?', targetConstituency: 'লক্ষ্য সমষ্টি', stateLabel: 'ৰাজ্য', partyMember: 'দলৰ সদস্য', createProfile: 'মোৰ আকাংক্ষী প্ৰ\'ফাইল সৃষ্টি কৰক', welcomeTitle: 'স্বাগতম, আকাংক্ষী!', letsGo: 'আৰম্ভ কৰোঁ' },
+  kycSheet: { title: 'অৱদানকাৰী পৰীক্ষা', verified: 'পৰীক্ষিত!', personalInfo: 'ব্যক্তিগত তথ্য', fullName: 'সম্পূৰ্ণ আইনগত নাম *', phone: 'ফোন নম্বৰ *', selfieSection: 'চেল্ফি পৰীক্ষা', takeSelfie: 'চেল্ফি তোলক', agreement: 'দায়িত্ব চুক্তি', agreeAndVerify: 'সন্মত হওক আৰু পৰীক্ষা কৰক' },
+  contentGate: { flag: 'ফ্লেগ', alert: 'সতৰ্কতা', flagContent: 'বিষয়বস্তু ফ্লেগ কৰক', raiseAlert: 'সতৰ্কতা পঠাওক', category: 'শ্ৰেণী', submitFlag: 'ফ্লেগ দাখিল কৰক' },
+  shortsPlayer: { branding: 'শ্বৰ্টছ', videoUnavailable: 'ভিডিঅ\' উপলব্ধ নহয়', openYouTube: 'YouTubeত খোলক', share: 'শ্বেয়াৰ', approve: 'অনুমোদন', skip: 'এৰি দিয়ক' },
+  uploadShort: { title: 'ৰাজনৈতিক শ্বৰ্ট আপলোড', creatorVerification: 'সৃষ্টিকৰ্তা পৰীক্ষা প্ৰয়োজন', startVerification: 'সৃষ্টিকৰ্তা পৰীক্ষা আৰম্ভ কৰক', maybeLater: 'পিছত', inputTitle: 'শিৰোনাম', inputDescription: 'বিৱৰণ', uploadButton: 'সমষ্টিলৈ আপলোড কৰক' },
+  moduleDetail: { keyTakeaways: 'মূল কথা', knowledgeCheck: 'জ্ঞান পৰীক্ষা', tryAgain: 'পুনৰ চেষ্টা কৰক', sources: 'উৎস আৰু আৰু পঢ়ক', moduleCompleted: 'মডিউল সম্পূৰ্ণ', submitQuiz: 'উত্তৰ দাখিল কৰক', markComplete: 'সম্পূৰ্ণ চিহ্নিত কৰক' },
+  outreachPanel: { compose: 'লিখক', history: 'ইতিহাস', templates: 'টেম্পলেট', channel: 'চেনেল', audience: 'দৰ্শক', message: 'বাৰ্তা', delivery: 'বিতৰণ', sendNow: 'এতিয়া পঠাওক', recipients: 'প্ৰাপক', noBroadcasts: 'এতিয়ালৈ কোনো সম্প্ৰচাৰ নাই', cancel: 'বাতিল কৰক', sendBroadcast: 'সম্প্ৰচাৰ পঠাওক' },
 };
 
 export default as;

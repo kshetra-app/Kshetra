@@ -1,4 +1,5 @@
 import { useState, useCallback } from 'react';
+import { useTranslation } from 'react-i18next';
 import {
   View,
   Text,
@@ -36,6 +37,7 @@ export default function ContentGateActions({
   contentId,
   compact = false,
 }: ContentGateActionsProps) {
+  const { t } = useTranslation();
   const user = useAuthStore((s) => s.user);
   const userProfile = useUserProfileStore((s) => s.profile);
   const userId = user?.id ?? 'anon';
@@ -62,7 +64,7 @@ export default function ContentGateActions({
 
   const handleVouch = useCallback(() => {
     if (!user) {
-      Alert.alert('Sign In Required', 'Please sign in to vouch for content.');
+      Alert.alert(t('contentGate.signInRequired'), t('contentGate.signInToVouch'));
       return;
     }
     if (vouched) return;
@@ -160,7 +162,7 @@ export default function ContentGateActions({
               color={vouched ? '#10B981' : '#9CA3AF'}
             />
             <Text style={[styles.actionText, vouched && { color: '#10B981' }]}>
-              {vouched ? 'Vouched' : 'Vouch'}
+              {vouched ? t('contentGate.vouched') : t('contentGate.vouch')}
             </Text>
             <Text style={[styles.actionCount, vouched && { color: '#10B981' }]}>
               {visibility.vouchCount}
@@ -179,7 +181,7 @@ export default function ContentGateActions({
               color={flagged ? '#EF4444' : '#9CA3AF'}
             />
             <Text style={[styles.actionText, flagged && { color: '#EF4444' }]}>
-              {flagged ? 'Flagged' : 'Flag'}
+              {flagged ? t('contentGate.flagged') : t('contentGate.flag')}
             </Text>
             {visibility.flagCount > 0 && (
               <Text style={[styles.actionCount, flagged && { color: '#EF4444' }]}>
@@ -194,7 +196,7 @@ export default function ContentGateActions({
             onPress={() => setShowAlertSheet(true)}
           >
             <Ionicons name="alert-circle-outline" size={16} color="#9CA3AF" />
-            <Text style={styles.actionText}>Alert</Text>
+            <Text style={styles.actionText}>{t('contentGate.alert')}</Text>
           </Pressable>
         </View>
       )}
@@ -204,7 +206,7 @@ export default function ContentGateActions({
         <View style={styles.restrictedBanner}>
           <Ionicons name="eye-off" size={14} color="#EF4444" />
           <Text style={styles.restrictedText}>
-            This content has been restricted from wider feeds pending review.
+            {t('contentGate.restrictedNotice')}
           </Text>
         </View>
       )}
@@ -240,7 +242,7 @@ export default function ContentGateActions({
             category,
           });
           setShowAlertSheet(false);
-          Alert.alert('Alert Submitted', 'Moderators have been notified. Thank you for keeping the platform safe.');
+          Alert.alert(t('contentGate.alertSubmitted'), t('contentGate.alertSubmittedMessage'));
         }}
       />
     </View>
@@ -258,6 +260,7 @@ function FlagSheet({
   onClose: () => void;
   onSubmit: (reason: FlagReason, description?: string) => void;
 }) {
+  const { t } = useTranslation();
   const [selectedReason, setSelectedReason] = useState<FlagReason | null>(null);
   const [description, setDescription] = useState('');
 
@@ -275,20 +278,20 @@ function FlagSheet({
           <Pressable onPress={onClose} hitSlop={8}>
             <Ionicons name="close" size={24} color="#9CA3AF" />
           </Pressable>
-          <Text style={flagStyles.title}>Flag Content</Text>
+          <Text style={flagStyles.title}>{t('contentGate.flagContent')}</Text>
           <Pressable
             onPress={handleSubmit}
             disabled={!selectedReason}
             hitSlop={8}
           >
             <Text style={[flagStyles.submitText, !selectedReason && { opacity: 0.3 }]}>
-              Submit
+              {t('contentGate.submitFlag')}
             </Text>
           </Pressable>
         </View>
 
         <Text style={flagStyles.subtitle}>
-          Why should this content be reviewed? Flagging helps prevent harmful content from reaching wider audiences.
+          {t('contentGate.flagSubtitle')}
         </Text>
 
         <ScrollView style={flagStyles.scroll}>
@@ -318,10 +321,10 @@ function FlagSheet({
 
           {selectedReason && (
             <View style={flagStyles.descriptionBox}>
-              <Text style={flagStyles.descLabel}>Additional details (optional)</Text>
+              <Text style={flagStyles.descLabel}>{t('contentGate.additionalDetails')}</Text>
               <TextInput
                 style={flagStyles.descInput}
-                placeholder="Describe why this is problematic..."
+                placeholder={t('contentGate.flagPlaceholder')}
                 placeholderTextColor="#4B5563"
                 value={description}
                 onChangeText={setDescription}
@@ -349,6 +352,7 @@ function AlertSheet({
   onClose: () => void;
   onSubmit: (severity: 'medium' | 'high' | 'critical', reason: string, category: AlertCategory) => void;
 }) {
+  const { t } = useTranslation();
   const [category, setCategory] = useState<AlertCategory | null>(null);
   const [reason, setReason] = useState('');
 
@@ -366,14 +370,14 @@ function AlertSheet({
           <Pressable onPress={onClose} hitSlop={8}>
             <Ionicons name="close" size={24} color="#9CA3AF" />
           </Pressable>
-          <Text style={flagStyles.title}>Raise Alert</Text>
+          <Text style={flagStyles.title}>{t('contentGate.raiseAlert')}</Text>
           <Pressable
             onPress={handleSubmit}
             disabled={!category || !reason.trim()}
             hitSlop={8}
           >
             <Text style={[flagStyles.submitText, (!category || !reason.trim()) && { opacity: 0.3 }]}>
-              Submit
+              {t('contentGate.submitAlert')}
             </Text>
           </Pressable>
         </View>
@@ -381,12 +385,12 @@ function AlertSheet({
         <View style={flagStyles.alertWarning}>
           <Ionicons name="warning" size={16} color="#EF4444" />
           <Text style={flagStyles.alertWarningText}>
-            Alerts are for URGENT issues only. This immediately flags content for moderator review. Misuse may affect your reputation.
+            {t('contentGate.alertWarning')}
           </Text>
         </View>
 
         <ScrollView style={flagStyles.scroll}>
-          <Text style={flagStyles.descLabel}>Category</Text>
+          <Text style={flagStyles.descLabel}>{t('contentGate.category')}</Text>
           {(Object.entries(ALERT_CATEGORY_CONFIG) as [AlertCategory, typeof ALERT_CATEGORY_CONFIG[AlertCategory]][]).map(
             ([key, config]) => (
               <Pressable
@@ -409,10 +413,10 @@ function AlertSheet({
           )}
 
           <View style={flagStyles.descriptionBox}>
-            <Text style={flagStyles.descLabel}>Explain the urgency *</Text>
+            <Text style={flagStyles.descLabel}>{t('contentGate.explainUrgency')}</Text>
             <TextInput
               style={flagStyles.descInput}
-              placeholder="Describe what makes this urgent..."
+              placeholder={t('contentGate.alertPlaceholder')}
               placeholderTextColor="#4B5563"
               value={reason}
               onChangeText={setReason}

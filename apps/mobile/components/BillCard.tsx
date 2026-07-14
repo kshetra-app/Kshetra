@@ -1,4 +1,5 @@
 import { View, Text, StyleSheet, Pressable } from 'react-native';
+import { useTranslation } from 'react-i18next';
 import { Ionicons } from '@expo/vector-icons';
 import type { Bill } from '../lib/civicMetricsTypes';
 import { getBillStatusLabel } from '../lib/civicMetricsTypes';
@@ -11,6 +12,7 @@ interface BillCardProps {
 }
 
 export default function BillCard({ bill, onPress, onSupport, onOppose }: BillCardProps) {
+  const { t } = useTranslation();
   const totalOpinion = bill.publicOpinion.support + bill.publicOpinion.oppose + bill.publicOpinion.neutral;
   const supportPct = totalOpinion > 0 ? Math.round((bill.publicOpinion.support / totalOpinion) * 100) : 0;
 
@@ -28,7 +30,7 @@ export default function BillCard({ bill, onPress, onSupport, onOppose }: BillCar
       </View>
 
       <Text style={styles.title} numberOfLines={2}>{bill.title}</Text>
-      <Text style={styles.meta}>Introduced by {bill.introducedBy} ({bill.introducedByParty}) · {bill.houseIntroduced.replace('_', ' ')}</Text>
+      <Text style={styles.meta}>{t('civicMetrics.introducedBy')} {bill.introducedBy} ({bill.introducedByParty}) · {bill.houseIntroduced.replace('_', ' ')}</Text>
 
       <Text style={styles.summary} numberOfLines={3}>{bill.summary}</Text>
 
@@ -42,7 +44,7 @@ export default function BillCard({ bill, onPress, onSupport, onOppose }: BillCar
 
       {/* Public Opinion */}
       <View style={styles.opinionSection}>
-        <Text style={styles.opinionLabel}>Public Opinion ({totalOpinion.toLocaleString()} votes)</Text>
+        <Text style={styles.opinionLabel}>{t('civicMetrics.publicOpinion')} ({totalOpinion.toLocaleString()} {t('common.votes')})</Text>
         <View style={styles.opinionBar}>
           <View style={[styles.opinionFill, { width: `${supportPct}%`, backgroundColor: '#10B981' }]} />
         </View>
@@ -51,7 +53,7 @@ export default function BillCard({ bill, onPress, onSupport, onOppose }: BillCar
             <Ionicons name="thumbs-up" size={14} color="#10B981" />
             <Text style={[styles.opinionCount, { color: '#10B981' }]}>{bill.publicOpinion.support}</Text>
           </Pressable>
-          <Text style={styles.opinionPct}>{supportPct}% support</Text>
+          <Text style={styles.opinionPct}>{supportPct}% {t('civicMetrics.support')}</Text>
           <Pressable style={styles.opinionButton} onPress={onOppose}>
             <Ionicons name="thumbs-down" size={14} color="#EF4444" />
             <Text style={[styles.opinionCount, { color: '#EF4444' }]}>{bill.publicOpinion.oppose}</Text>

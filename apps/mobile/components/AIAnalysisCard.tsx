@@ -1,4 +1,5 @@
 import { useState, useCallback } from 'react';
+import { useTranslation } from 'react-i18next';
 import {
   View,
   Text,
@@ -16,6 +17,7 @@ interface AIAnalysisCardProps {
 }
 
 export default function AIAnalysisCard({ acNo, constituencyName, stateCode = 'TS' }: AIAnalysisCardProps) {
+  const { t } = useTranslation();
   const [analysis, setAnalysis] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(false);
@@ -40,7 +42,7 @@ export default function AIAnalysisCard({ acNo, constituencyName, stateCode = 'TS
       <View style={styles.container}>
         <View style={styles.header}>
           <Ionicons name="sparkles" size={16} color="#4F8EF7" />
-          <Text style={styles.title}>AI Analysis</Text>
+          <Text style={styles.title}>{t('ai.analysis')}</Text>
           <Pressable
             style={styles.refreshButton}
             onPress={() => { setAnalysis(null); setError(false); }}
@@ -50,7 +52,7 @@ export default function AIAnalysisCard({ acNo, constituencyName, stateCode = 'TS
         </View>
         <Text style={styles.analysisText}>{analysis}</Text>
         <Text style={styles.disclaimer}>
-          AI-generated • Based on available election and demographic data
+          {t('ai.disclaimer')}
         </Text>
       </View>
     );
@@ -65,7 +67,7 @@ export default function AIAnalysisCard({ acNo, constituencyName, stateCode = 'TS
 
       {error && (
         <Text style={styles.errorText}>
-          Unable to generate analysis. Check your connection and API server.
+          {t('ai.errorText')}
         </Text>
       )}
 
@@ -77,13 +79,13 @@ export default function AIAnalysisCard({ acNo, constituencyName, stateCode = 'TS
         {loading ? (
           <>
             <ActivityIndicator size="small" color="#4F8EF7" />
-            <Text style={styles.generateText}>Analyzing {constituencyName}...</Text>
+            <Text style={styles.generateText}>{t('ai.analyzing')} {constituencyName}...</Text>
           </>
         ) : (
           <>
             <Ionicons name="flash" size={16} color="#4F8EF7" />
             <Text style={styles.generateText}>
-              Generate AI analysis for {constituencyName}
+              {t('ai.generate')} {constituencyName}
             </Text>
           </>
         )}

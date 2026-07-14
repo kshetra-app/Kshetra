@@ -1,4 +1,5 @@
 import { useState, useMemo, useCallback } from 'react';
+import { useTranslation } from 'react-i18next';
 import { View, Text, StyleSheet, ScrollView, Pressable, RefreshControl } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { Stack } from 'expo-router';
@@ -11,15 +12,16 @@ import CampaignOutreachPanel from '../../components/CampaignOutreachPanel';
 
 type Tab = 'campaigns' | 'outreach' | 'ads' | 'revenue' | 'booths';
 
-const TABS: { key: Tab; label: string; icon: string }[] = [
-  { key: 'campaigns', label: 'Campaigns', icon: 'flag' },
-  { key: 'outreach', label: 'Outreach', icon: 'send' },
-  { key: 'ads', label: 'Ads', icon: 'megaphone' },
-  { key: 'revenue', label: 'Revenue', icon: 'cash' },
-  { key: 'booths', label: 'Booths', icon: 'location' },
+const TAB_KEYS: { key: Tab; i18nKey: string; icon: string }[] = [
+  { key: 'campaigns', i18nKey: 'campaignManager.tabCampaigns', icon: 'flag' },
+  { key: 'outreach', i18nKey: 'campaignManager.tabOutreach', icon: 'send' },
+  { key: 'ads', i18nKey: 'campaignManager.tabAds', icon: 'megaphone' },
+  { key: 'revenue', i18nKey: 'campaignManager.tabRevenue', icon: 'cash' },
+  { key: 'booths', i18nKey: 'campaignManager.tabBooths', icon: 'location' },
 ];
 
 export default function CampaignManagerScreen() {
+  const { t } = useTranslation();
   const [activeTab, setActiveTab] = useState<Tab>('campaigns');
   const [refreshing, setRefreshing] = useState(false);
   const insets = useSafeAreaInsets();
@@ -46,14 +48,14 @@ export default function CampaignManagerScreen() {
 
   return (
     <View style={styles.container}>
-      <Stack.Screen options={{ title: 'Campaign Manager', headerShown: true, headerStyle: { backgroundColor: '#0A0A1A' }, headerTintColor: '#FFFFFF' }} />
+      <Stack.Screen options={{ title: t('campaignManager.screenTitle'), headerShown: true, headerStyle: { backgroundColor: '#0A0A1A' }, headerTintColor: '#FFFFFF' }} />
 
       {/* Tab Bar */}
       <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.tabBar} contentContainerStyle={styles.tabBarContent}>
-        {TABS.map((tab) => (
+        {TAB_KEYS.map((tab) => (
           <Pressable key={tab.key} style={[styles.tab, activeTab === tab.key && styles.tabActive]} onPress={() => setActiveTab(tab.key)}>
             <Ionicons name={(activeTab === tab.key ? tab.icon : `${tab.icon}-outline`) as any} size={16} color={activeTab === tab.key ? '#4F8EF7' : '#6B7280'} />
-            <Text style={[styles.tabLabel, activeTab === tab.key && styles.tabLabelActive]}>{tab.label}</Text>
+            <Text style={[styles.tabLabel, activeTab === tab.key && styles.tabLabelActive]}>{t(tab.i18nKey)}</Text>
           </Pressable>
         ))}
       </ScrollView>
@@ -65,30 +67,30 @@ export default function CampaignManagerScreen() {
             <View style={styles.summaryBar}>
               <View style={styles.summaryItem}>
                 <Text style={styles.summaryValue}>{activeCampaigns.length}</Text>
-                <Text style={styles.summaryLabel}>Active</Text>
+                <Text style={styles.summaryLabel}>{t('campaignManager.active')}</Text>
               </View>
               <View style={styles.summaryItem}>
                 <Text style={styles.summaryValue}>{campaigns.length}</Text>
-                <Text style={styles.summaryLabel}>Total</Text>
+                <Text style={styles.summaryLabel}>{t('campaignManager.total')}</Text>
               </View>
               <View style={styles.summaryItem}>
                 <Text style={styles.summaryValue}>{volunteers.length}</Text>
-                <Text style={styles.summaryLabel}>Volunteers</Text>
+                <Text style={styles.summaryLabel}>{t('campaignManager.volunteers')}</Text>
               </View>
               <View style={styles.summaryItem}>
                 <Text style={styles.summaryValue}>{booths.length}</Text>
-                <Text style={styles.summaryLabel}>Booths</Text>
+                <Text style={styles.summaryLabel}>{t('campaignManager.booths')}</Text>
               </View>
             </View>
 
-            <Text style={styles.sectionTitle}>Active Campaigns</Text>
+            <Text style={styles.sectionTitle}>{t('campaignManager.activeCampaigns')}</Text>
             {activeCampaigns.map((c) => (
               <CampaignDashboardCard key={c.id} campaign={c} />
             ))}
 
             {campaigns.filter((c) => c.status !== 'active').length > 0 && (
               <>
-                <Text style={styles.sectionTitle}>Other Campaigns</Text>
+                <Text style={styles.sectionTitle}>{t('campaignManager.otherCampaigns')}</Text>
                 {campaigns.filter((c) => c.status !== 'active').map((c) => (
                   <CampaignDashboardCard key={c.id} campaign={c} />
                 ))}
@@ -101,7 +103,7 @@ export default function CampaignManagerScreen() {
 
         {activeTab === 'ads' && (
           <>
-            <Text style={styles.sectionTitle}>Active Ads ({activeAds.length})</Text>
+            <Text style={styles.sectionTitle}>{t('campaignManager.activeAds', { count: activeAds.length })}</Text>
             {allAds.map((ad) => (
               <AdPerformanceCard key={ad.id} ad={ad} onPause={ad.status === 'active' ? () => pauseAd(ad.id) : undefined} />
             ))}
@@ -114,23 +116,23 @@ export default function CampaignManagerScreen() {
 
         {activeTab === 'booths' && (
           <>
-            <Text style={styles.sectionTitle}>Booth Strategy ({booths.length} booths)</Text>
+            <Text style={styles.sectionTitle}>{t('campaignManager.boothStrategy', { count: booths.length })}</Text>
             {booths.map((b) => (
               <View key={b.id} style={styles.boothCard}>
                 <View style={styles.boothHeader}>
                   <View>
                     <Text style={styles.boothName}>{b.boothName}</Text>
-                    <Text style={styles.boothMeta}>Booth #{b.boothNumber} · AC #{b.constituencyAcNo} · Ward {b.wardNo}</Text>
+                    <Text style={styles.boothMeta}>{t('campaignManager.boothMeta', { boothNumber: b.boothNumber, acNo: b.constituencyAcNo, wardNo: b.wardNo })}</Text>
                   </View>
                   <View style={[styles.priorityBadge, { backgroundColor: b.priority === 'critical' ? '#EF444420' : b.priority === 'high' ? '#F59E0B20' : '#6B728020' }]}>
                     <Text style={[styles.priorityText, { color: b.priority === 'critical' ? '#EF4444' : b.priority === 'high' ? '#F59E0B' : '#6B7280' }]}>{b.priority.toUpperCase()}</Text>
                   </View>
                 </View>
                 <View style={styles.boothStats}>
-                  <Text style={styles.boothStat}>Voters: {b.totalVoters}</Text>
-                  <Text style={styles.boothStat}>Target: {b.targetVotes}</Text>
-                  <Text style={styles.boothStat}>Support: {b.supportEstimate}%</Text>
-                  <Text style={styles.boothStat}>Canvas: {b.canvassingCompletion}%</Text>
+                  <Text style={styles.boothStat}>{t('campaignManager.voters', { count: b.totalVoters })}</Text>
+                  <Text style={styles.boothStat}>{t('campaignManager.target', { count: b.targetVotes })}</Text>
+                  <Text style={styles.boothStat}>{t('campaignManager.support', { pct: b.supportEstimate })}</Text>
+                  <Text style={styles.boothStat}>{t('campaignManager.canvas', { pct: b.canvassingCompletion })}</Text>
                 </View>
                 {b.notes && <Text style={styles.boothNotes}>{b.notes}</Text>}
               </View>

@@ -22,4 +22,10 @@ if (config.server) {
   config.server.unstable_serverRoot = monorepoRoot;
 }
 
+// 4. Bundle the prebuilt SQLite seed database as an asset so it can be
+//    require()'d and copied into the SQLite directory on first launch.
+if (!config.resolver.assetExts.includes('db')) {
+  config.resolver.assetExts.push('db');
+}
+
 module.exports = config;

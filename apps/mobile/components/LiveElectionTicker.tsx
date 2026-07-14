@@ -1,4 +1,5 @@
 import { useEffect, useRef } from 'react';
+import { useTranslation } from 'react-i18next';
 import { View, Text, StyleSheet, Pressable, Animated, ScrollView } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import type { LiveElectionState, LivePartyTally } from '../lib/electionLiveTypes';
@@ -33,6 +34,7 @@ function PartyTallyBar({ tally, totalSeats }: { tally: LivePartyTally; totalSeat
 }
 
 export default function LiveElectionTicker({ election, onPress }: LiveElectionTickerProps) {
+  const { t } = useTranslation();
   const pulseAnim = useRef(new Animated.Value(1)).current;
   const phaseConfig = ELECTION_PHASE_CONFIG[election.phase];
 
@@ -59,7 +61,7 @@ export default function LiveElectionTicker({ election, onPress }: LiveElectionTi
           {election.isLive && (
             <View style={styles.liveBadge}>
               <Animated.View style={[styles.liveDot, { opacity: pulseAnim }]} />
-              <Text style={styles.liveText}>LIVE</Text>
+              <Text style={styles.liveText}>{t('liveElection.live')}</Text>
             </View>
           )}
           <View style={[styles.phaseBadge, { backgroundColor: phaseConfig.color + '20' }]}>
@@ -67,7 +69,7 @@ export default function LiveElectionTicker({ election, onPress }: LiveElectionTi
             <Text style={[styles.phaseText, { color: phaseConfig.color }]}>{phaseConfig.label}</Text>
           </View>
         </View>
-        <Text style={styles.seats}>{election.resultsDeclared}/{election.totalSeats} declared</Text>
+        <Text style={styles.seats}>{election.resultsDeclared}/{election.totalSeats} {t('liveElection.declared')}</Text>
       </View>
 
       <Text style={styles.electionName}>{election.electionName}</Text>
@@ -77,7 +79,7 @@ export default function LiveElectionTicker({ election, onPress }: LiveElectionTi
         <View style={styles.progressBar}>
           <View style={[styles.progressFill, { width: `${election.countingProgress}%` }]} />
         </View>
-        <Text style={styles.progressText}>{election.countingProgress}% counting complete · Majority: {majority}</Text>
+        <Text style={styles.progressText}>{election.countingProgress}% {t('liveElection.countingComplete')} · {t('liveElection.majority')}: {majority}</Text>
       </View>
 
       {/* Party tallies */}
@@ -91,11 +93,11 @@ export default function LiveElectionTicker({ election, onPress }: LiveElectionTi
       <View style={styles.footer}>
         <View style={styles.footerItem}>
           <Ionicons name="people" size={12} color="#6B7280" />
-          <Text style={styles.footerText}>Turnout: {election.overallTurnout}%</Text>
+          <Text style={styles.footerText}>{t('liveElection.turnout')}: {election.overallTurnout}%</Text>
         </View>
         <View style={styles.footerItem}>
           <Ionicons name="time" size={12} color="#6B7280" />
-          <Text style={styles.footerText}>Updated: {new Date(election.lastUpdated).toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' })}</Text>
+          <Text style={styles.footerText}>{t('liveElection.updated')}: {new Date(election.lastUpdated).toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' })}</Text>
         </View>
       </View>
     </Pressable>

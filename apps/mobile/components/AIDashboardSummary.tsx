@@ -1,4 +1,5 @@
 import { useState, useCallback } from 'react';
+import { useTranslation } from 'react-i18next';
 import {
   View,
   Text,
@@ -15,6 +16,7 @@ interface AIDashboardSummaryProps {
 }
 
 export default function AIDashboardSummary({ constituencyName, issues }: AIDashboardSummaryProps) {
+  const { t } = useTranslation();
   const [summary, setSummary] = useState<string | null>(null);
   const [trendAnalysis, setTrendAnalysis] = useState<string | null>(null);
   const [loading, setLoading] = useState<'issues' | 'trends' | null>(null);
@@ -51,18 +53,18 @@ export default function AIDashboardSummary({ constituencyName, issues }: AIDashb
     <View style={styles.container}>
       <View style={styles.header}>
         <Ionicons name="sparkles" size={16} color="#F59E0B" style={{ marginRight: 6 }} />
-        <Text style={styles.title}>AI Insights</Text>
+        <Text style={styles.title}>{t('ai.insights')}</Text>
       </View>
 
       {/* Issue summary */}
       {constituencyName && issues && issues.length > 0 && (
         <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Issue Summary — {constituencyName}</Text>
+          <Text style={styles.sectionTitle}>{t('ai.issueSummary')} — {constituencyName}</Text>
           {summary ? (
             <>
               <Text style={styles.summaryText}>{summary}</Text>
               <Pressable onPress={() => setSummary(null)} style={styles.resetLink}>
-                <Text style={styles.resetText}>Regenerate</Text>
+                <Text style={styles.resetText}>{t('ai.regenerate')}</Text>
               </Pressable>
             </>
           ) : (
@@ -77,7 +79,7 @@ export default function AIDashboardSummary({ constituencyName, issues }: AIDashb
                 <Ionicons name="flash" size={14} color="#F59E0B" style={{ marginRight: 6 }} />
               )}
               <Text style={styles.actionButtonText}>
-                {loading === 'issues' ? 'Analyzing...' : `Summarize ${issues.length} issues`}
+                {loading === 'issues' ? t('ai.analyzing') + '...' : `${t('ai.summarize')} ${issues.length} ${t('ai.issuesLabel')}`}
               </Text>
             </Pressable>
           )}
@@ -86,12 +88,12 @@ export default function AIDashboardSummary({ constituencyName, issues }: AIDashb
 
       {/* Election trends */}
       <View style={styles.section}>
-        <Text style={styles.sectionTitle}>Election Trend Analysis</Text>
+        <Text style={styles.sectionTitle}>{t('ai.trendAnalysis')}</Text>
         {trendAnalysis ? (
           <>
             <Text style={styles.summaryText}>{trendAnalysis}</Text>
             <Pressable onPress={() => setTrendAnalysis(null)} style={styles.resetLink}>
-              <Text style={styles.resetText}>Regenerate</Text>
+              <Text style={styles.resetText}>{t('ai.regenerate')}</Text>
             </Pressable>
           </>
         ) : (
@@ -106,14 +108,14 @@ export default function AIDashboardSummary({ constituencyName, issues }: AIDashb
               <Ionicons name="trending-up" size={14} color="#F59E0B" style={{ marginRight: 6 }} />
             )}
             <Text style={styles.actionButtonText}>
-              {loading === 'trends' ? 'Analyzing 3 elections...' : 'Analyze election trends'}
+              {loading === 'trends' ? t('ai.analyzing') + '...' : t('ai.analyzeTrends')}
             </Text>
           </Pressable>
         )}
       </View>
 
       <Text style={styles.disclaimer}>
-        Powered by KSHETRA AI • Groq LLM
+        {t('ai.poweredBy')}
       </Text>
     </View>
   );

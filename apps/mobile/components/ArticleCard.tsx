@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next';
 import { View, Text, StyleSheet, Pressable, Image } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import type { Article } from '../lib/journalistTypes';
@@ -11,6 +12,7 @@ interface ArticleCardProps {
 }
 
 export default function ArticleCard({ article, onPress, onTip, compact }: ArticleCardProps) {
+  const { t } = useTranslation();
   const typeConfig = ARTICLE_TYPE_CONFIG[article.type];
   const tierConfig = JOURNALIST_TIER_CONFIG[article.authorTier];
 
@@ -22,7 +24,7 @@ export default function ArticleCard({ article, onPress, onTip, compact }: Articl
         </View>
         <View style={styles.compactContent}>
           <Text style={styles.compactHeadline} numberOfLines={2}>{article.headline}</Text>
-          <Text style={styles.compactMeta}>{article.authorName} · {article.readTimeMinutes} min read</Text>
+          <Text style={styles.compactMeta}>{article.authorName} · {t('articleCard.minRead', { n: article.readTimeMinutes })}</Text>
         </View>
         {article.coverImageUrl && (
           <Image source={{ uri: article.coverImageUrl }} style={styles.compactImage} />
@@ -46,13 +48,13 @@ export default function ArticleCard({ article, onPress, onTip, compact }: Articl
           {article.isBreaking && (
             <View style={[styles.typeBadge, { backgroundColor: '#EF444420' }]}>
               <Ionicons name="flash" size={12} color="#EF4444" />
-              <Text style={[styles.badgeText, { color: '#EF4444' }]}>Breaking</Text>
+              <Text style={[styles.badgeText, { color: '#EF4444' }]}>{t('articleCard.breaking')}</Text>
             </View>
           )}
           {article.isEditorPick && (
             <View style={[styles.typeBadge, { backgroundColor: '#F59E0B20' }]}>
               <Ionicons name="star" size={12} color="#F59E0B" />
-              <Text style={[styles.badgeText, { color: '#F59E0B' }]}>Editor's Pick</Text>
+              <Text style={[styles.badgeText, { color: '#F59E0B' }]}>{t('articleCard.editorsPick')}</Text>
             </View>
           )}
         </View>
@@ -70,7 +72,7 @@ export default function ArticleCard({ article, onPress, onTip, compact }: Articl
               <Text style={styles.authorName}>{article.authorName}</Text>
               <Ionicons name={tierConfig.icon as any} size={12} color={tierConfig.color} style={{ marginLeft: 4 }} />
             </View>
-            <Text style={styles.authorMeta}>{article.readTimeMinutes} min read · {article.stateCode || 'India'}</Text>
+            <Text style={styles.authorMeta}>{t('articleCard.minRead', { n: article.readTimeMinutes })} · {article.stateCode || 'India'}</Text>
           </View>
         </View>
 
@@ -78,11 +80,11 @@ export default function ArticleCard({ article, onPress, onTip, compact }: Articl
         {article.sources.length > 0 && (
           <View style={styles.sourceRow}>
             <Ionicons name="link" size={11} color="#6B7280" />
-            <Text style={styles.sourceText}>{article.sources.length} source{article.sources.length > 1 ? 's' : ''} cited</Text>
+            <Text style={styles.sourceText}>{t('articleCard.sourcesCited', { n: article.sources.length })}</Text>
             {article.sources.some((s) => s.verifiedByEditor) && (
               <View style={styles.verifiedBadge}>
                 <Ionicons name="checkmark-circle" size={10} color="#10B981" />
-                <Text style={styles.verifiedText}>Verified</Text>
+                <Text style={styles.verifiedText}>{t('articleCard.verified')}</Text>
               </View>
             )}
           </View>

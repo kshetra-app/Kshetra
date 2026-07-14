@@ -1,4 +1,5 @@
 import { View, Text, StyleSheet, Pressable } from 'react-native';
+import { useTranslation } from 'react-i18next';
 import { Ionicons } from '@expo/vector-icons';
 import type { LiveConstituencyResult } from '../lib/electionLiveTypes';
 import { COUNTING_STATUS_CONFIG } from '../lib/electionLiveTypes';
@@ -9,6 +10,7 @@ interface ConstituencyResultCardProps {
 }
 
 export default function ConstituencyResultCard({ result, onPress }: ConstituencyResultCardProps) {
+  const { t } = useTranslation();
   const statusConfig = COUNTING_STATUS_CONFIG[result.countingStatus];
   const leader = result.candidates.find((c) => c.isLeading || c.isWinner);
   const isComplete = result.countingStatus === 'result_declared';
@@ -28,7 +30,7 @@ export default function ConstituencyResultCard({ result, onPress }: Constituency
       {result.isUpset && (
         <View style={styles.upsetBanner}>
           <Ionicons name="flash" size={14} color="#F59E0B" />
-          <Text style={styles.upsetText}>UPSET — {result.previousWinnerParty} lost this seat!</Text>
+          <Text style={styles.upsetText}>{t('liveElection.upset')} {result.previousWinnerParty} {t('liveElection.lostSeat')}</Text>
         </View>
       )}
 
@@ -58,10 +60,10 @@ export default function ConstituencyResultCard({ result, onPress }: Constituency
       {/* Margin + Round */}
       <View style={styles.footer}>
         <Text style={styles.footerText}>
-          {isComplete ? 'Margin' : 'Lead'}: {result.marginVotes.toLocaleString()} votes
+          {isComplete ? t('liveElection.margin') : t('liveElection.lead')}: {result.marginVotes.toLocaleString()} {t('common.votes')}
         </Text>
-        <Text style={styles.footerText}>Round {result.roundNumber}/{result.totalRounds}</Text>
-        <Text style={styles.footerText}>Turnout: {result.turnoutPercent}%</Text>
+        <Text style={styles.footerText}>{t('liveElection.round')} {result.roundNumber}/{result.totalRounds}</Text>
+        <Text style={styles.footerText}>{t('liveElection.turnout')}: {result.turnoutPercent}%</Text>
       </View>
     </Pressable>
   );

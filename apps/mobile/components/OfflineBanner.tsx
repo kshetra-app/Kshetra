@@ -5,12 +5,14 @@
  */
 
 import { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { View, Text, StyleSheet, Animated } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useNetworkStore } from '../lib/networkStatus';
 import { flushQueue, getQueueSize } from '../lib/offlineSync';
 
 export default function OfflineBanner() {
+  const { t } = useTranslation();
   const isConnected = useNetworkStore((s) => s.isConnected);
   const [pendingCount, setPendingCount] = useState(0);
   const [justReconnected, setJustReconnected] = useState(false);
@@ -63,10 +65,10 @@ export default function OfflineBanner() {
       />
       <Text style={[styles.text, justReconnected && styles.textOnline]}>
         {justReconnected
-          ? 'Back online — data synced'
+          ? t('offlineBanner.backOnline')
           : pendingCount > 0
-            ? `Offline · ${pendingCount} pending sync${pendingCount > 1 ? 's' : ''}`
-            : 'You are offline'}
+            ? t('offlineBanner.offlinePendingSyncs', { count: pendingCount })
+            : t('offlineBanner.youAreOffline')}
       </Text>
     </Animated.View>
   );

@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
+import { useTranslation } from 'react-i18next';
 import {
   View,
   Text,
@@ -33,6 +34,7 @@ export default function ReportSheet({
   targetId,
   targetLabel,
 }: ReportSheetProps) {
+  const { t } = useTranslation();
   const [reason, setReason] = useState<ReportReason | null>(null);
   const [description, setDescription] = useState('');
   const [submitting, setSubmitting] = useState(false);
@@ -64,9 +66,9 @@ export default function ReportSheet({
     setTimeout(() => {
       setSubmitting(false);
       Alert.alert(
-        'Report Submitted',
-        'Thank you for helping keep our community safe. Our moderators will review this report.',
-        [{ text: 'OK', onPress: onClose }],
+        t('reportSheet.submitted'),
+        t('reportSheet.submittedMsg'),
+        [{ text: t('common.ok'), onPress: onClose }],
       );
     }, 500);
   };
@@ -84,14 +86,14 @@ export default function ReportSheet({
           <Pressable onPress={onClose} hitSlop={8}>
             <Ionicons name="close" size={24} color="#9CA3AF" />
           </Pressable>
-          <Text style={styles.headerTitle}>Report {targetType}</Text>
+          <Text style={styles.headerTitle}>{t('moderation.reportContent')} {targetType}</Text>
           <Pressable
             style={[styles.submitButton, !canSubmit && styles.submitDisabled]}
             onPress={handleSubmit}
             disabled={!canSubmit}
           >
             <Text style={styles.submitText}>
-              {submitting ? 'Sending...' : 'Submit'}
+              {submitting ? t('reportSheet.sending') : t('common.submit')}
             </Text>
           </Pressable>
         </View>
@@ -101,13 +103,13 @@ export default function ReportSheet({
           <View style={styles.contextBadge}>
             <Ionicons name="information-circle" size={14} color="#4F8EF7" />
             <Text style={styles.contextText} numberOfLines={1}>
-              Reporting: {targetLabel}
+              {t('reportSheet.reporting')}: {targetLabel}
             </Text>
           </View>
         )}
 
         {/* Reason selection */}
-        <Text style={styles.sectionLabel}>Why are you reporting this?</Text>
+        <Text style={styles.sectionLabel}>{t('reportSheet.whyReporting')}</Text>
         <View style={styles.reasonList}>
           {REPORT_REASONS.map((r) => {
             const active = reason === r.key;
@@ -134,10 +136,10 @@ export default function ReportSheet({
         </View>
 
         {/* Additional details */}
-        <Text style={styles.sectionLabel}>Additional details (optional)</Text>
+        <Text style={styles.sectionLabel}>{t('reportSheet.additionalDetails')}</Text>
         <TextInput
           style={styles.descInput}
-          placeholder="Provide more context to help our moderators..."
+          placeholder={t('reportSheet.placeholder')}
           placeholderTextColor="#4B5563"
           value={description}
           onChangeText={setDescription}

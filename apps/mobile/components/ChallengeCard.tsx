@@ -2,6 +2,7 @@
  * ChallengeCard — Displays a community challenge with progress and join action.
  */
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import { View, Text, StyleSheet, Pressable } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import {
@@ -17,6 +18,7 @@ interface ChallengeCardProps {
 }
 
 export default React.memo(function ChallengeCard({ challenge, participation, onJoin }: ChallengeCardProps) {
+  const { t } = useTranslation();
   const catConfig = CHALLENGE_CATEGORY_CONFIG[challenge.category];
   const isJoined = !!participation;
   const isComplete = participation?.completed ?? false;
@@ -34,7 +36,7 @@ export default React.memo(function ChallengeCard({ challenge, participation, onJ
         </View>
         <View style={styles.pointsBadge}>
           <Ionicons name="star" size={12} color="#F59E0B" />
-          <Text style={styles.pointsText}>{challenge.points} pts</Text>
+          <Text style={styles.pointsText}>{challenge.points} {t('challengeCard.points')}</Text>
         </View>
       </View>
 
@@ -50,7 +52,7 @@ export default React.memo(function ChallengeCard({ challenge, participation, onJ
               {participation!.progress} / {challenge.targetCount}
             </Text>
             <Text style={[styles.progressPercent, isComplete && { color: '#10B981' }]}>
-              {isComplete ? 'Completed!' : `${progressPct.toFixed(0)}%`}
+              {isComplete ? t('challengeCard.completed') : `${progressPct.toFixed(0)}%`}
             </Text>
           </View>
           <View style={styles.progressTrack}>
@@ -71,7 +73,7 @@ export default React.memo(function ChallengeCard({ challenge, participation, onJ
       {challenge.stateCode && (
         <View style={styles.stateTag}>
           <Ionicons name="location" size={10} color="#6B7280" />
-          <Text style={styles.stateText}>{challenge.stateCode} only</Text>
+          <Text style={styles.stateText}>{challenge.stateCode} {t('challengeCard.only')}</Text>
         </View>
       )}
 
@@ -79,14 +81,14 @@ export default React.memo(function ChallengeCard({ challenge, participation, onJ
       {!isJoined && (
         <Pressable style={[styles.joinButton, { backgroundColor: catConfig.color }]} onPress={onJoin}>
           <Ionicons name="flash" size={14} color="#FFFFFF" />
-          <Text style={styles.joinText}>Take Challenge</Text>
+          <Text style={styles.joinText}>{t('challengeCard.takeChallenge')}</Text>
         </Pressable>
       )}
 
       {isComplete && (
         <View style={styles.completeBanner}>
           <Ionicons name="checkmark-circle" size={16} color="#10B981" />
-          <Text style={styles.completeText}>Challenge Complete!</Text>
+          <Text style={styles.completeText}>{t('challengeCard.challengeComplete')}</Text>
         </View>
       )}
     </View>

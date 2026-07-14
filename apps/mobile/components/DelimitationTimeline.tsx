@@ -1,4 +1,5 @@
 import { View, Text, StyleSheet, Pressable, ScrollView } from 'react-native';
+import { useTranslation } from 'react-i18next';
 import { Ionicons } from '@expo/vector-icons';
 import type { DelimitationEvent } from '../lib/delimitationTypes';
 import { EVENT_TYPE_CONFIG, IMPACT_SEVERITY_CONFIG } from '../lib/delimitationTypes';
@@ -25,6 +26,7 @@ export default function DelimitationTimeline({
   compact = false,
   onEventPress,
 }: DelimitationTimelineProps) {
+  const { t } = useTranslation();
   const sorted = [...events].sort(
     (a, b) => new Date(a.date).getTime() - new Date(b.date).getTime(),
   );
@@ -106,7 +108,7 @@ export default function DelimitationTimeline({
                 </Text>
                 {!past && (
                   <View style={styles.upcomingBadge}>
-                    <Text style={styles.upcomingText}>Upcoming</Text>
+                    <Text style={styles.upcomingText}>{t('delimitationExtended.upcoming')}</Text>
                   </View>
                 )}
                 {event.isVerified && (

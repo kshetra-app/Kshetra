@@ -1,4 +1,5 @@
 import { useEffect, useRef } from 'react';
+import { useTranslation } from 'react-i18next';
 import { View, Text, StyleSheet, Pressable, Animated } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import type { BreakingNewsItem } from '../lib/journalistTypes';
@@ -11,6 +12,7 @@ interface BreakingNewsBannerProps {
 }
 
 export default function BreakingNewsBanner({ item, onPress, onDismiss }: BreakingNewsBannerProps) {
+  const { t } = useTranslation();
   const pulseAnim = useRef(new Animated.Value(1)).current;
   const config = BREAKING_PRIORITY_CONFIG[item.priority];
 
@@ -30,7 +32,7 @@ export default function BreakingNewsBanner({ item, onPress, onDismiss }: Breakin
       <View style={styles.header}>
         <Animated.View style={[styles.liveDot, { backgroundColor: config.color, opacity: pulseAnim }]} />
         <Text style={[styles.priority, { color: config.color }]}>{config.label}</Text>
-        <Text style={styles.time}>{item.updateCount > 0 ? `${item.updateCount} update${item.updateCount > 1 ? 's' : ''}` : 'Just now'}</Text>
+        <Text style={styles.time}>{item.updateCount > 0 ? t('breakingNews.updates', { n: item.updateCount }) : t('breakingNews.justNow')}</Text>
         {onDismiss && (
           <Pressable onPress={onDismiss} hitSlop={8}>
             <Ionicons name="close" size={16} color="#6B7280" />

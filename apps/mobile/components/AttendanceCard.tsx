@@ -1,4 +1,5 @@
 import { View, Text, StyleSheet, Pressable } from 'react-native';
+import { useTranslation } from 'react-i18next';
 import { Ionicons } from '@expo/vector-icons';
 import type { LegislatorAttendance } from '../lib/civicMetricsTypes';
 import { getAttendanceGrade } from '../lib/civicMetricsTypes';
@@ -9,6 +10,7 @@ interface AttendanceCardProps {
 }
 
 export default function AttendanceCard({ attendance, onPress }: AttendanceCardProps) {
+  const { t } = useTranslation();
   const grade = getAttendanceGrade(attendance.attendancePercent);
 
   return (
@@ -27,13 +29,13 @@ export default function AttendanceCard({ attendance, onPress }: AttendanceCardPr
       {/* Attendance bar */}
       <View style={styles.attendanceSection}>
         <View style={styles.attendanceHeader}>
-          <Text style={styles.attendanceLabel}>Assembly Attendance</Text>
+          <Text style={styles.attendanceLabel}>{t('civicMetrics.assemblyAttendance')}</Text>
           <Text style={[styles.attendancePct, { color: grade.color }]}>{attendance.attendancePercent}%</Text>
         </View>
         <View style={styles.attendanceBar}>
           <View style={[styles.attendanceBarFill, { width: `${attendance.attendancePercent}%`, backgroundColor: grade.color }]} />
         </View>
-        <Text style={styles.attendanceDetail}>{attendance.attended} / {attendance.totalSessions} sessions ({attendance.sessionYear})</Text>
+        <Text style={styles.attendanceDetail}>{attendance.attended} / {attendance.totalSessions} {t('civicMetrics.sessions')} ({attendance.sessionYear})</Text>
       </View>
 
       {/* Performance metrics */}
@@ -41,17 +43,17 @@ export default function AttendanceCard({ attendance, onPress }: AttendanceCardPr
         <View style={styles.metric}>
           <Ionicons name="help-circle" size={14} color="#3B82F6" />
           <Text style={styles.metricValue}>{attendance.questionsAsked}</Text>
-          <Text style={styles.metricLabel}>Questions</Text>
+          <Text style={styles.metricLabel}>{t('civicMetrics.questionsRaised')}</Text>
         </View>
         <View style={styles.metric}>
           <Ionicons name="chatbubbles" size={14} color="#8B5CF6" />
           <Text style={styles.metricValue}>{attendance.debatesParticipated}</Text>
-          <Text style={styles.metricLabel}>Debates</Text>
+          <Text style={styles.metricLabel}>{t('civicMetrics.debatesParticipated')}</Text>
         </View>
         <View style={styles.metric}>
           <Ionicons name="document-text" size={14} color="#F59E0B" />
           <Text style={styles.metricValue}>{attendance.privateMemberBills}</Text>
-          <Text style={styles.metricLabel}>Pvt Bills</Text>
+          <Text style={styles.metricLabel}>{t('civicMetrics.privateBills')}</Text>
         </View>
         <View style={styles.metric}>
           <Ionicons name="trophy" size={14} color="#10B981" />

@@ -46,7 +46,16 @@ export default function ProfileHeroCard({
   onSharePress,
 }: Props) {
   const partyColor = getPartyColor(party);
-  const houseLabel = house === 'state_assembly' ? 'MLA' : house === 'lok_sabha' ? 'MP (LS)' : house === 'rajya_sabha' ? 'MP (RS)' : 'MLC';
+  // Known legislator houses map to short labels; any other value (e.g. a
+  // local-body office label like 'Mayor', 'Corporator', 'Sarpanch', 'ZPTC
+  // Member') is displayed verbatim so the SAME hero card renders every tier.
+  const LEGISLATOR_HOUSE_LABELS: Record<string, string> = {
+    state_assembly: 'MLA',
+    lok_sabha: 'MP (LS)',
+    rajya_sabha: 'MP (RS)',
+    state_council: 'MLC',
+  };
+  const houseLabel = LEGISLATOR_HOUSE_LABELS[house] ?? house;
   const genderIcon = gender === 'female' ? 'woman' : 'man';
 
   return (

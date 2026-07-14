@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next';
 import { View, Text, StyleSheet, Pressable, Image } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import VerificationBadge from './VerificationBadge';
@@ -34,6 +35,7 @@ export default function UserProfileCard({
   onPress,
   showStats = true,
 }: UserProfileCardProps) {
+  const { t } = useTranslation();
   const config = ROLE_CONFIG[role];
 
   if (compact) {
@@ -83,24 +85,24 @@ export default function UserProfileCard({
         <View style={styles.statsRow}>
           <View style={styles.stat}>
             <Text style={styles.statValue}>{postsCount ?? 0}</Text>
-            <Text style={styles.statLabel}>Posts</Text>
+            <Text style={styles.statLabel}>{t('userProfileCard.posts')}</Text>
           </View>
           <View style={styles.statDivider} />
           <View style={styles.stat}>
             <Text style={styles.statValue}>{followersCount ?? 0}</Text>
-            <Text style={styles.statLabel}>Followers</Text>
+            <Text style={styles.statLabel}>{t('userProfileCard.followers')}</Text>
           </View>
           <View style={styles.statDivider} />
           <View style={styles.stat}>
             <Text style={styles.statValue}>{followingCount ?? 0}</Text>
-            <Text style={styles.statLabel}>Following</Text>
+            <Text style={styles.statLabel}>{t('userProfileCard.following')}</Text>
           </View>
           {reputation !== undefined && (
             <>
               <View style={styles.statDivider} />
               <View style={styles.stat}>
                 <Text style={[styles.statValue, { color: '#F59E0B' }]}>{reputation}</Text>
-                <Text style={styles.statLabel}>Rep</Text>
+                <Text style={styles.statLabel}>{t('userProfileCard.rep')}</Text>
               </View>
             </>
           )}

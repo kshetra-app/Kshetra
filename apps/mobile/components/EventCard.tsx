@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next';
 import { View, Text, StyleSheet, Pressable } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import type { PoliticalEvent } from '../lib/politicianPortalTypes';
@@ -10,6 +11,7 @@ interface EventCardProps {
 }
 
 export default function EventCard({ event, onPress, onRSVP }: EventCardProps) {
+  const { t } = useTranslation();
   const typeConfig = EVENT_TYPE_CONFIG[event.type];
   const startDate = new Date(event.startTime);
   const isUpcoming = startDate.getTime() > Date.now();
@@ -36,12 +38,12 @@ export default function EventCard({ event, onPress, onRSVP }: EventCardProps) {
           {isLive && (
             <View style={styles.liveBadge}>
               <View style={styles.liveDot} />
-              <Text style={styles.liveText}>LIVE</Text>
+              <Text style={styles.liveText}>{t('politicianPortal.live')}</Text>
             </View>
           )}
           {event.status === 'cancelled' && (
             <View style={[styles.typeBadge, { backgroundColor: '#EF444420' }]}>
-              <Text style={{ fontSize: 11, fontWeight: '700', color: '#EF4444' }}>Cancelled</Text>
+              <Text style={{ fontSize: 11, fontWeight: '700', color: '#EF4444' }}>{t('politicianPortal.cancelled')}</Text>
             </View>
           )}
         </View>
@@ -71,8 +73,8 @@ export default function EventCard({ event, onPress, onRSVP }: EventCardProps) {
         <View style={styles.footer}>
           <View style={styles.rsvpInfo}>
             <Ionicons name="people" size={14} color="#3B82F6" />
-            <Text style={styles.rsvpCount}>{event.rsvpCount} going</Text>
-            {event.actualAttendance && <Text style={styles.attended}> · {event.actualAttendance} attended</Text>}
+            <Text style={styles.rsvpCount}>{event.rsvpCount} {t('politicianPortal.going')}</Text>
+            {event.actualAttendance && <Text style={styles.attended}> · {event.actualAttendance} {t('politicianPortal.attended')}</Text>}
           </View>
           {isUpcoming && onRSVP && (
             <Pressable style={styles.rsvpButton} onPress={onRSVP}>

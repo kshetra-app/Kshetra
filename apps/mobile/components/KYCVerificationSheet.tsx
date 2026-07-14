@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
+import { useTranslation } from 'react-i18next';
 import {
   View,
   Text,
@@ -25,6 +26,7 @@ import {
 } from '../lib/contentAccountabilityTypes';
 
 export default function KYCVerificationSheet() {
+  const { t } = useTranslation();
   const visible = useContributorVerificationStore((s) => s.showKYCSheet);
   const kycLoading = useContributorVerificationStore((s) => s.kycLoading);
   const setShowKYCSheet = useContributorVerificationStore((s) => s.setShowKYCSheet);
@@ -107,16 +109,16 @@ export default function KYCVerificationSheet() {
           <Pressable onPress={onClose} hitSlop={8} disabled={kycLoading}>
             <Ionicons name="close" size={24} color={kycLoading ? '#374151' : '#9CA3AF'} />
           </Pressable>
-          <Text style={styles.headerTitle}>Contributor Verification</Text>
+          <Text style={styles.headerTitle}>{t('kycSheet.title')}</Text>
           <View style={{ width: 24 }} />
         </View>
 
         {step === 'done' ? (
           <View style={styles.doneContainer}>
             <Ionicons name="shield-checkmark" size={64} color="#10B981" />
-            <Text style={styles.doneTitle}>Verified!</Text>
+            <Text style={styles.doneTitle}>{t('kycSheet.verified')}</Text>
             <Text style={styles.doneSubtitle}>
-              You can now post, comment, and contribute to the platform.
+              {t('kycSheet.verifiedMsg')}
             </Text>
           </View>
         ) : (
@@ -125,9 +127,9 @@ export default function KYCVerificationSheet() {
             <View style={styles.infoBox}>
               <Ionicons name="shield-checkmark" size={20} color="#4F8EF7" />
               <View style={{ flex: 1 }}>
-                <Text style={styles.infoTitle}>Why is this needed?</Text>
+                <Text style={styles.infoTitle}>{t('kycSheet.whyNeeded')}</Text>
                 <Text style={styles.infoText}>
-                  To maintain platform credibility and prevent misuse, we verify the identity of all content creators. Your details are encrypted, stored securely, and only accessed during legal investigations.
+                  {t('kycSheet.whyNeededDesc')}
                 </Text>
               </View>
             </View>
@@ -143,12 +145,12 @@ export default function KYCVerificationSheet() {
             {/* Step 1: Personal Info */}
             {(step === 'info' || step === 'selfie' || step === 'terms') && (
               <>
-                <Text style={styles.sectionTitle}>Personal Information</Text>
+                <Text style={styles.sectionTitle}>{t('kycSheet.personalInfo')}</Text>
 
-                <Text style={styles.fieldLabel}>Full Legal Name *</Text>
+                <Text style={styles.fieldLabel}>{t('kycSheet.fullName')}</Text>
                 <TextInput
                   style={styles.textInput}
-                  placeholder="As per government ID (Aadhaar / PAN / Voter ID)"
+                  placeholder={t('kycSheet.fullNamePlaceholder')}
                   placeholderTextColor="#4B5563"
                   value={fullName}
                   onChangeText={setFullName}
@@ -157,14 +159,14 @@ export default function KYCVerificationSheet() {
                   editable={step === 'info'}
                 />
 
-                <Text style={styles.fieldLabel}>Phone Number *</Text>
+                <Text style={styles.fieldLabel}>{t('kycSheet.phone')}</Text>
                 <View style={styles.phoneRow}>
                   <View style={styles.countryCode}>
                     <Text style={styles.countryCodeText}>+91</Text>
                   </View>
                   <TextInput
                     style={[styles.textInput, { flex: 1 }]}
-                    placeholder="10-digit mobile number"
+                    placeholder={t('kycSheet.phonePlaceholder')}
                     placeholderTextColor="#4B5563"
                     value={phone}
                     onChangeText={setPhone}
@@ -174,7 +176,7 @@ export default function KYCVerificationSheet() {
                   />
                 </View>
                 {phone.length > 0 && !isValidIndianPhone(phone) && (
-                  <Text style={styles.errorText}>Enter a valid 10-digit Indian mobile number</Text>
+                  <Text style={styles.errorText}>{t('kycSheet.phoneError')}</Text>
                 )}
 
                 {step === 'info' && (
@@ -186,7 +188,7 @@ export default function KYCVerificationSheet() {
                     onPress={() => setStep('selfie')}
                     disabled={!fullName.trim() || !isValidIndianPhone(phone)}
                   >
-                    <Text style={styles.nextButtonText}>Next: Selfie Verification</Text>
+                    <Text style={styles.nextButtonText}>{t('kycSheet.nextSelfie')}</Text>
                     <Ionicons name="arrow-forward" size={18} color="#FFFFFF" />
                   </Pressable>
                 )}
@@ -196,9 +198,9 @@ export default function KYCVerificationSheet() {
             {/* Step 2: Selfie */}
             {(step === 'selfie' || step === 'terms') && (
               <>
-                <Text style={styles.sectionTitle}>Selfie Verification</Text>
+                <Text style={styles.sectionTitle}>{t('kycSheet.selfieSection')}</Text>
                 <Text style={styles.fieldHint}>
-                  Take a clear front-facing photo for identity verification. This helps us trace accountability in case of misuse.
+                  {t('kycSheet.selfieDesc')}
                 </Text>
 
                 {selfieUri ? (
@@ -209,14 +211,14 @@ export default function KYCVerificationSheet() {
                       onPress={takeSelfie}
                     >
                       <Ionicons name="camera-reverse" size={16} color="#FFFFFF" />
-                      <Text style={styles.retakeText}>Retake</Text>
+                      <Text style={styles.retakeText}>{t('kycSheet.retake')}</Text>
                     </Pressable>
                   </View>
                 ) : (
                   <Pressable style={styles.selfieButton} onPress={takeSelfie}>
                     <Ionicons name="camera" size={32} color="#4F8EF7" />
-                    <Text style={styles.selfieButtonText}>Take Selfie</Text>
-                    <Text style={styles.selfieButtonHint}>Front camera • Clear face</Text>
+                    <Text style={styles.selfieButtonText}>{t('kycSheet.takeSelfie')}</Text>
+                    <Text style={styles.selfieButtonHint}>{t('kycSheet.selfieHint')}</Text>
                   </Pressable>
                 )}
 
@@ -224,14 +226,14 @@ export default function KYCVerificationSheet() {
                   <View style={styles.buttonRow}>
                     <Pressable style={styles.backButton} onPress={() => setStep('info')}>
                       <Ionicons name="arrow-back" size={16} color="#9CA3AF" />
-                      <Text style={styles.backButtonText}>Back</Text>
+                      <Text style={styles.backButtonText}>{t('kycSheet.backButton')}</Text>
                     </Pressable>
                     <Pressable
                       style={[styles.nextButton, !selfieUri && styles.buttonDisabled]}
                       onPress={() => setStep('terms')}
                       disabled={!selfieUri}
                     >
-                      <Text style={styles.nextButtonText}>Next: Terms</Text>
+                      <Text style={styles.nextButtonText}>{t('kycSheet.nextTerms')}</Text>
                       <Ionicons name="arrow-forward" size={18} color="#FFFFFF" />
                     </Pressable>
                   </View>
@@ -242,7 +244,7 @@ export default function KYCVerificationSheet() {
             {/* Step 3: Terms & Submit */}
             {step === 'terms' && (
               <>
-                <Text style={styles.sectionTitle}>Accountability Agreement</Text>
+                <Text style={styles.sectionTitle}>{t('kycSheet.agreement')}</Text>
 
                 <View style={styles.termsBox}>
                   <Text style={styles.termsText}>
@@ -289,7 +291,7 @@ export default function KYCVerificationSheet() {
                 <View style={styles.buttonRow}>
                   <Pressable style={styles.backButton} onPress={() => setStep('selfie')}>
                     <Ionicons name="arrow-back" size={16} color="#9CA3AF" />
-                    <Text style={styles.backButtonText}>Back</Text>
+                    <Text style={styles.backButtonText}>{t('kycSheet.backButton')}</Text>
                   </Pressable>
                   <Pressable
                     style={[
@@ -304,7 +306,7 @@ export default function KYCVerificationSheet() {
                     ) : (
                       <>
                         <Ionicons name="shield-checkmark" size={18} color="#FFFFFF" />
-                        <Text style={styles.submitButtonText}>Verify & Continue</Text>
+                        <Text style={styles.submitButtonText}>{t('kycSheet.agreeAndVerify')}</Text>
                       </>
                     )}
                   </Pressable>

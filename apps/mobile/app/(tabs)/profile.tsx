@@ -104,28 +104,28 @@ export default function ProfileScreen() {
         {user ? (
           <>
             <Text style={styles.headerTitle}>{user.email}</Text>
-            <Text style={styles.headerSubtitle}>Signed in</Text>
+            <Text style={styles.headerSubtitle}>{t('auth.signedIn')}</Text>
             <Pressable
               style={[styles.signInButton, styles.signOutButton]}
               onPress={signOut}
               disabled={loading}
             >
               <Text style={styles.signInText}>
-                {loading ? 'Signing out...' : 'Sign Out'}
+                {loading ? t('auth.signingOut') : t('auth.signOut')}
               </Text>
             </Pressable>
           </>
         ) : (
           <>
-            <Text style={styles.headerTitle}>Guest User</Text>
+            <Text style={styles.headerTitle}>{t('auth.guestUser')}</Text>
             <Text style={styles.headerSubtitle}>
-              Sign in to sync favourites across devices
+              {t('auth.signInToSync')}
             </Text>
             <Pressable
               style={styles.signInButton}
               onPress={() => router.push('/auth/sign-in')}
             >
-              <Text style={styles.signInText}>Sign In</Text>
+              <Text style={styles.signInText}>{t('auth.signIn')}</Text>
             </Pressable>
           </>
         )}
@@ -133,13 +133,13 @@ export default function ProfileScreen() {
 
       {/* Notifications */}
       <View style={styles.section}>
-        <Text style={styles.sectionTitle}>Notifications</Text>
+        <Text style={styles.sectionTitle}>{t('profile.notifications')}</Text>
         <View style={styles.card}>
           <View style={styles.settingRow}>
             <View style={[styles.settingIcon, { backgroundColor: '#4F8EF720' }]}>
               <Ionicons name="notifications" size={18} color="#4F8EF7" />
             </View>
-            <Text style={styles.settingLabel}>Push Notifications</Text>
+            <Text style={styles.settingLabel}>{t('profile.pushNotifications')}</Text>
             <Switch
               value={notifEnabled}
               onValueChange={toggleNotif}
@@ -149,14 +149,14 @@ export default function ProfileScreen() {
           </View>
           <SettingRow
             icon="mail"
-            label="Notification Center"
-            value={unreadCount > 0 ? `${unreadCount} unread` : 'None'}
+            label={t('profileExtended.notificationCenter')}
+            value={unreadCount > 0 ? t('notifications.unread', { count: unreadCount }) : undefined}
             onPress={() => router.push('/notifications')}
             color="#F59E0B"
           />
           <SettingRow
             icon="settings"
-            label="Notification Settings"
+            label={t('profileExtended.notificationSettings')}
             onPress={() => router.push('/notification-settings')}
             color="#8B5CF6"
           />
@@ -183,14 +183,14 @@ export default function ProfileScreen() {
             onPress={() => router.push('/auth/edit-profile' as any)}
           >
             <Ionicons name="create-outline" size={16} color="#4F8EF7" />
-            <Text style={styles.editProfileText}>Edit Profile</Text>
+            <Text style={styles.editProfileText}>{t('profile.editProfile')}</Text>
           </Pressable>
         </View>
       )}
 
       {/* Contributor Verification */}
       <View style={styles.section}>
-        <Text style={styles.sectionTitle}>Contributor Status</Text>
+        <Text style={styles.sectionTitle}>{t('profileExtended.contributorStatus')}</Text>
         <View style={styles.card}>
           {kycConfig ? (
             <View style={styles.settingRow}>
@@ -218,9 +218,9 @@ export default function ProfileScreen() {
                 <Ionicons name="finger-print" size={18} color="#F59E0B" />
               </View>
               <View style={{ flex: 1 }}>
-                <Text style={styles.settingLabel}>Verify to Contribute</Text>
+                <Text style={styles.settingLabel}>{t('profileExtended.verifyToContribute')}</Text>
                 <Text style={{ fontSize: 11, color: '#6B7280', marginTop: 2 }}>
-                  Required before posting, commenting, or reporting
+                  {t('profileExtended.verifyDesc')}
                 </Text>
               </View>
               <Ionicons name="chevron-forward" size={16} color="#374151" />
@@ -246,47 +246,47 @@ export default function ProfileScreen() {
           <SettingRow icon="information-circle" label={t('profile.version')} value="0.1.0" />
           <SettingRow icon="map" label={t('profile.settings')} value={STATES[activeStateCode]?.name ?? activeStateCode} />
           <SettingRow icon="people" label={t('explore.constituencies')} value={String(STATES[activeStateCode]?.assemblySeats ?? '—')} />
-          <SettingRow icon="server" label="Data" value={`${latestElectionYear} Elections`} />
+          <SettingRow icon="server" label={t('profileExtended.data')} value={`${latestElectionYear} ${t('profileExtended.elections')}`} />
         </View>
       </View>
 
       {/* Explore Features */}
       <View style={styles.section}>
-        <Text style={styles.sectionTitle}>Explore Features</Text>
+        <Text style={styles.sectionTitle}>{t('profileExtended.exploreFeatures')}</Text>
         <View style={styles.card}>
           <SettingRow
             icon="business"
-            label="Parliament — MPs & Party Strength"
+            label={t('profileExtended.parliamentMPs')}
             onPress={() => router.push('/parliament' as any)}
             color="#8B5CF6"
           />
           <SettingRow
             icon="sparkles"
-            label="AI Chat — Ask Anything"
+            label={t('profileExtended.aiChatAsk')}
             onPress={() => router.push('/ai-chat' as any)}
             color="#F59E0B"
           />
           <SettingRow
             icon="map"
-            label="Delimitation Tracker"
+            label={t('profileExtended.delimitationTracker')}
             onPress={() => router.push('/delimitation' as any)}
             color="#10B981"
           />
           <SettingRow
             icon="person-circle"
-            label="What Changes For You"
+            label={t('profileExtended.whatChangesForYou')}
             onPress={() => router.push('/delimitation/my-impact' as any)}
             color="#EF4444"
           />
           <SettingRow
             icon="school"
-            label="Leadership Academy"
+            label={t('profileExtended.leadershipAcademy')}
             onPress={() => router.push('/leadership-academy' as any)}
             color="#8B5CF6"
           />
           <SettingRow
             icon="rocket"
-            label="Become an Aspirant"
+            label={t('profileExtended.becomeAspirant')}
             onPress={() => router.push('/become-aspirant' as any)}
             color="#06B6D4"
           />
@@ -295,18 +295,18 @@ export default function ProfileScreen() {
 
       {/* Activity */}
       <View style={styles.section}>
-        <Text style={styles.sectionTitle}>Activity</Text>
+        <Text style={styles.sectionTitle}>{t('profileExtended.activity')}</Text>
         <View style={styles.card}>
           <SettingRow
             icon="heart"
-            label="Favourites"
-            value={`${favoriteCount} saved`}
+            label={t('profile.favorites')}
+            value={`${favoriteCount} ${t('profileExtended.saved')}`}
             color="#EF4444"
           />
           <SettingRow
             icon="time"
-            label="Recently Viewed"
-            value={`${recents.length} visited`}
+            label={t('profileExtended.recentlyViewed')}
+            value={`${recents.length} ${t('profileExtended.visited')}`}
             color="#F59E0B"
           />
         </View>
@@ -316,9 +316,9 @@ export default function ProfileScreen() {
       {recents.length > 0 && (
         <View style={styles.section}>
           <View style={styles.sectionHeaderRow}>
-            <Text style={styles.sectionTitle}>Recent</Text>
+            <Text style={styles.sectionTitle}>{t('profileExtended.recent')}</Text>
             <Pressable onPress={clearRecents} hitSlop={8}>
-              <Text style={styles.clearText}>Clear</Text>
+              <Text style={styles.clearText}>{t('profileExtended.clear')}</Text>
             </Pressable>
           </View>
           <View style={styles.card}>
@@ -349,13 +349,13 @@ export default function ProfileScreen() {
 
       {/* Preferences */}
       <View style={styles.section}>
-        <Text style={styles.sectionTitle}>Preferences</Text>
+        <Text style={styles.sectionTitle}>{t('profileExtended.preferences')}</Text>
         <View style={styles.card}>
           <View style={styles.settingRow}>
             <View style={[styles.settingIcon, { backgroundColor: '#F59E0B20' }]}>
               <Ionicons name="notifications" size={18} color="#F59E0B" />
             </View>
-            <Text style={styles.settingLabel}>Notifications</Text>
+            <Text style={styles.settingLabel}>{t('profile.notifications')}</Text>
             <Switch
               value={prefs.notificationsEnabled}
               onValueChange={prefs.setNotificationsEnabled}
@@ -367,7 +367,7 @@ export default function ProfileScreen() {
             <View style={[styles.settingIcon, { backgroundColor: '#8B5CF620' }]}>
               <Ionicons name="phone-portrait" size={18} color="#8B5CF6" />
             </View>
-            <Text style={styles.settingLabel}>Haptic Feedback</Text>
+            <Text style={styles.settingLabel}>{t('profileExtended.hapticFeedback')}</Text>
             <Switch
               value={prefs.hapticFeedback}
               onValueChange={prefs.setHapticFeedback}
@@ -380,9 +380,9 @@ export default function ProfileScreen() {
               <Ionicons name="tv" size={18} color="#10B981" />
             </View>
             <View style={{ flex: 1 }}>
-              <Text style={styles.settingLabel}>Broadcast / Playout Mode</Text>
+              <Text style={styles.settingLabel}>{t('profileExtended.broadcastMode')}</Text>
               <Text style={{ fontSize: 11, color: '#6B7280', marginTop: 2 }}>
-                Hides all UI on map, leaving a clean feed for screen capture
+                {t('profileExtended.broadcastDesc')}
               </Text>
             </View>
             <Switch
@@ -396,7 +396,7 @@ export default function ProfileScreen() {
             <View style={[styles.settingIcon, { backgroundColor: '#8B5CF620' }]}>
               <Ionicons name="moon" size={18} color="#8B5CF6" />
             </View>
-            <Text style={styles.settingLabel}>Theme</Text>
+            <Text style={styles.settingLabel}>{t('profileExtended.theme')}</Text>
             <View style={styles.themePicker}>
               {(['dark', 'light', 'system'] as const).map((mode) => (
                 <Pressable
@@ -427,17 +427,17 @@ export default function ProfileScreen() {
 
       {/* About */}
       <View style={styles.section}>
-        <Text style={styles.sectionTitle}>About</Text>
+        <Text style={styles.sectionTitle}>{t('profile.about')}</Text>
         <View style={styles.card}>
           <SettingRow
             icon="shield-checkmark"
-            label="Privacy Policy"
+            label={t('profileExtended.privacyPolicy')}
             onPress={() => {}}
             color="#10B981"
           />
           <SettingRow
             icon="document-text"
-            label="Terms of Service"
+            label={t('profileExtended.termsOfService')}
             onPress={() => {}}
             color="#6B7280"
           />
@@ -445,11 +445,11 @@ export default function ProfileScreen() {
       </View>
 
       <View style={styles.footer}>
-        <Text style={styles.footerBrand}>KSHETRA</Text>
+        <Text style={styles.footerBrand}>{t('common.appName')}</Text>
         <Text style={styles.footerText}>
-          India's Political Intelligence Platform
+          {t('profileExtended.tagline')}
         </Text>
-        <Text style={styles.footerVersion}>v0.1.0 · Phase 1</Text>
+        <Text style={styles.footerVersion}>{t('profileExtended.versionPhase')}</Text>
       </View>
     </ScrollView>
   );

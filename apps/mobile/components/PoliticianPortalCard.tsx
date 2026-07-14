@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next';
 import { View, Text, StyleSheet, Pressable } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import type { PoliticianPortalProfile } from '../lib/politicianPortalTypes';
@@ -10,6 +11,7 @@ interface PoliticianPortalCardProps {
 }
 
 export default function PoliticianPortalCard({ politician, onPress, compact }: PoliticianPortalCardProps) {
+  const { t } = useTranslation();
   const tierConfig = POLITICIAN_TIER_CONFIG[politician.tier];
 
   if (compact) {
@@ -20,7 +22,7 @@ export default function PoliticianPortalCard({ politician, onPress, compact }: P
         </View>
         <View style={styles.compactInfo}>
           <Text style={styles.compactName}>{politician.displayName}</Text>
-          <Text style={styles.compactMeta}>{politician.party || 'Independent'} · {tierConfig.label}</Text>
+          <Text style={styles.compactMeta}>{politician.party || t('politicianPortal.independent')} · {tierConfig.label}</Text>
         </View>
         {politician.isVerified && <Ionicons name="checkmark-circle" size={16} color="#10B981" />}
       </Pressable>
@@ -54,29 +56,29 @@ export default function PoliticianPortalCard({ politician, onPress, compact }: P
         <View style={styles.metric}>
           <Ionicons name="people" size={16} color="#3B82F6" />
           <Text style={styles.metricValue}>{politician.followerCount > 1000 ? `${Math.round(politician.followerCount / 1000)}K` : politician.followerCount}</Text>
-          <Text style={styles.metricLabel}>Followers</Text>
+          <Text style={styles.metricLabel}>{t('common.followers')}</Text>
         </View>
         <View style={styles.metric}>
           <Ionicons name="chatbubbles" size={16} color="#10B981" />
           <Text style={styles.metricValue}>{politician.responseRate.toFixed(0)}%</Text>
-          <Text style={styles.metricLabel}>Response Rate</Text>
+          <Text style={styles.metricLabel}>{t('politicianPortal.responseRate')}</Text>
         </View>
         <View style={styles.metric}>
           <Ionicons name="warning" size={16} color="#F59E0B" />
           <Text style={styles.metricValue}>{politician.issuesResponded}</Text>
-          <Text style={styles.metricLabel}>Issues Handled</Text>
+          <Text style={styles.metricLabel}>{t('politicianPortal.issuesHandled')}</Text>
         </View>
         <View style={styles.metric}>
           <Ionicons name="thumbs-up" size={16} color="#8B5CF6" />
           <Text style={styles.metricValue}>{politician.endorsementCount}</Text>
-          <Text style={styles.metricLabel}>Endorsements</Text>
+          <Text style={styles.metricLabel}>{t('civicScoreCard.endorsements')}</Text>
         </View>
       </View>
 
       {/* Response Time */}
       <View style={styles.responseRow}>
         <Ionicons name="time" size={14} color="#6B7280" />
-        <Text style={styles.responseText}>Avg. response time: {politician.avgResponseTimeHours.toFixed(1)} hours</Text>
+        <Text style={styles.responseText}>{t('politicianPortal.avgResponseTime', { hours: politician.avgResponseTimeHours.toFixed(1) })}</Text>
       </View>
     </Pressable>
   );

@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next';
 import { View, Text, StyleSheet, Pressable } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import type { FactCheck } from '../lib/journalistTypes';
@@ -10,6 +11,7 @@ interface FactCheckCardProps {
 }
 
 export default function FactCheckCard({ factCheck, onPress, compact }: FactCheckCardProps) {
+  const { t } = useTranslation();
   const verdictConfig = FACT_CHECK_CONFIG[factCheck.verdict];
 
   if (compact) {
@@ -29,16 +31,16 @@ export default function FactCheckCard({ factCheck, onPress, compact }: FactCheck
         <Text style={[styles.verdictLabel, { color: verdictConfig.color }]}>{verdictConfig.emoji} {verdictConfig.label}</Text>
       </View>
       <View style={styles.content}>
-        <Text style={styles.claimLabel}>CLAIM</Text>
+        <Text style={styles.claimLabel}>{t('factCheckCard.claim')}</Text>
         <Text style={styles.claimText}>"{factCheck.claimText}"</Text>
         <Text style={styles.claimSource}>— {factCheck.claimSource}</Text>
         <View style={styles.divider} />
-        <Text style={styles.explanationLabel}>EXPLANATION</Text>
+        <Text style={styles.explanationLabel}>{t('factCheckCard.explanation')}</Text>
         <Text style={styles.explanation}>{factCheck.explanation}</Text>
         {factCheck.evidence.length > 0 && (
           <View style={styles.evidenceRow}>
             <Ionicons name="document-text" size={14} color="#6B7280" />
-            <Text style={styles.evidenceText}>{factCheck.evidence.length} evidence source{factCheck.evidence.length > 1 ? 's' : ''}</Text>
+            <Text style={styles.evidenceText}>{t('factCheckCard.evidenceSources', { n: factCheck.evidence.length })}</Text>
           </View>
         )}
       </View>

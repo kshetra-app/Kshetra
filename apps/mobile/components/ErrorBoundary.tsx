@@ -1,6 +1,7 @@
 import React from 'react';
 import { View, Text, StyleSheet, Pressable } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import i18next from 'i18next';
 
 interface Props {
   children: React.ReactNode;
@@ -31,13 +32,13 @@ export default class ErrorBoundary extends React.Component<Props, State> {
       return (
         <View style={styles.container}>
           <Ionicons name="warning" size={48} color="#EF4444" />
-          <Text style={styles.title}>Something went wrong</Text>
+          <Text style={styles.title}>{i18next.t('common.errorBoundary.title')}</Text>
           <Text style={styles.message}>
-            {this.props.fallbackMessage ?? this.state.error?.message ?? 'An unexpected error occurred'}
+            {this.props.fallbackMessage ?? this.state.error?.message ?? i18next.t('common.errorBoundary.message')}
           </Text>
           <Pressable style={styles.retryButton} onPress={this.handleRetry}>
             <Ionicons name="refresh" size={16} color="#FFFFFF" />
-            <Text style={styles.retryText}>Try Again</Text>
+            <Text style={styles.retryText}>{i18next.t('common.errorBoundary.retry')}</Text>
           </Pressable>
         </View>
       );

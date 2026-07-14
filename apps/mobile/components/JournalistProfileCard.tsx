@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next';
 import { View, Text, StyleSheet, Pressable } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import type { JournalistProfile } from '../lib/journalistTypes';
@@ -10,6 +11,7 @@ interface JournalistProfileCardProps {
 }
 
 export default function JournalistProfileCard({ journalist, onPress, compact }: JournalistProfileCardProps) {
+  const { t } = useTranslation();
   const tierConfig = JOURNALIST_TIER_CONFIG[journalist.tier];
 
   if (compact) {
@@ -71,19 +73,19 @@ export default function JournalistProfileCard({ journalist, onPress, compact }: 
       <View style={styles.statsRow}>
         <View style={styles.stat}>
           <Text style={styles.statValue}>{journalist.totalArticles}</Text>
-          <Text style={styles.statLabel}>Articles</Text>
+          <Text style={styles.statLabel}>{t('journalist.articles')}</Text>
         </View>
         <View style={styles.stat}>
           <Text style={styles.statValue}>{journalist.totalViews > 1000000 ? `${(journalist.totalViews / 1000000).toFixed(1)}M` : `${Math.round(journalist.totalViews / 1000)}K`}</Text>
-          <Text style={styles.statLabel}>Views</Text>
+          <Text style={styles.statLabel}>{t('journalist.viewsLabel')}</Text>
         </View>
         <View style={styles.stat}>
           <Text style={styles.statValue}>⭐ {journalist.avgRating.toFixed(1)}</Text>
-          <Text style={styles.statLabel}>Rating</Text>
+          <Text style={styles.statLabel}>{t('journalist.rating')}</Text>
         </View>
         <View style={styles.stat}>
           <Text style={styles.statValue}>{journalist.reputation}</Text>
-          <Text style={styles.statLabel}>Reputation</Text>
+          <Text style={styles.statLabel}>{t('journalist.reputation')}</Text>
         </View>
       </View>
 

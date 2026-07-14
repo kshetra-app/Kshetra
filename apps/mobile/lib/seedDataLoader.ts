@@ -9,6 +9,8 @@
  */
 
 import * as SQLite from 'expo-sqlite';
+import { Asset } from 'expo-asset';
+import * as FileSystem from 'expo-file-system/legacy';
 import { useEffect, useRef } from 'react';
 
 // ═════════════════════════════════════════════════════════════════════════
@@ -105,6 +107,63 @@ export interface ElectionHistoryResultRow {
 let dbInstance: SQLite.SQLiteDatabase | null = null;
 let dbInitPromise: Promise<SQLite.SQLiteDatabase> | null = null;
 
+/**
+ * Bundled prebuilt database. `openDatabaseAsync(DB_NAME)` reads from the app's
+ * SQLite directory, so the bundled asset must be copied there on first launch.
+ * The version is auto-derived from the DB content hash (see below), so no manual
+ * bookkeeping is needed when the .db is rebuilt.
+ */
+const DB_NAME = 'seed-data.db';
+// Auto-derived from the DB's content hash by scripts/build-seed-db.mjs — no
+// manual bump needed. Changes whenever the bundled DB is rebuilt, which forces
+// devices to re-copy the fresh file on next launch.
+// eslint-disable-next-line @typescript-eslint/no-var-requires
+const DB_ASSET_VERSION: string = require('../data/seed-db-version.json').version;
+// eslint-disable-next-line @typescript-eslint/no-var-requires
+const DB_ASSET_MODULE = require('../data/seed-data.db');
+
+/**
+ * Copy the bundled seed database into the SQLite directory if missing or stale.
+ * Produces a single self-contained file (the build checkpoints its WAL), so we
+ * also clear any stray -wal/-shm before copying a fresh version.
+ */
+async function ensureBundledDbCopied(): Promise<void> {
+  const sqliteDir = `${FileSystem.documentDirectory}SQLite`;
+  const dbPath = `${sqliteDir}/${DB_NAME}`;
+  const versionPath = `${dbPath}.version`;
+
+  const dirInfo = await FileSystem.getInfoAsync(sqliteDir);
+  if (!dirInfo.exists) {
+    await FileSystem.makeDirectoryAsync(sqliteDir, { intermediates: true });
+  }
+
+  const dbInfo = await FileSystem.getInfoAsync(dbPath);
+  if (dbInfo.exists) {
+    let installedVersion: string | null = null;
+    try {
+      installedVersion = await FileSystem.readAsStringAsync(versionPath);
+    } catch {
+      installedVersion = null;
+    }
+    if (installedVersion === DB_ASSET_VERSION) return; // up to date
+  }
+
+  const asset = Asset.fromModule(DB_ASSET_MODULE);
+  await asset.downloadAsync();
+  if (!asset.localUri) {
+    throw new Error('[seedDataLoader] bundled seed-data.db asset has no localUri');
+  }
+
+  // Remove any prior copy (and its journal siblings) before installing fresh.
+  await FileSystem.deleteAsync(dbPath, { idempotent: true });
+  await FileSystem.deleteAsync(`${dbPath}-wal`, { idempotent: true });
+  await FileSystem.deleteAsync(`${dbPath}-shm`, { idempotent: true });
+
+  await FileSystem.copyAsync({ from: asset.localUri, to: dbPath });
+  await FileSystem.writeAsStringAsync(versionPath, DB_ASSET_VERSION);
+  console.log('[seedDataLoader] Bundled seed-data.db installed into SQLite dir');
+}
+
 const cache = {
   mlaProfiles: new Map<string, Map<number, MLAProfileRow>>(),
   demographics: new Map<string, Map<number, DemographicsRow>>(),
@@ -123,7 +182,8 @@ async function initDB(): Promise<SQLite.SQLiteDatabase> {
 
   dbInitPromise = (async () => {
     try {
-      const db = await SQLite.openDatabaseAsync('seed-data.db');
+      await ensureBundledDbCopied();
+      const db = await SQLite.openDatabaseAsync(DB_NAME);
       dbInstance = db;
       console.log('[seedDataLoader] Database initialized');
       return db;
@@ -144,6 +204,14 @@ async function ensureDB(): Promise<SQLite.SQLiteDatabase> {
     await initDB();
   }
   return dbInstance!;
+}
+
+/**
+ * Shared handle to the bundled `seed-data.db` for other modules (e.g.
+ * representativesData) so the whole app uses a single connection + init path.
+ */
+export async function getSeedDb(): Promise<SQLite.SQLiteDatabase> {
+  return ensureDB();
 }
 
 // ═════════════════════════════════════════════════════════════════════════

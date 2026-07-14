@@ -3,6 +3,7 @@
  * Shows key transparency metrics: assets, criminal cases, education, red flags.
  */
 import React, { useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 import { View, Text, StyleSheet, Pressable } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
@@ -22,6 +23,7 @@ interface AffidavitCardProps {
 }
 
 export default React.memo(function AffidavitCard({ stateCode, acNo, electionYear }: AffidavitCardProps) {
+  const { t } = useTranslation();
   const router = useRouter();
   const getWinnerAffidavit = useAffidavitStore((s) => s.getWinnerAffidavit);
   const getRedFlags = useAffidavitStore((s) => s.getRedFlags);
@@ -55,7 +57,7 @@ export default React.memo(function AffidavitCard({ stateCode, acNo, electionYear
       <View style={styles.header}>
         <View style={styles.headerLeft}>
           <Ionicons name="document-text" size={18} color="#4F8EF7" />
-          <Text style={styles.title}>Election Affidavit</Text>
+          <Text style={styles.title}>{t('affidavit.title')}</Text>
         </View>
         <View style={styles.yearBadge}>
           <Text style={styles.yearText}>{affidavit.electionYear}</Text>
@@ -64,19 +66,19 @@ export default React.memo(function AffidavitCard({ stateCode, acNo, electionYear
 
       {/* Candidate info */}
       <Text style={styles.candidateName}>{affidavit.candidateName}</Text>
-      <Text style={styles.candidateMeta}>{affidavit.party} · {EDUCATION_LEVEL_CONFIG[affidavit.education].label} · Age {affidavit.age}</Text>
+      <Text style={styles.candidateMeta}>{affidavit.party} · {EDUCATION_LEVEL_CONFIG[affidavit.education].label} · {t('affidavit.age')} {affidavit.age}</Text>
 
       {/* Key metrics */}
       <View style={styles.metricsRow}>
         <View style={styles.metric}>
           <Ionicons name="wallet" size={16} color="#10B981" />
           <Text style={styles.metricValue}>{formatINR(affidavit.totalAssets)}</Text>
-          <Text style={styles.metricLabel}>Total Assets</Text>
+          <Text style={styles.metricLabel}>{t('affidavit.totalAssets')}</Text>
         </View>
         <View style={styles.metric}>
           <Ionicons name="card" size={16} color="#F59E0B" />
           <Text style={styles.metricValue}>{formatINR(affidavit.totalLiabilities)}</Text>
-          <Text style={styles.metricLabel}>Liabilities</Text>
+          <Text style={styles.metricLabel}>{t('affidavit.liabilities')}</Text>
         </View>
         <View style={styles.metric}>
           <Ionicons
@@ -87,13 +89,13 @@ export default React.memo(function AffidavitCard({ stateCode, acNo, electionYear
           <Text style={[styles.metricValue, affidavit.criminalCases > 0 && { color: '#EF4444' }]}>
             {affidavit.criminalCases}
           </Text>
-          <Text style={styles.metricLabel}>Cases</Text>
+          <Text style={styles.metricLabel}>{t('affidavit.cases')}</Text>
         </View>
         {latestGrowth && (
           <View style={styles.metric}>
             <Ionicons name="trending-up" size={16} color="#8B5CF6" />
             <Text style={styles.metricValue}>{latestGrowth.percentGrowth.toFixed(0)}%</Text>
-            <Text style={styles.metricLabel}>Growth</Text>
+            <Text style={styles.metricLabel}>{t('affidavit.growth')}</Text>
           </View>
         )}
       </View>
@@ -116,7 +118,7 @@ export default React.memo(function AffidavitCard({ stateCode, acNo, electionYear
 
       {/* View full X-ray link */}
       <View style={styles.footer}>
-        <Text style={styles.footerLink}>View Complete Profile</Text>
+        <Text style={styles.footerLink}>{t('affidavit.viewCompleteProfile')}</Text>
         <Ionicons name="chevron-forward" size={14} color="#4F8EF7" />
       </View>
     </Pressable>

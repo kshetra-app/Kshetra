@@ -274,7 +274,7 @@ export default function ConstituencyDetailScreen() {
             color={isFavorite ? '#4F8EF7' : '#6B7280'}
           />
           <Text style={[styles.followButtonText, isFavorite && styles.followButtonTextActive]}>
-            {isFavorite ? 'Following Constituency' : 'Follow Constituency'}
+            {isFavorite ? t('constituencyExtended.followingConstituency') : t('constituencyExtended.followConstituency')}
           </Text>
           {isFavorite && (
             <Ionicons name="checkmark-circle" size={16} color="#4F8EF7" />
@@ -366,7 +366,7 @@ export default function ConstituencyDetailScreen() {
                 onPress={() => router.push(`/legislator/MLA_${stateCode}_${constituency.electionYear}_${constituency.name}_${constituency.acNo}` as any)}
               >
                 <Ionicons name="person-circle" size={16} color="#4F8EF7" />
-                <Text style={styles.fullProfileBtnText}>View Complete Profile</Text>
+                <Text style={styles.fullProfileBtnText}>{t('constituencyExtended.viewCompleteProfile')}</Text>
                 <Ionicons name="chevron-forward" size={14} color="#4F8EF7" />
               </Pressable>
             </View>
@@ -376,13 +376,13 @@ export default function ConstituencyDetailScreen() {
         {/* Administrative Hierarchy drill-down (Booth → Panchayat → Mandal) */}
         {hasHierarchyData(stateCode, acNo) && (
           <View style={styles.section}>
-            <Text style={styles.sectionTitle}>Administrative Hierarchy</Text>
+            <Text style={styles.sectionTitle}>{t('constituencyExtended.administrativeHierarchy')}</Text>
             <Pressable
               style={styles.fullProfileBtn}
               onPress={() => router.push(`/hierarchy/${stateCode}-AC-${acNo}` as any)}
             >
               <Ionicons name="git-branch" size={16} color="#4F8EF7" />
-              <Text style={styles.fullProfileBtnText}>Explore Mandals, Panchayats &amp; Booths</Text>
+              <Text style={styles.fullProfileBtnText}>{t('constituencyExtended.exploreHierarchy')}</Text>
               <Ionicons name="chevron-forward" size={14} color="#4F8EF7" />
             </Pressable>
           </View>
@@ -470,21 +470,21 @@ export default function ConstituencyDetailScreen() {
                 <Text style={styles.demoSubTitle}>{t('constituency.socialComposition')}</Text>
                 <View style={styles.demoBarGroup}>
                   <View style={styles.demoBarRow}>
-                    <Text style={styles.demoBarLabel}>SC</Text>
+                    <Text style={styles.demoBarLabel}>{t('constituencyExtended.scLabel')}</Text>
                     <View style={styles.demoBarTrack}>
                       <View style={[styles.demoBarFill, { width: `${demo.scPercent}%`, backgroundColor: '#F59E0B' }]} />
                     </View>
                     <Text style={styles.demoBarValue}>{demo.scPercent}%</Text>
                   </View>
                   <View style={styles.demoBarRow}>
-                    <Text style={styles.demoBarLabel}>ST</Text>
+                    <Text style={styles.demoBarLabel}>{t('constituencyExtended.stLabel')}</Text>
                     <View style={styles.demoBarTrack}>
                       <View style={[styles.demoBarFill, { width: `${demo.stPercent}%`, backgroundColor: '#10B981' }]} />
                     </View>
                     <Text style={styles.demoBarValue}>{demo.stPercent}%</Text>
                   </View>
                   <View style={styles.demoBarRow}>
-                    <Text style={styles.demoBarLabel}>Urban</Text>
+                    <Text style={styles.demoBarLabel}>{t('constituencyExtended.urbanLabel')}</Text>
                     <View style={styles.demoBarTrack}>
                       <View style={[styles.demoBarFill, { width: `${demo.urbanPercent}%`, backgroundColor: '#4F8EF7' }]} />
                     </View>
@@ -507,15 +507,15 @@ export default function ConstituencyDetailScreen() {
             {constituencyIssues.length > 0 ? (
               <>
                 <View style={styles.tabHeader}>
-                  <Text style={styles.tabHeaderTitle}>Civic Issues</Text>
-                  <Text style={styles.tabHeaderCount}>{constituencyIssues.length} {constituencyIssues.length === 1 ? 'issue' : 'issues'}</Text>
+                  <Text style={styles.tabHeaderTitle}>{t('constituencyExtended.civicIssues')}</Text>
+                  <Text style={styles.tabHeaderCount}>{constituencyIssues.length} {constituencyIssues.length === 1 ? t('constituencyExtended.issue') : t('constituencyExtended.issues')}</Text>
                 </View>
                 {/* Issue summary stats */}
                 <View style={styles.issueStatsRow}>
                   {(['open', 'in_progress', 'resolved'] as const).map((status) => {
                     const count = constituencyIssues.filter((i) => i.status === status).length;
                     const colors = { open: '#3B82F6', in_progress: '#F59E0B', resolved: '#10B981' };
-                    const labels = { open: 'Open', in_progress: 'In Progress', resolved: 'Resolved' };
+                    const labels = { open: t('constituencyExtended.issueStatus.open'), in_progress: t('constituencyExtended.issueStatus.inProgress'), resolved: t('constituencyExtended.issueStatus.resolved') };
                     return (
                       <View key={status} style={styles.issueStatItem}>
                         <Text style={[styles.issueStatValue, { color: colors[status] }]}>{count}</Text>
@@ -541,7 +541,7 @@ export default function ConstituencyDetailScreen() {
             ) : (
               <View style={styles.emptyState}>
                 <Ionicons name="checkmark-circle-outline" size={48} color="#374151" />
-                <Text style={styles.emptyTitle}>No Issues Reported</Text>
+                <Text style={styles.emptyTitle}>{t('constituencyExtended.noIssuesReported')}</Text>
                 <Text style={styles.emptySubtitle}>No civic issues have been reported for this constituency yet. Be the first to report one!</Text>
               </View>
             )}
@@ -556,8 +556,8 @@ export default function ConstituencyDetailScreen() {
             {constituencyPosts.length > 0 ? (
               <>
                 <View style={styles.tabHeader}>
-                  <Text style={styles.tabHeaderTitle}>Community Pulse</Text>
-                  <Text style={styles.tabHeaderCount}>{constituencyPosts.length} {constituencyPosts.length === 1 ? 'post' : 'posts'}</Text>
+                  <Text style={styles.tabHeaderTitle}>{t('constituencyExtended.communityPulse')}</Text>
+                  <Text style={styles.tabHeaderCount}>{constituencyPosts.length} {constituencyPosts.length === 1 ? t('common.post') : t('common.posts')}</Text>
                 </View>
                 {constituencyPosts.map((post) => (
                   <View key={post.id}>
@@ -587,7 +587,7 @@ export default function ConstituencyDetailScreen() {
             ) : (
               <View style={styles.emptyState}>
                 <Ionicons name="chatbubbles-outline" size={48} color="#374151" />
-                <Text style={styles.emptyTitle}>No Discussions Yet</Text>
+                <Text style={styles.emptyTitle}>{t('constituencyExtended.noDiscussions')}</Text>
                 <Text style={styles.emptySubtitle}>Start a conversation about this constituency on the Feed tab. Posts tagged to this area will appear here.</Text>
               </View>
             )}
@@ -602,7 +602,7 @@ export default function ConstituencyDetailScreen() {
             {constituencyHeadlines.length > 0 ? (
               <>
                 <View style={styles.tabHeader}>
-                  <Text style={styles.tabHeaderTitle}>News & Headlines</Text>
+                  <Text style={styles.tabHeaderTitle}>{t('constituencyExtended.newsAndHeadlines')}</Text>
                   <Text style={styles.tabHeaderCount}>{constituencyHeadlines.length} {constituencyHeadlines.length === 1 ? 'article' : 'articles'}</Text>
                 </View>
                 <View style={{ paddingHorizontal: 16 }}>
@@ -807,7 +807,7 @@ export default function ConstituencyDetailScreen() {
 
         {/* Candidate Transparency — Affidavit */}
         <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Candidate Transparency</Text>
+          <Text style={styles.sectionTitle}>{t('constituencyExtended.candidateTransparency')}</Text>
           <AffidavitCard stateCode={stateCode} acNo={acNo} electionYear={constituency.electionYear} />
         </View>
 

@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next';
 import { View, Text, StyleSheet, Pressable } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import type { AdCreative } from '../lib/campaignTypes';
@@ -10,6 +11,7 @@ interface AdPerformanceCardProps {
 }
 
 export default function AdPerformanceCard({ ad, onPress, onPause }: AdPerformanceCardProps) {
+  const { t } = useTranslation();
   const formatConfig = AD_FORMAT_CONFIG[ad.format];
   const perf = ad.performance;
   const isActive = ad.status === 'active';
@@ -34,15 +36,15 @@ export default function AdPerformanceCard({ ad, onPress, onPause }: AdPerformanc
       <View style={styles.kpiRow}>
         <View style={styles.kpi}>
           <Text style={styles.kpiValue}>{perf.impressions > 1000000 ? `${(perf.impressions / 1000000).toFixed(1)}M` : `${Math.round(perf.impressions / 1000)}K`}</Text>
-          <Text style={styles.kpiLabel}>Impressions</Text>
+          <Text style={styles.kpiLabel}>{t('campaignManager.impressions')}</Text>
         </View>
         <View style={styles.kpi}>
           <Text style={[styles.kpiValue, { color: '#10B981' }]}>{perf.ctr.toFixed(1)}%</Text>
-          <Text style={styles.kpiLabel}>CTR</Text>
+          <Text style={styles.kpiLabel}>{t('campaignManager.ctr')}</Text>
         </View>
         <View style={styles.kpi}>
           <Text style={styles.kpiValue}>{formatBudget(perf.spend)}</Text>
-          <Text style={styles.kpiLabel}>Spent</Text>
+          <Text style={styles.kpiLabel}>{t('campaignManager.spent')}</Text>
         </View>
         <View style={styles.kpi}>
           <Text style={[styles.kpiValue, { color: perf.roi > 200 ? '#10B981' : '#F59E0B' }]}>{perf.roi}%</Text>
@@ -52,7 +54,7 @@ export default function AdPerformanceCard({ ad, onPress, onPause }: AdPerformanc
 
       {/* Sentiment */}
       <View style={styles.sentimentRow}>
-        <Text style={styles.sentimentLabel}>Sentiment:</Text>
+        <Text style={styles.sentimentLabel}>{t('outreach.sentiment')}:</Text>
         <View style={styles.sentimentBar}>
           <View style={[styles.sentimentFill, { width: `${perf.sentimentPositive}%`, backgroundColor: '#10B981' }]} />
           <View style={[styles.sentimentFill, { width: `${perf.sentimentNeutral}%`, backgroundColor: '#6B7280' }]} />
@@ -64,15 +66,15 @@ export default function AdPerformanceCard({ ad, onPress, onPause }: AdPerformanc
       {/* ECI Compliance */}
       <View style={styles.complianceRow}>
         <Ionicons name={ad.isECICompliant ? 'checkmark-circle' : 'warning'} size={14} color={ad.isECICompliant ? '#10B981' : '#EF4444'} />
-        <Text style={[styles.complianceText, { color: ad.isECICompliant ? '#10B981' : '#EF4444' }]}>{ad.isECICompliant ? 'ECI Compliant' : 'Compliance Issue'}</Text>
-        {ad.disclosureText && <Text style={styles.disclosureText} numberOfLines={1}>Paid by: {ad.paidForBy}</Text>}
+        <Text style={[styles.complianceText, { color: ad.isECICompliant ? '#10B981' : '#EF4444' }]}>{ad.isECICompliant ? t('campaignManager.eciCompliant') : t('campaignManager.complianceIssue')}</Text>
+        {ad.disclosureText && <Text style={styles.disclosureText} numberOfLines={1}>{t('campaignManager.paidBy')}: {ad.paidForBy}</Text>}
       </View>
 
       {/* Actions */}
       {isActive && onPause && (
         <Pressable style={styles.pauseButton} onPress={onPause}>
           <Ionicons name="pause" size={14} color="#F59E0B" />
-          <Text style={styles.pauseText}>Pause Ad</Text>
+          <Text style={styles.pauseText}>{t('campaignManager.pauseAd')}</Text>
         </Pressable>
       )}
     </Pressable>

@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next';
 import { View, Text, StyleSheet, Pressable } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import type { EManifesto, ManifestoItem } from '../lib/politicianPortalTypes';
@@ -10,6 +11,7 @@ interface ManifestoCardProps {
 }
 
 function ManifestoItemRow({ item, onVote }: { item: ManifestoItem; onVote?: (support: boolean) => void }) {
+  const { t } = useTranslation();
   const catConfig = MANIFESTO_CATEGORY_CONFIG[item.category];
   const totalVotes = item.supportVotes + item.opposeVotes;
   const supportPct = totalVotes > 0 ? Math.round((item.supportVotes / totalVotes) * 100) : 0;
@@ -42,7 +44,7 @@ function ManifestoItemRow({ item, onVote }: { item: ManifestoItem; onVote?: (sup
             <Ionicons name="thumbs-up" size={14} color="#10B981" />
             <Text style={[styles.voteCount, { color: '#10B981' }]}>{item.supportVotes}</Text>
           </Pressable>
-          <Text style={styles.votePct}>{supportPct}% support</Text>
+          <Text style={styles.votePct}>{supportPct}% {t('civicMetrics.support')}</Text>
           <Pressable style={styles.voteButton} onPress={() => onVote?.(false)}>
             <Ionicons name="thumbs-down" size={14} color="#EF4444" />
             <Text style={[styles.voteCount, { color: '#EF4444' }]}>{item.opposeVotes}</Text>
@@ -54,6 +56,7 @@ function ManifestoItemRow({ item, onVote }: { item: ManifestoItem; onVote?: (sup
 }
 
 export default function ManifestoCard({ manifesto, onPress, onVoteItem }: ManifestoCardProps) {
+  const { t } = useTranslation();
   return (
     <Pressable style={styles.card} onPress={onPress}>
       <View style={styles.header}>
@@ -63,7 +66,7 @@ export default function ManifestoCard({ manifesto, onPress, onVoteItem }: Manife
         </View>
         <View style={styles.statsCol}>
           <Text style={styles.statValue}>{manifesto.views}</Text>
-          <Text style={styles.statLabel}>views</Text>
+          <Text style={styles.statLabel}>{t('politicianPortal.views')}</Text>
         </View>
       </View>
 
@@ -74,7 +77,7 @@ export default function ManifestoCard({ manifesto, onPress, onVoteItem }: Manife
       ))}
 
       {manifesto.items.length > 3 && (
-        <Text style={styles.moreItems}>+{manifesto.items.length - 3} more promises</Text>
+        <Text style={styles.moreItems}>+{manifesto.items.length - 3} {t('politicianPortal.morePromises')}</Text>
       )}
     </Pressable>
   );

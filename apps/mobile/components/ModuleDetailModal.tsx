@@ -7,6 +7,7 @@
  * (and the quiz score, when a quiz is present) via the aspirant store.
  */
 import React, { useMemo, useState, useCallback } from 'react';
+import { useTranslation } from 'react-i18next';
 import {
   View,
   Text,
@@ -41,6 +42,7 @@ export default function ModuleDetailModal({
   onClose,
   onComplete,
 }: ModuleDetailModalProps) {
+  const { t } = useTranslation();
   const insets = useSafeAreaInsets();
 
   // Quiz state
@@ -126,12 +128,12 @@ export default function ModuleDetailModal({
             <View style={styles.takeawaysBox}>
               <View style={styles.takeawaysHeader}>
                 <Ionicons name="bulb" size={16} color="#F59E0B" />
-                <Text style={styles.takeawaysTitle}>Key Takeaways</Text>
+                <Text style={styles.takeawaysTitle}>{t('moduleDetail.keyTakeaways')}</Text>
               </View>
-              {module.keyTakeaways.map((t, i) => (
+              {module.keyTakeaways.map((takeaway, i) => (
                 <View key={i} style={styles.takeawayRow}>
                   <Ionicons name="checkmark-circle" size={15} color="#10B981" style={{ marginTop: 1 }} />
-                  <Text style={styles.takeawayText}>{t}</Text>
+                  <Text style={styles.takeawayText}>{takeaway}</Text>
                 </View>
               ))}
             </View>
@@ -142,7 +144,7 @@ export default function ModuleDetailModal({
             <View style={styles.quizBox}>
               <View style={styles.quizHeaderRow}>
                 <Ionicons name="help-circle" size={18} color="#4F8EF7" />
-                <Text style={styles.quizTitle}>Knowledge Check</Text>
+                <Text style={styles.quizTitle}>{t('moduleDetail.knowledgeCheck')}</Text>
                 {submitted && (
                   <Text
                     style={[
@@ -205,13 +207,13 @@ export default function ModuleDetailModal({
                   onPress={() => setSubmitted(true)}
                 >
                   <Text style={styles.quizSubmitText}>
-                    {allAnswered ? 'Submit Answers' : 'Answer all questions'}
+                    {allAnswered ? t('moduleDetail.submitQuiz') : t('leadershipAcademy.answerAllQuestions')}
                   </Text>
                 </Pressable>
               ) : (
                 <Pressable style={styles.retry} onPress={reset}>
                   <Ionicons name="refresh" size={14} color="#9CA3AF" />
-                  <Text style={styles.retryText}>Try again</Text>
+                  <Text style={styles.retryText}>{t('moduleDetail.tryAgain')}</Text>
                 </Pressable>
               )}
             </View>
@@ -222,7 +224,7 @@ export default function ModuleDetailModal({
             <View style={styles.sourcesBox}>
               <View style={styles.sourcesHeader}>
                 <Ionicons name="library" size={15} color="#9CA3AF" />
-                <Text style={styles.sourcesTitle}>Sources & Further Reading</Text>
+                <Text style={styles.sourcesTitle}>{t('moduleDetail.sources')}</Text>
               </View>
               {module.citations.map((c, i) => (
                 <Pressable
@@ -239,9 +241,7 @@ export default function ModuleDetailModal({
                 </Pressable>
               ))}
               <Text style={styles.legalNote}>
-                Educational summary prepared from the public sources above. Videos are streamed
-                from the original publisher's official channel with attribution and are not
-                re-hosted. All trademarks belong to their respective owners.
+                {t('leadershipAcademy.legalNote')}
               </Text>
             </View>
           )}
@@ -252,7 +252,7 @@ export default function ModuleDetailModal({
           {isCompleted ? (
             <View style={styles.completedBanner}>
               <Ionicons name="checkmark-circle" size={18} color="#10B981" />
-              <Text style={styles.completedText}>Module Completed</Text>
+              <Text style={styles.completedText}>{t('moduleDetail.moduleCompleted')}</Text>
             </View>
           ) : (
             <Pressable
@@ -262,7 +262,7 @@ export default function ModuleDetailModal({
             >
               <Ionicons name="checkmark-done" size={18} color="#FFFFFF" />
               <Text style={styles.completeBtnText}>
-                {hasQuiz && !submitted ? 'Take the quiz to complete' : 'Mark as Complete'}
+                {hasQuiz && !submitted ? t('leadershipAcademy.takeQuizToComplete') : t('moduleDetail.markComplete')}
               </Text>
             </Pressable>
           )}
@@ -278,6 +278,7 @@ function AttributedVideo({
 }: {
   video: NonNullable<LeadershipModule['video']>;
 }) {
+  const { t } = useTranslation();
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
 
@@ -324,7 +325,7 @@ var player;function onYouTubeIframeAPIReady(){player=new YT.Player('player',{wid
             onPress={() => Linking.openURL(video.sourceUrl).catch(() => {})}
           >
             <Ionicons name="logo-youtube" size={36} color="#FF0000" />
-            <Text style={styles.videoErrText}>Tap to watch on YouTube</Text>
+            <Text style={styles.videoErrText}>{t('moduleDetail.tapToWatch')}</Text>
           </Pressable>
         )}
       </View>

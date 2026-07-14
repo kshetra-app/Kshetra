@@ -2,6 +2,7 @@
  * MPCard — Compact card showing an MP's profile with party, house, and key stats.
  */
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import { View, Text, StyleSheet } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { getPartyColor } from '@/lib/constants';
@@ -20,9 +21,10 @@ function formatINR(val: number): string {
 }
 
 export default function MPCard({ profile, compact }: MPCardProps) {
+  const { t } = useTranslation();
   const partyColor = getPartyColor(profile.party);
 
-  const houseLabel = profile.house === 'lok_sabha' ? 'Lok Sabha' : 'Rajya Sabha';
+  const houseLabel = profile.house === 'lok_sabha' ? t('parliament.lokSabha') : t('parliament.rajyaSabha');
   const houseColor = profile.house === 'lok_sabha' ? '#4F8EF7' : '#8B5CF6';
 
   return (
@@ -50,7 +52,7 @@ export default function MPCard({ profile, compact }: MPCardProps) {
             {profile.isMinister && (
               <View style={styles.ministerBadge}>
                 <Ionicons name="star" size={10} color="#F59E0B" />
-                <Text style={styles.ministerText}>Minister</Text>
+                <Text style={styles.ministerText}>{t('parliament.mpProfile')}</Text>
               </View>
             )}
           </View>
@@ -72,12 +74,12 @@ export default function MPCard({ profile, compact }: MPCardProps) {
             {profile.age && (
               <View style={styles.statItem}>
                 <Text style={styles.statValue}>{profile.age}</Text>
-                <Text style={styles.statLabel}>Age</Text>
+                <Text style={styles.statLabel}>{t('affidavit.age')}</Text>
               </View>
             )}
             <View style={styles.statItem}>
               <Text style={styles.statValue}>{profile.terms}</Text>
-              <Text style={styles.statLabel}>Terms</Text>
+              <Text style={styles.statLabel}>{t('parliament.terms')}</Text>
             </View>
             {profile.gender && (
               <View style={styles.statItem}>
@@ -92,7 +94,7 @@ export default function MPCard({ profile, compact }: MPCardProps) {
             {profile.totalAssets !== undefined && (
               <View style={styles.statItem}>
                 <Text style={styles.statValue}>{formatINR(profile.totalAssets)}</Text>
-                <Text style={styles.statLabel}>Assets</Text>
+                <Text style={styles.statLabel}>{t('affidavit.totalAssets')}</Text>
               </View>
             )}
             {profile.criminalCases !== undefined && (
@@ -100,7 +102,7 @@ export default function MPCard({ profile, compact }: MPCardProps) {
                 <Text style={[styles.statValue, profile.criminalCases > 0 && { color: '#EF4444' }]}>
                   {profile.criminalCases}
                 </Text>
-                <Text style={styles.statLabel}>Cases</Text>
+                <Text style={styles.statLabel}>{t('affidavit.cases')}</Text>
               </View>
             )}
           </View>
@@ -111,19 +113,19 @@ export default function MPCard({ profile, compact }: MPCardProps) {
               {profile.attendancePercent !== undefined && (
                 <View style={styles.perfItem}>
                   <Ionicons name="checkmark-done" size={13} color="#10B981" />
-                  <Text style={styles.perfText}>{profile.attendancePercent}% Attendance</Text>
+                  <Text style={styles.perfText}>{profile.attendancePercent}% {t('parliament.attendance')}</Text>
                 </View>
               )}
               {profile.questionsAsked !== undefined && (
                 <View style={styles.perfItem}>
                   <Ionicons name="help-circle" size={13} color="#4F8EF7" />
-                  <Text style={styles.perfText}>{profile.questionsAsked} Questions</Text>
+                  <Text style={styles.perfText}>{profile.questionsAsked} {t('parliament.questions')}</Text>
                 </View>
               )}
               {profile.debatesParticipated !== undefined && (
                 <View style={styles.perfItem}>
                   <Ionicons name="chatbubbles" size={13} color="#8B5CF6" />
-                  <Text style={styles.perfText}>{profile.debatesParticipated} Debates</Text>
+                  <Text style={styles.perfText}>{profile.debatesParticipated} {t('parliament.debates')}</Text>
                 </View>
               )}
             </View>

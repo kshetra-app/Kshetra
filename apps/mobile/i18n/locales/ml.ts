@@ -27,6 +27,50 @@ const ml: PartialTranslationKeys = {
     comingSoon: 'ഉടൻ വരുന്നു',
     noResults: 'ഫലങ്ങളൊന്നും കണ്ടെത്തിയില്ല',
     pullToRefresh: 'പുതുക്കാൻ താഴേക്ക് വലിക്കുക',
+    submit: 'സമർപ്പിക്കുക',
+    confirm: 'സ്ഥിരീകരിക്കുക',
+    select: 'തിരഞ്ഞെടുക്കുക',
+    filter: 'ഫിൽട്ടർ',
+    sort: 'ക്രമീകരിക്കുക',
+    refresh: 'പുതുക്കുക',
+    viewAll: 'എല്ലാം കാണുക',
+    learnMore: 'കൂടുതൽ അറിയുക',
+    signIn: 'ലോഗിൻ ചെയ്യുക',
+    signOut: 'ലോഗ് ഔട്ട് ചെയ്യുക',
+    guest: 'അതിഥി',
+    offline: 'ഓഫ്‌ലൈൻ',
+    online: 'ഓൺലൈൻ',
+    pending: 'നിലവിലുള്ളത്',
+    active: 'സജീവം',
+    completed: 'പൂർത്തിയായി',
+    failed: 'പരാജയപ്പെട്ടു',
+    votes: 'വോട്ടുകൾ',
+    vote: 'വോട്ട്',
+    posts: 'പോസ്റ്റുകൾ',
+    post: 'പോസ്റ്റ്',
+    items: 'ഇനങ്ങൾ',
+    item: 'ഇനം',
+    followers: 'പിന്തുടരുന്നവർ',
+    following: 'പിന്തുടരുന്നവ',
+    timeAgo: {
+      justNow: 'ഇപ്പോൾ',
+      minutesAgo: '{{n}} മിനിറ്റ് മുമ്പ്',
+      hoursAgo: '{{n}} മണിക്കൂർ മുമ്പ്',
+      daysAgo: '{{n}} ദിവസം മുമ്പ്',
+      weeksAgo: '{{n}} ആഴ്ച മുമ്പ്',
+    },
+    scopes: {
+      myConstituency: 'എന്റെ നിയോജകമണ്ഡലം',
+      myState: 'എന്റെ സംസ്ഥാനം',
+      national: 'ദേശീയം',
+      allIndia: 'അഖിലേന്ത്യ',
+      state: 'സംസ്ഥാനം',
+    },
+    errorBoundary: {
+      title: 'എന്തോ തകരാർ സംഭവിച്ചു',
+      message: 'അപ്രതീക്ഷിതമായ ഒരു പിശക് സംഭവിച്ചു',
+      retry: 'വീണ്ടും ശ്രമിക്കുക',
+    },
   },
 
   // ── Tab Bar ─────────────────────────────────────────────────
@@ -721,6 +765,36 @@ const ml: PartialTranslationKeys = {
     systemDefault: 'ഫോണിന്റെ ഡിഫോൾട്ട് ഭാഷ',
     changeConfirm: 'ഭാഷ {{language}}-ലേക്ക് മാറ്റണോ?',
   },
+
+  // ── Constituency Tab Bar ───────────────────────────────────
+  constituencyTabBar: { overview: 'അവലോകനം', issues: 'പ്രശ്നങ്ങൾ', pulse: 'പൾസ്', news: 'വാർത്ത', history: 'ചരിത്രം', xray: 'എക്സ്-റേ' },
+
+  // ── Compare ────────────────────────────────────────────────
+  compare: { title: 'താരതമ്യം', selectA: 'A തിരഞ്ഞെടുക്കുക', selectB: 'B തിരഞ്ഞെടുക്കുക', selectConstituency: 'മണ്ഡലം തിരഞ്ഞെടുക്കുക', election: 'തിരഞ്ഞെടുപ്പ്', winnerVotes: 'വിജയി വോട്ടുകൾ', margin: 'വ്യത്യാസം', demographics: 'ജനസംഖ്യ', population: 'ജനസംഖ്യ', totalVoters: 'ആകെ വോട്ടർമാർ', literacy: 'സാക്ഷരത', mlaProfile: 'MLA പ്രൊഫൈൽ', gender: 'ലിംഗം', male: 'പുരുഷൻ', female: 'സ്ത്രീ', terms: 'കാലാവധികൾ', historical: 'ചരിത്ര താരതമ്യം' },
+
+  // ── Export ─────────────────────────────────────────────────
+  export: { title: 'എക്സ്പോർട്ട് ഡാഷ്ബോർഡ്', dataScope: 'ഡാറ്റ വ്യാപ്തി', currentView: 'നിലവിലെ കാഴ്ച', allData: 'എല്ലാ ഡാറ്റ', upgradeRequired: 'അപ്ഗ്രേഡ് ആവശ്യം', failed: 'എക്സ്പോർട്ട് പരാജയം', errorOccurred: 'ഒരു പിശക് സംഭവിച്ചു.' },
+
+  // ── Aspirant Registration ──────────────────────────────────
+  aspirantReg: { title: 'ആകാംക്ഷിയാകൂ', publicName: 'പൊതു പേര്', nameRequired: 'പേര് ആവശ്യം', standFor: 'നിങ്ങൾ എന്തിനു വേണ്ടി നിലകൊള്ളുന്നു?', targetConstituency: 'ലക്ഷ്യ മണ്ഡലം', stateLabel: 'സംസ്ഥാനം', affiliation: 'ബന്ധം', partyMember: 'പാർട്ടി അംഗം', createProfile: 'എന്റെ ആകാംക്ഷി പ്രൊഫൈൽ സൃഷ്ടിക്കൂ', welcomeTitle: 'സ്വാഗതം, ആകാംക്ഷി!', letsGo: 'തുടങ്ങാം' },
+
+  // ── KYC Sheet ──────────────────────────────────────────────
+  kycSheet: { title: 'സംഭാവകൻ പരിശോധന', verified: 'പരിശോധിച്ചു!', personalInfo: 'വ്യക്തിഗത വിവരങ്ങൾ', fullName: 'മുഴുവൻ നിയമ നാമം *', phone: 'ഫോൺ നമ്പർ *', selfieSection: 'സെൽഫി പരിശോധന', takeSelfie: 'സെൽഫി എടുക്കൂ', agreement: 'ഉത്തരവാദിത്ത കരാർ', agreeAndVerify: 'സമ്മതിച്ച് പരിശോധിക്കുക' },
+
+  // ── Content Gate ───────────────────────────────────────────
+  contentGate: { flag: 'ഫ്ലാഗ്', alert: 'അലർട്ട്', flagContent: 'ഉള്ളടക്കം ഫ്ലാഗ് ചെയ്യുക', raiseAlert: 'അലർട്ട് അയയ്ക്കുക', category: 'വിഭാഗം', submitFlag: 'ഫ്ലാഗ് സമർപ്പിക്കുക' },
+
+  // ── Shorts Player ──────────────────────────────────────────
+  shortsPlayer: { branding: 'ഷോർട്ട്സ്', videoUnavailable: 'വീഡിയോ ലഭ്യമല്ല', openYouTube: 'YouTubeൽ തുറക്കൂ', share: 'പങ്കിടുക', approve: 'അംഗീകരിക്കുക', skip: 'ഒഴിവാക്കുക' },
+
+  // ── Upload Short ───────────────────────────────────────────
+  uploadShort: { title: 'രാഷ്ട്രീയ ഷോർട്ട് അപ്ലോഡ്', creatorVerification: 'ക്രിയേറ്റർ പരിശോധന ആവശ്യം', startVerification: 'ക്രിയേറ്റർ പരിശോധന ആരംഭിക്കൂ', maybeLater: 'പിന്നീട്', inputTitle: 'ശീർഷകം', inputDescription: 'വിവരണം', uploadButton: 'മണ്ഡലത്തിലേക്ക് അപ്ലോഡ്' },
+
+  // ── Module Detail ──────────────────────────────────────────
+  moduleDetail: { keyTakeaways: 'പ്രധാന അംശങ്ങൾ', knowledgeCheck: 'അറിവ് പരിശോധന', tryAgain: 'വീണ്ടും ശ്രമിക്കൂ', sources: 'ഉറവിടങ്ങൾ & കൂടുതൽ വായന', moduleCompleted: 'മൊഡ്യൂൾ പൂർത്തിയായി', submitQuiz: 'ഉത്തരങ്ങൾ സമർപ്പിക്കുക', markComplete: 'പൂർത്തിയായി എന്ന് അടയാളപ്പെടുത്തുക' },
+
+  // ── Outreach Panel ─────────────────────────────────────────
+  outreachPanel: { compose: 'എഴുതുക', history: 'ചരിത്രം', templates: 'ടെംപ്ലേറ്റുകൾ', channel: 'ചാനൽ', audience: 'പ്രേക്ഷകർ', message: 'സന്ദേശം', delivery: 'ഡെലിവറി', sendNow: 'ഇപ്പോൾ അയയ്ക്കുക', recipients: 'സ്വീകർത്താക്കൾ', noBroadcasts: 'ഇതുവരെ പ്രക്ഷേപണങ്ങളില്ല', cancel: 'റദ്ദാക്കുക', sendBroadcast: 'പ്രക്ഷേപണം അയയ്ക്കുക' },
 };
 
 export default ml;

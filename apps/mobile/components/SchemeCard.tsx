@@ -1,4 +1,5 @@
 import { View, Text, StyleSheet, Pressable } from 'react-native';
+import { useTranslation } from 'react-i18next';
 import { Ionicons } from '@expo/vector-icons';
 import type { GovernmentScheme } from '../lib/civicMetricsTypes';
 import { SCHEME_CATEGORY_CONFIG, formatCrores } from '../lib/civicMetricsTypes';
@@ -9,6 +10,7 @@ interface SchemeCardProps {
 }
 
 export default function SchemeCard({ scheme, onPress }: SchemeCardProps) {
+  const { t } = useTranslation();
   const catConfig = SCHEME_CATEGORY_CONFIG[scheme.category];
 
   return (
@@ -19,7 +21,7 @@ export default function SchemeCard({ scheme, onPress }: SchemeCardProps) {
           <Text style={[styles.catLabel, { color: catConfig.color }]}>{catConfig.label}</Text>
         </View>
         <View style={[styles.levelBadge, { backgroundColor: scheme.level === 'central' ? '#3B82F620' : '#F59E0B20' }]}>
-          <Text style={[styles.levelText, { color: scheme.level === 'central' ? '#3B82F6' : '#F59E0B' }]}>{scheme.level === 'central' ? 'Central' : scheme.stateCode || 'State'}</Text>
+          <Text style={[styles.levelText, { color: scheme.level === 'central' ? '#3B82F6' : '#F59E0B' }]}>{scheme.level === 'central' ? t('civicMetrics.centralScheme') : scheme.stateCode || t('civicMetrics.stateScheme')}</Text>
         </View>
       </View>
 
@@ -29,14 +31,14 @@ export default function SchemeCard({ scheme, onPress }: SchemeCardProps) {
       {/* Coverage */}
       <View style={styles.coverageSection}>
         <View style={styles.coverageHeader}>
-          <Text style={styles.coverageLabel}>Coverage</Text>
+          <Text style={styles.coverageLabel}>{t('civicMetrics.coverage')}</Text>
           <Text style={[styles.coveragePct, { color: scheme.coveragePercent >= 80 ? '#10B981' : '#F59E0B' }]}>{scheme.coveragePercent}%</Text>
         </View>
         <View style={styles.coverageBar}>
           <View style={[styles.coverageBarFill, { width: `${scheme.coveragePercent}%`, backgroundColor: scheme.coveragePercent >= 80 ? '#10B981' : '#F59E0B' }]} />
         </View>
         <Text style={styles.coverageDetail}>
-          {(scheme.beneficiariesActual / 1000000).toFixed(1)}M / {(scheme.beneficiariesTarget / 1000000).toFixed(1)}M beneficiaries
+          {(scheme.beneficiariesActual / 1000000).toFixed(1)}M / {(scheme.beneficiariesTarget / 1000000).toFixed(1)}M {t('civicMetrics.beneficiaries')}
         </Text>
       </View>
 
@@ -44,7 +46,7 @@ export default function SchemeCard({ scheme, onPress }: SchemeCardProps) {
       <View style={styles.metaRow}>
         <View style={styles.metaItem}>
           <Ionicons name="wallet" size={12} color="#6B7280" />
-          <Text style={styles.metaText}>Budget: {formatCrores(scheme.budgetCrores)}</Text>
+          <Text style={styles.metaText}>{t('civicMetrics.tabs.budget')}: {formatCrores(scheme.budgetCrores)}</Text>
         </View>
         <View style={styles.metaItem}>
           <Ionicons name="business" size={12} color="#6B7280" />
@@ -55,7 +57,7 @@ export default function SchemeCard({ scheme, onPress }: SchemeCardProps) {
       {scheme.applicationUrl && (
         <View style={styles.applyRow}>
           <Ionicons name="open" size={12} color="#4F8EF7" />
-          <Text style={styles.applyText}>Apply Online</Text>
+          <Text style={styles.applyText}>{t('civicMetrics.applyOnline')}</Text>
         </View>
       )}
     </Pressable>

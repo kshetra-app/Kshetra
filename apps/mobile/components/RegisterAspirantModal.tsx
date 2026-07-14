@@ -3,6 +3,7 @@
  * Collects a public civic profile and creates it via the aspirant store.
  */
 import React, { useState, useCallback, useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 import {
   View,
   Text,
@@ -32,6 +33,7 @@ const CURRENT_YEAR = new Date().getFullYear();
 const ELECTION_YEARS = [CURRENT_YEAR + 1, CURRENT_YEAR + 2, CURRENT_YEAR + 3, CURRENT_YEAR + 4];
 
 export default function RegisterAspirantModal({ visible, onClose }: RegisterAspirantModalProps) {
+  const { t } = useTranslation();
   const insets = useSafeAreaInsets();
 
   const registerAsAspirant = useAspirantStore((s: any) => s.registerAsAspirant);
@@ -56,15 +58,15 @@ export default function RegisterAspirantModal({ visible, onClose }: RegisterAspi
 
   const handleSubmit = useCallback(() => {
     if (!displayName.trim()) {
-      Alert.alert('Name required', 'Please enter the name voters will see.');
+      Alert.alert(t('aspirantReg.nameRequired'), t('aspirantReg.nameRequiredMsg'));
       return;
     }
     if (!bio.trim()) {
-      Alert.alert('Bio required', 'Tell the community what you stand for.');
+      Alert.alert(t('aspirantReg.bioRequired'), t('aspirantReg.bioRequiredMsg'));
       return;
     }
     if (!isIndependent && !party.trim()) {
-      Alert.alert('Party required', 'Enter your party, or mark yourself as Independent.');
+      Alert.alert(t('aspirantReg.partyRequired'), t('aspirantReg.partyRequiredMsg'));
       return;
     }
 
@@ -82,9 +84,9 @@ export default function RegisterAspirantModal({ visible, onClose }: RegisterAspi
     });
 
     Alert.alert(
-      'Welcome, Aspirant!',
-      'Your civic profile is live. Complete modules and challenges to grow your Civic Score.',
-      [{ text: 'Let\u2019s go', onPress: onClose }],
+      t('aspirantReg.welcomeTitle'),
+      t('aspirantReg.welcomeMsg'),
+      [{ text: t('aspirantReg.letsGo'), onPress: onClose }],
     );
   }, [displayName, bio, isIndependent, party, registerAsAspirant, kycRecord, stateCode, myHome, constituency, year, isPublic, onClose]);
 
@@ -96,7 +98,7 @@ export default function RegisterAspirantModal({ visible, onClose }: RegisterAspi
       >
         {/* Header */}
         <View style={[styles.header, { paddingTop: insets.top + 8 }]}>
-          <Text style={styles.headerTitle}>Become an Aspirant</Text>
+          <Text style={styles.headerTitle}>{t('aspirantReg.title')}</Text>
           <Pressable onPress={onClose} hitSlop={12}>
             <Ionicons name="close" size={24} color="#FFFFFF" />
           </Pressable>
@@ -109,29 +111,28 @@ export default function RegisterAspirantModal({ visible, onClose }: RegisterAspi
           <View style={styles.introBox}>
             <Ionicons name="rocket" size={20} color="#06B6D4" />
             <Text style={styles.introText}>
-              Create a public civic profile to track your Civic Score, earn badges, and let your
-              constituency know you want to lead. You can hide your profile any time.
+              {t('aspirantReg.introText')}
             </Text>
           </View>
 
           {/* Display name */}
-          <Text style={styles.label}>Public name</Text>
+          <Text style={styles.label}>{t('aspirantReg.publicName')}</Text>
           <TextInput
             style={styles.input}
             value={displayName}
             onChangeText={setDisplayName}
-            placeholder="Name voters will see"
+            placeholder={t('aspirantReg.namePlaceholder')}
             placeholderTextColor="#4B5563"
             maxLength={50}
           />
 
           {/* Bio */}
-          <Text style={styles.label}>What do you stand for?</Text>
+          <Text style={styles.label}>{t('aspirantReg.standFor')}</Text>
           <TextInput
             style={[styles.input, styles.textArea]}
             value={bio}
             onChangeText={setBio}
-            placeholder="E.g., Teacher and RTI activist focused on school reform and clean water."
+            placeholder={t('aspirantReg.bioPlaceholder')}
             placeholderTextColor="#4B5563"
             multiline
             numberOfLines={3}
@@ -140,7 +141,7 @@ export default function RegisterAspirantModal({ visible, onClose }: RegisterAspi
           <Text style={styles.charCount}>{bio.length}/180</Text>
 
           {/* Constituency (from home) */}
-          <Text style={styles.label}>Target constituency</Text>
+          <Text style={styles.label}>{t('aspirantReg.targetConstituency')}</Text>
           <TextInput
             style={styles.input}
             value={constituency}
@@ -148,10 +149,10 @@ export default function RegisterAspirantModal({ visible, onClose }: RegisterAspi
             placeholder={myHome ? myHome.name : 'Set your home constituency in Profile'}
             placeholderTextColor="#4B5563"
           />
-          <Text style={styles.hint}>State: {stateName}</Text>
+          <Text style={styles.hint}>{t('aspirantReg.stateLabel')}: {stateName}</Text>
 
           {/* Election year */}
-          <Text style={styles.label}>Target election year</Text>
+          <Text style={styles.label}>{t('aspirantReg.targetYear')}</Text>
           <View style={styles.chipRow}>
             {ELECTION_YEARS.map((y) => (
               <Pressable
@@ -165,19 +166,19 @@ export default function RegisterAspirantModal({ visible, onClose }: RegisterAspi
           </View>
 
           {/* Independent / party */}
-          <Text style={styles.label}>Affiliation</Text>
+          <Text style={styles.label}>{t('aspirantReg.affiliation')}</Text>
           <View style={styles.chipRow}>
             <Pressable
               style={[styles.chip, isIndependent && styles.chipActive]}
               onPress={() => setIsIndependent(true)}
             >
-              <Text style={[styles.chipText, isIndependent && styles.chipTextActive]}>Independent</Text>
+              <Text style={[styles.chipText, isIndependent && styles.chipTextActive]}>{t('politicianPortal.independent')}</Text>
             </Pressable>
             <Pressable
               style={[styles.chip, !isIndependent && styles.chipActive]}
               onPress={() => setIsIndependent(false)}
             >
-              <Text style={[styles.chipText, !isIndependent && styles.chipTextActive]}>Party member</Text>
+              <Text style={[styles.chipText, !isIndependent && styles.chipTextActive]}>{t('aspirantReg.partyMember')}</Text>
             </Pressable>
           </View>
           {!isIndependent && (
@@ -185,7 +186,7 @@ export default function RegisterAspirantModal({ visible, onClose }: RegisterAspi
               style={[styles.input, { marginTop: 10 }]}
               value={party}
               onChangeText={setParty}
-              placeholder="Party name or abbreviation (e.g., INC, BJP, BRS)"
+              placeholder={t('aspirantReg.partyPlaceholder')}
               placeholderTextColor="#4B5563"
               autoCapitalize="characters"
             />
@@ -194,8 +195,8 @@ export default function RegisterAspirantModal({ visible, onClose }: RegisterAspi
           {/* Public toggle */}
           <Pressable style={styles.toggleRow} onPress={() => setIsPublic((v) => !v)}>
             <View style={{ flex: 1 }}>
-              <Text style={styles.toggleTitle}>List me in the Aspirants directory</Text>
-              <Text style={styles.toggleSub}>Other citizens can find and endorse you.</Text>
+              <Text style={styles.toggleTitle}>{t('aspirantReg.listInDirectory')}</Text>
+              <Text style={styles.toggleSub}>{t('aspirantReg.listInDirectoryDesc')}</Text>
             </View>
             <View style={[styles.switch, isPublic && styles.switchOn]}>
               <View style={[styles.knob, isPublic && styles.knobOn]} />
@@ -205,13 +206,11 @@ export default function RegisterAspirantModal({ visible, onClose }: RegisterAspi
           {/* Submit */}
           <Pressable style={styles.submit} onPress={handleSubmit}>
             <Ionicons name="rocket" size={18} color="#FFFFFF" />
-            <Text style={styles.submitText}>Create my Aspirant profile</Text>
+            <Text style={styles.submitText}>{t('aspirantReg.createProfile')}</Text>
           </Pressable>
 
           <Text style={styles.disclaimer}>
-            This profile is for civic engagement on Kshetra and is not a nomination or registration
-            with the Election Commission of India. Filing an actual nomination follows the legal
-            process covered in the Leadership Academy.
+            {t('aspirantReg.disclaimer')}
           </Text>
         </ScrollView>
       </KeyboardAvoidingView>

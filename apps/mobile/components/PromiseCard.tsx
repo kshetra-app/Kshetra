@@ -2,6 +2,7 @@
  * PromiseCard — Displays an election promise with status, progress bar, engagement.
  */
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import { View, Text, StyleSheet, Pressable } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
@@ -20,6 +21,7 @@ interface PromiseCardProps {
 }
 
 export default React.memo(function PromiseCard({ promise, onFollow, onPress }: PromiseCardProps) {
+  const { t } = useTranslation();
   const statusConfig = PROMISE_STATUS_CONFIG[promise.status];
   const categoryConfig = PROMISE_CATEGORY_CONFIG[promise.category];
   const sourceConfig = PROMISE_SOURCE_CONFIG[promise.source];
@@ -60,7 +62,7 @@ export default React.memo(function PromiseCard({ promise, onFollow, onPress }: P
       {/* Progress bar */}
       <View style={styles.progressSection}>
         <View style={styles.progressHeader}>
-          <Text style={styles.progressLabel}>Delivery Progress</Text>
+          <Text style={styles.progressLabel}>{t('promiseCard.deliveryProgress')}</Text>
           <Text style={[styles.progressPercent, { color: statusConfig.color }]}>
             {promise.deliveryPercentage}%
           </Text>
@@ -83,7 +85,7 @@ export default React.memo(function PromiseCard({ promise, onFollow, onPress }: P
         <View style={styles.overdueBar}>
           <Ionicons name="time" size={13} color="#EF4444" />
           <Text style={styles.overdueText}>
-            Deadline passed: {new Date(promise.deadline!).toLocaleDateString('en-IN', { month: 'short', year: 'numeric' })}
+            {t('promiseCard.deadlinePassed')} {new Date(promise.deadline!).toLocaleDateString('en-IN', { month: 'short', year: 'numeric' })}
           </Text>
         </View>
       )}
@@ -102,12 +104,12 @@ export default React.memo(function PromiseCard({ promise, onFollow, onPress }: P
         </Pressable>
         <View style={styles.engagementItem}>
           <Ionicons name="checkmark-done" size={16} color="#10B981" />
-          <Text style={styles.engagementText}>{promise.verificationCount} verified</Text>
+          <Text style={styles.engagementText}>{promise.verificationCount} {t('promiseCard.verified')}</Text>
         </View>
         <View style={styles.engagementItem}>
           <Ionicons name="flag" size={16} color={promise.disputeCount > 100 ? '#EF4444' : '#6B7280'} />
           <Text style={[styles.engagementText, promise.disputeCount > 100 && { color: '#EF4444' }]}>
-            {promise.disputeCount} disputes
+            {promise.disputeCount} {t('promiseCard.disputes')}
           </Text>
         </View>
       </View>

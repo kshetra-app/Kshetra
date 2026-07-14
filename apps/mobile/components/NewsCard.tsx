@@ -1,4 +1,5 @@
 import { memo } from 'react';
+import { useTranslation } from 'react-i18next';
 import { View, Text, StyleSheet, Pressable, Image } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
@@ -12,6 +13,7 @@ interface NewsCardProps {
 }
 
 function NewsCardBase({ item, bookmarked, onToggleBookmark }: NewsCardProps) {
+  const { t } = useTranslation();
   const router = useRouter();
   const accent = item.source.accent ?? '#4F8EF7';
   const isVideo = !!item.video;
@@ -62,7 +64,7 @@ function NewsCardBase({ item, bookmarked, onToggleBookmark }: NewsCardProps) {
           </View>
           <View style={styles.readAt}>
             <Ionicons name={isVideo ? 'play-circle-outline' : 'book-outline'} size={11} color="#6B7280" />
-            <Text style={styles.readAtText}>{isVideo ? 'Watch' : 'Read'} · {item.source.domain}</Text>
+            <Text style={styles.readAtText}>{isVideo ? t('journalist.watch') : t('journalist.read')} · {item.source.domain}</Text>
           </View>
         </View>
       </View>

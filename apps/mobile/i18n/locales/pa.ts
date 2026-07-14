@@ -727,6 +727,18 @@ const pa: PartialTranslationKeys = {
     systemDefault: 'ਸਿਸਟਮ ਡਿਫੌਲਟ',
     changeConfirm: 'ਕੀ ਭਾਸ਼ਾ ਬਦਲ ਕੇ {{language}} ਕਰਨੀ ਹੈ?',
   },
+
+  // ── Constituency Tab Bar ──────────────────────────────────
+  constituencyTabBar: { overview: 'ਸੰਖੇਪ', issues: 'ਮੁੱਦੇ', pulse: 'ਨਬਜ਼', news: 'ਖ਼ਬਰਾਂ', history: 'ਇਤਿਹਾਸ', xray: 'ਐਕਸ-ਰੇ' },
+  compare: { title: 'ਤੁਲਨਾ', selectA: 'A ਚੁਣੋ', selectB: 'B ਚੁਣੋ', selectConstituency: 'ਹਲਕਾ ਚੁਣੋ', election: 'ਚੋਣ', winnerVotes: 'ਜੇਤੂ ਵੋਟ', margin: 'ਫ਼ਰਕ', demographics: 'ਜਨਸੰਖਿਆ', population: 'ਆਬਾਦੀ', totalVoters: 'ਕੁੱਲ ਵੋਟਰ', literacy: 'ਸਾਖਰਤਾ', mlaProfile: 'MLA ਪ੍ਰੋਫ਼ਾਈਲ', gender: 'ਲਿੰਗ', male: 'ਪੁਰਸ਼', female: 'ਔਰਤ', terms: 'ਕਾਰਜਕਾਲ', historical: 'ਇਤਿਹਾਸਕ ਤੁਲਨਾ' },
+  export: { title: 'ਨਿਰਯਾਤ ਡੈਸ਼ਬੋਰਡ', dataScope: 'ਡਾਟਾ ਘੇਰਾ', currentView: 'ਮੌਜੂਦਾ ਦ੍ਰਿਸ਼', allData: 'ਸਾਰਾ ਡਾਟਾ', upgradeRequired: 'ਅੱਪਗ੍ਰੇਡ ਲੋੜੀਂਦਾ', failed: 'ਨਿਰਯਾਤ ਅਸਫ਼ਲ', errorOccurred: 'ਇੱਕ ਗ਼ਲਤੀ ਹੋਈ।' },
+  aspirantReg: { title: 'ਆਕਾਂਖੀ ਬਣੋ', publicName: 'ਜਨਤਕ ਨਾਮ', nameRequired: 'ਨਾਮ ਲੋੜੀਂਦਾ', standFor: 'ਤੁਸੀਂ ਕਿਸ ਲਈ ਖੜ੍ਹੇ ਹੋ?', targetConstituency: 'ਨਿਸ਼ਾਨਾ ਹਲਕਾ', stateLabel: 'ਸੂਬਾ', partyMember: 'ਪਾਰਟੀ ਮੈਂਬਰ', createProfile: 'ਮੇਰੀ ਆਕਾਂਖੀ ਪ੍ਰੋਫ਼ਾਈਲ ਬਣਾਓ', welcomeTitle: 'ਜੀ ਆਇਆਂ ਨੂੰ, ਆਕਾਂਖੀ!', letsGo: 'ਚੱਲੋ ਸ਼ੁਰੂ ਕਰੀਏ' },
+  kycSheet: { title: 'ਯੋਗਦਾਨੀ ਤਸਦੀਕ', verified: 'ਤਸਦੀਕ ਹੋ ਗਈ!', personalInfo: 'ਨਿੱਜੀ ਜਾਣਕਾਰੀ', fullName: 'ਪੂਰਾ ਕਨੂੰਨੀ ਨਾਮ *', phone: 'ਫ਼ੋਨ ਨੰਬਰ *', selfieSection: 'ਸੈਲਫ਼ੀ ਤਸਦੀਕ', takeSelfie: 'ਸੈਲਫ਼ੀ ਲਓ', agreement: 'ਜ਼ਿੰਮੇਵਾਰੀ ਇਕਰਾਰ', agreeAndVerify: 'ਸਹਿਮਤ ਹੋਵੋ ਤੇ ਤਸਦੀਕ ਕਰੋ' },
+  contentGate: { flag: 'ਫ਼ਲੈਗ', alert: 'ਚੇਤਾਵਨੀ', flagContent: 'ਸਮੱਗਰੀ ਫ਼ਲੈਗ ਕਰੋ', raiseAlert: 'ਚੇਤਾਵਨੀ ਭੇਜੋ', category: 'ਸ਼੍ਰੇਣੀ', submitFlag: 'ਫ਼ਲੈਗ ਜਮ੍ਹਾਂ ਕਰੋ' },
+  shortsPlayer: { branding: 'ਸ਼ੌਰਟਸ', videoUnavailable: 'ਵੀਡੀਓ ਉਪਲਬਧ ਨਹੀਂ', openYouTube: 'YouTubeਤੇ ਖੋਲ੍ਹੋ', share: 'ਸਾਂਝਾ ਕਰੋ', approve: 'ਮਨਜ਼ੂਰ', skip: 'ਛੱਡੋ' },
+  uploadShort: { title: 'ਸਿਆਸੀ ਸ਼ੌਰਟ ਅੱਪਲੋਡ', creatorVerification: 'ਸਿਰਜਣਹਾਰ ਤਸਦੀਕ ਲੋੜੀਂਦੀ', startVerification: 'ਸਿਰਜਣਹਾਰ ਤਸਦੀਕ ਸ਼ੁਰੂ ਕਰੋ', maybeLater: 'ਬਾਅਦ ਵਿੱਚ', inputTitle: 'ਸਿਰਲੇਖ', inputDescription: 'ਵੇਰਵਾ', uploadButton: 'ਹਲਕੇ ਵਿੱਚ ਅੱਪਲੋਡ' },
+  moduleDetail: { keyTakeaways: 'ਮੁੱਖ ਗੱਲਾਂ', knowledgeCheck: 'ਗਿਆਨ ਪਰੀਖਿਆ', tryAgain: 'ਦੁਬਾਰਾ ਕੋਸ਼ਿਸ਼', sources: 'ਸ੍ਰੋਤ ਅਤੇ ਹੋਰ ਪੜ੍ਹੋ', moduleCompleted: 'ਮੋਡੀਊਲ ਪੂਰਾ', submitQuiz: 'ਜਵਾਬ ਜਮ੍ਹਾਂ ਕਰੋ', markComplete: 'ਪੂਰਾ ਚਿੰਨ੍ਹਿਤ ਕਰੋ' },
+  outreachPanel: { compose: 'ਲਿਖੋ', history: 'ਇਤਿਹਾਸ', templates: 'ਟੈਂਪਲੇਟ', channel: 'ਚੈਨਲ', audience: 'ਦਰਸ਼ਕ', message: 'ਸੁਨੇਹਾ', delivery: 'ਡਿਲਿਵਰੀ', sendNow: 'ਹੁਣੇ ਭੇਜੋ', recipients: 'ਪ੍ਰਾਪਤਕਰਤਾ', noBroadcasts: 'ਅਜੇ ਕੋਈ ਪ੍ਰਸਾਰਣ ਨਹੀਂ', cancel: 'ਰੱਦ ਕਰੋ', sendBroadcast: 'ਪ੍ਰਸਾਰਣ ਭੇਜੋ' },
 };
 
 export default pa;

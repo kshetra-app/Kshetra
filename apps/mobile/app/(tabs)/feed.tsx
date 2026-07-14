@@ -35,10 +35,10 @@ const FILTER_TAB_KEYS: { key: PostType | 'all'; tKey: string; icon: string }[] =
   { key: 'opinion', tKey: 'feed.filters.opinion', icon: 'megaphone' },
 ];
 
-const SCOPE_OPTIONS: { key: FeedScope; icon: string; label: string }[] = [
-  { key: 'constituency', icon: 'location', label: 'My Constituency' },
-  { key: 'state', icon: 'map', label: 'State' },
-  { key: 'national', icon: 'globe', label: 'National' },
+const SCOPE_OPTIONS: { key: FeedScope; icon: string; tKey: string }[] = [
+  { key: 'constituency', icon: 'location', tKey: 'common.scopes.myConstituency' },
+  { key: 'state', icon: 'map', tKey: 'common.scopes.state' },
+  { key: 'national', icon: 'globe', tKey: 'common.scopes.national' },
 ];
 
 export default function FeedScreen() {
@@ -126,8 +126,8 @@ export default function FeedScreen() {
   const scopeLabel = useMemo(() => {
     if (scopeFilter === 'constituency' && myHome) return myHome.name;
     if (scopeFilter === 'state') return (STATES as Record<string, { name: string }>)[stateCode]?.name ?? stateCode;
-    return 'All India';
-  }, [scopeFilter, stateCode, myHome]);
+    return t('common.scopes.allIndia');
+  }, [scopeFilter, stateCode, myHome, t]);
 
   const handleRefresh = useCallback(() => {
     setRefreshing(true);
@@ -204,7 +204,7 @@ export default function FeedScreen() {
           <View style={styles.scopeIndicator}>
             <Ionicons name="funnel" size={10} color="#6B7280" />
             <Text style={styles.scopeIndicatorText}>
-              {scopeLabel} · {posts.length} post{posts.length !== 1 ? 's' : ''}
+              {scopeLabel} · {posts.length} {posts.length !== 1 ? t('common.posts') : t('common.post')}
             </Text>
           </View>
         </View>
@@ -237,7 +237,7 @@ export default function FeedScreen() {
                   ? (STATES as Record<string, { name: string }>)[stateCode]?.name ?? stateCode
                   : opt.key === 'constituency' && myHome
                     ? myHome.name
-                    : opt.label}
+                    : t(opt.tKey)}
               </Text>
             </Pressable>
           );

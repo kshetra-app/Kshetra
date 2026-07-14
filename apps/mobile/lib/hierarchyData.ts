@@ -29,7 +29,6 @@ import {
   ANDHRA_PRADESH_POLLING_BOOTHS,
   ANDHRA_PRADESH_MANDAL_OVERLAPS,
 } from '../../../data/seed/andhra-pradesh-hierarchy';
-import { getUnifiedConstituenciesForState } from './stateDataAdapter';
 import { STATES } from '@kshetra/shared';
 
 export type {
@@ -69,7 +68,12 @@ const BUNDLES: Record<string, StateHierarchyBundle> = {
   },
 };
 
-const SIMULATED_BUNDLES = new Map<string, StateHierarchyBundle>();
+/**
+ * Data-availability status for a constituency's hierarchy.
+ * - `verified`     — backed by an official LGD/CEO pilot seed
+ * - `data_pending` — the constituency exists but no verified drill-down data yet
+ */
+export type HierarchyDataStatus = 'verified' | 'data_pending';
 
 function extractAcNoFromId(id: string): number | null {
   if (!id) return null;
@@ -151,146 +155,49 @@ function buildGenericConfig(stateCode: string): StateHierarchyConfig {
 }
 
 /**
- * Generate a realistic, deterministic simulated hierarchy for one constituency.
- * Used for every constituency that lacks an official LGD/CEO seed so that the
- * booth-level drill-down (list + map zoom) works for the whole country, not
- * just the TS/AP pilot.
+ * ZERO-FABRICATION policy (migration 023 / plan Phase 2):
+ * User-facing reads NEVER synthesize hierarchy or representative data. Only
+ * constituencies covered by an official LGD/CEO pilot seed return drill-down
+ * entities; every other constituency returns empty data + a `data_pending`
+ * status so the UI can render an explicit, honest "Data pending" state.
  */
-function buildSimulatedBundle(stateCode: string, acNo: number): StateHierarchyBundle {
-  const upper = stateCode.toUpperCase();
-  const key = `${upper}-${acNo}`;
-  const cached = SIMULATED_BUNDLES.get(key);
-  if (cached) return cached;
-
-  const official = bundle(upper);
-  const config = official?.config ?? buildGenericConfig(upper);
-  const cid = constituencyId(upper, acNo);
-
-  let constituencyName = `Constituency ${acNo}`;
-  let districtName = config.stateName;
-  try {
-    const consts = getUnifiedConstituenciesForState(upper);
-    const c = consts.find((item) => item.acNo === acNo);
-    if (c) {
-      constituencyName = c.name;
-      districtName = c.district;
-    }
-  } catch {
-    // Ignore — fall back to generic names.
-  }
-
-  const districtId = `${upper}-${districtName.toLowerCase().replace(/\s+/g, '-')}`;
-
-  const mandals: Mandal[] = [
-    { id: `${upper}-mandal-${acNo}-1`, name: `${constituencyName} Central`, districtId, lgdCode: 1000 + acNo * 10 + 1, totalPopulation: 120000, mandalType: config.mandalType, totalGPs: 3 },
-    { id: `${upper}-mandal-${acNo}-2`, name: `${constituencyName} North`, districtId, lgdCode: 1000 + acNo * 10 + 2, totalPopulation: 95000, mandalType: config.mandalType, totalGPs: 3 },
-    { id: `${upper}-mandal-${acNo}-3`, name: `${constituencyName} South`, districtId, lgdCode: 1000 + acNo * 10 + 3, totalPopulation: 80000, mandalType: config.mandalType, totalGPs: 3 },
-    { id: `${upper}-mandal-${acNo}-4`, name: `${constituencyName} Rural`, districtId, lgdCode: 1000 + acNo * 10 + 4, totalPopulation: 65000, mandalType: config.mandalType, totalGPs: 3 },
-  ];
-
-  const overlaps: MandalConstituencyOverlap[] = [
-    { id: `${upper}-MCA-${acNo}-${mandals[0].id}`, constituencyId: cid, mandalId: mandals[0].id, overlapPercentage: 100, overlapPopulation: 120000, verified: true, source: 'MANUAL' },
-    { id: `${upper}-MCA-${acNo}-${mandals[1].id}`, constituencyId: cid, mandalId: mandals[1].id, overlapPercentage: 80, overlapPopulation: 76000, verified: true, source: 'MANUAL' },
-    { id: `${upper}-MCA-${acNo}-${mandals[2].id}`, constituencyId: cid, mandalId: mandals[2].id, overlapPercentage: 60, overlapPopulation: 48000, verified: true, source: 'MANUAL' },
-    { id: `${upper}-MCA-${acNo}-${mandals[3].id}`, constituencyId: cid, mandalId: mandals[3].id, overlapPercentage: 40, overlapPopulation: 26000, verified: true, source: 'MANUAL' },
-  ];
-
-  const panchayats: GramPanchayat[] = [];
-  const booths: PollingBooth[] = [];
-
-  const buildingNames = [
-    'Zilla Parishad High School',
-    'Govt. Primary School',
-    'Panchayat Office Building',
-    'Community Hall',
-    'Govt. Junior College',
-  ];
-
-  let boothNum = 1;
-  mandals.forEach((m, mIdx) => {
-    for (let gpIdx = 1; gpIdx <= 3; gpIdx++) {
-      const gpId = `${m.id}-gp-${gpIdx}`;
-      const gpName = `${m.name} GP-${gpIdx}`;
-      panchayats.push({
-        id: gpId,
-        name: gpName,
-        mandalId: m.id,
-        lgdCode: 20000 + acNo * 100 + mIdx * 10 + gpIdx,
-        totalPopulation: Math.floor(m.totalPopulation! / 10),
-        panchayatType: config.panchayatType,
-        totalVillages: 1,
-      });
-
-      for (let bIdx = 0; bIdx < 5; bIdx++) {
-        const bId = `${cid}-booth-${boothNum}`;
-        const bName = `${buildingNames[bIdx]}, ${gpName}`;
-        const totalVoters = 850 + (boothNum * 17) % 300;
-        const maleVoters = Math.floor(totalVoters * 0.49);
-        const femaleVoters = Math.floor(totalVoters * 0.50);
-
-        booths.push({
-          id: bId,
-          boothNumber: boothNum,
-          nameEn: bName,
-          totalVoters,
-          maleVoters,
-          femaleVoters,
-          thirdGenderVoters: totalVoters - maleVoters - femaleVoters,
-          panchayatId: gpId,
-          constituencyId: cid,
-          isUrban: false,
-        });
-        boothNum++;
-      }
-    }
-  });
-
-  const bundleData: StateHierarchyBundle = {
-    config,
-    districts: official?.districts ?? [{
-      id: districtId,
-      name: districtName,
-      stateCode: upper,
-      lgdCode: 0,
-      headquartersCity: districtName,
-      totalMandals: mandals.length,
-      totalGPs: panchayats.length,
-    }],
-    mandals,
-    panchayats,
-    booths,
-    overlaps,
-  };
-
-  SIMULATED_BUNDLES.set(key, bundleData);
-  return bundleData;
-}
-
 function getResolvedBundle(stateCode: string, acNo: number | null): StateHierarchyBundle | null {
   const official = bundle(stateCode);
-  const upper = stateCode?.toUpperCase();
 
-  // Config / capability probe (no specific constituency).
+  // Config / capability probe (no specific constituency): official seed only.
   if (acNo == null) {
-    if (official) return official;
-    if (!upper || upper === 'IN') return null;
-    return buildSimulatedBundle(upper, 1);
+    return official;
   }
 
   const cid = constituencyId(stateCode, acNo);
 
-  // Prefer official LGD/CEO seed data when it covers this constituency.
+  // Only return official LGD/CEO seed data when it actually covers this AC.
   if (official) {
     const hasOfficial = official.overlaps.some((o) => o.constituencyId === cid) ||
                         official.booths.some((bo) => bo.constituencyId === cid);
     if (hasOfficial) return official;
   }
 
-  // Everything else (any state, any AC) gets a generated hierarchy so the
-  // booth-level drill-down works nationwide. National view ('IN') is excluded.
-  if (!upper || upper === 'IN') return null;
+  // No verified data → caller renders "Data pending" (no simulation).
+  return null;
+}
 
-  return buildSimulatedBundle(upper, acNo);
+/**
+ * Honest data-availability status for a constituency's drill-down hierarchy.
+ * `verified` only when an official pilot seed covers the AC; otherwise
+ * `data_pending`. The National view ('IN') is treated as data_pending.
+ */
+export function getConstituencyDataStatus(stateCode: string, acNo: number): HierarchyDataStatus {
+  return getResolvedBundle(stateCode, acNo) ? 'verified' : 'data_pending';
+}
+
+/**
+ * A label-only config for a state without an official seed, so the
+ * "Data pending" UI can still show the correct regional terminology
+ * (Mandal / Block / Taluk, Sarpanch / Pradhan, …) without any fake entities.
+ */
+export function getHierarchyLabelsConfig(stateCode: string): StateHierarchyConfig {
+  return bundle(stateCode)?.config ?? buildGenericConfig(stateCode);
 }
 
 /** The state config (terminology labels, totals) — null if no hierarchy data. */

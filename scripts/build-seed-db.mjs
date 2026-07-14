@@ -15,11 +15,15 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 import Database from 'better-sqlite3';
 import crypto from 'crypto';
+import { buildRepsFromKYR, slug } from './lib/kyr-transform.mjs';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const rootDir = path.resolve(__dirname, '..');
 const dataDir = path.resolve(rootDir, 'apps/mobile/data');
 const dbPath = path.resolve(dataDir, 'seed-data.db');
+const localBodyDir = path.resolve(rootDir, 'scrapers/output/local-body');
+
+const NO_MANDAL = '__no_mandal__';
 
 // ═════════════════════════════════════════════════════════════════════════
 // ── Schema ──────────────────────────────────────────────────────────────
@@ -144,12 +148,48 @@ function initSchema(db) {
       last_updated TEXT
     );
 
+    -- Unified local-body office-holders (migration 023 mirror; verified winners only).
+    -- Precomputed slug/key columns let the mobile app query the browse hierarchy
+    -- (district → mandal → GP → ward) without in-memory slugging of 200k+ rows.
+    CREATE TABLE IF NOT EXISTS representatives (
+      id TEXT PRIMARY KEY,
+      office_type TEXT NOT NULL,
+      jurisdiction_type TEXT,
+      jurisdiction_id TEXT,
+      state_code TEXT NOT NULL,
+      district TEXT,
+      district_slug TEXT,
+      mandal TEXT,
+      mandal_slug TEXT,
+      gram_panchayat TEXT,
+      gp_key TEXT,
+      ward_no TEXT,
+      constituency TEXT,
+      name TEXT NOT NULL,
+      party TEXT,
+      party_official INTEGER,
+      elected_party TEXT,
+      gender TEXT,
+      reservation TEXT,
+      votes INTEGER,
+      election_year INTEGER,
+      is_current INTEGER,
+      source_type TEXT,
+      source_url TEXT,
+      data_status TEXT
+    );
+
     CREATE INDEX IF NOT EXISTS idx_constituencies_state ON constituencies(state_code);
     CREATE INDEX IF NOT EXISTS idx_mla_profiles_state ON mla_profiles(state_code);
     CREATE INDEX IF NOT EXISTS idx_demographics_state ON demographics(state_code);
     CREATE INDEX IF NOT EXISTS idx_historical_results_state_year ON historical_results(state_code, year);
     CREATE INDEX IF NOT EXISTS idx_political_timeline_state_ac ON political_timeline(state_code, ac_no);
     CREATE INDEX IF NOT EXISTS idx_election_history_state ON election_history(state_code);
+    CREATE INDEX IF NOT EXISTS idx_reps_state_office ON representatives(state_code, office_type);
+    CREATE INDEX IF NOT EXISTS idx_reps_state_district ON representatives(state_code, district_slug);
+    CREATE INDEX IF NOT EXISTS idx_reps_state_mandal ON representatives(state_code, district_slug, mandal_slug);
+    CREATE INDEX IF NOT EXISTS idx_reps_gpkey ON representatives(state_code, gp_key);
+    CREATE INDEX IF NOT EXISTS idx_reps_jurisdiction ON representatives(jurisdiction_type, jurisdiction_id);
   `);
 }
 
@@ -441,6 +481,120 @@ async function importSeedData(db) {
 }
 
 // ═════════════════════════════════════════════════════════════════════════
+// ── Local-body representatives (SEC KYR → representatives table) ───────────
+// ═════════════════════════════════════════════════════════════════════════
+
+/**
+ * Ingest every hardened SEC scraper file (scrapers/output/local-body/*-kyr.json)
+ * into the `representatives` table. Uses the SAME transform (buildRepsFromKYR)
+ * as the Supabase importer so offline and server data stay identical.
+ *
+ * GP-tier grouping: the district-level Sarpanch report omits mandal, while ward
+ * rows carry it. We resolve each GP's mandal from any row that has one (wards
+ * preferred) and backfill it onto mandal-less rows so a GP's sarpanch and wards
+ * share one mandal bucket + one gp_key.
+ */
+function importRepresentatives(db) {
+  if (!fs.existsSync(localBodyDir)) {
+    console.log('  (no scrapers/output/local-body dir — skipping representatives)');
+    return { total: 0, byState: {} };
+  }
+  const files = fs.readdirSync(localBodyDir).filter((f) => f.endsWith('-kyr.json'));
+  if (files.length === 0) {
+    console.log('  (no *-kyr.json files — skipping representatives)');
+    return { total: 0, byState: {} };
+  }
+
+  const all = [];
+  for (const file of files) {
+    try {
+      const data = JSON.parse(fs.readFileSync(path.join(localBodyDir, file), 'utf8'));
+      const reps = buildRepsFromKYR(data);
+      for (const rep of reps) all.push(rep); // loop, not spread (142k+ overflows arg stack)
+      console.log(`  ${file}: ${reps.length} winners`);
+    } catch (err) {
+      console.error(`  ✗ ${file}: ${err.message}`);
+    }
+  }
+
+  const isGpTier = (o) => o === 'sarpanch' || o === 'gp_ward_member';
+  const gpIdent = (r) => `${r.stateCode}::${slug(r.district)}::${slug(r.gramPanchayat)}`;
+
+  // Resolve mandal per GP (ward rows win over mandal-less sarpanch rows).
+  const mandalByGp = new Map();
+  for (const r of all) {
+    if (!isGpTier(r.officeType) || !r.gramPanchayat || !r.mandal) continue;
+    const k = gpIdent(r);
+    if (r.officeType === 'gp_ward_member' || !mandalByGp.has(k)) mandalByGp.set(k, r.mandal);
+  }
+
+  const insert = db.prepare(`
+    INSERT OR REPLACE INTO representatives (
+      id, office_type, jurisdiction_type, jurisdiction_id, state_code,
+      district, district_slug, mandal, mandal_slug, gram_panchayat, gp_key,
+      ward_no, constituency, name, party, party_official, elected_party,
+      gender, reservation, votes, election_year, is_current, source_type,
+      source_url, data_status
+    ) VALUES (
+      @id, @office_type, @jurisdiction_type, @jurisdiction_id, @state_code,
+      @district, @district_slug, @mandal, @mandal_slug, @gram_panchayat, @gp_key,
+      @ward_no, @constituency, @name, @party, @party_official, @elected_party,
+      @gender, @reservation, @votes, @election_year, @is_current, @source_type,
+      @source_url, @data_status
+    )
+  `);
+
+  const byState = {};
+  const tx = db.transaction((rows) => {
+    for (const r of rows) {
+      const dSlug = slug(r.district);
+      let mandal = r.mandal ?? null;
+      let mSlug;
+      let gpKey = null;
+      if (isGpTier(r.officeType)) {
+        if (!mandal) mandal = mandalByGp.get(gpIdent(r)) ?? null;
+        mSlug = mandal ? slug(mandal) : NO_MANDAL;
+        gpKey = `${dSlug}::${mSlug}::${slug(r.gramPanchayat)}`;
+      } else {
+        mSlug = mandal ? slug(mandal) : NO_MANDAL;
+      }
+      insert.run({
+        id: r.id,
+        office_type: r.officeType,
+        jurisdiction_type: r.jurisdictionType ?? null,
+        jurisdiction_id: r.jurisdictionId ?? null,
+        state_code: r.stateCode,
+        district: r.district ?? null,
+        district_slug: dSlug,
+        mandal,
+        mandal_slug: mSlug,
+        gram_panchayat: r.gramPanchayat ?? null,
+        gp_key: gpKey,
+        ward_no: r.wardNo ?? null,
+        constituency: r.constituency ?? null,
+        name: r.name,
+        party: r.party ?? null,
+        party_official: r.partyOfficial ? 1 : 0,
+        elected_party: r.party ?? null,
+        gender: r.gender ?? null,
+        reservation: r.reservation ?? null,
+        votes: r.votes ?? null,
+        election_year: r.electionYear ?? null,
+        is_current: 1,
+        source_type: 'sec',
+        source_url: r.sourceUrl ?? null,
+        data_status: 'verified',
+      });
+      byState[r.stateCode] = (byState[r.stateCode] ?? 0) + 1;
+    }
+  });
+  tx(all);
+
+  const total = Object.values(byState).reduce((s, n) => s + n, 0);
+  return { total, byState };
+}
+
+// ═════════════════════════════════════════════════════════════════════════
 // ── Main ────────────────────────────────────────────────────────────────
 // ═════════════════════════════════════════════════════════════════════════
 
@@ -465,6 +619,14 @@ async function main() {
     console.log('📥 Importing seed data...');
     const manifest = await importSeedData(db);
 
+    // Import local-body representatives (SEC KYR → representatives table)
+    console.log('\n📥 Importing local-body representatives...');
+    const reps = importRepresentatives(db);
+    if (reps.total > 0) {
+      console.log(`  ✓ Representatives: ${reps.total} (` +
+        Object.entries(reps.byState).map(([s, n]) => `${s}:${n}`).join(', ') + ')');
+    }
+
     // Optimize
     console.log('\n⚙️  Optimizing database...');
     db.exec('VACUUM; ANALYZE;');
@@ -486,9 +648,24 @@ async function main() {
     console.log(`   Total constituencies: ${Object.values(manifest).reduce((sum, m) => sum + m.constituency_count, 0)}`);
     console.log(`   Database size: ${dbSizeMB} MB`);
     console.log(`   Estimated gzipped: ${(dbStats.size * 0.3 / 1024 / 1024).toFixed(2)} MB`);
+
+    // Collapse the WAL into the main file and switch to a rollback journal so the
+    // shipped artifact is a single self-contained .db (no -wal/-shm dependency).
+    // This is required because the app bundles the .db as a read-only asset.
+    db.pragma('wal_checkpoint(TRUNCATE)');
+    db.pragma('journal_mode = DELETE');
+    console.log('✅ WAL checkpointed & journal set to DELETE (single-file artifact)');
   } finally {
     db.close();
   }
+
+  // Write an auto-derived version file from the final DB's content hash. The app
+  // imports this JSON and re-copies the bundled DB whenever the hash changes, so
+  // there is no manual version bump to remember after a rebuild.
+  const hash = crypto.createHash('sha256').update(fs.readFileSync(dbPath)).digest('hex').slice(0, 16);
+  const versionPath = path.resolve(dataDir, 'seed-db-version.json');
+  fs.writeFileSync(versionPath, JSON.stringify({ version: hash, builtAt: new Date().toISOString() }, null, 2) + '\n');
+  console.log(`✅ Version file written: ${versionPath} (${hash})`);
 }
 
 main().catch(err => {

@@ -98,6 +98,384 @@ export type LocalElectionType =
   | 'corporation';
 
 // ═══════════════════════════════════════════════════════════════════════════
+// Local-Body Representatives (migration 023) — Urban / Rural sub-tiers
+// ═══════════════════════════════════════════════════════════════════════════
+
+/**
+ * Classification of an urban local body. Rural bodies remain in
+ * {@link GramPanchayat}; this covers the urban tier as a first-class entity.
+ */
+export type UrbanLocalBodyType =
+  | 'corporation'
+  | 'municipality'
+  | 'nagar_panchayat'
+  | 'cantonment';
+
+/**
+ * Seat reservation category (incl. woman-reserved `-W` variants) used by
+ * State Election Commissions for ward / division rotation each cycle.
+ */
+export type ReservationCategory =
+  | 'GEN' | 'SC' | 'ST' | 'BC'
+  | 'GEN-W' | 'SC-W' | 'ST-W' | 'BC-W';
+
+/**
+ * Every local-body elected office modelled by the unified
+ * {@link Representative} table.
+ */
+export type OfficeType =
+  | 'mayor'
+  | 'deputy_mayor'
+  | 'corporator'
+  | 'ulb_chairperson'
+  | 'ulb_vice_chairperson'
+  | 'ward_member'
+  | 'sarpanch'
+  | 'gp_ward_member'
+  | 'mptc_member'
+  | 'mandal_parishad_president'
+  | 'zptc_member'
+  | 'zilla_parishad_chairperson';
+
+/**
+ * The polymorphic jurisdiction entity a {@link Representative} governs.
+ * Resolved against the matching table by `jurisdictionType`.
+ */
+export type JurisdictionType =
+  | 'urban_local_body'
+  | 'ulb_ward'
+  | 'zilla_parishad'
+  | 'zptc_division'
+  | 'mandal_parishad'
+  | 'mptc_division'
+  | 'gram_panchayat'
+  | 'gp_ward';
+
+/**
+ * Origin of a representative record or a crowdsourced edit.
+ */
+export type RepresentativeSourceType =
+  | 'lgd' | 'sec' | 'lok_dhaba' | 'opencity' | 'wikipedia'
+  | 'eci' | 'myneta' | 'news' | 'curated' | 'crowdsourced';
+
+/**
+ * Honest data-availability state — the backbone of the zero-fabrication policy.
+ *
+ * - `verified`                 — sourced from an official / authoritative source
+ * - `data_pending`             — the seat exists but the holder is not yet known
+ * - `crowdsourced_unverified`  — user-submitted, awaiting moderation
+ */
+export type DataStatus = 'verified' | 'data_pending' | 'crowdsourced_unverified';
+
+/** Optional polygon geometry as GeoJSON (null → "boundary pending" in UI). */
+export interface GeoPoint {
+  latitude: number;
+  longitude: number;
+}
+
+/** Urban local body — corporation / municipality / nagar panchayat. */
+export interface UrbanLocalBody {
+  /** Convention: `{stateCode}-ULB-{lgdCode}` */
+  id: string;
+  name: string;
+  localName?: string;
+  stateCode: string;
+  district: string;
+  lgdCode?: number;
+  type: UrbanLocalBodyType;
+  /** Mayor (corporation) or Chairperson (municipality / nagar panchayat). */
+  headOfficeType: 'mayor' | 'chairperson';
+  primaryConstituencyId?: string;
+  totalWards?: number;
+  population2011?: number;
+  totalVoters?: number;
+  areaSqKm?: number;
+  centroid?: GeoPoint;
+  /** True when a boundary polygon exists in the DB. */
+  hasBoundary?: boolean;
+}
+
+/** Ward inside an urban local body — the corporator / councillor seat. */
+export interface ULBWard {
+  /** Convention: `{ulbId}-W{wardNo}` */
+  id: string;
+  ulbId: string;
+  stateCode: string;
+  wardNo: number;
+  name?: string;
+  localName?: string;
+  lgdWardCode?: number;
+  reservation: ReservationCategory;
+  constituencyId?: string;
+  population2011?: number;
+  totalVoters?: number;
+  centroid?: GeoPoint;
+  hasBoundary?: boolean;
+}
+
+/** District rural council. Head is the Zilla Parishad Chairperson. */
+export interface ZillaParishad {
+  /** Convention: `{stateCode}-ZP-{districtSlug}` */
+  id: string;
+  name: string;
+  localName?: string;
+  stateCode: string;
+  district: string;
+  lgdCode?: number;
+  totalDivisions?: number;
+  population2011?: number;
+  hasBoundary?: boolean;
+}
+
+/** Zilla Parishad Territorial Constituency — one ZPTC member per division. */
+export interface ZPTCDivision {
+  id: string;
+  zillaParishadId: string;
+  /** ZPTC divisions are usually coterminous with a mandal. */
+  mandalId?: string;
+  stateCode: string;
+  name: string;
+  divisionNo?: number;
+  reservation: ReservationCategory;
+  population2011?: number;
+  hasBoundary?: boolean;
+}
+
+/** Mandal Parishad — block-level rural body. Head is the MPP. */
+export interface MandalParishad {
+  /** Convention: `{mandalId}-MP` */
+  id: string;
+  mandalId: string;
+  stateCode: string;
+  district: string;
+  name: string;
+  totalDivisions?: number;
+  population2011?: number;
+  hasBoundary?: boolean;
+}
+
+/** Mandal Parishad Territorial Constituency — one MPTC member per division. */
+export interface MPTCDivision {
+  id: string;
+  mandalParishadId: string;
+  primaryPanchayatId?: string;
+  stateCode: string;
+  name: string;
+  divisionNo?: number;
+  reservation: ReservationCategory;
+  population2011?: number;
+  hasBoundary?: boolean;
+}
+
+/** Gram Panchayat ward — the ward-member seat (highest-volume tier). */
+export interface GPWard {
+  /** Convention: `{panchayatId}-W{wardNo}` */
+  id: string;
+  panchayatId: string;
+  stateCode: string;
+  wardNo: number;
+  name?: string;
+  reservation: ReservationCategory;
+  population2011?: number;
+  centroid?: GeoPoint;
+  hasBoundary?: boolean;
+}
+
+/**
+ * Unified local-body office-holder (migration 023 `representatives`).
+ *
+ * Mirrors the MLA/MP profile fields so a single UI can render every tier.
+ * All enrichment fields are optional → when absent the UI shows an explicit
+ * "data pending" state rather than a fabricated value.
+ */
+export interface Representative {
+  id: string;
+
+  officeType: OfficeType;
+  jurisdictionType: JurisdictionType;
+  jurisdictionId: string;
+
+  stateCode: string;
+  district?: string;
+  /** Sub-district territorial context (rural: mandal/block). */
+  mandal?: string;
+  /** Gram-panchayat name for GP-tier offices (sarpanch, GP ward member). */
+  gramPanchayat?: string;
+  /** Ward number within the GP (GP ward members only). */
+  wardNo?: string;
+  /** Seat reservation category as published by the SEC (e.g. "ST", "BC-Woman"). */
+  reservation?: string;
+
+  // Identity
+  name: string;
+  localName?: string;
+  /** De-facto party; undefined when officially non-party. */
+  party?: string;
+  /** False for officially non-party polls (e.g. AP gram panchayats). */
+  partyOfficial: boolean;
+  electedParty?: string;
+  gender?: 'M' | 'F' | 'O';
+  age?: number;
+  dob?: string; // YYYY-MM-DD
+  dobEstimated?: boolean;
+  education?: string;
+  profession?: string;
+  maritalStatus?: string;
+  terms?: number;
+
+  // Affidavit-derived (nullable → data pending)
+  criminalCases?: number;
+  totalAssets?: number;
+  totalLiabilities?: number;
+
+  // Contact / media (sparse — crowdsourced over time)
+  photoUrl?: string;
+  phone?: string;
+  email?: string;
+
+  // Tenure
+  electionYear?: number;
+  electionId?: number;
+  termStart?: string;
+  termEnd?: string;
+  isCurrent: boolean;
+
+  // Provenance summary
+  sourceType: RepresentativeSourceType;
+  sourceUrl?: string;
+  dataStatus: DataStatus;
+}
+
+/**
+ * A single Wikipedia-style edit to a {@link Representative}, carrying source
+ * provenance + a forensic fingerprint + moderation status.
+ */
+export interface RepresentativeEdit {
+  id: number;
+  representativeId: string;
+  editorUserId?: string;
+  editorKycVerified: boolean;
+  sourceType: RepresentativeSourceType;
+  sourceUrl?: string;
+  citation?: string;
+  /** `{ field: { from, to } }` proposed changes. */
+  diff: Record<string, { from: unknown; to: unknown }>;
+  /** CCA/KYC forensic snapshot captured at submit time. */
+  digitalFingerprint?: Record<string, unknown>;
+  submittedAt: string;
+  moderationStatus: 'pending' | 'approved' | 'rejected' | 'auto_applied';
+  moderatedBy?: string;
+  moderatedAt?: string;
+  moderationNote?: string;
+}
+
+/**
+ * Interface-unification shape: one profile card renders MLA / MP *and* every
+ * local-body office. Local reps map here directly; existing `acNo`-keyed
+ * MLA/MP data is adapted via {@link representativeToProfile}-style adapters in
+ * the mobile layer. This is NOT a storage merge — purely a display contract.
+ */
+export interface RepresentativeProfile {
+  id: string;
+  /** Broad category used to pick labels / icons. */
+  officeCategory: 'legislator' | 'local_body';
+  /** Specific office label, e.g. 'MLA', 'Mayor', 'Sarpanch', 'ZPTC Member'. */
+  officeLabel: string;
+  officeType?: OfficeType;
+
+  name: string;
+  localName?: string;
+  party?: string;
+  partyOfficial: boolean;
+
+  /** Jurisdiction display name (constituency name, ward name, GP name, …). */
+  jurisdictionName: string;
+  district?: string;
+  stateCode: string;
+
+  gender?: 'M' | 'F' | 'O';
+  age?: number;
+  terms?: number;
+  education?: string;
+  profession?: string;
+  maritalStatus?: string;
+
+  criminalCases?: number;
+  totalAssets?: number;
+  totalLiabilities?: number;
+
+  photoUrl?: string;
+  phone?: string;
+  email?: string;
+
+  isCurrent: boolean;
+  termStart?: string;
+  termEnd?: string;
+
+  // Provenance (drives the "Source & Provenance" section)
+  sourceType?: RepresentativeSourceType | string;
+  sourceUrl?: string;
+  dataStatus: DataStatus;
+  lastEditedBy?: string;
+  lastEditedAt?: string;
+  fingerprintVerified?: boolean;
+}
+
+/** Human-readable label + icon for each {@link OfficeType}. */
+export const OFFICE_TYPE_CONFIG: Record<OfficeType, { label: string; short: string; category: 'urban' | 'rural' }> = {
+  mayor:                       { label: 'Mayor',                        short: 'Mayor',      category: 'urban' },
+  deputy_mayor:                { label: 'Deputy Mayor',                 short: 'Dy. Mayor',  category: 'urban' },
+  corporator:                  { label: 'Corporator',                   short: 'Corporator', category: 'urban' },
+  ulb_chairperson:             { label: 'Municipal Chairperson',        short: 'Chairperson',category: 'urban' },
+  ulb_vice_chairperson:        { label: 'Municipal Vice-Chairperson',   short: 'Vice-Chair', category: 'urban' },
+  ward_member:                 { label: 'Ward Member',                  short: 'Ward Member',category: 'urban' },
+  sarpanch:                    { label: 'Sarpanch',                     short: 'Sarpanch',   category: 'rural' },
+  gp_ward_member:              { label: 'GP Ward Member',               short: 'Ward Member',category: 'rural' },
+  mptc_member:                 { label: 'MPTC Member',                  short: 'MPTC',       category: 'rural' },
+  mandal_parishad_president:   { label: 'Mandal Parishad President',    short: 'MPP',        category: 'rural' },
+  zptc_member:                 { label: 'ZPTC Member',                  short: 'ZPTC',       category: 'rural' },
+  zilla_parishad_chairperson:  { label: 'Zilla Parishad Chairperson',   short: 'ZP Chair',   category: 'rural' },
+};
+
+/** Map a {@link Representative} row to the unified {@link RepresentativeProfile}. */
+export function representativeToProfile(
+  rep: Representative,
+  jurisdictionName: string,
+): RepresentativeProfile {
+  return {
+    id: rep.id,
+    officeCategory: 'local_body',
+    officeLabel: OFFICE_TYPE_CONFIG[rep.officeType]?.label ?? rep.officeType,
+    officeType: rep.officeType,
+    name: rep.name,
+    localName: rep.localName,
+    party: rep.party,
+    partyOfficial: rep.partyOfficial,
+    jurisdictionName,
+    district: rep.district,
+    stateCode: rep.stateCode,
+    gender: rep.gender,
+    age: rep.age,
+    terms: rep.terms,
+    education: rep.education,
+    profession: rep.profession,
+    maritalStatus: rep.maritalStatus,
+    criminalCases: rep.criminalCases,
+    totalAssets: rep.totalAssets,
+    totalLiabilities: rep.totalLiabilities,
+    photoUrl: rep.photoUrl,
+    phone: rep.phone,
+    email: rep.email,
+    isCurrent: rep.isCurrent,
+    termStart: rep.termStart,
+    termEnd: rep.termEnd,
+    sourceType: rep.sourceType,
+    sourceUrl: rep.sourceUrl,
+    dataStatus: rep.dataStatus,
+  };
+}
+
+// ═══════════════════════════════════════════════════════════════════════════
 // Core Hierarchy Entities
 // ═══════════════════════════════════════════════════════════════════════════
 

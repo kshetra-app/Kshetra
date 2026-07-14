@@ -174,15 +174,19 @@ export default function ExploreScreen() {
       <View style={styles.quickNavRow}>
         <Pressable style={styles.quickNavBtn} onPress={() => router.push('/parliament' as any)}>
           <Ionicons name="business" size={18} color="#8B5CF6" />
-          <Text style={styles.quickNavText}>{'MPs & Parliament'}</Text>
+          <Text style={styles.quickNavText}>{t('exploreExtended.mpsParliament')}</Text>
         </Pressable>
         <Pressable style={styles.quickNavBtn} onPress={() => router.push('/ai-chat' as any)}>
           <Ionicons name="sparkles" size={18} color="#F59E0B" />
-          <Text style={styles.quickNavText}>AI Chat</Text>
+          <Text style={styles.quickNavText}>{t('exploreExtended.aiChat')}</Text>
         </Pressable>
         <Pressable style={styles.quickNavBtn} onPress={() => router.push('/delimitation' as any)}>
           <Ionicons name="resize" size={18} color="#10B981" />
-          <Text style={styles.quickNavText}>Delimitation</Text>
+          <Text style={styles.quickNavText}>{t('exploreExtended.delimitation')}</Text>
+        </Pressable>
+        <Pressable style={styles.quickNavBtn} onPress={() => router.push('/local-bodies' as any)}>
+          <Ionicons name="home" size={18} color="#EC4899" />
+          <Text style={styles.quickNavText}>{t('exploreExtended.localBodies')}</Text>
         </Pressable>
       </View>
 
@@ -349,9 +353,9 @@ export default function ExploreScreen() {
       {stateCode === 'IN' ? (
         <View style={styles.emptyState}>
           <Ionicons name="map" size={48} color="#4F8EF7" style={{ marginBottom: 12 }} />
-          <Text style={styles.emptyTitle}>Select a State</Text>
+          <Text style={styles.emptyTitle}>{t('exploreExtended.selectAState')}</Text>
           <Text style={styles.emptyText}>
-            Please select a specific state using the selector in the header to explore constituencies and MLA profiles.
+            {t('exploreExtended.pleaseSelectState')}
           </Text>
         </View>
       ) : filtered.length === 0 ? (
@@ -398,6 +402,7 @@ const ConstituencyCard = React.memo(function ConstituencyCard({
   onAvatarPress?: (uri: string | null, name: string, party: string) => void;
 }) {
   const partyColor = getPartyColor(item.winnerParty);
+  const { t } = useTranslation();
 
   // Rich data badges from affidavit store
   const winnerAffidavit = useAffidavitStore.getState().getWinnerAffidavit(item.stateCode || 'TS', item.acNo, item.electionYear || 2023);
@@ -435,13 +440,13 @@ const ConstituencyCard = React.memo(function ConstituencyCard({
             {isCrorepati && (
               <View style={styles.cardCrorepatiBadge}>
                 <Ionicons name="diamond" size={9} color="#F59E0B" />
-                <Text style={styles.cardCrorepatiText}>Crorepati</Text>
+                <Text style={styles.cardCrorepatiText}>{t('exploreExtended.crorepati')}</Text>
               </View>
             )}
             {criminalCases != null && criminalCases > 0 && (
               <View style={styles.cardCriminalBadge}>
                 <Ionicons name="alert-circle" size={9} color="#EF4444" />
-                <Text style={styles.cardCriminalText}>{criminalCases} case{criminalCases > 1 ? 's' : ''}</Text>
+                <Text style={styles.cardCriminalText}>{criminalCases} {criminalCases > 1 ? t('exploreExtended.cases') : t('exploreExtended.case')}</Text>
               </View>
             )}
           </View>

@@ -721,6 +721,36 @@ const ta: PartialTranslationKeys = {
     systemDefault: 'முறைமையின் இயல்புநிலை',
     changeConfirm: 'மொழியை {{language}}-க்கு மாற்ற வேண்டுமா?',
   },
+
+  // ── Constituency Tab Bar ───────────────────────────────────
+  constituencyTabBar: { overview: 'மேலோட்டம்', issues: 'சிக்கல்கள்', pulse: 'துடிப்பு', news: 'செய்திகள்', history: 'வரலாறு', xray: 'எக்ஸ்-ரே' },
+
+  // ── Compare ────────────────────────────────────────────────
+  compare: { title: 'ஒப்பிடுக', selectA: 'A தேர்வு', selectB: 'B தேர்வு', selectConstituency: 'தொகுதி தேர்வு', election: 'தேர்தல்', winnerVotes: 'வெற்றியாளர் வாக்குகள்', margin: 'இடைவெளி', marginPct: 'இடைவெளி %', demographics: 'மக்கள்தொகை விவரங்கள்', population: 'மக்கள்தொகை', totalVoters: 'மொத்த வாக்காளர்கள்', turnout2023: 'வாக்குப்பதிவு 2023', literacy: 'கல்வியறிவு', urbanPct: 'நகர்ப்புற %', scPct: 'SC %', stPct: 'ST %', area: 'பரப்பளவு (சதுர கிமீ)', mlaProfile: 'MLA சுயவிவரம்', gender: 'பாலினம்', male: 'ஆண்', female: 'பெண்', terms: 'பதவிக்காலங்கள்', historical: 'வரலாற்று ஒப்பீடு' },
+
+  // ── Export ─────────────────────────────────────────────────
+  export: { title: 'ஏற்றுமதி டாஷ்போர்டு', dataScope: 'தரவு வரம்பு', currentView: 'தற்போதைய காட்சி', allData: 'அனைத்து தரவு', upgradeRequired: 'மேம்படுத்தல் தேவை', cannotExport: 'தற்போதைய திட்டத்தில் ஏற்றுமதி செய்ய இயலாது.', failed: 'ஏற்றுமதி தோல்வி', errorOccurred: 'பிழை ஏற்பட்டது.' },
+
+  // ── Aspirant Registration ──────────────────────────────────
+  aspirantReg: { title: 'விரும்பியாக ஆகுங்கள்', publicName: 'பொது பெயர்', nameRequired: 'பெயர் தேவை', standFor: 'நீங்கள் எதற்காக நிற்கிறீர்கள்?', targetConstituency: 'இலக்கு தொகுதி', stateLabel: 'மாநிலம்', targetYear: 'இலக்கு தேர்தல் ஆண்டு', affiliation: 'இணைப்பு', partyMember: 'கட்சி உறுப்பினர்', createProfile: 'என் விரும்பி சுயவிவரத்தை உருவாக்கு', welcomeTitle: 'வரவேற்கிறோம், விரும்பி!', letsGo: 'தொடங்குவோம்' },
+
+  // ── KYC Sheet ──────────────────────────────────────────────
+  kycSheet: { title: 'பங்களிப்பாளர் சரிபார்ப்பு', verified: 'சரிபார்க்கப்பட்டது!', personalInfo: 'தனிப்பட்ட தகவல்', fullName: 'முழு சட்டப்பூர்வ பெயர் *', phone: 'தொலைபேசி எண் *', selfieSection: 'செல்ஃபி சரிபார்ப்பு', takeSelfie: 'செல்ஃபி எடுங்கள்', agreement: 'பொறுப்பு ஒப்பந்தம்', agreeAndVerify: 'ஒப்புக் கொண்டு சரிபார்' },
+
+  // ── Content Gate ───────────────────────────────────────────
+  contentGate: { flag: 'ஃப்ளாக்', alert: 'அலர்ட்', flagContent: 'உள்ளடக்கத்தை ஃப்ளாக் செய்', raiseAlert: 'அலர்ட் அனுப்பு', category: 'வகை', submitFlag: 'ஃப்ளாக் சமர்ப்பி' },
+
+  // ── Shorts Player ─────────────────────────────────────────
+  shortsPlayer: { branding: 'ஷார்ட்ஸ்', videoUnavailable: 'வீடியோ கிடைக்கவில்லை', openYouTube: 'YouTubeல் திற', share: 'பகிர்', approve: 'அனுமதி', skip: 'தவிர்' },
+
+  // ── Upload Short ──────────────────────────────────────────
+  uploadShort: { title: 'அரசியல் ஷார்ட் பதிவேற்று', creatorVerification: 'படைப்பாளர் சரிபார்ப்பு தேவை', startVerification: 'படைப்பாளர் சரிபார்ப்பு தொடங்கு', maybeLater: 'பின்னர்', inputTitle: 'தலைப்பு', inputDescription: 'விளக்கம்', uploadButton: 'தொகுதிக்கு பதிவேற்று' },
+
+  // ── Module Detail ─────────────────────────────────────────
+  moduleDetail: { keyTakeaways: 'முக்கிய அம்சங்கள்', knowledgeCheck: 'அறிவுப் பரிசோதனை', tryAgain: 'மீண்டும் முயற்சி', sources: 'ஆதாரங்கள் & மேலும் படிக்க', moduleCompleted: 'தொகுதி நிறைவு', submitQuiz: 'பதில்களை சமர்ப்பி', markComplete: 'நிறைவு என குறி' },
+
+  // ── Outreach Panel ────────────────────────────────────────
+  outreachPanel: { compose: 'எழுது', history: 'வரலாறு', templates: 'டெம்ப்ளேட்கள்', channel: 'சேனல்', audience: 'பார்வையாளர்கள்', message: 'செய்தி', delivery: 'விநியோகம்', sendNow: 'இப்போது அனுப்பு', recipients: 'பெறுநர்கள்', noBroadcasts: 'இதுவரை ஒளிபரப்புகள் இல்லை', cancel: 'ரத்து', sendBroadcast: 'ஒளிபரப்பு அனுப்பு' },
 };
 
 export default ta;

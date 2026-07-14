@@ -727,6 +727,36 @@ const gu: PartialTranslationKeys = {
     systemDefault: 'સિસ્ટમ ડિફોલ્ટ',
     changeConfirm: 'ભાષા બદલીને {{language}} કરવી છે?',
   },
+
+  // ── Constituency Tab Bar ───────────────────────────────────
+  constituencyTabBar: { overview: 'સમીક્ષા', issues: 'મુદ્દાઓ', pulse: 'ધબકાર', news: 'સમાચાર', history: 'ઇતિહાસ', xray: 'એક્સ-રે' },
+
+  // ── Compare ────────────────────────────────────────────────
+  compare: { title: 'સરખામણી', selectA: 'A પસંદ કરો', selectB: 'B પસંદ કરો', selectConstituency: 'મતવિસ્તાર પસંદ કરો', election: 'ચૂંટણી', winnerVotes: 'વિજેતા મત', margin: 'તફાવત', demographics: 'વસ્તી વિગતો', population: 'વસ્તી', totalVoters: 'કુલ મતદારો', literacy: 'સાક્ષરતા', mlaProfile: 'MLA પ્રોફાઇલ', gender: 'જાતિ', male: 'પુરુષ', female: 'સ્ત્રી', terms: 'કાર્યકાળ', historical: 'ઐતિહાસિક સરખામણી' },
+
+  // ── Export ─────────────────────────────────────────────────
+  export: { title: 'નિકાસ ડેશબોર્ડ', dataScope: 'ડેટા કાર્યક્ષેત્ર', currentView: 'વર્તમાન દૃશ્ય', allData: 'બધો ડેટા', upgradeRequired: 'અપગ્રેડ જરૂરી', failed: 'નિકાસ નિષ્ફળ', errorOccurred: 'એક ભૂલ આવી.' },
+
+  // ── Aspirant Registration ──────────────────────────────────
+  aspirantReg: { title: 'આકાંક્ષી બનો', publicName: 'જાહેર નામ', nameRequired: 'નામ જરૂરી', standFor: 'તમે શેના માટે ઊભા છો?', targetConstituency: 'લક્ષ્ય મતવિસ્તાર', stateLabel: 'રાજ્ય', partyMember: 'પક્ષ સભ્ય', createProfile: 'મારી આકાંક્ષી પ્રોફાઇલ બનાવો', welcomeTitle: 'સ્વાગત, આકાંક્ષી!', letsGo: 'ચાલો શરૂ કરીએ' },
+
+  // ── KYC Sheet ──────────────────────────────────────────────
+  kycSheet: { title: 'યોગદાનકર્તા ચકાસણી', verified: 'ચકાસાયેલ!', personalInfo: 'વ્યક્તિગત માહિતી', fullName: 'સંપૂર્ણ કાનૂની નામ *', phone: 'ફોન નંબર *', selfieSection: 'સેલ્ફી ચકાસણી', takeSelfie: 'સેલ્ફી લો', agreement: 'જવાબદારી કરાર', agreeAndVerify: 'સંમત થાઓ અને ચકાસો' },
+
+  // ── Content Gate ───────────────────────────────────────────
+  contentGate: { flag: 'ફ્લેગ', alert: 'ચેતવણી', flagContent: 'સામગ્રી ફ્લેગ કરો', raiseAlert: 'ચેતવણી મોકલો', category: 'શ્રેણી', submitFlag: 'ફ્લેગ સબમિટ કરો' },
+
+  // ── Shorts Player ──────────────────────────────────────────
+  shortsPlayer: { branding: 'શોર્ટ્સ', videoUnavailable: 'વીડિયો ઉપલબ્ધ નથી', openYouTube: 'YouTubeમાં ખોલો', share: 'શેર કરો', approve: 'મંજૂર', skip: 'છોડો' },
+
+  // ── Upload Short ───────────────────────────────────────────
+  uploadShort: { title: 'રાજકીય શોર્ટ અપલોડ', creatorVerification: 'સર્જક ચકાસણી જરૂરી', startVerification: 'સર્જક ચકાસણી શરૂ કરો', maybeLater: 'પછી', inputTitle: 'શીર્ષક', inputDescription: 'વર્ણન', uploadButton: 'મતવિસ્તારમાં અપલોડ' },
+
+  // ── Module Detail ──────────────────────────────────────────
+  moduleDetail: { keyTakeaways: 'મુખ્ય અંશો', knowledgeCheck: 'જ્ઞાન ચકાસણી', tryAgain: 'ફરી પ્રયત્ન', sources: 'સ્રોતો & વધુ વાંચો', moduleCompleted: 'મોડ્યુલ પૂર્ણ', submitQuiz: 'જવાબો સબમિટ', markComplete: 'પૂર્ણ ચિહ્નિત' },
+
+  // ── Outreach Panel ─────────────────────────────────────────
+  outreachPanel: { compose: 'લખો', history: 'ઇતિહાસ', templates: 'ટેમ્પલેટ્સ', channel: 'ચેનલ', audience: 'દર્શકો', message: 'સંદેશ', delivery: 'ડિલિવરી', sendNow: 'હમણાં મોકલો', recipients: 'પ્રાપ્તકર્તાઓ', noBroadcasts: 'હજી સુધી કોઈ પ્રસારણ નથી', cancel: 'રદ કરો', sendBroadcast: 'પ્રસારણ મોકલો' },
 };
 
 export default gu;

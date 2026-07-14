@@ -1,4 +1,5 @@
 import { useState, useMemo, useCallback } from 'react';
+import { useTranslation } from 'react-i18next';
 import { View, Text, StyleSheet, ScrollView, Pressable, RefreshControl, StatusBar } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
@@ -10,13 +11,14 @@ import DataPipelineCard from '../../components/DataPipelineCard';
 
 type Tab = 'overview' | 'constituencies' | 'pipeline';
 
-const TABS: { key: Tab; label: string; icon: string }[] = [
-  { key: 'overview', label: 'Overview', icon: 'bar-chart' },
-  { key: 'constituencies', label: 'Constituencies', icon: 'list' },
-  { key: 'pipeline', label: 'Data Pipeline', icon: 'git-network' },
+const TAB_KEYS: { key: Tab; i18nKey: string; icon: string }[] = [
+  { key: 'overview', i18nKey: 'liveElection.tabOverview', icon: 'bar-chart' },
+  { key: 'constituencies', i18nKey: 'liveElection.tabConstituencies', icon: 'list' },
+  { key: 'pipeline', i18nKey: 'liveElection.tabPipeline', icon: 'git-network' },
 ];
 
 export default function LiveElectionScreen() {
+  const { t } = useTranslation();
   const router = useRouter();
   const insets = useSafeAreaInsets();
   const [activeTab, setActiveTab] = useState<Tab>('overview');
@@ -43,23 +45,23 @@ export default function LiveElectionScreen() {
           <Ionicons name="arrow-back" size={22} color="#FFFFFF" />
         </Pressable>
         <View style={{ flex: 1 }}>
-          <Text style={styles.headerTitle}>Live Election</Text>
-          <Text style={styles.headerSub}>Real-Time Counting & Data Pipeline</Text>
+          <Text style={styles.headerTitle}>{t('liveElection.screenTitle')}</Text>
+          <Text style={styles.headerSub}>{t('liveElection.screenSubtitle')}</Text>
         </View>
         {liveElection?.isLive && (
           <View style={styles.liveBadge}>
             <View style={styles.liveDotHeader} />
-            <Text style={styles.liveTextHeader}>LIVE</Text>
+            <Text style={styles.liveTextHeader}>{t('liveElection.live')}</Text>
           </View>
         )}
       </View>
 
       {/* Tab Bar */}
       <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.tabBar} contentContainerStyle={styles.tabBarContent}>
-        {TABS.map((tab) => (
+        {TAB_KEYS.map((tab) => (
           <Pressable key={tab.key} style={[styles.tab, activeTab === tab.key && styles.tabActive]} onPress={() => setActiveTab(tab.key)}>
             <Ionicons name={(activeTab === tab.key ? tab.icon : `${tab.icon}-outline`) as any} size={16} color={activeTab === tab.key ? '#4F8EF7' : '#6B7280'} />
-            <Text style={[styles.tabLabel, activeTab === tab.key && styles.tabLabelActive]}>{tab.label}</Text>
+            <Text style={[styles.tabLabel, activeTab === tab.key && styles.tabLabelActive]}>{t(tab.i18nKey)}</Text>
           </Pressable>
         ))}
       </ScrollView>
@@ -77,15 +79,15 @@ export default function LiveElectionScreen() {
             ) : (
               <View style={styles.empty}>
                 <Ionicons name="radio" size={48} color="#4B5563" />
-                <Text style={styles.emptyTitle}>No Live Election</Text>
-                <Text style={styles.emptyText}>Live election data will appear here when counting is in progress.</Text>
+                <Text style={styles.emptyTitle}>{t('liveElection.noLiveElection')}</Text>
+                <Text style={styles.emptyText}>{t('liveElection.noLiveElectionDesc')}</Text>
               </View>
             )}
 
             {/* Vote share comparison */}
             {liveElection && (
               <View style={styles.voteShareCard}>
-                <Text style={styles.voteShareTitle}>Vote Share Comparison</Text>
+                <Text style={styles.voteShareTitle}>{t('liveElection.voteShareComparison')}</Text>
                 {liveElection.partyWise.map((t) => (
                   <View key={t.party} style={styles.voteShareRow}>
                     <View style={[styles.partyDot, { backgroundColor: t.partyColor }]} />
@@ -109,14 +111,14 @@ export default function LiveElectionScreen() {
           <>
             {liveElection ? (
               <>
-                <Text style={styles.sectionTitle}>Constituency Results ({liveElection.constituencies.length})</Text>
+                <Text style={styles.sectionTitle}>{t('liveElection.constituencyResults', { count: liveElection.constituencies.length })}</Text>
                 {liveElection.constituencies.map((c) => (
                   <ConstituencyResultCard key={c.acNo} result={c} />
                 ))}
               </>
             ) : (
               <View style={styles.empty}>
-                <Text style={styles.emptyText}>No constituency data available</Text>
+                <Text style={styles.emptyText}>{t('liveElection.noConstituencyData')}</Text>
               </View>
             )}
           </>
@@ -127,7 +129,7 @@ export default function LiveElectionScreen() {
             <View style={styles.healthSummary}>
               <View style={[styles.healthDot, { backgroundColor: pipelineHealth.overallStatus === 'healthy' ? '#10B981' : '#EF4444' }]} />
               <Text style={[styles.healthText, { color: pipelineHealth.overallStatus === 'healthy' ? '#10B981' : '#EF4444' }]}>
-                System {pipelineHealth.overallStatus}: {pipelineHealth.healthy}/{pipelineHealth.total} sources healthy
+                {t('liveElection.systemHealth', { status: pipelineHealth.overallStatus, healthy: pipelineHealth.healthy, total: pipelineHealth.total })}
               </Text>
             </View>
             <DataPipelineCard pipeline={pipeline} onRefresh={store.refreshPipelineStatus} />

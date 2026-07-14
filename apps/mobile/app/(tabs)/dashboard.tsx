@@ -28,10 +28,10 @@ import { usePromiseStore } from '../../stores/promises';
 import { PROMISE_STATUS_CONFIG, type PromiseStatus as PStatus } from '../../lib/promiseTypes';
 import { STATES } from '@kshetra/shared';
 
-const SCOPE_OPTIONS: { key: CivicScope; icon: string; label: string }[] = [
-  { key: 'constituency', icon: 'location', label: 'My Constituency' },
-  { key: 'state', icon: 'map', label: 'My State' },
-  { key: 'national', icon: 'globe', label: 'National' },
+const SCOPE_OPTIONS: { key: CivicScope; icon: string; tKey: string }[] = [
+  { key: 'constituency', icon: 'location', tKey: 'common.scopes.myConstituency' },
+  { key: 'state', icon: 'map', tKey: 'common.scopes.myState' },
+  { key: 'national', icon: 'globe', tKey: 'common.scopes.national' },
 ];
 
 // ─── Error Boundary to prevent Fabric native crashes ───
@@ -173,7 +173,7 @@ function DashboardContent() {
   const scopeLabel = useMemo(() => {
     if (scopeFilter === 'constituency' && myHome) return myHome.name;
     if (scopeFilter === 'state') return (STATES as Record<string, { name: string }>)[stateCode]?.name ?? stateCode;
-    return 'All India';
+    return t('common.scopes.allIndia');
   }, [scopeFilter, stateCode, myHome]);
 
   const issueStats = useMemo(() => {
@@ -209,7 +209,7 @@ function DashboardContent() {
           <View style={styles.scopeIndicator}>
             <Ionicons name="funnel" size={10} color="#6B7280" />
             <Text style={styles.scopeIndicatorText}>
-              {scopeLabel} · {issues.length} item{issues.length !== 1 ? 's' : ''}
+              {scopeLabel} · {issues.length} {issues.length !== 1 ? t('common.items') : t('common.item')}
             </Text>
           </View>
         </View>
@@ -242,7 +242,7 @@ function DashboardContent() {
                   ? (STATES as Record<string, { name: string }>)[stateCode]?.name ?? stateCode
                   : opt.key === 'constituency' && myHome
                     ? myHome.name
-                    : opt.label}
+                    : t(opt.tKey)}
               </Text>
             </Pressable>
           );
@@ -275,8 +275,8 @@ function DashboardContent() {
               <Ionicons name="stats-chart" size={18} color="#4F8EF7" />
             </View>
             <View>
-              <Text style={styles.delimBannerTitle}>Election Analytics</Text>
-              <Text style={styles.delimBannerSub}>Swing seats, party strength, district heatmaps</Text>
+              <Text style={styles.delimBannerTitle}>{t('dashboardExtended.electionAnalytics')}</Text>
+              <Text style={styles.delimBannerSub}>{t('dashboardExtended.electionAnalyticsDesc')}</Text>
             </View>
           </View>
           <Ionicons name="chevron-forward" size={16} color="#374151" />
@@ -285,9 +285,9 @@ function DashboardContent() {
         {/* Quick Nav: Gold Standard Pillars */}
         <ScrollView horizontal showsHorizontalScrollIndicator={false} style={{ marginHorizontal: 12, marginBottom: 8 }} contentContainerStyle={{ gap: 8 }}>
           {[
-            { label: 'Civic Metrics', icon: 'bar-chart', color: '#10B981', route: '/civic-metrics' },
-            { label: 'Live Election', icon: 'radio', color: '#F59E0B', route: '/live-election' },
-            { label: 'Investor Demo', icon: 'rocket', color: '#EC4899', route: '/investor-demo' },
+            { tKey: 'dashboardExtended.civicMetrics', icon: 'bar-chart', color: '#10B981', route: '/civic-metrics' },
+            { tKey: 'dashboardExtended.liveElection', icon: 'radio', color: '#F59E0B', route: '/live-election' },
+            { tKey: 'dashboardExtended.investorDemo', icon: 'rocket', color: '#EC4899', route: '/investor-demo' },
           ].map((item) => (
             <Pressable
               key={item.route}
@@ -295,7 +295,7 @@ function DashboardContent() {
               onPress={() => router.push(item.route as any)}
             >
               <Ionicons name={item.icon as any} size={16} color={item.color} />
-              <Text style={{ fontSize: 12, fontWeight: '700', color: item.color }}>{item.label}</Text>
+              <Text style={{ fontSize: 12, fontWeight: '700', color: item.color }}>{t(item.tKey)}</Text>
             </Pressable>
           ))}
         </ScrollView>
@@ -306,9 +306,9 @@ function DashboardContent() {
             <View style={styles.statsRow}>
               {[
                 { value: issueStats.open, label: t('dashboard.statusFilters.open'), color: '#3B82F6' },
-                { value: issueStats.inProgress, label: 'In Progress', color: '#F59E0B' },
+                { value: issueStats.inProgress, label: t('dashboardExtended.inProgress'), color: '#F59E0B' },
                 { value: issueStats.resolved, label: t('dashboard.statusFilters.resolved'), color: '#10B981' },
-                { value: issueStats.critical, label: 'Critical', color: '#EF4444' },
+                { value: issueStats.critical, label: t('dashboardExtended.critical'), color: '#EF4444' },
               ].map((stat) => (
                 <View key={stat.label} style={[styles.statCard, { borderLeftColor: stat.color }]}>
                   <Text style={styles.statValue}>{stat.value}</Text>
@@ -395,7 +395,7 @@ function DashboardContent() {
             {scopedPromises.length === 0 ? (
               <View style={styles.emptyState}>
                 <Ionicons name="ribbon-outline" size={48} color="#1F2937" />
-                <Text style={styles.emptyTitle}>No promises tracked at this scope</Text>
+                <Text style={styles.emptyTitle}>{t('dashboardExtended.noPromisesTracked')}</Text>
               </View>
             ) : (
               scopedPromises.map((promise) => (

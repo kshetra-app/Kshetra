@@ -66,6 +66,7 @@ import MapTimeSlider from '../../components/MapTimeSlider';
 import { tapLight, selectionChanged } from '../../lib/haptics';
 import { getLocalizedStateName, getLocalizedDistrictName } from '@/lib/stateTranslations';
 import { getBoothsForConstituency, hasHierarchyData } from '@/lib/hierarchyData';
+import { useHasRepresentativeData } from '@/lib/representativesData';
 
 interface SelectedConstituency {
   acNo: number;
@@ -104,6 +105,7 @@ function FullMapScreen() {
   const mapOnlyMode = useActiveStateStore((s) => s.mapOnlyMode);
   const broadcastMode = usePreferencesStore((s) => s.broadcastMode);
   const currentState = STATES[stateCode];
+  const hasLocalBodyData = useHasRepresentativeData(stateCode);
 
   // Spatial UI local tab selections
   const [spatialTab, setSpatialTab] = useState<'feed' | 'stats' | 'list'>('feed');
@@ -1012,12 +1014,12 @@ function FullMapScreen() {
       {!broadcastMode && (
         <View style={[styles.header, { top: mapTopOffset }]}>
           <View style={styles.headerTop}>
-            <Text style={styles.headerTitle}>KSHETRA</Text>
+            <Text style={styles.headerTitle}>{t('common.appName')}</Text>
             <StateSwitcher />
           </View>
           <Text style={styles.headerSubtitle}>
             {stateCode === 'IN'
-              ? 'National Overview'
+              ? t('mapExtended.nationalOverview')
               : `${currentState?.name ?? stateCode} · ${currentState?.assemblySeats ?? '?'} ${t('explore.constituencies')}`}
           </Text>
           <ChiefMinisterBadge stateCode={stateCode} compact />
@@ -1046,11 +1048,11 @@ function FullMapScreen() {
         >
           <Ionicons name="layers-outline" size={18} color="#4F8EF7" />
           <Text style={{ flex: 1, color: '#E2E8F0', fontSize: 13, fontWeight: '600', marginLeft: 10 }}>
-            Zoom in to reveal polling booths
+            {t('mapExtended.zoomForBooths')}
           </Text>
           <View style={{ flexDirection: 'row', alignItems: 'center', backgroundColor: '#4F8EF7', borderRadius: 9, paddingVertical: 5, paddingHorizontal: 10 }}>
             <Ionicons name="scan-outline" size={13} color="#FFFFFF" />
-            <Text style={{ color: '#FFFFFF', fontSize: 12, fontWeight: '700', marginLeft: 5 }}>Show</Text>
+            <Text style={{ color: '#FFFFFF', fontSize: 12, fontWeight: '700', marginLeft: 5 }}>{t('mapExtended.show')}</Text>
           </View>
         </Pressable>
       )}
@@ -1082,13 +1084,13 @@ function FullMapScreen() {
         >
           <View style={{ flex: 1 }}>
             <Text style={{ fontSize: 10, fontWeight: '800', color: '#FF3B30', letterSpacing: 1, textTransform: 'uppercase' }}>
-              Polling Booth #{selectedBooth.boothNumber}
+              {t('mapExtended.pollingBooth', { n: selectedBooth.boothNumber })}
             </Text>
             <Text style={{ fontSize: 14, fontWeight: '700', color: '#FFFFFF', marginTop: 2 }} numberOfLines={1}>
               {selectedBooth.name}
             </Text>
             <Text style={{ fontSize: 11, color: '#9CA3AF', marginTop: 2 }}>
-              {(selectedBooth.totalVoters || 0).toLocaleString()} Registered Voters
+              {(selectedBooth.totalVoters || 0).toLocaleString()} {t('mapExtended.registeredVoters')}
             </Text>
           </View>
           <Pressable onPress={() => setSelectedBooth(null)} style={{ padding: 4 }}>
@@ -1200,8 +1202,8 @@ function FullMapScreen() {
         <View style={styles.delimBar}>
           <View style={styles.delimBarTop}>
             <Ionicons name="layers" size={14} color="#FCD34D" />
-            <Text style={styles.delimBarTitle}>Seat Density Overlay</Text>
-            <Text style={styles.delimBarBadge}>PROJECTED</Text>
+            <Text style={styles.delimBarTitle}>{t('mapExtended.seatDensityOverlay')}</Text>
+            <Text style={styles.delimBarBadge}>{t('mapExtended.projected')}</Text>
           </View>
           <View style={styles.delimBarLegend}>
             <View style={[styles.delimDot, { backgroundColor: '#EF4444' }]} />
@@ -1216,16 +1218,16 @@ function FullMapScreen() {
             <Text style={styles.delimBarLbl}>&lt;-10%</Text>
           </View>
           <View style={styles.delimBarLegend}>
-            <Text style={[styles.delimBarLbl, { color: '#EF4444' }]}>Under-represented</Text>
+            <Text style={[styles.delimBarLbl, { color: '#EF4444' }]}>{t('mapExtended.underRepresented')}</Text>
             <View style={styles.delimBarSpacer} />
             <Text style={styles.delimBarStat}>{stateProjection.currentSeats}</Text>
             <Ionicons name="arrow-forward" size={12} color="#FCD34D" />
             <Text style={[styles.delimBarStat, { color: '#10B981' }]}>{stateProjection.projectedSeats}</Text>
             <View style={styles.delimBarSpacer} />
-            <Text style={[styles.delimBarLbl, { color: '#22C55E' }]}>Over-represented</Text>
+            <Text style={[styles.delimBarLbl, { color: '#22C55E' }]}>{t('mapExtended.overRepresented')}</Text>
           </View>
           <Pressable onPress={() => router.push('/delimitation' as any)}>
-            <Text style={styles.delimBarLink}>View full analysis →</Text>
+            <Text style={styles.delimBarLink}>{t('mapExtended.viewFullAnalysis')}</Text>
           </Pressable>
         </View>
       )}
@@ -1240,7 +1242,7 @@ function FullMapScreen() {
               onPress={() => setSpatialTab('feed')}
             >
               <Text style={[styles.spatialHubTabText, spatialTab === 'feed' && styles.spatialHubTabTextActive]}>
-                Feed
+                {t('mapExtended.hubFeed')}
               </Text>
             </Pressable>
             <Pressable
@@ -1248,7 +1250,7 @@ function FullMapScreen() {
               onPress={() => setSpatialTab('stats')}
             >
               <Text style={[styles.spatialHubTabText, spatialTab === 'stats' && styles.spatialHubTabTextActive]}>
-                Analytics
+                {t('mapExtended.hubAnalytics')}
               </Text>
             </Pressable>
             <Pressable
@@ -1256,7 +1258,7 @@ function FullMapScreen() {
               onPress={() => setSpatialTab('list')}
             >
               <Text style={[styles.spatialHubTabText, spatialTab === 'list' && styles.spatialHubTabTextActive]}>
-                {stateCode === 'IN' ? 'States' : 'Constituencies'}
+                {stateCode === 'IN' ? t('mapExtended.hubStates') : t('mapExtended.hubConstituencies')}
               </Text>
             </Pressable>
           </View>
@@ -1265,7 +1267,7 @@ function FullMapScreen() {
           {spatialTab === 'feed' && (
             <ScrollView style={styles.spatialHubScroll}>
               {spatialPosts.length === 0 ? (
-                <Text style={styles.spatialHubEmpty}>No feed posts available</Text>
+                <Text style={styles.spatialHubEmpty}>{t('mapExtended.noFeedPosts')}</Text>
               ) : (
                 spatialPosts.map((p) => (
                   <View key={p.id} style={styles.spatialHubRow}>
@@ -1300,7 +1302,7 @@ function FullMapScreen() {
                       <View style={[styles.spatialHubDot, { backgroundColor: getPartyColor(party) }]} />
                       <View style={styles.spatialHubRowInfo}>
                         <Text style={styles.spatialHubRowTitle}>{party}</Text>
-                        <Text style={styles.spatialHubRowSubtitle}>Rules {count} {count === 1 ? 'state' : 'states'}</Text>
+                        <Text style={styles.spatialHubRowSubtitle}>{t('mapExtended.rulesStates', { count })}</Text>
                       </View>
                     </View>
                   ));
@@ -1314,14 +1316,14 @@ function FullMapScreen() {
                   }
                   const sorted = Array.from(counts.entries()).sort((a, b) => b[1] - a[1]);
                   if (sorted.length === 0) {
-                    return <Text style={styles.spatialHubEmpty}>No statistics available</Text>;
+                    return <Text style={styles.spatialHubEmpty}>{t('mapExtended.noStatistics')}</Text>;
                   }
                   return sorted.map(([party, count]) => (
                     <View key={party} style={styles.spatialHubRow}>
                       <View style={[styles.spatialHubDot, { backgroundColor: getPartyColor(party) }]} />
                       <View style={styles.spatialHubRowInfo}>
                         <Text style={styles.spatialHubRowTitle}>{party}</Text>
-                        <Text style={styles.spatialHubRowSubtitle}>{count} seats won / leading</Text>
+                        <Text style={styles.spatialHubRowSubtitle}>{count} {t('mapExtended.seatsWonLeading')}</Text>
                       </View>
                     </View>
                   ));
@@ -1349,11 +1351,11 @@ function FullMapScreen() {
                       <View style={styles.spatialHubRowInfo}>
                         <Text style={styles.spatialHubRowTitle}>{state.name}</Text>
                         <Text style={styles.spatialHubRowSubtitle}>
-                          {state.assemblySeats} constituencies · Ruled by {state.rulingParty}
+                          {state.assemblySeats} {t('mapExtended.constituenciesRuledBy')} {state.rulingParty}
                         </Text>
                       </View>
                       <View style={styles.spatialHubBadge}>
-                        <Text style={styles.spatialHubBadgeText}>{supported ? 'Active' : 'Stub'}</Text>
+                        <Text style={styles.spatialHubBadgeText}>{supported ? t('mapExtended.statusActive') : t('mapExtended.statusStub')}</Text>
                       </View>
                     </Pressable>
                   );
@@ -1464,7 +1466,7 @@ function FullMapScreen() {
       {mapCompareActive && selected && (
         <View style={styles.compareCard}>
           <View style={styles.compareHeader}>
-            <Text style={styles.compareTitle}>CONSTITUENCY COMPARISON</Text>
+            <Text style={styles.compareTitle}>{t('mapExtended.constituencyComparison')}</Text>
             <Pressable
               style={styles.compareClose}
               onPress={() => {
@@ -1481,9 +1483,9 @@ function FullMapScreen() {
             <View style={[styles.compareCol, styles.compareColLeft]}>
               <Text style={styles.compareSeatName} numberOfLines={1}>{selected.name ?? ''}</Text>
               <Text style={styles.compareParty}>{selected.winner ?? 'IND'} (AC #{selected.acNo ?? -1})</Text>
-              <Text style={styles.compareStatLabel}>Margin</Text>
-              <Text style={styles.compareStatValue}>{(selected.margin ?? 0).toLocaleString()} votes</Text>
-              <Text style={styles.compareStatLabel}>Winner Votes</Text>
+              <Text style={styles.compareStatLabel}>{t('mapExtended.margin')}</Text>
+              <Text style={styles.compareStatValue}>{(selected.margin ?? 0).toLocaleString()} {t('mapExtended.votes')}</Text>
+              <Text style={styles.compareStatLabel}>{t('mapExtended.winnerVotes')}</Text>
               <Text style={styles.compareStatValue}>{(selected.votes ?? 0).toLocaleString()}</Text>
             </View>
 
@@ -1492,15 +1494,15 @@ function FullMapScreen() {
               <View style={[styles.compareCol, styles.compareColRight]}>
                 <Text style={styles.compareSeatName} numberOfLines={1}>{compareSelected.name ?? ''}</Text>
                 <Text style={styles.compareParty}>{compareSelected.winner ?? 'IND'} (AC #{compareSelected.acNo ?? -1})</Text>
-                <Text style={styles.compareStatLabel}>Margin</Text>
-                <Text style={styles.compareStatValue}>{(compareSelected.margin ?? 0).toLocaleString()} votes</Text>
-                <Text style={styles.compareStatLabel}>Winner Votes</Text>
+                <Text style={styles.compareStatLabel}>{t('mapExtended.margin')}</Text>
+                <Text style={styles.compareStatValue}>{(compareSelected.margin ?? 0).toLocaleString()} {t('mapExtended.votes')}</Text>
+                <Text style={styles.compareStatLabel}>{t('mapExtended.winnerVotes')}</Text>
                 <Text style={styles.compareStatValue}>{(compareSelected.votes ?? 0).toLocaleString()}</Text>
               </View>
             ) : (
               <View style={styles.compareCol}>
                 <Text style={[styles.compareSeatName, { color: '#9CA3AF', fontSize: 13, fontStyle: 'italic', marginTop: 10, textAlign: 'center' }]}>
-                  Tap another constituency on the map to compare...
+                  {t('mapExtended.tapToCompare')}
                 </Text>
               </View>
             )}
@@ -1604,7 +1606,7 @@ function FullMapScreen() {
                   onPress={() => setSheetTab('mla')}
                 >
                   <Text style={[styles.spatialHubTabText, sheetTab === 'mla' && styles.spatialHubTabTextActive]}>
-                    MLA Profile
+                    {t('constituencyExtended.mlaProfile')}
                   </Text>
                 </Pressable>
                 <Pressable
@@ -1612,7 +1614,7 @@ function FullMapScreen() {
                   onPress={() => setSheetTab('feed')}
                 >
                   <Text style={[styles.spatialHubTabText, sheetTab === 'feed' && styles.spatialHubTabTextActive]}>
-                    Feed
+                    {t('mapExtended.hubFeed')}
                   </Text>
                 </Pressable>
                 <Pressable
@@ -1620,7 +1622,7 @@ function FullMapScreen() {
                   onPress={() => setSheetTab('analytics')}
                 >
                   <Text style={[styles.spatialHubTabText, sheetTab === 'analytics' && styles.spatialHubTabTextActive]}>
-                    Analytics
+                    {t('mapExtended.hubAnalytics')}
                   </Text>
                 </Pressable>
               </View>
@@ -1688,7 +1690,7 @@ function FullMapScreen() {
                 {(() => {
                   const localPosts = allPosts.filter((p) => p.constituencyId === `${stateCode}-AC-${selected.acNo}` && !p.isDeleted);
                   return localPosts.length === 0 ? (
-                    <Text style={styles.spatialHubEmpty}>No discussions in this constituency yet</Text>
+                    <Text style={styles.spatialHubEmpty}>{t('constituencyExtended.noDiscussions')}</Text>
                   ) : (
                     localPosts.map((p) => (
                       <View key={p.id} style={styles.spatialHubRow}>
@@ -1717,17 +1719,17 @@ function FullMapScreen() {
                   if (!props) return null;
                   return (
                     <View style={{ gap: 8, marginBottom: 12 }}>
-                      <Text style={styles.resultLabel}>Demographics & Voters</Text>
+                      <Text style={styles.resultLabel}>{t('mapExtended.demographicsVoters')}</Text>
                       <View style={{ flexDirection: 'row', justifyContent: 'space-between', backgroundColor: '#1F293750', borderRadius: 8, padding: 8 }}>
-                        <Text style={{ color: '#9CA3AF', fontSize: 12 }}>Population</Text>
+                        <Text style={{ color: '#9CA3AF', fontSize: 12 }}>{t('mapExtended.population')}</Text>
                         <Text style={{ color: '#FFFFFF', fontSize: 12, fontWeight: '700' }}>{(props.POPULATION || 0).toLocaleString()}</Text>
                       </View>
                       <View style={{ flexDirection: 'row', justifyContent: 'space-between', backgroundColor: '#1F293750', borderRadius: 8, padding: 8 }}>
-                        <Text style={{ color: '#9CA3AF', fontSize: 12 }}>Voter Turnout</Text>
+                        <Text style={{ color: '#9CA3AF', fontSize: 12 }}>{t('mapExtended.voterTurnout')}</Text>
                         <Text style={{ color: '#FFFFFF', fontSize: 12, fontWeight: '700' }}>{props.TURNOUT || 0}%</Text>
                       </View>
                       <View style={{ flexDirection: 'row', justifyContent: 'space-between', backgroundColor: '#1F293750', borderRadius: 8, padding: 8 }}>
-                        <Text style={{ color: '#9CA3AF', fontSize: 12 }}>Literacy Rate</Text>
+                        <Text style={{ color: '#9CA3AF', fontSize: 12 }}>{t('mapExtended.literacyRate')}</Text>
                         <Text style={{ color: '#FFFFFF', fontSize: 12, fontWeight: '700' }}>{props.LITERACY || 0}%</Text>
                       </View>
                     </View>
@@ -1778,7 +1780,22 @@ function FullMapScreen() {
                     }}
                   >
                     <Ionicons name="git-branch" size={16} color="#60A5FA" />
-                    <Text style={[styles.sheetCompareText, { color: '#60A5FA' }]}>Explore Hierarchy</Text>
+                    <Text style={[styles.sheetCompareText, { color: '#60A5FA' }]}>{t('constituencyExtended.exploreHierarchyButton')}</Text>
+                  </Pressable>
+                )}
+
+                {/* Local Bodies trigger — rural GP reps (Sarpanch + Ward members) */}
+                {!mapOnlyMode && hasLocalBodyData && (
+                  <Pressable
+                    style={[styles.sheetCompareButton, { borderColor: '#EC489950', backgroundColor: '#EC489915', marginBottom: 10 }]}
+                    onPress={() => {
+                      tapLight();
+                      bottomSheetRef.current?.close();
+                      router.push('/local-bodies' as any);
+                    }}
+                  >
+                    <Ionicons name="home" size={16} color="#F472B6" />
+                    <Text style={[styles.sheetCompareText, { color: '#F472B6' }]}>{t('exploreExtended.localBodies')}</Text>
                   </Pressable>
                 )}
 
@@ -1793,7 +1810,7 @@ function FullMapScreen() {
                     }}
                   >
                     <Ionicons name="git-compare" size={16} color="#A78BFA" />
-                    <Text style={styles.sheetCompareText}>Compare on Map</Text>
+                    <Text style={styles.sheetCompareText}>{t('constituencyExtended.compareOnMap')}</Text>
                   </Pressable>
                 )}
               </>

@@ -1,4 +1,5 @@
 import { useState, useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 import {
   View,
   Text,
@@ -14,6 +15,7 @@ import { isStateSupported, getStateData } from '../lib/stateRegistry';
 import { usePrefetchState } from '../lib/usePrefetchState';
 
 export default function StateSwitcher() {
+  const { t } = useTranslation();
   const [visible, setVisible] = useState(false);
   const stateCode = useActiveStateStore((s) => s.stateCode);
   const setStateCode = useActiveStateStore((s) => s.setStateCode);
@@ -46,7 +48,7 @@ export default function StateSwitcher() {
       >
         <Pressable style={styles.overlay} onPress={() => setVisible(false)}>
           <View style={styles.sheet}>
-            <Text style={styles.sheetTitle}>Select State</Text>
+            <Text style={styles.sheetTitle}>{t('stateSwitcher.selectState')}</Text>
             <ScrollView style={styles.scrollArea} showsVerticalScrollIndicator={false}>
               <Pressable
                 key="IN"
@@ -63,10 +65,10 @@ export default function StateSwitcher() {
                       stateCode === 'IN' && styles.stateNameActive,
                     ]}
                   >
-                    India (National View)
+                    {t('stateSwitcherExtended.nationalView')}
                   </Text>
                   <Text style={styles.stateSeats}>
-                    31 states & union territories
+                    {t('stateSwitcherExtended.statesAndUTs')}
                   </Text>
                 </View>
                 {stateCode === 'IN' && (
@@ -101,7 +103,7 @@ export default function StateSwitcher() {
                         {state.name}
                       </Text>
                       <Text style={styles.stateSeats}>
-                        {state.assemblySeats} constituencies
+                        {state.assemblySeats} {t('stateSwitcher.constituencies')}
                       </Text>
                     </View>
                     {isActive && (
@@ -115,12 +117,12 @@ export default function StateSwitcher() {
                           : styles.statusStub,
                       ]}>
                         <Text style={styles.statusText}>
-                          {data?.hasFullData ? 'Full' : `${data?.loadedCount}/${state.assemblySeats}`}
+                          {data?.hasFullData ? t('stateSwitcher.full') : `${data?.loadedCount}/${state.assemblySeats}`}
                         </Text>
                       </View>
                     )}
                     {!supported && (
-                      <Text style={styles.comingSoon}>Coming Soon</Text>
+                      <Text style={styles.comingSoon}>{t('stateSwitcher.comingSoon')}</Text>
                     )}
                   </Pressable>
                 );

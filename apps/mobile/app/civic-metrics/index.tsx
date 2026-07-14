@@ -1,4 +1,5 @@
 import { useState, useMemo, useCallback } from 'react';
+import { useTranslation } from 'react-i18next';
 import { View, Text, StyleSheet, ScrollView, Pressable, RefreshControl, StatusBar } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
@@ -13,16 +14,17 @@ import { useActiveStateStore } from '../../stores/activeState';
 
 type Tab = 'budget' | 'attendance' | 'bills' | 'schemes' | 'projects' | 'rti';
 
-const TABS: { key: Tab; label: string; icon: string }[] = [
-  { key: 'budget', label: 'Budget', icon: 'wallet' },
-  { key: 'attendance', label: 'Attendance', icon: 'checkbox' },
-  { key: 'bills', label: 'Bills', icon: 'document-text' },
-  { key: 'schemes', label: 'Schemes', icon: 'gift' },
-  { key: 'projects', label: 'Projects', icon: 'construct' },
-  { key: 'rti', label: 'RTI', icon: 'search' },
+const TAB_KEYS: { key: Tab; i18nKey: string; icon: string }[] = [
+  { key: 'budget', i18nKey: 'civicMetrics.tabBudget', icon: 'wallet' },
+  { key: 'attendance', i18nKey: 'civicMetrics.tabAttendance', icon: 'checkbox' },
+  { key: 'bills', i18nKey: 'civicMetrics.tabBills', icon: 'document-text' },
+  { key: 'schemes', i18nKey: 'civicMetrics.tabSchemes', icon: 'gift' },
+  { key: 'projects', i18nKey: 'civicMetrics.tabProjects', icon: 'construct' },
+  { key: 'rti', i18nKey: 'civicMetrics.tabRTI', icon: 'search' },
 ];
 
 export default function CivicMetricsScreen() {
+  const { t } = useTranslation();
   const router = useRouter();
   const insets = useSafeAreaInsets();
   const [activeTab, setActiveTab] = useState<Tab>('budget');
@@ -53,17 +55,17 @@ export default function CivicMetricsScreen() {
           <Ionicons name="arrow-back" size={22} color="#FFFFFF" />
         </Pressable>
         <View style={{ flex: 1 }}>
-          <Text style={styles.headerTitle}>Civic Metrics</Text>
-          <Text style={styles.headerSub}>Budget · Attendance · Bills · Schemes</Text>
+          <Text style={styles.headerTitle}>{t('civicMetrics.screenTitle')}</Text>
+          <Text style={styles.headerSub}>{t('civicMetrics.screenSubtitle')}</Text>
         </View>
       </View>
 
       {/* Tab Bar */}
       <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.tabBar} contentContainerStyle={styles.tabBarContent}>
-        {TABS.map((tab) => (
+        {TAB_KEYS.map((tab) => (
           <Pressable key={tab.key} style={[styles.tab, activeTab === tab.key && styles.tabActive]} onPress={() => setActiveTab(tab.key)}>
             <Ionicons name={(activeTab === tab.key ? tab.icon : `${tab.icon}-outline`) as any} size={14} color={activeTab === tab.key ? '#4F8EF7' : '#6B7280'} />
-            <Text style={[styles.tabLabel, activeTab === tab.key && styles.tabLabelActive]}>{tab.label}</Text>
+            <Text style={[styles.tabLabel, activeTab === tab.key && styles.tabLabelActive]}>{t(tab.i18nKey)}</Text>
           </Pressable>
         ))}
       </ScrollView>
@@ -76,16 +78,16 @@ export default function CivicMetricsScreen() {
       >
         {activeTab === 'budget' && (
           <>
-            <Text style={styles.sectionTitle}>State Budget Overview</Text>
+            <Text style={styles.sectionTitle}>{t('civicMetrics.stateBudgetOverview')}</Text>
             {budgetSummary ? <BudgetCard summary={budgetSummary} /> : (
-              <View style={styles.empty}><Text style={styles.emptyText}>No budget data for this state yet</Text></View>
+              <View style={styles.empty}><Text style={styles.emptyText}>{t('civicMetrics.noBudgetData')}</Text></View>
             )}
           </>
         )}
 
         {activeTab === 'attendance' && (
           <>
-            <Text style={styles.sectionTitle}>Legislator Attendance ({attendance.length})</Text>
+            <Text style={styles.sectionTitle}>{t('civicMetrics.legislatorAttendance', { count: attendance.length })}</Text>
             {attendance.map((a) => (
               <AttendanceCard key={`${a.legislatorId}-${a.sessionYear}`} attendance={a} />
             ))}
@@ -94,7 +96,7 @@ export default function CivicMetricsScreen() {
 
         {activeTab === 'bills' && (
           <>
-            <Text style={styles.sectionTitle}>Active Bills ({activeBills.length})</Text>
+            <Text style={styles.sectionTitle}>{t('civicMetrics.activeBills', { count: activeBills.length })}</Text>
             {bills.map((b) => (
               <BillCard key={b.id} bill={b} onSupport={() => store.supportBill(b.id)} onOppose={() => store.opposeBill(b.id)} />
             ))}
@@ -103,7 +105,7 @@ export default function CivicMetricsScreen() {
 
         {activeTab === 'schemes' && (
           <>
-            <Text style={styles.sectionTitle}>Government Schemes ({schemes.length})</Text>
+            <Text style={styles.sectionTitle}>{t('civicMetrics.governmentSchemes', { count: schemes.length })}</Text>
             {schemes.map((s) => (
               <SchemeCard key={s.id} scheme={s} />
             ))}
@@ -112,7 +114,7 @@ export default function CivicMetricsScreen() {
 
         {activeTab === 'projects' && (
           <>
-            <Text style={styles.sectionTitle}>Development Projects ({projects.length})</Text>
+            <Text style={styles.sectionTitle}>{t('civicMetrics.developmentProjects', { count: projects.length })}</Text>
             {projects.map((p) => (
               <ProjectCard key={p.id} project={p} />
             ))}
@@ -121,7 +123,7 @@ export default function CivicMetricsScreen() {
 
         {activeTab === 'rti' && (
           <>
-            <Text style={styles.sectionTitle}>Public RTI Requests ({publicRTIs.length})</Text>
+            <Text style={styles.sectionTitle}>{t('civicMetrics.publicRTIRequests', { count: publicRTIs.length })}</Text>
             {publicRTIs.map((r) => (
               <View key={r.id} style={styles.rtiCard}>
                 <View style={styles.rtiHeader}>
@@ -132,14 +134,14 @@ export default function CivicMetricsScreen() {
                 </View>
                 <Text style={styles.rtiDept}>{r.department} · {r.stateCode}</Text>
                 <Text style={styles.rtiQuestion} numberOfLines={2}>{r.questionText}</Text>
-                {r.responseText && <Text style={styles.rtiResponse} numberOfLines={2}>Response: {r.responseText}</Text>}
+                {r.responseText && <Text style={styles.rtiResponse} numberOfLines={2}>{t('civicMetrics.response', { text: r.responseText })}</Text>}
                 <View style={styles.rtiFooter}>
                   <Pressable style={styles.rtiUpvote} onPress={() => store.upvoteRTI(r.id)}>
                     <Ionicons name="arrow-up" size={14} color="#4F8EF7" />
                     <Text style={styles.rtiUpvoteText}>{r.upvotes}</Text>
                   </Pressable>
-                  <Text style={styles.rtiViews}>{r.views} views</Text>
-                  <Text style={styles.rtiDate}>Filed: {r.filedDate}</Text>
+                  <Text style={styles.rtiViews}>{t('civicMetrics.views', { count: r.views })}</Text>
+                  <Text style={styles.rtiDate}>{t('civicMetrics.filed', { date: r.filedDate })}</Text>
                 </View>
               </View>
             ))}

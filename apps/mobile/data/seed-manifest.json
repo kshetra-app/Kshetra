@@ -2,218 +2,342 @@
   "TS": {
     "state_code": "TS",
     "version": "",
-    "has_constituencies": 1,
-    "constituency_count": 119,
-    "last_updated": "2026-06-24T08:54:28.270Z"
+    "has_mla_profiles": 0,
+    "has_demographics": 0,
+    "has_historical_results": 0,
+    "has_political_timeline": 0,
+    "has_election_history": 0,
+    "constituency_count": 0,
+    "last_updated": "2026-07-14T13:43:56.499Z"
   },
   "AP": {
     "state_code": "AP",
     "version": "",
-    "has_constituencies": 1,
-    "constituency_count": 175,
-    "last_updated": "2026-06-24T08:54:28.300Z"
+    "has_mla_profiles": 0,
+    "has_demographics": 0,
+    "has_historical_results": 0,
+    "has_political_timeline": 0,
+    "has_election_history": 0,
+    "constituency_count": 0,
+    "last_updated": "2026-07-14T13:43:56.513Z"
   },
   "KA": {
     "state_code": "KA",
     "version": "",
-    "has_constituencies": 1,
-    "constituency_count": 224,
-    "last_updated": "2026-06-24T08:54:28.339Z"
+    "has_mla_profiles": 0,
+    "has_demographics": 0,
+    "has_historical_results": 0,
+    "has_political_timeline": 0,
+    "has_election_history": 0,
+    "constituency_count": 0,
+    "last_updated": "2026-07-14T13:43:56.514Z"
   },
   "MH": {
     "state_code": "MH",
     "version": "",
-    "has_constituencies": 1,
-    "constituency_count": 288,
-    "last_updated": "2026-06-24T08:54:28.403Z"
+    "has_mla_profiles": 0,
+    "has_demographics": 0,
+    "has_historical_results": 0,
+    "has_political_timeline": 0,
+    "has_election_history": 0,
+    "constituency_count": 0,
+    "last_updated": "2026-07-14T13:43:56.515Z"
   },
   "TN": {
     "state_code": "TN",
     "version": "",
-    "has_constituencies": 1,
-    "constituency_count": 234,
-    "last_updated": "2026-06-24T08:54:28.459Z"
+    "has_mla_profiles": 0,
+    "has_demographics": 0,
+    "has_historical_results": 0,
+    "has_political_timeline": 0,
+    "has_election_history": 0,
+    "constituency_count": 0,
+    "last_updated": "2026-07-14T13:43:56.516Z"
   },
   "KL": {
     "state_code": "KL",
     "version": "",
-    "has_constituencies": 1,
-    "constituency_count": 140,
-    "last_updated": "2026-06-24T08:54:28.502Z"
+    "has_mla_profiles": 0,
+    "has_demographics": 0,
+    "has_historical_results": 0,
+    "has_political_timeline": 0,
+    "has_election_history": 0,
+    "constituency_count": 0,
+    "last_updated": "2026-07-14T13:43:56.517Z"
   },
   "WB": {
     "state_code": "WB",
     "version": "",
-    "has_constituencies": 1,
-    "constituency_count": 294,
-    "last_updated": "2026-06-24T08:54:28.521Z"
+    "has_mla_profiles": 0,
+    "has_demographics": 0,
+    "has_historical_results": 0,
+    "has_political_timeline": 0,
+    "has_election_history": 0,
+    "constituency_count": 0,
+    "last_updated": "2026-07-14T13:43:56.518Z"
   },
   "UP": {
     "state_code": "UP",
     "version": "",
-    "has_constituencies": 1,
-    "constituency_count": 403,
-    "last_updated": "2026-06-24T08:54:28.585Z"
+    "has_mla_profiles": 0,
+    "has_demographics": 0,
+    "has_historical_results": 0,
+    "has_political_timeline": 0,
+    "has_election_history": 0,
+    "constituency_count": 0,
+    "last_updated": "2026-07-14T13:43:56.518Z"
   },
   "RJ": {
     "state_code": "RJ",
     "version": "",
-    "has_constituencies": 1,
-    "constituency_count": 187,
-    "last_updated": "2026-06-24T08:54:28.670Z"
+    "has_mla_profiles": 0,
+    "has_demographics": 0,
+    "has_historical_results": 0,
+    "has_political_timeline": 0,
+    "has_election_history": 0,
+    "constituency_count": 0,
+    "last_updated": "2026-07-14T13:43:56.519Z"
   },
   "GJ": {
     "state_code": "GJ",
     "version": "",
-    "has_constituencies": 1,
-    "constituency_count": 182,
-    "last_updated": "2026-06-24T08:54:28.695Z"
+    "has_mla_profiles": 0,
+    "has_demographics": 0,
+    "has_historical_results": 0,
+    "has_political_timeline": 0,
+    "has_election_history": 0,
+    "constituency_count": 0,
+    "last_updated": "2026-07-14T13:43:56.639Z"
   },
   "JH": {
     "state_code": "JH",
     "version": "",
-    "has_constituencies": 1,
-    "constituency_count": 73,
-    "last_updated": "2026-06-24T08:54:28.732Z"
+    "has_mla_profiles": 0,
+    "has_demographics": 0,
+    "has_historical_results": 0,
+    "has_political_timeline": 0,
+    "has_election_history": 0,
+    "constituency_count": 0,
+    "last_updated": "2026-07-14T13:43:56.640Z"
   },
   "OD": {
     "state_code": "OD",
     "version": "",
-    "has_constituencies": 1,
-    "constituency_count": 132,
-    "last_updated": "2026-06-24T08:54:28.755Z"
+    "has_mla_profiles": 0,
+    "has_demographics": 0,
+    "has_historical_results": 0,
+    "has_political_timeline": 0,
+    "has_election_history": 0,
+    "constituency_count": 0,
+    "last_updated": "2026-07-14T13:43:56.642Z"
   },
   "DL": {
     "state_code": "DL",
     "version": "",
-    "has_constituencies": 1,
-    "constituency_count": 221,
-    "last_updated": "2026-06-24T08:54:28.771Z"
+    "has_mla_profiles": 0,
+    "has_demographics": 0,
+    "has_historical_results": 0,
+    "has_political_timeline": 0,
+    "has_election_history": 0,
+    "constituency_count": 0,
+    "last_updated": "2026-07-14T13:43:56.643Z"
   },
   "PB": {
     "state_code": "PB",
     "version": "",
-    "has_constituencies": 1,
-    "constituency_count": 117,
-    "last_updated": "2026-06-24T08:54:28.820Z"
+    "has_mla_profiles": 0,
+    "has_demographics": 0,
+    "has_historical_results": 0,
+    "has_political_timeline": 0,
+    "has_election_history": 0,
+    "constituency_count": 0,
+    "last_updated": "2026-07-14T13:43:56.644Z"
   },
   "HR": {
     "state_code": "HR",
     "version": "",
-    "has_constituencies": 1,
-    "constituency_count": 80,
-    "last_updated": "2026-06-24T08:54:28.852Z"
+    "has_mla_profiles": 0,
+    "has_demographics": 0,
+    "has_historical_results": 0,
+    "has_political_timeline": 0,
+    "has_election_history": 0,
+    "constituency_count": 0,
+    "last_updated": "2026-07-14T13:43:56.645Z"
   },
   "CG": {
     "state_code": "CG",
     "version": "",
-    "has_constituencies": 1,
-    "constituency_count": 81,
-    "last_updated": "2026-06-24T08:54:28.864Z"
+    "has_mla_profiles": 0,
+    "has_demographics": 0,
+    "has_historical_results": 0,
+    "has_political_timeline": 0,
+    "has_election_history": 0,
+    "constituency_count": 0,
+    "last_updated": "2026-07-14T13:43:56.646Z"
   },
   "MP": {
     "state_code": "MP",
     "version": "",
-    "has_constituencies": 1,
-    "constituency_count": 208,
-    "last_updated": "2026-06-24T08:54:28.896Z"
+    "has_mla_profiles": 0,
+    "has_demographics": 0,
+    "has_historical_results": 0,
+    "has_political_timeline": 0,
+    "has_election_history": 0,
+    "constituency_count": 0,
+    "last_updated": "2026-07-14T13:43:56.647Z"
   },
   "BR": {
     "state_code": "BR",
     "version": "",
-    "has_constituencies": 1,
-    "constituency_count": 243,
-    "last_updated": "2026-06-24T08:54:28.948Z"
+    "has_mla_profiles": 0,
+    "has_demographics": 0,
+    "has_historical_results": 0,
+    "has_political_timeline": 0,
+    "has_election_history": 0,
+    "constituency_count": 0,
+    "last_updated": "2026-07-14T13:43:56.648Z"
   },
   "AS": {
     "state_code": "AS",
     "version": "",
-    "has_constituencies": 1,
-    "constituency_count": 112,
-    "last_updated": "2026-06-24T08:54:29.007Z"
+    "has_mla_profiles": 0,
+    "has_demographics": 0,
+    "has_historical_results": 0,
+    "has_political_timeline": 0,
+    "has_election_history": 0,
+    "constituency_count": 0,
+    "last_updated": "2026-07-14T13:43:56.648Z"
   },
   "GA": {
     "state_code": "GA",
     "version": "",
-    "has_constituencies": 1,
-    "constituency_count": 40,
-    "last_updated": "2026-06-24T08:54:29.032Z"
+    "has_mla_profiles": 0,
+    "has_demographics": 0,
+    "has_historical_results": 0,
+    "has_political_timeline": 0,
+    "has_election_history": 0,
+    "constituency_count": 0,
+    "last_updated": "2026-07-14T13:43:56.649Z"
   },
   "HP": {
     "state_code": "HP",
     "version": "",
-    "has_constituencies": 1,
-    "constituency_count": 70,
-    "last_updated": "2026-06-24T08:54:29.062Z"
-  },
-  "JK": {
-    "state_code": "JK",
-    "version": "",
-    "has_constituencies": 1,
-    "constituency_count": 90,
-    "last_updated": "2026-06-24T08:54:29.074Z"
+    "has_mla_profiles": 0,
+    "has_demographics": 0,
+    "has_historical_results": 0,
+    "has_political_timeline": 0,
+    "has_election_history": 0,
+    "constituency_count": 0,
+    "last_updated": "2026-07-14T13:43:56.782Z"
   },
   "MN": {
     "state_code": "MN",
     "version": "",
-    "has_constituencies": 1,
-    "constituency_count": 60,
-    "last_updated": "2026-06-24T08:54:29.089Z"
+    "has_mla_profiles": 0,
+    "has_demographics": 0,
+    "has_historical_results": 0,
+    "has_political_timeline": 0,
+    "has_election_history": 0,
+    "constituency_count": 0,
+    "last_updated": "2026-07-14T13:43:56.783Z"
   },
   "ML": {
     "state_code": "ML",
     "version": "",
-    "has_constituencies": 1,
-    "constituency_count": 60,
-    "last_updated": "2026-06-24T08:54:29.099Z"
+    "has_mla_profiles": 0,
+    "has_demographics": 0,
+    "has_historical_results": 0,
+    "has_political_timeline": 0,
+    "has_election_history": 0,
+    "constituency_count": 0,
+    "last_updated": "2026-07-14T13:43:56.786Z"
   },
   "MZ": {
     "state_code": "MZ",
     "version": "",
-    "has_constituencies": 1,
-    "constituency_count": 40,
-    "last_updated": "2026-06-24T08:54:29.121Z"
+    "has_mla_profiles": 0,
+    "has_demographics": 0,
+    "has_historical_results": 0,
+    "has_political_timeline": 0,
+    "has_election_history": 0,
+    "constituency_count": 0,
+    "last_updated": "2026-07-14T13:43:56.788Z"
   },
   "NL": {
     "state_code": "NL",
     "version": "",
-    "has_constituencies": 1,
-    "constituency_count": 60,
-    "last_updated": "2026-06-24T08:54:29.127Z"
+    "has_mla_profiles": 0,
+    "has_demographics": 0,
+    "has_historical_results": 0,
+    "has_political_timeline": 0,
+    "has_election_history": 0,
+    "constituency_count": 0,
+    "last_updated": "2026-07-14T13:43:56.790Z"
   },
   "TR": {
     "state_code": "TR",
     "version": "",
-    "has_constituencies": 1,
-    "constituency_count": 60,
-    "last_updated": "2026-06-24T08:54:29.135Z"
+    "has_mla_profiles": 0,
+    "has_demographics": 0,
+    "has_historical_results": 0,
+    "has_political_timeline": 0,
+    "has_election_history": 0,
+    "constituency_count": 0,
+    "last_updated": "2026-07-14T13:43:56.792Z"
   },
   "SK": {
     "state_code": "SK",
     "version": "",
-    "has_constituencies": 1,
-    "constituency_count": 32,
-    "last_updated": "2026-06-24T08:54:29.141Z"
+    "has_mla_profiles": 0,
+    "has_demographics": 0,
+    "has_historical_results": 0,
+    "has_political_timeline": 0,
+    "has_election_history": 0,
+    "constituency_count": 0,
+    "last_updated": "2026-07-14T13:43:56.795Z"
   },
   "AR": {
     "state_code": "AR",
     "version": "",
-    "has_constituencies": 1,
-    "constituency_count": 60,
-    "last_updated": "2026-06-24T08:54:29.164Z"
+    "has_mla_profiles": 0,
+    "has_demographics": 0,
+    "has_historical_results": 0,
+    "has_political_timeline": 0,
+    "has_election_history": 0,
+    "constituency_count": 0,
+    "last_updated": "2026-07-14T13:43:56.797Z"
   },
   "UK": {
     "state_code": "UK",
     "version": "",
-    "has_constituencies": 1,
-    "constituency_count": 70,
-    "last_updated": "2026-06-24T08:54:29.175Z"
+    "has_mla_profiles": 0,
+    "has_demographics": 0,
+    "has_historical_results": 0,
+    "has_political_timeline": 0,
+    "has_election_history": 0,
+    "constituency_count": 0,
+    "last_updated": "2026-07-14T13:43:56.800Z"
   },
   "PY": {
     "state_code": "PY",
     "version": "",
-    "has_constituencies": 1,
-    "constituency_count": 30,
-    "last_updated": "2026-06-24T08:54:29.187Z"
+    "has_mla_profiles": 0,
+    "has_demographics": 0,
+    "has_historical_results": 0,
+    "has_political_timeline": 0,
+    "has_election_history": 0,
+    "constituency_count": 0,
+    "last_updated": "2026-07-14T13:43:56.802Z"
+  },
+  "JK": {
+    "state_code": "JK",
+    "version": "",
+    "has_mla_profiles": 0,
+    "has_demographics": 0,
+    "has_historical_results": 0,
+    "has_political_timeline": 0,
+    "has_election_history": 0,
+    "constituency_count": 0,
+    "last_updated": "2026-07-14T13:43:56.804Z"
   }
 }

@@ -1,4 +1,5 @@
 import { View, Text, StyleSheet, Pressable } from 'react-native';
+import { useTranslation } from 'react-i18next';
 import { Ionicons } from '@expo/vector-icons';
 import type { StateBudgetSummary } from '../lib/civicMetricsTypes';
 import { BUDGET_CATEGORY_CONFIG, getUtilizationColor, formatCrores } from '../lib/civicMetricsTypes';
@@ -9,16 +10,17 @@ interface BudgetCardProps {
 }
 
 export default function BudgetCard({ summary, onPress }: BudgetCardProps) {
+  const { t } = useTranslation();
   return (
     <Pressable style={styles.card} onPress={onPress}>
       <View style={styles.header}>
         <View>
-          <Text style={styles.title}>State Budget {summary.fiscalYear}</Text>
-          <Text style={styles.subtitle}>{summary.stateCode} · Total: {formatCrores(summary.totalBudgetCrores)}</Text>
+          <Text style={styles.title}>{t('civicMetrics.stateBudget')} {summary.fiscalYear}</Text>
+          <Text style={styles.subtitle}>{summary.stateCode} · {t('civicMetrics.totalBudget')}: {formatCrores(summary.totalBudgetCrores)}</Text>
         </View>
         <View style={[styles.utilizationBadge, { backgroundColor: getUtilizationColor(summary.overallUtilization) + '20' }]}>
           <Text style={[styles.utilizationText, { color: getUtilizationColor(summary.overallUtilization) }]}>{summary.overallUtilization}%</Text>
-          <Text style={styles.utilizationLabel}>utilized</Text>
+          <Text style={styles.utilizationLabel}>{t('civicMetrics.utilized')}</Text>
         </View>
       </View>
 
@@ -42,15 +44,15 @@ export default function BudgetCard({ summary, onPress }: BudgetCardProps) {
       {/* Fiscal indicators */}
       <View style={styles.fiscalRow}>
         <View style={styles.fiscal}>
-          <Text style={styles.fiscalLabel}>Fiscal Deficit</Text>
+          <Text style={styles.fiscalLabel}>{t('civicMetrics.fiscalDeficit')}</Text>
           <Text style={[styles.fiscalValue, { color: '#EF4444' }]}>{formatCrores(summary.fiscalDeficitCrores)}</Text>
         </View>
         <View style={styles.fiscal}>
-          <Text style={styles.fiscalLabel}>Revenue Deficit</Text>
+          <Text style={styles.fiscalLabel}>{t('civicMetrics.revenueDeficit')}</Text>
           <Text style={[styles.fiscalValue, { color: '#F59E0B' }]}>{formatCrores(summary.revenueDeficitCrores)}</Text>
         </View>
         <View style={styles.fiscal}>
-          <Text style={styles.fiscalLabel}>Debt/GDP</Text>
+          <Text style={styles.fiscalLabel}>{t('civicMetrics.debtGDP')}</Text>
           <Text style={[styles.fiscalValue, { color: summary.debtToGDPRatio > 25 ? '#EF4444' : '#10B981' }]}>{summary.debtToGDPRatio}%</Text>
         </View>
       </View>

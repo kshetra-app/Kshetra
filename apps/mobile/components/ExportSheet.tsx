@@ -1,4 +1,5 @@
 import { useState, useMemo, useCallback } from 'react';
+import { useTranslation } from 'react-i18next';
 import {
   View,
   Text,
@@ -79,6 +80,7 @@ export default function ExportSheet({
   allSentiment,
   scopeLabel,
 }: ExportSheetProps) {
+  const { t } = useTranslation();
   const [format, setFormat] = useState<ExportFormat>('csv');
   const [scope, setScope] = useState<ExportScope>('filtered');
   const [exporting, setExporting] = useState(false);
@@ -103,7 +105,7 @@ export default function ExportSheet({
 
   const handleExport = useCallback(async () => {
     if (!exportCheck.allowed) {
-      Alert.alert('Upgrade Required', exportCheck.reason ?? 'Cannot export with current plan.');
+      Alert.alert(t('export.upgradeRequired'), exportCheck.reason ?? t('export.cannotExport'));
       return;
     }
 
@@ -113,7 +115,7 @@ export default function ExportSheet({
         issues: cappedIssues,
         headlines,
         sentiment,
-        scopeLabel: scope === 'filtered' ? scopeLabel : 'All Data',
+        scopeLabel: scope === 'filtered' ? scopeLabel : t('export.allData'),
         exportedAt: new Date().toISOString(),
         tierLabel: tierConfig.label,
       };
@@ -124,10 +126,10 @@ export default function ExportSheet({
         recordExport();
         onClose();
       } else {
-        Alert.alert('Export Failed', result.error ?? 'An error occurred.');
+        Alert.alert(t('export.failed'), result.error ?? t('export.errorOccurred'));
       }
     } catch (err: any) {
-      Alert.alert('Export Failed', err?.message ?? 'An error occurred.');
+      Alert.alert(t('export.failed'), err?.message ?? t('export.errorOccurred'));
     } finally {
       setExporting(false);
     }
@@ -146,7 +148,7 @@ export default function ExportSheet({
             <Pressable onPress={onClose} hitSlop={8}>
               <Ionicons name="close" size={22} color="#9CA3AF" />
             </Pressable>
-            <Text style={styles.headerTitle}>Export Dashboard</Text>
+            <Text style={styles.headerTitle}>{t('export.title')}</Text>
             <View style={[styles.tierBadge, { backgroundColor: tierConfig.color + '20' }]}>
               <Ionicons name={tierConfig.icon as any} size={12} color={tierConfig.color} />
               <Text style={[styles.tierBadgeText, { color: tierConfig.color }]}>{tierConfig.label}</Text>
@@ -154,7 +156,7 @@ export default function ExportSheet({
           </View>
 
           {/* Scope selection */}
-          <Text style={styles.sectionLabel}>Data Scope</Text>
+          <Text style={styles.sectionLabel}>{t('export.dataScope')}</Text>
           <View style={styles.scopeRow}>
             <Pressable
               style={[styles.scopeOption, scope === 'filtered' && styles.scopeOptionActive]}
@@ -163,7 +165,7 @@ export default function ExportSheet({
               <Ionicons name="funnel" size={16} color={scope === 'filtered' ? '#FFFFFF' : '#6B7280'} />
               <View style={styles.scopeTextWrap}>
                 <Text style={[styles.scopeOptionLabel, scope === 'filtered' && styles.scopeOptionLabelActive]}>
-                  Current View
+                  {t('export.currentView')}
                 </Text>
                 <Text style={styles.scopeOptionCount}>
                   {filteredIssues.length} issues · {filteredHeadlines.length} headlines
@@ -177,7 +179,7 @@ export default function ExportSheet({
               <Ionicons name="globe" size={16} color={scope === 'all' ? '#FFFFFF' : '#6B7280'} />
               <View style={styles.scopeTextWrap}>
                 <Text style={[styles.scopeOptionLabel, scope === 'all' && styles.scopeOptionLabelActive]}>
-                  All Data
+                  {t('export.allData')}
                 </Text>
                 <Text style={styles.scopeOptionCount}>
                   {allIssues.length} issues · {allHeadlines.length} headlines

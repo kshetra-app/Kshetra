@@ -1,4 +1,5 @@
 import { useMemo, useState, useCallback } from 'react';
+import { useTranslation } from 'react-i18next';
 import {
   View,
   Text,
@@ -26,11 +27,11 @@ const STATES = ['TS', 'AP', 'KA', 'MH'] as const;
 const STATE_NAMES: Record<string, string> = { TS: 'Telangana', AP: 'Andhra Pradesh', KA: 'Karnataka', MH: 'Maharashtra' };
 type TabKey = 'overview' | 'parties' | 'districts' | 'swing';
 
-const TABS: { key: TabKey; label: string; icon: string }[] = [
-  { key: 'overview', label: 'Overview', icon: 'stats-chart' },
-  { key: 'parties', label: 'Parties', icon: 'people' },
-  { key: 'districts', label: 'Districts', icon: 'map' },
-  { key: 'swing', label: 'Swing', icon: 'swap-horizontal' },
+const TAB_KEYS: { key: TabKey; tKey: string; icon: string }[] = [
+  { key: 'overview', tKey: 'analytics.tabs.overview', icon: 'stats-chart' },
+  { key: 'parties', tKey: 'analytics.tabs.parties', icon: 'people' },
+  { key: 'districts', tKey: 'analytics.tabs.heatmap', icon: 'map' },
+  { key: 'swing', tKey: 'analytics.tabs.swingSeats', icon: 'swap-horizontal' },
 ];
 
 const PARTY_COLORS: Record<string, string> = {
@@ -42,6 +43,7 @@ const PARTY_COLORS: Record<string, string> = {
 const getPartyColor = (p: string) => PARTY_COLORS[p] ?? '#6B7280';
 
 export default function AnalyticsDashboard() {
+  const { t } = useTranslation();
   const router = useRouter();
   const insets = useSafeAreaInsets();
   const { width: screenWidth, height: screenHeight } = useWindowDimensions();
@@ -56,16 +58,16 @@ export default function AnalyticsDashboard() {
     if (!analytics) return;
     const top3 = analytics.partyStrength.slice(0, 3);
     const text = [
-      `KSHETRA Election Analytics — ${STATE_NAMES[selectedState]}`,
-      `Election Year: ${analytics.electionYear}`,
-      `Total Seats: ${analytics.totalSeats}`,
+      `KSHETRA ${t('analytics.title')} — ${STATE_NAMES[selectedState]}`,
+      `${t('analytics.electionYear')}: ${analytics.electionYear}`,
+      `${t('analytics.totalSeats')}: ${analytics.totalSeats}`,
       ``,
-      `Party Strength:`,
-      ...top3.map((p) => `  ${p.party}: ${p.seatsWon} seats (${p.seatPercent}%)`),
+      `${t('analytics.partyStrength')}:`,
+      ...top3.map((p) => `  ${p.party}: ${p.seatsWon} ${t('analytics.seatsWon')} (${p.seatPercent}%)`),
       ``,
-      `Swing Seats: ${analytics.swingSeats.length}`,
+      `${t('analytics.tabs.swingSeats')}: ${analytics.swingSeats.length}`,
       ``,
-      `Key Insights:`,
+      `${t('analytics.keyInsights')}:`,
       ...analytics.insights.map((i) => `  • ${i}`),
       ``,
       `Powered by KSHETRA`,
@@ -92,29 +94,29 @@ export default function AnalyticsDashboard() {
         {/* Hero */}
         <View style={styles.heroCard}>
           <Text style={styles.heroState}>{STATE_NAMES[selectedState]}</Text>
-          <Text style={styles.heroYear}>{analytics.electionYear} Assembly Election</Text>
+          <Text style={styles.heroYear}>{t('analytics.assemblyElection', { year: analytics.electionYear })}</Text>
           <View style={styles.heroStats}>
             <View style={styles.heroStat}>
               <Text style={styles.heroValue}>{analytics.totalSeats}</Text>
-              <Text style={styles.heroLabel}>Seats</Text>
+              <Text style={styles.heroLabel}>{t('analytics.totalSeats')}</Text>
             </View>
             <View style={styles.heroStat}>
               <Text style={[styles.heroValue, { color: getPartyColor(top?.party ?? '') }]}>{top?.party ?? '-'}</Text>
-              <Text style={styles.heroLabel}>Ruling</Text>
+              <Text style={styles.heroLabel}>{t('analytics.ruling')}</Text>
             </View>
             <View style={styles.heroStat}>
               <Text style={styles.heroValue}>{analytics.swingSeats.length}</Text>
-              <Text style={styles.heroLabel}>Swing</Text>
+              <Text style={styles.heroLabel}>{t('analytics.tabs.swingSeats')}</Text>
             </View>
             <View style={styles.heroStat}>
               <Text style={styles.heroValue}>{antiIncumbency.defectionCount}</Text>
-              <Text style={styles.heroLabel}>Defections</Text>
+              <Text style={styles.heroLabel}>{t('analytics.defections')}</Text>
             </View>
           </View>
         </View>
 
         {/* Party Bar */}
-        <Text style={styles.sectionTitle}>Seat Distribution</Text>
+        <Text style={styles.sectionTitle}>{t('analytics.seatDistribution')}</Text>
         <View style={styles.partyBar}>
           {analytics.partyStrength.map((p) => (
             <View key={p.party} style={[styles.partySegment, { flex: p.seatsWon, backgroundColor: getPartyColor(p.party) }]} />
@@ -130,24 +132,24 @@ export default function AnalyticsDashboard() {
         </View>
 
         {/* Reservation */}
-        <Text style={styles.sectionTitle}>Reservation Split</Text>
+        <Text style={styles.sectionTitle}>{t('analytics.reservation')}</Text>
         <View style={styles.resRow}>
           <View style={[styles.resBox, { borderLeftColor: '#3B82F6' }]}>
             <Text style={styles.resValue}>{reservation.gen.count}</Text>
-            <Text style={styles.resLabel}>General</Text>
+            <Text style={styles.resLabel}>{t('explore.gen')}</Text>
           </View>
           <View style={[styles.resBox, { borderLeftColor: '#F59E0B' }]}>
             <Text style={styles.resValue}>{reservation.sc.count}</Text>
-            <Text style={styles.resLabel}>SC</Text>
+            <Text style={styles.resLabel}>{t('explore.sc')}</Text>
           </View>
           <View style={[styles.resBox, { borderLeftColor: '#10B981' }]}>
             <Text style={styles.resValue}>{reservation.st.count}</Text>
-            <Text style={styles.resLabel}>ST</Text>
+            <Text style={styles.resLabel}>{t('explore.st')}</Text>
           </View>
         </View>
 
         {/* Insights */}
-        <Text style={styles.sectionTitle}>Key Insights</Text>
+        <Text style={styles.sectionTitle}>{t('analytics.keyInsights')}</Text>
         {analytics.insights.map((insight, i) => (
           <View key={i} style={styles.insightCard}>
             <Ionicons name="bulb" size={14} color="#F59E0B" />
@@ -156,7 +158,7 @@ export default function AnalyticsDashboard() {
         ))}
 
         {/* Cross-State */}
-        <Text style={styles.sectionTitle}>Cross-State Comparison</Text>
+        <Text style={styles.sectionTitle}>{t('analytics.crossStateComparison')}</Text>
         {national.states.map((s) => (
           <Pressable
             key={s.stateCode}
@@ -178,13 +180,13 @@ export default function AnalyticsDashboard() {
   // ─── PARTIES TAB ───
   const renderParties = () => (
     <View>
-      <Text style={styles.sectionTitle}>Party Strength Analysis</Text>
+      <Text style={styles.sectionTitle}>{t('analytics.partyStrength')}</Text>
       {analytics.partyStrength.map((p) => (
         <View key={p.party} style={styles.partyCard}>
           <View style={styles.partyHeader}>
             <View style={[styles.partyDot, { backgroundColor: getPartyColor(p.party) }]} />
             <Text style={styles.partyName}>{p.party}</Text>
-            <Text style={styles.partySeatCount}>{p.seatsWon} seats ({p.seatPercent}%)</Text>
+            <Text style={styles.partySeatCount}>{p.seatsWon} {t('analytics.seatsWon')} ({p.seatPercent}%)</Text>
           </View>
           {/* Seat bar */}
           <View style={styles.seatBar}>
@@ -193,18 +195,18 @@ export default function AnalyticsDashboard() {
             <View style={[styles.seatMarginal, { flex: p.marginalSeats || 0.01 }]} />
           </View>
           <View style={styles.seatLegend}>
-            <Text style={styles.seatLegendItem}>Safe: {p.safeSeats}</Text>
-            <Text style={styles.seatLegendItem}>Comfortable: {p.comfortableSeats}</Text>
-            <Text style={styles.seatLegendItem}>Marginal: {p.marginalSeats}</Text>
+            <Text style={styles.seatLegendItem}>{t('analytics.safe')}: {p.safeSeats}</Text>
+            <Text style={styles.seatLegendItem}>{t('analytics.comfortable')}: {p.comfortableSeats}</Text>
+            <Text style={styles.seatLegendItem}>{t('analytics.marginal')}: {p.marginalSeats}</Text>
           </View>
           <View style={styles.partyStats}>
             <View style={styles.pStat}>
               <Text style={styles.pStatValue}>{(p.avgMargin / 1000).toFixed(1)}K</Text>
-              <Text style={styles.pStatLabel}>Avg Margin</Text>
+              <Text style={styles.pStatLabel}>{t('analytics.averageMargin')}</Text>
             </View>
             <View style={styles.pStat}>
               <Text style={styles.pStatValue}>{(p.medianMargin / 1000).toFixed(1)}K</Text>
-              <Text style={styles.pStatLabel}>Median</Text>
+              <Text style={styles.pStatLabel}>{t('analytics.median')}</Text>
             </View>
             <View style={styles.pStat}>
               <Text style={[styles.pStatValue, { color: '#EF4444' }]}>{p.closeSeats}</Text>
@@ -219,8 +221,8 @@ export default function AnalyticsDashboard() {
   // ─── DISTRICTS TAB ───
   const renderDistricts = () => (
     <View>
-      <Text style={styles.sectionTitle}>District Heatmap</Text>
-      <Text style={styles.sectionSub}>Competitive Index: higher = more contested</Text>
+      <Text style={styles.sectionTitle}>{t('analytics.districtHeatmap')}</Text>
+      <Text style={styles.sectionSub}>{t('analytics.competitiveIndexDesc')}</Text>
       {analytics.districtHeatmap.map((d) => (
         <View key={d.districtName} style={styles.distCard}>
           <View style={styles.distHeader}>
@@ -233,7 +235,7 @@ export default function AnalyticsDashboard() {
               }]}>{d.competitiveIndex}</Text>
             </View>
           </View>
-          <Text style={styles.distMeta}>{d.totalSeats} seats · Dominant: {d.dominantParty} ({d.dominancePercent}%)</Text>
+          <Text style={styles.distMeta}>{d.totalSeats} {t('analytics.seatsWon')} · {t('analytics.dominant')}: {d.dominantParty} ({d.dominancePercent}%)</Text>
           <View style={styles.distBar}>
             {d.partyBreakdown.map((pb) => (
               <View key={pb.party} style={[styles.distSeg, { flex: pb.seats, backgroundColor: getPartyColor(pb.party) }]} />
@@ -254,8 +256,8 @@ export default function AnalyticsDashboard() {
   // ─── SWING TAB ───
   const renderSwing = () => (
     <View>
-      <Text style={styles.sectionTitle}>Swing Seats (margin &lt; 8K)</Text>
-      <Text style={styles.sectionSub}>{analytics.swingSeats.length} seats could flip</Text>
+      <Text style={styles.sectionTitle}>{t('analytics.swingSeatsTitle')}</Text>
+      <Text style={styles.sectionSub}>{t('analytics.seatsCouldFlip', { count: analytics.swingSeats.length })}</Text>
 
       {analytics.swingSeats.map((s) => (
         <View key={s.acNo} style={styles.swingCard}>
@@ -273,25 +275,25 @@ export default function AnalyticsDashboard() {
       ))}
 
       {/* Anti-incumbency */}
-      <Text style={[styles.sectionTitle, { marginTop: 20 }]}>Anti-Incumbency Indicators</Text>
+      <Text style={[styles.sectionTitle, { marginTop: 20 }]}>{t('analytics.antiIncumbencyIndicators')}</Text>
       <View style={styles.aiCard}>
         <View style={styles.aiRow}>
-          <Text style={styles.aiLabel}>Defection Rate</Text>
+          <Text style={styles.aiLabel}>{t('analytics.defectionRate')}</Text>
           <Text style={styles.aiValue}>{analytics.antiIncumbency.defectionRate}%</Text>
         </View>
         <View style={styles.aiRow}>
-          <Text style={styles.aiLabel}>Defections</Text>
+          <Text style={styles.aiLabel}>{t('analytics.defections')}</Text>
           <Text style={styles.aiValue}>{analytics.antiIncumbency.defectionCount}</Text>
         </View>
         <View style={styles.aiRow}>
-          <Text style={styles.aiLabel}>Vulnerable Seats (&lt;5%)</Text>
+          <Text style={styles.aiLabel}>{t('analytics.vulnerableSeats')}</Text>
           <Text style={styles.aiValue}>{analytics.antiIncumbency.vulnerableSeats.length}</Text>
         </View>
       </View>
 
       {analytics.antiIncumbency.defectionCount > 0 && (
         <>
-          <Text style={styles.subHeading}>Defection Flow</Text>
+          <Text style={styles.subHeading}>{t('analytics.defectionFlow')}</Text>
           {Object.entries(analytics.antiIncumbency.defectedFrom).map(([party, count]) => (
             <View key={party} style={styles.defRow}>
               <Text style={[styles.defParty, { color: getPartyColor(party) }]}>{party}</Text>
@@ -305,7 +307,7 @@ export default function AnalyticsDashboard() {
       )}
 
       {/* Closest contests */}
-      <Text style={styles.subHeading}>Closest Contests (Top 10)</Text>
+      <Text style={styles.subHeading}>{t('analytics.closestContestsTop10')}</Text>
       {analytics.antiIncumbency.closestContests.map((c) => (
         <View key={c.acNo} style={styles.closeRow}>
           <Text style={styles.closeName}>{c.name}</Text>
@@ -326,8 +328,8 @@ export default function AnalyticsDashboard() {
           <Ionicons name="arrow-back" size={isSmallScreen ? 20 : 22} color="#FFFFFF" />
         </Pressable>
         <View style={{ flex: 1 }}>
-          <Text style={[styles.headerTitle, isSmallScreen && { fontSize: 16 }]}>Election Analytics</Text>
-          <Text style={styles.headerSub}>Cross-State Intelligence</Text>
+          <Text style={[styles.headerTitle, isSmallScreen && { fontSize: 16 }]}>{t('analytics.title')}</Text>
+          <Text style={styles.headerSub}>{t('analytics.crossStateIntelligence')}</Text>
         </View>
         <Pressable onPress={handleShare} style={styles.shareBtn}>
           <Ionicons name="share-outline" size={18} color="#4F8EF7" />
@@ -349,14 +351,14 @@ export default function AnalyticsDashboard() {
 
       {/* Tabs */}
       <View style={[styles.tabRow, isSmallScreen && { marginBottom: 2 }]}>
-        {TABS.map((tab) => (
+        {TAB_KEYS.map((tab) => (
           <Pressable
             key={tab.key}
             style={[styles.tab, isSmallScreen && { paddingVertical: 6 }, activeTab === tab.key && styles.tabActive]}
             onPress={() => setActiveTab(tab.key)}
           >
             <Ionicons name={tab.icon as any} size={isSmallScreen ? 12 : 14} color={activeTab === tab.key ? '#4F8EF7' : '#6B7280'} />
-            <Text style={[styles.tabLabel, isSmallScreen && { fontSize: 10 }, activeTab === tab.key && styles.tabLabelActive]}>{tab.label}</Text>
+            <Text style={[styles.tabLabel, isSmallScreen && { fontSize: 10 }, activeTab === tab.key && styles.tabLabelActive]}>{t(tab.tKey)}</Text>
           </Pressable>
         ))}
       </View>

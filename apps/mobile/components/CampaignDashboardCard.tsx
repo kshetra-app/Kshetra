@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next';
 import { View, Text, StyleSheet, Pressable } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import type { Campaign } from '../lib/campaignTypes';
@@ -9,6 +10,7 @@ interface CampaignDashboardCardProps {
 }
 
 export default function CampaignDashboardCard({ campaign, onPress }: CampaignDashboardCardProps) {
+  const { t } = useTranslation();
   const typeConfig = CAMPAIGN_TYPE_CONFIG[campaign.type];
   const budgetUtilization = campaign.totalBudgetINR > 0 ? Math.round((campaign.spentBudgetINR / campaign.totalBudgetINR) * 100) : 0;
   const engagementRate = campaign.impressions > 0 ? ((campaign.engagements / campaign.impressions) * 100).toFixed(1) : '0';
@@ -35,29 +37,29 @@ export default function CampaignDashboardCard({ campaign, onPress }: CampaignDas
         <View style={styles.kpi}>
           <Ionicons name="eye" size={16} color="#3B82F6" />
           <Text style={styles.kpiValue}>{campaign.impressions > 1000000 ? `${(campaign.impressions / 1000000).toFixed(1)}M` : `${Math.round(campaign.impressions / 1000)}K`}</Text>
-          <Text style={styles.kpiLabel}>Impressions</Text>
+          <Text style={styles.kpiLabel}>{t('campaignManager.impressions')}</Text>
         </View>
         <View style={styles.kpi}>
           <Ionicons name="people" size={16} color="#8B5CF6" />
           <Text style={styles.kpiValue}>{campaign.reach > 1000000 ? `${(campaign.reach / 1000000).toFixed(1)}M` : `${Math.round(campaign.reach / 1000)}K`}</Text>
-          <Text style={styles.kpiLabel}>Reach</Text>
+          <Text style={styles.kpiLabel}>{t('outreach.reach')}</Text>
         </View>
         <View style={styles.kpi}>
           <Ionicons name="heart" size={16} color="#EC4899" />
           <Text style={styles.kpiValue}>{engagementRate}%</Text>
-          <Text style={styles.kpiLabel}>Engagement</Text>
+          <Text style={styles.kpiLabel}>{t('outreach.engagement')}</Text>
         </View>
         <View style={styles.kpi}>
           <Ionicons name="trending-up" size={16} color="#10B981" />
           <Text style={styles.kpiValue}>{campaign.sentimentScore}</Text>
-          <Text style={styles.kpiLabel}>Sentiment</Text>
+          <Text style={styles.kpiLabel}>{t('outreach.sentiment')}</Text>
         </View>
       </View>
 
       {/* Budget Bar */}
       <View style={styles.budgetSection}>
         <View style={styles.budgetHeader}>
-          <Text style={styles.budgetLabel}>Budget: {formatBudget(campaign.spentBudgetINR)} / {formatBudget(campaign.totalBudgetINR)}</Text>
+          <Text style={styles.budgetLabel}>{t('campaignManager.budget')}: {formatBudget(campaign.spentBudgetINR)} / {formatBudget(campaign.totalBudgetINR)}</Text>
           <Text style={[styles.budgetPct, { color: budgetUtilization > 80 ? '#EF4444' : '#10B981' }]}>{budgetUtilization}%</Text>
         </View>
         <View style={styles.budgetBar}>
@@ -69,15 +71,15 @@ export default function CampaignDashboardCard({ campaign, onPress }: CampaignDas
       <View style={styles.bottomRow}>
         <View style={styles.bottomStat}>
           <Ionicons name="megaphone" size={12} color="#6B7280" />
-          <Text style={styles.bottomStatText}>{campaign.adCount} ads</Text>
+          <Text style={styles.bottomStatText}>{campaign.adCount} {t('campaignManager.tabs.ads').toLowerCase()}</Text>
         </View>
         <View style={styles.bottomStat}>
           <Ionicons name="people" size={12} color="#6B7280" />
-          <Text style={styles.bottomStatText}>{campaign.volunteerCount} volunteers</Text>
+          <Text style={styles.bottomStatText}>{campaign.volunteerCount} {t('campaignManager.volunteers').toLowerCase()}</Text>
         </View>
         <View style={styles.bottomStat}>
           <Ionicons name="location" size={12} color="#6B7280" />
-          <Text style={styles.bottomStatText}>{campaign.boothsCovered}/{campaign.totalBooths} booths</Text>
+          <Text style={styles.bottomStatText}>{campaign.boothsCovered}/{campaign.totalBooths} {t('hierarchy.booths').toLowerCase()}</Text>
         </View>
       </View>
     </Pressable>

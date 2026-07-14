@@ -1,4 +1,5 @@
 import { useState, useCallback, useRef } from 'react';
+import { useTranslation } from 'react-i18next';
 import {
   View,
   Text,
@@ -27,6 +28,7 @@ interface AISmartSearchProps {
 }
 
 export default function AISmartSearch({ onSelect }: AISmartSearchProps) {
+  const { t } = useTranslation();
   const [query, setQuery] = useState('');
   const [aiResponse, setAiResponse] = useState('');
   const [loading, setLoading] = useState(false);
@@ -58,7 +60,7 @@ export default function AISmartSearch({ onSelect }: AISmartSearchProps) {
 
       setAiResponse(result.response);
     } catch {
-      setError('Search failed. Check your connection.');
+      setError(t('ai.searchFailed'));
     } finally {
       setLoading(false);
     }
@@ -68,14 +70,14 @@ export default function AISmartSearch({ onSelect }: AISmartSearchProps) {
     <View style={styles.container}>
       <View style={styles.header}>
         <Ionicons name="sparkles" size={16} color="#8B5CF6" />
-        <Text style={styles.title}>AI Search</Text>
+        <Text style={styles.title}>{t('ai.smartSearch')}</Text>
       </View>
 
       <View style={styles.inputRow}>
         <TextInput
           ref={inputRef}
           style={styles.input}
-          placeholder="Ask anything about politics..."
+          placeholder={t('ai.searchPlaceholder')}
           placeholderTextColor="#4B5563"
           value={query}
           onChangeText={setQuery}
@@ -99,7 +101,7 @@ export default function AISmartSearch({ onSelect }: AISmartSearchProps) {
       {/* Example queries */}
       {!hasSearched && (
         <View style={styles.examples}>
-          <Text style={styles.examplesLabel}>Try asking:</Text>
+          <Text style={styles.examplesLabel}>{t('ai.tryAsking')}:</Text>
           {EXAMPLE_QUERIES.map((eq, i) => (
             <Pressable
               key={i}
@@ -117,7 +119,7 @@ export default function AISmartSearch({ onSelect }: AISmartSearchProps) {
       {loading && (
         <View style={styles.loadingRow}>
           <ActivityIndicator size="small" color="#8B5CF6" />
-          <Text style={styles.loadingText}>KSHETRA AI is thinking...</Text>
+          <Text style={styles.loadingText}>{t('ai.thinkingSearch')}</Text>
         </View>
       )}
 
@@ -133,7 +135,7 @@ export default function AISmartSearch({ onSelect }: AISmartSearchProps) {
 
       {/* Empty state */}
       {hasSearched && !loading && !aiResponse && !error && (
-        <Text style={styles.emptyText}>No response received. Try a different query.</Text>
+        <Text style={styles.emptyText}>{t('ai.noResponse')}</Text>
       )}
     </View>
   );

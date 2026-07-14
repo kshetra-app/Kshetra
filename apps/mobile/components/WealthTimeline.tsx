@@ -3,6 +3,7 @@
  * Bar chart showing total assets per election year with growth percentage.
  */
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import { View, Text, StyleSheet } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import type { CandidateAffidavit, WealthGrowth } from '../lib/affidavitTypes';
@@ -14,6 +15,7 @@ interface WealthTimelineProps {
 }
 
 export default React.memo(function WealthTimeline({ affidavits, growths }: WealthTimelineProps) {
+  const { t } = useTranslation();
   if (affidavits.length === 0) return null;
 
   const sorted = [...affidavits].sort((a, b) => a.electionYear - b.electionYear);
@@ -23,7 +25,7 @@ export default React.memo(function WealthTimeline({ affidavits, growths }: Wealt
     <View style={styles.container}>
       <View style={styles.header}>
         <Ionicons name="trending-up" size={16} color="#8B5CF6" />
-        <Text style={styles.title}>Wealth Growth Timeline</Text>
+        <Text style={styles.title}>{t('wealthTimeline.title')}</Text>
       </View>
 
       <View style={styles.chart}>
@@ -71,11 +73,11 @@ export default React.memo(function WealthTimeline({ affidavits, growths }: Wealt
       <View style={styles.legend}>
         <View style={styles.legendItem}>
           <View style={[styles.legendDot, { backgroundColor: '#4F8EF7' }]} />
-          <Text style={styles.legendText}>Self</Text>
+          <Text style={styles.legendText}>{t('wealthTimeline.self')}</Text>
         </View>
         <View style={styles.legendItem}>
           <View style={[styles.legendDot, { backgroundColor: '#8B5CF6' }]} />
-          <Text style={styles.legendText}>Spouse</Text>
+          <Text style={styles.legendText}>{t('wealthTimeline.spouse')}</Text>
         </View>
       </View>
 
@@ -83,12 +85,12 @@ export default React.memo(function WealthTimeline({ affidavits, growths }: Wealt
       {growths.length > 0 && (
         <View style={styles.summary}>
           <Text style={styles.summaryText}>
-            Total growth: {formatINR(sorted[0].totalAssets)} ({sorted[0].electionYear}) →{' '}
+            {t('wealthTimeline.totalGrowth')} {formatINR(sorted[0].totalAssets)} ({sorted[0].electionYear}) →{' '}
             {formatINR(sorted[sorted.length - 1].totalAssets)} ({sorted[sorted.length - 1].electionYear})
           </Text>
           {growths.length > 0 && (
             <Text style={styles.summaryAnnualized}>
-              Annualized: {growths[growths.length - 1].annualizedGrowth.toFixed(1)}% per year
+              {t('wealthTimeline.annualized')} {growths[growths.length - 1].annualizedGrowth.toFixed(1)}% {t('wealthTimeline.perYear')}
             </Text>
           )}
         </View>

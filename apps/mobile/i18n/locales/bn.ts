@@ -721,6 +721,36 @@ const bn: PartialTranslationKeys = {
     systemDefault: 'সিস্টেম ডিফল্ট',
     changeConfirm: 'ভাষা পরিবর্তন করে {{language}} করবেন?',
   },
+
+  // ── Constituency Tab Bar ───────────────────────────────────
+  constituencyTabBar: { overview: 'পর্যালোচনা', issues: 'সমস্যা', pulse: 'নাড়ি', news: 'সংবাদ', history: 'ইতিহাস', xray: 'এক্স-রে' },
+
+  // ── Compare ────────────────────────────────────────────────
+  compare: { title: 'তুলনা', selectA: 'A নির্বাচন', selectB: 'B নির্বাচন', selectConstituency: 'নির্বাচনী এলাকা নির্বাচন', election: 'নির্বাচন', winnerVotes: 'বিজয়ীর ভোট', margin: 'ব্যবধান', demographics: 'জনসংখ্যা', population: 'জনসংখ্যা', totalVoters: 'মোট ভোটার', literacy: 'সাক্ষরতা', mlaProfile: 'MLA প্রোফাইল', gender: 'লিঙ্গ', male: 'পুরুষ', female: 'মহিলা', terms: 'মেয়াদ', historical: 'ঐতিহাসিক তুলনা' },
+
+  // ── Export ─────────────────────────────────────────────────
+  export: { title: 'রপ্তানি ড্যাশবোর্ড', dataScope: 'ডেটা পরিধি', currentView: 'বর্তমান দৃশ্য', allData: 'সমস্ত ডেটা', upgradeRequired: 'আপগ্রেড প্রয়োজন', failed: 'রপ্তানি ব্যর্থ', errorOccurred: 'একটি ত্রুটি ঘটেছে।' },
+
+  // ── Aspirant Registration ──────────────────────────────────
+  aspirantReg: { title: 'আকাঙ্ক্ষী হন', publicName: 'প্রকাশ্য নাম', nameRequired: 'নাম প্রয়োজন', standFor: 'আপনি কিসের জন্য দাঁড়ান?', targetConstituency: 'লক্ষ্য নির্বাচনী এলাকা', stateLabel: 'রাজ্য', affiliation: 'অনুষঙ্গ', partyMember: 'দলের সদস্য', createProfile: 'আমার আকাঙ্ক্ষী প্রোফাইল তৈরি করুন', welcomeTitle: 'স্বাগতম, আকাঙ্ক্ষী!', letsGo: 'শুরু করি' },
+
+  // ── KYC Sheet ──────────────────────────────────────────────
+  kycSheet: { title: 'অবদানকারী যাচাই', verified: 'যাচাই হয়েছে!', personalInfo: 'ব্যক্তিগত তথ্য', fullName: 'সম্পূর্ণ আইনি নাম *', phone: 'ফোন নম্বর *', selfieSection: 'সেলফি যাচাই', takeSelfie: 'সেলফি তুলুন', agreement: 'দায়বদ্ধতা চুক্তি', agreeAndVerify: 'সম্মত ও যাচাই করুন' },
+
+  // ── Content Gate ───────────────────────────────────────────
+  contentGate: { flag: 'ফ্ল্যাগ', alert: 'সতর্কতা', flagContent: 'বিষয়বস্তু ফ্ল্যাগ করুন', raiseAlert: 'সতর্কতা পাঠান', category: 'শ্রেণী', submitFlag: 'ফ্ল্যাগ জমা দিন' },
+
+  // ── Shorts Player ──────────────────────────────────────────
+  shortsPlayer: { branding: 'শর্টস', videoUnavailable: 'ভিডিও অনুপলব্ধ', openYouTube: 'YouTubeএ খুলুন', share: 'শেয়ার', approve: 'অনুমোদন', skip: 'এড়িয়ে যান' },
+
+  // ── Upload Short ───────────────────────────────────────────
+  uploadShort: { title: 'রাজনৈতিক শর্ট আপলোড', creatorVerification: 'নির্মাতা যাচাই প্রয়োজন', startVerification: 'নির্মাতা যাচাই শুরু করুন', maybeLater: 'পরে', inputTitle: 'শিরোনাম', inputDescription: 'বিবরণ', uploadButton: 'নির্বাচনী এলাকায় আপলোড' },
+
+  // ── Module Detail ──────────────────────────────────────────
+  moduleDetail: { keyTakeaways: 'মূল বিষয়', knowledgeCheck: 'জ্ঞান পরীক্ষা', tryAgain: 'আবার চেষ্টা করুন', sources: 'উৎস ও আরও পড়ুন', moduleCompleted: 'মডিউল সম্পন্ন', submitQuiz: 'উত্তর জমা দিন', markComplete: 'সম্পন্ন চিহ্নিত করুন' },
+
+  // ── Outreach Panel ─────────────────────────────────────────
+  outreachPanel: { compose: 'লিখুন', history: 'ইতিহাস', templates: 'টেমপ্লেট', channel: 'চ্যানেল', audience: 'দর্শক', message: 'বার্তা', delivery: 'বিতরণ', sendNow: 'এখনই পাঠান', recipients: 'প্রাপক', noBroadcasts: 'এখনও কোনো সম্প্রচার নেই', cancel: 'বাতিল', sendBroadcast: 'সম্প্রচার পাঠান' },
 };
 
 export default bn;

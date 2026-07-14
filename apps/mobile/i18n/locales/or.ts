@@ -721,6 +721,18 @@ const or: PartialTranslationKeys = {
     systemDefault: 'ସିଷ୍ଟମର ପୂର୍ବନିର୍ଦ୍ଧାରିତ ଭାଷା',
     changeConfirm: 'ଭାଷାକୁ {{language}} କୁ ପରିବର୍ତ୍ତନ କରିବେ କି?',
   },
+
+  // ── Constituency Tab Bar ──────────────────────────────────
+  constituencyTabBar: { overview: 'ସମୀକ୍ଷା', issues: 'ସମସ୍ୟା', pulse: 'ନାଡ଼ି', news: 'ସମ୍ବାଦ', history: 'ଇତିହାସ', xray: 'ଏକ୍ସ-ରେ' },
+  compare: { title: 'ତୁଳନା', selectA: 'A ବାଛନ୍ତୁ', selectB: 'B ବାଛନ୍ତୁ', selectConstituency: 'ନିର୍ବାଚନ ମଣ୍ଡଳୀ ବାଛନ୍ତୁ', election: 'ନିର୍ବାଚନ', winnerVotes: 'ବିଜୟୀ ଭୋଟ', margin: 'ପାର୍ଥକ୍ୟ', demographics: 'ଜନସଂଖ୍ୟା', population: 'ଜନସଂଖ୍ୟା', totalVoters: 'ମୋଟ ଭୋଟର', literacy: 'ସାକ୍ଷରତା', mlaProfile: 'MLA ପ୍ରୋଫାଇଲ', gender: 'ଲିଙ୍ଗ', male: 'ପୁରୁଷ', female: 'ମହିଳା', terms: 'କାର୍ଯ୍ୟକାଳ', historical: 'ଐତିହାସିକ ତୁଳନା' },
+  export: { title: 'ରପ୍ତାନି ଡ୍ୟାସବୋର୍ଡ', dataScope: 'ଡାଟା ପରିସର', currentView: 'ବର୍ତ୍ତମାନ ଦୃଶ୍ୟ', allData: 'ସମସ୍ତ ଡାଟା', upgradeRequired: 'ଅପଗ୍ରେଡ ଆବଶ୍ୟକ', failed: 'ରପ୍ତାନି ବିଫଳ', errorOccurred: 'ଏକ ତ୍ରୁଟି ଘଟିଲା।' },
+  aspirantReg: { title: 'ଆକାଂକ୍ଷୀ ହୁଅନ୍ତୁ', publicName: 'ସାର୍ବଜନିକ ନାମ', nameRequired: 'ନାମ ଆବଶ୍ୟକ', standFor: 'ଆପଣ କାହିଁକି ଠିଆ ହୋଇଛନ୍ତି?', targetConstituency: 'ଲକ୍ଷ୍ୟ ନିର୍ବାଚନ ମଣ୍ଡଳୀ', stateLabel: 'ରାଜ୍ୟ', partyMember: 'ଦଳ ସଦସ୍ୟ', createProfile: 'ମୋର ଆକାଂକ୍ଷୀ ପ୍ରୋଫାଇଲ ସୃଷ୍ଟି କରନ୍ତୁ', welcomeTitle: 'ସ୍ୱାଗତ, ଆକାଂକ୍ଷୀ!', letsGo: 'ଆରମ୍ଭ କରିବା' },
+  kycSheet: { title: 'ଯୋଗଦାନକାରୀ ଯାଞ୍ଚ', verified: 'ଯାଞ୍ଚ ହୋଇଗଲା!', personalInfo: 'ବ୍ୟକ୍ତିଗତ ସୂଚନା', fullName: 'ସମ୍ପୂର୍ଣ୍ଣ ଆଇନଗତ ନାମ *', phone: 'ଫୋନ ନମ୍ବର *', selfieSection: 'ସେଲ୍ଫି ଯାଞ୍ଚ', takeSelfie: 'ସେଲ୍ଫି ନିଅନ୍ତୁ', agreement: 'ଦାୟିତ୍ୱ ଚୁକ୍ତି', agreeAndVerify: 'ସହମତ ହୁଅନ୍ତୁ ଓ ଯାଞ୍ଚ କରନ୍ତୁ' },
+  contentGate: { flag: 'ଫ୍ଲାଗ', alert: 'ସତର୍କତା', flagContent: 'ବିଷୟବସ୍ତୁ ଫ୍ଲାଗ କରନ୍ତୁ', raiseAlert: 'ସତର୍କତା ପଠାନ୍ତୁ', category: 'ଶ୍ରେଣୀ', submitFlag: 'ଫ୍ଲାଗ ଦାଖଲ କରନ୍ତୁ' },
+  shortsPlayer: { branding: 'ସର୍ଟସ', videoUnavailable: 'ଭିଡିଓ ଉପಲବ୍ଧ ନାହିଁ', openYouTube: 'YouTubeରେ ଖୋଲନ୍ତୁ', share: 'ଶେୟାର', approve: 'ଅନୁମୋଦନ', skip: 'ଛାଡ଼ନ୍ତୁ' },
+  uploadShort: { title: 'ରାଜନୈତିକ ସର୍ଟ ଅପଲୋଡ', creatorVerification: 'ସୃଷ୍ଟିକର୍ତ୍ତା ଯାଞ୍ଚ ଆବଶ୍ୟକ', startVerification: 'ସୃଷ୍ଟିକର୍ତ୍ତା ଯାଞ୍ଚ ଆରମ୍ଭ କରନ୍ତୁ', maybeLater: 'ପରେ', inputTitle: 'ଶୀର୍ଷକ', inputDescription: 'ବର୍ଣ୍ଣନା', uploadButton: 'ନିର୍ବାଚନ ମଣ୍ଡଳୀକୁ ଅପଲୋଡ' },
+  moduleDetail: { keyTakeaways: 'ମୁଖ୍ୟ ଅଂଶ', knowledgeCheck: 'ଜ୍ଞାନ ପରୀକ୍ଷା', tryAgain: 'ପୁଣି ଚେଷ୍ଟା କରନ୍ତୁ', sources: 'ଉତ୍ସ ଓ ଅଧିକ ପଢ଼ନ୍ତୁ', moduleCompleted: 'ମଡ୍ୟୁଲ ସମ୍ପୂର୍ଣ୍ଣ', submitQuiz: 'ଉତ୍ତର ଦାଖଲ କରନ୍ତୁ', markComplete: 'ସମ୍ପୂର୍ଣ୍ଣ ଚିହ୍ନିତ କରନ୍ତୁ' },
+  outreachPanel: { compose: 'ଲେଖନ୍ତୁ', history: 'ଇତିହାସ', templates: 'ଟେମ୍ପଲେଟ', channel: 'ଚ୍ୟାନେଲ', audience: 'ଦର୍ଶକ', message: 'ସନ୍ଦେଶ', delivery: 'ବିତରଣ', sendNow: 'ଏବେ ପଠାନ୍ତୁ', recipients: 'ପ୍ରାପ୍ତକର୍ତ୍ତା', noBroadcasts: 'ଏପର୍ଯ୍ୟନ୍ତ କୌଣସି ପ୍ରସାରଣ ନାହିଁ', cancel: 'ବାତିଲ', sendBroadcast: 'ପ୍ରସାରଣ ପଠାନ୍ତୁ' },
 };
 
 export default or;

@@ -2,6 +2,7 @@
  * CivicScoreCard — Displays a user's civic score breakdown with level badge.
  */
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import { View, Text, StyleSheet } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import {
@@ -26,6 +27,7 @@ const SCORE_ITEMS: { key: keyof Omit<CivicScoreBreakdown, 'totalScore' | 'level'
 ];
 
 export default React.memo(function CivicScoreCard({ score, displayName }: CivicScoreCardProps) {
+  const { t } = useTranslation();
   const levelConfig = CIVIC_LEVEL_CONFIG[score.level];
   const maxScore = 1000;
   const progressPct = Math.min((score.totalScore / maxScore) * 100, 100);
@@ -36,7 +38,7 @@ export default React.memo(function CivicScoreCard({ score, displayName }: CivicS
       <View style={styles.header}>
         <View>
           <Text style={styles.title}>
-            {displayName ? `${displayName}'s` : 'Your'} Civic Score
+            {displayName ? `${displayName}${t('civicScoreCard.possessive')}` : t('civicScoreCard.your')} {t('civicScoreCard.title')}
           </Text>
           <View style={[styles.levelBadge, { backgroundColor: levelConfig.color + '20' }]}>
             <Ionicons name={levelConfig.icon as any} size={14} color={levelConfig.color} />
@@ -54,7 +56,7 @@ export default React.memo(function CivicScoreCard({ score, displayName }: CivicS
           <View style={[styles.progressFill, { width: `${progressPct}%`, backgroundColor: levelConfig.color }]} />
         </View>
         <Text style={styles.progressText}>
-          {score.totalScore} / {maxScore} to Champion
+          {score.totalScore} / {maxScore} {t('civicScoreCard.toChampion')}
         </Text>
       </View>
 

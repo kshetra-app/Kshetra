@@ -1,4 +1,5 @@
 import { useState, useMemo, useCallback } from 'react';
+import { useTranslation } from 'react-i18next';
 import {
   View,
   Text,
@@ -119,6 +120,7 @@ function ConstituencyPicker({
 }
 
 export default function CompareSheet({ visible, initialAcNo, onClose }: CompareSheetProps) {
+  const { t } = useTranslation();
   const stateCode = useActiveStateStore((s) => s.stateCode);
   const hasFull = hasFullDataForState(stateCode);
   const stateConstituencies = useMemo(
@@ -165,7 +167,7 @@ export default function CompareSheet({ visible, initialAcNo, onClose }: CompareS
       <SafeAreaView style={styles.container}>
         {/* Header */}
         <View style={styles.header}>
-          <Text style={styles.headerTitle}>Compare</Text>
+          <Text style={styles.headerTitle}>{t('compare.title')}</Text>
           <Pressable onPress={onClose} hitSlop={8}>
             <Ionicons name="close" size={24} color="#9CA3AF" />
           </Pressable>
@@ -180,7 +182,7 @@ export default function CompareSheet({ visible, initialAcNo, onClose }: CompareS
                 <Text style={styles.selectorName} numberOfLines={1}>{left.name}</Text>
               </>
             ) : (
-              <Text style={styles.selectorPlaceholder}>Select A</Text>
+              <Text style={styles.selectorPlaceholder}>{t('compare.selectA')}</Text>
             )}
           </Pressable>
 
@@ -195,7 +197,7 @@ export default function CompareSheet({ visible, initialAcNo, onClose }: CompareS
                 <Text style={styles.selectorName} numberOfLines={1}>{right.name}</Text>
               </>
             ) : (
-              <Text style={styles.selectorPlaceholder}>Select B</Text>
+              <Text style={styles.selectorPlaceholder}>{t('compare.selectB')}</Text>
             )}
           </Pressable>
         </View>
@@ -205,7 +207,7 @@ export default function CompareSheet({ visible, initialAcNo, onClose }: CompareS
           <View style={styles.pickerOverlay}>
             <View style={styles.pickerHeader}>
               <Text style={styles.pickerTitle}>
-                Select Constituency {pickingSide === 'left' ? 'A' : 'B'}
+                {t('compare.selectConstituency')} {pickingSide === 'left' ? 'A' : 'B'}
               </Text>
               <Pressable onPress={() => setPickingSide(null)} hitSlop={8}>
                 <Ionicons name="close" size={20} color="#9CA3AF" />
@@ -247,12 +249,12 @@ export default function CompareSheet({ visible, initialAcNo, onClose }: CompareS
 
             {/* Election stats */}
             <View style={styles.sectionDivider}>
-              <Text style={styles.sectionLabel}>{left.electionYear ?? ''} Election</Text>
+              <Text style={styles.sectionLabel}>{left.electionYear ?? ''} {t('compare.election')}</Text>
             </View>
-            <StatCompare label="Winner Votes" leftValue={left.winnerVotes} rightValue={right.winnerVotes} format="compact" />
-            <StatCompare label="Margin" leftValue={left.margin} rightValue={right.margin} format="compact" />
+            <StatCompare label={t('compare.winnerVotes')} leftValue={left.winnerVotes} rightValue={right.winnerVotes} format="compact" />
+            <StatCompare label={t('compare.margin')} leftValue={left.margin} rightValue={right.margin} format="compact" />
             <StatCompare
-              label="Margin %"
+              label={t('compare.marginPct')}
               leftValue={parseFloat(((left.margin / Math.max(left.winnerVotes, 1)) * 100).toFixed(1))}
               rightValue={parseFloat(((right.margin / Math.max(right.winnerVotes, 1)) * 100).toFixed(1))}
               format="pct"
@@ -262,16 +264,16 @@ export default function CompareSheet({ visible, initialAcNo, onClose }: CompareS
             {leftDemo && rightDemo && (
               <>
                 <View style={styles.sectionDivider}>
-                  <Text style={styles.sectionLabel}>Demographics</Text>
+                  <Text style={styles.sectionLabel}>{t('compare.demographics')}</Text>
                 </View>
-                <StatCompare label="Population" leftValue={leftDemo.population} rightValue={rightDemo.population} format="compact" />
-                <StatCompare label="Total Voters" leftValue={leftDemo.totalVoters} rightValue={rightDemo.totalVoters} format="compact" />
-                <StatCompare label="Turnout 2023" leftValue={leftDemo.turnout2023} rightValue={rightDemo.turnout2023} format="pct" />
-                <StatCompare label="Literacy" leftValue={leftDemo.literacy} rightValue={rightDemo.literacy} format="pct" />
-                <StatCompare label="Urban %" leftValue={leftDemo.urbanPercent} rightValue={rightDemo.urbanPercent} format="pct" />
-                <StatCompare label="SC %" leftValue={leftDemo.scPercent} rightValue={rightDemo.scPercent} format="pct" />
-                <StatCompare label="ST %" leftValue={leftDemo.stPercent} rightValue={rightDemo.stPercent} format="pct" />
-                <StatCompare label="Area (km²)" leftValue={leftDemo.areaSqKm} rightValue={rightDemo.areaSqKm} />
+                <StatCompare label={t('compare.population')} leftValue={leftDemo.population} rightValue={rightDemo.population} format="compact" />
+                <StatCompare label={t('compare.totalVoters')} leftValue={leftDemo.totalVoters} rightValue={rightDemo.totalVoters} format="compact" />
+                <StatCompare label={t('compare.turnout2023')} leftValue={leftDemo.turnout2023} rightValue={rightDemo.turnout2023} format="pct" />
+                <StatCompare label={t('compare.literacy')} leftValue={leftDemo.literacy} rightValue={rightDemo.literacy} format="pct" />
+                <StatCompare label={t('compare.urbanPct')} leftValue={leftDemo.urbanPercent} rightValue={rightDemo.urbanPercent} format="pct" />
+                <StatCompare label={t('compare.scPct')} leftValue={leftDemo.scPercent} rightValue={rightDemo.scPercent} format="pct" />
+                <StatCompare label={t('compare.stPct')} leftValue={leftDemo.stPercent} rightValue={rightDemo.stPercent} format="pct" />
+                <StatCompare label={t('compare.area')} leftValue={leftDemo.areaSqKm} rightValue={rightDemo.areaSqKm} />
               </>
             )}
 
@@ -279,14 +281,14 @@ export default function CompareSheet({ visible, initialAcNo, onClose }: CompareS
             {leftMLA && rightMLA && (
               <>
                 <View style={styles.sectionDivider}>
-                  <Text style={styles.sectionLabel}>MLA Profile</Text>
+                  <Text style={styles.sectionLabel}>{t('compare.mlaProfile')}</Text>
                 </View>
                 <View style={styles.statRow}>
-                  <Text style={styles.statValue}>{leftMLA.gender === 'M' ? 'Male' : 'Female'}</Text>
-                  <Text style={styles.statLabel}>Gender</Text>
-                  <Text style={styles.statValue}>{rightMLA.gender === 'M' ? 'Male' : 'Female'}</Text>
+                  <Text style={styles.statValue}>{leftMLA.gender === 'M' ? t('compare.male') : t('compare.female')}</Text>
+                  <Text style={styles.statLabel}>{t('compare.gender')}</Text>
+                  <Text style={styles.statValue}>{rightMLA.gender === 'M' ? t('compare.male') : t('compare.female')}</Text>
                 </View>
-                <StatCompare label="Terms" leftValue={leftMLA.terms} rightValue={rightMLA.terms} />
+                <StatCompare label={t('compare.terms')} leftValue={leftMLA.terms} rightValue={rightMLA.terms} />
               </>
             )}
 
@@ -294,7 +296,7 @@ export default function CompareSheet({ visible, initialAcNo, onClose }: CompareS
             {leftHistory.length > 0 && rightHistory.length > 0 && (
               <>
                 <View style={styles.sectionDivider}>
-                  <Text style={styles.sectionLabel}>Historical Comparison</Text>
+                  <Text style={styles.sectionLabel}>{t('compare.historical')}</Text>
                 </View>
                 {leftHistory.map((lh) => {
                   const rh = rightHistory.find((r) => r.year === lh.year);

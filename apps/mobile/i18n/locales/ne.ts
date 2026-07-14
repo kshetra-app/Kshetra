@@ -721,6 +721,18 @@ const ne: PartialTranslationKeys = {
     systemDefault: 'प्रणाली पूर्वनिर्धारित',
     changeConfirm: 'भाषा परिवर्तन गरेर {{language}} राख्ने हो?',
   },
+
+  // ── Constituency Tab Bar ──────────────────────────────────
+  constituencyTabBar: { overview: 'अवलोकन', issues: 'मुद्दा', pulse: 'नाडी', news: 'समाचार', history: 'इतिहास', xray: 'एक्स-रे' },
+  compare: { title: 'तुलना', selectA: 'A छान्नुहोस्', selectB: 'B छान्नुहोस्', selectConstituency: 'निर्वाचन क्षेत्र छान्नुहोस्', election: 'निर्वाचन', winnerVotes: 'विजेता मत', margin: 'अन्तर', demographics: 'जनसांख्यिकी', population: 'जनसंख्या', totalVoters: 'कुल मतदाता', literacy: 'साक्षरता', mlaProfile: 'MLA प्रोफाइल', gender: 'लिङ्ग', male: 'पुरुष', female: 'महिला', terms: 'कार्यकाल', historical: 'ऐतिहासिक तुलना' },
+  export: { title: 'निर्यात ड्यासबोर्ड', dataScope: 'डेटा दायरा', currentView: 'हालको दृश्य', allData: 'सबै डेटा', upgradeRequired: 'अपग्रेड आवश्यक', failed: 'निर्यात असफल', errorOccurred: 'एउटा त्रुटि भयो।' },
+  aspirantReg: { title: 'आकांक्षी बन्नुहोस्', publicName: 'सार्वजनिक नाम', nameRequired: 'नाम आवश्यक', standFor: 'तपाईं के लागि उभिनुहुन्छ?', targetConstituency: 'लक्ष्य निर्वाचन क्षेत्र', stateLabel: 'राज्य', partyMember: 'पार्टी सदस्य', createProfile: 'मेरो आकांक्षी प्रोफाइल बनाउनुहोस्', welcomeTitle: 'स्वागत, आकांक्षी!', letsGo: 'सुरु गरौं' },
+  kycSheet: { title: 'योगदानकर्ता प्रमाणीकरण', verified: 'प्रमाणित!', personalInfo: 'व्यक्तिगत जानकारी', fullName: 'पूरा कानूनी नाम *', phone: 'फोन नम्बर *', selfieSection: 'सेल्फी प्रमाणीकरण', takeSelfie: 'सेल्फी लिनुहोस्', agreement: 'जवाफदेहिता सम्झौता', agreeAndVerify: 'सहमत र प्रमाणित गर्नुहोस्' },
+  contentGate: { flag: 'फ्ल्याग', alert: 'चेतावनी', flagContent: 'सामग्री फ्ल्याग गर्नुहोस्', raiseAlert: 'चेतावनी पठाउनुहोस्', category: 'वर्ग', submitFlag: 'फ्ल्याग पेश गर्नुहोस्' },
+  shortsPlayer: { branding: 'सर्ट्स', videoUnavailable: 'भिडियो उपलब्ध छैन', openYouTube: 'YouTubeमा खोल्नुहोस्', share: 'साझा', approve: 'स्वीकृति', skip: 'छोड्नुहोस्' },
+  uploadShort: { title: 'राजनीतिक सर्ट अपलोड', creatorVerification: 'सिर्जक प्रमाणीकरण आवश्यक', startVerification: 'सिर्जक प्रमाणीकरण सुरु गर्नुहोस्', maybeLater: 'पछि', inputTitle: 'शीर्षक', inputDescription: 'विवरण', uploadButton: 'निर्वाचन क्षेत्रमा अपलोड' },
+  moduleDetail: { keyTakeaways: 'मुख्य कुराहरू', knowledgeCheck: 'ज्ञान जाँच', tryAgain: 'फेरि प्रयास गर्नुहोस्', sources: 'स्रोतहरू र थप पढ्नुहोस्', moduleCompleted: 'मोड्युल पूरा', submitQuiz: 'जवाफ पेश गर्नुहोस्', markComplete: 'पूरा चिन्ह लगाउनुहोस्' },
+  outreachPanel: { compose: 'लेख्नुहोस्', history: 'इतिहास', templates: 'टेम्प्लेट', channel: 'च्यानल', audience: 'दर्शक', message: 'सन्देश', delivery: 'डेलिभरी', sendNow: 'अहिले पठाउनुहोस्', recipients: 'प्राप्तकर्ता', noBroadcasts: 'अहिलेसम्म कुनै प्रसारण छैन', cancel: 'रद्द गर्नुहोस्', sendBroadcast: 'प्रसारण पठाउनुहोस्' },
 };
 
 export default ne;

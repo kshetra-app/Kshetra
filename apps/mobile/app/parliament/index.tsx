@@ -3,6 +3,7 @@
  * and state-wise parliamentary representation.
  */
 import React, { useMemo, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import {
   View,
   Text,
@@ -27,6 +28,7 @@ import { useActiveStateStore } from '../../stores/activeState';
 type TabType = 'overview' | 'lok_sabha' | 'rajya_sabha';
 
 export default function ParliamentScreen() {
+  const { t } = useTranslation();
   const router = useRouter();
   const selectedState = useActiveStateStore((s) => s.stateCode);
   const [tab, setTab] = useState<TabType>('overview');
@@ -73,19 +75,19 @@ export default function ParliamentScreen() {
         <Pressable onPress={() => router.back()} style={styles.backBtn}>
           <Ionicons name="arrow-back" size={22} color="#FFFFFF" />
         </Pressable>
-        <Text style={styles.headerTitle}>Parliament</Text>
+        <Text style={styles.headerTitle}>{t('parliament.screenTitle')}</Text>
       </View>
 
       {/* Tabs */}
       <View style={styles.tabRow}>
-        {(['overview', 'lok_sabha', 'rajya_sabha'] as TabType[]).map((t) => (
+        {(['overview', 'lok_sabha', 'rajya_sabha'] as TabType[]).map((tabKey) => (
           <Pressable
-            key={t}
-            style={[styles.tabBtn, tab === t && styles.tabBtnActive]}
-            onPress={() => setTab(t)}
+            key={tabKey}
+            style={[styles.tabBtn, tab === tabKey && styles.tabBtnActive]}
+            onPress={() => setTab(tabKey)}
           >
-            <Text style={[styles.tabText, tab === t && styles.tabTextActive]}>
-              {t === 'overview' ? 'Overview' : t === 'lok_sabha' ? 'Lok Sabha' : 'Rajya Sabha'}
+            <Text style={[styles.tabText, tab === tabKey && styles.tabTextActive]}>
+              {tabKey === 'overview' ? t('parliament.tabOverview') : tabKey === 'lok_sabha' ? t('parliament.tabLokSabha') : t('parliament.tabRajyaSabha')}
             </Text>
           </Pressable>
         ))}

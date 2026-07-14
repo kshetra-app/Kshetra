@@ -3,6 +3,7 @@
  * Shows PDI score, status breakdown donut, category distribution, top delivered/broken.
  */
 import React, { useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 import { View, Text, StyleSheet } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { getPartyColor } from '../lib/constants';
@@ -19,10 +20,11 @@ interface GovernmentReportCardProps {
 }
 
 export default React.memo(function GovernmentReportCard({ data }: GovernmentReportCardProps) {
+  const { t } = useTranslation();
   const partyColor = getPartyColor(data.party);
 
   const pdiColor = data.pdi >= 70 ? '#10B981' : data.pdi >= 40 ? '#F59E0B' : '#EF4444';
-  const pdiLabel = data.pdi >= 70 ? 'Good' : data.pdi >= 40 ? 'Average' : 'Poor';
+  const pdiLabel = data.pdi >= 70 ? t('govReportCard.pdiGood') : data.pdi >= 40 ? t('govReportCard.pdiAverage') : t('govReportCard.pdiPoor');
 
   const statusEntries = useMemo(
     () =>
@@ -45,13 +47,13 @@ export default React.memo(function GovernmentReportCard({ data }: GovernmentRepo
       {/* Header */}
       <View style={styles.header}>
         <View>
-          <Text style={styles.headerTitle}>Government Report Card</Text>
+          <Text style={styles.headerTitle}>{t('govReportCard.title')}</Text>
           <View style={styles.headerMeta}>
             <View style={[styles.partyBadge, { backgroundColor: partyColor + '30' }]}>
               <Text style={[styles.partyText, { color: partyColor }]}>{data.party}</Text>
             </View>
-            <Text style={styles.metaText}>{data.electionYear} Manifesto</Text>
-            <Text style={styles.metaText}>{data.totalPromises} promises tracked</Text>
+            <Text style={styles.metaText}>{data.electionYear} {t('govReportCard.manifesto')}</Text>
+            <Text style={styles.metaText}>{t('govReportCard.promisesTracked', { count: data.totalPromises })}</Text>
           </View>
         </View>
       </View>
@@ -65,18 +67,17 @@ export default React.memo(function GovernmentReportCard({ data }: GovernmentRepo
         <View style={styles.pdiInfo}>
           <Text style={[styles.pdiRating, { color: pdiColor }]}>{pdiLabel}</Text>
           <Text style={styles.pdiDescription}>
-            Promise Delivery Index measures how well the government has fulfilled its election commitments.
-            100 = all delivered, 0 = nothing done.
+            {t('govReportCard.pdiDescription')}
           </Text>
           <Text style={styles.pdiAvg}>
-            Avg. delivery: {data.averageDeliveryPercent}%
+            {t('govReportCard.avgDelivery')} {data.averageDeliveryPercent}%
           </Text>
         </View>
       </View>
 
       {/* Status Breakdown */}
       <View style={styles.section}>
-        <Text style={styles.sectionTitle}>Status Breakdown</Text>
+        <Text style={styles.sectionTitle}>{t('govReportCard.statusBreakdown')}</Text>
         <View style={styles.statusGrid}>
           {statusEntries.map(([status, count]) => {
             const config = PROMISE_STATUS_CONFIG[status];
@@ -103,7 +104,7 @@ export default React.memo(function GovernmentReportCard({ data }: GovernmentRepo
 
       {/* Category Distribution */}
       <View style={styles.section}>
-        <Text style={styles.sectionTitle}>By Category</Text>
+        <Text style={styles.sectionTitle}>{t('govReportCard.byCategory')}</Text>
         <View style={styles.categoryGrid}>
           {categoryEntries.map(([cat, count]) => {
             const config = PROMISE_CATEGORY_CONFIG[cat];
@@ -123,7 +124,7 @@ export default React.memo(function GovernmentReportCard({ data }: GovernmentRepo
         <View style={styles.section}>
           <View style={styles.topHeader}>
             <Ionicons name="checkmark-circle" size={14} color="#10B981" />
-            <Text style={[styles.sectionTitle, { color: '#10B981' }]}>Top Delivered</Text>
+            <Text style={[styles.sectionTitle, { color: '#10B981' }]}>{t('govReportCard.topDelivered')}</Text>
           </View>
           {data.topDelivered.slice(0, 3).map((p) => (
             <Text key={p.id} style={styles.topItem}>
@@ -138,7 +139,7 @@ export default React.memo(function GovernmentReportCard({ data }: GovernmentRepo
         <View style={styles.section}>
           <View style={styles.topHeader}>
             <Ionicons name="close-circle" size={14} color="#EF4444" />
-            <Text style={[styles.sectionTitle, { color: '#EF4444' }]}>Broken Promises</Text>
+            <Text style={[styles.sectionTitle, { color: '#EF4444' }]}>{t('govReportCard.brokenPromises')}</Text>
           </View>
           {data.topBroken.slice(0, 3).map((p) => (
             <Text key={p.id} style={styles.topItemBroken}>
@@ -150,7 +151,7 @@ export default React.memo(function GovernmentReportCard({ data }: GovernmentRepo
 
       {/* Disclaimer */}
       <Text style={styles.disclaimer}>
-        Based on publicly verifiable data. Citizens can submit evidence to verify or dispute status.
+        {t('govReportCard.disclaimer')}
       </Text>
     </View>
   );

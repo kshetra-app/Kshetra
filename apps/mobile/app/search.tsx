@@ -1,4 +1,5 @@
 import { useState, useCallback, useMemo, useRef, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import {
   View,
   Text,
@@ -30,6 +31,7 @@ const TYPE_CONFIG: Record<SearchResultType, { icon: string; color: string; label
 
 export default function GlobalSearchScreen() {
   const router = useRouter();
+  const { t } = useTranslation();
   const [query, setQuery] = useState('');
   const inputRef = useRef<TextInput>(null);
   const recents = useRecentsStore((s) => s.recents);
@@ -117,7 +119,7 @@ export default function GlobalSearchScreen() {
           <TextInput
             ref={inputRef}
             style={styles.input}
-            placeholder="Search constituencies, MLAs, issues..."
+            placeholder={t('search.placeholder')}
             placeholderTextColor="#4B5563"
             value={query}
             onChangeText={setQuery}
@@ -137,7 +139,7 @@ export default function GlobalSearchScreen() {
         <View style={styles.resultsList}>
           {results.length > 0 ? (
             <>
-              <Text style={styles.resultCount}>{results.length} results</Text>
+              <Text style={styles.resultCount}>{t('search.resultCount', { count: results.length })}</Text>
               <FlashList
                 data={results}
                 renderItem={renderResult}
@@ -148,7 +150,7 @@ export default function GlobalSearchScreen() {
           ) : (
             <View style={styles.emptyState}>
               <Ionicons name="search" size={40} color="#374151" />
-              <Text style={styles.emptyText}>No results for "{query}"</Text>
+              <Text style={styles.emptyText}>{t('search.noResults')} "{query}"</Text>
             </View>
           )}
         </View>
@@ -158,9 +160,9 @@ export default function GlobalSearchScreen() {
           {recents.length > 0 && (
             <View style={styles.section}>
               <View style={styles.sectionHeader}>
-                <Text style={styles.sectionTitle}>Recent</Text>
+                <Text style={styles.sectionTitle}>{t('search.recentSearches')}</Text>
                 <Pressable onPress={clearRecents}>
-                  <Text style={styles.clearText}>Clear</Text>
+                  <Text style={styles.clearText}>{t('search.clearRecent')}</Text>
                 </Pressable>
               </View>
               {recents.slice(0, 5).map((r) => (
@@ -179,7 +181,7 @@ export default function GlobalSearchScreen() {
 
           {/* Suggestions */}
           <View style={styles.section}>
-            <Text style={styles.sectionTitle}>Suggested</Text>
+            <Text style={styles.sectionTitle}>{t('ai.suggestions')}</Text>
             <View style={styles.suggestionsWrap}>
               {suggestions.map((s) => (
                 <Pressable key={s} style={styles.suggestionChip} onPress={() => handleSuggestion(s)}>
@@ -191,7 +193,7 @@ export default function GlobalSearchScreen() {
 
           {/* Search tips */}
           <View style={styles.section}>
-            <Text style={styles.sectionTitle}>Search Tips</Text>
+            <Text style={styles.sectionTitle}>{t('search.tryDifferent')}</Text>
             <View style={styles.tipCard}>
               <Text style={styles.tipText}>Try searching by:</Text>
               <Text style={styles.tipExample}>• Constituency name: "Jubilee Hills"</Text>

@@ -1,4 +1,5 @@
 import { useState, useMemo, useCallback } from 'react';
+import { useTranslation } from 'react-i18next';
 import { View, Text, StyleSheet, ScrollView, Pressable, RefreshControl } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { Stack } from 'expo-router';
@@ -10,14 +11,15 @@ import ManifestoCard from '../../components/ManifestoCard';
 
 type Tab = 'politicians' | 'events' | 'manifestos' | 'surveys';
 
-const TABS: { key: Tab; label: string; icon: string }[] = [
-  { key: 'politicians', label: 'Politicians', icon: 'people' },
-  { key: 'events', label: 'Events', icon: 'calendar' },
-  { key: 'manifestos', label: 'Manifestos', icon: 'document-text' },
-  { key: 'surveys', label: 'Surveys', icon: 'bar-chart' },
+const TAB_KEYS: { key: Tab; i18nKey: string; icon: string }[] = [
+  { key: 'politicians', i18nKey: 'politicianPortal.tabPoliticians', icon: 'people' },
+  { key: 'events', i18nKey: 'politicianPortal.tabEvents', icon: 'calendar' },
+  { key: 'manifestos', i18nKey: 'politicianPortal.tabManifestos', icon: 'document-text' },
+  { key: 'surveys', i18nKey: 'politicianPortal.tabSurveys', icon: 'bar-chart' },
 ];
 
 export default function PoliticianPortalScreen() {
+  const { t } = useTranslation();
   const [activeTab, setActiveTab] = useState<Tab>('politicians');
   const [refreshing, setRefreshing] = useState(false);
   const insets = useSafeAreaInsets();
@@ -41,14 +43,14 @@ export default function PoliticianPortalScreen() {
 
   return (
     <View style={styles.container}>
-      <Stack.Screen options={{ title: 'Politician Portal', headerShown: true, headerStyle: { backgroundColor: '#0A0A1A' }, headerTintColor: '#FFFFFF' }} />
+      <Stack.Screen options={{ title: t('politicianPortal.screenTitle'), headerShown: true, headerStyle: { backgroundColor: '#0A0A1A' }, headerTintColor: '#FFFFFF' }} />
 
       {/* Tab Bar */}
       <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.tabBar} contentContainerStyle={styles.tabBarContent}>
-        {TABS.map((tab) => (
+        {TAB_KEYS.map((tab) => (
           <Pressable key={tab.key} style={[styles.tab, activeTab === tab.key && styles.tabActive]} onPress={() => setActiveTab(tab.key)}>
             <Ionicons name={(activeTab === tab.key ? tab.icon : `${tab.icon}-outline`) as any} size={16} color={activeTab === tab.key ? '#4F8EF7' : '#6B7280'} />
-            <Text style={[styles.tabLabel, activeTab === tab.key && styles.tabLabelActive]}>{tab.label}</Text>
+            <Text style={[styles.tabLabel, activeTab === tab.key && styles.tabLabelActive]}>{t(tab.i18nKey)}</Text>
           </Pressable>
         ))}
       </ScrollView>
@@ -56,7 +58,7 @@ export default function PoliticianPortalScreen() {
       <ScrollView style={styles.content} refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor="#4F8EF7" />}>
         {activeTab === 'politicians' && (
           <>
-            <Text style={styles.sectionTitle}>Registered Politicians</Text>
+            <Text style={styles.sectionTitle}>{t('politicianPortal.registeredPoliticians')}</Text>
             {politicians.map((p) => (
               <PoliticianPortalCard key={p.id} politician={p} />
             ))}
@@ -67,13 +69,13 @@ export default function PoliticianPortalScreen() {
           <>
             {upcomingEvents.length > 0 && (
               <View>
-                <Text style={styles.sectionTitle}>Upcoming Events</Text>
+                <Text style={styles.sectionTitle}>{t('politicianPortal.upcomingEvents')}</Text>
                 {upcomingEvents.map((e) => (
                   <EventCard key={e.id} event={e} onRSVP={() => rsvpEvent(e.id)} />
                 ))}
               </View>
             )}
-            <Text style={styles.sectionTitle}>All Events</Text>
+            <Text style={styles.sectionTitle}>{t('politicianPortal.allEvents')}</Text>
             {events.map((e) => (
               <EventCard key={e.id} event={e} />
             ))}
@@ -82,7 +84,7 @@ export default function PoliticianPortalScreen() {
 
         {activeTab === 'manifestos' && (
           <>
-            <Text style={styles.sectionTitle}>E-Manifestos</Text>
+            <Text style={styles.sectionTitle}>{t('politicianPortal.eManifestos')}</Text>
             {manifestos.map((m) => (
               <ManifestoCard key={m.id} manifesto={m} />
             ))}
@@ -91,11 +93,11 @@ export default function PoliticianPortalScreen() {
 
         {activeTab === 'surveys' && (
           <>
-            <Text style={styles.sectionTitle}>Opinion Surveys</Text>
+            <Text style={styles.sectionTitle}>{t('politicianPortal.opinionSurveys')}</Text>
             {surveys.map((s) => (
               <View key={s.id} style={styles.surveyCard}>
                 <Text style={styles.surveyQuestion}>{s.title}</Text>
-                <Text style={styles.surveyMeta}>{s.description} · {s.responseCount} responses</Text>
+                <Text style={styles.surveyMeta}>{s.description} · {t('politicianPortal.responsesCount', { count: s.responseCount })}</Text>
                 {s.questions.slice(0, 3).map((q) => (
                   <View key={q.id} style={styles.optionRow}>
                     <Text style={styles.optionLabel} numberOfLines={1}>{q.text}</Text>
@@ -105,7 +107,7 @@ export default function PoliticianPortalScreen() {
                   </View>
                 ))}
                 {s.results && (
-                  <Text style={styles.resultsLabel}>{s.results.totalResponses} completed responses</Text>
+                  <Text style={styles.resultsLabel}>{t('politicianPortal.completedResponses', { count: s.results.totalResponses })}</Text>
                 )}
               </View>
             ))}

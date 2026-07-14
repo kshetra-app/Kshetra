@@ -1,4 +1,5 @@
 import { useState, useRef, useCallback, useEffect, useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 import {
   View,
   Text,
@@ -39,6 +40,7 @@ export default function ShortsPlayerModal({
   initialIndex,
   onClose,
 }: ShortsPlayerModalProps) {
+  const { t } = useTranslation();
   const insets = useSafeAreaInsets();
   const { width: screenWidth, height: screenHeight } = useWindowDimensions();
   const [currentIndex, setCurrentIndex] = useState(initialIndex);
@@ -168,6 +170,7 @@ function ShortPageItem({
   onClose,
   incrementViews,
 }: ShortPageItemProps) {
+  const { t } = useTranslation();
   const insets = useSafeAreaInsets();
   const [webViewLoading, setWebViewLoading] = useState(true);
   const [videoError, setVideoError] = useState(false);
@@ -237,7 +240,7 @@ function ShortPageItem({
   const handleFlagAction = useCallback(() => {
     onFlag();
     setShowCurationPrompt(false);
-    Platform.OS !== 'web' ? Alert.alert('Reported', 'Thank you for reporting this video. It is under curation audit.') : null;
+    Platform.OS !== 'web' ? Alert.alert(t('shortsPlayer.alertReportedTitle'), t('shortsPlayer.alertReportedMessage')) : null;
   }, [onFlag]);
 
   const handleSkipCuration = useCallback(() => {
@@ -245,7 +248,7 @@ function ShortPageItem({
   }, []);
 
   const handleNativeShare = useCallback(() => {
-    Platform.OS !== 'web' ? Alert.alert('Share Link Created', `Shared Short: ${item.title}`) : null;
+    Platform.OS !== 'web' ? Alert.alert(t('shortsPlayer.alertShareTitle'), t('shortsPlayer.alertShareMessage', { title: item.title })) : null;
   }, [item.title]);
 
   const handlePostComment = useCallback(() => {
@@ -356,19 +359,19 @@ function onYouTubeIframeAPIReady(){
       {videoError && (
         <View style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: '#000', justifyContent: 'center', alignItems: 'center', paddingHorizontal: 24 }}>
           <Ionicons name="alert-circle" size={48} color="#EF4444" />
-          <Text style={{ color: '#FFFFFF', fontSize: 16, fontWeight: '700', marginTop: 12, textAlign: 'center' }}>Video Unavailable</Text>
+          <Text style={{ color: '#FFFFFF', fontSize: 16, fontWeight: '700', marginTop: 12, textAlign: 'center' }}>{t('shortsPlayer.videoUnavailable')}</Text>
           <Text style={{ color: '#9CA3AF', fontSize: 13, textAlign: 'center', marginTop: 8, lineHeight: 18 }}>
-            This video couldn't be loaded in-app. You can watch it directly on YouTube.
+            {t('shortsPlayer.videoUnavailableDesc')}
           </Text>
           <Pressable
             onPress={() => Linking.openURL(`https://www.youtube.com/watch?v=${videoId}`)}
             style={{ backgroundColor: '#FF0000', borderRadius: 10, paddingHorizontal: 24, paddingVertical: 12, marginTop: 20, flexDirection: 'row', alignItems: 'center', gap: 8 }}
           >
             <Ionicons name="logo-youtube" size={20} color="#FFFFFF" />
-            <Text style={{ color: '#FFFFFF', fontWeight: '800', fontSize: 14 }}>Open in YouTube</Text>
+            <Text style={{ color: '#FFFFFF', fontWeight: '800', fontSize: 14 }}>{t('shortsPlayer.openYouTube')}</Text>
           </Pressable>
           <Pressable onPress={handleRetry} style={{ marginTop: 14, paddingVertical: 8, paddingHorizontal: 16 }}>
-            <Text style={{ color: '#4F8EF7', fontWeight: '700', fontSize: 13 }}>Retry</Text>
+            <Text style={{ color: '#4F8EF7', fontWeight: '700', fontSize: 13 }}>{t('shortsPlayer.retry')}</Text>
           </Pressable>
         </View>
       )}
@@ -380,7 +383,7 @@ function onYouTubeIframeAPIReady(){
         </Pressable>
         <View style={styles.brandingRow}>
           <Ionicons name="play-circle" size={18} color="#FF4444" />
-          <Text style={styles.brandingText}>Shorts</Text>
+          <Text style={styles.brandingText}>{t('shortsPlayer.branding')}</Text>
         </View>
         <View style={{ width: 36 }} />
       </View>
@@ -410,7 +413,7 @@ function onYouTubeIframeAPIReady(){
         {/* Share Button */}
         <Pressable style={styles.sidebarBtn} onPress={handleNativeShare}>
           <Ionicons name="share-social-outline" size={26} color="#FFFFFF" />
-          <Text style={styles.sidebarCount}>Share</Text>
+          <Text style={styles.sidebarCount}>{t('shortsPlayer.share')}</Text>
         </Pressable>
 
         {/* Flag Button */}
@@ -481,7 +484,7 @@ function onYouTubeIframeAPIReady(){
           <View style={styles.curationPromptContent}>
             <View style={styles.curationPromptHeader}>
               <Ionicons name="shield-checkmark" size={20} color="#F59E0B" />
-              <Text style={styles.curationPromptTitle}>Democratic Local Curation</Text>
+              <Text style={styles.curationPromptTitle}>{t('shortsPlayer.democraticCuration')}</Text>
             </View>
             <Text style={styles.curationPromptText}>
               {item.visibilityLevel === 'constituency'
@@ -491,16 +494,16 @@ function onYouTubeIframeAPIReady(){
             <View style={styles.curationPromptActions}>
               <Pressable style={[styles.promptBtn, styles.promptBtnApprove]} onPress={handleApproveAction}>
                 <Ionicons name="thumbs-up" size={16} color="#000000" />
-                <Text style={styles.promptBtnApproveText}>Approve</Text>
+                <Text style={styles.promptBtnApproveText}>{t('shortsPlayer.approve')}</Text>
               </Pressable>
               
               <Pressable style={[styles.promptBtn, styles.promptBtnFlag]} onPress={handleFlagAction}>
                 <Ionicons name="flag" size={16} color="#FFFFFF" />
-                <Text style={styles.promptBtnFlagText}>Flag</Text>
+                <Text style={styles.promptBtnFlagText}>{t('shortsPlayer.flagShort')}</Text>
               </Pressable>
               
               <Pressable style={[styles.promptBtn, styles.promptBtnSkip]} onPress={handleSkipCuration}>
-                <Text style={styles.promptBtnSkipText}>Skip</Text>
+                <Text style={styles.promptBtnSkipText}>{t('shortsPlayer.skip')}</Text>
               </Pressable>
             </View>
           </View>
@@ -520,7 +523,7 @@ function onYouTubeIframeAPIReady(){
         >
           <View style={styles.commentsSheet}>
             <View style={styles.commentsHeader}>
-              <Text style={styles.commentsTitle}>Comments ({comments.length})</Text>
+              <Text style={styles.commentsTitle}>{t('shortsPlayer.comments')} ({comments.length})</Text>
               <Pressable onPress={() => setCommentsVisible(false)} hitSlop={12}>
                 <Ionicons name="close" size={24} color="#FFFFFF" />
               </Pressable>
@@ -550,7 +553,7 @@ function onYouTubeIframeAPIReady(){
             <View style={[styles.commentInputRow, { paddingBottom: Math.max(insets.bottom, 12) }]}>
               <TextInput
                 style={styles.commentInput}
-                placeholder="Add verified comment..."
+                placeholder={t('shortsPlayer.addComment')}
                 placeholderTextColor="#6B7280"
                 value={commentText}
                 onChangeText={setCommentText}

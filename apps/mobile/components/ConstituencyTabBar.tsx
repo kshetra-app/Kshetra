@@ -1,4 +1,5 @@
 import { useRef, useEffect, useCallback } from 'react';
+import { useTranslation } from 'react-i18next';
 import { View, Text, StyleSheet, Pressable, ScrollView } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 
@@ -18,12 +19,12 @@ interface TabDef {
 }
 
 const TABS: TabDef[] = [
-  { key: 'overview', label: 'Overview', icon: 'home' },
-  { key: 'issues', label: 'Issues', icon: 'warning' },
-  { key: 'pulse', label: 'Pulse', icon: 'chatbubbles' },
-  { key: 'news', label: 'News', icon: 'newspaper' },
-  { key: 'history', label: 'History', icon: 'time' },
-  { key: 'xray', label: 'X-Ray', icon: 'document-text' },
+  { key: 'overview', label: 'constituencyTabBar.overview', icon: 'home' },
+  { key: 'issues', label: 'constituencyTabBar.issues', icon: 'warning' },
+  { key: 'pulse', label: 'constituencyTabBar.pulse', icon: 'chatbubbles' },
+  { key: 'news', label: 'constituencyTabBar.news', icon: 'newspaper' },
+  { key: 'history', label: 'constituencyTabBar.history', icon: 'time' },
+  { key: 'xray', label: 'constituencyTabBar.xray', icon: 'document-text' },
 ];
 
 interface ConstituencyTabBarProps {
@@ -41,6 +42,7 @@ export default function ConstituencyTabBar({
   pulseBadge,
   newsBadge,
 }: ConstituencyTabBarProps) {
+  const { t } = useTranslation();
   const scrollRef = useRef<ScrollView>(null);
   const tabRefs = useRef<Record<string, number>>({});
 
@@ -79,7 +81,7 @@ export default function ConstituencyTabBar({
                 color={isActive ? '#4F8EF7' : '#6B7280'}
               />
               <Text style={[styles.tabLabel, isActive && styles.tabLabelActive]}>
-                {tab.label}
+                {t(tab.label)}
               </Text>
               {badge !== undefined && badge > 0 && (
                 <View style={styles.badge}>

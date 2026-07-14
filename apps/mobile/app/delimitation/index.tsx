@@ -69,8 +69,7 @@ export default function DelimitationHub() {
           </View>
         </View>
         <Text style={styles.statusDesc}>
-          India's next delimitation exercise will redraw all constituency boundaries based on Census 2026 data.
-          This will affect every MLA, MP, political party, and voter in the country.
+          {t('delimitationExtended.statusDesc')}
         </Text>
       </View>
 
@@ -81,8 +80,8 @@ export default function DelimitationHub() {
       >
         <Ionicons name="flask" size={20} color="#FFFFFF" />
         <View style={{ flex: 1, marginLeft: 10 }}>
-          <Text style={styles.simCtaTitle}>Interactive Simulator</Text>
-          <Text style={styles.simCtaSub}>Adjust seats, compare modes, share results</Text>
+          <Text style={styles.simCtaTitle}>{t('delimitationExtended.interactiveSimulator')}</Text>
+          <Text style={styles.simCtaSub}>{t('delimitationExtended.simulatorSub')}</Text>
         </View>
         <Ionicons name="chevron-forward" size={18} color="#4F8EF7" />
       </Pressable>
@@ -97,17 +96,17 @@ export default function DelimitationHub() {
         <View style={styles.statCard}>
           <Ionicons name="time" size={20} color="#F59E0B" />
           <Text style={styles.statValue}>{events.length}</Text>
-          <Text style={styles.statLabel}>Timeline Events</Text>
+          <Text style={styles.statLabel}>{t('delimitationExtended.timelineEvents')}</Text>
         </View>
         <View style={styles.statCard}>
           <Ionicons name="checkmark-circle" size={20} color="#10B981" />
           <Text style={styles.statValue}>{verifiedCount}</Text>
-          <Text style={styles.statLabel}>Verified Events</Text>
+          <Text style={styles.statLabel}>{t('delimitationExtended.verifiedEvents')}</Text>
         </View>
         <View style={styles.statCard}>
           <Ionicons name="trending-up" size={20} color="#EF4444" />
           <Text style={styles.statValue}>{summary.totalGained}</Text>
-          <Text style={styles.statLabel}>Seats to Gain*</Text>
+          <Text style={styles.statLabel}>{t('delimitationExtended.seatsToGain')}</Text>
         </View>
       </View>
 
@@ -128,7 +127,7 @@ export default function DelimitationHub() {
       }
 
       {/* Recent timeline */}
-      <Text style={styles.sectionTitle}>Recent Events</Text>
+      <Text style={styles.sectionTitle}>{t('delimitationExtended.recentEvents')}</Text>
       <DelimitationTimeline events={timelineEvents} maxItems={5} compact />
 
       {/* Disclaimer */}
@@ -145,7 +144,7 @@ export default function DelimitationHub() {
     <View>
       <Text style={styles.sectionTitle}>{t('delimitation.projections')}</Text>
       <Text style={styles.sectionSubtitle}>
-        Based on equal-population principle using Census 2011 data
+        {t('delimitationExtended.projectionsBasis')}
       </Text>
 
       {/* Summary */}
@@ -164,7 +163,7 @@ export default function DelimitationHub() {
 
       {/* Gainers */}
       <Text style={styles.subHeading}>
-        <Ionicons name="trending-up" size={14} color="#10B981" /> States Gaining Seats
+        <Ionicons name="trending-up" size={14} color="#10B981" /> {t('delimitationExtended.statesGainingSeats')}
       </Text>
       {gainers.map((a) => (
         <SeatProjectionCard key={a.stateCode} allocation={a} />
@@ -172,7 +171,7 @@ export default function DelimitationHub() {
 
       {/* Losers */}
       <Text style={styles.subHeading}>
-        <Ionicons name="trending-down" size={14} color="#EF4444" /> States Losing Seats
+        <Ionicons name="trending-down" size={14} color="#EF4444" /> {t('delimitationExtended.statesLosingSeats')}
       </Text>
       {losers.map((a) => (
         <SeatProjectionCard key={a.stateCode} allocation={a} />
@@ -182,9 +181,9 @@ export default function DelimitationHub() {
 
   const renderTimeline = () => (
     <View>
-      <Text style={styles.sectionTitle}>Delimitation Timeline</Text>
+      <Text style={styles.sectionTitle}>{t('delimitationExtended.delimitationTimeline')}</Text>
       <Text style={styles.sectionSubtitle}>
-        Historical events and upcoming milestones
+        {t('delimitationExtended.timelineSubtitle')}
       </Text>
       <DelimitationTimeline events={timelineEvents} />
     </View>
@@ -192,43 +191,41 @@ export default function DelimitationHub() {
 
   const renderImpact = () => (
     <View>
-      <Text style={styles.sectionTitle}>Political Impact Analysis</Text>
+      <Text style={styles.sectionTitle}>{t('delimitationExtended.politicalImpactAnalysis')}</Text>
       <Text style={styles.sectionSubtitle}>
-        How delimitation affects parties, MLAs, and voters
+        {t('delimitationExtended.impactSubtitle')}
       </Text>
 
       {/* The political earthquake */}
       <View style={styles.impactCard}>
         <View style={styles.impactHeader}>
           <Ionicons name="alert-circle" size={20} color="#EF4444" />
-          <Text style={styles.impactTitle}>The North-South Divide</Text>
+          <Text style={styles.impactTitle}>{t('delimitationExtended.northSouthDivide')}</Text>
         </View>
         <Text style={styles.impactBody}>
-          Southern states (TN, KA, KL, TS, AP) that invested in family planning and reduced population
-          growth will LOSE seats. Northern states (UP, BR, RJ, MP) that didn't will GAIN massively.
-          This is the most politically sensitive aspect of delimitation.
+          {t('delimitationExtended.northSouthBody')}
         </Text>
         <View style={styles.impactStatsRow}>
           <View style={styles.impactStat}>
-            <Text style={[styles.impactStatValue, { color: '#10B981' }]}>North</Text>
-            <Text style={styles.impactStatLabel}>Gains 200+ seats</Text>
+            <Text style={[styles.impactStatValue, { color: '#10B981' }]}>{t('delimitationExtended.north')}</Text>
+            <Text style={styles.impactStatLabel}>{t('delimitationExtended.northGains')}</Text>
           </View>
           <View style={styles.impactStat}>
-            <Text style={[styles.impactStatValue, { color: '#EF4444' }]}>South</Text>
-            <Text style={styles.impactStatLabel}>Loses 100+ seats</Text>
+            <Text style={[styles.impactStatValue, { color: '#EF4444' }]}>{t('delimitationExtended.south')}</Text>
+            <Text style={styles.impactStatLabel}>{t('delimitationExtended.southLoses')}</Text>
           </View>
         </View>
       </View>
 
       {/* Per-state impact summaries */}
-      <Text style={styles.subHeading}>State-Level Impact</Text>
+      <Text style={styles.subHeading}>{t('delimitationExtended.stateLevelImpact')}</Text>
       {[...gainers.slice(0, 3), ...losers.slice(0, 3)].map((a) => {
         const isGain = a.seatChange > 0;
         return (
           <View key={a.stateCode} style={styles.impactRow}>
             <Text style={styles.impactRowState}>{a.stateName}</Text>
             <Text style={[styles.impactRowChange, { color: isGain ? '#10B981' : '#EF4444' }]}>
-              {isGain ? '+' : ''}{a.seatChange} seats
+              {isGain ? '+' : ''}{t('delimitationExtended.seats', { count: a.seatChange })}
             </Text>
             <Text style={styles.impactRowDetail}>
               {a.currentSeats} → {a.projectedSeats}
@@ -240,12 +237,12 @@ export default function DelimitationHub() {
       {/* What Kshetra provides */}
       <View style={styles.featureCard}>
         <Ionicons name="diamond" size={20} color="#F59E0B" />
-        <Text style={styles.featureTitle}>Coming Soon on KSHETRA</Text>
-        <Text style={styles.featureItem}>• "What Changes For You" — enter pin code, see impact</Text>
-        <Text style={styles.featureItem}>• MLA Risk Calculator — which MLAs lose safe seats</Text>
-        <Text style={styles.featureItem}>• Party Seat Projections — new boundaries, new estimates</Text>
-        <Text style={styles.featureItem}>• Boundary Overlay — old vs new on interactive map</Text>
-        <Text style={styles.featureItem}>• Real-time Gazette Monitor — alerts as proposals publish</Text>
+        <Text style={styles.featureTitle}>{t('delimitationExtended.comingSoon')}</Text>
+        <Text style={styles.featureItem}>{t('delimitationExtended.featureWhatChanges')}</Text>
+        <Text style={styles.featureItem}>{t('delimitationExtended.featureMLARisk')}</Text>
+        <Text style={styles.featureItem}>{t('delimitationExtended.featurePartyProjections')}</Text>
+        <Text style={styles.featureItem}>{t('delimitationExtended.featureBoundaryOverlay')}</Text>
+        <Text style={styles.featureItem}>{t('delimitationExtended.featureGazetteMonitor')}</Text>
       </View>
     </View>
   );
@@ -261,7 +258,7 @@ export default function DelimitationHub() {
         </Pressable>
         <View>
           <Text style={styles.headerTitle}>{t('delimitation.hubTitle')}</Text>
-          <Text style={styles.headerSubtitle}>India's Constituency Redraw Tracker</Text>
+          <Text style={styles.headerSubtitle}>{t('delimitationExtended.headerSubtitle')}</Text>
         </View>
         <View style={[styles.liveBadge, { backgroundColor: statusConfig.color + '20' }]}>
           <View style={[styles.liveDot, { backgroundColor: statusConfig.color }]} />

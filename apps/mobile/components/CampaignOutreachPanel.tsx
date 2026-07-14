@@ -1,4 +1,5 @@
 import { useMemo, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import {
   View,
   Text,
@@ -31,6 +32,7 @@ const STATUS_META: Record<Broadcast['status'], { label: string; color: string }>
 };
 
 export default function CampaignOutreachPanel() {
+  const { t } = useTranslation();
   const [subTab, setSubTab] = useState<SubTab>('compose');
   const broadcasts = useOutreachStore((s) => s.broadcasts);
 
@@ -45,7 +47,7 @@ export default function CampaignOutreachPanel() {
             onPress={() => setSubTab(k)}
           >
             <Text style={[styles.segmentText, subTab === k && styles.segmentTextActive]}>
-              {k === 'compose' ? 'Compose' : k === 'history' ? `History (${broadcasts.length})` : 'Templates'}
+              {k === 'compose' ? t('outreachPanel.compose') : k === 'history' ? `${t('outreachPanel.history')} (${broadcasts.length})` : t('outreachPanel.templates')}
             </Text>
           </Pressable>
         ))}
@@ -65,6 +67,7 @@ function Composer({ onSent }: { onSent: () => void }) {
   const templates = useOutreachStore((s) => s.templates);
   const createBroadcast = useOutreachStore((s) => s.createBroadcast);
 
+  const { t } = useTranslation();
   const [channel, setChannel] = useState<OutreachChannel>('whatsapp');
   const [segment, setSegment] = useState<AudienceSegment>(segments[0]);
   const [templateId, setTemplateId] = useState<string | undefined>();
@@ -99,12 +102,12 @@ function Composer({ onSent }: { onSent: () => void }) {
     const finalName = name.trim() || `${activeChannel.label} to ${segment.name}`;
     const when = scheduledAt();
     Alert.alert(
-      when ? 'Schedule broadcast?' : 'Send broadcast?',
-      `${activeChannel.label} · ${fmt(segment.size)} recipients\n\nNote: This is a simulation — no real messages are sent. Live sending will require provider credentials${channel === 'sms' ? ' and DLT approval' : ''}.`,
+      when ? t('outreachPanel.scheduleBroadcastConfirm') : t('outreachPanel.sendBroadcastConfirm'),
+      `${activeChannel.label} · ${fmt(segment.size)} ${t('outreachPanel.recipients')}\n\n${t('outreachPanel.simulationNote')}${channel === 'sms' ? t('outreachPanel.dltApproval') : ''}.`,
       [
-        { text: 'Cancel', style: 'cancel' },
+        { text: t('outreachPanel.cancel'), style: 'cancel' },
         {
-          text: when ? 'Schedule' : 'Send now',
+          text: when ? t('outreachPanel.schedule') : t('outreachPanel.sendNow'),
           onPress: async () => {
             setSending(true);
             await createBroadcast({ name: finalName, channel, segment, templateId, body, scheduledAt: when });
@@ -123,12 +126,12 @@ function Composer({ onSent }: { onSent: () => void }) {
       <View style={styles.notice}>
         <Ionicons name="shield-checkmark" size={16} color="#F59E0B" />
         <Text style={styles.noticeText}>
-          Simulation mode. Real delivery needs provider setup{channel === 'sms' ? ' + DLT-registered templates' : ''}. Only message opted-in contacts.
+          Simulation mode. Real delivery needs provider setup{channel === 'sms' ? ' + DLT-registered templates' : ''}. {t('outreachPanel.optedInOnly')}
         </Text>
       </View>
 
       {/* Channel */}
-      <Text style={styles.label}>Channel</Text>
+      <Text style={styles.label}>{t('outreachPanel.channel')}</Text>
       <View style={styles.channelRow}>
         {CHANNELS.map((c) => {
           const active = channel === c.key;
@@ -147,7 +150,7 @@ function Composer({ onSent }: { onSent: () => void }) {
       <Text style={styles.hint}>{activeChannel.hint}</Text>
 
       {/* Audience */}
-      <Text style={styles.label}>Audience</Text>
+      <Text style={styles.label}>{t('outreachPanel.audience')}</Text>
       {segments.map((s) => {
         const active = segment.id === s.id;
         return (
@@ -165,7 +168,7 @@ function Composer({ onSent }: { onSent: () => void }) {
       {/* Templates */}
       {channelTemplates.length > 0 && (
         <>
-          <Text style={styles.label}>Template</Text>
+          <Text style={styles.label}>{t('outreachPanel.template')}</Text>
           <View style={styles.tplRow}>
             {channelTemplates.map((t) => {
               const active = templateId === t.id;
@@ -184,7 +187,7 @@ function Composer({ onSent }: { onSent: () => void }) {
       )}
 
       {/* Message */}
-      <Text style={styles.label}>Message</Text>
+      <Text style={styles.label}>{t('outreachPanel.message')}</Text>
       <TextInput
         style={styles.textArea}
         value={body}
@@ -207,7 +210,7 @@ function Composer({ onSent }: { onSent: () => void }) {
       </Text>
 
       {/* Campaign name */}
-      <Text style={styles.label}>Broadcast name (optional)</Text>
+      <Text style={styles.label}>{t('outreachPanel.broadcastName')}</Text>
       <TextInput
         style={styles.input}
         value={name}
@@ -217,9 +220,9 @@ function Composer({ onSent }: { onSent: () => void }) {
       />
 
       {/* Schedule */}
-      <Text style={styles.label}>Delivery</Text>
+      <Text style={styles.label}>{t('outreachPanel.delivery')}</Text>
       <View style={styles.tplRow}>
-        {([['now', 'Send now'], ['1h', 'In 1 hour'], ['3h', 'In 3 hours'], ['tomorrow', 'Tomorrow 9 AM']] as const).map(([k, lbl]) => (
+        {([['now', t('outreachPanel.sendNow')], ['1h', t('outreachPanel.in1Hour')], ['3h', t('outreachPanel.in3Hours')], ['tomorrow', t('outreachPanel.tomorrow9AM')]] as const).map(([k, lbl]) => (
           <Pressable key={k} style={[styles.tplChip, schedule === k && styles.tplChipActive]} onPress={() => setSchedule(k)}>
             <Text style={[styles.tplChipText, schedule === k && { color: '#FFF' }]}>{lbl}</Text>
           </Pressable>
@@ -230,17 +233,17 @@ function Composer({ onSent }: { onSent: () => void }) {
       <View style={styles.estimate}>
         <View style={styles.estItem}>
           <Text style={styles.estValue}>{fmt(segment.size)}</Text>
-          <Text style={styles.estLabel}>Recipients</Text>
+          <Text style={styles.estLabel}>{t('outreachPanel.recipients')}</Text>
         </View>
         <View style={styles.estDivider} />
         <View style={styles.estItem}>
           <Text style={styles.estValue}>{fmt(estCredits)}</Text>
-          <Text style={styles.estLabel}>Est. credits</Text>
+          <Text style={styles.estLabel}>{t('outreachPanel.estCredits')}</Text>
         </View>
         <View style={styles.estDivider} />
         <View style={styles.estItem}>
           <Text style={[styles.estValue, { color: activeChannel.color }]}>{activeChannel.label}</Text>
-          <Text style={styles.estLabel}>Channel</Text>
+          <Text style={styles.estLabel}>{t('outreachPanel.channel')}</Text>
         </View>
       </View>
 
@@ -250,7 +253,7 @@ function Composer({ onSent }: { onSent: () => void }) {
         ) : (
           <>
             <Ionicons name={schedule === 'now' ? 'send' : 'time'} size={18} color="#FFF" />
-            <Text style={styles.sendBtnText}>{schedule === 'now' ? 'Send Broadcast' : 'Schedule Broadcast'}</Text>
+            <Text style={styles.sendBtnText}>{schedule === 'now' ? t('outreachPanel.sendBroadcast') : t('outreachPanel.scheduleBroadcast')}</Text>
           </>
         )}
       </Pressable>
@@ -262,13 +265,14 @@ function Composer({ onSent }: { onSent: () => void }) {
 
 function History() {
   const broadcasts = useOutreachStore((s) => s.broadcasts);
+  const { t } = useTranslation();
   const cancelBroadcast = useOutreachStore((s) => s.cancelBroadcast);
 
   if (broadcasts.length === 0) {
     return (
       <View style={styles.empty}>
         <Ionicons name="paper-plane-outline" size={44} color="#1F2937" />
-        <Text style={styles.emptyText}>No broadcasts yet</Text>
+        <Text style={styles.emptyText}>{t('outreachPanel.noBroadcasts')}</Text>
       </View>
     );
   }
@@ -302,7 +306,7 @@ function History() {
                   Goes out {new Date(b.scheduledAt).toLocaleString('en-IN', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' })}
                 </Text>
                 <Pressable style={styles.cancelBtn} onPress={() => cancelBroadcast(b.id)}>
-                  <Text style={styles.cancelText}>Cancel</Text>
+                  <Text style={styles.cancelText}>{t('outreachPanel.cancel')}</Text>
                 </Pressable>
               </View>
             )}
@@ -345,6 +349,7 @@ function Stat({ label, value, sub, color }: { label: string; value: string; sub:
 // ── Templates ───────────────────────────────────────────────────────────────
 
 function Templates() {
+  const { t } = useTranslation();
   const templates = useOutreachStore((s) => s.templates);
   const addTemplate = useOutreachStore((s) => s.addTemplate);
   const deleteTemplate = useOutreachStore((s) => s.deleteTemplate);
@@ -356,7 +361,7 @@ function Templates() {
 
   const save = () => {
     if (!name.trim() || !body.trim()) {
-      Alert.alert('Missing fields', 'Give the template a name and a message body.');
+      Alert.alert(t('outreachPanel.missingFields'), t('outreachPanel.missingFieldsMessage'));
       return;
     }
     addTemplate({ name: name.trim(), channel, body: body.trim() });
@@ -367,7 +372,7 @@ function Templates() {
     <View style={styles.pad}>
       <Pressable style={styles.addBtn} onPress={() => setAdding((v) => !v)}>
         <Ionicons name={adding ? 'close' : 'add'} size={18} color="#4F8EF7" />
-        <Text style={styles.addBtnText}>{adding ? 'Close' : 'New template'}</Text>
+        <Text style={styles.addBtnText}>{adding ? t('outreachPanel.close') : t('outreachPanel.newTemplate')}</Text>
       </Pressable>
 
       {adding && (
@@ -388,7 +393,7 @@ function Templates() {
           <TextInput style={styles.textArea} value={body} onChangeText={setBody} placeholder="Body with {name}, {booth}…" placeholderTextColor="#4B5563" multiline />
           <Pressable style={styles.sendBtn} onPress={save}>
             <Ionicons name="save" size={16} color="#FFF" />
-            <Text style={styles.sendBtnText}>Save template</Text>
+            <Text style={styles.sendBtnText}>{t('outreachPanel.saveTemplate')}</Text>
           </Pressable>
         </View>
       )}

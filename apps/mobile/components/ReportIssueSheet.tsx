@@ -1,4 +1,5 @@
 import { useState, useRef, useEffect, useCallback } from 'react';
+import { useTranslation } from 'react-i18next';
 import {
   View,
   Text,
@@ -36,6 +37,7 @@ const CATEGORIES = Object.entries(ISSUE_CATEGORY_CONFIG) as [IssueCategory, type
 const SEVERITIES = Object.entries(SEVERITY_CONFIG) as [IssueSeverity, typeof SEVERITY_CONFIG[IssueSeverity]][];
 
 export default function ReportIssueSheet({ visible, onClose, onSubmit }: ReportIssueSheetProps) {
+  const { t } = useTranslation();
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
   const [category, setCategory] = useState<IssueCategory>('roads');
@@ -60,12 +62,12 @@ export default function ReportIssueSheet({ visible, onClose, onSubmit }: ReportI
 
   const pickFromGallery = useCallback(async () => {
     if (mediaUris.length >= MAX_MEDIA) {
-      Alert.alert('Limit reached', `You can add up to ${MAX_MEDIA} photos.`);
+      Alert.alert(t('reportIssueSheet.limitReached'), `You can add up to ${MAX_MEDIA} photos.`);
       return;
     }
     const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
     if (status !== 'granted') {
-      Alert.alert('Permission needed', 'Please allow photo access to add evidence.');
+      Alert.alert(t('reportIssueSheet.permissionNeeded'), t('reportIssueSheet.permissionMsg'));
       return;
     }
     const result = await ImagePicker.launchImageLibraryAsync({
@@ -81,12 +83,12 @@ export default function ReportIssueSheet({ visible, onClose, onSubmit }: ReportI
 
   const takePhoto = useCallback(async () => {
     if (mediaUris.length >= MAX_MEDIA) {
-      Alert.alert('Limit reached', `You can add up to ${MAX_MEDIA} photos.`);
+      Alert.alert(t('reportIssueSheet.limitReached'), `You can add up to ${MAX_MEDIA} photos.`);
       return;
     }
     const { status } = await ImagePicker.requestCameraPermissionsAsync();
     if (status !== 'granted') {
-      Alert.alert('Permission needed', 'Please allow camera access to capture evidence.');
+      Alert.alert(t('reportIssueSheet.permissionNeeded'), t('reportIssueSheet.permissionMsg'));
       return;
     }
     const result = await ImagePicker.launchCameraAsync({
@@ -165,13 +167,13 @@ export default function ReportIssueSheet({ visible, onClose, onSubmit }: ReportI
             <Pressable onPress={onClose} hitSlop={8}>
               <Ionicons name="close" size={24} color="#9CA3AF" />
             </Pressable>
-            <Text style={styles.headerTitle}>Report Issue</Text>
+            <Text style={styles.headerTitle}>{t('reportIssueSheet.title')}</Text>
             <Pressable
               style={[styles.submitButton, !canSubmit && styles.submitDisabled]}
               onPress={handleSubmit}
               disabled={!canSubmit}
             >
-              <Text style={styles.submitText}>Submit</Text>
+              <Text style={styles.submitText}>{t('reportIssueSheet.submit')}</Text>
             </Pressable>
           </View>
 
@@ -181,17 +183,17 @@ export default function ReportIssueSheet({ visible, onClose, onSubmit }: ReportI
               <View style={styles.constituencyBadge}>
                 <Ionicons name="location" size={14} color="#4F8EF7" />
                 <Text style={styles.constituencyBadgeText}>
-                  Reporting in {myHome.name}
+                  {t('reportIssueSheet.reportingIn')} {myHome.name}
                 </Text>
               </View>
             )}
 
             {/* Title */}
-            <Text style={styles.fieldLabel}>Title *</Text>
+            <Text style={styles.fieldLabel}>{t('reportIssueSheet.titleLabel')}</Text>
             <TextInput
               ref={titleRef}
               style={styles.titleInput}
-              placeholder="Brief description of the issue"
+              placeholder={t('reportIssueSheet.titlePlaceholder')}
               placeholderTextColor="#4B5563"
               value={title}
               onChangeText={setTitle}
@@ -200,10 +202,10 @@ export default function ReportIssueSheet({ visible, onClose, onSubmit }: ReportI
             <Text style={styles.charHint}>{title.length}/200</Text>
 
             {/* Description */}
-            <Text style={styles.fieldLabel}>Details</Text>
+            <Text style={styles.fieldLabel}>{t('reportIssueSheet.details')}</Text>
             <TextInput
               style={styles.descInput}
-              placeholder="Provide more context, location details, how long the issue has persisted..."
+              placeholder={t('reportIssueSheet.detailsPlaceholder')}
               placeholderTextColor="#4B5563"
               value={description}
               onChangeText={setDescription}
@@ -213,7 +215,7 @@ export default function ReportIssueSheet({ visible, onClose, onSubmit }: ReportI
             />
 
             {/* Category */}
-            <Text style={styles.fieldLabel}>Category *</Text>
+            <Text style={styles.fieldLabel}>{t('reportIssueSheet.categoryLabel')}</Text>
             <View style={styles.chipGrid}>
               {CATEGORIES.map(([key, config]) => {
                 const active = category === key;
@@ -234,7 +236,7 @@ export default function ReportIssueSheet({ visible, onClose, onSubmit }: ReportI
             </View>
 
             {/* Media Evidence */}
-            <Text style={styles.fieldLabel}>Evidence (photos)</Text>
+            <Text style={styles.fieldLabel}>{t('reportIssueSheet.evidencePhotos')}</Text>
             <View style={styles.mediaRow}>
               {mediaUris.map((uri, idx) => (
                 <View key={uri} style={styles.mediaThumbnailWrap}>
@@ -248,21 +250,21 @@ export default function ReportIssueSheet({ visible, onClose, onSubmit }: ReportI
                 <>
                   <Pressable style={styles.mediaAddButton} onPress={pickFromGallery}>
                     <Ionicons name="images" size={22} color="#4F8EF7" />
-                    <Text style={styles.mediaAddText}>Gallery</Text>
+                    <Text style={styles.mediaAddText}>{t('reportIssueSheet.gallery')}</Text>
                   </Pressable>
                   <Pressable style={styles.mediaAddButton} onPress={takePhoto}>
                     <Ionicons name="camera" size={22} color="#10B981" />
-                    <Text style={styles.mediaAddText}>Camera</Text>
+                    <Text style={styles.mediaAddText}>{t('reportIssueSheet.camera')}</Text>
                   </Pressable>
                 </>
               )}
             </View>
             {mediaUris.length > 0 && (
-              <Text style={styles.charHint}>{mediaUris.length}/{MAX_MEDIA} photos added</Text>
+              <Text style={styles.charHint}>{t('reportIssueSheet.photosAdded', { count: mediaUris.length })}</Text>
             )}
 
             {/* Severity */}
-            <Text style={styles.fieldLabel}>Severity</Text>
+            <Text style={styles.fieldLabel}>{t('reportIssueSheet.severity')}</Text>
             <View style={styles.severityRow}>
               {SEVERITIES.map(([key, config]) => {
                 const active = severity === key;

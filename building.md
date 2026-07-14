@@ -74,6 +74,7 @@
 | Sprint 51: Administrative Hierarchy Framework (data + types + engine + scrapers) | ✅ Complete | 2026-06-22 | 2026-06-22 |
 | Sprint 52: Authoritative Seed Rebuild (TCPD), Historical Backfill, TN Geo Clean & Hierarchy UI | ✅ Complete | 2026-06-22 | 2026-06-22 |
 | Sprint 53: News Aggregator (RSS backend), In-App Reader & Campaign Outreach Panel | ✅ Complete | 2026-07-02 | 2026-07-02 |
+| Sprint 54: Local-Body Representatives — TSEC Scraper, Offline Seed & Local Bodies Browser | ✅ Complete | 2026-07-08 | 2026-07-12 |
 
 ---
 
@@ -4564,3 +4565,257 @@ aggregation backend** to power the feed — all localized across 13 languages.
 | `apps/mobile/lib/outreachTypes.ts`, `lib/outreachProvider.ts` | New | Provider adapter seam + mock |
 | `apps/mobile/data/outreachSeed.ts`, `stores/outreach.ts` | New | Seed segments/templates + store |
 | `apps/mobile/i18n/locales/*.ts` (13 files) | Modified | `news/shorts/more` translations |
+
+---
+
+## Sprint 54: Local-Body Representatives — TSEC Scraper, Offline Seed & Local Bodies Browser
+
+**Date**: 2026-07-08 → 2026-07-12
+**Goal**: Bring **grassroots democracy** into the app — the elected representatives
+below the MLA/MP tier (Sarpanches and Gram-Panchayat Ward members). Harden a
+scraper for the **Telangana State Election Commission (TSEC)** "Know Your Public
+Representative" (KYR) portal, ship the results **offline and bundled** (no runtime
+Supabase dependency), and make every record reachable through **both the map and
+the Explore tab** via a new District → Mandal → Gram Panchayat drill-down. Hold a
+strict **zero-fabrication** bar throughout: only verified, elected winners ship;
+unpublished tiers show an honest "data pending" / "elections to be conducted"
+state instead of synthesized data.
+
+### 1. TSEC-KYR scraper — hardened & resumable
+- `scrapers/tsec-kyr-scraper.js` drives the official TSEC KYR (Rural) portal
+  (`https://tsec.gov.in/knowPRRural.do`) across four office types via an
+  `OFFICE_META` map that encodes the portal's per-office report code:
+  - **S** = Sarpanch, **M** = MPTC member (report type `A`),
+    **GW** = GP Ward member (report type `E`), **Z** = ZPTC member.
+- **Reliability hardening** (the portal frequently stalls sockets):
+  - `AbortController` **30s hard timeout** per request + **retry ×4** with backoff
+    — fixes indefinite hangs on a dropped connection.
+  - **Resume-by-default**: districts already flushed to disk are skipped on
+    re-run; `--fresh` forces a full re-scrape.
+  - Throttle/scoping caps for safe iterative runs: `--limit`, `--maxmandals`,
+    `--maxgps`, `--delay`.
+- Output lands in `scrapers/output/local-body/<STATE>-<YEAR>-<OFFICE>-kyr.json`,
+  retaining **losers too** (for audit) while downstream keeps winners only.
+
+### 2. Data captured (Telangana 2025) — honest coverage
+- **Sarpanch**: **12,701** elected (district-level report; no mandal field in that
+  report — captured GP + reservation).
+- **GP Ward member**: **59,433** elected winners across **all 34 rural districts**
+  (urban Hyderabad / Medchal legitimately have 0 rural GP seats).
+- **MPTC / ZPTC**: results were **not published** by the SEC (2025 mandal &
+  zilla-parishad polls postponed) → **no records**. The app surfaces this as
+  "Elections to be conducted" rather than an empty screen.
+- **Andhra Pradesh**: **no data yet** — APSEC uses a different portal; needs a
+  separate scraper (AP GP polls were 2021, non-party). The browser shows AP an
+  explicit "data pending" state.
+
+### 3. Offline bundled seed — generation & type-safety
+- `scripts/lib/kyr-transform.mjs` — single source of truth turning raw KYR JSON
+  into normalized `Representative` records. **Winners-only** filter (drops
+  `Result Status "--"`); deterministic **`jurisdictionId` scheme**:
+  - Sarpanch → `TS-GP-<district>-<mandal>-<gp>` (mandal empty for the
+    district-level report), Ward → `…-W<n>`, MPTC → `…-MPTC-<name>`,
+    ZPTC → `TS-ZP-<district>-ZPTC-<name>`; collisions disambiguated with a stable
+    numeric suffix so no winner is silently overwritten.
+  - Records **non-party** GP-tier polls correctly (`partyOfficial: false` for
+    AP/TS sarpanch + GP ward — those ballots carry no party symbol).
+- `scripts/generate-local-body-seed.mjs` → `data/seed/local-body-representatives.generated.ts`
+  (**72,134 records; ~37.8 MB**). Ships the way all other seeds do — static TS
+  compiled into the app, consumed offline with **no runtime DB**.
+  - Now emits clean **geography fields** (`mandal`, `gramPanchayat`, `wardNo`,
+    `reservation`) so the UI can build a real browse tree and label profiles
+    without slug-parsing.
+  - **TS2590 avoidance**: a 72k-element object *literal* makes `tsc` infer an
+    unrepresentable union ("union type too complex"). The generator instead emits
+    `JSON.parse("<double-encoded JSON>")`, which sidesteps type computation
+    entirely **and** parses faster at runtime. Shape is validated at generation.
+- `packages/shared` `Representative` type extended with the four optional
+  geography fields (real, scraped — zero fabrication).
+
+### 4. Data-access & geography browse layer
+- `apps/mobile/lib/representativesData.ts` gained a **lazily-built geo index**
+  (`District → Mandal → Gram Panchayat → { sarpanch, wardMembers[] }`), built only
+  on first access:
+  - `getLocalBodyDistricts`, `getLocalBodyMandals`, `getLocalBodyGPs`,
+    `getGpNode` — power the drill-down.
+  - `getUpperTierStatus` — returns the honest MPTC/ZPTC "elections to be
+    conducted" status.
+  - Index stats: **31 districts, ~12,094 GP keys, 377 district-mandals**. GPs are
+    keyed by `(district-slug, gp-slug)`; ~600 same-named GPs in different mandals
+    merge in the tree (each representative still individually reachable by id).
+
+### 5. Local Bodies browser screen
+- New `apps/mobile/app/local-bodies/index.tsx` — a self-contained drill-down:
+  **District → Mandal → Gram Panchayat → (Sarpanch + Ward members)**, with search
+  at each level, party & reservation badges, and breadcrumb navigation.
+  - Tapping a Sarpanch or Ward member opens the existing unified
+    `/representative/[id]` profile (same card that renders MLA/MP).
+  - A prominent banner shows **"MPTC & ZPTC — Elections to be conducted"** while
+    those tiers are unpublished.
+  - Honest **empty state** for states without verified data (e.g. Andhra Pradesh).
+
+### 6. Entry-point wiring — reachable from map *and* Explore
+- **Explore tab** (`apps/mobile/app/(tabs)/explore.tsx`): new "Local Bodies"
+  quick-nav button → `/local-bodies`.
+- **Map bottom sheet** (`apps/mobile/app/(tabs)/index.tsx`): new "Local Bodies"
+  action alongside "Explore Hierarchy", gated by `hasRepresentativeData(stateCode)`.
+- i18n key `exploreExtended.localBodies` added to **en / hi / kn / mr / te**.
+- Hierarchy GP-level deep-linking was **deferred** — the pilot hierarchy seed's GP
+  names don't reliably match the scraped slugs; the dedicated browser already
+  exposes the full dataset from both required entry points.
+
+### 7. Bug fixes surfaced during verification
+Running `tsc --noEmit` revealed a **fatal pre-existing corruption** that had been
+masking other errors; all were fixed:
+- **`i18n/locales/hi.ts` corruption** — a stray `};` + an encoding artifact
+  (`\uFFFD`) prematurely closed the translations object, followed by ~143 lines of
+  **orphaned duplicate content** (`issues`/`headlines`/`delimitation`/`language`
+  already present earlier in the file). Verified via a brace-depth parser +
+  boundary check that the tail was pure duplicate, then removed lines 1499–1641.
+  File is valid again (1502 lines), ending `config` → `};` → `export default hi;`
+  (matching `en.ts`).
+- **`app/parliament/index.tsx`** — a `.map((t) => …)` loop variable **shadowed**
+  `useTranslation()`'s `t`, so `t('parliament.tabOverview')` was calling a string
+  (a latent runtime crash on the Parliament tab bar). Renamed the loop var to
+  `tabKey`.
+- **`i18n/locales/en.ts`** — duplicate `subtitle` key in `leadershipAcademy`
+  (`TS1117`); removed the stray, keeping the canonical section subtitle.
+- **`local-body-representatives.generated.ts`** — resolved `TS2590` via the
+  `JSON.parse` emission described in §3.
+
+### Zero-fabrication guarantees
+- Only **elected winners** with a real `sourceUrl` + `dataStatus: 'verified'` ship.
+- Empty tiers (MPTC/ZPTC) and empty states (AP) render explicit pending states —
+  **never** synthesized names or placeholder holders.
+- GP-tier party affiliation is marked **de-facto** (`partyOfficial: false`) because
+  those polls are officially non-party in TS/AP.
+
+### Verification
+- `npx tsc --noEmit` (mobile): **EXIT 0 — zero errors** (whole app type-checks
+  clean, including the newly-fixed `hi.ts`).
+- Seed regeneration validated: **72,134** records parse via `JSON.parse`;
+  geography fields confirmed on sample records (e.g. `Allikori / ward 1 / ST`).
+- Geo-index sanity: 31 districts, 12,094 GP keys, 377 district-mandals.
+
+### Known limitations / pending
+- **AP local-body data** — needs a dedicated APSEC-portal scraper.
+- **MPTC/ZPTC** — blocked on the SEC publishing results.
+- **Startup cost** — `index.tsx` / `explore.tsx` import `hasRepresentativeData`,
+  which eagerly loads the ~37.8 MB seed on map/Explore mount just to decide button
+  visibility; recommend a lightweight `LOCAL_BODY_STATES = ['TS']` constant so the
+  gate doesn't force the big load.
+- **~600 same-named GP merges** in the browse tree (could disambiguate by mandal
+  once sarpanch records carry one).
+- **Hierarchy-GP deep-linking** deferred (name/slug matching).
+
+### Files Changed
+| File | Change | Description |
+|---|---|---|
+| `scrapers/tsec-kyr-scraper.js` | New/Hardened | TSEC-KYR portal scraper (timeout+retry, resume, caps) |
+| `scrapers/output/local-body/TS-2025-{S,GW,M}-kyr.json`, `TS-2019-Z-kyr.json` | New | Raw scraped KYR output (winners + losers for audit) |
+| `scripts/lib/kyr-transform.mjs` | New/Modified | KYR → `Representative` transform; `wardNo` added |
+| `scripts/generate-local-body-seed.mjs` | New/Modified | Seed generator; geography fields + `JSON.parse` emission |
+| `data/seed/local-body-representatives.generated.ts` | New | Bundled seed — 72,134 verified records (~37.8 MB) |
+| `packages/shared/src/types/hierarchy.ts` | Modified | `Representative` + `mandal/gramPanchayat/wardNo/reservation` |
+| `apps/mobile/lib/representativesData.ts` | Modified | Geo browse index + `getLocalBody*` / `getUpperTierStatus` |
+| `apps/mobile/app/local-bodies/index.tsx` | New | District→Mandal→GP→members drill-down screen |
+| `apps/mobile/app/(tabs)/explore.tsx` | Modified | "Local Bodies" quick-nav entry |
+| `apps/mobile/app/(tabs)/index.tsx` | Modified | "Local Bodies" map bottom-sheet action |
+| `apps/mobile/i18n/locales/{en,hi,kn,mr,te}.ts` | Modified | `exploreExtended.localBodies` key |
+| `apps/mobile/i18n/locales/hi.ts` | Fixed | Removed corrupt/duplicate lines 1499–1641 |
+| `apps/mobile/i18n/locales/en.ts` | Fixed | Removed duplicate `subtitle` key (TS1117) |
+| `apps/mobile/app/parliament/index.tsx` | Fixed | Renamed shadowing `t` → `tabKey` (runtime crash) |
+
+---
+
+## Local Bodies — Migration to Prebuilt SQLite (offline) + AP data + auto-versioning
+
+**Date**: 2026-07-14
+**Goal**: Replace the ~37.8 MB bundled TypeScript seed (loaded eagerly into memory) with
+the app's prebuilt SQLite database, add Andhra Pradesh coverage, and make the whole
+local-body data path async + offline-ready in the APK — with **zero manual bookkeeping**
+on rebuild. Directly resolves the "Startup cost" and size limitations noted in the
+previous section.
+
+### What changed (overview)
+- **Data source pivot**: `representativesData.ts` no longer imports the giant generated
+  `.ts` array. It now queries the bundled `seed-data.db` via `expo-sqlite` (async),
+  matching the established `seedDataLoader` pattern used for MLA/demographics data.
+- **Coverage**: Added **Andhra Pradesh** alongside Telangana. The DB now holds
+  **224,780 verified winners** (AP 152,646 + TS 72,134) across Sarpanch, GP ward,
+  and ZPTC/MPTC tiers.
+- **Offline delivery wired**: the prebuilt DB is now actually shipped and copied into
+  the device SQLite directory on first launch (previously `openDatabaseAsync` would have
+  opened an empty sandbox DB — the bundling step was missing for *all* seed data).
+- **Auto-versioning**: no more manual version bumps — the build derives a content hash.
+
+### Build pipeline (`scripts/build-seed-db.mjs`)
+- [x] Added a `representatives` table (+ indexes on state/office/jurisdiction/geo keys),
+  ingesting all six `*-kyr.json` files (AP GP + MZ, TS S/GW/M + Z) via the shared
+  `buildRepsFromKYR` transform in `scripts/lib/kyr-transform.mjs`.
+- [x] **Single-file artifact**: after build, `PRAGMA wal_checkpoint(TRUNCATE)` +
+  `journal_mode = DELETE` collapse the WAL so the shipped `.db` has no `-wal`/`-shm`
+  dependency (required for a read-only bundled asset).
+- [x] **Auto-version file**: writes `apps/mobile/data/seed-db-version.json`
+  (`{ version: <sha256(db).slice(0,16)>, builtAt }`). The hash only changes when the
+  data changes.
+
+### Runtime data layer (`apps/mobile/lib/`)
+- [x] `representativesData.ts` — **rewritten to async SQLite**: `getRepresentativeById`,
+  `getRepresentativesForJurisdiction`, `getLocalBodyDistricts/Mandals/GPs`, `getGpNode`,
+  `getUpperTierStatus`, `getRepresentativeCoverage`, `getRepresentativeProfile`. Added a
+  small synchronous availability cache (`preloadRepStates` + `useHasRepresentativeData`
+  hook) so render code can gate UI without blocking.
+- [x] `seedDataLoader.ts` — exports shared `getSeedDb()`; added `ensureBundledDbCopied()`
+  which copies the bundled asset into `${documentDirectory}SQLite/` on first launch,
+  keyed on `DB_ASSET_VERSION` (imported from `seed-db-version.json`) so devices auto
+  re-copy whenever the DB is rebuilt. Cleans stale `-wal`/`-shm` before copying.
+
+### App wiring
+- [x] `metro.config.js` — added `db` to `resolver.assetExts` so the `.db` can be bundled
+  and `require()`'d as an asset.
+- [x] `package.json` (mobile) — added explicit `expo-asset` (`~12.0.13`) dependency.
+- [x] Converted all 4 caller screens to the async API:
+  - `app/local-bodies/index.tsx` — `useEffect`-driven loaders + loading/empty states.
+  - `app/(tabs)/index.tsx` — map bottom-sheet uses the `useHasRepresentativeData` hook.
+  - `app/representative/[id].tsx` — async profile lookup with a loading spinner.
+  - `app/representative/edit/[id].tsx` — async record fetch, seeds the edit form once.
+
+### How rebuild works now (no manual step)
+Run **`node scripts/build-seed-db.mjs`** — it rebuilds the DB, checkpoints the WAL to a
+single file, and regenerates `seed-db-version.json`. The app imports that version; a
+changed hash forces devices to re-copy the fresh DB on next launch. Nothing to remember.
+
+### Verification
+- `npx tsc --noEmit` (mobile): **EXIT 0 — zero errors**.
+- DB rebuilt and validated via read-only connection: **224,780** representatives,
+  `journal_mode=delete`, clean single-file artifact (no `-wal`/`-shm`), 137 MB on disk
+  (~39 MB gzipped). Version hash generated: `876882039a77c9a8`.
+- `seed-data.db` and `seed-db-version.json` confirmed **not** gitignored (ship for
+  EAS/cloud builds).
+
+### Tradeoffs / notes
+- APK grows by ~131 MB (≈39 MB gzipped) — the accepted cost of full offline coverage.
+- Matches the longer-term direction of a lightweight app + server APIs; the SQLite
+  bundle can later be slimmed or swapped for on-demand fetch without touching callers.
+- **AP GP polls are officially non-party** — party affiliation stays de-facto.
+
+### Known limitations / pending
+- **MPTC/ZPTC** — still blocked on the SEC publishing results.
+- **Supabase import** — real import into the cloud `representatives` table is pending
+  (needs credentials); the offline SQLite path is independent of it.
+
+### Files Changed
+| File | Change | Description |
+|---|---|---|
+| `scripts/build-seed-db.mjs` | Modified | `representatives` table + KYR ingestion; WAL→single-file; auto content-hash version file |
+| `apps/mobile/lib/representativesData.ts` | Rewritten | Async `expo-sqlite` queries; `useHasRepresentativeData` gate (replaces in-memory array) |
+| `apps/mobile/lib/seedDataLoader.ts` | Modified | `getSeedDb()`; first-run bundled-DB copy keyed on auto version |
+| `apps/mobile/metro.config.js` | Modified | `db` added to `assetExts` |
+| `apps/mobile/package.json` | Modified | Added `expo-asset` dependency |
+| `apps/mobile/data/seed-data.db` | Rebuilt | +`representatives` (224,780 rows); single-file artifact |
+| `apps/mobile/data/seed-db-version.json` | New | Auto-derived DB content-hash version (`{version, builtAt}`) |
+| `apps/mobile/app/local-bodies/index.tsx` | Modified | Async loaders + loading/empty states |
+| `apps/mobile/app/(tabs)/index.tsx` | Modified | `useHasRepresentativeData` hook for Local Bodies action |
+| `apps/mobile/app/representative/[id].tsx` | Modified | Async profile lookup + loading state |
+| `apps/mobile/app/representative/edit/[id].tsx` | Modified | Async record fetch; form seeded once loaded |

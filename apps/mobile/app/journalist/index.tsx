@@ -1,4 +1,5 @@
 import { useState, useMemo, useCallback } from 'react';
+import { useTranslation } from 'react-i18next';
 import { View, Text, StyleSheet, ScrollView, Pressable, RefreshControl } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { Stack, useRouter } from 'expo-router';
@@ -11,14 +12,15 @@ import JournalistProfileCard from '../../components/JournalistProfileCard';
 
 type Tab = 'feed' | 'fact_checks' | 'breaking' | 'journalists';
 
-const TABS: { key: Tab; label: string; icon: string }[] = [
-  { key: 'feed', label: 'Feed', icon: 'newspaper' },
-  { key: 'fact_checks', label: 'Fact Check', icon: 'checkmark-circle' },
-  { key: 'breaking', label: 'Breaking', icon: 'flash' },
-  { key: 'journalists', label: 'Journalists', icon: 'people' },
+const TAB_KEYS: { key: Tab; i18nKey: string; icon: string }[] = [
+  { key: 'feed', i18nKey: 'journalist.tabFeed', icon: 'newspaper' },
+  { key: 'fact_checks', i18nKey: 'journalist.tabFactCheck', icon: 'checkmark-circle' },
+  { key: 'breaking', i18nKey: 'journalist.tabBreaking', icon: 'flash' },
+  { key: 'journalists', i18nKey: 'journalist.tabJournalists', icon: 'people' },
 ];
 
 export default function JournalistDashboardScreen() {
+  const { t } = useTranslation();
   const [activeTab, setActiveTab] = useState<Tab>('feed');
   const [refreshing, setRefreshing] = useState(false);
   const insets = useSafeAreaInsets();
@@ -50,14 +52,14 @@ export default function JournalistDashboardScreen() {
 
   return (
     <View style={styles.container}>
-      <Stack.Screen options={{ title: 'Newsroom', headerShown: true, headerStyle: { backgroundColor: '#0A0A1A' }, headerTintColor: '#FFFFFF' }} />
+      <Stack.Screen options={{ title: t('journalist.screenTitle'), headerShown: true, headerStyle: { backgroundColor: '#0A0A1A' }, headerTintColor: '#FFFFFF' }} />
 
       {/* Tab Bar */}
       <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.tabBar} contentContainerStyle={styles.tabBarContent}>
-        {TABS.map((tab) => (
+        {TAB_KEYS.map((tab) => (
           <Pressable key={tab.key} style={[styles.tab, activeTab === tab.key && styles.tabActive]} onPress={() => setActiveTab(tab.key)}>
             <Ionicons name={(activeTab === tab.key ? tab.icon : `${tab.icon}-outline`) as any} size={16} color={activeTab === tab.key ? '#4F8EF7' : '#6B7280'} />
-            <Text style={[styles.tabLabel, activeTab === tab.key && styles.tabLabelActive]}>{tab.label}</Text>
+            <Text style={[styles.tabLabel, activeTab === tab.key && styles.tabLabelActive]}>{t(tab.i18nKey)}</Text>
             {tab.key === 'breaking' && breakingNews.length > 0 && (
               <View style={styles.badge}><Text style={styles.badgeText}>{breakingNews.length}</Text></View>
             )}
@@ -71,14 +73,14 @@ export default function JournalistDashboardScreen() {
             {/* Editor's Picks */}
             {editorPicks.length > 0 && (
               <View style={styles.section}>
-                <Text style={styles.sectionTitle}>Editor's Picks</Text>
+                <Text style={styles.sectionTitle}>{t('journalist.editorsPicks')}</Text>
                 {editorPicks.slice(0, 2).map((a) => (
                   <ArticleCard key={a.id} article={a} />
                 ))}
               </View>
             )}
 
-            <Text style={styles.sectionTitle}>Latest Articles</Text>
+            <Text style={styles.sectionTitle}>{t('journalist.latestArticles')}</Text>
             {publishedArticles.map((a) => (
               <ArticleCard key={a.id} article={a} />
             ))}
@@ -87,7 +89,7 @@ export default function JournalistDashboardScreen() {
 
         {activeTab === 'fact_checks' && (
           <>
-            <Text style={styles.sectionTitle}>Recent Fact Checks</Text>
+            <Text style={styles.sectionTitle}>{t('journalist.recentFactChecks')}</Text>
             {factChecks.map((fc) => (
               <FactCheckCard key={fc.id} factCheck={fc} />
             ))}
@@ -96,11 +98,11 @@ export default function JournalistDashboardScreen() {
 
         {activeTab === 'breaking' && (
           <>
-            <Text style={styles.sectionTitle}>Breaking News</Text>
+            <Text style={styles.sectionTitle}>{t('journalist.breakingNews')}</Text>
             {breakingNews.length === 0 ? (
               <View style={styles.emptyState}>
                 <Ionicons name="flash-off" size={40} color="#4B5563" />
-                <Text style={styles.emptyText}>No breaking news right now</Text>
+                <Text style={styles.emptyText}>{t('journalist.noBreakingNews')}</Text>
               </View>
             ) : (
               breakingNews.map((bn) => (
@@ -112,7 +114,7 @@ export default function JournalistDashboardScreen() {
 
         {activeTab === 'journalists' && (
           <>
-            <Text style={styles.sectionTitle}>Top Journalists</Text>
+            <Text style={styles.sectionTitle}>{t('journalist.topJournalists')}</Text>
             {journalists.map((j) => (
               <JournalistProfileCard key={j.id} journalist={j} />
             ))}

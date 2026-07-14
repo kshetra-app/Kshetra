@@ -1,4 +1,5 @@
 import { useState, useRef, useCallback } from 'react';
+import { useTranslation } from 'react-i18next';
 import {
   View,
   Text,
@@ -36,6 +37,7 @@ const GENERAL_QUESTIONS = [
 ];
 
 export default function AIChatScreen() {
+  const { t } = useTranslation();
   const params = useLocalSearchParams<{ acNo?: string }>();
   const initialAcNo = params.acNo ? parseInt(params.acNo, 10) : undefined;
   const [messages, setMessages] = useState<Message[]>([]);
@@ -105,8 +107,7 @@ export default function AIChatScreen() {
         const errorMsg: Message = {
           id: (Date.now() + 1).toString(),
           role: 'assistant',
-          content:
-            'Unable to connect to KSHETRA AI. Please check your network connection.',
+          content: t('ai.error'),
           timestamp: Date.now(),
         };
         setMessages((prev) => [...prev, errorMsg]);
@@ -151,7 +152,7 @@ export default function AIChatScreen() {
     <View style={styles.container}>
       <Stack.Screen
         options={{
-          title: 'KSHETRA AI',
+          title: t('ai.chatTitle'),
           headerStyle: { backgroundColor: '#0A0A1A' },
           headerTintColor: '#FFFFFF',
         }}
@@ -167,9 +168,9 @@ export default function AIChatScreen() {
             <View style={styles.aiLogo}>
               <Ionicons name="sparkles" size={40} color="#4F8EF7" />
             </View>
-            <Text style={styles.emptyTitle}>KSHETRA AI</Text>
+            <Text style={styles.emptyTitle}>{t('ai.chatTitle')}</Text>
             <Text style={styles.emptySubtitle}>
-              Ask me anything about Telangana elections, constituencies, or political trends
+              {t('ai.placeholder')}
             </Text>
 
             {/* Constituency context picker */}
@@ -191,13 +192,13 @@ export default function AIChatScreen() {
               >
                 <Ionicons name="location-outline" size={14} color="#6B7280" />
                 <Text style={styles.contextPickerText}>
-                  Tap to set constituency context
+                  {t('ai.contextPicker')}
                 </Text>
               </Pressable>
             )}
 
             <View style={styles.suggestions}>
-              <Text style={styles.suggestionsTitle}>Try asking:</Text>
+              <Text style={styles.suggestionsTitle}>{t('ai.suggestions')}</Text>
               {suggestedQuestions.map((q, i) => (
                 <Pressable
                   key={i}
@@ -230,14 +231,14 @@ export default function AIChatScreen() {
         {loading && (
           <View style={styles.typingIndicator}>
             <ActivityIndicator size="small" color="#4F8EF7" />
-            <Text style={styles.typingText}>KSHETRA AI is thinking...</Text>
+            <Text style={styles.typingText}>{t('ai.thinking')}</Text>
           </View>
         )}
 
         <View style={[styles.inputBar, { paddingBottom: Math.max(insets.bottom, 12) }]}>
           <TextInput
             style={styles.textInput}
-            placeholder="Ask about elections, constituencies..."
+            placeholder={t('ai.placeholder')}
             placeholderTextColor="#4B5563"
             value={input}
             onChangeText={setInput}
