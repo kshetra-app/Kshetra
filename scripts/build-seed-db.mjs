@@ -517,15 +517,22 @@ function importRepresentatives(db) {
     }
   }
 
-  const isGpTier = (o) => o === 'sarpanch' || o === 'gp_ward_member';
-  const gpIdent = (r) => `${r.stateCode}::${slug(r.district)}::${slug(r.gramPanchayat)}`;
-
-  // Resolve mandal per GP (ward rows win over mandal-less sarpanch rows).
-  const mandalByGp = new Map();
+  // ── Ward-derived mandal pool per (state, district, GP name) ──────────────
+  // Some states' Sarpanch report omits the mandal (Telangana), while the Ward
+  // report always carries it. We build an ordered, de-duplicated list of the
+  // mandals each (district, GP-name) appears in across the ward rows. This lets
+  // us (a) backfill a concrete mandal onto mandal-less sarpanch and — crucially —
+  // (b) split N same-named GPs sitting in different mandals into N DISTINCT GP
+  // nodes (one sarpanch each) instead of collapsing them into a single node.
+  const poolKey = (st, dS, gS) => `${st}::${dS}::${gS}`;
+  const wardMandalPool = new Map(); // poolKey -> [{ mSlug, mandal }]
   for (const r of all) {
-    if (!isGpTier(r.officeType) || !r.gramPanchayat || !r.mandal) continue;
-    const k = gpIdent(r);
-    if (r.officeType === 'gp_ward_member' || !mandalByGp.has(k)) mandalByGp.set(k, r.mandal);
+    if (r.officeType !== 'gp_ward_member' || !r.gramPanchayat || !r.mandal) continue;
+    const k = poolKey(r.stateCode, slug(r.district), slug(r.gramPanchayat));
+    let arr = wardMandalPool.get(k);
+    if (!arr) { arr = []; wardMandalPool.set(k, arr); }
+    const mS = slug(r.mandal);
+    if (!arr.some((e) => e.mSlug === mS)) arr.push({ mSlug: mS, mandal: r.mandal });
   }
 
   const insert = db.prepare(`
@@ -545,17 +552,47 @@ function importRepresentatives(db) {
   `);
 
   const byState = {};
+  const poolPtr = new Map();    // poolKey -> next unconsumed mandal index
+  const gpKeySeen = new Set();  // guarantees one GP node per sarpanch (no collapse)
   const tx = db.transaction((rows) => {
     for (const r of rows) {
       const dSlug = slug(r.district);
       let mandal = r.mandal ?? null;
       let mSlug;
       let gpKey = null;
-      if (isGpTier(r.officeType)) {
-        if (!mandal) mandal = mandalByGp.get(gpIdent(r)) ?? null;
+      if (r.officeType === 'gp_ward_member') {
+        // Wards always carry mandal → deterministic node key.
         mSlug = mandal ? slug(mandal) : NO_MANDAL;
         gpKey = `${dSlug}::${mSlug}::${slug(r.gramPanchayat)}`;
+      } else if (r.officeType === 'sarpanch') {
+        const gS = slug(r.gramPanchayat);
+        if (mandal) {
+          // State already provides the mandal (e.g. AP) → trust it verbatim.
+          mSlug = slug(mandal);
+        } else {
+          // Telangana: consume one mandal from the ward pool per sarpanch so
+          // same-named GPs in different mandals become distinct nodes.
+          const k = poolKey(r.stateCode, dSlug, gS);
+          const pool = wardMandalPool.get(k);
+          const ptr = poolPtr.get(k) ?? 0;
+          if (pool && ptr < pool.length) {
+            mandal = pool[ptr].mandal;
+            mSlug = pool[ptr].mSlug;
+            poolPtr.set(k, ptr + 1);
+          } else {
+            mSlug = NO_MANDAL; // mandal genuinely unknown from either report
+          }
+        }
+        gpKey = `${dSlug}::${mSlug}::${gS}`;
+        // Safety net: never let two distinct sarpanch collapse into one node.
+        if (gpKeySeen.has(gpKey)) {
+          let i = 2;
+          while (gpKeySeen.has(`${gpKey}::${i}`)) i++;
+          gpKey = `${gpKey}::${i}`;
+        }
+        gpKeySeen.add(gpKey);
       } else {
+        // MPTC / ZPTC — territorial mandal/constituency, no GP node.
         mSlug = mandal ? slug(mandal) : NO_MANDAL;
       }
       insert.run({
