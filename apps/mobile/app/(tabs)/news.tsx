@@ -193,7 +193,12 @@ function Chip({
       onPress={onPress}
     >
       {icon && <Ionicons name={icon as any} size={12} color={active ? '#FFF' : disabled ? '#374151' : '#9CA3AF'} />}
-      <Text style={[styles.chipText, active && styles.chipTextActive, disabled && { color: '#374151' }]}>{label}</Text>
+      <Text
+        numberOfLines={1}
+        style={[styles.chipText, active && styles.chipTextActive, disabled && { color: '#374151' }]}
+      >
+        {label}
+      </Text>
     </Pressable>
   );
 }
@@ -207,12 +212,12 @@ const styles = StyleSheet.create({
   updatedText: { fontSize: 11, color: '#6B7280', fontWeight: '600' },
   iconBtn: { width: 36, height: 36, borderRadius: 18, backgroundColor: '#111827', justifyContent: 'center', alignItems: 'center' },
   iconBtnActive: { backgroundColor: '#F59E0B20' },
-  railWrap: { maxHeight: 40, marginBottom: 6 },
-  railContent: { paddingHorizontal: 16, gap: 6, alignItems: 'center' },
-  chip: { flexDirection: 'row', alignItems: 'center', gap: 4, paddingHorizontal: 12, paddingVertical: 7, borderRadius: 18, backgroundColor: '#111827' },
+  railWrap: { height: 44, marginBottom: 6 },
+  railContent: { paddingHorizontal: 16, gap: 6, alignItems: 'center', paddingVertical: 4 },
+  chip: { flexDirection: 'row', alignItems: 'center', gap: 4, paddingHorizontal: 12, paddingVertical: 7, borderRadius: 18, backgroundColor: '#111827', minHeight: 32 },
   chipActive: { backgroundColor: '#4F8EF7' },
   chipDisabled: { opacity: 0.4 },
-  chipText: { fontSize: 12, fontWeight: '700', color: '#9CA3AF' },
+  chipText: { fontSize: 12, fontWeight: '700', color: '#9CA3AF', lineHeight: 16, includeFontPadding: false, textAlignVertical: 'center' },
   chipTextActive: { color: '#FFFFFF' },
   empty: { alignItems: 'center', paddingTop: 80, gap: 10 },
   emptyText: { fontSize: 14, fontWeight: '700', color: '#374151' },

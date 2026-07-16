@@ -69,23 +69,36 @@ function NewsCardBase({ item, bookmarked, onToggleBookmark }: NewsCardProps) {
         </View>
       </View>
 
-      {/* Thumbnail */}
-      <View style={styles.thumbWrap}>
-        {item.imageUrl ? (
+      {/* Thumbnail — only rendered when the story actually has a related
+          image. No dummy/placeholder graphic is shown otherwise; the bookmark
+          control is still made available in a compact right-aligned slot. */}
+      {item.imageUrl ? (
+        <View style={styles.thumbWrap}>
           <Image source={{ uri: item.imageUrl }} style={styles.thumb} />
-        ) : (
-          <View style={[styles.thumb, styles.thumbPlaceholder, { backgroundColor: accent + '25' }]}>
-            <Ionicons name="newspaper-outline" size={22} color={accent} />
-          </View>
-        )}
-        {isVideo && (
-          <View style={styles.playOverlay}>
-            <Ionicons name="play" size={16} color="#FFFFFF" style={{ marginLeft: 1 }} />
-          </View>
-        )}
+          {isVideo && (
+            <View style={styles.playOverlay}>
+              <Ionicons name="play" size={16} color="#FFFFFF" style={{ marginLeft: 1 }} />
+            </View>
+          )}
+          <Pressable
+            hitSlop={8}
+            style={styles.bookmarkBtn}
+            onPress={(e) => {
+              e.stopPropagation?.();
+              onToggleBookmark();
+            }}
+          >
+            <Ionicons
+              name={bookmarked ? 'bookmark' : 'bookmark-outline'}
+              size={15}
+              color={bookmarked ? '#F59E0B' : '#FFFFFF'}
+            />
+          </Pressable>
+        </View>
+      ) : (
         <Pressable
           hitSlop={8}
-          style={styles.bookmarkBtn}
+          style={styles.bookmarkOnly}
           onPress={(e) => {
             e.stopPropagation?.();
             onToggleBookmark();
@@ -93,11 +106,11 @@ function NewsCardBase({ item, bookmarked, onToggleBookmark }: NewsCardProps) {
         >
           <Ionicons
             name={bookmarked ? 'bookmark' : 'bookmark-outline'}
-            size={15}
-            color={bookmarked ? '#F59E0B' : '#FFFFFF'}
+            size={18}
+            color={bookmarked ? '#F59E0B' : '#6B7280'}
           />
         </Pressable>
-      </View>
+      )}
     </Pressable>
   );
 }
@@ -140,6 +153,12 @@ const styles = StyleSheet.create({
     width: 26, height: 26, borderRadius: 13,
     backgroundColor: 'rgba(0,0,0,0.5)',
     justifyContent: 'center', alignItems: 'center',
+  },
+  bookmarkOnly: {
+    width: 32, height: 32, borderRadius: 16,
+    backgroundColor: '#111827',
+    justifyContent: 'center', alignItems: 'center',
+    alignSelf: 'flex-start',
   },
 });
 

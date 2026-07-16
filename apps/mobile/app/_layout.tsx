@@ -229,6 +229,36 @@ export default function RootLayout() {
           }}
         />
         <Stack.Screen
+          name="local-bodies/index"
+          options={{
+            headerShown: true,
+            headerStyle: { backgroundColor: '#0A0A1A' },
+            headerTintColor: '#FFFFFF',
+            headerShadowVisible: false,
+            animation: 'slide_from_right',
+          }}
+        />
+        <Stack.Screen
+          name="representative/[id]"
+          options={{
+            headerShown: true,
+            headerStyle: { backgroundColor: '#0A0A1A' },
+            headerTintColor: '#FFFFFF',
+            headerShadowVisible: false,
+            animation: 'slide_from_right',
+          }}
+        />
+        <Stack.Screen
+          name="representative/edit/[id]"
+          options={{
+            headerShown: true,
+            headerStyle: { backgroundColor: '#0A0A1A' },
+            headerTintColor: '#FFFFFF',
+            headerShadowVisible: false,
+            animation: 'slide_from_right',
+          }}
+        />
+        <Stack.Screen
           name="reader"
           options={{
             headerShown: false,

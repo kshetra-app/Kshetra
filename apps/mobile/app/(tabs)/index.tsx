@@ -479,6 +479,15 @@ function FullMapScreen() {
     };
   }, [selected, currentZoom, stateCode, activeGeoJSON]);
 
+  /** Whether the selected constituency actually has verified booth/hierarchy
+   *  data available (pilot coverage only — zero-fabrication policy). Used to
+   *  gate the "Show booths" affordance so we never invite the user to zoom in
+   *  on a constituency that has no booth data to reveal. */
+  const selectedHasBoothData = useMemo(
+    () => (selected ? hasHierarchyData(stateCode, selected.acNo) : false),
+    [selected, stateCode],
+  );
+
   /** Compute the centroid [lng, lat] of a constituency polygon from activeGeoJSON. */
   const getConstituencyCentroid = useCallback(
     (acNo: number): [number, number] | null => {
@@ -653,22 +662,69 @@ function FullMapScreen() {
   }, [stateCode]);
 
   const handleReset = useCallback(() => {
-    setSelected(null);
-    setCompareSelected(null);
-    setMapCompareActive(false);
-    setFocusedDistrict('');
-    setUserMarker(null);
-    bottomSheetRef.current?.close();
-    if (stateCode !== 'IN') {
-      setStateCode('IN');
-    } else {
+    tapLight();
+
+    // Step-by-step "back" that unwinds the map hierarchy one level per press
+    // (booth popup → booth zoom → constituency → district/compare → state →
+    // India) instead of jumping straight to the national map.
+
+    // 1. A booth popup is open → just dismiss it.
+    if (selectedBooth) {
+      setSelectedBooth(null);
+      return;
+    }
+
+    // 2. Zoomed into the booth-reveal level → pull back to the state overview
+    //    while keeping the constituency selection.
+    if (selected && currentZoom >= BOOTH_ZOOM_THRESHOLD) {
       cameraRef.current?.setCamera({
-        centerCoordinate: getStateCenter('IN'),
-        zoomLevel: getStateZoom('IN'),
+        centerCoordinate: getStateCenter(stateCode),
+        zoomLevel: getStateZoom(stateCode),
+        pitch: is3DMode ? 55 : 0,
         animationDuration: 600,
       });
+      return;
     }
-  }, [stateCode, setStateCode]);
+
+    // 3. A constituency is selected (bottom sheet) → clear it, back to state.
+    if (selected) {
+      setSelected(null);
+      setUserMarker(null);
+      bottomSheetRef.current?.close();
+      return;
+    }
+
+    // 4. Compare mode / district focus overlays → clear them.
+    if (mapCompareActive || compareSelected || focusedDistrict !== '') {
+      setCompareSelected(null);
+      setMapCompareActive(false);
+      setFocusedDistrict('');
+      return;
+    }
+
+    // 5. Inside a state → back to the national (India) map.
+    if (stateCode !== 'IN') {
+      setStateCode('IN');
+      return;
+    }
+
+    // 6. Already at India → recentre the national view.
+    cameraRef.current?.setCamera({
+      centerCoordinate: getStateCenter('IN'),
+      zoomLevel: getStateZoom('IN'),
+      animationDuration: 600,
+    });
+  }, [
+    stateCode,
+    setStateCode,
+    selected,
+    selectedBooth,
+    currentZoom,
+    is3DMode,
+    mapCompareActive,
+    compareSelected,
+    focusedDistrict,
+  ]);
 
   const handleLocateMe = useCallback(async () => {
     const loc = await requestLocation();
@@ -861,16 +917,13 @@ function FullMapScreen() {
                     textHaloColor: '#0A0A1A',
                     textHaloWidth: 1.5,
                     textAnchor: 'center',
-                    ...(is3DMode ? {
-                      // NOTE: `symbolZElevate` is a Mapbox-GL-only property and
-                      // is unsupported by MapLibre — including it broke the
-                      // layer/style parse and made 3D mode render a blank map.
-                      textIgnorePlacement: true,
-                      textAllowOverlap: true,
-                    } : {
-                      textAllowOverlap: false,
-                      textIgnorePlacement: false,
-                    }),
+                    // Always render region labels regardless of zoom/collision so
+                    // state (India view) and district (state view) names are
+                    // visible in the default/zoomed-out state, not only after
+                    // zooming in. `symbolZElevate` is Mapbox-GL-only and breaks
+                    // MapLibre parsing, so it is intentionally omitted.
+                    textAllowOverlap: true,
+                    textIgnorePlacement: true,
                   }}
                 />
               </MapboxGL.ShapeSource>
@@ -1028,7 +1081,7 @@ function FullMapScreen() {
 
       {/* Booth-zoom discoverability hint — tells users to zoom in (or taps
           the button to auto-fly) to reveal the polling-booth drill-down. */}
-      {!broadcastMode && selected && !selectedBooth && currentZoom < BOOTH_ZOOM_THRESHOLD && (
+      {!broadcastMode && selected && selectedHasBoothData && !selectedBooth && currentZoom < BOOTH_ZOOM_THRESHOLD && (
         <Pressable
           onPress={flyToBooths}
           style={{
