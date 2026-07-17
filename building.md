@@ -4819,3 +4819,109 @@ changed hash forces devices to re-copy the fresh DB on next launch. Nothing to r
 | `apps/mobile/app/(tabs)/index.tsx` | Modified | `useHasRepresentativeData` hook for Local Bodies action |
 | `apps/mobile/app/representative/[id].tsx` | Modified | Async profile lookup + loading state |
 | `apps/mobile/app/representative/edit/[id].tsx` | Modified | Async record fetch; form seeded once loaded |
+
+---
+
+## Sprint 55: Telangana Local-Body Accuracy Fix & 2017 ECI Booth-Location Map Layer
+
+**Date**: 2026-07-17
+**Goal**: (A) Fix the Telangana local-body data anomaly where a mandal showed **more
+Sarpanch (GP presidents) than Gram Panchayats**, and (B) put **real booth-level GPS dots
+on the map statewide** for Telangana + Andhra Pradesh, after establishing whether current
+ECI sources can supply booth coordinates at all.
+
+### Part A — Telangana "more presidents than gram panchayats" fix
+
+**Symptom (user-reported)**: In the Explore → Local Bodies drill-down, many Telangana
+mandals listed more Sarpanch than the number of Gram Panchayats under them. AP looked
+correct (GP count == president count).
+
+**Root cause**: The Telangana **Sarpanch** KYR report (`TS-2025-S-kyr.json`) frequently
+has a **null `mandal`**, whereas the **GP-Ward** report (`TS-2025-GW-kyr.json`) always
+carries mandal. The previous seed-build backfill assigned one mandal per
+`(district, GP-name)` pair, which **collapsed same-named GPs that legitimately exist in
+different mandals** into a single GP node — so multiple distinct sarpanch piled onto one
+node (517 GP nodes carried >1 sarpanch).
+
+**Fix** (`scripts/build-seed-db.mjs`, grouping logic ~L520–597): build a **ward-derived
+mandal pool** per district from the reliable GW report, then assign each Sarpanch its own
+**distinct GP node** (disambiguated by mandal), with a `gp_key` **uniqueness safety net**
+so two different mandals never merge under one node.
+
+**Result**: TS GP nodes with multiple sarpanch **517 → 0**; distinct GP nodes (12,705)
+now ≥ sarpanch (12,701). AP unchanged (13,069 == 13,069). DB rebuilt + Android raw copy
+refreshed. (Committed `55863d5`.)
+
+### Part B — Booth GPS: source investigation → 2017 ECI historical layer
+
+The user asked to see booth-level dots when tapping **"Show booth level data"**, ideally
+from **current ECI** data. Preference order was **(B) live modern ECI API → (C) other
+current source → (A) 2017 historical snapshot**.
+
+**B/C — modern ECI proven infeasible (not just hard)**: reverse-engineered the
+`electoralsearch.eci.gov.in` SPA + `gateway-voters.eci.gov.in` API. Findings:
+- Data endpoints (`/api/v1/druid/userDetails`) require `applicationName: ELECTORAL-SEARCH`
+  headers **and an encrypted request body**; auxiliary endpoints are **captcha-token gated**
+  (401 without a solved-captcha token).
+- Decisively, the **entire JS bundle contains zero `latitude`/`longitude` fields and no map
+  library** — the modern portal serves polling-station **names + voter counts, NOT GPS**.
+  The old coordinate portal `psleci.nic.in` is **offline**. No captcha work could yield
+  coordinates that simply aren't served.
+
+**A — 2017 ECI snapshot (the only bulk source of booth GPS)**: used the preserved
+`psleci` 2017 snapshot (`github.com/aaronrudkin/IndianPollingStations`, `out.csv`), whose
+`WebURL` encodes state code + AC number + part number (`S=S29&A=118&P=30`).
+
+- New build script **`scripts/build-booth-locations-2017.mjs`** parses that CSV, filters
+  `S29→TS` / `S01→AP`, validates coordinates (India bbox), dedupes by `(state, AC, PS#)`,
+  and writes **`data/seed/booth-locations-2017.json`** grouped `state → acNo → [{n,name,lat,lng}]`.
+- Coverage baked in: **TS 27,612 booths / 118 ACs**, **AP 31,154 booths / 146 ACs**
+  (~58.8k booths, 3.77 MB JSON). Raw 141 MB CSV is **gitignored**; the derived JSON is committed.
+
+**App integration** (`apps/mobile/lib/hierarchyData.ts`):
+- `get2017Booths(stateCode, acNo)` converts JSON rows → `PollingBooth[]` (real `location`,
+  title-cased `nameEn`, `historical: true`, `sourceYear: 2017`, `totalVoters: 0`). The JSON
+  is loaded via **`require()`** (not `import`) so `tsc` doesn't infer a giant literal type
+  from ~58k entries.
+- `getBoothsForConstituency` now returns the **richer official pilot booths where present,
+  else the 2017 historical booths** — so the zero-fabrication policy holds (2017 data is
+  real, just historical) while booths now render statewide.
+- New **`hasBoothData(stateCode, acNo)`** gates the map's "Show booths" affordance for any
+  AC that has either source (replaces the pilot-only `hasHierarchyData` gate for booths).
+
+**Map + UX** (`apps/mobile/app/(tabs)/index.tsx`):
+- `selectedHasBoothData` now uses `hasBoothData`; `boothGeoJSON` features carry
+  `historical` + `sourceYear`.
+- The floating booth callout shows **"{year} ECI location · historical"** for 2017 booths
+  instead of a misleading "0 registered voters". New i18n key **`mapExtended.boothHistorical`**
+  added to `en.ts` + `te.ts`.
+- `PollingBooth` interface extended with optional `historical` / `sourceYear`
+  (`data/seed/telangana-hierarchy.ts`). (Committed `7b59a16`.)
+
+### Verification
+- `npx tsc --noEmit` (mobile): **EXIT 0 — zero errors**.
+- Booth JSON validated via the app's access pattern: `TS['7']` → 210 booths, sample
+  `{ n:1, name:"akoli", lat:19.818743, lng:78.53875 }`; states = `[TS, AP]`.
+- Working tree clean; stale root `eslint.config.mjs` removed as housekeeping (`ed2b57b`).
+
+### Tradeoffs / limitations
+- **2017 vintage**: booth **locations** are real but **booth numbers & voter counts are
+  historical** — deliberately surfaced as "historical" and voter counts omitted.
+- **AP is partial**: ~146 / 175 ACs present in the 2017 scrape; per-AC booth counts are a
+  near-complete-but-not-100% sample.
+- Local-body reps (Sarpanch/ward) **cannot** be point-joined to individual booths (different
+  granularity, no shared key), so they remain in their own GP→ward browse.
+
+### Files Changed
+| File | Change | Description |
+|---|---|---|
+| `scripts/build-seed-db.mjs` | Modified | TS sarpanch grouping via ward-derived mandal pool + `gp_key` uniqueness net (fixes >GP-count anomaly) |
+| `apps/mobile/data/seed-data.db` | Rebuilt | TS local-body nodes corrected; AP unchanged |
+| `scripts/build-booth-locations-2017.mjs` | New | Parses 2017 psleci CSV → `booth-locations-2017.json` (TS+AP, valid coords, deduped) |
+| `data/seed/booth-locations-2017.json` | New | 58.8k booth GPS + names (TS 27,612 / AP 31,154), 3.77 MB |
+| `data/seed/telangana-hierarchy.ts` | Modified | `PollingBooth` gains optional `historical` / `sourceYear` |
+| `apps/mobile/lib/hierarchyData.ts` | Modified | `get2017Booths`, 2017 fallback in `getBoothsForConstituency`, new `hasBoothData`, `titleCase` |
+| `apps/mobile/app/(tabs)/index.tsx` | Modified | Booth gate → `hasBoothData`; GeoJSON provenance; historical callout |
+| `apps/mobile/i18n/locales/en.ts`, `te.ts` | Modified | `mapExtended.boothHistorical` key |
+| `.gitignore` | Modified | Ignore large raw `scrapers/output/eci/*.csv` |
+| `eslint.config.mjs` | Deleted | Removed stale root ESLint config (housekeeping) |
