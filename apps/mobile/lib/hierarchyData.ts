@@ -90,6 +90,44 @@ const bundle = (stateCode: string): StateHierarchyBundle | null =>
 const constituencyId = (stateCode: string, acNo: number) =>
   `${stateCode.toUpperCase()}-AC-${acNo}`;
 
+// ─── Historical 2017-ECI booth locations (TS + AP) ──────────────────────
+// Real coordinates + booth names; booth numbers / voter counts are historical
+// (see scripts/build-booth-locations-2017.mjs). Shape: { [state]: { [acNo]: [{n,name,lat,lng}] } }.
+// Loaded via require (not import) so TypeScript does not infer a giant literal
+// type from the ~58k-entry JSON, which would cripple type-checking performance.
+type Raw2017Booth = { n: number; name: string; lat: number; lng: number };
+// eslint-disable-next-line @typescript-eslint/no-var-requires
+const BOOTHS_2017_TYPED: Record<string, Record<string, Raw2017Booth[]>> =
+  require('../../../data/seed/booth-locations-2017.json');
+
+function titleCase(s: string): string {
+  return s.replace(/\w\S*/g, (w) => w.charAt(0).toUpperCase() + w.slice(1).toLowerCase());
+}
+
+/**
+ * Real 2017-ECI polling-booth locations for a constituency. Coordinates and
+ * booth names are genuine; booth numbers and voter counts are historical, so
+ * `totalVoters` is 0 and `historical` is set (the UI labels these accordingly).
+ */
+function get2017Booths(stateCode: string, acNo: number): PollingBooth[] {
+  const st = BOOTHS_2017_TYPED[stateCode?.toUpperCase()];
+  const rows = st?.[String(acNo)];
+  if (!rows || rows.length === 0) return [];
+  const cid = constituencyId(stateCode, acNo);
+  return rows.map((r) => ({
+    id: `${cid}-B2017-${r.n}`,
+    constituencyId: cid,
+    panchayatId: null,
+    boothNumber: r.n,
+    nameEn: titleCase(r.name),
+    location: { latitude: r.lat, longitude: r.lng },
+    totalVoters: 0,
+    isUrban: false,
+    historical: true,
+    sourceYear: 2017,
+  }));
+}
+
 // ─── State-specific terminology for the generic (simulated) hierarchy ───
 const STATE_TERMINOLOGY: Record<string, {
   mandalType: Mandal['mandalType'];
@@ -252,12 +290,30 @@ export function getBoothsForPanchayat(stateCode: string, panchayatId: string): P
   return b.booths.filter((bo) => bo.panchayatId === panchayatId).sort((a, b2) => a.boothNumber - b2.boothNumber);
 }
 
-/** All booths in a constituency. */
+/**
+ * All booths in a constituency. Prefers the richer official pilot seed where it
+ * exists; otherwise falls back to the real 2017-ECI historical locations so the
+ * map can plot booths statewide across TS + AP.
+ */
 export function getBoothsForConstituency(stateCode: string, acNo: number): PollingBooth[] {
   const b = getResolvedBundle(stateCode, acNo);
-  if (!b) return [];
+  if (b) {
+    const cid = constituencyId(stateCode, acNo);
+    const official = b.booths
+      .filter((bo) => bo.constituencyId === cid)
+      .sort((a, b2) => a.boothNumber - b2.boothNumber);
+    if (official.length > 0) return official;
+  }
+  return get2017Booths(stateCode, acNo);
+}
+
+/** Whether a constituency has ANY booth data to plot (official pilot or 2017 historical). */
+export function hasBoothData(stateCode: string, acNo: number): boolean {
+  const b = getResolvedBundle(stateCode, acNo);
   const cid = constituencyId(stateCode, acNo);
-  return b.booths.filter((bo) => bo.constituencyId === cid).sort((a, b2) => a.boothNumber - b2.boothNumber);
+  if (b && b.booths.some((bo) => bo.constituencyId === cid)) return true;
+  const st = BOOTHS_2017_TYPED[stateCode?.toUpperCase()];
+  return !!(st && st[String(acNo)]?.length);
 }
 
 export interface ConstituencyHierarchySummary {

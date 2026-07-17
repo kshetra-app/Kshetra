@@ -1368,6 +1368,7 @@ const en = {
     show: 'Show',
     pollingBooth: 'Polling Booth #{{n}}',
     registeredVoters: 'Registered Voters',
+    boothHistorical: '{{year}} ECI location · historical',
     seatDensityOverlay: 'Seat Density Overlay',
     projected: 'PROJECTED',
     underRepresented: 'Under-represented',

@@ -208,6 +208,11 @@ export interface PollingBooth {
   isUrban: boolean;
   /** Municipal ward number (for urban booths only) */
   wardNumber?: number;
+  /** True when sourced from the 2017 ECI snapshot: location is real but the
+   *  booth number and voter counts are historical / unknown. */
+  historical?: boolean;
+  /** Year the location data was sourced (e.g. 2017). */
+  sourceYear?: number;
 }
 
 /** Junction table for Mandal ↔ Constituency M:N relationship */

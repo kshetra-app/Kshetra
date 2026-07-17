@@ -65,7 +65,7 @@ import { styles } from '@/lib/mapScreenStyles';
 import MapTimeSlider from '../../components/MapTimeSlider';
 import { tapLight, selectionChanged } from '../../lib/haptics';
 import { getLocalizedStateName, getLocalizedDistrictName } from '@/lib/stateTranslations';
-import { getBoothsForConstituency, hasHierarchyData } from '@/lib/hierarchyData';
+import { getBoothsForConstituency, hasHierarchyData, hasBoothData } from '@/lib/hierarchyData';
 import { useHasRepresentativeData } from '@/lib/representativesData';
 
 interface SelectedConstituency {
@@ -468,6 +468,8 @@ function FullMapScreen() {
             name: b.nameEn,
             boothNumber: b.boothNumber,
             totalVoters: b.totalVoters ?? 0,
+            historical: b.historical ?? false,
+            sourceYear: b.sourceYear ?? null,
           },
         };
       })
@@ -479,12 +481,12 @@ function FullMapScreen() {
     };
   }, [selected, currentZoom, stateCode, activeGeoJSON]);
 
-  /** Whether the selected constituency actually has verified booth/hierarchy
-   *  data available (pilot coverage only — zero-fabrication policy). Used to
-   *  gate the "Show booths" affordance so we never invite the user to zoom in
-   *  on a constituency that has no booth data to reveal. */
+  /** Whether the selected constituency has any booth data to plot — either the
+   *  richer official pilot seed or the real 2017-ECI historical locations
+   *  (TS + AP). Gates the "Show booths" affordance so we never invite the user
+   *  to zoom in on a constituency that has no booth data to reveal. */
   const selectedHasBoothData = useMemo(
-    () => (selected ? hasHierarchyData(stateCode, selected.acNo) : false),
+    () => (selected ? hasBoothData(stateCode, selected.acNo) : false),
     [selected, stateCode],
   );
 
@@ -1142,9 +1144,15 @@ function FullMapScreen() {
             <Text style={{ fontSize: 14, fontWeight: '700', color: '#FFFFFF', marginTop: 2 }} numberOfLines={1}>
               {selectedBooth.name}
             </Text>
-            <Text style={{ fontSize: 11, color: '#9CA3AF', marginTop: 2 }}>
-              {(selectedBooth.totalVoters || 0).toLocaleString()} {t('mapExtended.registeredVoters')}
-            </Text>
+            {selectedBooth.historical ? (
+              <Text style={{ fontSize: 11, color: '#9CA3AF', marginTop: 2 }}>
+                {t('mapExtended.boothHistorical', { year: selectedBooth.sourceYear ?? 2017 })}
+              </Text>
+            ) : (
+              <Text style={{ fontSize: 11, color: '#9CA3AF', marginTop: 2 }}>
+                {(selectedBooth.totalVoters || 0).toLocaleString()} {t('mapExtended.registeredVoters')}
+              </Text>
+            )}
           </View>
           <Pressable onPress={() => setSelectedBooth(null)} style={{ padding: 4 }}>
             <Ionicons name="close-circle" size={22} color="#FF3B30" />

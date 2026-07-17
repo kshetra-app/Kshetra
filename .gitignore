@@ -44,6 +44,9 @@ coverage/
 # External cloned repos (used for data sourcing only)
 scripts/india-votes-data/
 
+# Large raw booth-location source CSV (2017 psleci snapshot); derived JSON is committed
+scrapers/output/eci/*.csv
+
 # Scraper debug artifacts
 scripts/myneta-sample.html
 

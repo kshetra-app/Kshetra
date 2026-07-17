@@ -1281,6 +1281,7 @@ const te: PartialTranslationKeys = {
     show: 'చూపించు',
     pollingBooth: 'పోలింగ్ బూత్ #{{n}}',
     registeredVoters: 'నమోదైన ఓటర్లు',
+    boothHistorical: '{{year}} ECI స్థానం · చారిత్రక',
     seatDensityOverlay: 'సీటు సాంద్రత అతివ్యాప్తి',
     projected: 'అంచనా',
     underRepresented: 'తక్కువ ప్రాతినిధ్యం',
