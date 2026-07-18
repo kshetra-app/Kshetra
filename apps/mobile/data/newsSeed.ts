@@ -20,7 +20,13 @@ export const NEWS_SOURCES: Record<string, NewsSource> = {
 
 const now = Date.now();
 const ago = (min: number) => new Date(now - min * 60000).toISOString();
-const img = (seed: string) => `https://picsum.photos/seed/${seed}/640/360`;
+/**
+ * The seed feed is only a last-resort offline fallback (used when the on-device
+ * scraper AND the last-good cache are both unavailable). It intentionally
+ * carries NO images — real thumbnails come from live scraped stories, and we
+ * never show placeholder/stock graphics. NewsCard renders these text-only.
+ */
+const img = (_seed: string): string | undefined => undefined;
 
 export const NEWS_ITEMS: NewsItem[] = [
   // ── National / English ──

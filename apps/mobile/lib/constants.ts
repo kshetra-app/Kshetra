@@ -18,6 +18,22 @@ export const MAP_STYLE_LIGHT = 'https://basemaps.cartocdn.com/gl/positron-gl-sty
 export const API_BASE_URL =
   process.env.EXPO_PUBLIC_API_URL ?? 'http://localhost:3001';
 
+/**
+ * A *hosted* API base URL, or null when only the localhost dev default is set.
+ *
+ * Used to decide the news source of truth without the two paths clashing:
+ * when a real remote server is configured the app prefers the backend feed;
+ * otherwise it scrapes RSS on-device. On a shipped APK (no env var) this is
+ * null, so the on-device engine runs. Set `EXPO_PUBLIC_API_URL` to a deployed
+ * host later and the backend automatically takes over.
+ */
+export const REMOTE_API_URL: string | null = (() => {
+  const url = process.env.EXPO_PUBLIC_API_URL;
+  if (!url) return null;
+  if (/localhost|127\.0\.0\.1|10\.0\.2\.2/i.test(url)) return null;
+  return url;
+})();
+
 /** Get [lng, lat] center for any state code */
 export function getStateCenter(stateCode: string): [number, number] {
   if (stateCode.toUpperCase() === 'IN') return [78.9629, 22.5937];
