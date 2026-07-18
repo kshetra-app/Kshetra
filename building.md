@@ -4925,3 +4925,57 @@ current source → (A) 2017 historical snapshot**.
 | `apps/mobile/i18n/locales/en.ts`, `te.ts` | Modified | `mapExtended.boothHistorical` key |
 | `.gitignore` | Modified | Ignore large raw `scrapers/output/eci/*.csv` |
 | `eslint.config.mjs` | Deleted | Removed stale root ESLint config (housekeeping) |
+
+---
+
+## Sprint: On-Device News Engine + App Icon (2026-07-18)
+
+### Summary
+Replaced the placeholder-image news feed with a real, **on-device, language-aware RSS
+scraper** so the News tab shows genuine article thumbnails without needing a hosted
+backend. Also set the official Kshetra dark-background icon as the app launcher icon.
+
+### News engine (on-device)
+- **Problem:** the bundled seed used random `picsum.photos` stock images, and the app always
+  fell back to it because the backend (`localhost:3001`) is unreachable on a shipped APK — so
+  every story showed a dummy image.
+- **Fix:** ported the RSS parser + scraper into the app (`apps/mobile/lib/news/`):
+  - `rssParser.ts` — dependency-free RSS 2.0 / Atom parser (extracts title, link, summary,
+    date, and the real `media:content`/`media:thumbnail`/`enclosure`/`<img>` thumbnail).
+  - `sources.ts` — curated, **live-validated** feed registry for all 9 languages. Each feed
+    was verified (HTTP 200 + returns items + carries thumbnails) via
+    `scripts/validate-news-feeds.mjs`. A `primary` flag marks one image-rich feed per
+    language for the "All languages" view.
+  - `scrape.ts` — **language-aware** `scrapeNewsOnDevice(lang)`: scrapes all feeds for the
+    chosen language, or one primary per language when "All languages" is selected.
+- **Layered loader** (`apps/mobile/stores/news.ts`) — source-of-truth order that keeps the
+  on-device and backend paths from clashing:
+  1. Hosted backend feed — **only** when `EXPO_PUBLIC_API_URL` points at a real remote host
+     (`REMOTE_API_URL` in `lib/constants.ts`; localhost/emulator IPs are ignored).
+  2. On-device RSS scrape of the chosen language.
+  3. Last-good per-language MMKV cache (offline still shows real stories).
+  4. Bundled seed — now **text-only, no dummy images**.
+- Switching language re-scrapes that language; hourly auto-refresh retained.
+- **Server path kept ready:** `apps/api` is untouched. Deploy it later and set
+  `EXPO_PUBLIC_API_URL` → the backend automatically takes over, on-device becomes fallback.
+
+### App icon
+- Set `apps/mobile/assets/icon.png` and `adaptive-icon.png` to
+  `Logo/kshetra_appicon_darkbg_1024.png` (1024×1024). Adaptive-icon background stays
+  `#0A0A1A`, matching the dark artwork.
+
+### Verification
+- `npx tsc --noEmit` (mobile): **EXIT 0 — zero errors**.
+- Feed validation script confirmed image-rich feeds for en/hi/te/ta/kn/ml/mr/bn/gu.
+
+### Files Changed
+| File | Change | Description |
+|---|---|---|
+| `apps/mobile/lib/news/rssParser.ts` | New | On-device RSS/Atom parser |
+| `apps/mobile/lib/news/sources.ts` | New | Validated 9-language feed registry + helpers |
+| `apps/mobile/lib/news/scrape.ts` | New | Language-aware on-device scraper |
+| `apps/mobile/stores/news.ts` | Modified | Layered loader + per-language MMKV cache |
+| `apps/mobile/lib/constants.ts` | Modified | `REMOTE_API_URL` remote-host detection |
+| `apps/mobile/data/newsSeed.ts` | Modified | Dropped picsum dummies (text-only fallback) |
+| `apps/mobile/assets/icon.png`, `adaptive-icon.png` | Modified | Kshetra dark-bg launcher icon |
+| `scripts/validate-news-feeds.mjs` | New | Live RSS feed validation dev tool |
