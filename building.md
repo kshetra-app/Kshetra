@@ -75,6 +75,7 @@
 | Sprint 52: Authoritative Seed Rebuild (TCPD), Historical Backfill, TN Geo Clean & Hierarchy UI | ✅ Complete | 2026-06-22 | 2026-06-22 |
 | Sprint 53: News Aggregator (RSS backend), In-App Reader & Campaign Outreach Panel | ✅ Complete | 2026-07-02 | 2026-07-02 |
 | Sprint 54: Local-Body Representatives — TSEC Scraper, Offline Seed & Local Bodies Browser | ✅ Complete | 2026-07-08 | 2026-07-12 |
+| Sprint 55: Kshetra Live Media Exchange (LMX) — Phase 1 Vertical Slice | ✅ Complete | 2026-07-25 | 2026-07-25 |
 
 ---
 
@@ -4979,3 +4980,119 @@ backend. Also set the official Kshetra dark-background icon as the app launcher 
 | `apps/mobile/data/newsSeed.ts` | Modified | Dropped picsum dummies (text-only fallback) |
 | `apps/mobile/assets/icon.png`, `adaptive-icon.png` | Modified | Kshetra dark-bg launcher icon |
 | `scripts/validate-news-feeds.mjs` | New | Live RSS feed validation dev tool |
+
+---
+
+## Sprint 55: Kshetra Live Media Exchange (LMX) — Phase 1 Vertical Slice (2026-07-25)
+
+**Commit**: `6d4a295` — *feat(lmx): Kshetra Live Media Exchange - Phase 1 vertical slice* (23 files, +3836)
+
+### Summary
+Built the complete **application, data, and orchestration layer** of the Kshetra
+Live Media Exchange — a citizen/journalist live-streaming exchange that routes a
+single broadcast to the public feed, to media partners, and to government
+departments simultaneously. Delivered as a working, seed-backed, offline-first
+vertical slice: the Live tab, go-live flow, player, department console,
+moderation queue, and distribution surfaces all function end-to-end against a
+local Zustand store, with a matching API control plane and DB schema built to the
+integration boundary.
+
+### Guiding principles (locked in from the outset)
+- **Cross-platform, not Android-only.** This is the Kshetra app itself
+  (Expo/React Native), not a separate Android build.
+- **AI is fully built but OPTIONAL and pluggable.** Mirrors the existing
+  `apps/api/src/services/ai.ts` `if (!apiKey)` fallback: with no model
+  configured, the entire flow still works using neutral AI defaults. AI **never**
+  triggers routing — it only adds alert context and ranks the Live-tab priority.
+- **The Live Event Object is the single source of truth.**
+- **Two orthogonal go-live choices** (deliberately independent):
+  1. `visibility_mode` — `public` / `exclusive_partner` / `confidential_direct`.
+  2. `alertDepartments[]` — reporter-initiated, GPS-jurisdiction-resolved.
+- **Tier B (political/campaign live) is out of scope** for this phase; the schema
+  and types preserve room for it without rework.
+
+### What now works end-to-end
+- **Kshetra Live tab** — new visible tab (between Feed and News); priority-ranked
+  feed with category / freshness / verified filters; `LiveStreamCard` showing
+  tier, brand, viewers, and department-alert indicators.
+- **Go-Live flow** — the three orthogonal choices, KYC-gated via
+  `contributorVerification.requestAction('go_live')`, GPS capture with graceful
+  fallback, and a live moderation-buffer preview.
+- **Live player** — feed area, department alerts fired, owner "end broadcast"
+  control, and an **AI enrichment panel that only appears when AI is active**
+  (otherwise an honest "AI off — flow still works" notice).
+- **Department console** — reporter-initiated, jurisdiction-resolved alert inbox;
+  acknowledging `genuine` / `false` / `unable_to_verify` **feeds directly back
+  into the reporter's credibility score**.
+- **Moderation queue** — human buffer triage (allow / mute / cut / escalate); AI
+  flags extend the buffer only when AI is on and never auto-kill.
+- **Distribution + recipient-side** — RTMP relay key entry, copy/share embed
+  `<iframe>` snippet, SRT endpoint, and a **universal HTML5 web receiver**
+  (`apps/web-receiver`) for Windows / Android-TV / touchscreen kiosks, shipped as
+  separate software with an hls.js player and demo-feed fallback.
+
+### Data model & core logic
+- **`supabase/migrations/024_live_media_exchange.sql`** — the Live Event Object
+  (`live_events`) + an optional 1:1 `live_event_ai` table + `lmx_departments`,
+  `lmx_department_alerts` (with acknowledgment), `lmx_distribution_destinations`,
+  `lmx_org_relays`, `lmx_brand_kits`, `lmx_affiliations`, `lmx_credibility`,
+  `lmx_moderation_events`; plus `lmx_live_tab_feed` and `lmx_department_inbox`
+  views and RLS policies.
+- **`apps/mobile/lib/lmxTypes.ts`** — full type system + config maps and pure,
+  unit-tested utilities: `neutralAI`, `hasAI`, `computeBufferSeconds`,
+  `computePriorityScore`, `applyAckToCredibility`, `resolveJurisdiction`,
+  `haversineKm`.
+- **`apps/mobile/stores/liveExchange.ts`** — Zustand + persist store with seeded
+  demo events/departments/affiliations/brand-kits/credibility; the `startLiveEvent`
+  pipeline dispatches jurisdiction-resolved alerts; `acknowledgeAlert` updates
+  credibility; `aiServiceEnabled` defaults **off** and `enrichWithAI` is a no-op
+  when disabled.
+
+### AI-optional API control plane
+- **`apps/api/src/routes/lmx.ts`** (registered in `server.ts`) — `status`,
+  `live` (list + detail), go-live create, end, `departments` (list + subscribe),
+  `alerts` dispatch, `alerts/:id/acknowledge`, and `distribution`. `aiEnabled` is
+  derived from `!!process.env.OPENAI_API_KEY`, so every endpoint degrades
+  gracefully with no model configured.
+
+### Verification
+- `npx tsc --noEmit` (mobile): **EXIT 0 — zero errors**.
+- `npx tsc --noEmit` (api): **EXIT 0 — zero errors**.
+- `apps/mobile/__tests__/lmx-types.test.ts`: **19/19 pass** — covers AI-optional
+  defaults, buffer timing (incl. AI-flag extension only when enabled), priority
+  ranking, the credibility feedback loop (genuine ↑ / false ↓ / restriction
+  thresholds / clamping), per-department-type jurisdiction resolution (nearest
+  verified office, catchment radius, exclusion of unverified/inactive), and
+  haversine sanity.
+
+### Integration boundary (intentionally NOT built — needs provisioning)
+Consistent with the Mapbox-token precedent, the media plane is left to
+infrastructure provisioning rather than fabricated:
+- Managed media stack (AWS MediaLive/MediaConnect/CDN/SRT nodes), real transcode.
+- Live camera capture + RTMP/WebRTC publish; real HLS playback (the in-app player
+  is a styled placeholder that surfaces the HLS URL).
+- Supabase persistence wiring (the store is currently seed/local only).
+- Org admin portal for brand kits; SRT provisioning backend; Phase-2 native
+  Windows / Android-TV receiver wrappers; Tier B (political live).
+
+### Files Changed
+| File | Change | Description |
+|---|---|---|
+| `supabase/migrations/024_live_media_exchange.sql` | New | 11 tables + 2 views + RLS for the Live Event Object and supporting entities |
+| `apps/mobile/lib/lmxTypes.ts` | New | LMX type system, config maps, and pure utilities |
+| `apps/mobile/stores/liveExchange.ts` | New | Exchange store: go-live pipeline, alert dispatch, credibility loop (AI off by default) |
+| `apps/mobile/components/LiveStreamCard.tsx` | New | Live feed card (tier/brand/viewers/dept indicators) |
+| `apps/mobile/app/(tabs)/live.tsx` | New | Kshetra Live tab + filters |
+| `apps/mobile/app/live/[id].tsx` | New | Live player + optional AI panel + dept alerts + owner controls |
+| `apps/mobile/app/live/go-live.tsx` | New | Go-live flow: 3 orthogonal choices, KYC gate, GPS |
+| `apps/mobile/app/live/moderation-queue.tsx` | New | Human moderation buffer triage |
+| `apps/mobile/app/live/distribution.tsx` | New | RTMP relay / embed snippet / SRT endpoint |
+| `apps/mobile/app/departments/dashboard.tsx` | New | Department console (ack → credibility) |
+| `apps/web-receiver/index.html`, `README.md` | New | Universal HTML5 web receiver (separate software) |
+| `apps/api/src/routes/lmx.ts` | New | AI-optional LMX control-plane API |
+| `apps/api/src/server.ts` | Modified | Register `lmxRoutes` |
+| `apps/mobile/app/(tabs)/_layout.tsx` | Modified | Register the Live tab (icon `radio`) |
+| `apps/mobile/app/(tabs)/more.tsx` | Modified | "Live Media Exchange" section (Go Live / Live / Dept Console / Moderation / Distribution) |
+| `apps/mobile/lib/contentAccountabilityTypes.ts` | Modified | `GATED_ACTIONS` + config gain `go_live` and `alert_department` |
+| `apps/mobile/i18n/locales/{en,hi,te,kn,mr}.ts` | Modified | `tabs.live` translation key |
+| `apps/mobile/__tests__/lmx-types.test.ts` | New | 19 unit tests for LMX pure utilities |
