@@ -69,6 +69,13 @@ export default function GoLiveScreen() {
   const [gps, setGps] = useState<{ lat: number; lng: number } | null>(null);
   const [gpsStatus, setGpsStatus] = useState<'detecting' | 'ready' | 'unavailable'>('detecting');
 
+  // Real device camera capture (expo-image-picker). True live RTMP publish needs
+  // the managed media plane; until then this captures a real clip for look-and-feel.
+  const [capturedUri, setCapturedUri] = useState<string | null>(null);
+  const [captureSeconds, setCaptureSeconds] = useState<number | null>(null);
+  const [capturing, setCapturing] = useState(false);
+  const [captureError, setCaptureError] = useState<string | null>(null);
+
   const selectedAffiliation = affiliations.find((a) => a.id === affiliationId);
   const tier = DEMO_REPORTER.tier;
 
@@ -114,6 +121,33 @@ export default function GoLiveScreen() {
     setAlertDepts((prev) => (prev.includes(d) ? prev.filter((x) => x !== d) : [...prev, d]));
 
   const canGoLive = gps !== null;
+
+  const captureClip = async () => {
+    setCaptureError(null);
+    setCapturing(true);
+    try {
+      const ImagePicker = await import('expo-image-picker');
+      const perm = await ImagePicker.requestCameraPermissionsAsync();
+      if (!perm.granted) {
+        setCaptureError('Camera permission denied. You can still go live with a demo stream.');
+        return;
+      }
+      const result = await ImagePicker.launchCameraAsync({
+        mediaTypes: ['videos'],
+        videoMaxDuration: 60,
+        quality: 1,
+      });
+      if (!result.canceled && result.assets?.length) {
+        const asset = result.assets[0];
+        setCapturedUri(asset.uri);
+        setCaptureSeconds(asset.duration ? Math.round(asset.duration / 1000) : null);
+      }
+    } catch {
+      setCaptureError('Camera unavailable on this device. You can still go live with a demo stream.');
+    } finally {
+      setCapturing(false);
+    }
+  };
 
   const handleGoLive = () => {
     // KYC gate — going live is a high-severity content action.
@@ -165,6 +199,44 @@ export default function GoLiveScreen() {
                 : 'Using approximate location (permission denied)'}
           </Text>
         </View>
+
+        {/* Camera capture */}
+        <Section
+          title="Camera"
+          hint="Record a clip from your device camera. Live RTMP publish activates once the media plane is provisioned."
+        >
+          {capturedUri ? (
+            <View style={styles.captureDone}>
+              <Ionicons name="checkmark-circle" size={20} color="#10B981" />
+              <View style={{ flex: 1 }}>
+                <Text style={styles.captureDoneText}>Clip captured</Text>
+                <Text style={styles.captureMeta}>
+                  {captureSeconds != null ? `${captureSeconds}s · ` : ''}ready on device
+                </Text>
+              </View>
+              <Pressable onPress={captureClip} hitSlop={8}>
+                <Text style={styles.recapture}>Re-record</Text>
+              </Pressable>
+            </View>
+          ) : (
+            <Pressable
+              style={[styles.captureBtn, capturing && { opacity: 0.6 }]}
+              onPress={captureClip}
+              disabled={capturing}
+            >
+              <Ionicons name="videocam" size={18} color="#FFFFFF" />
+              <Text style={styles.captureBtnText}>
+                {capturing ? 'Opening camera…' : 'Record a clip'}
+              </Text>
+            </Pressable>
+          )}
+          {!!captureError && (
+            <View style={styles.alertNote}>
+              <Ionicons name="warning" size={13} color="#F59E0B" />
+              <Text style={styles.alertNoteText}>{captureError}</Text>
+            </View>
+          )}
+        </Section>
 
         {/* 1. Broadcasting as */}
         <Section title="Broadcasting as" hint="Choose an affiliation or stream independently.">
@@ -385,6 +457,19 @@ const styles = StyleSheet.create({
   optIcon: { width: 38, height: 38, borderRadius: 10, justifyContent: 'center', alignItems: 'center' },
   optLabel: { fontSize: 14, fontWeight: '700', color: '#F9FAFB' },
   optSub: { fontSize: 11, color: '#9CA3AF', marginTop: 2 },
+  captureBtn: {
+    flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 8,
+    backgroundColor: '#1D4ED8', paddingVertical: 13, borderRadius: 12,
+  },
+  captureBtnText: { color: '#FFFFFF', fontSize: 14, fontWeight: '800' },
+  captureDone: {
+    flexDirection: 'row', alignItems: 'center', gap: 10,
+    borderWidth: 1, borderColor: '#10B98155', backgroundColor: '#10B98114',
+    borderRadius: 12, padding: 12,
+  },
+  captureDoneText: { fontSize: 14, fontWeight: '700', color: '#F9FAFB' },
+  captureMeta: { fontSize: 11, color: '#9CA3AF', marginTop: 2 },
+  recapture: { fontSize: 12, fontWeight: '800', color: '#4F8EF7' },
   deptGrid: { flexDirection: 'row', flexWrap: 'wrap', gap: 8 },
   deptChip: {
     flexDirection: 'row', alignItems: 'center', gap: 6,

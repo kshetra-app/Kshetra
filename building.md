@@ -5096,3 +5096,63 @@ infrastructure provisioning rather than fabricated:
 | `apps/mobile/lib/contentAccountabilityTypes.ts` | Modified | `GATED_ACTIONS` + config gain `go_live` and `alert_department` |
 | `apps/mobile/i18n/locales/{en,hi,te,kn,mr}.ts` | Modified | `tabs.live` translation key |
 | `apps/mobile/__tests__/lmx-types.test.ts` | New | 19 unit tests for LMX pure utilities |
+
+---
+
+## Sprint 56 — LMX Phase 2: crash fix, real capture + HLS playback, transparent icon APK
+
+### Summary
+Hardened and made the LMX slice tangible: fixed the **Live tab release crash**, made
+streams **actually watchable** (real HLS playback), added **real device camera capture**
+to the go-live flow, and rebuilt the APK with the requested **transparent app icon** — all
+without a `expo prebuild` (which would wipe the customized `android/` project).
+
+### What changed
+- **Live tab crash (release-only) fixed.** Zustand v5 has no built-in selector
+  memoization; selectors returning fresh arrays (`getLiveTabFeed` / `getModerationQueue`
+  / `getAlertsForEvent` / `getActiveAffiliations`) drove an infinite render loop → hard
+  crash on open. Wrapped every derived-array selector in `useShallow`
+  (`live.tsx`, `distribution.tsx`, `moderation-queue.tsx`, `go-live.tsx`, `live/[id].tsx`).
+- **Real HLS playback.** New `HlsPlayer` component renders a WebView + `hls.js`
+  (already-present `react-native-webview` — no native module, no prebuild). Wired into
+  `live/[id].tsx`; go-live events without a provisioned media plane show a "provisioning"
+  state instead of loading a dead URL. Seed events now point at real public HLS test
+  streams (Mux / Apple bipbop) so the Live tab plays actual video.
+- **Real camera capture.** `go-live.tsx` gained a Camera section using `expo-image-picker`
+  `launchCameraAsync({ mediaTypes: ['videos'] })` to record a real clip on-device. True
+  live RTMP publish still needs the media plane (honest UI copy). Added `CAMERA` +
+  `RECORD_AUDIO` to `app.json` and to the already-generated `AndroidManifest.xml`.
+- **Transparent app icon.** Regenerated all `mipmap-*` legacy + adaptive-foreground PNGs
+  from `Logo/kshetra_appicon_transparent_512.png` in place (System.Drawing), and updated
+  `assets/icon.png` / `assets/adaptive-icon.png` for future prebuilds.
+
+### Integration boundary (unchanged)
+Managed live media plane (ingest → transcode → HLS/SRT origin/CDN) is still external
+infrastructure. This sprint stops exactly at that boundary: capture is real, playback is
+real against real HLS origins, but Kshetra-originated live publish awaits provisioning.
+Alternatives to AWS MediaLive/CDN/SRT that slot into the same `mediaIngestUrl` /
+`mediaPlaybackHls` fields: **Mux Video**, **Cloudflare Stream**, **Livepeer**, or
+self-hosted **MediaMTX / Ant Media / Nginx-RTMP**; **LiveKit / Agora** for WebRTC.
+
+### Verification
+- `npx tsc --noEmit` clean after every edit.
+- APK rebuilt via the Section 10 recipe: `export:embed` → Hermes compile
+  (`index.android.bundle` magic `C6-1F-BC-03`) → `assembleRelease` (**BUILD SUCCESSFUL**,
+  315.7 MB). Copied to `Desktop\kshetra-release.apk`. New transparent icon confirmed on the
+  source mipmaps (192×192, alpha, transparent corner).
+- Hit an `expo export:embed --reset-cache` **serializer deadlock at 99.9%**; documented
+  the detection + fix (kill, retry without `--reset-cache`) in TROUBLESHOOTING §3.
+
+### Files Changed
+| File | Change | Description |
+|---|---|---|
+| `apps/mobile/components/HlsPlayer.tsx` | New | WebView + hls.js HLS player (no native module / prebuild) |
+| `apps/mobile/app/live/[id].tsx` | Modified | Real HLS playback + provisioning fallback + `useShallow` |
+| `apps/mobile/app/live/go-live.tsx` | Modified | Camera capture (expo-image-picker) + `useShallow` |
+| `apps/mobile/app/(tabs)/live.tsx`, `live/distribution.tsx`, `live/moderation-queue.tsx` | Modified | `useShallow` on derived-array selectors (crash fix) |
+| `apps/mobile/stores/liveExchange.ts` | Modified | Seed events use real public HLS test streams |
+| `apps/mobile/app.json` | Modified | `CAMERA` + `RECORD_AUDIO` permissions |
+| `apps/mobile/android/.../AndroidManifest.xml` | Modified (gitignored) | `CAMERA` permission added in place |
+| `apps/mobile/android/.../res/mipmap-*` | Modified (gitignored) | Regenerated launcher icons (transparent) |
+| `apps/mobile/assets/{icon,adaptive-icon}.png` | Modified | New transparent source icon |
+| `TROUBLESHOOTING.md` | Modified | Zustand v5 crash, Metro deadlock, icon-without-prebuild entries |

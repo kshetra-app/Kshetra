@@ -138,7 +138,9 @@ function seedEvent(partial: Partial<LiveEvent> & { id: string; streamId: string 
     stateCode: 'TS', districtName: 'Hyderabad', mandalName: null, constituencyAcNo: null, locality: null,
     issueCategory: 'general', tags: [], language: 'en',
     mediaIngestUrl: null,
-    mediaPlaybackHls: 'https://demo.kshetra.in/live/placeholder.m3u8',
+    // Real public HLS test streams so the Live tab is genuinely watchable in the
+    // demo (the managed media plane is not provisioned yet). Overridden per event.
+    mediaPlaybackHls: 'https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8',
     mediaPlaybackWebrtc: null, thumbnailUrl: null, multiCameraAngles: [],
     affiliationId: null, activeBrandKitId: null, organizationName: null, exclusivityFlag: false,
     visibilityMode: 'public', alertDepartments: [],
@@ -158,6 +160,7 @@ const SEED_EVENTS: LiveEvent[] = [
   seedEvent({
     id: 'le-1', streamId: 'KX-240001', reporterId: 'u-j1', reporterName: 'Kavitha Reddy',
     accreditationTier: 'senior', credibilityScore: 88,
+    mediaPlaybackHls: 'https://devstreaming-cdn.apple.com/videos/streaming/examples/img_bipbop_adv_example_ts/master.m3u8',
     issueCategory: 'breaking_news', tags: ['assembly', 'session'],
     districtName: 'Hyderabad', locality: 'Assembly',
     organizationName: 'Deccan Chronicle', affiliationId: 'aff-1', activeBrandKitId: 'bk-dc',
@@ -180,6 +183,7 @@ const SEED_EVENTS: LiveEvent[] = [
   }),
   seedEvent({
     id: 'le-4', streamId: 'KX-240004', reporterName: 'Ground Report — KA',
+    mediaPlaybackHls: 'https://test-streams.mux.dev/pts_shift/master.m3u8',
     stateCode: 'KA', districtName: 'Bengaluru Urban', locality: 'MG Road',
     gpsLat: 12.9757, gpsLng: 77.6068,
     issueCategory: 'civic', tags: ['pothole', 'infrastructure'],

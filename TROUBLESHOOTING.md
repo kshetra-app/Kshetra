@@ -273,6 +273,47 @@ And `app.json` has the router plugin:
 
 ---
 
+### `expo export:embed` hangs forever at 99.9% ("Writing bundle output" never finishes)
+
+**Symptom:** The Metro bundle reaches `99.9% (2477/2477)` and then sits there for
+10+ minutes with **no further output** and no `index.android.bundle` ever written.
+
+**How to confirm it's a deadlock (not just slow serialization):** Sample the `node`
+processes twice a few seconds apart. In a real deadlock **every** worker is idle:
+```powershell
+# All node procs at ~9-15 MB RAM and 0 CPU delta = deadlocked, not working.
+$a=@{}; Get-Process node | %{ $a[$_.Id]=$_.CPU }; Start-Sleep 8
+Get-Process node | %{ "$($_.Id) dCPU=$([math]::Round($_.CPU-$a[$_.Id],1)) mem=$([int]($_.WS/1MB))MB" }
+```
+A genuine serialization pass keeps **one** process burning CPU with a large heap
+(hundreds of MB). If nothing holds a big heap and CPU deltas are all `0`, it's hung —
+the `jest-worker` transformers finished but the main serializer never resolves. This
+project's bundle is large (~78 MB raw JS, mostly inlined GeoJSON), which makes the
+window for this race wider.
+
+**Fix:** Kill the whole build and re-run **without** `--reset-cache` (the cache is
+already warm from the first attempt, so the retry is fast and skips the racey rebuild):
+```powershell
+# 1. Kill the hung build (all node procs are the export + its jest-workers)
+Get-CimInstance Win32_Process -Filter "Name='node.exe'" |
+  Where-Object { $_.CommandLine -match 'export:embed|jest-worker' } |
+  ForEach-Object { Stop-Process -Id $_.ProcessId -Force }
+
+# 2. Retry WITHOUT --reset-cache
+npx expo export:embed --platform android --dev false `
+  --bundle-output android/app/src/main/assets/index.android.bundle `
+  --assets-dest android/app/src/main/res/
+```
+Success looks like: `Writing bundle output to: ...`, `Copying N asset files`,
+`Done writing bundle output`. Then continue with the Hermes step in
+[Section 10](#10-apk-build--step-by-step-recipe).
+
+> Real occurrence: Sprint 56 (LMX capture/playback). The first `export:embed --reset-cache`
+> deadlocked at 99.9%; all 8 node procs sat at 0 CPU / ~13 MB. Killing and re-running
+> without `--reset-cache` bundled cleanly in ~45 s.
+
+---
+
 ## 4. Native Module Errors
 
 ### Module not found at runtime but builds fine
@@ -377,6 +418,53 @@ npx expo prebuild --clean
    ```
 
 2. **Pre-place the JS bundle** (see [Section 10](#10-apk-build--step-by-step-recipe))
+
+### Change the app icon WITHOUT a full prebuild
+
+`expo prebuild` is the "official" way to regenerate launcher icons from
+`app.json` → `icon` / `android.adaptiveIcon`, but it **wipes** the customized
+`android/` folder (see warning above). Since our APK recipe reuses the committed
+native project, regenerate the mipmaps in place instead. The build step
+`expo export:embed --assets-dest res/` only copies **JS-referenced** assets into
+`res/drawable-*` / `res/raw` — it does **not** touch `res/mipmap-*`, so launcher
+icons must be written directly:
+
+```powershell
+Add-Type -AssemblyName System.Drawing
+$src = "C:\K\Logo\kshetra_appicon_transparent_512.png"   # your source (square PNG)
+$res = "C:\K\apps\mobile\android\app\src\main\res"
+$orig = [System.Drawing.Image]::FromFile($src)
+function Canvas([int]$s){ $b=New-Object System.Drawing.Bitmap($s,$s,[System.Drawing.Imaging.PixelFormat]::Format32bppArgb)
+  $g=[System.Drawing.Graphics]::FromImage($b); $g.InterpolationMode='HighQualityBicubic'
+  $g.Clear([System.Drawing.Color]::Transparent); return ,@($b,$g) }
+# Legacy icons (full-bleed): 48/72/96/144/192
+@{ "mipmap-mdpi"=48;"mipmap-hdpi"=72;"mipmap-xhdpi"=96;"mipmap-xxhdpi"=144;"mipmap-xxxhdpi"=192 }.GetEnumerator()|%{
+  $p=Canvas $_.Value; $p[1].DrawImage($orig,0,0,$_.Value,$_.Value)
+  $p[0].Save("$res\$($_.Key)\ic_launcher.png",'Png'); $p[0].Save("$res\$($_.Key)\ic_launcher_round.png",'Png') }
+# Adaptive foreground (logo ~66% within the 108dp safe zone): 108/162/216/324/432
+@{ "mipmap-mdpi"=108;"mipmap-hdpi"=162;"mipmap-xhdpi"=216;"mipmap-xxhdpi"=324;"mipmap-xxxhdpi"=432 }.GetEnumerator()|%{
+  $p=Canvas $_.Value; $l=[int]($_.Value*0.66); $o=[int](($_.Value-$l)/2)
+  $p[1].DrawImage($orig,$o,$o,$l,$l); $p[0].Save("$res\$($_.Key)\ic_launcher_foreground.png",'Png') }
+$orig.Dispose()
+```
+
+Also update the source assets so a **future** prebuild stays consistent:
+```powershell
+Copy-Item $src "C:\K\apps\mobile\assets\icon.png" -Force
+Copy-Item $src "C:\K\apps\mobile\assets\adaptive-icon.png" -Force
+```
+
+Notes:
+- The adaptive **background** is a solid color (`@color/iconBackground` in
+  `mipmap-anydpi-v26/ic_launcher.xml`), so a *transparent* source shows on that
+  color tile — Android adaptive icons can't have a truly transparent background.
+- Verify: the xxxhdpi legacy icon should be `192x192` with a transparent corner
+  (`(Get-Item ...).LastWriteTime` newer than the last build; corner pixel alpha `0`).
+- Release APKs rename resources (AAPT2), so you **cannot** find `ic_launcher.png`
+  by name inside the `.apk` — verify on the source PNGs before building instead.
+
+> Real occurrence: Sprint 56 swapped in `kshetra_appicon_transparent_512.png` this
+> way (no prebuild), preserving the `build.gradle` bundler patch and manifest edits.
 
 ---
 

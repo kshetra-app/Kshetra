@@ -11,6 +11,7 @@ import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useShallow } from 'zustand/react/shallow';
 import { useLiveExchangeStore } from '../../stores/liveExchange';
+import { HlsPlayer } from '../../components/HlsPlayer';
 import {
   ISSUE_CATEGORY_CONFIG,
   TIER_CONFIG,
@@ -57,17 +58,34 @@ export default function LivePlayerScreen() {
   const isOwner = event.reporterId === currentReporterId;
   const aiOn = hasAI(event);
 
+  // Only attempt real playback for actual stream URLs. Go-live events get a
+  // placeholder kshetra.in URL (no media plane provisioned yet), so we show a
+  // "provisioning" state for those instead of loading a URL that will 404.
+  const playbackSrc =
+    event.mediaPlaybackHls && !/kshetra\.in/.test(event.mediaPlaybackHls)
+      ? event.mediaPlaybackHls
+      : null;
+
   return (
     <View style={styles.container}>
       {/* Video area */}
       <View style={[styles.player, { paddingTop: insets.top }]}>
-        <View style={styles.playerInner}>
-          <Ionicons name={cat.icon as any} size={54} color={cat.color} />
-          <Text style={styles.playerNote}>
-            {isLive ? 'Live video feed' : 'Replay'}
-          </Text>
-          <Text style={styles.playerUrl} numberOfLines={1}>{event.mediaPlaybackHls}</Text>
-        </View>
+        {playbackSrc ? (
+          <HlsPlayer
+            src={playbackSrc}
+            style={StyleSheet.absoluteFill}
+            autoPlay={isLive}
+            muted
+          />
+        ) : (
+          <View style={styles.playerInner}>
+            <Ionicons name={cat.icon as any} size={54} color={cat.color} />
+            <Text style={styles.playerNote}>
+              {isLive ? 'Provisioning stream…' : 'Replay unavailable'}
+            </Text>
+            <Text style={styles.playerUrl} numberOfLines={1}>{event.streamId}</Text>
+          </View>
+        )}
 
         <Pressable style={[styles.closeBtn, { top: insets.top + 8 }]} onPress={() => router.back()}>
           <Ionicons name="chevron-down" size={26} color="#FFFFFF" />
