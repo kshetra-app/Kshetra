@@ -45,6 +45,8 @@ export type ContentActionType =
   | 'submit_report'
   | 'create_challenge'
   | 'endorse_aspirant'
+  | 'go_live'
+  | 'alert_department'
   | 'other';
 
 export const GATED_ACTIONS: ContentActionType[] = [
@@ -65,6 +67,8 @@ export const GATED_ACTIONS: ContentActionType[] = [
   'submit_report',
   'create_challenge',
   'endorse_aspirant',
+  'go_live',
+  'alert_department',
 ];
 
 export const ACTION_TYPE_CONFIG: Record<ContentActionType, { label: string; severity: 'low' | 'medium' | 'high' }> = {
@@ -87,6 +91,8 @@ export const ACTION_TYPE_CONFIG: Record<ContentActionType, { label: string; seve
   submit_report: { label: 'Report Content', severity: 'medium' },
   create_challenge: { label: 'Create Challenge', severity: 'high' },
   endorse_aspirant: { label: 'Endorse Aspirant', severity: 'medium' },
+  go_live: { label: 'Go Live', severity: 'high' },
+  alert_department: { label: 'Alert a Government Department', severity: 'high' },
   other: { label: 'Other Action', severity: 'low' },
 };
 

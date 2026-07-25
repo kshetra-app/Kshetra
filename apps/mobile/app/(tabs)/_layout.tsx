@@ -81,6 +81,15 @@ export default function TabLayout() {
         }}
       />
       <Tabs.Screen
+        name="live"
+        options={{
+          title: t('tabs.live', { defaultValue: 'Live' }),
+          tabBarIcon: ({ color, size }) => (
+            <TabIcon name="radio" color={color} size={size} />
+          ),
+        }}
+      />
+      <Tabs.Screen
         name="news"
         options={{
           title: t('tabs.news', { defaultValue: 'News' }),

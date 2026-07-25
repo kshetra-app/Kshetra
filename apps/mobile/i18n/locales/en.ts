@@ -83,6 +83,7 @@ const en = {
     explore: 'Explore',
     feed: 'Feed',
     news: 'News',
+    live: 'Live',
     shorts: 'Shorts',
     more: 'More',
     dashboard: 'Dashboard',

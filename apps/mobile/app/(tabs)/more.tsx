@@ -33,6 +33,14 @@ export default function MoreScreen() {
     { label: 'Parliament', icon: 'business', color: '#818CF8', route: '/parliament' },
   ];
 
+  const liveExchange: Tile[] = [
+    { label: 'Go Live', icon: 'radio', color: '#EF4444', route: '/live/go-live' },
+    { label: 'Kshetra Live', icon: 'videocam', color: '#F97316', route: '/live' },
+    { label: 'Dept. Console', icon: 'shield', color: '#3B82F6', route: '/departments/dashboard' },
+    { label: 'Moderation', icon: 'shield-half', color: '#8B5CF6', route: '/live/moderation-queue' },
+    { label: 'Distribution', icon: 'share-social', color: '#14B8A6', route: '/live/distribution' },
+  ];
+
   const account: Tile[] = [
     { label: 'Profile', icon: 'person', color: '#4F8EF7', route: '/profile' },
     { label: 'Notifications', icon: 'notifications', color: '#EF4444', route: '/notifications', badge: unread || undefined },
@@ -74,6 +82,7 @@ export default function MoreScreen() {
         </Pressable>
 
         <Section title="Politicians & Campaign" tiles={campaign} tileWidth={tileWidth} onPress={go} />
+        <Section title="Live Media Exchange" tiles={liveExchange} tileWidth={tileWidth} onPress={go} />
         <Section title="Civic & Elections" tiles={civic} tileWidth={tileWidth} onPress={go} />
         <Section title="Account" tiles={account} tileWidth={tileWidth} onPress={go} />
       </ScrollView>

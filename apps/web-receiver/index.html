@@ -1,0 +1,215 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>Kshetra Live Receiver</title>
+  <!--
+    Kshetra Live Media Exchange — Universal Web Receiver (doc Section 7a.2)
+
+    ONE HTML5 page that covers three device classes with a single codebase:
+      • Windows: any browser in full-screen / kiosk mode on a PC → TV via HDMI.
+      • Android smart TV: the TV browser, or a thin WebView wrapper (Phase 2).
+      • Interactive touchscreens: Windows/Android panels running a browser.
+
+    This is SEPARATE software from the Kshetra mobile app — partners are not app
+    users. It authenticates, lists a partner's subscribed feeds, and plays the
+    HLS feed full-screen. HLS is played via hls.js where MSE is available, and
+    natively on Safari / many smart-TV browsers.
+
+    Config: set window.KSHETRA_API to your LMX API base (defaults shown).
+  -->
+  <script>
+    window.KSHETRA_API = window.KSHETRA_API || 'https://api.kshetra.in/api/v1/lmx';
+  </script>
+  <script src="https://cdn.jsdelivr.net/npm/hls.js@1.5.13/dist/hls.min.js"></script>
+  <style>
+    :root {
+      --bg: #0A0A1A; --panel: #111827; --border: #1F2937;
+      --text: #F9FAFB; --muted: #9CA3AF; --accent: #4F8EF7; --live: #EF4444;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body { height: 100%; background: var(--bg); color: var(--text);
+      font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; }
+    #app { display: flex; flex-direction: column; height: 100vh; }
+
+    header { display: flex; align-items: center; justify-content: space-between;
+      padding: 14px 20px; border-bottom: 1px solid var(--border); }
+    header h1 { font-size: 18px; font-weight: 800; letter-spacing: 0.3px; }
+    header .dot { width: 9px; height: 9px; border-radius: 50%; background: var(--live);
+      display: inline-block; margin-right: 6px; }
+    header .sub { font-size: 12px; color: var(--muted); }
+
+    /* Login */
+    #login { margin: auto; width: 320px; background: var(--panel);
+      border: 1px solid var(--border); border-radius: 16px; padding: 24px; }
+    #login h2 { font-size: 16px; margin-bottom: 4px; }
+    #login p { font-size: 12px; color: var(--muted); margin-bottom: 16px; }
+    input, button { width: 100%; font-size: 14px; border-radius: 10px; }
+    input { padding: 11px 12px; background: var(--bg); color: var(--text);
+      border: 1px solid var(--border); margin-bottom: 10px; }
+    button { padding: 12px; border: none; background: var(--accent); color: #fff;
+      font-weight: 700; cursor: pointer; }
+    button:hover { filter: brightness(1.08); }
+
+    /* Layout */
+    main { flex: 1; display: grid; grid-template-columns: 300px 1fr; overflow: hidden; }
+    #list { border-right: 1px solid var(--border); overflow-y: auto; padding: 12px; }
+    .feed { display: flex; gap: 10px; padding: 12px; border-radius: 12px;
+      cursor: pointer; border: 1px solid transparent; }
+    .feed:hover, .feed.active { background: var(--panel); border-color: var(--border); }
+    .feed .thumb { width: 56px; height: 56px; border-radius: 10px; flex: none;
+      display: flex; align-items: center; justify-content: center; font-size: 22px;
+      background: #1f2937; }
+    .feed .meta { min-width: 0; }
+    .feed .title { font-size: 13px; font-weight: 700; white-space: nowrap;
+      overflow: hidden; text-overflow: ellipsis; }
+    .feed .sub { font-size: 11px; color: var(--muted); margin-top: 3px; }
+    .badge { font-size: 9px; font-weight: 800; padding: 2px 6px; border-radius: 5px;
+      background: var(--live); color: #fff; margin-right: 5px; }
+
+    #stage { position: relative; background: #000; display: flex;
+      align-items: center; justify-content: center; }
+    video { width: 100%; height: 100%; object-fit: contain; background: #000; }
+    #stage .empty { color: var(--muted); font-size: 14px; }
+    #stage .overlay { position: absolute; top: 16px; left: 16px; display: flex;
+      align-items: center; gap: 8px; }
+    #stage .name { position: absolute; bottom: 16px; left: 16px; font-weight: 800;
+      background: rgba(0,0,0,.6); padding: 6px 12px; border-radius: 8px; }
+    #fs { position: absolute; top: 16px; right: 16px; width: auto; padding: 8px 12px;
+      background: rgba(0,0,0,.6); border-radius: 8px; font-size: 12px; }
+
+    @media (max-width: 700px) { main { grid-template-columns: 1fr; }
+      #list { display: none; } }
+  </style>
+</head>
+<body>
+  <div id="app">
+    <header>
+      <h1>Kshetra <span style="color:var(--accent)">Live</span> Receiver</h1>
+      <div class="sub" id="status"><span class="dot"></span><span id="statusText">Connecting…</span></div>
+    </header>
+
+    <!-- Login -->
+    <div id="login">
+      <h2>Partner Sign-in</h2>
+      <p>Enter your partner ID and access key to load your subscribed feeds.</p>
+      <input id="partnerId" placeholder="Partner ID" autocomplete="off" />
+      <input id="accessKey" type="password" placeholder="Access key" />
+      <button onclick="signIn()">Load my feeds</button>
+    </div>
+
+    <!-- Receiver -->
+    <main id="receiver" style="display:none">
+      <div id="list"></div>
+      <div id="stage">
+        <div class="empty" id="stageEmpty">Select a feed to present full-screen</div>
+        <video id="video" playsinline controls style="display:none"></video>
+        <div class="overlay" id="overlay" style="display:none"><span class="badge">LIVE</span></div>
+        <div class="name" id="feedName" style="display:none"></div>
+        <button id="fs" style="display:none" onclick="goFullscreen()">⛶ Full screen</button>
+      </div>
+    </main>
+  </div>
+
+  <script>
+    var video = document.getElementById('video');
+    var hls = null;
+
+    function setStatus(text, ok) {
+      document.getElementById('statusText').textContent = text;
+      document.querySelector('#status .dot').style.background = ok ? '#10B981' : '#EF4444';
+    }
+
+    // Demo feeds used when the API is unreachable so the receiver still renders.
+    var DEMO_FEEDS = [
+      { streamId: 'KX-240001', reporterName: 'Kavitha Reddy', category: 'Breaking News',
+        icon: '⚡', hls: 'https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8', live: true },
+      { streamId: 'KX-240003', reporterName: 'Sunitha Rao', category: 'Emergency',
+        icon: '🚨', hls: 'https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8', live: true }
+    ];
+
+    async function signIn() {
+      var partnerId = document.getElementById('partnerId').value.trim() || 'demo';
+      document.getElementById('login').style.display = 'none';
+      document.getElementById('receiver').style.display = 'grid';
+      await loadFeeds(partnerId);
+    }
+
+    async function loadFeeds(partnerId) {
+      var feeds = DEMO_FEEDS;
+      try {
+        var res = await fetch(window.KSHETRA_API + '/live?partner=' + encodeURIComponent(partnerId));
+        if (res.ok) {
+          var data = await res.json();
+          if (data.events && data.events.length) {
+            feeds = data.events.map(function (e) {
+              return { streamId: e.streamId, reporterName: e.reporterName,
+                category: e.issueCategory, icon: '📡', hls: e.mediaPlaybackHls, live: e.status === 'live' };
+            });
+          }
+          setStatus('Connected · ' + feeds.length + ' feed(s)', true);
+        } else { setStatus('Offline — demo feeds', false); }
+      } catch (err) { setStatus('Offline — demo feeds', false); }
+      renderList(feeds);
+    }
+
+    function renderList(feeds) {
+      var list = document.getElementById('list');
+      list.innerHTML = '';
+      feeds.forEach(function (f, i) {
+        var el = document.createElement('div');
+        el.className = 'feed' + (i === 0 ? ' active' : '');
+        el.innerHTML =
+          '<div class="thumb">' + (f.icon || '📡') + '</div>' +
+          '<div class="meta"><div class="title">' +
+          (f.live ? '<span class="badge">LIVE</span>' : '') + f.category +
+          '</div><div class="sub">' + f.reporterName + ' · ' + f.streamId + '</div></div>';
+        el.onclick = function () {
+          document.querySelectorAll('.feed').forEach(function (x) { x.classList.remove('active'); });
+          el.classList.add('active');
+          play(f);
+        };
+        list.appendChild(el);
+      });
+      if (feeds.length) play(feeds[0]);
+    }
+
+    function play(feed) {
+      document.getElementById('stageEmpty').style.display = 'none';
+      video.style.display = 'block';
+      document.getElementById('overlay').style.display = feed.live ? 'flex' : 'none';
+      document.getElementById('fs').style.display = 'block';
+      var name = document.getElementById('feedName');
+      name.style.display = 'block';
+      name.textContent = feed.reporterName + ' — ' + feed.category;
+
+      if (hls) { hls.destroy(); hls = null; }
+      if (window.Hls && window.Hls.isSupported()) {
+        hls = new window.Hls({ lowLatencyMode: true });
+        hls.loadSource(feed.hls);
+        hls.attachMedia(video);
+        hls.on(window.Hls.Events.MANIFEST_PARSED, function () { video.play(); });
+      } else if (video.canPlayType('application/vnd.apple.mpegurl')) {
+        video.src = feed.hls; // Safari / many smart-TV browsers play HLS natively.
+        video.play();
+      }
+    }
+
+    function goFullscreen() {
+      var stage = document.getElementById('stage');
+      if (stage.requestFullscreen) stage.requestFullscreen();
+      else if (stage.webkitRequestFullscreen) stage.webkitRequestFullscreen();
+    }
+
+    // Probe the exchange status on load.
+    (async function () {
+      try {
+        var res = await fetch(window.KSHETRA_API + '/status');
+        if (res.ok) { var s = await res.json(); setStatus('Exchange ' + s.exchange, true); }
+        else setStatus('Exchange unreachable', false);
+      } catch (e) { setStatus('Exchange unreachable', false); }
+    })();
+  </script>
+</body>
+</html>

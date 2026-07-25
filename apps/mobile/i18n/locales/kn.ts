@@ -36,6 +36,7 @@ const kn: PartialTranslationKeys = {
 
   tabs: {
     news: 'ಸುದ್ದಿ',
+    live: 'ಲೈವ್',
     shorts: 'ಶಾರ್ಟ್ಸ್',
     more: 'ಇನ್ನಷ್ಟು',
     map: 'ನಕ್ಷೆ',

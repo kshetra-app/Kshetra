@@ -80,6 +80,7 @@ const hi: PartialTranslationKeys = {
 
   tabs: {
     news: 'समाचार',
+    live: 'लाइव',
     shorts: 'शॉर्ट्स',
     more: 'और',
     map: 'मानचित्र',
