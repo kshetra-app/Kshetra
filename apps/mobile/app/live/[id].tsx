@@ -9,6 +9,7 @@ import {
 import { Ionicons } from '@expo/vector-icons';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { useShallow } from 'zustand/react/shallow';
 import { useLiveExchangeStore } from '../../stores/liveExchange';
 import {
   ISSUE_CATEGORY_CONFIG,
@@ -25,7 +26,7 @@ export default function LivePlayerScreen() {
   const router = useRouter();
 
   const event = useLiveExchangeStore((s) => s.getEventById(id));
-  const alerts = useLiveExchangeStore((s) => s.getAlertsForEvent(id));
+  const alerts = useLiveExchangeStore(useShallow((s) => s.getAlertsForEvent(id)));
   const incrementViewers = useLiveExchangeStore((s) => s.incrementViewers);
   const endEvent = useLiveExchangeStore((s) => s.endEvent);
   const currentReporterId = useLiveExchangeStore((s) => s.currentReporterId);

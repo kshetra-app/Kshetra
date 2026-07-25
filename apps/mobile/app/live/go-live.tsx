@@ -10,6 +10,7 @@ import {
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { useShallow } from 'zustand/react/shallow';
 import { useLiveExchangeStore } from '../../stores/liveExchange';
 import { useContributorVerificationStore } from '../../stores/contributorVerification';
 import type {
@@ -53,7 +54,7 @@ export default function GoLiveScreen() {
   const insets = useSafeAreaInsets();
   const router = useRouter();
 
-  const affiliations = useLiveExchangeStore((s) => s.getActiveAffiliations(DEMO_REPORTER.id));
+  const affiliations = useLiveExchangeStore(useShallow((s) => s.getActiveAffiliations(DEMO_REPORTER.id)));
   const startLiveEvent = useLiveExchangeStore((s) => s.startLiveEvent);
   const aiServiceEnabled = useLiveExchangeStore((s) => s.aiServiceEnabled);
   const requestAction = useContributorVerificationStore((s) => s.requestAction);

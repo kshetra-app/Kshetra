@@ -8,6 +8,7 @@ import {
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { useShallow } from 'zustand/react/shallow';
 import { useLiveExchangeStore } from '../../stores/liveExchange';
 import type { HumanDecision, LiveEvent } from '../../lib/lmxTypes';
 import { ISSUE_CATEGORY_CONFIG, TIER_CONFIG, hasAI } from '../../lib/lmxTypes';
@@ -28,7 +29,7 @@ const DECISIONS: { key: HumanDecision; label: string; icon: string; color: strin
 export default function ModerationQueueScreen() {
   const insets = useSafeAreaInsets();
   const router = useRouter();
-  const queue = useLiveExchangeStore((s) => s.getModerationQueue());
+  const queue = useLiveExchangeStore(useShallow((s) => s.getModerationQueue()));
   const setHumanDecision = useLiveExchangeStore((s) => s.setHumanDecision);
   const aiServiceEnabled = useLiveExchangeStore((s) => s.aiServiceEnabled);
 

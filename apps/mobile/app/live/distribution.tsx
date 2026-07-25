@@ -11,6 +11,7 @@ import {
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { useShallow } from 'zustand/react/shallow';
 import { useLiveExchangeStore } from '../../stores/liveExchange';
 
 /**
@@ -25,7 +26,7 @@ export default function DistributionScreen() {
   const insets = useSafeAreaInsets();
   const router = useRouter();
 
-  const events = useLiveExchangeStore((s) => s.getLiveTabFeed());
+  const events = useLiveExchangeStore(useShallow((s) => s.getLiveTabFeed()));
   const addDistribution = useLiveExchangeStore((s) => s.addDistribution);
 
   const [selectedId, setSelectedId] = useState<string>(events[0]?.id ?? '');

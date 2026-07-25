@@ -433,6 +433,57 @@ persist(storeCreator, {
 
 ---
 
+### A specific screen/tab crashes instantly on open — Zustand v5 selector returns a new array (infinite loop)
+
+**Symptom:** Every other tab/screen works, but opening one specific screen instantly
+closes the app (no error dialog). In a **release APK** this is a hard crash; in a dev
+build you'd see the red-box `Warning: The result of getSnapshot should be cached to
+avoid an infinite loop` followed by `Maximum update depth exceeded`.
+
+**Cause:** This project uses **Zustand v5** (`"zustand": "^5.0.0"`). Unlike v4, v5 uses
+plain React `useSyncExternalStore` with `Object.is` equality and **no built-in selector
+memoization**. If a selector *computes and returns a brand-new object/array reference on
+every call* — e.g. a store "getter" that does `.filter()` / `.sort()` / `.map()` — React
+sees the snapshot "change" on every render and re-renders forever → crash.
+
+```ts
+// ❌ CRASHES in Zustand v5 — getLiveTabFeed() returns a NEW array every call
+const events = useLiveExchangeStore((s) => s.getLiveTabFeed());
+
+// ❌ Also crashes — any inline .filter()/.map()/.sort() in the selector
+const alerts = useMyStore((s) => s.alerts.filter((a) => a.open));
+```
+
+**Fix:** Wrap the selector in `useShallow`, which caches the previous result and returns
+the **same reference** when the contents are shallow-equal, breaking the loop:
+
+```ts
+import { useShallow } from 'zustand/react/shallow';
+
+// ✅ SAFE — useShallow returns the prior reference when contents are unchanged
+const events = useLiveExchangeStore(useShallow((s) => s.getLiveTabFeed()));
+const alerts = useMyStore(useShallow((s) => s.alerts.filter((a) => a.open)));
+```
+
+**What is and isn't affected:**
+- ❌ **Affected** (needs `useShallow`): selectors returning a *new* array/object —
+  `.filter()`, `.map()`, `.sort()`, `.slice()`, `{ ...spread }`, `Object.values()`.
+- ✅ **Safe** (leave as-is): selecting a stable slice (`(s) => s.events`), a primitive
+  (`(s) => s.count`), a bound action (`(s) => s.doThing`), or `.find()` (returns an
+  existing element reference, which is stable across renders).
+
+**How it slips past checks:** `tsc --noEmit` passes (it's valid TypeScript) and it often
+"works" in a fast dev reload, so it only manifests when the screen is actually mounted —
+frequently discovered only after installing the release APK. **Always smoke-test every
+new screen on-device, not just via `tsc`.**
+
+> Real occurrence: Sprint 55 (LMX). The **Kshetra Live** tab crashed on open because
+> `live.tsx`, `distribution.tsx`, `moderation-queue.tsx`, `go-live.tsx` and `live/[id].tsx`
+> all read derived arrays via `getLiveTabFeed()` / `getModerationQueue()` /
+> `getAlertsForEvent()` / `getActiveAffiliations()`. Wrapping each in `useShallow` fixed it.
+
+---
+
 ### "Compare on Map" UI Lock or Crash (BottomSheet closing)
 
 **Cause:** Clicking "Compare on Map" closes the BottomSheet, which triggers `onClose` and sets `selected` to `null`. Since the comparison view requires `selected` to remain populated, this clears the state, causing the comparison panel to disappear or crash.
@@ -619,10 +670,11 @@ When something goes wrong, check in this order:
 | Map blank / not rendering | [7](#map-not-rendering-blank-screen) | Need dev build, not Expo Go |
 | MapLibre expression or style crash | [7](#maplibre-layer-expression-or-style-crashes-and--symbolzelevate-errors) | Use `['all']` and valid keys in styles |
 | Store data corrupted | [8](#store-rehydration-crash) | Clear app data, add store migration |
+| One screen crashes instantly on open | [8](#a-specific-screentab-crashes-instantly-on-open--zustand-v5-selector-returns-a-new-array-infinite-loop) | Wrap new-array Zustand v5 selectors in `useShallow` |
 | Compare on Map crash / UI lock | [8](#compare-on-map-ui-lock-or-crash-bottomsheet-closing) | Add `mapCompareActiveRef` check in `onClose` |
 | Route ID NaN / Constituency Not Found | [8](#parameter-parsing--route-id-nan-crash-composite-ids) | Parse composite IDs (e.g. `TS-AC-X`) |
 | Peer dependency errors | [9](#npm-install-fails-with-peer-dependency-errors) | `npm install --force` |
 
 ---
 
-*Last updated: 2026-06-27*
+*Last updated: 2026-07-25*

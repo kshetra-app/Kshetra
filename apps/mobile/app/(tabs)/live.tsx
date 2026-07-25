@@ -10,6 +10,7 @@ import {
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { useShallow } from 'zustand/react/shallow';
 import { useLiveExchangeStore } from '../../stores/liveExchange';
 import { LiveStreamCard } from '../../components/LiveStreamCard';
 import type { IssueCategory, LiveEvent } from '../../lib/lmxTypes';
@@ -31,7 +32,10 @@ const CATEGORY_ORDER: CategoryFilter[] = [
 export default function LiveTabScreen() {
   const insets = useSafeAreaInsets();
   const router = useRouter();
-  const events = useLiveExchangeStore((s) => s.getLiveTabFeed());
+  // Zustand v5 has no built-in selector memoization, so a selector that returns
+  // a fresh array (filter+sort) must be wrapped in useShallow — otherwise every
+  // render produces a new reference and React infinite-loops (crashes in release).
+  const events = useLiveExchangeStore(useShallow((s) => s.getLiveTabFeed()));
   const aiServiceEnabled = useLiveExchangeStore((s) => s.aiServiceEnabled);
 
   const [category, setCategory] = useState<CategoryFilter>('all');
