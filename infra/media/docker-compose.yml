@@ -1,0 +1,103 @@
+# Kshetra Live Media Exchange — self-hosted media plane (all 4 tiers)
+#
+# Tiered, COMPLEMENTARY stack — each service does what it is best at; the control
+# plane (apps/mobile lib/mediaPipeline.ts + apps/api) auto-routes each live event
+# to the right tier and writes the resulting URLs back onto the Live Event Object.
+#
+#   TIER 0  mediamtx   — universal ingest gateway (RTMP/SRT/WHIP in) + relay-of-record
+#   TIER 1  ome        — OvenMediaEngine: sub-second LL-HLS + WebRTC (alerts/breaking)
+#   TIER 2  srs        — SRS: scalable HLS + edge clustering + DVR (large public)
+#   TIER 3  livekit    — WebRTC SFU: multi-guest / two-way interactive
+#   EDGE    edge       — Nginx: HLS caching + CORS (P2P Media Loader) + reverse proxy
+#
+# This is a runnable STARTING POINT. Harden TLS, auth, and scaling for production
+# (see README.md). Bring up only the tiers you need: `docker compose up mediamtx srs edge`.
+
+name: kshetra-media
+
+networks:
+  media:
+    driver: bridge
+
+volumes:
+  srs-dvr:
+  ome-records:
+
+services:
+  # ── TIER 0 · MediaMTX — universal ingest gateway ───────────────────────────
+  mediamtx:
+    image: bluenviron/mediamtx:latest
+    restart: unless-stopped
+    networks: [media]
+    env_file: [.env]
+    ports:
+      - "${MTX_RTMP_PORT:-1935}:1935"       # RTMP ingest (phone default)
+      - "${MTX_SRT_PORT:-8890}:8890/udp"    # SRT ingest
+      - "${MTX_WHIP_PORT:-8889}:8889"       # WebRTC WHIP/WHEP (HTTP)
+      - "8189:8189/udp"                      # WebRTC ICE/UDP
+      - "${MTX_HLS_PORT:-8888}:8888"        # HLS (gateway preview)
+      - "8554:8554"                          # RTSP
+      - "9997:9997"                          # control API
+    volumes:
+      - ./mediamtx/mediamtx.yml:/mediamtx.yml:ro
+
+  # ── TIER 1 · OvenMediaEngine — LL-HLS + WebRTC (low latency) ───────────────
+  ome:
+    image: airensoft/ovenmediaengine:latest
+    restart: unless-stopped
+    networks: [media]
+    env_file: [.env]
+    environment:
+      OME_HOST_IP: "${PUBLIC_IP:-127.0.0.1}"
+    ports:
+      - "1937:1935"                          # RTMP provider (mapped off MediaMTX's 1935)
+      - "9999:9999/udp"                      # SRT provider
+      - "3333:3333"                          # WebRTC signalling (ws) + LL-HLS (http) 3334
+      - "3334:3334"                          # LL-HLS
+      - "3478:3478"                          # TURN
+      - "10000-10009:10000-10009/udp"        # WebRTC ICE range
+    volumes:
+      - ./ome/Server.xml:/opt/ovenmediaengine/bin/origin_conf/Server.xml:ro
+      - ome-records:/opt/ovenmediaengine/bin/records
+
+  # ── TIER 2 · SRS — scalable HLS + edge clustering + DVR ────────────────────
+  srs:
+    image: ossrs/srs:5
+    restart: unless-stopped
+    networks: [media]
+    env_file: [.env]
+    environment:
+      CANDIDATE: "${PUBLIC_IP:-127.0.0.1}"   # SRS WebRTC ICE candidate (public IP in prod)
+    command: ["./objs/srs", "-c", "conf/kshetra.conf"]
+    ports:
+      - "1985:1985"                          # HTTP API
+      - "${SRS_HTTP_PORT:-8080}:8080"       # HTTP server (HLS / HTTP-FLV)
+      - "8000:8000/udp"                      # WebRTC (WHEP)
+    volumes:
+      - ./srs/srs.conf:/usr/local/srs/conf/kshetra.conf:ro
+      - srs-dvr:/usr/local/srs/objs/nginx/html/dvr
+
+  # ── TIER 3 · LiveKit — WebRTC SFU (interactive / multi-guest) ──────────────
+  livekit:
+    image: livekit/livekit-server:latest
+    restart: unless-stopped
+    networks: [media]
+    env_file: [.env]
+    command: ["--config", "/etc/livekit.yaml"]
+    ports:
+      - "7880:7880"                          # HTTP / WS (client join)
+      - "7881:7881"                          # RTC over TCP
+      - "50000-50100:50000-50100/udp"        # RTC over UDP
+    volumes:
+      - ./livekit/livekit.yaml:/etc/livekit.yaml:ro
+
+  # ── EDGE · Nginx — HLS cache + CORS (P2P) + reverse proxy ──────────────────
+  edge:
+    image: nginx:1.27-alpine
+    restart: unless-stopped
+    networks: [media]
+    depends_on: [srs, ome]
+    ports:
+      - "${EDGE_HTTP_PORT:-80}:80"
+    volumes:
+      - ./edge/nginx.conf:/etc/nginx/nginx.conf:ro

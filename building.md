@@ -5156,3 +5156,59 @@ self-hosted **MediaMTX / Ant Media / Nginx-RTMP**; **LiveKit / Agora** for WebRT
 | `apps/mobile/android/.../res/mipmap-*` | Modified (gitignored) | Regenerated launcher icons (transparent) |
 | `apps/mobile/assets/{icon,adaptive-icon}.png` | Modified | New transparent source icon |
 | `TROUBLESHOOTING.md` | Modified | Zustand v5 crash, Metro deadlock, icon-without-prebuild entries |
+
+---
+
+## Sprint 57 — Self-hosted media plane (open-source, 4 tiers, auto-routed)
+
+### Summary
+Replaced the assumed AWS MediaLive/CloudFront/SRT dependency with an **open-source,
+self-hostable media plane you ship in the repo** (`infra/media/`), plus a pure
+**control-plane router** (`selectPipeline()`) that auto-assigns each live event to the
+right tier and writes the ingest/playback URLs onto the Live Event Object. No app
+schema changes — same `mediaIngestUrl` / `mediaPlaybackHls` / `mediaPlaybackWebrtc`.
+
+### The stack (complementary, not competing)
+| Tier | Service | Role |
+|---|---|---|
+| 0 | **MediaMTX** | Universal ingest gateway (RTMP/SRT/WHIP) + relay-of-record to SRS |
+| 1 | **OvenMediaEngine** | Sub-second LL-HLS + WebRTC (emergency / breaking / dept alerts) |
+| 2 | **SRS** | Scalable HLS + edge clustering (self-hosted CDN) + DVR (general public) |
+| 3 | **LiveKit** | WebRTC SFU for interactive / multi-guest / two-way |
+| edge | **Nginx** | HLS caching + CORS for **P2P Media Loader** (egress offload) + reverse proxy |
+
+SRT is free/built-in on every tier (Haivision `libsrt`).
+
+### Auto-routing (`selectPipeline`)
+Pure function over signals already on the event:
+- `interactive` → **LiveKit**
+- `issueCategory ∈ {emergency, breaking_news}` **or** `alertDepartments > 0` → **OME** (LL-HLS + WebRTC)
+- otherwise → **SRS** (HLS + edge + P2P); ingest always via **MediaMTX**.
+- Degrades to SRS HLS if a tier isn't deployed. `demo` mode returns public HLS test
+  streams (deterministic per `streamId`) so the app stays watchable unprovisioned;
+  `self_hosted` mode emits real URLs from `EXPO_PUBLIC_MEDIA_*` env.
+
+### Verification
+- Mobile `tsc` + API `tsc` clean.
+- **13/13** new unit tests pass (`__tests__/media-pipeline.test.ts`): tier selection,
+  ingest-protocol URLs (rtmp/srt/whip), demo vs self_hosted playback, determinism.
+
+### The one non-bundleable piece
+Mobile **publishing** still needs a native broadcaster (RTMP `react-native-nodemediaclient`
+or WebRTC-WHIP module) — documented in `infra/media/README.md`.
+
+### Files Changed
+| File | Change | Description |
+|---|---|---|
+| `infra/media/docker-compose.yml` | New | All 4 tiers + Nginx edge |
+| `infra/media/{.env.example,README.md}` | New | Config + run/wire/hardening guide |
+| `infra/media/mediamtx/mediamtx.yml` | New | Ingest gateway + relay-to-SRS |
+| `infra/media/srs/srs.conf` | New | HLS + FLV + WebRTC + DVR + edge origin |
+| `infra/media/ome/Server.xml` | New | LL-HLS + WebRTC low-latency origin |
+| `infra/media/livekit/livekit.yaml` | New | WebRTC SFU (interactive tier) |
+| `infra/media/edge/nginx.conf` | New | HLS cache + CORS + reverse proxy |
+| `apps/mobile/lib/mediaPipeline.ts` | New | Pure tier router + URL builder |
+| `apps/api/src/lib/mediaPipeline.ts` | New | Self-contained API mirror |
+| `apps/mobile/stores/liveExchange.ts` | Modified | `startLiveEvent` uses `selectPipeline`; `interactive` input flag |
+| `apps/api/src/routes/lmx.ts` | Modified | Create-live + status use the router (returns `mediaTier`) |
+| `apps/mobile/__tests__/media-pipeline.test.ts` | New | 13 unit tests |

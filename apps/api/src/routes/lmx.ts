@@ -1,4 +1,5 @@
 import type { FastifyInstance } from 'fastify';
+import { selectPipeline, getMediaHosts } from '../lib/mediaPipeline';
 
 /**
  * Kshetra Live Media Exchange (LMX) API — doc Sections 3, 7, 12.
@@ -23,7 +24,12 @@ export async function lmxRoutes(app: FastifyInstance) {
       aiModelProvider: aiEnabled ? 'openai' : null,
       protocols: ['hls', 'dash', 'webrtc', 'srt', 'rtmp', 'mpegts', 'ndi', 'embed'],
       ingestRegion: process.env.LMX_INGEST_REGION ?? 'ap-south-1',
-      note: 'Media-plane (ingest/transcode/CDN) is provisioned separately; connect Supabase + managed media stack for live data.',
+      mediaPlane: {
+        mode: getMediaHosts().mode,
+        tiers: ['mediamtx', 'ovenmediaengine', 'srs', 'livekit'],
+        note: 'Self-hosted stack in infra/media/; selectPipeline() auto-routes per event.',
+      },
+      note: 'Media-plane (ingest/transcode/CDN) is self-hostable (infra/media/) or managed; connect Supabase for live data.',
     };
   });
 
@@ -64,13 +70,21 @@ export async function lmxRoutes(app: FastifyInstance) {
     }
     const visibilityMode = body.visibilityMode ?? 'public';
     const alertDepartments = body.alertDepartments ?? [];
-    // Provision (stub) an ingest endpoint — real provisioning hits the media API.
     const streamId = `KX-${Date.now().toString(36)}`;
+    // Auto-route to the right self-hosted media tier (mirrors the mobile store).
+    const pipeline = selectPipeline({
+      streamId,
+      issueCategory: body.issueCategory ?? 'general',
+      alertDepartments,
+      visibilityMode,
+    });
     return reply.code(201).send({
       streamId,
-      ingestUrl: `rtmp://ingest-ap-south-1.kshetra.in/live/${streamId}`,
-      playbackHls: `https://cdn.kshetra.in/live/${streamId}/index.m3u8`,
-      playbackWebrtc: `https://cdn.kshetra.in/live/${streamId}/whep`,
+      mediaTier: pipeline.tier,
+      routingReason: pipeline.reason,
+      ingestUrl: pipeline.ingestUrl,
+      playbackHls: pipeline.playbackHls,
+      playbackWebrtc: pipeline.playbackWebrtc,
       visibilityMode,
       alertDepartments,
       aiEnrichment: aiEnabled ? 'enabled' : 'disabled',

@@ -1,0 +1,30 @@
+# LiveKit — TIER 3 WebRTC SFU for interactive / multi-guest live (reporter + remote
+# guest, live Q&A, studio). Different use case from the broadcast tiers, not a dupe.
+# Docs: https://docs.livekit.io/home/self-hosting/
+
+port: 7880
+bind_addresses: ["0.0.0.0"]
+
+rtc:
+  tcp_port: 7881
+  port_range_start: 50000
+  port_range_end: 50100
+  # In production set the public IP so remote peers get reachable ICE candidates:
+  # use_external_ip: true
+
+# API keys. DEV DEFAULT below is insecure — generate real keys:
+#   docker run --rm livekit/livekit-server generate-keys
+# then set them here (and give the app the same key/secret to mint join tokens).
+keys:
+  devkey: devsecretdevsecretdevsecretdevsecret
+
+# Single-node needs no redis. For multi-node SFU, point all nodes at one redis:
+# redis:
+#   address: redis:6379
+
+logging:
+  level: info
+
+# RTMP/WHIP -> LiveKit room ingest is a SEPARATE service (livekit-ingress) plus
+# HLS/recording out is livekit-egress. Add them when you need push-ingest or a
+# CDN-friendly HLS mirror of an interactive room; pure app clients join via SDK.

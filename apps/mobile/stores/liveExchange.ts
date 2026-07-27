@@ -26,6 +26,7 @@ import {
   applyAckToCredibility,
   resolveJurisdiction,
 } from '../lib/lmxTypes';
+import { selectPipeline } from '../lib/mediaPipeline';
 
 // ─── Seed: brand kits + affiliations (doc Section 11) ────────────────────────
 
@@ -259,6 +260,8 @@ export interface StartLiveInput {
   stateCode?: string | null;
   districtName?: string | null;
   locality?: string | null;
+  /** Two-way / multi-guest session → routed to the LiveKit interactive tier. */
+  interactive?: boolean;
 }
 
 let seq = 240100;
@@ -360,6 +363,16 @@ export const useLiveExchangeStore = create<LiveExchangeState>()(
         const id = `le-${Date.now().toString(36)}`;
         const streamId = nextStreamId();
 
+        // Auto-route to the right self-hosted media tier (see lib/mediaPipeline.ts
+        // + infra/media/). Picks LiveKit / OME LL-HLS / SRS from the event signals.
+        const pipeline = selectPipeline({
+          streamId,
+          issueCategory: input.issueCategory,
+          alertDepartments: input.alertDepartments,
+          visibilityMode: input.visibilityMode,
+          interactive: input.interactive,
+        });
+
         const event: LiveEvent = {
           id,
           streamId,
@@ -377,9 +390,9 @@ export const useLiveExchangeStore = create<LiveExchangeState>()(
           issueCategory: input.issueCategory,
           tags: input.tags ?? [],
           language: input.language ?? 'en',
-          mediaIngestUrl: `rtmp://ingest-ap-south-1.kshetra.in/live/${streamId}`,
-          mediaPlaybackHls: `https://cdn.kshetra.in/live/${streamId}/index.m3u8`,
-          mediaPlaybackWebrtc: `https://cdn.kshetra.in/live/${streamId}/whep`,
+          mediaIngestUrl: pipeline.ingestUrl,
+          mediaPlaybackHls: pipeline.playbackHls,
+          mediaPlaybackWebrtc: pipeline.playbackWebrtc,
           thumbnailUrl: null,
           multiCameraAngles: [],
           affiliationId: input.affiliationId ?? null,

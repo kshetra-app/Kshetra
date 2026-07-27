@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  OvenMediaEngine — TIER 1 low-latency origin.
+  Ingest: RTMP / SRT / WebRTC-WHIP.  Publish: LL-HLS (~1-2s) + WebRTC (sub-second).
+  Used for emergency / breaking-news / department-alert streams where latency wins.
+
+  This is a trimmed starting config. The element set changes between OME major
+  versions — if it fails to parse, diff against the Server.xml shipped in your
+  airensoft/ovenmediaengine image. Docs: https://airensoft.gitbook.io/ovenmediaengine
+-->
+<Server version="8">
+  <Name>Kshetra-OME</Name>
+  <Type>origin</Type>
+  <IP>*</IP>
+  <PrivacyProtection>false</PrivacyProtection>
+  <StunServer>stun.l.google.com:19302</StunServer>
+
+  <Bind>
+    <Providers>
+      <RTMP><Port>1935</Port></RTMP>
+      <SRT><Port>9999</Port></SRT>
+      <WebRTC>
+        <Signalling><Port>3333</Port></Signalling>
+        <IceCandidates>
+          <IceCandidate>*:10000-10009/udp</IceCandidate>
+          <TcpRelay>*:3478</TcpRelay>
+        </IceCandidates>
+      </WebRTC>
+    </Providers>
+    <Publishers>
+      <LLHLS><Port>3334</Port></LLHLS>
+      <WebRTC>
+        <Signalling><Port>3333</Port></Signalling>
+        <IceCandidates>
+          <IceCandidate>*:10000-10009/udp</IceCandidate>
+          <TcpRelay>*:3478</TcpRelay>
+        </IceCandidates>
+      </WebRTC>
+    </Publishers>
+  </Bind>
+
+  <VirtualHosts>
+    <VirtualHost>
+      <Name>default</Name>
+      <Host><Names><Name>*</Name></Names></Host>
+
+      <Applications>
+        <Application>
+          <Name>app</Name>
+          <Type>live</Type>
+
+          <OutputProfiles>
+            <OutputProfile>
+              <Name>bypass</Name>
+              <OutputStreamName>${OriginStreamName}</OutputStreamName>
+              <Encodes>
+                <Video><Bypass>true</Bypass></Video>
+                <Audio><Bypass>true</Bypass></Audio>
+              </Encodes>
+            </OutputProfile>
+          </OutputProfiles>
+
+          <Providers>
+            <RTMP />
+            <SRT />
+            <WebRTC />
+          </Providers>
+
+          <Publishers>
+            <LLHLS>
+              <ChunkDuration>0.5</ChunkDuration>
+              <SegmentDuration>1</SegmentDuration>
+              <SegmentCount>10</SegmentCount>
+              <CrossDomains><Url>*</Url></CrossDomains>
+            </LLHLS>
+            <WebRTC>
+              <Timeout>30000</Timeout>
+            </WebRTC>
+          </Publishers>
+        </Application>
+      </Applications>
+    </VirtualHost>
+  </VirtualHosts>
+</Server>

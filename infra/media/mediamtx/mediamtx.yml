@@ -1,0 +1,60 @@
+# MediaMTX — TIER 0 universal ingest gateway.
+# Accepts whatever the phone can publish (RTMP / SRT / WebRTC-WHIP) and relays the
+# normalized feed to SRS (the origin of record). OME/LiveKit tiers can either be
+# fed directly by the control plane or pulled from SRS; see README.md.
+#
+# Docs: https://github.com/bluenviron/mediamtx
+
+logLevel: info
+logDestinations: [stdout]
+
+# ── Protocol servers (all enabled so any publisher works) ──────────────────
+rtmp: yes
+rtmpAddress: :1935
+
+srt: yes
+srtAddress: :8890
+
+webrtc: yes
+webrtcAddress: :8889
+webrtcLocalUDPAddress: :8189
+# For a public server also set webrtcAdditionalHosts: [ "YOUR_PUBLIC_IP" ]
+
+hls: yes
+hlsAddress: :8888
+hlsVariant: lowLatency   # gateway-side preview is already low-latency
+
+rtsp: yes
+rtspAddress: :8554
+
+api: yes
+apiAddress: :9997
+
+# ── Auth ───────────────────────────────────────────────────────────────────
+# DEV DEFAULT = anyone can publish/read. LOCK THIS DOWN in production, e.g. per-path
+# credentials or an external auth webhook that validates the streamId + token the
+# control plane issued at go-live.
+#
+# authMethod: internal
+# authInternalUsers:
+#   - user: publisher
+#     pass: CHANGE_ME
+#     permissions: [ { action: publish } ]
+#   - user: any
+#     permissions: [ { action: read } ]
+
+# ── Paths ────────────────────────────────────────────────────────────────────
+pathDefaults:
+  # When any stream starts, relay it to SRS as RTMP so SRS becomes the HLS/DVR
+  # origin. `runOnReady` runs the bundled ffmpeg. $MTX_PATH = the streamId.
+  runOnReady: >
+    ffmpeg -re -i rtmp://localhost:1935/$MTX_PATH
+    -c copy -f flv rtmp://srs:1935/live/$MTX_PATH
+  runOnReadyRestart: yes
+
+paths:
+  # Reporters publish to  rtmp://<gateway>:1935/live/<streamId>
+  # (or srt://<gateway>:8890?streamid=publish:live/<streamId>, or WHIP)
+  ~^live/.*$:
+    # inherits pathDefaults (relay-to-SRS)
+  all_others:
