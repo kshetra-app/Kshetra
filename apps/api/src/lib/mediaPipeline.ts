@@ -98,6 +98,11 @@ export function buildIngestUrl(streamId: string, hosts: MediaHosts): string {
   }
 }
 
+/** WHIP publish endpoint on the MediaMTX gateway (used by the in-app WebRTC broadcaster). */
+export function buildWhipPublishUrl(streamId: string, hosts: MediaHosts = getMediaHosts()): string {
+  return `${hosts.scheme}://${hosts.ingestHost}:8889/live/${streamId}/whip`;
+}
+
 export function selectPipeline(signals: PipelineSignals, hosts: MediaHosts = getMediaHosts()): MediaPipeline {
   const { tier, reason } = selectTier(signals);
   const { streamId } = signals;

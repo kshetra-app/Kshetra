@@ -26,6 +26,8 @@ import {
   TIER_CONFIG,
   computeBufferSeconds,
 } from '../../lib/lmxTypes';
+import LiveBroadcaster, { isBroadcastSupported } from '../../components/LiveBroadcaster';
+import { buildWhipPublishUrl } from '../../lib/mediaPipeline';
 
 const CATEGORIES: IssueCategory[] = [
   'emergency',
@@ -68,6 +70,9 @@ export default function GoLiveScreen() {
   const [tags, setTags] = useState('');
   const [gps, setGps] = useState<{ lat: number; lng: number } | null>(null);
   const [gpsStatus, setGpsStatus] = useState<'detecting' | 'ready' | 'unavailable'>('detecting');
+
+  // When set, the full-screen WebRTC-WHIP broadcaster is shown (native build only).
+  const [publishTarget, setPublishTarget] = useState<{ id: string; streamId: string } | null>(null);
 
   // Real device camera capture (expo-image-picker). True live RTMP publish needs
   // the managed media plane; until then this captures a real clip for look-and-feel.
@@ -170,8 +175,25 @@ export default function GoLiveScreen() {
       locality: null,
     });
 
-    router.replace(`/live/${event.id}` as any);
+    // If the native WebRTC module is compiled in, publish the live camera feed to
+    // the media plane over WHIP; otherwise fall straight through to the viewer page
+    // (which plays the stream via HLS).
+    if (isBroadcastSupported()) {
+      setPublishTarget({ id: event.id, streamId: event.streamId });
+    } else {
+      router.replace(`/live/${event.id}` as any);
+    }
   };
+
+  if (publishTarget) {
+    return (
+      <LiveBroadcaster
+        whipUrl={buildWhipPublishUrl(publishTarget.streamId)}
+        streamLabel={publishTarget.streamId}
+        onStop={() => router.replace(`/live/${publishTarget.id}` as any)}
+      />
+    );
+  }
 
   return (
     <View style={styles.container}>
@@ -203,7 +225,7 @@ export default function GoLiveScreen() {
         {/* Camera capture */}
         <Section
           title="Camera"
-          hint="Record a clip from your device camera. Live RTMP publish activates once the media plane is provisioned."
+          hint="Record a clip, or go live directly: on a native build the feed publishes to the media plane over WebRTC-WHIP."
         >
           {capturedUri ? (
             <View style={styles.captureDone}>

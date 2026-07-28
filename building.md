@@ -5212,3 +5212,53 @@ or WebRTC-WHIP module) — documented in `infra/media/README.md`.
 | `apps/mobile/stores/liveExchange.ts` | Modified | `startLiveEvent` uses `selectPipeline`; `interactive` input flag |
 | `apps/api/src/routes/lmx.ts` | Modified | Create-live + status use the router (returns `mediaTier`) |
 | `apps/mobile/__tests__/media-pipeline.test.ts` | New | 13 unit tests |
+
+---
+
+## Sprint 58 — Native WebRTC-WHIP publisher (camera feed reaches the stack)
+
+### Summary
+Closed the last gap: the go-live **camera feed now publishes to the self-hosted media
+plane over WebRTC-WHIP**. Implemented as a guarded native integration so the JS bundle
+and the current APK keep working unchanged — real publishing activates after a native
+build that includes `react-native-webrtc`.
+
+### What changed
+- **Pure WHIP client** (`lib/whipClient.ts`): create offer → `POST` SDP to the WHIP
+  endpoint → apply answer → keep the resource URL for `DELETE` on stop. Decoupled from
+  `react-native-webrtc` (operates on a `MinimalPeer` + injectable `fetch`) so it's
+  unit-testable in Node. Works against MediaMTX (`:8889`) and OvenMediaEngine.
+- **`components/LiveBroadcaster.tsx`**: camera preview (`RTCView`) + `getUserMedia` +
+  `RTCPeerConnection` → `negotiateWhip`. `react-native-webrtc` is imported via a
+  **guarded `require`**; `isBroadcastSupported()` gates it. Graceful "NOT PUBLISHING"
+  fallback when the native module isn't present (viewer still gets HLS).
+- **`buildWhipPublishUrl(streamId)`** added to both `mediaPipeline` copies — the in-app
+  broadcaster always publishes over WHIP regardless of the configured default ingest
+  protocol (RTMP/SRT are for external encoders).
+- **go-live wiring**: on Start Broadcasting, if the native module is present the
+  full-screen broadcaster opens and publishes; otherwise the flow navigates straight to
+  the viewer page (unchanged behavior).
+- **Deps**: `react-native-webrtc` + `@config-plugins/react-native-webrtc` added to
+  `package.json`/`app.json` (camera/mic perms already present).
+
+### Verification
+- Mobile `tsc` clean. **20/20** unit tests pass (7 new WHIP + 13 pipeline): offer POST,
+  bearer token, non-2xx + empty-answer errors, relative Location resolution, stop DELETE.
+- Bundle-safe: guarded `require` means no crash / no bundle break without the native module.
+
+### To actually publish (native build)
+`npx expo install react-native-webrtc @config-plugins/react-native-webrtc` → `expo
+prebuild --clean` (re-apply the build.gradle patch + icons, §6) → rebuild APK (§10) →
+set `EXPO_PUBLIC_MEDIA_MODE=self_hosted` + a reachable `EXPO_PUBLIC_MEDIA_INGEST_HOST`.
+Full guide in TROUBLESHOOTING.md §11.
+
+### Files Changed
+| File | Change | Description |
+|---|---|---|
+| `apps/mobile/lib/whipClient.ts` | New | Pure WHIP negotiation (testable) |
+| `apps/mobile/components/LiveBroadcaster.tsx` | New | Camera preview + WHIP publish (guarded native) |
+| `apps/mobile/__tests__/whip-client.test.ts` | New | 7 unit tests |
+| `apps/mobile/lib/mediaPipeline.ts`, `apps/api/src/lib/mediaPipeline.ts` | Modified | `buildWhipPublishUrl()` |
+| `apps/mobile/app/live/go-live.tsx` | Modified | Broadcaster wired behind `isBroadcastSupported()` |
+| `apps/mobile/package.json`, `apps/mobile/app.json` | Modified | `react-native-webrtc` + config plugin |
+| `TROUBLESHOOTING.md` | Modified | §11 Live Broadcasting (WebRTC-WHIP) |

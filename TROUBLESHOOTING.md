@@ -721,6 +721,57 @@ $zip.Dispose()
 
 ---
 
+## 11. Live Broadcasting (WebRTC-WHIP)
+
+The go-live camera publisher (`components/LiveBroadcaster.tsx`) uses
+**`react-native-webrtc`**, a native module. It is imported through a **guarded
+`require`**, so:
+
+- **Expo Go / a build without the module** → `isBroadcastSupported()` returns
+  `false`; go-live skips the broadcaster and navigates straight to the viewer page
+  (which plays the stream via HLS). The bundle still builds; nothing crashes.
+- **A native build that includes it** → real camera capture + WHIP publish to the
+  media plane (`buildWhipPublishUrl(streamId)` → MediaMTX `:8889`).
+
+### Enabling real publishing (native build)
+
+```powershell
+cd C:\K\apps\mobile
+# 1. Install the module + its Expo config plugin at SDK-aligned versions:
+npx expo install react-native-webrtc @config-plugins/react-native-webrtc
+# 2. The plugin is already in app.json. Regenerate native config:
+#    (adds camera/mic + WebRTC build settings). This WIPES android/ — see §6,
+#    re-apply the build.gradle bundler patch + icons afterwards.
+npx expo prebuild --clean
+# 3. Rebuild the APK via the §10 recipe.
+```
+
+> Version alignment matters: use `npx expo install` (not `npm install`) so
+> `react-native-webrtc` and `@config-plugins/react-native-webrtc` match the Expo
+> SDK. Pinned versions in `package.json` are a starting point only.
+
+### "NOT PUBLISHING" badge on the broadcaster
+
+The overlay shows this when `negotiateWhip` failed. Checks:
+- **Reachability**: the phone must reach the gateway's WHIP port — set
+  `EXPO_PUBLIC_MEDIA_INGEST_HOST` to a LAN/public IP the device can hit (**not**
+  `127.0.0.1`), and `EXPO_PUBLIC_MEDIA_MODE=self_hosted`.
+- **HTTPS**: WebRTC needs a secure context in production; use TLS on the WHIP
+  endpoint (or test over LAN HTTP with a dev build).
+- **ICE**: set the server's public candidate (OME `IceCandidate`, MediaMTX
+  `webrtcAdditionalHosts`) or peers can't connect through NAT.
+- **CORS**: the WHIP `POST` needs permissive CORS (handled by the edge Nginx).
+
+### `getUserMedia` throws / black preview
+
+Camera + mic permissions must be granted. They're declared in `app.json`
+(`android.permission.CAMERA` / `RECORD_AUDIO`) and the manifest; on Android 13+
+the OS prompts at first `getUserMedia`. A black preview with `status='live'`
+usually means the track published but `RTCView` didn't attach — confirm
+`react-native-webrtc` is the native build (not a JS-only shim).
+
+---
+
 ## Quick Diagnostic Checklist
 
 When something goes wrong, check in this order:

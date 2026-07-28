@@ -117,6 +117,15 @@ export function buildIngestUrl(streamId: string, hosts: MediaHosts): string {
 }
 
 /**
+ * WHIP publish endpoint on the MediaMTX gateway. The in-app WebRTC broadcaster
+ * (components/LiveBroadcaster) always publishes over WHIP regardless of the
+ * configured default ingest protocol (RTMP/SRT are for external encoders).
+ */
+export function buildWhipPublishUrl(streamId: string, hosts: MediaHosts = getMediaHosts()): string {
+  return `${hosts.scheme}://${hosts.ingestHost}:8889/live/${streamId}/whip`;
+}
+
+/**
  * Resolve the full pipeline (tier + ingest + playback URLs) for a live event.
  * In `demo` mode ingest still resolves to real gateway URLs, but playback returns
  * a public test stream so the app is watchable without a provisioned plane.
