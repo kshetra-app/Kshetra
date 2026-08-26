@@ -1,6 +1,8 @@
+import React from 'react';
 import { View, Text, StyleSheet, Pressable } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useTranslation } from 'react-i18next';
+import { useTheme } from '../lib/theme';
 import type { Poll } from '../lib/feedTypes';
 
 interface PollCardProps {
@@ -8,19 +10,20 @@ interface PollCardProps {
   onVote: (optionId: string) => void;
 }
 
-const BAR_COLORS = ['#4F8EF7', '#8B5CF6', '#10B981', '#F59E0B', '#EF4444'];
+const BAR_COLORS = ['#2563EB', '#8B5CF6', '#10B981', '#F59E0B', '#EF4444'];
 
 export default function PollCard({ poll, onVote }: PollCardProps) {
   const { t } = useTranslation();
+  const { colors } = useTheme();
   const hasVoted = !!poll.userVotedOptionId;
   const showResults = hasVoted || poll.isClosed;
 
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, { backgroundColor: colors.surface, borderColor: colors.border }]}>
       {/* Question */}
       <View style={styles.questionRow}>
-        <Ionicons name="stats-chart" size={16} color="#8B5CF6" />
-        <Text style={styles.question}>{poll.question}</Text>
+        <Ionicons name="stats-chart" size={16} color="#8B5CF6" style={{ marginRight: 8, marginTop: 2 }} />
+        <Text style={[styles.question, { color: colors.text }]}>{poll.question}</Text>
       </View>
 
       {/* Options */}
@@ -37,7 +40,8 @@ export default function PollCard({ poll, onVote }: PollCardProps) {
               key={option.id}
               style={[
                 styles.option,
-                isSelected && styles.optionSelected,
+                { backgroundColor: colors.background, borderColor: colors.border },
+                isSelected && { borderColor: colors.primary, borderWidth: 1.5 },
               ]}
               onPress={() => !showResults && onVote(option.id)}
               disabled={showResults}
@@ -46,24 +50,33 @@ export default function PollCard({ poll, onVote }: PollCardProps) {
                 <View
                   style={[
                     styles.optionBar,
-                    { width: `${pct}%`, backgroundColor: barColor + '30' },
+                    { width: `${pct}%`, backgroundColor: barColor + '20' },
                   ]}
                 />
               )}
               <View style={styles.optionContent}>
                 <View style={styles.optionLeft}>
                   {!showResults && (
-                    <View style={styles.radio} />
+                    <View style={[styles.radio, { borderColor: colors.textMuted }]} />
                   )}
                   {showResults && isSelected && (
-                    <Ionicons name="checkmark-circle" size={16} color={barColor} />
+                    <Ionicons name="checkmark-circle" size={16} color={barColor} style={{ marginRight: 8 }} />
                   )}
-                  <Text style={[styles.optionLabel, isSelected && { color: barColor }]}>
+                  <Text
+                    style={[
+                      styles.optionLabel,
+                      { color: colors.text },
+                      isSelected && { fontWeight: '700', color: colors.primary },
+                      !showResults && { marginLeft: 8 },
+                    ]}
+                  >
                     {option.label}
                   </Text>
                 </View>
                 {showResults && (
-                  <Text style={[styles.optionPct, { color: barColor }]}>{pct}%</Text>
+                  <Text style={[styles.optionPct, { color: barColor }]}>
+                    {pct}%
+                  </Text>
                 )}
               </View>
             </Pressable>
@@ -71,24 +84,18 @@ export default function PollCard({ poll, onVote }: PollCardProps) {
         })}
       </View>
 
-      {/* Footer */}
+      {/* Footer info */}
       <View style={styles.footer}>
-        <Text style={styles.footerText}>
-          {poll.totalVotes.toLocaleString()} {poll.totalVotes !== 1 ? t('pollCard.votes') : t('pollCard.vote')}
+        <Text style={[styles.footerText, { color: colors.textMuted }]}>
+          {poll.totalVotes} {t('feed.votes', 'votes')}
         </Text>
-        {poll.isClosed && (
-          <>
-            <Text style={styles.footerDot}>·</Text>
-            <Text style={styles.closedText}>{t('pollCard.closed')}</Text>
-          </>
-        )}
-        {poll.expiresAt && !poll.isClosed && (
-          <>
-            <Text style={styles.footerDot}>·</Text>
-            <Text style={styles.footerText}>
-              {t('pollCard.ends')} {new Date(poll.expiresAt).toLocaleDateString(undefined, { month: 'short', day: 'numeric' })}
-            </Text>
-          </>
+        <Text style={[styles.footerDot, { color: colors.textMuted }]}>·</Text>
+        {poll.isClosed ? (
+          <Text style={styles.closedText}>{t('feed.pollClosed', 'Poll closed')}</Text>
+        ) : (
+          <Text style={[styles.footerText, { color: colors.textMuted }]}>
+            {hasVoted ? t('feed.voted', 'Voted') : t('feed.tapToVote', 'Tap to vote')}
+          </Text>
         )}
       </View>
     </View>
@@ -97,12 +104,10 @@ export default function PollCard({ poll, onVote }: PollCardProps) {
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: '#0D1117',
-    borderRadius: 12,
+    borderRadius: 14,
     padding: 14,
-    marginBottom: 6,
+    marginBottom: 8,
     borderWidth: 1,
-    borderColor: '#8B5CF620',
   },
   questionRow: {
     flexDirection: 'row',
@@ -113,20 +118,15 @@ const styles = StyleSheet.create({
     flex: 1,
     fontSize: 14,
     fontWeight: '700',
-    color: '#FFFFFF',
     lineHeight: 20,
   },
   options: {
+    gap: 8,
   },
   option: {
-    backgroundColor: '#1F2937',
     borderRadius: 10,
     overflow: 'hidden',
     borderWidth: 1,
-    borderColor: '#374151',
-  },
-  optionSelected: {
-    borderColor: '#4F8EF7',
   },
   optionBar: {
     position: 'absolute',
@@ -151,17 +151,14 @@ const styles = StyleSheet.create({
     width: 16,
     height: 16,
     borderRadius: 8,
-    borderWidth: 2,
-    borderColor: '#4B5563',
+    borderWidth: 1.5,
   },
   optionLabel: {
     fontSize: 13,
-    fontWeight: '600',
-    color: '#D1D5DB',
     flex: 1,
   },
   optionPct: {
-    fontSize: 14,
+    fontSize: 13,
     fontWeight: '800',
     marginLeft: 8,
   },
@@ -172,12 +169,10 @@ const styles = StyleSheet.create({
   },
   footerText: {
     fontSize: 12,
-    color: '#6B7280',
     fontWeight: '600',
   },
   footerDot: {
     fontSize: 12,
-    color: '#374151',
     marginHorizontal: 6,
   },
   closedText: {

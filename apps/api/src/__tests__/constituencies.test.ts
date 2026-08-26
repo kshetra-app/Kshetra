@@ -38,17 +38,13 @@ describe('Constituency Routes', () => {
     expect(first.currentMLA).toBeDefined();
   });
 
-  it('GET /states/KA/constituencies should return empty for unsupported state', async () => {
+  it('GET /states/ZZ/constituencies should return 404 for unsupported state', async () => {
     const response = await app.inject({
       method: 'GET',
-      url: '/api/v1/states/KA/constituencies',
+      url: '/api/v1/states/ZZ/constituencies',
     });
 
-    expect(response.statusCode).toBe(200);
-    const body = JSON.parse(response.payload);
-    expect(body.state).toBe('KA');
-    expect(body.count).toBe(0);
-    expect(body.data).toHaveLength(0);
+    expect(response.statusCode).toBe(404);
   });
 
   // ─── DETAIL ───

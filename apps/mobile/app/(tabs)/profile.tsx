@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import {
   View,
   Text,
@@ -6,6 +7,7 @@ import {
   Platform,
   Pressable,
   Switch,
+  TouchableOpacity,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
@@ -25,6 +27,8 @@ import { getUnifiedConstituenciesForState } from '@/lib/stateDataAdapter';
 import { useResponsive } from '../../lib/responsive';
 import { useContributorVerificationStore } from '../../stores/contributorVerification';
 import { KYC_STATUS_CONFIG } from '../../lib/contentAccountabilityTypes';
+import { useTheme } from '../../lib/theme';
+import { DevFeatureSwitcher } from '../../components/DevFeatureSwitcher';
 
 interface SettingRowProps {
   icon: keyof typeof Ionicons.glyphMap;
@@ -34,16 +38,21 @@ interface SettingRowProps {
   color?: string;
 }
 
-function SettingRow({ icon, label, value, onPress, color = '#4F8EF7' }: SettingRowProps) {
+function SettingRow({ icon, label, value, onPress, color = '#2563EB' }: SettingRowProps) {
+  const { colors } = useTheme();
   return (
-    <Pressable style={styles.settingRow} onPress={onPress} disabled={!onPress}>
-      <View style={[styles.settingIcon, { backgroundColor: color + '20' }]}>
+    <Pressable
+      style={[styles.settingRow, { borderBottomColor: colors.border }]}
+      onPress={onPress}
+      disabled={!onPress}
+    >
+      <View style={[styles.settingIcon, { backgroundColor: color + '15' }]}>
         <Ionicons name={icon} size={18} color={color} />
       </View>
-      <Text style={styles.settingLabel}>{label}</Text>
-      {value && <Text style={styles.settingValue}>{value}</Text>}
+      <Text style={[styles.settingLabel, { color: colors.text }]}>{label}</Text>
+      {value && <Text style={[styles.settingValue, { color: colors.textMuted }]}>{value}</Text>}
       {onPress && (
-        <Ionicons name="chevron-forward" size={16} color="#374151" />
+        <Ionicons name="chevron-forward" size={16} color={colors.textMuted} />
       )}
     </Pressable>
   );
@@ -70,6 +79,8 @@ export default function ProfileScreen() {
   })();
 
   const { insets } = useResponsive();
+  const { colors } = useTheme();
+  const [showDevModal, setShowDevModal] = useState(false);
   const kycRecord = useContributorVerificationStore((s) => s.kycRecord);
   const setShowKYCSheet = useContributorVerificationStore((s) => s.setShowKYCSheet);
   const kycStatus = kycRecord?.status ?? null;
@@ -444,13 +455,27 @@ export default function ProfileScreen() {
         </View>
       </View>
 
-      <View style={styles.footer}>
-        <Text style={styles.footerBrand}>{t('common.appName')}</Text>
-        <Text style={styles.footerText}>
+      <TouchableOpacity
+        style={styles.footer}
+        onPress={() => setShowDevModal(true)}
+        activeOpacity={0.7}
+      >
+        <Text style={[styles.footerBrand, { color: colors.primary }]}>{t('common.appName')}</Text>
+        <Text style={[styles.footerText, { color: colors.textSecondary }]}>
           {t('profileExtended.tagline')}
         </Text>
-        <Text style={styles.footerVersion}>{t('profileExtended.versionPhase')}</Text>
-      </View>
+        <View style={{ flexDirection: 'row', alignItems: 'center', gap: 4, marginTop: 4 }}>
+          <Ionicons name="settings-outline" size={12} color={colors.textMuted} />
+          <Text style={[styles.footerVersion, { color: colors.textMuted }]}>
+            {t('profileExtended.versionPhase')} • Tap for Dev Switches
+          </Text>
+        </View>
+      </TouchableOpacity>
+
+      <DevFeatureSwitcher
+        visible={showDevModal}
+        onClose={() => setShowDevModal(false)}
+      />
     </ScrollView>
   );
 }

@@ -46,7 +46,7 @@ export default function RootLayout() {
         screenOptions={{
           headerShown: false,
           animation: 'fade',
-          contentStyle: { backgroundColor: '#0A0A1A' },
+          contentStyle: { backgroundColor: colors.background },
         }}
       >
         <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
@@ -54,8 +54,9 @@ export default function RootLayout() {
           name="constituency/[id]"
           options={{
             headerShown: true,
-            headerStyle: { backgroundColor: '#0A0A1A' },
-            headerTintColor: '#FFFFFF',
+            headerStyle: { backgroundColor: colors.surface },
+            headerTintColor: colors.text,
+            headerShadowVisible: false,
             animation: 'slide_from_right',
           }}
         />
@@ -63,8 +64,8 @@ export default function RootLayout() {
           name="auth/sign-in"
           options={{
             headerShown: true,
-            headerStyle: { backgroundColor: '#0A0A1A' },
-            headerTintColor: '#FFFFFF',
+            headerStyle: { backgroundColor: colors.surface },
+            headerTintColor: colors.text,
             animation: 'slide_from_bottom',
             presentation: 'modal',
           }}
@@ -73,8 +74,8 @@ export default function RootLayout() {
           name="notifications"
           options={{
             headerShown: true,
-            headerStyle: { backgroundColor: '#0A0A1A' },
-            headerTintColor: '#FFFFFF',
+            headerStyle: { backgroundColor: colors.surface },
+            headerTintColor: colors.text,
             animation: 'slide_from_right',
           }}
         />
@@ -89,8 +90,8 @@ export default function RootLayout() {
           name="ai-chat"
           options={{
             headerShown: true,
-            headerStyle: { backgroundColor: '#0A0A1A' },
-            headerTintColor: '#FFFFFF',
+            headerStyle: { backgroundColor: colors.surface },
+            headerTintColor: colors.text,
             animation: 'slide_from_bottom',
             presentation: 'modal',
           }}
@@ -120,8 +121,8 @@ export default function RootLayout() {
           name="candidate-xray/[id]"
           options={{
             headerShown: true,
-            headerStyle: { backgroundColor: '#0A0A1A' },
-            headerTintColor: '#FFFFFF',
+            headerStyle: { backgroundColor: colors.surface },
+            headerTintColor: colors.text,
             animation: 'slide_from_right',
           }}
         />
@@ -129,8 +130,8 @@ export default function RootLayout() {
           name="issue/[id]"
           options={{
             headerShown: true,
-            headerStyle: { backgroundColor: '#030712' },
-            headerTintColor: '#FFFFFF',
+            headerStyle: { backgroundColor: colors.surface },
+            headerTintColor: colors.text,
             headerShadowVisible: false,
             animation: 'slide_from_right',
           }}
@@ -139,8 +140,8 @@ export default function RootLayout() {
           name="notification-settings"
           options={{
             headerShown: true,
-            headerStyle: { backgroundColor: '#0A0A1A' },
-            headerTintColor: '#FFFFFF',
+            headerStyle: { backgroundColor: colors.surface },
+            headerTintColor: colors.text,
             animation: 'slide_from_right',
           }}
         />
@@ -148,8 +149,8 @@ export default function RootLayout() {
           name="edit-profile"
           options={{
             headerShown: true,
-            headerStyle: { backgroundColor: '#0A0A1A' },
-            headerTintColor: '#FFFFFF',
+            headerStyle: { backgroundColor: colors.surface },
+            headerTintColor: colors.text,
             animation: 'slide_from_right',
           }}
         />
@@ -171,8 +172,8 @@ export default function RootLayout() {
           name="legislator/[id]"
           options={{
             headerShown: true,
-            headerStyle: { backgroundColor: '#0A0A1A' },
-            headerTintColor: '#FFFFFF',
+            headerStyle: { backgroundColor: colors.surface },
+            headerTintColor: colors.text,
             headerShadowVisible: false,
             animation: 'slide_from_right',
           }}
@@ -223,8 +224,8 @@ export default function RootLayout() {
           name="hierarchy/[id]"
           options={{
             headerShown: true,
-            headerStyle: { backgroundColor: '#0A0A1A' },
-            headerTintColor: '#FFFFFF',
+            headerStyle: { backgroundColor: colors.surface },
+            headerTintColor: colors.text,
             animation: 'slide_from_right',
           }}
         />
@@ -232,8 +233,8 @@ export default function RootLayout() {
           name="local-bodies/index"
           options={{
             headerShown: true,
-            headerStyle: { backgroundColor: '#0A0A1A' },
-            headerTintColor: '#FFFFFF',
+            headerStyle: { backgroundColor: colors.surface },
+            headerTintColor: colors.text,
             headerShadowVisible: false,
             animation: 'slide_from_right',
           }}
@@ -242,8 +243,8 @@ export default function RootLayout() {
           name="representative/[id]"
           options={{
             headerShown: true,
-            headerStyle: { backgroundColor: '#0A0A1A' },
-            headerTintColor: '#FFFFFF',
+            headerStyle: { backgroundColor: colors.surface },
+            headerTintColor: colors.text,
             headerShadowVisible: false,
             animation: 'slide_from_right',
           }}
@@ -252,8 +253,8 @@ export default function RootLayout() {
           name="representative/edit/[id]"
           options={{
             headerShown: true,
-            headerStyle: { backgroundColor: '#0A0A1A' },
-            headerTintColor: '#FFFFFF',
+            headerStyle: { backgroundColor: colors.surface },
+            headerTintColor: colors.text,
             headerShadowVisible: false,
             animation: 'slide_from_right',
           }}

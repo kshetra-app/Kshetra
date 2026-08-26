@@ -22,7 +22,7 @@ interface PreferencesState {
 export const usePreferencesStore = create<PreferencesState>()(
   persist(
     (set) => ({
-      theme: 'dark',
+      theme: 'light',
       language: 'en',
       notificationsEnabled: false,
       hapticFeedback: true,

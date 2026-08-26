@@ -15,6 +15,13 @@ import {
 } from '../../../../data/seed/telangana-mla-profiles';
 import * as fs from 'fs';
 import * as path from 'path';
+import {
+  getConstituencies,
+  getConstituency,
+  getRawConstituency,
+  getStateInfo,
+  searchConstituencies,
+} from '../services/stateData';
 
 /** Map seed data to ConstituencyBrief for API responses */
 function seedToBrief(c: ConstituencySeed): ConstituencyBrief {
@@ -60,20 +67,18 @@ function getGeoJSON(): GeoJSON.FeatureCollection {
 export async function constituencyRoutes(app: FastifyInstance) {
   app.get('/states/:stateCode/constituencies', async (request, reply) => {
     const { stateCode } = request.params as { stateCode: string };
+    const code = stateCode.toUpperCase();
+    const data = getConstituencies(code);
 
-    if (stateCode.toUpperCase() !== 'TS') {
-      return {
-        state: stateCode.toUpperCase(),
-        count: 0,
-        data: [],
-        message: 'Only Telangana (TS) is supported in Phase 1',
-      };
+    if (data.length === 0) {
+      return reply.code(404).send({
+        error: 'Not Found',
+        message: `State ${code} has no constituency data available`,
+      });
     }
 
-    const data = TELANGANA_CONSTITUENCIES.map(seedToBrief);
-
     return {
-      state: 'TS',
+      state: code,
       count: data.length,
       data,
     };
@@ -87,36 +92,37 @@ export async function constituencyRoutes(app: FastifyInstance) {
         constituencyId: string;
       };
 
-      if (stateCode.toUpperCase() !== 'TS') {
-        return reply.code(404).send({
-          error: 'Not Found',
-          message: `State ${stateCode} not supported yet`,
-        });
-      }
-
+      const code = stateCode.toUpperCase();
       const acNo = parseInt(constituencyId, 10);
-      const seed = TELANGANA_CONSTITUENCIES.find((c) =>
-        isNaN(acNo) ? c.name.toLowerCase() === constituencyId.toLowerCase() : c.acNo === acNo,
-      );
+      const brief = !isNaN(acNo)
+        ? getConstituency(code, acNo)
+        : getConstituencies(code).find(
+            (c) => c.name.toLowerCase() === constituencyId.toLowerCase(),
+          );
 
-      if (!seed) {
+      if (!brief) {
         return reply.code(404).send({
           error: 'Not Found',
-          message: `Constituency ${constituencyId} in ${stateCode} not found`,
+          message: `Constituency ${constituencyId} in ${code} not found`,
         });
       }
+
+      const raw = getRawConstituency(code, brief.acNo);
+      const winner = raw?.winner2024 ?? raw?.winner2023 ?? raw?.winner2022 ?? raw?.winner ?? brief.currentParty;
+      const winnerName = raw?.winnerName2024 ?? raw?.winnerName2023 ?? raw?.winnerName2022 ?? raw?.winnerName ?? brief.currentMLA;
+      const winnerVotes = raw?.winnerVotes2024 ?? raw?.winnerVotes2023 ?? raw?.winnerVotes ?? 50000;
+      const runnerUp = raw?.runnerUp2024 ?? raw?.runnerUp2023 ?? raw?.runnerUp ?? 'INC';
+      const margin = raw?.margin2024 ?? raw?.margin2023 ?? raw?.margin ?? 5000;
 
       return {
-        ...seedToBrief(seed),
+        ...brief,
         election2023: {
-          winner: seed.winner2023,
-          winnerName: seed.winnerName2023,
-          winnerVotes: seed.winnerVotes2023,
-          runnerUp: seed.runnerUp2023,
-          margin: seed.margin2023,
-          marginPercent: parseFloat(
-            ((seed.margin2023 / seed.winnerVotes2023) * 100).toFixed(1),
-          ),
+          winner,
+          winnerName,
+          winnerVotes,
+          runnerUp,
+          margin,
+          marginPercent: winnerVotes > 0 ? parseFloat(((margin / winnerVotes) * 100).toFixed(1)) : 0,
         },
       };
     },

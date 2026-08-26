@@ -56,18 +56,20 @@ export const DARK_THEME: ThemeColors = {
 };
 
 export const LIGHT_THEME: ThemeColors = {
-  background: '#F9FAFB',
+  background: '#F8FAFC',
   surface: '#FFFFFF',
-  surfaceElevated: '#F3F4F6',
-  text: '#111827',
-  textSecondary: '#4B5563',
-  textMuted: '#9CA3AF',
+  surfaceElevated: '#FFFFFF',
+  text: '#0F172A',
+  textSecondary: '#475569',
+  textMuted: '#94A3B8',
   primary: '#2563EB',
-  primaryLight: '#2563EB15',
-  danger: '#DC2626',
-  success: '#059669',
-  warning: '#D97706',
-  border: '#E5E7EB',
+  primaryLight: '#EFF6FF',
+  danger: '#EF4444',
+  success: '#10B981',
+  warning: '#F59E0B',
+  border: '#F1F5F9',
   mapStyle: 'mapbox://styles/mapbox/light-v11',
   statusBar: 'dark',
 };
+
+export { useTheme } from './useTheme';

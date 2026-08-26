@@ -78,7 +78,7 @@ describe('stateData service', () => {
 
   it('reports support status by data tier', () => {
     expect(isStateSupported('TS')).toBe(true);
-    expect(isStateSupported('MH')).toBe(false); // planned, no data
+    expect(isStateSupported('MH')).toBe(true);
     expect(isStateSupported('ZZ')).toBe(false);
   });
 

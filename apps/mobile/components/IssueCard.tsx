@@ -1,7 +1,9 @@
+import React from 'react';
 import { View, Text, StyleSheet, Pressable, ScrollView } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { Image } from 'expo-image';
 import { useTranslation } from 'react-i18next';
+import { useTheme } from '../lib/theme';
 import type { CivicIssue } from '../lib/civicTypes';
 import {
   ISSUE_CATEGORY_CONFIG,
@@ -33,6 +35,7 @@ interface IssueCardProps {
 
 export default function IssueCard({ issue, onUpvote, onPress, onFollow, onShare }: IssueCardProps) {
   const { t } = useTranslation();
+  const { colors } = useTheme();
   const catConfig = ISSUE_CATEGORY_CONFIG[issue.category];
   const sevConfig = SEVERITY_CONFIG[issue.severity];
   const statusConfig = STATUS_CONFIG[issue.status];
@@ -45,39 +48,42 @@ export default function IssueCard({ issue, onUpvote, onPress, onFollow, onShare 
   const issueDesc = issue.description ? t(`content.issues.${issue.id}.description`, issue.description) : undefined;
 
   return (
-    <Pressable style={styles.card} onPress={onPress}>
+    <Pressable
+      style={[styles.card, { backgroundColor: colors.surface, borderColor: colors.border }]}
+      onPress={onPress}
+    >
       {/* Category + Severity header */}
       <View style={styles.topRow}>
-        <View style={[styles.categoryBadge, { backgroundColor: catConfig.color + '20', marginRight: 6 }]}>
+        <View style={[styles.categoryBadge, { backgroundColor: catConfig.color + '18', marginRight: 6 }]}>
           <Ionicons name={catConfig.icon as any} size={12} color={catConfig.color} style={{ marginRight: 4 }} />
           <Text style={[styles.categoryText, { color: catConfig.color }]}>{catLabel}</Text>
         </View>
-        <View style={[styles.severityBadge, { backgroundColor: sevConfig.color + '20', marginRight: 6 }]}>
+        <View style={[styles.severityBadge, { backgroundColor: sevConfig.color + '18', marginRight: 6 }]}>
           <Text style={[styles.severityText, { color: sevConfig.color }]}>{sevLabel}</Text>
         </View>
-        <View style={[styles.statusBadge, { backgroundColor: statusConfig.color + '20' }]}>
+        <View style={[styles.statusBadge, { backgroundColor: statusConfig.color + '18' }]}>
           <Ionicons name={statusConfig.icon as any} size={11} color={statusConfig.color} style={{ marginRight: 3 }} />
           <Text style={[styles.statusText, { color: statusConfig.color }]}>{statusLabel}</Text>
         </View>
       </View>
 
       {/* Title */}
-      <Text style={styles.title} numberOfLines={2}>{issueTitle}</Text>
+      <Text style={[styles.title, { color: colors.text }]} numberOfLines={2}>{issueTitle}</Text>
 
       {/* Description preview */}
       {issueDesc && (
-        <Text style={styles.description} numberOfLines={2}>{issueDesc}</Text>
+        <Text style={[styles.description, { color: colors.textSecondary }]} numberOfLines={2}>{issueDesc}</Text>
       )}
 
       {/* Media evidence thumbnails */}
       {issue.mediaUrls && issue.mediaUrls.length > 0 && (
         <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.mediaStrip}>
-          {issue.mediaUrls.slice(0, 4).map((url, idx) => (
+          {issue.mediaUrls.slice(0, 4).map((url) => (
             <Image key={url} source={{ uri: url }} style={styles.mediaThumb} contentFit="cover" />
           ))}
           {issue.mediaUrls.length > 4 && (
-            <View style={styles.mediaMoreBadge}>
-              <Text style={styles.mediaMoreText}>+{issue.mediaUrls.length - 4}</Text>
+            <View style={[styles.mediaMoreBadge, { backgroundColor: colors.background }]}>
+              <Text style={[styles.mediaMoreText, { color: colors.textMuted }]}>+{issue.mediaUrls.length - 4}</Text>
             </View>
           )}
         </ScrollView>
@@ -87,18 +93,18 @@ export default function IssueCard({ issue, onUpvote, onPress, onFollow, onShare 
       <View style={styles.metaRow}>
         {issue.constituencyName && (
           <View style={styles.metaItem}>
-            <Ionicons name="location" size={12} color="#4F8EF7" />
-            <Text style={styles.metaLocationText}>{issue.constituencyName}</Text>
+            <Ionicons name="location" size={12} color={colors.primary} />
+            <Text style={[styles.metaLocationText, { color: colors.primary }]}>{issue.constituencyName}</Text>
           </View>
         )}
-        <Text style={styles.metaTimeText}>{timeAgo(issue.createdAt)}</Text>
-        <Text style={styles.metaDot}>·</Text>
-        <Text style={styles.metaReporterText}>{issue.reporterName}</Text>
+        <Text style={[styles.metaTimeText, { color: colors.textMuted }]}>{timeAgo(issue.createdAt)}</Text>
+        <Text style={[styles.metaDot, { color: colors.textMuted }]}>·</Text>
+        <Text style={[styles.metaReporterText, { color: colors.textMuted }]}>{issue.reporterName}</Text>
       </View>
 
       {/* MLA Response indicator */}
       {issue.mlaTagged && (
-        <View style={styles.mlaRow}>
+        <View style={[styles.mlaRow, { backgroundColor: '#F59E0B12', borderColor: '#F59E0B30' }]}>
           <Ionicons name="megaphone" size={12} color="#F59E0B" />
           <Text style={styles.mlaText}>
             {issue.mlaResponded ? 'MLA Responded' : 'MLA Tagged — Awaiting Response'}
@@ -110,45 +116,45 @@ export default function IssueCard({ issue, onUpvote, onPress, onFollow, onShare 
       )}
 
       {/* Actions */}
-      <View style={styles.actions}>
+      <View style={[styles.actions, { borderTopColor: colors.border }]}>
         <Pressable style={styles.upvoteButton} onPress={onUpvote} hitSlop={8}>
           <Ionicons
             name={issue.userUpvoted ? 'arrow-up-circle' : 'arrow-up-circle-outline'}
             size={20}
-            color={issue.userUpvoted ? '#10B981' : '#6B7280'}
+            color={issue.userUpvoted ? '#10B981' : colors.textMuted}
           />
-          <Text style={[styles.upvoteText, issue.userUpvoted && styles.upvoteTextActive, { marginLeft: 4 }]}>
+          <Text style={[styles.upvoteText, { color: issue.userUpvoted ? '#10B981' : colors.textSecondary }, { marginLeft: 4 }]}>
             {issue.upvoteCount}
           </Text>
         </Pressable>
-        <View style={[styles.commentCount, { marginLeft: 12 }]}>
-          <Ionicons name="chatbubble-outline" size={14} color="#6B7280" />
-          <Text style={[styles.commentCountText, { marginLeft: 4 }]}>{issue.commentCount}</Text>
+        <View style={[styles.commentCount, { marginLeft: 14 }]}>
+          <Ionicons name="chatbubble-outline" size={14} color={colors.textMuted} />
+          <Text style={[styles.commentCountText, { color: colors.textSecondary, marginLeft: 4 }]}>{issue.commentCount}</Text>
         </View>
-        <Pressable style={[styles.commentCount, { marginLeft: 12 }]} onPress={onFollow} hitSlop={8}>
+        <Pressable style={[styles.commentCount, { marginLeft: 14 }]} onPress={onFollow} hitSlop={8}>
           <Ionicons
             name={issue.userFollowing ? 'notifications' : 'notifications-outline'}
             size={14}
-            color={issue.userFollowing ? '#3B82F6' : '#6B7280'}
+            color={issue.userFollowing ? colors.primary : colors.textMuted}
           />
-          <Text style={[styles.commentCountText, { marginLeft: 4, color: issue.userFollowing ? '#3B82F6' : '#6B7280' }]}>
+          <Text style={[styles.commentCountText, { marginLeft: 4, color: issue.userFollowing ? colors.primary : colors.textSecondary }]}>
             {issue.followCount}
           </Text>
         </Pressable>
         {issue.evidenceCount > 0 && (
-          <View style={[styles.commentCount, { marginLeft: 12 }]}>
+          <View style={[styles.commentCount, { marginLeft: 14 }]}>
             <Ionicons name="camera-outline" size={14} color="#F59E0B" />
             <Text style={[styles.commentCountText, { marginLeft: 4, color: '#F59E0B' }]}>{issue.evidenceCount}</Text>
           </View>
         )}
         {issue.disputeCount > 0 && (
-          <View style={[styles.commentCount, { marginLeft: 12 }]}>
+          <View style={[styles.commentCount, { marginLeft: 14 }]}>
             <Ionicons name="flag" size={13} color="#EF4444" />
             <Text style={[styles.commentCountText, { marginLeft: 3, color: '#EF4444' }]}>{issue.disputeCount}</Text>
           </View>
         )}
         <Pressable style={[styles.commentCount, { marginLeft: 'auto' }]} onPress={onShare} hitSlop={8}>
-          <Ionicons name="share-outline" size={15} color="#6B7280" />
+          <Ionicons name="share-outline" size={16} color={colors.textMuted} />
         </Pressable>
       </View>
     </Pressable>
@@ -157,11 +163,16 @@ export default function IssueCard({ issue, onUpvote, onPress, onFollow, onShare 
 
 const styles = StyleSheet.create({
   card: {
-    backgroundColor: '#111827',
     borderRadius: 16,
+    borderWidth: 1,
     padding: 14,
     marginHorizontal: 16,
-    marginBottom: 10,
+    marginBottom: 12,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.03,
+    shadowRadius: 8,
+    elevation: 2,
   },
   topRow: {
     flexDirection: 'row',
@@ -173,7 +184,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingHorizontal: 8,
     paddingVertical: 3,
-    borderRadius: 8,
+    borderRadius: 6,
   },
   categoryText: {
     fontSize: 11,
@@ -182,7 +193,7 @@ const styles = StyleSheet.create({
   severityBadge: {
     paddingHorizontal: 8,
     paddingVertical: 3,
-    borderRadius: 8,
+    borderRadius: 6,
   },
   severityText: {
     fontSize: 11,
@@ -193,7 +204,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingHorizontal: 8,
     paddingVertical: 3,
-    borderRadius: 8,
+    borderRadius: 6,
   },
   statusText: {
     fontSize: 11,
@@ -202,13 +213,11 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 15,
     fontWeight: '700',
-    color: '#FFFFFF',
-    lineHeight: 20,
+    lineHeight: 21,
     marginBottom: 4,
   },
   description: {
     fontSize: 13,
-    color: '#9CA3AF',
     lineHeight: 18,
     marginBottom: 8,
   },
@@ -217,34 +226,31 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     flexWrap: 'wrap',
     marginBottom: 10,
+    gap: 4,
   },
   metaItem: {
     flexDirection: 'row',
     alignItems: 'center',
     marginRight: 4,
+    gap: 2,
   },
   metaLocationText: {
     fontSize: 12,
-    color: '#4F8EF7',
     fontWeight: '600',
   },
   metaTimeText: {
     fontSize: 12,
-    color: '#6B7280',
   },
   metaDot: {
     fontSize: 12,
-    color: '#374151',
   },
   metaReporterText: {
     fontSize: 12,
-    color: '#6B7280',
   },
   actions: {
     flexDirection: 'row',
     alignItems: 'center',
-    borderTopWidth: 0.5,
-    borderTopColor: '#1F2937',
+    borderTopWidth: 1,
     paddingTop: 10,
   },
   upvoteButton: {
@@ -252,20 +258,15 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   upvoteText: {
-    fontSize: 14,
+    fontSize: 13,
     fontWeight: '700',
-    color: '#6B7280',
-  },
-  upvoteTextActive: {
-    color: '#10B981',
   },
   commentCount: {
     flexDirection: 'row',
     alignItems: 'center',
   },
   commentCountText: {
-    fontSize: 13,
-    color: '#6B7280',
+    fontSize: 12,
     fontWeight: '600',
   },
   mediaStrip: {
@@ -282,14 +283,12 @@ const styles = StyleSheet.create({
     width: 56,
     height: 56,
     borderRadius: 8,
-    backgroundColor: '#1F2937',
     justifyContent: 'center',
     alignItems: 'center',
   },
   mediaMoreText: {
-    fontSize: 14,
+    fontSize: 13,
     fontWeight: '700',
-    color: '#9CA3AF',
   },
   mlaRow: {
     flexDirection: 'row',
@@ -298,10 +297,8 @@ const styles = StyleSheet.create({
     paddingVertical: 6,
     paddingHorizontal: 8,
     marginBottom: 8,
-    backgroundColor: '#1C191720',
     borderRadius: 8,
     borderWidth: 0.5,
-    borderColor: '#F59E0B30',
   },
   mlaText: {
     fontSize: 11,

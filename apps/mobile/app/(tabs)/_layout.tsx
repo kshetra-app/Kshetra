@@ -6,10 +6,8 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { moderateScale } from '../../lib/responsive';
 import { usePreferencesStore } from '../../stores/preferences';
 import { useActiveStateStore } from '../../stores/activeState';
-
-const ACTIVE_COLOR = '#4F8EF7';
-const INACTIVE_COLOR = '#6B7280';
-const TAB_BG = '#0A0A1A';
+import { useTheme } from '../../lib/theme';
+import { useFeatureFlags } from '../../lib/featureFlags';
 
 type TabIconProps = {
   name: keyof typeof Ionicons.glyphMap;
@@ -23,6 +21,8 @@ function TabIcon({ name, color, size }: TabIconProps) {
 
 export default function TabLayout() {
   const { t } = useTranslation();
+  const { colors } = useTheme();
+  const flags = useFeatureFlags();
   const unreadCount = useNotificationsStore((s) => s.unreadCount);
   const insets = useSafeAreaInsets();
   const mapOnlyMode = useActiveStateStore((s) => s.mapOnlyMode);
@@ -36,16 +36,21 @@ export default function TabLayout() {
     <Tabs
       screenOptions={{
         headerShown: false,
-        tabBarActiveTintColor: ACTIVE_COLOR,
-        tabBarInactiveTintColor: INACTIVE_COLOR,
+        tabBarActiveTintColor: colors.primary,
+        tabBarInactiveTintColor: colors.textMuted,
         tabBarStyle: {
-          backgroundColor: TAB_BG,
-          borderTopColor: '#1F2937',
-          borderTopWidth: 0.5,
+          backgroundColor: colors.surface,
+          borderTopColor: colors.border,
+          borderTopWidth: 1,
           height: tabBarHeight,
           paddingBottom: tabBarPaddingBottom,
           paddingTop: 6,
           display: (mapOnlyMode || broadcastMode) ? 'none' : 'flex',
+          elevation: 8,
+          shadowColor: '#000',
+          shadowOffset: { width: 0, height: -2 },
+          shadowOpacity: 0.04,
+          shadowRadius: 8,
         },
         tabBarLabelStyle: {
           fontSize: moderateScale(10),
@@ -57,6 +62,7 @@ export default function TabLayout() {
         name="index"
         options={{
           title: t('tabs.map'),
+          href: flags.enableMap ? undefined : null,
           tabBarIcon: ({ color, size }) => (
             <TabIcon name="map" color={color} size={size} />
           ),
@@ -66,6 +72,7 @@ export default function TabLayout() {
         name="explore"
         options={{
           title: t('tabs.explore'),
+          href: flags.enableExploreSearch ? undefined : null,
           tabBarIcon: ({ color, size }) => (
             <TabIcon name="search" color={color} size={size} />
           ),
@@ -75,6 +82,7 @@ export default function TabLayout() {
         name="feed"
         options={{
           title: t('tabs.feed'),
+          href: flags.enableFeed ? undefined : null,
           tabBarIcon: ({ color, size }) => (
             <TabIcon name="chatbubbles" color={color} size={size} />
           ),
@@ -84,6 +92,7 @@ export default function TabLayout() {
         name="live"
         options={{
           title: t('tabs.live', { defaultValue: 'Live' }),
+          href: flags.enableLiveTab ? undefined : null,
           tabBarIcon: ({ color, size }) => (
             <TabIcon name="radio" color={color} size={size} />
           ),
@@ -93,6 +102,7 @@ export default function TabLayout() {
         name="news"
         options={{
           title: t('tabs.news', { defaultValue: 'News' }),
+          href: flags.enableNewsTab ? undefined : null,
           tabBarIcon: ({ color, size }) => (
             <TabIcon name="newspaper" color={color} size={size} />
           ),
@@ -102,6 +112,7 @@ export default function TabLayout() {
         name="shorts"
         options={{
           title: t('tabs.shorts', { defaultValue: 'Shorts' }),
+          href: flags.enableShortsTab ? undefined : null,
           tabBarIcon: ({ color, size }) => (
             <TabIcon name="play-circle" color={color} size={size} />
           ),
