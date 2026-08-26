@@ -7,9 +7,9 @@
     "test:coverage": "node ../../node_modules/jest/bin/jest.js --coverage"
   },
   "devDependencies": {
-    "@types/jest": "^29.5.0",
-    "jest": "^29.7.0",
+    "@types/jest": "^30.0.0",
+    "jest": "^30.4.2",
     "ts-jest": "^29.2.0",
-    "typescript": "^5.7.0"
+    "typescript": "^7.0.2"
   }
 }
