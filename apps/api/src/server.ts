@@ -110,6 +110,10 @@ export async function buildApp() {
     return payload;
   });
 
+  // Root health endpoints for Cloud Container platforms (Railway, Render, Fly.io)
+  app.get('/', async () => ({ status: 'ok', service: 'kshetra-api', version: '0.1.0' }));
+  app.get('/health', async () => ({ status: 'ok', service: 'kshetra-api', version: '0.1.0' }));
+
   await app.register(healthRoutes, { prefix: '/api' });
   await app.register(constituencyRoutes, { prefix: '/api/v1' });
   await app.register(aiRoutes);
@@ -149,9 +153,8 @@ export async function start() {
   return app;
 }
 
-const isMainModule =
-  typeof require !== 'undefined' && require.main === module;
-
-if (isMainModule) {
-  start();
-}
+// Execute server start unconditionally
+start().catch((err) => {
+  console.error('Fatal startup error in KSHETRA API server:', err);
+  process.exit(1);
+});
