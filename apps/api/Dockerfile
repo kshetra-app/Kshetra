@@ -2,14 +2,14 @@ FROM node:22-alpine AS base
 WORKDIR /app
 ENV NODE_ENV=production
 
-# Copy root manifests
+# Copy root manifests & workspaces
 COPY package.json package-lock.json ./
 COPY packages ./packages
 COPY apps/api ./apps/api
 COPY data ./data
 
-# Install dependencies including tsx and shared types
-RUN npm ci --no-audit --no-fund
+# Install dependencies with platform flexibility for Docker Linux container
+RUN npm install --no-audit --no-fund --force
 
 # Build shared package
 RUN npm run build --prefix packages/shared
