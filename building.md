@@ -5262,3 +5262,84 @@ Full guide in TROUBLESHOOTING.md §11.
 | `apps/mobile/app/live/go-live.tsx` | Modified | Broadcaster wired behind `isBroadcastSupported()` |
 | `apps/mobile/package.json`, `apps/mobile/app.json` | Modified | `react-native-webrtc` + config plugin |
 | `TROUBLESHOOTING.md` | Modified | §11 Live Broadcasting (WebRTC-WHIP) |
+
+---
+
+## Microservices Decoupling, White Theme UI/UX, Feature Flags Engine & KSHETRA Pulse Deep Analytics
+
+**Date**: 2026-08-26
+**Goals**:
+1. Decouple heavy offline GeoJSON datasets (60+ MB) from the mobile Hermes JS bundle to Fastify on-demand streaming with on-device SWR caching.
+2. Upgrade entire mobile UI/UX from dark theme to a world-class Instagram/Swiggy-grade White Design System with pure white branding assets.
+3. Build a 3-way "Cakewalk" Feature Switching Engine (In-App Dev Modal, Central Config, Fastify Remote API) with dynamic tab filtering.
+4. Implement the KSHETRA Pulse Deep Analytics Engine: Anti-Incumbency Vulnerability Index (AIVI 0–100), 5-Pillar Sentiment Radar, Civic Anomaly Detector, and Executive AI Briefings with live mobile UI integration.
+5. Provide 1-click free-tier cloud deployment configuration (`railway.json`, `render.yaml`) for instant phone testing.
+6. Enforce 100% test pass and zero-error TypeScript monorepo compilation.
+
+### Key Architecture & Implementation Details
+
+- **Microservices Decoupling (60+ MB Offloaded)**:
+  - Trimmed `loaders` in `apps/mobile/lib/geoLoader.ts` to only inline the national overview (`IN`) and initial launch template (`TS`), ensuring zero-latency startup while eliminating 60+ MB of uncompressed JSON from the client bundle.
+  - `apps/mobile/lib/remoteGeoLoader.ts` streams the remaining 29 states on-demand from Fastify `/geo/:stateCode` (served gzipped) and caches them to disk with version-hashed keys from `geo-manifest.json`.
+  - Configured `apps/mobile/android/gradle.properties` with `android.enableMinifyInReleaseBuilds=true` and `android.enableShrinkResourcesInReleaseBuilds=true` for aggressive R8 dead-code stripping.
+
+- **World-Class White Theme UI/UX Design System**:
+  - `apps/mobile/lib/theme.ts`: Slate-white tokens (`background: '#F8FAFC'`, `surface: '#FFFFFF'`, `text: '#0F172A'`, `primary: '#2563EB'`, `border: '#F1F5F9'`).
+  - `apps/mobile/stores/preferences.ts`: Default app theme set to `'light'`.
+  - Brand Assets: Replaced dark app icon assets with high-res white background logo (`Logo/kshetra_logo_whitebg_1024.png`) in `apps/mobile/assets/icon.png` and `adaptive-icon.png`.
+  - Modernized `IssueCard.tsx`, `PostCard.tsx`, `PollCard.tsx`, `LanguageSwitcher.tsx`, `_layout.tsx`, `(tabs)/_layout.tsx`, and `AnalyticsDashboard`.
+
+- **3-Way Feature Switching Engine**:
+  - `packages/shared/src/config/features.ts`: Central typed feature flags covering all 6 phases.
+  - `apps/mobile/lib/featureFlags.ts`: Reactive Zustand store with MMKV disk persistence.
+  - `apps/mobile/components/DevFeatureSwitcher.tsx`: Interactive modal accessible by tapping the version number in Profile.
+  - `apps/api/src/routes/config.ts`: `GET` and `PATCH` `/api/v1/config/flags` for live cloud toggling.
+
+- **KSHETRA Pulse Deep Analytics & Intelligence Engine**:
+  - `packages/shared/src/analytics/pulse-engine.ts`: Multi-variable Anti-Incumbency Vulnerability Index (AIVI 0–100), 5-Pillar Sentiment Radar (Governance, Infrastructure, Welfare, Economy, Candidate Trust), Civic Anomaly Detector, and Executive AI Briefing synthesis.
+  - `apps/api/src/routes/intelligence.ts`: B2B/B2G intelligence endpoints (`/api/v1/enterprise/intelligence/...`).
+  - `apps/mobile/app/analytics/index.tsx`: Live dashboard with `VulnerabilityGauge.tsx`, `SentimentRadarChart.tsx`, and `ExecutiveBriefCard.tsx`.
+
+- **1-Click Free Cloud Deployment**:
+  - `railway.json` & `render.yaml` created for instant cloud hosting.
+
+### Verification
+- Monorepo build (`turbo run build`): **100% Passed (3/3 tasks)**.
+- Mobile TypeScript (`tsc --noEmit`): **0 errors**.
+- API TypeScript (`tsc --noEmit`): **0 errors**.
+- Pulse Engine Unit Tests (`pulse.test.ts`): **4/4 Passed**.
+- Feature Flags Store Unit Tests (`feature-flags.test.ts`): **4/4 Passed**.
+- Fastify Config Routes Unit Tests (`config.test.ts`): **2/2 Passed**.
+
+### Files Changed / Added
+| File | Change | Description |
+|---|---|---|
+| `decoupledapp.md` | New | Comprehensive decoupling & architecture master walkthrough |
+| `packages/shared/src/analytics/pulse-engine.ts` | New | KSHETRA Pulse mathematical algorithms (AIVI, Radar, Anomaly, AI Brief) |
+| `packages/shared/src/config/features.ts` | New | Typed feature flags for all 6 roadmap phases |
+| `packages/shared/src/index.ts` | Modified | Exported pulse engine and feature flags |
+| `apps/api/src/routes/intelligence.ts` | New | Fastify enterprise B2B/B2G intelligence API routes |
+| `apps/api/src/routes/config.ts` | New | Fastify remote feature flag endpoints |
+| `apps/api/src/services/stateData.ts` | Modified | Multi-state adapter supporting all 31 Indian states & UTs |
+| `apps/api/src/routes/constituencies.ts` | Modified | Dynamic constituency resolution across all 31 states |
+| `apps/api/src/server.ts` | Modified | Registered configRoutes and intelligenceRoutes |
+| `apps/api/src/__tests__/pulse.test.ts` | New | 4 unit tests for KSHETRA Pulse engine |
+| `apps/api/src/__tests__/config.test.ts` | New | Unit tests for remote config API |
+| `apps/mobile/lib/theme.ts` | Modified | Defined Slate-White palette tokens & re-exported useTheme |
+| `apps/mobile/stores/preferences.ts` | Modified | Default theme set to 'light' |
+| `apps/mobile/assets/icon.png`, `adaptive-icon.png` | Modified | Replaced with white background branding icon |
+| `apps/mobile/lib/featureFlags.ts` | New | Zustand + MMKV feature flag store |
+| `apps/mobile/components/DevFeatureSwitcher.tsx` | New | Developer feature toggle modal |
+| `apps/mobile/components/VulnerabilityGauge.tsx` | New | Radial score dial with risk factors and confidence badge |
+| `apps/mobile/components/SentimentRadarChart.tsx` | New | 5-pillar civic mood breakdown |
+| `apps/mobile/components/ExecutiveBriefCard.tsx` | New | AI executive summary card with shareable export |
+| `apps/mobile/components/IssueCard.tsx` | Modified | Modernized with White Theme tokens |
+| `apps/mobile/components/PostCard.tsx` | Modified | Modernized with White Theme tokens |
+| `apps/mobile/components/PollCard.tsx` | Modified | Modernized with White Theme tokens |
+| `apps/mobile/components/LanguageSwitcher.tsx` | Modified | Modernized with White Theme tokens |
+| `apps/mobile/app/analytics/index.tsx` | Modified | Added Pulse Intel tab with live AIVI and radar metrics |
+| `apps/mobile/lib/geoLoader.ts` | Modified | Decoupled 29 state GeoJSON files from JS bundle |
+| `apps/mobile/android/gradle.properties` | Modified | Enabled R8 minification and resource shrinking |
+| `railway.json`, `render.yaml` | New | 1-click cloud deployment configurations |
+| `building.md` | Modified | Comprehensive sprint log update |
+
