@@ -18,6 +18,6 @@ RUN npm run build --prefix packages/shared
 ENV PORT=3001
 ENV HOST=0.0.0.0
 EXPOSE 3001
-WORKDIR /app/apps/api
+WORKDIR /app
 
-CMD ["npx", "tsx", "src/server.ts"]
+CMD ["npx", "tsx", "apps/api/src/server.ts"]
