@@ -53,8 +53,7 @@
           "photosPermission": "Kshetra uses your photos to attach evidence to civic issue reports.",
           "cameraPermission": "Kshetra uses your camera to capture evidence for civic issue reports."
         }
-      ],
-      "@config-plugins/react-native-webrtc"
+      ]
     ],
     "experiments": {
       "typedRoutes": true

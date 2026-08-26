@@ -1,3 +1,4 @@
+# Ignore heavy client and native build directories
 node_modules
 **/node_modules
 apps/mobile
