@@ -1,3 +1,4 @@
+import { useMemo } from 'react';
 import { useColorScheme } from 'react-native';
 import { usePreferencesStore } from '../stores/preferences';
 import { DARK_THEME, LIGHT_THEME, type ThemeColors, type ThemeMode } from './theme';
@@ -14,16 +15,14 @@ export function useTheme(): {
   const themePreference = usePreferencesStore((s) => s.theme) as ThemeMode;
   const systemScheme = useColorScheme();
 
-  let isDark: boolean;
-  if (themePreference === 'system') {
-    isDark = systemScheme !== 'light';
-  } else {
-    isDark = themePreference === 'dark';
-  }
+  const isDark = themePreference === 'system' ? systemScheme !== 'light' : themePreference === 'dark';
 
-  return {
-    colors: isDark ? DARK_THEME : LIGHT_THEME,
-    mode: themePreference,
-    isDark,
-  };
+  return useMemo(
+    () => ({
+      colors: isDark ? DARK_THEME : LIGHT_THEME,
+      mode: themePreference,
+      isDark,
+    }),
+    [isDark, themePreference],
+  );
 }

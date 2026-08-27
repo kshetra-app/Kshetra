@@ -76,34 +76,39 @@ export const useFeatureFlagsStore = create<FeatureFlagsState>()(
   ),
 );
 
+import { useShallow } from 'zustand/react/shallow';
+
 /**
  * Convenient selector hook to consume feature flags in UI components.
+ * Wrapped with useShallow to prevent infinite re-render cycles in Zustand v5.
  */
 export function useFeatureFlags(): AppFeatureFlags {
-  return useFeatureFlagsStore((state) => ({
-    enableMap: state.enableMap,
-    enableExploreSearch: state.enableExploreSearch,
-    enableElectionHistory: state.enableElectionHistory,
-    enableTriviaEngine: state.enableTriviaEngine,
-    enableMultiLanguage: state.enableMultiLanguage,
+  return useFeatureFlagsStore(
+    useShallow((state) => ({
+      enableMap: state.enableMap,
+      enableExploreSearch: state.enableExploreSearch,
+      enableElectionHistory: state.enableElectionHistory,
+      enableTriviaEngine: state.enableTriviaEngine,
+      enableMultiLanguage: state.enableMultiLanguage,
 
-    enableFeed: state.enableFeed,
-    enableCivicDashboard: state.enableCivicDashboard,
-    enableNotifications: state.enableNotifications,
+      enableFeed: state.enableFeed,
+      enableCivicDashboard: state.enableCivicDashboard,
+      enableNotifications: state.enableNotifications,
 
-    enableLiveTab: state.enableLiveTab,
-    enableNewsTab: state.enableNewsTab,
-    enableShortsTab: state.enableShortsTab,
+      enableLiveTab: state.enableLiveTab,
+      enableNewsTab: state.enableNewsTab,
+      enableShortsTab: state.enableShortsTab,
 
-    enableDelimitation: state.enableDelimitation,
-    enableDeepAnalytics: state.enableDeepAnalytics,
+      enableDelimitation: state.enableDelimitation,
+      enableDeepAnalytics: state.enableDeepAnalytics,
 
-    enablePoliticianPortal: state.enablePoliticianPortal,
-    enableAspirants: state.enableAspirants,
-    enableCampaignManager: state.enableCampaignManager,
-    enableLeadershipAcademy: state.enableLeadershipAcademy,
+      enablePoliticianPortal: state.enablePoliticianPortal,
+      enableAspirants: state.enableAspirants,
+      enableCampaignManager: state.enableCampaignManager,
+      enableLeadershipAcademy: state.enableLeadershipAcademy,
 
-    enableInvestorDemo: state.enableInvestorDemo,
-    enableEnterpriseApis: state.enableEnterpriseApis,
-  }));
+      enableInvestorDemo: state.enableInvestorDemo,
+      enableEnterpriseApis: state.enableEnterpriseApis,
+    })),
+  );
 }
