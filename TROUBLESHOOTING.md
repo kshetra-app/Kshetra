@@ -98,6 +98,8 @@ const KYCVerificationSheet = lazy(() => import('../components/KYCVerificationShe
 
 ---
 
+---
+
 **Cause D — Missing native module not caught by try/catch**
 
 Top-level `import * as X from 'some-native-module'` will crash if the module isn't linked. Dynamic `require()` inside try/catch is safe.
@@ -114,9 +116,134 @@ import * as Device from 'expo-device';
 
 ---
 
+**Cause E — Zustand v5 Unstable Selector in Root / Tab Layout (Infinite Re-render Loop / Maximum update depth exceeded)**
+
+**Symptom:** The app opens, and immediately shows the ErrorBoundary screen saying *"Something went wrong - Kshetra encountered an error, please restart the app"*, or logs the fatal error:
+```text
+Error: Maximum update depth exceeded. This can happen when a component repeatedly calls setState inside componentWillUpdate or componentDidUpdate. React limits the number of nested updates to prevent infinite loops.
+```
+
+**Root Cause:**
+In Zustand v5, selecting an inline object literal `{ ... }` or array inside a selector function without memoization creates a brand-new object reference on every evaluation. When consumed in a top-level component (like `(tabs)/_layout.tsx` via `useFeatureFlags()`), Zustand detects `prevObject !== newObject` and triggers an immediate re-render on the first frame. This creates an infinite re-render loop that exceeds React's nested update limit before the first screen finishes mounting.
+
+```ts
+// ❌ CRASHES on startup — returns a new object reference on every selector run:
+export function useFeatureFlags(): AppFeatureFlags {
+  return useFeatureFlagsStore((state) => ({
+    enableMap: state.enableMap,
+    enableExploreSearch: state.enableExploreSearch,
+    // ...
+  }));
+}
+```
+
+**Working Solution:**
+Wrap multi-property selectors in `useShallow` from `zustand/react/shallow` so Zustand performs shallow equality checks on the returned properties rather than checking reference equality:
+
+```ts
+import { useShallow } from 'zustand/react/shallow';
+
+// ✅ SAFE — returns stable reference when property values have not changed:
+export function useFeatureFlags(): AppFeatureFlags {
+  return useFeatureFlagsStore(
+    useShallow((state) => ({
+      enableMap: state.enableMap,
+      enableExploreSearch: state.enableExploreSearch,
+      // ...
+    })),
+  );
+}
+```
+Also ensure theme / appearance hooks returning color objects are memoized with `useMemo`:
+```ts
+// ✅ lib/useTheme.ts
+export function useTheme() {
+  const themePreference = usePreferencesStore((s) => s.theme);
+  const systemScheme = useColorScheme();
+  const isDark = themePreference === 'system' ? systemScheme !== 'light' : themePreference === 'dark';
+
+  return useMemo(
+    () => ({
+      colors: isDark ? DARK_THEME : LIGHT_THEME,
+      mode: themePreference,
+      isDark,
+    }),
+    [isDark, themePreference],
+  );
+}
+```
+
+---
+
+**Cause F — NetInfo CommonJS Module Resolution Crash on First Frame**
+
+**Symptom:** App crashes on the first tick of JavaScript execution with `TypeError: Cannot read property 'addEventListener' of undefined` inside `lib/networkStatus.ts`.
+
+**Root Cause:**
+In Metro production bundling for Android release builds, CommonJS packages like `@react-native-community/netinfo` export their API directly on the module object rather than under a `.default` property. Calling `NetInfo.default.addEventListener()` fails because `NetInfo.default` is `undefined`.
+
+**Working Solution:**
+Safely unwrap the module with a fallback and guard listener registration:
+```ts
+// ✅ lib/networkStatus.ts
+const netinfoModule = NetInfo.default || NetInfo;
+if (typeof netinfoModule?.addEventListener === 'function') {
+  unsubscribe = netinfoModule.addEventListener((state: any) => {
+    // ...
+  });
+}
+```
+
+---
+
+**Cause G — Unhandled Rejections in SplashScreen & Root Auth Bootstrap**
+
+**Symptom:** App crashes during splash screen transition or cold boot if the native Android Activity state changes while JS is executing.
+
+**Root Cause:**
+`SplashScreen.preventAutoHideAsync()`, `SplashScreen.hideAsync()`, and `initializeAuth()` were called without catching rejection promises. If the Activity is recreated or transitions state before the JS thread initializes, these threw unhandled promise rejections.
+
+**Working Solution:**
+Defensively catch all splash screen and lifecycle promises in `app/_layout.tsx`:
+```ts
+// ✅ app/_layout.tsx
+useEffect(() => {
+  try {
+    SplashScreen.preventAutoHideAsync().catch(() => {});
+  } catch {}
+  try {
+    initializeAuth().catch(() => {});
+  } catch {}
+  try {
+    SplashScreen.hideAsync().catch(() => {});
+  } catch {}
+}, []);
+```
+
+---
+
+**Cause H — MMKV & SecureStore Adapter Exceptions During Rehydration**
+
+**Symptom:** Crash on launch when accessing Android KeyStore / MMKV native bindings before JNI initialization is complete.
+
+**Working Solution:**
+Wrap MMKV synchronous operations and Expo SecureStore asynchronous calls in defensive try/catch blocks with automatic in-memory fallbacks (`lib/storage.ts` & `lib/supabase.ts`).
+
+---
+
+**Cause I — In-App Crash Diagnostics & Logs Window in ErrorBoundary**
+
+**Feature & Solution:**
+When a React runtime error occurs in a release APK, `components/ErrorBoundary.tsx` renders an interactive terminal-style error console directly on-device instead of masking the error behind a generic message.
+- **Header**: Shows exact error name and message in bold red monospace text.
+- **Terminal Console**: Scrollable view of the complete JS Stack Trace and React Component Hierarchy.
+- **One-Tap "Copy / Share Log"**: Invokes the Android Share dialog or clipboard so error logs can be shared and diagnosed immediately without requiring a USB cable or ADB logcat.
+
+---
+
 ### Symptom: App crashes after a few seconds (not instant)
 
-Likely a JS runtime error. Connect via USB and check:
+Likely a JS runtime error. Check the in-app Diagnostics Window on the ErrorBoundary screen, or connect via USB and check:
 ```powershell
 adb logcat *:E | Select-String -Pattern "FATAL|ReactNative|AndroidRuntime"
 ```
@@ -797,6 +924,10 @@ When something goes wrong, check in this order:
 |---|---|---|
 | App crashes instantly on open | [1A](#cause-a--raw-js-bundle-instead-of-hermes-bytecode) | Compile bundle to Hermes bytecode |
 | App opens with black screen | [1B](#cause-b--js-bundle-missing-from-apk-blank--black-screen) | Run Metro bundle without `--entry-file` override |
+| `Maximum update depth exceeded` / Infinite loop on open | [1E](#cause-e--zustand-v5-unstable-selector-in-root--tab-layout-infinite-re-render-loop--maximum-update-depth-exceeded) | Wrap multi-property Zustand selectors in `useShallow` & memoize `useTheme` |
+| `Cannot read property 'addEventListener' of undefined` (NetInfo) | [1F](#cause-f--netinfo-commonjs-module-resolution-crash-on-first-frame) | Unwrap `NetInfo.default || NetInfo` with fallback |
+| Unhandled splash screen / auth bootstrap promise crash | [1G](#cause-g--unhandled-rejections-in-splashscreen--root-auth-bootstrap) | Add `.catch(() => {})` & `try/catch` around root promises |
+| KeyStore / MMKV crash on cold boot | [1H](#cause-h--mmkv--securestore-adapter-exceptions-during-rehydration) | Wrap synchronous MMKV/SecureStore calls in in-memory fallback |
 | `createBundleReleaseJsAndAssets` failed | [2](#execution-failed-for-task-appcreatebundlereleasejsandassets) | Add `debuggableVariants = ["release", "debug"]` |
 | `Filename longer than 260 characters` | [2](#filename-longer-than-260-characters-cmake--ninja-error) | Build from `C:\K` junction |
 | `configure_fingerprint.bin` not valid | [2](#configurecamakerelwithdeinfo--could-not-read-configure_fingerprintbin) | Delete `.cxx` directory |
@@ -816,4 +947,4 @@ When something goes wrong, check in this order:
 
 ---
 
-*Last updated: 2026-07-25*
+*Last updated: 2026-08-27*
