@@ -43,34 +43,34 @@ export default function RootLayout() {
   }, [initializeAuth, startNetworkMonitoring]);
 
   return (
-    <ErrorBoundary fallbackMessage="Kshetra encountered an error. Please restart the app.">
-    <SafeAreaProvider>
     <GestureHandlerRootView style={{ flex: 1 }}>
-      <StatusBar style={colors.statusBar} />
-      <OfflineBanner />
-      {showKYCSheet && (
-        <Suspense fallback={null}>
-          <KYCVerificationSheet />
-        </Suspense>
-      )}
-      <Stack
-        screenOptions={{
-          headerShown: false,
-          animation: 'fade',
-          contentStyle: { backgroundColor: colors.background },
-        }}
-      >
-        <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-        <Stack.Screen
-          name="constituency/[id]"
-          options={{
-            headerShown: true,
-            headerStyle: { backgroundColor: colors.surface },
-            headerTintColor: colors.text,
-            headerShadowVisible: false,
-            animation: 'slide_from_right',
-          }}
-        />
+      <SafeAreaProvider>
+        <ErrorBoundary>
+          <StatusBar style={colors.statusBar} />
+          <OfflineBanner />
+          {showKYCSheet && (
+            <Suspense fallback={null}>
+              <KYCVerificationSheet />
+            </Suspense>
+          )}
+          <Stack
+            screenOptions={{
+              headerShown: false,
+              animation: 'fade',
+              contentStyle: { backgroundColor: colors.background },
+            }}
+          >
+            <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+            <Stack.Screen
+              name="constituency/[id]"
+              options={{
+                headerShown: true,
+                headerStyle: { backgroundColor: colors.surface },
+                headerTintColor: colors.text,
+                headerShadowVisible: false,
+                animation: 'slide_from_right',
+              }}
+            />
         <Stack.Screen
           name="auth/sign-in"
           options={{
@@ -279,8 +279,8 @@ export default function RootLayout() {
           }}
         />
       </Stack>
+        </ErrorBoundary>
+      </SafeAreaProvider>
     </GestureHandlerRootView>
-    </SafeAreaProvider>
-    </ErrorBoundary>
   );
 }
