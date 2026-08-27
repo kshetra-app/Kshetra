@@ -30,24 +30,30 @@ export const isMMKVAvailable = usingMMKV;
  */
 export const mmkvStorage: StateStorage = {
   getItem: (name: string) => {
-    if (usingMMKV) {
-      const value = mmkvInstance.getString(name);
-      return value ?? null;
-    }
+    try {
+      if (usingMMKV && mmkvInstance) {
+        const value = mmkvInstance.getString(name);
+        return value ?? null;
+      }
+    } catch {}
     return memoryStore.get(name) ?? null;
   },
   setItem: (name: string, value: string) => {
-    if (usingMMKV) {
-      mmkvInstance.set(name, value);
-    } else {
-      memoryStore.set(name, value);
-    }
+    try {
+      if (usingMMKV && mmkvInstance) {
+        mmkvInstance.set(name, value);
+        return;
+      }
+    } catch {}
+    memoryStore.set(name, value);
   },
   removeItem: (name: string) => {
-    if (usingMMKV) {
-      mmkvInstance.delete(name);
-    } else {
-      memoryStore.delete(name);
-    }
+    try {
+      if (usingMMKV && mmkvInstance) {
+        mmkvInstance.delete(name);
+        return;
+      }
+    } catch {}
+    memoryStore.delete(name);
   },
 };

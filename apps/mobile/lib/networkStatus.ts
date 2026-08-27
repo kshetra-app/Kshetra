@@ -32,15 +32,23 @@ export const useNetworkStore = create<NetworkState>()((set) => ({
   startMonitoring: () => {
     if (!NetInfo) return () => {};
 
-    const unsubscribe = NetInfo.default.addEventListener((state: any) => {
-      set({
-        isConnected: state.isConnected ?? true,
-        isInternetReachable: state.isInternetReachable,
-        connectionType: state.type ?? 'unknown',
-      });
-    });
+    try {
+      const netinfoModule = NetInfo.default || NetInfo;
+      if (typeof netinfoModule?.addEventListener === 'function') {
+        const unsubscribe = netinfoModule.addEventListener((state: any) => {
+          set({
+            isConnected: state.isConnected ?? true,
+            isInternetReachable: state.isInternetReachable,
+            connectionType: state.type ?? 'unknown',
+          });
+        });
+        return typeof unsubscribe === 'function' ? unsubscribe : () => {};
+      }
+    } catch (e) {
+      console.warn('NetInfo monitor failed to initialize:', e);
+    }
 
-    return unsubscribe;
+    return () => {};
   },
 }));
 

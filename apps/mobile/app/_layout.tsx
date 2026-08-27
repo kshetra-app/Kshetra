@@ -15,7 +15,7 @@ import '../i18n';
 
 const KYCVerificationSheet = lazy(() => import('../components/KYCVerificationSheet'));
 
-SplashScreen.preventAutoHideAsync();
+SplashScreen.preventAutoHideAsync().catch(() => {});
 
 export default function RootLayout() {
   const initializeAuth = useAuthStore((s) => s.initialize);
@@ -25,10 +25,21 @@ export default function RootLayout() {
   const showKYCSheet = useContributorVerificationStore((s) => s.showKYCSheet);
 
   useEffect(() => {
-    initializeAuth();
-    SplashScreen.hideAsync();
-    const stopNetwork = startNetworkMonitoring();
-    return () => { if (stopNetwork) stopNetwork(); };
+    try {
+      initializeAuth().catch(() => {});
+    } catch {}
+    try {
+      SplashScreen.hideAsync().catch(() => {});
+    } catch {}
+    let stopNetwork: (() => void) | undefined;
+    try {
+      stopNetwork = startNetworkMonitoring();
+    } catch {}
+    return () => {
+      if (typeof stopNetwork === 'function') {
+        try { stopNetwork(); } catch {}
+      }
+    };
   }, [initializeAuth, startNetworkMonitoring]);
 
   return (

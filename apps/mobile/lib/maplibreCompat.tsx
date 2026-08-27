@@ -195,6 +195,12 @@ try {
     return <ML.Layer type="symbol" style={layerStyle} {...rest} />;
   };
 
+  try {
+    if (typeof ML.setAccessToken === 'function') {
+      ML.setAccessToken(null);
+    }
+  } catch {}
+
   MapboxGL = {
     MapView: MapViewCompat,
     Camera: CameraCompat,
@@ -205,10 +211,26 @@ try {
     CircleLayer: CircleLayerCompat,
     PointAnnotation: PointAnnotationCompat,
     SymbolLayer: SymbolLayerCompat,
+    setAccessToken: () => {},
+    setTelemetryEnabled: () => {},
   };
   mapboxAvailable = true;
 } catch (e) {
   console.warn('MapLibre native module not available:', e);
+  const NullComponent = () => null;
+  MapboxGL = {
+    MapView: NullComponent,
+    Camera: NullComponent,
+    ShapeSource: NullComponent,
+    FillLayer: NullComponent,
+    FillExtrusionLayer: NullComponent,
+    LineLayer: NullComponent,
+    CircleLayer: NullComponent,
+    PointAnnotation: NullComponent,
+    SymbolLayer: NullComponent,
+    setAccessToken: () => {},
+    setTelemetryEnabled: () => {},
+  };
 }
 
 export { MapboxGL, mapboxAvailable };

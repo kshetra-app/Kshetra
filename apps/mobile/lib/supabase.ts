@@ -16,23 +16,31 @@ export const isSupabaseConfigured = !!(supabaseUrl && supabaseAnonKey);
 const SecureStoreAdapter = {
   getItem: async (key: string): Promise<string | null> => {
     if (Platform.OS === 'web') {
-      return localStorage.getItem(key);
+      try { return localStorage.getItem(key); } catch { return null; }
     }
-    return SecureStore.getItemAsync(key);
+    try {
+      return await SecureStore.getItemAsync(key);
+    } catch {
+      return null;
+    }
   },
   setItem: async (key: string, value: string): Promise<void> => {
     if (Platform.OS === 'web') {
-      localStorage.setItem(key, value);
+      try { localStorage.setItem(key, value); } catch {}
       return;
     }
-    await SecureStore.setItemAsync(key, value);
+    try {
+      await SecureStore.setItemAsync(key, value);
+    } catch {}
   },
   removeItem: async (key: string): Promise<void> => {
     if (Platform.OS === 'web') {
-      localStorage.removeItem(key);
+      try { localStorage.removeItem(key); } catch {}
       return;
     }
-    await SecureStore.deleteItemAsync(key);
+    try {
+      await SecureStore.deleteItemAsync(key);
+    } catch {}
   },
 };
 
