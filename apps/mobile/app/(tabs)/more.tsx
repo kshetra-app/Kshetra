@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import {
   View,
   Text,
@@ -11,6 +12,7 @@ import { useRouter } from 'expo-router';
 import { useTranslation } from 'react-i18next';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useNotificationsStore } from '../../stores/notifications';
+import { DevFeatureSwitcher } from '../../components/DevFeatureSwitcher';
 
 type Tile = { label: string; icon: string; color: string; route: string; badge?: number };
 
@@ -20,8 +22,15 @@ export default function MoreScreen() {
   const insets = useSafeAreaInsets();
   const { width } = useWindowDimensions();
   const unread = useNotificationsStore((s) => s.unreadCount);
+  const [showDevModal, setShowDevModal] = useState(false);
 
-  const go = (route: string) => router.push(route as any);
+  const go = (route: string) => {
+    if (route === '__dev_switches__') {
+      setShowDevModal(true);
+      return;
+    }
+    router.push(route as any);
+  };
   const tileWidth = (width - 16 * 2 - 12 * 2) / 3;
 
   const civic: Tile[] = [
@@ -39,6 +48,7 @@ export default function MoreScreen() {
     { label: 'Dept. Console', icon: 'shield', color: '#3B82F6', route: '/departments/dashboard' },
     { label: 'Moderation', icon: 'shield-half', color: '#8B5CF6', route: '/live/moderation-queue' },
     { label: 'Distribution', icon: 'share-social', color: '#14B8A6', route: '/live/distribution' },
+    { label: 'Dev Switches', icon: 'toggle', color: '#10B981', route: '__dev_switches__' },
   ];
 
   const account: Tile[] = [
@@ -86,6 +96,11 @@ export default function MoreScreen() {
         <Section title="Civic & Elections" tiles={civic} tileWidth={tileWidth} onPress={go} />
         <Section title="Account" tiles={account} tileWidth={tileWidth} onPress={go} />
       </ScrollView>
+
+      <DevFeatureSwitcher
+        visible={showDevModal}
+        onClose={() => setShowDevModal(false)}
+      />
     </View>
   );
 }

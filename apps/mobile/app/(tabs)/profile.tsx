@@ -433,6 +433,12 @@ export default function ProfileScreen() {
             value={prefs.language === 'en' ? 'English' : prefs.language === 'hi' ? 'Hindi' : 'Telugu'}
             color="#10B981"
           />
+          <SettingRow
+            icon="toggle"
+            label="Feature Flags & Dev Switches"
+            onPress={() => setShowDevModal(true)}
+            color="#8B5CF6"
+          />
         </View>
       </View>
 
