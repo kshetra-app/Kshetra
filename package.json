@@ -10,6 +10,8 @@
   "scripts": {
     "dev:mobile": "turbo run dev --filter=@kshetra/mobile",
     "dev:api": "turbo run dev --filter=@kshetra/api",
+    "dev:admin": "npm run dev --prefix apps/web-admin",
+    "build:admin": "npm run build --prefix apps/web-admin",
     "dev": "turbo run dev",
     "build": "turbo run build",
     "start": "tsx apps/api/src/server.ts",
