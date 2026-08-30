@@ -296,8 +296,8 @@ export default function MyImpactScreen() {
 
         {/* Sample PIN codes for quick demonstration */}
         <View style={[styles.sampleCard, { backgroundColor: colors.surface, borderColor: colors.border }]}>
-          <Text style={[styles.sampleTitle, { color: colors.text }]}>Quick Test PIN Codes</Text>
-          <Text style={[styles.sampleSub, { color: colors.textSecondary }]}>Tap any PIN code to immediately calculate personal delimitation impact:</Text>
+          <Text style={[styles.sampleTitle, { color: colors.text }]}>{t('delimitation.quickTestPin', { defaultValue: 'Quick Test PIN Codes' })}</Text>
+          <Text style={[styles.sampleSub, { color: colors.textSecondary }]}>{t('delimitation.quickTestPinDesc', { defaultValue: 'Tap any PIN code to immediately calculate personal delimitation impact:' })}</Text>
           <View style={styles.sampleChipsRow}>
             {[
               { pin: '500001', label: 'Hyderabad (500001)' },
@@ -332,23 +332,21 @@ export default function MyImpactScreen() {
           </View>
         </View>
 
-        {/* Constitutional Framework & Citizen Rights */}
+        {/* {t('delimitation.constitutionalFramework', { defaultValue: 'Constitutional Framework & Citizen Rights' })} */}
         <View style={[styles.comingSoonCard, { backgroundColor: colors.surface, borderColor: colors.border }]}>
           <Ionicons name="shield-checkmark" size={20} color={colors.primary} />
-          <Text style={[styles.comingSoonTitle, { color: colors.text }]}>
-            Constitutional Framework & Citizen Rights
+          <Text style={[styles.comingSoonTitle, { color: colors.text }]}>{t('delimitation.constitutionalFramework', { defaultValue: 'Constitutional Framework & Citizen Rights' })}</Text>
+          <Text style={[styles.comingSoonItem, { color: colors.textSecondary }]}>
+            {t('delimitation.art170Desc')}
           </Text>
           <Text style={[styles.comingSoonItem, { color: colors.textSecondary }]}>
-            • <Text style={{ fontWeight: '700' }}>Article 170</Text>: Mandates that each constituency within a state must have equal population within a strict ±10% deviation bound.
+            {t('delimitation.art330Desc')}
           </Text>
           <Text style={[styles.comingSoonItem, { color: colors.textSecondary }]}>
-            • <Text style={{ fontWeight: '700' }}>Articles 330 & 332</Text>: Proportional reservations for Scheduled Castes and Scheduled Tribes based on the latest published Census figures.
+            {t('delimitation.publicObjectionDesc')}
           </Text>
           <Text style={[styles.comingSoonItem, { color: colors.textSecondary }]}>
-            • <Text style={{ fontWeight: '700' }}>Public Objection Window</Text>: Under Section 9(2) of the Delimitation Act, the Commission must publish draft boundaries and allow citizens to submit objections before final notification.
-          </Text>
-          <Text style={[styles.comingSoonItem, { color: colors.textSecondary }]}>
-            • <Text style={{ fontWeight: '700' }}>Contiguity Requirement</Text>: All redrawn constituencies must be geographically contiguous without enclaves or isolated pockets.
+            {t('delimitation.contiguityDesc')}
           </Text>
         </View>
 

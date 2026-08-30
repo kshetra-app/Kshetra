@@ -545,7 +545,7 @@ export default function ConstituencyDetailScreen() {
               <View style={styles.emptyState}>
                 <Ionicons name="checkmark-circle-outline" size={48} color="#374151" />
                 <Text style={styles.emptyTitle}>{t('constituencyExtended.noIssuesReported')}</Text>
-                <Text style={styles.emptySubtitle}>No civic issues have been reported for this constituency yet. Be the first to report one!</Text>
+                <Text style={styles.emptySubtitle}>{t('constituencyExtended.noIssuesMsg', { defaultValue: 'No civic issues have been reported for this constituency yet. Be the first to report one!' })}</Text>
               </View>
             )}
           </View>
@@ -591,7 +591,7 @@ export default function ConstituencyDetailScreen() {
               <View style={styles.emptyState}>
                 <Ionicons name="chatbubbles-outline" size={48} color="#374151" />
                 <Text style={styles.emptyTitle}>{t('constituencyExtended.noDiscussions')}</Text>
-                <Text style={styles.emptySubtitle}>Start a conversation about this constituency on the Feed tab. Posts tagged to this area will appear here.</Text>
+                <Text style={styles.emptySubtitle}>{t('constituencyExtended.startConversation', { defaultValue: 'Start a conversation about this constituency on the Feed tab. Posts tagged to this area will appear here.' })}</Text>
               </View>
             )}
           </View>
@@ -606,7 +606,7 @@ export default function ConstituencyDetailScreen() {
               <>
                 <View style={styles.tabHeader}>
                   <Text style={styles.tabHeaderTitle}>{t('constituencyExtended.newsAndHeadlines')}</Text>
-                  <Text style={styles.tabHeaderCount}>{constituencyHeadlines.length} {constituencyHeadlines.length === 1 ? 'article' : 'articles'}</Text>
+                  <Text style={styles.tabHeaderCount}>{constituencyHeadlines.length} {constituencyHeadlines.length === 1 ? t('constituencyExtended.article', { defaultValue: 'article' }) : t('constituencyExtended.articles', { defaultValue: 'articles' })}</Text>
                 </View>
                 <View style={{ paddingHorizontal: 16 }}>
                   {constituencyHeadlines.map((hl) => (
@@ -617,8 +617,8 @@ export default function ConstituencyDetailScreen() {
             ) : (
               <View style={styles.emptyState}>
                 <Ionicons name="newspaper-outline" size={48} color="#374151" />
-                <Text style={styles.emptyTitle}>No Local News</Text>
-                <Text style={styles.emptySubtitle}>No news articles are currently tagged to this constituency. Check back later or view state-level news in the Dashboard.</Text>
+                <Text style={styles.emptyTitle}>{t('constituencyExtended.noLocalNews', { defaultValue: 'No Local News' })}</Text>
+                <Text style={styles.emptySubtitle}>{t('constituencyExtended.noNewsMsg', { defaultValue: 'No news articles are currently tagged to this constituency. Check back later or view state-level news in the Dashboard.' })}</Text>
               </View>
             )}
           </View>

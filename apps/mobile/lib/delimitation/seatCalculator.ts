@@ -93,58 +93,74 @@ function toPopulationSummary(census: CensusStateData): StatePopulationSummary {
  * 2. 'PROPORTIONAL': Pure constitutional proportional representation (Articles 81/170).
  *    Uses national average population per seat. Faster-growing states gain, slower-growing lose.
  */
+/** Statutory expansion mandates under specific Acts (e.g. AP Reorganisation Act 2014) */
+const STATUTORY_ASSEMBLY_SEATS: Record<string, number> = {
+  AP: 225, // AP Reorganisation Act 2014 Sec 26 (175 -> 225)
+  TS: 153, // AP Reorganisation Act 2014 Sec 26 (119 -> 153)
+  JK: 90,  // J&K Delimitation Commission Order 2022
+  AS: 126, // ECI Delimitation Order 2023
+};
+
+/**
+ * Compute seat allocation for all states using Census 2011 data.
+ *
+ * Supports two constitutional models:
+ * 1. 'EXPANSION_SAFE' (default): Total seats are expanded so that no state
+ *    loses existing seats, implementing Section 26 statutory mandates for AP/TS
+ *    and bounded by Article 170 ceiling (max 500). Protects states that controlled fertility.
+ * 2. 'PROPORTIONAL': Constitutional proportional representation (Articles 81/170)
+ *    using the national average population per AC seat (~293,683), strictly capped at 500.
+ */
 export function computeAllSeatAllocations(
   idealPopPerSeat?: number,
   preserveMinimum = true,
   model: SeatCalculationModel = 'EXPANSION_SAFE',
 ): SeatAllocation[] {
-  let ideal: number;
-
-  if (idealPopPerSeat) {
-    ideal = idealPopPerSeat;
-  } else if (model === 'PROPORTIONAL') {
-    // Pure constitutional proportional: national ideal pop per AC seat
-    ideal = IDEAL_POP_PER_AC_SEAT_2011;
-  } else {
-    // Expansion-safe ideal: minimum pop-per-seat ratio so all states gain or stay flat
-    const ratios = CENSUS_2011_STATES
-      .filter((s) => s.currentAssemblySeats > 0)
-      .map((s) => s.totalPopulation / s.currentAssemblySeats);
-    ideal = Math.floor(Math.min(...ratios) * 0.95);
-  }
+  const nationalIdeal = idealPopPerSeat ?? IDEAL_POP_PER_AC_SEAT_2011;
 
   return CENSUS_2011_STATES.map((census) => {
-    const summary = toPopulationSummary(census);
-    const allocation = computeSeatAllocation(summary, ideal);
-    allocation.model = model;
+    let projectedSeats = 0;
 
-    if (model === 'EXPANSION_SAFE') {
-      // Guarantee no state loses seats — floor at current seats
-      if (allocation.projectedSeats < census.currentAssemblySeats) {
-        allocation.projectedSeats = census.currentAssemblySeats;
-        allocation.seatChange = 0;
-        allocation.populationPerProjectedSeat = Math.round(
-          census.totalPopulation / allocation.projectedSeats,
-        );
-        allocation.reservedSC = calculateSCReservedSeats(allocation.projectedSeats, census.scPopulation, census.totalPopulation);
-        allocation.reservedST = calculateSTReservedSeats(allocation.projectedSeats, census.stPopulation, census.totalPopulation);
-        allocation.general = allocation.projectedSeats - allocation.reservedSC - allocation.reservedST;
+    if (census.currentAssemblySeats === 0) {
+      projectedSeats = 0;
+    } else if (model === 'EXPANSION_SAFE') {
+      if (STATUTORY_ASSEMBLY_SEATS[census.stateCode]) {
+        projectedSeats = STATUTORY_ASSEMBLY_SEATS[census.stateCode];
+      } else {
+        // Organic demographic expansion bounded between 10% and 15%, strictly capped by Art. 170 ceiling of 500
+        const expansionFactor = census.totalPopulation > 50_000_000 ? 1.15 : 1.10;
+        projectedSeats = Math.min(MAX_ASSEMBLY_SEATS, Math.max(census.currentAssemblySeats, Math.round(census.currentAssemblySeats * expansionFactor)));
       }
-    }
-
-    // Apply constitutional bounds (Art. 170)
-    if (preserveMinimum) {
+    } else {
+      // Proportional representation based on national average pop per AC seat (~2.94L)
       const minSeats = census.totalPopulation > 10_000_000 ? MIN_ASSEMBLY_SEATS : MIN_SMALL_STATE_SEATS;
-      if (allocation.projectedSeats < minSeats) {
-        allocation.projectedSeats = minSeats;
-        allocation.seatChange = allocation.projectedSeats - allocation.currentSeats;
-        allocation.reservedSC = calculateSCReservedSeats(allocation.projectedSeats, census.scPopulation, census.totalPopulation);
-        allocation.reservedST = calculateSTReservedSeats(allocation.projectedSeats, census.stPopulation, census.totalPopulation);
-        allocation.general = allocation.projectedSeats - allocation.reservedSC - allocation.reservedST;
-      }
+      const raw = Math.round(census.totalPopulation / nationalIdeal);
+      projectedSeats = Math.min(MAX_ASSEMBLY_SEATS, Math.max(minSeats, raw));
     }
 
-    return allocation;
+    const seatChange = projectedSeats - census.currentAssemblySeats;
+    const popPerSeat = projectedSeats > 0 ? Math.round(census.totalPopulation / projectedSeats) : 0;
+    const deviation = nationalIdeal > 0 && popPerSeat > 0 ? ((popPerSeat - nationalIdeal) / nationalIdeal) * 100 : 0;
+    const reservedSC = calculateSCReservedSeats(projectedSeats, census.scPopulation, census.totalPopulation);
+    const reservedST = calculateSTReservedSeats(projectedSeats, census.stPopulation, census.totalPopulation);
+    const general = Math.max(0, projectedSeats - reservedSC - reservedST);
+
+    return {
+      stateCode: census.stateCode,
+      stateName: census.stateName,
+      censusYear: 2011,
+      totalPopulation: census.totalPopulation,
+      idealPopulationPerSeat: nationalIdeal,
+      currentSeats: census.currentAssemblySeats,
+      projectedSeats,
+      seatChange,
+      populationPerProjectedSeat: popPerSeat,
+      deviationPercent: Math.round(deviation * 10) / 10,
+      reservedSC,
+      reservedST,
+      general,
+      model,
+    };
   });
 }
 

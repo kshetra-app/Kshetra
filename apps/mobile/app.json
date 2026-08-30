@@ -23,7 +23,7 @@
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
-        "backgroundColor": "#A8201A"
+        "backgroundColor": "#540912"
       },
       "package": "in.kshetra.app",
       "permissions": [

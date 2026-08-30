@@ -154,9 +154,9 @@ export default function LocalBodiesScreen() {
         />
         <View style={s.centerWrap}>
           <Ionicons name="alert-circle" size={48} color={colors.gold} />
-          <Text style={[s.selectorTitle, { color: colors.text, marginTop: 12 }]}>Database Initializing</Text>
+          <Text style={[s.selectorTitle, { color: colors.text, marginTop: 12 }]}>{t('localBodies.dbInitializing', { defaultValue: 'Database Initializing' })}</Text>
           <Text style={[s.selectorMsg, { color: colors.textSecondary }]}>
-            The bundled local bodies database (137 MB, 224,780 official records) is being loaded into device storage.
+            {t('localBodies.dbLoadingDesc', { defaultValue: 'The bundled local bodies database (137 MB, 224,780 official records) is being loaded into device storage.' })}
           </Text>
           <Pressable
             style={[s.retryBtn, { backgroundColor: colors.primary }]}
@@ -175,7 +175,7 @@ export default function LocalBodiesScreen() {
             }}
           >
             <Ionicons name="refresh" size={16} color="#fff" />
-            <Text style={s.retryBtnText}>Retry Loading Database</Text>
+            <Text style={s.retryBtnText}>{t('localBodies.retryDbLoad', { defaultValue: 'Retry Loading Database' })}</Text>
           </Pressable>
         </View>
       </View>
@@ -210,11 +210,9 @@ export default function LocalBodiesScreen() {
             <View style={[s.selectorIconWrap, { backgroundColor: colors.goldLight, borderColor: colors.goldBorder || colors.border }]}>
               <Ionicons name="business" size={32} color={colors.gold} />
             </View>
-            <Text style={[s.selectorTitle, { color: colors.text }]}>Local Bodies Directory</Text>
+            <Text style={[s.selectorTitle, { color: colors.text }]}>{t('localBodies.directoryTitle', { defaultValue: 'Local Bodies Directory' })}</Text>
             <Text style={[s.selectorMsg, { color: colors.textSecondary }]}>
-              {stateCode === 'IN'
-                ? 'Official rural local body election records (Sarpanch, Ward Members, MPTC & ZPTC) are verified and available for the following states. Select a state to explore:'
-                : `Official gram-panchayat records for ${stateName} are undergoing ingestion from the State Election Commission. Select one of the available states below to explore its complete verified hierarchy:`}
+              {stateCode === 'IN' ? t('localBodies.nationalSelectStateDesc', { defaultValue: 'Official rural local body election records (Sarpanch, Ward Members, MPTC & ZPTC) are verified and available for the following states. Select a state to explore:' }) : t('localBodies.stateIngestionDesc', { state: stateName, defaultValue: `Official gram-panchayat records for ${stateName} are undergoing ingestion from the State Election Commission. Select one of the available states below to explore its complete verified hierarchy:` })}
             </Text>
 
             <Pressable
@@ -229,11 +227,11 @@ export default function LocalBodiesScreen() {
                   <Text style={[s.stateLaunchTitle, { color: colors.text }]}>Telangana</Text>
                   <View style={[s.verifiedPill, { backgroundColor: '#10B98118', borderColor: '#10B98150' }]}>
                     <Ionicons name="checkmark-circle" size={12} color="#10B981" />
-                    <Text style={[s.verifiedPillText, { color: '#10B981' }]}>Verified TSEC</Text>
+                    <Text style={[s.verifiedPillText, { color: '#10B981' }]}>{t('localBodies.verifiedTsec', { defaultValue: 'Verified TSEC' })}</Text>
                   </View>
                 </View>
-                <Text style={[s.stateLaunchSubtitle, { color: colors.textSecondary }]}>31 Districts · 12,705 Gram Panchayats</Text>
-                <Text style={[s.stateLaunchDesc, { color: colors.textMuted }]}>72,134 verified Sarpanch & Ward Member records</Text>
+                <Text style={[s.stateLaunchSubtitle, { color: colors.textSecondary }]}>{t('localBodies.tsStatsSummary', { defaultValue: '31 Districts · 12,705 Gram Panchayats' })}</Text>
+                <Text style={[s.stateLaunchDesc, { color: colors.textMuted }]}>{t('localBodies.tsRecordsSummary', { defaultValue: '72,134 verified Sarpanch & Ward Member records' })}</Text>
               </View>
               <Ionicons name="chevron-forward" size={20} color={colors.primary} />
             </Pressable>
@@ -250,17 +248,17 @@ export default function LocalBodiesScreen() {
                   <Text style={[s.stateLaunchTitle, { color: colors.text }]}>Andhra Pradesh</Text>
                   <View style={[s.verifiedPill, { backgroundColor: '#10B98118', borderColor: '#10B98150' }]}>
                     <Ionicons name="checkmark-circle" size={12} color="#10B981" />
-                    <Text style={[s.verifiedPillText, { color: '#10B981' }]}>Verified APSEC</Text>
+                    <Text style={[s.verifiedPillText, { color: '#10B981' }]}>{t('localBodies.verifiedApsec', { defaultValue: 'Verified APSEC' })}</Text>
                   </View>
                 </View>
-                <Text style={[s.stateLaunchSubtitle, { color: colors.textSecondary }]}>13 Districts · 13,079 Gram Panchayats</Text>
-                <Text style={[s.stateLaunchDesc, { color: colors.textMuted }]}>152,646 verified Sarpanch, Ward, MPTC & ZPTC records</Text>
+                <Text style={[s.stateLaunchSubtitle, { color: colors.textSecondary }]}>{t('localBodies.apStatsSummary', { defaultValue: '13 Districts · 13,079 Gram Panchayats' })}</Text>
+                <Text style={[s.stateLaunchDesc, { color: colors.textMuted }]}>{t('localBodies.apRecordsSummary', { defaultValue: '152,646 verified Sarpanch, Ward, MPTC & ZPTC records' })}</Text>
               </View>
               <Ionicons name="chevron-forward" size={20} color={colors.primary} />
             </Pressable>
 
             <View style={s.stateSwitcherRow}>
-              <Text style={[s.stateSwitcherHint, { color: colors.textMuted }]}>Or choose another state:</Text>
+              <Text style={[s.stateSwitcherHint, { color: colors.textMuted }]}>{t('localBodies.chooseAnotherState', { defaultValue: 'Or choose another state:' })}</Text>
               <StateSwitcher />
             </View>
           </View>
@@ -296,7 +294,7 @@ export default function LocalBodiesScreen() {
           }}
         >
           <Text style={[s.stateTabBtnText, { color: stateCode === 'TS' ? colors.primary : colors.textSecondary }]}>
-            Telangana (31 Districts)
+            {t('localBodies.tsTabLabel', { defaultValue: 'Telangana (31 Districts)' })}
           </Text>
           {stateCode === 'TS' && <View style={[s.activeDot, { backgroundColor: colors.primary }]} />}
         </Pressable>
@@ -312,7 +310,7 @@ export default function LocalBodiesScreen() {
           }}
         >
           <Text style={[s.stateTabBtnText, { color: stateCode === 'AP' ? colors.primary : colors.textSecondary }]}>
-            Andhra Pradesh (15 Districts)
+            {t('localBodies.apTabLabel', { defaultValue: 'Andhra Pradesh (15 Districts)' })}
           </Text>
           {stateCode === 'AP' && <View style={[s.activeDot, { backgroundColor: colors.primary }]} />}
         </Pressable>
@@ -372,9 +370,9 @@ export default function LocalBodiesScreen() {
               <View style={[s.tierBanner, { backgroundColor: '#10B98112', borderColor: '#10B98135' }]}>
                 <Ionicons name="shield-checkmark" size={18} color="#10B981" />
                 <View style={{ flex: 1 }}>
-                  <Text style={[s.tierTitle, { color: colors.text }]}>Verified 3-Tier Panchayati Raj Dataset</Text>
+                  <Text style={[s.tierTitle, { color: colors.text }]}>{t('localBodies.verified3TierTitle', { defaultValue: 'Verified 3-Tier Panchayati Raj Dataset' })}</Text>
                   <Text style={[s.tierSub, { color: colors.textSecondary }]}>
-                    Complete official results for Gram Panchayats (Sarpanches & Ward Members), Mandal Parishad (MPTC), and Zilla Parishad (ZPTC).
+                    {t('localBodies.verified3TierSub', { defaultValue: 'Complete official results for Gram Panchayats (Sarpanches & Ward Members), Mandal Parishad (MPTC), and Zilla Parishad (ZPTC).' })}
                   </Text>
                 </View>
               </View>
@@ -382,9 +380,9 @@ export default function LocalBodiesScreen() {
               <View style={[s.tierBanner, { backgroundColor: colors.warning + '15', borderColor: colors.warning + '40' }]}>
                 <Ionicons name="information-circle-outline" size={18} color={colors.warning} />
                 <View style={{ flex: 1 }}>
-                  <Text style={[s.tierTitle, { color: colors.text }]}>Gram Panchayat Tier Active</Text>
+                  <Text style={[s.tierTitle, { color: colors.text }]}>{t('localBodies.gpTierActiveTitle', { defaultValue: 'Gram Panchayat Tier Active' })}</Text>
                   <Text style={[s.tierSub, { color: colors.textSecondary }]}>
-                    Verified official results for Gram Panchayat representatives (Sarpanch & Ward members). MPTC/ZPTC elections were postponed by the State Election Commission.
+                    {t('localBodies.gpTierActiveSub', { defaultValue: 'Verified official results for Gram Panchayat representatives (Sarpanch & Ward members). MPTC/ZPTC elections were postponed by the State Election Commission.' })}
                   </Text>
                 </View>
               </View>

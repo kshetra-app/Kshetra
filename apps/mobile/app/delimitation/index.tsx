@@ -109,7 +109,7 @@ export default function DelimitationHub() {
     <View style={[styles.modelToggleCard, { backgroundColor: colors.surface, borderColor: colors.border }]}>
       <View style={styles.modelToggleHeader}>
         <Ionicons name="calculator-outline" size={16} color={colors.primary} />
-        <Text style={[styles.modelToggleTitle, { color: colors.text }]}>Constitutional Calculation Model</Text>
+        <Text style={[styles.modelToggleTitle, { color: colors.text }]}>{t('delimitation.calcModel', { defaultValue: 'Constitutional Calculation Model' })}</Text>
       </View>
       <View style={styles.modelButtonsRow}>
         <Pressable
@@ -123,7 +123,7 @@ export default function DelimitationHub() {
           onPress={() => setSelectedModel('EXPANSION_SAFE')}
         >
           <Text style={[styles.modelBtnText, { color: selectedModel === 'EXPANSION_SAFE' ? '#FFFFFF' : colors.text }]}>
-            Expansion-Safe Protection
+            {t('delimitation.expansionSafe', { defaultValue: 'Expansion-Safe Protection' })}
           </Text>
         </Pressable>
         <Pressable
@@ -137,14 +137,12 @@ export default function DelimitationHub() {
           onPress={() => setSelectedModel('PROPORTIONAL')}
         >
           <Text style={[styles.modelBtnText, { color: selectedModel === 'PROPORTIONAL' ? '#FFFFFF' : colors.text }]}>
-            Proportional (Art. 170)
+            {t('delimitation.proportional', { defaultValue: 'Proportional (Art. 170)' })}
           </Text>
         </Pressable>
       </View>
       <Text style={[styles.modelExplainText, { color: colors.textSecondary }]}>
-        {selectedModel === 'EXPANSION_SAFE'
-          ? 'Protects states that implemented successful family planning. No state loses seats; fast-growing states gain.'
-          : 'Strict constitutional proportional representation based on Census population. Slower-growth states see seat reductions.'}
+        {selectedModel === 'EXPANSION_SAFE' ? t('delimitation.expansionSafeDesc', { defaultValue: 'Protects states that implemented successful family planning. No state loses seats; fast-growing states gain.' }) : t('delimitation.proportionalDesc', { defaultValue: 'Strict constitutional proportional representation based on Census population. Slower-growth states see seat reductions.' })}
       </Text>
     </View>
   );
@@ -177,9 +175,9 @@ export default function DelimitationHub() {
       >
         <Ionicons name="location" size={22} color="#3B82F6" />
         <View style={{ flex: 1, marginLeft: 10 }}>
-          <Text style={[styles.impactCtaTitle, { color: '#2563EB' }]}>What Changes For You?</Text>
+          <Text style={[styles.impactCtaTitle, { color: '#2563EB' }]}>{t('delimitation.whatChangesForYou', { defaultValue: 'What Changes For You?' })}</Text>
           <Text style={[styles.impactCtaSub, { color: colors.textSecondary }]}>
-            Enter your PIN code to see how boundary redraws, MLA shifts, and reservation affect your vote.
+            {t('delimitation.enterPinDesc', { defaultValue: 'Enter your PIN code to see how boundary redraws, MLA shifts, and reservation affect your vote.' })}
           </Text>
         </View>
         <Ionicons name="chevron-forward" size={18} color="#3B82F6" />
@@ -318,7 +316,7 @@ export default function DelimitationHub() {
     <View>
       <Text style={[styles.sectionTitle, { color: colors.text }]}>{t('delimitation.timeline')}</Text>
       <Text style={[styles.sectionSubtitle, { color: colors.textSecondary }]}>
-        Constitutional milestones, commission orders, and public consultations.
+        {t('delimitation.timelineSubtitle', { defaultValue: 'Constitutional milestones, commission orders, and public consultations.' })}
       </Text>
       <DelimitationTimeline events={timelineEvents} />
     </View>
@@ -333,16 +331,16 @@ export default function DelimitationHub() {
       >
         <Ionicons name="search" size={22} color="#3B82F6" />
         <View style={{ flex: 1, marginLeft: 10 }}>
-          <Text style={[styles.impactCtaTitle, { color: '#2563EB' }]}>Lookup Citizen Delimitation Impact</Text>
+          <Text style={[styles.impactCtaTitle, { color: '#2563EB' }]}>{t('delimitation.lookupCitizenImpact', { defaultValue: 'Lookup Citizen Delimitation Impact' })}</Text>
           <Text style={[styles.impactCtaSub, { color: colors.textSecondary }]}>
-            Check how your PIN code or home constituency is impacted under proposed boundaries.
+            {t('delimitation.lookupCitizenDesc', { defaultValue: 'Check how your PIN code or home constituency is impacted under proposed boundaries.' })}
           </Text>
         </View>
         <Ionicons name="chevron-forward" size={18} color="#3B82F6" />
       </Pressable>
 
       {/* State Switcher for MLA Risk & Party Modeling */}
-      <Text style={[styles.subHeading, { color: colors.text }]}>Select State for In-Depth Political Analysis</Text>
+      <Text style={[styles.subHeading, { color: colors.text }]}>{t('delimitation.selectStateAnalysis', { defaultValue: 'Select State for In-Depth Political Analysis' })}</Text>
       <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.statePickerScroll} contentContainerStyle={styles.statePickerContent}>
         {IMPACT_STATES.map((s) => (
           <Pressable
@@ -368,34 +366,34 @@ export default function DelimitationHub() {
         <View style={styles.impactHeader}>
           <Ionicons name="shield" size={20} color="#F59E0B" />
           <Text style={[styles.impactTitle, { color: colors.text }]}>
-            Sitting MLA Risk Analyzer ({impactState})
+            {t('delimitation.sittingMlaAnalyzer', { state: impactState, defaultValue: `Sitting MLA Risk Analyzer (${impactState})` })}
           </Text>
         </View>
         <Text style={[styles.impactBody, { color: colors.textSecondary }]}>
-          Calculates boundary disruption, reservation displacement, and voter margin buffer for all {mlaSummary.total} sitting legislators.
+          {t('delimitation.sittingMlaDesc', { total: mlaSummary.total, defaultValue: `Calculates boundary disruption, reservation displacement, and voter margin buffer for all ${mlaSummary.total} sitting legislators.` })}
         </Text>
 
         <View style={styles.riskCounterRow}>
           <View style={[styles.riskPill, { backgroundColor: '#EF444420' }]}>
             <Text style={[styles.riskPillNumber, { color: '#EF4444' }]}>{mlaSummary.critical}</Text>
-            <Text style={[styles.riskPillLabel, { color: '#EF4444' }]}>Critical</Text>
+            <Text style={[styles.riskPillLabel, { color: '#EF4444' }]}>{t('delimitation.riskCritical', { defaultValue: 'Critical' })}</Text>
           </View>
           <View style={[styles.riskPill, { backgroundColor: '#F9731620' }]}>
             <Text style={[styles.riskPillNumber, { color: '#F97316' }]}>{mlaSummary.high}</Text>
-            <Text style={[styles.riskPillLabel, { color: '#F97316' }]}>High Risk</Text>
+            <Text style={[styles.riskPillLabel, { color: '#F97316' }]}>{t('delimitation.riskHigh', { defaultValue: 'High Risk' })}</Text>
           </View>
           <View style={[styles.riskPill, { backgroundColor: '#F59E0B20' }]}>
             <Text style={[styles.riskPillNumber, { color: '#F59E0B' }]}>{mlaSummary.moderate}</Text>
-            <Text style={[styles.riskPillLabel, { color: '#F59E0B' }]}>Moderate</Text>
+            <Text style={[styles.riskPillLabel, { color: '#F59E0B' }]}>{t('delimitation.riskModerate', { defaultValue: 'Moderate' })}</Text>
           </View>
           <View style={[styles.riskPill, { backgroundColor: '#10B98120' }]}>
             <Text style={[styles.riskPillNumber, { color: '#10B981' }]}>{mlaSummary.safe}</Text>
-            <Text style={[styles.riskPillLabel, { color: '#10B981' }]}>Safe</Text>
+            <Text style={[styles.riskPillLabel, { color: '#10B981' }]}>{t('delimitation.riskSafe', { defaultValue: 'Safe' })}</Text>
           </View>
         </View>
 
         {/* Top At-Risk MLAs */}
-        <Text style={[styles.mlaListTitle, { color: colors.text }]}>High-Displacement Constituencies:</Text>
+        <Text style={[styles.mlaListTitle, { color: colors.text }]}>{t('delimitation.highDisplacement', { defaultValue: 'High-Displacement Constituencies:' })}</Text>
         {mlaProfiles.slice(0, 5).map((m) => {
           const isExpanded = expandedMlaId === m.currentAcNo;
           const ratingColor = m.riskRating === 'critical_risk' ? '#EF4444' :
@@ -462,7 +460,7 @@ export default function DelimitationHub() {
           <View style={styles.impactHeader}>
             <Ionicons name="pie-chart" size={20} color="#3B82F6" />
             <Text style={[styles.impactTitle, { color: colors.text }]}>
-              Party Seat Projections ({partyProjections.stateName})
+              {t('delimitation.partyProjectionsTitle', { state: partyProjections.stateName, defaultValue: `Party Seat Projections (${partyProjections.stateName})` })}
             </Text>
           </View>
           <Text style={[styles.impactBody, { color: colors.textSecondary }]}>
@@ -475,7 +473,7 @@ export default function DelimitationHub() {
                 <View style={{ flex: 1 }}>
                   <Text style={[styles.partyName, { color: colors.text }]}>{p.party}</Text>
                   <Text style={[styles.partyShare, { color: colors.textMuted }]}>
-                    Vote Share: {p.currentVoteSharePercent}% · Safe: {p.safeSeats} · Battleground: {p.battlegroundSeats}
+                    {t('delimitation.partyVoteShareStats', { share: p.currentVoteSharePercent, safe: p.safeSeats, battleground: p.battlegroundSeats, defaultValue: `Vote Share: ${p.currentVoteSharePercent}% · Safe: ${p.safeSeats} · Battleground: ${p.battlegroundSeats}` })}
                   </Text>
                 </View>
                 <View style={{ alignItems: 'flex-end' }}>
@@ -517,19 +515,19 @@ export default function DelimitationHub() {
       <View style={[styles.impactCard, { backgroundColor: colors.surface, borderColor: colors.border }]}>
         <View style={styles.impactHeader}>
           <Ionicons name="book" size={20} color={colors.primary} />
-          <Text style={[styles.impactTitle, { color: colors.text }]}>Constitutional Delimitation Framework</Text>
+          <Text style={[styles.impactTitle, { color: colors.text }]}>{t('delimitation.frameworkTitle', { defaultValue: 'Constitutional Delimitation Framework' })}</Text>
         </View>
         <Text style={[styles.featureItem, { color: colors.textSecondary }]}>
-          • <Text style={{ fontWeight: '700' }}>Article 82</Text>: Readjustment of allocation of seats in the House of the People and division of each State into territorial constituencies.
+          {t('delimitation.art82Desc')}
         </Text>
         <Text style={[styles.featureItem, { color: colors.textSecondary }]}>
-          • <Text style={{ fontWeight: '700' }}>Article 170(2)</Text>: Each State assembly divided into territorial constituencies such that population:seats ratio is practically uniform.
+          {t('delimitation.art170_2Desc')}
         </Text>
         <Text style={[styles.featureItem, { color: colors.textSecondary }]}>
-          • <Text style={{ fontWeight: '700' }}>Articles 330 & 332</Text>: Mandatory proportional reservations for Scheduled Castes and Scheduled Tribes.
+          {t('delimitation.art330_332Desc')}
         </Text>
         <Text style={[styles.featureItem, { color: colors.textSecondary }]}>
-          • <Text style={{ fontWeight: '700' }}>Delimitation Act Section 9</Text>: Equal population deviation bound (±10%), physical features, and administrative unit integrity.
+          {t('delimitation.delimActSec9Desc')}
         </Text>
       </View>
     </View>

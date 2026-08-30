@@ -189,6 +189,190 @@ const DL_STATE: Omit<CensusStateData, 'districts'> = {
   areaKmSq: 1484, currentAssemblySeats: 70, currentLokSabhaSeats: 7,
 };
 
+const OD_STATE: Omit<CensusStateData, 'districts'> = {
+  stateCode: 'OD', stateName: 'Odisha',
+  totalPopulation: 41974218, malePopulation: 21212136, femalePopulation: 20762082,
+  scPopulation: 7188463, stPopulation: 9590756,
+  literatePopulation: 26781580, urbanPopulation: 7003656,
+  areaKmSq: 155707, currentAssemblySeats: 147, currentLokSabhaSeats: 21,
+};
+
+const JH_STATE: Omit<CensusStateData, 'districts'> = {
+  stateCode: 'JH', stateName: 'Jharkhand',
+  totalPopulation: 32988134, malePopulation: 16930315, femalePopulation: 16057819,
+  scPopulation: 3985644, stPopulation: 8645042,
+  literatePopulation: 18328069, urbanPopulation: 7933061,
+  areaKmSq: 79714, currentAssemblySeats: 81, currentLokSabhaSeats: 14,
+};
+
+const AS_STATE: Omit<CensusStateData, 'districts'> = {
+  stateCode: 'AS', stateName: 'Assam',
+  totalPopulation: 31205576, malePopulation: 15939443, femalePopulation: 15266133,
+  scPopulation: 2231321, stPopulation: 3884371,
+  literatePopulation: 19177977, urbanPopulation: 4398542,
+  areaKmSq: 78438, currentAssemblySeats: 126, currentLokSabhaSeats: 14,
+};
+
+const PB_STATE: Omit<CensusStateData, 'districts'> = {
+  stateCode: 'PB', stateName: 'Punjab',
+  totalPopulation: 27743338, malePopulation: 14639465, femalePopulation: 13103873,
+  scPopulation: 8860179, stPopulation: 0,
+  literatePopulation: 18707053, urbanPopulation: 10399146,
+  areaKmSq: 50362, currentAssemblySeats: 117, currentLokSabhaSeats: 13,
+};
+
+const CG_STATE: Omit<CensusStateData, 'districts'> = {
+  stateCode: 'CG', stateName: 'Chhattisgarh',
+  totalPopulation: 25545198, malePopulation: 12832895, femalePopulation: 12712303,
+  scPopulation: 3274269, stPopulation: 7822902,
+  literatePopulation: 15379922, urbanPopulation: 5937237,
+  areaKmSq: 135191, currentAssemblySeats: 90, currentLokSabhaSeats: 11,
+};
+
+const HR_STATE: Omit<CensusStateData, 'districts'> = {
+  stateCode: 'HR', stateName: 'Haryana',
+  totalPopulation: 25351462, malePopulation: 13494734, femalePopulation: 11856728,
+  scPopulation: 5113615, stPopulation: 0,
+  literatePopulation: 16598988, urbanPopulation: 8842103,
+  areaKmSq: 44212, currentAssemblySeats: 90, currentLokSabhaSeats: 10,
+};
+
+const JK_STATE: Omit<CensusStateData, 'districts'> = {
+  stateCode: 'JK', stateName: 'Jammu & Kashmir',
+  totalPopulation: 12267032, malePopulation: 6640662, femalePopulation: 5626370,
+  scPopulation: 924991, stPopulation: 1493299,
+  literatePopulation: 7067233, urbanPopulation: 3433242,
+  areaKmSq: 42241, currentAssemblySeats: 90, currentLokSabhaSeats: 5,
+};
+
+const UK_STATE: Omit<CensusStateData, 'districts'> = {
+  stateCode: 'UK', stateName: 'Uttarakhand',
+  totalPopulation: 10086292, malePopulation: 5137773, femalePopulation: 4948519,
+  scPopulation: 1892516, stPopulation: 291906,
+  literatePopulation: 6880953, urbanPopulation: 3049338,
+  areaKmSq: 53483, currentAssemblySeats: 70, currentLokSabhaSeats: 5,
+};
+
+const HP_STATE: Omit<CensusStateData, 'districts'> = {
+  stateCode: 'HP', stateName: 'Himachal Pradesh',
+  totalPopulation: 6864602, malePopulation: 3481873, femalePopulation: 3382729,
+  scPopulation: 1729252, stPopulation: 392126,
+  literatePopulation: 5039736, urbanPopulation: 688552,
+  areaKmSq: 55673, currentAssemblySeats: 68, currentLokSabhaSeats: 4,
+};
+
+const TR_STATE: Omit<CensusStateData, 'districts'> = {
+  stateCode: 'TR', stateName: 'Tripura',
+  totalPopulation: 3673917, malePopulation: 1874376, femalePopulation: 1799541,
+  scPopulation: 654918, stPopulation: 1166813,
+  literatePopulation: 2804783, urbanPopulation: 961453,
+  areaKmSq: 10486, currentAssemblySeats: 60, currentLokSabhaSeats: 2,
+};
+
+const ML_STATE: Omit<CensusStateData, 'districts'> = {
+  stateCode: 'ML', stateName: 'Meghalaya',
+  totalPopulation: 2966889, malePopulation: 1491832, femalePopulation: 1475057,
+  scPopulation: 17355, stPopulation: 2555861,
+  literatePopulation: 1785005, urbanPopulation: 595450,
+  areaKmSq: 22429, currentAssemblySeats: 60, currentLokSabhaSeats: 2,
+};
+
+const MN_STATE: Omit<CensusStateData, 'districts'> = {
+  stateCode: 'MN', stateName: 'Manipur',
+  totalPopulation: 2855794, malePopulation: 1438586, femalePopulation: 1417208,
+  scPopulation: 97328, stPopulation: 902740,
+  literatePopulation: 1908476, urbanPopulation: 834154,
+  areaKmSq: 22327, currentAssemblySeats: 60, currentLokSabhaSeats: 2,
+};
+
+const NL_STATE: Omit<CensusStateData, 'districts'> = {
+  stateCode: 'NL', stateName: 'Nagaland',
+  totalPopulation: 1978502, malePopulation: 1024649, femalePopulation: 953853,
+  scPopulation: 0, stPopulation: 1710973,
+  literatePopulation: 1342434, urbanPopulation: 570966,
+  areaKmSq: 16579, currentAssemblySeats: 60, currentLokSabhaSeats: 1,
+};
+
+const GA_STATE: Omit<CensusStateData, 'districts'> = {
+  stateCode: 'GA', stateName: 'Goa',
+  totalPopulation: 1458545, malePopulation: 739140, femalePopulation: 719405,
+  scPopulation: 25449, stPopulation: 149275,
+  literatePopulation: 1165487, urbanPopulation: 906814,
+  areaKmSq: 3702, currentAssemblySeats: 40, currentLokSabhaSeats: 2,
+};
+
+const AR_STATE: Omit<CensusStateData, 'districts'> = {
+  stateCode: 'AR', stateName: 'Arunachal Pradesh',
+  totalPopulation: 1383727, malePopulation: 713912, femalePopulation: 669815,
+  scPopulation: 0, stPopulation: 951821,
+  literatePopulation: 766005, urbanPopulation: 313446,
+  areaKmSq: 83743, currentAssemblySeats: 60, currentLokSabhaSeats: 2,
+};
+
+const PY_STATE: Omit<CensusStateData, 'districts'> = {
+  stateCode: 'PY', stateName: 'Puducherry',
+  totalPopulation: 1247953, malePopulation: 612511, femalePopulation: 635442,
+  scPopulation: 196325, stPopulation: 0,
+  literatePopulation: 957309, urbanPopulation: 852753,
+  areaKmSq: 479, currentAssemblySeats: 30, currentLokSabhaSeats: 1,
+};
+
+const MZ_STATE: Omit<CensusStateData, 'districts'> = {
+  stateCode: 'MZ', stateName: 'Mizoram',
+  totalPopulation: 1097206, malePopulation: 555339, femalePopulation: 541867,
+  scPopulation: 1218, stPopulation: 1036115,
+  literatePopulation: 848175, urbanPopulation: 571771,
+  areaKmSq: 21081, currentAssemblySeats: 40, currentLokSabhaSeats: 1,
+};
+
+const CH_STATE: Omit<CensusStateData, 'districts'> = {
+  stateCode: 'CH', stateName: 'Chandigarh',
+  totalPopulation: 1055450, malePopulation: 580663, femalePopulation: 474787,
+  scPopulation: 199200, stPopulation: 0,
+  literatePopulation: 805438, urbanPopulation: 1026459,
+  areaKmSq: 114, currentAssemblySeats: 0, currentLokSabhaSeats: 1,
+};
+
+const SK_STATE: Omit<CensusStateData, 'districts'> = {
+  stateCode: 'SK', stateName: 'Sikkim',
+  totalPopulation: 610577, malePopulation: 323070, femalePopulation: 287507,
+  scPopulation: 28275, stPopulation: 206360,
+  literatePopulation: 444952, urbanPopulation: 153578,
+  areaKmSq: 7096, currentAssemblySeats: 32, currentLokSabhaSeats: 1,
+};
+
+const DN_STATE: Omit<CensusStateData, 'districts'> = {
+  stateCode: 'DN', stateName: 'Dadra & Nagar Haveli and Daman & Diu',
+  totalPopulation: 586956, malePopulation: 344061, femalePopulation: 242895,
+  scPopulation: 16916, stPopulation: 215920,
+  literatePopulation: 434600, urbanPopulation: 388520,
+  areaKmSq: 603, currentAssemblySeats: 0, currentLokSabhaSeats: 2,
+};
+
+const AN_STATE: Omit<CensusStateData, 'districts'> = {
+  stateCode: 'AN', stateName: 'Andaman & Nicobar Islands',
+  totalPopulation: 380581, malePopulation: 202871, femalePopulation: 177710,
+  scPopulation: 0, stPopulation: 28530,
+  literatePopulation: 294401, urbanPopulation: 143088,
+  areaKmSq: 8249, currentAssemblySeats: 0, currentLokSabhaSeats: 1,
+};
+
+const LA_STATE: Omit<CensusStateData, 'districts'> = {
+  stateCode: 'LA', stateName: 'Ladakh',
+  totalPopulation: 274000, malePopulation: 146000, femalePopulation: 128000,
+  scPopulation: 1200, stPopulation: 218000,
+  literatePopulation: 198000, urbanPopulation: 65000,
+  areaKmSq: 59146, currentAssemblySeats: 0, currentLokSabhaSeats: 1,
+};
+
+const LD_STATE: Omit<CensusStateData, 'districts'> = {
+  stateCode: 'LD', stateName: 'Lakshadweep',
+  totalPopulation: 64473, malePopulation: 33123, femalePopulation: 31350,
+  scPopulation: 0, stPopulation: 61120,
+  literatePopulation: 52553, urbanPopulation: 50332,
+  areaKmSq: 32, currentAssemblySeats: 0, currentLokSabhaSeats: 1,
+};
+
 // ─── AGGREGATE STATE SUMMARIES ───
 
 function buildStateSummary(
@@ -265,6 +449,29 @@ export const CENSUS_2011_STATES: CensusStateData[] = [
   buildStateSummaryFromBase(GJ_STATE),
   buildStateSummaryFromBase(MP_STATE),
   buildStateSummaryFromBase(DL_STATE),
+  buildStateSummaryFromBase(OD_STATE),
+  buildStateSummaryFromBase(JH_STATE),
+  buildStateSummaryFromBase(AS_STATE),
+  buildStateSummaryFromBase(PB_STATE),
+  buildStateSummaryFromBase(CG_STATE),
+  buildStateSummaryFromBase(HR_STATE),
+  buildStateSummaryFromBase(JK_STATE),
+  buildStateSummaryFromBase(UK_STATE),
+  buildStateSummaryFromBase(HP_STATE),
+  buildStateSummaryFromBase(TR_STATE),
+  buildStateSummaryFromBase(ML_STATE),
+  buildStateSummaryFromBase(MN_STATE),
+  buildStateSummaryFromBase(NL_STATE),
+  buildStateSummaryFromBase(GA_STATE),
+  buildStateSummaryFromBase(AR_STATE),
+  buildStateSummaryFromBase(PY_STATE),
+  buildStateSummaryFromBase(MZ_STATE),
+  buildStateSummaryFromBase(CH_STATE),
+  buildStateSummaryFromBase(SK_STATE),
+  buildStateSummaryFromBase(DN_STATE),
+  buildStateSummaryFromBase(AN_STATE),
+  buildStateSummaryFromBase(LA_STATE),
+  buildStateSummaryFromBase(LD_STATE),
 ];
 
 /** Get census data for a specific state */
@@ -305,7 +512,10 @@ export function computeAllProjections(idealPopPerSeat?: number): Array<{
 }> {
   const ideal = idealPopPerSeat ?? IDEAL_POP_PER_AC_SEAT_2011;
   return CENSUS_2011_STATES.map((s) => {
-    const projectedSeats = Math.round(s.totalPopulation / ideal);
+    const minSeats = s.totalPopulation > 10_000_000 ? 60 : 30;
+    const projectedSeats = s.currentAssemblySeats === 0
+      ? 0
+      : Math.min(500, Math.max(minSeats, Math.round(s.totalPopulation / ideal)));
     return {
       stateCode: s.stateCode,
       stateName: s.stateName,

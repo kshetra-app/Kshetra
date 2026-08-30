@@ -155,37 +155,9 @@ export default function ExploreScreen() {
 
   const { insets, contentPaddingBottom } = useResponsive();
 
-  return (
-    <View style={[styles.container, { backgroundColor: colors.background }]}>
-      <View style={[styles.header, { paddingTop: insets.top + 8, borderBottomColor: colors.border }]}>
-        <View style={styles.headerRow}>
-          <View style={styles.headerLeft}>
-            <View style={styles.titleRow}>
-              <Text style={[styles.title, { color: colors.text }]}>{t('explore.title')}</Text>
-              <StateSwitcher />
-            </View>
-            <Text style={[styles.subtitle, { color: colors.textMuted }]}>
-              {filtered.length} / {allConstituencies.length} {t('explore.constituencies')}
-              {showFavoritesOnly ? ` (${t('explore.favoritesOnly')})` : ''}
-            </Text>
-          </View>
-          <Pressable
-            style={[
-              styles.favFilterButton,
-              { backgroundColor: colors.surface, borderColor: colors.goldBorder || colors.border },
-              showFavoritesOnly && { backgroundColor: colors.primaryLight },
-            ]}
-            onPress={() => setShowFavoritesOnly((v) => !v)}
-          >
-            <Ionicons
-              name={showFavoritesOnly ? 'heart' : 'heart-outline'}
-              size={18}
-              color={showFavoritesOnly ? colors.primary : colors.textMuted}
-            />
-          </Pressable>
-        </View>
-        <ChiefMinisterBadge stateCode={stateCode} />
-      </View>
+  const renderHeaderControls = () => (
+    <View>
+      <ChiefMinisterBadge stateCode={stateCode} />
 
       {/* Quick Nav — Parliament, AI Chat, Delimitation */}
       <View style={styles.quickNavRow}>
@@ -212,7 +184,7 @@ export default function ExploreScreen() {
           onPress={() => router.push('/delimitation' as any)}
         >
           <Ionicons name="resize" size={20} color={colors.primary} />
-          <Text style={[styles.quickNavText, { color: colors.text }]} numberOfLines={2}>
+          <Text style={[styles.quickNavText, { color: colors.text, fontSize: 10.5 }]} numberOfLines={1}>
             {t('exploreExtended.delimitation', { defaultValue: 'Delimitation' })}
           </Text>
         </Pressable>
@@ -370,7 +342,7 @@ export default function ExploreScreen() {
             </ScrollView>
           </View>
 
-          {/* Reservation type filter */}
+          {/* Type filter */}
           <View style={styles.filterSection}>
             <Text style={styles.filterLabel}>{t('explore.type')}</Text>
             <View style={styles.chipRow}>
@@ -400,36 +372,74 @@ export default function ExploreScreen() {
           )}
         </View>
       )}
+    </View>
+  );
+
+  return (
+    <View style={[styles.container, { backgroundColor: colors.background }]}>
+      <View style={[styles.header, { paddingTop: insets.top + 8, borderBottomColor: colors.border }]}>
+        <View style={styles.headerRow}>
+          <View style={styles.headerLeft}>
+            <View style={styles.titleRow}>
+              <Text style={[styles.title, { color: colors.text }]}>{t('explore.title')}</Text>
+              <StateSwitcher />
+            </View>
+            <Text style={[styles.subtitle, { color: colors.textMuted }]}>
+              {filtered.length} / {allConstituencies.length} {t('explore.constituencies')}
+              {showFavoritesOnly ? ` (${t('explore.favoritesOnly')})` : ''}
+            </Text>
+          </View>
+          <Pressable
+            style={[
+              styles.favFilterButton,
+              { backgroundColor: colors.surface, borderColor: colors.goldBorder || colors.border },
+              showFavoritesOnly && { backgroundColor: colors.primaryLight },
+            ]}
+            onPress={() => setShowFavoritesOnly((v) => !v)}
+          >
+            <Ionicons
+              name={showFavoritesOnly ? 'heart' : 'heart-outline'}
+              size={18}
+              color={showFavoritesOnly ? colors.primary : colors.textMuted}
+            />
+          </Pressable>
+        </View>
+      </View>
 
       {stateCode === 'IN' ? (
-        <View style={styles.emptyState}>
-          <View style={[styles.emptyIconWrap, { backgroundColor: colors.goldLight, borderColor: colors.goldBorder || colors.border }]}>
-            <Ionicons name="map" size={38} color={colors.gold} />
+        <ScrollView contentContainerStyle={styles.scrollHeaderOnly}>
+          {renderHeaderControls()}
+          <View style={styles.emptyState}>
+            <View style={[styles.emptyIconWrap, { backgroundColor: colors.goldLight, borderColor: colors.goldBorder || colors.border }]}>
+              <Ionicons name="map" size={38} color={colors.gold} />
+            </View>
+            <Text style={[styles.emptyTitle, { color: colors.text }]}>{t('exploreExtended.selectAState')}</Text>
+            <Text style={[styles.emptyText, { color: colors.textMuted }]}>
+              {t('exploreExtended.pleaseSelectState')}
+            </Text>
           </View>
-          <Text style={[styles.emptyTitle, { color: colors.text }]}>{t('exploreExtended.selectAState')}</Text>
-          <Text style={[styles.emptyText, { color: colors.textMuted }]}>
-            {t('exploreExtended.pleaseSelectState')}
-          </Text>
-        </View>
+        </ScrollView>
       ) : filtered.length === 0 ? (
-        <View style={styles.emptyState}>
-          <View style={[styles.emptyIconWrap, { backgroundColor: colors.surface, borderColor: colors.border }]}>
-            <Ionicons name="search" size={34} color={colors.textMuted} />
+        <ScrollView contentContainerStyle={styles.scrollHeaderOnly}>
+          {renderHeaderControls()}
+          <View style={styles.emptyState}>
+            <View style={[styles.emptyIconWrap, { backgroundColor: colors.surface, borderColor: colors.border }]}>
+              <Ionicons name="search" size={34} color={colors.textMuted} />
+            </View>
+            <Text style={[styles.emptyTitle, { color: colors.text }]}>{t('common.noResults')}</Text>
+            <Text style={[styles.emptyText, { color: colors.textMuted }]}>
+              {t('explore.noResultsHint')}
+            </Text>
           </View>
-          <Text style={[styles.emptyTitle, { color: colors.text }]}>{t('common.noResults')}</Text>
-          <Text style={[styles.emptyText, { color: colors.textMuted }]}>
-            {t('explore.noResultsHint')}
-          </Text>
-        </View>
+        </ScrollView>
       ) : (
         <FlashList
-          // key={stateCode} forces a fresh list when the active state changes,
-          // so recycled cells never keep another state's MLA photo.
           key={stateCode}
           data={filtered}
-          extraData={{ stateCode, favoriteIds }}
+          extraData={{ stateCode, favoriteIds, showAISearch, showFilters, query, sortKey, partyFilter, districtFilter, typeFilter }}
           renderItem={renderItem}
           keyExtractor={(item) => `${stateCode}-${item.acNo}`}
+          ListHeaderComponent={renderHeaderControls}
           contentContainerStyle={[
             styles.listContent,
             { paddingBottom: Math.max(contentPaddingBottom, 110) },
@@ -536,6 +546,9 @@ const ConstituencyCard = React.memo(function ConstituencyCard({
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+  },
+  scrollHeaderOnly: {
+    paddingBottom: 120,
   },
   header: {
     paddingHorizontal: 16,

@@ -307,15 +307,15 @@ export default function SimulatorScreen() {
             <View style={styles.resSummaryRow}>
               <View style={[styles.resBox, { backgroundColor: colors.surface, borderColor: colors.border, borderLeftColor: '#F59E0B' }]}>
                 <Text style={[styles.resBoxValue, { color: colors.text }]}>{quickSim.totals.scReserved}</Text>
-                <Text style={[styles.resBoxLabel, { color: colors.textSecondary }]}>SC</Text>
+                <Text style={[styles.resBoxLabel, { color: colors.textSecondary }]}>{t('delimitation.sc')}</Text>
               </View>
               <View style={[styles.resBox, { backgroundColor: colors.surface, borderColor: colors.border, borderLeftColor: '#10B981' }]}>
                 <Text style={[styles.resBoxValue, { color: colors.text }]}>{quickSim.totals.stReserved}</Text>
-                <Text style={[styles.resBoxLabel, { color: colors.textSecondary }]}>ST</Text>
+                <Text style={[styles.resBoxLabel, { color: colors.textSecondary }]}>{t('delimitation.st')}</Text>
               </View>
               <View style={[styles.resBox, { backgroundColor: colors.surface, borderColor: colors.border, borderLeftColor: colors.primary }]}>
                 <Text style={[styles.resBoxValue, { color: colors.text }]}>{quickSim.totals.general}</Text>
-                <Text style={[styles.resBoxLabel, { color: colors.textSecondary }]}>General</Text>
+                <Text style={[styles.resBoxLabel, { color: colors.textSecondary }]}>{t('delimitation.general')}</Text>
               </View>
             </View>
 
@@ -394,7 +394,7 @@ export default function SimulatorScreen() {
                 <View style={styles.explainHeader}>
                   <Ionicons name="school" size={20} color={colors.primary} />
                   <Text style={[styles.explainTitle, { color: colors.text }]}>
-                    Constitutional Formulas & Mathematical Derivation
+                    {t('delimitation.mathematicalDerivation', { defaultValue: 'Constitutional Formulas & Mathematical Derivation' })}
                   </Text>
                 </View>
 
@@ -406,7 +406,7 @@ export default function SimulatorScreen() {
                 </View>
 
                 {/* Step by step derivation */}
-                <Text style={[styles.formulaSubhead, { color: colors.text }]}>Constitutional Reasoning Steps:</Text>
+                <Text style={[styles.formulaSubhead, { color: colors.text }]}>{t('delimitation.reasoningSteps', { defaultValue: 'Constitutional Reasoning Steps:' })}</Text>
                 {mathExplanation.reasoningSteps.map((step, sIdx) => (
                   <Text key={sIdx} style={[styles.reasoningStepText, { color: colors.textSecondary }]}>
                     {step}
@@ -416,19 +416,19 @@ export default function SimulatorScreen() {
                 {/* Mathematical formulas */}
                 <View style={[styles.formulaBox, { backgroundColor: colors.surfaceElevated, borderColor: colors.border }]}>
                   <Text style={[styles.formulaItem, { color: colors.text }]}>
-                    <Text style={{ fontWeight: '700' }}>Ideal Divisor: </Text>
+                    <Text style={{ fontWeight: '700' }}>{t('delimitation.idealDivisor')}</Text>
                     {mathExplanation.formulas.idealPopEquation}
                   </Text>
                   <Text style={[styles.formulaItem, { color: colors.text }]}>
-                    <Text style={{ fontWeight: '700' }}>Seat Quota: </Text>
+                    <Text style={{ fontWeight: '700' }}>{t('delimitation.seatQuota')}</Text>
                     {mathExplanation.formulas.seatQuotaEquation}
                   </Text>
                   <Text style={[styles.formulaItem, { color: colors.text }]}>
-                    <Text style={{ fontWeight: '700' }}>Article 332 SC: </Text>
+                    <Text style={{ fontWeight: '700' }}>{t('delimitation.article332Sc')}</Text>
                     {mathExplanation.formulas.scQuotaEquation}
                   </Text>
                   <Text style={[styles.formulaItem, { color: colors.text }]}>
-                    <Text style={{ fontWeight: '700' }}>Article 332 ST: </Text>
+                    <Text style={{ fontWeight: '700' }}>{t('delimitation.article332St')}</Text>
                     {mathExplanation.formulas.stQuotaEquation}
                   </Text>
                 </View>

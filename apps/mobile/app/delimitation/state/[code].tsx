@@ -72,7 +72,7 @@ export default function StateDelimitationDetail() {
         </Pressable>
         <View style={{ flex: 1 }}>
           <Text style={[styles.headerTitle, { color: colors.text }]}>{allocation.stateName}</Text>
-          <Text style={[styles.headerSubtitle, { color: colors.textSecondary }]}>State Delimitation & Constitutional Analysis</Text>
+          <Text style={[styles.headerSubtitle, { color: colors.textSecondary }]}>{t('delimitation.stateAnalysisTitle', { defaultValue: 'State Delimitation & Constitutional Analysis' })}</Text>
         </View>
       </View>
 
@@ -80,7 +80,7 @@ export default function StateDelimitationDetail() {
 
         {/* Model Selector */}
         <View style={[styles.modelToggleBox, { backgroundColor: colors.surface, borderColor: colors.border }]}>
-          <Text style={[styles.modelToggleTitle, { color: colors.text }]}>Constitutional Model</Text>
+          <Text style={[styles.modelToggleTitle, { color: colors.text }]}>{t('delimitation.calcModel', { defaultValue: 'Constitutional Model' })}</Text>
           <View style={styles.modelToggleRow}>
             <Pressable
               style={[
@@ -92,9 +92,7 @@ export default function StateDelimitationDetail() {
               ]}
               onPress={() => setModel('EXPANSION_SAFE')}
             >
-              <Text style={[styles.modelChipText, { color: model === 'EXPANSION_SAFE' ? '#FFFFFF' : colors.text }]}>
-                Expansion-Safe
-              </Text>
+              <Text style={[styles.modelChipText, { color: model === 'EXPANSION_SAFE' ? '#FFFFFF' : colors.text }]}>{t('delimitation.expansionSafe')}</Text>
             </Pressable>
             <Pressable
               style={[
@@ -106,9 +104,7 @@ export default function StateDelimitationDetail() {
               ]}
               onPress={() => setModel('PROPORTIONAL')}
             >
-              <Text style={[styles.modelChipText, { color: model === 'PROPORTIONAL' ? '#FFFFFF' : colors.text }]}>
-                Proportional (Art. 170)
-              </Text>
+              <Text style={[styles.modelChipText, { color: model === 'PROPORTIONAL' ? '#FFFFFF' : colors.text }]}>{t('delimitation.proportional')}</Text>
             </Pressable>
           </View>
         </View>
@@ -147,11 +143,11 @@ export default function StateDelimitationDetail() {
             <View style={styles.sectionHeaderRow}>
               <Ionicons name="school" size={18} color={colors.primary} />
               <Text style={[styles.sectionTitle, { color: colors.text, marginBottom: 0 }]}>
-                Constitutional Formula Breakdown
+                {t('delimitation.formulaBreakdown', { defaultValue: 'Constitutional Formula Breakdown' })}
               </Text>
             </View>
             <Text style={[styles.sectionSubtitle, { color: colors.textSecondary }]}>
-              Exact mathematical derivation under {mathExplanation.constitutionalArticles.assemblyArticle}
+              {t('delimitation.exactDerivation', { article: mathExplanation.constitutionalArticles.assemblyArticle, defaultValue: `Exact mathematical derivation under ${mathExplanation.constitutionalArticles.assemblyArticle}` })}
             </Text>
 
             <View style={styles.reasoningList}>
@@ -164,19 +160,19 @@ export default function StateDelimitationDetail() {
 
             <View style={[styles.equationBox, { backgroundColor: colors.surfaceElevated, borderColor: colors.border }]}>
               <Text style={[styles.equationText, { color: colors.text }]}>
-                <Text style={{ fontWeight: '700' }}>Divisor Equation: </Text>
+                <Text style={{ fontWeight: '700' }}>{t('delimitation.divisorEquation')}: </Text>
                 {mathExplanation.formulas.idealPopEquation}
               </Text>
               <Text style={[styles.equationText, { color: colors.text }]}>
-                <Text style={{ fontWeight: '700' }}>Seat Quota: </Text>
+                <Text style={{ fontWeight: '700' }}>{t('delimitation.seatQuota')}</Text>
                 {mathExplanation.formulas.seatQuotaEquation}
               </Text>
               <Text style={[styles.equationText, { color: colors.text }]}>
-                <Text style={{ fontWeight: '700' }}>SC Quota (Art. 332): </Text>
+                <Text style={{ fontWeight: '700' }}>{t('delimitation.scQuota')}: </Text>
                 {mathExplanation.formulas.scQuotaEquation}
               </Text>
               <Text style={[styles.equationText, { color: colors.text }]}>
-                <Text style={{ fontWeight: '700' }}>ST Quota (Art. 332): </Text>
+                <Text style={{ fontWeight: '700' }}>{t('delimitation.stQuota')}: </Text>
                 {mathExplanation.formulas.stQuotaEquation}
               </Text>
             </View>
@@ -235,7 +231,7 @@ export default function StateDelimitationDetail() {
         {/* Party Seat Projections */}
         {partyProjections && (
           <View style={styles.section}>
-            <Text style={[styles.sectionTitle, { color: colors.text }]}>Party Seat Projections</Text>
+            <Text style={[styles.sectionTitle, { color: colors.text }]}>{t('delimitation.partyProjectionsTitle', { state: allocation.stateName, defaultValue: `Party Seat Projections (${allocation.stateName})` })}</Text>
             <View style={[styles.card, { backgroundColor: colors.surface, borderColor: colors.border }]}>
               <Text style={[styles.sectionSubtitle, { color: colors.textSecondary, marginBottom: 8 }]}>
                 {partyProjections.methodologyNotes}
@@ -264,11 +260,11 @@ export default function StateDelimitationDetail() {
         <View style={styles.section}>
           <View style={styles.sectionHeaderRow}>
             <Text style={[styles.sectionTitle, { color: colors.text, marginBottom: 0 }]}>
-              Sitting MLA Risk Analyzer ({mlaProfiles.length} MLAs)
+              {t('delimitation.sittingMlaAnalyzer', { state: `${mlaProfiles.length} MLAs`, defaultValue: `Sitting MLA Risk Analyzer (${mlaProfiles.length} MLAs)` })}
             </Text>
             <Pressable onPress={() => setShowMLAs(!showMLAs)}>
               <Text style={[styles.toggleBtnText, { color: colors.primary }]}>
-                {showMLAs ? 'Collapse' : 'Expand All'}
+                {showMLAs ? t('common.collapse', { defaultValue: 'Collapse' }) : t('common.expandAll', { defaultValue: 'Expand All' })}
               </Text>
             </Pressable>
           </View>
@@ -323,11 +319,11 @@ export default function StateDelimitationDetail() {
                   <View style={styles.districtStats}>
                     <View style={styles.districtStat}>
                       <Text style={[styles.dStatValue, { color: colors.text }]}>{formatPopulation(d.population)}</Text>
-                      <Text style={[styles.dStatLabel, { color: colors.textMuted }]}>Population</Text>
+                      <Text style={[styles.dStatLabel, { color: colors.textMuted }]}>{t('delimitation.population', { defaultValue: 'Population' })}</Text>
                     </View>
                     <View style={styles.districtStat}>
                       <Text style={[styles.dStatValue, { color: colors.text }]}>{formatPopulation(d.populationPerSeat)}</Text>
-                      <Text style={[styles.dStatLabel, { color: colors.textMuted }]}>Pop/Seat</Text>
+                      <Text style={[styles.dStatLabel, { color: colors.textMuted }]}>{t('delimitation.popPerSeat', { defaultValue: 'Pop/Seat' })}</Text>
                     </View>
                     <View style={styles.districtStat}>
                       <Text style={[styles.dStatValue, {
@@ -335,7 +331,7 @@ export default function StateDelimitationDetail() {
                       }]}>
                         {d.deviationPercent > 0 ? '+' : ''}{d.deviationPercent}%
                       </Text>
-                      <Text style={[styles.dStatLabel, { color: colors.textMuted }]}>Deviation</Text>
+                      <Text style={[styles.dStatLabel, { color: colors.textMuted }]}>{t('delimitation.deviation', { defaultValue: 'Deviation' })}</Text>
                     </View>
                   </View>
                   <View style={styles.districtResBar}>
@@ -354,7 +350,7 @@ export default function StateDelimitationDetail() {
           <View style={styles.section}>
             <View style={styles.sectionHeaderRow}>
               <Text style={[styles.sectionTitle, { color: colors.text, marginBottom: 0 }]}>
-                Assembly Constituencies ({constituencies.length})
+                {t('delimitation.assemblyConstituencies', { count: constituencies.length, defaultValue: `Assembly Constituencies (${constituencies.length})` })}
               </Text>
               <Pressable onPress={() => setShowConstituencies(!showConstituencies)}>
                 <Text style={[styles.toggleBtnText, { color: colors.primary }]}>
@@ -394,7 +390,7 @@ export default function StateDelimitationDetail() {
         <View style={[styles.disclaimer, { backgroundColor: '#F59E0B15', borderColor: '#F59E0B40' }]}>
           <Ionicons name="information-circle" size={14} color="#F59E0B" />
           <Text style={styles.disclaimerText}>
-            Delimitation calculations derived from Census of India official district demographic figures under Articles 81, 82, and 170 of the Constitution.
+            {t('delimitation.stateFooterDisclaimer', { defaultValue: 'Delimitation calculations derived from Census of India official district demographic figures under Articles 81, 82, and 170 of the Constitution.' })}
           </Text>
         </View>
       </ScrollView>

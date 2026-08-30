@@ -1,756 +1,1161 @@
-import type { PartialTranslationKeys } from './en';
-
-const ta: PartialTranslationKeys = {
-  // ── Common ──────────────────────────────────────────────────
-  common: {
-    appName: 'க்ஷேத்ரா',
-    loading: 'ஏற்றப்படுகிறது…',
-    error: 'ஏதோ தவறு நடந்துவிட்டது',
-    retry: 'மீண்டும் முயலவும்',
-    cancel: 'ரத்து செய்',
-    save: 'சேமி',
-    done: 'முடிந்தது',
-    next: 'அடுத்து',
-    back: 'பின்னால்',
-    search: 'தேடு',
-    close: 'மூடு',
-    delete: 'நீக்கு',
-    edit: 'திருத்து',
-    share: 'பகிர்',
-    report: 'புகாரளி',
-    ok: 'சரி',
-    yes: 'ஆம்',
-    no: 'இல்லை',
-    all: 'அனைத்தும்',
-    none: 'எதுவுமில்லை',
-    seeAll: 'அனைத்தையும் காண்க',
-    comingSoon: 'விரைவில்',
-    noResults: 'முடிவுகள் எதுவும் இல்லை',
-    pullToRefresh: 'புதுப்பிக்க கீழே இழுக்கவும்',
-  },
-
-  // ── Tab Bar ─────────────────────────────────────────────────
-  tabs: {
-    news: 'செய்திகள்',
-    shorts: 'ஷார்ட்ஸ்',
-    more: 'மேலும்',
-    map: 'வரைபடம்',
-    explore: 'ஆராய்க',
-    feed: 'பதிவுகள்',
-    dashboard: 'டாஷ்போர்டு',
-    profile: 'சுயவிவரம்',
-  },
-
-  // ── Map Screen ──────────────────────────────────────────────
-  map: {
-    title: 'க்ஷேத்ரா',
-    searchPlaceholder: 'நியோஜகவர்க்கங்களை தேடு…',
-    tapToExplore: 'ஆராய ஒரு நியோஜகவர்க்கத்தை தட்டவும்',
-    locateMe: 'எனது இருப்பிடம்',
-    colorModes: {
-      party: 'கட்சி',
-      margin: 'வாக்கு வித்தியாசம்',
-      reservation: 'வகை',
-      population: 'மக்கள் தொகை',
-      literacy: 'எழுத்தறிவு',
-      turnout: 'வாக்குப்பதிவு',
-      data: 'தரவு',
+/**
+ * TA translation
+ */
+const ta = {
+  "common": {
+    "appName": "க்ஷேத்ரா",
+    "loading": "ஏற்றப்படுகிறது…",
+    "error": "ஏதோ தவறு நடந்துவிட்டது",
+    "retry": "மீண்டும் முயலவும்",
+    "cancel": "ரத்து செய்",
+    "save": "சேமி",
+    "done": "முடிந்தது",
+    "next": "அடுத்து",
+    "back": "பின்னால்",
+    "search": "தேடு",
+    "close": "மூடு",
+    "delete": "நீக்கு",
+    "edit": "திருத்து",
+    "share": "பகிர்",
+    "report": "புகாரளி",
+    "ok": "சரி",
+    "yes": "ஆம்",
+    "no": "இல்லை",
+    "all": "அனைத்தும்",
+    "none": "எதுவுமில்லை",
+    "seeAll": "அனைத்தையும் காண்க",
+    "comingSoon": "விரைவில்",
+    "noResults": "முடிவுகள் எதுவும் இல்லை",
+    "pullToRefresh": "புதுப்பிக்க கீழே இழுக்கவும்",
+    "submit": "சமர்ப்பி",
+    "confirm": "உறுதிப்படுத்து",
+    "select": "தேர்ந்தெடு",
+    "filter": "வடிகட்டு",
+    "sort": "வரிசைப்படுத்து",
+    "refresh": "புதுப்பி",
+    "viewAll": "அனைத்தையும் காண்க",
+    "learnMore": "மேலும் அறிக",
+    "signIn": "உள்நுழைக",
+    "signOut": "வெளியேறு",
+    "guest": "விருந்தினர்",
+    "offline": "ஆஃப்லைன்",
+    "online": "ஆன்லைன்",
+    "pending": "நிலுவையில்",
+    "active": "செயலில்",
+    "completed": "முடிந்தது",
+    "failed": "தோல்வியடைந்தது",
+    "votes": "வாக்குகள்",
+    "vote": "வாக்கு",
+    "posts": "பதிவுகள்",
+    "post": "பதிவு",
+    "items": "உருப்படிகள்",
+    "item": "உருப்படி",
+    "followers": "பின்பற்றுபவர்கள்",
+    "following": "பின்பற்றுகிறீர்கள்",
+    "article": "கட்டுரை",
+    "articles": "கட்டுரைகள்",
+    "timeAgo": {
+      "justNow": "சற்று முன்",
+      "minutesAgo": "{{n}} நிமிடங்களுக்கு முன்",
+      "hoursAgo": "{{n}} மணி நேரத்திற்கு முன்",
+      "daysAgo": "{{n}} நாட்களுக்கு முன்",
+      "weeksAgo": "{{n}} வாரங்களுக்கு முன்"
     },
-    compare: 'ஒப்பிடு',
-    setAsHome: 'எனது நியோஜகவர்க்கமாக அமை',
-    removeHome: 'எனது நியோஜகவர்க்கத்திலிருந்து நீக்கு',
-    myConstituency: 'எனது நியோஜகவர்க்கம்',
-    didYouKnow: 'உங்களுக்குத் தெரியுமா?',
-    legend: 'குறியீடுகள்',
-    boundariesComingSoon: 'எல்லைகள் விரைவில் வரவுள்ளன',
-  },
-
-  // ── Map Legend ─────────────────────────────────────────────
-  mapLegend: {
-    legend: 'குறியீடுகள்',
-    partyColors: 'கட்சி வண்ணங்கள்',
-    victoryMargin: 'வெற்றி வாக்கு வித்தியாசம்',
-    constituencyType: 'நியோஜகவர்க்க வகை',
-    populationDensity: 'மக்கள் தொகை அடர்த்தி',
-    literacyRate: 'எழுத்தறிவு விகிதம்',
-    voterTurnout: 'வாக்காளர் வாக்குப்பதிவு',
-    low: 'குறைவு',
-    high: 'அதிகம்',
-    razorThin: 'மிகக் குறைந்த வாக்கு வித்தியாசம்',
-    selected: 'தேர்ந்தெடுக்கப்பட்டது',
-    favourite: 'விருப்பமானது',
-    gen: 'பொது (GEN)',
-    sc: 'பட்டியலிடப்பட்ட சாதியினர் (SC)',
-    st: 'பட்டியலிடப்பட்ட பழங்குடியினர் (ST)',
-  },
-
-  // ── Map Search ────────────────────────────────────────────
-  mapSearch: {
-    placeholder: 'நியோஜகவர்க்கம், சட்டமன்ற உறுப்பினர், மாவட்டம் ஆகியவற்றைத் தேடு...',
-    cancel: 'ரத்து செய்',
-    noResults: 'நியோஜகவர்க்கங்கள் எதுவும் கிடைக்கவில்லை',
-  },
-
-  // ── Map Bottom Sheet ───────────────────────────────────────
-  mapSheet: {
-    winner2023: '2023 வெற்றியாளர்',
-    winnerYear: '{{year}} வெற்றியாளர்',
-    winnerVotes: 'வெற்றியாளர் வாக்குகள்',
-    margin: 'வாக்கு வித்தியாசம்',
-    runnerUp: 'இரண்டாம் இடம்',
-    viewFullProfile: 'முழு விவரத்தைக் காண்க',
-  },
-
-  // ── Explore Screen ──────────────────────────────────────────
-  explore: {
-    title: 'ஆராய்க',
-    searchPlaceholder: 'பெயர், சட்டமன்ற உறுப்பினர், கட்சி, மாவட்டம் மூலம் தேடு…',
-    sortBy: 'வரிசைப்படுத்து',
-    sort: {
-      acNo: 'சட்டமன்றத் தொகுதி எண் #',
-      name: 'A–Z',
-      marginAsc: 'அருகிலுள்ளவை',
-      marginDesc: 'மிகப்பெரியவை',
+    "scopes": {
+      "myConstituency": "என் தொகுதி",
+      "myState": "என் மாநிலம்",
+      "national": "தேசிய",
+      "allIndia": "அனைத்திந்திய",
+      "state": "மாநிலம்"
     },
-    filters: 'வடிகட்டிகள்',
-    party: 'கட்சி',
-    district: 'மாவட்டம்',
-    type: 'வகை',
-    clearFilters: 'வடிகட்டிகளை நீக்கு',
-    noResultsHint: 'உங்கள் தேடல் அல்லது வடிகட்டிகளை மாற்றியமைத்துப் பாருங்கள்',
-    favoritesOnly: 'விருப்பமானவை மட்டும்',
-    aiSearch: 'செயற்கை நுண்ணறிவுத் (AI) தேடல்',
-    constituencies: 'நியோஜகவர்க்கங்கள்',
-    margin: 'வாக்கு வித்தியாசம்',
-    seat: 'இடம்',
-    gen: 'பொது',
-    sc: 'SC',
-    st: 'ST',
-  },
-
-  // ── Constituency Detail ─────────────────────────────────────
-  constituency: {
-    overview: 'கண்ணோட்டம்',
-    currentMLA: 'தற்போதைய சட்டமன்ற உறுப்பினர்',
-    electedAs: 'தேர்ந்தெடுக்கப்பட்ட கட்சி',
-    defectedTo: 'தாவிய கட்சி',
-    district: 'மாவட்டம்',
-    type: 'வகை',
-    acNumber: 'சட்டமன்ற தொகுதி எண்',
-    election2023: '{{year}} தேர்தல்',
-    winner: 'வெற்றியாளர்',
-    runnerUp: 'இரண்டாம் இடம்',
-    margin: 'வாக்கு வித்தியாசம்',
-    votes: 'வாக்குகள்',
-    voteShare: 'வாக்குப் பங்கு',
-    demographics: 'மக்கள் தொகை விவரங்கள்',
-    population: 'மக்கள் தொகை',
-    literacy: 'எழுத்தறிவு விகிதம்',
-    urbanRural: 'நகர்ப்புறம் / கிராமப்புறம்',
-    genderRatio: 'பாலின விகிதம்',
-    scPct: 'SC %',
-    stPct: 'ST %',
-    history: 'வரலாறு',
-    electionHistory: 'தேர்தல் வரலாறு',
-    noHistory: 'வரலாற்றுத் தரவுகள் எதுவும் கிடைக்கவில்லை',
-    trivia: 'உங்களுக்குத் தெரியுமா?',
-    aiAnalysis: 'செயற்கை நுண்ணறிவு (AI) பகுப்பாய்வு',
-    generateAnalysis: 'செயற்கை நுண்ணறிவு (AI) பகுப்பாய்வை உருவாக்கு',
-    analyzing: 'பகுப்பாய்வு செய்யப்படுகிறது…',
-    electionResult: '{{year}} தேர்தல் முடிவு',
-    currentMlaSection: 'தற்போதைய சட்டமன்ற உறுப்பினர்',
-    districtLabel: 'மாவட்டம்',
-    notFound: 'கண்டறியப்படவில்லை',
-    notFoundMsg: 'நியோஜகவர்க்கம் #{{id}} கண்டறியப்படவில்லை',
-    myHome: 'எனது சொந்த நியோஜகவர்க்கம்',
-    setAsHome: 'எனது நியோஜகவர்க்கமாக அமை',
-    constituencyHistory: 'நியோஜகவர்க்க வரலாறு',
-    stronghold: 'கோட்டை',
-    swingSeat: 'மாறும் தொகுதி',
-    current: 'தற்போதைய',
-    assemblyOverview: '{{stateName}} சட்டமன்ற கண்ணோட்டம்',
-    turnout: 'வாக்குப்பதிவு',
-    voters: 'வாக்காளர்கள்',
-    demographicsSection: 'மக்கள் தொகை விவரங்கள்',
-    populationLabel: 'மக்கள் தொகை',
-    literacyLabel: 'எழுத்தறிவு',
-    urbanLabel: 'நகர்ப்புறம்',
-    areaSqKm: 'ச.கி.மீ',
-    voterProfile: 'வாக்காளர் சுயவிவரம் ({{year}})',
-    totalVoters: 'மொத்த வாக்காளர்கள்',
-    turnoutLabel: 'வாக்குப்பதிவு',
-    male: 'ஆண்',
-    female: 'பெண்',
-    socialComposition: 'சமூகக் கட்டமைப்பு',
-    demoDisclaimer: 'ஆதாரம்: மக்கள் தொகை கணக்கெடுப்பு 2011 · ECI 2023 வாக்காளர் பட்டியல்',
-  },
-
-  // ── Feed Screen ─────────────────────────────────────────────
-  feed: {
-    title: 'சமூகப் பகிர்வு',
-    compose: 'பதிவிடு',
-    filters: {
-      all: 'அனைத்தும்',
-      discussion: 'விவாதம்',
-      news: 'செய்திகள்',
-      question: 'கேள்வி-பதில்',
-      poll: 'வாக்கெடுப்புகள்',
-      opinion: 'கருத்து',
-      alert: 'அறிவிப்பு',
+    "errorBoundary": {
+      "title": "ஏதோ தவறு நேர்ந்துவிட்டது",
+      "message": "எதிர்பாராத பிழை ஏற்பட்டது",
+      "retry": "மீண்டும் முயற்சிக்கவும்"
     },
-    emptyFeed: 'இன்னும் எந்தப் பதிவுகளும் இல்லை. முதலாளராகப் பகிருங்கள்!',
-    trending: 'பிரபலமானவை',
-    trendingIn: '{{state}}-இல் பிரபலமானவை',
-    share: 'இந்தப் பதிவைப் பகிர்',
-    react: 'எதிர்வினை',
-    reply: 'பதிலளி',
-    replies: 'பதில்கள்',
-    writeReply: 'பதிலை எழுதுக…',
+    "reset": "மீட்டமை",
+    "collapse": "சுருக்கு",
+    "expandAll": "அனைத்தையும் விரிவாக்கு",
+    "hide": "மறை"
   },
-
-  // ── Post Card ──────────────────────────────────────────────
-  postCard: {
-    pinned: 'முதன்மையானது',
-    justNow: 'இப்போதுதான்',
-    discussion: 'விவாதம்',
-    news: 'செய்திகள்',
-    opinion: 'கருத்து',
-    question: 'கேள்வி',
-    alert: 'அறிவிப்பு',
-    poll: 'வாக்கெடுப்பு',
-    edited: '(திருத்தப்பட்டது)',
-    deleteConfirm: 'இந்தப் பதிவை நீக்க வேண்டுமா?',
-    deleteConfirmBody: 'இந்த நடவடிக்கையை மாற்ற முடியாது.',
-    delete: 'நீக்கு',
-    cancel: 'ரத்து செய்',
+  "tabs": {
+    "news": "செய்திகள்",
+    "shorts": "ஷார்ட்ஸ்",
+    "more": "மேலும்",
+    "map": "வரைபடம்",
+    "explore": "ஆராய்க",
+    "feed": "பதிவுகள்",
+    "dashboard": "டாஷ்போர்டு",
+    "profile": "சுயவிவரம்"
   },
-
-  // ── Poll Card ─────────────────────────────────────────────
-  pollCard: {
-    votes: 'வாக்குகள்',
-    vote: 'வாக்கு',
-    closed: 'முடிவடைந்தது',
-    ends: 'முடிகிறது',
-  },
-
-  // ── Compose ─────────────────────────────────────────────────
-  compose: {
-    title: 'புதிய பதிவு',
-    replyTo: '{{name}}-க்கு பதிலளி',
-    placeholder: 'உங்கள் மனதில் என்ன இருக்கிறது?',
-    pollPlaceholder: 'உங்கள் வாக்கெடுப்பு கேள்வியையை எழுதுக…',
-    replyPlaceholder: 'உங்கள் பதிலை எழுதுக…',
-    constituencyPlaceholder: 'உங்கள் நியோஜகவர்க்கத்தில் என்ன நடக்கிறது?',
-    postType: 'பதிவு வகை',
-    addHashtags: 'ஹேஷ்டேக்குகளைச் சேர்',
-    submit: 'பதிவிடு',
-    editTitle: 'பதிவைத் திருத்து',
-    save: 'சேமி',
-    postingIn: '{{name}}-இல் பதிவிடப்படுகிறது',
-    pollOptions: 'வாக்கெடுப்பு விருப்பங்கள்',
-    addOption: 'விருப்பத்தைச் சேர்',
-    selectConstituency: 'ஒரு நியோஜகவர்க்கத்தைக் குறிக்கவும்',
-    addMedia: 'ஊடகத்தைச் சேர்',
-    addImage: 'படத்தைச் சேர்',
-    addLink: 'இணைப்பைச் சேர்',
-    linkPlaceholder: 'இணைப்பை ஒட்டவும்…',
-    linkAdd: 'சேர்',
-  },
-
-  // ── Dashboard ───────────────────────────────────────────────
-  dashboard: {
-    title: 'குடிமைத் டாஷ்போர்டு',
-    tabs: {
-      issues: 'பிரச்சனைகள்',
-      promises: 'வாக்குறுதிகள்',
-      sentiment: 'மனநிலை',
-      headlines: 'தலைப்புச் செய்திகள்',
+  "map": {
+    "title": "க்ஷேத்ரா",
+    "searchPlaceholder": "நியோஜகவர்க்கங்களை தேடு…",
+    "tapToExplore": "ஆராய ஒரு நியோஜகவர்க்கத்தை தட்டவும்",
+    "locateMe": "எனது இருப்பிடம்",
+    "colorModes": {
+      "party": "கட்சி",
+      "margin": "வாக்கு வித்தியாசம்",
+      "reservation": "வகை",
+      "population": "மக்கள் தொகை",
+      "literacy": "எழுத்தறிவு",
+      "turnout": "வாக்குப்பதிவு",
+      "data": "தரவு"
     },
-    reportIssue: 'பிரச்சனையைப் புகாரளி',
-    statusFilters: {
-      all: 'அனைத்தும்',
-      open: 'திறந்தவை',
-      acknowledged: 'ஏற்கப்பட்டவை',
-      inProgress: 'செயல்பாட்டில்',
-      resolved: 'தீர்க்கப்பட்டவை',
-    },
-    categories: 'வகைகள்',
-    noIssues: 'பிரச்சனைகள் எதுவும் காணப்படவில்லை',
-    upvote: 'ஆதரவளி',
-    upvotes: 'ஆதரவுகள்',
-    sentimentScore: 'மனநிலை மதிப்பீடு',
-    positive: 'நேர்மறை',
-    negative: 'எதிர்மறை',
-    neutral: 'நடுநிலை',
-    analytics: 'பகுப்பாய்வு',
-    aiSummary: 'செயற்கை நுண்ணறிவு (AI) சுருக்கம்',
+    "compare": "ஒப்பிடு",
+    "setAsHome": "எனது நியோஜகவர்க்கமாக அமை",
+    "removeHome": "எனது நியோஜகவர்க்கத்திலிருந்து நீக்கு",
+    "myConstituency": "எனது நியோஜகவர்க்கம்",
+    "didYouKnow": "உங்களுக்குத் தெரியுமா?",
+    "legend": "குறியீடுகள்",
+    "boundariesComingSoon": "எல்லைகள் விரைவில் வரவுள்ளன"
   },
-
-  // ── Report Issue ────────────────────────────────────────────
-  reportIssue: {
-    title: 'குடிமைப் பிரச்சனையைப் புகாரளி',
-    issueTitle: 'தலைப்பு',
-    description: 'விளக்கம்',
-    category: 'வகை',
-    severity: 'தீவிரம்',
-    location: 'இருப்பிடம்',
-    submit: 'புகாரைச் சமர்ப்பி',
-    categories: {
-      infrastructure: 'கட்டமைப்பு',
-      water: 'குடிநீர் விநியோகம்',
-      electricity: 'மின்சாரம்',
-      sanitation: 'சுகாதாரம்',
-      education: 'கல்வி',
-      healthcare: 'சுகாதாரப் பாதுகாப்பு',
-      transport: 'போக்குவரத்து',
-      safety: 'பாதுகாப்பு',
-      corruption: 'ஊழல்',
-      other: 'மற்றவை',
-    },
-    severityLevels: {
-      low: 'குறைவு',
-      medium: 'நடுத்தரம்',
-      high: 'அதிகம்',
-      critical: 'மிகவும் ஆபத்தானது',
-    },
+  "mapLegend": {
+    "legend": "குறியீடுகள்",
+    "partyColors": "கட்சி வண்ணங்கள்",
+    "victoryMargin": "வெற்றி வாக்கு வித்தியாசம்",
+    "constituencyType": "நியோஜகவர்க்க வகை",
+    "populationDensity": "மக்கள் தொகை அடர்த்தி",
+    "literacyRate": "எழுத்தறிவு விகிதம்",
+    "voterTurnout": "வாக்காளர் வாக்குப்பதிவு",
+    "low": "குறைவு",
+    "high": "அதிகம்",
+    "razorThin": "மிகக் குறைந்த வாக்கு வித்தியாசம்",
+    "selected": "தேர்ந்தெடுக்கப்பட்டது",
+    "favourite": "விருப்பமானது",
+    "gen": "பொது (GEN)",
+    "sc": "பட்டியலிடப்பட்ட சாதியினர் (SC)",
+    "st": "பட்டியலிடப்பட்ட பழங்குடியினர் (ST)"
   },
-
-  // ── Profile ─────────────────────────────────────────────────
-  profile: {
-    title: 'சுயவிவரம்',
-    signIn: 'உள்நுழை',
-    signOut: 'வெளியேறு',
-    editProfile: 'சுயவிவரத்தைத் திருத்து',
-    notifications: 'அறிவிப்பு அமைப்புகள்',
-    favorites: 'விருப்பமானவை',
-    language: 'மொழி',
-    about: 'க்ஷேத்ரா பற்றி',
-    version: 'பதிப்பு',
-    settings: 'அமைப்புகள்',
-    appearance: 'தோற்றம்',
-    darkMode: 'இருண்ட பயன்முறை',
-    pushNotifications: 'புஷ் அறிவிப்புகள்',
-    signedInAs: 'இவராக உள்நுழைந்துள்ளார்',
-    guest: 'விருந்தினர்',
-    reputation: 'மதிப்பு',
-    posts: 'பதிவுகள்',
-    followers: 'பின்தொடர்பவர்கள்',
-    following: 'பின்தொடர்பவை',
+  "mapSearch": {
+    "placeholder": "நியோஜகவர்க்கம், சட்டமன்ற உறுப்பினர், மாவட்டம் ஆகியவற்றைத் தேடு...",
+    "cancel": "ரத்து செய்",
+    "noResults": "நியோஜகவர்க்கங்கள் எதுவும் கிடைக்கவில்லை"
   },
-
-  // ── Edit Profile ────────────────────────────────────────────
-  editProfile: {
-    title: 'சுயவிவரத்தைத் திருத்து',
-    displayName: 'காட்சிப் பெயர்',
-    bio: 'சுயகுறிப்பு',
-    bioPlaceholder: 'உங்களைப் பற்றி எங்களிடம் கூறுங்கள்…',
-    role: 'பங்கு',
-    interests: 'ஆர்வங்கள்',
-    save: 'சேமி',
-    nameRequired: 'பெயர் தேவை',
-    nameRequiredMsg: 'Please enter your display name.',
-    roles: {
-      citizen: 'குடிமகன்',
-      journalist: 'பத்திரிகையாளர்',
-      activist: 'செயற்பாட்டாளர்',
-      politician: 'அரசியல்வாதி',
+  "mapSheet": {
+    "winner2023": "2023 வெற்றியாளர்",
+    "winnerYear": "{{year}} வெற்றியாளர்",
+    "winnerVotes": "வெற்றியாளர் வாக்குகள்",
+    "margin": "வாக்கு வித்தியாசம்",
+    "runnerUp": "இரண்டாம் இடம்",
+    "viewFullProfile": "முழு விவரத்தைக் காண்க"
+  },
+  "explore": {
+    "title": "ஆராய்க",
+    "searchPlaceholder": "பெயர், சட்டமன்ற உறுப்பினர், கட்சி, மாவட்டம் மூலம் தேடு…",
+    "sortBy": "வரிசைப்படுத்து",
+    "sort": {
+      "acNo": "சட்டமன்றத் தொகுதி எண் #",
+      "name": "A–Z",
+      "marginAsc": "அருகிலுள்ளவை",
+      "marginDesc": "மிகப்பெரியவை"
     },
-    roleDescriptions: {
-      citizen: 'தகவலறிந்த வாக்காளர் மற்றும் சமூக உறுப்பினர்',
-      journalist: 'அரசியலை உள்ளடக்கும் ஊடக நிபுணர்',
-      activist: 'சமூக அல்லது அரசியல் காரணங்களுக்காக வாதிடுபவர்',
-      politician: 'தேர்ந்தெடுக்கப்பட்ட அல்லது விரும்பும் மக்கள் பிரதிநிதி',
+    "filters": "வடிகட்டிகள்",
+    "party": "கட்சி",
+    "district": "மாவட்டம்",
+    "type": "வகை",
+    "clearFilters": "வடிகட்டிகளை நீக்கு",
+    "noResultsHint": "உங்கள் தேடல் அல்லது வடிகட்டிகளை மாற்றியமைத்துப் பாருங்கள்",
+    "favoritesOnly": "விருப்பமானவை மட்டும்",
+    "aiSearch": "செயற்கை நுண்ணறிவுத் (AI) தேடல்",
+    "constituencies": "நியோஜகவர்க்கங்கள்",
+    "margin": "வாக்கு வித்தியாசம்",
+    "seat": "இடம்",
+    "gen": "பொது",
+    "sc": "SC",
+    "st": "ST",
+    "removeFavorite": "விருப்பத்திலிருந்து நீக்கு",
+    "addFavorite": "விருப்பத்தில் சேர்",
+    "jumpTo": "நேரடியாகச் செல்"
+  },
+  "constituency": {
+    "overview": "கண்ணோட்டம்",
+    "currentMLA": "தற்போதைய சட்டமன்ற உறுப்பினர்",
+    "electedAs": "தேர்ந்தெடுக்கப்பட்ட கட்சி",
+    "defectedTo": "தாவிய கட்சி",
+    "district": "மாவட்டம்",
+    "type": "வகை",
+    "acNumber": "சட்டமன்ற தொகுதி எண்",
+    "election2023": "{{year}} தேர்தல்",
+    "winner": "வெற்றியாளர்",
+    "runnerUp": "இரண்டாம் இடம்",
+    "margin": "வாக்கு வித்தியாசம்",
+    "votes": "வாக்குகள்",
+    "voteShare": "வாக்குப் பங்கு",
+    "demographics": "மக்கள் தொகை விவரங்கள்",
+    "population": "மக்கள் தொகை",
+    "literacy": "எழுத்தறிவு விகிதம்",
+    "urbanRural": "நகர்ப்புறம் / கிராமப்புறம்",
+    "genderRatio": "பாலின விகிதம்",
+    "scPct": "SC %",
+    "stPct": "ST %",
+    "history": "வரலாறு",
+    "electionHistory": "தேர்தல் வரலாறு",
+    "noHistory": "வரலாற்றுத் தரவுகள் எதுவும் கிடைக்கவில்லை",
+    "trivia": "உங்களுக்குத் தெரியுமா?",
+    "aiAnalysis": "செயற்கை நுண்ணறிவு (AI) பகுப்பாய்வு",
+    "generateAnalysis": "செயற்கை நுண்ணறிவு (AI) பகுப்பாய்வை உருவாக்கு",
+    "analyzing": "பகுப்பாய்வு செய்யப்படுகிறது…",
+    "electionResult": "{{year}} தேர்தல் முடிவு",
+    "currentMlaSection": "தற்போதைய சட்டமன்ற உறுப்பினர்",
+    "districtLabel": "மாவட்டம்",
+    "notFound": "கண்டறியப்படவில்லை",
+    "notFoundMsg": "நியோஜகவர்க்கம் #{{id}} கண்டறியப்படவில்லை",
+    "myHome": "எனது சொந்த நியோஜகவர்க்கம்",
+    "setAsHome": "எனது நியோஜகவர்க்கமாக அமை",
+    "constituencyHistory": "நியோஜகவர்க்க வரலாறு",
+    "stronghold": "கோட்டை",
+    "swingSeat": "மாறும் தொகுதி",
+    "current": "தற்போதைய",
+    "assemblyOverview": "{{stateName}} சட்டமன்ற கண்ணோட்டம்",
+    "turnout": "வாக்குப்பதிவு",
+    "voters": "வாக்காளர்கள்",
+    "demographicsSection": "மக்கள் தொகை விவரங்கள்",
+    "populationLabel": "மக்கள் தொகை",
+    "literacyLabel": "எழுத்தறிவு",
+    "urbanLabel": "நகர்ப்புறம்",
+    "areaSqKm": "ச.கி.மீ",
+    "voterProfile": "வாக்காளர் சுயவிவரம் ({{year}})",
+    "totalVoters": "மொத்த வாக்காளர்கள்",
+    "turnoutLabel": "வாக்குப்பதிவு",
+    "male": "ஆண்",
+    "female": "பெண்",
+    "socialComposition": "சமூகக் கட்டமைப்பு",
+    "demoDisclaimer": "ஆதாரம்: மக்கள் தொகை கணக்கெடுப்பு 2011 · ECI 2023 வாக்காளர் பட்டியல்",
+    "notFoundTitle": "தொகுதி கிடைக்கவில்லை",
+    "notFoundDesc": "கோரப்பட்ட தொகுதி கிடைக்கவில்லை. மீண்டும் தேடவும்.",
+    "politicalEvents": "அரசியல் நிகழ்வுகள்"
+  },
+  "feed": {
+    "title": "சமூகப் பகிர்வு",
+    "compose": "பதிவிடு",
+    "filters": {
+      "all": "அனைத்தும்",
+      "discussion": "விவாதம்",
+      "news": "செய்திகள்",
+      "question": "கேள்வி-பதில்",
+      "poll": "வாக்கெடுப்புகள்",
+      "opinion": "கருத்து",
+      "alert": "அறிவிப்பு"
     },
+    "emptyFeed": "இன்னும் எந்தப் பதிவுகளும் இல்லை. முதலாளராகப் பகிருங்கள்!",
+    "trending": "பிரபலமானவை",
+    "trendingIn": "{{state}}-இல் பிரபலமானவை",
+    "share": "இந்தப் பதிவைப் பகிர்",
+    "react": "எதிர்வினை",
+    "reply": "பதிலளி",
+    "replies": "பதில்கள்",
+    "writeReply": "பதிலை எழுதுக…"
   },
-
-  // ── Notification Settings ───────────────────────────────────
-  notificationSettings: {
-    title: 'அறிவிப்பு அமைப்புகள்',
-    masterToggle: 'புஷ் அறிவிப்புகள்',
-    masterDesc: 'உங்கள் நியோஜகவர்க்கங்களின் செயல்பாடுகள் பற்றிய விழிப்பூட்டல்களைப் பெறுங்கள்',
-    categories: {
-      post_reply: 'பதிவு பதில்கள்',
-      post_replyDesc: 'யாராவது உங்கள் பதிவுகளுக்குப் பதிலளிக்கும் போது',
-      issue_updates: 'பிரச்சனை மேம்பாடுகள்',
-      issue_updatesDesc: 'நீங்கள் பின்தொடரும் பிரச்சனைகளின் நிலை மாற்றங்கள்',
-      constituency_alerts: 'நியோஜகவர்க்க விழிப்பூட்டல்கள்',
-      constituency_alertsDesc: 'உங்கள் நியோஜகவர்க்கத்தின் செய்திகள் மற்றும் விழிப்பூட்டல்கள்',
-      headlines: 'முக்கியத் தலைப்புச் செய்திகள்',
-      headlinesDesc: 'முக்கிய அரசியல் செய்திகள் மற்றும் புதுப்பிப்புகள்',
+  "postCard": {
+    "pinned": "முதன்மையானது",
+    "justNow": "இப்போதுதான்",
+    "discussion": "விவாதம்",
+    "news": "செய்திகள்",
+    "opinion": "கருத்து",
+    "question": "கேள்வி",
+    "alert": "அறிவிப்பு",
+    "poll": "வாக்கெடுப்பு",
+    "edited": "(திருத்தப்பட்டது)",
+    "deleteConfirm": "இந்தப் பதிவை நீக்க வேண்டுமா?",
+    "deleteConfirmBody": "இந்த நடவடிக்கையை மாற்ற முடியாது.",
+    "delete": "நீக்கு",
+    "cancel": "ரத்து செய்"
+  },
+  "pollCard": {
+    "votes": "வாக்குகள்",
+    "vote": "வாக்கு",
+    "closed": "முடிவடைந்தது",
+    "ends": "முடிகிறது"
+  },
+  "compose": {
+    "title": "புதிய பதிவு",
+    "replyTo": "{{name}}-க்கு பதிலளி",
+    "placeholder": "உங்கள் மனதில் என்ன இருக்கிறது?",
+    "pollPlaceholder": "உங்கள் வாக்கெடுப்பு கேள்வியையை எழுதுக…",
+    "replyPlaceholder": "உங்கள் பதிலை எழுதுக…",
+    "constituencyPlaceholder": "உங்கள் நியோஜகவர்க்கத்தில் என்ன நடக்கிறது?",
+    "postType": "பதிவு வகை",
+    "addHashtags": "ஹேஷ்டேக்குகளைச் சேர்",
+    "submit": "பதிவிடு",
+    "editTitle": "பதிவைத் திருத்து",
+    "save": "சேமி",
+    "postingIn": "{{name}}-இல் பதிவிடப்படுகிறது",
+    "pollOptions": "வாக்கெடுப்பு விருப்பங்கள்",
+    "addOption": "விருப்பத்தைச் சேர்",
+    "selectConstituency": "ஒரு நியோஜகவர்க்கத்தைக் குறிக்கவும்",
+    "addMedia": "ஊடகத்தைச் சேர்",
+    "addImage": "படத்தைச் சேர்",
+    "addLink": "இணைப்பைச் சேர்",
+    "linkPlaceholder": "இணைப்பை ஒட்டவும்…",
+    "linkAdd": "சேர்"
+  },
+  "dashboard": {
+    "title": "குடிமைத் டாஷ்போர்டு",
+    "tabs": {
+      "issues": "பிரச்சனைகள்",
+      "promises": "வாக்குறுதிகள்",
+      "sentiment": "மனநிலை",
+      "headlines": "தலைப்புச் செய்திகள்"
     },
-  },
-
-  // ── Onboarding ──────────────────────────────────────────────
-  onboarding: {
-    welcome: 'க்ஷேத்ரா-விற்கு வரவேற்கிறோம்',
-    welcomeSubtitle: 'இந்தியாவின் அரசியல் நுண்ணறிவு தளம்',
-    getStarted: 'தொடங்குங்கள்',
-    nameStep: 'உங்கள் பெயர் என்ன?',
-    namePlaceholder: 'உங்கள் காட்சிப் பெயரை உள்ளிடவும்',
-    roleStep: 'உங்களைச் சிறந்த முறையில் விளக்குவது எது?',
-    constituencyStep: 'உங்கள் நியோஜகவர்க்கத்தைத் தேர்ந்தெடுக்கவும்',
-    constituencySearch: 'நியோஜகவர்க்கங்களை தேடு…',
-    interestsStep: 'உங்களுக்கு என்ன தலைப்புகளில் ஆர்வம் உள்ளது?',
-    interestsSubtitle: 'Pick at least 2 topics',
-    doneStep: 'நீங்கள் தயாராகிவிட்டீர்கள்!',
-    doneSubtitle: 'Your personalized political feed is ready',
-    finish: 'Enter Kshetra',
-    skip: 'Skip',
-    interests: {
-      elections: 'தேர்தல்கள்',
-      governance: 'ஆளுகை',
-      infrastructure: 'கட்டமைப்பு',
-      education: 'கல்வி',
-      healthcare: 'சுகாதாரப் பாதுகாப்பு',
-      economy: 'பொருளாதாரம்',
-      law: 'சட்டம் ஒழுங்கு',
-      environment: 'சுற்றுச்சூழல்',
-      technology: 'தொழில்நுட்பம்',
-      agriculture: 'விவசாயம்',
-      womensRights: 'பெண்களின் உரிமைகள்',
-      youthPolitics: 'இளைஞர் அரசியல்',
+    "reportIssue": "பிரச்சனையைப் புகாரளி",
+    "statusFilters": {
+      "all": "அனைத்தும்",
+      "open": "திறந்தவை",
+      "acknowledged": "ஏற்கப்பட்டவை",
+      "inProgress": "செயல்பாட்டில்",
+      "resolved": "தீர்க்கப்பட்டவை"
     },
+    "categories": "வகைகள்",
+    "noIssues": "பிரச்சனைகள் எதுவும் காணப்படவில்லை",
+    "upvote": "ஆதரவளி",
+    "upvotes": "ஆதரவுகள்",
+    "sentimentScore": "மனநிலை மதிப்பீடு",
+    "positive": "நேர்மறை",
+    "negative": "எதிர்மறை",
+    "neutral": "நடுநிலை",
+    "analytics": "பகுப்பாய்வு",
+    "aiSummary": "செயற்கை நுண்ணறிவு (AI) சுருக்கம்"
   },
-
-  // ── AI Chat ─────────────────────────────────────────────────
-  ai: {
-    chatTitle: 'செயற்கை நுண்ணறிவு (AI) உதவியாளர்',
-    placeholder: 'Ask about any constituency…',
-    thinking: 'Thinking…',
-    error: 'AI could not respond. Try again.',
-    suggestions: 'Suggested Questions',
-    contextPicker: 'Select Constituency Context',
-    smartSearch: 'AI Smart Search',
-    summary: 'AI Summary',
-    analyze: 'Analyze',
-  },
-
-  // ── State Switcher ──────────────────────────────────────────
-  stateSwitcher: {
-    selectState: 'Select State',
-    constituencies: 'constituencies',
-    full: 'Full',
-    comingSoon: 'Coming Soon',
-  },
-
-  // ── Report / Moderation ─────────────────────────────────────
-  moderation: {
-    reportContent: 'Report Content',
-    reportReason: 'Reason for report',
-    reasons: {
-      spam: 'Spam',
-      harassment: 'Harassment',
-      misinformation: 'Misinformation',
-      hateSpeech: 'Hate Speech',
-      violence: 'Violence',
-      inappropriate: 'Inappropriate Content',
-      other: 'Other',
+  "reportIssue": {
+    "title": "குடிமைப் பிரச்சனையைப் புகாரளி",
+    "issueTitle": "தலைப்பு",
+    "description": "விளக்கம்",
+    "category": "வகை",
+    "severity": "தீவிரம்",
+    "location": "இருப்பிடம்",
+    "submit": "புகாரைச் சமர்ப்பி",
+    "categories": {
+      "infrastructure": "கட்டமைப்பு",
+      "water": "குடிநீர் விநியோகம்",
+      "electricity": "மின்சாரம்",
+      "sanitation": "சுகாதாரம்",
+      "education": "கல்வி",
+      "healthcare": "சுகாதாரப் பாதுகாப்பு",
+      "transport": "போக்குவரத்து",
+      "safety": "பாதுகாப்பு",
+      "corruption": "ஊழல்",
+      "other": "மற்றவை"
     },
-    submit: 'Submit Report',
-    thankYou: 'Thank you for reporting',
+    "severityLevels": {
+      "low": "குறைவு",
+      "medium": "நடுத்தரம்",
+      "high": "அதிகம்",
+      "critical": "மிகவும் ஆபத்தானது"
+    }
   },
-
-  // ── Verification ────────────────────────────────────────────
-  verification: {
-    verified: 'Verified',
-    citizen: 'Citizen',
-    journalist: 'Journalist',
-    activist: 'Activist',
-    politician: 'Politician',
-    moderator: 'Moderator',
-    admin: 'Admin',
+  "profile": {
+    "title": "சுயவிவரம்",
+    "signIn": "உள்நுழை",
+    "signOut": "வெளியேறு",
+    "editProfile": "சுயவிவரத்தைத் திருத்து",
+    "notifications": "அறிவிப்பு அமைப்புகள்",
+    "favorites": "விருப்பமானவை",
+    "language": "மொழி",
+    "about": "க்ஷேத்ரா பற்றி",
+    "version": "பதிப்பு",
+    "settings": "அமைப்புகள்",
+    "appearance": "தோற்றம்",
+    "darkMode": "இருண்ட பயன்முறை",
+    "pushNotifications": "புஷ் அறிவிப்புகள்",
+    "signedInAs": "இவராக உள்நுழைந்துள்ளார்",
+    "guest": "விருந்தினர்",
+    "reputation": "மதிப்பு",
+    "posts": "பதிவுகள்",
+    "followers": "பின்தொடர்பவர்கள்",
+    "following": "பின்தொடர்பவை"
   },
-
-  // ── Parties ─────────────────────────────────────────────────
-  parties: {
-    BJP: 'பாஜக',
-    INC: 'காங்கிரஸ்',
-    BRS: 'BRS',
-    TDP: 'தெதேபா',
-    AIMIM: 'AIMIM',
-    YSRCP: 'YSRCP',
-    JSP: 'JSP',
-    JDS: 'மஜத (JD(S))',
-    IND: 'சுயேச்சை',
-    OTH: 'மற்றவை',
+  "editProfile": {
+    "title": "சுயவிவரத்தைத் திருத்து",
+    "displayName": "காட்சிப் பெயர்",
+    "bio": "சுயகுறிப்பு",
+    "bioPlaceholder": "உங்களைப் பற்றி எங்களிடம் கூறுங்கள்…",
+    "role": "பங்கு",
+    "interests": "ஆர்வங்கள்",
+    "save": "சேமி",
+    "nameRequired": "பெயர் தேவை",
+    "nameRequiredMsg": "Please enter your display name.",
+    "roles": {
+      "citizen": "குடிமகன்",
+      "journalist": "பத்திரிகையாளர்",
+      "activist": "செயற்பாட்டாளர்",
+      "politician": "அரசியல்வாதி"
+    },
+    "roleDescriptions": {
+      "citizen": "தகவலறிந்த வாக்காளர் மற்றும் சமூக உறுப்பினர்",
+      "journalist": "அரசியலை உள்ளடக்கும் ஊடக நிபுணர்",
+      "activist": "சமூக அல்லது அரசியல் காரணங்களுக்காக வாதிடுபவர்",
+      "politician": "தேர்ந்தெடுக்கப்பட்ட அல்லது விரும்பும் மக்கள் பிரதிநிதி"
+    }
   },
-
-  // ── MLA Card ───────────────────────────────────────────────
-  mla: {
-    age: 'Age',
-    male: 'Male',
-    female: 'Female',
-    terms: 'Terms',
-    education: 'Education',
-    assets: 'Assets',
-    cases: 'Cases',
-    term_1: '1st term',
-    term_2: '2nd term',
-    term_3: '3rd term',
-    term_n: '{{n}}th term',
+  "notificationSettings": {
+    "title": "அறிவிப்பு அமைப்புகள்",
+    "masterToggle": "புஷ் அறிவிப்புகள்",
+    "masterDesc": "உங்கள் நியோஜகவர்க்கங்களின் செயல்பாடுகள் பற்றிய விழிப்பூட்டல்களைப் பெறுங்கள்",
+    "categories": {
+      "post_reply": "பதிவு பதில்கள்",
+      "post_replyDesc": "யாராவது உங்கள் பதிவுகளுக்குப் பதிலளிக்கும் போது",
+      "issue_updates": "பிரச்சனை மேம்பாடுகள்",
+      "issue_updatesDesc": "நீங்கள் பின்தொடரும் பிரச்சனைகளின் நிலை மாற்றங்கள்",
+      "constituency_alerts": "நியோஜகவர்க்க விழிப்பூட்டல்கள்",
+      "constituency_alertsDesc": "உங்கள் நியோஜகவர்க்கத்தின் செய்திகள் மற்றும் விழிப்பூட்டல்கள்",
+      "headlines": "முக்கியத் தலைப்புச் செய்திகள்",
+      "headlinesDesc": "முக்கிய அரசியல் செய்திகள் மற்றும் புதுப்பிப்புகள்"
+    }
   },
-
-  // ── Defection Badge ────────────────────────────────────────
-  defection: {
-    title: 'தேர்தலுக்குப் பிந்தைய கட்சித் தாவல்',
-    elected: 'தேர்ந்தெடுக்கப்பட்டது',
-    current: 'தற்போதைய',
-    note: 'இந்த சட்டமன்ற உறுப்பினர் 2023 தேர்தலுக்குப் பிறகு கட்சி மாறினார். கட்சித் தாவல் தடை நடவடிக்கை நிலுவையில் இருக்கலாம்.',
+  "onboarding": {
+    "welcome": "க்ஷேத்ரா-விற்கு வரவேற்கிறோம்",
+    "welcomeSubtitle": "இந்தியாவின் அரசியல் நுண்ணறிவு தளம்",
+    "getStarted": "தொடங்குங்கள்",
+    "nameStep": "உங்கள் பெயர் என்ன?",
+    "namePlaceholder": "உங்கள் காட்சிப் பெயரை உள்ளிடவும்",
+    "roleStep": "உங்களைச் சிறந்த முறையில் விளக்குவது எது?",
+    "constituencyStep": "உங்கள் நியோஜகவர்க்கத்தைத் தேர்ந்தெடுக்கவும்",
+    "constituencySearch": "நியோஜகவர்க்கங்களை தேடு…",
+    "interestsStep": "உங்களுக்கு என்ன தலைப்புகளில் ஆர்வம் உள்ளது?",
+    "interestsSubtitle": "Pick at least 2 topics",
+    "doneStep": "நீங்கள் தயாராகிவிட்டீர்கள்!",
+    "doneSubtitle": "Your personalized political feed is ready",
+    "finish": "Enter Kshetra",
+    "skip": "Skip",
+    "interests": {
+      "elections": "தேர்தல்கள்",
+      "governance": "ஆளுகை",
+      "infrastructure": "கட்டமைப்பு",
+      "education": "கல்வி",
+      "healthcare": "சுகாதாரப் பாதுகாப்பு",
+      "economy": "பொருளாதாரம்",
+      "law": "சட்டம் ஒழுங்கு",
+      "environment": "சுற்றுச்சூழல்",
+      "technology": "தொழில்நுட்பம்",
+      "agriculture": "விவசாயம்",
+      "womensRights": "பெண்களின் உரிமைகள்",
+      "youthPolitics": "இளைஞர் அரசியல்"
+    }
   },
-
-  // ── Content: Seed data translations ────────────────────────
-  content: {
-    issueCategories: {
-      roads: 'சாலைகள்',
-      water: 'குடிநீர்',
-      electricity: 'மின்சாரம்',
-      sanitation: 'சுகாதாரம்',
-      healthcare: 'சுகாதாரப் பாதுகாப்பு',
-      education: 'கல்வி',
-      public_safety: 'பாதுகாப்பு',
-      transport: 'போக்குவரத்து',
-      housing: 'வீட்டுவசதி',
-      environment: 'சுற்றுச்சூழல்',
-      corruption: 'ஊழல்',
-      other: 'மற்றவை',
+  "ai": {
+    "chatTitle": "செயற்கை நுண்ணறிவு (AI) உதவியாளர்",
+    "placeholder": "Ask about any constituency…",
+    "thinking": "Thinking…",
+    "error": "AI could not respond. Try again.",
+    "suggestions": "Suggested Questions",
+    "contextPicker": "Select Constituency Context",
+    "smartSearch": "AI Smart Search",
+    "summary": "AI Summary",
+    "analyze": "Analyze"
+  },
+  "stateSwitcher": {
+    "selectState": "Select State",
+    "constituencies": "constituencies",
+    "full": "Full",
+    "comingSoon": "Coming Soon"
+  },
+  "moderation": {
+    "reportContent": "Report Content",
+    "reportReason": "Reason for report",
+    "reasons": {
+      "spam": "Spam",
+      "harassment": "Harassment",
+      "misinformation": "Misinformation",
+      "hateSpeech": "Hate Speech",
+      "violence": "Violence",
+      "inappropriate": "Inappropriate Content",
+      "other": "Other"
     },
-    issueSeverity: {
-      low: 'குறைவு',
-      medium: 'நடுத்தரம்',
-      high: 'அதிகம்',
-      critical: 'மிகவும் ஆபத்தானது',
+    "submit": "Submit Report",
+    "thankYou": "Thank you for reporting"
+  },
+  "verification": {
+    "verified": "Verified",
+    "citizen": "Citizen",
+    "journalist": "Journalist",
+    "activist": "Activist",
+    "politician": "Politician",
+    "moderator": "Moderator",
+    "admin": "Admin"
+  },
+  "parties": {
+    "BJP": "பாஜக",
+    "INC": "காங்கிரஸ்",
+    "BRS": "BRS",
+    "TDP": "தெதேபா",
+    "AIMIM": "AIMIM",
+    "YSRCP": "YSRCP",
+    "JSP": "JSP",
+    "JDS": "மஜத (JD(S))",
+    "IND": "சுயேச்சை",
+    "OTH": "மற்றவை"
+  },
+  "mla": {
+    "age": "Age",
+    "male": "Male",
+    "female": "Female",
+    "terms": "Terms",
+    "education": "Education",
+    "assets": "Assets",
+    "cases": "Cases",
+    "term_1": "1st term",
+    "term_2": "2nd term",
+    "term_3": "3rd term",
+    "term_n": "{{n}}th term"
+  },
+  "defection": {
+    "title": "தேர்தலுக்குப் பிந்தைய கட்சித் தாவல்",
+    "elected": "தேர்ந்தெடுக்கப்பட்டது",
+    "current": "தற்போதைய",
+    "note": "இந்த சட்டமன்ற உறுப்பினர் 2023 தேர்தலுக்குப் பிறகு கட்சி மாறினார். கட்சித் தாவல் தடை நடவடிக்கை நிலுவையில் இருக்கலாம்."
+  },
+  "content": {
+    "issueCategories": {
+      "roads": "சாலைகள்",
+      "water": "குடிநீர்",
+      "electricity": "மின்சாரம்",
+      "sanitation": "சுகாதாரம்",
+      "healthcare": "சுகாதாரப் பாதுகாப்பு",
+      "education": "கல்வி",
+      "public_safety": "பாதுகாப்பு",
+      "transport": "போக்குவரத்து",
+      "housing": "வீட்டுவசதி",
+      "environment": "சுற்றுச்சூழல்",
+      "corruption": "ஊழல்",
+      "other": "மற்றவை"
     },
-    issueStatus: {
-      open: 'திறந்தவை',
-      acknowledged: 'ஏற்கப்பட்டவை',
-      in_progress: 'செயல்பாட்டில்',
-      resolved: 'தீர்க்கப்பட்டவை',
-      closed: 'மூடப்பட்டவை',
+    "issueSeverity": {
+      "low": "குறைவு",
+      "medium": "நடுத்தரம்",
+      "high": "அதிகம்",
+      "critical": "மிகவும் ஆபத்தானது"
     },
-    headlineCategories: {
-      politics: 'அரசியல்',
-      governance: 'ஆளுகை',
-      development: 'வளர்ச்சி',
-      law_and_order: 'சட்டம் ஒழுங்கு',
-      economy: 'பொருளாதாரம்',
-      education: 'கல்வி',
-      health: 'சுகாதாரம்',
-      environment: 'சுற்றுச்சூழல்',
-      opinion: 'கருத்து',
+    "issueStatus": {
+      "open": "திறந்தவை",
+      "acknowledged": "ஏற்கப்பட்டவை",
+      "in_progress": "செயல்பாட்டில்",
+      "resolved": "தீர்க்கப்பட்டவை",
+      "closed": "மூடப்பட்டவை"
     },
-    sentimentLabels: {
-      positive: 'நேர்மறை',
-      negative: 'எதிர்மறை',
-      neutral: 'நடுநிலை',
-      posts: 'பதிவுகள்',
-      moodIndex: 'நியோஜகவர்க்க மனநிலை குறியீடு',
+    "headlineCategories": {
+      "politics": "அரசியல்",
+      "governance": "ஆளுகை",
+      "development": "வளர்ச்சி",
+      "law_and_order": "சட்டம் ஒழுங்கு",
+      "economy": "பொருளாதாரம்",
+      "education": "கல்வி",
+      "health": "சுகாதாரம்",
+      "environment": "சுற்றுச்சூழல்",
+      "opinion": "கருத்து"
     },
-    issues: {
-      'issue-1': {
-        title: 'வெளிவட்டச் சாலை (ORR) சேவைச் சாலை அமைக்கும் பணி 3 மாதங்களாக முடங்கியுள்ளது',
-        description: 'கச்சிபௌலி சந்திப்பு அருகில் சாலை விரிவாக்கப் பணி பாதியிலேயே கைவிடப்பட்டுள்ளது. சாலையில் வைக்கப்பட்டுள்ள தடுப்புகளால் நெரிசல் நேரங்களில் தினமும் போக்குவரத்து நெரிசல் ஏற்படுகிறது. GHMC மற்றும் NHAI அமைப்புகளுக்கு பலமுறை புகார் அளித்தும் எந்த பதிலும் இல்லை.',
+    "sentimentLabels": {
+      "positive": "நேர்மறை",
+      "negative": "எதிர்மறை",
+      "neutral": "நடுநிலை",
+      "posts": "பதிவுகள்",
+      "moodIndex": "நியோஜகவர்க்க மனநிலை குறியீடு"
+    },
+    "issues": {
+      "issue-1": {
+        "title": "வெளிவட்டச் சாலை (ORR) சேவைச் சாலை அமைக்கும் பணி 3 மாதங்களாக முடங்கியுள்ளது",
+        "description": "கச்சிபௌலி சந்திப்பு அருகில் சாலை விரிவாக்கப் பணி பாதியிலேயே கைவிடப்பட்டுள்ளது. சாலையில் வைக்கப்பட்டுள்ள தடுப்புகளால் நெரிசல் நேரங்களில் தினமும் போக்குவரத்து நெரிசல் ஏற்படுகிறது. GHMC மற்றும் NHAI அமைப்புகளுக்கு பலமுறை புகார் அளித்தும் எந்த பதிலும் இல்லை."
       },
-      'issue-2': {
-        title: 'பழைய நகரப் பகுதிகளில் ஒழுங்கற்ற குடிநீர் விநியோகம்',
-        description: 'தண்ணீர் லாரிகள் உரிய நேரத்திற்கு வருவதில்லை. HMWSSB உதவி எண் எப்போதும் பிஸியாகவே உள்ளது. பலக்னுமா, ஷாலிபண்டா, யாகுத்புரா பகுதி மக்கள் பாதிக்கப்பட்டுள்ளனர். சில பகுதிகளில் 3 நாட்களுக்கு ஒருமுறைதான் தண்ணீர் விநியோகம் செய்யப்படுகிறது.',
+      "issue-2": {
+        "title": "பழைய நகரப் பகுதிகளில் ஒழுங்கற்ற குடிநீர் விநியோகம்",
+        "description": "தண்ணீர் லாரிகள் உரிய நேரத்திற்கு வருவதில்லை. HMWSSB உதவி எண் எப்போதும் பிஸியாகவே உள்ளது. பலக்னுமா, ஷாலிபண்டா, யாகுத்புரா பகுதி மக்கள் பாதிக்கப்பட்டுள்ளனர். சில பகுதிகளில் 3 நாட்களுக்கு ஒருமுறைதான் தண்ணீர் விநியோகம் செய்யப்படுகிறது."
       },
-      'issue-3': {
-        title: 'அத்தாப்பூர் பகுதியில் அடிக்கடி மின்தடை',
-        description: 'மாலை நேரங்களில் தினமும் 2-3 மணி நேரம் மின்தடை ஏற்படுகிறது. குடியிருப்பு நுழைவாயிலில் உள்ள மின்மாற்றி பல வாரங்களாக பழுதடைந்துள்ளது. TSSPDCL புகார் எண் வழங்கப்பட்டும் எந்த நடவடிக்கையும் எடுக்கப்படவில்லை.',
+      "issue-3": {
+        "title": "அத்தாப்பூர் பகுதியில் அடிக்கடி மின்தடை",
+        "description": "மாலை நேரங்களில் தினமும் 2-3 மணி நேரம் மின்தடை ஏற்படுகிறது. குடியிருப்பு நுழைவாயிலில் உள்ள மின்மாற்றி பல வாரங்களாக பழுதடைந்துள்ளது. TSSPDCL புகார் எண் வழங்கப்பட்டும் எந்த நடவடிக்கையும் எடுக்கப்படவில்லை."
       },
-      'issue-4': {
-        title: 'கொம்பல்லி ஆரம்ப சுகாதார நிலையத்தில் 2 வாரங்களாக மருத்துவர் இல்லை',
-        description: 'கொம்பல்லி ஆரம்ப சுகாதார நிலையத்தில் 14 நாட்களாக மருத்துவர் யாரும் இல்லை. நோயாளிகள் திருப்பி அனுப்பப்படுகிறார்கள். அடுத்த மருத்துவமனை 8 கி.மீ தொலைவில் உள்ள செகந்திராபாத்தில் உள்ளது. இது முதியவர்கள் மற்றும் கர்ப்பிணிப் பெண்களுக்கு மிகவும் அவசியமானது.',
+      "issue-4": {
+        "title": "கொம்பல்லி ஆரம்ப சுகாதார நிலையத்தில் 2 வாரங்களாக மருத்துவர் இல்லை",
+        "description": "கொம்பல்லி ஆரம்ப சுகாதார நிலையத்தில் 14 நாட்களாக மருத்துவர் யாரும் இல்லை. நோயாளிகள் திருப்பி அனுப்பப்படுகிறார்கள். அடுத்த மருத்துவமனை 8 கி.மீ தொலைவில் உள்ள செகந்திராபாத்தில் உள்ளது. இது முதியவர்கள் மற்றும் கர்ப்பிணிப் பெண்களுக்கு மிகவும் அவசியமானது."
       },
-      'issue-5': {
-        title: 'விநாயக் நகர் பள்ளி அருகில் திறந்தவெளி கழிவுநீர் கால்வாய்',
-        description: 'பள்ளிச் சுவரை ஒட்டி திறந்தவெளி கழிவுநீர் கால்வாய் செல்கிறது. குழந்தைகள் மாசடைந்த நீரினால் பாதிக்கப்படும் அபாயம் உள்ளது. கொசுக்கள் உற்பத்தியாகும் இடமாக மாறியுள்ளது. நகராட்சிக்கு மூன்று முறை தகவல் தெரிவிக்கப்பட்டுள்ளது.',
+      "issue-5": {
+        "title": "விநாயக் நகர் பள்ளி அருகில் திறந்தவெளி கழிவுநீர் கால்வாய்",
+        "description": "பள்ளிச் சுவரை ஒட்டி திறந்தவெளி கழிவுநீர் கால்வாய் செல்கிறது. குழந்தைகள் மாசடைந்த நீரினால் பாதிக்கப்படும் அபாயம் உள்ளது. கொசுக்கள் உற்பத்தியாகும் இடமாக மாறியுள்ளது. நகராட்சிக்கு மூன்று முறை தகவல் தெரிவிக்கப்பட்டுள்ளது."
       },
-      'issue-6': {
-        title: 'முன்னறிவிப்பின்றி சம்ஷாபாத் பேருந்து சேவை குறைப்பு',
-        description: 'மஹேஸ்வரத்தை சம்ஷாபாத் விமான நிலையத்துடன் இணைக்கும் 4 பேருந்து வழித்தடங்களை TSRTC குறைத்துள்ளது. பயணிகள் தவித்து வருகிறார்கள், அதிக கட்டணம் வசூலிக்கும் ஆட்டோக்களைப் பயன்படுத்த வேண்டிய கட்டாயத்தில் உள்ளனர். மாற்று பொதுப் போக்குவரத்து இல்லை.',
+      "issue-6": {
+        "title": "முன்னறிவிப்பின்றி சம்ஷாபாத் பேருந்து சேவை குறைப்பு",
+        "description": "மஹேஸ்வரத்தை சம்ஷாபாத் விமான நிலையத்துடன் இணைக்கும் 4 பேருந்து வழித்தடங்களை TSRTC குறைத்துள்ளது. பயணிகள் தவித்து வருகிறார்கள், அதிக கட்டணம் வசூலிக்கும் ஆட்டோக்களைப் பயன்படுத்த வேண்டிய கட்டாயத்தில் உள்ளனர். மாற்று பொதுப் போக்குவரத்து இல்லை."
       },
-      'issue-7': {
-        title: 'மழைக்காலத்திற்குப் பிறகு அரசுப் பள்ளி கட்டிடத்தின் கூரை கசிகிறது',
-        description: 'ZP உயர்நிலைப் பள்ளி முதன்மைக் கட்டிடத்தின் கூரையில் பல இடங்களில் கசிவு ஏற்பட்டுள்ளது. மாணவர்கள் ஈரமான வகுப்பறைகளில் அமர்ந்து படிக்கிறார்கள். ஒரு வகுப்பறை பாதுகாப்பற்றது என அறிவிக்கப்பட்டுள்ளது. சீரமைப்பு நிதி ஒதுக்கீடு செய்யப்பட்டும் பணிகள் தொடங்கப்படவில்லை.',
+      "issue-7": {
+        "title": "மழைக்காலத்திற்குப் பிறகு அரசுப் பள்ளி கட்டிடத்தின் கூரை கசிகிறது",
+        "description": "ZP உயர்நிலைப் பள்ளி முதன்மைக் கட்டிடத்தின் கூரையில் பல இடங்களில் கசிவு ஏற்பட்டுள்ளது. மாணவர்கள் ஈரமான வகுப்பறைகளில் அமர்ந்து படிக்கிறார்கள். ஒரு வகுப்பறை பாதுகாப்பற்றது என அறிவிக்கப்பட்டுள்ளது. சீரமைப்பு நிதி ஒதுக்கீடு செய்யப்பட்டும் பணிகள் தொடங்கப்படவில்லை."
       },
-      'issue-8': {
-        title: 'எம்ஜே மார்க்கெட் முதல் அபிட்ஸ் வரை தெருவிளக்குகள் எரியவில்லை',
-        description: 'எம்ஜே மார்க்கெட் மற்றும் அபிட்ஸ் சாலைக்கு இடையே பல தெருவிளக்குகள் எரியவில்லை. இரவில் இருட்டாக இருப்பதால், குறிப்பாக பெண்களுக்கு பாதுகாப்பு குறித்த கவலைகள் எழுந்துள்ளன. GHMC-க்கு புகார் அளித்தும் எந்த பழுதுநீக்கமும் செய்யப்படவில்லை.',
-      },
+      "issue-8": {
+        "title": "எம்ஜே மார்க்கெட் முதல் அபிட்ஸ் வரை தெருவிளக்குகள் எரியவில்லை",
+        "description": "எம்ஜே மார்க்கெட் மற்றும் அபிட்ஸ் சாலைக்கு இடையே பல தெருவிளக்குகள் எரியவில்லை. இரவில் இருட்டாக இருப்பதால், குறிப்பாக பெண்களுக்கு பாதுகாப்பு குறித்த கவலைகள் எழுந்துள்ளன. GHMC-க்கு புகார் அளித்தும் எந்த பழுதுநீக்கமும் செய்யப்படவில்லை."
+      }
     },
-    headlines: {
-      'hl-1': {
-        title: 'ஹைதராபாத் முழுவதும் நகர்ப்புற சாலைகளை மேம்படுத்த முதலமைச்சர் ரேவந்த் ரெட்டி ரூ.2,000 கோடி அறிவிப்பு',
-        summary: 'கிரேட்டர் ஹைதராபாத்தில் 500 கி.மீ சாலைகளை இலக்காகக் கொண்ட முக்கிய சாலை கட்டமைப்பு மேம்பாடு. வெளிவட்டச் சாலை (ORR) சேவைச் சாலைகள் மற்றும் குடியிருப்பு உள் சாலைகளில் கவனம் செலுத்தப்படும்.',
+    "headlines": {
+      "hl-1": {
+        "title": "ஹைதராபாத் முழுவதும் நகர்ப்புற சாலைகளை மேம்படுத்த முதலமைச்சர் ரேவந்த் ரெட்டி ரூ.2,000 கோடி அறிவிப்பு",
+        "summary": "கிரேட்டர் ஹைதராபாத்தில் 500 கி.மீ சாலைகளை இலக்காகக் கொண்ட முக்கிய சாலை கட்டமைப்பு மேம்பாடு. வெளிவட்டச் சாலை (ORR) சேவைச் சாலைகள் மற்றும் குடியிருப்பு உள் சாலைகளில் கவனம் செலுத்தப்படும்."
       },
-      'hl-2': {
-        title: 'பயிர்க்கடன் தள்ளுபடி அமலாக்கம் குறித்து சிறப்பு சட்டமன்றக் கூட்டத்தைக் கூட்ட பிஆர்எஸ் சட்டமன்ற உறுப்பினர்கள் கோரிக்கை',
-        summary: 'ரூ.31,000 கோடி தள்ளுபடி வாக்குறுதி இன்னும் 70% தகுதியான விவசாயிகளைச் சென்றடையவில்லை என்று எதிர்க்கட்சிகள் குற்றம் சாட்டுகின்றன. இரண்டாம் கட்ட விநியோகம் அடுத்த மாதம் தொடங்கும் என அரசு தெரிவித்துள்ளது.',
+      "hl-2": {
+        "title": "பயிர்க்கடன் தள்ளுபடி அமலாக்கம் குறித்து சிறப்பு சட்டமன்றக் கூட்டத்தைக் கூட்ட பிஆர்எஸ் சட்டமன்ற உறுப்பினர்கள் கோரிக்கை",
+        "summary": "ரூ.31,000 கோடி தள்ளுபடி வாக்குறுதி இன்னும் 70% தகுதியான விவசாயிகளைச் சென்றடையவில்லை என்று எதிர்க்கட்சிகள் குற்றம் சாட்டுகின்றன. இரண்டாம் கட்ட விநியோகம் அடுத்த மாதம் தொடங்கும் என அரசு தெரிவித்துள்ளது."
       },
-      'hl-3': {
-        title: 'பழைய நகர குடிநீர் தட்டுப்பாடு: 50 கூடுதல் குடிநீர் லாரிகளை இயக்க HMWSSB முடிவு',
-        summary: 'பரவலான புகார்களைத் தொடர்ந்து அவசர நடவடிக்கை. கோடை வெப்பம் மற்றும் குழாய் பதிக்கும் பணிகள் காரணமாக சார்மினார், யாகுத்புரா, கர்வான் நியோஜகவர்க்கங்களில் குடிநீர் விநியோகம் பாதிக்கப்பட்டுள்ளது.',
+      "hl-3": {
+        "title": "பழைய நகர குடிநீர் தட்டுப்பாடு: 50 கூடுதல் குடிநீர் லாரிகளை இயக்க HMWSSB முடிவு",
+        "summary": "பரவலான புகார்களைத் தொடர்ந்து அவசர நடவடிக்கை. கோடை வெப்பம் மற்றும் குழாய் பதிக்கும் பணிகள் காரணமாக சார்மினார், யாகுத்புரா, கர்வான் நியோஜகவர்க்கங்களில் குடிநீர் விநியோகம் பாதிக்கப்பட்டுள்ளது."
       },
-      'hl-4': {
-        title: 'மிஷன் பகீரதா திட்டத்தின் கீழ் தெலங்கானாவில் 95% வீடுகளுக்கு குழாய் மூலம் குடிநீர் விநியோகம் சாதனை',
-        summary: 'தேசிய அளவில் முதல் 5 மாநிலங்களில் தெலங்கானா இடம் பெற்றுள்ளது. தொலைதூர பழங்குடியின கிராமங்களில் உள்ள மீதமுள்ள 5% வீடுகள் ஜூன் 2026-க்குள் இணைக்கப்படும்.',
+      "hl-4": {
+        "title": "மிஷன் பகீரதா திட்டத்தின் கீழ் தெலங்கானாவில் 95% வீடுகளுக்கு குழாய் மூலம் குடிநீர் விநியோகம் சாதனை",
+        "summary": "தேசிய அளவில் முதல் 5 மாநிலங்களில் தெலங்கானா இடம் பெற்றுள்ளது. தொலைதூர பழங்குடியின கிராமங்களில் உள்ள மீதமுள்ள 5% வீடுகள் ஜூன் 2026-க்குள் இணைக்கப்படும்."
       },
-      'hl-5': {
-        title: 'கட்சித் தாவல் தடைச் சட்டம்: தெலங்கானா பிஆர்எஸ் மனுக்களை உச்சநீதிமன்றம் அடுத்த வாரம் விசாரிக்கிறது',
-        summary: '10 பிஆர்எஸ் முதல் காங்கிரஸ் வரையிலான கட்சித் தாவல் வழக்குகள் நிலுவையில் உள்ளன. சபாநாயகரின் தாமதமான தகுதி நீக்க நடவடிக்கைகள் குறித்து நீதிமன்றம் ஆய்வு செய்யும்.',
+      "hl-5": {
+        "title": "கட்சித் தாவல் தடைச் சட்டம்: தெலங்கானா பிஆர்எஸ் மனுக்களை உச்சநீதிமன்றம் அடுத்த வாரம் விசாரிக்கிறது",
+        "summary": "10 பிஆர்எஸ் முதல் காங்கிரஸ் வரையிலான கட்சித் தாவல் வழக்குகள் நிலுவையில் உள்ளன. சபாநாயகரின் தாமதமான தகுதி நீக்க நடவடிக்கைகள் குறித்து நீதிமன்றம் ஆய்வு செய்யும்."
       },
-      'hl-6': {
-        title: 'ஏப்ரல் மாதத்தில் TSRTC அதிக வருவாய் ஈட்டியது, ஆனால் கிராமப்புற வழித்தடங்கள் இன்னும் நஷ்டத்தில் இயங்குகின்றன',
-        summary: 'நகர்ப்புற வழித்தடங்கள் லாபகரமாக இருந்தாலும், 40% கிராமப்புற வழித்தடங்கள் நஷ்டத்தில் இயங்குகின்றன. பேருந்து சேவைகளைக் குறைப்பதற்குப் பதிலாக வழித்தடங்களை மறுசீரமைக்க தொழிற்சங்கம் கோரிக்கை விடுத்துள்ளது.',
+      "hl-6": {
+        "title": "ஏப்ரல் மாதத்தில் TSRTC அதிக வருவாய் ஈட்டியது, ஆனால் கிராமப்புற வழித்தடங்கள் இன்னும் நஷ்டத்தில் இயங்குகின்றன",
+        "summary": "நகர்ப்புற வழித்தடங்கள் லாபகரமாக இருந்தாலும், 40% கிராமப்புற வழித்தடங்கள் நஷ்டத்தில் இயங்குகின்றன. பேருந்து சேவைகளைக் குறைப்பதற்குப் பதிலாக வழித்தடங்களை மறுசீரமைக்க தொழிற்சங்கம் கோரிக்கை விடுத்துள்ளது."
       },
-      'hl-7': {
-        title: 'தெலங்கானா இடைநிலைக் கல்வி வாரிய முடிவுகள்: தேர்ச்சி விகிதம் 68.4% ஆக உயர்ந்தது',
-        summary: 'முந்தைய ஆண்டை விட 3.2% தேர்ச்சி விகிதம் அதிகரித்துள்ளது. மேடக் மாவட்டம் 74% தேர்ச்சி விகிதத்துடன் முதலிடத்தில் உள்ளது.',
+      "hl-7": {
+        "title": "தெலங்கானா இடைநிலைக் கல்வி வாரிய முடிவுகள்: தேர்ச்சி விகிதம் 68.4% ஆக உயர்ந்தது",
+        "summary": "முந்தைய ஆண்டை விட 3.2% தேர்ச்சி விகிதம் அதிகரித்துள்ளது. மேடக் மாவட்டம் 74% தேர்ச்சி விகிதத்துடன் முதலிடத்தில் உள்ளது."
       },
-      'hl-8': {
-        title: 'மூசி நதிக்கரை தூய்மைப்படுத்துதல்: முதற்கட்ட இடிப்பு நடவடிக்கைகளுக்கு சட்டப்பூர்வ சவால்',
-        summary: 'ஆக்கிரமிப்புகளை இடிப்பதற்கு எதிராக தாக்கல் செய்யப்பட்ட மனுக்கள் குறித்து உயர்நீதிமன்றம் நோட்டீஸ் அனுப்பியுள்ளது. நதியைத் தூய்மைப்படுத்துவதே முன்னுரிமை என அரசு வாதிடுகிறது.',
-      },
+      "hl-8": {
+        "title": "மூசி நதிக்கரை தூய்மைப்படுத்துதல்: முதற்கட்ட இடிப்பு நடவடிக்கைகளுக்கு சட்டப்பூர்வ சவால்",
+        "summary": "ஆக்கிரமிப்புகளை இடிப்பதற்கு எதிராக தாக்கல் செய்யப்பட்ட மனுக்கள் குறித்து உயர்நீதிமன்றம் நோட்டீஸ் அனுப்பியுள்ளது. நதியைத் தூய்மைப்படுத்துவதே முன்னுரிமை என அரசு வாதிடுகிறது."
+      }
+    }
+  },
+  "trivia": {
+    "TRV-DEF-001": {
+      "headline": "4 கட்சிகள் கண்ட மனிதர்",
+      "body": "டி. பிரகாஷ் கவுட் (ராஜேந்திரநகர்) வெறும் 10 ஆண்டுகளில் 4 கட்சிகளில் இருந்துள்ளார்: தெதேபா (2014) → இணைப்பின் மூலம் டிஆர்எஸ் (2016) → பெயர் மாற்றத்தால் பிஆர்எஸ் (2022) → கட்சித் தாவல் மூலம் காங்கிரஸ் (2024)."
     },
-  },
-
-  // ── Trivia (Did You Know) ───────────────────────────────────
-  trivia: {
-    // Telangana
-    'TRV-DEF-001': { headline: '4 கட்சிகள் கண்ட மனிதர்', body: 'டி. பிரகாஷ் கவுட் (ராஜேந்திரநகர்) வெறும் 10 ஆண்டுகளில் 4 கட்சிகளில் இருந்துள்ளார்: தெதேபா (2014) → இணைப்பின் மூலம் டிஆர்எஸ் (2016) → பெயர் மாற்றத்தால் பிஆர்எஸ் (2022) → கட்சித் தாவல் மூலம் காங்கிரஸ் (2024).' },
-    'TRV-DEF-002': { headline: 'ஒரே மாதிரியான இணைப்புகள்', body: '2016-இல் 12 தெதேபா சட்டமன்ற உறுப்பினர்கள் டிஆர்எஸ்-உடன் இணைந்தனர், பின்னர் 2019-இல் 12 காங்கிரஸ் சட்டமன்ற உறுப்பினர்கள் டிஆர்எஸ்-உடன் இணைந்தனர். இரண்டுமே 2/3 பெரும்பான்மை என்ற விதிவிலக்கைப் பயன்படுத்தின.' },
-    'TRV-DEF-003': { headline: 'ஆபரேஷன் ஆகர்ஷ்: தொடர்ச்சி', body: '2016-இல், டிஆர்எஸ் 12 தெதேபா சட்டமன்ற உறுப்பினர்களை இழுத்தது. 2024-இல், காங்கிரஸ் 10 பிஆர்எஸ் சட்டமன்ற உறுப்பினர்களை இழுத்தது — ஊடகங்கள் இதை "ஆபரேஷன் ஆகர்ஷ் 2.0" என்று அழைத்தன.' },
-    'TRV-DEF-004': { headline: 'தந்தையைப் போல மகன்', body: '2021-இல் நாகார்ஜுன சாகர் சட்டமன்ற உறுப்பினர் நோமுலா நரசிம்மய்யா (டிஆர்எஸ்) காலமானபோது, அவரது மகன் நோமுலா பகத் அதே கட்சியின் சார்பில் இடைத்தேர்தலில் வெற்றி பெற்றார்.' },
-    'TRV-DEF-005': { headline: 'கட்சித் தாவல் பூமராங்', body: 'அரேகபுடி காந்தியின் நியோஜகவர்க்கம் ஒரு இடைத்தேர்தல் கூட இல்லாமல் 4 கட்சிகளால் "பிரதிநிதித்துவப்படுத்தப்பட்டுள்ளது".' },
-    'TRV-REC-001': { headline: 'தகர்க்க முடியாத கோட்டை', body: 'ஹைதராபாத் பழைய நகரத்தின் அனைத்து 7 தொகுதிகளையும் ஏஐஎம்ஐஎம் தொடர்ந்து 3 தேர்தல்களில் தக்க வைத்துக் கொண்டுள்ளது — இது ஒரு சரியான 21/21 சாதனை.' },
-    'TRV-REC-002': { headline: 'மிகச்சிறந்த மறுபிரவேசம்', body: '2023 தேர்தலில் காங்கிரஸ் 6 இடங்களிலிருந்து 64 இடங்களுக்கு உயர்ந்தது — இது 967% அதிகரிப்பு, தெலங்கானா வரலாற்றிலேயே மிகப்பெரிய மாற்றமாகும்.' },
-    'TRV-REC-003': { headline: '9 ஆண்டுகளில் சட்டமன்ற உறுப்பினரிலிருந்து முதலமைச்சராக', body: 'ரேவந்த் ரெட்டி: தெதேபா சட்டமன்ற உறுப்பினர் (2014) → காங்கிரஸில் இணைந்தார் (2017) → தோல்வி (2018) → டிபிசிசி தலைவர் → முதலமைச்சர் (2023).' },
-    'TRV-REC-004': { headline: 'சிற்சில்லா மன்னன்', body: 'கேடிஆர் தெலங்கானாவின் அனைத்து 3 தேர்தல்களிலும் (2014, 2018, 2023) சிற்சில்லா தொகுதியில் வெற்றி பெற்றுள்ளார்.' },
-    'TRV-REC-005': { headline: 'ஹரிஷ் ராவின் சித்திபேட்டை சாதனை', body: 'டி. ஹரிஷ் ராவ் 2004 முதல் சித்திபேட்டையை பிரதிநிதித்துவப்படுத்துகிறார் — தொடர்ந்து 5 தேர்தல்களில் வெற்றி பெற்றுள்ளார்.' },
-    'TRV-ELE-001': { headline: 'முன்கூட்டியே கலைக்கப்பட்ட சூதாட்டம்', body: 'கேசிஆர் 2018-இல் சட்டமன்றத்தை 9 மாதங்களுக்கு முன்பே கலைத்தார். டிஆர்எஸ் 88/119 இடங்களில் வென்றது. 2023-இல், முழு பதவிக்காலம் முடிந்தபோது வெறும் 39 இடங்களை மட்டுமே பெற்றது.' },
-    'TRV-ELE-002': { headline: 'ஒரே மாதிரியான வாக்குகள், முற்றிலும் மாறுபட்ட இடங்கள்', body: '2023-இல், காங்கிரஸ் 39.4% வாக்குகளைப் பெற்று 64 இடங்களை வென்றது, பிஆர்எஸ் 37.4% வாக்குகளைப் பெற்று 39 இடங்களை வென்றது. 2% வாக்கு வித்தியாசத்திற்கு 25 இடங்கள் வித்தியாசம்.' },
-    'TRV-ELE-003': { headline: 'சிவப்புக் கோட்டை', body: 'ராமகுண்டம் தெலங்கானாவின் ஒரே இடதுசாரி நியோஜகவர்க்கம் ஆகும். நிலக்கரி சுரங்கப் பகுதி இடதுசாரி அரசியலை உயிர்ப்புடன் வைத்துள்ளது.' },
-    'TRV-HIS-001': { headline: 'இளைய மாநிலத்தின் முதல் வாக்குப்பதிவு', body: 'ஜூன் 2, 2014 அன்று மாநிலம் உருவான பிறகு நடந்த முதலாவது தெலங்கானா சட்டமன்றத் தேர்தல் 2014 ஆகும்.' },
-    'TRV-HIS-002': { headline: 'பெயரில் என்ன இருக்கிறது?', body: 'டிஆர்எஸ் அக்டோபர் 2022-இல் பிஆர்எஸ் ஆக மாறியது — தேசிய அளவிலான நோக்கங்களுக்காக "தெலங்கானா" என்பது "பாரத்" என்று மாற்றப்பட்டது, ஆனால் அது தோல்வியடைந்தது.' },
-    // Andhra Pradesh
-    'AP-T-001': { headline: 'சந்திரபாபு நாயுடு — மீண்டெழுந்த மன்னன்', body: 'நாயுடு 2024-இல் குப்பம் தொகுதியில் 72,000-க்கும் அதிகமான வாக்குகள் வித்தியாசத்தில் மிகப்பெரிய வெற்றியைப் பெற்றார். அவர் 74 வயதில் 4-வது முறையாக முதலமைச்சரானார்.' },
-    'AP-T-002': { headline: 'பவன் கல்யாண் — திரையிலிருந்து நிஜத்திற்கு', body: 'ஜேஎஸ்பி தலைவர் பவன் கல்யாண் பிதாபுரத்தில் 67,890 வாக்குகள் வித்தியாசத்தில் வெற்றி பெற்றார். ஜேஎஸ்பி 100% வெற்றி விகிதத்தை எட்டியது — 21/21 இடங்கள்.' },
-    'AP-T-003': { headline: 'ஒய்எஸ்ஆர்சிபி: 151-லிருந்து 11 ஆக சரிவு', body: '2019-இல், ஒய்எஸ்ஆர்சிபி 151/175 இடங்களை வென்றது. 2024-இல், அது வெறும் 11 ஆகக் குறைந்தது — ஒரே சுழற்சியில் 140 இடங்களை இழந்தது.' },
-    'AP-T-004': { headline: 'தேசிய ஜனநாயகக் கூட்டணியின் முத்தரப்புக் கூட்டணி வெற்றி', body: 'தெதேபா-ஜேஎஸ்பி-பாஜக கூட்டணி 2024-இல் 164/175 இடங்களை வென்றது — இது மொத்த இடங்களில் 93.7% ஆகும், ஆந்திரப் பிரதேசப் பிரிவினைக்குப் பிறகு மிக முக்கிய முடிவாகும்.' },
-    'AP-T-005': { headline: 'புலிவெந்துலா — ஜெகனின் கடைசி கோட்டை', body: '2024-இன் பெரும் தோல்வியிலும், ஜெகன் புலிவெந்துலாவை 45,678 வாக்குகள் வித்தியாசத்தில் தக்கவைத்துக் கொண்டார். இவரது குடும்பம் இத்தொகுதியை 40+ ஆண்டுகளாக தன் வசம் வைத்துள்ளது.' },
-    'AP-T-006': { headline: 'ஆபரேஷன் ஆகர்ஷ் 2.0', body: '2024 தேர்தலுக்கு முன்னதாக 6 ஒய்எஸ்ஆர்சிபி சட்டமன்ற உறுப்பினர்கள் தெதேபாவிற்கு தாவினர், இது 2017-இன் "ஆபரேஷன் ஆகர்ஷ்" நிகழ்வை நினைவூட்டுகிறது.' },
-    // Karnataka
-    'KA-T-001': { headline: 'ஆபரேஷன் கமலா — மிகப்பெரிய கட்சித் தாவல் நாடகம்', body: 'ஜூலை 2019-இல் 17 மஜத-காங்கிரஸ் சட்டமன்ற உறுப்பினர்கள் ராஜினாமா செய்தனர். சில மாதங்களுக்குப் பிறகு பாஜக சின்னத்தில் போட்டியிட்டு 12 பேர் இடைத்தேர்தலில் வெற்றி பெற்றனர்.' },
-    'KA-T-002': { headline: 'சித்தராமையா — வாக்குறுதி நாயகன்', body: 'சித்தராமையா பாதாமியில் 42,567 வாக்குகள் வித்தியாசத்தில் வெற்றி பெற்றார். இவரது 5 முக்கிய வாக்குறுதித் திட்டங்கள் காங்கிரஸ் 135 இடங்களை அள்ளிக் குவிக்க வழிவகுத்தன.' },
-    'KA-T-003': { headline: 'தேவ கவுடா வம்சம் — மூன்று தலைமுறைகள்', body: 'எச்.டி. தேவ கவுடா (பிரதமர்), மகன் குமாரசாமி (முதலமைச்சர்), பேரன் பிரஜ்வல் — ஆகிய மூவருமே தேர்ந்தெடுக்கப்பட்ட மக்கள் பிரதிநிதிகளாக பதவி வகித்தனர்.' },
-    'KA-T-004': { headline: 'பாஜக: 104-லிருந்து 66 ஆக சரிவு', body: 'பாஜக 38 இடங்களை இழந்தது (2018→2023). "40% கமிஷன்" குற்றச்சாட்டுகளும் ஒரே பதவிக்காலத்தில் 3 முதலமைச்சர்கள் மாற்றப்பட்டதும் முக்கியக் காரணிகளாக அமைந்தன.' },
-    'KA-T-005': { headline: 'ஒகை பதவிக்காலத்தில் மூன்று முதலமைச்சர்கள்', body: 'கர்நாடகாவில் 2018-2023 காலப்பகுதியில் 3 பாஜக முதலமைச்சர்கள் இருந்தனர்: எடியூரப்பா, பொம்மை மற்றும் சிறிது காலம் சதானந்த கவுடா பரிசீலிக்கப்பட்டார்.' },
-    'KA-T-006': { headline: 'ஜார்கிஹோலி சகோதரர்கள் — எதிர் எதிர் துருவங்களில்', body: 'ரமேஷ் பாஜகவில் (கோகாக்), பாலச்சந்திரா காங்கிரஸில் (அரபாவி). ஒரே குடும்பத்திற்குள் அரசியல் போட்டி!' },
-    'KA-T-007': { headline: 'கடலோர கர்நாடகா — பாஜகவின் கோட்டை', body: '2023-இல், மாநிலத்தில் பாஜக தோல்வியடைந்த போதிலும், கடலோரப் பகுதியின் அனைத்து 8 இடங்களையும் வென்றது.' },
-    // Maharashtra
-    'MH-T-001': { headline: 'சிவசேனாவின் பெரும் பிளவு', body: 'ஏக்நாத் ஷிண்டே 56 சிவசேனா சட்டமன்ற உறுப்பினர்களில் 40 பேருடன் கிளர்ச்சியில் ஈடுபட்டார் (ஜூன் 2022). தேர்தல் ஆணையம் கட்சிப் பெயரை ஷிண்டே பிரிவுக்கு வழங்கியது.' },
-    'MH-T-002': { headline: 'பவார் எதிர் பவார் — மாமா எதிர் மருமகன்', body: 'அஜித் பவார் 40-க்கும் மேற்பட்ட சட்டமன்ற உறுப்பினர்களுடன் பாஜக கூட்டணியில் இணைந்து தேசியவாத காங்கிரஸைப் பிளந்தார். மாமா சரத் பவார் (83) NCP(SP) பிரிவைத் தொடங்கினார்.' },
-    'MH-T-003': { headline: 'பட்னாவிஸ் — மீண்டெழுந்த நாயகன்', body: 'பட்னாவிஸ் தென்மேற்கு நாக்பூரில் பெரும் வாக்கு வித்தியாசத்தில் வெற்றி பெற்று, 3-வது முறையாக முதலமைச்சரானார்.' },
-    'MH-T-004': { headline: 'காங்கிரஸ்: 44-லிருந்து 16 ஆக சரிவு', body: 'காங்கிரஸ் பெரும் வீழ்ச்சியைச் சந்தித்தது — 2019-இல் 44 இடங்களிலிருந்து 2024-இல் வெறும் 16 இடங்களாகக் குறைந்தது, இது மகாராஷ்டிராவில் அவர்களின் மிக மோசமான செயல்திறனாகும்.' },
-    'MH-T-005': { headline: 'ஆதித்யா தாக்கரே — வொர்லி இளவரசன்', body: 'தனது தந்தையின் பிரிவு மாநிலம் தழுவிய அளவில் சரிவைச் சந்தித்த போதிலும், ஆதித்யா வொர்லி தொகுதியைத் தக்க வைத்துக் கொண்டார்.' },
-    'MH-T-006': { headline: 'மகாயுதி சுனாமி — 230/288', body: 'பாஜக-சிவசேனா-NCP (மகாயுதி) கூட்டணி 2024-இல் 230/288 இடங்களை வென்றது — மகாராஷ்டிரா வரலாற்றிலேயே மிகத் தெளிவான முடிவு இதுவாகும்.' },
-    'MH-T-007': { headline: 'ஒரே பெயர் கொண்ட இரண்டு கட்சிகள்', body: 'சிவசேனா மற்றும் தேசியவாத காங்கிரஸ் ஆகிய இரண்டுமே இரண்டாகப் பிளந்து, ஒவ்வொன்றும் அசல் பெயரைத் தங்களுக்கே கோரின. நீதிமன்றங்கள் இதில் தீர்ப்பளிக்க வேண்டியிருந்தது.' },
-    'MH-T-008': { headline: 'மும்பை — 36 இடங்கள், பாஜகவின் ஆதிக்கம்', body: '2024-இல் மும்பையின் 36 சட்டமன்றத் தொகுதிகளில் பெரும்பாலானவற்றை பாஜக கைப்பற்றி, தனது நகர்ப்புற ஆதிக்கத்தை உறுதிப்படுத்தியது.' },
-  },
-
-  // ── Seed Posts (Feed) ─────────────────────────────────────
-  seedPosts: {
-    'seed-ts-1': { content: 'க்ஷேத்ரா-விற்கு வரவேற்கிறோம்! இது தெலங்கானாவின் அரசியல் விவாதங்களுக்கான சமூகப் பகிர்வுத் தளம். உள்ளூர் ஆளுகை குறித்த உங்கள் கருத்துக்களைப் பகிர்ந்து கொள்ளுங்கள், உங்கள் நியோஜகவர்க்கம் பற்றி கேள்விகளைக் கேளுங்கள், எப்போதும் விழிப்புடன் இருங்கள்.' },
-    'seed-ts-2': { content: 'கச்சிபௌலி அருகில் வெளிவட்டச் சாலை (ORR) சேவைச் சாலை அமைக்கும் பணி 3 மாதங்களாக முடங்கியுள்ளது. இதை எந்தத் துறையிடம் கொண்டு செல்ல வேண்டும்? சட்டமன்ற உறுப்பினர் அலுவலகம் GHMC என்கிறது, GHMC-யோ NHAI என்கிறது. வழக்கமான அலைக்கழிப்பு. #infrastructure #serilingampally' },
-    'seed-ts-3': { content: 'இன்று நியோஜகவர்க்க அளவிலான மறுஆய்வுக் கூட்டத்தில் பங்கேற்றேன். சில சுவாரசியமான புள்ளிவிவரங்கள்: இந்த மாதத்தில் 43 புதிய குடும்ப அட்டைகள் வழங்கப்பட்டுள்ளன, 12 நிலுவையில் இருந்த ஓய்வூதிய வழக்குகள் தீர்க்கப்பட்டுள்ளன. முன்னேற்றம் மெதுவாக இருந்தாலும் கண்ணுக்குத் தெரிகிறது. #goshamahal #governance' },
-    'seed-ts-4': { content: '10 பிஆர்எஸ்→காங்கிரஸ் கட்சித் தாவல்கள் அந்த நியோஜகவர்க்கங்களின் அடிமட்ட அளவிலான ஆளுகையை மாற்றியமைத்துள்ளன என்று நீங்கள் நினைக்கிறீர்களா?' },
-    'seed-ts-5': { content: 'சிற்சில்லாவில் கேடிஆரின் வெற்றி வாக்கு வித்தியாசம் — 51,489 வாக்குகள் — இது 2023 தேர்தலிலேயே மிகப்பெரியதாகும். பிஆர்எஸ் ஒட்டுமொத்தமாக மோசமாகத் தோற்ற ஆண்டிலும், இந்த நியோஜகவர்க்கம் தனது விசுவாசத்தைக் காட்டியுள்ளது. சிற்சில்லாவை வேறுபடுத்துவது எது? #sircilla #brs #ktr' },
-    'seed-ts-6': { content: 'பழைய நகரத்தில் குடிநீர் தட்டுப்பாடு பிரச்சனை மோசமடைந்து வருகிறது. தண்ணீர் லாரிகள் உரிய நேரத்திற்கு வருவதில்லை, HMWSSB உதவி எண் எப்போதும் பிஸியாகவே உள்ளது. வேறு யாராவது இதை எதிர்கொள்கிறீர்களா? #charminar #watersupply #hyderabad' },
-    'seed-ts-7': { content: 'புதிதாகத் தேர்ந்தெடுக்கப்பட்ட காங்கிரஸ் சட்டமன்ற உறுப்பினர்களில் இதுவரை தங்கள் நியோஜகவர்க்கத்தில் மிகவும் சுறுசுறுப்பாகச் செயல்பட்டவர் யார்?' },
-  },
-
-  // ── Delimitation ────────────────────────────────────────────
-  delimitation: {
-    title: 'தொகுதி மறுசீரமைப்பு',
-    hubTitle: 'தொகுதி மறுசீரமைப்பு மையம்',
-    trackerTitle: 'தொகுதி மறுசீரமைப்பு கண்காணிப்பகம்',
-    whatChangesForYou: 'உங்களுக்கு என்ன மாற்றங்கள் ஏற்படும்',
-    overview: 'கண்ணோட்டம்',
-    projections: 'முன்கணிப்புகள்',
-    timeline: 'காலவரிசை',
-    impact: 'தாக்கம்',
-    currentSeats: 'தற்போதைய இடங்கள்',
-    projectedSeats: 'முன்கணிக்கப்பட்ட இடங்கள்',
-    seatChange: 'இடங்களின் மாற்றம்',
-    population: 'மக்கள் தொகை',
-    reservation: 'ஒதுக்கீடு',
-    general: 'பொது',
-    sc: 'SC',
-    st: 'ST',
-    gainers: 'இடங்களைப் பெறுபவை',
-    losers: 'இடங்களை இழப்பவை',
-    noChange: 'மாற்றமில்லை',
-    enterPinCode: 'உங்கள் அஞ்சல் குறியீட்டை (PIN Code) உள்ளிடவும்',
-    impactNotAvailable: 'தாக்கம் இன்னும் கிடைக்கவில்லை',
-    impactPending: 'தொகுதி மறுசீரமைப்பு முன்மொழிவுகள் இன்னும் வெளியிடப்படவில்லை.',
-    notifyMe: 'கிடைக்கும்போது எனக்கு அறிவிக்கவும்',
-    comingSoon: 'முன்மொழிவுகள் வெளியிடப்படும் போது வரும்',
-    disclaimer: '2011 மக்கள் தொகை கணக்கெடுப்பு தரவுகளின் அடிப்படையில் இந்த முன்கணிப்புகள் உள்ளன. உண்மையான தொகுதி மறுசீரமைப்பிற்கு 2026 மக்கள் தொகை கணக்கெடுப்பு தரவுகள் பயன்படுத்தப்படும்.',
-    status: {
-      pre_census: 'மக்கள் தொகை கணக்கெடுப்பிற்கு முந்தைய நிலை',
-      census_underway: 'மக்கள் தொகை கணக்கெடுப்பு நடைபெறுகிறது',
-      census_published: 'மக்கள் தொகை கணக்கெடுப்பு வெளியிடப்பட்டது',
-      commission_formed: 'ஆணையம் அமைக்கப்பட்டது',
-      draft_published: 'வரைவு வெளியிடப்பட்டது',
-      objections_period: 'ஆட்சேபனைகள் வரவேற்கப்படுகின்றன',
-      final_notified: 'இறுதி அறிவிப்பு வெளியிடப்பட்டது',
-      implemented: 'அமல்படுத்தப்பட்டது',
+    "TRV-DEF-002": {
+      "headline": "ஒரே மாதிரியான இணைப்புகள்",
+      "body": "2016-இல் 12 தெதேபா சட்டமன்ற உறுப்பினர்கள் டிஆர்எஸ்-உடன் இணைந்தனர், பின்னர் 2019-இல் 12 காங்கிரஸ் சட்டமன்ற உறுப்பினர்கள் டிஆர்எஸ்-உடன் இணைந்தனர். இரண்டுமே 2/3 பெரும்பான்மை என்ற விதிவிலக்கைப் பயன்படுத்தின."
     },
+    "TRV-DEF-003": {
+      "headline": "ஆபரேஷன் ஆகர்ஷ்: தொடர்ச்சி",
+      "body": "2016-இல், டிஆர்எஸ் 12 தெதேபா சட்டமன்ற உறுப்பினர்களை இழுத்தது. 2024-இல், காங்கிரஸ் 10 பிஆர்எஸ் சட்டமன்ற உறுப்பினர்களை இழுத்தது — ஊடகங்கள் இதை \"ஆபரேஷன் ஆகர்ஷ் 2.0\" என்று அழைத்தன."
+    },
+    "TRV-DEF-004": {
+      "headline": "தந்தையைப் போல மகன்",
+      "body": "2021-இல் நாகார்ஜுன சாகர் சட்டமன்ற உறுப்பினர் நோமுலா நரசிம்மய்யா (டிஆர்எஸ்) காலமானபோது, அவரது மகன் நோமுலா பகத் அதே கட்சியின் சார்பில் இடைத்தேர்தலில் வெற்றி பெற்றார்."
+    },
+    "TRV-DEF-005": {
+      "headline": "கட்சித் தாவல் பூமராங்",
+      "body": "அரேகபுடி காந்தியின் நியோஜகவர்க்கம் ஒரு இடைத்தேர்தல் கூட இல்லாமல் 4 கட்சிகளால் \"பிரதிநிதித்துவப்படுத்தப்பட்டுள்ளது\"."
+    },
+    "TRV-REC-001": {
+      "headline": "தகர்க்க முடியாத கோட்டை",
+      "body": "ஹைதராபாத் பழைய நகரத்தின் அனைத்து 7 தொகுதிகளையும் ஏஐஎம்ஐஎம் தொடர்ந்து 3 தேர்தல்களில் தக்க வைத்துக் கொண்டுள்ளது — இது ஒரு சரியான 21/21 சாதனை."
+    },
+    "TRV-REC-002": {
+      "headline": "மிகச்சிறந்த மறுபிரவேசம்",
+      "body": "2023 தேர்தலில் காங்கிரஸ் 6 இடங்களிலிருந்து 64 இடங்களுக்கு உயர்ந்தது — இது 967% அதிகரிப்பு, தெலங்கானா வரலாற்றிலேயே மிகப்பெரிய மாற்றமாகும்."
+    },
+    "TRV-REC-003": {
+      "headline": "9 ஆண்டுகளில் சட்டமன்ற உறுப்பினரிலிருந்து முதலமைச்சராக",
+      "body": "ரேவந்த் ரெட்டி: தெதேபா சட்டமன்ற உறுப்பினர் (2014) → காங்கிரஸில் இணைந்தார் (2017) → தோல்வி (2018) → டிபிசிசி தலைவர் → முதலமைச்சர் (2023)."
+    },
+    "TRV-REC-004": {
+      "headline": "சிற்சில்லா மன்னன்",
+      "body": "கேடிஆர் தெலங்கானாவின் அனைத்து 3 தேர்தல்களிலும் (2014, 2018, 2023) சிற்சில்லா தொகுதியில் வெற்றி பெற்றுள்ளார்."
+    },
+    "TRV-REC-005": {
+      "headline": "ஹரிஷ் ராவின் சித்திபேட்டை சாதனை",
+      "body": "டி. ஹரிஷ் ராவ் 2004 முதல் சித்திபேட்டையை பிரதிநிதித்துவப்படுத்துகிறார் — தொடர்ந்து 5 தேர்தல்களில் வெற்றி பெற்றுள்ளார்."
+    },
+    "TRV-ELE-001": {
+      "headline": "முன்கூட்டியே கலைக்கப்பட்ட சூதாட்டம்",
+      "body": "கேசிஆர் 2018-இல் சட்டமன்றத்தை 9 மாதங்களுக்கு முன்பே கலைத்தார். டிஆர்எஸ் 88/119 இடங்களில் வென்றது. 2023-இல், முழு பதவிக்காலம் முடிந்தபோது வெறும் 39 இடங்களை மட்டுமே பெற்றது."
+    },
+    "TRV-ELE-002": {
+      "headline": "ஒரே மாதிரியான வாக்குகள், முற்றிலும் மாறுபட்ட இடங்கள்",
+      "body": "2023-இல், காங்கிரஸ் 39.4% வாக்குகளைப் பெற்று 64 இடங்களை வென்றது, பிஆர்எஸ் 37.4% வாக்குகளைப் பெற்று 39 இடங்களை வென்றது. 2% வாக்கு வித்தியாசத்திற்கு 25 இடங்கள் வித்தியாசம்."
+    },
+    "TRV-ELE-003": {
+      "headline": "சிவப்புக் கோட்டை",
+      "body": "ராமகுண்டம் தெலங்கானாவின் ஒரே இடதுசாரி நியோஜகவர்க்கம் ஆகும். நிலக்கரி சுரங்கப் பகுதி இடதுசாரி அரசியலை உயிர்ப்புடன் வைத்துள்ளது."
+    },
+    "TRV-HIS-001": {
+      "headline": "இளைய மாநிலத்தின் முதல் வாக்குப்பதிவு",
+      "body": "ஜூன் 2, 2014 அன்று மாநிலம் உருவான பிறகு நடந்த முதலாவது தெலங்கானா சட்டமன்றத் தேர்தல் 2014 ஆகும்."
+    },
+    "TRV-HIS-002": {
+      "headline": "பெயரில் என்ன இருக்கிறது?",
+      "body": "டிஆர்எஸ் அக்டோபர் 2022-இல் பிஆர்எஸ் ஆக மாறியது — தேசிய அளவிலான நோக்கங்களுக்காக \"தெலங்கானா\" என்பது \"பாரத்\" என்று மாற்றப்பட்டது, ஆனால் அது தோல்வியடைந்தது."
+    },
+    "AP-T-001": {
+      "headline": "சந்திரபாபு நாயுடு — மீண்டெழுந்த மன்னன்",
+      "body": "நாயுடு 2024-இல் குப்பம் தொகுதியில் 72,000-க்கும் அதிகமான வாக்குகள் வித்தியாசத்தில் மிகப்பெரிய வெற்றியைப் பெற்றார். அவர் 74 வயதில் 4-வது முறையாக முதலமைச்சரானார்."
+    },
+    "AP-T-002": {
+      "headline": "பவன் கல்யாண் — திரையிலிருந்து நிஜத்திற்கு",
+      "body": "ஜேஎஸ்பி தலைவர் பவன் கல்யாண் பிதாபுரத்தில் 67,890 வாக்குகள் வித்தியாசத்தில் வெற்றி பெற்றார். ஜேஎஸ்பி 100% வெற்றி விகிதத்தை எட்டியது — 21/21 இடங்கள்."
+    },
+    "AP-T-003": {
+      "headline": "ஒய்எஸ்ஆர்சிபி: 151-லிருந்து 11 ஆக சரிவு",
+      "body": "2019-இல், ஒய்எஸ்ஆர்சிபி 151/175 இடங்களை வென்றது. 2024-இல், அது வெறும் 11 ஆகக் குறைந்தது — ஒரே சுழற்சியில் 140 இடங்களை இழந்தது."
+    },
+    "AP-T-004": {
+      "headline": "தேசிய ஜனநாயகக் கூட்டணியின் முத்தரப்புக் கூட்டணி வெற்றி",
+      "body": "தெதேபா-ஜேஎஸ்பி-பாஜக கூட்டணி 2024-இல் 164/175 இடங்களை வென்றது — இது மொத்த இடங்களில் 93.7% ஆகும், ஆந்திரப் பிரதேசப் பிரிவினைக்குப் பிறகு மிக முக்கிய முடிவாகும்."
+    },
+    "AP-T-005": {
+      "headline": "புலிவெந்துலா — ஜெகனின் கடைசி கோட்டை",
+      "body": "2024-இன் பெரும் தோல்வியிலும், ஜெகன் புலிவெந்துலாவை 45,678 வாக்குகள் வித்தியாசத்தில் தக்கவைத்துக் கொண்டார். இவரது குடும்பம் இத்தொகுதியை 40+ ஆண்டுகளாக தன் வசம் வைத்துள்ளது."
+    },
+    "AP-T-006": {
+      "headline": "ஆபரேஷன் ஆகர்ஷ் 2.0",
+      "body": "2024 தேர்தலுக்கு முன்னதாக 6 ஒய்எஸ்ஆர்சிபி சட்டமன்ற உறுப்பினர்கள் தெதேபாவிற்கு தாவினர், இது 2017-இன் \"ஆபரேஷன் ஆகர்ஷ்\" நிகழ்வை நினைவூட்டுகிறது."
+    },
+    "KA-T-001": {
+      "headline": "ஆபரேஷன் கமலா — மிகப்பெரிய கட்சித் தாவல் நாடகம்",
+      "body": "ஜூலை 2019-இல் 17 மஜத-காங்கிரஸ் சட்டமன்ற உறுப்பினர்கள் ராஜினாமா செய்தனர். சில மாதங்களுக்குப் பிறகு பாஜக சின்னத்தில் போட்டியிட்டு 12 பேர் இடைத்தேர்தலில் வெற்றி பெற்றனர்."
+    },
+    "KA-T-002": {
+      "headline": "சித்தராமையா — வாக்குறுதி நாயகன்",
+      "body": "சித்தராமையா பாதாமியில் 42,567 வாக்குகள் வித்தியாசத்தில் வெற்றி பெற்றார். இவரது 5 முக்கிய வாக்குறுதித் திட்டங்கள் காங்கிரஸ் 135 இடங்களை அள்ளிக் குவிக்க வழிவகுத்தன."
+    },
+    "KA-T-003": {
+      "headline": "தேவ கவுடா வம்சம் — மூன்று தலைமுறைகள்",
+      "body": "எச்.டி. தேவ கவுடா (பிரதமர்), மகன் குமாரசாமி (முதலமைச்சர்), பேரன் பிரஜ்வல் — ஆகிய மூவருமே தேர்ந்தெடுக்கப்பட்ட மக்கள் பிரதிநிதிகளாக பதவி வகித்தனர்."
+    },
+    "KA-T-004": {
+      "headline": "பாஜக: 104-லிருந்து 66 ஆக சரிவு",
+      "body": "பாஜக 38 இடங்களை இழந்தது (2018→2023). \"40% கமிஷன்\" குற்றச்சாட்டுகளும் ஒரே பதவிக்காலத்தில் 3 முதலமைச்சர்கள் மாற்றப்பட்டதும் முக்கியக் காரணிகளாக அமைந்தன."
+    },
+    "KA-T-005": {
+      "headline": "ஒகை பதவிக்காலத்தில் மூன்று முதலமைச்சர்கள்",
+      "body": "கர்நாடகாவில் 2018-2023 காலப்பகுதியில் 3 பாஜக முதலமைச்சர்கள் இருந்தனர்: எடியூரப்பா, பொம்மை மற்றும் சிறிது காலம் சதானந்த கவுடா பரிசீலிக்கப்பட்டார்."
+    },
+    "KA-T-006": {
+      "headline": "ஜார்கிஹோலி சகோதரர்கள் — எதிர் எதிர் துருவங்களில்",
+      "body": "ரமேஷ் பாஜகவில் (கோகாக்), பாலச்சந்திரா காங்கிரஸில் (அரபாவி). ஒரே குடும்பத்திற்குள் அரசியல் போட்டி!"
+    },
+    "KA-T-007": {
+      "headline": "கடலோர கர்நாடகா — பாஜகவின் கோட்டை",
+      "body": "2023-இல், மாநிலத்தில் பாஜக தோல்வியடைந்த போதிலும், கடலோரப் பகுதியின் அனைத்து 8 இடங்களையும் வென்றது."
+    },
+    "MH-T-001": {
+      "headline": "சிவசேனாவின் பெரும் பிளவு",
+      "body": "ஏக்நாத் ஷிண்டே 56 சிவசேனா சட்டமன்ற உறுப்பினர்களில் 40 பேருடன் கிளர்ச்சியில் ஈடுபட்டார் (ஜூன் 2022). தேர்தல் ஆணையம் கட்சிப் பெயரை ஷிண்டே பிரிவுக்கு வழங்கியது."
+    },
+    "MH-T-002": {
+      "headline": "பவார் எதிர் பவார் — மாமா எதிர் மருமகன்",
+      "body": "அஜித் பவார் 40-க்கும் மேற்பட்ட சட்டமன்ற உறுப்பினர்களுடன் பாஜக கூட்டணியில் இணைந்து தேசியவாத காங்கிரஸைப் பிளந்தார். மாமா சரத் பவார் (83) NCP(SP) பிரிவைத் தொடங்கினார்."
+    },
+    "MH-T-003": {
+      "headline": "பட்னாவிஸ் — மீண்டெழுந்த நாயகன்",
+      "body": "பட்னாவிஸ் தென்மேற்கு நாக்பூரில் பெரும் வாக்கு வித்தியாசத்தில் வெற்றி பெற்று, 3-வது முறையாக முதலமைச்சரானார்."
+    },
+    "MH-T-004": {
+      "headline": "காங்கிரஸ்: 44-லிருந்து 16 ஆக சரிவு",
+      "body": "காங்கிரஸ் பெரும் வீழ்ச்சியைச் சந்தித்தது — 2019-இல் 44 இடங்களிலிருந்து 2024-இல் வெறும் 16 இடங்களாகக் குறைந்தது, இது மகாராஷ்டிராவில் அவர்களின் மிக மோசமான செயல்திறனாகும்."
+    },
+    "MH-T-005": {
+      "headline": "ஆதித்யா தாக்கரே — வொர்லி இளவரசன்",
+      "body": "தனது தந்தையின் பிரிவு மாநிலம் தழுவிய அளவில் சரிவைச் சந்தித்த போதிலும், ஆதித்யா வொர்லி தொகுதியைத் தக்க வைத்துக் கொண்டார்."
+    },
+    "MH-T-006": {
+      "headline": "மகாயுதி சுனாமி — 230/288",
+      "body": "பாஜக-சிவசேனா-NCP (மகாயுதி) கூட்டணி 2024-இல் 230/288 இடங்களை வென்றது — மகாராஷ்டிரா வரலாற்றிலேயே மிகத் தெளிவான முடிவு இதுவாகும்."
+    },
+    "MH-T-007": {
+      "headline": "ஒரே பெயர் கொண்ட இரண்டு கட்சிகள்",
+      "body": "சிவசேனா மற்றும் தேசியவாத காங்கிரஸ் ஆகிய இரண்டுமே இரண்டாகப் பிளந்து, ஒவ்வொன்றும் அசல் பெயரைத் தங்களுக்கே கோரின. நீதிமன்றங்கள் இதில் தீர்ப்பளிக்க வேண்டியிருந்தது."
+    },
+    "MH-T-008": {
+      "headline": "மும்பை — 36 இடங்கள், பாஜகவின் ஆதிக்கம்",
+      "body": "2024-இல் மும்பையின் 36 சட்டமன்றத் தொகுதிகளில் பெரும்பாலானவற்றை பாஜக கைப்பற்றி, தனது நகர்ப்புற ஆதிக்கத்தை உறுதிப்படுத்தியது."
+    }
   },
-
-  // ── Language ────────────────────────────────────────────────
-  language: {
-    title: 'மொழி',
-    subtitle: 'உங்களுக்கு விருப்பமான மொழியைத் தேர்ந்தெடுக்கவும்',
-    en: 'English',
-    te: 'తెలుగు',
-    hi: 'हिन्दी',
-    kn: 'ಕನ್ನಡ',
-    mr: 'मराठी',
-    systemDefault: 'முறைமையின் இயல்புநிலை',
-    changeConfirm: 'மொழியை {{language}}-க்கு மாற்ற வேண்டுமா?',
+  "seedPosts": {
+    "seed-ts-1": {
+      "content": "க்ஷேத்ரா-விற்கு வரவேற்கிறோம்! இது தெலங்கானாவின் அரசியல் விவாதங்களுக்கான சமூகப் பகிர்வுத் தளம். உள்ளூர் ஆளுகை குறித்த உங்கள் கருத்துக்களைப் பகிர்ந்து கொள்ளுங்கள், உங்கள் நியோஜகவர்க்கம் பற்றி கேள்விகளைக் கேளுங்கள், எப்போதும் விழிப்புடன் இருங்கள்."
+    },
+    "seed-ts-2": {
+      "content": "கச்சிபௌலி அருகில் வெளிவட்டச் சாலை (ORR) சேவைச் சாலை அமைக்கும் பணி 3 மாதங்களாக முடங்கியுள்ளது. இதை எந்தத் துறையிடம் கொண்டு செல்ல வேண்டும்? சட்டமன்ற உறுப்பினர் அலுவலகம் GHMC என்கிறது, GHMC-யோ NHAI என்கிறது. வழக்கமான அலைக்கழிப்பு. #infrastructure #serilingampally"
+    },
+    "seed-ts-3": {
+      "content": "இன்று நியோஜகவர்க்க அளவிலான மறுஆய்வுக் கூட்டத்தில் பங்கேற்றேன். சில சுவாரசியமான புள்ளிவிவரங்கள்: இந்த மாதத்தில் 43 புதிய குடும்ப அட்டைகள் வழங்கப்பட்டுள்ளன, 12 நிலுவையில் இருந்த ஓய்வூதிய வழக்குகள் தீர்க்கப்பட்டுள்ளன. முன்னேற்றம் மெதுவாக இருந்தாலும் கண்ணுக்குத் தெரிகிறது. #goshamahal #governance"
+    },
+    "seed-ts-4": {
+      "content": "10 பிஆர்எஸ்→காங்கிரஸ் கட்சித் தாவல்கள் அந்த நியோஜகவர்க்கங்களின் அடிமட்ட அளவிலான ஆளுகையை மாற்றியமைத்துள்ளன என்று நீங்கள் நினைக்கிறீர்களா?"
+    },
+    "seed-ts-5": {
+      "content": "சிற்சில்லாவில் கேடிஆரின் வெற்றி வாக்கு வித்தியாசம் — 51,489 வாக்குகள் — இது 2023 தேர்தலிலேயே மிகப்பெரியதாகும். பிஆர்எஸ் ஒட்டுமொத்தமாக மோசமாகத் தோற்ற ஆண்டிலும், இந்த நியோஜகவர்க்கம் தனது விசுவாசத்தைக் காட்டியுள்ளது. சிற்சில்லாவை வேறுபடுத்துவது எது? #sircilla #brs #ktr"
+    },
+    "seed-ts-6": {
+      "content": "பழைய நகரத்தில் குடிநீர் தட்டுப்பாடு பிரச்சனை மோசமடைந்து வருகிறது. தண்ணீர் லாரிகள் உரிய நேரத்திற்கு வருவதில்லை, HMWSSB உதவி எண் எப்போதும் பிஸியாகவே உள்ளது. வேறு யாராவது இதை எதிர்கொள்கிறீர்களா? #charminar #watersupply #hyderabad"
+    },
+    "seed-ts-7": {
+      "content": "புதிதாகத் தேர்ந்தெடுக்கப்பட்ட காங்கிரஸ் சட்டமன்ற உறுப்பினர்களில் இதுவரை தங்கள் நியோஜகவர்க்கத்தில் மிகவும் சுறுசுறுப்பாகச் செயல்பட்டவர் யார்?"
+    }
   },
-
-  // ── Constituency Tab Bar ───────────────────────────────────
-  constituencyTabBar: { overview: 'மேலோட்டம்', issues: 'சிக்கல்கள்', pulse: 'துடிப்பு', news: 'செய்திகள்', history: 'வரலாறு', xray: 'எக்ஸ்-ரே' },
-
-  // ── Compare ────────────────────────────────────────────────
-  compare: { title: 'ஒப்பிடுக', selectA: 'A தேர்வு', selectB: 'B தேர்வு', selectConstituency: 'தொகுதி தேர்வு', election: 'தேர்தல்', winnerVotes: 'வெற்றியாளர் வாக்குகள்', margin: 'இடைவெளி', marginPct: 'இடைவெளி %', demographics: 'மக்கள்தொகை விவரங்கள்', population: 'மக்கள்தொகை', totalVoters: 'மொத்த வாக்காளர்கள்', turnout2023: 'வாக்குப்பதிவு 2023', literacy: 'கல்வியறிவு', urbanPct: 'நகர்ப்புற %', scPct: 'SC %', stPct: 'ST %', area: 'பரப்பளவு (சதுர கிமீ)', mlaProfile: 'MLA சுயவிவரம்', gender: 'பாலினம்', male: 'ஆண்', female: 'பெண்', terms: 'பதவிக்காலங்கள்', historical: 'வரலாற்று ஒப்பீடு' },
-
-  // ── Export ─────────────────────────────────────────────────
-  export: { title: 'ஏற்றுமதி டாஷ்போர்டு', dataScope: 'தரவு வரம்பு', currentView: 'தற்போதைய காட்சி', allData: 'அனைத்து தரவு', upgradeRequired: 'மேம்படுத்தல் தேவை', cannotExport: 'தற்போதைய திட்டத்தில் ஏற்றுமதி செய்ய இயலாது.', failed: 'ஏற்றுமதி தோல்வி', errorOccurred: 'பிழை ஏற்பட்டது.' },
-
-  // ── Aspirant Registration ──────────────────────────────────
-  aspirantReg: { title: 'விரும்பியாக ஆகுங்கள்', publicName: 'பொது பெயர்', nameRequired: 'பெயர் தேவை', standFor: 'நீங்கள் எதற்காக நிற்கிறீர்கள்?', targetConstituency: 'இலக்கு தொகுதி', stateLabel: 'மாநிலம்', targetYear: 'இலக்கு தேர்தல் ஆண்டு', affiliation: 'இணைப்பு', partyMember: 'கட்சி உறுப்பினர்', createProfile: 'என் விரும்பி சுயவிவரத்தை உருவாக்கு', welcomeTitle: 'வரவேற்கிறோம், விரும்பி!', letsGo: 'தொடங்குவோம்' },
-
-  // ── KYC Sheet ──────────────────────────────────────────────
-  kycSheet: { title: 'பங்களிப்பாளர் சரிபார்ப்பு', verified: 'சரிபார்க்கப்பட்டது!', personalInfo: 'தனிப்பட்ட தகவல்', fullName: 'முழு சட்டப்பூர்வ பெயர் *', phone: 'தொலைபேசி எண் *', selfieSection: 'செல்ஃபி சரிபார்ப்பு', takeSelfie: 'செல்ஃபி எடுங்கள்', agreement: 'பொறுப்பு ஒப்பந்தம்', agreeAndVerify: 'ஒப்புக் கொண்டு சரிபார்' },
-
-  // ── Content Gate ───────────────────────────────────────────
-  contentGate: { flag: 'ஃப்ளாக்', alert: 'அலர்ட்', flagContent: 'உள்ளடக்கத்தை ஃப்ளாக் செய்', raiseAlert: 'அலர்ட் அனுப்பு', category: 'வகை', submitFlag: 'ஃப்ளாக் சமர்ப்பி' },
-
-  // ── Shorts Player ─────────────────────────────────────────
-  shortsPlayer: { branding: 'ஷார்ட்ஸ்', videoUnavailable: 'வீடியோ கிடைக்கவில்லை', openYouTube: 'YouTubeல் திற', share: 'பகிர்', approve: 'அனுமதி', skip: 'தவிர்' },
-
-  // ── Upload Short ──────────────────────────────────────────
-  uploadShort: { title: 'அரசியல் ஷார்ட் பதிவேற்று', creatorVerification: 'படைப்பாளர் சரிபார்ப்பு தேவை', startVerification: 'படைப்பாளர் சரிபார்ப்பு தொடங்கு', maybeLater: 'பின்னர்', inputTitle: 'தலைப்பு', inputDescription: 'விளக்கம்', uploadButton: 'தொகுதிக்கு பதிவேற்று' },
-
-  // ── Module Detail ─────────────────────────────────────────
-  moduleDetail: { keyTakeaways: 'முக்கிய அம்சங்கள்', knowledgeCheck: 'அறிவுப் பரிசோதனை', tryAgain: 'மீண்டும் முயற்சி', sources: 'ஆதாரங்கள் & மேலும் படிக்க', moduleCompleted: 'தொகுதி நிறைவு', submitQuiz: 'பதில்களை சமர்ப்பி', markComplete: 'நிறைவு என குறி' },
-
-  // ── Outreach Panel ────────────────────────────────────────
-  outreachPanel: { compose: 'எழுது', history: 'வரலாறு', templates: 'டெம்ப்ளேட்கள்', channel: 'சேனல்', audience: 'பார்வையாளர்கள்', message: 'செய்தி', delivery: 'விநியோகம்', sendNow: 'இப்போது அனுப்பு', recipients: 'பெறுநர்கள்', noBroadcasts: 'இதுவரை ஒளிபரப்புகள் இல்லை', cancel: 'ரத்து', sendBroadcast: 'ஒளிபரப்பு அனுப்பு' },
+  "delimitation": {
+    "title": "தொகுதி மறுசீரமைப்பு",
+    "hubTitle": "தொகுதி மறுசீரமைப்பு மையம்",
+    "trackerTitle": "தொகுதி மறுசீரமைப்பு கண்காணிப்பகம்",
+    "whatChangesForYou": "உங்களுக்கு என்ன மாறுகிறது?",
+    "overview": "கண்ணோட்டம்",
+    "projections": "முன்கணிப்புகள்",
+    "timeline": "காலவரிசை",
+    "impact": "தாக்கம்",
+    "currentSeats": "தற்போதைய இடங்கள்",
+    "projectedSeats": "முன்கணிக்கப்பட்ட இடங்கள்",
+    "seatChange": "இடங்களின் மாற்றம்",
+    "population": "மக்கள் தொகை",
+    "reservation": "ஒதுக்கீடு",
+    "general": "பொது",
+    "sc": "SC",
+    "st": "ST",
+    "gainers": "இடங்களைப் பெறுபவை",
+    "losers": "இடங்களை இழப்பவை",
+    "noChange": "மாற்றமில்லை",
+    "enterPinCode": "உங்கள் அஞ்சல் குறியீட்டை (PIN Code) உள்ளிடவும்",
+    "impactNotAvailable": "தாக்கம் இன்னும் கிடைக்கவில்லை",
+    "impactPending": "தொகுதி மறுசீரமைப்பு முன்மொழிவுகள் இன்னும் வெளியிடப்படவில்லை.",
+    "notifyMe": "கிடைக்கும்போது எனக்கு அறிவிக்கவும்",
+    "comingSoon": "முன்மொழிவுகள் வெளியிடப்படும் போது வரும்",
+    "disclaimer": "2011 மக்கள் தொகை கணக்கெடுப்பு தரவுகளின் அடிப்படையில் இந்த முன்கணிப்புகள் உள்ளன. உண்மையான தொகுதி மறுசீரமைப்பிற்கு 2026 மக்கள் தொகை கணக்கெடுப்பு தரவுகள் பயன்படுத்தப்படும்.",
+    "status": {
+      "pre_census": "மக்கள் தொகை கணக்கெடுப்பிற்கு முந்தைய நிலை",
+      "census_underway": "மக்கள் தொகை கணக்கெடுப்பு நடைபெறுகிறது",
+      "census_published": "மக்கள் தொகை கணக்கெடுப்பு வெளியிடப்பட்டது",
+      "commission_formed": "ஆணையம் அமைக்கப்பட்டது",
+      "draft_published": "வரைவு வெளியிடப்பட்டது",
+      "objections_period": "ஆட்சேபனைகள் வரவேற்கப்படுகின்றன",
+      "final_notified": "இறுதி அறிவிப்பு வெளியிடப்பட்டது",
+      "implemented": "அமல்படுத்தப்பட்டது"
+    },
+    "calcModel": "அரசியலமைப்பு கணக்கீட்டு முறை",
+    "expansionSafe": "விரிவாக்கம்-பாதுகாப்பான முறை",
+    "proportional": "விகிதாச்சார பிரதிநிதித்துவம் (சரத்து 170)",
+    "expansionSafeDesc": "மக்கள் தொகையைக் கட்டுப்படுத்திய மாநிலங்களைப் பாதுகாக்கிறது. எந்த மாநிலமும் இடங்களை இழக்காது.",
+    "proportionalDesc": "மக்கள் தொகைக்கு ஏற்ப விகிதாச்சார பிரதிநிதித்துவம்.",
+    "enterPinDesc": "மறுவரையறை உங்கள் வாக்கை எவ்வாறு பாதிக்கிறது என்பதைப் பார்க்க அஞ்சல் குறியீட்டை உள்ளிடவும்.",
+    "timelineSubtitle": "அரசியலமைப்பு மைல்கற்கள் மற்றும் தேர்தல் ஆணையத்தின் அதிகாரப்பூர்வ அறிவிப்புகள்.",
+    "lookupCitizenImpact": "குடிமக்கள் தொகுதி தாக்கத்தைத் தேடுங்கள்",
+    "lookupCitizenDesc": "முன்மொழியப்பட்ட எல்லைகளில் உங்கள் தொகுதி எவ்வாறு மாறுகிறது என்பதைப் பாருங்கள்.",
+    "selectStateAnalysis": "ஆழமான அரசியல் பகுப்பாய்விற்கு மாநிலத்தைத் தேர்ந்தெடுக்கவும்",
+    "sittingMlaAnalyzer": "எம்எல்ஏ ஆபத்து பகுப்பாய்வி ({{state}})",
+    "sittingMlaDesc": "அனைத்து {{total}} எம்எல்ஏக்களின் தொகுதி மாற்றம் மற்றும் வெற்றி வாய்ப்பை மதிப்பிடுகிறது.",
+    "riskCritical": "மிக ஆபத்தானது",
+    "riskHigh": "அதிக ஆபத்து",
+    "riskModerate": "மிதமான",
+    "riskSafe": "பாதுகாப்பானது",
+    "highDisplacement": "அதிக இடப்பெயர்வு தொகுதிகள்:",
+    "partyProjectionsTitle": "கட்சி இடங்கள் கணிப்பு ({{state}})",
+    "partyVoteShareStats": "வாக்கு பங்கு: {{share}}% · பாதுகாப்பானது: {{safe}} · போட்டி: {{battleground}}",
+    "frameworkTitle": "அரசியலமைப்பு மறுவரையறை கட்டமைப்பு",
+    "quickTestPin": "விரைவு சோதனை பின்கோடுகள்",
+    "quickTestPinDesc": "தொகுதி தாக்கத்தை உடனடியாக அறிய ஏதேனும் பின்கோடைத் தட்டவும்:",
+    "constitutionalFramework": "அரசியலமைப்பு கட்டமைப்பு மற்றும் குடிமக்கள் உரிமைகள்",
+    "stateAnalysisTitle": "மாநில மறுவரையறை மற்றும் அரசியலமைப்பு பகுப்பாய்வு",
+    "formulaBreakdown": "அரசியலமைப்பு சூத்திரங்களின் விளக்கம்",
+    "exactDerivation": "{{article}} இன் கீழ் துல்லியமான கணித கணக்கீடு",
+    "divisorEquation": "வகுத்தல் சமன்பாடு",
+    "seatQuota": "இட ஒதுக்கீடு கோட்டா",
+    "scQuota": "எஸ்சி கோட்டா (சரத்து 332)",
+    "stQuota": "எஸ்டி கோட்டா (சரத்து 332)",
+    "constitutionalDeviation": "அரசியலமைப்பு விலகல்",
+    "mathematicalDerivation": "அரசியலமைப்பு சூத்திரங்கள் மற்றும் கணித மதிப்பீடு",
+    "reasoningSteps": "அரசியலமைப்பு விளக்கப் படிகள்:",
+    "seats": "இடங்கள்",
+    "art82Desc": "• Article 82: Readjustment of allocation of seats in the House of the People and division of each State into territorial constituencies.",
+    "art170_2Desc": "• Article 170(2): Each State assembly divided into territorial constituencies such that population:seats ratio is practically uniform.",
+    "art330_332Desc": "• Articles 330 & 332: Mandatory proportional reservations for Scheduled Castes and Scheduled Tribes.",
+    "delimActSec9Desc": "• Delimitation Act Section 9: Equal population deviation bound (±10%), physical features, and administrative unit integrity.",
+    "art170Desc": "• Article 170: Mandates that each constituency within a state must have equal population within a strict ±10% deviation bound.",
+    "art330Desc": "• Articles 330 & 332: Proportional reservations for Scheduled Castes and Scheduled Tribes based on the latest published Census figures.",
+    "publicObjectionDesc": "• Public Objection Window: Under Section 9(2) of the Delimitation Act, the Commission must publish draft boundaries and allow citizens to submit objections before final notification.",
+    "contiguityDesc": "• Contiguity Requirement: All redrawn constituencies must be geographically contiguous without enclaves or isolated pockets.",
+    "idealDivisor": "Ideal Divisor: ",
+    "article332Sc": "Article 332 SC: ",
+    "article332St": "Article 332 ST: ",
+    "popPerSeat": "மக்கள்/இடம்",
+    "deviation": "விலகல்",
+    "assemblyConstituencies": "சட்டமன்றத் தொகுதிகள் ({{count}})",
+    "stateFooterDisclaimer": "அரசியலமைப்பின் 81, 82 மற்றும் 170 வது பிரிவுகளின் கீழ் இந்திய மக்கள் தொகை கணக்கெடுப்பு புள்ளிவிவரங்களின்படி கணக்கிடப்பட்ட மறுவரையறை."
+  },
+  "language": {
+    "title": "மொழி",
+    "subtitle": "உங்களுக்கு விருப்பமான மொழியைத் தேர்ந்தெடுக்கவும்",
+    "en": "English",
+    "te": "తెలుగు",
+    "hi": "हिन्दी",
+    "kn": "ಕನ್ನಡ",
+    "mr": "मराठी",
+    "systemDefault": "முறைமையின் இயல்புநிலை",
+    "changeConfirm": "மொழியை {{language}}-க்கு மாற்ற வேண்டுமா?"
+  },
+  "constituencyTabBar": {
+    "overview": "மேலோட்டம்",
+    "issues": "சிக்கல்கள்",
+    "pulse": "துடிப்பு",
+    "news": "செய்திகள்",
+    "history": "வரலாறு",
+    "xray": "எக்ஸ்-ரே"
+  },
+  "compare": {
+    "title": "ஒப்பிடுக",
+    "selectA": "A தேர்வு",
+    "selectB": "B தேர்வு",
+    "selectConstituency": "தொகுதி தேர்வு",
+    "election": "தேர்தல்",
+    "winnerVotes": "வெற்றியாளர் வாக்குகள்",
+    "margin": "இடைவெளி",
+    "marginPct": "இடைவெளி %",
+    "demographics": "மக்கள்தொகை விவரங்கள்",
+    "population": "மக்கள்தொகை",
+    "totalVoters": "மொத்த வாக்காளர்கள்",
+    "turnout2023": "வாக்குப்பதிவு 2023",
+    "literacy": "கல்வியறிவு",
+    "urbanPct": "நகர்ப்புற %",
+    "scPct": "SC %",
+    "stPct": "ST %",
+    "area": "பரப்பளவு (சதுர கிமீ)",
+    "mlaProfile": "MLA சுயவிவரம்",
+    "gender": "பாலினம்",
+    "male": "ஆண்",
+    "female": "பெண்",
+    "terms": "பதவிக்காலங்கள்",
+    "historical": "வரலாற்று ஒப்பீடு"
+  },
+  "export": {
+    "title": "ஏற்றுமதி டாஷ்போர்டு",
+    "dataScope": "தரவு வரம்பு",
+    "currentView": "தற்போதைய காட்சி",
+    "allData": "அனைத்து தரவு",
+    "upgradeRequired": "மேம்படுத்தல் தேவை",
+    "cannotExport": "தற்போதைய திட்டத்தில் ஏற்றுமதி செய்ய இயலாது.",
+    "failed": "ஏற்றுமதி தோல்வி",
+    "errorOccurred": "பிழை ஏற்பட்டது."
+  },
+  "aspirantReg": {
+    "title": "விரும்பியாக ஆகுங்கள்",
+    "publicName": "பொது பெயர்",
+    "nameRequired": "பெயர் தேவை",
+    "standFor": "நீங்கள் எதற்காக நிற்கிறீர்கள்?",
+    "targetConstituency": "இலக்கு தொகுதி",
+    "stateLabel": "மாநிலம்",
+    "targetYear": "இலக்கு தேர்தல் ஆண்டு",
+    "affiliation": "இணைப்பு",
+    "partyMember": "கட்சி உறுப்பினர்",
+    "createProfile": "என் விரும்பி சுயவிவரத்தை உருவாக்கு",
+    "welcomeTitle": "வரவேற்கிறோம், விரும்பி!",
+    "letsGo": "தொடங்குவோம்"
+  },
+  "kycSheet": {
+    "title": "பங்களிப்பாளர் சரிபார்ப்பு",
+    "verified": "சரிபார்க்கப்பட்டது!",
+    "personalInfo": "தனிப்பட்ட தகவல்",
+    "fullName": "முழு சட்டப்பூர்வ பெயர் *",
+    "phone": "தொலைபேசி எண் *",
+    "selfieSection": "செல்ஃபி சரிபார்ப்பு",
+    "takeSelfie": "செல்ஃபி எடுங்கள்",
+    "agreement": "பொறுப்பு ஒப்பந்தம்",
+    "agreeAndVerify": "ஒப்புக் கொண்டு சரிபார்"
+  },
+  "contentGate": {
+    "flag": "ஃப்ளாக்",
+    "alert": "அலர்ட்",
+    "flagContent": "உள்ளடக்கத்தை ஃப்ளாக் செய்",
+    "raiseAlert": "அலர்ட் அனுப்பு",
+    "category": "வகை",
+    "submitFlag": "ஃப்ளாக் சமர்ப்பி"
+  },
+  "shortsPlayer": {
+    "branding": "ஷார்ட்ஸ்",
+    "videoUnavailable": "வீடியோ கிடைக்கவில்லை",
+    "openYouTube": "YouTubeல் திற",
+    "share": "பகிர்",
+    "approve": "அனுமதி",
+    "skip": "தவிர்"
+  },
+  "uploadShort": {
+    "title": "அரசியல் ஷார்ட் பதிவேற்று",
+    "creatorVerification": "படைப்பாளர் சரிபார்ப்பு தேவை",
+    "startVerification": "படைப்பாளர் சரிபார்ப்பு தொடங்கு",
+    "maybeLater": "பின்னர்",
+    "inputTitle": "தலைப்பு",
+    "inputDescription": "விளக்கம்",
+    "uploadButton": "தொகுதிக்கு பதிவேற்று"
+  },
+  "moduleDetail": {
+    "keyTakeaways": "முக்கிய அம்சங்கள்",
+    "knowledgeCheck": "அறிவுப் பரிசோதனை",
+    "tryAgain": "மீண்டும் முயற்சி",
+    "sources": "ஆதாரங்கள் & மேலும் படிக்க",
+    "moduleCompleted": "தொகுதி நிறைவு",
+    "submitQuiz": "பதில்களை சமர்ப்பி",
+    "markComplete": "நிறைவு என குறி"
+  },
+  "outreachPanel": {
+    "compose": "எழுது",
+    "history": "வரலாறு",
+    "templates": "டெம்ப்ளேட்கள்",
+    "channel": "சேனல்",
+    "audience": "பார்வையாளர்கள்",
+    "message": "செய்தி",
+    "delivery": "விநியோகம்",
+    "sendNow": "இப்போது அனுப்பு",
+    "recipients": "பெறுநர்கள்",
+    "noBroadcasts": "இதுவரை ஒளிபரப்புகள் இல்லை",
+    "cancel": "ரத்து",
+    "sendBroadcast": "ஒளிபரப்பு அனுப்பு"
+  },
+  "parliament": {
+    "majorityMark": "பெரும்பான்மை எல்லை: {{count}} / {{total}}",
+    "lokSabhaSeats": "மக்களவை இடங்கள்",
+    "rulingAlliance": "ஆளும் கூட்டணி",
+    "oppositionAlliance": "எதிர்க்கட்சி",
+    "independentRegional": "சுயேச்சை / பிராந்திய",
+    "partyDistributionIn": "{{state}} மாநில கட்சி நிலவரம்:",
+    "totalLsSeatsTally": "மொத்த மக்களவை இடங்கள்: {{count}} / {{total}}",
+    "thParty": "கட்சி",
+    "thLokSabha": "மக்களவை",
+    "thRajyaSabha": "மாநிலங்களவை",
+    "thTotal": "மொத்தம்",
+    "showTop15": "முதல் 15 கட்சிகளைக் காட்டு",
+    "viewAllParties": "அனைத்து {{count}} கட்சிகளையும் காண்க (YSRCP, BRS, TDP உட்பட…)",
+    "lokSabhaMPsCount": "18வது மக்களவை உறுப்பினர்கள் (543 இல் {{count}})",
+    "stateLokSabhaCount": "மக்களவை உறுப்பினர்கள் — {{state}} ({{count}})",
+    "noMPsMatch": "உங்கள் தேடலுக்கு ஏற்ற எம்பிக்கள் எவரும் இல்லை.",
+    "rajyaSabhaMPsCount": "மாநிலங்களவை உறுப்பினர்கள் (142 இல் {{count}})",
+    "stateRajyaSabhaCount": "மாநிலங்களவை உறுப்பினர்கள் — {{state}} ({{count}})",
+    "noRajyaSabhaMatch": "எந்த மாநிலங்களவை உறுப்பினரும் கிடைக்கவில்லை.",
+    "termsElected": "தேர்ந்தெடுக்கப்பட்ட முறை",
+    "age": "வயது",
+    "criminalCases": "குற்ற வழக்குகள்",
+    "declaredFinancials": "சொத்து விவரங்கள் (பிரமாணப் பத்திரம்)",
+    "totalAssets": "மொத்த சொத்துக்கள்",
+    "liabilities": "கடன்கள்",
+    "trackRecord": "நாடாளுமன்ற செயல்பாடு",
+    "attendance": "வருகைப்பதிவு",
+    "questionsAsked": "கேட்கப்பட்ட கேள்விகள்",
+    "debates": "விவாதங்கள்",
+    "background": "பின்னணி",
+    "education": "கல்வி:",
+    "profession": "தொழில்:",
+    "viewOfficialAffidavit": "MyNeta / Sansad இல் அதிகாரப்பூர்வ பத்திரத்தை காண்க",
+    "searchLokSabhaPlaceholder": "பெயர், தொகுதி அல்லது கட்சி மூலம் 543 எம்பிக்களைத் தேடுங்கள்…",
+    "searchRajyaSabhaPlaceholder": "பெயர் அல்லது கட்சி மூலம் மாநிலங்களவை எம்பிக்களைத் தேடுங்கள்…",
+    "screenTitle": "Parliament & MPs",
+    "tabOverview": "Overview",
+    "tabLokSabha": "Lok Sabha",
+    "tabRajyaSabha": "Rajya Sabha",
+    "title": "Parliament",
+    "subtitle": "MPs & Party Strength",
+    "lokSabha": "Lok Sabha",
+    "rajyaSabha": "Rajya Sabha",
+    "totalMPs": "Total MPs",
+    "opposition": "Opposition",
+    "others": "Others",
+    "tabs": {
+      "overview": "Overview",
+      "members": "Members",
+      "parties": "Parties",
+      "states": "By State"
+    },
+    "mpProfile": "MP Profile",
+    "constituency": "Constituency",
+    "state": "State",
+    "party": "Party",
+    "terms": "Terms",
+    "questions": "Questions",
+    "allianceStrength": "Alliance Strength at Centre",
+    "topParties": "Top Parties in Parliament",
+    "stateParliamentSeats": "{{state}} — Parliament Seats",
+    "lokSabhaMPsTitle": "Lok Sabha MPs — {{state}} ({{count}})",
+    "rajyaSabhaMPsTitle": "Rajya Sabha MPs — {{state}} ({{count}})",
+    "mpDataComingSoon": "MP data for this state coming soon.",
+    "rsDataComingSoon": "Rajya Sabha MP data coming soon.",
+    "ndaAlliance": "NDA",
+    "indiaAlliance": "I.N.D.I.A",
+    "othersAlliance": "Others"
+  },
+  "localBodies": {
+    "dbInitializing": "தரவுத்தளம் தயாராகிறது",
+    "dbLoadingDesc": "உள்ளாட்சி அமைப்புகளின் தேர்தல் பதிவுகள் சாதனத்தில் ஏற்றப்படுகின்றன.",
+    "retryDbLoad": "மீண்டும் ஏற்ற முயற்சிக்கவும்",
+    "directoryTitle": "உள்ளாட்சி அமைப்புகளின் அடைவு",
+    "nationalSelectStateDesc": "கிராம பஞ்சாயத்து, தலைவர் மற்றும் வார்டு உறுப்பினர் தேர்தல் பதிவுகள் கிடைக்கின்றன. தேர்ந்தெடுக்கவும்:",
+    "stateIngestionDesc": "{{state}} மாநில தேர்தல் ஆணையத்திடமிருந்து பஞ்சாயத்து பதிவுகள் சேர்க்கப்படுகின்றன:",
+    "verifiedTsec": "சரிபார்க்கப்பட்ட அதிகாரப்பூர்வ பதிவுகள்",
+    "tsStatsSummary": "31 மாவட்டங்கள் · 12,705 கிராம பஞ்சாயத்துகள்",
+    "tsRecordsSummary": "72,134 சரிபார்க்கப்பட்ட பிரதிநிதிகள் பதிவுகள்",
+    "screenTitle": "Local Bodies",
+    "loadingState": "Loading {{state}} local bodies…",
+    "noDataDesc": "Verified gram-panchayat representatives for {{state}} are being ingested from the State Election Commission. We only display data confirmed from official sources.",
+    "sourceNote": "Source: State Election Commission KYR portal",
+    "searchDistricts": "Search districts",
+    "searchMandals": "Search mandals",
+    "searchGps": "Search gram panchayats",
+    "mptcZptcTitle": "MPTC & ZPTC — {{note}}",
+    "mptcZptcDesc": "Mandal & Zilla Parishad territorial constituency polls have not been held/published yet. Only Gram Panchayat–tier results (Sarpanch & Ward members) are available.",
+    "electionsToBeConducted": "Elections to be conducted",
+    "gps": "GPs",
+    "sarpanches": "sarpanches",
+    "wardMembers": "ward members",
+    "gramPanchayats": "gram panchayats",
+    "sarpanch": "Sarpanch",
+    "sarpanchDataPending": "Sarpanch — data pending",
+    "wards": "wards",
+    "wardMembersDataPending": "Ward members — data pending",
+    "ward": "Ward",
+    "ruralSourceFooter": "Source: Telangana State Election Commission — Know Your Public Representative (Rural). Gram Panchayat polls are officially non-party.",
+    "verifiedApsec": "Verified APSEC",
+    "apStatsSummary": "13 Districts · 13,079 Gram Panchayats",
+    "apRecordsSummary": "152,646 verified Sarpanch, Ward, MPTC & ZPTC records",
+    "chooseAnotherState": "Or choose another state:",
+    "tsTabLabel": "தெலுங்கானா (31 மாவட்டங்கள்)",
+    "apTabLabel": "ஆந்திரப் பிரதேசம் (15 மாவட்டங்கள்)",
+    "verified3TierTitle": "சரிபார்க்கப்பட்ட 3-அடுக்கு பஞ்சாயத்து ராஜ் தரவு",
+    "verified3TierSub": "கிராம பஞ்சாயத்துகள் (தலைவர் & வார்டு உறுப்பினர்கள்), ஒன்றிய கவுன்சிலர் மற்றும் மாவட்ட கவுன்சிலர் அதிகாரப்பூர்வ முடிவுகள்.",
+    "gpTierActiveTitle": "கிராம பஞ்சாயத்து அடுக்கு செயலில் உள்ளது",
+    "gpTierActiveSub": "கிராம பஞ்சாயத்து பிரதிநிதிகளுக்கான (தலைவர் & வார்டு உறுப்பினர்கள்) அதிகாரப்பூர்வ முடிவுகள்."
+  },
+  "constituencyExtended": {
+    "followConstituency": "Follow Constituency",
+    "followingConstituency": "Following Constituency",
+    "viewCompleteProfile": "View Complete Profile",
+    "administrativeHierarchy": "Administrative Hierarchy",
+    "exploreHierarchy": "Explore Mandals, Panchayats & Booths",
+    "scLabel": "SC",
+    "stLabel": "ST",
+    "urbanLabel": "Urban",
+    "civicIssues": "Civic Issues",
+    "issue": "issue",
+    "issues": "issues",
+    "issueStatus": {
+      "open": "Open",
+      "inProgress": "In Progress",
+      "resolved": "Resolved"
+    },
+    "noIssuesReported": "No Issues Reported",
+    "noIssuesMsg": "No civic issues have been reported for this constituency yet",
+    "communityPulse": "Community Pulse",
+    "noDiscussions": "No Discussions Yet",
+    "startConversation": "Start a conversation about this constituency",
+    "newsAndHeadlines": "News & Headlines",
+    "article": "article",
+    "articles": "articles",
+    "noLocalNews": "No Local News",
+    "noNewsMsg": "No news articles are currently tagged for this constituency",
+    "candidateTransparency": "Candidate Transparency",
+    "compareOnMap": "Compare on Map",
+    "mlaProfile": "MLA Profile",
+    "exploreHierarchyButton": "Explore Hierarchy"
+  },
+  "exploreExtended": {
+    "mpsParliament": "நாடாளுமன்றம் & எம்.பி.க்கள்",
+    "aiChat": "AI அரட்டை",
+    "delimitation": "மறுவரையறை",
+    "localBodies": "உள்ளாட்சி அமைப்புகள்",
+    "selectAState": "மாநிலத்தைத் தேர்ந்தெடுக்கவும்",
+    "pleaseSelectState": "தொகுதி விவரங்களைக் காண மாநிலத்தைத் தேர்ந்தெடுக்கவும்",
+    "crorepati": "கோடீஸ்வரர்",
+    "case": "வழக்கு",
+    "cases": "வழக்குகள்"
+  }
 };
 
 export default ta;
