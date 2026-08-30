@@ -17,11 +17,13 @@ import CriminalRecordCard from '../../components/legislator/CriminalRecordCard';
 import PerformanceCard from '../../components/legislator/PerformanceCard';
 import RedFlagsBanner from '../../components/legislator/RedFlagsBanner';
 import DefectionJourneyCard from '../../components/legislator/DefectionJourneyCard';
+import { useTheme } from '../../lib/theme';
 
 
 export default function LegislatorProfileScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const router = useRouter();
+  const { colors } = useTheme();
   const { contentPaddingBottom } = useResponsive();
 
   // Parse ID: format is "MLA_TS_2023_Kodangal_65"
@@ -44,50 +46,49 @@ export default function LegislatorProfileScreen() {
       // Financial records
       let _financialRecords: any[] = [];
       if (_winnerAffidavit) {
-        const candidateAffs = _store.getAffidavitsForCandidate(_winnerAffidavit.candidateName) || [];
-        _financialRecords = candidateAffs.map(a => ({
-          electionYear: a.electionYear,
-          selfMovableAssets: a.selfMovableAssets || 0,
-          selfImmovableAssets: a.selfImmovableAssets || 0,
-          spouseMovableAssets: a.spouseMovableAssets || 0,
-          spouseImmovableAssets: a.spouseImmovableAssets || 0,
-          dependentsAssets: 0,
-          totalAssets: a.totalAssets || 0,
-          totalLiabilities: a.totalLiabilities || 0,
-          netWorth: (a.totalAssets || 0) - (a.totalLiabilities || 0),
-          selfIncome: a.selfIncome || 0,
-          spouseIncome: a.spouseIncome || 0,
-        }));
+        _financialRecords = [
+          {
+            year: electionYear,
+            movableAssets: (_winnerAffidavit.selfMovableAssets || 0) + (_winnerAffidavit.spouseMovableAssets || 0),
+            immovableAssets: (_winnerAffidavit.selfImmovableAssets || 0) + (_winnerAffidavit.spouseImmovableAssets || 0),
+            totalAssets: _winnerAffidavit.totalAssets || 0,
+            liabilities: _winnerAffidavit.totalLiabilities || 0,
+            netWorth: (_winnerAffidavit.totalAssets || 0) - (_winnerAffidavit.totalLiabilities || 0),
+          },
+        ];
       }
 
-      // Red flags
-      let _redFlags: any[] = [];
+      // Red flags calculation
+      const _redFlags: { type: string; severity: string; description: string; value?: string }[] = [];
       if (_winnerAffidavit) {
-        try {
-          const flags = _store.getRedFlags(_winnerAffidavit.id) || [];
-          _redFlags = flags.map(f => ({
-            type: f.type || 'unknown',
-            severity: f.severity === 'critical' ? 'critical' : f.severity === 'warning' ? 'warning' : 'info',
-            description: f.description || '',
-          }));
-        } catch { _redFlags = []; }
+        if (_winnerAffidavit.criminalCases > 0) {
+          _redFlags.push({
+            type: 'multiple_cases',
+            severity: 'warning',
+            description: `${_winnerAffidavit.criminalCases} criminal case${_winnerAffidavit.criminalCases > 1 ? 's' : ''} declared in affidavit`,
+          });
+        }
+        if (_winnerAffidavit.seriousCriminalCases > 0) {
+          _redFlags.push({
+            type: 'serious_criminal_cases',
+            severity: 'critical',
+            description: `${_winnerAffidavit.seriousCriminalCases} serious IPC charge${_winnerAffidavit.seriousCriminalCases > 1 ? 's' : ''}`,
+          });
+        }
+        if ((_winnerAffidavit.totalLiabilities || 0) > (_winnerAffidavit.totalAssets || 0) && (_winnerAffidavit.totalAssets || 0) > 0) {
+          _redFlags.push({
+            type: 'zero_liability_anomaly',
+            severity: 'warning',
+            description: 'Liabilities exceed declared assets',
+          });
+        }
       }
 
-      // Completeness
-      let fields = 0, filled = 0;
-      if (_mla) {
-        fields += 8;
-        if (_mla.name) filled++;
-        if (_mla.party) filled++;
-        if (_mla.gender) filled++;
-        if (_mla.terms) filled++;
-        if (_mla.age) filled++;
-        if (_mla.education) filled++;
-        if (_mla.profession) filled++;
-        if (_mla.photoUrl) filled++;
-      }
-      if (_winnerAffidavit) { fields += 6; filled += 6; }
-      const _dataCompleteness = fields > 0 ? Math.round((filled / fields) * 100) : 30;
+      // Data completeness score (0-100)
+      let score = 0;
+      if (_mla) score += 40;
+      if (_winnerAffidavit) score += 40;
+      if (_constituency) score += 20;
 
       return {
         mla: _mla,
@@ -95,7 +96,7 @@ export default function LegislatorProfileScreen() {
         winnerAffidavit: _winnerAffidavit,
         financialRecords: _financialRecords,
         redFlags: _redFlags,
-        dataCompleteness: _dataCompleteness,
+        dataCompleteness: score,
       };
     } catch (e) {
       console.error('[LegislatorProfile] Data load error:', e);
@@ -106,15 +107,15 @@ export default function LegislatorProfileScreen() {
   // Fall through — need at least MLA or constituency data
   if (!mla && !constituency) {
     return (
-      <View style={styles.container}>
-        <Stack.Screen options={{ title: 'Legislator Profile', headerStyle: { backgroundColor: '#0A0A1A' }, headerTintColor: '#FFF' }} />
+      <View style={[styles.container, { backgroundColor: colors.background }]}>
+        <Stack.Screen options={{ title: 'Legislator Profile', headerStyle: { backgroundColor: colors.surface }, headerTintColor: colors.primary }} />
         <View style={styles.center}>
-          <Ionicons name="person-circle" size={56} color="#374151" />
-          <Text style={styles.emptyTitle}>Profile Not Found</Text>
-          <Text style={styles.emptySubtitle}>Could not find data for AC #{acNo}</Text>
-          <Pressable style={styles.backButton} onPress={() => router.back()}>
-            <Ionicons name="arrow-back" size={18} color="#4F8EF7" />
-            <Text style={styles.backButtonText}>Go Back</Text>
+          <Ionicons name="person-circle" size={56} color={colors.textMuted} />
+          <Text style={[styles.emptyTitle, { color: colors.text }]}>Profile Not Found</Text>
+          <Text style={[styles.emptySubtitle, { color: colors.textMuted }]}>Could not find data for AC #{acNo}</Text>
+          <Pressable style={[styles.backButton, { backgroundColor: colors.surface, borderColor: colors.goldBorder || colors.border, borderWidth: 1 }]} onPress={() => router.back()}>
+            <Ionicons name="arrow-back" size={18} color={colors.primary} />
+            <Text style={[styles.backButtonText, { color: colors.primary }]}>Go Back</Text>
           </Pressable>
         </View>
       </View>
@@ -156,12 +157,12 @@ export default function LegislatorProfileScreen() {
   };
 
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, { backgroundColor: colors.background }]}>
       <Stack.Screen
         options={{
           title: name,
-          headerStyle: { backgroundColor: '#0A0A1A' },
-          headerTintColor: '#FFFFFF',
+          headerStyle: { backgroundColor: colors.surface },
+          headerTintColor: colors.primary,
           headerShadowVisible: false,
         }}
       />
@@ -283,35 +284,35 @@ export default function LegislatorProfileScreen() {
 
         {/* Disclaimer */}
         {winnerAffidavit && (
-          <Text style={styles.disclaimer}>
+          <Text style={[styles.disclaimer, { color: colors.textMuted }]}>
             Data sourced from candidate self-declarations filed with the Election Commission of India.
             Figures are approximations from MyNeta/ADR summaries. Always verify with official records.
           </Text>
         )}
 
         {/* Sources */}
-        <View style={styles.sourcesSection}>
-          <Text style={styles.sourcesTitle}>Data Sources</Text>
+        <View style={[styles.sourcesSection, { borderTopColor: colors.border }]}>
+          <Text style={[styles.sourcesTitle, { color: colors.textMuted }]}>Data Sources</Text>
           <View style={styles.sourceChips}>
-            <View style={styles.sourceChip}>
-              <View style={styles.sourceChipDot} />
-              <Text style={styles.sourceChipText}>MLA Profiles (Seed)</Text>
+            <View style={[styles.sourceChip, { backgroundColor: colors.surfaceElevated, borderColor: colors.border, borderWidth: 1 }]}>
+              <View style={[styles.sourceChipDot, { backgroundColor: colors.success }]} />
+              <Text style={[styles.sourceChipText, { color: colors.textSecondary }]}>MLA Profiles (Seed)</Text>
             </View>
             {winnerAffidavit && (
-              <View style={styles.sourceChip}>
-                <View style={styles.sourceChipDot} />
-                <Text style={styles.sourceChipText}>MyNeta Affidavit</Text>
+              <View style={[styles.sourceChip, { backgroundColor: colors.surfaceElevated, borderColor: colors.border, borderWidth: 1 }]}>
+                <View style={[styles.sourceChipDot, { backgroundColor: colors.success }]} />
+                <Text style={[styles.sourceChipText, { color: colors.textSecondary }]}>MyNeta Affidavit</Text>
               </View>
             )}
-            <View style={styles.sourceChip}>
-              <View style={styles.sourceChipDot} />
-              <Text style={styles.sourceChipText}>ECI Results</Text>
+            <View style={[styles.sourceChip, { backgroundColor: colors.surfaceElevated, borderColor: colors.border, borderWidth: 1 }]}>
+              <View style={[styles.sourceChipDot, { backgroundColor: colors.success }]} />
+              <Text style={[styles.sourceChipText, { color: colors.textSecondary }]}>ECI Results</Text>
             </View>
           </View>
           {winnerAffidavit?.sourceUrl && (
             <Pressable style={styles.sourceLink} onPress={handleSourceLink}>
-              <Ionicons name="open-outline" size={14} color="#4F8EF7" />
-              <Text style={styles.sourceLinkText}>View Full Affidavit on MyNeta</Text>
+              <Ionicons name="open-outline" size={14} color={colors.primary} />
+              <Text style={[styles.sourceLinkText, { color: colors.primary }]}>View Full Affidavit on MyNeta</Text>
             </Pressable>
           )}
         </View>
@@ -341,10 +342,11 @@ function NavChip({ icon, label, color }: { icon: string; label: string; color: s
 }
 
 function InfoRow({ label, value }: { label: string; value: string }) {
+  const { colors } = useTheme();
   return (
     <View style={styles.infoRow}>
-      <Text style={styles.infoLabel}>{label}</Text>
-      <Text style={styles.infoValue}>{value}</Text>
+      <Text style={[styles.infoLabel, { color: colors.textMuted }]}>{label}</Text>
+      <Text style={[styles.infoValue, { color: colors.text }]}>{value}</Text>
     </View>
   );
 }
@@ -352,7 +354,6 @@ function InfoRow({ label, value }: { label: string; value: string }) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#0A0A1A',
   },
   center: {
     flex: 1,
@@ -364,12 +365,10 @@ const styles = StyleSheet.create({
   emptyTitle: {
     fontSize: 18,
     fontWeight: '700',
-    color: '#FFFFFF',
     marginTop: 12,
   },
   emptySubtitle: {
     fontSize: 13,
-    color: '#6B7280',
     textAlign: 'center',
   },
   backButton: {
@@ -379,12 +378,10 @@ const styles = StyleSheet.create({
     marginTop: 16,
     paddingHorizontal: 16,
     paddingVertical: 10,
-    backgroundColor: '#111827',
     borderRadius: 10,
   },
   backButtonText: {
     fontSize: 14,
-    color: '#4F8EF7',
     fontWeight: '600',
   },
   scroll: {
@@ -404,17 +401,14 @@ const styles = StyleSheet.create({
     flex: 1,
     height: 4,
     borderRadius: 2,
-    backgroundColor: '#1F2937',
     overflow: 'hidden',
   },
   completenessFill: {
     height: '100%',
-    backgroundColor: '#4F8EF7',
     borderRadius: 2,
   },
   completenessText: {
     fontSize: 10,
-    color: '#6B7280',
     fontWeight: '600',
   },
   navChips: {
@@ -430,18 +424,17 @@ const styles = StyleSheet.create({
     paddingVertical: 6,
     borderRadius: 16,
     borderWidth: 1,
-    backgroundColor: '#0A0A1A',
   },
   navChipText: {
     fontSize: 11,
     fontWeight: '600',
   },
   sectionCard: {
-    backgroundColor: '#111827',
     borderRadius: 16,
     padding: 16,
     marginHorizontal: 16,
     marginTop: 12,
+    borderWidth: 1,
   },
   sectionHeader: {
     flexDirection: 'row',
@@ -452,7 +445,6 @@ const styles = StyleSheet.create({
   sectionTitle: {
     fontSize: 15,
     fontWeight: '700',
-    color: '#FFFFFF',
   },
   infoGrid: {
     gap: 8,
@@ -465,12 +457,10 @@ const styles = StyleSheet.create({
   },
   infoLabel: {
     fontSize: 12,
-    color: '#6B7280',
     fontWeight: '500',
   },
   infoValue: {
     fontSize: 13,
-    color: '#D1D5DB',
     fontWeight: '600',
     maxWidth: '60%',
     textAlign: 'right',
@@ -484,7 +474,7 @@ const styles = StyleSheet.create({
     width: 8,
     height: 8,
     borderRadius: 4,
-    backgroundColor: '#F59E0B',
+    backgroundColor: '#D97706',
     marginTop: 4,
   },
   eventInfo: {
@@ -492,24 +482,20 @@ const styles = StyleSheet.create({
   },
   eventDate: {
     fontSize: 10,
-    color: '#6B7280',
     fontWeight: '600',
   },
   eventDesc: {
     fontSize: 12,
-    color: '#D1D5DB',
   },
   sourcesSection: {
     marginHorizontal: 16,
     marginTop: 16,
     paddingTop: 12,
     borderTopWidth: 1,
-    borderTopColor: '#1F2937',
   },
   sourcesTitle: {
     fontSize: 11,
     fontWeight: '600',
-    color: '#6B7280',
     marginBottom: 8,
   },
   sourceChips: {
@@ -522,7 +508,6 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: 4,
-    backgroundColor: '#1F2937',
     paddingHorizontal: 8,
     paddingVertical: 4,
     borderRadius: 6,
@@ -531,11 +516,9 @@ const styles = StyleSheet.create({
     width: 6,
     height: 6,
     borderRadius: 3,
-    backgroundColor: '#10B981',
   },
   sourceChipText: {
     fontSize: 10,
-    color: '#D1D5DB',
     fontWeight: '500',
   },
   sourceLink: {
@@ -546,12 +529,10 @@ const styles = StyleSheet.create({
   },
   sourceLinkText: {
     fontSize: 12,
-    color: '#4F8EF7',
     fontWeight: '600',
   },
   disclaimer: {
     fontSize: 11,
-    color: '#4B5563',
     textAlign: 'center',
     marginHorizontal: 16,
     marginTop: 16,
@@ -560,7 +541,6 @@ const styles = StyleSheet.create({
   },
   lastUpdated: {
     fontSize: 10,
-    color: '#4B5563',
     marginTop: 4,
   },
 });

@@ -4,8 +4,8 @@ import { useLocalSearchParams, Stack, useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useTranslation } from 'react-i18next';
-import { getPartyColor } from '@/lib/constants';
-import CandidateAvatar from '@/components/CandidateAvatar';
+import { getPartyColor } from '../../lib/constants';
+import CandidateAvatar from '../../components/CandidateAvatar';
 import {
   getMLAProfileForState,
   getDemographicsForState,
@@ -14,12 +14,12 @@ import {
   getElectionHistoryForState,
   hasFullDataForState,
   getTimelineForState,
-} from '@/lib/stateDataDispatcher';
-import { getTriviaForConstituencyInState } from '@/lib/stateTriviaAdapter';
-import { getUnifiedConstituenciesForState, type UnifiedConstituency } from '@/lib/stateDataAdapter';
-import { hasHierarchyData } from '@/lib/hierarchyData';
-import { selectFreshTrivia } from '@/lib/triviaSelector';
-import { useSeedDataWithLoading } from '@/lib/useSeedDataWithLoading';
+} from '../../lib/stateDataDispatcher';
+import { getTriviaForConstituencyInState } from '../../lib/stateTriviaAdapter';
+import { getUnifiedConstituenciesForState, type UnifiedConstituency } from '../../lib/stateDataAdapter';
+import { hasHierarchyData } from '../../lib/hierarchyData';
+import { selectFreshTrivia } from '../../lib/triviaSelector';
+import { useSeedDataWithLoading } from '../../lib/useSeedDataWithLoading';
 import { STATES } from '@kshetra/shared';
 import { useActiveStateStore } from '../../stores/activeState';
 import { useFavoritesStore } from '../../stores/favorites';
@@ -40,10 +40,12 @@ import IssueCard from '../../components/IssueCard';
 import HeadlineCard from '../../components/HeadlineCard';
 import PoliticalTimelineCard from '../../components/PoliticalTimelineCard';
 import { ConstituencyCardSkeleton, TextSkeleton } from '../../components/SkeletonLoaders';
+import { useTheme } from '../../lib/theme';
 
 
 export default function ConstituencyDetailScreen() {
   const { t } = useTranslation();
+  const { colors } = useTheme();
   const router = useRouter();
   const { id } = useLocalSearchParams<{ id: string }>();
   const stateCodeStore = useActiveStateStore((s) => s.stateCode);
@@ -89,53 +91,48 @@ export default function ConstituencyDetailScreen() {
   const isFavorite = useFavoritesStore((s) => s.isFavorite(acNo));
   const toggleFavorite = useFavoritesStore((s) => s.toggleFavorite);
   const addRecent = useRecentsStore((s) => s.addRecent);
-  const myHome = useMyConstituencyStore((s) => s.home);
+  const isHome = useMyConstituencyStore((s) => s.isHome(acNo));
+  const isMyHome = isHome;
   const setHome = useMyConstituencyStore((s) => s.setHome);
   const clearHome = useMyConstituencyStore((s) => s.clearHome);
-  const isMyHome = myHome?.acNo === acNo;
+  const scrollRef = useRef<ScrollView>(null);
 
-  // ─── Feed / Civic store connections ───
-  const allPosts = useFeedStore((s) => s.posts);
-  const feedToggleReaction = useFeedStore((s) => s.toggleReaction);
-  const feedVotePoll = useFeedStore((s) => s.votePoll);
-  const allIssues = useCivicStore((s) => s.issues);
-  const allHeadlines = useCivicStore((s) => s.headlines);
+  // Civic store for issues tab
+  const civicIssues = useCivicStore((s) => s.issues);
+  const civicHeadlines = useCivicStore((s) => s.headlines);
+  const addIssue = useCivicStore((s) => s.addIssue);
   const civicToggleUpvote = useCivicStore((s) => s.toggleUpvote);
   const civicToggleFollow = useCivicStore((s) => s.toggleFollow);
-  const civicShareIssue = useCivicStore((s) => s.shareIssue);
+  const civicShareIssue = (issueId: string) => {
+    const iss = civicIssues.find((i) => i.id === issueId);
+    return iss ? `${iss.title}\n\n— via Kshetra` : '';
+  };
 
-  // ─── Constituency-specific data filtering ───
-  const constituencyIdKey = `${stateCode}-AC-${acNo}`;
-
-  const constituencyPosts = useMemo(
-    () => allPosts.filter((p) =>
-      !p.isDeleted && (
-        p.constituencyId === constituencyIdKey ||
-        (constituency && p.constituencyName?.toLowerCase() === constituency.name.toLowerCase())
-      )
-    ).sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()),
-    [allPosts, constituencyIdKey, constituency],
-  );
+  // Feed store for community posts & polls
+  const feedPosts = useFeedStore((s) => s.posts);
+  const feedToggleReaction = useFeedStore((s) => s.toggleReaction);
+  const feedVotePoll = useFeedStore((s) => s.votePoll);
 
   const constituencyIssues = useMemo(
-    () => allIssues.filter((i) => i.constituencyId === constituencyIdKey)
-      .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()),
-    [allIssues, constituencyIdKey],
+    () => civicIssues.filter((i) => i.constituencyName === constituency?.name || i.stateCode === stateCode),
+    [civicIssues, constituency, stateCode],
+  );
+
+  const constituencyPosts = useMemo(
+    () => feedPosts.filter((p) => p.constituencyName === constituency?.name || p.stateCode === stateCode),
+    [feedPosts, constituency, stateCode],
   );
 
   const constituencyHeadlines = useMemo(
-    () => allHeadlines.filter((h) =>
-      h.constituencyId === constituencyIdKey ||
-      (constituency && (
-        h.title.toLowerCase().includes(constituency.name.toLowerCase()) ||
-        h.title.toLowerCase().includes(constituency.district.toLowerCase())
-      ))
-    ).sort((a, b) => new Date(b.publishedAt).getTime() - new Date(a.publishedAt).getTime()),
-    [allHeadlines, constituencyIdKey, constituency],
+    () => civicHeadlines.filter((h) => (constituency ? h.constituencyId === `${stateCode}-AC-${constituency.acNo}` : false) || h.stateCode === stateCode),
+    [civicHeadlines, constituency, stateCode],
   );
 
+  const [issueFilter, setIssueFilter] = useState<'all' | 'open' | 'resolved'>('all');
+  const [categoryFilter, setCategoryFilter] = useState<string>('all');
+  const [reportSheetVisible, setReportSheetVisible] = useState(false);
+
   // ─── Scroll ref for tab changes ───
-  const scrollRef = useRef<ScrollView>(null);
   const handleTabChange = useCallback((tab: ConstituencyTab) => {
     setActiveTab(tab);
     scrollRef.current?.scrollTo({ y: 0, animated: true });
@@ -151,16 +148,22 @@ export default function ConstituencyDetailScreen() {
         stateCode: stateCode,
       });
     }
-  }, [constituency, addRecent]);
+  }, [constituency, addRecent, stateCode]);
 
   if (!constituency) {
     return (
-      <View style={styles.container}>
-        <Stack.Screen options={{ title: t('constituency.notFound') }} />
+      <View style={[styles.container, { backgroundColor: colors.background }]}>
+        <Stack.Screen
+          options={{
+            title: t('constituency.notFoundTitle'),
+            headerStyle: { backgroundColor: colors.surface },
+            headerTintColor: colors.primary,
+          }}
+        />
         <View style={styles.center}>
-          <Ionicons name="alert-circle" size={48} color="#EF4444" />
-          <Text style={styles.errorText}>
-            {t('constituency.notFoundMsg', { id })}
+          <Ionicons name="alert-circle-outline" size={48} color={colors.danger} />
+          <Text style={[styles.errorText, { color: colors.textSecondary }]}>
+            {t('constituency.notFoundDesc')}
           </Text>
         </View>
       </View>
@@ -170,12 +173,12 @@ export default function ConstituencyDetailScreen() {
   const partyColor = getPartyColor(constituency.winnerParty);
 
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, { backgroundColor: colors.background }]}>
       <Stack.Screen
         options={{
           title: constituency.name,
-          headerStyle: { backgroundColor: '#0A0A1A' },
-          headerTintColor: '#FFFFFF',
+          headerStyle: { backgroundColor: colors.surface },
+          headerTintColor: colors.primary,
         }}
       />
       {/* Phase 4: Show skeleton while seed data loads */}
@@ -194,13 +197,13 @@ export default function ConstituencyDetailScreen() {
         contentContainerStyle={[styles.scrollContent, { paddingBottom: Math.max(insets.bottom, 20) + 80 }]}
       >
         {/* Hero */}
-        <View style={styles.hero}>
-          <Text style={styles.acNumber}>AC #{constituency.acNo}</Text>
-          <Text style={styles.name}>{constituency.name}</Text>
-          <Text style={styles.district}>{constituency.district} {t('constituency.districtLabel')}</Text>
+        <View style={[styles.hero, { borderBottomColor: colors.border }]}>
+          <Text style={[styles.acNumber, { color: colors.textMuted }]}>AC #{constituency.acNo}</Text>
+          <Text style={[styles.name, { color: colors.text }]}>{constituency.name}</Text>
+          <Text style={[styles.district, { color: colors.textSecondary }]}>{constituency.district} {t('constituency.districtLabel')}</Text>
           <View style={styles.heroActions}>
-            <View style={styles.typeBadge}>
-              <Text style={styles.typeBadgeText}>{constituency.type}</Text>
+            <View style={[styles.typeBadge, { backgroundColor: colors.surfaceElevated, borderColor: colors.goldBorder || colors.border, borderWidth: 1 }]}>
+              <Text style={[styles.typeBadgeText, { color: colors.textSecondary }]}>{constituency.type}</Text>
             </View>
             <View style={styles.heroButtons}>
               <Pressable
@@ -514,11 +517,11 @@ export default function ConstituencyDetailScreen() {
                 <View style={styles.issueStatsRow}>
                   {(['open', 'in_progress', 'resolved'] as const).map((status) => {
                     const count = constituencyIssues.filter((i) => i.status === status).length;
-                    const colors = { open: '#3B82F6', in_progress: '#F59E0B', resolved: '#10B981' };
+                    const statusColors = { open: '#3B82F6', in_progress: '#F59E0B', resolved: '#10B981' };
                     const labels = { open: t('constituencyExtended.issueStatus.open'), in_progress: t('constituencyExtended.issueStatus.inProgress'), resolved: t('constituencyExtended.issueStatus.resolved') };
                     return (
                       <View key={status} style={styles.issueStatItem}>
-                        <Text style={[styles.issueStatValue, { color: colors[status] }]}>{count}</Text>
+                        <Text style={[styles.issueStatValue, { color: statusColors[status] }]}>{count}</Text>
                         <Text style={styles.issueStatLabel}>{labels[status]}</Text>
                       </View>
                     );
@@ -836,7 +839,6 @@ export default function ConstituencyDetailScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#0A0A1A',
   },
   center: {
     flex: 1,
@@ -846,7 +848,6 @@ const styles = StyleSheet.create({
   },
   errorText: {
     fontSize: 16,
-    color: '#EF4444',
     marginTop: 12,
   },
   scroll: {
@@ -860,22 +861,18 @@ const styles = StyleSheet.create({
     paddingTop: 20,
     paddingBottom: 24,
     borderBottomWidth: 1,
-    borderBottomColor: '#1F2937',
   },
   acNumber: {
     fontSize: 13,
-    color: '#6B7280',
     fontWeight: '600',
   },
   name: {
     fontSize: 32,
     fontWeight: '800',
-    color: '#FFFFFF',
     marginTop: 4,
   },
   district: {
     fontSize: 15,
-    color: '#9CA3AF',
     marginTop: 4,
   },
   heroActions: {
@@ -885,7 +882,6 @@ const styles = StyleSheet.create({
     marginTop: 12,
   },
   typeBadge: {
-    backgroundColor: '#1F2937',
     borderRadius: 6,
     paddingHorizontal: 10,
     paddingVertical: 4,
@@ -898,14 +894,13 @@ const styles = StyleSheet.create({
     width: 40,
     height: 40,
     borderRadius: 20,
-    backgroundColor: '#1F2937',
     justifyContent: 'center',
     alignItems: 'center',
+    borderWidth: 1,
   },
   typeBadgeText: {
     fontSize: 12,
     fontWeight: '700',
-    color: '#9CA3AF',
   },
   homeButton: {
     flexDirection: 'row',
@@ -915,23 +910,15 @@ const styles = StyleSheet.create({
     marginTop: 12,
     paddingVertical: 12,
     borderRadius: 12,
-    backgroundColor: '#1F2937',
     borderWidth: 1,
-    borderColor: '#374151',
     gap: 8,
   },
-  homeButtonActive: {
-    backgroundColor: '#10B98120',
-    borderColor: '#10B98140',
-  },
+  homeButtonActive: {},
   homeButtonText: {
     fontSize: 14,
     fontWeight: '700',
-    color: '#6B7280',
   },
-  homeButtonTextActive: {
-    color: '#10B981',
-  },
+  homeButtonTextActive: {},
   followButton: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -940,22 +927,22 @@ const styles = StyleSheet.create({
     marginTop: 8,
     paddingVertical: 12,
     borderRadius: 12,
-    backgroundColor: '#1F2937',
+    backgroundColor: '#FAF6EE',
     borderWidth: 1,
-    borderColor: '#374151',
+    borderColor: '#D8BC7E',
     gap: 8,
   },
   followButtonActive: {
-    backgroundColor: '#4F8EF715',
-    borderColor: '#4F8EF740',
+    backgroundColor: '#A8201A15',
+    borderColor: '#A8201A40',
   },
   followButtonText: {
     fontSize: 14,
     fontWeight: '700',
-    color: '#6B7280',
+    color: '#6D5549',
   },
   followButtonTextActive: {
-    color: '#4F8EF7',
+    color: '#A8201A',
   },
   section: {
     paddingHorizontal: 20,
@@ -964,13 +951,15 @@ const styles = StyleSheet.create({
   sectionTitle: {
     fontSize: 18,
     fontWeight: '700',
-    color: '#FFFFFF',
+    color: '#241814',
     marginBottom: 12,
   },
   resultCard: {
-    backgroundColor: '#111827',
+    backgroundColor: '#FFFFFF',
     borderRadius: 16,
     padding: 16,
+    borderWidth: 1,
+    borderColor: '#D8BC7E',
   },
   resultRow: {
     flexDirection: 'row',
@@ -987,7 +976,7 @@ const styles = StyleSheet.create({
     borderRadius: 24,
     borderWidth: 2,
     overflow: 'hidden',
-    backgroundColor: '#1F2937',
+    backgroundColor: '#F5EFE4',
     marginRight: 12,
   },
   resultAvatar: {
@@ -1004,11 +993,11 @@ const styles = StyleSheet.create({
   resultParty: {
     fontSize: 18,
     fontWeight: '800',
-    color: '#FFFFFF',
+    color: '#241814',
   },
   resultCandidate: {
     fontSize: 13,
-    color: '#9CA3AF',
+    color: '#6D5549',
     marginTop: 2,
   },
   resultRight: {
@@ -1017,15 +1006,15 @@ const styles = StyleSheet.create({
   resultVotes: {
     fontSize: 20,
     fontWeight: '800',
-    color: '#FFFFFF',
+    color: '#241814',
   },
   resultLabel: {
     fontSize: 11,
-    color: '#6B7280',
+    color: '#8E7B6F',
   },
   divider: {
     height: 1,
-    backgroundColor: '#1F2937',
+    backgroundColor: '#E8DED1',
     marginVertical: 14,
   },
   statsRow: {
@@ -1038,17 +1027,19 @@ const styles = StyleSheet.create({
   statValue: {
     fontSize: 16,
     fontWeight: '700',
-    color: '#FFFFFF',
+    color: '#241814',
   },
   statLabel: {
     fontSize: 11,
-    color: '#6B7280',
+    color: '#8E7B6F',
     marginTop: 4,
   },
   demoCard: {
-    backgroundColor: '#111827',
+    backgroundColor: '#FFFFFF',
     borderRadius: 16,
     padding: 16,
+    borderWidth: 1,
+    borderColor: '#D8BC7E',
   },
   demoRow: {
     flexDirection: 'row',
@@ -1062,24 +1053,24 @@ const styles = StyleSheet.create({
   demoValue: {
     fontSize: 16,
     fontWeight: '700',
-    color: '#FFFFFF',
+    color: '#241814',
     marginTop: 4,
   },
   demoLabel: {
     fontSize: 10,
-    color: '#6B7280',
+    color: '#8E7B6F',
     marginTop: 2,
     textTransform: 'uppercase',
   },
   demoDivider: {
     height: 1,
-    backgroundColor: '#1F2937',
+    backgroundColor: '#E8DED1',
     marginVertical: 12,
   },
   demoSubTitle: {
     fontSize: 12,
     fontWeight: '700',
-    color: '#9CA3AF',
+    color: '#6D5549',
     textTransform: 'uppercase',
     letterSpacing: 1,
     marginBottom: 8,
@@ -1094,13 +1085,13 @@ const styles = StyleSheet.create({
   demoBarLabel: {
     fontSize: 12,
     fontWeight: '700',
-    color: '#9CA3AF',
+    color: '#6D5549',
     width: 44,
   },
   demoBarTrack: {
     flex: 1,
     height: 8,
-    backgroundColor: '#1F2937',
+    backgroundColor: '#F5EFE4',
     borderRadius: 4,
     overflow: 'hidden',
     marginHorizontal: 8,
@@ -1112,22 +1103,24 @@ const styles = StyleSheet.create({
   demoBarValue: {
     fontSize: 12,
     fontWeight: '700',
-    color: '#6B7280',
+    color: '#8E7B6F',
     width: 40,
     textAlign: 'right',
   },
   demoDisclaimer: {
     fontSize: 10,
-    color: '#4B5563',
+    color: '#8E7B6F',
     fontStyle: 'italic',
     textAlign: 'right',
     marginTop: 8,
   },
   historyCard: {
-    backgroundColor: '#111827',
+    backgroundColor: '#FFFFFF',
     borderRadius: 14,
     padding: 16,
     marginBottom: 12,
+    borderWidth: 1,
+    borderColor: '#D8BC7E',
   },
   historyHeader: {
     flexDirection: 'row',
@@ -1138,7 +1131,7 @@ const styles = StyleSheet.create({
   historyYear: {
     fontSize: 20,
     fontWeight: '800',
-    color: '#FFFFFF',
+    color: '#241814',
   },
   historyWinnerBadge: {
     paddingHorizontal: 10,
@@ -1151,7 +1144,7 @@ const styles = StyleSheet.create({
   },
   historyNotes: {
     fontSize: 12,
-    color: '#6B7280',
+    color: '#6D5549',
     marginBottom: 12,
     lineHeight: 16,
   },
@@ -1165,13 +1158,13 @@ const styles = StyleSheet.create({
   historyBarLabel: {
     fontSize: 12,
     fontWeight: '700',
-    color: '#9CA3AF',
+    color: '#6D5549',
     width: 44,
   },
   historyBarTrack: {
     flex: 1,
     height: 8,
-    backgroundColor: '#1F2937',
+    backgroundColor: '#F5EFE4',
     borderRadius: 4,
     overflow: 'hidden',
     marginHorizontal: 8,
@@ -1183,13 +1176,13 @@ const styles = StyleSheet.create({
   historyBarValue: {
     fontSize: 12,
     fontWeight: '700',
-    color: '#6B7280',
+    color: '#8E7B6F',
     width: 28,
     textAlign: 'right',
   },
   historyTurnout: {
     fontSize: 11,
-    color: '#4B5563',
+    color: '#8E7B6F',
     marginTop: 10,
     textAlign: 'right',
   },
@@ -1226,20 +1219,22 @@ const styles = StyleSheet.create({
   swingText: {
     fontSize: 11,
     fontWeight: '700',
-    color: '#F59E0B',
+    color: '#D97706',
   },
   histCard: {
     flexDirection: 'row',
-    backgroundColor: '#111827',
+    backgroundColor: '#FFFFFF',
     borderRadius: 12,
     padding: 14,
     marginBottom: 8,
     alignItems: 'center',
+    borderWidth: 1,
+    borderColor: '#D8BC7E',
   },
   histCardCurrent: {
     borderWidth: 1,
-    borderColor: '#4F8EF740',
-    backgroundColor: '#111827',
+    borderColor: '#A8201A',
+    backgroundColor: '#FAF6EE',
   },
   histCardLeft: {
     width: 54,
@@ -1249,15 +1244,15 @@ const styles = StyleSheet.create({
   histYear: {
     fontSize: 16,
     fontWeight: '800',
-    color: '#6B7280',
+    color: '#6D5549',
   },
   histYearCurrent: {
-    color: '#4F8EF7',
+    color: '#A8201A',
   },
   histCurrentLabel: {
     fontSize: 9,
     fontWeight: '700',
-    color: '#4F8EF7',
+    color: '#A8201A',
     textTransform: 'uppercase',
     letterSpacing: 0.5,
     marginTop: 2,
@@ -1351,9 +1346,11 @@ const styles = StyleSheet.create({
     justifyContent: 'space-around',
     marginHorizontal: 16,
     marginBottom: 16,
-    backgroundColor: '#111827',
+    backgroundColor: '#F5EFE4',
     borderRadius: 12,
     padding: 14,
+    borderWidth: 1,
+    borderColor: '#E8DED1',
   },
   issueStatItem: {
     alignItems: 'center',

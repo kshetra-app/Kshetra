@@ -15,7 +15,7 @@ import {
   ActivityIndicator,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { getPartyColor } from '@/lib/constants';
+import { getPartyColor } from '../lib/constants';
 
 const { width: SCREEN_W, height: SCREEN_H } = Dimensions.get('window');
 const IMAGE_SIZE = Math.min(SCREEN_W - 48, SCREEN_H * 0.5);

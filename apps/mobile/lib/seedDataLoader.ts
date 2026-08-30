@@ -128,7 +128,12 @@ const DB_ASSET_MODULE = require('../data/seed-data.db');
  * also clear any stray -wal/-shm before copying a fresh version.
  */
 async function ensureBundledDbCopied(): Promise<void> {
-  const sqliteDir = `${FileSystem.documentDirectory}SQLite`;
+  const docDir = FileSystem.documentDirectory;
+  if (!docDir) {
+    // Web platform or environment without document directory
+    return;
+  }
+  const sqliteDir = `${docDir}SQLite`;
   const dbPath = `${sqliteDir}/${DB_NAME}`;
   const versionPath = `${dbPath}.version`;
 
@@ -138,14 +143,16 @@ async function ensureBundledDbCopied(): Promise<void> {
   }
 
   const dbInfo = await FileSystem.getInfoAsync(dbPath);
-  if (dbInfo.exists) {
+  // Real seed-data.db is ~137MB. Any file smaller than 10MB is corrupt or a git LFS pointer.
+  const isValidDbSize = (dbInfo as any).size && (dbInfo as any).size > 10_000_000;
+  if (dbInfo.exists && isValidDbSize) {
     let installedVersion: string | null = null;
     try {
       installedVersion = await FileSystem.readAsStringAsync(versionPath);
     } catch {
       installedVersion = null;
     }
-    if (installedVersion === DB_ASSET_VERSION) return; // up to date
+    if (installedVersion === DB_ASSET_VERSION) return; // up to date and genuine DB size
   }
 
   const asset = Asset.fromModule(DB_ASSET_MODULE);

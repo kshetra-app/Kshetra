@@ -1,7 +1,8 @@
 import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { moderateScale as ms } from '@/lib/responsive';
+import { moderateScale as ms } from '../../lib/responsive';
+import { useTheme } from '../../lib/theme';
 
 interface FinancialRecord {
   electionYear: number;
@@ -23,63 +24,73 @@ interface Props {
   compact?: boolean;
 }
 
-function formatINR(val: number): string {
+function formatINR(val: number | undefined | null): string {
+  if (val === undefined || val === null || isNaN(val) || typeof val !== 'number') return '—';
   if (val >= 1_00_00_000) return `₹${(val / 1_00_00_000).toFixed(1)} Cr`;
   if (val >= 1_00_000) return `₹${(val / 1_00_000).toFixed(1)} L`;
   if (val >= 1000) return `₹${(val / 1000).toFixed(0)}K`;
-  return `₹${val}`;
+  return `₹${val.toLocaleString('en-IN')}`;
 }
 
 export default function FinancialBreakdownCard({ records, compact }: Props) {
+  const { colors } = useTheme();
+
   if (records.length === 0) {
     return (
-      <View style={styles.container}>
-        <Text style={styles.emptyText}>No financial data available</Text>
+      <View style={[styles.container, { backgroundColor: colors.surface, borderColor: colors.goldBorder || colors.border, borderWidth: 1 }]}>
+        <Text style={[styles.emptyText, { color: colors.textMuted }]}>No financial data available</Text>
       </View>
     );
   }
 
   const latest = records[records.length - 1];
   const previous = records.length >= 2 ? records[records.length - 2] : null;
-  const isCrorepati = latest.totalAssets >= 1_00_00_000;
+  const totalAssets = latest.totalAssets || 0;
+  const isCrorepati = totalAssets >= 1_00_00_000;
 
   // Compute growth
   let growthPercent: number | null = null;
   if (previous && previous.totalAssets > 0) {
-    growthPercent = Math.round(((latest.totalAssets - previous.totalAssets) / previous.totalAssets) * 100);
+    growthPercent = Math.round(((totalAssets - previous.totalAssets) / previous.totalAssets) * 100);
   }
 
   // Asset breakdown percentages
-  const total = latest.totalAssets || 1;
-  const selfMovPct = Math.round((latest.selfMovableAssets / total) * 100);
-  const selfImmPct = Math.round((latest.selfImmovableAssets / total) * 100);
-  const spousePct = Math.round(((latest.spouseMovableAssets + latest.spouseImmovableAssets) / total) * 100);
-  const depPct = Math.round((latest.dependentsAssets / total) * 100);
+  const total = totalAssets || 1;
+  const selfMov = latest.selfMovableAssets || 0;
+  const selfImm = latest.selfImmovableAssets || 0;
+  const spouseMov = latest.spouseMovableAssets || 0;
+  const spouseImm = latest.spouseImmovableAssets || 0;
+  const dep = latest.dependentsAssets || 0;
+
+  const selfMovPct = Math.round((selfMov / total) * 100);
+  const selfImmPct = Math.round((selfImm / total) * 100);
+  const spousePct = Math.round(((spouseMov + spouseImm) / total) * 100);
+  const depPct = Math.round((dep / total) * 100);
 
   if (compact) {
     return (
-      <View style={styles.compactContainer}>
+      <View style={[styles.compactContainer, { backgroundColor: colors.surface, borderColor: colors.goldBorder || colors.border, borderWidth: 1 }]}>
         <View style={styles.compactRow}>
           <View style={styles.compactItem}>
-            <Text style={styles.compactValue}>{formatINR(latest.totalAssets)}</Text>
-            <Text style={styles.compactLabel}>Assets</Text>
+            <Text style={[styles.compactValue, { color: colors.text }]}>{formatINR(latest.totalAssets)}</Text>
+            <Text style={[styles.compactLabel, { color: colors.textMuted }]}>Assets</Text>
           </View>
-          <View style={styles.compactDivider} />
+          <View style={[styles.compactDivider, { backgroundColor: colors.border }]} />
           <View style={styles.compactItem}>
-            <Text style={styles.compactValue}>{formatINR(latest.totalLiabilities)}</Text>
-            <Text style={styles.compactLabel}>Liabilities</Text>
+            <Text style={[styles.compactValue, { color: colors.text }]}>{formatINR(latest.totalLiabilities)}</Text>
+            <Text style={[styles.compactLabel, { color: colors.textMuted }]}>Liabilities</Text>
           </View>
-          <View style={styles.compactDivider} />
+          <View style={[styles.compactDivider, { backgroundColor: colors.border }]} />
           <View style={styles.compactItem}>
-            <Text style={[styles.compactValue, { color: growthPercent && growthPercent > 500 ? '#EF4444' : '#10B981' }]}>
+            <Text style={[styles.compactValue, { color: growthPercent && growthPercent > 500 ? colors.danger : colors.success }]}>
               {growthPercent !== null ? `${growthPercent > 0 ? '+' : ''}${growthPercent}%` : '—'}
             </Text>
-            <Text style={styles.compactLabel}>Growth</Text>
+            <Text style={[styles.compactLabel, { color: colors.textMuted }]}>Growth</Text>
           </View>
         </View>
         {isCrorepati && (
           <View style={styles.crorepatiTag}>
-            <Ionicons name="diamond" size={10} color="#F59E0B" />
+            <Ionicons name="diamond" size={10} color="#D97706" />
             <Text style={styles.crorepatiText}>Crorepati</Text>
           </View>
         )}
@@ -88,25 +99,25 @@ export default function FinancialBreakdownCard({ records, compact }: Props) {
   }
 
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, { backgroundColor: colors.surface, borderColor: colors.goldBorder || colors.border, borderWidth: 1 }]}>
       {/* Header */}
       <View style={styles.header}>
         <View style={styles.headerLeft}>
-          <Ionicons name="wallet" size={18} color="#4F8EF7" />
-          <Text style={styles.title}>Financial Disclosure</Text>
+          <Ionicons name="wallet" size={18} color={colors.primary} />
+          <Text style={[styles.title, { color: colors.text }]}>Financial Disclosure</Text>
         </View>
-        <Text style={styles.yearBadge}>{latest.electionYear}</Text>
+        <Text style={[styles.yearBadge, { backgroundColor: colors.surfaceElevated, color: colors.textSecondary }]}>{latest.electionYear}</Text>
       </View>
 
       {/* Total Net Worth */}
-      <View style={styles.netWorthRow}>
+      <View style={[styles.netWorthRow, { backgroundColor: colors.surfaceElevated, borderColor: colors.goldBorder || colors.border, borderWidth: 1 }]}>
         <View>
-          <Text style={styles.netWorthLabel}>Net Worth</Text>
-          <Text style={styles.netWorthValue}>{formatINR(latest.netWorth)}</Text>
+          <Text style={[styles.netWorthLabel, { color: colors.textMuted }]}>Net Worth</Text>
+          <Text style={[styles.netWorthValue, { color: colors.text }]}>{formatINR(latest.netWorth)}</Text>
         </View>
         {isCrorepati && (
           <View style={styles.crorepatiChip}>
-            <Ionicons name="diamond" size={12} color="#F59E0B" />
+            <Ionicons name="diamond" size={12} color="#D97706" />
             <Text style={styles.crorepatiChipText}>Crorepati</Text>
           </View>
         )}
@@ -114,37 +125,37 @@ export default function FinancialBreakdownCard({ records, compact }: Props) {
 
       {/* Asset Breakdown Bars */}
       <View style={styles.breakdownSection}>
-        <Text style={styles.breakdownTitle}>Asset Breakdown</Text>
-        <View style={styles.stackBar}>
-          <View style={[styles.stackSegment, { flex: selfMovPct, backgroundColor: '#4F8EF7' }]} />
-          <View style={[styles.stackSegment, { flex: selfImmPct, backgroundColor: '#10B981' }]} />
-          <View style={[styles.stackSegment, { flex: spousePct, backgroundColor: '#F59E0B' }]} />
-          {depPct > 0 && <View style={[styles.stackSegment, { flex: depPct, backgroundColor: '#8B5CF6' }]} />}
+        <Text style={[styles.breakdownTitle, { color: colors.textSecondary }]}>Asset Breakdown</Text>
+        <View style={[styles.stackBar, { backgroundColor: colors.surfaceElevated }]}>
+          <View style={[styles.stackSegment, { flex: Math.max(1, selfMovPct), backgroundColor: colors.teal }]} />
+          <View style={[styles.stackSegment, { flex: Math.max(1, selfImmPct), backgroundColor: colors.success }]} />
+          <View style={[styles.stackSegment, { flex: Math.max(1, spousePct), backgroundColor: colors.gold }]} />
+          {depPct > 0 && <View style={[styles.stackSegment, { flex: depPct, backgroundColor: colors.primary }]} />}
         </View>
         <View style={styles.legendRow}>
-          <LegendItem color="#4F8EF7" label="Self Movable" value={formatINR(latest.selfMovableAssets)} />
-          <LegendItem color="#10B981" label="Self Immovable" value={formatINR(latest.selfImmovableAssets)} />
+          <LegendItem color={colors.teal} label="Self Movable" value={formatINR(selfMov)} textSecondary={colors.textSecondary} textPrimary={colors.text} />
+          <LegendItem color={colors.success} label="Self Immovable" value={formatINR(selfImm)} textSecondary={colors.textSecondary} textPrimary={colors.text} />
         </View>
         <View style={styles.legendRow}>
-          <LegendItem color="#F59E0B" label="Spouse" value={formatINR(latest.spouseMovableAssets + latest.spouseImmovableAssets)} />
-          {latest.dependentsAssets > 0 && (
-            <LegendItem color="#8B5CF6" label="Dependents" value={formatINR(latest.dependentsAssets)} />
+          <LegendItem color={colors.gold} label="Spouse" value={formatINR(spouseMov + spouseImm)} textSecondary={colors.textSecondary} textPrimary={colors.text} />
+          {dep > 0 && (
+            <LegendItem color={colors.primary} label="Dependents" value={formatINR(dep)} textSecondary={colors.textSecondary} textPrimary={colors.text} />
           )}
         </View>
       </View>
 
       {/* Income */}
       {(latest.selfIncome > 0 || latest.spouseIncome > 0) && (
-        <View style={styles.incomeSection}>
-          <Text style={styles.breakdownTitle}>Declared Income (ITR)</Text>
+        <View style={[styles.incomeSection, { borderTopColor: colors.border }]}>
+          <Text style={[styles.breakdownTitle, { color: colors.textSecondary }]}>Declared Income (ITR)</Text>
           <View style={styles.incomeRow}>
-            <View style={styles.incomeItem}>
-              <Text style={styles.incomeValue}>{formatINR(latest.selfIncome)}</Text>
-              <Text style={styles.incomeLabel}>Self</Text>
+            <View style={[styles.incomeItem, { backgroundColor: colors.surfaceElevated }]}>
+              <Text style={[styles.incomeValue, { color: colors.text }]}>{formatINR(latest.selfIncome)}</Text>
+              <Text style={[styles.incomeLabel, { color: colors.textMuted }]}>Self</Text>
             </View>
-            <View style={styles.incomeItem}>
-              <Text style={styles.incomeValue}>{formatINR(latest.spouseIncome)}</Text>
-              <Text style={styles.incomeLabel}>Spouse</Text>
+            <View style={[styles.incomeItem, { backgroundColor: colors.surfaceElevated }]}>
+              <Text style={[styles.incomeValue, { color: colors.text }]}>{formatINR(latest.spouseIncome)}</Text>
+              <Text style={[styles.incomeLabel, { color: colors.textMuted }]}>Spouse</Text>
             </View>
           </View>
         </View>
@@ -152,25 +163,25 @@ export default function FinancialBreakdownCard({ records, compact }: Props) {
 
       {/* Growth across elections */}
       {records.length >= 2 && (
-        <View style={styles.growthSection}>
-          <Text style={styles.breakdownTitle}>Wealth Timeline</Text>
+        <View style={[styles.growthSection, { borderTopColor: colors.border }]}>
+          <Text style={[styles.breakdownTitle, { color: colors.textSecondary }]}>Wealth Timeline</Text>
           <View style={styles.timelineRow}>
             {records.map((r, idx) => {
-              const maxAsset = Math.max(...records.map(x => x.totalAssets));
-              const barHeight = Math.max(8, (r.totalAssets / (maxAsset || 1)) * 60);
+              const maxAsset = Math.max(...records.map(x => x.totalAssets || 0));
+              const barHeight = Math.max(8, ((r.totalAssets || 0) / (maxAsset || 1)) * 60);
               return (
                 <View key={r.electionYear} style={styles.timelineItem}>
-                  <View style={[styles.timelineBar, { height: barHeight, backgroundColor: idx === records.length - 1 ? '#4F8EF7' : '#374151' }]} />
-                  <Text style={styles.timelineYear}>{r.electionYear}</Text>
-                  <Text style={styles.timelineVal}>{formatINR(r.totalAssets)}</Text>
+                  <View style={[styles.timelineBar, { height: barHeight, backgroundColor: idx === records.length - 1 ? colors.primary : colors.border }]} />
+                  <Text style={[styles.timelineYear, { color: colors.textSecondary }]}>{r.electionYear}</Text>
+                  <Text style={[styles.timelineVal, { color: colors.textMuted }]}>{formatINR(r.totalAssets)}</Text>
                 </View>
               );
             })}
           </View>
           {growthPercent !== null && (
             <View style={[styles.growthChip, growthPercent > 500 && styles.growthChipDanger]}>
-              <Ionicons name={growthPercent > 0 ? 'trending-up' : 'trending-down'} size={12} color={growthPercent > 500 ? '#EF4444' : '#10B981'} />
-              <Text style={[styles.growthChipText, growthPercent > 500 && styles.growthChipTextDanger]}>
+              <Ionicons name={growthPercent > 0 ? 'trending-up' : 'trending-down'} size={12} color={growthPercent > 500 ? colors.danger : colors.success} />
+              <Text style={[styles.growthChipText, { color: growthPercent > 500 ? colors.danger : colors.success }]}>
                 {growthPercent > 0 ? '+' : ''}{growthPercent}% since {previous?.electionYear}
               </Text>
             </View>
@@ -179,28 +190,27 @@ export default function FinancialBreakdownCard({ records, compact }: Props) {
       )}
 
       {/* Liabilities */}
-      <View style={styles.liabilityRow}>
-        <Ionicons name="card" size={14} color="#EF4444" />
-        <Text style={styles.liabilityLabel}>Total Liabilities:</Text>
-        <Text style={styles.liabilityValue}>{formatINR(latest.totalLiabilities)}</Text>
+      <View style={[styles.liabilityRow, { borderTopColor: colors.border }]}>
+        <Ionicons name="card" size={14} color={colors.danger} />
+        <Text style={[styles.liabilityLabel, { color: colors.textSecondary }]}>Total Liabilities:</Text>
+        <Text style={[styles.liabilityValue, { color: colors.danger }]}>{formatINR(latest.totalLiabilities)}</Text>
       </View>
     </View>
   );
 }
 
-function LegendItem({ color, label, value }: { color: string; label: string; value: string }) {
+function LegendItem({ color, label, value, textSecondary, textPrimary }: { color: string; label: string; value: string; textSecondary?: string; textPrimary?: string }) {
   return (
     <View style={styles.legendItem}>
       <View style={[styles.legendDot, { backgroundColor: color }]} />
-      <Text style={styles.legendLabel}>{label}</Text>
-      <Text style={styles.legendValue}>{value}</Text>
+      <Text style={[styles.legendLabel, textSecondary ? { color: textSecondary } : undefined]}>{label}</Text>
+      <Text style={[styles.legendValue, textPrimary ? { color: textPrimary } : undefined]}>{value}</Text>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: '#111827',
     borderRadius: 16,
     padding: 16,
     marginHorizontal: 16,
@@ -208,7 +218,6 @@ const styles = StyleSheet.create({
   },
   emptyText: {
     fontSize: ms(13),
-    color: '#6B7280',
     textAlign: 'center',
     paddingVertical: 20,
   },
@@ -226,13 +235,10 @@ const styles = StyleSheet.create({
   title: {
     fontSize: ms(15),
     fontWeight: '700',
-    color: '#FFFFFF',
   },
   yearBadge: {
     fontSize: ms(11),
     fontWeight: '700',
-    color: '#9CA3AF',
-    backgroundColor: '#1F2937',
     paddingHorizontal: 8,
     paddingVertical: 2,
     borderRadius: 8,
@@ -243,18 +249,15 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginBottom: 16,
     padding: 12,
-    backgroundColor: '#0A0A1A',
     borderRadius: 12,
   },
   netWorthLabel: {
     fontSize: ms(11),
-    color: '#6B7280',
     fontWeight: '500',
   },
   netWorthValue: {
     fontSize: ms(24),
     fontWeight: '800',
-    color: '#FFFFFF',
   },
   crorepatiChip: {
     flexDirection: 'row',
@@ -270,7 +273,7 @@ const styles = StyleSheet.create({
   crorepatiChipText: {
     fontSize: ms(10),
     fontWeight: '700',
-    color: '#F59E0B',
+    color: '#D97706',
   },
   breakdownSection: {
     marginBottom: 14,
@@ -278,7 +281,6 @@ const styles = StyleSheet.create({
   breakdownTitle: {
     fontSize: ms(12),
     fontWeight: '600',
-    color: '#9CA3AF',
     marginBottom: 8,
   },
   stackBar: {
@@ -309,18 +311,15 @@ const styles = StyleSheet.create({
   },
   legendLabel: {
     fontSize: ms(10),
-    color: '#6B7280',
   },
   legendValue: {
     fontSize: ms(10),
     fontWeight: '600',
-    color: '#D1D5DB',
   },
   incomeSection: {
     marginBottom: 14,
     paddingTop: 12,
     borderTopWidth: 1,
-    borderTopColor: '#1F2937',
   },
   incomeRow: {
     flexDirection: 'row',
@@ -328,7 +327,6 @@ const styles = StyleSheet.create({
   },
   incomeItem: {
     flex: 1,
-    backgroundColor: '#0A0A1A',
     borderRadius: 10,
     padding: 10,
     alignItems: 'center',
@@ -336,18 +334,15 @@ const styles = StyleSheet.create({
   incomeValue: {
     fontSize: ms(14),
     fontWeight: '700',
-    color: '#FFFFFF',
   },
   incomeLabel: {
     fontSize: ms(10),
-    color: '#6B7280',
     marginTop: 2,
   },
   growthSection: {
     marginBottom: 14,
     paddingTop: 12,
     borderTopWidth: 1,
-    borderTopColor: '#1F2937',
   },
   timelineRow: {
     flexDirection: 'row',
@@ -367,12 +362,10 @@ const styles = StyleSheet.create({
   },
   timelineYear: {
     fontSize: ms(9),
-    color: '#6B7280',
     fontWeight: '600',
   },
   timelineVal: {
     fontSize: ms(8),
-    color: '#9CA3AF',
   },
   growthChip: {
     flexDirection: 'row',
@@ -390,31 +383,24 @@ const styles = StyleSheet.create({
   growthChipText: {
     fontSize: ms(10),
     fontWeight: '600',
-    color: '#10B981',
   },
-  growthChipTextDanger: {
-    color: '#EF4444',
-  },
+  growthChipTextDanger: {},
   liabilityRow: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: 6,
     paddingTop: 12,
     borderTopWidth: 1,
-    borderTopColor: '#1F2937',
   },
   liabilityLabel: {
     fontSize: ms(12),
-    color: '#9CA3AF',
   },
   liabilityValue: {
     fontSize: ms(13),
     fontWeight: '700',
-    color: '#EF4444',
   },
   // Compact mode
   compactContainer: {
-    backgroundColor: '#111827',
     borderRadius: 12,
     padding: 12,
   },
@@ -429,17 +415,14 @@ const styles = StyleSheet.create({
   compactValue: {
     fontSize: ms(13),
     fontWeight: '700',
-    color: '#FFFFFF',
   },
   compactLabel: {
     fontSize: ms(9),
-    color: '#6B7280',
     marginTop: 2,
   },
   compactDivider: {
     width: 1,
     height: 20,
-    backgroundColor: '#374151',
   },
   crorepatiTag: {
     flexDirection: 'row',
@@ -451,6 +434,5 @@ const styles = StyleSheet.create({
   crorepatiText: {
     fontSize: ms(9),
     fontWeight: '700',
-    color: '#F59E0B',
   },
 });

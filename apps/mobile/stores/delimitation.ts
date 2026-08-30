@@ -9,7 +9,9 @@ import type {
   MLAImpact,
   SeatAllocation,
   DelimitationStatus,
+  SeatCalculationModel,
 } from '../lib/delimitationTypes';
+import { resolvePinCodeToImpact, getDelimitationImpactForAC } from '../lib/delimitation/pinCodeResolver';
 
 // ─── Seed Delimitation Timeline Events ───
 // Real historical + anticipated events for context
@@ -184,6 +186,9 @@ interface DelimitationState {
   // Current national status
   nationalStatus: DelimitationStatus;
 
+  // Selected calculation model
+  selectedModel: SeatCalculationModel;
+
   // Timeline events
   events: DelimitationEvent[];
 
@@ -216,11 +221,13 @@ interface DelimitationState {
   getTimelineEvents: () => DelimitationEvent[];
   getVerifiedEvents: () => DelimitationEvent[];
   getCitizenImpact: (pinCode: string) => CitizenImpact | undefined;
+  getCitizenImpactForConstituency: (stateCode: string, acNo: number) => CitizenImpact;
   getProposalForState: (stateCode: string) => DelimitationProposal | undefined;
   getSeatAllocation: (stateCode: string) => SeatAllocation | undefined;
   getGainersAndLosers: () => { gainers: SeatAllocation[]; losers: SeatAllocation[] };
 
   // ─── Actions ───
+  setSelectedModel: (model: SeatCalculationModel) => void;
   setActiveState: (stateCode: string | null) => void;
   addEvent: (event: DelimitationEvent) => void;
   setSeatAllocations: (allocations: SeatAllocation[]) => void;
@@ -232,6 +239,7 @@ interface DelimitationState {
 export const useDelimitationStore = create<DelimitationState>((set, get) => ({
   // ─── State ───
   nationalStatus: 'pre_census',
+  selectedModel: 'EXPANSION_SAFE',
   events: SEED_EVENTS,
   proposals: [],
   seatAllocations: [],
@@ -259,8 +267,22 @@ export const useDelimitationStore = create<DelimitationState>((set, get) => ({
   getVerifiedEvents: () =>
     get().events.filter((e) => e.isVerified),
 
-  getCitizenImpact: (pinCode: string) =>
-    get().citizenImpacts[pinCode],
+  getCitizenImpact: (pinCode: string) => {
+    const cached = get().citizenImpacts[pinCode];
+    if (cached) return cached;
+
+    // Calculate dynamically from real PIN code resolver
+    const resolved = resolvePinCodeToImpact(pinCode);
+    if (resolved) {
+      set((s) => ({ citizenImpacts: { ...s.citizenImpacts, [pinCode]: resolved } }));
+      return resolved;
+    }
+    return undefined;
+  },
+
+  getCitizenImpactForConstituency: (stateCode: string, acNo: number) => {
+    return getDelimitationImpactForAC(stateCode, acNo);
+  },
 
   getProposalForState: (stateCode: string) =>
     get().proposals.find((p) => p.stateCode === stateCode && p.status !== 'superseded'),
@@ -276,6 +298,8 @@ export const useDelimitationStore = create<DelimitationState>((set, get) => ({
   },
 
   // ─── Actions ───
+
+  setSelectedModel: (model) => set({ selectedModel: model }),
 
   setActiveState: (stateCode) => set({ activeStateCode: stateCode }),
 

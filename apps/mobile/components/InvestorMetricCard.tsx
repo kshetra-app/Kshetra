@@ -34,12 +34,12 @@ export default function InvestorMetricCard({ metric }: InvestorMetricCardProps) 
 }
 
 const styles = StyleSheet.create({
-  card: { backgroundColor: '#111827', borderRadius: 14, padding: 14, borderWidth: 1, borderColor: '#1F2937', borderLeftWidth: 3, width: '48%' },
+  card: { backgroundColor: '#FFFFFF', borderRadius: 14, padding: 14, borderWidth: 1, borderColor: '#E8DED1', borderLeftWidth: 3, width: '48%' },
   header: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 },
   iconCircle: { width: 36, height: 36, borderRadius: 18, justifyContent: 'center', alignItems: 'center' },
   changeBadge: { flexDirection: 'row', alignItems: 'center', gap: 2, paddingHorizontal: 6, paddingVertical: 2, borderRadius: 6 },
   changeText: { fontSize: 10, fontWeight: '700' },
-  value: { fontSize: 22, fontWeight: '900', color: '#FFFFFF', marginBottom: 2 },
-  label: { fontSize: 12, fontWeight: '700', color: '#9CA3AF', marginBottom: 2 },
-  description: { fontSize: 10, color: '#6B7280', lineHeight: 14 },
+  value: { fontSize: 22, fontWeight: '900', color: '#241814', marginBottom: 2 },
+  label: { fontSize: 12, fontWeight: '700', color: '#6D5549', marginBottom: 2 },
+  description: { fontSize: 10, color: '#988275', lineHeight: 14 },
 });

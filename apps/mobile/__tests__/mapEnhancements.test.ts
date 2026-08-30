@@ -46,13 +46,13 @@ describe('Map Enhancements & Premium Utilities', () => {
 
     it('maps extrusion height expressions correctly', () => {
       const popExpr = getExtrusionHeightExpression('population');
-      expect(popExpr).toEqual(['/', ['get', 'POPULATION'], 2]);
+      expect(popExpr).toEqual(['+', 6000, ['*', ['coalesce', ['get', 'POPULATION'], 100000], 0.08]]);
 
       const marginExpr = getExtrusionHeightExpression('margin');
-      expect(marginExpr).toEqual(['/', ['get', 'MARGIN'], 0.1]);
+      expect(marginExpr).toEqual(['+', 6000, ['*', ['coalesce', ['get', 'MARGIN'], 5000], 0.5]]);
 
       const defaultExpr = getExtrusionHeightExpression('party');
-      expect(defaultExpr).toBe(15000);
+      expect(defaultExpr).toEqual(['+', 8000, ['*', ['coalesce', ['get', 'MARGIN'], 8000], 0.35]]);
     });
   });
 

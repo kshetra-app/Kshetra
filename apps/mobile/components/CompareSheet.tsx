@@ -14,16 +14,16 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
-import { getPartyColor } from '@/lib/constants';
-import CandidateAvatar from '@/components/CandidateAvatar';
+import { getPartyColor } from '../lib/constants';
+import CandidateAvatar from './CandidateAvatar';
 import {
   getMLAProfileForState,
   getDemographicsForState,
   getHistoryForState,
   isStrongholdForState,
   hasFullDataForState,
-} from '@/lib/stateDataDispatcher';
-import { getUnifiedConstituenciesForState, type UnifiedConstituency } from '@/lib/stateDataAdapter';
+} from '../lib/stateDataDispatcher';
+import { getUnifiedConstituenciesForState, type UnifiedConstituency } from '../lib/stateDataAdapter';
 import { useActiveStateStore } from '../stores/activeState';
 
 interface CompareSheetProps {
@@ -365,7 +365,7 @@ export default function CompareSheet({ visible, initialAcNo, onClose }: CompareS
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#0A0A1A',
+    backgroundColor: '#F5EFE4',
   },
   header: {
     flexDirection: 'row',
@@ -375,12 +375,12 @@ const styles = StyleSheet.create({
     paddingTop: 16,
     paddingBottom: 12,
     borderBottomWidth: 0.5,
-    borderBottomColor: '#1F2937',
+    borderBottomColor: '#E8DED1',
   },
   headerTitle: {
     fontSize: 22,
     fontWeight: '800',
-    color: '#FFFFFF',
+    color: '#241814',
   },
   selectorsRow: {
     flexDirection: 'row',
@@ -393,13 +393,13 @@ const styles = StyleSheet.create({
     flex: 1,
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#111827',
+    backgroundColor: '#FFFFFF',
     borderRadius: 12,
     paddingVertical: 14,
     paddingHorizontal: 14,
     gap: 8,
     borderWidth: 1,
-    borderColor: '#1F2937',
+    borderColor: '#E8DED1',
   },
   selectorDot: {
     width: 10,
@@ -410,7 +410,7 @@ const styles = StyleSheet.create({
     flex: 1,
     fontSize: 14,
     fontWeight: '700',
-    color: '#FFFFFF',
+    color: '#241814',
   },
   selectorPlaceholder: {
     fontSize: 14,
@@ -447,7 +447,7 @@ const styles = StyleSheet.create({
   partyText: {
     fontSize: 16,
     fontWeight: '800',
-    color: '#FFFFFF',
+    color: '#241814',
   },
   vsText: {
     fontSize: 14,
@@ -456,7 +456,7 @@ const styles = StyleSheet.create({
   },
   sectionDivider: {
     borderTopWidth: 0.5,
-    borderTopColor: '#1F2937',
+    borderTopColor: '#E8DED1',
     marginTop: 16,
     paddingTop: 12,
     marginBottom: 8,
@@ -477,7 +477,7 @@ const styles = StyleSheet.create({
     flex: 1,
     fontSize: 13,
     fontWeight: '700',
-    color: '#FFFFFF',
+    color: '#241814',
     flexShrink: 1,
   },
   statBetter: {
@@ -486,7 +486,7 @@ const styles = StyleSheet.create({
   statLabel: {
     fontSize: 11,
     fontWeight: '600',
-    color: '#6B7280',
+    color: '#988275',
     textAlign: 'center',
     width: 72,
     flexShrink: 0,
@@ -500,12 +500,12 @@ const styles = StyleSheet.create({
     width: 36,
     height: 36,
     borderRadius: 18,
-    backgroundColor: '#1F2937',
+    backgroundColor: '#E8DED1',
   },
   mlaName: {
     fontSize: 12,
     fontWeight: '600',
-    color: '#9CA3AF',
+    color: '#6D5549',
     textAlign: 'center',
   },
   badgeWrap: {
@@ -557,7 +557,7 @@ const styles = StyleSheet.create({
   // ─── Picker ───
   pickerOverlay: {
     flex: 1,
-    backgroundColor: '#0A0A1A',
+    backgroundColor: '#F5EFE4',
   },
   pickerHeader: {
     flexDirection: 'row',
@@ -566,12 +566,12 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
     paddingVertical: 10,
     borderBottomWidth: 0.5,
-    borderBottomColor: '#1F2937',
+    borderBottomColor: '#E8DED1',
   },
   pickerTitle: {
     fontSize: 16,
     fontWeight: '700',
-    color: '#FFFFFF',
+    color: '#241814',
   },
   picker: {
     flex: 1,
@@ -579,7 +579,7 @@ const styles = StyleSheet.create({
   pickerSearch: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#1F2937',
+    backgroundColor: '#E8DED1',
     borderRadius: 10,
     marginHorizontal: 16,
     marginVertical: 10,
@@ -590,7 +590,7 @@ const styles = StyleSheet.create({
   pickerInput: {
     flex: 1,
     fontSize: 14,
-    color: '#FFFFFF',
+    color: '#241814',
     height: 40,
   },
   pickerList: {
@@ -602,7 +602,7 @@ const styles = StyleSheet.create({
     paddingVertical: 12,
     paddingHorizontal: 16,
     borderBottomWidth: 0.5,
-    borderBottomColor: '#1F2937',
+    borderBottomColor: '#E8DED1',
     gap: 10,
   },
   pickerDot: {
@@ -614,10 +614,10 @@ const styles = StyleSheet.create({
     flex: 1,
     fontSize: 14,
     fontWeight: '600',
-    color: '#FFFFFF',
+    color: '#241814',
   },
   pickerAc: {
     fontSize: 12,
-    color: '#6B7280',
+    color: '#988275',
   },
 });

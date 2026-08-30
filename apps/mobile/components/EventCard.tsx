@@ -88,7 +88,7 @@ export default function EventCard({ event, onPress, onRSVP }: EventCardProps) {
 }
 
 const styles = StyleSheet.create({
-  card: { flexDirection: 'row', backgroundColor: '#111827', borderRadius: 16, marginHorizontal: 16, marginVertical: 6, overflow: 'hidden', borderWidth: 1, borderColor: '#1F2937' },
+  card: { flexDirection: 'row', backgroundColor: '#FFFFFF', borderRadius: 16, marginHorizontal: 16, marginVertical: 6, overflow: 'hidden', borderWidth: 1, borderColor: '#E8DED1' },
   dateStrip: { width: 56, justifyContent: 'center', alignItems: 'center', paddingVertical: 12 },
   dateDay: { fontSize: 22, fontWeight: '900' },
   dateMonth: { fontSize: 11, fontWeight: '800' },
@@ -99,17 +99,17 @@ const styles = StyleSheet.create({
   liveBadge: { flexDirection: 'row', alignItems: 'center', gap: 4, backgroundColor: '#EF444420', paddingHorizontal: 8, paddingVertical: 3, borderRadius: 10 },
   liveDot: { width: 6, height: 6, borderRadius: 3, backgroundColor: '#EF4444' },
   liveText: { fontSize: 10, fontWeight: '800', color: '#EF4444' },
-  title: { fontSize: 15, fontWeight: '700', color: '#FFFFFF', lineHeight: 20, marginBottom: 4 },
+  title: { fontSize: 15, fontWeight: '700', color: '#241814', lineHeight: 20, marginBottom: 4 },
   politicianRow: { flexDirection: 'row', alignItems: 'center', gap: 4, marginBottom: 6 },
-  politicianName: { fontSize: 12, fontWeight: '600', color: '#D1D5DB' },
-  partyLabel: { fontSize: 11, color: '#6B7280' },
+  politicianName: { fontSize: 12, fontWeight: '600', color: '#6D5549' },
+  partyLabel: { fontSize: 11, color: '#988275' },
   detailsRow: { flexDirection: 'row', gap: 12, marginBottom: 8 },
   detail: { flexDirection: 'row', alignItems: 'center', gap: 4 },
-  detailText: { fontSize: 11, color: '#6B7280', maxWidth: 120 },
+  detailText: { fontSize: 11, color: '#988275', maxWidth: 120 },
   footer: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
   rsvpInfo: { flexDirection: 'row', alignItems: 'center', gap: 4 },
   rsvpCount: { fontSize: 12, fontWeight: '600', color: '#3B82F6' },
-  attended: { fontSize: 11, color: '#6B7280' },
+  attended: { fontSize: 11, color: '#988275' },
   rsvpButton: { backgroundColor: '#3B82F6', paddingHorizontal: 14, paddingVertical: 6, borderRadius: 8 },
-  rsvpButtonText: { fontSize: 12, fontWeight: '800', color: '#FFFFFF' },
+  rsvpButtonText: { fontSize: 12, fontWeight: '800', color: '#241814' },
 });

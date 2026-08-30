@@ -46,7 +46,7 @@ export default function RootLayout() {
     <GestureHandlerRootView style={{ flex: 1 }}>
       <SafeAreaProvider>
         <ErrorBoundary>
-          <StatusBar style={colors.statusBar} />
+          <StatusBar style={colors.statusBar === 'light-content' ? 'light' : 'dark'} />
           <OfflineBanner />
           {showKYCSheet && (
             <Suspense fallback={null}>
@@ -58,6 +58,10 @@ export default function RootLayout() {
               headerShown: false,
               animation: 'fade',
               contentStyle: { backgroundColor: colors.background },
+              headerStyle: { backgroundColor: colors.surface },
+              headerTintColor: colors.primary,
+              headerTitleStyle: { color: colors.text, fontWeight: '700' },
+              headerShadowVisible: false,
             }}
           >
             <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
@@ -66,7 +70,7 @@ export default function RootLayout() {
               options={{
                 headerShown: true,
                 headerStyle: { backgroundColor: colors.surface },
-                headerTintColor: colors.text,
+                headerTintColor: colors.primary,
                 headerShadowVisible: false,
                 animation: 'slide_from_right',
               }}
@@ -76,7 +80,7 @@ export default function RootLayout() {
           options={{
             headerShown: true,
             headerStyle: { backgroundColor: colors.surface },
-            headerTintColor: colors.text,
+            headerTintColor: colors.primary,
             animation: 'slide_from_bottom',
             presentation: 'modal',
           }}
@@ -86,7 +90,7 @@ export default function RootLayout() {
           options={{
             headerShown: true,
             headerStyle: { backgroundColor: colors.surface },
-            headerTintColor: colors.text,
+            headerTintColor: colors.primary,
             animation: 'slide_from_right',
           }}
         />
@@ -102,7 +106,7 @@ export default function RootLayout() {
           options={{
             headerShown: true,
             headerStyle: { backgroundColor: colors.surface },
-            headerTintColor: colors.text,
+            headerTintColor: colors.primary,
             animation: 'slide_from_bottom',
             presentation: 'modal',
           }}
@@ -129,11 +133,25 @@ export default function RootLayout() {
           }}
         />
         <Stack.Screen
+          name="delimitation/simulator"
+          options={{
+            headerShown: false,
+            animation: 'slide_from_right',
+          }}
+        />
+        <Stack.Screen
+          name="delimitation/state/[code]"
+          options={{
+            headerShown: false,
+            animation: 'slide_from_right',
+          }}
+        />
+        <Stack.Screen
           name="candidate-xray/[id]"
           options={{
             headerShown: true,
             headerStyle: { backgroundColor: colors.surface },
-            headerTintColor: colors.text,
+            headerTintColor: colors.primary,
             animation: 'slide_from_right',
           }}
         />
@@ -142,7 +160,7 @@ export default function RootLayout() {
           options={{
             headerShown: true,
             headerStyle: { backgroundColor: colors.surface },
-            headerTintColor: colors.text,
+            headerTintColor: colors.primary,
             headerShadowVisible: false,
             animation: 'slide_from_right',
           }}
@@ -152,7 +170,7 @@ export default function RootLayout() {
           options={{
             headerShown: true,
             headerStyle: { backgroundColor: colors.surface },
-            headerTintColor: colors.text,
+            headerTintColor: colors.primary,
             animation: 'slide_from_right',
           }}
         />
@@ -161,7 +179,7 @@ export default function RootLayout() {
           options={{
             headerShown: true,
             headerStyle: { backgroundColor: colors.surface },
-            headerTintColor: colors.text,
+            headerTintColor: colors.primary,
             animation: 'slide_from_right',
           }}
         />
@@ -184,7 +202,7 @@ export default function RootLayout() {
           options={{
             headerShown: true,
             headerStyle: { backgroundColor: colors.surface },
-            headerTintColor: colors.text,
+            headerTintColor: colors.primary,
             headerShadowVisible: false,
             animation: 'slide_from_right',
           }}
@@ -236,7 +254,7 @@ export default function RootLayout() {
           options={{
             headerShown: true,
             headerStyle: { backgroundColor: colors.surface },
-            headerTintColor: colors.text,
+            headerTintColor: colors.primary,
             animation: 'slide_from_right',
           }}
         />
@@ -245,7 +263,7 @@ export default function RootLayout() {
           options={{
             headerShown: true,
             headerStyle: { backgroundColor: colors.surface },
-            headerTintColor: colors.text,
+            headerTintColor: colors.primary,
             headerShadowVisible: false,
             animation: 'slide_from_right',
           }}
@@ -255,7 +273,7 @@ export default function RootLayout() {
           options={{
             headerShown: true,
             headerStyle: { backgroundColor: colors.surface },
-            headerTintColor: colors.text,
+            headerTintColor: colors.primary,
             headerShadowVisible: false,
             animation: 'slide_from_right',
           }}
@@ -265,7 +283,7 @@ export default function RootLayout() {
           options={{
             headerShown: true,
             headerStyle: { backgroundColor: colors.surface },
-            headerTintColor: colors.text,
+            headerTintColor: colors.primary,
             headerShadowVisible: false,
             animation: 'slide_from_right',
           }}

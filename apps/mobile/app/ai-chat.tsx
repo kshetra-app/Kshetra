@@ -15,9 +15,10 @@ import {
 import { Stack, useLocalSearchParams } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { sendAIChat, isAIConfigured, type AIChatMessage } from '@/lib/aiService';
-import { getUnifiedConstituenciesForState } from '@/lib/stateDataAdapter';
+import { sendAIChat, isAIConfigured, type AIChatMessage } from '../lib/aiService';
+import { getUnifiedConstituenciesForState } from '../lib/stateDataAdapter';
 import { useActiveStateStore } from '../stores/activeState';
+import { useTheme } from '../lib/theme';
 
 interface Message {
   id: string;
@@ -38,6 +39,7 @@ const GENERAL_QUESTIONS = [
 
 export default function AIChatScreen() {
   const { t } = useTranslation();
+  const { colors } = useTheme();
   const params = useLocalSearchParams<{ acNo?: string }>();
   const initialAcNo = params.acNo ? parseInt(params.acNo, 10) : undefined;
   const [messages, setMessages] = useState<Message[]>([]);
@@ -49,74 +51,49 @@ export default function AIChatScreen() {
   const insets = useSafeAreaInsets();
 
   const stateCode = useActiveStateStore((s) => s.stateCode);
-  const stateConstituencies = getUnifiedConstituenciesForState(stateCode);
-  const selectedConstituency = selectedAcNo
-    ? stateConstituencies.find((c) => c.acNo === selectedAcNo)
+  const constituencies = getUnifiedConstituenciesForState(stateCode);
+  const constituency = selectedAcNo
+    ? constituencies.find((c) => c.acNo === selectedAcNo)
     : undefined;
 
-  const suggestedQuestions = selectedConstituency
-    ? [
-        `Analyze ${selectedConstituency.name} constituency`,
-        `What's the political history of ${selectedConstituency.name}?`,
-        `Tell me about the MLA of ${selectedConstituency.name}`,
-        `How did demographics affect ${selectedConstituency.name}'s result?`,
-        `Were there any defections in ${selectedConstituency.name}?`,
-      ]
-    : GENERAL_QUESTIONS;
+  const handleSend = useCallback(async (textToSend?: string) => {
+    const text = (textToSend || input).trim();
+    if (!text || loading) return;
 
-  const sendMessage = useCallback(
-    async (text: string) => {
-      if (!text.trim() || loading) return;
+    const userMsg: Message = {
+      id: `user-${Date.now()}`,
+      role: 'user',
+      content: text,
+      timestamp: Date.now(),
+    };
 
-      const userMsg: Message = {
-        id: Date.now().toString(),
-        role: 'user',
-        content: text.trim(),
-        timestamp: Date.now(),
-      };
+    setMessages((prev) => [...prev, userMsg]);
+    if (!textToSend) setInput('');
+    setLoading(true);
 
-      setMessages((prev) => [...prev, userMsg]);
-      setInput('');
-      setLoading(true);
+    const history: AIChatMessage[] = [
+      ...messages.map((m) => ({
+        role: m.role,
+        content: m.content,
+      })),
+      { role: 'user', content: text },
+    ];
 
-      try {
-        const chatMessages: AIChatMessage[] = [
-          ...messages.map((m) => ({ role: m.role as 'user' | 'assistant', content: m.content })),
-          { role: 'user' as const, content: text.trim() },
-        ];
+    const response = await sendAIChat(
+      history,
+      constituency ? { constituencyName: constituency.name, acNo: constituency.acNo } : undefined,
+    );
 
-        const data = await sendAIChat(chatMessages, {
-          stateCode,
-          constituencyName: selectedConstituency?.name,
-          acNo: selectedAcNo,
-        });
+    const assistantMsg: Message = {
+      id: `assistant-${Date.now()}`,
+      role: 'assistant',
+      content: response.response,
+      timestamp: Date.now(),
+    };
 
-        const assistantMsg: Message = {
-          id: (Date.now() + 1).toString(),
-          role: 'assistant',
-          content: data.response,
-          timestamp: Date.now(),
-        };
-
-        setMessages((prev) => [...prev, assistantMsg]);
-
-        if (data.error === 'NO_API_KEY') {
-          setAiConfigured(false);
-        }
-      } catch {
-        const errorMsg: Message = {
-          id: (Date.now() + 1).toString(),
-          role: 'assistant',
-          content: t('ai.error'),
-          timestamp: Date.now(),
-        };
-        setMessages((prev) => [...prev, errorMsg]);
-      } finally {
-        setLoading(false);
-      }
-    },
-    [messages, loading],
-  );
+    setMessages((prev) => [...prev, assistantMsg]);
+    setLoading(false);
+  }, [input, loading, messages, constituency]);
 
   const renderMessage = ({ item }: { item: Message }) => (
     <View
@@ -126,19 +103,22 @@ export default function AIChatScreen() {
       ]}
     >
       {item.role === 'assistant' && (
-        <View style={styles.aiAvatar}>
-          <Ionicons name="sparkles" size={14} color="#4F8EF7" />
+        <View style={[styles.aiAvatar, { backgroundColor: colors.goldLight }]}>
+          <Ionicons name="sparkles" size={14} color={colors.gold} />
         </View>
       )}
       <View
         style={[
           styles.messageContent,
-          item.role === 'user' ? styles.userContent : styles.aiContent,
+          item.role === 'user'
+            ? [styles.userContent, { backgroundColor: colors.primary }]
+            : [styles.aiContent, { backgroundColor: colors.surface, borderColor: colors.goldBorder || colors.border, borderWidth: 1 }],
         ]}
       >
         <Text
           style={[
             styles.messageText,
+            { color: item.role === 'user' ? '#FFFFFF' : colors.text },
             item.role === 'user' && styles.userText,
           ]}
         >
@@ -149,12 +129,12 @@ export default function AIChatScreen() {
   );
 
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, { backgroundColor: colors.background }]}>
       <Stack.Screen
         options={{
           title: t('ai.chatTitle'),
-          headerStyle: { backgroundColor: '#0A0A1A' },
-          headerTintColor: '#FFFFFF',
+          headerStyle: { backgroundColor: colors.surface },
+          headerTintColor: colors.primary,
         }}
       />
 
@@ -164,53 +144,55 @@ export default function AIChatScreen() {
         keyboardVerticalOffset={90}
       >
         {messages.length === 0 ? (
-          <ScrollView contentContainerStyle={styles.emptyState} showsVerticalScrollIndicator={false}>
-            <View style={styles.aiLogo}>
-              <Ionicons name="sparkles" size={40} color="#4F8EF7" />
+          <ScrollView
+            contentContainerStyle={styles.emptyState}
+            showsVerticalScrollIndicator={false}
+          >
+            <View style={[styles.aiLogo, { backgroundColor: colors.goldLight }]}>
+              <Ionicons name="sparkles" size={32} color={colors.gold} />
             </View>
-            <Text style={styles.emptyTitle}>{t('ai.chatTitle')}</Text>
-            <Text style={styles.emptySubtitle}>
-              {t('ai.placeholder')}
+            <Text style={[styles.emptyTitle, { color: colors.text }]}>{t('ai.title')}</Text>
+            <Text style={[styles.emptySubtitle, { color: colors.textMuted }]}>
+              {constituency
+                ? t('ai.askAboutConstituency', { name: constituency.name })
+                : t('ai.askAboutState', { state: stateCode })}
             </Text>
 
-            {/* Constituency context picker */}
-            {selectedConstituency ? (
-              <Pressable
-                style={styles.contextBadge}
-                onPress={() => setSelectedAcNo(undefined)}
-              >
-                <Ionicons name="location" size={12} color="#10B981" />
-                <Text style={styles.contextBadgeText}>
-                  Context: #{selectedConstituency.acNo} {selectedConstituency.name}
+            {constituency && (
+              <View style={[styles.contextBadge, { backgroundColor: colors.goldLight, borderColor: colors.gold }]}>
+                <Ionicons name="location" size={14} color={colors.gold} />
+                <Text style={[styles.contextBadgeText, { color: colors.gold }]}>
+                  {constituency.name} (#{constituency.acNo})
                 </Text>
-                <Ionicons name="close-circle" size={14} color="#6B7280" />
-              </Pressable>
-            ) : (
-              <Pressable
-                style={styles.contextPicker}
-                onPress={() => setSelectedAcNo(1)}
-              >
-                <Ionicons name="location-outline" size={14} color="#6B7280" />
-                <Text style={styles.contextPickerText}>
-                  {t('ai.contextPicker')}
-                </Text>
-              </Pressable>
+                <Pressable onPress={() => setSelectedAcNo(undefined)} hitSlop={8}>
+                  <Ionicons name="close-circle" size={16} color={colors.gold} />
+                </Pressable>
+              </View>
             )}
 
             <View style={styles.suggestions}>
-              <Text style={styles.suggestionsTitle}>{t('ai.suggestions')}</Text>
-              {suggestedQuestions.map((q, i) => (
+              <Text style={[styles.suggestionsTitle, { color: colors.textMuted }]}>{t('ai.suggestedQuestions')}</Text>
+              {(constituency
+                ? [
+                    t('ai.qWinner2023', { name: constituency.name, defaultValue: `Who won ${constituency.name} in 2023?` }),
+                    t('ai.qMarginTrend', { name: constituency.name, defaultValue: `What is the margin trend in ${constituency.name}?` }),
+                    t('ai.qTellAboutMLA', { name: constituency.name, defaultValue: `Tell me about the MLA of ${constituency.name}` }),
+                    t('ai.qDefections', { name: constituency.name, defaultValue: `Has ${constituency.name} seen any defections?` }),
+                  ]
+                : [
+                    t('ai.qKeyTakeaways', { defaultValue: 'What were the key takeaways from the last election?' }),
+                    t('ai.qConsistentParty', { defaultValue: 'Which party has been most consistent across elections?' }),
+                    t('ai.qStronghold', { defaultValue: 'Explain the AIMIM stronghold in Hyderabad' }),
+                    t('ai.qTurnoutAcross', { defaultValue: 'Compare turnout across past elections' }),
+                  ]
+              ).map((q) => (
                 <Pressable
-                  key={i}
-                  style={styles.suggestionChip}
-                  onPress={() => sendMessage(q)}
+                  key={q}
+                  style={[styles.suggestionChip, { backgroundColor: colors.surface, borderColor: colors.goldBorder || colors.border, borderWidth: 1 }]}
+                  onPress={() => handleSend(q)}
                 >
-                  <Ionicons
-                    name="chatbubble-outline"
-                    size={14}
-                    color="#4F8EF7"
-                  />
-                  <Text style={styles.suggestionText}>{q}</Text>
+                  <Ionicons name="chatbubble-outline" size={14} color={colors.gold} />
+                  <Text style={[styles.suggestionText, { color: colors.textSecondary }]}>{q}</Text>
                 </Pressable>
               ))}
             </View>
@@ -219,8 +201,8 @@ export default function AIChatScreen() {
           <FlatList
             ref={flatListRef}
             data={messages}
-            renderItem={renderMessage}
             keyExtractor={(item) => item.id}
+            renderItem={renderMessage}
             contentContainerStyle={styles.messageList}
             onContentSizeChange={() =>
               flatListRef.current?.scrollToEnd({ animated: true })
@@ -230,30 +212,30 @@ export default function AIChatScreen() {
 
         {loading && (
           <View style={styles.typingIndicator}>
-            <ActivityIndicator size="small" color="#4F8EF7" />
-            <Text style={styles.typingText}>{t('ai.thinking')}</Text>
+            <ActivityIndicator size="small" color={colors.gold} />
+            <Text style={[styles.typingText, { color: colors.textMuted }]}>{t('ai.thinking')}</Text>
           </View>
         )}
 
-        <View style={[styles.inputBar, { paddingBottom: Math.max(insets.bottom, 12) }]}>
+        <View style={[styles.inputBar, { paddingBottom: Math.max(insets.bottom, 12), backgroundColor: colors.surface, borderTopColor: colors.border }]}>
           <TextInput
-            style={styles.textInput}
-            placeholder={t('ai.placeholder')}
-            placeholderTextColor="#4B5563"
+            style={[styles.textInput, { backgroundColor: colors.background, color: colors.text, borderColor: colors.border, borderWidth: 1 }]}
+            placeholder={t('ai.askPlaceholder')}
+            placeholderTextColor={colors.textMuted}
             value={input}
             onChangeText={setInput}
             multiline
             maxLength={500}
-            onSubmitEditing={() => sendMessage(input)}
             returnKeyType="send"
-            blurOnSubmit={false}
+            onSubmitEditing={() => handleSend()}
           />
           <Pressable
             style={[
               styles.sendButton,
+              { backgroundColor: colors.primary },
               (!input.trim() || loading) && styles.sendDisabled,
             ]}
-            onPress={() => sendMessage(input)}
+            onPress={() => handleSend()}
             disabled={!input.trim() || loading}
           >
             <Ionicons name="send" size={18} color="#FFFFFF" />
@@ -267,7 +249,6 @@ export default function AIChatScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#0A0A1A',
   },
   inner: {
     flex: 1,
@@ -307,7 +288,7 @@ const styles = StyleSheet.create({
   },
   suggestionsTitle: {
     fontSize: 12,
-    color: '#4B5563',
+    color: '#6D5549',
     fontWeight: '600',
     marginBottom: 12,
     textTransform: 'uppercase',
@@ -316,16 +297,18 @@ const styles = StyleSheet.create({
   suggestionChip: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#111827',
+    backgroundColor: '#FFFFFF',
     borderRadius: 12,
     paddingVertical: 12,
     paddingHorizontal: 14,
     marginBottom: 8,
+    borderWidth: 1,
+    borderColor: '#D8BC7E',
     gap: 10,
   },
   suggestionText: {
     fontSize: 13,
-    color: '#D1D5DB',
+    color: '#241814',
     flex: 1,
   },
   messageList: {
@@ -349,7 +332,7 @@ const styles = StyleSheet.create({
     width: 28,
     height: 28,
     borderRadius: 14,
-    backgroundColor: '#4F8EF720',
+    backgroundColor: '#FBE8E7',
     justifyContent: 'center',
     alignItems: 'center',
     marginRight: 8,
@@ -362,16 +345,18 @@ const styles = StyleSheet.create({
     maxWidth: '92%',
   },
   userContent: {
-    backgroundColor: '#4F8EF7',
+    backgroundColor: '#A8201A',
     borderBottomRightRadius: 4,
   },
   aiContent: {
-    backgroundColor: '#111827',
+    backgroundColor: '#FFFFFF',
     borderBottomLeftRadius: 4,
+    borderWidth: 1,
+    borderColor: '#D8BC7E',
   },
   messageText: {
     fontSize: 14,
-    color: '#D1D5DB',
+    color: '#241814',
     lineHeight: 20,
   },
   userText: {
@@ -386,7 +371,7 @@ const styles = StyleSheet.create({
   },
   typingText: {
     fontSize: 12,
-    color: '#6B7280',
+    color: '#8E7B6F',
     fontStyle: 'italic',
   },
   inputBar: {
@@ -395,25 +380,21 @@ const styles = StyleSheet.create({
     paddingHorizontal: 12,
     paddingTop: 8,
     borderTopWidth: 1,
-    borderTopColor: '#1F2937',
-    backgroundColor: '#0A0A1A',
     gap: 8,
   },
   textInput: {
     flex: 1,
-    backgroundColor: '#111827',
     borderRadius: 20,
     paddingHorizontal: 16,
     paddingVertical: 10,
     fontSize: 14,
-    color: '#FFFFFF',
     maxHeight: 100,
   },
   sendButton: {
     width: 40,
     height: 40,
     borderRadius: 20,
-    backgroundColor: '#4F8EF7',
+    backgroundColor: '#A8201A',
     justifyContent: 'center',
     alignItems: 'center',
   },
@@ -427,15 +408,15 @@ const styles = StyleSheet.create({
     marginTop: 16,
     paddingHorizontal: 12,
     paddingVertical: 8,
-    backgroundColor: '#10B98120',
+    backgroundColor: '#145C6820',
     borderRadius: 20,
     borderWidth: 1,
-    borderColor: '#10B98140',
+    borderColor: '#145C6850',
   },
   contextBadgeText: {
     fontSize: 12,
     fontWeight: '600',
-    color: '#10B981',
+    color: '#145C68',
   },
   contextPicker: {
     flexDirection: 'row',
@@ -444,11 +425,13 @@ const styles = StyleSheet.create({
     marginTop: 16,
     paddingHorizontal: 12,
     paddingVertical: 8,
-    backgroundColor: '#111827',
+    backgroundColor: '#FFFFFF',
+    borderWidth: 1,
+    borderColor: '#D8BC7E',
     borderRadius: 20,
   },
   contextPickerText: {
     fontSize: 12,
-    color: '#6B7280',
+    color: '#6D5549',
   },
 });

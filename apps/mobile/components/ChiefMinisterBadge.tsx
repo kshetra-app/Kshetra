@@ -12,8 +12,9 @@ import React, { memo, useState, useCallback } from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import CandidateAvatar from './CandidateAvatar';
 import PhotoViewerModal from './PhotoViewerModal';
-import { getChiefMinister, getPrimeMinister } from '@/lib/chiefMinisters';
-import { getPartyColor } from '@/lib/constants';
+import { getChiefMinister, getPrimeMinister } from '../lib/chiefMinisters';
+import { getPartyColor } from '../lib/constants';
+import { useTheme } from '../lib/theme';
 
 interface ChiefMinisterBadgeProps {
   stateCode: string;
@@ -25,6 +26,7 @@ export default memo(function ChiefMinisterBadge({
   stateCode,
   compact = false,
 }: ChiefMinisterBadgeProps) {
+  const { colors } = useTheme();
   const isIndia = stateCode === 'IN';
   const person = isIndia ? getPrimeMinister() : getChiefMinister(stateCode);
   const [viewerVisible, setViewerVisible] = useState(false);
@@ -32,7 +34,7 @@ export default memo(function ChiefMinisterBadge({
 
   if (!person) return null;
 
-  const avatarSize = compact ? 34 : 42;
+  const avatarSize = compact ? 28 : 42;
   const partyColor = getPartyColor(person.party);
 
   const handlePress = useCallback((uri: string | null) => {
@@ -42,18 +44,18 @@ export default memo(function ChiefMinisterBadge({
 
   return (
     <>
-      <View style={[styles.container, compact && styles.containerCompact]}>
+      <View style={[styles.container, { backgroundColor: colors.surface, borderColor: colors.goldBorder || colors.border }, compact && styles.containerCompact]}>
         <CandidateAvatar
           name={person.name}
           party={person.party}
           size={avatarSize}
-          borderWidth={2}
+          borderWidth={1.5}
           onPress={handlePress}
         />
         <View style={styles.info}>
           <View style={styles.nameRow}>
             <Text
-              style={[styles.name, compact && styles.nameCompact]}
+              style={[styles.name, { color: colors.text }, compact && styles.nameCompact]}
               numberOfLines={1}
             >
               {person.name}
@@ -63,7 +65,7 @@ export default memo(function ChiefMinisterBadge({
             />
           </View>
           <Text
-            style={[styles.designation, compact && styles.designationCompact]}
+            style={[styles.designation, { color: colors.textSecondary }, compact && styles.designationCompact]}
             numberOfLines={1}
           >
             {person.designation}
@@ -87,21 +89,24 @@ const styles = StyleSheet.create({
   container: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#111827E6',
     borderRadius: 12,
     paddingVertical: 8,
     paddingHorizontal: 10,
     gap: 10,
     borderWidth: 1,
-    borderColor: '#1F293780',
     marginTop: 8,
+    shadowColor: '#2C1810',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 3,
   },
   containerCompact: {
-    paddingVertical: 6,
+    paddingVertical: 3,
     paddingHorizontal: 8,
-    gap: 8,
+    gap: 6,
     borderRadius: 10,
-    marginTop: 6,
+    marginTop: 4,
   },
   info: {
     flex: 1,
@@ -115,7 +120,6 @@ const styles = StyleSheet.create({
   name: {
     fontSize: 13,
     fontWeight: '700',
-    color: '#FFFFFF',
     flexShrink: 1,
   },
   nameCompact: {
@@ -129,7 +133,6 @@ const styles = StyleSheet.create({
   designation: {
     fontSize: 11,
     fontWeight: '500',
-    color: '#9CA3AF',
     marginTop: 1,
   },
   designationCompact: {

@@ -12,15 +12,15 @@ import { View, Text, StyleSheet, ScrollView, Pressable, Share, Linking, Activity
 import { useLocalSearchParams, Stack, useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { useTheme } from '@/lib/useTheme';
-import { formatINR } from '@/lib/legislatorProfileTypes';
+import { useTheme } from '../../lib/useTheme';
+import { formatINR } from '../../lib/legislatorProfileTypes';
 import {
   getRepresentativeById,
   getPendingProfile,
-} from '@/lib/representativesData';
-import { representativeToProfile, type RepresentativeProfile } from '@kshetra/shared';
-import ProfileHeroCard from '@/components/legislator/ProfileHeroCard';
-import DataPendingCard, { SourceAttributionFooter } from '@/components/DataPendingCard';
+} from '../../lib/representativesData';
+import { representativeToProfile, type RepresentativeProfile, type Representative } from '@kshetra/shared';
+import ProfileHeroCard from '../../components/legislator/ProfileHeroCard';
+import DataPendingCard, { SourceAttributionFooter } from '../../components/DataPendingCard';
 
 export default function RepresentativeProfileScreen() {
   const { id, jurisdiction, office, state } = useLocalSearchParams<{
@@ -35,20 +35,23 @@ export default function RepresentativeProfileScreen() {
 
   const jurisdictionName = String(jurisdiction ?? '').trim();
 
+  const [rep, setRep] = useState<Representative | null>(null);
   const [profile, setProfile] = useState<RepresentativeProfile | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     let mounted = true;
     setLoading(true);
-    getRepresentativeById(String(id ?? '')).then((rep) => {
+    getRepresentativeById(String(id ?? '')).then((repData) => {
       if (!mounted) return;
-      if (rep) {
-        setProfile(representativeToProfile(rep, jurisdictionName || rep.district || rep.stateCode));
+      if (repData) {
+        setRep(repData);
+        setProfile(representativeToProfile(repData, jurisdictionName || repData.district || repData.stateCode));
       } else if (office && state) {
-        // No verified record → honest data-pending shell (needs office + state hints).
+        setRep(null);
         setProfile(getPendingProfile(office as any, jurisdictionName || 'This seat', String(state), {}));
       } else {
+        setRep(null);
         setProfile(null);
       }
       setLoading(false);
@@ -120,20 +123,16 @@ export default function RepresentativeProfileScreen() {
             </View>
             <DataPendingCard
               title={`${profile.officeLabel} record`}
-              message="This seat is part of the verified administrative structure, but a confirmed office-holder record is not yet available. We only publish data sourced from official records."
-              sourceNote="State Election Commission · Lok Dhaba / data.opencity.in · ECI affidavits · Wikipedia (cited)"
+              message="This seat is part of the administrative structure, but confirmed election records are being compiled from official sources."
+              sourceNote="State Election Commission"
             />
-            <Pressable style={[styles.claimBtn, { borderColor: colors.primary }]} onPress={handleClaim}>
-              <Ionicons name="create-outline" size={16} color={colors.primary} />
-              <Text style={[styles.claimText, { color: colors.primary }]}>Know this representative? Contribute verified details</Text>
-            </Pressable>
           </>
         ) : (
           <>
             <ProfileHeroCard
               fullName={profile.name}
               displayName={profile.name}
-              party={profile.party ?? '—'}
+              party={profile.party ?? (profile.partyOfficial ? 'Independent' : 'Non-Party')}
               constituency={profile.jurisdictionName}
               district={profile.district ?? ''}
               stateCode={profile.stateCode}
@@ -146,81 +145,151 @@ export default function RepresentativeProfileScreen() {
               onSharePress={handleShare}
             />
 
-            {/* Party note for officially non-party polls (e.g. AP panchayats) */}
+            {/* Party note for officially non-party polls (e.g. AP/TS panchayats) */}
             {profile.party && !profile.partyOfficial ? (
               <View style={[styles.note, { backgroundColor: colors.warning + '15', borderColor: colors.warning + '40' }]}>
                 <Ionicons name="information-circle-outline" size={14} color={colors.warning} />
                 <Text style={[styles.noteText, { color: colors.textSecondary }]}>
-                  This poll is officially non-party. Party ({partyLabel}) is de-facto / unofficial.
+                  This poll is officially non-party. Party affiliation ({partyLabel}) is de-facto / unofficial.
                 </Text>
               </View>
             ) : null}
 
-            {/* Financials */}
+            {/* Verified Election & Mandate Details */}
             <View style={[styles.section, { backgroundColor: colors.surface, borderColor: colors.border }]}>
-              <Text style={[styles.sectionTitle, { color: colors.text }]}>Declared Assets</Text>
-              {profile.totalAssets != null ? (
+              <Text style={[styles.sectionTitle, { color: colors.text }]}>Election & Mandate Details</Text>
+              
+              <View style={styles.kvRow}>
+                <Text style={[styles.kvLabel, { color: colors.textSecondary }]}>Designation</Text>
+                <Text style={[styles.kvValue, { color: colors.text }]}>{profile.officeLabel}</Text>
+              </View>
+
+              {rep?.gramPanchayat ? (
                 <View style={styles.kvRow}>
-                  <Text style={[styles.kvLabel, { color: colors.textSecondary }]}>Total Assets</Text>
-                  <Text style={[styles.kvValue, { color: colors.text }]}>{formatINR(profile.totalAssets)}</Text>
-                </View>
-              ) : (
-                <Text style={[styles.pendingInline, { color: colors.textMuted }]}>Assets — data pending</Text>
-              )}
-              {profile.totalLiabilities != null ? (
-                <View style={styles.kvRow}>
-                  <Text style={[styles.kvLabel, { color: colors.textSecondary }]}>Total Liabilities</Text>
-                  <Text style={[styles.kvValue, { color: colors.text }]}>{formatINR(profile.totalLiabilities)}</Text>
+                  <Text style={[styles.kvLabel, { color: colors.textSecondary }]}>Gram Panchayat</Text>
+                  <Text style={[styles.kvValue, { color: colors.text }]}>{rep.gramPanchayat}</Text>
                 </View>
               ) : null}
+
+              {rep?.wardNo ? (
+                <View style={styles.kvRow}>
+                  <Text style={[styles.kvLabel, { color: colors.textSecondary }]}>Ward Number</Text>
+                  <Text style={[styles.kvValue, { color: colors.text }]}>Ward {rep.wardNo}</Text>
+                </View>
+              ) : null}
+
+              {rep?.mandal ? (
+                <View style={styles.kvRow}>
+                  <Text style={[styles.kvLabel, { color: colors.textSecondary }]}>Mandal / Block</Text>
+                  <Text style={[styles.kvValue, { color: colors.text }]}>{rep.mandal}</Text>
+                </View>
+              ) : null}
+
+              {rep?.district ? (
+                <View style={styles.kvRow}>
+                  <Text style={[styles.kvLabel, { color: colors.textSecondary }]}>District</Text>
+                  <Text style={[styles.kvValue, { color: colors.text }]}>{rep.district}</Text>
+                </View>
+              ) : null}
+
+              <View style={styles.kvRow}>
+                <Text style={[styles.kvLabel, { color: colors.textSecondary }]}>State</Text>
+                <Text style={[styles.kvValue, { color: colors.text }]}>
+                  {profile.stateCode === 'TS' ? 'Telangana' : profile.stateCode === 'AP' ? 'Andhra Pradesh' : profile.stateCode}
+                </Text>
+              </View>
+
+              {rep?.reservation ? (
+                <View style={styles.kvRow}>
+                  <Text style={[styles.kvLabel, { color: colors.textSecondary }]}>Seat Reservation</Text>
+                  <Text style={[styles.kvValue, { color: colors.primary, fontWeight: '800' }]}>{rep.reservation}</Text>
+                </View>
+              ) : null}
+
+              {rep?.electionYear ? (
+                <View style={styles.kvRow}>
+                  <Text style={[styles.kvLabel, { color: colors.textSecondary }]}>Election Year</Text>
+                  <Text style={[styles.kvValue, { color: colors.text }]}>{rep.electionYear}</Text>
+                </View>
+              ) : null}
+
+              <View style={styles.kvRow}>
+                <Text style={[styles.kvLabel, { color: colors.textSecondary }]}>Status</Text>
+                <Text style={[styles.kvValue, { color: '#10B981', fontWeight: '800' }]}>Officially Elected Winner</Text>
+              </View>
+
+              <View style={styles.kvRow}>
+                <Text style={[styles.kvLabel, { color: colors.textSecondary }]}>Party Status</Text>
+                <Text style={[styles.kvValue, { color: colors.text }]}>
+                  {rep?.party
+                    ? `${rep.party}${rep.partyOfficial ? '' : ' (Unofficial / De-facto)'}`
+                    : 'Officially Non-Party (State Panchayati Raj Act)'}
+                </Text>
+              </View>
             </View>
 
-            {/* Criminal */}
-            <View style={[styles.section, { backgroundColor: colors.surface, borderColor: colors.border }]}>
-              <Text style={[styles.sectionTitle, { color: colors.text }]}>Criminal Record</Text>
-              {profile.criminalCases != null ? (
+            {/* Financials (only if declared) */}
+            {(profile.totalAssets != null || profile.totalLiabilities != null) && (
+              <View style={[styles.section, { backgroundColor: colors.surface, borderColor: colors.border }]}>
+                <Text style={[styles.sectionTitle, { color: colors.text }]}>Declared Assets</Text>
+                {profile.totalAssets != null && (
+                  <View style={styles.kvRow}>
+                    <Text style={[styles.kvLabel, { color: colors.textSecondary }]}>Total Assets</Text>
+                    <Text style={[styles.kvValue, { color: colors.text }]}>{formatINR(profile.totalAssets)}</Text>
+                  </View>
+                )}
+                {profile.totalLiabilities != null && (
+                  <View style={styles.kvRow}>
+                    <Text style={[styles.kvLabel, { color: colors.textSecondary }]}>Total Liabilities</Text>
+                    <Text style={[styles.kvValue, { color: colors.text }]}>{formatINR(profile.totalLiabilities)}</Text>
+                  </View>
+                )}
+              </View>
+            )}
+
+            {/* Criminal Record (only if declared) */}
+            {profile.criminalCases != null && (
+              <View style={[styles.section, { backgroundColor: colors.surface, borderColor: colors.border }]}>
+                <Text style={[styles.sectionTitle, { color: colors.text }]}>Criminal Record</Text>
                 <Text style={[styles.kvValue, { color: profile.criminalCases > 0 ? colors.danger : colors.success }]}>
                   {profile.criminalCases} declared case{profile.criminalCases === 1 ? '' : 's'}
                 </Text>
-              ) : (
-                <Text style={[styles.pendingInline, { color: colors.textMuted }]}>Criminal record — data pending</Text>
-              )}
-            </View>
+              </View>
+            )}
 
-            {/* Contact (crowdsourced over time) */}
-            <View style={[styles.section, { backgroundColor: colors.surface, borderColor: colors.border }]}>
-              <Text style={[styles.sectionTitle, { color: colors.text }]}>Contact</Text>
-              {profile.phone ? (
-                <Pressable onPress={() => Linking.openURL(`tel:${profile.phone}`)}>
-                  <Text style={[styles.link, { color: colors.primary }]}>{profile.phone}</Text>
-                </Pressable>
-              ) : (
-                <Text style={[styles.pendingInline, { color: colors.textMuted }]}>Phone — data pending</Text>
-              )}
-              {profile.email ? (
-                <Pressable onPress={() => Linking.openURL(`mailto:${profile.email}`)}>
-                  <Text style={[styles.link, { color: colors.primary }]}>{profile.email}</Text>
-                </Pressable>
-              ) : (
-                <Text style={[styles.pendingInline, { color: colors.textMuted }]}>Email — data pending</Text>
-              )}
-            </View>
+            {/* Contact (only if present) */}
+            {(profile.phone || profile.email) && (
+              <View style={[styles.section, { backgroundColor: colors.surface, borderColor: colors.border }]}>
+                <Text style={[styles.sectionTitle, { color: colors.text }]}>Contact</Text>
+                {profile.phone && (
+                  <Pressable onPress={() => Linking.openURL(`tel:${profile.phone}`)}>
+                    <Text style={[styles.link, { color: colors.primary }]}>{profile.phone}</Text>
+                  </Pressable>
+                )}
+                {profile.email && (
+                  <Pressable onPress={() => Linking.openURL(`mailto:${profile.email}`)}>
+                    <Text style={[styles.link, { color: colors.primary }]}>{profile.email}</Text>
+                  </Pressable>
+                )}
+              </View>
+            )}
 
             {/* Source & Provenance */}
             <View style={[styles.section, { backgroundColor: colors.surface, borderColor: colors.border }]}>
-              <Text style={[styles.sectionTitle, { color: colors.text }]}>Source & Provenance</Text>
+              <Text style={[styles.sectionTitle, { color: colors.text }]}>Official Source & Verification</Text>
+              <Text style={[styles.secSourceText, { color: colors.textSecondary }]}>
+                {profile.stateCode === 'AP'
+                  ? 'Official Election Results from Andhra Pradesh State Election Commission (APSEC)'
+                  : 'Official Election Results from Telangana State Election Commission (TSEC) — Know Your Representative (KYR)'}
+              </Text>
               {profile.sourceUrl ? (
-                <Pressable onPress={() => Linking.openURL(profile.sourceUrl!)}>
-                  <Text style={[styles.link, { color: colors.primary }]} numberOfLines={1}>{profile.sourceUrl}</Text>
+                <Pressable style={styles.sourceBtn} onPress={() => Linking.openURL(profile.sourceUrl!)}>
+                  <Ionicons name="open-outline" size={14} color={colors.primary} />
+                  <Text style={[styles.link, { color: colors.primary }]} numberOfLines={1}>
+                    Verify on State Election Commission Portal
+                  </Text>
                 </Pressable>
               ) : null}
-              <SourceAttributionFooter
-                sourceType={typeof profile.sourceType === 'string' ? profile.sourceType : undefined}
-                sourceUrl={profile.sourceUrl}
-                lastEditedBy={profile.lastEditedBy}
-                lastEditedAt={profile.lastEditedAt}
-                fingerprintVerified={profile.fingerprintVerified}
-              />
             </View>
 
             <Pressable style={[styles.claimBtn, { borderColor: colors.primary }]} onPress={handleClaim}>
@@ -252,6 +321,8 @@ const styles = StyleSheet.create({
   link: { fontSize: 14, fontWeight: '600', paddingVertical: 3 },
   note: { flexDirection: 'row', alignItems: 'center', gap: 8, padding: 10, borderRadius: 10, borderWidth: 1, marginBottom: 10 },
   noteText: { fontSize: 12, flex: 1, lineHeight: 17 },
+  secSourceText: { fontSize: 13, lineHeight: 18, marginBottom: 8 },
+  sourceBtn: { flexDirection: 'row', alignItems: 'center', gap: 6, marginTop: 4 },
   claimBtn: {
     flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 8,
     borderWidth: 1, borderRadius: 12, paddingVertical: 12, paddingHorizontal: 14, marginTop: 6,

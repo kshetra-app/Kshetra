@@ -17,13 +17,13 @@ import { useRecentsStore } from '../../stores/recents';
 import { useAuthStore } from '../../stores/auth';
 import { useNotificationsStore } from '../../stores/notifications';
 import { useUserProfileStore } from '../../stores/userProfile';
-import { getPartyColor } from '@/lib/constants';
+import { getPartyColor } from '../../lib/constants';
 import UserProfileCard from '../../components/UserProfileCard';
 import LanguageSwitcher from '../../components/LanguageSwitcher';
 import { useTranslation } from 'react-i18next';
 import { STATES } from '@kshetra/shared';
 import { useActiveStateStore } from '../../stores/activeState';
-import { getUnifiedConstituenciesForState } from '@/lib/stateDataAdapter';
+import { getUnifiedConstituenciesForState } from '../../lib/stateDataAdapter';
 import { useResponsive } from '../../lib/responsive';
 import { useContributorVerificationStore } from '../../stores/contributorVerification';
 import { KYC_STATUS_CONFIG } from '../../lib/contentAccountabilityTypes';
@@ -88,36 +88,36 @@ export default function ProfileScreen() {
 
   return (
     <ScrollView
-      style={styles.container}
+      style={[styles.container, { backgroundColor: colors.background }]}
       contentContainerStyle={[styles.content, { paddingTop: insets.top + 12 }]}
       showsVerticalScrollIndicator={false}
     >
       {/* Header */}
       <View style={styles.header}>
         <Pressable
-          style={styles.bellButton}
+          style={[styles.bellButton, { backgroundColor: colors.surface, borderColor: colors.goldBorder || colors.border, borderWidth: 1 }]}
           onPress={() => router.push('/notifications')}
         >
-          <Ionicons name="notifications-outline" size={22} color="#9CA3AF" />
+          <Ionicons name="notifications-outline" size={22} color={colors.textMuted} />
           {unreadCount > 0 && (
-            <View style={styles.bellBadge}>
+            <View style={[styles.bellBadge, { backgroundColor: colors.primary }]}>
               <Text style={styles.bellBadgeText}>{unreadCount > 9 ? '9+' : unreadCount}</Text>
             </View>
           )}
         </Pressable>
-        <View style={styles.avatar}>
+        <View style={[styles.avatar, { backgroundColor: colors.surface, borderColor: colors.goldBorder || colors.border, borderWidth: 1 }]}>
           <Ionicons
             name={user ? 'person-circle' : 'person'}
             size={32}
-            color={user ? '#10B981' : '#4F8EF7'}
+            color={user ? colors.teal : colors.gold}
           />
         </View>
         {user ? (
           <>
-            <Text style={styles.headerTitle}>{user.email}</Text>
-            <Text style={styles.headerSubtitle}>{t('auth.signedIn')}</Text>
+            <Text style={[styles.headerTitle, { color: colors.text }]}>{user.email}</Text>
+            <Text style={[styles.headerSubtitle, { color: colors.textMuted }]}>{t('auth.signedIn')}</Text>
             <Pressable
-              style={[styles.signInButton, styles.signOutButton]}
+              style={[styles.signInButton, { backgroundColor: colors.danger }]}
               onPress={signOut}
               disabled={loading}
             >
@@ -128,12 +128,12 @@ export default function ProfileScreen() {
           </>
         ) : (
           <>
-            <Text style={styles.headerTitle}>{t('auth.guestUser')}</Text>
-            <Text style={styles.headerSubtitle}>
+            <Text style={[styles.headerTitle, { color: colors.text }]}>{t('auth.guestUser')}</Text>
+            <Text style={[styles.headerSubtitle, { color: colors.textMuted }]}>
               {t('auth.signInToSync')}
             </Text>
             <Pressable
-              style={styles.signInButton}
+              style={[styles.signInButton, { backgroundColor: colors.primary }]}
               onPress={() => router.push('/auth/sign-in')}
             >
               <Text style={styles.signInText}>{t('auth.signIn')}</Text>
@@ -489,7 +489,6 @@ export default function ProfileScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#0A0A1A',
   },
   content: {
     paddingHorizontal: 16,
@@ -506,7 +505,9 @@ const styles = StyleSheet.create({
     width: 40,
     height: 40,
     borderRadius: 20,
-    backgroundColor: '#111827',
+    backgroundColor: '#FFFFFF',
+    borderWidth: 1,
+    borderColor: '#D8BC7E',
     justifyContent: 'center',
     alignItems: 'center',
   },
@@ -514,7 +515,7 @@ const styles = StyleSheet.create({
     position: 'absolute',
     top: 2,
     right: 2,
-    backgroundColor: '#EF4444',
+    backgroundColor: '#A8201A',
     borderRadius: 8,
     minWidth: 16,
     height: 16,
@@ -531,7 +532,9 @@ const styles = StyleSheet.create({
     width: 72,
     height: 72,
     borderRadius: 36,
-    backgroundColor: '#111827',
+    backgroundColor: '#F5EFE4',
+    borderWidth: 2,
+    borderColor: '#D8BC7E',
     justifyContent: 'center',
     alignItems: 'center',
     marginBottom: 14,
@@ -539,19 +542,22 @@ const styles = StyleSheet.create({
   headerTitle: {
     fontSize: 22,
     fontWeight: '800',
-    color: '#FFFFFF',
+    color: '#241814',
   },
   headerSubtitle: {
     fontSize: 13,
-    color: '#6B7280',
+    color: '#6D5549',
     marginTop: 4,
     marginBottom: 16,
   },
   signInButton: {
-    backgroundColor: '#4F8EF7',
+    backgroundColor: '#A8201A',
     borderRadius: 12,
     paddingVertical: 12,
-    paddingHorizontal: 32,
+    paddingHorizontal: 24,
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
   },
   signOutButton: {
     backgroundColor: '#EF4444',
@@ -567,16 +573,15 @@ const styles = StyleSheet.create({
   sectionTitle: {
     fontSize: 14,
     fontWeight: '700',
-    color: '#6B7280',
     textTransform: 'uppercase',
     letterSpacing: 1,
     marginBottom: 10,
     marginLeft: 4,
   },
   card: {
-    backgroundColor: '#111827',
     borderRadius: 14,
     overflow: 'hidden',
+    borderWidth: 1,
   },
   settingRow: {
     flexDirection: 'row',
@@ -584,7 +589,6 @@ const styles = StyleSheet.create({
     paddingVertical: 14,
     paddingHorizontal: 16,
     borderBottomWidth: 0.5,
-    borderBottomColor: '#1F2937',
   },
   settingIcon: {
     width: 32,
@@ -597,12 +601,10 @@ const styles = StyleSheet.create({
   settingLabel: {
     flex: 1,
     fontSize: 15,
-    color: '#FFFFFF',
     fontWeight: '500',
   },
   settingValue: {
     fontSize: 14,
-    color: '#6B7280',
     marginRight: 4,
   },
   sectionHeaderRow: {
@@ -615,7 +617,6 @@ const styles = StyleSheet.create({
   },
   clearText: {
     fontSize: 13,
-    color: '#4F8EF7',
     fontWeight: '600',
   },
   recentRow: {
@@ -624,7 +625,6 @@ const styles = StyleSheet.create({
     paddingVertical: 12,
     paddingHorizontal: 16,
     borderBottomWidth: 0.5,
-    borderBottomColor: '#1F2937',
   },
   recentDot: {
     width: 10,
@@ -637,12 +637,10 @@ const styles = StyleSheet.create({
   },
   recentName: {
     fontSize: 15,
-    color: '#FFFFFF',
     fontWeight: '600',
   },
   recentMeta: {
     fontSize: 12,
-    color: '#6B7280',
     marginTop: 1,
   },
   themePicker: {
@@ -653,15 +651,11 @@ const styles = StyleSheet.create({
     width: 32,
     height: 32,
     borderRadius: 8,
-    backgroundColor: '#1F2937',
     justifyContent: 'center',
     alignItems: 'center',
+    borderWidth: 1,
   },
-  themeOptionActive: {
-    backgroundColor: '#4F8EF720',
-    borderWidth: 1.5,
-    borderColor: '#4F8EF7',
-  },
+  themeOptionActive: {},
   footer: {
     alignItems: 'center',
     marginTop: 16,
@@ -669,17 +663,14 @@ const styles = StyleSheet.create({
   footerBrand: {
     fontSize: 16,
     fontWeight: '800',
-    color: '#4F8EF7',
     letterSpacing: 4,
   },
   footerText: {
     fontSize: 12,
-    color: '#374151',
     marginTop: 4,
   },
   footerVersion: {
     fontSize: 11,
-    color: '#1F2937',
     marginTop: 2,
   },
   editProfileButton: {
@@ -689,13 +680,11 @@ const styles = StyleSheet.create({
     gap: 6,
     marginTop: 10,
     paddingVertical: 10,
-    backgroundColor: '#4F8EF710',
     borderRadius: 12,
   },
   editProfileText: {
     fontSize: 14,
     fontWeight: '600',
-    color: '#4F8EF7',
   },
   languageRow: {
     paddingVertical: 8,

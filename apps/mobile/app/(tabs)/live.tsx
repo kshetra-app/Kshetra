@@ -15,6 +15,7 @@ import { useLiveExchangeStore } from '../../stores/liveExchange';
 import { LiveStreamCard } from '../../components/LiveStreamCard';
 import type { IssueCategory, LiveEvent } from '../../lib/lmxTypes';
 import { ISSUE_CATEGORY_CONFIG } from '../../lib/lmxTypes';
+import { useTheme } from '../../lib/theme';
 
 type FreshnessFilter = 'all' | 'live' | 'replay';
 type CategoryFilter = IssueCategory | 'all';
@@ -30,6 +31,7 @@ const CATEGORY_ORDER: CategoryFilter[] = [
 ];
 
 export default function LiveTabScreen() {
+  const { colors } = useTheme();
   const insets = useSafeAreaInsets();
   const router = useRouter();
   // Zustand v5 has no built-in selector memoization, so a selector that returns
@@ -57,21 +59,21 @@ export default function LiveTabScreen() {
   const openEvent = (e: LiveEvent) => router.push(`/live/${e.id}` as any);
 
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, { backgroundColor: colors.background }]}>
       {/* Header */}
-      <View style={[styles.header, { paddingTop: insets.top + 8 }]}>
+      <View style={[styles.header, { paddingTop: insets.top + 8, borderBottomColor: colors.border }]}>
         <View style={styles.headerRow}>
           <View>
-            <Text style={styles.title}>Kshetra Live</Text>
+            <Text style={[styles.title, { color: colors.text }]}>Kshetra Live</Text>
             <View style={styles.subRow}>
-              <View style={styles.liveDot} />
-              <Text style={styles.subtitle}>{liveCount} live now</Text>
+              <View style={[styles.liveDot, { backgroundColor: colors.primary }]} />
+              <Text style={[styles.subtitle, { color: colors.textMuted }]}>{liveCount} live now</Text>
               {!aiServiceEnabled && (
-                <Text style={styles.aiOff}>· AI enrichment off</Text>
+                <Text style={[styles.aiOff, { color: colors.textMuted }]}>· AI enrichment off</Text>
               )}
             </View>
           </View>
-          <Pressable style={styles.goLive} onPress={() => router.push('/live/go-live' as any)}>
+          <Pressable style={[styles.goLive, { backgroundColor: colors.primary }]} onPress={() => router.push('/live/go-live' as any)}>
             <Ionicons name="radio" size={16} color="#FFFFFF" />
             <Text style={styles.goLiveText}>Go Live</Text>
           </Pressable>
@@ -88,15 +90,19 @@ export default function LiveTabScreen() {
           {CATEGORY_ORDER.map((c) => {
             const active = category === c;
             const cfg = c === 'all' ? null : ISSUE_CATEGORY_CONFIG[c];
-            const color = cfg?.color ?? '#4F8EF7';
+            const color = cfg?.color ?? colors.primary;
             return (
               <Pressable
                 key={c}
                 onPress={() => setCategory(c)}
-                style={[styles.chip, active && { backgroundColor: color + '22', borderColor: color }]}
+                style={[
+                  styles.chip,
+                  { backgroundColor: colors.surface, borderColor: colors.goldBorder || colors.border },
+                  active && { backgroundColor: color + '22', borderColor: color },
+                ]}
               >
-                {cfg && <Ionicons name={cfg.icon as any} size={12} color={active ? color : '#9CA3AF'} />}
-                <Text style={[styles.chipText, active && { color }]}>
+                {cfg && <Ionicons name={cfg.icon as any} size={12} color={active ? color : colors.textMuted} />}
+                <Text style={[styles.chipText, { color: colors.textSecondary }, active && { color, fontWeight: '800' }]}>
                   {c === 'all' ? 'All' : cfg!.label}
                 </Text>
               </Pressable>
@@ -113,23 +119,31 @@ export default function LiveTabScreen() {
             <Pressable
               key={f}
               onPress={() => setFreshness(f)}
-              style={[styles.chip, freshness === f && styles.chipActive]}
+              style={[
+                styles.chip,
+                { backgroundColor: colors.surface, borderColor: colors.goldBorder || colors.border },
+                freshness === f && { backgroundColor: colors.primary, borderColor: colors.primary },
+              ]}
             >
-              <Text style={[styles.chipText, freshness === f && styles.chipTextActive]}>
+              <Text style={[styles.chipText, { color: colors.textSecondary }, freshness === f && styles.chipTextActive]}>
                 {f === 'all' ? 'All' : f === 'live' ? 'Live now' : 'Replays'}
               </Text>
             </Pressable>
           ))}
           <Pressable
             onPress={() => setVerifiedOnly((v) => !v)}
-            style={[styles.chip, verifiedOnly && styles.chipActive]}
+            style={[
+              styles.chip,
+              { backgroundColor: colors.surface, borderColor: colors.goldBorder || colors.border },
+              verifiedOnly && { backgroundColor: colors.teal, borderColor: colors.teal },
+            ]}
           >
             <Ionicons
               name="shield-checkmark"
               size={12}
-              color={verifiedOnly ? '#10B981' : '#9CA3AF'}
+              color={verifiedOnly ? '#FFFFFF' : colors.textMuted}
             />
-            <Text style={[styles.chipText, verifiedOnly && styles.chipTextActive]}>Verified</Text>
+            <Text style={[styles.chipText, { color: colors.textSecondary }, verifiedOnly && styles.chipTextActive]}>Verified</Text>
           </Pressable>
         </ScrollView>
       </View>
@@ -143,9 +157,9 @@ export default function LiveTabScreen() {
         showsVerticalScrollIndicator={false}
         ListEmptyComponent={
           <View style={styles.empty}>
-            <Ionicons name="videocam-off" size={40} color="#374151" />
-            <Text style={styles.emptyTitle}>No live streams match your filters</Text>
-            <Text style={styles.emptySub}>Be the first — tap Go Live to broadcast from here.</Text>
+            <Ionicons name="videocam-off" size={40} color={colors.textMuted} />
+            <Text style={[styles.emptyTitle, { color: colors.textSecondary }]}>No live streams match your filters</Text>
+            <Text style={[styles.emptySub, { color: colors.textMuted }]}>Be the first — tap Go Live to broadcast from here.</Text>
           </View>
         }
       />
@@ -154,31 +168,31 @@ export default function LiveTabScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#0A0A1A' },
+  container: { flex: 1 },
   header: { paddingHorizontal: 16, paddingBottom: 10 },
   headerRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-end' },
-  title: { fontSize: 26, fontWeight: '800', color: '#FFFFFF' },
+  title: { fontSize: 26, fontWeight: '800' },
   subRow: { flexDirection: 'row', alignItems: 'center', gap: 6, marginTop: 2 },
-  liveDot: { width: 8, height: 8, borderRadius: 4, backgroundColor: '#EF4444' },
-  subtitle: { fontSize: 12, color: '#9CA3AF', fontWeight: '600' },
-  aiOff: { fontSize: 11, color: '#6B7280', fontWeight: '500' },
+  liveDot: { width: 8, height: 8, borderRadius: 4 },
+  subtitle: { fontSize: 12, fontWeight: '600' },
+  aiOff: { fontSize: 11, fontWeight: '500' },
   goLive: {
     flexDirection: 'row', alignItems: 'center', gap: 6,
-    backgroundColor: '#EF4444', paddingHorizontal: 14, paddingVertical: 9, borderRadius: 22,
+    paddingHorizontal: 14, paddingVertical: 9, borderRadius: 22,
   },
   goLiveText: { color: '#FFFFFF', fontSize: 13, fontWeight: '800' },
   filters: { gap: 8, paddingBottom: 6 },
   chipRow: { paddingHorizontal: 16, gap: 8 },
   chip: {
     flexDirection: 'row', alignItems: 'center', gap: 4,
-    borderWidth: 1, borderColor: '#1F2937', backgroundColor: '#111827',
+    borderWidth: 1,
     paddingHorizontal: 12, paddingVertical: 6, borderRadius: 16,
   },
-  chipActive: { backgroundColor: '#4F8EF722', borderColor: '#4F8EF7' },
-  chipText: { fontSize: 12, fontWeight: '700', color: '#9CA3AF' },
-  chipTextActive: { color: '#4F8EF7' },
+  chipActive: {},
+  chipText: { fontSize: 12, fontWeight: '700' },
+  chipTextActive: { color: '#FFFFFF' },
   list: { padding: 16, paddingBottom: 120 },
   empty: { alignItems: 'center', paddingTop: 80, gap: 8 },
-  emptyTitle: { fontSize: 15, fontWeight: '700', color: '#9CA3AF' },
-  emptySub: { fontSize: 12, color: '#6B7280', textAlign: 'center', paddingHorizontal: 40 },
+  emptyTitle: { fontSize: 15, fontWeight: '700' },
+  emptySub: { fontSize: 12, textAlign: 'center', paddingHorizontal: 40 },
 });

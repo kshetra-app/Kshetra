@@ -2,6 +2,7 @@ import { useRef, useEffect, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import { View, Text, StyleSheet, Pressable, ScrollView } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import { useTheme } from '../lib/theme';
 
 export type ConstituencyTab =
   | 'overview'
@@ -43,8 +44,8 @@ export default function ConstituencyTabBar({
   newsBadge,
 }: ConstituencyTabBarProps) {
   const { t } = useTranslation();
+  const { colors } = useTheme();
   const scrollRef = useRef<ScrollView>(null);
-  const tabRefs = useRef<Record<string, number>>({});
 
   const getBadge = useCallback(
     (key: ConstituencyTab) => {
@@ -57,7 +58,7 @@ export default function ConstituencyTabBar({
   );
 
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, { backgroundColor: colors.background, borderBottomColor: colors.border }]}>
       <ScrollView
         ref={scrollRef}
         horizontal
@@ -71,20 +72,23 @@ export default function ConstituencyTabBar({
           return (
             <Pressable
               key={tab.key}
-              style={[styles.tab, isActive && styles.tabActive]}
+              style={[
+                styles.tab,
+                { backgroundColor: isActive ? colors.primaryLight : colors.surface, borderColor: isActive ? colors.primary : colors.border },
+              ]}
               onPress={() => onTabChange(tab.key)}
               hitSlop={4}
             >
               <Ionicons
                 name={(isActive ? tab.icon : `${tab.icon}-outline`) as any}
                 size={16}
-                color={isActive ? '#4F8EF7' : '#6B7280'}
+                color={isActive ? colors.primary : colors.textSecondary}
               />
-              <Text style={[styles.tabLabel, isActive && styles.tabLabelActive]}>
+              <Text style={[styles.tabLabel, { color: isActive ? colors.primary : colors.textSecondary }, isActive && styles.tabLabelActive]}>
                 {t(tab.label)}
               </Text>
               {badge !== undefined && badge > 0 && (
-                <View style={styles.badge}>
+                <View style={[styles.badge, { backgroundColor: colors.primary }]}>
                   <Text style={styles.badgeText}>
                     {badge > 99 ? '99+' : badge}
                   </Text>
@@ -101,12 +105,10 @@ export default function ConstituencyTabBar({
 const styles = StyleSheet.create({
   container: {
     borderBottomWidth: 1,
-    borderBottomColor: '#1F2937',
-    backgroundColor: '#0A0A1A',
   },
   scrollContent: {
     paddingHorizontal: 16,
-    gap: 4,
+    gap: 6,
     paddingVertical: 10,
   },
   tab: {
@@ -116,25 +118,16 @@ const styles = StyleSheet.create({
     paddingHorizontal: 14,
     paddingVertical: 8,
     borderRadius: 20,
-    backgroundColor: '#111827',
     borderWidth: 1,
-    borderColor: '#1F2937',
-  },
-  tabActive: {
-    backgroundColor: '#4F8EF715',
-    borderColor: '#4F8EF740',
   },
   tabLabel: {
     fontSize: 13,
     fontWeight: '600',
-    color: '#6B7280',
   },
   tabLabelActive: {
-    color: '#4F8EF7',
     fontWeight: '700',
   },
   badge: {
-    backgroundColor: '#EF4444',
     borderRadius: 8,
     minWidth: 16,
     height: 16,

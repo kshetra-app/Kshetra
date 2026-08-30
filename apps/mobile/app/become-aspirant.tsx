@@ -21,6 +21,7 @@ import {
   type CivicBadge,
   type CivicScoreBreakdown,
 } from '../lib/aspirantTypes';
+import { useTheme } from '../lib/theme';
 
 const BENEFITS: { icon: string; title: string; sub: string }[] = [
   { icon: 'trophy', title: 'Build a civic score', sub: 'Earn points for learning, engagement & community work.' },
@@ -31,6 +32,7 @@ const BENEFITS: { icon: string; title: string; sub: string }[] = [
 
 export default function BecomeAspirantScreen() {
   const router = useRouter();
+  const { colors } = useTheme();
   const [registerVisible, setRegisterVisible] = useState(false);
 
   const profile = useAspirantStore((s: any) => s.profile) as AspirantProfile | null;
@@ -44,12 +46,12 @@ export default function BecomeAspirantScreen() {
   const { insets } = useResponsive();
 
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, { backgroundColor: colors.background }]}>
       <Stack.Screen
         options={{
           title: 'Become an Aspirant',
-          headerStyle: { backgroundColor: '#0A0A1A' },
-          headerTintColor: '#FFFFFF',
+          headerStyle: { backgroundColor: colors.surface },
+          headerTintColor: colors.primary,
         }}
       />
 
@@ -57,13 +59,13 @@ export default function BecomeAspirantScreen() {
       <View style={[styles.header, { paddingTop: insets.top + 8 }]}>
         <View style={{ flexDirection: 'row', alignItems: 'center', gap: 12 }}>
           <Pressable onPress={() => router.back()} hitSlop={8}>
-            <Ionicons name="arrow-back" size={22} color="#FFFFFF" />
+            <Ionicons name="arrow-back" size={22} color={colors.primary} />
           </Pressable>
-          <Text style={styles.headerTitle}>Become an Aspirant</Text>
+          <View>
+            <Text style={[styles.headerTitle, { color: colors.text }]}>Civic Aspirants</Text>
+            <Text style={[styles.headerSubtitle, { color: colors.textMuted }]}>Build credentials, earn endorsements</Text>
+          </View>
         </View>
-        <Text style={[styles.headerSubtitle, { marginLeft: 34 }]}>
-          Step up. Build trust. Lead your constituency.
-        </Text>
       </View>
 
       <ScrollView style={styles.scroll} showsVerticalScrollIndicator={false}>
@@ -215,82 +217,82 @@ export default function BecomeAspirantScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#0A0A1A' },
+  container: { flex: 1 },
   header: { paddingHorizontal: 20, paddingBottom: 12 },
-  headerTitle: { fontSize: 26, fontWeight: '800', color: '#FFFFFF' },
-  headerSubtitle: { fontSize: 14, color: '#9CA3AF', marginTop: 2 },
+  headerTitle: { fontSize: 26, fontWeight: '800' },
+  headerSubtitle: { fontSize: 14, marginTop: 2 },
   scroll: { flex: 1 },
   content: { paddingHorizontal: 16 },
   // Hero
   hero: { alignItems: 'center', paddingVertical: 16, gap: 8 },
   heroIcon: {
     width: 64, height: 64, borderRadius: 32,
-    backgroundColor: '#06B6D420', justifyContent: 'center', alignItems: 'center',
+    justifyContent: 'center', alignItems: 'center',
   },
-  heroTitle: { fontSize: 22, fontWeight: '900', color: '#FFFFFF', marginTop: 4 },
-  heroSub: { fontSize: 13, color: '#9CA3AF', textAlign: 'center', lineHeight: 19, paddingHorizontal: 8 },
+  heroTitle: { fontSize: 22, fontWeight: '900', marginTop: 4 },
+  heroSub: { fontSize: 13, textAlign: 'center', lineHeight: 19, paddingHorizontal: 8 },
   // Benefits
   benefits: { marginTop: 14, gap: 10 },
   benefitRow: {
     flexDirection: 'row', alignItems: 'center', gap: 12,
-    backgroundColor: '#111827', borderRadius: 12, padding: 12,
-    borderWidth: 1, borderColor: '#1F2937',
+    borderRadius: 12, padding: 12,
+    borderWidth: 1,
   },
   benefitIcon: {
     width: 40, height: 40, borderRadius: 20,
-    backgroundColor: '#06B6D415', justifyContent: 'center', alignItems: 'center',
+    justifyContent: 'center', alignItems: 'center',
   },
-  benefitTitle: { fontSize: 14, fontWeight: '800', color: '#FFFFFF' },
-  benefitSub: { fontSize: 12, color: '#9CA3AF', marginTop: 2 },
+  benefitTitle: { fontSize: 14, fontWeight: '800' },
+  benefitSub: { fontSize: 12, marginTop: 2 },
   cta: {
     flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 8,
-    backgroundColor: '#06B6D4', borderRadius: 14, paddingVertical: 15, marginTop: 18,
+    borderRadius: 14, paddingVertical: 15, marginTop: 18,
   },
   ctaText: { fontSize: 15, fontWeight: '800', color: '#FFFFFF' },
   // Registered profile meta
   profileMetaCard: {
     flexDirection: 'row', alignItems: 'center', gap: 12,
-    backgroundColor: '#06B6D412', borderRadius: 12, padding: 14, marginTop: 12,
-    borderWidth: 1, borderColor: '#06B6D433',
+    borderRadius: 12, padding: 14, marginTop: 12,
+    borderWidth: 1,
   },
-  profileMetaName: { fontSize: 15, fontWeight: '800', color: '#FFFFFF' },
-  profileMetaSub: { fontSize: 12, color: '#9CA3AF', marginTop: 2 },
-  sectionTitle: { fontSize: 16, fontWeight: '800', color: '#FFFFFF', marginTop: 20 },
-  sectionSub: { fontSize: 12, color: '#6B7280', marginTop: 2, marginBottom: 10 },
+  profileMetaName: { fontSize: 15, fontWeight: '800' },
+  profileMetaSub: { fontSize: 12, marginTop: 2 },
+  sectionTitle: { fontSize: 16, fontWeight: '800', marginTop: 20 },
+  sectionSub: { fontSize: 12, marginTop: 2, marginBottom: 10 },
   // Learn link
   learnLink: {
     flexDirection: 'row', alignItems: 'center', gap: 8,
-    backgroundColor: '#8B5CF612', borderRadius: 12, padding: 14, marginTop: 18,
-    borderWidth: 1, borderColor: '#8B5CF633',
+    borderRadius: 12, padding: 14, marginTop: 18,
+    borderWidth: 1,
   },
-  learnLinkText: { flex: 1, fontSize: 13, fontWeight: '700', color: '#C4B5FD' },
+  learnLinkText: { flex: 1, fontSize: 13, fontWeight: '700' },
   // Community
   communityHeader: { flexDirection: 'row', alignItems: 'center', gap: 8, marginTop: 24, marginBottom: 12 },
-  communityTitle: { fontSize: 17, fontWeight: '700', color: '#FFFFFF' },
+  communityTitle: { fontSize: 17, fontWeight: '700' },
   aspirantCard: {
-    backgroundColor: '#111827', borderRadius: 12, padding: 12, marginBottom: 8,
-    borderWidth: 1, borderColor: '#1F2937',
+    borderRadius: 12, padding: 12, marginBottom: 8,
+    borderWidth: 1,
   },
   aspirantRow: { flexDirection: 'row', alignItems: 'center' },
   aspirantAvatar: { width: 44, height: 44, borderRadius: 22, justifyContent: 'center', alignItems: 'center', marginRight: 12 },
   aspirantInfo: { flex: 1 },
-  aspirantName: { fontSize: 14, fontWeight: '800', color: '#FFFFFF' },
-  aspirantBio: { fontSize: 11, color: '#9CA3AF', marginTop: 2 },
+  aspirantName: { fontSize: 14, fontWeight: '800' },
+  aspirantBio: { fontSize: 11, marginTop: 2 },
   aspirantMeta: { flexDirection: 'row', alignItems: 'center', gap: 6, marginTop: 4 },
-  aspirantTarget: { fontSize: 10, color: '#6B7280' },
+  aspirantTarget: { fontSize: 10 },
   levelTag: { borderRadius: 4, paddingHorizontal: 6, paddingVertical: 1 },
   levelTagText: { fontSize: 9, fontWeight: '700' },
   aspirantScore: { alignItems: 'center', marginLeft: 8 },
   aspirantScoreValue: { fontSize: 18, fontWeight: '900' },
-  aspirantScoreLabel: { fontSize: 9, color: '#6B7280', fontWeight: '600' },
+  aspirantScoreLabel: { fontSize: 9, fontWeight: '600' },
   endorseBtn: {
     flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 6,
     marginTop: 10, paddingVertical: 8, borderRadius: 8,
-    backgroundColor: '#0A0A1A', borderWidth: 1, borderColor: '#1F2937',
+    borderWidth: 1,
   },
-  endorseBtnDone: { borderColor: '#EF444455', backgroundColor: '#EF444410' },
-  endorseText: { fontSize: 12, fontWeight: '700', color: '#9CA3AF' },
-  endorseCount: { fontSize: 11, color: '#6B7280' },
+  endorseBtnDone: {},
+  endorseText: { fontSize: 12, fontWeight: '700' },
+  endorseCount: { fontSize: 11 },
   empty: { alignItems: 'center', paddingTop: 40 },
-  emptyText: { fontSize: 14, fontWeight: '700', color: '#374151', marginTop: 8 },
+  emptyText: { fontSize: 14, fontWeight: '700', marginTop: 8 },
 });

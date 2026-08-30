@@ -13,9 +13,11 @@ import { STATES } from '@kshetra/shared';
 import { useActiveStateStore } from '../stores/activeState';
 import { isStateSupported, getStateData } from '../lib/stateRegistry';
 import { usePrefetchState } from '../lib/usePrefetchState';
+import { useTheme } from '../lib/theme';
 
 export default function StateSwitcher() {
   const { t } = useTranslation();
+  const { colors } = useTheme();
   const [visible, setVisible] = useState(false);
   const stateCode = useActiveStateStore((s) => s.stateCode);
   const setStateCode = useActiveStateStore((s) => s.setStateCode);
@@ -34,10 +36,10 @@ export default function StateSwitcher() {
 
   return (
     <>
-      <Pressable style={styles.trigger} onPress={() => setVisible(true)}>
-        <Ionicons name="location" size={14} color="#4F8EF7" />
-        <Text style={styles.triggerText}>{stateCode === 'IN' ? 'India' : currentState?.name ?? stateCode}</Text>
-        <Ionicons name="chevron-down" size={12} color="#6B7280" />
+      <Pressable style={[styles.trigger, { backgroundColor: colors.surface, borderColor: colors.goldBorder || colors.border, borderWidth: 1 }]} onPress={() => setVisible(true)}>
+        <Ionicons name="location" size={14} color={colors.primary} />
+        <Text style={[styles.triggerText, { color: colors.text }]}>{stateCode === 'IN' ? 'India' : currentState?.name ?? stateCode}</Text>
+        <Ionicons name="chevron-down" size={12} color={colors.textSecondary} />
       </Pressable>
 
       <Modal
@@ -47,14 +49,14 @@ export default function StateSwitcher() {
         onRequestClose={() => setVisible(false)}
       >
         <Pressable style={styles.overlay} onPress={() => setVisible(false)}>
-          <View style={styles.sheet}>
-            <Text style={styles.sheetTitle}>{t('stateSwitcher.selectState')}</Text>
+          <View style={[styles.sheet, { backgroundColor: colors.surface, borderColor: colors.goldBorder || colors.border, borderWidth: 1 }]}>
+            <Text style={[styles.sheetTitle, { color: colors.text }]}>{t('stateSwitcher.selectState')}</Text>
             <ScrollView style={styles.scrollArea} showsVerticalScrollIndicator={false}>
               <Pressable
                 key="IN"
                 style={[
                   styles.stateRow,
-                  stateCode === 'IN' && styles.stateRowActive,
+                  stateCode === 'IN' && { backgroundColor: colors.primaryLight },
                 ]}
                 onPress={() => handleSelect('IN')}
               >
@@ -62,17 +64,18 @@ export default function StateSwitcher() {
                   <Text
                     style={[
                       styles.stateName,
-                      stateCode === 'IN' && styles.stateNameActive,
+                      { color: colors.text },
+                      stateCode === 'IN' && { color: colors.primary, fontWeight: '800' },
                     ]}
                   >
                     {t('stateSwitcherExtended.nationalView')}
                   </Text>
-                  <Text style={styles.stateSeats}>
+                  <Text style={[styles.stateSeats, { color: colors.textMuted }]}>
                     {t('stateSwitcherExtended.statesAndUTs')}
                   </Text>
                 </View>
                 {stateCode === 'IN' && (
-                  <Ionicons name="checkmark-circle" size={20} color="#4F8EF7" />
+                  <Ionicons name="checkmark-circle" size={20} color={colors.primary} />
                 )}
               </Pressable>
 
@@ -85,7 +88,7 @@ export default function StateSwitcher() {
                     key={state.code}
                     style={[
                       styles.stateRow,
-                      isActive && styles.stateRowActive,
+                      isActive && { backgroundColor: colors.primaryLight },
                       !supported && styles.stateRowDisabled,
                     ]}
                     onPress={() => supported && handleSelect(state.code)}
@@ -96,18 +99,19 @@ export default function StateSwitcher() {
                       <Text
                         style={[
                           styles.stateName,
-                          isActive && styles.stateNameActive,
-                          !supported && styles.stateNameDisabled,
+                          { color: colors.text },
+                          isActive && { color: colors.primary, fontWeight: '800' },
+                          !supported && { color: colors.textMuted },
                         ]}
                       >
                         {state.name}
                       </Text>
-                      <Text style={styles.stateSeats}>
+                      <Text style={[styles.stateSeats, { color: colors.textMuted }]}>
                         {state.assemblySeats} {t('stateSwitcher.constituencies')}
                       </Text>
                     </View>
                     {isActive && (
-                      <Ionicons name="checkmark-circle" size={20} color="#4F8EF7" />
+                      <Ionicons name="checkmark-circle" size={20} color={colors.primary} />
                     )}
                     {supported && !isActive && (
                       <View style={[
@@ -116,7 +120,7 @@ export default function StateSwitcher() {
                           ? styles.statusFull
                           : styles.statusStub,
                       ]}>
-                        <Text style={styles.statusText}>
+                        <Text style={[styles.statusText, { color: data?.hasFullData ? colors.success : colors.gold }]}>
                           {data?.hasFullData ? t('stateSwitcher.full') : `${data?.loadedCount}/${state.assemblySeats}`}
                         </Text>
                       </View>
@@ -139,26 +143,28 @@ const styles = StyleSheet.create({
   trigger: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#111827',
     borderRadius: 8,
     paddingHorizontal: 10,
     paddingVertical: 6,
     gap: 6,
+    shadowColor: '#2C1810',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 3,
   },
   triggerText: {
     fontSize: 13,
     fontWeight: '700',
-    color: '#FFFFFF',
   },
   overlay: {
     flex: 1,
-    backgroundColor: 'rgba(0,0,0,0.6)',
+    backgroundColor: 'rgba(0,0,0,0.5)',
     justifyContent: 'center',
     alignItems: 'center',
     padding: 32,
   },
   sheet: {
-    backgroundColor: '#111827',
     borderRadius: 20,
     padding: 20,
     width: '100%',
@@ -171,7 +177,6 @@ const styles = StyleSheet.create({
   sheetTitle: {
     fontSize: 18,
     fontWeight: '800',
-    color: '#FFFFFF',
     marginBottom: 16,
     textAlign: 'center',
   },
@@ -184,9 +189,6 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     marginBottom: 4,
   },
-  stateRowActive: {
-    backgroundColor: '#4F8EF720',
-  },
   stateRowDisabled: {
     opacity: 0.5,
   },
@@ -196,22 +198,14 @@ const styles = StyleSheet.create({
   stateName: {
     fontSize: 15,
     fontWeight: '600',
-    color: '#FFFFFF',
-  },
-  stateNameActive: {
-    color: '#4F8EF7',
-  },
-  stateNameDisabled: {
-    color: '#6B7280',
   },
   stateSeats: {
     fontSize: 12,
-    color: '#6B7280',
     marginTop: 2,
   },
   comingSoon: {
     fontSize: 11,
-    color: '#F59E0B',
+    color: '#D97706',
     fontWeight: '600',
   },
   statusBadge: {
@@ -228,6 +222,5 @@ const styles = StyleSheet.create({
   statusText: {
     fontSize: 10,
     fontWeight: '700',
-    color: '#9CA3AF',
   },
 });

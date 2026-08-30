@@ -10,12 +10,12 @@ import { View, Text, StyleSheet, ScrollView, TextInput, Pressable, Alert } from 
 import { useLocalSearchParams, Stack, useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { useTheme } from '@/lib/useTheme';
-import { getRepresentativeById } from '@/lib/representativesData';
+import { useTheme } from '../../../lib/useTheme';
+import { getRepresentativeById } from '../../../lib/representativesData';
 import type { Representative } from '@kshetra/shared';
-import { submitRepresentativeEdit } from '@/lib/representativeEdits';
-import { gateContentAction } from '@/lib/contentAccountability';
-import { useContributorVerificationStore } from '@/stores/contributorVerification';
+import { submitRepresentativeEdit } from '../../../lib/representativeEdits';
+import { gateContentAction } from '../../../lib/contentAccountability';
+import { useContributorVerificationStore } from '../../../stores/contributorVerification';
 
 const EDITABLE_FIELDS: { key: string; label: string; keyboard?: 'default' | 'phone-pad' | 'email-address' | 'url' }[] = [
   { key: 'name', label: 'Full name' },

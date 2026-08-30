@@ -2,9 +2,9 @@ import React, { useState } from 'react';
 import { View, Text, StyleSheet, Pressable, Linking } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useTranslation } from 'react-i18next';
-import { getPartyColor } from '@/lib/constants';
-import { tapLight } from '@/lib/haptics';
-import { moderateScale as ms } from '@/lib/responsive';
+import { getPartyColor } from '../lib/constants';
+import { tapLight } from '../lib/haptics';
+import { moderateScale as ms } from '../lib/responsive';
 import type { PoliticalLedgerEntry } from '../../../data/seed/telangana-political-timeline';
 
 interface Props {
@@ -24,9 +24,9 @@ export default function PoliticalTimelineCard({ event }: Props) {
       case 'BY_ELECTION':
         return { color: '#10B981', icon: 'add-circle' as const, label: t('timeline.by_election', 'BY-ELECTION') };
       case 'DEATH_IN_OFFICE':
-        return { color: '#6B7280', icon: 'remove-circle' as const, label: t('timeline.death', 'VACANCY (DEATH)') };
+        return { color: '#988275', icon: 'remove-circle' as const, label: t('timeline.death', 'VACANCY (DEATH)') };
       case 'RESIGNATION':
-        return { color: '#6B7280', icon: 'remove-circle' as const, label: t('timeline.resignation', 'VACANCY (RESIGNATION)') };
+        return { color: '#988275', icon: 'remove-circle' as const, label: t('timeline.resignation', 'VACANCY (RESIGNATION)') };
       case 'DISQUALIFICATION':
         return { color: '#EF4444', icon: 'close-circle' as const, label: t('timeline.disqualification', 'DISQUALIFICATION') };
       case 'PARTY_MERGER':
@@ -142,7 +142,7 @@ export default function PoliticalTimelineCard({ event }: Props) {
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: '#111827',
+    backgroundColor: '#FFFFFF',
     borderRadius: 12,
     padding: 12,
     marginVertical: 6,
@@ -161,7 +161,7 @@ const styles = StyleSheet.create({
   },
   dateText: {
     fontSize: ms(11),
-    color: '#9CA3AF',
+    color: '#6D5549',
     fontWeight: '500',
   },
   badge: {
@@ -179,14 +179,14 @@ const styles = StyleSheet.create({
   },
   explanation: {
     fontSize: ms(13),
-    color: '#FFFFFF',
+    color: '#241814',
     fontWeight: '600',
     lineHeight: 18,
     marginBottom: 6,
   },
   members: {
     fontSize: ms(11),
-    color: '#9CA3AF',
+    color: '#6D5549',
     fontWeight: '500',
     marginBottom: 8,
   },
@@ -215,12 +215,12 @@ const styles = StyleSheet.create({
     marginTop: 10,
     paddingTop: 10,
     borderTopWidth: 1,
-    borderTopColor: '#1F2937',
+    borderTopColor: '#E8DED1',
     gap: 8,
   },
   detailsText: {
     fontSize: ms(12),
-    color: '#D1D5DB',
+    color: '#6D5549',
     lineHeight: 17,
   },
   detailRow: {
@@ -230,12 +230,12 @@ const styles = StyleSheet.create({
   },
   detailLabel: {
     fontSize: ms(11),
-    color: '#6B7280',
+    color: '#988275',
     fontWeight: '600',
   },
   detailValue: {
     fontSize: ms(11),
-    color: '#FFFFFF',
+    color: '#241814',
     fontWeight: '600',
   },
   sourcesContainer: {
@@ -245,11 +245,11 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    backgroundColor: '#0A0A1A',
+    backgroundColor: '#F5EFE4',
     padding: 6,
     borderRadius: 6,
     borderWidth: 1,
-    borderColor: '#1F2937',
+    borderColor: '#E8DED1',
   },
   sourceLinkText: {
     fontSize: ms(10),

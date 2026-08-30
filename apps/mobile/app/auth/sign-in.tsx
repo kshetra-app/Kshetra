@@ -13,9 +13,11 @@ import { Stack, useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useAuthStore } from '../../stores/auth';
+import { useTheme } from '../../lib/theme';
 
 export default function SignInScreen() {
   const router = useRouter();
+  const { colors } = useTheme();
   const signInWithEmail = useAuthStore((s) => s.signInWithEmail);
   const signUpWithEmail = useAuthStore((s) => s.signUpWithEmail);
   const loading = useAuthStore((s) => s.loading);
@@ -46,12 +48,12 @@ export default function SignInScreen() {
   };
 
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, { backgroundColor: colors.background }]}>
       <Stack.Screen
         options={{
           title: isSignUp ? 'Create Account' : 'Sign In',
-          headerStyle: { backgroundColor: '#0A0A1A' },
-          headerTintColor: '#FFFFFF',
+          headerStyle: { backgroundColor: colors.surface },
+          headerTintColor: colors.primary,
         }}
       />
       <KeyboardAvoidingView
@@ -59,8 +61,8 @@ export default function SignInScreen() {
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
       >
         <View style={styles.logoContainer}>
-          <Text style={styles.brand}>KSHETRA</Text>
-          <Text style={styles.tagline}>
+          <Text style={[styles.brand, { color: colors.primary }]}>KSHETRA</Text>
+          <Text style={[styles.tagline, { color: colors.textMuted }]}>
             {isSignUp
               ? 'Create your account'
               : 'Sign in to sync your data'}
@@ -68,17 +70,17 @@ export default function SignInScreen() {
         </View>
 
         <View style={styles.form}>
-          <View style={styles.inputContainer}>
+          <View style={[styles.inputContainer, { backgroundColor: colors.surface, borderColor: colors.goldBorder || colors.border }]}>
             <Ionicons
               name="mail-outline"
               size={18}
-              color="#6B7280"
+              color={colors.textMuted}
               style={styles.inputIcon}
             />
             <TextInput
-              style={styles.input}
+              style={[styles.input, { color: colors.text }]}
               placeholder="Email"
-              placeholderTextColor="#4B5563"
+              placeholderTextColor={colors.textMuted}
               value={email}
               onChangeText={setEmail}
               autoCapitalize="none"
@@ -87,17 +89,17 @@ export default function SignInScreen() {
             />
           </View>
 
-          <View style={styles.inputContainer}>
+          <View style={[styles.inputContainer, { backgroundColor: colors.surface, borderColor: colors.goldBorder || colors.border }]}>
             <Ionicons
               name="lock-closed-outline"
               size={18}
-              color="#6B7280"
+              color={colors.textMuted}
               style={styles.inputIcon}
             />
             <TextInput
-              style={styles.input}
+              style={[styles.input, { color: colors.text }]}
               placeholder="Password"
-              placeholderTextColor="#4B5563"
+              placeholderTextColor={colors.textMuted}
               value={password}
               onChangeText={setPassword}
               secureTextEntry
@@ -106,7 +108,7 @@ export default function SignInScreen() {
           </View>
 
           <Pressable
-            style={[styles.submitButton, loading && styles.submitDisabled]}
+            style={[styles.submitButton, { backgroundColor: colors.primary }, loading && styles.submitDisabled]}
             onPress={handleSubmit}
             disabled={loading}
           >
@@ -123,7 +125,7 @@ export default function SignInScreen() {
             style={styles.toggleButton}
             onPress={() => setIsSignUp((v) => !v)}
           >
-            <Text style={styles.toggleText}>
+            <Text style={[styles.toggleText, { color: colors.teal }]}>
               {isSignUp
                 ? 'Already have an account? Sign In'
                 : "Don't have an account? Sign Up"}
@@ -138,7 +140,6 @@ export default function SignInScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#0A0A1A',
   },
   inner: {
     flex: 1,
@@ -152,12 +153,10 @@ const styles = StyleSheet.create({
   brand: {
     fontSize: 32,
     fontWeight: '900',
-    color: '#4F8EF7',
     letterSpacing: 6,
   },
   tagline: {
     fontSize: 14,
-    color: '#6B7280',
     marginTop: 8,
   },
   form: {
@@ -166,10 +165,8 @@ const styles = StyleSheet.create({
   inputContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#111827',
     borderRadius: 12,
     borderWidth: 1,
-    borderColor: '#1F2937',
     paddingHorizontal: 14,
   },
   inputIcon: {
@@ -178,11 +175,9 @@ const styles = StyleSheet.create({
   input: {
     flex: 1,
     fontSize: 15,
-    color: '#FFFFFF',
     paddingVertical: 14,
   },
   submitButton: {
-    backgroundColor: '#4F8EF7',
     borderRadius: 12,
     paddingVertical: 16,
     alignItems: 'center',
@@ -202,7 +197,6 @@ const styles = StyleSheet.create({
   },
   toggleText: {
     fontSize: 14,
-    color: '#4F8EF7',
     fontWeight: '600',
   },
 });

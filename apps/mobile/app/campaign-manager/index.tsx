@@ -9,22 +9,25 @@ import CampaignDashboardCard from '../../components/CampaignDashboardCard';
 import AdPerformanceCard from '../../components/AdPerformanceCard';
 import RevenueCard from '../../components/RevenueCard';
 import CampaignOutreachPanel from '../../components/CampaignOutreachPanel';
+import { useResponsive } from '../../lib/responsive';
+import { useTheme } from '../../lib/theme';
 
-type Tab = 'campaigns' | 'outreach' | 'ads' | 'revenue' | 'booths';
+type CampaignTab = 'campaigns' | 'outreach' | 'ads' | 'revenue' | 'booths' | 'volunteers';
 
-const TAB_KEYS: { key: Tab; i18nKey: string; icon: string }[] = [
-  { key: 'campaigns', i18nKey: 'campaignManager.tabCampaigns', icon: 'flag' },
-  { key: 'outreach', i18nKey: 'campaignManager.tabOutreach', icon: 'send' },
-  { key: 'ads', i18nKey: 'campaignManager.tabAds', icon: 'megaphone' },
-  { key: 'revenue', i18nKey: 'campaignManager.tabRevenue', icon: 'cash' },
-  { key: 'booths', i18nKey: 'campaignManager.tabBooths', icon: 'location' },
+const TAB_KEYS: { key: CampaignTab; icon: string; i18nKey: string }[] = [
+  { key: 'campaigns', icon: 'flag', i18nKey: 'campaignManager.tabs.campaigns' },
+  { key: 'ads', icon: 'megaphone', i18nKey: 'campaignManager.tabs.ads' },
+  { key: 'revenue', icon: 'cash', i18nKey: 'campaignManager.tabs.revenue' },
+  { key: 'volunteers', icon: 'people', i18nKey: 'campaignManager.tabs.volunteers' },
+  { key: 'booths', icon: 'location', i18nKey: 'campaignManager.tabs.booths' },
 ];
 
 export default function CampaignManagerScreen() {
   const { t } = useTranslation();
-  const [activeTab, setActiveTab] = useState<Tab>('campaigns');
+  const { insets } = useResponsive();
+  const { colors } = useTheme();
+  const [activeTab, setActiveTab] = useState<CampaignTab>('campaigns');
   const [refreshing, setRefreshing] = useState(false);
-  const insets = useSafeAreaInsets();
 
   const campaigns = useCampaignStore((s) => s.campaigns);
   const allAds = useCampaignStore((s) => s.ads);
@@ -47,20 +50,28 @@ export default function CampaignManagerScreen() {
   }, []);
 
   return (
-    <View style={styles.container}>
-      <Stack.Screen options={{ title: t('campaignManager.screenTitle'), headerShown: true, headerStyle: { backgroundColor: '#0A0A1A' }, headerTintColor: '#FFFFFF' }} />
+    <View style={[styles.container, { backgroundColor: colors.background }]}>
+      <Stack.Screen options={{ title: t('campaignManager.screenTitle'), headerShown: true, headerStyle: { backgroundColor: colors.surface }, headerTintColor: colors.primary }} />
 
       {/* Tab Bar */}
-      <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.tabBar} contentContainerStyle={styles.tabBarContent}>
+      <ScrollView horizontal showsHorizontalScrollIndicator={false} style={[styles.tabBar, { borderBottomColor: colors.border }]} contentContainerStyle={styles.tabBarContent}>
         {TAB_KEYS.map((tab) => (
-          <Pressable key={tab.key} style={[styles.tab, activeTab === tab.key && styles.tabActive]} onPress={() => setActiveTab(tab.key)}>
-            <Ionicons name={(activeTab === tab.key ? tab.icon : `${tab.icon}-outline`) as any} size={16} color={activeTab === tab.key ? '#4F8EF7' : '#6B7280'} />
-            <Text style={[styles.tabLabel, activeTab === tab.key && styles.tabLabelActive]}>{t(tab.i18nKey)}</Text>
+          <Pressable
+            key={tab.key}
+            style={[
+              styles.tab,
+              { backgroundColor: colors.surface, borderColor: colors.goldBorder || colors.border, borderWidth: 1 },
+              activeTab === tab.key && { backgroundColor: colors.primary, borderColor: colors.primary },
+            ]}
+            onPress={() => setActiveTab(tab.key)}
+          >
+            <Ionicons name={(activeTab === tab.key ? tab.icon : `${tab.icon}-outline`) as any} size={16} color={activeTab === tab.key ? '#FFFFFF' : colors.textMuted} />
+            <Text style={[styles.tabLabel, { color: colors.textSecondary }, activeTab === tab.key && { color: '#FFFFFF', fontWeight: '700' }]}>{t(tab.i18nKey)}</Text>
           </Pressable>
         ))}
       </ScrollView>
 
-      <ScrollView style={styles.content} refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor="#4F8EF7" />}>
+      <ScrollView style={styles.content} refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={colors.primary} />}>
         {activeTab === 'campaigns' && (
           <>
             {/* Summary bar */}
@@ -147,26 +158,26 @@ export default function CampaignManagerScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#0A0A1A' },
-  tabBar: { maxHeight: 48, borderBottomWidth: 1, borderBottomColor: '#1F2937' },
+  container: { flex: 1 },
+  tabBar: { maxHeight: 48, borderBottomWidth: 1 },
   tabBarContent: { paddingHorizontal: 12, gap: 4, alignItems: 'center' },
-  tab: { flexDirection: 'row', alignItems: 'center', gap: 5, paddingHorizontal: 14, paddingVertical: 8, borderRadius: 20, backgroundColor: '#111827' },
-  tabActive: { backgroundColor: '#4F8EF715', borderWidth: 1, borderColor: '#4F8EF740' },
-  tabLabel: { fontSize: 12, fontWeight: '600', color: '#6B7280' },
-  tabLabelActive: { color: '#4F8EF7', fontWeight: '700' },
+  tab: { flexDirection: 'row', alignItems: 'center', gap: 5, paddingHorizontal: 14, paddingVertical: 8, borderRadius: 20 },
+  tabActive: {},
+  tabLabel: { fontSize: 12, fontWeight: '600' },
+  tabLabelActive: { fontWeight: '700' },
   content: { flex: 1 },
-  summaryBar: { flexDirection: 'row', justifyContent: 'space-around', marginHorizontal: 16, marginTop: 12, padding: 12, backgroundColor: '#111827', borderRadius: 12, borderWidth: 1, borderColor: '#1F2937' },
+  summaryBar: { flexDirection: 'row', justifyContent: 'space-around', marginHorizontal: 16, marginTop: 12, padding: 12, borderRadius: 12, borderWidth: 1 },
   summaryItem: { alignItems: 'center' },
-  summaryValue: { fontSize: 20, fontWeight: '900', color: '#FFFFFF' },
-  summaryLabel: { fontSize: 10, color: '#6B7280', fontWeight: '600' },
-  sectionTitle: { fontSize: 16, fontWeight: '800', color: '#FFFFFF', marginHorizontal: 16, marginTop: 16, marginBottom: 10 },
-  boothCard: { backgroundColor: '#111827', borderRadius: 14, marginHorizontal: 16, marginVertical: 5, padding: 14, borderWidth: 1, borderColor: '#1F2937' },
+  summaryValue: { fontSize: 20, fontWeight: '900' },
+  summaryLabel: { fontSize: 10, fontWeight: '600' },
+  sectionTitle: { fontSize: 16, fontWeight: '800', marginHorizontal: 16, marginTop: 16, marginBottom: 10 },
+  boothCard: { borderRadius: 14, marginHorizontal: 16, marginVertical: 5, padding: 14, borderWidth: 1 },
   boothHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 8 },
-  boothName: { fontSize: 14, fontWeight: '700', color: '#FFFFFF' },
-  boothMeta: { fontSize: 11, color: '#6B7280', marginTop: 2 },
+  boothName: { fontSize: 14, fontWeight: '700' },
+  boothMeta: { fontSize: 11, marginTop: 2 },
   priorityBadge: { paddingHorizontal: 8, paddingVertical: 3, borderRadius: 6 },
   priorityText: { fontSize: 9, fontWeight: '800' },
   boothStats: { flexDirection: 'row', justifyContent: 'space-between', marginBottom: 6 },
-  boothStat: { fontSize: 11, color: '#9CA3AF', fontWeight: '600' },
-  boothNotes: { fontSize: 11, color: '#6B7280', fontStyle: 'italic', marginTop: 4 },
+  boothStat: { fontSize: 11, fontWeight: '600' },
+  boothNotes: { fontSize: 11, fontStyle: 'italic', marginTop: 4 },
 });

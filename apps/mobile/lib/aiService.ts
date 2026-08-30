@@ -3,9 +3,19 @@
  * Uses the Groq API (OpenAI-compatible endpoint) for chat completions.
  */
 
-const GROQ_API_KEY = process.env.EXPO_PUBLIC_GROK_API_KEY || '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';
+const GROQ_API_KEY =
+  process.env.EXPO_PUBLIC_GROQ_API_KEY ||
+  process.env.EXPO_PUBLIC_GROK_API_KEY ||
+  'GROQ_KEY_REMOVED';
 const GROQ_API_URL = 'https://api.groq.com/openai/v1/chat/completions';
-const MODEL = 'llama-3.3-70b-versatile';
+const PRIMARY_MODEL = 'openai/gpt-oss-120b';
+const FALLBACK_MODELS = [
+  'openai/gpt-oss-120b',
+  'openai/gpt-oss-20b',
+  'qwen/qwen3.8-27b',
+  'qwen/qwen3.6-27b',
+  'llama-3.3-70b-versatile',
+];
 
 const SYSTEM_PROMPT = `You are KSHETRA AI — an expert political analyst specializing in Indian state assembly and parliamentary elections.
 
@@ -73,45 +83,51 @@ export async function sendAIChat(
     ...messages,
   ];
 
-  try {
-    const res = await fetch(GROQ_API_URL, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${GROQ_API_KEY}`,
-      },
-      body: JSON.stringify({
-        model: MODEL,
-        messages: fullMessages,
-        temperature: 0.7,
-        max_tokens: 1024,
-      }),
-    });
+  let lastError = '';
+  let lastStatus = 0;
 
-    if (!res.ok) {
-      const errText = await res.text();
-      return {
-        response: `AI service error (${res.status}). Please try again later.`,
-        model: MODEL,
-        error: errText,
-      };
+  for (const modelName of FALLBACK_MODELS) {
+    try {
+      const res = await fetch(GROQ_API_URL, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${GROQ_API_KEY}`,
+        },
+        body: JSON.stringify({
+          model: modelName,
+          messages: fullMessages,
+          temperature: 0.7,
+          max_tokens: 1024,
+        }),
+      });
+
+      if (res.ok) {
+        const data = await res.json();
+        const choice = data.choices?.[0];
+        return {
+          response: choice?.message?.content ?? 'No response generated.',
+          model: data.model ?? modelName,
+          usage: data.usage,
+        };
+      }
+
+      lastStatus = res.status;
+      lastError = await res.text();
+      // If 404 / model_not_found, gracefully continue to next candidate model
+      if (res.status === 404) {
+        continue;
+      }
+    } catch (err: any) {
+      lastError = err?.message ?? 'Network error';
     }
-
-    const data = await res.json();
-    const choice = data.choices?.[0];
-
-    return {
-      response: choice?.message?.content ?? 'No response generated.',
-      model: data.model ?? MODEL,
-      usage: data.usage,
-    };
-  } catch (err: any) {
-    return {
-      response: 'Unable to reach AI service. Please check your internet connection.',
-      model: MODEL,
-      error: err?.message ?? 'Network error',
-    };
   }
+
+  return {
+    response: lastStatus ? `AI service error (${lastStatus}). Please try again later.` : 'Unable to reach AI service. Please check your internet connection.',
+    model: PRIMARY_MODEL,
+    error: lastError,
+  };
 }
 
 /**

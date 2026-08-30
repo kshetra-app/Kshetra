@@ -7,6 +7,7 @@ import {
   DEPARTMENT_CONFIG,
   hasAI,
 } from '../lib/lmxTypes';
+import { useTheme } from '../lib/theme';
 
 function timeAgo(iso: string): string {
   const s = Math.floor((Date.now() - new Date(iso).getTime()) / 1000);
@@ -29,13 +30,23 @@ export function LiveStreamCard({
   event: LiveEvent;
   onPress: (e: LiveEvent) => void;
 }) {
+  const { colors } = useTheme();
   const cat = ISSUE_CATEGORY_CONFIG[event.issueCategory];
   const tier = TIER_CONFIG[event.accreditationTier];
   const isLive = event.status === 'live';
   const aiOn = hasAI(event);
 
   return (
-    <Pressable style={styles.card} onPress={() => onPress(event)}>
+    <Pressable
+      style={[
+        styles.card,
+        {
+          backgroundColor: colors.surface,
+          borderColor: colors.goldBorder || colors.border,
+        },
+      ]}
+      onPress={() => onPress(event)}
+    >
       {/* Thumbnail zone */}
       <View style={[styles.thumb, { backgroundColor: cat.color + '22' }]}>
         <Ionicons name={cat.icon as any} size={30} color={cat.color} />
@@ -75,7 +86,7 @@ export function LiveStreamCard({
           <Text style={styles.time}>{timeAgo(event.startedAt)} ago</Text>
         </View>
 
-        <Text style={styles.headline} numberOfLines={2}>
+        <Text style={[styles.headline, { color: colors.text }]} numberOfLines={2}>
           {event.ai?.autoHeadline?.trim() ||
             `${cat.label} in ${event.locality || event.districtName || event.stateCode || 'Live'}`}
         </Text>
@@ -85,13 +96,13 @@ export function LiveStreamCard({
             <Ionicons name={tier.badgeIcon as any} size={10} color={tier.color} />
             <Text style={[styles.tierText, { color: tier.color }]}>{tier.label}</Text>
           </View>
-          <Text style={styles.reporter} numberOfLines={1}>{event.reporterName}</Text>
+          <Text style={[styles.reporter, { color: colors.textSecondary }]} numberOfLines={1}>{event.reporterName}</Text>
         </View>
 
         <View style={styles.footRow}>
           <View style={styles.locRow}>
-            <Ionicons name="location" size={11} color="#6B7280" />
-            <Text style={styles.loc} numberOfLines={1}>
+            <Ionicons name="location" size={11} color={colors.textMuted} />
+            <Text style={[styles.loc, { color: colors.textMuted }]} numberOfLines={1}>
               {[event.districtName, event.stateCode].filter(Boolean).join(', ') || 'Unknown'}
             </Text>
           </View>

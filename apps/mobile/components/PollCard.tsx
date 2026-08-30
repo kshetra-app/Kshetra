@@ -10,7 +10,7 @@ interface PollCardProps {
   onVote: (optionId: string) => void;
 }
 
-const BAR_COLORS = ['#2563EB', '#8B5CF6', '#10B981', '#F59E0B', '#EF4444'];
+const BAR_COLORS = ['#A8201A', '#C5A059', '#145C68', '#D97706', '#2E7D32'];
 
 export default function PollCard({ poll, onVote }: PollCardProps) {
   const { t } = useTranslation();
@@ -19,10 +19,10 @@ export default function PollCard({ poll, onVote }: PollCardProps) {
   const showResults = hasVoted || poll.isClosed;
 
   return (
-    <View style={[styles.container, { backgroundColor: colors.surface, borderColor: colors.border }]}>
+    <View style={[styles.container, { backgroundColor: colors.surface, borderColor: colors.goldBorder || colors.border }]}>
       {/* Question */}
       <View style={styles.questionRow}>
-        <Ionicons name="stats-chart" size={16} color="#8B5CF6" style={{ marginRight: 8, marginTop: 2 }} />
+        <Ionicons name="stats-chart" size={16} color={colors.gold} style={{ marginRight: 8, marginTop: 2 }} />
         <Text style={[styles.question, { color: colors.text }]}>{poll.question}</Text>
       </View>
 

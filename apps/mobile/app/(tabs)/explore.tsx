@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import {
   View,
   Text,
@@ -12,18 +12,19 @@ import {
 import { FlashList } from '@shopify/flash-list';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
-import { getPartyColor } from '@/lib/constants';
-import CandidateAvatar from '@/components/CandidateAvatar';
+import { getPartyColor } from '../../lib/constants';
+import CandidateAvatar from '../../components/CandidateAvatar';
 import { useFavoritesStore } from '../../stores/favorites';
 import { useActiveStateStore } from '../../stores/activeState';
 import StateSwitcher from '../../components/StateSwitcher';
 import AISmartSearch from '../../components/AISmartSearch';
-import { getUnifiedConstituenciesForState, type UnifiedConstituency } from '@/lib/stateDataAdapter';
+import { getUnifiedConstituenciesForState, type UnifiedConstituency } from '../../lib/stateDataAdapter';
 import { useTranslation } from 'react-i18next';
 import { useResponsive } from '../../lib/responsive';
 import PhotoViewerModal from '../../components/PhotoViewerModal';
 import { useAffidavitStore } from '../../stores/affidavits';
 import ChiefMinisterBadge from '../../components/ChiefMinisterBadge';
+import { useTheme } from '../../lib/theme';
 
 type SortKey = 'acNo' | 'name' | 'margin_asc' | 'margin_desc';
 
@@ -36,6 +37,7 @@ const SORT_OPTION_KEYS: { key: SortKey; tKey: string }[] = [
 
 export default function ExploreScreen() {
   const { t } = useTranslation();
+  const { colors } = useTheme();
   const router = useRouter();
   const [query, setQuery] = useState('');
   const [showFavoritesOnly, setShowFavoritesOnly] = useState(false);
@@ -48,11 +50,21 @@ export default function ExploreScreen() {
   const [photoViewer, setPhotoViewer] = useState<{ uri: string | null; name: string; party: string } | null>(null);
   const favoriteIds = useFavoritesStore((s) => s.favoriteIds);
   const isFavorite = useFavoritesStore((s) => s.isFavorite);
+  const toggleFavorite = useFavoritesStore((s) => s.toggleFavorite);
   const stateCode = useActiveStateStore((s) => s.stateCode);
   const allConstituencies = useMemo(
     () => getUnifiedConstituenciesForState(stateCode),
     [stateCode],
   );
+
+  /** Reset filters and search when switching state to avoid phantom empty results */
+  useEffect(() => {
+    setPartyFilter(null);
+    setDistrictFilter(null);
+    setTypeFilter(null);
+    setQuery('');
+    setShowFavoritesOnly(false);
+  }, [stateCode]);
 
   /** Derive unique parties and districts from data */
   const { parties, districts } = useMemo(() => {
@@ -85,13 +97,16 @@ export default function ExploreScreen() {
     }
 
     if (query.trim()) {
-      const q = query.toLowerCase();
+      const q = query.toLowerCase().trim();
       results = results.filter(
         (c) =>
           c.name.toLowerCase().includes(q) ||
           c.district.toLowerCase().includes(q) ||
           c.winnerName.toLowerCase().includes(q) ||
           c.winnerParty.toLowerCase().includes(q) ||
+          (c.runnerUp && c.runnerUp.toLowerCase().includes(q)) ||
+          c.type.toLowerCase() === q ||
+          String(c.acNo) === q ||
           String(c.acNo).includes(q),
       );
     }
@@ -132,23 +147,24 @@ export default function ExploreScreen() {
         isFav={isFavorite(item.acNo)}
         onPress={() => router.push(`/constituency/${item.stateCode}-AC-${item.acNo}` as any)}
         onAvatarPress={(uri, name, party) => setPhotoViewer({ uri, name, party })}
+        onToggleFav={() => toggleFavorite(item.acNo)}
       />
     ),
-    [isFavorite, router],
+    [isFavorite, toggleFavorite, router],
   );
 
   const { insets, contentPaddingBottom } = useResponsive();
 
   return (
-    <View style={styles.container}>
-      <View style={[styles.header, { paddingTop: insets.top + 8 }]}>
+    <View style={[styles.container, { backgroundColor: colors.background }]}>
+      <View style={[styles.header, { paddingTop: insets.top + 8, borderBottomColor: colors.border }]}>
         <View style={styles.headerRow}>
           <View style={styles.headerLeft}>
             <View style={styles.titleRow}>
-              <Text style={styles.title}>{t('explore.title')}</Text>
+              <Text style={[styles.title, { color: colors.text }]}>{t('explore.title')}</Text>
               <StateSwitcher />
             </View>
-            <Text style={styles.subtitle}>
+            <Text style={[styles.subtitle, { color: colors.textMuted }]}>
               {filtered.length} / {allConstituencies.length} {t('explore.constituencies')}
               {showFavoritesOnly ? ` (${t('explore.favoritesOnly')})` : ''}
             </Text>
@@ -156,14 +172,15 @@ export default function ExploreScreen() {
           <Pressable
             style={[
               styles.favFilterButton,
-              showFavoritesOnly && styles.favFilterActive,
+              { backgroundColor: colors.surface, borderColor: colors.goldBorder || colors.border },
+              showFavoritesOnly && { backgroundColor: colors.primaryLight },
             ]}
             onPress={() => setShowFavoritesOnly((v) => !v)}
           >
             <Ionicons
               name={showFavoritesOnly ? 'heart' : 'heart-outline'}
               size={18}
-              color={showFavoritesOnly ? '#EF4444' : '#6B7280'}
+              color={showFavoritesOnly ? colors.primary : colors.textMuted}
             />
           </Pressable>
         </View>
@@ -172,32 +189,62 @@ export default function ExploreScreen() {
 
       {/* Quick Nav — Parliament, AI Chat, Delimitation */}
       <View style={styles.quickNavRow}>
-        <Pressable style={styles.quickNavBtn} onPress={() => router.push('/parliament' as any)}>
-          <Ionicons name="business" size={18} color="#8B5CF6" />
-          <Text style={styles.quickNavText}>{t('exploreExtended.mpsParliament')}</Text>
+        <Pressable
+          style={[styles.quickNavBtn, { backgroundColor: colors.surface, borderColor: colors.goldBorder || colors.border }]}
+          onPress={() => router.push('/parliament' as any)}
+        >
+          <Ionicons name="business" size={20} color={colors.teal} />
+          <Text style={[styles.quickNavText, { color: colors.text }]} numberOfLines={2}>
+            {t('exploreExtended.mpsParliament', { defaultValue: 'Parliament & MPs' })}
+          </Text>
         </Pressable>
-        <Pressable style={styles.quickNavBtn} onPress={() => router.push('/ai-chat' as any)}>
-          <Ionicons name="sparkles" size={18} color="#F59E0B" />
-          <Text style={styles.quickNavText}>{t('exploreExtended.aiChat')}</Text>
+        <Pressable
+          style={[styles.quickNavBtn, { backgroundColor: colors.surface, borderColor: colors.goldBorder || colors.border }]}
+          onPress={() => router.push('/ai-chat' as any)}
+        >
+          <Ionicons name="sparkles" size={20} color={colors.gold} />
+          <Text style={[styles.quickNavText, { color: colors.text }]} numberOfLines={2}>
+            {t('exploreExtended.aiChat', { defaultValue: 'AI Chat' })}
+          </Text>
         </Pressable>
-        <Pressable style={styles.quickNavBtn} onPress={() => router.push('/delimitation' as any)}>
-          <Ionicons name="resize" size={18} color="#10B981" />
-          <Text style={styles.quickNavText}>{t('exploreExtended.delimitation')}</Text>
+        <Pressable
+          style={[styles.quickNavBtn, { backgroundColor: colors.surface, borderColor: colors.goldBorder || colors.border }]}
+          onPress={() => router.push('/delimitation' as any)}
+        >
+          <Ionicons name="resize" size={20} color={colors.primary} />
+          <Text style={[styles.quickNavText, { color: colors.text }]} numberOfLines={2}>
+            {t('exploreExtended.delimitation', { defaultValue: 'Delimitation' })}
+          </Text>
         </Pressable>
-        <Pressable style={styles.quickNavBtn} onPress={() => router.push('/local-bodies' as any)}>
-          <Ionicons name="home" size={18} color="#EC4899" />
-          <Text style={styles.quickNavText}>{t('exploreExtended.localBodies')}</Text>
+        <Pressable
+          style={[styles.quickNavBtn, { backgroundColor: colors.surface, borderColor: colors.goldBorder || colors.border }]}
+          onPress={() => router.push('/local-bodies' as any)}
+        >
+          <Ionicons name="home" size={20} color={colors.gold} />
+          <Text style={[styles.quickNavText, { color: colors.text }]} numberOfLines={2}>
+            {t('exploreExtended.localBodies', { defaultValue: 'Local Bodies' })}
+          </Text>
         </Pressable>
       </View>
 
       {/* AI Smart Search toggle */}
       <View style={styles.aiSearchToggleRow}>
         <Pressable
-          style={[styles.aiSearchToggle, showAISearch && styles.aiSearchToggleActive]}
+          style={[
+            styles.aiSearchToggle,
+            { backgroundColor: colors.surface, borderColor: colors.goldBorder || colors.border },
+            showAISearch && { backgroundColor: colors.goldLight, borderColor: colors.gold },
+          ]}
           onPress={() => setShowAISearch((v) => !v)}
         >
-          <Ionicons name="sparkles" size={14} color={showAISearch ? '#8B5CF6' : '#6B7280'} />
-          <Text style={[styles.aiSearchToggleText, showAISearch && styles.aiSearchToggleTextActive]}>
+          <Ionicons name="sparkles" size={14} color={showAISearch ? colors.gold : colors.textMuted} />
+          <Text
+            style={[
+              styles.aiSearchToggleText,
+              { color: colors.textSecondary },
+              showAISearch && { color: colors.gold, fontWeight: '700' },
+            ]}
+          >
             {t('explore.aiSearch')}
           </Text>
         </Pressable>
@@ -205,22 +252,22 @@ export default function ExploreScreen() {
 
       {showAISearch && (
         <View style={styles.aiSearchContainer}>
-          <AISmartSearch onSelect={(acNo) => router.push(`/constituency/${acNo}` as any)} />
+          <AISmartSearch onSelect={(acNo) => router.push(`/constituency/${stateCode}-AC-${acNo}` as any)} />
         </View>
       )}
 
       <View style={styles.searchRow}>
-        <View style={styles.searchContainer}>
+        <View style={[styles.searchContainer, { backgroundColor: colors.surface, borderColor: colors.goldBorder || colors.border }]}>
           <Ionicons
             name="search"
             size={18}
-            color="#6B7280"
+            color={colors.textMuted}
             style={styles.searchIcon}
           />
           <TextInput
-            style={styles.searchInput}
+            style={[styles.searchInput, { color: colors.text }]}
             placeholder={t('explore.searchPlaceholder')}
-            placeholderTextColor="#6B7280"
+            placeholderTextColor={colors.textMuted}
             value={query}
             onChangeText={setQuery}
             returnKeyType="search"
@@ -228,17 +275,21 @@ export default function ExploreScreen() {
           />
           {query.length > 0 && (
             <Pressable onPress={() => setQuery('')} hitSlop={8}>
-              <Ionicons name="close-circle" size={18} color="#6B7280" />
+              <Ionicons name="close-circle" size={18} color={colors.textMuted} />
             </Pressable>
           )}
         </View>
         <Pressable
-          style={[styles.filterToggle, showFilters && styles.filterToggleActive]}
+          style={[
+            styles.filterToggle,
+            { backgroundColor: colors.surface, borderColor: colors.goldBorder || colors.border },
+            showFilters && { backgroundColor: colors.primaryLight, borderColor: colors.primary },
+          ]}
           onPress={() => setShowFilters((v) => !v)}
         >
-          <Ionicons name="options" size={18} color={showFilters ? '#4F8EF7' : '#6B7280'} />
+          <Ionicons name="options" size={18} color={showFilters ? colors.primary : colors.textMuted} />
           {activeFilterCount > 0 && (
-            <View style={styles.filterBadge}>
+            <View style={[styles.filterBadge, { backgroundColor: colors.primary }]}>
               <Text style={styles.filterBadgeText}>{activeFilterCount}</Text>
             </View>
           )}
@@ -352,17 +403,21 @@ export default function ExploreScreen() {
 
       {stateCode === 'IN' ? (
         <View style={styles.emptyState}>
-          <Ionicons name="map" size={48} color="#4F8EF7" style={{ marginBottom: 12 }} />
-          <Text style={styles.emptyTitle}>{t('exploreExtended.selectAState')}</Text>
-          <Text style={styles.emptyText}>
+          <View style={[styles.emptyIconWrap, { backgroundColor: colors.goldLight, borderColor: colors.goldBorder || colors.border }]}>
+            <Ionicons name="map" size={38} color={colors.gold} />
+          </View>
+          <Text style={[styles.emptyTitle, { color: colors.text }]}>{t('exploreExtended.selectAState')}</Text>
+          <Text style={[styles.emptyText, { color: colors.textMuted }]}>
             {t('exploreExtended.pleaseSelectState')}
           </Text>
         </View>
       ) : filtered.length === 0 ? (
         <View style={styles.emptyState}>
-          <Ionicons name="search" size={40} color="#4B5563" />
-          <Text style={styles.emptyTitle}>{t('common.noResults')}</Text>
-          <Text style={styles.emptyText}>
+          <View style={[styles.emptyIconWrap, { backgroundColor: colors.surface, borderColor: colors.border }]}>
+            <Ionicons name="search" size={34} color={colors.textMuted} />
+          </View>
+          <Text style={[styles.emptyTitle, { color: colors.text }]}>{t('common.noResults')}</Text>
+          <Text style={[styles.emptyText, { color: colors.textMuted }]}>
             {t('explore.noResultsHint')}
           </Text>
         </View>
@@ -372,10 +427,13 @@ export default function ExploreScreen() {
           // so recycled cells never keep another state's MLA photo.
           key={stateCode}
           data={filtered}
-          extraData={stateCode}
+          extraData={{ stateCode, favoriteIds }}
           renderItem={renderItem}
           keyExtractor={(item) => `${stateCode}-${item.acNo}`}
-          contentContainerStyle={styles.listContent}
+          contentContainerStyle={[
+            styles.listContent,
+            { paddingBottom: Math.max(contentPaddingBottom, 110) },
+          ]}
         />
       )}
 
@@ -395,14 +453,17 @@ const ConstituencyCard = React.memo(function ConstituencyCard({
   isFav,
   onPress,
   onAvatarPress,
+  onToggleFav,
 }: {
   item: UnifiedConstituency;
   isFav: boolean;
   onPress: () => void;
   onAvatarPress?: (uri: string | null, name: string, party: string) => void;
+  onToggleFav?: () => void;
 }) {
   const partyColor = getPartyColor(item.winnerParty);
   const { t } = useTranslation();
+  const { colors } = useTheme();
 
   // Rich data badges from affidavit store
   const winnerAffidavit = useAffidavitStore.getState().getWinnerAffidavit(item.stateCode || 'TS', item.acNo, item.electionYear || 2023);
@@ -411,7 +472,7 @@ const ConstituencyCard = React.memo(function ConstituencyCard({
   const isCrorepati = totalAssets != null && totalAssets >= 1_00_00_000;
 
   return (
-    <Pressable style={styles.card} onPress={onPress}>
+    <Pressable style={[styles.card, { backgroundColor: colors.surface, borderColor: colors.goldBorder || colors.border }]} onPress={onPress}>
       <View style={styles.cardLeft}>
         <CandidateAvatar
           key={`${item.stateCode || ''}-${item.winnerName}`}
@@ -422,15 +483,15 @@ const ConstituencyCard = React.memo(function ConstituencyCard({
         />
       </View>
       <View style={styles.cardContent}>
-        <Text style={styles.cardName}>{item.name}</Text>
-        <Text style={styles.cardMeta}>
+        <Text style={[styles.cardName, { color: colors.text }]}>{item.name}</Text>
+        <Text style={[styles.cardMeta, { color: colors.textMuted }]}>
           #{item.acNo} · {item.district} · {item.type}
         </Text>
         <View style={styles.cardWinnerRow}>
           <View style={[styles.partyBadge, { backgroundColor: partyColor }]}>
             <Text style={styles.partyBadgeText}>{item.winnerParty}</Text>
           </View>
-          <Text style={styles.cardWinner} numberOfLines={1}>
+          <Text style={[styles.cardWinner, { color: colors.textSecondary }]} numberOfLines={1}>
             {item.winnerName} · {item.margin.toLocaleString()}
           </Text>
         </View>
@@ -438,24 +499,36 @@ const ConstituencyCard = React.memo(function ConstituencyCard({
         {(isCrorepati || (criminalCases != null && criminalCases > 0)) && (
           <View style={styles.cardBadgeRow}>
             {isCrorepati && (
-              <View style={styles.cardCrorepatiBadge}>
-                <Ionicons name="diamond" size={9} color="#F59E0B" />
-                <Text style={styles.cardCrorepatiText}>{t('exploreExtended.crorepati')}</Text>
+              <View style={[styles.cardCrorepatiBadge, { backgroundColor: colors.goldLight }]}>
+                <Ionicons name="diamond" size={9} color={colors.gold} />
+                <Text style={[styles.cardCrorepatiText, { color: colors.gold }]}>{t('exploreExtended.crorepati')}</Text>
               </View>
             )}
             {criminalCases != null && criminalCases > 0 && (
-              <View style={styles.cardCriminalBadge}>
-                <Ionicons name="alert-circle" size={9} color="#EF4444" />
-                <Text style={styles.cardCriminalText}>{criminalCases} {criminalCases > 1 ? t('exploreExtended.cases') : t('exploreExtended.case')}</Text>
+              <View style={[styles.cardCriminalBadge, { backgroundColor: colors.primaryLight }]}>
+                <Ionicons name="alert-circle" size={9} color={colors.danger} />
+                <Text style={[styles.cardCriminalText, { color: colors.danger }]}>{criminalCases} {criminalCases > 1 ? t('exploreExtended.cases') : t('exploreExtended.case')}</Text>
               </View>
             )}
           </View>
         )}
       </View>
-      {isFav && (
-        <Ionicons name="heart" size={14} color="#EF4444" style={{ marginRight: 6 }} />
-      )}
-      <Ionicons name="chevron-forward" size={18} color="#4B5563" />
+      <Pressable
+        hitSlop={10}
+        onPress={(e) => {
+          e.stopPropagation?.();
+          onToggleFav?.();
+        }}
+        style={styles.cardFavButton}
+        accessibilityLabel={isFav ? t('explore.removeFavorite', { defaultValue: 'Remove favorite' }) : t('explore.addFavorite', { defaultValue: 'Add favorite' })}
+      >
+        <Ionicons
+          name={isFav ? 'heart' : 'heart-outline'}
+          size={18}
+          color={isFav ? colors.primary : colors.textMuted}
+        />
+      </Pressable>
+      <Ionicons name="chevron-forward" size={18} color={colors.textMuted} />
     </Pressable>
   );
 });
@@ -463,7 +536,6 @@ const ConstituencyCard = React.memo(function ConstituencyCard({
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#0A0A1A',
   },
   header: {
     paddingHorizontal: 16,
@@ -486,12 +558,15 @@ const styles = StyleSheet.create({
     width: 40,
     height: 40,
     borderRadius: 20,
-    backgroundColor: '#111827',
+    backgroundColor: '#FFFFFF',
+    borderWidth: 1,
+    borderColor: '#D8BC7E',
     justifyContent: 'center',
     alignItems: 'center',
   },
   favFilterActive: {
-    backgroundColor: '#EF444420',
+    backgroundColor: '#FBE8E7',
+    borderColor: '#A8201A',
   },
   quickNavRow: {
     flexDirection: 'row',
@@ -503,28 +578,31 @@ const styles = StyleSheet.create({
     flex: 1,
     flexDirection: 'column',
     alignItems: 'center',
-    gap: 4,
-    backgroundColor: '#111827',
+    justifyContent: 'center',
+    gap: 5,
+    backgroundColor: '#FFFFFF',
     borderRadius: 12,
     paddingVertical: 10,
-    paddingHorizontal: 6,
+    paddingHorizontal: 4,
+    minHeight: 68,
     borderWidth: 1,
-    borderColor: '#1F2937',
+    borderColor: '#D8BC7E',
   },
   quickNavText: {
-    fontSize: 10,
+    fontSize: 11.5,
     fontWeight: '700',
-    color: '#D1D5DB',
+    color: '#241814',
     textAlign: 'center',
+    lineHeight: 14,
   },
   title: {
     fontSize: 28,
     fontWeight: '800',
-    color: '#FFFFFF',
+    color: '#241814',
   },
   subtitle: {
     fontSize: 13,
-    color: '#9CA3AF',
+    color: '#6D5549',
     marginTop: 4,
   },
   searchRow: {
@@ -538,27 +616,32 @@ const styles = StyleSheet.create({
     flex: 1,
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#111827',
+    backgroundColor: '#FFFFFF',
     borderRadius: 12,
     paddingHorizontal: 12,
     height: 44,
+    borderWidth: 1,
+    borderColor: '#D8BC7E',
   },
   filterToggle: {
     width: 44,
     height: 44,
     borderRadius: 12,
-    backgroundColor: '#111827',
+    backgroundColor: '#FFFFFF',
+    borderWidth: 1,
+    borderColor: '#D8BC7E',
     justifyContent: 'center',
     alignItems: 'center',
   },
   filterToggleActive: {
-    backgroundColor: '#4F8EF720',
+    backgroundColor: '#FBE8E7',
+    borderColor: '#A8201A',
   },
   filterBadge: {
     position: 'absolute',
     top: 4,
     right: 4,
-    backgroundColor: '#4F8EF7',
+    backgroundColor: '#A8201A',
     borderRadius: 8,
     width: 16,
     height: 16,
@@ -580,7 +663,7 @@ const styles = StyleSheet.create({
   filterLabel: {
     fontSize: 11,
     fontWeight: '700',
-    color: '#4B5563',
+    color: '#6D5549',
     textTransform: 'uppercase',
     letterSpacing: 1,
     marginBottom: 6,
@@ -592,25 +675,26 @@ const styles = StyleSheet.create({
   chip: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#111827',
+    backgroundColor: '#FFFFFF',
     borderRadius: 8,
     paddingHorizontal: 10,
     paddingVertical: 6,
     borderWidth: 1,
-    borderColor: 'transparent',
+    borderColor: '#E8DED1',
     gap: 4,
   },
   chipActive: {
-    backgroundColor: '#4F8EF720',
-    borderColor: '#4F8EF7',
+    backgroundColor: '#FBE8E7',
+    borderColor: '#A8201A',
   },
   chipText: {
     fontSize: 12,
     fontWeight: '600',
-    color: '#9CA3AF',
+    color: '#6D5549',
   },
   chipTextActive: {
-    color: '#4F8EF7',
+    color: '#A8201A',
+    fontWeight: '700',
   },
   partyDot: {
     width: 8,
@@ -627,7 +711,7 @@ const styles = StyleSheet.create({
   },
   clearButtonText: {
     fontSize: 12,
-    color: '#EF4444',
+    color: '#A8201A',
     fontWeight: '600',
   },
   searchIcon: {
@@ -636,25 +720,39 @@ const styles = StyleSheet.create({
   searchInput: {
     flex: 1,
     fontSize: 15,
-    color: '#FFFFFF',
+    color: '#241814',
     height: 44,
   },
   emptyState: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
+    paddingHorizontal: 32,
     paddingTop: 60,
   },
+  emptyIconWrap: {
+    width: 76,
+    height: 76,
+    borderRadius: 38,
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderWidth: 1,
+    marginBottom: 16,
+  },
   emptyTitle: {
-    fontSize: 18,
-    fontWeight: '700',
-    color: '#6B7280',
-    marginTop: 12,
+    fontSize: 19,
+    fontWeight: '800',
+    color: '#241814',
+    textAlign: 'center',
+    marginBottom: 6,
   },
   emptyText: {
-    fontSize: 13,
-    color: '#4B5563',
-    marginTop: 4,
+    fontSize: 14,
+    color: '#6D5549',
+    textAlign: 'center',
+    lineHeight: 22,
+    maxWidth: 280,
+    alignSelf: 'center',
   },
   listContent: {
     paddingHorizontal: 16,
@@ -663,10 +761,12 @@ const styles = StyleSheet.create({
   card: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#111827',
+    backgroundColor: '#FFFFFF',
     borderRadius: 12,
     padding: 14,
     marginBottom: 8,
+    borderWidth: 1,
+    borderColor: '#E8DED1',
   },
   cardLeft: {
     marginRight: 12,
@@ -677,7 +777,7 @@ const styles = StyleSheet.create({
     borderRadius: 22,
     borderWidth: 2,
     overflow: 'hidden',
-    backgroundColor: '#1F2937',
+    backgroundColor: '#F5EFE4',
   },
   candidateAvatar: {
     width: 40,
@@ -706,16 +806,16 @@ const styles = StyleSheet.create({
   cardName: {
     fontSize: 16,
     fontWeight: '700',
-    color: '#FFFFFF',
+    color: '#241814',
   },
   cardMeta: {
     fontSize: 12,
-    color: '#9CA3AF',
+    color: '#6D5549',
     marginTop: 2,
   },
   cardWinner: {
     fontSize: 11,
-    color: '#6B7280',
+    color: '#8E7B6F',
     flex: 1,
   },
   aiSearchToggleRow: {
@@ -730,18 +830,22 @@ const styles = StyleSheet.create({
     paddingHorizontal: 10,
     paddingVertical: 6,
     borderRadius: 8,
-    backgroundColor: '#111827',
+    backgroundColor: '#FFFFFF',
+    borderWidth: 1,
+    borderColor: '#D8BC7E',
   },
   aiSearchToggleActive: {
-    backgroundColor: '#8B5CF620',
+    backgroundColor: '#F9F4E8',
+    borderColor: '#C5A059',
   },
   aiSearchToggleText: {
     fontSize: 12,
     fontWeight: '600',
-    color: '#6B7280',
+    color: '#6D5549',
   },
   aiSearchToggleTextActive: {
-    color: '#8B5CF6',
+    color: '#C5A059',
+    fontWeight: '700',
   },
   aiSearchContainer: {
     paddingHorizontal: 16,
@@ -779,5 +883,11 @@ const styles = StyleSheet.create({
     fontSize: 9,
     fontWeight: '700',
     color: '#EF4444',
+  },
+  cardFavButton: {
+    padding: 6,
+    marginRight: 4,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
 });

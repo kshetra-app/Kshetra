@@ -365,12 +365,12 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
     paddingVertical: 16,
     borderBottomWidth: 0.5,
-    borderBottomColor: '#1F2937',
+    borderBottomColor: '#E8DED1',
   },
   headerTitle: {
     fontSize: 18,
     fontWeight: '800',
-    color: '#FFFFFF',
+    color: '#241814',
   },
   closeBtn: {
     width: 32,
@@ -392,9 +392,9 @@ const styles = StyleSheet.create({
   // ── Target Binding Banner ────────────────────────────────────
   bindingBanner: {
     flexDirection: 'row',
-    backgroundColor: '#111827',
+    backgroundColor: '#FFFFFF',
     borderWidth: 1,
-    borderColor: '#1F2937',
+    borderColor: '#E8DED1',
     borderRadius: 12,
     padding: 12,
     gap: 12,
@@ -407,15 +407,15 @@ const styles = StyleSheet.create({
   },
   bindingText: {
     fontSize: 12,
-    color: '#D1D5DB',
+    color: '#6D5549',
   },
   bindingHighlight: {
     fontWeight: '800',
-    color: '#FFFFFF',
+    color: '#241814',
   },
   bindingNotice: {
     fontSize: 11,
-    color: '#9CA3AF',
+    color: '#6D5549',
     marginTop: 4,
     lineHeight: 14,
   },
@@ -427,16 +427,16 @@ const styles = StyleSheet.create({
   inputLabel: {
     fontSize: 13,
     fontWeight: '700',
-    color: '#9CA3AF',
+    color: '#6D5549',
   },
   textInput: {
-    backgroundColor: '#111827',
+    backgroundColor: '#FFFFFF',
     borderWidth: 1,
-    borderColor: '#1F2937',
+    borderColor: '#E8DED1',
     borderRadius: 8,
     paddingHorizontal: 12,
     paddingVertical: 10,
-    color: '#FFFFFF',
+    color: '#241814',
     fontSize: 14,
   },
   textArea: {
@@ -446,13 +446,13 @@ const styles = StyleSheet.create({
   charCount: {
     alignSelf: 'flex-end',
     fontSize: 11,
-    color: '#6B7280',
+    color: '#988275',
     marginTop: -4,
   },
 
   // ── Demo Presets ─────────────────────────────────────────────
   presetsContainer: {
-    backgroundColor: '#111827',
+    backgroundColor: '#FFFFFF',
     borderRadius: 8,
     padding: 12,
     gap: 8,
@@ -460,7 +460,7 @@ const styles = StyleSheet.create({
   presetsLabel: {
     fontSize: 11,
     fontWeight: '700',
-    color: '#9CA3AF',
+    color: '#6D5549',
   },
   presetItem: {
     flexDirection: 'row',
@@ -469,7 +469,7 @@ const styles = StyleSheet.create({
     paddingVertical: 6,
     paddingHorizontal: 8,
     borderRadius: 6,
-    backgroundColor: '#1F2937',
+    backgroundColor: '#E8DED1',
   },
   presetItemActive: {
     backgroundColor: 'rgba(79, 142, 247, 0.15)',
@@ -479,10 +479,10 @@ const styles = StyleSheet.create({
   presetText: {
     flex: 1,
     fontSize: 12,
-    color: '#D1D5DB',
+    color: '#6D5549',
   },
   presetTextActive: {
-    color: '#FFFFFF',
+    color: '#241814',
     fontWeight: '700',
   },
 
@@ -510,7 +510,7 @@ const styles = StyleSheet.create({
   checkboxLabel: {
     flex: 1,
     fontSize: 11,
-    color: '#9CA3AF',
+    color: '#6D5549',
     lineHeight: 16,
   },
 
@@ -531,7 +531,7 @@ const styles = StyleSheet.create({
   submitButtonText: {
     fontSize: 15,
     fontWeight: '800',
-    color: '#FFFFFF',
+    color: '#241814',
   },
 
   // ── KYC Gate UI ──────────────────────────────────────────────
@@ -561,13 +561,13 @@ const styles = StyleSheet.create({
   kycGateTitle: {
     fontSize: 22,
     fontWeight: '800',
-    color: '#FFFFFF',
+    color: '#241814',
     marginBottom: 10,
     textAlign: 'center',
   },
   kycGateText: {
     fontSize: 14,
-    color: '#9CA3AF',
+    color: '#6D5549',
     textAlign: 'center',
     lineHeight: 20,
     marginBottom: 24,
@@ -575,11 +575,11 @@ const styles = StyleSheet.create({
   bulletList: {
     width: '100%',
     gap: 14,
-    backgroundColor: '#111827',
+    backgroundColor: '#FFFFFF',
     padding: 16,
     borderRadius: 12,
     borderWidth: 0.5,
-    borderColor: '#1F2937',
+    borderColor: '#E8DED1',
     marginBottom: 30,
   },
   bulletItem: {
@@ -593,7 +593,7 @@ const styles = StyleSheet.create({
   bulletText: {
     flex: 1,
     fontSize: 12,
-    color: '#E5E7EB',
+    color: '#241814',
     lineHeight: 16,
   },
   kycButton: {
@@ -615,7 +615,7 @@ const styles = StyleSheet.create({
   },
   cancelBtnText: {
     fontSize: 14,
-    color: '#6B7280',
+    color: '#988275',
     fontWeight: '700',
   },
 });

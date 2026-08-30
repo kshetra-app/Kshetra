@@ -9,6 +9,7 @@ import {
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { sendAIChat } from '../lib/aiService';
+import { useTheme } from '../lib/theme';
 
 interface AIDashboardSummaryProps {
   constituencyName?: string;
@@ -17,6 +18,7 @@ interface AIDashboardSummaryProps {
 
 export default function AIDashboardSummary({ constituencyName, issues }: AIDashboardSummaryProps) {
   const { t } = useTranslation();
+  const { colors } = useTheme();
   const [summary, setSummary] = useState<string | null>(null);
   const [trendAnalysis, setTrendAnalysis] = useState<string | null>(null);
   const [loading, setLoading] = useState<'issues' | 'trends' | null>(null);
@@ -50,33 +52,33 @@ export default function AIDashboardSummary({ constituencyName, issues }: AIDashb
   }, []);
 
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, { backgroundColor: colors.surface, borderColor: colors.goldBorder || colors.border, shadowColor: colors.shadowColor }]}>
       <View style={styles.header}>
-        <Ionicons name="sparkles" size={16} color="#F59E0B" style={{ marginRight: 6 }} />
-        <Text style={styles.title}>{t('ai.insights')}</Text>
+        <Ionicons name="sparkles" size={16} color={colors.primary} style={{ marginRight: 6 }} />
+        <Text style={[styles.title, { color: colors.text }]}>{t('ai.insights')}</Text>
       </View>
 
       {/* Issue summary */}
       {constituencyName && issues && issues.length > 0 && (
         <View style={styles.section}>
-          <Text style={styles.sectionTitle}>{t('ai.issueSummary')} — {constituencyName}</Text>
+          <Text style={[styles.sectionTitle, { color: colors.textSecondary }]}>{t('ai.issueSummary')} — {constituencyName}</Text>
           {summary ? (
             <>
-              <Text style={styles.summaryText}>{summary}</Text>
+              <Text style={[styles.summaryText, { color: colors.text }]}>{summary}</Text>
               <Pressable onPress={() => setSummary(null)} style={styles.resetLink}>
-                <Text style={styles.resetText}>{t('ai.regenerate')}</Text>
+                <Text style={[styles.resetText, { color: colors.primary }]}>{t('ai.regenerate')}</Text>
               </Pressable>
             </>
           ) : (
             <Pressable
-              style={[styles.actionButton, loading === 'issues' && styles.actionButtonDisabled]}
+              style={[styles.actionButton, { backgroundColor: colors.primary }, loading === 'issues' && styles.actionButtonDisabled]}
               onPress={fetchIssueSummary}
               disabled={loading === 'issues'}
             >
               {loading === 'issues' ? (
-                <ActivityIndicator size="small" color="#F59E0B" />
+                <ActivityIndicator size="small" color="#FFFFFF" />
               ) : (
-                <Ionicons name="flash" size={14} color="#F59E0B" style={{ marginRight: 6 }} />
+                <Ionicons name="flash" size={14} color="#FFFFFF" style={{ marginRight: 6 }} />
               )}
               <Text style={styles.actionButtonText}>
                 {loading === 'issues' ? t('ai.analyzing') + '...' : `${t('ai.summarize')} ${issues.length} ${t('ai.issuesLabel')}`}
@@ -88,24 +90,24 @@ export default function AIDashboardSummary({ constituencyName, issues }: AIDashb
 
       {/* Election trends */}
       <View style={styles.section}>
-        <Text style={styles.sectionTitle}>{t('ai.trendAnalysis')}</Text>
+        <Text style={[styles.sectionTitle, { color: colors.textSecondary }]}>{t('ai.trendAnalysis')}</Text>
         {trendAnalysis ? (
           <>
-            <Text style={styles.summaryText}>{trendAnalysis}</Text>
+            <Text style={[styles.summaryText, { color: colors.text }]}>{trendAnalysis}</Text>
             <Pressable onPress={() => setTrendAnalysis(null)} style={styles.resetLink}>
-              <Text style={styles.resetText}>{t('ai.regenerate')}</Text>
+              <Text style={[styles.resetText, { color: colors.primary }]}>{t('ai.regenerate')}</Text>
             </Pressable>
           </>
         ) : (
           <Pressable
-            style={[styles.actionButton, loading === 'trends' && styles.actionButtonDisabled]}
+            style={[styles.actionButton, { backgroundColor: colors.primary }, loading === 'trends' && styles.actionButtonDisabled]}
             onPress={fetchTrendAnalysis}
             disabled={loading === 'trends'}
           >
             {loading === 'trends' ? (
-              <ActivityIndicator size="small" color="#F59E0B" />
+              <ActivityIndicator size="small" color="#FFFFFF" />
             ) : (
-              <Ionicons name="trending-up" size={14} color="#F59E0B" style={{ marginRight: 6 }} />
+              <Ionicons name="trending-up" size={14} color="#FFFFFF" style={{ marginRight: 6 }} />
             )}
             <Text style={styles.actionButtonText}>
               {loading === 'trends' ? t('ai.analyzing') + '...' : t('ai.analyzeTrends')}
@@ -114,7 +116,7 @@ export default function AIDashboardSummary({ constituencyName, issues }: AIDashb
         )}
       </View>
 
-      <Text style={styles.disclaimer}>
+      <Text style={[styles.disclaimer, { color: colors.textMuted }]}>
         {t('ai.poweredBy')}
       </Text>
     </View>
@@ -123,13 +125,15 @@ export default function AIDashboardSummary({ constituencyName, issues }: AIDashb
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: '#111827',
     borderRadius: 16,
     padding: 14,
     marginHorizontal: 16,
     marginBottom: 16,
     borderWidth: 1,
-    borderColor: '#F59E0B20',
+    elevation: 2,
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.06,
+    shadowRadius: 6,
   },
   header: {
     flexDirection: 'row',
@@ -139,7 +143,6 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 15,
     fontWeight: '700',
-    color: '#FFFFFF',
   },
   section: {
     marginBottom: 12,
@@ -147,14 +150,12 @@ const styles = StyleSheet.create({
   sectionTitle: {
     fontSize: 12,
     fontWeight: '700',
-    color: '#9CA3AF',
     marginBottom: 6,
     textTransform: 'uppercase',
     letterSpacing: 0.5,
   },
   summaryText: {
     fontSize: 13,
-    color: '#D1D5DB',
     lineHeight: 20,
   },
   resetLink: {
@@ -163,14 +164,12 @@ const styles = StyleSheet.create({
   },
   resetText: {
     fontSize: 11,
-    color: '#F59E0B',
     fontWeight: '600',
   },
   actionButton: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: '#F59E0B10',
     borderRadius: 10,
     paddingVertical: 12,
   },
@@ -179,12 +178,11 @@ const styles = StyleSheet.create({
   },
   actionButtonText: {
     fontSize: 13,
-    fontWeight: '600',
-    color: '#F59E0B',
+    fontWeight: '700',
+    color: '#FFFFFF',
   },
   disclaimer: {
     fontSize: 10,
-    color: '#4B5563',
     fontStyle: 'italic',
     textAlign: 'center',
   },

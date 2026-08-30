@@ -1,8 +1,9 @@
 import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { getPartyColor } from '@/lib/constants';
-import { moderateScale as ms } from '@/lib/responsive';
+import { getPartyColor } from '../../lib/constants';
+import { moderateScale as ms } from '../../lib/responsive';
+import { useTheme } from '../../lib/theme';
 
 interface ElectionRecord {
   electionYear: number;
@@ -23,29 +24,30 @@ interface Props {
 }
 
 export default function ElectionHistoryCard({ elections }: Props) {
+  const { colors } = useTheme();
   if (elections.length === 0) return null;
 
   const wins = elections.filter(e => e.result === 'won').length;
   const losses = elections.filter(e => e.result === 'lost').length;
 
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, { backgroundColor: colors.surface, borderColor: colors.goldBorder || colors.border, borderWidth: 1 }]}>
       {/* Header */}
       <View style={styles.header}>
-        <Ionicons name="trophy" size={18} color="#F59E0B" />
-        <Text style={styles.title}>Election History</Text>
-        <View style={styles.recordBadge}>
-          <Text style={styles.recordText}>{wins}W - {losses}L</Text>
+        <Ionicons name="trophy" size={18} color="#D97706" />
+        <Text style={[styles.title, { color: colors.text }]}>Election History</Text>
+        <View style={[styles.recordBadge, { backgroundColor: colors.goldLight, borderColor: colors.goldBorder, borderWidth: 1 }]}>
+          <Text style={[styles.recordText, { color: colors.gold }]}>{wins}W - {losses}L</Text>
         </View>
       </View>
 
       {/* Win rate bar */}
       <View style={styles.winRateRow}>
-        <View style={styles.winRateBar}>
-          <View style={[styles.winRateFill, { flex: wins || 0.1 }]} />
-          <View style={[styles.lossRateFill, { flex: losses || 0.1 }]} />
+        <View style={[styles.winRateBar, { backgroundColor: colors.surfaceElevated }]}>
+          <View style={[styles.winRateFill, { flex: wins || 0.1, backgroundColor: colors.success }]} />
+          <View style={[styles.lossRateFill, { flex: losses || 0.1, backgroundColor: colors.danger }]} />
         </View>
-        <Text style={styles.winRateText}>{Math.round((wins / (elections.length || 1)) * 100)}% win rate</Text>
+        <Text style={[styles.winRateText, { color: colors.textMuted }]}>{Math.round((wins / (elections.length || 1)) * 100)}% win rate</Text>
       </View>
 
       {/* Timeline */}
@@ -58,18 +60,18 @@ export default function ElectionHistoryCard({ elections }: Props) {
           <View key={`${e.electionYear}-${e.constituencyName}`} style={styles.electionRow}>
             {/* Timeline connector */}
             <View style={styles.timelineCol}>
-              <View style={[styles.timelineDot, { backgroundColor: isWon ? '#10B981' : '#EF4444' }]}>
+              <View style={[styles.timelineDot, { backgroundColor: isWon ? colors.success : colors.danger }]}>
                 <Ionicons name={isWon ? 'checkmark' : 'close'} size={10} color="#FFFFFF" />
               </View>
-              {idx < elections.length - 1 && <View style={styles.timelineLine} />}
+              {idx < elections.length - 1 && <View style={[styles.timelineLine, { backgroundColor: colors.border }]} />}
             </View>
 
             {/* Election details */}
-            <View style={[styles.electionCard, isLatest && styles.electionCardLatest]}>
+            <View style={[styles.electionCard, { backgroundColor: colors.surfaceElevated, borderColor: isLatest ? colors.goldBorder || colors.border : colors.border, borderWidth: 1 }]}>
               <View style={styles.electionHeader}>
-                <Text style={styles.electionYear}>{e.electionYear}</Text>
+                <Text style={[styles.electionYear, { color: colors.text }]}>{e.electionYear}</Text>
                 <View style={[styles.resultBadge, { backgroundColor: isWon ? '#10B98120' : '#EF444420' }]}>
-                  <Text style={[styles.resultText, { color: isWon ? '#10B981' : '#EF4444' }]}>
+                  <Text style={[styles.resultText, { color: isWon ? colors.success : colors.danger }]}>
                     {isWon ? 'WON' : 'LOST'}
                   </Text>
                 </View>
@@ -78,40 +80,34 @@ export default function ElectionHistoryCard({ elections }: Props) {
                 </View>
               </View>
 
-              <Text style={styles.electionConstituency}>{e.constituencyName}</Text>
+              <Text style={[styles.electionConstituency, { color: colors.textSecondary }]}>{e.constituencyName}</Text>
 
               {/* Vote stats */}
               <View style={styles.voteRow}>
                 {e.votesReceived != null && e.votesReceived > 0 && (
                   <View style={styles.voteItem}>
-                    <Text style={styles.voteValue}>{e.votesReceived.toLocaleString()}</Text>
-                    <Text style={styles.voteLabel}>votes</Text>
+                    <Text style={[styles.voteValue, { color: colors.text }]}>{e.votesReceived.toLocaleString()}</Text>
+                    <Text style={[styles.voteLabel, { color: colors.textMuted }]}>votes</Text>
                   </View>
                 )}
                 {e.voteShare != null && e.voteShare > 0 && (
                   <View style={styles.voteItem}>
-                    <Text style={styles.voteValue}>{e.voteShare.toFixed(1)}%</Text>
-                    <Text style={styles.voteLabel}>share</Text>
+                    <Text style={[styles.voteValue, { color: colors.text }]}>{e.voteShare.toFixed(1)}%</Text>
+                    <Text style={[styles.voteLabel, { color: colors.textMuted }]}>share</Text>
                   </View>
                 )}
                 {e.margin != null && e.margin > 0 && isWon && (
                   <View style={styles.voteItem}>
-                    <Text style={[styles.voteValue, { color: '#10B981' }]}>+{e.margin.toLocaleString()}</Text>
-                    <Text style={styles.voteLabel}>margin</Text>
-                  </View>
-                )}
-                {e.rank != null && e.rank > 0 && (
-                  <View style={styles.voteItem}>
-                    <Text style={styles.voteValue}>#{e.rank}</Text>
-                    <Text style={styles.voteLabel}>of {e.totalCandidates || '?'}</Text>
+                    <Text style={[styles.voteValue, { color: colors.success }]}>+{e.margin.toLocaleString()}</Text>
+                    <Text style={[styles.voteLabel, { color: colors.textMuted }]}>margin</Text>
                   </View>
                 )}
               </View>
 
               {/* Runner up */}
-              {e.runnerUp && isWon && (
-                <Text style={styles.runnerUpText}>
-                  vs {e.runnerUp} ({e.runnerUpParty})
+              {e.runnerUp && (
+                <Text style={[styles.runnerUpText, { color: colors.textMuted }]}>
+                  {isWon ? 'Defeated' : 'Lost to'} {e.runnerUp} {e.runnerUpParty ? `(${e.runnerUpParty})` : ''}
                 </Text>
               )}
             </View>
@@ -124,7 +120,6 @@ export default function ElectionHistoryCard({ elections }: Props) {
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: '#111827',
     borderRadius: 16,
     padding: 16,
     marginHorizontal: 16,
@@ -139,11 +134,9 @@ const styles = StyleSheet.create({
   title: {
     fontSize: ms(15),
     fontWeight: '700',
-    color: '#FFFFFF',
     flex: 1,
   },
   recordBadge: {
-    backgroundColor: '#F59E0B20',
     paddingHorizontal: 8,
     paddingVertical: 3,
     borderRadius: 8,
@@ -151,7 +144,6 @@ const styles = StyleSheet.create({
   recordText: {
     fontSize: ms(11),
     fontWeight: '700',
-    color: '#F59E0B',
   },
   winRateRow: {
     flexDirection: 'row',
@@ -165,19 +157,15 @@ const styles = StyleSheet.create({
     borderRadius: 3,
     flexDirection: 'row',
     overflow: 'hidden',
-    backgroundColor: '#1F2937',
   },
   winRateFill: {
     height: '100%',
-    backgroundColor: '#10B981',
   },
   lossRateFill: {
     height: '100%',
-    backgroundColor: '#EF4444',
   },
   winRateText: {
     fontSize: ms(10),
-    color: '#6B7280',
     fontWeight: '600',
   },
   electionRow: {
@@ -198,20 +186,15 @@ const styles = StyleSheet.create({
   timelineLine: {
     width: 2,
     flex: 1,
-    backgroundColor: '#374151',
     marginVertical: 4,
   },
   electionCard: {
     flex: 1,
-    backgroundColor: '#0A0A1A',
     borderRadius: 10,
     padding: 12,
     marginBottom: 8,
   },
-  electionCardLatest: {
-    borderWidth: 1,
-    borderColor: '#374151',
-  },
+  electionCardLatest: {},
   electionHeader: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -221,7 +204,6 @@ const styles = StyleSheet.create({
   electionYear: {
     fontSize: ms(13),
     fontWeight: '800',
-    color: '#FFFFFF',
   },
   resultBadge: {
     paddingHorizontal: 6,
@@ -243,7 +225,6 @@ const styles = StyleSheet.create({
   },
   electionConstituency: {
     fontSize: ms(11),
-    color: '#9CA3AF',
     marginBottom: 6,
   },
   voteRow: {
@@ -258,15 +239,12 @@ const styles = StyleSheet.create({
   voteValue: {
     fontSize: ms(12),
     fontWeight: '700',
-    color: '#D1D5DB',
   },
   voteLabel: {
     fontSize: ms(9),
-    color: '#6B7280',
   },
   runnerUpText: {
     fontSize: ms(10),
-    color: '#6B7280',
     marginTop: 4,
     fontStyle: 'italic',
   },

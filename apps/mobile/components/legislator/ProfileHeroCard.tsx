@@ -1,8 +1,9 @@
 import React from 'react';
 import { View, Text, StyleSheet, Pressable, Image } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { getPartyColor } from '@/lib/constants';
-import { moderateScale as ms } from '@/lib/responsive';
+import { getPartyColor } from '../../lib/constants';
+import { moderateScale as ms } from '../../lib/responsive';
+import { useTheme } from '../../lib/theme';
 
 interface Props {
   fullName: string;
@@ -45,6 +46,7 @@ export default function ProfileHeroCard({
   onPhotoPress,
   onSharePress,
 }: Props) {
+  const { colors } = useTheme();
   const partyColor = getPartyColor(party);
   // Known legislator houses map to short labels; any other value (e.g. a
   // local-body office label like 'Mayor', 'Corporator', 'Sarpanch', 'ZPTC
@@ -59,9 +61,9 @@ export default function ProfileHeroCard({
   const genderIcon = gender === 'female' ? 'woman' : 'man';
 
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, { backgroundColor: colors.surface, borderColor: colors.goldBorder || colors.border }]}>
       {/* Party color accent background */}
-      <View style={[styles.gradient, { backgroundColor: partyColor + '15' }]} />
+      <View style={[styles.gradient, { backgroundColor: partyColor + '12' }]} />
 
       {/* Content */}
       <View style={styles.content}>
@@ -84,19 +86,19 @@ export default function ProfileHeroCard({
 
         {/* Name & Title */}
         <View style={styles.nameSection}>
-          <Text style={styles.fullName} numberOfLines={2}>{displayName}</Text>
+          <Text style={[styles.fullName, { color: colors.text }]} numberOfLines={2}>{displayName}</Text>
           {displayName !== fullName && (
-            <Text style={styles.aliasName} numberOfLines={1}>{fullName}</Text>
+            <Text style={[styles.aliasName, { color: colors.textSecondary }]} numberOfLines={1}>{fullName}</Text>
           )}
         </View>
 
         {/* Badges Row */}
         <View style={styles.badgeRow}>
-          <View style={[styles.badge, { backgroundColor: partyColor + '25', borderColor: partyColor + '50' }]}>
+          <View style={[styles.badge, { backgroundColor: partyColor + '20', borderColor: partyColor + '50' }]}>
             <Text style={[styles.badgeText, { color: partyColor }]}>{party}</Text>
           </View>
-          <View style={[styles.badge, styles.houseBadge]}>
-            <Text style={styles.houseBadgeText}>{houseLabel}</Text>
+          <View style={[styles.badge, { backgroundColor: colors.surfaceElevated, borderColor: colors.goldBorder || colors.border }]}>
+            <Text style={[styles.houseBadgeText, { color: colors.textSecondary }]}>{houseLabel}</Text>
           </View>
           {reservationType && reservationType !== 'general' && (
             <View style={[styles.badge, styles.resBadge]}>
@@ -111,46 +113,46 @@ export default function ProfileHeroCard({
           )}
           {isCabinetMinister && !isChiefMinister && (
             <View style={[styles.badge, styles.minBadge]}>
-              <Ionicons name="briefcase" size={10} color="#8B5CF6" />
-              <Text style={styles.minBadgeText}>Minister</Text>
+              <Ionicons name="briefcase" size={10} color={colors.primary} />
+              <Text style={[styles.minBadgeText, { color: colors.primary }]}>Minister</Text>
             </View>
           )}
         </View>
 
         {/* Constituency */}
         <View style={styles.constituencyRow}>
-          <Ionicons name="location" size={14} color="#9CA3AF" />
-          <Text style={styles.constituencyText}>{constituency}, {district}</Text>
+          <Ionicons name="location" size={14} color={colors.primary} />
+          <Text style={[styles.constituencyText, { color: colors.textSecondary }]}>{constituency}, {district}</Text>
         </View>
 
         {/* Quick Stats */}
-        <View style={styles.statsRow}>
+        <View style={[styles.statsRow, { backgroundColor: colors.surfaceElevated, borderColor: colors.goldBorder || colors.border, borderWidth: 1 }]}>
           <View style={styles.stat}>
-            <Text style={styles.statValue}>{age ?? '—'}</Text>
-            <Text style={styles.statLabel}>Age</Text>
+            <Text style={[styles.statValue, { color: colors.text }]}>{age ?? '—'}</Text>
+            <Text style={[styles.statLabel, { color: colors.textMuted }]}>Age</Text>
           </View>
-          <View style={styles.statDivider} />
+          <View style={[styles.statDivider, { backgroundColor: colors.border }]} />
           <View style={styles.stat}>
-            <Text style={styles.statValue}>{termsServed}</Text>
-            <Text style={styles.statLabel}>{termsServed === 1 ? 'Term' : 'Terms'}</Text>
+            <Text style={[styles.statValue, { color: colors.text }]}>{termsServed}</Text>
+            <Text style={[styles.statLabel, { color: colors.textMuted }]}>{termsServed === 1 ? 'Term' : 'Terms'}</Text>
           </View>
-          <View style={styles.statDivider} />
+          <View style={[styles.statDivider, { backgroundColor: colors.border }]} />
           <View style={styles.stat}>
-            <Ionicons name={genderIcon as any} size={16} color="#9CA3AF" />
-            <Text style={styles.statLabel}>{gender === 'female' ? 'Female' : 'Male'}</Text>
+            <Ionicons name={genderIcon as any} size={16} color={colors.primary} />
+            <Text style={[styles.statLabel, { color: colors.textMuted }]}>{gender === 'female' ? 'Female' : 'Male'}</Text>
           </View>
-          <View style={styles.statDivider} />
+          <View style={[styles.statDivider, { backgroundColor: colors.border }]} />
           <View style={styles.stat}>
-            <Text style={styles.statValue}>{stateCode}</Text>
-            <Text style={styles.statLabel}>State</Text>
+            <Text style={[styles.statValue, { color: colors.text }]}>{stateCode}</Text>
+            <Text style={[styles.statLabel, { color: colors.textMuted }]}>State</Text>
           </View>
         </View>
       </View>
 
       {/* Share button */}
       {onSharePress && (
-        <Pressable style={styles.shareBtn} onPress={onSharePress} hitSlop={8}>
-          <Ionicons name="share-outline" size={20} color="#9CA3AF" />
+        <Pressable style={[styles.shareBtn, { backgroundColor: colors.surfaceElevated, borderColor: colors.border, borderWidth: 1 }]} onPress={onSharePress} hitSlop={8}>
+          <Ionicons name="share-outline" size={20} color={colors.text} />
         </Pressable>
       )}
     </View>
@@ -162,9 +164,9 @@ const styles = StyleSheet.create({
     position: 'relative',
     overflow: 'hidden',
     borderRadius: 20,
-    backgroundColor: '#111827',
     marginHorizontal: 16,
     marginTop: 8,
+    borderWidth: 1,
   },
   gradient: {
     ...StyleSheet.absoluteFillObject,
@@ -184,7 +186,7 @@ const styles = StyleSheet.create({
     height: ms(88),
     borderRadius: ms(44),
     borderWidth: 3,
-    borderColor: '#1F2937',
+    borderColor: '#C5A059',
   },
   photoPlaceholder: {
     width: ms(88),
@@ -193,7 +195,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     borderWidth: 3,
-    borderColor: '#1F2937',
+    borderColor: '#C5A059',
   },
   initials: {
     fontSize: ms(28),
@@ -208,7 +210,7 @@ const styles = StyleSheet.create({
     borderRadius: 7,
     backgroundColor: '#10B981',
     borderWidth: 2,
-    borderColor: '#111827',
+    borderColor: '#FAF6EE',
   },
   nameSection: {
     alignItems: 'center',
@@ -217,12 +219,10 @@ const styles = StyleSheet.create({
   fullName: {
     fontSize: ms(22),
     fontWeight: '800',
-    color: '#FFFFFF',
     textAlign: 'center',
   },
   aliasName: {
     fontSize: ms(12),
-    color: '#6B7280',
     marginTop: 2,
   },
   badgeRow: {
@@ -239,21 +239,16 @@ const styles = StyleSheet.create({
     paddingVertical: 4,
     borderRadius: 12,
     borderWidth: 1,
-    borderColor: '#374151',
     gap: 4,
   },
   badgeText: {
     fontSize: ms(11),
     fontWeight: '700',
   },
-  houseBadge: {
-    backgroundColor: '#1F293740',
-    borderColor: '#374151',
-  },
+  houseBadge: {},
   houseBadgeText: {
     fontSize: ms(11),
     fontWeight: '700',
-    color: '#D1D5DB',
   },
   resBadge: {
     backgroundColor: '#F59E0B15',
@@ -262,7 +257,7 @@ const styles = StyleSheet.create({
   resBadgeText: {
     fontSize: ms(10),
     fontWeight: '800',
-    color: '#F59E0B',
+    color: '#D97706',
   },
   cmBadge: {
     backgroundColor: '#F59E0B15',
@@ -271,16 +266,15 @@ const styles = StyleSheet.create({
   cmBadgeText: {
     fontSize: ms(10),
     fontWeight: '800',
-    color: '#F59E0B',
+    color: '#D97706',
   },
   minBadge: {
-    backgroundColor: '#8B5CF615',
-    borderColor: '#8B5CF640',
+    backgroundColor: '#A8201A15',
+    borderColor: '#A8201A40',
   },
   minBadgeText: {
     fontSize: ms(10),
     fontWeight: '700',
-    color: '#8B5CF6',
   },
   constituencyRow: {
     flexDirection: 'row',
@@ -290,12 +284,10 @@ const styles = StyleSheet.create({
   },
   constituencyText: {
     fontSize: ms(13),
-    color: '#9CA3AF',
   },
   statsRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#0A0A1A80',
     borderRadius: 14,
     paddingVertical: 12,
     paddingHorizontal: 16,
@@ -309,17 +301,14 @@ const styles = StyleSheet.create({
   statValue: {
     fontSize: ms(15),
     fontWeight: '700',
-    color: '#FFFFFF',
   },
   statLabel: {
     fontSize: ms(10),
-    color: '#6B7280',
     fontWeight: '500',
   },
   statDivider: {
     width: 1,
     height: 24,
-    backgroundColor: '#374151',
   },
   shareBtn: {
     position: 'absolute',
@@ -328,7 +317,6 @@ const styles = StyleSheet.create({
     width: 36,
     height: 36,
     borderRadius: 18,
-    backgroundColor: '#1F2937',
     justifyContent: 'center',
     alignItems: 'center',
   },

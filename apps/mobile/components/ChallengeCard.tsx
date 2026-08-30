@@ -97,11 +97,11 @@ export default React.memo(function ChallengeCard({ challenge, participation, onJ
 
 const styles = StyleSheet.create({
   card: {
-    backgroundColor: '#111827',
+    backgroundColor: '#FFFFFF',
     borderRadius: 14,
     padding: 14,
     borderWidth: 1,
-    borderColor: '#1F2937',
+    borderColor: '#E8DED1',
     marginBottom: 10,
   },
   cardComplete: {
@@ -127,19 +127,19 @@ const styles = StyleSheet.create({
     gap: 4,
   },
   pointsText: { fontSize: 12, fontWeight: '800', color: '#F59E0B' },
-  title: { fontSize: 15, fontWeight: '800', color: '#FFFFFF', marginBottom: 4 },
-  description: { fontSize: 12, color: '#9CA3AF', lineHeight: 18, marginBottom: 10 },
+  title: { fontSize: 15, fontWeight: '800', color: '#241814', marginBottom: 4 },
+  description: { fontSize: 12, color: '#6D5549', lineHeight: 18, marginBottom: 10 },
   progressSection: { marginBottom: 10 },
   progressHeader: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     marginBottom: 4,
   },
-  progressLabel: { fontSize: 11, color: '#6B7280', fontWeight: '600' },
-  progressPercent: { fontSize: 12, fontWeight: '800', color: '#FFFFFF' },
+  progressLabel: { fontSize: 11, color: '#988275', fontWeight: '600' },
+  progressPercent: { fontSize: 12, fontWeight: '800', color: '#241814' },
   progressTrack: {
     height: 6,
-    backgroundColor: '#1F2937',
+    backgroundColor: '#E8DED1',
     borderRadius: 3,
     overflow: 'hidden',
   },
@@ -150,7 +150,7 @@ const styles = StyleSheet.create({
     gap: 4,
     marginBottom: 10,
   },
-  stateText: { fontSize: 10, color: '#6B7280' },
+  stateText: { fontSize: 10, color: '#988275' },
   joinButton: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -159,7 +159,7 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     gap: 6,
   },
-  joinText: { fontSize: 13, fontWeight: '700', color: '#FFFFFF' },
+  joinText: { fontSize: 13, fontWeight: '700', color: '#241814' },
   completeBanner: {
     flexDirection: 'row',
     alignItems: 'center',

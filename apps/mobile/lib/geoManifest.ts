@@ -8,7 +8,7 @@
  * except states flagged `bundled` (the national "IN" overview) which ship in
  * the JS bundle for an instant, offline first paint.
  */
-import manifest from '@/data/geo-manifest.json';
+import manifest from '../data/geo-manifest.json';
 
 export interface GeoManifestEntry {
   /** Remote file name, e.g. "up-assembly.json". */

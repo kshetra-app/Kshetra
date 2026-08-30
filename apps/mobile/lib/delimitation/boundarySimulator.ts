@@ -172,10 +172,14 @@ export function simulateState(
 }
 
 /**
- * Quick simulation using district-level data only (no ward generation).
- * Much faster — suitable for API responses and initial projections.
+ * Quick simulation using district-level data with Hare-Niemeyer seat allocation.
+ * Supports custom target seat counts and distinct simulation modes.
  */
-export function simulateStateQuick(stateCode: string): {
+export function simulateStateQuick(
+  stateCode: string,
+  targetSeats?: number,
+  mode: SimulationMode = 'equal_population',
+): {
   stateCode: string;
   stateName: string;
   districtBreakdown: Array<{
@@ -195,37 +199,80 @@ export function simulateStateQuick(stateCode: string): {
     general: number;
     idealPopPerSeat: number;
   };
+  qualityScore: number;
 } | null {
   const census = CENSUS_2011_STATES.find((s) => s.stateCode === stateCode);
   if (!census) return null;
 
-  const agg = quickDistrictAggregation(stateCode);
-  if (!agg) return null;
+  const totalSeats = targetSeats && targetSeats > 0 ? targetSeats : census.currentAssemblySeats;
+  const idealPopPerSeat = Math.max(1, Math.round(census.totalPopulation / totalSeats));
 
-  const districtBreakdown = agg.districts.map((d) => {
-    const scRes = calculateSCReservedSeats(d.projectedSeats, Math.round(d.population * d.scPercent / 100), d.population);
-    const stRes = calculateSTReservedSeats(d.projectedSeats, Math.round(d.population * d.stPercent / 100), d.population);
+  // Compute Hare-Niemeyer district allocations
+  const districtQuotas = census.districts.map((d) => {
+    const rawQuota = d.totalPopulation / idealPopPerSeat;
+    let base = Math.max(1, Math.floor(rawQuota));
+
+    // Mode-specific adjustment
+    if (mode === 'minimal_change') {
+      // Prioritize preserving historical proportion
+      base = Math.max(1, Math.round((d.totalPopulation / census.totalPopulation) * totalSeats));
+    }
+
+    const rem = rawQuota - Math.floor(rawQuota);
     return {
-      districtName: d.districtName,
-      population: d.population,
-      projectedSeats: d.projectedSeats,
-      populationPerSeat: d.populationPerSeat,
-      deviationPercent: d.deviationPercent,
-      scReserved: scRes,
-      stReserved: stRes,
-      general: d.projectedSeats - scRes - stRes,
+      district: d,
+      rawQuota,
+      baseSeats: base,
+      remainder: rem,
     };
   });
 
+  const totalBase = districtQuotas.reduce((sum, d) => sum + d.baseSeats, 0);
+  let leftover = totalSeats - totalBase;
+
+  const sortedByRem = [...districtQuotas].sort((a, b) => b.remainder - a.remainder);
+  const districtBreakdown = districtQuotas.map((dq) => {
+    let finalSeats = dq.baseSeats;
+    if (leftover > 0 && sortedByRem.slice(0, leftover).some((r) => r.district.districtName === dq.district.districtName)) {
+      finalSeats += 1;
+    } else if (leftover < 0 && dq.baseSeats > 1) {
+      finalSeats -= 1;
+      leftover += 1;
+    }
+
+    const popPerSeat = finalSeats > 0 ? Math.round(dq.district.totalPopulation / finalSeats) : 0;
+    const deviation = idealPopPerSeat > 0 ? Math.round(((popPerSeat - idealPopPerSeat) / idealPopPerSeat) * 1000) / 10 : 0;
+    const scRes = calculateSCReservedSeats(finalSeats, dq.district.scPopulation, dq.district.totalPopulation);
+    const stRes = calculateSTReservedSeats(finalSeats, dq.district.stPopulation, dq.district.totalPopulation);
+
+    return {
+      districtName: dq.district.districtName,
+      population: dq.district.totalPopulation,
+      projectedSeats: finalSeats,
+      populationPerSeat: popPerSeat,
+      deviationPercent: deviation,
+      scReserved: scRes,
+      stReserved: stRes,
+      general: Math.max(0, finalSeats - scRes - stRes),
+    };
+  });
+
+  const finalTotalSeats = districtBreakdown.reduce((s, d) => s + d.projectedSeats, 0);
+  const scReservedTotal = calculateSCReservedSeats(finalTotalSeats, census.scPopulation, census.totalPopulation);
+  const stReservedTotal = calculateSTReservedSeats(finalTotalSeats, census.stPopulation, census.totalPopulation);
+
   const totals = {
-    seats: districtBreakdown.reduce((s, d) => s + d.projectedSeats, 0),
-    scReserved: districtBreakdown.reduce((s, d) => s + d.scReserved, 0),
-    stReserved: districtBreakdown.reduce((s, d) => s + d.stReserved, 0),
-    general: districtBreakdown.reduce((s, d) => s + d.general, 0),
-    idealPopPerSeat: agg.idealPopPerSeat,
+    seats: finalTotalSeats,
+    scReserved: scReservedTotal,
+    stReserved: stReservedTotal,
+    general: Math.max(0, finalTotalSeats - scReservedTotal - stReservedTotal),
+    idealPopPerSeat,
   };
 
-  return { stateCode, stateName: census.stateName, districtBreakdown, totals };
+  const withinBoundsCount = districtBreakdown.filter((d) => Math.abs(d.deviationPercent) <= 10).length;
+  const qualityScore = Math.round((withinBoundsCount / Math.max(1, districtBreakdown.length)) * 100);
+
+  return { stateCode, stateName: census.stateName, districtBreakdown, totals, qualityScore };
 }
 
 /**

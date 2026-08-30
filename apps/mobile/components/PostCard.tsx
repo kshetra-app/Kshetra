@@ -7,12 +7,12 @@ import type { Post, ReactionType } from '../lib/feedTypes';
 import ContentGateActions from './ContentGateActions';
 
 const TYPE_CONFIG: Record<string, { icon: string; color: string; tKey: string }> = {
-  discussion: { icon: 'chatbubbles', color: '#6366F1', tKey: 'postCard.discussion' },
-  news: { icon: 'newspaper', color: '#3B82F6', tKey: 'postCard.news' },
-  opinion: { icon: 'megaphone', color: '#F59E0B', tKey: 'postCard.opinion' },
-  question: { icon: 'help-circle', color: '#10B981', tKey: 'postCard.question' },
-  alert: { icon: 'alert-circle', color: '#EF4444', tKey: 'postCard.alert' },
-  poll: { icon: 'stats-chart', color: '#8B5CF6', tKey: 'postCard.poll' },
+  discussion: { icon: 'chatbubbles', color: '#145C68', tKey: 'postCard.discussion' },
+  news: { icon: 'newspaper', color: '#A8201A', tKey: 'postCard.news' },
+  opinion: { icon: 'megaphone', color: '#D97706', tKey: 'postCard.opinion' },
+  question: { icon: 'help-circle', color: '#B45309', tKey: 'postCard.question' },
+  alert: { icon: 'alert-circle', color: '#C0392B', tKey: 'postCard.alert' },
+  poll: { icon: 'stats-chart', color: '#C5A059', tKey: 'postCard.poll' },
 };
 
 function timeAgo(dateStr: string): string {

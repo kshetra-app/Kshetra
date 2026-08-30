@@ -294,7 +294,7 @@ export default function ReportIssueSheet({ visible, onClose, onSubmit }: ReportI
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#0A0A1A',
+    backgroundColor: '#F5EFE4',
   },
   header: {
     flexDirection: 'row',
@@ -304,12 +304,12 @@ const styles = StyleSheet.create({
     paddingTop: 16,
     paddingBottom: 12,
     borderBottomWidth: 0.5,
-    borderBottomColor: '#1F2937',
+    borderBottomColor: '#E8DED1',
   },
   headerTitle: {
     fontSize: 16,
     fontWeight: '700',
-    color: '#FFFFFF',
+    color: '#241814',
   },
   submitButton: {
     backgroundColor: '#10B981',
@@ -323,7 +323,7 @@ const styles = StyleSheet.create({
   submitText: {
     fontSize: 14,
     fontWeight: '800',
-    color: '#FFFFFF',
+    color: '#241814',
   },
   scroll: {
     flex: 1,
@@ -344,19 +344,19 @@ const styles = StyleSheet.create({
   fieldLabel: {
     fontSize: 13,
     fontWeight: '700',
-    color: '#9CA3AF',
+    color: '#6D5549',
     marginTop: 16,
     marginBottom: 6,
   },
   titleInput: {
-    backgroundColor: '#111827',
+    backgroundColor: '#FFFFFF',
     borderRadius: 12,
     paddingHorizontal: 14,
     paddingVertical: 12,
     fontSize: 15,
-    color: '#FFFFFF',
+    color: '#241814',
     borderWidth: 1,
-    borderColor: '#1F2937',
+    borderColor: '#E8DED1',
   },
   charHint: {
     fontSize: 11,
@@ -365,15 +365,15 @@ const styles = StyleSheet.create({
     marginTop: 2,
   },
   descInput: {
-    backgroundColor: '#111827',
+    backgroundColor: '#FFFFFF',
     borderRadius: 12,
     paddingHorizontal: 14,
     paddingVertical: 12,
     fontSize: 14,
-    color: '#FFFFFF',
+    color: '#241814',
     minHeight: 100,
     borderWidth: 1,
-    borderColor: '#1F2937',
+    borderColor: '#E8DED1',
     lineHeight: 20,
   },
   chipGrid: {
@@ -388,13 +388,13 @@ const styles = StyleSheet.create({
     paddingVertical: 6,
     borderRadius: 20,
     borderWidth: 1,
-    borderColor: '#374151',
+    borderColor: '#E8DED1',
     gap: 4,
   },
   chipText: {
     fontSize: 12,
     fontWeight: '700',
-    color: '#6B7280',
+    color: '#988275',
   },
   severityRow: {
     flexDirection: 'row',
@@ -407,12 +407,12 @@ const styles = StyleSheet.create({
     paddingVertical: 10,
     borderRadius: 12,
     borderWidth: 1,
-    borderColor: '#374151',
+    borderColor: '#E8DED1',
   },
   severityChipText: {
     fontSize: 13,
     fontWeight: '700',
-    color: '#6B7280',
+    color: '#988275',
   },
   mediaRow: {
     flexDirection: 'row',
@@ -443,7 +443,7 @@ const styles = StyleSheet.create({
     height: 72,
     borderRadius: 10,
     borderWidth: 1.5,
-    borderColor: '#374151',
+    borderColor: '#E8DED1',
     borderStyle: 'dashed',
     justifyContent: 'center',
     alignItems: 'center',
@@ -452,6 +452,6 @@ const styles = StyleSheet.create({
   mediaAddText: {
     fontSize: 10,
     fontWeight: '700',
-    color: '#6B7280',
+    color: '#988275',
   },
 });

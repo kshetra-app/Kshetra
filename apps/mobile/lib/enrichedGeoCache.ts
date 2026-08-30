@@ -1,7 +1,7 @@
-import { enrichGeoJSON, enrichGeoJSONForState, enrichIndiaGeoJSON } from '@/lib/enrichGeoJSON';
-import { getStateGeoJSON, isBundledGeoJSON } from '@/lib/geoLoader';
-import { fetchStateGeoJSON, getGeoBaseUrl } from '@/lib/remoteGeoLoader';
-import { getManifestEntry } from '@/lib/geoManifest';
+import { enrichGeoJSON, enrichGeoJSONForState, enrichIndiaGeoJSON } from './enrichGeoJSON';
+import { getStateGeoJSON, isBundledGeoJSON } from './geoLoader';
+import { fetchStateGeoJSON, getGeoBaseUrl } from './remoteGeoLoader';
+import { getManifestEntry } from './geoManifest';
 
 /**
  * Universal enriched GeoJSON cache — keyed by state code.

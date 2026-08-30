@@ -9,7 +9,7 @@ import type { StateInfo, ConstituencyBrief } from '@kshetra/shared';
 import {
   TELANGANA_CONSTITUENCIES,
   type ConstituencySeed,
-} from '@/lib/data';
+} from './data';
 import { getConstituenciesForState, hasFullData as checkFullData } from './stateDataAdapter';
 
 export interface StateData {

@@ -5,6 +5,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import type { NewsItem } from '../lib/newsTypes';
 import { formatRelativeTime } from '../lib/newsTypes';
+import { useTheme } from '../lib/theme';
 
 interface NewsCardProps {
   item: NewsItem;
@@ -14,8 +15,9 @@ interface NewsCardProps {
 
 function NewsCardBase({ item, bookmarked, onToggleBookmark }: NewsCardProps) {
   const { t } = useTranslation();
+  const { colors } = useTheme();
   const router = useRouter();
-  const accent = item.source.accent ?? '#4F8EF7';
+  const accent = item.source.accent ?? colors.primary;
   const isVideo = !!item.video;
 
   // Everything opens inside the app via the in-app reader (WebView / official embed).
@@ -31,26 +33,26 @@ function NewsCardBase({ item, bookmarked, onToggleBookmark }: NewsCardProps) {
     } as any);
 
   return (
-    <Pressable style={styles.card} onPress={openInApp}>
+    <Pressable style={[styles.card, { borderBottomColor: colors.border }]} onPress={openInApp}>
       <View style={styles.body}>
         {/* Source citation row */}
         <View style={styles.sourceRow}>
           <View style={[styles.sourceDot, { backgroundColor: accent }]} />
-          <Text style={styles.sourceName} numberOfLines={1}>
+          <Text style={[styles.sourceName, { color: colors.text }]} numberOfLines={1}>
             {item.source.name}
           </Text>
           {item.source.verified && (
-            <Ionicons name="checkmark-circle" size={12} color="#4F8EF7" />
+            <Ionicons name="checkmark-circle" size={12} color={colors.gold} />
           )}
-          <Text style={styles.dotSep}>·</Text>
-          <Text style={styles.time}>{formatRelativeTime(item.publishedAt)}</Text>
+          <Text style={[styles.dotSep, { color: colors.textMuted }]}>·</Text>
+          <Text style={[styles.time, { color: colors.textMuted }]}>{formatRelativeTime(item.publishedAt)}</Text>
         </View>
 
-        <Text style={styles.title} numberOfLines={3}>
+        <Text style={[styles.title, { color: colors.text }]} numberOfLines={3}>
           {item.title}
         </Text>
         {!!item.summary && (
-          <Text style={styles.summary} numberOfLines={2}>
+          <Text style={[styles.summary, { color: colors.textSecondary }]} numberOfLines={2}>
             {item.summary}
           </Text>
         )}
@@ -122,21 +124,21 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
     paddingVertical: 14,
     borderBottomWidth: 0.5,
-    borderBottomColor: '#1F2937',
+    borderBottomColor: '#E8DED1',
   },
   body: { flex: 1 },
   sourceRow: { flexDirection: 'row', alignItems: 'center', gap: 5, marginBottom: 5 },
   sourceDot: { width: 6, height: 6, borderRadius: 3 },
-  sourceName: { fontSize: 11, fontWeight: '800', color: '#D1D5DB', maxWidth: 140 },
+  sourceName: { fontSize: 11, fontWeight: '800', color: '#6D5549', maxWidth: 140 },
   dotSep: { color: '#4B5563', fontSize: 11 },
-  time: { fontSize: 11, color: '#6B7280', fontWeight: '600' },
-  title: { fontSize: 14, fontWeight: '700', color: '#F9FAFB', lineHeight: 19 },
-  summary: { fontSize: 12, color: '#9CA3AF', lineHeight: 16, marginTop: 4 },
+  time: { fontSize: 11, color: '#988275', fontWeight: '600' },
+  title: { fontSize: 14, fontWeight: '700', color: '#241814', lineHeight: 19 },
+  summary: { fontSize: 12, color: '#6D5549', lineHeight: 16, marginTop: 4 },
   metaRow: { flexDirection: 'row', alignItems: 'center', gap: 10, marginTop: 8 },
   langBadge: { paddingHorizontal: 6, paddingVertical: 1, borderRadius: 5, borderWidth: 1 },
   langText: { fontSize: 9, fontWeight: '800', letterSpacing: 0.4 },
   readAt: { flexDirection: 'row', alignItems: 'center', gap: 4 },
-  readAtText: { fontSize: 10, color: '#6B7280', fontWeight: '600' },
+  readAtText: { fontSize: 10, color: '#988275', fontWeight: '600' },
   thumbWrap: { width: 96, height: 96, borderRadius: 12, overflow: 'hidden', position: 'relative' },
   thumb: { width: 96, height: 96, borderRadius: 12 },
   thumbPlaceholder: { justifyContent: 'center', alignItems: 'center' },
@@ -156,7 +158,7 @@ const styles = StyleSheet.create({
   },
   bookmarkOnly: {
     width: 32, height: 32, borderRadius: 16,
-    backgroundColor: '#111827',
+    backgroundColor: '#FFFFFF',
     justifyContent: 'center', alignItems: 'center',
     alignSelf: 'flex-start',
   },

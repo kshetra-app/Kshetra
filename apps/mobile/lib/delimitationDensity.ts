@@ -1,4 +1,4 @@
-import { getUnifiedConstituenciesForState } from '@/lib/stateDataAdapter';
+import { getUnifiedConstituenciesForState } from './stateDataAdapter';
 import { getCensusDistricts } from '../../../data/census/india-district-population-2011';
 
 /**

@@ -11,6 +11,7 @@ import { WebView } from 'react-native-webview';
 import { Ionicons } from '@expo/vector-icons';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { useTheme } from '../lib/theme';
 
 /**
  * In-app reader. Everything stays inside the app — articles load in a WebView
@@ -20,6 +21,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 export default function ReaderScreen() {
   const router = useRouter();
   const insets = useSafeAreaInsets();
+  const { colors } = useTheme();
   const params = useLocalSearchParams<{
     url?: string;
     title?: string;
@@ -64,31 +66,31 @@ function onYouTubeIframeAPIReady(){
   };
 
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, { backgroundColor: colors.background }]}>
       {/* Header */}
-      <View style={[styles.header, { paddingTop: insets.top + 6 }]}>
-        <Pressable hitSlop={10} style={styles.iconBtn} onPress={() => router.back()}>
-          <Ionicons name="chevron-down" size={22} color="#FFFFFF" />
+      <View style={[styles.header, { paddingTop: insets.top + 6, borderBottomColor: colors.border, backgroundColor: colors.surface }]}>
+        <Pressable hitSlop={10} style={[styles.iconBtn, { backgroundColor: colors.surfaceElevated || colors.surface, borderColor: colors.goldBorder || colors.border, borderWidth: 1 }]} onPress={() => router.back()}>
+          <Ionicons name="chevron-down" size={22} color={colors.text} />
         </Pressable>
         <View style={styles.headerCenter}>
-          <Text style={styles.headerTitle} numberOfLines={1}>
+          <Text style={[styles.headerTitle, { color: colors.text }]} numberOfLines={1}>
             {params.title ?? (isVideo ? 'Video' : 'Article')}
           </Text>
           {!!params.source && (
-            <Text style={styles.headerSource} numberOfLines={1}>
+            <Text style={[styles.headerSource, { color: colors.textMuted }]} numberOfLines={1}>
               {params.source}
             </Text>
           )}
         </View>
-        <Pressable hitSlop={10} style={styles.iconBtn} onPress={shareLink}>
-          <Ionicons name="share-social-outline" size={20} color="#FFFFFF" />
+        <Pressable hitSlop={10} style={[styles.iconBtn, { backgroundColor: colors.surfaceElevated || colors.surface, borderColor: colors.goldBorder || colors.border, borderWidth: 1 }]} onPress={shareLink}>
+          <Ionicons name="share-social-outline" size={20} color={colors.text} />
         </Pressable>
       </View>
 
       {/* Thin progress bar for article loads */}
       {!isVideo && loading && (
-        <View style={styles.progressTrack}>
-          <View style={[styles.progressFill, { width: `${Math.max(8, progress * 100)}%` }]} />
+        <View style={[styles.progressTrack, { backgroundColor: colors.border }]}>
+          <View style={[styles.progressFill, { width: `${Math.max(8, progress * 100)}%`, backgroundColor: colors.primary }]} />
         </View>
       )}
 
@@ -108,17 +110,17 @@ function onYouTubeIframeAPIReady(){
         domStorageEnabled
         startInLoadingState
         renderLoading={() => (
-          <View style={styles.loadingOverlay}>
-            <ActivityIndicator size="large" color="#4F8EF7" />
+          <View style={[styles.loadingOverlay, { backgroundColor: colors.background }]}>
+            <ActivityIndicator size="large" color={colors.primary} />
           </View>
         )}
       />
 
       {/* Citation footer */}
       {!!params.source && (
-        <View style={[styles.footer, { paddingBottom: Math.max(insets.bottom, 8) }]}>
-          <Ionicons name="link-outline" size={12} color="#6B7280" />
-          <Text style={styles.footerText} numberOfLines={1}>
+        <View style={[styles.footer, { paddingBottom: Math.max(insets.bottom, 8), borderTopColor: colors.border, backgroundColor: colors.surface }]}>
+          <Ionicons name="link-outline" size={12} color={colors.textMuted} />
+          <Text style={[styles.footerText, { color: colors.textMuted }]} numberOfLines={1}>
             Content from {params.source}
           </Text>
         </View>
@@ -128,24 +130,24 @@ function onYouTubeIframeAPIReady(){
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#0A0A1A' },
+  container: { flex: 1 },
   header: {
     flexDirection: 'row', alignItems: 'center', gap: 10,
     paddingHorizontal: 12, paddingBottom: 10,
-    borderBottomWidth: 0.5, borderBottomColor: '#1F2937',
+    borderBottomWidth: 0.5,
   },
-  iconBtn: { width: 36, height: 36, borderRadius: 18, backgroundColor: '#111827', justifyContent: 'center', alignItems: 'center' },
+  iconBtn: { width: 36, height: 36, borderRadius: 18, justifyContent: 'center', alignItems: 'center' },
   headerCenter: { flex: 1 },
-  headerTitle: { fontSize: 15, fontWeight: '800', color: '#FFFFFF' },
-  headerSource: { fontSize: 11, color: '#9CA3AF', fontWeight: '600', marginTop: 1 },
-  progressTrack: { height: 2, backgroundColor: '#1F2937' },
-  progressFill: { height: 2, backgroundColor: '#4F8EF7' },
-  web: { flex: 1, backgroundColor: '#000000' },
-  loadingOverlay: { ...StyleSheet.absoluteFillObject, justifyContent: 'center', alignItems: 'center', backgroundColor: '#0A0A1A' },
+  headerTitle: { fontSize: 15, fontWeight: '800' },
+  headerSource: { fontSize: 11, fontWeight: '600', marginTop: 1 },
+  progressTrack: { height: 2 },
+  progressFill: { height: 2 },
+  web: { flex: 1 },
+  loadingOverlay: { ...StyleSheet.absoluteFillObject, justifyContent: 'center', alignItems: 'center' },
   footer: {
     flexDirection: 'row', alignItems: 'center', gap: 5,
     paddingHorizontal: 16, paddingTop: 8,
-    borderTopWidth: 0.5, borderTopColor: '#1F2937',
+    borderTopWidth: 0.5,
   },
-  footerText: { fontSize: 11, color: '#6B7280', fontWeight: '600' },
+  footerText: { fontSize: 11, fontWeight: '600' },
 });

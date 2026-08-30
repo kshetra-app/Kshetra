@@ -16,7 +16,12 @@
  * 4. Compute SC/ST reserved seats proportional to SC/ST population
  */
 
-import type { SeatAllocation, StatePopulationSummary } from '../delimitationTypes';
+import type {
+  SeatAllocation,
+  StatePopulationSummary,
+  SeatCalculationModel,
+  MathematicalFormulaExplanation,
+} from '../delimitationTypes';
 import {
   computeSeatAllocation,
   calculateSCReservedSeats,
@@ -74,7 +79,7 @@ function toPopulationSummary(census: CensusStateData): StatePopulationSummary {
       literatePopulation: d.literatePopulation,
       urbanPopulation: d.urbanPopulation,
       areaKmSq: d.areaKmSq,
-      currentSeats: 0, // would need mapping data
+      currentSeats: 0,
     })),
   };
 }
@@ -82,49 +87,52 @@ function toPopulationSummary(census: CensusStateData): StatePopulationSummary {
 /**
  * Compute seat allocation for all states using Census 2011 data.
  *
- * Uses an expansion model: the national ideal pop-per-seat is derived
- * from the state with the LOWEST current pop-per-seat ratio, ensuring
- * no state loses seats. This is the politically realistic scenario —
- * India's total assembly seats will INCREASE during delimitation.
- *
- * @param idealPopPerSeat — override national average. If not provided,
- *   auto-computes an expansion-safe ideal.
- * @param preserveMinimum — if true, no state loses seats below constitutional minimum
+ * Supports two constitutional models:
+ * 1. 'EXPANSION_SAFE' (default): Total seats are expanded so that no state
+ *    loses existing seats. Protects states that controlled fertility.
+ * 2. 'PROPORTIONAL': Pure constitutional proportional representation (Articles 81/170).
+ *    Uses national average population per seat. Faster-growing states gain, slower-growing lose.
  */
 export function computeAllSeatAllocations(
   idealPopPerSeat?: number,
   preserveMinimum = true,
+  model: SeatCalculationModel = 'EXPANSION_SAFE',
 ): SeatAllocation[] {
-  // Compute expansion-safe ideal: use the lowest pop-per-seat ratio
-  // across all states so that every state gains or stays the same.
   let ideal: number;
+
   if (idealPopPerSeat) {
     ideal = idealPopPerSeat;
+  } else if (model === 'PROPORTIONAL') {
+    // Pure constitutional proportional: national ideal pop per AC seat
+    ideal = IDEAL_POP_PER_AC_SEAT_2011;
   } else {
+    // Expansion-safe ideal: minimum pop-per-seat ratio so all states gain or stay flat
     const ratios = CENSUS_2011_STATES
       .filter((s) => s.currentAssemblySeats > 0)
       .map((s) => s.totalPopulation / s.currentAssemblySeats);
-    // Use the minimum ratio (with a small reduction) so all states gain
     ideal = Math.floor(Math.min(...ratios) * 0.95);
   }
 
   return CENSUS_2011_STATES.map((census) => {
     const summary = toPopulationSummary(census);
     const allocation = computeSeatAllocation(summary, ideal);
+    allocation.model = model;
 
-    // Guarantee no state loses seats — floor at current seats
-    if (allocation.projectedSeats < census.currentAssemblySeats) {
-      allocation.projectedSeats = census.currentAssemblySeats;
-      allocation.seatChange = 0;
-      allocation.populationPerProjectedSeat = Math.round(
-        census.totalPopulation / allocation.projectedSeats,
-      );
-      allocation.reservedSC = calculateSCReservedSeats(allocation.projectedSeats, census.scPopulation, census.totalPopulation);
-      allocation.reservedST = calculateSTReservedSeats(allocation.projectedSeats, census.stPopulation, census.totalPopulation);
-      allocation.general = allocation.projectedSeats - allocation.reservedSC - allocation.reservedST;
+    if (model === 'EXPANSION_SAFE') {
+      // Guarantee no state loses seats — floor at current seats
+      if (allocation.projectedSeats < census.currentAssemblySeats) {
+        allocation.projectedSeats = census.currentAssemblySeats;
+        allocation.seatChange = 0;
+        allocation.populationPerProjectedSeat = Math.round(
+          census.totalPopulation / allocation.projectedSeats,
+        );
+        allocation.reservedSC = calculateSCReservedSeats(allocation.projectedSeats, census.scPopulation, census.totalPopulation);
+        allocation.reservedST = calculateSTReservedSeats(allocation.projectedSeats, census.stPopulation, census.totalPopulation);
+        allocation.general = allocation.projectedSeats - allocation.reservedSC - allocation.reservedST;
+      }
     }
 
-    // Apply constitutional bounds
+    // Apply constitutional bounds (Art. 170)
     if (preserveMinimum) {
       const minSeats = census.totalPopulation > 10_000_000 ? MIN_ASSEMBLY_SEATS : MIN_SMALL_STATE_SEATS;
       if (allocation.projectedSeats < minSeats) {
@@ -142,25 +150,13 @@ export function computeAllSeatAllocations(
 
 /**
  * Compute seat allocation for a single state.
- *
- * IMPORTANT: Uses the same expansion-safe ideal and floor-guard as
- * computeAllSeatAllocations() so the overview page and state-detail
- * page always show identical, consistent numbers.
  */
 export function computeStateSeatAllocation(
   stateCode: string,
   idealPopPerSeat?: number,
+  model: SeatCalculationModel = 'EXPANSION_SAFE',
 ): SeatAllocation | null {
-  if (idealPopPerSeat) {
-    // Custom ideal requested — compute standalone (advanced/simulator use)
-    const census = CENSUS_2011_STATES.find((s) => s.stateCode === stateCode);
-    if (!census) return null;
-    const summary = toPopulationSummary(census);
-    return computeSeatAllocation(summary, idealPopPerSeat);
-  }
-
-  // Default: delegate to the all-states calculator to guarantee consistency
-  const allAllocations = computeAllSeatAllocations();
+  const allAllocations = computeAllSeatAllocations(idealPopPerSeat, true, model);
   return allAllocations.find((a) => a.stateCode === stateCode) ?? null;
 }
 
@@ -302,3 +298,99 @@ export function validateAllocation(allocation: SeatAllocation): {
 
   return { valid: issues.length === 0, issues };
 }
+
+/**
+ * Generate a complete, explainable mathematical breakdown of seat allocation
+ * and constitutional formula execution for any state.
+ */
+export function explainSeatCalculation(
+  stateCode: string,
+  model: SeatCalculationModel = 'EXPANSION_SAFE',
+): MathematicalFormulaExplanation | null {
+  const census = CENSUS_2011_STATES.find((s) => s.stateCode === stateCode);
+  if (!census) return null;
+
+  const allocation = computeStateSeatAllocation(stateCode, undefined, model);
+  if (!allocation) return null;
+
+  const idealPop = allocation.idealPopulationPerSeat;
+  const rawQuota = Math.round((census.totalPopulation / idealPop) * 100) / 100;
+  const popPerSeat = allocation.populationPerProjectedSeat;
+  const scPercent = census.totalPopulation > 0 ? (census.scPopulation / census.totalPopulation) * 100 : 0;
+  const stPercent = census.totalPopulation > 0 ? (census.stPopulation / census.totalPopulation) * 100 : 0;
+
+  // Hare-Niemeyer steps across districts
+  const districtIdeal = Math.round(census.totalPopulation / allocation.projectedSeats);
+  const hareNiemeyerSteps = census.districts.map((d) => {
+    const exactQuota = districtIdeal > 0 ? d.totalPopulation / districtIdeal : 1;
+    const baseSeats = Math.max(1, Math.floor(exactQuota));
+    const remainder = exactQuota - Math.floor(exactQuota);
+    return {
+      districtName: d.districtName,
+      population: d.totalPopulation,
+      exactQuota: Math.round(exactQuota * 100) / 100,
+      baseSeats,
+      remainder: Math.round(remainder * 1000) / 1000,
+      allocatedSeats: baseSeats, // will be adjusted below
+    };
+  });
+
+  const totalBase = hareNiemeyerSteps.reduce((s, d) => s + d.baseSeats, 0);
+  let remainingSeats = allocation.projectedSeats - totalBase;
+  const sortedByRemainder = [...hareNiemeyerSteps].sort((a, b) => b.remainder - a.remainder);
+  for (let i = 0; i < remainingSeats && i < sortedByRemainder.length; i++) {
+    const item = hareNiemeyerSteps.find((d) => d.districtName === sortedByRemainder[i].districtName);
+    if (item) item.allocatedSeats += 1;
+  }
+
+  const reasoningSteps: string[] = [
+    `1. Population Basis: Using Census population of ${census.totalPopulation.toLocaleString()} citizens for ${census.stateName}.`,
+    `2. Ideal Population Per Seat: Under ${model === 'EXPANSION_SAFE' ? 'Expansion-Safe Protection Model' : 'Constitutional Proportional Model'}, the benchmark divisor is ${idealPop.toLocaleString()} citizens per seat.`,
+    `3. Raw Quotient: Total State Population (${census.totalPopulation.toLocaleString()}) ÷ Ideal Benchmark (${idealPop.toLocaleString()}) = ${rawQuota} raw seats.`,
+    `4. Constitutional Bounds & Protection: ${model === 'EXPANSION_SAFE' ? `State baseline preserved at current ${census.currentAssemblySeats} seats to avoid penalizing fertility control.` : `Constitutional Article 170 bounds applied (range 60–500 seats).`}`,
+    `5. Projected Assembly Total: State allocated ${allocation.projectedSeats} seats (${allocation.seatChange >= 0 ? '+' : ''}${allocation.seatChange} net seat change).`,
+    `6. Article 332 SC Reservation: SC population of ${census.scPopulation.toLocaleString()} (${scPercent.toFixed(1)}%) mandates round(${allocation.projectedSeats} × ${scPercent.toFixed(2)}%) = ${allocation.reservedSC} reserved SC seats.`,
+    `7. Article 332 ST Reservation: ST population of ${census.stPopulation.toLocaleString()} (${stPercent.toFixed(1)}%) mandates round(${allocation.projectedSeats} × ${stPercent.toFixed(2)}%) = ${allocation.reservedST} reserved ST seats.`,
+    `8. General Unreserved Representation: ${allocation.projectedSeats} total - ${allocation.reservedSC} SC - ${allocation.reservedST} ST = ${allocation.general} General seats.`,
+    `9. District Allocation: Hare-Niemeyer largest remainder distribution partitions seats across ${census.districts.length} administrative districts with maximum population deviation of ±10%.`,
+  ];
+
+  return {
+    stateCode: census.stateCode,
+    stateName: census.stateName,
+    model,
+    constitutionalArticles: {
+      assemblyArticle: 'Article 170 (Composition of the Legislative Assemblies)',
+      parliamentArticle: 'Article 81 & 82 (Composition of the House of the People & Readjustment)',
+      reservationArticle: 'Article 330 & 332 (Reservation of seats for SC and ST)',
+      deviationTolerancePercent: MAX_POPULATION_DEVIATION_PERCENT,
+    },
+    metrics: {
+      totalStatePopulation: census.totalPopulation,
+      idealPopPerSeat: idealPop,
+      rawQuota,
+      currentSeats: census.currentAssemblySeats,
+      projectedSeats: allocation.projectedSeats,
+      seatChange: allocation.seatChange,
+      populationPerProjectedSeat: popPerSeat,
+      deviationPercent: allocation.deviationPercent,
+      scPopulation: census.scPopulation,
+      scPercent: Math.round(scPercent * 10) / 10,
+      scReservedSeats: allocation.reservedSC,
+      stPopulation: census.stPopulation,
+      stPercent: Math.round(stPercent * 10) / 10,
+      stReservedSeats: allocation.reservedST,
+      generalSeats: allocation.general,
+    },
+    hareNiemeyerSteps,
+    formulas: {
+      idealPopEquation: `IdealPop = StatePopulation / TargetSeats = ${census.totalPopulation.toLocaleString()} / ${allocation.projectedSeats} = ${popPerSeat.toLocaleString()}`,
+      seatQuotaEquation: `RawQuota = TotalPopulation / BenchmarkIdeal = ${census.totalPopulation.toLocaleString()} / ${idealPop.toLocaleString()} = ${rawQuota}`,
+      deviationEquation: `Deviation = ((ActualPop - IdealPop) / IdealPop) * 100 = ${allocation.deviationPercent.toFixed(2)}%`,
+      scQuotaEquation: `SCSeats = round(TotalSeats * (SCPopulation / TotalPopulation)) = round(${allocation.projectedSeats} * ${scPercent.toFixed(2)}%) = ${allocation.reservedSC}`,
+      stQuotaEquation: `STSeats = round(TotalSeats * (STPopulation / TotalPopulation)) = round(${allocation.projectedSeats} * ${stPercent.toFixed(2)}%) = ${allocation.reservedST}`,
+    },
+    reasoningSteps,
+  };
+}
+

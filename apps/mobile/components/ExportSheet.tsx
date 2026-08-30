@@ -320,7 +320,7 @@ const styles = StyleSheet.create({
     justifyContent: 'flex-end',
   },
   sheet: {
-    backgroundColor: '#0A0A1A',
+    backgroundColor: '#F5EFE4',
     borderTopLeftRadius: 24,
     borderTopRightRadius: 24,
     paddingHorizontal: 20,
@@ -337,7 +337,7 @@ const styles = StyleSheet.create({
   headerTitle: {
     fontSize: 17,
     fontWeight: '800',
-    color: '#FFFFFF',
+    color: '#241814',
   },
   tierBadge: {
     flexDirection: 'row',
@@ -354,7 +354,7 @@ const styles = StyleSheet.create({
   sectionLabel: {
     fontSize: 12,
     fontWeight: '700',
-    color: '#6B7280',
+    color: '#988275',
     textTransform: 'uppercase',
     letterSpacing: 0.5,
     marginBottom: 8,
@@ -370,11 +370,11 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: 8,
-    backgroundColor: '#111827',
+    backgroundColor: '#FFFFFF',
     borderRadius: 12,
     padding: 12,
     borderWidth: 1.5,
-    borderColor: '#1F2937',
+    borderColor: '#E8DED1',
   },
   scopeOptionActive: {
     backgroundColor: '#4F8EF720',
@@ -386,14 +386,14 @@ const styles = StyleSheet.create({
   scopeOptionLabel: {
     fontSize: 13,
     fontWeight: '700',
-    color: '#9CA3AF',
+    color: '#6D5549',
   },
   scopeOptionLabelActive: {
-    color: '#FFFFFF',
+    color: '#241814',
   },
   scopeOptionCount: {
     fontSize: 10,
-    color: '#6B7280',
+    color: '#988275',
     marginTop: 2,
   },
   limitNotice: {
@@ -418,12 +418,12 @@ const styles = StyleSheet.create({
   },
   formatCard: {
     flex: 1,
-    backgroundColor: '#111827',
+    backgroundColor: '#FFFFFF',
     borderRadius: 14,
     padding: 14,
     alignItems: 'center',
     borderWidth: 1.5,
-    borderColor: '#1F2937',
+    borderColor: '#E8DED1',
   },
   formatCardActive: {
     backgroundColor: '#4F8EF720',
@@ -444,7 +444,7 @@ const styles = StyleSheet.create({
   formatLabel: {
     fontSize: 13,
     fontWeight: '800',
-    color: '#FFFFFF',
+    color: '#241814',
     marginBottom: 2,
   },
   formatLabelActive: {
@@ -452,7 +452,7 @@ const styles = StyleSheet.create({
   },
   formatDesc: {
     fontSize: 9,
-    color: '#6B7280',
+    color: '#988275',
     textAlign: 'center',
     lineHeight: 13,
   },
@@ -474,7 +474,7 @@ const styles = StyleSheet.create({
   },
   summaryItem: {
     flex: 1,
-    backgroundColor: '#111827',
+    backgroundColor: '#FFFFFF',
     borderRadius: 10,
     padding: 10,
     alignItems: 'center',
@@ -482,11 +482,11 @@ const styles = StyleSheet.create({
   summaryValue: {
     fontSize: 18,
     fontWeight: '800',
-    color: '#FFFFFF',
+    color: '#241814',
   },
   summaryLabel: {
     fontSize: 9,
-    color: '#6B7280',
+    color: '#988275',
     fontWeight: '600',
     marginTop: 2,
   },
@@ -506,7 +506,7 @@ const styles = StyleSheet.create({
   exportButtonText: {
     fontSize: 15,
     fontWeight: '800',
-    color: '#FFFFFF',
+    color: '#241814',
   },
   upgradeBanner: {
     backgroundColor: '#F59E0B10',

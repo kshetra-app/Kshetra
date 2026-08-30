@@ -70,6 +70,7 @@ function rowToRepresentative(r: RepRow): Representative {
     mandal: r.mandal ?? undefined,
     gramPanchayat: r.gram_panchayat ?? undefined,
     wardNo: r.ward_no ?? undefined,
+    constituency: r.constituency ?? undefined,
     reservation: r.reservation ?? undefined,
     name: r.name,
     party: r.party ?? undefined,
@@ -265,17 +266,41 @@ export async function getLocalBodyDistricts(stateCode: string): Promise<District
   return rows;
 }
 
-/** Mandals within a district (sorted; "Mandal not listed" bucket last). */
+/** Mandals within a district (sorted; "Other Gram Panchayats (Direct Listing)" bucket last). */
 export async function getLocalBodyMandals(stateCode: string, districtKey: string): Promise<MandalSummary[]> {
   const db = await getSeedDb();
   const rows = await db.getAllAsync<MandalSummary>(
-    `SELECT COALESCE(mandal, 'Mandal not listed') AS name, mandal_slug AS mandalKey, COUNT(DISTINCT gp_key) AS gpCount
+    `SELECT COALESCE(mandal, 'Other Gram Panchayats (Direct Listing)') AS name, mandal_slug AS mandalKey, COUNT(DISTINCT gp_key) AS gpCount
      FROM representatives
      WHERE state_code = ? AND district_slug = ? AND ${GP_TIER}
      GROUP BY mandal_slug ORDER BY (mandal_slug = '${NO_MANDAL}'), name`,
     [stateCode?.toUpperCase(), districtKey],
   );
   return rows;
+}
+
+/** MPTC members for a district + mandal. */
+export async function getLocalBodyMptcs(stateCode: string, districtKey: string, mandalKey: string): Promise<Representative[]> {
+  const db = await getSeedDb();
+  const rows = await db.getAllAsync<RepRow>(
+    `SELECT * FROM representatives
+     WHERE state_code = ? AND district_slug = ? AND mandal_slug = ? AND office_type = 'mptc_member'
+     ORDER BY constituency, name`,
+    [stateCode?.toUpperCase(), districtKey, mandalKey],
+  );
+  return rows.map(rowToRepresentative);
+}
+
+/** ZPTC members for a district. */
+export async function getLocalBodyZptcs(stateCode: string, districtKey: string): Promise<Representative[]> {
+  const db = await getSeedDb();
+  const rows = await db.getAllAsync<RepRow>(
+    `SELECT * FROM representatives
+     WHERE state_code = ? AND district_slug = ? AND office_type = 'zptc_member'
+     ORDER BY constituency, name`,
+    [stateCode?.toUpperCase(), districtKey],
+  );
+  return rows.map(rowToRepresentative);
 }
 
 /** Gram panchayats within a district+mandal (sorted). */

@@ -10,8 +10,8 @@
  */
 import React, { useState, useEffect, memo } from 'react';
 import { View, Image, Text, Pressable, StyleSheet } from 'react-native';
-import { getPartyColor } from '@/lib/constants';
-import { fetchWikipediaPhoto, getCachedPhoto, hasKnownPhoto } from '@/lib/candidatePhotos';
+import { getPartyColor } from '../lib/constants';
+import { fetchWikipediaPhoto, getCachedPhoto, hasKnownPhoto } from '../lib/candidatePhotos';
 
 interface CandidateAvatarProps {
   name: string;

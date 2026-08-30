@@ -52,14 +52,14 @@ const POLITICAL_SHORTS: PoliticalShort[] = [
     videoUrl: 'https://www.youtube.com/embed/GMC8_zKulm8',
     visibilityLevel: 'constituency',
     uploadedBy: 'system',
-    gradientColors: ['#1a1a2e', '#e94560'],
-    stateAccent: '#e94560',
+    gradientColors: ['#3A1C16', '#A8201A'],
+    stateAccent: '#A8201A',
   },
   {
     id: 'short-ts-002',
     title: 'BIG Switch: Congress Leaders Join BRS at Telangana Bhavan | KTR',
-    description: 'High-drama moment as Congress leaders cross over and join BRS in KTR\'s presence at Telangana Bhavan — a major pre-poll realignment.',
-    channelName: 'NTV Telugu',
+    description: 'Key local leaders defect to BRS ahead of local body elections; KTR welcomes them with pink scarves.',
+    channelName: 'V6 News Telugu',
     channelVerified: true,
     stateCode: 'TS',
     stateName: 'Telangana',
@@ -74,8 +74,8 @@ const POLITICAL_SHORTS: PoliticalShort[] = [
     videoUrl: 'https://www.youtube.com/embed/LkWMJ9DWTZc',
     visibilityLevel: 'state',
     uploadedBy: 'system',
-    gradientColors: ['#0f0c29', '#302b63'],
-    stateAccent: '#FF6B9D',
+    gradientColors: ['#3A1C16', '#A8201A'],
+    stateAccent: '#A8201A',
   },
   {
     id: 'short-ts-003',
@@ -96,8 +96,8 @@ const POLITICAL_SHORTS: PoliticalShort[] = [
     videoUrl: 'https://www.youtube.com/embed/E2jt4XjGvyw',
     visibilityLevel: 'state',
     uploadedBy: 'system',
-    gradientColors: ['#141E30', '#243B55'],
-    stateAccent: '#4FC3F7',
+    gradientColors: ['#281E12', '#C5A059'],
+    stateAccent: '#C5A059',
   },
   {
     id: 'short-ts-004',
@@ -118,8 +118,8 @@ const POLITICAL_SHORTS: PoliticalShort[] = [
     videoUrl: 'https://www.youtube.com/embed/OJmiw0-lhoU',
     visibilityLevel: 'national',
     uploadedBy: 'system',
-    gradientColors: ['#1A1A2E', '#16213E'],
-    stateAccent: '#FFB74D',
+    gradientColors: ['#3A1C16', '#D97706'],
+    stateAccent: '#D97706',
   },
 
   // ── Karnataka — Bengaluru civic governance ───────────────────
@@ -142,8 +142,8 @@ const POLITICAL_SHORTS: PoliticalShort[] = [
     videoUrl: 'https://www.youtube.com/embed/ABjVkb_5SrQ',
     visibilityLevel: 'constituency',
     uploadedBy: 'system',
-    gradientColors: ['#1B0A2A', '#6C3483'],
-    stateAccent: '#CE93D8',
+    gradientColors: ['#1A2528', '#145C68'],
+    stateAccent: '#145C68',
   },
   {
     id: 'short-ka-002',
@@ -164,8 +164,8 @@ const POLITICAL_SHORTS: PoliticalShort[] = [
     videoUrl: 'https://www.youtube.com/embed/wrJsH-p2oak',
     visibilityLevel: 'state',
     uploadedBy: 'system',
-    gradientColors: ['#0D1B2A', '#1B4965'],
-    stateAccent: '#81D4FA',
+    gradientColors: ['#1A2528', '#145C68'],
+    stateAccent: '#145C68',
   },
   {
     id: 'short-ka-003',
@@ -186,8 +186,8 @@ const POLITICAL_SHORTS: PoliticalShort[] = [
     videoUrl: 'https://www.youtube.com/embed/lMxiUK48gA4',
     visibilityLevel: 'state',
     uploadedBy: 'system',
-    gradientColors: ['#0B0C10', '#1F2833'],
-    stateAccent: '#80CBC4',
+    gradientColors: ['#281E12', '#C5A059'],
+    stateAccent: '#C5A059',
   },
   {
     id: 'short-ka-004',
@@ -208,8 +208,8 @@ const POLITICAL_SHORTS: PoliticalShort[] = [
     videoUrl: 'https://www.youtube.com/embed/Pdh0mnWmGHI',
     visibilityLevel: 'national',
     uploadedBy: 'system',
-    gradientColors: ['#1A1A2E', '#533483'],
-    stateAccent: '#B39DDB',
+    gradientColors: ['#3A1C16', '#A8201A'],
+    stateAccent: '#A8201A',
   },
 
   // ── Maharashtra — welfare & Mumbai politics ──────────────────
@@ -232,8 +232,8 @@ const POLITICAL_SHORTS: PoliticalShort[] = [
     videoUrl: 'https://www.youtube.com/embed/lzylx-G_Dxg',
     visibilityLevel: 'constituency',
     uploadedBy: 'system',
-    gradientColors: ['#1A0000', '#8B0000'],
-    stateAccent: '#FF8A65',
+    gradientColors: ['#301F15', '#D97706'],
+    stateAccent: '#D97706',
   },
   {
     id: 'short-mh-002',
@@ -254,8 +254,8 @@ const POLITICAL_SHORTS: PoliticalShort[] = [
     videoUrl: 'https://www.youtube.com/embed/jyIV020jY3o',
     visibilityLevel: 'state',
     uploadedBy: 'system',
-    gradientColors: ['#0B0C10', '#1F2833'],
-    stateAccent: '#80CBC4',
+    gradientColors: ['#281E12', '#C5A059'],
+    stateAccent: '#C5A059',
   },
   {
     id: 'short-mh-003',
@@ -276,8 +276,8 @@ const POLITICAL_SHORTS: PoliticalShort[] = [
     videoUrl: 'https://www.youtube.com/embed/HklUSEQmfpY',
     visibilityLevel: 'state',
     uploadedBy: 'system',
-    gradientColors: ['#0B132B', '#1C2541'],
-    stateAccent: '#5BC0BE',
+    gradientColors: ['#1A2528', '#145C68'],
+    stateAccent: '#145C68',
   },
   {
     id: 'short-mh-004',
@@ -298,8 +298,8 @@ const POLITICAL_SHORTS: PoliticalShort[] = [
     videoUrl: 'https://www.youtube.com/embed/QU5coJB6fKY',
     visibilityLevel: 'national',
     uploadedBy: 'system',
-    gradientColors: ['#1A1A2E', '#533483'],
-    stateAccent: '#B39DDB',
+    gradientColors: ['#3A1C16', '#A8201A'],
+    stateAccent: '#A8201A',
   },
 
   // ── Andhra Pradesh — Amaravati capital ───────────────────────
@@ -322,8 +322,8 @@ const POLITICAL_SHORTS: PoliticalShort[] = [
     videoUrl: 'https://www.youtube.com/embed/l_fo8Xw-wcg',
     visibilityLevel: 'constituency',
     uploadedBy: 'system',
-    gradientColors: ['#0A1628', '#1B3A5C'],
-    stateAccent: '#64B5F6',
+    gradientColors: ['#301F15', '#D97706'],
+    stateAccent: '#D97706',
   },
   {
     id: 'short-ap-002',
@@ -344,8 +344,8 @@ const POLITICAL_SHORTS: PoliticalShort[] = [
     videoUrl: 'https://www.youtube.com/embed/E32aNDeKeEM',
     visibilityLevel: 'state',
     uploadedBy: 'system',
-    gradientColors: ['#0D0D0D', '#1A3A1A'],
-    stateAccent: '#81C784',
+    gradientColors: ['#281E12', '#C5A059'],
+    stateAccent: '#C5A059',
   },
   {
     id: 'short-ap-003',
@@ -366,8 +366,8 @@ const POLITICAL_SHORTS: PoliticalShort[] = [
     videoUrl: 'https://www.youtube.com/embed/-F-BBWlMoBo',
     visibilityLevel: 'state',
     uploadedBy: 'system',
-    gradientColors: ['#0A192F', '#172A45'],
-    stateAccent: '#4DD0E1',
+    gradientColors: ['#1A2528', '#145C68'],
+    stateAccent: '#145C68',
   },
   {
     id: 'short-ap-004',
@@ -388,8 +388,8 @@ const POLITICAL_SHORTS: PoliticalShort[] = [
     videoUrl: 'https://www.youtube.com/embed/xy5v9We_zqg',
     visibilityLevel: 'national',
     uploadedBy: 'system',
-    gradientColors: ['#141E30', '#243B55'],
-    stateAccent: '#FFB74D',
+    gradientColors: ['#3A1C16', '#A8201A'],
+    stateAccent: '#A8201A',
   },
 ];
 

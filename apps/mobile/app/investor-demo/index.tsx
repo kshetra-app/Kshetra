@@ -7,6 +7,7 @@ import { useElectionLiveStore } from '../../stores/electionLive';
 import InvestorMetricCard from '../../components/InvestorMetricCard';
 import FlywheelVisualization from '../../components/FlywheelVisualization';
 import MoatShowcase from '../../components/MoatShowcase';
+import { useTheme } from '../../lib/theme';
 
 type Tab = 'metrics' | 'flywheel' | 'moat' | 'unit_economics';
 
@@ -21,6 +22,7 @@ export default function InvestorDemoScreen() {
   const [activeTab, setActiveTab] = useState<Tab>('metrics');
   const insets = useSafeAreaInsets();
   const router = useRouter();
+  const { colors } = useTheme();
 
   const investorMetrics = useElectionLiveStore((s) => s.getInvestorMetrics());
   const flywheelSteps = useElectionLiveStore((s) => s.getFlywheelSteps());
@@ -34,15 +36,23 @@ export default function InvestorDemoScreen() {
   const dataMoatMetrics = investorMetrics.filter((m) => m.category === 'data_moat');
 
   return (
-    <View style={styles.container}>
-      <Stack.Screen options={{ title: 'Investor Demo', headerShown: true, headerStyle: { backgroundColor: '#0A0A1A' }, headerTintColor: '#FFFFFF' }} />
+    <View style={[styles.container, { backgroundColor: colors.background }]}>
+      <Stack.Screen options={{ title: 'Investor Demo', headerShown: true, headerStyle: { backgroundColor: colors.surface }, headerTintColor: colors.primary }} />
 
       {/* Tab Bar */}
-      <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.tabBar} contentContainerStyle={styles.tabBarContent}>
+      <ScrollView horizontal showsHorizontalScrollIndicator={false} style={[styles.tabBar, { borderBottomColor: colors.border }]} contentContainerStyle={styles.tabBarContent}>
         {TABS.map((tab) => (
-          <Pressable key={tab.key} style={[styles.tab, activeTab === tab.key && styles.tabActive]} onPress={() => setActiveTab(tab.key)}>
-            <Ionicons name={(activeTab === tab.key ? tab.icon : `${tab.icon}-outline`) as any} size={16} color={activeTab === tab.key ? '#4F8EF7' : '#6B7280'} />
-            <Text style={[styles.tabLabel, activeTab === tab.key && styles.tabLabelActive]}>{tab.label}</Text>
+          <Pressable
+            key={tab.key}
+            style={[
+              styles.tab,
+              { backgroundColor: colors.surface, borderColor: colors.goldBorder || colors.border, borderWidth: 1 },
+              activeTab === tab.key && { backgroundColor: colors.primary, borderColor: colors.primary },
+            ]}
+            onPress={() => setActiveTab(tab.key)}
+          >
+            <Ionicons name={(activeTab === tab.key ? tab.icon : `${tab.icon}-outline`) as any} size={16} color={activeTab === tab.key ? '#FFFFFF' : colors.textMuted} />
+            <Text style={[styles.tabLabel, { color: colors.textSecondary }, activeTab === tab.key && { color: '#FFFFFF', fontWeight: '700' }]}>{tab.label}</Text>
           </Pressable>
         ))}
       </ScrollView>
@@ -207,45 +217,45 @@ export default function InvestorDemoScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#0A0A1A' },
-  tabBar: { maxHeight: 48, borderBottomWidth: 1, borderBottomColor: '#1F2937' },
+  container: { flex: 1 },
+  tabBar: { maxHeight: 48, borderBottomWidth: 1 },
   tabBarContent: { paddingHorizontal: 12, gap: 4, alignItems: 'center' },
-  tab: { flexDirection: 'row', alignItems: 'center', gap: 5, paddingHorizontal: 14, paddingVertical: 8, borderRadius: 20, backgroundColor: '#111827' },
-  tabActive: { backgroundColor: '#4F8EF715', borderWidth: 1, borderColor: '#4F8EF740' },
-  tabLabel: { fontSize: 12, fontWeight: '600', color: '#6B7280' },
-  tabLabelActive: { color: '#4F8EF7', fontWeight: '700' },
+  tab: { flexDirection: 'row', alignItems: 'center', gap: 5, paddingHorizontal: 14, paddingVertical: 8, borderRadius: 20 },
+  tabActive: {},
+  tabLabel: { fontSize: 12, fontWeight: '600' },
+  tabLabelActive: { fontWeight: '700' },
   content: { flex: 1 },
-  sectionTitle: { fontSize: 16, fontWeight: '800', color: '#FFFFFF', marginHorizontal: 16, marginTop: 16, marginBottom: 10 },
-  heroCard: { backgroundColor: '#111827', borderRadius: 16, marginHorizontal: 16, marginTop: 12, padding: 20, borderWidth: 1, borderColor: '#4F8EF730' },
-  heroTitle: { fontSize: 22, fontWeight: '900', color: '#FFFFFF', textAlign: 'center' },
-  heroSubtitle: { fontSize: 13, color: '#9CA3AF', textAlign: 'center', marginTop: 4, marginBottom: 16 },
+  sectionTitle: { fontSize: 16, fontWeight: '800', marginHorizontal: 16, marginTop: 16, marginBottom: 10 },
+  heroCard: { borderRadius: 16, marginHorizontal: 16, marginTop: 12, padding: 20, borderWidth: 1 },
+  heroTitle: { fontSize: 22, fontWeight: '900', textAlign: 'center' },
+  heroSubtitle: { fontSize: 13, textAlign: 'center', marginTop: 4, marginBottom: 16 },
   heroRow: { flexDirection: 'row', justifyContent: 'space-around' },
   heroStat: { alignItems: 'center' },
-  heroValue: { fontSize: 24, fontWeight: '900', color: '#4F8EF7' },
-  heroLabel: { fontSize: 10, color: '#6B7280', fontWeight: '700', marginTop: 2 },
+  heroValue: { fontSize: 24, fontWeight: '900' },
+  heroLabel: { fontSize: 10, fontWeight: '700', marginTop: 2 },
   metricGrid: { flexDirection: 'row', flexWrap: 'wrap', gap: 10, marginHorizontal: 16, justifyContent: 'space-between' },
-  retentionCard: { backgroundColor: '#111827', borderRadius: 16, marginHorizontal: 16, marginTop: 16, padding: 16, borderWidth: 1, borderColor: '#1F2937' },
-  retentionTitle: { fontSize: 14, fontWeight: '700', color: '#FFFFFF', marginBottom: 10 },
+  retentionCard: { borderRadius: 16, marginHorizontal: 16, marginTop: 16, padding: 16, borderWidth: 1 },
+  retentionTitle: { fontSize: 14, fontWeight: '700', marginBottom: 10 },
   retentionRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 16 },
   retentionItem: { alignItems: 'center' },
-  retentionValue: { fontSize: 24, fontWeight: '900', color: '#4F8EF7' },
-  retentionLabel: { fontSize: 11, color: '#6B7280', fontWeight: '700' },
-  retentionNote: { fontSize: 11, color: '#6B7280', textAlign: 'center', marginTop: 10 },
-  featuresCard: { backgroundColor: '#111827', borderRadius: 16, marginHorizontal: 16, marginTop: 12, padding: 16, borderWidth: 1, borderColor: '#1F2937' },
-  featuresTitle: { fontSize: 14, fontWeight: '700', color: '#FFFFFF', marginBottom: 10 },
+  retentionValue: { fontSize: 24, fontWeight: '900' },
+  retentionLabel: { fontSize: 11, fontWeight: '700' },
+  retentionNote: { fontSize: 11, textAlign: 'center', marginTop: 10 },
+  featuresCard: { borderRadius: 16, marginHorizontal: 16, marginTop: 12, padding: 16, borderWidth: 1 },
+  featuresTitle: { fontSize: 14, fontWeight: '700', marginBottom: 10 },
   featureRow: { flexDirection: 'row', alignItems: 'center', gap: 8, marginBottom: 6 },
-  featureName: { fontSize: 11, color: '#D1D5DB', width: 100 },
-  featureBar: { flex: 1, height: 8, backgroundColor: '#1F2937', borderRadius: 4, overflow: 'hidden' },
-  featureBarFill: { height: '100%', backgroundColor: '#4F8EF7', borderRadius: 4 },
-  featurePct: { fontSize: 12, fontWeight: '700', color: '#FFFFFF', width: 36, textAlign: 'right' },
-  unitEconCard: { backgroundColor: '#111827', borderRadius: 16, margin: 16, padding: 20, borderWidth: 1, borderColor: '#1F2937' },
-  unitEconTitle: { fontSize: 18, fontWeight: '900', color: '#FFFFFF', textAlign: 'center', marginBottom: 16 },
+  featureName: { fontSize: 11, width: 100 },
+  featureBar: { flex: 1, height: 8, borderRadius: 4, overflow: 'hidden' },
+  featureBarFill: { height: '100%', borderRadius: 4 },
+  featurePct: { fontSize: 12, fontWeight: '700', width: 36, textAlign: 'right' },
+  unitEconCard: { borderRadius: 16, margin: 16, padding: 20, borderWidth: 1 },
+  unitEconTitle: { fontSize: 18, fontWeight: '900', textAlign: 'center', marginBottom: 16 },
   unitEconGrid: { flexDirection: 'row', justifyContent: 'space-around' },
   unitEconItem: { alignItems: 'center' },
-  unitEconValue: { fontSize: 20, fontWeight: '900', color: '#FFFFFF' },
-  unitEconLabel: { fontSize: 10, color: '#6B7280', fontWeight: '700', marginTop: 2 },
-  unitEconDivider: { height: 1, backgroundColor: '#1F2937', marginVertical: 14 },
+  unitEconValue: { fontSize: 20, fontWeight: '900' },
+  unitEconLabel: { fontSize: 10, fontWeight: '700', marginTop: 2 },
+  unitEconDivider: { height: 1, marginVertical: 14 },
   perUserRow: { flexDirection: 'row', justifyContent: 'space-between', marginBottom: 6 },
-  perUserLabel: { fontSize: 13, color: '#9CA3AF' },
-  perUserValue: { fontSize: 14, fontWeight: '700', color: '#FFFFFF' },
+  perUserLabel: { fontSize: 13 },
+  perUserValue: { fontSize: 14, fontWeight: '700' },
 });

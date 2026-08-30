@@ -13,6 +13,7 @@ import { useRouter } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useShallow } from 'zustand/react/shallow';
 import { useLiveExchangeStore } from '../../stores/liveExchange';
+import { useTheme } from '../../lib/theme';
 
 /**
  * Recipient-side distribution config (doc Section 7a). Fastest-to-ship pieces:
@@ -25,6 +26,7 @@ import { useLiveExchangeStore } from '../../stores/liveExchange';
 export default function DistributionScreen() {
   const insets = useSafeAreaInsets();
   const router = useRouter();
+  const { colors } = useTheme();
 
   const events = useLiveExchangeStore(useShallow((s) => s.getLiveTabFeed()));
   const addDistribution = useLiveExchangeStore((s) => s.addDistribution);
@@ -75,7 +77,7 @@ export default function DistributionScreen() {
     <View style={styles.container}>
       <View style={[styles.header, { paddingTop: insets.top + 8 }]}>
         <Pressable onPress={() => router.back()} hitSlop={10}>
-          <Ionicons name="chevron-back" size={26} color="#FFFFFF" />
+          <Ionicons name="chevron-back" size={26} color={colors.primary} />
         </Pressable>
         <Text style={styles.title}>Distribution</Text>
         <View style={{ width: 26 }} />
@@ -182,38 +184,38 @@ function Card({
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#0A0A1A' },
+  container: { flex: 1 },
   header: {
     flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between',
     paddingHorizontal: 16, paddingBottom: 12,
   },
-  title: { fontSize: 18, fontWeight: '800', color: '#FFFFFF' },
+  title: { fontSize: 18, fontWeight: '800' },
   feedRow: { paddingHorizontal: 16, gap: 8, paddingBottom: 8 },
   feedChip: {
-    maxWidth: 220, borderWidth: 1, borderColor: '#1F2937', backgroundColor: '#111827',
+    maxWidth: 220, borderWidth: 1,
     paddingHorizontal: 12, paddingVertical: 8, borderRadius: 18,
   },
-  feedChipActive: { backgroundColor: '#4F8EF722', borderColor: '#4F8EF7' },
-  feedChipText: { fontSize: 12, fontWeight: '700', color: '#9CA3AF' },
-  feedChipTextActive: { color: '#4F8EF7' },
-  card: { marginHorizontal: 16, marginTop: 14, backgroundColor: '#111827', borderRadius: 14, padding: 14, borderWidth: 0.5, borderColor: '#1F2937' },
+  feedChipActive: {},
+  feedChipText: { fontSize: 12, fontWeight: '700' },
+  feedChipTextActive: {},
+  card: { marginHorizontal: 16, marginTop: 14, borderRadius: 14, padding: 14, borderWidth: 1 },
   cardHead: { flexDirection: 'row', alignItems: 'center', gap: 10 },
   cardIcon: { width: 36, height: 36, borderRadius: 10, justifyContent: 'center', alignItems: 'center' },
-  cardTitle: { fontSize: 15, fontWeight: '800', color: '#F9FAFB' },
-  cardHint: { fontSize: 12, color: '#9CA3AF', marginTop: 8, lineHeight: 17 },
+  cardTitle: { fontSize: 15, fontWeight: '800' },
+  cardHint: { fontSize: 12, marginTop: 8, lineHeight: 17 },
   input: {
-    backgroundColor: '#0A0A1A', borderRadius: 10, borderWidth: 1, borderColor: '#1F2937',
-    paddingHorizontal: 12, paddingVertical: 10, color: '#F9FAFB', fontSize: 13,
+    borderRadius: 10, borderWidth: 1,
+    paddingHorizontal: 12, paddingVertical: 10, fontSize: 13,
   },
   btn: {
     flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 6,
-    backgroundColor: '#EF4444', paddingVertical: 11, borderRadius: 10, marginTop: 10,
+    paddingVertical: 11, borderRadius: 10, marginTop: 10,
   },
-  btnDone: { backgroundColor: '#10B981' },
+  btnDone: {},
   btnText: { color: '#FFFFFF', fontSize: 13, fontWeight: '800' },
-  codeBox: { backgroundColor: '#0A0A1A', borderRadius: 10, borderWidth: 1, borderColor: '#1F2937', padding: 12 },
-  code: { fontSize: 11, color: '#93C5FD', fontFamily: 'monospace', lineHeight: 16 },
+  codeBox: { borderRadius: 10, borderWidth: 1, padding: 12 },
+  code: { fontSize: 11, fontFamily: 'monospace', lineHeight: 16 },
   copyBtn: { flexDirection: 'row', alignItems: 'center', gap: 6, marginTop: 10, alignSelf: 'flex-start' },
-  copyText: { fontSize: 12, color: '#14B8A6', fontWeight: '700' },
-  note: { fontSize: 11, color: '#6B7280', marginTop: 10, lineHeight: 16 },
+  copyText: { fontSize: 12, fontWeight: '700' },
+  note: { fontSize: 11, marginTop: 10, lineHeight: 16 },
 });

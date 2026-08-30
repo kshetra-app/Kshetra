@@ -11,6 +11,7 @@ import BillCard from '../../components/BillCard';
 import SchemeCard from '../../components/SchemeCard';
 import ProjectCard from '../../components/ProjectCard';
 import { useActiveStateStore } from '../../stores/activeState';
+import { useTheme } from '../../lib/theme';
 
 type Tab = 'budget' | 'attendance' | 'bills' | 'schemes' | 'projects' | 'rti';
 
@@ -26,6 +27,7 @@ const TAB_KEYS: { key: Tab; i18nKey: string; icon: string }[] = [
 export default function CivicMetricsScreen() {
   const { t } = useTranslation();
   const router = useRouter();
+  const { colors } = useTheme();
   const insets = useSafeAreaInsets();
   const [activeTab, setActiveTab] = useState<Tab>('budget');
   const [refreshing, setRefreshing] = useState(false);
@@ -46,26 +48,34 @@ export default function CivicMetricsScreen() {
   }, []);
 
   return (
-    <View style={[styles.container, { paddingTop: insets.top }]}>
-      <StatusBar barStyle="light-content" />
+    <View style={[styles.container, { backgroundColor: colors.background, paddingTop: insets.top }]}>
+      <StatusBar barStyle={colors.statusBar} />
 
       {/* Custom Header */}
-      <View style={styles.header}>
-        <Pressable onPress={() => router.back()} style={styles.backBtn}>
-          <Ionicons name="arrow-back" size={22} color="#FFFFFF" />
+      <View style={[styles.header, { borderBottomColor: colors.border }]}>
+        <Pressable onPress={() => router.back()} style={[styles.backBtn, { backgroundColor: colors.surface, borderColor: colors.goldBorder || colors.border, borderWidth: 1 }]}>
+          <Ionicons name="arrow-back" size={22} color={colors.primary} />
         </Pressable>
         <View style={{ flex: 1 }}>
-          <Text style={styles.headerTitle}>{t('civicMetrics.screenTitle')}</Text>
-          <Text style={styles.headerSub}>{t('civicMetrics.screenSubtitle')}</Text>
+          <Text style={[styles.headerTitle, { color: colors.text }]}>{t('civicMetrics.screenTitle')}</Text>
+          <Text style={[styles.headerSub, { color: colors.textMuted }]}>{t('civicMetrics.screenSubtitle')}</Text>
         </View>
       </View>
 
       {/* Tab Bar */}
-      <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.tabBar} contentContainerStyle={styles.tabBarContent}>
+      <ScrollView horizontal showsHorizontalScrollIndicator={false} style={[styles.tabBar, { borderBottomColor: colors.border }]} contentContainerStyle={styles.tabBarContent}>
         {TAB_KEYS.map((tab) => (
-          <Pressable key={tab.key} style={[styles.tab, activeTab === tab.key && styles.tabActive]} onPress={() => setActiveTab(tab.key)}>
-            <Ionicons name={(activeTab === tab.key ? tab.icon : `${tab.icon}-outline`) as any} size={14} color={activeTab === tab.key ? '#4F8EF7' : '#6B7280'} />
-            <Text style={[styles.tabLabel, activeTab === tab.key && styles.tabLabelActive]}>{t(tab.i18nKey)}</Text>
+          <Pressable 
+            key={tab.key} 
+            style={[
+              styles.tab, 
+              { backgroundColor: colors.surface, borderColor: colors.goldBorder || colors.border, borderWidth: 1 },
+              activeTab === tab.key && { backgroundColor: colors.primary, borderColor: colors.primary }
+            ]} 
+            onPress={() => setActiveTab(tab.key)}
+          >
+            <Ionicons name={(activeTab === tab.key ? tab.icon : `${tab.icon}-outline`) as any} size={15} color={activeTab === tab.key ? '#FFFFFF' : colors.textMuted} />
+            <Text style={[styles.tabLabel, { color: colors.textSecondary }, activeTab === tab.key && { color: '#FFFFFF', fontWeight: '700' }]}>{t(tab.i18nKey)}</Text>
           </Pressable>
         ))}
       </ScrollView>
@@ -73,12 +83,12 @@ export default function CivicMetricsScreen() {
       <ScrollView
         style={styles.content}
         contentContainerStyle={{ paddingBottom: insets.bottom + 40 }}
-        refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor="#4F8EF7" />}
+        refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={colors.primary} />}
         showsVerticalScrollIndicator={false}
       >
         {activeTab === 'budget' && (
           <>
-            <Text style={styles.sectionTitle}>{t('civicMetrics.stateBudgetOverview')}</Text>
+            <Text style={[styles.sectionTitle, { color: colors.text }]}>{t('civicMetrics.stateBudgetOverview')}</Text>
             {budgetSummary ? <BudgetCard summary={budgetSummary} /> : (
               <View style={styles.empty}><Text style={styles.emptyText}>{t('civicMetrics.noBudgetData')}</Text></View>
             )}
@@ -153,32 +163,32 @@ export default function CivicMetricsScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#0A0A1A' },
+  container: { flex: 1 },
   header: { flexDirection: 'row', alignItems: 'center', paddingHorizontal: 16, paddingTop: 8, paddingBottom: 8, gap: 10 },
-  backBtn: { width: 36, height: 36, borderRadius: 18, backgroundColor: '#1F2937', alignItems: 'center', justifyContent: 'center' },
-  headerTitle: { fontSize: 18, fontWeight: '900', color: '#FFFFFF' },
-  headerSub: { fontSize: 11, color: '#6B7280', fontWeight: '600' },
-  tabBar: { maxHeight: 48, borderBottomWidth: 1, borderBottomColor: '#1F2937' },
+  backBtn: { width: 36, height: 36, borderRadius: 18, alignItems: 'center', justifyContent: 'center' },
+  headerTitle: { fontSize: 18, fontWeight: '900' },
+  headerSub: { fontSize: 11, fontWeight: '600' },
+  tabBar: { maxHeight: 48, borderBottomWidth: 1 },
   tabBarContent: { paddingHorizontal: 12, gap: 4, alignItems: 'center' },
-  tab: { flexDirection: 'row', alignItems: 'center', gap: 4, paddingHorizontal: 12, paddingVertical: 8, borderRadius: 20, backgroundColor: '#111827' },
-  tabActive: { backgroundColor: '#4F8EF715', borderWidth: 1, borderColor: '#4F8EF740' },
-  tabLabel: { fontSize: 11, fontWeight: '600', color: '#6B7280' },
-  tabLabelActive: { color: '#4F8EF7', fontWeight: '700' },
+  tab: { flexDirection: 'row', alignItems: 'center', gap: 4, paddingHorizontal: 12, paddingVertical: 8, borderRadius: 20 },
+  tabActive: {},
+  tabLabel: { fontSize: 11, fontWeight: '600' },
+  tabLabelActive: { fontWeight: '700' },
   content: { flex: 1 },
-  sectionTitle: { fontSize: 16, fontWeight: '800', color: '#FFFFFF', marginHorizontal: 16, marginTop: 16, marginBottom: 10 },
+  sectionTitle: { fontSize: 16, fontWeight: '800', marginHorizontal: 16, marginTop: 16, marginBottom: 10 },
   empty: { alignItems: 'center', paddingVertical: 40 },
-  emptyText: { fontSize: 14, color: '#6B7280' },
-  rtiCard: { backgroundColor: '#111827', borderRadius: 14, marginHorizontal: 16, marginVertical: 5, padding: 14, borderWidth: 1, borderColor: '#1F2937' },
+  emptyText: { fontSize: 14 },
+  rtiCard: { borderRadius: 14, marginHorizontal: 16, marginVertical: 5, padding: 14, borderWidth: 1 },
   rtiHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 4 },
-  rtiSubject: { fontSize: 14, fontWeight: '700', color: '#FFFFFF', flex: 1, marginRight: 8 },
+  rtiSubject: { fontSize: 14, fontWeight: '700', flex: 1, marginRight: 8 },
   rtiStatus: { paddingHorizontal: 8, paddingVertical: 3, borderRadius: 6 },
   rtiStatusText: { fontSize: 9, fontWeight: '700', textTransform: 'capitalize' },
-  rtiDept: { fontSize: 11, color: '#6B7280', marginBottom: 6 },
-  rtiQuestion: { fontSize: 12, color: '#9CA3AF', lineHeight: 17, marginBottom: 6 },
-  rtiResponse: { fontSize: 12, color: '#10B981', lineHeight: 17, marginBottom: 6, fontStyle: 'italic' },
-  rtiFooter: { flexDirection: 'row', alignItems: 'center', gap: 16, paddingTop: 8, borderTopWidth: 1, borderTopColor: '#1F2937' },
+  rtiDept: { fontSize: 11, marginBottom: 6 },
+  rtiQuestion: { fontSize: 12, lineHeight: 17, marginBottom: 6 },
+  rtiResponse: { fontSize: 12, lineHeight: 17, marginBottom: 6, fontStyle: 'italic' },
+  rtiFooter: { flexDirection: 'row', alignItems: 'center', gap: 16, paddingTop: 8, borderTopWidth: 1 },
   rtiUpvote: { flexDirection: 'row', alignItems: 'center', gap: 4 },
-  rtiUpvoteText: { fontSize: 12, fontWeight: '700', color: '#4F8EF7' },
-  rtiViews: { fontSize: 11, color: '#6B7280' },
-  rtiDate: { fontSize: 11, color: '#6B7280', marginLeft: 'auto' },
+  rtiUpvoteText: { fontSize: 12, fontWeight: '700' },
+  rtiViews: { fontSize: 11 },
+  rtiDate: { fontSize: 11, marginLeft: 'auto' },
 });

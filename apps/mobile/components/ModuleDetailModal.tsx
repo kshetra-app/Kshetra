@@ -344,7 +344,7 @@ var player;function onYouTubeIframeAPIReady(){player=new YT.Player('player',{wid
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#0A0A1A' },
+  container: { flex: 1, backgroundColor: '#F5EFE4' },
   header: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -352,7 +352,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
     paddingBottom: 12,
     borderBottomWidth: 1,
-    borderBottomColor: '#1F2937',
+    borderBottomColor: '#E8DED1',
   },
   headerBtn: { width: 36, height: 36, justifyContent: 'center' },
   catChip: {
@@ -365,9 +365,9 @@ const styles = StyleSheet.create({
   },
   catChipText: { fontSize: 11, fontWeight: '700' },
   scroll: { flex: 1, paddingHorizontal: 18 },
-  title: { fontSize: 23, fontWeight: '800', color: '#FFFFFF', marginTop: 16 },
-  meta: { fontSize: 12, color: '#6B7280', marginTop: 6, textTransform: 'capitalize' },
-  description: { fontSize: 14, color: '#9CA3AF', lineHeight: 21, marginTop: 12 },
+  title: { fontSize: 23, fontWeight: '800', color: '#241814', marginTop: 16 },
+  meta: { fontSize: 12, color: '#988275', marginTop: 6, textTransform: 'capitalize' },
+  description: { fontSize: 14, color: '#6D5549', lineHeight: 21, marginTop: 12 },
   // Video
   videoWrap: { marginTop: 18 },
   videoFrame: {
@@ -378,7 +378,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#000',
   },
   videoLoader: { justifyContent: 'center', alignItems: 'center', backgroundColor: '#000', gap: 8 },
-  videoErrText: { color: '#9CA3AF', fontSize: 13, fontWeight: '600' },
+  videoErrText: { color: '#6D5549', fontSize: 13, fontWeight: '600' },
   attribution: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -386,11 +386,11 @@ const styles = StyleSheet.create({
     marginTop: 8,
     paddingHorizontal: 4,
   },
-  attributionText: { flex: 1, fontSize: 11, color: '#6B7280', fontStyle: 'italic' },
+  attributionText: { flex: 1, fontSize: 11, color: '#988275', fontStyle: 'italic' },
   // Sections
   section: { marginTop: 22 },
-  sectionHeading: { fontSize: 16, fontWeight: '800', color: '#FFFFFF', marginBottom: 8 },
-  sectionBody: { fontSize: 14, color: '#D1D5DB', lineHeight: 22 },
+  sectionHeading: { fontSize: 16, fontWeight: '800', color: '#241814', marginBottom: 8 },
+  sectionBody: { fontSize: 14, color: '#6D5549', lineHeight: 22 },
   // Takeaways
   takeawaysBox: {
     marginTop: 24,
@@ -403,21 +403,21 @@ const styles = StyleSheet.create({
   takeawaysHeader: { flexDirection: 'row', alignItems: 'center', gap: 7, marginBottom: 12 },
   takeawaysTitle: { fontSize: 14, fontWeight: '800', color: '#F59E0B' },
   takeawayRow: { flexDirection: 'row', gap: 9, marginBottom: 9 },
-  takeawayText: { flex: 1, fontSize: 13, color: '#D1D5DB', lineHeight: 19 },
+  takeawayText: { flex: 1, fontSize: 13, color: '#6D5549', lineHeight: 19 },
   // Quiz
   quizBox: {
     marginTop: 24,
-    backgroundColor: '#111827',
+    backgroundColor: '#FFFFFF',
     borderRadius: 14,
     padding: 16,
     borderWidth: 1,
-    borderColor: '#1F2937',
+    borderColor: '#E8DED1',
   },
   quizHeaderRow: { flexDirection: 'row', alignItems: 'center', gap: 7, marginBottom: 14 },
-  quizTitle: { fontSize: 15, fontWeight: '800', color: '#FFFFFF', flex: 1 },
+  quizTitle: { fontSize: 15, fontWeight: '800', color: '#241814', flex: 1 },
   quizScore: { fontSize: 16, fontWeight: '900' },
   question: { marginBottom: 18 },
-  questionText: { fontSize: 14, fontWeight: '700', color: '#FFFFFF', marginBottom: 10, lineHeight: 20 },
+  questionText: { fontSize: 14, fontWeight: '700', color: '#241814', marginBottom: 10, lineHeight: 20 },
   option: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -425,9 +425,9 @@ const styles = StyleSheet.create({
     paddingVertical: 10,
     paddingHorizontal: 12,
     borderRadius: 10,
-    backgroundColor: '#0A0A1A',
+    backgroundColor: '#F5EFE4',
     borderWidth: 1,
-    borderColor: '#1F2937',
+    borderColor: '#E8DED1',
     marginBottom: 7,
   },
   optionCorrect: {
@@ -454,10 +454,10 @@ const styles = StyleSheet.create({
     borderColor: '#EF444455',
     marginBottom: 7,
   },
-  optionText: { flex: 1, fontSize: 13, color: '#D1D5DB' },
+  optionText: { flex: 1, fontSize: 13, color: '#6D5549' },
   explanation: {
     fontSize: 12,
-    color: '#9CA3AF',
+    color: '#6D5549',
     fontStyle: 'italic',
     lineHeight: 18,
     marginTop: 4,
@@ -470,9 +470,9 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginTop: 4,
   },
-  quizSubmitText: { fontSize: 14, fontWeight: '800', color: '#FFFFFF' },
+  quizSubmitText: { fontSize: 14, fontWeight: '800', color: '#241814' },
   retry: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 6, paddingVertical: 8 },
-  retryText: { fontSize: 13, color: '#9CA3AF', fontWeight: '600' },
+  retryText: { fontSize: 13, color: '#6D5549', fontWeight: '600' },
   // Sources
   sourcesBox: {
     marginTop: 26,
@@ -480,10 +480,10 @@ const styles = StyleSheet.create({
     borderRadius: 14,
     padding: 16,
     borderWidth: 1,
-    borderColor: '#1F2937',
+    borderColor: '#E8DED1',
   },
   sourcesHeader: { flexDirection: 'row', alignItems: 'center', gap: 7, marginBottom: 12 },
-  sourcesTitle: { fontSize: 13, fontWeight: '800', color: '#9CA3AF', textTransform: 'uppercase', letterSpacing: 0.5 },
+  sourcesTitle: { fontSize: 13, fontWeight: '800', color: '#6D5549', textTransform: 'uppercase', letterSpacing: 0.5 },
   sourceRow: {
     flexDirection: 'row',
     alignItems: 'flex-start',
@@ -492,16 +492,16 @@ const styles = StyleSheet.create({
     borderTopWidth: 1,
     borderTopColor: '#1A1A28',
   },
-  sourceLabel: { fontSize: 13, color: '#E5E7EB', fontWeight: '600', lineHeight: 18 },
-  sourcePublisher: { fontSize: 11, color: '#6B7280', marginTop: 1 },
+  sourceLabel: { fontSize: 13, color: '#241814', fontWeight: '600', lineHeight: 18 },
+  sourcePublisher: { fontSize: 11, color: '#988275', marginTop: 1 },
   legalNote: { fontSize: 10, color: '#4B5563', lineHeight: 15, marginTop: 12, fontStyle: 'italic' },
   // Footer
   footer: {
     paddingHorizontal: 18,
     paddingTop: 12,
     borderTopWidth: 1,
-    borderTopColor: '#1F2937',
-    backgroundColor: '#0A0A1A',
+    borderTopColor: '#E8DED1',
+    backgroundColor: '#F5EFE4',
   },
   completeBtn: {
     flexDirection: 'row',
@@ -512,7 +512,7 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     paddingVertical: 14,
   },
-  completeBtnText: { fontSize: 15, fontWeight: '800', color: '#FFFFFF' },
+  completeBtnText: { fontSize: 15, fontWeight: '800', color: '#241814' },
   completedBanner: {
     flexDirection: 'row',
     alignItems: 'center',

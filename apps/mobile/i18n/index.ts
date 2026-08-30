@@ -157,6 +157,17 @@ i18n.use(initReactI18next).init({
   react: {
     useSuspense: false, // Avoid suspense flickers on language switch
   },
+  parseMissingKeyHandler: (key: string, defaultValue?: string) => {
+    if (defaultValue) return defaultValue;
+    // Permanent safety guard: if any key is missing in all locales,
+    // convert dot-path (e.g. 'parliament.screenTitle') to human-readable 'Screen Title'
+    const lastPart = key.split('.').pop() || key;
+    return lastPart
+      .replace(/([A-Z])/g, ' $1')
+      .replace(/[-_]/g, ' ')
+      .replace(/^\w/, (c) => c.toUpperCase())
+      .trim();
+  },
 });
 
 // Async language restore (runs after init, updates if user had a saved preference)

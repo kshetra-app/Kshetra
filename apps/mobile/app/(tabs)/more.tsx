@@ -13,11 +13,13 @@ import { useTranslation } from 'react-i18next';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useNotificationsStore } from '../../stores/notifications';
 import { DevFeatureSwitcher } from '../../components/DevFeatureSwitcher';
+import { useTheme } from '../../lib/theme';
 
 type Tile = { label: string; icon: string; color: string; route: string; badge?: number };
 
 export default function MoreScreen() {
   const { t } = useTranslation();
+  const { colors } = useTheme();
   const router = useRouter();
   const insets = useSafeAreaInsets();
   const { width } = useWindowDimensions();
@@ -34,51 +36,54 @@ export default function MoreScreen() {
   const tileWidth = (width - 16 * 2 - 12 * 2) / 3;
 
   const civic: Tile[] = [
-    { label: 'Civic Dashboard', icon: 'pulse', color: '#4F8EF7', route: '/dashboard', badge: unread || undefined },
-    { label: 'Delimitation', icon: 'git-branch', color: '#F59E0B', route: '/delimitation' },
-    { label: 'Analytics', icon: 'stats-chart', color: '#38BDF8', route: '/analytics' },
-    { label: 'Civic Metrics', icon: 'bar-chart', color: '#10B981', route: '/civic-metrics' },
-    { label: 'Live Election', icon: 'radio', color: '#F97316', route: '/live-election' },
-    { label: 'Parliament', icon: 'business', color: '#818CF8', route: '/parliament' },
+    { label: 'Civic Dashboard', icon: 'pulse', color: colors.teal, route: '/dashboard', badge: unread || undefined },
+    { label: 'Delimitation', icon: 'git-branch', color: colors.gold, route: '/delimitation' },
+    { label: 'Analytics', icon: 'stats-chart', color: colors.teal, route: '/analytics' },
+    { label: 'Civic Metrics', icon: 'bar-chart', color: colors.success, route: '/civic-metrics' },
+    { label: 'Live Election', icon: 'radio', color: colors.primary, route: '/live-election' },
+    { label: 'Parliament', icon: 'business', color: colors.gold, route: '/parliament' },
   ];
 
   const liveExchange: Tile[] = [
-    { label: 'Go Live', icon: 'radio', color: '#EF4444', route: '/live/go-live' },
-    { label: 'Kshetra Live', icon: 'videocam', color: '#F97316', route: '/live' },
-    { label: 'Dept. Console', icon: 'shield', color: '#3B82F6', route: '/departments/dashboard' },
-    { label: 'Moderation', icon: 'shield-half', color: '#8B5CF6', route: '/live/moderation-queue' },
-    { label: 'Distribution', icon: 'share-social', color: '#14B8A6', route: '/live/distribution' },
-    { label: 'Dev Switches', icon: 'toggle', color: '#10B981', route: '__dev_switches__' },
+    { label: 'Go Live', icon: 'radio', color: colors.primary, route: '/live/go-live' },
+    { label: 'Kshetra Live', icon: 'videocam', color: colors.gold, route: '/live' },
+    { label: 'Dept. Console', icon: 'shield', color: colors.teal, route: '/departments/dashboard' },
+    { label: 'Moderation', icon: 'shield-half', color: colors.primary, route: '/live/moderation-queue' },
+    { label: 'Distribution', icon: 'share-social', color: colors.teal, route: '/live/distribution' },
+    { label: 'Dev Switches', icon: 'toggle', color: colors.gold, route: '__dev_switches__' },
   ];
 
   const account: Tile[] = [
-    { label: 'Profile', icon: 'person', color: '#4F8EF7', route: '/profile' },
-    { label: 'Notifications', icon: 'notifications', color: '#EF4444', route: '/notifications', badge: unread || undefined },
-    { label: 'Settings', icon: 'settings', color: '#9CA3AF', route: '/notification-settings' },
-    { label: 'AI Assistant', icon: 'sparkles', color: '#A855F7', route: '/ai-chat' },
+    { label: 'Profile', icon: 'person', color: colors.primary, route: '/profile' },
+    { label: 'Notifications', icon: 'notifications', color: colors.primary, route: '/notifications', badge: unread || undefined },
+    { label: 'Settings', icon: 'settings', color: colors.textSecondary, route: '/notification-settings' },
+    { label: 'AI Assistant', icon: 'sparkles', color: colors.gold, route: '/ai-chat' },
   ];
 
   const campaign: Tile[] = [
-    { label: 'Politician Portal', icon: 'people', color: '#8B5CF6', route: '/politician-portal' },
-    { label: 'Become Aspirant', icon: 'rocket', color: '#EC4899', route: '/become-aspirant' },
-    { label: 'Campaign Manager', icon: 'megaphone', color: '#EF4444', route: '/campaign-manager' },
-    { label: 'Leadership Academy', icon: 'school', color: '#F59E0B', route: '/leadership-academy' },
-    { label: 'Candidate X-Ray', icon: 'scan', color: '#14B8A6', route: '/candidate-xray' },
+    { label: 'Politician Portal', icon: 'people', color: colors.gold, route: '/politician-portal' },
+    { label: 'Become Aspirant', icon: 'rocket', color: colors.primary, route: '/become-aspirant' },
+    { label: 'Campaign Manager', icon: 'megaphone', color: colors.primary, route: '/campaign-manager' },
+    { label: 'Leadership Academy', icon: 'school', color: colors.gold, route: '/leadership-academy' },
+    { label: 'Candidate X-Ray', icon: 'scan', color: colors.teal, route: '/candidate-xray' },
   ];
 
   return (
-    <View style={styles.container}>
-      <View style={[styles.header, { paddingTop: insets.top + 8 }]}>
-        <Text style={styles.title}>{t('tabs.more', { defaultValue: 'More' })}</Text>
-        <Text style={styles.subtitle}>Everything else, two taps away</Text>
+    <View style={[styles.container, { backgroundColor: colors.background }]}>
+      <View style={[styles.header, { paddingTop: insets.top + 8, borderBottomColor: colors.border }]}>
+        <Text style={[styles.title, { color: colors.text }]}>{t('tabs.more', { defaultValue: 'More' })}</Text>
+        <Text style={[styles.subtitle, { color: colors.textMuted }]}>Everything else, two taps away</Text>
       </View>
 
       <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingBottom: 100 }}>
         {/* Featured: Politicians & Campaign HQ */}
-        <Pressable style={styles.featured} onPress={() => go('/politician-portal')}>
+        <Pressable
+          style={[styles.featured, { backgroundColor: colors.primary, borderColor: colors.goldBorder || colors.gold, borderWidth: 1 }]}
+          onPress={() => go('/politician-portal')}
+        >
           <View style={styles.featuredGlow} />
           <View style={styles.featuredLeft}>
-            <View style={styles.featuredIcon}>
+            <View style={[styles.featuredIcon, { backgroundColor: 'rgba(255,255,255,0.2)' }]}>
               <Ionicons name="megaphone" size={24} color="#FFFFFF" />
             </View>
             <View style={{ flex: 1 }}>
@@ -108,21 +113,22 @@ export default function MoreScreen() {
 function Section({
   title, tiles, tileWidth, onPress,
 }: { title: string; tiles: Tile[]; tileWidth: number; onPress: (r: string) => void }) {
+  const { colors } = useTheme();
   return (
     <View style={styles.section}>
-      <Text style={styles.sectionTitle}>{title}</Text>
+      <Text style={[styles.sectionTitle, { color: colors.primary }]}>{title}</Text>
       <View style={styles.grid}>
         {tiles.map((tile) => (
           <Pressable key={tile.route} style={[styles.tile, { width: tileWidth }]} onPress={() => onPress(tile.route)}>
-            <View style={[styles.tileIcon, { backgroundColor: tile.color + '20' }]}>
+            <View style={[styles.tileIcon, { backgroundColor: colors.surface, borderColor: colors.goldBorder || colors.border, borderWidth: 1 }]}>
               <Ionicons name={tile.icon as any} size={22} color={tile.color} />
               {!!tile.badge && (
-                <View style={styles.badge}>
+                <View style={[styles.badge, { backgroundColor: colors.primary, borderColor: colors.surface }]}>
                   <Text style={styles.badgeText}>{tile.badge > 9 ? '9+' : tile.badge}</Text>
                 </View>
               )}
             </View>
-            <Text style={styles.tileLabel} numberOfLines={2}>{tile.label}</Text>
+            <Text style={[styles.tileLabel, { color: colors.text }]} numberOfLines={2}>{tile.label}</Text>
           </Pressable>
         ))}
       </View>
@@ -131,13 +137,13 @@ function Section({
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#0A0A1A' },
+  container: { flex: 1 },
   header: { paddingHorizontal: 16, paddingBottom: 8 },
-  title: { fontSize: 26, fontWeight: '800', color: '#FFFFFF' },
-  subtitle: { fontSize: 12, color: '#6B7280', fontWeight: '600', marginTop: 2 },
+  title: { fontSize: 26, fontWeight: '800' },
+  subtitle: { fontSize: 12, fontWeight: '600', marginTop: 2 },
   featured: {
     marginHorizontal: 16, marginTop: 6, marginBottom: 8,
-    backgroundColor: '#7C3AED', borderRadius: 18, padding: 16,
+    borderRadius: 18, padding: 16,
     flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between',
     overflow: 'hidden',
   },
@@ -147,21 +153,21 @@ const styles = StyleSheet.create({
   },
   featuredLeft: { flexDirection: 'row', alignItems: 'center', gap: 12, flex: 1, marginRight: 8 },
   featuredIcon: {
-    width: 48, height: 48, borderRadius: 14, backgroundColor: 'rgba(255,255,255,0.2)',
+    width: 48, height: 48, borderRadius: 14,
     justifyContent: 'center', alignItems: 'center',
   },
   featuredTitle: { fontSize: 17, fontWeight: '800', color: '#FFFFFF' },
-  featuredSub: { fontSize: 12, color: 'rgba(255,255,255,0.85)', marginTop: 2, lineHeight: 16 },
+  featuredSub: { fontSize: 12, color: 'rgba(255,255,255,0.9)', marginTop: 2, lineHeight: 16 },
   section: { marginTop: 14 },
-  sectionTitle: { fontSize: 13, fontWeight: '800', color: '#9CA3AF', paddingHorizontal: 16, marginBottom: 10, textTransform: 'uppercase', letterSpacing: 0.5 },
+  sectionTitle: { fontSize: 13, fontWeight: '800', paddingHorizontal: 16, marginBottom: 10, textTransform: 'uppercase', letterSpacing: 0.5 },
   grid: { flexDirection: 'row', flexWrap: 'wrap', paddingHorizontal: 16, gap: 12 },
   tile: { alignItems: 'center', gap: 6 },
   tileIcon: { width: 56, height: 56, borderRadius: 16, justifyContent: 'center', alignItems: 'center' },
-  tileLabel: { fontSize: 11, fontWeight: '700', color: '#D1D5DB', textAlign: 'center' },
+  tileLabel: { fontSize: 11, fontWeight: '700', textAlign: 'center' },
   badge: {
     position: 'absolute', top: -4, right: -4, minWidth: 18, height: 18, borderRadius: 9,
-    backgroundColor: '#EF4444', justifyContent: 'center', alignItems: 'center', paddingHorizontal: 4,
-    borderWidth: 2, borderColor: '#0A0A1A',
+    justifyContent: 'center', alignItems: 'center', paddingHorizontal: 4,
+    borderWidth: 2,
   },
   badgeText: { fontSize: 9, fontWeight: '800', color: '#FFFFFF' },
 });

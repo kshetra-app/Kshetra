@@ -18,16 +18,27 @@ try {
   const ML = require('@maplibre/maplibre-react-native');
 
   // ── Helper: extract [lng, lat] from any press-event shape ──
-  // Native codegen delivers lngLat as [lng, lat] array,
-  // but the TS type exposes it as LngLat = [number, number].
-  // Defensively handle both array and object forms.
   function extractLngLat(raw: any): [number, number] | null {
     if (!raw) return null;
     const ne = raw.nativeEvent ?? raw;
-    const ll = ne?.lngLat;
+    const ll = ne?.lngLat ?? raw?.lngLat;
     if (Array.isArray(ll) && ll.length >= 2) return [ll[0], ll[1]];
-    if (ll && typeof ll.lng === 'number') return [ll.lng, ll.lat];
-    if (ll && typeof ll.longitude === 'number') return [ll.longitude, ll.latitude];
+    if (ll && typeof ll.lng === 'number' && typeof ll.lat === 'number') return [ll.lng, ll.lat];
+    if (ll && typeof ll.longitude === 'number' && typeof ll.latitude === 'number') return [ll.longitude, ll.latitude];
+
+    const coord = ne?.coordinate ?? raw?.coordinate;
+    if (Array.isArray(coord) && coord.length >= 2) return [coord[0], coord[1]];
+    if (coord && typeof coord.longitude === 'number') return [coord.longitude, coord.latitude];
+
+    const coords = ne?.coordinates ?? raw?.coordinates;
+    if (Array.isArray(coords) && coords.length >= 2) return [coords[0], coords[1]];
+    if (coords && typeof coords.longitude === 'number') return [coords.longitude, coords.latitude];
+
+    if (raw?.geometry?.coordinates && Array.isArray(raw.geometry.coordinates)) {
+      const gc = raw.geometry.coordinates;
+      if (typeof gc[0] === 'number' && typeof gc[1] === 'number') return [gc[0], gc[1]];
+    }
+
     return null;
   }
 
@@ -138,8 +149,15 @@ try {
     const { shape, onPress, ...rest } = props;
     const wrappedOnPress = onPress
       ? (e: any) => {
+          const coords = extractLngLat(e);
           const ne = e?.nativeEvent ?? e;
-          onPress(ne);
+          onPress({
+            geometry: coords ? { coordinates: coords } : undefined,
+            coordinates: coords,
+            lngLat: coords,
+            features: ne?.features ?? [],
+            ...ne,
+          });
         }
       : undefined;
     return <ML.GeoJSONSource data={shape} onPress={wrappedOnPress} {...rest} />;

@@ -22,11 +22,13 @@ import {
 } from '../../lib/newsTypes';
 import NewsCard from '../../components/NewsCard';
 import { STATES } from '@kshetra/shared';
+import { useTheme } from '../../lib/theme';
 
 type NewsScopeTab = 'national' | 'state' | 'constituency';
 
 export default function NewsScreen() {
   const { t } = useTranslation();
+  const { colors } = useTheme();
   const insets = useSafeAreaInsets();
 
   const items = useNewsStore((s) => s.items);
@@ -109,23 +111,31 @@ export default function NewsScreen() {
   ];
 
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, { backgroundColor: colors.background }]}>
       {/* Header */}
-      <View style={[styles.header, { paddingTop: insets.top + 8 }]}>
-        <View style={{ flex: 1 }}>
-          <Text style={styles.title}>{t('tabs.news', { defaultValue: 'News' })}</Text>
+      <View style={[styles.header, { paddingTop: insets.top + 8, borderBottomColor: colors.border }]}>
+        <View>
+          <Text style={[styles.title, { color: colors.text }]}>{t('tabs.news', { defaultValue: 'News' })}</Text>
           <View style={styles.updatedRow}>
-            <View style={styles.liveDot} />
-            <Text style={styles.updatedText}>
+            <View style={[styles.liveDot, { backgroundColor: colors.success }]} />
+            <Text style={[styles.updatedText, { color: colors.textMuted }]}>
               Updated {formatRelativeTime(generatedAt)} · every {refreshIntervalMin}m
             </Text>
           </View>
         </View>
         <Pressable
-          style={[styles.iconBtn, showBookmarks && styles.iconBtnActive]}
+          style={[
+            styles.iconBtn,
+            { backgroundColor: colors.surface, borderColor: colors.goldBorder || colors.border },
+            showBookmarks && { backgroundColor: colors.goldLight, borderColor: colors.gold },
+          ]}
           onPress={() => setShowBookmarks((v) => !v)}
         >
-          <Ionicons name={showBookmarks ? 'bookmark' : 'bookmark-outline'} size={18} color={showBookmarks ? '#F59E0B' : '#9CA3AF'} />
+          <Ionicons
+            name={showBookmarks ? 'bookmark' : 'bookmark-outline'}
+            size={18}
+            color={showBookmarks ? colors.gold : colors.textMuted}
+          />
         </Pressable>
       </View>
 
@@ -169,12 +179,12 @@ export default function NewsScreen() {
             onToggleBookmark={() => toggleBookmark(item.id)}
           />
         )}
-        refreshControl={<RefreshControl refreshing={loading} onRefresh={refresh} tintColor="#4F8EF7" />}
+        refreshControl={<RefreshControl refreshing={loading} onRefresh={refresh} tintColor={colors.primary} />}
         contentContainerStyle={{ paddingBottom: 100 }}
         ListEmptyComponent={
           <View style={styles.empty}>
-            <Ionicons name={showBookmarks ? 'bookmark-outline' : 'newspaper-outline'} size={48} color="#1F2937" />
-            <Text style={styles.emptyText}>
+            <Ionicons name={showBookmarks ? 'bookmark-outline' : 'newspaper-outline'} size={48} color={colors.textMuted} />
+            <Text style={[styles.emptyText, { color: colors.textSecondary }]}>
               {showBookmarks ? 'No saved stories yet' : 'No stories match these filters'}
             </Text>
           </View>
@@ -187,15 +197,32 @@ export default function NewsScreen() {
 function Chip({
   label, active, onPress, icon, disabled,
 }: { label: string; active: boolean; onPress: () => void; icon?: string; disabled?: boolean }) {
+  const { colors } = useTheme();
   return (
     <Pressable
-      style={[styles.chip, active && styles.chipActive, disabled && styles.chipDisabled]}
+      style={[
+        styles.chip,
+        { backgroundColor: colors.surface, borderColor: colors.goldBorder || colors.border },
+        active && { backgroundColor: colors.primary, borderColor: colors.primary },
+        disabled && styles.chipDisabled,
+      ]}
       onPress={onPress}
     >
-      {icon && <Ionicons name={icon as any} size={12} color={active ? '#FFF' : disabled ? '#374151' : '#9CA3AF'} />}
+      {icon && (
+        <Ionicons
+          name={icon as any}
+          size={12}
+          color={active ? '#FFF' : disabled ? colors.textMuted : colors.textSecondary}
+        />
+      )}
       <Text
         numberOfLines={1}
-        style={[styles.chipText, active && styles.chipTextActive, disabled && { color: '#374151' }]}
+        style={[
+          styles.chipText,
+          { color: colors.textSecondary },
+          active && styles.chipTextActive,
+          disabled && { color: colors.textMuted },
+        ]}
       >
         {label}
       </Text>
@@ -204,21 +231,21 @@ function Chip({
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#0A0A1A' },
-  header: { flexDirection: 'row', alignItems: 'flex-start', paddingHorizontal: 16, paddingBottom: 6 },
-  title: { fontSize: 24, fontWeight: '800', color: '#FFFFFF' },
+  container: { flex: 1 },
+  header: { flexDirection: 'row', alignItems: 'flex-start', justifyContent: 'space-between', paddingHorizontal: 16, paddingBottom: 6 },
+  title: { fontSize: 24, fontWeight: '800' },
   updatedRow: { flexDirection: 'row', alignItems: 'center', gap: 5, marginTop: 2 },
-  liveDot: { width: 6, height: 6, borderRadius: 3, backgroundColor: '#10B981' },
-  updatedText: { fontSize: 11, color: '#6B7280', fontWeight: '600' },
-  iconBtn: { width: 36, height: 36, borderRadius: 18, backgroundColor: '#111827', justifyContent: 'center', alignItems: 'center' },
-  iconBtnActive: { backgroundColor: '#F59E0B20' },
+  liveDot: { width: 6, height: 6, borderRadius: 3 },
+  updatedText: { fontSize: 11, fontWeight: '600' },
+  iconBtn: { width: 36, height: 36, borderRadius: 18, justifyContent: 'center', alignItems: 'center', borderWidth: 1 },
+  iconBtnActive: {},
   railWrap: { height: 44, marginBottom: 6 },
   railContent: { paddingHorizontal: 16, gap: 6, alignItems: 'center', paddingVertical: 4 },
-  chip: { flexDirection: 'row', alignItems: 'center', gap: 4, paddingHorizontal: 12, paddingVertical: 7, borderRadius: 18, backgroundColor: '#111827', minHeight: 32 },
-  chipActive: { backgroundColor: '#4F8EF7' },
+  chip: { flexDirection: 'row', alignItems: 'center', gap: 4, paddingHorizontal: 12, paddingVertical: 7, borderRadius: 18, borderWidth: 1, minHeight: 32 },
+  chipActive: {},
   chipDisabled: { opacity: 0.4 },
-  chipText: { fontSize: 12, fontWeight: '700', color: '#9CA3AF', lineHeight: 16, includeFontPadding: false, textAlignVertical: 'center' },
+  chipText: { fontSize: 12, fontWeight: '700', lineHeight: 16, includeFontPadding: false, textAlignVertical: 'center' },
   chipTextActive: { color: '#FFFFFF' },
   empty: { alignItems: 'center', paddingTop: 80, gap: 10 },
-  emptyText: { fontSize: 14, fontWeight: '700', color: '#374151' },
+  emptyText: { fontSize: 14, fontWeight: '700' },
 });

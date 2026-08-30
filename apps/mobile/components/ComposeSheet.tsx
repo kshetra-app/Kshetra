@@ -357,7 +357,7 @@ export default function ComposeSheet({ visible, onClose, onSubmit, onEditSubmit,
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#0A0A1A',
+    backgroundColor: '#F5EFE4',
   },
   header: {
     flexDirection: 'row',
@@ -367,12 +367,12 @@ const styles = StyleSheet.create({
     paddingTop: 16,
     paddingBottom: 12,
     borderBottomWidth: 0.5,
-    borderBottomColor: '#1F2937',
+    borderBottomColor: '#E8DED1',
   },
   headerTitle: {
     fontSize: 16,
     fontWeight: '700',
-    color: '#FFFFFF',
+    color: '#241814',
   },
   submitButton: {
     backgroundColor: '#4F8EF7',
@@ -386,7 +386,7 @@ const styles = StyleSheet.create({
   submitText: {
     fontSize: 14,
     fontWeight: '800',
-    color: '#FFFFFF',
+    color: '#241814',
   },
   scroll: {
     flex: 1,
@@ -406,13 +406,13 @@ const styles = StyleSheet.create({
     paddingVertical: 6,
     borderRadius: 20,
     borderWidth: 1,
-    borderColor: '#374151',
+    borderColor: '#E8DED1',
     gap: 4,
   },
   typeChipText: {
     fontSize: 12,
     fontWeight: '700',
-    color: '#6B7280',
+    color: '#988275',
   },
   constituencyBadge: {
     flexDirection: 'row',
@@ -428,7 +428,7 @@ const styles = StyleSheet.create({
   },
   input: {
     fontSize: 16,
-    color: '#FFFFFF',
+    color: '#241814',
     lineHeight: 24,
     minHeight: 120,
     marginTop: 12,
@@ -445,7 +445,7 @@ const styles = StyleSheet.create({
   pollSection: {
     marginTop: 16,
     borderTopWidth: 0.5,
-    borderTopColor: '#1F2937',
+    borderTopColor: '#E8DED1',
     paddingTop: 14,
   },
   pollSectionTitle: {
@@ -462,14 +462,14 @@ const styles = StyleSheet.create({
   },
   pollOptionInput: {
     flex: 1,
-    backgroundColor: '#1F2937',
+    backgroundColor: '#E8DED1',
     borderRadius: 10,
     paddingHorizontal: 14,
     paddingVertical: 10,
     fontSize: 14,
-    color: '#FFFFFF',
+    color: '#241814',
     borderWidth: 1,
-    borderColor: '#374151',
+    borderColor: '#E8DED1',
   },
   addOptionButton: {
     flexDirection: 'row',
@@ -489,7 +489,7 @@ const styles = StyleSheet.create({
   mediaItem: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#1F2937',
+    backgroundColor: '#E8DED1',
     borderRadius: 8,
     paddingHorizontal: 10,
     paddingVertical: 8,
@@ -498,7 +498,7 @@ const styles = StyleSheet.create({
   mediaItemText: {
     flex: 1,
     fontSize: 13,
-    color: '#9CA3AF',
+    color: '#6D5549',
   },
   mediaToolbar: {
     flexDirection: 'row',
@@ -506,7 +506,7 @@ const styles = StyleSheet.create({
     marginTop: 12,
     paddingTop: 12,
     borderTopWidth: 0.5,
-    borderTopColor: '#1F2937',
+    borderTopColor: '#E8DED1',
   },
   mediaButton: {
     flexDirection: 'row',
@@ -515,7 +515,7 @@ const styles = StyleSheet.create({
   },
   mediaButtonText: {
     fontSize: 13,
-    color: '#6B7280',
+    color: '#988275',
     fontWeight: '600',
   },
   linkInputRow: {
@@ -526,14 +526,14 @@ const styles = StyleSheet.create({
   },
   linkInput: {
     flex: 1,
-    backgroundColor: '#1F2937',
+    backgroundColor: '#E8DED1',
     borderRadius: 10,
     paddingHorizontal: 14,
     paddingVertical: 10,
     fontSize: 14,
-    color: '#FFFFFF',
+    color: '#241814',
     borderWidth: 1,
-    borderColor: '#374151',
+    borderColor: '#E8DED1',
   },
   linkAddButton: {
     backgroundColor: '#4F8EF7',
@@ -544,6 +544,6 @@ const styles = StyleSheet.create({
   linkAddText: {
     fontSize: 13,
     fontWeight: '700',
-    color: '#FFFFFF',
+    color: '#241814',
   },
 });

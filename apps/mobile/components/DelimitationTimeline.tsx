@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { Ionicons } from '@expo/vector-icons';
 import type { DelimitationEvent } from '../lib/delimitationTypes';
 import { EVENT_TYPE_CONFIG, IMPACT_SEVERITY_CONFIG } from '../lib/delimitationTypes';
+import { useTheme } from '../lib/theme';
 
 function formatDate(dateStr: string): string {
   const d = new Date(dateStr);
@@ -27,6 +28,7 @@ export default function DelimitationTimeline({
   onEventPress,
 }: DelimitationTimelineProps) {
   const { t } = useTranslation();
+  const { colors } = useTheme();
   const sorted = [...events].sort(
     (a, b) => new Date(a.date).getTime() - new Date(b.date).getTime(),
   );
@@ -41,18 +43,22 @@ export default function DelimitationTimeline({
           return (
             <Pressable
               key={event.id}
-              style={[styles.compactCard, !past && styles.compactFuture]}
+              style={[
+                styles.compactCard,
+                { backgroundColor: colors.surface, borderColor: colors.border },
+                !past && [styles.compactFuture, { backgroundColor: colors.surfaceElevated, borderColor: colors.goldBorder || colors.border }],
+              ]}
               onPress={() => onEventPress?.(event)}
             >
               <Ionicons
                 name={config.icon as any}
                 size={16}
-                color={past ? config.color : '#6B7280'}
+                color={past ? config.color : colors.textMuted}
               />
-              <Text style={[styles.compactDate, !past && styles.compactDateFuture]}>
+              <Text style={[styles.compactDate, { color: colors.primary }, !past && { color: colors.textSecondary }]}>
                 {formatDate(event.date)}
               </Text>
-              <Text style={styles.compactTitle} numberOfLines={2}>
+              <Text style={[styles.compactTitle, { color: colors.text }]} numberOfLines={2}>
                 {event.title}
               </Text>
             </Pressable>
@@ -81,7 +87,7 @@ export default function DelimitationTimeline({
               <View
                 style={[
                   styles.dot,
-                  { backgroundColor: past ? config.color : '#374151' },
+                  { backgroundColor: past ? config.color : colors.primaryLight, borderColor: colors.primary, borderWidth: 1.5 },
                   event.significance === 'critical' && styles.dotLarge,
                 ]}
               />
@@ -89,21 +95,27 @@ export default function DelimitationTimeline({
                 <View
                   style={[
                     styles.line,
-                    { backgroundColor: past ? '#374151' : '#1F2937' },
+                    { backgroundColor: colors.border },
                   ]}
                 />
               )}
             </View>
 
             {/* Content */}
-            <View style={[styles.content, !past && styles.futureContent]}>
+            <View
+              style={[
+                styles.content,
+                { backgroundColor: colors.surface, borderColor: colors.border },
+                !past && [styles.futureContent, { backgroundColor: colors.surfaceElevated, borderColor: colors.goldBorder || colors.border }],
+              ]}
+            >
               <View style={styles.headerRow}>
                 <Ionicons
                   name={config.icon as any}
                   size={14}
-                  color={past ? config.color : '#6B7280'}
+                  color={past ? config.color : colors.textMuted}
                 />
-                <Text style={[styles.date, !past && styles.futureText]}>
+                <Text style={[styles.date, { color: colors.primary }, !past && { color: colors.textSecondary }]}>
                   {formatDate(event.date)}
                 </Text>
                 {!past && (
@@ -121,18 +133,18 @@ export default function DelimitationTimeline({
                 )}
               </View>
 
-              <Text style={[styles.title, !past && styles.futureText]}>
+              <Text style={[styles.title, { color: colors.text }]}>
                 {event.title}
               </Text>
 
-              <Text style={styles.description} numberOfLines={3}>
+              <Text style={[styles.description, { color: colors.textSecondary }]} numberOfLines={3}>
                 {event.description}
               </Text>
 
               <View style={styles.footerRow}>
                 {event.stateCode && (
-                  <View style={styles.stateBadge}>
-                    <Text style={styles.stateText}>{event.stateCode}</Text>
+                  <View style={[styles.stateBadge, { backgroundColor: colors.primaryLight }]}>
+                    <Text style={[styles.stateText, { color: colors.primary }]}>{event.stateCode}</Text>
                   </View>
                 )}
                 <View style={[styles.severityBadge, { backgroundColor: sevConfig.color + '20' }]}>
@@ -140,7 +152,7 @@ export default function DelimitationTimeline({
                     {sevConfig.label}
                   </Text>
                 </View>
-                <Text style={styles.sourceLabel}>
+                <Text style={[styles.sourceLabel, { color: colors.textMuted }]}>
                   {config.label}
                 </Text>
               </View>
@@ -175,7 +187,6 @@ const styles = StyleSheet.create({
     height: 14,
     borderRadius: 7,
     borderWidth: 2,
-    borderColor: '#1F2937',
   },
   line: {
     width: 2,
@@ -184,16 +195,13 @@ const styles = StyleSheet.create({
   },
   content: {
     flex: 1,
-    backgroundColor: '#111827',
     borderRadius: 12,
     padding: 12,
     marginBottom: 8,
     marginLeft: 4,
+    borderWidth: 1,
   },
   futureContent: {
-    backgroundColor: '#0D1117',
-    borderWidth: 1,
-    borderColor: '#1F2937',
     borderStyle: 'dashed',
   },
   headerRow: {
@@ -205,10 +213,6 @@ const styles = StyleSheet.create({
   date: {
     fontSize: 11,
     fontWeight: '700',
-    color: '#9CA3AF',
-  },
-  futureText: {
-    color: '#6B7280',
   },
   upcomingBadge: {
     backgroundColor: '#F59E0B20',
@@ -225,13 +229,11 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 14,
     fontWeight: '700',
-    color: '#FFFFFF',
     lineHeight: 18,
     marginBottom: 4,
   },
   description: {
     fontSize: 12,
-    color: '#9CA3AF',
     lineHeight: 16,
     marginBottom: 8,
   },
@@ -241,7 +243,6 @@ const styles = StyleSheet.create({
     gap: 6,
   },
   stateBadge: {
-    backgroundColor: '#4F8EF720',
     paddingHorizontal: 6,
     paddingVertical: 2,
     borderRadius: 4,
@@ -249,7 +250,6 @@ const styles = StyleSheet.create({
   stateText: {
     fontSize: 10,
     fontWeight: '800',
-    color: '#4F8EF7',
   },
   severityBadge: {
     paddingHorizontal: 6,
@@ -262,7 +262,6 @@ const styles = StyleSheet.create({
   },
   sourceLabel: {
     fontSize: 10,
-    color: '#6B7280',
     marginLeft: 'auto',
   },
   // ─── Compact mode ───
@@ -270,33 +269,26 @@ const styles = StyleSheet.create({
     paddingVertical: 8,
   },
   compactCard: {
-    backgroundColor: '#111827',
     borderRadius: 10,
     padding: 10,
     marginRight: 8,
     minWidth: 120,
     maxWidth: 160,
     alignItems: 'center',
+    borderWidth: 1,
   },
   compactFuture: {
-    borderWidth: 1,
-    borderColor: '#1F2937',
     borderStyle: 'dashed',
-    opacity: 0.7,
+    opacity: 0.9,
   },
   compactDate: {
     fontSize: 10,
     fontWeight: '700',
-    color: '#9CA3AF',
     marginTop: 4,
-  },
-  compactDateFuture: {
-    color: '#6B7280',
   },
   compactTitle: {
     fontSize: 11,
     fontWeight: '600',
-    color: '#FFFFFF',
     textAlign: 'center',
     marginTop: 4,
     lineHeight: 14,

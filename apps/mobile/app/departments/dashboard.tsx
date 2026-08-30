@@ -13,6 +13,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useLiveExchangeStore } from '../../stores/liveExchange';
 import type { AlertAcknowledgment, DepartmentAlert } from '../../lib/lmxTypes';
 import { DEPARTMENT_CONFIG, ACK_CONFIG, TIER_CONFIG } from '../../lib/lmxTypes';
+import { useTheme } from '../../lib/theme';
 
 /**
  * Department Console — in-app simulation of the Kshetra-hosted department
@@ -24,6 +25,7 @@ import { DEPARTMENT_CONFIG, ACK_CONFIG, TIER_CONFIG } from '../../lib/lmxTypes';
 export default function DepartmentDashboardScreen() {
   const insets = useSafeAreaInsets();
   const router = useRouter();
+  const { colors } = useTheme();
 
   const departments = useLiveExchangeStore((s) => s.departments);
   const alerts = useLiveExchangeStore((s) => s.alerts);
@@ -48,12 +50,12 @@ export default function DepartmentDashboardScreen() {
     acknowledgeAlert(alertId, verdict, selectedDept?.officeName ?? 'department');
 
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, { backgroundColor: colors.background }]}>
       <View style={[styles.header, { paddingTop: insets.top + 8 }]}>
         <Pressable onPress={() => router.back()} hitSlop={10}>
-          <Ionicons name="chevron-back" size={26} color="#FFFFFF" />
+          <Ionicons name="chevron-back" size={26} color={colors.primary} />
         </Pressable>
-        <Text style={styles.title}>Department Console</Text>
+        <Text style={[styles.title, { color: colors.text }]}>Department Console</Text>
         <View style={{ width: 26 }} />
       </View>
 
@@ -222,42 +224,42 @@ function AlertCard({
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#0A0A1A' },
+  container: { flex: 1 },
   header: {
     flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between',
     paddingHorizontal: 16, paddingBottom: 12,
   },
-  title: { fontSize: 18, fontWeight: '800', color: '#FFFFFF' },
+  title: { fontSize: 18, fontWeight: '800' },
   deptRow: { paddingHorizontal: 16, gap: 8, paddingBottom: 4 },
   deptChip: {
     flexDirection: 'row', alignItems: 'center', gap: 6, maxWidth: 220,
-    borderWidth: 1, borderColor: '#1F2937', backgroundColor: '#111827',
+    borderWidth: 1,
     paddingHorizontal: 12, paddingVertical: 8, borderRadius: 20,
   },
-  deptChipText: { fontSize: 12, fontWeight: '700', color: '#9CA3AF', flexShrink: 1 },
+  deptChipText: { fontSize: 12, fontWeight: '700', flexShrink: 1 },
   cntBadge: { minWidth: 16, height: 16, borderRadius: 8, backgroundColor: '#EF4444', justifyContent: 'center', alignItems: 'center', paddingHorizontal: 4 },
   cntText: { fontSize: 9, fontWeight: '800', color: '#FFFFFF' },
   deptInfo: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 16, marginTop: 10 },
   deptInfoRow: { flexDirection: 'row', alignItems: 'center', gap: 4 },
-  deptInfoText: { fontSize: 11, color: '#6B7280', fontWeight: '600' },
+  deptInfoText: { fontSize: 11, fontWeight: '600' },
   subBadge: { flexDirection: 'row', alignItems: 'center', gap: 4, paddingHorizontal: 8, paddingVertical: 3, borderRadius: 6 },
   subText: { fontSize: 10, fontWeight: '700', textTransform: 'capitalize' },
   summaryRow: { paddingHorizontal: 16, marginTop: 12 },
-  summaryText: { fontSize: 12, color: '#9CA3AF', fontWeight: '600' },
+  summaryText: { fontSize: 12, fontWeight: '600' },
   list: { padding: 16, paddingBottom: 100 },
-  card: { backgroundColor: '#111827', borderRadius: 14, padding: 14, marginBottom: 12, borderWidth: 0.5, borderColor: '#1F2937' },
+  card: { borderRadius: 14, padding: 14, marginBottom: 12, borderWidth: 1 },
   cardTop: { flexDirection: 'row', alignItems: 'center', gap: 10 },
   cardIcon: { width: 38, height: 38, borderRadius: 10, justifyContent: 'center', alignItems: 'center' },
-  cardTitle: { fontSize: 14, fontWeight: '800', color: '#F9FAFB' },
-  cardMeta: { fontSize: 11, color: '#6B7280', marginTop: 2 },
+  cardTitle: { fontSize: 14, fontWeight: '800' },
+  cardMeta: { fontSize: 11, marginTop: 2 },
   tierBadge: { borderWidth: 1, paddingHorizontal: 7, paddingVertical: 3, borderRadius: 6 },
   tierText: { fontSize: 9, fontWeight: '800' },
-  aiSummary: { fontSize: 12, color: '#C4B5FD', lineHeight: 17, marginTop: 10 },
+  aiSummary: { fontSize: 12, lineHeight: 17, marginTop: 10 },
   cardStats: { flexDirection: 'row', gap: 14, marginTop: 10 },
   stat: { flexDirection: 'row', alignItems: 'center', gap: 4 },
-  statText: { fontSize: 11, color: '#9CA3AF', fontWeight: '600' },
+  statText: { fontSize: 11, fontWeight: '600' },
   watchBtn: { flexDirection: 'row', alignItems: 'center', gap: 6, marginTop: 10 },
-  watchText: { fontSize: 12, color: '#4F8EF7', fontWeight: '700' },
+  watchText: { fontSize: 12, fontWeight: '700' },
   ackRow: { flexDirection: 'row', gap: 8, marginTop: 12 },
   ackBtn: {
     flex: 1, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 4,
@@ -267,5 +269,5 @@ const styles = StyleSheet.create({
   ackedBar: { flexDirection: 'row', alignItems: 'center', gap: 6, marginTop: 12, padding: 10, borderRadius: 9 },
   ackedText: { fontSize: 12, fontWeight: '800' },
   empty: { alignItems: 'center', paddingTop: 80, gap: 8 },
-  emptyText: { fontSize: 14, color: '#6B7280', fontWeight: '600' },
+  emptyText: { fontSize: 14, fontWeight: '600' },
 });

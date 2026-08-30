@@ -1,18 +1,19 @@
 import { View, Text, StyleSheet, Pressable, Linking } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useTranslation } from 'react-i18next';
+import { useTheme } from '../lib/theme';
 import type { Headline } from '../lib/civicTypes';
 
 const CATEGORY_COLORS: Record<string, string> = {
-  politics: '#EF4444',
-  governance: '#4F8EF7',
-  development: '#10B981',
-  law_and_order: '#F59E0B',
-  economy: '#8B5CF6',
-  education: '#3B82F6',
-  health: '#EC4899',
-  environment: '#84CC16',
-  opinion: '#F97316',
+  politics: '#A8201A',
+  governance: '#145C68',
+  development: '#2E7D32',
+  law_and_order: '#D97706',
+  economy: '#C5A059',
+  education: '#7C3AED',
+  health: '#C0392B',
+  environment: '#65A30D',
+  opinion: '#EA580C',
 };
 
 function timeAgo(dateStr: string): string {
@@ -32,33 +33,34 @@ interface HeadlineCardProps {
 
 export default function HeadlineCard({ headline }: HeadlineCardProps) {
   const { t } = useTranslation();
-  const catColor = CATEGORY_COLORS[headline.category] ?? '#6B7280';
+  const { colors } = useTheme();
+  const catColor = CATEGORY_COLORS[headline.category] ?? colors.gold;
   const catLabel = t(`content.headlineCategories.${headline.category}`, headline.category.replace(/_/g, ' '));
   const hlTitle = t(`content.headlines.${headline.id}.title`, headline.title);
   const hlSummary = headline.summary ? t(`content.headlines.${headline.id}.summary`, headline.summary) : undefined;
 
   return (
     <Pressable
-      style={styles.card}
+      style={[styles.card, { backgroundColor: colors.surface, borderColor: colors.goldBorder || colors.border }]}
       onPress={() => Linking.openURL(headline.sourceUrl).catch(() => {})}
     >
       <View style={styles.topRow}>
-        <View style={[styles.categoryBadge, { backgroundColor: catColor + '20' }]}>
+        <View style={[styles.categoryBadge, { backgroundColor: catColor + '18' }]}>
           <Text style={[styles.categoryText, { color: catColor }]}>{catLabel}</Text>
         </View>
-        <Text style={styles.timeText}>{timeAgo(headline.publishedAt)}</Text>
+        <Text style={[styles.timeText, { color: colors.textMuted }]}>{timeAgo(headline.publishedAt)}</Text>
       </View>
 
-      <Text style={styles.title} numberOfLines={3}>{hlTitle}</Text>
+      <Text style={[styles.title, { color: colors.text }]} numberOfLines={3}>{hlTitle}</Text>
 
       {hlSummary && (
-        <Text style={styles.summary} numberOfLines={2}>{hlSummary}</Text>
+        <Text style={[styles.summary, { color: colors.textSecondary }]} numberOfLines={2}>{hlSummary}</Text>
       )}
 
       <View style={styles.sourceRow}>
-        <Ionicons name="newspaper-outline" size={12} color="#6B7280" style={{ marginRight: 4 }} />
-        <Text style={styles.sourceName}>{headline.sourceName}</Text>
-        <Ionicons name="open-outline" size={12} color="#4F8EF7" style={styles.externalIcon} />
+        <Ionicons name="newspaper-outline" size={12} color={colors.textMuted} style={{ marginRight: 4 }} />
+        <Text style={[styles.sourceName, { color: colors.textMuted }]}>{headline.sourceName}</Text>
+        <Ionicons name="open-outline" size={12} color={colors.primary} style={styles.externalIcon} />
       </View>
     </Pressable>
   );
@@ -66,10 +68,10 @@ export default function HeadlineCard({ headline }: HeadlineCardProps) {
 
 const styles = StyleSheet.create({
   card: {
-    backgroundColor: '#111827',
     borderRadius: 14,
+    borderWidth: 1,
     padding: 14,
-    marginBottom: 8,
+    marginBottom: 10,
   },
   topRow: {
     flexDirection: 'row',

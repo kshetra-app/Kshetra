@@ -4,6 +4,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useNotificationsStore } from '../stores/notifications';
 import type { AlertCategory } from '../lib/notifications';
+import { useTheme } from '../lib/theme';
 
 interface NotifToggle {
   category: AlertCategory;
@@ -80,6 +81,7 @@ const NOTIFICATION_TYPES: NotifToggle[] = [
 ];
 
 export default function NotificationSettingsScreen() {
+  const { colors } = useTheme();
   const enabled = useNotificationsStore((s) => s.enabled);
   const toggleEnabled = useNotificationsStore((s) => s.toggleEnabled);
   const categories = useNotificationsStore((s) => s.categories);
@@ -87,47 +89,52 @@ export default function NotificationSettingsScreen() {
   const insets = useSafeAreaInsets();
 
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, { backgroundColor: colors.background }]}>
       <Stack.Screen
         options={{
           headerShown: true,
           title: 'Notification Settings',
-          headerStyle: { backgroundColor: '#0A0A1A' },
-          headerTintColor: '#FFFFFF',
+          headerStyle: { backgroundColor: colors.surface },
+          headerTintColor: colors.primary,
         }}
       />
 
       <ScrollView style={styles.scroll} showsVerticalScrollIndicator={false}>
         {/* Master toggle */}
         <View style={styles.masterSection}>
-          <View style={styles.masterRow}>
-            <View style={styles.masterIcon}>
-              <Ionicons name="notifications" size={24} color="#4F8EF7" />
+          <View style={[styles.masterRow, { backgroundColor: colors.surface, borderColor: (colors as any).goldBorder || colors.border, borderWidth: 1 }]}>
+            <View style={[styles.masterIcon, { backgroundColor: (colors as any).goldLight || '#4F8EF720' }]}>
+              <Ionicons
+                name={enabled ? 'notifications' : 'notifications-off'}
+                size={24}
+                color={enabled ? colors.primary : '#6B7280'}
+              />
             </View>
             <View style={styles.masterInfo}>
-              <Text style={styles.masterTitle}>Push Notifications</Text>
-              <Text style={styles.masterSubtitle}>
-                {enabled ? 'Notifications are enabled' : 'All notifications are disabled'}
+              <Text style={[styles.masterTitle, { color: colors.text }]}>Allow Notifications</Text>
+              <Text style={[styles.masterSubtitle, { color: colors.textMuted }]}>
+                {enabled ? 'Receiving updates' : 'All notifications paused'}
               </Text>
             </View>
             <Switch
               value={enabled}
               onValueChange={toggleEnabled}
-              trackColor={{ false: '#374151', true: '#4F8EF760' }}
-              thumbColor={enabled ? '#4F8EF7' : '#6B7280'}
+              trackColor={{ false: colors.border, true: colors.primary }}
+              thumbColor="#FFFFFF"
             />
           </View>
         </View>
 
         {/* Category toggles */}
         <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Notification Types</Text>
-          <View style={styles.card}>
+          <Text style={[styles.sectionTitle, { color: colors.textMuted }]}>Notification Types</Text>
+          <View style={[styles.card, { backgroundColor: colors.surface, borderColor: (colors as any).goldBorder || colors.border, borderWidth: 1 }]}>
             {NOTIFICATION_TYPES.map((notif, idx) => (
               <View
                 key={notif.category}
                 style={[
                   styles.categoryRow,
+                  { borderBottomColor: colors.border },
                   idx === NOTIFICATION_TYPES.length - 1 && styles.lastRow,
                 ]}
               >
@@ -135,17 +142,17 @@ export default function NotificationSettingsScreen() {
                   <Ionicons name={notif.icon} size={18} color={notif.color} />
                 </View>
                 <View style={styles.categoryInfo}>
-                  <Text style={[styles.categoryLabel, !enabled && styles.disabledText]}>
+                  <Text style={[styles.categoryLabel, { color: colors.text }, !enabled && { color: colors.textMuted }]}>
                     {notif.label}
                   </Text>
-                  <Text style={styles.categoryDesc}>{notif.description}</Text>
+                  <Text style={[styles.categoryDesc, { color: colors.textMuted }]}>{notif.description}</Text>
                 </View>
                 <Switch
                   value={categories[notif.category] && enabled}
                   onValueChange={() => toggleCategory(notif.category)}
                   disabled={!enabled}
-                  trackColor={{ false: '#374151', true: notif.color + '60' }}
-                  thumbColor={categories[notif.category] && enabled ? notif.color : '#6B7280'}
+                  trackColor={{ false: colors.border, true: notif.color }}
+                  thumbColor="#FFFFFF"
                 />
               </View>
             ))}
@@ -154,9 +161,9 @@ export default function NotificationSettingsScreen() {
 
         {/* Info */}
         <View style={styles.infoSection}>
-          <Ionicons name="information-circle-outline" size={16} color="#4B5563" />
-          <Text style={styles.infoText}>
-            Notification preferences are stored locally. When you sign in, they will sync to your account.
+          <Ionicons name="information-circle-outline" size={16} color={colors.textMuted} />
+          <Text style={[styles.infoText, { color: colors.textMuted }]}>
+            Notifications are sent for critical updates only. You can adjust per-constituency alerts from the constituency page.
           </Text>
         </View>
         <View style={{ height: Math.max(insets.bottom, 20) }} />
@@ -168,7 +175,6 @@ export default function NotificationSettingsScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#0A0A1A',
   },
   scroll: {
     flex: 1,
@@ -181,7 +187,6 @@ const styles = StyleSheet.create({
   masterRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#111827',
     borderRadius: 16,
     padding: 16,
   },
@@ -189,7 +194,6 @@ const styles = StyleSheet.create({
     width: 48,
     height: 48,
     borderRadius: 24,
-    backgroundColor: '#4F8EF720',
     justifyContent: 'center',
     alignItems: 'center',
     marginRight: 14,
@@ -200,11 +204,9 @@ const styles = StyleSheet.create({
   masterTitle: {
     fontSize: 16,
     fontWeight: '700',
-    color: '#FFFFFF',
   },
   masterSubtitle: {
     fontSize: 12,
-    color: '#6B7280',
     marginTop: 2,
   },
   section: {
@@ -213,14 +215,12 @@ const styles = StyleSheet.create({
   sectionTitle: {
     fontSize: 13,
     fontWeight: '700',
-    color: '#6B7280',
     textTransform: 'uppercase',
     letterSpacing: 0.5,
     marginBottom: 10,
     marginLeft: 4,
   },
   card: {
-    backgroundColor: '#111827',
     borderRadius: 14,
     overflow: 'hidden',
   },
@@ -229,7 +229,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     padding: 14,
     borderBottomWidth: 0.5,
-    borderBottomColor: '#1F2937',
   },
   lastRow: {
     borderBottomWidth: 0,
@@ -248,16 +247,12 @@ const styles = StyleSheet.create({
   categoryLabel: {
     fontSize: 15,
     fontWeight: '600',
-    color: '#FFFFFF',
   },
   categoryDesc: {
     fontSize: 11,
-    color: '#6B7280',
     marginTop: 2,
   },
-  disabledText: {
-    color: '#4B5563',
-  },
+  disabledText: {},
   infoSection: {
     flexDirection: 'row',
     alignItems: 'flex-start',
@@ -267,7 +262,6 @@ const styles = StyleSheet.create({
   },
   infoText: {
     fontSize: 12,
-    color: '#4B5563',
     flex: 1,
     lineHeight: 16,
   },

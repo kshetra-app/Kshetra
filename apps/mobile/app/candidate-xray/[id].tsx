@@ -8,8 +8,10 @@ import React, { useEffect, useMemo } from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import { useLocalSearchParams, Stack, useRouter } from 'expo-router';
 import { useAffidavitStore } from '../../stores/affidavits';
+import { useTheme } from '../../lib/theme';
 
 export default function CandidateXRayRedirect() {
+  const { colors } = useTheme();
   const { id } = useLocalSearchParams<{ id: string }>();
   const router = useRouter();
   const affidavits = useAffidavitStore((s) => s.affidavits);
@@ -25,22 +27,22 @@ export default function CandidateXRayRedirect() {
 
   if (!affidavit) {
     return (
-      <View style={styles.container}>
+      <View style={[styles.container, { backgroundColor: colors.background }]}>
         <Stack.Screen options={{ title: 'Redirecting...' }} />
-        <Text style={styles.text}>Profile not found</Text>
+        <Text style={[styles.text, { color: colors.textMuted }]}>Profile not found</Text>
       </View>
     );
   }
 
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, { backgroundColor: colors.background }]}>
       <Stack.Screen options={{ title: 'Redirecting...' }} />
-      <Text style={styles.text}>Loading profile...</Text>
+      <Text style={[styles.text, { color: colors.textMuted }]}>Loading profile...</Text>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#0A0A1A', justifyContent: 'center', alignItems: 'center' },
-  text: { fontSize: 14, color: '#6B7280' },
+  container: { flex: 1, justifyContent: 'center', alignItems: 'center' },
+  text: { fontSize: 14 },
 });

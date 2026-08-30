@@ -9,6 +9,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { Stack, useRouter } from 'expo-router';
 import { useResponsive } from '../lib/responsive';
 import { useAspirantStore } from '../stores/aspirant';
+import { useTheme } from '../lib/theme';
 import CivicScoreCard from '../components/CivicScoreCard';
 import CivicBadgeGrid from '../components/CivicBadgeGrid';
 import ChallengeCard from '../components/ChallengeCard';
@@ -38,6 +39,7 @@ const TAB_KEYS: { key: AcademyTab; tKey: string; icon: string }[] = [
 export default function LeadershipAcademyScreen() {
   const { t } = useTranslation();
   const router = useRouter();
+  const { colors } = useTheme();
   const [activeTab, setActiveTab] = useState<AcademyTab>('modules');
   const [selectedModule, setSelectedModule] = useState<LeadershipModule | null>(null);
   const [registerVisible, setRegisterVisible] = useState(false);
@@ -78,12 +80,12 @@ export default function LeadershipAcademyScreen() {
   const { insets } = useResponsive();
 
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, { backgroundColor: colors.background }]}>
       <Stack.Screen
         options={{
           title: t('leadershipAcademy.title'),
-          headerStyle: { backgroundColor: '#0A0A1A' },
-          headerTintColor: '#FFFFFF',
+          headerStyle: { backgroundColor: colors.surface },
+          headerTintColor: colors.primary,
         }}
       />
 
@@ -91,11 +93,11 @@ export default function LeadershipAcademyScreen() {
       <View style={[styles.header, { paddingTop: insets.top + 8 }]}>
         <View style={{ flexDirection: 'row', alignItems: 'center', gap: 12 }}>
           <Pressable onPress={() => router.back()} hitSlop={8}>
-            <Ionicons name="arrow-back" size={22} color="#FFFFFF" />
+            <Ionicons name="arrow-back" size={22} color={colors.primary} />
           </Pressable>
-          <Text style={styles.headerTitle}>{t('leadershipAcademy.title')}</Text>
+          <Text style={[styles.headerTitle, { color: colors.text }]}>{t('leadershipAcademy.title')}</Text>
         </View>
-        <Text style={[styles.headerSubtitle, { marginLeft: 34 }]}>{t('leadershipAcademy.subtitle')}</Text>
+        <Text style={[styles.headerSubtitle, { color: colors.textMuted, marginLeft: 34 }]}>{t('leadershipAcademy.subtitle')}</Text>
       </View>
 
       {/* Civic Score (if registered) */}
@@ -311,21 +313,21 @@ export default function LeadershipAcademyScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#0A0A1A' },
+  container: { flex: 1 },
   header: {
     paddingHorizontal: 20,
     paddingBottom: 12,
   },
-  headerTitle: { fontSize: 28, fontWeight: '800', color: '#FFFFFF' },
-  headerSubtitle: { fontSize: 14, color: '#9CA3AF', marginTop: 2 },
+  headerTitle: { fontSize: 28, fontWeight: '800' },
+  headerSubtitle: { fontSize: 14, marginTop: 2 },
   scoreSection: { paddingHorizontal: 16, marginBottom: 12 },
   tabRow: {
     flexDirection: 'row',
     marginHorizontal: 16,
     marginBottom: 10,
-    backgroundColor: '#111827',
     borderRadius: 14,
     padding: 4,
+    borderWidth: 1,
   },
   tab: {
     flex: 1,
@@ -336,8 +338,8 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     gap: 4,
   },
-  tabActive: { backgroundColor: '#4F8EF7' },
-  tabLabel: { fontSize: 12, fontWeight: '700', color: '#6B7280' },
+  tabActive: {},
+  tabLabel: { fontSize: 12, fontWeight: '700' },
   tabLabelActive: { color: '#FFFFFF' },
   scroll: { flex: 1 },
   tabContent: { paddingHorizontal: 16 },
@@ -350,24 +352,21 @@ const styles = StyleSheet.create({
     marginBottom: 8,
   },
   moduleGroupTitle: { fontSize: 15, fontWeight: '700', flex: 1 },
-  moduleGroupCount: { fontSize: 11, color: '#6B7280' },
+  moduleGroupCount: { fontSize: 11 },
   moduleCard: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#111827',
     borderRadius: 10,
     padding: 12,
     marginBottom: 6,
     borderWidth: 1,
-    borderColor: '#1F2937',
   },
   moduleCardComplete: { borderColor: '#10B98140' },
   moduleLeft: { marginRight: 10 },
   moduleInfo: { flex: 1 },
-  moduleTitle: { fontSize: 13, fontWeight: '700', color: '#FFFFFF' },
-  moduleMeta: { fontSize: 11, color: '#6B7280', marginTop: 2 },
+  moduleTitle: { fontSize: 13, fontWeight: '700' },
+  moduleMeta: { fontSize: 11, marginTop: 2 },
   premiumBadge: {
-    backgroundColor: '#F59E0B20',
     borderRadius: 6,
     padding: 4,
   },
@@ -378,14 +377,12 @@ const styles = StyleSheet.create({
     gap: 8,
     marginBottom: 12,
   },
-  communityTitle: { fontSize: 17, fontWeight: '700', color: '#FFFFFF' },
+  communityTitle: { fontSize: 17, fontWeight: '700' },
   aspirantCard: {
-    backgroundColor: '#111827',
     borderRadius: 12,
     padding: 12,
     marginBottom: 8,
     borderWidth: 1,
-    borderColor: '#1F2937',
   },
   aspirantRow: { flexDirection: 'row', alignItems: 'center' },
   endorseBtn: {
@@ -396,13 +393,11 @@ const styles = StyleSheet.create({
     marginTop: 10,
     paddingVertical: 8,
     borderRadius: 8,
-    backgroundColor: '#0A0A1A',
     borderWidth: 1,
-    borderColor: '#1F2937',
   },
-  endorseBtnDone: { borderColor: '#EF444455', backgroundColor: '#EF444410' },
-  endorseText: { fontSize: 12, fontWeight: '700', color: '#9CA3AF' },
-  endorseCount: { fontSize: 11, color: '#6B7280' },
+  endorseBtnDone: {},
+  endorseText: { fontSize: 12, fontWeight: '700' },
+  endorseCount: { fontSize: 11 },
   // Register CTA
   registerCta: {
     flexDirection: 'row',
@@ -410,22 +405,19 @@ const styles = StyleSheet.create({
     gap: 12,
     marginHorizontal: 16,
     marginBottom: 12,
-    backgroundColor: '#06B6D412',
     borderRadius: 14,
     padding: 14,
     borderWidth: 1,
-    borderColor: '#06B6D433',
   },
   registerIcon: {
     width: 40,
     height: 40,
     borderRadius: 20,
-    backgroundColor: '#06B6D420',
     justifyContent: 'center',
     alignItems: 'center',
   },
-  registerTitle: { fontSize: 15, fontWeight: '800', color: '#FFFFFF' },
-  registerSub: { fontSize: 12, color: '#9CA3AF', marginTop: 2 },
+  registerTitle: { fontSize: 15, fontWeight: '800' },
+  registerSub: { fontSize: 12, marginTop: 2 },
   aspirantAvatar: {
     width: 44,
     height: 44,
@@ -435,19 +427,19 @@ const styles = StyleSheet.create({
     marginRight: 12,
   },
   aspirantInfo: { flex: 1 },
-  aspirantName: { fontSize: 14, fontWeight: '800', color: '#FFFFFF' },
-  aspirantBio: { fontSize: 11, color: '#9CA3AF', marginTop: 2 },
+  aspirantName: { fontSize: 14, fontWeight: '800' },
+  aspirantBio: { fontSize: 11, marginTop: 2 },
   aspirantMeta: { flexDirection: 'row', alignItems: 'center', gap: 6, marginTop: 4 },
-  aspirantTarget: { fontSize: 10, color: '#6B7280' },
+  aspirantTarget: { fontSize: 10 },
   levelTag: { borderRadius: 4, paddingHorizontal: 6, paddingVertical: 1 },
   levelTagText: { fontSize: 9, fontWeight: '700' },
   aspirantScore: { alignItems: 'center', marginLeft: 8 },
   aspirantScoreValue: { fontSize: 18, fontWeight: '900' },
-  aspirantScoreLabel: { fontSize: 9, color: '#6B7280', fontWeight: '600' },
-  aspirantEndorsements: { fontSize: 9, color: '#6B7280', marginTop: 2 },
+  aspirantScoreLabel: { fontSize: 9, fontWeight: '600' },
+  aspirantEndorsements: { fontSize: 9, marginTop: 2 },
   // Badges
-  badgeHeader: { fontSize: 13, color: '#6B7280', marginBottom: 12 },
+  badgeHeader: { fontSize: 13, marginBottom: 12 },
   // Empty
   empty: { alignItems: 'center', paddingTop: 60 },
-  emptyText: { fontSize: 16, fontWeight: '700', color: '#374151', marginTop: 8 },
+  emptyText: { fontSize: 16, fontWeight: '700', marginTop: 8 },
 });

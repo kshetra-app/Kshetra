@@ -101,11 +101,11 @@ export default React.memo(function WealthTimeline({ affidavits, growths }: Wealt
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: '#111827',
+    backgroundColor: '#FFFFFF',
     borderRadius: 14,
     padding: 16,
     borderWidth: 1,
-    borderColor: '#1F2937',
+    borderColor: '#E8DED1',
   },
   header: {
     flexDirection: 'row',
@@ -116,7 +116,7 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 15,
     fontWeight: '700',
-    color: '#FFFFFF',
+    color: '#241814',
   },
   chart: {
     flexDirection: 'row',
@@ -155,7 +155,7 @@ const styles = StyleSheet.create({
     width: 32,
     borderRadius: 6,
     overflow: 'hidden',
-    backgroundColor: '#1F2937',
+    backgroundColor: '#E8DED1',
   },
   barFillSelf: {
     backgroundColor: '#4F8EF7',
@@ -168,13 +168,13 @@ const styles = StyleSheet.create({
   barAmount: {
     fontSize: 11,
     fontWeight: '700',
-    color: '#D1D5DB',
+    color: '#6D5549',
     marginTop: 6,
   },
   barYear: {
     fontSize: 12,
     fontWeight: '800',
-    color: '#9CA3AF',
+    color: '#6D5549',
     marginTop: 2,
   },
   legend: {
@@ -195,22 +195,22 @@ const styles = StyleSheet.create({
   },
   legendText: {
     fontSize: 11,
-    color: '#9CA3AF',
+    color: '#6D5549',
   },
   summary: {
-    backgroundColor: '#1F2937',
+    backgroundColor: '#E8DED1',
     borderRadius: 8,
     padding: 10,
     alignItems: 'center',
   },
   summaryText: {
     fontSize: 12,
-    color: '#D1D5DB',
+    color: '#6D5549',
     fontWeight: '600',
   },
   summaryAnnualized: {
     fontSize: 11,
-    color: '#9CA3AF',
+    color: '#6D5549',
     marginTop: 2,
   },
 });

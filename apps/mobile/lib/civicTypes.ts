@@ -145,34 +145,34 @@ export interface ConstituencySentiment {
 }
 
 export const ISSUE_CATEGORY_CONFIG: Record<IssueCategory, { icon: string; color: string; label: string }> = {
-  roads: { icon: 'car', color: '#F59E0B', label: 'Roads' },
-  water: { icon: 'water', color: '#3B82F6', label: 'Water' },
-  electricity: { icon: 'flash', color: '#EAB308', label: 'Electricity' },
-  sanitation: { icon: 'trash', color: '#84CC16', label: 'Sanitation' },
-  healthcare: { icon: 'medkit', color: '#EF4444', label: 'Healthcare' },
-  education: { icon: 'school', color: '#8B5CF6', label: 'Education' },
-  public_safety: { icon: 'shield-checkmark', color: '#06B6D4', label: 'Safety' },
-  transport: { icon: 'bus', color: '#F97316', label: 'Transport' },
-  housing: { icon: 'home', color: '#A855F7', label: 'Housing' },
-  environment: { icon: 'leaf', color: '#10B981', label: 'Environment' },
-  corruption: { icon: 'warning', color: '#DC2626', label: 'Corruption' },
-  other: { icon: 'ellipsis-horizontal', color: '#6B7280', label: 'Other' },
+  roads: { icon: 'car', color: '#D97706', label: 'Roads' },
+  water: { icon: 'water', color: '#145C68', label: 'Water' },
+  electricity: { icon: 'flash', color: '#C5A059', label: 'Electricity' },
+  sanitation: { icon: 'trash', color: '#65A30D', label: 'Sanitation' },
+  healthcare: { icon: 'medkit', color: '#C0392B', label: 'Healthcare' },
+  education: { icon: 'school', color: '#7C3AED', label: 'Education' },
+  public_safety: { icon: 'shield-checkmark', color: '#0E7490', label: 'Safety' },
+  transport: { icon: 'bus', color: '#EA580C', label: 'Transport' },
+  housing: { icon: 'home', color: '#9333EA', label: 'Housing' },
+  environment: { icon: 'leaf', color: '#2E7D32', label: 'Environment' },
+  corruption: { icon: 'warning', color: '#A8201A', label: 'Corruption' },
+  other: { icon: 'ellipsis-horizontal', color: '#8A6D3B', label: 'Other' },
 };
 
 export const SEVERITY_CONFIG: Record<IssueSeverity, { color: string; label: string }> = {
-  low: { color: '#6B7280', label: 'Low' },
-  medium: { color: '#F59E0B', label: 'Medium' },
-  high: { color: '#F97316', label: 'High' },
-  critical: { color: '#EF4444', label: 'Critical' },
+  low: { color: '#8A6D3B', label: 'Low' },
+  medium: { color: '#D97706', label: 'Medium' },
+  high: { color: '#EA580C', label: 'High' },
+  critical: { color: '#C0392B', label: 'Critical' },
 };
 
 export const STATUS_CONFIG: Record<IssueStatus, { color: string; label: string; icon: string }> = {
-  open: { color: '#3B82F6', label: 'Open', icon: 'radio-button-on' },
-  acknowledged: { color: '#8B5CF6', label: 'Acknowledged', icon: 'eye' },
-  in_progress: { color: '#F59E0B', label: 'In Progress', icon: 'hammer' },
-  resolved: { color: '#10B981', label: 'Resolved', icon: 'checkmark-circle' },
-  closed: { color: '#6B7280', label: 'Closed', icon: 'close-circle' },
-  reopened: { color: '#EF4444', label: 'Reopened', icon: 'refresh-circle' },
+  open: { color: '#145C68', label: 'Open', icon: 'radio-button-on' },
+  acknowledged: { color: '#C5A059', label: 'Acknowledged', icon: 'eye' },
+  in_progress: { color: '#D97706', label: 'In Progress', icon: 'hammer' },
+  resolved: { color: '#2E7D32', label: 'Resolved', icon: 'checkmark-circle' },
+  closed: { color: '#8A6D3B', label: 'Closed', icon: 'close-circle' },
+  reopened: { color: '#A8201A', label: 'Reopened', icon: 'refresh-circle' },
 };
 
 /** Valid status transitions with who can perform them */

@@ -1,7 +1,8 @@
 import React from 'react';
 import { View, Text, StyleSheet, ScrollView } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { moderateScale as ms } from '@/lib/responsive';
+import { moderateScale as ms } from '../../lib/responsive';
+import { useTheme } from '../../lib/theme';
 
 interface RedFlag {
   type: string;
@@ -26,32 +27,33 @@ const FLAG_ICON: Record<string, string> = {
 };
 
 const SEVERITY_COLOR: Record<string, string> = {
-  critical: '#EF4444',
-  warning: '#F59E0B',
-  info: '#4F8EF7',
+  critical: '#A8201A',
+  warning: '#D97706',
+  info: '#145C68',
 };
 
 export default function RedFlagsBanner({ flags }: Props) {
+  const { colors } = useTheme();
   if (flags.length === 0) return null;
 
   const criticalCount = flags.filter(f => f.severity === 'critical').length;
-  const bgColor = criticalCount > 0 ? '#EF444410' : '#F59E0B10';
-  const borderColor = criticalCount > 0 ? '#EF444440' : '#F59E0B40';
+  const bgColor = criticalCount > 0 ? '#A8201A10' : '#D9770610';
+  const borderColor = criticalCount > 0 ? '#A8201A30' : '#D9770630';
 
   return (
     <View style={[styles.container, { backgroundColor: bgColor, borderColor }]}>
       <View style={styles.header}>
-        <Ionicons name="warning" size={16} color={criticalCount > 0 ? '#EF4444' : '#F59E0B'} />
-        <Text style={styles.headerText}>{flags.length} Red Flag{flags.length > 1 ? 's' : ''} Detected</Text>
+        <Ionicons name="warning" size={16} color={criticalCount > 0 ? colors.danger : '#D97706'} />
+        <Text style={[styles.headerText, { color: colors.text }]}>{flags.length} Red Flag{flags.length > 1 ? 's' : ''} Detected</Text>
       </View>
       <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.flagsScroll}>
         {flags.map((flag, idx) => {
-          const color = SEVERITY_COLOR[flag.severity] || '#6B7280';
+          const color = SEVERITY_COLOR[flag.severity] || colors.textMuted;
           const icon = FLAG_ICON[flag.type] || 'flag';
           return (
-            <View key={idx} style={[styles.flagChip, { borderColor: color + '40' }]}>
+            <View key={idx} style={[styles.flagChip, { backgroundColor: colors.surface, borderColor: colors.goldBorder || colors.border }]}>
               <Ionicons name={icon as any} size={12} color={color} />
-              <Text style={[styles.flagText, { color }]} numberOfLines={2}>
+              <Text style={[styles.flagText, { color: colors.text }]} numberOfLines={2}>
                 {flag.description}
               </Text>
             </View>
@@ -79,7 +81,6 @@ const styles = StyleSheet.create({
   headerText: {
     fontSize: ms(12),
     fontWeight: '700',
-    color: '#FFFFFF',
   },
   flagsScroll: {
     gap: 8,
@@ -89,7 +90,6 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: 6,
-    backgroundColor: '#0A0A1A',
     borderRadius: 8,
     borderWidth: 1,
     paddingHorizontal: 10,

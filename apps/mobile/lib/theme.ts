@@ -1,75 +1,104 @@
 /**
- * Kshetra Theme System
+ * Kshetra Theme System - Raja Ravi Varma Heritage Edition
  *
- * Defines dark and light color palettes.
- * Consumed via useTheme() hook connected to preferences store.
+ * Infuses the visual depth, warm chiaroscuro, natural pigments (sindoori vermilion,
+ * kasavu gold, peacock teal, aged rosewood, ivory parchment) of Raja Ravi Varma's
+ * classical masterworks into a human-crafted digital civic experience.
  */
 
 export type ThemeMode = 'dark' | 'light' | 'system';
 
 export interface ThemeColors {
-  /** Primary background */
+  /** Primary canvas background (Parchment in light, Rosewood in dark) */
   background: string;
-  /** Elevated card/surface background */
+  /** Elevated card/surface background (Ivory in light, Teakwood in dark) */
   surface: string;
-  /** More elevated surface */
+  /** More elevated surface / highlighted card */
   surfaceElevated: string;
-  /** Primary text */
+  /** Primary text (Walnut Ink in light, Antique Silk in dark) */
   text: string;
   /** Secondary text */
   textSecondary: string;
   /** Muted/tertiary text */
   textMuted: string;
-  /** Primary accent */
+  /** Sindoori Vermilion - Primary Royal Accent */
   primary: string;
-  /** Primary accent with transparency */
+  /** Primary accent with transparency / soft wash */
   primaryLight: string;
-  /** Danger/error */
+  /** Kasavu / Zari Gold - Trims, Accents, Emblems */
+  gold: string;
+  /** Soft gold highlight background */
+  goldLight: string;
+  /** Zari border stroke */
+  goldBorder: string;
+  /** Mayil Peacock Teal - Secondary Regal Accent */
+  teal: string;
+  /** Soft teal highlight background */
+  tealLight: string;
+  /** Warm parchment surface */
+  parchment: string;
+  /** Danger/error - Crimson Lacquer */
   danger: string;
-  /** Success */
+  /** Success - Temple Emerald */
   success: string;
-  /** Warning */
+  /** Warning - Marigold Saffron */
   warning: string;
-  /** Divider/border */
+  /** Linen / Teak divider border */
   border: string;
   /** Map style URL */
   mapStyle: string;
   /** Status bar style */
-  statusBar: 'light' | 'dark';
+  statusBar: 'light-content' | 'dark-content';
+  /** Warm ambient shadow color */
+  shadowColor: string;
 }
 
 export const DARK_THEME: ThemeColors = {
-  background: '#0A0A1A',
-  surface: '#111827',
-  surfaceElevated: '#1F2937',
-  text: '#FFFFFF',
-  textSecondary: '#9CA3AF',
-  textMuted: '#6B7280',
-  primary: '#4F8EF7',
-  primaryLight: '#4F8EF720',
-  danger: '#EF4444',
-  success: '#10B981',
+  background: '#16100E',
+  surface: '#221916',
+  surfaceElevated: '#2D221E',
+  text: '#F5EBE1',
+  textSecondary: '#C4B1A2',
+  textMuted: '#8E7B6F',
+  primary: '#D3453E',
+  primaryLight: '#3D1B19',
+  gold: '#D8BC7E',
+  goldLight: '#2C2114',
+  goldBorder: '#8A6D3B',
+  teal: '#268596',
+  tealLight: '#122E34',
+  parchment: '#1E1613',
+  danger: '#E74C3C',
+  success: '#388E3C',
   warning: '#F59E0B',
-  border: '#1F2937',
+  border: '#382A24',
   mapStyle: 'mapbox://styles/mapbox/dark-v11',
-  statusBar: 'light',
+  statusBar: 'light-content',
+  shadowColor: '#0A0605',
 };
 
 export const LIGHT_THEME: ThemeColors = {
-  background: '#F8FAFC',
+  background: '#FAF6EE',
   surface: '#FFFFFF',
-  surfaceElevated: '#FFFFFF',
-  text: '#0F172A',
-  textSecondary: '#475569',
-  textMuted: '#94A3B8',
-  primary: '#2563EB',
-  primaryLight: '#EFF6FF',
-  danger: '#EF4444',
-  success: '#10B981',
-  warning: '#F59E0B',
-  border: '#F1F5F9',
+  surfaceElevated: '#F5EFE4',
+  text: '#241814',
+  textSecondary: '#6D5549',
+  textMuted: '#988275',
+  primary: '#A8201A',
+  primaryLight: '#FBE8E7',
+  gold: '#C5A059',
+  goldLight: '#F9F4E8',
+  goldBorder: '#D8BC7E',
+  teal: '#145C68',
+  tealLight: '#E6F4F6',
+  parchment: '#F4EFE6',
+  danger: '#C0392B',
+  success: '#2E7D32',
+  warning: '#D97706',
+  border: '#E8DED1',
   mapStyle: 'mapbox://styles/mapbox/light-v11',
-  statusBar: 'dark',
+  statusBar: 'dark-content',
+  shadowColor: '#2A1810',
 };
 
 export { useTheme } from './useTheme';

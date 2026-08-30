@@ -1,9 +1,10 @@
 import { View, Text, StyleSheet } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useTranslation } from 'react-i18next';
-import { getPartyColor } from '@/lib/constants';
-import CandidateAvatar from '@/components/CandidateAvatar';
-import type { MLAProfile } from '@/lib/data';
+import { getPartyColor } from '../lib/constants';
+import CandidateAvatar from './CandidateAvatar';
+import type { MLAProfile } from '../lib/data';
+import { useTheme } from '../lib/theme';
 
 /** Format INR amounts in lakhs/crores */
 function formatINR(amount: number): string {
@@ -22,6 +23,7 @@ interface MLACardProps {
 
 export default function MLACard({ profile }: MLACardProps) {
   const { t } = useTranslation();
+  const { colors } = useTheme();
   const partyColor = getPartyColor(profile.party);
 
   const termLabel = profile.terms === 1 ? t('mla.term_1')
@@ -30,7 +32,7 @@ export default function MLACard({ profile }: MLACardProps) {
     : t('mla.term_n', { n: profile.terms });
 
   return (
-    <View style={styles.card}>
+    <View style={[styles.card, { backgroundColor: colors.surface, borderColor: colors.goldBorder || colors.border }]}>
       {/* Header */}
       <View style={styles.header}>
         <CandidateAvatar
@@ -40,22 +42,22 @@ export default function MLACard({ profile }: MLACardProps) {
           photoUrl={profile.photoUrl}
         />
         <View style={styles.headerInfo}>
-          <Text style={styles.name}>{profile.name}</Text>
+          <Text style={[styles.name, { color: colors.text }]}>{profile.name}</Text>
           {profile.constituencyName && (
-            <Text style={styles.constituencyLabel}>AC #{profile.acNo} · {profile.constituencyName}</Text>
+            <Text style={[styles.constituencyLabel, { color: colors.textMuted }]}>AC #{profile.acNo} · {profile.constituencyName}</Text>
           )}
           <View style={styles.partyRow}>
             <View style={[styles.partyBadge, { backgroundColor: partyColor }]}>
               <Text style={styles.partyText}>{profile.party}</Text>
             </View>
             {profile.age && (
-              <Text style={styles.metaText}>{t('mla.age')} {profile.age}</Text>
+              <Text style={[styles.metaText, { color: colors.textSecondary }]}>{t('mla.age')} {profile.age}</Text>
             )}
-            <Text style={styles.metaText}>
+            <Text style={[styles.metaText, { color: colors.textSecondary }]}>
               {profile.gender === 'F' ? t('mla.female') : t('mla.male')}
             </Text>
             {profile.maritalStatus && (
-              <Text style={styles.metaText}>· {profile.maritalStatus}</Text>
+              <Text style={[styles.metaText, { color: colors.textSecondary }]}>· {profile.maritalStatus}</Text>
             )}
           </View>
         </View>
@@ -66,71 +68,62 @@ export default function MLACard({ profile }: MLACardProps) {
         <View style={styles.detailsRow}>
           {profile.education && (
             <View style={styles.detailItem}>
-              <Ionicons name="school" size={13} color="#10B981" />
-              <Text style={styles.detailText}>{profile.education}</Text>
+              <Ionicons name="school" size={13} color={colors.primary} />
+              <Text style={[styles.detailText, { color: colors.textSecondary }]}>{profile.education}</Text>
             </View>
           )}
           {profile.profession && (
             <View style={styles.detailItem}>
-              <Ionicons name="briefcase" size={13} color="#6B7280" />
-              <Text style={styles.detailText}>{profile.profession}</Text>
+              <Ionicons name="briefcase" size={13} color={colors.textMuted} />
+              <Text style={[styles.detailText, { color: colors.textSecondary }]}>{profile.profession}</Text>
             </View>
           )}
           {profile.dob && (
             <View style={styles.detailItem}>
-              <Ionicons name="calendar" size={13} color="#8B5CF6" />
-              <Text style={styles.detailText}>DOB: {profile.dob}</Text>
+              <Ionicons name="calendar" size={13} color={colors.gold} />
+              <Text style={[styles.detailText, { color: colors.textSecondary }]}>DOB: {profile.dob}</Text>
             </View>
           )}
         </View>
       )}
 
       {/* Stats Grid */}
-      <View style={styles.statsGrid}>
+      <View style={[styles.statsGrid, { backgroundColor: colors.surfaceElevated }]}>
         <View style={styles.statItem}>
-          <Ionicons name="ribbon" size={16} color="#4F8EF7" />
-          <Text style={styles.statValue}>
+          <Ionicons name="ribbon" size={16} color={colors.gold} />
+          <Text style={[styles.statValue, { color: colors.text }]}>
             {termLabel}
           </Text>
-          <Text style={styles.statLabel}>{t('mla.terms')}</Text>
+          <Text style={[styles.statLabel, { color: colors.textMuted }]}>{t('mla.terms')}</Text>
         </View>
 
         {profile.totalAssets !== undefined && (
           <View style={styles.statItem}>
-            <Ionicons name="wallet" size={16} color="#F59E0B" />
-            <Text style={styles.statValue}>
+            <Ionicons name="wallet" size={16} color={colors.gold} />
+            <Text style={[styles.statValue, { color: colors.text }]}>
               {formatINR(profile.totalAssets)}
             </Text>
-            <Text style={styles.statLabel}>{t('mla.assets')}</Text>
-          </View>
-        )}
-
-        {profile.totalLiabilities !== undefined && (
-          <View style={styles.statItem}>
-            <Ionicons name="card" size={16} color="#F97316" />
-            <Text style={styles.statValue}>
-              {formatINR(profile.totalLiabilities)}
-            </Text>
-            <Text style={styles.statLabel}>Liabilities</Text>
+            <Text style={[styles.statLabel, { color: colors.textMuted }]}>{t('mla.assets')}</Text>
           </View>
         )}
 
         {profile.criminalCases !== undefined && (
           <View style={styles.statItem}>
             <Ionicons
-              name={(profile.criminalCases ?? 0) > 0 ? 'warning' : 'checkmark-circle'}
+              name={(profile.criminalCases ?? 0) > 0 ? "alert-circle" : "shield-checkmark"}
               size={16}
-              color={(profile.criminalCases ?? 0) > 0 ? '#EF4444' : '#10B981'}
+              color={(profile.criminalCases ?? 0) > 0 ? colors.danger : colors.success}
             />
             <Text
               style={[
                 styles.statValue,
-                (profile.criminalCases ?? 0) > 0 && styles.warningText,
+                { color: colors.text },
+                (profile.criminalCases ?? 0) > 0 && { color: colors.danger },
               ]}
             >
               {profile.criminalCases}
             </Text>
-            <Text style={styles.statLabel}>{t('mla.cases')}</Text>
+            <Text style={[styles.statLabel, { color: colors.textMuted }]}>{t('mla.cases')}</Text>
           </View>
         )}
       </View>
@@ -140,9 +133,10 @@ export default function MLACard({ profile }: MLACardProps) {
 
 const styles = StyleSheet.create({
   card: {
-    backgroundColor: '#111827',
     borderRadius: 16,
+    borderWidth: 1,
     padding: 16,
+    marginBottom: 12,
   },
   header: {
     flexDirection: 'row',
@@ -153,7 +147,7 @@ const styles = StyleSheet.create({
     width: 52,
     height: 52,
     borderRadius: 26,
-    backgroundColor: '#1F2937',
+    backgroundColor: '#E8DED1',
     borderWidth: 2,
     justifyContent: 'center',
     alignItems: 'center',
@@ -167,7 +161,7 @@ const styles = StyleSheet.create({
   avatarInitials: {
     fontSize: 18,
     fontWeight: '800',
-    color: '#9CA3AF',
+    color: '#6D5549',
   },
   headerInfo: {
     flex: 1,
@@ -175,12 +169,12 @@ const styles = StyleSheet.create({
   name: {
     fontSize: 18,
     fontWeight: '700',
-    color: '#FFFFFF',
+    color: '#241814',
     marginBottom: 2,
   },
   constituencyLabel: {
     fontSize: 11,
-    color: '#6B7280',
+    color: '#988275',
     marginBottom: 3,
   },
   partyRow: {
@@ -197,11 +191,11 @@ const styles = StyleSheet.create({
   partyText: {
     fontSize: 11,
     fontWeight: '800',
-    color: '#FFFFFF',
+    color: '#241814',
   },
   metaText: {
     fontSize: 12,
-    color: '#9CA3AF',
+    color: '#6D5549',
   },
   detailsRow: {
     flexDirection: 'row',
@@ -217,12 +211,12 @@ const styles = StyleSheet.create({
   },
   detailText: {
     fontSize: 12,
-    color: '#D1D5DB',
+    color: '#6D5549',
   },
   statsGrid: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    backgroundColor: '#0A0A1A',
+    backgroundColor: '#F5EFE4',
     borderRadius: 12,
     padding: 12,
   },
@@ -233,11 +227,11 @@ const styles = StyleSheet.create({
   statValue: {
     fontSize: 13,
     fontWeight: '700',
-    color: '#FFFFFF',
+    color: '#241814',
   },
   statLabel: {
     fontSize: 10,
-    color: '#6B7280',
+    color: '#988275',
     textTransform: 'uppercase',
     letterSpacing: 0.5,
   },

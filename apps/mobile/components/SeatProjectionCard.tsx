@@ -1,32 +1,39 @@
-import { View, Text, StyleSheet } from 'react-native';
+import { View, Text, StyleSheet, Pressable } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useTranslation } from 'react-i18next';
 import type { SeatAllocation } from '../lib/delimitationTypes';
 import { formatPopulation } from '../lib/delimitationTypes';
+import { useTheme } from '../lib/theme';
 
 interface SeatProjectionCardProps {
   allocation: SeatAllocation;
   compact?: boolean;
+  onPress?: (stateCode: string) => void;
 }
 
-export default function SeatProjectionCard({ allocation, compact = false }: SeatProjectionCardProps) {
+export default function SeatProjectionCard({ allocation, compact = false, onPress }: SeatProjectionCardProps) {
   const { t } = useTranslation();
+  const { colors } = useTheme();
   const isGainer = allocation.seatChange > 0;
   const isLoser = allocation.seatChange < 0;
-  const changeColor = isGainer ? '#10B981' : isLoser ? '#EF4444' : '#6B7280';
+  const changeColor = isGainer ? '#10B981' : isLoser ? '#EF4444' : colors.textMuted;
   const changeIcon = isGainer ? 'arrow-up' : isLoser ? 'arrow-down' : 'remove';
   const changeText = isGainer ? `+${allocation.seatChange}` : `${allocation.seatChange}`;
 
   if (compact) {
     return (
-      <View style={styles.compactCard}>
+      <Pressable
+        onPress={onPress ? () => onPress(allocation.stateCode) : undefined}
+        disabled={!onPress}
+        style={[styles.compactCard, { backgroundColor: colors.surface, borderColor: colors.border }]}
+      >
         <View style={styles.compactLeft}>
-          <Text style={styles.compactState}>{allocation.stateCode}</Text>
-          <Text style={styles.compactName}>{allocation.stateName}</Text>
+          <Text style={[styles.compactState, { color: colors.primary }]}>{allocation.stateCode}</Text>
+          <Text style={[styles.compactName, { color: colors.text }]}>{allocation.stateName}</Text>
         </View>
         <View style={styles.compactSeats}>
-          <Text style={styles.compactCurrent}>{allocation.currentSeats}</Text>
-          <Ionicons name="arrow-forward" size={12} color="#6B7280" />
+          <Text style={[styles.compactCurrent, { color: colors.textSecondary }]}>{allocation.currentSeats}</Text>
+          <Ionicons name="arrow-forward" size={12} color={colors.textMuted} />
           <Text style={[styles.compactProjected, { color: changeColor }]}>
             {allocation.projectedSeats}
           </Text>
@@ -35,17 +42,21 @@ export default function SeatProjectionCard({ allocation, compact = false }: Seat
           <Ionicons name={changeIcon as any} size={10} color={changeColor} />
           <Text style={[styles.changeText, { color: changeColor }]}>{changeText}</Text>
         </View>
-      </View>
+      </Pressable>
     );
   }
 
   return (
-    <View style={styles.card}>
+    <Pressable
+      onPress={onPress ? () => onPress(allocation.stateCode) : undefined}
+      disabled={!onPress}
+      style={[styles.card, { backgroundColor: colors.surface, borderColor: colors.border, shadowColor: colors.shadowColor }]}
+    >
       {/* Header */}
       <View style={styles.headerRow}>
         <View>
-          <Text style={styles.stateName}>{allocation.stateName}</Text>
-          <Text style={styles.stateCode}>{allocation.stateCode}</Text>
+          <Text style={[styles.stateName, { color: colors.text }]}>{allocation.stateName}</Text>
+          <Text style={[styles.stateCode, { color: colors.primary }]}>{allocation.stateCode}</Text>
         </View>
         <View style={[styles.changeBadgeLarge, { backgroundColor: changeColor + '20' }]}>
           <Ionicons name={changeIcon as any} size={14} color={changeColor} />
@@ -56,12 +67,12 @@ export default function SeatProjectionCard({ allocation, compact = false }: Seat
       {/* Seat comparison */}
       <View style={styles.seatRow}>
         <View style={styles.seatBlock}>
-          <Text style={styles.seatLabel}>{t('delimitation.currentSeats')}</Text>
-          <Text style={styles.seatValue}>{allocation.currentSeats}</Text>
+          <Text style={[styles.seatLabel, { color: colors.textMuted }]}>{t('delimitation.currentSeats')}</Text>
+          <Text style={[styles.seatValue, { color: colors.text }]}>{allocation.currentSeats}</Text>
         </View>
-        <Ionicons name="arrow-forward" size={18} color="#6B7280" />
+        <Ionicons name="arrow-forward" size={18} color={colors.goldBorder || colors.border} />
         <View style={styles.seatBlock}>
-          <Text style={styles.seatLabel}>{t('delimitation.projectedSeats')}</Text>
+          <Text style={[styles.seatLabel, { color: colors.textMuted }]}>{t('delimitation.projectedSeats')}</Text>
           <Text style={[styles.seatValue, { color: changeColor }]}>
             {allocation.projectedSeats}
           </Text>
@@ -69,43 +80,47 @@ export default function SeatProjectionCard({ allocation, compact = false }: Seat
       </View>
 
       {/* Reservation breakdown */}
-      <View style={styles.reservationRow}>
+      <View style={[styles.reservationRow, { backgroundColor: colors.surfaceElevated, borderColor: colors.border }]}>
         <View style={styles.resBlock}>
           <View style={[styles.resDot, { backgroundColor: '#3B82F6' }]} />
-          <Text style={styles.resLabel}>{t('delimitation.general')} {allocation.general}</Text>
+          <Text style={[styles.resLabel, { color: colors.textSecondary }]}>{t('delimitation.general')} {allocation.general}</Text>
         </View>
         <View style={styles.resBlock}>
           <View style={[styles.resDot, { backgroundColor: '#F59E0B' }]} />
-          <Text style={styles.resLabel}>{t('delimitation.sc')} {allocation.reservedSC}</Text>
+          <Text style={[styles.resLabel, { color: colors.textSecondary }]}>{t('delimitation.sc')} {allocation.reservedSC}</Text>
         </View>
         <View style={styles.resBlock}>
           <View style={[styles.resDot, { backgroundColor: '#10B981' }]} />
-          <Text style={styles.resLabel}>{t('delimitation.st')} {allocation.reservedST}</Text>
+          <Text style={[styles.resLabel, { color: colors.textSecondary }]}>{t('delimitation.st')} {allocation.reservedST}</Text>
         </View>
       </View>
 
       {/* Population stats */}
       <View style={styles.statsRow}>
-        <Text style={styles.statText}>
+        <Text style={[styles.statText, { color: colors.textMuted }]}>
           Pop: {formatPopulation(allocation.totalPopulation)}
         </Text>
-        <Text style={styles.statText}>
+        <Text style={[styles.statText, { color: colors.textMuted }]}>
           Pop/Seat: {formatPopulation(allocation.populationPerProjectedSeat)}
         </Text>
-        <Text style={[styles.statText, { color: Math.abs(allocation.deviationPercent) > 10 ? '#EF4444' : '#6B7280' }]}>
+        <Text style={[styles.statText, { color: Math.abs(allocation.deviationPercent) > 10 ? colors.danger : colors.textMuted }]}>
           Dev: {allocation.deviationPercent > 0 ? '+' : ''}{allocation.deviationPercent.toFixed(1)}%
         </Text>
       </View>
-    </View>
+    </Pressable>
   );
 }
 
 const styles = StyleSheet.create({
   card: {
-    backgroundColor: '#111827',
     borderRadius: 14,
     padding: 14,
     marginBottom: 10,
+    borderWidth: 1,
+    elevation: 2,
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.06,
+    shadowRadius: 6,
   },
   headerRow: {
     flexDirection: 'row',
@@ -116,12 +131,10 @@ const styles = StyleSheet.create({
   stateName: {
     fontSize: 16,
     fontWeight: '800',
-    color: '#FFFFFF',
   },
   stateCode: {
     fontSize: 11,
-    fontWeight: '600',
-    color: '#6B7280',
+    fontWeight: '700',
     marginTop: 1,
   },
   changeBadgeLarge: {
@@ -149,13 +162,11 @@ const styles = StyleSheet.create({
   seatLabel: {
     fontSize: 11,
     fontWeight: '600',
-    color: '#6B7280',
     marginBottom: 2,
   },
   seatValue: {
     fontSize: 28,
     fontWeight: '900',
-    color: '#FFFFFF',
   },
   reservationRow: {
     flexDirection: 'row',
@@ -165,8 +176,8 @@ const styles = StyleSheet.create({
     marginBottom: 10,
     paddingVertical: 8,
     paddingHorizontal: 6,
-    backgroundColor: '#0D1117',
     borderRadius: 8,
+    borderWidth: 1,
   },
   resBlock: {
     flexDirection: 'row',
@@ -181,7 +192,6 @@ const styles = StyleSheet.create({
   resLabel: {
     fontSize: 12,
     fontWeight: '700',
-    color: '#9CA3AF',
   },
   statsRow: {
     flexDirection: 'row',
@@ -192,16 +202,15 @@ const styles = StyleSheet.create({
   statText: {
     fontSize: 11,
     fontWeight: '600',
-    color: '#6B7280',
   },
   // ─── Compact mode ───
   compactCard: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#111827',
     borderRadius: 10,
     padding: 10,
     marginBottom: 6,
+    borderWidth: 1,
   },
   compactLeft: {
     flex: 1,
@@ -209,12 +218,10 @@ const styles = StyleSheet.create({
   compactState: {
     fontSize: 10,
     fontWeight: '800',
-    color: '#6B7280',
   },
   compactName: {
     fontSize: 13,
     fontWeight: '700',
-    color: '#FFFFFF',
   },
   compactSeats: {
     flexDirection: 'row',
@@ -225,7 +232,6 @@ const styles = StyleSheet.create({
   compactCurrent: {
     fontSize: 14,
     fontWeight: '700',
-    color: '#9CA3AF',
   },
   compactProjected: {
     fontSize: 14,

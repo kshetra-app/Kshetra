@@ -27,6 +27,7 @@ import { useMyConstituencyStore } from '../../stores/myConstituency';
 import { usePromiseStore } from '../../stores/promises';
 import { PROMISE_STATUS_CONFIG, type PromiseStatus as PStatus } from '../../lib/promiseTypes';
 import { STATES } from '@kshetra/shared';
+import { useTheme } from '../../lib/theme';
 
 const SCOPE_OPTIONS: { key: CivicScope; icon: string; tKey: string }[] = [
   { key: 'constituency', icon: 'location', tKey: 'common.scopes.myConstituency' },
@@ -46,15 +47,15 @@ class DashboardErrorBoundary extends Component<
   render() {
     if (this.state.hasError) {
       return (
-        <View style={{ flex: 1, backgroundColor: '#0A0A1A', justifyContent: 'center', alignItems: 'center', padding: 20 }}>
-          <Ionicons name="warning" size={48} color="#EF4444" />
-          <Text style={{ color: '#FFF', fontSize: 18, fontWeight: '700', marginTop: 12 }}>Dashboard Error</Text>
-          <Text style={{ color: '#9CA3AF', fontSize: 13, marginTop: 8, textAlign: 'center' }}>{this.state.error}</Text>
+        <View style={{ flex: 1, backgroundColor: '#FAF6EE', justifyContent: 'center', alignItems: 'center', padding: 20 }}>
+          <Ionicons name="warning" size={48} color="#A8201A" />
+          <Text style={{ color: '#16100E', fontSize: 18, fontWeight: '700', marginTop: 12 }}>Dashboard Error</Text>
+          <Text style={{ color: '#5C554E', fontSize: 13, marginTop: 8, textAlign: 'center' }}>{this.state.error}</Text>
           <Pressable
-            style={{ marginTop: 16, backgroundColor: '#4F8EF7', borderRadius: 10, paddingHorizontal: 20, paddingVertical: 10 }}
+            style={{ marginTop: 16, backgroundColor: '#A8201A', borderRadius: 10, paddingHorizontal: 20, paddingVertical: 10 }}
             onPress={() => this.setState({ hasError: false, error: '' })}
           >
-            <Text style={{ color: '#FFF', fontWeight: '700' }}>Retry</Text>
+            <Text style={{ color: '#FAF6EE', fontWeight: '700' }}>Retry</Text>
           </Pressable>
         </View>
       );
@@ -89,6 +90,7 @@ export default function DashboardScreen() {
 
 function DashboardContent() {
   const { t } = useTranslation();
+  const { colors } = useTheme();
   const router = useRouter();
   const [activeTab, setActiveTab] = useState<DashboardTab>('issues');
   const [reportVisible, setReportVisible] = useState(false);
@@ -129,18 +131,26 @@ function DashboardContent() {
   // Strict scope demarcation for promises: each level shows ONLY its own content.
   const scopedPromises = useMemo(() => {
     if (scopeFilter === 'constituency') {
-      // Constituency: strictly promises tied to this constituency.
       return myHome
         ? allPromises.filter((p) => p.stateCode === stateCode && p.constituencyAcNo === myHome.acNo)
         : [];
     }
     if (scopeFilter === 'national') {
-      // National: strictly national-level promises.
       return allPromises.filter((p) => p.stateCode === 'NATIONAL');
     }
-    // State: strictly this state's promises (its constituencies + state-wide).
-    return allPromises.filter((p) => p.stateCode === stateCode);
+    return allPromises.filter((p) => p.stateCode === stateCode && p.constituencyAcNo == null);
   }, [allPromises, scopeFilter, stateCode, myHome]);
+
+  const reportCard = useMemo(() => {
+    const rulingParty = stateCode === 'AP' ? 'TDP' : stateCode === 'KA' ? 'INC' : stateCode === 'MH' ? 'BJP' : 'INC';
+    if (scopeFilter === 'constituency' && myHome) {
+      return getReportCard(stateCode, myHome.party || rulingParty, 2023);
+    }
+    if (scopeFilter === 'state' && stateCode !== 'IN') {
+      return getReportCard(stateCode, rulingParty, 2023);
+    }
+    return getReportCard('TS', 'INC', 2023);
+  }, [getReportCard, scopeFilter, stateCode, myHome]);
 
   // Scope-filtered data — derive in useMemo from raw arrays
   const { issues, headlines, sentiment } = useMemo(() => {
@@ -174,7 +184,7 @@ function DashboardContent() {
     if (scopeFilter === 'constituency' && myHome) return myHome.name;
     if (scopeFilter === 'state') return (STATES as Record<string, { name: string }>)[stateCode]?.name ?? stateCode;
     return t('common.scopes.allIndia');
-  }, [scopeFilter, stateCode, myHome]);
+  }, [scopeFilter, stateCode, myHome, t]);
 
   const issueStats = useMemo(() => {
     const open = issues.filter((i) => i.status === 'open').length;
@@ -201,24 +211,24 @@ function DashboardContent() {
   const { insets } = useResponsive();
 
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, { backgroundColor: colors.background }]}>
       {/* ── Compact Header ── */}
-      <View style={[styles.header, { paddingTop: insets.top + 8 }]}>
+      <View style={[styles.header, { paddingTop: insets.top + 8, borderBottomColor: colors.border }]}>
         <View>
-          <Text style={styles.headerTitle}>{t('dashboard.title')}</Text>
+          <Text style={[styles.headerTitle, { color: colors.text }]}>{t('dashboard.title')}</Text>
           <View style={styles.scopeIndicator}>
-            <Ionicons name="funnel" size={10} color="#6B7280" />
-            <Text style={styles.scopeIndicatorText}>
+            <Ionicons name="funnel" size={10} color={colors.textMuted} />
+            <Text style={[styles.scopeIndicatorText, { color: colors.textMuted }]}>
               {scopeLabel} · {issues.length} {issues.length !== 1 ? t('common.items') : t('common.item')}
             </Text>
           </View>
         </View>
         <View style={styles.headerActions}>
-          <Pressable style={styles.iconButton} onPress={() => setExportVisible(true)}>
-            <Ionicons name="download-outline" size={18} color="#10B981" />
+          <Pressable style={[styles.iconButton, { backgroundColor: colors.surface, borderColor: colors.goldBorder || colors.border, borderWidth: 1 }]} onPress={() => setExportVisible(true)}>
+            <Ionicons name="download-outline" size={18} color={colors.teal} />
           </Pressable>
           {activeTab === 'issues' && (
-            <Pressable style={styles.reportButton} onPress={() => setReportVisible(true)}>
+            <Pressable style={[styles.reportButton, { backgroundColor: colors.primary }]} onPress={() => setReportVisible(true)}>
               <Ionicons name="add" size={20} color="#FFFFFF" />
             </Pressable>
           )}
@@ -233,11 +243,27 @@ function DashboardContent() {
           return (
             <Pressable
               key={opt.key}
-              style={[styles.scopeChip, active && styles.scopeChipActive, disabled && styles.scopeChipDisabled]}
+              style={[
+                styles.scopeChip,
+                { backgroundColor: colors.surface, borderColor: colors.goldBorder || colors.border },
+                active && { backgroundColor: colors.primary, borderColor: colors.primary },
+                disabled && styles.scopeChipDisabled,
+              ]}
               onPress={() => !disabled && setScopeFilter(opt.key)}
             >
-              <Ionicons name={opt.icon as any} size={12} color={active ? '#FFF' : disabled ? '#374151' : '#9CA3AF'} />
-              <Text style={[styles.scopeChipText, active && styles.scopeChipTextActive, disabled && { color: '#374151' }]}>
+              <Ionicons
+                name={opt.icon as any}
+                size={12}
+                color={active ? '#FFF' : disabled ? colors.textMuted : colors.textSecondary}
+              />
+              <Text
+                style={[
+                  styles.scopeChipText,
+                  { color: colors.textSecondary },
+                  active && styles.scopeChipTextActive,
+                  disabled && { color: colors.textMuted },
+                ]}
+              >
                 {opt.key === 'state'
                   ? (STATES as Record<string, { name: string }>)[stateCode]?.name ?? stateCode
                   : opt.key === 'constituency' && myHome
@@ -250,17 +276,17 @@ function DashboardContent() {
       </ScrollView>
 
       {/* ── Tab Bar ── */}
-      <View style={styles.tabRow}>
+      <View style={[styles.tabRow, { backgroundColor: colors.surfaceElevated, borderColor: colors.goldBorder || colors.border, borderWidth: 1 }]}>
         {TAB_KEYS.map((tab) => {
           const active = activeTab === tab.key;
           return (
             <Pressable
               key={tab.key}
-              style={[styles.tab, active && styles.tabActive]}
+              style={[styles.tab, active && { backgroundColor: colors.primary }]}
               onPress={() => setActiveTab(tab.key)}
             >
-              <Ionicons name={tab.icon as any} size={15} color={active ? '#FFF' : '#6B7280'} />
-              <Text style={[styles.tabLabel, active && styles.tabLabelActive]}>{t(tab.tKey)}</Text>
+              <Ionicons name={tab.icon as any} size={15} color={active ? '#FFF' : colors.textSecondary} />
+              <Text style={[styles.tabLabel, { color: colors.textSecondary }, active && styles.tabLabelActive]}>{t(tab.tKey)}</Text>
             </Pressable>
           );
         })}
@@ -269,33 +295,46 @@ function DashboardContent() {
       {/* ── Content ── */}
       <ScrollView style={styles.scroll} showsVerticalScrollIndicator={false}>
         {/* Election Analytics Entry Point */}
-        <Pressable style={[styles.delimBanner, { borderColor: '#4F8EF730' }]} onPress={() => router.push('/analytics' as any)}>
+        <Pressable
+          style={[styles.delimBanner, { backgroundColor: colors.surface, borderColor: colors.goldBorder || colors.border }]}
+          onPress={() => router.push('/analytics' as any)}
+        >
           <View style={styles.delimBannerLeft}>
-            <View style={[styles.delimIconWrap, { backgroundColor: '#4F8EF720' }]}>
-              <Ionicons name="stats-chart" size={18} color="#4F8EF7" />
+            <View style={[styles.delimIconWrap, { backgroundColor: colors.goldLight }]}>
+              <Ionicons name="stats-chart" size={18} color={colors.gold} />
             </View>
             <View>
-              <Text style={styles.delimBannerTitle}>{t('dashboardExtended.electionAnalytics')}</Text>
-              <Text style={styles.delimBannerSub}>{t('dashboardExtended.electionAnalyticsDesc')}</Text>
+              <Text style={[styles.delimBannerTitle, { color: colors.text }]}>{t('dashboardExtended.electionAnalytics')}</Text>
+              <Text style={[styles.delimBannerSub, { color: colors.textMuted }]}>{t('dashboardExtended.electionAnalyticsDesc')}</Text>
             </View>
           </View>
-          <Ionicons name="chevron-forward" size={16} color="#374151" />
+          <Ionicons name="chevron-forward" size={16} color={colors.textMuted} />
         </Pressable>
 
         {/* Quick Nav: Gold Standard Pillars */}
         <ScrollView horizontal showsHorizontalScrollIndicator={false} style={{ marginHorizontal: 12, marginBottom: 8 }} contentContainerStyle={{ gap: 8 }}>
           {[
-            { tKey: 'dashboardExtended.civicMetrics', icon: 'bar-chart', color: '#10B981', route: '/civic-metrics' },
-            { tKey: 'dashboardExtended.liveElection', icon: 'radio', color: '#F59E0B', route: '/live-election' },
-            { tKey: 'dashboardExtended.investorDemo', icon: 'rocket', color: '#EC4899', route: '/investor-demo' },
+            { tKey: 'dashboardExtended.civicMetrics', icon: 'bar-chart', color: colors.teal, route: '/civic-metrics' },
+            { tKey: 'dashboardExtended.liveElection', icon: 'radio', color: colors.primary, route: '/live-election' },
+            { tKey: 'dashboardExtended.investorDemo', icon: 'rocket', color: colors.gold, route: '/investor-demo' },
           ].map((item) => (
             <Pressable
               key={item.route}
-              style={{ flexDirection: 'row', alignItems: 'center', gap: 6, backgroundColor: item.color + '15', paddingHorizontal: 14, paddingVertical: 10, borderRadius: 12, borderWidth: 1, borderColor: item.color + '30' }}
+              style={{
+                flexDirection: 'row',
+                alignItems: 'center',
+                gap: 6,
+                backgroundColor: colors.surface,
+                paddingHorizontal: 14,
+                paddingVertical: 10,
+                borderRadius: 12,
+                borderWidth: 1,
+                borderColor: colors.goldBorder || colors.border,
+              }}
               onPress={() => router.push(item.route as any)}
             >
               <Ionicons name={item.icon as any} size={16} color={item.color} />
-              <Text style={{ fontSize: 12, fontWeight: '700', color: item.color }}>{t(item.tKey)}</Text>
+              <Text style={{ fontSize: 12, fontWeight: '700', color: colors.text }}>{t(item.tKey)}</Text>
             </Pressable>
           ))}
         </ScrollView>
@@ -305,14 +344,14 @@ function DashboardContent() {
             {/* Compact stats row */}
             <View style={styles.statsRow}>
               {[
-                { value: issueStats.open, label: t('dashboard.statusFilters.open'), color: '#3B82F6' },
-                { value: issueStats.inProgress, label: t('dashboardExtended.inProgress'), color: '#F59E0B' },
-                { value: issueStats.resolved, label: t('dashboard.statusFilters.resolved'), color: '#10B981' },
-                { value: issueStats.critical, label: t('dashboardExtended.critical'), color: '#EF4444' },
+                { value: issueStats.open, label: t('dashboard.statusFilters.open'), color: colors.primary },
+                { value: issueStats.inProgress, label: t('dashboardExtended.inProgress'), color: colors.gold },
+                { value: issueStats.resolved, label: t('dashboard.statusFilters.resolved'), color: colors.teal },
+                { value: issueStats.critical, label: t('dashboardExtended.critical'), color: colors.danger },
               ].map((stat) => (
-                <View key={stat.label} style={[styles.statCard, { borderLeftColor: stat.color }]}>
-                  <Text style={styles.statValue}>{stat.value}</Text>
-                  <Text style={styles.statLabel}>{stat.label}</Text>
+                <View key={stat.label} style={[styles.statCard, { backgroundColor: colors.surface, borderLeftColor: stat.color, borderColor: colors.border }]}>
+                  <Text style={[styles.statValue, { color: colors.text }]}>{stat.value}</Text>
+                  <Text style={[styles.statLabel, { color: colors.textMuted }]}>{stat.label}</Text>
                 </View>
               ))}
             </View>
@@ -455,7 +494,6 @@ function DashboardContent() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#0A0A1A',
   },
   header: {
     flexDirection: 'row',
@@ -505,11 +543,14 @@ const styles = StyleSheet.create({
     paddingHorizontal: 12,
     paddingVertical: 7,
     borderRadius: 18,
-    backgroundColor: '#111827',
+    backgroundColor: '#FFFFFF',
+    borderWidth: 1,
+    borderColor: '#D8BC7E',
     gap: 4,
   },
   scopeChipActive: {
-    backgroundColor: '#4F8EF7',
+    backgroundColor: '#A8201A',
+    borderColor: '#A8201A',
   },
   scopeChipDisabled: {
     opacity: 0.35,
@@ -517,7 +558,7 @@ const styles = StyleSheet.create({
   scopeChipText: {
     fontSize: 12,
     fontWeight: '700',
-    color: '#9CA3AF',
+    color: '#6D5549',
   },
   scopeChipTextActive: {
     color: '#FFFFFF',
@@ -530,16 +571,18 @@ const styles = StyleSheet.create({
   },
   scopeIndicatorText: {
     fontSize: 11,
-    color: '#6B7280',
+    color: '#8E7B6F',
     fontWeight: '600',
   },
   tabRow: {
     flexDirection: 'row',
     marginHorizontal: 16,
     marginBottom: 8,
-    backgroundColor: '#111827',
+    backgroundColor: '#FFFFFF',
     borderRadius: 12,
     padding: 3,
+    borderWidth: 1,
+    borderColor: '#E8DED1',
   },
   tab: {
     flex: 1,
@@ -551,12 +594,12 @@ const styles = StyleSheet.create({
     gap: 4,
   },
   tabActive: {
-    backgroundColor: '#4F8EF7',
+    backgroundColor: '#A8201A',
   },
   tabLabel: {
     fontSize: 12,
     fontWeight: '700',
-    color: '#6B7280',
+    color: '#6D5549',
   },
   tabLabelActive: {
     color: '#FFFFFF',
@@ -575,21 +618,23 @@ const styles = StyleSheet.create({
   },
   statCard: {
     flex: 1,
-    backgroundColor: '#111827',
+    backgroundColor: '#FFFFFF',
     borderRadius: 10,
     paddingVertical: 8,
     paddingHorizontal: 6,
     alignItems: 'center',
     borderLeftWidth: 3,
+    borderWidth: 1,
+    borderColor: '#E8DED1',
   },
   statValue: {
     fontSize: 18,
     fontWeight: '800',
-    color: '#FFFFFF',
+    color: '#241814',
   },
   statLabel: {
     fontSize: 9,
-    color: '#6B7280',
+    color: '#8E7B6F',
     fontWeight: '600',
     marginTop: 1,
   },
@@ -608,19 +653,19 @@ const styles = StyleSheet.create({
     paddingHorizontal: 10,
     paddingVertical: 6,
     borderRadius: 16,
-    backgroundColor: '#111827',
+    backgroundColor: '#FFFFFF',
     borderWidth: 1,
-    borderColor: '#1F2937',
+    borderColor: '#E8DED1',
     gap: 4,
   },
   filterChipActive: {
-    backgroundColor: '#4F8EF7',
-    borderColor: '#4F8EF7',
+    backgroundColor: '#A8201A',
+    borderColor: '#A8201A',
   },
   filterChipText: {
     fontSize: 11,
     fontWeight: '700',
-    color: '#6B7280',
+    color: '#6D5549',
   },
   filterChipTextActive: {
     color: '#FFFFFF',
@@ -628,7 +673,7 @@ const styles = StyleSheet.create({
   filterDivider: {
     width: 1,
     height: 20,
-    backgroundColor: '#374151',
+    backgroundColor: '#E8DED1',
   },
   emptyState: {
     alignItems: 'center',
@@ -637,7 +682,7 @@ const styles = StyleSheet.create({
   emptyTitle: {
     fontSize: 16,
     fontWeight: '700',
-    color: '#374151',
+    color: '#6D5549',
     marginTop: 8,
   },
   sentimentItem: {
@@ -650,14 +695,14 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    backgroundColor: '#111827',
+    backgroundColor: '#FFFFFF',
     borderRadius: 12,
     padding: 12,
     marginHorizontal: 16,
     marginTop: 8,
     marginBottom: 4,
     borderWidth: 1,
-    borderColor: '#F59E0B20',
+    borderColor: '#D8BC7E',
   },
   delimBannerLeft: {
     flexDirection: 'row',
@@ -668,19 +713,19 @@ const styles = StyleSheet.create({
     width: 34,
     height: 34,
     borderRadius: 10,
-    backgroundColor: '#F59E0B18',
+    backgroundColor: '#F9F4E8',
     alignItems: 'center',
     justifyContent: 'center',
   },
   delimBannerTitle: {
     fontSize: 13,
     fontWeight: '800',
-    color: '#FFFFFF',
+    color: '#241814',
   },
   delimBannerSub: {
     fontSize: 11,
     fontWeight: '600',
-    color: '#6B7280',
+    color: '#8E7B6F',
     marginTop: 1,
   },
 });

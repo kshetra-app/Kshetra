@@ -58,10 +58,10 @@ export default function DataPipelineCard({ pipeline, onRefresh }: DataPipelineCa
 }
 
 const styles = StyleSheet.create({
-  card: { backgroundColor: '#111827', borderRadius: 16, marginHorizontal: 16, marginVertical: 8, padding: 16, borderWidth: 1, borderColor: '#1F2937' },
+  card: { backgroundColor: '#FFFFFF', borderRadius: 16, marginHorizontal: 16, marginVertical: 8, padding: 16, borderWidth: 1, borderColor: '#E8DED1' },
   header: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 },
   headerLeft: { flexDirection: 'row', alignItems: 'center', gap: 8 },
-  title: { fontSize: 16, fontWeight: '800', color: '#FFFFFF' },
+  title: { fontSize: 16, fontWeight: '800', color: '#241814' },
   headerRight: { flexDirection: 'row', alignItems: 'center', gap: 8 },
   healthBadge: { flexDirection: 'row', alignItems: 'center', gap: 4, paddingHorizontal: 8, paddingVertical: 3, borderRadius: 8 },
   healthDotLarge: { width: 8, height: 8, borderRadius: 4 },
@@ -69,9 +69,9 @@ const styles = StyleSheet.create({
   row: { flexDirection: 'row', alignItems: 'center', gap: 8, paddingVertical: 8, borderBottomWidth: 1, borderBottomColor: '#1F293740' },
   healthDot: { width: 8, height: 8, borderRadius: 4 },
   rowInfo: { flex: 1 },
-  sourceName: { fontSize: 13, fontWeight: '600', color: '#D1D5DB' },
+  sourceName: { fontSize: 13, fontWeight: '600', color: '#6D5549' },
   freshness: { fontSize: 10, fontWeight: '600', marginTop: 1 },
   rowStats: { alignItems: 'flex-end' },
-  recordCount: { fontSize: 13, fontWeight: '700', color: '#FFFFFF' },
-  recordLabel: { fontSize: 9, color: '#6B7280' },
+  recordCount: { fontSize: 13, fontWeight: '700', color: '#241814' },
+  recordLabel: { fontSize: 9, color: '#988275' },
 });

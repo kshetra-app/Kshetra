@@ -1,4 +1,4 @@
-import { TELANGANA_CONSTITUENCIES, type ConstituencySeed, TELANGANA_DEMOGRAPHICS, type ConstituencyDemographics } from '@/lib/data';
+import { TELANGANA_CONSTITUENCIES, type ConstituencySeed, TELANGANA_DEMOGRAPHICS, type ConstituencyDemographics } from './data';
 import { getUnifiedConstituenciesForState, type UnifiedConstituency } from './stateDataAdapter';
 import { getDemographicsForState, getHistoryForState } from './stateDataDispatcher';
 import { STATES } from '@kshetra/shared';

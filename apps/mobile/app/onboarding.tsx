@@ -18,6 +18,7 @@ import { getUnifiedConstituenciesForState } from '../lib/stateDataAdapter';
 import { useActiveStateStore } from '../stores/activeState';
 import { ROLE_CONFIG, type UserRole } from '../lib/moderationTypes';
 import { useTranslation } from 'react-i18next';
+import { useTheme } from '../lib/theme';
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
 
@@ -49,6 +50,7 @@ const STEPS: OnboardingStep[] = ['welcome', 'name', 'role', 'constituency', 'int
 export default function OnboardingScreen() {
   const { t } = useTranslation();
   const router = useRouter();
+  const { colors } = useTheme();
   const flatListRef = useRef<FlatList>(null);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [displayName, setDisplayName] = useState('');
@@ -299,7 +301,7 @@ export default function OnboardingScreen() {
       <View style={[styles.footer, { paddingBottom: Math.max(insets.bottom, 16) }]}>
         {currentIndex > 0 && currentStep !== 'done' && (
           <Pressable style={styles.backButton} onPress={goBack}>
-            <Ionicons name="arrow-back" size={20} color="#6B7280" />
+            <Ionicons name="arrow-back" size={20} color={colors.primary} />
             <Text style={styles.backText}>{t('common.back')}</Text>
           </Pressable>
         )}
@@ -343,7 +345,6 @@ export default function OnboardingScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#0A0A1A',
   },
   progressBar: {
     flexDirection: 'row',
@@ -356,11 +357,8 @@ const styles = StyleSheet.create({
     flex: 1,
     height: 4,
     borderRadius: 2,
-    backgroundColor: '#1F2937',
   },
-  progressDotActive: {
-    backgroundColor: '#4F8EF7',
-  },
+  progressDotActive: {},
   step: {
     width: SCREEN_WIDTH,
     paddingHorizontal: 24,
@@ -372,26 +370,22 @@ const styles = StyleSheet.create({
     width: 100,
     height: 100,
     borderRadius: 50,
-    backgroundColor: '#4F8EF720',
     justifyContent: 'center',
     alignItems: 'center',
     marginBottom: 24,
   },
   welcomeTitle: {
     fontSize: 18,
-    color: '#9CA3AF',
     fontWeight: '500',
   },
   brandTitle: {
     fontSize: 36,
     fontWeight: '900',
-    color: '#4F8EF7',
     letterSpacing: 6,
     marginBottom: 16,
   },
   welcomeSubtitle: {
     fontSize: 14,
-    color: '#6B7280',
     textAlign: 'center',
     lineHeight: 22,
     paddingHorizontal: 20,
@@ -399,28 +393,23 @@ const styles = StyleSheet.create({
   stepTitle: {
     fontSize: 22,
     fontWeight: '800',
-    color: '#FFFFFF',
     marginTop: 16,
     marginBottom: 8,
     textAlign: 'center',
   },
   stepHint: {
     fontSize: 13,
-    color: '#6B7280',
     marginBottom: 20,
     textAlign: 'center',
   },
   nameInput: {
     width: '100%',
-    backgroundColor: '#111827',
     borderRadius: 14,
     paddingHorizontal: 20,
     paddingVertical: 16,
     fontSize: 18,
-    color: '#FFFFFF',
     textAlign: 'center',
     borderWidth: 1,
-    borderColor: '#4F8EF740',
     marginTop: 20,
   },
   roleGrid: {
@@ -432,35 +421,28 @@ const styles = StyleSheet.create({
   },
   roleCard: {
     width: '47%' as any,
-    backgroundColor: '#111827',
     borderRadius: 12,
     padding: 14,
     borderWidth: 1.5,
-    borderColor: '#1F2937',
     alignItems: 'center',
   },
   roleLabel: {
     fontSize: 14,
     fontWeight: '700',
-    color: '#FFFFFF',
     marginTop: 8,
   },
   roleDesc: {
     fontSize: 11,
-    color: '#6B7280',
     marginTop: 4,
     textAlign: 'center',
   },
   searchInput: {
     width: '100%',
-    backgroundColor: '#111827',
     borderRadius: 12,
     paddingHorizontal: 16,
     paddingVertical: 12,
     fontSize: 14,
-    color: '#FFFFFF',
     borderWidth: 1,
-    borderColor: '#1F2937',
     marginBottom: 8,
   },
   acRow: {
@@ -470,26 +452,18 @@ const styles = StyleSheet.create({
     paddingVertical: 10,
     paddingHorizontal: 12,
     borderRadius: 10,
-    backgroundColor: '#111827',
     marginBottom: 4,
-  },
-  acRowActive: {
-    backgroundColor: '#10B98120',
     borderWidth: 1,
-    borderColor: '#10B98140',
   },
+  acRowActive: {},
   acText: {
     fontSize: 14,
     fontWeight: '600',
-    color: '#FFFFFF',
     flex: 1,
   },
-  acTextActive: {
-    color: '#10B981',
-  },
+  acTextActive: {},
   acMeta: {
     fontSize: 12,
-    color: '#6B7280',
     marginRight: 8,
   },
   selectedAc: {
@@ -499,13 +473,11 @@ const styles = StyleSheet.create({
     marginTop: 12,
     paddingHorizontal: 12,
     paddingVertical: 8,
-    backgroundColor: '#10B98120',
     borderRadius: 10,
   },
   selectedAcText: {
     fontSize: 13,
     fontWeight: '600',
-    color: '#10B981',
   },
   interestGrid: {
     flexDirection: 'row',
@@ -517,21 +489,14 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
     paddingVertical: 10,
     borderRadius: 22,
-    backgroundColor: '#111827',
     borderWidth: 1,
-    borderColor: '#1F2937',
   },
-  interestChipActive: {
-    backgroundColor: '#4F8EF720',
-    borderColor: '#4F8EF7',
-  },
+  interestChipActive: {},
   interestText: {
     fontSize: 14,
-    color: '#6B7280',
     fontWeight: '500',
   },
   interestTextActive: {
-    color: '#4F8EF7',
     fontWeight: '600',
   },
   doneIcon: {
@@ -540,12 +505,10 @@ const styles = StyleSheet.create({
   doneTitle: {
     fontSize: 28,
     fontWeight: '900',
-    color: '#FFFFFF',
     marginBottom: 12,
   },
   doneSubtitle: {
     fontSize: 14,
-    color: '#6B7280',
     textAlign: 'center',
     lineHeight: 22,
     paddingHorizontal: 20,
@@ -567,14 +530,12 @@ const styles = StyleSheet.create({
   },
   backText: {
     fontSize: 15,
-    color: '#6B7280',
     fontWeight: '600',
   },
   primaryButton: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: 8,
-    backgroundColor: '#4F8EF7',
     borderRadius: 14,
     paddingVertical: 14,
     paddingHorizontal: 28,

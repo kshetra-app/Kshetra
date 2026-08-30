@@ -153,8 +153,11 @@ export async function start() {
   return app;
 }
 
-// Execute server start unconditionally
-start().catch((err) => {
-  console.error('Fatal startup error in KSHETRA API server:', err);
-  process.exit(1);
-});
+// Only start automatically when not in test environment
+if (process.env.NODE_ENV !== 'test') {
+  start().catch((err) => {
+    console.error('Fatal startup error in KSHETRA API server:', err);
+    process.exit(1);
+  });
+}
+

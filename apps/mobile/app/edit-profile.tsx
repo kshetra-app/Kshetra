@@ -13,6 +13,7 @@ import { Stack, useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { useUserProfileStore } from '../stores/userProfile';
 import { ROLE_CONFIG, type UserRole } from '../lib/moderationTypes';
+import { useTheme } from '../lib/theme';
 
 const INTEREST_OPTIONS = [
   'Elections',
@@ -38,6 +39,7 @@ const ROLE_OPTIONS: { key: UserRole; label: string; desc: string }[] = [
 
 export default function EditProfileScreen() {
   const router = useRouter();
+  const { colors } = useTheme();
   const profile = useUserProfileStore((s) => s.profile);
   const updateProfile = useUserProfileStore((s) => s.updateProfile);
 
@@ -54,7 +56,7 @@ export default function EditProfileScreen() {
 
   const handleSave = () => {
     if (!displayName.trim()) {
-      Alert.alert('Name Required', 'Please enter your display name.');
+      Alert.alert('Required', 'Please enter a display name');
       return;
     }
 
@@ -69,16 +71,16 @@ export default function EditProfileScreen() {
   };
 
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, { backgroundColor: colors.background }]}>
       <Stack.Screen
         options={{
           headerShown: true,
           title: 'Edit Profile',
-          headerStyle: { backgroundColor: '#0A0A1A' },
-          headerTintColor: '#FFFFFF',
+          headerStyle: { backgroundColor: colors.surface },
+          headerTintColor: colors.primary,
           headerRight: () => (
             <Pressable onPress={handleSave} hitSlop={8}>
-              <Text style={styles.saveButton}>Save</Text>
+              <Text style={[styles.saveButton, { color: colors.primary }]}>Save</Text>
             </Pressable>
           ),
         }}
@@ -187,7 +189,6 @@ export default function EditProfileScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#0A0A1A',
   },
   scroll: {
     flex: 1,
@@ -196,7 +197,6 @@ const styles = StyleSheet.create({
   saveButton: {
     fontSize: 15,
     fontWeight: '700',
-    color: '#4F8EF7',
   },
   avatarSection: {
     alignItems: 'center',
@@ -206,23 +206,19 @@ const styles = StyleSheet.create({
     width: 88,
     height: 88,
     borderRadius: 44,
-    backgroundColor: '#111827',
     justifyContent: 'center',
     alignItems: 'center',
     marginBottom: 12,
     borderWidth: 2,
-    borderColor: '#4F8EF740',
   },
   changePhotoButton: {
     paddingHorizontal: 16,
     paddingVertical: 8,
     borderRadius: 8,
-    backgroundColor: '#1F2937',
   },
   changePhotoText: {
     fontSize: 13,
     fontWeight: '600',
-    color: '#4F8EF7',
   },
   field: {
     marginBottom: 24,
@@ -230,25 +226,20 @@ const styles = StyleSheet.create({
   fieldLabel: {
     fontSize: 14,
     fontWeight: '700',
-    color: '#9CA3AF',
     marginBottom: 8,
     textTransform: 'uppercase',
     letterSpacing: 0.5,
   },
   fieldHint: {
     fontSize: 12,
-    color: '#4B5563',
     marginBottom: 10,
   },
   textInput: {
-    backgroundColor: '#111827',
     borderRadius: 12,
     paddingHorizontal: 16,
     paddingVertical: 14,
     fontSize: 15,
-    color: '#FFFFFF',
     borderWidth: 1,
-    borderColor: '#1F2937',
   },
   textArea: {
     minHeight: 80,
@@ -267,22 +258,22 @@ const styles = StyleSheet.create({
   },
   roleCard: {
     width: '47%' as any,
-    backgroundColor: '#111827',
+    backgroundColor: '#FFFFFF',
     borderRadius: 12,
     padding: 14,
     borderWidth: 1.5,
-    borderColor: '#1F2937',
+    borderColor: '#E8DED1',
     position: 'relative',
   },
   roleLabel: {
     fontSize: 14,
     fontWeight: '700',
-    color: '#FFFFFF',
+    color: '#241814',
     marginTop: 8,
   },
   roleDesc: {
     fontSize: 11,
-    color: '#6B7280',
+    color: '#6D5549',
     marginTop: 4,
     lineHeight: 14,
   },
@@ -305,22 +296,22 @@ const styles = StyleSheet.create({
     paddingHorizontal: 14,
     paddingVertical: 8,
     borderRadius: 20,
-    backgroundColor: '#111827',
+    backgroundColor: '#FFFFFF',
     borderWidth: 1,
-    borderColor: '#1F2937',
+    borderColor: '#E8DED1',
   },
   interestChipActive: {
-    backgroundColor: '#4F8EF720',
-    borderColor: '#4F8EF7',
+    backgroundColor: '#FBE8E7',
+    borderColor: '#A8201A',
   },
   interestText: {
     fontSize: 13,
-    color: '#6B7280',
+    color: '#6D5549',
     fontWeight: '500',
   },
   interestTextActive: {
-    color: '#4F8EF7',
-    fontWeight: '600',
+    color: '#A8201A',
+    fontWeight: '700',
   },
   bottomPadding: {
     height: 40,

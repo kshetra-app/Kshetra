@@ -305,6 +305,8 @@ export interface Representative {
   wardNo?: string;
   /** Seat reservation category as published by the SEC (e.g. "ST", "BC-Woman"). */
   reservation?: string;
+  /** Constituency or division name (e.g. MPTC territorial division, assembly constituency). */
+  constituency?: string;
 
   // Identity
   name: string;
@@ -411,6 +413,8 @@ export interface RepresentativeProfile {
   isCurrent: boolean;
   termStart?: string;
   termEnd?: string;
+  constituency?: string;
+  reservation?: string;
 
   // Provenance (drives the "Source & Provenance" section)
   sourceType?: RepresentativeSourceType | string;
@@ -454,6 +458,8 @@ export function representativeToProfile(
     jurisdictionName,
     district: rep.district,
     stateCode: rep.stateCode,
+    constituency: rep.constituency,
+    reservation: rep.reservation,
     gender: rep.gender,
     age: rep.age,
     terms: rep.terms,

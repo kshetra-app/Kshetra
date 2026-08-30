@@ -76,11 +76,11 @@ export default React.memo(function CivicScoreCard({ score, displayName }: CivicS
 
 const styles = StyleSheet.create({
   card: {
-    backgroundColor: '#111827',
+    backgroundColor: '#FFFFFF',
     borderRadius: 14,
     padding: 16,
     borderWidth: 1,
-    borderColor: '#1F2937',
+    borderColor: '#E8DED1',
   },
   header: {
     flexDirection: 'row',
@@ -88,7 +88,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginBottom: 14,
   },
-  title: { fontSize: 16, fontWeight: '800', color: '#FFFFFF' },
+  title: { fontSize: 16, fontWeight: '800', color: '#241814' },
   levelBadge: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -112,14 +112,14 @@ const styles = StyleSheet.create({
   progressSection: { marginBottom: 14 },
   progressTrack: {
     height: 6,
-    backgroundColor: '#1F2937',
+    backgroundColor: '#E8DED1',
     borderRadius: 3,
     overflow: 'hidden',
   },
   progressFill: { height: '100%', borderRadius: 3 },
   progressText: {
     fontSize: 10,
-    color: '#6B7280',
+    color: '#988275',
     marginTop: 4,
     textAlign: 'right',
   },
@@ -129,6 +129,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     gap: 8,
   },
-  breakdownLabel: { fontSize: 12, color: '#9CA3AF', flex: 1 },
+  breakdownLabel: { fontSize: 12, color: '#6D5549', flex: 1 },
   breakdownValue: { fontSize: 13, fontWeight: '700', color: '#10B981' },
 });

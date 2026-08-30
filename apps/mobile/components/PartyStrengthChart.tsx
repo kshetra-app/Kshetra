@@ -2,8 +2,9 @@ import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useTranslation } from 'react-i18next';
-import { getPartyColor } from '@/lib/constants';
-import { moderateScale as ms } from '@/lib/responsive';
+import { getPartyColor } from '../lib/constants';
+import { moderateScale as ms } from '../lib/responsive';
+import { useTheme } from '../lib/theme';
 
 interface Props {
   electionSeats: Record<string, number>;
@@ -21,6 +22,7 @@ export default function PartyStrengthChart({
   byelectionsCount,
 }: Props) {
   const { t } = useTranslation();
+  const { colors } = useTheme();
 
   // Combine and unique all parties that have seats in either election or current day
   const parties = Array.from(
@@ -36,10 +38,10 @@ export default function PartyStrengthChart({
   );
 
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, { backgroundColor: colors.surface, borderColor: colors.border, shadowColor: colors.shadowColor }]}>
       <View style={styles.header}>
-        <Ionicons name="bar-chart" size={18} color="#4F8EF7" />
-        <Text style={styles.title}>
+        <Ionicons name="bar-chart" size={18} color={colors.primary} />
+        <Text style={[styles.title, { color: colors.text }]}>
           {t('intelligence.party_strength_title', 'Party Strength: Current vs Election Day')}
         </Text>
       </View>
@@ -60,7 +62,7 @@ export default function PartyStrengthChart({
               </View>
 
               <View style={styles.barContainer}>
-                <View style={styles.barTrack}>
+                <View style={[styles.barTrack, { backgroundColor: colors.surfaceElevated }]}>
                   <View
                     style={[
                       styles.barFill,
@@ -74,7 +76,7 @@ export default function PartyStrengthChart({
               </View>
 
               <View style={styles.seatsValueContainer}>
-                <Text style={styles.seatsText}>{cur}</Text>
+                <Text style={[styles.seatsText, { color: colors.text }]}>{cur}</Text>
                 {diff !== 0 && (
                   <Text
                     style={[
@@ -92,17 +94,17 @@ export default function PartyStrengthChart({
       </View>
 
       {/* Summary Footer Stats */}
-      <View style={styles.footer}>
+      <View style={[styles.footer, { borderTopColor: colors.border }]}>
         <View style={styles.stat}>
-          <Ionicons name="swap-horizontal" size={14} color="#F59E0B" />
-          <Text style={styles.statText}>
+          <Ionicons name="swap-horizontal" size={14} color={colors.primary} />
+          <Text style={[styles.statText, { color: colors.textSecondary }]}>
             {defectionsCount} {t('defection.tracker_label', 'defections this term')}
           </Text>
         </View>
         {byelectionsCount > 0 && (
           <View style={styles.stat}>
             <Ionicons name="add-circle" size={14} color="#10B981" />
-            <Text style={styles.statText}>
+            <Text style={[styles.statText, { color: colors.textSecondary }]}>
               {byelectionsCount} {t('timeline.by_elections_held', 'by-elections held')}
             </Text>
           </View>
@@ -114,11 +116,15 @@ export default function PartyStrengthChart({
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: '#111827',
     borderRadius: 16,
     padding: 16,
     marginHorizontal: 16,
     marginTop: 12,
+    borderWidth: 1,
+    elevation: 2,
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.06,
+    shadowRadius: 6,
   },
   header: {
     flexDirection: 'row',
@@ -129,7 +135,6 @@ const styles = StyleSheet.create({
   title: {
     fontSize: ms(13),
     fontWeight: '700',
-    color: '#FFFFFF',
   },
   chartContainer: {
     gap: 12,
@@ -153,7 +158,6 @@ const styles = StyleSheet.create({
   },
   barTrack: {
     height: 8,
-    backgroundColor: '#1F2937',
     borderRadius: 4,
     overflow: 'hidden',
   },
@@ -170,7 +174,6 @@ const styles = StyleSheet.create({
   seatsText: {
     fontSize: ms(12),
     fontWeight: '700',
-    color: '#FFFFFF',
   },
   diffText: {
     fontSize: ms(10),
@@ -180,7 +183,6 @@ const styles = StyleSheet.create({
     marginTop: 16,
     paddingTop: 12,
     borderTopWidth: 1,
-    borderTopColor: '#1F2937',
     flexDirection: 'row',
     flexWrap: 'wrap',
     gap: 16,
@@ -192,7 +194,6 @@ const styles = StyleSheet.create({
   },
   statText: {
     fontSize: ms(11),
-    color: '#9CA3AF',
     fontWeight: '500',
   },
 });

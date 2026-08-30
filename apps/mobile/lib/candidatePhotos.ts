@@ -16,7 +16,7 @@
 // Falls back to empty object if file hasn't been generated yet
 let STATIC_PHOTO_MAP: Record<string, string> = {};
 try {
-  STATIC_PHOTO_MAP = require('@/data/candidate-photo-map.json');
+  STATIC_PHOTO_MAP = require('../data/candidate-photo-map.json');
 } catch {
   // File not generated yet — scraper hasn't been run
 }

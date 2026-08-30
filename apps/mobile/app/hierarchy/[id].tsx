@@ -11,10 +11,10 @@ import { View, Text, StyleSheet, ScrollView, Pressable } from 'react-native';
 import { useLocalSearchParams, Stack, useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { useTheme } from '@/lib/useTheme';
-import { getPartyColor } from '@/lib/constants';
+import { useTheme } from '../../lib/useTheme';
+import { getPartyColor } from '../../lib/constants';
 import { useActiveStateStore } from '../../stores/activeState';
-import { getUnifiedConstituenciesForState } from '@/lib/stateDataAdapter';
+import { getUnifiedConstituenciesForState } from '../../lib/stateDataAdapter';
 import {
   getHierarchyConfig,
   getHierarchyLabelsConfig,
@@ -26,8 +26,8 @@ import {
   getBoothsForConstituency,
   type MandalWithOverlap,
   type GramPanchayat,
-} from '@/lib/hierarchyData';
-import DataPendingCard from '@/components/DataPendingCard';
+} from '../../lib/hierarchyData';
+import DataPendingCard from '../../components/DataPendingCard';
 
 type Level = 'mandals' | 'panchayats' | 'booths';
 

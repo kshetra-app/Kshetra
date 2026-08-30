@@ -13,6 +13,8 @@ import {
 } from '../../lib/civicTypes';
 import type { IssueComment, IssueStatusChange } from '../../lib/civicTypes';
 
+import { useTheme } from '../../lib/theme';
+
 function timeAgo(dateStr: string): string {
   const now = Date.now();
   const then = new Date(dateStr).getTime();
@@ -35,6 +37,7 @@ export default function IssueDetailScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const router = useRouter();
   const { t } = useTranslation();
+  const { colors } = useTheme();
 
   const issues = useCivicStore((s) => s.issues);
   const allComments = useCivicStore((s) => s.comments);
@@ -62,12 +65,12 @@ export default function IssueDetailScreen() {
 
   if (!issue) {
     return (
-      <View style={styles.errorContainer}>
-        <Stack.Screen options={{ headerShown: true, title: 'Issue Not Found' }} />
-        <Ionicons name="alert-circle-outline" size={48} color="#EF4444" />
-        <Text style={styles.errorText}>Issue not found</Text>
-        <Pressable style={styles.backButton} onPress={() => router.back()}>
-          <Text style={styles.backButtonText}>Go Back</Text>
+      <View style={[styles.errorContainer, { backgroundColor: colors.background }]}>
+        <Stack.Screen options={{ headerShown: true, title: 'Issue Not Found', headerStyle: { backgroundColor: colors.surface }, headerTintColor: colors.primary }} />
+        <Ionicons name="alert-circle-outline" size={48} color={colors.primary} />
+        <Text style={[styles.errorText, { color: colors.textSecondary }]}>Issue not found</Text>
+        <Pressable style={[styles.backButton, { backgroundColor: colors.surfaceElevated }]} onPress={() => router.back()}>
+          <Text style={[styles.backButtonText, { color: colors.primary }]}>Go Back</Text>
         </Pressable>
       </View>
     );
@@ -128,13 +131,13 @@ export default function IssueDetailScreen() {
   const displayMedia = showAllMedia ? mediaUrls : mediaUrls.slice(0, 6);
 
   return (
-    <KeyboardAvoidingView style={styles.container} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
+    <KeyboardAvoidingView style={[styles.container, { backgroundColor: colors.background }]} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
       <Stack.Screen
         options={{
           headerShown: true,
           title: '',
-          headerStyle: { backgroundColor: '#030712' },
-          headerTintColor: '#FFFFFF',
+          headerStyle: { backgroundColor: colors.surface },
+          headerTintColor: colors.primary,
           headerShadowVisible: false,
         }}
       />
@@ -447,92 +450,92 @@ const styles = StyleSheet.create({
   badgeText: { fontSize: 11, fontWeight: '700' },
 
   // Title
-  title: { fontSize: 20, fontWeight: '800', color: '#FFFFFF', lineHeight: 26, paddingHorizontal: 16, marginTop: 12 },
-  description: { fontSize: 14, color: '#D1D5DB', lineHeight: 20, paddingHorizontal: 16, marginTop: 8 },
+  title: { fontSize: 20, fontWeight: '800', color: '#241814', lineHeight: 26, paddingHorizontal: 16, marginTop: 12 },
+  description: { fontSize: 14, color: '#6D5549', lineHeight: 20, paddingHorizontal: 16, marginTop: 8 },
 
   // Meta
   metaRow: { flexDirection: 'row', alignItems: 'center', flexWrap: 'wrap', paddingHorizontal: 16, marginTop: 10, gap: 4 },
   metaItem: { flexDirection: 'row', alignItems: 'center', gap: 3 },
-  metaLocation: { fontSize: 12, color: '#4F8EF7', fontWeight: '600' },
-  metaGray: { fontSize: 12, color: '#6B7280' },
-  metaDot: { fontSize: 12, color: '#374151' },
+  metaLocation: { fontSize: 12, color: '#A8201A', fontWeight: '600' },
+  metaGray: { fontSize: 12, color: '#8E7B6F' },
+  metaDot: { fontSize: 12, color: '#8E7B6F' },
 
   // Stats
-  statsRow: { flexDirection: 'row', justifyContent: 'space-around', paddingHorizontal: 16, paddingVertical: 14, marginTop: 12, marginHorizontal: 16, backgroundColor: '#111827', borderRadius: 12 },
+  statsRow: { flexDirection: 'row', justifyContent: 'space-around', paddingHorizontal: 16, paddingVertical: 14, marginTop: 12, marginHorizontal: 16, backgroundColor: '#FFFFFF', borderWidth: 1, borderColor: '#E8DED1', borderRadius: 12 },
   statItem: { alignItems: 'center', gap: 4 },
-  statValue: { fontSize: 16, fontWeight: '800', color: '#FFFFFF' },
-  statLabel: { fontSize: 10, color: '#6B7280', fontWeight: '600' },
+  statValue: { fontSize: 16, fontWeight: '800', color: '#241814' },
+  statLabel: { fontSize: 10, color: '#8E7B6F', fontWeight: '600' },
 
   // Actions
-  actionRow: { flexDirection: 'row', justifyContent: 'space-around', paddingHorizontal: 8, paddingVertical: 12, marginTop: 8, marginHorizontal: 16, backgroundColor: '#111827', borderRadius: 12 },
+  actionRow: { flexDirection: 'row', justifyContent: 'space-around', paddingHorizontal: 8, paddingVertical: 12, marginTop: 8, marginHorizontal: 16, backgroundColor: '#FFFFFF', borderWidth: 1, borderColor: '#E8DED1', borderRadius: 12 },
   actionBtn: { alignItems: 'center', gap: 4, paddingHorizontal: 8, paddingVertical: 6, borderRadius: 8 },
-  actionBtnActive: { backgroundColor: '#1F293780' },
-  actionBtnText: { fontSize: 10, fontWeight: '600', color: '#9CA3AF' },
+  actionBtnActive: { backgroundColor: '#F5EFE4' },
+  actionBtnText: { fontSize: 10, fontWeight: '600', color: '#6D5549' },
 
   // MLA section
   mlaSection: { marginTop: 16, paddingHorizontal: 16 },
-  mlaResponseCard: { backgroundColor: '#1C1917', borderWidth: 1, borderColor: '#F59E0B40', borderRadius: 12, padding: 14, marginTop: 8 },
-  mlaResponseText: { fontSize: 13, color: '#FEF3C7', lineHeight: 19 },
-  mlaWaitingCard: { flexDirection: 'row', alignItems: 'center', gap: 8, backgroundColor: '#1C1917', borderRadius: 12, padding: 14, marginTop: 8 },
-  mlaWaitingText: { fontSize: 13, color: '#F59E0B' },
+  mlaResponseCard: { backgroundColor: '#F9F4E8', borderWidth: 1, borderColor: '#D8BC7E', borderRadius: 12, padding: 14, marginTop: 8 },
+  mlaResponseText: { fontSize: 13, color: '#241814', lineHeight: 19 },
+  mlaWaitingCard: { flexDirection: 'row', alignItems: 'center', gap: 8, backgroundColor: '#F9F4E8', borderRadius: 12, padding: 14, marginTop: 8 },
+  mlaWaitingText: { fontSize: 13, color: '#C5A059', fontWeight: '700' },
 
   // Resolution
   resolutionSection: { marginTop: 16, paddingHorizontal: 16 },
-  resolutionCard: { backgroundColor: '#052E16', borderWidth: 1, borderColor: '#10B98140', borderRadius: 12, padding: 14, marginTop: 8 },
-  resolutionText: { fontSize: 13, color: '#BBF7D0', lineHeight: 19 },
-  resolutionDate: { fontSize: 11, color: '#6B7280', marginTop: 8 },
-  disputeBtn: { flexDirection: 'row', alignItems: 'center', gap: 8, marginTop: 10, paddingVertical: 10, paddingHorizontal: 14, backgroundColor: '#1F2937', borderRadius: 10 },
+  resolutionCard: { backgroundColor: '#F0FDF4', borderWidth: 1, borderColor: '#86EFAC', borderRadius: 12, padding: 14, marginTop: 8 },
+  resolutionText: { fontSize: 13, color: '#166534', lineHeight: 19 },
+  resolutionDate: { fontSize: 11, color: '#8E7B6F', marginTop: 8 },
+  disputeBtn: { flexDirection: 'row', alignItems: 'center', gap: 8, marginTop: 10, paddingVertical: 10, paddingHorizontal: 14, backgroundColor: '#F5EFE4', borderRadius: 10 },
   disputeBtnDisabled: { opacity: 0.5 },
-  disputeBtnText: { fontSize: 13, fontWeight: '600', color: '#EF4444' },
-  disputeCount: { fontSize: 11, color: '#6B7280', marginLeft: 'auto' },
+  disputeBtnText: { fontSize: 13, fontWeight: '600', color: '#A8201A' },
+  disputeCount: { fontSize: 11, color: '#8E7B6F', marginLeft: 'auto' },
 
   // Reopened
-  reopenedBanner: { flexDirection: 'row', alignItems: 'center', gap: 8, marginTop: 12, marginHorizontal: 16, backgroundColor: '#7F1D1D40', borderWidth: 1, borderColor: '#EF444440', borderRadius: 12, padding: 12 },
-  reopenedText: { flex: 1, fontSize: 13, color: '#FCA5A5', fontWeight: '600' },
+  reopenedBanner: { flexDirection: 'row', alignItems: 'center', gap: 8, marginTop: 12, marginHorizontal: 16, backgroundColor: '#FBE8E7', borderWidth: 1, borderColor: '#A8201A40', borderRadius: 12, padding: 12 },
+  reopenedText: { flex: 1, fontSize: 13, color: '#A8201A', fontWeight: '600' },
 
   // Section
   section: { marginTop: 20, paddingHorizontal: 16 },
   sectionHeader: { flexDirection: 'row', alignItems: 'center', gap: 6, marginBottom: 10 },
-  sectionTitle: { fontSize: 15, fontWeight: '700', color: '#FFFFFF' },
+  sectionTitle: { fontSize: 15, fontWeight: '700', color: '#241814' },
 
   // Media grid
   mediaGrid: { flexDirection: 'row', flexWrap: 'wrap', gap: 6 },
   mediaGridItem: { width: '31%' as any, aspectRatio: 1, borderRadius: 10 },
   showMoreBtn: { marginTop: 8, alignSelf: 'center' },
-  showMoreText: { fontSize: 13, color: '#3B82F6', fontWeight: '600' },
+  showMoreText: { fontSize: 13, color: '#A8201A', fontWeight: '600' },
 
   // Timeline
   timeline: { paddingLeft: 4 },
   timelineItem: { flexDirection: 'row', marginBottom: 0 },
   timelineDotCol: { alignItems: 'center', width: 24 },
   timelineDot: { width: 10, height: 10, borderRadius: 5, marginTop: 4 },
-  timelineLine: { width: 2, flex: 1, backgroundColor: '#374151', marginVertical: 2 },
+  timelineLine: { width: 2, flex: 1, backgroundColor: '#E8DED1', marginVertical: 2 },
   timelineContent: { flex: 1, paddingLeft: 10, paddingBottom: 16 },
   timelineHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
   timelineStatus: { fontSize: 13, fontWeight: '700' },
-  timelineTime: { fontSize: 10, color: '#6B7280' },
-  timelineActor: { fontSize: 11, color: '#9CA3AF', marginTop: 2 },
-  timelineNote: { fontSize: 12, color: '#D1D5DB', marginTop: 4, lineHeight: 17, backgroundColor: '#1F2937', padding: 8, borderRadius: 8 },
+  timelineTime: { fontSize: 10, color: '#8E7B6F' },
+  timelineActor: { fontSize: 11, color: '#6D5549', marginTop: 2 },
+  timelineNote: { fontSize: 12, color: '#241814', marginTop: 4, lineHeight: 17, backgroundColor: '#F5EFE4', padding: 8, borderRadius: 8 },
 
   // Comments
   emptyComments: { alignItems: 'center', paddingVertical: 24, gap: 8 },
-  emptyCommentsText: { fontSize: 13, color: '#6B7280' },
-  commentCard: { backgroundColor: '#111827', borderRadius: 12, padding: 12, marginBottom: 8 },
-  commentCardOfficial: { borderWidth: 1, borderColor: '#3B82F640' },
+  emptyCommentsText: { fontSize: 13, color: '#8E7B6F' },
+  commentCard: { backgroundColor: '#FFFFFF', borderWidth: 1, borderColor: '#E8DED1', borderRadius: 12, padding: 12, marginBottom: 8 },
+  commentCardOfficial: { borderWidth: 1, borderColor: '#D8BC7E' },
   commentHeader: { flexDirection: 'row', alignItems: 'center', gap: 8, marginBottom: 8 },
-  commentAvatar: { width: 28, height: 28, borderRadius: 14, backgroundColor: '#1F2937', justifyContent: 'center', alignItems: 'center' },
-  commentAvatarText: { fontSize: 12, fontWeight: '700', color: '#9CA3AF' },
+  commentAvatar: { width: 28, height: 28, borderRadius: 14, backgroundColor: '#F5EFE4', justifyContent: 'center', alignItems: 'center' },
+  commentAvatarText: { fontSize: 12, fontWeight: '700', color: '#6D5549' },
   commentNameRow: { flexDirection: 'row', alignItems: 'center', gap: 6 },
-  commentName: { fontSize: 13, fontWeight: '600', color: '#FFFFFF' },
-  officialBadge: { flexDirection: 'row', alignItems: 'center', gap: 3, backgroundColor: '#3B82F620', paddingHorizontal: 6, paddingVertical: 2, borderRadius: 6 },
-  officialBadgeText: { fontSize: 9, fontWeight: '700', color: '#3B82F6' },
-  commentTime: { fontSize: 10, color: '#6B7280' },
-  commentBody: { fontSize: 13, color: '#D1D5DB', lineHeight: 18 },
+  commentName: { fontSize: 13, fontWeight: '600', color: '#241814' },
+  officialBadge: { flexDirection: 'row', alignItems: 'center', gap: 3, backgroundColor: '#FBE8E7', paddingHorizontal: 6, paddingVertical: 2, borderRadius: 6 },
+  officialBadgeText: { fontSize: 9, fontWeight: '700', color: '#A8201A' },
+  commentTime: { fontSize: 10, color: '#8E7B6F' },
+  commentBody: { fontSize: 13, color: '#6D5549', lineHeight: 18 },
   commentImage: { width: '100%' as any, height: 160, borderRadius: 8, marginTop: 8 },
 
   // Comment input
-  commentInputBar: { flexDirection: 'row', alignItems: 'flex-end', paddingHorizontal: 12, paddingVertical: 8, backgroundColor: '#111827', borderTopWidth: 0.5, borderTopColor: '#1F2937' },
-  commentInput: { flex: 1, backgroundColor: '#1F2937', borderRadius: 20, paddingHorizontal: 16, paddingVertical: 10, color: '#FFFFFF', fontSize: 14, maxHeight: 100 },
+  commentInputBar: { flexDirection: 'row', alignItems: 'flex-end', paddingHorizontal: 12, paddingVertical: 8, backgroundColor: '#FFFFFF', borderTopWidth: 1, borderTopColor: '#E8DED1' },
+  commentInput: { flex: 1, backgroundColor: '#FAF6EE', borderRadius: 20, paddingHorizontal: 16, paddingVertical: 10, color: '#241814', fontSize: 14, maxHeight: 100, borderWidth: 1, borderColor: '#E8DED1' },
   sendBtn: { width: 40, height: 40, justifyContent: 'center', alignItems: 'center' },
   sendBtnDisabled: { opacity: 0.4 },
 });

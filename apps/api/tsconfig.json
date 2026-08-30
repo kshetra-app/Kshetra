@@ -13,7 +13,7 @@
     "forceConsistentCasingInFileNames": true,
     "resolveJsonModule": true
   },
-  "include": ["src/**/*", "../../data/seed/**/*"],
+  "include": ["src/**/*", "../../data/seed/**/*", "../../data/census/**/*"],
   "exclude": [
     "node_modules",
     "dist",

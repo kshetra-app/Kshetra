@@ -2,12 +2,12 @@ import { useMemo } from 'react';
 import { View, Text, StyleSheet, Pressable, ScrollView, Platform } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
-import { PARTY_COLORS, getPartyColor } from '@/lib/constants';
+import { PARTY_COLORS, getPartyColor } from '../lib/constants';
 import { STATES } from '@kshetra/shared';
 import StateSwitcher from './StateSwitcher';
-import { getUnifiedConstituenciesForState } from '@/lib/stateDataAdapter';
+import { getUnifiedConstituenciesForState } from '../lib/stateDataAdapter';
 import { useActiveStateStore } from '../stores/activeState';
-import { computeAllSeatAllocations } from '@/lib/delimitation/seatCalculator';
+import { computeAllSeatAllocations } from '../lib/delimitation/seatCalculator';
 import { useResponsive } from '../lib/responsive';
 
 /**

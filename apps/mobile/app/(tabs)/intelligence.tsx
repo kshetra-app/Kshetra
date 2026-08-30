@@ -10,13 +10,14 @@ import {
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import StateSwitcher from '../../components/StateSwitcher';
-import { PARTY_COLORS, getPartyColor } from '@/lib/constants';
+import { PARTY_COLORS, getPartyColor } from '../../lib/constants';
 import { getElectionHistoryForState, hasFullDataForState, getTimelineForState } from '../../lib/stateDataDispatcher';
 import { getUnifiedConstituenciesForState, type UnifiedConstituency } from '../../lib/stateDataAdapter';
 import { useActiveStateStore } from '../../stores/activeState';
 import { STATES } from '@kshetra/shared';
 import { useResponsive } from '../../lib/responsive';
 import PartyStrengthChart from '../../components/PartyStrengthChart';
+import { useTheme } from '../../lib/theme';
 
 /** Compute analytics from seed data — recomputed when state changes */
 function useElectionAnalytics(stateCode: string) {
@@ -94,6 +95,7 @@ function useElectionAnalytics(stateCode: string) {
 
 export default function IntelligenceScreen() {
   const router = useRouter();
+  const { colors } = useTheme();
   const stateCode = useActiveStateStore((s) => s.stateCode);
   const currentState = STATES[stateCode];
   const hasFull = hasFullDataForState(stateCode);
@@ -150,55 +152,55 @@ export default function IntelligenceScreen() {
 
   return (
     <ScrollView
-      style={styles.container}
+      style={[styles.container, { backgroundColor: colors.background }]}
       contentContainerStyle={[styles.content, { paddingTop: insets.top + 12 }]}
       showsVerticalScrollIndicator={false}
     >
       {/* Header */}
       <View style={styles.header}>
         <View style={styles.headerTop}>
-          <Text style={styles.headerTitle}>Intelligence</Text>
+          <Text style={[styles.headerTitle, { color: colors.text }]}>Intelligence</Text>
           <View style={styles.headerActions}>
             <Pressable
-              style={styles.aiButton}
+              style={[styles.aiButton, { backgroundColor: colors.surface, borderColor: colors.goldBorder || colors.border, borderWidth: 1 }]}
               onPress={() => router.push('/parliament' as any)}
             >
-              <Ionicons name="business" size={16} color="#8B5CF6" />
-              <Text style={[styles.aiButtonText, { color: '#8B5CF6' }]}>MPs</Text>
+              <Ionicons name="business" size={16} color={colors.teal} />
+              <Text style={[styles.aiButtonText, { color: colors.teal }]}>MPs</Text>
             </Pressable>
             <Pressable
-              style={styles.aiButton}
+              style={[styles.aiButton, { backgroundColor: colors.surface, borderColor: colors.goldBorder || colors.border, borderWidth: 1 }]}
               onPress={() => router.push('/ai-chat')}
             >
-              <Ionicons name="sparkles" size={16} color="#4F8EF7" />
-              <Text style={styles.aiButtonText}>AI</Text>
+              <Ionicons name="sparkles" size={16} color={colors.gold} />
+              <Text style={[styles.aiButtonText, { color: colors.gold }]}>AI</Text>
             </Pressable>
             <StateSwitcher />
           </View>
         </View>
-        <Text style={styles.headerSubtitle}>
+        <Text style={[styles.headerSubtitle, { color: colors.textMuted }]}>
           {currentState?.name ?? stateCode} {electionYear} · Assembly Elections
         </Text>
       </View>
 
       {/* Summary Cards */}
       <View style={styles.summaryRow}>
-        <View style={styles.summaryCard}>
-          <Ionicons name="people" size={20} color="#4F8EF7" />
-          <Text style={styles.summaryValue}>{analytics.totalConstituencies}</Text>
-          <Text style={styles.summaryLabel}>Constituencies</Text>
+        <View style={[styles.summaryCard, { backgroundColor: colors.surface, borderColor: colors.goldBorder || colors.border, borderWidth: 1 }]}>
+          <Ionicons name="people" size={20} color={colors.primary} />
+          <Text style={[styles.summaryValue, { color: colors.text }]}>{analytics.totalConstituencies}</Text>
+          <Text style={[styles.summaryLabel, { color: colors.textMuted }]}>Constituencies</Text>
         </View>
-        <View style={styles.summaryCard}>
-          <Ionicons name="location" size={20} color="#4F8EF7" />
-          <Text style={styles.summaryValue}>{analytics.districtCount}</Text>
-          <Text style={styles.summaryLabel}>Districts</Text>
+        <View style={[styles.summaryCard, { backgroundColor: colors.surface, borderColor: colors.goldBorder || colors.border, borderWidth: 1 }]}>
+          <Ionicons name="location" size={20} color={colors.teal} />
+          <Text style={[styles.summaryValue, { color: colors.text }]}>{analytics.districtCount}</Text>
+          <Text style={[styles.summaryLabel, { color: colors.textMuted }]}>Districts</Text>
         </View>
-        <View style={styles.summaryCard}>
-          <Ionicons name="flag" size={20} color="#4F8EF7" />
-          <Text style={styles.summaryValue}>
+        <View style={[styles.summaryCard, { backgroundColor: colors.surface, borderColor: colors.goldBorder || colors.border, borderWidth: 1 }]}>
+          <Ionicons name="flag" size={20} color={colors.gold} />
+          <Text style={[styles.summaryValue, { color: colors.text }]}>
             {analytics.partyBreakdown.length}
           </Text>
-          <Text style={styles.summaryLabel}>Parties Won</Text>
+          <Text style={[styles.summaryLabel, { color: colors.textMuted }]}>Parties Won</Text>
         </View>
       </View>
 
@@ -407,7 +409,6 @@ export default function IntelligenceScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#0A0A1A',
   },
   content: {
     paddingHorizontal: 16,
@@ -429,7 +430,6 @@ const styles = StyleSheet.create({
   aiButton: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#4F8EF720',
     borderRadius: 8,
     paddingHorizontal: 10,
     paddingVertical: 6,
@@ -438,16 +438,13 @@ const styles = StyleSheet.create({
   aiButtonText: {
     fontSize: 13,
     fontWeight: '700',
-    color: '#4F8EF7',
   },
   headerTitle: {
     fontSize: 28,
     fontWeight: '800',
-    color: '#FFFFFF',
   },
   headerSubtitle: {
     fontSize: 14,
-    color: '#6B7280',
     marginTop: 4,
   },
   summaryRow: {
@@ -457,7 +454,6 @@ const styles = StyleSheet.create({
   },
   summaryCard: {
     flex: 1,
-    backgroundColor: '#111827',
     borderRadius: 14,
     padding: 14,
     alignItems: 'center',
@@ -466,11 +462,9 @@ const styles = StyleSheet.create({
   summaryValue: {
     fontSize: 24,
     fontWeight: '800',
-    color: '#FFFFFF',
   },
   summaryLabel: {
     fontSize: 11,
-    color: '#6B7280',
     fontWeight: '600',
   },
   section: {
@@ -479,7 +473,6 @@ const styles = StyleSheet.create({
   sectionTitle: {
     fontSize: 18,
     fontWeight: '700',
-    color: '#FFFFFF',
     marginBottom: 14,
   },
   partyRow: {
@@ -499,17 +492,14 @@ const styles = StyleSheet.create({
   partyName: {
     fontSize: 14,
     fontWeight: '700',
-    color: '#FFFFFF',
     width: 52,
   },
   seatCount: {
     fontSize: 13,
-    color: '#9CA3AF',
     marginLeft: 8,
   },
   barContainer: {
     height: 8,
-    backgroundColor: '#1F2937',
     borderRadius: 4,
     overflow: 'hidden',
     marginBottom: 2,
@@ -520,7 +510,6 @@ const styles = StyleSheet.create({
   },
   pctText: {
     fontSize: 12,
-    color: '#6B7280',
     fontWeight: '600',
     textAlign: 'right',
   },
@@ -530,10 +519,10 @@ const styles = StyleSheet.create({
   },
   reservationCard: {
     flex: 1,
-    backgroundColor: '#111827',
     borderRadius: 14,
     padding: 16,
     alignItems: 'center',
+    borderWidth: 1,
   },
   reservationValue: {
     fontSize: 28,
@@ -541,17 +530,16 @@ const styles = StyleSheet.create({
   },
   reservationLabel: {
     fontSize: 12,
-    color: '#6B7280',
     marginTop: 4,
     fontWeight: '600',
   },
   insightCard: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#111827',
     borderRadius: 14,
     padding: 16,
     marginBottom: 10,
+    borderWidth: 1,
     gap: 14,
   },
   insightText: {
@@ -559,20 +547,18 @@ const styles = StyleSheet.create({
   },
   insightTitle: {
     fontSize: 13,
-    color: '#6B7280',
     fontWeight: '600',
   },
   insightValue: {
     fontSize: 15,
-    color: '#FFFFFF',
     fontWeight: '600',
     marginTop: 2,
   },
   districtRow: {
-    backgroundColor: '#111827',
     borderRadius: 12,
     padding: 14,
     marginBottom: 8,
+    borderWidth: 1,
   },
   districtInfo: {
     flexDirection: 'row',
@@ -583,11 +569,9 @@ const styles = StyleSheet.create({
   districtName: {
     fontSize: 15,
     fontWeight: '700',
-    color: '#FFFFFF',
   },
   districtSeats: {
     fontSize: 13,
-    color: '#6B7280',
   },
   districtParties: {
     flexDirection: 'row',
@@ -608,10 +592,10 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   timelineCard: {
-    backgroundColor: '#111827',
     borderRadius: 14,
     padding: 16,
     marginBottom: 10,
+    borderWidth: 1,
   },
   timelineHeader: {
     flexDirection: 'row',
@@ -622,11 +606,9 @@ const styles = StyleSheet.create({
   timelineYear: {
     fontSize: 20,
     fontWeight: '800',
-    color: '#FFFFFF',
   },
   timelineTurnout: {
     fontSize: 12,
-    color: '#6B7280',
     fontWeight: '600',
   },
   timelineParties: {
@@ -645,29 +627,24 @@ const styles = StyleSheet.create({
   timelinePartyName: {
     fontSize: 13,
     fontWeight: '700',
-    color: '#FFFFFF',
     width: 48,
   },
   timelinePartySeats: {
     fontSize: 14,
     fontWeight: '800',
-    color: '#FFFFFF',
     width: 30,
     textAlign: 'right',
   },
   timelineVoteShare: {
     fontSize: 12,
-    color: '#6B7280',
     marginLeft: 8,
   },
   timelineNotes: {
     fontSize: 11,
-    color: '#4B5563',
     marginTop: 10,
     lineHeight: 15,
   },
   footerText: {
     fontSize: 11,
-    color: '#374151',
   },
 });

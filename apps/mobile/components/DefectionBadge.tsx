@@ -1,7 +1,7 @@
 import { View, Text, StyleSheet } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useTranslation } from 'react-i18next';
-import { getPartyColor } from '@/lib/constants';
+import { getPartyColor } from '../lib/constants';
 
 interface DefectionBadgeProps {
   electedParty: string;

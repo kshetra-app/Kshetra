@@ -1,6 +1,6 @@
 import { View, Text, StyleSheet } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { useTheme } from '@/lib/useTheme';
+import { useTheme } from '../lib/useTheme';
 
 /**
  * DataPendingCard — the honest, zero-fabrication empty state.

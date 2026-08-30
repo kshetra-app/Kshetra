@@ -1,11 +1,23 @@
-import { useState, useMemo } from 'react';
-import { View, Text, StyleSheet, Pressable, ScrollView, Dimensions } from 'react-native';
+import { useState, useMemo, useRef, useEffect } from 'react';
+import {
+  View,
+  Text,
+  StyleSheet,
+  Pressable,
+  ScrollView,
+  Dimensions,
+  Animated,
+  PanResponder,
+} from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useTranslation } from 'react-i18next';
-import { getPartyColor } from '@/lib/constants';
+import { getPartyColor } from '../lib/constants';
 import { PARTY_CONFIG, STATES } from '@kshetra/shared';
-import { getUnifiedConstituenciesForState } from '@/lib/stateDataAdapter';
+import { getUnifiedConstituenciesForState } from '../lib/stateDataAdapter';
 import type { MapColorMode } from './MapColorToggle';
+import { useTheme } from '../lib/theme';
+
+const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get('window');
 
 /** Build party legend dynamically from a state's seed data, sorted by seat count */
 function buildPartyLegend(stateCode: string): { party: string; label: string; seats: number }[] {
@@ -46,17 +58,41 @@ function buildPartyLegend(stateCode: string): { party: string; label: string; se
 }
 
 const MARGIN_LEGEND = [
-  { color: '#14532D', label: '> 50,000' },
-  { color: '#22C55E', label: '20,000 – 50,000' },
-  { color: '#FDE047', label: '5,000 – 20,000' },
-  { color: '#F97316', label: '1,000 – 5,000' },
-  { color: '#EF4444', label: '< 1,000 (razor thin)' },
+  { color: '#8B5CF6', label: '> 100,000 (Massive)' },
+  { color: '#3B82F6', label: '50,000 – 100,000 (Landslide)' },
+  { color: '#10B981', label: '20,000 – 50,000 (Comfortable)' },
+  { color: '#F59E0B', label: '5,000 – 20,000 (Competitive)' },
+  { color: '#EF4444', label: '< 5,000 (Razor Thin)' },
 ];
 
 const RESERVATION_LEGEND = [
-  { color: '#4F8EF7', label: 'General (GEN)' },
+  { color: '#6366F1', label: 'General (GEN)' },
   { color: '#F59E0B', label: 'Scheduled Caste (SC)' },
   { color: '#10B981', label: 'Scheduled Tribe (ST)' },
+];
+
+const TURNOUT_LEGEND = [
+  { color: '#059669', label: '> 82% (High Turnout)' },
+  { color: '#10B981', label: '76% – 82% (Good)' },
+  { color: '#FBBF24', label: '72% – 76% (Moderate)' },
+  { color: '#F59E0B', label: '68% – 72% (Below Average)' },
+  { color: '#EF4444', label: '< 68% (Low Turnout)' },
+];
+
+const LITERACY_LEGEND = [
+  { color: '#059669', label: '> 80% (High Literacy)' },
+  { color: '#10B981', label: '70% – 80% (Good)' },
+  { color: '#FBBF24', label: '60% – 70% (Moderate)' },
+  { color: '#F59E0B', label: '50% – 60% (Low)' },
+  { color: '#EF4444', label: '< 50% (Critical)' },
+];
+
+const POPULATION_LEGEND = [
+  { color: '#1D4ED8', label: '> 350,000 (Very Dense)' },
+  { color: '#2563EB', label: '310,000 – 350,000 (Dense)' },
+  { color: '#3B82F6', label: '280,000 – 310,000 (Medium)' },
+  { color: '#60A5FA', label: '250,000 – 280,000 (Moderate)' },
+  { color: '#DBEAFE', label: '< 250,000 (Sparse)' },
 ];
 
 const BATTLEGROUND_LEGEND = [
@@ -68,34 +104,81 @@ const BATTLEGROUND_LEGEND = [
 const SWING_LEGEND = [
   { color: '#8B5CF6', label: 'Swing Seat (Party Switched)' },
   { color: '#10B981', label: 'Retained Seat (Same Party)' },
-  { color: '#9CA3AF', label: 'No History Available' },
+  { color: '#6B7280', label: 'No History Available' },
 ];
-
-const GRADIENT_LEGENDS: Record<string, { title: string; low: string; high: string; lowLabel: string; highLabel: string }> = {
-  population: { title: 'Population Density', low: '#1E3A5F', high: '#4F8EF7', lowLabel: 'Low', highLabel: 'High' },
-  literacy:   { title: 'Literacy Rate', low: '#7F1D1D', high: '#22C55E', lowLabel: 'Low', highLabel: 'High' },
-  turnout:    { title: 'Voter Turnout', low: '#374151', high: '#8B5CF6', lowLabel: 'Low', highLabel: 'High' },
-};
 
 interface MapLegendProps {
   colorMode?: MapColorMode;
   stateCode?: string;
+  initialX?: number;
+  initialTop?: number;
 }
 
-export default function MapLegend({ colorMode = 'party', stateCode = 'TS' }: MapLegendProps) {
+export default function MapLegend({
+  colorMode = 'party',
+  stateCode = 'TS',
+  initialX = 16,
+  initialTop = 160,
+}: MapLegendProps) {
   const { t } = useTranslation();
+  const { colors } = useTheme();
   const [expanded, setExpanded] = useState(false);
   const partyLegend = useMemo(() => buildPartyLegend(stateCode), [stateCode]);
+
+  // Floating Draggable Pan State
+  const pan = useRef(new Animated.ValueXY({ x: initialX, y: initialTop })).current;
+  const currentPos = useRef({ x: initialX, y: initialTop });
+  const [panelOpensUpward, setPanelOpensUpward] = useState(false);
+
+  useEffect(() => {
+    if (initialTop != null && currentPos.current.y === 160) {
+      pan.setValue({ x: initialX, y: initialTop });
+      currentPos.current = { x: initialX, y: initialTop };
+    }
+  }, [initialTop, initialX, pan]);
+
+  const panResponder = useRef(
+    PanResponder.create({
+      onStartShouldSetPanResponder: () => true,
+      onMoveShouldSetPanResponder: (_, gestureState) => {
+        return Math.abs(gestureState.dx) > 3 || Math.abs(gestureState.dy) > 3;
+      },
+      onPanResponderGrant: () => {
+        pan.setOffset({
+          x: currentPos.current.x,
+          y: currentPos.current.y,
+        });
+        pan.setValue({ x: 0, y: 0 });
+      },
+      onPanResponderMove: Animated.event([null, { dx: pan.x, dy: pan.y }], {
+        useNativeDriver: false,
+      }),
+      onPanResponderRelease: (_, gestureState) => {
+        pan.flattenOffset();
+        const newX = Math.min(Math.max(10, currentPos.current.x + gestureState.dx), SCREEN_WIDTH - 110);
+        const newY = Math.min(Math.max(60, currentPos.current.y + gestureState.dy), SCREEN_HEIGHT - 130);
+
+        currentPos.current = { x: newX, y: newY };
+        pan.setValue({ x: newX, y: newY });
+        setPanelOpensUpward(newY > SCREEN_HEIGHT * 0.55);
+
+        // If movement was small, treat as a tap
+        if (Math.abs(gestureState.dx) < 6 && Math.abs(gestureState.dy) < 6) {
+          setExpanded((prev) => !prev);
+        }
+      },
+    })
+  ).current;
 
   const renderContent = () => {
     if (colorMode === 'margin') {
       return (
         <>
-          <Text style={styles.panelTitle}>{t('mapLegend.victoryMargin')}</Text>
+          <Text style={[styles.panelTitle, { color: colors.textMuted }]}>{t('mapLegend.victoryMargin')}</Text>
           {MARGIN_LEGEND.map((item) => (
             <View key={item.label} style={styles.row}>
               <View style={[styles.colorDot, { backgroundColor: item.color }]} />
-              <Text style={styles.partyName}>{item.label}</Text>
+              <Text style={[styles.partyName, { color: colors.textSecondary }]}>{item.label}</Text>
             </View>
           ))}
         </>
@@ -105,11 +188,53 @@ export default function MapLegend({ colorMode = 'party', stateCode = 'TS' }: Map
     if (colorMode === 'reservation') {
       return (
         <>
-          <Text style={styles.panelTitle}>{t('mapLegend.constituencyType')}</Text>
+          <Text style={[styles.panelTitle, { color: colors.textMuted }]}>{t('mapLegend.seatCategory')}</Text>
           {RESERVATION_LEGEND.map((item) => (
             <View key={item.label} style={styles.row}>
               <View style={[styles.colorDot, { backgroundColor: item.color }]} />
-              <Text style={styles.partyName}>{item.label}</Text>
+              <Text style={[styles.partyName, { color: colors.textSecondary }]}>{item.label}</Text>
+            </View>
+          ))}
+        </>
+      );
+    }
+
+    if (colorMode === 'turnout') {
+      return (
+        <>
+          <Text style={[styles.panelTitle, { color: colors.textMuted }]}>Voter Turnout</Text>
+          {TURNOUT_LEGEND.map((item) => (
+            <View key={item.label} style={styles.row}>
+              <View style={[styles.colorDot, { backgroundColor: item.color }]} />
+              <Text style={[styles.partyName, { color: colors.textSecondary }]}>{item.label}</Text>
+            </View>
+          ))}
+        </>
+      );
+    }
+
+    if (colorMode === 'literacy') {
+      return (
+        <>
+          <Text style={[styles.panelTitle, { color: colors.textMuted }]}>Literacy Rate</Text>
+          {LITERACY_LEGEND.map((item) => (
+            <View key={item.label} style={styles.row}>
+              <View style={[styles.colorDot, { backgroundColor: item.color }]} />
+              <Text style={[styles.partyName, { color: colors.textSecondary }]}>{item.label}</Text>
+            </View>
+          ))}
+        </>
+      );
+    }
+
+    if (colorMode === 'population') {
+      return (
+        <>
+          <Text style={[styles.panelTitle, { color: colors.textMuted }]}>Population Density</Text>
+          {POPULATION_LEGEND.map((item) => (
+            <View key={item.label} style={styles.row}>
+              <View style={[styles.colorDot, { backgroundColor: item.color }]} />
+              <Text style={[styles.partyName, { color: colors.textSecondary }]}>{item.label}</Text>
             </View>
           ))}
         </>
@@ -119,11 +244,11 @@ export default function MapLegend({ colorMode = 'party', stateCode = 'TS' }: Map
     if (colorMode === 'battleground') {
       return (
         <>
-          <Text style={styles.panelTitle}>{t('mapLegend.battlegrounds', 'Battlegrounds')}</Text>
+          <Text style={[styles.panelTitle, { color: colors.textMuted }]}>{t('mapLegend.competitiveness')}</Text>
           {BATTLEGROUND_LEGEND.map((item) => (
             <View key={item.label} style={styles.row}>
               <View style={[styles.colorDot, { backgroundColor: item.color }]} />
-              <Text style={styles.partyName}>{item.label}</Text>
+              <Text style={[styles.partyName, { color: colors.textSecondary }]}>{item.label}</Text>
             </View>
           ))}
         </>
@@ -133,116 +258,159 @@ export default function MapLegend({ colorMode = 'party', stateCode = 'TS' }: Map
     if (colorMode === 'swing') {
       return (
         <>
-          <Text style={styles.panelTitle}>{t('mapLegend.swingSeats', 'Swing Seats')}</Text>
+          <Text style={[styles.panelTitle, { color: colors.textMuted }]}>{t('mapLegend.seatStatus')}</Text>
           {SWING_LEGEND.map((item) => (
             <View key={item.label} style={styles.row}>
               <View style={[styles.colorDot, { backgroundColor: item.color }]} />
-              <Text style={styles.partyName}>{item.label}</Text>
+              <Text style={[styles.partyName, { color: colors.textSecondary }]}>{item.label}</Text>
             </View>
           ))}
         </>
       );
     }
 
-    const gradient = GRADIENT_LEGENDS[colorMode];
-    if (gradient) {
-      return (
-        <>
-          <Text style={styles.panelTitle}>{gradient.title}</Text>
-          <View style={styles.gradientRow}>
-            <Text style={styles.gradientLabel}>{gradient.lowLabel}</Text>
-            <View style={[styles.gradientBar, { backgroundColor: gradient.low }]}>
-              <View style={[styles.gradientBarHalf, { backgroundColor: gradient.high }]} />
-            </View>
-            <Text style={styles.gradientLabel}>{gradient.highLabel}</Text>
-          </View>
-        </>
-      );
-    }
-
-    // Default: party legend (dynamic per state)
+    // Default: party legend
     return (
       <>
-        <Text style={styles.panelTitle}>{t('mapLegend.partyColors')}</Text>
-        {partyLegend.map((item) => (
-          <View key={item.party} style={styles.row}>
-            <View style={[styles.colorDot, { backgroundColor: getPartyColor(item.party) }]} />
-            <Text style={styles.partyCode}>{item.party}</Text>
-            <Text style={styles.partyName} numberOfLines={1}>
-              {item.label} ({stateCode.toUpperCase() === 'IN' ? `${item.seats} ${item.seats === 1 ? 'state' : 'states'}` : item.seats})
-            </Text>
-          </View>
-        ))}
+        <Text style={[styles.panelTitle, { color: colors.textMuted }]}>
+          {stateCode === 'IN' ? t('mapLegend.stateParties') : t('mapLegend.parties')}
+        </Text>
+        {partyLegend.map((item) => {
+          const color = getPartyColor(item.party);
+          return (
+            <View key={item.party} style={styles.row}>
+              <View style={[styles.colorDot, { backgroundColor: color }]} />
+              <Text style={[styles.partyCode, { color: colors.text }]}>{item.party}</Text>
+              <Text style={[styles.partyName, { color: colors.textSecondary }]} numberOfLines={1}>
+                {item.label}
+              </Text>
+            </View>
+          );
+        })}
       </>
     );
   };
 
-  const screenHeight = Dimensions.get('window').height;
-  const maxPanelHeight = screenHeight * 0.45;
-
   return (
-    <View style={styles.container}>
-      <Pressable
-        style={styles.toggle}
-        onPress={() => setExpanded((v) => !v)}
-      >
-        <Ionicons name="color-palette" size={16} color="#FFFFFF" />
-        {!expanded && <Text style={styles.toggleText}>{t('mapLegend.legend')}</Text>}
-        {expanded && <Ionicons name="chevron-down" size={14} color="#FFFFFF" style={{ marginLeft: 4 }} />}
-      </Pressable>
+    <Animated.View
+      style={[
+        styles.floatingContainer,
+        {
+          transform: [{ translateX: pan.x }, { translateY: pan.y }],
+        },
+      ]}
+      {...panResponder.panHandlers}
+    >
+      <View style={styles.toggle}>
+        <Ionicons name="reorder-two" size={14} color="#94A3B8" style={{ marginRight: 2 }} />
+        <Ionicons
+          name={expanded ? 'close' : 'information-circle'}
+          size={14}
+          color="#FCD34D"
+          style={{ marginRight: 4 }}
+        />
+        <Text style={styles.toggleText}>{t('mapLegend.legend')}</Text>
+      </View>
 
       {expanded && (
-        <View style={[styles.panel, { maxHeight: maxPanelHeight }]}>
-          <ScrollView showsVerticalScrollIndicator={true} nestedScrollEnabled>
+        <View style={[styles.panel, panelOpensUpward ? styles.panelUpwards : styles.panelDownwards]}>
+          <View style={styles.panelHeader}>
+            <Text style={styles.panelTitleText}>
+              {t('mapLegend.legend').toUpperCase()}
+            </Text>
+            <Pressable onPress={() => setExpanded(false)} hitSlop={10}>
+              <Ionicons name="close-circle" size={18} color="#94A3B8" />
+            </Pressable>
+          </View>
+          <ScrollView
+            style={{ maxHeight: 220 }}
+            showsVerticalScrollIndicator={false}
+          >
             {renderContent()}
+
+            {/* Always show Selected/Favorite markers */}
             <View style={styles.divider} />
             <View style={styles.row}>
               <View style={[styles.colorDot, styles.selectedDot]} />
-              <Text style={styles.partyCode}>{t('mapLegend.selected')}</Text>
+              <Text style={[styles.partyName, { color: '#E2E8F0' }]}>{t('mapLegend.selected')}</Text>
             </View>
             <View style={styles.row}>
               <View style={[styles.colorDot, styles.favDot]} />
-              <Text style={styles.partyCode}>{t('mapLegend.favourite')}</Text>
+              <Text style={[styles.partyName, { color: '#E2E8F0' }]}>{t('mapLegend.favorite')}</Text>
             </View>
           </ScrollView>
         </View>
       )}
-    </View>
+    </Animated.View>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
+  floatingContainer: {
     position: 'absolute',
-    bottom: 130,
-    left: 12,
-    maxWidth: Dimensions.get('window').width * 0.65,
+    top: 0,
+    left: 0,
+    zIndex: 90,
   },
   toggle: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: 'rgba(17, 24, 39, 0.9)',
-    borderRadius: 10,
-    paddingHorizontal: 10,
-    paddingVertical: 8,
-    marginRight: 6,
+    backgroundColor: '#0F172AF2',
+    borderColor: '#C5A059',
+    borderWidth: 1.5,
+    borderRadius: 16,
+    paddingHorizontal: 9,
+    paddingVertical: 5,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 3 },
+    shadowOpacity: 0.45,
+    shadowRadius: 5,
+    elevation: 8,
   },
   toggleText: {
-    fontSize: 12,
-    fontWeight: '600',
+    fontSize: 11,
+    fontWeight: '800',
     color: '#FFFFFF',
+    letterSpacing: 0.3,
   },
   panel: {
-    marginTop: 8,
-    backgroundColor: 'rgba(17, 24, 39, 0.95)',
-    borderRadius: 12,
+    position: 'absolute',
+    left: 0,
+    borderRadius: 14,
     padding: 12,
-    minWidth: 200,
+    minWidth: 210,
+    maxWidth: SCREEN_WIDTH * 0.75,
+    backgroundColor: '#0F172AF8',
+    borderColor: '#C5A059',
+    borderWidth: 1.5,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 6 },
+    shadowOpacity: 0.45,
+    shadowRadius: 8,
+    elevation: 12,
+    zIndex: 100,
+  },
+  panelDownwards: {
+    top: 36,
+  },
+  panelUpwards: {
+    bottom: 36,
+  },
+  panelHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    marginBottom: 6,
+  },
+  panelTitleText: {
+    fontSize: 11,
+    fontWeight: '800',
+    color: '#FCD34D',
+    letterSpacing: 0.5,
   },
   panelTitle: {
     fontSize: 11,
     fontWeight: '700',
-    color: '#6B7280',
     textTransform: 'uppercase',
     letterSpacing: 1,
     marginBottom: 8,
@@ -271,12 +439,10 @@ const styles = StyleSheet.create({
   partyCode: {
     fontSize: 12,
     fontWeight: '700',
-    color: '#D1D5DB',
     width: 44,
   },
   partyName: {
     fontSize: 11,
-    color: '#6B7280',
     flex: 1,
   },
   gradientRow: {
@@ -301,12 +467,10 @@ const styles = StyleSheet.create({
   },
   gradientLabel: {
     fontSize: 10,
-    color: '#9CA3AF',
     fontWeight: '600',
   },
   divider: {
     height: 1,
-    backgroundColor: '#374151',
     marginVertical: 6,
   },
 });

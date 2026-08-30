@@ -114,7 +114,7 @@ export default function UserProfileCard({
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: '#111827',
+    backgroundColor: '#FFFFFF',
     borderRadius: 16,
     padding: 16,
   },
@@ -126,7 +126,7 @@ const styles = StyleSheet.create({
     width: 56,
     height: 56,
     borderRadius: 28,
-    backgroundColor: '#1F2937',
+    backgroundColor: '#E8DED1',
     justifyContent: 'center',
     alignItems: 'center',
     borderWidth: 2,
@@ -147,7 +147,7 @@ const styles = StyleSheet.create({
   name: {
     fontSize: 17,
     fontWeight: '700',
-    color: '#FFFFFF',
+    color: '#241814',
     flexShrink: 1,
   },
   locationRow: {
@@ -158,11 +158,11 @@ const styles = StyleSheet.create({
   },
   locationText: {
     fontSize: 12,
-    color: '#6B7280',
+    color: '#988275',
   },
   bio: {
     fontSize: 13,
-    color: '#9CA3AF',
+    color: '#6D5549',
     marginTop: 6,
     lineHeight: 18,
   },
@@ -173,7 +173,7 @@ const styles = StyleSheet.create({
     marginTop: 16,
     paddingTop: 14,
     borderTopWidth: 0.5,
-    borderTopColor: '#1F2937',
+    borderTopColor: '#E8DED1',
   },
   stat: {
     alignItems: 'center',
@@ -182,17 +182,17 @@ const styles = StyleSheet.create({
   statValue: {
     fontSize: 16,
     fontWeight: '800',
-    color: '#FFFFFF',
+    color: '#241814',
   },
   statLabel: {
     fontSize: 11,
-    color: '#6B7280',
+    color: '#988275',
     marginTop: 2,
   },
   statDivider: {
     width: 1,
     height: 24,
-    backgroundColor: '#1F2937',
+    backgroundColor: '#E8DED1',
   },
   // Compact mode
   compactContainer: {
@@ -204,7 +204,7 @@ const styles = StyleSheet.create({
     width: 28,
     height: 28,
     borderRadius: 14,
-    backgroundColor: '#1F2937',
+    backgroundColor: '#E8DED1',
     justifyContent: 'center',
     alignItems: 'center',
     borderWidth: 1.5,
@@ -217,7 +217,7 @@ const styles = StyleSheet.create({
   compactName: {
     fontSize: 13,
     fontWeight: '600',
-    color: '#FFFFFF',
+    color: '#241814',
     flexShrink: 1,
   },
 });

@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from 'react';
-import { getCachedEnrichedGeo, loadEnrichedGeoForState, subscribeToGeoCache } from '@/lib/enrichedGeoCache';
+import { getCachedEnrichedGeo, loadEnrichedGeoForState, subscribeToGeoCache } from './enrichedGeoCache';
 
 export interface EnrichedGeoState {
   /** Enriched FeatureCollection, or null while loading / on error. */

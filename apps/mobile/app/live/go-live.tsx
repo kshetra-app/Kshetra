@@ -28,6 +28,7 @@ import {
 } from '../../lib/lmxTypes';
 import LiveBroadcaster, { isBroadcastSupported } from '../../components/LiveBroadcaster';
 import { buildWhipPublishUrl } from '../../lib/mediaPipeline';
+import { useTheme } from '../../lib/theme';
 
 const CATEGORIES: IssueCategory[] = [
   'emergency',
@@ -55,6 +56,7 @@ const DEMO_REPORTER = { id: 'u-citizen-1', name: 'You (Citizen)', tier: 'citizen
 export default function GoLiveScreen() {
   const insets = useSafeAreaInsets();
   const router = useRouter();
+  const { colors } = useTheme();
 
   const affiliations = useLiveExchangeStore(useShallow((s) => s.getActiveAffiliations(DEMO_REPORTER.id)));
   const startLiveEvent = useLiveExchangeStore((s) => s.startLiveEvent);
@@ -456,81 +458,81 @@ function OptionRow({
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#0A0A1A' },
+  container: { flex: 1 },
   header: {
     flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between',
     paddingHorizontal: 16, paddingBottom: 12,
   },
-  title: { fontSize: 18, fontWeight: '800', color: '#FFFFFF' },
+  title: { fontSize: 18, fontWeight: '800' },
   gpsBar: {
     flexDirection: 'row', alignItems: 'center', gap: 6,
     marginHorizontal: 16, marginBottom: 4, padding: 10,
-    backgroundColor: '#111827', borderRadius: 10,
+    borderRadius: 10, borderWidth: 1,
   },
-  gpsText: { fontSize: 12, color: '#9CA3AF', fontWeight: '600', flex: 1 },
+  gpsText: { fontSize: 12, fontWeight: '600', flex: 1 },
   section: { paddingHorizontal: 16, marginTop: 18 },
-  sectionTitle: { fontSize: 15, fontWeight: '800', color: '#FFFFFF' },
-  sectionHint: { fontSize: 12, color: '#6B7280', marginTop: 2 },
+  sectionTitle: { fontSize: 15, fontWeight: '800' },
+  sectionHint: { fontSize: 12, marginTop: 2 },
   optRow: {
     flexDirection: 'row', alignItems: 'center', gap: 12,
-    borderWidth: 1, borderColor: '#1F2937', backgroundColor: '#111827',
+    borderWidth: 1,
     borderRadius: 12, padding: 12,
   },
   optIcon: { width: 38, height: 38, borderRadius: 10, justifyContent: 'center', alignItems: 'center' },
-  optLabel: { fontSize: 14, fontWeight: '700', color: '#F9FAFB' },
-  optSub: { fontSize: 11, color: '#9CA3AF', marginTop: 2 },
+  optLabel: { fontSize: 14, fontWeight: '700' },
+  optSub: { fontSize: 11, marginTop: 2 },
   captureBtn: {
     flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 8,
-    backgroundColor: '#1D4ED8', paddingVertical: 13, borderRadius: 12,
+    paddingVertical: 13, borderRadius: 12,
   },
   captureBtnText: { color: '#FFFFFF', fontSize: 14, fontWeight: '800' },
   captureDone: {
     flexDirection: 'row', alignItems: 'center', gap: 10,
-    borderWidth: 1, borderColor: '#10B98155', backgroundColor: '#10B98114',
+    borderWidth: 1,
     borderRadius: 12, padding: 12,
   },
-  captureDoneText: { fontSize: 14, fontWeight: '700', color: '#F9FAFB' },
-  captureMeta: { fontSize: 11, color: '#9CA3AF', marginTop: 2 },
-  recapture: { fontSize: 12, fontWeight: '800', color: '#4F8EF7' },
+  captureDoneText: { fontSize: 14, fontWeight: '700' },
+  captureMeta: { fontSize: 11, marginTop: 2 },
+  recapture: { fontSize: 12, fontWeight: '800' },
   deptGrid: { flexDirection: 'row', flexWrap: 'wrap', gap: 8 },
   deptChip: {
     flexDirection: 'row', alignItems: 'center', gap: 6,
-    borderWidth: 1, borderColor: '#1F2937', backgroundColor: '#111827',
+    borderWidth: 1,
     paddingHorizontal: 12, paddingVertical: 8, borderRadius: 20,
   },
-  deptChipText: { fontSize: 12, fontWeight: '700', color: '#9CA3AF' },
+  deptChipText: { fontSize: 12, fontWeight: '700' },
   alertNote: {
     flexDirection: 'row', gap: 6, marginTop: 10, padding: 10,
-    backgroundColor: '#F59E0B14', borderRadius: 10,
+    borderRadius: 10, borderWidth: 1,
   },
-  alertNoteText: { flex: 1, fontSize: 11, color: '#FBBF24', lineHeight: 16 },
+  alertNoteText: { flex: 1, fontSize: 11, lineHeight: 16 },
   catGrid: { flexDirection: 'row', flexWrap: 'wrap', gap: 8 },
   catChip: {
     flexDirection: 'row', alignItems: 'center', gap: 5,
-    borderWidth: 1, borderColor: '#1F2937', backgroundColor: '#111827',
+    borderWidth: 1,
     paddingHorizontal: 12, paddingVertical: 8, borderRadius: 18,
   },
-  catChipText: { fontSize: 12, fontWeight: '700', color: '#9CA3AF' },
+  catChipText: { fontSize: 12, fontWeight: '700' },
   input: {
-    marginTop: 10, backgroundColor: '#111827', borderRadius: 10,
-    borderWidth: 1, borderColor: '#1F2937', paddingHorizontal: 12, paddingVertical: 10,
-    color: '#F9FAFB', fontSize: 14,
+    marginTop: 10, borderRadius: 10,
+    borderWidth: 1, paddingHorizontal: 12, paddingVertical: 10,
+    fontSize: 14,
   },
   bufferPreview: {
     flexDirection: 'row', gap: 8, marginHorizontal: 16, marginTop: 18, padding: 12,
-    backgroundColor: '#8B5CF614', borderRadius: 12,
+    borderRadius: 12, borderWidth: 1,
   },
-  bufferText: { flex: 1, fontSize: 12, color: '#C4B5FD', lineHeight: 17 },
+  bufferText: { flex: 1, fontSize: 12, lineHeight: 17 },
   footer: {
     position: 'absolute', bottom: 0, left: 0, right: 0,
-    paddingHorizontal: 16, paddingTop: 12, backgroundColor: '#0A0A1A',
-    borderTopWidth: 0.5, borderTopColor: '#1F2937',
+    paddingHorizontal: 16, paddingTop: 12,
+    borderTopWidth: 0.5,
   },
   goBtn: {
     flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 8,
     backgroundColor: '#EF4444', paddingVertical: 15, borderRadius: 14,
   },
-  goBtnDisabled: { backgroundColor: '#374151' },
+  goBtnDisabled: { opacity: 0.5 },
   goBtnText: { color: '#FFFFFF', fontSize: 16, fontWeight: '800' },
-  footerHint: { fontSize: 11, color: '#6B7280', textAlign: 'center', marginTop: 8, fontWeight: '600' },
+  footerHint: { fontSize: 11, textAlign: 'center', marginTop: 8, fontWeight: '600' },
 });

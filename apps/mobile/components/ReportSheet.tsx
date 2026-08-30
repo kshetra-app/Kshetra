@@ -163,7 +163,7 @@ export default function ReportSheet({
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#0A0A1A',
+    backgroundColor: '#F5EFE4',
     paddingHorizontal: 16,
   },
   header: {
@@ -173,12 +173,12 @@ const styles = StyleSheet.create({
     paddingTop: 16,
     paddingBottom: 12,
     borderBottomWidth: 0.5,
-    borderBottomColor: '#1F2937',
+    borderBottomColor: '#E8DED1',
   },
   headerTitle: {
     fontSize: 16,
     fontWeight: '700',
-    color: '#FFFFFF',
+    color: '#241814',
     textTransform: 'capitalize',
   },
   submitButton: {
@@ -193,7 +193,7 @@ const styles = StyleSheet.create({
   submitText: {
     fontSize: 14,
     fontWeight: '800',
-    color: '#FFFFFF',
+    color: '#241814',
   },
   contextBadge: {
     flexDirection: 'row',
@@ -211,7 +211,7 @@ const styles = StyleSheet.create({
   sectionLabel: {
     fontSize: 13,
     fontWeight: '700',
-    color: '#9CA3AF',
+    color: '#6D5549',
     marginTop: 16,
     marginBottom: 8,
   },
@@ -232,25 +232,25 @@ const styles = StyleSheet.create({
   reasonText: {
     fontSize: 15,
     fontWeight: '600',
-    color: '#9CA3AF',
+    color: '#6D5549',
     flex: 1,
   },
   reasonTextActive: {
-    color: '#FFFFFF',
+    color: '#241814',
   },
   checkIcon: {
     marginLeft: 'auto',
   },
   descInput: {
-    backgroundColor: '#111827',
+    backgroundColor: '#FFFFFF',
     borderRadius: 12,
     paddingHorizontal: 14,
     paddingVertical: 12,
     fontSize: 14,
-    color: '#FFFFFF',
+    color: '#241814',
     minHeight: 80,
     borderWidth: 1,
-    borderColor: '#1F2937',
+    borderColor: '#E8DED1',
     lineHeight: 20,
   },
   infoBox: {
@@ -264,7 +264,7 @@ const styles = StyleSheet.create({
   },
   infoText: {
     fontSize: 12,
-    color: '#6B7280',
+    color: '#988275',
     lineHeight: 18,
     flex: 1,
   },

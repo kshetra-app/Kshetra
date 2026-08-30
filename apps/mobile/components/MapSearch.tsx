@@ -10,8 +10,8 @@ import {
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useTranslation } from 'react-i18next';
-import { getPartyColor } from '@/lib/constants';
-import type { UnifiedConstituency } from '@/lib/stateDataAdapter';
+import { getPartyColor } from '../lib/constants';
+import type { UnifiedConstituency } from '../lib/stateDataAdapter';
 
 interface MapSearchProps {
   constituencies: UnifiedConstituency[];

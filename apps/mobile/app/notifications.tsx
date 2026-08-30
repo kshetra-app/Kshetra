@@ -1,9 +1,10 @@
 import { View, Text, StyleSheet, Pressable, Platform } from 'react-native';
 import { FlashList } from '@shopify/flash-list';
 import { Ionicons } from '@expo/vector-icons';
-import { Stack } from 'expo-router';
+import { Stack, useRouter } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useNotificationsStore, type NotificationItem } from '../stores/notifications';
+import { useTheme } from '../lib/theme';
 
 const CATEGORY_ICONS: Record<string, keyof typeof Ionicons.glyphMap> = {
   election_results: 'trophy',
@@ -24,6 +25,8 @@ function formatTimeAgo(ts: number): string {
 }
 
 export default function NotificationsScreen() {
+  const router = useRouter();
+  const { colors } = useTheme();
   const items = useNotificationsStore((s) => s.items);
   const markRead = useNotificationsStore((s) => s.markRead);
   const markAllRead = useNotificationsStore((s) => s.markAllRead);
@@ -31,38 +34,55 @@ export default function NotificationsScreen() {
   const unreadCount = useNotificationsStore((s) => s.unreadCount);
   const insets = useSafeAreaInsets();
 
+  const handlePress = (item: NotificationItem) => {
+    markRead(item.id);
+    if (item.data?.acNo) {
+      router.push(`/constituency/${item.data.stateCode ? `${item.data.stateCode}-AC-${item.data.acNo}` : item.data.acNo}` as any);
+    }
+  };
+
   const renderItem = ({ item }: { item: NotificationItem }) => (
     <Pressable
-      style={[styles.card, !item.read && styles.cardUnread]}
-      onPress={() => markRead(item.id)}
+      style={[
+        styles.card,
+        { backgroundColor: colors.surface, borderColor: colors.goldBorder || colors.border, borderWidth: 1 },
+        !item.read && [styles.cardUnread, { borderLeftColor: colors.primary }],
+      ]}
+      onPress={() => handlePress(item)}
     >
-      <View style={styles.iconContainer}>
+      <View style={[styles.iconContainer, { backgroundColor: colors.surfaceElevated }]}>
         <Ionicons
-          name={CATEGORY_ICONS[item.category] ?? 'notifications'}
-          size={20}
-          color={item.read ? '#4B5563' : '#4F8EF7'}
+          name={(CATEGORY_ICONS[item.category] || 'notifications') as any}
+          size={18}
+          color={item.read ? colors.textMuted : colors.primary}
         />
       </View>
       <View style={styles.cardContent}>
-        <Text style={[styles.cardTitle, !item.read && styles.cardTitleUnread]}>
+        <Text
+          style={[
+            styles.cardTitle,
+            { color: colors.textSecondary },
+            !item.read && [styles.cardTitleUnread, { color: colors.text }],
+          ]}
+        >
           {item.title}
         </Text>
-        <Text style={styles.cardBody} numberOfLines={2}>
+        <Text style={[styles.cardBody, { color: colors.textMuted }]} numberOfLines={2}>
           {item.body}
         </Text>
-        <Text style={styles.cardTime}>{formatTimeAgo(item.timestamp)}</Text>
+        <Text style={[styles.cardTime, { color: colors.textMuted }]}>{formatTimeAgo(item.timestamp)}</Text>
       </View>
-      {!item.read && <View style={styles.unreadDot} />}
+      {!item.read && <View style={[styles.unreadDot, { backgroundColor: colors.primary }]} />}
     </Pressable>
   );
 
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, { backgroundColor: colors.background }]}>
       <Stack.Screen
         options={{
           title: 'Notifications',
-          headerStyle: { backgroundColor: '#0A0A1A' },
-          headerTintColor: '#FFFFFF',
+          headerStyle: { backgroundColor: colors.surface },
+          headerTintColor: colors.primary,
         }}
       />
 
@@ -105,7 +125,6 @@ export default function NotificationsScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#0A0A1A',
   },
   actions: {
     flexDirection: 'row',
@@ -122,26 +141,21 @@ const styles = StyleSheet.create({
   actionText: {
     fontSize: 13,
     fontWeight: '600',
-    color: '#4F8EF7',
   },
   card: {
     flexDirection: 'row',
     alignItems: 'flex-start',
-    backgroundColor: '#111827',
     borderRadius: 12,
     padding: 14,
     marginBottom: 8,
   },
   cardUnread: {
-    backgroundColor: '#111827',
     borderLeftWidth: 3,
-    borderLeftColor: '#4F8EF7',
   },
   iconContainer: {
     width: 36,
     height: 36,
     borderRadius: 18,
-    backgroundColor: '#1F2937',
     justifyContent: 'center',
     alignItems: 'center',
     marginRight: 12,
@@ -152,28 +166,23 @@ const styles = StyleSheet.create({
   cardTitle: {
     fontSize: 15,
     fontWeight: '600',
-    color: '#9CA3AF',
   },
   cardTitleUnread: {
-    color: '#FFFFFF',
     fontWeight: '700',
   },
   cardBody: {
     fontSize: 13,
-    color: '#6B7280',
     marginTop: 2,
     lineHeight: 18,
   },
   cardTime: {
     fontSize: 11,
-    color: '#4B5563',
     marginTop: 4,
   },
   unreadDot: {
     width: 8,
     height: 8,
     borderRadius: 4,
-    backgroundColor: '#4F8EF7',
     marginTop: 4,
   },
   emptyState: {
@@ -184,12 +193,10 @@ const styles = StyleSheet.create({
   emptyTitle: {
     fontSize: 18,
     fontWeight: '700',
-    color: '#6B7280',
     marginTop: 12,
   },
   emptyText: {
     fontSize: 13,
-    color: '#4B5563',
     marginTop: 4,
   },
   listContent: {

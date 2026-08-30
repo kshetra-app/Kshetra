@@ -1,17 +1,16 @@
-/**
- * MPCard — Compact card showing an MP's profile with party, house, and key stats.
- */
 import React from 'react';
 import { useTranslation } from 'react-i18next';
-import { View, Text, StyleSheet } from 'react-native';
+import { View, Text, StyleSheet, Pressable } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { getPartyColor } from '@/lib/constants';
-import CandidateAvatar from '@/components/CandidateAvatar';
-import type { MPProfile } from '@/lib/mpTypes';
+import { getPartyColor } from '../lib/constants';
+import CandidateAvatar from './CandidateAvatar';
+import type { MPProfile } from '../lib/mpTypes';
+import { useTheme } from '../lib/theme';
 
 interface MPCardProps {
   profile: MPProfile;
   compact?: boolean;
+  onPress?: () => void;
 }
 
 function formatINR(val: number): string {
@@ -20,15 +19,24 @@ function formatINR(val: number): string {
   return `₹${val.toLocaleString('en-IN')}`;
 }
 
-export default function MPCard({ profile, compact }: MPCardProps) {
+export default function MPCard({ profile, compact, onPress }: MPCardProps) {
   const { t } = useTranslation();
+  const { colors } = useTheme();
   const partyColor = getPartyColor(profile.party);
 
   const houseLabel = profile.house === 'lok_sabha' ? t('parliament.lokSabha') : t('parliament.rajyaSabha');
-  const houseColor = profile.house === 'lok_sabha' ? '#4F8EF7' : '#8B5CF6';
+  const houseColor = profile.house === 'lok_sabha' ? colors.primary : colors.teal;
 
   return (
-    <View style={styles.card}>
+    <Pressable
+      onPress={onPress}
+      disabled={!onPress}
+      style={({ pressed }) => [
+        styles.card,
+        { backgroundColor: colors.surface, borderColor: colors.goldBorder || colors.border },
+        pressed && { opacity: 0.92, transform: [{ scale: 0.99 }] },
+      ]}
+    >
       {/* Header */}
       <View style={styles.header}>
         <CandidateAvatar
@@ -38,21 +46,21 @@ export default function MPCard({ profile, compact }: MPCardProps) {
           photoUrl={profile.photoUrl}
         />
         <View style={styles.headerInfo}>
-          <Text style={styles.name} numberOfLines={1}>{profile.name}</Text>
+          <Text style={[styles.name, { color: colors.text }]} numberOfLines={1}>{profile.name}</Text>
           {profile.constituency && (
-            <Text style={styles.constituencyLabel}>{profile.constituency}</Text>
+            <Text style={[styles.constituencyLabel, { color: colors.textMuted }]}>{profile.constituency}</Text>
           )}
           <View style={styles.badgeRow}>
             <View style={[styles.partyBadge, { backgroundColor: partyColor }]}>
               <Text style={styles.partyText}>{profile.party}</Text>
             </View>
-            <View style={[styles.houseBadge, { backgroundColor: houseColor + '25' }]}>
+            <View style={[styles.houseBadge, { backgroundColor: houseColor + '20' }]}>
               <Text style={[styles.houseText, { color: houseColor }]}>{houseLabel}</Text>
             </View>
             {profile.isMinister && (
-              <View style={styles.ministerBadge}>
-                <Ionicons name="star" size={10} color="#F59E0B" />
-                <Text style={styles.ministerText}>{t('parliament.mpProfile')}</Text>
+              <View style={[styles.ministerBadge, { backgroundColor: colors.goldLight }]}>
+                <Ionicons name="star" size={10} color={colors.gold} />
+                <Text style={[styles.ministerText, { color: colors.gold }]}>{t('parliament.mpProfile')}</Text>
               </View>
             )}
           </View>
@@ -132,17 +140,17 @@ export default function MPCard({ profile, compact }: MPCardProps) {
           )}
         </>
       )}
-    </View>
+    </Pressable>
   );
 }
 
 const styles = StyleSheet.create({
   card: {
-    backgroundColor: '#111827',
+    backgroundColor: '#FFFFFF',
     borderRadius: 14,
     padding: 14,
     borderWidth: 1,
-    borderColor: '#1F2937',
+    borderColor: '#E8DED1',
   },
   header: {
     flexDirection: 'row',
@@ -227,16 +235,18 @@ const styles = StyleSheet.create({
   },
   portfolioText: {
     fontSize: 12,
-    color: '#D1D5DB',
+    color: '#6D5549',
     fontStyle: 'italic',
   },
   statsGrid: {
     flexDirection: 'row',
     justifyContent: 'space-around',
-    backgroundColor: '#0A0A1A',
+    backgroundColor: '#F5EFE4',
     borderRadius: 10,
     padding: 10,
     marginBottom: 8,
+    borderWidth: 1,
+    borderColor: '#E8DED1',
   },
   statItem: {
     alignItems: 'center',
@@ -244,11 +254,11 @@ const styles = StyleSheet.create({
   statValue: {
     fontSize: 13,
     fontWeight: '700',
-    color: '#FFFFFF',
+    color: '#241814',
   },
   statLabel: {
     fontSize: 9,
-    color: '#6B7280',
+    color: '#988275',
     textTransform: 'uppercase',
     letterSpacing: 0.5,
     marginTop: 2,
@@ -266,6 +276,6 @@ const styles = StyleSheet.create({
   },
   perfText: {
     fontSize: 11,
-    color: '#D1D5DB',
+    color: '#6D5549',
   },
 });

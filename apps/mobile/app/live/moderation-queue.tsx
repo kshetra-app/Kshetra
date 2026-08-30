@@ -12,6 +12,7 @@ import { useShallow } from 'zustand/react/shallow';
 import { useLiveExchangeStore } from '../../stores/liveExchange';
 import type { HumanDecision, LiveEvent } from '../../lib/lmxTypes';
 import { ISSUE_CATEGORY_CONFIG, TIER_CONFIG, hasAI } from '../../lib/lmxTypes';
+import { useTheme } from '../../lib/theme';
 
 /**
  * Human moderation buffer triage (doc Section 13 Layer 3).
@@ -29,17 +30,18 @@ const DECISIONS: { key: HumanDecision; label: string; icon: string; color: strin
 export default function ModerationQueueScreen() {
   const insets = useSafeAreaInsets();
   const router = useRouter();
+  const { colors } = useTheme();
   const queue = useLiveExchangeStore(useShallow((s) => s.getModerationQueue()));
   const setHumanDecision = useLiveExchangeStore((s) => s.setHumanDecision);
   const aiServiceEnabled = useLiveExchangeStore((s) => s.aiServiceEnabled);
 
   return (
-    <View style={styles.container}>
-      <View style={[styles.header, { paddingTop: insets.top + 8 }]}>
+    <View style={[styles.container, { backgroundColor: colors.background }]}>
+      <View style={[styles.header, { paddingTop: insets.top + 8, borderBottomColor: colors.border }]}>
         <Pressable onPress={() => router.back()} hitSlop={10}>
-          <Ionicons name="chevron-back" size={26} color="#FFFFFF" />
+          <Ionicons name="chevron-back" size={26} color={colors.primary} />
         </Pressable>
-        <Text style={styles.title}>Moderation Queue</Text>
+        <Text style={[styles.title, { color: colors.text }]}>Moderation Queue</Text>
         <View style={{ width: 26 }} />
       </View>
 
@@ -145,32 +147,32 @@ function QueueCard({
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#0A0A1A' },
+  container: { flex: 1 },
   header: {
     flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between',
     paddingHorizontal: 16, paddingBottom: 12,
   },
-  title: { fontSize: 18, fontWeight: '800', color: '#FFFFFF' },
+  title: { fontSize: 18, fontWeight: '800' },
   banner: {
     flexDirection: 'row', alignItems: 'center', gap: 8,
-    marginHorizontal: 16, padding: 11, backgroundColor: '#8B5CF614', borderRadius: 10,
+    marginHorizontal: 16, padding: 11, borderRadius: 10, borderWidth: 1,
   },
-  bannerText: { flex: 1, fontSize: 12, color: '#C4B5FD', fontWeight: '600' },
+  bannerText: { flex: 1, fontSize: 12, fontWeight: '600' },
   list: { padding: 16, paddingBottom: 100 },
   empty: { alignItems: 'center', paddingTop: 80, gap: 10 },
-  emptyText: { fontSize: 14, color: '#6B7280', fontWeight: '600' },
-  card: { backgroundColor: '#111827', borderRadius: 14, padding: 14, marginBottom: 12, borderWidth: 0.5, borderColor: '#1F2937' },
+  emptyText: { fontSize: 14, fontWeight: '600' },
+  card: { borderRadius: 14, padding: 14, marginBottom: 12, borderWidth: 1 },
   cardTop: { flexDirection: 'row', alignItems: 'center', gap: 10 },
   catIcon: { width: 38, height: 38, borderRadius: 10, justifyContent: 'center', alignItems: 'center' },
-  cardTitle: { fontSize: 14, fontWeight: '800', color: '#F9FAFB' },
-  cardMeta: { fontSize: 11, color: '#6B7280', marginTop: 2 },
+  cardTitle: { fontSize: 14, fontWeight: '800' },
+  cardMeta: { fontSize: 11, marginTop: 2 },
   tierBadge: { borderWidth: 1, paddingHorizontal: 7, paddingVertical: 3, borderRadius: 6 },
   tierText: { fontSize: 9, fontWeight: '800' },
   flagRow: { flexDirection: 'row', gap: 6, marginTop: 10 },
-  flag: { flexDirection: 'row', alignItems: 'center', gap: 3, backgroundColor: '#EF444422', paddingHorizontal: 8, paddingVertical: 4, borderRadius: 6 },
-  flagText: { fontSize: 10, fontWeight: '800', color: '#EF4444', textTransform: 'uppercase' },
+  flag: { flexDirection: 'row', alignItems: 'center', gap: 3, paddingHorizontal: 8, paddingVertical: 4, borderRadius: 6 },
+  flagText: { fontSize: 10, fontWeight: '800', textTransform: 'uppercase' },
   previewBtn: { flexDirection: 'row', alignItems: 'center', gap: 6, marginTop: 12 },
-  previewText: { fontSize: 12, color: '#4F8EF7', fontWeight: '700' },
+  previewText: { fontSize: 12, fontWeight: '700' },
   decisionRow: { flexDirection: 'row', gap: 8, marginTop: 12 },
   decisionBtn: {
     flex: 1, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 4,

@@ -1,4 +1,4 @@
-import { PARTY_COLORS } from '@/lib/constants';
+import { PARTY_COLORS } from './constants';
 
 /**
  * MapLibre/Mapbox fill-color expressions for the constituency map.
@@ -167,8 +167,22 @@ export function getPartyFillColorExpression(year?: number, isIndia?: boolean): a
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function getExtrusionHeightExpression(mode: string, isIndia?: boolean): any {
   if (isIndia) {
-    return 10000;
+    return ['+', 8000, ['*', ['coalesce', ['get', 'ASSEMBLY_SEATS'], 40], 250]];
   }
-  return 5000;
+  if (mode === 'population') {
+    return ['+', 6000, ['*', ['coalesce', ['get', 'POPULATION'], 100000], 0.08]];
+  }
+  if (mode === 'margin') {
+    return ['+', 6000, ['*', ['coalesce', ['get', 'MARGIN'], 5000], 0.5]];
+  }
+  if (mode === 'turnout') {
+    return ['*', ['coalesce', ['get', 'TURNOUT'], 50], 200];
+  }
+  if (mode === 'literacy') {
+    return ['*', ['coalesce', ['get', 'LITERACY'], 50], 200];
+  }
+  // Default party / general mode: dynamic height by margin/votes
+  return ['+', 8000, ['*', ['coalesce', ['get', 'MARGIN'], 8000], 0.35]];
 }
+
 

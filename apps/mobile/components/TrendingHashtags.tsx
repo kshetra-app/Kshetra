@@ -5,6 +5,7 @@ import { useTranslation } from 'react-i18next';
 import { STATES } from '@kshetra/shared';
 import { useActiveStateStore } from '../stores/activeState';
 import type { Post, TrendingHashtag } from '../lib/feedTypes';
+import { useTheme } from '../lib/theme';
 
 interface TrendingHashtagsProps {
   posts: Post[];
@@ -18,6 +19,7 @@ export default function TrendingHashtags({
   maxTags = 10,
 }: TrendingHashtagsProps) {
   const { t } = useTranslation();
+  const { colors } = useTheme();
   const stateCode = useActiveStateStore((s) => s.stateCode);
   const stateName = STATES[stateCode]?.name ?? stateCode;
   const trending = useMemo((): TrendingHashtag[] => {
@@ -38,10 +40,10 @@ export default function TrendingHashtags({
   if (trending.length === 0) return null;
 
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, { borderBottomColor: colors.border }]}>
       <View style={styles.header}>
-        <Ionicons name="trending-up" size={18} color="#F59E0B" />
-        <Text style={styles.title}>{t('feed.trendingIn', { state: stateName })}</Text>
+        <Ionicons name="trending-up" size={18} color={colors.primary} />
+        <Text style={[styles.title, { color: colors.text }]}>{t('feed.trendingIn', { state: stateName })}</Text>
       </View>
       <FlatList
         data={trending}
@@ -51,13 +53,13 @@ export default function TrendingHashtags({
         contentContainerStyle={styles.list}
         renderItem={({ item, index }) => (
           <Pressable
-            style={styles.tagChip}
+            style={[styles.tagChip, { backgroundColor: colors.surface, borderColor: colors.border, shadowColor: colors.shadowColor }]}
             onPress={() => onTagPress?.(item.tag)}
           >
-            <Text style={styles.tagRank}>{index + 1}</Text>
+            <Text style={[styles.tagRank, { color: colors.gold }]}>{index + 1}</Text>
             <View>
-              <Text style={styles.tagName}>#{item.tag}</Text>
-              <Text style={styles.tagCount}>
+              <Text style={[styles.tagName, { color: colors.primary }]}>#{item.tag}</Text>
+              <Text style={[styles.tagCount, { color: colors.textMuted }]}>
                 {item.postCount} {t('content.sentimentLabels.posts')}
               </Text>
             </View>
@@ -73,7 +75,6 @@ const styles = StyleSheet.create({
     paddingTop: 4,
     paddingBottom: 10,
     borderBottomWidth: 0.5,
-    borderBottomColor: '#1F2937',
   },
   header: {
     flexDirection: 'row',
@@ -85,7 +86,6 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 15,
     fontWeight: '700',
-    color: '#FFFFFF',
   },
   list: {
     paddingHorizontal: 16,
@@ -94,29 +94,28 @@ const styles = StyleSheet.create({
   tagChip: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#111827',
     borderRadius: 12,
     paddingHorizontal: 12,
     paddingVertical: 10,
     gap: 8,
     borderWidth: 1,
-    borderColor: '#1F2937',
+    elevation: 2,
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.06,
+    shadowRadius: 4,
   },
   tagRank: {
     fontSize: 16,
     fontWeight: '800',
-    color: '#F59E0B',
     width: 20,
     textAlign: 'center',
   },
   tagName: {
     fontSize: 13,
     fontWeight: '700',
-    color: '#4F8EF7',
   },
   tagCount: {
     fontSize: 11,
-    color: '#6B7280',
     marginTop: 1,
   },
 });

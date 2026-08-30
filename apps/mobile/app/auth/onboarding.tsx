@@ -14,6 +14,7 @@ import { useRouter } from 'expo-router';
 import { useUserProfileStore } from '../../stores/userProfile';
 import { useMyConstituencyStore } from '../../stores/myConstituency';
 import { useAuthStore } from '../../stores/auth';
+import { useTheme } from '../../lib/theme';
 
 const INTERESTS = [
   { key: 'elections', icon: 'podium', label: 'Elections' },
@@ -30,6 +31,7 @@ type Step = 'welcome' | 'profile' | 'interests' | 'constituency' | 'done';
 
 export default function OnboardingScreen() {
   const router = useRouter();
+  const { colors } = useTheme();
   const user = useAuthStore((s) => s.user);
   const { updateProfile, setOnboarded } = useUserProfileStore();
   const setHome = useMyConstituencyStore((s) => s.setHome);
@@ -184,7 +186,7 @@ export default function OnboardingScreen() {
       {/* Back */}
       {currentIdx > 0 && (
         <Pressable style={styles.backBtn} onPress={() => setStep(steps[currentIdx - 1])}>
-          <Ionicons name="arrow-back" size={20} color="#FFFFFF" />
+          <Ionicons name="arrow-back" size={20} color={colors.primary} />
         </Pressable>
       )}
 
@@ -199,35 +201,35 @@ export default function OnboardingScreen() {
 }
 
 const styles = StyleSheet.create({
-  safe: { flex: 1, backgroundColor: '#0A0A1A' },
+  safe: { flex: 1 },
   scrollContent: { flexGrow: 1, justifyContent: 'center', padding: 24 },
   progressRow: { flexDirection: 'row', justifyContent: 'center', gap: 6, paddingTop: 12 },
-  progressDot: { width: 8, height: 8, borderRadius: 4, backgroundColor: '#1F2937' },
-  progressDotActive: { backgroundColor: '#4F8EF7', width: 20 },
-  backBtn: { position: 'absolute', top: 50, left: 16, zIndex: 10, width: 36, height: 36, borderRadius: 18, backgroundColor: '#1F2937', alignItems: 'center', justifyContent: 'center' },
+  progressDot: { width: 8, height: 8, borderRadius: 4 },
+  progressDotActive: { width: 20 },
+  backBtn: { position: 'absolute', top: 50, left: 16, zIndex: 10, width: 36, height: 36, borderRadius: 18, alignItems: 'center', justifyContent: 'center', borderWidth: 1 },
 
   stepContent: { alignItems: 'center', gap: 12 },
-  brand: { fontSize: 36, fontWeight: '900', color: '#4F8EF7', letterSpacing: 8 },
-  welcomeTitle: { fontSize: 20, fontWeight: '800', color: '#FFFFFF', textAlign: 'center', marginTop: 8 },
-  welcomeDesc: { fontSize: 14, color: '#9CA3AF', textAlign: 'center', lineHeight: 20 },
+  brand: { fontSize: 36, fontWeight: '900', letterSpacing: 8 },
+  welcomeTitle: { fontSize: 20, fontWeight: '800', textAlign: 'center', marginTop: 8 },
+  welcomeDesc: { fontSize: 14, textAlign: 'center', lineHeight: 20 },
   featureList: { width: '100%', gap: 10, marginTop: 12 },
-  featureRow: { flexDirection: 'row', alignItems: 'center', gap: 10, backgroundColor: '#111827', borderRadius: 10, padding: 12 },
-  featureText: { fontSize: 14, color: '#D1D5DB', fontWeight: '600' },
+  featureRow: { flexDirection: 'row', alignItems: 'center', gap: 10, borderRadius: 10, padding: 12, borderWidth: 1 },
+  featureText: { fontSize: 14, fontWeight: '600' },
 
-  stepTitle: { fontSize: 22, fontWeight: '900', color: '#FFFFFF', marginTop: 8 },
-  stepDesc: { fontSize: 14, color: '#9CA3AF', textAlign: 'center', lineHeight: 20, marginBottom: 8 },
+  stepTitle: { fontSize: 22, fontWeight: '900', marginTop: 8 },
+  stepDesc: { fontSize: 14, textAlign: 'center', lineHeight: 20, marginBottom: 8 },
 
-  inputWrap: { flexDirection: 'row', alignItems: 'center', backgroundColor: '#111827', borderRadius: 12, borderWidth: 1, borderColor: '#1F2937', paddingHorizontal: 14, width: '100%', gap: 10 },
-  input: { flex: 1, fontSize: 15, color: '#FFFFFF', paddingVertical: 14 },
+  inputWrap: { flexDirection: 'row', alignItems: 'center', borderRadius: 12, borderWidth: 1, paddingHorizontal: 14, width: '100%', gap: 10 },
+  input: { flex: 1, fontSize: 15, paddingVertical: 14 },
 
   interestsGrid: { flexDirection: 'row', flexWrap: 'wrap', gap: 8, justifyContent: 'center' },
-  interestChip: { flexDirection: 'row', alignItems: 'center', gap: 6, paddingHorizontal: 14, paddingVertical: 10, borderRadius: 20, backgroundColor: '#111827', borderWidth: 1, borderColor: '#1F2937' },
-  interestChipActive: { borderColor: '#4F8EF7', backgroundColor: '#4F8EF715' },
-  interestText: { fontSize: 13, fontWeight: '600', color: '#6B7280' },
-  interestTextActive: { color: '#4F8EF7', fontWeight: '700' },
+  interestChip: { flexDirection: 'row', alignItems: 'center', gap: 6, paddingHorizontal: 14, paddingVertical: 10, borderRadius: 20, borderWidth: 1 },
+  interestChipActive: {},
+  interestText: { fontSize: 13, fontWeight: '600' },
+  interestTextActive: { fontWeight: '700' },
 
-  primaryBtn: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 8, backgroundColor: '#4F8EF7', borderRadius: 12, paddingVertical: 16, width: '100%', marginTop: 12 },
+  primaryBtn: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 8, borderRadius: 12, paddingVertical: 16, width: '100%', marginTop: 12 },
   primaryBtnText: { fontSize: 16, fontWeight: '800', color: '#FFFFFF' },
   skipBtn: { paddingVertical: 10 },
-  skipBtnText: { fontSize: 14, color: '#6B7280', fontWeight: '600' },
+  skipBtnText: { fontSize: 14, fontWeight: '600' },
 });

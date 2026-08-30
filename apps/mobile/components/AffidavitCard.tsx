@@ -127,11 +127,11 @@ export default React.memo(function AffidavitCard({ stateCode, acNo, electionYear
 
 const styles = StyleSheet.create({
   card: {
-    backgroundColor: '#111827',
+    backgroundColor: '#FFFFFF',
     borderRadius: 14,
     padding: 16,
     borderWidth: 1,
-    borderColor: '#1F2937',
+    borderColor: '#E8DED1',
   },
   header: {
     flexDirection: 'row',
@@ -147,7 +147,7 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 15,
     fontWeight: '700',
-    color: '#FFFFFF',
+    color: '#241814',
   },
   yearBadge: {
     backgroundColor: '#4F8EF720',
@@ -163,12 +163,12 @@ const styles = StyleSheet.create({
   candidateName: {
     fontSize: 17,
     fontWeight: '800',
-    color: '#FFFFFF',
+    color: '#241814',
     marginBottom: 2,
   },
   candidateMeta: {
     fontSize: 12,
-    color: '#9CA3AF',
+    color: '#6D5549',
     marginBottom: 14,
   },
   metricsRow: {
@@ -183,12 +183,12 @@ const styles = StyleSheet.create({
   metricValue: {
     fontSize: 15,
     fontWeight: '800',
-    color: '#FFFFFF',
+    color: '#241814',
     marginTop: 4,
   },
   metricLabel: {
     fontSize: 10,
-    color: '#6B7280',
+    color: '#988275',
     fontWeight: '600',
     marginTop: 2,
   },
@@ -207,7 +207,7 @@ const styles = StyleSheet.create({
   },
   redFlagText: {
     fontSize: 11,
-    color: '#D1D5DB',
+    color: '#6D5549',
     flex: 1,
     lineHeight: 16,
   },
@@ -218,7 +218,7 @@ const styles = StyleSheet.create({
     marginTop: 14,
     paddingTop: 12,
     borderTopWidth: 1,
-    borderTopColor: '#1F2937',
+    borderTopColor: '#E8DED1',
     gap: 4,
   },
   footerLink: {

@@ -25,6 +25,7 @@ import type { Post, PostType, PostMedia, FeedScope } from '../../lib/feedTypes';
 import { useTranslation } from 'react-i18next';
 import { STATES } from '@kshetra/shared';
 import { useContentPromotionStore } from '../../stores/contentPromotion';
+import { useTheme } from '../../lib/theme';
 
 const FILTER_TAB_KEYS: { key: PostType | 'all'; tKey: string; icon: string }[] = [
   { key: 'all', tKey: 'feed.filters.all', icon: 'grid' },
@@ -43,6 +44,7 @@ const SCOPE_OPTIONS: { key: FeedScope; icon: string; tKey: string }[] = [
 
 export default function FeedScreen() {
   const { t } = useTranslation();
+  const { colors } = useTheme();
   const [composeVisible, setComposeVisible] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
   const [editingPost, setEditingPost] = useState<Post | undefined>(undefined);
@@ -196,20 +198,20 @@ export default function FeedScreen() {
   const { insets } = useResponsive();
 
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, { backgroundColor: colors.background }]}>
       {/* Header */}
-      <View style={[styles.header, { paddingTop: insets.top + 8 }]}>
+      <View style={[styles.header, { paddingTop: insets.top + 8, borderBottomColor: colors.border }]}>
         <View>
-          <Text style={styles.headerTitle}>{t('feed.title')}</Text>
+          <Text style={[styles.headerTitle, { color: colors.text }]}>{t('feed.title')}</Text>
           <View style={styles.scopeIndicator}>
-            <Ionicons name="funnel" size={10} color="#6B7280" />
-            <Text style={styles.scopeIndicatorText}>
+            <Ionicons name="funnel" size={10} color={colors.textMuted} />
+            <Text style={[styles.scopeIndicatorText, { color: colors.textMuted }]}>
               {scopeLabel} · {posts.length} {posts.length !== 1 ? t('common.posts') : t('common.post')}
             </Text>
           </View>
         </View>
         <Pressable
-          style={styles.composeButton}
+          style={[styles.composeButton, { backgroundColor: colors.primary }]}
           onPress={() => setComposeVisible(true)}
         >
           <Ionicons name="create" size={18} color="#FFFFFF" />
@@ -224,14 +226,28 @@ export default function FeedScreen() {
           return (
             <Pressable
               key={opt.key}
-              style={[styles.scopeChip, active && styles.scopeChipActive, disabled && styles.scopeChipDisabled]}
+              style={[
+                styles.scopeChip,
+                { backgroundColor: colors.surface, borderColor: colors.goldBorder || colors.border },
+                active && { backgroundColor: colors.primary, borderColor: colors.primary },
+                disabled && styles.scopeChipDisabled,
+              ]}
               onPress={() => !disabled && setScopeFilter(opt.key)}
             >
-              <Ionicons name={opt.icon as any} size={12} color={active ? '#FFF' : disabled ? '#374151' : '#9CA3AF'} />
+              <Ionicons
+                name={opt.icon as any}
+                size={12}
+                color={active ? '#FFF' : disabled ? colors.textMuted : colors.textSecondary}
+              />
               <Text
                 numberOfLines={1}
                 allowFontScaling={false}
-                style={[styles.scopeChipText, active && styles.scopeChipTextActive, disabled && { color: '#374151' }]}
+                style={[
+                  styles.scopeChipText,
+                  { color: colors.textSecondary },
+                  active && styles.scopeChipTextActive,
+                  disabled && { color: colors.textMuted },
+                ]}
               >
                 {opt.key === 'state'
                   ? (STATES as Record<string, { name: string }>)[stateCode]?.name ?? stateCode
@@ -245,20 +261,32 @@ export default function FeedScreen() {
       </ScrollView>
 
       {/* Type filter tabs */}
-      <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.filterScroll} contentContainerStyle={styles.filterContent}>
+      <ScrollView horizontal showsHorizontalScrollIndicator={false} style={[styles.filterScroll, { borderBottomColor: colors.border }]} contentContainerStyle={styles.filterContent}>
         {FILTER_TAB_KEYS.map((tab) => {
           const active = feedFilter === tab.key;
           return (
             <Pressable
               key={tab.key}
-              style={[styles.filterTab, active && styles.filterTabActive]}
+              style={[
+                styles.filterTab,
+                { backgroundColor: colors.surface, borderColor: colors.goldBorder || colors.border },
+                active && { backgroundColor: colors.primary, borderColor: colors.primary },
+              ]}
               onPress={() => setFilter(tab.key)}
             >
-              <Ionicons name={tab.icon as any} size={13} color={active ? '#FFFFFF' : '#6B7280'} />
+              <Ionicons
+                name={tab.icon as any}
+                size={13}
+                color={active ? '#FFFFFF' : colors.textSecondary}
+              />
               <Text
                 numberOfLines={1}
                 allowFontScaling={false}
-                style={[styles.filterLabel, active && styles.filterLabelActive]}
+                style={[
+                  styles.filterLabel,
+                  { color: colors.textSecondary },
+                  active && styles.filterLabelActive,
+                ]}
               >
                 {t(tab.tKey)}
               </Text>
@@ -320,21 +348,19 @@ export default function FeedScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#0A0A1A',
   },
   header: {
-    flexShrink: 0,
     flexDirection: 'row',
-    alignItems: 'flex-start',
+    alignItems: 'center',
     justifyContent: 'space-between',
     paddingHorizontal: 16,
     paddingBottom: 8,
+    borderBottomWidth: 0.5,
     zIndex: 10,
   },
   headerTitle: {
     fontSize: 24,
     fontWeight: '800',
-    color: '#FFFFFF',
   },
   scopeIndicator: {
     flexDirection: 'row',
@@ -344,21 +370,17 @@ const styles = StyleSheet.create({
   },
   scopeIndicatorText: {
     fontSize: 11,
-    color: '#6B7280',
     fontWeight: '600',
   },
   composeButton: {
     width: 36,
     height: 36,
     borderRadius: 18,
-    backgroundColor: '#4F8EF7',
     justifyContent: 'center',
     alignItems: 'center',
     elevation: 3,
   },
   scopeScroll: {
-    // Fixed height + flexGrow:0 so this row never grows/shrinks when the
-    // post list below it changes size (e.g. a single-result filter).
     flexGrow: 0,
     flexShrink: 0,
     height: 46,
@@ -376,32 +398,26 @@ const styles = StyleSheet.create({
     height: 34,
     paddingHorizontal: 12,
     borderRadius: 18,
-    backgroundColor: '#111827',
+    borderWidth: 1,
     gap: 4,
   },
-  scopeChipActive: {
-    backgroundColor: '#4F8EF7',
-  },
+  scopeChipActive: {},
   scopeChipDisabled: {
     opacity: 0.35,
   },
   scopeChipText: {
     fontSize: 12,
     fontWeight: '700',
-    color: '#9CA3AF',
   },
   scopeChipTextActive: {
     color: '#FFFFFF',
   },
   filterScroll: {
-    // Fixed height + flexGrow:0 keeps the filter row visually anchored
-    // regardless of how many posts the selected filter returns.
     flexGrow: 0,
     flexShrink: 0,
     height: 49,
     marginBottom: 4,
     borderBottomWidth: 0.5,
-    borderBottomColor: '#1F2937',
     zIndex: 5,
   },
   filterContent: {
@@ -416,23 +432,18 @@ const styles = StyleSheet.create({
     height: 32,
     paddingHorizontal: 10,
     borderRadius: 16,
-    backgroundColor: '#111827',
+    borderWidth: 1,
     gap: 4,
   },
-  filterTabActive: {
-    backgroundColor: '#4F8EF7',
-  },
+  filterTabActive: {},
   filterLabel: {
     fontSize: 11,
     fontWeight: '700',
-    color: '#6B7280',
   },
   filterLabelActive: {
     color: '#FFFFFF',
   },
   list: {
-    // Always fill the remaining space so a short result set (e.g. a
-    // single-post filter) can't reflow the chip rows above it.
     flex: 1,
   },
   listContent: {
@@ -453,10 +464,8 @@ const styles = StyleSheet.create({
   emptyTitle: {
     fontSize: 16,
     fontWeight: '700',
-    color: '#374151',
   },
   emptySubtitle: {
     fontSize: 13,
-    color: '#4B5563',
   },
 });

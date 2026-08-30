@@ -5,6 +5,7 @@ import {
   Pressable,
   ActivityIndicator,
   ScrollView,
+  Dimensions,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
@@ -17,17 +18,17 @@ import {
   getPartyColor,
   getStateCenter,
   getStateZoom,
-} from '@/lib/constants';
-import CandidateAvatar from '@/components/CandidateAvatar';
-import { useUserLocation } from '@/lib/useUserLocation';
+} from '../../lib/constants';
+import CandidateAvatar from '../../components/CandidateAvatar';
+import { useUserLocation } from '../../lib/useUserLocation';
 import { findConstituencyAtPoint, STATES } from '@kshetra/shared';
 import { useActiveStateStore } from '../../stores/activeState';
 import { usePreferencesStore } from '../../stores/preferences';
 import { useFeedStore } from '../../stores/feed';
 import { isStateSupported, getStateData } from '../../lib/stateRegistry';
-import { MapboxGL, mapboxAvailable } from '@/lib/maplibreCompat';
-import { useEnrichedGeo } from '@/lib/useEnrichedGeo';
-import { computeDistrictDensityMap } from '@/lib/delimitationDensity';
+import { MapboxGL, mapboxAvailable } from '../../lib/maplibreCompat';
+import { useEnrichedGeo } from '../../lib/useEnrichedGeo';
+import { computeDistrictDensityMap } from '../../lib/delimitationDensity';
 import {
   partyFillColor,
   marginFillColor,
@@ -39,7 +40,7 @@ import {
   swingFillColor,
   getPartyFillColorExpression,
   getExtrusionHeightExpression,
-} from '@/lib/mapFillColors';
+} from '../../lib/mapFillColors';
 import StateSwitcher from '../../components/StateSwitcher';
 import MapLegend from '../../components/MapLegend';
 import MapFallback from '../../components/MapFallback';
@@ -47,6 +48,7 @@ import TriviaCard from '../../components/TriviaCard';
 import DefectionBadge from '../../components/DefectionBadge';
 import MapColorToggle, { type MapColorMode } from '../../components/MapColorToggle';
 import MapSearch from '../../components/MapSearch';
+import { useTheme } from '../../lib/theme';
 import CompareSheet from '../../components/CompareSheet';
 import ChiefMinisterBadge from '../../components/ChiefMinisterBadge';
 import PhotoViewerModal from '../../components/PhotoViewerModal';
@@ -56,17 +58,17 @@ import {
   getUnifiedConstituenciesForState,
   getAvailableYearsForState,
   type UnifiedConstituency,
-} from '@/lib/stateDataAdapter';
-import { getTriviaForConstituencyInState, getAllTriviaForState } from '@/lib/stateTriviaAdapter';
-import { getHistoryForState } from '@/lib/stateDataDispatcher';
-import { selectFreshTrivia } from '@/lib/triviaSelector';
-import { computeAllSeatAllocations } from '@/lib/delimitation/seatCalculator';
-import { styles } from '@/lib/mapScreenStyles';
+} from '../../lib/stateDataAdapter';
+import { getTriviaForConstituencyInState, getAllTriviaForState } from '../../lib/stateTriviaAdapter';
+import { getHistoryForState } from '../../lib/stateDataDispatcher';
+import { selectFreshTrivia } from '../../lib/triviaSelector';
+import { computeAllSeatAllocations } from '../../lib/delimitation/seatCalculator';
+import { styles } from '../../lib/mapScreenStyles';
 import MapTimeSlider from '../../components/MapTimeSlider';
 import { tapLight, selectionChanged } from '../../lib/haptics';
-import { getLocalizedStateName, getLocalizedDistrictName } from '@/lib/stateTranslations';
-import { getBoothsForConstituency, hasHierarchyData, hasBoothData } from '@/lib/hierarchyData';
-import { useHasRepresentativeData } from '@/lib/representativesData';
+import { getLocalizedStateName, getLocalizedDistrictName } from '../../lib/stateTranslations';
+import { getBoothsForConstituency, hasHierarchyData, hasBoothData } from '../../lib/hierarchyData';
+import { useHasRepresentativeData } from '../../lib/representativesData';
 
 interface SelectedConstituency {
   acNo: number;
@@ -84,6 +86,81 @@ interface SelectedConstituency {
 
 // idleTrivia is now computed per-state inside FullMapScreen
 
+// Dynamic state camera calculations to ensure all states fit perfectly on any device screen
+const STATE_BOUNDS_CONFIG: Record<string, { center: [number, number]; zoom: number }> = {
+  IN: { center: [78.9629, 22.5937], zoom: 3.6 },
+  AP: { center: [80.1500, 15.8500], zoom: 5.8 },
+  TS: { center: [79.1151, 17.8495], zoom: 6.7 },
+  KA: { center: [76.2000, 15.0000], zoom: 6.1 },
+  MH: { center: [76.5000, 19.5000], zoom: 5.8 },
+  TN: { center: [78.6569, 11.1271], zoom: 6.3 },
+  KL: { center: [76.2711, 10.8505], zoom: 6.8 },
+  WB: { center: [87.8550, 22.9868], zoom: 6.3 },
+  UP: { center: [80.9462, 26.8467], zoom: 5.7 },
+  RJ: { center: [74.2179, 27.0238], zoom: 5.7 },
+  GJ: { center: [71.1924, 22.2587], zoom: 6.2 },
+  DL: { center: [77.1025, 28.7041], zoom: 9.5 },
+  OD: { center: [85.0985, 20.9517], zoom: 6.2 },
+  JH: { center: [85.2799, 23.6102], zoom: 6.7 },
+};
+
+function getDynamicStateCamera(code: string, geojson?: any): { centerCoordinate: [number, number]; zoomLevel: number } {
+  const { width, height } = Dimensions.get('window');
+  const usableHeight = Math.max(280, height - 280);
+  const usableWidth = Math.max(260, width - 40);
+
+  if (geojson?.features?.length) {
+    let minLng = 180, minLat = 90, maxLng = -180, maxLat = -90;
+    let count = 0;
+
+    const processCoord = (lng: number, lat: number) => {
+      if (typeof lng !== 'number' || typeof lat !== 'number') return;
+      if (lng < 60 || lng > 100 || lat < 6 || lat > 40) return;
+      if (lng < minLng) minLng = lng;
+      if (lng > maxLng) maxLng = lng;
+      if (lat < minLat) minLat = lat;
+      if (lat > maxLat) maxLat = lat;
+      count++;
+    };
+
+    const traverse = (coords: any) => {
+      if (!Array.isArray(coords)) return;
+      if (coords.length >= 2 && typeof coords[0] === 'number' && typeof coords[1] === 'number') {
+        processCoord(coords[0], coords[1]);
+        return;
+      }
+      for (let i = 0; i < coords.length; i++) traverse(coords[i]);
+    };
+
+    for (const f of geojson.features) {
+      if (f.geometry?.coordinates) traverse(f.geometry.coordinates);
+    }
+
+    if (count > 0 && minLng < maxLng && minLat < maxLat) {
+      const center: [number, number] = [(minLng + maxLng) / 2, (minLat + maxLat) / 2];
+      const dLng = maxLng - minLng;
+      const dLat = maxLat - minLat;
+
+      const zoomLng = Math.log2(360 * (usableWidth / 256) / dLng);
+      const zoomLat = Math.log2(180 * (usableHeight / 256) / dLat);
+      const zoom = Math.max(3.3, Math.min(zoomLng, zoomLat) - 0.2);
+
+      return {
+        centerCoordinate: center,
+        zoomLevel: Number(zoom.toFixed(2)),
+      };
+    }
+  }
+
+  const s = STATE_BOUNDS_CONFIG[code] ?? { center: getStateCenter(code), zoom: getStateZoom(code) };
+  const minDim = Math.min(width, height);
+  const sizeAdj = minDim < 360 ? -0.35 : minDim < 400 ? -0.15 : 0.05;
+  return {
+    centerCoordinate: s.center,
+    zoomLevel: Number((s.zoom + sizeAdj).toFixed(2)),
+  };
+}
+
 export default function MapScreen() {
   if (!mapboxAvailable) return <MapFallback />;
   return <FullMapScreen />;
@@ -91,6 +168,7 @@ export default function MapScreen() {
 
 function FullMapScreen() {
   const router = useRouter();
+  const { colors } = useTheme();
   const { t, i18n } = useTranslation();
   const cameraRef = useRef<any>(null);
   const bottomSheetRef = useRef<BottomSheet>(null);
@@ -127,6 +205,7 @@ function FullMapScreen() {
   const compareSelectedRef = useRef<SelectedConstituency | null>(null);
   const [currentZoom, setCurrentZoom] = useState<number>(() => getStateZoom(stateCode));
   const [selectedBooth, setSelectedBooth] = useState<any | null>(null);
+  const [hideOverlays, setHideOverlays] = useState(false);
 
   /** Delimitation seat projections (computed once) */
   const delimitationProjections = useMemo(() => computeAllSeatAllocations(), []);
@@ -466,8 +545,15 @@ function FullMapScreen() {
           properties: {
             id: b.id,
             name: b.nameEn,
+            nameTe: (b as any).nameTe || '',
             boothNumber: b.boothNumber,
             totalVoters: b.totalVoters ?? 0,
+            maleVoters: (b as any).maleVoters ?? null,
+            femaleVoters: (b as any).femaleVoters ?? null,
+            thirdGenderVoters: (b as any).thirdGenderVoters ?? null,
+            isUrban: (b as any).isUrban ?? false,
+            wardNumber: (b as any).wardNumber ?? null,
+            panchayatId: (b as any).panchayatId ?? null,
             historical: b.historical ?? false,
             sourceYear: b.sourceYear ?? null,
           },
@@ -515,6 +601,25 @@ function FullMapScreen() {
     [activeGeoJSON],
   );
 
+  /** Compute the centroid [lng, lat] of any GeoJSON feature geometry */
+  const getFeatureCentroid = useCallback((feature: any): [number, number] | null => {
+    if (!feature?.geometry?.coordinates) return null;
+    let sumLng = 0;
+    let sumLat = 0;
+    let count = 0;
+    const walk = (coords: any) => {
+      if (Array.isArray(coords[0])) {
+        coords.forEach(walk);
+      } else if (typeof coords[0] === 'number') {
+        sumLng += coords[0];
+        sumLat += coords[1];
+        count++;
+      }
+    };
+    walk(feature.geometry.coordinates);
+    return count > 0 ? [sumLng / count, sumLat / count] : null;
+  }, []);
+
   /** Fly the camera down to booth-reveal zoom, centred on the selected AC. */
   const flyToBooths = useCallback(() => {
     if (!selected) return;
@@ -528,47 +633,37 @@ function FullMapScreen() {
     });
   }, [selected, getConstituencyCentroid, is3DMode, BOOTH_ZOOM_THRESHOLD]);
 
+  const lastPressTimeRef = useRef(0);
+
   const handleMapPress = useCallback(
     (event: any) => {
+      const now = Date.now();
+      if (now - lastPressTimeRef.current < 250) return;
+      lastPressTimeRef.current = now;
+
       // Extract tap coordinates from MapLibre / @rnmapbox event formats
       let lng: number | undefined;
       let lat: number | undefined;
 
-      // MapLibre RN: geometry.coordinates = [lng, lat]
-      if (event?.geometry?.coordinates) {
-        [lng, lat] = event.geometry.coordinates;
-      }
-      // MapLibre alternative: coordinate array
-      else if (event?.coordinate) {
-        if (Array.isArray(event.coordinate)) {
-          [lng, lat] = event.coordinate;
-        }
-      }
-      // @rnmapbox/maps legacy: {longitude, latitude}
-      else if (event?.coordinates) {
-        const c = event.coordinates;
-        if (Array.isArray(c)) { [lng, lat] = c; }
-        else if (c.longitude != null) { lng = c.longitude; lat = c.latitude; }
-      }
-      // GeoJSONSource onPress or features-based fallback (lngLat as array from native)
-      else if (event?.lngLat && Array.isArray(event.lngLat)) {
-        [lng, lat] = event.lngLat;
-      }
+      const raw = event?.nativeEvent ?? event;
 
-      if (stateCode === 'IN') {
-        if (lng == null && event?.features?.[0]?.properties?.STATE_CODE != null) {
-          const code = event.features[0].properties.STATE_CODE;
-          tapLight();
-          setStateCode(code);
-          return;
-        }
-        if (lng == null || lat == null || !activeGeoJSON) return;
-        const found = findConstituencyAtPoint(lng, lat, activeGeoJSON);
-        if (found?.properties?.STATE_CODE) {
-          tapLight();
-          setStateCode(found.properties.STATE_CODE);
-        }
-        return;
+      if (raw?.geometry?.coordinates && Array.isArray(raw.geometry.coordinates)) {
+        [lng, lat] = raw.geometry.coordinates;
+      } else if (raw?.coordinates && Array.isArray(raw.coordinates)) {
+        [lng, lat] = raw.coordinates;
+      } else if (raw?.coordinate && Array.isArray(raw.coordinate)) {
+        [lng, lat] = raw.coordinate;
+      } else if (raw?.lngLat && Array.isArray(raw.lngLat) && raw.lngLat.length >= 2) {
+        [lng, lat] = raw.lngLat;
+      } else if (raw?.lngLat && typeof raw.lngLat === 'object') {
+        lng = raw.lngLat.lng ?? raw.lngLat.longitude;
+        lat = raw.lngLat.lat ?? raw.lngLat.latitude;
+      } else if (raw?.coordinate && typeof raw.coordinate === 'object') {
+        lng = raw.coordinate.longitude ?? raw.coordinate.lng;
+        lat = raw.coordinate.latitude ?? raw.coordinate.lat;
+      } else if (raw?.coordinates && typeof raw.coordinates === 'object') {
+        lng = raw.coordinates.longitude ?? raw.coordinates.lng;
+        lat = raw.coordinates.latitude ?? raw.coordinates.lat;
       }
 
       // Helper function to process direct selection properties
@@ -591,6 +686,16 @@ function FullMapScreen() {
           return;
         }
 
+        if (currentZoom >= BOOTH_ZOOM_THRESHOLD) {
+          // At booth level, map presses should NOT navigate to constituency page
+          if (selectedRef.current?.acNo === acNo) {
+            if (selectedBooth) {
+              setSelectedBooth(null);
+            }
+            return;
+          }
+        }
+
         if (selectedRef.current?.acNo === acNo) {
           router.push(`/constituency/${stateCode}-AC-${acNo}` as any);
           return;
@@ -606,42 +711,88 @@ function FullMapScreen() {
         }
       };
 
-      // features-based direct selection (when coords extraction fails)
-      if (lng == null && event?.features?.[0]?.properties?.AC_NO != null) {
-        const f = event.features[0];
-        const { AC_NO, AC_NAME, DIST_NAME } = f.properties;
-        const acNo = Number(AC_NO);
-        const lngLat = event.lngLat;
-        const clickLng = Array.isArray(lngLat) ? lngLat[0] : undefined;
-        const clickLat = Array.isArray(lngLat) ? lngLat[1] : undefined;
+      let hitFeature: any = null;
 
-        processDirectSelect(acNo, AC_NAME, DIST_NAME, clickLng, clickLat);
+      // ── PRIORITY 1: Mathematical Point-in-Polygon (Exact Boundary Hit Test) ──
+      // Evaluates whether the tapped (lng, lat) is truly within the polygon boundary.
+      // This is mathematically 100% exact and completely eliminates bounding-box false
+      // positives (e.g. clicking Telangana when Maharashtra's bounding box encloses it).
+      if (lng != null && lat != null && activeGeoJSON) {
+        const found = findConstituencyAtPoint(lng, lat, activeGeoJSON);
+        if (found) {
+          hitFeature = activeGeoJSON.features[found.index];
+        }
+      }
+
+      // ── PRIORITY 2: If tap fell on a border sliver, pick candidate closest to tap coordinate ──
+      if (!hitFeature && event?.features?.length) {
+        if (lng != null && lat != null) {
+          let bestDist = Infinity;
+          let bestFeature = event.features[0];
+          for (const f of event.features) {
+            const centroid = getConstituencyCentroid(Number(f.properties?.AC_NO)) ??
+              (f.geometry ? getFeatureCentroid(f) : null);
+            if (centroid) {
+              const d = Math.hypot(centroid[0] - lng, centroid[1] - lat);
+              if (d < bestDist) {
+                bestDist = d;
+                bestFeature = f;
+              }
+            }
+          }
+          hitFeature = bestFeature;
+        } else {
+          hitFeature = event.features[0];
+        }
+      }
+
+      if (!hitFeature) return;
+
+      // National View: navigate to the selected state
+      if (stateCode === 'IN') {
+        const code = hitFeature.properties?.STATE_CODE;
+        if (code) {
+          tapLight();
+          setStateCode(code);
+        }
         return;
       }
 
-      if (lng == null || lat == null || !activeGeoJSON) return;
+      // State View: select the constituency
+      const acNo = Number(hitFeature.properties?.AC_NO);
+      const acName = hitFeature.properties?.AC_NAME ?? '';
+      const distName = hitFeature.properties?.DIST_NAME ?? hitFeature.properties?.DISTRICT ?? '';
 
-      // Reliable point-in-polygon constituency detection (works offline, all states)
-      const found = findConstituencyAtPoint(lng, lat, activeGeoJSON);
-      if (!found) return;
-
-      const { AC_NO, AC_NAME, DIST_NAME } = found.properties;
-      const acNo = Number(AC_NO);
-
-      processDirectSelect(acNo, AC_NAME, DIST_NAME, lng, lat);
+      if (acNo) {
+        processDirectSelect(acNo, acName, distName, lng, lat);
+      }
     },
-    [selectConstituency, router, activeGeoJSON, mapCompareActive, getSelectedConstituencyObject, stateCode, setStateCode],
+    [
+      selectConstituency,
+      router,
+      activeGeoJSON,
+      mapCompareActive,
+      getSelectedConstituencyObject,
+      stateCode,
+      setStateCode,
+      currentZoom,
+      BOOTH_ZOOM_THRESHOLD,
+      selectedBooth,
+      getConstituencyCentroid,
+      getFeatureCentroid,
+    ],
   );
 
-  // Update camera pitch dynamically when 3D mode is toggled
+  // Update camera pitch & bearing dynamically when 3D mode is toggled for realistic isometric 3D depth
   useEffect(() => {
     cameraRef.current?.setCamera({
-      pitch: is3DMode ? 55 : 0,
-      animationDuration: 600,
+      pitch: is3DMode ? 48 : 0,
+      heading: is3DMode ? 350 : 0,
+      animationDuration: 700,
     });
   }, [is3DMode]);
 
-  // Fly camera to new state when state switcher changes
+  // Fly camera to new state with dynamic bounding box fitting to device screen
   useEffect(() => {
     setSelected(null);
     setCompareSelected(null);
@@ -651,17 +802,33 @@ function FullMapScreen() {
 
     const years = getAvailableYearsForState(stateCode);
     setSelectedYear(years[years.length - 1]);
-    setCurrentZoom(getStateZoom(stateCode));
     setSelectedBooth(null);
 
+    const cam = getDynamicStateCamera(stateCode, activeGeoJSON);
+    setCurrentZoom(cam.zoomLevel);
+
     cameraRef.current?.setCamera({
-      centerCoordinate: getStateCenter(stateCode),
-      zoomLevel: getStateZoom(stateCode),
-      pitch: is3DMode ? 55 : 0,
+      centerCoordinate: cam.centerCoordinate,
+      zoomLevel: cam.zoomLevel,
+      pitch: is3DMode ? 48 : 0,
       animationDuration: 800,
     });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [stateCode]);
+
+  // When activeGeoJSON loads, dynamically frame the entire state geometry to the device screen
+  useEffect(() => {
+    if (activeGeoJSON?.features?.length && !selected && !mapCompareActive) {
+      const cam = getDynamicStateCamera(stateCode, activeGeoJSON);
+      setCurrentZoom(cam.zoomLevel);
+      cameraRef.current?.setCamera({
+        centerCoordinate: cam.centerCoordinate,
+        zoomLevel: cam.zoomLevel,
+        pitch: is3DMode ? 48 : 0,
+        animationDuration: 600,
+      });
+    }
+  }, [activeGeoJSON, stateCode]);
 
   const handleReset = useCallback(() => {
     tapLight();
@@ -679,10 +846,11 @@ function FullMapScreen() {
     // 2. Zoomed into the booth-reveal level → pull back to the state overview
     //    while keeping the constituency selection.
     if (selected && currentZoom >= BOOTH_ZOOM_THRESHOLD) {
+      const cam = getDynamicStateCamera(stateCode, activeGeoJSON);
       cameraRef.current?.setCamera({
-        centerCoordinate: getStateCenter(stateCode),
-        zoomLevel: getStateZoom(stateCode),
-        pitch: is3DMode ? 55 : 0,
+        centerCoordinate: cam.centerCoordinate,
+        zoomLevel: cam.zoomLevel,
+        pitch: is3DMode ? 48 : 0,
         animationDuration: 600,
       });
       return;
@@ -711,9 +879,11 @@ function FullMapScreen() {
     }
 
     // 6. Already at India → recentre the national view.
+    const cam = getDynamicStateCamera('IN', activeGeoJSON);
     cameraRef.current?.setCamera({
-      centerCoordinate: getStateCenter('IN'),
-      zoomLevel: getStateZoom('IN'),
+      centerCoordinate: cam.centerCoordinate,
+      zoomLevel: cam.zoomLevel,
+      pitch: is3DMode ? 48 : 0,
       animationDuration: 600,
     });
   }, [
@@ -726,6 +896,7 @@ function FullMapScreen() {
     mapCompareActive,
     compareSelected,
     focusedDistrict,
+    activeGeoJSON,
   ]);
 
   const handleLocateMe = useCallback(async () => {
@@ -788,7 +959,7 @@ function FullMapScreen() {
   }, [selected, stateCode, router]);
 
   const { insets } = useResponsive();
-  const mapTopOffset = insets.top + 8;
+  const mapTopOffset = Math.max(insets.top, 24);
 
   return (
     <View style={styles.container}>
@@ -809,12 +980,12 @@ function FullMapScreen() {
         <MapboxGL.Camera
           ref={cameraRef}
           defaultSettings={{
-            centerCoordinate: getStateCenter(stateCode),
-            zoomLevel: getStateZoom(stateCode),
+            centerCoordinate: getDynamicStateCamera(stateCode, activeGeoJSON).centerCoordinate,
+            zoomLevel: getDynamicStateCamera(stateCode, activeGeoJSON).zoomLevel,
             padding: { paddingTop: 80, paddingBottom: 40, paddingLeft: 16, paddingRight: 16 },
           }}
-          pitch={is3DMode ? 55 : 0}
-          minZoomLevel={stateCode === 'IN' ? 2.5 : 5}
+          pitch={is3DMode ? 48 : 0}
+          minZoomLevel={stateCode === 'IN' ? 2.5 : 4.2}
           maxZoomLevel={14}
         />
 
@@ -1067,196 +1238,345 @@ function FullMapScreen() {
 
       {/* Header overlay */}
       {!broadcastMode && (
-        <View style={[styles.header, { top: mapTopOffset }]}>
+        <View style={[styles.header, { top: mapTopOffset }]} pointerEvents="box-none">
           <View style={styles.headerTop}>
-            <Text style={styles.headerTitle}>{t('common.appName')}</Text>
-            <StateSwitcher />
+            <View style={{ flex: 1, marginRight: 8, justifyContent: 'center' }}>
+              <Text style={styles.headerTitle} numberOfLines={1}>
+                {t('common.appName')}
+              </Text>
+              <Text style={styles.headerSubtitle} numberOfLines={1}>
+                {stateCode === 'IN'
+                  ? t('mapExtended.nationalOverview')
+                  : `${currentState?.assemblySeats ?? '?'} ${t('explore.constituencies')}`}
+              </Text>
+            </View>
+            <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6, flexShrink: 0 }}>
+              {/* Full Map / Clean view toggle */}
+              <Pressable
+                style={{
+                  backgroundColor: hideOverlays ? colors.gold : colors.primary,
+                  borderRadius: 14,
+                  paddingHorizontal: 8,
+                  paddingVertical: 5,
+                  borderWidth: 1,
+                  borderColor: colors.goldBorder || '#C5A059',
+                  flexDirection: 'row',
+                  alignItems: 'center',
+                  gap: 4,
+                  shadowColor: colors.shadowColor,
+                  shadowOffset: { width: 0, height: 2 },
+                  shadowOpacity: 0.2,
+                  shadowRadius: 3,
+                  elevation: 4,
+                }}
+                onPress={() => {
+                  tapLight();
+                  setHideOverlays((v) => !v);
+                }}
+              >
+                <Ionicons
+                  name={hideOverlays ? 'eye' : 'expand-outline'}
+                  size={13}
+                  color="#FFFFFF"
+                />
+                <Text
+                  style={{
+                    fontSize: 10,
+                    fontWeight: '800',
+                    color: '#FFFFFF',
+                    letterSpacing: 0.3,
+                  }}
+                >
+                  {hideOverlays ? 'UI' : 'Full'}
+                </Text>
+              </Pressable>
+              <StateSwitcher />
+            </View>
           </View>
-          <Text style={styles.headerSubtitle}>
-            {stateCode === 'IN'
-              ? t('mapExtended.nationalOverview')
-              : `${currentState?.name ?? stateCode} · ${currentState?.assemblySeats ?? '?'} ${t('explore.constituencies')}`}
-          </Text>
-          <ChiefMinisterBadge stateCode={stateCode} compact />
+
+          {/* Prime Minister (National) / Chief Minister (State) Leader badge */}
+          {!hideOverlays && !selected && (
+            <View style={{ marginTop: 4, marginRight: 54 }}>
+              <ChiefMinisterBadge stateCode={stateCode} compact />
+            </View>
+          )}
+
+          {/* Thematic Color Mode Toggle (Full Width — No Overlap) */}
+          {stateCode !== 'IN' && (
+            <View style={{ marginTop: 5, marginRight: 54 }}>
+              <MapColorToggle mode={colorMode} onModeChange={setColorMode} />
+            </View>
+          )}
+
+          {/* Booth-zoom discoverability hint */}
+          {selected && selectedHasBoothData && !selectedBooth && currentZoom < BOOTH_ZOOM_THRESHOLD && (
+            <Pressable
+              onPress={flyToBooths}
+              style={{
+                flexDirection: 'row',
+                alignItems: 'center',
+                backgroundColor: 'rgba(15,23,42,0.95)',
+                borderRadius: 12,
+                borderWidth: 1.5,
+                borderColor: '#4F8EF780',
+                paddingVertical: 6,
+                paddingHorizontal: 10,
+                marginTop: 6,
+                marginRight: 54,
+                shadowColor: '#000',
+                shadowOffset: { width: 0, height: 3 },
+                shadowOpacity: 0.35,
+                shadowRadius: 5,
+                elevation: 7,
+              }}
+            >
+              <Ionicons name="layers-outline" size={15} color="#60A5FA" />
+              <Text style={{ flex: 1, color: '#E2E8F0', fontSize: 11, fontWeight: '700', marginLeft: 8 }} numberOfLines={1}>
+                {t('mapExtended.zoomForBooths')}
+              </Text>
+              <View style={{ flexDirection: 'row', alignItems: 'center', backgroundColor: '#3B82F6', borderRadius: 6, paddingVertical: 3, paddingHorizontal: 6 }}>
+                <Ionicons name="scan-outline" size={11} color="#FFFFFF" />
+                <Text style={{ color: '#FFFFFF', fontSize: 10, fontWeight: '700', marginLeft: 3 }}>{t('mapExtended.show')}</Text>
+              </View>
+            </Pressable>
+          )}
         </View>
       )}
 
-      {/* Booth-zoom discoverability hint — tells users to zoom in (or taps
-          the button to auto-fly) to reveal the polling-booth drill-down. */}
-      {!broadcastMode && selected && selectedHasBoothData && !selectedBooth && currentZoom < BOOTH_ZOOM_THRESHOLD && (
-        <Pressable
-          onPress={flyToBooths}
-          style={{
-            position: 'absolute',
-            top: mapTopOffset + (stateCode === 'IN' ? 70 : 130),
-            left: 16,
-            right: 16,
-            flexDirection: 'row',
-            alignItems: 'center',
-            backgroundColor: 'rgba(15,23,42,0.92)',
-            borderRadius: 14,
-            borderWidth: 1,
-            borderColor: '#4F8EF750',
-            paddingVertical: 10,
-            paddingHorizontal: 14,
-          }}
-        >
-          <Ionicons name="layers-outline" size={18} color="#4F8EF7" />
-          <Text style={{ flex: 1, color: '#E2E8F0', fontSize: 13, fontWeight: '600', marginLeft: 10 }}>
-            {t('mapExtended.zoomForBooths')}
-          </Text>
-          <View style={{ flexDirection: 'row', alignItems: 'center', backgroundColor: '#4F8EF7', borderRadius: 9, paddingVertical: 5, paddingHorizontal: 10 }}>
-            <Ionicons name="scan-outline" size={13} color="#FFFFFF" />
-            <Text style={{ color: '#FFFFFF', fontSize: 12, fontWeight: '700', marginLeft: 5 }}>{t('mapExtended.show')}</Text>
-          </View>
-        </Pressable>
+      {/* Floating Draggable Map Legend (Moved downwards, fully movable anywhere on screen) */}
+      {!broadcastMode && !selectedBooth && (
+        <MapLegend
+          colorMode={colorMode}
+          stateCode={stateCode}
+          initialTop={mapTopOffset + (!hideOverlays && !selected && stateCode !== 'IN' ? 148 : 98)}
+        />
       )}
 
-      {/* Floating Polling Booth Callout (Map-Based Hierarchy Zoom) */}
+      {/* Floating Detailed Polling Booth Card (Full Available Details) */}
       {selectedBooth && (
         <View
           style={{
             position: 'absolute',
-            top: mapTopOffset + (stateCode === 'IN' ? 70 : 130),
-            left: 16,
-            right: 16,
-            backgroundColor: 'rgba(17, 24, 39, 0.95)',
-            borderRadius: 12,
-            padding: 12,
-            borderWidth: 1,
-            borderColor: '#FF3B3080',
+            bottom: 24,
+            left: 14,
+            right: 14,
+            backgroundColor: 'rgba(15, 23, 42, 0.98)',
+            borderRadius: 18,
+            padding: 16,
+            borderWidth: 1.5,
+            borderColor: '#FF3B30',
             shadowColor: '#000',
-            shadowOffset: { width: 0, height: 4 },
-            shadowOpacity: 0.3,
-            shadowRadius: 4,
-            elevation: 5,
-            flexDirection: 'row',
-            alignItems: 'center',
-            justifyContent: 'space-between',
-            gap: 12,
+            shadowOffset: { width: 0, height: 6 },
+            shadowOpacity: 0.45,
+            shadowRadius: 8,
+            elevation: 12,
             zIndex: 99,
           }}
         >
-          <View style={{ flex: 1 }}>
-            <Text style={{ fontSize: 10, fontWeight: '800', color: '#FF3B30', letterSpacing: 1, textTransform: 'uppercase' }}>
-              {t('mapExtended.pollingBooth', { n: selectedBooth.boothNumber })}
+          {/* Header */}
+          <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 8 }}>
+            <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6, flexWrap: 'wrap' }}>
+              <View style={{ backgroundColor: '#FF3B30', paddingHorizontal: 8, paddingVertical: 3, borderRadius: 6 }}>
+                <Text style={{ fontSize: 11, fontWeight: '800', color: '#FFFFFF', letterSpacing: 0.5 }}>
+                  BOOTH #{selectedBooth.boothNumber}
+                </Text>
+              </View>
+              <View style={{ backgroundColor: '#1E293B', paddingHorizontal: 8, paddingVertical: 3, borderRadius: 6, borderWidth: 1, borderColor: '#334155' }}>
+                <Text style={{ fontSize: 10, fontWeight: '700', color: '#94A3B8' }}>
+                  {selectedBooth.isUrban ? `URBAN ${selectedBooth.wardNumber ? `· WARD ${selectedBooth.wardNumber}` : ''}` : 'RURAL GRAM PANCHAYAT'}
+                </Text>
+              </View>
+              {selectedBooth.historical && (
+                <View style={{ backgroundColor: '#78350F40', paddingHorizontal: 6, paddingVertical: 3, borderRadius: 6, borderWidth: 1, borderColor: '#F59E0B50' }}>
+                  <Text style={{ fontSize: 9, fontWeight: '700', color: '#FCD34D' }}>ECI {selectedBooth.sourceYear ?? 2017}</Text>
+                </View>
+              )}
+            </View>
+            <Pressable onPress={() => setSelectedBooth(null)} hitSlop={10} style={{ padding: 2 }}>
+              <Ionicons name="close-circle" size={24} color="#94A3B8" />
+            </Pressable>
+          </View>
+
+          {/* Name & Regional Name */}
+          <Text style={{ fontSize: 15, fontWeight: '800', color: '#FFFFFF', marginTop: 2 }}>
+            {selectedBooth.name}
+          </Text>
+          {selectedBooth.nameTe ? (
+            <Text style={{ fontSize: 13, color: '#FCD34D', marginTop: 2 }}>
+              {selectedBooth.nameTe}
             </Text>
-            <Text style={{ fontSize: 14, fontWeight: '700', color: '#FFFFFF', marginTop: 2 }} numberOfLines={1}>
-              {selectedBooth.name}
-            </Text>
-            {selectedBooth.historical ? (
-              <Text style={{ fontSize: 11, color: '#9CA3AF', marginTop: 2 }}>
-                {t('mapExtended.boothHistorical', { year: selectedBooth.sourceYear ?? 2017 })}
+          ) : null}
+
+          {/* Stats Breakdown */}
+          <View style={{ flexDirection: 'row', gap: 8, marginTop: 12 }}>
+            <View style={{ flex: 1, backgroundColor: '#1E293B', borderRadius: 10, padding: 10, borderWidth: 1, borderColor: '#334155' }}>
+              <Text style={{ fontSize: 10, color: '#94A3B8', fontWeight: '600' }}>{t('mapExtended.registeredVoters')}</Text>
+              <Text style={{ fontSize: 16, fontWeight: '800', color: '#FFFFFF', marginTop: 2 }}>
+                {(selectedBooth.totalVoters || 0).toLocaleString()}
               </Text>
-            ) : (
-              <Text style={{ fontSize: 11, color: '#9CA3AF', marginTop: 2 }}>
-                {(selectedBooth.totalVoters || 0).toLocaleString()} {t('mapExtended.registeredVoters')}
-              </Text>
+            </View>
+            {(selectedBooth.maleVoters != null || selectedBooth.femaleVoters != null) && (
+              <>
+                <View style={{ flex: 1, backgroundColor: '#1E293B', borderRadius: 10, padding: 10, borderWidth: 1, borderColor: '#334155' }}>
+                  <Text style={{ fontSize: 10, color: '#60A5FA', fontWeight: '600' }}>Male Voters</Text>
+                  <Text style={{ fontSize: 15, fontWeight: '700', color: '#60A5FA', marginTop: 2 }}>
+                    {(selectedBooth.maleVoters || 0).toLocaleString()}
+                  </Text>
+                </View>
+                <View style={{ flex: 1, backgroundColor: '#1E293B', borderRadius: 10, padding: 10, borderWidth: 1, borderColor: '#334155' }}>
+                  <Text style={{ fontSize: 10, color: '#F472B6', fontWeight: '600' }}>Female Voters</Text>
+                  <Text style={{ fontSize: 15, fontWeight: '700', color: '#F472B6', marginTop: 2 }}>
+                    {(selectedBooth.femaleVoters || 0).toLocaleString()}
+                  </Text>
+                </View>
+              </>
             )}
           </View>
-          <Pressable onPress={() => setSelectedBooth(null)} style={{ padding: 4 }}>
-            <Ionicons name="close-circle" size={22} color="#FF3B30" />
-          </Pressable>
+
+          {/* Action to explore Hierarchy */}
+          {selected && (
+            <Pressable
+              style={{
+                flexDirection: 'row',
+                alignItems: 'center',
+                justifyContent: 'center',
+                backgroundColor: '#3B82F625',
+                borderWidth: 1,
+                borderColor: '#3B82F680',
+                borderRadius: 10,
+                paddingVertical: 9,
+                marginTop: 12,
+                gap: 6,
+              }}
+              onPress={() => {
+                tapLight();
+                router.push(`/hierarchy/${stateCode}-AC-${selected.acNo}` as any);
+              }}
+            >
+              <Ionicons name="git-branch" size={15} color="#60A5FA" />
+              <Text style={{ fontSize: 12, fontWeight: '700', color: '#60A5FA' }}>
+                Explore Hierarchy of this Booth
+              </Text>
+            </Pressable>
+          )}
         </View>
       )}
 
-      {/* Action buttons */}
+      {/* Action buttons with Short Crisp Titles on the right */}
       {!broadcastMode && (
-        <View style={[styles.actionButtons, { top: mapTopOffset + (stateCode === 'IN' ? 50 : 110) }]}>
+        <View style={[styles.actionButtons, { top: mapTopOffset + (stateCode === 'IN' ? 55 : 62) }]}>
           {stateCode !== 'IN' && (
-            <Pressable
-              style={styles.actionButton}
-              onPress={() => setShowSearch(true)}
-            >
-              <Ionicons name="search" size={20} color="#FFFFFF" />
-            </Pressable>
+            <View style={styles.actionItem}>
+              <Pressable
+                style={[styles.actionButton, styles.searchButton]}
+                onPress={() => setShowSearch(true)}
+              >
+                <Ionicons name="search" size={19} color="#60A5FA" />
+              </Pressable>
+              <Text style={styles.actionButtonLabel}>Search</Text>
+            </View>
           )}
+
           {stateCode !== 'IN' && (
-            <Pressable
-              style={[styles.actionButton, styles.compareButton]}
-              onPress={() => setShowCompare(true)}
-            >
-              <Ionicons name="git-compare" size={20} color="#FFFFFF" />
-            </Pressable>
+            <View style={styles.actionItem}>
+              <Pressable
+                style={[styles.actionButton, styles.compareButton]}
+                onPress={() => setShowCompare(true)}
+              >
+                <Ionicons name="git-compare" size={19} color="#A78BFA" />
+              </Pressable>
+              <Text style={styles.actionButtonLabel}>Compare</Text>
+            </View>
           )}
+
           {(selected || mapCompareActive || focusedDistrict !== '' || stateCode !== 'IN') && (
-            <Pressable style={styles.actionButton} onPress={handleReset}>
-              <Ionicons name="resize" size={20} color="#FFFFFF" />
-            </Pressable>
+            <View style={styles.actionItem}>
+              <Pressable style={[styles.actionButton, styles.resetButton]} onPress={handleReset}>
+                <Ionicons name="refresh" size={19} color="#F1F5F9" />
+              </Pressable>
+              <Text style={styles.actionButtonLabel}>Reset</Text>
+            </View>
           )}
 
           {/* 3D Extrusion Toggle */}
-          <Pressable
-            style={[styles.actionButton, is3DMode && styles.activeButton]}
-            onPress={() => {
-              tapLight();
-              setIs3DMode((v) => !v);
-            }}
-          >
-            <Ionicons name="cube" size={20} color={is3DMode ? '#FCD34D' : '#FFFFFF'} />
-          </Pressable>
+          <View style={styles.actionItem}>
+            <Pressable
+              style={[styles.actionButton, is3DMode && styles.activeButton]}
+              onPress={() => {
+                tapLight();
+                setIs3DMode((v) => !v);
+              }}
+            >
+              <Ionicons name="cube" size={19} color={is3DMode ? '#FCD34D' : '#FFFFFF'} />
+            </Pressable>
+            <Text style={[styles.actionButtonLabel, is3DMode && { color: '#FCD34D' }]}>3D View</Text>
+          </View>
 
           {/* District Focus Toggle */}
           {stateCode !== 'IN' && (
-            <Pressable
-              style={[
-                styles.actionButton,
-                focusedDistrict !== '' && styles.activeButton,
-                !selected && styles.actionButtonDisabled,
-              ]}
-              onPress={() => {
-                if (!selected) return;
-                tapLight();
-                setFocusedDistrict((d) => (d === selected.district ? '' : selected.district));
-              }}
-              disabled={!selected}
-            >
-              <Ionicons
-                name="funnel"
-                size={20}
-                color={focusedDistrict !== '' ? '#FCD34D' : selected ? '#FFFFFF' : '#4B5563'}
-              />
-            </Pressable>
+            <View style={styles.actionItem}>
+              <Pressable
+                style={[
+                  styles.actionButton,
+                  focusedDistrict !== '' && styles.activeButton,
+                  !selected && styles.actionButtonDisabled,
+                ]}
+                onPress={() => {
+                  if (!selected) return;
+                  tapLight();
+                  setFocusedDistrict((d) => (d === selected.district ? '' : selected.district));
+                }}
+                disabled={!selected}
+              >
+                <Ionicons
+                  name="funnel"
+                  size={19}
+                  color={focusedDistrict !== '' ? '#FCD34D' : selected ? '#FFFFFF' : '#475569'}
+                />
+              </Pressable>
+              <Text style={[styles.actionButtonLabel, focusedDistrict !== '' && { color: '#FCD34D' }]}>District</Text>
+            </View>
           )}
 
+          {/* Delimitation / Seat Density Toggle */}
           {stateCode !== 'IN' && (
+            <View style={styles.actionItem}>
+              <Pressable
+                style={[
+                  styles.actionButton,
+                  showDelimitation && styles.delimButtonActive,
+                ]}
+                onPress={() => setShowDelimitation((v) => !v)}
+              >
+                <Ionicons name="layers" size={19} color={showDelimitation ? '#34D399' : '#FFFFFF'} />
+              </Pressable>
+              <Text style={[styles.actionButtonLabel, showDelimitation && { color: '#34D399' }]}>Density</Text>
+            </View>
+          )}
+
+          {/* Locate Me */}
+          <View style={styles.actionItem}>
             <Pressable
               style={[
                 styles.actionButton,
-                showDelimitation && styles.delimButtonActive,
+                styles.locateButton,
+                locating && styles.actionButtonDisabled,
               ]}
-              onPress={() => setShowDelimitation((v) => !v)}
+              onPress={handleLocateMe}
+              disabled={locating}
             >
-              <Ionicons name="layers" size={20} color={showDelimitation ? '#FCD34D' : '#FFFFFF'} />
+              {locating ? (
+                <ActivityIndicator size="small" color="#FFFFFF" />
+              ) : (
+                <Ionicons name="navigate" size={19} color="#FFFFFF" />
+              )}
             </Pressable>
-          )}
-          <Pressable
-            style={[
-              styles.actionButton,
-              styles.locateButton,
-              locating && styles.actionButtonDisabled,
-            ]}
-            onPress={handleLocateMe}
-            disabled={locating}
-          >
-            {locating ? (
-              <ActivityIndicator size="small" color="#FFFFFF" />
-            ) : (
-              <Ionicons name="navigate" size={20} color="#FFFFFF" />
-            )}
-          </Pressable>
+            <Text style={styles.actionButtonLabel}>Locate</Text>
+          </View>
         </View>
       )}
 
-      {/* Map Legend */}
-      {!broadcastMode && <MapLegend colorMode={colorMode} stateCode={stateCode} />}
 
-      {/* Color mode toggle */}
-      {!broadcastMode && stateCode !== 'IN' && (
-        <View style={[styles.colorToggleContainer, { top: mapTopOffset + 110 }]}>
-          <MapColorToggle mode={colorMode} onModeChange={setColorMode} />
-        </View>
-      )}
 
       {/* Delimitation overlay info bar */}
       {!broadcastMode && showDelimitation && stateProjection && (
@@ -1461,7 +1781,7 @@ function FullMapScreen() {
       )}
 
       {/* Bottom Dashboard: stacks timeline slider, idle trivia, and home button dynamically */}
-      {!broadcastMode && !mapOnlyMode && !selected && !showDelimitation && !mapCompareActive && hasBottomContent && (
+      {!broadcastMode && !mapOnlyMode && !selected && !selectedBooth && !showDelimitation && !mapCompareActive && hasBottomContent && !hideOverlays && (
         <View style={styles.bottomDashboardContainer}>
           {/* My Constituency home marker */}
           {myHome && stateCode !== 'IN' && (

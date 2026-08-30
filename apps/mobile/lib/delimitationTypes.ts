@@ -305,6 +305,115 @@ export interface SeatAllocation {
   reservedSC: number;
   reservedST: number;
   general: number;
+  model?: 'PROPORTIONAL' | 'EXPANSION_SAFE';
+}
+
+export type SeatCalculationModel = 'PROPORTIONAL' | 'EXPANSION_SAFE';
+
+export type MLARiskRating = 'safe' | 'low_risk' | 'moderate_risk' | 'high_risk' | 'critical_risk';
+
+/** Step-by-step mathematical reasoning and formula breakdown for a state */
+export interface MathematicalFormulaExplanation {
+  stateCode: string;
+  stateName: string;
+  model: SeatCalculationModel;
+  constitutionalArticles: {
+    assemblyArticle: string;
+    parliamentArticle: string;
+    reservationArticle: string;
+    deviationTolerancePercent: number;
+  };
+  metrics: {
+    totalStatePopulation: number;
+    idealPopPerSeat: number;
+    rawQuota: number;
+    currentSeats: number;
+    projectedSeats: number;
+    seatChange: number;
+    populationPerProjectedSeat: number;
+    deviationPercent: number;
+    scPopulation: number;
+    scPercent: number;
+    scReservedSeats: number;
+    stPopulation: number;
+    stPercent: number;
+    stReservedSeats: number;
+    generalSeats: number;
+  };
+  hareNiemeyerSteps: {
+    districtName: string;
+    population: number;
+    exactQuota: number;
+    baseSeats: number;
+    remainder: number;
+    allocatedSeats: number;
+  }[];
+  formulas: {
+    idealPopEquation: string;
+    seatQuotaEquation: string;
+    deviationEquation: string;
+    scQuotaEquation: string;
+    stQuotaEquation: string;
+  };
+  reasoningSteps: string[];
+}
+
+/** Comprehensive MLA Risk Profile under Delimitation */
+export interface MLARiskProfile {
+  mlaName: string;
+  party: string;
+  currentAcNo: number;
+  currentAcName: string;
+  stateCode: string;
+  districtName: string;
+  currentMarginVotes: number;
+  currentMarginPercent: number;
+  seatChangeType: BoundaryChangeType;
+  reservationChange: ReservationChange;
+  primaryNewAcNo: number;
+  primaryNewAcName: string;
+  votersRetainedPercent: number;
+  votersDisplacedPercent: number;
+  riskScore: number; // 0 to 100
+  riskRating: MLARiskRating;
+  displacedIncumbent: boolean;
+  detailedAnalysis: string;
+  riskFactors: string[];
+  mitigatingFactors: string[];
+}
+
+/** Party-wise seat projection under new boundaries */
+export interface StatePartyProjection {
+  stateCode: string;
+  stateName: string;
+  totalSeats: number;
+  projectedSeats: number;
+  parties: {
+    party: string;
+    currentSeats: number;
+    currentVoteSharePercent: number;
+    projectedSeats: number;
+    seatChange: number;
+    safeSeats: number;
+    battlegroundSeats: number;
+    lossRiskSeats: number;
+  }[];
+  methodologyNotes: string;
+}
+
+/** Detailed Indian PIN code resolution record */
+export interface PinCodeResolution {
+  pinCode: string;
+  stateCode: string;
+  stateName: string;
+  districtName: string;
+  region: string;
+  nearestAcNo: number;
+  nearestAcName: string;
+  sittingMLA?: string;
+  currentParty?: string;
+  currentReservation: 'GEN' | 'SC' | 'ST';
+  confidence: 'exact' | 'high' | 'approximate';
 }
 
 // ─── CONFIGS ───

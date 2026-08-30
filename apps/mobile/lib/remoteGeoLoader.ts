@@ -11,9 +11,9 @@
  * this module.
  */
 import * as FileSystem from 'expo-file-system/legacy';
-import { API_BASE_URL } from '@/lib/constants';
-import { getManifestEntry } from '@/lib/geoManifest';
-import { sanitizeGeoJSON } from '@/lib/geoLoader';
+import { API_BASE_URL } from './constants';
+import { getManifestEntry } from './geoManifest';
+import { sanitizeGeoJSON } from './geoLoader';
 
 /** In-memory cache so repeated reads in one session never touch disk. */
 const memCache = new Map<string, GeoJSON.FeatureCollection>();

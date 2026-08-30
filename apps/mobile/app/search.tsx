@@ -19,19 +19,21 @@ import MLACard from '../components/MLACard';
 import MPCard from '../components/MPCard';
 import { getMLAProfileForState } from '../lib/stateDataDispatcher';
 import { getMPById } from '../lib/data';
+import { useTheme } from '../lib/theme';
 
 const TYPE_CONFIG: Record<SearchResultType, { icon: string; color: string; label: string }> = {
-  constituency: { icon: 'location', color: '#4F8EF7', label: 'Constituency' },
-  mla: { icon: 'person', color: '#10B981', label: 'MLA' },
-  mp: { icon: 'business', color: '#8B5CF6', label: 'MP' },
-  issue: { icon: 'megaphone', color: '#EF4444', label: 'Issue' },
-  post: { icon: 'chatbubble', color: '#8B5CF6', label: 'Post' },
-  promise: { icon: 'checkmark-done', color: '#F59E0B', label: 'Promise' },
+  constituency: { icon: 'location', color: '#A8201A', label: 'Constituency' },
+  mla: { icon: 'person', color: '#145C68', label: 'MLA' },
+  mp: { icon: 'business', color: '#C5A059', label: 'MP' },
+  issue: { icon: 'megaphone', color: '#D3453E', label: 'Issue' },
+  post: { icon: 'chatbubble', color: '#C5A059', label: 'Post' },
+  promise: { icon: 'checkmark-done', color: '#C5A059', label: 'Promise' },
 };
 
 export default function GlobalSearchScreen() {
   const router = useRouter();
   const { t } = useTranslation();
+  const { colors } = useTheme();
   const [query, setQuery] = useState('');
   const inputRef = useRef<TextInput>(null);
   const recents = useRecentsStore((s) => s.recents);
@@ -106,13 +108,13 @@ export default function GlobalSearchScreen() {
   const showResults = query.trim().length >= 2;
 
   return (
-    <SafeAreaView style={styles.safe}>
-      <StatusBar barStyle="light-content" />
+    <SafeAreaView style={[styles.safe, { backgroundColor: colors.background }]}>
+      <StatusBar barStyle={colors.statusBar} />
 
       {/* Search Bar */}
       <View style={styles.searchBar}>
-        <Pressable onPress={() => router.back()} style={styles.backBtn}>
-          <Ionicons name="arrow-back" size={20} color="#FFFFFF" />
+        <Pressable onPress={() => router.back()} style={[styles.backBtn, { backgroundColor: colors.primaryLight, borderColor: colors.goldBorder || colors.border }]}>
+          <Ionicons name="arrow-back" size={20} color={colors.primary} />
         </Pressable>
         <View style={styles.inputWrap}>
           <Ionicons name="search" size={16} color="#6B7280" />
@@ -210,14 +212,14 @@ export default function GlobalSearchScreen() {
 }
 
 const styles = StyleSheet.create({
-  safe: { flex: 1, backgroundColor: '#0A0A1A' },
+  safe: { flex: 1 },
   searchBar: { flexDirection: 'row', alignItems: 'center', paddingHorizontal: 12, paddingVertical: 8, gap: 8 },
-  backBtn: { width: 36, height: 36, borderRadius: 18, backgroundColor: '#1F2937', alignItems: 'center', justifyContent: 'center' },
-  inputWrap: { flex: 1, flexDirection: 'row', alignItems: 'center', backgroundColor: '#111827', borderRadius: 12, paddingHorizontal: 12, gap: 8 },
-  input: { flex: 1, fontSize: 15, color: '#FFFFFF', paddingVertical: 12 },
+  backBtn: { width: 36, height: 36, borderRadius: 18, alignItems: 'center', justifyContent: 'center', borderWidth: 1 },
+  inputWrap: { flex: 1, flexDirection: 'row', alignItems: 'center', borderRadius: 12, paddingHorizontal: 12, gap: 8, borderWidth: 1 },
+  input: { flex: 1, fontSize: 15, paddingVertical: 12 },
 
   resultsList: { flex: 1, paddingHorizontal: 12 },
-  resultCount: { fontSize: 11, color: '#6B7280', fontWeight: '600', marginBottom: 8, marginLeft: 4 },
+  resultCount: { fontSize: 11, fontWeight: '600', marginBottom: 8, marginLeft: 4 },
 
   // Rich card wrapper (MLA / MP results)
   cardWrapper: {
@@ -225,7 +227,6 @@ const styles = StyleSheet.create({
     borderRadius: 16,
     overflow: 'hidden',
     borderWidth: 1,
-    borderColor: '#1F2937',
   },
   cardChevron: {
     position: 'absolute',
@@ -234,32 +235,32 @@ const styles = StyleSheet.create({
   },
 
   // Flat row (other result types)
-  resultCard: { flexDirection: 'row', alignItems: 'center', backgroundColor: '#111827', borderRadius: 10, padding: 10, marginBottom: 4, gap: 10 },
+  resultCard: { flexDirection: 'row', alignItems: 'center', borderRadius: 10, padding: 10, marginBottom: 4, gap: 10, borderWidth: 1 },
   resultIcon: { width: 32, height: 32, borderRadius: 8, alignItems: 'center', justifyContent: 'center' },
   resultContent: { flex: 1 },
-  resultTitle: { fontSize: 14, fontWeight: '700', color: '#FFFFFF' },
-  resultSub: { fontSize: 11, color: '#6B7280', marginTop: 1 },
+  resultTitle: { fontSize: 14, fontWeight: '700' },
+  resultSub: { fontSize: 11, marginTop: 1 },
   typeBadge: { paddingHorizontal: 8, paddingVertical: 3, borderRadius: 6 },
   typeBadgeText: { fontSize: 9, fontWeight: '800' },
 
   emptyState: { flex: 1, justifyContent: 'center', alignItems: 'center', gap: 8 },
-  emptyText: { fontSize: 14, color: '#6B7280' },
+  emptyText: { fontSize: 14 },
 
   idleContent: { flex: 1, paddingHorizontal: 16, paddingTop: 8 },
   section: { marginBottom: 20 },
   sectionHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 },
-  sectionTitle: { fontSize: 13, fontWeight: '700', color: '#6B7280', textTransform: 'uppercase', letterSpacing: 0.5 },
-  clearText: { fontSize: 12, color: '#EF4444', fontWeight: '600' },
+  sectionTitle: { fontSize: 13, fontWeight: '700', textTransform: 'uppercase', letterSpacing: 0.5 },
+  clearText: { fontSize: 12, fontWeight: '600' },
 
-  recentRow: { flexDirection: 'row', alignItems: 'center', gap: 8, paddingVertical: 8, borderBottomWidth: 0.5, borderBottomColor: '#1F2937' },
-  recentText: { flex: 1, fontSize: 14, color: '#D1D5DB', fontWeight: '600' },
-  recentMeta: { fontSize: 12, color: '#6B7280', fontWeight: '600' },
+  recentRow: { flexDirection: 'row', alignItems: 'center', gap: 8, paddingVertical: 8, borderBottomWidth: 0.5 },
+  recentText: { flex: 1, fontSize: 14, fontWeight: '600' },
+  recentMeta: { fontSize: 12, fontWeight: '600' },
 
   suggestionsWrap: { flexDirection: 'row', flexWrap: 'wrap', gap: 6 },
-  suggestionChip: { paddingHorizontal: 12, paddingVertical: 7, borderRadius: 16, backgroundColor: '#111827', borderWidth: 1, borderColor: '#1F2937' },
-  suggestionText: { fontSize: 12, color: '#9CA3AF', fontWeight: '600' },
+  suggestionChip: { paddingHorizontal: 12, paddingVertical: 7, borderRadius: 16, borderWidth: 1 },
+  suggestionText: { fontSize: 12, fontWeight: '600' },
 
-  tipCard: { backgroundColor: '#111827', borderRadius: 10, padding: 12 },
-  tipText: { fontSize: 12, color: '#9CA3AF', fontWeight: '600', marginBottom: 6 },
-  tipExample: { fontSize: 12, color: '#6B7280', lineHeight: 20 },
+  tipCard: { borderRadius: 10, padding: 12, borderWidth: 1 },
+  tipText: { fontSize: 12, fontWeight: '600', marginBottom: 6 },
+  tipExample: { fontSize: 12, lineHeight: 20 },
 });

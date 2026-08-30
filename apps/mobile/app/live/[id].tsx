@@ -20,11 +20,13 @@ import {
   ACK_CONFIG,
   hasAI,
 } from '../../lib/lmxTypes';
+import { useTheme } from '../../lib/theme';
 
 export default function LivePlayerScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const insets = useSafeAreaInsets();
   const router = useRouter();
+  const { colors } = useTheme();
 
   const event = useLiveExchangeStore((s) => s.getEventById(id));
   const alerts = useLiveExchangeStore(useShallow((s) => s.getAlertsForEvent(id)));
@@ -41,11 +43,11 @@ export default function LivePlayerScreen() {
 
   if (!event) {
     return (
-      <View style={[styles.container, styles.center]}>
-        <Ionicons name="alert-circle" size={40} color="#374151" />
-        <Text style={styles.notFound}>Stream not found</Text>
+      <View style={[styles.container, styles.center, { backgroundColor: colors.background }]}>
+        <Ionicons name="alert-circle" size={40} color={colors.textMuted} />
+        <Text style={[styles.notFound, { color: colors.textSecondary }]}>Stream not found</Text>
         <Pressable onPress={() => router.back()} style={styles.backLink}>
-          <Text style={styles.backLinkText}>Go back</Text>
+          <Text style={[styles.backLinkText, { color: colors.primary }]}>Go back</Text>
         </Pressable>
       </View>
     );
@@ -240,15 +242,15 @@ function AiStat({ label, value }: { label: string; value: string }) {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#0A0A1A' },
+  container: { flex: 1 },
   center: { justifyContent: 'center', alignItems: 'center', gap: 10 },
-  notFound: { color: '#9CA3AF', fontSize: 15, fontWeight: '700' },
+  notFound: { fontSize: 15, fontWeight: '700' },
   backLink: { marginTop: 6 },
-  backLinkText: { color: '#4F8EF7', fontSize: 14, fontWeight: '700' },
+  backLinkText: { fontSize: 14, fontWeight: '700' },
   player: { height: 260, backgroundColor: '#000000', justifyContent: 'center', alignItems: 'center' },
   playerInner: { alignItems: 'center', gap: 8 },
-  playerNote: { color: '#9CA3AF', fontSize: 13, fontWeight: '700' },
-  playerUrl: { color: '#4B5563', fontSize: 10, maxWidth: 260 },
+  playerNote: { fontSize: 13, fontWeight: '700' },
+  playerUrl: { fontSize: 10, maxWidth: 260 },
   closeBtn: { position: 'absolute', left: 12, padding: 4 },
   topBadges: { position: 'absolute', right: 12, flexDirection: 'row', gap: 8 },
   liveBadge: { flexDirection: 'row', alignItems: 'center', gap: 4, paddingHorizontal: 8, paddingVertical: 3, borderRadius: 6 },
@@ -259,38 +261,38 @@ const styles = StyleSheet.create({
   brandOverlay: { position: 'absolute', bottom: 12, left: 12, backgroundColor: 'rgba(0,0,0,0.65)', paddingHorizontal: 10, paddingVertical: 5, borderRadius: 6 },
   brandText: { color: '#FFFFFF', fontSize: 13, fontWeight: '800' },
   block: { paddingHorizontal: 16, paddingTop: 16 },
-  headline: { fontSize: 19, fontWeight: '800', color: '#F9FAFB', lineHeight: 25 },
+  headline: { fontSize: 19, fontWeight: '800', lineHeight: 25 },
   metaRow: { flexDirection: 'row', alignItems: 'center', gap: 8, marginTop: 10 },
   tierBadge: { flexDirection: 'row', alignItems: 'center', gap: 3, borderWidth: 1, paddingHorizontal: 7, paddingVertical: 3, borderRadius: 6 },
   tierText: { fontSize: 10, fontWeight: '800' },
-  reporter: { flex: 1, fontSize: 13, color: '#D1D5DB', fontWeight: '700' },
-  credPill: { flexDirection: 'row', alignItems: 'center', gap: 3, backgroundColor: '#10B98122', paddingHorizontal: 8, paddingVertical: 3, borderRadius: 6 },
-  credText: { fontSize: 11, fontWeight: '800', color: '#10B981' },
+  reporter: { flex: 1, fontSize: 13, fontWeight: '700' },
+  credPill: { flexDirection: 'row', alignItems: 'center', gap: 3, paddingHorizontal: 8, paddingVertical: 3, borderRadius: 6 },
+  credText: { fontSize: 11, fontWeight: '800' },
   chipsRow: { flexDirection: 'row', flexWrap: 'wrap', gap: 8, marginTop: 12 },
-  pill: { flexDirection: 'row', alignItems: 'center', gap: 4, backgroundColor: '#1F2937', paddingHorizontal: 9, paddingVertical: 5, borderRadius: 8 },
-  pillText: { fontSize: 11, fontWeight: '700', color: '#9CA3AF' },
-  aiPanel: { margin: 16, marginBottom: 0, padding: 14, backgroundColor: '#A855F70D', borderRadius: 14, borderWidth: 1, borderColor: '#A855F733' },
+  pill: { flexDirection: 'row', alignItems: 'center', gap: 4, paddingHorizontal: 9, paddingVertical: 5, borderRadius: 8, borderWidth: 1 },
+  pillText: { fontSize: 11, fontWeight: '700' },
+  aiPanel: { margin: 16, marginBottom: 0, padding: 14, borderRadius: 14, borderWidth: 1 },
   aiHeader: { flexDirection: 'row', alignItems: 'center', gap: 6 },
-  aiTitle: { flex: 1, fontSize: 14, fontWeight: '800', color: '#C4B5FD' },
-  aiProvider: { fontSize: 10, color: '#8B5CF6', fontWeight: '700' },
-  aiSummary: { fontSize: 13, color: '#E5E7EB', lineHeight: 19, marginTop: 10 },
-  aiLabel: { fontSize: 11, fontWeight: '800', color: '#A855F7', marginTop: 12, textTransform: 'uppercase' },
-  aiBody: { fontSize: 12, color: '#9CA3AF', lineHeight: 18, marginTop: 4 },
+  aiTitle: { flex: 1, fontSize: 14, fontWeight: '800' },
+  aiProvider: { fontSize: 10, fontWeight: '700' },
+  aiSummary: { fontSize: 13, lineHeight: 19, marginTop: 10 },
+  aiLabel: { fontSize: 11, fontWeight: '800', marginTop: 12, textTransform: 'uppercase' },
+  aiBody: { fontSize: 12, lineHeight: 18, marginTop: 4 },
   aiStats: { flexDirection: 'row', gap: 10, marginTop: 12 },
-  aiStat: { flex: 1, backgroundColor: '#111827', borderRadius: 10, padding: 10, alignItems: 'center' },
-  aiStatValue: { fontSize: 18, fontWeight: '800', color: '#F9FAFB' },
-  aiStatLabel: { fontSize: 10, color: '#6B7280', fontWeight: '700', marginTop: 2 },
-  aiOff: { flexDirection: 'row', gap: 8, margin: 16, marginBottom: 0, padding: 12, backgroundColor: '#111827', borderRadius: 12 },
-  aiOffText: { flex: 1, fontSize: 11, color: '#6B7280', lineHeight: 16 },
-  sectionTitle: { fontSize: 15, fontWeight: '800', color: '#FFFFFF', marginBottom: 10 },
-  alertRow: { flexDirection: 'row', alignItems: 'center', gap: 10, backgroundColor: '#111827', borderRadius: 12, padding: 12, marginBottom: 8 },
+  aiStat: { flex: 1, borderRadius: 10, padding: 10, alignItems: 'center', borderWidth: 1 },
+  aiStatValue: { fontSize: 18, fontWeight: '800' },
+  aiStatLabel: { fontSize: 10, fontWeight: '700', marginTop: 2 },
+  aiOff: { flexDirection: 'row', gap: 8, margin: 16, marginBottom: 0, padding: 12, borderRadius: 12, borderWidth: 1 },
+  aiOffText: { flex: 1, fontSize: 11, lineHeight: 16 },
+  sectionTitle: { fontSize: 15, fontWeight: '800', marginBottom: 10 },
+  alertRow: { flexDirection: 'row', alignItems: 'center', gap: 10, borderRadius: 12, padding: 12, marginBottom: 8, borderWidth: 1 },
   alertIcon: { width: 34, height: 34, borderRadius: 9, justifyContent: 'center', alignItems: 'center' },
-  alertLabel: { fontSize: 13, fontWeight: '700', color: '#F9FAFB' },
-  alertStatus: { fontSize: 11, color: '#6B7280', marginTop: 2 },
+  alertLabel: { fontSize: 13, fontWeight: '700' },
+  alertStatus: { fontSize: 11, marginTop: 2 },
   ackBadge: { flexDirection: 'row', alignItems: 'center', gap: 3, paddingHorizontal: 8, paddingVertical: 4, borderRadius: 6 },
   ackText: { fontSize: 10, fontWeight: '800' },
-  pendingText: { fontSize: 10, color: '#6B7280', fontWeight: '600' },
+  pendingText: { fontSize: 10, fontWeight: '600' },
   endBtn: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 8, backgroundColor: '#EF4444', paddingVertical: 13, borderRadius: 12 },
   endBtnText: { color: '#FFFFFF', fontSize: 15, fontWeight: '800' },
-  ownerHint: { fontSize: 11, color: '#6B7280', textAlign: 'center', marginTop: 8 },
+  ownerHint: { fontSize: 11, textAlign: 'center', marginTop: 8 },
 });
