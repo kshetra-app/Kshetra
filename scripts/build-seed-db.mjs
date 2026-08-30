@@ -703,6 +703,14 @@ async function main() {
   const versionPath = path.resolve(dataDir, 'seed-db-version.json');
   fs.writeFileSync(versionPath, JSON.stringify({ version: hash, builtAt: new Date().toISOString() }, null, 2) + '\n');
   console.log(`✅ Version file written: ${versionPath} (${hash})`);
+
+  // If Android assets directory exists, also copy directly so it's baked into APK assets
+  const androidAssetsDir = path.resolve(rootDir, 'apps/mobile/android/app/src/main/assets');
+  if (fs.existsSync(androidAssetsDir)) {
+    const androidDbPath = path.resolve(androidAssetsDir, 'seed-data.db');
+    fs.copyFileSync(dbPath, androidDbPath);
+    console.log(`✅ Android APK asset synced: ${androidDbPath}`);
+  }
 }
 
 main().catch(err => {

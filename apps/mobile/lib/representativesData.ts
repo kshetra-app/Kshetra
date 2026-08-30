@@ -174,6 +174,8 @@ export function preloadRepStates(): Promise<void> {
     } catch (err) {
       console.warn('[representativesData] preloadRepStates failed:', err);
     }
+    repStates.add('TS');
+    repStates.add('AP');
     repStatesLoaded = true;
   })();
   return repStatesPromise;
@@ -253,6 +255,7 @@ function groupGps(rows: RepRow[]): GpNode[] {
 /** Districts in a state that have rural local-body rep data (sorted). */
 export async function getLocalBodyDistricts(stateCode: string): Promise<DistrictSummary[]> {
   const db = await getSeedDb();
+  const code = (stateCode === 'IN' || !stateCode) ? 'TS' : stateCode.toUpperCase();
   const rows = await db.getAllAsync<{ name: string; districtKey: string; gpCount: number; sarpanchCount: number; wardCount: number }>(
     `SELECT district AS name, district_slug AS districtKey,
             COUNT(DISTINCT gp_key) AS gpCount,
@@ -261,7 +264,7 @@ export async function getLocalBodyDistricts(stateCode: string): Promise<District
      FROM representatives
      WHERE state_code = ? AND ${GP_TIER} AND gram_panchayat IS NOT NULL
      GROUP BY district_slug ORDER BY name`,
-    [stateCode?.toUpperCase()],
+    [code],
   );
   return rows;
 }

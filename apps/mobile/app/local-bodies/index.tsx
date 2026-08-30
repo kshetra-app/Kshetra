@@ -40,15 +40,18 @@ export default function LocalBodiesScreen() {
   const insets = useSafeAreaInsets();
   const { t } = useTranslation();
   const { colors } = useTheme();
-  const stateCode = useActiveStateStore((s) => s.stateCode);
+  const rawStateCode = useActiveStateStore((s) => s.stateCode);
   const setStateCode = useActiveStateStore((s) => s.setStateCode);
-  const stateName = getHierarchyConfig(stateCode)?.stateName ?? (stateCode === 'IN' ? 'National' : stateCode);
+  // Default National 'IN' to 'TS' so local body data is immediately populated
+  const stateCode = (rawStateCode === 'IN' || !rawStateCode) ? 'TS' : rawStateCode;
+  const stateName = getHierarchyConfig(stateCode)?.stateName ?? stateCode;
 
   const [level, setLevel] = useState<Level>('districts');
   const [district, setDistrict] = useState<DistrictSummary | null>(null);
   const [mandal, setMandal] = useState<MandalSummary | null>(null);
   const [gpKey, setGpKey] = useState<string | null>(null);
   const [query, setQuery] = useState('');
+  const [loadError, setLoadError] = useState<string | null>(null);
 
   useHasRepresentativeData(stateCode); // warms the availability cache
   const [upperTier, setUpperTier] = useState({
@@ -66,11 +69,27 @@ export default function LocalBodiesScreen() {
   useEffect(() => {
     let mounted = true;
     setDistrictsLoading(true);
-    getLocalBodyDistricts(stateCode).then((d) => {
-      if (mounted) { setDistricts(d); setDistrictsLoading(false); }
-    });
-    getUpperTierStatus(stateCode).then((u) => { if (mounted) setUpperTier(u); });
-    return () => { mounted = false; };
+    setLoadError(null);
+    getLocalBodyDistricts(stateCode)
+      .then((d) => {
+        if (mounted) {
+          setDistricts(d);
+          setDistrictsLoading(false);
+        }
+      })
+      .catch((err) => {
+        console.error('[LocalBodies] Error loading districts:', err);
+        if (mounted) {
+          setLoadError(err?.message ?? 'Failed to load local body records');
+          setDistrictsLoading(false);
+        }
+      });
+    getUpperTierStatus(stateCode).then((u) => {
+      if (mounted) setUpperTier(u);
+    }).catch(() => {});
+    return () => {
+      mounted = false;
+    };
   }, [stateCode]);
 
   useEffect(() => {
@@ -122,6 +141,46 @@ export default function LocalBodiesScreen() {
   };
 
   const s = makeStyles(colors);
+
+  // ── Error state with user retry ──
+  if (loadError) {
+    return (
+      <View style={s.container}>
+        <Stack.Screen
+          options={{
+            title: t('localBodies.screenTitle', { defaultValue: 'Local Bodies' }),
+            headerRight: () => <StateSwitcher />,
+          }}
+        />
+        <View style={s.centerWrap}>
+          <Ionicons name="alert-circle" size={48} color={colors.gold} />
+          <Text style={[s.selectorTitle, { color: colors.text, marginTop: 12 }]}>Database Initializing</Text>
+          <Text style={[s.selectorMsg, { color: colors.textSecondary }]}>
+            The bundled local bodies database (137 MB, 224,780 official records) is being loaded into device storage.
+          </Text>
+          <Pressable
+            style={[s.retryBtn, { backgroundColor: colors.primary }]}
+            onPress={() => {
+              setDistrictsLoading(true);
+              setLoadError(null);
+              getLocalBodyDistricts(stateCode)
+                .then((d) => {
+                  setDistricts(d);
+                  setDistrictsLoading(false);
+                })
+                .catch((e) => {
+                  setLoadError(e?.message ?? 'Failed to initialize database');
+                  setDistrictsLoading(false);
+                });
+            }}
+          >
+            <Ionicons name="refresh" size={16} color="#fff" />
+            <Text style={s.retryBtnText}>Retry Loading Database</Text>
+          </Pressable>
+        </View>
+      </View>
+    );
+  }
 
   // ── Loading state (districts still resolving from SQLite) ──
   if (districtsLoading) {
@@ -223,6 +282,41 @@ export default function LocalBodiesScreen() {
           headerRight: () => <StateSwitcher />,
         }}
       />
+
+      {/* State Switcher Bar: 1-tap toggle between Telangana and Andhra Pradesh */}
+      <View style={[s.stateTabsBar, { backgroundColor: colors.surface, borderBottomColor: colors.border }]}>
+        <Pressable
+          style={[
+            s.stateTabBtn,
+            stateCode === 'TS' && [s.stateTabBtnActive, { borderColor: colors.primary, backgroundColor: colors.primary + '14' }],
+          ]}
+          onPress={() => {
+            setStateCode('TS');
+            goDistricts();
+          }}
+        >
+          <Text style={[s.stateTabBtnText, { color: stateCode === 'TS' ? colors.primary : colors.textSecondary }]}>
+            Telangana (31 Districts)
+          </Text>
+          {stateCode === 'TS' && <View style={[s.activeDot, { backgroundColor: colors.primary }]} />}
+        </Pressable>
+
+        <Pressable
+          style={[
+            s.stateTabBtn,
+            stateCode === 'AP' && [s.stateTabBtnActive, { borderColor: colors.primary, backgroundColor: colors.primary + '14' }],
+          ]}
+          onPress={() => {
+            setStateCode('AP');
+            goDistricts();
+          }}
+        >
+          <Text style={[s.stateTabBtnText, { color: stateCode === 'AP' ? colors.primary : colors.textSecondary }]}>
+            Andhra Pradesh (15 Districts)
+          </Text>
+          {stateCode === 'AP' && <View style={[s.activeDot, { backgroundColor: colors.primary }]} />}
+        </Pressable>
+      </View>
 
       {/* Breadcrumb */}
       <View style={[s.breadcrumbBar, { borderBottomColor: colors.border }]}>
@@ -511,5 +605,13 @@ function makeStyles(colors: any) {
     stateLaunchDesc: { fontSize: 11, marginTop: 2 },
     stateSwitcherRow: { flexDirection: 'row', alignItems: 'center', gap: 8, marginTop: 24 },
     stateSwitcherHint: { fontSize: 13, fontWeight: '600' },
+    stateTabsBar: { flexDirection: 'row', borderBottomWidth: 1, paddingHorizontal: 12, paddingVertical: 8, gap: 8 },
+    stateTabBtn: { flex: 1, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 6, paddingVertical: 8, paddingHorizontal: 10, borderRadius: 8, borderWidth: 1, borderColor: 'transparent' },
+    stateTabBtnActive: { borderWidth: 1 },
+    stateTabBtnText: { fontSize: 12, fontWeight: '700' },
+    activeDot: { width: 6, height: 6, borderRadius: 3 },
+    centerWrap: { flex: 1, justifyContent: 'center', alignItems: 'center', padding: 24 },
+    retryBtn: { flexDirection: 'row', alignItems: 'center', gap: 8, paddingHorizontal: 20, paddingVertical: 12, borderRadius: 10, marginTop: 16 },
+    retryBtnText: { color: '#fff', fontSize: 14, fontWeight: '700' },
   });
 }

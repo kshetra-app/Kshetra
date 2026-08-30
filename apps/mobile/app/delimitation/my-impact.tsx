@@ -128,7 +128,7 @@ export default function MyImpactScreen() {
             />
             <Pressable
               style={[styles.searchBtn, { backgroundColor: colors.primary }, pinCode.length !== 6 && styles.searchBtnDisabled]}
-              onPress={handleSearch}
+              onPress={() => handleSearch()}
               disabled={pinCode.length !== 6}
             >
               {searching ? (

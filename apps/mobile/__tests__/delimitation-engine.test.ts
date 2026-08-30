@@ -72,10 +72,11 @@ describe('Delimitation Engine', () => {
 
     it('resolves full end-to-end citizen impact directly from PIN code', () => {
       const citizen = resolvePinCodeToImpact('500034');
-      expect(citizen.pinCode).toBe('500034');
-      expect(citizen.currentAcName).toBeDefined();
-      expect(citizen.proposedAcName).toBeDefined();
-      expect(citizen.impactSeverity).toBeDefined();
+      expect(citizen).not.toBeNull();
+      expect(citizen?.pinCode).toBe('500034');
+      expect(citizen?.currentAcName).toBeDefined();
+      expect(citizen?.proposedAcName).toBeDefined();
+      expect(citizen?.impactSeverity).toBeDefined();
     });
   });
 

@@ -366,7 +366,7 @@ export default function DelimitationHub() {
       {/* Sitting MLA Risk Analyzer */}
       <View style={[styles.impactCard, { backgroundColor: colors.surface, borderColor: colors.border }]}>
         <View style={styles.impactHeader}>
-          <Ionicons name="shield-alert" size={20} color="#F59E0B" />
+          <Ionicons name="shield" size={20} color="#F59E0B" />
           <Text style={[styles.impactTitle, { color: colors.text }]}>
             Sitting MLA Risk Analyzer ({impactState})
           </Text>

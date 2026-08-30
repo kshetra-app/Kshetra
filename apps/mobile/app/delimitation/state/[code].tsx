@@ -367,9 +367,9 @@ export default function StateDelimitationDetail() {
               <View style={[styles.card, { backgroundColor: colors.surface, borderColor: colors.border, marginTop: 8 }]}>
                 {constituencies.map((c) => (
                   <Pressable
-                    key={c.id}
+                    key={`${c.stateCode}-${c.acNo}`}
                     style={[styles.acRow, { borderBottomColor: colors.border }]}
-                    onPress={() => router.push(`/constituency/${c.id}` as any)}
+                    onPress={() => router.push(`/constituency/${c.acNo}` as any)}
                   >
                     <View style={{ flex: 1 }}>
                       <Text style={[styles.acName, { color: colors.text }]}>
