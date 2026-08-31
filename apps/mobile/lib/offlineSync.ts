@@ -30,6 +30,7 @@ export type SyncOpType =
   | 'favorite_toggle'
   | 'report_issue'
   | 'compose_post'
+  | 'add_comment'
   | 'issue_comment'
   | 'upload_short'
   | 'approve_short'

@@ -241,11 +241,25 @@ const bn = {
     "emptyFeed": "এখনও কোনো পোস্ট নেই। প্রথম শেয়ারকারী হন!",
     "trending": "ট্রেন্ডিং",
     "trendingIn": "{{state}}-এ ট্রেন্ডিং",
-    "share": "এই পোস্টটি শেয়ার করুন",
-    "react": "প্রতিক্রিয়া জানান",
-    "reply": "উত্তর দিন",
-    "replies": "উত্তর সমূহ",
-    "writeReply": "একটি উত্তর লিখুন…"
+    "sort": {
+      "latest": "সর্বশেষ",
+      "top": "শীর্ষ প্রতিক্রিয়া",
+      "discussed": "সর্বাধিক আলোচিত",
+      "polls": "চলমান ভোট সমীক্ষা",
+      "verifiedOnly": "শুধুমাত্র যাচাইকৃত"
+    },
+    "searchPlaceholder": "আলোচনা, খবর, #হ্যাশট্যাগ খুঁজুন…",
+    "activeFilters": "সক্রিয় ফিল্টার সমূহ",
+    "activeTag": "ট্যাগ: #{{tag}}",
+    "clearFilter": "সব মুছুন",
+    "noResults": "কোনো মিল পাওয়া যায়নি",
+    "noResultsSubtitle": "আপনার ফিল্টার বা অনুসন্ধানের শব্দ পরিবর্তন করে দেখুন।",
+    "selectConstituency": "নির্বাচনী এলাকা নির্বাচন করুন",
+    "searchConstituency": "নাম, AC নম্বর বা জেলা দিয়ে খুঁজুন…",
+    "setAsHome": "আমার এলাকা হিসেবে সেট করুন",
+    "browseConstituency": "ব্রাউজ করুন",
+    "allConstituencies": "সকল নির্বাচনী এলাকা",
+    "myConstituency": "আমার নির্বাচনী এলাকা"
   },
   "postCard": {
     "pinned": "পিন করা",
@@ -260,7 +274,30 @@ const bn = {
     "deleteConfirm": "এই পোস্টটি মুছে ফেলবেন?",
     "deleteConfirmBody": "এই কাজটি আর ফেরানো যাবে না।",
     "delete": "মুছে ফেলুন",
-    "cancel": "বাতিল করুন"
+    "cancel": "বাতিল করুন",
+    "actions": "পোস্টের বিকল্প সমূহ",
+    "editPost": "পোস্ট সম্পাদনা করুন",
+    "deletePost": "পোস্ট মুছে ফেলুন",
+    "copyText": "টেক্সট কপি করুন",
+    "copied": "টেক্সট ক্লিপবোর্ডে কপি করা হয়েছে",
+    "sharePost": "পোস্টটি শেয়ার করুন",
+    "reportPost": "রিপোর্ট করুন",
+    "pinPost": "পিন করুন",
+    "unpinPost": "আনপিন করুন",
+    "like": "পছন্দ",
+    "insightful": "জ্ঞানগর্ভ",
+    "disagree": "ভিন্নমত",
+    "celebrate": "উদযাপন"
+  },
+  "postDetail": {
+    "title": "আলোচনা",
+    "comments": "মন্তব্য সমূহ",
+    "noComments": "এখনও কোনো মন্তব্য নেই। আলোচনা শুরু করুন!",
+    "replyPlaceholder": "একটি সুবিবেচিত উত্তর লিখুন…",
+    "postReply": "উত্তর দিন",
+    "deleteComment": "মন্তব্য মুছুন",
+    "deleteCommentConfirm": "আপনি কি নিশ্চিতভাবে এই মন্তব্যটি মুছে ফেলতে চান?",
+    "replyingTo": "{{name}}-কে উত্তর দেওয়া হচ্ছে"
   },
   "pollCard": {
     "votes": "ভোট",
@@ -288,7 +325,12 @@ const bn = {
     "addImage": "ছবি যোগ করুন",
     "addLink": "লিঙ্ক যোগ করুন",
     "linkPlaceholder": "ইউআরএল (URL) পেস্ট করুন…",
-    "linkAdd": "যোগ করুন"
+    "linkAdd": "যোগ করুন",
+    "selectScope": "পোস্টের দৃশ্যমানতা",
+    "scopeNational": "জাতীয় (সর্বভারতীয়)",
+    "scopeState": "রাজ্য ({{state}})",
+    "scopeConstituency": "নির্বাচনী এলাকা ({{name}})",
+    "selectLanguage": "ভাষা"
   },
   "dashboard": {
     "title": "নাগরিক ড্যাশবোর্ড",

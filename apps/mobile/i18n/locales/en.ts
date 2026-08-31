@@ -253,11 +253,25 @@ const en = {
     "emptyFeed": "No posts yet. Be the first to share!",
     "trending": "Trending",
     "trendingIn": "Trending in {{state}}",
-    "share": "Share this post",
-    "react": "React",
-    "reply": "Reply",
-    "replies": "replies",
-    "writeReply": "Write a reply…"
+    "sort": {
+      "latest": "Latest",
+      "top": "Top Reacted",
+      "discussed": "Most Discussed",
+      "polls": "Active Polls",
+      "verifiedOnly": "Verified Only"
+    },
+    "searchPlaceholder": "Search discussions, news, #tags…",
+    "activeFilters": "Active Filters",
+    "activeTag": "Tag: #{{tag}}",
+    "clearFilter": "Clear All",
+    "noResults": "No matching posts found",
+    "noResultsSubtitle": "Try adjusting your filters, scope, or search query.",
+    "selectConstituency": "Select Constituency",
+    "searchConstituency": "Search constituency by name, AC number, or district…",
+    "setAsHome": "Set as Home",
+    "browseConstituency": "Browse",
+    "allConstituencies": "All Constituencies",
+    "myConstituency": "My Constituency"
   },
   "shorts": {
     "title": "Political Shorts",
@@ -282,7 +296,30 @@ const en = {
     "deleteConfirm": "Delete this post?",
     "deleteConfirmBody": "This action cannot be undone.",
     "delete": "Delete",
-    "cancel": "Cancel"
+    "cancel": "Cancel",
+    "actions": "Post actions",
+    "editPost": "Edit Post",
+    "deletePost": "Delete Post",
+    "copyText": "Copy Text",
+    "copied": "Text copied to clipboard",
+    "sharePost": "Share Post",
+    "reportPost": "Report Post",
+    "pinPost": "Pin Post",
+    "unpinPost": "Unpin Post",
+    "like": "Like",
+    "insightful": "Insightful",
+    "disagree": "Disagree",
+    "celebrate": "Celebrate"
+  },
+  "postDetail": {
+    "title": "Discussion",
+    "comments": "Comments",
+    "noComments": "No comments yet. Start the conversation!",
+    "replyPlaceholder": "Write a thoughtful reply…",
+    "postReply": "Reply",
+    "deleteComment": "Delete Comment",
+    "deleteCommentConfirm": "Are you sure you want to delete this comment?",
+    "replyingTo": "Replying to {{name}}"
   },
   "pollCard": {
     "votes": "votes",
@@ -310,7 +347,12 @@ const en = {
     "addImage": "Add image",
     "addLink": "Add link",
     "linkPlaceholder": "Paste URL…",
-    "linkAdd": "Add"
+    "linkAdd": "Add",
+    "selectScope": "Post Visibility",
+    "scopeNational": "National (All-India)",
+    "scopeState": "State ({{state}})",
+    "scopeConstituency": "Constituency ({{name}})",
+    "selectLanguage": "Language"
   },
   "dashboard": {
     "title": "Civic Dashboard",

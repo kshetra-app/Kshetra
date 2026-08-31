@@ -241,11 +241,25 @@ const ne = {
     "emptyFeed": "अहिलेसम्म कुनै पोस्ट छैन। साझा गर्ने पहिलो बन्नुहोस्!",
     "trending": "ट्रेन्डिङ",
     "trendingIn": "{{state}} मा ट्रेन्डिङ",
-    "share": "यो पोस्ट साझा गर्नुहोस्",
-    "react": "प्रतिक्रिया दिनुहोस्",
-    "reply": "जवाफ दिनुहोस्",
-    "replies": "जवाफहरू",
-    "writeReply": "जवाफ लेख्नुहोस्…"
+    "sort": {
+      "latest": "नवीनतम",
+      "top": "शीर्ष प्रतिक्रियाहरू",
+      "discussed": "सबैभन्दा धेरै छलफल गरिएको",
+      "polls": "सक्रिय सर्वेक्षणहरू",
+      "verifiedOnly": "प्रमाणित मात्र"
+    },
+    "searchPlaceholder": "छलफल, समाचार, #ह्यासट्यागहरू खोज्नुहोस्…",
+    "activeFilters": "सक्रिय फिल्टरहरू",
+    "activeTag": "ट्याग: #{{tag}}",
+    "clearFilter": "सबै हटाउनुहोस्",
+    "noResults": "कुनै मिल्दो पोस्ट भेटिएन",
+    "noResultsSubtitle": "आफ्ना फिल्टरहरू वा खोज शब्द बदलेर प्रयास गर्नुहोस्।",
+    "selectConstituency": "निर्वाचन क्षेत्र छान्नुहोस्",
+    "searchConstituency": "नाम, AC नम्बर वा जिल्लाबाट खोज्नुहोस्…",
+    "setAsHome": "मेरो गृह क्षेत्र बनाउनुहोस्",
+    "browseConstituency": "हेर्नुहोस्",
+    "allConstituencies": "सबै निर्वाचन क्षेत्रहरू",
+    "myConstituency": "मेरो निर्वाचन क्षेत्र"
   },
   "postCard": {
     "pinned": "पिन गरिएको",
@@ -260,7 +274,30 @@ const ne = {
     "deleteConfirm": "यो पोस्ट हटाउनुहोस्?",
     "deleteConfirmBody": "यो कार्य फिर्ता लिन सकिँदैन।",
     "delete": "हटाउनुहोस्",
-    "cancel": "रद्द गर्नुहोस्"
+    "cancel": "रद्द गर्नुहोस्",
+    "actions": "पोस्ट विकल्पहरू",
+    "editPost": "पोस्ट सम्पादन गर्नुहोस्",
+    "deletePost": "पोस्ट हटाउनुहोस्",
+    "copyText": "पाठ प्रतिलिपि गर्नुहोस्",
+    "copied": "पाठ क्लिपबोर्डमा प्रतिलिपि भयो",
+    "sharePost": "पोस्ट साझा गर्नुहोस्",
+    "reportPost": "रिपोर्ट गर्नुहोस्",
+    "pinPost": "पिन गर्नुहोस्",
+    "unpinPost": "अनपिन गर्नुहोस्",
+    "like": "मन पर्यो",
+    "insightful": "ज्ञानवर्धक",
+    "disagree": "असहमत",
+    "celebrate": "उत्सव"
+  },
+  "postDetail": {
+    "title": "छलफल",
+    "comments": "टिप्पणीहरू",
+    "noComments": "अहिलेसम्म कुनै टिप्पणी छैन। कुराकानी सुरु गर्नुहोस्!",
+    "replyPlaceholder": "विचारशील जवाफ लेख्नुहोस्…",
+    "postReply": "जवाफ दिनुहोस्",
+    "deleteComment": "टिप्पणी हटाउनुहोस्",
+    "deleteCommentConfirm": "के तपाईं साँच्चै यो टिप्पणी हटाउन चाहनुहुन्छ?",
+    "replyingTo": "{{name}} लाई जवाफ दिइँदै"
   },
   "pollCard": {
     "votes": "मत",
@@ -288,7 +325,12 @@ const ne = {
     "addImage": "तस्बिर थप्नुहोस्",
     "addLink": "लिङ्क थप्नुहोस्",
     "linkPlaceholder": "URL टाँस्नुहोस्…",
-    "linkAdd": "थप्नुहोस्"
+    "linkAdd": "थप्नुहोस्",
+    "selectScope": "पोस्टको दृश्यता",
+    "scopeNational": "राष्ट्रिय (अखिल भारतीय)",
+    "scopeState": "राज्य ({{state}})",
+    "scopeConstituency": "निर्वाचन क्षेत्र ({{name}})",
+    "selectLanguage": "भाषा"
   },
   "dashboard": {
     "title": "नागरिक ड्यासबोर्ड",

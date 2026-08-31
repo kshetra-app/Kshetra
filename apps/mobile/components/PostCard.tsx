@@ -1,10 +1,13 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { View, Text, StyleSheet, Pressable } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useTranslation } from 'react-i18next';
 import { useTheme } from '../lib/theme';
 import type { Post, ReactionType } from '../lib/feedTypes';
+import { REACTION_CONFIG } from '../lib/feedTypes';
 import ContentGateActions from './ContentGateActions';
+import PostActionSheet from './PostActionSheet';
+import ReportSheet from './ReportSheet';
 
 const TYPE_CONFIG: Record<string, { icon: string; color: string; tKey: string }> = {
   discussion: { icon: 'chatbubbles', color: '#145C68', tKey: 'postCard.discussion' },
@@ -37,6 +40,7 @@ interface PostCardProps {
   onShare?: () => void;
   onEdit?: () => void;
   onDelete?: () => void;
+  onTagPress?: (tag: string) => void;
   isOwner?: boolean;
   compact?: boolean;
 }
@@ -49,129 +53,196 @@ export default function PostCard({
   onShare,
   onEdit,
   onDelete,
+  onTagPress,
   isOwner = false,
   compact = false,
 }: PostCardProps) {
   const { t } = useTranslation();
   const { colors } = useTheme();
+  const [actionSheetVisible, setActionSheetVisible] = useState(false);
+  const [reportSheetVisible, setReportSheetVisible] = useState(false);
+
   const typeInfo = TYPE_CONFIG[post.type] ?? TYPE_CONFIG.discussion;
-  const isReacted = !!post.userReaction;
+  const userReaction = post.userReaction;
+  const reactionMeta = userReaction ? REACTION_CONFIG[userReaction] : null;
 
   return (
-    <Pressable
-      style={[
-        styles.card,
-        { backgroundColor: colors.surface, borderColor: colors.border },
-        post.isPinned && styles.cardPinned,
-      ]}
-      onPress={onPress}
-    >
-      {/* Pinned indicator */}
-      {post.isPinned && (
-        <View style={styles.pinnedRow}>
-          <Ionicons name="pin" size={12} color="#F59E0B" style={{ marginRight: 4 }} />
-          <Text style={styles.pinnedText}>{t('feed.pinned')}</Text>
-        </View>
-      )}
-
-      {/* Header: Author + Meta + Type badge */}
-      <View style={styles.header}>
-        <View style={[styles.avatar, { backgroundColor: colors.primaryLight }]}>
-          <Text style={[styles.avatarText, { color: colors.primary }]}>
-            {(post.author.displayName || 'A').charAt(0).toUpperCase()}
-          </Text>
-        </View>
-        <View style={styles.headerInfo}>
-          <View style={styles.nameRow}>
-            <Text style={[styles.authorName, { color: colors.text }]} numberOfLines={1}>
-              {post.author.displayName}
-            </Text>
-            {post.author.isVerified && (
-              <Ionicons name="checkmark-circle" size={14} color="#10B981" />
-            )}
-          </View>
-          <View style={styles.metaRow}>
-            <Text style={[styles.timeText, { color: colors.textMuted }]}>{timeAgo(post.createdAt)}</Text>
-            {post.constituencyName && (
-              <>
-                <Text style={[styles.metaDot, { color: colors.textMuted }]}>·</Text>
-                <Text style={[styles.constituencyText, { color: colors.primary }]} numberOfLines={1}>
-                  {post.constituencyName}
-                </Text>
-              </>
-            )}
-          </View>
-        </View>
-
-        <View style={[styles.typeBadge, { backgroundColor: typeInfo.color + '18' }]}>
-          <Ionicons name={typeInfo.icon as any} size={11} color={typeInfo.color} />
-          <Text style={[styles.typeLabel, { color: typeInfo.color }]}>
-            {t(typeInfo.tKey, post.type)}
-          </Text>
-        </View>
-      </View>
-
-      {/* Content */}
-      <Text
-        style={[styles.content, { color: colors.text }]}
-        numberOfLines={compact ? 3 : undefined}
+    <>
+      <Pressable
+        style={[
+          styles.card,
+          { backgroundColor: colors.surface, borderColor: colors.border },
+          post.isPinned && styles.cardPinned,
+        ]}
+        onPress={onPress}
       >
-        {post.content}
-      </Text>
+        {/* Pinned indicator */}
+        {post.isPinned && (
+          <View style={styles.pinnedRow}>
+            <Ionicons name="pin" size={12} color="#F59E0B" style={{ marginRight: 4 }} />
+            <Text style={styles.pinnedText}>{t('feed.pinned')}</Text>
+          </View>
+        )}
 
-      {/* Hashtags */}
-      {post.hashtags && post.hashtags.length > 0 && (
-        <View style={styles.hashtagRow}>
-          {post.hashtags.map((tag) => (
-            <Text key={tag} style={[styles.hashtag, { color: colors.primary }]}>
-              #{tag}
+        {/* Header: Author + Meta + Type badge + 3-dots Menu */}
+        <View style={styles.header}>
+          <View style={[styles.avatar, { backgroundColor: colors.primaryLight }]}>
+            <Text style={[styles.avatarText, { color: colors.primary }]}>
+              {(post.author.displayName || 'A').charAt(0).toUpperCase()}
             </Text>
-          ))}
+          </View>
+          <View style={styles.headerInfo}>
+            <View style={styles.nameRow}>
+              <Text style={[styles.authorName, { color: colors.text }]} numberOfLines={1}>
+                {post.author.displayName}
+              </Text>
+              {post.author.isVerified && (
+                <Ionicons name="checkmark-circle" size={14} color="#10B981" />
+              )}
+            </View>
+            <View style={styles.metaRow}>
+              <Text style={[styles.timeText, { color: colors.textMuted }]}>
+                {timeAgo(post.createdAt)}
+              </Text>
+              {post.constituencyName && (
+                <>
+                  <Text style={[styles.metaDot, { color: colors.textMuted }]}>·</Text>
+                  <Text style={[styles.constituencyText, { color: colors.primary }]} numberOfLines={1}>
+                    {post.constituencyName}
+                  </Text>
+                </>
+              )}
+              {post.language && post.language !== 'en' && (
+                <>
+                  <Text style={[styles.metaDot, { color: colors.textMuted }]}>·</Text>
+                  <Text style={[styles.langBadge, { color: colors.gold || colors.primary }]}>
+                    {post.language.toUpperCase()}
+                  </Text>
+                </>
+              )}
+            </View>
+          </View>
+
+          <View style={styles.headerRight}>
+            <View style={[styles.typeBadge, { backgroundColor: typeInfo.color + '18' }]}>
+              <Ionicons name={typeInfo.icon as any} size={11} color={typeInfo.color} />
+              <Text style={[styles.typeLabel, { color: typeInfo.color }]}>
+                {t(typeInfo.tKey, post.type)}
+              </Text>
+            </View>
+            <Pressable
+              onPress={() => setActionSheetVisible(true)}
+              hitSlop={8}
+              style={styles.moreButton}
+            >
+              <Ionicons name="ellipsis-horizontal" size={16} color={colors.textMuted} />
+            </Pressable>
+          </View>
         </View>
-      )}
 
-      {/* Actions footer */}
-      <View style={[styles.actions, { borderTopColor: colors.border }]}>
-        <Pressable
-          style={styles.actionButton}
-          onPress={() => onReact?.('like')}
-          hitSlop={8}
+        {/* Content */}
+        <Text
+          style={[styles.content, { color: colors.text }]}
+          numberOfLines={compact ? 3 : undefined}
         >
-          <Ionicons
-            name={isReacted ? 'heart' : 'heart-outline'}
-            size={18}
-            color={isReacted ? '#EF4444' : colors.textMuted}
-          />
-          <Text style={[styles.actionText, { color: isReacted ? '#EF4444' : colors.textSecondary }]}>
-            {post.reactionCount}
-          </Text>
-        </Pressable>
+          {post.content}
+        </Text>
 
-        <Pressable
-          style={styles.actionButton}
-          onPress={onReply}
-          hitSlop={8}
-        >
-          <Ionicons name="chatbubble-outline" size={17} color={colors.textMuted} />
-          <Text style={[styles.actionText, { color: colors.textSecondary }]}>{post.replyCount}</Text>
-        </Pressable>
+        {/* Hashtags (Clickable) */}
+        {post.hashtags && post.hashtags.length > 0 && (
+          <View style={styles.hashtagRow}>
+            {post.hashtags.map((tag) => (
+              <Pressable
+                key={tag}
+                onPress={() => onTagPress?.(tag)}
+                hitSlop={4}
+              >
+                <Text style={[styles.hashtag, { color: colors.primary }]}>
+                  #{tag}
+                </Text>
+              </Pressable>
+            ))}
+          </View>
+        )}
 
-        <Pressable
-          style={styles.actionButton}
-          onPress={onShare}
-          hitSlop={8}
-        >
-          <Ionicons name="share-outline" size={17} color={colors.textMuted} />
-        </Pressable>
+        {/* Actions footer */}
+        <View style={[styles.actions, { borderTopColor: colors.border }]}>
+          {/* Reaction Button (Tap to toggle like, long-press to open reaction picker) */}
+          <Pressable
+            style={styles.actionButton}
+            onPress={() => onReact?.('like')}
+            onLongPress={() => setActionSheetVisible(true)}
+            hitSlop={8}
+          >
+            <Ionicons
+              name={reactionMeta ? (reactionMeta.icon as any) : 'heart-outline'}
+              size={18}
+              color={reactionMeta ? reactionMeta.color : colors.textMuted}
+            />
+            <Text
+              style={[
+                styles.actionText,
+                { color: reactionMeta ? reactionMeta.color : colors.textSecondary },
+              ]}
+            >
+              {post.reactionCount}
+            </Text>
+          </Pressable>
 
-        <View style={{ marginLeft: 'auto' }}>
-          <ContentGateActions
-            contentType="post"
-            contentId={post.id}
-          />
+          {/* Reply Button */}
+          <Pressable
+            style={styles.actionButton}
+            onPress={onReply}
+            hitSlop={8}
+          >
+            <Ionicons name="chatbubble-outline" size={17} color={colors.textMuted} />
+            <Text style={[styles.actionText, { color: colors.textSecondary }]}>
+              {post.replyCount}
+            </Text>
+          </Pressable>
+
+          {/* Share Button */}
+          <Pressable
+            style={styles.actionButton}
+            onPress={onShare}
+            hitSlop={8}
+          >
+            <Ionicons name="share-outline" size={17} color={colors.textMuted} />
+          </Pressable>
+
+          {/* Community Vouch / Flag */}
+          <View style={{ marginLeft: 'auto' }}>
+            <ContentGateActions
+              contentType="post"
+              contentId={post.id}
+              compact
+            />
+          </View>
         </View>
-      </View>
-    </Pressable>
+      </Pressable>
+
+      {/* 3-Dots Action Sheet */}
+      <PostActionSheet
+        visible={actionSheetVisible}
+        post={post}
+        isOwner={isOwner}
+        onClose={() => setActionSheetVisible(false)}
+        onEdit={() => onEdit?.()}
+        onDelete={() => onDelete?.()}
+        onShare={() => onShare?.()}
+        onReport={() => setReportSheetVisible(true)}
+        onReact={(reaction) => onReact?.(reaction)}
+      />
+
+      {/* Moderation Report Sheet */}
+      <ReportSheet
+        visible={reportSheetVisible}
+        onClose={() => setReportSheetVisible(false)}
+        targetType="post"
+        targetId={post.id}
+        targetLabel={post.content.slice(0, 50)}
+      />
+    </>
   );
 }
 
@@ -232,15 +303,6 @@ const styles = StyleSheet.create({
     fontWeight: '700',
     maxWidth: 140,
   },
-  badgePill: {
-    paddingHorizontal: 6,
-    paddingVertical: 1,
-    borderRadius: 4,
-  },
-  badgeText: {
-    fontSize: 10,
-    fontWeight: '700',
-  },
   metaRow: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -258,6 +320,15 @@ const styles = StyleSheet.create({
     fontWeight: '600',
     maxWidth: 110,
   },
+  langBadge: {
+    fontSize: 10,
+    fontWeight: '700',
+  },
+  headerRight: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+  },
   typeBadge: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -269,6 +340,9 @@ const styles = StyleSheet.create({
   typeLabel: {
     fontSize: 11,
     fontWeight: '700',
+  },
+  moreButton: {
+    padding: 4,
   },
   content: {
     fontSize: 14,

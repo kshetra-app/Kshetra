@@ -241,11 +241,25 @@ const gu = {
     "emptyFeed": "હજુ સુધી કોઈ પોસ્ટ નથી. કંઈક શેર કરનાર પ્રથમ બનો!",
     "trending": "ટ્રેન્ડિંગ",
     "trendingIn": "{{state}} માં લોકપ્રિય",
-    "share": "આ પોસ્ટ શેર કરો",
-    "react": "પ્રતિક્રિયા આપો",
-    "reply": "જવાબ આપો",
-    "replies": "જવાબો",
-    "writeReply": "જવાબ લખો…"
+    "sort": {
+      "latest": "નવીનતમ",
+      "top": "ટોચની પ્રતિક્રિયાઓ",
+      "discussed": "સૌથી વધુ ચર્ચાયેલ",
+      "polls": "સક્રિય પોલ્સ",
+      "verifiedOnly": "માત્ર ચકાસાયેલ"
+    },
+    "searchPlaceholder": "ચર્ચાઓ, સમાચાર, #હેશટેગ્સ શોધો…",
+    "activeFilters": "સક્રિય ફિલ્ટર્સ",
+    "activeTag": "ટેગ: #{{tag}}",
+    "clearFilter": "બધા સાફ કરો",
+    "noResults": "કોઈ મેળ ખાતી પોસ્ટ્સ મળી નથી",
+    "noResultsSubtitle": "તમારા ફિલ્ટર્સ અથવા શોધ શબ્દ બદલીને પ્રયાસ કરો.",
+    "selectConstituency": "મતવિસ્તાર પસંદ કરો",
+    "searchConstituency": "નામ, AC નંબર અથવા જિલ્લા દ્વારા શોધો…",
+    "setAsHome": "મારું હોમ ક્ષેત્ર બનાવો",
+    "browseConstituency": "બ્રાઉઝ કરો",
+    "allConstituencies": "બધા મતવિસ્તારો",
+    "myConstituency": "મારો મતવિસ્તાર"
   },
   "postCard": {
     "pinned": "પિન કરેલ",
@@ -260,7 +274,30 @@ const gu = {
     "deleteConfirm": "આ પોસ્ટ કાઢી નાખવી છે?",
     "deleteConfirmBody": "આ પ્રક્રિયા પાછી ખેંચી શકાશે નહીં.",
     "delete": "કાઢી નાખો",
-    "cancel": "રદ કરો"
+    "cancel": "રદ કરો",
+    "actions": "પોસ્ટ વિકલ્પો",
+    "editPost": "પોસ્ટમાં ફેરફાર કરો",
+    "deletePost": "પોસ્ટ કાઢી નાખો",
+    "copyText": "ટેક્સ્ટ કૉપિ કરો",
+    "copied": "ટેક્સ્ટ કૉપિ થઈ ગઈ",
+    "sharePost": "પોસ્ટ શેર કરો",
+    "reportPost": "રિપોર્ટ કરો",
+    "pinPost": "પિન કરો",
+    "unpinPost": "અનપિન કરો",
+    "like": "પસંદ",
+    "insightful": "જ્ઞાનવર્ધક",
+    "disagree": "અસંમત",
+    "celebrate": "ઉજવણી"
+  },
+  "postDetail": {
+    "title": "ચર્ચા",
+    "comments": "ટિપ્પણીઓ",
+    "noComments": "હજુ સુધી કોઈ ટિપ્પણીઓ નથી. વાતચીત શરૂ કરો!",
+    "replyPlaceholder": "વિચારપૂર્વક જવાબ લખો…",
+    "postReply": "જવાબ આપો",
+    "deleteComment": "ટિપ્પણી કાઢી નાખો",
+    "deleteCommentConfirm": "શું તમે ખરેખર આ ટિપ્પણી કાઢી નાખવા માંગો છો?",
+    "replyingTo": "{{name}} ને જવાબ"
   },
   "pollCard": {
     "votes": "મતો",
@@ -288,7 +325,12 @@ const gu = {
     "addImage": "છબી ઉમેરો",
     "addLink": "લિંક ઉમેરો",
     "linkPlaceholder": "URL પેસ્ટ કરો…",
-    "linkAdd": "ઉમેરો"
+    "linkAdd": "ઉમેરો",
+    "selectScope": "પોસ્ટ દૃશ્યતા",
+    "scopeNational": "રાષ્ટ્રીય (સમગ્ર ભારત)",
+    "scopeState": "રાજ્ય ({{state}})",
+    "scopeConstituency": "મતવિસ્તાર ({{name}})",
+    "selectLanguage": "ભાષા"
   },
   "dashboard": {
     "title": "નાગરિક ડેશબોર્ડ",

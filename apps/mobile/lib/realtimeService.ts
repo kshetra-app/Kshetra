@@ -59,7 +59,7 @@ export function subscribeToCivicIssues(constituencyId?: string): () => void {
 }
 
 /**
- * Subscribe to new posts in the feed.
+ * Subscribe to new posts, comments, reactions, and poll votes in the feed.
  */
 export function subscribeToFeed(stateCode?: string): () => void {
   if (!isSupabaseConfigured) return () => {};
@@ -69,12 +69,22 @@ export function subscribeToFeed(stateCode?: string): () => void {
 
   const channel = supabase
     .channel(channelName)
-    .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'posts' }, (_payload) => {
-      // Could refresh feed store here
+    .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'posts' }, (payload) => {
+      useFeedStore.getState().receiveRealtimePost(payload.new);
+    })
+    .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'posts' }, (payload) => {
+      useFeedStore.getState().receiveRealtimePost(payload.new);
     })
     .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'comments' }, (payload) => {
       const comment = payload.new as any;
-      notifyCommunityReply(comment.author_name ?? 'Someone', comment.content ?? '');
+      useFeedStore.getState().receiveRealtimeComment(comment);
+      notifyCommunityReply(comment.author_display_name ?? 'Someone', comment.content ?? '');
+    })
+    .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'reactions' }, (payload) => {
+      useFeedStore.getState().receiveRealtimeReaction(payload.new);
+    })
+    .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'poll_votes' }, (payload) => {
+      useFeedStore.getState().receiveRealtimeVote(payload.new);
     })
     .subscribe();
 

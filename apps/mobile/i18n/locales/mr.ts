@@ -241,12 +241,25 @@ const mr = {
     },
     "emptyFeed": "अजून कोणतीही पोस्ट नाही. पहिले व्हा!",
     "trending": "ट्रेंडिंग",
-    "trendingIn": "{{state}} मध्ये ट्रेंडिंग",
-    "share": "ही पोस्ट शेअर करा",
-    "react": "प्रतिक्रिया",
-    "reply": "उत्तर",
-    "replies": "उत्तरे",
-    "writeReply": "उत्तर लिहा…"
+    "sort": {
+      "latest": "नवीनतम",
+      "top": "सर्वाधिक प्रतिक्रिया",
+      "discussed": "सर्वाधिक चर्चित",
+      "polls": "सक्रिय सर्वेक्षणे",
+      "verifiedOnly": "केवळ सत्यापित"
+    },
+    "searchPlaceholder": "चर्चा, बातम्या, #हॅशटॅग शोधा…",
+    "activeFilters": "सक्रिय फिल्टर्स",
+    "activeTag": "टॅग: #{{tag}}",
+    "clearFilter": "सर्व हटवा",
+    "noResults": "कोणतीही जुळणारी पोस्ट सापडली नाही",
+    "noResultsSubtitle": "तुमचे फिल्टर्स किंवा शोध शब्द बदलून पहा.",
+    "selectConstituency": "मतदारसंघ निवडा",
+    "searchConstituency": "नाव, AC क्रमांक किंवा जिल्ह्यानुसार शोधा…",
+    "setAsHome": "माझे गृहक्षेत्र म्हणून सेट करा",
+    "browseConstituency": "पहा",
+    "allConstituencies": "सर्व मतदारसंघ",
+    "myConstituency": "माझा मतदारसंघ"
   },
   "shorts": {
     "title": "राजकीय शॉर्ट्स",
@@ -271,7 +284,30 @@ const mr = {
     "deleteConfirm": "ही पोस्ट हटवायची?",
     "deleteConfirmBody": "हे कृत्य पूर्ववत करता येणार नाही.",
     "delete": "हटवा",
-    "cancel": "रद्द करा"
+    "cancel": "रद्द करा",
+    "actions": "पोस्ट पर्याय",
+    "editPost": "पोस्ट संपादित करा",
+    "deletePost": "पोस्ट हटवा",
+    "copyText": "मजकूर कॉपी करा",
+    "copied": "मजकूर कॉपी झाला",
+    "sharePost": "पोस्ट शेअर करा",
+    "reportPost": "तक्रार करा",
+    "pinPost": "पिन करा",
+    "unpinPost": "अनपिन करा",
+    "like": "आवडले",
+    "insightful": "ज्ञानवर्धक",
+    "disagree": "असहमत",
+    "celebrate": "उत्सव"
+  },
+  "postDetail": {
+    "title": "चर्चा",
+    "comments": "टिप्पण्या",
+    "noComments": "अजून कोणत्याही टिप्पण्या नाहीत. चर्चा सुरू करा!",
+    "replyPlaceholder": "विचारपूर्वक उत्तर लिहा…",
+    "postReply": "उत्तर द्या",
+    "deleteComment": "टिप्पणी हटवा",
+    "deleteCommentConfirm": "तुम्हाला नक्की ही टिप्पणी हटवायची आहे का?",
+    "replyingTo": "{{name}} ला उत्तर"
   },
   "pollCard": {
     "votes": "मते",
@@ -299,7 +335,12 @@ const mr = {
     "addImage": "प्रतिमा जोडा",
     "addLink": "लिंक जोडा",
     "linkPlaceholder": "URL पेस्ट करा…",
-    "linkAdd": "जोडा"
+    "linkAdd": "जोडा",
+    "selectScope": "पोस्ट दृश्यता",
+    "scopeNational": "राष्ट्रीय (अखिल भारतीय)",
+    "scopeState": "राज्य ({{state}})",
+    "scopeConstituency": "मतदारसंघ ({{name}})",
+    "selectLanguage": "भाषा"
   },
   "dashboard": {
     "title": "नागरिक डॅशबोर्ड",

@@ -241,11 +241,25 @@ const or_ = {
     "emptyFeed": "ଏପର୍ଯ୍ୟନ୍ତ କୌଣସି ପୋଷ୍ଟ ନାହିଁ। ପ୍ରଥମେ ସେୟାର କରନ୍ତୁ!",
     "trending": "ଟ୍ରେଣ୍ଡିଂ",
     "trendingIn": "{{state}} ରେ ଟ୍ରେଣ୍ଡିଂ",
-    "share": "ଏହି ପୋଷ୍ଟଟିକୁ ସେୟାର କରନ୍ତୁ",
-    "react": "ପ୍ରତିକ୍ରିୟା ଦିଅନ୍ତୁ",
-    "reply": "ଉତ୍ତର ଦିଅନ୍ତୁ",
-    "replies": "ଉତ୍ତରଗୁଡ଼ିକ",
-    "writeReply": "ଏକ ଉତ୍ତର ଲେଖନ୍ତୁ..."
+    "sort": {
+      "latest": "ନୂତନତମ",
+      "top": "ସର୍ବାଧିକ ପ୍ରତିକ୍ରିୟା",
+      "discussed": "ସର୍ବାଧିକ ଆଲୋଚିତ",
+      "polls": "ସକ୍ରିୟ ପୋଲ୍",
+      "verifiedOnly": "କେବଳ ପ୍ରମାଣିତ"
+    },
+    "searchPlaceholder": "ଆଲୋଚନା, ଖବର, #ହ୍ୟାସଟ୍ୟାଗ୍ ଖୋଜନ୍ତୁ...",
+    "activeFilters": "ସକ୍ରିୟ ଫିଲ୍ଟର୍",
+    "activeTag": "ଟ୍ୟାଗ୍: #{{tag}}",
+    "clearFilter": "ସବୁ ହଟାନ୍ତୁ",
+    "noResults": "କୌଣସି ପୋଷ୍ଟ ମିଳିଲା ନାହିଁ",
+    "noResultsSubtitle": "ଆପଣଙ୍କ ଫିଲ୍ଟର୍ କିମ୍ବା ସନ୍ଧାନ ଶବ୍ଦ ବଦଳାଇ ଚେଷ୍ଟା କରନ୍ତୁ।",
+    "selectConstituency": "ନିର୍ବାଚନ ମଣ୍ଡଳୀ ବାଛନ୍ତୁ",
+    "searchConstituency": "ନାମ, AC ସଂଖ୍ୟା କିମ୍ବା ଜିଲ୍ଲା ଦ୍ୱାରା ଖୋଜନ୍ତୁ...",
+    "setAsHome": "ମୋ ଗୃହ କ୍ଷେତ୍ର ଭାବେ ସେଟ୍ କରନ୍ତୁ",
+    "browseConstituency": "ଦେଖନ୍ତୁ",
+    "allConstituencies": "ସମସ୍ତ ନିର୍ବାଚନ ମଣ୍ଡଳୀ",
+    "myConstituency": "ମୋ ନିର୍ବାଚନ ମଣ୍ଡଳୀ"
   },
   "postCard": {
     "pinned": "ପିନ୍ ହୋଇଛି",
@@ -260,7 +274,30 @@ const or_ = {
     "deleteConfirm": "ଏହି ପୋଷ୍ଟଟିକୁ ଡିଲିଟ୍ କରିବେ କି?",
     "deleteConfirmBody": "ଏହି କାର୍ଯ୍ୟଟିକୁ ପୁନର୍ବାର ବଦଳାଯାଇପାରିବ ନାହିଁ।",
     "delete": "ଡିଲିଟ୍ କରନ୍ତୁ",
-    "cancel": "ବାତିଲ କରନ୍ତୁ"
+    "cancel": "ବାତିଲ କରନ୍ତୁ",
+    "actions": "ପୋଷ୍ଟ ବିକଳ୍ପ",
+    "editPost": "ପୋଷ୍ଟ ସମ୍ପାଦନ କରନ୍ତୁ",
+    "deletePost": "ପୋଷ୍ଟ ଡିଲିଟ୍ କରନ୍ତୁ",
+    "copyText": "ଲେଖା କପି କରନ୍ତୁ",
+    "copied": "ଲେଖା କ୍ଲିପବୋର୍ଡକୁ କପି ହେଲା",
+    "sharePost": "ପୋଷ୍ଟ ସେୟାର କରନ୍ତୁ",
+    "reportPost": "ରିପୋର୍ଟ କରନ୍ତୁ",
+    "pinPost": "ପିନ୍ କରନ୍ତୁ",
+    "unpinPost": "ଅନପିନ୍ କରନ୍ତୁ",
+    "like": "ପସନ୍ଦ",
+    "insightful": "ଜ୍ଞାନବର୍ଦ୍ଧକ",
+    "disagree": "ଅସହମତ",
+    "celebrate": "ଉତ୍ସବ"
+  },
+  "postDetail": {
+    "title": "ଆଲୋଚନା",
+    "comments": "ମନ୍ତବ୍ୟଗୁଡ଼ିକ",
+    "noComments": "କୌଣସି ମନ୍ତବ୍ୟ ନାହିଁ। ଆଲୋଚନା ଆରମ୍ଭ କରନ୍ତୁ!",
+    "replyPlaceholder": "ଏକ ଭଲ ଉତ୍ତର ଲେଖନ୍ତୁ...",
+    "postReply": "ଉତ୍ତର ଦିଅନ୍ତୁ",
+    "deleteComment": "ମନ୍ତବ୍ୟ ଡିଲିଟ୍ କରନ୍ତୁ",
+    "deleteCommentConfirm": "ଆପଣ ନିଶ୍ଚିତ ଭାବରେ ଏହି ମନ୍ତବ୍ୟଟିକୁ ଡିଲିଟ୍ କରିବାକୁ ଚାହାଁନ୍ତି କି?",
+    "replyingTo": "{{name}} ଙ୍କୁ ଉତ୍ତର"
   },
   "pollCard": {
     "votes": "ଭୋଟ୍",
@@ -288,7 +325,12 @@ const or_ = {
     "addImage": "ଛବି ଯୋଡନ୍ତୁ",
     "addLink": "ଲିଙ୍କ୍ ଯୋଡନ୍ତୁ",
     "linkPlaceholder": "URL ପେଷ୍ଟ କରନ୍ତୁ...",
-    "linkAdd": "ଯୋଡନ୍ତୁ"
+    "linkAdd": "ଯୋଡନ୍ତୁ",
+    "selectScope": "ପୋଷ୍ଟ ଦୃଶ୍ୟମାନତା",
+    "scopeNational": "ଜାତୀୟ (ସମଗ୍ର ଭାରତ)",
+    "scopeState": "ରାଜ୍ୟ ({{state}})",
+    "scopeConstituency": "ନିର୍ବାଚନ ମଣ୍ଡଳୀ ({{name}})",
+    "selectLanguage": "ଭାଷା"
   },
   "dashboard": {
     "title": "ନାଗରିକ ଡ୍ୟାସବୋର୍ଡ",

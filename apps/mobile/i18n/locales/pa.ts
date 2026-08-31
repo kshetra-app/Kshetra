@@ -241,11 +241,25 @@ const pa = {
     "emptyFeed": "ਅਜੇ ਤੱਕ ਕੋਈ ਪੋਸਟ ਨਹੀਂ ਹੈ। ਸਾਂਝਾ ਕਰਨ ਵਾਲੇ ਪਹਿਲੇ ਬਣੋ!",
     "trending": "ਚਰਚਾ ਵਿੱਚ",
     "trendingIn": "{{state}} ਵਿੱਚ ਚਰਚਾ ਵਿੱਚ",
-    "share": "ਇਸ ਪੋਸਟ ਨੂੰ ਸਾਂਝਾ ਕਰੋ",
-    "react": "ਪ੍ਰਤੀਕਿਰਿਆ ਦਿਓ",
-    "reply": "ਜਵਾਬ ਦਿਓ",
-    "replies": "ਜਵਾਬ",
-    "writeReply": "ਜਵਾਬ ਲਿਖੋ…"
+    "sort": {
+      "latest": "ਨਵੀਨਤਮ",
+      "top": "ਸਭ ਤੋਂ ਵੱਧ ਪ੍ਰਤੀਕਿਰਿਆਵਾਂ",
+      "discussed": "ਸਭ ਤੋਂ ਵੱਧ ਚਰਚਾ ਕੀਤੀ ਗਈ",
+      "polls": "ਸਰਗਰਮ ਸਰਵੇਖਣ",
+      "verifiedOnly": "ਸਿਰਫ਼ ਪ੍ਰਮਾਣਿਤ"
+    },
+    "searchPlaceholder": "ਚਰਚਾਵਾਂ, ਖ਼ਬਰਾਂ, #ਹੈਸ਼ਟੈਗ ਖੋਜੋ…",
+    "activeFilters": "ਸਰਗਰਮ ਫਿਲਟਰ",
+    "activeTag": "ਟੈਗ: #{{tag}}",
+    "clearFilter": "ਸਭ ਸਾਫ਼ ਕਰੋ",
+    "noResults": "ਕੋਈ ਮੇਲ ਖਾਂਦੀਆਂ ਪੋਸਟਾਂ ਨਹੀਂ ਮਿਲੀਆਂ",
+    "noResultsSubtitle": "ਆਪਣੇ ਫਿਲਟਰ ਜਾਂ ਖੋਜ ਸ਼ਬਦ ਬਦਲ ਕੇ ਕੋਸ਼ਿਸ਼ ਕਰੋ।",
+    "selectConstituency": "ਹਲਕਾ ਚੁਣੋ",
+    "searchConstituency": "ਨਾਮ, AC ਨੰਬਰ ਜਾਂ ਜ਼ਿਲ੍ਹੇ ਦੁਆਰਾ ਖੋਜੋ…",
+    "setAsHome": "ਮੇਰਾ ਗ੍ਰਹਿ ਖੇਤਰ ਬਣਾਓ",
+    "browseConstituency": "ਵੇਖੋ",
+    "allConstituencies": "ਸਾਰੇ ਹਲਕੇ",
+    "myConstituency": "ਮੇਰਾ ਹਲਕਾ"
   },
   "postCard": {
     "pinned": "ਪਿੰਨ ਕੀਤਾ ਗਿਆ",
@@ -260,7 +274,30 @@ const pa = {
     "deleteConfirm": "ਕੀ ਇਸ ਪੋਸਟ ਨੂੰ ਮਿਟਾਉਣਾ ਹੈ?",
     "deleteConfirmBody": "ਇਹ ਕਾਰਵਾਈ ਵਾਪਸ ਨਹੀਂ ਲਈ ਜਾ ਸਕਦੀ।",
     "delete": "ਮਿਟਾਓ",
-    "cancel": "ਰੱਦ ਕਰੋ"
+    "cancel": "ਰੱਦ ਕਰੋ",
+    "actions": "ਪੋਸਟ ਕਾਰਵਾਈਆਂ",
+    "editPost": "ਪੋਸਟ ਸੋਧੋ",
+    "deletePost": "ਪੋਸਟ ਮਿਟਾਓ",
+    "copyText": "ਟੈਕਸਟ ਕਾਪੀ ਕਰੋ",
+    "copied": "ਟੈਕਸਟ ਕਾਪੀ ਹੋ ਗਿਆ",
+    "sharePost": "ਪੋਸਟ ਸਾਂਝੀ ਕਰੋ",
+    "reportPost": "ਰਿਪੋਰਟ ਕਰੋ",
+    "pinPost": "ਪਿੰਨ ਕਰੋ",
+    "unpinPost": "ਅਨਪਿੰਨ ਕਰੋ",
+    "like": "ਪਸੰਦ",
+    "insightful": "ਸੂਝਵਾਨ",
+    "disagree": "ਅਸਹਿਮਤ",
+    "celebrate": "ਜਸ਼ਨ"
+  },
+  "postDetail": {
+    "title": "ਚਰਚਾ",
+    "comments": "ਟਿੱਪਣੀਆਂ",
+    "noComments": "ਅਜੇ ਕੋਈ ਟਿੱਪਣੀ ਨਹੀਂ। ਗੱਲਬਾਤ ਸ਼ੁਰੂ ਕਰੋ!",
+    "replyPlaceholder": "ਸੋਚ-ਸਮਝ ਕੇ ਜਵਾਬ ਲਿਖੋ…",
+    "postReply": "ਜਵਾਬ ਦਿਓ",
+    "deleteComment": "ਟਿੱਪਣੀ ਮਿਟਾਓ",
+    "deleteCommentConfirm": "ਕੀ ਤੁਸੀਂ ਯਕੀਨੀ ਤੌਰ 'ਤੇ ਇਹ ਟਿੱਪਣੀ ਮਿਟਾਉਣਾ ਚਾਹੁੰਦੇ ਹੋ?",
+    "replyingTo": "{{name}} ਨੂੰ ਜਵਾਬ ਦਿੱਤਾ ਜਾ ਰਿਹਾ ਹੈ"
   },
   "pollCard": {
     "votes": "ਵੋਟਾਂ",
@@ -288,7 +325,12 @@ const pa = {
     "addImage": "ਤਸਵੀਰ ਜੋੜੋ",
     "addLink": "ਲਿੰਕ ਜੋੜੋ",
     "linkPlaceholder": "URL ਪੇਸਟ ਕਰੋ…",
-    "linkAdd": "ਜੋੜੋ"
+    "linkAdd": "ਜੋੜੋ",
+    "selectScope": "ਪੋਸਟ ਦਿੱਖ",
+    "scopeNational": "ਰਾਸ਼ਟਰੀ (ਸਰਬ ਭਾਰਤੀ)",
+    "scopeState": "ਰਾਜ ({{state}})",
+    "scopeConstituency": "ਹਲਕਾ ({{name}})",
+    "selectLanguage": "ਭਾਸ਼ਾ"
   },
   "dashboard": {
     "title": "ਨਾਗਰਿਕ ਡੈਸ਼ਬੋਰਡ",

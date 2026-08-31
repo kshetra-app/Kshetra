@@ -257,6 +257,7 @@ export async function composePost(post: {
   hashtags?: string[];
   constituencyId?: string;
   parentId?: string;
+  language?: string;
 }): Promise<{ id: string | null; success: boolean }> {
   if (!guard()) return { id: `local-${Date.now()}`, success: true };
   try {
@@ -270,6 +271,7 @@ export async function composePost(post: {
         author_id: post.authorId,
         constituency_id: post.constituencyId ?? null,
         parent_id: post.parentId ?? null,
+        language: post.language ?? 'en',
       })
       .select('id')
       .single();
@@ -344,13 +346,14 @@ export async function addPostComment(
   postId: string,
   userId: string,
   content: string,
+  language?: string,
 ): Promise<{ id: string | null; success: boolean }> {
   if (!guard()) return { id: `local-cmt-${Date.now()}`, success: true };
   try {
     addBreadcrumb('feed', 'add_comment', { postId });
     const { data, error } = await supabase
       .from('comments')
-      .insert({ post_id: postId, author_id: userId, content })
+      .insert({ post_id: postId, author_id: userId, content, language: language ?? 'en' })
       .select('id')
       .single();
     if (error) throw error;
@@ -358,6 +361,67 @@ export async function addPostComment(
   } catch (err) {
     captureException(err as Error, { op: 'add_comment', postId });
     return { id: null, success: false };
+  }
+}
+
+export async function reactToComment(
+  commentId: string,
+  userId: string,
+  reaction: string,
+): Promise<boolean> {
+  if (!guard()) return true;
+  try {
+    addBreadcrumb('feed', 'react_comment', { commentId, reaction });
+    const { error } = await supabase
+      .from('reactions')
+      .upsert(
+        { comment_id: commentId, user_id: userId, type: reaction },
+        { onConflict: 'user_id,comment_id' },
+      );
+    if (error) throw error;
+    return true;
+  } catch (err) {
+    captureException(err as Error, { op: 'react_comment', commentId });
+    return false;
+  }
+}
+
+export async function removeCommentReaction(
+  commentId: string,
+  userId: string,
+): Promise<boolean> {
+  if (!guard()) return true;
+  try {
+    addBreadcrumb('feed', 'remove_comment_reaction', { commentId });
+    const { error } = await supabase
+      .from('reactions')
+      .delete()
+      .match({ comment_id: commentId, user_id: userId });
+    if (error) throw error;
+    return true;
+  } catch (err) {
+    captureException(err as Error, { op: 'remove_comment_reaction', commentId });
+    return false;
+  }
+}
+
+export async function deletePostComment(
+  commentId: string,
+  userId: string,
+): Promise<boolean> {
+  if (!guard()) return true;
+  try {
+    addBreadcrumb('feed', 'delete_comment', { commentId });
+    const { error } = await supabase
+      .from('comments')
+      .update({ is_deleted: true, content: '[Deleted]' })
+      .eq('id', commentId)
+      .eq('author_id', userId);
+    if (error) throw error;
+    return true;
+  } catch (err) {
+    captureException(err as Error, { op: 'delete_comment', commentId });
+    return false;
   }
 }
 

@@ -241,11 +241,25 @@ const as_ = {
     "emptyFeed": "এতিয়ালৈকে কোনো পোষ্ট নাই। প্ৰথমে শ্বেয়াৰ কৰক!",
     "trending": "ট্ৰেণ্ডিং",
     "trendingIn": "{{state}}ত ট্ৰেণ্ডিং",
-    "share": "এই পোষ্টটো শ্বেয়াৰ কৰক",
-    "react": "প্ৰতিক্ৰিয়া",
-    "reply": "উত্তৰ দিয়ক",
-    "replies": "উত্তৰসমূহ",
-    "writeReply": "উত্তৰ লিখক…"
+    "sort": {
+      "latest": "শেহতীয়া",
+      "top": "শীৰ্ষ সঁহাৰি",
+      "discussed": "সৰ্বাধিক আলোচিত",
+      "polls": "সক্ৰিয় ভোটদান",
+      "verifiedOnly": "কেৱল প্ৰমাণীকৃত"
+    },
+    "searchPlaceholder": "আলোচনা, বাতৰি, #হেচটেগ সন্ধান কৰক…",
+    "activeFilters": "সক্ৰিয় ফিল্টাৰসমূহ",
+    "activeTag": "টেগ: #{{tag}}",
+    "clearFilter": "সকলো আতৰাওক",
+    "noResults": "কোনো মিল থকা পোষ্ট পোৱা নগ’ল",
+    "noResultsSubtitle": "আপোনাৰ ফিল্টাৰ বা সন্ধান সলনি কৰি চাওক।",
+    "selectConstituency": "সমষ্টি বাছনি কৰক",
+    "searchConstituency": "নাম, AC নম্বৰ বা জিলাৰ দ্বাৰা সন্ধান কৰক…",
+    "setAsHome": "মোৰ গৃহ সমষ্টি হিচাপে ছেট কৰক",
+    "browseConstituency": "চাওক",
+    "allConstituencies": "সকলো সমষ্টি",
+    "myConstituency": "মোৰ সমষ্টি"
   },
   "postCard": {
     "pinned": "পিন কৰা হৈছে",
@@ -260,7 +274,30 @@ const as_ = {
     "deleteConfirm": "এই পোষ্টটো মচি পেলাব বিচাৰেনে?",
     "deleteConfirmBody": "এই কাৰ্যটো ঘূৰাই আনিব নোৱাৰি।",
     "delete": "মচি পেলাওক",
-    "cancel": "বাতিল কৰক"
+    "cancel": "বাতিল কৰক",
+    "actions": "পোষ্টৰ বিকল্পসমূহ",
+    "editPost": "পোষ্ট সম্পাদনা কৰক",
+    "deletePost": "পোষ্ট মচি পেলাওক",
+    "copyText": "পাঠ্য কপি কৰক",
+    "copied": "পাঠ্য ক্লিপবৰ্ডত কপি হ’ল",
+    "sharePost": "পোষ্ট শ্বেয়াৰ কৰক",
+    "reportPost": "ৰিপোৰ্ট কৰক",
+    "pinPost": "পিন কৰক",
+    "unpinPost": "আনপিন কৰক",
+    "like": "পছন্দ",
+    "insightful": "জ্ঞানবৰ্ধক",
+    "disagree": "অসন্মত",
+    "celebrate": "উদ্‌যাপন"
+  },
+  "postDetail": {
+    "title": "আলোচনা",
+    "comments": "মন্তব্যসমূহ",
+    "noComments": "এতিয়ালৈকে কোনো মন্তব্য নাই। আলোচনা আৰম্ভ কৰক!",
+    "replyPlaceholder": "চিন্তাশীল উত্তৰ লিখক…",
+    "postReply": "উত্তৰ দিয়ক",
+    "deleteComment": "মন্তব্য মচক",
+    "deleteCommentConfirm": "আপুনি নিশ্চিতভাৱে এই মন্তব্যটো মচিব বিচাৰেনে?",
+    "replyingTo": "{{name}}লৈ উত্তৰ দিয়া হৈছে"
   },
   "pollCard": {
     "votes": "ভোটসমূহ",
@@ -288,7 +325,12 @@ const as_ = {
     "addImage": "ছবি যোগ কৰক",
     "addLink": "লিংক যোগ কৰক",
     "linkPlaceholder": "ইউআৰএল (URL) পেষ্ট কৰক…",
-    "linkAdd": "যোগ কৰক"
+    "linkAdd": "যোগ কৰক",
+    "selectScope": "পোষ্টৰ দৃশ্যমানতা",
+    "scopeNational": "ৰাষ্ট্ৰীয় (সৰ্বভাৰতীয়)",
+    "scopeState": "ৰাজ্য ({{state}})",
+    "scopeConstituency": "সমষ্টি ({{name}})",
+    "selectLanguage": "ভাষা"
   },
   "dashboard": {
     "title": "নাগৰিক ডেচবৰ্ড",

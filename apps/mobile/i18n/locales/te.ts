@@ -249,13 +249,25 @@ const te = {
     },
     "emptyFeed": "ఇంకా పోస్ట్‌లు లేవు. మొదటివారు కండి!",
     "trending": "ట్రెండింగ్",
-    "trendingIn": "{{state}}లో ట్రెండింగ్",
-    "share": "ఈ పోస్ట్‌ను షేర్ చేయండి",
-    "react": "రియాక్ట్",
-    "reply": "జవాబు",
-    "replies": "జవాబులు",
-    "writeReply": "జవాబు రాయండి…",
-    "votes": "ఓట్లు"
+    "sort": {
+      "latest": "తాజావి",
+      "top": "అత్యధిక స్పందనలు",
+      "discussed": "ఎక్కువ చర్చించినవి",
+      "polls": "యాక్టివ్ పోల్స్",
+      "verifiedOnly": "ధృవీకరించబడినవి మాత్రమే"
+    },
+    "searchPlaceholder": "చర్చలు, వార్తలు, #ట్యాగ్‌ల కోసం వెతకండి…",
+    "activeFilters": "యాక్టివ్ ఫిల్టర్లు",
+    "activeTag": "ట్యాగ్: #{{tag}}",
+    "clearFilter": "అన్నీ తొలగించండి",
+    "noResults": "సరిపోలే పోస్ట్‌లు కనుగొనబడలేదు",
+    "noResultsSubtitle": "మీ ఫిల్టర్‌లు లేదా శోధన పదాన్ని మార్చి చూడండి.",
+    "selectConstituency": "నియోజకవర్గాన్ని ఎంచుకోండి",
+    "searchConstituency": "పేరు, AC సంఖ్య లేదా జిల్లా ద్వారా వెతకండి…",
+    "setAsHome": "నా హోమ్‌గా సెట్ చేయండి",
+    "browseConstituency": "బ్రౌజ్ చేయండి",
+    "allConstituencies": "అన్ని నియోజకవర్గాలు",
+    "myConstituency": "నా నియోజకవర్గం"
   },
   "postCard": {
     "pinned": "పిన్ చేసినది",
@@ -270,7 +282,30 @@ const te = {
     "deleteConfirm": "ఈ పోస్ట్‌ను తొలగించాలా?",
     "deleteConfirmBody": "ఈ చర్యను రద్దు చేయలేరు.",
     "delete": "తొలగించండి",
-    "cancel": "రద్దు"
+    "cancel": "రద్దు",
+    "actions": "పోస్ట్ చర్యలు",
+    "editPost": "పోస్ట్‌ను సవరించండి",
+    "deletePost": "పోస్ట్‌ను తొలగించండి",
+    "copyText": "వచనాన్ని కాపీ చేయండి",
+    "copied": "వచనం క్లిప్‌బోర్డ్‌కు కాపీ చేయబడింది",
+    "sharePost": "పోస్ట్‌ను షేర్ చేయండి",
+    "reportPost": "రిపోర్ట్ చేయండి",
+    "pinPost": "పిన్ చేయండి",
+    "unpinPost": "అన్‌పిన్ చేయండి",
+    "like": "లైక్",
+    "insightful": "వివేచనాత్మకమైనది",
+    "disagree": "ఏకీభవించను",
+    "celebrate": "అభినందించండి"
+  },
+  "postDetail": {
+    "title": "చర్చ",
+    "comments": "వ్యాఖ్యలు",
+    "noComments": "ఇంకా వ్యాఖ్యలు లేవు. చర్చను ప్రారంభించండి!",
+    "replyPlaceholder": "మీ జవాబును ఆలోచించి రాయండి…",
+    "postReply": "జవాబు ఇవ్వండి",
+    "deleteComment": "వ్యాఖ్యను తొలగించండి",
+    "deleteCommentConfirm": "ఈ వ్యాఖ్యను ఖచ్చితంగా తొలగించాలనుకుంటున్నారా?",
+    "replyingTo": "{{name}}కు జవాబు"
   },
   "pollCard": {
     "votes": "ఓట్లు",
@@ -298,7 +333,12 @@ const te = {
     "linkPlaceholder": "URL పేస్ట్ చేయండి…",
     "linkAdd": "జోడించు",
     "editTitle": "పోస్ట్ మార్చండి",
-    "save": "సేవ్ చేయండి"
+    "save": "సేవ్ చేయండి",
+    "selectScope": "పోస్ట్ దృశ్యమానత",
+    "scopeNational": "జాతీయ (అఖిల భారత)",
+    "scopeState": "రాష్ట్రం ({{state}})",
+    "scopeConstituency": "నియోజకవర్గం ({{name}})",
+    "selectLanguage": "భాష"
   },
   "dashboard": {
     "title": "పౌర డాష్‌బోర్డ్",

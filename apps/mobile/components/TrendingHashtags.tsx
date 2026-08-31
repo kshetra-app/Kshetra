@@ -1,4 +1,4 @@
-import { useMemo } from 'react';
+import React, { useMemo } from 'react';
 import { View, Text, StyleSheet, Pressable, FlatList } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useTranslation } from 'react-i18next';
@@ -9,19 +9,24 @@ import { useTheme } from '../lib/theme';
 
 interface TrendingHashtagsProps {
   posts: Post[];
+  activeTag?: string | null;
   onTagPress?: (tag: string) => void;
+  onClearTag?: () => void;
   maxTags?: number;
 }
 
 export default function TrendingHashtags({
   posts,
+  activeTag,
   onTagPress,
+  onClearTag,
   maxTags = 10,
 }: TrendingHashtagsProps) {
   const { t } = useTranslation();
   const { colors } = useTheme();
   const stateCode = useActiveStateStore((s) => s.stateCode);
-  const stateName = STATES[stateCode]?.name ?? stateCode;
+  const stateName = (STATES as Record<string, { name: string }>)[stateCode]?.name ?? stateCode;
+
   const trending = useMemo((): TrendingHashtag[] => {
     const counts = new Map<string, number>();
     for (const post of posts) {
@@ -37,34 +42,81 @@ export default function TrendingHashtags({
       .slice(0, maxTags);
   }, [posts, maxTags]);
 
-  if (trending.length === 0) return null;
+  if (trending.length === 0 && !activeTag) return null;
 
   return (
     <View style={[styles.container, { borderBottomColor: colors.border }]}>
       <View style={styles.header}>
         <Ionicons name="trending-up" size={18} color={colors.primary} />
-        <Text style={[styles.title, { color: colors.text }]}>{t('feed.trendingIn', { state: stateName })}</Text>
+        <Text style={[styles.title, { color: colors.text }]}>
+          {stateCode === 'IN'
+            ? t('feed.trending')
+            : t('feed.trendingIn', { state: stateName })}
+        </Text>
+
+        {activeTag && (
+          <Pressable
+            style={[styles.activeFilterChip, { backgroundColor: colors.primaryLight, borderColor: colors.primary }]}
+            onPress={onClearTag}
+            hitSlop={6}
+          >
+            <Text style={[styles.activeFilterText, { color: colors.primary }]}>
+              #{activeTag}
+            </Text>
+            <Ionicons name="close-circle" size={14} color={colors.primary} />
+          </Pressable>
+        )}
       </View>
+
       <FlatList
         data={trending}
         keyExtractor={(item) => item.tag}
         horizontal
         showsHorizontalScrollIndicator={false}
         contentContainerStyle={styles.list}
-        renderItem={({ item, index }) => (
-          <Pressable
-            style={[styles.tagChip, { backgroundColor: colors.surface, borderColor: colors.border, shadowColor: colors.shadowColor }]}
-            onPress={() => onTagPress?.(item.tag)}
-          >
-            <Text style={[styles.tagRank, { color: colors.gold }]}>{index + 1}</Text>
-            <View>
-              <Text style={[styles.tagName, { color: colors.primary }]}>#{item.tag}</Text>
-              <Text style={[styles.tagCount, { color: colors.textMuted }]}>
-                {item.postCount} {t('content.sentimentLabels.posts')}
+        renderItem={({ item, index }) => {
+          const isActive = item.tag === activeTag;
+          return (
+            <Pressable
+              style={[
+                styles.tagChip,
+                { backgroundColor: colors.surface, borderColor: colors.border },
+                isActive && { backgroundColor: colors.primary, borderColor: colors.primary },
+              ]}
+              onPress={() => onTagPress?.(item.tag)}
+            >
+              <Text
+                style={[
+                  styles.tagRank,
+                  { color: colors.gold || colors.primary },
+                  isActive && { color: '#FFFFFF' },
+                ]}
+              >
+                {index + 1}
               </Text>
-            </View>
-          </Pressable>
-        )}
+              <View>
+                <Text
+                  style={[
+                    styles.tagName,
+                    { color: colors.primary },
+                    isActive && { color: '#FFFFFF' },
+                  ]}
+                >
+                  #{item.tag}
+                </Text>
+                <Text
+                  style={[
+                    styles.tagCount,
+                    { color: colors.textMuted },
+                    isActive && { color: '#FFFFFF99' },
+                  ]}
+                >
+                  {item.postCount} {t('common.posts', 'posts')}
+                </Text>
+              </View>
+            </Pressable>
+          );
+        }}
       />
     </View>
   );
@@ -80,11 +132,25 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: 6,
-    paddingHorizontal: 20,
-    marginBottom: 10,
+    paddingHorizontal: 16,
+    marginBottom: 8,
   },
   title: {
-    fontSize: 15,
+    fontSize: 14,
+    fontWeight: '700',
+  },
+  activeFilterChip: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginLeft: 'auto',
+    paddingHorizontal: 8,
+    paddingVertical: 3,
+    borderRadius: 12,
+    borderWidth: 1,
+    gap: 4,
+  },
+  activeFilterText: {
+    fontSize: 11,
     fontWeight: '700',
   },
   list: {
@@ -96,18 +162,15 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     borderRadius: 12,
     paddingHorizontal: 12,
-    paddingVertical: 10,
+    paddingVertical: 8,
     gap: 8,
     borderWidth: 1,
-    elevation: 2,
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.06,
-    shadowRadius: 4,
+    elevation: 1,
   },
   tagRank: {
-    fontSize: 16,
+    fontSize: 15,
     fontWeight: '800',
-    width: 20,
+    width: 18,
     textAlign: 'center',
   },
   tagName: {
@@ -115,7 +178,7 @@ const styles = StyleSheet.create({
     fontWeight: '700',
   },
   tagCount: {
-    fontSize: 11,
+    fontSize: 10,
     marginTop: 1,
   },
 });

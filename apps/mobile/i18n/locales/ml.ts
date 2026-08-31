@@ -241,11 +241,25 @@ const ml = {
     "emptyFeed": "പോസ്റ്റുകളൊന്നുമില്ല. ആദ്യമായി പങ്കുവെക്കൂ!",
     "trending": "ട്രെൻഡിംഗ്",
     "trendingIn": "{{state}}-ൽ ട്രെൻഡിംഗ്",
-    "share": "ഈ പോസ്റ്റ് പങ്കുവെക്കുക",
-    "react": "പ്രതികരിക്കുക",
-    "reply": "മറുപടി നൽകുക",
-    "replies": "മറുപടികൾ",
-    "writeReply": "മറുപടി എഴുതുക…"
+    "sort": {
+      "latest": "ഏറ്റവും പുതിയത്",
+      "top": "കൂടുതൽ പ്രതികരണങ്ങൾ",
+      "discussed": "കൂടുതൽ ചർച്ച ചെയ്യപ്പെട്ടവ",
+      "polls": "സജീവ പോളുകൾ",
+      "verifiedOnly": "പരിശോധിച്ചുറപ്പിച്ചവ മാത്രം"
+    },
+    "searchPlaceholder": "ചർച്ചകൾ, വാർത്തകൾ, #ഹാഷ്‌ടാഗുകൾ തിരയുക…",
+    "activeFilters": "സജീവ ഫിൽട്ടറുകൾ",
+    "activeTag": "ടാഗ്: #{{tag}}",
+    "clearFilter": "എല്ലാം ഒഴിവാക്കുക",
+    "noResults": "പൊരുത്തപ്പെടുന്ന പോസ്റ്റുകളൊന്നും കണ്ടെത്തിയില്ല",
+    "noResultsSubtitle": "നിങ്ങളുടെ ഫിൽട്ടറുകളോ തിരയൽ വാക്കുകളോ മാറ്റി നോക്കൂ.",
+    "selectConstituency": "നിയോജകമണ്ഡലം തിരഞ്ഞെടുക്കുക",
+    "searchConstituency": "പേര്, AC നമ്പർ അല്ലെങ്കിൽ ജില്ല അനുസരിച്ച് തിരയുക…",
+    "setAsHome": "എന്റെ മണ്ഡലമായി സജ്ജീകരിക്കുക",
+    "browseConstituency": "ബ്രൗസ് ചെയ്യുക",
+    "allConstituencies": "എല്ലാ നിയോജകമണ്ഡലങ്ങളും",
+    "myConstituency": "എന്റെ നിയോജകമണ്ഡലം"
   },
   "postCard": {
     "pinned": "പിൻ ചെയ്തത്",
@@ -260,7 +274,30 @@ const ml = {
     "deleteConfirm": "ഈ പോസ്റ്റ് ഒഴിവാക്കണോ?",
     "deleteConfirmBody": "ഈ നടപടി റദ്ദാക്കാൻ കഴിയില്ല.",
     "delete": "ഇല്ലാതാക്കുക",
-    "cancel": "റദ്ദാക്കുക"
+    "cancel": "റദ്ദാക്കുക",
+    "actions": "പോസ്റ്റ് ഓപ്ഷനുകൾ",
+    "editPost": "പോസ്റ്റ് തിരുത്തുക",
+    "deletePost": "പോസ്റ്റ് ഇല്ലാതാക്കുക",
+    "copyText": "വാചകം പകർത്തുക",
+    "copied": "വാചകം പകർത്തി",
+    "sharePost": "പോസ്റ്റ് പങ്കുവെക്കുക",
+    "reportPost": "റിപ്പോർട്ട് ചെയ്യുക",
+    "pinPost": "പിൻ ചെയ്യുക",
+    "unpinPost": "അൺപിൻ ചെയ്യുക",
+    "like": "ഇഷ്ടം",
+    "insightful": "വിജ്ഞാനപ്രദം",
+    "disagree": "യോജിക്കുന്നില്ല",
+    "celebrate": "ആഘോഷിക്കുക"
+  },
+  "postDetail": {
+    "title": "ചർച്ച",
+    "comments": "അഭിപ്രായങ്ങൾ",
+    "noComments": "ഇതുവരെ കമന്റുകളൊന്നുമില്ല. സംഭാഷണം ആരംഭിക്കൂ!",
+    "replyPlaceholder": "ചിന്തനീയമായ മറുപടി എഴുതുക…",
+    "postReply": "മറുപടി നൽകുക",
+    "deleteComment": "കമന്റ് ഒഴിവാക്കുക",
+    "deleteCommentConfirm": "ഈ കമന്റ് ഇല്ലാതാക്കാൻ ആഗ്രഹിക്കുന്നുവെന്ന് ഉറപ്പാണോ?",
+    "replyingTo": "{{name}}-ന് മറുപടി നൽകുന്നു"
   },
   "pollCard": {
     "votes": "വോട്ടുകൾ",
@@ -288,7 +325,12 @@ const ml = {
     "addImage": "ചിത്രം ചേർക്കുക",
     "addLink": "ലിങ്ക് ചേർക്കുക",
     "linkPlaceholder": "യു.ആർ.എൽ ഒട്ടിക്കുക…",
-    "linkAdd": "ചേർക്കുക"
+    "linkAdd": "ചേർക്കുക",
+    "selectScope": "പോസ്റ്റ് ദൃശ്യപരത",
+    "scopeNational": "ദേശീയ (അഖിലേന്ത്യാ തലം)",
+    "scopeState": "സംസ്ഥാനം ({{state}})",
+    "scopeConstituency": "നിയോജകമണ്ഡലം ({{name}})",
+    "selectLanguage": "ഭാഷ"
   },
   "dashboard": {
     "title": "സിവിക് ഡാഷ്‌ബോർഡ്",

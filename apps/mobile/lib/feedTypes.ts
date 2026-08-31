@@ -1,6 +1,6 @@
 /**
  * Feed types for Posts, Polls, Comments, Reactions.
- * Mirrors the Supabase schema from 0035_posts_polls_social.sql.
+ * Mirrors the Supabase schema from 0035_posts_polls_social.sql & 025_feed_realtime_and_social.sql.
  *
  * While Supabase is optional (offline-first), these types are
  * used by UI components regardless of the data source.
@@ -9,6 +9,18 @@
 export type PostType = 'discussion' | 'news' | 'opinion' | 'question' | 'alert' | 'poll';
 
 export type ReactionType = 'like' | 'insightful' | 'disagree' | 'celebrate';
+
+export type SortOrder = 'latest' | 'top' | 'discussed' | 'polls';
+
+export const REACTION_CONFIG: Record<
+  ReactionType,
+  { label: string; icon: string; emoji: string; color: string; tKey: string }
+> = {
+  like: { label: 'Like', icon: 'heart', emoji: '❤️', color: '#EF4444', tKey: 'postCard.like' },
+  insightful: { label: 'Insightful', icon: 'bulb', emoji: '💡', color: '#F59E0B', tKey: 'postCard.insightful' },
+  disagree: { label: 'Disagree', icon: 'thumbs-down', emoji: '👎', color: '#6B7280', tKey: 'postCard.disagree' },
+  celebrate: { label: 'Celebrate', icon: 'sparkles', emoji: '🎉', color: '#10B981', tKey: 'postCard.celebrate' },
+};
 
 export type ReportReason =
   | 'spam'
@@ -64,6 +76,7 @@ export interface Post {
   reactionCount: number;
   isPinned: boolean;
   isDeleted: boolean;
+  language?: string;
   createdAt: string;
   updatedAt: string;
   media?: PostMedia[];
@@ -79,6 +92,7 @@ export interface Comment {
   content: string;
   reactionCount: number;
   isDeleted: boolean;
+  language?: string;
   createdAt: string;
   updatedAt: string;
   userReaction?: ReactionType;

@@ -240,12 +240,25 @@ const ta = {
     },
     "emptyFeed": "இன்னும் எந்தப் பதிவுகளும் இல்லை. முதலாளராகப் பகிருங்கள்!",
     "trending": "பிரபலமானவை",
-    "trendingIn": "{{state}}-இல் பிரபலமானவை",
-    "share": "இந்தப் பதிவைப் பகிர்",
-    "react": "எதிர்வினை",
-    "reply": "பதிலளி",
-    "replies": "பதில்கள்",
-    "writeReply": "பதிலை எழுதுக…"
+    "sort": {
+      "latest": "சமீபத்தியவை",
+      "top": "அதிக எதிர்வினைகள்",
+      "discussed": "அதிகம் விவாதிக்கப்பட்டவை",
+      "polls": "நடப்பு வாக்கெடுப்புகள்",
+      "verifiedOnly": "சரிபார்க்கப்பட்டவை மட்டும்"
+    },
+    "searchPlaceholder": "விவாதங்கள், செய்திகள், #ஹேஷ்டேக்குகளைத் தேடுங்கள்…",
+    "activeFilters": "செயலில் உள்ள வடிகட்டிகள்",
+    "activeTag": "குறிச்சொல்: #{{tag}}",
+    "clearFilter": "அனைத்தையும் நீக்கு",
+    "noResults": "பொருந்தக்கூடிய பதிவுகள் எதுவும் இல்லை",
+    "noResultsSubtitle": "வடிகட்டிகளை அல்லது தேடல் சொற்களை மாற்றி முயற்சிக்கவும்.",
+    "selectConstituency": "தொகுதியைத் தேர்ந்தெடுக்கவும்",
+    "searchConstituency": "பெயர், AC எண் அல்லது மாவட்டம் மூலம் தேடவும்…",
+    "setAsHome": "எனது தொகுதியாக அமை",
+    "browseConstituency": "பார்வையிடு",
+    "allConstituencies": "அனைத்து தொகுதிகள்",
+    "myConstituency": "எனது தொகுதி"
   },
   "postCard": {
     "pinned": "முதன்மையானது",
@@ -260,7 +273,30 @@ const ta = {
     "deleteConfirm": "இந்தப் பதிவை நீக்க வேண்டுமா?",
     "deleteConfirmBody": "இந்த நடவடிக்கையை மாற்ற முடியாது.",
     "delete": "நீக்கு",
-    "cancel": "ரத்து செய்"
+    "cancel": "ரத்து செய்",
+    "actions": "பதிவு விருப்பங்கள்",
+    "editPost": "பதிவைத் திருத்து",
+    "deletePost": "பதிவை நீக்கு",
+    "copyText": "உரையை நகலெடு",
+    "copied": "உரை நகலெடுக்கப்பட்டது",
+    "sharePost": "பதிவைப் பகிர்",
+    "reportPost": "புகாரளி",
+    "pinPost": "முதன்மையாக்கு",
+    "unpinPost": "நீக்கு",
+    "like": "விருப்பம்",
+    "insightful": "பயனுள்ளது",
+    "disagree": "மறுப்பு",
+    "celebrate": "கொண்டாடு"
+  },
+  "postDetail": {
+    "title": "விவாதம்",
+    "comments": "கருத்துகள்",
+    "noComments": "இன்னும் கருத்துகள் இல்லை. உரையாடலைத் தொடங்குங்கள்!",
+    "replyPlaceholder": "சிந்தனைமிக்க பதிலை எழுதுங்கள்…",
+    "postReply": "பதிலளி",
+    "deleteComment": "கருத்தை நீக்கு",
+    "deleteCommentConfirm": "இந்தக் கருத்தை நிச்சயமாக நீக்க விரும்புகிறீர்களா?",
+    "replyingTo": "{{name}}-க்கு பதிலளிக்கிறது"
   },
   "pollCard": {
     "votes": "வாக்குகள்",
@@ -288,7 +324,12 @@ const ta = {
     "addImage": "படத்தைச் சேர்",
     "addLink": "இணைப்பைச் சேர்",
     "linkPlaceholder": "இணைப்பை ஒட்டவும்…",
-    "linkAdd": "சேர்"
+    "linkAdd": "சேர்",
+    "selectScope": "பதிவு தெரிவுநிலை",
+    "scopeNational": "தேசிய (அனைத்து இந்தியா)",
+    "scopeState": "மாநிலம் ({{state}})",
+    "scopeConstituency": "தொகுதி ({{name}})",
+    "selectLanguage": "மொழி"
   },
   "dashboard": {
     "title": "குடிமைத் டாஷ்போர்டு",
