@@ -14,9 +14,10 @@ import { useActiveStateStore } from '../stores/activeState';
 import { isStateSupported, getStateData } from '../lib/stateRegistry';
 import { usePrefetchState } from '../lib/usePrefetchState';
 import { useTheme } from '../lib/theme';
+import { getLocalizedStateName } from '../lib/seedTranslations';
 
 export default function StateSwitcher() {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const { colors } = useTheme();
   const [visible, setVisible] = useState(false);
   const stateCode = useActiveStateStore((s) => s.stateCode);
@@ -34,11 +35,15 @@ export default function StateSwitcher() {
     prefetch(code);
   };
 
+  const triggerLabel = stateCode === 'IN'
+    ? getLocalizedStateName('IN', i18n.language, 'India')
+    : getLocalizedStateName(stateCode, i18n.language, currentState?.name ?? stateCode);
+
   return (
     <>
       <Pressable style={[styles.trigger, { backgroundColor: colors.surface, borderColor: colors.goldBorder || colors.border, borderWidth: 1 }]} onPress={() => setVisible(true)}>
         <Ionicons name="location" size={14} color={colors.primary} />
-        <Text style={[styles.triggerText, { color: colors.text }]}>{stateCode === 'IN' ? 'India' : currentState?.name ?? stateCode}</Text>
+        <Text style={[styles.triggerText, { color: colors.text }]}>{triggerLabel}</Text>
         <Ionicons name="chevron-down" size={12} color={colors.textSecondary} />
       </Pressable>
 
@@ -104,7 +109,7 @@ export default function StateSwitcher() {
                           !supported && { color: colors.textMuted },
                         ]}
                       >
-                        {state.name}
+                        {getLocalizedStateName(state.code, i18n.language, state.name)}
                       </Text>
                       <Text style={[styles.stateSeats, { color: colors.textMuted }]}>
                         {state.assemblySeats} {t('stateSwitcher.constituencies')}

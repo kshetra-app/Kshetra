@@ -17,11 +17,19 @@ import {
   type LanguageCode,
 } from '../i18n';
 
-export default function LanguageSwitcher() {
-  const { t } = useTranslation();
+interface LanguageSwitcherProps {
+  compact?: boolean;
+}
+
+export default function LanguageSwitcher({ compact = false }: LanguageSwitcherProps) {
+  const { t, i18n } = useTranslation();
   const { colors } = useTheme();
   const [visible, setVisible] = useState(false);
   const [current, setCurrent] = useState<LanguageCode>(getCurrentLanguage());
+
+  React.useEffect(() => {
+    setCurrent(getCurrentLanguage());
+  }, [i18n.language]);
 
   const handleSelect = async (code: LanguageCode) => {
     await setLanguage(code);
@@ -34,12 +42,18 @@ export default function LanguageSwitcher() {
   return (
     <>
       <Pressable
-        style={[styles.trigger, { backgroundColor: colors.surface, borderColor: colors.border }]}
+        style={[
+          styles.trigger,
+          { backgroundColor: colors.surface, borderColor: colors.goldBorder || colors.border },
+          compact && styles.compactTrigger,
+        ]}
         onPress={() => setVisible(true)}
       >
-        <Ionicons name="language" size={16} color={colors.primary} />
-        <Text style={[styles.triggerText, { color: colors.text }]}>{currentLang?.nativeLabel ?? 'English'}</Text>
-        <Ionicons name="chevron-down" size={12} color={colors.textMuted} />
+        <Ionicons name="language" size={compact ? 14 : 16} color={colors.primary} />
+        <Text style={[styles.triggerText, { color: colors.text }, compact && styles.compactTriggerText]}>
+          {currentLang?.nativeLabel ?? 'English'}
+        </Text>
+        <Ionicons name="chevron-down" size={compact ? 10 : 12} color={colors.textMuted} />
       </Pressable>
 
       {visible && (
@@ -107,8 +121,18 @@ const styles = StyleSheet.create({
     paddingVertical: 8,
     gap: 6,
   },
+  compactTrigger: {
+    paddingHorizontal: 8,
+    paddingVertical: 5,
+    borderRadius: 8,
+    gap: 4,
+  },
   triggerText: {
     fontSize: 14,
+    fontWeight: '600',
+  },
+  compactTriggerText: {
+    fontSize: 12,
     fontWeight: '600',
   },
   overlay: {

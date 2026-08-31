@@ -618,7 +618,7 @@ export function resolvePinCode(pinCode: string): PinCodeResolution | null {
     pinCode: cleanPin,
     stateCode,
     stateName,
-    districtName: selectedAc?.district || targetDistrict || stateName,
+    districtName: targetDistrict || selectedAc?.district || stateName,
     region,
     nearestAcNo: selectedAc?.acNo ?? 1,
     nearestAcName: selectedAc?.name ?? `${targetDistrict || stateName} Constituency`,

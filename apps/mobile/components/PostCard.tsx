@@ -8,6 +8,11 @@ import { REACTION_CONFIG } from '../lib/feedTypes';
 import ContentGateActions from './ContentGateActions';
 import PostActionSheet from './PostActionSheet';
 import ReportSheet from './ReportSheet';
+import {
+  getLocalizedPost,
+  getLocalizedHashtag,
+  formatLocalizedTimeAgo,
+} from '../lib/seedTranslations';
 
 const TYPE_CONFIG: Record<string, { icon: string; color: string; tKey: string }> = {
   discussion: { icon: 'chatbubbles', color: '#145C68', tKey: 'postCard.discussion' },
@@ -17,20 +22,6 @@ const TYPE_CONFIG: Record<string, { icon: string; color: string; tKey: string }>
   alert: { icon: 'alert-circle', color: '#C0392B', tKey: 'postCard.alert' },
   poll: { icon: 'stats-chart', color: '#C5A059', tKey: 'postCard.poll' },
 };
-
-function timeAgo(dateStr: string): string {
-  const now = Date.now();
-  const then = new Date(dateStr).getTime();
-  const diffMs = now - then;
-  const mins = Math.floor(diffMs / 60000);
-  if (mins < 1) return 'just now';
-  if (mins < 60) return `${mins}m`;
-  const hours = Math.floor(mins / 60);
-  if (hours < 24) return `${hours}h`;
-  const days = Math.floor(hours / 24);
-  if (days < 7) return `${days}d`;
-  return new Date(dateStr).toLocaleDateString('en-IN', { month: 'short', day: 'numeric' });
-}
 
 interface PostCardProps {
   post: Post;
@@ -57,13 +48,14 @@ export default function PostCard({
   isOwner = false,
   compact = false,
 }: PostCardProps) {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const { colors } = useTheme();
   const [actionSheetVisible, setActionSheetVisible] = useState(false);
   const [reportSheetVisible, setReportSheetVisible] = useState(false);
 
-  const typeInfo = TYPE_CONFIG[post.type] ?? TYPE_CONFIG.discussion;
-  const userReaction = post.userReaction;
+  const displayPost = getLocalizedPost(post, i18n.language);
+  const typeInfo = TYPE_CONFIG[displayPost.type] ?? TYPE_CONFIG.discussion;
+  const userReaction = displayPost.userReaction;
   const reactionMeta = userReaction ? REACTION_CONFIG[userReaction] : null;
 
   return (
@@ -88,35 +80,35 @@ export default function PostCard({
         <View style={styles.header}>
           <View style={[styles.avatar, { backgroundColor: colors.primaryLight }]}>
             <Text style={[styles.avatarText, { color: colors.primary }]}>
-              {(post.author.displayName || 'A').charAt(0).toUpperCase()}
+              {(displayPost.author.displayName || 'A').charAt(0).toUpperCase()}
             </Text>
           </View>
           <View style={styles.headerInfo}>
             <View style={styles.nameRow}>
               <Text style={[styles.authorName, { color: colors.text }]} numberOfLines={1}>
-                {post.author.displayName}
+                {displayPost.author.displayName}
               </Text>
-              {post.author.isVerified && (
+              {displayPost.author.isVerified && (
                 <Ionicons name="checkmark-circle" size={14} color="#10B981" />
               )}
             </View>
             <View style={styles.metaRow}>
               <Text style={[styles.timeText, { color: colors.textMuted }]}>
-                {timeAgo(post.createdAt)}
+                {formatLocalizedTimeAgo(displayPost.createdAt, t)}
               </Text>
-              {post.constituencyName && (
+              {displayPost.constituencyName && (
                 <>
                   <Text style={[styles.metaDot, { color: colors.textMuted }]}>·</Text>
                   <Text style={[styles.constituencyText, { color: colors.primary }]} numberOfLines={1}>
-                    {post.constituencyName}
+                    {displayPost.constituencyName}
                   </Text>
                 </>
               )}
-              {post.language && post.language !== 'en' && (
+              {displayPost.language && displayPost.language !== 'en' && (
                 <>
                   <Text style={[styles.metaDot, { color: colors.textMuted }]}>·</Text>
                   <Text style={[styles.langBadge, { color: colors.gold || colors.primary }]}>
-                    {post.language.toUpperCase()}
+                    {displayPost.language.toUpperCase()}
                   </Text>
                 </>
               )}
@@ -127,7 +119,7 @@ export default function PostCard({
             <View style={[styles.typeBadge, { backgroundColor: typeInfo.color + '18' }]}>
               <Ionicons name={typeInfo.icon as any} size={11} color={typeInfo.color} />
               <Text style={[styles.typeLabel, { color: typeInfo.color }]}>
-                {t(typeInfo.tKey, post.type)}
+                {t(typeInfo.tKey, displayPost.type)}
               </Text>
             </View>
             <Pressable
@@ -145,20 +137,20 @@ export default function PostCard({
           style={[styles.content, { color: colors.text }]}
           numberOfLines={compact ? 3 : undefined}
         >
-          {post.content}
+          {displayPost.content}
         </Text>
 
         {/* Hashtags (Clickable) */}
-        {post.hashtags && post.hashtags.length > 0 && (
+        {displayPost.hashtags && displayPost.hashtags.length > 0 && (
           <View style={styles.hashtagRow}>
-            {post.hashtags.map((tag) => (
+            {displayPost.hashtags.map((tag) => (
               <Pressable
                 key={tag}
                 onPress={() => onTagPress?.(tag)}
                 hitSlop={4}
               >
                 <Text style={[styles.hashtag, { color: colors.primary }]}>
-                  #{tag}
+                  #{getLocalizedHashtag(tag, i18n.language)}
                 </Text>
               </Pressable>
             ))}

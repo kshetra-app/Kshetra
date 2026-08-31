@@ -22,6 +22,12 @@ import type { Post, Comment } from '../lib/feedTypes';
 import PollCard from './PollCard';
 import ContentGateActions from './ContentGateActions';
 import ReportSheet from './ReportSheet';
+import {
+  getLocalizedPost,
+  getLocalizedComments,
+  getLocalizedHashtag,
+  formatLocalizedTimeAgo,
+} from '../lib/seedTranslations';
 
 interface PostDetailModalProps {
   visible: boolean;
@@ -29,20 +35,6 @@ interface PostDetailModalProps {
   autoFocusReply?: boolean;
   onClose: () => void;
   onEditPost?: (post: Post) => void;
-}
-
-function timeAgo(dateStr: string): string {
-  const now = Date.now();
-  const then = new Date(dateStr).getTime();
-  const diffMs = now - then;
-  const mins = Math.floor(diffMs / 60000);
-  if (mins < 1) return 'just now';
-  if (mins < 60) return `${mins}m`;
-  const hours = Math.floor(mins / 60);
-  if (hours < 24) return `${hours}h`;
-  const days = Math.floor(hours / 24);
-  if (days < 7) return `${days}d`;
-  return new Date(dateStr).toLocaleDateString('en-IN', { month: 'short', day: 'numeric' });
 }
 
 export default function PostDetailModal({
@@ -58,18 +50,20 @@ export default function PostDetailModal({
   const [reportVisible, setReportVisible] = useState(false);
   const inputRef = useRef<TextInput>(null);
 
-  const user = useAuthStore((s) => s.user);
-  const userId = user?.id ?? 'anon';
-
-  const commentsMap = useFeedStore((s) => s.comments);
+  const rawComments = useFeedStore((s) => (post ? s.comments[post.id] ?? [] : []));
   const addComment = useFeedStore((s) => s.addComment);
   const deleteComment = useFeedStore((s) => s.deleteComment);
   const toggleCommentReaction = useFeedStore((s) => s.toggleCommentReaction);
   const toggleReaction = useFeedStore((s) => s.toggleReaction);
   const votePoll = useFeedStore((s) => s.votePoll);
   const deletePost = useFeedStore((s) => s.deletePost);
-
-  const comments: Comment[] = post ? (commentsMap[post.id] ?? []).filter((c) => !c.isDeleted) : [];
+  const user = useAuthStore((s) => s.user);
+  const userId = user?.id ?? 'anon';
+  const displayPost = post ? getLocalizedPost(post, i18n.language) : null;
+  const comments = getLocalizedComments(
+    rawComments.filter((c) => !c.isDeleted),
+    i18n.language,
+  );
 
   useEffect(() => {
     if (visible && autoFocusReply) {
@@ -147,7 +141,7 @@ export default function PostDetailModal({
     [post, deleteComment, t],
   );
 
-  if (!post) return null;
+  if (!post || !displayPost) return null;
 
   const isOwner = post.author.id === userId;
   const isPostReacted = !!post.userReaction;
@@ -215,51 +209,51 @@ export default function PostDetailModal({
               <View style={styles.authorRow}>
                 <View style={[styles.avatar, { backgroundColor: colors.primaryLight }]}>
                   <Text style={[styles.avatarText, { color: colors.primary }]}>
-                    {(post.author.displayName || 'A').charAt(0).toUpperCase()}
+                    {(displayPost.author.displayName || 'A').charAt(0).toUpperCase()}
                   </Text>
                 </View>
                 <View style={styles.authorInfo}>
                   <View style={styles.authorNameRow}>
                     <Text style={[styles.authorName, { color: colors.text }]}>
-                      {post.author.displayName}
+                      {displayPost.author.displayName}
                     </Text>
-                    {post.author.isVerified && (
+                    {displayPost.author.isVerified && (
                       <Ionicons name="checkmark-circle" size={15} color="#10B981" />
                     )}
                   </View>
                   <Text style={[styles.postMeta, { color: colors.textMuted }]}>
-                    {timeAgo(post.createdAt)}
-                    {post.constituencyName ? ` · ${post.constituencyName}` : ''}
-                    {post.stateCode ? ` (${post.stateCode})` : ''}
+                    {formatLocalizedTimeAgo(displayPost.createdAt, t)}
+                    {displayPost.constituencyName ? ` · ${displayPost.constituencyName}` : ''}
+                    {displayPost.stateCode ? ` (${displayPost.stateCode})` : ''}
                   </Text>
                 </View>
                 <View style={[styles.typePill, { backgroundColor: colors.primaryLight }]}>
                   <Text style={[styles.typePillText, { color: colors.primary }]}>
-                    {post.type.toUpperCase()}
+                    {t('feed.filters.' + displayPost.type, displayPost.type).toUpperCase()}
                   </Text>
                 </View>
               </View>
 
               {/* Main Content */}
-              <Text style={[styles.postText, { color: colors.text }]}>{post.content}</Text>
+              <Text style={[styles.postText, { color: colors.text }]}>{displayPost.content}</Text>
 
               {/* Hashtags */}
-              {post.hashtags && post.hashtags.length > 0 && (
+              {displayPost.hashtags && displayPost.hashtags.length > 0 && (
                 <View style={styles.hashtagRow}>
-                  {post.hashtags.map((tag) => (
+                  {displayPost.hashtags.map((tag) => (
                     <Text key={tag} style={[styles.hashtag, { color: colors.primary }]}>
-                      #{tag}
+                      #{getLocalizedHashtag(tag, i18n.language)}
                     </Text>
                   ))}
                 </View>
               )}
 
               {/* Poll Card if present */}
-              {post.poll && (
+              {displayPost.poll && (
                 <View style={styles.pollWrapper}>
                   <PollCard
-                    poll={post.poll}
-                    onVote={(optId) => votePoll(post.id, optId)}
+                    poll={displayPost.poll}
+                    onVote={(optId) => votePoll(displayPost.id, optId)}
                   />
                 </View>
               )}
@@ -337,7 +331,7 @@ export default function PostDetailModal({
                       )}
                     </View>
                     <Text style={[styles.commentTime, { color: colors.textMuted }]}>
-                      {timeAgo(item.createdAt)}
+                      {formatLocalizedTimeAgo(item.createdAt, t)}
                     </Text>
                   </View>
 

@@ -24,6 +24,12 @@ import TrendingHashtags from '../../components/TrendingHashtags';
 import PostDetailModal from '../../components/PostDetailModal';
 import ConstituencySelectorSheet from '../../components/ConstituencySelectorSheet';
 import StateSwitcher from '../../components/StateSwitcher';
+import LanguageSwitcher from '../../components/LanguageSwitcher';
+import {
+  getLocalizedPosts,
+  getLocalizedStateName,
+  getLocalizedHashtag,
+} from '../../lib/seedTranslations';
 import type { Post, PostType, FeedScope, SortOrder } from '../../lib/feedTypes';
 import { useTranslation } from 'react-i18next';
 import { STATES } from '@kshetra/shared';
@@ -54,7 +60,7 @@ const SORT_OPTIONS: { key: SortOrder; icon: string; tKey: string }[] = [
 ];
 
 export default function FeedScreen() {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const { colors } = useTheme();
   const [composeVisible, setComposeVisible] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
@@ -94,7 +100,8 @@ export default function FeedScreen() {
   const userId = user?.id ?? 'anon';
 
   const stateCode = useActiveStateStore((s) => s.stateCode);
-  const stateName = (STATES as Record<string, { name: string }>)[stateCode]?.name ?? stateCode;
+  const rawStateName = (STATES as Record<string, { name: string }>)[stateCode]?.name ?? stateCode;
+  const stateName = getLocalizedStateName(stateCode, i18n.language, rawStateName);
   const myHome = useMyConstituencyStore((s) => s.home);
 
   const effectiveConstituencyId = selectedConstituency
@@ -180,7 +187,7 @@ export default function FeedScreen() {
     }
 
     // 6. Sorting
-    return filtered.sort((a, b) => {
+    const sorted = filtered.sort((a, b) => {
       // Pinned posts always remain at the top
       if (a.isPinned && !b.isPinned) return -1;
       if (!a.isPinned && b.isPinned) return 1;
@@ -199,6 +206,8 @@ export default function FeedScreen() {
       // Default: latest timestamp
       return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
     });
+
+    return getLocalizedPosts(sorted, i18n.language);
   }, [
     allPosts,
     scopeFilter,
@@ -210,6 +219,7 @@ export default function FeedScreen() {
     searchQuery,
     sortBy,
     getContentVisibilityLevel,
+    i18n.language,
   ]);
 
   // Scope label in header
@@ -306,6 +316,7 @@ export default function FeedScreen() {
 
         <View style={styles.headerRight}>
           <StateSwitcher />
+          <LanguageSwitcher compact />
           <Pressable
             style={[
               styles.headerIconButton,

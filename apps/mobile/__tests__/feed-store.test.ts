@@ -213,4 +213,55 @@ describe('Mobile Feed Store', () => {
     expect(addedComment).toBeDefined();
     expect(addedComment?.author.displayName).toBe('Anil Kumar');
   });
+
+  describe('seedTranslations (Screen-wide Multi-language Localization)', () => {
+    it('localizes seed posts, authors, and polls to Telugu', () => {
+      const { getLocalizedPost, getLocalizedStateName } = require('../lib/seedTranslations');
+      const seedPost = useFeedStore.getState().posts.find((p) => p.id === 'seed-ts-1');
+      expect(seedPost).toBeDefined();
+
+      const teluguPost = getLocalizedPost(seedPost, 'te');
+      expect(teluguPost.author.displayName).toBe('తెలంగాణ రాష్ట్ర ఎన్నికల సంఘం');
+      expect(teluguPost.content).toContain('అసెంబ్లీ');
+
+      // Test poll post
+      const pollPost = useFeedStore.getState().posts.find((p) => p.id === 'seed-ts-4');
+      expect(pollPost).toBeDefined();
+      const teluguPollPost = getLocalizedPost(pollPost, 'te');
+      expect(teluguPollPost.poll).toBeDefined();
+      expect(teluguPollPost.poll?.question).toContain('నియోజకవర్గాల్లో');
+
+      // State name translation
+      expect(getLocalizedStateName('TS', 'te')).toBe('తెలంగాణ');
+      expect(getLocalizedStateName('IN', 'te')).toBe('భారతదేశం');
+    });
+
+    it('localizes seed posts and authors to Hindi', () => {
+      const { getLocalizedPost, getLocalizedStateName } = require('../lib/seedTranslations');
+      const seedPost = useFeedStore.getState().posts.find((p) => p.id === 'seed-ts-1');
+      expect(seedPost).toBeDefined();
+
+      const hindiPost = getLocalizedPost(seedPost, 'hi');
+      expect(hindiPost.author.displayName).toBe('तेलंगाना राज्य चुनाव प्राधिकरण');
+      expect(hindiPost.content).toContain('मतदाता');
+
+      const pollPost = useFeedStore.getState().posts.find((p) => p.id === 'seed-ts-4');
+      const hindiPollPost = getLocalizedPost(pollPost, 'hi');
+      expect(hindiPollPost.poll?.question).toContain('निर्वाचन क्षेत्रों');
+
+      expect(getLocalizedStateName('TS', 'hi')).toBe('तेलंगाना');
+      expect(getLocalizedStateName('IN', 'hi')).toBe('भारत');
+    });
+
+    it('localizes seed comments to chosen language', () => {
+      const { getLocalizedComments } = require('../lib/seedTranslations');
+      const comments = useFeedStore.getState().comments['seed-ts-1'] ?? [];
+      expect(comments.length).toBeGreaterThan(0);
+
+      const teluguComments = getLocalizedComments(comments, 'te');
+      expect(teluguComments[0].content).toBeDefined();
+      expect(teluguComments[0].author.displayName).toBe('కవిత ఆర్');
+    });
+  });
 });
+

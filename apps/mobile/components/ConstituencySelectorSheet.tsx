@@ -16,6 +16,7 @@ import { useTheme } from '../lib/theme';
 import { getConstituenciesForState } from '../lib/stateDataAdapter';
 import { useMyConstituencyStore } from '../stores/myConstituency';
 import type { ConstituencyBrief } from '@kshetra/shared';
+import { getLocalizedStateName } from '../lib/seedTranslations';
 
 interface ConstituencySelectorSheetProps {
   visible: boolean;
@@ -34,7 +35,7 @@ export default function ConstituencySelectorSheet({
   onClose,
   onSelect,
 }: ConstituencySelectorSheetProps) {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const { colors } = useTheme();
   const [search, setSearch] = useState('');
   const home = useMyConstituencyStore((s) => s.home);
@@ -106,7 +107,7 @@ export default function ConstituencySelectorSheet({
         {/* Subheader info */}
         <View style={styles.stateBanner}>
           <Text style={[styles.stateBannerText, { color: colors.textSecondary }]}>
-            {stateName} · {constituencies.length} {t('stateSwitcher.constituencies')}
+            {getLocalizedStateName(stateCode, i18n.language, stateName)} · {constituencies.length} {t('stateSwitcher.constituencies')}
           </Text>
         </View>
 

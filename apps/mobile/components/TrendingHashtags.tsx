@@ -6,6 +6,7 @@ import { STATES } from '@kshetra/shared';
 import { useActiveStateStore } from '../stores/activeState';
 import type { Post, TrendingHashtag } from '../lib/feedTypes';
 import { useTheme } from '../lib/theme';
+import { getLocalizedStateName, getLocalizedHashtag } from '../lib/seedTranslations';
 
 interface TrendingHashtagsProps {
   posts: Post[];
@@ -22,10 +23,11 @@ export default function TrendingHashtags({
   onClearTag,
   maxTags = 10,
 }: TrendingHashtagsProps) {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const { colors } = useTheme();
   const stateCode = useActiveStateStore((s) => s.stateCode);
-  const stateName = (STATES as Record<string, { name: string }>)[stateCode]?.name ?? stateCode;
+  const rawStateName = (STATES as Record<string, { name: string }>)[stateCode]?.name ?? stateCode;
+  const stateName = getLocalizedStateName(stateCode, i18n.language, rawStateName);
 
   const trending = useMemo((): TrendingHashtag[] => {
     const counts = new Map<string, number>();
@@ -102,7 +104,7 @@ export default function TrendingHashtags({
                     isActive && { color: '#FFFFFF' },
                   ]}
                 >
-                  #{item.tag}
+                  #{getLocalizedHashtag(item.tag, i18n.language)}
                 </Text>
                 <Text
                   style={[
@@ -111,7 +113,7 @@ export default function TrendingHashtags({
                     isActive && { color: '#FFFFFF99' },
                   ]}
                 >
-                  {item.postCount} {t('common.posts', 'posts')}
+                  {item.postCount} {item.postCount !== 1 ? t('common.posts') : t('common.post')}
                 </Text>
               </View>
             </Pressable>
