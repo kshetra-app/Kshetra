@@ -1,4 +1,5 @@
 import type { Post, Comment } from './feedTypes';
+import { STATE_TRANSLATIONS } from './stateTranslations';
 
 /**
  * Multi-Language Translation Engine for Seed Content, Posts, Comments, Polls, and UI Metadata.
@@ -1805,10 +1806,15 @@ export function getLocalizedStateName(
   language: string,
   fallback = stateCode,
 ): string {
+  const code = (stateCode || '').toUpperCase();
   if (!language || language === 'en') {
-    return STATE_NAME_LOCALES[stateCode]?.en ?? fallback;
+    return STATE_TRANSLATIONS[code]?.en ?? STATE_NAME_LOCALES[code]?.en ?? fallback;
   }
-  return STATE_NAME_LOCALES[stateCode]?.[language] ?? STATE_NAME_LOCALES[stateCode]?.en ?? fallback;
+  return STATE_TRANSLATIONS[code]?.[language]
+    ?? STATE_NAME_LOCALES[code]?.[language]
+    ?? STATE_TRANSLATIONS[code]?.en
+    ?? STATE_NAME_LOCALES[code]?.en
+    ?? fallback;
 }
 
 /**

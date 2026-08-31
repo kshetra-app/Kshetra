@@ -305,10 +305,12 @@ export default function FeedScreen() {
       {/* Header */}
       <View style={[styles.header, { paddingTop: insets.top + 8, borderBottomColor: colors.border }]}>
         <View style={styles.headerLeft}>
-          <Text style={[styles.headerTitle, { color: colors.text }]}>{t('feed.title')}</Text>
+          <Text style={[styles.headerTitle, { color: colors.text }]} numberOfLines={1}>
+            {t('feed.title')}
+          </Text>
           <View style={styles.scopeIndicator}>
             <Ionicons name="funnel" size={10} color={colors.textMuted} />
-            <Text style={[styles.scopeIndicatorText, { color: colors.textMuted }]}>
+            <Text style={[styles.scopeIndicatorText, { color: colors.textMuted }]} numberOfLines={1}>
               {scopeLabel} · {posts.length} {posts.length !== 1 ? t('common.posts') : t('common.post')}
             </Text>
           </View>
@@ -316,7 +318,6 @@ export default function FeedScreen() {
 
         <View style={styles.headerRight}>
           <StateSwitcher />
-          <LanguageSwitcher compact />
           <Pressable
             style={[
               styles.headerIconButton,
@@ -700,15 +701,19 @@ const styles = StyleSheet.create({
   },
   headerLeft: {
     flex: 1,
+    marginRight: 8,
+    justifyContent: 'center',
   },
   headerRight: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: 8,
+    flexShrink: 0,
   },
   headerTitle: {
-    fontSize: 22,
+    fontSize: 20,
     fontWeight: '800',
+    letterSpacing: -0.2,
   },
   scopeIndicator: {
     flexDirection: 'row',

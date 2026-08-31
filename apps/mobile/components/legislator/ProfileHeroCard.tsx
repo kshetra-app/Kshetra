@@ -5,6 +5,15 @@ import { getPartyColor } from '../../lib/constants';
 import { moderateScale as ms } from '../../lib/responsive';
 import { useTheme } from '../../lib/theme';
 
+import { useTranslation } from 'react-i18next';
+import {
+  getLocalizedPartyName,
+  getLocalizedStateName,
+  getLocalizedDistrictName,
+  getLocalizedRole,
+  getLocalizedReservation,
+} from '../../lib/stateTranslations';
+
 interface Props {
   fullName: string;
   displayName: string;
@@ -46,6 +55,7 @@ export default function ProfileHeroCard({
   onPhotoPress,
   onSharePress,
 }: Props) {
+  const { t, i18n } = useTranslation();
   const { colors } = useTheme();
   const partyColor = getPartyColor(party);
   // Known legislator houses map to short labels; any other value (e.g. a
@@ -57,8 +67,12 @@ export default function ProfileHeroCard({
     rajya_sabha: 'MP (RS)',
     state_council: 'MLC',
   };
-  const houseLabel = LEGISLATOR_HOUSE_LABELS[house] ?? house;
+  const rawHouseLabel = LEGISLATOR_HOUSE_LABELS[house] ?? house;
+  const houseLabel = getLocalizedRole(rawHouseLabel, i18n.language) || rawHouseLabel;
   const genderIcon = gender === 'female' ? 'woman' : 'man';
+  const localizedParty = getLocalizedPartyName(party, i18n.language) || party;
+  const localizedDistrict = getLocalizedDistrictName(district, i18n.language) || district;
+  const localizedState = getLocalizedStateName(stateCode, i18n.language) || stateCode;
 
   return (
     <View style={[styles.container, { backgroundColor: colors.surface, borderColor: colors.goldBorder || colors.border }]}>
@@ -95,14 +109,14 @@ export default function ProfileHeroCard({
         {/* Badges Row */}
         <View style={styles.badgeRow}>
           <View style={[styles.badge, { backgroundColor: partyColor + '20', borderColor: partyColor + '50' }]}>
-            <Text style={[styles.badgeText, { color: partyColor }]}>{party}</Text>
+            <Text style={[styles.badgeText, { color: partyColor }]}>{localizedParty}</Text>
           </View>
           <View style={[styles.badge, { backgroundColor: colors.surfaceElevated, borderColor: colors.goldBorder || colors.border }]}>
             <Text style={[styles.houseBadgeText, { color: colors.textSecondary }]}>{houseLabel}</Text>
           </View>
           {reservationType && reservationType !== 'general' && (
             <View style={[styles.badge, styles.resBadge]}>
-              <Text style={styles.resBadgeText}>{reservationType.toUpperCase()}</Text>
+              <Text style={styles.resBadgeText}>{getLocalizedReservation(reservationType, i18n.language)}</Text>
             </View>
           )}
           {isChiefMinister && (
@@ -114,7 +128,7 @@ export default function ProfileHeroCard({
           {isCabinetMinister && !isChiefMinister && (
             <View style={[styles.badge, styles.minBadge]}>
               <Ionicons name="briefcase" size={10} color={colors.primary} />
-              <Text style={[styles.minBadgeText, { color: colors.primary }]}>Minister</Text>
+              <Text style={[styles.minBadgeText, { color: colors.primary }]}>{t('common.minister', { defaultValue: 'Minister' })}</Text>
             </View>
           )}
         </View>
@@ -122,29 +136,29 @@ export default function ProfileHeroCard({
         {/* Constituency */}
         <View style={styles.constituencyRow}>
           <Ionicons name="location" size={14} color={colors.primary} />
-          <Text style={[styles.constituencyText, { color: colors.textSecondary }]}>{constituency}, {district}</Text>
+          <Text style={[styles.constituencyText, { color: colors.textSecondary }]}>{constituency}, {localizedDistrict}</Text>
         </View>
 
         {/* Quick Stats */}
         <View style={[styles.statsRow, { backgroundColor: colors.surfaceElevated, borderColor: colors.goldBorder || colors.border, borderWidth: 1 }]}>
           <View style={styles.stat}>
             <Text style={[styles.statValue, { color: colors.text }]}>{age ?? '—'}</Text>
-            <Text style={[styles.statLabel, { color: colors.textMuted }]}>Age</Text>
+            <Text style={[styles.statLabel, { color: colors.textMuted }]}>{t('mla.age')}</Text>
           </View>
           <View style={[styles.statDivider, { backgroundColor: colors.border }]} />
           <View style={styles.stat}>
             <Text style={[styles.statValue, { color: colors.text }]}>{termsServed}</Text>
-            <Text style={[styles.statLabel, { color: colors.textMuted }]}>{termsServed === 1 ? 'Term' : 'Terms'}</Text>
+            <Text style={[styles.statLabel, { color: colors.textMuted }]}>{termsServed === 1 ? t('mla.term_1') : t('mla.term_n', { n: termsServed })}</Text>
           </View>
           <View style={[styles.statDivider, { backgroundColor: colors.border }]} />
           <View style={styles.stat}>
             <Ionicons name={genderIcon as any} size={16} color={colors.primary} />
-            <Text style={[styles.statLabel, { color: colors.textMuted }]}>{gender === 'female' ? 'Female' : 'Male'}</Text>
+            <Text style={[styles.statLabel, { color: colors.textMuted }]}>{gender === 'female' ? t('mla.female') : t('mla.male')}</Text>
           </View>
           <View style={[styles.statDivider, { backgroundColor: colors.border }]} />
           <View style={styles.stat}>
-            <Text style={[styles.statValue, { color: colors.text }]}>{stateCode}</Text>
-            <Text style={[styles.statLabel, { color: colors.textMuted }]}>State</Text>
+            <Text style={[styles.statValue, { color: colors.text }]}>{localizedState}</Text>
+            <Text style={[styles.statLabel, { color: colors.textMuted }]}>{t('common.state', { defaultValue: 'State' })}</Text>
           </View>
         </View>
       </View>

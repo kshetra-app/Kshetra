@@ -41,10 +41,17 @@ import HeadlineCard from '../../components/HeadlineCard';
 import PoliticalTimelineCard from '../../components/PoliticalTimelineCard';
 import { ConstituencyCardSkeleton, TextSkeleton } from '../../components/SkeletonLoaders';
 import { useTheme } from '../../lib/theme';
+import {
+  getLocalizedStateName,
+  getLocalizedDistrictName,
+  getLocalizedPartyName,
+  getLocalizedReservation,
+  getLocalizedConstituencyName,
+} from '../../lib/stateTranslations';
 
 
 export default function ConstituencyDetailScreen() {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const { colors } = useTheme();
   const router = useRouter();
   const { id } = useLocalSearchParams<{ id: string }>();
@@ -85,6 +92,22 @@ export default function ConstituencyDetailScreen() {
     () => stateConstituencies.find((c) => c.acNo === acNo) ?? null,
     [stateConstituencies, acNo],
   );
+
+  const localizedConstName = constituency
+    ? getLocalizedConstituencyName(constituency.acNo, stateCode, constituency.name, i18n.language, constituency.localName)
+    : '';
+  const localizedDistrict = constituency
+    ? getLocalizedDistrictName(constituency.district, i18n.language) || constituency.district
+    : '';
+  const localizedReservation = constituency
+    ? getLocalizedReservation(constituency.type, i18n.language) || constituency.type
+    : '';
+  const localizedWinnerParty = constituency
+    ? getLocalizedPartyName(constituency.winnerParty, i18n.language) || constituency.winnerParty
+    : '';
+  const localizedRunnerUp = constituency
+    ? getLocalizedPartyName(constituency.runnerUp, i18n.language) || constituency.runnerUp
+    : '';
 
   const [activeTab, setActiveTab] = useState<ConstituencyTab>('overview');
   const [photoViewer, setPhotoViewer] = useState<{ uri: string | null; name: string; party: string } | null>(null);
@@ -199,11 +222,11 @@ export default function ConstituencyDetailScreen() {
         {/* Hero */}
         <View style={[styles.hero, { borderBottomColor: colors.border }]}>
           <Text style={[styles.acNumber, { color: colors.textMuted }]}>AC #{constituency.acNo}</Text>
-          <Text style={[styles.name, { color: colors.text }]}>{constituency.name}</Text>
-          <Text style={[styles.district, { color: colors.textSecondary }]}>{constituency.district} {t('constituency.districtLabel')}</Text>
+          <Text style={[styles.name, { color: colors.text }]}>{localizedConstName || constituency.name}</Text>
+          <Text style={[styles.district, { color: colors.textSecondary }]}>{localizedDistrict} {t('constituency.districtLabel')}</Text>
           <View style={styles.heroActions}>
             <View style={[styles.typeBadge, { backgroundColor: colors.surfaceElevated, borderColor: colors.goldBorder || colors.border, borderWidth: 1 }]}>
-              <Text style={[styles.typeBadgeText, { color: colors.textSecondary }]}>{constituency.type}</Text>
+              <Text style={[styles.typeBadgeText, { color: colors.textSecondary }]}>{localizedReservation}</Text>
             </View>
             <View style={styles.heroButtons}>
               <Pressable
@@ -312,7 +335,7 @@ export default function ConstituencyDetailScreen() {
                 />
                 <View>
                   <Text style={styles.resultParty}>
-                    {constituency.winnerParty}
+                    {localizedWinnerParty}
                   </Text>
                   <Text style={styles.resultCandidate}>
                     {constituency.winnerName}
@@ -338,7 +361,7 @@ export default function ConstituencyDetailScreen() {
               </View>
               <View style={styles.statItem}>
                 <Text style={styles.statValue}>
-                  {constituency.runnerUp}
+                  {localizedRunnerUp}
                 </Text>
                 <Text style={styles.statLabel}>{t('constituency.runnerUp')}</Text>
               </View>

@@ -17,12 +17,18 @@ function formatINR(amount: number): string {
   return `₹${amount.toLocaleString('en-IN')}`;
 }
 
+import {
+  getLocalizedPartyName,
+  getLocalizedConstituencyName,
+  getLocalizedDetail,
+} from '../lib/stateTranslations';
+
 interface MLACardProps {
   profile: MLAProfile;
 }
 
 export default function MLACard({ profile }: MLACardProps) {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const { colors } = useTheme();
   const partyColor = getPartyColor(profile.party);
 
@@ -30,6 +36,11 @@ export default function MLACard({ profile }: MLACardProps) {
     : profile.terms === 2 ? t('mla.term_2')
     : profile.terms === 3 ? t('mla.term_3')
     : t('mla.term_n', { n: profile.terms });
+
+  const localizedParty = getLocalizedPartyName(profile.party, i18n.language) || profile.party;
+  const localizedConstName = profile.constituencyName
+    ? getLocalizedConstituencyName(profile.acNo, 'TS', profile.constituencyName, i18n.language)
+    : '';
 
   return (
     <View style={[styles.card, { backgroundColor: colors.surface, borderColor: colors.goldBorder || colors.border }]}>
@@ -43,12 +54,14 @@ export default function MLACard({ profile }: MLACardProps) {
         />
         <View style={styles.headerInfo}>
           <Text style={[styles.name, { color: colors.text }]}>{profile.name}</Text>
-          {profile.constituencyName && (
-            <Text style={[styles.constituencyLabel, { color: colors.textMuted }]}>AC #{profile.acNo} · {profile.constituencyName}</Text>
-          )}
+          {localizedConstName ? (
+            <Text style={[styles.constituencyLabel, { color: colors.textMuted }]}>
+              AC #{profile.acNo} · {localizedConstName}
+            </Text>
+          ) : null}
           <View style={styles.partyRow}>
             <View style={[styles.partyBadge, { backgroundColor: partyColor }]}>
-              <Text style={styles.partyText}>{profile.party}</Text>
+              <Text style={styles.partyText}>{localizedParty}</Text>
             </View>
             {profile.age && (
               <Text style={[styles.metaText, { color: colors.textSecondary }]}>{t('mla.age')} {profile.age}</Text>
@@ -57,7 +70,9 @@ export default function MLACard({ profile }: MLACardProps) {
               {profile.gender === 'F' ? t('mla.female') : t('mla.male')}
             </Text>
             {profile.maritalStatus && (
-              <Text style={[styles.metaText, { color: colors.textSecondary }]}>· {profile.maritalStatus}</Text>
+              <Text style={[styles.metaText, { color: colors.textSecondary }]}>
+                · {getLocalizedDetail(profile.maritalStatus, i18n.language)}
+              </Text>
             )}
           </View>
         </View>
@@ -69,19 +84,25 @@ export default function MLACard({ profile }: MLACardProps) {
           {profile.education && (
             <View style={styles.detailItem}>
               <Ionicons name="school" size={13} color={colors.primary} />
-              <Text style={[styles.detailText, { color: colors.textSecondary }]}>{profile.education}</Text>
+              <Text style={[styles.detailText, { color: colors.textSecondary }]}>
+                {getLocalizedDetail(profile.education, i18n.language)}
+              </Text>
             </View>
           )}
           {profile.profession && (
             <View style={styles.detailItem}>
               <Ionicons name="briefcase" size={13} color={colors.textMuted} />
-              <Text style={[styles.detailText, { color: colors.textSecondary }]}>{profile.profession}</Text>
+              <Text style={[styles.detailText, { color: colors.textSecondary }]}>
+                {getLocalizedDetail(profile.profession, i18n.language)}
+              </Text>
             </View>
           )}
           {profile.dob && (
             <View style={styles.detailItem}>
               <Ionicons name="calendar" size={13} color={colors.gold} />
-              <Text style={[styles.detailText, { color: colors.textSecondary }]}>DOB: {profile.dob}</Text>
+              <Text style={[styles.detailText, { color: colors.textSecondary }]}>
+                {t('mla.dob', { defaultValue: 'DOB' })}: {profile.dob}
+              </Text>
             </View>
           )}
         </View>

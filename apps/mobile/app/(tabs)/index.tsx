@@ -42,6 +42,7 @@ import {
   getExtrusionHeightExpression,
 } from '../../lib/mapFillColors';
 import StateSwitcher from '../../components/StateSwitcher';
+import LanguageSwitcher from '../../components/LanguageSwitcher';
 import MapLegend from '../../components/MapLegend';
 import MapFallback from '../../components/MapFallback';
 import TriviaCard from '../../components/TriviaCard';
@@ -66,7 +67,13 @@ import { computeAllSeatAllocations } from '../../lib/delimitation/seatCalculator
 import { styles } from '../../lib/mapScreenStyles';
 import MapTimeSlider from '../../components/MapTimeSlider';
 import { tapLight, selectionChanged } from '../../lib/haptics';
-import { getLocalizedStateName, getLocalizedDistrictName } from '../../lib/stateTranslations';
+import {
+  getLocalizedStateName,
+  getLocalizedDistrictName,
+  getLocalizedPartyName,
+  getLocalizedReservation,
+  getLocalizedConstituencyName,
+} from '../../lib/stateTranslations';
 import { getBoothsForConstituency, hasHierarchyData, hasBoothData } from '../../lib/hierarchyData';
 import { useHasRepresentativeData } from '../../lib/representativesData';
 
@@ -80,6 +87,7 @@ interface SelectedConstituency {
   margin: number;
   votes: number;
   type: string;
+  localName?: string;
   currentParty?: string;
   electionYear: number;
 }
@@ -258,18 +266,15 @@ function FullMapScreen() {
           const code = props.STATE_CODE;
           if (code) {
             const localized = getLocalizedStateName(code, lang);
-            if (localized) {
-              props.STATE_NAME = localized;
-            }
+            props.STATE_NAME_EN = props.STATE_NAME;
+            props.STATE_NAME_LOCAL = localized || props.STATE_NAME;
           }
         } else {
           const distName = props.DISTRICT || props.DIST_NAME;
           if (distName) {
             const localized = getLocalizedDistrictName(distName, lang);
-            if (localized) {
-              props.DISTRICT = localized;
-              props.DIST_NAME = localized;
-            }
+            props.DISTRICT_EN = distName;
+            props.DISTRICT_LOCAL = localized || distName;
           }
         }
         return {
@@ -444,6 +449,7 @@ function FullMapScreen() {
         margin: seed?.margin ?? 0,
         votes: seed?.winnerVotes ?? 0,
         type: seed?.type ?? 'GEN',
+        localName: seed?.localName,
         currentParty: seed?.currentParty,
         electionYear: seed?.electionYear ?? 2023,
       };
@@ -1247,7 +1253,7 @@ function FullMapScreen() {
               <Text style={styles.headerSubtitle} numberOfLines={1}>
                 {stateCode === 'IN'
                   ? t('mapExtended.nationalOverview')
-                  : `${currentState?.assemblySeats ?? '?'} ${t('explore.constituencies')}`}
+                  : `${getLocalizedStateName(stateCode, i18n.language) || currentState?.name || stateCode} · ${currentState?.assemblySeats ?? '?'} ${t('explore.constituencies')}`}
               </Text>
             </View>
             <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6, flexShrink: 0 }}>
@@ -1291,6 +1297,7 @@ function FullMapScreen() {
                 </Text>
               </Pressable>
               <StateSwitcher />
+              <LanguageSwitcher compact />
             </View>
           </View>
 
@@ -1769,8 +1776,12 @@ function FullMapScreen() {
                   >
                     <View style={[styles.spatialHubDot, { backgroundColor: getPartyColor(c.winnerParty) }]} />
                     <View style={styles.spatialHubRowInfo}>
-                      <Text style={styles.spatialHubRowTitle}>{c.name}</Text>
-                      <Text style={styles.spatialHubRowSubtitle}>AC #{c.acNo} · {c.district}</Text>
+                      <Text style={styles.spatialHubRowTitle}>
+                        {getLocalizedConstituencyName(c.acNo, stateCode, c.name, i18n.language, c.localName)}
+                      </Text>
+                      <Text style={styles.spatialHubRowSubtitle}>
+                        AC #{c.acNo} · {getLocalizedDistrictName(c.district, i18n.language)}
+                      </Text>
                     </View>
                   </Pressable>
                 ))
@@ -1969,12 +1980,16 @@ function FullMapScreen() {
                   { backgroundColor: getPartyColor(selected.winner) },
                 ]}
               >
-                <Text style={styles.partyBadgeText}>{selected.winner}</Text>
+                <Text style={styles.partyBadgeText}>
+                  {getLocalizedPartyName(selected.winner, i18n.language) || selected.winner}
+                </Text>
               </View>
               <View style={styles.sheetTitleGroup}>
-                <Text style={styles.sheetTitle}>{selected.name}</Text>
+                <Text style={styles.sheetTitle}>
+                  {getLocalizedConstituencyName(selected.acNo, stateCode, selected.name, i18n.language, selected.localName)}
+                </Text>
                 <Text style={styles.sheetSubtitle}>
-                  AC #{selected.acNo} · {selected.district} · {selected.type}
+                  AC #{selected.acNo} · {getLocalizedDistrictName(selected.district, i18n.language)} · {getLocalizedReservation(selected.type, i18n.language)}
                 </Text>
               </View>
             </View>
@@ -2040,7 +2055,9 @@ function FullMapScreen() {
                     <Text style={styles.statLabel}>{t('mapSheet.margin')}</Text>
                   </View>
                   <View style={styles.statBox}>
-                    <Text style={styles.statValue}>{selected.runnerUp}</Text>
+                    <Text style={styles.statValue}>
+                      {getLocalizedPartyName(selected.runnerUp, i18n.language) || selected.runnerUp}
+                    </Text>
                     <Text style={styles.statLabel}>{t('mapSheet.runnerUp')}</Text>
                   </View>
                 </View>

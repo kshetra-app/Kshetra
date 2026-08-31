@@ -16,6 +16,9 @@ import { getChiefMinister, getPrimeMinister } from '../lib/chiefMinisters';
 import { getPartyColor } from '../lib/constants';
 import { useTheme } from '../lib/theme';
 
+import { useTranslation } from 'react-i18next';
+import { getLocalizedStateName, getLocalizedRole } from '../lib/stateTranslations';
+
 interface ChiefMinisterBadgeProps {
   stateCode: string;
   /** Compact mode for map overlay — smaller avatar and tighter spacing */
@@ -26,6 +29,7 @@ export default memo(function ChiefMinisterBadge({
   stateCode,
   compact = false,
 }: ChiefMinisterBadgeProps) {
+  const { t, i18n } = useTranslation();
   const { colors } = useTheme();
   const isIndia = stateCode === 'IN';
   const person = isIndia ? getPrimeMinister() : getChiefMinister(stateCode);
@@ -33,6 +37,10 @@ export default memo(function ChiefMinisterBadge({
   const [resolvedUri, setResolvedUri] = useState<string | null>(null);
 
   if (!person) return null;
+
+  const localizedDesignation = isIndia
+    ? (getLocalizedRole('PrimeMinister', i18n.language) || 'Prime Minister')
+    : `${getLocalizedRole('ChiefMinister', i18n.language) || 'Chief Minister'} · ${getLocalizedStateName(stateCode, i18n.language) || (person as any).stateName || stateCode}`;
 
   const avatarSize = compact ? 28 : 42;
   const partyColor = getPartyColor(person.party);
@@ -68,7 +76,7 @@ export default memo(function ChiefMinisterBadge({
             style={[styles.designation, { color: colors.textSecondary }, compact && styles.designationCompact]}
             numberOfLines={1}
           >
-            {person.designation}
+            {localizedDesignation}
           </Text>
         </View>
       </View>

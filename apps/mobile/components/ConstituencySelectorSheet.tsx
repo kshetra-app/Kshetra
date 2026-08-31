@@ -17,6 +17,11 @@ import { getConstituenciesForState } from '../lib/stateDataAdapter';
 import { useMyConstituencyStore } from '../stores/myConstituency';
 import type { ConstituencyBrief } from '@kshetra/shared';
 import { getLocalizedStateName } from '../lib/seedTranslations';
+import {
+  getLocalizedConstituencyName,
+  getLocalizedDistrictName,
+  getLocalizedPartyName,
+} from '../lib/stateTranslations';
 
 interface ConstituencySelectorSheetProps {
   visible: boolean;
@@ -157,7 +162,9 @@ export default function ConstituencySelectorSheet({
                   </View>
                   <View style={styles.itemInfo}>
                     <View style={styles.itemNameRow}>
-                      <Text style={[styles.itemName, { color: colors.text }]}>{item.name}</Text>
+                      <Text style={[styles.itemName, { color: colors.text }]}>
+                        {getLocalizedConstituencyName(item.acNo, stateCode, item.name, i18n.language, (item as any).localName)}
+                      </Text>
                       {isHome && (
                         <View style={styles.homeTag}>
                           <Ionicons name="home" size={10} color="#10B981" />
@@ -166,8 +173,8 @@ export default function ConstituencySelectorSheet({
                       )}
                     </View>
                     <Text style={[styles.itemMeta, { color: colors.textMuted }]}>
-                      {item.district}
-                      {item.currentParty ? ` · ${item.currentParty}` : ''}
+                      {getLocalizedDistrictName(item.district, i18n.language) || item.district}
+                      {item.currentParty ? ` · ${getLocalizedPartyName(item.currentParty, i18n.language) || item.currentParty}` : ''}
                     </Text>
                   </View>
                 </View>

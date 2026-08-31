@@ -15,8 +15,6 @@ import '../i18n';
 
 const KYCVerificationSheet = lazy(() => import('../components/KYCVerificationSheet'));
 
-SplashScreen.preventAutoHideAsync().catch(() => {});
-
 export default function RootLayout() {
   const initializeAuth = useAuthStore((s) => s.initialize);
   const { colors, isDark } = useTheme();
@@ -27,9 +25,6 @@ export default function RootLayout() {
   useEffect(() => {
     try {
       initializeAuth().catch(() => {});
-    } catch {}
-    try {
-      SplashScreen.hideAsync().catch(() => {});
     } catch {}
     let stopNetwork: (() => void) | undefined;
     try {

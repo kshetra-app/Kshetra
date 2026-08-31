@@ -70,6 +70,8 @@ export interface UnifiedConstituency {
   currentParty: string;
   /** Year of the election result data */
   electionYear: number;
+  /** Name in native language script */
+  localName?: string;
 }
 
 // ─── Generic adapter for auto-generated seeds ────────────────────────────────
@@ -101,6 +103,7 @@ function genericAdapter(
     margin: c[marginKey] ?? 0,
     currentParty: c.currentParty ?? c[winnerKey] ?? '',
     electionYear: year,
+    localName: c.localName || c.nameTe || c.local_name,
   };
 }
 
@@ -122,6 +125,7 @@ export function getUnifiedConstituenciesForState(stateCode: string): UnifiedCons
         margin: c.margin2023,
         currentParty: c.currentParty ?? c.winner2023,
         electionYear: 2023,
+        localName: c.localName,
       }));
     case 'AP':
       return AP_CONSTITUENCIES.map((c) => ({
@@ -137,6 +141,7 @@ export function getUnifiedConstituenciesForState(stateCode: string): UnifiedCons
         margin: c.margin2024,
         currentParty: c.currentParty ?? c.winner2024,
         electionYear: 2024,
+        localName: c.localName,
       }));
     case 'KA':
       return KA_CONSTITUENCIES.map((c) => ({
@@ -152,6 +157,7 @@ export function getUnifiedConstituenciesForState(stateCode: string): UnifiedCons
         margin: c.margin2023,
         currentParty: c.currentParty ?? c.winner2023,
         electionYear: 2023,
+        localName: (c as any).localName,
       }));
     case 'MH':
       return MH_CONSTITUENCIES.map((c) => ({

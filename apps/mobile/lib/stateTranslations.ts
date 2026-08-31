@@ -1,4 +1,19 @@
 export const STATE_TRANSLATIONS: Record<string, Record<string, string>> = {
+  IN: {
+    en: 'India',
+    te: 'భారతదేశం',
+    hi: 'भारत',
+    ta: 'இந்தியா',
+    kn: 'ಭಾರತ',
+    mr: 'भारत',
+    bn: 'ভারত',
+    gu: 'ભારત',
+    ml: 'ഇന്ത്യ',
+    pa: 'ਭਾਰਤ',
+    or: 'ଭାରତ',
+    as: 'ভাৰত',
+    ne: 'भारत',
+  },
   TS: {
     en: 'Telangana',
     te: 'తెలంగాణ',
@@ -501,6 +516,98 @@ export const DISTRICT_TRANSLATIONS: Record<string, Record<string, string>> = {
   'Kadapa': { te: 'కడప', hi: 'कडपा', kn: 'ಕಡಪ' },
   'Anantapur': { te: 'అనంతపురం', hi: 'अनंतपुर', kn: 'ಅನಂತಪುರ' },
   'Kurnool': { te: 'కర్నూలు', hi: 'कर्नूल', kn: 'ಕರ್ನೂಲ್' },
+  'Alluri Sitharama Raju': { te: 'అల్లూరి సీతారామరాజు', hi: 'अल्लूरी सीताराम राजू', kn: 'ಅಲ್ಲೂರಿ ಸೀತಾರಾಮ ರಾಜು' },
+  'Anakapalli': { te: 'అనకాపల్లి', hi: 'अनकापल्ली', kn: 'ಅನಕಾಪಲ್ಲಿ' },
+  'Annamayya': { te: 'అన్నమయ్య', hi: 'अन्नमय्या', kn: 'ಅನ್ನಮಯ್ಯ' },
+  'Bapatla': { te: 'బాపట్ల', hi: 'बापटला', kn: 'ಬಾಪಟ್ಲ' },
+  'Eluru': { te: 'ఏలూరు', hi: 'एलुरु', kn: 'ಏಲೂರು' },
+  'Kakinada': { te: 'కాకినాడ', hi: 'काकीनाडा', kn: 'ಕಾಕಿನಾಡ' },
+  'Konaseema': { te: 'కోనసీమ', hi: 'कोनासीमा', kn: 'ಕೋನಸೀಮ' },
+  'Dr. B.R. Ambedkar Konaseema': { te: 'డాక్టర్ బి.ఆర్. అంబేద్కర్ కోనసీమ', hi: 'डॉ. बी.आर. अम्बेडकर कोनासीमा' },
+  'Nandyal': { te: 'నంద్యాల', hi: 'नंद्याल', kn: 'ನಂದ್ಯಾಲ' },
+  'NTR': { te: 'ఎన్టీఆర్ జిల్లా', hi: 'एनटीआर जिला', kn: 'ಎನ್‌ಟಿಆರ್ ಜಿಲ್ಲೆ' },
+  'Palnadu': { te: 'పల్నాడు', hi: 'पलनाडु', kn: 'ಪಲ್ನಾಡು' },
+  'Parvathipuram Manyam': { te: 'పార్వతీపురం మన్యం', hi: 'पार्वतीपुरम मान्यम', kn: 'ಪಾರ್ವತಿಪುರಂ ಮಾನ್ಯಂ' },
+  'Sri Potti Sriramulu Nellore': { te: 'శ్రీ పొట్టి శ్రీరాములు నెల్లూరు', hi: 'श्री पोट्टी श्रीरामुलु नेल्लोर' },
+  'Sri Sathya Sai': { te: 'శ్రీ సత్యసాయి', hi: 'श्री सत्य साई', kn: 'ಶ್ರೀ ಸತ್ಯ ಸಾಯಿ' },
+  'Tirupati': { te: 'తిరుపతి', hi: 'तिरुपति', kn: 'ತಿರುಪತಿ' },
+  'Bengaluru Urban': { te: 'బెంగళూరు అర్బన్', hi: 'बेंगलुरु शहरी', kn: 'ಬೆಂಗಳೂರು ನಗರ', ta: 'பெங்களூரு நகர்ப்புறம்' },
+  'Bengaluru Rural': { te: 'బెంగళూరు రూరల్', hi: 'बेंगलुरु ग्रामीण', kn: 'ಬೆಂಗಳೂರು ಗ್ರಾಮಾಂತರ' },
+  'Mysuru': { te: 'మైసూరు', hi: 'मैसूरु', kn: 'ಮೈಸೂರು', ta: 'மைசூரு' },
+  'Dakshina Kannada': { te: 'దక్షిణ కన్నడ', hi: 'दक्षिण कन्नड़', kn: 'ದಕ್ಷಿಣ ಕನ್ನಡ' },
+  'Belagavi': { te: 'బెళగావి', hi: 'बेलगावी', kn: 'ಬೆಳಗಾವಿ', mr: 'बेळगाव' },
+  'Dharwad': { te: 'ధార్వాడ్', hi: 'धारवाड़', kn: 'ಧಾರವಾಡ' },
+  'Kalaburagi': { te: 'కలబురగి', hi: 'कलबुर्गी', kn: 'ಕಲಬುರಗಿ' },
+  'Ballari': { te: 'బళ్లారి', hi: 'बल्लारी', kn: 'ಬಳ್ಳಾರಿ' },
+  'Shivamogga': { te: 'శివమొగ్గ', hi: 'शिवमोग्गा', kn: 'ಶಿವಮೊಗ್ಗ' },
+  'Udupi': { te: 'ఉడుపి', hi: 'उडुपी', kn: 'ಉಡುಪಿ' },
+  'Mumbai': { te: 'ముంబై', hi: 'मुंबई', mr: 'मुंबई', ta: 'மும்பை', kn: 'ಮುಂಬೈ' },
+  'Mumbai Suburban': { te: 'ముంబై సబర్బన్', hi: 'मुंबई उपनगर', mr: 'मुंबई उपनगर' },
+  'Thane': { te: 'థాణే', hi: 'ठाणे', mr: 'ठाणे' },
+  'Pune': { te: 'పుణె', hi: 'पुणे', mr: 'पुणे', kn: 'ಪುಣೆ' },
+  'Nagpur': { te: 'నాగ్‌పూర్', hi: 'नागपुर', mr: 'नागपूर' },
+  'Nashik': { te: 'నాసిక్', hi: 'नाशिक', mr: 'नाशिक' },
+  'Aurangabad': { te: 'ఔరంగాబాద్ (ఛత్రపతి శంభాజీనగర్)', hi: 'औरंगाबाद', mr: 'छत्रपती संभाजीनगर' },
+  'Nanded': { te: 'నాందేడ్', hi: 'नांदेड़', mr: 'नांदेड' },
+};
+
+export const PARTY_TRANSLATIONS: Record<string, Record<string, string>> = {
+  INC: { en: 'INC (Congress)', te: 'కాంగ్రెస్ (INC)', hi: 'कांग्रेस (INC)', ta: 'காங்கிரஸ் (INC)', kn: 'ಕಾಂಗ್ರೆಸ್ (INC)', mr: 'काँग्रेस (INC)', bn: 'কংগ্রেস (INC)' },
+  BJP: { en: 'BJP', te: 'బీజేపీ (BJP)', hi: 'भाजपा (BJP)', ta: 'பாஜக (BJP)', kn: 'ಬಿಜೆಪಿ (BJP)', mr: 'भाजप (BJP)', bn: 'বিজেপি (BJP)' },
+  BRS: { en: 'BRS', te: 'బీఆర్ఎస్ (BRS)', hi: 'बीआरएस (BRS)', ta: 'பிஆர்எஸ் (பிஆர்எஸ்)', kn: 'ಬಿಆರ್‌ಎಸ್ (BRS)', mr: 'बीआरएस (BRS)' },
+  TDP: { en: 'TDP', te: 'తెలుగుదేశం (TDP)', hi: 'टीडीपी (TDP)', ta: 'டிடிபி (TDP)', kn: 'ಟಿಡಿಪಿ (TDP)' },
+  JSP: { en: 'Jana Sena', te: 'జనసేన (JSP)', hi: 'जन सेना (JSP)', ta: 'ஜன சேனா (JSP)', kn: 'ಜನಸೇನಾ (JSP)' },
+  YSRCP: { en: 'YSRCP', te: 'వైఎస్సార్సీపీ (YSRCP)', hi: 'वाईएसआरसीपी (YSRCP)', ta: 'ஒய்எஸ்ஆர்சிபி (YSRCP)', kn: 'ವೈಎಸ್‌ಆರ್‌ಸಿಪಿ (YSRCP)' },
+  AIMIM: { en: 'AIMIM', te: 'ఎంఐఎం (AIMIM)', hi: 'एआईएमआईएम (AIMIM)', ta: 'ஏஐஎம்ஐஎம் (AIMIM)', kn: 'ಎಐಎಂಐಎಂ (AIMIM)' },
+  AAP: { en: 'AAP', te: 'ఆప్ (AAP)', hi: 'आप (AAP)', ta: 'ஆப் (AAP)', kn: 'ಎಎಪಿ (AAP)', mr: 'आप (AAP)' },
+  CPI: { en: 'CPI', te: 'సిపిఐ (CPI)', hi: 'सीपीआई (CPI)', ta: 'சிபிஐ (CPI)', kn: 'ಸಿಪಿಐ (CPI)' },
+  'CPI(M)': { en: 'CPI(M)', te: 'సిపిఎం (CPI-M)', hi: 'सीपीएम (CPI-M)', ta: 'சிபிஎம் (CPI-M)', kn: 'ಸಿಪಿಎಂ (CPI-M)' },
+  CPM: { en: 'CPM', te: 'సిపిఎం (CPM)', hi: 'सीपीएम (CPM)', ta: 'சிபிஎம் (CPM)', kn: 'ಸಿಪಿಎಂ (CPM)' },
+  SHS: { en: 'Shiv Sena', te: 'శివసేన (SHS)', hi: 'शिवसेना (SHS)', mr: 'शिवसेना (SHS)' },
+  NCP: { en: 'NCP', te: 'ఎన్సీపీ (NCP)', hi: 'एनसीपी (NCP)', mr: 'राष्ट्रवादी (NCP)' },
+  DMK: { en: 'DMK', te: 'డిఎంకె (DMK)', hi: 'डीएमके (DMK)', ta: 'திமுக (DMK)' },
+  AIADMK: { en: 'AIADMK', te: 'ఎఐఎడిఎంకె (AIADMK)', hi: 'एआईएडीएमके (AIADMK)', ta: 'அதிமுக (AIADMK)' },
+  AITC: { en: 'Trinamool Congress', te: 'తృణమూల్ (AITC)', hi: 'तृणमूल (AITC)', bn: 'তৃণমূল (AITC)' },
+  TMC: { en: 'Trinamool Congress', te: 'తృణమూల్ (TMC)', hi: 'तृणमूल (TMC)', bn: 'তৃণমূল (TMC)' },
+  SP: { en: 'Samajwadi Party', te: 'సమాజ్‌వాదీ (SP)', hi: 'सपा (SP)' },
+  BSP: { en: 'BSP', te: 'బిఎస్పీ (BSP)', hi: 'बसपा (BSP)' },
+  JDU: { en: 'JD(U)', te: 'జెడియు (JDU)', hi: 'जदयू (JDU)' },
+  IND: { en: 'Independent', te: 'స్వతంత్ర (IND)', hi: 'निर्दलीय (IND)', ta: 'சுயேச்சை (IND)', kn: 'ಪಕ್ಷೇತರ (IND)', mr: 'अपक्ष (IND)', bn: 'স্বতন্ত্র (IND)' },
+};
+
+export const RESERVATION_TRANSLATIONS: Record<string, Record<string, string>> = {
+  GEN: { en: 'General (GEN)', te: 'సాధారణ (GEN)', hi: 'सामान्य (GEN)', ta: 'பொது (GEN)', kn: 'ಸಾಮಾನ್ಯ (GEN)', mr: 'सर्वसाधारण (GEN)', bn: 'সাধারণ (GEN)' },
+  SC: { en: 'SC Reserved', te: 'ఎస్సీ రిజర్వ్‌డ్ (SC)', hi: 'एससी आरक्षित (SC)', ta: 'எஸ்.சி ஒதுக்கப்பட்டது (SC)', kn: 'ಎಸ್‌ಸಿ ಮೀಸಲು (SC)', mr: 'एससी राखीव (SC)', bn: 'এসসি সংরক্ষিত (SC)' },
+  ST: { en: 'ST Reserved', te: 'ఎస్టీ రిజర్వ్‌డ్ (ST)', hi: 'एसटी आरक्षित (ST)', ta: 'எஸ்.டி ஒதுக்கப்பட்டது (ST)', kn: 'ಎಸ್‌ಟಿ ಮೀಸಲು (ST)', mr: 'एसटी राखीव (ST)', bn: 'এসটি সংরক্ষিত (ST)' },
+};
+
+export const ROLE_TRANSLATIONS: Record<string, Record<string, string>> = {
+  MLA: { en: 'MLA', te: 'శాసనసభ్యుడు (MLA)', hi: 'विधायक (MLA)', ta: 'சட்டமன்ற உறுப்பினர் (MLA)', kn: 'ಶಾಸಕ (MLA)', mr: 'आमदार (MLA)', bn: 'বিধায়ক (MLA)' },
+  MP: { en: 'MP', te: 'పార్లమెంట్ సభ్యుడు (MP)', hi: 'सांसद (MP)', ta: 'நாடாளுமன்ற உறுப்பினர் (MP)', kn: 'ಸಂಸದ (MP)', mr: 'खासदार (MP)', bn: 'সাংসদ (MP)' },
+  'MP (LS)': { en: 'MP (Lok Sabha)', te: 'లోక్‌సభ ఎంపీ', hi: 'लोकसभा सांसद', ta: 'மக்களவை எம்பி', kn: 'ಲೋಕಸಭಾ ಸಂಸದ', mr: 'लोकसभा खासदार', bn: 'লোকসভা সাংসদ' },
+  'MP (RS)': { en: 'MP (Rajya Sabha)', te: 'రాజ్యసభ ఎంపీ', hi: 'राज्यसभा सांसद', ta: 'மாநிலங்களவை எம்பி', kn: 'ರಾಜ್ಯಸಭಾ ಸಂಸದ', mr: 'ರಾಜ್ಯಸಭಾ ಸಂಸದ', bn: 'রাজ্যসভা সাংসদ' },
+  MLC: { en: 'MLC', te: 'శాసనమండలి సభ్యుడు (MLC)', hi: 'विधान परिषद सदस्य (MLC)', ta: 'சட்டமேலவை உறுப்பினர் (MLC)', kn: 'ವಿಧಾನ ಪರಿಷತ್ ಸದಸ್ಯ (MLC)', mr: 'विधान परिषद सदस्य (MLC)' },
+  ChiefMinister: { en: 'Chief Minister', te: 'ముఖ్యమంత్రి', hi: 'मुख्यमंत्री', ta: 'முதலமைச்சர்', kn: 'ಮುಖ್ಯಮಂತ್ರಿ', mr: 'मुख्यमंत्री', bn: 'মুখ্যমন্ত্রী' },
+  PrimeMinister: { en: 'Prime Minister', te: 'ప్రధానమంత్రి', hi: 'प्रधानमंत्री', ta: 'பிரதமர்', kn: 'ಪ್ರಧಾನಮಂತ್ರಿ', mr: 'पंतप्रधान', bn: 'প্রধানমন্ত্রী' },
+};
+
+export const DETAIL_TRANSLATIONS: Record<string, Record<string, string>> = {
+  male: { en: 'Male', te: 'పురుషుడు', hi: 'पुरुष', ta: 'ஆண்', kn: 'ಪುರುಷ', mr: 'पुरुष', bn: 'পুরুষ' },
+  female: { en: 'Female', te: 'మహిళ', hi: 'महिला', ta: 'பெண்', kn: 'ಮಹಿಳೆ', mr: 'महिला', bn: 'মহিলা' },
+  married: { en: 'Married', te: 'వివాహితులు', hi: 'विवाहित', ta: 'திருமணமானவர்', kn: 'ವಿವಾಹಿತ', mr: 'विवाहित', bn: 'বিবাহিত' },
+  unmarried: { en: 'Unmarried', te: 'అవివాహితులు', hi: 'अविवाहित', ta: 'திருமணமாகாதவர்', kn: 'ಅವಿವಾಹಿತ', mr: 'अविवाहित', bn: 'অবিবাহিত' },
+  single: { en: 'Single', te: 'సింగిల్', hi: 'अविवाहित', ta: 'ஒற்றை', kn: 'ಸಿಂಗಲ್', mr: 'अविवाहित', bn: 'অবিবাহিত' },
+  graduate: { en: 'Graduate', te: 'గ్రాడ్యుయేట్ (పట్టభద్రుడు)', hi: 'स्नातक', ta: 'பட்டதாரி', kn: 'ಪದವೀಧರ', mr: 'पदवीधर', bn: 'স্নাতক' },
+  post_graduate: { en: 'Post Graduate', te: 'పోస్ట్ గ్రాడ్యుయేట్', hi: 'परास्नातक', ta: 'முதுகலை பட்டதாரி', kn: 'ಸ್ನಾತಕೋತ್ತರ', mr: 'पदव्युत्तर', bn: 'স্নাতকোত্তর' },
+  doctorate: { en: 'Doctorate', te: 'డాక్టరేట్', hi: 'डॉक्टरेट', ta: 'முனைவர்', kn: 'ಡಾಕ್ಟರೇಟ್', mr: 'डॉक्टरेट', bn: 'ডক্টরেট' },
+  matric: { en: '10th Pass', te: '10వ తరగతి', hi: '10वीं पास', ta: '10ஆம் வகுப்பு', kn: '10ನೇ ತರಗತಿ', mr: '10वी उत्तीर्ण', bn: '১০ম পাস' },
+  intermediate: { en: '12th Pass', te: 'ఇంటర్మీడియట్ (12వ)', hi: '12वीं पास', ta: '12ஆம் வகுப்பு', kn: '12ನೇ ತರగತಿ', mr: '12वी उत्तीर्ण', bn: '১২শ পাস' },
+  business: { en: 'Business', te: 'వ్యాపారం', hi: 'व्यापार', ta: 'வணிகம்', kn: 'ವ್ಯಾಪಾರ', mr: 'व्यवसाय', bn: 'ব্যবসা' },
+  agriculture: { en: 'Agriculture / Farmer', te: 'వ్యవసాయం / రైతు', hi: 'कृषि / किसान', ta: 'விவசாயம்', kn: 'ಕೃಷಿ / ರೈತ', mr: 'शेती', bn: 'কৃষি' },
+  social_worker: { en: 'Social Worker', te: 'సామాజిక కార్యకర్త', hi: 'समाजसेवी', ta: 'சமூக சேவகர்', kn: 'ಸಮಾಜ ಸೇವಕ', mr: 'समाजसेवक', bn: 'সমাজসেবক' },
+  politics: { en: 'Full-time Politics', te: 'రాజకీయాలు', hi: 'राजनीति', ta: 'அரசியல்', kn: 'ರಾಜಕೀಯ', mr: 'राजकारण', bn: 'রাজনীতি' },
+  advocate: { en: 'Advocate / Legal', te: 'న్యాయవాది', hi: 'अधिवक्ता / वकील', ta: 'வழக்கறிஞர்', kn: 'ವಕೀಲ', mr: 'वकील', bn: 'আইনজীবী' },
+  doctor: { en: 'Doctor / Medical', te: 'వైద్యుడు (డాక్టర్)', hi: 'चिकित्सक / डॉक्टर', ta: 'மருத்துவர்', kn: 'ವೈದ್ಯ', mr: 'डॉक्टर', bn: 'চিকিৎসক' },
 };
 
 export function getLocalizedStateName(code: string, lang: string): string | null {
@@ -511,7 +618,51 @@ export function getLocalizedStateName(code: string, lang: string): string | null
 }
 
 export function getLocalizedDistrictName(name: string, lang: string): string | null {
+  if (!name) return '';
   const translations = DISTRICT_TRANSLATIONS[name];
-  if (!translations) return null;
-  return translations[lang] || name;
+  if (!translations) return name;
+  return translations[lang] || translations['en'] || name;
+}
+
+export function getLocalizedPartyName(party: string, lang: string): string {
+  if (!party) return '';
+  const translations = PARTY_TRANSLATIONS[party.toUpperCase()];
+  if (!translations) return party;
+  return translations[lang] || translations['en'] || party;
+}
+
+export function getLocalizedReservation(type: string, lang: string): string {
+  if (!type) return '';
+  const translations = RESERVATION_TRANSLATIONS[type.toUpperCase()];
+  if (!translations) return type;
+  return translations[lang] || translations['en'] || type;
+}
+
+export function getLocalizedRole(role: string, lang: string): string {
+  if (!role) return '';
+  const translations = ROLE_TRANSLATIONS[role];
+  if (!translations) return role;
+  return translations[lang] || translations['en'] || role;
+}
+
+export function getLocalizedDetail(value: string, lang: string): string {
+  if (!value) return '';
+  const key = value.toLowerCase().replace(/[^a-z0-9_]/g, '_');
+  const translations = DETAIL_TRANSLATIONS[key];
+  if (!translations) return value;
+  return translations[lang] || translations['en'] || value;
+}
+
+/** Localized constituency name resolver */
+export function getLocalizedConstituencyName(
+  acNo: number,
+  stateCode: string,
+  fallbackName: string,
+  lang: string,
+  localNameCandidate?: string,
+): string {
+  if (localNameCandidate && (lang === 'te' || lang === 'kn' || lang === 'ta' || lang === 'mr')) {
+    return localNameCandidate;
+  }
+  return fallbackName;
 }

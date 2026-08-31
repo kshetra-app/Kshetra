@@ -19,13 +19,23 @@ function formatINR(val: number): string {
   return `₹${val.toLocaleString('en-IN')}`;
 }
 
+import {
+  getLocalizedPartyName,
+  getLocalizedConstituencyName,
+  getLocalizedDetail,
+} from '../lib/stateTranslations';
+
 export default function MPCard({ profile, compact, onPress }: MPCardProps) {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const { colors } = useTheme();
   const partyColor = getPartyColor(profile.party);
 
   const houseLabel = profile.house === 'lok_sabha' ? t('parliament.lokSabha') : t('parliament.rajyaSabha');
   const houseColor = profile.house === 'lok_sabha' ? colors.primary : colors.teal;
+  const localizedParty = getLocalizedPartyName(profile.party, i18n.language) || profile.party;
+  const localizedConstName = profile.constituency
+    ? getLocalizedConstituencyName(0, profile.stateCode || '', profile.constituency, i18n.language)
+    : '';
 
   return (
     <Pressable
@@ -47,12 +57,12 @@ export default function MPCard({ profile, compact, onPress }: MPCardProps) {
         />
         <View style={styles.headerInfo}>
           <Text style={[styles.name, { color: colors.text }]} numberOfLines={1}>{profile.name}</Text>
-          {profile.constituency && (
-            <Text style={[styles.constituencyLabel, { color: colors.textMuted }]}>{profile.constituency}</Text>
-          )}
+          {localizedConstName ? (
+            <Text style={[styles.constituencyLabel, { color: colors.textMuted }]}>{localizedConstName}</Text>
+          ) : null}
           <View style={styles.badgeRow}>
             <View style={[styles.partyBadge, { backgroundColor: partyColor }]}>
-              <Text style={styles.partyText}>{profile.party}</Text>
+              <Text style={styles.partyText}>{localizedParty}</Text>
             </View>
             <View style={[styles.houseBadge, { backgroundColor: houseColor + '20' }]}>
               <Text style={[styles.houseText, { color: houseColor }]}>{houseLabel}</Text>
