@@ -1,7 +1,7 @@
 /**
  * TA translation
  */
-const ta = {
+const ta =  {
   "common": {
     "appName": "க்ஷேத்ரா",
     "loading": "ஏற்றப்படுகிறது…",
@@ -442,6 +442,47 @@ const ta = {
       "constituency_alertsDesc": "உங்கள் நியோஜகவர்க்கத்தின் செய்திகள் மற்றும் விழிப்பூட்டல்கள்",
       "headlines": "முக்கியத் தலைப்புச் செய்திகள்",
       "headlinesDesc": "முக்கிய அரசியல் செய்திகள் மற்றும் புதுப்பிப்புகள்"
+    },
+    "allowNotifications": "அறிவிப்புகளை அனுமதி",
+    "receivingUpdates": "அறிவிப்புகள் பெறப்படுகின்றன",
+    "typesHeader": "அறிவிப்பு வகைகள்",
+    "types": {
+      "election_results": {
+        "label": "தேர்தல் முடிவுகள்",
+        "description": "தேர்தல் முடிவுகள் அறிவிக்கப்படும் போது அறிவிப்பு பெறவும்"
+      },
+      "constituency_updates": {
+        "label": "தொகுதி தகவல்கள்",
+        "description": "நீங்கள் பின்தொடரும் தொகுதிகளின் விவரங்கள்"
+      },
+      "civic_issue": {
+        "label": "குடிமை பிரச்சனைகள்",
+        "description": "உங்கள் அருகிலுள்ள பிரச்சனைகள் மற்றும் எம்.எல்.ஏ பதில்கள்"
+      },
+      "promise_update": {
+        "label": "வாக்குறுதி கண்காணிப்பான்",
+        "description": "தேர்தல் வாக்குறுதிகளின் தற்போதைய நிலை"
+      },
+      "delimitation_alert": {
+        "label": "மறுவரையறை எச்சரிக்கைகள்",
+        "description": "எல்லை மாற்றங்கள் மற்றும் ஆணையத்தின் அறிவிப்புகள்"
+      },
+      "analytics_insight": {
+        "label": "தரவு பகுப்பாய்வு",
+        "description": "உங்கள் மாநிலத்தின் தேர்தல் போக்குகள் பற்றிய தரவு"
+      },
+      "community_activity": {
+        "label": "சமூகம்",
+        "description": "பதில்கள், குறிப்புகள் மற்றும் சவால்கள்"
+      },
+      "new_state_added": {
+        "label": "புதிய மாநில தரவு",
+        "description": "புதிய மாநில தரவு கிடைக்கும் போது"
+      },
+      "app_updates": {
+        "label": "செயலி புதுப்பிப்புகள்",
+        "description": "புதிய அம்சங்கள் மற்றும் மேம்பாடுகள்"
+      }
     }
   },
   "onboarding": {
@@ -1401,7 +1442,254 @@ const ta = {
     "crorepati": "கோடீஸ்வரர்",
     "case": "வழக்கு",
     "cases": "வழக்குகள்"
+  },
+  "more": {
+    "title": "மேலும்",
+    "subtitle": "மற்ற அனைத்தும், வெறும் இரண்டு தட்டல்களில்",
+    "campaignHQTitle": "தேர்தல் பிரச்சார தலைமையகம்",
+    "campaignHQDesc": "தேர்தலில் போட்டியிடுங்கள், பிரச்சாரத்தை நிர்வகியுங்கள், வாட்ஸ்அப் & எஸ்எம்எஸ் மூலம் வாக்காளர்களை சென்றடையுங்கள்",
+    "sections": {
+      "politiciansAndCampaign": "அரசியல்வாதிகள் மற்றும் பிரச்சாரம்",
+      "liveMediaExchange": "நேரலை ஊடக பரிமாற்றம்",
+      "civicAndElections": "குடிமை சேவைகள் மற்றும் தேர்தல்கள்",
+      "account": "கணக்கு"
+    },
+    "tiles": {
+      "politicianPortal": "அரசியல்வாதி போர்டல்",
+      "becomeAspirant": "வேட்பாளர் ஆகுங்கள்",
+      "campaignManager": "பிரச்சார மேலாளர்",
+      "leadershipAcademy": "தலைமைத்துவ அகாடமி",
+      "candidateXRay": "வேட்பாளர் எக்ஸ்-ரே",
+      "goLive": "நேரலை தொடங்கு",
+      "kshetraLive": "க்ஷேத்ரா லைவ்",
+      "deptConsole": "துறை பணியகம்",
+      "moderation": "மதிப்பாய்வு",
+      "distribution": "விநியோகம்",
+      "devSwitches": "டெவ் சுவிட்சுகள்",
+      "civicDashboard": "குடிமை டாஷ்போர்டு",
+      "delimitation": "தொகுதி மறுவரையறை",
+      "analytics": "ஆழ்ந்த பகுப்பாய்வு",
+      "civicMetrics": "குடிமை அளவீடுகள்",
+      "liveElection": "நேரலை தேர்தல்",
+      "parliament": "நாடாளுமன்றம்",
+      "profile": "சுயவிவரம்",
+      "notifications": "அறிவிப்புகள்",
+      "settings": "அமைப்புகள்",
+      "aiAssistant": "ஏஐ உதவியாளர்"
+    }
+  },
+  "analytics": {
+    "deepTitle": "ஆழ்ந்த பகுப்பாய்வு",
+    "pulseIntel": "பல்ஸ் இன்டெல்",
+    "vulnerabilityTitle": "ஆளும் கட்சி எதிர்ப்பு நிலை (AIVI)",
+    "aiviConfidence": "AIVI குறியீடு • நம்பகத்தன்மை {{pct}}%",
+    "estSwing": "மதிப்பிடப்பட்ட வாக்கு மாற்ற வாய்ப்பு: {{pct}}%",
+    "keyDrivers": "முக்கிய பாதிப்பு காரணிகள்",
+    "highFlip": "வெற்றி கைமாறும் அதிக வாய்ப்பு",
+    "contested": "கடும் போட்டி தொகுதி",
+    "incumbentAdvantage": "ஆளும் கட்சிக்கு சாதகம்",
+    "twoTermIncumbency": "இருமுறை ஆட்சி செய்ததன் சுமை",
+    "unresolvedGrievance": "தீர்க்கப்படாத புகார்களின் உயர் விகிதம்",
+    "negativeSentiment": "களத்தில் நிலவும் எதிர்மறை மனநிலை",
+    "adverseDemographics": "மக்கள் தொகையில் பாதகமான மாற்றம்",
+    "criticalNegativeNews": "பிராந்திய செய்திகளில் எதிர்மறை போக்கு",
+    "narrowMargin": "குறைந்த வாக்கு வித்தியாச வெற்றி (<5%)",
+    "likelyHold": "தக்கவைக்க வாய்ப்பு",
+    "leanIncumbent": "ஆளும் கட்சிக்கு முன்னிலை",
+    "tossup": "சம பல போட்டி",
+    "leanChallenger": "எதிர்க்கட்சிக்கு சாதகம்",
+    "likelyFlip": "தோல்வியடைய வாய்ப்பு",
+    "sentimentRadarTitle": "5-தூண் உணர்வு ரேடார்",
+    "sentimentRadarSubtitle": "உண்மையான கள நிலவரம் மற்றும் மக்கள் திருப்தி",
+    "netMood": "மக்கள் மனநிலை",
+    "governanceResponse": "ஆளுமை மற்றும் தீர்வுகள்",
+    "civicInfrastructure": "குடிமை உள்கட்டமைப்பு",
+    "welfareSchemes": "நலத்திட்டங்கள் மற்றும் நேரடி உதவிகள்",
+    "economyLivelihood": "பொருளாதாரம் மற்றும் வாழ்வாதாரம்",
+    "candidateTrust": "வேட்பாளர் மீதான நம்பிக்கை",
+    "executiveBriefTitle": "நிர்வாக ஏஐ அறிக்கை",
+    "strategicTakeaways": "முக்கிய உத்திகள்",
+    "recommendedCounterActions": "பரிந்துரைக்கப்பட்ட எதிர் நடவடிக்கைகள்",
+    "criticalBattlegrounds": "முக்கிய போட்டித் தொகுதிகள்",
+    "seatDistribution": "தொகுதி பகிர்வு",
+    "keyInsights": "முக்கிய தகவல்கள்",
+    "totalSeats": "மொத்த இடங்கள்",
+    "rulingParty": "ஆளும் கட்சி",
+    "swingSeats": "மாறும் இடங்கள்",
+    "margin": "வித்தியாசம்",
+    "won": "வெற்றி",
+    "vs": "எதிராக"
+  },
+  "campaignManager": {
+    "tabs": {
+      "campaigns": "பிரச்சாரங்கள்",
+      "outreach": "தொடர்பு",
+      "ads": "விளம்பரங்கள்",
+      "revenue": "வருவாய்",
+      "volunteers": "தன்னார்வலர்கள்",
+      "booths": "வாக்குச்சாவடிகள்"
+    },
+    "types": {
+      "election": "தேர்தல் பிரச்சாரம்",
+      "awareness": "விழிப்புணர்வு",
+      "fundraising": "நிதி திரட்டுதல்",
+      "outreach": "மக்கள் தொடர்பு",
+      "issue_advocacy": "பிரச்சனைகளுக்கான குரல்",
+      "brand_building": "நற்பெயர் உருவாக்கம்",
+      "get_out_vote": "வாக்களிப்பு விழிப்புணர்வு"
+    },
+    "statuses": {
+      "active": "செயலில்",
+      "paused": "நிறுத்தப்பட்டது",
+      "draft": "வரைவு",
+      "completed": "முடிந்தது",
+      "planned": "திட்டமிடப்பட்டது",
+      "cancelled": "ரத்து செய்யப்பட்டது"
+    },
+    "impressions": "பார்வைகள்",
+    "totalReach": "மொத்த அடைவு",
+    "engagement": "ஈடுபாடு",
+    "sentiment": "மனநிலை",
+    "budget": "பட்ஜெட்",
+    "activeCampaigns": "செயலில் உள்ள பிரச்சாரங்கள்",
+    "adCount": "{{count}} விளம்பரங்கள்",
+    "volunteerCount": "{{count}} தன்னார்வலர்கள்",
+    "boothCount": "{{covered}}/{{total}} வாக்குச்சாவடிகள்",
+    "campaignNames": {
+      "tsReportCard": "தெலுங்கானா வளர்ச்சி அறிக்கை",
+      "youthConnect": "இளைஞர் இணைப்பு 2026",
+      "guaranteesImpact": "5 உத்தரவாத திட்டங்களின் அறிக்கை"
+    }
+  },
+  "leadershipAcademy": {
+    "categories": {
+      "electoral_process": "தேர்தல் நடைமுறை",
+      "campaign_strategy": "பிரச்சார உத்தி",
+      "legal_framework": "சட்ட விதிகளின் கட்டமைப்பு",
+      "public_speaking": "மேடைப் பேச்சு",
+      "community_organizing": "சமூக ஒருமைப்பாடு",
+      "digital_campaigning": "டிஜிட்டல் பிரச்சாரம்",
+      "policy_making": "கொள்கை உருவாக்கம்",
+      "ethics_governance": "அறநெறி மற்றும் நிர்வாகம்"
+    },
+    "contentTypes": {
+      "article": "கட்டுரை",
+      "video": "வீடியோ",
+      "quiz": "வினாடி வினா",
+      "case_study": "வழக்காய்வு"
+    },
+    "difficulty": {
+      "beginner": "தொடக்க நிலை",
+      "intermediate": "இடைநிலை",
+      "advanced": "மேம்பட்ட நிலை"
+    },
+    "min": "நிமிடம்",
+    "earned": "பெற்றவை",
+    "locked": "பூட்டப்பட்டவை",
+    "aspiringLeaders": "வருங்கால தலைவர்கள்",
+    "noActiveChallenges": "செயலில் சவால்கள் இல்லை",
+    "noPublicAspirants": "வேட்பாளர்கள் இல்லை",
+    "moduleNames": {
+      "howElectionsWork": "இந்திய தேர்தல் முறை செயல்படும் விதம்",
+      "filingNomination": "வேட்புமனு தாக்கல் செய்யும் முறை",
+      "electionSymbols": "தேர்தல் சின்னங்களின் முக்கியத்துவம்",
+      "grassrootsCampaign": "அடிப்படை கள பிரச்சார அமைப்பு",
+      "fundraising": "சுயேச்சை வேட்பாளர்களுக்கான நிதி திரட்டல்",
+      "rpaAct": "மக்கள் பிரதிநிதித்துவ சட்டத்தின் விதிகள்"
+    }
+  },
+  "becomeAspirant": {
+    "screenTitle": "வேட்பாளர் ஆகுங்கள்",
+    "headerTitle": "குடிமை வேட்பாளர்கள்",
+    "headerSubtitle": "தகுதியை வளர்த்து, ஆதரவை பெறுங்கள்",
+    "registerCTA": "வேட்பாளராக பதிவு செய்க",
+    "yourBadges": "உங்கள் பேட்ஜ்கள்",
+    "earnedLocked": "{{earned}} பெற்றது · {{locked}} மீதம்",
+    "aspiringIn": "வேட்பாளர் · {{seat}} · {{year}}",
+    "profileActive": "வேட்பாளர் சுயவிவரம் செயலில் உள்ளது",
+    "heroTitle": "உங்கள் சமூகத்திற்காக களமிறங்குங்கள்",
+    "heroSub": "தேர்தலில் போட்டியிடும் முன் உங்கள் நற்பெயரையும் சேவையையும் உறுதி செய்யுங்கள்.",
+    "benefits": {
+      "scoreTitle": "குடிமை மதிப்பெண் பெறுங்கள்",
+      "scoreSub": "கற்றல், சேவை மற்றும் மக்கள் தொடர்பு மூலம் புள்ளிகளை ஈட்டுங்கள்.",
+      "badgeTitle": "பேட்ஜ்களை திறங்கள்",
+      "badgeSub": "உங்கள் சாதனைகளை சுயவிவரத்தில் காட்டுங்கள்.",
+      "endorseTitle": "ஆதரவை பெறுங்கள்",
+      "endorseSub": "உங்கள் தொகுதி மக்கள் உங்கள் வேட்புமனுவுக்கு ஆதரவளிக்கட்டும்.",
+      "goalTitle": "இலக்கை தெரிவியுங்கள்",
+      "goalSub": "எந்த தொகுதியில் எப்போது போட்டியிட விரும்புகிறீர்கள் என்று வாக்காளர்களுக்கு கூறுங்கள்."
+    }
+  },
+  "departments": {
+    "title": "துறை பணியகம்",
+    "selectDepartment": "துறையைத் தேர்ந்தெடுக்கவும்",
+    "pendingAlerts": "{{count}} நிலுவையில் உள்ள எச்சரிக்கைகள்",
+    "noAlerts": "இந்த துறைக்கு எச்சரிக்கைகள் எதுவும் இல்லை",
+    "acknowledge": "உறுதிப்படுத்து",
+    "genuine": "உண்மையான எச்சரிக்கை",
+    "falseAlarm": "தவறான தகவல்",
+    "unableToVerify": "சரிபார்க்க முடியவில்லை",
+    "reporterCredibility": "தகவல் தருபவரின் நம்பகத்தன்மை",
+    "dispatchedAt": "{{time}} அனுப்பப்பட்டது"
+  },
+  "devSwitches": {
+    "title": "டெவலப்பர் அம்ச சுவிட்சுகள்",
+    "subtitle": "சோதனை அம்சங்களை இயக்கவும் அல்லது நிறுத்தவும்",
+    "done": "முடிந்தது",
+    "reset": "மீட்டமை",
+    "enableAll": "அனைத்தையும் இயக்கு"
+  },
+  "notifications": {
+    "title": "அறிவிப்புகள்",
+    "markAllRead": "அனைத்தும் படித்ததாகக் குறி",
+    "clearAll": "அனைத்தும் நீக்கு",
+    "noNotifications": "அறிவிப்புகள் இல்லை",
+    "caughtUp": "அனைத்து அறிவிப்புகளையும் பார்த்துவிட்டீர்கள்!",
+    "justNow": "இப்போது",
+    "minutesAgo": "{{n}} நிமிடங்களுக்கு முன்",
+    "hoursAgo": "{{n}} மணிநேரத்திற்கு முன்",
+    "daysAgo": "{{n}} நாட்களுக்கு முன்"
+  },
+  "politicianPortal": {
+    "screenTitle": "அரசியல்வாதி போர்டல்",
+    "registeredPoliticians": "சரிபார்க்கப்பட்ட மக்கள் பிரதிநிதிகள் & வேட்பாளர்கள்",
+    "upcomingEvents": "வரவிருக்கும் பொதுக்கூட்டங்கள் & பேரணிகள்",
+    "allEvents": "பொது நிகழ்வுகள்",
+    "eManifestos": "டிஜிட்டல் தேர்தல் அறிக்கைகள் & வாக்குறுதிகள்",
+    "opinionSurveys": "மக்கள் கருத்துக்கணிப்புகள்",
+    "tabPoliticians": "அரசியல்வாதிகள்",
+    "tabEvents": "நிகழ்வுகள்",
+    "tabManifestos": "தேர்தல் அறிக்கை",
+    "tabSurveys": "கருத்துக்கணிப்புகள்"
+  },
+  "civicMetrics": {
+    "screenTitle": "குடிமை செயல்பாடு & அளவீடுகள்",
+    "screenSubtitle": "பட்ஜெட், வருகை, மசோதாக்கள் & திட்டங்கள்",
+    "stateBudgetOverview": "மாநில பட்ஜெட் கண்ணோட்டம்",
+    "noBudgetData": "இந்த மாநிலத்திற்கு பட்ஜெட் விவரங்கள் இல்லை",
+    "legislatorAttendance": "சட்டமன்ற உறுப்பினர் வருகை ({{count}})",
+    "activeBills": "செயலில் உள்ள மசோதாக்கள் ({{count}})",
+    "governmentSchemes": "அரசு நலத்திட்டங்கள் ({{count}})",
+    "developmentProjects": "வளர்ச்சித் திட்டங்கள் ({{count}})",
+    "tabBudget": "பட்ஜெட்",
+    "tabAttendance": "வருகை",
+    "tabBills": "மசோதாக்கள்",
+    "tabSchemes": "திட்டங்கள்",
+    "tabProjects": "திட்டங்கள்",
+    "tabRTI": "RTI"
+  },
+  "liveElection": {
+    "screenTitle": "நேரலை தேர்தல் மையம்",
+    "screenSubtitle": "உண்மையான நேர வாக்கு எண்ணிக்கை & முடிவுகள்",
+    "live": "நேரலை",
+    "noLiveElection": "தற்போது நேரலை தேர்தல் எதுவும் நடைபெறவில்லை",
+    "noLiveElectionDesc": "வாக்கு எண்ணிக்கை தொடங்கும் போது நேரலை முடிவுகள் இங்குக் காட்டப்படும்.",
+    "voteShareComparison": "வாக்கு சதவீத ஒப்பீடு",
+    "constituencyResults": "தொகுதி முடிவுகள் ({{count}})",
+    "tabOverview": "கண்ணோட்டம்",
+    "tabConstituencies": "தொகுதிகள்",
+    "tabPipeline": "தரவு விவரம்"
   }
-};
+}
 
 export default ta;

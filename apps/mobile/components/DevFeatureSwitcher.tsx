@@ -10,6 +10,7 @@ import {
   Platform,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import { useTranslation } from 'react-i18next';
 import { useFeatureFlagsStore } from '../lib/featureFlags';
 import { useTheme } from '../lib/theme';
 import type { AppFeatureFlags } from '@kshetra/shared';
@@ -164,6 +165,7 @@ const FLAG_GROUPS: FlagGroup[] = [
 ];
 
 export function DevFeatureSwitcher({ visible, onClose }: Props) {
+  const { t } = useTranslation();
   const { colors } = useTheme();
   const flags = useFeatureFlagsStore();
   const setFlag = useFeatureFlagsStore((s) => s.setFlag);
@@ -184,7 +186,7 @@ export function DevFeatureSwitcher({ visible, onClose }: Props) {
               <Ionicons name="toggle" size={14} color={colors.primary} />
               <Text style={[styles.badgeText, { color: colors.primary }]}>DEV CONTROL</Text>
             </View>
-            <Text style={[styles.headerTitle, { color: colors.text }]}>Feature Switches</Text>
+            <Text style={[styles.headerTitle, { color: colors.text }]}>{t('devSwitches.title', { defaultValue: 'Developer Feature Switches' })}</Text>
           </View>
           <TouchableOpacity onPress={onClose} style={styles.closeButton}>
             <Ionicons name="close-circle" size={28} color={colors.textSecondary} />
@@ -193,7 +195,7 @@ export function DevFeatureSwitcher({ visible, onClose }: Props) {
 
         <ScrollView style={styles.content} showsVerticalScrollIndicator={false}>
           <Text style={[styles.subtitle, { color: colors.textSecondary }]}>
-            Toggle features on or off in real-time. Changes take effect instantly without restarting the app.
+            {t('devSwitches.subtitle', { defaultValue: 'Toggle experimental and release features' })}
           </Text>
 
           {FLAG_GROUPS.map((group, gIdx) => (
@@ -237,7 +239,7 @@ export function DevFeatureSwitcher({ visible, onClose }: Props) {
             onPress={resetFlags}
           >
             <Ionicons name="refresh" size={16} color={colors.danger} />
-            <Text style={[styles.resetText, { color: colors.danger }]}>Reset All to Default Settings</Text>
+            <Text style={[styles.resetText, { color: colors.danger }]}>{t('devSwitches.reset', { defaultValue: 'Reset All to Default Settings' })}</Text>
           </TouchableOpacity>
 
           <View style={{ height: 40 }} />

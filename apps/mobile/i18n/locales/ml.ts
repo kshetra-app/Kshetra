@@ -1,7 +1,7 @@
 /**
  * ML translation
  */
-const ml = {
+const ml =  {
   "common": {
     "appName": "ക്ഷേത്ര",
     "loading": "ശേഖരിക്കുന്നു…",
@@ -443,6 +443,47 @@ const ml = {
       "constituency_alertsDesc": "നിങ്ങളുടെ നിയോജകമണ്ഡലത്തിൽ നിന്നുള്ള വാർത്തകളും അറിയിപ്പുകളും",
       "headlines": "പ്രധാന വാർത്തകൾ",
       "headlinesDesc": "പ്രധാന രാഷ്ട്രീയ വാർത്തകളും വിവരങ്ങളും"
+    },
+    "allowNotifications": "അറിയിപ്പുകൾ അനുവദിക്കുക",
+    "receivingUpdates": "അപ്‌ഡേറ്റുകൾ ലഭിക്കുന്നു",
+    "typesHeader": "അറിയിപ്പ് തരങ്ങൾ",
+    "types": {
+      "election_results": {
+        "label": "തിരഞ്ഞെടുപ്പ് ഫലങ്ങൾ",
+        "description": "ഫലങ്ങൾ പ്രഖ്യാപിക്കുമ്പോൾ ഉടനടി അറിയുക"
+      },
+      "constituency_updates": {
+        "label": "മണ്ഡല വിവരങ്ങൾ",
+        "description": "നിങ്ങൾ പിന്തുടരുന്ന മണ്ഡലങ്ങളുടെ വിവരങ്ങൾ"
+      },
+      "civic_issue": {
+        "label": "പൗര പ്രശ്നങ്ങൾ",
+        "description": "സമീപത്തെ പ്രശ്നങ്ങളും എംഎൽഎയുടെ പ്രതികരണങ്ങളും"
+      },
+      "promise_update": {
+        "label": "വാഗ്ദാന ട്രാക്കർ",
+        "description": "തിരഞ്ഞെടുപ്പ് വാഗ്ദാനങ്ങളുടെ പുരോഗതി"
+      },
+      "delimitation_alert": {
+        "label": "പുനർനിർണ്ണയ വിവരങ്ങൾ",
+        "description": "അതിർത്തി മാറ്റങ്ങളും കമ്മീഷൻ അറിയിപ്പുകളും"
+      },
+      "analytics_insight": {
+        "label": "ഡാറ്റാ വിശകലനം",
+        "description": "സംസ്ഥാനത്തെക്കുറിച്ചുള്ള വിവര വിശകലനങ്ങൾ"
+      },
+      "community_activity": {
+        "label": "കമ്മ്യൂണിറ്റി",
+        "description": "മറുപടികളും വെല്ലുവിളികളും"
+      },
+      "new_state_added": {
+        "label": "പുതിയ സംസ്ഥാന ഡാറ്റ",
+        "description": "പുതിയ സംസ്ഥാന വിവരങ്ങൾ ലഭ്യമാകുമ്പോൾ"
+      },
+      "app_updates": {
+        "label": "ആപ്പ് അപ്‌ഡേറ്റുകൾ",
+        "description": "പുതിയ സവിശേഷതകളും മെച്ചപ്പെടുത്തലുകളും"
+      }
     }
   },
   "onboarding": {
@@ -1394,7 +1435,254 @@ const ml = {
     "crorepati": "കോടീശ്വരൻ",
     "case": "കേസ്",
     "cases": "കേസുകൾ"
+  },
+  "more": {
+    "title": "കൂടുതൽ",
+    "subtitle": "മറ്റെല്ലാം, വെറും രണ്ട് ടാപ്പുകൾ മാത്രം അകലെ",
+    "campaignHQTitle": "തിരഞ്ഞെടുപ്പ് പ്രചാരണ ആസ്ഥാനം",
+    "campaignHQDesc": "തിരഞ്ഞെടുപ്പിൽ മത്സരിക്കുക, പ്രചാരണം നിയന്ത്രിക്കുക, വാട്സാപ്പിലൂടെ വോട്ടർമാരിലേക്ക് എത്തുക",
+    "sections": {
+      "politiciansAndCampaign": "രാഷ്ട്രീയക്കാരും പ്രചാരണവും",
+      "liveMediaExchange": "തത്സമയ മാധ്യമ വിനിമയം",
+      "civicAndElections": "പൗരസേവനങ്ങളും തിരഞ്ഞെടുപ്പുകളും",
+      "account": "അക്കൗണ്ട്"
+    },
+    "tiles": {
+      "politicianPortal": "രാഷ്ട്രീയ പോർട്ടൽ",
+      "becomeAspirant": "സ്ഥാനാർത്ഥിയാകൂ",
+      "campaignManager": "പ്രചാരണ മാനേജർ",
+      "leadershipAcademy": "നേതൃത്വ അക്കാദമി",
+      "candidateXRay": "സ്ഥാനാർത്ഥി എക്സ്-റേ",
+      "goLive": "തത്സമയം പോകുക",
+      "kshetraLive": "ക്ഷേത്ര ലൈവ്",
+      "deptConsole": "ഡിപ്പാർട്ട്‌മെന്റ് കൺസോൾ",
+      "moderation": "മോഡറേഷൻ",
+      "distribution": "വിതരണം",
+      "devSwitches": "ഡെവ് സ്വിച്ചുകൾ",
+      "civicDashboard": "സിവിക് ഡാഷ്‌ബോർഡ്",
+      "delimitation": "മണ്ഡല പുനർനിർണ്ണയം",
+      "analytics": "ആഴത്തിലുള്ള വിശകലനം",
+      "civicMetrics": "പൗര മെട്രിക്സ്",
+      "liveElection": "ലൈവ് തിരഞ്ഞെടുപ്പ്",
+      "parliament": "പാർലമെന്റ്",
+      "profile": "പ്രൊഫൈൽ",
+      "notifications": "അറിയിപ്പുകൾ",
+      "settings": "ക്രമീകരണങ്ങൾ",
+      "aiAssistant": "എഐ അസിസ്റ്റന്റ്"
+    }
+  },
+  "analytics": {
+    "deepTitle": "ആഴത്തിലുള്ള വിശകലനം",
+    "pulseIntel": "പൾസ് ഇന്റൽ",
+    "vulnerabilityTitle": "ഭരണവിരുദ്ധ വികാരം (AIVI)",
+    "aiviConfidence": "AIVI സൂചിക • കൃത്യത {{pct}}%",
+    "estSwing": "പ്രതീക്ഷിക്കുന്ന മാറ്റ സാധ്യത: {{pct}}%",
+    "keyDrivers": "പ്രധാന ഘടകങ്ങൾ",
+    "highFlip": "മാറ്റത്തിന് ഉയർന്ന സാധ്യത",
+    "contested": "ശക്തമായ മത്സര മണ്ഡലം",
+    "incumbentAdvantage": "ഭരണപക്ഷത്തിന് മുൻതൂക്കം",
+    "twoTermIncumbency": "തുടർഭരണ സമ്മർദ്ദം",
+    "unresolvedGrievance": "പരിഹരിക്കപ്പെടാത്ത പരാതികൾ",
+    "negativeSentiment": "പ്രതികൂല ജനവികാരം",
+    "adverseDemographics": "ജനസംഖ്യാപരമായ മാറ്റങ്ങൾ",
+    "criticalNegativeNews": "വാർത്തകളിലെ പ്രതികൂല ഘടകങ്ങൾ",
+    "narrowMargin": "കുറഞ്ഞ ഭൂരിപക്ഷം (<5%)",
+    "likelyHold": "നിലനിർത്താൻ സാധ്യത",
+    "leanIncumbent": "ഭരണപക്ഷത്തേക്ക് ചായ്‌വ്",
+    "tossup": "തുല്യ മത്സരം",
+    "leanChallenger": "പ്രതിപക്ഷത്തേക്ക് ചായ്‌വ്",
+    "likelyFlip": "പരാജയ സാധ്യത",
+    "sentimentRadarTitle": "5-സ്തംഭ ജനവികാര റഡാർ",
+    "sentimentRadarSubtitle": "തത്സമയ ജനവികാരവും തൃപ്തിയും",
+    "netMood": "ജനവികാരം",
+    "governanceResponse": "ഭരണവും പ്രതികരണവും",
+    "civicInfrastructure": "അടിസ്ഥാന സൗകര്യങ്ങൾ",
+    "welfareSchemes": "ക്ഷേമ പദ്ധതികൾ",
+    "economyLivelihood": "സാമ്പത്തികവും ഉപജീവനവും",
+    "candidateTrust": "സ്ഥാനാർത്ഥിയിലുള്ള വിശ്വാസം",
+    "executiveBriefTitle": "എക്സിക്യൂട്ടീവ് എഐ വിവരണം",
+    "strategicTakeaways": "തന്ത്രപരമായ കണ്ടെത്തലുകൾ",
+    "recommendedCounterActions": "ശുപാർശ ചെയ്യുന്ന നടപടികൾ",
+    "criticalBattlegrounds": "പ്രധാന പോരാട്ട മണ്ഡലങ്ങൾ",
+    "seatDistribution": "സീറ്റ് വിതരണം",
+    "keyInsights": "പ്രധാന വിവരങ്ങൾ",
+    "totalSeats": "ആകെ സീറ്റുകൾ",
+    "rulingParty": "ഭരണകക്ഷി",
+    "swingSeats": "മാറ്റ സീറ്റുകൾ",
+    "margin": "ഭൂരിപക്ഷം",
+    "won": "വിജയം",
+    "vs": "എതിരെ"
+  },
+  "campaignManager": {
+    "tabs": {
+      "campaigns": "പ്രചാരണങ്ങൾ",
+      "outreach": "ജനസമ്പർക്കം",
+      "ads": "പരസ്യങ്ങൾ",
+      "revenue": "വരുമാനം",
+      "volunteers": "വോളണ്ടിയർമാർ",
+      "booths": "ബൂത്തുകൾ"
+    },
+    "types": {
+      "election": "തിരഞ്ഞെടുപ്പ് പ്രചാരണം",
+      "awareness": "ബോധവൽക്കരണം",
+      "fundraising": "ഫണ്ട് സമാഹരണം",
+      "outreach": "ജനസമ്പർക്കം",
+      "issue_advocacy": "പ്രശ്നപരിഹാര പ്രചാരണം",
+      "brand_building": "പ്രതിച്ഛായ നിർമ്മാണം",
+      "get_out_vote": "വോട്ടിംഗ് പ്രോത്സാഹനം"
+    },
+    "statuses": {
+      "active": "സജീവം",
+      "paused": "നിർത്തിവെച്ചു",
+      "draft": "ഡ്രാഫ്റ്റ്",
+      "completed": "പൂർത്തിയായി",
+      "planned": "ആസൂത്രണം ചെയ്തത്",
+      "cancelled": "റദ്ദാക്കി"
+    },
+    "impressions": "ഇംപ്രഷനുകൾ",
+    "totalReach": "ആകെ റീച്ച്",
+    "engagement": "ഇടപെടൽ",
+    "sentiment": "പ്രതികരണം",
+    "budget": "ബജറ്റ്",
+    "activeCampaigns": "സജീവ പ്രചാരണങ്ങൾ",
+    "adCount": "{{count}} പരസ്യങ്ങൾ",
+    "volunteerCount": "{{count}} വോളണ്ടിയർമാർ",
+    "boothCount": "{{covered}}/{{total}} ബൂത്തുകൾ",
+    "campaignNames": {
+      "tsReportCard": "തെലങ്കാന വികസന റിപ്പോർട്ട്",
+      "youthConnect": "യൂത്ത് കണക്ട് 2026",
+      "guaranteesImpact": "5 ഗ്യാരന്റി പദ്ധതികളുടെ റിപ്പോർട്ട്"
+    }
+  },
+  "leadershipAcademy": {
+    "categories": {
+      "electoral_process": "തിരഞ്ഞെടുപ്പ് പ്രക്രിയ",
+      "campaign_strategy": "പ്രചാരണ തന്ത്രം",
+      "legal_framework": "നിയമ ചട്ടക്കൂട്",
+      "public_speaking": "പ്രസംഗകല",
+      "community_organizing": "സമൂഹ സമാഹരണം",
+      "digital_campaigning": "ഡിജിറ്റൽ പ്രചാരണം",
+      "policy_making": "നയരൂപീകരണം",
+      "ethics_governance": "ധാർമ്മികതയും ഭരണവും"
+    },
+    "contentTypes": {
+      "article": "ലേഖനം",
+      "video": "വീഡിയോ",
+      "quiz": "ക്വിസ്",
+      "case_study": "കേസ് സ്റ്റഡി"
+    },
+    "difficulty": {
+      "beginner": "പ്രാഥമികം",
+      "intermediate": "ഇടത്തരം",
+      "advanced": "ഉയർന്ന തലം"
+    },
+    "min": "മിനിറ്റ്",
+    "earned": "നേടിയത്",
+    "locked": "പൂട്ടിയത്",
+    "aspiringLeaders": "ഭാവി നേതാക്കൾ",
+    "noActiveChallenges": "വെല്ലുവിളികൾ ഇല്ല",
+    "noPublicAspirants": "സ്ഥാനാർത്ഥികൾ ഇല്ല",
+    "moduleNames": {
+      "howElectionsWork": "ഇന്ത്യൻ തിരഞ്ഞെടുപ്പ് സംവിധാനം",
+      "filingNomination": "നാമനിർദ്ദേശ പത്രിക സമർപ്പണം",
+      "electionSymbols": "തിരഞ്ഞെടുപ്പ് ചിഹ്നങ്ങളുടെ പ്രാധാന്യം",
+      "grassrootsCampaign": "ഗ്രാസ്റൂട്ട് പ്രചാരണ രൂപീകരണം",
+      "fundraising": "സ്വതന്ത്രർക്കുള്ള ഫണ്ട് സമാഹരണം",
+      "rpaAct": "ജനപ്രാതിനിധ്യ നിയമം"
+    }
+  },
+  "becomeAspirant": {
+    "screenTitle": "സ്ഥാനാർത്ഥിയാകൂ",
+    "headerTitle": "പൗര സ്ഥാനാർത്ഥികൾ",
+    "headerSubtitle": "വിശ്വാസ്യത വളർത്തൂ, പിന്തുണ നേടൂ",
+    "registerCTA": "രജിസ്റ്റർ ചെയ്യുക",
+    "yourBadges": "ബാഡ്ജുകൾ",
+    "earnedLocked": "{{earned}} നേടി · {{locked}} ബാക്കി",
+    "aspiringIn": "സ്ഥാനാർത്ഥി · {{seat}} · {{year}}",
+    "profileActive": "സ്ഥാനാർത്ഥി പ്രൊഫൈൽ സജീവമാണ്",
+    "heroTitle": "സമൂഹത്തിനായി മുന്നിട്ടിറങ്ങൂ",
+    "heroSub": "തിരഞ്ഞെടുപ്പിൽ മത്സരിക്കുന്നതിന് മുമ്പ് നിങ്ങളുടെ പൊതുസേവന റെക്കോർഡ് കെട്ടിപ്പടുക്കുക.",
+    "benefits": {
+      "scoreTitle": "പൗര സ്കോർ നേടുക",
+      "scoreSub": "പഠനത്തിലൂടെയും സേവനത്തിലൂടെയും പോയിന്റുകൾ നേടുക.",
+      "badgeTitle": "ബാഡ്ജുകൾ അൺലോക്ക് ചെയ്യുക",
+      "badgeSub": "നിങ്ങളുടെ പ്രൊഫൈലിൽ നേട്ടങ്ങൾ കാണിക്കുക.",
+      "endorseTitle": "പിന്തുണ നേടുക",
+      "endorseSub": "മണ്ഡലത്തിലെ ജനങ്ങൾ നിങ്ങളെ പിന്തുണയ്ക്കട്ടെ.",
+      "goalTitle": "ലക്ഷ്യം പ്രഖ്യാപിക്കുക",
+      "goalSub": "ഏത് മണ്ഡലത്തിൽ എപ്പോൾ മത്സരിക്കാൻ ആഗ്രഹിക്കുന്നുവെന്ന് വ്യക്തമാക്കുക."
+    }
+  },
+  "departments": {
+    "title": "ഡിപ്പാർട്ട്‌മെന്റ് കൺസോൾ",
+    "selectDepartment": "വകുപ്പ് തിരഞ്ഞെടുക്കുക",
+    "pendingAlerts": "{{count}} തീർപ്പുകൽപ്പിക്കാത്ത അറിയിപ്പുകൾ",
+    "noAlerts": "ഈ വകുപ്പിൽ അറിയിപ്പുകൾ ഒന്നുമില്ല",
+    "acknowledge": "പരിശോധിക്കുക",
+    "genuine": "യഥാർത്ഥ വിവരം",
+    "falseAlarm": "തെറ്റായ വിവരം",
+    "unableToVerify": "സ്ഥിരീകരിക്കാൻ കഴിഞ്ഞില്ല",
+    "reporterCredibility": "റിപ്പോർട്ടറുടെ വിശ്വാസ്യത",
+    "dispatchedAt": "{{time}} അയച്ചു"
+  },
+  "devSwitches": {
+    "title": "ഡെവലപ്പർ സ്വിച്ചുകൾ",
+    "subtitle": "പരീക്ഷണാടിസ്ഥാനത്തിലുള്ള സവിശേഷതകൾ നിയന്ത്രിക്കുക",
+    "done": "പൂർത്തിയായി",
+    "reset": "റീസെറ്റ്",
+    "enableAll": "എല്ലാം പ്രവർത്തനക്ഷമമാക്കുക"
+  },
+  "notifications": {
+    "title": "അറിയിപ്പുകൾ",
+    "markAllRead": "എല്ലാം വായിച്ചതായി അടയാളപ്പെടുത്തുക",
+    "clearAll": "എല്ലാം മായ്‌ക്കുക",
+    "noNotifications": "അറിയിപ്പുകൾ ഒന്നുമില്ല",
+    "caughtUp": "എല്ലാ വിവരങ്ങളും നിങ്ങൾ കണ്ടുകഴിഞ്ഞു!",
+    "justNow": "ഇപ്പോൾ",
+    "minutesAgo": "{{n}} മിനിറ്റ് മുൻപ്",
+    "hoursAgo": "{{n}} മണിക്കൂർ മുൻപ്",
+    "daysAgo": "{{n}} ദിവസം മുൻപ്"
+  },
+  "politicianPortal": {
+    "screenTitle": "രാഷ്ട്രീയ പോർട്ടൽ",
+    "registeredPoliticians": "സ്ഥിരീകരിച്ച ജനപ്രതിനിധികളും സ്ഥാനാർത്ഥികളും",
+    "upcomingEvents": "വരാനിരിക്കുന്ന പൊതുയോഗങ്ങളും റാലികളും",
+    "allEvents": "പൊതുപരിപാടികൾ",
+    "eManifestos": "ഡിജിറ്റൽ പ്രകടനപത്രികകൾ",
+    "opinionSurveys": "അഭിപ്രായ സർവേകൾ",
+    "tabPoliticians": "നേതാക്കൾ",
+    "tabEvents": "പരിപാടികൾ",
+    "tabManifestos": "പ്രകടനപത്രിക",
+    "tabSurveys": "സർവേകൾ"
+  },
+  "civicMetrics": {
+    "screenTitle": "പൗര പ്രകടനവും അളവുകോലുകളും",
+    "screenSubtitle": "ബജറ്റ്, ഹാജർ, ബില്ലുകൾ, പദ്ധതികൾ",
+    "stateBudgetOverview": "സംസ്ഥാന ബജറ്റ് അവലോകനം",
+    "noBudgetData": "ഈ സംസ്ഥാനത്തിന് ബജറ്റ് വിവരങ്ങൾ ലഭ്യമല്ല",
+    "legislatorAttendance": "ജനപ്രതിനിധികളുടെ ഹാജർ ({{count}})",
+    "activeBills": "സജീവ ബില്ലുകൾ ({{count}})",
+    "governmentSchemes": "ക്ഷേമ പദ്ധതികൾ ({{count}})",
+    "developmentProjects": "വികസന പദ്ധതികൾ ({{count}})",
+    "tabBudget": "ബജറ്റ്",
+    "tabAttendance": "ഹാജർ",
+    "tabBills": "ബില്ലുകൾ",
+    "tabSchemes": "പദ്ധതികൾ",
+    "tabProjects": "പദ്ധതികൾ",
+    "tabRTI": "RTI"
+  },
+  "liveElection": {
+    "screenTitle": "ലൈവ് തിരഞ്ഞെടുപ്പ് കേന്ദ്രം",
+    "screenSubtitle": "തത്സമയ വോട്ടെണ്ണലും ഫലങ്ങളും",
+    "live": "ലൈവ്",
+    "noLiveElection": "നിലവിൽ തത്സമയ തിരഞ്ഞെടുപ്പുകൾ ഇല്ല",
+    "noLiveElectionDesc": "വോട്ടെണ്ണൽ ആരംഭിക്കുമ്പോൾ ഫലങ്ങൾ തത്സമയം ലഭ്യമാകും.",
+    "voteShareComparison": "വോട്ട് വിഹിത താരതമ്യം",
+    "constituencyResults": "മണ്ഡല ഫലങ്ങൾ ({{count}})",
+    "tabOverview": "അവലോകനം",
+    "tabConstituencies": "മണ്ഡലങ്ങൾ",
+    "tabPipeline": "പൈപ്പ്‌ലൈൻ"
   }
-};
+}
 
 export default ml;

@@ -1,6 +1,7 @@
 import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import { useTranslation } from 'react-i18next';
 import { useTheme } from '../lib/theme';
 import type { SentimentRadarScores } from '@kshetra/shared';
 
@@ -24,7 +25,19 @@ const DIMENSIONS: DimensionConfig[] = [
 ];
 
 export function SentimentRadarChart({ scores }: Props) {
+  const { t } = useTranslation();
   const { colors } = useTheme();
+
+  const localizeDim = (key: string, defaultLabel: string) => {
+    switch (key) {
+      case 'governance': return t('analytics.governanceResponse', { defaultValue: defaultLabel });
+      case 'infrastructure': return t('analytics.civicInfrastructure', { defaultValue: defaultLabel });
+      case 'welfare': return t('analytics.welfareSchemes', { defaultValue: defaultLabel });
+      case 'economy': return t('analytics.economyLivelihood', { defaultValue: defaultLabel });
+      case 'candidateTrust': return t('analytics.candidateTrust', { defaultValue: defaultLabel });
+      default: return defaultLabel;
+    }
+  };
 
   return (
     <View style={[styles.card, { backgroundColor: colors.surface, borderColor: colors.border }]}>
@@ -34,16 +47,18 @@ export function SentimentRadarChart({ scores }: Props) {
             <Ionicons name="speedometer" size={18} color={colors.primary} />
           </View>
           <View>
-            <Text style={[styles.title, { color: colors.text }]}>5-Pillar Sentiment Radar</Text>
+            <Text style={[styles.title, { color: colors.text }]}>
+              {t('analytics.sentimentRadarTitle', { defaultValue: '5-Pillar Sentiment Radar' })}
+            </Text>
             <Text style={[styles.subtitle, { color: colors.textMuted }]}>
-              Real-time ground pulse & satisfaction metrics
+              {t('analytics.sentimentRadarSubtitle', { defaultValue: 'Real-time ground pulse & satisfaction metrics' })}
             </Text>
           </View>
         </View>
 
         <View style={[styles.netSentimentPill, { backgroundColor: scores.overallSentiment >= 0 ? '#10B98115' : '#EF444415' }]}>
           <Text style={[styles.netSentimentText, { color: scores.overallSentiment >= 0 ? '#10B981' : '#EF4444' }]}>
-            {scores.overallSentiment >= 0 ? `+${scores.overallSentiment}` : scores.overallSentiment} Net Mood
+            {scores.overallSentiment >= 0 ? `+${scores.overallSentiment}` : scores.overallSentiment} {t('analytics.netMood', { defaultValue: 'Net Mood' })}
           </Text>
         </View>
       </View>
@@ -56,7 +71,7 @@ export function SentimentRadarChart({ scores }: Props) {
               <View style={styles.dimHeader}>
                 <View style={styles.dimLabelGroup}>
                   <Ionicons name={dim.icon} size={14} color={dim.color} />
-                  <Text style={[styles.dimLabel, { color: colors.text }]}>{dim.label}</Text>
+                  <Text style={[styles.dimLabel, { color: colors.text }]}>{localizeDim(dim.key, dim.label)}</Text>
                 </View>
                 <Text style={[styles.dimScore, { color: colors.text }]}>{val}%</Text>
               </View>

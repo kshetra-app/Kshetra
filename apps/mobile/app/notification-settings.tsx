@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next';
 import { View, Text, StyleSheet, ScrollView, Switch, Platform } from 'react-native';
 import { Stack } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
@@ -81,6 +82,7 @@ const NOTIFICATION_TYPES: NotifToggle[] = [
 ];
 
 export default function NotificationSettingsScreen() {
+  const { t } = useTranslation();
   const { colors } = useTheme();
   const enabled = useNotificationsStore((s) => s.enabled);
   const toggleEnabled = useNotificationsStore((s) => s.toggleEnabled);
@@ -93,7 +95,7 @@ export default function NotificationSettingsScreen() {
       <Stack.Screen
         options={{
           headerShown: true,
-          title: 'Notification Settings',
+          title: t('notificationSettings.title', { defaultValue: 'Notification Settings' }),
           headerStyle: { backgroundColor: colors.surface },
           headerTintColor: colors.primary,
         }}
@@ -111,9 +113,11 @@ export default function NotificationSettingsScreen() {
               />
             </View>
             <View style={styles.masterInfo}>
-              <Text style={[styles.masterTitle, { color: colors.text }]}>Allow Notifications</Text>
+              <Text style={[styles.masterTitle, { color: colors.text }]}>
+                {t('notificationSettings.allowNotifications', { defaultValue: 'Allow Notifications' })}
+              </Text>
               <Text style={[styles.masterSubtitle, { color: colors.textMuted }]}>
-                {enabled ? 'Receiving updates' : 'All notifications paused'}
+                {enabled ? t('notificationSettings.receivingUpdates', { defaultValue: 'Receiving updates' }) : t('notificationSettings.paused', { defaultValue: 'All notifications paused' })}
               </Text>
             </View>
             <Switch
@@ -127,7 +131,9 @@ export default function NotificationSettingsScreen() {
 
         {/* Category toggles */}
         <View style={styles.section}>
-          <Text style={[styles.sectionTitle, { color: colors.textMuted }]}>Notification Types</Text>
+          <Text style={[styles.sectionTitle, { color: colors.textMuted }]}>
+            {t('notificationSettings.typesHeader', { defaultValue: 'NOTIFICATION TYPES' })}
+          </Text>
           <View style={[styles.card, { backgroundColor: colors.surface, borderColor: (colors as any).goldBorder || colors.border, borderWidth: 1 }]}>
             {NOTIFICATION_TYPES.map((notif, idx) => (
               <View
@@ -143,9 +149,11 @@ export default function NotificationSettingsScreen() {
                 </View>
                 <View style={styles.categoryInfo}>
                   <Text style={[styles.categoryLabel, { color: colors.text }, !enabled && { color: colors.textMuted }]}>
-                    {notif.label}
+                    {t(`notificationSettings.types.${notif.category}.label`, { defaultValue: notif.label })}
                   </Text>
-                  <Text style={[styles.categoryDesc, { color: colors.textMuted }]}>{notif.description}</Text>
+                  <Text style={[styles.categoryDesc, { color: colors.textMuted }]}>
+                    {t(`notificationSettings.types.${notif.category}.description`, { defaultValue: notif.description })}
+                  </Text>
                 </View>
                 <Switch
                   value={categories[notif.category] && enabled}
@@ -163,7 +171,7 @@ export default function NotificationSettingsScreen() {
         <View style={styles.infoSection}>
           <Ionicons name="information-circle-outline" size={16} color={colors.textMuted} />
           <Text style={[styles.infoText, { color: colors.textMuted }]}>
-            Notifications are sent for critical updates only. You can adjust per-constituency alerts from the constituency page.
+            {t('notificationSettings.infoText', { defaultValue: 'Notifications are sent for critical updates only. You can adjust per-constituency alerts from the constituency page.' })}
           </Text>
         </View>
         <View style={{ height: Math.max(insets.bottom, 20) }} />

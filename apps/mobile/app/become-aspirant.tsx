@@ -10,6 +10,7 @@ import React, { useState } from 'react';
 import { View, Text, StyleSheet, ScrollView, Pressable } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { Stack, useRouter } from 'expo-router';
+import { useTranslation } from 'react-i18next';
 import { useResponsive } from '../lib/responsive';
 import { useAspirantStore } from '../stores/aspirant';
 import CivicScoreCard from '../components/CivicScoreCard';
@@ -23,14 +24,8 @@ import {
 } from '../lib/aspirantTypes';
 import { useTheme } from '../lib/theme';
 
-const BENEFITS: { icon: string; title: string; sub: string }[] = [
-  { icon: 'trophy', title: 'Build a civic score', sub: 'Earn points for learning, engagement & community work.' },
-  { icon: 'ribbon', title: 'Unlock badges', sub: 'Showcase verified milestones on your public profile.' },
-  { icon: 'people', title: 'Get endorsed', sub: 'Let citizens in your constituency back your candidacy.' },
-  { icon: 'megaphone', title: 'Declare your goal', sub: 'Tell voters which seat and election year you aim for.' },
-];
-
 export default function BecomeAspirantScreen() {
+  const { t } = useTranslation();
   const router = useRouter();
   const { colors } = useTheme();
   const [registerVisible, setRegisterVisible] = useState(false);
@@ -45,11 +40,18 @@ export default function BecomeAspirantScreen() {
   const civicScore = getCivicScore();
   const { insets } = useResponsive();
 
+  const benefits = [
+    { icon: 'trophy', title: t('becomeAspirant.benefits.scoreTitle', { defaultValue: 'Build a civic score' }), sub: t('becomeAspirant.benefits.scoreSub', { defaultValue: 'Earn points for learning, engagement & community work.' }) },
+    { icon: 'ribbon', title: t('becomeAspirant.benefits.badgeTitle', { defaultValue: 'Unlock badges' }), sub: t('becomeAspirant.benefits.badgeSub', { defaultValue: 'Showcase verified milestones on your public profile.' }) },
+    { icon: 'people', title: t('becomeAspirant.benefits.endorseTitle', { defaultValue: 'Get endorsed' }), sub: t('becomeAspirant.benefits.endorseSub', { defaultValue: 'Let citizens in your constituency back your candidacy.' }) },
+    { icon: 'megaphone', title: t('becomeAspirant.benefits.goalTitle', { defaultValue: 'Declare your goal' }), sub: t('becomeAspirant.benefits.goalSub', { defaultValue: 'Tell voters which seat and election year you aim for.' }) },
+  ];
+
   return (
     <View style={[styles.container, { backgroundColor: colors.background }]}>
       <Stack.Screen
         options={{
-          title: 'Become an Aspirant',
+          title: t('becomeAspirant.screenTitle', { defaultValue: 'Become an Aspirant' }),
           headerStyle: { backgroundColor: colors.surface },
           headerTintColor: colors.primary,
         }}
@@ -62,8 +64,12 @@ export default function BecomeAspirantScreen() {
             <Ionicons name="arrow-back" size={22} color={colors.primary} />
           </Pressable>
           <View>
-            <Text style={[styles.headerTitle, { color: colors.text }]}>Civic Aspirants</Text>
-            <Text style={[styles.headerSubtitle, { color: colors.textMuted }]}>Build credentials, earn endorsements</Text>
+            <Text style={[styles.headerTitle, { color: colors.text }]}>
+              {t('becomeAspirant.headerTitle', { defaultValue: 'Civic Aspirants' })}
+            </Text>
+            <Text style={[styles.headerSubtitle, { color: colors.textMuted }]}>
+              {t('becomeAspirant.headerSubtitle', { defaultValue: 'Build credentials, earn endorsements' })}
+            </Text>
           </View>
         </View>
       </View>
@@ -81,16 +87,20 @@ export default function BecomeAspirantScreen() {
                   <Text style={styles.profileMetaName}>{profile?.displayName}</Text>
                   {profile?.targetConstituencyName ? (
                     <Text style={styles.profileMetaSub}>
-                      Aspiring · {profile.targetConstituencyName} · {profile.targetElectionYear}
+                      {t('becomeAspirant.aspiringIn', { seat: profile.targetConstituencyName, year: profile.targetElectionYear, defaultValue: `Aspiring · ${profile.targetConstituencyName} · ${profile.targetElectionYear}` })}
                     </Text>
                   ) : (
-                    <Text style={styles.profileMetaSub}>Civic aspirant profile active</Text>
+                    <Text style={styles.profileMetaSub}>
+                      {t('becomeAspirant.profileActive', { defaultValue: 'Civic aspirant profile active' })}
+                    </Text>
                   )}
                 </View>
               </View>
 
-              <Text style={styles.sectionTitle}>Your Badges</Text>
-              <Text style={styles.sectionSub}>{badges.length} earned · {13 - badges.length} locked</Text>
+              <Text style={styles.sectionTitle}>{t('becomeAspirant.yourBadges', { defaultValue: 'Your Badges' })}</Text>
+              <Text style={styles.sectionSub}>
+                {t('becomeAspirant.earnedLocked', { earned: badges.length, locked: 13 - badges.length, defaultValue: `${badges.length} earned · ${13 - badges.length} locked` })}
+              </Text>
               <CivicBadgeGrid earned={badges} />
             </>
           ) : (
@@ -100,15 +110,14 @@ export default function BecomeAspirantScreen() {
                 <View style={styles.heroIcon}>
                   <Ionicons name="rocket" size={30} color="#06B6D4" />
                 </View>
-                <Text style={styles.heroTitle}>Become an Aspirant</Text>
+                <Text style={styles.heroTitle}>{t('becomeAspirant.heroTitle', { defaultValue: 'Step up for your community' })}</Text>
                 <Text style={styles.heroSub}>
-                  Create a public civic profile, track your impact, and let your community
-                  rally behind you ahead of the next election.
+                  {t('becomeAspirant.heroSub', { defaultValue: 'Build your verified civic record and earn community trust before seeking election.' })}
                 </Text>
               </View>
 
               <View style={styles.benefits}>
-                {BENEFITS.map((b) => (
+                {benefits.map((b) => (
                   <View key={b.title} style={styles.benefitRow}>
                     <View style={styles.benefitIcon}>
                       <Ionicons name={b.icon as any} size={18} color="#06B6D4" />
@@ -123,7 +132,7 @@ export default function BecomeAspirantScreen() {
 
               <Pressable style={styles.cta} onPress={() => setRegisterVisible(true)}>
                 <Ionicons name="rocket" size={18} color="#FFFFFF" />
-                <Text style={styles.ctaText}>Create my aspirant profile</Text>
+                <Text style={styles.ctaText}>{t('becomeAspirant.registerCTA', { defaultValue: 'Register as Aspirant' })}</Text>
               </Pressable>
             </>
           )}

@@ -1,7 +1,7 @@
 ﻿/**
  * PA translation
  */
-const pa = {
+const pa =  {
   "common": {
     "appName": "ਖੇਤਰ",
     "loading": "ਲੋਡ ਹੋ ਰਿਹਾ ਹੈ…",
@@ -431,7 +431,7 @@ const pa = {
     }
   },
   "notificationSettings": {
-    "title": "ਨੋਟੀਫਿਕੇਸ਼ਨ ਸੈਟਿੰਗਜ਼",
+    "title": "ਸੂਚਨਾ ਸੈਟਿੰਗਾਂ",
     "masterToggle": "ਪੁਸ਼ ਨੋਟੀਫਿਕੇਸ਼ਨ",
     "masterDesc": "ਆਪਣੇ ਹਲਕਿਆਂ ਵਿੱਚ ਹੋਣ ਵਾਲੀਆਂ ਗਤੀਵਿਧੀਆਂ ਬਾਰੇ ਚੇਤਾਵਨੀਆਂ ਪ੍ਰਾਪਤ ਕਰੋ",
     "categories": {
@@ -443,6 +443,47 @@ const pa = {
       "constituency_alertsDesc": "ਤੁਹਾਡੇ ਹਲਕੇ ਦੀਆਂ ਖ਼ਬਰਾਂ ਅਤੇ ਚੇਤਾਵਨੀਆਂ",
       "headlines": "ਤਾਜ਼ਾ ਮੁੱਖ ਖ਼ਬਰਾਂ",
       "headlinesDesc": "ਮੁੱਖ ਰਾਜਨੀਤਿਕ ਖ਼ਬਰਾਂ ਅਤੇ ਅੱਪਡੇਟ"
+    },
+    "allowNotifications": "ਸੂਚਨਾਵਾਂ ਦੀ ਇਜਾਜ਼ਤ ਦਿਓ",
+    "receivingUpdates": "ਅੱਪਡੇਟ ਪ੍ਰਾਪਤ ਹੋ ਰਹੇ ਹਨ",
+    "typesHeader": "ਸੂਚਨਾਵਾਂ ਦੀਆਂ ਕਿਸਮਾਂ",
+    "types": {
+      "election_results": {
+        "label": "ਚੋਣ ਨਤੀਜੇ",
+        "description": "ਨਤੀਜੇ ਘੋਸ਼ਿਤ ਹੋਣ 'ਤੇ ਤੁਰੰਤ ਜਾਣਕਾਰੀ ਪ੍ਰਾਪਤ ਕਰੋ"
+      },
+      "constituency_updates": {
+        "label": "ਹਲਕੇ ਦੇ ਅੱਪਡੇਟ",
+        "description": "ਤੁਹਾਡੇ ਚੁਣੇ ਹੋਏ ਹਲਕਿਆਂ ਦੀ ਜਾਣਕਾਰੀ"
+      },
+      "civic_issue": {
+        "label": "ਨਾਗਰਿਕ ਮੁੱਦੇ",
+        "description": "ਨੇੜਲੇ ਮੁੱਦੇ ਅਤੇ ਵਿਧਾਇਕ ਦੇ ਜਵਾਬ"
+      },
+      "promise_update": {
+        "label": "ਵਾਅਦਾ ਟਰੈਕਰ",
+        "description": "ਚੋਣ ਵਾਅਦਿਆਂ ਦੀ ਪ੍ਰਗਤੀ"
+      },
+      "delimitation_alert": {
+        "label": "ਹਲਕਾਬੰਦੀ ਅਲਰਟ",
+        "description": "ਹੱਦਬੰਦੀ ਬਦਲਾਅ ਅਤੇ ਕਮਿਸ਼ਨ ਅੱਪਡੇਟ"
+      },
+      "analytics_insight": {
+        "label": "ਡੇਟਾ ਵਿਸ਼ਲੇਸ਼ਣ",
+        "description": "ਸੂਬੇ ਦੇ ਚੋਣ ਰੁਝਾਨਾਂ ਦਾ ਵਿਸ਼ਲੇਸ਼ਣ"
+      },
+      "community_activity": {
+        "label": "ਭਾਈਚਾਰਾ",
+        "description": "ਜਵਾਬ ਅਤੇ ਭਾਈਚਾਰਕ ਚੁਣੌਤੀਆਂ"
+      },
+      "new_state_added": {
+        "label": "ਨਵੇਂ ਰਾਜ ਦਾ ਡੇਟਾ",
+        "description": "ਜਦੋਂ ਨਵਾਂ ਡੇਟਾ ਉਪਲਬਧ ਹੋਵੇ"
+      },
+      "app_updates": {
+        "label": "ਐਪ ਅੱਪਡੇਟ",
+        "description": "ਨਵੀਆਂ ਵਿਸ਼ੇਸ਼ਤਾਵਾਂ ਅਤੇ ਸੁਧਾਰ"
+      }
     }
   },
   "onboarding": {
@@ -1393,7 +1434,254 @@ const pa = {
     "crorepati": "ਕਰੋੜਪਤੀ",
     "case": "ਮਾਮਲਾ",
     "cases": "ਮਾਮਲੇ"
+  },
+  "more": {
+    "title": "ਹੋਰ",
+    "subtitle": "ਬਾਕੀ ਸਭ ਕੁਝ, ਸਿਰਫ਼ ਦੋ ਟੈਪ ਦੂਰ",
+    "campaignHQTitle": "ਚੋਣ ਪ੍ਰਚਾਰ ਮੁੱਖ ਦਫ਼ਤਰ",
+    "campaignHQDesc": "ਚੋਣ ਲੜੋ, ਮੁਹਿੰਮ ਚਲਾਓ, ਵਟਸਐਪ ਅਤੇ ਐਸਐਮਐਸ ਰਾਹੀਂ ਵੋਟਰਾਂ ਤੱਕ ਪਹੁੰਚੋ",
+    "sections": {
+      "politiciansAndCampaign": "ਸਿਆਸਤਦਾਨ ਅਤੇ ਮੁਹਿੰਮ",
+      "liveMediaExchange": "ਲਾਈਵ ਮੀਡੀਆ ਐਕਸਚੇਂਜ",
+      "civicAndElections": "ਨਾਗਰਿਕ ਸੇਵਾਵਾਂ ਅਤੇ ਚੋਣਾਂ",
+      "account": "ਖਾਤਾ"
+    },
+    "tiles": {
+      "politicianPortal": "ਨੇਤਾ ਪੋਰਟਲ",
+      "becomeAspirant": "ਉਮੀਦਵਾਰ ਬਣੋ",
+      "campaignManager": "ਮੁਹਿੰਮ ਪ੍ਰਬੰਧਕ",
+      "leadershipAcademy": "ਲੀਡਰਸ਼ਿਪ ਅਕੈਡਮੀ",
+      "candidateXRay": "ਉਮੀਦਵਾਰ ਐਕਸ-ਰੇ",
+      "goLive": "ਲਾਈਵ ਜਾਓ",
+      "kshetraLive": "ਖੇਤਰ ਲਾਈਵ",
+      "deptConsole": "ਵਿਭਾਗ ਕੰਸੋਲ",
+      "moderation": "ਸੰਜਮਤਾ",
+      "distribution": "ਵੰਡ",
+      "devSwitches": "ਡੈਵ ਸਵਿੱਚਾਂ",
+      "civicDashboard": "ਸਿਵਿਕ ਡੈਸ਼ਬੋਰਡ",
+      "delimitation": "ਹਲਕਾਬੰਦੀ",
+      "analytics": "ਡੂੰਘਾ ਵਿਸ਼ਲੇਸ਼ਣ",
+      "civicMetrics": "ਸਿਵਿਕ ਮੈਟ੍ਰਿਕਸ",
+      "liveElection": "ਲਾਈਵ ਚੋਣਾਂ",
+      "parliament": "ਸੰਸਦ",
+      "profile": "ਪ੍ਰੋਫਾਈਲ",
+      "notifications": "ਸੂਚਨਾਵਾਂ",
+      "settings": "ਸੈਟਿੰਗਾਂ",
+      "aiAssistant": "ਏਆਈ ਸਹਾਇਕ"
+    }
+  },
+  "analytics": {
+    "deepTitle": "ਡੂੰਘਾ ਵਿਸ਼ਲੇਸ਼ਣ",
+    "pulseIntel": "ਪਲਸ ਇੰਟੈੱਲ",
+    "vulnerabilityTitle": "ਸਰਕਾਰ ਵਿਰੋਧੀ ਲਹਿਰ (AIVI)",
+    "aiviConfidence": "AIVI ਸੂਚਕਾਂਕ • ਭਰੋਸੇਯੋਗਤਾ {{pct}}%",
+    "estSwing": "ਸੰਭਾਵੀ ਵੋਟ ਬਦਲਾਅ: {{pct}}%",
+    "keyDrivers": "ਮੁੱਖ ਜੋਖਮ ਕਾਰਕ",
+    "highFlip": "ਸੀਟ ਬਦਲਣ ਦੀ ਉੱਚ ਸੰਭਾਵਨਾ",
+    "contested": "ਸਖ਼ਤ ਮੁਕਾਬਲੇ ਵਾਲੀ ਸੀਟ",
+    "incumbentAdvantage": "ਸੱਤਾਧਾਰੀ ਪਾਰਟੀ ਨੂੰ ਬੜ੍ਹਤ",
+    "twoTermIncumbency": "ਦੋ ਕਾਰਜਕਾਲਾਂ ਦਾ ਦਬਾਅ",
+    "unresolvedGrievance": "ਅਣਸੁਲਝੀਆਂ ਸ਼ਿਕਾਇਤਾਂ ਦਾ ਵੱਧ ਅਨੁਪਾਤ",
+    "negativeSentiment": "ਜ਼ਮੀਨੀ ਪੱਧਰ 'ਤੇ ਨਕਾਰਾਤਮਕ ਮਾਹੌਲ",
+    "adverseDemographics": "ਉਲਟ ਜਨਸੰਖਿਆ ਤਬਦੀਲੀਆਂ",
+    "criticalNegativeNews": "ਖੇਤਰੀ ਮੀਡੀਆ ਵਿੱਚ ਨਕਾਰਾਤਮਕਤਾ",
+    "narrowMargin": "ਘੱਟ ਫ਼ਰਕ ਵਾਲੀ ਜਿੱਤ (<5%)",
+    "likelyHold": "ਸੀਟ ਬਚਾਉਣ ਦੀ ਸੰਭਾਵਨਾ",
+    "leanIncumbent": "ਸੱਤਾਧਾਰੀ ਵੱਲ ਝੁਕਾਅ",
+    "tossup": "ਬਰਾਬਰ ਮੁਕਾਬਲਾ",
+    "leanChallenger": "ਵਿਰੋਧੀ ਧਿਰ ਵੱਲ ਝੁਕਾਅ",
+    "likelyFlip": "ਹਾਰਨ ਦੀ ਸੰਭਾਵਨਾ",
+    "sentimentRadarTitle": "੫-ਥੰਮ੍ਹ ਜਨਤਕ ਭਾਵਨਾ ਰਾਡਾਰ",
+    "sentimentRadarSubtitle": "ਅਸਲ ਸਮੇਂ ਦੀ ਜ਼ਮੀਨੀ ਨਬਜ਼ ਅਤੇ ਸੰਤੁਸ਼ਟੀ",
+    "netMood": "ਲੋਕ ਭਾਵਨਾ",
+    "governanceResponse": "ਪ੍ਰਸ਼ਾਸਨ ਅਤੇ ਜਵਾਬਦੇਹੀ",
+    "civicInfrastructure": "ਨਾਗਰਿਕ ਬੁਨਿਆਦੀ ਢਾਂਚਾ",
+    "welfareSchemes": "ਭਲਾਈ ਸਕੀਮਾਂ",
+    "economyLivelihood": "ਆਰਥਿਕਤਾ ਅਤੇ ਰੋਜ਼ੀ-ਰੋਟੀ",
+    "candidateTrust": "ਉਮੀਦਵਾਰ 'ਤੇ ਭਰੋਸਾ",
+    "executiveBriefTitle": "ਕਾਰਜਕਾਰੀ ਏਆਈ ਬ੍ਰੀਫ",
+    "strategicTakeaways": "ਰਣਨੀਤਕ ਨੁਕਤੇ",
+    "recommendedCounterActions": "ਸੁਝਾਏ ਗਏ ਕਦਮ",
+    "criticalBattlegrounds": "ਮਹੱਤਵਪੂਰਨ ਮੁਕਾਬਲੇ ਵਾਲੀਆਂ ਸੀਟਾਂ",
+    "seatDistribution": "ਸੀਟਾਂ ਦੀ ਵੰਡ",
+    "keyInsights": "ਮੁੱਖ ਨੁਕਤੇ",
+    "totalSeats": "ਕੁੱਲ ਸੀਟਾਂ",
+    "rulingParty": "ਸੱਤਾਧਾਰੀ ਪਾਰਟੀ",
+    "swingSeats": "ਬਦਲਣ ਵਾਲੀਆਂ ਸੀਟਾਂ",
+    "margin": "ਫ਼ਰਕ",
+    "won": "ਜਿੱਤੇ",
+    "vs": "ਬਨਾਮ"
+  },
+  "campaignManager": {
+    "tabs": {
+      "campaigns": "ਮੁਹਿੰਮਾਂ",
+      "outreach": "ਸੰਪਰਕ",
+      "ads": "ਇਸ਼ਤਿਹਾਰ",
+      "revenue": "ਆਮਦਨ",
+      "volunteers": "ਵਲੰਟੀਅਰ",
+      "booths": "ਬੂਥ"
+    },
+    "types": {
+      "election": "ਚੋਣ ਮੁਹਿੰਮ",
+      "awareness": "ਜਾਗਰੂਕਤਾ",
+      "fundraising": "ਫੰਡ ਇਕੱਠਾ ਕਰਨਾ",
+      "outreach": "ਜਨਤਕ ਸੰਪਰਕ",
+      "issue_advocacy": "ਮੁੱਦਿਆਂ ਦਾ ਪ੍ਰਚਾਰ",
+      "brand_building": "ਅਕਸ ਨਿਰਮਾਣ",
+      "get_out_vote": "ਵੋਟਿੰਗ ਉਤਸ਼ਾਹ"
+    },
+    "statuses": {
+      "active": "ਸਰਗਰਮ",
+      "paused": "ਰੋਕਿਆ ਗਿਆ",
+      "draft": "ਡਰਾਫਟ",
+      "completed": "ਮੁਕੰਮਲ",
+      "planned": "ਯੋਜਨਾਬੱਧ",
+      "cancelled": "ਰੱਦ"
+    },
+    "impressions": "ਇੰਪ੍ਰੈਸ਼ਨ",
+    "totalReach": "ਕੁੱਲ ਪਹੁੰਚ",
+    "engagement": "ਸ਼ਮੂਲੀਅਤ",
+    "sentiment": "ਭਾਵਨਾ",
+    "budget": "ਬਜਟ",
+    "activeCampaigns": "ਸਰਗਰਮ ਮੁਹਿੰਮਾਂ",
+    "adCount": "{{count}} ਇਸ਼ਤਿਹਾਰ",
+    "volunteerCount": "{{count}} ਵਲੰਟੀਅਰ",
+    "boothCount": "{{covered}}/{{total}} ਬੂਥ",
+    "campaignNames": {
+      "tsReportCard": "ਤੇਲੰਗਾਨਾ ਵਿਕਾਸ ਰਿਪੋਰਟ ਕਾਰਡ",
+      "youthConnect": "ਯੂਥ ਕਨੈਕਟ 2026",
+      "guaranteesImpact": "5 ਗਾਰੰਟੀਆਂ ਪ੍ਰਭਾਵ ਰਿਪੋਰਟ"
+    }
+  },
+  "leadershipAcademy": {
+    "categories": {
+      "electoral_process": "ਚੋਣ ਪ੍ਰਕਿਰਿਆ",
+      "campaign_strategy": "ਮੁਹਿੰਮ ਰਣਨੀਤੀ",
+      "legal_framework": "ਕਾਨੂੰਨੀ ਢਾਂਚਾ",
+      "public_speaking": "ਭਾਸ਼ਣ ਕਲਾ",
+      "community_organizing": "ਭਾਈਚਾਰਕ ਸੰਗਠਨ",
+      "digital_campaigning": "ਡਿਜੀਟਲ ਪ੍ਰਚਾਰ",
+      "policy_making": "ਨੀਤੀ ਨਿਰਮਾਣ",
+      "ethics_governance": "ਨੈਤਿਕਤਾ ਅਤੇ ਸ਼ਾਸਨ"
+    },
+    "contentTypes": {
+      "article": "ਲੇਖ",
+      "video": "ਵੀਡੀਓ",
+      "quiz": "ਕੁਇਜ਼",
+      "case_study": "ਕੇਸ ਸਟੱਡੀ"
+    },
+    "difficulty": {
+      "beginner": "ਮੁੱਢਲਾ",
+      "intermediate": "ਦਰਮਿਆਨਾ",
+      "advanced": "ਉੱਨਤ"
+    },
+    "min": "ਮਿੰਟ",
+    "earned": "ਪ੍ਰਾਪਤ",
+    "locked": "ਲਾਕ",
+    "aspiringLeaders": "ਉੱਭਰਦੇ ਆਗੂ",
+    "noActiveChallenges": "ਕੋਈ ਸਰਗਰਮ ਚੁਣੌਤੀ ਨਹੀਂ",
+    "noPublicAspirants": "ਕੋਈ ਉਮੀਦਵਾਰ ਨਹੀਂ",
+    "moduleNames": {
+      "howElectionsWork": "ਭਾਰਤੀ ਚੋਣ ਪ੍ਰਣਾਲੀ ਕਿਵੇਂ ਕੰਮ ਕਰਦੀ ਹੈ",
+      "filingNomination": "ਨਾਮਜ਼ਦਗੀ ਪੱਤਰ ਭਰਨ ਦਾ ਤਰੀਕਾ",
+      "electionSymbols": "ਚੋਣ ਨਿਸ਼ਾਨਾਂ ਦੀ ਮਹੱਤਤਾ",
+      "grassrootsCampaign": "ਜ਼ਮੀਨੀ ਪੱਧਰ 'ਤੇ ਮੁਹਿੰਮ ਦਾ ਗਠਨ",
+      "fundraising": "ਆਜ਼ਾਦ ਉਮੀਦਵਾਰਾਂ ਲਈ ਫੰਡ ਇਕੱਠਾ ਕਰਨਾ",
+      "rpaAct": "ਲੋਕ ਪ੍ਰਤੀਨਿਧਤਾ ਕਾਨੂੰਨ ਦੇ ਨਿਯਮ"
+    }
+  },
+  "becomeAspirant": {
+    "screenTitle": "ਉਮੀਦਵਾਰ ਬਣੋ",
+    "headerTitle": "ਨਾਗਰਿਕ ਉਮੀਦਵਾਰ",
+    "headerSubtitle": "ਭਰੋਸੇਯੋਗਤਾ ਬਣਾਓ, ਲੋਕ ਸਮਰਥਨ ਪ੍ਰਾਪਤ ਕਰੋ",
+    "registerCTA": "ਉਮੀਦਵਾਰ ਵਜੋਂ ਰਜਿਸਟਰ ਕਰੋ",
+    "yourBadges": "ਤੁਹਾਡੇ ਬੈਜ",
+    "earnedLocked": "{{earned}} ਪ੍ਰਾਪਤ · {{locked}} ਬਾਕੀ",
+    "aspiringIn": "ਉਮੀਦਵਾਰ · {{seat}} · {{year}}",
+    "profileActive": "ਉਮੀਦਵਾਰ ਪ੍ਰੋਫਾਈਲ ਸਰਗਰਮ ਹੈ",
+    "heroTitle": "ਆਪਣੇ ਸਮਾਜ ਲਈ ਅੱਗੇ ਵਧੋ",
+    "heroSub": "ਚੋਣ ਲੜਨ ਤੋਂ ਪਹਿਲਾਂ ਆਪਣੇ ਸਮਾਜ ਸੇਵਾ ਰਿਕਾਰਡ ਨੂੰ ਮਜ਼ਬੂਤ ਕਰੋ।",
+    "benefits": {
+      "scoreTitle": "ਨਾਗਰਿਕ ਸਕੋਰ ਬਣਾਓ",
+      "scoreSub": "ਸਿੱਖਣ ਅਤੇ ਸਮਾਜ ਸੇਵਾ ਰਾਹੀਂ ਅੰਕ ਹਾਸਲ ਕਰੋ।",
+      "badgeTitle": "ਬੈਜ ਅਨਲੌਕ ਕਰੋ",
+      "badgeSub": "ਆਪਣੀ ਪ੍ਰੋਫਾਈਲ 'ਤੇ ਉਪਲਬਧੀਆਂ ਦਿਖਾਓ।",
+      "endorseTitle": "ਸਮਰਥਨ ਪ੍ਰਾਪਤ ਕਰੋ",
+      "endorseSub": "ਹਲਕੇ ਦੇ ਲੋਕ ਤੁਹਾਡੀ ਉਮੀਦਵਾਰੀ ਦਾ ਸਮਰਥਨ ਕਰਨ।",
+      "goalTitle": "ਟੀਚਾ ਐਲਾਨੋ",
+      "goalSub": "ਵੋਟਰਾਂ ਨੂੰ ਦੱਸੋ ਕਿ ਤੁਸੀਂ ਕਿਹੜੀ ਸੀਟ ਤੋਂ ਅਤੇ ਕਦੋਂ ਚੋਣ ਲੜਨਾ ਚਾਹੁੰਦੇ ਹੋ।"
+    }
+  },
+  "departments": {
+    "title": "ਵਿਭਾਗੀ ਕੰਸੋਲ",
+    "selectDepartment": "ਵਿਭਾਗ ਚੁਣੋ",
+    "pendingAlerts": "{{count}} ਬਕਾਇਆ ਅਲਰਟ",
+    "noAlerts": "ਇਸ ਵਿਭਾਗ ਲਈ ਕੋਈ ਬਕਾਇਆ ਅਲਰਟ ਨਹੀਂ ਹੈ",
+    "acknowledge": "ਜਾਂਚ ਕਰੋ",
+    "genuine": "ਅਸਲ ਜਾਣਕਾਰੀ",
+    "falseAlarm": "ਗਲਤ ਜਾਣਕਾਰੀ",
+    "unableToVerify": "ਤਸਦੀਕ ਅਸੰਭਵ",
+    "reporterCredibility": "ਰਿਪੋਰਟਰ ਦੀ ਭਰੋਸੇਯੋਗਤਾ",
+    "dispatchedAt": "{{time}} ਭੇਜਿਆ ਗਿਆ"
+  },
+  "devSwitches": {
+    "title": "ਡਿਵੈਲਪਰ ਫੀਚਰ ਸਵਿੱਚਾਂ",
+    "subtitle": "ਪ੍ਰਯੋਗਾਤਮਕ ਵਿਸ਼ੇਸ਼ਤਾਵਾਂ ਨੂੰ ਚਾਲੂ ਜਾਂ ਬੰਦ ਕਰੋ",
+    "done": "ਮੁਕੰਮਲ",
+    "reset": "ਰੀਸੈੱਟ",
+    "enableAll": "ਸਾਰੇ ਸਮਰੱਥ ਕਰੋ"
+  },
+  "notifications": {
+    "title": "ਸੂਚਨਾਵਾਂ",
+    "markAllRead": "ਸਾਰੇ ਪੜ੍ਹੇ ਗਏ ਵਜੋਂ ਨਿਸ਼ਾਨਬੱਧ ਕਰੋ",
+    "clearAll": "ਸਭ ਸਾਫ਼ ਕਰੋ",
+    "noNotifications": "ਕੋਈ ਸੂਚਨਾ ਨਹੀਂ ਹੈ",
+    "caughtUp": "ਤੁਸੀਂ ਸਾਰੇ ਅੱਪਡੇਟ ਦੇਖ ਲਏ ਹਨ!",
+    "justNow": "ਹੁਣੇ",
+    "minutesAgo": "{{n}} ਮਿੰਟ ਪਹਿਲਾਂ",
+    "hoursAgo": "{{n}} ਘੰਟੇ ਪਹਿਲਾਂ",
+    "daysAgo": "{{n}} ਦਿਨ ਪਹਿਲਾਂ"
+  },
+  "politicianPortal": {
+    "screenTitle": "ਨੇਤਾ ਪੋਰਟਲ",
+    "registeredPoliticians": "ਤਸਦੀਕਸ਼ੁਦਾ ਲੋਕ ਨੁਮਾਇੰਦੇ ਅਤੇ ਉਮੀਦਵਾਰ",
+    "upcomingEvents": "ਆਉਣ ਵਾਲੀਆਂ ਜਨਤਕ ਮੀਟਿੰਗਾਂ ਅਤੇ ਰੈਲੀਆਂ",
+    "allEvents": "ਜਨਤਕ ਪ੍ਰੋਗਰਾਮ",
+    "eManifestos": "ਡਿਜੀਟਲ ਚੋਣ ਮਨੋਰਥ ਪੱਤਰ",
+    "opinionSurveys": "ਲੋਕ ਰਾਏ ਸਰਵੇਖਣ ਅਤੇ ਪੋਲ",
+    "tabPoliticians": "ਸਿਆਸਤਦਾਨ",
+    "tabEvents": "ਸਮਾਗਮ",
+    "tabManifestos": "ਮੈਨੀਫੈਸਟੋ",
+    "tabSurveys": "ਸਰਵੇਖਣ"
+  },
+  "civicMetrics": {
+    "screenTitle": "ਨਾਗਰਿਕ ਕਾਰਗੁਜ਼ਾਰੀ ਅਤੇ ਮੈਟ੍ਰਿਕਸ",
+    "screenSubtitle": "ਬਜਟ, ਹਾਜ਼ਰੀ, ਬਿੱਲ ਅਤੇ ਸਕੀਮਾਂ",
+    "stateBudgetOverview": "ਰਾਜ ਬਜਟ ਸੰਖੇਪ",
+    "noBudgetData": "ਇਸ ਰਾਜ ਲਈ ਕੋਈ ਬਜਟ ਡੇਟਾ ਉਪਲਬਧ ਨਹੀਂ ਹੈ",
+    "legislatorAttendance": "ਵਿਧਾਇਕਾਂ ਦੀ ਹਾਜ਼ਰੀ ({{count}})",
+    "activeBills": "ਸਰਗਰਮ ਬਿੱਲ ({{count}})",
+    "governmentSchemes": "ਸਰਕਾਰੀ ਭਲਾਈ ਸਕੀਮਾਂ ({{count}})",
+    "developmentProjects": "ਵਿਕਾਸ ਪ੍ਰੋਜੈਕਟ ({{count}})",
+    "tabBudget": "ਬਜਟ",
+    "tabAttendance": "ਹਾਜ਼ਰੀ",
+    "tabBills": "ਬਿੱਲ",
+    "tabSchemes": "ਸਕੀਮਾਂ",
+    "tabProjects": "ਪ੍ਰੋਜੈਕਟ",
+    "tabRTI": "RTI"
+  },
+  "liveElection": {
+    "screenTitle": "ਲਾਈਵ ਚੋਣ ਕੇਂਦਰ",
+    "screenSubtitle": "ਅਸਲ ਸਮੇਂ ਦੀ ਗਿਣਤੀ ਅਤੇ ਨਤੀਜੇ",
+    "live": "ਲਾਈਵ",
+    "noLiveElection": "ਵਰਤਮਾਨ ਵਿੱਚ ਕੋਈ ਲਾਈਵ ਚੋਣ ਨਹੀਂ ਚੱਲ ਰਹੀ ਹੈ",
+    "noLiveElectionDesc": "ਵੋਟਾਂ ਦੀ ਗਿਣਤੀ ਸ਼ੁਰੂ ਹੋਣ 'ਤੇ ਨਤੀਜੇ ਲਾਈਵ ਅੱਪਡੇਟ ਕੀਤੇ ਜਾਣਗੇ।",
+    "voteShareComparison": "ਵੋਟ ਸ਼ੇਅਰ ਤੁਲਨਾ",
+    "constituencyResults": "ਹਲਕੇ ਦੇ ਨਤੀਜੇ ({{count}})",
+    "tabOverview": "ਸੰਖੇਪ",
+    "tabConstituencies": "ਹਲਕੇ",
+    "tabPipeline": "ਪਾਈਪਲਾਈਨ"
   }
-};
+}
 
 export default pa;

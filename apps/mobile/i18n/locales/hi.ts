@@ -1,7 +1,7 @@
 /**
  * HI translation
  */
-const hi = {
+const hi =  {
   "common": {
     "appName": "क्षेत्र",
     "loading": "लोड हो रहा है…",
@@ -431,7 +431,7 @@ const hi = {
     }
   },
   "notificationSettings": {
-    "title": "सूचना सेटिंग्स",
+    "title": "अधिसूचना सेटिंग्स",
     "masterToggle": "पुश सूचनाएँ",
     "masterDesc": "अपने निर्वाचन क्षेत्र की गतिविधियों की सूचना पाएँ",
     "categories": {
@@ -443,6 +443,47 @@ const hi = {
       "constituency_alertsDesc": "आपके निर्वाचन क्षेत्र के समाचार और चेतावनी",
       "headlines": "ब्रेकिंग समाचार",
       "headlinesDesc": "प्रमुख राजनीतिक समाचार और अपडेट"
+    },
+    "allowNotifications": "सूचनाएं चालू करें",
+    "receivingUpdates": "अपडेट प्राप्त हो रहे हैं",
+    "typesHeader": "अधिसूचना के प्रकार",
+    "types": {
+      "election_results": {
+        "label": "चुनाव परिणाम",
+        "description": "चुनाव परिणाम घोषित होने पर तुरंत सूचना प्राप्त करें"
+      },
+      "constituency_updates": {
+        "label": "निर्वाचन क्षेत्र अपडेट",
+        "description": "आपके चुने हुए क्षेत्रों से संबंधित समाचार"
+      },
+      "civic_issue": {
+        "label": "नागरिक मुद्दे",
+        "description": "आपके पास के नए मुद्दे, स्थिति बदलाव और विधायक के जवाब"
+      },
+      "promise_update": {
+        "label": "घोषणापत्र ट्रैकर",
+        "description": "चुनावी वादों की प्रगति और महत्वपूर्ण पड़ाव"
+      },
+      "delimitation_alert": {
+        "label": "परिसीमन अलर्ट",
+        "description": "सीमा परिवर्तन, राजपत्र अधिसूचना और आयोग अपडेट"
+      },
+      "analytics_insight": {
+        "label": "डेटा अंतर्दृष्टि",
+        "description": "आपके राज्य के चुनावी रुझानों का डेटा आधारित विश्लेषण"
+      },
+      "community_activity": {
+        "label": "समुदाय",
+        "description": "जवाब, उल्लेख और सामुदायिक चुनौतियां"
+      },
+      "new_state_added": {
+        "label": "नया राज्य डेटा",
+        "description": "जब नए राज्य का डेटा उपलब्ध हो"
+      },
+      "app_updates": {
+        "label": "ऐप अपडेट",
+        "description": "नई सुविधाएं और तकनीकी सुधार"
+      }
     }
   },
   "onboarding": {
@@ -910,7 +951,45 @@ const hi = {
     "biggestWins": "सबसे बड़ी जीत",
     "reservation": "आरक्षण",
     "totalSeats": "कुल सीटें",
-    "seatsWon": "सीटें जीतीं"
+    "seatsWon": "सीटें जीतीं",
+    "deepTitle": "गहन विश्लेषण",
+    "pulseIntel": "पल्स इंटेल",
+    "vulnerabilityTitle": "सत्तारूढ़ विरोधी लहर (AIVI)",
+    "aiviConfidence": "AIVI सूचकांक • विश्वसनीयता {{pct}}%",
+    "estSwing": "अनुमानित स्विंग संभावना: {{pct}}%",
+    "keyDrivers": "मुख्य जोखिम कारक",
+    "highFlip": "सीट बदलने की प्रबल संभावना",
+    "contested": "कड़े मुकाबले वाली सीट",
+    "incumbentAdvantage": "सत्तारूढ़ दल को बढ़त",
+    "twoTermIncumbency": "लगातार दो कार्यकाल का दबाव",
+    "unresolvedGrievance": "अनसुलझी शिकायतों का उच्च अनुपात",
+    "negativeSentiment": "जमीनी स्तर पर मजबूत नकारात्मक माहौल",
+    "adverseDemographics": "प्रतिकूल जनसांख्यिकीय बदलाव",
+    "criticalNegativeNews": "क्षेत्रीय मीडिया में नकारात्मकता",
+    "narrowMargin": "पिछली जीत का बहुत कम अंतर (<5%)",
+    "likelyHold": "सीट बरकरार रखने की संभावना",
+    "leanIncumbent": "सत्तारूढ़ दल की ओर झुकाव",
+    "tossup": "समान मुकाबला",
+    "leanChallenger": "विपक्षी दल की ओर झुकाव",
+    "likelyFlip": "हारने की प्रबल संभावना",
+    "sentimentRadarTitle": "5-स्तंभ जनभावना रडार",
+    "sentimentRadarSubtitle": "वास्तविक समय में जमीनी नब्ज और जनसंतोष",
+    "netMood": "जनभावना",
+    "governanceResponse": "प्रशासन और जवाबदेही",
+    "civicInfrastructure": "नागरिक बुनियादी ढांचा",
+    "welfareSchemes": "कल्याणकारी और प्रत्यक्ष योजनाएं",
+    "economyLivelihood": "अर्थव्यवस्था और आजीविका",
+    "candidateTrust": "उम्मीदवार पर भरोसा",
+    "executiveBriefTitle": "एआई रणनीतिक ब्रीफ",
+    "strategicTakeaways": "रणनीतिक निष्कर्ष",
+    "recommendedCounterActions": "सुझाए गए जवाबी कदम",
+    "criticalBattlegrounds": "महत्वपूर्ण चुनावी मुकाबला सीटें",
+    "keyInsights": "प्रमुख अंतर्दृष्टि",
+    "rulingParty": "सत्तारूढ़ दल",
+    "swingSeats": "स्विंग सीटें",
+    "margin": "अंतर",
+    "won": "जीता",
+    "vs": "बनाम"
   },
   "parliament": {
     "title": "संसद",
@@ -1008,7 +1087,42 @@ const hi = {
     "badges": "बैज",
     "becomeAspirant": "उम्मीदवार बनें",
     "aspirantDesc": "अपने समुदाय में भावी नेता के रूप में पंजीकरण करें",
-    "registerNow": "अभी पंजीकरण करें"
+    "registerNow": "अभी पंजीकरण करें",
+    "categories": {
+      "electoral_process": "चुनावी प्रक्रिया",
+      "campaign_strategy": "प्रचार रणनीति",
+      "legal_framework": "कानूनी ढांचा",
+      "public_speaking": "सार्वजनिक भाषण",
+      "community_organizing": "समुदाय संगठन",
+      "digital_campaigning": "डिजिटल प्रचार",
+      "policy_making": "नीति निर्माण",
+      "ethics_governance": "नैतिकता और सुशासन"
+    },
+    "contentTypes": {
+      "article": "लेख",
+      "video": "वीडियो",
+      "quiz": "प्रश्नोत्तरी",
+      "case_study": "केस स्टडी"
+    },
+    "difficulty": {
+      "beginner": "शुरुआती",
+      "intermediate": "मध्यम",
+      "advanced": "उन्नत"
+    },
+    "min": "मिनट",
+    "earned": "अर्जित",
+    "locked": "लॉक्ड",
+    "aspiringLeaders": "उभरते नेता",
+    "noActiveChallenges": "कोई सक्रिय चुनौती नहीं",
+    "noPublicAspirants": "कोई सार्वजनिक आकांक्षी नहीं",
+    "moduleNames": {
+      "howElectionsWork": "भारतीय चुनाव प्रणाली कैसे काम करती है",
+      "filingNomination": "नामांकन दाखिल करने की प्रक्रिया",
+      "electionSymbols": "चुनाव चिन्हों का आवंटन और महत्व",
+      "grassrootsCampaign": "जमीनी स्तर पर प्रचार की रूपरेखा",
+      "fundraising": "निर्दलीय प्रत्याशियों के लिए क्राउडफंडिंग",
+      "rpaAct": "जन प्रतिनिधित्व अधिनियम के नियम"
+    }
   },
   "becomeAspirant": {
     "title": "उम्मीदवार बनें",
@@ -1026,7 +1140,27 @@ const hi = {
     "requirements": "आवश्यकताएँ",
     "minAge": "न्यूनतम आयु: 18",
     "minCivicScore": "न्यूनतम नागरिक स्कोर: 50",
-    "verifiedAccount": "सत्यापित खाता आवश्यक"
+    "verifiedAccount": "सत्यापित खाता आवश्यक",
+    "screenTitle": "प्रत्याशी बनें",
+    "headerTitle": "नागरिक आकांक्षी",
+    "headerSubtitle": "विश्वसनीयता बनाएं, जनसमर्थन हासिल करें",
+    "registerCTA": "आकांक्षी के रूप में पंजीकरण करें",
+    "yourBadges": "आपके बैज",
+    "earnedLocked": "{{earned}} अर्जित · {{locked}} शेष",
+    "aspiringIn": "प्रत्याशी · {{seat}} · {{year}}",
+    "profileActive": "नागरिक प्रत्याशी प्रोफ़ाइल सक्रिय है",
+    "heroTitle": "अपने समाज के लिए आगे आएं",
+    "heroSub": "चुनाव लड़ने से पहले अपना सत्यापित नागरिक ट्रैक रिकॉर्ड बनाएं।",
+    "benefits": {
+      "scoreTitle": "नागरिक स्कोर बनाएं",
+      "scoreSub": "सीखने, सेवा कार्यों और लोगों से जुड़ने पर अंक पाएं।",
+      "badgeTitle": "बैज अनलॉक करें",
+      "badgeSub": "अपनी सार्वजनिक प्रोफ़ाइल पर सत्यापित उपलब्धियां दिखाएं।",
+      "endorseTitle": "जनसमर्थन प्राप्त करें",
+      "endorseSub": "अपने निर्वाचन क्षेत्र के नागरिकों से समर्थन पाएं।",
+      "goalTitle": "अपना लक्ष्य तय करें",
+      "goalSub": "मतदाताओं को बताएं कि आप किस सीट से और कब चुनाव लड़ना चाहते हैं।"
+    }
   },
   "hierarchy": {
     "title": "प्रशासनिक पदानुक्रम",
@@ -1107,14 +1241,16 @@ const hi = {
     "tabs": {
       "overview": "अवलोकन",
       "ads": "विज्ञापन",
-      "booths": "बूथ रणनीति",
-      "volunteers": "स्वयंसेवक",
-      "outreach": "जन-संपर्क"
+      "booths": "मतदान केंद्र",
+      "volunteers": "कार्यकर्ता",
+      "outreach": "आउटरीच",
+      "campaigns": "अभियान",
+      "revenue": "राजस्व"
     },
     "createCampaign": "अभियान बनाएँ",
     "activeCampaigns": "सक्रिय अभियान",
     "adPerformance": "विज्ञापन प्रदर्शन",
-    "impressions": "इम्प्रेशन",
+    "impressions": "इंप्रेशन",
     "clicks": "क्लिक",
     "ctr": "CTR",
     "spent": "ख़र्च",
@@ -1123,7 +1259,35 @@ const hi = {
     "boothsCovered": "बूथ कवर किए",
     "voterReach": "मतदाता पहुँच",
     "abTesting": "A/B टेस्टिंग",
-    "revenue": "राजस्व"
+    "revenue": "राजस्व",
+    "types": {
+      "election": "चुनावी अभियान",
+      "awareness": "जन जागरूकता",
+      "fundraising": "फंड जुटाना",
+      "outreach": "जनसंपर्क",
+      "issue_advocacy": "मुद्दों की वकालत",
+      "brand_building": "छवि निर्माण",
+      "get_out_vote": "मतदान प्रोत्साहन"
+    },
+    "statuses": {
+      "active": "सक्रिय",
+      "paused": "रोका गया",
+      "draft": "ड्राफ्ट",
+      "completed": "पूर्ण",
+      "planned": "नियोजित",
+      "cancelled": "रद्द"
+    },
+    "totalReach": "कुल पहुंच",
+    "engagement": "एंगेजमेंट",
+    "sentiment": "सकारात्मकता",
+    "adCount": "{{count}} विज्ञापन",
+    "volunteerCount": "{{count}} कार्यकर्ता",
+    "boothCount": "{{covered}}/{{total}} बूथ",
+    "campaignNames": {
+      "tsReportCard": "तेलंगाना विकास रिपोर्ट कार्ड",
+      "youthConnect": "युवा कनेक्ट 2026",
+      "guaranteesImpact": "5 गारंटी प्रभाव रिपोर्ट"
+    }
   },
   "outreach": {
     "title": "अभियान जन-संपर्क",
@@ -1422,13 +1586,19 @@ const hi = {
     }
   },
   "notifications": {
-    "title": "सूचनाएँ",
-    "markAllRead": "सभी पढ़ा हुआ करें",
-    "noNotifications": "अभी कोई सूचना नहीं",
+    "title": "सूचनाएं",
+    "markAllRead": "सभी पढ़ी गई मार्क करें",
+    "noNotifications": "कोई सूचना नहीं है",
     "unread": "{{count}} अपठित",
     "today": "आज",
     "earlier": "पहले",
-    "thisWeek": "इस सप्ताह"
+    "thisWeek": "इस सप्ताह",
+    "clearAll": "सभी हटाएं",
+    "caughtUp": "आप पूरी तरह अपडेट हैं!",
+    "justNow": "अभी-अभी",
+    "minutesAgo": "{{n}} मिनट पहले",
+    "hoursAgo": "{{n}} घंटे पहले",
+    "daysAgo": "{{n}} दिन पहले"
   },
   "auth": {
     "signIn": "साइन इन",
@@ -2007,7 +2177,61 @@ const hi = {
     "verified3TierSub": "ग्राम पंचायतों (सरपंच और वार्ड सदस्य), मंडल परिषद (MPTC) और जिला परिषद (ZPTC) के पूर्ण आधिकारिक परिणाम।",
     "gpTierActiveTitle": "ग्राम पंचायत स्तर सक्रिय",
     "gpTierActiveSub": "ग्राम पंचायत प्रतिनिधियों (सरपंच और वार्ड सदस्य) के सत्यापित परिणाम। राज्य चुनाव आयोग द्वारा मध्यवर्ती चुनाव स्थगित किए गए थे।"
+  },
+  "more": {
+    "title": "अधिक",
+    "subtitle": "बाकी सब कुछ, बस दो टैप दूर",
+    "campaignHQTitle": "चुनाव प्रचार मुख्यालय",
+    "campaignHQDesc": "चुनाव लड़ें, प्रचार संभालें, व्हाट्सएप व एसएमएस से मतदाताओं तक पहुंचें",
+    "sections": {
+      "politiciansAndCampaign": "राजनेता और चुनाव प्रचार",
+      "liveMediaExchange": "लाइव मीडिया एक्सचेंज",
+      "civicAndElections": "नागरिक सेवा व चुनाव",
+      "account": "खाता"
+    },
+    "tiles": {
+      "politicianPortal": "राजनेता पोर्टल",
+      "becomeAspirant": "प्रत्याशी बनें",
+      "campaignManager": "प्रचार प्रबंधक",
+      "leadershipAcademy": "नेतृत्व अकादमी",
+      "candidateXRay": "उम्मीदवार एक्स-रे",
+      "goLive": "लाइव जाएं",
+      "kshetraLive": "क्षेत्र लाइव",
+      "deptConsole": "विभाग कंसोल",
+      "moderation": "मॉडरेशन",
+      "distribution": "वितरण",
+      "devSwitches": "डेव स्विचेस",
+      "civicDashboard": "नागरिक डैशबोर्ड",
+      "delimitation": "परिसीमन",
+      "analytics": "गहन विश्लेषण",
+      "civicMetrics": "नागरिक मेट्रिक्स",
+      "liveElection": "लाइव चुनाव",
+      "parliament": "संसद",
+      "profile": "प्रोफ़ाइल",
+      "notifications": "सूचनाएं",
+      "settings": "सेटिंग्स",
+      "aiAssistant": "एआई सहायक"
+    }
+  },
+  "departments": {
+    "title": "विभागीय कंसोल",
+    "selectDepartment": "विभाग चुनें",
+    "pendingAlerts": "{{count}} लंबित अलर्ट",
+    "noAlerts": "इस विभाग के लिए कोई लंबित अलर्ट नहीं है",
+    "acknowledge": "समीक्षा करें",
+    "genuine": "वास्तविक अलर्ट",
+    "falseAlarm": "गलत सूचना",
+    "unableToVerify": "सत्यापन में असमर्थ",
+    "reporterCredibility": "रिपोर्टर विश्वसनीयता",
+    "dispatchedAt": "{{time}} भेजा गया"
+  },
+  "devSwitches": {
+    "title": "डेवलपर फीचर स्विचेस",
+    "subtitle": "प्रायोगिक और विकास सुविधाओं को ऑन/ऑफ करें",
+    "done": "पूर्ण",
+    "reset": "रीसेट करें",
+    "enableAll": "सभी सक्षम करें"
   }
-};
+}
 
 export default hi;

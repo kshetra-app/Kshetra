@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next';
 import { View, Text, StyleSheet, Pressable, Platform } from 'react-native';
 import { FlashList } from '@shopify/flash-list';
 import { Ionicons } from '@expo/vector-icons';
@@ -13,18 +14,19 @@ const CATEGORY_ICONS: Record<string, keyof typeof Ionicons.glyphMap> = {
   app_updates: 'sparkles',
 };
 
-function formatTimeAgo(ts: number): string {
+function formatTimeAgo(ts: number, t: (key: string, opts?: any) => string): string {
   const diff = Date.now() - ts;
   const mins = Math.floor(diff / 60000);
-  if (mins < 1) return 'Just now';
-  if (mins < 60) return `${mins}m ago`;
+  if (mins < 1) return t('notifications.justNow', { defaultValue: 'Just now' });
+  if (mins < 60) return t('notifications.minutesAgo', { n: mins, defaultValue: `${mins}m ago` });
   const hours = Math.floor(mins / 60);
-  if (hours < 24) return `${hours}h ago`;
+  if (hours < 24) return t('notifications.hoursAgo', { n: hours, defaultValue: `${hours}h ago` });
   const days = Math.floor(hours / 24);
-  return `${days}d ago`;
+  return t('notifications.daysAgo', { n: days, defaultValue: `${days}d ago` });
 }
 
 export default function NotificationsScreen() {
+  const { t } = useTranslation();
   const router = useRouter();
   const { colors } = useTheme();
   const items = useNotificationsStore((s) => s.items);
@@ -70,7 +72,7 @@ export default function NotificationsScreen() {
         <Text style={[styles.cardBody, { color: colors.textMuted }]} numberOfLines={2}>
           {item.body}
         </Text>
-        <Text style={[styles.cardTime, { color: colors.textMuted }]}>{formatTimeAgo(item.timestamp)}</Text>
+        <Text style={[styles.cardTime, { color: colors.textMuted }]}>{formatTimeAgo(item.timestamp, t)}</Text>
       </View>
       {!item.read && <View style={[styles.unreadDot, { backgroundColor: colors.primary }]} />}
     </Pressable>
@@ -80,7 +82,7 @@ export default function NotificationsScreen() {
     <View style={[styles.container, { backgroundColor: colors.background }]}>
       <Stack.Screen
         options={{
-          title: 'Notifications',
+          title: t('notifications.title', { defaultValue: 'Notifications' }),
           headerStyle: { backgroundColor: colors.surface },
           headerTintColor: colors.primary,
         }}
@@ -92,12 +94,12 @@ export default function NotificationsScreen() {
           {unreadCount > 0 && (
             <Pressable style={styles.actionButton} onPress={markAllRead}>
               <Ionicons name="checkmark-done" size={16} color="#4F8EF7" />
-              <Text style={styles.actionText}>Mark all read</Text>
+              <Text style={styles.actionText}>{t('notifications.markAllRead', { defaultValue: 'Mark all read' })}</Text>
             </Pressable>
           )}
           <Pressable style={styles.actionButton} onPress={clearAll}>
             <Ionicons name="trash" size={16} color="#EF4444" />
-            <Text style={[styles.actionText, { color: '#EF4444' }]}>Clear all</Text>
+            <Text style={[styles.actionText, { color: '#EF4444' }]}>{t('notifications.clearAll', { defaultValue: 'Clear all' })}</Text>
           </Pressable>
         </View>
       )}
@@ -105,9 +107,9 @@ export default function NotificationsScreen() {
       {items.length === 0 ? (
         <View style={styles.emptyState}>
           <Ionicons name="notifications-off" size={48} color="#4B5563" />
-          <Text style={styles.emptyTitle}>No notifications</Text>
+          <Text style={styles.emptyTitle}>{t('notifications.noNotifications', { defaultValue: 'No notifications yet' })}</Text>
           <Text style={styles.emptyText}>
-            You'll see election updates and alerts here
+            {t('notifications.caughtUp', { defaultValue: "You're all caught up!" })}
           </Text>
         </View>
       ) : (

@@ -36,43 +36,43 @@ export default function MoreScreen() {
   const tileWidth = (width - 16 * 2 - 12 * 2) / 3;
 
   const civic: Tile[] = [
-    { label: 'Civic Dashboard', icon: 'pulse', color: colors.teal, route: '/dashboard', badge: unread || undefined },
-    { label: 'Delimitation', icon: 'git-branch', color: colors.gold, route: '/delimitation' },
-    { label: 'Analytics', icon: 'stats-chart', color: colors.teal, route: '/analytics' },
-    { label: 'Civic Metrics', icon: 'bar-chart', color: colors.success, route: '/civic-metrics' },
-    { label: 'Live Election', icon: 'radio', color: colors.primary, route: '/live-election' },
-    { label: 'Parliament', icon: 'business', color: colors.gold, route: '/parliament' },
+    { label: t('more.tiles.civicDashboard', { defaultValue: 'Civic Dashboard' }), icon: 'pulse', color: colors.teal, route: '/dashboard', badge: unread || undefined },
+    { label: t('more.tiles.delimitation', { defaultValue: 'Delimitation' }), icon: 'git-branch', color: colors.gold, route: '/delimitation' },
+    { label: t('more.tiles.analytics', { defaultValue: 'Analytics' }), icon: 'stats-chart', color: colors.teal, route: '/analytics' },
+    { label: t('more.tiles.civicMetrics', { defaultValue: 'Civic Metrics' }), icon: 'bar-chart', color: colors.success, route: '/civic-metrics' },
+    { label: t('more.tiles.liveElection', { defaultValue: 'Live Election' }), icon: 'radio', color: colors.primary, route: '/live-election' },
+    { label: t('more.tiles.parliament', { defaultValue: 'Parliament' }), icon: 'business', color: colors.gold, route: '/parliament' },
   ];
 
   const liveExchange: Tile[] = [
-    { label: 'Go Live', icon: 'radio', color: colors.primary, route: '/live/go-live' },
-    { label: 'Kshetra Live', icon: 'videocam', color: colors.gold, route: '/live' },
-    { label: 'Dept. Console', icon: 'shield', color: colors.teal, route: '/departments/dashboard' },
-    { label: 'Moderation', icon: 'shield-half', color: colors.primary, route: '/live/moderation-queue' },
-    { label: 'Distribution', icon: 'share-social', color: colors.teal, route: '/live/distribution' },
-    { label: 'Dev Switches', icon: 'toggle', color: colors.gold, route: '__dev_switches__' },
+    { label: t('more.tiles.goLive', { defaultValue: 'Go Live' }), icon: 'radio', color: colors.primary, route: '/live/go-live' },
+    { label: t('more.tiles.kshetraLive', { defaultValue: 'Kshetra Live' }), icon: 'videocam', color: colors.gold, route: '/live' },
+    { label: t('more.tiles.deptConsole', { defaultValue: 'Dept. Console' }), icon: 'shield', color: colors.teal, route: '/departments/dashboard' },
+    { label: t('more.tiles.moderation', { defaultValue: 'Moderation' }), icon: 'shield-half', color: colors.primary, route: '/live/moderation-queue' },
+    { label: t('more.tiles.distribution', { defaultValue: 'Distribution' }), icon: 'share-social', color: colors.teal, route: '/live/distribution' },
+    { label: t('more.tiles.devSwitches', { defaultValue: 'Dev Switches' }), icon: 'toggle', color: colors.gold, route: '__dev_switches__' },
   ];
 
   const account: Tile[] = [
-    { label: 'Profile', icon: 'person', color: colors.primary, route: '/profile' },
-    { label: 'Notifications', icon: 'notifications', color: colors.primary, route: '/notifications', badge: unread || undefined },
-    { label: 'Settings', icon: 'settings', color: colors.textSecondary, route: '/notification-settings' },
-    { label: 'AI Assistant', icon: 'sparkles', color: colors.gold, route: '/ai-chat' },
+    { label: t('more.tiles.profile', { defaultValue: 'Profile' }), icon: 'person', color: colors.primary, route: '/profile' },
+    { label: t('more.tiles.notifications', { defaultValue: 'Notifications' }), icon: 'notifications', color: colors.primary, route: '/notifications', badge: unread || undefined },
+    { label: t('more.tiles.settings', { defaultValue: 'Settings' }), icon: 'settings', color: colors.textSecondary, route: '/notification-settings' },
+    { label: t('more.tiles.aiAssistant', { defaultValue: 'AI Assistant' }), icon: 'sparkles', color: colors.gold, route: '/ai-chat' },
   ];
 
   const campaign: Tile[] = [
-    { label: 'Politician Portal', icon: 'people', color: colors.gold, route: '/politician-portal' },
-    { label: 'Become Aspirant', icon: 'rocket', color: colors.primary, route: '/become-aspirant' },
-    { label: 'Campaign Manager', icon: 'megaphone', color: colors.primary, route: '/campaign-manager' },
-    { label: 'Leadership Academy', icon: 'school', color: colors.gold, route: '/leadership-academy' },
-    { label: 'Candidate X-Ray', icon: 'scan', color: colors.teal, route: '/candidate-xray' },
+    { label: t('more.tiles.politicianPortal', { defaultValue: 'Politician Portal' }), icon: 'people', color: colors.gold, route: '/politician-portal' },
+    { label: t('more.tiles.becomeAspirant', { defaultValue: 'Become Aspirant' }), icon: 'rocket', color: colors.primary, route: '/become-aspirant' },
+    { label: t('more.tiles.campaignManager', { defaultValue: 'Campaign Manager' }), icon: 'megaphone', color: colors.primary, route: '/campaign-manager' },
+    { label: t('more.tiles.leadershipAcademy', { defaultValue: 'Leadership Academy' }), icon: 'school', color: colors.gold, route: '/leadership-academy' },
+    { label: t('more.tiles.candidateXRay', { defaultValue: 'Candidate X-Ray' }), icon: 'scan', color: colors.teal, route: '/candidate-xray' },
   ];
 
   return (
     <View style={[styles.container, { backgroundColor: colors.background }]}>
       <View style={[styles.header, { paddingTop: insets.top + 8, borderBottomColor: colors.border }]}>
-        <Text style={[styles.title, { color: colors.text }]}>{t('tabs.more', { defaultValue: 'More' })}</Text>
-        <Text style={[styles.subtitle, { color: colors.textMuted }]}>Everything else, two taps away</Text>
+        <Text style={[styles.title, { color: colors.text }]}>{t('more.title', { defaultValue: t('tabs.more', { defaultValue: 'More' }) })}</Text>
+        <Text style={[styles.subtitle, { color: colors.textMuted }]}>{t('more.subtitle', { defaultValue: 'Everything else, two taps away' })}</Text>
       </View>
 
       <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingBottom: 100 }}>
@@ -87,19 +87,19 @@ export default function MoreScreen() {
               <Ionicons name="megaphone" size={24} color="#FFFFFF" />
             </View>
             <View style={{ flex: 1 }}>
-              <Text style={styles.featuredTitle}>Campaign HQ</Text>
+              <Text style={styles.featuredTitle}>{t('more.campaignHQTitle', { defaultValue: 'Campaign HQ' })}</Text>
               <Text style={styles.featuredSub}>
-                Run for office, manage campaigns, reach voters on WhatsApp, SMS & calls
+                {t('more.campaignHQDesc', { defaultValue: 'Run for office, manage campaigns, reach voters on WhatsApp, SMS & calls' })}
               </Text>
             </View>
           </View>
           <Ionicons name="chevron-forward" size={18} color="#FFFFFF" />
         </Pressable>
 
-        <Section title="Politicians & Campaign" tiles={campaign} tileWidth={tileWidth} onPress={go} />
-        <Section title="Live Media Exchange" tiles={liveExchange} tileWidth={tileWidth} onPress={go} />
-        <Section title="Civic & Elections" tiles={civic} tileWidth={tileWidth} onPress={go} />
-        <Section title="Account" tiles={account} tileWidth={tileWidth} onPress={go} />
+        <Section title={t('more.sections.politiciansAndCampaign', { defaultValue: 'Politicians & Campaign' })} tiles={campaign} tileWidth={tileWidth} onPress={go} />
+        <Section title={t('more.sections.liveMediaExchange', { defaultValue: 'Live Media Exchange' })} tiles={liveExchange} tileWidth={tileWidth} onPress={go} />
+        <Section title={t('more.sections.civicAndElections', { defaultValue: 'Civic & Elections' })} tiles={civic} tileWidth={tileWidth} onPress={go} />
+        <Section title={t('more.sections.account', { defaultValue: 'Account' })} tiles={account} tileWidth={tileWidth} onPress={go} />
       </ScrollView>
 
       <DevFeatureSwitcher

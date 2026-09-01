@@ -25,6 +25,7 @@ import {
 import { VulnerabilityGauge } from '../../components/VulnerabilityGauge';
 import { SentimentRadarChart } from '../../components/SentimentRadarChart';
 import { ExecutiveBriefCard } from '../../components/ExecutiveBriefCard';
+import { getLocalizedStateName } from '../../lib/stateTranslations';
 
 const STATES = ['TS', 'AP', 'KA', 'MH'] as const;
 const STATE_NAMES: Record<string, string> = {
@@ -65,7 +66,7 @@ const PARTY_COLORS: Record<string, string> = {
 const getPartyColor = (p: string) => PARTY_COLORS[p] ?? '#6B7280';
 
 export default function AnalyticsDashboard() {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const router = useRouter();
   const insets = useSafeAreaInsets();
   const { colors } = useTheme();
@@ -126,6 +127,17 @@ export default function AnalyticsDashboard() {
     } catch {}
   }, [analytics, selectedState]);
 
+  const getTabLabel = (tab: typeof TAB_KEYS[0]) => {
+    switch (tab.key) {
+      case 'pulse': return t('analytics.pulseIntel', { defaultValue: tab.label });
+      case 'overview': return t('analytics.tabOverview', { defaultValue: tab.label });
+      case 'parties': return t('analytics.tabParties', { defaultValue: tab.label });
+      case 'districts': return t('analytics.tabDistricts', { defaultValue: tab.label });
+      case 'swing': return t('analytics.swingSeats', { defaultValue: tab.label });
+      default: return tab.label;
+    }
+  };
+
   if (!analytics) return null;
 
   // ─── PULSE INTEL TAB ───
@@ -143,7 +155,9 @@ export default function AnalyticsDashboard() {
         <ExecutiveBriefCard briefing={pulseMetrics.briefing} onExport={handleShare} />
 
         {/* Top Swing / Contested Battlegrounds */}
-        <Text style={[styles.sectionTitle, { color: colors.text }]}>CRITICAL BATTLEGROUND SEATS</Text>
+        <Text style={[styles.sectionTitle, { color: colors.text }]}>
+          {t('analytics.criticalBattlegrounds', { defaultValue: 'CRITICAL BATTLEGROUND SEATS' })}
+        </Text>
         {analytics.swingSeats.slice(0, 5).map((seat) => (
           <View
             key={seat.name}
@@ -152,13 +166,19 @@ export default function AnalyticsDashboard() {
             <View style={styles.seatHeader}>
               <Text style={[styles.seatName, { color: colors.text }]}>{seat.name}</Text>
               <View style={[styles.marginBadge, { backgroundColor: '#EF444415' }]}>
-                <Text style={[styles.marginText, { color: '#EF4444' }]}>Margin: {seat.margin.toLocaleString()}</Text>
+                <Text style={[styles.marginText, { color: '#EF4444' }]}>
+                  {t('analytics.margin', { defaultValue: 'Margin' })}: {seat.margin.toLocaleString()}
+                </Text>
               </View>
             </View>
 
             <View style={styles.seatParties}>
-              <Text style={[styles.partyWinner, { color: getPartyColor(seat.winnerParty) }]}>{seat.winnerParty} (Won)</Text>
-              <Text style={[styles.vsText, { color: colors.textMuted }]}>vs</Text>
+              <Text style={[styles.partyWinner, { color: getPartyColor(seat.winnerParty) }]}>
+                {seat.winnerParty} ({t('analytics.won', { defaultValue: 'Won' })})
+              </Text>
+              <Text style={[styles.vsText, { color: colors.textMuted }]}>
+                {t('analytics.vs', { defaultValue: 'vs' })}
+              </Text>
               <Text style={[styles.partyRunner, { color: getPartyColor(seat.runnerUp) }]}>{seat.runnerUp}</Text>
             </View>
           </View>
@@ -177,21 +197,29 @@ export default function AnalyticsDashboard() {
           <View style={styles.heroGrid}>
             <View style={styles.heroStat}>
               <Text style={[styles.heroValue, { color: colors.text }]}>{analytics.totalSeats}</Text>
-              <Text style={[styles.heroLabel, { color: colors.textMuted }]}>Total Seats</Text>
+              <Text style={[styles.heroLabel, { color: colors.textMuted }]}>
+                {t('analytics.totalSeats', { defaultValue: 'Total Seats' })}
+              </Text>
             </View>
             <View style={styles.heroStat}>
               <Text style={[styles.heroValue, { color: getPartyColor(top?.party ?? '') }]}>{top?.party ?? '-'}</Text>
-              <Text style={[styles.heroLabel, { color: colors.textMuted }]}>Ruling Party</Text>
+              <Text style={[styles.heroLabel, { color: colors.textMuted }]}>
+                {t('analytics.rulingParty', { defaultValue: 'Ruling Party' })}
+              </Text>
             </View>
             <View style={styles.heroStat}>
               <Text style={[styles.heroValue, { color: colors.text }]}>{analytics.swingSeats.length}</Text>
-              <Text style={[styles.heroLabel, { color: colors.textMuted }]}>Swing Seats</Text>
+              <Text style={[styles.heroLabel, { color: colors.textMuted }]}>
+                {t('analytics.swingSeats', { defaultValue: 'Swing Seats' })}
+              </Text>
             </View>
           </View>
         </View>
 
         {/* Seat Distribution Bar */}
-        <Text style={[styles.sectionTitle, { color: colors.text }]}>SEAT DISTRIBUTION</Text>
+        <Text style={[styles.sectionTitle, { color: colors.text }]}>
+          {t('analytics.seatDistribution', { defaultValue: 'SEAT DISTRIBUTION' })}
+        </Text>
         <View style={[styles.partyBar, { backgroundColor: colors.border }]}>
           {analytics.partyStrength.map((p) => (
             <View key={p.party} style={{ flex: p.seatsWon, backgroundColor: getPartyColor(p.party) }} />
@@ -207,7 +235,9 @@ export default function AnalyticsDashboard() {
         </View>
 
         {/* Key Insights */}
-        <Text style={[styles.sectionTitle, { color: colors.text }]}>KEY INSIGHTS</Text>
+        <Text style={[styles.sectionTitle, { color: colors.text }]}>
+          {t('analytics.keyInsights', { defaultValue: 'KEY INSIGHTS' })}
+        </Text>
         {analytics.insights.map((insight, i) => (
           <View key={i} style={[styles.insightCard, { backgroundColor: colors.surface, borderColor: colors.border }]}>
             <Ionicons name="bulb" size={16} color="#F59E0B" />
@@ -223,7 +253,9 @@ export default function AnalyticsDashboard() {
       {/* Header */}
       <View style={[styles.header, { backgroundColor: colors.surface, borderBottomColor: colors.border }]}>
         <View style={styles.headerTitleRow}>
-          <Text style={[styles.headerTitle, { color: colors.text }]}>Deep Analytics</Text>
+          <Text style={[styles.headerTitle, { color: colors.text }]}>
+            {t('analytics.deepTitle', { defaultValue: 'Deep Analytics' })}
+          </Text>
           <Pressable onPress={handleShare} style={styles.headerShareBtn}>
             <Ionicons name="share-outline" size={20} color={colors.text} />
           </Pressable>
@@ -246,7 +278,7 @@ export default function AnalyticsDashboard() {
                   { color: selectedState === st ? '#FFFFFF' : colors.textSecondary, fontWeight: selectedState === st ? '700' : '500' },
                 ]}
               >
-                {STATE_NAMES[st]}
+                {getLocalizedStateName(st, i18n.language) || STATE_NAMES[st]}
               </Text>
             </Pressable>
           ))}
@@ -274,7 +306,7 @@ export default function AnalyticsDashboard() {
                   { color: activeTab === tab.key ? colors.primary : colors.textMuted, fontWeight: activeTab === tab.key ? '700' : '500' },
                 ]}
               >
-                {tab.label}
+                {getTabLabel(tab)}
               </Text>
             </Pressable>
           ))}

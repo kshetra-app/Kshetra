@@ -1,7 +1,7 @@
 /**
  * TE translation
  */
-const te = {
+const te =  {
   "common": {
     "appName": "క్షేత్ర",
     "loading": "లోడ్ అవుతోంది…",
@@ -451,6 +451,47 @@ const te = {
       "constituency_alertsDesc": "మీ నియోజకవర్గం నుండి వార్తలు మరియు హెచ్చరికలు",
       "headlines": "బ్రేకింగ్ వార్తలు",
       "headlinesDesc": "ముఖ్యమైన రాజకీయ వార్తలు మరియు నవీకరణలు"
+    },
+    "allowNotifications": "నోటిఫికేషన్‌లను అనుమతించండి",
+    "receivingUpdates": "అప్‌డేట్‌లు అందుతున్నాయి",
+    "typesHeader": "నోటిఫికేషన్ రకాలు",
+    "types": {
+      "election_results": {
+        "label": "ఎన్నికల ఫలితాలు",
+        "description": "ఎన్నికల ఫలితాలు ప్రకటించినప్పుడు నోటిఫికేషన్ పొందండి"
+      },
+      "constituency_updates": {
+        "label": "నియోజకవర్గ అప్‌డేట్‌లు",
+        "description": "మీరు అనుసరించే నియోజకవర్గాల వివరాలు"
+      },
+      "civic_issue": {
+        "label": "పౌర సమస్యలు",
+        "description": "మీ సమీపంలోని కొత్త సమస్యలు, స్థితి మార్పులు మరియు ఎమ్మెల్యే స్పందనలు"
+      },
+      "promise_update": {
+        "label": "హామీల ట్రాకర్",
+        "description": "ఎన్నికల హామీల పురోగతి మరియు మైలురాళ్లు"
+      },
+      "delimitation_alert": {
+        "label": "పునర్విభజన హెచ్చరికలు",
+        "description": "సరిహద్దు మార్పులు, గెజిట్ నోటిఫికేషన్‌లు, కమిషన్ అప్‌డేట్‌లు"
+      },
+      "analytics_insight": {
+        "label": "విశ్లేషణ ఇన్‌సైట్లు",
+        "description": "మీ రాష్ట్రంపై సరికొత్త డేటా ఆధారిత విశ్లేషణలు"
+      },
+      "community_activity": {
+        "label": "కమ్యూనిటీ",
+        "description": "సమాధానాలు, ప్రస్తావనలు మరియు కమ్యూనిటీ ఛాలెంజ్‌లు"
+      },
+      "new_state_added": {
+        "label": "కొత్త రాష్ట్ర డేటా",
+        "description": "కొత్త రాష్ట్ర డేటా అందుబాటులోకి వచ్చినప్పుడు"
+      },
+      "app_updates": {
+        "label": "యాప్ అప్‌డేట్‌లు",
+        "description": "కొత్త ఫీచర్లు మరియు మెరుగుదలలు"
+      }
     }
   },
   "onboarding": {
@@ -985,7 +1026,45 @@ const te = {
     "biggestWins": "అతిపెద్ద విజయాలు",
     "reservation": "రిజర్వేషన్",
     "totalSeats": "మొత్తం సీట్లు",
-    "seatsWon": "గెలిచిన సీట్లు"
+    "seatsWon": "గెలిచిన సీట్లు",
+    "deepTitle": "లోతైన విశ్లేషణ",
+    "pulseIntel": "పల్స్ ఇంటెల్",
+    "vulnerabilityTitle": "ప్రభుత్వ వ్యతిరేకత బలహీనత",
+    "aiviConfidence": "AIVI సూచిక • విశ్వసనీయత {{pct}}%",
+    "estSwing": "అంచనా స్వింగ్ సంభావ్యత: {{pct}}%",
+    "keyDrivers": "ప్రధాన ప్రభావ కారకాలు",
+    "highFlip": "మారే అధిక సంభావ్యత",
+    "contested": "తీవ్ర పోటీ స్థానం",
+    "incumbentAdvantage": "పాలక పక్ష ఆధిక్యం",
+    "twoTermIncumbency": "రెండు పర్యాయాల పాలన ఒత్తిడి",
+    "unresolvedGrievance": "పరిష్కారం కాని ఫిర్యాదుల అధిక నిష్పత్తి",
+    "negativeSentiment": "క్షేత్రస్థాయిలో ప్రతికూల భావన",
+    "adverseDemographics": "ప్రతికూల జనాభా మార్పులు",
+    "criticalNegativeNews": "ప్రాంతీయ వార్తల్లో ప్రతికూలత",
+    "narrowMargin": "స్వల్ప గెలుపు మార్జిన్ (<5%)",
+    "likelyHold": "నిలుపుకునే అవకాశం",
+    "leanIncumbent": "పాలక పక్షం వైపు మొగ్గు",
+    "tossup": "హోరాహోరీ",
+    "leanChallenger": "ప్రత్యర్థి వైపు మొగ్గు",
+    "likelyFlip": "ఓడిపోయే అవకాశం",
+    "sentimentRadarTitle": "5-స్తంభాల సెంటిమెంట్ రాడార్",
+    "sentimentRadarSubtitle": "నిజ-సమయ క్షేత్రస్థాయి ప్రజల నాడి & సంతృప్తి",
+    "netMood": "ప్రజా నాడి",
+    "governanceResponse": "పరిపాలన & స్పందన",
+    "civicInfrastructure": "పౌర మౌలిక సదుపాయాలు",
+    "welfareSchemes": "సంక్షేమం & ప్రత్యక్ష పథకాలు",
+    "economyLivelihood": "ఆర్థిక వ్యవస్థ & జీవనోపాధి",
+    "candidateTrust": "అభ్యర్థిపై నమ్మకం",
+    "executiveBriefTitle": "ఎగ్జిక్యూటివ్ ఏఐ బ్రీఫ్",
+    "strategicTakeaways": "వ్యూహాత్మక ముఖ్యాంశాలు",
+    "recommendedCounterActions": "సిఫార్సు చేసిన వ్యూహాత్మక చర్యలు",
+    "criticalBattlegrounds": "కీలక పోరాట స్థానాలు",
+    "keyInsights": "కీలక అంతర్దృష్టులు",
+    "rulingParty": "పాలక పక్షం",
+    "swingSeats": "స్వింగ్ సీట్లు",
+    "margin": "మెజారిటీ",
+    "won": "గెలుపు",
+    "vs": "వర్సెస్"
   },
   "parliament": {
     "title": "పార్లమెంట్",
@@ -1083,7 +1162,42 @@ const te = {
     "badges": "బ్యాడ్జ్‌లు",
     "becomeAspirant": "ఆశావాది కండి",
     "aspirantDesc": "మీ సమాజంలో భవిష్యత్ నాయకుడిగా నమోదు చేసుకోండి",
-    "registerNow": "ఇప్పుడే నమోదు చేసుకోండి"
+    "registerNow": "ఇప్పుడే నమోదు చేసుకోండి",
+    "categories": {
+      "electoral_process": "ఎన్నికల ప్రక్రియ",
+      "campaign_strategy": "ప్రచార వ్యూహం",
+      "legal_framework": "చట్టపరమైన నిబంధనలు",
+      "public_speaking": "ప్రజా ప్రసంగం",
+      "community_organizing": "కమ్యూనిటీ సమీకరణ",
+      "digital_campaigning": "డిజిటల్ ప్రచారం",
+      "policy_making": "విధాన రూపకల్పన",
+      "ethics_governance": "నైతికత & పాలన"
+    },
+    "contentTypes": {
+      "article": "వ్యాసం",
+      "video": "వీడియో",
+      "quiz": "క్విజ్",
+      "case_study": "కేస్ స్టడీ"
+    },
+    "difficulty": {
+      "beginner": "ప్రారంభ స్థాయి",
+      "intermediate": "మధ్యస్థ స్థాయి",
+      "advanced": "ఉన్నత స్థాయి"
+    },
+    "min": "నిమిషాలు",
+    "earned": "సాధించినవి",
+    "locked": "లాక్ చేయబడినవి",
+    "aspiringLeaders": "భవిష్యత్ నాయకులు",
+    "noActiveChallenges": "సక్రియ సవాళ్లు లేవు",
+    "noPublicAspirants": "ఆశావాదులు లేరు",
+    "moduleNames": {
+      "howElectionsWork": "భారతీయ ఎన్నికల విధానం",
+      "filingNomination": "నామినేషన్ దాఖలు చేయడం ఎలా",
+      "electionSymbols": "ఎన్నికల గుర్తులను అర్థం చేసుకోవడం",
+      "grassrootsCampaign": "క్షేత్రస్థాయి ప్రచార నిర్మాణం",
+      "fundraising": "స్వతంత్ర అభ్యర్థుల నిధుల సేకరణ",
+      "rpaAct": "ప్రజాప్రాతినిధ్య చట్టం సమగ్ర వివరాలు"
+    }
   },
   "becomeAspirant": {
     "title": "ఆశావాది కండి",
@@ -1101,7 +1215,27 @@ const te = {
     "requirements": "అర్హతలు",
     "minAge": "కనీస వయసు: 18",
     "minCivicScore": "కనీస పౌర స్కోర్: 50",
-    "verifiedAccount": "ధృవీకరించిన ఖాతా అవసరం"
+    "verifiedAccount": "ధృవీకరించిన ఖాతా అవసరం",
+    "screenTitle": "ఆశావాదిగా చేరండి",
+    "headerTitle": "పౌర ఆశావాదులు",
+    "headerSubtitle": "విశ్వసనీయత పెంచుకోండి, ప్రజా మద్దతు పొందండి",
+    "registerCTA": "ఆశావాదిగా నమోదు చేసుకోండి",
+    "yourBadges": "మీ బ్యాడ్జ్‌లు",
+    "earnedLocked": "{{earned}} సాధించారు · {{locked}} మిగిలాయి",
+    "aspiringIn": "ఆశావాది · {{seat}} · {{year}}",
+    "profileActive": "పౌర ఆశావాది ప్రొఫైల్ సక్రియంగా ఉంది",
+    "heroTitle": "మీ సమాజం కోసం ముందడుగు వేయండి",
+    "heroSub": "ఎన్నికల్లో పోటీ చేయడానికి ముందే ధృవీకరించబడిన పౌర రికార్డును నిర్మించుకోండి.",
+    "benefits": {
+      "scoreTitle": "పౌర స్కోరు నిర్మించండి",
+      "scoreSub": "నేర్చుకోవడం, సేవా కార్యక్రమాలు మరియు ప్రజలతో మమేకం కావడం ద్వారా పాయింట్లు పొందండి.",
+      "badgeTitle": "బ్యాడ్జ్‌లను పొందండి",
+      "badgeSub": "మీ ప్రజా ప్రొఫైల్‌లో మీ మైలురాళ్లను ప్రదర్శించండి.",
+      "endorseTitle": "ప్రజా మద్దతు పొందండి",
+      "endorseSub": "మీ నియోజకవర్గ పౌరులు మీ అభ్యర్థిత్వానికి మద్దతు తెలపనివ్వండి.",
+      "goalTitle": "మీ లక్ష్యాన్ని ప్రకటించండి",
+      "goalSub": "మీరు ఏ నియోజకవర్గంలో ఏ సంవత్సరంలో పోటీ చేయాలనుకుంటున్నారో ఓటర్లకు తెలపండి."
+    }
   },
   "hierarchy": {
     "title": "పరిపాలనా క్రమం",
@@ -1175,14 +1309,16 @@ const te = {
     "tabs": {
       "overview": "అవలోకనం",
       "ads": "ప్రకటనలు",
-      "booths": "బూత్ వ్యూహం",
+      "booths": "పోలింగ్ బూత్‌లు",
       "volunteers": "వాలంటీర్లు",
-      "outreach": "ఆవుట్‌రీచ్"
+      "outreach": "ఔట్‌రీచ్",
+      "campaigns": "ప్రచారాలు",
+      "revenue": "ఆదాయం"
     },
     "createCampaign": "ప్రచారం సృష్టించండి",
     "activeCampaigns": "సక్రియ ప్రచారాలు",
     "adPerformance": "ప్రకటన పనితీరు",
-    "impressions": "ఇంప్రెషన్‌లు",
+    "impressions": "ఇంప్రెషన్లు",
     "clicks": "క్లిక్‌లు",
     "ctr": "CTR",
     "spent": "ఖర్చు",
@@ -1191,7 +1327,35 @@ const te = {
     "boothsCovered": "కవర్ చేసిన బూత్‌లు",
     "voterReach": "ఓటర్ రీచ్",
     "abTesting": "A/B టెస్టింగ్",
-    "revenue": "ఆదాయం"
+    "revenue": "ఆదాయం",
+    "types": {
+      "election": "ఎన్నికల ప్రచారం",
+      "awareness": "అవగాహన",
+      "fundraising": "నిధుల సేకరణ",
+      "outreach": "ప్రజా సంపర్కం",
+      "issue_advocacy": "సమస్యల పోరాటం",
+      "brand_building": "బ్రాండ్ నిర్మాణం",
+      "get_out_vote": "ఓటు వేయించే ప్రచారం"
+    },
+    "statuses": {
+      "active": "సక్రియం",
+      "paused": "నిలిపివేయబడింది",
+      "draft": "డ్రాఫ్ట్",
+      "completed": "పూర్తయింది",
+      "planned": "ప్రణాళిక",
+      "cancelled": "రద్దు చేయబడింది"
+    },
+    "totalReach": "మొత్తం రీచ్",
+    "engagement": "ఎంగేజ్‌మెంట్",
+    "sentiment": "సెంటిమెంట్",
+    "adCount": "{{count}} ప్రకటనలు",
+    "volunteerCount": "{{count}} వాలంటీర్లు",
+    "boothCount": "{{covered}}/{{total}} బూత్‌లు",
+    "campaignNames": {
+      "tsReportCard": "తెలంగాణ అభివృద్ధి ప్రగతి నివేదిక",
+      "youthConnect": "యూత్ కనెక్ట్ 2026",
+      "guaranteesImpact": "5 గ్యారెంటీ పథకాల ప్రభావ నివేదిక"
+    }
   },
   "outreach": {
     "title": "ప్రచార ఆవుట్‌రీచ్",
@@ -1492,11 +1656,17 @@ const te = {
   "notifications": {
     "title": "నోటిఫికేషన్లు",
     "markAllRead": "అన్నీ చదివినట్లు గుర్తించండి",
-    "noNotifications": "ఇంకా నోటిఫికేషన్లు లేవు",
+    "noNotifications": "నోటిఫికేషన్‌లు లేవు",
     "unread": "{{count}} చదవనివి",
     "today": "ఈ రోజు",
     "earlier": "ఇంతకు ముందు",
-    "thisWeek": "ఈ వారం"
+    "thisWeek": "ఈ వారం",
+    "clearAll": "అన్నీ తొలగించండి",
+    "caughtUp": "మీరు అన్ని అప్‌డేట్‌లను చూసేశారు!",
+    "justNow": "ఇప్పుడే",
+    "minutesAgo": "{{n}} నిమిషాల క్రితం",
+    "hoursAgo": "{{n}} గంటల క్రితం",
+    "daysAgo": "{{n}} రోజుల క్రితం"
   },
   "auth": {
     "signIn": "సైన్ ఇన్",
@@ -2157,7 +2327,61 @@ const te = {
     "verified3TierSub": "గ్రామ పంచాయతీలు (సర్పంచులు & వార్డు సభ్యులు), మండల పరిషత్ (ఎంపీటీసీ), మరియు జిల్లా పరిషత్ (జెడ్పీటీసీ) పూర్తి అధికారిక ఫలితాలు.",
     "gpTierActiveTitle": "గ్రామ పంచాయతీ విభాగం మాత్రమే అందుబాటులో ఉంది",
     "gpTierActiveSub": "సర్పంచ్ మరియు వార్డు సభ్యుల ఫలితాలు మాత్రమే అందుబాటులో ఉన్నాయి. ఎంపీటీసీ/జెడ్పీటీసీ ఎన్నికలు రాష్ట్ర ఎన్నికల సంఘం ద్వారా వాయిదా వేయబడ్డాయి."
+  },
+  "more": {
+    "title": "మరిన్ని",
+    "subtitle": "మిగతావన్నీ కేవలం రెండు ట్యాప్‌లలో",
+    "campaignHQTitle": "ఎన్నికల ప్రచార హెచ్‌క్యూ",
+    "campaignHQDesc": "ఎన్నికలలో పోటీ చేయండి, ప్రచారాలు నిర్వహించండి, వాట్సాప్, ఎస్ఎమ్ఎస్ ద్వారా ఓటర్లను చేరండి",
+    "sections": {
+      "politiciansAndCampaign": "రాజకీయ నాయకులు & ప్రచారం",
+      "liveMediaExchange": "లైవ్ మీడియా ఎక్స్ఛేంజ్",
+      "civicAndElections": "పౌర సేవలు & ఎన్నికలు",
+      "account": "ఖాతా"
+    },
+    "tiles": {
+      "politicianPortal": "రాజకీయ పోర్టల్",
+      "becomeAspirant": "ఆశావాది కండి",
+      "campaignManager": "ప్రచార నిర్వాహకుడు",
+      "leadershipAcademy": "నాయకత్వ అకాడమీ",
+      "candidateXRay": "అభ్యర్థి ఎక్స్-రే",
+      "goLive": "లైవ్ వెళ్లండి",
+      "kshetraLive": "క్షేత్ర లైవ్",
+      "deptConsole": "విభాగ కన్సోల్",
+      "moderation": "మోడరేషన్",
+      "distribution": "పంపిణీ",
+      "devSwitches": "డెవ్ స్విచ్‌లు",
+      "civicDashboard": "పౌర డాష్‌బోర్డ్",
+      "delimitation": "నియోజకవర్గ పునర్విభజన",
+      "analytics": "లోతైన విశ్లేషణ",
+      "civicMetrics": "పౌర కొలమానాలు",
+      "liveElection": "లైవ్ ఎన్నికలు",
+      "parliament": "పార్లమెంట్",
+      "profile": "ప్రొఫైల్",
+      "notifications": "నోటిఫికేషన్లు",
+      "settings": "సెట్టింగ్‌లు",
+      "aiAssistant": "ఏఐ అసిస్టెంట్"
+    }
+  },
+  "departments": {
+    "title": "శాఖల కన్సోల్",
+    "selectDepartment": "శాఖను ఎంచుకోండి",
+    "pendingAlerts": "{{count}} పెండింగ్ హెచ్చరికలు",
+    "noAlerts": "ఈ శాఖకు ఎటువంటి పెండింగ్ హెచ్చరికలు లేవు",
+    "acknowledge": "ధృవీకరించండి",
+    "genuine": "నిజమైన సమాచారం",
+    "falseAlarm": "తప్పుడు సమాచారం",
+    "unableToVerify": "ధృవీకరించలేము",
+    "reporterCredibility": "నివేదకుడి విశ్వసనీయత",
+    "dispatchedAt": "{{time}} పంపబడింది"
+  },
+  "devSwitches": {
+    "title": "డెవలపర్ ఫీచర్ స్విచ్‌లు",
+    "subtitle": "ప్రయోగాత్మక ఫీచర్లను ఆన్ లేదా ఆఫ్ చేయండి",
+    "done": "పూర్తయింది",
+    "reset": "రీసెట్ చేయండి",
+    "enableAll": "అన్నీ ప్రారంభించండి"
   }
-};
+}
 
 export default te;

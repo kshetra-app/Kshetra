@@ -1,7 +1,7 @@
 /**
  * English (en) — Base translation
  */
-const en = {
+const en =  {
   "common": {
     "appName": "Kshetra",
     "loading": "Loading…",
@@ -465,6 +465,47 @@ const en = {
       "constituency_alertsDesc": "News and alerts from your constituency",
       "headlines": "Breaking Headlines",
       "headlinesDesc": "Top political news and updates"
+    },
+    "allowNotifications": "Allow Notifications",
+    "receivingUpdates": "Receiving updates",
+    "typesHeader": "NOTIFICATION TYPES",
+    "types": {
+      "election_results": {
+        "label": "Election Results",
+        "description": "Get notified when election results are declared"
+      },
+      "constituency_updates": {
+        "label": "Constituency Updates",
+        "description": "Updates about your followed constituencies"
+      },
+      "civic_issue": {
+        "label": "Civic Issues",
+        "description": "New issues, status changes, and MLA responses near you"
+      },
+      "promise_update": {
+        "label": "Promise Tracker",
+        "description": "Promise status changes and milestone updates"
+      },
+      "delimitation_alert": {
+        "label": "Delimitation Alerts",
+        "description": "Boundary changes, gazette notifications, commission updates"
+      },
+      "analytics_insight": {
+        "label": "Analytics Insights",
+        "description": "New data-driven insights about your state"
+      },
+      "community_activity": {
+        "label": "Community",
+        "description": "Replies, mentions, and community challenge updates"
+      },
+      "new_state_added": {
+        "label": "New State Data",
+        "description": "When new state data becomes available"
+      },
+      "app_updates": {
+        "label": "App Updates",
+        "description": "New features and improvements"
+      }
     }
   },
   "onboarding": {
@@ -1032,7 +1073,7 @@ const en = {
       "heatmap": "Heatmap",
       "antiIncumbency": "Anti-Incumbency"
     },
-    "seatDistribution": "Seat Distribution",
+    "seatDistribution": "SEAT DISTRIBUTION",
     "partyStrength": "Party Strength",
     "voteShare": "Vote Share",
     "marginAnalysis": "Margin Analysis",
@@ -1050,7 +1091,7 @@ const en = {
     "assemblyElection": "{{year}} Assembly Election",
     "ruling": "Ruling",
     "defections": "Defections",
-    "keyInsights": "Key Insights",
+    "keyInsights": "KEY INSIGHTS",
     "crossStateComparison": "Cross-State Comparison",
     "crossStateIntelligence": "Cross-State Intelligence",
     "electionYear": "Election Year",
@@ -1066,7 +1107,44 @@ const en = {
     "defectionRate": "Defection Rate",
     "vulnerableSeats": "Vulnerable Seats (<5%)",
     "defectionFlow": "Defection Flow",
-    "closestContestsTop10": "Closest Contests (Top 10)"
+    "closestContestsTop10": "Closest Contests (Top 10)",
+    "deepTitle": "Deep Analytics",
+    "pulseIntel": "Pulse Intel",
+    "vulnerabilityTitle": "Anti-Incumbency Vulnerability",
+    "aiviConfidence": "AIVI Index • Confidence {{pct}}%",
+    "estSwing": "Est. Swing Probability: {{pct}}%",
+    "keyDrivers": "KEY VULNERABILITY DRIVERS",
+    "highFlip": "High Flip Probability",
+    "contested": "Contested Battleground",
+    "incumbentAdvantage": "Incumbent Advantage",
+    "twoTermIncumbency": "Two-term incumbency pressure",
+    "unresolvedGrievance": "High unresolved grievance ratio",
+    "negativeSentiment": "Strong negative ground sentiment trend",
+    "adverseDemographics": "Adverse demographic realignment",
+    "criticalNegativeNews": "Dominant negative regional news cycle",
+    "narrowMargin": "Narrow historical victory margin (<5%)",
+    "likelyHold": "Likely Hold",
+    "leanIncumbent": "Lean Incumbent",
+    "tossup": "Tossup",
+    "leanChallenger": "Lean Challenger",
+    "likelyFlip": "Likely Flip",
+    "sentimentRadarTitle": "5-Pillar Sentiment Radar",
+    "sentimentRadarSubtitle": "Real-time ground pulse & satisfaction metrics",
+    "netMood": "Net Mood",
+    "governanceResponse": "Governance & Response",
+    "civicInfrastructure": "Civic Infrastructure",
+    "welfareSchemes": "Welfare & Direct Schemes",
+    "economyLivelihood": "Economy & Livelihood",
+    "candidateTrust": "Candidate Trust",
+    "executiveBriefTitle": "EXECUTIVE AI BRIEF",
+    "strategicTakeaways": "STRATEGIC TAKEAWAYS",
+    "recommendedCounterActions": "RECOMMENDED COUNTER-ACTIONS",
+    "criticalBattlegrounds": "CRITICAL BATTLEGROUND SEATS",
+    "rulingParty": "Ruling Party",
+    "swingSeats": "Swing Seats",
+    "margin": "Margin",
+    "won": "Won",
+    "vs": "vs"
   },
   "parliament": {
     "screenTitle": "Parliament & MPs",
@@ -1171,7 +1249,7 @@ const en = {
     "min": "min",
     "noActiveChallenges": "No active challenges",
     "aspiringLeaders": "Aspiring Leaders",
-    "noPublicAspirants": "No public aspirants yet",
+    "noPublicAspirants": "No public aspirants",
     "earned": "earned",
     "locked": "locked",
     "endorsed": "Endorsed",
@@ -1186,7 +1264,36 @@ const en = {
     "moduleCompleted": "Module Completed",
     "takeQuizToComplete": "Take the quiz to complete",
     "markAsComplete": "Mark as Complete",
-    "tapToWatchOnYouTube": "Tap to watch on YouTube"
+    "tapToWatchOnYouTube": "Tap to watch on YouTube",
+    "categories": {
+      "electoral_process": "Electoral Process",
+      "campaign_strategy": "Campaign Strategy",
+      "legal_framework": "Legal Framework",
+      "public_speaking": "Public Speaking",
+      "community_organizing": "Community Organizing",
+      "digital_campaigning": "Digital Campaigning",
+      "policy_making": "Policy Making",
+      "ethics_governance": "Ethics & Governance"
+    },
+    "contentTypes": {
+      "article": "article",
+      "video": "video",
+      "quiz": "quiz",
+      "case_study": "case study"
+    },
+    "difficulty": {
+      "beginner": "beginner",
+      "intermediate": "intermediate",
+      "advanced": "advanced"
+    },
+    "moduleNames": {
+      "howElectionsWork": "How Indian Elections Work",
+      "filingNomination": "Filing Your Nomination",
+      "electionSymbols": "Understanding Election Symbols",
+      "grassrootsCampaign": "Building a Grassroots Campaign",
+      "fundraising": "Fundraising for Independents",
+      "rpaAct": "Representation of the People Act"
+    }
   },
   "becomeAspirant": {
     "title": "Become an Aspirant",
@@ -1204,7 +1311,27 @@ const en = {
     "requirements": "Requirements",
     "minAge": "Minimum age: 18",
     "minCivicScore": "Minimum civic score: 50",
-    "verifiedAccount": "Verified account required"
+    "verifiedAccount": "Verified account required",
+    "screenTitle": "Become an Aspirant",
+    "headerTitle": "Civic Aspirants",
+    "headerSubtitle": "Build credentials, earn endorsements",
+    "registerCTA": "Register as Aspirant",
+    "yourBadges": "Your Badges",
+    "earnedLocked": "{{earned}} earned · {{locked}} locked",
+    "aspiringIn": "Aspiring · {{seat}} · {{year}}",
+    "profileActive": "Civic aspirant profile active",
+    "heroTitle": "Step up for your community",
+    "heroSub": "Build your verified civic record and earn community trust before seeking election.",
+    "benefits": {
+      "scoreTitle": "Build a civic score",
+      "scoreSub": "Earn points for learning, engagement & community work.",
+      "badgeTitle": "Unlock badges",
+      "badgeSub": "Showcase verified milestones on your public profile.",
+      "endorseTitle": "Get endorsed",
+      "endorseSub": "Let citizens in your constituency back your candidacy.",
+      "goalTitle": "Declare your goal",
+      "goalSub": "Tell voters which seat and election year you aim for."
+    }
   },
   "hierarchy": {
     "screenTitle": "Local Governance Hierarchy",
@@ -1332,9 +1459,11 @@ const en = {
     "tabs": {
       "overview": "Overview",
       "ads": "Ads",
-      "booths": "Booth Strategy",
+      "booths": "Booths",
       "volunteers": "Volunteers",
-      "outreach": "Outreach"
+      "outreach": "Outreach",
+      "campaigns": "Campaigns",
+      "revenue": "Revenue"
     },
     "createCampaign": "Create Campaign",
     "activeCampaigns": "Active Campaigns",
@@ -1352,7 +1481,35 @@ const en = {
     "eciCompliant": "ECI Compliant",
     "complianceIssue": "Compliance Issue",
     "paidBy": "Paid by",
-    "pauseAd": "Pause Ad"
+    "pauseAd": "Pause Ad",
+    "types": {
+      "election": "Election Campaign",
+      "awareness": "Awareness",
+      "fundraising": "Fundraising",
+      "outreach": "Outreach",
+      "issue_advocacy": "Issue Advocacy",
+      "brand_building": "Brand Building",
+      "get_out_vote": "Get Out The Vote"
+    },
+    "statuses": {
+      "active": "ACTIVE",
+      "paused": "PAUSED",
+      "draft": "DRAFT",
+      "completed": "COMPLETED",
+      "planned": "PLANNED",
+      "cancelled": "CANCELLED"
+    },
+    "totalReach": "Total Reach",
+    "engagement": "Engagement",
+    "sentiment": "Sentiment",
+    "adCount": "{{count}} ads",
+    "volunteerCount": "{{count}} volunteers",
+    "boothCount": "{{covered}}/{{total}} booths",
+    "campaignNames": {
+      "tsReportCard": "Telangana Development Report Card",
+      "youthConnect": "Youth Connect 2026",
+      "guaranteesImpact": "5 Guarantees Impact Report"
+    }
   },
   "outreach": {
     "sentiment": "Sentiment",
@@ -1680,7 +1837,13 @@ const en = {
     "unread": "{{count}} unread",
     "today": "Today",
     "earlier": "Earlier",
-    "thisWeek": "This Week"
+    "thisWeek": "This Week",
+    "clearAll": "Clear all",
+    "caughtUp": "You're all caught up!",
+    "justNow": "Just now",
+    "minutesAgo": "{{n}}m ago",
+    "hoursAgo": "{{n}}h ago",
+    "daysAgo": "{{n}}d ago"
   },
   "auth": {
     "signIn": "Sign In",
@@ -2437,8 +2600,62 @@ const en = {
     "verified3TierSub": "Complete official results for Gram Panchayats (Sarpanches & Ward Members), Mandal Parishad (MPTC), and Zilla Parishad (ZPTC).",
     "gpTierActiveTitle": "Gram Panchayat Tier Active",
     "gpTierActiveSub": "Verified official results for Gram Panchayat representatives (Sarpanch & Ward members). MPTC/ZPTC elections were postponed by the State Election Commission."
+  },
+  "more": {
+    "title": "More",
+    "subtitle": "Everything else, two taps away",
+    "campaignHQTitle": "Campaign HQ",
+    "campaignHQDesc": "Run for office, manage campaigns, reach voters on WhatsApp, SMS & calls",
+    "sections": {
+      "politiciansAndCampaign": "Politicians & Campaign",
+      "liveMediaExchange": "Live Media Exchange",
+      "civicAndElections": "Civic & Elections",
+      "account": "Account"
+    },
+    "tiles": {
+      "politicianPortal": "Politician Portal",
+      "becomeAspirant": "Become Aspirant",
+      "campaignManager": "Campaign Manager",
+      "leadershipAcademy": "Leadership Academy",
+      "candidateXRay": "Candidate X-Ray",
+      "goLive": "Go Live",
+      "kshetraLive": "Kshetra Live",
+      "deptConsole": "Dept. Console",
+      "moderation": "Moderation",
+      "distribution": "Distribution",
+      "devSwitches": "Dev Switches",
+      "civicDashboard": "Civic Dashboard",
+      "delimitation": "Delimitation",
+      "analytics": "Analytics",
+      "civicMetrics": "Civic Metrics",
+      "liveElection": "Live Election",
+      "parliament": "Parliament",
+      "profile": "Profile",
+      "notifications": "Notifications",
+      "settings": "Settings",
+      "aiAssistant": "AI Assistant"
+    }
+  },
+  "departments": {
+    "title": "Department Console",
+    "selectDepartment": "Select Department",
+    "pendingAlerts": "{{count}} Pending Alerts",
+    "noAlerts": "No pending alerts for this department",
+    "acknowledge": "Acknowledge",
+    "genuine": "Genuine Alert",
+    "falseAlarm": "False Alarm",
+    "unableToVerify": "Unable to Verify",
+    "reporterCredibility": "Reporter Credibility",
+    "dispatchedAt": "Dispatched {{time}}"
+  },
+  "devSwitches": {
+    "title": "Developer Feature Switches",
+    "subtitle": "Toggle experimental and release features",
+    "done": "Done",
+    "reset": "Reset All",
+    "enableAll": "Enable All"
   }
-};
+}
 
 export default en;
 export type TranslationKeys = typeof en;

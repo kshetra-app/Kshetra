@@ -1,6 +1,7 @@
 import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import { useTranslation } from 'react-i18next';
 import { useTheme } from '../lib/theme';
 import type { ExecutiveBriefing } from '@kshetra/shared';
 
@@ -10,6 +11,7 @@ interface Props {
 }
 
 export function ExecutiveBriefCard({ briefing, onExport }: Props) {
+  const { t } = useTranslation();
   const { colors } = useTheme();
 
   return (
@@ -19,7 +21,9 @@ export function ExecutiveBriefCard({ briefing, onExport }: Props) {
         <View style={styles.titleRow}>
           <View style={[styles.aiBadge, { backgroundColor: '#8B5CF615' }]}>
             <Ionicons name="sparkles" size={14} color="#8B5CF6" />
-            <Text style={[styles.aiBadgeText, { color: '#8B5CF6' }]}>EXECUTIVE AI BRIEF</Text>
+            <Text style={[styles.aiBadgeText, { color: '#8B5CF6' }]}>
+              {t('analytics.executiveBriefTitle', { defaultValue: 'EXECUTIVE AI BRIEF' })}
+            </Text>
           </View>
           <Text style={[styles.timestamp, { color: colors.textMuted }]}>
             {new Date(briefing.generatedAt).toLocaleDateString()}
@@ -38,7 +42,9 @@ export function ExecutiveBriefCard({ briefing, onExport }: Props) {
 
       {/* Key Takeaways */}
       <View style={[styles.sectionBlock, { backgroundColor: colors.background }]}>
-        <Text style={[styles.sectionTitle, { color: colors.textMuted }]}>STRATEGIC TAKEAWAYS</Text>
+        <Text style={[styles.sectionTitle, { color: colors.textMuted }]}>
+          {t('analytics.strategicTakeaways', { defaultValue: 'STRATEGIC TAKEAWAYS' })}
+        </Text>
         {briefing.keyTakeaways.map((takeaway, idx) => (
           <View key={idx} style={styles.takeawayRow}>
             <Ionicons name="checkmark-circle" size={14} color={colors.primary} style={styles.checkIcon} />
@@ -49,7 +55,9 @@ export function ExecutiveBriefCard({ briefing, onExport }: Props) {
 
       {/* Actionable Recommendations */}
       <View style={[styles.sectionBlock, { backgroundColor: '#EFF6FF', borderColor: '#DBEAFE', borderWidth: 1 }]}>
-        <Text style={[styles.sectionTitle, { color: '#1E40AF' }]}>RECOMMENDED COUNTER-ACTIONS</Text>
+        <Text style={[styles.sectionTitle, { color: '#1E40AF' }]}>
+          {t('analytics.recommendedCounterActions', { defaultValue: 'RECOMMENDED COUNTER-ACTIONS' })}
+        </Text>
         {briefing.strategicRecommendations.map((rec, idx) => (
           <View key={idx} style={styles.recRow}>
             <Text style={[styles.recNumber, { color: '#2563EB' }]}>{idx + 1}.</Text>

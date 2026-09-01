@@ -1,4 +1,5 @@
 import { useMemo, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import {
   View,
   Text,
@@ -23,6 +24,7 @@ import { useTheme } from '../../lib/theme';
  * feeds directly back into the reporter's credibility score (doc Section 12.6).
  */
 export default function DepartmentDashboardScreen() {
+  const { t } = useTranslation();
   const insets = useSafeAreaInsets();
   const router = useRouter();
   const { colors } = useTheme();
@@ -55,7 +57,7 @@ export default function DepartmentDashboardScreen() {
         <Pressable onPress={() => router.back()} hitSlop={10}>
           <Ionicons name="chevron-back" size={26} color={colors.primary} />
         </Pressable>
-        <Text style={[styles.title, { color: colors.text }]}>Department Console</Text>
+        <Text style={[styles.title, { color: colors.text }]}>{t('departments.title', { defaultValue: 'Department Console' })}</Text>
         <View style={{ width: 26 }} />
       </View>
 
@@ -129,7 +131,7 @@ export default function DepartmentDashboardScreen() {
         ListEmptyComponent={
           <View style={styles.empty}>
             <Ionicons name="notifications-off" size={40} color="#374151" />
-            <Text style={styles.emptyText}>No alerts routed to this office yet</Text>
+            <Text style={styles.emptyText}>{t('departments.noAlerts', { defaultValue: 'No alerts routed to this office yet' })}</Text>
           </View>
         }
       />
@@ -148,9 +150,19 @@ function AlertCard({
   onAck: (id: string, verdict: AlertAcknowledgment) => void;
   onOpen: () => void;
 }) {
+  const { t } = useTranslation();
   const dcfg = DEPARTMENT_CONFIG[alert.departmentType];
   const acked = alert.acknowledgment ? ACK_CONFIG[alert.acknowledgment] : null;
   const event = useLiveExchangeStore((s) => s.getEventById(alert.liveEventId));
+
+  const localizeAckVerdict = (verdict: AlertAcknowledgment) => {
+    switch (verdict) {
+      case 'genuine': return t('departments.genuine', { defaultValue: 'Genuine Alert' });
+      case 'false': return t('departments.falseAlarm', { defaultValue: 'False Alarm' });
+      case 'unable_to_verify': return t('departments.unableToVerify', { defaultValue: 'Unable to Verify' });
+      default: return '';
+    }
+  };
 
   return (
     <View style={styles.card}>
@@ -185,7 +197,7 @@ function AlertCard({
         {event && (
           <View style={styles.stat}>
             <Ionicons name="pulse" size={12} color="#10B981" />
-            <Text style={styles.statText}>Credibility {Math.round(event.credibilityScore)}</Text>
+            <Text style={styles.statText}>{t('departments.reporterCredibility', { defaultValue: 'Credibility' })} {Math.round(event.credibilityScore)}</Text>
           </View>
         )}
       </View>
@@ -199,7 +211,7 @@ function AlertCard({
         <View style={[styles.ackedBar, { backgroundColor: acked.color + '18' }]}>
           <Ionicons name={acked.icon as any} size={15} color={acked.color} />
           <Text style={[styles.ackedText, { color: acked.color }]}>
-            Acknowledged: {acked.label}
+            {t('departments.acknowledge', { defaultValue: 'Acknowledged' })}: {localizeAckVerdict(alert.acknowledgment!)}
           </Text>
         </View>
       ) : (
@@ -213,7 +225,7 @@ function AlertCard({
                 style={[styles.ackBtn, { borderColor: cfg.color }]}
               >
                 <Ionicons name={cfg.icon as any} size={13} color={cfg.color} />
-                <Text style={[styles.ackBtnText, { color: cfg.color }]}>{cfg.label}</Text>
+                <Text style={[styles.ackBtnText, { color: cfg.color }]}>{localizeAckVerdict(v)}</Text>
               </Pressable>
             );
           })}

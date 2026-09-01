@@ -3,6 +3,7 @@ import { View, Text, StyleSheet, Pressable } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import type { Campaign } from '../lib/campaignTypes';
 import { CAMPAIGN_TYPE_CONFIG, formatBudget } from '../lib/campaignTypes';
+import { getLocalizedStateName } from '../lib/stateTranslations';
 
 interface CampaignDashboardCardProps {
   campaign: Campaign;
@@ -10,10 +11,19 @@ interface CampaignDashboardCardProps {
 }
 
 export default function CampaignDashboardCard({ campaign, onPress }: CampaignDashboardCardProps) {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const typeConfig = CAMPAIGN_TYPE_CONFIG[campaign.type];
   const budgetUtilization = campaign.totalBudgetINR > 0 ? Math.round((campaign.spentBudgetINR / campaign.totalBudgetINR) * 100) : 0;
   const engagementRate = campaign.impressions > 0 ? ((campaign.engagements / campaign.impressions) * 100).toFixed(1) : '0';
+
+  const localizeCampaignName = (name: string) => {
+    if (name.includes('Telangana Development') || name.includes('Report Card')) return t('campaignManager.campaignNames.tsReportCard', { defaultValue: name });
+    if (name.includes('Youth Connect')) return t('campaignManager.campaignNames.youthConnect', { defaultValue: name });
+    if (name.includes('Guarantees')) return t('campaignManager.campaignNames.guaranteesImpact', { defaultValue: name });
+    return name;
+  };
+
+  const localizedState = getLocalizedStateName(campaign.stateCode, i18n.language) || campaign.stateCode;
 
   return (
     <Pressable style={styles.card} onPress={onPress}>
@@ -21,45 +31,49 @@ export default function CampaignDashboardCard({ campaign, onPress }: CampaignDas
       <View style={styles.header}>
         <View style={[styles.typeBadge, { backgroundColor: typeConfig.color + '15' }]}>
           <Ionicons name={typeConfig.icon as any} size={14} color={typeConfig.color} />
-          <Text style={[styles.typeLabel, { color: typeConfig.color }]}>{typeConfig.label}</Text>
+          <Text style={[styles.typeLabel, { color: typeConfig.color }]}>
+            {t(`campaignManager.types.${campaign.type}`, { defaultValue: typeConfig.label })}
+          </Text>
         </View>
         <View style={[styles.statusBadge, { backgroundColor: campaign.status === 'active' ? '#10B98120' : '#6B728020' }]}>
           <View style={[styles.statusDot, { backgroundColor: campaign.status === 'active' ? '#10B981' : '#6B7280' }]} />
-          <Text style={[styles.statusText, { color: campaign.status === 'active' ? '#10B981' : '#6B7280' }]}>{campaign.status.toUpperCase()}</Text>
+          <Text style={[styles.statusText, { color: campaign.status === 'active' ? '#10B981' : '#6B7280' }]}>
+            {t(`campaignManager.statuses.${campaign.status}`, { defaultValue: campaign.status.toUpperCase() })}
+          </Text>
         </View>
       </View>
 
-      <Text style={styles.name}>{campaign.name}</Text>
-      <Text style={styles.politician}>{campaign.politicianName}{campaign.party ? ` · ${campaign.party}` : ''} · {campaign.stateCode}</Text>
+      <Text style={styles.name}>{localizeCampaignName(campaign.name)}</Text>
+      <Text style={styles.politician}>{campaign.politicianName}{campaign.party ? ` · ${campaign.party}` : ''} · {localizedState}</Text>
 
       {/* KPI Grid */}
       <View style={styles.kpiGrid}>
         <View style={styles.kpi}>
           <Ionicons name="eye" size={16} color="#3B82F6" />
           <Text style={styles.kpiValue}>{campaign.impressions > 1000000 ? `${(campaign.impressions / 1000000).toFixed(1)}M` : `${Math.round(campaign.impressions / 1000)}K`}</Text>
-          <Text style={styles.kpiLabel}>{t('campaignManager.impressions')}</Text>
+          <Text style={styles.kpiLabel}>{t('campaignManager.impressions', { defaultValue: 'Impressions' })}</Text>
         </View>
         <View style={styles.kpi}>
           <Ionicons name="people" size={16} color="#8B5CF6" />
           <Text style={styles.kpiValue}>{campaign.reach > 1000000 ? `${(campaign.reach / 1000000).toFixed(1)}M` : `${Math.round(campaign.reach / 1000)}K`}</Text>
-          <Text style={styles.kpiLabel}>{t('outreach.reach')}</Text>
+          <Text style={styles.kpiLabel}>{t('campaignManager.totalReach', { defaultValue: t('outreach.reach', { defaultValue: 'Total Reach' }) })}</Text>
         </View>
         <View style={styles.kpi}>
           <Ionicons name="heart" size={16} color="#EC4899" />
           <Text style={styles.kpiValue}>{engagementRate}%</Text>
-          <Text style={styles.kpiLabel}>{t('outreach.engagement')}</Text>
+          <Text style={styles.kpiLabel}>{t('campaignManager.engagement', { defaultValue: t('outreach.engagement', { defaultValue: 'Engagement' }) })}</Text>
         </View>
         <View style={styles.kpi}>
           <Ionicons name="trending-up" size={16} color="#10B981" />
           <Text style={styles.kpiValue}>{campaign.sentimentScore}</Text>
-          <Text style={styles.kpiLabel}>{t('outreach.sentiment')}</Text>
+          <Text style={styles.kpiLabel}>{t('campaignManager.sentiment', { defaultValue: t('outreach.sentiment', { defaultValue: 'Sentiment' }) })}</Text>
         </View>
       </View>
 
       {/* Budget Bar */}
       <View style={styles.budgetSection}>
         <View style={styles.budgetHeader}>
-          <Text style={styles.budgetLabel}>{t('campaignManager.budget')}: {formatBudget(campaign.spentBudgetINR)} / {formatBudget(campaign.totalBudgetINR)}</Text>
+          <Text style={styles.budgetLabel}>{t('campaignManager.budget', { defaultValue: 'Budget' })}: {formatBudget(campaign.spentBudgetINR)} / {formatBudget(campaign.totalBudgetINR)}</Text>
           <Text style={[styles.budgetPct, { color: budgetUtilization > 80 ? '#EF4444' : '#10B981' }]}>{budgetUtilization}%</Text>
         </View>
         <View style={styles.budgetBar}>
@@ -71,15 +85,15 @@ export default function CampaignDashboardCard({ campaign, onPress }: CampaignDas
       <View style={styles.bottomRow}>
         <View style={styles.bottomStat}>
           <Ionicons name="megaphone" size={12} color="#6B7280" />
-          <Text style={styles.bottomStatText}>{campaign.adCount} {t('campaignManager.tabs.ads').toLowerCase()}</Text>
+          <Text style={styles.bottomStatText}>{campaign.adCount} {t('campaignManager.tabs.ads', { defaultValue: 'ads' }).toLowerCase()}</Text>
         </View>
         <View style={styles.bottomStat}>
           <Ionicons name="people" size={12} color="#6B7280" />
-          <Text style={styles.bottomStatText}>{campaign.volunteerCount} {t('campaignManager.volunteers').toLowerCase()}</Text>
+          <Text style={styles.bottomStatText}>{campaign.volunteerCount} {t('campaignManager.tabs.volunteers', { defaultValue: 'volunteers' }).toLowerCase()}</Text>
         </View>
         <View style={styles.bottomStat}>
           <Ionicons name="location" size={12} color="#6B7280" />
-          <Text style={styles.bottomStatText}>{campaign.boothsCovered}/{campaign.totalBooths} {t('hierarchy.booths').toLowerCase()}</Text>
+          <Text style={styles.bottomStatText}>{campaign.boothsCovered}/{campaign.totalBooths} {t('campaignManager.tabs.booths', { defaultValue: 'booths' }).toLowerCase()}</Text>
         </View>
       </View>
     </Pressable>

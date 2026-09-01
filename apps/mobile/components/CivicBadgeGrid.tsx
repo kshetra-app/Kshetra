@@ -4,6 +4,7 @@
 import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import { useTranslation } from 'react-i18next';
 import { BADGE_CONFIG, type BadgeType, type CivicBadge } from '../lib/aspirantTypes';
 
 interface CivicBadgeGridProps {
@@ -14,6 +15,7 @@ interface CivicBadgeGridProps {
 const ALL_BADGE_TYPES: BadgeType[] = Object.keys(BADGE_CONFIG) as BadgeType[];
 
 export default React.memo(function CivicBadgeGrid({ earned, compact }: CivicBadgeGridProps) {
+  const { t } = useTranslation();
   const earnedSet = new Set(earned.map((b) => b.type));
 
   if (compact) {
@@ -53,7 +55,7 @@ export default React.memo(function CivicBadgeGrid({ earned, compact }: CivicBadg
               color={isEarned ? config.color : '#374151'}
             />
             <Text style={[styles.badgeLabel, isEarned && { color: '#FFFFFF' }]} numberOfLines={1}>
-              {config.label}
+              {t(`leadershipAcademy.badges.${type}`, { defaultValue: config.label })}
             </Text>
             {!isEarned && (
               <Ionicons name="lock-closed" size={10} color="#374151" style={styles.lockIcon} />

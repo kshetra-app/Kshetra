@@ -76,6 +76,7 @@
 | Sprint 53: News Aggregator (RSS backend), In-App Reader & Campaign Outreach Panel | ✅ Complete | 2026-07-02 | 2026-07-02 |
 | Sprint 54: Local-Body Representatives — TSEC Scraper, Offline Seed & Local Bodies Browser | ✅ Complete | 2026-07-08 | 2026-07-12 |
 | Sprint 55: Kshetra Live Media Exchange (LMX) — Phase 1 Vertical Slice | ✅ Complete | 2026-07-25 | 2026-07-25 |
+| Sprint 65: More Tab & Sub-Pages 100% Localization (All 13 Languages) | ✅ Complete | 2026-09-01 | 2026-09-01 |
 
 ---
 
@@ -5527,3 +5528,59 @@ Fixed a critical React Native runtime crash (`Maximum update depth exceeded`) wh
 | `apps/mobile/app/live/[id].tsx` | Modified | Stabilized selectors; applied `lmxLocalizer` to stream player |
 
 ---
+
+## Sprint 65 — More Tab & Sub-Pages 100% Localization (All 13 Languages)
+
+### Summary
+Addressed user request to localize every menu, page, card, badge, and dynamic component accessible from the More tab into the user's selected language across all 13 supported Indian languages (`en`, `te`, `hi`, `kn`, `mr`, `ta`, `ml`, `bn`, `gu`, `pa`, `or`, `as`, `ne`).
+
+### Key Architecture & Implementation Details
+- **Locale Dictionaries (`apps/mobile/i18n/locales/*.ts`)**:
+  - Expanded all 13 locale files with complete translation structures for:
+    - `more`: Screen title, subtitle, Campaign HQ featured banner, 4 section titles (`politiciansAndCampaign`, `liveMediaExchange`, `civicAndElections`, `account`), and all 21 tile labels.
+    - `notificationSettings`: Header title, master switch labels, section headers, and 9 notification type labels and descriptions.
+    - `analytics`: Deep analytics title, 5 tabs (`pulseIntel`, `tabOverview`, `tabParties`, `tabDistricts`, `swingSeats`), Anti-Incumbency Vulnerability Gauge (all 5 tiers, swing probability, key vulnerability driver strings), 5-Pillar Sentiment Radar (title, subtitle, net mood, 5 dimension pillars), Executive AI Brief (headers, takeaways, counter-actions), Battlegrounds, and KPIs.
+    - `leadershipAcademy`: 8 categories, 4 content types, 3 difficulty levels, duration units, badges, and module names.
+    - `campaignManager`: 6 tabs, 7 campaign types, status pills, KPI metrics (Total Reach, Engagement, Sentiment, Impressions, Budget), and demo campaign titles.
+    - `becomeAspirant`: Headers, hero banner, 4 benefit cards, badges status, and registration CTAs.
+    - `departments`: Console title, empty states, reporter credibility, and alert verdict actions (`genuine`, `false`, `unableToVerify`).
+    - `devSwitches`: Header, subtitle, action buttons (`reset`, `enableAll`, `done`).
+    - `notifications`: Header, action buttons (`markAllRead`, `clearAll`), empty state, and relative time-ago strings.
+    - `politicianPortal`, `civicMetrics`, `liveElection`: Fully populated localized entries across all 13 locales.
+- **UI Screen & Component Localization**:
+  - `apps/mobile/app/(tabs)/more.tsx`: Fully wired with `t(...)` for headers, banners, sections, and tiles.
+  - `apps/mobile/app/notification-settings.tsx`: Wired `useTranslation()`, dynamic title, master switch text, and category item labels & descriptions.
+  - `apps/mobile/app/analytics/index.tsx`: Integrated `getLocalizedStateName` from `stateTranslations.ts` to localize state selector pills into all 13 languages; localized tab labels, battleground margin/won/vs labels, KPI grid, and section headers.
+  - `apps/mobile/components/VulnerabilityGauge.tsx`: Localized gauge title, subtitle, tier pill, meter headers, swing probability, and all risk factor driver bullets.
+  - `apps/mobile/components/SentimentRadarChart.tsx`: Localized radar title, subtitle, Net Mood status, and 5 dimension pillar names.
+  - `apps/mobile/components/ExecutiveBriefCard.tsx`: Localized brief header, strategic takeaways, and actionable recommendations.
+  - `apps/mobile/app/leadership-academy.tsx` & `CivicBadgeGrid.tsx`: Localized category headers, module names, content types, difficulty levels, duration units, and badges.
+  - `apps/mobile/components/CampaignDashboardCard.tsx`: Localized type badges, status pills, KPI labels, campaign names, and dynamic state names.
+  - `apps/mobile/app/become-aspirant.tsx`: Localized header, hero text, 4 benefit cards, CTA buttons, and badge counters.
+  - `apps/mobile/app/departments/dashboard.tsx`: Localized console header, empty states, and alert review verdict buttons.
+  - `apps/mobile/components/DevFeatureSwitcher.tsx`: Localized header, subtitle, and reset action button.
+  - `apps/mobile/app/notifications.tsx`: Localized screen title, action buttons, empty state, and relative time-ago formatting (`formatTimeAgo`).
+
+### Verification
+- **TypeScript monorepo compilation (`npx tsc --noEmit`)**: **0 errors**.
+
+### Files Changed / Added
+| File | Change | Description |
+|---|---|---|
+| `apps/mobile/i18n/locales/*.ts` (13 files) | Modified | Added translations for more, analytics, campaign, academy, aspirant, dept, etc. |
+| `apps/mobile/app/(tabs)/more.tsx` | Modified | Localized header, featured banner, sections, and tiles |
+| `apps/mobile/app/notification-settings.tsx` | Modified | Wired `useTranslation` on headers, master toggle, and notification types |
+| `apps/mobile/app/analytics/index.tsx` | Modified | Localized state selector pills with `getLocalizedStateName`, tabs, and KPIs |
+| `apps/mobile/components/VulnerabilityGauge.tsx` | Modified | Localized gauge title, confidence, tier pill, meter, and drivers |
+| `apps/mobile/components/SentimentRadarChart.tsx` | Modified | Localized radar title, subtitle, net mood, and 5 dimensions |
+| `apps/mobile/components/ExecutiveBriefCard.tsx` | Modified | Localized AI brief title, takeaways, and counter-actions |
+| `apps/mobile/app/leadership-academy.tsx` | Modified | Localized category titles, module titles, content types, difficulty, and min |
+| `apps/mobile/components/CivicBadgeGrid.tsx` | Modified | Localized badge labels with `useTranslation` |
+| `apps/mobile/components/CampaignDashboardCard.tsx` | Modified | Localized campaign type, status, reach/engagement/sentiment KPIs, and budget |
+| `apps/mobile/app/become-aspirant.tsx` | Modified | Localized hero, benefits list, badge counts, and CTAs |
+| `apps/mobile/app/departments/dashboard.tsx` | Modified | Localized console title, empty state, and verdict actions |
+| `apps/mobile/components/DevFeatureSwitcher.tsx` | Modified | Localized switches title, subtitle, and reset button |
+| `apps/mobile/app/notifications.tsx` | Modified | Localized title, actions, empty state, and relative time-ago formatting |
+
+---
+

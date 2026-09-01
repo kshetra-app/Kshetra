@@ -1,7 +1,7 @@
 /**
  * AS translation
  */
-const as_ = {
+const as_ =  {
   "common": {
     "appName": "ক্ষেত্ৰ",
     "loading": "লোড হৈ আছে…",
@@ -431,7 +431,7 @@ const as_ = {
     }
   },
   "notificationSettings": {
-    "title": "জাননীৰ ছেটিংছ",
+    "title": "জাননী ছেটিংছ",
     "masterToggle": "পুশ জাননীসমূহ",
     "masterDesc": "আপোনাৰ সমষ্টিসমূহৰ কাৰ্যকলাপৰ বিষয়ে জাননী লাভ কৰক",
     "categories": {
@@ -443,6 +443,47 @@ const as_ = {
       "constituency_alertsDesc": "আপোনাৰ সমষ্টিৰ বাতৰি আৰু সতৰ্কবাৰ্তা",
       "headlines": "শীৰ্ষ বাতৰি",
       "headlinesDesc": "শীৰ্ষ ৰাজনৈতিক বাতৰি আৰু আপডেটসমূহ"
+    },
+    "allowNotifications": "জাননী অন কৰক",
+    "receivingUpdates": "আপডেট লাভ কৰি থকা হৈছে",
+    "typesHeader": "জাননীৰ প্ৰকাৰ",
+    "types": {
+      "election_results": {
+        "label": "নিৰ্বাচনী ফলাফল",
+        "description": "ফলাফল ঘোষণাৰ লগে লগে জাননী পাওক"
+      },
+      "constituency_updates": {
+        "label": "সমষ্টিৰ আপডেট",
+        "description": "আপুনি অনুসৰণ কৰা সমষ্টিৰ খবৰ"
+      },
+      "civic_issue": {
+        "label": "নাগৰিক সমস্যা",
+        "description": "ওচৰৰ সমস্যা আৰু বিধায়কৰ সঁহাৰি"
+      },
+      "promise_update": {
+        "label": "প্ৰতিশ্ৰুতি ট্ৰেকাৰ",
+        "description": "নিৰ্বাচনী প্ৰতিশ্ৰুতিৰ অগ্ৰগতি"
+      },
+      "delimitation_alert": {
+        "label": "সমষ্টি পুনৰ্নিৰ্ধাৰণ",
+        "description": "সীমা পৰিৱৰ্তন আৰু আয়োগৰ খবৰ"
+      },
+      "analytics_insight": {
+        "label": "তথ্য বিশ্লেষণ",
+        "description": "ৰাজ্যৰ নিৰ্বাচনী তথ্যৰ বিশ্লেষণ"
+      },
+      "community_activity": {
+        "label": "সম্প্ৰদায়",
+        "description": "উত্তৰ আৰু প্ৰত্যাহ্বান"
+      },
+      "new_state_added": {
+        "label": "নতুন ৰাজ্যৰ তথ্য",
+        "description": "নতুন তথ্য উপলব্ধ হ'লে"
+      },
+      "app_updates": {
+        "label": "এপ আপডেট",
+        "description": "নতুন বৈশিষ্ট্য আৰু উন্নতি"
+      }
     }
   },
   "onboarding": {
@@ -1393,7 +1434,254 @@ const as_ = {
     "crorepati": "কোটিপতি",
     "case": "গোচৰ",
     "cases": "গোচৰসমূহ"
+  },
+  "more": {
+    "title": "অধিক",
+    "subtitle": "বাকী সকলো, মাত্ৰ দুটা টেপৰ দূৰত্বত",
+    "campaignHQTitle": "নিৰ্বাচনী প্ৰচাৰ মুখ্য কাৰ্যালয়",
+    "campaignHQDesc": "নিৰ্বাচনত অংশ লওক, প্ৰচাৰ পৰিচালনা কৰক, হোৱাটছএপ আৰু এছএমএছযোগে ভোটাৰৰ ওচৰলৈ যাওক",
+    "sections": {
+      "politiciansAndCampaign": "ৰাজনীতিবিদ আৰু প্ৰচাৰ",
+      "liveMediaExchange": "লাইভ মিডিয়া এক্সচেঞ্জ",
+      "civicAndElections": "নাগৰিক সেৱা আৰু নিৰ্বাচন",
+      "account": "একাউণ্ট"
+    },
+    "tiles": {
+      "politicianPortal": "ৰাজনীতিবিদ প’ৰ্টেল",
+      "becomeAspirant": "প্ৰাৰ্থী হওক",
+      "campaignManager": "প্ৰচাৰ মেনেজাৰ",
+      "leadershipAcademy": "নেতৃত্ব একাডেমী",
+      "candidateXRay": "প্ৰাৰ্থী এক্স-ৰে",
+      "goLive": "লাইভলৈ যাওক",
+      "kshetraLive": "ক্ষেত্ৰ লাইভ",
+      "deptConsole": "বিভাগ কনচোল",
+      "moderation": "মডাৰেচন",
+      "distribution": "বিতৰণ",
+      "devSwitches": "ডেভ চুইচ",
+      "civicDashboard": "নাগৰিক ডেশ্বব’ৰ্ড",
+      "delimitation": "সমষ্টি পুনৰ্নিৰ্ধাৰণ",
+      "analytics": "গভীৰ বিশ্লেষণ",
+      "civicMetrics": "নাগৰিক মেট্ৰিক্স",
+      "liveElection": "লাইভ নিৰ্বাচন",
+      "parliament": "সংসদ",
+      "profile": "প্ৰফাইল",
+      "notifications": "জাননী",
+      "settings": "ছেটিংছ",
+      "aiAssistant": "এআই সহায়ক"
+    }
+  },
+  "analytics": {
+    "deepTitle": "গভীৰ বিশ্লেষণ",
+    "pulseIntel": "পালছ ইণ্টেল",
+    "vulnerabilityTitle": "চৰকাৰ বিৰোধী ঢৌ (AIVI)",
+    "aiviConfidence": "AIVI সূচক • বিশ্বাসযোগ্যতা {{pct}}%",
+    "estSwing": "সম্ভাব্য ভোট পৰিৱৰ্তনৰ হাৰ: {{pct}}%",
+    "keyDrivers": "মূল সংকটৰ কাৰক",
+    "highFlip": "আসন হেৰুওৱাৰ অধিক সম্ভাৱনা",
+    "contested": "তীব্ৰ প্ৰতিদ্বন্দ্বিতাপূৰ্ণ সমষ্টি",
+    "incumbentAdvantage": "শাসক দলৰ অগ্ৰগতি",
+    "twoTermIncumbency": "টানা দুটা কাৰ্যকালৰ হেঁচা",
+    "unresolvedGrievance": "অমীমাংসিত অভিযোগৰ উচ্চ হাৰ",
+    "negativeSentiment": "তৃণমূল পৰ্যায়ত নেতিবাচক মনোভাব",
+    "adverseDemographics": "প্ৰতিকূল জনসংখ্যাগত পৰিৱৰ্তন",
+    "criticalNegativeNews": "সংবাদ মাধ্যমত নেতিবাচক প্ৰচাৰ",
+    "narrowMargin": "কম ব্যৱধানত জয় (<5%)",
+    "likelyHold": "আসন ৰক্ষাৰ সম্ভাৱনা",
+    "leanIncumbent": "শাসক দলৰ ফালে ঢাল",
+    "tossup": "সমান প্ৰতিদ্বন্দ্বিতা",
+    "leanChallenger": "বিৰোধীৰ ফালে ঢাল",
+    "likelyFlip": "পৰাজয়ৰ প্ৰবল সম্ভাৱনা",
+    "sentimentRadarTitle": "৫-স্তম্ভ জনমত ৰাডাৰ",
+    "sentimentRadarSubtitle": "প্ৰকৃত সময়ৰ তৃণমূলৰ জনমত আৰু সন্তুষ্টি",
+    "netMood": "জনমত",
+    "governanceResponse": "প্ৰশাসন আৰু সঁহাৰি",
+    "civicInfrastructure": "নাগৰিক আন্তঃগাঁথনি",
+    "welfareSchemes": "কল্যাণকামী আৰু প্ৰত্যক্ষ আঁচনি",
+    "economyLivelihood": "অৰ্থনীতি আৰু জীৱিকা",
+    "candidateTrust": "প্ৰাৰ্থীৰ ওপৰত বিশ্বাস",
+    "executiveBriefTitle": "কাৰ্যবাহী এআই সাৰাংশ",
+    "strategicTakeaways": "কৌশলগত দিশ",
+    "recommendedCounterActions": "প্ৰস্তাৱিত পদক্ষেপ",
+    "criticalBattlegrounds": "গুৰুত্বপূৰ্ণ প্ৰতিদ্বন্দ্বিতাপূৰ্ণ আসন",
+    "seatDistribution": "আসন বিতৰণ",
+    "keyInsights": "মূল তথ্য",
+    "totalSeats": "মুঠ আসন",
+    "rulingParty": "শাসক দল",
+    "swingSeats": "পৰিৱৰ্তনশীল আসন",
+    "margin": "ব্যৱধান",
+    "won": "বিজয়ী",
+    "vs": "বনাম"
+  },
+  "campaignManager": {
+    "tabs": {
+      "campaigns": "প্ৰচাৰ",
+      "outreach": "যোগাযোগ",
+      "ads": "বিজ্ঞাপন",
+      "revenue": "ৰাজহ",
+      "volunteers": "স্বেচ্ছাসেৱক",
+      "booths": "বুথ"
+    },
+    "types": {
+      "election": "নিৰ্বাচনী প্ৰচাৰ",
+      "awareness": "সজাগতা",
+      "fundraising": "পুঁজি সংগ্ৰহ",
+      "outreach": "জনসংযোগ",
+      "issue_advocacy": "ইছ্যুভিত্তিক প্ৰচাৰ",
+      "brand_building": "ভাৱমূৰ্তি নিৰ্মাণ",
+      "get_out_vote": "ভোটদান উৎসাহ"
+    },
+    "statuses": {
+      "active": "সক্ৰিয়",
+      "paused": "স্থগিত",
+      "draft": "খচৰা",
+      "completed": "সম্পূৰ্ণ",
+      "planned": "পৰিকল্পিত",
+      "cancelled": "বাতিল"
+    },
+    "impressions": "ইম্প্ৰেছন",
+    "totalReach": "মুঠ প্ৰসাৰ",
+    "engagement": "সংযুক্তি",
+    "sentiment": "মনোভাৱ",
+    "budget": "বাজেট",
+    "activeCampaigns": "সক্ৰিয় প্ৰচাৰসমূহ",
+    "adCount": "{{count}} টা বিজ্ঞাপন",
+    "volunteerCount": "{{count}} গৰাকী স্বেচ্ছাসেৱক",
+    "boothCount": "{{covered}}/{{total}} টা বুথ",
+    "campaignNames": {
+      "tsReportCard": "তেলেংগানা বিকাশ ৰিপোৰ্ট কাৰ্ড",
+      "youthConnect": "ইউথ কানেক্ট ২০২৬",
+      "guaranteesImpact": "৫ গেৰাণ্টি প্ৰভাৱ ৰিপোৰ্ট"
+    }
+  },
+  "leadershipAcademy": {
+    "categories": {
+      "electoral_process": "নিৰ্বাচনী প্ৰক্ৰিয়া",
+      "campaign_strategy": "প্ৰচাৰ কৌশল",
+      "legal_framework": "আইনী ব্যৱস্থা",
+      "public_speaking": "ভাষণ কলা",
+      "community_organizing": "সম্প্ৰদায় সংগঠন",
+      "digital_campaigning": "ডিজিটেল প্ৰচাৰ",
+      "policy_making": "নীতি নিৰ্ধাৰণ",
+      "ethics_governance": "নৈতিকতা আৰু সুশাসন"
+    },
+    "contentTypes": {
+      "article": "প্ৰবন্ধ",
+      "video": "ভিডিঅ'",
+      "quiz": "কুইজ",
+      "case_study": "কেছ ষ্টাডি"
+    },
+    "difficulty": {
+      "beginner": "প্ৰাথমিক",
+      "intermediate": "মধ্যমীয়া",
+      "advanced": "উন্নত"
+    },
+    "min": "মিনিট",
+    "earned": "অৰ্জিত",
+    "locked": "লক থকা",
+    "aspiringLeaders": "উদীয়মান নেতা",
+    "noActiveChallenges": "কোনো সক্ৰিয় প্ৰত্যাহ্বান নাই",
+    "noPublicAspirants": "কোনো প্ৰাৰ্থী নাই",
+    "moduleNames": {
+      "howElectionsWork": "ভাৰতীয় নিৰ্বাচন ব্যৱস্থা কেনেদৰে চলে",
+      "filingNomination": "মনোনয়ন পত্ৰ দাখিলৰ নিয়ম",
+      "electionSymbols": "নিৰ্বাচনী প্ৰতীকৰ গুৰুত্ব",
+      "grassrootsCampaign": "তৃণমূল পৰ্যায়ত প্ৰচাৰ গঠন",
+      "fundraising": "নিৰ্দলীয় প্ৰাৰ্থীৰ পুঁজি সংগ্ৰহ",
+      "rpaAct": "জনপ্ৰতিনিধিত্ব আইনৰ নিয়ম"
+    }
+  },
+  "becomeAspirant": {
+    "screenTitle": "প্ৰাৰ্থী হওক",
+    "headerTitle": "নাগৰিক প্ৰাৰ্থী",
+    "headerSubtitle": "যোগ্যতা গঢ়ক, জনসমৰ্থন লাভ কৰক",
+    "registerCTA": "প্ৰাৰ্থী হিচাপে পঞ্জীয়ন কৰক",
+    "yourBadges": "আপোনাৰ বেজ",
+    "earnedLocked": "{{earned}} অৰ্জিত · {{locked}} বাকী",
+    "aspiringIn": "প্ৰাৰ্থী · {{seat}} · {{year}}",
+    "profileActive": "নাগৰিক প্ৰাৰ্থী প্ৰফাইল সক্ৰিয় হৈ আছে",
+    "heroTitle": "সমাজৰ বাবে আগবাঢ়ি আহক",
+    "heroSub": "নিৰ্বাচনত প্ৰতিদ্বন্দ্বিতা কৰাৰ পূৰ্বে সমাজসেৱাৰ ৰেকৰ্ড গঢ়ক।",
+    "benefits": {
+      "scoreTitle": "নাগৰিক স্ক'ৰ বঢ়াওক",
+      "scoreSub": "শিক্ষা আৰু সেৱাৰ জৰিয়তে পইণ্ট অৰ্জন কৰক।",
+      "badgeTitle": "বেজ আনলক কৰক",
+      "badgeSub": "প্ৰফাইলত সাফল্য প্ৰদৰ্শন কৰক।",
+      "endorseTitle": "সমৰ্থন লাভ কৰক",
+      "endorseSub": "সমষ্টিৰ ৰাইজে আপোনাক সমৰ্থন কৰক।",
+      "goalTitle": "লক্ষ্য ঘোষণা কৰক",
+      "goalSub": "কোনটো সমষ্টিৰ পৰা কেতিয়া নিৰ্বাচন খেলিব বিচাৰে জনাওক।"
+    }
+  },
+  "departments": {
+    "title": "বিভাগীয় কনচোল",
+    "selectDepartment": "বিভাগ বাছক",
+    "pendingAlerts": "{{count}} স্থগিত সতৰ্কবাৰ্তা",
+    "noAlerts": "এই বিভাগৰ কোনো স্থগিত সতৰ্কবাৰ্তা নাই",
+    "acknowledge": "পৰীক্ষা কৰক",
+    "genuine": "সত্য তথ্য",
+    "falseAlarm": "ভুল তথ্য",
+    "unableToVerify": "যাচাই কৰা অসম্ভৱ",
+    "reporterCredibility": "সংবাদদাতাৰ বিশ্বাসযোগ্যতা",
+    "dispatchedAt": "{{time}} প্ৰেৰণ কৰা হ'ল"
+  },
+  "devSwitches": {
+    "title": "ডেভেলপাৰ ফিচাৰ চুইচ",
+    "subtitle": "পৰীক্ষামূলক সুবিধা অন বা অফ কৰক",
+    "done": "সম্পূৰ্ণ",
+    "reset": "ৰিছেট",
+    "enableAll": "সকলো সক্ষম কৰক"
+  },
+  "notifications": {
+    "title": "জাননী",
+    "markAllRead": "সকলো পঢ়া বুলি চিহ্নিত কৰক",
+    "clearAll": "সকলো মচক",
+    "noNotifications": "কোনো জাননী নাই",
+    "caughtUp": "আপুনি সকলো আপডেট পাইছে!",
+    "justNow": "এইমাত্ৰ",
+    "minutesAgo": "{{n}} মিনিট আগতে",
+    "hoursAgo": "{{n}} ঘণ্টা আগতে",
+    "daysAgo": "{{n}} দিন আগতে"
+  },
+  "politicianPortal": {
+    "screenTitle": "ৰাজনীতিবিদ প’ৰ্টেল",
+    "registeredPoliticians": "যাচাই কৰা প্ৰতিনিধি আৰু প্ৰাৰ্থীসকল",
+    "upcomingEvents": "আসন্ন জনসভা আৰু সমদল",
+    "allEvents": "ৰাজহুৱা কাৰ্যসূচী",
+    "eManifestos": "ডিজিটেল ইস্তাহাৰ আৰু প্ৰতিশ্ৰুতি",
+    "opinionSurveys": "জনমত সমীক্ষা আৰু পোল",
+    "tabPoliticians": "ৰাজনীতিবিদ",
+    "tabEvents": "অনুষ্ঠান",
+    "tabManifestos": "ইস্তাহাৰ",
+    "tabSurveys": "সমীক্ষা"
+  },
+  "civicMetrics": {
+    "screenTitle": "নাগৰিক প্ৰদৰ্শন আৰু মেট্ৰিক্স",
+    "screenSubtitle": "বাজেট, উপস্থিতি, বিধেয়ক আৰু আঁচনি",
+    "stateBudgetOverview": "ৰাজ্যিক বাজেট পৰ্যালোচনা",
+    "noBudgetData": "এই ৰাজ্যৰ বাবে কোনো বাজেট তথ্য উপলব্ধ নহয়",
+    "legislatorAttendance": "বিধায়কসকলৰ উপস্থিতি ({{count}})",
+    "activeBills": "সক্ৰিয় বিধেয়ক ({{count}})",
+    "governmentSchemes": "চৰকাৰী কল্যাণমূলক আঁচনি ({{count}})",
+    "developmentProjects": "উন্নয়নমূলক প্ৰকল্প ({{count}})",
+    "tabBudget": "বাজেট",
+    "tabAttendance": "উপস্থিতি",
+    "tabBills": "বিধেয়ক",
+    "tabSchemes": "আঁচনি",
+    "tabProjects": "প্ৰকল্প",
+    "tabRTI": "RTI"
+  },
+  "liveElection": {
+    "screenTitle": "লাইভ নিৰ্বাচন কেন্দ্ৰ",
+    "screenSubtitle": "প্ৰকৃত সময়ৰ গণনা আৰু ফলাফল",
+    "live": "লাইভ",
+    "noLiveElection": "বৰ্তমান কোনো লাইভ নিৰ্বাচন চলি থকা নাই",
+    "noLiveElectionDesc": "ভোট গণনা আৰম্ভ হ'লে ফলাফল প্ৰত্যক্ষভাৱে আপডেট হ'ব।",
+    "voteShareComparison": "ভোটৰ অংশীদাৰিত্বৰ তুলনা",
+    "constituencyResults": "সমষ্টিৰ ফলাফল ({{count}})",
+    "tabOverview": "পৰ্যালোচনা",
+    "tabConstituencies": "সমষ্টিসমূহ",
+    "tabPipeline": "পাইপলাইন"
   }
-};
+}
 
 export default as_;

@@ -146,12 +146,23 @@ export default function LeadershipAcademyScreen() {
                   <View style={styles.moduleGroupHeader}>
                     <Ionicons name={catConfig.icon as any} size={16} color={catConfig.color} />
                     <Text style={[styles.moduleGroupTitle, { color: catConfig.color }]}>
-                      {catConfig.label}
+                      {t(`leadershipAcademy.categories.${category}`, { defaultValue: catConfig.label })}
                     </Text>
                     <Text style={styles.moduleGroupCount}>{t('leadershipAcademy.moduleCount', { count: mods.length })}</Text>
                   </View>
                   {mods.map((mod) => {
                     const isCompleted = completedModuleIds.includes(mod.id);
+                    const modKey = ({
+                      'mod-1': 'howElectionsWork',
+                      'mod-2': 'filingNomination',
+                      'mod-3': 'electionSymbols',
+                      'mod-4': 'grassrootsCampaign',
+                      'mod-5': 'fundraising',
+                      'mod-6': 'rpaAct',
+                    } as Record<string, string>)[mod.id];
+                    const localizedTitle = modKey ? t(`leadershipAcademy.moduleNames.${modKey}`, { defaultValue: mod.title }) : mod.title;
+                    const localizedType = t(`leadershipAcademy.contentTypes.${mod.contentType}`, { defaultValue: mod.contentType });
+                    const localizedDiff = t(`leadershipAcademy.difficulty.${mod.difficulty}`, { defaultValue: mod.difficulty });
                     return (
                       <Pressable
                         key={mod.id}
@@ -166,9 +177,9 @@ export default function LeadershipAcademyScreen() {
                           />
                         </View>
                         <View style={styles.moduleInfo}>
-                          <Text style={styles.moduleTitle}>{mod.title}</Text>
+                          <Text style={styles.moduleTitle}>{localizedTitle}</Text>
                           <Text style={styles.moduleMeta}>
-                            {mod.durationMinutes} {t('leadershipAcademy.min')} · {mod.contentType} · {mod.difficulty}
+                            {mod.durationMinutes} {t('leadershipAcademy.min', { defaultValue: 'min' })} · {localizedType} · {localizedDiff}
                           </Text>
                         </View>
                         {mod.isPremium && (

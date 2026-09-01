@@ -1,7 +1,7 @@
 /**
  * KN translation
  */
-const kn = {
+const kn =  {
   "common": {
     "appName": "ಕ್ಷೇತ್ರ",
     "loading": "ಲೋಡ್ ಆಗುತ್ತಿದೆ…",
@@ -443,6 +443,47 @@ const kn = {
       "constituency_alertsDesc": "ನಿಮ್ಮ ಕ್ಷೇತ್ರದಿಂದ ಸುದ್ದಿ ಮತ್ತು ಎಚ್ಚರಿಕೆ",
       "headlines": "ಬ್ರೇಕಿಂಗ್ ಸುದ್ದಿ",
       "headlinesDesc": "ಪ್ರಮುಖ ರಾಜಕೀಯ ಸುದ್ದಿ ಮತ್ತು ನವೀಕರಣ"
+    },
+    "allowNotifications": "ಅಧಿಸೂಚನೆಗಳನ್ನು ಅನುಮತಿಸಿ",
+    "receivingUpdates": "ಅಪ್‌ಡೇಟ್‌ಗಳು ಬರುತ್ತಿವೆ",
+    "typesHeader": "ಅಧಿಸೂಚನೆಗಳ ವಿಧಗಳು",
+    "types": {
+      "election_results": {
+        "label": "ಚುನಾವಣಾ ಫಲಿತಾಂಶಗಳು",
+        "description": "ಚುನಾವಣಾ ಫಲಿತಾಂಶ ಪ್ರಕಟವಾದಾಗ ತಕ್ಷಣ ಮಾಹಿತಿ ಪಡೆಯಿರಿ"
+      },
+      "constituency_updates": {
+        "label": "ಕ್ಷೇತ್ರದ ಅಪ್‌ಡೇಟ್‌ಗಳು",
+        "description": "ನೀವು ಹಿಂಬಾಲಿಸುವ ಕ್ಷೇತ್ರಗಳ ತಾಜಾ ಮಾಹಿತಿ"
+      },
+      "civic_issue": {
+        "label": "ನಾಗರಿಕ ಸಮಸ್ಯೆಗಳು",
+        "description": "ಹೊಸ ಸಮಸ್ಯೆಗಳು ಮತ್ತು ಶಾಸಕರ ಸ್ಪಂದನೆಗಳು"
+      },
+      "promise_update": {
+        "label": "ಭರವಸೆಗಳ ಟ್ರ್ಯಾಕರ್",
+        "description": "ಚುನಾವಣಾ ಭರವಸೆಗಳ ಪ್ರಗತಿಯ ವಿವರ"
+      },
+      "delimitation_alert": {
+        "label": "ಪುನರ್ವಿಂಗಡಣೆ ಅಲರ್ಟ್‌ಗಳು",
+        "description": "ಗಡಿ ಬದಲಾವಣೆ ಮತ್ತು ಗೆಜೆಟ್ ಅಧಿಸೂಚನೆಗಳು"
+      },
+      "analytics_insight": {
+        "label": "ಡೇಟಾ ವಿಶ್ಲೇಷಣೆ",
+        "description": "ನಿಮ್ಮ ರಾಜ್ಯದ ಡೇಟಾ ಆಧಾರಿತ ಒಳನೋಟಗಳು"
+      },
+      "community_activity": {
+        "label": "ಸಮುದಾಯ",
+        "description": "ಪ್ರತಿಕ್ರಿಯೆಗಳು ಮತ್ತು ಸವಾಲುಗಳು"
+      },
+      "new_state_added": {
+        "label": "ಹೊಸ ರಾಜ್ಯದ ಡೇಟಾ",
+        "description": "ಹೊಸ ರಾಜ್ಯದ ಮಾಹಿತಿ ಲಭ್ಯವಾದಾಗ"
+      },
+      "app_updates": {
+        "label": "ಆ್ಯಪ್ ಅಪ್‌ಡೇಟ್‌ಗಳು",
+        "description": "ಹೊಸ ವೈಶಿಷ್ಟ್ಯಗಳು ಮತ್ತು ಸುಧಾರಣೆಗಳು"
+      }
     }
   },
   "onboarding": {
@@ -880,7 +921,7 @@ const kn = {
       "heatmap": "ಹೀಟ್‌ಮ್ಯಾಪ್",
       "antiIncumbency": "ಪ್ರಸ್ತುತ ವಿರೋಧಿ"
     },
-    "seatDistribution": "ಸ್ಥಾನ ಹಂಚಿಕೆ",
+    "seatDistribution": "ಸ್ಥಾನಗಳ ಹಂಚಿಕೆ",
     "partyStrength": "ಪಕ್ಷ ಬಲ",
     "voteShare": "ಮತ ಪ್ರಮಾಣ",
     "marginAnalysis": "ಅಂತರ ವಿಶ್ಲೇಷಣೆ",
@@ -898,7 +939,7 @@ const kn = {
     "assemblyElection": "{{year}} ವಿಧಾನಸಭೆ ಚುನಾವಣೆ",
     "ruling": "ಆಡಳಿತ",
     "defections": "ಪಕ್ಷಾಂತರಗಳು",
-    "keyInsights": "ಮುಖ್ಯ ಒಳನೋಟಗಳು",
+    "keyInsights": "ಪ್ರಮುಖ ಒಳನೋಟಗಳು",
     "crossStateComparison": "ಅಂತರ-ರಾಜ್ಯ ಹೋಲಿಕೆ",
     "crossStateIntelligence": "ಅಂತರ-ರಾಜ್ಯ ಗುಪ್ತಚರ",
     "electionYear": "ಚುನಾವಣಾ ವರ್ಷ",
@@ -914,7 +955,44 @@ const kn = {
     "defectionRate": "ಪಕ್ಷಾಂತರ ದರ",
     "vulnerableSeats": "ದುರ್ಬಲ ಸ್ಥಾನಗಳು (<5%)",
     "defectionFlow": "ಪಕ್ಷಾಂತರ ಹರಿವು",
-    "closestContestsTop10": "ಅತಿ ಹತ್ತಿರದ ಸ್ಪರ್ಧೆಗಳು (ಟಾಪ್ 10)"
+    "closestContestsTop10": "ಅತಿ ಹತ್ತಿರದ ಸ್ಪರ್ಧೆಗಳು (ಟಾಪ್ 10)",
+    "deepTitle": "ಆಳವಾದ ವಿಶ್ಲೇಷಣೆ",
+    "pulseIntel": "ಪಲ್ಸ್ ಇಂಟೆಲ್",
+    "vulnerabilityTitle": "ಆಡಳಿತ ವಿರೋಧಿ ಅಲೆ ಸೂಚ್ಯಂಕ",
+    "aiviConfidence": "AIVI ಸೂಚ್ಯಂಕ • ವಿಶ್ವಾಸಾರ್ಹತೆ {{pct}}%",
+    "estSwing": "ಅಂದಾಜು ಬದಲಾವಣೆ ಸಂಭವನೀಯತೆ: {{pct}}%",
+    "keyDrivers": "ಪ್ರಮುಖ ಪ್ರಭಾವಿ ಅಂಶಗಳು",
+    "highFlip": "ಗೆಲ್ಲುವ ಪಕ್ಷ ಬದಲಾಗುವ ಸಾಧ್ಯತೆ",
+    "contested": "ತೀವ್ರ ಸ್ಪರ್ಧೆಯ ಕ್ಷೇತ್ರ",
+    "incumbentAdvantage": "ಹಾಲಿ ಶಾಸಕರಿಗೆ ಮುನ್ನಡೆ",
+    "twoTermIncumbency": "ಎರಡು ಅವಧಿಗಳ ಆಡಳಿತದ ಒತ್ತಡ",
+    "unresolvedGrievance": "ಪರಿಹಾರವಾಗದ ದೂರುಗಳ ಪ್ರಮಾಣ ಹೆಚ್ಚು",
+    "negativeSentiment": "ತಳಮಟ್ಟದಲ್ಲಿ ನಕಾರಾತ್ಮಕ ಭಾವನೆ",
+    "adverseDemographics": "ಪ್ರತಿಕೂಲ ಜನಸಂಖ್ಯಾ ಬದಲಾವಣೆ",
+    "criticalNegativeNews": "ಸ್ಥಳೀಯ ಮಾಧ್ಯಮಗಳಲ್ಲಿ ನಕಾರಾತ್ಮಕತೆ",
+    "narrowMargin": "ಕಡಿಮೆ ಅಂತರದ ಗೆಲುವು (<5%)",
+    "likelyHold": "ಉಳಿಸಿಕೊಳ್ಳುವ ಸಾಧ್ಯತೆ",
+    "leanIncumbent": "ಆಡಳಿತ ಪಕ್ಷದತ್ತ ಒಲವು",
+    "tossup": "ನುಣ್ಣನೆಯ ಸ್ಪರ್ಧೆ",
+    "leanChallenger": "ಪ್ರತಿಪಕ್ಷದತ್ತ ಒಲವು",
+    "likelyFlip": "ಸೋಲುವ ಸಾಧ್ಯತೆ ಹೆಚ್ಚು",
+    "sentimentRadarTitle": "5-ಸ್ತಂಭಗಳ ಸಾರ್ವಜನಿಕ ಭಾವನೆ",
+    "sentimentRadarSubtitle": "ನೈಜ ಸಮಯದ ತಳಮಟ್ಟದ ಸ್ಪಂದನೆ ಮತ್ತು ತೃಪ್ತಿ",
+    "netMood": "ಜನರ ಭಾವನೆ",
+    "governanceResponse": "ಆಡಳಿತ ಮತ್ತು ಸ್ಪಂದನೆ",
+    "civicInfrastructure": "ನಾಗರಿಕ ಮೂಲಸೌಕರ್ಯ",
+    "welfareSchemes": "ಕಲ್ಯಾಣ ಮತ್ತು ನೇರ ಯೋಜನೆಗಳು",
+    "economyLivelihood": "ಆರ್ಥಿಕತೆ ಮತ್ತು ಜೀವನೋಪಾಯ",
+    "candidateTrust": "ಅಭ್ಯರ್ಥಿಯ ಮೇಲಿನ ವಿಶ್ವಾಸ",
+    "executiveBriefTitle": "ಕಾರ್ಯನಿರ್ವಾಹಕ ಎಐ ಬ್ರೀಫ್",
+    "strategicTakeaways": "ಕಾರ್ಯತಂತ್ರದ ಮುಖ್ಯಾಂಶಗಳು",
+    "recommendedCounterActions": "ಶಿಫಾರಸು ಮಾಡಿದ ಕ್ರಮಗಳು",
+    "criticalBattlegrounds": "ಪ್ರಮುಖ ಹಣಾಹಣಿ ಕ್ಷೇತ್ರಗಳು",
+    "rulingParty": "ಆಡಳಿತ ಪಕ್ಷ",
+    "swingSeats": "ಸ್ಪರ್ಧಾತ್ಮಕ ಸ್ಥಾನಗಳು",
+    "margin": "ಅಂತರ",
+    "won": "ಗೆಲುವು",
+    "vs": "ವಿರುದ್ಧ"
   },
   "parliament": {
     "title": "ಸಂಸತ್ತು",
@@ -1013,14 +1091,43 @@ const kn = {
     "becomeAspirant": "ಆಕಾಂಕ್ಷಿಯಾಗಿ",
     "aspirantDesc": "ನಿಮ್ಮ ಸಮುದಾಯದಲ್ಲಿ ಭವಿಷ್ಯದ ನಾಯಕರಾಗಿ ನೋಂದಣಿ ಮಾಡಿ",
     "registerNow": "ಈಗ ನೋಂದಣಿ ಮಾಡಿ",
-    "min": "ನಿ.",
-    "noActiveChallenges": "ಸಕ್ರಿಯ ಸವಾಲುಗಳಿಲ್ಲ",
-    "aspiringLeaders": "ಆಕಾಂಕ್ಷಿ ನಾಯಕರು",
-    "noPublicAspirants": "ಇನ್ನೂ ಸಾರ್ವಜನಿಕ ಆಕಾಂಕ್ಷಿಗಳಿಲ್ಲ",
-    "earned": "ಗಳಿಸಿದ",
-    "locked": "ಲಾಕ್",
+    "min": "ನಿಮಿಷ",
+    "noActiveChallenges": "ಯಾವುದೇ ಸಕ್ರಿಯ ಸವಾಲುಗಳಿಲ್ಲ",
+    "aspiringLeaders": "ಉದಯೋನ್ಮುಖ ನಾಯಕರು",
+    "noPublicAspirants": "ಯಾವುದೇ ಸಾರ್ವಜನಿಕ ಆಕಾಂಕ್ಷಿಗಳಿಲ್ಲ",
+    "earned": "ಗಳಿಸಿದವು",
+    "locked": "ಲಾಕ್ ಆಗಿರುವವು",
     "endorsed": "ಅನುಮೋದಿಸಲಾಗಿದೆ",
-    "endorse": "ಅನುಮೋದಿಸಿ"
+    "endorse": "ಅನುಮೋದಿಸಿ",
+    "categories": {
+      "electoral_process": "ಚುನಾವಣಾ ಪ್ರಕ್ರಿಯೆ",
+      "campaign_strategy": "ಪ್ರಚಾರ ತಂತ್ರ",
+      "legal_framework": "ಕಾನೂನು ಚೌಕಟ್ಟು",
+      "public_speaking": "ಸಾರ್ವಜನಿಕ ಭಾಷಣ",
+      "community_organizing": "ಸಮುದಾಯ ಸಂಘಟನೆ",
+      "digital_campaigning": "ಡಿಜಿಟಲ್ ಪ್ರಚಾರ",
+      "policy_making": "ನೀತಿ ನಿರೂಪಣೆ",
+      "ethics_governance": "ನೈತಿಕತೆ ಮತ್ತು ಆಡಳಿತ"
+    },
+    "contentTypes": {
+      "article": "ಲೇಖನ",
+      "video": "ವೀಡಿಯೊ",
+      "quiz": "ರಸಪ್ರಶ್ನೆ",
+      "case_study": "ಕೇಸ್ ಸ್ಟಡಿ"
+    },
+    "difficulty": {
+      "beginner": "ಆರಂಭಿಕ",
+      "intermediate": "ಮಧ್ಯಮ",
+      "advanced": "ಉನ್ನತ"
+    },
+    "moduleNames": {
+      "howElectionsWork": "ಭಾರತೀಯ ಚುನಾವಣೆಗಳ ಕಾರ್ಯವಿಧಾನ",
+      "filingNomination": "ನಾಮಪತ್ರ ಸಲ್ಲಿಕೆ ವಿಧಾನ",
+      "electionSymbols": "ಚುನಾವಣಾ ಚಿಹ್ನೆಗಳ ಮಹತ್ವ",
+      "grassrootsCampaign": "ತಳಮಟ್ಟದ ಪ್ರಚಾರ ಸಂಘಟನೆ",
+      "fundraising": "ಸ್ವತಂತ್ರ ಅಭ್ಯರ್ಥಿಗಳಿಗೆ ನಿಧಿ ಸಂಗ್ರಹ",
+      "rpaAct": "ಜನಪ್ರತಿನಿಧಿ ಕಾಯ್ದೆಯ ಮುಖ್ಯಾಂಶಗಳು"
+    }
   },
   "becomeAspirant": {
     "title": "ಆಕಾಂಕ್ಷಿಯಾಗಿ",
@@ -1038,7 +1145,27 @@ const kn = {
     "requirements": "ಅವಶ್ಯಕತೆಗಳು",
     "minAge": "ಕನಿಷ್ಠ ವಯಸ್ಸು: 18",
     "minCivicScore": "ಕನಿಷ್ಠ ನಾಗರಿಕ ಸ್ಕೋರ್: 50",
-    "verifiedAccount": "ಪರಿಶೀಲಿತ ಖಾತೆ ಅಗತ್ಯ"
+    "verifiedAccount": "ಪರಿಶೀಲಿತ ಖಾತೆ ಅಗತ್ಯ",
+    "screenTitle": "ಆಕಾಂಕ್ಷಿಯಾಗಿ",
+    "headerTitle": "ನಾಗರಿಕ ಆಕಾಂಕ್ಷಿಗಳು",
+    "headerSubtitle": "ಅರ್ಹತೆ ಗಳಿಸಿ, ಜನಬೆಂಬಲ ಪಡೆಯಿರಿ",
+    "registerCTA": "ಆಕಾಂಕ್ಷಿಯಾಗಿ ನೋಂದಾಯಿಸಿ",
+    "yourBadges": "ನಿಮ್ಮ ಬ್ಯಾಡ್ಜ್‌ಗಳು",
+    "earnedLocked": "{{earned}} ಗಳಿಸಲಾಗಿದೆ · {{locked}} ಬಾಕಿ",
+    "aspiringIn": "ಆಕಾಂಕ್ಷಿ · {{seat}} · {{year}}",
+    "profileActive": "ನಾಗರಿಕ ಆಕಾಂಕ್ಷಿ ಪ್ರೊಫೈಲ್ ಸಕ್ರಿಯವಾಗಿದೆ",
+    "heroTitle": "ನಿಮ್ಮ ಸಮಾಜಕ್ಕಾಗಿ ಮುನ್ನಡೆಯಿರಿ",
+    "heroSub": "ಚುನಾವಣೆಗೆ ಸ್ಪರ್ಧಿಸುವ ಮುನ್ನ ನಿಮ್ಮ ಸಾರ್ವಜನಿಕ ಸೇವೆಯ ದಾಖಲೆಯನ್ನು ನಿರ್ಮಿಸಿಕೊಳ್ಳಿ.",
+    "benefits": {
+      "scoreTitle": "ನಾಗರಿಕ ಅಂಕಗಳನ್ನು ಗಳಿಸಿ",
+      "scoreSub": "ಕಲಿಕೆ ಮತ್ತು ಸಮಾಜ ಸೇವೆಯಿಂದ ಅಂಕಗಳನ್ನು ಹೆಚ್ಚಿಸಿಕೊಳ್ಳಿ.",
+      "badgeTitle": "ಬ್ಯಾಡ್ಜ್‌ಗಳನ್ನು ಪಡೆಯಿರಿ",
+      "badgeSub": "ನಿಮ್ಮ ಪ್ರೊಫೈಲ್‌ನಲ್ಲಿ ಸಾಧನೆಗಳನ್ನು ಪ್ರದರ್ಶಿಸಿ.",
+      "endorseTitle": "ಬೆಂಬಲ ಪಡೆದುಕೊಳ್ಳಿ",
+      "endorseSub": "ನಿಮ್ಮ ಕ್ಷೇತ್ರದ ನಾಗರಿಕರು ನಿಮ್ಮ ಉಮೇದುವಾರಿಕೆಯನ್ನು ಬೆಂಬಲಿಸಲಿ.",
+      "goalTitle": "ಗುರಿ ಘೋಷಿಸಿ",
+      "goalSub": "ಯಾವ ಕ್ಷೇತ್ರದಲ್ಲಿ ಯಾವ ವರ್ಷ ಸ್ಪರ್ಧಿಸಲು ಬಯಸುತ್ತೀರಿ ಎಂದು ತಿಳಿಸಿ."
+    }
   },
   "hierarchy": {
     "title": "ಆಡಳಿತ ಶ್ರೇಣಿ",
@@ -1112,14 +1239,16 @@ const kn = {
     "tabs": {
       "overview": "ಅವಲೋಕನ",
       "ads": "ಜಾಹೀರಾತುಗಳು",
-      "booths": "ಬೂತ್ ತಂತ್ರ",
+      "booths": "ಮತಗಟ್ಟೆಗಳು",
       "volunteers": "ಸ್ವಯಂಸೇವಕರು",
-      "outreach": "ಸಂವಹನ"
+      "outreach": "ಸಂಪರ್ಕ",
+      "campaigns": "ಪ್ರಚಾರಗಳು",
+      "revenue": "ಆದಾಯ"
     },
     "createCampaign": "ಪ್ರಚಾರ ರಚಿಸಿ",
     "activeCampaigns": "ಸಕ್ರಿಯ ಪ್ರಚಾರಗಳು",
     "adPerformance": "ಜಾಹೀರಾತು ಕಾರ್ಯಕ್ಷಮತೆ",
-    "impressions": "ಇಂಪ್ರೆಶನ್‌ಗಳು",
+    "impressions": "ಇಂಪ್ರೆಷನ್‌ಗಳು",
     "clicks": "ಕ್ಲಿಕ್‌ಗಳು",
     "ctr": "CTR",
     "spent": "ಖರ್ಚು",
@@ -1128,7 +1257,35 @@ const kn = {
     "boothsCovered": "ಕವರ್ ಆದ ಬೂತ್‌ಗಳು",
     "voterReach": "ಮತದಾರ ತಲುಪುವಿಕೆ",
     "abTesting": "A/B ಪರೀಕ್ಷೆ",
-    "revenue": "ಆದಾಯ"
+    "revenue": "ಆದಾಯ",
+    "types": {
+      "election": "ಚುನಾವಣಾ ಪ್ರಚಾರ",
+      "awareness": "ಜಾಗೃತಿ",
+      "fundraising": "ನಿಧಿ ಸಂಗ್ರಹ",
+      "outreach": "ಜನಸಂಪರ್ಕ",
+      "issue_advocacy": "ಸಮಸ್ಯೆಗಳ ಹೋರಾಟ",
+      "brand_building": "ಪ್ರತಿಷ್ಠೆ ನಿರ್ಮಾಣ",
+      "get_out_vote": "ಮತದಾನ ಪ್ರೇರಣೆ"
+    },
+    "statuses": {
+      "active": "ಸಕ್ರಿಯ",
+      "paused": "ವಿರಾಮಗೊಳಿಸಲಾಗಿದೆ",
+      "draft": "ಕರಡು",
+      "completed": "ಪೂರ್ಣಗೊಂಡಿದೆ",
+      "planned": "ಯೋಜಿಸಲಾಗಿದೆ",
+      "cancelled": "ರದ್ದುಗೊಳಿಸಲಾಗಿದೆ"
+    },
+    "totalReach": "ಒಟ್ಟು ತಲುಪುವಿಕೆ",
+    "engagement": "ಎಂಗೇಜ್‌ಮೆಂಟ್",
+    "sentiment": "ಭಾವನೆ",
+    "adCount": "{{count}} ಜಾಹೀರಾತುಗಳು",
+    "volunteerCount": "{{count}} ಸ್ವಯಂಸೇವಕರು",
+    "boothCount": "{{covered}}/{{total}} ಬೂತ್‌ಗಳು",
+    "campaignNames": {
+      "tsReportCard": "ತೆಲಂಗಾಣ ಅಭಿವೃದ್ಧಿ ಪ್ರಗತಿ ವರದಿ",
+      "youthConnect": "ಯೂತ್ ಕನೆಕ್ಟ್ 2026",
+      "guaranteesImpact": "5 ಗ್ಯಾರಂಟಿ ಯೋಜನೆಗಳ ಪ್ರಭಾವ ವರದಿ"
+    }
   },
   "outreach": {
     "title": "ಪ್ರಚಾರ ಸಂವಹನ",
@@ -1428,12 +1585,18 @@ const kn = {
   },
   "notifications": {
     "title": "ಅಧಿಸೂಚನೆಗಳು",
-    "markAllRead": "ಎಲ್ಲ ಓದಿದೆ ಎಂದು ಗುರುತಿಸಿ",
-    "noNotifications": "ಇನ್ನೂ ಅಧಿಸೂಚನೆಗಳಿಲ್ಲ",
+    "markAllRead": "ಎಲ್ಲವನ್ನೂ ಓದಿದೆ ಎಂದು ಗುರುತಿಸಿ",
+    "noNotifications": "ಯಾವುದೇ ಅಧಿಸೂಚನೆಗಳಿಲ್ಲ",
     "unread": "{{count}} ಓದದ",
     "today": "ಇಂದು",
     "earlier": "ಹಿಂದಿನ",
-    "thisWeek": "ಈ ವಾರ"
+    "thisWeek": "ಈ ವಾರ",
+    "clearAll": "ಎಲ್ಲವನ್ನೂ ಅಳಿಸಿ",
+    "caughtUp": "ನೀವು ಎಲ್ಲಾ ಅಪ್‌ಡೇಟ್‌ಗಳನ್ನು ನೋಡಿದ್ದೀರಿ!",
+    "justNow": "ಈಗಷ್ಟೇ",
+    "minutesAgo": "{{n}} ನಿಮಿಷಗಳ ಹಿಂದೆ",
+    "hoursAgo": "{{n}} ಗಂಟೆಗಳ ಹಿಂದೆ",
+    "daysAgo": "{{n}} ದಿನಗಳ ಹಿಂದೆ"
   },
   "auth": {
     "signIn": "ಸೈನ್ ಇನ್",
@@ -1996,7 +2159,61 @@ const kn = {
     "verified3TierSub": "ಗ್ರಾಮ ಪಂಚಾಯಿತಿಗಳು (ಸರಪಂಚರು & ವಾರ್ಡ್ ಸದಸ್ಯರು), ತಾಲೂಕು ಪಂಚಾಯಿತಿ (MPTC) ಮತ್ತು ಜಿಲ್ಲಾ ಪಂಚಾಯಿತಿ (ZPTC) ಅಧಿಕೃತ ಫಲಿತಾಂಶಗಳು.",
     "gpTierActiveTitle": "ಗ್ರಾಮ ಪಂಚಾಯಿತಿ ಮಟ್ಟ ಮಾತ್ರ ಸಕ್ರಿಯ",
     "gpTierActiveSub": "ಗ್ರಾಮ ಪಂಚಾಯಿತಿ ಪ್ರತಿನಿಧಿಗಳ (ಸರಪಂಚರು ಮತ್ತು ವಾರ್ಡ್ ಸದಸ್ಯರು) ದೃಢೀಕರಿಸಿದ ಫಲಿತಾಂಶಗಳು ಮಾತ್ರ ಲಭ್ಯವಿವೆ."
+  },
+  "more": {
+    "title": "ಇನ್ನಷ್ಟು",
+    "subtitle": "ಉಳಿದೆಲ್ಲವೂ, ಕೇವಲ ಎರಡು ಟ್ಯಾಪ್‌ಗಳ ಅಂತರದಲ್ಲಿ",
+    "campaignHQTitle": "ಚುನಾವಣಾ ಪ್ರಚಾರ ಕೇಂದ್ರ",
+    "campaignHQDesc": "ಚುನಾವಣೆಗೆ ಸ್ಪರ್ಧಿಸಿ, ಪ್ರಚಾರ ನಿರ್ವಹಿಸಿ, ವಾಟ್ಸಾಪ್ ಮತ್ತು ಎಸ್‌ಎಂಎಸ್ ಮೂಲಕ ಮತದಾರರನ್ನು ತಲುಪಿ",
+    "sections": {
+      "politiciansAndCampaign": "ರಾಜಕೀಯ ನಾಯಕರು ಮತ್ತು ಪ್ರಚಾರ",
+      "liveMediaExchange": "ಲೈವ್ ಮೀಡಿಯಾ ಎಕ್ಸ್‌ಚೇಂಜ್",
+      "civicAndElections": "ನಾಗರಿಕ ಸೇವೆಗಳು ಮತ್ತು ಚುನಾವಣೆಗಳು",
+      "account": "ಖಾತೆ"
+    },
+    "tiles": {
+      "politicianPortal": "ರಾಜಕಾರಣಿಗಳ ಪೋರ್ಟಲ್",
+      "becomeAspirant": "ಆಕಾಂಕ್ಷಿಯಾಗಿ",
+      "campaignManager": "ಪ್ರಚಾರ ವ್ಯವಸ್ಥಾಪಕ",
+      "leadershipAcademy": "ನಾಯಕತ್ವ ಅಕಾಡೆಮಿ",
+      "candidateXRay": "ಅಭ್ಯರ್ಥಿ ಎಕ್ಸ್-ರೇ",
+      "goLive": "ಲೈವ್ ಹೋಗಿ",
+      "kshetraLive": "ಕ್ಷೇತ್ರ ಲೈವ್",
+      "deptConsole": "ಇಲಾಖಾ ಕನ್ಸೋಲ್",
+      "moderation": "ಮಾಡರೇಶನ್",
+      "distribution": "ವಿತರಣೆ",
+      "devSwitches": "ಡೆವ್ ಸ್ವಿಚ್‌ಗಳು",
+      "civicDashboard": "ನಾಗರಿಕ ಡ್ಯಾಶ್‌ಬೋರ್ಡ್",
+      "delimitation": "ಕ್ಷೇತ್ರ ಪುನರ್ವಿಂಗಡಣೆ",
+      "analytics": "ಆಳವಾದ ವಿಶ್ಲೇಷಣೆ",
+      "civicMetrics": "ನಾಗರಿಕ ಮೆಟ್ರಿಕ್ಸ್",
+      "liveElection": "ಲೈವ್ ಚುನಾವಣೆ",
+      "parliament": "ಸಂಸತ್ತು",
+      "profile": "ಪ್ರೊಫೈಲ್",
+      "notifications": "ಅಧಿಸೂಚನೆಗಳು",
+      "settings": "ಸೆಟ್ಟಿಂಗ್‌ಗಳು",
+      "aiAssistant": "ಎಐ ಸಹಾಯಕ"
+    }
+  },
+  "departments": {
+    "title": "ಇಲಾಖಾ ಕನ್ಸೋಲ್",
+    "selectDepartment": "ಇಲಾಖೆಯನ್ನು ಆಯ್ಕೆಮಾಡಿ",
+    "pendingAlerts": "{{count}} ಬಾಕಿ ಅಲರ್ಟ್‌ಗಳು",
+    "noAlerts": "ಈ ಇಲಾಖೆಗೆ ಯಾವುದೇ ಬಾಕಿ ಅಲರ್ಟ್‌ಗಳಿಲ್ಲ",
+    "acknowledge": "ಪರಿಶೀಲಿಸಿ",
+    "genuine": "ನೈಜ ಮಾಹಿತಿ",
+    "falseAlarm": "ಸುಳ್ಳು ಮಾಹಿತಿ",
+    "unableToVerify": "ದೃಢೀಕರಿಸಲು ಅಸಾಧ್ಯ",
+    "reporterCredibility": "ವರದಿದಾರರ ವಿಶ್ವಾಸಾರ್ಹತೆ",
+    "dispatchedAt": "{{time}} ರವಾನಿಸಲಾಗಿದೆ"
+  },
+  "devSwitches": {
+    "title": "ಡೆವಲಪರ್ ಫೀಚರ್ ಸ್ವಿಚ್‌ಗಳು",
+    "subtitle": "ಪ್ರಾಯೋಗಿಕ ವೈಶಿಷ್ಟ್ಯಗಳನ್ನು ಆನ್ ಅಥವಾ ಆಫ್ ಮಾಡಿ",
+    "done": "ಮುಕ್ತಾಯ",
+    "reset": "ಮರುಹೊಂದಿಸಿ",
+    "enableAll": "ಎಲ್ಲವನ್ನೂ ಸಕ್ರಿಯಗೊಳಿಸಿ"
   }
-};
+}
 
 export default kn;
