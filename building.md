@@ -5343,3 +5343,187 @@ Full guide in TROUBLESHOOTING.md §11.
 | `railway.json`, `render.yaml` | New | 1-click cloud deployment configurations |
 | `building.md` | Modified | Comprehensive sprint log update |
 
+
+---
+
+## Sprint 59 — Cloud Deployment, Monorepo Dockerization & Railway CI/CD
+
+### Summary
+Containerized the Kshetra monorepo for production cloud deployment on Railway and Render. Solved path-resolution, healthchecks, cross-platform compilation, and workspace linking.
+
+### Key Architecture & Implementation Details
+- **Root Docker Multi-Stage Build**: Created a high-efficiency multi-stage `Dockerfile` at repository root that builds `@kshetra/shared` and runs the Fastify `@kshetra/api` service.
+- **Cross-Platform npm Compatibility**: Resolved dependency tree differences between Windows dev environments and Linux build containers using `npm install --force` with frozen workspace links.
+- **Docker Working Directory Realignment**: Corrected `WORKDIR` from `/app/apps/api` to `/app` with internal service execution (`npm --workspace=apps/api start`), eliminating double-path prefix errors (`/app/apps/api/apps/api`).
+- **Healthcheck & Deployment Readiness**: Implemented root `/` and `/health` endpoints in `apps/api/src/server.ts` returning `{ status: "ok", uptime, timestamp, version }`, allowing cloud container orchestrators to verify container health.
+- **Build Isolation**: Excluded test files from `@kshetra/shared` `tsconfig.json` build output so API container builds do not require Jest dependencies.
+
+### Files Changed / Added
+| File | Change | Description |
+|---|---|---|
+| `Dockerfile` | New | Multi-stage production container build for monorepo API |
+| `railway.json` | Modified | Updated build strategy to point to root Dockerfile |
+| `.dockerignore`, `.railwayignore` | Modified | Synchronized build contexts, ignoring mobile Android caches |
+| `apps/api/src/server.ts` | Modified | Added `/` and `/health` healthchecks; unconditional auto-start |
+| `packages/shared/tsconfig.json` | Modified | Excluded `__tests__` from production distribution build |
+
+---
+
+## Sprint 60 — Mobile Stability Hardening, Crash Diagnostics Window & Error Boundaries
+
+### Summary
+Hardened the React Native mobile client against startup failures in production release builds. Implemented safe initialization adapters for MMKV, SecureStore, and NetInfo, and built an interactive in-app Crash Diagnostics Window.
+
+### Key Architecture & Implementation Details
+- **Startup Crash Hardening**: Addressed release APK crashes on Android by implementing fallback storage adapters. If MMKV or `expo-secure-store` encounter uninitialized native bindings, the stores automatically degrade to AsyncStorage without crashing the process.
+- **Interactive Crash Diagnostics Modal**: Built an in-app diagnostic log viewer in `components/CrashDiagnosticsModal.tsx` wired into the global `ErrorBoundary`. Users or QA testers can view the stack trace, copy the error payload, or share the diagnostic log directly from the device.
+- **Zustand v5 Selector & Theme Memoization**: Resolved an infinite re-render loop on app startup caused by non-memoized selectors in `useFeatureFlags` and `useTheme`. Wrapped state selectors in `useShallow` to ensure reference stability.
+- **Developer Feature Switches**: Surfaced the feature flag switcher prominently in the Profile tab and More menu for easy toggling of microservices, mock data, and experimental tabs.
+- **Troubleshooting Knowledge Base**: Authored comprehensive diagnostic and recovery documentation in `TROUBLESHOOTING.md`.
+
+### Files Changed / Added
+| File | Change | Description |
+|---|---|---|
+| `apps/mobile/components/ErrorBoundary.tsx` | Modified | Integrated diagnostics capture & button |
+| `apps/mobile/components/CrashDiagnosticsModal.tsx` | New | Interactive stack trace inspector & log exporter |
+| `apps/mobile/lib/theme.ts` | Modified | Memoized theme hook to prevent cascading render storms |
+| `apps/mobile/lib/featureFlags.ts` | Modified | Added `useShallow` guards to state exports |
+| `apps/mobile/app/(tabs)/more.tsx`, `profile.tsx` | Modified | Added Dev Switches shortcuts |
+| `TROUBLESHOOTING.md` | Modified | Complete root cause analysis and resolution steps |
+
+---
+
+## Sprint 61 — Web Admin Portal & Delimitation / Explore Engine Overhaul
+
+### Summary
+Built and shipped the standalone Web Admin Portal for live election operations, telemetry, and moderation. Simultaneously delivered the 100% functional Delimitation Simulator and a complete 13-language translation pass for the Explore tab.
+
+### Key Architecture & Implementation Details
+- **Web Admin Portal (`apps/web-admin`)**: Scaffolded a Next.js 14 / Tailwind CSS administrative dashboard featuring:
+  - Live system telemetry and server health monitoring.
+  - Interactive feature flag toggling synced with the API.
+  - Content moderation queues with approval/quarantine controls.
+  - Bulk CSV ingestion tools for voter lists, delimitation boundaries, and candidates.
+- **Launch & Operations Manual**: Published `docs/Web_Admin_Portal_Operations_Manual.docx` detailing operational workflows, user roles, security protocols, and incident response.
+- **Delimitation Engine with Zero Stubs**:
+  - Implemented `delimitation/seatCalculator.ts` and `delimitation/boundarySimulator.ts` modeling 2026 Delimitation scenarios (Census-based vs. Population-proportional).
+  - PIN Code Constituency Resolver (`lib/delimitation/pinCodeResolver.ts`) mapping 6-digit postal codes to State, District, and AC numbers.
+  - MLA Risk Assessment Index calculation based on demographic shifts and margin of victory.
+- **Explore Tab 100% i18n Translation**: Comprehensive translation pass across all 13 supported Indian languages covering all submenus, constituency analytics, and local body profiles.
+
+### Files Changed / Added
+| File | Change | Description |
+|---|---|---|
+| `apps/web-admin/*` | New | Standalone Next.js 14 Web Admin Portal |
+| `docs/Web_Admin_Portal_Operations_Manual.docx` | New | Complete operator manual |
+| `apps/mobile/lib/delimitation/*` | New/Mod | 100% functional delimitation mathematical engine |
+| `apps/mobile/app/(tabs)/explore.tsx` | Modified | Local body database loading, state switchers, zero stubs |
+| `apps/mobile/i18n/locales/*.ts` (13 files) | Modified | Full localization of Explore and Delimitation namespaces |
+
+---
+
+## Sprint 62 — Live Feed Tab Overhaul, Brand Theme Icon & Blank Screen Fix
+
+### Summary
+Overhauled the central Feed tab into a production-grade live community stream, restored header controls, localized all seed content, and updated Android app launcher assets to the official dark reddish maroon theme (`#540912`).
+
+### Key Architecture & Implementation Details
+- **Feed Tab Realtime & Social Features**: Upgraded `(tabs)/feed.tsx` with dynamic category filtering, verified badges, comment counts, upvoting, and Supabase real-time feed synchronization.
+- **Startup Blank Screen Elimination**: Fixed an initialization race condition where the splash screen dismissed before font assets and i18n dictionaries had fully hydrated.
+- **100% Screen-Wide Feed Localization**: Localized all seed posts, community discussions, and comment threads into all 13 supported languages.
+- **App Launcher Icon Refresh**: Generated adaptive and legacy mipmap icons using the brand's dark reddish maroon aesthetic (`#540912`), providing an elegant launch presence on Android devices.
+
+### Files Changed / Added
+| File | Change | Description |
+|---|---|---|
+| `apps/mobile/app/(tabs)/feed.tsx` | Modified | Comprehensive feed tab overhaul with social interactions |
+| `apps/mobile/components/PostCard.tsx` | Modified | Real-time like counts, comment threads, localized timestamps |
+| `apps/mobile/app/_layout.tsx` | Modified | Fixed splash screen hide sequencing to prevent blank screen |
+| `apps/mobile/android/.../res/mipmap-*` | Modified | Dark reddish maroon icons generated and installed |
+| `apps/mobile/assets/icon.png`, `adaptive-icon.png` | Modified | Updated source icon assets |
+
+---
+
+## Sprint 63 — Production-Ready Live Tab (LMX) & 13-Language i18n
+
+### Summary
+Transformed the Live Media Exchange (LMX) from a mock prototype into an enterprise-grade live broadcasting and stream consumption system. Fully integrated Supabase persistence, real user authentication, legal compliance with RPA 1951, and complete 13-language i18n support.
+
+### Key Architecture & Implementation Details
+- **Complete i18n Coverage (~180 Keys Across 13 Languages)**:
+  - Extracted every user-facing string from the Live tab screens and components into the `lmx` namespace in `en.ts`.
+  - Added full native translations across all 12 Indian languages: Telugu (`te`), Hindi (`hi`), Kannada (`kn`), Marathi (`mr`), Tamil (`ta`), Malayalam (`ml`), Bengali (`bn`), Gujarati (`gu`), Punjabi (`pa`), Odia (`or`), Assamese (`as`), and Nepali (`ne`).
+  - Refactored `lmxTypes.ts` config maps (`VISIBILITY_CONFIG`, `ISSUE_CATEGORY_CONFIG`, `DEPARTMENT_CONFIG`, `TIER_CONFIG`, `ACK_CONFIG`) with `labelKey` and `descriptionKey` references.
+- **Supabase Backend Data Layer**:
+  - Implemented 14 CRUD and query functions in `apps/mobile/lib/supabaseDataService.ts` (`fetchLiveEvents`, `createLiveEvent`, `endLiveEvent`, `dispatchDepartmentAlert`, `acknowledgeDepartmentAlert`, `incrementViewerCount`, etc.).
+  - Added `hydrate()` action to `liveExchange.ts` Zustand store to populate live streams, affiliations, brand kits, and departments directly from PostgreSQL tables on app boot (`supabaseBootstrap.ts`).
+  - Added Realtime Postgres changes subscription (`lmx-live-events`) in `realtimeService.ts` for live updates.
+- **Real Authentication & Contributor Verification**:
+  - Removed mock `DEMO_REPORTER` and wired broadcaster identity to authenticated user credentials from `useAuthStore` and `useUserProfileStore`.
+  - Bound stream owner permissions (`isOwner`) directly to `auth.uid()`.
+  - Enforced KYC verification check (`useContributorVerificationStore`) before opening the broadcast pipeline.
+- **Legal Compliance — Pre-Poll Silence (RPA 1951 §126)**:
+  - Implemented `isPrePollSilenceActive()` in `lib/lmxTypes.ts` calculating the mandatory 48-hour broadcast blackout window before election polling.
+  - Added prominent statutory warning banner in `go-live.tsx` and locked out the "Start Broadcasting" button during active silence periods.
+- **API Route Hardening**:
+  - Created server-side Supabase client in `apps/api/src/lib/supabase.ts`.
+  - Rewired all 8 handlers in `apps/api/src/routes/lmx.ts` (`/status`, `/live`, `/live/:streamId`, `/alerts`, `/distribution`) to real database queries.
+
+### Files Changed / Added
+| File | Change | Description |
+|---|---|---|
+| `apps/mobile/i18n/locales/*.ts` (13 files) | Modified | Added complete `lmx` namespace (~180 keys each) |
+| `apps/mobile/lib/lmxTypes.ts` | Modified | Added i18n keys to config maps; pre-poll silence algorithms |
+| `apps/mobile/app/(tabs)/live.tsx` | Modified | Localized header, filter chips, empty state, Go Live CTA |
+| `apps/mobile/app/live/go-live.tsx` | Modified | Removed demo reporter; real auth + pre-poll silence + i18n |
+| `apps/mobile/app/live/[id].tsx` | Modified | Real auth ownership; fully localized viewer screen |
+| `apps/mobile/app/live/distribution.tsx` | Modified | Localized distribution endpoints (YouTube, SRT, Embed) |
+| `apps/mobile/app/live/moderation-queue.tsx` | Modified | Localized moderation queue actions and AI screening status |
+| `apps/mobile/components/LiveStreamCard.tsx` | Modified | Localized priority pills, viewer counts, and status badges |
+| `apps/mobile/components/LiveBroadcaster.tsx` | Modified | Localized camera controls and connection status |
+| `apps/mobile/components/HlsPlayer.tsx` | Modified | Added i18n props for WebView error & offline states |
+| `apps/mobile/lib/supabaseDataService.ts` | Modified | 14 LMX Supabase CRUD functions |
+| `apps/mobile/stores/liveExchange.ts` | Modified | Supabase store hydration, DB-to-TS mappers, live sync |
+| `apps/mobile/lib/realtimeService.ts` | Modified | Live events realtime channel subscription |
+| `apps/mobile/lib/supabaseBootstrap.ts` | Modified | Auto-hydration of LMX store on authentication |
+| `apps/api/src/lib/supabase.ts` | New | Server-side Supabase client with service role key |
+| `apps/api/src/routes/lmx.ts` | Modified | Connected all endpoints to live Supabase database |
+
+---
+
+## Sprint 64 — Go Live Re-Render Loop Resolution & 100% Card Localization
+
+### Summary
+Fixed a critical React Native runtime crash (`Maximum update depth exceeded`) when clicking Go Live. Solved the "half-translated" card display bug by introducing a centralized multi-language localizer for places, reporters, organizations, and news ticker headlines across all 13 supported languages.
+
+### Key Architecture & Implementation Details
+- **Zustand v5 Selector Stability Fix**:
+  - Diagnosed `Maximum update depth exceeded` in `app/live/go-live.tsx`: selector was constructing a new `{ displayName, role }` object on every render cycle, failing `Object.is` equality in React 18's `useSyncExternalStore` and triggering an infinite re-render loop.
+  - Fixed by selecting `s.profile` directly and deriving values with `useMemo`.
+  - Replaced closure-dependent `getActiveAffiliations(reporter.id)` with direct `s.affiliations` selection and memoized filtering.
+  - Applied identical safe selection patterns to `app/live/[id].tsx`.
+- **100% Card Localization (`lmxLocalizer.ts`)**:
+  - Replaced hardcoded English relative time (`${timeAgo} ago`) with the app's standard `useTimeAgo()` hook, rendering native phrases like `12 मि. पहले` (Hindi) and `12 నిమి. క్రితం` (Telugu).
+  - Built `apps/mobile/lib/lmxLocalizer.ts` providing full 13-language translations and transliterations for:
+    - **Localities**: `Assembly`, `Abids`, `Panjagutta`, `MG Road`, `Charminar`, `Secunderabad`, `Jubilee Hills`, `Banjara Hills`, `Hitec City`.
+    - **Districts**: `Hyderabad`, `Bengaluru Urban`, `Bengaluru`, `Rangareddy`, `Warangal`, `Karimnagar`, `Nizamabad`.
+    - **States**: `Telangana` (`TS`), `Karnataka` (`KA`), `Andhra Pradesh` (`AP`), `Maharashtra` (`MH`), `Delhi` (`DL`).
+    - **Broadcasters & Media Orgs**: `Kavitha Reddy`, `Sunitha Rao`, `Anil Kumar`, `Deccan Chronicle`.
+  - Formatted news headlines to standard broadcast ticker syntax (`{{category}} — {{location}}`), completely eliminating hardcoded English prepositions (`" in "`).
+  - Localized location line `📍 Hyderabad, TS` -> `📍 हैदराबाद, तेलंगाना` (Hindi), `📍 హైదరాబాద్, తెలంగాణ` (Telugu).
+  - Synchronized player screen (`[id].tsx`) with the same localization engine.
+
+### Verification
+- **TypeScript monorepo compilation (`npx tsc --noEmit`)**: **0 errors**.
+- **Release APK Build**: Compiled release APK via Gradle in 1m 45s (`BUILD SUCCESSFUL`, 116.29 MB) with validated Hermes bytecode bundle (`C6-1F-BC-03`, 20.59 MB) and delivered to Desktop.
+- **Card Localization Validation**: Verified complete native script display across all card elements without any remaining Latin script or English prepositions.
+
+### Files Changed / Added
+| File | Change | Description |
+|---|---|---|
+| `apps/mobile/lib/lmxLocalizer.ts` | New | 13-language dictionary for places, reporters, orgs, and headlines |
+| `apps/mobile/components/LiveStreamCard.tsx` | Modified | Integrated `useTimeAgo` and `lmxLocalizer`; 100% localized |
+| `apps/mobile/app/live/go-live.tsx` | Modified | Fixed infinite loop; localized footer hints and watermark |
+| `apps/mobile/app/live/[id].tsx` | Modified | Stabilized selectors; applied `lmxLocalizer` to stream player |
+
+---
