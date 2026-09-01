@@ -10,7 +10,6 @@ import {
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { useShallow } from 'zustand/react/shallow';
 import { useTranslation } from 'react-i18next';
 import { useAuthStore } from '../../stores/auth';
 import { useUserProfileStore } from '../../stores/userProfile';
@@ -59,18 +58,28 @@ const DEPARTMENTS: DepartmentType[] = [
 export default function GoLiveScreen() {
   const { t } = useTranslation();
   const authUser = useAuthStore((s) => s.user);
-  const userProfile = useUserProfileStore((s) => ({ displayName: s.profile?.displayName, role: s.profile?.role }));
-  const reporter = useMemo(() => ({
-    id: authUser?.id ?? 'anonymous',
-    name: userProfile.displayName || authUser?.email?.split('@')[0] || t('common.guest'),
-    tier: (userProfile.role === 'journalist' ? 'accredited' : userProfile.role === 'admin' ? 'editor' : 'citizen') as AccreditationTier,
-  }), [authUser, userProfile, t]);
+  const profile = useUserProfileStore((s) => s.profile);
+  const reporter = useMemo(() => {
+    const name = profile?.displayName || authUser?.email?.split('@')[0] || t('common.guest');
+    const tier = (
+      profile?.role === 'journalist' ? 'accredited' : profile?.role === 'admin' ? 'editor' : 'citizen'
+    ) as AccreditationTier;
+    return {
+      id: authUser?.id ?? 'anonymous',
+      name,
+      tier,
+    };
+  }, [authUser?.id, authUser?.email, profile?.displayName, profile?.role, t]);
 
   const insets = useSafeAreaInsets();
   const router = useRouter();
   const { colors } = useTheme();
 
-  const affiliations = useLiveExchangeStore(useShallow((s) => s.getActiveAffiliations(reporter.id)));
+  const allAffiliations = useLiveExchangeStore((s) => s.affiliations);
+  const affiliations = useMemo(
+    () => allAffiliations.filter((a) => a.contributorId === reporter.id && a.status === 'active'),
+    [allAffiliations, reporter.id],
+  );
   const startLiveEvent = useLiveExchangeStore((s) => s.startLiveEvent);
   const aiServiceEnabled = useLiveExchangeStore((s) => s.aiServiceEnabled);
   const requestAction = useContributorVerificationStore((s) => s.requestAction);

@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, useMemo } from 'react';
 import {
   View,
   Text,
@@ -9,7 +9,6 @@ import {
 import { Ionicons } from '@expo/vector-icons';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { useShallow } from 'zustand/react/shallow';
 import { useTranslation } from 'react-i18next';
 import { useAuthStore } from '../../stores/auth';
 import { useLiveExchangeStore } from '../../stores/liveExchange';
@@ -31,8 +30,10 @@ export default function LivePlayerScreen() {
   const { colors } = useTheme();
   const { t } = useTranslation();
 
-  const event = useLiveExchangeStore((s) => s.getEventById(id));
-  const alerts = useLiveExchangeStore(useShallow((s) => s.getAlertsForEvent(id)));
+  const allEvents = useLiveExchangeStore((s) => s.events);
+  const event = useMemo(() => allEvents.find((e) => e.id === id), [allEvents, id]);
+  const allAlerts = useLiveExchangeStore((s) => s.alerts);
+  const alerts = useMemo(() => allAlerts.filter((a) => a.liveEventId === id), [allAlerts, id]);
   const incrementViewers = useLiveExchangeStore((s) => s.incrementViewers);
   const endEvent = useLiveExchangeStore((s) => s.endEvent);
   const currentUserId = useAuthStore((s) => s.user?.id);
