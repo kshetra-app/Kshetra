@@ -11,6 +11,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useShallow } from 'zustand/react/shallow';
+import { useTranslation } from 'react-i18next';
 import { useLiveExchangeStore } from '../../stores/liveExchange';
 import { LiveStreamCard } from '../../components/LiveStreamCard';
 import type { IssueCategory, LiveEvent } from '../../lib/lmxTypes';
@@ -32,6 +33,7 @@ const CATEGORY_ORDER: CategoryFilter[] = [
 
 export default function LiveTabScreen() {
   const { colors } = useTheme();
+  const { t } = useTranslation();
   const insets = useSafeAreaInsets();
   const router = useRouter();
   // Zustand v5 has no built-in selector memoization, so a selector that returns
@@ -64,18 +66,18 @@ export default function LiveTabScreen() {
       <View style={[styles.header, { paddingTop: insets.top + 8, borderBottomColor: colors.border }]}>
         <View style={styles.headerRow}>
           <View>
-            <Text style={[styles.title, { color: colors.text }]}>Kshetra Live</Text>
+            <Text style={[styles.title, { color: colors.text }]}>{t('lmx.screenTitle')}</Text>
             <View style={styles.subRow}>
               <View style={[styles.liveDot, { backgroundColor: colors.primary }]} />
-              <Text style={[styles.subtitle, { color: colors.textMuted }]}>{liveCount} live now</Text>
+              <Text style={[styles.subtitle, { color: colors.textMuted }]}>{t('lmx.liveNow', { count: liveCount })}</Text>
               {!aiServiceEnabled && (
-                <Text style={[styles.aiOff, { color: colors.textMuted }]}>· AI enrichment off</Text>
+                <Text style={[styles.aiOff, { color: colors.textMuted }]}>· {t('lmx.aiEnrichmentOff')}</Text>
               )}
             </View>
           </View>
           <Pressable style={[styles.goLive, { backgroundColor: colors.primary }]} onPress={() => router.push('/live/go-live' as any)}>
             <Ionicons name="radio" size={16} color="#FFFFFF" />
-            <Text style={styles.goLiveText}>Go Live</Text>
+            <Text style={styles.goLiveText}>{t('lmx.goLive')}</Text>
           </Pressable>
         </View>
       </View>
@@ -103,7 +105,7 @@ export default function LiveTabScreen() {
               >
                 {cfg && <Ionicons name={cfg.icon as any} size={12} color={active ? color : colors.textMuted} />}
                 <Text style={[styles.chipText, { color: colors.textSecondary }, active && { color, fontWeight: '800' }]}>
-                  {c === 'all' ? 'All' : cfg!.label}
+                  {c === 'all' ? t('lmx.filters.all') : t(cfg!.labelKey)}
                 </Text>
               </Pressable>
             );
@@ -126,7 +128,7 @@ export default function LiveTabScreen() {
               ]}
             >
               <Text style={[styles.chipText, { color: colors.textSecondary }, freshness === f && styles.chipTextActive]}>
-                {f === 'all' ? 'All' : f === 'live' ? 'Live now' : 'Replays'}
+                {f === 'all' ? t('lmx.filters.all') : f === 'live' ? t('lmx.filters.liveNow') : t('lmx.filters.replays')}
               </Text>
             </Pressable>
           ))}
@@ -143,7 +145,7 @@ export default function LiveTabScreen() {
               size={12}
               color={verifiedOnly ? '#FFFFFF' : colors.textMuted}
             />
-            <Text style={[styles.chipText, { color: colors.textSecondary }, verifiedOnly && styles.chipTextActive]}>Verified</Text>
+            <Text style={[styles.chipText, { color: colors.textSecondary }, verifiedOnly && styles.chipTextActive]}>{t('lmx.filters.verified')}</Text>
           </Pressable>
         </ScrollView>
       </View>
@@ -158,8 +160,8 @@ export default function LiveTabScreen() {
         ListEmptyComponent={
           <View style={styles.empty}>
             <Ionicons name="videocam-off" size={40} color={colors.textMuted} />
-            <Text style={[styles.emptyTitle, { color: colors.textSecondary }]}>No live streams match your filters</Text>
-            <Text style={[styles.emptySub, { color: colors.textMuted }]}>Be the first — tap Go Live to broadcast from here.</Text>
+            <Text style={[styles.emptyTitle, { color: colors.textSecondary }]}>{t('lmx.empty.title')}</Text>
+            <Text style={[styles.emptySub, { color: colors.textMuted }]}>{t('lmx.empty.subtitle')}</Text>
           </View>
         }
       />

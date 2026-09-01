@@ -10,6 +10,8 @@ import { Ionicons } from '@expo/vector-icons';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useShallow } from 'zustand/react/shallow';
+import { useTranslation } from 'react-i18next';
+import { useAuthStore } from '../../stores/auth';
 import { useLiveExchangeStore } from '../../stores/liveExchange';
 import { HlsPlayer } from '../../components/HlsPlayer';
 import {
@@ -27,12 +29,13 @@ export default function LivePlayerScreen() {
   const insets = useSafeAreaInsets();
   const router = useRouter();
   const { colors } = useTheme();
+  const { t } = useTranslation();
 
   const event = useLiveExchangeStore((s) => s.getEventById(id));
   const alerts = useLiveExchangeStore(useShallow((s) => s.getAlertsForEvent(id)));
   const incrementViewers = useLiveExchangeStore((s) => s.incrementViewers);
   const endEvent = useLiveExchangeStore((s) => s.endEvent);
-  const currentReporterId = useLiveExchangeStore((s) => s.currentReporterId);
+  const currentUserId = useAuthStore((s) => s.user?.id);
 
   useEffect(() => {
     if (!event) return;
@@ -45,9 +48,9 @@ export default function LivePlayerScreen() {
     return (
       <View style={[styles.container, styles.center, { backgroundColor: colors.background }]}>
         <Ionicons name="alert-circle" size={40} color={colors.textMuted} />
-        <Text style={[styles.notFound, { color: colors.textSecondary }]}>Stream not found</Text>
+        <Text style={[styles.notFound, { color: colors.textSecondary }]}>{t('lmx.player.streamNotFound')}</Text>
         <Pressable onPress={() => router.back()} style={styles.backLink}>
-          <Text style={[styles.backLinkText, { color: colors.primary }]}>Go back</Text>
+          <Text style={[styles.backLinkText, { color: colors.primary }]}>{t('lmx.player.goBack')}</Text>
         </Pressable>
       </View>
     );
@@ -57,7 +60,7 @@ export default function LivePlayerScreen() {
   const tier = TIER_CONFIG[event.accreditationTier];
   const vis = VISIBILITY_CONFIG[event.visibilityMode];
   const isLive = event.status === 'live';
-  const isOwner = event.reporterId === currentReporterId;
+  const isOwner = currentUserId === event.reporterId;
   const aiOn = hasAI(event);
 
   // Only attempt real playback for actual stream URLs. Go-live events get a
@@ -83,7 +86,7 @@ export default function LivePlayerScreen() {
           <View style={styles.playerInner}>
             <Ionicons name={cat.icon as any} size={54} color={cat.color} />
             <Text style={styles.playerNote}>
-              {isLive ? 'Provisioning stream…' : 'Replay unavailable'}
+              {isLive ? t('lmx.player.provisioning') : t('lmx.player.replayUnavailable')}
             </Text>
             <Text style={styles.playerUrl} numberOfLines={1}>{event.streamId}</Text>
           </View>
@@ -96,11 +99,11 @@ export default function LivePlayerScreen() {
         <View style={[styles.topBadges, { top: insets.top + 10 }]}>
           <View style={[styles.liveBadge, { backgroundColor: isLive ? '#EF4444' : '#374151' }]}>
             {isLive && <View style={styles.dot} />}
-            <Text style={styles.liveText}>{isLive ? 'LIVE' : 'REPLAY'}</Text>
+            <Text style={styles.liveText}>{isLive ? t('lmx.player.live') : t('lmx.player.replay')}</Text>
           </View>
           <View style={styles.viewerBadge}>
             <Ionicons name="eye" size={12} color="#FFFFFF" />
-            <Text style={styles.viewerText}>{event.viewerCount}</Text>
+            <Text style={styles.viewerText}>{t('lmx.player.viewers', { count: event.viewerCount })}</Text>
           </View>
         </View>
 
@@ -116,12 +119,12 @@ export default function LivePlayerScreen() {
         <View style={styles.block}>
           <Text style={styles.headline}>
             {event.ai?.autoHeadline?.trim() ||
-              `${cat.label} — ${event.locality || event.districtName || event.stateCode}`}
+              `${t(cat.labelKey)} — ${event.locality || event.districtName || event.stateCode}`}
           </Text>
           <View style={styles.metaRow}>
             <View style={[styles.tierBadge, { borderColor: tier.color }]}>
               <Ionicons name={tier.badgeIcon as any} size={11} color={tier.color} />
-              <Text style={[styles.tierText, { color: tier.color }]}>{tier.label}</Text>
+              <Text style={[styles.tierText, { color: tier.color }]}>{t(tier.labelKey)}</Text>
             </View>
             <Text style={styles.reporter}>{event.reporterName}</Text>
             <View style={styles.credPill}>
@@ -133,11 +136,11 @@ export default function LivePlayerScreen() {
           <View style={styles.chipsRow}>
             <View style={[styles.pill, { backgroundColor: cat.color + '22' }]}>
               <Ionicons name={cat.icon as any} size={11} color={cat.color} />
-              <Text style={[styles.pillText, { color: cat.color }]}>{cat.label}</Text>
+              <Text style={[styles.pillText, { color: cat.color }]}>{t(cat.labelKey)}</Text>
             </View>
             <View style={[styles.pill, { backgroundColor: vis.color + '22' }]}>
               <Ionicons name={vis.icon as any} size={11} color={vis.color} />
-              <Text style={[styles.pillText, { color: vis.color }]}>{vis.shortLabel}</Text>
+              <Text style={[styles.pillText, { color: vis.color }]}>{t(vis.labelKey)}</Text>
             </View>
             <View style={styles.pill}>
               <Ionicons name="location" size={11} color="#9CA3AF" />
@@ -151,25 +154,25 @@ export default function LivePlayerScreen() {
           <View style={styles.aiPanel}>
             <View style={styles.aiHeader}>
               <Ionicons name="sparkles" size={15} color="#A855F7" />
-              <Text style={styles.aiTitle}>AI Enrichment</Text>
+              <Text style={styles.aiTitle}>{t('lmx.player.aiEnrichment')}</Text>
               <Text style={styles.aiProvider}>{event.ai?.modelProvider}</Text>
             </View>
             {!!event.ai?.summary && <Text style={styles.aiSummary}>{event.ai.summary}</Text>}
             {!!event.ai?.transcript && (
               <>
-                <Text style={styles.aiLabel}>Transcript</Text>
+                <Text style={styles.aiLabel}>{t('lmx.player.transcript')}</Text>
                 <Text style={styles.aiBody}>{event.ai.transcript}</Text>
               </>
             )}
             <View style={styles.aiStats}>
               {typeof event.ai?.emergencyScore === 'number' && (
-                <AiStat label="Emergency" value={`${Math.round(event.ai.emergencyScore)}`} />
+                <AiStat label={t('lmx.player.emergency')} value={`${Math.round(event.ai.emergencyScore)}`} />
               )}
               {typeof event.ai?.crowdEstimate === 'number' && (
-                <AiStat label="Crowd" value={`${event.ai.crowdEstimate}`} />
+                <AiStat label={t('lmx.player.crowd')} value={`${event.ai.crowdEstimate}`} />
               )}
               {typeof event.ai?.authenticityScore === 'number' && (
-                <AiStat label="Authenticity" value={`${Math.round(event.ai.authenticityScore)}`} />
+                <AiStat label={t('lmx.player.authenticity')} value={`${Math.round(event.ai.authenticityScore)}`} />
               )}
             </View>
           </View>
@@ -186,7 +189,7 @@ export default function LivePlayerScreen() {
         {/* Department alerts fired */}
         {alerts.length > 0 && (
           <View style={styles.block}>
-            <Text style={styles.sectionTitle}>Department Alerts</Text>
+            <Text style={styles.sectionTitle}>{t('lmx.player.departmentAlerts')}</Text>
             {alerts.map((al) => {
               const dcfg = DEPARTMENT_CONFIG[al.departmentType];
               const ack = al.acknowledgment ? ACK_CONFIG[al.acknowledgment] : null;
@@ -196,18 +199,18 @@ export default function LivePlayerScreen() {
                     <Ionicons name={dcfg.icon as any} size={16} color={dcfg.color} />
                   </View>
                   <View style={{ flex: 1 }}>
-                    <Text style={styles.alertLabel}>{dcfg.label}</Text>
+                    <Text style={styles.alertLabel}>{t(dcfg.labelKey)}</Text>
                     <Text style={styles.alertStatus}>
-                      {al.deliveryStatus === 'dispatched' ? 'Dispatched' : al.deliveryStatus}
+                      {al.deliveryStatus === 'dispatched' ? t('lmx.player.dispatched') : al.deliveryStatus}
                     </Text>
                   </View>
                   {ack ? (
                     <View style={[styles.ackBadge, { backgroundColor: ack.color + '22' }]}>
                       <Ionicons name={ack.icon as any} size={12} color={ack.color} />
-                      <Text style={[styles.ackText, { color: ack.color }]}>{ack.label}</Text>
+                      <Text style={[styles.ackText, { color: ack.color }]}>{t(ack.labelKey)}</Text>
                     </View>
                   ) : (
-                    <Text style={styles.pendingText}>Awaiting ack</Text>
+                    <Text style={styles.pendingText}>{t('lmx.player.awaitingAck')}</Text>
                   )}
                 </View>
               );
@@ -220,10 +223,10 @@ export default function LivePlayerScreen() {
           <View style={styles.block}>
             <Pressable style={styles.endBtn} onPress={() => endEvent(event.id)}>
               <Ionicons name="stop-circle" size={20} color="#FFFFFF" />
-              <Text style={styles.endBtnText}>End Broadcast</Text>
+              <Text style={styles.endBtnText}>{t('lmx.player.endBroadcast')}</Text>
             </Pressable>
             <Text style={styles.ownerHint}>
-              Buffer state: {event.bufferState} · Stream ID: {event.streamId}
+              {t('lmx.player.bufferState')} {event.bufferState} · {t('lmx.player.streamId')} {event.streamId}
             </Text>
           </View>
         )}

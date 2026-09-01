@@ -9,6 +9,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useShallow } from 'zustand/react/shallow';
+import { useTranslation } from 'react-i18next';
 import { useLiveExchangeStore } from '../../stores/liveExchange';
 import type { HumanDecision, LiveEvent } from '../../lib/lmxTypes';
 import { ISSUE_CATEGORY_CONFIG, TIER_CONFIG, hasAI } from '../../lib/lmxTypes';
@@ -20,17 +21,18 @@ import { useTheme } from '../../lib/theme';
  * allow / mute / cut / escalate. AI flags (when active) extend the buffer and
  * are surfaced here — but AI never auto-kills; a human always decides.
  */
-const DECISIONS: { key: HumanDecision; label: string; icon: string; color: string }[] = [
-  { key: 'allow', label: 'Allow', icon: 'checkmark-circle', color: '#10B981' },
-  { key: 'mute', label: 'Mute', icon: 'volume-mute', color: '#F59E0B' },
-  { key: 'cut', label: 'Cut', icon: 'close-circle', color: '#EF4444' },
-  { key: 'escalate', label: 'Escalate', icon: 'arrow-up-circle', color: '#8B5CF6' },
+const DECISIONS: { key: HumanDecision; labelKey: string; icon: string; color: string }[] = [
+  { key: 'allow', labelKey: 'lmx.moderation.allow', icon: 'checkmark-circle', color: '#10B981' },
+  { key: 'mute', labelKey: 'lmx.moderation.mute', icon: 'volume-mute', color: '#F59E0B' },
+  { key: 'cut', labelKey: 'lmx.moderation.cut', icon: 'close-circle', color: '#EF4444' },
+  { key: 'escalate', labelKey: 'lmx.moderation.escalate', icon: 'arrow-up-circle', color: '#8B5CF6' },
 ];
 
 export default function ModerationQueueScreen() {
   const insets = useSafeAreaInsets();
   const router = useRouter();
   const { colors } = useTheme();
+  const { t } = useTranslation();
   const queue = useLiveExchangeStore(useShallow((s) => s.getModerationQueue()));
   const setHumanDecision = useLiveExchangeStore((s) => s.setHumanDecision);
   const aiServiceEnabled = useLiveExchangeStore((s) => s.aiServiceEnabled);
@@ -41,17 +43,17 @@ export default function ModerationQueueScreen() {
         <Pressable onPress={() => router.back()} hitSlop={10}>
           <Ionicons name="chevron-back" size={26} color={colors.primary} />
         </Pressable>
-        <Text style={[styles.title, { color: colors.text }]}>Moderation Queue</Text>
+        <Text style={[styles.title, { color: colors.text }]}>{t('lmx.moderation.title')}</Text>
         <View style={{ width: 26 }} />
       </View>
 
       <View style={styles.banner}>
         <Ionicons name="shield-half" size={15} color="#8B5CF6" />
         <Text style={styles.bannerText}>
-          {queue.length} stream(s) in buffer.{' '}
+          {t('lmx.moderation.streamsInBuffer', { count: queue.length })}{' '}
           {aiServiceEnabled
-            ? 'AI screening active — flags extend the buffer.'
-            : 'AI screening off — human review only.'}
+            ? t('lmx.moderation.aiScreeningActive')
+            : t('lmx.moderation.aiScreeningOff')}
         </Text>
       </View>
 
@@ -59,7 +61,7 @@ export default function ModerationQueueScreen() {
         {queue.length === 0 ? (
           <View style={styles.empty}>
             <Ionicons name="checkmark-done-circle" size={44} color="#10B981" />
-            <Text style={styles.emptyText}>Queue clear — nothing awaiting review</Text>
+            <Text style={styles.emptyText}>{t('lmx.moderation.queueClear')}</Text>
           </View>
         ) : (
           queue.map((e) => (
@@ -88,6 +90,7 @@ function QueueCard({
   const cat = ISSUE_CATEGORY_CONFIG[event.issueCategory];
   const tier = TIER_CONFIG[event.accreditationTier];
   const aiOn = hasAI(event);
+  const { t } = useTranslation();
   const flags: string[] = [];
   if (aiOn) {
     if (event.ai?.violenceFlag) flags.push('violence');
@@ -103,14 +106,14 @@ function QueueCard({
         </View>
         <View style={{ flex: 1 }}>
           <Text style={styles.cardTitle} numberOfLines={1}>
-            {cat.label} · {event.locality || event.districtName || event.stateCode}
+            {t(cat.labelKey)} · {event.locality || event.districtName || event.stateCode}
           </Text>
           <Text style={styles.cardMeta}>
             {event.reporterName} · {event.streamId} · buffer {event.bufferSeconds}s
           </Text>
         </View>
         <View style={[styles.tierBadge, { borderColor: tier.color }]}>
-          <Text style={[styles.tierText, { color: tier.color }]}>{tier.label}</Text>
+          <Text style={[styles.tierText, { color: tier.color }]}>{t(tier.labelKey)}</Text>
         </View>
       </View>
 
@@ -127,7 +130,7 @@ function QueueCard({
 
       <Pressable style={styles.previewBtn} onPress={onOpen}>
         <Ionicons name="eye" size={15} color="#4F8EF7" />
-        <Text style={styles.previewText}>Preview feed</Text>
+        <Text style={styles.previewText}>{t('lmx.moderation.previewFeed')}</Text>
       </Pressable>
 
       <View style={styles.decisionRow}>
@@ -138,7 +141,7 @@ function QueueCard({
             style={[styles.decisionBtn, { borderColor: d.color }]}
           >
             <Ionicons name={d.icon as any} size={14} color={d.color} />
-            <Text style={[styles.decisionText, { color: d.color }]}>{d.label}</Text>
+            <Text style={[styles.decisionText, { color: d.color }]}>{t(d.labelKey)}</Text>
           </Pressable>
         ))}
       </View>

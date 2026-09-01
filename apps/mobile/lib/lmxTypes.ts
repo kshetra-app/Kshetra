@@ -85,25 +85,31 @@ export type AffiliationStatus = 'active' | 'expired' | 'revoked' | 'pending';
 
 export const VISIBILITY_CONFIG: Record<
   VisibilityMode,
-  { label: string; shortLabel: string; description: string; icon: string; color: string }
+  { labelKey: string; label: string; shortLabel: string; descriptionKey: string; description: string; icon: string; color: string }
 > = {
   public: {
+    labelKey: 'lmx.visibility.public',
     label: 'Public',
     shortLabel: 'Public',
+    descriptionKey: 'lmx.visibility.publicDesc',
     description: 'Appears on the Kshetra Live tab and is eligible for media/broadcast distribution.',
     icon: 'earth',
     color: '#10B981',
   },
   exclusive_partner: {
+    labelKey: 'lmx.visibility.exclusivePartner',
     label: 'Exclusive to Partner',
     shortLabel: 'Exclusive',
+    descriptionKey: 'lmx.visibility.exclusivePartnerDesc',
     description: 'Only your affiliated organization receives it. Not shown on the Live tab.',
     icon: 'briefcase',
     color: '#F59E0B',
   },
   confidential_direct: {
+    labelKey: 'lmx.visibility.confidentialDirect',
     label: 'Confidential / Direct',
     shortLabel: 'Confidential',
+    descriptionKey: 'lmx.visibility.confidentialDirectDesc',
     description: 'Never public and never distributed to media. Only alerted departments can see it.',
     icon: 'lock-closed',
     color: '#EF4444',
@@ -112,50 +118,50 @@ export const VISIBILITY_CONFIG: Record<
 
 export const ISSUE_CATEGORY_CONFIG: Record<
   IssueCategory,
-  { label: string; icon: string; color: string; weight: number }
+  { labelKey: string; label: string; icon: string; color: string; weight: number }
 > = {
-  emergency: { label: 'Emergency', icon: 'alert-circle', color: '#EF4444', weight: 100 },
-  breaking_news: { label: 'Breaking News', icon: 'flash', color: '#F97316', weight: 80 },
-  traffic: { label: 'Traffic', icon: 'car', color: '#F59E0B', weight: 50 },
-  weather: { label: 'Weather', icon: 'rainy', color: '#38BDF8', weight: 50 },
-  civic: { label: 'Civic / Infra', icon: 'construct', color: '#8B5CF6', weight: 40 },
-  general: { label: 'General', icon: 'videocam', color: '#6B7280', weight: 20 },
+  emergency: { labelKey: 'lmx.categories.emergency', label: 'Emergency', icon: 'alert-circle', color: '#EF4444', weight: 100 },
+  breaking_news: { labelKey: 'lmx.categories.breakingNews', label: 'Breaking News', icon: 'flash', color: '#F97316', weight: 80 },
+  traffic: { labelKey: 'lmx.categories.traffic', label: 'Traffic', icon: 'car', color: '#F59E0B', weight: 50 },
+  weather: { labelKey: 'lmx.categories.weather', label: 'Weather', icon: 'rainy', color: '#38BDF8', weight: 50 },
+  civic: { labelKey: 'lmx.categories.civic', label: 'Civic / Infra', icon: 'construct', color: '#8B5CF6', weight: 40 },
+  general: { labelKey: 'lmx.categories.general', label: 'General', icon: 'videocam', color: '#6B7280', weight: 20 },
 };
 
 export const DEPARTMENT_CONFIG: Record<
   DepartmentType,
-  { label: string; icon: string; color: string; jurisdictionType: JurisdictionType }
+  { labelKey: string; label: string; icon: string; color: string; jurisdictionType: JurisdictionType }
 > = {
-  police: { label: 'Police', icon: 'shield', color: '#3B82F6', jurisdictionType: 'police_station' },
-  fire: { label: 'Fire Services', icon: 'flame', color: '#EF4444', jurisdictionType: 'administrative' },
-  hospital: { label: 'Hospital / Medical', icon: 'medkit', color: '#EC4899', jurisdictionType: 'hospital_catchment' },
-  disaster_management: { label: 'Disaster Management', icon: 'warning', color: '#F97316', jurisdictionType: 'administrative' },
-  anti_corruption: { label: 'Anti-Corruption / Vigilance', icon: 'eye', color: '#A855F7', jurisdictionType: 'administrative' },
-  traffic_police: { label: 'Traffic Police', icon: 'car-sport', color: '#F59E0B', jurisdictionType: 'police_station' },
-  municipal: { label: 'Municipal / Civic', icon: 'business', color: '#14B8A6', jurisdictionType: 'municipal_ward' },
-  collectorate: { label: 'Collectorate / Secretariat', icon: 'library', color: '#6366F1', jurisdictionType: 'administrative' },
-  electricity_board: { label: 'Electricity Board', icon: 'flash', color: '#EAB308', jurisdictionType: 'administrative' },
-  water_board: { label: 'Water Board', icon: 'water', color: '#0EA5E9', jurisdictionType: 'administrative' },
-  women_child_helpline: { label: 'Women & Child Helpline', icon: 'heart', color: '#F43F5E', jurisdictionType: 'administrative' },
-  forest: { label: 'Forest Department', icon: 'leaf', color: '#22C55E', jurisdictionType: 'administrative' },
+  police: { labelKey: 'lmx.departments.police', label: 'Police', icon: 'shield', color: '#3B82F6', jurisdictionType: 'police_station' },
+  fire: { labelKey: 'lmx.departments.fire', label: 'Fire Services', icon: 'flame', color: '#EF4444', jurisdictionType: 'administrative' },
+  hospital: { labelKey: 'lmx.departments.hospital', label: 'Hospital / Medical', icon: 'medkit', color: '#EC4899', jurisdictionType: 'hospital_catchment' },
+  disaster_management: { labelKey: 'lmx.departments.disasterManagement', label: 'Disaster Management', icon: 'warning', color: '#F97316', jurisdictionType: 'administrative' },
+  anti_corruption: { labelKey: 'lmx.departments.antiCorruption', label: 'Anti-Corruption / Vigilance', icon: 'eye', color: '#A855F7', jurisdictionType: 'administrative' },
+  traffic_police: { labelKey: 'lmx.departments.trafficPolice', label: 'Traffic Police', icon: 'car-sport', color: '#F59E0B', jurisdictionType: 'police_station' },
+  municipal: { labelKey: 'lmx.departments.municipal', label: 'Municipal / Civic', icon: 'business', color: '#14B8A6', jurisdictionType: 'municipal_ward' },
+  collectorate: { labelKey: 'lmx.departments.collectorate', label: 'Collectorate / Secretariat', icon: 'library', color: '#6366F1', jurisdictionType: 'administrative' },
+  electricity_board: { labelKey: 'lmx.departments.electricityBoard', label: 'Electricity Board', icon: 'flash', color: '#EAB308', jurisdictionType: 'administrative' },
+  water_board: { labelKey: 'lmx.departments.waterBoard', label: 'Water Board', icon: 'water', color: '#0EA5E9', jurisdictionType: 'administrative' },
+  women_child_helpline: { labelKey: 'lmx.departments.womenChildHelpline', label: 'Women & Child Helpline', icon: 'heart', color: '#F43F5E', jurisdictionType: 'administrative' },
+  forest: { labelKey: 'lmx.departments.forest', label: 'Forest Department', icon: 'leaf', color: '#22C55E', jurisdictionType: 'administrative' },
 };
 
 export const TIER_CONFIG: Record<
   AccreditationTier,
-  { label: string; color: string; bufferSeconds: number; badgeIcon: string }
+  { labelKey: string; label: string; color: string; bufferSeconds: number; badgeIcon: string }
 > = {
-  citizen: { label: 'Citizen', color: '#6B7280', bufferSeconds: 25, badgeIcon: 'person' },
-  stringer: { label: 'Stringer', color: '#38BDF8', bufferSeconds: 15, badgeIcon: 'create' },
-  accredited: { label: 'Accredited', color: '#10B981', bufferSeconds: 8, badgeIcon: 'ribbon' },
-  senior: { label: 'Senior', color: '#8B5CF6', bufferSeconds: 5, badgeIcon: 'star' },
-  editor: { label: 'Editor', color: '#F59E0B', bufferSeconds: 3, badgeIcon: 'shield-checkmark' },
-  organization: { label: 'Organization', color: '#4F8EF7', bufferSeconds: 3, badgeIcon: 'business' },
+  citizen: { labelKey: 'lmx.tiers.citizen', label: 'Citizen', color: '#6B7280', bufferSeconds: 25, badgeIcon: 'person' },
+  stringer: { labelKey: 'lmx.tiers.stringer', label: 'Stringer', color: '#38BDF8', bufferSeconds: 15, badgeIcon: 'create' },
+  accredited: { labelKey: 'lmx.tiers.accredited', label: 'Accredited', color: '#10B981', bufferSeconds: 8, badgeIcon: 'ribbon' },
+  senior: { labelKey: 'lmx.tiers.senior', label: 'Senior', color: '#8B5CF6', bufferSeconds: 5, badgeIcon: 'star' },
+  editor: { labelKey: 'lmx.tiers.editor', label: 'Editor', color: '#F59E0B', bufferSeconds: 3, badgeIcon: 'shield-checkmark' },
+  organization: { labelKey: 'lmx.tiers.organization', label: 'Organization', color: '#4F8EF7', bufferSeconds: 3, badgeIcon: 'business' },
 };
 
-export const ACK_CONFIG: Record<AlertAcknowledgment, { label: string; color: string; icon: string; credibilityDelta: number }> = {
-  genuine: { label: 'Genuine', color: '#10B981', icon: 'checkmark-circle', credibilityDelta: 5 },
-  false: { label: 'False Alert', color: '#EF4444', icon: 'close-circle', credibilityDelta: -15 },
-  unable_to_verify: { label: 'Unable to Verify', color: '#6B7280', icon: 'help-circle', credibilityDelta: 0 },
+export const ACK_CONFIG: Record<AlertAcknowledgment, { labelKey: string; label: string; color: string; icon: string; credibilityDelta: number }> = {
+  genuine: { labelKey: 'lmx.ack.genuine', label: 'Genuine', color: '#10B981', icon: 'checkmark-circle', credibilityDelta: 5 },
+  false: { labelKey: 'lmx.ack.falseAlert', label: 'False Alert', color: '#EF4444', icon: 'close-circle', credibilityDelta: -15 },
+  unable_to_verify: { labelKey: 'lmx.ack.unableToVerify', label: 'Unable to Verify', color: '#6B7280', icon: 'help-circle', credibilityDelta: 0 },
 };
 
 // ─── Interfaces ─────────────────────────────────────────────────────────────
@@ -509,4 +515,46 @@ export function resolveJurisdiction(
 
   // Administrative / police / municipal: nearest verified office.
   return withDistance.slice(0, 1).map((x) => x.dept);
+}
+
+/**
+ * Pre-poll silence enforcement (RPA 1951, Section 126).
+ * Broadcasting is restricted during the 48-hour window before polling day.
+ * This function checks if the current time falls within an active silence period.
+ */
+export interface PrePollSilenceWindow {
+  electionName: string;
+  pollingDate: string; // ISO date of polling day
+  silenceStartsAt: string; // ISO datetime (48h before)
+  silenceEndsAt: string; // ISO datetime (end of polling day)
+  stateCode?: string; // null = national
+}
+
+/**
+ * Returns the active pre-poll silence window if one is currently in effect.
+ * In production, these windows are fetched from the election_schedule table.
+ * For now, we check against locally configured windows.
+ */
+export function getActivePrePollSilence(
+  windows: PrePollSilenceWindow[],
+  now: Date = new Date(),
+): PrePollSilenceWindow | null {
+  for (const w of windows) {
+    const start = new Date(w.silenceStartsAt);
+    const end = new Date(w.silenceEndsAt);
+    if (now >= start && now <= end) return w;
+  }
+  return null;
+}
+
+export function isPrePollSilenceActive(
+  windows: PrePollSilenceWindow[],
+  stateCode?: string | null,
+  now: Date = new Date(),
+): boolean {
+  const active = getActivePrePollSilence(windows, now);
+  if (!active) return false;
+  // National silence applies everywhere; state-specific only to that state
+  if (!active.stateCode) return true;
+  return active.stateCode === stateCode;
 }

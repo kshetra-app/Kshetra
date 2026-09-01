@@ -60,6 +60,14 @@ export async function bootstrapSupabase(): Promise<void> {
     // 3. Load fresh data from server into stores
     await hydrateStoresFromServer();
 
+    // Hydrate Live Media Exchange store
+    try {
+      const { useLiveExchangeStore } = require('../stores/liveExchange');
+      await useLiveExchangeStore.getState().hydrate();
+    } catch (e) {
+      console.warn('[Bootstrap] LMX hydrate error:', e);
+    }
+
     // 4. Flush offline queue
     if (isOnline()) {
       const queueSize = getQueueSize();

@@ -1227,3 +1227,232 @@ export async function endSession(sessionId: string, screensViewed: string[], act
     // Silent fail — non-critical
   }
 }
+
+// ─── Live Media Exchange (LMX) ────────────────────────────────────────────────
+
+export async function fetchLiveEvents(filters?: {
+  category?: string;
+  stateCode?: string;
+  status?: string;
+}): Promise<any[]> {
+  if (!isSupabaseConfigured) return [];
+  try {
+    let query = supabase
+      .from('live_events')
+      .select('*, live_event_ai(*)')
+      .in('buffer_state', ['cleared', 'bypassed'])
+      .in('visibility_mode', ['public'])
+      .order('status', { ascending: true })
+      .order('priority_score', { ascending: false });
+    if (filters?.category && filters.category !== 'all') {
+      query = query.eq('issue_category', filters.category);
+    }
+    if (filters?.stateCode) {
+      query = query.eq('state_code', filters.stateCode);
+    }
+    if (filters?.status && filters.status !== 'all') {
+      query = query.eq('status', filters.status === 'live' ? 'live' : 'ended');
+    }
+    const { data, error } = await query;
+    if (error) { console.warn('[LMX] fetchLiveEvents error:', error.message); return []; }
+    return data ?? [];
+  } catch (e) { console.warn('[LMX] fetchLiveEvents exception:', e); return []; }
+}
+
+export async function fetchLiveEventById(eventId: string): Promise<any | null> {
+  if (!isSupabaseConfigured) return null;
+  try {
+    const { data, error } = await supabase
+      .from('live_events')
+      .select('*, live_event_ai(*), lmx_department_alerts(*)')
+      .eq('id', eventId)
+      .single();
+    if (error) { console.warn('[LMX] fetchLiveEventById error:', error.message); return null; }
+    return data;
+  } catch (e) { console.warn('[LMX] fetchLiveEventById exception:', e); return null; }
+}
+
+export async function createLiveEvent(event: Record<string, any>): Promise<any | null> {
+  if (!isSupabaseConfigured) return null;
+  try {
+    const { data, error } = await supabase
+      .from('live_events')
+      .insert(event)
+      .select()
+      .single();
+    if (error) { console.warn('[LMX] createLiveEvent error:', error.message); return null; }
+    return data;
+  } catch (e) { console.warn('[LMX] createLiveEvent exception:', e); return null; }
+}
+
+export async function updateLiveEvent(eventId: string, updates: Record<string, any>): Promise<boolean> {
+  if (!isSupabaseConfigured) return false;
+  try {
+    const { error } = await supabase
+      .from('live_events')
+      .update(updates)
+      .eq('id', eventId);
+    if (error) { console.warn('[LMX] updateLiveEvent error:', error.message); return false; }
+    return true;
+  } catch (e) { console.warn('[LMX] updateLiveEvent exception:', e); return false; }
+}
+
+export async function endLiveEvent(eventId: string, contentHash: string): Promise<boolean> {
+  if (!isSupabaseConfigured) return false;
+  try {
+    const { error } = await supabase
+      .from('live_events')
+      .update({
+        status: 'ended',
+        ended_at: new Date().toISOString(),
+        content_hash: contentHash,
+        retention_expiry: new Date(Date.now() + 90 * 24 * 60 * 60 * 1000).toISOString(),
+      })
+      .eq('id', eventId);
+    if (error) { console.warn('[LMX] endLiveEvent error:', error.message); return false; }
+    return true;
+  } catch (e) { console.warn('[LMX] endLiveEvent exception:', e); return false; }
+}
+
+export async function fetchDepartments(stateCode?: string): Promise<any[]> {
+  if (!isSupabaseConfigured) return [];
+  try {
+    let query = supabase
+      .from('lmx_departments')
+      .select('*')
+      .eq('subscription_status', 'active')
+      .eq('verified', true);
+    if (stateCode) query = query.eq('state_code', stateCode);
+    const { data, error } = await query;
+    if (error) { console.warn('[LMX] fetchDepartments error:', error.message); return []; }
+    return data ?? [];
+  } catch (e) { console.warn('[LMX] fetchDepartments exception:', e); return []; }
+}
+
+export async function dispatchDepartmentAlert(alert: Record<string, any>): Promise<any | null> {
+  if (!isSupabaseConfigured) return null;
+  try {
+    const { data, error } = await supabase
+      .from('lmx_department_alerts')
+      .insert(alert)
+      .select()
+      .single();
+    if (error) { console.warn('[LMX] dispatchDepartmentAlert error:', error.message); return null; }
+    return data;
+  } catch (e) { console.warn('[LMX] dispatchDepartmentAlert exception:', e); return null; }
+}
+
+export async function acknowledgeDepartmentAlert(
+  alertId: string,
+  acknowledgment: string,
+  acknowledgedBy: string
+): Promise<boolean> {
+  if (!isSupabaseConfigured) return false;
+  try {
+    const { error } = await supabase
+      .from('lmx_department_alerts')
+      .update({
+        acknowledgment,
+        acknowledged_at: new Date().toISOString(),
+        acknowledged_by: acknowledgedBy,
+        delivery_status: 'delivered',
+      })
+      .eq('id', alertId);
+    if (error) { console.warn('[LMX] acknowledgeDepartmentAlert error:', error.message); return false; }
+    return true;
+  } catch (e) { console.warn('[LMX] acknowledgeDepartmentAlert exception:', e); return false; }
+}
+
+export async function fetchReporterCredibility(reporterId: string): Promise<any | null> {
+  if (!isSupabaseConfigured) return null;
+  try {
+    const { data, error } = await supabase
+      .from('lmx_credibility')
+      .select('*')
+      .eq('reporter_id', reporterId)
+      .single();
+    if (error) return null;
+    return data;
+  } catch (e) { return null; }
+}
+
+export async function updateReporterCredibility(reporterId: string, updates: Record<string, any>): Promise<boolean> {
+  if (!isSupabaseConfigured) return false;
+  try {
+    const { error } = await supabase
+      .from('lmx_credibility')
+      .upsert({ reporter_id: reporterId, ...updates });
+    if (error) { console.warn('[LMX] updateReporterCredibility error:', error.message); return false; }
+    return true;
+  } catch (e) { console.warn('[LMX] updateReporterCredibility exception:', e); return false; }
+}
+
+export async function fetchBrandKits(): Promise<any[]> {
+  if (!isSupabaseConfigured) return [];
+  try {
+    const { data, error } = await supabase
+      .from('lmx_brand_kits')
+      .select('*')
+      .eq('is_approved', true);
+    if (error) { console.warn('[LMX] fetchBrandKits error:', error.message); return []; }
+    return data ?? [];
+  } catch (e) { console.warn('[LMX] fetchBrandKits exception:', e); return []; }
+}
+
+export async function fetchAffiliations(contributorId: string): Promise<any[]> {
+  if (!isSupabaseConfigured) return [];
+  try {
+    const { data, error } = await supabase
+      .from('lmx_affiliations')
+      .select('*')
+      .eq('contributor_id', contributorId)
+      .eq('status', 'active');
+    if (error) { console.warn('[LMX] fetchAffiliations error:', error.message); return []; }
+    return data ?? [];
+  } catch (e) { console.warn('[LMX] fetchAffiliations exception:', e); return []; }
+}
+
+export async function addDistributionDestination(dest: Record<string, any>): Promise<any | null> {
+  if (!isSupabaseConfigured) return null;
+  try {
+    const { data, error } = await supabase
+      .from('lmx_distribution_destinations')
+      .insert(dest)
+      .select()
+      .single();
+    if (error) { console.warn('[LMX] addDistributionDestination error:', error.message); return null; }
+    return data;
+  } catch (e) { console.warn('[LMX] addDistributionDestination exception:', e); return null; }
+}
+
+export async function logModerationEvent(event: Record<string, any>): Promise<boolean> {
+  if (!isSupabaseConfigured) return false;
+  try {
+    const { error } = await supabase
+      .from('lmx_moderation_events')
+      .insert(event);
+    if (error) { console.warn('[LMX] logModerationEvent error:', error.message); return false; }
+    return true;
+  } catch (e) { console.warn('[LMX] logModerationEvent exception:', e); return false; }
+}
+
+export async function incrementViewerCount(eventId: string, delta: number): Promise<boolean> {
+  if (!isSupabaseConfigured) return false;
+  try {
+    const { data: current } = await supabase
+      .from('live_events')
+      .select('viewer_count, peak_viewers')
+      .eq('id', eventId)
+      .single();
+    if (!current) return false;
+    const newCount = Math.max(0, (current.viewer_count ?? 0) + delta);
+    const newPeak = Math.max(current.peak_viewers ?? 0, newCount);
+    const { error } = await supabase
+      .from('live_events')
+      .update({ viewer_count: newCount, peak_viewers: newPeak })
+      .eq('id', eventId);
+    if (error) { console.warn('[LMX] incrementViewerCount error:', error.message); return false; }
+    return true;
+  } catch (e) { console.warn('[LMX] incrementViewerCount exception:', e); return false; }
+}
+

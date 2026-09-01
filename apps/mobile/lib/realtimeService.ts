@@ -141,6 +141,30 @@ export function subscribeToDelimitation(): () => void {
 }
 
 /**
+ * Subscribe to LMX live events.
+ */
+export function subscribeToLmx(): () => void {
+  if (!isSupabaseConfigured) return () => {};
+
+  const channelName = 'lmx-live-events';
+  if (channels.has(channelName)) return () => unsubscribe(channelName);
+
+  const channel = supabase
+    .channel(channelName)
+    .on('postgres_changes', { event: '*', schema: 'public', table: 'live_events' }, (payload) => {
+      const { useLiveExchangeStore } = require('../stores/liveExchange');
+      const store = useLiveExchangeStore.getState();
+      if (payload.eventType === 'INSERT' || payload.eventType === 'UPDATE') {
+        store.hydrate();
+      }
+    })
+    .subscribe();
+
+  channels.set(channelName, channel);
+  return () => unsubscribe(channelName);
+}
+
+/**
  * Subscribe to all relevant channels.
  */
 export function subscribeAll(stateCode?: string, constituencyId?: string): () => void {
@@ -149,6 +173,7 @@ export function subscribeAll(stateCode?: string, constituencyId?: string): () =>
     subscribeToFeed(stateCode),
     subscribeToPromises(),
     subscribeToDelimitation(),
+    subscribeToLmx(),
   ];
   return () => unsubs.forEach((fn) => fn());
 }

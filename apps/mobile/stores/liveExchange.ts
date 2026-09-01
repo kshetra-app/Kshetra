@@ -1,6 +1,9 @@
 import { create } from 'zustand';
 import { createJSONStorage, persist } from 'zustand/middleware';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { supabase, isSupabaseConfigured } from '../lib/supabase';
+import * as dataService from '../lib/supabaseDataService';
+import { useAuthStore } from './auth';
 import type {
   LiveEvent,
   LiveEventAI,
@@ -193,6 +196,111 @@ const SEED_EVENTS: LiveEvent[] = [
   }),
 ];
 
+// ─── Supabase row → TypeScript mappers ─────────────────────────────────
+
+function mapDbEventToLiveEvent(row: any): LiveEvent {
+  return {
+    id: row.id,
+    streamId: row.stream_id ?? row.id,
+    reporterId: row.reporter_id,
+    reporterName: row.reporter_name ?? 'Unknown',
+    accreditationTier: row.accreditation_tier ?? 'citizen',
+    credibilityScore: row.credibility_score ?? 50,
+    gpsLat: row.gps_lat,
+    gpsLng: row.gps_lng,
+    stateCode: row.state_code,
+    districtName: row.district_name,
+    mandalName: row.mandal_name,
+    constituencyAcNo: row.constituency_ac_no,
+    locality: row.locality,
+    issueCategory: row.issue_category ?? 'general',
+    tags: row.tags ?? [],
+    language: row.language ?? 'en',
+    mediaIngestUrl: row.media_ingest_url,
+    mediaPlaybackHls: row.media_playback_hls,
+    mediaPlaybackWebrtc: row.media_playback_webrtc,
+    thumbnailUrl: row.thumbnail_url,
+    multiCameraAngles: row.multi_camera_angles ?? [],
+    affiliationId: row.affiliation_id,
+    activeBrandKitId: row.active_brand_kit_id,
+    organizationName: row.organization_name,
+    exclusivityFlag: row.exclusivity_flag ?? false,
+    visibilityMode: row.visibility_mode ?? 'public',
+    alertDepartments: row.alert_departments ?? [],
+    bufferState: row.buffer_state ?? 'buffering',
+    bufferSeconds: row.buffer_seconds ?? 25,
+    humanDecision: row.human_decision,
+    status: row.status ?? 'preparing',
+    viewerCount: row.viewer_count ?? 0,
+    peakViewers: row.peak_viewers ?? 0,
+    priorityScore: row.priority_score ?? 0,
+    contentHash: row.content_hash,
+    rawRecordingUrl: row.raw_recording_url,
+    brandedRecordingUrl: row.branded_recording_url,
+    retentionExpiry: row.retention_expiry,
+    startedAt: row.started_at ?? row.created_at ?? new Date().toISOString(),
+    endedAt: row.ended_at,
+    ai: row.live_event_ai?.[0] ? mapDbAiToLiveEventAI(row.live_event_ai[0]) : neutralAI(),
+  };
+}
+
+function mapDbAiToLiveEventAI(row: any): LiveEventAI {
+  return {
+    aiEnabled: row.ai_enabled ?? false,
+    transcript: row.transcript,
+    translation: row.translation,
+    summary: row.summary,
+    autoHeadline: row.auto_headline,
+    detectedObjects: row.detected_objects ?? [],
+    crowdEstimate: row.crowd_estimate,
+    sentiment: row.sentiment,
+    emergencyScore: row.emergency_score,
+    authenticityScore: row.authenticity_score,
+    deepfakeFlag: row.deepfake_flag ?? false,
+    violenceFlag: row.violence_flag ?? false,
+    weaponFlag: row.weapon_flag ?? false,
+    modelProvider: row.model_provider,
+    processedAt: row.processed_at,
+  };
+}
+
+function mapDbDepartmentToGovernmentDepartment(row: any): GovernmentDepartment {
+  return {
+    id: row.id,
+    departmentType: row.department_type,
+    officeName: row.office_name,
+    jurisdictionType: row.jurisdiction_type,
+    stateCode: row.state_code,
+    districtName: row.district_name,
+    mandalName: row.mandal_name,
+    catchmentRadiusKm: row.catchment_radius_km,
+    centerLat: row.center_lat,
+    centerLng: row.center_lng,
+    deliveryMethod: row.delivery_method ?? 'dashboard',
+    webhookUrl: row.webhook_url,
+    contactPhone: row.contact_phone,
+    contactEmail: row.contact_email,
+    subscriptionStatus: row.subscription_status ?? 'active',
+    verified: row.verified ?? false,
+  };
+}
+
+function mapDbBrandKitToBrandKit(row: any): BrandKit {
+  return {
+    id: row.id,
+    organizationId: row.organization_id,
+    organizationName: row.organization_name,
+    logoUrl: row.logo_url,
+    lowerThirdTemplate: row.lower_third_template,
+    colorPrimary: row.color_primary ?? '#000000',
+    colorSecondary: row.color_secondary ?? '#FFFFFF',
+    introBumperUrl: row.intro_bumper_url,
+    outroBumperUrl: row.outro_bumper_url,
+    watermarkUrl: row.watermark_url,
+    isApproved: row.is_approved ?? false,
+  };
+}
+
 // ─── State ────────────────────────────────────────────────────────────────────
 
 interface LiveExchangeState {
@@ -243,6 +351,7 @@ interface LiveExchangeState {
 
   addDistribution: (dest: Omit<DistributionDestination, 'id'>) => DistributionDestination;
   subscribeDepartment: (dept: Omit<GovernmentDepartment, 'id'>) => GovernmentDepartment;
+  hydrate: () => Promise<void>;
 }
 
 export interface StartLiveInput {
@@ -336,6 +445,33 @@ export const useLiveExchangeStore = create<LiveExchangeState>()(
           .sort((a, b) => new Date(b.startedAt).getTime() - new Date(a.startedAt).getTime()),
 
       // ─── Actions ──────────────────────────────────────────────────────────
+
+      hydrate: async () => {
+        if (!isSupabaseConfigured) return; // keep seed data as fallback
+        try {
+          const [events, departments, brandKits, credibility] = await Promise.all([
+            dataService.fetchLiveEvents(),
+            dataService.fetchDepartments(),
+            dataService.fetchBrandKits(),
+            (async () => {
+              const userId = useAuthStore.getState().user?.id;
+              if (!userId) return null;
+              return dataService.fetchReporterCredibility(userId);
+            })(),
+          ]);
+          
+          // Map Supabase snake_case to camelCase LiveEvent objects
+          // Only replace if we got real data
+          set((state) => ({
+            ...state,
+            ...(events.length > 0 ? { events: events.map(mapDbEventToLiveEvent) } : {}),
+            ...(departments.length > 0 ? { departments: departments.map(mapDbDepartmentToGovernmentDepartment) } : {}),
+            ...(brandKits.length > 0 ? { brandKits: brandKits.map(mapDbBrandKitToBrandKit) } : {}),
+          }));
+        } catch (e) {
+          console.warn('[LMX] hydrate error, using seed data:', e);
+        }
+      },
 
       setAIService: (enabled, provider = null) =>
         set({ aiServiceEnabled: enabled, aiModelProvider: enabled ? provider : null }),
@@ -453,6 +589,35 @@ export const useLiveExchangeStore = create<LiveExchangeState>()(
           events: [event, ...s.events],
           alerts: [...newAlerts, ...s.alerts],
         }));
+
+        // Persist to Supabase if configured
+        if (isSupabaseConfigured) {
+          dataService.createLiveEvent({
+            id: event.id,
+            stream_id: event.streamId,
+            reporter_id: event.reporterId,
+            reporter_name: event.reporterName,
+            accreditation_tier: event.accreditationTier,
+            credibility_score: event.credibilityScore,
+            gps_lat: event.gpsLat,
+            gps_lng: event.gpsLng,
+            state_code: event.stateCode,
+            district_name: event.districtName,
+            issue_category: event.issueCategory,
+            tags: event.tags,
+            language: event.language,
+            media_ingest_url: event.mediaIngestUrl,
+            media_playback_hls: event.mediaPlaybackHls,
+            visibility_mode: event.visibilityMode,
+            alert_departments: event.alertDepartments,
+            buffer_state: event.bufferState,
+            buffer_seconds: event.bufferSeconds,
+            status: event.status,
+            priority_score: event.priorityScore,
+            started_at: event.startedAt,
+          }).catch(e => console.warn('[LMX] createLiveEvent sync error:', e));
+        }
+
         return event;
       },
 
@@ -465,7 +630,7 @@ export const useLiveExchangeStore = create<LiveExchangeState>()(
           ),
         })),
 
-      setHumanDecision: (eventId, decision, note) =>
+      setHumanDecision: (eventId, decision, note) => {
         set((s) => {
           const bufferState =
             decision === 'allow'
@@ -493,9 +658,25 @@ export const useLiveExchangeStore = create<LiveExchangeState>()(
               ...s.moderationEvents,
             ],
           };
-        }),
+        });
+        
+        if (isSupabaseConfigured) {
+          const state = get();
+          dataService.updateLiveEvent(eventId, {
+            human_decision: decision,
+            buffer_state: decision === 'allow' ? 'cleared' : decision === 'cut' ? 'cut' : decision === 'escalate' ? 'held' : state.events.find(e => e.id === eventId)?.bufferState,
+          }).catch(e => console.warn('[LMX] setHumanDecision sync error:', e));
+          dataService.logModerationEvent({
+            live_event_id: eventId,
+            layer: 'human_buffer',
+            action: decision,
+            note: note || null,
+            raised_by: useAuthStore.getState().user?.id ?? 'system',
+          }).catch(e => console.warn('[LMX] logModerationEvent sync error:', e));
+        }
+      },
 
-      incrementViewers: (eventId, delta = 1) =>
+      incrementViewers: (eventId, delta = 1) => {
         set((s) => ({
           events: s.events.map((e) => {
             if (e.id !== eventId) return e;
@@ -505,22 +686,33 @@ export const useLiveExchangeStore = create<LiveExchangeState>()(
             updated.priorityScore = computePriorityScore(updated);
             return updated;
           }),
-        })),
+        }));
+        if (isSupabaseConfigured) {
+          dataService.incrementViewerCount(eventId, delta).catch(() => {});
+        }
+      },
 
-      endEvent: (eventId) =>
+      endEvent: (eventId) => {
+        let hash = '';
         set((s) => ({
-          events: s.events.map((e) =>
-            e.id === eventId
-              ? {
-                  ...e,
-                  status: 'ended' as const,
-                  endedAt: new Date().toISOString(),
-                  contentHash: `sha-${Math.abs(hashStr(e.streamId + e.startedAt)).toString(16)}`,
-                  retentionExpiry: new Date(Date.now() + 90 * 86400000).toISOString(),
-                }
-              : e,
-          ),
-        })),
+          events: s.events.map((e) => {
+            if (e.id === eventId) {
+              hash = `sha-${Math.abs(hashStr(e.streamId + e.startedAt)).toString(16)}`;
+              return {
+                ...e,
+                status: 'ended' as const,
+                endedAt: new Date().toISOString(),
+                contentHash: hash,
+                retentionExpiry: new Date(Date.now() + 90 * 86400000).toISOString(),
+              };
+            }
+            return e;
+          }),
+        }));
+        if (isSupabaseConfigured) {
+          dataService.endLiveEvent(eventId, hash).catch(e => console.warn('[LMX] endLiveEvent sync error:', e));
+        }
+      },
 
       enrichWithAI: (eventId, ai) => {
         if (!get().aiServiceEnabled) return; // AI optional — silently skip.

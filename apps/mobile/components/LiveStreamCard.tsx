@@ -8,6 +8,7 @@ import {
   hasAI,
 } from '../lib/lmxTypes';
 import { useTheme } from '../lib/theme';
+import { useTranslation } from 'react-i18next';
 
 function timeAgo(iso: string): string {
   const s = Math.floor((Date.now() - new Date(iso).getTime()) / 1000);
@@ -31,6 +32,7 @@ export function LiveStreamCard({
   onPress: (e: LiveEvent) => void;
 }) {
   const { colors } = useTheme();
+  const { t } = useTranslation();
   const cat = ISSUE_CATEGORY_CONFIG[event.issueCategory];
   const tier = TIER_CONFIG[event.accreditationTier];
   const isLive = event.status === 'live';
@@ -54,13 +56,13 @@ export function LiveStreamCard({
         {/* Live / replay badge */}
         <View style={[styles.liveBadge, { backgroundColor: isLive ? '#EF4444' : '#374151' }]}>
           {isLive && <View style={styles.liveDot} />}
-          <Text style={styles.liveText}>{isLive ? 'LIVE' : 'REPLAY'}</Text>
+          <Text style={styles.liveText}>{isLive ? t('lmx.card.live') : t('lmx.card.replay')}</Text>
         </View>
 
         {/* Viewer count */}
         <View style={styles.viewers}>
           <Ionicons name="eye" size={11} color="#FFFFFF" />
-          <Text style={styles.viewersText}>{formatCount(event.viewerCount)}</Text>
+          <Text style={styles.viewersText}>{t('lmx.card.viewers', { count: event.viewerCount })}</Text>
         </View>
 
         {/* Brand overlay (if streaming "as" an org) */}
@@ -73,7 +75,7 @@ export function LiveStreamCard({
         {/* Priority pill */}
         <View style={styles.priority}>
           <Ionicons name="trending-up" size={10} color="#0A0A1A" />
-          <Text style={styles.priorityText}>{Math.round(event.priorityScore)}</Text>
+          <Text style={styles.priorityText}>{t('lmx.card.priority', { score: Math.round(event.priorityScore) })}</Text>
         </View>
       </View>
 
@@ -81,20 +83,20 @@ export function LiveStreamCard({
       <View style={styles.body}>
         <View style={styles.rowBetween}>
           <View style={[styles.catTag, { backgroundColor: cat.color + '22' }]}>
-            <Text style={[styles.catTagText, { color: cat.color }]}>{cat.label}</Text>
+            <Text style={[styles.catTagText, { color: cat.color }]}>{t(cat.labelKey)}</Text>
           </View>
           <Text style={styles.time}>{timeAgo(event.startedAt)} ago</Text>
         </View>
 
         <Text style={[styles.headline, { color: colors.text }]} numberOfLines={2}>
           {event.ai?.autoHeadline?.trim() ||
-            `${cat.label} in ${event.locality || event.districtName || event.stateCode || 'Live'}`}
+            `${t(cat.labelKey)} in ${event.locality || event.districtName || event.stateCode || t('lmx.card.live')}`}
         </Text>
 
         <View style={styles.metaRow}>
           <View style={[styles.tierBadge, { borderColor: tier.color }]}>
             <Ionicons name={tier.badgeIcon as any} size={10} color={tier.color} />
-            <Text style={[styles.tierText, { color: tier.color }]}>{tier.label}</Text>
+            <Text style={[styles.tierText, { color: tier.color }]}>{t(tier.labelKey)}</Text>
           </View>
           <Text style={[styles.reporter, { color: colors.textSecondary }]} numberOfLines={1}>{event.reporterName}</Text>
         </View>
@@ -121,7 +123,7 @@ export function LiveStreamCard({
           {aiOn && (
             <View style={styles.aiPill}>
               <Ionicons name="sparkles" size={9} color="#A855F7" />
-              <Text style={styles.aiText}>AI</Text>
+              <Text style={styles.aiText}>{t('lmx.card.aiHeadline')}</Text>
             </View>
           )}
         </View>

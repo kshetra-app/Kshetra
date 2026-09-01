@@ -11,6 +11,9 @@ import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useShallow } from 'zustand/react/shallow';
+import { useTranslation } from 'react-i18next';
+import { useAuthStore } from '../../stores/auth';
+import { useUserProfileStore } from '../../stores/userProfile';
 import { useLiveExchangeStore } from '../../stores/liveExchange';
 import { useContributorVerificationStore } from '../../stores/contributorVerification';
 import type {
@@ -25,6 +28,9 @@ import {
   DEPARTMENT_CONFIG,
   TIER_CONFIG,
   computeBufferSeconds,
+  isPrePollSilenceActive,
+  getActivePrePollSilence,
+  type PrePollSilenceWindow
 } from '../../lib/lmxTypes';
 import LiveBroadcaster, { isBroadcastSupported } from '../../components/LiveBroadcaster';
 import { buildWhipPublishUrl } from '../../lib/mediaPipeline';
@@ -50,18 +56,29 @@ const DEPARTMENTS: DepartmentType[] = [
   'collectorate',
 ];
 
-// Demo reporter identity — in production this comes from the auth/session layer.
-const DEMO_REPORTER = { id: 'u-citizen-1', name: 'You (Citizen)', tier: 'citizen' as AccreditationTier };
-
 export default function GoLiveScreen() {
+  const { t } = useTranslation();
+  const authUser = useAuthStore((s) => s.user);
+  const userProfile = useUserProfileStore((s) => ({ displayName: s.profile?.displayName, role: s.profile?.role }));
+  const reporter = useMemo(() => ({
+    id: authUser?.id ?? 'anonymous',
+    name: userProfile.displayName || authUser?.email?.split('@')[0] || t('common.guest'),
+    tier: (userProfile.role === 'journalist' ? 'accredited' : userProfile.role === 'admin' ? 'editor' : 'citizen') as AccreditationTier,
+  }), [authUser, userProfile, t]);
+
   const insets = useSafeAreaInsets();
   const router = useRouter();
   const { colors } = useTheme();
 
-  const affiliations = useLiveExchangeStore(useShallow((s) => s.getActiveAffiliations(DEMO_REPORTER.id)));
+  const affiliations = useLiveExchangeStore(useShallow((s) => s.getActiveAffiliations(reporter.id)));
   const startLiveEvent = useLiveExchangeStore((s) => s.startLiveEvent);
   const aiServiceEnabled = useLiveExchangeStore((s) => s.aiServiceEnabled);
   const requestAction = useContributorVerificationStore((s) => s.requestAction);
+
+  const stateCode = 'TS';
+  const PRE_POLL_WINDOWS: PrePollSilenceWindow[] = []; // Populated from election schedule in production
+  const silenceActive = isPrePollSilenceActive(PRE_POLL_WINDOWS, stateCode);
+  const activeSilenceWindow = getActivePrePollSilence(PRE_POLL_WINDOWS);
 
   // Three orthogonal choices
   const [affiliationId, setAffiliationId] = useState<string | null>(null); // null = Independent
@@ -84,7 +101,7 @@ export default function GoLiveScreen() {
   const [captureError, setCaptureError] = useState<string | null>(null);
 
   const selectedAffiliation = affiliations.find((a) => a.id === affiliationId);
-  const tier = DEMO_REPORTER.tier;
+  const tier = reporter.tier;
 
   // Capture GPS (optional — flow continues with a default if unavailable).
   useEffect(() => {
@@ -162,8 +179,8 @@ export default function GoLiveScreen() {
     if (!gate.allowed) return; // KYC sheet auto-shown by the store.
 
     const event = startLiveEvent({
-      reporterId: DEMO_REPORTER.id,
-      reporterName: selectedAffiliation ? DEMO_REPORTER.name : DEMO_REPORTER.name,
+      reporterId: reporter.id,
+      reporterName: reporter.name,
       accreditationTier: selectedAffiliation ? 'organization' : tier,
       visibilityMode: visibility,
       alertDepartments: alertDepts,
@@ -203,11 +220,25 @@ export default function GoLiveScreen() {
         <Pressable onPress={() => router.back()} hitSlop={10}>
           <Ionicons name="close" size={26} color="#FFFFFF" />
         </Pressable>
-        <Text style={styles.title}>Go Live</Text>
+        <Text style={styles.title}>{t('lmx.goLiveScreen.title')}</Text>
         <View style={{ width: 26 }} />
       </View>
 
       <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingBottom: 140 }}>
+        {silenceActive && activeSilenceWindow && (
+          <View style={[styles.silenceBanner, { backgroundColor: '#FEF2F2' }]}>
+            <Ionicons name="alert-circle" size={20} color="#EF4444" />
+            <View style={{ flex: 1 }}>
+              <Text style={[styles.silenceTitle, { color: '#DC2626' }]}>{t('lmx.goLiveScreen.prePollSilence')}</Text>
+              <Text style={[styles.silenceDesc, { color: '#991B1B' }]}>
+                {t('lmx.goLiveScreen.prePollSilenceDesc', {
+                  startTime: new Date(activeSilenceWindow.silenceStartsAt).toLocaleString(),
+                  endTime: new Date(activeSilenceWindow.silenceEndsAt).toLocaleString(),
+                })}
+              </Text>
+            </View>
+          </View>
+        )}
         {/* GPS status */}
         <View style={styles.gpsBar}>
           <Ionicons
@@ -217,16 +248,16 @@ export default function GoLiveScreen() {
           />
           <Text style={styles.gpsText}>
             {gpsStatus === 'detecting'
-              ? 'Detecting location…'
+              ? t('lmx.goLiveScreen.detectingLocation')
               : gpsStatus === 'ready'
-                ? `Location locked (${gps?.lat.toFixed(3)}, ${gps?.lng.toFixed(3)})`
-                : 'Using approximate location (permission denied)'}
+                ? t('lmx.goLiveScreen.locationLocked', { district: gps?.lat.toFixed(3), state: gps?.lng.toFixed(3) })
+                : t('lmx.goLiveScreen.approxLocation')}
           </Text>
         </View>
 
         {/* Camera capture */}
         <Section
-          title="Camera"
+          title={t('lmx.goLiveScreen.camera')}
           hint="Record a clip, or go live directly: on a native build the feed publishes to the media plane over WebRTC-WHIP."
         >
           {capturedUri ? (
@@ -239,7 +270,7 @@ export default function GoLiveScreen() {
                 </Text>
               </View>
               <Pressable onPress={captureClip} hitSlop={8}>
-                <Text style={styles.recapture}>Re-record</Text>
+                <Text style={styles.recapture}>{t('lmx.goLiveScreen.reRecord')}</Text>
               </Pressable>
             </View>
           ) : (
@@ -250,7 +281,7 @@ export default function GoLiveScreen() {
             >
               <Ionicons name="videocam" size={18} color="#FFFFFF" />
               <Text style={styles.captureBtnText}>
-                {capturing ? 'Opening camera…' : 'Record a clip'}
+                {capturing ? 'Opening camera…' : t('lmx.goLiveScreen.recordClip')}
               </Text>
             </Pressable>
           )}
@@ -263,12 +294,12 @@ export default function GoLiveScreen() {
         </Section>
 
         {/* 1. Broadcasting as */}
-        <Section title="Broadcasting as" hint="Choose an affiliation or stream independently.">
+        <Section title={t('lmx.goLiveScreen.broadcastingAs')} hint="Choose an affiliation or stream independently.">
           <OptionRow
             active={affiliationId === null}
             icon="person"
             color="#6B7280"
-            label="Independent"
+            label={t('lmx.goLiveScreen.independent')}
             sub="No branding — neutral Kshetra watermark"
             onPress={() => setAffiliationId(null)}
           />
@@ -286,7 +317,7 @@ export default function GoLiveScreen() {
         </Section>
 
         {/* 2. Visibility */}
-        <Section title="Visibility" hint="Who else can see this stream. Independent of department alerts.">
+        <Section title={t('lmx.goLiveScreen.visibility')} hint="Who else can see this stream. Independent of department alerts.">
           {(Object.keys(VISIBILITY_CONFIG) as VisibilityMode[]).map((v) => {
             const cfg = VISIBILITY_CONFIG[v];
             const disabled = v === 'exclusive_partner' && !hasExclusiveOption;
@@ -297,8 +328,8 @@ export default function GoLiveScreen() {
                 disabled={disabled}
                 icon={cfg.icon}
                 color={cfg.color}
-                label={cfg.label + (disabled ? ' (needs exclusive contract)' : '')}
-                sub={cfg.description}
+                label={t(cfg.labelKey) + (disabled ? ' (needs exclusive contract)' : '')}
+                sub={t(cfg.descriptionKey)}
                 onPress={() => !disabled && setVisibility(v)}
               />
             );
@@ -307,7 +338,7 @@ export default function GoLiveScreen() {
 
         {/* 3. Alert to (departments) */}
         <Section
-          title="Alert a government department"
+          title={t('lmx.goLiveScreen.alertDepartment')}
           hint="Optional. Reporter-initiated only — a deliberate choice, never automatic."
         >
           <View style={styles.deptGrid}>
@@ -321,7 +352,7 @@ export default function GoLiveScreen() {
                   style={[styles.deptChip, active && { backgroundColor: cfg.color + '22', borderColor: cfg.color }]}
                 >
                   <Ionicons name={cfg.icon as any} size={16} color={active ? cfg.color : '#9CA3AF'} />
-                  <Text style={[styles.deptChipText, active && { color: cfg.color }]}>{cfg.label}</Text>
+                  <Text style={[styles.deptChipText, active && { color: cfg.color }]}>{t(cfg.labelKey)}</Text>
                 </Pressable>
               );
             })}
@@ -338,7 +369,7 @@ export default function GoLiveScreen() {
         </Section>
 
         {/* Category + tags */}
-        <Section title="Category">
+        <Section title={t('lmx.goLiveScreen.category')}>
           <View style={styles.catGrid}>
             {CATEGORIES.map((c) => {
               const cfg = ISSUE_CATEGORY_CONFIG[c];
@@ -350,7 +381,7 @@ export default function GoLiveScreen() {
                   style={[styles.catChip, active && { backgroundColor: cfg.color + '22', borderColor: cfg.color }]}
                 >
                   <Ionicons name={cfg.icon as any} size={14} color={active ? cfg.color : '#9CA3AF'} />
-                  <Text style={[styles.catChipText, active && { color: cfg.color }]}>{cfg.label}</Text>
+                  <Text style={[styles.catChipText, active && { color: cfg.color }]}>{t(cfg.labelKey)}</Text>
                 </Pressable>
               );
             })}
@@ -368,9 +399,7 @@ export default function GoLiveScreen() {
         <View style={styles.bufferPreview}>
           <Ionicons name="shield-half" size={15} color="#8B5CF6" />
           <Text style={styles.bufferText}>
-            Moderation buffer: ~{bufferSeconds}s before public/broadcast fan-out
-            {alertDepts.length > 0 ? ' (shorter for department alerts)' : ''}.
-            {!aiServiceEnabled && ' AI screening is off — human moderation applies.'}
+            {t('lmx.goLiveScreen.moderationBuffer', { seconds: bufferSeconds })}
           </Text>
         </View>
       </ScrollView>
@@ -378,13 +407,13 @@ export default function GoLiveScreen() {
       {/* Go Live button */}
       <View style={[styles.footer, { paddingBottom: insets.bottom + 12 }]}>
         <Pressable
-          style={[styles.goBtn, !canGoLive && styles.goBtnDisabled]}
-          disabled={!canGoLive}
+          style={[styles.goBtn, (!canGoLive || silenceActive) && styles.goBtnDisabled]}
+          disabled={!canGoLive || silenceActive}
           onPress={handleGoLive}
         >
           <Ionicons name="radio" size={20} color="#FFFFFF" />
           <Text style={styles.goBtnText}>
-            {canGoLive ? 'Start Broadcasting' : 'Locating…'}
+            {canGoLive ? t('lmx.goLiveScreen.startBroadcasting') : t('lmx.goLiveScreen.locating')}
           </Text>
         </Pressable>
         <Text style={styles.footerHint}>
@@ -535,4 +564,7 @@ const styles = StyleSheet.create({
   goBtnDisabled: { opacity: 0.5 },
   goBtnText: { color: '#FFFFFF', fontSize: 16, fontWeight: '800' },
   footerHint: { fontSize: 11, textAlign: 'center', marginTop: 8, fontWeight: '600' },
+  silenceBanner: { flexDirection: 'row', alignItems: 'flex-start', gap: 10, padding: 14, borderRadius: 12, marginBottom: 16 },
+  silenceTitle: { fontSize: 14, fontWeight: '800' },
+  silenceDesc: { fontSize: 12, marginTop: 2 },
 });

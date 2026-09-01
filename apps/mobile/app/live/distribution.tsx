@@ -13,6 +13,7 @@ import { useRouter } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useShallow } from 'zustand/react/shallow';
 import { useLiveExchangeStore } from '../../stores/liveExchange';
+import { useTranslation } from 'react-i18next';
 import { useTheme } from '../../lib/theme';
 
 /**
@@ -27,6 +28,7 @@ export default function DistributionScreen() {
   const insets = useSafeAreaInsets();
   const router = useRouter();
   const { colors } = useTheme();
+  const { t } = useTranslation();
 
   const events = useLiveExchangeStore(useShallow((s) => s.getLiveTabFeed()));
   const addDistribution = useLiveExchangeStore((s) => s.addDistribution);
@@ -79,7 +81,7 @@ export default function DistributionScreen() {
         <Pressable onPress={() => router.back()} hitSlop={10}>
           <Ionicons name="chevron-back" size={26} color={colors.primary} />
         </Pressable>
-        <Text style={styles.title}>Distribution</Text>
+        <Text style={styles.title}>{t('lmx.distribution.title')}</Text>
         <View style={{ width: 26 }} />
       </View>
 
@@ -100,11 +102,11 @@ export default function DistributionScreen() {
         </ScrollView>
 
         {/* 1. YouTube / RTMP relay */}
-        <Card icon="logo-youtube" color="#EF4444" title="YouTube / Digital Relay"
-          hint="Paste your platform's RTMP stream key. We push the branded, moderated feed straight to it — no client software.">
+        <Card icon="logo-youtube" color="#EF4444" title={t('lmx.distribution.youtubeRelay')}
+          hint={t('lmx.distribution.youtubeRelayDesc')}>
           <TextInput
             style={styles.input}
-            placeholder="Stream key (from your Go Live screen)"
+            placeholder={t('lmx.distribution.streamKey')}
             placeholderTextColor="#4B5563"
             value={relayKey}
             onChangeText={(t) => { setRelayKey(t); setRelaySaved(false); }}
@@ -112,37 +114,37 @@ export default function DistributionScreen() {
           />
           <Pressable style={[styles.btn, relaySaved && styles.btnDone]} onPress={saveRelay}>
             <Ionicons name={relaySaved ? 'checkmark' : 'add-circle'} size={16} color="#FFFFFF" />
-            <Text style={styles.btnText}>{relaySaved ? 'Relay added' : 'Add relay output'}</Text>
+            <Text style={styles.btnText}>{relaySaved ? t('lmx.distribution.relayAdded') : t('lmx.distribution.addRelay')}</Text>
           </Pressable>
         </Card>
 
         {/* 2. Embeddable player */}
-        <Card icon="code-slash" color="#14B8A6" title="Embeddable Player"
-          hint="Copy-paste into any website. Points at the HLS/WebRTC feed — no relay, no key.">
+        <Card icon="code-slash" color="#14B8A6" title={t('lmx.distribution.embeddablePlayer')}
+          hint={t('lmx.distribution.embeddablePlayerDesc')}>
           <View style={styles.codeBox}>
             <Text style={styles.code}>{embedSnippet}</Text>
           </View>
           <Pressable style={styles.copyBtn} onPress={() => copy(embedSnippet)}>
             <Ionicons name="copy" size={15} color="#14B8A6" />
-            <Text style={styles.copyText}>Copy snippet</Text>
+            <Text style={styles.copyText}>{t('lmx.distribution.copySnippet')}</Text>
           </Pressable>
         </Card>
 
         {/* 3. SRT endpoint */}
-        <Card icon="git-network" color="#4F8EF7" title="SRT Endpoint (broadcasters)"
-          hint="Enter into your playout/receive device. Encrypted, packet-loss resilient — most TV stations ingest this.">
+        <Card icon="git-network" color="#4F8EF7" title={t('lmx.distribution.srtEndpoint')}
+          hint={t('lmx.distribution.srtEndpointDesc')}>
           <View style={styles.codeBox}>
             <Text style={styles.code}>{srtEndpoint}</Text>
           </View>
           <Pressable style={styles.copyBtn} onPress={() => copy(srtEndpoint)}>
             <Ionicons name="copy" size={15} color="#4F8EF7" />
-            <Text style={[styles.copyText, { color: '#4F8EF7' }]}>Copy endpoint</Text>
+            <Text style={[styles.copyText, { color: '#4F8EF7' }]}>{t('lmx.distribution.copyEndpoint')}</Text>
           </Pressable>
         </Card>
 
         {/* 4. Universal web receiver */}
-        <Card icon="tv" color="#F59E0B" title="Universal Web Receiver"
-          hint="One HTML5 page for Windows kiosks, Android smart TVs, and touchscreens. Log in, pick a feed, present full-screen.">
+        <Card icon="tv" color="#F59E0B" title={t('lmx.distribution.webReceiver')}
+          hint={t('lmx.distribution.webReceiverDesc')}>
           <View style={styles.codeBox}>
             <Text style={styles.code}>https://receiver.kshetra.in</Text>
           </View>

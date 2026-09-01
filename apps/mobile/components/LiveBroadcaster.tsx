@@ -12,6 +12,7 @@ import { useEffect, useRef, useState } from 'react';
 import { View, Text, StyleSheet, Pressable, ActivityIndicator } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { negotiateWhip, stopWhip, type MinimalPeer } from '../lib/whipClient';
+import { useTranslation } from 'react-i18next';
 
 // ── Guarded native import ────────────────────────────────────────────────────
 let RNWebRTC: any = null;
@@ -40,6 +41,7 @@ interface Props {
 }
 
 export default function LiveBroadcaster({ whipUrl, token, onStop, streamLabel }: Props) {
+  const { t } = useTranslation();
   const [status, setStatus] = useState<Status>('starting');
   const [error, setError] = useState<string | null>(null);
   const [streamUrl, setStreamUrl] = useState<string | null>(null);
@@ -53,7 +55,7 @@ export default function LiveBroadcaster({ whipUrl, token, onStop, streamLabel }:
     mounted.current = true;
     if (!isBroadcastSupported()) {
       setStatus('error');
-      setError('Live camera publishing needs the native build (react-native-webrtc).');
+      setError(t('lmx.broadcaster.notSupported'));
       return;
     }
 
@@ -113,17 +115,17 @@ export default function LiveBroadcaster({ whipUrl, token, onStop, streamLabel }:
         {status === 'live' ? (
           <View style={styles.liveBadge}>
             <View style={styles.liveDot} />
-            <Text style={styles.liveText}>LIVE</Text>
+            <Text style={styles.liveText}>{t('lmx.broadcaster.live')}</Text>
           </View>
         ) : status === 'starting' ? (
           <View style={styles.liveBadge}>
             <ActivityIndicator size="small" color="#FFFFFF" />
-            <Text style={styles.liveText}>CONNECTING…</Text>
+            <Text style={styles.liveText}>{t('lmx.broadcaster.connecting')}</Text>
           </View>
         ) : (
           <View style={[styles.liveBadge, { backgroundColor: '#7F1D1D' }]}>
             <Ionicons name="warning" size={13} color="#FCA5A5" />
-            <Text style={styles.liveText}>NOT PUBLISHING</Text>
+            <Text style={styles.liveText}>{t('lmx.broadcaster.notSupported')}</Text>
           </View>
         )}
         {!!streamLabel && <Text style={styles.streamLabel}>{streamLabel}</Text>}
@@ -141,7 +143,7 @@ export default function LiveBroadcaster({ whipUrl, token, onStop, streamLabel }:
 
       <Pressable style={styles.stopBtn} onPress={onStop}>
         <Ionicons name="stop-circle" size={22} color="#FFFFFF" />
-        <Text style={styles.stopText}>{status === 'live' ? 'End broadcast' : 'Close'}</Text>
+        <Text style={styles.stopText}>{status === 'live' ? t('lmx.broadcaster.endBroadcast') : 'Close'}</Text>
       </Pressable>
     </View>
   );

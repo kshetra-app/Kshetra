@@ -26,12 +26,18 @@ export function HlsPlayer({
   autoPlay = true,
   muted = true,
   poster,
+  errorText,
+  offlineText,
 }: {
   src: string;
   style?: StyleProp<ViewStyle>;
   autoPlay?: boolean;
   muted?: boolean;
   poster?: string | null;
+  /** i18n-translated error message shown when stream fails */
+  errorText?: string;
+  /** i18n-translated offline message shown when stream is unavailable */
+  offlineText?: string;
 }) {
   const [loading, setLoading] = useState(true);
 
@@ -54,7 +60,7 @@ export function HlsPlayer({
 <body>
   <video id="v" ${poster ? `poster="${poster}"` : ''} playsinline webkit-playsinline
     ${muted ? 'muted' : ''} ${autoPlay ? 'autoplay' : ''} controls></video>
-  <div id="err">Stream unavailable right now.<br/>It may be offline or still starting.</div>
+  <div id="err">${errorText || 'Stream unavailable right now.'}<br/>${offlineText || 'It may be offline or still starting.'}</div>
   <script src="https://cdn.jsdelivr.net/npm/hls.js@1.5.13/dist/hls.min.js"></script>
   <script>
     (function () {
@@ -98,7 +104,7 @@ export function HlsPlayer({
   </script>
 </body>
 </html>`,
-    [src, autoPlay, muted, poster],
+    [src, autoPlay, muted, poster, errorText, offlineText],
   );
 
   return (
