@@ -309,7 +309,7 @@ export default function GoLiveScreen() {
             icon="person"
             color="#6B7280"
             label={t('lmx.goLiveScreen.independent')}
-            sub="No branding — neutral Kshetra watermark"
+            sub={t('lmx.goLiveScreen.neutralWatermark')}
             onPress={() => setAffiliationId(null)}
           />
           {affiliations.map((a) => (
@@ -426,9 +426,9 @@ export default function GoLiveScreen() {
           </Text>
         </Pressable>
         <Text style={styles.footerHint}>
-          {VISIBILITY_CONFIG[visibility].shortLabel}
-          {selectedAffiliation ? ` · as ${selectedAffiliation.organizationName}` : ' · Independent'}
-          {alertDepts.length > 0 ? ` · ${alertDepts.length} dept alert(s)` : ''}
+          {t(VISIBILITY_CONFIG[visibility].labelKey)}
+          {selectedAffiliation ? ` · ${selectedAffiliation.organizationName}` : ` · ${t('lmx.goLiveScreen.independent')}`}
+          {alertDepts.length > 0 ? ` · ${alertDepts.length} ${t('lmx.goLiveScreen.alertDepartment')}` : ''}
         </Text>
       </View>
     </View>

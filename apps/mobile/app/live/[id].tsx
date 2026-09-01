@@ -22,13 +22,23 @@ import {
   hasAI,
 } from '../../lib/lmxTypes';
 import { useTheme } from '../../lib/theme';
+import {
+  localizeLocality,
+  localizeDistrict,
+  localizeState,
+  localizeReporterName,
+  localizeOrgName,
+  formatLiveHeadline,
+  formatLocationText,
+} from '../../lib/lmxLocalizer';
 
 export default function LivePlayerScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const insets = useSafeAreaInsets();
   const router = useRouter();
   const { colors } = useTheme();
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
+  const lang = i18n.language || 'en';
 
   const allEvents = useLiveExchangeStore((s) => s.events);
   const event = useMemo(() => allEvents.find((e) => e.id === id), [allEvents, id]);
@@ -63,6 +73,19 @@ export default function LivePlayerScreen() {
   const isLive = event.status === 'live';
   const isOwner = currentUserId === event.reporterId;
   const aiOn = hasAI(event);
+
+  const localizedLocality = localizeLocality(event.locality, lang);
+  const localizedDistrict = localizeDistrict(event.districtName, lang);
+  const localizedState = localizeState(event.stateCode, lang);
+  const locationLabel = localizedLocality || localizedDistrict || localizedState;
+
+  const headline =
+    event.ai?.autoHeadline?.trim() ||
+    formatLiveHeadline(t(cat.labelKey), locationLabel, lang);
+
+  const orgName = event.organizationName ? localizeOrgName(event.organizationName, lang) : null;
+  const reporterName = localizeReporterName(event.reporterName, lang);
+  const locationText = formatLocationText(event.districtName, event.stateCode, lang, t('lmx.card.noLocation'));
 
   // Only attempt real playback for actual stream URLs. Go-live events get a
   // placeholder kshetra.in URL (no media plane provisioned yet), so we show a
@@ -108,9 +131,9 @@ export default function LivePlayerScreen() {
           </View>
         </View>
 
-        {!!event.organizationName && (
+        {!!orgName && (
           <View style={styles.brandOverlay}>
-            <Text style={styles.brandText}>{event.organizationName}</Text>
+            <Text style={styles.brandText}>{orgName}</Text>
           </View>
         )}
       </View>
@@ -119,15 +142,14 @@ export default function LivePlayerScreen() {
         {/* Title block */}
         <View style={styles.block}>
           <Text style={styles.headline}>
-            {event.ai?.autoHeadline?.trim() ||
-              `${t(cat.labelKey)} — ${event.locality || event.districtName || event.stateCode}`}
+            {headline}
           </Text>
           <View style={styles.metaRow}>
             <View style={[styles.tierBadge, { borderColor: tier.color }]}>
               <Ionicons name={tier.badgeIcon as any} size={11} color={tier.color} />
               <Text style={[styles.tierText, { color: tier.color }]}>{t(tier.labelKey)}</Text>
             </View>
-            <Text style={styles.reporter}>{event.reporterName}</Text>
+            <Text style={styles.reporter}>{reporterName}</Text>
             <View style={styles.credPill}>
               <Ionicons name="pulse" size={11} color="#10B981" />
               <Text style={styles.credText}>{Math.round(event.credibilityScore)}</Text>
@@ -145,7 +167,7 @@ export default function LivePlayerScreen() {
             </View>
             <View style={styles.pill}>
               <Ionicons name="location" size={11} color="#9CA3AF" />
-              <Text style={styles.pillText}>{event.districtName || event.stateCode}</Text>
+              <Text style={styles.pillText}>{locationText}</Text>
             </View>
           </View>
         </View>

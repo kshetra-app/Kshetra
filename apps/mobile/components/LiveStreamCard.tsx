@@ -9,20 +9,16 @@ import {
 } from '../lib/lmxTypes';
 import { useTheme } from '../lib/theme';
 import { useTranslation } from 'react-i18next';
-
-function timeAgo(iso: string): string {
-  const s = Math.floor((Date.now() - new Date(iso).getTime()) / 1000);
-  if (s < 60) return `${s}s`;
-  const m = Math.floor(s / 60);
-  if (m < 60) return `${m}m`;
-  const h = Math.floor(m / 60);
-  return `${h}h`;
-}
-
-function formatCount(n: number): string {
-  if (n >= 1000) return `${(n / 1000).toFixed(1)}k`;
-  return String(n);
-}
+import { useTimeAgo } from '../lib/useTimeAgo';
+import {
+  localizeLocality,
+  localizeDistrict,
+  localizeState,
+  localizeReporterName,
+  localizeOrgName,
+  formatLiveHeadline,
+  formatLocationText,
+} from '../lib/lmxLocalizer';
 
 export function LiveStreamCard({
   event,
@@ -32,11 +28,27 @@ export function LiveStreamCard({
   onPress: (e: LiveEvent) => void;
 }) {
   const { colors } = useTheme();
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
+  const { timeAgo } = useTimeAgo();
+  const lang = i18n.language || 'en';
+
   const cat = ISSUE_CATEGORY_CONFIG[event.issueCategory];
   const tier = TIER_CONFIG[event.accreditationTier];
   const isLive = event.status === 'live';
   const aiOn = hasAI(event);
+
+  const localizedLocality = localizeLocality(event.locality, lang);
+  const localizedDistrict = localizeDistrict(event.districtName, lang);
+  const localizedState = localizeState(event.stateCode, lang);
+  const locationLabel = localizedLocality || localizedDistrict || localizedState;
+
+  const headline =
+    event.ai?.autoHeadline?.trim() ||
+    formatLiveHeadline(t(cat.labelKey), locationLabel, lang);
+
+  const orgName = event.organizationName ? localizeOrgName(event.organizationName, lang) : null;
+  const reporterName = localizeReporterName(event.reporterName, lang);
+  const locationText = formatLocationText(event.districtName, event.stateCode, lang, t('lmx.card.noLocation'));
 
   return (
     <Pressable
@@ -66,9 +78,9 @@ export function LiveStreamCard({
         </View>
 
         {/* Brand overlay (if streaming "as" an org) */}
-        {!!event.organizationName && (
+        {!!orgName && (
           <View style={styles.brand}>
-            <Text style={styles.brandText} numberOfLines={1}>{event.organizationName}</Text>
+            <Text style={styles.brandText} numberOfLines={1}>{orgName}</Text>
           </View>
         )}
 
@@ -85,12 +97,11 @@ export function LiveStreamCard({
           <View style={[styles.catTag, { backgroundColor: cat.color + '22' }]}>
             <Text style={[styles.catTagText, { color: cat.color }]}>{t(cat.labelKey)}</Text>
           </View>
-          <Text style={styles.time}>{timeAgo(event.startedAt)} ago</Text>
+          <Text style={styles.time}>{timeAgo(event.startedAt)}</Text>
         </View>
 
         <Text style={[styles.headline, { color: colors.text }]} numberOfLines={2}>
-          {event.ai?.autoHeadline?.trim() ||
-            `${t(cat.labelKey)} in ${event.locality || event.districtName || event.stateCode || t('lmx.card.live')}`}
+          {headline}
         </Text>
 
         <View style={styles.metaRow}>
@@ -98,14 +109,14 @@ export function LiveStreamCard({
             <Ionicons name={tier.badgeIcon as any} size={10} color={tier.color} />
             <Text style={[styles.tierText, { color: tier.color }]}>{t(tier.labelKey)}</Text>
           </View>
-          <Text style={[styles.reporter, { color: colors.textSecondary }]} numberOfLines={1}>{event.reporterName}</Text>
+          <Text style={[styles.reporter, { color: colors.textSecondary }]} numberOfLines={1}>{reporterName}</Text>
         </View>
 
         <View style={styles.footRow}>
           <View style={styles.locRow}>
             <Ionicons name="location" size={11} color={colors.textMuted} />
             <Text style={[styles.loc, { color: colors.textMuted }]} numberOfLines={1}>
-              {[event.districtName, event.stateCode].filter(Boolean).join(', ') || 'Unknown'}
+              {locationText}
             </Text>
           </View>
 
