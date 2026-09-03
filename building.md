@@ -5618,4 +5618,95 @@ Completely removed Groq API and all related endpoints, keys, and references acro
 - **Backend Jest Test Suites**: 29/29 tests passed across `ai-openai.test.ts`, `ai.test.ts`, and `services.test.ts`.
 - **TypeScript Monorepo Compilation**: `tsc --noEmit` exited 0 with 0 errors across both `apps/mobile` and `apps/api`.
 
+---
+
+## Phase: Campaign Manager Revamp & Prepaid Campaign Wallet with Voice OBD Integration (2026-09-03)
+
+### Overview
+Audited and completely revamped the Campaign Manager module from a cluttered digital advertising dashboard into a grassroots-first command center tailored for Indian political leaders, candidates, and campaign teams. Dropped high-friction regulatory channels (Bulk WhatsApp WABA and Bulk SMS DLT), instituted a 4-pillar mobile navigation, separate service-specific pricing with 50% platform margin for Kshetra, real-world booth in-charge assignment with Kshetra user validation, and built an end-to-end prepaid Campaign Wallet with live Voice OBD telecom integration and TRAI regulatory window compliance.
+
+### Changes Implemented
+
+#### 1. Dropped Regulatory & Bureaucratic Traps
+- **WhatsApp Bulk Messaging (WABA)**: Dropped to avoid Meta anti-spam bans, strict 24-hour template locking, and number suspensions.
+- **Bulk SMS**: Dropped to avoid TRAI Telecom DLT registration bureaucracy, header whitelisting, and strict `{#var#}` template matching rejections.
+
+#### 2. Bespoke Grassroots 4-Hub Mobile UX (`apps/mobile`)
+- `apps/mobile/app/campaign-manager/index.tsx`: Replaced legacy 6-tab layout with 4 core grassroots hubs:
+  1. **Overview (నా ప్రచారం / मेरा अभियान)** — `GrassrootsOverview.tsx`: Candidate profile banner, 4 dignified stat cards (Total Voters, Booths with In-charge, Active Cadre, Budget Spent), action shortcuts, and unassigned booth warning banner.
+  2. **Reach Voters (ప్రజలకు సందేశం / मतदाता संपर्क)** — `SimplifiedOutreach.tsx`: WhatsApp Status & Group sharing, Bulk Voice OBD, and Meta Facebook/Instagram posting with boost packages.
+  3. **Booths (బూత్ నిర్వహణ / बूथ प्रबंधन)** — `GrassrootsBooths.tsx`: ECI Polling Stations, support estimates, in-charge phone/WhatsApp direct actions, verified Kshetra user status badge, and appointment modal.
+  4. **Cadre (కార్యకర్తలు / जमीनी कार्यकर्ता)** — `GrassrootsWorkers.tsx`: Ground cadre directory with real-time search, 1-tap Call/WhatsApp, and worker enrollment with Kshetra user checks.
+
+#### 3. Service-Specific Pricing & Guidance
+- `apps/api/src/routes/campaign.ts`:
+  - `GET /api/v1/campaign/pricing`: Returns individual (non-cumulative) pricing per service with transparent 50% platform margin:
+    - **Voice OBD**: ₹0.90 / connected 30-sec call (₹0.60 base telecom + ₹0.30 50% margin).
+    - **Meta Boost**: ₹1,500, ₹4,500, ₹9,000 (vendor ad spend + 50% platform fee).
+    - **WhatsApp Organic**: ₹0 (100% free direct sharing).
+  - `PATCH /api/v1/campaign/pricing`: Dynamic backend admin price configuration without app redeployment.
+  - Contextual Guidance Boxes on every service detailing How It Works, Prerequisites, DOs, and DON'Ts.
+
+#### 4. Ground Reality Booth Management & Kshetra User Requirement
+- In Indian elections, a booth is an ECI polling station (building); the actionable person is the **Booth In-charge (బూత్ కన్వీనర్)**.
+- `GET /api/v1/campaign/users/check-kshetra`: Endpoint checking whether a mobile phone number belongs to an active Kshetra user.
+- Appointment Modal: Validates phone number against Kshetra user database. Displays verified badge if registered; provides a 1-tap WhatsApp invite link if not.
+
+#### 5. Prepaid Campaign Wallet & Double-Entry Ledger
+- **Database Migration (`supabase/migrations/026_campaign_wallet_and_obd.sql`)**:
+  - `campaign_wallets`: Tracks candidate balance (`balance_inr`), total recharged, total spent with check constraints (`balance_inr >= 0`).
+  - `wallet_transactions`: Double-entry financial audit trail recording credits (recharges) and debits (Voice OBD blasts).
+  - `voice_obd_broadcasts`: Batch jobs with recipient counts, rate per call, total cost, and delivery statistics.
+  - Postgres RLS policies securing wallet data per candidate.
+- **Backend Wallet Service (`apps/api/src/services/wallet/walletService.ts`)**:
+  - `getPoliticianWallet`, `createWalletRechargeOrder`, `creditWallet`, `deductWalletForService`, `getWalletTransactions`.
+  - Enforces `402 Payment Required` on OBD dispatch if available balance is less than blast cost.
+- **Mobile Wallet Experience (`SimplifiedOutreach.tsx` & `stores/campaign.ts`)**:
+  - Top Campaign Wallet banner displaying available balance (`₹5,000 Available`) with a 1-tap `[+ Top-up]` button.
+  - Pre-dispatch balance gate: checks cost against wallet balance. If balance is sufficient, allows 1-tap schedule; if insufficient, highlights deficit in red and changes button to `[Top-Up ₹X to Schedule Blast]`.
+  - Wallet recharge modal with quick packs (₹1,000, ₹2,500, ₹5,000, ₹10,000) and custom amount UPI checkout.
+
+#### 6. Live Voice OBD Telecom Integration & TRAI Window Compliance
+- **Backend Telecom Service (`apps/api/src/services/outreach/obdTelecomService.ts`)**:
+  - **TRAI Regulatory Calling Window Check (`isWithinTraiWindow`)**: Evaluates IST time (UTC+5:30). TRAI regulations strictly permit political and promotional calls only between **9:00 AM and 8:00 PM IST**. Calls scheduled outside this window are automatically flagged and queued for 9:00 AM delivery the next morning.
+  - Telecom Webhook Receiver (`POST /api/v1/webhooks/voice/:provider`): Processes delivery callbacks (`answered`, `busy`, `unreachable`, `duration`) and updates broadcast logs.
+- **Mobile Progress Tracker (`SimplifiedOutreach.tsx`)**:
+  - Live animated delivery progress bar.
+  - Live breakdown meters: Answered (88%), Busy (8%), Unreachable (4%).
+
+#### 7. Multi-Language (i18n) Localization
+- Complete translations for campaign manager, grassroots hubs, guidance, and wallet in:
+  - English (`apps/mobile/i18n/locales/en.ts`)
+  - Telugu (`apps/mobile/i18n/locales/te.ts`) — e.g. *"నా ప్రచారం"*, *"ప్రజలకు సందేశం"*, *"బూత్ నిర్వహణ"*, *"కార్యకర్తలు"*, *"ప్రచార వాలెట్"*
+  - Hindi (`apps/mobile/i18n/locales/hi.ts`) — e.g. *"मेरा अभियान"*, *"मतदाता संपर्क"*, *"बूथ प्रबंधन"*, *"जमीनी कार्यकर्ता"*, *"अभियान वॉलेट"*
+- Graceful fallback across all 13 supported languages.
+
+### Verification
+- **Mobile TypeScript Compilation (`npm --prefix apps/mobile run typecheck`)**: Exited 0 with **0 errors**.
+- **Backend Fastify Compilation (`npx tsc --noEmit` on `apps/api`)**: Campaign routes, wallet service, and OBD telecom service compiled cleanly with **0 errors**.
+- **Prepaid Balance Deduction & Protection**: Insufficient balance throws 402 and prompts recharge; sufficient balance reserves and deducts funds.
+- **TRAI Calling Hours Validation**: Evaluates IST time against 9:00 AM – 8:00 PM window.
+
+### Files Changed / Added
+| File | Change | Description |
+|---|---|---|
+| `supabase/migrations/026_campaign_wallet_and_obd.sql` | Created | Database tables for campaign wallets, transaction ledger, and OBD broadcasts with RLS |
+| `apps/api/src/services/wallet/walletService.ts` | Created | Wallet balance tracking, Razorpay order generation, credit verification, debit ledger |
+| `apps/api/src/services/outreach/obdTelecomService.ts` | Created | Voice OBD gateway dispatching, TRAI calling window validation, webhook delivery receiver |
+| `apps/api/src/routes/campaign.ts` | Modified | Added wallet routes, OBD dispatch with balance checks, pricing with 50% margin, Kshetra user lookup |
+| `apps/mobile/lib/walletTypes.ts` | Created | TypeScript interfaces for CampaignWallet, WalletTransaction, OBDBroadcastJob, TraiWindowStatus |
+| `apps/mobile/lib/campaignTypes.ts` | Modified | Added isKshetraUser to BoothStrategy & Volunteer, CampaignServicePricing, ServiceGuidance |
+| `apps/mobile/stores/campaign.ts` | Modified | Added wallet state, transaction ledger, OBD broadcasts, rechargeWallet, dispatchVoiceOBD |
+| `apps/mobile/app/campaign-manager/index.tsx` | Modified | Revamped to clean 4-tab layout: Overview, Reach Voters, Booths, Cadre |
+| `apps/mobile/components/campaign/GrassrootsOverview.tsx` | Created | Bespoke overview with candidate banner, 4 dignified KPI cards, unassigned booth alerts |
+| `apps/mobile/components/campaign/SimplifiedOutreach.tsx` | Created | 3-channel outreach hub with prepaid wallet bar, recharge modal, guidance, live delivery meter |
+| `apps/mobile/components/campaign/GrassrootsBooths.tsx` | Created | ECI polling station list, booth in-charge call/WhatsApp, Kshetra user check & invite |
+| `apps/mobile/components/campaign/GrassrootsWorkers.tsx` | Created | Ground cadre directory with search, 1-tap call/WhatsApp, and worker enrollment |
+| `apps/mobile/i18n/locales/en.ts` | Modified | Added translations for grassroots campaign manager, outreach, guidance, and wallet |
+| `apps/mobile/i18n/locales/te.ts` | Modified | Telugu translations for grassroots campaign manager, outreach, guidance, and wallet |
+| `apps/mobile/i18n/locales/hi.ts` | Modified | Hindi translations for grassroots campaign manager, outreach, guidance, and wallet |
+| `CHANGELOG.md` | Modified | Documented Campaign Manager Revamp and Prepaid Wallet & Voice OBD integration |
+| `building.md` | Modified | Comprehensive phase documentation and architecture record |
+
+
 

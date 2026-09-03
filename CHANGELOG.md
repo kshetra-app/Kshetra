@@ -7,6 +7,47 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added — Campaign Manager Revamp: Grassroots Command Center & Simplified Outreach (2026-09-03)
+- **Eliminated Regulatory Friction Channels**:
+  - Dropped bulk WhatsApp (WABA) to prevent Meta anti-spam account blocks and template approval friction.
+  - Dropped bulk SMS to avoid TRAI Telecom DLT registration bureaucracy and `{#var#}` template rejections.
+- **Bespoke 4-Pillar UI / UX Architecture** — `apps/mobile/app/campaign-manager/index.tsx`:
+  - Revamped cluttered 6-tab marketing view into 4 dignified hubs tailored for non-tech-savvy grassroots leaders:
+    1. **Overview (నా ప్రచారం / मेरा अभियान)** — `GrassrootsOverview.tsx`: Candidate profile banner, 4 dignified KPI cards (Total Voters, Booths with In-charge, Active Cadre, Budget Spent), immediate action shortcuts, and unassigned booth warning banner.
+    2. **Reach Voters (ప్రజలకు సందేశం / मतदाता संपर्क)** — `SimplifiedOutreach.tsx`: 3 compliant channels (WhatsApp Status & Groups, Bulk Voice OBD, Meta Facebook Page & Instagram).
+    3. **Booths (బూత్ నిర్వహణ / बूथ प्रबंधन)** — `GrassrootsBooths.tsx`: ECI Polling Stations, support estimates, in-charge phone/WhatsApp direct actions, verified Kshetra user status badge, and appointment modal.
+    4. **Cadre (కార్యకర్తలు / जमीनी कार्यकर्ता)** — `GrassrootsWorkers.tsx`: Ground cadre directory with real-time search, 1-tap Call/WhatsApp, and worker enrollment with Kshetra user checks.
+- **Service-Specific Pricing & Guidance Notes**:
+  - Configured transparent, non-cumulative pricing per channel with a 50% platform margin for Kshetra:
+    - Voice OBD: ₹0.90 per connected call (₹0.60 telecom base + ₹0.30 50% platform margin).
+    - Meta Boost packages: ₹1,500, ₹4,500, ₹9,000 (vendor spend + 50% fee).
+    - WhatsApp Organic: ₹0 (unlimited status & group shares).
+  - Contextual Guidance Boxes on every service explaining how it works, prerequisites, DOs, and DON'Ts.
+- **Voter Segmentation & Targeting Engine**:
+  - Dynamic filtering by Geography (Entire Constituency vs Specific Wards vs Specific Booths) and Cadre/Demographic groups (All Voters, Cadre Only, Women Voters, Youth).
+  - Real-time price recalculation as filters adjust.
+- **Booth In-charge Reality & Kshetra User Requirement**:
+  - Grounded in Indian election mechanics: a polling booth is an ECI building; the actionable contact is the **Booth In-charge (బూత్ కన్వీనర్)**.
+  - Phone check endpoint `GET /api/v1/campaign/users/check-kshetra` validates registered Kshetra status. If not yet registered, provides a 1-tap WhatsApp invite link.
+
+### Added — Campaign Prepaid Wallet & Live Voice OBD Telecom Integration (2026-09-03)
+- **Database Migration** — `supabase/migrations/026_campaign_wallet_and_obd.sql`:
+  - `campaign_wallets`: Prepaid balances, total recharged, total spent with non-negative constraints.
+  - `wallet_transactions`: Double-entry audit ledger for credits (recharges) and debits (Voice OBD blasts).
+  - `voice_obd_broadcasts`: Call batches with recipient counts, rate per call, total cost, and delivery statistics.
+  - Full Postgres RLS policies securing wallet data per candidate.
+- **Backend Wallet & Telecom Services (`apps/api`)**:
+  - `apps/api/src/services/wallet/walletService.ts`: Prepaid balance tracking, Razorpay/UPI recharge order generation, signature credit verification, and service debit deduction with insufficient balance protection (`402 Payment Required`).
+  - `apps/api/src/services/outreach/obdTelecomService.ts`: Voice gateway dispatching with **TRAI Regulatory Calling Window Check** (strictly 9:00 AM – 8:00 PM IST per Indian telecom rules). Calls scheduled outside this window are automatically queued for next morning.
+  - `apps/api/src/routes/campaign.ts`: Added `/api/v1/campaign/wallet`, `/wallet/transactions`, `/wallet/recharge/order`, `/wallet/recharge/verify`, `/obd/dispatch`, `/obd/broadcasts`, `/obd/trai-status`, and telecom delivery webhook handler `/webhooks/voice/:provider`.
+- **Mobile Prepaid Wallet Experience & Live Progress Tracker** — `SimplifiedOutreach.tsx`:
+  - Top Campaign Wallet banner displaying available balance (`₹5,000 Available`) with a 1-tap `[+ Top-up]` button.
+  - Pre-dispatch balance gate: checks cost against wallet balance. If balance is sufficient, allows 1-tap schedule; if insufficient, highlights deficit and changes button to `[Top-Up ₹X to Schedule Blast]`.
+  - Wallet recharge modal with quick packs (₹1,000, ₹2,500, ₹5,000, ₹10,000) and custom amount UPI checkout.
+  - Live OBD call delivery progress tracker with animated progress bar and live breakdown meters: Answered (88%), Busy (8%), Unreachable (4%).
+- **Multi-Language (i18n) Localization**:
+  - Full localization in English (`en.ts`), Telugu (`te.ts`), and Hindi (`hi.ts`), with graceful fallback across all 13 supported languages.
+
 ### Changed — Groq Removed & Replaced with Google Gemini Across System (2026-09-03)
 - **Migrated Mobile AI service to Google Gemini** — `apps/mobile/lib/aiService.ts`:
   - Dropped all Groq endpoints, keys, and model candidates (`openai/gpt-oss-120b`, `llama-3.3-70b-versatile`, etc.).
