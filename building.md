@@ -77,6 +77,7 @@
 | Sprint 54: Local-Body Representatives — TSEC Scraper, Offline Seed & Local Bodies Browser | ✅ Complete | 2026-07-08 | 2026-07-12 |
 | Sprint 55: Kshetra Live Media Exchange (LMX) — Phase 1 Vertical Slice | ✅ Complete | 2026-07-25 | 2026-07-25 |
 | Sprint 65: More Tab & Sub-Pages 100% Localization (All 13 Languages) | ✅ Complete | 2026-09-01 | 2026-09-01 |
+| Sprint 66: 31-State Constituency & Map Data Rectification (100% Official Assembly Strength) | ✅ Complete | 2026-09-03 | 2026-09-03 |
 
 ---
 
@@ -5707,6 +5708,92 @@ Audited and completely revamped the Campaign Manager module from a cluttered dig
 | `apps/mobile/i18n/locales/hi.ts` | Modified | Hindi translations for grassroots campaign manager, outreach, guidance, and wallet |
 | `CHANGELOG.md` | Modified | Documented Campaign Manager Revamp and Prepaid Wallet & Voice OBD integration |
 | `building.md` | Modified | Comprehensive phase documentation and architecture record |
+
+---
+
+## Sprint 66: 31-State Constituency & Map Data Rectification (100% Official Assembly Strength)
+
+**Date**: 2026-09-03  
+**Goal**: Address data audit findings by rebuilding all 9 anomalous/short constituency seeds to 100% official legislative assembly seat strength, eliminating all synthetic/fabricated data, ensuring contiguous `acNo` 1..N order, cleaning corrupted district names, and achieving 100% test coverage across all 31 Indian states and union territories.
+
+### Background & Audit Findings
+An audit of `data/seed/*-constituencies.ts` against official Election Commission of India (ECI) assembly strengths revealed that while code wiring was present for all 31 states:
+1. **Delhi**: Seed had 221 records because 2022 MCD municipal wards were scraped instead of official 70 Assembly Constituencies.
+2. **Haryana**: 80/90 seats (short 10 seats).
+3. **Jharkhand**: 73/81 seats (short 8 seats; alphabetical placeholder numbering).
+4. **Himachal Pradesh**: 70 seats with 8 appended 2024 bye-elections creating duplicate IDs and missing 7 general seats.
+5. **Rajasthan, MP, Chhattisgarh, Odisha, Assam**: Short of official seat counts (RJ 187/200, MP 208/230, CG 81/90, OD 132/147, AS 112/126) with corrupted district names (`'Sc'`, `'St'`).
+
+### What Was Built & Rectified
+
+#### 1. Delhi Assembly Constituencies (221 → 70 Official Seats)
+- Replaced 221 MCD municipal wards with official Assembly Constituencies AC 1–70 using official February 2025 ECI results (`scripts/india-votes-data/results/2025Assembly-DL.json`).
+- Included authentic winning candidate names, parties, votes, margins, runner-up candidates, and Devanagari local script names.
+- Official tally: BJP 48, AAP 22 = 70 seats.
+- Updated `apps/mobile/lib/stateDataAdapter.ts` to map year `2025` for Delhi.
+- Updated `data/seed/__tests__/delhi-constituencies.test.ts` (5/5 tests passing).
+
+#### 2. Haryana Assembly Constituencies (80 → 90 Official Seats)
+- Rebuilt from October 2024 ECI results (`scripts/india-votes-data/results/2024Assembly-HR.json`).
+- Contiguous AC 1–90 with authentic EVM/postal vote totals, runner-ups, and TCPD districts.
+- Official tally: BJP 48, INC 37, IND 3, INLD 2 = 90 seats.
+- Added `data/seed/__tests__/haryana-constituencies.test.ts` (5/5 tests passing).
+
+#### 3. Jharkhand Assembly Constituencies (73 → 81 Official Seats)
+- Rebuilt from November 2024 ECI results (`scripts/india-votes-data/results/2024Assembly-JH.json`).
+- Contiguous AC 1–81 with official seat numbers, authentic votes, margins, and TCPD reservations.
+- Official tally: JMM 34, BJP 21, INC 16, RJD 4, CPIML 2, AJSU 1, LJPRV 1, JLKM 1, JDU 1 = 81 seats.
+- Updated `data/seed/__tests__/jharkhand-constituencies.test.ts` (5/5 tests passing).
+
+#### 4. Himachal Pradesh Assembly Constituencies (70 → 68 Official Seats)
+- Sourced from 2022 ECI results + TCPD delimitation order.
+- Reconciled 8 appended bye-election rows back into primary ACs (1–68), filling 7 omitted general seats.
+- Official tally: INC 40, BJP 25, IND 3 = 68 seats.
+- Added `data/seed/__tests__/himachal-pradesh-constituencies.test.ts` (5/5 tests passing).
+
+#### 5. Large States Short Seeds Expanded to 100% Strength
+- **Rajasthan (187 → 200 seats)**: Rebuilt using 2023 election results + TCPD delimitation baseline. Cleaned district corruptions (`'Sc'`/`'St'`). Tally: BJP 115, INC 70, IND 8, BAP 3, BSP 2, RLD 1, RLP 1 = 200 seats.
+- **Madhya Pradesh (208 → 230 seats)**: Rebuilt using 2023 election results + TCPD baseline. Tally: BJP 163, INC 66, BAP 1 = 230 seats.
+- **Chhattisgarh (81 → 90 seats)**: Rebuilt using 2023 election results + TCPD baseline. Tally: BJP 54, INC 35, GGP 1 = 90 seats.
+- **Odisha (132 → 147 seats)**: Rebuilt using 2024 election results + TCPD baseline. Tally: BJP 78, BJD 51, INC 14, IND 3, CPIM 1 = 147 seats.
+- **Assam (112 → 126 seats)**: Rebuilt using 2021 election results + TCPD baseline. Tally: BJP 60, INC 29, AIUDF 16, AGP 9, UPPL 6, BPF 4, CPIM 1, IND 1 = 126 seats.
+
+#### 6. Single Source of Truth Scorecard Updated
+- `AUDIT_GOLD_STANDARD_STATUS.md`: Synchronized to record Sprint 53/66 completion — all 31 states now match 100% official seats, 0 short seeds.
+- `KSHETRA_REALITY_CHECK_AND_TODO.html`: Updated Section 5 and Section 7 tables and callouts.
+
+### Verification Results
+- **Automated 31-State Audit Script**:
+  - `ALL 31 STATES: 100% CLEAN, CONTIGUOUS (1..N), UNIQUE, AND MATCHING OFFICIAL SEATS!`
+- **Jest Unit Test Suites**:
+  - `PASS __tests__/jharkhand-constituencies.test.ts` (5/5 tests)
+  - `PASS __tests__/haryana-constituencies.test.ts` (5/5 tests)
+  - `PASS __tests__/himachal-pradesh-constituencies.test.ts` (5/5 tests)
+  - `PASS __tests__/delhi-constituencies.test.ts` (5/5 tests)
+  - Total: 20 passed, 20 total.
+
+### Files Changed / Added
+| File | Change | Description |
+|---|---|---|
+| `data/seed/delhi-constituencies.ts` | Modified | Rebuilt with 70 official ACs from Feb 2025 ECI results |
+| `data/seed/haryana-constituencies.ts` | Modified | Rebuilt with 90 official ACs from Oct 2024 ECI results |
+| `data/seed/jharkhand-constituencies.ts` | Modified | Rebuilt with 81 official ACs from Nov 2024 ECI results |
+| `data/seed/himachal-pradesh-constituencies.ts` | Modified | Reconciled to 68 official ACs (ECI 2022) |
+| `data/seed/rajasthan-constituencies.ts` | Modified | Rebuilt to all 200 seats (2023 results + TCPD) |
+| `data/seed/madhya-pradesh-constituencies.ts` | Modified | Rebuilt to all 230 seats (2023 results + TCPD) |
+| `data/seed/chhattisgarh-constituencies.ts` | Modified | Rebuilt to all 90 seats (2023 results + TCPD) |
+| `data/seed/odisha-constituencies.ts` | Modified | Rebuilt to all 147 seats (2024 results + TCPD) |
+| `data/seed/assam-constituencies.ts` | Modified | Rebuilt to all 126 seats (2021 results + TCPD) |
+| `apps/mobile/lib/stateDataAdapter.ts` | Modified | Delhi year set to 2025 |
+| `data/seed/__tests__/delhi-constituencies.test.ts` | Modified | Updated test for 70 seats |
+| `data/seed/__tests__/jharkhand-constituencies.test.ts` | Modified | Updated test for 81 seats |
+| `data/seed/__tests__/haryana-constituencies.test.ts` | Created | Unit test verifying 90 seats |
+| `data/seed/__tests__/himachal-pradesh-constituencies.test.ts` | Created | Unit test verifying 68 seats |
+| `AUDIT_GOLD_STANDARD_STATUS.md` | Modified | Scorecard updated to 31/31 official seats |
+| `KSHETRA_REALITY_CHECK_AND_TODO.html` | Modified | Reality check table updated to 0 short seeds |
+| `CHANGELOG.md` | Modified | Added 31-state rectification release notes |
+| `building.md` | Modified | Documented Sprint 66 milestone |
+
 
 
 

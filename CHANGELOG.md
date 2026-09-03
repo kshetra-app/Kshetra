@@ -7,6 +7,25 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added — 31-State Constituency & Map Data Rectification: 100% Official Assembly Strength (2026-09-03)
+- **100% Official Assembly Seat Coverage Across All 31 States / UTs**:
+  - Closed all verified data gaps and anomalies across the 9 remaining short-count/anomalous states, using authoritative Election Commission of India (ECI) and Trivedi Centre for Political Data (TCPD) datasets with zero fabrication:
+    - **Delhi (DL — 70/70 seats)**: Replaced 2022 MCD municipal ward scrape (221 rows) with official Assembly Constituencies 1–70 using February 2025 ECI results (`2025Assembly-DL.json`). Tally: BJP 48, AAP 22 = 70.
+    - **Haryana (HR — 90/90 seats)**: Rebuilt from 80 to all 90 constituencies using October 2024 ECI results (`2024Assembly-HR.json`). Tally: BJP 48, INC 37, IND 3, INLD 2 = 90.
+    - **Jharkhand (JH — 81/81 seats)**: Rebuilt from 73 to all 81 constituencies using November 2024 ECI results (`2024Assembly-JH.json`). Tally: JMM 34, BJP 21, INC 16, RJD 4, CPIML 2, AJSU 1, LJPRV 1, JLKM 1, JDU 1 = 81.
+    - **Himachal Pradesh (HP — 68/68 seats)**: Reconciled to the official 68 Assembly Constituencies from 2022 ECI results, folding 8 appended bye-election duplicates into their primary ACs and filling 7 missing general seats. Tally: INC 40, BJP 25, IND 3 = 68.
+    - **Rajasthan (RJ — 200/200 seats)**: Expanded from 187 to all 200 seats using 2023 election results + TCPD delimitation baseline. Cleaned district corruptions (`'Sc'`/`'St'`). Tally: BJP 115, INC 70, IND 8, BAP 3, BSP 2, RLD 1, RLP 1 = 200.
+    - **Madhya Pradesh (MP — 230/230 seats)**: Expanded from 208 to all 230 seats from 2023 election results + TCPD baseline. Tally: BJP 163, INC 66, BAP 1 = 230.
+    - **Chhattisgarh (CG — 90/90 seats)**: Expanded from 81 to all 90 seats from 2023 election results + TCPD baseline. Tally: BJP 54, INC 35, GGP 1 = 90.
+    - **Odisha (OD — 147/147 seats)**: Expanded from 132 to all 147 seats from 2024 election results + TCPD baseline. Tally: BJP 78, BJD 51, INC 14, IND 3, CPIM 1 = 147.
+    - **Assam (AS — 126/126 seats)**: Expanded from 112 to all 126 seats from 2021 election results + TCPD baseline. Tally: BJP 60, INC 29, AIUDF 16, AGP 9, UPPL 6, BPF 4, CPIM 1, IND 1 = 126.
+- **Data Integrity & Continuity**:
+  - Every single one of the 4,123 assembly constituencies across all 31 states and union territories has verified contiguous `acNo` 1..N, authentic winning candidate, party code, vote count, margin, and runner-up.
+  - Zero synthetic or placeholder values.
+- **Automated Tests & Quality Gates**:
+  - Updated and expanded test suites: `delhi-constituencies.test.ts` (70 seats), `haryana-constituencies.test.ts` (90 seats), `jharkhand-constituencies.test.ts` (81 seats), and `himachal-pradesh-constituencies.test.ts` (68 seats) — all 20 tests passing.
+  - Synchronized `AUDIT_GOLD_STANDARD_STATUS.md` and `KSHETRA_REALITY_CHECK_AND_TODO.html` to reflect 0 short seeds and 100% official assembly strength.
+
 ### Added — Campaign Manager Revamp: Grassroots Command Center & Simplified Outreach (2026-09-03)
 - **Eliminated Regulatory Friction Channels**:
   - Dropped bulk WhatsApp (WABA) to prevent Meta anti-spam account blocks and template approval friction.
