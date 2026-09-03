@@ -101,11 +101,14 @@ describe('stateData service', () => {
 
 describe('ai service — graceful degradation without API key', () => {
   const original = process.env.OPENAI_API_KEY;
+  const originalGemini = process.env.GEMINI_API_KEY;
   beforeAll(() => {
     delete process.env.OPENAI_API_KEY;
+    delete process.env.GEMINI_API_KEY;
   });
   afterAll(() => {
     if (original) process.env.OPENAI_API_KEY = original;
+    if (originalGemini) process.env.GEMINI_API_KEY = originalGemini;
   });
 
   it('chatWithAI explains the missing key', async () => {

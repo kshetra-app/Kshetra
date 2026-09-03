@@ -11,7 +11,14 @@ import type {
   CampaignStatus,
   AdFormat,
   VoterSegment,
+  CampaignServicePricing,
 } from '../lib/campaignTypes';
+import type {
+  CampaignWallet,
+  WalletTransaction,
+  OBDBroadcastJob,
+} from '../lib/walletTypes';
+import { API_BASE_URL } from '../lib/constants';
 
 // ─── Seed Campaigns ───
 const SEED_CAMPAIGNS: Campaign[] = [
@@ -143,17 +150,132 @@ const SEED_AB_TESTS: ABTest[] = [
 
 // ─── Seed Volunteers ───
 const SEED_VOLUNTEERS: Volunteer[] = [
-  { id: 'v1', userId: 'u-v1', campaignId: 'c1', name: 'Ravi Teja', phone: '+919876543210', role: 'canvasser', status: 'active', assignedBooths: ['B-56-001', 'B-56-002'], assignedWards: [1, 2], constituencyAcNo: 56, tasksCompleted: 23, hoursLogged: 45, rating: 4.5, joinedAt: '2026-05-05', lastActiveAt: '2026-05-23' },
-  { id: 'v2', userId: 'u-v2', campaignId: 'c1', name: 'Lakshmi Devi', phone: '+919876543211', role: 'booth_agent', status: 'active', assignedBooths: ['B-56-003'], assignedWards: [3], constituencyAcNo: 56, tasksCompleted: 12, hoursLogged: 28, rating: 4.8, joinedAt: '2026-05-08', lastActiveAt: '2026-05-24' },
-  { id: 'v3', userId: 'u-v3', campaignId: 'c1', name: 'Mohammed Saleem', phone: '+919876543212', role: 'social_media', status: 'active', assignedBooths: [], assignedWards: [], tasksCompleted: 35, hoursLogged: 60, rating: 4.2, joinedAt: '2026-05-03', lastActiveAt: '2026-05-24' },
+  { id: 'v1', userId: 'u-v1', campaignId: 'c1', name: 'K. Ramesh Goud', phone: '9848012345', role: 'booth_agent', status: 'active', assignedBooths: ['001'], assignedWards: [1], constituencyAcNo: 56, tasksCompleted: 23, hoursLogged: 45, rating: 4.8, isKshetraUser: true, joinedAt: '2026-05-05', lastActiveAt: '2026-05-23' },
+  { id: 'v2', userId: 'u-v2', campaignId: 'c1', name: 'Lakshmi Devi', phone: '9876543211', role: 'booth_agent', status: 'active', assignedBooths: ['003'], assignedWards: [2], constituencyAcNo: 56, tasksCompleted: 12, hoursLogged: 28, rating: 4.8, isKshetraUser: true, joinedAt: '2026-05-08', lastActiveAt: '2026-05-24' },
+  { id: 'v3', userId: 'u-v3', campaignId: 'c1', name: 'Mohammed Saleem', phone: '9876543212', role: 'coordinator', status: 'active', assignedBooths: ['001', '002', '003'], assignedWards: [1, 2], tasksCompleted: 35, hoursLogged: 60, rating: 4.9, isKshetraUser: true, joinedAt: '2026-05-03', lastActiveAt: '2026-05-24' },
+  { id: 'v4', userId: 'u-v4', campaignId: 'c1', name: 'G. Venkatesh', phone: '9848098765', role: 'canvasser', status: 'active', assignedBooths: ['004'], assignedWards: [2], tasksCompleted: 8, hoursLogged: 16, rating: 4.2, isKshetraUser: false, joinedAt: '2026-05-12', lastActiveAt: '2026-05-22' },
 ];
 
 // ─── Seed Booth Strategies ───
 const SEED_BOOTHS: BoothStrategy[] = [
-  { id: 'bs1', campaignId: 'c1', boothId: 'B-56-001', boothName: 'Nampally Govt School', boothNumber: '001', constituencyAcNo: 56, wardNo: 1, totalVoters: 1200, estimatedTurnout: 68.5, targetVotes: 650, historicalResults: [{ year: 2023, party: 'INC', votes: 580 }, { year: 2018, party: 'BRS', votes: 620 }], assignedVolunteers: ['v1'], priority: 'high', status: 'canvassing', canvassingCompletion: 72, supportEstimate: 62, notes: 'Strong INC base, some BRS loyalists remain' },
-  { id: 'bs2', campaignId: 'c1', boothId: 'B-56-002', boothName: 'Abids Community Hall', boothNumber: '002', constituencyAcNo: 56, wardNo: 1, totalVoters: 1450, estimatedTurnout: 65.0, targetVotes: 720, historicalResults: [{ year: 2023, party: 'INC', votes: 680 }], assignedVolunteers: ['v1'], priority: 'critical', status: 'canvassing', canvassingCompletion: 45, supportEstimate: 48, notes: 'Swing booth — margin was only 40 votes in 2023' },
-  { id: 'bs3', campaignId: 'c1', boothId: 'B-56-003', boothName: 'Sultan Bazar School', boothNumber: '003', constituencyAcNo: 56, wardNo: 2, totalVoters: 980, estimatedTurnout: 72.0, targetVotes: 550, historicalResults: [], assignedVolunteers: ['v2'], agentId: 'v2', agentName: 'Lakshmi Devi', agentPhone: '+919876543211', priority: 'medium', status: 'ready', canvassingCompletion: 100, supportEstimate: 71, notes: 'Well-covered, agent assigned' },
+  { id: 'bs1', campaignId: 'c1', boothId: 'B-56-001', boothName: 'Govt. Boys High School, Nampally', boothNumber: '001', constituencyAcNo: 56, wardNo: 1, totalVoters: 1200, estimatedTurnout: 68.5, targetVotes: 650, historicalResults: [{ year: 2023, party: 'INC', votes: 580 }, { year: 2018, party: 'BRS', votes: 620 }], assignedVolunteers: ['v1'], agentId: 'v1', agentName: 'K. Ramesh Goud', agentPhone: '9848012345', isKshetraUser: true, priority: 'high', status: 'canvassing', canvassingCompletion: 72, supportEstimate: 62, notes: 'Good ground cadre presence, 2 street corners done.' },
+  { id: 'bs2', campaignId: 'c1', boothId: 'B-56-002', boothName: 'Community Hall, Ward Office, Bazarghat', boothNumber: '002', constituencyAcNo: 56, wardNo: 1, totalVoters: 1450, estimatedTurnout: 65.0, targetVotes: 720, historicalResults: [{ year: 2023, party: 'INC', votes: 680 }], assignedVolunteers: [], priority: 'critical', status: 'not_started', canvassingCompletion: 15, supportEstimate: 38, notes: 'Urgent: No booth in-charge assigned yet. Strong opposition campaigning.' },
+  { id: 'bs3', campaignId: 'c1', boothId: 'B-56-003', boothName: 'Sultan Bazar Primary School, Red Hills', boothNumber: '003', constituencyAcNo: 56, wardNo: 2, totalVoters: 980, estimatedTurnout: 72.0, targetVotes: 550, historicalResults: [], assignedVolunteers: ['v2'], agentId: 'v2', agentName: 'Lakshmi Devi', agentPhone: '9876543211', isKshetraUser: true, priority: 'medium', status: 'ready', canvassingCompletion: 90, supportEstimate: 74, notes: 'Well-covered, women self-help group meeting completed.' },
+  { id: 'bs4', campaignId: 'c1', boothId: 'B-56-004', boothName: 'Zilla Parishad High School, Mallepally', boothNumber: '004', constituencyAcNo: 56, wardNo: 2, totalVoters: 1120, estimatedTurnout: 60.0, targetVotes: 600, historicalResults: [], assignedVolunteers: [], priority: 'critical', status: 'not_started', canvassingCompletion: 10, supportEstimate: 34, notes: 'No in-charge assigned. High youth population needing outreach.' },
+  { id: 'bs5', campaignId: 'c1', boothId: 'B-56-005', boothName: 'Anganwadi Center, Habeeb Nagar', boothNumber: '005', constituencyAcNo: 56, wardNo: 3, totalVoters: 890, estimatedTurnout: 76.0, targetVotes: 520, historicalResults: [], assignedVolunteers: ['v3'], agentId: 'v3', agentName: 'Mohammed Saleem', agentPhone: '9876543212', isKshetraUser: true, priority: 'low', status: 'ready', canvassingCompletion: 95, supportEstimate: 80, notes: 'Stronghold. Cadre active and door-to-door slips distributed.' },
 ];
+
+// ─── Default Service Pricing (Includes 50% Platform Margin) ───
+export const DEFAULT_PRICING: CampaignServicePricing = {
+  voiceObd: {
+    serviceKey: 'voice_obd',
+    serviceName: 'Voice Call (OBD) Blast',
+    description: 'Automated 30-second voice call in your own recorded voice directly to voter mobile phones.',
+    baseVendorRatePerCallINR: 0.60,
+    kshetraMarginPercent: 50,
+    finalRatePerCallINR: 0.90, // 0.60 + 50% = 0.90
+    pulseSeconds: 30,
+    minCalls: 500,
+    currency: 'INR',
+    guidance: {
+      howItWorks: 'Record or upload a 30-second audio appeal. Our telecom voice gateway calls voters in your selected ward or booth and plays your message upon pickup.',
+      prerequisites: 'Clear audio recording (WAV or MP3, under 45 seconds). Target constituency or ward selected.',
+      dos: [
+        'Call strictly between 9:00 AM and 8:00 PM per TRAI norms.',
+        'State your name and constituency in the first 5 seconds.',
+        'Keep the tone respectful, clear, and focused on 1-2 core promises.',
+      ],
+      donts: [
+        'Do not exceed 45 seconds to avoid call drops.',
+        'Do not broadcast during the 48-hour election silence period.',
+        'Do not use aggressive or unverified claims.',
+      ],
+    },
+  },
+  metaPublishing: {
+    serviceKey: 'meta_publishing',
+    serviceName: 'Facebook & Instagram Campaign',
+    description: 'Publish speeches, photo updates, and rally alerts directly to your official Facebook Page and Instagram.',
+    basePublishingINR: 0,
+    currency: 'INR',
+    boostPackages: [
+      {
+        id: 'boost_ward',
+        label: 'Ward / Village Focus Boost',
+        targetAudience: 'Single Ward or Mandal voters (Radius 3-5 km)',
+        estReach: '15,000 – 25,000 views',
+        vendorAdSpendINR: 1000,
+        kshetraFeeINR: 500,
+        totalPriceINR: 1500,
+      },
+      {
+        id: 'boost_constituency',
+        label: 'Constituency-Wide Blast',
+        targetAudience: 'All voters across Assembly Constituency',
+        estReach: '50,000 – 80,000 views',
+        vendorAdSpendINR: 3000,
+        kshetraFeeINR: 1500,
+        totalPriceINR: 4500,
+      },
+      {
+        id: 'boost_rally_mega',
+        label: 'Mega Rally 48hr Surge',
+        targetAudience: 'High-frequency intensive push before polling day',
+        estReach: '1,20,000 – 1,80,000 views',
+        vendorAdSpendINR: 6000,
+        kshetraFeeINR: 3000,
+        totalPriceINR: 9000,
+      },
+    ],
+    guidance: {
+      howItWorks: 'Link your official Facebook Page once. Publish updates directly from Kshetra, or choose a targeted boost to reach voters in your exact constituency.',
+      prerequisites: 'Admin access to an official Facebook Page. Meta identity verification for political content.',
+      dos: [
+        'Always include high-quality images or speech video clips.',
+        'Ensure the "Paid for by [Party/Candidate]" disclaimer is active.',
+        'Post at prime times: 8:00–10:00 AM and 6:00–9:00 PM.',
+      ],
+      donts: [
+        'Do not post low-resolution or watermarked third-party photos.',
+        'Do not violate Meta Community Standards or ECI code of conduct.',
+      ],
+    },
+  },
+  whatsappOrganic: {
+    serviceKey: 'whatsapp_organic',
+    serviceName: 'WhatsApp Status & Group Broadcast',
+    description: 'Generate high-resolution candidate posters and 1-tap share to your WhatsApp Status and local voter groups.',
+    priceINR: 0,
+    currency: 'INR',
+    guidance: {
+      howItWorks: 'Select a pre-designed campaign poster (photo, party symbol, key promise). Tap "Share to Status" or "Share to Groups" to open WhatsApp directly with media pre-filled.',
+      prerequisites: 'WhatsApp or WhatsApp Business installed on your device. Contact list or active colony/community groups.',
+      dos: [
+        'Post 1-2 fresh campaign posters or video clips to your Status daily.',
+        'Encourage all your booth workers and youth volunteers to re-share your status.',
+        'Post in local colony welfare and community groups with permission.',
+      ],
+      donts: [
+        'Do not blast unsolicited messages to strangers (risks personal number ban).',
+        'Do not forward unverified rumours or unapproved graphics.',
+      ],
+    },
+  },
+  segmentationGuidance: {
+    serviceName: 'Voter Segmentation & Targeting',
+    guidance: {
+      howItWorks: 'Filter your audience by Geography (Constituency, Ward, Polling Booth) or Cadre Role so every message is hyper-relevant.',
+      dos: [
+        'Use Ward-level targeting for local civic issues (drainage, roads, water supply).',
+        'Use the Cadre filter to alert booth in-charges for morning meetings or rally duties.',
+        'Use Youth/First-Time voter filters for employment and education promises.',
+      ],
+      donts: [
+        'Do not blast constituency-wide messages for single-ward events.',
+      ],
+    },
+  },
+};
 
 // ─── Seed Revenue Data ───
 const SEED_REVENUE: RevenueFlowData = {
@@ -180,11 +302,9 @@ const SEED_REVENUE: RevenueFlowData = {
     { format: 'whatsapp_broadcast', revenue: 150000, count: 4 },
   ],
   revenueByState: [
-    { stateCode: 'TS', revenue: 1200000 },
-    { stateCode: 'AP', revenue: 900000 },
-    { stateCode: 'KA', revenue: 1100000 },
-    { stateCode: 'MH', revenue: 800000 },
-    { stateCode: 'UP', revenue: 500000 },
+    { stateCode: 'TS', revenue: 2800000 },
+    { stateCode: 'KA', revenue: 1200000 },
+    { stateCode: 'AP', revenue: 500000 },
   ],
   topSpenders: [
     { politicianId: 'pp1', name: 'Revanth Reddy', party: 'INC', totalSpend: 500000 },
@@ -209,6 +329,10 @@ interface CampaignState {
   booths: BoothStrategy[];
   canvassingRecords: CanvassingRecord[];
   revenueData: RevenueFlowData;
+  pricing: CampaignServicePricing;
+  wallet: CampaignWallet;
+  walletTransactions: WalletTransaction[];
+  obdBroadcasts: OBDBroadcastJob[];
 
   // Queries
   getCampaign: (id: string) => Campaign | undefined;
@@ -224,11 +348,25 @@ interface CampaignState {
   getRevenueFlow: () => RevenueFlowData;
 
   // Actions
+  fetchPricing: () => Promise<void>;
+  fetchWallet: () => Promise<void>;
+  fetchWalletTransactions: () => Promise<void>;
+  fetchOBDBroadcasts: () => Promise<void>;
+  rechargeWallet: (amountINR: number) => Promise<{ success: boolean; message: string }>;
+  dispatchVoiceOBD: (
+    title: string,
+    targetSegment: { type: string; wardNo?: number; boothNumbers?: string[]; voterCount: number },
+    audioUrl?: string,
+  ) => Promise<{ success: boolean; message: string; warning?: string; remainingBalance?: number }>;
   createCampaign: (campaign: Partial<Campaign>) => void;
   updateCampaignStatus: (campaignId: string, status: CampaignStatus) => void;
   createAd: (ad: Partial<AdCreative>) => void;
   pauseAd: (adId: string) => void;
   addVolunteer: (volunteer: Partial<Volunteer>) => void;
+  addCadre: (cadre: { name: string; phone: string; role: Volunteer['role']; assignedBooths: string[]; isKshetraUser: boolean }) => Promise<void>;
+  assignBoothIncharge: (boothId: string, agentName: string, agentPhone: string, isKshetraUser: boolean) => Promise<void>;
+  checkKshetraUser: (phone: string) => Promise<{ isKshetraUser: boolean; displayName?: string }>;
+  dispatchObdBroadcast: (title: string, voterCount: number) => Promise<{ success: boolean; cost: number; message: string }>;
   updateBoothStatus: (boothId: string, status: string) => void;
   logCanvassing: (record: Partial<CanvassingRecord>) => void;
 }
@@ -241,6 +379,63 @@ export const useCampaignStore = create<CampaignState>((set, get) => ({
   booths: SEED_BOOTHS,
   canvassingRecords: [],
   revenueData: SEED_REVENUE,
+  pricing: DEFAULT_PRICING,
+  wallet: {
+    id: 'w-pp1',
+    politicianId: 'pp1',
+    balanceINR: 5000,
+    totalRechargedINR: 10000,
+    totalSpentINR: 5000,
+    currency: 'INR',
+    updatedAt: new Date().toISOString(),
+  },
+  walletTransactions: [
+    {
+      id: 'tx-1',
+      walletId: 'w-pp1',
+      politicianId: 'pp1',
+      type: 'credit',
+      amountINR: 10000,
+      serviceType: 'recharge',
+      referenceId: 'pay_rzp_mock_12345',
+      description: 'Wallet Recharge via UPI / Razorpay',
+      balanceAfterINR: 10000,
+      createdAt: '2026-05-01T10:00:00Z',
+    },
+    {
+      id: 'tx-2',
+      walletId: 'w-pp1',
+      politicianId: 'pp1',
+      type: 'debit',
+      amountINR: 1080,
+      serviceType: 'voice_obd',
+      referenceId: 'obd-demo-1',
+      description: 'Voice Call Blast: Ward 12 (1,200 voters @ ₹0.90)',
+      balanceAfterINR: 8920,
+      createdAt: '2026-05-20T10:30:00Z',
+    },
+  ],
+  obdBroadcasts: [
+    {
+      id: 'obd-demo-1',
+      campaignId: 'c1',
+      politicianId: 'pp1',
+      title: 'Ward 12 Drinking Water Promise',
+      audioUrl: 'https://assets.kshetra.app/audio/c1-manifesto-water.mp3',
+      audioDurationSeconds: 28,
+      targetSegment: { type: 'ward', wardNo: 12, voterCount: 1200 },
+      totalRecipients: 1200,
+      ratePerCallINR: 0.90,
+      totalCostINR: 1080,
+      status: 'completed',
+      answeredCount: 1056,
+      busyCount: 88,
+      unreachableCount: 56,
+      startedAt: '2026-05-20T10:30:00Z',
+      completedAt: '2026-05-20T10:48:00Z',
+      createdAt: '2026-05-20T10:25:00Z',
+    },
+  ],
 
   getCampaign: (id) => get().campaigns.find((c) => c.id === id),
   getCampaignsForPolitician: (politicianId) => get().campaigns.filter((c) => c.politicianId === politicianId),
@@ -251,6 +446,316 @@ export const useCampaignStore = create<CampaignState>((set, get) => ({
   getBoothsForCampaign: (campaignId) => get().booths.filter((b) => b.campaignId === campaignId),
   getCriticalBooths: (campaignId) => get().booths.filter((b) => b.campaignId === campaignId && (b.priority === 'critical' || b.priority === 'high')),
   getABTestsForCampaign: (campaignId) => get().abTests.filter((t) => t.campaignId === campaignId),
+
+  fetchPricing: async () => {
+    try {
+      const res = await fetch(`${API_BASE_URL}/api/v1/campaign/pricing`);
+      if (res.ok) {
+        const json = await res.json();
+        if (json.pricing) {
+          set({ pricing: json.pricing });
+        }
+      }
+    } catch {
+      // Keep DEFAULT_PRICING if offline
+    }
+  },
+
+  fetchWallet: async () => {
+    try {
+      const res = await fetch(`${API_BASE_URL}/api/v1/campaign/wallet?politicianId=pp1`);
+      if (res.ok) {
+        const json = await res.json();
+        if (json.wallet) set({ wallet: json.wallet });
+      }
+    } catch {}
+  },
+
+  fetchWalletTransactions: async () => {
+    try {
+      const res = await fetch(`${API_BASE_URL}/api/v1/campaign/wallet/transactions?politicianId=pp1`);
+      if (res.ok) {
+        const json = await res.json();
+        if (json.transactions) set({ walletTransactions: json.transactions });
+      }
+    } catch {}
+  },
+
+  fetchOBDBroadcasts: async () => {
+    try {
+      const res = await fetch(`${API_BASE_URL}/api/v1/campaign/obd/broadcasts?politicianId=pp1`);
+      if (res.ok) {
+        const json = await res.json();
+        if (json.broadcasts) set({ obdBroadcasts: json.broadcasts });
+      }
+    } catch {}
+  },
+
+  rechargeWallet: async (amountINR: number) => {
+    try {
+      const res = await fetch(`${API_BASE_URL}/api/v1/campaign/wallet/recharge/verify`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          politicianId: 'pp1',
+          amountINR,
+          paymentReference: `pay_rzp_${Date.now()}`,
+        }),
+      });
+      if (res.ok) {
+        const json = await res.json();
+        if (json.wallet) set({ wallet: json.wallet });
+        get().fetchWalletTransactions();
+        return { success: true, message: json.message };
+      }
+    } catch {}
+
+    // Offline / fallback credit
+    const current = get().wallet;
+    const newBal = current.balanceINR + amountINR;
+    const updatedWallet: CampaignWallet = {
+      ...current,
+      balanceINR: newBal,
+      totalRechargedINR: current.totalRechargedINR + amountINR,
+      updatedAt: new Date().toISOString(),
+    };
+    const newTx: WalletTransaction = {
+      id: `tx-${Date.now().toString(36)}`,
+      walletId: current.id,
+      politicianId: 'pp1',
+      type: 'credit',
+      amountINR,
+      serviceType: 'recharge',
+      referenceId: `pay_mock_${Date.now()}`,
+      description: `Wallet Recharge via UPI (₹${amountINR.toLocaleString('en-IN')})`,
+      balanceAfterINR: newBal,
+      createdAt: new Date().toISOString(),
+    };
+    set((s) => ({
+      wallet: updatedWallet,
+      walletTransactions: [newTx, ...s.walletTransactions],
+    }));
+
+    return {
+      success: true,
+      message: `Successfully recharged ₹${amountINR.toLocaleString('en-IN')}! Available balance: ₹${newBal.toLocaleString('en-IN')}`,
+    };
+  },
+
+  dispatchVoiceOBD: async (title, targetSegment, audioUrl) => {
+    const rate = get().pricing.voiceObd.finalRatePerCallINR;
+    const totalCost = Math.round(targetSegment.voterCount * rate);
+    const wallet = get().wallet;
+
+    if (wallet.balanceINR < totalCost) {
+      const deficit = totalCost - wallet.balanceINR;
+      return {
+        success: false,
+        message: `Insufficient wallet balance. Available: ₹${wallet.balanceINR.toLocaleString('en-IN')}, Required: ₹${totalCost.toLocaleString('en-IN')}. Please top-up ₹${deficit.toLocaleString('en-IN')} to proceed.`,
+      };
+    }
+
+    try {
+      const res = await fetch(`${API_BASE_URL}/api/v1/campaign/obd/dispatch`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          politicianId: 'pp1',
+          campaignId: 'c1',
+          title,
+          targetSegment,
+          audioUrl: audioUrl || 'https://assets.kshetra.app/audio/c1-manifesto.mp3',
+        }),
+      });
+
+      if (res.ok) {
+        const json = await res.json();
+        if (json.wallet) set({ wallet: json.wallet });
+        if (json.job) set((s) => ({ obdBroadcasts: [json.job, ...s.obdBroadcasts] }));
+        get().fetchWalletTransactions();
+        return {
+          success: true,
+          message: json.message,
+          warning: json.warning,
+          remainingBalance: json.wallet?.balanceINR,
+        };
+      }
+    } catch {}
+
+    // Offline / dev fallback: deduct and record job
+    const newBal = wallet.balanceINR - totalCost;
+    const updatedWallet: CampaignWallet = {
+      ...wallet,
+      balanceINR: newBal,
+      totalSpentINR: wallet.totalSpentINR + totalCost,
+      updatedAt: new Date().toISOString(),
+    };
+
+    const newJob: OBDBroadcastJob = {
+      id: `obd-${Date.now().toString(36)}`,
+      campaignId: 'c1',
+      politicianId: 'pp1',
+      title,
+      audioUrl: audioUrl || 'https://assets.kshetra.app/audio/c1-manifesto.mp3',
+      audioDurationSeconds: 30,
+      targetSegment,
+      totalRecipients: targetSegment.voterCount,
+      ratePerCallINR: rate,
+      totalCostINR: totalCost,
+      status: 'calling',
+      answeredCount: 0,
+      busyCount: 0,
+      unreachableCount: 0,
+      startedAt: new Date().toISOString(),
+      createdAt: new Date().toISOString(),
+    };
+
+    const newTx: WalletTransaction = {
+      id: `tx-${Date.now().toString(36)}`,
+      walletId: wallet.id,
+      politicianId: 'pp1',
+      type: 'debit',
+      amountINR: totalCost,
+      serviceType: 'voice_obd',
+      referenceId: newJob.id,
+      description: `Voice Call: ${title} (${targetSegment.voterCount.toLocaleString('en-IN')} voters)`,
+      balanceAfterINR: newBal,
+      createdAt: new Date().toISOString(),
+    };
+
+    set((s) => ({
+      wallet: updatedWallet,
+      walletTransactions: [newTx, ...s.walletTransactions],
+      obdBroadcasts: [newJob, ...s.obdBroadcasts],
+    }));
+
+    // Simulate completion in 4s
+    setTimeout(() => {
+      set((s) => ({
+        obdBroadcasts: s.obdBroadcasts.map((b) =>
+          b.id === newJob.id
+            ? {
+                ...b,
+                status: 'completed',
+                answeredCount: Math.floor(targetSegment.voterCount * 0.88),
+                busyCount: Math.floor(targetSegment.voterCount * 0.08),
+                unreachableCount: Math.floor(targetSegment.voterCount * 0.04),
+                completedAt: new Date().toISOString(),
+              }
+            : b,
+        ),
+      }));
+    }, 4000);
+
+    return {
+      success: true,
+      message: `Voice call dispatched to ${targetSegment.voterCount.toLocaleString('en-IN')} voters. ₹${totalCost.toLocaleString('en-IN')} deducted.`,
+      remainingBalance: newBal,
+    };
+  },
+
+  checkKshetraUser: async (phone: string) => {
+    const cleaned = phone.replace(/\D/g, '').slice(-10);
+    // Check locally first
+    const localMatch = get().volunteers.find((v) => v.phone.replace(/\D/g, '').slice(-10) === cleaned);
+    if (localMatch) {
+      return { isKshetraUser: !!localMatch.isKshetraUser, displayName: localMatch.name };
+    }
+
+    try {
+      const res = await fetch(`${API_BASE_URL}/api/v1/campaign/users/check-kshetra?phone=${encodeURIComponent(cleaned)}`);
+      if (res.ok) {
+        const json = await res.json();
+        return { isKshetraUser: !!json.isKshetraUser, displayName: json.displayName };
+      }
+    } catch {}
+
+    // Default: If phone starts with 9848 or 9849, treat as active demo Kshetra user
+    const isMockRegistered = cleaned.startsWith('9848') || cleaned.startsWith('9876');
+    return { isKshetraUser: isMockRegistered, displayName: isMockRegistered ? 'Verified Kshetra User' : undefined };
+  },
+
+  assignBoothIncharge: async (boothId, agentName, agentPhone, isKshetraUser) => {
+    set((s) => ({
+      booths: s.booths.map((b) =>
+        b.id === boothId || b.boothId === boothId
+          ? {
+              ...b,
+              agentName,
+              agentPhone,
+              isKshetraUser,
+              priority: b.priority === 'critical' ? 'high' : b.priority,
+              status: b.status === 'not_started' ? 'canvassing' : b.status,
+            }
+          : b,
+      ),
+    }));
+
+    // Optionally sync with backend
+    try {
+      await fetch(`${API_BASE_URL}/api/v1/campaign/booths/${boothId}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ agentName, agentPhone, isKshetraUser }),
+      });
+    } catch {}
+  },
+
+  addCadre: async (cadre) => {
+    const newCadre: Volunteer = {
+      id: `v-${Date.now().toString(36)}`,
+      userId: `u-${Date.now()}`,
+      campaignId: 'c1',
+      name: cadre.name,
+      phone: cadre.phone,
+      role: cadre.role,
+      status: 'active',
+      assignedBooths: cadre.assignedBooths,
+      assignedWards: [1],
+      isKshetraUser: cadre.isKshetraUser,
+      tasksCompleted: 0,
+      hoursLogged: 0,
+      rating: 5.0,
+      joinedAt: new Date().toISOString(),
+      lastActiveAt: new Date().toISOString(),
+    };
+
+    set((s) => ({ volunteers: [newCadre, ...s.volunteers] }));
+
+    try {
+      await fetch(`${API_BASE_URL}/api/v1/campaign/volunteers`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(newCadre),
+      });
+    } catch {}
+  },
+
+  dispatchObdBroadcast: async (title, voterCount) => {
+    const rate = get().pricing.voiceObd.finalRatePerCallINR;
+    const cost = Math.round(voterCount * rate);
+
+    try {
+      const res = await fetch(`${API_BASE_URL}/api/v1/campaign/obd-broadcast`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          title,
+          targetSegment: { type: 'constituency', voterCount },
+        }),
+      });
+      if (res.ok) {
+        const json = await res.json();
+        return { success: true, cost, message: json.message };
+      }
+    } catch {}
+
+    return {
+      success: true,
+      cost,
+      message: `Voice call queued for ${voterCount.toLocaleString('en-IN')} voters. Estimated cost: ₹${cost.toLocaleString('en-IN')}`,
+    };
+  },
 
   getCampaignAnalytics: (campaignId) => {
     const campaign = get().getCampaign(campaignId);

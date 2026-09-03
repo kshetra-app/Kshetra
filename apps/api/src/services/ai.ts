@@ -113,13 +113,34 @@ export interface AIChatOptions {
   stream?: boolean;
 }
 
-export async function chatWithAI(options: AIChatOptions): Promise<string> {
-  const apiKey = process.env.OPENAI_API_KEY;
-  if (!apiKey) {
-    return 'AI features require an OpenAI API key. Set OPENAI_API_KEY in your environment variables to enable KSHETRA AI.';
+export function getAIClient(): { client: OpenAI; model: string } | null {
+  const geminiKey = process.env.GEMINI_API_KEY;
+  if (geminiKey) {
+    return {
+      client: new OpenAI({
+        apiKey: geminiKey,
+        baseURL: 'https://generativelanguage.googleapis.com/v1beta/openai',
+      }),
+      model: 'gemini-3.6-flash',
+    };
   }
 
-  const openai = new OpenAI({ apiKey });
+  const openaiKey = process.env.OPENAI_API_KEY;
+  if (openaiKey) {
+    return {
+      client: new OpenAI({ apiKey: openaiKey }),
+      model: 'gpt-4o-mini',
+    };
+  }
+
+  return null;
+}
+
+export async function chatWithAI(options: AIChatOptions): Promise<string> {
+  const ai = getAIClient();
+  if (!ai) {
+    return 'AI features require a Gemini or OpenAI API key. Set GEMINI_API_KEY in your environment variables to enable KSHETRA AI.';
+  }
 
   const contextualPrompt =
     SYSTEM_PROMPT +
@@ -135,10 +156,10 @@ export async function chatWithAI(options: AIChatOptions): Promise<string> {
     })),
   ];
 
-  const completion = await openai.chat.completions.create({
-    model: 'gpt-4o-mini',
+  const completion = await ai.client.chat.completions.create({
+    model: ai.model,
     messages,
-    max_tokens: 1024,
+    max_tokens: 2048,
     temperature: 0.7,
   });
 
@@ -195,13 +216,11 @@ export async function smartSearch(query: string): Promise<{ acNo: number; name: 
     return `${c.acNo}|${c.name}|${c.district}|${c.winner2023}|${c.winnerName2023}|${mla?.name ?? ''}|${c.type}`;
   }).join('\n');
 
-  const apiKey = process.env.OPENAI_API_KEY;
-  if (!apiKey) return [];
+  const ai = getAIClient();
+  if (!ai) return [];
 
-  const openai = new OpenAI({ apiKey });
-
-  const completion = await openai.chat.completions.create({
-    model: 'gpt-4o-mini',
+  const completion = await ai.client.chat.completions.create({
+    model: ai.model,
     messages: [
       {
         role: 'system',
@@ -209,7 +228,7 @@ export async function smartSearch(query: string): Promise<{ acNo: number; name: 
       },
       { role: 'user', content: query },
     ],
-    max_tokens: 512,
+    max_tokens: 1024,
     temperature: 0,
   });
 

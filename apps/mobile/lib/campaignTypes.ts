@@ -248,6 +248,7 @@ export interface Volunteer {
   tasksCompleted: number;
   hoursLogged: number;
   rating: number;
+  isKshetraUser?: boolean;
   joinedAt: string;
   lastActiveAt: string;
 }
@@ -268,11 +269,71 @@ export interface BoothStrategy {
   agentId?: string;
   agentName?: string;
   agentPhone?: string;
+  isKshetraUser?: boolean;
   priority: 'critical' | 'high' | 'medium' | 'low';
   status: 'not_started' | 'canvassing' | 'ready' | 'polling_day' | 'counted';
   canvassingCompletion: number;
   supportEstimate: number;
   notes: string;
+}
+
+export interface ServiceGuidance {
+  howItWorks: string;
+  prerequisites?: string;
+  dos: string[];
+  donts: string[];
+}
+
+export interface VoiceObdPricing {
+  serviceKey: string;
+  serviceName: string;
+  description: string;
+  baseVendorRatePerCallINR: number;
+  kshetraMarginPercent: number;
+  finalRatePerCallINR: number;
+  pulseSeconds: number;
+  minCalls: number;
+  currency: string;
+  guidance: ServiceGuidance;
+}
+
+export interface MetaBoostPackage {
+  id: string;
+  label: string;
+  targetAudience: string;
+  estReach: string;
+  vendorAdSpendINR: number;
+  kshetraFeeINR: number;
+  totalPriceINR: number;
+}
+
+export interface MetaPublishingPricing {
+  serviceKey: string;
+  serviceName: string;
+  description: string;
+  basePublishingINR: number;
+  currency: string;
+  boostPackages: MetaBoostPackage[];
+  guidance: ServiceGuidance;
+}
+
+export interface WhatsappOrganicPricing {
+  serviceKey: string;
+  serviceName: string;
+  description: string;
+  priceINR: number;
+  currency: string;
+  guidance: ServiceGuidance;
+}
+
+export interface CampaignServicePricing {
+  voiceObd: VoiceObdPricing;
+  metaPublishing: MetaPublishingPricing;
+  whatsappOrganic: WhatsappOrganicPricing;
+  segmentationGuidance: {
+    serviceName: string;
+    guidance: ServiceGuidance;
+  };
 }
 
 export interface CampaignAnalytics {

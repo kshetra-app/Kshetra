@@ -240,7 +240,7 @@ export function getUnifiedConstituenciesForState(stateCode: string): UnifiedCons
     case 'GJ': return GJ_CONSTITUENCIES.map((c) => genericAdapter(c, 'GJ', 2022));
     case 'JH': return JH_CONSTITUENCIES.map((c) => genericAdapter(c, 'JH', 2024));
     case 'OD': return OD_CONSTITUENCIES.map((c) => genericAdapter(c, 'OD', 2024));
-    case 'DL': return DL_CONSTITUENCIES.map((c) => genericAdapter(c, 'DL', 2022));
+    case 'DL': return DL_CONSTITUENCIES.map((c) => genericAdapter(c, 'DL', 2025));
     case 'PB': return PB_CONSTITUENCIES.map((c) => genericAdapter(c, 'PB', 2022));
     case 'HR': return HR_CONSTITUENCIES.map((c) => genericAdapter(c, 'HR', 2024));
     case 'CG': return CG_CONSTITUENCIES.map((c) => genericAdapter(c, 'CG', 2023));

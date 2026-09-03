@@ -3,12 +3,12 @@
  */
 import { DL_CONSTITUENCIES, getDLConstituency } from '../delhi-constituencies';
 
-describe('Delhi Wards/Constituencies Seed', () => {
-  it('should have 221 constituencies/wards', () => {
-    expect(DL_CONSTITUENCIES).toHaveLength(221);
+describe('Delhi Assembly Constituencies Seed', () => {
+  it('should have 70 constituencies', () => {
+    expect(DL_CONSTITUENCIES).toHaveLength(70);
   });
 
-  it('every constituency/ward should have acNo, name, and localName in Devanagari script', () => {
+  it('every constituency should have acNo, name, and localName in Devanagari script', () => {
     for (const c of DL_CONSTITUENCIES) {
       expect(c.acNo).toBeGreaterThan(0);
       expect(c.name.length).toBeGreaterThan(0);
@@ -30,8 +30,8 @@ describe('Delhi Wards/Constituencies Seed', () => {
   it('getDLConstituency should return the correct constituency', () => {
     const c = getDLConstituency(1);
     expect(c).toBeDefined();
-    expect(c?.name).toBe('1-Narela');
-    expect(c?.localName).toBe('1-नरेला');
+    expect(c?.name).toBe('Narela');
+    expect(c?.localName).toBe('नरेला');
   });
 
   it('getDLConstituency should return undefined for invalid acNo', () => {

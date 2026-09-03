@@ -4,8 +4,8 @@
 import { JH_CONSTITUENCIES, getJHConstituency } from '../jharkhand-constituencies';
 
 describe('Jharkhand Constituencies Seed', () => {
-  it('should have 73 constituencies', () => {
-    expect(JH_CONSTITUENCIES).toHaveLength(73);
+  it('should have 81 constituencies', () => {
+    expect(JH_CONSTITUENCIES).toHaveLength(81);
   });
 
   it('every constituency should have acNo, name, and localName in Devanagari script', () => {
@@ -30,8 +30,8 @@ describe('Jharkhand Constituencies Seed', () => {
   it('getJHConstituency should return the correct constituency', () => {
     const c = getJHConstituency(1);
     expect(c).toBeDefined();
-    expect(c?.name).toBe('Baghmara');
-    expect(c?.localName).toBe('बाघमारा');
+    expect(c?.name).toBe('Rajmahal');
+    expect(c?.localName).toBe('राजमहल');
   });
 
   it('getJHConstituency should return undefined for invalid acNo', () => {

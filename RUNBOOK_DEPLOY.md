@@ -136,8 +136,8 @@ context = repo root; health check path `/api/health`.
 
 Set these env vars on the host as needed:
 `PORT` (host usually injects), `HOST=0.0.0.0`, `NODE_ENV=production`,
-`CORS_ORIGINS=<comma-separated app origins>`, and optionally `OPENAI_API_KEY` /
-`GROQ_API_KEY` for AI routes.
+`CORS_ORIGINS=<comma-separated app origins>`, and optionally `GEMINI_API_KEY` /
+`OPENAI_API_KEY` for AI routes.
 
 ### Point the mobile app at the deployed API — `apps/mobile/.env`
 

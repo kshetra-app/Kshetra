@@ -1,0 +1,1870 @@
+=== Results by constituency ===
+{| class="wikitable sortable" style="text-align:center"
+! colspan="2" | Assembly constituency
+! colspan="5" | Winner
+! colspan="5" | Runner-up
+! rowspan="2" data-sort-type=number |Margin
+|-
+! {{Abbr|No.|Number}}
+! Name
+! Candidate
+! colspan="2" | Party
+! data-sort-type=number | Votes
+! '''%'''
+! Candidate
+! colspan="2" | Party
+! data-sort-type=number | Votes
+! '''%'''
+|-
+| colspan="13" bgcolor="grey" align="center" | [[Karimganj district|<span style="color:white;">'''Karimganj District'''</span>]]
+|-
+| 1
+| [[Ratabari Assembly constituency|Ratabari (SC)]]
+| [[Bijoy Malakar]]
+| bgcolor=#FF9933 | 
+| [[Bharatiya Janata Party|BJP]]
+| 84,711
+| 61.92
+| [[Sambhu Sing Mallah]]
+| bgcolor=#00BFFF | 
+| [[Indian National Congress|INC]]
+| 48,490
+| 35.44
+| 36,221
+|-
+| 2
+| [[Patharkandi Assembly constituency|Patharkandi]]
+| [[Krishnendu Paul]]
+| bgcolor=#FF9933 | 
+| [[Bharatiya Janata Party|BJP]]
+| 74,846
+| 49.66
+| Sachin Sahoo
+| bgcolor=#00BFFF | 
+| [[Indian National Congress|INC]]
+| 70,379
+| 46.70
+| 4,467
+|-
+| 3
+| [[Karimganj North Assembly constituency|Karimganj North]]
+| [[Kamalakhya Dey Purkayastha]]
+| bgcolor=#00BFFF | 
+| [[Indian National Congress|INC]]
+| 60,998
+| 41.57
+| Dr. Manash Das
+| bgcolor=#FF9933 | 
+| [[Bharatiya Janata Party|BJP]]
+| 52,674
+| 35.89
+| 8,324
+|-
+| 4
+| [[Karimganj South Assembly constituency|Karimganj South]]
+| [[Siddique Ahmed (Indian politician)|Siddique Ahmed]]
+| bgcolor=#00BFFF | 
+| [[Indian National Congress|INC]]
+| 88,909
+| 59.16
+| [[Aziz Ahmed Khan (politician)|Aziz Ahmed Khan]]
+| bgcolor=#99CCFF | 
+| [[Asom Gana Parishad|AGP]]
+| 56,422
+| 37.54
+| 32,487
+|-
+| 5
+| [[Badarpur, Assam Assembly constituency|Badarpur]]
+| [[Abdul Aziz (Indian politician)|Abdul Aziz]]
+| bgcolor=#348017 | 
+| [[All India United Democratic Front|AIUDF]]
+| 74,452
+| 56.62
+| Biswarup Bhattacharjee
+| bgcolor=#FF9933 | 
+| [[Bharatiya Janata Party|BJP]]
+| 50,504
+| 38.41
+| 23,948
+|-
+| colspan="13" bgcolor="grey" align="center" " |  [[Hailakandi district|<span style="color:white;">'''Hailakandi District'''</span>]]
+|-
+| 6
+| [[Hailakandi Assembly constituency|Hailakandi]]
+| [[Zakir Hussain Laskar]]
+| bgcolor=#348017 | 
+| [[All India United Democratic Front|AIUDF]]
+| 71,057
+| 55.15
+| Milan Das
+| bgcolor=#FF9933 | 
+| [[Bharatiya Janata Party|BJP]]
+| 47,303
+| 36.72
+| 23,754
+|-
+| 7
+| [[Katlicherra Assembly constituency|Katlicherra]]
+| [[Suzam Uddin Laskar|Sujam Uddin Laskar]]
+| bgcolor=#348017 | 
+| [[All India United Democratic Front|AIUDF]]
+| 79,769
+| 51.83
+| Subrata Nath
+| bgcolor=#FF9933 | 
+| [[Bharatiya Janata Party|BJP]]
+| 66,798
+| 43.41
+| 12,971
+|-
+| 8
+| [[Algapur Assembly constituency|Algapur]]
+| [[Nizam Uddin Choudhury|Nizamuddin Choudhury]]
+| bgcolor=#348017 | 
+| [[All India United Democratic Front|AIUDF]]
+| 66,785
+| 49.46
+| Mun Swarnakar
+| bgcolor=#FF9933 | 
+| [[Bharatiya Janata Party|BJP]]
+| 49,181
+| 36.42
+| 17,604
+|-
+| colspan="13" bgcolor="grey" align="center" | [[Cachar district|<span style="color:white;">'''Cachar District'''</span>]]
+|-
+| 9
+| [[Silchar Assembly constituency|Silchar]]
+| [[Dipayan Chakraborty]]
+| bgcolor=#FF9933 | 
+| [[Bharatiya Janata Party|BJP]]
+| 98,558
+| 56.17
+| Tamal Kanti Banik
+| bgcolor=#00BFFF | 
+| [[Indian National Congress|INC]]
+| 60,980
+| 34.75
+| 37,578
+|-
+| 10
+| [[Sonai Assembly constituency|Sonai]]
+| [[Karim Uddin Barbhuiya]]
+| bgcolor=#348017 | 
+| [[All India United Democratic Front|AIUDF]]
+| 71,937
+| 48.83
+| [[Aminul Haque Laskar]]
+| bgcolor=#FF9933 | 
+| [[Bharatiya Janata Party|BJP]]
+| 52,283
+| 35.49
+| 19,654
+|-
+| 11
+| [[Dholai Assembly constituency|Dholai (SC)]]
+| [[Parimal Suklabaidya]]
+| bgcolor=#FF9933 | 
+| [[Bharatiya Janata Party|BJP]]
+| 82,568
+| 55.03
+| Kamakhya Prasad Mala
+| bgcolor=#00BFFF | 
+| [[Indian National Congress|INC]]
+| 62,176
+| 41.44
+| 20,392
+|-
+| 12
+| [[Udharbond Assembly constituency|Udharbond]]
+| [[Mihir Kanti Shome]]
+| bgcolor=#FF9933 | 
+| [[Bharatiya Janata Party|BJP]]
+| 61,745
+| 47.34
+| Ajit Singh
+| bgcolor=#00BFFF | 
+| [[Indian National Congress|INC]]
+| 59,060
+| 45.28
+| 2,685
+|-
+| 13
+| [[Lakhipur Assembly constituency|Lakhipur]]
+| [[Kaushik Rai]]
+| bgcolor=#FF9933 | 
+| [[Bharatiya Janata Party|BJP]]
+| 55,341
+| 44.61
+| Mukesh Pandey
+| bgcolor=#00BFFF | 
+| [[Indian National Congress|INC]]
+| 42,641
+| 34.38
+| 12,700
+|-
+| 14
+| [[Barkhola Assembly constituency|Barkhola]]
+| [[Misbahul Islam Laskar]]
+| bgcolor=#00BFFF | 
+| [[Indian National Congress|INC]]
+| 64,433
+| 51.77
+| Amalendu Das
+| bgcolor=#FF9933 | 
+| [[Bharatiya Janata Party|BJP]]
+| 57,402
+| 46.12
+| 7,031
+|-
+| 15
+| [[Katigorah Assembly constituency|Katigorah]]
+| [[Khalil Uddin Mazumder]]
+| bgcolor=#00BFFF | 
+| [[Indian National Congress|INC]]
+| 83,268
+| 51.22
+| Gautam Roy
+| bgcolor=#FF9933 | 
+| [[Bharatiya Janata Party|BJP]]
+| 76,329
+| 46.95
+| 6,939
+|-
+| colspan="13" bgcolor="grey" align="center" | [[Dima Hasao district|<span style="color:white;">'''Dima Hasao District'''</span>]]
+|-
+| 16
+| [[Haflong Assembly constituency|Haflong (ST)]]
+| [[Nandita Garlosa]]
+| bgcolor=#FF9933 | 
+| [[Bharatiya Janata Party|BJP]]
+| 67,797
+| 56.73
+| Nirmal Langthasa
+| bgcolor=#00BFFF | 
+| [[Indian National Congress|INC]]
+| 49,199
+| 41.16
+| 18,598
+|-
+| colspan="13" bgcolor="grey" align="center" | [[Karbi Anglong district|<span style="color:white;">'''Karbi Anglong District'''</span>]]
+|-
+| 17
+| [[Bokajan Assembly constituency|Bokajan (ST)]]
+| [[Numal Momin]]
+| bgcolor=#FF9933 | 
+| [[Bharatiya Janata Party|BJP]]
+| 60,726
+| 51.05
+| Raton Engti
+| bgcolor=#00BFFF | 
+| [[Indian National Congress|INC]]
+| 42,841
+| 36.02
+| 17,885
+|-
+| 18
+| [[Howraghat Assembly constituency|Howraghat (ST)]]
+| [[Dorsing Ronghang]]
+| bgcolor=#FF9933 | 
+| [[Bharatiya Janata Party|BJP]]
+| 57,927
+| 55.74
+| Sanjeeb Teron
+| bgcolor=#00BFFF | 
+| [[Indian National Congress|INC]]
+| 26,244
+| 25.25
+| 31,683
+|-
+| 19
+| [[Diphu Assembly constituency|Diphu (ST)]]
+| [[Bidya Sing Engleng]]
+| bgcolor=#FF9933 | 
+| [[Bharatiya Janata Party|BJP]]
+| 77,032
+| 50.58
+| [[Sum Ronghang]]
+| bgcolor=#00BFFF | 
+| [[Indian National Congress|INC]]
+| 36,504
+| 23.97
+| 40,528
+|-
+| colspan="13" bgcolor="grey" align="center" | [[West Karbi Anglong district|<span style="color:white;">'''West Karbi Anglong District'''</span>]]
+|-
+| 20
+| [[Baithalangso Assembly constituency|Baithalangso (ST)]]
+| [[Rupsing Teron]]
+| bgcolor=#FF9933 | 
+| [[Bharatiya Janata Party|BJP]]
+| 89,715
+| 55.00
+| Augustine Enghee
+| bgcolor=#00BFFF | 
+| [[Indian National Congress|INC]]
+| 36,278
+| 22.24
+| 53,437
+|-
+| colspan="13" bgcolor="grey" align="center" | [[South Salmara district|<span style="color:white;">'''South Salmara District'''</span>]]
+|-
+| 21
+| [[Mankachar Assembly constituency|Mankachar]]
+| [[Aminul Islam (Indian politician, born 1975)|Adv. Aminul Islam]]
+| bgcolor=#348017 | 
+| [[All India United Democratic Front|AIUDF]]
+| 125,873
+| 60.72
+| Javed Islam
+| bgcolor=#99CCFF | 
+| [[Asom Gana Parishad|AGP]]
+| 69,033
+| 33.30
+| 56,840
+|-
+| 22
+| [[Salmara South Assembly constituency|Salmara South]]
+| [[Wazed Ali Choudhury]]
+| bgcolor=#00BFFF | 
+| [[Indian National Congress|INC]]
+| 146,248
+| 83.98
+| Nurul Islam Mollah
+| bgcolor="{{party color|Independent politician}}"|
+| [[Independent politician|IND]]
+| 10,674
+| 6.13
+| 135,574
+|-
+| colspan="13" bgcolor="grey" align="center" | [[Dhubri district|<span style="color:white;">'''Dhubri District'''</span>]]
+|-
+| 23
+| [[Dhubri Assembly constituency|Dhubri]]
+| [[Najrul Hoque|Nazrul Hoque]]
+| bgcolor=#348017 | 
+| [[All India United Democratic Front|AIUDF]]
+| 123,913
+| 70.24
+| Dr. Debamoy Sanyal
+| bgcolor=#FF9933 | 
+| [[Bharatiya Janata Party|BJP]]
+| 46,100
+| 26.13
+| 77,813
+|-
+| 24
+| [[Gauripur Assembly constituency|Gauripur]]
+| [[Nijanur Rahman]]
+| bgcolor=#348017 | 
+| [[All India United Democratic Front|AIUDF]]
+| 112,194
+| 61.07
+| [[Banendra Mushahary]]
+| bgcolor=#FF9933 | 
+| [[Bharatiya Janata Party|BJP]]
+| 63,349
+| 34.48
+| 48,845
+|-
+| 25
+| [[Golakganj Assembly constituency|Golakganj]]
+| [[Abdus Sobahan Ali Sarkar|Abdus Sobahun Ali Sarkar]]
+| bgcolor=#00BFFF | 
+| [[Indian National Congress|INC]]
+| 89,870
+| 48.96
+| [[Ashwini Roy Sarkar]]
+| bgcolor=#FF9933 | 
+| [[Bharatiya Janata Party|BJP]]
+| 79,171
+| 43.14
+| 10,699
+|-
+| 26
+| [[Bilasipara West Assembly constituency|Bilasipara West]]
+| [[Hafiz Bashir Ahmed]]
+| bgcolor=#348017 | 
+| [[All India United Democratic Front|AIUDF]]
+| 90,529
+| 56.16
+| Ali Akbar Miah
+| bgcolor="{{party color|Independent politician}}"|
+| [[Independent politician|IND]]
+| 30,771
+| 19.09
+| 59,758
+|-
+| 27
+| [[Bilasipara East Assembly constituency|Bilasipara East]]
+| [[Samsul Huda]]
+| bgcolor=#348017 | 
+| [[All India United Democratic Front|AIUDF]]
+| 116,714
+| 59.30
+| [[Ashok Kumar Singhi]]
+| bgcolor=#FF9933 | 
+| [[Bharatiya Janata Party|BJP]]
+| 66,768
+| 34.11
+| 49,300
+|-
+| colspan="13" bgcolor="grey" align="center" | [[Kokrajhar district|<span style="color:white;">'''Kokrajhar District'''</span>]]
+|-
+| 28
+| [[Gossaigaon Assembly constituency|Gossaigaon]]
+| [[Majendra Narzary]]
+| bgcolor=#FF6600 | 
+| [[Bodoland People's Front|BPF]]
+| 70,407
+| 45.19
+| Somnath Narzary
+| bgcolor=#F3ED13 | 
+| [[United People's Party Liberal|UPPL]]
+| 60,064
+| 38.55
+| 10,343
+|-
+| 29
+| [[Kokrajhar West]] (ST)
+| [[Rabiram Narzary]]
+| bgcolor=#FF6600 | 
+| [[Bodoland People's Front|BPF]]
+| 77,509
+| 49.68
+| Manaranjan Brahma
+| bgcolor=#F3ED13 | 
+| [[United People's Party Liberal|UPPL]]
+| 65,438
+| 41.94
+| 12,071
+|-
+| 30
+| [[Kokrajhar East]] (ST)
+| [[Lawrence Islary]]
+| bgcolor=#F3ED13 | 
+| [[United People's Party Liberal|UPPL]]
+| 82,817
+| 54.14
+| [[Pramila Rani Brahma]]
+| bgcolor=#FF6600 | 
+| [[Bodoland People's Front|BPF]]
+| 63,420
+| 41.11
+| 19,397
+|-
+| colspan="13" bgcolor="grey" align="center" | [[Chirang district|<span style="color:white;">'''Chirang District'''</span>]]
+|-
+| 31
+| [[Sidli Assembly constituency|Sidli (ST)]]
+| [[Joyanta Basumatary]]
+| bgcolor=#F3ED13 | 
+| [[United People's Party Liberal|UPPL]]
+| 97,087
+| 56.50
+| [[Chandan Brahma]]
+| bgcolor=#FF6600 | 
+| [[Bodoland People's Front|BPF]]
+| 65,767
+| 38.27
+| 31,320
+|-
+| colspan="13" bgcolor="grey" align="center" | [[Bongaigaon district|<span style="color:white;">'''Bongaigaon District'''</span>]]
+|-
+| 32
+| [[Bongaigaon Assembly constituency|Bongaigaon]]
+| [[Phani Bhusan Choudhury]]
+| bgcolor=#99CCFF | 
+| [[Asom Gana Parishad|AGP]]
+| 82,800
+| 53.90
+| Shankar Prasad Rai
+| bgcolor=#00BFFF | 
+| [[Indian National Congress|INC]]
+| 44,633
+| 29.05
+| 38,167
+|-
+| colspan="13" bgcolor="grey" align="center" | [[Chirang district|<span style="color:white;">'''Chirang District'''</span>]]
+|-
+| 33
+| [[Bijni Assembly constituency|Bijni]]
+| [[Ajoy Kumar Ray]]
+| bgcolor=#FF9933 | 
+| [[Bharatiya Janata Party|BJP]]
+| 45,733
+| 32.69
+| [[Kamal Singh Narzary]]
+| bgcolor=#FF6600 | 
+| [[Bodoland People's Front|BPF]]
+| 44,730
+| 31.97
+| 1,003
+|-
+| colspan="13" bgcolor="grey" align="center" | [[Bongaigaon district|<span style="color:white;">'''Bongaigaon District'''</span>]]
+|-
+| 34
+| [[Abhayapuri North Assembly constituency|Abhayapuri North]]
+| [[Abdul Batin Khandakar|Abdul Batin Khandkar]]
+| bgcolor=#00BFFF | 
+| [[Indian National Congress|INC]]
+| 93,276
+| 58.58
+| Bhupen Ray
+| bgcolor=#99CCFF | 
+| [[Asom Gana Parishad|AGP]]
+| 60,495
+| 38.00
+| 32,781
+|-
+| 35
+| [[Abhayapuri South Assembly constituency|Abhayapuri South (SC)]]
+| [[Pradip Sarkar (Assam politician)|Pradip Sarkar]]
+| bgcolor=#00BFFF | 
+| [[Indian National Congress|INC]]
+| 112,954
+| 61.04
+| Punendra Banikya
+| bgcolor=#99CCFF | 
+| [[Asom Gana Parishad|AGP]]
+| 65,869
+| 35.59
+| 47,085
+|-
+| colspan="13" bgcolor="grey" align="center" | [[Goalpara district|<span style="color:white;">'''Goalpara District'''</span>]]
+|-
+| 36
+| [[Dudhnai Assembly constituency|Dudhnai (ST)]]
+| [[Jadab Sawargiary]]
+| bgcolor=#00BFFF | 
+| [[Indian National Congress|INC]]
+| 78,551
+| 43.46
+| Shyamjit Rabha
+| bgcolor=#FF9933 | 
+| [[Bharatiya Janata Party|BJP]]
+| 77,275
+| 42.75
+| 1,276
+|-
+| 37
+| [[Goalpara East Assembly constituency|Goalpara East]]
+| [[Abul Kalam Rasheed Alam|Abdul Kalam Rasheed Alam]]
+| bgcolor=#00BFFF | 
+| [[Indian National Congress|INC]]
+| 112,995
+| 57.81
+| Jyotish Das
+| bgcolor=#99CCFF | 
+| [[Asom Gana Parishad|AGP]]
+| 67,747
+| 34.66
+| 45,248
+|-
+| 38
+| [[Goalpara West Assembly constituency|Goalpara West]]
+| [[Abdur Rashid Mandal|Md. Abdur Rashid Mandal]]
+| bgcolor=#00BFFF | 
+| [[Indian National Congress|INC]]
+| 85,752
+| 54.18
+| [[Sheikh Shah Alam]]
+| bgcolor=#99CCFF | 
+| [[Asom Gana Parishad|AGP]]
+| 39,728
+| 25.10
+| 46,024
+|-
+| 39
+| [[Jaleswar, Assam Assembly constituency|Jaleswar]]
+| [[Aftabuddin]] Mollah
+| bgcolor=#00BFFF | 
+| [[Indian National Congress|INC]]
+| 76,026
+| 50.75
+| Dr. Reza M. A. Amin
+| bgcolor=#348017 | 
+| [[All India United Democratic Front|AIUDF]]
+| 54,046
+| 36.08
+| 21,980
+|-
+| colspan="13" bgcolor="grey" align="center" | [[Barpeta district|<span style="color:white;">'''Barpeta District'''</span>]]
+|-
+| 40
+| [[Sorbhog Assembly constituency|Sorbhog]]
+| [[Manoranjan Talukdar]]
+| bgcolor=#ff0000 | 
+| [[Communist Party of India (Marxist)|CPI(M)]]
+| 96,134
+| 50.21
+| Sankar Chandra Das
+| bgcolor=#FF9933 | 
+| [[Bharatiya Janata Party|BJP]]
+| 85,872
+| 44.85
+| 10,262
+|-
+| colspan="13" bgcolor="grey" align="center" | [[Bajali district|<span style="color:white;">'''Bajali District'''</span>]]
+|-
+| 41
+| [[Bhabanipur, Assam Assembly constituency|Bhabanipur]]
+| [[Phanidhar Talukdar]]
+| bgcolor=#348017 | 
+| [[All India United Democratic Front|AIUDF]]
+| 55,975
+| 44.57
+| Ranjit Deka
+| bgcolor=#99CCFF | 
+| [[Asom Gana Parishad|AGP]]
+| 52,748
+| 42.00
+| 3,227
+|-
+| 42
+| [[Patacharkuchi Assembly constituency|Patacharkuchi]]
+| [[Ranjeet Kumar Dass]]
+| bgcolor=#FF9933 | 
+| [[Bharatiya Janata Party|BJP]]
+| 81,284
+| 71.67
+| Santanu Sarma
+| bgcolor=#00BFFF | 
+| [[Indian National Congress|INC]]
+| 18,431
+| 16.25
+| 62,853
+|-
+| colspan="13" bgcolor="grey" align="center" | [[Barpeta district|<span style="color:white;">'''Barpeta District'''</span>]]
+|-
+| 43
+| [[Barpeta Assembly constituency|Barpeta]]
+| [[Abdur Rahim Ahmed]]
+| bgcolor=#00BFFF | 
+| [[Indian National Congress|INC]]
+| 111,083
+| 61.04
+| [[Gunindra Nath Das]]
+| bgcolor=#99CCFF | 
+| [[Asom Gana Parishad|AGP]]
+| 66,364
+| 36.47
+| 44,719
+|-
+| 44
+| [[Jania Assembly constituency|Jania]]
+| [[Rafiqul Islam (Indian politician)|Rafiqul Islam]]
+| bgcolor=#348017 | 
+| [[All India United Democratic Front|AIUDF]]
+| 156,183
+| 84.60
+| Shahidul Islam
+| bgcolor=#FF9933 | 
+| [[Bharatiya Janata Party|BJP]]
+| 11,408
+| 6.18
+| 144,775
+|-
+| 45
+| [[Baghbar Assembly constituency|Baghbor]]
+| [[Sherman Ali Ahmed]]
+| bgcolor=#00BFFF | 
+| [[Indian National Congress|INC]]
+| 79,357
+| 52.46
+| Rajib Ahmed
+| bgcolor=#348017 | 
+| [[All India United Democratic Front|AIUDF]]
+| 65,415
+| 43.24
+| 13,942
+|-
+| 46
+| [[Sarukhetri Assembly constituency|Sarukhetri]]
+| [[Jakir Hussain Sikdar]]
+| bgcolor=#00BFFF | 
+| [[Indian National Congress|INC]]
+| 77,045
+| 43.07
+| [[Kalpana Patowary]]
+| bgcolor=#99CCFF | 
+| [[Asom Gana Parishad|AGP]]
+| 47,504
+| 26.56
+| 29,541
+|-
+| 47
+| [[Chenga Assembly constituency|Chenga]]
+| [[Ashraful Hussain]]
+| bgcolor=#348017 | 
+| [[All India United Democratic Front|AIUDF]]
+| 75,312
+| 58.83
+| Rabiul Hussain
+| bgcolor=#99CCFF | 
+| [[Asom Gana Parishad|AGP]]
+| 23,373
+| 18.76
+| 51,939
+|-
+| colspan="13" bgcolor="grey" align="center" | [[Kamrup district|<span style="color:white;">'''Kamrup District'''</span>]]
+|-
+| 48
+| [[Boko Assembly constituency|Boko (SC)]]
+| [[Nandita Das (politician)|Nandita Das]]
+| bgcolor=#00BFFF | 
+| [[Indian National Congress|INC]]
+| 120,613
+| 58.82
+| [[Jyoti Prasad Das]]
+| bgcolor=#99CCFF | 
+| [[Asom Gana Parishad|AGP]]
+| 68,147
+| 33.23
+| 52,466
+|-
+| 49
+| [[Chaygaon Assembly constituency|Chaygaon]]
+| [[Rekibuddin Ahmed]]
+| bgcolor=#00BFFF | 
+| [[Indian National Congress|INC]]
+| 93,864
+| 56.32
+| [[Kamala Kanta Kalita]]
+| bgcolor=#99CCFF | 
+| [[Asom Gana Parishad|AGP]]
+| 65,820
+| 39.50
+| 28,044
+|-
+| 50
+| [[Palasbari Assembly constituency|Palasbari]]
+| [[Hemanga Thakuria]]
+| bgcolor=#FF9933 | 
+| [[Bharatiya Janata Party|BJP]]
+| 68,311
+| 51.81
+| Pankaj Lochan Devgoswami
+| bgcolor=#0048BA | 
+| [[Assam Jatiya Parishad|AJP]]
+| 28,641
+| 21.72
+| 39,670
+|-
+| colspan="13" bgcolor="grey" align="center" | [[Kamrup Metropolitan district|<span style="color:white;">'''Kamrup Metropolitan District'''</span>]]
+|-
+| 51
+| [[Jalukbari Assembly constituency|Jalukbari]]
+| [[Himanta Biswa Sarma]]
+| bgcolor=#FF9933 | 
+| [[Bharatiya Janata Party|BJP]]
+| 130,762
+| 77.39
+| Ramen Chandra Borthakur
+| bgcolor=#00BFFF | 
+| [[Indian National Congress|INC]]
+| 28,851
+| 17.07
+| 101,911
+|-
+| 52
+| [[Dispur Assembly constituency|Dispur]]
+| [[Atul Bora Sr.|Atul Bora]]
+| bgcolor=#FF9933 | 
+| [[Bharatiya Janata Party|BJP]]
+| 196,043
+| 64.00
+| Manjit Mahanta
+| bgcolor=#00BFFF | 
+| [[Indian National Congress|INC]]
+| 74,386
+| 24.28
+| 121,657
+|-
+| 53
+| [[Gauhati East Assembly constituency|Gauhati East]]
+| [[Siddhartha Bhattacharya]]
+| bgcolor=#FF9933 | 
+| [[Bharatiya Janata Party|BJP]]
+| 113,461
+| 66.33
+| Ashima Bordoloi
+| bgcolor=#00BFFF | 
+| [[Indian National Congress|INC]]
+| 29,361
+| 17.16
+| 84,100
+|-
+| 54
+| [[Gauhati West Assembly constituency|Gauhati West]]
+| [[Ramendra Narayan Kalita]]
+| bgcolor=#99CCFF | 
+| [[Asom Gana Parishad|AGP]]
+| 137,533
+| 59.87
+| Mira Borthakur Goswami
+| bgcolor=#00BFFF | 
+| [[Indian National Congress|INC]]
+| 59,084
+| 25.72
+| 78,449
+|-
+| colspan="13" bgcolor="grey" align="center" | [[Kamrup district|<span style="color:white;">'''Kamrup District'''</span>]]
+|-
+| 55
+| [[Hajo Assembly constituency|Hajo]]
+| [[Suman Haripriya]]
+| bgcolor=#FF9933 | 
+| [[Bharatiya Janata Party|BJP]]
+| 66,165
+| 43.63
+| Dulu Ahmed
+| bgcolor=#0048BA | 
+| [[Assam Jatiya Parishad|AJP]]
+| 51,797
+| 34.15
+| 14,368
+|-
+| 56
+| [[Kamalpur, Assam Assembly constituency|Kamalpur]]
+| [[Diganta Kalita]]
+| bgcolor=#FF9933 | 
+| [[Bharatiya Janata Party|BJP]]
+| 81,083
+| 53.93
+| Kishor Bhattacharya
+| bgcolor=#00BFFF | 
+| [[Indian National Congress|INC]]
+| 62,969
+| 41.89
+| 18,114
+|-
+| 57
+| [[Rangiya Assembly constituency|Rangia]]
+| [[Bhabesh Kalita]]
+| bgcolor=#FF9933 | 
+| [[Bharatiya Janata Party|BJP]]
+| 84,844
+| 52.11
+| Bhagaban Dev Misra
+| bgcolor=#FF0000 | 
+| [[Communist Party of India (Marxist)|CPI(M)]]
+| 64,624
+| 39.69
+| 20,220
+|-
+| colspan="13" bgcolor="grey" align="center" | [[Baksa district|<span style="color:white;">'''Baksa District'''</span>]]
+|-
+| 58
+| [[Tamulpur Assembly constituency|Tamulpur]]
+| [[Leho Ram Boro]]
+| bgcolor=#F3ED13 | 
+| [[United People's Party Liberal|UPPL]]
+| 78,818
+| 46.75
+| Ramdas Basumatary
+| bgcolor=#FF6600 | 
+| [[Bodoland People's Front|BPF]]
+| 46,635
+| 27.66
+| 32,183
+|-
+| colspan="13" bgcolor="grey" align="center" | [[Nalbari district|<span style="color:white;">'''Nalbari District'''</span>]]
+|-
+| 59
+| [[Nalbari Assembly constituency|Nalbari]]
+| [[Jayanta Malla Baruah]]
+| bgcolor=#FF9933 | 
+| [[Bharatiya Janata Party|BJP]]
+| 106,190
+| 58.84
+| Pradyut Kumar Bhuyan
+| bgcolor=#00BFFF | 
+| [[Indian National Congress|INC]]
+| 56,733
+| 31.43
+| 49,457
+|-
+| 60
+| [[Barkhetry Assembly constituency|Barkhetry]]
+| [[Diganta Barman]]
+| bgcolor=#00BFFF | 
+| [[Indian National Congress|INC]]
+| 85,826
+| 49.46
+| [[Narayan Deka]]
+| bgcolor=#FF9933 | 
+| [[Bharatiya Janata Party|BJP]]
+| 81,772
+| 47.13
+| 4,054
+|-
+| 61
+| [[Dharmapur Assembly constituency|Dharmapur]]
+| [[Chandra Mohan Patowary]]
+| bgcolor=#FF9933 | 
+| [[Bharatiya Janata Party|BJP]]
+| 68,362
+| 56.73
+| Ratul Patowary
+| bgcolor=#00BFFF | 
+| [[Indian National Congress|INC]]
+| 43,328
+| 35.96
+| 25,034
+|-
+| colspan="13" bgcolor="grey" align="center" | [[Baksa district|<span style="color:white;">'''Baksa District'''</span>]]
+|-
+| 62
+| [[Barama Assembly constituency|Barama (ST)]]
+| [[Bhupen Baro|Bhupen Boro]]
+| bgcolor=#F3ED13 | 
+| [[United People's Party Liberal|UPPL]]
+| 62,385
+| 46.78
+| Prabin Boro
+| bgcolor=#FF6600 | 
+| [[Bodoland People's Front|BPF]]
+| 38,613
+| 28.96
+| 23,772
+|-
+| 63
+| [[Chapaguri Assembly constituency|Chapaguri (ST)]]
+| [[Urkhao Gwra Brahma]]
+| bgcolor=#F3ED13 | 
+| [[United People's Party Liberal|UPPL]]
+| 61,804
+| 48.58
+| [[Hitesh Basumatary]]
+| bgcolor=#FF6600 | 
+| [[Bodoland People's Front|BPF]]
+| 35,065
+| 27.56
+| 26,739
+|-
+| colspan="13" bgcolor="grey" align="center" | [[Udalguri district|<span style="color:white;">'''Udalguri District'''</span>]]
+|-
+| 64
+| [[Panery Assembly constituency|Panery]]
+| [[Biswajit Daimary]]
+| bgcolor=#FF9933 | 
+| [[Bharatiya Janata Party|BJP]]
+| 72,639
+| 60.82
+| Karuna Kanta Swargiary
+| bgcolor=#FF6600 | 
+| [[Bodoland People's Front|BPF]]
+| 36,787
+| 30.80
+| 35,852
+|-
+| colspan="13" bgcolor="grey" align="center" | [[Darrang district|<span style="color:white;">'''Darrang District'''</span>]]
+|-
+| 65
+| [[Kalaigaon Assembly constituency|Kalaigaon]]
+| [[Durga Das Boro]]
+| bgcolor=#FF6600 | 
+| [[Bodoland People's Front|BPF]]
+| 60,815
+| 41.05
+| Madhu Ram Deka
+| bgcolor=#FF9933 | 
+| [[Bharatiya Janata Party|BJP]]
+| 53,713
+| 36.26
+| 7,102
+|-
+| 66
+| [[Sipajhar Assembly constituency|Sipajhar]]
+| [[Paramananda Rajbongshi|Parmananda Rajbongshi]]
+| bgcolor=#FF9933 | 
+| [[Bharatiya Janata Party|BJP]]
+| 74,739
+| 50.33
+| Kuldip Barua
+| bgcolor=#00BFFF | 
+| [[Indian National Congress|INC]]
+| 67,605
+| 45.52
+| 7,134
+|-
+| 67
+| [[Mangaldoi Assembly constituency|Mangaldoi (SC)]]
+| [[Basanta Das]]
+| bgcolor=#00BFFF | 
+| [[Indian National Congress|INC]]
+| 111,386
+| 54.68
+| Guru Jyoti Das
+| bgcolor=#FF9933 | 
+| [[Bharatiya Janata Party|BJP]]
+| 87,032
+| 42.72
+| 24,354
+|-
+| 68
+| [[Dalgaon Assembly constituency|Dalgaon]]
+| [[Mazibur Rahman]]
+| bgcolor=#348017 | 
+| [[All India United Democratic Front|AIUDF]]
+| 118,342
+| 55.20
+| [[Ilias Ali (Indian politician)|Ilias Ali]]
+| bgcolor=#00BFFF | 
+| [[Indian National Congress|INC]]
+| 62,959
+| 29.37
+| 55,383
+|-
+| colspan="13" bgcolor="grey" align="center" | [[Udalguri district|<span style="color:white;">'''Udalguri District'''</span>]]
+|-
+| 69
+| [[Udalguri Assembly constituency|Udalguri (ST)]]
+| [[Gobinda Chandra Basumatary]]
+| bgcolor=#F3ED13 | 
+| [[United People's Party Liberal|UPPL]]
+| 61,767
+| 50.43
+| Rihon Daimari
+| bgcolor=#FF6600 | 
+| [[Bodoland People's Front|BPF]]
+| 56,916
+| 46.47
+| 4,851
+|-
+| 70
+| [[Majbat Assembly constituency|Majbat]]
+| [[Charan Boro]]
+| bgcolor=#FF6600 | 
+| [[Bodoland People's Front|BPF]]
+| 54,409
+| 42.32
+| Jitu Kissan
+| bgcolor=#FF9933 | 
+| [[Bharatiya Janata Party|BJP]]
+| 38,352
+| 29.83
+| 16,057
+|-
+| colspan="13" bgcolor="grey" align="center" | [[Sonitpur district|<span style="color:white;">'''Sonitpur District'''</span>]]
+|-
+| 71
+| [[Dhekiajuli Assembly constituency|Dhekiajuli]]
+| [[Ashok Singhal (politician)|Ashok Singhal]]
+| bgcolor=#FF9933 | 
+| [[Bharatiya Janata Party|BJP]]
+| 93,768
+| 56.89
+| Benudhar Nath
+| bgcolor=#00BFFF | 
+| [[Indian National Congress|INC]]
+| 58,698
+| 35.62
+| 35,070
+|-
+| 72
+| [[Barchalla Assembly constituency|Barchalla]]
+| [[Ganesh Kumar Limbu]]
+| bgcolor=#FF9933 | 
+| [[Bharatiya Janata Party|BJP]]
+| 70,569
+| 51.50
+| [[Ram Prasad Sharma|Ram Prasad Sarma]]
+| bgcolor=#00BFFF | 
+| [[Indian National Congress|INC]]
+| 52,787
+| 38.52
+| 17,782
+|-
+| 73
+| [[Tezpur Assembly constituency|Tezpur]]
+| [[Prithiraj Rava]]
+| bgcolor=#99CDFF | 
+| [[Asom Gana Parishad|AGP]]
+| 71,454
+| 47.69
+| Anuj Kumar Mech
+| bgcolor=#00BFFF | 
+| [[Indian National Congress|INC]]
+| 61,331
+| 40.93
+| 10,123
+|-
+| 74
+| [[Rangapara Assembly constituency|Rangapara]]
+| [[Krishna Kamal Tanti]]
+| bgcolor=#FF9933 | 
+| [[Bharatiya Janata Party|BJP]]
+| 70,172
+| 53.20
+| Abhijit Hazarika
+| bgcolor=#00BFFF | 
+| [[Indian National Congress|INC]]
+| 47,827
+| 36.26
+| 22,345
+|-
+| 75
+| [[Sootea Assembly constituency|Sootea]]
+| [[Padma Hazarika]]
+| bgcolor=#FF9933 | 
+| [[Bharatiya Janata Party|BJP]]
+| 84,807
+| 56.50
+| Praneswar Basumatary
+| bgcolor=#00BFFF | 
+| [[Indian National Congress|INC]]
+| 60,432
+| 40.26
+| 24,375
+|-
+| colspan="13" bgcolor="grey" align="center" | [[Biswanath district|<span style="color:white;">'''Biswanath District'''</span>]]
+|-
+| 76
+| [[Biswanath Assembly constituency|Biswanath]]
+| [[Promod Borthakur]]
+| bgcolor=#FF9933 | 
+| [[Bharatiya Janata Party|BJP]]
+| 71,201
+| 50.80
+| Anjan Borah
+| bgcolor=#00BFFF | 
+| [[Indian National Congress|INC]]
+| 61,991
+| 44.23
+| 9,210
+|-
+| 77
+| [[Behali Assembly constituency|Behali]]
+| [[Ranjit Dutta]]
+| bgcolor=#FF9933 | 
+| [[Bharatiya Janata Party|BJP]]
+| 53,583
+| 50.93
+| Jayanta Borah
+| bgcolor=#CDCDCD | 
+| [[Independent politician|IND]]
+| 23,744
+| 22.57
+| 29,839
+|-
+| colspan="13" bgcolor="grey" align="center" | [[Sonitpur district|<span style="color:white;">'''Sonitpur District'''</span>]]
+|-
+| 78
+| [[Gohpur Assembly constituency|Gohpur]]
+| [[Utpal Borah]]
+| bgcolor=#FF9933 | 
+| [[Bharatiya Janata Party|BJP]]
+| 93,224
+| 57.14
+| [[Ripun Bora]]
+| bgcolor=#00BFFF | 
+| [[Indian National Congress|INC]]
+| 63,930
+| 39.18
+| 29,294
+|-
+| colspan="13" bgcolor="grey" align="center" | [[Morigaon district|<span style="color:white;">'''Morigaon District'''</span>]]
+|-
+| 79
+| [[Jagiroad Assembly constituency|Jagiroad (SC)]]
+| [[Pijush Hazarika]]
+| bgcolor=#FF9933 | 
+| [[Bharatiya Janata Party|BJP]]
+| 106,643
+| 53.54
+| Swapan Kumar Mandal
+| bgcolor=#00BFFF | 
+| [[Indian National Congress|INC]]
+| 77,239
+| 38.78
+| 29,404
+|-
+| 80
+| [[Marigaon Assembly constituency|Marigaon]]
+| [[Rama Kanta Dewri]]
+| bgcolor=#FF9933 | 
+| [[Bharatiya Janata Party|BJP]]
+| 81,657
+| 52.15
+| Bani Kanta Das
+| bgcolor=#0048BA | 
+| [[Assam Jatiya Parishad|AJP]]
+| 45,125
+| 28.82
+| 36,532
+|-
+| 81
+| [[Laharighat Assembly constituency|Laharighat]]
+| Dr. [[Asif Mohammad Nazar]]
+| bgcolor=#00BFFF | 
+| [[Indian National Congress|INC]]
+| 60,932
+| 37.30
+| Siddique Ahmed
+| bgcolor=#CDCDCD | 
+| [[Independent candidate|IND]]
+| 58,904
+| 36.06
+| 2,028
+|-
+| colspan="13" bgcolor="grey" align="center" | [[Nagaon district|<span style="color:white;">'''Nagaon District'''</span>]]
+|-
+| 82
+| [[Raha Assembly constituency|Raha (SC)]]
+| [[Sashi Kanta Das]]
+| bgcolor=#00BFFF | 
+| [[Indian National Congress|INC]]
+| 89,511
+| 50.05
+| Bishnu Das
+| bgcolor=#99CCFF | 
+| [[Asom Gana Parishad|AGP]]
+| 76,453
+| 42.75
+| 13,058
+|-
+| 83
+| [[Dhing Assembly constituency|Dhing]]
+| [[Aminul Islam (Indian politician, born 1972)|Aminul Islam]]
+| bgcolor=#348017 | 
+| [[All India United Democratic Front|AIUDF]]
+| 145,888
+| 70.39
+| Mehboob Muktar
+| bgcolor=#CDCDCD | 
+| [[Independent candidate|IND]]
+| 42,921
+| 20.71
+| 102,947
+|-
+| 84
+| [[Batadroba Assembly constituency|Batadroba]]
+| [[Sibamoni Bora]]
+| bgcolor=#00BFFF | 
+| [[Indian National Congress|INC]]
+| 84,278
+| 60.02
+| [[Angoorlata Deka]]
+| bgcolor=#FF9933 | 
+| [[Bharatiya Janata Party|BJP]]
+| 51,458
+| 36.64
+| 32,820
+|-
+| 85
+| [[Rupohihat Assembly constituency|Rupohihat]]
+| [[Nurul Huda (Assamese politician)|Nurul Huda]]
+| bgcolor=#00BFFF | 
+| [[Indian National Congress|INC]]
+| 132,091
+| 73.00
+| Najir Hussain
+| bgcolor=#FF9933 | 
+| [[Bharatiya Janata Party|BJP]]
+| 25,739
+| 14.22
+| 106,352
+|-
+| 86
+| [[Nowgong Assembly constituency|Nowgong]]
+| [[Rupak Sarmah]]
+| bgcolor=#FF9933 | 
+| [[Bharatiya Janata Party|BJP]]
+| 81,098
+| 52.01
+| Santanu Sarma
+| bgcolor=#00BFFF | 
+| [[Indian National Congress|INC]]
+| 70,015
+| 44.90
+| 11,083
+|-
+| 87
+| [[Barhampur Assembly constituency|Barhampur]]
+| [[Jitu Goswami]]
+| bgcolor=#FF9933 | 
+| [[Bharatiya Janata Party|BJP]]
+| 70,111
+| 48.70
+| Suresh Borah
+| bgcolor=#00BFFF | 
+| [[Indian National Congress|INC]]
+| 69,360
+| 48.18
+| 751
+|-
+| 88
+| [[Samaguri Assembly constituency|Samaguri]]
+| [[Rakibul Hussain]]
+| bgcolor=#00BFFF | 
+| [[Indian National Congress|INC]]
+| 81,123
+| 58.09
+| Anil Saikia
+| bgcolor=#FF9933 | 
+| [[Bharatiya Janata Party|BJP]]
+| 55,025
+| 39.40
+| 26,098
+|-
+| 89
+| [[Kaliabor Assembly constituency|Kaliabor]]
+| [[Keshab Mahanta]]
+| bgcolor=#99CDFF | 
+| [[Asom Gana Parishad|AGP]]
+| 73,677
+| 59.06
+| Prasanta Kumar Saikia
+| bgcolor=#00BFFF | 
+| [[Indian National Congress|INC]]
+| 44,957
+| 36.04
+| 28,720
+|-
+| colspan="13" bgcolor="grey" align="center" | [[Hojai district|<span style="color:white;">'''Hojai District'''</span>]]
+|-
+| 90
+| [[Jamunamukh Assembly constituency|Jamunamukh]]
+| [[Sirajuddin Ajmal]]
+| bgcolor=#348017 | 
+| [[All India United Democratic Front|AIUDF]]
+| 136,902
+| 73.14
+| Sadik Ullah Bhuyan
+| bgcolor=#99CDFF | 
+| [[Asom Gana Parishad|AGP]]
+| 18,342
+| 9.80
+| 118,560
+|-
+| 91
+| [[Hojai Assembly constituency|Hojai]]
+| [[Ramkrishna Ghosh]]
+| bgcolor=#FF9933 | 
+| [[Bharatiya Janata Party|BJP]]
+| 125,790
+| 56.64
+| Debabrata Saha
+| bgcolor=#00BFFF | 
+| [[Indian National Congress|INC]]
+| 92,008
+| 41.43
+| 33,782
+|-
+| 92
+| [[Lumding Assembly constituency|Lumding]]
+| [[Sibu Misra]]
+| bgcolor=#FF9933 | 
+| [[Bharatiya Janata Party|BJP]]
+| 89,108
+| 51.04
+| [[Swapan Kar]]
+| bgcolor=#00BFFF | 
+| [[Indian National Congress|INC]]
+| 77,377
+| 44.32
+| 11,731
+|-
+| colspan="13" bgcolor="grey" align="center" | [[Golaghat district|<span style="color:white;">'''Golaghat District'''</span>]]
+|-
+| 93
+| [[Bokakhat Assembly constituency|Bokakhat]]
+| [[Atul Bora]]
+| bgcolor=#99CDFF | 
+| [[Asom Gana Parishad|AGP]]
+| 72,930
+| 60.56
+| Pranab Doley
+| bgcolor=#CDCDCD | 
+| [[Independent politician|IND]]
+| 27,749
+| 23.04
+| 45,181
+|-
+| 94
+| [[Sarupathar Assembly constituency|Sarupathar]]
+| [[Biswajit Phukan]]
+| bgcolor=#FF9933 | 
+| [[Bharatiya Janata Party|BJP]]
+| 107,090
+| 51.49
+| [[Roselina Tirkey]]
+| bgcolor=#00BFFF | 
+| [[Indian National Congress|INC]]
+| 67,731
+| 32.57
+| 39,359
+|-
+| 95
+| [[Golaghat Assembly constituency|Golaghat]]
+| [[Ajanta Neog]]
+| bgcolor=#FF9933 | 
+| [[Bharatiya Janata Party|BJP]]
+| 81,651
+| 50.63
+| Bitupan Saikia
+| bgcolor=#00BFFF | 
+| [[Indian National Congress|INC]]
+| 72,326
+| 44.84
+| 9,325
+|-
+| 96
+| [[Khumtai Assembly constituency|Khumtai]]
+| [[Mrinal Saikia]]
+| bgcolor=#FF9933 | 
+| [[Bharatiya Janata Party|BJP]]
+| 65,655
+| 56.49
+| [[Bismita Gogoi]]
+| bgcolor=#00BFFF | 
+| [[Indian National Congress|INC]]
+| 38,522
+| 33.14
+| 27,133
+|-
+| 97
+| [[Dergaon Assembly constituency|Dergaon (SC)]]
+| [[Bhabendra Nath Bharali]]
+| bgcolor=#99CDFF | 
+| [[Asom Gana Parishad|AGP]]
+| 64,043
+| 48.12
+| Bani Hazarika
+| bgcolor=#00BFFF | 
+| [[Indian National Congress|INC]]
+| 51,546
+| 38.73
+| 12,497
+|-
+| colspan="13" bgcolor="grey" align="center" | [[Jorhat district|<span style="color:white;">'''Jorhat District'''</span>]]
+|-
+| 98
+| [[Jorhat Assembly constituency|Jorhat]]
+| [[Hitendra Nath Goswami]]
+| bgcolor=#FF9933 | 
+| [[Bharatiya Janata Party|BJP]]
+| 68,321
+| 48.84
+| [[Rana Goswami]]
+| bgcolor=#00BFFF | 
+| [[Indian National Congress|INC]]
+| 61,833
+| 44.20
+| 6,488
+|-
+| colspan="13" bgcolor="grey" align="center" | [[Majuli district|<span style="color:white;">'''Majuli District'''</span>]]
+|-
+| 99
+| [[Majuli Assembly constituency|Majuli (ST)]]
+| [[Sarbananda Sonowal]]
+| bgcolor=#FF9933 | 
+| [[Bharatiya Janata Party|BJP]]
+| 71,436
+| 67.53
+| [[Rajib Lochan Pegu]]
+| bgcolor=#00BFFF | 
+| [[Indian National Congress|INC]]
+| 28,244
+| 26.70
+| 43,192
+|-
+| colspan="13" bgcolor="grey" align="center" | [[Jorhat district|<span style="color:white;">'''Jorhat District'''</span>]]
+|-
+| 100
+| [[Titabar Assembly constituency|Titabar]]
+| [[Bhaskar Jyoti Baruah]]
+| bgcolor=#00BFFF | 
+| [[Indian National Congress|INC]]
+| 64,303
+| 52.89
+| [[Hemanta Kalita]]
+| bgcolor=#FF9933 | 
+| [[Bharatiya Janata Party|BJP]]
+| 50,924
+| 41.89
+| 13,397
+|-
+| 101
+| [[Mariani Assembly constituency|Mariani]]
+| [[Rupjyoti Kurmi]]
+| bgcolor=#00BFFF | 
+| [[Indian National Congress|INC]]
+| 47,308
+| 49.36
+| Ramani Tanti
+| bgcolor=#FF9933 | 
+| [[Bharatiya Janata Party|BJP]]
+| 44,862
+| 46.81
+| 2,446
+|-
+| 102
+| [[Teok Assembly constituency|Teok]]
+| [[Renupoma Rajkhowa]]
+| bgcolor=#99CDFF | 
+| [[Asom Gana Parishad|AGP]]
+| 47,555
+| 45.78
+| Pallabi Gogoi
+| bgcolor=#00BFFF | 
+| [[Indian National Congress|INC]]
+| 46,205
+| 44.48
+| 1,350
+|-
+| colspan="13" bgcolor="grey" align="center" | [[Sivasagar district|<span style="color:white;">'''Sibsagar District'''</span>]]
+|-
+| 103
+| [[Amguri Assembly constituency|Amguri]]
+| [[Prodip Hazarika]]
+| bgcolor=#99CDFF | 
+| [[Asom Gana Parishad|AGP]]
+| 49,891
+| 48.03
+| Angkita Dutta
+| bgcolor=#00BFFF | 
+| [[Indian National Congress|INC]]
+| 43,712
+| 42.08
+| 6,179
+|-
+| 104
+| [[Nazira Assembly constituency|Nazira]]
+| [[Debabrata Saikia]]
+| bgcolor=#00BFFF | 
+| [[Indian National Congress|INC]]
+| 52,387
+| 47.56
+| Mayur Borgohain
+| bgcolor=#FF9933 | 
+| [[Bharatiya Janata Party|BJP]]
+| 51,704
+| 46.94
+| 683
+|-
+| colspan="13" bgcolor="grey" align="center" | [[Charaideo district|<span style="color:white;">'''Charaideo District'''</span>]]
+|-
+| 105
+| [[Mahmara Assembly constituency|Mahmara]]
+| [[Jogen Mohan]]
+| bgcolor=#FF9933 | 
+| [[Bharatiya Janata Party|BJP]]
+| 51,282
+| 45.18
+| Suruj Dehingia
+| bgcolor=#00BFFF | 
+| [[Indian National Congress|INC]]
+| 38,147
+| 33.61
+| 13,135
+|-
+| 106
+| [[Sonari Assembly constituency|Sonari]]
+| [[Dharmeswar Konwar]]
+| bgcolor=#FF9933 | 
+| [[Bharatiya Janata Party|BJP]]
+| 69,690
+| 48.00
+| Sushil Kumar Suri
+| bgcolor=#00BFFF | 
+| [[Indian National Congress|INC]]
+| 54,573
+| 37.59
+| 15,117
+|-
+| colspan="13" bgcolor="grey" align="center" | [[Sivasagar district|<span style="color:white;">'''Sibsagar District'''</span>]]
+|-
+| 107
+| [[Thowra Assembly constituency|Thowra]]
+| [[Sushanta Borgohain]]
+| bgcolor=#00BFFF | 
+| [[Indian National Congress|INC]]
+| 48,026
+| 49.56
+| [[Kushal Dowari]]
+| bgcolor=#FF9933 | 
+| [[Bharatiya Janata Party|BJP]]
+| 46,020
+| 47.49
+| 2,006
+|-
+| 108
+| [[Sibsagar Assembly constituency|Sibsagar]]
+| [[Akhil Gogoi]]{{efn|Akhil Gogoi is the president of Raijor Dal, but he contested the election as an independent candidate.}}
+| bgcolor=#CDCDCD | 
+| [[Independent politician|IND]]
+| 57,219
+| 46.06
+| Surabhi Rajkonwari
+| bgcolor=#FF9933 | 
+| [[Bharatiya Janata Party|BJP]]
+| 45,344
+| 36.50
+| 11,875
+|-
+| colspan="13" bgcolor="grey" align="center" | [[Lakhimpur district|<span style="color:white;">'''Lakhimpur District'''</span>]]
+|-
+| 109
+| [[Bihpuria Assembly constituency|Bihpuria]]
+| [[Amiya Kumar Bhuyan]]
+| bgcolor=#FF9933 | 
+| [[Bharatiya Janata Party|BJP]]
+| 58,979
+| 48.53
+| [[Bhupen Kumar Borah]]
+| bgcolor=#00BFFF | 
+| [[Indian National Congress|INC]]
+| 48,801
+| 40.16
+| 10,178
+|-
+| 110
+| [[Naoboicha Assembly constituency|Naoboicha]]
+| [[Bharat Narah|Bharat Chandra Narah]]
+| bgcolor=#00BFFF | 
+| [[Indian National Congress|INC]]
+| 52,905
+| 27.34
+| Ajijur Rahman
+| bgcolor=#CDCDCD | 
+| [[Independent politician|IND]]
+| 49,292
+| 25.47
+| 3,613
+|-
+| 111
+| [[Lakhimpur, Assam Assembly constituency|Lakhimpur]]
+| [[Manab Deka]]
+| bgcolor=#FF9933 | 
+| [[Bharatiya Janata Party|BJP]]
+| 70,387
+| 45.03
+| Dr. Joy Prakash Das
+| bgcolor=#00BFFF | 
+| [[Indian National Congress|INC]]
+| 67,351
+| 43.09
+| 3,036
+|-
+| 112
+| [[Dhakuakhana Assembly constituency|Dhakuakhana (ST)]]
+| [[Naba Kumar Doley]]
+| bgcolor=#FF9933 | 
+| [[Bharatiya Janata Party|BJP]]
+| 86,382
+| 50.83
+| Padmalochan Doley
+| bgcolor=#00BFFF | 
+| [[Indian National Congress|INC]]
+| 76,786
+| 45.18
+| 9,596
+|-
+| colspan="13" bgcolor="grey" align="center" | [[Dhemaji district|<span style="color:white;">'''Dhemaji District'''</span>]]
+|-
+| 113
+| [[Dhemaji Assembly constituency|Dhemaji (ST)]]
+| [[Ranoj Pegu]]
+| bgcolor=#FF9933 | 
+| [[Bharatiya Janata Party|BJP]]
+| 87,681
+| 45.33
+| Chittaranjan Basumatary
+| bgcolor=#0048BA | 
+| [[Assam Jatiya Parishad|AJP]]
+| 56,889
+| 29.41
+| 30,792
+|-
+| 114
+| [[Jonai Assembly constituency|Jonai (ST)]]
+| [[Bhubon Pegu]]
+| bgcolor=#FF9933 | 
+| [[Bharatiya Janata Party|BJP]]
+| 168,411
+| 68.69
+| Hema Hari Prasanna Pegu
+| bgcolor=#00BFFF | 
+| [[Indian National Congress|INC]]
+| 57,424
+| 23.42
+| 110,987
+|-
+| colspan="13" bgcolor="grey" align="center" | [[Dibrugarh district|<span style="color:white;">'''Dibrugarh District'''</span>]]
+|-
+| 115
+| [[Moran Assembly constituency|Moran]]
+| [[Chakradhar Gogoi]]
+| bgcolor=#FF9933 | 
+| [[Bharatiya Janata Party|BJP]]
+| 55,604
+| 49.68
+| Pranjal Ghatowar
+| bgcolor=#00BFFF | 
+| [[Indian National Congress|INC]]
+| 33,263
+| 29.72
+| 22,341
+|-
+| 116
+| [[Dibrugarh Assembly constituency|Dibrugarh]]
+| [[Prasanta Phukan]]
+| bgcolor=#FF9933 | 
+| [[Bharatiya Janata Party|BJP]]
+| 68,762
+| 60.44
+| Rajkumar Nilanetra Neog
+| bgcolor=#00BFFF | 
+| [[Indian National Congress|INC]]
+| 30,757
+| 27.03
+| 38,005
+|-
+| 117
+| [[Lahowal Assembly constituency|Lahowal]]
+| [[Binod Hazarika]]
+| bgcolor=#FF9933 | 
+| [[Bharatiya Janata Party|BJP]]
+| 59,295
+| 48.13
+| Manoj Dhanowar
+| bgcolor=#00BFFF | 
+| [[Indian National Congress|INC]]
+| 42,047
+| 34.13
+| 17,248
+|-
+| 118
+| [[Duliajan Assembly constituency|Duliajan]]
+| [[Terash Gowalla]]
+| bgcolor=#FF9933 | 
+| [[Bharatiya Janata Party|BJP]]
+| 54,762
+| 43.35
+| Dhruba Gogoi
+| bgcolor=#00BFFF | 
+| [[Indian National Congress|INC]]
+| 46,652
+| 36.08
+| 8,110
+|-
+| 119
+| [[Tingkhong Assembly constituency|Tingkhong]]
+| [[Bimal Bora]]h
+| bgcolor=#FF9933 | 
+| [[Bharatiya Janata Party|BJP]]
+| 62,675
+| 52.66
+| Etuwa Munda
+| bgcolor=#00BFFF | 
+| [[Indian National Congress|INC]]
+| 34,282
+| 28.80
+| 28,394
+|-
+| 120
+| [[Naharkatia Assembly constituency|Naharkatia]]
+| [[Taranga Gogoi]]
+| bgcolor=#FF9933 | 
+| [[Bharatiya Janata Party|BJP]]
+| 47,268
+| 42.57
+| [[Pranati Phukan]]
+| bgcolor=#00BFFF | 
+| [[Indian National Congress|INC]]
+| 32,292
+| 29.08
+| 14,976
+|-
+| 121
+| [[Chabua Assembly constituency|Chabua]]
+| [[Ponakan Baruah]]
+| bgcolor=#99CDFF | 
+| [[Asom Gana Parishad|AGP]]
+| 53,554
+| 41.40
+| Ajoy Phukan
+| bgcolor=#00BFFF | 
+| [[Indian National Congress|INC]]
+| 34,824
+| 26.92
+| 18,730
+|-
+| colspan="13" bgcolor="grey" align="center" | [[Tinsukia district|<span style="color:white;">'''Tinsukia District'''</span>]]
+|-
+| 122
+| [[Tinsukia Assembly constituency|Tinsukia]]
+| [[Sanjoy Kishan]]
+| bgcolor=#FF9933 | 
+| [[Bharatiya Janata Party|BJP]]
+| 85,857
+| 65.58
+| Shamsher Singh
+| bgcolor={{party color|Assam Jatiya Parishad}}|
+| [[Assam Jatiya Parishad|AJP]]
+| 15,060
+| 11.50
+| 70,797
+|-
+| 123
+| [[Digboi Assembly constituency|Digboi]]
+| [[Suren Phukan]]
+| bgcolor=#FF9933 | 
+| [[Bharatiya Janata Party|BJP]]
+| 59,217
+| 55.24
+| Shibanath Chetia
+| bgcolor=#00BFFF | 
+| [[Indian National Congress|INC]]
+| 32,241
+| 30.80
+| 26,976
+|-
+| 124
+| [[Margherita Assembly constituency|Margherita]]
+| [[Bhaskar Sharma]]
+| bgcolor=#FF9933 | 
+| [[Bharatiya Janata Party|BJP]]
+| 86,640
+| 56.52
+| Manoranjan Borgohain
+| bgcolor=#00BFFF | 
+| [[Indian National Congress|INC]]
+| 28,140
+| 18.36
+| 58,500
+|-
+| 125
+| [[Doomdooma]]
+| [[Rupesh Gowala]]
+| bgcolor=#FF9933 | 
+| [[Bharatiya Janata Party|BJP]]
+| 49,119
+| 41.72
+| [[Durga Bhumij]]
+| bgcolor=#00BFFF | 
+| [[Indian National Congress|INC]]
+| 40,981
+| 34.80
+| 8,138
+|-
+| 126
+| [[Sadiya Assembly constituency|Sadiya]]
+| [[Bolin Chetia]]
+| bgcolor=#FF9933 | 
+| [[Bharatiya Janata Party|BJP]]
+| 64,855
+| 45.49
+| Lakhin Chandra Chetia
+| bgcolor=#00BFFF | 
+| [[Indian National Congress|INC]]
+| 42,771
+| 30.00
+| 22,084
+|}
+
+Source:<ref>{{cite news |url=https://old.eci.gov.in/files/file/13620-assam-general-legislative-election-2021/ |title=Assam General Legislative Election 2021 |work=Election Commission of India |language=en |access-date=18 July 2021 |archive-date=24 July 2021 |archive-url=https://web.archive.org/web/20210724162506/https://eci.gov.in/files/file/13620-assam-general-legislative-election-2021/ |url-status=live }}</ref><ref>{{cite news |url=http://ceoassam.nic.in/assembly/2021/form21E_2021.html |title=Assembly Constituency wise vote polled by contesting candidates in FORM-21 |work=Office of the Chief Electoral Officer, Assam |language=en |access-date=30 July 2021 |archive-date=14 May 2021 |archive-url=https://web.archive.org/web/20210514115345/http://ceoassam.nic.in/assembly/2021/form21E_2021.html |url-status=live }}</ref>

@@ -1,0 +1,983 @@
+=== Results by constituency ===
+{| class="wikitable sortable" style="line-height:20px;text-align:center;white-space:nowrap;font-size:94%;"
+! rowspan="2" |[[List of districts of Himachal Pradesh|District]]
+! colspan="2" | Constituency
+! colspan="5" |Winner<ref>{{cite news |last1=Mint |first1= |date=8 December 2022 |title=Himachal Pradesh Election Result 2022 winners' list: Cong wrests power from BJP |language=en |work= |url=https://www.livemint.com/news/india/himachal-pradesh-election-result-2022-winners-list-complete-constituencywise-11670466672738.html |accessdate=9 December 2022 |archiveurl=https://web.archive.org/web/20221209074119/https://www.livemint.com/news/india/himachal-pradesh-election-result-2022-winners-list-complete-constituencywise-11670466672738.html |archivedate=9 December 2022}}</ref>
+! colspan="5" |Runner-up
+! rowspan="2" |Margin
+|-
+! #
+! Name
+! Candidate
+! colspan="2" | Party
+! Votes
+!'''%'''
+! Candidate
+! colspan="2" | Party
+! Votes
+!'''%'''
+|-
+! rowspan="5" |[[Chamba district|Chamba]] 
+|1
+|[[Churah Assembly constituency|Churah]] (SC)
+|[[Hans Raj (politician)|Hans Raj]]
+| style="background-color:{{party color|BJP}}" |
+|[[BJP]]
+|32,095
+|51.49
+|Yashwant Singh
+| style="background-color:{{party color|Indian National Congress}}" |
+|[[Indian National Congress|INC]]
+|29,453
+|47.26
+|2,642
+|-
+|2
+|[[Bharmour Assembly constituency|Bharmour]] (ST)
+|[[Janak Raj (politician)|Janak Raj]]
+|style=background-color:{{party color|BJP}} |
+|[[BJP]]
+|30,336
+|53.68
+|Thakur Singh Bharmouri
+|style=background-color:{{party color|Indian National Congress}} |
+|[[Indian National Congress|INC]]
+|25,164
+|44.53
+|5,172
+|-
+|3
+|[[Chamba Assembly constituency|Chamba]]
+|[[Neeraj Nayar]]
+|style=background-color:{{party color|Indian National Congress}} |
+|[[Indian National Congress|INC]]
+|32,783
+|53.28
+|Neelam Nayyar
+|style=background-color:{{party color|BJP}} |
+|[[BJP]]
+|25,001
+|40.63
+|7,782
+|-
+|4
+|[[Dalhousie Assembly constituency|Dalhousie]]
+|[[Dhavinder Singh|Dhavinder Singh Thakur]]
+|style=background-color:{{party color|BJP}} |
+|[[BJP]]
+|33,488
+|57.49
+|[[Asha Kumari (politician)|Asha Kumari]]
+|style=background-color:{{party color|Indian National Congress}} |
+|[[Indian National Congress|INC]]
+|23,570
+|40.47
+|9,918
+|-
+|5
+|[[Bhattiyat Assembly constituency|Bhattiyat]]
+|[[Kuldeep Singh Pathania]]
+|style=background-color:{{party color|Indian National Congress}} |
+|[[Indian National Congress|INC]]
+|25,989
+|43.73
+|Bikram Singh
+|style=background-color:{{party color|BJP}} |
+|[[BJP]]
+|24,422
+|41.10
+|1,567
+|-
+! rowspan="15" |[[Kangra district|Kangra]] 
+|6
+|[[Nurpur Assembly constituency|Nurpur]]
+|[[Ranbir Singh Nikka|Ranbir Singh]]
+| style="background-color:{{party color|BJP}}" |
+|[[BJP]]
+|44,132
+|62.45
+|Ajay Mahajan
+| style="background-color:{{party color|Indian National Congress}}" |
+|[[Indian National Congress|INC]]
+|25,380
+|35.92
+|18,752
+|-
+|7
+|[[Indora Assembly constituency|Indora]] (SC)
+|[[Malender Rajan]]
+|style=background-color:{{party color|Indian National Congress}} |
+|[[Indian National Congress|INC]]
+|30,797
+|45.55
+|[[Reeta Devi (politician)|Reeta Devi]]
+|style=background-color:{{party color|BJP}} |
+|[[BJP]]
+|28,547
+|42.22
+|2,250
+|-
+|8
+|[[Fatehpur, Himachal Pradesh Assembly constituency|Fatehpur]]
+|[[Bhawani Singh Pathania]]
+|style=background-color:{{party color|Indian National Congress}} |
+|[[Indian National Congress|INC]]
+|33,238
+|51.83
+|[[Rakesh Pathania]]
+|style=background-color:{{party color|BJP}} |
+|[[BJP]]
+|25,884
+|40.36
+|7,354
+|-
+|9
+|[[Jawali Assembly constituency|Jawali]]
+|[[Chander Kumar]]
+|style=background-color:{{party color|Indian National Congress}} |
+|[[Indian National Congress|INC]]
+|38,243
+|51.22
+|Sanjay Guleria
+|style=background-color:{{party color|BJP}} |
+|[[BJP]]
+|35,212
+|47.16
+|3,031
+|-
+|10
+|[[Dehra Assembly constituency|Dehra]]
+|[[Hoshyar Singh]]
+|style=background-color:{{party color|Independent}} |
+|[[Independent politician|IND]]
+|22,997
+|37.96
+|Rajesh Sharma
+|style=background-color:{{party color|Indian National Congress}} |
+|[[Indian National Congress|INC]]
+|19,120
+|31.56
+|3,877
+|-
+|11
+|[[Jaswan-Pragpur Assembly constituency|Jaswan-Pragpur]]
+|[[Bikram Singh (politician)|Bikram Singh]]
+|style=background-color:{{party color|BJP}} |
+|[[BJP]]
+|22,658
+|38.27
+|Surinder Singh Mankotia
+|style=background-color:{{party color|Indian National Congress}} |
+|[[Indian National Congress|INC]]
+|20,869
+|35.25
+|1,789
+|-
+|12
+|[[Jawalamukhi Assembly constituency|Jawalamukhi]]
+|[[Sanjay Rattan]]
+|style=background-color:{{party color|Indian National Congress}} |
+|[[Indian National Congress|INC]]
+|27,827
+|46.48
+|Ravinder Singh
+|style=background-color:{{party color|BJP}} |
+|[[BJP]]
+|21,423
+|35.78
+|6,404
+|-
+|13
+|[[Jaisinghpur Assembly constituency|Jaisinghpur]] (SC)
+|[[Yadvinder Goma]]
+|style=background-color:{{party color|Indian National Congress}} |
+|[[Indian National Congress|INC]]
+|28,058
+|50.43
+|[[Ravinder Kumar (politician)|Ravinder Kumar Dhiman]]
+|style=background-color:{{party color|BJP}} |
+|[[BJP]]
+|25,362
+|45.58
+|2,696
+|-
+|14
+|[[Sullah Assembly constituency|Sullah]]
+|[[Vipin Singh Parmar]]
+|style=background-color:{{party color|BJP}} |
+|[[BJP]]
+|36,670
+|48.35
+|Jagjiwan Paul
+|style=background-color:{{party color|Independent}} |
+|[[Independent politician|IND]]
+|29,558
+|38.97
+|7,112
+|-
+|15
+|[[Nagrota, Himachal Pradesh Assembly constituency|Nagrota]]
+|[[Raghubir Singh Bali|R.S. Bali]]
+|style=background-color:{{party color|Indian National Congress}} |
+|[[Indian National Congress|INC]]
+|42,079
+|59.88
+|[[Arun Kumar (Himachal Pradesh politician)|Arun Kumar]]
+|style=background-color:{{party color|BJP}} |
+|[[BJP]]
+|26,187
+|37.26
+|15,892
+|-
+|16
+|[[Kangra Assembly constituency|Kangra]]
+|[[Pawan Kumar Kajal]]
+|style=background-color:{{party color|BJP}} |
+|[[BJP]]
+|35,239
+|55.64
+|Surinder Kumar
+|style=background-color:{{party color|Indian National Congress}} |
+|[[Indian National Congress|INC]]
+|15,405
+|24.32
+|19,834
+|-
+|17
+|[[Shahpur, Himachal Pradesh Assembly constituency|Shahpur]]
+|[[Kewal Singh Pathania]]
+|style=background-color:{{party color|Indian National Congress}} |
+|[[Indian National Congress|INC]]
+|36,603
+|55.39
+|[[Sarveen Choudhary]]
+|style=background-color:{{party color|BJP}} |
+|[[BJP]]
+|24,360
+|36.86
+|12,243
+|-
+|18
+|[[Dharamshala Assembly constituency|Dharamshala]]
+|[[Sudhir Sharma]]
+|style=background-color:{{party color|Indian National Congress}} |
+|[[Indian National Congress|INC]]
+|27,323
+|45.53
+|Rakesh Kumar
+|style=background-color:{{party color|BJP}} |
+|[[BJP]]
+|24,038
+|40.06
+|3,285
+|-
+|19
+|[[Palampur Assembly constituency|Palampur]]
+|[[Ashish Butail]]
+|style=background-color:{{party color|Indian National Congress}} |
+|[[Indian National Congress|INC]]
+|30,874
+|53.72
+|Trilok Kapoor
+|style=background-color:{{party color|BJP}} |
+|[[BJP]]
+|25,546
+|44.45
+|5,328
+|-
+|20
+|[[Baijnath Assembly constituency|Baijnath]] (SC)
+|[[Kishori Lal (Baijnath politician)|Kishori Lal]]
+|style=background-color:{{party color|Indian National Congress}} |
+|[[Indian National Congress|INC]]
+|29,338
+|50.32
+|Mulkh Raj
+|style=background-color:{{party color|BJP}} |
+|[[BJP]]
+|25,892
+|44.41
+|3,446
+|-
+![[Lahaul and Spiti district|Lahaul and Spiti]] 
+|21
+|[[Lahaul and Spiti Assembly constituency|Lahaul and Spiti]] (ST)
+|[[Ravi Thakur (politician)|Ravi Thakur]]
+| style="background-color:{{party color|Indian National Congress}}" |
+|[[Indian National Congress|INC]]
+|9,948
+|52.91
+|[[Ram Lal Markanda]]
+| style="background-color:{{party color|BJP}}" |
+|[[BJP]]
+|8,332
+|44.32
+|1,616
+|-
+! rowspan="4" |[[Kullu district|Kullu]] 
+|22
+|[[Manali Assembly constituency|Manali]]
+|[[Bhuvneshwar Gaur]]
+| style="background-color:{{party color|Indian National Congress}}" |
+|[[Indian National Congress|INC]]
+|29,892
+|49.46
+|[[Govind Singh Thakur]]
+| style="background-color:{{party color|BJP}}" |
+|[[BJP]]
+|26,935
+|44.57
+|2,957
+|-
+|23
+|[[Kullu Assembly constituency|Kullu]]
+|[[Sunder Singh Thakur]]
+|style=background-color:{{party color|Indian National Congress}} |
+|[[Indian National Congress|INC]]
+|30,286
+|42.56
+|Narottam Singh
+|style=background-color:{{party color|BJP}} |
+|[[BJP]]
+|26,183
+|36.79
+|4,103
+|-
+|24
+|[[Banjar Assembly constituency|Banjar]]
+|[[Surender Shourie]]
+|style=background-color:{{party color|BJP}} |
+|[[BJP]]
+|25,038
+|40.44
+|[[Khimi Ram]]
+|style=background-color:{{party color|Indian National Congress}} |
+|[[Indian National Congress|INC]]
+|20,704
+|33.44
+|4,334
+|-
+|25
+|[[Anni Assembly constituency|Anni]] (SC)
+|[[Lokender Kumar]]
+|style=background-color:{{party color|BJP}} |
+|[[BJP]]
+|24,133
+|35.77
+|Paras Ram
+|style=background-color:{{party color|Independent}} |
+|[[Independent politician|IND]]
+|17,355
+|25.72
+|6,778
+|-
+! rowspan="10" |[[Mandi district|Mandi]] 
+|26
+|[[Karsog Assembly constituency|Karsog]] (SC)
+|[[Deep Raj (politician)|Deepraj Kapoor]]
+| style="background-color:{{party color|BJP}}" |
+|[[BJP]]
+|34,512
+|57.36
+|Mahesh Raj
+| style="background-color:{{party color|Indian National Congress}}" |
+|[[Indian National Congress|INC]]
+|23,978
+|39.85
+|10,534
+|-
+|27
+|[[Sundernagar Assembly constituency|Sundernagar]]
+|[[Rakesh Jamwal]]
+|style=background-color:{{party color|BJP}} |
+|[[BJP]]
+|29,432
+|44.16
+|Sohan Lal
+|style=background-color:{{party color|Indian National Congress}} |
+|[[Indian National Congress|INC]]
+|21,307
+|31.97
+|8,125
+|-
+|28
+|[[Nachan Assembly constituency|Nachan]] (SC)
+|[[Vinod Kumar (politician)|Vinod Kumar]]
+|style=background-color:{{party color|BJP}} |
+|[[BJP]]
+|33,200
+|46.40
+|Naresh Kumar
+|style=background-color:{{party color|Indian National Congress}} |
+|[[Indian National Congress|INC]]
+|24,244
+|33.88
+|8,956
+|-
+|29
+|[[Seraj Assembly constituency|Seraj]]
+|[[Jai Ram Thakur]]
+|style=background-color:{{party color|BJP}} |
+|[[BJP]]
+|53,562
+|75.70
+|Chet Ram
+|style=background-color:{{party color|Indian National Congress}} |
+|[[Indian National Congress|INC]]
+|15,379
+|21.74
+|38,183
+|-
+|30
+|[[Darang Assembly constituency|Darang]]
+|[[Puran Chand Thakur]]
+|style=background-color:{{party color|BJP}} |
+|[[BJP]]
+|36,572
+|49.76
+|Kaul Singh Thakur
+|style=background-color:{{party color|Indian National Congress}} |
+|[[Indian National Congress|INC]]
+|35,954
+|48.92
+|618
+|-
+|31
+|[[Jogindernagar Assembly constituency|Jogindernagar]]
+|[[Prakash Rana]]
+|style=background-color:{{party color|BJP}} |
+|[[BJP]]
+|33,782
+|47.87
+|Surender Paul Thakur
+|style=background-color:{{party color|Indian National Congress}} |
+|[[Indian National Congress|INC]]
+|29,443
+|41.73
+|4,339
+|-
+|32
+|[[Dharampur, Himachal Pradesh Assembly constituency|Dharampur]]
+|[[Chander Shekhar Thakur]]
+|style=background-color:{{party color|Indian National Congress}} |
+|[[Indian National Congress|INC]]
+|31,063
+|51.90
+|Rajat Thakur
+|style=background-color:{{party color|BJP}} |
+|[[BJP]]
+|28,037
+|46.84
+|3,026
+|-
+|33
+|[[Mandi Assembly constituency|Mandi]]
+|[[Anil Sharma (Himachal Pradesh politician)|Anil Sharma]]
+|style=background-color:{{party color|BJP}} |
+|[[BJP]]
+|31,303
+|53.37
+|Champa Thakur
+|style=background-color:{{party color|Indian National Congress}} |
+|[[Indian National Congress|INC]]
+|21.297
+|36.31
+|10,006
+|-
+|34
+|[[Balh Assembly constituency|Balh]] (SC)
+|[[Inder Singh  Gandhi]]
+|style=background-color:{{party color|BJP}} |
+|[[BJP]]
+|31,792
+|49.12
+|Prakash Chaudhary
+|style=background-color:{{party color|Indian National Congress}} |
+|[[Indian National Congress|INC]]
+|30,485
+|47.1
+|1,307
+|-
+|35
+|[[Sarkaghat Assembly constituency|Sarkaghat]]
+|[[Dalip Thakur]]
+|style=background-color:{{party color|BJP}} |
+|[[BJP]]
+|27,346
+|42.89
+|Pawan Kumar
+|style=background-color:{{party color|Indian National Congress}} |
+|[[Indian National Congress|INC]]
+|25,539
+|40.05
+|1,807
+|-
+! rowspan="5" |[[Hamirpur district, Himachal Pradesh|Hamirpur]] 
+|36
+|[[Bhoranj Assembly constituency|Bhoranj]] (SC)
+|[[Suresh Kumar (Himachal politician)|Suresh Kumar]]
+| style="background-color:{{party color|Indian National Congress}}" |
+|[[Indian National Congress|INC]]
+|24,779
+|43.16
+|Dr. Anil Dhaman
+| style="background-color:{{party color|BJP}}" |
+|[[BJP]]
+|24,719
+|43.05
+|60
+|-
+|37
+|[[Sujanpur (Himachal Pradesh Assembly constituency)|Sujanpur]]
+|[[Rajinder Rana]]
+|style=background-color:{{party color|Indian National Congress}} |
+|[[Indian National Congress|INC]]
+|27,679
+|49.79
+|Ranjit Singh Rana
+|style=background-color:{{party color|BJP}} |
+|[[BJP]]
+|27,280
+|49.07
+|399
+|-
+|38
+|[[Hamirpur (Himachal Pradesh Assembly constituency)|Hamirpur]]
+|[[Ashish Sharma (politician)|Ashish Sharma]]
+|style=background-color:{{party color|Independent}} |
+|[[Independent politician|IND]]
+|25,916
+|47.09
+|Pushpinder Vwema
+|style=background-color:{{party color|Indian National Congress}} |
+|[[Indian National Congress|INC]]
+|13,017
+|23.65
+|12,899
+|-
+|39
+|[[Barsar Assembly constituency|Barsar]]
+|[[Inder Dutt Lakhanpal|Inderdutt Lakhanpal]]
+|style=background-color:{{party color|Indian National Congress}} |
+|[[Indian National Congress|INC]]
+|30,293
+|48.16
+|Maya Sharma
+|style=background-color:{{party color|BJP}} |
+|[[BJP]]
+|16.501
+|26.23
+|13,792
+|-
+|40
+|[[Nadaun Assembly constituency|Nadaun]]
+|[[Sukhvinder Singh Sukhu]]
+|style=background-color:{{party color|Indian National Congress}} |
+|[[Indian National Congress|INC]]
+|36,142
+|50.88
+|Vijay Kumar
+|style=background-color:{{party color|BJP}} |
+|[[BJP]]
+|32,779
+|46.14
+|3,363
+|-
+! rowspan="5" |[[Una district|Una]] 
+|41
+|[[Chintpurni Assembly constituency|Chintpurni]] (SC)
+|[[Sudarshan Singh Babloo]]
+| style="background-color:{{party color|Indian National Congress}}" |
+|[[Indian National Congress|INC]]
+|32,712
+|52.7
+|Balbir Singh
+| style="background-color:{{party color|BJP}}" |
+|[[BJP]]
+|27,854
+|44.87
+|4,858
+|-
+|42
+|[[Gagret Assembly constituency|Gagret]]
+|[[Chaitanya Sharma]]
+|style=background-color:{{party color|Indian National Congress}} |
+|[[Indian National Congress|INC]]
+|40,767
+|61.15
+|Rajesh Thakur
+|style=background-color:{{party color|BJP}} |
+|[[BJP]]
+|25,082
+|37.62
+|15,685
+|-
+|43
+|[[Haroli Assembly constituency|Haroli]]
+|[[Mukesh Agnihotri]]
+|style=background-color:{{party color|Indian National Congress}} |
+|[[Indian National Congress|INC]]
+|38,652
+|55.33
+|Ram Kumar
+|style=background-color:{{party color|BJP}} |
+|[[BJP]]
+|29,504
+|42.23
+|9,148
+|-
+|44
+|[[Una (Himachal Pradesh Assembly constituency)|Una]]
+|[[Satpal Singh Satti]]
+|style=background-color:{{party color|BJP}} |
+|[[BJP]]
+|33,974
+|50.05
+|[[Satpal Raizada]]
+|style=background-color:{{party color|Indian National Congress}} |
+|[[Indian National Congress|INC]]
+|32,238
+|47.49
+|1,736
+|-
+|45
+|[[Kutlehar Assembly constituency|Kutlehar]]
+|[[Davinder Kumar Bhutto]]
+|style=background-color:{{party color|Indian National Congress}} |
+|[[Indian National Congress|INC]]
+|36,636
+|54.84
+|[[Virender Kanwar]]
+|style=background-color:{{party color|BJP}} |
+|[[BJP]]
+|29,057
+|43.49
+|7,579
+|-
+! rowspan="4" |[[Bilaspur district, Himachal Pradesh|Bilaspur]] 
+|46
+|[[Jhanduta Assembly constituency|Jhanduta]] (SC)
+|[[Jeet Ram Katwal]]
+| style="background-color:{{party color|BJP}}" |
+|[[BJP]]
+|28,268
+|46.72
+|Vivek Kumar
+| style="background-color:{{party color|Indian National Congress}}" |
+|[[Indian National Congress|INC]]
+|22.469
+|37.14
+|5,799
+|-
+|47
+|[[Ghumarwin Assembly constituency|Ghumarwin]]
+|[[Rajesh Dharmani]]
+|style=background-color:{{party color|Indian National Congress}} |
+|[[Indian National Congress|INC]]
+|35,378
+|51.96
+|[[Rajinder Garg]]
+|style=background-color:{{party color|BJP}} |
+|[[BJP]]
+|29,767
+|43.72
+|5,611
+|-
+|48
+|[[Bilaspur (Himachal Pradesh Assembly constituency)|Bilaspur]]
+|[[Trilok Jamwal]]
+|style=background-color:{{party color|BJP}} |
+|[[BJP]]
+|30,988
+|47.76
+|Bumber Thakur
+|style=background-color:{{party color|Indian National Congress}} |
+|[[Indian National Congress|INC]]
+|30,712
+|47.34
+|276
+|-
+|49
+|[[Sri Naina Deviji Assembly constituency|Sri Naina Deviji]]
+|[[Randhir Sharma]]
+|style=background-color:{{party color|BJP}} |
+|[[BJP]]
+|29,403
+|47.23
+|[[Ram Lal Thakur]]
+|style=background-color:{{party color|Indian National Congress}} |
+|[[Indian National Congress|INC]]
+|29,232
+|46.96
+|171
+|-
+! rowspan="5" |[[Solan district|Solan]] 
+|50
+|[[Arki Assembly constituency|Arki]]
+|[[Sanjay Awasthy]]
+| style="background-color:{{party color|Indian National Congress}}" |
+|[[Indian National Congress|INC]]
+|30,897
+|42.02
+|Rajender
+| style="background-color:{{party color|Independent}}" |
+|[[Independent politician|IND]]
+|26,075
+|35.46
+|4,822
+|-
+|51
+|[[Nalagarh Assembly constituency|Nalagarh]]
+|[[Krishan Lal Thakur|K. L. Thakur]]
+|style=background-color:{{party color|Independent}} |
+|[[Independent politician|IND]]
+|33,427
+|44.51
+|Hardeep Singh Bhawa
+|style=background-color:{{party color|Indian National Congress}} |
+|[[Indian National Congress|INC]]
+|20,163
+|26.85
+|13,264
+|-
+|52
+|[[Doon Assembly constituency|Doon]]
+|[[Ram Kumar Chaudhary|Ram Kumar]]
+|style=background-color:{{party color|Indian National Congress}} |
+|[[Indian National Congress|INC]]
+|32,038
+|51.89
+|[[Paramjeet Singh Pammi]]
+|style=background-color:{{party color|BJP}} |
+|[[BJP]]
+|25,227
+|40.86
+|6,811
+|-
+|53
+|[[Solan Assembly constituency|Solan]] (SC)
+|[[Dhani Ram Shandil]]
+|style=background-color:{{party color|Indian National Congress}} |
+|[[Indian National Congress|INC]]
+|30,089
+|51.54
+|Rajesh Kashyap
+|style=background-color:{{party color|BJP}} |
+|[[BJP]]
+|26,231
+|44.39
+|3,858
+|-
+|54
+|[[Kasauli Assembly constituency|Kasauli]] (SC)
+|[[Vinod Kumar Sultanpuri]]
+|style=background-color:{{party color|Indian National Congress}} |
+|[[Indian National Congress|INC]]
+|28,200
+|52.1
+|[[Rajiv Saizal]]
+|style=background-color:{{party color|BJP}} |
+|[[BJP]]
+|21,432
+|39.6
+|6,768
+|-
+! rowspan="5" |[[Sirmaur district|Sirmaur]] 
+|55
+|[[Pachhad Assembly constituency|Pachhad]] (SC)
+|[[Reena Kashyap]]
+| style="background-color:{{party color|BJP}}" |
+|[[BJP]]
+|21,215
+|34.52
+|Dayal Pyari
+| style="background-color:{{party color|Indian National Congress}}" |
+|[[Indian National Congress|INC]]
+|17,358
+|28.25
+|3,857
+|-
+|56
+|[[Nahan Assembly constituency|Nahan]]
+|[[Ajay Solanki]]
+|style=background-color:{{party color|Indian National Congress}} |
+|[[Indian National Congress|INC]]
+|35,291
+|50.08
+|[[Rajeev Bindal]]
+|style=background-color:{{party color|BJP}} |
+|[[BJP]]
+|33,652
+|47.75
+|1,639
+|-
+|57
+|[[Sri Renukaji Assembly constituency|Sri Renukaji]] (SC)
+|[[Vinay Kumar (politician)|Vinay Kumar]]
+|style=background-color:{{party color|Indian National Congress}} |
+|[[Indian National Congress|INC]]
+|28,642
+|47.99
+|Narain Singh
+|style=background-color:{{party color|BJP}} |
+|[[BJP]]
+|27,782
+|46.55
+|860
+|-
+|58
+|[[Paonta Sahib Assembly constituency|Paonta Sahib]]
+|[[Sukh Ram Chaudhary]]
+|style=background-color:{{party color|BJP}} |
+|[[BJP]]
+|31,008
+|46.93
+|Kirnesh Jung
+|style=background-color:{{party color|Indian National Congress}} |
+|[[Indian National Congress|INC]]
+|22,412
+|33.92
+|8,596
+|-
+|59
+|[[Shillai Assembly constituency|Shillai]]
+|[[Harshwardhan Chauhan]]
+|style=background-color:{{party color|Indian National Congress}} |
+|[[Indian National Congress|INC]]
+|32,093
+|49.17
+|Baldev Singh Tomar
+|style=background-color:{{party color|BJP}} |
+|[[BJP]]
+|31,711
+|48.58
+|382
+|-
+! rowspan="8" |[[Shimla district|Shimla]] 
+|60
+|[[Chopal Assembly constituency|Chopal]]
+|[[Balbir Singh Verma]]
+| style="background-color:{{party color|BJP}}" |
+|[[BJP]]
+|25,873
+|41.58
+|Rajneesh Kimta
+| style="background-color:{{party color|Indian National Congress}}" |
+|[[Indian National Congress|INC]]
+|20,840
+|33.49
+|5,033
+|-
+|61
+|[[Theog Assembly constituency|Theog]]
+|[[Kuldeep Singh Rathore]]
+|style=background-color:{{party color|Indian National Congress}} |
+|[[Indian National Congress|INC]]
+|19,447
+|29.47
+|Ajay Shyam
+|style=background-color:{{party color|BJP}} |
+|[[BJP]]
+|14,178
+|21.49
+|5,269
+|-
+|62
+|[[Kasumpti Assembly constituency|Kasumpti]]
+|[[Anirudh Singh (politician)|Anirudh Singh]]
+|style=background-color:{{party color|Indian National Congress}} |
+|[[Indian National Congress|INC]]
+|25,759
+|55.43
+|[[Suresh Bhardwaj (politician)|Suresh Bhardwaj]]
+|style=background-color:{{party color|BJP}} |
+|[[BJP]]
+|17,104
+|36.81
+|8,655
+|-
+|63
+|[[Shimla Assembly constituency|Shimla]]
+|[[Harish Janartha]]
+|style=background-color:{{party color|Indian National Congress}} |
+|[[Indian National Congress|INC]]
+|15,803
+|51.35
+|Jatin Puri
+|style=background-color:{{party color|BJP}} |
+|[[BJP]]
+|12,766
+|41.48
+|3,037
+|-
+|64
+|[[Shimla Rural Assembly constituency|Shimla Rural]]
+|[[Vikramaditya Singh (Himachal Pradesh politician)|Vikramaditya Singh]]
+|style=background-color:{{party color|Indian National Congress}} |
+|[[Indian National Congress|INC]]
+|35,269
+|60.19
+|Ravi Kumar Mehta
+|style=background-color:{{party color|BJP}} |
+|[[BJP]]
+|21,409
+|36.54
+|13,860
+|-
+|65
+|[[Jubbal-Kotkhai Assembly constituency|Jubbal-Kotkhai]]
+|[[Rohit Thakur (politician)|Rohit Thakur]]
+|style=background-color:{{party color|Indian National Congress}} |
+|[[Indian National Congress|INC]]
+|31,393
+|52.65
+|Chetan Singh Bragta
+|style=background-color:{{party color|BJP}} |
+|[[BJP]]
+|26,324
+|44.15
+|5,069
+|-
+|66
+|[[Rampur (Himachal Pradesh Assembly constituency)|Rampur]] (SC)
+|[[Nand Lal (Himachal Pradesh politician)|Nand Lal]]
+|style=background-color:{{party color|Indian National Congress}} |
+|[[Indian National Congress|INC]]
+|28,397
+|49.07
+|Kaul Singh
+|style=background-color:{{party color|BJP}} |
+|[[BJP]]
+|27,830
+|48.09
+|567
+|-
+|67
+|[[Rohru Assembly constituency|Rohru]] (SC)
+|[[Mohan Lal Brakta]]
+|style=background-color:{{party color|Indian National Congress}} |
+|[[Indian National Congress|INC]]
+|34,327
+|61.90
+|Shashi Bala
+|style=background-color:{{party color|BJP}} |
+|[[BJP]]
+|14,988
+|27.03
+|19,339
+|-
+![[Kinnaur district|Kinnaur]] 
+|68
+|[[Kinnaur Assembly constituency|Kinnaur]]  (ST)
+|[[Jagat Singh Negi]]
+| style="background-color:{{party color|Indian National Congress}}" |
+|[[Indian National Congress|INC]]
+|20,696
+|46.95
+|Surat Negi
+| style="background-color:{{party color|BJP}}" |
+|[[BJP]]
+|13.732
+|31.15
+|6,964
+|}

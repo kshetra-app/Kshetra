@@ -23,7 +23,7 @@ describe('AI Routes', () => {
       const body = JSON.parse(res.payload);
       expect(body).toHaveProperty('configured');
       expect(body).toHaveProperty('model');
-      expect(body).toHaveProperty('provider', 'openai');
+      expect(['openai', 'gemini']).toContain(body.provider);
       expect(typeof body.configured).toBe('boolean');
     });
   });
@@ -53,7 +53,9 @@ describe('AI Routes', () => {
 
     it('should return graceful message when no API key', async () => {
       const originalKey = process.env.OPENAI_API_KEY;
+      const originalGeminiKey = process.env.GEMINI_API_KEY;
       delete process.env.OPENAI_API_KEY;
+      delete process.env.GEMINI_API_KEY;
 
       const res = await app.inject({
         method: 'POST',
@@ -68,6 +70,7 @@ describe('AI Routes', () => {
       expect(body.response).toContain('API key');
 
       if (originalKey) process.env.OPENAI_API_KEY = originalKey;
+      if (originalGeminiKey) process.env.GEMINI_API_KEY = originalGeminiKey;
     });
   });
 

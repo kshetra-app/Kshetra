@@ -7,6 +7,31 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed — Groq Removed & Replaced with Google Gemini Across System (2026-09-03)
+- **Migrated Mobile AI service to Google Gemini** — `apps/mobile/lib/aiService.ts`:
+  - Dropped all Groq endpoints, keys, and model candidates (`openai/gpt-oss-120b`, `llama-3.3-70b-versatile`, etc.).
+  - Integrated Google Gemini chat completions endpoint:
+    `https://generativelanguage.googleapis.com/v1beta/openai/chat/completions`.
+  - Configured with `gemini-3.6-flash` as primary model, with resilient fallbacks to
+    `gemini-flash-latest`, `gemini-3.8-flash`, and `gemini-3.5-flash`.
+  - Increased completion `max_tokens` to 2048 to accommodate Gemini thinking tokens.
+  - Wired `EXPO_PUBLIC_GEMINI_API_KEY` with fallback to default key.
+- **Backend Fastify AI service updated** — `apps/api/src/services/ai.ts`:
+  - Wired `getAIClient()` to connect to Google Gemini endpoint `https://generativelanguage.googleapis.com/v1beta/openai` with model `gemini-3.6-flash`.
+  - Updated `chatWithAI`, `smartSearch`, `analyzeConstituency`, `analyzeElectionTrends`, and `summarizeIssues` to leverage Gemini.
+  - Updated `apps/api/src/routes/ai.ts` `/api/v1/ai/status` route to report `provider: 'gemini'` and `model: 'gemini-3.6-flash'`.
+  - Updated `apps/api/src/routes/lmx.ts` to check `GEMINI_API_KEY`.
+- **Environment and documentation scrub** —
+  - `apps/mobile/.env` & `.env.example`: Removed `EXPO_PUBLIC_GROQ_API_KEY` / `EXPO_PUBLIC_GROK_API_KEY`; added `EXPO_PUBLIC_GEMINI_API_KEY`.
+  - `apps/api/.env` & `.env.example`: Removed `GROQ_API_KEY`; added `GEMINI_API_KEY`.
+  - `apps/mobile/i18n/locales/en.ts` & `hi.ts`: Updated `poweredBy` attribution from Groq to *"Powered by KSHETRA AI • Google Gemini"*.
+  - `SUPABASE_SETUP.md` & `RUNBOOK_DEPLOY.md`: Scrubbed all Groq references and replaced with Gemini keys.
+- **Testing & Verification** —
+  - Tested live Gemini chat completion over HTTP (status 200 OK).
+  - Added Gemini-configured test suite in `apps/api/src/__tests__/ai-openai.test.ts`.
+  - All 29 API tests in `ai-openai.test.ts`, `ai.test.ts`, and `services.test.ts` passing.
+  - `tsc --noEmit` clean on both `apps/mobile` and `apps/api`.
+
 ### Added — News Aggregator, In-App Reader & Campaign Outreach (2026-07-02, Sprint 53)
 - **Hourly RSS news backend (Fastify)** — new `apps/api/src/services/news/`
   (`sources.ts`, `rssParser.ts`, `newsService.ts`) + `routes/news.ts`. Aggregates

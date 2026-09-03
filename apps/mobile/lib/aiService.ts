@@ -1,20 +1,19 @@
 /**
- * Groq AI Service — Connects to Groq's ultra-fast LLM API for intelligent political analysis.
- * Uses the Groq API (OpenAI-compatible endpoint) for chat completions.
+ * Google Gemini AI Service — Connects to Google's Gemini API for intelligent political analysis.
+ * Uses Gemini's OpenAI-compatible chat completions endpoint.
  */
 
-const GROQ_API_KEY =
-  process.env.EXPO_PUBLIC_GROQ_API_KEY ||
-  process.env.EXPO_PUBLIC_GROK_API_KEY ||
-  'GROQ_KEY_REMOVED';
-const GROQ_API_URL = 'https://api.groq.com/openai/v1/chat/completions';
-const PRIMARY_MODEL = 'openai/gpt-oss-120b';
+const GEMINI_API_KEY =
+  process.env.EXPO_PUBLIC_GEMINI_API_KEY ||
+  'GEMINI_KEY_REMOVED';
+
+const GEMINI_API_URL = 'https://generativelanguage.googleapis.com/v1beta/openai/chat/completions';
+const PRIMARY_MODEL = 'gemini-3.6-flash';
 const FALLBACK_MODELS = [
-  'openai/gpt-oss-120b',
-  'openai/gpt-oss-20b',
-  'qwen/qwen3.8-27b',
-  'qwen/qwen3.6-27b',
-  'llama-3.3-70b-versatile',
+  'gemini-3.6-flash',
+  'gemini-flash-latest',
+  'gemini-3.8-flash',
+  'gemini-3.5-flash',
 ];
 
 const SYSTEM_PROMPT = `You are KSHETRA AI — an expert political analyst specializing in Indian state assembly and parliamentary elections.
@@ -51,11 +50,11 @@ export interface AIResponse {
  * Check if AI is configured (API key present)
  */
 export function isAIConfigured(): boolean {
-  return GROQ_API_KEY.length > 10;
+  return GEMINI_API_KEY.length > 10;
 }
 
 /**
- * Send a chat completion request to Grok API
+ * Send a chat completion request to Google Gemini API
  */
 export async function sendAIChat(
   messages: AIChatMessage[],
@@ -63,7 +62,7 @@ export async function sendAIChat(
 ): Promise<AIResponse> {
   if (!isAIConfigured()) {
     return {
-      response: 'AI is not configured. Please add your Grok API key to the environment variables.',
+      response: 'AI is not configured. Please add your Google Gemini API key to the environment variables.',
       model: 'none',
       error: 'NO_API_KEY',
     };
@@ -88,17 +87,17 @@ export async function sendAIChat(
 
   for (const modelName of FALLBACK_MODELS) {
     try {
-      const res = await fetch(GROQ_API_URL, {
+      const res = await fetch(GEMINI_API_URL, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${GROQ_API_KEY}`,
+          'Authorization': `Bearer ${GEMINI_API_KEY}`,
         },
         body: JSON.stringify({
           model: modelName,
           messages: fullMessages,
           temperature: 0.7,
-          max_tokens: 1024,
+          max_tokens: 2048,
         }),
       });
 
@@ -114,10 +113,8 @@ export async function sendAIChat(
 
       lastStatus = res.status;
       lastError = await res.text();
-      // If 404 / model_not_found, gracefully continue to next candidate model
-      if (res.status === 404) {
-        continue;
-      }
+      // If error, gracefully continue to next candidate model
+      continue;
     } catch (err: any) {
       lastError = err?.message ?? 'Network error';
     }

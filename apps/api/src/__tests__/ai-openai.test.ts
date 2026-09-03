@@ -28,13 +28,17 @@ function mockReply(content: unknown) {
 
 describe('ai service — OpenAI-configured path (mocked client)', () => {
   const original = process.env.OPENAI_API_KEY;
+  const originalGemini = process.env.GEMINI_API_KEY;
 
   beforeAll(() => {
+    delete process.env.GEMINI_API_KEY;
     process.env.OPENAI_API_KEY = 'test-key';
   });
   afterAll(() => {
     if (original) process.env.OPENAI_API_KEY = original;
     else delete process.env.OPENAI_API_KEY;
+    if (originalGemini) process.env.GEMINI_API_KEY = originalGemini;
+    else delete process.env.GEMINI_API_KEY;
   });
   beforeEach(() => {
     mockCreate.mockReset();
@@ -111,5 +115,40 @@ describe('ai service — OpenAI-configured path (mocked client)', () => {
       const res = await smartSearch('broken');
       expect(res).toEqual([]);
     });
+  });
+});
+
+describe('ai service — Gemini-configured path (mocked client)', () => {
+  const originalOpenAI = process.env.OPENAI_API_KEY;
+  const originalGemini = process.env.GEMINI_API_KEY;
+
+  beforeAll(() => {
+    delete process.env.OPENAI_API_KEY;
+    process.env.GEMINI_API_KEY = 'test-gemini-key';
+  });
+  afterAll(() => {
+    if (originalOpenAI) process.env.OPENAI_API_KEY = originalOpenAI;
+    else delete process.env.OPENAI_API_KEY;
+    if (originalGemini) process.env.GEMINI_API_KEY = originalGemini;
+    else delete process.env.GEMINI_API_KEY;
+  });
+  beforeEach(() => {
+    mockCreate.mockReset();
+  });
+
+  it('uses gemini model for chat completions', async () => {
+    mockReply('Hello from Gemini.');
+    const res = await chatWithAI({ messages: [{ role: 'user', content: 'hi' }] });
+    expect(res).toBe('Hello from Gemini.');
+    expect(mockCreate).toHaveBeenCalledTimes(1);
+    expect(mockCreate.mock.calls[0][0].model).toBe('gemini-3.6-flash');
+  });
+
+  it('uses gemini model for smartSearch', async () => {
+    mockReply(JSON.stringify([{ acNo: 1, name: 'Sirpur', reason: 'match' }]));
+    const res = await smartSearch('sirpur');
+    expect(res).toEqual([{ acNo: 1, name: 'Sirpur', reason: 'match' }]);
+    expect(mockCreate).toHaveBeenCalledTimes(1);
+    expect(mockCreate.mock.calls[0][0].model).toBe('gemini-3.6-flash');
   });
 });

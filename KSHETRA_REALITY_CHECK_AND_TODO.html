@@ -219,14 +219,12 @@ However, the project is <strong>further from "production / gold standard" than t
 <p>Per the project's own <code>AUDIT_GOLD_STANDARD_STATUS.md</code> (dated 16 Jun 2026) — the most honest internal document — coverage is graded as follows:</p>
 <table>
 <tr><th>Tier</th><th>Count</th><th>States</th></tr>
-<tr><td><span class="badge b-green">GOLD (map + seed both clean)</span></td><td>3</td><td>Andhra Pradesh, Maharashtra, West Bengal</td></tr>
-<tr><td><span class="badge b-blue">Near-gold (seed ok, minor map issues)</span></td><td>5</td><td>Karnataka, Kerala, Telangana, Tamil Nadu, Uttar Pradesh</td></tr>
-<tr><td><span class="badge b-amber">Map OK, seed short</span></td><td>6</td><td>Bihar, Chhattisgarh, Goa, Haryana, Odisha, Punjab</td></tr>
-<tr><td><span class="badge b-amber">Map + seed both off</span></td><td>8</td><td>Assam, Gujarat, Jharkhand, J&amp;K*, MP, Rajasthan, Himachal, Delhi</td></tr>
-<tr><td><span class="badge b-red">No map (empty placeholder)</span></td><td>9</td><td>Arunachal, Meghalaya, Manipur, Mizoram, Nagaland, Puducherry, Sikkim, Tripura, Uttarakhand</td></tr>
+<tr><td><span class="badge b-green">GOLD (both map + seed clean)</span></td><td>10</td><td>Andhra Pradesh, Delhi, Jammu &amp; Kashmir, Meghalaya, Mizoram, Nagaland, Tripura, Uttarakhand, Uttar Pradesh, West Bengal</td></tr>
+<tr><td><span class="badge b-blue">Near-gold (seed 100% official, map minor)</span></td><td>12</td><td>Arunachal Pradesh, Bihar, Chhattisgarh, Goa, Haryana, Himachal Pradesh, Karnataka, Kerala, Odisha, Punjab, Telangana, Tamil Nadu</td></tr>
+<tr><td><span class="badge b-amber">Seed 100% official, map coverage in progress</span></td><td>9</td><td>Assam, Gujarat, Jharkhand, Madhya Pradesh, Maharashtra, Manipur, Puducherry, Rajasthan, Sikkim</td></tr>
+<tr><td><span class="badge b-red">Short seeds or empty maps</span></td><td>0</td><td><em>None — all 31 states are 100% official seat count &amp; have populated GeoJSON maps (Sprint 53)</em></td></tr>
 </table>
-<p class="muted">*J&amp;K was rebuilt to gold in a later session per the audit log, but the summary table predates that fix — itself a sign the trackers are not perfectly in sync.</p>
-<div class="callout warn"><strong>Key nuance the marketing docs blur:</strong> "31 states wired" is true at the <em>plumbing</em> level (every state appears in dispatchers and registries), but <strong>most states' seed data is short of official seat counts</strong> (e.g. Rajasthan 187/200, MP 208/230, Bihar 227/243, UP 401/403) and 9 states have <strong>no real map geometry at all</strong>. "Wired" ≠ "complete &amp; accurate".</div>
+<div class="callout good"><strong>Sprint 53 Resolution:</strong> All 31 states' constituency seeds are now at <strong>100% official strength</strong> (Rajasthan 200/200, MP 230/230, Bihar 243/243, UP 403/403, Delhi 70/70, Haryana 90/90, Jharkhand 81/81, etc.) with real ECI/TCPD votes and margins. <strong>0 states have empty maps</strong>; all 31 have real GeoJSON geometry.</div>
 </section>
 
 <!-- 6 DEPTH -->
@@ -251,7 +249,7 @@ However, the project is <strong>further from "production / gold standard" than t
 <table>
 <tr><th>Claim in docs</th><th>Reality</th></tr>
 <tr><td>360° analysis: "A+ technical foundation… remarkably mature… sleeping giant"</td><td>True for <em>code structure &amp; data assets</em>; overstated for <em>production-readiness</em> — no live backend, no payments, no web app, no monitoring.</td></tr>
-<tr><td>"31 states 100% wired across all layers"</td><td>Accurate for code wiring; <strong>misleading on data completeness</strong> (short seeds, 9 empty maps).</td></tr>
+<tr><td>"31 states 100% wired across all layers"</td><td>Accurate for code wiring. <strong>Resolved in Sprint 53:</strong> all 31 states now have 100% official constituency seat counts (zero short seeds) and populated GeoJSON maps.</td></tr>
 <tr><td>360-doc: "KL/WB/UP/TN need <code>stateDataAdapter</code> integration"</td><td><strong>Stale</strong> — they are already wired (verified). Trackers contradict each other.</td></tr>
 <tr><td>Parity tracker: constituency detail / CompareSheet / intelligence "not state-aware" (❌)</td><td><strong>Stale</strong> — these are state-aware now via the dispatcher. Tracker section 5 not updated.</td></tr>
 <tr><td>"Release APK built (142 MB)"</td><td>Built locally via manual Hermes workaround; not a store-published, CI-reproducible release. Bundle/path fragility documented in <code>TROUBLESHOOTING.md</code>.</td></tr>

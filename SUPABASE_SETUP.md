@@ -17,7 +17,7 @@
 ```bash
 EXPO_PUBLIC_SUPABASE_URL=https://your-project-id.supabase.co
 EXPO_PUBLIC_SUPABASE_ANON_KEY=your-anon-key-here
-EXPO_PUBLIC_GROQ_API_KEY=gsk_your-groq-key-here
+EXPO_PUBLIC_GEMINI_API_KEY=your-gemini-key-here
 ```
 
 **API server** (`apps/api/.env`):
@@ -25,7 +25,7 @@ EXPO_PUBLIC_GROQ_API_KEY=gsk_your-groq-key-here
 SUPABASE_URL=https://your-project-id.supabase.co
 SUPABASE_SERVICE_ROLE_KEY=your-service-role-key-here
 SUPABASE_ANON_KEY=your-anon-key-here
-GROQ_API_KEY=gsk_your-groq-key-here
+GEMINI_API_KEY=your-gemini-key-here
 ```
 
 ### 3. Run Migrations

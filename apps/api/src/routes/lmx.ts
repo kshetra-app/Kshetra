@@ -15,7 +15,7 @@ import { supabase, isSupabaseConfigured } from '../lib/supabase';
  * Every endpoint works whether or not AI is present (doc Section 3, 14).
  */
 export async function lmxRoutes(app: FastifyInstance) {
-  const aiEnabled = !!process.env.OPENAI_API_KEY;
+  const aiEnabled = !!process.env.GEMINI_API_KEY || !!process.env.OPENAI_API_KEY;
 
   /** GET /api/v1/lmx/status — exchange + AI availability */
   app.get('/api/v1/lmx/status', async (request, reply) => {

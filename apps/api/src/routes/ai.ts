@@ -99,10 +99,12 @@ export async function aiRoutes(app: FastifyInstance) {
 
   /** GET /api/v1/ai/status — check if AI is configured */
   app.get('/api/v1/ai/status', async () => {
+    const isConfigured = !!process.env.GEMINI_API_KEY || !!process.env.OPENAI_API_KEY;
+    const provider = process.env.OPENAI_API_KEY && !process.env.GEMINI_API_KEY ? 'openai' : 'gemini';
     return {
-      configured: !!process.env.OPENAI_API_KEY,
-      model: 'gpt-4o-mini',
-      provider: 'openai',
+      configured: isConfigured,
+      model: provider === 'gemini' ? 'gemini-3.6-flash' : 'gpt-4o-mini',
+      provider,
     };
   });
 }

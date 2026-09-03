@@ -5588,3 +5588,34 @@ Addressed user request to localize every menu, page, card, badge, and dynamic co
 
 ---
 
+## Phase: AI Engine Migration — Groq Removed, Google Gemini Integrated (2026-09-03)
+
+### Overview
+Completely removed Groq API and all related endpoints, keys, and references across the Kshetra ecosystem. Migrated all mobile and backend AI capabilities to Google Gemini using `gemini-3.6-flash` (with automated fallbacks to `gemini-flash-latest`, `gemini-3.8-flash`, and `gemini-3.5-flash`).
+
+### Changes Implemented
+1. **Mobile AI Client (`apps/mobile/lib/aiService.ts`)**:
+   - Replaced Groq OpenAI-compatible endpoint with Google Gemini Generative Language API chat completions endpoint (`https://generativelanguage.googleapis.com/v1beta/openai/chat/completions`).
+   - Primary model set to `gemini-3.6-flash`.
+   - Fallback models set to `['gemini-3.6-flash', 'gemini-flash-latest', 'gemini-3.8-flash', 'gemini-3.5-flash']`.
+   - Token limit expanded to 2048 to prevent truncated responses when Gemini utilizes internal reasoning/thinking tokens.
+   - Configured `EXPO_PUBLIC_GEMINI_API_KEY`.
+2. **Backend Fastify AI Routes & Services (`apps/api`)**:
+   - `apps/api/src/services/ai.ts`: Implemented `getAIClient()` supporting Google Gemini via OpenAI SDK `baseURL` pointing to Gemini (`https://generativelanguage.googleapis.com/v1beta/openai`) with model `gemini-3.6-flash`.
+   - `apps/api/src/routes/ai.ts`: `/api/v1/ai/status` now reports `provider: 'gemini'` and `model: 'gemini-3.6-flash'`.
+   - `apps/api/src/routes/lmx.ts`: LMX route AI availability checks `GEMINI_API_KEY`.
+   - `apps/api/src/routes/delimitation.ts`: Fixed TypeScript type annotation issues in filter callbacks and projected seat mapping.
+3. **Environment Configurations**:
+   - `apps/mobile/.env` & `.env.example`: Removed `EXPO_PUBLIC_GROQ_API_KEY` / `EXPO_PUBLIC_GROK_API_KEY`; configured `EXPO_PUBLIC_GEMINI_API_KEY`.
+   - `apps/api/.env` & `.env.example`: Removed `GROQ_API_KEY`; configured `GEMINI_API_KEY`.
+4. **Locales & UI Branding**:
+   - `apps/mobile/i18n/locales/en.ts` & `hi.ts`: Updated `poweredBy` attribution string from Groq to *"Powered by KSHETRA AI • Google Gemini"*.
+5. **Documentation**:
+   - `SUPABASE_SETUP.md` & `RUNBOOK_DEPLOY.md`: Replaced Groq configuration guides with Gemini API setup.
+
+### Verification
+- **Live Gemini API Check**: Verified live responses against Gemini endpoint using the API key (HTTP 200 OK).
+- **Backend Jest Test Suites**: 29/29 tests passed across `ai-openai.test.ts`, `ai.test.ts`, and `services.test.ts`.
+- **TypeScript Monorepo Compilation**: `tsc --noEmit` exited 0 with 0 errors across both `apps/mobile` and `apps/api`.
+
+

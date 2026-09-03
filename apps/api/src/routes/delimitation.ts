@@ -20,7 +20,7 @@ import {
   IDEAL_POP_PER_AC_SEAT_2011,
   type CensusStateData,
 } from '../../../../data/census/india-district-population-2011';
-import { getStateConstituencies } from '../services/stateData';
+import { getConstituencies as getStateConstituencies } from '../services/stateData';
 
 interface DynamicSeatProjection {
   stateCode: string;
@@ -239,7 +239,7 @@ export async function delimitationRoutes(app: FastifyInstance) {
         stateName: l.stateName,
         change: `${l.seatChange}`,
         current: l.currentSeats,
-        projected: g.projectedSeats,
+        projected: l.projectedSeats,
       })),
     };
   });
@@ -586,8 +586,8 @@ export async function delimitationRoutes(app: FastifyInstance) {
     return {
       stateCode: code,
       totalMLAsAnalyzed: mlaProfiles.length,
-      highRiskCount: mlaProfiles.filter((m) => m.riskRating === 'critical_risk' || m.riskRating === 'high_risk').length,
-      safeCount: mlaProfiles.filter((m) => m.riskRating === 'safe').length,
+      highRiskCount: mlaProfiles.filter((m: any) => m.riskRating === 'critical_risk' || m.riskRating === 'high_risk').length,
+      safeCount: mlaProfiles.filter((m: any) => m.riskRating === 'safe').length,
       mlaProfiles,
     };
   });
