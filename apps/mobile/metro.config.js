@@ -27,8 +27,13 @@ config.resolver.resolveRequest = (context, moduleName, platform) => {
     const resolvedPath = path.resolve(projectRoot, subPath);
     return metroResolver.resolve(context, resolvedPath, platform);
   }
-  if (moduleName === '@kshetra/shared') {
-    const resolvedPath = path.resolve(monorepoRoot, 'packages/shared/src');
+  if (moduleName === '@kshetra/shared' || moduleName.replace(/\\/g, '/').endsWith('packages/shared/src')) {
+    const resolvedPath = path.resolve(monorepoRoot, 'packages/shared/src/index.ts');
+    return metroResolver.resolve(context, resolvedPath, platform);
+  }
+  if (moduleName.startsWith('@kshetra/shared/')) {
+    const subPath = moduleName.slice('@kshetra/shared/'.length);
+    const resolvedPath = path.resolve(monorepoRoot, 'packages/shared/src', subPath);
     return metroResolver.resolve(context, resolvedPath, platform);
   }
   return metroResolver.resolve(context, moduleName, platform);

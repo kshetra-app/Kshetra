@@ -11,7 +11,7 @@ module.exports = function (api) {
           root: [path.resolve(__dirname, '.')],
           alias: {
             '@': path.resolve(__dirname, '.'),
-            '@kshetra/shared': path.resolve(__dirname, '../../packages/shared/src'),
+            '@kshetra/shared': path.resolve(__dirname, '../../packages/shared/src/index.ts'),
           },
         },
       ],
