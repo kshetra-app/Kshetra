@@ -439,6 +439,15 @@ export default function ProfileScreen() {
             onPress={() => setShowDevModal(true)}
             color="#8B5CF6"
           />
+          {(userProfile?.role === 'moderator' || userProfile?.role === 'admin') && (
+            <SettingRow
+              icon="shield-half"
+              label="Content Moderation Queue"
+              value="Grievance Officer"
+              onPress={() => router.push('/moderation' as any)}
+              color="#EC4899"
+            />
+          )}
         </View>
       </View>
 

@@ -1098,6 +1098,70 @@ export async function fetchFollowedUserIds(followerId: string): Promise<string[]
   }
 }
 
+export async function fetchUserProfile(userId: string): Promise<any | null> {
+  if (!guard()) return null;
+  try {
+    const { data, error } = await supabase
+      .from('user_profiles')
+      .select('*')
+      .eq('user_id', userId)
+      .maybeSingle();
+    if (error) throw error;
+    return data;
+  } catch (err) {
+    captureException(err as Error, { op: 'fetch_user_profile', userId });
+    return null;
+  }
+}
+
+export async function fetchPostsByAuthor(authorId: string, limit = 30): Promise<any[] | null> {
+  if (!guard()) return null;
+  try {
+    const { data, error } = await supabase
+      .from('posts')
+      .select('*')
+      .eq('author_id', authorId)
+      .eq('is_deleted', false)
+      .order('created_at', { ascending: false })
+      .limit(limit);
+    if (error) throw error;
+    return data;
+  } catch (err) {
+    captureException(err as Error, { op: 'fetch_posts_by_author', authorId });
+    return null;
+  }
+}
+
+export async function submitContentReport(report: {
+  reporterId: string;
+  targetType: 'post' | 'comment';
+  targetId: string;
+  reason: string;
+  description?: string;
+}): Promise<boolean> {
+  if (!guard()) return true;
+  try {
+    addBreadcrumb('moderation', 'submit_report', { targetId: report.targetId });
+    const payload: any = {
+      reporter_id: report.reporterId,
+      reason: report.reason,
+      description: report.description ?? null,
+      status: 'pending',
+    };
+    if (report.targetType === 'post') {
+      payload.post_id = report.targetId;
+    } else {
+      payload.comment_id = report.targetId;
+    }
+    const { error } = await supabase.from('reports').insert(payload);
+    if (error) throw error;
+    return true;
+  } catch (err) {
+    captureException(err as Error, { op: 'submit_content_report' });
+    return false;
+  }
+}
+
 export async function fetchBlendedFeed(
   viewerId?: string | null,
   constituencyId?: string | null,

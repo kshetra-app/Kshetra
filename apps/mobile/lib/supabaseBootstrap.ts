@@ -39,28 +39,23 @@ export async function bootstrapSupabase(): Promise<void> {
     return;
   }
 
-  const user = useAuthStore.getState().user;
-  if (!user) {
-    addBreadcrumb('bootstrap', 'skipped', { reason: 'no_user' });
-    return;
-  }
-
   if (bootstrapped) return;
   bootstrapped = true;
 
-  addBreadcrumb('bootstrap', 'starting', { userId: user.id });
+  const user = useAuthStore.getState().user;
+  addBreadcrumb('bootstrap', 'starting', { userId: user?.id ?? 'guest' });
 
   try {
-    // 1. Ensure user profile exists server-side
-    await ensureUserProfile(user.id, user.email ?? '');
+    // 1. If user is authenticated, ensure profile and sync user-specific data
+    if (user) {
+      await ensureUserProfile(user.id, user.email ?? '');
+      await syncLocalToServer(user.id);
+    }
 
-    // 2. Sync local state to server (favorites, profile updates)
-    await syncLocalToServer(user.id);
-
-    // 3. Load fresh data from server into stores
+    // 2. Load fresh public data from server into stores (Feed, Civic Issues)
     await hydrateStoresFromServer();
 
-    // Hydrate Live Media Exchange store
+    // 3. Hydrate Live Media Exchange store
     try {
       const { useLiveExchangeStore } = require('../stores/liveExchange');
       await useLiveExchangeStore.getState().hydrate();
@@ -68,8 +63,8 @@ export async function bootstrapSupabase(): Promise<void> {
       console.warn('[Bootstrap] LMX hydrate error:', e);
     }
 
-    // 4. Flush offline queue
-    if (isOnline()) {
+    // 4. Flush offline queue if authenticated and online
+    if (user && isOnline()) {
       const queueSize = getQueueSize();
       if (queueSize > 0) {
         addBreadcrumb('bootstrap', 'flushing_queue', { size: queueSize });

@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { View, Text, StyleSheet, Pressable } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import { useRouter } from 'expo-router';
 import { useTranslation } from 'react-i18next';
 import { useTheme } from '../lib/theme';
 import type { Post, ReactionType } from '../lib/feedTypes';
@@ -48,6 +49,7 @@ export default function PostCard({
   isOwner = false,
   compact = false,
 }: PostCardProps) {
+  const router = useRouter();
   const { t, i18n } = useTranslation();
   const { colors } = useTheme();
   const [actionSheetVisible, setActionSheetVisible] = useState(false);
@@ -78,20 +80,36 @@ export default function PostCard({
 
         {/* Header: Author + Meta + Type badge + 3-dots Menu */}
         <View style={styles.header}>
-          <View style={[styles.avatar, { backgroundColor: colors.primaryLight }]}>
+          <Pressable
+            style={[styles.avatar, { backgroundColor: colors.primaryLight }]}
+            onPress={() => {
+              if (displayPost.author.id) {
+                router.push(`/user/${displayPost.author.id}` as any);
+              }
+            }}
+            hitSlop={6}
+          >
             <Text style={[styles.avatarText, { color: colors.primary }]}>
               {(displayPost.author.displayName || 'A').charAt(0).toUpperCase()}
             </Text>
-          </View>
+          </Pressable>
           <View style={styles.headerInfo}>
-            <View style={styles.nameRow}>
+            <Pressable
+              style={styles.nameRow}
+              onPress={() => {
+                if (displayPost.author.id) {
+                  router.push(`/user/${displayPost.author.id}` as any);
+                }
+              }}
+              hitSlop={6}
+            >
               <Text style={[styles.authorName, { color: colors.text }]} numberOfLines={1}>
                 {displayPost.author.displayName}
               </Text>
               {displayPost.author.isVerified && (
                 <Ionicons name="checkmark-circle" size={14} color="#10B981" />
               )}
-            </View>
+            </Pressable>
             <View style={styles.metaRow}>
               <Text style={[styles.timeText, { color: colors.textMuted }]}>
                 {formatLocalizedTimeAgo(displayPost.createdAt, t)}

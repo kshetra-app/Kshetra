@@ -1289,12 +1289,22 @@ interface FeedState {
   receiveRealtimeComment: (serverComment: any) => void;
   receiveRealtimeReaction: (payload: any) => void;
   receiveRealtimeVote: (payload: any) => void;
+
+  // Reliability & Throttling (Ticket 1.2)
+  lastError: string | null;
+  clearError: () => void;
+  lastPostTime: number;
+  lastCommentTime: number;
 }
 
 export const useFeedStore = create<FeedState>()((set, get) => ({
   posts: SEED_POSTS,
   comments: SEED_COMMENTS,
   followedUserIds: [],
+  lastError: null,
+  clearError: () => set({ lastError: null }),
+  lastPostTime: 0,
+  lastCommentTime: 0,
   feedFilter: 'all',
   scopeFilter: 'state' as FeedScope,
   selectedConstituency: null,
@@ -1321,28 +1331,56 @@ export const useFeedStore = create<FeedState>()((set, get) => ({
       verifiedOnly: false,
     }),
 
-  addPost: (post) => {
-    set((state) => ({ posts: [post, ...state.posts] }));
+  addPost: async (post) => {
+    // Client-side rate limit: 5 seconds between posts
+    const now = Date.now();
+    const lastTime = get().lastPostTime;
+    if (now - lastTime < 5000) {
+      const waitSec = Math.ceil((5000 - (now - lastTime)) / 1000);
+      set({ lastError: `Please wait ${waitSec}s before posting again.` });
+      return;
+    }
+
+    set((state) => ({
+      posts: [post, ...state.posts],
+      lastPostTime: now,
+      lastError: null,
+    }));
+
     const userId = useAuthStore.getState().user?.id;
     if (userId) {
-      enqueue('compose_post', {
-        content: post.content,
-        type: post.type,
-        stateCode: post.stateCode,
-        authorId: userId,
-        hashtags: post.hashtags ?? [],
-        constituencyId: post.constituencyId,
-        language: post.language ?? 'en',
-      });
-      dataService.composePost({
-        content: post.content,
-        type: post.type,
-        stateCode: post.stateCode,
-        authorId: userId,
-        hashtags: post.hashtags ?? [],
-        constituencyId: post.constituencyId,
-        language: post.language ?? 'en',
-      });
+      try {
+        enqueue('compose_post', {
+          content: post.content,
+          type: post.type,
+          stateCode: post.stateCode,
+          authorId: userId,
+          hashtags: post.hashtags ?? [],
+          constituencyId: post.constituencyId,
+          language: post.language ?? 'en',
+        });
+        const res = await dataService.composePost({
+          content: post.content,
+          type: post.type,
+          stateCode: post.stateCode,
+          authorId: userId,
+          hashtags: post.hashtags ?? [],
+          constituencyId: post.constituencyId,
+          language: post.language ?? 'en',
+        });
+        if (!res.success) {
+          // Rollback optimistic addition if server explicitly fails and not queued
+          set((state) => ({
+            posts: state.posts.filter((p) => p.id !== post.id),
+            lastError: 'Could not submit post. Please try again.',
+          }));
+        }
+      } catch (err: any) {
+        set((state) => ({
+          posts: state.posts.filter((p) => p.id !== post.id),
+          lastError: 'Network error while posting. Post not published.',
+        }));
+      }
     }
   },
 
@@ -1380,12 +1418,16 @@ export const useFeedStore = create<FeedState>()((set, get) => ({
       ),
     })),
 
-  toggleReaction: (postId, reaction) => {
+  toggleReaction: async (postId, reaction) => {
     const post = get().posts.find((p) => p.id === postId);
     if (!post) return;
     const currentReaction = post.userReaction;
     const isRemoving = currentReaction === reaction;
     const isSwitching = !!currentReaction && !isRemoving;
+
+    // Snapshot for rollback
+    const prevReaction = currentReaction;
+    const prevCount = post.reactionCount;
 
     set((state) => ({
       posts: state.posts.map((p) => {
@@ -1404,19 +1446,44 @@ export const useFeedStore = create<FeedState>()((set, get) => ({
         };
       }),
     }));
+
     const userId = useAuthStore.getState().user?.id;
     if (userId) {
-      if (isRemoving) {
-        dataService.removeReaction(postId, userId);
-      } else {
-        dataService.reactToPost(postId, userId, reaction);
-        enqueue('react_post', { postId, userId, reaction });
+      try {
+        let success = true;
+        if (isRemoving) {
+          success = await dataService.removeReaction(postId, userId);
+        } else {
+          success = await dataService.reactToPost(postId, userId, reaction);
+          enqueue('react_post', { postId, userId, reaction });
+        }
+        if (!success) {
+          // Rollback
+          set((state) => ({
+            posts: state.posts.map((p) =>
+              p.id === postId ? { ...p, userReaction: prevReaction, reactionCount: prevCount } : p,
+            ),
+            lastError: 'Failed to update reaction.',
+          }));
+        }
+      } catch (err) {
+        set((state) => ({
+          posts: state.posts.map((p) =>
+            p.id === postId ? { ...p, userReaction: prevReaction, reactionCount: prevCount } : p,
+          ),
+          lastError: 'Network error updating reaction.',
+        }));
       }
     }
   },
 
-  votePoll: (postId, optionId) => {
+  votePoll: async (postId, optionId) => {
     const post = get().posts.find((p) => p.id === postId);
+    if (!post || !post.poll || post.poll.userVotedOptionId) return;
+
+    // Snapshot for rollback
+    const prevPoll = { ...post.poll };
+
     set((state) => ({
       posts: state.posts.map((p) => {
         if (p.id !== postId || !p.poll || p.poll.userVotedOptionId) return p;
@@ -1433,13 +1500,40 @@ export const useFeedStore = create<FeedState>()((set, get) => ({
         };
       }),
     }));
+
     const userId = useAuthStore.getState().user?.id;
-    if (userId && post?.poll?.id) {
-      dataService.votePoll(post.poll.id, optionId, userId);
+    if (userId && post.poll.id) {
+      try {
+        const success = await dataService.votePoll(post.poll.id, optionId, userId);
+        if (!success) {
+          // Rollback
+          set((state) => ({
+            posts: state.posts.map((p) =>
+              p.id === postId ? { ...p, poll: prevPoll } : p,
+            ),
+            lastError: 'Failed to record vote. Please retry.',
+          }));
+        }
+      } catch (err) {
+        set((state) => ({
+          posts: state.posts.map((p) =>
+            p.id === postId ? { ...p, poll: prevPoll } : p,
+          ),
+          lastError: 'Network error submitting vote.',
+        }));
+      }
     }
   },
 
-  addComment: (postId, comment) => {
+  addComment: async (postId, comment) => {
+    // Client-side rate limit: 2 seconds between comments
+    const now = Date.now();
+    const lastTime = get().lastCommentTime;
+    if (now - lastTime < 2000) {
+      set({ lastError: 'Please wait a moment before sending another comment.' });
+      return;
+    }
+
     set((state) => ({
       comments: {
         ...state.comments,
@@ -1448,16 +1542,45 @@ export const useFeedStore = create<FeedState>()((set, get) => ({
       posts: state.posts.map((p) =>
         p.id === postId ? { ...p, replyCount: p.replyCount + 1 } : p,
       ),
+      lastCommentTime: now,
+      lastError: null,
     }));
+
     const userId = useAuthStore.getState().user?.id;
     if (userId) {
-      dataService.addPostComment(postId, userId, comment.content, comment.language);
-      enqueue('add_comment', {
-        postId,
-        userId,
-        content: comment.content,
-        language: comment.language,
-      });
+      try {
+        const res = await dataService.addPostComment(postId, userId, comment.content, comment.language);
+        enqueue('add_comment', {
+          postId,
+          userId,
+          content: comment.content,
+          language: comment.language,
+        });
+        if (!res.success) {
+          // Rollback comment
+          set((state) => ({
+            comments: {
+              ...state.comments,
+              [postId]: (state.comments[postId] ?? []).filter((c) => c.id !== comment.id),
+            },
+            posts: state.posts.map((p) =>
+              p.id === postId ? { ...p, replyCount: Math.max(0, p.replyCount - 1) } : p,
+            ),
+            lastError: 'Failed to submit comment. Please retry.',
+          }));
+        }
+      } catch (err) {
+        set((state) => ({
+          comments: {
+            ...state.comments,
+            [postId]: (state.comments[postId] ?? []).filter((c) => c.id !== comment.id),
+          },
+          posts: state.posts.map((p) =>
+            p.id === postId ? { ...p, replyCount: Math.max(0, p.replyCount - 1) } : p,
+          ),
+          lastError: 'Network error while adding comment.',
+        }));
+      }
     }
   },
 

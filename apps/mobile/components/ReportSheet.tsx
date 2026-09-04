@@ -18,6 +18,8 @@ import {
   type ReportSubmission,
 } from '../lib/moderationTypes';
 import { gateContentAction, logContentAction } from '../lib/contentAccountability';
+import { submitContentReport } from '../lib/supabaseDataService';
+import { useAuthStore } from '../stores/auth';
 
 interface ReportSheetProps {
   visible: boolean;
@@ -47,30 +49,30 @@ export default function ReportSheet({
     }
   }, [visible]);
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     if (!reason) return;
     if (!gateContentAction('submit_report')) return;
 
-    const report: ReportSubmission = {
-      targetType,
-      targetId,
-      reason,
-      description: description.trim() || undefined,
-    };
-
     setSubmitting(true);
 
-    // In production: send to API /api/v1/reports
-    // For now, simulate success
+    const userId = useAuthStore.getState().user?.id || 'demo-reporter';
+    if (targetType === 'post' || targetType === 'comment') {
+      await submitContentReport({
+        reporterId: userId,
+        targetType,
+        targetId,
+        reason,
+        description: description.trim() || undefined,
+      });
+    }
+
     logContentAction('submit_report', { type: targetType, id: targetId, body: reason, screenName: 'report' });
-    setTimeout(() => {
-      setSubmitting(false);
-      Alert.alert(
-        t('reportSheet.submitted'),
-        t('reportSheet.submittedMsg'),
-        [{ text: t('common.ok'), onPress: onClose }],
-      );
-    }, 500);
+    setSubmitting(false);
+    Alert.alert(
+      t('reportSheet.submitted'),
+      t('reportSheet.submittedMsg'),
+      [{ text: t('common.ok'), onPress: onClose }],
+    );
   };
 
   const canSubmit = reason !== null && !submitting;

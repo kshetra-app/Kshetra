@@ -11,6 +11,7 @@ import { usePushNotifications } from '../lib/usePushNotifications';
 import { useNetworkStore } from '../lib/networkStatus';
 import OfflineBanner from '../components/OfflineBanner';
 import { useContributorVerificationStore } from '../stores/contributorVerification';
+import { bootstrapSupabase } from '../lib/supabaseBootstrap';
 import '../i18n';
 
 const KYCVerificationSheet = lazy(() => import('../components/KYCVerificationSheet'));
@@ -23,13 +24,20 @@ export default function RootLayout() {
   const showKYCSheet = useContributorVerificationStore((s) => s.showKYCSheet);
 
   useEffect(() => {
-    try {
-      initializeAuth().catch(() => {});
-    } catch {}
     let stopNetwork: (() => void) | undefined;
     try {
       stopNetwork = startNetworkMonitoring();
     } catch {}
+
+    // Initialize Auth first, then bootstrap Supabase data stores
+    initializeAuth()
+      .catch(() => {})
+      .finally(() => {
+        bootstrapSupabase().catch((err) => {
+          console.warn('[RootLayout] Supabase bootstrap warning:', err);
+        });
+      });
+
     return () => {
       if (typeof stopNetwork === 'function') {
         try { stopNetwork(); } catch {}
@@ -289,6 +297,20 @@ export default function RootLayout() {
             headerShown: false,
             presentation: 'modal',
             animation: 'slide_from_bottom',
+          }}
+        />
+        <Stack.Screen
+          name="user/[userId]"
+          options={{
+            headerShown: false,
+            animation: 'slide_from_right',
+          }}
+        />
+        <Stack.Screen
+          name="moderation/index"
+          options={{
+            headerShown: false,
+            animation: 'slide_from_right',
           }}
         />
       </Stack>

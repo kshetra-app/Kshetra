@@ -19,6 +19,7 @@ describe('Ticket 0.3: Follow Graph & Feed Blending', () => {
           stateCode: 'TS',
           constituencyId: 'TS-AC-01',
           createdAt: '2026-05-01T10:00:00Z',
+          updatedAt: '2026-05-01T10:00:00Z',
           replyCount: 0,
           reactionCount: 0,
           isPinned: false,
@@ -34,6 +35,7 @@ describe('Ticket 0.3: Follow Graph & Feed Blending', () => {
           stateCode: 'KA', // Different state/constituency
           constituencyId: 'KA-AC-99',
           createdAt: '2026-05-02T12:00:00Z', // More recent
+          updatedAt: '2026-05-02T12:00:00Z',
           replyCount: 0,
           reactionCount: 0,
           isPinned: false,
