@@ -3,9 +3,7 @@
  * Uses Google's high-speed native Generative Language API.
  */
 
-const GEMINI_API_KEY =
-  process.env.EXPO_PUBLIC_GEMINI_API_KEY ||
-  'GEMINI_KEY_REMOVED';
+const GEMINI_API_KEY = process.env.EXPO_PUBLIC_GEMINI_API_KEY || '';
 
 const PRIMARY_MODEL = 'gemini-flash-lite-latest';
 const FALLBACK_MODELS = [
