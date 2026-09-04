@@ -141,7 +141,7 @@ describe('ai service — Gemini-configured path (mocked client)', () => {
     const res = await chatWithAI({ messages: [{ role: 'user', content: 'hi' }] });
     expect(res).toBe('Hello from Gemini.');
     expect(mockCreate).toHaveBeenCalledTimes(1);
-    expect(mockCreate.mock.calls[0][0].model).toBe('gemini-3.6-flash');
+    expect(mockCreate.mock.calls[0][0].model).toBe('gemini-flash-lite-latest');
   });
 
   it('uses gemini model for smartSearch', async () => {
@@ -149,6 +149,6 @@ describe('ai service — Gemini-configured path (mocked client)', () => {
     const res = await smartSearch('sirpur');
     expect(res).toEqual([{ acNo: 1, name: 'Sirpur', reason: 'match' }]);
     expect(mockCreate).toHaveBeenCalledTimes(1);
-    expect(mockCreate.mock.calls[0][0].model).toBe('gemini-3.6-flash');
+    expect(mockCreate.mock.calls[0][0].model).toBe('gemini-flash-lite-latest');
   });
 });

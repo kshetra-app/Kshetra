@@ -1,19 +1,18 @@
 /**
  * Google Gemini AI Service — Connects to Google's Gemini API for intelligent political analysis.
- * Uses Gemini's OpenAI-compatible chat completions endpoint.
+ * Uses Google's high-speed native Generative Language API.
  */
 
 const GEMINI_API_KEY =
   process.env.EXPO_PUBLIC_GEMINI_API_KEY ||
   'GEMINI_KEY_REMOVED';
 
-const GEMINI_API_URL = 'https://generativelanguage.googleapis.com/v1beta/openai/chat/completions';
-const PRIMARY_MODEL = 'gemini-3.6-flash';
+const PRIMARY_MODEL = 'gemini-flash-lite-latest';
 const FALLBACK_MODELS = [
+  'gemini-flash-lite-latest',
+  'gemini-3.5-flash-lite',
+  'gemini-3.1-flash-lite',
   'gemini-3.6-flash',
-  'gemini-flash-latest',
-  'gemini-3.8-flash',
-  'gemini-3.5-flash',
 ];
 
 const SYSTEM_PROMPT = `You are KSHETRA AI — an expert political analyst specializing in Indian state assembly and parliamentary elections.
@@ -77,51 +76,84 @@ export async function sendAIChat(
     systemPrompt += ` Specifically constituency #${context.acNo} — ${context.constituencyName}.`;
   }
 
-  const fullMessages: AIChatMessage[] = [
-    { role: 'system', content: systemPrompt },
-    ...messages,
-  ];
+  // Format messages into Gemini's native contents schema
+  const contents: Array<{ role: 'user' | 'model'; parts: Array<{ text: string }> }> = [];
+  for (const m of messages) {
+    if (m.role === 'system') continue;
+    contents.push({
+      role: m.role === 'assistant' ? 'model' : 'user',
+      parts: [{ text: m.content }],
+    });
+  }
+
+  if (contents.length === 0) {
+    contents.push({ role: 'user', parts: [{ text: 'Hello' }] });
+  }
 
   let lastError = '';
   let lastStatus = 0;
 
   for (const modelName of FALLBACK_MODELS) {
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 12000);
+    const startTime = Date.now();
+
     try {
-      const res = await fetch(GEMINI_API_URL, {
+      console.log(`[KSHETRA AI] Querying Gemini model: ${modelName}`);
+      const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/${modelName}:generateContent?key=${GEMINI_API_KEY}`;
+      const res = await fetch(endpoint, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${GEMINI_API_KEY}`,
         },
+        signal: controller.signal,
         body: JSON.stringify({
-          model: modelName,
-          messages: fullMessages,
-          temperature: 0.7,
-          max_tokens: 2048,
+          systemInstruction: { parts: [{ text: systemPrompt }] },
+          contents,
+          generationConfig: {
+            temperature: 0.7,
+            maxOutputTokens: 2048,
+          },
         }),
       });
 
+      clearTimeout(timeoutId);
+
       if (res.ok) {
         const data = await res.json();
-        const choice = data.choices?.[0];
-        return {
-          response: choice?.message?.content ?? 'No response generated.',
-          model: data.model ?? modelName,
-          usage: data.usage,
-        };
+        const text = data.candidates?.[0]?.content?.parts?.[0]?.text;
+        if (text) {
+          console.log(`[KSHETRA AI] Response received from ${modelName} in ${Date.now() - startTime}ms`);
+          return {
+            response: text,
+            model: modelName,
+            usage: data.usageMetadata
+              ? {
+                  prompt_tokens: data.usageMetadata.promptTokenCount ?? 0,
+                  completion_tokens: data.usageMetadata.candidatesTokenCount ?? 0,
+                  total_tokens: data.usageMetadata.totalTokenCount ?? 0,
+                }
+              : undefined,
+          };
+        }
       }
 
       lastStatus = res.status;
       lastError = await res.text();
-      // If error, gracefully continue to next candidate model
+      console.warn(`[KSHETRA AI] Model ${modelName} error (${res.status}): ${lastError.slice(0, 150)}`);
+      // Fall through to next model in chain
       continue;
     } catch (err: any) {
-      lastError = err?.message ?? 'Network error';
+      clearTimeout(timeoutId);
+      lastError = err?.name === 'AbortError' ? 'Request timed out after 12s' : (err?.message ?? 'Network error');
+      console.warn(`[KSHETRA AI] Model ${modelName} exception: ${lastError}`);
     }
   }
 
   return {
-    response: lastStatus ? `AI service error (${lastStatus}). Please try again later.` : 'Unable to reach AI service. Please check your internet connection.',
+    response: lastStatus
+      ? `AI service error (${lastStatus}). Please try again shortly.`
+      : 'Unable to reach AI service. Please check your network connection.',
     model: PRIMARY_MODEL,
     error: lastError,
   };

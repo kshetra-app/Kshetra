@@ -121,7 +121,7 @@ export function getAIClient(): { client: OpenAI; model: string } | null {
         apiKey: geminiKey,
         baseURL: 'https://generativelanguage.googleapis.com/v1beta/openai',
       }),
-      model: 'gemini-3.6-flash',
+      model: 'gemini-flash-lite-latest',
     };
   }
 

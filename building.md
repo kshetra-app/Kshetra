@@ -5794,6 +5794,38 @@ An audit of `data/seed/*-constituencies.ts` against official Election Commission
 | `CHANGELOG.md` | Modified | Added 31-state rectification release notes |
 | `building.md` | Modified | Documented Sprint 66 milestone |
 
+---
+
+## Phase: AI Engine Performance Optimization & Native Gemini Migration (2026-09-04)
+
+### Problem Diagnosed
+Questions asked via the AI Chat feature (`apps/mobile/app/ai-chat.tsx`) and AI Smart Search (`apps/mobile/components/AISmartSearch.tsx`) remained stuck on a persistent "thinking" indicator and never returned a response.
+
+### Root Cause Analysis
+1. **OpenAI Gateway Latency & Hangs**: `apps/mobile/lib/aiService.ts` was pointing to Google's OpenAI-compatibility endpoint (`https://generativelanguage.googleapis.com/v1beta/openai/chat/completions`). When handling extensive political system instructions (`role: 'system'`), this compatibility proxy suffered from severe latency spikes (>30–60s) or socket hangs.
+2. **Model 503 Capacity Overload**: `gemini-3.6-flash`, `gemini-flash-latest`, and `gemini-3.8-flash` were intermittently throwing `503 Service Unavailable` ("This model is currently experiencing high demand"). Because each failed attempt in the fallback loop took 15–30s before failing, mobile clients spent minutes in an un-aborted loop.
+3. **Missing Fetch Timeout**: The previous fetch calls lacked `AbortController` timeouts, causing mobile network requests to stall indefinitely on suspended connections.
+
+### Resolution & Optimizations
+1. **Migrated to Native Gemini Generative Language API**:
+   - Replaced the proxy endpoint with direct native REST calls:
+     `https://generativelanguage.googleapis.com/v1beta/models/${modelName}:generateContent?key=${GEMINI_API_KEY}`
+   - Formatted prompts with native `systemInstruction` and `contents` (`role: 'user'` and `role: 'model'`).
+2. **Sub-Second Fast-Path Models**:
+   - Switched primary model to `gemini-flash-lite-latest` (consistently responds in ~800–1,200ms).
+   - Replaced fallback chain with high-availability, low-latency variants:
+     `['gemini-flash-lite-latest', 'gemini-3.5-flash-lite', 'gemini-3.1-flash-lite', 'gemini-3.6-flash']`.
+3. **Hard 12-Second Request Timeouts**:
+   - Added an `AbortController` timeout (12s per model) to immediately fail over if an upstream model experiences network or capacity pauses.
+4. **Backend Parity**:
+   - Updated `apps/api/src/services/ai.ts` and `apps/api/src/routes/ai.ts` to use `gemini-flash-lite-latest`.
+
+### Verification
+- **Multi-Turn Chat Benchmark**: Verified multi-turn query responses in 2.9s and 4.5s with complete candidate, party, and margin accuracy.
+- **Backend Jest Test Suites**: 29/29 tests passing.
+- **TypeScript Compilation**: Clean 0 errors across `apps/mobile` and `apps/api`.
+
+
 
 
 

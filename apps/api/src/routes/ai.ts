@@ -103,7 +103,7 @@ export async function aiRoutes(app: FastifyInstance) {
     const provider = process.env.OPENAI_API_KEY && !process.env.GEMINI_API_KEY ? 'openai' : 'gemini';
     return {
       configured: isConfigured,
-      model: provider === 'gemini' ? 'gemini-3.6-flash' : 'gpt-4o-mini',
+      model: provider === 'gemini' ? 'gemini-flash-lite-latest' : 'gpt-4o-mini',
       provider,
     };
   });
