@@ -91,8 +91,12 @@ export const manageRoutes: FastifyPluginAsync = async (app) => {
         <li>Direct constituent emergency broadcast alerts</li>
       </ul>
 
-      <div style="margin-top: 20px; display: flex; align-items: center; gap: 16px;">
+      <div style="margin-top: 20px; display: flex; flex-wrap: wrap; align-items: center; gap: 16px;">
         <button id="buy-pro-btn" class="btn btn-gold" onclick="handlePurchasePro()">Subscribe to Page Pro (₹1,999/mo)</button>
+        <a href="https://razorpay.me/@mallinenipreethammahesh" target="_blank" rel="noopener noreferrer" class="btn" style="background: #0f172a; color: #fff; text-decoration: none; display: inline-flex; align-items: center; gap: 6px;">
+          <span>Direct UPI / Razorpay.me</span>
+          <span style="font-size: 11px; opacity: 0.8;">↗</span>
+        </a>
         <span id="buy-hint" style="font-size: 12px; color: var(--text-muted);">Secure billing via Razorpay · Cancel anytime</span>
       </div>
     </div>

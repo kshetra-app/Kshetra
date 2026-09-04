@@ -1,3 +1,4 @@
+import crypto from 'node:crypto';
 import type { FastifyPluginAsync } from 'fastify';
 
 /**
@@ -114,17 +115,28 @@ export const pagesRoutes: FastifyPluginAsync = async (app) => {
     const { pageId } = request.params;
     const body = request.body ?? {};
 
-    // Validate payment or allow test sandbox bypass
-    const isValid = !!(
-      (body.razorpay_payment_id && body.razorpay_order_id) ||
-      body.sandboxBypass ||
-      process.env.NODE_ENV !== 'production'
-    );
+    // Validate payment: HMAC-SHA256 signature check if secret is configured, or payment id check
+    const secret = process.env.RAZORPAY_KEY_SECRET;
+    let isValid = false;
+
+    if (body.sandboxBypass || process.env.NODE_ENV !== 'production') {
+      isValid = true;
+    } else if (body.razorpay_payment_id && body.razorpay_order_id) {
+      if (secret && body.razorpay_signature) {
+        const expectedSignature = crypto
+          .createHmac('sha256', secret)
+          .update(`${body.razorpay_order_id}|${body.razorpay_payment_id}`)
+          .digest('hex');
+        isValid = expectedSignature === body.razorpay_signature;
+      } else {
+        isValid = true;
+      }
+    }
 
     if (!isValid) {
       return reply.status(400).send({
         success: false,
-        message: 'Invalid payment verification payload',
+        message: 'Invalid payment verification payload or signature',
       });
     }
 
