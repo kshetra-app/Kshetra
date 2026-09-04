@@ -26,6 +26,7 @@ export interface MLAProfile {
   photoUrl?: string;
   constituencyName?: string;
   district?: string;
+  reservationType?: 'General' | 'SC' | 'ST' | string;
   sourceUrl?: string;
 }
 
@@ -287,7 +288,8 @@ export const HR_MLA_PROFILES: MLAProfile[] = [
     maritalStatus: 'Married',
     photoUrl: 'https://www.myneta.info/images_candidate/Haryana2024/56a9151ecb0d84a8d8062050c553db1824b3dcd5.jpg',
     constituencyName: 'Bawal',
-    district: 'Sc',
+    district: 'Rewari',
+    reservationType: 'SC',
     sourceUrl: 'https://www.myneta.info/Haryana2024/candidate.php?candidate_id=274',
   },
   {
@@ -307,7 +309,8 @@ export const HR_MLA_PROFILES: MLAProfile[] = [
     maritalStatus: 'Married',
     photoUrl: 'https://www.myneta.info/images_candidate/Haryana2024/7c1ccc0a8d5d084d4a1c6b6973121a818dff9a2b.jpg',
     constituencyName: 'Bawani Khera',
-    district: 'Sc',
+    district: 'Bhiwani',
+    reservationType: 'SC',
     sourceUrl: 'https://www.myneta.info/Haryana2024/candidate.php?candidate_id=272',
   },
   {
@@ -547,7 +550,8 @@ export const HR_MLA_PROFILES: MLAProfile[] = [
     maritalStatus: 'Married',
     photoUrl: 'https://www.myneta.info/images_candidate/Haryana2024/3e2f828599265587a8ac598e8d863b3e0be60b67.jpg',
     constituencyName: 'Guhla',
-    district: 'Sc',
+    district: 'Kaithal',
+    reservationType: 'SC',
     sourceUrl: 'https://www.myneta.info/Haryana2024/candidate.php?candidate_id=345',
   },
   {
@@ -647,7 +651,8 @@ export const HR_MLA_PROFILES: MLAProfile[] = [
     maritalStatus: 'Married',
     photoUrl: 'https://www.myneta.info/images_candidate/Haryana2024/ac26247f4ff75448f2263906182495b965c4bdca.jpg',
     constituencyName: 'Hodal',
-    district: 'Sc',
+    district: 'Palwal',
+    reservationType: 'SC',
     sourceUrl: 'https://www.myneta.info/Haryana2024/candidate.php?candidate_id=248',
   },
   {
@@ -707,7 +712,8 @@ export const HR_MLA_PROFILES: MLAProfile[] = [
     maritalStatus: 'Married',
     photoUrl: 'https://www.myneta.info/images_candidate/Haryana2024/e85d65e3a4a15950b6f759098868dcef5963c83c.jpg',
     constituencyName: 'Jhajjar',
-    district: 'Sc',
+    district: 'Jhajjar',
+    reservationType: 'SC',
     sourceUrl: 'https://www.myneta.info/Haryana2024/candidate.php?candidate_id=156',
   },
   {
@@ -787,7 +793,8 @@ export const HR_MLA_PROFILES: MLAProfile[] = [
     maritalStatus: 'Married',
     photoUrl: 'https://www.myneta.info/images_candidate/Haryana2024/6d3373f5a0ec4586da3748543ffa2e68964c9352.jpg',
     constituencyName: 'Kalanaur',
-    district: 'Sc',
+    district: 'Rohtak',
+    reservationType: 'SC',
     sourceUrl: 'https://www.myneta.info/Haryana2024/candidate.php?candidate_id=237',
   },
   {
@@ -807,7 +814,8 @@ export const HR_MLA_PROFILES: MLAProfile[] = [
     maritalStatus: 'Married',
     photoUrl: 'https://www.myneta.info/images_candidate/Haryana2024/fc1fb25d21fb4cb4f249cfb65fc9e59bd2284338.jpg',
     constituencyName: 'Kalanwali',
-    district: 'Sc',
+    district: 'Sirsa',
+    reservationType: 'SC',
     sourceUrl: 'https://www.myneta.info/Haryana2024/candidate.php?candidate_id=236',
   },
   {
@@ -867,7 +875,8 @@ export const HR_MLA_PROFILES: MLAProfile[] = [
     maritalStatus: 'Married',
     photoUrl: 'https://www.myneta.info/images_candidate/Haryana2024/02676ab2062aea345ff061030466d3db6a0583c9.jpg',
     constituencyName: 'Kharkhauda',
-    district: 'Sc',
+    district: 'Sonipat',
+    reservationType: 'SC',
     sourceUrl: 'https://www.myneta.info/Haryana2024/candidate.php?candidate_id=164',
   },
   {
@@ -987,7 +996,8 @@ export const HR_MLA_PROFILES: MLAProfile[] = [
     maritalStatus: 'Married',
     photoUrl: 'https://www.myneta.info/images_candidate/Haryana2024/ec4c64c78b5a0fbec0eddc7f126d503556b370b3.jpg',
     constituencyName: 'Mulana',
-    district: 'Sc',
+    district: 'Ambala',
+    reservationType: 'SC',
     sourceUrl: 'https://www.myneta.info/Haryana2024/candidate.php?candidate_id=317',
   },
   {
@@ -1087,7 +1097,8 @@ export const HR_MLA_PROFILES: MLAProfile[] = [
     maritalStatus: 'Married',
     photoUrl: 'https://www.myneta.info/images_candidate/Haryana2024/3a72eef3a5d560369698ac7d4e487aa5ccd012f0.jpg',
     constituencyName: 'Narwana',
-    district: 'Sc',
+    district: 'Jind',
+    reservationType: 'SC',
     sourceUrl: 'https://www.myneta.info/Haryana2024/candidate.php?candidate_id=423',
   },
   {
@@ -1107,7 +1118,8 @@ export const HR_MLA_PROFILES: MLAProfile[] = [
     maritalStatus: 'Married',
     photoUrl: 'https://www.myneta.info/images_candidate/Haryana2024/e7913c3aa724a5835be3cb18814fcebff40ee304.jpg',
     constituencyName: 'Nilokheri',
-    district: 'Sc',
+    district: 'Karnal',
+    reservationType: 'SC',
     sourceUrl: 'https://www.myneta.info/Haryana2024/candidate.php?candidate_id=359',
   },
   {
@@ -1207,7 +1219,8 @@ export const HR_MLA_PROFILES: MLAProfile[] = [
     maritalStatus: 'Married',
     photoUrl: 'https://www.myneta.info/images_candidate/Haryana2024/2334184efff8c04facfc03c63f7dacc5fc47f238.jpg',
     constituencyName: 'Pataudi',
-    district: 'Sc',
+    district: 'Gurgaon',
+    reservationType: 'SC',
     sourceUrl: 'https://www.myneta.info/Haryana2024/candidate.php?candidate_id=210',
   },
   {
@@ -1347,7 +1360,8 @@ export const HR_MLA_PROFILES: MLAProfile[] = [
     maritalStatus: 'Married',
     photoUrl: 'https://www.myneta.info/images_candidate/Haryana2024/da93a024803bffd7a570989fdbfad940dccb8072.jpg',
     constituencyName: 'Ratia',
-    district: 'Sc',
+    district: 'Fatehabad',
+    reservationType: 'SC',
     sourceUrl: 'https://www.myneta.info/Haryana2024/candidate.php?candidate_id=442',
   },
   {
@@ -1407,7 +1421,8 @@ export const HR_MLA_PROFILES: MLAProfile[] = [
     maritalStatus: 'Married',
     photoUrl: 'https://www.myneta.info/images_candidate/Haryana2024/94b2dc4190b47a413c66c1219a350f6d00ed02d6.jpg',
     constituencyName: 'Sadhaura',
-    district: 'Sc',
+    district: 'Yamunanagar',
+    reservationType: 'SC',
     sourceUrl: 'https://www.myneta.info/Haryana2024/candidate.php?candidate_id=189',
   },
   {
@@ -1467,7 +1482,8 @@ export const HR_MLA_PROFILES: MLAProfile[] = [
     maritalStatus: 'Married',
     photoUrl: 'https://www.myneta.info/images_candidate/Haryana2024/2ec68f6d012ed88d7461256613005af1bc9735de.jpg',
     constituencyName: 'Shahbad',
-    district: 'Sc',
+    district: 'Kurukshetra',
+    reservationType: 'SC',
     sourceUrl: 'https://www.myneta.info/Haryana2024/candidate.php?candidate_id=334',
   },
   {
@@ -1627,7 +1643,8 @@ export const HR_MLA_PROFILES: MLAProfile[] = [
     maritalStatus: 'Married',
     photoUrl: 'https://www.myneta.info/images_candidate/Haryana2024/f790f3a2b4374e623300eee5904f173b5548705a.jpg',
     constituencyName: 'Uklana',
-    district: 'Sc',
+    district: 'Hisar',
+    reservationType: 'SC',
     sourceUrl: 'https://www.myneta.info/Haryana2024/candidate.php?candidate_id=459',
   },
 ];

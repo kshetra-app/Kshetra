@@ -26,6 +26,7 @@ export interface MLAProfile {
   photoUrl?: string;
   constituencyName?: string;
   district?: string;
+  reservationType?: 'General' | 'SC' | 'ST' | string;
   sourceUrl?: string;
 }
 
@@ -47,7 +48,8 @@ export const MP_MLA_PROFILES: MLAProfile[] = [
     maritalStatus: 'Married',
     photoUrl: 'https://www.myneta.info/images_candidate/MadhyaPradesh2023/6e099355b66760231abc3358a62b7f09dfbb4535.jpg',
     constituencyName: 'Agar',
-    district: 'Sc',
+    district: 'Agar Malwa',
+    reservationType: 'SC',
     sourceUrl: 'https://www.myneta.info/MadhyaPradesh2023/candidate.php?candidate_id=550',
   },
   {
@@ -67,7 +69,8 @@ export const MP_MLA_PROFILES: MLAProfile[] = [
     maritalStatus: 'Married',
     photoUrl: 'https://www.myneta.info/images_candidate/MadhyaPradesh2023/60b97a9e1ae0cee4b43924a8d10a450ed33ec3e9.jpg',
     constituencyName: 'Alirajpur',
-    district: 'St',
+    district: 'Alirajpur',
+    reservationType: 'ST',
     sourceUrl: 'https://www.myneta.info/MadhyaPradesh2023/candidate.php?candidate_id=554',
   },
   {
@@ -87,7 +90,8 @@ export const MP_MLA_PROFILES: MLAProfile[] = [
     maritalStatus: 'Married',
     photoUrl: 'https://www.myneta.info/images_candidate/MadhyaPradesh2023/830fc3b47ec45dc56caf5ff021221bf4439da8ae.jpg',
     constituencyName: 'Alot',
-    district: 'Sc',
+    district: 'Ratlam',
+    reservationType: 'SC',
     sourceUrl: 'https://www.myneta.info/MadhyaPradesh2023/candidate.php?candidate_id=1146',
   },
   {
@@ -127,7 +131,8 @@ export const MP_MLA_PROFILES: MLAProfile[] = [
     maritalStatus: 'Married',
     photoUrl: 'https://www.myneta.info/images_candidate/MadhyaPradesh2023/f4630b8eca04eb7cc8401899f61fa327eb808d24.jpg',
     constituencyName: 'Amarwara',
-    district: 'St',
+    district: 'Chhindwara',
+    reservationType: 'ST',
     sourceUrl: 'https://www.myneta.info/MadhyaPradesh2023/candidate.php?candidate_id=1137',
   },
   {
@@ -147,7 +152,8 @@ export const MP_MLA_PROFILES: MLAProfile[] = [
     maritalStatus: 'Married',
     photoUrl: 'https://www.myneta.info/images_candidate/MadhyaPradesh2023/9f5c9fa146d8aa16c117b4e09bf21472aa50c068.jpg',
     constituencyName: 'Ambah',
-    district: 'Sc',
+    district: 'Morena',
+    reservationType: 'SC',
     sourceUrl: 'https://www.myneta.info/MadhyaPradesh2023/candidate.php?candidate_id=225',
   },
   {
@@ -167,7 +173,8 @@ export const MP_MLA_PROFILES: MLAProfile[] = [
     maritalStatus: 'Married',
     photoUrl: 'https://www.myneta.info/images_candidate/MadhyaPradesh2023/8500c1e4e43cd1ee2b3231a7e010af447a98107e.jpg',
     constituencyName: 'Amla',
-    district: 'Sc',
+    district: 'Betul',
+    reservationType: 'SC',
     sourceUrl: 'https://www.myneta.info/MadhyaPradesh2023/candidate.php?candidate_id=226',
   },
   {
@@ -187,7 +194,8 @@ export const MP_MLA_PROFILES: MLAProfile[] = [
     maritalStatus: 'Married',
     photoUrl: 'https://www.myneta.info/images_candidate/MadhyaPradesh2023/0a65d61f70a2070058ceea7afe1e83ccfa6750d0.jpg',
     constituencyName: 'Anuppur',
-    district: 'St',
+    district: 'Anuppur',
+    reservationType: 'ST',
     sourceUrl: 'https://www.myneta.info/MadhyaPradesh2023/candidate.php?candidate_id=1117',
   },
   {
@@ -207,7 +215,8 @@ export const MP_MLA_PROFILES: MLAProfile[] = [
     maritalStatus: 'Married',
     photoUrl: 'https://www.myneta.info/images_candidate/MadhyaPradesh2023/82f83f9786a924e008341625d796de37884f1c31.jpg',
     constituencyName: 'Ashta',
-    district: 'Sc',
+    district: 'Sehore',
+    reservationType: 'SC',
     sourceUrl: 'https://www.myneta.info/MadhyaPradesh2023/candidate.php?candidate_id=1125',
   },
   {
@@ -307,7 +316,8 @@ export const MP_MLA_PROFILES: MLAProfile[] = [
     maritalStatus: 'Married',
     photoUrl: 'https://www.myneta.info/images_candidate/MadhyaPradesh2023/5a01c153d6e6d530cde07d045f6f7901053564ee.jpg',
     constituencyName: 'Badwani',
-    district: 'St',
+    district: 'Gwalior',
+    reservationType: 'ST',
     sourceUrl: 'https://www.myneta.info/MadhyaPradesh2023/candidate.php?candidate_id=2928',
   },
   {
@@ -327,7 +337,8 @@ export const MP_MLA_PROFILES: MLAProfile[] = [
     maritalStatus: 'Married',
     photoUrl: 'https://www.myneta.info/images_candidate/MadhyaPradesh2023/66a72954fd900d253b5b84a0cc9f20e810eb71af.jpg',
     constituencyName: 'Bagli',
-    district: 'St',
+    district: 'Dewas',
+    reservationType: 'ST',
     sourceUrl: 'https://www.myneta.info/MadhyaPradesh2023/candidate.php?candidate_id=654',
   },
   {
@@ -427,7 +438,8 @@ export const MP_MLA_PROFILES: MLAProfile[] = [
     maritalStatus: 'Married',
     photoUrl: 'https://www.myneta.info/images_candidate/MadhyaPradesh2023/0f7c9280f193028e948738c9a9ee648abdd11817.jpg',
     constituencyName: 'Bandhavgarh',
-    district: 'St',
+    district: 'Umaria',
+    reservationType: 'ST',
     sourceUrl: 'https://www.myneta.info/MadhyaPradesh2023/candidate.php?candidate_id=11',
   },
   {
@@ -447,7 +459,8 @@ export const MP_MLA_PROFILES: MLAProfile[] = [
     maritalStatus: 'Married',
     photoUrl: 'https://www.myneta.info/images_candidate/MadhyaPradesh2023/8f1c994bff00af75ead99cf639b949478f26083f.jpg',
     constituencyName: 'Barghat',
-    district: 'St',
+    district: 'Seoni',
+    reservationType: 'ST',
     sourceUrl: 'https://www.myneta.info/MadhyaPradesh2023/candidate.php?candidate_id=657',
   },
   {
@@ -487,7 +500,8 @@ export const MP_MLA_PROFILES: MLAProfile[] = [
     maritalStatus: 'Married',
     photoUrl: 'https://www.myneta.info/images_candidate/MadhyaPradesh2023/6fc9a29453f3b0433a1351e69cd59185537bacbe.jpg',
     constituencyName: 'Barwara',
-    district: 'St',
+    district: 'Katni',
+    reservationType: 'ST',
     sourceUrl: 'https://www.myneta.info/MadhyaPradesh2023/candidate.php?candidate_id=660',
   },
   {
@@ -527,7 +541,8 @@ export const MP_MLA_PROFILES: MLAProfile[] = [
     maritalStatus: 'Married',
     photoUrl: 'https://www.myneta.info/images_candidate/MadhyaPradesh2023/6f9ed1212159d9c861a33fe98e98b0dc61cc0623.jpg',
     constituencyName: 'Berasia',
-    district: 'Sc',
+    district: 'Bhopal',
+    reservationType: 'SC',
     sourceUrl: 'https://www.myneta.info/MadhyaPradesh2023/candidate.php?candidate_id=1385',
   },
   {
@@ -567,7 +582,8 @@ export const MP_MLA_PROFILES: MLAProfile[] = [
     maritalStatus: 'Married',
     photoUrl: 'https://www.myneta.info/images_candidate/MadhyaPradesh2023/5862935c60d55e85688110cac2303ada245234cd.jpg',
     constituencyName: 'Bhagwanpura',
-    district: 'St',
+    district: 'Khargone',
+    reservationType: 'ST',
     sourceUrl: 'https://www.myneta.info/MadhyaPradesh2023/candidate.php?candidate_id=248',
   },
   {
@@ -587,7 +603,8 @@ export const MP_MLA_PROFILES: MLAProfile[] = [
     maritalStatus: 'Married',
     photoUrl: 'https://www.myneta.info/images_candidate/MadhyaPradesh2023/ee2bcd9c2a1faba176ecfd2b86bf69719dd3793b.jpg',
     constituencyName: 'Bhainsdehi',
-    district: 'St',
+    district: 'Betul',
+    reservationType: 'ST',
     sourceUrl: 'https://www.myneta.info/MadhyaPradesh2023/candidate.php?candidate_id=28',
   },
   {
@@ -607,7 +624,8 @@ export const MP_MLA_PROFILES: MLAProfile[] = [
     maritalStatus: 'Married',
     photoUrl: 'https://www.myneta.info/images_candidate/MadhyaPradesh2023/a86adb92e4a7d104bc782eaf5e46a4b59054ce39.jpg',
     constituencyName: 'Bhander',
-    district: 'Sc',
+    district: 'Datia',
+    reservationType: 'SC',
     sourceUrl: 'https://www.myneta.info/MadhyaPradesh2023/candidate.php?candidate_id=1131',
   },
   {
@@ -627,7 +645,8 @@ export const MP_MLA_PROFILES: MLAProfile[] = [
     maritalStatus: 'Married',
     photoUrl: 'https://www.myneta.info/images_candidate/MadhyaPradesh2023/033bb1f57d726dd7d51684ef7f77e77155b450fc.jpg',
     constituencyName: 'Bhikangaon',
-    district: 'St',
+    district: 'Khargone',
+    reservationType: 'ST',
     sourceUrl: 'https://www.myneta.info/MadhyaPradesh2023/candidate.php?candidate_id=250',
   },
   {
@@ -767,7 +786,8 @@ export const MP_MLA_PROFILES: MLAProfile[] = [
     maritalStatus: 'Married',
     photoUrl: 'https://www.myneta.info/images_candidate/MadhyaPradesh2023/c09d039b90b6c4b8591005920516c2a8b846898b.jpg',
     constituencyName: 'Bichhiya',
-    district: 'St',
+    district: 'Mandla',
+    reservationType: 'ST',
     sourceUrl: 'https://www.myneta.info/MadhyaPradesh2023/candidate.php?candidate_id=259',
   },
   {
@@ -807,7 +827,8 @@ export const MP_MLA_PROFILES: MLAProfile[] = [
     maritalStatus: 'Married',
     photoUrl: 'https://www.myneta.info/images_candidate/MadhyaPradesh2023/417603939ef857a1ebb8cc3226030db211799d58.jpg',
     constituencyName: 'Bina',
-    district: 'Sc',
+    district: 'Sagar',
+    reservationType: 'SC',
     sourceUrl: 'https://www.myneta.info/MadhyaPradesh2023/candidate.php?candidate_id=481',
   },
   {
@@ -887,7 +908,8 @@ export const MP_MLA_PROFILES: MLAProfile[] = [
     maritalStatus: 'Married',
     photoUrl: 'https://www.myneta.info/images_candidate/MadhyaPradesh2023/383832f1b7eadd3680a06fad5b1400c4dcd1c025.jpg',
     constituencyName: 'Chandla',
-    district: 'Sc',
+    district: 'Chhatarpur',
+    reservationType: 'SC',
     sourceUrl: 'https://www.myneta.info/MadhyaPradesh2023/candidate.php?candidate_id=1422',
   },
   {
@@ -967,7 +989,8 @@ export const MP_MLA_PROFILES: MLAProfile[] = [
     maritalStatus: 'Married',
     photoUrl: 'https://www.myneta.info/images_candidate/MadhyaPradesh2023/5d5b057451fffdf6020b61bb36dfa3b4603dd471.jpg',
     constituencyName: 'Chitrangi',
-    district: 'St',
+    district: 'Singrauli',
+    reservationType: 'ST',
     sourceUrl: 'https://www.myneta.info/MadhyaPradesh2023/candidate.php?candidate_id=269',
   },
   {
@@ -1007,7 +1030,8 @@ export const MP_MLA_PROFILES: MLAProfile[] = [
     maritalStatus: 'Married',
     photoUrl: 'https://www.myneta.info/images_candidate/MadhyaPradesh2023/bb5b1641682604b3341452f9312eb438f668fc20.jpg',
     constituencyName: 'Dabra',
-    district: 'Sc',
+    district: 'Gwalior',
+    reservationType: 'SC',
     sourceUrl: 'https://www.myneta.info/MadhyaPradesh2023/candidate.php?candidate_id=490',
   },
   {
@@ -1127,7 +1151,8 @@ export const MP_MLA_PROFILES: MLAProfile[] = [
     maritalStatus: 'Married',
     photoUrl: 'https://www.myneta.info/images_candidate/MadhyaPradesh2023/cdf8f094c1f738458fca32729f5b7baa8063eff5.jpg',
     constituencyName: 'Devsar',
-    district: 'Sc',
+    district: 'Singrauli',
+    reservationType: 'SC',
     sourceUrl: 'https://www.myneta.info/MadhyaPradesh2023/candidate.php?candidate_id=496',
   },
   {
@@ -1167,7 +1192,8 @@ export const MP_MLA_PROFILES: MLAProfile[] = [
     maritalStatus: 'Married',
     photoUrl: 'https://www.myneta.info/images_candidate/MadhyaPradesh2023/33e7516739ecc56bd91edab1052e0fa5152328da.jpg',
     constituencyName: 'Dharampuri',
-    district: 'St',
+    district: 'Dhar',
+    reservationType: 'ST',
     sourceUrl: 'https://www.myneta.info/MadhyaPradesh2023/candidate.php?candidate_id=1158',
   },
   {
@@ -1187,7 +1213,8 @@ export const MP_MLA_PROFILES: MLAProfile[] = [
     maritalStatus: 'Married',
     photoUrl: 'https://www.myneta.info/images_candidate/MadhyaPradesh2023/7aa87b92e81d5ef4d800da53634649329540e2a3.jpg',
     constituencyName: 'Dhauhani',
-    district: 'St',
+    district: 'Sidhi',
+    reservationType: 'ST',
     sourceUrl: 'https://www.myneta.info/MadhyaPradesh2023/candidate.php?candidate_id=103',
   },
   {
@@ -1227,7 +1254,8 @@ export const MP_MLA_PROFILES: MLAProfile[] = [
     maritalStatus: 'Married',
     photoUrl: 'https://www.myneta.info/images_candidate/MadhyaPradesh2023/b2ebf59c40613b02af368e6809cec3b5bbfc08a6.jpg',
     constituencyName: 'Dindori',
-    district: 'St',
+    district: 'Dindori',
+    reservationType: 'ST',
     sourceUrl: 'https://www.myneta.info/MadhyaPradesh2023/candidate.php?candidate_id=1163',
   },
   {
@@ -1287,7 +1315,8 @@ export const MP_MLA_PROFILES: MLAProfile[] = [
     maritalStatus: 'Married',
     photoUrl: 'https://www.myneta.info/images_candidate/MadhyaPradesh2023/0581f26442da9addbbcc1a633e1eadbef3ca53db.jpg',
     constituencyName: 'Gandhwani',
-    district: 'St',
+    district: 'Dhar',
+    reservationType: 'ST',
     sourceUrl: 'https://www.myneta.info/MadhyaPradesh2023/candidate.php?candidate_id=690',
   },
   {
@@ -1327,7 +1356,8 @@ export const MP_MLA_PROFILES: MLAProfile[] = [
     maritalStatus: 'Married',
     photoUrl: 'https://www.myneta.info/images_candidate/MadhyaPradesh2023/1b7de31280cbe1916d05de110dd59b191feb13d5.jpg',
     constituencyName: 'Ghoradongri',
-    district: 'St',
+    district: 'Betul',
+    reservationType: 'ST',
     sourceUrl: 'https://www.myneta.info/MadhyaPradesh2023/candidate.php?candidate_id=286',
   },
   {
@@ -1347,7 +1377,8 @@ export const MP_MLA_PROFILES: MLAProfile[] = [
     maritalStatus: 'Married',
     photoUrl: 'https://www.myneta.info/images_candidate/MadhyaPradesh2023/18d44723bc348af6b209c3dbc556f3e83bcd59af.jpg',
     constituencyName: 'Gohad',
-    district: 'Sc',
+    district: 'Bhind',
+    reservationType: 'SC',
     sourceUrl: 'https://www.myneta.info/MadhyaPradesh2023/candidate.php?candidate_id=695',
   },
   {
@@ -1367,7 +1398,8 @@ export const MP_MLA_PROFILES: MLAProfile[] = [
     maritalStatus: 'Married',
     photoUrl: 'https://www.myneta.info/images_candidate/MadhyaPradesh2023/0e5c8b697a0ef80e9ec7c298061921aae0283f2e.jpg',
     constituencyName: 'Gotegaon',
-    district: 'Sc',
+    district: 'Narsinghpur',
+    reservationType: 'SC',
     sourceUrl: 'https://www.myneta.info/MadhyaPradesh2023/candidate.php?candidate_id=131',
   },
   {
@@ -1407,7 +1439,8 @@ export const MP_MLA_PROFILES: MLAProfile[] = [
     maritalStatus: 'Married',
     photoUrl: 'https://www.myneta.info/images_candidate/MadhyaPradesh2023/0090598a7097629e9258a705263471bc9f945cd4.jpg',
     constituencyName: 'Guna',
-    district: 'Sc',
+    district: 'Guna',
+    reservationType: 'SC',
     sourceUrl: 'https://www.myneta.info/MadhyaPradesh2023/candidate.php?candidate_id=924',
   },
   {
@@ -1427,7 +1460,8 @@ export const MP_MLA_PROFILES: MLAProfile[] = [
     maritalStatus: 'Married',
     photoUrl: 'https://www.myneta.info/images_candidate/MadhyaPradesh2023/59dee0f84597c4185f489074c815d5489b13a652.jpg',
     constituencyName: 'Gunnaor',
-    district: 'Sc',
+    district: 'Panna',
+    reservationType: 'SC',
     sourceUrl: 'https://www.myneta.info/MadhyaPradesh2023/candidate.php?candidate_id=502',
   },
   {
@@ -1547,7 +1581,8 @@ export const MP_MLA_PROFILES: MLAProfile[] = [
     maritalStatus: 'Married',
     photoUrl: 'https://www.myneta.info/images_candidate/MadhyaPradesh2023/3c4bcdb576540291ae5a33c6359ed4831d8f13dc.jpg',
     constituencyName: 'Harsud',
-    district: 'St',
+    district: 'Khandwa',
+    reservationType: 'ST',
     sourceUrl: 'https://www.myneta.info/MadhyaPradesh2023/candidate.php?candidate_id=707',
   },
   {
@@ -1587,7 +1622,8 @@ export const MP_MLA_PROFILES: MLAProfile[] = [
     maritalStatus: 'Married',
     photoUrl: 'https://www.myneta.info/images_candidate/MadhyaPradesh2023/02367dbb0d4ff572189484d62520280e9a999a8d.jpg',
     constituencyName: 'Hatta',
-    district: 'Sc',
+    district: 'Damoh',
+    reservationType: 'SC',
     sourceUrl: 'https://www.myneta.info/MadhyaPradesh2023/candidate.php?candidate_id=1444',
   },
   {
@@ -1787,7 +1823,8 @@ export const MP_MLA_PROFILES: MLAProfile[] = [
     maritalStatus: 'Married',
     photoUrl: 'https://www.myneta.info/images_candidate/MadhyaPradesh2023/be498fe75e7539c17de78e56d67b11b47ba0230d.jpg',
     constituencyName: 'Jabalpur Purba',
-    district: 'Sc',
+    district: 'Anuppur',
+    reservationType: 'SC',
     sourceUrl: 'https://www.myneta.info/MadhyaPradesh2023/candidate.php?candidate_id=146',
   },
   {
@@ -1827,7 +1864,8 @@ export const MP_MLA_PROFILES: MLAProfile[] = [
     maritalStatus: 'Married',
     photoUrl: 'https://www.myneta.info/images_candidate/MadhyaPradesh2023/c5aeb97d88a213cc8b6d45f8584eac9c091713e5.jpg',
     constituencyName: 'Jaisinghnagar',
-    district: 'St',
+    district: 'Umaria',
+    reservationType: 'ST',
     sourceUrl: 'https://www.myneta.info/MadhyaPradesh2023/candidate.php?candidate_id=303',
   },
   {
@@ -1847,7 +1885,8 @@ export const MP_MLA_PROFILES: MLAProfile[] = [
     maritalStatus: 'Married',
     photoUrl: 'https://www.myneta.info/images_candidate/MadhyaPradesh2023/fa3835201440d60bc935537ebb270d0d720251e4.jpg',
     constituencyName: 'Jaitpur',
-    district: 'St',
+    district: 'Shahdol',
+    reservationType: 'ST',
     sourceUrl: 'https://www.myneta.info/MadhyaPradesh2023/candidate.php?candidate_id=304',
   },
   {
@@ -1887,7 +1926,8 @@ export const MP_MLA_PROFILES: MLAProfile[] = [
     maritalStatus: 'Married',
     photoUrl: 'https://www.myneta.info/images_candidate/MadhyaPradesh2023/887155102e2d4acdc8c9364c5068aca32b0ec1cb.jpg',
     constituencyName: 'Jatara',
-    district: 'Sc',
+    district: 'Tikamgarh',
+    reservationType: 'SC',
     sourceUrl: 'https://www.myneta.info/MadhyaPradesh2023/candidate.php?candidate_id=730',
   },
   {
@@ -1947,7 +1987,8 @@ export const MP_MLA_PROFILES: MLAProfile[] = [
     maritalStatus: 'Married',
     photoUrl: 'https://www.myneta.info/images_candidate/MadhyaPradesh2023/08db000705205b3d2d094b287352aa4e31fbbb75.jpg',
     constituencyName: 'Jhabua',
-    district: 'St',
+    district: 'Jhabua',
+    reservationType: 'ST',
     sourceUrl: 'https://www.myneta.info/MadhyaPradesh2023/candidate.php?candidate_id=732',
   },
   {
@@ -1967,7 +2008,8 @@ export const MP_MLA_PROFILES: MLAProfile[] = [
     maritalStatus: 'Married',
     photoUrl: 'https://www.myneta.info/images_candidate/MadhyaPradesh2023/6b0f6ee8b8d9f49d01ee234019714d5f7dad3300.jpg',
     constituencyName: 'Junnardeo',
-    district: 'St',
+    district: 'Chhindwara',
+    reservationType: 'ST',
     sourceUrl: 'https://www.myneta.info/MadhyaPradesh2023/candidate.php?candidate_id=1437',
   },
   {
@@ -2007,7 +2049,8 @@ export const MP_MLA_PROFILES: MLAProfile[] = [
     maritalStatus: 'Married',
     photoUrl: 'https://www.myneta.info/images_candidate/MadhyaPradesh2023/fd1eea623a243444e79ec1075ea1be18cbe8baa5.jpg',
     constituencyName: 'Karera',
-    district: 'Sc',
+    district: 'Shivpuri',
+    reservationType: 'SC',
     sourceUrl: 'https://www.myneta.info/MadhyaPradesh2023/candidate.php?candidate_id=735',
   },
   {
@@ -2087,7 +2130,8 @@ export const MP_MLA_PROFILES: MLAProfile[] = [
     maritalStatus: 'Married',
     photoUrl: 'https://www.myneta.info/images_candidate/MadhyaPradesh2023/558ff4f6d199420e5a3a440164fc180340a5c7d0.jpg',
     constituencyName: 'Khandwa',
-    district: 'Sc',
+    district: 'Khandwa',
+    reservationType: 'SC',
     sourceUrl: 'https://www.myneta.info/MadhyaPradesh2023/candidate.php?candidate_id=1176',
   },
   {
@@ -2227,7 +2271,8 @@ export const MP_MLA_PROFILES: MLAProfile[] = [
     maritalStatus: 'Married',
     photoUrl: 'https://www.myneta.info/images_candidate/MadhyaPradesh2023/0b824a8fb3c29f1dd470ec55ac4b1d6c85f0f468.jpg',
     constituencyName: 'Kukshi',
-    district: 'St',
+    district: 'Dhar',
+    reservationType: 'ST',
     sourceUrl: 'https://www.myneta.info/MadhyaPradesh2023/candidate.php?candidate_id=324',
   },
   {
@@ -2247,7 +2292,8 @@ export const MP_MLA_PROFILES: MLAProfile[] = [
     maritalStatus: 'Married',
     photoUrl: 'https://www.myneta.info/images_candidate/MadhyaPradesh2023/d0edb6640da8c7609bf922721e06e05120be23d3.jpg',
     constituencyName: 'Kurwai',
-    district: 'Sc',
+    district: 'Vidisha',
+    reservationType: 'SC',
     sourceUrl: 'https://www.myneta.info/MadhyaPradesh2023/candidate.php?candidate_id=62',
   },
   {
@@ -2327,7 +2373,8 @@ export const MP_MLA_PROFILES: MLAProfile[] = [
     maritalStatus: 'Married',
     photoUrl: 'https://www.myneta.info/images_candidate/MadhyaPradesh2023/19be25f39c180a9e4b9ced8220c4a26870f21af9.jpg',
     constituencyName: 'Maheshwar',
-    district: 'Sc',
+    district: 'Khargone',
+    reservationType: 'SC',
     sourceUrl: 'https://www.myneta.info/MadhyaPradesh2023/candidate.php?candidate_id=10',
   },
   {
@@ -2407,7 +2454,8 @@ export const MP_MLA_PROFILES: MLAProfile[] = [
     maritalStatus: 'Married',
     photoUrl: 'https://www.myneta.info/images_candidate/MadhyaPradesh2023/0504e8f93f5a55fd1a47f1a60e61cc40eb67b342.jpg',
     constituencyName: 'Malhargarh',
-    district: 'Sc',
+    district: 'Mandsaur',
+    reservationType: 'SC',
     sourceUrl: 'https://www.myneta.info/MadhyaPradesh2023/candidate.php?candidate_id=531',
   },
   {
@@ -2467,7 +2515,8 @@ export const MP_MLA_PROFILES: MLAProfile[] = [
     maritalStatus: 'Married',
     photoUrl: 'https://www.myneta.info/images_candidate/MadhyaPradesh2023/6f91fc786b075c144ae82ce50626904e6ca26228.jpg',
     constituencyName: 'Mandla',
-    district: 'St',
+    district: 'Mandla',
+    reservationType: 'ST',
     sourceUrl: 'https://www.myneta.info/MadhyaPradesh2023/candidate.php?candidate_id=1496',
   },
   {
@@ -2507,7 +2556,8 @@ export const MP_MLA_PROFILES: MLAProfile[] = [
     maritalStatus: 'Married',
     photoUrl: 'https://www.myneta.info/images_candidate/MadhyaPradesh2023/05570541b45a1a057c4e22ff3501fb94e77b742c.jpg',
     constituencyName: 'Mangawan',
-    district: 'Sc',
+    district: 'Rewa',
+    reservationType: 'SC',
     sourceUrl: 'https://www.myneta.info/MadhyaPradesh2023/candidate.php?candidate_id=748',
   },
   {
@@ -2527,7 +2577,8 @@ export const MP_MLA_PROFILES: MLAProfile[] = [
     maritalStatus: 'Married',
     photoUrl: 'https://www.myneta.info/images_candidate/MadhyaPradesh2023/ae229afb60d00d3ca46f5b878a78cd2c26d3587e.jpg',
     constituencyName: 'Manpur',
-    district: 'St',
+    district: 'Umaria',
+    reservationType: 'ST',
     sourceUrl: 'https://www.myneta.info/MadhyaPradesh2023/candidate.php?candidate_id=66',
   },
   {
@@ -2747,7 +2798,8 @@ export const MP_MLA_PROFILES: MLAProfile[] = [
     maritalStatus: 'Married',
     photoUrl: 'https://www.myneta.info/images_candidate/MadhyaPradesh2023/3e0155b368d5c45bb07e37f632d2f157cf2989fe.jpg',
     constituencyName: 'Naryoli',
-    district: 'Sc',
+    district: 'Sagar',
+    reservationType: 'SC',
     sourceUrl: 'https://www.myneta.info/MadhyaPradesh2023/candidate.php?candidate_id=358',
   },
   {
@@ -2767,7 +2819,8 @@ export const MP_MLA_PROFILES: MLAProfile[] = [
     maritalStatus: 'Married',
     photoUrl: 'https://www.myneta.info/images_candidate/MadhyaPradesh2023/a651a4524348741893ef4a2d1438d88a483c778e.jpg',
     constituencyName: 'Nepanagar',
-    district: 'St',
+    district: 'Burhanpur',
+    reservationType: 'ST',
     sourceUrl: 'https://www.myneta.info/MadhyaPradesh2023/candidate.php?candidate_id=1179',
   },
   {
@@ -2807,7 +2860,8 @@ export const MP_MLA_PROFILES: MLAProfile[] = [
     maritalStatus: 'Married',
     photoUrl: 'https://www.myneta.info/images_candidate/MadhyaPradesh2023/86a6f7050f56e289fb98142f29eafc7d9eb49e1e.jpg',
     constituencyName: 'Niwas',
-    district: 'St',
+    district: 'Mandla',
+    reservationType: 'ST',
     sourceUrl: 'https://www.myneta.info/MadhyaPradesh2023/candidate.php?candidate_id=1282',
   },
   {
@@ -2847,7 +2901,8 @@ export const MP_MLA_PROFILES: MLAProfile[] = [
     maritalStatus: 'Married',
     photoUrl: 'https://www.myneta.info/images_candidate/MadhyaPradesh2023/55133510fa4b16e2b46fd952af32c68a175ce347.jpg',
     constituencyName: 'Pandhana',
-    district: 'St',
+    district: 'Khandwa',
+    reservationType: 'ST',
     sourceUrl: 'https://www.myneta.info/MadhyaPradesh2023/candidate.php?candidate_id=1258',
   },
   {
@@ -2867,7 +2922,8 @@ export const MP_MLA_PROFILES: MLAProfile[] = [
     maritalStatus: 'Married',
     photoUrl: 'https://www.myneta.info/images_candidate/MadhyaPradesh2023/40819d321ec2074ad6ea7c543d793f345216dd0e.jpg',
     constituencyName: 'Pandhurna',
-    district: 'St',
+    district: 'Chhindwara',
+    reservationType: 'ST',
     sourceUrl: 'https://www.myneta.info/MadhyaPradesh2023/candidate.php?candidate_id=74',
   },
   {
@@ -2907,7 +2963,8 @@ export const MP_MLA_PROFILES: MLAProfile[] = [
     maritalStatus: 'Married',
     photoUrl: 'https://www.myneta.info/images_candidate/MadhyaPradesh2023/57cd36d89e531102769b1788250c04d3d1dd811f.jpg',
     constituencyName: 'Pansemal',
-    district: 'St',
+    district: 'Barwani',
+    reservationType: 'ST',
     sourceUrl: 'https://www.myneta.info/MadhyaPradesh2023/candidate.php?candidate_id=363',
   },
   {
@@ -3007,7 +3064,8 @@ export const MP_MLA_PROFILES: MLAProfile[] = [
     maritalStatus: 'Married',
     photoUrl: 'https://www.myneta.info/images_candidate/MadhyaPradesh2023/3a289e5db015ae37360e31591233ee5802ed1add.jpg',
     constituencyName: 'Petlawad',
-    district: 'St',
+    district: 'Jhabua',
+    reservationType: 'ST',
     sourceUrl: 'https://www.myneta.info/MadhyaPradesh2023/candidate.php?candidate_id=371',
   },
   {
@@ -3047,7 +3105,8 @@ export const MP_MLA_PROFILES: MLAProfile[] = [
     maritalStatus: 'Married',
     photoUrl: 'https://www.myneta.info/images_candidate/MadhyaPradesh2023/e386b893ae5c12408a1464f2e8025a8c3ecf690c.jpg',
     constituencyName: 'Pipariya',
-    district: 'Sc',
+    district: 'Hoshangabad',
+    reservationType: 'SC',
     sourceUrl: 'https://www.myneta.info/MadhyaPradesh2023/candidate.php?candidate_id=761',
   },
   {
@@ -3087,7 +3146,8 @@ export const MP_MLA_PROFILES: MLAProfile[] = [
     maritalStatus: 'Married',
     photoUrl: 'https://www.myneta.info/images_candidate/MadhyaPradesh2023/9426015e9f419b5f01b60703f664e1ebacfdb8c8.jpg',
     constituencyName: 'Pushprajgarh',
-    district: 'St',
+    district: 'Anuppur',
+    reservationType: 'ST',
     sourceUrl: 'https://www.myneta.info/MadhyaPradesh2023/candidate.php?candidate_id=764',
   },
   {
@@ -3127,7 +3187,8 @@ export const MP_MLA_PROFILES: MLAProfile[] = [
     maritalStatus: 'Married',
     photoUrl: 'https://www.myneta.info/images_candidate/MadhyaPradesh2023/0fb93182cfbc7cad71d2d1d874d3f558292dd99d.jpg',
     constituencyName: 'Raigaon',
-    district: 'Sc',
+    district: 'Satna',
+    reservationType: 'SC',
     sourceUrl: 'https://www.myneta.info/MadhyaPradesh2023/candidate.php?candidate_id=384',
   },
   {
@@ -3187,7 +3248,8 @@ export const MP_MLA_PROFILES: MLAProfile[] = [
     maritalStatus: 'Married',
     photoUrl: 'https://www.myneta.info/images_candidate/MadhyaPradesh2023/3ce5b418cc37266c70a223f3d881d07eb005e025.jpg',
     constituencyName: 'Rajpur',
-    district: 'St',
+    district: 'Barwani',
+    reservationType: 'ST',
     sourceUrl: 'https://www.myneta.info/MadhyaPradesh2023/candidate.php?candidate_id=388',
   },
   {
@@ -3347,7 +3409,8 @@ export const MP_MLA_PROFILES: MLAProfile[] = [
     maritalStatus: 'Married',
     photoUrl: 'https://www.myneta.info/images_candidate/MadhyaPradesh2023/72d55192b06a81925fc8b734d7abd6e551a36acf.jpg',
     constituencyName: 'Sailana',
-    district: 'St',
+    district: 'Ratlam',
+    reservationType: 'ST',
     sourceUrl: 'https://www.myneta.info/MadhyaPradesh2023/candidate.php?candidate_id=1192',
   },
   {
@@ -3367,7 +3430,8 @@ export const MP_MLA_PROFILES: MLAProfile[] = [
     maritalStatus: 'Married',
     photoUrl: 'https://www.myneta.info/images_candidate/MadhyaPradesh2023/6389e18d90ddf77aa4b970bc28af9a75b99d8a11.jpg',
     constituencyName: 'Sanchi',
-    district: 'Sc',
+    district: 'Raisen',
+    reservationType: 'SC',
     sourceUrl: 'https://www.myneta.info/MadhyaPradesh2023/candidate.php?candidate_id=86',
   },
   {
@@ -3387,7 +3451,8 @@ export const MP_MLA_PROFILES: MLAProfile[] = [
     maritalStatus: 'Married',
     photoUrl: 'https://www.myneta.info/images_candidate/MadhyaPradesh2023/3f68c8bd8e120bab96ab307fc066e33d9118cd0a.jpg',
     constituencyName: 'Sanwer',
-    district: 'Sc',
+    district: 'Indore',
+    reservationType: 'SC',
     sourceUrl: 'https://www.myneta.info/MadhyaPradesh2023/candidate.php?candidate_id=5',
   },
   {
@@ -3407,7 +3472,8 @@ export const MP_MLA_PROFILES: MLAProfile[] = [
     maritalStatus: 'Married',
     photoUrl: 'https://www.myneta.info/images_candidate/MadhyaPradesh2023/caa3fa16e3fdf736d9dd72a447a3acb846cfaf5a.jpg',
     constituencyName: 'Sardarpur',
-    district: 'St',
+    district: 'Dhar',
+    reservationType: 'ST',
     sourceUrl: 'https://www.myneta.info/MadhyaPradesh2023/candidate.php?candidate_id=1194',
   },
   {
@@ -3507,7 +3573,8 @@ export const MP_MLA_PROFILES: MLAProfile[] = [
     maritalStatus: 'Married',
     photoUrl: 'https://www.myneta.info/images_candidate/MadhyaPradesh2023/a3ddf5a4f3f7e7d6b58df9e9288e9252db4d825a.jpg',
     constituencyName: 'Sendhwa',
-    district: 'St',
+    district: 'Dewas',
+    reservationType: 'ST',
     sourceUrl: 'https://www.myneta.info/MadhyaPradesh2023/candidate.php?candidate_id=1517',
   },
   {
@@ -3567,7 +3634,8 @@ export const MP_MLA_PROFILES: MLAProfile[] = [
     maritalStatus: 'Married',
     photoUrl: 'https://www.myneta.info/images_candidate/MadhyaPradesh2023/a67aaabad4577e353552583872f7ef58b668330d.jpg',
     constituencyName: 'Shahpura',
-    district: 'St',
+    district: 'Dindori',
+    reservationType: 'ST',
     sourceUrl: 'https://www.myneta.info/MadhyaPradesh2023/candidate.php?candidate_id=632',
   },
   {
@@ -3827,7 +3895,8 @@ export const MP_MLA_PROFILES: MLAProfile[] = [
     maritalStatus: 'Married',
     photoUrl: 'https://www.myneta.info/images_candidate/MadhyaPradesh2023/97fc48116d9ea35891e550ec328b0c238b34f615.jpg',
     constituencyName: 'Sonkatch',
-    district: 'Sc',
+    district: 'Dewas',
+    reservationType: 'SC',
     sourceUrl: 'https://www.myneta.info/MadhyaPradesh2023/candidate.php?candidate_id=449',
   },
   {
@@ -3907,7 +3976,8 @@ export const MP_MLA_PROFILES: MLAProfile[] = [
     maritalStatus: 'Married',
     photoUrl: 'https://www.myneta.info/images_candidate/MadhyaPradesh2023/bfdd76fb8887ac3aeb5a75bbe198e9905105666d.jpg',
     constituencyName: 'Tarana',
-    district: 'Sc',
+    district: 'Ujjain',
+    reservationType: 'SC',
     sourceUrl: 'https://www.myneta.info/MadhyaPradesh2023/candidate.php?candidate_id=215',
   },
   {
@@ -3967,7 +4037,8 @@ export const MP_MLA_PROFILES: MLAProfile[] = [
     maritalStatus: 'Married',
     photoUrl: 'https://www.myneta.info/images_candidate/MadhyaPradesh2023/0c28230bc0f0a10a327a9c89391dfb8b3845c251.jpg',
     constituencyName: 'Thandla',
-    district: 'St',
+    district: 'Jhabua',
+    reservationType: 'ST',
     sourceUrl: 'https://www.myneta.info/MadhyaPradesh2023/candidate.php?candidate_id=443',
   },
   {
@@ -4007,7 +4078,8 @@ export const MP_MLA_PROFILES: MLAProfile[] = [
     maritalStatus: 'Married',
     photoUrl: 'https://www.myneta.info/images_candidate/MadhyaPradesh2023/00a6976c162de73adcbc66c1d6b55ca7f72e2d6a.jpg',
     constituencyName: 'Timarni',
-    district: 'St',
+    district: 'Harda',
+    reservationType: 'ST',
     sourceUrl: 'https://www.myneta.info/MadhyaPradesh2023/candidate.php?candidate_id=639',
   },
   {
@@ -4147,7 +4219,8 @@ export const MP_MLA_PROFILES: MLAProfile[] = [
     maritalStatus: 'Married',
     photoUrl: 'https://www.myneta.info/images_candidate/MadhyaPradesh2023/7b43397826f13267014a4530467951aaed51f265.jpg',
     constituencyName: 'Amarwara',
-    district: 'St',
+    district: 'Chhindwara',
+    reservationType: 'ST',
     sourceUrl: 'https://www.myneta.info/MadhyaPradesh2023/candidate.php?candidate_id=2929',
   },
   {

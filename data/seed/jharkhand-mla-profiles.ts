@@ -26,6 +26,7 @@ export interface MLAProfile {
   photoUrl?: string;
   constituencyName?: string;
   district?: string;
+  reservationType?: 'General' | 'SC' | 'ST' | string;
   sourceUrl?: string;
 }
 
@@ -107,7 +108,8 @@ export const JH_MLA_PROFILES: MLAProfile[] = [
     maritalStatus: 'Married',
     photoUrl: 'https://www.myneta.info/images_candidate/Jharkhand2024/8c7332b31a80880e2e67c74c2cdd1561b371c0ed.jpg',
     constituencyName: 'Barhait',
-    district: 'St',
+    district: 'Sahebganj',
+    reservationType: 'ST',
     sourceUrl: 'https://www.myneta.info/Jharkhand2024/candidate.php?candidate_id=895',
   },
   {
@@ -207,7 +209,8 @@ export const JH_MLA_PROFILES: MLAProfile[] = [
     maritalStatus: 'Married',
     photoUrl: 'https://www.myneta.info/images_candidate/Jharkhand2024/9b988940731b0bfd1dbba8d60d4517103b47a560.jpg',
     constituencyName: 'Bishunpur',
-    district: 'St',
+    district: 'Gumla',
+    reservationType: 'ST',
     sourceUrl: 'https://www.myneta.info/Jharkhand2024/candidate.php?candidate_id=311',
   },
   {
@@ -247,7 +250,8 @@ export const JH_MLA_PROFILES: MLAProfile[] = [
     maritalStatus: 'Married',
     photoUrl: 'https://www.myneta.info/images_candidate/Jharkhand2024/5d4b324c971970f387f67b2b8b900fb40589323d.jpg',
     constituencyName: 'Borio',
-    district: 'St',
+    district: 'Sahebganj',
+    reservationType: 'ST',
     sourceUrl: 'https://www.myneta.info/Jharkhand2024/candidate.php?candidate_id=892',
   },
   {
@@ -267,7 +271,8 @@ export const JH_MLA_PROFILES: MLAProfile[] = [
     maritalStatus: 'Married',
     photoUrl: 'https://www.myneta.info/images_candidate/Jharkhand2024/8a092a0292636808b7bdeabc1ceadc0f40e548ad.jpg',
     constituencyName: 'Chaibasa',
-    district: 'St',
+    district: 'West Singhbhum',
+    reservationType: 'ST',
     sourceUrl: 'https://www.myneta.info/Jharkhand2024/candidate.php?candidate_id=139',
   },
   {
@@ -287,7 +292,8 @@ export const JH_MLA_PROFILES: MLAProfile[] = [
     maritalStatus: 'Married',
     photoUrl: 'https://www.myneta.info/images_candidate/Jharkhand2024/19f3f0e3034eec87d3a068b017941276c2d47165.jpg',
     constituencyName: 'Chakradharpur',
-    district: 'St',
+    district: 'West Singhbhum',
+    reservationType: 'ST',
     sourceUrl: 'https://www.myneta.info/Jharkhand2024/candidate.php?candidate_id=783',
   },
   {
@@ -307,7 +313,8 @@ export const JH_MLA_PROFILES: MLAProfile[] = [
     maritalStatus: 'Married',
     photoUrl: 'https://www.myneta.info/images_candidate/Jharkhand2024/2b39fa399ba8264b4905d4a12d4aa729b5f5501f.jpg',
     constituencyName: 'Chandankiyari',
-    district: 'Sc',
+    district: 'Bokaro',
+    reservationType: 'SC',
     sourceUrl: 'https://www.myneta.info/Jharkhand2024/candidate.php?candidate_id=813',
   },
   {
@@ -327,7 +334,8 @@ export const JH_MLA_PROFILES: MLAProfile[] = [
     maritalStatus: 'Married',
     photoUrl: 'https://www.myneta.info/images_candidate/Jharkhand2024/4a1cbddd4325f32523b0282620de48c4bbfae150.jpg',
     constituencyName: 'Chatra',
-    district: 'Sc',
+    district: 'Chatra',
+    reservationType: 'SC',
     sourceUrl: 'https://www.myneta.info/Jharkhand2024/candidate.php?candidate_id=175',
   },
   {
@@ -347,7 +355,8 @@ export const JH_MLA_PROFILES: MLAProfile[] = [
     maritalStatus: 'Married',
     photoUrl: 'https://www.myneta.info/images_candidate/Jharkhand2024/1ebcabcb7b13b8b0b5e73c17bacfe1654bca7f0e.jpg',
     constituencyName: 'Chhatarpur',
-    district: 'Sc',
+    district: 'Palamau',
+    reservationType: 'SC',
     sourceUrl: 'https://www.myneta.info/Jharkhand2024/candidate.php?candidate_id=661',
   },
   {
@@ -367,7 +376,8 @@ export const JH_MLA_PROFILES: MLAProfile[] = [
     maritalStatus: 'Married',
     photoUrl: 'https://www.myneta.info/images_candidate/Jharkhand2024/ada4131d6d6c78541e21ab66f7eae6246e118533.jpg',
     constituencyName: 'Deoghar',
-    district: 'Sc',
+    district: 'Deoghar',
+    reservationType: 'SC',
     sourceUrl: 'https://www.myneta.info/Jharkhand2024/candidate.php?candidate_id=932',
   },
   {
@@ -427,7 +437,8 @@ export const JH_MLA_PROFILES: MLAProfile[] = [
     maritalStatus: 'Married',
     photoUrl: 'https://www.myneta.info/images_candidate/Jharkhand2024/e2c19e4d11c66740e1c73073b4ef9654f3d0a2a3.jpg',
     constituencyName: 'Dumka',
-    district: 'St',
+    district: 'Dumka',
+    reservationType: 'ST',
     sourceUrl: 'https://www.myneta.info/Jharkhand2024/candidate.php?candidate_id=831',
   },
   {
@@ -507,7 +518,8 @@ export const JH_MLA_PROFILES: MLAProfile[] = [
     maritalStatus: 'Married',
     photoUrl: 'https://www.myneta.info/images_candidate/Jharkhand2024/4238d4c37b98782b98435bafca62b9d8504bb876.jpg',
     constituencyName: 'Ghatsila',
-    district: 'St',
+    district: 'East Singhbhum',
+    reservationType: 'ST',
     sourceUrl: 'https://www.myneta.info/Jharkhand2024/candidate.php?candidate_id=79',
   },
   {
@@ -567,7 +579,8 @@ export const JH_MLA_PROFILES: MLAProfile[] = [
     maritalStatus: 'Married',
     photoUrl: 'https://www.myneta.info/images_candidate/Jharkhand2024/f6e44fefda32ec9358521d40d886260d79694421.jpg',
     constituencyName: 'Gumla',
-    district: 'St',
+    district: 'Gumla',
+    reservationType: 'ST',
     sourceUrl: 'https://www.myneta.info/Jharkhand2024/candidate.php?candidate_id=230',
   },
   {
@@ -667,7 +680,8 @@ export const JH_MLA_PROFILES: MLAProfile[] = [
     maritalStatus: 'Married',
     photoUrl: 'https://www.myneta.info/images_candidate/Jharkhand2024/aa76c33a41a58097c648950dfe6b17c89eea2a91.jpg',
     constituencyName: 'Jaganathpur',
-    district: 'St',
+    district: 'West Singhbhum',
+    reservationType: 'ST',
     sourceUrl: 'https://www.myneta.info/Jharkhand2024/candidate.php?candidate_id=142',
   },
   {
@@ -747,7 +761,8 @@ export const JH_MLA_PROFILES: MLAProfile[] = [
     maritalStatus: 'Married',
     photoUrl: 'https://www.myneta.info/images_candidate/Jharkhand2024/8139bf4fabda29c655b192507a434339ca642b68.jpg',
     constituencyName: 'Jamua',
-    district: 'Sc',
+    district: 'Giridih',
+    reservationType: 'SC',
     sourceUrl: 'https://www.myneta.info/Jharkhand2024/candidate.php?candidate_id=846',
   },
   {
@@ -807,7 +822,8 @@ export const JH_MLA_PROFILES: MLAProfile[] = [
     maritalStatus: 'Married',
     photoUrl: 'https://www.myneta.info/images_candidate/Jharkhand2024/182b2234ea260278f0a86cf1a782191db891299b.jpg',
     constituencyName: 'Jugsalai',
-    district: 'Sc',
+    district: 'East Singhbhum',
+    reservationType: 'SC',
     sourceUrl: 'https://www.myneta.info/Jharkhand2024/candidate.php?candidate_id=16',
   },
   {
@@ -827,7 +843,8 @@ export const JH_MLA_PROFILES: MLAProfile[] = [
     maritalStatus: 'Married',
     photoUrl: 'https://www.myneta.info/images_candidate/Jharkhand2024/ad76e77d17fceeef2f00194d610af7d205a593b6.jpg',
     constituencyName: 'Kanke',
-    district: 'Sc',
+    district: 'Ranchi',
+    reservationType: 'SC',
     sourceUrl: 'https://www.myneta.info/Jharkhand2024/candidate.php?candidate_id=715',
   },
   {
@@ -847,7 +864,8 @@ export const JH_MLA_PROFILES: MLAProfile[] = [
     maritalStatus: 'Married',
     photoUrl: 'https://www.myneta.info/images_candidate/Jharkhand2024/435ef15318c8f7ceae5e545ff3b6c4e6c71014cb.jpg',
     constituencyName: 'Khijri',
-    district: 'St',
+    district: 'Ranchi',
+    reservationType: 'ST',
     sourceUrl: 'https://www.myneta.info/Jharkhand2024/candidate.php?candidate_id=885',
   },
   {
@@ -867,7 +885,8 @@ export const JH_MLA_PROFILES: MLAProfile[] = [
     maritalStatus: 'Married',
     photoUrl: 'https://www.myneta.info/images_candidate/Jharkhand2024/3a46cd6e240d96259b131deb97456de0610739f9.jpg',
     constituencyName: 'Khunti',
-    district: 'St',
+    district: 'Khunti',
+    reservationType: 'ST',
     sourceUrl: 'https://www.myneta.info/Jharkhand2024/candidate.php?candidate_id=605',
   },
   {
@@ -907,7 +926,8 @@ export const JH_MLA_PROFILES: MLAProfile[] = [
     maritalStatus: 'Married',
     photoUrl: 'https://www.myneta.info/images_candidate/Jharkhand2024/cac04562f8110b31d16ba1344d8a5a93fa067721.jpg',
     constituencyName: 'Kolebira',
-    district: 'St',
+    district: 'Simdega',
+    reservationType: 'ST',
     sourceUrl: 'https://www.myneta.info/Jharkhand2024/candidate.php?candidate_id=381',
   },
   {
@@ -927,7 +947,8 @@ export const JH_MLA_PROFILES: MLAProfile[] = [
     maritalStatus: 'Married',
     photoUrl: 'https://www.myneta.info/images_candidate/Jharkhand2024/c3a6f2911a35eca54bd6cc7da667e677f9e7095b.jpg',
     constituencyName: 'Latehar',
-    district: 'Sc',
+    district: 'Latehar',
+    reservationType: 'SC',
     sourceUrl: 'https://www.myneta.info/Jharkhand2024/candidate.php?candidate_id=283',
   },
   {
@@ -947,7 +968,8 @@ export const JH_MLA_PROFILES: MLAProfile[] = [
     maritalStatus: 'Married',
     photoUrl: 'https://www.myneta.info/images_candidate/Jharkhand2024/d4eceaf78a518bc6bdadf638c0a9bd797eda38b3.jpg',
     constituencyName: 'Litipara',
-    district: 'St',
+    district: 'Pakaur',
+    reservationType: 'ST',
     sourceUrl: 'https://www.myneta.info/Jharkhand2024/candidate.php?candidate_id=976',
   },
   {
@@ -967,7 +989,8 @@ export const JH_MLA_PROFILES: MLAProfile[] = [
     maritalStatus: 'Married',
     photoUrl: 'https://www.myneta.info/images_candidate/Jharkhand2024/c5775044694f219185c3e19c212cb5e83e6c5616.jpg',
     constituencyName: 'Lohardaga',
-    district: 'St',
+    district: 'Lohardaga',
+    reservationType: 'ST',
     sourceUrl: 'https://www.myneta.info/Jharkhand2024/candidate.php?candidate_id=289',
   },
   {
@@ -1007,7 +1030,8 @@ export const JH_MLA_PROFILES: MLAProfile[] = [
     maritalStatus: 'Married',
     photoUrl: 'https://www.myneta.info/images_candidate/Jharkhand2024/ba27aaa8a2810e840e7143a1459a1c718a5d9195.jpg',
     constituencyName: 'Maheshpur',
-    district: 'St',
+    district: 'Pakaur',
+    reservationType: 'ST',
     sourceUrl: 'https://www.myneta.info/Jharkhand2024/candidate.php?candidate_id=980',
   },
   {
@@ -1027,7 +1051,8 @@ export const JH_MLA_PROFILES: MLAProfile[] = [
     maritalStatus: 'Married',
     photoUrl: 'https://www.myneta.info/images_candidate/Jharkhand2024/193ea4d0e10be2becd815aa71a5ff7656f83e086.jpg',
     constituencyName: 'Majhgaon',
-    district: 'St',
+    district: 'West Singhbhum',
+    reservationType: 'ST',
     sourceUrl: 'https://www.myneta.info/Jharkhand2024/candidate.php?candidate_id=403',
   },
   {
@@ -1047,7 +1072,8 @@ export const JH_MLA_PROFILES: MLAProfile[] = [
     maritalStatus: 'Married',
     photoUrl: 'https://www.myneta.info/images_candidate/Jharkhand2024/e1afe00f5d0335ca066b302d7296347c2ac457e4.jpg',
     constituencyName: 'Mandar',
-    district: 'St',
+    district: 'Ranchi',
+    reservationType: 'ST',
     sourceUrl: 'https://www.myneta.info/Jharkhand2024/candidate.php?candidate_id=353',
   },
   {
@@ -1087,7 +1113,8 @@ export const JH_MLA_PROFILES: MLAProfile[] = [
     maritalStatus: 'Married',
     photoUrl: 'https://www.myneta.info/images_candidate/Jharkhand2024/211458c2f066a02b04af2913444f10328d3c49f4.jpg',
     constituencyName: 'Manika',
-    district: 'St',
+    district: 'Latehar',
+    reservationType: 'ST',
     sourceUrl: 'https://www.myneta.info/Jharkhand2024/candidate.php?candidate_id=278',
   },
   {
@@ -1107,7 +1134,8 @@ export const JH_MLA_PROFILES: MLAProfile[] = [
     maritalStatus: 'Married',
     photoUrl: 'https://www.myneta.info/images_candidate/Jharkhand2024/065e400798c4120f638827d2b138e3914a41f7ed.jpg',
     constituencyName: 'Manoharpur',
-    district: 'St',
+    district: 'West Singhbhum',
+    reservationType: 'ST',
     sourceUrl: 'https://www.myneta.info/Jharkhand2024/candidate.php?candidate_id=144',
   },
   {
@@ -1207,7 +1235,8 @@ export const JH_MLA_PROFILES: MLAProfile[] = [
     maritalStatus: 'Married',
     photoUrl: 'https://www.myneta.info/images_candidate/Jharkhand2024/43caa2f61370ba80b88fe332c69caebcc2715628.jpg',
     constituencyName: 'Potka',
-    district: 'St',
+    district: 'East Singhbhum',
+    reservationType: 'ST',
     sourceUrl: 'https://www.myneta.info/Jharkhand2024/candidate.php?candidate_id=13',
   },
   {
@@ -1307,7 +1336,8 @@ export const JH_MLA_PROFILES: MLAProfile[] = [
     maritalStatus: 'Married',
     photoUrl: 'https://www.myneta.info/images_candidate/Jharkhand2024/9394a38fc146d8794e3982aa504794a61f91f0c4.jpg',
     constituencyName: 'Seraikella',
-    district: 'St',
+    district: 'Saraikela Kharsawan',
+    reservationType: 'ST',
     sourceUrl: 'https://www.myneta.info/Jharkhand2024/candidate.php?candidate_id=734',
   },
   {
@@ -1347,7 +1377,8 @@ export const JH_MLA_PROFILES: MLAProfile[] = [
     maritalStatus: 'Married',
     photoUrl: 'https://www.myneta.info/images_candidate/Jharkhand2024/835e168d80bb491c82ccb706da4d09ede3c43dbf.jpg',
     constituencyName: 'Simaria',
-    district: 'Sc',
+    district: 'Chatra',
+    reservationType: 'SC',
     sourceUrl: 'https://www.myneta.info/Jharkhand2024/candidate.php?candidate_id=149',
   },
   {
@@ -1367,7 +1398,8 @@ export const JH_MLA_PROFILES: MLAProfile[] = [
     maritalStatus: 'Married',
     photoUrl: 'https://www.myneta.info/images_candidate/Jharkhand2024/d1860f54d03a77750e43ce7bf3970e2d907e584c.jpg',
     constituencyName: 'Simdega',
-    district: 'St',
+    district: 'Simdega',
+    reservationType: 'ST',
     sourceUrl: 'https://www.myneta.info/Jharkhand2024/candidate.php?candidate_id=375',
   },
   {
@@ -1407,7 +1439,8 @@ export const JH_MLA_PROFILES: MLAProfile[] = [
     maritalStatus: 'Married',
     photoUrl: 'https://www.myneta.info/images_candidate/Jharkhand2024/c424f9790d9e6b441eb9d0048e8e2c9c771b0751.jpg',
     constituencyName: 'Sisai',
-    district: 'St',
+    district: 'Gumla',
+    reservationType: 'ST',
     sourceUrl: 'https://www.myneta.info/Jharkhand2024/candidate.php?candidate_id=227',
   },
   {
@@ -1427,7 +1460,8 @@ export const JH_MLA_PROFILES: MLAProfile[] = [
     maritalStatus: 'Married',
     photoUrl: 'https://www.myneta.info/images_candidate/Jharkhand2024/a1c683c0221e29c45ac724d4387dc2b9e3c78a8f.jpg',
     constituencyName: 'Tamar',
-    district: 'St',
+    district: 'Ranchi',
+    reservationType: 'ST',
     sourceUrl: 'https://www.myneta.info/Jharkhand2024/candidate.php?candidate_id=333',
   },
   {
@@ -1447,7 +1481,8 @@ export const JH_MLA_PROFILES: MLAProfile[] = [
     maritalStatus: 'Married',
     photoUrl: 'https://www.myneta.info/images_candidate/Jharkhand2024/0ecc0a169e4181012f14bdba273ea8e2d5612a7e.jpg',
     constituencyName: 'Torpa',
-    district: 'St',
+    district: 'Khunti',
+    reservationType: 'ST',
     sourceUrl: 'https://www.myneta.info/Jharkhand2024/candidate.php?candidate_id=160',
   },
   {
@@ -1487,7 +1522,8 @@ export const JH_MLA_PROFILES: MLAProfile[] = [
     maritalStatus: 'Married',
     photoUrl: 'https://www.myneta.info/images_candidate/Jharkhand2024/2d497be178c47f49016f73878428df95756a9cfd.jpg',
     constituencyName: 'Ghatsila',
-    district: 'St',
+    district: 'East Singhbhum',
+    reservationType: 'ST',
     sourceUrl: 'https://www.myneta.info/Jharkhand2024/candidate.php?candidate_id=1389',
   },
 ];

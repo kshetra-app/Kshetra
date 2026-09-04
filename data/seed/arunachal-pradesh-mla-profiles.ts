@@ -26,6 +26,7 @@ export interface MLAProfile {
   photoUrl?: string;
   constituencyName?: string;
   district?: string;
+  reservationType?: 'General' | 'SC' | 'ST' | string;
   sourceUrl?: string;
 }
 
@@ -47,7 +48,8 @@ export const AR_MLA_PROFILES: MLAProfile[] = [
     maritalStatus: 'Married',
     photoUrl: 'https://www.myneta.info/images_candidate/ArunachalPradesh2024/9f58769690e2a9f6cac02d8789293a320de3f7d9.jpg',
     constituencyName: 'Along East',
-    district: 'St',
+    district: 'West Siang',
+    reservationType: 'ST',
     sourceUrl: 'https://www.myneta.info/ArunachalPradesh2024/candidate.php?candidate_id=5',
   },
   {
@@ -67,7 +69,8 @@ export const AR_MLA_PROFILES: MLAProfile[] = [
     maritalStatus: 'Married',
     photoUrl: 'https://www.myneta.info/images_candidate/ArunachalPradesh2024/ff2be1c669f21e00d74b0cb7fd93c691b69db377.jpg',
     constituencyName: 'Along West',
-    district: 'St',
+    district: 'West Siang',
+    reservationType: 'ST',
     sourceUrl: 'https://www.myneta.info/ArunachalPradesh2024/candidate.php?candidate_id=11',
   },
   {
@@ -87,7 +90,8 @@ export const AR_MLA_PROFILES: MLAProfile[] = [
     maritalStatus: 'Married',
     photoUrl: 'https://www.myneta.info/images_candidate/ArunachalPradesh2024/ebb69cd73fee5538d8411867b1a8bd1270f37009.jpg',
     constituencyName: 'Anini',
-    district: 'St',
+    district: 'Dibang Valley',
+    reservationType: 'ST',
     sourceUrl: 'https://www.myneta.info/ArunachalPradesh2024/candidate.php?candidate_id=12',
   },
   {
@@ -107,7 +111,8 @@ export const AR_MLA_PROFILES: MLAProfile[] = [
     maritalStatus: 'Married',
     photoUrl: 'https://www.myneta.info/images_candidate/ArunachalPradesh2024/cd72a37dfbcba1f21b075dd732915a0adf7e18df.jpg',
     constituencyName: 'Bameng',
-    district: 'St',
+    district: 'East Kameng',
+    reservationType: 'ST',
     sourceUrl: 'https://www.myneta.info/ArunachalPradesh2024/candidate.php?candidate_id=13',
   },
   {
@@ -127,7 +132,8 @@ export const AR_MLA_PROFILES: MLAProfile[] = [
     maritalStatus: 'Married',
     photoUrl: 'https://www.myneta.info/images_candidate/ArunachalPradesh2024/08ed1c984e4d2916ba60ca9dd2b39eb588cea8c1.jpg',
     constituencyName: 'Basar',
-    district: 'St',
+    district: 'West Siang',
+    reservationType: 'ST',
     sourceUrl: 'https://www.myneta.info/ArunachalPradesh2024/candidate.php?candidate_id=15',
   },
   {
@@ -147,7 +153,8 @@ export const AR_MLA_PROFILES: MLAProfile[] = [
     maritalStatus: 'Married',
     photoUrl: 'https://www.myneta.info/images_candidate/ArunachalPradesh2024/7a81979e2cfa82325aacd0ae7190d835c3a917d6.jpg',
     constituencyName: 'Bomdila',
-    district: 'St',
+    district: 'West Kameng',
+    reservationType: 'ST',
     sourceUrl: 'https://www.myneta.info/ArunachalPradesh2024/candidate.php?candidate_id=6',
   },
   {
@@ -187,7 +194,8 @@ export const AR_MLA_PROFILES: MLAProfile[] = [
     maritalStatus: 'Married',
     photoUrl: 'https://www.myneta.info/images_candidate/ArunachalPradesh2024/cba15d13d49172cdade035d81b8b197442e64c08.jpg',
     constituencyName: 'Borduria-Bogapani',
-    district: 'St',
+    district: 'East Kameng',
+    reservationType: 'ST',
     sourceUrl: 'https://www.myneta.info/ArunachalPradesh2024/candidate.php?candidate_id=18',
   },
   {
@@ -207,7 +215,8 @@ export const AR_MLA_PROFILES: MLAProfile[] = [
     maritalStatus: 'Married',
     photoUrl: 'https://www.myneta.info/images_candidate/ArunachalPradesh2024/8d14e6aa57bcf01873354ed4902f3cea152903bb.jpg',
     constituencyName: 'Changlang South',
-    district: 'St',
+    district: 'Changlang',
+    reservationType: 'ST',
     sourceUrl: 'https://www.myneta.info/ArunachalPradesh2024/candidate.php?candidate_id=1',
   },
   {
@@ -227,7 +236,8 @@ export const AR_MLA_PROFILES: MLAProfile[] = [
     maritalStatus: 'Married',
     photoUrl: 'https://www.myneta.info/images_candidate/ArunachalPradesh2024/53d2656b05fe3b3b37db332a14816140e31e07e4.jpg',
     constituencyName: 'Chowkham',
-    district: 'St',
+    district: 'Lohit',
+    reservationType: 'ST',
     sourceUrl: 'https://www.myneta.info/ArunachalPradesh2024/candidate.php?candidate_id=22',
   },
   {
@@ -247,7 +257,8 @@ export const AR_MLA_PROFILES: MLAProfile[] = [
     maritalStatus: 'Married',
     photoUrl: 'https://www.myneta.info/images_candidate/ArunachalPradesh2024/21200ab811d95d89f99b7859ba1ce4d21c62d78d.jpg',
     constituencyName: 'Chyangtajo',
-    district: 'St',
+    district: 'East Kameng',
+    reservationType: 'ST',
     sourceUrl: 'https://www.myneta.info/ArunachalPradesh2024/candidate.php?candidate_id=23',
   },
   {
@@ -267,7 +278,8 @@ export const AR_MLA_PROFILES: MLAProfile[] = [
     maritalStatus: 'Married',
     photoUrl: 'https://www.myneta.info/images_candidate/ArunachalPradesh2024/6636170834d2bcaaf236ac67b781869d19420051.jpg',
     constituencyName: 'Dambuk',
-    district: 'St',
+    district: 'Lower Dibang Valley',
+    reservationType: 'ST',
     sourceUrl: 'https://www.myneta.info/ArunachalPradesh2024/candidate.php?candidate_id=25',
   },
   {
@@ -287,7 +299,8 @@ export const AR_MLA_PROFILES: MLAProfile[] = [
     maritalStatus: 'Married',
     photoUrl: 'https://www.myneta.info/images_candidate/ArunachalPradesh2024/9fbc283ceddb352d65cdd0033686295df73232c7.jpg',
     constituencyName: 'Daporijo',
-    district: 'St',
+    district: 'Upper Subansiri',
+    reservationType: 'ST',
     sourceUrl: 'https://www.myneta.info/ArunachalPradesh2024/candidate.php?candidate_id=26',
   },
   {
@@ -307,7 +320,8 @@ export const AR_MLA_PROFILES: MLAProfile[] = [
     maritalStatus: 'Married',
     photoUrl: 'https://www.myneta.info/images_candidate/ArunachalPradesh2024/8cfab95751ee07d57afd26edcc3e7cc8f4bc64bf.jpg',
     constituencyName: 'Dirang',
-    district: 'St',
+    district: 'West Kameng',
+    reservationType: 'ST',
     sourceUrl: 'https://www.myneta.info/ArunachalPradesh2024/candidate.php?candidate_id=7',
   },
   {
@@ -327,7 +341,8 @@ export const AR_MLA_PROFILES: MLAProfile[] = [
     maritalStatus: 'Married',
     photoUrl: 'https://www.myneta.info/images_candidate/ArunachalPradesh2024/bef6d041bb523b22783ea89960ae0d96ca28c805.jpg',
     constituencyName: 'Doimukh',
-    district: 'St',
+    district: 'Papum Pare',
+    reservationType: 'ST',
     sourceUrl: 'https://www.myneta.info/ArunachalPradesh2024/candidate.php?candidate_id=88',
   },
   {
@@ -347,7 +362,8 @@ export const AR_MLA_PROFILES: MLAProfile[] = [
     maritalStatus: 'Married',
     photoUrl: 'https://www.myneta.info/images_candidate/ArunachalPradesh2024/7f22a75057a6ffac9abdc7f8c5f1397cf7a8f03e.jpg',
     constituencyName: 'Dumporijo',
-    district: 'St',
+    district: 'Upper Subansiri',
+    reservationType: 'ST',
     sourceUrl: 'https://www.myneta.info/ArunachalPradesh2024/candidate.php?candidate_id=30',
   },
   {
@@ -367,7 +383,8 @@ export const AR_MLA_PROFILES: MLAProfile[] = [
     maritalStatus: 'Married',
     photoUrl: 'https://www.myneta.info/images_candidate/ArunachalPradesh2024/9c75deddb7c65bcef572041d03d1b25dd4222a72.jpg',
     constituencyName: 'Itanagar',
-    district: 'St',
+    district: 'Papum Pare',
+    reservationType: 'ST',
     sourceUrl: 'https://www.myneta.info/ArunachalPradesh2024/candidate.php?candidate_id=34',
   },
   {
@@ -387,7 +404,8 @@ export const AR_MLA_PROFILES: MLAProfile[] = [
     maritalStatus: 'Married',
     photoUrl: 'https://www.myneta.info/images_candidate/ArunachalPradesh2024/d895e836bdb397bc68c709180f5b14cd90b1643c.jpg',
     constituencyName: 'Kalaktang',
-    district: 'St',
+    district: 'West Kameng',
+    reservationType: 'ST',
     sourceUrl: 'https://www.myneta.info/ArunachalPradesh2024/candidate.php?candidate_id=9',
   },
   {
@@ -407,7 +425,8 @@ export const AR_MLA_PROFILES: MLAProfile[] = [
     maritalStatus: 'Married',
     photoUrl: 'https://www.myneta.info/images_candidate/ArunachalPradesh2024/ddb97dd6caa8e1cd2c65760a66b264a2185aa07a.jpg',
     constituencyName: 'Kanubari',
-    district: 'St',
+    district: 'Tirap',
+    reservationType: 'ST',
     sourceUrl: 'https://www.myneta.info/ArunachalPradesh2024/candidate.php?candidate_id=126',
   },
   {
@@ -427,7 +446,8 @@ export const AR_MLA_PROFILES: MLAProfile[] = [
     maritalStatus: 'Married',
     photoUrl: 'https://www.myneta.info/images_candidate/ArunachalPradesh2024/fe0b69b16fcbe38f1e7b4e2540032a2a345371f2.jpg',
     constituencyName: 'Khonsa East',
-    district: 'St',
+    district: 'Tirap',
+    reservationType: 'ST',
     sourceUrl: 'https://www.myneta.info/ArunachalPradesh2024/candidate.php?candidate_id=41',
   },
   {
@@ -447,7 +467,8 @@ export const AR_MLA_PROFILES: MLAProfile[] = [
     maritalStatus: 'Married',
     photoUrl: 'https://www.myneta.info/images_candidate/ArunachalPradesh2024/e699f15aa14b0f3a2baf9e62f04ddecbb1c4374e.jpg',
     constituencyName: 'Khonsa West',
-    district: 'St',
+    district: 'Tirap',
+    reservationType: 'ST',
     sourceUrl: 'https://www.myneta.info/ArunachalPradesh2024/candidate.php?candidate_id=39',
   },
   {
@@ -467,7 +488,8 @@ export const AR_MLA_PROFILES: MLAProfile[] = [
     maritalStatus: 'Married',
     photoUrl: 'https://www.myneta.info/images_candidate/ArunachalPradesh2024/9f443f9b1e5391ac0ddbd602c3134bbf0b6212bb.jpg',
     constituencyName: 'Koloriang',
-    district: 'St',
+    district: 'Kurung Kumey',
+    reservationType: 'ST',
     sourceUrl: 'https://www.myneta.info/ArunachalPradesh2024/candidate.php?candidate_id=134',
   },
   {
@@ -487,7 +509,8 @@ export const AR_MLA_PROFILES: MLAProfile[] = [
     maritalStatus: 'Married',
     photoUrl: 'https://www.myneta.info/images_candidate/ArunachalPradesh2024/95177ab5a45749a42deb0d0486b23cad3c8a0f7a.jpg',
     constituencyName: 'Lekang',
-    district: 'St',
+    district: 'Lohit',
+    reservationType: 'ST',
     sourceUrl: 'https://www.myneta.info/ArunachalPradesh2024/candidate.php?candidate_id=43',
   },
   {
@@ -507,7 +530,8 @@ export const AR_MLA_PROFILES: MLAProfile[] = [
     maritalStatus: 'Married',
     photoUrl: 'https://www.myneta.info/images_candidate/ArunachalPradesh2024/c9679db6a7e59037b96672c71c669972779e59fa.jpg',
     constituencyName: 'Likabali',
-    district: 'St',
+    district: 'West Siang',
+    reservationType: 'ST',
     sourceUrl: 'https://www.myneta.info/ArunachalPradesh2024/candidate.php?candidate_id=46',
   },
   {
@@ -527,7 +551,8 @@ export const AR_MLA_PROFILES: MLAProfile[] = [
     maritalStatus: 'Married',
     photoUrl: 'https://www.myneta.info/images_candidate/ArunachalPradesh2024/0d2cea71ddabb1707cab9b5c7e6e0d969610b723.jpg',
     constituencyName: 'Longding-Pumao',
-    district: 'St',
+    district: 'Upper Subansiri',
+    reservationType: 'ST',
     sourceUrl: 'https://www.myneta.info/ArunachalPradesh2024/candidate.php?candidate_id=49',
   },
   {
@@ -547,7 +572,8 @@ export const AR_MLA_PROFILES: MLAProfile[] = [
     maritalStatus: 'Married',
     photoUrl: 'https://www.myneta.info/images_candidate/ArunachalPradesh2024/fdf23d259ecc1a63f2fb1ee5a5bc29d0a4cb830b.jpg',
     constituencyName: 'Lumla',
-    district: 'St',
+    district: 'Tawang',
+    reservationType: 'ST',
     sourceUrl: 'https://www.myneta.info/ArunachalPradesh2024/candidate.php?candidate_id=51',
   },
   {
@@ -567,7 +593,8 @@ export const AR_MLA_PROFILES: MLAProfile[] = [
     maritalStatus: 'Married',
     photoUrl: 'https://www.myneta.info/images_candidate/ArunachalPradesh2024/12a5971429d115496963fbf6c4b6b77bd704f5e1.jpg',
     constituencyName: 'Mariyang-Geku',
-    district: 'St',
+    district: 'Upper Siang',
+    reservationType: 'ST',
     sourceUrl: 'https://www.myneta.info/ArunachalPradesh2024/candidate.php?candidate_id=142',
   },
   {
@@ -587,7 +614,8 @@ export const AR_MLA_PROFILES: MLAProfile[] = [
     maritalStatus: 'Married',
     photoUrl: 'https://www.myneta.info/images_candidate/ArunachalPradesh2024/233a2252caaf77db897e71708c28a1fa6e747f81.jpg',
     constituencyName: 'Mebo',
-    district: 'St',
+    district: 'East Siang',
+    reservationType: 'ST',
     sourceUrl: 'https://www.myneta.info/ArunachalPradesh2024/candidate.php?candidate_id=176',
   },
   {
@@ -607,7 +635,8 @@ export const AR_MLA_PROFILES: MLAProfile[] = [
     maritalStatus: 'Married',
     photoUrl: 'https://www.myneta.info/images_candidate/ArunachalPradesh2024/4d3e151b93e43badb7bc96c1c21f704672efac62.jpg',
     constituencyName: 'Mechuka',
-    district: 'St',
+    district: 'West Siang',
+    reservationType: 'ST',
     sourceUrl: 'https://www.myneta.info/ArunachalPradesh2024/candidate.php?candidate_id=53',
   },
   {
@@ -627,7 +656,8 @@ export const AR_MLA_PROFILES: MLAProfile[] = [
     maritalStatus: 'Married',
     photoUrl: 'https://www.myneta.info/images_candidate/ArunachalPradesh2024/7ce9b886d8bac045ac6faa33539af063ce367d3d.jpg',
     constituencyName: 'Miao',
-    district: 'St',
+    district: 'Changlang',
+    reservationType: 'ST',
     sourceUrl: 'https://www.myneta.info/ArunachalPradesh2024/candidate.php?candidate_id=144',
   },
   {
@@ -647,7 +677,8 @@ export const AR_MLA_PROFILES: MLAProfile[] = [
     maritalStatus: 'Married',
     photoUrl: 'https://www.myneta.info/images_candidate/ArunachalPradesh2024/fc72903a221045e3516fd584543d373d789e293a.jpg',
     constituencyName: 'Mukto',
-    district: 'St',
+    district: 'Tawang',
+    reservationType: 'ST',
     sourceUrl: 'https://www.myneta.info/ArunachalPradesh2024/candidate.php?candidate_id=3',
   },
   {
@@ -667,7 +698,8 @@ export const AR_MLA_PROFILES: MLAProfile[] = [
     maritalStatus: 'Married',
     photoUrl: 'https://www.myneta.info/images_candidate/ArunachalPradesh2024/c1b95a4b390c36f2411aab7964e7fbcf844bb704.jpg',
     constituencyName: 'Nacho',
-    district: 'St',
+    district: 'Upper Subansiri',
+    reservationType: 'ST',
     sourceUrl: 'https://www.myneta.info/ArunachalPradesh2024/candidate.php?candidate_id=56',
   },
   {
@@ -687,7 +719,8 @@ export const AR_MLA_PROFILES: MLAProfile[] = [
     maritalStatus: 'Married',
     photoUrl: 'https://www.myneta.info/images_candidate/ArunachalPradesh2024/dc88ea17ca7366a00a27a4ac5d57136a39e0df88.jpg',
     constituencyName: 'Namsai',
-    district: 'St',
+    district: 'Lohit',
+    reservationType: 'ST',
     sourceUrl: 'https://www.myneta.info/ArunachalPradesh2024/candidate.php?candidate_id=4',
   },
   {
@@ -707,7 +740,8 @@ export const AR_MLA_PROFILES: MLAProfile[] = [
     maritalStatus: 'Married',
     photoUrl: 'https://www.myneta.info/images_candidate/ArunachalPradesh2024/891f06cea089e86214125dbe10ef8d6ad4cf7dbc.jpg',
     constituencyName: 'Namsang',
-    district: 'St',
+    district: 'Tirap',
+    reservationType: 'ST',
     sourceUrl: 'https://www.myneta.info/ArunachalPradesh2024/candidate.php?candidate_id=61',
   },
   {
@@ -727,7 +761,8 @@ export const AR_MLA_PROFILES: MLAProfile[] = [
     maritalStatus: 'Married',
     photoUrl: 'https://www.myneta.info/images_candidate/ArunachalPradesh2024/4bfeff8bbaabfb72b5740f8caa74ec4cc594cd28.jpg',
     constituencyName: 'Nari-Koyu',
-    district: 'St',
+    district: 'East Siang',
+    reservationType: 'ST',
     sourceUrl: 'https://www.myneta.info/ArunachalPradesh2024/candidate.php?candidate_id=62',
   },
   {
@@ -747,7 +782,8 @@ export const AR_MLA_PROFILES: MLAProfile[] = [
     maritalStatus: 'Married',
     photoUrl: 'https://www.myneta.info/images_candidate/ArunachalPradesh2024/172f399354a51fd6e78a339a6b6a4614631f71ef.jpg',
     constituencyName: 'Nyapin',
-    district: 'St',
+    district: 'Kurung Kumey',
+    reservationType: 'ST',
     sourceUrl: 'https://www.myneta.info/ArunachalPradesh2024/candidate.php?candidate_id=174',
   },
   {
@@ -767,7 +803,8 @@ export const AR_MLA_PROFILES: MLAProfile[] = [
     maritalStatus: 'Married',
     photoUrl: 'https://www.myneta.info/images_candidate/ArunachalPradesh2024/ad743ac1ef40e3514faf073ebd3d668da80e73bc.jpg',
     constituencyName: 'Pakke-Kasang',
-    district: 'St',
+    district: 'East Siang',
+    reservationType: 'ST',
     sourceUrl: 'https://www.myneta.info/ArunachalPradesh2024/candidate.php?candidate_id=94',
   },
   {
@@ -787,7 +824,8 @@ export const AR_MLA_PROFILES: MLAProfile[] = [
     maritalStatus: 'Married',
     photoUrl: 'https://www.myneta.info/images_candidate/ArunachalPradesh2024/75dcd5b1e853106e2b6fa376162412f418a62918.jpg',
     constituencyName: 'Palin',
-    district: 'St',
+    district: 'Kurung Kumey',
+    reservationType: 'ST',
     sourceUrl: 'https://www.myneta.info/ArunachalPradesh2024/candidate.php?candidate_id=64',
   },
   {
@@ -807,7 +845,8 @@ export const AR_MLA_PROFILES: MLAProfile[] = [
     maritalStatus: 'Married',
     photoUrl: 'https://www.myneta.info/images_candidate/ArunachalPradesh2024/d8766814384055559a8d6091ddb12b7ff1534cfc.jpg',
     constituencyName: 'Pangin',
-    district: 'St',
+    district: 'East Siang',
+    reservationType: 'ST',
     sourceUrl: 'https://www.myneta.info/ArunachalPradesh2024/candidate.php?candidate_id=151',
   },
   {
@@ -827,7 +866,8 @@ export const AR_MLA_PROFILES: MLAProfile[] = [
     maritalStatus: 'Married',
     photoUrl: 'https://www.myneta.info/images_candidate/ArunachalPradesh2024/32c859a643bff0ee88b033ad9ce0d255db48df9b.jpg',
     constituencyName: 'Pasighat East',
-    district: 'St',
+    district: 'East Siang',
+    reservationType: 'ST',
     sourceUrl: 'https://www.myneta.info/ArunachalPradesh2024/candidate.php?candidate_id=65',
   },
   {
@@ -847,7 +887,8 @@ export const AR_MLA_PROFILES: MLAProfile[] = [
     maritalStatus: 'Married',
     photoUrl: 'https://www.myneta.info/images_candidate/ArunachalPradesh2024/092ce97ba86a283f44c6bbbb9e48b76dd85c7311.jpg',
     constituencyName: 'Pongchao-Wakka',
-    district: 'St',
+    district: 'Dibang Valley',
+    reservationType: 'ST',
     sourceUrl: 'https://www.myneta.info/ArunachalPradesh2024/candidate.php?candidate_id=68',
   },
   {
@@ -867,7 +908,8 @@ export const AR_MLA_PROFILES: MLAProfile[] = [
     maritalStatus: 'Married',
     photoUrl: 'https://www.myneta.info/images_candidate/ArunachalPradesh2024/987e7a129289674230035772e569cf2be67620c7.jpg',
     constituencyName: 'Raga',
-    district: 'St',
+    district: 'Upper Subansiri',
+    reservationType: 'ST',
     sourceUrl: 'https://www.myneta.info/ArunachalPradesh2024/candidate.php?candidate_id=162',
   },
   {
@@ -887,7 +929,8 @@ export const AR_MLA_PROFILES: MLAProfile[] = [
     maritalStatus: 'Married',
     photoUrl: 'https://www.myneta.info/images_candidate/ArunachalPradesh2024/fb3296fcdaccefc06175ccfb824ebc03a34bbbb1.jpg',
     constituencyName: 'Roing',
-    district: 'St',
+    district: 'Lower Dibang Valley',
+    reservationType: 'ST',
     sourceUrl: 'https://www.myneta.info/ArunachalPradesh2024/candidate.php?candidate_id=69',
   },
   {
@@ -907,7 +950,8 @@ export const AR_MLA_PROFILES: MLAProfile[] = [
     maritalStatus: 'Married',
     photoUrl: 'https://www.myneta.info/images_candidate/ArunachalPradesh2024/548ab296f6e4d123cf0adc8682637e3206692bfa.jpg',
     constituencyName: 'Rumgong',
-    district: 'St',
+    district: 'West Siang',
+    reservationType: 'ST',
     sourceUrl: 'https://www.myneta.info/ArunachalPradesh2024/candidate.php?candidate_id=70',
   },
   {
@@ -927,7 +971,8 @@ export const AR_MLA_PROFILES: MLAProfile[] = [
     maritalStatus: 'Married',
     photoUrl: 'https://www.myneta.info/images_candidate/ArunachalPradesh2024/4d427768f393a73b6154b11692f4bfcffa25bf16.jpg',
     constituencyName: 'Seppa East',
-    district: 'St',
+    district: 'East Kameng',
+    reservationType: 'ST',
     sourceUrl: 'https://www.myneta.info/ArunachalPradesh2024/candidate.php?candidate_id=73',
   },
   {
@@ -947,7 +992,8 @@ export const AR_MLA_PROFILES: MLAProfile[] = [
     maritalStatus: 'Married',
     photoUrl: 'https://www.myneta.info/images_candidate/ArunachalPradesh2024/cd6682f0db11527e9a12b84fef1c07aaab3290c2.jpg',
     constituencyName: 'Seppa West',
-    district: 'St',
+    district: 'East Kameng',
+    reservationType: 'ST',
     sourceUrl: 'https://www.myneta.info/ArunachalPradesh2024/candidate.php?candidate_id=75',
   },
   {
@@ -967,7 +1013,8 @@ export const AR_MLA_PROFILES: MLAProfile[] = [
     maritalStatus: 'Married',
     photoUrl: 'https://www.myneta.info/images_candidate/ArunachalPradesh2024/3540b23f54b97d70aaa36924201444b82f139745.jpg',
     constituencyName: 'Tali',
-    district: 'St',
+    district: 'Kurung Kumey',
+    reservationType: 'ST',
     sourceUrl: 'https://www.myneta.info/ArunachalPradesh2024/candidate.php?candidate_id=76',
   },
   {
@@ -987,7 +1034,8 @@ export const AR_MLA_PROFILES: MLAProfile[] = [
     maritalStatus: 'Married',
     photoUrl: 'https://www.myneta.info/images_candidate/ArunachalPradesh2024/3697a99005472ff0e93aada04f0ddd72ede1c60d.jpg',
     constituencyName: 'Taliha',
-    district: 'St',
+    district: 'Upper Subansiri',
+    reservationType: 'ST',
     sourceUrl: 'https://www.myneta.info/ArunachalPradesh2024/candidate.php?candidate_id=77',
   },
   {
@@ -1007,7 +1055,8 @@ export const AR_MLA_PROFILES: MLAProfile[] = [
     maritalStatus: 'Married',
     photoUrl: 'https://www.myneta.info/images_candidate/ArunachalPradesh2024/51675f3a962fc274d6c7d627f1fb5d67b59c2ce7.jpg',
     constituencyName: 'Tezu',
-    district: 'St',
+    district: 'Lohit',
+    reservationType: 'ST',
     sourceUrl: 'https://www.myneta.info/ArunachalPradesh2024/candidate.php?candidate_id=79',
   },
   {
@@ -1027,7 +1076,8 @@ export const AR_MLA_PROFILES: MLAProfile[] = [
     maritalStatus: 'Married',
     photoUrl: 'https://www.myneta.info/images_candidate/ArunachalPradesh2024/7b2618014f4911b969dbd2af65381c9df9644224.jpg',
     constituencyName: 'Thrizino-Buragaon',
-    district: 'St',
+    district: 'West Kameng',
+    reservationType: 'ST',
     sourceUrl: 'https://www.myneta.info/ArunachalPradesh2024/candidate.php?candidate_id=80',
   },
   {
@@ -1047,7 +1097,8 @@ export const AR_MLA_PROFILES: MLAProfile[] = [
     maritalStatus: 'Married',
     photoUrl: 'https://www.myneta.info/images_candidate/ArunachalPradesh2024/e6eec54ba125913b8d057bd9825e21d22253cab7.jpg',
     constituencyName: 'Tuting-Yingkiong',
-    district: 'St',
+    district: 'Changlang',
+    reservationType: 'ST',
     sourceUrl: 'https://www.myneta.info/ArunachalPradesh2024/candidate.php?candidate_id=82',
   },
   {
@@ -1067,7 +1118,8 @@ export const AR_MLA_PROFILES: MLAProfile[] = [
     maritalStatus: 'Married',
     photoUrl: 'https://www.myneta.info/images_candidate/ArunachalPradesh2024/aba00922eaa811eceafd4cfb9458c092ab68b470.jpg',
     constituencyName: 'Yachuli',
-    district: 'St',
+    district: 'Lower Subansiri',
+    reservationType: 'ST',
     sourceUrl: 'https://www.myneta.info/ArunachalPradesh2024/candidate.php?candidate_id=97',
   },
   {
@@ -1087,7 +1139,8 @@ export const AR_MLA_PROFILES: MLAProfile[] = [
     maritalStatus: 'Married',
     photoUrl: 'https://www.myneta.info/images_candidate/ArunachalPradesh2024/e9d748ab6164d86afe831352c1972e691839df89.jpg',
     constituencyName: 'Ziro-Hapoli',
-    district: 'St',
+    district: 'Changlang',
+    reservationType: 'ST',
     sourceUrl: 'https://www.myneta.info/ArunachalPradesh2024/candidate.php?candidate_id=84',
   },
 ];

@@ -26,6 +26,7 @@ export interface MLAProfile {
   photoUrl?: string;
   constituencyName?: string;
   district?: string;
+  reservationType?: 'General' | 'SC' | 'ST' | string;
   sourceUrl?: string;
 }
 
@@ -427,7 +428,8 @@ export const SK_MLA_PROFILES: MLAProfile[] = [
     maritalStatus: 'Married',
     photoUrl: 'https://www.myneta.info/images_candidate/Sikkim2024/3a622c39c1091852366cc5bb5652e905c57cfc49.jpg',
     constituencyName: 'Salghari-Zoom',
-    district: 'Sc',
+    district: 'East',
+    reservationType: 'SC',
     sourceUrl: 'https://www.myneta.info/Sikkim2024/candidate.php?candidate_id=98',
   },
   {
@@ -567,7 +569,8 @@ export const SK_MLA_PROFILES: MLAProfile[] = [
     maritalStatus: 'Married',
     photoUrl: 'https://www.myneta.info/images_candidate/Sikkim2024/b2ae19e2c185fc42e7a624592cd454335a6de08d.jpg',
     constituencyName: 'West Pendam',
-    district: 'Sc',
+    district: 'East',
+    reservationType: 'SC',
     sourceUrl: 'https://www.myneta.info/Sikkim2024/candidate.php?candidate_id=136',
   },
   {

@@ -88,6 +88,7 @@ export interface LegislatorProfile {
   constituencyName: string;
   constituencyNumber: number;
   district: string;
+  reservationType?: 'General' | 'SC' | 'ST' | string;
   currentParty: string;
   currentPartyFull: string;
   isCurrentMember: boolean;
@@ -323,7 +324,8 @@ export const PY_MLA_PROFILES: LegislatorProfile[] = [
     stateName: 'Puducherry',
     constituencyName: 'Embalam',
     constituencyNumber: 21,
-    district: 'Sc',
+    district: 'Puducherry',
+    reservationType: 'SC',
     currentParty: 'AINRC',
     currentPartyFull: 'All India N.R. Congress',
     isCurrentMember: true,
@@ -1558,7 +1560,8 @@ export const PY_MLA_PROFILES: LegislatorProfile[] = [
     stateName: 'Puducherry',
     constituencyName: 'Nedungadu',
     constituencyNumber: 24,
-    district: 'Sc',
+    district: 'Karaikal',
+    reservationType: 'SC',
     currentParty: 'INC',
     currentPartyFull: 'Indian National Congress',
     isCurrentMember: true,
@@ -1748,7 +1751,8 @@ export const PY_MLA_PROFILES: LegislatorProfile[] = [
     stateName: 'Puducherry',
     constituencyName: 'Nettapakkam',
     constituencyNumber: 22,
-    district: 'Sc',
+    district: 'Puducherry',
+    reservationType: 'SC',
     currentParty: 'AINRC',
     currentPartyFull: 'All India N.R. Congress',
     isCurrentMember: true,
@@ -2033,7 +2037,8 @@ export const PY_MLA_PROFILES: LegislatorProfile[] = [
     stateName: 'Puducherry',
     constituencyName: 'Oussudu',
     constituencyNumber: 3,
-    district: 'Sc',
+    district: 'Puducherry',
+    reservationType: 'SC',
     currentParty: 'INC',
     currentPartyFull: 'Indian National Congress',
     isCurrentMember: true,

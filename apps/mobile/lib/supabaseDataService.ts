@@ -1050,6 +1050,96 @@ export async function fetchIssuesForConstituency(
   }
 }
 
+// ─── User & Page Follow Graph (Ticket 0.3) ──────────────────────────
+
+export async function followUser(followerId: string, followedId: string): Promise<boolean> {
+  if (!guard()) return true;
+  try {
+    addBreadcrumb('social', 'follow_user', { followerId, followedId });
+    const { error } = await supabase
+      .from('user_follows')
+      .upsert({ follower_id: followerId, followed_id: followedId }, { onConflict: 'follower_id,followed_id' });
+    if (error) throw error;
+    return true;
+  } catch (err) {
+    captureException(err as Error, { op: 'follow_user', followedId });
+    return false;
+  }
+}
+
+export async function unfollowUser(followerId: string, followedId: string): Promise<boolean> {
+  if (!guard()) return true;
+  try {
+    addBreadcrumb('social', 'unfollow_user', { followerId, followedId });
+    const { error } = await supabase
+      .from('user_follows')
+      .delete()
+      .match({ follower_id: followerId, followed_id: followedId });
+    if (error) throw error;
+    return true;
+  } catch (err) {
+    captureException(err as Error, { op: 'unfollow_user', followedId });
+    return false;
+  }
+}
+
+export async function fetchFollowedUserIds(followerId: string): Promise<string[]> {
+  if (!guard()) return [];
+  try {
+    const { data, error } = await supabase
+      .from('user_follows')
+      .select('followed_id')
+      .eq('follower_id', followerId);
+    if (error) throw error;
+    return (data ?? []).map((row: any) => row.followed_id);
+  } catch (err) {
+    captureException(err as Error, { op: 'fetch_followed_users', followerId });
+    return [];
+  }
+}
+
+export async function fetchBlendedFeed(
+  viewerId?: string | null,
+  constituencyId?: string | null,
+  stateCode?: string | null,
+  limit = 50,
+): Promise<any[] | null> {
+  if (!guard()) return null;
+  try {
+    let followedIds: string[] = [];
+    if (viewerId) {
+      followedIds = await fetchFollowedUserIds(viewerId);
+    }
+
+    let query = supabase.from('posts').select('*').eq('is_deleted', false);
+
+    if (followedIds.length > 0 && constituencyId) {
+      const orFilter = `author_id.in.(${followedIds.join(',')}),constituency_id.eq.${constituencyId}`;
+      query = query.or(orFilter);
+    } else if (followedIds.length > 0) {
+      if (stateCode) {
+        query = query.or(`author_id.in.(${followedIds.join(',')}),state_code.eq.${stateCode}`);
+      } else {
+        query = query.in('author_id', followedIds);
+      }
+    } else if (constituencyId) {
+      query = query.eq('constituency_id', constituencyId);
+    } else if (stateCode) {
+      query = query.eq('state_code', stateCode);
+    }
+
+    const { data, error } = await query
+      .order('created_at', { ascending: false })
+      .limit(limit);
+
+    if (error) throw error;
+    return data;
+  } catch (err) {
+    captureException(err as Error, { op: 'fetch_blended_feed' });
+    return null;
+  }
+}
+
 export async function fetchFeedForState(
   stateCode: string,
   limit = 50,

@@ -26,6 +26,7 @@ export interface MLAProfile {
   photoUrl?: string;
   constituencyName?: string;
   district?: string;
+  reservationType?: 'General' | 'SC' | 'ST' | string;
   sourceUrl?: string;
 }
 
@@ -407,7 +408,8 @@ export const GA_MLA_PROFILES: MLAProfile[] = [
     maritalStatus: 'Married',
     photoUrl: 'https://www.myneta.info/images_candidate/goa2022/381a56f7b98e26f86cbbe97c8d8b9634e0ed14e6.jpeg',
     constituencyName: 'Pernem',
-    district: 'Sc',
+    district: 'North Goa',
+    reservationType: 'SC',
     sourceUrl: 'https://www.myneta.info/goa2022/candidate.php?candidate_id=131',
   },
   {

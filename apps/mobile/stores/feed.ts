@@ -1276,8 +1276,14 @@ interface FeedState {
   deleteComment: (postId: string, commentId: string) => void;
   toggleCommentReaction: (postId: string, commentId: string, reaction?: ReactionType) => void;
 
+  // Follow Graph (Ticket 0.3)
+  followedUserIds: string[];
+  followUser: (userId: string) => Promise<void>;
+  unfollowUser: (userId: string) => Promise<void>;
+  isFollowing: (userId: string) => boolean;
+
   // Sync & Realtime
-  refreshFeed: (stateCode: string) => Promise<void>;
+  refreshFeed: (stateCode?: string, constituencyId?: string | null) => Promise<void>;
   hydrateFromServer: (serverPosts: any[]) => void;
   receiveRealtimePost: (serverPost: any) => void;
   receiveRealtimeComment: (serverComment: any) => void;
@@ -1288,6 +1294,7 @@ interface FeedState {
 export const useFeedStore = create<FeedState>()((set, get) => ({
   posts: SEED_POSTS,
   comments: SEED_COMMENTS,
+  followedUserIds: [],
   feedFilter: 'all',
   scopeFilter: 'state' as FeedScope,
   selectedConstituency: null,
@@ -1496,10 +1503,45 @@ export const useFeedStore = create<FeedState>()((set, get) => ({
     }
   },
 
-  refreshFeed: async (stateCode) => {
+  // Follow Graph (Ticket 0.3)
+  followUser: async (userId: string) => {
+    const currentFollowed = get().followedUserIds;
+    if (currentFollowed.includes(userId)) return;
+    const updated = [...currentFollowed, userId];
+    set({ followedUserIds: updated });
+
+    const authUser = useAuthStore.getState().user;
+    if (authUser?.id) {
+      dataService.followUser(authUser.id, userId);
+    }
+    await get().refreshFeed();
+  },
+
+  unfollowUser: async (userId: string) => {
+    const updated = get().followedUserIds.filter((id) => id !== userId);
+    set({ followedUserIds: updated });
+
+    const authUser = useAuthStore.getState().user;
+    if (authUser?.id) {
+      dataService.unfollowUser(authUser.id, userId);
+    }
+    await get().refreshFeed();
+  },
+
+  isFollowing: (userId: string) => {
+    return get().followedUserIds.includes(userId);
+  },
+
+  refreshFeed: async (stateCode = 'TS', constituencyId = null) => {
     set({ loading: true });
     try {
-      const livePosts = await dataService.fetchFeedForState(stateCode, 50);
+      const authUser = useAuthStore.getState().user;
+      const livePosts = await dataService.fetchBlendedFeed(
+        authUser?.id,
+        constituencyId,
+        stateCode,
+        50,
+      );
       if (livePosts && livePosts.length > 0) {
         const transformed: Post[] = livePosts.map((p: any) => ({
           id: p.id,
@@ -1526,9 +1568,57 @@ export const useFeedStore = create<FeedState>()((set, get) => ({
         }));
         const localOnly = get().posts.filter((p) => p.id.startsWith('local-'));
         set({ posts: [...transformed, ...localOnly], isLive: true });
+      } else {
+        // Offline / demo fallback: blend followed authors + constituency posts, ranked by recency
+        const followed = new Set(get().followedUserIds);
+        const seenIds = new Set<string>();
+        const candidatePool = [...get().posts, ...SEED_POSTS].filter((p) => {
+          if (seenIds.has(p.id)) return false;
+          seenIds.add(p.id);
+          return true;
+        });
+
+        const blended = candidatePool.filter((p) => {
+          if (followed.has(p.author.id)) return true;
+          if (constituencyId && p.constituencyId === constituencyId) return true;
+          if (!constituencyId && (!p.stateCode || p.stateCode === stateCode)) return true;
+          return false;
+        }).sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+
+        const localOnly = get().posts.filter((p) => p.id.startsWith('local-'));
+        const seen = new Set();
+        const deduped = [...blended, ...localOnly].filter((p) => {
+          if (seen.has(p.id)) return false;
+          seen.add(p.id);
+          return true;
+        });
+        set({ posts: deduped });
       }
     } catch (_) {
-      // Offline fallback: keep cached/seed posts intact
+      // Offline fallback: blend followed authors + constituency posts, ranked by recency
+      const followed = new Set(get().followedUserIds);
+      const seenIds = new Set<string>();
+      const candidatePool = [...get().posts, ...SEED_POSTS].filter((p) => {
+        if (seenIds.has(p.id)) return false;
+        seenIds.add(p.id);
+        return true;
+      });
+
+      const blended = candidatePool.filter((p) => {
+        if (followed.has(p.author.id)) return true;
+        if (constituencyId && p.constituencyId === constituencyId) return true;
+        if (!constituencyId && (!p.stateCode || p.stateCode === stateCode)) return true;
+        return false;
+      }).sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+
+      const localOnly = get().posts.filter((p) => p.id.startsWith('local-'));
+      const seen = new Set();
+      const deduped = [...blended, ...localOnly].filter((p) => {
+        if (seen.has(p.id)) return false;
+        seen.add(p.id);
+        return true;
+      });
+      set({ posts: deduped });
     } finally {
       set({ loading: false });
     }

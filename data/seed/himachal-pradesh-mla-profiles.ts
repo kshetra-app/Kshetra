@@ -26,6 +26,7 @@ export interface MLAProfile {
   photoUrl?: string;
   constituencyName?: string;
   district?: string;
+  reservationType?: 'General' | 'SC' | 'ST' | string;
   sourceUrl?: string;
 }
 
@@ -47,7 +48,8 @@ export const HP_MLA_PROFILES: MLAProfile[] = [
     maritalStatus: 'Married',
     photoUrl: undefined,
     constituencyName: 'Anni',
-    district: 'Sc',
+    district: 'Kullu',
+    reservationType: 'SC',
     sourceUrl: 'https://www.myneta.info/HimachalPradesh2022/candidate.php?candidate_id=63',
   },
   {
@@ -87,7 +89,8 @@ export const HP_MLA_PROFILES: MLAProfile[] = [
     maritalStatus: 'Married',
     photoUrl: undefined,
     constituencyName: 'Baijnath',
-    district: 'Sc',
+    district: 'Kangra',
+    reservationType: 'SC',
     sourceUrl: 'https://www.myneta.info/HimachalPradesh2022/candidate.php?candidate_id=159',
   },
   {
@@ -107,7 +110,8 @@ export const HP_MLA_PROFILES: MLAProfile[] = [
     maritalStatus: 'Married',
     photoUrl: undefined,
     constituencyName: 'Balh',
-    district: 'Sc',
+    district: 'Mandi',
+    reservationType: 'SC',
     sourceUrl: 'https://www.myneta.info/HimachalPradesh2022/candidate.php?candidate_id=6',
   },
   {
@@ -167,7 +171,8 @@ export const HP_MLA_PROFILES: MLAProfile[] = [
     maritalStatus: 'Married',
     photoUrl: undefined,
     constituencyName: 'Bharmour',
-    district: 'St',
+    district: 'Chamba',
+    reservationType: 'ST',
     sourceUrl: 'https://www.myneta.info/HimachalPradesh2022/candidate.php?candidate_id=127',
   },
   {
@@ -247,7 +252,8 @@ export const HP_MLA_PROFILES: MLAProfile[] = [
     maritalStatus: 'Married',
     photoUrl: undefined,
     constituencyName: 'Chintpurni',
-    district: 'Sc',
+    district: 'Una',
+    reservationType: 'SC',
     sourceUrl: 'https://www.myneta.info/HimachalPradesh2022/candidate.php?candidate_id=381',
   },
   {
@@ -287,7 +293,8 @@ export const HP_MLA_PROFILES: MLAProfile[] = [
     maritalStatus: 'Married',
     photoUrl: undefined,
     constituencyName: 'Churah',
-    district: 'Sc',
+    district: 'Chamba',
+    reservationType: 'SC',
     sourceUrl: 'https://www.myneta.info/HimachalPradesh2022/candidate.php?candidate_id=125',
   },
   {
@@ -507,7 +514,8 @@ export const HP_MLA_PROFILES: MLAProfile[] = [
     maritalStatus: 'Married',
     photoUrl: undefined,
     constituencyName: 'Indora',
-    district: 'Sc',
+    district: 'Kangra',
+    reservationType: 'SC',
     sourceUrl: 'https://www.myneta.info/HimachalPradesh2022/candidate.php?candidate_id=263',
   },
   {
@@ -587,7 +595,8 @@ export const HP_MLA_PROFILES: MLAProfile[] = [
     maritalStatus: 'Married',
     photoUrl: undefined,
     constituencyName: 'Jhanduta',
-    district: 'Sc',
+    district: 'Bilaspur',
+    reservationType: 'SC',
     sourceUrl: 'https://www.myneta.info/HimachalPradesh2022/candidate.php?candidate_id=116',
   },
   {
@@ -667,7 +676,8 @@ export const HP_MLA_PROFILES: MLAProfile[] = [
     maritalStatus: 'Married',
     photoUrl: undefined,
     constituencyName: 'Karsog',
-    district: 'Sc',
+    district: 'Mandi',
+    reservationType: 'SC',
     sourceUrl: 'https://www.myneta.info/HimachalPradesh2022/candidate.php?candidate_id=54',
   },
   {
@@ -707,7 +717,8 @@ export const HP_MLA_PROFILES: MLAProfile[] = [
     maritalStatus: 'Married',
     photoUrl: undefined,
     constituencyName: 'Kinnaur',
-    district: 'St',
+    district: 'Kinnaur',
+    reservationType: 'ST',
     sourceUrl: 'https://www.myneta.info/HimachalPradesh2022/candidate.php?candidate_id=236',
   },
   {
@@ -767,7 +778,8 @@ export const HP_MLA_PROFILES: MLAProfile[] = [
     maritalStatus: undefined,
     photoUrl: undefined,
     constituencyName: 'Lahaul And Spiti',
-    district: 'St',
+    district: 'Lahaul and Spiti',
+    reservationType: 'ST',
     sourceUrl: 'https://www.myneta.info/HimachalPradesh2022/candidate.php?candidate_id=41',
   },
   {
@@ -827,7 +839,8 @@ export const HP_MLA_PROFILES: MLAProfile[] = [
     maritalStatus: 'Married',
     photoUrl: undefined,
     constituencyName: 'Nachan',
-    district: 'Sc',
+    district: 'Mandi',
+    reservationType: 'SC',
     sourceUrl: 'https://www.myneta.info/HimachalPradesh2022/candidate.php?candidate_id=97',
   },
   {
@@ -927,7 +940,8 @@ export const HP_MLA_PROFILES: MLAProfile[] = [
     maritalStatus: 'Married',
     photoUrl: undefined,
     constituencyName: 'Pachhad',
-    district: 'Sc',
+    district: 'Sirmaur',
+    reservationType: 'SC',
     sourceUrl: 'https://www.myneta.info/HimachalPradesh2022/candidate.php?candidate_id=196',
   },
   {
@@ -987,7 +1001,8 @@ export const HP_MLA_PROFILES: MLAProfile[] = [
     maritalStatus: 'Married',
     photoUrl: undefined,
     constituencyName: 'Rampur',
-    district: 'Sc',
+    district: 'Shimla',
+    reservationType: 'SC',
     sourceUrl: 'https://www.myneta.info/HimachalPradesh2022/candidate.php?candidate_id=220',
   },
   {
@@ -1127,7 +1142,8 @@ export const HP_MLA_PROFILES: MLAProfile[] = [
     maritalStatus: 'Married',
     photoUrl: undefined,
     constituencyName: 'Solan',
-    district: 'Sc',
+    district: 'Solan',
+    reservationType: 'SC',
     sourceUrl: 'https://www.myneta.info/HimachalPradesh2022/candidate.php?candidate_id=192',
   },
   {
@@ -1387,7 +1403,8 @@ export const HP_MLA_PROFILES: MLAProfile[] = [
     maritalStatus: 'Married',
     photoUrl: 'https://www.myneta.info/images_candidate/HimachalPradesh2022/fcb8ce1706dceadbe92607a5759f0156e3f88643.jpg',
     constituencyName: 'Lahaul & Spiti',
-    district: 'St',
+    district: 'Kinnaur',
+    reservationType: 'ST',
     sourceUrl: 'https://www.myneta.info/HimachalPradesh2022/candidate.php?candidate_id=500',
   },
   {

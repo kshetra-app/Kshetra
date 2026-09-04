@@ -3,7 +3,9 @@
  * Mirrors the Supabase schema from 006_trust_safety.sql.
  */
 
-export type UserRole = 'citizen' | 'journalist' | 'activist' | 'politician' | 'official' | 'aspirant' | 'moderator' | 'admin';
+export type UserRole = 'citizen' | 'journalist' | 'activist' | 'politician' | 'official' | 'aspirant' | 'party' | 'moderator' | 'admin';
+
+export type UserVerificationStatus = 'unverified' | 'pending' | 'verified';
 
 export type VerificationType = 'identity' | 'journalist' | 'politician' | 'government_official' | 'organization';
 

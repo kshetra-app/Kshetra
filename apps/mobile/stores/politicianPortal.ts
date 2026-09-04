@@ -128,20 +128,22 @@ const SEED_MANIFESTOS: EManifesto[] = [
   },
 ];
 
-// ─── Seed Mentorships ───
+// ─── Seed Mentorships (Fictional Demo Data — Not Real Public Figures) ───
+// NOTE: All mentorships and endorsements below use synthetic demo personas
+// created strictly for UI demonstration and test suites. No real public figures.
 const SEED_MENTORSHIPS: Mentorship[] = [
   {
-    id: 'ms1', mentorId: 'pp1', mentorName: 'Revanth Reddy', mentorTier: 'chief_minister',
+    id: 'ms1', mentorId: 'demo-mentor-1', mentorName: 'Dr. K. S. Sharma (Demo Mentor)', mentorTier: 'mla',
     menteeId: 'pp3', menteeName: 'Ananya Rao', menteeTier: 'aspirant',
     status: 'active', focusAreas: ['Public speaking', 'Campaign strategy', 'Policy writing'],
     sessionsCompleted: 6, nextSessionDate: '2026-06-05T10:00:00Z', startedAt: '2026-01-15',
   },
 ];
 
-// ─── Seed Endorsements ───
+// ─── Seed Endorsements (Fictional Demo Data — Not Real Public Figures) ───
 const SEED_ENDORSEMENTS: Endorsement[] = [
-  { id: 'en1', endorserId: 'pp1', endorserName: 'Revanth Reddy', endorserTier: 'chief_minister', endorseeId: 'pp3', endorseeName: 'Ananya Rao', type: 'leadership', message: 'Ananya represents the future of Indian politics. Her data-driven approach to governance is refreshing.', isPublic: true, createdAt: '2026-03-01' },
-  { id: 'en2', endorserId: 'pp4', endorserName: 'Siddaramaiah', endorserTier: 'chief_minister', endorseeId: 'pp3', endorseeName: 'Ananya Rao', type: 'capability', message: 'Impressed by her grasp of urban governance challenges. India needs more such young leaders.', isPublic: true, createdAt: '2026-04-15' },
+  { id: 'en1', endorserId: 'demo-endorser-1', endorserName: 'Dr. K. S. Sharma (Demo)', endorserTier: 'mla', endorseeId: 'pp3', endorseeName: 'Ananya Rao', type: 'leadership', message: 'Ananya demonstrates a committed, data-driven approach to community service and local governance.', isPublic: true, createdAt: '2026-03-01' },
+  { id: 'en2', endorserId: 'demo-endorser-2', endorserName: 'Prof. Savitri Devi (Demo)', endorserTier: 'local_leader', endorseeId: 'pp3', endorseeName: 'Ananya Rao', type: 'capability', message: 'Impressed by her focus on urban public infrastructure and young citizen engagement.', isPublic: true, createdAt: '2026-04-15' },
 ];
 
 // ─── Seed Fundraise Projects ───

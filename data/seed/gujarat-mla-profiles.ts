@@ -26,6 +26,7 @@ export interface MLAProfile {
   photoUrl?: string;
   constituencyName?: string;
   district?: string;
+  reservationType?: 'General' | 'SC' | 'ST' | string;
   sourceUrl?: string;
 }
 
@@ -227,7 +228,8 @@ export const GJ_MLA_PROFILES: MLAProfile[] = [
     maritalStatus: 'Married',
     photoUrl: undefined,
     constituencyName: 'Bansda',
-    district: 'St',
+    district: 'Banaskantha',
+    reservationType: 'ST',
     sourceUrl: 'https://www.myneta.info/Gujarat2022/candidate.php?candidate_id=4946',
   },
   {
@@ -267,7 +269,8 @@ export const GJ_MLA_PROFILES: MLAProfile[] = [
     maritalStatus: 'Married',
     photoUrl: undefined,
     constituencyName: 'Bardoli',
-    district: 'Sc',
+    district: 'Banaskantha',
+    reservationType: 'SC',
     sourceUrl: 'https://www.myneta.info/Gujarat2022/candidate.php?candidate_id=5408',
   },
   {
@@ -387,7 +390,8 @@ export const GJ_MLA_PROFILES: MLAProfile[] = [
     maritalStatus: 'Married',
     photoUrl: undefined,
     constituencyName: 'Bhiloda',
-    district: 'St',
+    district: 'Patan',
+    reservationType: 'ST',
     sourceUrl: 'https://www.myneta.info/Gujarat2022/candidate.php?candidate_id=6197',
   },
   {
@@ -487,7 +491,8 @@ export const GJ_MLA_PROFILES: MLAProfile[] = [
     maritalStatus: 'Married',
     photoUrl: undefined,
     constituencyName: 'Chhota Udaipur',
-    district: 'St',
+    district: 'Mahesana',
+    reservationType: 'ST',
     sourceUrl: 'https://www.myneta.info/Gujarat2022/candidate.php?candidate_id=5980',
   },
   {
@@ -567,7 +572,8 @@ export const GJ_MLA_PROFILES: MLAProfile[] = [
     maritalStatus: 'Married',
     photoUrl: undefined,
     constituencyName: 'Dahod',
-    district: 'St',
+    district: 'Sabarkantha',
+    reservationType: 'ST',
     sourceUrl: 'https://www.myneta.info/Gujarat2022/candidate.php?candidate_id=6086',
   },
   {
@@ -587,7 +593,8 @@ export const GJ_MLA_PROFILES: MLAProfile[] = [
     maritalStatus: 'Married',
     photoUrl: undefined,
     constituencyName: 'Dangs',
-    district: 'St',
+    district: 'Dangs',
+    reservationType: 'ST',
     sourceUrl: 'https://www.myneta.info/Gujarat2022/candidate.php?candidate_id=5159',
   },
   {
@@ -607,7 +614,8 @@ export const GJ_MLA_PROFILES: MLAProfile[] = [
     maritalStatus: 'Married',
     photoUrl: undefined,
     constituencyName: 'Danilimda',
-    district: 'Sc',
+    district: 'Sabarkantha',
+    reservationType: 'SC',
     sourceUrl: 'https://www.myneta.info/Gujarat2022/candidate.php?candidate_id=6276',
   },
   {
@@ -627,7 +635,8 @@ export const GJ_MLA_PROFILES: MLAProfile[] = [
     maritalStatus: 'Married',
     photoUrl: undefined,
     constituencyName: 'Danta',
-    district: 'St',
+    district: 'Arvalli',
+    reservationType: 'ST',
     sourceUrl: 'https://www.myneta.info/Gujarat2022/candidate.php?candidate_id=5930',
   },
   {
@@ -667,7 +676,8 @@ export const GJ_MLA_PROFILES: MLAProfile[] = [
     maritalStatus: 'Married',
     photoUrl: 'https://www.myneta.info/images_candidate/Gujarat2022/43f8fd15203ceed58efad28d8cf5cb395e3bae66.jpg',
     constituencyName: 'Dasada',
-    district: 'Sc',
+    district: 'Arvalli',
+    reservationType: 'SC',
     sourceUrl: 'https://www.myneta.info/Gujarat2022/candidate.php?candidate_id=5308',
   },
   {
@@ -687,7 +697,8 @@ export const GJ_MLA_PROFILES: MLAProfile[] = [
     maritalStatus: 'Married',
     photoUrl: undefined,
     constituencyName: 'Dediapada',
-    district: 'St',
+    district: 'Sabarkantha',
+    reservationType: 'ST',
     sourceUrl: 'https://www.myneta.info/Gujarat2022/candidate.php?candidate_id=5183',
   },
   {
@@ -807,7 +818,8 @@ export const GJ_MLA_PROFILES: MLAProfile[] = [
     maritalStatus: 'Married',
     photoUrl: undefined,
     constituencyName: 'Dharampur',
-    district: 'St',
+    district: 'Valsad',
+    reservationType: 'ST',
     sourceUrl: 'https://www.myneta.info/Gujarat2022/candidate.php?candidate_id=5372',
   },
   {
@@ -927,7 +939,8 @@ export const GJ_MLA_PROFILES: MLAProfile[] = [
     maritalStatus: 'Married',
     photoUrl: undefined,
     constituencyName: 'Fatepura',
-    district: 'St',
+    district: 'Ahmedabad',
+    reservationType: 'ST',
     sourceUrl: 'https://www.myneta.info/Gujarat2022/candidate.php?candidate_id=6101',
   },
   {
@@ -947,7 +960,8 @@ export const GJ_MLA_PROFILES: MLAProfile[] = [
     maritalStatus: 'Married',
     photoUrl: undefined,
     constituencyName: 'Gadhada',
-    district: 'Sc',
+    district: 'Ahmedabad',
+    reservationType: 'SC',
     sourceUrl: 'https://www.myneta.info/Gujarat2022/candidate.php?candidate_id=5179',
   },
   {
@@ -967,7 +981,8 @@ export const GJ_MLA_PROFILES: MLAProfile[] = [
     maritalStatus: 'Married',
     photoUrl: undefined,
     constituencyName: 'Gandevi',
-    district: 'St',
+    district: 'Navsari',
+    reservationType: 'ST',
     sourceUrl: 'https://www.myneta.info/Gujarat2022/candidate.php?candidate_id=4948',
   },
   {
@@ -987,7 +1002,8 @@ export const GJ_MLA_PROFILES: MLAProfile[] = [
     maritalStatus: 'Married',
     photoUrl: 'https://www.myneta.info/images_candidate/Gujarat2022/ca0e32f057bd90435a68587159bda89b48a77b36.jpg',
     constituencyName: 'Gandhidham',
-    district: 'Sc',
+    district: 'Ahmedabad',
+    reservationType: 'SC',
     sourceUrl: 'https://www.myneta.info/Gujarat2022/candidate.php?candidate_id=5124',
   },
   {
@@ -1027,7 +1043,8 @@ export const GJ_MLA_PROFILES: MLAProfile[] = [
     maritalStatus: 'Married',
     photoUrl: undefined,
     constituencyName: 'Garbada',
-    district: 'St',
+    district: 'Ahmedabad',
+    reservationType: 'ST',
     sourceUrl: 'https://www.myneta.info/Gujarat2022/candidate.php?candidate_id=6079',
   },
   {
@@ -1327,7 +1344,8 @@ export const GJ_MLA_PROFILES: MLAProfile[] = [
     maritalStatus: 'Married',
     photoUrl: undefined,
     constituencyName: 'Jetpur',
-    district: 'St',
+    district: 'Morbi',
+    reservationType: 'ST',
     sourceUrl: 'https://www.myneta.info/Gujarat2022/candidate.php?candidate_id=5979',
   },
   {
@@ -1347,7 +1365,8 @@ export const GJ_MLA_PROFILES: MLAProfile[] = [
     maritalStatus: 'Married',
     photoUrl: undefined,
     constituencyName: 'Jhagadia',
-    district: 'St',
+    district: 'Morbi',
+    reservationType: 'ST',
     sourceUrl: 'https://www.myneta.info/Gujarat2022/candidate.php?candidate_id=5627',
   },
   {
@@ -1367,7 +1386,8 @@ export const GJ_MLA_PROFILES: MLAProfile[] = [
     maritalStatus: 'Married',
     photoUrl: undefined,
     constituencyName: 'Jhalod',
-    district: 'St',
+    district: 'Morbi',
+    reservationType: 'ST',
     sourceUrl: 'https://www.myneta.info/Gujarat2022/candidate.php?candidate_id=6094',
   },
   {
@@ -1407,7 +1427,8 @@ export const GJ_MLA_PROFILES: MLAProfile[] = [
     maritalStatus: 'Married',
     photoUrl: undefined,
     constituencyName: 'Kadi',
-    district: 'Sc',
+    district: 'Surat',
+    reservationType: 'SC',
     sourceUrl: 'https://www.myneta.info/Gujarat2022/candidate.php?candidate_id=5969',
   },
   {
@@ -1427,7 +1448,8 @@ export const GJ_MLA_PROFILES: MLAProfile[] = [
     maritalStatus: 'Married',
     photoUrl: undefined,
     constituencyName: 'Kalavad',
-    district: 'Sc',
+    district: 'Rajkot',
+    reservationType: 'SC',
     sourceUrl: 'https://www.myneta.info/Gujarat2022/candidate.php?candidate_id=5345',
   },
   {
@@ -1527,7 +1549,8 @@ export const GJ_MLA_PROFILES: MLAProfile[] = [
     maritalStatus: 'Married',
     photoUrl: undefined,
     constituencyName: 'Kaprada',
-    district: 'St',
+    district: 'Valsad',
+    reservationType: 'ST',
     sourceUrl: 'https://www.myneta.info/Gujarat2022/candidate.php?candidate_id=4941',
   },
   {
@@ -1647,7 +1670,8 @@ export const GJ_MLA_PROFILES: MLAProfile[] = [
     maritalStatus: 'Married',
     photoUrl: undefined,
     constituencyName: 'Khedbrahma',
-    district: 'St',
+    district: 'Devbhumi Dwarka',
+    reservationType: 'ST',
     sourceUrl: 'https://www.myneta.info/Gujarat2022/candidate.php?candidate_id=6190',
   },
   {
@@ -1687,7 +1711,8 @@ export const GJ_MLA_PROFILES: MLAProfile[] = [
     maritalStatus: 'Married',
     photoUrl: undefined,
     constituencyName: 'Kodinar',
-    district: 'Sc',
+    district: 'Porbandar',
+    reservationType: 'SC',
     sourceUrl: 'https://www.myneta.info/Gujarat2022/candidate.php?candidate_id=5221',
   },
   {
@@ -1787,7 +1812,8 @@ export const GJ_MLA_PROFILES: MLAProfile[] = [
     maritalStatus: 'Married',
     photoUrl: undefined,
     constituencyName: 'Limkheda',
-    district: 'St',
+    district: 'Junagadh',
+    reservationType: 'ST',
     sourceUrl: 'https://www.myneta.info/Gujarat2022/candidate.php?candidate_id=6093',
   },
   {
@@ -1867,7 +1893,8 @@ export const GJ_MLA_PROFILES: MLAProfile[] = [
     maritalStatus: 'Married',
     photoUrl: undefined,
     constituencyName: 'Mahuva',
-    district: 'St',
+    district: 'Gir Somnath',
+    reservationType: 'ST',
     sourceUrl: 'https://www.myneta.info/Gujarat2022/candidate.php?candidate_id=5056',
   },
   {
@@ -1947,7 +1974,8 @@ export const GJ_MLA_PROFILES: MLAProfile[] = [
     maritalStatus: 'Married',
     photoUrl: undefined,
     constituencyName: 'Mandvi',
-    district: 'St',
+    district: 'Amreli',
+    reservationType: 'ST',
     sourceUrl: 'https://www.myneta.info/Gujarat2022/candidate.php?candidate_id=5258',
   },
   {
@@ -1967,7 +1995,8 @@ export const GJ_MLA_PROFILES: MLAProfile[] = [
     maritalStatus: 'Married',
     photoUrl: undefined,
     constituencyName: 'Mangrol',
-    district: 'St',
+    district: 'Amreli',
+    reservationType: 'ST',
     sourceUrl: 'https://www.myneta.info/Gujarat2022/candidate.php?candidate_id=5028',
   },
   {
@@ -2147,7 +2176,8 @@ export const GJ_MLA_PROFILES: MLAProfile[] = [
     maritalStatus: 'Married',
     photoUrl: undefined,
     constituencyName: 'Nandod',
-    district: 'St',
+    district: 'Botad',
+    reservationType: 'ST',
     sourceUrl: 'https://www.myneta.info/Gujarat2022/candidate.php?candidate_id=5068',
   },
   {
@@ -2247,7 +2277,8 @@ export const GJ_MLA_PROFILES: MLAProfile[] = [
     maritalStatus: 'Married',
     photoUrl: undefined,
     constituencyName: 'Nizar',
-    district: 'St',
+    district: 'Tapi',
+    reservationType: 'ST',
     sourceUrl: 'https://www.myneta.info/Gujarat2022/candidate.php?candidate_id=5161',
   },
   {
@@ -2447,7 +2478,8 @@ export const GJ_MLA_PROFILES: MLAProfile[] = [
     maritalStatus: 'Married',
     photoUrl: undefined,
     constituencyName: 'Rajkot Rural',
-    district: 'Sc',
+    district: 'Kheda',
+    reservationType: 'SC',
     sourceUrl: 'https://www.myneta.info/Gujarat2022/candidate.php?candidate_id=5016',
   },
   {
@@ -2607,7 +2639,8 @@ export const GJ_MLA_PROFILES: MLAProfile[] = [
     maritalStatus: 'Married',
     photoUrl: undefined,
     constituencyName: 'Santrampur',
-    district: 'St',
+    district: 'Dahod',
+    reservationType: 'ST',
     sourceUrl: 'https://www.myneta.info/Gujarat2022/candidate.php?candidate_id=5211',
   },
   {
@@ -2927,7 +2960,8 @@ export const GJ_MLA_PROFILES: MLAProfile[] = [
     maritalStatus: 'Married',
     photoUrl: undefined,
     constituencyName: 'Umbergaon',
-    district: 'St',
+    district: 'Valsad',
+    reservationType: 'ST',
     sourceUrl: 'https://www.myneta.info/Gujarat2022/candidate.php?candidate_id=4940',
   },
   {
@@ -3007,7 +3041,8 @@ export const GJ_MLA_PROFILES: MLAProfile[] = [
     maritalStatus: 'Married',
     photoUrl: undefined,
     constituencyName: 'Vadgam',
-    district: 'Sc',
+    district: 'Narmada',
+    reservationType: 'SC',
     sourceUrl: 'https://www.myneta.info/Gujarat2022/candidate.php?candidate_id=5931',
   },
   {
@@ -3027,7 +3062,8 @@ export const GJ_MLA_PROFILES: MLAProfile[] = [
     maritalStatus: 'Married',
     photoUrl: undefined,
     constituencyName: 'Vadodara City',
-    district: 'Sc',
+    district: 'Bharuch',
+    reservationType: 'SC',
     sourceUrl: 'https://www.myneta.info/Gujarat2022/candidate.php?candidate_id=5217',
   },
   {
@@ -3287,7 +3323,8 @@ export const GJ_MLA_PROFILES: MLAProfile[] = [
     maritalStatus: 'Married',
     photoUrl: 'https://www.myneta.info/images_candidate/Gujarat2022/2b636321aa418eb2ad0b357a74419e53c4441e85.jpg',
     constituencyName: 'Kadi',
-    district: 'Sc',
+    district: 'Surat',
+    reservationType: 'SC',
     sourceUrl: 'https://www.myneta.info/Gujarat2022/candidate.php?candidate_id=6793',
   },
   {

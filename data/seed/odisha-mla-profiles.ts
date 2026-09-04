@@ -26,6 +26,7 @@ export interface MLAProfile {
   photoUrl?: string;
   constituencyName?: string;
   district?: string;
+  reservationType?: 'General' | 'SC' | 'ST' | string;
   sourceUrl?: string;
 }
 
@@ -47,7 +48,8 @@ export const OD_MLA_PROFILES: MLAProfile[] = [
     maritalStatus: 'Married',
     photoUrl: 'https://www.myneta.info/images_candidate/Odisha2024/ec6f31468076abba78438e7a452b5b5a176e71bb.jpg',
     constituencyName: 'Anandapur',
-    district: 'Sc',
+    district: 'Kendujhar',
+    reservationType: 'SC',
     sourceUrl: 'https://www.myneta.info/Odisha2024/candidate.php?candidate_id=517',
   },
   {
@@ -147,7 +149,8 @@ export const OD_MLA_PROFILES: MLAProfile[] = [
     maritalStatus: 'Married',
     photoUrl: 'https://www.myneta.info/images_candidate/Odisha2024/38caf903a9621e1a13bab9b99984c0589b778974.jpg',
     constituencyName: 'Attabira',
-    district: 'Sc',
+    district: 'Baragada',
+    reservationType: 'SC',
     sourceUrl: 'https://www.myneta.info/Odisha2024/candidate.php?candidate_id=250',
   },
   {
@@ -187,7 +190,8 @@ export const OD_MLA_PROFILES: MLAProfile[] = [
     maritalStatus: 'Married',
     photoUrl: 'https://www.myneta.info/images_candidate/Odisha2024/999325b99d1715682844c1815e32079f41ecada4.jpg',
     constituencyName: 'Badasahi',
-    district: 'Sc',
+    district: 'Mayurbhanj',
+    reservationType: 'SC',
     sourceUrl: 'https://www.myneta.info/Odisha2024/candidate.php?candidate_id=953',
   },
   {
@@ -207,7 +211,8 @@ export const OD_MLA_PROFILES: MLAProfile[] = [
     maritalStatus: 'Married',
     photoUrl: 'https://www.myneta.info/images_candidate/Odisha2024/9f31cfbb1e4795c3d9a7462cb80953c110f293a5.jpg',
     constituencyName: 'Baliguda',
-    district: 'St',
+    district: 'Kandhamal',
+    reservationType: 'ST',
     sourceUrl: 'https://www.myneta.info/Odisha2024/candidate.php?candidate_id=257',
   },
   {
@@ -247,7 +252,8 @@ export const OD_MLA_PROFILES: MLAProfile[] = [
     maritalStatus: 'Married',
     photoUrl: 'https://www.myneta.info/images_candidate/Odisha2024/ac4ef430e32d621aab91624327c1f49da34ada8c.jpg',
     constituencyName: 'Bangriposi',
-    district: 'St',
+    district: 'Sundaragada',
+    reservationType: 'ST',
     sourceUrl: 'https://www.myneta.info/Odisha2024/candidate.php?candidate_id=1035',
   },
   {
@@ -367,7 +373,8 @@ export const OD_MLA_PROFILES: MLAProfile[] = [
     maritalStatus: 'Married',
     photoUrl: 'https://www.myneta.info/images_candidate/Odisha2024/ee7d9bf99b1989b0f5215a95388bd0fe9e03c49a.jpg',
     constituencyName: 'Baripada',
-    district: 'St',
+    district: 'Mayurbhanj',
+    reservationType: 'ST',
     sourceUrl: 'https://www.myneta.info/Odisha2024/candidate.php?candidate_id=983',
   },
   {
@@ -527,7 +534,8 @@ export const OD_MLA_PROFILES: MLAProfile[] = [
     maritalStatus: 'Married',
     photoUrl: 'https://www.myneta.info/images_candidate/Odisha2024/ba533aea1f2757f6edcb5b3fe5126d5cb9564b35.jpg',
     constituencyName: 'Bhawanipatna',
-    district: 'Sc',
+    district: 'Kendujhar',
+    reservationType: 'SC',
     sourceUrl: 'https://www.myneta.info/Odisha2024/candidate.php?candidate_id=164',
   },
   {
@@ -627,7 +635,8 @@ export const OD_MLA_PROFILES: MLAProfile[] = [
     maritalStatus: 'Married',
     photoUrl: 'https://www.myneta.info/images_candidate/Odisha2024/6bbd08d475d262534d010621f4a936b2f3d10894.jpg',
     constituencyName: 'Binjharpur',
-    district: 'Sc',
+    district: 'Jajpur',
+    reservationType: 'SC',
     sourceUrl: 'https://www.myneta.info/Odisha2024/candidate.php?candidate_id=1294',
   },
   {
@@ -647,7 +656,8 @@ export const OD_MLA_PROFILES: MLAProfile[] = [
     maritalStatus: 'Married',
     photoUrl: 'https://www.myneta.info/images_candidate/Odisha2024/a178596b1f1c7e7bbd0b007960355d8039c05244.jpg',
     constituencyName: 'Biramitrapur',
-    district: 'St',
+    district: 'Sundaragada',
+    reservationType: 'ST',
     sourceUrl: 'https://www.myneta.info/Odisha2024/candidate.php?candidate_id=396',
   },
   {
@@ -667,7 +677,8 @@ export const OD_MLA_PROFILES: MLAProfile[] = [
     maritalStatus: 'Married',
     photoUrl: 'https://www.myneta.info/images_candidate/Odisha2024/c1de16e195c72526a63b3a2c66f9a6b5b0453277.jpg',
     constituencyName: 'Birmaharajpur',
-    district: 'Sc',
+    district: 'Subarnapur',
+    reservationType: 'SC',
     sourceUrl: 'https://www.myneta.info/Odisha2024/candidate.php?candidate_id=398',
   },
   {
@@ -707,7 +718,8 @@ export const OD_MLA_PROFILES: MLAProfile[] = [
     maritalStatus: 'Married',
     photoUrl: 'https://www.myneta.info/images_candidate/Odisha2024/06f031dd11b2b40d1c451576ef3508f9f3a1fba0.jpg',
     constituencyName: 'Bonai',
-    district: 'St',
+    district: 'Mayurbhanj',
+    reservationType: 'ST',
     sourceUrl: 'https://www.myneta.info/Odisha2024/candidate.php?candidate_id=418',
   },
   {
@@ -827,7 +839,8 @@ export const OD_MLA_PROFILES: MLAProfile[] = [
     maritalStatus: 'Married',
     photoUrl: 'https://www.myneta.info/images_candidate/Odisha2024/63454b44c5d716e014ddb0ad9e69106f1b92e526.jpg',
     constituencyName: 'Chhatrapur',
-    district: 'Sc',
+    district: 'Ganjam',
+    reservationType: 'SC',
     sourceUrl: 'https://www.myneta.info/Odisha2024/candidate.php?candidate_id=7',
   },
   {
@@ -887,7 +900,8 @@ export const OD_MLA_PROFILES: MLAProfile[] = [
     maritalStatus: 'Married',
     photoUrl: 'https://www.myneta.info/images_candidate/Odisha2024/fc744a463f25c62156ee662510f84d40c7e4a4df.jpg',
     constituencyName: 'Chitrakonda',
-    district: 'St',
+    district: 'Malkangiri',
+    reservationType: 'ST',
     sourceUrl: 'https://www.myneta.info/Odisha2024/candidate.php?candidate_id=59',
   },
   {
@@ -927,7 +941,8 @@ export const OD_MLA_PROFILES: MLAProfile[] = [
     maritalStatus: 'Married',
     photoUrl: 'https://www.myneta.info/images_candidate/Odisha2024/b93fe0aee418c1ba90e5974514c90ca8328c7835.jpg',
     constituencyName: 'Cuttack Sadar',
-    district: 'Sc',
+    district: 'Bhadrak',
+    reservationType: 'SC',
     sourceUrl: 'https://www.myneta.info/Odisha2024/candidate.php?candidate_id=665',
   },
   {
@@ -947,7 +962,8 @@ export const OD_MLA_PROFILES: MLAProfile[] = [
     maritalStatus: 'Married',
     photoUrl: 'https://www.myneta.info/images_candidate/Odisha2024/49bba6a06eee12307723bca2ba84b7d2a8dc947a.jpg',
     constituencyName: 'Dabugam',
-    district: 'St',
+    district: 'Bhadrak',
+    reservationType: 'ST',
     sourceUrl: 'https://www.myneta.info/Odisha2024/candidate.php?candidate_id=2',
   },
   {
@@ -967,7 +983,8 @@ export const OD_MLA_PROFILES: MLAProfile[] = [
     maritalStatus: 'Married',
     photoUrl: 'https://www.myneta.info/images_candidate/Odisha2024/bb123e18b777031748a8d92822e4d67ed5361cf4.jpg',
     constituencyName: 'Daspalla',
-    district: 'Sc',
+    district: 'Bhadrak',
+    reservationType: 'SC',
     sourceUrl: 'https://www.myneta.info/Odisha2024/candidate.php?candidate_id=439',
   },
   {
@@ -1107,7 +1124,8 @@ export const OD_MLA_PROFILES: MLAProfile[] = [
     maritalStatus: 'Married',
     photoUrl: 'https://www.myneta.info/images_candidate/Odisha2024/ef8d0d9f4cebcb88ad595bddca675d4d64457146.jpg',
     constituencyName: 'G. Udayagiri',
-    district: 'St',
+    district: 'Jajpur',
+    reservationType: 'ST',
     sourceUrl: 'https://www.myneta.info/Odisha2024/candidate.php?candidate_id=448',
   },
   {
@@ -1167,7 +1185,8 @@ export const OD_MLA_PROFILES: MLAProfile[] = [
     maritalStatus: 'Married',
     photoUrl: 'https://www.myneta.info/images_candidate/Odisha2024/4e9921eae48fde68ab51f1090312332bbf018708.jpg',
     constituencyName: 'Hindol',
-    district: 'Sc',
+    district: 'Dhenkanal',
+    reservationType: 'SC',
     sourceUrl: 'https://www.myneta.info/Odisha2024/candidate.php?candidate_id=711',
   },
   {
@@ -1267,7 +1286,8 @@ export const OD_MLA_PROFILES: MLAProfile[] = [
     maritalStatus: 'Married',
     photoUrl: 'https://www.myneta.info/images_candidate/Odisha2024/feae12ec9dc5333d45ed3d5f14292398642d45e2.jpg',
     constituencyName: 'Jashipur',
-    district: 'St',
+    district: 'Mayurbhanj',
+    reservationType: 'ST',
     sourceUrl: 'https://www.myneta.info/Odisha2024/candidate.php?candidate_id=1113',
   },
   {
@@ -1307,7 +1327,8 @@ export const OD_MLA_PROFILES: MLAProfile[] = [
     maritalStatus: 'Married',
     photoUrl: 'https://www.myneta.info/images_candidate/Odisha2024/49e0262b0f0ab97147ce81bc158e9ab55f42c004.jpg',
     constituencyName: 'Jayadev',
-    district: 'Sc',
+    district: 'Khordha',
+    reservationType: 'SC',
     sourceUrl: 'https://www.myneta.info/Odisha2024/candidate.php?candidate_id=726',
   },
   {
@@ -1327,7 +1348,8 @@ export const OD_MLA_PROFILES: MLAProfile[] = [
     maritalStatus: 'Married',
     photoUrl: 'https://www.myneta.info/images_candidate/Odisha2024/2719f3a0a83426f7d816c95949a837a85f7829a2.jpg',
     constituencyName: 'Jharigam',
-    district: 'St',
+    district: 'Subarnapur',
+    reservationType: 'ST',
     sourceUrl: 'https://www.myneta.info/Odisha2024/candidate.php?candidate_id=121',
   },
   {
@@ -1407,7 +1429,8 @@ export const OD_MLA_PROFILES: MLAProfile[] = [
     maritalStatus: 'Married',
     photoUrl: 'https://www.myneta.info/images_candidate/Odisha2024/356af19dfdb1c001ac5195f9c4f9c1699ea78bfb.jpg',
     constituencyName: 'Kakatpur',
-    district: 'Sc',
+    district: 'Balangir',
+    reservationType: 'SC',
     sourceUrl: 'https://www.myneta.info/Odisha2024/candidate.php?candidate_id=936',
   },
   {
@@ -1487,7 +1510,8 @@ export const OD_MLA_PROFILES: MLAProfile[] = [
     maritalStatus: 'Married',
     photoUrl: 'https://www.myneta.info/images_candidate/Odisha2024/752236943105648693d1ca95423ce1b5cf8a9533.jpg',
     constituencyName: 'Kendrapara',
-    district: 'Sc',
+    district: 'Nabarangpur',
+    reservationType: 'SC',
     sourceUrl: 'https://www.myneta.info/Odisha2024/candidate.php?candidate_id=1115',
   },
   {
@@ -1507,7 +1531,8 @@ export const OD_MLA_PROFILES: MLAProfile[] = [
     maritalStatus: 'Married',
     photoUrl: 'https://www.myneta.info/images_candidate/Odisha2024/ec635d32bc2404f428e9afcfe8c40f3e7efadd43.jpg',
     constituencyName: 'Keonjhar',
-    district: 'St',
+    district: 'Nabarangpur',
+    reservationType: 'ST',
     sourceUrl: 'https://www.myneta.info/Odisha2024/candidate.php?candidate_id=751',
   },
   {
@@ -1527,7 +1552,8 @@ export const OD_MLA_PROFILES: MLAProfile[] = [
     maritalStatus: 'Married',
     photoUrl: 'https://www.myneta.info/images_candidate/Odisha2024/56287342feab006056178df4976aa7aeae13fd11.jpg',
     constituencyName: 'Khalikote',
-    district: 'Sc',
+    district: 'Nabarangpur',
+    reservationType: 'SC',
     sourceUrl: 'https://www.myneta.info/Odisha2024/candidate.php?candidate_id=352',
   },
   {
@@ -1607,7 +1633,8 @@ export const OD_MLA_PROFILES: MLAProfile[] = [
     maritalStatus: 'Married',
     photoUrl: 'https://www.myneta.info/images_candidate/Odisha2024/76c1f0255a6b78e3a2fc6f2c4ff287d07e755a0f.jpg',
     constituencyName: 'Koraput',
-    district: 'Sc',
+    district: 'Koraput',
+    reservationType: 'SC',
     sourceUrl: 'https://www.myneta.info/Odisha2024/candidate.php?candidate_id=216',
   },
   {
@@ -1647,7 +1674,8 @@ export const OD_MLA_PROFILES: MLAProfile[] = [
     maritalStatus: 'Married',
     photoUrl: 'https://www.myneta.info/images_candidate/Odisha2024/12ec0d63f3c7fa814b938f0b175e09eb08e8231f.jpg',
     constituencyName: 'Kuchinda',
-    district: 'St',
+    district: 'Sambalpur',
+    reservationType: 'ST',
     sourceUrl: 'https://www.myneta.info/Odisha2024/candidate.php?candidate_id=780',
   },
   {
@@ -1667,7 +1695,8 @@ export const OD_MLA_PROFILES: MLAProfile[] = [
     maritalStatus: 'Married',
     photoUrl: 'https://www.myneta.info/images_candidate/Odisha2024/bf4f23cbd123e2c786c0496e1c10aeb1b87d68b1.jpg',
     constituencyName: 'Lakshmipur',
-    district: 'St',
+    district: 'Kandhamal',
+    reservationType: 'ST',
     sourceUrl: 'https://www.myneta.info/Odisha2024/candidate.php?candidate_id=226',
   },
   {
@@ -1687,7 +1716,8 @@ export const OD_MLA_PROFILES: MLAProfile[] = [
     maritalStatus: 'Married',
     photoUrl: 'https://www.myneta.info/images_candidate/Odisha2024/7605907778dea60b9a57e7128459d4cbf9835710.jpg',
     constituencyName: 'Lanjigarh',
-    district: 'St',
+    district: 'Kandhamal',
+    reservationType: 'ST',
     sourceUrl: 'https://www.myneta.info/Odisha2024/candidate.php?candidate_id=25',
   },
   {
@@ -1707,7 +1737,8 @@ export const OD_MLA_PROFILES: MLAProfile[] = [
     maritalStatus: 'Married',
     photoUrl: 'https://www.myneta.info/images_candidate/Odisha2024/e2de0656d4a40d1aa3f81d680fda3fa25d9a1961.jpg',
     constituencyName: 'Loisingha',
-    district: 'Sc',
+    district: 'Kandhamal',
+    reservationType: 'SC',
     sourceUrl: 'https://www.myneta.info/Odisha2024/candidate.php?candidate_id=359',
   },
   {
@@ -1767,7 +1798,8 @@ export const OD_MLA_PROFILES: MLAProfile[] = [
     maritalStatus: 'Married',
     photoUrl: 'https://www.myneta.info/images_candidate/Odisha2024/477dd5b304c914ed2b6ea0469b30cd0125e05b76.jpg',
     constituencyName: 'Malkangiri',
-    district: 'St',
+    district: 'Malkangiri',
+    reservationType: 'ST',
     sourceUrl: 'https://www.myneta.info/Odisha2024/candidate.php?candidate_id=128',
   },
   {
@@ -1787,7 +1819,8 @@ export const OD_MLA_PROFILES: MLAProfile[] = [
     maritalStatus: 'Married',
     photoUrl: 'https://www.myneta.info/images_candidate/Odisha2024/cb1612c5c59c09ac0ffd0172b89eb3bc80e90abb.jpg',
     constituencyName: 'Mohana',
-    district: 'St',
+    district: 'Gajapati',
+    reservationType: 'ST',
     sourceUrl: 'https://www.myneta.info/Odisha2024/candidate.php?candidate_id=3',
   },
   {
@@ -1807,7 +1840,8 @@ export const OD_MLA_PROFILES: MLAProfile[] = [
     maritalStatus: 'Married',
     photoUrl: 'https://www.myneta.info/images_candidate/Odisha2024/eb671ce4911b3f393d28c93fc41200a186112c00.jpg',
     constituencyName: 'Nabarangpur',
-    district: 'St',
+    district: 'Nabarangpur',
+    reservationType: 'ST',
     sourceUrl: 'https://www.myneta.info/Odisha2024/candidate.php?candidate_id=185',
   },
   {
@@ -1867,7 +1901,8 @@ export const OD_MLA_PROFILES: MLAProfile[] = [
     maritalStatus: 'Married',
     photoUrl: 'https://www.myneta.info/images_candidate/Odisha2024/59491ee8f8103afaee25986be4c8e58034a93409.jpg',
     constituencyName: 'Niali',
-    district: 'Sc',
+    district: 'Kataka',
+    reservationType: 'SC',
     sourceUrl: 'https://www.myneta.info/Odisha2024/candidate.php?candidate_id=1133',
   },
   {
@@ -2047,7 +2082,8 @@ export const OD_MLA_PROFILES: MLAProfile[] = [
     maritalStatus: 'Married',
     photoUrl: 'https://www.myneta.info/images_candidate/Odisha2024/15e381ff823662603c333da212ae0b5c196d2bef.jpg',
     constituencyName: 'Patna',
-    district: 'St',
+    district: 'Jagatsinghpur',
+    reservationType: 'ST',
     sourceUrl: 'https://www.myneta.info/Odisha2024/candidate.php?candidate_id=806',
   },
   {
@@ -2087,7 +2123,8 @@ export const OD_MLA_PROFILES: MLAProfile[] = [
     maritalStatus: 'Married',
     photoUrl: 'https://www.myneta.info/images_candidate/Odisha2024/76a81c6e3faee0826541afe8a337499bf58fe934.jpg',
     constituencyName: 'Phulbani',
-    district: 'St',
+    district: 'Jagatsinghpur',
+    reservationType: 'ST',
     sourceUrl: 'https://www.myneta.info/Odisha2024/candidate.php?candidate_id=499',
   },
   {
@@ -2127,7 +2164,8 @@ export const OD_MLA_PROFILES: MLAProfile[] = [
     maritalStatus: 'Married',
     photoUrl: 'https://www.myneta.info/images_candidate/Odisha2024/42ef0058181bb65f7ce176f45eeff378a348afc4.jpg',
     constituencyName: 'Pottangi',
-    district: 'St',
+    district: 'Koraput',
+    reservationType: 'ST',
     sourceUrl: 'https://www.myneta.info/Odisha2024/candidate.php?candidate_id=5',
   },
   {
@@ -2167,7 +2205,8 @@ export const OD_MLA_PROFILES: MLAProfile[] = [
     maritalStatus: 'Married',
     photoUrl: 'https://www.myneta.info/images_candidate/Odisha2024/3fb53a9d9315bd0e86ecee50cd81ef5be2161ef9.jpg',
     constituencyName: 'Raghunathpali',
-    district: 'Sc',
+    district: 'Sundaragada',
+    reservationType: 'SC',
     sourceUrl: 'https://www.myneta.info/Odisha2024/candidate.php?candidate_id=333',
   },
   {
@@ -2207,7 +2246,8 @@ export const OD_MLA_PROFILES: MLAProfile[] = [
     maritalStatus: 'Married',
     photoUrl: 'https://www.myneta.info/images_candidate/Odisha2024/15d91d28001bd1f5f0f5eee707b8bc4cd6ee95ec.jpg',
     constituencyName: 'Rairangpur',
-    district: 'St',
+    district: 'Mayurbhanj',
+    reservationType: 'ST',
     sourceUrl: 'https://www.myneta.info/Odisha2024/candidate.php?candidate_id=1243',
   },
   {
@@ -2247,7 +2287,8 @@ export const OD_MLA_PROFILES: MLAProfile[] = [
     maritalStatus: 'Married',
     photoUrl: 'https://www.myneta.info/images_candidate/Odisha2024/d6376af8e167cd7e6b6a88e7619d01e6bc8e869c.jpg',
     constituencyName: 'Rajgangpur',
-    district: 'St',
+    district: 'Sundaragada',
+    reservationType: 'ST',
     sourceUrl: 'https://www.myneta.info/Odisha2024/candidate.php?candidate_id=324',
   },
   {
@@ -2287,7 +2328,8 @@ export const OD_MLA_PROFILES: MLAProfile[] = [
     maritalStatus: 'Married',
     photoUrl: 'https://www.myneta.info/images_candidate/Odisha2024/7d21b941db7c3c19d3444b49a1dc9523726e399d.jpg',
     constituencyName: 'Remuna',
-    district: 'Sc',
+    district: 'Baleshwar',
+    reservationType: 'SC',
     sourceUrl: 'https://www.myneta.info/Odisha2024/candidate.php?candidate_id=1173',
   },
   {
@@ -2307,7 +2349,8 @@ export const OD_MLA_PROFILES: MLAProfile[] = [
     maritalStatus: 'Married',
     photoUrl: 'https://www.myneta.info/images_candidate/Odisha2024/3b7ee45457fcb1ddae69c174300d944660346512.jpg',
     constituencyName: 'Rengali',
-    district: 'Sc',
+    district: 'Sambalpur',
+    reservationType: 'SC',
     sourceUrl: 'https://www.myneta.info/Odisha2024/candidate.php?candidate_id=844',
   },
   {
@@ -2407,7 +2450,8 @@ export const OD_MLA_PROFILES: MLAProfile[] = [
     maritalStatus: 'Married',
     photoUrl: 'https://www.myneta.info/images_candidate/Odisha2024/690c0b87807765c8ba72d08f2706941cf6ba4559.jpg',
     constituencyName: 'Saraskana',
-    district: 'St',
+    district: 'Mayurbhanj',
+    reservationType: 'ST',
     sourceUrl: 'https://www.myneta.info/Odisha2024/candidate.php?candidate_id=1255',
   },
   {
@@ -2467,7 +2511,8 @@ export const OD_MLA_PROFILES: MLAProfile[] = [
     maritalStatus: 'Married',
     photoUrl: 'https://www.myneta.info/images_candidate/Odisha2024/ade5cbb9999585e949290d133aa0679c55d88523.jpg',
     constituencyName: 'Soro',
-    district: 'Sc',
+    district: 'Nayagada',
+    reservationType: 'SC',
     sourceUrl: 'https://www.myneta.info/Odisha2024/candidate.php?candidate_id=1196',
   },
   {
@@ -2507,7 +2552,8 @@ export const OD_MLA_PROFILES: MLAProfile[] = [
     maritalStatus: 'Married',
     photoUrl: 'https://www.myneta.info/images_candidate/Odisha2024/44064506e5885d1ad22ddd03a877c969ee108531.jpg',
     constituencyName: 'Sundargarh',
-    district: 'St',
+    district: 'Ganjam',
+    reservationType: 'ST',
     sourceUrl: 'https://www.myneta.info/Odisha2024/candidate.php?candidate_id=302',
   },
   {
@@ -2567,7 +2613,8 @@ export const OD_MLA_PROFILES: MLAProfile[] = [
     maritalStatus: 'Married',
     photoUrl: 'https://www.myneta.info/images_candidate/Odisha2024/4ace7450f01c76cd56a51f93fe3f97baddac7a79.jpg',
     constituencyName: 'Talsara',
-    district: 'St',
+    district: 'Sundaragada',
+    reservationType: 'ST',
     sourceUrl: 'https://www.myneta.info/Odisha2024/candidate.php?candidate_id=292',
   },
   {
@@ -2587,7 +2634,8 @@ export const OD_MLA_PROFILES: MLAProfile[] = [
     maritalStatus: 'Married',
     photoUrl: 'https://www.myneta.info/images_candidate/Odisha2024/e361222438cf6054c966af359bef3f61d7779a15.jpg',
     constituencyName: 'Telkoi',
-    district: 'St',
+    district: 'Kendujhar',
+    reservationType: 'ST',
     sourceUrl: 'https://www.myneta.info/Odisha2024/candidate.php?candidate_id=881',
   },
   {
@@ -2627,7 +2675,8 @@ export const OD_MLA_PROFILES: MLAProfile[] = [
     maritalStatus: 'Married',
     photoUrl: 'https://www.myneta.info/images_candidate/Odisha2024/5289b8cf12361d93a717533d322208e69696241b.jpg',
     constituencyName: 'Udala',
-    district: 'St',
+    district: 'Mayurbhanj',
+    reservationType: 'ST',
     sourceUrl: 'https://www.myneta.info/Odisha2024/candidate.php?candidate_id=1280',
   },
   {
@@ -2647,7 +2696,8 @@ export const OD_MLA_PROFILES: MLAProfile[] = [
     maritalStatus: 'Married',
     photoUrl: 'https://www.myneta.info/images_candidate/Odisha2024/0845962bc6edb389e7f1372e4a55b1a5104b7dfb.jpg',
     constituencyName: 'Umerkote',
-    district: 'St',
+    district: 'Ganjam',
+    reservationType: 'ST',
     sourceUrl: 'https://www.myneta.info/Odisha2024/candidate.php?candidate_id=24',
   },
   {

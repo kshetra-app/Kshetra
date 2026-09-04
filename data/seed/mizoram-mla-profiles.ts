@@ -26,6 +26,7 @@ export interface MLAProfile {
   photoUrl?: string;
   constituencyName?: string;
   district?: string;
+  reservationType?: 'General' | 'SC' | 'ST' | string;
   sourceUrl?: string;
 }
 
@@ -67,7 +68,8 @@ export const MZ_MLA_PROFILES: MLAProfile[] = [
     maritalStatus: 'Married',
     photoUrl: 'https://www.myneta.info/images_candidate/Mizoram2023/dd017d2d65ef7759798739c044cf8d5120a75369.jpg',
     constituencyName: 'Aizawl East-Ii',
-    district: 'St',
+    district: 'Mamit',
+    reservationType: 'ST',
     sourceUrl: 'https://www.myneta.info/Mizoram2023/candidate.php?candidate_id=26',
   },
   {
@@ -87,7 +89,8 @@ export const MZ_MLA_PROFILES: MLAProfile[] = [
     maritalStatus: 'Married',
     photoUrl: 'https://www.myneta.info/images_candidate/Mizoram2023/bb7d0de890bd0273ce9dd53b2e48468ad0438599.jpg',
     constituencyName: 'Aizawl North-I',
-    district: 'St',
+    district: 'Mamit',
+    reservationType: 'ST',
     sourceUrl: 'https://www.myneta.info/Mizoram2023/candidate.php?candidate_id=113',
   },
   {
@@ -107,7 +110,8 @@ export const MZ_MLA_PROFILES: MLAProfile[] = [
     maritalStatus: 'Married',
     photoUrl: 'https://www.myneta.info/images_candidate/Mizoram2023/530bad4e8ddb9ababfe92bca986dd39b262508d8.jpg',
     constituencyName: 'Aizawl North-Ii',
-    district: 'St',
+    district: 'Kolasib',
+    reservationType: 'ST',
     sourceUrl: 'https://www.myneta.info/Mizoram2023/candidate.php?candidate_id=28',
   },
   {
@@ -127,7 +131,8 @@ export const MZ_MLA_PROFILES: MLAProfile[] = [
     maritalStatus: 'Married',
     photoUrl: 'https://www.myneta.info/images_candidate/Mizoram2023/c92b8097286973766a8dba6ff9097140e148eac4.jpg',
     constituencyName: 'Aizawl North-Iii',
-    district: 'St',
+    district: 'Tuivawl',
+    reservationType: 'ST',
     sourceUrl: 'https://www.myneta.info/Mizoram2023/candidate.php?candidate_id=32',
   },
   {
@@ -147,7 +152,8 @@ export const MZ_MLA_PROFILES: MLAProfile[] = [
     maritalStatus: 'Married',
     photoUrl: 'https://www.myneta.info/images_candidate/Mizoram2023/eb70364a1e6a79d79c4dd7db53767a46ffafd21e.jpg',
     constituencyName: 'Aizawl South-I',
-    district: 'St',
+    district: 'Kolasib',
+    reservationType: 'ST',
     sourceUrl: 'https://www.myneta.info/Mizoram2023/candidate.php?candidate_id=35',
   },
   {
@@ -167,7 +173,8 @@ export const MZ_MLA_PROFILES: MLAProfile[] = [
     maritalStatus: 'Married',
     photoUrl: 'https://www.myneta.info/images_candidate/Mizoram2023/6ebdb927e58c753cfe34ea81b634cc55763e8bf7.jpg',
     constituencyName: 'Aizawl South-Ii',
-    district: 'St',
+    district: 'Tuivawl',
+    reservationType: 'ST',
     sourceUrl: 'https://www.myneta.info/Mizoram2023/candidate.php?candidate_id=121',
   },
   {
@@ -187,7 +194,8 @@ export const MZ_MLA_PROFILES: MLAProfile[] = [
     maritalStatus: 'Married',
     photoUrl: 'https://www.myneta.info/images_candidate/Mizoram2023/67b0afe1a135a9314eeb2adbb705faf2e17f5147.jpg',
     constituencyName: 'Aizawl South-Iii',
-    district: 'St',
+    district: 'Tuivawl',
+    reservationType: 'ST',
     sourceUrl: 'https://www.myneta.info/Mizoram2023/candidate.php?candidate_id=39',
   },
   {
@@ -207,7 +215,8 @@ export const MZ_MLA_PROFILES: MLAProfile[] = [
     maritalStatus: 'Married',
     photoUrl: 'https://www.myneta.info/images_candidate/Mizoram2023/42c8f6b63dfb302982a8c7aae16449587e60bed7.jpg',
     constituencyName: 'Aizawl West-Ii',
-    district: 'St',
+    district: 'Tuivawl',
+    reservationType: 'ST',
     sourceUrl: 'https://www.myneta.info/Mizoram2023/candidate.php?candidate_id=43',
   },
   {
@@ -227,7 +236,8 @@ export const MZ_MLA_PROFILES: MLAProfile[] = [
     maritalStatus: 'Married',
     photoUrl: 'https://www.myneta.info/images_candidate/Mizoram2023/3b82b61e0b052e3b6ccf15faf5502a734ee8f0f8.jpg',
     constituencyName: 'Aizawl West-Iii',
-    district: 'St',
+    district: 'Tuivawl',
+    reservationType: 'ST',
     sourceUrl: 'https://www.myneta.info/Mizoram2023/candidate.php?candidate_id=45',
   },
   {
@@ -247,7 +257,8 @@ export const MZ_MLA_PROFILES: MLAProfile[] = [
     maritalStatus: 'Married',
     photoUrl: 'https://www.myneta.info/images_candidate/Mizoram2023/277845014a3469f8e89fd0878bedcd0a986bcd2a.jpg',
     constituencyName: 'Chalfilh',
-    district: 'St',
+    district: 'Tuivawl',
+    reservationType: 'ST',
     sourceUrl: 'https://www.myneta.info/Mizoram2023/candidate.php?candidate_id=49',
   },
   {
@@ -267,7 +278,8 @@ export const MZ_MLA_PROFILES: MLAProfile[] = [
     maritalStatus: 'Married',
     photoUrl: 'https://www.myneta.info/images_candidate/Mizoram2023/ffc0f64cd66d7976bdd54f8cf9f19b18b32b5583.jpg',
     constituencyName: 'Champhai North',
-    district: 'St',
+    district: 'Champhai',
+    reservationType: 'ST',
     sourceUrl: 'https://www.myneta.info/Mizoram2023/candidate.php?candidate_id=90',
   },
   {
@@ -287,7 +299,8 @@ export const MZ_MLA_PROFILES: MLAProfile[] = [
     maritalStatus: 'Married',
     photoUrl: 'https://www.myneta.info/images_candidate/Mizoram2023/a8a97f8d0f1df24d772ec8c0a39f6e20657c0bef.jpg',
     constituencyName: 'Champhai South',
-    district: 'St',
+    district: 'Champhai',
+    reservationType: 'ST',
     sourceUrl: 'https://www.myneta.info/Mizoram2023/candidate.php?candidate_id=50',
   },
   {
@@ -307,7 +320,8 @@ export const MZ_MLA_PROFILES: MLAProfile[] = [
     maritalStatus: 'Married',
     photoUrl: 'https://www.myneta.info/images_candidate/Mizoram2023/c2181f90510101f472eb32f9f3ef65dc50ac0b24.jpg',
     constituencyName: 'Dampa',
-    district: 'St',
+    district: 'Mamit',
+    reservationType: 'ST',
     sourceUrl: 'https://www.myneta.info/Mizoram2023/candidate.php?candidate_id=54',
   },
   {
@@ -327,7 +341,8 @@ export const MZ_MLA_PROFILES: MLAProfile[] = [
     maritalStatus: 'Married',
     photoUrl: 'https://www.myneta.info/images_candidate/Mizoram2023/87482d0bf698e0a898f0de30c4eaba5fed7567ae.jpg',
     constituencyName: 'East Tuipui',
-    district: 'St',
+    district: 'Champhai',
+    reservationType: 'ST',
     sourceUrl: 'https://www.myneta.info/Mizoram2023/candidate.php?candidate_id=135',
   },
   {
@@ -347,7 +362,8 @@ export const MZ_MLA_PROFILES: MLAProfile[] = [
     maritalStatus: 'Married',
     photoUrl: 'https://www.myneta.info/images_candidate/Mizoram2023/fc63244d56c7ab6cba2564ef8d7c3c1f7b9caafe.jpg',
     constituencyName: 'Hachhek',
-    district: 'St',
+    district: 'Mamit',
+    reservationType: 'ST',
     sourceUrl: 'https://www.myneta.info/Mizoram2023/candidate.php?candidate_id=14',
   },
   {
@@ -367,7 +383,8 @@ export const MZ_MLA_PROFILES: MLAProfile[] = [
     maritalStatus: 'Married',
     photoUrl: 'https://www.myneta.info/images_candidate/Mizoram2023/cceb635d4a1e533caa376c93d85cd2bacf257180.jpg',
     constituencyName: 'Kolasib',
-    district: 'St',
+    district: 'Kolasib',
+    reservationType: 'ST',
     sourceUrl: 'https://www.myneta.info/Mizoram2023/candidate.php?candidate_id=61',
   },
   {
@@ -387,7 +404,8 @@ export const MZ_MLA_PROFILES: MLAProfile[] = [
     maritalStatus: 'Married',
     photoUrl: 'https://www.myneta.info/images_candidate/Mizoram2023/476af67933e1fc4936891b160de5aa2843231ec8.jpg',
     constituencyName: 'Lawngtlai East',
-    district: 'St',
+    district: 'Lawngtlai',
+    reservationType: 'ST',
     sourceUrl: 'https://www.myneta.info/Mizoram2023/candidate.php?candidate_id=140',
   },
   {
@@ -407,7 +425,8 @@ export const MZ_MLA_PROFILES: MLAProfile[] = [
     maritalStatus: 'Married',
     photoUrl: 'https://www.myneta.info/images_candidate/Mizoram2023/bbb9d1d59c4aa844163a7450dd88f875ed2bd378.jpg',
     constituencyName: 'Lawngtlai West',
-    district: 'St',
+    district: 'Lawngtlai',
+    reservationType: 'ST',
     sourceUrl: 'https://www.myneta.info/Mizoram2023/candidate.php?candidate_id=142',
   },
   {
@@ -427,7 +446,8 @@ export const MZ_MLA_PROFILES: MLAProfile[] = [
     maritalStatus: 'Married',
     photoUrl: 'https://www.myneta.info/images_candidate/Mizoram2023/1207221c1ce8519a91c21e99317974571bd56fc9.jpg',
     constituencyName: 'Lunglei East',
-    district: 'St',
+    district: 'Lunglei',
+    reservationType: 'ST',
     sourceUrl: 'https://www.myneta.info/Mizoram2023/candidate.php?candidate_id=169',
   },
   {
@@ -447,7 +467,8 @@ export const MZ_MLA_PROFILES: MLAProfile[] = [
     maritalStatus: 'Married',
     photoUrl: 'https://www.myneta.info/images_candidate/Mizoram2023/e9ddc6a304743f58664cf5b19fe6403e576c59c4.jpg',
     constituencyName: 'Lunglei North',
-    district: 'St',
+    district: 'Lunglei',
+    reservationType: 'ST',
     sourceUrl: 'https://www.myneta.info/Mizoram2023/candidate.php?candidate_id=91',
   },
   {
@@ -467,7 +488,8 @@ export const MZ_MLA_PROFILES: MLAProfile[] = [
     maritalStatus: 'Married',
     photoUrl: 'https://www.myneta.info/images_candidate/Mizoram2023/87bca676155e8f4a1989b25633ba4726f9d58d00.jpg',
     constituencyName: 'Lunglei South',
-    district: 'St',
+    district: 'Lunglei',
+    reservationType: 'ST',
     sourceUrl: 'https://www.myneta.info/Mizoram2023/candidate.php?candidate_id=70',
   },
   {
@@ -487,7 +509,8 @@ export const MZ_MLA_PROFILES: MLAProfile[] = [
     maritalStatus: 'Married',
     photoUrl: 'https://www.myneta.info/images_candidate/Mizoram2023/a509dee142fc7134845e14d0203c6fdf30105153.jpg',
     constituencyName: 'Lunglei West',
-    district: 'St',
+    district: 'Lunglei',
+    reservationType: 'ST',
     sourceUrl: 'https://www.myneta.info/Mizoram2023/candidate.php?candidate_id=95',
   },
   {
@@ -507,7 +530,8 @@ export const MZ_MLA_PROFILES: MLAProfile[] = [
     maritalStatus: 'Married',
     photoUrl: 'https://www.myneta.info/images_candidate/Mizoram2023/82b6ee2d364e845ff745fa6975505f547c87be35.jpg',
     constituencyName: 'Mamit',
-    district: 'St',
+    district: 'Mamit',
+    reservationType: 'ST',
     sourceUrl: 'https://www.myneta.info/Mizoram2023/candidate.php?candidate_id=98',
   },
   {
@@ -527,7 +551,8 @@ export const MZ_MLA_PROFILES: MLAProfile[] = [
     maritalStatus: 'Married',
     photoUrl: 'https://www.myneta.info/images_candidate/Mizoram2023/94b2c3b9f1558cf6a4fde12548ec5e598816ff95.jpg',
     constituencyName: 'Saiha',
-    district: 'St',
+    district: 'Saiha',
+    reservationType: 'ST',
     sourceUrl: 'https://www.myneta.info/Mizoram2023/candidate.php?candidate_id=153',
   },
   {
@@ -547,7 +572,8 @@ export const MZ_MLA_PROFILES: MLAProfile[] = [
     maritalStatus: 'Married',
     photoUrl: 'https://www.myneta.info/images_candidate/Mizoram2023/f25277c4a9a87ff86d8f60dfeec87dd931c446a2.jpg',
     constituencyName: 'Serchhip',
-    district: 'St',
+    district: 'Serchhip',
+    reservationType: 'ST',
     sourceUrl: 'https://www.myneta.info/Mizoram2023/candidate.php?candidate_id=74',
   },
   {
@@ -567,7 +593,8 @@ export const MZ_MLA_PROFILES: MLAProfile[] = [
     maritalStatus: 'Married',
     photoUrl: 'https://www.myneta.info/images_candidate/Mizoram2023/57b4124553881cfcb38a10b087a5b8e1885b63d0.jpg',
     constituencyName: 'Serlui',
-    district: 'St',
+    district: 'Kolasib',
+    reservationType: 'ST',
     sourceUrl: 'https://www.myneta.info/Mizoram2023/candidate.php?candidate_id=10',
   },
   {
@@ -587,7 +614,8 @@ export const MZ_MLA_PROFILES: MLAProfile[] = [
     maritalStatus: 'Married',
     photoUrl: 'https://www.myneta.info/images_candidate/Mizoram2023/ebe83f8257f82cebbe9d563bf7a441f6b45716a5.jpg',
     constituencyName: 'South Tuipui',
-    district: 'St',
+    district: 'Lunglei',
+    reservationType: 'ST',
     sourceUrl: 'https://www.myneta.info/Mizoram2023/candidate.php?candidate_id=102',
   },
   {
@@ -607,7 +635,8 @@ export const MZ_MLA_PROFILES: MLAProfile[] = [
     maritalStatus: 'Married',
     photoUrl: 'https://www.myneta.info/images_candidate/Mizoram2023/a4037ad94d40db039596ece55fdf12eaee72fdcd.jpg',
     constituencyName: 'Tawi',
-    district: 'St',
+    district: 'Tuivawl',
+    reservationType: 'ST',
     sourceUrl: 'https://www.myneta.info/Mizoram2023/candidate.php?candidate_id=22',
   },
   {
@@ -627,7 +656,8 @@ export const MZ_MLA_PROFILES: MLAProfile[] = [
     maritalStatus: 'Married',
     photoUrl: 'https://www.myneta.info/images_candidate/Mizoram2023/da99357068cdfd3dfa384375c2f280413448aad3.jpg',
     constituencyName: 'Thorang',
-    district: 'St',
+    district: 'Lunglei',
+    reservationType: 'ST',
     sourceUrl: 'https://www.myneta.info/Mizoram2023/candidate.php?candidate_id=80',
   },
   {
@@ -647,7 +677,8 @@ export const MZ_MLA_PROFILES: MLAProfile[] = [
     maritalStatus: 'Married',
     photoUrl: 'https://www.myneta.info/images_candidate/Mizoram2023/516531352f0f26bafd9247dacd029f909a704d2e.jpg',
     constituencyName: 'Tuichang',
-    district: 'St',
+    district: 'Champhai',
+    reservationType: 'ST',
     sourceUrl: 'https://www.myneta.info/Mizoram2023/candidate.php?candidate_id=81',
   },
   {
@@ -667,7 +698,8 @@ export const MZ_MLA_PROFILES: MLAProfile[] = [
     maritalStatus: 'Married',
     photoUrl: 'https://www.myneta.info/images_candidate/Mizoram2023/1115d2f07876968d52b649f13d28f8abbb143ce9.jpg',
     constituencyName: 'Tuichawng',
-    district: 'St',
+    district: 'Lawngtlai',
+    reservationType: 'ST',
     sourceUrl: 'https://www.myneta.info/Mizoram2023/candidate.php?candidate_id=83',
   },
   {
@@ -687,7 +719,8 @@ export const MZ_MLA_PROFILES: MLAProfile[] = [
     maritalStatus: 'Married',
     photoUrl: 'https://www.myneta.info/images_candidate/Mizoram2023/0a2f907f38037ad5044a2cedb45c0f7532cb61e9.jpg',
     constituencyName: 'Tuirial',
-    district: 'St',
+    district: 'Kolasib',
+    reservationType: 'ST',
     sourceUrl: 'https://www.myneta.info/Mizoram2023/candidate.php?candidate_id=87',
   },
   {
@@ -707,7 +740,8 @@ export const MZ_MLA_PROFILES: MLAProfile[] = [
     maritalStatus: 'Married',
     photoUrl: 'https://www.myneta.info/images_candidate/Mizoram2023/9bf278963c83497d1beef22229493e537bba1dac.jpg',
     constituencyName: 'Tuivawl',
-    district: 'St',
+    district: 'Tuivawl',
+    reservationType: 'ST',
     sourceUrl: 'https://www.myneta.info/Mizoram2023/candidate.php?candidate_id=105',
   },
   {
@@ -727,7 +761,8 @@ export const MZ_MLA_PROFILES: MLAProfile[] = [
     maritalStatus: 'Married',
     photoUrl: 'https://www.myneta.info/images_candidate/Mizoram2023/14431ba62a16f9c20279cc8b199f9cd79ff319a1.jpg',
     constituencyName: 'West Tuipui',
-    district: 'St',
+    district: 'Lunglei',
+    reservationType: 'ST',
     sourceUrl: 'https://www.myneta.info/Mizoram2023/candidate.php?candidate_id=13',
   },
 ];

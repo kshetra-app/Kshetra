@@ -26,6 +26,7 @@ export interface MLAProfile {
   photoUrl?: string;
   constituencyName?: string;
   district?: string;
+  reservationType?: 'General' | 'SC' | 'ST' | string;
   sourceUrl?: string;
 }
 
@@ -67,7 +68,8 @@ export const CG_MLA_PROFILES: MLAProfile[] = [
     maritalStatus: 'Married',
     photoUrl: 'https://www.myneta.info/images_candidate/Chhattisgarh2023/fc5c1f71840b549ff407eb33ef2e869dafb83f7d.jpg',
     constituencyName: 'Ahiwara',
-    district: 'Sc',
+    district: 'Durg |Durg',
+    reservationType: 'SC',
     sourceUrl: 'https://www.myneta.info/Chhattisgarh2023/candidate.php?candidate_id=280',
   },
   {
@@ -127,7 +129,8 @@ export const CG_MLA_PROFILES: MLAProfile[] = [
     maritalStatus: 'Married',
     photoUrl: 'https://www.myneta.info/images_candidate/Chhattisgarh2023/b0f0b0c570d6222687bb11f6a47bf3786fdfdafd.jpg',
     constituencyName: 'Antagarh',
-    district: 'St',
+    district: 'Kanker |Kanker',
+    reservationType: 'ST',
     sourceUrl: 'https://www.myneta.info/Chhattisgarh2023/candidate.php?candidate_id=14',
   },
   {
@@ -147,7 +150,8 @@ export const CG_MLA_PROFILES: MLAProfile[] = [
     maritalStatus: 'Married',
     photoUrl: 'https://www.myneta.info/images_candidate/Chhattisgarh2023/5f3065e7889cc88e9ebfb0f81109413223ca45b0.jpg',
     constituencyName: 'Arang',
-    district: 'Sc',
+    district: 'Raipur |Raipur',
+    reservationType: 'SC',
     sourceUrl: 'https://www.myneta.info/Chhattisgarh2023/candidate.php?candidate_id=311',
   },
   {
@@ -207,7 +211,8 @@ export const CG_MLA_PROFILES: MLAProfile[] = [
     maritalStatus: 'Married',
     photoUrl: 'https://www.myneta.info/images_candidate/Chhattisgarh2023/2615c96da12d28e82ff2eb2e4a41125246e70cac.jpg',
     constituencyName: 'Bastar',
-    district: 'St',
+    district: 'Bastar |Bastar',
+    reservationType: 'ST',
     sourceUrl: 'https://www.myneta.info/Chhattisgarh2023/candidate.php?candidate_id=19',
   },
   {
@@ -267,7 +272,8 @@ export const CG_MLA_PROFILES: MLAProfile[] = [
     maritalStatus: 'Married',
     photoUrl: 'https://www.myneta.info/images_candidate/Chhattisgarh2023/26d28648390fd88aec40a0512fee24b4ad2e13b6.jpg',
     constituencyName: 'Bhanupratappur',
-    district: 'St',
+    district: 'Kanker |Kanker',
+    reservationType: 'ST',
     sourceUrl: 'https://www.myneta.info/Chhattisgarh2023/candidate.php?candidate_id=50',
   },
   {
@@ -287,7 +293,8 @@ export const CG_MLA_PROFILES: MLAProfile[] = [
     maritalStatus: 'Married',
     photoUrl: 'https://www.myneta.info/images_candidate/Chhattisgarh2023/a6bf060451fb356589e702036dbaf72e8bb3a2ac.jpg',
     constituencyName: 'Bharatpur-Sonhat',
-    district: 'St',
+    district: 'Manendragarh-Chirmiri-Bharatpur |Manendragarh-Chirmiri-Bharatpur',
+    reservationType: 'ST',
     sourceUrl: 'https://www.myneta.info/Chhattisgarh2023/candidate.php?candidate_id=599',
   },
   {
@@ -367,7 +374,8 @@ export const CG_MLA_PROFILES: MLAProfile[] = [
     maritalStatus: 'Married',
     photoUrl: 'https://www.myneta.info/images_candidate/Chhattisgarh2023/4f9a4d6e581364331ee7868349097451f473a809.jpg',
     constituencyName: 'Bilaigarh',
-    district: 'Sc',
+    district: 'Sarangarh-Bilaigarh |Sarangarh-Bilaigarh',
+    reservationType: 'SC',
     sourceUrl: 'https://www.myneta.info/Chhattisgarh2023/candidate.php?candidate_id=416',
   },
   {
@@ -427,7 +435,8 @@ export const CG_MLA_PROFILES: MLAProfile[] = [
     maritalStatus: 'Married',
     photoUrl: 'https://www.myneta.info/images_candidate/Chhattisgarh2023/f203796d7605ee04fc2ddc9eb697c2c6792ccc3e.jpg',
     constituencyName: 'Bindranawagarh',
-    district: 'St',
+    district: 'Korba |Korba',
+    reservationType: 'ST',
     sourceUrl: 'https://www.myneta.info/Chhattisgarh2023/candidate.php?candidate_id=422',
   },
   {
@@ -467,7 +476,8 @@ export const CG_MLA_PROFILES: MLAProfile[] = [
     maritalStatus: 'Married',
     photoUrl: 'https://www.myneta.info/images_candidate/Chhattisgarh2023/3ee70e6518f35cebb305b9f3f9a62d773c938d5c.jpg',
     constituencyName: 'Chitrakot',
-    district: 'St',
+    district: 'Bastar |Bastar',
+    reservationType: 'ST',
     sourceUrl: 'https://www.myneta.info/Chhattisgarh2023/candidate.php?candidate_id=21',
   },
   {
@@ -487,7 +497,8 @@ export const CG_MLA_PROFILES: MLAProfile[] = [
     maritalStatus: 'Married',
     photoUrl: 'https://www.myneta.info/images_candidate/Chhattisgarh2023/d16c6282f5fe99eca6c2dabd1e4102735a65bcd8.jpg',
     constituencyName: 'Dantewada',
-    district: 'St',
+    district: 'Dantewada |Dantewada',
+    reservationType: 'ST',
     sourceUrl: 'https://www.myneta.info/Chhattisgarh2023/candidate.php?candidate_id=24',
   },
   {
@@ -547,7 +558,8 @@ export const CG_MLA_PROFILES: MLAProfile[] = [
     maritalStatus: 'Married',
     photoUrl: 'https://www.myneta.info/images_candidate/Chhattisgarh2023/f81965df9aaf17fbbc8243fe469ba3267534eef9.jpg',
     constituencyName: 'Dondi Lohara',
-    district: 'St',
+    district: 'Balod |Balod',
+    reservationType: 'ST',
     sourceUrl: 'https://www.myneta.info/Chhattisgarh2023/candidate.php?candidate_id=291',
   },
   {
@@ -587,7 +599,8 @@ export const CG_MLA_PROFILES: MLAProfile[] = [
     maritalStatus: 'Married',
     photoUrl: 'https://www.myneta.info/images_candidate/Chhattisgarh2023/8b45fba8b6e7312f1cbd2f97ec2a993a5491640a.jpg',
     constituencyName: 'Dongargarh',
-    district: 'Sc',
+    district: 'Rajnandgaon |Rajnandgaon',
+    reservationType: 'SC',
     sourceUrl: 'https://www.myneta.info/Chhattisgarh2023/candidate.php?candidate_id=71',
   },
   {
@@ -707,7 +720,8 @@ export const CG_MLA_PROFILES: MLAProfile[] = [
     maritalStatus: 'Married',
     photoUrl: 'https://www.myneta.info/images_candidate/Chhattisgarh2023/a4e90ab89833509126e4ce561867178263e2b6ff.jpg',
     constituencyName: 'Jashpur',
-    district: 'St',
+    district: 'Jashpur |Jashpur',
+    reservationType: 'ST',
     sourceUrl: 'https://www.myneta.info/Chhattisgarh2023/candidate.php?candidate_id=445',
   },
   {
@@ -727,7 +741,8 @@ export const CG_MLA_PROFILES: MLAProfile[] = [
     maritalStatus: 'Married',
     photoUrl: 'https://www.myneta.info/images_candidate/Chhattisgarh2023/028fe4250a8cb9e1a7c7c198229c478f5225b333.jpg',
     constituencyName: 'Kanker',
-    district: 'St',
+    district: 'Kanker |Kanker',
+    reservationType: 'ST',
     sourceUrl: 'https://www.myneta.info/Chhattisgarh2023/candidate.php?candidate_id=55',
   },
   {
@@ -807,7 +822,8 @@ export const CG_MLA_PROFILES: MLAProfile[] = [
     maritalStatus: 'Married',
     photoUrl: 'https://www.myneta.info/images_candidate/Chhattisgarh2023/e71cebd587abbcbc4998263620152b22e60ae81d.jpg',
     constituencyName: 'Keshkal',
-    district: 'St',
+    district: 'Kondagaon |Kondagaon',
+    reservationType: 'ST',
     sourceUrl: 'https://www.myneta.info/Chhattisgarh2023/candidate.php?candidate_id=66',
   },
   {
@@ -887,7 +903,8 @@ export const CG_MLA_PROFILES: MLAProfile[] = [
     maritalStatus: 'Married',
     photoUrl: 'https://www.myneta.info/images_candidate/Chhattisgarh2023/b878907fa252b25243e8488d116d53a4a736d3b5.jpg',
     constituencyName: 'Kondagaon',
-    district: 'St',
+    district: 'Kondagaon |Kondagaon',
+    reservationType: 'ST',
     sourceUrl: 'https://www.myneta.info/Chhattisgarh2023/candidate.php?candidate_id=67',
   },
   {
@@ -907,7 +924,8 @@ export const CG_MLA_PROFILES: MLAProfile[] = [
     maritalStatus: 'Married',
     photoUrl: undefined,
     constituencyName: 'Konta',
-    district: 'St',
+    district: 'Sukma |Sukma',
+    reservationType: 'ST',
     sourceUrl: 'https://www.myneta.info/Chhattisgarh2023/candidate.php?candidate_id=47',
   },
   {
@@ -967,7 +985,8 @@ export const CG_MLA_PROFILES: MLAProfile[] = [
     maritalStatus: 'Married',
     photoUrl: 'https://www.myneta.info/images_candidate/Chhattisgarh2023/2e212afc477a655b15e54c9e48647c621e672688.jpg',
     constituencyName: 'Kunkuri',
-    district: 'St',
+    district: 'Jashpur |Jashpur',
+    reservationType: 'ST',
     sourceUrl: 'https://www.myneta.info/Chhattisgarh2023/candidate.php?candidate_id=458',
   },
   {
@@ -1027,7 +1046,8 @@ export const CG_MLA_PROFILES: MLAProfile[] = [
     maritalStatus: 'Married',
     photoUrl: 'https://www.myneta.info/images_candidate/Chhattisgarh2023/75193326855812906384272141c2be239b7c7658.jpg',
     constituencyName: 'Lundra',
-    district: 'St',
+    district: 'Surguja |Surguja',
+    reservationType: 'ST',
     sourceUrl: 'https://www.myneta.info/Chhattisgarh2023/candidate.php?candidate_id=341',
   },
   {
@@ -1087,7 +1107,8 @@ export const CG_MLA_PROFILES: MLAProfile[] = [
     maritalStatus: 'Married',
     photoUrl: 'https://www.myneta.info/images_candidate/Chhattisgarh2023/5c71053c05b1e24ed82c25e897621c64d065ef8e.jpg',
     constituencyName: 'Marwahi',
-    district: 'St',
+    district: 'Gaurela-Pendra-Marwahi |Gaurela-Pendra-Marwahi',
+    reservationType: 'ST',
     sourceUrl: 'https://www.myneta.info/Chhattisgarh2023/candidate.php?candidate_id=481',
   },
   {
@@ -1107,7 +1128,8 @@ export const CG_MLA_PROFILES: MLAProfile[] = [
     maritalStatus: 'Married',
     photoUrl: 'https://www.myneta.info/images_candidate/Chhattisgarh2023/684017697ccf81d02a9f4c9e92af9f210f7824ef.jpg',
     constituencyName: 'Masturi',
-    district: 'Sc',
+    district: 'Bilaspur Chhattisgarh|Bilaspur',
+    reservationType: 'SC',
     sourceUrl: 'https://www.myneta.info/Chhattisgarh2023/candidate.php?candidate_id=483',
   },
   {
@@ -1127,7 +1149,8 @@ export const CG_MLA_PROFILES: MLAProfile[] = [
     maritalStatus: 'Married',
     photoUrl: 'https://www.myneta.info/images_candidate/Chhattisgarh2023/b7cc990930126fce07cc0ac91b35af9deca18e7e.jpg',
     constituencyName: 'Mohla-Manpur',
-    district: 'St',
+    district: 'Mohla-Manpur-Ambagarh Chowki |Mohla-Manpur-Ambagarh Chowki',
+    reservationType: 'ST',
     sourceUrl: 'https://www.myneta.info/Chhattisgarh2023/candidate.php?candidate_id=39',
   },
   {
@@ -1147,7 +1170,8 @@ export const CG_MLA_PROFILES: MLAProfile[] = [
     maritalStatus: 'Married',
     photoUrl: 'https://www.myneta.info/images_candidate/Chhattisgarh2023/ad03423e9fdfa69cc365d16154c9d97da88b744a.jpg',
     constituencyName: 'Mungeli',
-    district: 'Sc',
+    district: 'Mungeli |Mungeli',
+    reservationType: 'SC',
     sourceUrl: 'https://www.myneta.info/Chhattisgarh2023/candidate.php?candidate_id=486',
   },
   {
@@ -1167,7 +1191,8 @@ export const CG_MLA_PROFILES: MLAProfile[] = [
     maritalStatus: 'Married',
     photoUrl: 'https://www.myneta.info/images_candidate/Chhattisgarh2023/1b0ef177f162f07b0d500949d7552bc554c5d6ac.jpg',
     constituencyName: 'Nawagarh',
-    district: 'Sc',
+    district: 'Dhamtari |Dhamtari',
+    reservationType: 'SC',
     sourceUrl: 'https://www.myneta.info/Chhattisgarh2023/candidate.php?candidate_id=349',
   },
   {
@@ -1187,7 +1212,8 @@ export const CG_MLA_PROFILES: MLAProfile[] = [
     maritalStatus: 'Married',
     photoUrl: 'https://www.myneta.info/images_candidate/Chhattisgarh2023/7e14b1020f9097b64872646ba4aaca692eb03d24.jpg',
     constituencyName: 'Pali-Tanakhar',
-    district: 'St',
+    district: 'Korba |Korba',
+    reservationType: 'ST',
     sourceUrl: 'https://www.myneta.info/Chhattisgarh2023/candidate.php?candidate_id=492',
   },
   {
@@ -1207,7 +1233,8 @@ export const CG_MLA_PROFILES: MLAProfile[] = [
     maritalStatus: 'Married',
     photoUrl: 'https://www.myneta.info/images_candidate/Chhattisgarh2023/206f606d71a1f80995eab53dff2e374f00647441.jpg',
     constituencyName: 'Pamgarh',
-    district: 'Sc',
+    district: 'Janjgir–Champa |Janjgir–Champa',
+    reservationType: 'SC',
     sourceUrl: 'https://www.myneta.info/Chhattisgarh2023/candidate.php?candidate_id=298',
   },
   {
@@ -1267,7 +1294,8 @@ export const CG_MLA_PROFILES: MLAProfile[] = [
     maritalStatus: 'Married',
     photoUrl: 'https://www.myneta.info/images_candidate/Chhattisgarh2023/709a2f9eaf9ba615cdca77686b1485301f0c4bb9.jpg',
     constituencyName: 'Pathalgaon',
-    district: 'St',
+    district: 'Jashpur |Jashpur',
+    reservationType: 'ST',
     sourceUrl: 'https://www.myneta.info/Chhattisgarh2023/candidate.php?candidate_id=494',
   },
   {
@@ -1287,7 +1315,8 @@ export const CG_MLA_PROFILES: MLAProfile[] = [
     maritalStatus: 'Married',
     photoUrl: 'https://www.myneta.info/images_candidate/Chhattisgarh2023/8b4aafcaad6b440faca6a4dd19da0b1cfdb44148.jpg',
     constituencyName: 'Pratappur',
-    district: 'St',
+    district: 'Balrampur Chhattisgarh|Balrampur',
+    reservationType: 'ST',
     sourceUrl: 'https://www.myneta.info/Chhattisgarh2023/candidate.php?candidate_id=496',
   },
   {
@@ -1447,7 +1476,8 @@ export const CG_MLA_PROFILES: MLAProfile[] = [
     maritalStatus: 'Married',
     photoUrl: 'https://www.myneta.info/images_candidate/Chhattisgarh2023/feba9e4126f8eccf3fa797712da35a2628e78e1a.jpg',
     constituencyName: 'Ramanujganj',
-    district: 'St',
+    district: 'Balrampur Chhattisgarh|Balrampur',
+    reservationType: 'ST',
     sourceUrl: 'https://www.myneta.info/Chhattisgarh2023/candidate.php?candidate_id=516',
   },
   {
@@ -1467,7 +1497,8 @@ export const CG_MLA_PROFILES: MLAProfile[] = [
     maritalStatus: 'Married',
     photoUrl: 'https://www.myneta.info/images_candidate/Chhattisgarh2023/1b8840c2b8440da3c0e024e083c421fae7070d76.jpg',
     constituencyName: 'Rampur',
-    district: 'St',
+    district: 'Korba |Korba',
+    reservationType: 'ST',
     sourceUrl: 'https://www.myneta.info/Chhattisgarh2023/candidate.php?candidate_id=361',
   },
   {
@@ -1507,7 +1538,8 @@ export const CG_MLA_PROFILES: MLAProfile[] = [
     maritalStatus: 'Married',
     photoUrl: 'https://www.myneta.info/images_candidate/Chhattisgarh2023/17c4cd1fede5858254dde850e3381848873090b6.jpg',
     constituencyName: 'Samri',
-    district: 'St',
+    district: 'Balrampur Chhattisgarh|Balrampur',
+    reservationType: 'ST',
     sourceUrl: 'https://www.myneta.info/Chhattisgarh2023/candidate.php?candidate_id=523',
   },
   {
@@ -1547,7 +1579,8 @@ export const CG_MLA_PROFILES: MLAProfile[] = [
     maritalStatus: 'Married',
     photoUrl: 'https://www.myneta.info/images_candidate/Chhattisgarh2023/d1b00d794b0c464111aab8c6b008d4f25c428d49.jpg',
     constituencyName: 'Saraipali',
-    district: 'Sc',
+    district: 'Mahasamund |Mahasamund',
+    reservationType: 'SC',
     sourceUrl: 'https://www.myneta.info/Chhattisgarh2023/candidate.php?candidate_id=1207',
   },
   {
@@ -1567,7 +1600,8 @@ export const CG_MLA_PROFILES: MLAProfile[] = [
     maritalStatus: undefined,
     photoUrl: 'https://www.myneta.info/images_candidate/Chhattisgarh2023/19a06f593dade5606fe9e84e9120ea78704a6ec8.jpg',
     constituencyName: 'Sarangarh',
-    district: 'Sc',
+    district: 'Sarangarh-Bilaigarh |Sarangarh-Bilaigarh',
+    reservationType: 'SC',
     sourceUrl: 'https://www.myneta.info/Chhattisgarh2023/candidate.php?candidate_id=528',
   },
   {
@@ -1587,7 +1621,8 @@ export const CG_MLA_PROFILES: MLAProfile[] = [
     maritalStatus: 'Married',
     photoUrl: 'https://www.myneta.info/images_candidate/Chhattisgarh2023/40c9ab6b242a82351a65b5c3aa146aeb533c25e3.jpg',
     constituencyName: 'Sihawa',
-    district: 'St',
+    district: 'Dhamtari |Dhamtari',
+    reservationType: 'ST',
     sourceUrl: 'https://www.myneta.info/Chhattisgarh2023/candidate.php?candidate_id=407',
   },
   {
@@ -1607,7 +1642,8 @@ export const CG_MLA_PROFILES: MLAProfile[] = [
     maritalStatus: 'Married',
     photoUrl: 'https://www.myneta.info/images_candidate/Chhattisgarh2023/1f3745df4d34fb450f92dfcbbfc0c5a15a6b3a25.jpg',
     constituencyName: 'Sitapur',
-    district: 'St',
+    district: 'Surguja |Surguja',
+    reservationType: 'ST',
     sourceUrl: 'https://www.myneta.info/Chhattisgarh2023/candidate.php?candidate_id=1224',
   },
   {

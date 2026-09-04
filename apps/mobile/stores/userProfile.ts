@@ -1,7 +1,7 @@
 import { create } from 'zustand';
 import { createJSONStorage, persist } from 'zustand/middleware';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import type { UserRole } from '../lib/moderationTypes';
+import type { UserRole, UserVerificationStatus } from '../lib/moderationTypes';
 
 export interface UserProfile {
   id: string;
@@ -10,6 +10,7 @@ export interface UserProfile {
   avatarUrl: string | null;
   role: UserRole;
   isVerified: boolean;
+  verificationStatus: UserVerificationStatus;
   homeConstituencyAcNo: number | null;
   homeConstituencyName: string | null;
   interests: string[];
@@ -37,6 +38,7 @@ const DEFAULT_PROFILE: UserProfile = {
   avatarUrl: null,
   role: 'citizen',
   isVerified: false,
+  verificationStatus: 'unverified',
   homeConstituencyAcNo: null,
   homeConstituencyName: null,
   interests: [],

@@ -26,6 +26,7 @@ export interface MLAProfile {
   photoUrl?: string;
   constituencyName?: string;
   district?: string;
+  reservationType?: 'General' | 'SC' | 'ST' | string;
   sourceUrl?: string;
 }
 
@@ -67,7 +68,8 @@ export const PB_MLA_PROFILES: MLAProfile[] = [
     maritalStatus: 'Married',
     photoUrl: undefined,
     constituencyName: 'Adampur',
-    district: 'Sc',
+    district: 'Pathankot',
+    reservationType: 'SC',
     sourceUrl: 'https://www.myneta.info/punjab2022/candidate.php?candidate_id=274',
   },
   {
@@ -207,7 +209,8 @@ export const PB_MLA_PROFILES: MLAProfile[] = [
     maritalStatus: 'Married',
     photoUrl: undefined,
     constituencyName: 'Amritsar West',
-    district: 'Sc',
+    district: 'Gurdaspur',
+    reservationType: 'SC',
     sourceUrl: 'https://www.myneta.info/punjab2022/candidate.php?candidate_id=654',
   },
   {
@@ -267,7 +270,8 @@ export const PB_MLA_PROFILES: MLAProfile[] = [
     maritalStatus: 'Married',
     photoUrl: undefined,
     constituencyName: 'Attari',
-    district: 'Sc',
+    district: 'Amritsar',
+    reservationType: 'SC',
     sourceUrl: 'https://www.myneta.info/punjab2022/candidate.php?candidate_id=519',
   },
   {
@@ -287,7 +291,8 @@ export const PB_MLA_PROFILES: MLAProfile[] = [
     maritalStatus: 'Married',
     photoUrl: undefined,
     constituencyName: 'Baba Bakala',
-    district: 'Sc',
+    district: 'Amritsar',
+    reservationType: 'SC',
     sourceUrl: 'https://www.myneta.info/punjab2022/candidate.php?candidate_id=259',
   },
   {
@@ -347,7 +352,8 @@ export const PB_MLA_PROFILES: MLAProfile[] = [
     maritalStatus: 'Married',
     photoUrl: undefined,
     constituencyName: 'Balluana',
-    district: 'Sc',
+    district: 'Amritsar',
+    reservationType: 'SC',
     sourceUrl: 'https://www.myneta.info/punjab2022/candidate.php?candidate_id=22',
   },
   {
@@ -387,7 +393,8 @@ export const PB_MLA_PROFILES: MLAProfile[] = [
     maritalStatus: 'Married',
     photoUrl: undefined,
     constituencyName: 'Bassi Pathana',
-    district: 'Sc',
+    district: 'Amritsar',
+    reservationType: 'SC',
     sourceUrl: 'https://www.myneta.info/punjab2022/candidate.php?candidate_id=850',
   },
   {
@@ -427,7 +434,8 @@ export const PB_MLA_PROFILES: MLAProfile[] = [
     maritalStatus: 'Married',
     photoUrl: undefined,
     constituencyName: 'Bathinda Rural',
-    district: 'Sc',
+    district: 'Amritsar',
+    reservationType: 'SC',
     sourceUrl: 'https://www.myneta.info/punjab2022/candidate.php?candidate_id=336',
   },
   {
@@ -467,7 +475,8 @@ export const PB_MLA_PROFILES: MLAProfile[] = [
     maritalStatus: 'Married',
     photoUrl: undefined,
     constituencyName: 'Bhadaur',
-    district: 'Sc',
+    district: 'Tarn Taran',
+    reservationType: 'SC',
     sourceUrl: 'https://www.myneta.info/punjab2022/candidate.php?candidate_id=748',
   },
   {
@@ -487,7 +496,8 @@ export const PB_MLA_PROFILES: MLAProfile[] = [
     maritalStatus: 'Married',
     photoUrl: undefined,
     constituencyName: 'Bhoa',
-    district: 'Sc',
+    district: 'Tarn Taran',
+    reservationType: 'SC',
     sourceUrl: 'https://www.myneta.info/punjab2022/candidate.php?candidate_id=264',
   },
   {
@@ -527,7 +537,8 @@ export const PB_MLA_PROFILES: MLAProfile[] = [
     maritalStatus: 'Married',
     photoUrl: undefined,
     constituencyName: 'Budhlada',
-    district: 'Sc',
+    district: 'Amritsar',
+    reservationType: 'SC',
     sourceUrl: 'https://www.myneta.info/punjab2022/candidate.php?candidate_id=43',
   },
   {
@@ -547,7 +558,8 @@ export const PB_MLA_PROFILES: MLAProfile[] = [
     maritalStatus: 'Married',
     photoUrl: undefined,
     constituencyName: 'Chabbewal',
-    district: 'Sc',
+    district: 'Sangrur',
+    reservationType: 'SC',
     sourceUrl: 'https://www.myneta.info/punjab2022/candidate.php?candidate_id=772',
   },
   {
@@ -567,7 +579,8 @@ export const PB_MLA_PROFILES: MLAProfile[] = [
     maritalStatus: 'Married',
     photoUrl: undefined,
     constituencyName: 'Chamkaur Sahib',
-    district: 'Sc',
+    district: 'Kapurthala',
+    reservationType: 'SC',
     sourceUrl: 'https://www.myneta.info/punjab2022/candidate.php?candidate_id=820',
   },
   {
@@ -687,7 +700,8 @@ export const PB_MLA_PROFILES: MLAProfile[] = [
     maritalStatus: 'Married',
     photoUrl: undefined,
     constituencyName: 'Dina Nagar',
-    district: 'Sc',
+    district: 'Jalandhar',
+    reservationType: 'SC',
     sourceUrl: 'https://www.myneta.info/punjab2022/candidate.php?candidate_id=484',
   },
   {
@@ -707,7 +721,8 @@ export const PB_MLA_PROFILES: MLAProfile[] = [
     maritalStatus: 'Married',
     photoUrl: undefined,
     constituencyName: 'Dirba',
-    district: 'Sc',
+    district: 'Jalandhar',
+    reservationType: 'SC',
     sourceUrl: 'https://www.myneta.info/punjab2022/candidate.php?candidate_id=1194',
   },
   {
@@ -827,7 +842,8 @@ export const PB_MLA_PROFILES: MLAProfile[] = [
     maritalStatus: 'Married',
     photoUrl: undefined,
     constituencyName: 'Firozpur Rural',
-    district: 'Sc',
+    district: 'Hoshiarpur',
+    reservationType: 'SC',
     sourceUrl: 'https://www.myneta.info/punjab2022/candidate.php?candidate_id=932',
   },
   {
@@ -887,7 +903,8 @@ export const PB_MLA_PROFILES: MLAProfile[] = [
     maritalStatus: 'Married',
     photoUrl: undefined,
     constituencyName: 'Gill',
-    district: 'Sc',
+    district: 'Hoshiarpur',
+    reservationType: 'SC',
     sourceUrl: 'https://www.myneta.info/punjab2022/candidate.php?candidate_id=76',
   },
   {
@@ -967,7 +984,8 @@ export const PB_MLA_PROFILES: MLAProfile[] = [
     maritalStatus: 'Married',
     photoUrl: undefined,
     constituencyName: 'Jagraon',
-    district: 'Sc',
+    district: 'Nawanshahr',
+    reservationType: 'SC',
     sourceUrl: 'https://www.myneta.info/punjab2022/candidate.php?candidate_id=439',
   },
   {
@@ -987,7 +1005,8 @@ export const PB_MLA_PROFILES: MLAProfile[] = [
     maritalStatus: 'Married',
     photoUrl: undefined,
     constituencyName: 'Jaitu',
-    district: 'Sc',
+    district: 'Nawanshahr',
+    reservationType: 'SC',
     sourceUrl: 'https://www.myneta.info/punjab2022/candidate.php?candidate_id=89',
   },
   {
@@ -1067,7 +1086,8 @@ export const PB_MLA_PROFILES: MLAProfile[] = [
     maritalStatus: 'Married',
     photoUrl: undefined,
     constituencyName: 'Jalandhar West',
-    district: 'Sc',
+    district: 'Patiala',
+    reservationType: 'SC',
     sourceUrl: 'https://www.myneta.info/punjab2022/candidate.php?candidate_id=530',
   },
   {
@@ -1087,7 +1107,8 @@ export const PB_MLA_PROFILES: MLAProfile[] = [
     maritalStatus: 'Married',
     photoUrl: undefined,
     constituencyName: 'Jandiala',
-    district: 'Sc',
+    district: 'S.A.S. Nagar',
+    reservationType: 'SC',
     sourceUrl: 'https://www.myneta.info/punjab2022/candidate.php?candidate_id=103',
   },
   {
@@ -1127,7 +1148,8 @@ export const PB_MLA_PROFILES: MLAProfile[] = [
     maritalStatus: 'Married',
     photoUrl: undefined,
     constituencyName: 'Kartarpur',
-    district: 'Sc',
+    district: 'Fatehgarh Sahib',
+    reservationType: 'SC',
     sourceUrl: 'https://www.myneta.info/punjab2022/candidate.php?candidate_id=106',
   },
   {
@@ -1387,7 +1409,8 @@ export const PB_MLA_PROFILES: MLAProfile[] = [
     maritalStatus: 'Married',
     photoUrl: undefined,
     constituencyName: 'Malout',
-    district: 'Sc',
+    district: 'Ludhiana',
+    reservationType: 'SC',
     sourceUrl: 'https://www.myneta.info/punjab2022/candidate.php?candidate_id=218',
   },
   {
@@ -1447,7 +1470,8 @@ export const PB_MLA_PROFILES: MLAProfile[] = [
     maritalStatus: 'Married',
     photoUrl: undefined,
     constituencyName: 'Mehal Kalan',
-    district: 'Sc',
+    district: 'Moga',
+    reservationType: 'SC',
     sourceUrl: 'https://www.myneta.info/punjab2022/candidate.php?candidate_id=209',
   },
   {
@@ -1507,7 +1531,8 @@ export const PB_MLA_PROFILES: MLAProfile[] = [
     maritalStatus: 'Married',
     photoUrl: undefined,
     constituencyName: 'Nabha',
-    district: 'Sc',
+    district: 'Moga',
+    reservationType: 'SC',
     sourceUrl: 'https://www.myneta.info/punjab2022/candidate.php?candidate_id=1176',
   },
   {
@@ -1567,7 +1592,8 @@ export const PB_MLA_PROFILES: MLAProfile[] = [
     maritalStatus: 'Married',
     photoUrl: undefined,
     constituencyName: 'Nihal Singh Wala',
-    district: 'Sc',
+    district: 'Firozpur',
+    reservationType: 'SC',
     sourceUrl: 'https://www.myneta.info/punjab2022/candidate.php?candidate_id=190',
   },
   {
@@ -1647,7 +1673,8 @@ export const PB_MLA_PROFILES: MLAProfile[] = [
     maritalStatus: 'Married',
     photoUrl: undefined,
     constituencyName: 'Payal',
-    district: 'Sc',
+    district: 'Fazilka',
+    reservationType: 'SC',
     sourceUrl: 'https://www.myneta.info/punjab2022/candidate.php?candidate_id=179',
   },
   {
@@ -1667,7 +1694,8 @@ export const PB_MLA_PROFILES: MLAProfile[] = [
     maritalStatus: 'Married',
     photoUrl: undefined,
     constituencyName: 'Phagwara',
-    district: 'Sc',
+    district: 'Fazilka',
+    reservationType: 'SC',
     sourceUrl: 'https://www.myneta.info/punjab2022/candidate.php?candidate_id=177',
   },
   {
@@ -1687,7 +1715,8 @@ export const PB_MLA_PROFILES: MLAProfile[] = [
     maritalStatus: 'Married',
     photoUrl: undefined,
     constituencyName: 'Phillaur',
-    district: 'Sc',
+    district: 'Mukatsar',
+    reservationType: 'SC',
     sourceUrl: 'https://www.myneta.info/punjab2022/candidate.php?candidate_id=962',
   },
   {
@@ -1727,7 +1756,8 @@ export const PB_MLA_PROFILES: MLAProfile[] = [
     maritalStatus: 'Married',
     photoUrl: undefined,
     constituencyName: 'Raikot',
-    district: 'Sc',
+    district: 'Mukatsar',
+    reservationType: 'SC',
     sourceUrl: 'https://www.myneta.info/punjab2022/candidate.php?candidate_id=897',
   },
   {
@@ -1967,7 +1997,8 @@ export const PB_MLA_PROFILES: MLAProfile[] = [
     maritalStatus: 'Married',
     photoUrl: undefined,
     constituencyName: 'Shutrana',
-    district: 'Sc',
+    district: 'Patiala',
+    reservationType: 'SC',
     sourceUrl: 'https://www.myneta.info/punjab2022/candidate.php?candidate_id=134',
   },
   {
@@ -1987,7 +2018,8 @@ export const PB_MLA_PROFILES: MLAProfile[] = [
     maritalStatus: 'Married',
     photoUrl: undefined,
     constituencyName: 'Sri Hargobindpur',
-    district: 'Sc',
+    district: 'Mansa',
+    reservationType: 'SC',
     sourceUrl: 'https://www.myneta.info/punjab2022/candidate.php?candidate_id=499',
   },
   {
@@ -2147,7 +2179,8 @@ export const PB_MLA_PROFILES: MLAProfile[] = [
     maritalStatus: 'Married',
     photoUrl: 'https://www.myneta.info/images_candidate/punjab2022/523dee27af9a8bc392b5db8f2326943205935e0c.jpg',
     constituencyName: 'Chabbewal',
-    district: 'Sc',
+    district: 'Sangrur',
+    reservationType: 'SC',
     sourceUrl: 'https://www.myneta.info/punjab2022/candidate.php?candidate_id=1343',
   },
   {
@@ -2207,7 +2240,8 @@ export const PB_MLA_PROFILES: MLAProfile[] = [
     maritalStatus: 'Married',
     photoUrl: 'https://www.myneta.info/images_candidate/punjab2022/257997567fcd3e1ef1cb70d6fdade22487f257ee.jpg',
     constituencyName: 'Jalandhar West',
-    district: 'Sc',
+    district: 'Patiala',
+    reservationType: 'SC',
     sourceUrl: 'https://www.myneta.info/punjab2022/candidate.php?candidate_id=1318',
   },
   {

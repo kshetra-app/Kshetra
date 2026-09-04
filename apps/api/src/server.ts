@@ -20,6 +20,9 @@ import { newsRoutes } from './routes/news';
 import { lmxRoutes } from './routes/lmx';
 import { configRoutes } from './routes/config';
 import { intelligenceRoutes } from './routes/intelligence';
+import { manageRoutes } from './routes/manage';
+import { pagesRoutes } from './routes/pages';
+import { policyRoutes } from './routes/policy';
 import { startNewsScheduler } from './services/news/newsService';
 
 const envToLogger: Record<string, object | boolean> = {
@@ -131,6 +134,9 @@ export async function buildApp() {
   await app.register(lmxRoutes);
   await app.register(configRoutes);
   await app.register(intelligenceRoutes);
+  await app.register(manageRoutes);
+  await app.register(pagesRoutes);
+  await app.register(policyRoutes);
 
   return app;
 }
