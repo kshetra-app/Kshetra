@@ -41,6 +41,41 @@ export interface OBDBroadcastRecord {
   createdAt: string;
 }
 
+// ─── TRAI Opt-Out Ledger ───
+export interface TraiOptOutRecord {
+  phoneNumber: string;
+  optedOutAt: string;
+  channel: 'voice_press_9' | 'sms_stop';
+  campaignId?: string;
+}
+
+const inMemoryOptOuts = new Set<string>();
+
+export function isNumberOptedOut(phone: string): boolean {
+  const cleaned = phone.replace(/\D/g, '').slice(-10);
+  return inMemoryOptOuts.has(cleaned);
+}
+
+export async function recordOptOut(phone: string, campaignId?: string): Promise<boolean> {
+  const cleaned = phone.replace(/\D/g, '').slice(-10);
+  if (!cleaned) return false;
+  inMemoryOptOuts.add(cleaned);
+
+  if (isSupabaseConfigured) {
+    try {
+      await supabase.from('trai_opt_outs').upsert({
+        phone_number: cleaned,
+        channel: 'voice_press_9',
+        campaign_id: campaignId ?? null,
+        opted_out_at: new Date().toISOString(),
+      }, { onConflict: 'phone_number' });
+    } catch {
+      // Best-effort database persist
+    }
+  }
+  return true;
+}
+
 // In-memory store for dev / offline testing
 const inMemoryBroadcasts: OBDBroadcastRecord[] = [
   {
@@ -201,14 +236,41 @@ export async function getOBDBroadcasts(politicianId: string): Promise<OBDBroadca
 
 /**
  * Processes incoming telecom webhook callback (e.g. from Exotel / Knowlarity).
+ * Handles delivery statuses and 2-way IVR DTMF responses (Press 9 for Opt-Out).
  */
 export async function processTelecomWebhook(payload: {
   CallSid?: string;
   Status?: string;
   CustomField?: string;
   Duration?: number;
+  Digits?: string; // DTMF input e.g. "9", "1", "2"
+  From?: string;   // Voter phone number
+  To?: string;
 }) {
   const broadcastId = payload.CustomField;
+  const callerPhone = payload.From || payload.To;
+
+  // 1. Mandatory Press 9 Opt-Out Handling
+  if (payload.Digits === '9' && callerPhone) {
+    await recordOptOut(callerPhone, broadcastId);
+    return {
+      ok: true,
+      action: 'opt_out_recorded',
+      phone: callerPhone.slice(-4),
+      message: 'Voter opted out via Press 9. Excluded from future voice campaigns.',
+    };
+  }
+
+  // 2. 2-way IVR Interactive Response (Press 1 or 2)
+  if (payload.Digits && ['1', '2'].includes(payload.Digits)) {
+    return {
+      ok: true,
+      action: 'ivr_digit_captured',
+      digit: payload.Digits,
+      message: `Captured IVR response digit ${payload.Digits}`,
+    };
+  }
+
   if (!broadcastId) return { ok: true, ignored: true };
 
   const item = inMemoryBroadcasts.find((b) => b.id === broadcastId || b.providerRef === broadcastId);

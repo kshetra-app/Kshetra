@@ -1311,7 +1311,7 @@ export async function fetchChallenges(stateCode?: string): Promise<any[] | null>
   }
 }
 
-export async function fetchPublicAspirants(stateCode?: string): Promise<any[] | null> {
+export async function fetchPublicAspirants(stateCode?: string, acNo?: number): Promise<any[] | null> {
   if (!guard()) return null;
   try {
     let query = supabase
@@ -1322,6 +1322,9 @@ export async function fetchPublicAspirants(stateCode?: string): Promise<any[] | 
       .limit(50);
     if (stateCode) {
       query = query.eq('state_code', stateCode);
+    }
+    if (acNo !== undefined && acNo !== null) {
+      query = query.eq('target_constituency_ac_no', acNo);
     }
     const { data, error } = await query;
     if (error) throw error;

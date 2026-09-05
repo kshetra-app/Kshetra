@@ -15,6 +15,7 @@ import type {
 } from '../lib/aspirantTypes';
 import { computeCivicScore } from '../lib/aspirantTypes';
 import { MODULE_CONTENT } from '../data/leadershipContent';
+import * as dataService from '../lib/supabaseDataService';
 
 interface AspirantState {
   // Current user aspirant profile (null if not registered)
@@ -36,14 +37,15 @@ interface AspirantState {
   getAspirantsForConstituency: (stateCode: string, acNo: number) => AspirantProfile[];
 
   // Actions
-  registerAsAspirant: (profile: Omit<AspirantProfile, 'id' | 'civicScore' | 'issuesReported' | 'issuesResolved' | 'commentsCount' | 'evidenceSubmitted' | 'promisesTracked' | 'communityEndorsements' | 'modulesCompleted' | 'challengesCompleted'>) => void;
+  registerAsAspirant: (profile: Omit<AspirantProfile, 'id' | 'civicScore' | 'issuesReported' | 'issuesResolved' | 'commentsCount' | 'evidenceSubmitted' | 'promisesTracked' | 'communityEndorsements' | 'modulesCompleted' | 'challengesCompleted'>) => Promise<void>;
   updateProfile: (updates: Partial<AspirantProfile>) => void;
   startModule: (moduleId: string) => void;
   completeModule: (moduleId: string, quizScore?: number) => void;
   joinChallenge: (challengeId: string) => void;
   updateChallengeProgress: (challengeId: string, progress: number) => void;
   earnBadge: (badgeType: BadgeType) => void;
-  endorseAspirant: (aspirantId: string) => void;
+  endorseAspirant: (aspirantId: string, endorserId?: string) => Promise<void>;
+  hydrateAspirants: (stateCode?: string, acNo?: number) => Promise<void>;
   endorsedIds: string[];
 }
 
@@ -374,22 +376,43 @@ export const useAspirantStore = create<AspirantState>()((set, get) => ({
       (a) => a.stateCode === stateCode && a.targetConstituencyAcNo === acNo,
     ),
 
-  registerAsAspirant: (profileData) =>
-    set({
-      profile: {
-        ...profileData,
-        id: `asp-${Date.now()}`,
-        civicScore: 0,
-        issuesReported: 0,
-        issuesResolved: 0,
-        commentsCount: 0,
-        evidenceSubmitted: 0,
-        promisesTracked: 0,
-        communityEndorsements: 0,
-        modulesCompleted: 0,
-        challengesCompleted: 0,
-      },
-    }),
+  registerAsAspirant: async (profileData) => {
+    const tempId = `asp-${Date.now()}`;
+    const newProfile: AspirantProfile = {
+      ...profileData,
+      id: tempId,
+      civicScore: 0,
+      issuesReported: 0,
+      issuesResolved: 0,
+      commentsCount: 0,
+      evidenceSubmitted: 0,
+      promisesTracked: 0,
+      communityEndorsements: 0,
+      modulesCompleted: 0,
+      challengesCompleted: 0,
+    };
+    set({ profile: newProfile });
+
+    // Asynchronously register in Supabase
+    try {
+      const res = await dataService.registerAspirant(profileData.userId, {
+        displayName: profileData.displayName,
+        bio: profileData.bio,
+        stateCode: profileData.stateCode,
+        targetConstituencyAcNo: profileData.targetConstituencyAcNo,
+        targetConstituencyName: profileData.targetConstituencyName,
+        partyAffiliation: profileData.partyAffiliation,
+        isIndependent: profileData.isIndependent,
+      });
+      if (res.success && res.id) {
+        set((state) => ({
+          profile: state.profile ? { ...state.profile, id: res.id! } : null,
+        }));
+      }
+    } catch {
+      // Offline fallback: profile remains stored locally
+    }
+  },
 
   updateProfile: (updates) =>
     set((state) => ({
@@ -466,20 +489,60 @@ export const useAspirantStore = create<AspirantState>()((set, get) => ({
       };
     }),
 
-  endorseAspirant: (aspirantId) =>
-    set((state) => {
-      if (state.endorsedIds.includes(aspirantId)) return state;
-      return {
-        endorsedIds: [...state.endorsedIds, aspirantId],
-        publicAspirants: state.publicAspirants.map((a) =>
-          a.id === aspirantId
-            ? {
-                ...a,
-                communityEndorsements: a.communityEndorsements + 1,
-                civicScore: a.civicScore + 5,
-              }
-            : a,
-        ),
-      };
-    }),
+  endorseAspirant: async (aspirantId, endorserId) => {
+    const currentEndorsed = get().endorsedIds;
+    if (currentEndorsed.includes(aspirantId)) return;
+
+    // Optimistic local update
+    set((state) => ({
+      endorsedIds: [...state.endorsedIds, aspirantId],
+      publicAspirants: state.publicAspirants.map((a) =>
+        a.id === aspirantId
+          ? {
+              ...a,
+              communityEndorsements: a.communityEndorsements + 1,
+              civicScore: a.civicScore + 5,
+            }
+          : a,
+      ),
+    }));
+
+    // Real backend call
+    const eId = endorserId || `anon-endorser-${Date.now()}`;
+    await dataService.endorseAspirant(eId, aspirantId);
+  },
+
+  hydrateAspirants: async (stateCode, acNo) => {
+    try {
+      const remoteAspirants = await dataService.fetchPublicAspirants(stateCode, acNo);
+      if (remoteAspirants && remoteAspirants.length > 0) {
+        const mapped: AspirantProfile[] = remoteAspirants.map((r: any) => ({
+          id: r.id,
+          userId: r.user_id,
+          displayName: r.display_name,
+          bio: r.bio || undefined,
+          avatarUrl: r.avatar_url || undefined,
+          stateCode: r.state_code,
+          targetConstituencyAcNo: r.target_constituency_ac_no,
+          targetConstituencyName: r.target_constituency_name,
+          targetElectionYear: r.target_election_year || 2028,
+          partyAffiliation: r.party_affiliation || undefined,
+          isIndependent: r.is_independent ?? true,
+          civicScore: r.civic_score || 0,
+          issuesReported: r.issues_reported || 0,
+          issuesResolved: r.issues_resolved || 0,
+          commentsCount: r.comments_count || 0,
+          evidenceSubmitted: r.evidence_submitted || 0,
+          promisesTracked: r.promises_tracked || 0,
+          communityEndorsements: r.community_endorsements || 0,
+          modulesCompleted: r.modules_completed || 0,
+          challengesCompleted: r.challenges_completed || 0,
+          isPublic: r.is_public ?? true,
+        }));
+        set({ publicAspirants: mapped });
+      }
+    } catch {
+      // Retain existing seeds if fetch fails
+    }
+  },
 }));

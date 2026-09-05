@@ -38,18 +38,21 @@ export default function MoreScreen() {
   const civic: Tile[] = [
     { label: t('more.tiles.civicDashboard', { defaultValue: 'Civic Dashboard' }), icon: 'pulse', color: colors.teal, route: '/dashboard', badge: unread || undefined },
     { label: t('more.tiles.delimitation', { defaultValue: 'Delimitation' }), icon: 'git-branch', color: colors.gold, route: '/delimitation' },
-    { label: t('more.tiles.analytics', { defaultValue: 'Analytics' }), icon: 'stats-chart', color: colors.teal, route: '/analytics' },
-    { label: t('more.tiles.civicMetrics', { defaultValue: 'Civic Metrics' }), icon: 'bar-chart', color: colors.success, route: '/civic-metrics' },
     { label: t('more.tiles.liveElection', { defaultValue: 'Live Election' }), icon: 'radio', color: colors.primary, route: '/live-election' },
     { label: t('more.tiles.parliament', { defaultValue: 'Parliament' }), icon: 'business', color: colors.gold, route: '/parliament' },
   ];
 
+  const campaign: Tile[] = [
+    { label: t('more.tiles.pagesAndLeaders', { defaultValue: 'Pages & Leaders' }), icon: 'people', color: colors.gold, route: '/pages' },
+    { label: t('more.tiles.campaignManager', { defaultValue: 'Campaign Manager' }), icon: 'megaphone', color: colors.primary, route: '/campaign-manager' },
+    { label: t('more.tiles.leadershipAcademy', { defaultValue: 'Leadership Academy' }), icon: 'school', color: colors.gold, route: '/leadership-academy' },
+    { label: t('more.tiles.candidateXRay', { defaultValue: 'Candidate X-Ray' }), icon: 'scan', color: colors.teal, route: '/candidate-xray' },
+  ];
+
   const liveExchange: Tile[] = [
-    { label: t('more.tiles.goLive', { defaultValue: 'Go Live' }), icon: 'radio', color: colors.primary, route: '/live/go-live' },
-    { label: t('more.tiles.kshetraLive', { defaultValue: 'Kshetra Live' }), icon: 'videocam', color: colors.gold, route: '/live' },
+    { label: t('more.tiles.kshetraLive', { defaultValue: 'Kshetra Live' }), icon: 'videocam', color: colors.primary, route: '/live' },
+    { label: t('more.tiles.moderation', { defaultValue: 'Moderation' }), icon: 'shield-half', color: colors.teal, route: '/moderation' },
     { label: t('more.tiles.deptConsole', { defaultValue: 'Dept. Console' }), icon: 'shield', color: colors.teal, route: '/departments/dashboard' },
-    { label: t('more.tiles.moderation', { defaultValue: 'Moderation' }), icon: 'shield-half', color: colors.primary, route: '/live/moderation-queue' },
-    { label: t('more.tiles.distribution', { defaultValue: 'Distribution' }), icon: 'share-social', color: colors.teal, route: '/live/distribution' },
     { label: t('more.tiles.devSwitches', { defaultValue: 'Dev Switches' }), icon: 'toggle', color: colors.gold, route: '__dev_switches__' },
   ];
 
@@ -60,14 +63,6 @@ export default function MoreScreen() {
     { label: t('more.tiles.aiAssistant', { defaultValue: 'AI Assistant' }), icon: 'sparkles', color: colors.gold, route: '/ai-chat' },
   ];
 
-  const campaign: Tile[] = [
-    { label: t('more.tiles.politicianPortal', { defaultValue: 'Politician Portal' }), icon: 'people', color: colors.gold, route: '/politician-portal' },
-    { label: t('more.tiles.becomeAspirant', { defaultValue: 'Become Aspirant' }), icon: 'rocket', color: colors.primary, route: '/become-aspirant' },
-    { label: t('more.tiles.campaignManager', { defaultValue: 'Campaign Manager' }), icon: 'megaphone', color: colors.primary, route: '/campaign-manager' },
-    { label: t('more.tiles.leadershipAcademy', { defaultValue: 'Leadership Academy' }), icon: 'school', color: colors.gold, route: '/leadership-academy' },
-    { label: t('more.tiles.candidateXRay', { defaultValue: 'Candidate X-Ray' }), icon: 'scan', color: colors.teal, route: '/candidate-xray' },
-  ];
-
   return (
     <View style={[styles.container, { backgroundColor: colors.background }]}>
       <View style={[styles.header, { paddingTop: insets.top + 8, borderBottomColor: colors.border }]}>
@@ -76,28 +71,28 @@ export default function MoreScreen() {
       </View>
 
       <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingBottom: 100 }}>
-        {/* Featured: Politicians & Campaign HQ */}
+        {/* Featured: Pages & Leaders */}
         <Pressable
           style={[styles.featured, { backgroundColor: colors.primary, borderColor: colors.goldBorder || colors.gold, borderWidth: 1 }]}
-          onPress={() => go('/politician-portal')}
+          onPress={() => go('/pages')}
         >
           <View style={styles.featuredGlow} />
           <View style={styles.featuredLeft}>
             <View style={[styles.featuredIcon, { backgroundColor: 'rgba(255,255,255,0.2)' }]}>
-              <Ionicons name="megaphone" size={24} color="#FFFFFF" />
+              <Ionicons name="people" size={24} color="#FFFFFF" />
             </View>
             <View style={{ flex: 1 }}>
-              <Text style={styles.featuredTitle}>{t('more.campaignHQTitle', { defaultValue: 'Campaign HQ' })}</Text>
+              <Text style={styles.featuredTitle}>{t('more.pagesHQTitle', { defaultValue: 'Pages & Leaders' })}</Text>
               <Text style={styles.featuredSub}>
-                {t('more.campaignHQDesc', { defaultValue: 'Run for office, manage campaigns, reach voters on WhatsApp, SMS & calls' })}
+                {t('more.pagesHQDesc', { defaultValue: 'Discover civic aspirants, elected representatives, manifestos and campaigns' })}
               </Text>
             </View>
           </View>
           <Ionicons name="chevron-forward" size={18} color="#FFFFFF" />
         </Pressable>
 
-        <Section title={t('more.sections.politiciansAndCampaign', { defaultValue: 'Politicians & Campaign' })} tiles={campaign} tileWidth={tileWidth} onPress={go} />
-        <Section title={t('more.sections.liveMediaExchange', { defaultValue: 'Live Media Exchange' })} tiles={liveExchange} tileWidth={tileWidth} onPress={go} />
+        <Section title={t('more.sections.campaignAndLeadership', { defaultValue: 'Leaders & Campaign' })} tiles={campaign} tileWidth={tileWidth} onPress={go} />
+        <Section title={t('more.sections.liveAndModeration', { defaultValue: 'Live & Media' })} tiles={liveExchange} tileWidth={tileWidth} onPress={go} />
         <Section title={t('more.sections.civicAndElections', { defaultValue: 'Civic & Elections' })} tiles={civic} tileWidth={tileWidth} onPress={go} />
         <Section title={t('more.sections.account', { defaultValue: 'Account' })} tiles={account} tileWidth={tileWidth} onPress={go} />
       </ScrollView>

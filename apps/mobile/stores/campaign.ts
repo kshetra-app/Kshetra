@@ -165,7 +165,7 @@ const SEED_BOOTHS: BoothStrategy[] = [
   { id: 'bs5', campaignId: 'c1', boothId: 'B-56-005', boothName: 'Anganwadi Center, Habeeb Nagar', boothNumber: '005', constituencyAcNo: 56, wardNo: 3, totalVoters: 890, estimatedTurnout: 76.0, targetVotes: 520, historicalResults: [], assignedVolunteers: ['v3'], agentId: 'v3', agentName: 'Mohammed Saleem', agentPhone: '9876543212', isKshetraUser: true, priority: 'low', status: 'ready', canvassingCompletion: 95, supportEstimate: 80, notes: 'Stronghold. Cadre active and door-to-door slips distributed.' },
 ];
 
-// ─── Default Service Pricing (Includes 50% Platform Margin) ───
+// ─── Default Service Pricing ───
 export const DEFAULT_PRICING: CampaignServicePricing = {
   voiceObd: {
     serviceKey: 'voice_obd',
@@ -173,7 +173,7 @@ export const DEFAULT_PRICING: CampaignServicePricing = {
     description: 'Automated 30-second voice call in your own recorded voice directly to voter mobile phones.',
     baseVendorRatePerCallINR: 0.60,
     kshetraMarginPercent: 50,
-    finalRatePerCallINR: 0.90, // 0.60 + 50% = 0.90
+    finalRatePerCallINR: 0.90,
     pulseSeconds: 30,
     minCalls: 500,
     currency: 'INR',

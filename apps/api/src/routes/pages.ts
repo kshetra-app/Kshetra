@@ -76,13 +76,14 @@ export const pagesRoutes: FastifyPluginAsync = async (app) => {
 
   /**
    * POST /api/v1/pages/:pageId/pro/order
-   * Razorpay order creation for Page Pro subscription.
+   * Razorpay order creation for Page Pro subscription (Monthly: ₹499, Annual: ₹4,999).
    */
-  app.post<{ Params: { pageId: string }; Body: { amount?: number; currency?: string } }>(
+  app.post<{ Params: { pageId: string }; Body: { amount?: number; currency?: string; billingCycle?: string } }>(
     '/api/v1/pages/:pageId/pro/order',
     async (request, reply) => {
       const { pageId } = request.params;
-      const amount = request.body?.amount ?? 199900; // ₹1,999 in paise
+      const billingCycle = request.body?.billingCycle === 'annual' ? 'annual' : 'monthly';
+      const amount = request.body?.amount ?? (billingCycle === 'annual' ? 499900 : 49900); // ₹4,999 or ₹499 in paise
       const currency = request.body?.currency ?? 'INR';
 
       const razorpayKey = process.env.RAZORPAY_KEY_ID;
@@ -93,6 +94,7 @@ export const pagesRoutes: FastifyPluginAsync = async (app) => {
         orderId,
         amount,
         currency,
+        billingCycle,
         key: razorpayKey || 'rzp_test_placeholder_key',
         isSandbox: !razorpayKey,
       });
@@ -110,6 +112,7 @@ export const pagesRoutes: FastifyPluginAsync = async (app) => {
       razorpay_order_id?: string;
       razorpay_signature?: string;
       sandboxBypass?: boolean;
+      billingCycle?: string;
     };
   }>('/api/v1/pages/:pageId/pro/verify', async (request, reply) => {
     const { pageId } = request.params;
@@ -141,7 +144,11 @@ export const pagesRoutes: FastifyPluginAsync = async (app) => {
     }
 
     const expiryDate = new Date();
-    expiryDate.setDate(expiryDate.getDate() + 30); // 30-day billing cycle
+    if (body.billingCycle === 'annual') {
+      expiryDate.setFullYear(expiryDate.getFullYear() + 1); // 365-day annual cycle
+    } else {
+      expiryDate.setDate(expiryDate.getDate() + 30); // 30-day monthly cycle
+    }
 
     const current = ENTITLEMENT_STORE.get(pageId) ?? {
       pageId,

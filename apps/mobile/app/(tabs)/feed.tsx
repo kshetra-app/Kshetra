@@ -12,6 +12,7 @@ import {
   TextInput,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import { useRouter } from 'expo-router';
 import { useFeedStore } from '../../stores/feed';
 import { useAuthStore } from '../../stores/auth';
 import { useActiveStateStore } from '../../stores/activeState';
@@ -298,6 +299,7 @@ export default function FeedScreen() {
     verifiedOnly ||
     feedFilter !== 'all';
 
+  const router = useRouter();
   const { insets } = useResponsive();
 
   return (
@@ -318,6 +320,17 @@ export default function FeedScreen() {
 
         <View style={styles.headerRight}>
           <StateSwitcher />
+          <Pressable
+            style={[
+              styles.headerIconButton,
+              { backgroundColor: colors.surface, borderColor: colors.border },
+            ]}
+            onPress={() => router.push('/pages' as any)}
+            hitSlop={6}
+            accessibilityLabel="Pages & Leaders"
+          >
+            <Ionicons name="people" size={18} color={colors.primary} />
+          </Pressable>
           <Pressable
             style={[
               styles.headerIconButton,

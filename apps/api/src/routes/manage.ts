@@ -91,13 +91,14 @@ export const manageRoutes: FastifyPluginAsync = async (app) => {
         <li>Direct constituent emergency broadcast alerts</li>
       </ul>
 
-      <div style="margin-top: 20px; display: flex; flex-wrap: wrap; align-items: center; gap: 16px;">
-        <button id="buy-pro-btn" class="btn btn-gold" onclick="handlePurchasePro()">Subscribe to Page Pro (₹1,999/mo)</button>
+      <div style="margin-top: 20px; display: flex; flex-wrap: wrap; align-items: center; gap: 12px;">
+        <button id="buy-monthly-btn" class="btn btn-gold" onclick="handlePurchasePlan('monthly', 49900)">Page Pro Monthly (₹499/mo)</button>
+        <button id="buy-annual-btn" class="btn" style="background: #15803D; color: #fff;" onclick="handlePurchasePlan('annual', 499900)">Page Pro Annual (₹4,999/yr — Save 17%)</button>
         <a href="https://razorpay.me/@mallinenipreethammahesh" target="_blank" rel="noopener noreferrer" class="btn" style="background: #0f172a; color: #fff; text-decoration: none; display: inline-flex; align-items: center; gap: 6px;">
           <span>Direct UPI / Razorpay.me</span>
           <span style="font-size: 11px; opacity: 0.8;">↗</span>
         </a>
-        <span id="buy-hint" style="font-size: 12px; color: var(--text-muted);">Secure billing via Razorpay · Cancel anytime</span>
+        <span id="buy-hint" style="font-size: 12px; color: var(--text-muted); width: 100%;">Secure billing via Razorpay · Auto-activates on mobile app · Cancel anytime</span>
       </div>
     </div>
   </div>
@@ -114,17 +115,19 @@ export const manageRoutes: FastifyPluginAsync = async (app) => {
           document.getElementById('current-plan-status').textContent = 'Page Pro Active (Expires: ' + new Date(data.expiresAt).toLocaleDateString() + ')';
           document.getElementById('current-plan-status').style.background = '#DCFCE7';
           document.getElementById('current-plan-status').style.color = '#15803D';
-          document.getElementById('buy-pro-btn').textContent = 'Page Pro Active';
-          document.getElementById('buy-pro-btn').disabled = true;
-          document.getElementById('buy-pro-btn').style.opacity = '0.7';
+          const mBtn = document.getElementById('buy-monthly-btn');
+          const aBtn = document.getElementById('buy-annual-btn');
+          if (mBtn) { mBtn.textContent = 'Pro Active'; mBtn.disabled = true; mBtn.style.opacity = '0.6'; }
+          if (aBtn) { aBtn.textContent = 'Pro Active'; aBtn.disabled = true; aBtn.style.opacity = '0.6'; }
         }
       } catch (err) {
         console.error('Failed to load entitlement', err);
       }
     }
 
-    async function handlePurchasePro() {
-      const btn = document.getElementById('buy-pro-btn');
+    async function handlePurchasePlan(billingCycle, amountPaise) {
+      const btn = billingCycle === 'monthly' ? document.getElementById('buy-monthly-btn') : document.getElementById('buy-annual-btn');
+      const originalText = btn.textContent;
       btn.textContent = 'Initiating Checkout...';
       btn.disabled = true;
 
@@ -132,7 +135,7 @@ export const manageRoutes: FastifyPluginAsync = async (app) => {
         const orderRes = await fetch('/api/v1/pages/' + PAGE_ID + '/pro/order', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ amount: 199900, currency: 'INR' })
+          body: JSON.stringify({ amount: amountPaise, currency: 'INR', billingCycle })
         });
         const orderData = await orderRes.json();
 
@@ -144,11 +147,12 @@ export const manageRoutes: FastifyPluginAsync = async (app) => {
             body: JSON.stringify({
               razorpay_order_id: orderData.orderId,
               razorpay_payment_id: 'pay_sandbox_' + Date.now(),
-              sandboxBypass: true
+              sandboxBypass: true,
+              billingCycle
             })
           });
           const verifyData = await verifyRes.json();
-          alert('Page Pro subscription successfully activated! Mobile app will reflect unlocked tools.');
+          alert('Page Pro (' + billingCycle + ') successfully activated! Mobile app will reflect unlocked tools.');
           checkEntitlement();
         } else {
           // Open Razorpay modal
@@ -157,13 +161,13 @@ export const manageRoutes: FastifyPluginAsync = async (app) => {
             amount: orderData.amount,
             currency: orderData.currency,
             name: 'Kshetra',
-            description: 'Page Pro Subscription (1 Month)',
+            description: 'Page Pro Subscription (' + (billingCycle === 'annual' ? '1 Year' : '1 Month') + ')',
             order_id: orderData.orderId,
             handler: async function (response) {
               await fetch('/api/v1/pages/' + PAGE_ID + '/pro/verify', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(response)
+                body: JSON.stringify({ ...response, billingCycle })
               });
               alert('Payment successful! Page Pro activated.');
               checkEntitlement();
@@ -174,6 +178,7 @@ export const manageRoutes: FastifyPluginAsync = async (app) => {
       } catch (err) {
         alert('Failed to process billing: ' + err.message);
       } finally {
+        btn.textContent = originalText;
         btn.disabled = false;
         checkEntitlement();
       }

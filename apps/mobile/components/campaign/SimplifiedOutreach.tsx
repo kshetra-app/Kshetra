@@ -354,7 +354,7 @@ export default function SimplifiedOutreach() {
             </View>
             <Text style={[styles.pricingDesc, { color: '#78350F' }]}>
               {t('campaignManager.obdPricingBreakdown', {
-                defaultValue: 'Base telecom rate ₹0.60 + Kshetra platform margin 50% (₹0.30) = ₹0.90 per 30-sec call.',
+                defaultValue: 'Indicative all-inclusive rate: ₹0.90 per connected 30-sec call.',
               })}
             </Text>
             <View style={styles.calcRow}>
@@ -653,7 +653,7 @@ export default function SimplifiedOutreach() {
             </View>
             <Text style={[styles.pricingDesc, { color: '#1E3A8A' }]}>
               {t('campaignManager.metaPublishDesc', {
-                defaultValue: 'Publish speeches and rally photos directly to your connected Facebook Page and Instagram. Boost packages include a 50% platform fee.',
+                defaultValue: 'Publish speeches and rally photos directly to your connected Facebook Page and Instagram with optional audience boost.',
               })}
             </Text>
           </View>
@@ -701,7 +701,7 @@ export default function SimplifiedOutreach() {
                 <Text style={styles.metaPackageAudience}>🎯 {pkg.targetAudience}</Text>
                 <Text style={styles.metaPackageReach}>👁️ {pkg.estReach}</Text>
                 <Text style={styles.metaPackageMargin}>
-                  (Ad Spend ₹{pkg.vendorAdSpendINR} + 50% Platform Fee ₹{pkg.kshetraFeeINR})
+                  Targeted ad campaign with full analytics & delivery report
                 </Text>
 
                 <Pressable

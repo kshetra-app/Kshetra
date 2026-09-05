@@ -97,6 +97,38 @@ export async function aiRoutes(app: FastifyInstance) {
     return { summary };
   });
 
+  /** POST /api/v1/ai/campaign-copy — generate AI copy for candidates */
+  app.post('/api/v1/ai/campaign-copy', async (request, reply) => {
+    const body = request.body as {
+      candidateName?: string;
+      constituencyName?: string;
+      topic?: string;
+      format?: 'whatsapp' | 'press_release' | 'speech';
+      language?: 'english' | 'telugu' | 'hindi';
+      isPro?: boolean;
+    };
+
+    if (!body?.candidateName || !body?.constituencyName || !body?.topic) {
+      return reply.status(400).send({ error: 'candidateName, constituencyName, and topic are required' });
+    }
+
+    const { generateCampaignCopy } = await import('../services/ai');
+    const copy = await generateCampaignCopy({
+      candidateName: body.candidateName,
+      constituencyName: body.constituencyName,
+      topic: body.topic,
+      format: body.format || 'whatsapp',
+      language: body.language || 'english',
+    });
+
+    return {
+      success: true,
+      copy,
+      format: body.format || 'whatsapp',
+      language: body.language || 'english',
+    };
+  });
+
   /** GET /api/v1/ai/status — check if AI is configured */
   app.get('/api/v1/ai/status', async () => {
     const isConfigured = !!process.env.GEMINI_API_KEY || !!process.env.OPENAI_API_KEY;

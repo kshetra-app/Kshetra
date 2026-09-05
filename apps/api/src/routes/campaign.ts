@@ -17,7 +17,6 @@ import {
 /**
  * Service-specific pricing configuration.
  * Admin can adjust anytime via PATCH /api/v1/campaign/pricing.
- * Includes a 50% platform margin on prevailing telecom/vendor rates.
  */
 let campaignPricing = {
   voiceObd: {
@@ -26,7 +25,7 @@ let campaignPricing = {
     description: 'Automated 30-second voice call in your own recorded voice directly to voter mobile phones.',
     baseVendorRatePerCallINR: 0.60,
     kshetraMarginPercent: 50,
-    finalRatePerCallINR: 0.90, // 0.60 + 50% margin (0.30)
+    finalRatePerCallINR: 0.90,
     pulseSeconds: 30,
     minCalls: 500,
     currency: 'INR',
@@ -39,9 +38,8 @@ let campaignPricing = {
         'Keep the tone respectful, clear, and focused on 1-2 core promises.',
       ],
       donts: [
-        'Do not exceed 45 seconds to avoid call drops.',
-        'Do not broadcast during the 48-hour election silence period.',
-        'Do not use aggressive or unverified claims.',
+        'Do not broadcast before 9:00 AM or after 8:00 PM (TRAI violation).',
+        'Do not use abusive language or unverified claims.',
       ],
     },
   },
@@ -58,7 +56,7 @@ let campaignPricing = {
         targetAudience: 'Single Ward or Mandal voters (Radius 3-5 km)',
         estReach: '15,000 – 25,000 views',
         vendorAdSpendINR: 1000,
-        kshetraFeeINR: 500, // 50% margin
+        kshetraFeeINR: 500,
         totalPriceINR: 1500,
       },
       {
@@ -67,7 +65,7 @@ let campaignPricing = {
         targetAudience: 'All voters across Assembly Constituency',
         estReach: '50,000 – 80,000 views',
         vendorAdSpendINR: 3000,
-        kshetraFeeINR: 1500, // 50% margin
+        kshetraFeeINR: 1500,
         totalPriceINR: 4500,
       },
       {
@@ -76,7 +74,7 @@ let campaignPricing = {
         targetAudience: 'High-frequency intensive push before polling day',
         estReach: '1,20,000 – 1,80,000 views',
         vendorAdSpendINR: 6000,
-        kshetraFeeINR: 3000, // 50% margin
+        kshetraFeeINR: 3000,
         totalPriceINR: 9000,
       },
     ],

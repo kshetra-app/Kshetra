@@ -59,16 +59,74 @@ export async function lmxRoutes(app: FastifyInstance) {
     reply.send(data);
   });
 
-  /** POST /api/v1/lmx/live — create (go-live) a Live Event Object */
+  /** POST /api/v1/lmx/live — create (go-live) a Live Event Object with server-side gating */
   app.post('/api/v1/lmx/live', async (request, reply) => {
     const body = request.body as any;
+
+    // Server-Side Role & Verification Gating (Ticket 2.5)
+    const allowedRoles = ['aspirant', 'politician', 'party', 'journalist', 'admin'];
+    const userRole = body.creator_role || body.role;
+    const verificationStatus = body.verification_status;
+
+    if (!userRole || !allowedRoles.includes(userRole)) {
+      return reply.status(403).send({
+        error: 'Forbidden: Live broadcasting is restricted to candidates, parties, and accredited journalists.',
+        code: 'INELIGIBLE_ROLE',
+      });
+    }
+
+    if (verificationStatus !== 'verified') {
+      return reply.status(403).send({
+        error: 'Forbidden: Live broadcasting requires a verified contributor profile (KYC verification).',
+        code: 'UNVERIFIED',
+      });
+    }
+
     const { data, error } = await supabase
       .from('live_events')
-      .insert(body)
+      .insert({
+        ...body,
+        buffer_state: body.buffer_state || 'buffered',
+        priority_score: body.priority_score || 50,
+      })
       .select()
       .single();
     if (error) return reply.status(500).send({ error: error.message });
     reply.status(201).send(data);
+  });
+
+  /** POST /api/v1/lmx/live/:streamId/moderate — moderator action (allow/mute/cut/escalate) */
+  app.post('/api/v1/lmx/live/:streamId/moderate', async (request, reply) => {
+    const { streamId } = request.params as any;
+    const { decision, reason, moderatorId } = request.body as any;
+
+    if (!['allow', 'mute', 'cut', 'escalate'].includes(decision)) {
+      return reply.status(400).send({ error: 'Invalid moderation decision' });
+    }
+
+    const updates: Record<string, any> = {
+      buffer_state: decision === 'cut' ? 'rejected' : decision === 'allow' ? 'cleared' : 'buffered',
+      updated_at: new Date().toISOString(),
+    };
+
+    if (decision === 'cut') {
+      updates.status = 'ended';
+      updates.ended_at = new Date().toISOString();
+    }
+
+    const { error } = await supabase
+      .from('live_events')
+      .update(updates)
+      .eq('id', streamId);
+
+    if (error) return reply.status(500).send({ error: error.message });
+
+    return reply.send({
+      success: true,
+      streamId,
+      decision,
+      message: `Stream buffer decision applied: ${decision}`,
+    });
   });
 
   /** POST /api/v1/lmx/live/:streamId/end — close out + finalize audit */

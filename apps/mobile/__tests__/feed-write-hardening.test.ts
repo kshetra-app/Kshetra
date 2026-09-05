@@ -113,7 +113,7 @@ describe('Phase 1: Ticket 1.2 - Feed Write Hardening & Throttling', () => {
     useFeedStore.setState({ posts: [post] });
     (dataService.reactToPost as jest.Mock).mockResolvedValue(false);
 
-    await useFeedStore.getState().toggleReaction('post-react-test', 'agree');
+    await useFeedStore.getState().toggleReaction('post-react-test', 'like');
 
     const updated = useFeedStore.getState().posts.find((p) => p.id === 'post-react-test');
     expect(updated?.reactionCount).toBe(5);
