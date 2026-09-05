@@ -1,4 +1,4 @@
-﻿import { buildApp } from '../server';
+import { buildApp } from '../server';
 import type { FastifyInstance } from 'fastify';
 
 describe('FIX-3: Server-side Live Gating Authentication & Role Checks', () => {
@@ -48,5 +48,28 @@ describe('FIX-3: Server-side Live Gating Authentication & Role Checks', () => {
     expect(res.statusCode).toBe(403);
     const data = JSON.parse(res.payload);
     expect(['PROFILE_NOT_FOUND', 'INELIGIBLE_ROLE', 'UNVERIFIED']).toContain(data.code);
+  });
+
+  it('rejects x-user-id header in production environment without valid bearer token', async () => {
+    const prevEnv = process.env.NODE_ENV;
+    process.env.NODE_ENV = 'production';
+    try {
+      const res = await app.inject({
+        method: 'POST',
+        url: '/api/v1/lmx/live',
+        headers: {
+          'x-user-id': '00000000-0000-0000-0000-000000000999',
+        },
+        payload: {
+          title: 'Prod Test Stream',
+        },
+      });
+
+      expect(res.statusCode).toBe(401);
+      const data = JSON.parse(res.payload);
+      expect(data.code).toBe('UNAUTHORIZED');
+    } finally {
+      process.env.NODE_ENV = prevEnv;
+    }
   });
 });

@@ -31,7 +31,11 @@ const CATEGORY_ORDER: CategoryFilter[] = [
   'general',
 ];
 
-export default function LiveTabScreen() {
+export interface LiveTabScreenProps {
+  hideHeader?: boolean;
+}
+
+export default function LiveTabScreen({ hideHeader = false }: LiveTabScreenProps = {}) {
   const { colors } = useTheme();
   const { t } = useTranslation();
   const insets = useSafeAreaInsets();
@@ -63,11 +67,13 @@ export default function LiveTabScreen() {
   return (
     <View style={[styles.container, { backgroundColor: colors.background }]}>
       {/* Header */}
-      <View style={[styles.header, { paddingTop: insets.top + 8, borderBottomColor: colors.border }]}>
+      <View style={[styles.header, { paddingTop: hideHeader ? 8 : (insets.top + 8), borderBottomColor: colors.border }]}>
         <View style={styles.headerRow}>
           <View>
-            <Text style={[styles.title, { color: colors.text }]}>{t('lmx.screenTitle')}</Text>
-            <View style={styles.subRow}>
+            {!hideHeader && (
+              <Text style={[styles.title, { color: colors.text }]}>{t('lmx.screenTitle')}</Text>
+            )}
+            <View style={[styles.subRow, hideHeader && { marginTop: 0 }]}>
               <View style={[styles.liveDot, { backgroundColor: colors.primary }]} />
               <Text style={[styles.subtitle, { color: colors.textMuted }]}>{t('lmx.liveNow', { count: liveCount })}</Text>
               {!aiServiceEnabled && (

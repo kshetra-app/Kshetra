@@ -74,8 +74,8 @@ export async function lmxRoutes(app: FastifyInstance) {
         userId = user.id;
       }
     }
-    // Also accept explicit x-user-id header in dev/test/staging environments
-    if (!userId && (request.headers['x-user-id'] as string)) {
+    // Also accept explicit x-user-id header only in non-production environments (dev/test/staging)
+    if (!userId && process.env.NODE_ENV !== 'production' && (request.headers['x-user-id'] as string)) {
       userId = request.headers['x-user-id'] as string;
     }
 

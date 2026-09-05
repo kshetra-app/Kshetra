@@ -22,7 +22,11 @@ import { useTheme } from '../../lib/theme';
 
 type ShortsScope = 'constituency' | 'state' | 'national';
 
-export default function ShortsScreen() {
+export interface ShortsScreenProps {
+  hideHeader?: boolean;
+}
+
+export default function ShortsScreen({ hideHeader = false }: ShortsScreenProps = {}) {
   const { t } = useTranslation();
   const { colors } = useTheme();
   const insets = useSafeAreaInsets();
@@ -69,13 +73,15 @@ export default function ShortsScreen() {
   return (
     <View style={[styles.container, { backgroundColor: colors.background }]}>
       {/* Header */}
-      <View style={[styles.header, { paddingTop: insets.top + 8, borderBottomColor: colors.border }]}>
+      <View style={[styles.header, { paddingTop: hideHeader ? 8 : (insets.top + 8), borderBottomColor: colors.border }]}>
         <View style={styles.headerLeft}>
           <View style={[styles.iconBg, { backgroundColor: colors.primaryLight }]}>
             <Ionicons name="play-circle" size={20} color={colors.primary} />
           </View>
           <View>
-            <Text style={[styles.title, { color: colors.text }]}>{t('tabs.shorts', { defaultValue: 'Shorts' })}</Text>
+            {!hideHeader && (
+              <Text style={[styles.title, { color: colors.text }]}>{t('tabs.shorts', { defaultValue: 'Shorts' })}</Text>
+            )}
             <Text style={[styles.subtitle, { color: colors.textMuted }]}>{shorts.length} short{shorts.length !== 1 ? 's' : ''}</Text>
           </View>
         </View>

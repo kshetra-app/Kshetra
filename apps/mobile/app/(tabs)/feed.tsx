@@ -60,7 +60,11 @@ const SORT_OPTIONS: { key: SortOrder; icon: string; tKey: string }[] = [
   { key: 'polls', icon: 'stats-chart-outline', tKey: 'feed.sort.polls' },
 ];
 
-export default function FeedScreen() {
+export interface FeedScreenProps {
+  hideHeader?: boolean;
+}
+
+export default function FeedScreen({ hideHeader = false }: FeedScreenProps = {}) {
   const { t, i18n } = useTranslation();
   const { colors } = useTheme();
   const [composeVisible, setComposeVisible] = useState(false);
@@ -305,12 +309,14 @@ export default function FeedScreen() {
   return (
     <View style={[styles.container, { backgroundColor: colors.background }]}>
       {/* Header */}
-      <View style={[styles.header, { paddingTop: insets.top + 8, borderBottomColor: colors.border }]}>
+      <View style={[styles.header, { paddingTop: hideHeader ? 8 : (insets.top + 8), borderBottomColor: colors.border }]}>
         <View style={styles.headerLeft}>
-          <Text style={[styles.headerTitle, { color: colors.text }]} numberOfLines={1}>
-            {t('feed.title')}
-          </Text>
-          <View style={styles.scopeIndicator}>
+          {!hideHeader && (
+            <Text style={[styles.headerTitle, { color: colors.text }]} numberOfLines={1}>
+              {t('feed.title')}
+            </Text>
+          )}
+          <View style={[styles.scopeIndicator, hideHeader && { marginTop: 0 }]}>
             <Ionicons name="funnel" size={10} color={colors.textMuted} />
             <Text style={[styles.scopeIndicatorText, { color: colors.textMuted }]} numberOfLines={1}>
               {scopeLabel} · {posts.length} {posts.length !== 1 ? t('common.posts') : t('common.post')}

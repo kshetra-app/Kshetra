@@ -80,22 +80,12 @@ export default function TabLayout() {
         }}
       />
       <Tabs.Screen
-        name="feed"
+        name="community"
         options={{
-          title: t('tabs.feed'),
-          href: flags.enableFeed ? undefined : null,
+          title: t('tabs.community', { defaultValue: 'Community' }),
+          href: (flags.enableFeed || flags.enableShortsTab || flags.enableLiveTab) ? undefined : null,
           tabBarIcon: ({ color, size }) => (
             <TabIcon name="chatbubbles" color={color} size={size} />
-          ),
-        }}
-      />
-      <Tabs.Screen
-        name="live"
-        options={{
-          title: t('tabs.live', { defaultValue: 'Live' }),
-          href: flags.enableLiveTab ? undefined : null,
-          tabBarIcon: ({ color, size }) => (
-            <TabIcon name="radio" color={color} size={size} />
           ),
         }}
       />
@@ -110,16 +100,6 @@ export default function TabLayout() {
         }}
       />
       <Tabs.Screen
-        name="shorts"
-        options={{
-          title: t('tabs.shorts', { defaultValue: 'Shorts' }),
-          href: flags.enableShortsTab ? undefined : null,
-          tabBarIcon: ({ color, size }) => (
-            <TabIcon name="play-circle" color={color} size={size} />
-          ),
-        }}
-      />
-      <Tabs.Screen
         name="more"
         options={{
           title: t('tabs.more', { defaultValue: 'More' }),
@@ -130,7 +110,10 @@ export default function TabLayout() {
           tabBarBadgeStyle: { backgroundColor: '#EF4444', fontSize: 10, fontWeight: '700' },
         }}
       />
-      {/* Hidden from the bar but still reachable via the More hub / navigation */}
+      {/* Standalone routes hidden from tab bar but preserved for direct navigation */}
+      <Tabs.Screen name="feed" options={{ href: null }} />
+      <Tabs.Screen name="live" options={{ href: null }} />
+      <Tabs.Screen name="shorts" options={{ href: null }} />
       <Tabs.Screen name="dashboard" options={{ href: null }} />
       <Tabs.Screen name="intelligence" options={{ href: null }} />
       <Tabs.Screen name="profile" options={{ href: null }} />

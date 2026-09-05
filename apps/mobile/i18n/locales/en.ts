@@ -80,6 +80,7 @@ const en =  {
     "map": "Map",
     "explore": "Explore",
     "feed": "Feed",
+    "community": "Community",
     "news": "News",
     "live": "Live",
     "shorts": "Shorts",
