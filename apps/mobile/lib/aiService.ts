@@ -3,6 +3,8 @@
  * Uses Google's high-speed native Generative Language API.
  */
 
+import { supabase, isSupabaseConfigured } from './supabase';
+
 const GEMINI_API_KEY = process.env.EXPO_PUBLIC_GEMINI_API_KEY || '';
 
 const PRIMARY_MODEL = 'gemini-flash-lite-latest';
@@ -158,7 +160,54 @@ export async function sendAIChat(
 }
 
 /**
- * Generate a quick analysis summary for a constituency
+ * Fetches verified stored record for a constituency and its representative from Supabase.
+ */
+async function fetchVerifiedConstituencyData(stateCode: string, acNo: number, constituencyName: string) {
+  if (!isSupabaseConfigured) return null;
+  try {
+    const { data: legislator } = await supabase
+      .from('legislator_profiles')
+      .select('full_name, display_name, current_party, constituency_name, constituency_number, state_code, education_level, attendance_percent, questions_asked, debates_participated, terms_served')
+      .eq('state_code', stateCode)
+      .eq('constituency_number', acNo)
+      .maybeSingle();
+
+    const { data: constituency } = await supabase
+      .from('constituencies')
+      .select('name, ac_no, district_name, reservation_type, total_electors, male_electors, female_electors')
+      .eq('state_code', stateCode)
+      .eq('ac_no', acNo)
+      .maybeSingle();
+
+    return {
+      legislator: legislator || null,
+      constituency: constituency || null,
+    };
+  } catch {
+    return null;
+  }
+}
+
+/**
+ * Fetches verified state data from Supabase.
+ */
+async function fetchVerifiedStateData(stateCode: string) {
+  if (!isSupabaseConfigured) return null;
+  try {
+    const { data: stateData } = await supabase
+      .from('states')
+      .select('code, name, total_seats, ruling_party, capital')
+      .eq('code', stateCode)
+      .maybeSingle();
+    return stateData || null;
+  } catch {
+    return null;
+  }
+}
+
+/**
+ * Generate a retrieval-grounded factual analysis summary for a constituency.
+ * Passes verified stored data directly into the model and strictly forbids hallucinating facts.
  */
 export async function getConstituencyAnalysis(
   constituencyName: string,
@@ -168,9 +217,38 @@ export async function getConstituencyAnalysis(
   winningParty?: string,
   margin?: number,
 ): Promise<string> {
-  const prompt = `Give a brief political analysis of ${constituencyName} (AC #${acNo}) in ${stateCode}.${
-    currentMLA ? ` Current MLA: ${currentMLA} (${winningParty}).` : ''
-  }${margin ? ` Won by margin of ${margin.toLocaleString()} votes.` : ''} Cover: political significance, demographics, key issues, and election trends in 150 words.`;
+  const verified = await fetchVerifiedConstituencyData(stateCode, acNo, constituencyName);
+
+  const verifiedFacts: Record<string, any> = {
+    constituency: constituencyName,
+    acNumber: acNo,
+    state: stateCode,
+    sittingMLA: currentMLA || verified?.legislator?.display_name || verified?.legislator?.full_name || null,
+    party: winningParty || verified?.legislator?.current_party || null,
+    victoryMargin: margin ? `${margin.toLocaleString()} votes` : null,
+    district: verified?.constituency?.district_name || null,
+    reservationCategory: verified?.constituency?.reservation_type || null,
+    totalVoters: verified?.constituency?.total_electors ? verified.constituency.total_electors.toLocaleString() : null,
+    assemblyAttendance: verified?.legislator?.attendance_percent ? `${verified.legislator.attendance_percent}%` : null,
+    assemblyQuestions: verified?.legislator?.questions_asked ?? null,
+    termsServed: verified?.legislator?.terms_served ?? null,
+  };
+
+  // If no verified record is available at all, return a factual absence statement
+  const hasSubstantialData = verifiedFacts.sittingMLA || verifiedFacts.party || verifiedFacts.totalVoters;
+  if (!hasSubstantialData) {
+    return `Verified electoral records for ${constituencyName} (AC #${acNo}, ${stateCode}) are currently limited in the state database. Official verified MLA and demographic details will be displayed once confirmed by the Election Commission.`;
+  }
+
+  const prompt = `Using ONLY the following verified data in JSON format, write a concise, plain-language factual summary of ${constituencyName} (AC #${acNo}, ${stateCode}).
+
+CRITICAL INSTRUCTIONS:
+1. Do NOT add, invent, or speculate on any facts, voter turnout percentages, election trends, or unlisted opinions.
+2. If any metric is null or unlisted in the JSON, do not estimate it; state that official verified data for that metric is not on file.
+3. Keep the summary strictly objective, non-partisan, and under 130 words.
+
+Verified Data:
+${JSON.stringify(verifiedFacts, null, 2)}`;
 
   const result = await sendAIChat([{ role: 'user', content: prompt }], {
     stateCode,
@@ -178,11 +256,18 @@ export async function getConstituencyAnalysis(
     acNo,
   });
 
-  return result.response;
+  // Post-generation validation: ensure output does not fabricate an unlisted MLA
+  let output = result.response;
+  if (verifiedFacts.sittingMLA && !output.toLowerCase().includes(verifiedFacts.sittingMLA.toLowerCase().split(' ')[0])) {
+    output = `[Verified Representative: ${verifiedFacts.sittingMLA} (${verifiedFacts.party || 'Independent'})]\n${output}`;
+  }
+
+  return output;
 }
 
 /**
- * Generate a dashboard summary for a state
+ * Generate a retrieval-grounded factual summary for a state.
+ * Strictly forbids open-ended speculation or opinion generation.
  */
 export async function getStateSummary(
   stateCode: string,
@@ -190,8 +275,27 @@ export async function getStateSummary(
   totalSeats: number,
   rulingParty: string,
 ): Promise<string> {
-  const prompt = `In 100 words, summarize the current political landscape of ${stateName} (${totalSeats} assembly seats, ruling party: ${rulingParty}). Include recent trends, opposition strength, and key upcoming challenges.`;
+  const verifiedState = await fetchVerifiedStateData(stateCode);
+
+  const verifiedStateFacts = {
+    stateName: verifiedState?.name || stateName,
+    stateCode,
+    totalAssemblySeats: verifiedState?.total_seats || totalSeats,
+    currentRulingParty: verifiedState?.ruling_party || rulingParty,
+    capital: verifiedState?.capital || null,
+  };
+
+  const prompt = `Using ONLY the following verified government data, write a concise summary of the official administrative and legislative structure of ${stateName}.
+
+CRITICAL INSTRUCTIONS:
+1. Do NOT predict upcoming election winners, opposition strength, speculative political challenges, or unverified opinions.
+2. Rely strictly on the verified numbers and facts provided below.
+3. Limit response to 90 words.
+
+Verified Data:
+${JSON.stringify(verifiedStateFacts, null, 2)}`;
 
   const result = await sendAIChat([{ role: 'user', content: prompt }], { stateCode });
   return result.response;
 }
+

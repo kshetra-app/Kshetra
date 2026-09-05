@@ -13,16 +13,13 @@ import { useTranslation } from 'react-i18next';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useTheme } from '../../lib/theme';
 import { useAspirantStore } from '../../stores/aspirant';
-import { usePoliticianPortalStore } from '../../stores/politicianPortal';
 import { useAuthStore } from '../../stores/auth';
 import { useUserProfileStore } from '../../stores/userProfile';
 import { canCreatePage } from '../../lib/pageGating';
+import { fetchVerifiedPoliticians } from '../../lib/supabaseDataService';
 import RegisterAspirantModal from '../../components/RegisterAspirantModal';
 import CivicScoreCard from '../../components/CivicScoreCard';
 import CivicBadgeGrid from '../../components/CivicBadgeGrid';
-import PoliticianPortalCard from '../../components/PoliticianPortalCard';
-import EventCard from '../../components/EventCard';
-import ManifestoCard from '../../components/ManifestoCard';
 
 type PageTab = 'aspirants' | 'politicians' | 'my_page';
 
@@ -35,6 +32,8 @@ export default function PagesScreen() {
   const [activeTab, setActiveTab] = useState<PageTab>('aspirants');
   const [refreshing, setRefreshing] = useState(false);
   const [registerVisible, setRegisterVisible] = useState(false);
+  const [verifiedPoliticians, setVerifiedPoliticians] = useState<any[]>([]);
+  const [loadingPoliticians, setLoadingPoliticians] = useState(false);
 
   const authUser = useAuthStore((s) => s.user);
   const userProfile = useUserProfileStore((s) => s.profile);
@@ -48,20 +47,23 @@ export default function PagesScreen() {
   const endorsedIds = useAspirantStore((s) => s.endorsedIds);
   const hydrateAspirants = useAspirantStore((s) => s.hydrateAspirants);
 
-  // Politician portal store
-  const politicians = usePoliticianPortalStore((s) => s.politicians);
-  const events = usePoliticianPortalStore((s) => s.events);
-  const manifestos = usePoliticianPortalStore((s) => s.manifestos);
+  const loadPoliticians = useCallback(async () => {
+    setLoadingPoliticians(true);
+    const data = await fetchVerifiedPoliticians();
+    setVerifiedPoliticians(data ?? []);
+    setLoadingPoliticians(false);
+  }, []);
 
   useEffect(() => {
     hydrateAspirants();
-  }, [hydrateAspirants]);
+    loadPoliticians();
+  }, [hydrateAspirants, loadPoliticians]);
 
   const onRefresh = useCallback(async () => {
     setRefreshing(true);
-    await hydrateAspirants();
+    await Promise.all([hydrateAspirants(), loadPoliticians()]);
     setRefreshing(false);
-  }, [hydrateAspirants]);
+  }, [hydrateAspirants, loadPoliticians]);
 
   const userCanCreate = canCreatePage(userProfile?.role);
   const civicScore = getCivicScore();
@@ -262,32 +264,60 @@ export default function PagesScreen() {
         {activeTab === 'politicians' && (
           <View style={styles.tabContent}>
             <Text style={[styles.sectionHeading, { color: colors.text }]}>
-              {t('politicianPortal.registeredPoliticians', { defaultValue: 'Registered Representatives & Parties' })}
+              {t('pages.registeredPoliticians', { defaultValue: 'Registered Representatives & Parties' })}
             </Text>
-            {politicians.map((p) => (
-              <PoliticianPortalCard key={p.id} politician={p} />
-            ))}
-
-            {events.length > 0 && (
-              <>
-                <Text style={[styles.sectionHeading, { color: colors.text, marginTop: 24 }]}>
-                  {t('politicianPortal.upcomingEvents', { defaultValue: 'Public Rallies & Sabhas' })}
+            {verifiedPoliticians.length > 0 ? (
+              verifiedPoliticians.map((p) => (
+                <View
+                  key={p.id || p.user_id}
+                  style={[styles.aspirantCard, { backgroundColor: colors.surface, borderColor: colors.border }]}
+                >
+                  <View style={styles.aspirantTopRow}>
+                    <View style={[styles.aspirantAvatar, { backgroundColor: colors.primary }]}>
+                      <Text style={[styles.avatarInitial, { color: '#FFFFFF' }]}>
+                        {(p.display_name || 'R').charAt(0).toUpperCase()}
+                      </Text>
+                    </View>
+                    <View style={{ flex: 1, marginLeft: 12 }}>
+                      <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                        <Text style={[styles.aspirantName, { color: colors.text }]}>{p.display_name}</Text>
+                        <Ionicons name="checkmark-circle" size={16} color="#10B981" style={{ marginLeft: 4 }} />
+                      </View>
+                      <Text style={[styles.aspirantSeat, { color: colors.textMuted }]}>
+                        {p.constituency ? `${p.constituency} · ` : ''}{p.state || t('pages.verifiedOfficial', { defaultValue: 'Verified Representative' })}
+                      </Text>
+                    </View>
+                  </View>
+                  {p.bio ? (
+                    <Text style={[styles.aspirantBio, { color: colors.textSecondary }]} numberOfLines={2}>
+                      {p.bio}
+                    </Text>
+                  ) : null}
+                  <View style={styles.cardActions}>
+                    <Pressable
+                      style={[styles.btnEndorse, { backgroundColor: colors.primary, borderColor: colors.primary }]}
+                      onPress={() => router.push(`/user/${p.user_id}` as any)}
+                    >
+                      <Ionicons name="person-outline" size={14} color="#FFFFFF" />
+                      <Text style={[styles.btnEndorseText, { color: '#FFFFFF' }]}>
+                        {t('pages.viewProfile', { defaultValue: 'View Profile' })}
+                      </Text>
+                    </Pressable>
+                  </View>
+                </View>
+              ))
+            ) : (
+              <View style={[styles.createPromptCard, { backgroundColor: colors.surface, borderColor: colors.border }]}>
+                <Ionicons name="shield-checkmark-outline" size={44} color={colors.textMuted} />
+                <Text style={[styles.promptTitle, { color: colors.text }]}>
+                  {t('pages.noPoliticiansTitle', { defaultValue: 'No Verified Representatives Yet' })}
                 </Text>
-                {events.map((e) => (
-                  <EventCard key={e.id} event={e} />
-                ))}
-              </>
-            )}
-
-            {manifestos.length > 0 && (
-              <>
-                <Text style={[styles.sectionHeading, { color: colors.text, marginTop: 24 }]}>
-                  {t('politicianPortal.eManifestos', { defaultValue: 'Official E-Manifestos' })}
+                <Text style={[styles.promptDesc, { color: colors.textMuted }]}>
+                  {t('pages.noPoliticiansDesc', {
+                    defaultValue: 'Official elected representatives and verified party leaders will appear here once authenticated on Kshetra. Real public figures require KYC verification.',
+                  })}
                 </Text>
-                {manifestos.map((m) => (
-                  <ManifestoCard key={m.id} manifesto={m} />
-                ))}
-              </>
+              </View>
             )}
           </View>
         )}

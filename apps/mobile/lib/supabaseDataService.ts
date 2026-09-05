@@ -1335,6 +1335,28 @@ export async function fetchPublicAspirants(stateCode?: string, acNo?: number): P
   }
 }
 
+export async function fetchVerifiedPoliticians(stateCode?: string, acNo?: number): Promise<any[] | null> {
+  if (!guard()) return null;
+  try {
+    let query = supabase
+      .from('user_profiles')
+      .select('id, user_id, display_name, role, verification_status, bio, avatar_url, constituency, state, updated_at')
+      .eq('role', 'politician')
+      .eq('verification_status', 'verified')
+      .order('display_name', { ascending: true })
+      .limit(50);
+    if (stateCode) {
+      query = query.eq('state', stateCode);
+    }
+    const { data, error } = await query;
+    if (error) throw error;
+    return data;
+  } catch (err) {
+    captureException(err as Error, { op: 'fetch_verified_politicians' });
+    return null;
+  }
+}
+
 // ─── Session Tracking (investor metrics) ─────────────────────────────
 
 export async function recordSession(session: {

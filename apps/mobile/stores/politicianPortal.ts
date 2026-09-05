@@ -10,28 +10,9 @@ import type {
   PoliticianSurvey,
 } from '../lib/politicianPortalTypes';
 
+// Fictional demo data only — no real, named public figures permitted here.
 // ─── Seed Politicians ───
 const SEED_POLITICIANS: PoliticianPortalProfile[] = [
-  {
-    id: 'pp1', userId: 'u-pp1', displayName: 'Revanth Reddy', tier: 'chief_minister', party: 'INC',
-    constituencyAcNo: 116, stateCode: 'TS', districtName: 'Rangareddy',
-    bio: 'Chief Minister of Telangana. Formerly a TDP MLA, joined INC in 2017. Leading the state through its first INC government since formation.',
-    photoUrl: 'https://myneta.info/photos/revanth.jpg', isVerified: true, isActive: true,
-    followerCount: 125000, endorsementCount: 45, endorsementScore: 180,
-    eventsHosted: 89, issuesResponded: 342, responseRate: 78.5, avgResponseTimeHours: 4.2,
-    menteesCount: 3, totalFundsRaised: 0, socialLinks: [{ platform: 'twitter', url: 'https://x.com/reaboraRevanth' }],
-    joinedAt: '2024-01-15', lastActiveAt: '2026-05-24',
-  },
-  {
-    id: 'pp2', userId: 'u-pp2', displayName: 'Chandrababu Naidu', tier: 'chief_minister', party: 'TDP',
-    constituencyAcNo: 133, stateCode: 'AP', districtName: 'Chittoor',
-    bio: 'Chief Minister of Andhra Pradesh. Visionary leader who transformed Hyderabad into a tech hub. Leading AP development with Super Six guarantees.',
-    isVerified: true, isActive: true,
-    followerCount: 200000, endorsementCount: 67, endorsementScore: 280,
-    eventsHosted: 156, issuesResponded: 512, responseRate: 82.3, avgResponseTimeHours: 3.1,
-    menteesCount: 5, totalFundsRaised: 0, socialLinks: [],
-    joinedAt: '2024-06-01', lastActiveAt: '2026-05-24',
-  },
   {
     id: 'pp3', userId: 'u-pp3', displayName: 'Ananya Rao', tier: 'aspirant', party: undefined,
     stateCode: 'TS', districtName: 'Hyderabad',
@@ -42,34 +23,10 @@ const SEED_POLITICIANS: PoliticianPortalProfile[] = [
     menteesCount: 0, totalFundsRaised: 25000, socialLinks: [{ platform: 'instagram', url: 'https://instagram.com/ananya_for_change' }],
     joinedAt: '2025-08-15', lastActiveAt: '2026-05-23',
   },
-  {
-    id: 'pp4', userId: 'u-pp4', displayName: 'Siddaramaiah', tier: 'chief_minister', party: 'INC',
-    constituencyAcNo: 86, stateCode: 'KA', districtName: 'Mysuru',
-    bio: 'Chief Minister of Karnataka. Architect of the landmark 5 Guarantee schemes including Gruha Lakshmi and Shakti.',
-    isVerified: true, isActive: true,
-    followerCount: 180000, endorsementCount: 52, endorsementScore: 220,
-    eventsHosted: 120, issuesResponded: 389, responseRate: 75.0, avgResponseTimeHours: 5.0,
-    menteesCount: 2, totalFundsRaised: 0, socialLinks: [],
-    joinedAt: '2023-06-01', lastActiveAt: '2026-05-24',
-  },
 ];
 
 // ─── Seed Broadcasts ───
 const SEED_BROADCASTS: ConstituentBroadcast[] = [
-  {
-    id: 'cb1', politicianId: 'pp1', type: 'announcement', title: 'Musi River Rejuvenation Project Update',
-    body: 'The first phase of Musi River cleanup has been completed ahead of schedule. 23 km of riverbank has been cleaned and landscaped. Phase 2 tender awarded.',
-    mediaUrls: [], targetScope: 'state', targetStateCode: 'TS',
-    sentAt: '2026-05-20T10:00:00Z', readCount: 45000, reactionCount: 8900, replyCount: 1200,
-    createdAt: '2026-05-20T09:00:00Z',
-  },
-  {
-    id: 'cb2', politicianId: 'pp2', type: 'update', title: 'Super Six Scheme Progress: Tallam Bharosa',
-    body: 'Under Tallam Bharosa, ₹20,000 annual support has been credited to 45 lakh farmer families. Total disbursement: ₹9,000 Crore in FY 2025-26.',
-    mediaUrls: [], targetScope: 'state', targetStateCode: 'AP',
-    sentAt: '2026-05-18T11:00:00Z', readCount: 62000, reactionCount: 12300, replyCount: 2100,
-    createdAt: '2026-05-18T10:00:00Z',
-  },
   {
     id: 'cb3', politicianId: 'pp3', type: 'event_invite', title: 'Youth Town Hall: Let\'s Build Smart Hyderabad Together',
     body: 'Inviting all young citizens (18-35) to a town hall discussion on urban governance, smart city initiatives, and youth employment. Free entry, refreshments provided.',
@@ -82,16 +39,6 @@ const SEED_BROADCASTS: ConstituentBroadcast[] = [
 // ─── Seed Events ───
 const SEED_EVENTS: PoliticalEvent[] = [
   {
-    id: 'pe1', politicianId: 'pp1', politicianName: 'Revanth Reddy', party: 'INC',
-    type: 'inauguration', status: 'completed', title: 'Musi Riverfront Park Inauguration',
-    description: 'Grand inauguration of the first 5km stretch of Musi Riverfront Park with walking tracks, gardens, and public amenities.',
-    venue: 'Musi Riverfront, Chaderghat', address: 'Chaderghat, Hyderabad', stateCode: 'TS',
-    districtName: 'Hyderabad', constituencyAcNo: 56,
-    startTime: '2026-05-15T10:00:00Z', endTime: '2026-05-15T12:00:00Z',
-    expectedAttendance: 5000, actualAttendance: 8500, isPublic: true, rsvpCount: 3200,
-    mediaUrls: [], createdAt: '2026-05-01T08:00:00Z', updatedAt: '2026-05-15T12:00:00Z',
-  },
-  {
     id: 'pe2', politicianId: 'pp3', politicianName: 'Ananya Rao',
     type: 'town_hall', status: 'confirmed', title: 'Youth Town Hall: Smart Hyderabad',
     description: 'Interactive town hall for young citizens to discuss urban governance and employment.',
@@ -100,15 +47,6 @@ const SEED_EVENTS: PoliticalEvent[] = [
     startTime: '2026-06-01T17:00:00Z', endTime: '2026-06-01T19:00:00Z',
     expectedAttendance: 200, isPublic: true, rsvpCount: 89,
     mediaUrls: [], createdAt: '2026-05-22T08:00:00Z', updatedAt: '2026-05-22T08:00:00Z',
-  },
-  {
-    id: 'pe3', politicianId: 'pp4', politicianName: 'Siddaramaiah', party: 'INC',
-    type: 'rally', status: 'planned', title: 'Gruha Lakshmi Beneficiary Rally',
-    description: 'Rally celebrating 1 crore women beneficiaries of the Gruha Lakshmi scheme.',
-    venue: 'Palace Grounds', address: 'Bengaluru', stateCode: 'KA',
-    startTime: '2026-06-15T16:00:00Z', endTime: '2026-06-15T19:00:00Z',
-    expectedAttendance: 50000, isPublic: true, rsvpCount: 12000,
-    mediaUrls: [], createdAt: '2026-05-20T08:00:00Z', updatedAt: '2026-05-20T08:00:00Z',
   },
 ];
 

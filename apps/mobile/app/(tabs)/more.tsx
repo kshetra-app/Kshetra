@@ -39,28 +39,20 @@ export default function MoreScreen() {
     { label: t('more.tiles.civicDashboard', { defaultValue: 'Civic Dashboard' }), icon: 'pulse', color: colors.teal, route: '/dashboard', badge: unread || undefined },
     { label: t('more.tiles.delimitation', { defaultValue: 'Delimitation' }), icon: 'git-branch', color: colors.gold, route: '/delimitation' },
     { label: t('more.tiles.liveElection', { defaultValue: 'Live Election' }), icon: 'radio', color: colors.primary, route: '/live-election' },
-    { label: t('more.tiles.parliament', { defaultValue: 'Parliament' }), icon: 'business', color: colors.gold, route: '/parliament' },
   ];
 
   const campaign: Tile[] = [
-    { label: t('more.tiles.pagesAndLeaders', { defaultValue: 'Pages & Leaders' }), icon: 'people', color: colors.gold, route: '/pages' },
     { label: t('more.tiles.campaignManager', { defaultValue: 'Campaign Manager' }), icon: 'megaphone', color: colors.primary, route: '/campaign-manager' },
-    { label: t('more.tiles.leadershipAcademy', { defaultValue: 'Leadership Academy' }), icon: 'school', color: colors.gold, route: '/leadership-academy' },
     { label: t('more.tiles.candidateXRay', { defaultValue: 'Candidate X-Ray' }), icon: 'scan', color: colors.teal, route: '/candidate-xray' },
-  ];
-
-  const liveExchange: Tile[] = [
+    { label: t('more.tiles.leadershipAcademy', { defaultValue: 'Leadership Academy' }), icon: 'school', color: colors.gold, route: '/leadership-academy' },
     { label: t('more.tiles.kshetraLive', { defaultValue: 'Kshetra Live' }), icon: 'videocam', color: colors.primary, route: '/live' },
-    { label: t('more.tiles.moderation', { defaultValue: 'Moderation' }), icon: 'shield-half', color: colors.teal, route: '/moderation' },
-    { label: t('more.tiles.deptConsole', { defaultValue: 'Dept. Console' }), icon: 'shield', color: colors.teal, route: '/departments/dashboard' },
-    { label: t('more.tiles.devSwitches', { defaultValue: 'Dev Switches' }), icon: 'toggle', color: colors.gold, route: '__dev_switches__' },
   ];
 
   const account: Tile[] = [
+    { label: t('more.tiles.aiAssistant', { defaultValue: 'AI Assistant' }), icon: 'sparkles', color: colors.gold, route: '/ai-chat' },
+    { label: t('more.tiles.moderation', { defaultValue: 'Moderation Queue' }), icon: 'shield-half', color: colors.teal, route: '/moderation' },
     { label: t('more.tiles.profile', { defaultValue: 'Profile' }), icon: 'person', color: colors.primary, route: '/profile' },
     { label: t('more.tiles.notifications', { defaultValue: 'Notifications' }), icon: 'notifications', color: colors.primary, route: '/notifications', badge: unread || undefined },
-    { label: t('more.tiles.settings', { defaultValue: 'Settings' }), icon: 'settings', color: colors.textSecondary, route: '/notification-settings' },
-    { label: t('more.tiles.aiAssistant', { defaultValue: 'AI Assistant' }), icon: 'sparkles', color: colors.gold, route: '/ai-chat' },
   ];
 
   return (
@@ -91,10 +83,9 @@ export default function MoreScreen() {
           <Ionicons name="chevron-forward" size={18} color="#FFFFFF" />
         </Pressable>
 
-        <Section title={t('more.sections.campaignAndLeadership', { defaultValue: 'Leaders & Campaign' })} tiles={campaign} tileWidth={tileWidth} onPress={go} />
-        <Section title={t('more.sections.liveAndModeration', { defaultValue: 'Live & Media' })} tiles={liveExchange} tileWidth={tileWidth} onPress={go} />
         <Section title={t('more.sections.civicAndElections', { defaultValue: 'Civic & Elections' })} tiles={civic} tileWidth={tileWidth} onPress={go} />
-        <Section title={t('more.sections.account', { defaultValue: 'Account' })} tiles={account} tileWidth={tileWidth} onPress={go} />
+        <Section title={t('more.sections.campaignAndLeadership', { defaultValue: 'Campaign & Live' })} tiles={campaign} tileWidth={tileWidth} onPress={go} />
+        <Section title={t('more.sections.account', { defaultValue: 'Tools & Account' })} tiles={account} tileWidth={tileWidth} onPress={go} />
       </ScrollView>
 
       <DevFeatureSwitcher

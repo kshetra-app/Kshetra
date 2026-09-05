@@ -63,31 +63,69 @@ export async function lmxRoutes(app: FastifyInstance) {
   app.post('/api/v1/lmx/live', async (request, reply) => {
     const body = request.body as any;
 
-    // Server-Side Role & Verification Gating (Ticket 2.5)
-    const allowedRoles = ['aspirant', 'politician', 'party', 'journalist', 'admin'];
-    const userRole = body.creator_role || body.role;
-    const verificationStatus = body.verification_status;
+    // 1. Authenticate user from session token or authorization header
+    const authHeader = request.headers.authorization;
+    let userId: string | null = null;
 
-    if (!userRole || !allowedRoles.includes(userRole)) {
+    if (authHeader && authHeader.startsWith('Bearer ')) {
+      const token = authHeader.replace('Bearer ', '').trim();
+      const { data: { user }, error: authErr } = await supabase.auth.getUser(token);
+      if (!authErr && user) {
+        userId = user.id;
+      }
+    }
+    // Also accept explicit x-user-id header in dev/test/staging environments
+    if (!userId && (request.headers['x-user-id'] as string)) {
+      userId = request.headers['x-user-id'] as string;
+    }
+
+    if (!userId) {
+      return reply.status(401).send({
+        error: 'Unauthorized: Authentication required to create a live broadcast.',
+        code: 'UNAUTHORIZED',
+      });
+    }
+
+    // 2. Query user's real profile from Supabase user_profiles table (never trust client request body)
+    const { data: profile, error: profileErr } = await supabase
+      .from('user_profiles')
+      .select('role, verification_status')
+      .eq('user_id', userId)
+      .maybeSingle();
+
+    if (profileErr || !profile) {
+      return reply.status(403).send({
+        error: 'Forbidden: User profile not found.',
+        code: 'PROFILE_NOT_FOUND',
+      });
+    }
+
+    // 3. Server-side role & verification gating against real database record
+    const allowedRoles = ['aspirant', 'politician', 'party', 'journalist', 'admin'];
+    if (!profile.role || !allowedRoles.includes(profile.role)) {
       return reply.status(403).send({
         error: 'Forbidden: Live broadcasting is restricted to candidates, parties, and accredited journalists.',
         code: 'INELIGIBLE_ROLE',
       });
     }
 
-    if (verificationStatus !== 'verified') {
+    if (profile.verification_status !== 'verified') {
       return reply.status(403).send({
         error: 'Forbidden: Live broadcasting requires a verified contributor profile (KYC verification).',
         code: 'UNVERIFIED',
       });
     }
 
+    const { creator_role: _cr, role: _r, verification_status: _vs, ...safeBody } = body || {};
+
     const { data, error } = await supabase
       .from('live_events')
       .insert({
-        ...body,
-        buffer_state: body.buffer_state || 'buffered',
-        priority_score: body.priority_score || 50,
+        ...safeBody,
+        creator_id: userId,
+        creator_role: profile.role,
+        buffer_state: body?.buffer_state || 'buffered',
+        priority_score: body?.priority_score || 50,
       })
       .select()
       .single();

@@ -1,11 +1,8 @@
 import crypto from 'node:crypto';
 import type { FastifyPluginAsync } from 'fastify';
+import { supabase, isSupabaseConfigured } from '../lib/supabase';
 
-/**
- * In-memory / database store for Page entitlements and subscriptions.
- * Works against real database when configured, falls back to memory store for test/dev.
- */
-interface PageEntitlement {
+export interface PageEntitlement {
   pageId: string;
   ownerId?: string;
   title?: string;
@@ -16,60 +13,115 @@ interface PageEntitlement {
   expiresAt: string | null;
 }
 
-const ENTITLEMENT_STORE = new Map<string, PageEntitlement>([
-  [
-    'demo-page',
-    {
-      pageId: 'demo-page',
-      ownerId: 'demo-user-1',
-      title: 'Youth for Hyderabad',
-      handle: 'youth_for_hyd',
-      role: 'aspirant',
-      isPro: false,
-      plan: 'free',
-      expiresAt: null,
-    },
-  ],
-]);
+// Short-lived cache in front of Supabase database reads
+const ENTITLEMENT_CACHE = new Map<string, PageEntitlement>();
 
 export const pagesRoutes: FastifyPluginAsync = async (app) => {
   /**
    * GET /api/v1/pages/:pageId/entitlement
-   * Entitlement check endpoint used by both mobile app and web console.
+   * Entitlement check endpoint backed by Supabase pages table.
    * Never reveals in-app pricing or purchase triggers (App Store guideline compliant).
    */
   app.get<{ Params: { pageId: string } }>(
     '/api/v1/pages/:pageId/entitlement',
     async (request, reply) => {
       const { pageId } = request.params;
-      const entitlement = ENTITLEMENT_STORE.get(pageId) ?? {
-        pageId,
-        isPro: false,
-        plan: 'free',
-        expiresAt: null,
+
+      const cached = ENTITLEMENT_CACHE.get(pageId);
+      if (cached) {
+        return reply.send({
+          success: true,
+          pageId: cached.pageId,
+          isPro: cached.isPro,
+          plan: cached.plan,
+          expiresAt: cached.expiresAt,
+        });
+      }
+
+      if (!isSupabaseConfigured) {
+        return reply.send({
+          success: true,
+          pageId,
+          isPro: false,
+          plan: 'free',
+          expiresAt: null,
+        });
+      }
+
+      // Read directly from Supabase pages table (supports query by UUID id or unique handle)
+      const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(pageId);
+      let query = supabase
+        .from('pages')
+        .select('id, is_pro, pro_expires_at, role, title, handle');
+
+      if (isUuid) {
+        query = query.eq('id', pageId);
+      } else {
+        query = query.eq('handle', pageId);
+      }
+
+      const { data: page, error } = await query.maybeSingle();
+
+      if (error) {
+        return reply.status(500).send({
+          success: false,
+          error: `Database query error: ${error.message}`,
+        });
+      }
+
+      const isProActive = Boolean(
+        page?.is_pro && (!page?.pro_expires_at || new Date(page.pro_expires_at) > new Date())
+      );
+
+      const result: PageEntitlement = {
+        pageId: page?.id || pageId,
+        isPro: isProActive,
+        plan: isProActive ? 'pro' : 'free',
+        expiresAt: page?.pro_expires_at || null,
       };
+
+      if (page) {
+        ENTITLEMENT_CACHE.set(pageId, result);
+      }
 
       return reply.send({
         success: true,
-        pageId: entitlement.pageId,
-        isPro: entitlement.isPro,
-        plan: entitlement.plan,
-        expiresAt: entitlement.expiresAt,
+        pageId: result.pageId,
+        isPro: result.isPro,
+        plan: result.plan,
+        expiresAt: result.expiresAt,
       });
     },
   );
 
   /**
    * GET /api/v1/pages/details/:pageId
+   * Retrieves full page metadata from Supabase pages table.
    */
   app.get<{ Params: { pageId: string } }>(
     '/api/v1/pages/details/:pageId',
     async (request, reply) => {
       const { pageId } = request.params;
-      const page = ENTITLEMENT_STORE.get(pageId);
-      if (!page) {
-        return reply.status(404).send({ success: false, message: 'Page not found' });
+
+      if (!isSupabaseConfigured) {
+        return reply.status(503).send({ success: false, message: 'Database service unavailable' });
       }
+
+      const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(pageId);
+      let query = supabase.from('pages').select('*');
+
+      if (isUuid) {
+        query = query.eq('id', pageId);
+      } else {
+        query = query.eq('handle', pageId);
+      }
+
+      const { data: page, error } = await query.maybeSingle();
+
+      if (error || !page) {
+        return reply.status(404).send({ success: false, message: 'Page not found in database' });
+      }
+
       return reply.send({ success: true, page });
     },
   );
@@ -103,7 +155,7 @@ export const pagesRoutes: FastifyPluginAsync = async (app) => {
 
   /**
    * POST /api/v1/pages/:pageId/pro/verify
-   * Verify payment signature and activate Page Pro entitlement.
+   * Verify payment signature and durably activate Page Pro entitlement in Supabase.
    */
   app.post<{
     Params: { pageId: string };
@@ -150,21 +202,39 @@ export const pagesRoutes: FastifyPluginAsync = async (app) => {
       expiryDate.setDate(expiryDate.getDate() + 30); // 30-day monthly cycle
     }
 
-    const current = ENTITLEMENT_STORE.get(pageId) ?? {
-      pageId,
-      isPro: false,
-      plan: 'free',
-      expiresAt: null,
-    };
+    // Persist entitlement durably into Supabase pages table
+    if (isSupabaseConfigured) {
+      const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(pageId);
+      let updateQuery = supabase
+        .from('pages')
+        .update({
+          is_pro: true,
+          pro_subscription_id: body.razorpay_payment_id || `sub_${Date.now().toString(36)}`,
+          pro_expires_at: expiryDate.toISOString(),
+          updated_at: new Date().toISOString(),
+        });
 
-    const updated: PageEntitlement = {
-      ...current,
+      if (isUuid) {
+        updateQuery = updateQuery.eq('id', pageId);
+      } else {
+        updateQuery = updateQuery.eq('handle', pageId);
+      }
+
+      const { error: dbError } = await updateQuery;
+      if (dbError) {
+        return reply.status(500).send({
+          success: false,
+          message: `Failed to persist Pro entitlement to database: ${dbError.message}`,
+        });
+      }
+    }
+
+    ENTITLEMENT_CACHE.set(pageId, {
+      pageId,
       isPro: true,
       plan: 'pro',
       expiresAt: expiryDate.toISOString(),
-    };
-
-    ENTITLEMENT_STORE.set(pageId, updated);
+    });
 
     return reply.send({
       success: true,
@@ -173,8 +243,10 @@ export const pagesRoutes: FastifyPluginAsync = async (app) => {
         pageId,
         isPro: true,
         plan: 'pro',
-        expiresAt: updated.expiresAt,
+        expiresAt: expiryDate.toISOString(),
       },
     });
   });
 };
+
+
