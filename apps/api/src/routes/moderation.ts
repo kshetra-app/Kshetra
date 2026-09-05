@@ -34,6 +34,45 @@ let MOCK_REPORTS_QUEUE = [
  * Moderation API Routes
  */
 export async function moderationRoutes(app: FastifyInstance) {
+  /**
+   * Helper: Securely resolve authenticated user and their verified role from database.
+   * Eliminates insecure client-supplied role headers (FIX-7 / FIX-3b pattern).
+   */
+  async function resolveModeratorRole(request: any): Promise<{ userId: string; role: UserRole } | null> {
+    let userId: string | null = null;
+    const authHeader = request.headers.authorization;
+
+    if (authHeader && authHeader.startsWith('Bearer ')) {
+      const token = authHeader.replace('Bearer ', '').trim();
+      const { data: { user }, error } = await supabase.auth.getUser(token);
+      if (!error && user) {
+        userId = user.id;
+      }
+    }
+
+    if (!userId && process.env.NODE_ENV !== 'production' && (request.headers['x-user-id'] as string)) {
+      userId = request.headers['x-user-id'] as string;
+    }
+
+    if (!userId) return null;
+
+    if (!isSupabaseConfigured) {
+      // In-memory test fallback: allow dev/test role if provided outside production, default to moderator
+      const testRole = (process.env.NODE_ENV !== 'production' && request.headers['x-test-role'])
+        ? (request.headers['x-test-role'] as UserRole)
+        : 'moderator';
+      return { userId, role: testRole };
+    }
+
+    const { data: profile } = await supabase
+      .from('user_profiles')
+      .select('role')
+      .eq('user_id', userId)
+      .maybeSingle();
+
+    const verifiedRole = (profile?.role as UserRole) || 'citizen';
+    return { userId, role: verifiedRole };
+  }
 
   // Perform moderation action
   app.post<{
@@ -56,11 +95,12 @@ export async function moderationRoutes(app: FastifyInstance) {
       },
     },
   }, async (request, reply) => {
-    const moderatorRole = (request.headers['x-user-role'] as UserRole) || 'moderator';
-    if (!canModerate(moderatorRole)) {
+    const auth = await resolveModeratorRole(request);
+    if (!auth || !canModerate(auth.role)) {
       return reply.status(403).send({ error: 'Insufficient permissions' });
     }
 
+    const moderatorRole = auth.role;
     const payload = request.body;
     if (!canPerformAction(moderatorRole, payload.actionType)) {
       return reply.status(403).send({ error: `Action '${payload.actionType}' requires admin role` });
@@ -142,8 +182,8 @@ export async function moderationRoutes(app: FastifyInstance) {
 
   // Get pending reports queue (moderator+)
   app.get('/api/v1/moderation/queue', async (request, reply) => {
-    const moderatorRole = (request.headers['x-user-role'] as UserRole) || 'moderator';
-    if (!canModerate(moderatorRole)) {
+    const auth = await resolveModeratorRole(request);
+    if (!auth || !canModerate(auth.role)) {
       return reply.status(403).send({ error: 'Insufficient permissions' });
     }
 
@@ -151,7 +191,7 @@ export async function moderationRoutes(app: FastifyInstance) {
       try {
         const { data, error } = await supabase
           .from('reports')
-          .select('*, post:posts(id, content, author_name:author_id), comment:comments(id, content)')
+          .select('*, post:posts(id, content, author_name:author_id), comment:comments(id, content), reported_user:user_profiles!reported_user_id(user_id, display_name, avatar_url, role)')
           .eq('status', 'pending')
           .order('created_at', { ascending: false })
           .limit(50);
@@ -193,8 +233,8 @@ export async function moderationRoutes(app: FastifyInstance) {
   app.get<{
     Querystring: { limit?: number; offset?: number; entityType?: string };
   }>('/api/v1/moderation/audit-log', async (request, reply) => {
-    const role = request.headers['x-user-role'] as UserRole;
-    if (role !== 'admin') {
+    const auth = await resolveModeratorRole(request);
+    if (!auth || auth.role !== 'admin') {
       return reply.status(403).send({ error: 'Admin access required' });
     }
 

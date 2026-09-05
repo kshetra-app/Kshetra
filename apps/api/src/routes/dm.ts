@@ -479,15 +479,16 @@ export const dmRoutes: FastifyPluginAsync = async (app) => {
         .from('blocked_users')
         .upsert({ blocker_id: auth.userId, blocked_id: targetUserId }, { onConflict: 'blocker_id,blocked_id' });
 
-      // 2. Feed into Phase 1 moderation queue
+      // 2. Feed into Phase 1 moderation queue as pending report awaiting human review
       await supabase
-        .from('moderation_actions')
+        .from('reports')
         .insert({
-          moderator_id: auth.userId,
-          target_user_id: targetUserId,
-          action_type: 'warn',
-          reason: `[DM Report] ${reason}${description ? `: ${description}` : ''}`,
-          notes: conversationId ? `Reported from conversation ${conversationId}` : 'Reported from DM',
+          reporter_id: auth.userId,
+          reported_user_id: targetUserId,
+          conversation_id: conversationId ?? null,
+          reason,
+          description: description ?? null,
+          status: 'pending',
         });
 
       // 3. Mark conversation declined if conversationId provided

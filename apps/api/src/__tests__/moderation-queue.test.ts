@@ -19,7 +19,8 @@ describe('Phase 1: Ticket 1.3 - Moderation Queue & Action Routes', () => {
       method: 'GET',
       url: '/api/v1/moderation/queue',
       headers: {
-        'x-user-role': 'citizen',
+        'x-user-id': 'test-citizen-1',
+        'x-test-role': 'citizen',
       },
     });
 
@@ -33,7 +34,8 @@ describe('Phase 1: Ticket 1.3 - Moderation Queue & Action Routes', () => {
       method: 'GET',
       url: '/api/v1/moderation/queue',
       headers: {
-        'x-user-role': 'moderator',
+        'x-user-id': 'test-mod-1',
+        'x-test-role': 'moderator',
       },
     });
 
@@ -48,7 +50,8 @@ describe('Phase 1: Ticket 1.3 - Moderation Queue & Action Routes', () => {
       method: 'POST',
       url: '/api/v1/moderation/action',
       headers: {
-        'x-user-role': 'moderator',
+        'x-user-id': 'mod-test-1',
+        'x-test-role': 'moderator',
       },
       payload: {
         moderatorId: 'mod-test-1',

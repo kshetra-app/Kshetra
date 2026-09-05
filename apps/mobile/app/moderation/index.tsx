@@ -13,6 +13,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useUserProfileStore } from '../../stores/userProfile';
+import { useAuthStore } from '../../stores/auth';
 import { useTheme } from '../../lib/theme';
 import { useFeedStore } from '../../stores/feed';
 
@@ -21,6 +22,8 @@ interface ReportItem {
   reporter_id: string;
   post_id?: string | null;
   comment_id?: string | null;
+  reported_user_id?: string | null;
+  conversation_id?: string | null;
   reason: string;
   description?: string | null;
   status: string;
@@ -34,6 +37,12 @@ interface ReportItem {
     id: string;
     content: string;
   };
+  reported_user?: {
+    user_id?: string;
+    display_name?: string;
+    avatar_url?: string | null;
+    role?: string;
+  };
 }
 
 export default function GeneralModerationQueueScreen() {
@@ -41,6 +50,8 @@ export default function GeneralModerationQueueScreen() {
   const router = useRouter();
   const { colors } = useTheme();
   const userProfile = useUserProfileStore((s) => s.profile);
+  const authSession = useAuthStore((s) => s.session);
+  const authUser = useAuthStore((s) => s.user);
   const deletePostLocally = useFeedStore((s) => s.deletePost);
 
   const role = userProfile?.role ?? 'citizen';
@@ -51,13 +62,23 @@ export default function GeneralModerationQueueScreen() {
   const [reports, setReports] = useState<ReportItem[]>([]);
   const [actionInProgress, setActionInProgress] = useState<string | null>(null);
 
+  const getAuthHeaders = () => {
+    const headers: Record<string, string> = {};
+    if (authSession?.access_token) {
+      headers['Authorization'] = `Bearer ${authSession.access_token}`;
+    }
+    const currentId = authUser?.id || userProfile?.id;
+    if (currentId) {
+      headers['x-user-id'] = currentId;
+    }
+    return headers;
+  };
+
   const loadQueue = async () => {
     try {
       const apiUrl = process.env.EXPO_PUBLIC_API_URL || 'https://kshetra-api-production-9f06.up.railway.app';
       const res = await fetch(`${apiUrl}/api/v1/moderation/queue`, {
-        headers: {
-          'x-user-role': role,
-        },
+        headers: getAuthHeaders(),
       });
       const data = await res.json();
       if (data && data.data?.queue) {
@@ -87,11 +108,12 @@ export default function GeneralModerationQueueScreen() {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'x-user-role': role,
+          ...getAuthHeaders(),
         },
         body: JSON.stringify({
-          moderatorId: userProfile?.id || 'mod-admin',
+          moderatorId: authUser?.id || userProfile?.id || 'mod-admin',
           reportId: report.id,
+          targetUserId: report.reported_user_id || undefined,
           targetPostId: report.post_id || undefined,
           targetCommentId: report.comment_id || undefined,
           actionType,
@@ -199,26 +221,62 @@ export default function GeneralModerationQueueScreen() {
                   </Text>
                 )}
 
-                {/* Target Content Snippet */}
-                <View style={[styles.snippetContainer, { backgroundColor: colors.background, borderColor: colors.border }]}>
-                  <Text style={{ fontSize: 11, fontWeight: '700', color: colors.primary, marginBottom: 4 }}>
-                    REPORTED {report.post_id ? 'POST' : 'COMMENT'}:
-                  </Text>
-                  <Text style={{ fontSize: 13, color: colors.text }} numberOfLines={4}>
-                    {report.post?.content || report.comment?.content || 'Content preview not available or already archived.'}
-                  </Text>
-                </View>
+                {/* Target Content Snippet: Post / Comment vs. DM User / Conversation */}
+                {report.reported_user_id ? (
+                  <View style={[styles.snippetContainer, { backgroundColor: colors.background, borderColor: colors.border }]}>
+                    <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 6 }}>
+                      <Text style={{ fontSize: 11, fontWeight: '700', color: colors.primary }}>
+                        REPORTED USER / DIRECT MESSAGE:
+                      </Text>
+                      {report.reported_user?.role && (
+                        <View style={[styles.roleTag, { backgroundColor: colors.border }]}>
+                          <Text style={{ fontSize: 10, color: colors.textSecondary, textTransform: 'capitalize' }}>
+                            {report.reported_user.role}
+                          </Text>
+                        </View>
+                      )}
+                    </View>
+
+                    <Text style={{ fontSize: 14, fontWeight: '600', color: colors.text }}>
+                      {report.reported_user?.display_name || `User ID: ${report.reported_user_id.slice(0, 8)}...`}
+                    </Text>
+
+                    {report.conversation_id && (
+                      <Pressable
+                        style={[styles.convLinkBtn, { borderColor: colors.primary, marginTop: 8 }]}
+                        onPress={() => router.push(`/messages/${report.conversation_id}` as any)}
+                      >
+                        <Ionicons name="chatbubbles-outline" size={14} color={colors.primary} />
+                        <Text style={{ color: colors.primary, fontSize: 12, fontWeight: '600' }}>
+                          Review Direct Message Thread
+                        </Text>
+                        <Ionicons name="open-outline" size={12} color={colors.primary} />
+                      </Pressable>
+                    )}
+                  </View>
+                ) : (
+                  <View style={[styles.snippetContainer, { backgroundColor: colors.background, borderColor: colors.border }]}>
+                    <Text style={{ fontSize: 11, fontWeight: '700', color: colors.primary, marginBottom: 4 }}>
+                      REPORTED {report.post_id ? 'POST' : 'COMMENT'}:
+                    </Text>
+                    <Text style={{ fontSize: 13, color: colors.text }} numberOfLines={4}>
+                      {report.post?.content || report.comment?.content || 'Content preview not available or already archived.'}
+                    </Text>
+                  </View>
+                )}
 
                 {/* Action Buttons */}
                 <View style={{ flexDirection: 'row', gap: 8, marginTop: 14, flexWrap: 'wrap' }}>
-                  <Pressable
-                    style={[styles.actionBtn, { backgroundColor: '#EF4444' }]}
-                    onPress={() => handleAction(report, 'delete_content')}
-                    disabled={isActing}
-                  >
-                    <Ionicons name="trash-outline" size={14} color="#fff" />
-                    <Text style={styles.actionBtnText}>Remove Content</Text>
-                  </Pressable>
+                  {!report.reported_user_id && (
+                    <Pressable
+                      style={[styles.actionBtn, { backgroundColor: '#EF4444' }]}
+                      onPress={() => handleAction(report, 'delete_content')}
+                      disabled={isActing}
+                    >
+                      <Ionicons name="trash-outline" size={14} color="#fff" />
+                      <Text style={styles.actionBtnText}>Remove Content</Text>
+                    </Pressable>
+                  )}
 
                   <Pressable
                     style={[styles.actionBtn, { backgroundColor: '#F59E0B' }]}
@@ -308,5 +366,20 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
     paddingVertical: 10,
     borderRadius: 8,
+  },
+  roleTag: {
+    paddingHorizontal: 6,
+    paddingVertical: 2,
+    borderRadius: 4,
+  },
+  convLinkBtn: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+    paddingVertical: 6,
+    paddingHorizontal: 10,
+    borderRadius: 6,
+    borderWidth: 1,
+    alignSelf: 'flex-start',
   },
 });
