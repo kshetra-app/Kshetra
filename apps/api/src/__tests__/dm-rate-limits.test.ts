@@ -119,5 +119,20 @@ describe('TICKET 3.5 & 3.2: Direct Message Tiered Rate Limiting & Anti-Abuse', (
       expect(body.blocked).toBe(true);
       expect(body.reported).toBe(true);
     });
+
+    it('returns unread count for authenticated user via GET /api/v1/dm/unread-count', async () => {
+      const res = await app.inject({
+        method: 'GET',
+        url: '/api/v1/dm/unread-count',
+        headers: {
+          'x-user-id': '00000000-0000-0000-0000-000000000001',
+        },
+      });
+
+      expect(res.statusCode).toBe(200);
+      const body = JSON.parse(res.payload);
+      expect(body.success).toBe(true);
+      expect(typeof body.count).toBe('number');
+    });
   });
 });

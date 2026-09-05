@@ -8,6 +8,8 @@ import {
   acceptDMRequest,
   declineDMRequest,
   blockAndReportDMUser,
+  markConversationMessagesRead,
+  fetchDMUnreadCount,
 } from '../lib/supabaseDataService';
 
 interface DMState {
@@ -16,9 +18,11 @@ interface DMState {
   activeMessages: Record<string, DMMessageItem[]>;
   loading: boolean;
   activeConversationId: string | null;
+  unreadCount: number;
 
   loadInbox: (userId: string) => Promise<void>;
-  loadThread: (conversationId: string) => Promise<void>;
+  loadThread: (conversationId: string, currentUserId?: string) => Promise<void>;
+  refreshUnreadCount: (userId: string, token?: string | null) => Promise<void>;
   sendMessage: (
     conversationId: string,
     senderId: string,
@@ -48,6 +52,17 @@ export const useDMStore = create<DMState>((set, get) => ({
   activeMessages: {},
   loading: false,
   activeConversationId: null,
+  unreadCount: 0,
+
+  refreshUnreadCount: async (userId: string, token?: string | null) => {
+    if (!userId) return;
+    try {
+      const count = await fetchDMUnreadCount(userId, token);
+      set({ unreadCount: count });
+    } catch {
+      // Ignore count fetch errors
+    }
+  },
 
   loadInbox: async (userId: string) => {
     set({ loading: true });
@@ -56,12 +71,13 @@ export const useDMStore = create<DMState>((set, get) => ({
       const chats = all.filter((c) => c.status === 'accepted');
       const requests = all.filter((c) => c.status === 'pending');
       set({ chats, requests, loading: false });
+      await get().refreshUnreadCount(userId);
     } catch {
       set({ loading: false });
     }
   },
 
-  loadThread: async (conversationId: string) => {
+  loadThread: async (conversationId: string, currentUserId?: string) => {
     set({ activeConversationId: conversationId });
     try {
       const messages = await fetchConversationMessages(conversationId);
@@ -71,6 +87,12 @@ export const useDMStore = create<DMState>((set, get) => ({
           [conversationId]: messages,
         },
       }));
+
+      // If user opened the thread, mark incoming messages as read and decrement/refresh badge
+      if (currentUserId) {
+        await markConversationMessagesRead(conversationId, currentUserId);
+        await get().refreshUnreadCount(currentUserId);
+      }
     } catch (e) {
       console.warn('[DM] Failed to load thread:', e);
     }

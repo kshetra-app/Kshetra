@@ -17,7 +17,7 @@ import { useFeedStore } from '../stores/feed';
 import { usePromiseStore } from '../stores/promises';
 import { searchMPs } from './data';
 
-export type SearchResultType = 'constituency' | 'issue' | 'post' | 'promise' | 'mla' | 'mp';
+export type SearchResultType = 'constituency' | 'issue' | 'post' | 'promise' | 'mla' | 'mp' | 'person';
 
 export interface SearchResult {
   id: string;

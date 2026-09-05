@@ -15,6 +15,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useTheme } from '../../lib/theme';
 import { useFeedStore } from '../../stores/feed';
 import { useAuthStore } from '../../stores/auth';
+import { useDMStore } from '../../stores/dmStore';
 import { fetchUserProfile, fetchPostsByAuthor } from '../../lib/supabaseDataService';
 import { ROLE_CONFIG, type UserRole } from '../../lib/moderationTypes';
 import PostCard from '../../components/PostCard';
@@ -195,30 +196,61 @@ export default function UserProfileScreen() {
               </Text>
             )}
 
-            {/* Follow / Unfollow Button */}
+            {/* Action Buttons: Follow + Direct Message */}
             {!isSelf && (
-              <Pressable
-                style={[
-                  styles.followBtn,
-                  isFollowing ? styles.followingBtn : { backgroundColor: colors.primary },
-                ]}
-                onPress={handleToggleFollow}
-                disabled={followLoading}
-              >
-                <Ionicons
-                  name={isFollowing ? 'checkmark' : 'person-add'}
-                  size={16}
-                  color={isFollowing ? colors.text : '#fff'}
-                />
-                <Text
+              <View style={{ flexDirection: 'row', gap: 10, marginTop: 14 }}>
+                <Pressable
                   style={[
-                    styles.followBtnText,
-                    { color: isFollowing ? colors.text : '#fff' },
+                    styles.followBtn,
+                    { flex: 1, marginTop: 0 },
+                    isFollowing ? styles.followingBtn : { backgroundColor: colors.primary },
                   ]}
+                  onPress={handleToggleFollow}
+                  disabled={followLoading}
                 >
-                  {isFollowing ? 'Following' : 'Follow'}
-                </Text>
-              </Pressable>
+                  <Ionicons
+                    name={isFollowing ? 'checkmark' : 'person-add'}
+                    size={16}
+                    color={isFollowing ? colors.text : '#fff'}
+                  />
+                  <Text
+                    style={[
+                      styles.followBtnText,
+                      { color: isFollowing ? colors.text : '#fff' },
+                    ]}
+                  >
+                    {isFollowing ? 'Following' : 'Follow'}
+                  </Text>
+                </Pressable>
+
+                <Pressable
+                  style={[
+                    styles.followBtn,
+                    { flex: 1, marginTop: 0, backgroundColor: colors.surface, borderWidth: 1, borderColor: colors.primary },
+                  ]}
+                  onPress={async () => {
+                    const convId = await useDMStore.getState().startConversationWithUser(
+                      currentUserId || 'anon',
+                      {
+                        id: userId ?? '',
+                        displayName: userProfile?.display_name || 'Kshetra Citizen',
+                        role: userProfile?.role,
+                        isVerified,
+                      },
+                    );
+                    if (convId) {
+                      router.push(`/messages/${convId}` as any);
+                    } else {
+                      router.push('/messages' as any);
+                    }
+                  }}
+                >
+                  <Ionicons name="chatbubble-outline" size={16} color={colors.primary} />
+                  <Text style={[styles.followBtnText, { color: colors.primary }]}>
+                    Message
+                  </Text>
+                </Pressable>
+              </View>
             )}
           </View>
 

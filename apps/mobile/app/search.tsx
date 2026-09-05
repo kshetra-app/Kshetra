@@ -20,11 +20,13 @@ import MPCard from '../components/MPCard';
 import { getMLAProfileForState } from '../lib/stateDataDispatcher';
 import { getMPById } from '../lib/data';
 import { useTheme } from '../lib/theme';
+import { searchVerifiedProfiles } from '../lib/supabaseDataService';
 
 const TYPE_CONFIG: Record<SearchResultType, { icon: string; color: string; label: string }> = {
   constituency: { icon: 'location', color: '#A8201A', label: 'Constituency' },
   mla: { icon: 'person', color: '#145C68', label: 'MLA' },
   mp: { icon: 'business', color: '#C5A059', label: 'MP' },
+  person: { icon: 'person-circle', color: '#2563EB', label: 'Leader / Page' },
   issue: { icon: 'megaphone', color: '#D3453E', label: 'Issue' },
   post: { icon: 'chatbubble', color: '#C5A059', label: 'Post' },
   promise: { icon: 'checkmark-done', color: '#C5A059', label: 'Promise' },
@@ -35,6 +37,7 @@ export default function GlobalSearchScreen() {
   const { t } = useTranslation();
   const { colors } = useTheme();
   const [query, setQuery] = useState('');
+  const [personResults, setPersonResults] = useState<SearchResult[]>([]);
   const inputRef = useRef<TextInput>(null);
   const recents = useRecentsStore((s) => s.recents);
   const clearRecents = useRecentsStore((s) => s.clearRecents);
@@ -44,7 +47,36 @@ export default function GlobalSearchScreen() {
     return () => clearTimeout(timer);
   }, []);
 
-  const results = useMemo(() => globalSearch(query), [query]);
+  // Async query for verified people / pages from user_profiles (FIX-10)
+  useEffect(() => {
+    let active = true;
+    if (query.trim().length >= 2) {
+      searchVerifiedProfiles(query).then((profiles) => {
+        if (!active) return;
+        const mapped: SearchResult[] = profiles.map((p) => ({
+          id: `person-${p.user_id}`,
+          type: 'person',
+          title: p.display_name,
+          subtitle: `${p.role.toUpperCase()} · Verified${p.state_code ? ` · ${p.state_code}` : ''}`,
+          route: `/user/${p.user_id}`,
+          score: 88,
+          meta: { status: 'verified' },
+        }));
+        setPersonResults(mapped);
+      });
+    } else {
+      setPersonResults([]);
+    }
+    return () => {
+      active = false;
+    };
+  }, [query]);
+
+  const localResults = useMemo(() => globalSearch(query), [query]);
+  const results = useMemo(() => {
+    if (personResults.length === 0) return localResults;
+    return [...personResults, ...localResults].sort((a, b) => b.score - a.score);
+  }, [personResults, localResults]);
   const suggestions = useMemo(() => getSearchSuggestions(), []);
 
   const handleSelect = useCallback((item: SearchResult) => {

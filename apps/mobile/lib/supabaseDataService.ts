@@ -1825,4 +1825,62 @@ export async function blockAndReportDMUser(
   }
 }
 
+export async function markConversationMessagesRead(conversationId: string, userId: string): Promise<boolean> {
+  if (!guard()) return false;
+  try {
+    const { error } = await supabase
+      .from('messages')
+      .update({ read_at: new Date().toISOString() })
+      .eq('conversation_id', conversationId)
+      .neq('sender_id', userId)
+      .is('read_at', null);
+
+    if (error) throw error;
+    return true;
+  } catch (err) {
+    captureException(err as Error, { op: 'mark_messages_read', conversationId });
+    return false;
+  }
+}
+
+export async function fetchDMUnreadCount(userId: string, token?: string | null): Promise<number> {
+  if (!guard()) return 0;
+  try {
+    const apiUrl = process.env.EXPO_PUBLIC_API_URL || 'https://kshetra-api-production-9f06.up.railway.app';
+    const headers: Record<string, string> = { 'x-user-id': userId };
+    if (token) {
+      headers['Authorization'] = `Bearer ${token}`;
+    }
+    const res = await fetch(`${apiUrl}/api/v1/dm/unread-count`, { headers });
+    if (res.ok) {
+      const data = await res.json();
+      return typeof data.count === 'number' ? data.count : 0;
+    }
+    return 0;
+  } catch (err) {
+    captureException(err as Error, { op: 'fetch_dm_unread_count', userId });
+    return 0;
+  }
+}
+
+export async function searchVerifiedProfiles(query: string, limit = 10): Promise<any[]> {
+  if (!guard() || !query || query.trim().length < 2) return [];
+  try {
+    const q = query.trim();
+    const { data, error } = await supabase
+      .from('user_profiles')
+      .select('user_id, display_name, role, verification_status, avatar_url, constituency_id, state_code')
+      .in('role', ['politician', 'aspirant', 'party', 'journalist'])
+      .eq('verification_status', 'verified')
+      .ilike('display_name', `%${q}%`)
+      .limit(limit);
+
+    if (error) throw error;
+    return data || [];
+  } catch (err) {
+    captureException(err as Error, { op: 'search_verified_profiles', query });
+    return [];
+  }
+}
+
 

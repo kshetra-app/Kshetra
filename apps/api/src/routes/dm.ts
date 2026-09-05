@@ -130,6 +130,53 @@ export const dmRoutes: FastifyPluginAsync = async (app) => {
   }
 
   /**
+   * GET /api/v1/dm/unread-count
+   * Returns count of unread messages where user is recipient in 'accepted' conversations
+   * (Pending requests do NOT increment this badge)
+   */
+  app.get('/api/v1/dm/unread-count', async (request, reply) => {
+    const auth = await resolveAuthUser(request);
+    if (!auth) {
+      return reply.status(401).send({ error: 'Authentication required' });
+    }
+
+    if (!isSupabaseConfigured) {
+      return reply.send({ success: true, count: 0 });
+    }
+
+    try {
+      // 1. Fetch IDs of accepted conversations for this user
+      const { data: convs, error: convError } = await supabase
+        .from('conversations')
+        .select('id')
+        .eq('status', 'accepted')
+        .or(`participant_one.eq.${auth.userId},participant_two.eq.${auth.userId}`);
+
+      if (convError) throw convError;
+      if (!convs || convs.length === 0) {
+        return reply.send({ success: true, count: 0 });
+      }
+
+      const convIds = convs.map((c) => c.id);
+
+      // 2. Count messages in these conversations where sender != auth.userId and read_at is null
+      const { count, error: countError } = await supabase
+        .from('messages')
+        .select('id', { count: 'exact', head: true })
+        .in('conversation_id', convIds)
+        .neq('sender_id', auth.userId)
+        .is('read_at', null);
+
+      if (countError) throw countError;
+
+      return reply.send({ success: true, count: count ?? 0 });
+    } catch (err: any) {
+      app.log.warn({ err: err.message }, 'Failed to compute DM unread count');
+      return reply.send({ success: true, count: 0 });
+    }
+  });
+
+  /**
    * POST /api/v1/dm/conversations
    * Start or retrieve a direct conversation between two users
    */

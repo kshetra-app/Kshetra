@@ -62,9 +62,9 @@ export default function ConversationThreadScreen() {
 
   useEffect(() => {
     if (conversationId) {
-      loadThread(conversationId);
+      loadThread(conversationId, currentUserId);
     }
-  }, [conversationId, loadThread]);
+  }, [conversationId, currentUserId, loadThread]);
 
   const handleSend = async () => {
     if (!inputContent.trim() || !conversationId) return;
