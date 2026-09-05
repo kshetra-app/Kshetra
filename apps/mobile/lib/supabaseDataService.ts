@@ -680,6 +680,19 @@ export async function updateUserProfile(userId: string, updates: {
   }
 }
 
+export async function updateMyProfile(userId: string, updates: { displayName?: string; bio?: string }): Promise<void> {
+  if (!guard()) return;
+  const { error } = await supabase
+    .from('user_profiles')
+    .update({
+      display_name: updates.displayName,
+      bio: updates.bio,
+    })
+    .eq('user_id', userId);
+
+  if (error) throw error;
+}
+
 // ─── Aspirant / Leadership Academy ───────────────────────────────────
 
 export async function registerAspirant(userId: string, profile: {

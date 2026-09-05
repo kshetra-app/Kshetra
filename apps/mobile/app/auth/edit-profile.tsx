@@ -14,6 +14,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import { useUserProfileStore } from '../../stores/userProfile';
 import { useAuthStore } from '../../stores/auth';
+import { updateMyProfile } from '../../lib/supabaseDataService';
 import { useTheme } from '../../lib/theme';
 
 const INTEREST_OPTIONS = [
@@ -26,11 +27,13 @@ export default function EditProfileScreen() {
   const profile = useUserProfileStore((s) => s.profile);
   const updateProfile = useUserProfileStore((s) => s.updateProfile);
   const user = useAuthStore((s) => s.user);
+  const authUser = user;
   const signOut = useAuthStore((s) => s.signOut);
 
   const [displayName, setDisplayName] = useState(profile?.displayName ?? '');
   const [bio, setBio] = useState(profile?.bio ?? '');
   const [interests, setInterests] = useState<string[]>(profile?.interests ?? []);
+  const [isSaving, setIsSaving] = useState(false);
 
   const toggleInterest = useCallback((key: string) => {
     setInterests((prev) =>
@@ -38,14 +41,29 @@ export default function EditProfileScreen() {
     );
   }, []);
 
-  const handleSave = useCallback(() => {
-    updateProfile({
-      displayName: displayName.trim() || 'Kshetra User',
-      bio: bio.trim(),
-      interests,
-    });
-    router.back();
-  }, [displayName, bio, interests, updateProfile, router]);
+  const handleSave = useCallback(async () => {
+    if (!displayName.trim()) {
+      Alert.alert('Required', 'Please enter a display name');
+      return;
+    }
+    setIsSaving(true);
+    try {
+      if (authUser?.id) {
+        await updateMyProfile(authUser.id, { displayName: displayName.trim(), bio: bio.trim() });
+      }
+      updateProfile({
+        displayName: displayName.trim(),
+        bio: bio.trim(),
+        role: profile?.role ?? 'citizen',
+        interests,
+      }); // keep local store in sync for instant UI reflect
+      router.back();
+    } catch (err) {
+      Alert.alert('Could not save', 'Something went wrong. Please try again.');
+    } finally {
+      setIsSaving(false);
+    }
+  }, [displayName, bio, profile?.role, interests, updateProfile, router, authUser]);
 
   const handleSignOut = useCallback(async () => {
     Alert.alert('Sign Out', 'Are you sure?', [
@@ -70,8 +88,12 @@ export default function EditProfileScreen() {
           <Ionicons name="arrow-back" size={22} color={colors.primary} />
         </Pressable>
         <Text style={[styles.headerTitle, { color: colors.text }]}>Edit Profile</Text>
-        <Pressable onPress={handleSave} style={[styles.saveBtn, { backgroundColor: colors.primary }]}>
-          <Text style={styles.saveBtnText}>Save</Text>
+        <Pressable
+          onPress={handleSave}
+          disabled={isSaving}
+          style={[styles.saveBtn, { backgroundColor: colors.primary, opacity: isSaving ? 0.6 : 1 }]}
+        >
+          <Text style={styles.saveBtnText}>{isSaving ? 'Saving...' : 'Save'}</Text>
         </Pressable>
       </View>
 

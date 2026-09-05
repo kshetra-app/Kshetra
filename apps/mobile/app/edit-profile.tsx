@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useCallback } from 'react';
 import {
   View,
   Text,
@@ -12,6 +12,8 @@ import {
 import { Stack, useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { useUserProfileStore } from '../stores/userProfile';
+import { useAuthStore } from '../stores/auth';
+import { updateMyProfile } from '../lib/supabaseDataService';
 import { ROLE_CONFIG, type UserRole } from '../lib/moderationTypes';
 import { useTheme } from '../lib/theme';
 
@@ -42,11 +44,13 @@ export default function EditProfileScreen() {
   const { colors } = useTheme();
   const profile = useUserProfileStore((s) => s.profile);
   const updateProfile = useUserProfileStore((s) => s.updateProfile);
+  const authUser = useAuthStore((s) => s.user);
 
   const [displayName, setDisplayName] = useState(profile?.displayName ?? '');
   const [bio, setBio] = useState(profile?.bio ?? '');
   const [role, setRole] = useState<UserRole>(profile?.role ?? 'citizen');
   const [interests, setInterests] = useState<string[]>(profile?.interests ?? []);
+  const [isSaving, setIsSaving] = useState(false);
 
   const toggleInterest = (interest: string) => {
     setInterests((prev) =>
@@ -54,21 +58,24 @@ export default function EditProfileScreen() {
     );
   };
 
-  const handleSave = () => {
+  const handleSave = useCallback(async () => {
     if (!displayName.trim()) {
       Alert.alert('Required', 'Please enter a display name');
       return;
     }
-
-    updateProfile({
-      displayName: displayName.trim(),
-      bio: bio.trim(),
-      role,
-      interests,
-    });
-
-    router.back();
-  };
+    setIsSaving(true);
+    try {
+      if (authUser?.id) {
+        await updateMyProfile(authUser.id, { displayName: displayName.trim(), bio: bio.trim() });
+      }
+      updateProfile({ displayName: displayName.trim(), bio: bio.trim(), role, interests }); // keep local store in sync for instant UI reflect
+      router.back();
+    } catch (err) {
+      Alert.alert('Could not save', 'Something went wrong. Please try again.');
+    } finally {
+      setIsSaving(false);
+    }
+  }, [displayName, bio, role, interests, updateProfile, router, authUser]);
 
   return (
     <View style={[styles.container, { backgroundColor: colors.background }]}>
@@ -79,8 +86,10 @@ export default function EditProfileScreen() {
           headerStyle: { backgroundColor: colors.surface },
           headerTintColor: colors.primary,
           headerRight: () => (
-            <Pressable onPress={handleSave} hitSlop={8}>
-              <Text style={[styles.saveButton, { color: colors.primary }]}>Save</Text>
+            <Pressable onPress={handleSave} hitSlop={8} disabled={isSaving} style={{ opacity: isSaving ? 0.5 : 1 }}>
+              <Text style={[styles.saveButton, { color: colors.primary }]}>
+                {isSaving ? 'Saving...' : 'Save'}
+              </Text>
             </Pressable>
           ),
         }}
