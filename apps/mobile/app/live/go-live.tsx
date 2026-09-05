@@ -263,7 +263,7 @@ export default function GoLiveScreen() {
             </Pressable>
           ) : (
             <Pressable
-              onPress={() => router.push('/become-aspirant' as any)}
+              onPress={() => router.push('/pages?tab=my_page' as any)}
               style={{ backgroundColor: colors.primary, paddingVertical: 12, paddingHorizontal: 28, borderRadius: 24, marginBottom: 12 }}
             >
               <Text style={{ color: '#FFFFFF', fontWeight: '700', fontSize: 15 }}>Apply as Aspirant / Leader</Text>

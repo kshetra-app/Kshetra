@@ -2233,6 +2233,10 @@ const en =  {
     "createProfile": "Create my Aspirant profile",
     "welcomeTitle": "Welcome, Aspirant!",
     "welcomeMsg": "Your civic profile is live. Complete modules and challenges to grow your Civic Score.",
+    "successTitle": "Welcome, Aspirant!",
+    "successMsg": "Your civic profile is live. Complete modules and challenges to grow your Civic Score.",
+    "errorTitle": "Could not create profile",
+    "errorMsg": "Something went wrong. Please try again.",
     "letsGo": "Let’s go",
     "disclaimer": "This profile is for civic engagement on Kshetra and is not a nomination or registration with the Election Commission of India. Filing an actual nomination follows the legal process covered in the Leadership Academy."
   },

@@ -15,6 +15,7 @@ import {
   KeyboardAvoidingView,
   Platform,
   Alert,
+  ActivityIndicator,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -55,8 +56,9 @@ export default function RegisterAspirantModal({ visible, onClose }: RegisterAspi
   const [isIndependent, setIsIndependent] = useState(true);
   const [party, setParty] = useState('');
   const [isPublic, setIsPublic] = useState(true);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const handleSubmit = useCallback(() => {
+  const handleSubmit = useCallback(async () => {
     if (!displayName.trim()) {
       Alert.alert(t('aspirantReg.nameRequired'), t('aspirantReg.nameRequiredMsg'));
       return;
@@ -70,25 +72,36 @@ export default function RegisterAspirantModal({ visible, onClose }: RegisterAspi
       return;
     }
 
-    registerAsAspirant({
-      userId: kycRecord?.userId ?? `me-${Date.now()}`,
-      displayName: displayName.trim(),
-      bio: bio.trim(),
-      stateCode,
-      targetConstituencyAcNo: myHome?.acNo,
-      targetConstituencyName: constituency.trim() || undefined,
-      targetElectionYear: year,
-      isIndependent,
-      partyAffiliation: isIndependent ? undefined : party.trim(),
-      isPublic,
-    });
+    setIsSubmitting(true);
+    try {
+      await registerAsAspirant({
+        userId: kycRecord?.userId ?? `me-${Date.now()}`,
+        displayName: displayName.trim(),
+        bio: bio.trim(),
+        stateCode,
+        targetConstituencyAcNo: myHome?.acNo,
+        targetConstituencyName: constituency.trim() || undefined,
+        targetElectionYear: year,
+        isIndependent,
+        partyAffiliation: isIndependent ? undefined : party.trim(),
+        isPublic,
+      });
 
-    Alert.alert(
-      t('aspirantReg.welcomeTitle'),
-      t('aspirantReg.welcomeMsg'),
-      [{ text: t('aspirantReg.letsGo'), onPress: onClose }],
-    );
-  }, [displayName, bio, isIndependent, party, registerAsAspirant, kycRecord, stateCode, myHome, constituency, year, isPublic, onClose]);
+      Alert.alert(
+        t('aspirantReg.successTitle', { defaultValue: t('aspirantReg.welcomeTitle') }),
+        t('aspirantReg.successMsg', { defaultValue: t('aspirantReg.welcomeMsg') }),
+        [{ text: t('aspirantReg.letsGo'), onPress: onClose }],
+      );
+    } catch (err) {
+      Alert.alert(
+        t('aspirantReg.errorTitle', { defaultValue: 'Could not create profile' }),
+        t('aspirantReg.errorMsg', { defaultValue: 'Something went wrong. Please try again.' }),
+      );
+      // do not call onClose — let the user retry with the form still open
+    } finally {
+      setIsSubmitting(false);
+    }
+  }, [displayName, bio, isIndependent, party, registerAsAspirant, kycRecord, stateCode, myHome, constituency, year, isPublic, onClose, t]);
 
   return (
     <Modal visible={visible} animationType="slide" presentationStyle="pageSheet" onRequestClose={onClose}>
@@ -204,9 +217,19 @@ export default function RegisterAspirantModal({ visible, onClose }: RegisterAspi
           </Pressable>
 
           {/* Submit */}
-          <Pressable style={styles.submit} onPress={handleSubmit}>
-            <Ionicons name="rocket" size={18} color="#FFFFFF" />
-            <Text style={styles.submitText}>{t('aspirantReg.createProfile')}</Text>
+          <Pressable
+            style={[styles.submit, isSubmitting && styles.submitDisabled]}
+            onPress={handleSubmit}
+            disabled={isSubmitting}
+          >
+            {isSubmitting ? (
+              <ActivityIndicator color="#FFFFFF" size="small" />
+            ) : (
+              <>
+                <Ionicons name="rocket" size={18} color="#FFFFFF" />
+                <Text style={styles.submitText}>{t('aspirantReg.createProfile')}</Text>
+              </>
+            )}
           </Pressable>
 
           <Text style={styles.disclaimer}>
@@ -300,6 +323,9 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     paddingVertical: 15,
     marginTop: 26,
+  },
+  submitDisabled: {
+    opacity: 0.6,
   },
   submitText: { fontSize: 15, fontWeight: '800', color: '#241814' },
   disclaimer: { fontSize: 11, color: '#4B5563', lineHeight: 17, marginTop: 16, fontStyle: 'italic' },

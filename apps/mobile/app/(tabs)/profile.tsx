@@ -298,7 +298,7 @@ export default function ProfileScreen() {
           <SettingRow
             icon="rocket"
             label={t('profileExtended.becomeAspirant')}
-            onPress={() => router.push('/become-aspirant' as any)}
+            onPress={() => router.push('/pages?tab=my_page' as any)}
             color="#06B6D4"
           />
         </View>

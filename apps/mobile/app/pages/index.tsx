@@ -6,9 +6,10 @@ import {
   ScrollView,
   Pressable,
   RefreshControl,
+  Share,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { Stack, useRouter } from 'expo-router';
+import { Stack, useRouter, useLocalSearchParams } from 'expo-router';
 import { useTranslation } from 'react-i18next';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useTheme } from '../../lib/theme';
@@ -28,8 +29,14 @@ export default function PagesScreen() {
   const { colors } = useTheme();
   const router = useRouter();
   const insets = useSafeAreaInsets();
+  const { tab } = useLocalSearchParams<{ tab?: string }>();
 
-  const [activeTab, setActiveTab] = useState<PageTab>('aspirants');
+  const [activeTab, setActiveTab] = useState<PageTab>(() => {
+    if (tab === 'my_page' || tab === 'aspirants' || tab === 'politicians') {
+      return tab;
+    }
+    return 'aspirants';
+  });
   const [refreshing, setRefreshing] = useState(false);
   const [registerVisible, setRegisterVisible] = useState(false);
   const [verifiedPoliticians, setVerifiedPoliticians] = useState<any[]>([]);
@@ -59,6 +66,12 @@ export default function PagesScreen() {
     loadPoliticians();
   }, [hydrateAspirants, loadPoliticians]);
 
+  useEffect(() => {
+    if (tab === 'my_page' || tab === 'aspirants' || tab === 'politicians') {
+      setActiveTab(tab);
+    }
+  }, [tab]);
+
   const onRefresh = useCallback(async () => {
     setRefreshing(true);
     await Promise.all([hydrateAspirants(), loadPoliticians()]);
@@ -67,6 +80,16 @@ export default function PagesScreen() {
 
   const userCanCreate = canCreatePage(userProfile?.role);
   const civicScore = getCivicScore();
+
+  const handleInviteEndorsements = useCallback(async () => {
+    try {
+      await Share.share({
+        message: `Support my civic journey as an aspirant on Kshetra! Check out my profile and endorse my vision for ${aspirantProfile?.targetConstituencyName || 'our community'}: https://kshetra.app/aspirant/${aspirantProfile?.id || ''}`,
+      });
+    } catch {
+      // User cancelled or share dismissed
+    }
+  }, [aspirantProfile]);
 
   return (
     <View style={[styles.container, { backgroundColor: colors.background }]}>
@@ -170,7 +193,13 @@ export default function PagesScreen() {
               </View>
               <Pressable
                 style={[styles.btnRegister, { backgroundColor: colors.primary }]}
-                onPress={() => setRegisterVisible(true)}
+                onPress={() => {
+                  if (aspirantProfile) {
+                    setActiveTab('my_page'); // go view the existing profile, don't reopen the create form
+                  } else {
+                    setRegisterVisible(true);
+                  }
+                }}
               >
                 <Text style={styles.btnRegisterText}>
                   {aspirantProfile ? t('pages.viewProfile', { defaultValue: 'My Profile' }) : t('pages.becomeAspirant', { defaultValue: 'Join Directory' })}
@@ -344,6 +373,78 @@ export default function PagesScreen() {
                       </View>
                     </View>
                     <CivicBadgeGrid earned={badges} />
+
+                    {/* Next Steps Card (FIX-14) */}
+                    <View style={[styles.nextStepsCard, { backgroundColor: colors.surface, borderColor: colors.border }]}>
+                      <View style={styles.nextStepsHeader}>
+                        <Ionicons name="sparkles" size={18} color="#F59E0B" />
+                        <Text style={[styles.nextStepsTitle, { color: colors.text }]}>
+                          {t('pages.nextStepsTitle', { defaultValue: 'Next Steps to Level Up' })}
+                        </Text>
+                      </View>
+                      <Text style={[styles.nextStepsSubtitle, { color: colors.textSecondary }]}>
+                        {t('pages.nextStepsSubtitle', {
+                          defaultValue: 'Complete concrete civic actions to earn badges, grow your score, and build grassroots support.',
+                        })}
+                      </Text>
+
+                      {/* Action 1: Leadership Academy */}
+                      <Pressable
+                        style={[styles.nextStepItem, { borderTopColor: colors.border }]}
+                        onPress={() => router.push('/leadership-academy' as any)}
+                      >
+                        <View style={[styles.nextStepIconWrap, { backgroundColor: '#8B5CF615' }]}>
+                          <Ionicons name="school-outline" size={20} color="#8B5CF6" />
+                        </View>
+                        <View style={{ flex: 1 }}>
+                          <Text style={[styles.nextStepItemTitle, { color: colors.text }]}>
+                            {t('pages.actionAcademy', { defaultValue: 'Start Leadership Academy' })}
+                          </Text>
+                          <Text style={[styles.nextStepItemDesc, { color: colors.textMuted }]}>
+                            {t('pages.actionAcademyDesc', { defaultValue: 'Complete election modules to unlock Scholar & Strategist badges.' })}
+                          </Text>
+                        </View>
+                        <Ionicons name="chevron-forward" size={16} color={colors.textMuted} />
+                      </Pressable>
+
+                      {/* Action 2: Report Civic Issue */}
+                      <Pressable
+                        style={[styles.nextStepItem, { borderTopColor: colors.border }]}
+                        onPress={() => router.push('/(tabs)/dashboard' as any)}
+                      >
+                        <View style={[styles.nextStepIconWrap, { backgroundColor: '#EF444415' }]}>
+                          <Ionicons name="alert-circle-outline" size={20} color="#EF4444" />
+                        </View>
+                        <View style={{ flex: 1 }}>
+                          <Text style={[styles.nextStepItemTitle, { color: colors.text }]}>
+                            {t('pages.actionReport', { defaultValue: 'Report a Civic Issue' })}
+                          </Text>
+                          <Text style={[styles.nextStepItemDesc, { color: colors.textMuted }]}>
+                            {t('pages.actionReportDesc', { defaultValue: 'Report grassroots issues in your constituency to earn the Civic Advocate badge.' })}
+                          </Text>
+                        </View>
+                        <Ionicons name="chevron-forward" size={16} color={colors.textMuted} />
+                      </Pressable>
+
+                      {/* Action 3: Invite Endorsement */}
+                      <Pressable
+                        style={[styles.nextStepItem, { borderTopColor: colors.border }]}
+                        onPress={handleInviteEndorsements}
+                      >
+                        <View style={[styles.nextStepIconWrap, { backgroundColor: '#10B98115' }]}>
+                          <Ionicons name="people-outline" size={20} color="#10B981" />
+                        </View>
+                        <View style={{ flex: 1 }}>
+                          <Text style={[styles.nextStepItemTitle, { color: colors.text }]}>
+                            {t('pages.actionEndorse', { defaultValue: 'Invite Your First Endorsement' })}
+                          </Text>
+                          <Text style={[styles.nextStepItemDesc, { color: colors.textMuted }]}>
+                            {t('pages.actionEndorseDesc', { defaultValue: 'Share your civic profile with voters to unlock the Community Champion badge.' })}
+                          </Text>
+                        </View>
+                        <Ionicons name="share-social-outline" size={16} color={colors.textMuted} />
+                      </Pressable>
+                    </View>
                   </>
                 ) : (
                   <View style={[styles.createPromptCard, { backgroundColor: colors.surface, borderColor: colors.border }]}>
@@ -515,4 +616,49 @@ const styles = StyleSheet.create({
     borderRadius: 8,
   },
   btnActionPrimaryText: { color: '#FFFFFF', fontSize: 13, fontWeight: '700' },
+  nextStepsCard: {
+    borderRadius: 14,
+    padding: 16,
+    borderWidth: 1,
+    marginTop: 16,
+    marginBottom: 8,
+  },
+  nextStepsHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+    marginBottom: 4,
+  },
+  nextStepsTitle: {
+    fontSize: 15,
+    fontWeight: '800',
+  },
+  nextStepsSubtitle: {
+    fontSize: 12,
+    lineHeight: 17,
+    marginBottom: 12,
+  },
+  nextStepItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 12,
+    paddingVertical: 12,
+    borderTopWidth: 1,
+  },
+  nextStepIconWrap: {
+    width: 38,
+    height: 38,
+    borderRadius: 10,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  nextStepItemTitle: {
+    fontSize: 13,
+    fontWeight: '700',
+    marginBottom: 2,
+  },
+  nextStepItemDesc: {
+    fontSize: 11,
+    lineHeight: 15,
+  },
 });
