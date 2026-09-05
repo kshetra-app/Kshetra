@@ -1635,3 +1635,194 @@ export async function incrementViewerCount(eventId: string, delta: number): Prom
   } catch (e) { console.warn('[LMX] incrementViewerCount exception:', e); return false; }
 }
 
+// ─── Direct Messaging (Tickets 3.1 - 3.6) ────────────────────────────
+
+export interface DMConversationItem {
+  id: string;
+  participant_one: string;
+  participant_two: string;
+  status: 'pending' | 'accepted' | 'declined';
+  initiated_by: string;
+  last_message_at: string;
+  last_message_preview: string | null;
+  media_accepted_by_one: boolean;
+  media_accepted_by_two: boolean;
+  otherUser?: {
+    id: string;
+    displayName: string;
+    avatarUrl?: string | null;
+    role?: string;
+    isVerified?: boolean;
+  };
+  unreadCount?: number;
+}
+
+export interface DMMessageItem {
+  id: string;
+  conversation_id: string;
+  sender_id: string;
+  content: string;
+  media_url?: string | null;
+  media_type?: 'image' | 'video' | 'audio' | 'document' | null;
+  is_media_locked: boolean;
+  read_at?: string | null;
+  created_at: string;
+}
+
+export async function fetchUserConversations(userId: string): Promise<DMConversationItem[]> {
+  if (!guard()) return [];
+  try {
+    const { data, error } = await supabase
+      .from('conversations')
+      .select('*')
+      .or(`participant_one.eq.${userId},participant_two.eq.${userId}`)
+      .order('last_message_at', { ascending: false });
+
+    if (error) throw error;
+    if (!data) return [];
+
+    // Resolve other participant profiles
+    const otherUserIds = data.map((c) => (c.participant_one === userId ? c.participant_two : c.participant_one));
+    const uniqueIds = Array.from(new Set(otherUserIds));
+
+    let profileMap = new Map<string, any>();
+    if (uniqueIds.length > 0) {
+      const { data: profiles } = await supabase
+        .from('user_profiles')
+        .select('user_id, display_name, avatar_url, role, verification_status')
+        .in('user_id', uniqueIds);
+
+      if (profiles) {
+        profiles.forEach((p) => profileMap.set(p.user_id, p));
+      }
+    }
+
+    return data.map((c) => {
+      const otherId = c.participant_one === userId ? c.participant_two : c.participant_one;
+      const profile = profileMap.get(otherId);
+      return {
+        ...c,
+        otherUser: {
+          id: otherId,
+          displayName: profile?.display_name || 'Kshetra Citizen',
+          avatarUrl: profile?.avatar_url || null,
+          role: profile?.role || 'citizen',
+          isVerified: profile?.verification_status === 'verified',
+        },
+      };
+    });
+  } catch (err) {
+    captureException(err as Error, { op: 'fetch_user_conversations', userId });
+    return [];
+  }
+}
+
+export async function fetchConversationMessages(conversationId: string): Promise<DMMessageItem[]> {
+  if (!guard()) return [];
+  try {
+    const { data, error } = await supabase
+      .from('messages')
+      .select('*')
+      .eq('conversation_id', conversationId)
+      .order('created_at', { ascending: true });
+
+    if (error) throw error;
+    return data ?? [];
+  } catch (err) {
+    captureException(err as Error, { op: 'fetch_conversation_messages', conversationId });
+    return [];
+  }
+}
+
+export async function sendDirectMessageToConversation(
+  conversationId: string,
+  senderId: string,
+  content: string,
+  mediaUrl?: string,
+  mediaType?: 'image' | 'video' | 'audio' | 'document',
+): Promise<DMMessageItem | null> {
+  if (!guard()) return null;
+  try {
+    const apiUrl = process.env.EXPO_PUBLIC_API_URL || 'https://kshetra-api-production-9f06.up.railway.app';
+    const res = await fetch(`${apiUrl}/api/v1/dm/conversations/${conversationId}/messages`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'x-user-id': senderId,
+      },
+      body: JSON.stringify({ content, mediaUrl, mediaType }),
+    });
+
+    if (res.ok) {
+      const result = await res.json();
+      return result.message;
+    }
+    return null;
+  } catch (err) {
+    captureException(err as Error, { op: 'send_dm', conversationId });
+    return null;
+  }
+}
+
+export async function acceptDMRequest(conversationId: string, userId: string): Promise<boolean> {
+  if (!guard()) return true;
+  try {
+    const apiUrl = process.env.EXPO_PUBLIC_API_URL || 'https://kshetra-api-production-9f06.up.railway.app';
+    const res = await fetch(`${apiUrl}/api/v1/dm/conversations/${conversationId}/accept`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'x-user-id': userId,
+      },
+    });
+    return res.ok;
+  } catch (err) {
+    captureException(err as Error, { op: 'accept_dm', conversationId });
+    return false;
+  }
+}
+
+export async function declineDMRequest(conversationId: string, userId: string): Promise<boolean> {
+  if (!guard()) return true;
+  try {
+    const apiUrl = process.env.EXPO_PUBLIC_API_URL || 'https://kshetra-api-production-9f06.up.railway.app';
+    const res = await fetch(`${apiUrl}/api/v1/dm/conversations/${conversationId}/decline`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'x-user-id': userId,
+      },
+    });
+    return res.ok;
+  } catch (err) {
+    captureException(err as Error, { op: 'decline_dm', conversationId });
+    return false;
+  }
+}
+
+export async function blockAndReportDMUser(
+  userId: string,
+  targetUserId: string,
+  reason: string,
+  description?: string,
+  conversationId?: string,
+): Promise<boolean> {
+  if (!guard()) return true;
+  try {
+    const apiUrl = process.env.EXPO_PUBLIC_API_URL || 'https://kshetra-api-production-9f06.up.railway.app';
+    const res = await fetch(`${apiUrl}/api/v1/dm/block-report`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'x-user-id': userId,
+      },
+      body: JSON.stringify({ targetUserId, reason, description, conversationId }),
+    });
+    return res.ok;
+  } catch (err) {
+    captureException(err as Error, { op: 'block_report_dm', targetUserId });
+    return false;
+  }
+}
+
+

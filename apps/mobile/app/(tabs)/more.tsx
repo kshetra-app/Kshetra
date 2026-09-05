@@ -49,6 +49,7 @@ export default function MoreScreen() {
   ];
 
   const account: Tile[] = [
+    { label: t('more.tiles.messages', { defaultValue: 'Direct Messages' }), icon: 'chatbubble-ellipses', color: colors.primary, route: '/messages' },
     { label: t('more.tiles.aiAssistant', { defaultValue: 'AI Assistant' }), icon: 'sparkles', color: colors.gold, route: '/ai-chat' },
     { label: t('more.tiles.moderation', { defaultValue: 'Moderation Queue' }), icon: 'shield-half', color: colors.teal, route: '/moderation' },
     { label: t('more.tiles.profile', { defaultValue: 'Profile' }), icon: 'person', color: colors.primary, route: '/profile' },
