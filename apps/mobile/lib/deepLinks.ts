@@ -5,7 +5,6 @@
  * Routes:
  *   kshetra://constituency/{stateCode}-AC-{acNo}
  *   kshetra://issue/{id}
- *   kshetra://analytics
  *   kshetra://delimitation
  *   kshetra://search?q={query}
  *   kshetra://feed

@@ -18,7 +18,7 @@ interface LazyScreenOptions {
  *
  * Usage:
  * ```ts
- * const AnalyticsScreen = lazyScreen(() => import('../app/analytics'));
+ * const DelimitationScreen = lazyScreen(() => import('../app/delimitation'));
  * ```
  */
 export function lazyScreen<P extends object>(

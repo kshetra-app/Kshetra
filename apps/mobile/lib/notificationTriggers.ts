@@ -133,17 +133,6 @@ export function notifyConstituencyUpdate(constituency: string, update: string): 
   });
 }
 
-// ─── ANALYTICS TRIGGERS ───
-
-export function notifyAnalyticsInsight(insight: string, stateCode: string): Promise<boolean> {
-  return dispatchIfEnabled({
-    category: 'analytics_insight',
-    title: 'New Insight',
-    body: insight,
-    data: { route: '/analytics' },
-  });
-}
-
 // ─── COMMUNITY TRIGGERS ───
 
 export function notifyCommunityReply(postAuthor: string, snippet: string): Promise<boolean> {

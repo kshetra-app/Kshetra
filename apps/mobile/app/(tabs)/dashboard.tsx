@@ -294,23 +294,6 @@ function DashboardContent() {
 
       {/* ── Content ── */}
       <ScrollView style={styles.scroll} showsVerticalScrollIndicator={false}>
-        {/* Election Analytics Entry Point */}
-        <Pressable
-          style={[styles.delimBanner, { backgroundColor: colors.surface, borderColor: colors.goldBorder || colors.border }]}
-          onPress={() => router.push('/analytics' as any)}
-        >
-          <View style={styles.delimBannerLeft}>
-            <View style={[styles.delimIconWrap, { backgroundColor: colors.goldLight }]}>
-              <Ionicons name="stats-chart" size={18} color={colors.gold} />
-            </View>
-            <View>
-              <Text style={[styles.delimBannerTitle, { color: colors.text }]}>{t('dashboardExtended.electionAnalytics')}</Text>
-              <Text style={[styles.delimBannerSub, { color: colors.textMuted }]}>{t('dashboardExtended.electionAnalyticsDesc')}</Text>
-            </View>
-          </View>
-          <Ionicons name="chevron-forward" size={16} color={colors.textMuted} />
-        </Pressable>
-
         {/* Quick Nav: Gold Standard Pillars */}
         <ScrollView horizontal showsHorizontalScrollIndicator={false} style={{ marginHorizontal: 12, marginBottom: 8 }} contentContainerStyle={{ gap: 8 }}>
           {[
