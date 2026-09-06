@@ -24,6 +24,8 @@ import { useResponsive } from '../../lib/responsive';
 import PhotoViewerModal from '../../components/PhotoViewerModal';
 import { useAffidavitStore } from '../../stores/affidavits';
 import ChiefMinisterBadge from '../../components/ChiefMinisterBadge';
+import AdCard from '../../components/AdCard';
+import { AD_INSERT_INTERVAL } from '../../lib/adConfig';
 import { useTheme } from '../../lib/theme';
 
 type SortKey = 'acNo' | 'name' | 'margin_asc' | 'margin_desc';
@@ -141,14 +143,19 @@ export default function ExploreScreen() {
   }, [query, showFavoritesOnly, favoriteIds, allConstituencies, partyFilter, districtFilter, typeFilter, sortKey]);
 
   const renderItem = useCallback(
-    ({ item }: { item: UnifiedConstituency }) => (
-      <ConstituencyCard
-        item={item}
-        isFav={isFavorite(item.acNo)}
-        onPress={() => router.push(`/constituency/${item.stateCode}-AC-${item.acNo}` as any)}
-        onAvatarPress={(uri, name, party) => setPhotoViewer({ uri, name, party })}
-        onToggleFav={() => toggleFavorite(item.acNo)}
-      />
+    ({ item, index }: { item: UnifiedConstituency; index: number }) => (
+      <View>
+        <ConstituencyCard
+          item={item}
+          isFav={isFavorite(item.acNo)}
+          onPress={() => router.push(`/constituency/${item.stateCode}-AC-${item.acNo}` as any)}
+          onAvatarPress={(uri, name, party) => setPhotoViewer({ uri, name, party })}
+          onToggleFav={() => toggleFavorite(item.acNo)}
+        />
+        {(index + 1) % AD_INSERT_INTERVAL === 0 && (
+          <AdCard screenName="explore" slotIndex={index} />
+        )}
+      </View>
     ),
     [isFavorite, toggleFavorite, router],
   );

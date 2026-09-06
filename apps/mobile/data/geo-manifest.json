@@ -12,9 +12,9 @@
     "file": "telangana-assembly.json",
     "count": 119,
     "hasPolygons": true,
-    "bytes": 1861739,
-    "gzipBytes": 542809,
-    "version": "a81116dce36d"
+    "bytes": 1861197,
+    "gzipBytes": 532675,
+    "version": "9bc5be4c40b3"
   },
   "AP": {
     "file": "ap-assembly.json",
@@ -28,9 +28,9 @@
     "file": "ka-assembly.json",
     "count": 225,
     "hasPolygons": true,
-    "bytes": 4259899,
-    "gzipBytes": 698551,
-    "version": "c8d251f28b3e"
+    "bytes": 4258444,
+    "gzipBytes": 688044,
+    "version": "927a10f680a1"
   },
   "MH": {
     "file": "mh-assembly.json",
@@ -44,17 +44,17 @@
     "file": "tn-assembly.json",
     "count": 235,
     "hasPolygons": true,
-    "bytes": 3251088,
-    "gzipBytes": 513830,
-    "version": "0d32bb4dbbc1"
+    "bytes": 3276453,
+    "gzipBytes": 518118,
+    "version": "4007e0f919f1"
   },
   "KL": {
     "file": "kl-assembly.json",
     "count": 141,
     "hasPolygons": true,
-    "bytes": 1494725,
-    "gzipBytes": 246597,
-    "version": "0a54dff34503"
+    "bytes": 1494434,
+    "gzipBytes": 243035,
+    "version": "c99c68447a52"
   },
   "WB": {
     "file": "wb-assembly.json",
@@ -164,9 +164,9 @@
     "file": "ga-assembly.json",
     "count": 40,
     "hasPolygons": true,
-    "bytes": 110725,
-    "gzipBytes": 19475,
-    "version": "ed8365ba5c43"
+    "bytes": 111097,
+    "gzipBytes": 19773,
+    "version": "89f2d1324094"
   },
   "HP": {
     "file": "hp-assembly.json",
@@ -216,9 +216,9 @@
     "count": 60,
     "hasPolygons": false,
     "status": "placeholder",
-    "bytes": 895185,
-    "gzipBytes": 198163,
-    "version": "55fe20295d1b"
+    "bytes": 892792,
+    "gzipBytes": 196561,
+    "version": "baa6ccf38adb"
   },
   "NL": {
     "file": "nl-assembly.json",
@@ -243,18 +243,18 @@
     "count": 32,
     "hasPolygons": false,
     "status": "placeholder",
-    "bytes": 123098,
-    "gzipBytes": 26539,
-    "version": "32d56fed56b3"
+    "bytes": 122256,
+    "gzipBytes": 26727,
+    "version": "3645cc5cc086"
   },
   "AR": {
     "file": "ar-assembly.json",
     "count": 60,
     "hasPolygons": false,
     "status": "placeholder",
-    "bytes": 562417,
-    "gzipBytes": 136997,
-    "version": "f0a392cbdbc0"
+    "bytes": 562142,
+    "gzipBytes": 134917,
+    "version": "9aaca5498a24"
   },
   "MZ": {
     "file": "mz-assembly.json",

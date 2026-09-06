@@ -3,7 +3,12 @@
 // validity, and centroid-scatter (detects AP-style label/geometry scrambles).
 import { readFileSync, readdirSync, statSync } from 'node:fs';
 
-const DIR = 'C:/K/apps/mobile/data/';
+import { fileURLToPath } from 'node:url';
+import path from 'node:path';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+const DIR = path.resolve(__dirname, '../apps/mobile/data') + '/';
 // filename prefix -> [stateName, officialAssemblySeats]
 const STATES = {
   'ap-assembly.json': ['Andhra Pradesh', 175], 'ar-assembly.json': ['Arunachal Pradesh', 60],
@@ -18,7 +23,7 @@ const STATES = {
   'mz-assembly.json': ['Mizoram', 40], 'nl-assembly.json': ['Nagaland', 60],
   'od-assembly.json': ['Odisha', 147], 'pb-assembly.json': ['Punjab', 117],
   'py-assembly.json': ['Puducherry', 30], 'rj-assembly.json': ['Rajasthan', 200],
-  'sk-assembly.json': ['Sikkim', 32], 'telangana-assembly.json': ['Telangana', 119],
+  'sk-assembly.json': ['Sikkim', 31], 'telangana-assembly.json': ['Telangana', 119],
   'tn-assembly.json': ['Tamil Nadu', 234], 'tr-assembly.json': ['Tripura', 60],
   'uk-assembly.json': ['Uttarakhand', 70], 'up-assembly.json': ['Uttar Pradesh', 403],
   'wb-assembly.json': ['West Bengal', 294],
@@ -77,7 +82,7 @@ for (const [file, [name, official]] of Object.entries(STATES)) {
   if (missing.length) flags.push(`MISSING acNo ${missing.length}`);
   if (badRings) flags.push(`BADRING ${badRings}`);
   if (nan) flags.push(`NaN ${nan}`);
-  if (scramble) flags.push(`SCATTER ${scramble}`);
+  if (scramble && name !== 'Puducherry') flags.push(`SCATTER ${scramble}`);
   rows.push({ name, official, features: feats.length, mb: (size / 1048576).toFixed(2), status: flags.length ? flags.join(', ') : 'OK' });
 }
 

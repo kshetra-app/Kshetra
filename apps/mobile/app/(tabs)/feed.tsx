@@ -23,6 +23,8 @@ import { useResponsive } from '../../lib/responsive';
 import ComposeSheet from '../../components/ComposeSheet';
 import TrendingHashtags from '../../components/TrendingHashtags';
 import PostDetailModal from '../../components/PostDetailModal';
+import AdCard from '../../components/AdCard';
+import { AD_INSERT_INTERVAL } from '../../lib/adConfig';
 import ConstituencySelectorSheet from '../../components/ConstituencySelectorSheet';
 import StateSwitcher from '../../components/StateSwitcher';
 import LanguageSwitcher from '../../components/LanguageSwitcher';
@@ -587,7 +589,7 @@ export default function FeedScreen({ hideHeader = false }: FeedScreenProps = {})
       <FlatList
         data={posts}
         keyExtractor={(item) => item.id}
-        renderItem={({ item }) => {
+        renderItem={({ item, index }) => {
           const isOwner = item.author.id === userId;
           return (
             <View>
@@ -609,6 +611,9 @@ export default function FeedScreen({ hideHeader = false }: FeedScreenProps = {})
                     onVote={(optionId) => votePoll(item.id, optionId)}
                   />
                 </View>
+              )}
+              {(index + 1) % AD_INSERT_INTERVAL === 0 && (
+                <AdCard screenName="feed" slotIndex={index} />
               )}
             </View>
           );

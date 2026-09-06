@@ -21,6 +21,8 @@ import {
   type NewsItem,
 } from '../../lib/newsTypes';
 import NewsCard from '../../components/NewsCard';
+import AdCard from '../../components/AdCard';
+import { AD_INSERT_INTERVAL } from '../../lib/adConfig';
 import { STATES } from '@kshetra/shared';
 import { useTheme } from '../../lib/theme';
 
@@ -172,12 +174,17 @@ export default function NewsScreen() {
       <FlatList
         data={filtered}
         keyExtractor={(i) => i.id}
-        renderItem={({ item }) => (
-          <NewsCard
-            item={item}
-            bookmarked={bookmarks.includes(item.id)}
-            onToggleBookmark={() => toggleBookmark(item.id)}
-          />
+        renderItem={({ item, index }) => (
+          <View>
+            <NewsCard
+              item={item}
+              bookmarked={bookmarks.includes(item.id)}
+              onToggleBookmark={() => toggleBookmark(item.id)}
+            />
+            {(index + 1) % AD_INSERT_INTERVAL === 0 && (
+              <AdCard screenName="news" slotIndex={index} />
+            )}
+          </View>
         )}
         refreshControl={<RefreshControl refreshing={loading} onRefresh={refresh} tintColor={colors.primary} />}
         contentContainerStyle={{ paddingBottom: 100 }}

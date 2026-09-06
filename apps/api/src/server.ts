@@ -24,6 +24,7 @@ import { manageRoutes } from './routes/manage';
 import { pagesRoutes } from './routes/pages';
 import { policyRoutes } from './routes/policy';
 import { dmRoutes } from './routes/dm';
+import { politicalAdsRoutes } from './routes/politicalAds';
 import { startNewsScheduler } from './services/news/newsService';
 
 const envToLogger: Record<string, object | boolean> = {
@@ -139,6 +140,7 @@ export async function buildApp() {
   await app.register(pagesRoutes);
   await app.register(policyRoutes);
   await app.register(dmRoutes);
+  await app.register(politicalAdsRoutes);
 
   return app;
 }

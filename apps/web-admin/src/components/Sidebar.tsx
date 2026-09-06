@@ -9,6 +9,7 @@ import {
   Users,
   UploadCloud,
   BadgeCheck,
+  ShieldCheck,
   AlertTriangle,
   GitMerge,
   Activity,
@@ -29,6 +30,7 @@ const NAV_ITEMS = [
     category: 'Trust & Safety',
     items: [
       { to: '/moderation', label: 'Moderation Queue', icon: ShieldAlert },
+      { to: '/political-ads', label: 'Political Ads & MCMC Review', icon: ShieldCheck, badge: 'Compliance' },
       { to: '/representative-edits', label: 'Politician Edits Review', icon: GitPullRequest, badge: 'Community' },
       { to: '/verifications', label: 'KYC & Aspirant Vetting', icon: BadgeCheck },
     ],

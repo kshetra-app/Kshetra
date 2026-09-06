@@ -4,6 +4,7 @@ import { Layout } from './components/Layout';
 import { Dashboard } from './pages/Dashboard';
 import { FeatureFlags } from './pages/FeatureFlags';
 import { Moderation } from './pages/Moderation';
+import { PoliticalAdReview } from './pages/PoliticalAdReview';
 import { RepresentativeEdits } from './pages/RepresentativeEdits';
 import { Constituencies } from './pages/Constituencies';
 import { Representatives } from './pages/Representatives';
@@ -21,6 +22,7 @@ export function App() {
           <Route index element={<Dashboard />} />
           <Route path="feature-flags" element={<FeatureFlags />} />
           <Route path="moderation" element={<Moderation />} />
+          <Route path="political-ads" element={<PoliticalAdReview />} />
           <Route path="representative-edits" element={<RepresentativeEdits />} />
           <Route path="constituencies" element={<Constituencies />} />
           <Route path="representatives" element={<Representatives />} />
