@@ -1,5 +1,5 @@
 import { useState, useCallback, useMemo } from 'react';
-import { View, Text, StyleSheet, ScrollView, Pressable, Alert, Share, TextInput, KeyboardAvoidingView, Platform } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, Pressable, Alert, Share, TextInput, KeyboardAvoidingView, Platform, ActivityIndicator } from 'react-native';
 import { useLocalSearchParams, useRouter, Stack } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { Image } from 'expo-image';
@@ -60,6 +60,8 @@ export default function IssueDetailScreen() {
   );
 
   const [commentText, setCommentText] = useState('');
+  const [commentError, setCommentError] = useState<string | null>(null);
+  const [submittingComment, setSubmittingComment] = useState(false);
   const [showAllMedia, setShowAllMedia] = useState(false);
   const insets = useSafeAreaInsets();
 
@@ -121,10 +123,18 @@ export default function IssueDetailScreen() {
     );
   };
 
-  const handleSubmitComment = () => {
-    if (!commentText.trim()) return;
-    addComment(issue.id, commentText.trim(), 'You');
-    setCommentText('');
+  const handleSubmitComment = async () => {
+    if (!commentText.trim() || submittingComment) return;
+    setSubmittingComment(true);
+    setCommentError(null);
+    try {
+      await addComment(issue.id, commentText.trim(), 'You');
+      setCommentText('');
+    } catch (err: any) {
+      setCommentError('Could not post comment. Please try again.');
+    } finally {
+      setSubmittingComment(false);
+    }
   };
 
   const mediaUrls = issue.mediaUrls ?? [];
@@ -381,6 +391,14 @@ export default function IssueDetailScreen() {
         <View style={{ height: 100 }} />
       </ScrollView>
 
+      {/* ── Comment Error Inline ── */}
+      {commentError ? (
+        <View style={styles.commentErrorRow}>
+          <Ionicons name="alert-circle" size={14} color="#EF4444" />
+          <Text style={styles.commentErrorText}>{commentError}</Text>
+        </View>
+      ) : null}
+
       {/* ── Comment Input ── */}
       <View style={[styles.commentInputBar, { paddingBottom: Math.max(insets.bottom, 10) }]}>
         <TextInput
@@ -388,16 +406,23 @@ export default function IssueDetailScreen() {
           placeholder="Add a comment..."
           placeholderTextColor="#6B7280"
           value={commentText}
-          onChangeText={setCommentText}
+          onChangeText={(text) => {
+            setCommentText(text);
+            if (commentError) setCommentError(null);
+          }}
           multiline
           maxLength={1000}
         />
         <Pressable
-          style={[styles.sendBtn, !commentText.trim() && styles.sendBtnDisabled]}
+          style={[styles.sendBtn, (!commentText.trim() || submittingComment) && styles.sendBtnDisabled]}
           onPress={handleSubmitComment}
-          disabled={!commentText.trim()}
+          disabled={!commentText.trim() || submittingComment}
         >
-          <Ionicons name="send" size={18} color={commentText.trim() ? '#3B82F6' : '#374151'} />
+          {submittingComment ? (
+            <ActivityIndicator size="small" color="#3B82F6" />
+          ) : (
+            <Ionicons name="send" size={18} color={commentText.trim() ? '#3B82F6' : '#374151'} />
+          )}
         </Pressable>
       </View>
     </KeyboardAvoidingView>
@@ -534,6 +559,8 @@ const styles = StyleSheet.create({
   commentImage: { width: '100%' as any, height: 160, borderRadius: 8, marginTop: 8 },
 
   // Comment input
+  commentErrorRow: { flexDirection: 'row', alignItems: 'center', gap: 6, paddingHorizontal: 16, paddingVertical: 6, backgroundColor: '#FEF2F2', borderTopWidth: 1, borderTopColor: '#FCA5A5' },
+  commentErrorText: { fontSize: 12, color: '#EF4444', fontWeight: '500' },
   commentInputBar: { flexDirection: 'row', alignItems: 'flex-end', paddingHorizontal: 12, paddingVertical: 8, backgroundColor: '#FFFFFF', borderTopWidth: 1, borderTopColor: '#E8DED1' },
   commentInput: { flex: 1, backgroundColor: '#FAF6EE', borderRadius: 20, paddingHorizontal: 16, paddingVertical: 10, color: '#241814', fontSize: 14, maxHeight: 100, borderWidth: 1, borderColor: '#E8DED1' },
   sendBtn: { width: 40, height: 40, justifyContent: 'center', alignItems: 'center' },

@@ -720,7 +720,7 @@ interface CivicState {
   addIssue: (issue: CivicIssue) => void;
   toggleUpvote: (issueId: string) => void;
   toggleFollow: (issueId: string) => void;
-  addComment: (issueId: string, body: string, userName: string, imageUrl?: string) => void;
+  addComment: (issueId: string, body: string, userName: string, imageUrl?: string) => Promise<boolean>;
   addEvidence: (issueId: string, imageUrl: string, userName: string, caption?: string) => void;
   tagMLA: (issueId: string) => void;
   disputeResolution: (issueId: string, reason?: string) => void;
@@ -838,10 +838,18 @@ export const useCivicStore = create<CivicState>()((set, get) => ({
     }
   },
 
-  addComment: (issueId, body, userName, imageUrl) => {
+  addComment: async (issueId, body, userName, imageUrl) => {
     const userId = useAuthStore.getState().user?.id ?? 'current-user';
+    let commentId = `cmt-${Date.now()}`;
+    if (userId !== 'current-user') {
+      const res = await dataService.addIssueComment(issueId, userId, userName, body, imageUrl);
+      if (!res.success) {
+        throw new Error('Failed to post comment to server');
+      }
+      if (res.id) commentId = res.id;
+    }
     const comment: IssueComment = {
-      id: `cmt-${Date.now()}`,
+      id: commentId,
       issueId,
       userId,
       userName,
@@ -856,9 +864,7 @@ export const useCivicStore = create<CivicState>()((set, get) => ({
         i.id === issueId ? { ...i, commentCount: i.commentCount + 1 } : i,
       ),
     }));
-    if (userId !== 'current-user') {
-      dataService.addIssueComment(issueId, userId, userName, body, imageUrl);
-    }
+    return true;
   },
 
   addEvidence: (issueId, imageUrl, userName, caption) => {

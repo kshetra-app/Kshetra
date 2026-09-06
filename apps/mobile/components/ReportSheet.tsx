@@ -55,24 +55,35 @@ export default function ReportSheet({
 
     setSubmitting(true);
 
-    const userId = useAuthStore.getState().user?.id || 'demo-reporter';
-    if (targetType === 'post' || targetType === 'comment') {
-      await submitContentReport({
-        reporterId: userId,
-        targetType,
-        targetId,
-        reason,
-        description: description.trim() || undefined,
-      });
-    }
+    try {
+      const userId = useAuthStore.getState().user?.id || 'demo-reporter';
+      if (targetType === 'post' || targetType === 'comment') {
+        const success = await submitContentReport({
+          reporterId: userId,
+          targetType,
+          targetId,
+          reason,
+          description: description.trim() || undefined,
+        });
+        if (!success) {
+          throw new Error('Failed to submit report');
+        }
+      }
 
-    logContentAction('submit_report', { type: targetType, id: targetId, body: reason, screenName: 'report' });
-    setSubmitting(false);
-    Alert.alert(
-      t('reportSheet.submitted'),
-      t('reportSheet.submittedMsg'),
-      [{ text: t('common.ok'), onPress: onClose }],
-    );
+      logContentAction('submit_report', { type: targetType, id: targetId, body: reason, screenName: 'report' });
+      Alert.alert(
+        t('reportSheet.submitted'),
+        t('reportSheet.submittedMsg'),
+        [{ text: t('common.ok'), onPress: onClose }],
+      );
+    } catch (err) {
+      Alert.alert(
+        t('reportSheet.errorTitle', { defaultValue: 'Could not submit report' }),
+        t('reportSheet.errorMsg', { defaultValue: 'Could not submit report. Please try again.' }),
+      );
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   const canSubmit = reason !== null && !submitting;
