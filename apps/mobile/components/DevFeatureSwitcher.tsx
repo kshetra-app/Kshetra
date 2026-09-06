@@ -141,17 +141,6 @@ const FLAG_GROUPS: FlagGroup[] = [
       },
     ],
   },
-  {
-    title: 'Phase 6: Enterprise & Institutional',
-    phase: 'Enterprise',
-    items: [
-      {
-        key: 'enableInvestorDemo',
-        label: 'Investor Demo Hub',
-        description: 'Metric showcase & moat visualizations',
-      },
-    ],
-  },
 ];
 
 export function DevFeatureSwitcher({ visible, onClose }: Props) {

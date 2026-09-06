@@ -6,17 +6,6 @@ import type {
   ElectionSimulation,
   RealTimeDataConfig,
   DataPipelineStatus,
-  FlywheelStep,
-  InvestorDemoMetric,
-  PlatformMoat,
-  UnitEconomicsDemo,
-  DAUMetrics,
-} from '../lib/electionLiveTypes';
-import {
-  generateFlywheelSteps,
-  generateMoatData,
-  generateDemoDAUMetrics,
-  generateUnitEconomicsDemo,
 } from '../lib/electionLiveTypes';
 
 // ─── Seed Live Election (demo / simulation) ───
@@ -91,22 +80,12 @@ interface ElectionLiveState {
   liveElection: LiveElectionState | null;
   simulation: ElectionSimulation | null;
   pipelineStatus: DataPipelineStatus[];
-  flywheelSteps: FlywheelStep[];
-  moatData: PlatformMoat[];
-  dauMetrics: DAUMetrics;
-  unitEconomics: UnitEconomicsDemo;
-  investorMetrics: InvestorDemoMetric[];
 
   // Queries
   getLiveElection: () => LiveElectionState | null;
   getConstituencyResult: (acNo: number) => LiveConstituencyResult | undefined;
   getPartyTallies: () => LivePartyTally[];
   getPipelineHealth: () => { healthy: number; total: number; overallStatus: 'healthy' | 'degraded' | 'down' };
-  getFlywheelSteps: () => FlywheelStep[];
-  getMoatData: () => PlatformMoat[];
-  getDAUMetrics: () => DAUMetrics;
-  getUnitEconomics: () => UnitEconomicsDemo;
-  getInvestorMetrics: () => InvestorDemoMetric[];
 
   // Actions
   setLiveElection: (election: LiveElectionState | null) => void;
@@ -120,22 +99,6 @@ export const useElectionLiveStore = create<ElectionLiveState>((set, get) => ({
   liveElection: SEED_ELECTION,
   simulation: null,
   pipelineStatus: SEED_PIPELINE,
-  flywheelSteps: generateFlywheelSteps(),
-  moatData: generateMoatData(),
-  dauMetrics: generateDemoDAUMetrics(),
-  unitEconomics: generateUnitEconomicsDemo(),
-  investorMetrics: [
-    { id: 'im1', category: 'engagement', label: 'DAU', value: '125K', numericValue: 125000, previousValue: 105000, changePercent: 19, trend: 'up', icon: 'people', color: '#3B82F6', description: 'Daily Active Users' },
-    { id: 'im2', category: 'engagement', label: 'Avg Session', value: '12.5 min', numericValue: 12.5, previousValue: 10.2, changePercent: 22.5, trend: 'up', icon: 'time', color: '#8B5CF6', description: 'Average session duration' },
-    { id: 'im3', category: 'growth', label: 'MAU Growth', value: '18.5%', numericValue: 18.5, previousValue: 14.2, changePercent: 30, trend: 'up', icon: 'trending-up', color: '#10B981', description: 'Month-over-month MAU growth' },
-    { id: 'im4', category: 'revenue', label: 'MRR', value: '₹45L', numericValue: 4500000, previousValue: 3200000, changePercent: 40.6, trend: 'up', icon: 'cash', color: '#F59E0B', description: 'Monthly Recurring Revenue' },
-    { id: 'im5', category: 'content', label: 'Articles/Day', value: '450', numericValue: 450, previousValue: 320, changePercent: 40.6, trend: 'up', icon: 'newspaper', color: '#EC4899', description: 'Articles published daily' },
-    { id: 'im6', category: 'data_moat', label: 'Constituencies', value: '1,674', numericValue: 1674, trend: 'stable', icon: 'map', color: '#06B6D4', description: 'Assembly constituencies mapped' },
-    { id: 'im7', category: 'data_moat', label: 'Legislator Profiles', value: '2,018', numericValue: 2018, trend: 'up', icon: 'people', color: '#A855F7', description: 'Complete legislator profiles' },
-    { id: 'im8', category: 'retention', label: 'D7 Retention', value: '38%', numericValue: 38, previousValue: 32, changePercent: 18.8, trend: 'up', icon: 'repeat', color: '#14B8A6', description: '7-day retention rate' },
-    { id: 'im9', category: 'revenue', label: 'LTV:CAC', value: '6.3x', numericValue: 6.3, previousValue: 4.8, changePercent: 31.3, trend: 'up', icon: 'analytics', color: '#F97316', description: 'Lifetime Value to Customer Acquisition Cost ratio' },
-    { id: 'im10', category: 'growth', label: 'Organic %', value: '72%', numericValue: 72, trend: 'stable', icon: 'leaf', color: '#84CC16', description: 'Organic user acquisition percentage' },
-  ],
 
   getLiveElection: () => get().liveElection,
   getConstituencyResult: (acNo) => get().liveElection?.constituencies.find((c) => c.acNo === acNo),
@@ -148,12 +111,6 @@ export const useElectionLiveStore = create<ElectionLiveState>((set, get) => ({
     const overallStatus = healthy === total ? 'healthy' : healthy >= total * 0.7 ? 'degraded' : 'down';
     return { healthy, total, overallStatus };
   },
-
-  getFlywheelSteps: () => get().flywheelSteps,
-  getMoatData: () => get().moatData,
-  getDAUMetrics: () => get().dauMetrics,
-  getUnitEconomics: () => get().unitEconomics,
-  getInvestorMetrics: () => get().investorMetrics,
 
   setLiveElection: (election) => set({ liveElection: election }),
 

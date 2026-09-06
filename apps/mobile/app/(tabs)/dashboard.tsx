@@ -299,7 +299,6 @@ function DashboardContent() {
           {[
             { tKey: 'dashboardExtended.civicMetrics', icon: 'bar-chart', color: colors.teal, route: '/civic-metrics' },
             { tKey: 'dashboardExtended.liveElection', icon: 'radio', color: colors.primary, route: '/live-election' },
-            { tKey: 'dashboardExtended.investorDemo', icon: 'rocket', color: colors.gold, route: '/investor-demo' },
           ].map((item) => (
             <Pressable
               key={item.route}

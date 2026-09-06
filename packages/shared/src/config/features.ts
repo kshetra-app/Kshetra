@@ -48,10 +48,6 @@ export interface AppFeatureFlags {
   enableCampaignManager: boolean;
   /** Aspirant training courses & certification */
   enableLeadershipAcademy: boolean;
-
-  // ── Phase 6: Enterprise & B2B ──
-  /** Investor demo showcase & moat visualization */
-  enableInvestorDemo: boolean;
 }
 
 /**
@@ -84,7 +80,4 @@ export const DEFAULT_FEATURE_FLAGS: AppFeatureFlags = {
   enableAspirants: true,
   enableCampaignManager: true,
   enableLeadershipAcademy: true,
-
-  // Phase 6 (Enterprise & B2B - Active)
-  enableInvestorDemo: false,
 };

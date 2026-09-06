@@ -246,13 +246,6 @@ export default function RootLayout() {
           }}
         />
         <Stack.Screen
-          name="investor-demo/index"
-          options={{
-            headerShown: false,
-            animation: 'slide_from_right',
-          }}
-        />
-        <Stack.Screen
           name="hierarchy/[id]"
           options={{
             headerShown: true,
