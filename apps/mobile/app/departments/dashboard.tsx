@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useMemo, useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
   View,
@@ -33,8 +33,13 @@ export default function DepartmentDashboardScreen() {
   const alerts = useLiveExchangeStore((s) => s.alerts);
   const getEventById = useLiveExchangeStore((s) => s.getEventById);
   const acknowledgeAlert = useLiveExchangeStore((s) => s.acknowledgeAlert);
+  const hydrateAlerts = useLiveExchangeStore((s) => s.hydrateAlerts);
 
   const [departmentId, setDepartmentId] = useState<string>(departments[0]?.id ?? '');
+
+  useEffect(() => {
+    hydrateAlerts(departmentId);
+  }, [departmentId, hydrateAlerts]);
 
   const selectedDept = departments.find((d) => d.id === departmentId);
 

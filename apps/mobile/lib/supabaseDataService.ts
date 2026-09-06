@@ -1555,6 +1555,107 @@ export async function acknowledgeDepartmentAlert(
   } catch (e) { console.warn('[LMX] acknowledgeDepartmentAlert exception:', e); return false; }
 }
 
+export async function fetchDepartmentAlerts(departmentId?: string, departmentType?: string): Promise<any[]> {
+  if (!isSupabaseConfigured) return [];
+  try {
+    let query = supabase
+      .from('lmx_department_alerts')
+      .select('*')
+      .order('dispatched_at', { ascending: false });
+    if (departmentId) {
+      query = query.eq('department_id', departmentId);
+    } else if (departmentType) {
+      query = query.eq('department_type', departmentType);
+    }
+    const { data, error } = await query;
+    if (error) {
+      console.warn('[LMX] fetchDepartmentAlerts error:', error.message);
+      return [];
+    }
+    return data ?? [];
+  } catch (e) {
+    console.warn('[LMX] fetchDepartmentAlerts exception:', e);
+    return [];
+  }
+}
+
+export async function createContentAlert(alert: {
+  contentVisibilityId?: string;
+  contentType: string;
+  contentId: string;
+  userId: string;
+  severity: string;
+  reason: string;
+  category: string;
+  stateCode?: string;
+  constituencyId?: string;
+}): Promise<{ id: string | null; success: boolean }> {
+  if (!guard()) return { id: `local-alert-${Date.now()}`, success: true };
+  try {
+    addBreadcrumb('content_alerts', 'create', { contentId: alert.contentId, category: alert.category });
+    const isUuid = alert.contentVisibilityId && alert.contentVisibilityId.length === 36 && alert.contentVisibilityId.includes('-');
+    const { data, error } = await supabase
+      .from('content_alerts')
+      .insert({
+        content_visibility_id: isUuid ? alert.contentVisibilityId : null,
+        content_type: alert.contentType,
+        content_id: alert.contentId,
+        user_id: alert.userId,
+        severity: alert.severity,
+        reason: alert.reason,
+        category: alert.category,
+        acknowledged: false,
+      })
+      .select('id')
+      .single();
+    if (error) throw error;
+    return { id: data?.id ?? null, success: true };
+  } catch (err) {
+    captureException(err as Error, { op: 'create_content_alert' });
+    return { id: null, success: false };
+  }
+}
+
+export async function acknowledgeContentAlert(
+  alertId: string,
+  acknowledgedBy: string,
+  actionTaken: string
+): Promise<boolean> {
+  if (!guard()) return true;
+  try {
+    const isUuid = acknowledgedBy && acknowledgedBy.length === 36 && acknowledgedBy.includes('-');
+    const { error } = await supabase
+      .from('content_alerts')
+      .update({
+        acknowledged: true,
+        acknowledged_by: isUuid ? acknowledgedBy : null,
+        acknowledged_at: new Date().toISOString(),
+        action_taken: actionTaken,
+      })
+      .eq('id', alertId);
+    if (error) throw error;
+    return true;
+  } catch (err) {
+    captureException(err as Error, { op: 'acknowledge_content_alert' });
+    return false;
+  }
+}
+
+export async function fetchContentAlerts(contentId?: string): Promise<any[]> {
+  if (!guard()) return [];
+  try {
+    let query = supabase.from('content_alerts').select('*').order('created_at', { ascending: false });
+    if (contentId) query = query.eq('content_id', contentId);
+    const { data, error } = await query;
+    if (error) throw error;
+    return data ?? [];
+  } catch (err) {
+    captureException(err as Error, { op: 'fetch_content_alerts' });
+    return [];
+  }
+}
+
+
 export async function fetchReporterCredibility(reporterId: string): Promise<any | null> {
   if (!isSupabaseConfigured) return null;
   try {

@@ -352,6 +352,7 @@ interface LiveExchangeState {
   addDistribution: (dest: Omit<DistributionDestination, 'id'>) => DistributionDestination;
   subscribeDepartment: (dept: Omit<GovernmentDepartment, 'id'>) => GovernmentDepartment;
   hydrate: () => Promise<void>;
+  hydrateAlerts: (departmentId?: string) => Promise<void>;
 }
 
 export interface StartLiveInput {
@@ -449,10 +450,11 @@ export const useLiveExchangeStore = create<LiveExchangeState>()(
       hydrate: async () => {
         if (!isSupabaseConfigured) return; // keep seed data as fallback
         try {
-          const [events, departments, brandKits, credibility] = await Promise.all([
+          const [events, departments, brandKits, alerts, credibility] = await Promise.all([
             dataService.fetchLiveEvents(),
             dataService.fetchDepartments(),
             dataService.fetchBrandKits(),
+            dataService.fetchDepartmentAlerts(),
             (async () => {
               const userId = useAuthStore.getState().user?.id;
               if (!userId) return null;
@@ -467,9 +469,68 @@ export const useLiveExchangeStore = create<LiveExchangeState>()(
             ...(events.length > 0 ? { events: events.map(mapDbEventToLiveEvent) } : {}),
             ...(departments.length > 0 ? { departments: departments.map(mapDbDepartmentToGovernmentDepartment) } : {}),
             ...(brandKits.length > 0 ? { brandKits: brandKits.map(mapDbBrandKitToBrandKit) } : {}),
+            ...(alerts && alerts.length > 0
+              ? {
+                  alerts: alerts.map((d: any) => ({
+                    id: d.id,
+                    liveEventId: d.live_event_id ?? '',
+                    departmentId: d.department_id ?? '',
+                    departmentType: d.department_type,
+                    reporterId: d.reporter_id,
+                    feedAccessUrl: d.feed_access_url,
+                    gpsLat: d.gps_lat ? Number(d.gps_lat) : null,
+                    gpsLng: d.gps_lng ? Number(d.gps_lng) : null,
+                    aiSummary: d.ai_summary,
+                    dispatchedAt: d.dispatched_at,
+                    deliveryStatus: d.delivery_status,
+                    acknowledgment: d.acknowledgment ?? null,
+                    acknowledgedAt: d.acknowledged_at ?? null,
+                    acknowledgedBy: d.acknowledged_by ?? null,
+                  })),
+                }
+              : {}),
           }));
         } catch (e) {
           console.warn('[LMX] hydrate error, using seed data:', e);
+        }
+      },
+
+      hydrateAlerts: async (departmentId?: string) => {
+        if (!isSupabaseConfigured) return;
+        try {
+          const dbAlerts = await dataService.fetchDepartmentAlerts(departmentId);
+          if (dbAlerts && dbAlerts.length > 0) {
+            set((s) => {
+              const mapped: DepartmentAlert[] = dbAlerts.map((d: any) => ({
+                id: d.id,
+                liveEventId: d.live_event_id ?? '',
+                departmentId: d.department_id ?? '',
+                departmentType: d.department_type,
+                reporterId: d.reporter_id,
+                feedAccessUrl: d.feed_access_url,
+                gpsLat: d.gps_lat ? Number(d.gps_lat) : null,
+                gpsLng: d.gps_lng ? Number(d.gps_lng) : null,
+                aiSummary: d.ai_summary,
+                dispatchedAt: d.dispatched_at,
+                deliveryStatus: d.delivery_status,
+                acknowledgment: d.acknowledgment ?? null,
+                acknowledgedAt: d.acknowledged_at ?? null,
+                acknowledgedBy: d.acknowledged_by ?? null,
+              }));
+              const merged = [...s.alerts];
+              for (const item of mapped) {
+                const idx = merged.findIndex((a) => a.id === item.id);
+                if (idx >= 0) {
+                  merged[idx] = item;
+                } else {
+                  merged.unshift(item);
+                }
+              }
+              return { alerts: merged };
+            });
+          }
+        } catch (e) {
+          console.warn('[LMX] hydrateAlerts error:', e);
         }
       },
 
@@ -616,6 +677,21 @@ export const useLiveExchangeStore = create<LiveExchangeState>()(
             priority_score: event.priorityScore,
             started_at: event.startedAt,
           }).catch(e => console.warn('[LMX] createLiveEvent sync error:', e));
+
+          for (const al of newAlerts) {
+            dataService.dispatchDepartmentAlert({
+              live_event_id: al.liveEventId,
+              department_id: al.departmentId,
+              department_type: al.departmentType,
+              reporter_id: al.reporterId,
+              feed_access_url: al.feedAccessUrl,
+              gps_lat: al.gpsLat,
+              gps_lng: al.gpsLng,
+              ai_summary: al.aiSummary,
+              dispatched_at: al.dispatchedAt,
+              delivery_status: al.deliveryStatus,
+            }).catch(e => console.warn('[LMX] dispatchDepartmentAlert sync error:', e));
+          }
         }
 
         return event;
@@ -739,7 +815,12 @@ export const useLiveExchangeStore = create<LiveExchangeState>()(
         }));
       },
 
-      acknowledgeAlert: (alertId, ack, by) =>
+      acknowledgeAlert: (alertId, ack, by) => {
+        if (isSupabaseConfigured) {
+          dataService.acknowledgeDepartmentAlert(alertId, ack, by ?? 'department')
+            .catch((e) => console.warn('[LMX] acknowledgeDepartmentAlert sync error:', e));
+        }
+
         set((s) => {
           const alert = s.alerts.find((a) => a.id === alertId);
           if (!alert) return {};
@@ -762,7 +843,8 @@ export const useLiveExchangeStore = create<LiveExchangeState>()(
             );
           }
           return { alerts: updatedAlerts, credibility };
-        }),
+        });
+      },
 
       addDistribution: (dest) => {
         const created: DistributionDestination = {

@@ -19,6 +19,8 @@ import { useContributorVerificationStore } from '../stores/contributorVerificati
 import { useMyConstituencyStore } from '../stores/myConstituency';
 import { useActiveStateStore } from '../stores/activeState';
 import { usePoliticalShortsStore } from '../stores/politicalShorts';
+import { useAuthStore } from '../stores/auth';
+import { uploadShort } from '../lib/supabaseDataService';
 import { STATES } from '@kshetra/shared';
 
 interface UploadShortModalProps {
@@ -54,6 +56,7 @@ export default function UploadShortModal({ visible, onClose }: UploadShortModalP
   const myHome = useMyConstituencyStore((s) => s.home);
   const stateCode = useActiveStateStore((s) => s.stateCode);
   const addShort = usePoliticalShortsStore((s) => s.addShort);
+  const user = useAuthStore((s) => s.user);
 
   // Form states
   const [title, setTitle] = useState('');
@@ -65,7 +68,7 @@ export default function UploadShortModal({ visible, onClose }: UploadShortModalP
 
   // Derive State Name
   const stateName = useMemo(() => {
-    return (STATES as Record<string, { name: string }>)[stateCode]?.name ?? stateCode;
+    return STATES[stateCode]?.name ?? stateCode;
   }, [stateCode]);
 
   const handleStartKYC = useCallback(() => {
@@ -80,17 +83,13 @@ export default function UploadShortModal({ visible, onClose }: UploadShortModalP
     setVideoUrl(url);
   }, []);
 
-  const handleSubmit = useCallback(() => {
+  const handleSubmit = useCallback(async () => {
     if (!title.trim()) {
       Alert.alert(t('uploadShort.alertErrorTitle'), t('uploadShort.alertTitleRequired'));
       return;
     }
-    if (!description.trim()) {
-      Alert.alert(t('uploadShort.alertErrorTitle'), t('uploadShort.alertDescriptionRequired'));
-      return;
-    }
-    if (!videoUrl.trim() || !videoUrl.startsWith('http')) {
-      Alert.alert(t('uploadShort.alertErrorTitle'), t('uploadShort.alertVideoUrlRequired'));
+    if (!videoUrl.trim()) {
+      Alert.alert(t('uploadShort.alertErrorTitle'), t('uploadShort.alertVideoRequired'));
       return;
     }
     if (!acceptedTerms) {
@@ -104,8 +103,7 @@ export default function UploadShortModal({ visible, onClose }: UploadShortModalP
 
     setLoading(true);
 
-    // Simulate video compression & upload network latency
-    setTimeout(() => {
+    try {
       const parsedTags = hashtagsStr
         .split(',')
         .map((tag) => tag.trim().replace(/^#/, ''))
@@ -116,24 +114,47 @@ export default function UploadShortModal({ visible, onClose }: UploadShortModalP
         parsedTags.push(stateName);
       }
 
+      const uploaderId = user?.id || kycRecord?.userId || 'user-id';
+      const channelName = kycRecord?.fullLegalName || 'Verified Contributor';
+      const constituencyId = `${stateCode}-AC-${myHome.acNo}`;
+
+      const res = await uploadShort({
+        title,
+        videoUrl,
+        channelName,
+        uploadedBy: uploaderId,
+        stateCode,
+        stateName,
+        constituencyId,
+        districtName: myHome.district,
+        duration: 45,
+        hashtags: parsedTags,
+        gradientColors: ['#0F2027', '#203A43'],
+        stateAccent: '#4F8EF7',
+      });
+
+      if (!res.success) {
+        throw new Error('Upload failed');
+      }
+
+      // Optimistic-UI store cache
       addShort({
         title,
         description,
-        channelName: kycRecord?.fullLegalName || 'Verified Contributor',
+        channelName,
         channelVerified: true,
         stateCode,
         stateName,
-        constituencyId: `${stateCode}-AC-${myHome.acNo}`,
+        constituencyId,
         districtName: myHome.district,
         hashtags: parsedTags,
-        duration: 45, // default mockup duration
+        duration: 45,
         videoUrl,
-        gradientColors: ['#0F2027', '#203A43'], // fallback gradient
+        gradientColors: ['#0F2027', '#203A43'],
         stateAccent: '#4F8EF7',
-        uploadedBy: kycRecord?.userId || 'user-id',
+        uploadedBy: uploaderId,
       });
 
-      setLoading(false);
       Alert.alert(t('uploadShort.alertSuccessTitle'), t('uploadShort.alertSuccessMessage'), [
         {
           text: 'OK',
@@ -148,8 +169,15 @@ export default function UploadShortModal({ visible, onClose }: UploadShortModalP
           },
         },
       ]);
-    }, 1500);
-  }, [title, description, videoUrl, hashtagsStr, acceptedTerms, myHome, stateCode, stateName, kycRecord, addShort, onClose]);
+    } catch (err) {
+      Alert.alert(
+        t('uploadShort.alertErrorTitle', { defaultValue: 'Upload Failed' }),
+        t('uploadShort.alertErrorMessage', { defaultValue: 'Could not upload your short. Please check your network and try again.' })
+      );
+    } finally {
+      setLoading(false);
+    }
+  }, [title, description, videoUrl, hashtagsStr, acceptedTerms, myHome, stateCode, stateName, kycRecord, user, addShort, onClose, t]);
 
   return (
     <Modal

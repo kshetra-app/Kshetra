@@ -22,6 +22,7 @@ import {
   shouldAutoRestrict,
   RISK_TIER_CONFIG,
 } from '../lib/contentPromotionTypes';
+import * as dataService from '../lib/supabaseDataService';
 
 // ─── State Interface ────────────────────────────────────────────────────────
 
@@ -309,11 +310,11 @@ export const useContentPromotionStore = create<ContentPromotionState>()((set, ge
     const record = get().visibilityRecords.find(
       (r) => r.contentType === params.contentType && r.contentId === params.contentId,
     );
-    if (!record) return;
 
+    const alertId = `alert_${Date.now().toString(36)}_${Math.random().toString(36).slice(2, 8)}`;
     const alert: ContentAlert = {
-      id: `alert_${Date.now().toString(36)}_${Math.random().toString(36).slice(2, 8)}`,
-      contentVisibilityId: record.id,
+      id: alertId,
+      contentVisibilityId: record?.id ?? `cv_${params.contentId}`,
       userId: params.userId,
       severity: params.severity,
       reason: params.reason,
@@ -327,16 +328,56 @@ export const useContentPromotionStore = create<ContentPromotionState>()((set, ge
 
     set((s) => ({
       alerts: [...s.alerts, alert],
-      visibilityRecords: s.visibilityRecords.map((r) =>
-        r.id === record.id
-          ? {
-              ...r,
-              alertCount: r.alertCount + 1,
-              reviewStatus: 'held' as ReviewStatus,
-            }
-          : r,
-      ),
+      visibilityRecords: record
+        ? s.visibilityRecords.map((r) =>
+            r.id === record.id
+              ? {
+                  ...r,
+                  alertCount: r.alertCount + 1,
+                  reviewStatus: 'held' as ReviewStatus,
+                }
+              : r,
+          )
+        : s.visibilityRecords,
     }));
+
+    // Persist to Supabase and dispatch to department pipeline
+    (async () => {
+      try {
+        const res = await dataService.createContentAlert({
+          contentVisibilityId: record?.id,
+          contentType: params.contentType,
+          contentId: params.contentId,
+          userId: params.userId,
+          severity: params.severity,
+          reason: params.reason,
+          category: params.category,
+        });
+
+        // Route urgent alert to appropriate department
+        const deptTypeMap: Record<string, string> = {
+          imminent_violence: 'police',
+          doxxing: 'police',
+          child_safety: 'women_child_helpline',
+          election_interference: 'collectorate',
+          impersonation_official: 'collectorate',
+          other: 'collectorate',
+        };
+        const deptType = deptTypeMap[params.category] || 'collectorate';
+
+        await dataService.dispatchDepartmentAlert({
+          department_type: deptType,
+          reporter_id: params.userId,
+          ai_summary: `[Citizen Content Alert - ${params.category}] ${params.reason}`,
+          delivery_status: 'dispatched',
+          content_alert_id: res.id,
+          content_type: params.contentType,
+          content_id: params.contentId,
+        });
+      } catch (err) {
+        console.warn('[ContentPromotion] alertContent sync error:', err);
+      }
+    })();
   },
 
   // ─── Moderator Actions ──────────────────────────────────────────────
@@ -439,6 +480,15 @@ export const useContentPromotionStore = create<ContentPromotionState>()((set, ge
           : a,
       ),
     }));
+
+    (async () => {
+      try {
+        await dataService.acknowledgeContentAlert(alertId, moderatorId, action);
+        await dataService.acknowledgeDepartmentAlert(alertId, 'genuine', moderatorId);
+      } catch (err) {
+        console.warn('[ContentPromotion] acknowledgeAlert sync error:', err);
+      }
+    })();
   },
 
   // ─── System Auto-Promotion Check ───────────────────────────────────

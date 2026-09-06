@@ -15,6 +15,7 @@ import {
   KeyboardAvoidingView,
   Alert,
   Linking,
+  Share,
   useWindowDimensions,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
@@ -247,9 +248,13 @@ function ShortPageItem({
     setShowCurationPrompt(false);
   }, []);
 
-  const handleNativeShare = useCallback(() => {
-    Platform.OS !== 'web' ? Alert.alert(t('shortsPlayer.alertShareTitle'), t('shortsPlayer.alertShareMessage', { title: item.title })) : null;
-  }, [item.title]);
+  const handleNativeShare = useCallback(async () => {
+    try {
+      await Share.share({
+        message: `${item.title}\n${item.videoUrl}\n\n— via Kshetra Shorts`,
+      });
+    } catch (_) {}
+  }, [item.title, item.videoUrl]);
 
   const handlePostComment = useCallback(() => {
     if (!commentText.trim()) return;
