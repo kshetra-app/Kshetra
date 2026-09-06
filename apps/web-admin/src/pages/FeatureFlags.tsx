@@ -38,11 +38,10 @@ const ALL_FLAGS: FlagMetadata[] = [
   { key: 'enableShortsTab', label: 'Short Video Clips (Shorts)', category: 'Phase 3: Real-Time', description: 'Vertical political video reels & soundbites' },
 
   { key: 'enableDelimitation', label: 'Delimitation Simulator', category: 'Phase 4: Intelligence', description: 'Post-2026 Lok Sabha & Assembly boundary reapportionment modeler' },
-  { key: 'enableDeepAnalytics', label: 'Deep Spatial Analytics', category: 'Phase 4: Intelligence', description: 'Demographic shifts, voter turnout trends & swing analysis' },
 
   { key: 'enablePoliticianPortal', label: 'Politician Portal', category: 'Phase 5: Commercial', description: 'Candidate dashboard, voter CRM & volunteer outreach' },
   { key: 'enableAspirants', label: 'Political Aspirant Incubation', category: 'Phase 5: Commercial', description: 'New candidate onboarding & constituency readiness scores' },
-  { key: 'enableCampaignManager', label: 'Campaign Manager HQ', category: 'Phase 5: Commercial', description: 'SMS, WhatsApp, audio broadcast dispatch & field logistics' },
+  { key: 'enableCampaignManager', label: 'Campaign Manager HQ', category: 'Phase 5: Commercial', description: 'Voice OBD & booth/cadre campaign tools' },
   { key: 'enableLeadershipAcademy', label: 'Leadership Academy', category: 'Phase 5: Commercial', description: 'Training courses & governance certifications for youth leaders' },
 ];
 

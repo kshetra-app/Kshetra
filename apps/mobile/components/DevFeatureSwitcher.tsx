@@ -113,11 +113,6 @@ const FLAG_GROUPS: FlagGroup[] = [
         label: 'Delimitation Simulator',
         description: 'Post-census redistricting projections',
       },
-      {
-        key: 'enableDeepAnalytics',
-        label: 'KSHETRA Pulse Core',
-        description: 'Anti-incumbency vulnerability & sentiment radar',
-      },
     ],
   },
   {
@@ -137,7 +132,7 @@ const FLAG_GROUPS: FlagGroup[] = [
       {
         key: 'enableCampaignManager',
         label: 'Campaign Manager',
-        description: 'WhatsApp/SMS outreach panel & field ops',
+        description: 'Voice OBD & booth/cadre campaign tools',
       },
       {
         key: 'enableLeadershipAcademy',
@@ -154,11 +149,6 @@ const FLAG_GROUPS: FlagGroup[] = [
         key: 'enableInvestorDemo',
         label: 'Investor Demo Hub',
         description: 'Metric showcase & moat visualizations',
-      },
-      {
-        key: 'enableEnterpriseApis',
-        label: 'Enterprise API Gateway',
-        description: 'B2B/B2G API suite & usage metering',
       },
     ],
   },

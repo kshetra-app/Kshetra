@@ -100,7 +100,6 @@ export function useFeatureFlags(): AppFeatureFlags {
       enableShortsTab: state.enableShortsTab,
 
       enableDelimitation: state.enableDelimitation,
-      enableDeepAnalytics: state.enableDeepAnalytics,
 
       enablePoliticianPortal: state.enablePoliticianPortal,
       enableAspirants: state.enableAspirants,
@@ -108,7 +107,6 @@ export function useFeatureFlags(): AppFeatureFlags {
       enableLeadershipAcademy: state.enableLeadershipAcademy,
 
       enableInvestorDemo: state.enableInvestorDemo,
-      enableEnterpriseApis: state.enableEnterpriseApis,
     })),
   );
 }

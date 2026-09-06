@@ -38,15 +38,13 @@ export interface AppFeatureFlags {
   // ── Phase 4: Delimitation & Real-Time Deep Analytics ──
   /** Delimitation boundary simulator & impact analysis */
   enableDelimitation: boolean;
-  /** KSHETRA Pulse Core (Anti-incumbency vulnerability, sentiment radar, AI briefs) */
-  enableDeepAnalytics: boolean;
 
   // ── Phase 5: Political SaaS & Campaign Tools ──
   /** Verified legislator dashboard & KYC portal */
   enablePoliticianPortal: boolean;
   /** Candidate onboarding & Candidate X-Ray */
   enableAspirants: boolean;
-  /** WhatsApp / SMS outreach panel & field campaign manager */
+  /** Voice OBD & booth/cadre campaign tools */
   enableCampaignManager: boolean;
   /** Aspirant training courses & certification */
   enableLeadershipAcademy: boolean;
@@ -54,8 +52,6 @@ export interface AppFeatureFlags {
   // ── Phase 6: Enterprise & B2B ──
   /** Investor demo showcase & moat visualization */
   enableInvestorDemo: boolean;
-  /** Enterprise B2B / B2G API Suite & metering */
-  enableEnterpriseApis: boolean;
 }
 
 /**
@@ -82,7 +78,6 @@ export const DEFAULT_FEATURE_FLAGS: AppFeatureFlags = {
 
   // Phase 4 (Delimitation & Deep Analytics - Active)
   enableDelimitation: true,
-  enableDeepAnalytics: true,
 
   // Phase 5 (Political SaaS - Active)
   enablePoliticianPortal: true,
@@ -91,6 +86,5 @@ export const DEFAULT_FEATURE_FLAGS: AppFeatureFlags = {
   enableLeadershipAcademy: true,
 
   // Phase 6 (Enterprise & B2B - Active)
-  enableInvestorDemo: true,
-  enableEnterpriseApis: true,
+  enableInvestorDemo: false,
 };
