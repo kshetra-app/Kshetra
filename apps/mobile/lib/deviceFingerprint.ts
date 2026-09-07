@@ -13,11 +13,13 @@
  *   - Public IP fetched via lightweight API call
  *
  * Required packages (must be installed):
- *   - expo-device (brand, model, OS details, memory)
- *   - expo-application (app version, build, bundle ID, androidId)
  *   - expo-location (already installed)
  *   - expo-constants (already installed)
- *   - @react-native-community/netinfo (already installed via expo)
+ *
+ * Optional packages (gracefully degrades if not installed/linked):
+ *   - expo-device (brand, model, OS details, memory)
+ *   - expo-application (app version, build, bundle ID, androidId)
+ *   - @react-native-community/netinfo (connection type, carrier)
  */
 
 import { Platform } from 'react-native';
@@ -46,58 +48,93 @@ export function resetSessionId(): void {
   _sessionId = null;
 }
 
-// ─── Device Info ────────────────────────────────────────────────────────────
+// ─── Safe Dynamic Import Helpers ────────────────────────────────────────────
+// Metro bundler resolves dynamic imports at build time. If the native module
+// is not linked (not in app.json plugins, or not in package.json dependencies),
+// the import may succeed (JS shim exists) but accessing native bridge properties
+// will throw a fatal native error. We wrap EVERY access in its own try/catch.
 
-export async function captureDeviceFingerprint(): Promise<DeviceFingerprint> {
+async function safeImport(moduleName: string): Promise<any | null> {
   try {
-    // Try to use expo-device if available
-    const Device = await importExpoDevice();
-
-    return {
-      brand: Device?.brand ?? null,
-      model: Device?.modelName ?? null,
-      os: Platform.OS === 'ios' ? 'iOS' : 'Android',
-      osVersion: String(Platform.Version),
-      deviceUniqueId: await getDeviceUniqueId(),
-      deviceName: Device?.deviceName ?? null,
-      totalMemoryMb: Device?.totalMemory
-        ? Math.round(Device.totalMemory / (1024 * 1024))
-        : null,
-    };
-  } catch {
-    // Fallback if expo-device not installed
-    return {
-      brand: null,
-      model: null,
-      os: Platform.OS === 'ios' ? 'iOS' : 'Android',
-      osVersion: String(Platform.Version),
-      deviceUniqueId: await getDeviceUniqueId(),
-      deviceName: Constants.deviceName ?? null,
-      totalMemoryMb: null,
-    };
-  }
-}
-
-async function importExpoDevice(): Promise<any | null> {
-  try {
-    return await import('expo-device');
+    switch (moduleName) {
+      case 'expo-device': return await import('expo-device');
+      case 'expo-application': return await import('expo-application');
+      case '@react-native-community/netinfo': return await import('@react-native-community/netinfo');
+      default: return null;
+    }
   } catch {
     return null;
   }
+}
+
+// ─── Device Info ────────────────────────────────────────────────────────────
+
+export async function captureDeviceFingerprint(): Promise<DeviceFingerprint> {
+  // Start with a safe fallback
+  const fingerprint: DeviceFingerprint = {
+    brand: null,
+    model: null,
+    os: Platform.OS === 'ios' ? 'iOS' : 'Android',
+    osVersion: String(Platform.Version),
+    deviceUniqueId: null,
+    deviceName: null,
+    totalMemoryMb: null,
+  };
+
+  // Try expo-device for brand/model/memory (non-critical)
+  try {
+    const Device = await safeImport('expo-device');
+    if (Device) {
+      fingerprint.brand = Device.brand ?? null;
+      fingerprint.model = Device.modelName ?? null;
+      fingerprint.deviceName = Device.deviceName ?? null;
+      fingerprint.totalMemoryMb = Device.totalMemory
+        ? Math.round(Device.totalMemory / (1024 * 1024))
+        : null;
+    }
+  } catch {
+    // expo-device not available or native module not linked — continue
+  }
+
+  // Fallback deviceName from Constants
+  if (!fingerprint.deviceName) {
+    try {
+      fingerprint.deviceName = Constants.deviceName ?? null;
+    } catch {
+      // ignore
+    }
+  }
+
+  // Try to get unique device ID (non-critical)
+  fingerprint.deviceUniqueId = await getDeviceUniqueId();
+
+  return fingerprint;
 }
 
 async function getDeviceUniqueId(): Promise<string | null> {
   try {
-    const Application = await import('expo-application');
+    const Application = await safeImport('expo-application');
+    if (!Application) return null;
+
     if (Platform.OS === 'android') {
-      return Application.getAndroidId();
+      // getAndroidId() is synchronous and accesses a native property.
+      // If the native module is not linked, this will throw.
+      try {
+        return Application.getAndroidId();
+      } catch {
+        return null;
+      }
     }
     if (Platform.OS === 'ios') {
-      return await Application.getIosIdForVendorAsync();
+      try {
+        return await Application.getIosIdForVendorAsync();
+      } catch {
+        return null;
+      }
     }
     return null;
   } catch {
-    // expo-application not installed — generate a persistent fallback ID
+    // expo-application not installed — return null
     return null;
   }
 }
@@ -114,7 +151,7 @@ export async function captureNetworkFingerprint(): Promise<NetworkFingerprint> {
     isConnected: true,
   };
 
-  // Get public IP via lightweight API
+  // Get public IP via lightweight API (non-critical)
   try {
     const controller = new AbortController();
     const timeout = setTimeout(() => controller.abort(), 3000);
@@ -130,31 +167,35 @@ export async function captureNetworkFingerprint(): Promise<NetworkFingerprint> {
     // Public IP fetch failed — not critical
   }
 
-  // Try NetInfo for connection type and carrier
+  // Try NetInfo for connection type and carrier (non-critical)
   try {
-    const NetInfo = await import('@react-native-community/netinfo');
-    const state = await NetInfo.default.fetch();
-    result.isConnected = state.isConnected ?? true;
+    const NetInfo = await safeImport('@react-native-community/netinfo');
+    if (NetInfo) {
+      const fetchFn = NetInfo.default?.fetch ?? NetInfo.fetch;
+      if (typeof fetchFn === 'function') {
+        const state = await fetchFn();
+        result.isConnected = state.isConnected ?? true;
 
-    if (state.type === 'wifi') {
-      result.networkType = 'wifi';
-      // WiFi details may require ACCESS_FINE_LOCATION permission
-      if (state.details && 'ssid' in state.details) {
-        result.wifiSsid = (state.details as any).ssid ?? null;
+        if (state.type === 'wifi') {
+          result.networkType = 'wifi';
+          if (state.details && 'ssid' in state.details) {
+            result.wifiSsid = (state.details as any).ssid ?? null;
+          }
+          if (state.details && 'ipAddress' in state.details) {
+            result.localIp = (state.details as any).ipAddress ?? null;
+          }
+        } else if (state.type === 'cellular') {
+          result.networkType = 'cellular';
+          if (state.details && 'carrier' in state.details) {
+            result.carrierName = (state.details as any).carrier ?? null;
+          }
+        } else if (state.type === 'ethernet') {
+          result.networkType = 'ethernet';
+        }
       }
-      if (state.details && 'ipAddress' in state.details) {
-        result.localIp = (state.details as any).ipAddress ?? null;
-      }
-    } else if (state.type === 'cellular') {
-      result.networkType = 'cellular';
-      if (state.details && 'carrier' in state.details) {
-        result.carrierName = (state.details as any).carrier ?? null;
-      }
-    } else if (state.type === 'ethernet') {
-      result.networkType = 'ethernet';
     }
   } catch {
-    // NetInfo not available
+    // NetInfo not available — continue with defaults
   }
 
   return result;
@@ -215,14 +256,26 @@ export async function captureAppFingerprint(): Promise<AppFingerprint> {
   let build: string | null = null;
   let bundleId: string | null = null;
 
+  // Try expo-application for native app info
   try {
-    const Application = await import('expo-application');
-    version = Application.nativeApplicationVersion ?? version;
-    build = Application.nativeBuildVersion ?? null;
-    bundleId = Application.applicationId ?? null;
+    const Application = await safeImport('expo-application');
+    if (Application) {
+      // Each access wrapped individually — native module might not be linked
+      try { version = Application.nativeApplicationVersion ?? version; } catch { /* ignore */ }
+      try { build = Application.nativeBuildVersion ?? null; } catch { /* ignore */ }
+      try { bundleId = Application.applicationId ?? null; } catch { /* ignore */ }
+    }
   } catch {
-    // expo-application not installed — use Constants fallback
-    version = Constants.expoConfig?.version ?? version;
+    // Fall through to Constants fallback
+  }
+
+  // Fallback to Constants
+  if (version === '0.1.0') {
+    try {
+      version = Constants.expoConfig?.version ?? version;
+    } catch {
+      // ignore
+    }
   }
 
   return {
@@ -241,13 +294,37 @@ export async function captureAppFingerprint(): Promise<AppFingerprint> {
  *
  * Performance: ~1-3 seconds due to IP lookup + location. Network and location
  * captures are parallel for speed.
+ *
+ * Safety: This function NEVER throws. If any capture fails, it returns
+ * safe defaults. A failed snapshot must NOT block KYC or content actions.
  */
 export async function captureForensicSnapshot(): Promise<ForensicSnapshot> {
+  // Run all captures in parallel, each with its own error isolation
   const [device, network, location, app] = await Promise.all([
-    captureDeviceFingerprint(),
-    captureNetworkFingerprint(),
-    captureLocationFingerprint(),
-    captureAppFingerprint(),
+    captureDeviceFingerprint().catch((): DeviceFingerprint => ({
+      brand: null,
+      model: null,
+      os: Platform.OS === 'ios' ? 'iOS' : 'Android',
+      osVersion: String(Platform.Version),
+      deviceUniqueId: null,
+      deviceName: null,
+      totalMemoryMb: null,
+    })),
+    captureNetworkFingerprint().catch((): NetworkFingerprint => ({
+      publicIp: null,
+      localIp: null,
+      networkType: 'unknown',
+      carrierName: null,
+      wifiSsid: null,
+      isConnected: true,
+    })),
+    captureLocationFingerprint().catch(() => null),
+    captureAppFingerprint().catch((): AppFingerprint => ({
+      version: Constants.expoConfig?.version ?? '0.1.0',
+      build: null,
+      bundleId: null,
+      sessionId: getSessionId(),
+    })),
   ]);
 
   return {
@@ -265,8 +342,21 @@ export async function captureForensicSnapshot(): Promise<ForensicSnapshot> {
  */
 export async function captureLightSnapshot(): Promise<ForensicSnapshot> {
   const [device, app] = await Promise.all([
-    captureDeviceFingerprint(),
-    captureAppFingerprint(),
+    captureDeviceFingerprint().catch((): DeviceFingerprint => ({
+      brand: null,
+      model: null,
+      os: Platform.OS === 'ios' ? 'iOS' : 'Android',
+      osVersion: String(Platform.Version),
+      deviceUniqueId: null,
+      deviceName: null,
+      totalMemoryMb: null,
+    })),
+    captureAppFingerprint().catch((): AppFingerprint => ({
+      version: Constants.expoConfig?.version ?? '0.1.0',
+      build: null,
+      bundleId: null,
+      sessionId: getSessionId(),
+    })),
   ]);
 
   return {

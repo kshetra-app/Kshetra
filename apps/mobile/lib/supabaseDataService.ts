@@ -812,16 +812,27 @@ export async function endorseAspirant(endorserId: string, aspirantId: string, me
 export async function submitKYC(userId: string, kyc: {
   fullLegalName: string;
   phoneNumber: string;
-  selfieUrl?: string;
-  selfieHash?: string;
-  deviceBrand?: string;
-  deviceModel?: string;
-  deviceOs?: string;
-  deviceOsVersion?: string;
-  deviceUniqueId?: string;
-  latitude?: number;
-  longitude?: number;
-  appVersion?: string;
+  phoneVerified?: boolean;
+  selfieUrl?: string | null;
+  selfieHash?: string | null;
+  deviceBrand?: string | null;
+  deviceModel?: string | null;
+  deviceOs?: string | null;
+  deviceOsVersion?: string | null;
+  deviceUniqueId?: string | null;
+  deviceName?: string | null;
+  ipAddress?: string | null;
+  networkType?: string | null;
+  carrierName?: string | null;
+  latitude?: number | null;
+  longitude?: number | null;
+  locationAccuracy?: number | null;
+  locationAddress?: string | null;
+  appVersion?: string | null;
+  appBuild?: string | null;
+  status?: 'pending' | 'verified' | 'rejected' | 'suspended' | 'revoked';
+  termsAcceptedAt?: string;
+  termsVersion?: string;
 }): Promise<{ id: string | null; success: boolean }> {
   if (!guard()) return { id: `local-kyc-${Date.now()}`, success: true };
   try {
@@ -832,6 +843,7 @@ export async function submitKYC(userId: string, kyc: {
         user_id: userId,
         full_legal_name: kyc.fullLegalName,
         phone_number: kyc.phoneNumber,
+        phone_verified: kyc.phoneVerified ?? false,
         selfie_url: kyc.selfieUrl ?? null,
         selfie_hash: kyc.selfieHash ?? null,
         device_brand: kyc.deviceBrand ?? null,
@@ -839,10 +851,21 @@ export async function submitKYC(userId: string, kyc: {
         device_os: kyc.deviceOs ?? null,
         device_os_version: kyc.deviceOsVersion ?? null,
         device_unique_id: kyc.deviceUniqueId ?? null,
+        device_name: kyc.deviceName ?? null,
+        ip_address: kyc.ipAddress ?? null,
+        network_type: kyc.networkType ?? null,
+        carrier_name: kyc.carrierName ?? null,
         latitude: kyc.latitude ?? null,
         longitude: kyc.longitude ?? null,
+        location_accuracy: kyc.locationAccuracy ?? null,
+        location_address: kyc.locationAddress ?? null,
         app_version: kyc.appVersion ?? null,
-        status: 'pending_review',
+        app_build: kyc.appBuild ?? null,
+        status: kyc.status ?? 'verified',
+        verified_at: (kyc.status ?? 'verified') === 'verified' ? new Date().toISOString() : null,
+        terms_accepted_at: kyc.termsAcceptedAt ?? new Date().toISOString(),
+        terms_version: kyc.termsVersion ?? '1.0',
+        updated_at: new Date().toISOString(),
       }, { onConflict: 'user_id' })
       .select('id')
       .single();
@@ -851,6 +874,111 @@ export async function submitKYC(userId: string, kyc: {
   } catch (err) {
     captureException(err as Error, { op: 'submit_kyc' });
     return { id: null, success: false };
+  }
+}
+
+export async function insertActionFingerprint(fp: {
+  userId: string;
+  kycId?: string | null;
+  actionType: string;
+  contentType?: string | null;
+  contentId?: string | null;
+  contentHash?: string | null;
+  deviceBrand?: string | null;
+  deviceModel?: string | null;
+  deviceOs?: string | null;
+  deviceOsVersion?: string | null;
+  deviceUniqueId?: string | null;
+  deviceName?: string | null;
+  ipAddress?: string | null;
+  localIp?: string | null;
+  networkType?: string | null;
+  carrierName?: string | null;
+  wifiSsid?: string | null;
+  latitude?: number | null;
+  longitude?: number | null;
+  locationAccuracy?: number | null;
+  appVersion?: string | null;
+  appBuild?: string | null;
+  sessionId?: string | null;
+  screenName?: string | null;
+  actionAt?: string;
+}): Promise<{ id: string | null; success: boolean }> {
+  if (!guard()) return { id: `local-fp-${Date.now()}`, success: true };
+  try {
+    addBreadcrumb('cca', 'insert_action_fingerprint', { actionType: fp.actionType, userId: fp.userId });
+    const { data, error } = await supabase
+      .from('action_fingerprints')
+      .insert({
+        user_id: fp.userId,
+        kyc_id: fp.kycId ?? null,
+        action_type: fp.actionType,
+        content_type: fp.contentType ?? null,
+        content_id: fp.contentId ?? null,
+        content_hash: fp.contentHash ?? null,
+        device_brand: fp.deviceBrand ?? null,
+        device_model: fp.deviceModel ?? null,
+        device_os: fp.deviceOs ?? null,
+        device_os_version: fp.deviceOsVersion ?? null,
+        device_unique_id: fp.deviceUniqueId ?? null,
+        device_name: fp.deviceName ?? null,
+        ip_address: fp.ipAddress ?? null,
+        local_ip: fp.localIp ?? null,
+        network_type: fp.networkType ?? null,
+        carrier_name: fp.carrierName ?? null,
+        wifi_ssid: fp.wifiSsid ?? null,
+        latitude: fp.latitude ?? null,
+        longitude: fp.longitude ?? null,
+        location_accuracy: fp.locationAccuracy ?? null,
+        app_version: fp.appVersion ?? null,
+        app_build: fp.appBuild ?? null,
+        session_id: fp.sessionId ?? null,
+        screen_name: fp.screenName ?? null,
+        action_at: fp.actionAt ?? new Date().toISOString(),
+      })
+      .select('id')
+      .single();
+    if (error) throw error;
+    return { id: data?.id ?? null, success: true };
+  } catch (err) {
+    captureException(err as Error, { op: 'insert_action_fingerprint', actionType: fp.actionType });
+    return { id: null, success: false };
+  }
+}
+
+export async function upsertContributorDevice(device: {
+  userId: string;
+  deviceBrand?: string | null;
+  deviceModel?: string | null;
+  deviceOs?: string | null;
+  deviceOsVersion?: string | null;
+  deviceUniqueId: string;
+  deviceName?: string | null;
+  deviceMemoryMb?: number | null;
+  isTrusted?: boolean;
+}): Promise<boolean> {
+  if (!guard()) return true;
+  try {
+    addBreadcrumb('cca', 'upsert_contributor_device', { userId: device.userId, deviceUniqueId: device.deviceUniqueId });
+    const { error } = await supabase
+      .from('contributor_devices')
+      .upsert({
+        user_id: device.userId,
+        device_brand: device.deviceBrand ?? null,
+        device_model: device.deviceModel ?? null,
+        device_os: device.deviceOs ?? null,
+        device_os_version: device.deviceOsVersion ?? null,
+        device_unique_id: device.deviceUniqueId,
+        device_name: device.deviceName ?? null,
+        device_memory_mb: device.deviceMemoryMb ?? null,
+        last_seen_at: new Date().toISOString(),
+        is_trusted: device.isTrusted ?? true,
+      }, { onConflict: 'user_id,device_unique_id' });
+    if (error) throw error;
+    return true;
+  } catch (err) {
+    captureException(err as Error, { op: 'upsert_contributor_device' });
+    return false;
   }
 }
 

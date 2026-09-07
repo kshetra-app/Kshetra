@@ -78,6 +78,7 @@
 | Sprint 55: Kshetra Live Media Exchange (LMX) — Phase 1 Vertical Slice | ✅ Complete | 2026-07-25 | 2026-07-25 |
 | Sprint 65: More Tab & Sub-Pages 100% Localization (All 13 Languages) | ✅ Complete | 2026-09-01 | 2026-09-01 |
 | Sprint 66: 31-State Constituency & Map Data Rectification (100% Official Assembly Strength) | ✅ Complete | 2026-09-03 | 2026-09-03 |
+| Sprint 67: Content Creator Accountability (CCA) Crash Fix & End-to-End Supabase Forensic Synchronization | ✅ Complete | 2026-09-07 | 2026-09-07 |
 
 ---
 
@@ -5824,6 +5825,30 @@ Questions asked via the AI Chat feature (`apps/mobile/app/ai-chat.tsx`) and AI S
 - **Multi-Turn Chat Benchmark**: Verified multi-turn query responses in 2.9s and 4.5s with complete candidate, party, and margin accuracy.
 - **Backend Jest Test Suites**: 29/29 tests passing.
 - **TypeScript Compilation**: Clean 0 errors across `apps/mobile` and `apps/api`.
+
+---
+
+## Sprint 67: Content Creator Accountability (CCA) Crash Fix & End-to-End Supabase Forensic Synchronization
+
+**Date**: 2026-09-07  
+**Goal**: Resolve fatal KYC submission crashes, harden device fingerprinting against unlinked native modules, wire live Supabase forensic writes, and enforce CCA gating & forensic audit logging across all content-creation touchpoints.
+
+### Key Problems Resolved
+1. **Fatal Native Crash on KYC Completion**:
+   - `captureForensicSnapshot()` dynamically imported `expo-device`, `expo-application`, and `@react-native-community/netinfo`. While JS stubs existed transitively in `node_modules`, native modules were not linked in the build.
+   - Accessing native getters (such as `ExpoApplication.androidId`) caused hard native runtime aborts that bypassed JS `try/catch`.
+   - **Fix**: Completely rewrote `apps/mobile/lib/deviceFingerprint.ts` with isolated safe wrappers, per-field try/catches, and safe fallbacks. KYC submission never throws.
+2. **Disconnected Supabase Ingestion**:
+   - The Supabase migration `013_content_accountability.sql` had created `creator_kyc_records`, `action_fingerprints`, and `contributor_devices`, but in `apps/mobile/lib/contentAccountability.ts` the Supabase write calls were commented out.
+   - Expanded `submitKYC` in `apps/mobile/lib/supabaseDataService.ts` to support all 19 schema columns with auto-verified status for launch readiness.
+   - Added `insertActionFingerprint` and `upsertContributorDevice` to `supabaseDataService.ts` and connected them asynchronously to `logContentAction` and `submitKYC`.
+3. **Universal Content Gating & Audit Logging**:
+   - Added `gateContentAction` and `logContentAction` across political shorts upload (`UploadShortModal.tsx`), post details (`PostDetailModal.tsx`), social feed (`feed.tsx`), civic issues (`issue/[id].tsx` and `dashboard.tsx`), constituency pulse (`constituency/[id].tsx`), live streaming (`go-live.tsx`), and profile edits (`representative/edit/[id].tsx`).
+   - High-severity actions capture full forensic snapshots (GPS + IP + Network + Device); lightweight actions capture device + session info.
+
+### Verification
+- `npx tsc --noEmit -p apps/mobile/tsconfig.json`: Passed with **0 errors**.
+
 
 
 

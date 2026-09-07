@@ -14,7 +14,7 @@ import { useTheme } from '../../../lib/useTheme';
 import { getRepresentativeById } from '../../../lib/representativesData';
 import type { Representative } from '@kshetra/shared';
 import { submitRepresentativeEdit } from '../../../lib/representativeEdits';
-import { gateContentAction } from '../../../lib/contentAccountability';
+import { gateContentAction, logContentAction } from '../../../lib/contentAccountability';
 import { useContributorVerificationStore } from '../../../stores/contributorVerification';
 
 const EDITABLE_FIELDS: { key: string; label: string; keyboard?: 'default' | 'phone-pad' | 'email-address' | 'url' }[] = [
@@ -109,6 +109,13 @@ export default function RepresentativeEditScreen() {
       });
 
       if (result.success) {
+        logContentAction('add_evidence', {
+          type: 'representative_edit',
+          id: String(id ?? ''),
+          body: sourceUrl.trim(),
+          screenName: 'representative_edit',
+        });
+
         Alert.alert(
           'Thank you',
           result.queued

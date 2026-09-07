@@ -38,6 +38,7 @@ import { useTranslation } from 'react-i18next';
 import { STATES } from '@kshetra/shared';
 import { useContentPromotionStore } from '../../stores/contentPromotion';
 import { useTheme } from '../../lib/theme';
+import { gateContentAction, logContentAction } from '../../lib/contentAccountability';
 
 const FILTER_TAB_KEYS: { key: PostType | 'all'; tKey: string; icon: string }[] = [
   { key: 'all', tKey: 'feed.filters.all', icon: 'grid' },
@@ -259,12 +260,24 @@ export default function FeedScreen({ hideHeader = false }: FeedScreenProps = {})
 
   const handleDelete = useCallback(
     (post: Post) => {
+      if (!gateContentAction('delete_post')) return;
       Alert.alert(
         t('postCard.deleteConfirm'),
         t('postCard.deleteConfirmBody'),
         [
           { text: t('postCard.cancel'), style: 'cancel' },
-          { text: t('postCard.delete'), style: 'destructive', onPress: () => deletePost(post.id) },
+          {
+            text: t('postCard.delete'),
+            style: 'destructive',
+            onPress: () => {
+              deletePost(post.id);
+              logContentAction('delete_post', {
+                type: 'post',
+                id: post.id,
+                screenName: 'feed',
+              });
+            },
+          },
         ],
       );
     },
@@ -597,7 +610,16 @@ export default function FeedScreen({ hideHeader = false }: FeedScreenProps = {})
                 post={item}
                 isOwner={isOwner}
                 onPress={() => handleCardPress(item)}
-                onReact={(reaction) => toggleReaction(item.id, reaction)}
+                onReact={(reaction) => {
+                  if (!gateContentAction('react_post')) return;
+                  toggleReaction(item.id, reaction);
+                  logContentAction('react_post', {
+                    type: 'post',
+                    id: item.id,
+                    body: reaction,
+                    screenName: 'feed',
+                  });
+                }}
                 onReply={() => handleReplyPress(item)}
                 onShare={() => handleShare(item)}
                 onEdit={() => handleEdit(item)}
@@ -608,7 +630,16 @@ export default function FeedScreen({ hideHeader = false }: FeedScreenProps = {})
                 <View style={styles.pollContainer}>
                   <PollCard
                     poll={item.poll}
-                    onVote={(optionId) => votePoll(item.id, optionId)}
+                    onVote={(optionId) => {
+                      if (!gateContentAction('vote_poll')) return;
+                      votePoll(item.id, optionId);
+                      logContentAction('vote_poll', {
+                        type: 'poll',
+                        id: item.id,
+                        body: optionId,
+                        screenName: 'feed',
+                      });
+                    }}
                   />
                 </View>
               )}

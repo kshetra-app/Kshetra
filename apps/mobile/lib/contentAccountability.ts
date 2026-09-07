@@ -15,7 +15,7 @@
  *   - Call `logContentAction()` AFTER successful content creation
  */
 
-import { Alert } from 'react-native';
+import { Alert, Platform } from 'react-native';
 import type {
   ContentActionType,
   ForensicSnapshot,
@@ -34,6 +34,11 @@ import {
   useContributorVerificationStore,
   buildActionFingerprint,
 } from '../stores/contributorVerification';
+import {
+  submitKYC as submitKYCToSupabase,
+  insertActionFingerprint,
+  upsertContributorDevice,
+} from './supabaseDataService';
 
 // ─── Gate Function ──────────────────────────────────────────────────────────
 
@@ -165,8 +170,52 @@ export async function logContentAction(
       });
     }
 
-    // In production: send to Supabase
-    // await supabase.from('action_fingerprints').insert(fingerprintToRow(fingerprint));
+    // Sync to Supabase in background (non-blocking)
+    insertActionFingerprint({
+      userId: kyc.userId,
+      kycId: kyc.id,
+      actionType,
+      contentType: contentInfo?.type ?? null,
+      contentId: contentInfo?.id ?? null,
+      contentHash: fingerprint.contentHash ?? null,
+      deviceBrand: snapshot.device.brand,
+      deviceModel: snapshot.device.model,
+      deviceOs: snapshot.device.os,
+      deviceOsVersion: snapshot.device.osVersion,
+      deviceUniqueId: snapshot.device.deviceUniqueId,
+      deviceName: snapshot.device.deviceName,
+      ipAddress: snapshot.network.publicIp,
+      localIp: snapshot.network.localIp,
+      networkType: snapshot.network.networkType,
+      carrierName: snapshot.network.carrierName,
+      wifiSsid: snapshot.network.wifiSsid,
+      latitude: snapshot.location?.latitude ?? null,
+      longitude: snapshot.location?.longitude ?? null,
+      locationAccuracy: snapshot.location?.accuracy ?? null,
+      appVersion: snapshot.app.version,
+      appBuild: snapshot.app.build,
+      sessionId: snapshot.app.sessionId,
+      screenName: contentInfo?.screenName ?? null,
+      actionAt: fingerprint.actionAt,
+    }).catch((err) => {
+      console.warn('[CCA] Failed to persist action fingerprint to Supabase:', err);
+    });
+
+    if (snapshot.device.deviceUniqueId) {
+      upsertContributorDevice({
+        userId: kyc.userId,
+        deviceBrand: snapshot.device.brand,
+        deviceModel: snapshot.device.model,
+        deviceOs: snapshot.device.os,
+        deviceOsVersion: snapshot.device.osVersion,
+        deviceUniqueId: snapshot.device.deviceUniqueId,
+        deviceName: snapshot.device.deviceName,
+        deviceMemoryMb: snapshot.device.totalMemoryMb,
+        isTrusted: true,
+      }).catch((err) => {
+        console.warn('[CCA] Failed to upsert contributor device to Supabase:', err);
+      });
+    }
 
     return fingerprint;
   } catch (error) {
@@ -202,8 +251,41 @@ export async function submitKYC(
   store.setKYCLoading(true);
 
   try {
-    // Capture full forensic snapshot at KYC time
-    const snapshot = await captureForensicSnapshot();
+    // Capture full forensic snapshot at KYC time.
+    // Wrapped with its own fallback so snapshot failures never block KYC.
+    let snapshot: Awaited<ReturnType<typeof captureForensicSnapshot>>;
+    try {
+      snapshot = await captureForensicSnapshot();
+    } catch (snapshotError) {
+      console.warn('[CCA] Forensic snapshot failed, using safe defaults:', snapshotError);
+      snapshot = {
+        device: {
+          brand: null,
+          model: null,
+          os: Platform.OS === 'ios' ? 'iOS' : 'Android',
+          osVersion: String(Platform.Version),
+          deviceUniqueId: null,
+          deviceName: null,
+          totalMemoryMb: null,
+        },
+        network: {
+          publicIp: null,
+          localIp: null,
+          networkType: 'unknown',
+          carrierName: null,
+          wifiSsid: null,
+          isConnected: true,
+        },
+        location: null,
+        app: {
+          version: '0.1.0',
+          build: null,
+          bundleId: null,
+          sessionId: `sess_${Date.now().toString(36)}_fallback`,
+        },
+        capturedAt: new Date().toISOString(),
+      };
+    }
 
     const now = new Date().toISOString();
 
@@ -236,9 +318,34 @@ export async function submitKYC(
       updatedAt: now,
     };
 
-    // In production: upload to Supabase
-    // const { error } = await supabase.from('creator_kyc_records').insert(kycRecordToRow(kycRecord));
-    // if (error) throw error;
+    // Sync KYC record to Supabase in background (non-blocking)
+    submitKYCToSupabase(userId, {
+      fullLegalName: kycRecord.fullLegalName,
+      phoneNumber: kycRecord.phoneNumber,
+      phoneVerified: kycRecord.phoneVerified,
+      selfieUrl: kycRecord.selfieUrl,
+      selfieHash: kycRecord.selfieHash,
+      deviceBrand: snapshot.device.brand,
+      deviceModel: snapshot.device.model,
+      deviceOs: snapshot.device.os,
+      deviceOsVersion: snapshot.device.osVersion,
+      deviceUniqueId: snapshot.device.deviceUniqueId,
+      deviceName: snapshot.device.deviceName,
+      ipAddress: snapshot.network.publicIp,
+      networkType: snapshot.network.networkType,
+      carrierName: snapshot.network.carrierName,
+      latitude: snapshot.location?.latitude ?? null,
+      longitude: snapshot.location?.longitude ?? null,
+      locationAccuracy: snapshot.location?.accuracy ?? null,
+      locationAddress: snapshot.location?.address ?? null,
+      appVersion: snapshot.app.version,
+      appBuild: snapshot.app.build,
+      status: 'verified',
+      termsAcceptedAt: kycRecord.termsAcceptedAt,
+      termsVersion: kycRecord.termsVersion,
+    }).catch((err) => {
+      console.warn('[CCA] Failed to persist KYC record to Supabase:', err);
+    });
 
     store.setKYCRecord(kycRecord);
     store.setShowKYCSheet(false);
@@ -260,6 +367,20 @@ export async function submitKYC(
         lastSeenAt: now,
         actionCount: 0,
         isTrusted: true,
+      });
+
+      upsertContributorDevice({
+        userId,
+        deviceBrand: snapshot.device.brand,
+        deviceModel: snapshot.device.model,
+        deviceOs: snapshot.device.os,
+        deviceOsVersion: snapshot.device.osVersion,
+        deviceUniqueId: snapshot.device.deviceUniqueId,
+        deviceName: snapshot.device.deviceName,
+        deviceMemoryMb: snapshot.device.totalMemoryMb,
+        isTrusted: true,
+      }).catch((err) => {
+        console.warn('[CCA] Failed to persist device to Supabase during KYC:', err);
       });
     }
 

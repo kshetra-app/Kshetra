@@ -15,6 +15,7 @@ import { useAuthStore } from '../../stores/auth';
 import { useUserProfileStore } from '../../stores/userProfile';
 import { useLiveExchangeStore } from '../../stores/liveExchange';
 import { useContributorVerificationStore } from '../../stores/contributorVerification';
+import { gateContentAction, logContentAction } from '../../lib/contentAccountability';
 import type {
   VisibilityMode,
   IssueCategory,
@@ -189,8 +190,7 @@ export default function GoLiveScreen() {
 
   const handleGoLive = () => {
     // KYC gate — going live is a high-severity content action.
-    const gate = requestAction('go_live');
-    if (!gate.allowed) return; // KYC sheet auto-shown by the store.
+    if (!gateContentAction('go_live')) return;
 
     const event = startLiveEvent({
       reporterId: reporter.id,
@@ -206,6 +206,13 @@ export default function GoLiveScreen() {
       stateCode: 'TS',
       districtName: 'Hyderabad',
       locality: null,
+    });
+
+    logContentAction('go_live', {
+      type: 'live_stream',
+      id: event.id,
+      body: `Live: ${category} - ${tags}`,
+      screenName: 'go_live',
     });
 
     // If the native WebRTC module is compiled in, publish the live camera feed to

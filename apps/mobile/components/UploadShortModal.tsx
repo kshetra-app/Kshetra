@@ -22,6 +22,7 @@ import { usePoliticalShortsStore } from '../stores/politicalShorts';
 import { useAuthStore } from '../stores/auth';
 import { uploadShort } from '../lib/supabaseDataService';
 import { STATES } from '@kshetra/shared';
+import { gateContentAction, logContentAction } from '../lib/contentAccountability';
 
 interface UploadShortModalProps {
   visible: boolean;
@@ -84,6 +85,8 @@ export default function UploadShortModal({ visible, onClose }: UploadShortModalP
   }, []);
 
   const handleSubmit = useCallback(async () => {
+    if (!gateContentAction('create_post')) return;
+
     if (!title.trim()) {
       Alert.alert(t('uploadShort.alertErrorTitle'), t('uploadShort.alertTitleRequired'));
       return;
@@ -136,6 +139,14 @@ export default function UploadShortModal({ visible, onClose }: UploadShortModalP
       if (!res.success) {
         throw new Error('Upload failed');
       }
+
+      // Log action fingerprint with full forensic snapshot & GPS
+      logContentAction('create_post', {
+        type: 'short',
+        id: res.id ?? `short-${Date.now()}`,
+        body: title.trim(),
+        screenName: 'upload_short',
+      });
 
       // Optimistic-UI store cache
       addShort({

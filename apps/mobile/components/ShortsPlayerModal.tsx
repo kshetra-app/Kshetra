@@ -27,6 +27,7 @@ import { usePoliticalShortsStore } from '../stores/politicalShorts';
 import { useMyConstituencyStore } from '../stores/myConstituency';
 import { useActiveStateStore } from '../stores/activeState';
 import { useContributorVerificationStore } from '../stores/contributorVerification';
+import { gateContentAction, logContentAction } from '../lib/contentAccountability';
 
 interface ShortsPlayerModalProps {
   visible: boolean;
@@ -258,18 +259,28 @@ function ShortPageItem({
 
   const handlePostComment = useCallback(() => {
     if (!commentText.trim()) return;
+    if (!gateContentAction('create_comment')) return;
+
+    const newCommentId = Date.now().toString();
+    const commentBody = commentText.trim();
     setComments((prev) => [
       {
-        id: Date.now().toString(),
+        id: newCommentId,
         author: 'You (Verified)',
-        text: commentText,
+        text: commentBody,
         likes: 0,
         time: 'Just now',
       },
       ...prev,
     ]);
+    logContentAction('create_comment', {
+      type: 'political_short_comment',
+      id: item.id,
+      body: commentBody,
+      screenName: 'shorts_player',
+    });
     setCommentText('');
-  }, [commentText]);
+  }, [commentText, item.id]);
 
   // Formatted labels
   const visibilityBadgeLabel = useMemo(() => {

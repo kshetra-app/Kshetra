@@ -22,6 +22,7 @@ import type { Post, Comment } from '../lib/feedTypes';
 import PollCard from './PollCard';
 import ContentGateActions from './ContentGateActions';
 import ReportSheet from './ReportSheet';
+import { gateContentAction, logContentAction } from '../lib/contentAccountability';
 import {
   getLocalizedPost,
   getLocalizedComments,
@@ -75,6 +76,8 @@ export default function PostDetailModal({
 
   const handleSendComment = useCallback(() => {
     if (!post || !commentText.trim()) return;
+    if (!gateContentAction('create_comment')) return;
+
     const authorName = user?.email?.split('@')[0] ?? 'Citizen';
     const newComment: Comment = {
       id: `local-c-${Date.now()}`,
@@ -91,6 +94,12 @@ export default function PostDetailModal({
       updatedAt: new Date().toISOString(),
     };
     addComment(post.id, newComment);
+    logContentAction('create_comment', {
+      type: 'comment',
+      id: newComment.id,
+      body: newComment.content,
+      screenName: 'post_detail',
+    });
     setCommentText('');
   }, [post, commentText, user, userId, i18n.language, addComment]);
 
@@ -105,6 +114,7 @@ export default function PostDetailModal({
 
   const handleDeleteSelfPost = useCallback(() => {
     if (!post) return;
+    if (!gateContentAction('delete_post')) return;
     Alert.alert(
       t('postCard.deleteConfirm'),
       t('postCard.deleteConfirmBody'),
@@ -115,6 +125,11 @@ export default function PostDetailModal({
           style: 'destructive',
           onPress: () => {
             deletePost(post.id);
+            logContentAction('delete_post', {
+              type: 'post',
+              id: post.id,
+              screenName: 'post_detail',
+            });
             onClose();
           },
         },
@@ -253,7 +268,16 @@ export default function PostDetailModal({
                 <View style={styles.pollWrapper}>
                   <PollCard
                     poll={displayPost.poll}
-                    onVote={(optId) => votePoll(displayPost.id, optId)}
+                    onVote={(optId) => {
+                      if (!gateContentAction('vote_poll')) return;
+                      votePoll(displayPost.id, optId);
+                      logContentAction('vote_poll', {
+                        type: 'poll',
+                        id: displayPost.id,
+                        body: optId,
+                        screenName: 'post_detail',
+                      });
+                    }}
                   />
                 </View>
               )}
@@ -276,7 +300,16 @@ export default function PostDetailModal({
               <View style={[styles.metricsBar, { borderTopColor: colors.border, borderBottomColor: colors.border }]}>
                 <Pressable
                   style={styles.metricItem}
-                  onPress={() => toggleReaction(post.id, 'like')}
+                  onPress={() => {
+                    if (!gateContentAction('react_post')) return;
+                    toggleReaction(post.id, 'like');
+                    logContentAction('react_post', {
+                      type: 'post',
+                      id: post.id,
+                      body: 'like',
+                      screenName: 'post_detail',
+                    });
+                  }}
                   hitSlop={8}
                 >
                   <Ionicons
@@ -338,7 +371,16 @@ export default function PostDetailModal({
                   <View style={styles.commentActions}>
                     <Pressable
                       style={styles.commentLikeButton}
-                      onPress={() => toggleCommentReaction(post.id, item.id, 'like')}
+                      onPress={() => {
+                        if (!gateContentAction('react_post')) return;
+                        toggleCommentReaction(post.id, item.id, 'like');
+                        logContentAction('react_post', {
+                          type: 'comment',
+                          id: item.id,
+                          body: 'like',
+                          screenName: 'post_detail',
+                        });
+                      }}
                       hitSlop={6}
                     >
                       <Ionicons

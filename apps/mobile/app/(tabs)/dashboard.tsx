@@ -28,6 +28,7 @@ import { usePromiseStore } from '../../stores/promises';
 import { PROMISE_STATUS_CONFIG, type PromiseStatus as PStatus } from '../../lib/promiseTypes';
 import { STATES } from '@kshetra/shared';
 import { useTheme } from '../../lib/theme';
+import { gateContentAction, logContentAction } from '../../lib/contentAccountability';
 
 const SCOPE_OPTIONS: { key: CivicScope; icon: string; tKey: string }[] = [
   { key: 'constituency', icon: 'location', tKey: 'common.scopes.myConstituency' },
@@ -384,8 +385,26 @@ function DashboardContent() {
                 <IssueCard
                   key={issue.id}
                   issue={issue}
-                  onUpvote={() => toggleUpvote(issue.id)}
-                  onFollow={() => toggleFollow(issue.id)}
+                  onUpvote={() => {
+                    if (!gateContentAction('upvote_issue')) return;
+                    toggleUpvote(issue.id);
+                    logContentAction('upvote_issue', {
+                      type: 'civic_issue',
+                      id: issue.id,
+                      body: 'upvote',
+                      screenName: 'dashboard',
+                    });
+                  }}
+                  onFollow={() => {
+                    if (!gateContentAction('follow_issue')) return;
+                    toggleFollow(issue.id);
+                    logContentAction('follow_issue', {
+                      type: 'civic_issue',
+                      id: issue.id,
+                      body: 'follow',
+                      screenName: 'dashboard',
+                    });
+                  }}
                   onShare={async () => {
                     const text = shareIssue(issue.id);
                     try { await Share.share({ message: text }); } catch (_) {}

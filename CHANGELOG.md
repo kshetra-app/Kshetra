@@ -7,7 +7,24 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-### Added — 31-State Constituency & Map Data Rectification: 100% Official Assembly Strength (2026-09-03)
+### Fixed — Content Creator Accountability (CCA): Launch Readiness & End-to-End Supabase Forensic Wire-up (2026-09-07)
+- **Crash Resolution on KYC Submit**:
+  - Eliminated fatal native crashes on dynamic imports of unlinked native modules (`expo-device`, `expo-application`, `@react-native-community/netinfo`) in `apps/mobile/lib/deviceFingerprint.ts`.
+  - Implemented safe per-property try/catch blocks and isolated fallback defaults so snapshot capture never throws.
+  - Hardened `submitKYC` in `apps/mobile/lib/contentAccountability.ts` with local defensive defaults.
+- **End-to-End Supabase Forensic Data Synchronization**:
+  - Expanded `submitKYC` in `apps/mobile/lib/supabaseDataService.ts` to write all DB columns (`ip_address`, `network_type`, `carrier_name`, `device_name`, `location_accuracy`, `location_address`, `app_build`, `terms_accepted_at`) with explicit auto-verified status for launch readiness.
+  - Implemented `insertActionFingerprint()` in `supabaseDataService.ts` to write all 24 columns to the live `action_fingerprints` table.
+  - Implemented `upsertContributorDevice()` in `supabaseDataService.ts` to persist all verified hardware devices to `contributor_devices`.
+  - Replaced commented-out Supabase code in `contentAccountability.ts` with real asynchronous, non-blocking sync calls.
+- **Universal Gating & Forensic Audit Logging Across All Touchpoints**:
+  - **Political Shorts**: Added `gateContentAction('create_post')` and `logContentAction('create_post')` with full forensic GPS stamp in `UploadShortModal.tsx`.
+  - **Community & Posts**: Wired `gateContentAction` and `logContentAction` for comment creation, comment reactions, poll voting, and post deletions in `PostDetailModal.tsx` and `app/(tabs)/feed.tsx`.
+  - **Civic Issues**: Wired `gateContentAction` and `logContentAction` for issue comments, MLA tagging, dispute resolution, upvoting, and following in `app/issue/[id].tsx` and `app/(tabs)/dashboard.tsx`.
+  - **Constituency Pulse**: Gated and logged reactions and poll voting in `app/constituency/[id].tsx`.
+  - **Live Streams**: Gated and logged `go_live` in `app/live/go-live.tsx`.
+  - **Representative Profile Edits**: Added forensic action logging in `app/representative/edit/[id].tsx`.
+
 - **100% Official Assembly Seat Coverage Across All 31 States / UTs**:
   - Closed all verified data gaps and anomalies across the 9 remaining short-count/anomalous states, using authoritative Election Commission of India (ECI) and Trivedi Centre for Political Data (TCPD) datasets with zero fabrication:
     - **Delhi (DL — 70/70 seats)**: Replaced 2022 MCD municipal ward scrape (221 rows) with official Assembly Constituencies 1–70 using February 2025 ECI results (`2025Assembly-DL.json`). Tally: BJP 48, AAP 22 = 70.

@@ -41,6 +41,7 @@ import HeadlineCard from '../../components/HeadlineCard';
 import PoliticalTimelineCard from '../../components/PoliticalTimelineCard';
 import { ConstituencyCardSkeleton, TextSkeleton } from '../../components/SkeletonLoaders';
 import { useTheme } from '../../lib/theme';
+import { gateContentAction, logContentAction } from '../../lib/contentAccountability';
 import {
   getLocalizedStateName,
   getLocalizedDistrictName,
@@ -590,7 +591,16 @@ export default function ConstituencyDetailScreen() {
                     <PostCard
                       post={post}
                       compact
-                      onReact={() => feedToggleReaction(post.id, 'like')}
+                      onReact={() => {
+                        if (!gateContentAction('react_post')) return;
+                        feedToggleReaction(post.id, 'like');
+                        logContentAction('react_post', {
+                          type: 'post',
+                          id: post.id,
+                          body: 'like',
+                          screenName: 'constituency_detail',
+                        });
+                      }}
                       onShare={async () => {
                         try {
                           await Share.share({
@@ -603,7 +613,16 @@ export default function ConstituencyDetailScreen() {
                       <View style={{ paddingHorizontal: 16, marginTop: -4, marginBottom: 10 }}>
                         <PollCard
                           poll={post.poll}
-                          onVote={(optId) => feedVotePoll(post.id, optId)}
+                          onVote={(optId) => {
+                            if (!gateContentAction('vote_poll')) return;
+                            feedVotePoll(post.id, optId);
+                            logContentAction('vote_poll', {
+                              type: 'poll',
+                              id: post.id,
+                              body: optId,
+                              screenName: 'constituency_detail',
+                            });
+                          }}
                         />
                       </View>
                     )}

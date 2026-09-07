@@ -14,6 +14,7 @@ import {
 import type { IssueComment, IssueStatusChange } from '../../lib/civicTypes';
 
 import { useTheme } from '../../lib/theme';
+import { gateContentAction, logContentAction } from '../../lib/contentAccountability';
 
 function timeAgo(dateStr: string): string {
   const now = Date.now();
@@ -94,12 +95,24 @@ export default function IssueDetailScreen() {
       Alert.alert('Already Tagged', 'MLA has already been tagged on this issue.');
       return;
     }
+    if (!gateContentAction('tag_mla')) return;
     Alert.alert(
       'Tag MLA',
       `This will send a notification to your constituency MLA about "${issue.title}". Continue?`,
       [
         { text: 'Cancel', style: 'cancel' },
-        { text: 'Tag MLA', onPress: () => tagMLA(issue.id) },
+        {
+          text: 'Tag MLA',
+          onPress: () => {
+            tagMLA(issue.id);
+            logContentAction('tag_mla', {
+              type: 'civic_issue',
+              id: issue.id,
+              body: issue.title,
+              screenName: 'issue_detail',
+            });
+          },
+        },
       ],
     );
   };
@@ -109,6 +122,7 @@ export default function IssueDetailScreen() {
       Alert.alert('Already Disputed', 'You have already disputed this resolution.');
       return;
     }
+    if (!gateContentAction('dispute_resolution')) return;
     Alert.alert(
       'Dispute Resolution',
       'Do you believe this issue has NOT been properly resolved? Your dispute will be recorded. If 5+ citizens dispute, the issue will be automatically reopened.',
@@ -117,7 +131,15 @@ export default function IssueDetailScreen() {
         {
           text: 'Dispute',
           style: 'destructive',
-          onPress: () => disputeResolution(issue.id, 'Resolution not satisfactory'),
+          onPress: () => {
+            disputeResolution(issue.id, 'Resolution not satisfactory');
+            logContentAction('dispute_resolution', {
+              type: 'civic_issue',
+              id: issue.id,
+              body: 'Resolution not satisfactory',
+              screenName: 'issue_detail',
+            });
+          },
         },
       ],
     );
@@ -125,10 +147,18 @@ export default function IssueDetailScreen() {
 
   const handleSubmitComment = async () => {
     if (!commentText.trim() || submittingComment) return;
+    if (!gateContentAction('create_comment')) return;
     setSubmittingComment(true);
     setCommentError(null);
     try {
-      await addComment(issue.id, commentText.trim(), 'You');
+      const commentContent = commentText.trim();
+      await addComment(issue.id, commentContent, 'You');
+      logContentAction('create_comment', {
+        type: 'civic_issue_comment',
+        id: issue.id,
+        body: commentContent,
+        screenName: 'issue_detail',
+      });
       setCommentText('');
     } catch (err: any) {
       setCommentError('Could not post comment. Please try again.');
@@ -219,14 +249,32 @@ export default function IssueDetailScreen() {
         <View style={styles.actionRow}>
           <Pressable
             style={[styles.actionBtn, issue.userUpvoted && styles.actionBtnActive]}
-            onPress={() => toggleUpvote(issue.id)}
+            onPress={() => {
+              if (!gateContentAction('upvote_issue')) return;
+              toggleUpvote(issue.id);
+              logContentAction('upvote_issue', {
+                type: 'civic_issue',
+                id: issue.id,
+                body: 'upvote',
+                screenName: 'issue_detail',
+              });
+            }}
           >
             <Ionicons name={issue.userUpvoted ? 'arrow-up-circle' : 'arrow-up-circle-outline'} size={20} color={issue.userUpvoted ? '#10B981' : '#9CA3AF'} />
             <Text style={[styles.actionBtnText, issue.userUpvoted && { color: '#10B981' }]}>Upvote</Text>
           </Pressable>
           <Pressable
             style={[styles.actionBtn, issue.userFollowing && styles.actionBtnActive]}
-            onPress={() => toggleFollow(issue.id)}
+            onPress={() => {
+              if (!gateContentAction('follow_issue')) return;
+              toggleFollow(issue.id);
+              logContentAction('follow_issue', {
+                type: 'civic_issue',
+                id: issue.id,
+                body: 'follow',
+                screenName: 'issue_detail',
+              });
+            }}
           >
             <Ionicons name={issue.userFollowing ? 'notifications' : 'notifications-outline'} size={18} color={issue.userFollowing ? '#3B82F6' : '#9CA3AF'} />
             <Text style={[styles.actionBtnText, issue.userFollowing && { color: '#3B82F6' }]}>
