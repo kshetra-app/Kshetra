@@ -10,6 +10,7 @@ import {
   type ModerationActionPayload,
   type UserRole,
 } from '../services/moderation';
+import { moderateContent } from '../services/contentModeration';
 
 // In-memory fallback queue for testing or offline mode
 let MOCK_REPORTS_QUEUE = [
@@ -162,7 +163,7 @@ export async function moderationRoutes(app: FastifyInstance) {
     });
   });
 
-  // Check content for policy violations
+  // Check content for policy violations (automated OpenAI moderation + rule engine fallback)
   app.post<{
     Body: { content: string };
   }>('/api/v1/moderation/check-content', {
@@ -176,7 +177,7 @@ export async function moderationRoutes(app: FastifyInstance) {
       },
     },
   }, async (request, reply) => {
-    const result = flagContent(request.body.content);
+    const result = await moderateContent(request.body.content);
     return reply.send({ success: true, data: result });
   });
 
@@ -265,13 +266,54 @@ export async function moderationRoutes(app: FastifyInstance) {
       },
     },
   }, async (request, reply) => {
-    const userId = request.headers['x-user-id'] as string;
-    if (!userId) {
+    const auth = await resolveModeratorRole(request);
+    if (!auth?.userId) {
       return reply.status(401).send({ error: 'Authentication required' });
     }
+    const userId = auth.userId;
 
     const { verificationType, documentUrl, notes } = request.body;
-    app.log.info({ userId, verificationType }, 'Verification request submitted');
+    const allowedTypes = ['identity', 'journalist', 'politician', 'government_official', 'organization'];
+    if (!allowedTypes.includes(verificationType)) {
+      return reply.status(400).send({ error: `Invalid verificationType. Must be one of: ${allowedTypes.join(', ')}` });
+    }
+
+    if (isSupabaseConfigured) {
+      try {
+        const { data, error } = await supabase
+          .from('user_verification')
+          .upsert({
+            user_id: userId,
+            verification_type: verificationType,
+            status: 'pending',
+            document_url: documentUrl || null,
+            notes: notes || null,
+            updated_at: new Date().toISOString(),
+          }, { onConflict: 'user_id,verification_type' })
+          .select()
+          .single();
+
+        if (error) {
+          app.log.error({ err: error.message }, 'Failed to persist user verification request');
+          return reply.status(500).send({ error: 'Failed to record verification request' });
+        }
+
+        app.log.info({ userId, verificationType, id: data.id }, 'Verification request persisted to database');
+        return reply.send({
+          success: true,
+          data: {
+            id: data.id,
+            userId,
+            verificationType: data.verification_type,
+            status: data.status,
+            submittedAt: data.created_at || new Date().toISOString(),
+          },
+        });
+      } catch (err: any) {
+        app.log.error({ err: err.message }, 'Unexpected error in verify-request');
+        return reply.status(500).send({ error: 'Internal server error processing verification request' });
+      }
+    }
 
     return reply.send({
       success: true,
@@ -298,14 +340,35 @@ export async function moderationRoutes(app: FastifyInstance) {
       },
     },
   }, async (request, reply) => {
-    const userId = request.headers['x-user-id'] as string;
-    if (!userId) {
+    const auth = await resolveModeratorRole(request);
+    if (!auth?.userId) {
       return reply.status(401).send({ error: 'Authentication required' });
     }
+    const userId = auth.userId;
 
     const { blockedUserId } = request.body;
     if (userId === blockedUserId) {
       return reply.status(400).send({ error: 'Cannot block yourself' });
+    }
+
+    if (isSupabaseConfigured) {
+      try {
+        const { error } = await supabase
+          .from('blocked_users')
+          .upsert({
+            blocker_id: userId,
+            blocked_id: blockedUserId,
+            created_at: new Date().toISOString(),
+          }, { onConflict: 'blocker_id,blocked_id' });
+
+        if (error) {
+          app.log.error({ err: error.message }, 'Failed to insert blocked user in Supabase');
+          return reply.status(500).send({ error: 'Failed to block user' });
+        }
+      } catch (err: any) {
+        app.log.error({ err: err.message }, 'Unexpected error blocking user');
+        return reply.status(500).send({ error: 'Internal server error blocking user' });
+      }
     }
 
     return reply.send({
@@ -318,14 +381,34 @@ export async function moderationRoutes(app: FastifyInstance) {
   app.delete<{
     Params: { userId: string };
   }>('/api/v1/moderation/block/:userId', async (request, reply) => {
-    const currentUserId = request.headers['x-user-id'] as string;
-    if (!currentUserId) {
+    const auth = await resolveModeratorRole(request);
+    if (!auth?.userId) {
       return reply.status(401).send({ error: 'Authentication required' });
+    }
+    const currentUserId = auth.userId;
+    const targetUserId = request.params.userId;
+
+    if (isSupabaseConfigured) {
+      try {
+        const { error } = await supabase
+          .from('blocked_users')
+          .delete()
+          .eq('blocker_id', currentUserId)
+          .eq('blocked_id', targetUserId);
+
+        if (error) {
+          app.log.error({ err: error.message }, 'Failed to remove blocked user in Supabase');
+          return reply.status(500).send({ error: 'Failed to unblock user' });
+        }
+      } catch (err: any) {
+        app.log.error({ err: err.message }, 'Unexpected error unblocking user');
+        return reply.status(500).send({ error: 'Internal server error unblocking user' });
+      }
     }
 
     return reply.send({
       success: true,
-      data: { unblocked: request.params.userId },
+      data: { unblocked: targetUserId },
     });
   });
 

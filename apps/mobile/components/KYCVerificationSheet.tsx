@@ -74,6 +74,15 @@ export default function KYCVerificationSheet() {
       return;
     }
 
+    // Require verified email for KYC submission
+    if (user && !user.email_confirmed_at) {
+      Alert.alert(
+        'Email Verification Required',
+        'Please verify your email address before completing account verification. Check your inbox for the confirmation link.',
+      );
+      return;
+    }
+
     const userId = user?.id ?? 'anon';
     const success = await submitKYC(userId, {
       fullLegalName: fullName,

@@ -15,9 +15,25 @@ describe('Ticket 0.2: Role System & Gating', () => {
       expect(canCreatePage('party')).toBe(true);
       expect(canCreatePage('journalist')).toBe(true);
     });
+
+    it('denies page creation if emailVerified is false', () => {
+      expect(canCreatePage('aspirant', false)).toBe(false);
+      expect(canCreatePage('politician', false)).toBe(false);
+    });
+
+    it('allows page creation if emailVerified is true', () => {
+      expect(canCreatePage('aspirant', true)).toBe(true);
+      expect(canCreatePage('politician', true)).toBe(true);
+    });
   });
 
   describe('canAccessLive', () => {
+    it('denies Live access if email is unverified', () => {
+      const result = canAccessLive('aspirant', 'verified', false);
+      expect(result.allowed).toBe(false);
+      expect(result.reason).toBe('unverified_email');
+    });
+
     it('denies Live access to citizen accounts even if marked verified', () => {
       const result = canAccessLive('citizen', 'verified');
       expect(result.allowed).toBe(false);

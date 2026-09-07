@@ -79,6 +79,7 @@
 | Sprint 65: More Tab & Sub-Pages 100% Localization (All 13 Languages) | ✅ Complete | 2026-09-01 | 2026-09-01 |
 | Sprint 66: 31-State Constituency & Map Data Rectification (100% Official Assembly Strength) | ✅ Complete | 2026-09-03 | 2026-09-03 |
 | Sprint 67: Content Creator Accountability (CCA) Crash Fix & End-to-End Supabase Forensic Synchronization | ✅ Complete | 2026-09-07 | 2026-09-07 |
+| Sprint 68: Production Hardening, Real Backend Wiring & Trust & Safety | ✅ Complete | 2026-09-07 | 2026-09-07 |
 
 ---
 
@@ -5848,6 +5849,57 @@ Questions asked via the AI Chat feature (`apps/mobile/app/ai-chat.tsx`) and AI S
 
 ### Verification
 - `npx tsc --noEmit -p apps/mobile/tsconfig.json`: Passed with **0 errors**.
+
+---
+
+## Sprint 68: Production Hardening, Real Backend Wiring & Trust & Safety
+
+**Date**: 2026-09-07  
+**Goal**: Production-readiness audit and comprehensive hardening across apps/mobile, apps/api, and packages/shared adhering to strict launch directives (await every async write in try/catch, never fake calls or false success, verify identity & role from real DB records, remove duplicate flow entry points, no in-memory-only cross-session stores).
+
+### Tickets Completed
+
+1. **FIX-21 — Real Notifications End-to-End**:
+   - Connected real Supabase writes to `notification_log` on DM received (accepted conversations), civic issue status change, post comments & reactions, and aspirant endorsements.
+   - Replaced empty store stubs in `apps/mobile/stores/notifications.ts` with real `fetchNotifications`, `markRead`, `markAllRead`, and Postgres changes realtime subscription.
+   - Connected notification hydration and live subscription in `apps/mobile/lib/supabaseBootstrap.ts`.
+   - Wired `apps/mobile/app/notifications.tsx` with authenticated user context and refresh control.
+
+2. **FIX-22 — Political Shorts Real Backend Wire-Up**:
+   - Implemented `fetchShorts` in `supabaseDataService.ts` querying the real `political_shorts` Supabase table.
+   - Connected view counting via Supabase RPC `increment_short_views` with read-modify-write fallback.
+   - Implemented real comment persistence in `short_comments` via `addShortComment`.
+   - Integrated with `ShortsPlayerModal.tsx` and hydrated feed in `supabaseBootstrap.ts`.
+
+3. **FIX-23 & FIX-24 — App Lifecycle & Civic Dispute Fixes**:
+   - Added foreground/background session tracking (`recordSession` & `endSession`) in `apps/mobile/app/_layout.tsx` using `AppState.addEventListener`.
+   - Wired `disputeResolution` in `apps/mobile/stores/civic.ts` to `dataService.disputeIssueResolution`.
+   - Audited codebase and removed dead mock functions.
+
+4. **FIX-26, FIX-27, FIX-28 — Identity, Role Verification & Persistence**:
+   - Changed KYC status default from `'verified'` to `'pending'` in `apps/mobile/lib/contentAccountability.ts`.
+   - Eliminated client-supplied `x-user-id` header trust in `apps/api/src/routes/moderation.ts`. Replaced with `resolveModeratorRole`, verifying Supabase Auth JWT and `user_profiles` role.
+   - Replaced in-memory mock sets with real Supabase persistence in `user_verification` and `blocked_users` tables.
+
+5. **FIX-31 — Email Verification Gating**:
+   - Added `emailVerified: boolean` requirement to `canCreatePage` and `canAccessLive` in `apps/mobile/lib/pageGating.ts`.
+   - Enforced `user.email_confirmed_at` check in `KYCVerificationSheet.tsx`, `pages/index.tsx`, and `go-live.tsx`.
+   - Added unit test coverage for email gating in `pageGating.test.ts`.
+
+6. **FIX-32 — Automated Content Moderation Engine**:
+   - Implemented `apps/api/src/services/contentModeration.ts` using `openai.moderations.create` with an embedded rule-based regex fallback.
+   - Wired content moderation into `POST /api/v1/moderation/check-content` in `moderation.ts`.
+
+7. **Feature Flags & Clean Architecture (Native Live & Political Ads)**:
+   - Added `enableNativeLive: false` and `enablePoliticalAds: false` to `AppFeatureFlags`.
+   - Displayed dignified "Coming Soon" view for native live streaming in `apps/mobile/app/live/go-live.tsx`.
+   - Added ECI compliance notice for ad promotion routes in `apps/api/src/routes/manage.ts`.
+
+### Verification
+- **`apps/mobile` TypeScript**: `npx tsc --noEmit -p apps/mobile/tsconfig.json` → **0 errors**.
+- **`apps/api` TypeScript**: `npx tsc --noEmit -p apps/api/tsconfig.json` → **0 errors**.
+- **`apps/mobile` Unit Tests**: Jest test suites (14 passed, 141 tests total) → **100% passing**.
+
 
 
 

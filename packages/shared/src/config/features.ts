@@ -48,6 +48,10 @@ export interface AppFeatureFlags {
   enableCampaignManager: boolean;
   /** Aspirant training courses & certification */
   enableLeadershipAcademy: boolean;
+  /** Political ad promotion and compliance queue */
+  enablePoliticalAds: boolean;
+  /** Native live streaming broadcast */
+  enableNativeLive: boolean;
 }
 
 /**
@@ -71,6 +75,7 @@ export const DEFAULT_FEATURE_FLAGS: AppFeatureFlags = {
   enableLiveTab: true,
   enableNewsTab: true,
   enableShortsTab: true,
+  enableNativeLive: false,
 
   // Phase 4 (Delimitation & Deep Analytics - Active)
   enableDelimitation: true,
@@ -80,4 +85,5 @@ export const DEFAULT_FEATURE_FLAGS: AppFeatureFlags = {
   enableAspirants: true,
   enableCampaignManager: true,
   enableLeadershipAcademy: true,
+  enablePoliticalAds: false,
 };

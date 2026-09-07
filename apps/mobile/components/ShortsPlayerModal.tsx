@@ -27,7 +27,10 @@ import { usePoliticalShortsStore } from '../stores/politicalShorts';
 import { useMyConstituencyStore } from '../stores/myConstituency';
 import { useActiveStateStore } from '../stores/activeState';
 import { useContributorVerificationStore } from '../stores/contributorVerification';
+import { useAuthStore } from '../stores/auth';
+import { useUserProfileStore } from '../stores/userProfile';
 import { gateContentAction, logContentAction } from '../lib/contentAccountability';
+import { addShortComment } from '../lib/supabaseDataService';
 
 interface ShortsPlayerModalProps {
   visible: boolean;
@@ -49,7 +52,10 @@ export default function ShortsPlayerModal({
   
   // State from stores
   const kycRecord = useContributorVerificationStore((s) => s.kycRecord);
-  const userId = kycRecord?.userId || 'anon-user';
+  const authUser = useAuthStore((s) => s.user);
+  const userProfile = useUserProfileStore((s) => s.profile);
+  const userId = authUser?.id || kycRecord?.userId || 'anon-user';
+  const authorName = userProfile?.displayName || kycRecord?.fullLegalName || authUser?.email?.split('@')[0] || 'Verified Citizen';
   const myHome = useMyConstituencyStore((s) => s.home);
   const activeStateCode = useActiveStateStore((s) => s.stateCode);
   const userConstituencyId = myHome ? `${activeStateCode}-AC-${myHome.acNo}` : undefined;
@@ -84,6 +90,7 @@ export default function ShortsPlayerModal({
           screenWidth={screenWidth}
           screenHeight={screenHeight}
           userId={userId}
+          authorName={authorName}
           userConstituencyId={userConstituencyId}
           isApproved={isApproved}
           isFlagged={isFlagged}
@@ -94,7 +101,7 @@ export default function ShortsPlayerModal({
         />
       );
     },
-    [currentIndex, screenWidth, screenHeight, userApprovals, flaggedShorts, userId, userConstituencyId, approveShort, flagShort, incrementViews, onClose]
+    [currentIndex, screenWidth, screenHeight, userApprovals, flaggedShorts, userId, authorName, userConstituencyId, approveShort, flagShort, incrementViews, onClose]
   );
 
   return (
@@ -149,6 +156,7 @@ interface ShortPageItemProps {
   screenWidth: number;
   screenHeight: number;
   userId: string;
+  authorName: string;
   userConstituencyId: string | undefined;
   isApproved: boolean;
   isFlagged: boolean;
@@ -164,6 +172,7 @@ function ShortPageItem({
   screenWidth,
   screenHeight,
   userId,
+  authorName,
   userConstituencyId,
   isApproved,
   isFlagged,
@@ -266,13 +275,19 @@ function ShortPageItem({
     setComments((prev) => [
       {
         id: newCommentId,
-        author: 'You (Verified)',
+        author: authorName || 'You (Verified)',
         text: commentBody,
         likes: 0,
         time: 'Just now',
       },
       ...prev,
     ]);
+
+    // Persist to real backend
+    addShortComment(item.id, userId, authorName || 'Citizen', commentBody).catch((err) => {
+      console.warn('[Shorts] Failed to persist comment to database:', err);
+    });
+
     logContentAction('create_comment', {
       type: 'political_short_comment',
       id: item.id,
@@ -280,7 +295,7 @@ function ShortPageItem({
       screenName: 'shorts_player',
     });
     setCommentText('');
-  }, [commentText, item.id]);
+  }, [commentText, item.id, userId, authorName]);
 
   // Formatted labels
   const visibilityBadgeLabel = useMemo(() => {

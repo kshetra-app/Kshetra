@@ -15,6 +15,7 @@ import { useAuthStore } from '../../stores/auth';
 import { useUserProfileStore } from '../../stores/userProfile';
 import { useLiveExchangeStore } from '../../stores/liveExchange';
 import { useContributorVerificationStore } from '../../stores/contributorVerification';
+import { useFeatureFlagsStore } from '../../lib/featureFlags';
 import { gateContentAction, logContentAction } from '../../lib/contentAccountability';
 import type {
   VisibilityMode,
@@ -74,8 +75,9 @@ export default function GoLiveScreen() {
   }, [authUser?.id, authUser?.email, profile?.displayName, profile?.role, t]);
 
   const liveAccess = useMemo(() => {
-    return canAccessLive(profile?.role, profile?.verificationStatus);
-  }, [profile?.role, profile?.verificationStatus]);
+    const isEmailVerified = authUser ? Boolean(authUser.email_confirmed_at) : false;
+    return canAccessLive(profile?.role, profile?.verificationStatus, isEmailVerified);
+  }, [profile?.role, profile?.verificationStatus, authUser?.email_confirmed_at]);
 
   const insets = useSafeAreaInsets();
   const router = useRouter();
@@ -225,6 +227,8 @@ export default function GoLiveScreen() {
     }
   };
 
+  const enableNativeLive = useFeatureFlagsStore((s) => s.enableNativeLive);
+
   if (publishTarget) {
     return (
       <LiveBroadcaster
@@ -235,8 +239,7 @@ export default function GoLiveScreen() {
     );
   }
 
-  if (!liveAccess.allowed) {
-    const isUnverifiedRole = liveAccess.reason === 'unverified';
+  if (!enableNativeLive) {
     return (
       <View style={styles.container}>
         <View style={[styles.header, { paddingTop: insets.top + 8 }]}>
@@ -248,16 +251,55 @@ export default function GoLiveScreen() {
         </View>
         <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', padding: 24 }}>
           <Ionicons
-            name={isUnverifiedRole ? 'shield-checkmark-outline' : 'lock-closed-outline'}
+            name="radio-outline"
             size={56}
             color={colors.primary}
             style={{ marginBottom: 16 }}
           />
           <Text style={{ fontSize: 20, fontWeight: '700', color: colors.text, textAlign: 'center', marginBottom: 10 }}>
-            {isUnverifiedRole ? 'Verification Required for Live' : 'Live Broadcast Access Restricted'}
+            Live Streaming Coming Soon
           </Text>
           <Text style={{ fontSize: 14, color: colors.textSecondary, textAlign: 'center', lineHeight: 22, marginBottom: 24, maxWidth: 320 }}>
-            {isUnverifiedRole
+            Native WebRTC and WHIP live video broadcasting is currently being finalized for high-bandwidth reliability. Live streaming will be activated shortly.
+          </Text>
+          <Pressable onPress={() => router.back()} style={{ padding: 10 }}>
+            <Text style={{ color: colors.primary, fontSize: 15, fontWeight: '600' }}>Go Back</Text>
+          </Pressable>
+        </View>
+      </View>
+    );
+  }
+
+  if (!liveAccess.allowed) {
+    const isUnverifiedRole = liveAccess.reason === 'unverified';
+    const isUnverifiedEmail = liveAccess.reason === 'unverified_email';
+    return (
+      <View style={styles.container}>
+        <View style={[styles.header, { paddingTop: insets.top + 8 }]}>
+          <Pressable onPress={() => router.back()} hitSlop={10}>
+            <Ionicons name="close" size={26} color="#FFFFFF" />
+          </Pressable>
+          <Text style={styles.title}>{t('lmx.goLiveScreen.title', { defaultValue: 'Live Broadcast' })}</Text>
+          <View style={{ width: 26 }} />
+        </View>
+        <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', padding: 24 }}>
+          <Ionicons
+            name={isUnverifiedEmail ? 'mail-unread-outline' : isUnverifiedRole ? 'shield-checkmark-outline' : 'lock-closed-outline'}
+            size={56}
+            color={colors.primary}
+            style={{ marginBottom: 16 }}
+          />
+          <Text style={{ fontSize: 20, fontWeight: '700', color: colors.text, textAlign: 'center', marginBottom: 10 }}>
+            {isUnverifiedEmail
+              ? 'Email Verification Required'
+              : isUnverifiedRole
+              ? 'Verification Required for Live'
+              : 'Live Broadcast Access Restricted'}
+          </Text>
+          <Text style={{ fontSize: 14, color: colors.textSecondary, textAlign: 'center', lineHeight: 22, marginBottom: 24, maxWidth: 320 }}>
+            {isUnverifiedEmail
+              ? 'Please confirm your email address before going live. Check your inbox for the confirmation link.'
+              : isUnverifiedRole
               ? 'Your account role qualifies for Live broadcasting, but verification is required before going on-air. Please complete identity verification to unlock Live access.'
               : 'Live broadcasting is available to accredited journalists, verified politicians, political parties, and verified aspirants. Citizen accounts cannot broadcast live.'}
           </Text>
@@ -268,14 +310,14 @@ export default function GoLiveScreen() {
             >
               <Text style={{ color: '#FFFFFF', fontWeight: '700', fontSize: 15 }}>Get Verified</Text>
             </Pressable>
-          ) : (
+          ) : !isUnverifiedEmail ? (
             <Pressable
               onPress={() => router.push('/pages?tab=my_page' as any)}
               style={{ backgroundColor: colors.primary, paddingVertical: 12, paddingHorizontal: 28, borderRadius: 24, marginBottom: 12 }}
             >
               <Text style={{ color: '#FFFFFF', fontWeight: '700', fontSize: 15 }}>Apply as Aspirant / Leader</Text>
             </Pressable>
-          )}
+          ) : null}
           <Pressable onPress={() => router.back()} style={{ padding: 10 }}>
             <Text style={{ color: colors.textSecondary, fontSize: 14 }}>Go Back</Text>
           </Pressable>

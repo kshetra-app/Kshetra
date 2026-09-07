@@ -1,10 +1,11 @@
 import { useTranslation } from 'react-i18next';
-import { View, Text, StyleSheet, Pressable, Platform } from 'react-native';
+import { View, Text, StyleSheet, Pressable, Platform, RefreshControl } from 'react-native';
 import { FlashList } from '@shopify/flash-list';
 import { Ionicons } from '@expo/vector-icons';
 import { Stack, useRouter } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useNotificationsStore, type NotificationItem } from '../stores/notifications';
+import { useAuthStore } from '../stores/auth';
 import { useTheme } from '../lib/theme';
 
 const CATEGORY_ICONS: Record<string, keyof typeof Ionicons.glyphMap> = {
@@ -12,6 +13,8 @@ const CATEGORY_ICONS: Record<string, keyof typeof Ionicons.glyphMap> = {
   constituency_updates: 'location',
   new_state_added: 'map',
   app_updates: 'sparkles',
+  civic_issue: 'alert-circle',
+  community_activity: 'chatbubbles',
 };
 
 function formatTimeAgo(ts: number, t: (key: string, opts?: any) => string): string {
@@ -29,15 +32,18 @@ export default function NotificationsScreen() {
   const { t } = useTranslation();
   const router = useRouter();
   const { colors } = useTheme();
+  const user = useAuthStore((s) => s.user);
   const items = useNotificationsStore((s) => s.items);
   const markRead = useNotificationsStore((s) => s.markRead);
   const markAllRead = useNotificationsStore((s) => s.markAllRead);
   const clearAll = useNotificationsStore((s) => s.clearAll);
   const unreadCount = useNotificationsStore((s) => s.unreadCount);
+  const loading = useNotificationsStore((s) => s.loading);
+  const fetchNotifications = useNotificationsStore((s) => s.fetchNotifications);
   const insets = useSafeAreaInsets();
 
   const handlePress = (item: NotificationItem) => {
-    markRead(item.id);
+    markRead(item.id, user?.id);
     if (item.data?.acNo) {
       router.push(`/constituency/${item.data.stateCode ? `${item.data.stateCode}-AC-${item.data.acNo}` : item.data.acNo}` as any);
     }
@@ -92,7 +98,7 @@ export default function NotificationsScreen() {
       {items.length > 0 && (
         <View style={styles.actions}>
           {unreadCount > 0 && (
-            <Pressable style={styles.actionButton} onPress={markAllRead}>
+            <Pressable style={styles.actionButton} onPress={() => markAllRead(user?.id)}>
               <Ionicons name="checkmark-done" size={16} color="#4F8EF7" />
               <Text style={styles.actionText}>{t('notifications.markAllRead', { defaultValue: 'Mark all read' })}</Text>
             </Pressable>
@@ -118,6 +124,15 @@ export default function NotificationsScreen() {
           renderItem={renderItem}
           keyExtractor={(item) => item.id}
           contentContainerStyle={{ ...styles.listContent, paddingBottom: Math.max(insets.bottom, 20) + 80 }}
+          refreshControl={
+            <RefreshControl
+              refreshing={loading}
+              onRefresh={() => {
+                if (user?.id) fetchNotifications(user.id);
+              }}
+              tintColor={colors.primary}
+            />
+          }
         />
       )}
     </View>

@@ -410,6 +410,27 @@ export const dmRoutes: FastifyPluginAsync = async (app) => {
         .eq('id', conversationId);
     }
 
+    if (shouldNotify) {
+      try {
+        await supabase
+          .from('notification_log')
+          .insert({
+            user_id: recipientId,
+            trigger_type: 'system',
+            title: notificationTitle,
+            body: notificationBody,
+            data: {
+              conversationId,
+              messageId: newMsg.id,
+              senderId: auth.userId,
+            },
+            read: false,
+          });
+      } catch (notifErr) {
+        app.log.warn({ err: notifErr }, 'Failed to insert into notification_log for DM');
+      }
+    }
+
     return reply.status(201).send({
       success: true,
       message: newMsg,

@@ -32,22 +32,28 @@ export const LIVE_ELIGIBLE_ROLES: UserRole[] = [
 /**
  * Check whether a user is allowed to create a Page.
  * Citizens cannot create a Page; aspirants, politicians, parties, journalists can.
+ * Requires verified email if emailVerified check is provided.
  */
-export function canCreatePage(role?: UserRole | null): boolean {
+export function canCreatePage(role?: UserRole | null, emailVerified?: boolean): boolean {
   if (!role) return false;
+  if (emailVerified === false) return false;
   return PAGE_ELIGIBLE_ROLES.includes(role);
 }
 
 /**
  * Check whether a user is allowed to broadcast Live.
- * Requires an eligible role AND verified status.
+ * Requires an eligible role, verified status, and verified email.
  */
 export function canAccessLive(
   role?: UserRole | null,
   verificationStatus?: UserVerificationStatus | null,
-): { allowed: boolean; reason?: 'ineligible_role' | 'unverified' } {
+  emailVerified?: boolean,
+): { allowed: boolean; reason?: 'ineligible_role' | 'unverified' | 'unverified_email' } {
   if (!role || !LIVE_ELIGIBLE_ROLES.includes(role)) {
     return { allowed: false, reason: 'ineligible_role' };
+  }
+  if (emailVerified === false) {
+    return { allowed: false, reason: 'unverified_email' };
   }
   if (verificationStatus !== 'verified') {
     return { allowed: false, reason: 'unverified' };

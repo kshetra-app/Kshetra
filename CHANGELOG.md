@@ -7,6 +7,41 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Hardened & Fixed — Sprint 68: Production Hardening, Real Backend Wiring & Trust & Safety (2026-09-07)
+- **Real Notifications End-to-End (FIX-21)**:
+  - Connected real Supabase writes to `notification_log` at 4 critical event touchpoints:
+    1. Direct Messages received in accepted conversations (`apps/api/src/routes/dm.ts`).
+    2. Civic issue status transitions (`updateIssueStatus` in `supabaseDataService.ts`).
+    3. Post comments and reactions (`addPostComment` and `reactToPost` in `supabaseDataService.ts`).
+    4. Aspirant leadership endorsements (`endorseAspirant` in `supabaseDataService.ts`).
+  - Wired `useNotificationsStore` in `apps/mobile/stores/notifications.ts` with real database fetching (`fetchNotifications`), read status updates (`markRead`, `markAllRead`), and Postgres changes realtime subscription (`subscribeToUserNotifications`).
+  - Integrated notification store hydration and realtime subscription into `supabaseBootstrap.ts`.
+  - Wired `NotificationsScreen` (`apps/mobile/app/notifications.tsx`) to real user ID context with pull-to-refresh.
+- **Political Shorts Backend Wire-up (FIX-22)**:
+  - Connected `fetchShorts` in `supabaseDataService.ts` to hydrate from real `political_shorts` database records, deprecating local-only mock data.
+  - Connected `incrementShortView` to real atomic view counts via Supabase RPC `increment_short_views` with read-modify-write fallback.
+  - Implemented `addShortComment` storing comments directly in the `short_comments` table and incrementing comment count.
+  - Wired `ShortsPlayerModal.tsx` and `politicalShorts` store to persist comments and view tracking asynchronously.
+- **App Lifecycle & Civic Dispute Fixes (FIX-23 & FIX-24)**:
+  - Wired `recordSession` and `endSession` to `AppState.addEventListener` in `apps/mobile/app/_layout.tsx` for real session tracking across background/foreground events.
+  - Wired `disputeResolution` in `apps/mobile/stores/civic.ts` to persist via `supabaseDataService.disputeIssueResolution`.
+  - Removed duplicate function declarations and confirmed elimination of dead mock RPC functions (`fetchFeedRPC`, `fetchIssuesRPC`, `fetchContentAlerts`).
+- **Identity & Role Verification Hardening (FIX-26, FIX-27, FIX-28)**:
+  - Corrected KYC status default to `'pending'` with `verifiedAt: null` in `contentAccountability.ts`.
+  - Deprecated and removed client-trusting headers (`x-user-id`) in `apps/api/src/routes/moderation.ts`. Replaced with `resolveModeratorRole`, strictly verifying bearer JWTs against Supabase Auth and confirming moderator/admin role in `user_profiles`.
+  - Replaced mock in-memory stores in `apps/api/src/routes/moderation.ts` with real persistence to `user_verification` and `blocked_users` tables.
+- **Email Verification Gating (FIX-31)**:
+  - Added email verification requirement across `canCreatePage` and `canAccessLive` in `pageGating.ts`.
+  - Enforced `user.email_confirmed_at` check in `KYCVerificationSheet.tsx`, `pages/index.tsx`, and `go-live.tsx`.
+  - Added unit test coverage for email gating in `pageGating.test.ts`.
+- **Automated Content Moderation Engine (FIX-32)**:
+  - Created automated content moderation service (`apps/api/src/services/contentModeration.ts`) using `openai.moderations.create` with an embedded rule-based regex fallback for hate speech, harassment, violence, and self-harm.
+  - Integrated moderation pipeline into `POST /api/v1/moderation/check-content` in `moderation.ts`.
+- **Compliant Feature Parking (Native Live & Political Ads)**:
+  - Added `enableNativeLive: false` and `enablePoliticalAds: false` to `features.ts` and `useFeatureFlags`.
+  - Parked native live video in `go-live.tsx` behind a dignified "Coming Soon" placeholder to avoid half-baked client crashes.
+  - Parked ad campaigns in `apps/api/src/routes/manage.ts` behind an ECI compliance notice until formal clearance.
+
 ### Fixed — Content Creator Accountability (CCA): Launch Readiness & End-to-End Supabase Forensic Wire-up (2026-09-07)
 - **Crash Resolution on KYC Submit**:
   - Eliminated fatal native crashes on dynamic imports of unlinked native modules (`expo-device`, `expo-application`, `@react-native-community/netinfo`) in `apps/mobile/lib/deviceFingerprint.ts`.

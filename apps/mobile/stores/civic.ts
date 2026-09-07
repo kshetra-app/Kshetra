@@ -924,6 +924,13 @@ export const useCivicStore = create<CivicState>()((set, get) => ({
 
       return { issues: updatedIssues, statusHistory: newHistory };
     });
+
+    const user = useAuthStore.getState().user;
+    if (user?.id) {
+      dataService.disputeIssueResolution(issueId, user.id, reason || 'Disputed by community member').catch((err) => {
+        console.warn('[CivicStore] Failed to persist dispute to database:', err);
+      });
+    }
   },
 
   updateIssueStatus: (issueId, newStatus, note, changedByName) => {

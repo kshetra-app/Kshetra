@@ -78,7 +78,8 @@ export default function PagesScreen() {
     setRefreshing(false);
   }, [hydrateAspirants, loadPoliticians]);
 
-  const userCanCreate = canCreatePage(userProfile?.role);
+  const isEmailVerified = authUser ? Boolean(authUser.email_confirmed_at) : false;
+  const userCanCreate = canCreatePage(userProfile?.role, isEmailVerified);
   const civicScore = getCivicScore();
 
   const handleInviteEndorsements = useCallback(async () => {

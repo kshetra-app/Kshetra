@@ -3,6 +3,7 @@ import { persist, createJSONStorage } from 'zustand/middleware';
 import { mmkvStorage } from '../lib/storage';
 import POLITICAL_SHORTS from '../data/politicalShortsData';
 import type { PoliticalShort } from '../data/politicalShortsData';
+import { fetchShorts, incrementShortView } from '../lib/supabaseDataService';
 
 interface ApprovalRecord {
   userId: string;
@@ -31,6 +32,7 @@ interface PoliticalShortsState {
   approveShort: (shortId: string, userId: string, userConstituencyId: string) => void;
   flagShort: (shortId: string, userId: string) => void;
   incrementViews: (shortId: string) => void;
+  hydrateShorts: (stateCode?: string) => Promise<void>;
   resetShorts: () => void;
 }
 
@@ -144,13 +146,26 @@ export const usePoliticalShortsStore = create<PoliticalShortsState>()(
           };
         }),
 
-      incrementViews: (shortId) =>
+      incrementViews: (shortId) => {
+        incrementShortView(shortId).catch(() => {});
         set((state) => {
           const updatedShorts = state.shorts.map((s) =>
             s.id === shortId ? { ...s, viewCount: s.viewCount + 1 } : s
           );
           return { shorts: updatedShorts };
-        }),
+        });
+      },
+
+      hydrateShorts: async (stateCode?: string) => {
+        try {
+          const remoteShorts = await fetchShorts(stateCode);
+          if (remoteShorts && remoteShorts.length > 0) {
+            set({ shorts: remoteShorts });
+          }
+        } catch (err) {
+          console.warn('[PoliticalShortsStore] Failed to hydrate shorts, using cache:', err);
+        }
+      },
 
       resetShorts: () =>
         set({

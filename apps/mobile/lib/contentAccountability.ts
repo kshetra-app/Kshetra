@@ -308,9 +308,9 @@ export async function submitKYC(
       locationAddress: snapshot.location?.address ?? null,
       appVersion: snapshot.app.version,
       appBuild: snapshot.app.build,
-      // Auto-verify for demo; in production this would be 'pending'
-      status: 'verified' as const,
-      verifiedAt: now,
+      // Real submission is pending verification review
+      status: 'pending' as const,
+      verifiedAt: null,
       rejectionReason: null,
       termsAcceptedAt: now,
       termsVersion: '1.0',
@@ -340,7 +340,7 @@ export async function submitKYC(
       locationAddress: snapshot.location?.address ?? null,
       appVersion: snapshot.app.version,
       appBuild: snapshot.app.build,
-      status: 'verified',
+      status: 'pending',
       termsAcceptedAt: kycRecord.termsAcceptedAt,
       termsVersion: kycRecord.termsVersion,
     }).catch((err) => {

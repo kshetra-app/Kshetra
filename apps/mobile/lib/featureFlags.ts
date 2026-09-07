@@ -105,6 +105,8 @@ export function useFeatureFlags(): AppFeatureFlags {
       enableAspirants: state.enableAspirants,
       enableCampaignManager: state.enableCampaignManager,
       enableLeadershipAcademy: state.enableLeadershipAcademy,
+      enablePoliticalAds: state.enablePoliticalAds,
+      enableNativeLive: state.enableNativeLive,
     })),
   );
 }

@@ -1,4 +1,5 @@
-import { useEffect, lazy, Suspense } from 'react';
+import { useEffect, useRef, lazy, Suspense } from 'react';
+import { AppState, Platform, type AppStateStatus } from 'react-native';
 import { Stack } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
@@ -12,16 +13,19 @@ import { useNetworkStore } from '../lib/networkStatus';
 import OfflineBanner from '../components/OfflineBanner';
 import { useContributorVerificationStore } from '../stores/contributorVerification';
 import { bootstrapSupabase } from '../lib/supabaseBootstrap';
+import { recordSession, endSession } from '../lib/supabaseDataService';
 import '../i18n';
 
 const KYCVerificationSheet = lazy(() => import('../components/KYCVerificationSheet'));
 
 export default function RootLayout() {
   const initializeAuth = useAuthStore((s) => s.initialize);
+  const user = useAuthStore((s) => s.user);
   const { colors, isDark } = useTheme();
   usePushNotifications();
   const startNetworkMonitoring = useNetworkStore((s) => s.startMonitoring);
   const showKYCSheet = useContributorVerificationStore((s) => s.showKYCSheet);
+  const sessionIdRef = useRef<string | null>(null);
 
   useEffect(() => {
     let stopNetwork: (() => void) | undefined;
@@ -44,6 +48,49 @@ export default function RootLayout() {
       }
     };
   }, [initializeAuth, startNetworkMonitoring]);
+
+  // Session lifecycle tracking (recordSession & endSession)
+  useEffect(() => {
+    let active = true;
+
+    // Start session
+    recordSession({
+      userId: user?.id,
+      platform: Platform.OS as 'ios' | 'android' | 'web',
+      appVersion: '1.0.0',
+    }).then((sId) => {
+      if (active) {
+        sessionIdRef.current = sId;
+      }
+    });
+
+    const handleAppStateChange = (nextAppState: AppStateStatus) => {
+      if (nextAppState === 'background' || nextAppState === 'inactive') {
+        if (sessionIdRef.current) {
+          endSession(sessionIdRef.current, [], 0).catch(() => {});
+          sessionIdRef.current = null;
+        }
+      } else if (nextAppState === 'active' && !sessionIdRef.current) {
+        recordSession({
+          userId: user?.id,
+          platform: Platform.OS as 'ios' | 'android' | 'web',
+          appVersion: '1.0.0',
+        }).then((sId) => {
+          sessionIdRef.current = sId;
+        });
+      }
+    };
+
+    const sub = AppState.addEventListener('change', handleAppStateChange);
+
+    return () => {
+      active = false;
+      sub.remove();
+      if (sessionIdRef.current) {
+        endSession(sessionIdRef.current, [], 0).catch(() => {});
+      }
+    };
+  }, [user?.id]);
 
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>

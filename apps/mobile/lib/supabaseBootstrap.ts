@@ -20,6 +20,7 @@ import { useFeedStore } from '../stores/feed';
 import { useCivicStore } from '../stores/civic';
 import { useFavoritesStore } from '../stores/favorites';
 import { useNotificationsStore } from '../stores/notifications';
+import { usePoliticalShortsStore } from '../stores/politicalShorts';
 import { subscribeAll, unsubscribeAll } from './realtimeService';
 import { flushQueue, getQueueSize } from './offlineSync';
 import { isOnline } from './networkStatus';
@@ -50,6 +51,7 @@ export async function bootstrapSupabase(): Promise<void> {
     if (user) {
       await ensureUserProfile(user.id, user.email ?? '');
       await syncLocalToServer(user.id);
+      await useNotificationsStore.getState().fetchNotifications(user.id);
     }
 
     // 2. Load fresh public data from server into stores (Feed, Civic Issues)
@@ -183,6 +185,9 @@ async function hydrateStoresFromServer(): Promise<void> {
     addBreadcrumb('bootstrap', 'issues_hydrated', { count: issuesData.value.length });
   }
 
+  // Hydrate shorts store
+  await usePoliticalShortsStore.getState().hydrateShorts(stateCode);
+
   addBreadcrumb('bootstrap', 'stores_hydrated');
 }
 
@@ -190,8 +195,15 @@ function startRealtimeSubscriptions(): void {
   const stateCode = useActiveStateStore.getState().stateCode;
   const myHome = useMyConstituencyStore.getState().home;
   const constituencyId = myHome ? `${stateCode}-AC-${myHome.acNo}` : undefined;
+  const user = useAuthStore.getState().user;
 
-  realtimeCleanup = subscribeAll(stateCode, constituencyId);
+  const appCleanup = subscribeAll(stateCode, constituencyId);
+  const notifCleanup = user ? useNotificationsStore.getState().subscribeToUserNotifications(user.id) : () => {};
+
+  realtimeCleanup = () => {
+    appCleanup();
+    notifCleanup();
+  };
   addBreadcrumb('bootstrap', 'realtime_started');
 }
 

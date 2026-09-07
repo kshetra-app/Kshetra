@@ -201,11 +201,28 @@ export async function updateIssueStatus(
       update.resolved_at = new Date().toISOString();
       update.resolution_note = note;
     }
-    const { error } = await supabase
+    const { data: issueData, error } = await supabase
       .from('civic_issues')
       .update(update)
-      .eq('id', issueId);
+      .eq('id', issueId)
+      .select('reporter_id, title')
+      .maybeSingle();
     if (error) throw error;
+
+    // Notify issue reporter of status update
+    if (issueData?.reporter_id) {
+      supabase.from('notification_log').insert({
+        user_id: issueData.reporter_id,
+        trigger_type: 'issue_status_change',
+        title: 'Issue Status Updated',
+        body: `Your issue "${issueData.title || 'Civic Issue'}" was marked as ${newStatus}.`,
+        source_issue_id: issueId,
+        read: false,
+      }).then(({ error: notifErr }) => {
+        if (notifErr) console.warn('[Notification] Failed to log issue status notification:', notifErr.message);
+      });
+    }
+
     return true;
   } catch (err) {
     captureException(err as Error, { op: 'update_issue_status', issueId });
@@ -226,6 +243,28 @@ export async function reactToPost(postId: string, userId: string, reaction: stri
         { onConflict: 'user_id,post_id' },
       );
     if (error) throw error;
+
+    // Log notification for post author (if not reacting to own post)
+    supabase
+      .from('posts')
+      .select('author_id')
+      .eq('id', postId)
+      .maybeSingle()
+      .then(({ data: postData }) => {
+        if (postData?.author_id && postData.author_id !== userId) {
+          supabase.from('notification_log').insert({
+            user_id: postData.author_id,
+            trigger_type: 'reaction',
+            title: 'New Reaction',
+            body: `Someone reacted with ${reaction} to your post.`,
+            source_post_id: postId,
+            read: false,
+          }).then(({ error: notifErr }) => {
+            if (notifErr) console.warn('[Notification] Failed to log reaction notification:', notifErr.message);
+          });
+        }
+      });
+
     return true;
   } catch (err) {
     captureException(err as Error, { op: 'react_post', postId });
@@ -357,6 +396,29 @@ export async function addPostComment(
       .select('id')
       .single();
     if (error) throw error;
+
+    // Log notification for post author (if not commenting on own post)
+    supabase
+      .from('posts')
+      .select('author_id')
+      .eq('id', postId)
+      .maybeSingle()
+      .then(({ data: postData }) => {
+        if (postData?.author_id && postData.author_id !== userId) {
+          supabase.from('notification_log').insert({
+            user_id: postData.author_id,
+            trigger_type: 'comment_reply',
+            title: 'New Comment',
+            body: content.slice(0, 100),
+            source_post_id: postId,
+            source_comment_id: data?.id ?? null,
+            read: false,
+          }).then(({ error: notifErr }) => {
+            if (notifErr) console.warn('[Notification] Failed to log comment notification:', notifErr.message);
+          });
+        }
+      });
+
     return { id: data?.id ?? null, success: true };
   } catch (err) {
     captureException(err as Error, { op: 'add_comment', postId });
@@ -602,50 +664,6 @@ export async function flagShort(shortId: string, userId: string, reason?: string
   }
 }
 
-export async function addShortComment(
-  shortId: string,
-  userId: string,
-  authorName: string,
-  text: string,
-): Promise<{ id: string | null; success: boolean }> {
-  if (!guard()) return { id: `local-sc-${Date.now()}`, success: true };
-  try {
-    addBreadcrumb('shorts', 'comment', { shortId });
-    const { data, error } = await supabase
-      .from('short_comments')
-      .insert({ short_id: shortId, user_id: userId, author_name: authorName, text })
-      .select('id')
-      .single();
-    if (error) throw error;
-    return { id: data?.id ?? null, success: true };
-  } catch (err) {
-    captureException(err as Error, { op: 'add_short_comment', shortId });
-    return { id: null, success: false };
-  }
-}
-
-export async function incrementShortView(shortId: string): Promise<boolean> {
-  if (!guard()) return true;
-  try {
-    const { error } = await supabase.rpc('increment_short_views', { p_short_id: shortId });
-    // Fallback to a read-modify-write update if the RPC doesn't exist yet.
-    if (error) {
-      const { data } = await supabase
-        .from('political_shorts')
-        .select('view_count')
-        .eq('id', shortId)
-        .single();
-      const current = (data?.view_count as number | null) ?? 0;
-      await supabase
-        .from('political_shorts')
-        .update({ view_count: current + 1 })
-        .eq('id', shortId);
-    }
-    return true;
-  } catch {
-    return false;
-  }
-}
 
 // ─── User Profile ────────────────────────────────────────────────────
 
@@ -800,6 +818,28 @@ export async function endorseAspirant(endorserId: string, aspirantId: string, me
       .from('community_endorsements')
       .insert({ endorser_id: endorserId, aspirant_id: aspirantId, message: message ?? null });
     if (error) throw error;
+
+    // Look up aspirant's user_id from aspirant_profiles to write notification
+    supabase
+      .from('aspirant_profiles')
+      .select('user_id, display_name')
+      .eq('id', aspirantId)
+      .maybeSingle()
+      .then(({ data: aspData }) => {
+        if (aspData?.user_id && aspData.user_id !== endorserId) {
+          supabase.from('notification_log').insert({
+            user_id: aspData.user_id,
+            trigger_type: 'system',
+            title: 'New Endorsement Received',
+            body: message ? `An endorsement was added: "${message.slice(0, 80)}"` : 'A citizen endorsed your leadership vision!',
+            data: { aspirantId, endorserId },
+            read: false,
+          }).then(({ error: notifErr }) => {
+            if (notifErr) console.warn('[Notification] Failed to log endorsement notification:', notifErr.message);
+          });
+        }
+      });
+
     return true;
   } catch (err) {
     captureException(err as Error, { op: 'endorse_aspirant', aspirantId });
@@ -1382,23 +1422,6 @@ export async function fetchPromisesForState(stateCode: string): Promise<any[] | 
   }
 }
 
-export async function fetchShorts(stateCode: string, limit = 20): Promise<any[] | null> {
-  if (!guard()) return null;
-  try {
-    const { data, error } = await supabase
-      .from('political_shorts')
-      .select('*')
-      .eq('state_code', stateCode)
-      .in('status', ['approved', 'pending'])
-      .order('created_at', { ascending: false })
-      .limit(limit);
-    if (error) throw error;
-    return data;
-  } catch (err) {
-    captureException(err as Error, { op: 'fetch_shorts', stateCode });
-    return null;
-  }
-}
 
 export async function fetchNotifications(userId: string, limit = 50): Promise<any[] | null> {
   if (!guard()) return null;
@@ -1545,6 +1568,108 @@ export async function endSession(sessionId: string, screensViewed: string[], act
       .eq('id', sessionId);
   } catch {
     // Silent fail — non-critical
+  }
+}
+
+// ─── Political Shorts ─────────────────────────────────────────────────────────
+
+export async function fetchShorts(stateCode?: string): Promise<any[]> {
+  if (!guard()) return [];
+  try {
+    let query = supabase
+      .from('political_shorts')
+      .select('*')
+      .in('status', ['approved', 'pending'])
+      .order('created_at', { ascending: false })
+      .limit(50);
+
+    if (stateCode) {
+      query = query.eq('state_code', stateCode);
+    }
+
+    const { data, error } = await query;
+    if (error) throw error;
+    return (data || []).map((row) => ({
+      id: row.id,
+      title: row.title,
+      description: row.description || '',
+      channelName: row.channel_name,
+      channelVerified: Boolean(row.channel_verified),
+      stateCode: row.state_code,
+      stateName: row.state_name || row.state_code,
+      constituencyId: row.constituency_id || '',
+      districtName: row.district_name || '',
+      hashtags: row.hashtags || [],
+      viewCount: row.view_count || 0,
+      likeCount: row.like_count || 0,
+      commentCount: row.comment_count || 0,
+      duration: row.duration || 0,
+      createdAt: row.created_at,
+      videoUrl: row.video_url,
+      visibilityLevel: row.constituency_id ? 'constituency' : (row.state_code ? 'state' : 'national'),
+      uploadedBy: row.uploaded_by || 'system',
+      gradientColors: row.gradient_colors && row.gradient_colors.length >= 2 ? row.gradient_colors : ['#0F2027', '#203A43'],
+      stateAccent: row.state_accent || '#4F8EF7',
+    }));
+  } catch (err) {
+    captureException(err as Error, { op: 'fetch_shorts' });
+    return [];
+  }
+}
+
+export async function incrementShortView(shortId: string): Promise<boolean> {
+  if (!guard()) return true;
+  try {
+    const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(shortId);
+    if (!isUuid) return true;
+    const { error } = await supabase.rpc('increment_short_views', { p_short_id: shortId });
+    if (error) {
+      // Fallback direct update
+      await supabase
+        .from('political_shorts')
+        .update({ view_count: supabase.rpc('increment') as any })
+        .eq('id', shortId);
+    }
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+export async function addShortComment(
+  shortId: string,
+  userId: string,
+  userName: string,
+  text: string,
+): Promise<{ id: string | null; success: boolean }> {
+  if (!guard()) return { id: `local-cmt-${Date.now()}`, success: true };
+  try {
+    const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(shortId);
+    if (!isUuid) return { id: `local-cmt-${Date.now()}`, success: true };
+
+    const { data, error } = await supabase
+      .from('short_comments')
+      .insert({
+        short_id: shortId,
+        user_id: userId,
+        author_name: userName,
+        text,
+      })
+      .select('id')
+      .single();
+
+    if (error) throw error;
+
+    // Increment comment_count on short
+    await supabase
+      .from('political_shorts')
+      .update({ updated_at: new Date().toISOString() })
+      .eq('id', shortId);
+
+    return { id: data?.id ?? null, success: true };
+  } catch (err) {
+    captureException(err as Error, { op: 'add_short_comment', shortId });
+    return { id: null, success: false };
   }
 }
 

@@ -1,4 +1,5 @@
 import type { FastifyPluginAsync } from 'fastify';
+import { DEFAULT_FEATURE_FLAGS } from '@kshetra/shared';
 
 export const manageRoutes: FastifyPluginAsync = async (app) => {
   /**
@@ -8,6 +9,7 @@ export const manageRoutes: FastifyPluginAsync = async (app) => {
    */
   app.get('/manage', async (request, reply) => {
     reply.header('Content-Type', 'text/html; charset=utf-8');
+    const enablePoliticalAds = DEFAULT_FEATURE_FLAGS.enablePoliticalAds;
     return `<!DOCTYPE html>
 <html lang="en">
 <head>
@@ -94,6 +96,7 @@ export const manageRoutes: FastifyPluginAsync = async (app) => {
       <h2>⚖️ Promote Post (Lane 2 Political Promotion)</h2>
       <p>ECI & Media Certification & Monitoring Committee (MCMC) compliant ad campaigns. Every political ad requires an authorized MCMC clearance certificate and manual compliance review.</p>
 
+      ${enablePoliticalAds ? `
       <div id="ad-submit-form">
         <div class="form-grid">
           <div class="form-group">
@@ -159,6 +162,15 @@ export const manageRoutes: FastifyPluginAsync = async (app) => {
           <!-- Populated dynamically -->
         </div>
       </div>
+      ` : `
+      <div style="padding: 24px; text-align: center; background: #F8FAFC; border: 1px dashed #CBD5E1; border-radius: 8px;">
+        <div style="font-size: 32px; margin-bottom: 8px;">⏳</div>
+        <h3 style="font-size: 16px; font-weight: 700; color: var(--text); margin-bottom: 6px;">Political Ad Promotion — Coming Soon</h3>
+        <p style="font-size: 13px; color: var(--text-muted); max-width: 500px; margin: 0 auto;">
+          In strict compliance with statutory regulations and the Election Commission of India (ECI) MCMC certification guidelines, candidate ad promotions and campaign broadcasts will be activated in upcoming election phases.
+        </p>
+      </div>
+      `}
     </div>
 
     <!-- Page Pro Subscription (Razorpay) -->
