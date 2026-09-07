@@ -1376,9 +1376,12 @@ export const useFeedStore = create<FeedState>()((set, get) => ({
           }));
         }
       } catch (err: any) {
+        const errorMsg = err?.message && err.message.includes('community guidelines')
+          ? err.message
+          : 'Network error while posting. Post not published.';
         set((state) => ({
           posts: state.posts.filter((p) => p.id !== post.id),
-          lastError: 'Network error while posting. Post not published.',
+          lastError: errorMsg,
         }));
       }
     }
@@ -1569,7 +1572,10 @@ export const useFeedStore = create<FeedState>()((set, get) => ({
             lastError: 'Failed to submit comment. Please retry.',
           }));
         }
-      } catch (err) {
+      } catch (err: any) {
+        const errorMsg = err?.message && err.message.includes('community guidelines')
+          ? err.message
+          : 'Network error while adding comment.';
         set((state) => ({
           comments: {
             ...state.comments,
@@ -1578,7 +1584,7 @@ export const useFeedStore = create<FeedState>()((set, get) => ({
           posts: state.posts.map((p) =>
             p.id === postId ? { ...p, replyCount: Math.max(0, p.replyCount - 1) } : p,
           ),
-          lastError: 'Network error while adding comment.',
+          lastError: errorMsg,
         }));
       }
     }

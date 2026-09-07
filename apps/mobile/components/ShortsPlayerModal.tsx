@@ -272,20 +272,27 @@ function ShortPageItem({
 
     const newCommentId = Date.now().toString();
     const commentBody = commentText.trim();
-    setComments((prev) => [
-      {
-        id: newCommentId,
-        author: authorName || 'You (Verified)',
-        text: commentBody,
-        likes: 0,
-        time: 'Just now',
-      },
-      ...prev,
-    ]);
+    const tempCommentId = `c-user-${Date.now()}`;
+    const newComment = {
+      id: tempCommentId,
+      author: authorName || 'Citizen',
+      text: commentBody,
+      likes: 0,
+      time: 'Just now',
+    };
 
-    // Persist to real backend
+    setComments((prev) => [newComment, ...prev]);
+
+    // Persist to real backend with moderation check
     addShortComment(item.id, userId, authorName || 'Citizen', commentBody).catch((err) => {
       console.warn('[Shorts] Failed to persist comment to database:', err);
+      // Remove optimistic comment
+      setComments((prev) => prev.filter((c) => c.id !== tempCommentId));
+      if (err?.message && err.message.includes('community guidelines')) {
+        Alert.alert('Content Moderation', err.message);
+      } else {
+        Alert.alert('Comment Failed', 'Could not post your comment. Please try again.');
+      }
     });
 
     logContentAction('create_comment', {

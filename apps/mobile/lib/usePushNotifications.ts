@@ -6,6 +6,7 @@ import { requestPermissions, getPushToken } from './notifications';
 import { useNotificationsStore } from '../stores/notifications';
 import { useAuthStore } from '../stores/auth';
 import { API_BASE_URL } from './constants';
+import { registerPushToken } from './supabaseDataService';
 import type { AlertCategory } from './notifications';
 
 /**
@@ -25,6 +26,8 @@ export function usePushNotifications() {
   const addNotification = useNotificationsStore((s) => s.addNotification);
   const enabled = useNotificationsStore((s) => s.enabled);
 
+  const registeredTokenRef = useRef<string | null>(null);
+
   // Register push token
   useEffect(() => {
     if (!enabled) return;
@@ -40,10 +43,21 @@ export function usePushNotifications() {
 
       setExpoPushToken(token);
 
-      // Register with API if user is authenticated
+      // Register with Supabase and backend if user is authenticated
       if (user?.id) {
+        // Only register if token/user has not already been registered in this session
+        const registrationKey = `${user.id}:${token}`;
+        if (registeredTokenRef.current === registrationKey) {
+          return;
+        }
+
         try {
-          await fetch(`${API_BASE_URL}/api/v1/notifications/register-token`, {
+          const platform = Platform.OS === 'ios' ? 'ios' : 'android';
+          await registerPushToken(user.id, token, platform);
+          registeredTokenRef.current = registrationKey;
+
+          // Also notify API backend for push service workers
+          fetch(`${API_BASE_URL}/api/v1/notifications/register-token`, {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json',
@@ -51,12 +65,12 @@ export function usePushNotifications() {
             },
             body: JSON.stringify({
               token,
-              platform: Platform.OS as 'ios' | 'android',
+              platform,
               deviceName: `${Platform.OS} ${Platform.Version}`,
             }),
-          });
-        } catch {
-          // Silently fail — token will be retried on next app launch
+          }).catch(() => {});
+        } catch (err) {
+          console.warn('[usePushNotifications] Failed to register push token:', err);
         }
       }
     }

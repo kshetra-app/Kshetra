@@ -13,8 +13,38 @@
 
 import { supabase, isSupabaseConfigured } from './supabase';
 import { captureException, addBreadcrumb } from './errorReporting';
+import { API_BASE_URL } from './constants';
 
 // ─── Helpers ─────────────────────────────────────────────────────────
+
+/**
+ * Validates text content against the server-side moderation endpoint.
+ * Returns { flagged: boolean; reason?: string }.
+ */
+export async function checkContentModeration(
+  content: string,
+): Promise<{ flagged: boolean; reason?: string }> {
+  if (!content || !content.trim()) {
+    return { flagged: false };
+  }
+  try {
+    const res = await fetch(`${API_BASE_URL}/api/v1/moderation/check-content`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ content }),
+    });
+    if (res.ok) {
+      const data = await res.json();
+      if (data?.data?.flagged) {
+        const reason = data.data.reasons?.join(', ') || 'Violates community guidelines';
+        return { flagged: true, reason };
+      }
+    }
+  } catch (err) {
+    console.warn('[Moderation] Moderation check error or network unreachable, proceeding:', err);
+  }
+  return { flagged: false };
+}
 
 function guard(): boolean {
   return isSupabaseConfigured;
@@ -298,6 +328,12 @@ export async function composePost(post: {
   parentId?: string;
   language?: string;
 }): Promise<{ id: string | null; success: boolean }> {
+  // Moderate content before insertion
+  const modCheck = await checkContentModeration(post.content);
+  if (modCheck.flagged) {
+    throw new Error(`This content could not be posted — it violates community guidelines (${modCheck.reason || 'moderation policy'}).`);
+  }
+
   if (!guard()) return { id: `local-${Date.now()}`, success: true };
   try {
     addBreadcrumb('feed', 'compose_post', { type: post.type });
@@ -387,6 +423,12 @@ export async function addPostComment(
   content: string,
   language?: string,
 ): Promise<{ id: string | null; success: boolean }> {
+  // Moderate content before insertion
+  const modCheck = await checkContentModeration(content);
+  if (modCheck.flagged) {
+    throw new Error(`This content could not be posted — it violates community guidelines (${modCheck.reason || 'moderation policy'}).`);
+  }
+
   if (!guard()) return { id: `local-cmt-${Date.now()}`, success: true };
   try {
     addBreadcrumb('feed', 'add_comment', { postId });
@@ -1081,57 +1123,6 @@ export async function registerPushToken(
 
 // ─── Data Fetching (read operations) ─────────────────────────────────
 
-export async function fetchFeedRPC(
-  stateCode: string,
-  constituencyId?: string,
-  type?: string,
-  cursor?: string,
-  limit = 30,
-): Promise<any[] | null> {
-  if (!guard()) return null;
-  try {
-    const { data, error } = await supabase.rpc('get_feed', {
-      p_state_code: stateCode,
-      p_constituency_id: constituencyId ?? null,
-      p_type: type ?? null,
-      p_cursor: cursor ?? new Date().toISOString(),
-      p_limit: limit,
-    });
-    if (error) throw error;
-    return data;
-  } catch (err) {
-    captureException(err as Error, { op: 'fetch_feed_rpc', stateCode });
-    // Fallback to simple query
-    return fetchFeedForState(stateCode, limit);
-  }
-}
-
-export async function fetchIssuesRPC(
-  stateCode: string,
-  constituencyId?: string,
-  status?: string,
-  category?: string,
-  cursor?: string,
-  limit = 30,
-): Promise<any[] | null> {
-  if (!guard()) return null;
-  try {
-    const { data, error } = await supabase.rpc('get_issues', {
-      p_state_code: stateCode,
-      p_constituency_id: constituencyId ?? null,
-      p_status: status ?? null,
-      p_category: category ?? null,
-      p_cursor: cursor ?? new Date().toISOString(),
-      p_limit: limit,
-    });
-    if (error) throw error;
-    return data;
-  } catch (err) {
-    captureException(err as Error, { op: 'fetch_issues_rpc', stateCode });
-    return fetchIssuesForConstituency(constituencyId ?? '', stateCode);
-  }
-}
-
 export async function globalSearch(
   query: string,
   stateCode?: string,
@@ -1152,63 +1143,6 @@ export async function globalSearch(
   }
 }
 
-export async function fetchTrendingHashtags(stateCode?: string, limit = 10): Promise<any[] | null> {
-  if (!guard()) return null;
-  try {
-    const { data, error } = await supabase.rpc('get_trending_hashtags', {
-      p_state_code: stateCode ?? null,
-      p_limit: limit,
-    });
-    if (error) throw error;
-    return data;
-  } catch (err) {
-    captureException(err as Error, { op: 'fetch_trending_hashtags' });
-    return null;
-  }
-}
-
-export async function fetchUserDashboard(userId: string): Promise<any | null> {
-  if (!guard()) return null;
-  try {
-    const { data, error } = await supabase.rpc('get_user_dashboard', { p_user_id: userId });
-    if (error) throw error;
-    return data?.[0] ?? null;
-  } catch (err) {
-    captureException(err as Error, { op: 'fetch_user_dashboard' });
-    return null;
-  }
-}
-
-export async function fetchConstituencyStats(constituencyId: string): Promise<any | null> {
-  if (!guard()) return null;
-  try {
-    const { data, error } = await supabase.rpc('get_constituency_stats', {
-      p_constituency_id: constituencyId,
-    });
-    if (error) throw error;
-    return data?.[0] ?? null;
-  } catch (err) {
-    captureException(err as Error, { op: 'fetch_constituency_stats' });
-    return null;
-  }
-}
-
-export async function fetchHeadlines(stateCode: string, limit = 20): Promise<any[] | null> {
-  if (!guard()) return null;
-  try {
-    const { data, error } = await supabase
-      .from('headlines')
-      .select('*')
-      .eq('state_code', stateCode)
-      .order('published_at', { ascending: false })
-      .limit(limit);
-    if (error) throw error;
-    return data;
-  } catch (err) {
-    captureException(err as Error, { op: 'fetch_headlines', stateCode });
-    return null;
-  }
-}
 
 export async function fetchIssuesForConstituency(
   constituencyId: string,
@@ -1642,6 +1576,12 @@ export async function addShortComment(
   userName: string,
   text: string,
 ): Promise<{ id: string | null; success: boolean }> {
+  // Moderate content before insertion
+  const modCheck = await checkContentModeration(text);
+  if (modCheck.flagged) {
+    throw new Error(`This content could not be posted — it violates community guidelines (${modCheck.reason || 'moderation policy'}).`);
+  }
+
   if (!guard()) return { id: `local-cmt-${Date.now()}`, success: true };
   try {
     const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(shortId);
@@ -1704,18 +1644,6 @@ export async function fetchLiveEvents(filters?: {
   } catch (e) { console.warn('[LMX] fetchLiveEvents exception:', e); return []; }
 }
 
-export async function fetchLiveEventById(eventId: string): Promise<any | null> {
-  if (!isSupabaseConfigured) return null;
-  try {
-    const { data, error } = await supabase
-      .from('live_events')
-      .select('*, live_event_ai(*), lmx_department_alerts(*)')
-      .eq('id', eventId)
-      .single();
-    if (error) { console.warn('[LMX] fetchLiveEventById error:', error.message); return null; }
-    return data;
-  } catch (e) { console.warn('[LMX] fetchLiveEventById exception:', e); return null; }
-}
 
 export async function createLiveEvent(event: Record<string, any>): Promise<any | null> {
   if (!isSupabaseConfigured) return null;
@@ -1891,20 +1819,6 @@ export async function acknowledgeContentAlert(
   } catch (err) {
     captureException(err as Error, { op: 'acknowledge_content_alert' });
     return false;
-  }
-}
-
-export async function fetchContentAlerts(contentId?: string): Promise<any[]> {
-  if (!guard()) return [];
-  try {
-    let query = supabase.from('content_alerts').select('*').order('created_at', { ascending: false });
-    if (contentId) query = query.eq('content_id', contentId);
-    const { data, error } = await query;
-    if (error) throw error;
-    return data ?? [];
-  } catch (err) {
-    captureException(err as Error, { op: 'fetch_content_alerts' });
-    return [];
   }
 }
 

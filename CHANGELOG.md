@@ -8,13 +8,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Hardened & Fixed — Sprint 68: Production Hardening, Real Backend Wiring & Trust & Safety (2026-09-07)
-- **Real Notifications End-to-End (FIX-21)**:
-  - Connected real Supabase writes to `notification_log` at 4 critical event touchpoints:
-    1. Direct Messages received in accepted conversations (`apps/api/src/routes/dm.ts`).
-    2. Civic issue status transitions (`updateIssueStatus` in `supabaseDataService.ts`).
-    3. Post comments and reactions (`addPostComment` and `reactToPost` in `supabaseDataService.ts`).
-    4. Aspirant leadership endorsements (`endorseAspirant` in `supabaseDataService.ts`).
-  - Wired `useNotificationsStore` in `apps/mobile/stores/notifications.ts` with real database fetching (`fetchNotifications`), read status updates (`markRead`, `markAllRead`), and Postgres changes realtime subscription (`subscribeToUserNotifications`).
+- **Real Notifications End-to-End (FIX-21 Completion)**:
+  - Connected real Supabase writes to `notification_log` at 4 critical event touchpoints (DMs, civic status changes, comments/reactions, aspirant endorsements).
+  - Wired `markRead` and `markAllRead` in `apps/mobile/stores/notifications.ts` to execute real backend writes via `markNotificationRead` and `markAllNotificationsRead` in `supabaseDataService.ts`, mutating local Zustand state only upon successful backend persistence.
+  - Wired `registerPushToken` in `apps/mobile/lib/usePushNotifications.ts` to write push tokens to the `push_tokens` table in Supabase upon acquisition, protected with a `${user.id}:${token}` ref-based deduplication guard to avoid redundant network updates.
   - Integrated notification store hydration and realtime subscription into `supabaseBootstrap.ts`.
   - Wired `NotificationsScreen` (`apps/mobile/app/notifications.tsx`) to real user ID context with pull-to-refresh.
 - **Political Shorts Backend Wire-up (FIX-22)**:
@@ -22,10 +19,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Connected `incrementShortView` to real atomic view counts via Supabase RPC `increment_short_views` with read-modify-write fallback.
   - Implemented `addShortComment` storing comments directly in the `short_comments` table and incrementing comment count.
   - Wired `ShortsPlayerModal.tsx` and `politicalShorts` store to persist comments and view tracking asynchronously.
-- **App Lifecycle & Civic Dispute Fixes (FIX-23 & FIX-24)**:
+- **Dead Function Deletion & Audit (FIX-24 Completion)**:
+  - Audited codebase and eliminated 8 dead/unused functions from `apps/mobile/lib/supabaseDataService.ts`:
+    - `fetchFeedRPC`
+    - `fetchIssuesRPC`
+    - `fetchTrendingHashtags`
+    - `fetchUserDashboard`
+    - `fetchConstituencyStats`
+    - `fetchHeadlines`
+    - `fetchContentAlerts`
+    - `fetchLiveEventById`
+  - Verified 0 callers across entire repository via `git grep` audits; confirmed clean TypeScript compilation (`tsc --noEmit`).
+- **App Lifecycle & Civic Dispute Fixes (FIX-23)**:
   - Wired `recordSession` and `endSession` to `AppState.addEventListener` in `apps/mobile/app/_layout.tsx` for real session tracking across background/foreground events.
   - Wired `disputeResolution` in `apps/mobile/stores/civic.ts` to persist via `supabaseDataService.disputeIssueResolution`.
-  - Removed duplicate function declarations and confirmed elimination of dead mock RPC functions (`fetchFeedRPC`, `fetchIssuesRPC`, `fetchContentAlerts`).
 - **Identity & Role Verification Hardening (FIX-26, FIX-27, FIX-28)**:
   - Corrected KYC status default to `'pending'` with `verifiedAt: null` in `contentAccountability.ts`.
   - Deprecated and removed client-trusting headers (`x-user-id`) in `apps/api/src/routes/moderation.ts`. Replaced with `resolveModeratorRole`, strictly verifying bearer JWTs against Supabase Auth and confirming moderator/admin role in `user_profiles`.
@@ -34,9 +41,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Added email verification requirement across `canCreatePage` and `canAccessLive` in `pageGating.ts`.
   - Enforced `user.email_confirmed_at` check in `KYCVerificationSheet.tsx`, `pages/index.tsx`, and `go-live.tsx`.
   - Added unit test coverage for email gating in `pageGating.test.ts`.
-- **Automated Content Moderation Engine (FIX-32)**:
+- **Content Moderation Pre-Submission Enforcement (FIX-32 Completion)**:
   - Created automated content moderation service (`apps/api/src/services/contentModeration.ts`) using `openai.moderations.create` with an embedded rule-based regex fallback for hate speech, harassment, violence, and self-harm.
   - Integrated moderation pipeline into `POST /api/v1/moderation/check-content` in `moderation.ts`.
+  - Enforced real content moderation pre-submission checks before Supabase writes in `composePost`, `addPostComment`, and `addShortComment` within `apps/mobile/lib/supabaseDataService.ts`.
+  - Rejects flagged content with an explicit guidelines error (`"This content could not be posted — it violates community guidelines."`), aborts the insert, and triggers state rollback with user-facing alerts.
+  - Architectural classification: Mobile pre-submission check-then-write pattern protecting standard client flows. Unbypassable backend enforcement for custom API clients requires routing writes through authenticated API endpoints (`POST /api/v1/posts`).
 - **Compliant Feature Parking (Native Live & Political Ads)**:
   - Added `enableNativeLive: false` and `enablePoliticalAds: false` to `features.ts` and `useFeatureFlags`.
   - Parked native live video in `go-live.tsx` behind a dignified "Coming Soon" placeholder to avoid half-baked client crashes.

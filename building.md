@@ -5859,9 +5859,10 @@ Questions asked via the AI Chat feature (`apps/mobile/app/ai-chat.tsx`) and AI S
 
 ### Tickets Completed
 
-1. **FIX-21 — Real Notifications End-to-End**:
+1. **FIX-21 — Real Notifications End-to-End & Push Token Registration (Completed)**:
    - Connected real Supabase writes to `notification_log` on DM received (accepted conversations), civic issue status change, post comments & reactions, and aspirant endorsements.
-   - Replaced empty store stubs in `apps/mobile/stores/notifications.ts` with real `fetchNotifications`, `markRead`, `markAllRead`, and Postgres changes realtime subscription.
+   - Wired `markRead` and `markAllRead` in `apps/mobile/stores/notifications.ts` to execute real backend writes via `markNotificationRead` and `markAllNotificationsRead` in `supabaseDataService.ts`, mutating local Zustand state only upon successful backend write.
+   - Wired `registerPushToken` in `apps/mobile/lib/usePushNotifications.ts` to write push tokens to `push_tokens` in Supabase upon acquisition, protected with a `${user.id}:${token}` ref deduplication guard.
    - Connected notification hydration and live subscription in `apps/mobile/lib/supabaseBootstrap.ts`.
    - Wired `apps/mobile/app/notifications.tsx` with authenticated user context and refresh control.
 
@@ -5871,10 +5872,11 @@ Questions asked via the AI Chat feature (`apps/mobile/app/ai-chat.tsx`) and AI S
    - Implemented real comment persistence in `short_comments` via `addShortComment`.
    - Integrated with `ShortsPlayerModal.tsx` and hydrated feed in `supabaseBootstrap.ts`.
 
-3. **FIX-23 & FIX-24 — App Lifecycle & Civic Dispute Fixes**:
+3. **FIX-23 & FIX-24 — App Lifecycle & Dead Code Removal (Completed)**:
    - Added foreground/background session tracking (`recordSession` & `endSession`) in `apps/mobile/app/_layout.tsx` using `AppState.addEventListener`.
    - Wired `disputeResolution` in `apps/mobile/stores/civic.ts` to `dataService.disputeIssueResolution`.
-   - Audited codebase and removed dead mock functions.
+   - Eliminated 8 dead/unused functions from `apps/mobile/lib/supabaseDataService.ts`: `fetchFeedRPC`, `fetchIssuesRPC`, `fetchTrendingHashtags`, `fetchUserDashboard`, `fetchConstituencyStats`, `fetchHeadlines`, `fetchContentAlerts`, `fetchLiveEventById`.
+   - Confirmed 0 callers across the repository via `git grep` audits.
 
 4. **FIX-26, FIX-27, FIX-28 — Identity, Role Verification & Persistence**:
    - Changed KYC status default from `'verified'` to `'pending'` in `apps/mobile/lib/contentAccountability.ts`.
@@ -5886,9 +5888,12 @@ Questions asked via the AI Chat feature (`apps/mobile/app/ai-chat.tsx`) and AI S
    - Enforced `user.email_confirmed_at` check in `KYCVerificationSheet.tsx`, `pages/index.tsx`, and `go-live.tsx`.
    - Added unit test coverage for email gating in `pageGating.test.ts`.
 
-6. **FIX-32 — Automated Content Moderation Engine**:
+6. **FIX-32 — Content Moderation Pre-Submission Enforcement (Completed)**:
    - Implemented `apps/api/src/services/contentModeration.ts` using `openai.moderations.create` with an embedded rule-based regex fallback.
    - Wired content moderation into `POST /api/v1/moderation/check-content` in `moderation.ts`.
+   - Enforced real content moderation pre-submission checks before Supabase writes in `composePost`, `addPostComment`, and `addShortComment` within `apps/mobile/lib/supabaseDataService.ts`.
+   - Rejects flagged content with `"This content could not be posted — it violates community guidelines."`, aborts the insert, triggers state rollback, and informs the user.
+   - Architectural classification: Mobile pre-submission check-then-write pattern protecting standard client flows. Unbypassable backend enforcement for custom API clients requires routing writes through authenticated API endpoints (`POST /api/v1/posts`).
 
 7. **Feature Flags & Clean Architecture (Native Live & Political Ads)**:
    - Added `enableNativeLive: false` and `enablePoliticalAds: false` to `AppFeatureFlags`.
@@ -5896,9 +5901,9 @@ Questions asked via the AI Chat feature (`apps/mobile/app/ai-chat.tsx`) and AI S
    - Added ECI compliance notice for ad promotion routes in `apps/api/src/routes/manage.ts`.
 
 ### Verification
-- **`apps/mobile` TypeScript**: `npx tsc --noEmit -p apps/mobile/tsconfig.json` → **0 errors**.
+- **`apps/mobile` TypeScript**: `npm run typecheck` (`tsc --noEmit`) → **0 errors**.
 - **`apps/api` TypeScript**: `npx tsc --noEmit -p apps/api/tsconfig.json` → **0 errors**.
-- **`apps/mobile` Unit Tests**: Jest test suites (14 passed, 141 tests total) → **100% passing**.
+- **`apps/mobile` Unit Tests**: Jest test suites (14 passed, 142 tests total) → **100% passing**.
 
 
 

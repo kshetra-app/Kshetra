@@ -61,6 +61,35 @@ describe('Phase 1: Ticket 1.2 - Feed Write Hardening & Throttling', () => {
     expect(useFeedStore.getState().lastError).toContain('Could not submit post');
   });
 
+  it('rolls back post and surfaces community guidelines violation message when moderation flags content', async () => {
+    (dataService.composePost as jest.Mock).mockRejectedValue(
+      new Error('This content could not be posted — it violates community guidelines (Matched pattern: hate).')
+    );
+
+    const post: Post = {
+      id: 'test-mod-flagged-post',
+      author: { id: 'u1', displayName: 'Test User' },
+      content: 'I hate everyone and violence',
+      type: 'discussion',
+      stateCode: 'TS',
+      constituencyId: 'TS-AC-01',
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+      replyCount: 0,
+      reactionCount: 0,
+      isPinned: false,
+      isDeleted: false,
+      language: 'en',
+      hashtags: [],
+    };
+
+    await useFeedStore.getState().addPost(post);
+
+    const currentPosts = useFeedStore.getState().posts;
+    expect(currentPosts.find((p) => p.id === 'test-mod-flagged-post')).toBeUndefined();
+    expect(useFeedStore.getState().lastError).toContain('violates community guidelines');
+  });
+
   it('throttles rapid repeated post submissions', async () => {
     (dataService.composePost as jest.Mock).mockResolvedValue({ id: 'p1', success: true });
 

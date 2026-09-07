@@ -3,6 +3,8 @@ import { createJSONStorage, persist } from 'zustand/middleware';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import type { AlertCategory } from '../lib/notifications';
 import { supabase, isSupabaseConfigured } from '../lib/supabase';
+import { markNotificationRead, markAllNotificationsRead } from '../lib/supabaseDataService';
+import { useAuthStore } from './auth';
 
 export interface NotificationItem {
   id: string;
@@ -136,6 +138,21 @@ export const useNotificationsStore = create<NotificationsState>()(
       },
 
       markRead: async (id: string, userId?: string) => {
+        const effectiveUserId = userId || useAuthStore.getState().user?.id;
+        if (!id.startsWith('notif-') && effectiveUserId) {
+          try {
+            const success = await markNotificationRead(id, effectiveUserId);
+            if (!success) {
+              console.warn('[NotificationsStore] markNotificationRead returned false');
+              return;
+            }
+          } catch (err) {
+            console.error('[NotificationsStore] Error calling markNotificationRead:', err);
+            return;
+          }
+        }
+
+        // Only update local state after backend succeeds
         set((s) => {
           const items = s.items.map((n) =>
             n.id === id ? { ...n, read: true } : n,
@@ -145,36 +162,28 @@ export const useNotificationsStore = create<NotificationsState>()(
             unreadCount: items.filter((n) => !n.read).length,
           };
         });
-
-        if (isSupabaseConfigured && !id.startsWith('notif-')) {
-          try {
-            await supabase
-              .from('notification_log')
-              .update({ read: true, read_at: new Date().toISOString() })
-              .eq('id', id);
-          } catch (err) {
-            console.warn('[NotificationsStore] Failed to mark read in Supabase:', err);
-          }
-        }
       },
 
       markAllRead: async (userId?: string) => {
+        const effectiveUserId = userId || useAuthStore.getState().user?.id;
+        if (effectiveUserId) {
+          try {
+            const success = await markAllNotificationsRead(effectiveUserId);
+            if (!success) {
+              console.warn('[NotificationsStore] markAllNotificationsRead returned false');
+              return;
+            }
+          } catch (err) {
+            console.error('[NotificationsStore] Error calling markAllNotificationsRead:', err);
+            return;
+          }
+        }
+
+        // Only update local state after backend succeeds
         set((s) => ({
           items: s.items.map((n) => ({ ...n, read: true })),
           unreadCount: 0,
         }));
-
-        if (isSupabaseConfigured && userId) {
-          try {
-            await supabase
-              .from('notification_log')
-              .update({ read: true, read_at: new Date().toISOString() })
-              .eq('user_id', userId)
-              .eq('read', false);
-          } catch (err) {
-            console.warn('[NotificationsStore] Failed to mark all read in Supabase:', err);
-          }
-        }
       },
 
       clearAll: () =>
