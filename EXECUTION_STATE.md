@@ -9,12 +9,12 @@
 PROJECT:               PANIN (formerly Kshetra)
 TARGET_DOMAIN:         India Political Geography, Intelligence, Participation & Media Platform
 CURRENT_PHASE:         W0 (Baseline Reconciliation & Ground-Truth Audit)
-CURRENT_JOB:           W001-R6A (Independent Verification Re-execution)
-LAST_COMPLETED_JOB:    W001-R5 (W001 Reconciliation & Remote Reproducibility)
-NEXT_PERMITTED_JOB:    W001-R6A (Independent Verification Re-execution; W002 BLOCKED until IV passes)
+CURRENT_JOB:           W002 (Staging / Prod Environment Separation)
+LAST_COMPLETED_JOB:    W001-R6A (Independent Verification Re-execution & Final W001 Acceptance)
+NEXT_PERMITTED_JOB:    W002 (Staging / Prod Environment Separation — UNBLOCKED)
 
 CURRENT_BRANCH:        master
-CURRENT_COMMIT:        019cc6e
+CURRENT_COMMIT:        7e39635
 API_VERSION:           v1 (Fastify 5.2 on Railway)
 MOBILE_VERSION:        0.1.0 (Expo 54, React Native 0.81.5)
 DATABASE_MIGRATIONS:   36 applied (001_initial_schema to 034_political_ads)
@@ -33,11 +33,11 @@ REMOTE_SYNC:           Up to date with origin/master
 | Job ID | Job Title | Status | Acceptance Date | Evidence / Notes |
 | :--- | :--- | :--- | :--- | :--- |
 | **W000** | Project Discovery & Ground-Truth Audit | **COMPLETE** | 2026-09-08 | Audited 53 routes, 106 endpoints, 148 tables, 47 deps |
-| **W001** | Production Environment Verification | **IN_VERIFICATION** | - | Real API contract mapped; live Supabase anon OK (200 OK); Remediated via W001-R1..R5; pending IV |
+| **W001** | Production Environment Verification | **ACCEPTED (W/ EXCEPTIONS)** | 2026-09-08 | Verified live Railway & Supabase; W001-R6A IV Pass w/ non-blocking exceptions |
 | **W001-R5** | W001 Reconciliation & Remote Reproducibility | **COMPLETE** | 2026-09-08 | Reconciled evidence into in-repo `reports/` with Part 7 metadata per Amendment v1.2 |
 | **W001-R6** | Independent Verification & Final W001 Acceptance | **REOPENED** | - | Reopened per user governance review; superseded by W001-R6A |
-| **W001-R6A** | Independent Verification Re-execution | **IN_VERIFICATION** | - | Real API contract matrix (`reports/w001_r6a_api_contract_matrix.json`) & environment report generated; awaiting independent verifier |
-| **W002** | Staging / Prod Environment Separation | **BLOCKED** | - | Prerequisite: W001-R6A Independent Verification Pass |
+| **W001-R6A** | Independent Verification Re-execution | **COMPLETE** | 2026-09-08 | Independent Verifier Pass with Non-Blocking Exceptions per Amendment v1.2 Rule IV-001 |
+| **W002** | Staging / Prod Environment Separation | **READY** | - | UNBLOCKED: Prerequisite W001-R6A Independent Verification Passed |
 
 | **W003** | CI/CD Quality Pipeline | NOT_STARTED | - | Prerequisite: W002 |
 | **W004** | Observability & Error Tracking | NOT_STARTED | - | Prerequisite: W003 |

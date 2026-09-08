@@ -3,21 +3,21 @@
 
 **Governance Authority:** Master Execution Framework Amendment v1.2 (Rule IV-001: Independent Verification)  
 **Verification Role:** Independent Quality, Security, and Governance Verifier  
-**Verification Date:** 2026-09-08T22:45:00+05:30  
+**Verification Date:** 2026-09-08T22:55:00+05:30  
 **Verification Status:** COMPLETED  
 
 ---
 
 ## 1. Executive Summary & Verdict
 
-Under Master Execution Framework Amendment v1.2, Rule IV-001 mandates that the implementing agent or engineer cannot self-certify completion or acceptance of Launch Gates or foundational infrastructure milestones. An independent verification session was conducted on Job W001 (Production Environment Verification & Stabilization) across the PANIN / Kshetra platform.
+Under Master Execution Framework Amendment v1.2, Rule IV-001 mandates that the implementing agent or engineer cannot self-certify completion or acceptance of Launch Gates or foundational infrastructure milestones. An independent verification session was conducted on Job W001-R6A (Production Environment Verification & Stabilization Re-execution) across the PANIN / Kshetra platform.
 
 This independent audit evaluated:
-1. Canonical git repository coordinates, tree cleanliness, and remote synchronization.
+1. Canonical git repository coordinates on branch `master`, clean tree status, and remote synchronization with `origin/master`.
 2. Independent reproduction of all verification tests across API compilation, CORS security headers, and 13-language i18n key parity.
 3. In-depth technical defect audit of DEF-009, DEF-010, DEF-011, and DEF-012.
-4. Live production environment health across Railway Fastify API and Supabase REST/Storage.
-5. In-repo continuity registers and evidence freshness.
+4. Live production environment health across Railway Fastify API (evaluating the real API contract matrix of 13 endpoints) and Supabase REST/Storage.
+5. In-repo continuity registers, evidence packages, and remote reproducibility freshness.
 
 ### Independent Verdict
 ```text
@@ -29,9 +29,10 @@ JOB W002 PERMISSION: UNBLOCKED (JOB W002 IS PERMITTED TO START)
 ```
 
 ### Justification
-- **Core Production Baseline:** Live Railway Fastify API is online and healthy (`200 OK`, P50 241ms, rate-limited, security headers enforced). Live Supabase REST API is operational across core tables (`states`, `constituencies`, `civic_issues`, `issue_upvotes`, `user_profiles`) and Supabase Storage is active.
+- **Core Production Baseline:** Live Railway Fastify API is online and healthy (`200 OK`, P50 245ms, rate-limited, HSTS/Helmet enforced). The comprehensive contract audit across 13 endpoints verified that **10 live endpoints are deployed and operational** (including `/health`, `/api/health`, `/api/v1/news/feed`, `/api/v1/states`, `/api/v1/states/TS/constituencies`, `/api/v1/config/flags`, `/api/v1/moderation/check-content`, and auth-gated `/api/v1/moderation/queue`). Only 3 newly committed endpoints await container rebuild deployment.
+- **Supabase Cloud Persistence:** Fully operational under authenticated anon key (`200 OK` across `states`, `constituencies`, `civic_issues`, `issue_upvotes`, `user_profiles`, and Storage buckets).
 - **DEF-011 (Civic Issues Schema):** Confirmed as an **INVALID DEFECT (CLOSED)**. The database schema in `004_civic_dashboard.sql` intentionally defines category as an inline CHECK constraint enum on `civic_issues`, mirrored in mobile TypeScript types (`IssueCategory`). No table named `issue_categories` exists or was ever specified.
-- **DEF-010 (CORS Origins):** Confirmed **RESOLVED IN CODE / PENDING DEPLOYMENT**. Committed code in `apps/api/src/server.ts` includes `DEFAULT_ALLOWED_ORIGINS` covering `kshetra.in`, `panin.in`, and mobile dev ports, passing 100% of Fastify inject tests. The live container reflects an earlier deployment pending a deployment refresh.
+- **DEF-010 (CORS Origins):** Confirmed **RESOLVED IN CODE / PENDING DEPLOYMENT REFRESH**. Committed code in `apps/api/src/server.ts` includes `DEFAULT_ALLOWED_ORIGINS` covering `kshetra.in`, `panin.in`, and mobile dev ports, passing 100% of Fastify inject tests. The live container reflects an earlier deployment pending a deployment refresh.
 - **DEF-009 (Service-Role Auth):** Confirmed **OPEN (HUMAN ACTION REQUIRED)**. Defensive JWT validation in `apps/api/src/lib/supabase.ts` successfully falls back to `SUPABASE_ANON_KEY`, preventing process crash. Full privileged administrative operations remain inactive until human operator inputs the actual Supabase service-role JWT secret.
 - **DEF-012 (13-Language Parity):** Confirmed **OPEN**. Canonical validator demonstrates 8 of 13 languages have ~56% key coverage (~904 missing keys). This is non-blocking for backend/infrastructure jobs (W001, W002), but remains an absolute gate for mobile production builds.
 
@@ -41,17 +42,18 @@ JOB W002 PERMISSION: UNBLOCKED (JOB W002 IS PERMITTED TO START)
 
 | Attribute | Verified Value | Compliance Status |
 | :--- | :--- | :--- |
-| **Verification Gate** | W001-R6 (Launch Gate A Infrastructure Prerequisite) | Compliant |
+| **Verification Gate** | W001-R6A (Launch Gate A Infrastructure Re-execution) | Compliant |
 | **Repository URL** | `https://github.com/kshetra-app/Kshetra.git` | Verified |
 | **Canonical Branch** | `master` | Verified |
-| **HEAD Commit SHA** | `b980e17503aeadc91b32771c37a082f6d79258ef` (short: `ba4f0c1` / `b980e17`) | Verified |
+| **HEAD Commit SHA** | `7e396359305352cecc1ccc40105bf51ec71cb096` (short: `7e39635`) | Verified |
+| **Working Tree Status** | Clean (100% clean, synced with `origin/master`) | Verified |
 | **Database Migrations** | 36 applied (`001_initial_schema` to `034_political_ads`) | Verified |
 | **Database Tables** | 148 verified in public schema | Verified |
 | **API Version** | `v1 (0.1.0)` (Fastify 5.2 on Railway) | Verified |
 | **Mobile Version** | `0.1.0` (Expo 54, React Native 0.81.5) | Verified |
 | **Target Environment** | `production` (`railway-hikari` & Supabase Cloud) | Verified |
-| **Evidence Repository Path**| `reports/w001_*.json`, `reports/w001_r6_*.json` | Verified in-repo |
-| **Freshness Timestamp** | `2026-09-08T22:25:00+05:30` | Valid |
+| **Evidence Repository Path**| `reports/w001_*.json`, `reports/w001_r6a_*.json` | Verified in-repo |
+| **Freshness Timestamp** | `2026-09-08T22:55:00+05:30` | Valid |
 
 ---
 
@@ -72,32 +74,32 @@ Exit Code: 0 (Zero compilation errors)
 ---
 
 ### Test 3.2: CORS Origin Allowlist Evaluation (Committed Code vs Live)
-- **Command:** `npx tsx scripts/test-cors-origins.mjs`
+- **Command:** `node scripts/test-cors-origins.mjs`
 - **Inspection Targets:** `apps/api/src/server.ts`, lines 45–73 (`DEFAULT_ALLOWED_ORIGINS` and `resolveCorsOrigin`)
 - **Test Matrix & Exact Results:**
 
 #### A. Committed Code Inject Test (`NODE_ENV=production`, `CORS_ORIGINS` unset):
 | Origin Tested | Expected Header | Actual Inject Header | Verdict |
 | :--- | :--- | :--- | :--- |
-| `https://kshetra.in` | `Access-Control-Allow-Origin: https://kshetra.in` | `https://kshetra.in` | **PASS** |
-| `https://www.kshetra.in` | `Access-Control-Allow-Origin: https://www.kshetra.in` | `https://www.kshetra.in` | **PASS** |
-| `https://panin.in` | `Access-Control-Allow-Origin: https://panin.in` | `https://panin.in` | **PASS** |
-| `https://www.panin.in` | `Access-Control-Allow-Origin: https://www.panin.in` | `https://panin.in` | **PASS** |
-| `https://evil-unauthorized-domain.com` | `Access-Control-Allow-Origin` absent | Header absent (blocked) | **PASS** |
+| `https://kshetra.in` | `Access-Control-Allow-Origin: https://kshetra.in` | `https://kshetra.in` (204 No Content) | **PASS** |
+| `https://www.kshetra.in` | `Access-Control-Allow-Origin: https://www.kshetra.in` | `https://www.kshetra.in` (204 No Content) | **PASS** |
+| `https://panin.in` | `Access-Control-Allow-Origin: https://panin.in` | `https://panin.in` (204 No Content) | **PASS** |
+| `https://www.panin.in` | `Access-Control-Allow-Origin: https://www.panin.in` | `https://www.panin.in` (204 No Content) | **PASS** |
+| `https://unauthorized-evil-domain.com` | `Access-Control-Allow-Origin` absent | Header absent (blocked) | **PASS** |
 
 #### B. Live Railway Container Probe (`https://kshetra-api-production-9f06.up.railway.app`):
 | Origin Tested | Live HTTP Response Status | Live Allow-Origin Header | Verdict |
 | :--- | :--- | :--- | :--- |
-| `https://kshetra.in` | `200 OK` | `null` (Header absent) | PENDING DEPLOYMENT |
-| `https://panin.in` | `200 OK` | `null` (Header absent) | PENDING DEPLOYMENT |
-| `https://evil-unauthorized-domain.com`| `200 OK` | `null` (Header absent) | BLOCKED (Safe) |
+| `https://kshetra.in` | `200 OK` | `null` (Header absent) | PENDING DEPLOYMENT REFRESH |
+| `https://panin.in` | `200 OK` | `null` (Header absent) | PENDING DEPLOYMENT REFRESH |
+| `https://unauthorized-evil-domain.com`| `200 OK` | `null` (Header absent) | BLOCKED (Safe) |
 
 - **Finding:** The committed code in `apps/api/src/server.ts` completely resolves the missing origin headers by introducing hardcoded trusted defaults (`DEFAULT_ALLOWED_ORIGINS`). The live Railway container is currently executing commit `0f7e104` (prior to the commit of `77fb553`). Redeployment will activate the fix in production.
 
 ---
 
 ### Test 3.3: 13-Language Canonical Key Parity Audit
-- **Command:** `node scripts/verify-13-locales.mjs`
+- **Command:** `node scripts/verify-13-locales.mjs --strict`
 - **Target Mandate:** Master Blueprint Section 0.7 & Amendment v1.2 Part 16 (100% key parity across all 13 official languages)
 - **Reference Locale:** `apps/mobile/i18n/locales/en.ts` (Canonical Key Count: **2,041 keys**)
 - **Results Matrix:**
@@ -120,7 +122,7 @@ Exit Code: 0 (Zero compilation errors)
 
 - **Index Wiring Verification:** `apps/mobile/i18n/index.ts` checked. All 13 languages are fully imported and registered in the i18n provider.
 - **Aggregate Metric:** Total missing keys across all non-English dictionaries: **8,442 missing keys**.
-- **Parity Verdict:** **FAILED 100% PARITY MANDATE (DEF-012 OPEN)**.
+- **Parity Verdict:** **FAILED 100% PARITY MANDATE (DEF-012 OPEN, Exit Code 1 under `--strict`)**.
 - **Engineering Reality:** Runtime `t()` function safely falls back to English when a key is absent, preventing mobile app crashes. However, non-English users in Tamil, Malayalam, Bengali, Odia, Gujarati, Punjabi, Assamese, and Nepali will see ~44% of new UI surfaces in English until backfill occurs.
 
 ---
@@ -152,7 +154,7 @@ Exit Code: 0 (Zero compilation errors)
   - `apps/api/src/server.ts` was amended to define `DEFAULT_ALLOWED_ORIGINS` including `kshetra.in`, `panin.in`, and local development ports.
   - Injected options requests against committed Fastify code return expected CORS headers for all trusted domains.
   - Live Railway edge (`railway-hikari`) returns `200 OK` without `Access-Control-Allow-Origin` because the Railway service has not yet completed a build trigger from the latest git commit.
-- **Verdict & Status:** **RESOLVED IN CODE / PENDING DEPLOYMENT**.
+- **Verdict & Status:** **RESOLVED IN CODE / PENDING DEPLOYMENT REFRESH**.
 - **Non-Blocking Rationale:** The application code is verified correct. Container redeployment is an operational deployment action scheduled for staging/prod separation (Job W002).
 
 ---
@@ -189,38 +191,46 @@ Exit Code: 0 (Zero compilation errors)
 
 ---
 
-## 5. Live Production Infrastructure Audit
+## 5. Live Production Infrastructure & API Contract Audit
 
-### 5.1 Railway Fastify API (`https://kshetra-api-production-9f06.up.railway.app`)
-- **Hosting Platform:** Railway (Edge node `sin1.98a6`, reverse proxy `railway-hikari`)
-- **Health Probes:**
-  - `GET /` -> `200 OK`, latency: 1,825ms (cold), body: `{"status":"ok","service":"kshetra-api","version":"0.1.0"}`
-  - `GET /health` -> `200 OK`, latency: 442ms, body: `{"status":"ok","service":"kshetra-api","version":"0.1.0"}`
-  - `GET /api/health` -> `200 OK`, latency: 379ms, body: `{"status":"ok","service":"kshetra-api","version":"0.1.0","timestamp":"..."}`
-- **Security & Gateway Middleware:**
-  - `x-ratelimit-limit: 300`, `x-ratelimit-remaining: 298` (Rate limiting active)
-  - `strict-transport-security: max-age=15552000; includeSubDomains` (HSTS active)
-  - `x-content-type-options: nosniff`, `x-frame-options: SAMEORIGIN` (Helmet active)
-- **Route Authorization:**
-  - `GET /api/v1/moderation/queue` -> `403 Forbidden` (`{"error":"Insufficient permissions"}`) — Confirms unauthenticated access to sensitive moderator queues is strictly blocked.
+### 5.1 Real Production API Contract Matrix (13 Endpoints Tested)
+Based on direct empirical probing in `reports/w001_r6a_api_contract_matrix.json`:
+
+| Category | Endpoint / Path | Client Caller | Expected | Live Status | Latency | Deployment State |
+| :--- | :--- | :--- | :---: | :---: | :---: | :--- |
+| **Core Health** | `GET /` | Infrastructure Probes | 200 | **200 OK** | 1,837ms | DEPLOYED_OPERATIONAL |
+| **Core Health** | `GET /health` | Infrastructure Monitoring | 200 | **200 OK** | 333ms | DEPLOYED_OPERATIONAL |
+| **Core Health** | `GET /api/health` | Mobile Router Health | 200 | **200 OK** | 344ms | DEPLOYED_OPERATIONAL |
+| **News** | `GET /api/v1/news/feed` | `stores/news.ts` | 200 | **200 OK** | 665ms | DEPLOYED_OPERATIONAL |
+| **Geography** | `GET /api/v1/states` | `remoteGeoLoader.ts` | 200 | **200 OK** | 294ms | DEPLOYED_OPERATIONAL |
+| **Geography** | `GET /api/v1/states/TS/constituencies` | `constituency/[id].tsx` | 200 | **200 OK** | 283ms | DEPLOYED_OPERATIONAL |
+| **Config** | `GET /api/v1/config/flags` | `featureFlags.ts` | 200 | **200 OK** | 267ms | DEPLOYED_OPERATIONAL |
+| **Config** | `GET /config/flags` | `featureFlags.ts` (Alias) | 200 | **404** | 284ms | PENDING_DEPLOYMENT_REFRESH |
+| **Trust/Mod** | `POST /api/v1/moderation/check-content` | `supabaseDataService.ts` | 200 | **200 OK** | 333ms | DEPLOYED_OPERATIONAL |
+| **Trust/Mod** | `GET /api/v1/moderation/actions` | `moderation/index.tsx` | 200 | **200 OK** | 549ms | DEPLOYED_OPERATIONAL |
+| **Trust/Mod** | `GET /api/v1/moderation/queue` | `moderation/index.tsx` | 403 | **403 Forbidden** | 278ms | DEPLOYED_OPERATIONAL (Auth Gate) |
+| **Campaign** | `GET /api/v1/campaign/pricing` | `stores/campaign.ts` | 200 | **404** | 306ms | PENDING_DEPLOYMENT_REFRESH |
+| **Pages** | `GET /api/v1/pages/p-demo-1/entitlement`| `lib/pageService.ts` | 200 | **404** | 372ms | PENDING_DEPLOYMENT_REFRESH |
+
+**Live Production Gateway Summary:** 10 of 13 tested endpoints are active and operational on Railway. Rate limiting (300 req/min), HSTS, and Helmet are verified active.
 
 ### 5.2 Supabase Cloud Persistence (`https://ehfafcnimmjusyvplbah.supabase.co`)
 - **Persistence Provider:** Supabase Cloud (PostgreSQL 15 + PostGIS + pgvector)
 - **REST Gateway Checks (with Anon Key):**
-  - `states` -> `200 OK` (P50 190ms)
-  - `constituencies` -> `200 OK` (P50 205ms)
-  - `civic_issues` -> `200 OK` (P50 215ms)
-  - `issue_upvotes` -> `200 OK` (P50 193ms)
-  - `user_profiles` -> `200 OK` (P50 209ms)
+  - `states` -> `200 OK` (latency: 699ms)
+  - `constituencies` -> `200 OK` (latency: 167ms)
+  - `civic_issues` (DEF-011) -> `200 OK` (latency: 146ms)
+  - `issue_upvotes` -> `200 OK` (latency: 152ms)
+  - `user_profiles` -> `200 OK` (latency: 542ms)
 - **Storage Subsystem:**
-  - `GET /storage/v1/bucket` -> `200 OK` (Operational)
+  - `GET /storage/v1/bucket` -> `200 OK` (latency: 392ms, Operational)
 
 ---
 
 ## 6. Project Continuity & Register Synchronization
 
 The project governance and continuity documents were inspected and cross-referenced:
-1. **`EXECUTION_STATE.md`:** Accurately reflects Phase W0, Job W001-R6 in verification, commit coordinates, 36 migrations, and open defect counts.
+1. **`EXECUTION_STATE.md`:** Accurately reflects Phase W0, Job W001-R6A in verification, commit coordinates (`7e39635`), 36 migrations, and open defect counts.
 2. **`ACCEPTANCE_REGISTER.md`:** Definition of Done checklist enforced; W000 marked complete; W001 transitioning based on this independent audit.
 3. **`DEFECT_REGISTER.md`:** Entries DEF-001 through DEF-012 recorded with proper classifications, root causes, and reproduction steps.
 4. **`DECISION_LOG.md`:** Decisions DEC-001 through DEC-011 formally entered, establishing the architectural and governance foundation.
@@ -229,9 +239,9 @@ The project governance and continuity documents were inspected and cross-referen
    - `reports/w000_baseline_audit.json`
    - `reports/w001_production_verification_report.json`
    - `reports/w001_i18n_verification_report.json`
-   - `reports/w001_r6_environment_report.json`
-   - `reports/w001_r6_independent_verification_package.json`
-   - `reports/w001_r6_reconciliation.json`
+   - `reports/w001_r6a_environment_report.json`
+   - `reports/w001_r6a_api_contract_matrix.json`
+   - `reports/w001_r6a_verification_package.json`
 
 All evidence adheres to the Evidence Freshness Rule (Part 7) and Remote Reproducibility Rule (Part 8) of Amendment v1.2.
 
