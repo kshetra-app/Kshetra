@@ -1,0 +1,43 @@
+{
+  "evidenceMetadata": {
+    "repository": "https://github.com/kshetra-app/Kshetra.git",
+    "branch": "master",
+    "commitSha": "019cc6e53f97ee1858bd0ac4b2b20869b2de6707",
+    "databaseVersion": "034_political_ads",
+    "apiVersion": "v1 (0.1.0)",
+    "mobileVersion": "0.1.0",
+    "environment": "production",
+    "timestamp": "2026-09-08T17:16:15.557Z"
+  },
+  "governanceRule": "Amendment v1.2 Rule IV-001 (Implementing Agent != Acceptance Authority)",
+  "cleanWorkingTree": true,
+  "canonicalBranch": "master",
+  "headCommit": "019cc6e53f97ee1858bd0ac4b2b20869b2de6707",
+  "evidenceArtifacts": [
+    "reports/w001_r6a_api_contract_matrix.json",
+    "reports/w001_r6a_environment_report.json",
+    "reports/w001_i18n_verification_report.json",
+    "reports/w000_baseline_audit.json"
+  ],
+  "reproducibleCommands": [
+    {
+      "command": "npm run build --prefix apps/api",
+      "purpose": "TypeScript compile check"
+    },
+    {
+      "command": "node scripts/verify-13-locales.mjs --strict",
+      "purpose": "Strict 13-language parity check"
+    },
+    {
+      "command": "node scripts/test-cors-origins.mjs",
+      "purpose": "Fastify CORS origin check"
+    }
+  ],
+  "openDefectsLedger": {
+    "DEF-009": "OPEN (HUMAN ACTION REQUIRED) — Supabase service role secret invalid in .env; fallback active; requires human secret injection.",
+    "DEF-010": "RESOLVED IN CODE / PENDING DEPLOYMENT REFRESH — server.ts default origins verified; live container pending rebuild.",
+    "DEF-011": "CLOSED (INVALID) — civic_issues table verified; category enum intentional; no issue_categories table exists.",
+    "DEF-012": "OPEN — 13-language translation key parity gap (8 languages at 56%). Strict validator exits code 1."
+  },
+  "independentVerificationMandate": "Independent verifier must inspect committed repository on origin/master, execute tests, evaluate defect classifications, and produce reports/w001_r6a_independent_verification.md with an independent verdict."
+}

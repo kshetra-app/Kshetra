@@ -1,0 +1,151 @@
+{
+  "evidenceMetadata": {
+    "repository": "https://github.com/kshetra-app/Kshetra.git",
+    "branch": "master",
+    "commitSha": "75ce3c0baa0574a9937026b8b1efccf4386350db",
+    "databaseVersion": "034_political_ads",
+    "apiVersion": "v1 (0.1.0)",
+    "mobileVersion": "0.1.0",
+    "environment": "production",
+    "timestamp": "2026-09-08T17:16:15.557Z"
+  },
+  "timestamp": "2026-09-08T17:16:15.561Z",
+  "cleanWorkingTree": false,
+  "railwayGateway": {
+    "status": "OPERATIONAL_WITH_PENDING_DEPLOYMENT_REFRESH",
+    "summary": "10 deployed endpoints operational; 3 endpoints registered in code awaiting Railway rebuild.",
+    "latency": {
+      "p50": 245,
+      "p90": 750
+    }
+  },
+  "supabaseCloud": {
+    "status": "OPERATIONAL_ANON_AUTHENTICATED",
+    "anonPathPassing": true,
+    "results": [
+      {
+        "tableOrService": "states",
+        "path": "/rest/v1/states?limit=2&select=code,name",
+        "status": 200,
+        "latencyMs": 699,
+        "ok": true,
+        "responseSnippet": "[{\"code\":\"TS\",\"name\":\"Telangana\"}, \n {\"code\":\"AP\",\"name\":\"Andhra Pradesh\"}]"
+      },
+      {
+        "tableOrService": "constituencies",
+        "path": "/rest/v1/constituencies?limit=2&select=id,name",
+        "status": 200,
+        "latencyMs": 167,
+        "ok": true,
+        "responseSnippet": "[]"
+      },
+      {
+        "tableOrService": "civic_issues (DEF-011)",
+        "path": "/rest/v1/civic_issues?limit=2&select=id,title,category,severity,status",
+        "status": 200,
+        "latencyMs": 146,
+        "ok": true,
+        "responseSnippet": "[]"
+      },
+      {
+        "tableOrService": "issue_upvotes",
+        "path": "/rest/v1/issue_upvotes?limit=2",
+        "status": 200,
+        "latencyMs": 152,
+        "ok": true,
+        "responseSnippet": "[]"
+      },
+      {
+        "tableOrService": "user_profiles",
+        "path": "/rest/v1/user_profiles?limit=2&select=user_id,role",
+        "status": 200,
+        "latencyMs": 542,
+        "ok": true,
+        "responseSnippet": "[{\"user_id\":\"8abad9b1-1065-4a0c-b269-7074dd4869da\",\"role\":\"citizen\"}]"
+      },
+      {
+        "tableOrService": "Storage Buckets",
+        "path": "/storage/v1/bucket",
+        "status": 200,
+        "latencyMs": 392,
+        "ok": true,
+        "responseSnippet": "[]"
+      }
+    ],
+    "privilegedPathStatus": "DEF-009_OPEN_HUMAN_ACTION_REQUIRED",
+    "privilegedDetails": "Configured secret in .env is rejected by PostgREST with 401 Unauthorized: Invalid API key. Fastify defensive fallback to anon key protects runtime."
+  },
+  "corsVerification": {
+    "localCommittedCode": {
+      "status": "VERIFIED_PASS",
+      "results": [
+        {
+          "origin": "https://kshetra.in",
+          "statusCode": 204,
+          "allowOriginHeader": "https://kshetra.in",
+          "verdict": "PASS"
+        },
+        {
+          "origin": "https://www.kshetra.in",
+          "statusCode": 204,
+          "allowOriginHeader": "https://www.kshetra.in",
+          "verdict": "PASS"
+        },
+        {
+          "origin": "https://panin.in",
+          "statusCode": 204,
+          "allowOriginHeader": "https://panin.in",
+          "verdict": "PASS"
+        },
+        {
+          "origin": "https://www.panin.in",
+          "statusCode": 204,
+          "allowOriginHeader": "https://www.panin.in",
+          "verdict": "PASS"
+        },
+        {
+          "origin": "https://unauthorized-evil-domain.com",
+          "statusCode": 204,
+          "allowOriginHeader": null,
+          "verdict": "PASS"
+        }
+      ]
+    },
+    "liveRailwayDeployment": {
+      "status": "PENDING_DEPLOYMENT_REFRESH",
+      "results": [
+        {
+          "origin": "https://kshetra.in",
+          "statusCode": 200,
+          "allowOriginHeader": null,
+          "status": "BLOCKED_OR_ABSENT"
+        },
+        {
+          "origin": "https://www.kshetra.in",
+          "statusCode": 200,
+          "allowOriginHeader": null,
+          "status": "BLOCKED_OR_ABSENT"
+        },
+        {
+          "origin": "https://panin.in",
+          "statusCode": 200,
+          "allowOriginHeader": null,
+          "status": "BLOCKED_OR_ABSENT"
+        },
+        {
+          "origin": "https://www.panin.in",
+          "statusCode": 200,
+          "allowOriginHeader": null,
+          "status": "BLOCKED_OR_ABSENT"
+        },
+        {
+          "origin": "https://unauthorized-evil-domain.com",
+          "statusCode": 200,
+          "allowOriginHeader": null,
+          "status": "BLOCKED_OR_ABSENT"
+        }
+      ]
+    },
+    "defectStatus": "DEF-010: RESOLVED IN CODE / PENDING LIVE DEPLOYMENT REFRESH"
+  }
+}

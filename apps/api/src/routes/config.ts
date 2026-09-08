@@ -5,17 +5,19 @@ import { DEFAULT_FEATURE_FLAGS, type AppFeatureFlags } from '@kshetra/shared';
 let currentFlags: AppFeatureFlags = { ...DEFAULT_FEATURE_FLAGS };
 
 export async function configRoutes(app: FastifyInstance) {
+  const getFlagsHandler = async () => ({
+    status: 'ok',
+    flags: currentFlags,
+    syncedAt: new Date().toISOString(),
+  });
+
   /**
-   * GET /api/v1/config/flags
+   * GET /config/flags and /api/v1/config/flags
    * Returns current active feature flags for mobile app and web clients.
    */
-  app.get('/api/v1/config/flags', async () => {
-    return {
-      status: 'ok',
-      flags: currentFlags,
-      syncedAt: new Date().toISOString(),
-    };
-  });
+  app.get('/config/flags', getFlagsHandler);
+  app.get('/api/v1/config/flags', getFlagsHandler);
+
 
   /**
    * PATCH /api/v1/config/flags
