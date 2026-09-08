@@ -9,12 +9,12 @@
 PROJECT:               PANIN (formerly Kshetra)
 TARGET_DOMAIN:         India Political Geography, Intelligence, Participation & Media Platform
 CURRENT_PHASE:         W0 (Baseline Reconciliation & Ground-Truth Audit)
-CURRENT_JOB:           W002 (Production/Staging Environment Separation)
+CURRENT_JOB:           W001-R6 (Independent Verification & Final W001 Acceptance)
 LAST_COMPLETED_JOB:    W001-R5 (W001 Reconciliation & Remote Reproducibility)
-NEXT_PERMITTED_JOB:    W002 (Production/Staging Environment Separation)
+NEXT_PERMITTED_JOB:    W001-R6 (Independent Verification & Final W001 Acceptance; W002 BLOCKED until IV passes)
 
-CURRENT_BRANCH:        main
-CURRENT_COMMIT:        94dd34b
+CURRENT_BRANCH:        master
+CURRENT_COMMIT:        b980e17
 API_VERSION:           v1 (Fastify 5.2 on Railway)
 MOBILE_VERSION:        0.1.0 (Expo 54, React Native 0.81.5)
 DATABASE_MIGRATIONS:   36 applied (001_initial_schema to 034_political_ads)
@@ -23,6 +23,7 @@ API_ENDPOINTS:         106
 MOBILE_ROUTES:         53
 MOBILE_STORES:         29
 GOVERNANCE_FRAMEWORK:  Master Execution Framework Amendment v1.2 (Active)
+REMOTE_SYNC:           Up to date with origin/master
 ```
 
 ---
@@ -32,9 +33,10 @@ GOVERNANCE_FRAMEWORK:  Master Execution Framework Amendment v1.2 (Active)
 | Job ID | Job Title | Status | Acceptance Date | Evidence / Notes |
 | :--- | :--- | :--- | :--- | :--- |
 | **W000** | Project Discovery & Ground-Truth Audit | **COMPLETE** | 2026-09-08 | Audited 53 routes, 106 endpoints, 148 tables, 47 deps |
-| **W001** | Production Environment Verification | **COMPLETE (ACCEPTED)** | 2026-09-08 | Verified Railway (200 OK, P50 241ms) & Supabase REST (200 OK); Remediated via W001-R1..R4 |
-| **W001-R5** | W001 Reconciliation & Remote Reproducibility | **COMPLETE (ACCEPTED)** | 2026-09-08 | Reconciled evidence into in-repo `reports/` with Part 7 metadata per Amendment v1.2 |
-| **W002** | Staging / Prod Environment Separation | NOT_STARTED | - | Prerequisite: W001-R5 (Ready to begin) |
+| **W001** | Production Environment Verification | **IN_VERIFICATION** | - | Verified Railway (200 OK, P50 241ms) & Supabase REST (200 OK); Remediated via W001-R1..R5; pending IV |
+| **W001-R5** | W001 Reconciliation & Remote Reproducibility | **COMPLETE** | 2026-09-08 | Reconciled evidence into in-repo `reports/` with Part 7 metadata per Amendment v1.2 |
+| **W001-R6** | Independent Verification & Final W001 Acceptance | **IN_VERIFICATION** | - | Evidence package generated (`reports/w001_r6_*.json`); awaiting independent verifier verdict |
+| **W002** | Staging / Prod Environment Separation | **BLOCKED** | - | Prerequisite: W001-R6 Independent Verification Pass |
 | **W003** | CI/CD Quality Pipeline | NOT_STARTED | - | Prerequisite: W002 |
 | **W004** | Observability & Error Tracking | NOT_STARTED | - | Prerequisite: W003 |
 | **W005** | Backup & Recovery Verification | NOT_STARTED | - | Prerequisite: W004 |
@@ -49,25 +51,25 @@ GOVERNANCE_FRAMEWORK:  Master Execution Framework Amendment v1.2 (Active)
 | **W051.5** | Compliance, DPDP & Data Governance Readiness | NOT_STARTED | - | **NEW JOB (Amendment v1.2 Part 2)**: DPDP Act 2023, personal data inventory, retention, deletion, consent, 13-lang privacy UI. Owners: COMPLIANCE+ARCH+SEC |
 | **W052** | Professional Broadcast Architecture | NOT_STARTED | - | Studio broadcast ingestion and distribution |
 
-
 ---
 
 ## 3. Defect & Blocker Summary
 - **Open P0 (Production Blockers):** 0
-- **Open P1 (Major Architectural Flaws):** 4
+- **Open P1 (Major Architectural Flaws):** 5
   - DEF-001: Duplicate routes (`user/[id]` vs `user/[userId]`, `edit-profile`, `onboarding`)
   - DEF-002: Deceptive local fallback returns in `supabaseDataService.ts` (`if (!guard()) return true;`)
   - DEF-003: Bloated native dependency (`react-native-webrtc` in consumer bundle)
   - DEF-004: Silent bypass in moderation check on network error
-  - *(DEF-009 resolved in code via fallback; awaiting production vault secret)*
-- **Open P2 (Moderate Technical Debt):** 5
+  - DEF-009: Invalid `SUPABASE_SERVICE_ROLE_KEY` in `apps/api/.env` (**OPEN - HUMAN ACTION REQUIRED**: Code fallback active; real secret extraction required)
+- **Open P2 (Moderate Technical Debt):** 6
   - DEF-005: Unstandardized dual-backend data paths (12 Supabase direct vs 8 Railway API callers)
   - DEF-006: Unformalized versioned geography tables (`geography_entity`, `geography_version`)
   - DEF-007: Short ID UUID check causing diverging identifier semantics
   - DEF-008: Residual unlocalized strings across screens bypassing 13-language translations
-  - DEF-012: 13-language translation key parity gap (8 of 13 languages at ~56% coverage; 904 keys missing in `ta`, `ml`, `bn`, `gu`, `or`, `pa`, `as`, `ne`)
-  - *(DEF-010 resolved via server.ts default allowlist)*
-  - *(DEF-011 closed as invalid: civic_issues operational)*
+  - DEF-010: Missing `CORS_ORIGINS` on Railway container (**RESOLVED IN CODE / PENDING DEPLOYMENT**: Committed code passes inject tests; live container awaits deployment refresh)
+  - DEF-012: 13-language translation key parity gap (**OPEN**: 8 languages at 56% coverage; 904 keys missing in `ta`, `ml`, `bn`, `gu`, `or`, `pa`, `as`, `ne`)
+  - *(DEF-011: **CLOSED - INVALID DEFECT**: Schema confirms intentional category enum on `civic_issues` table)*
+
 
 ---
 

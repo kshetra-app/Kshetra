@@ -93,3 +93,17 @@
 - **Decision:** All verification evidence must be stored in the repository (`reports/`), committed to git, and pushed to remote. Every evidence artifact must carry metadata: repository, branch, commit SHA, database version, API version, mobile version, timestamp, and environment. Any subsequent code change immediately invalidates existing evidence, requiring fresh regeneration.
 - **Rationale:** Ensures remote auditability and eliminates "works on my machine / exists only in local workspace" acceptance claims.
 
+---
+
+### DEC-011: Defect Classification Protocol & Truth-in-Engineering Governance (W001-R6)
+- **Date:** 2026-09-08
+- **Authority:** Master Execution Framework Amendment v1.2 & W001-R6 Mandate
+- **Context:** Defects DEF-009, DEF-010, DEF-011, and DEF-012 required unambiguous, uncompromised classification separating defensive code behavior from actual production capability.
+- **Decision:**
+  1. **DEF-009 (Service-Role Auth):** Retain status as `OPEN (HUMAN ACTION REQUIRED)`. The defensive JWT validation and anon-key fallback prevent process crashes, but do NOT constitute restoration of privileged admin access. Full resolution requires live extraction and configuration of the production secret.
+  2. **DEF-010 (CORS):** Classify as `RESOLVED IN CODE / PENDING DEPLOYMENT`. The committed code in `apps/api/src/server.ts` with `DEFAULT_ALLOWED_ORIGINS` passes 100% of inject tests for `kshetra.in`, `www.kshetra.in`, `panin.in`, and `www.panin.in`, but live Railway container remains on earlier deployment pending container refresh.
+  3. **DEF-011 (Civic Schema):** Classify as `CLOSED (INVALID DEFECT)`. PostgREST returns 200 OK for `public.civic_issues`. Schema inspection confirms `004_civic_dashboard.sql` deliberately models categories as a CHECK constraint enum. No table `issue_categories` exists by design in DB or client code.
+  4. **DEF-012 (13-Language Parity):** Retain status as `OPEN`. Canonical validator (`scripts/verify-13-locales.mjs --strict`) requires 100% key parity with zero missing keys and exits non-zero. No artificial 90% leniency threshold is permitted.
+- **Rationale:** Prevents deceptive defect closure and guarantees absolute truth in engineering status.
+
+

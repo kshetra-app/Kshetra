@@ -1,0 +1,64 @@
+{
+  "evidenceMetadata": {
+    "repository": "https://github.com/kshetra-app/Kshetra.git",
+    "branch": "master",
+    "commitSha": "b980e17503aeadc91b32771c37a082f6d79258ef",
+    "databaseVersion": "034_political_ads",
+    "apiVersion": "v1 (0.1.0)",
+    "mobileVersion": "0.1.0",
+    "environment": "production",
+    "timestamp": "2026-09-08T16:43:57.790Z"
+  },
+  "timestamp": "2026-09-08T16:43:57.807Z",
+  "reconciliationEntries": [
+    {
+      "item": "W000 Ground-Truth Baseline Audit",
+      "generatedAgainstCommit": "0f7e104",
+      "storedInCommit": "94dd34b",
+      "dataFile": "reports/w000_baseline_audit.json",
+      "status": "ACCEPTED (Audit Baseline)"
+    },
+    {
+      "item": "W001 Initial Production Environment Probes",
+      "generatedAgainstCommit": "0f7e104",
+      "storedInCommit": "94dd34b",
+      "dataFile": "reports/w001_production_verification_report.json",
+      "status": "CONDITIONAL (Triggered W001-R1..R4)"
+    },
+    {
+      "item": "DEF-009 (Supabase Service-Role Auth Fallback)",
+      "implementedInCommit": "77fb553",
+      "codeStatus": "RESOLVED_CODE_FALLBACK",
+      "productionStatus": "OPEN_HUMAN_ACTION_REQUIRED",
+      "notes": "JWT validation prevents crash; real secret awaiting dashboard extraction."
+    },
+    {
+      "item": "DEF-010 (CORS Default Allowed Origins)",
+      "implementedInCommit": "77fb553",
+      "testedInCommit": "b980e17",
+      "codeStatus": "RESOLVED_AND_VERIFIED (Inject tests pass for kshetra.in, panin.in, localhost)",
+      "productionStatus": "PENDING_RAILWAY_DEPLOYMENT_REFRESH",
+      "notes": "Committed Fastify code passes all origins. Live container running 0f7e104 requires redeployment."
+    },
+    {
+      "item": "DEF-011 (Civic Schema Drift Investigation)",
+      "investigatedInCommit": "77fb553",
+      "schemaStatus": "CLOSED_INVALID_DEFECT",
+      "evidence": "Table civic_issues operational with category enum check constraint in 004_civic_dashboard.sql and apps/mobile/lib/civicTypes.ts. No issue_categories table exists by design."
+    },
+    {
+      "item": "DEF-012 (13-Language Translation Parity)",
+      "auditedInCommit": "77fb553",
+      "canonicalValidatorScript": "scripts/verify-13-locales.mjs",
+      "status": "OPEN",
+      "evidence": "English: 2,041 keys. 8 languages at 56% (904 missing keys). Strict validator exits 1. Translation backfill required before mobile release."
+    },
+    {
+      "item": "W001-R5 (Evidence Remote Reproducibility)",
+      "implementedInCommit": "94dd34b",
+      "storedInCommit": "b980e17",
+      "status": "ACCEPTED",
+      "notes": "Migrated all local scratch artifacts into committed in-repo reports/ with Part 7 metadata."
+    }
+  ]
+}

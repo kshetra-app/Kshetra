@@ -2,16 +2,15 @@
   "evidenceMetadata": {
     "repository": "https://github.com/kshetra-app/Kshetra.git",
     "branch": "master",
-    "commitSha": "77fb553",
-    "databaseVersion": "034_political_ads",
-    "apiVersion": "v1 (0.1.0)",
-    "mobileVersion": "0.1.0",
-    "environment": "production",
-    "verifiedBy": "DEVOPS+QA",
-    "timestamp": "2026-09-08T15:52:48.982Z"
+    "targetMandate": "100% key parity across all 13 official languages",
+    "verifiedBy": "CANONICAL_VALIDATOR",
+    "timestamp": "2026-09-08T16:43:18.629Z"
   },
-  "timestamp": "2026-09-08T10:57:41.060Z",
+  "timestamp": "2026-09-08T16:43:18.637Z",
   "canonicalKeyCount": 2041,
+  "totalMissingKeysAcrossLanguages": 8442,
+  "allPassed100Percent": false,
+  "indexWiringComplete": true,
   "results": [
     {
       "lang": "en",
@@ -20,7 +19,10 @@
       "totalKeys": 2041,
       "matchedKeys": 2041,
       "coveragePct": 100,
-      "missingCount": 0
+      "missingCount": 0,
+      "status": "PASS",
+      "missingKeysSample": [],
+      "missingKeysTotal": 0
     },
     {
       "lang": "te",
@@ -29,7 +31,21 @@
       "totalKeys": 1844,
       "matchedKeys": 1841,
       "coveragePct": 90,
-      "missingCount": 200
+      "missingCount": 200,
+      "status": "FAIL_MISSING_KEYS",
+      "missingKeysSample": [
+        "tabs.community",
+        "feed.votes",
+        "feed.pollClosed",
+        "feed.voted",
+        "feed.tapToVote",
+        "feed.pinned",
+        "ai.analysis",
+        "ai.insights",
+        "ai.regenerate",
+        "ai.analyzing"
+      ],
+      "missingKeysTotal": 200
     },
     {
       "lang": "hi",
@@ -38,7 +54,21 @@
       "totalKeys": 1756,
       "matchedKeys": 1753,
       "coveragePct": 86,
-      "missingCount": 288
+      "missingCount": 288,
+      "status": "FAIL_MISSING_KEYS",
+      "missingKeysSample": [
+        "tabs.community",
+        "map.loadingBoundaries",
+        "map.boundariesFailed",
+        "mapLegend.seatCategory",
+        "mapLegend.competitiveness",
+        "mapLegend.seatStatus",
+        "mapLegend.stateParties",
+        "mapLegend.parties",
+        "mapLegend.favorite",
+        "feed.votes"
+      ],
+      "missingKeysTotal": 288
     },
     {
       "lang": "ta",
@@ -47,7 +77,21 @@
       "totalKeys": 1162,
       "matchedKeys": 1147,
       "coveragePct": 56,
-      "missingCount": 894
+      "missingCount": 894,
+      "status": "FAIL_MISSING_KEYS",
+      "missingKeysSample": [
+        "tabs.community",
+        "tabs.live",
+        "map.loadingBoundaries",
+        "map.boundariesFailed",
+        "mapLegend.seatCategory",
+        "mapLegend.competitiveness",
+        "mapLegend.seatStatus",
+        "mapLegend.stateParties",
+        "mapLegend.parties",
+        "mapLegend.favorite"
+      ],
+      "missingKeysTotal": 894
     },
     {
       "lang": "kn",
@@ -56,7 +100,21 @@
       "totalKeys": 1669,
       "matchedKeys": 1667,
       "coveragePct": 82,
-      "missingCount": 374
+      "missingCount": 374,
+      "status": "FAIL_MISSING_KEYS",
+      "missingKeysSample": [
+        "tabs.community",
+        "map.loadingBoundaries",
+        "map.boundariesFailed",
+        "mapLegend.seatCategory",
+        "mapLegend.competitiveness",
+        "mapLegend.seatStatus",
+        "mapLegend.stateParties",
+        "mapLegend.parties",
+        "mapLegend.favorite",
+        "feed.votes"
+      ],
+      "missingKeysTotal": 374
     },
     {
       "lang": "ml",
@@ -65,7 +123,21 @@
       "totalKeys": 1154,
       "matchedKeys": 1139,
       "coveragePct": 56,
-      "missingCount": 902
+      "missingCount": 902,
+      "status": "FAIL_MISSING_KEYS",
+      "missingKeysSample": [
+        "tabs.community",
+        "tabs.live",
+        "map.loadingBoundaries",
+        "map.boundariesFailed",
+        "mapLegend.seatCategory",
+        "mapLegend.competitiveness",
+        "mapLegend.seatStatus",
+        "mapLegend.stateParties",
+        "mapLegend.parties",
+        "mapLegend.favorite"
+      ],
+      "missingKeysTotal": 902
     },
     {
       "lang": "mr",
@@ -74,7 +146,21 @@
       "totalKeys": 1677,
       "matchedKeys": 1675,
       "coveragePct": 82,
-      "missingCount": 366
+      "missingCount": 366,
+      "status": "FAIL_MISSING_KEYS",
+      "missingKeysSample": [
+        "tabs.community",
+        "map.loadingBoundaries",
+        "map.boundariesFailed",
+        "mapLegend.seatCategory",
+        "mapLegend.competitiveness",
+        "mapLegend.seatStatus",
+        "mapLegend.stateParties",
+        "mapLegend.parties",
+        "mapLegend.favorite",
+        "feed.votes"
+      ],
+      "missingKeysTotal": 366
     },
     {
       "lang": "bn",
@@ -83,7 +169,21 @@
       "totalKeys": 1154,
       "matchedKeys": 1139,
       "coveragePct": 56,
-      "missingCount": 902
+      "missingCount": 902,
+      "status": "FAIL_MISSING_KEYS",
+      "missingKeysSample": [
+        "tabs.community",
+        "tabs.live",
+        "map.loadingBoundaries",
+        "map.boundariesFailed",
+        "mapLegend.seatCategory",
+        "mapLegend.competitiveness",
+        "mapLegend.seatStatus",
+        "mapLegend.stateParties",
+        "mapLegend.parties",
+        "mapLegend.favorite"
+      ],
+      "missingKeysTotal": 902
     },
     {
       "lang": "gu",
@@ -92,7 +192,21 @@
       "totalKeys": 1153,
       "matchedKeys": 1138,
       "coveragePct": 56,
-      "missingCount": 903
+      "missingCount": 903,
+      "status": "FAIL_MISSING_KEYS",
+      "missingKeysSample": [
+        "tabs.community",
+        "tabs.live",
+        "map.loadingBoundaries",
+        "map.boundariesFailed",
+        "mapLegend.seatCategory",
+        "mapLegend.competitiveness",
+        "mapLegend.seatStatus",
+        "mapLegend.stateParties",
+        "mapLegend.parties",
+        "mapLegend.favorite"
+      ],
+      "missingKeysTotal": 903
     },
     {
       "lang": "or",
@@ -101,7 +215,21 @@
       "totalKeys": 1152,
       "matchedKeys": 1137,
       "coveragePct": 56,
-      "missingCount": 904
+      "missingCount": 904,
+      "status": "FAIL_MISSING_KEYS",
+      "missingKeysSample": [
+        "tabs.community",
+        "tabs.live",
+        "map.loadingBoundaries",
+        "map.boundariesFailed",
+        "mapLegend.seatCategory",
+        "mapLegend.competitiveness",
+        "mapLegend.seatStatus",
+        "mapLegend.stateParties",
+        "mapLegend.parties",
+        "mapLegend.favorite"
+      ],
+      "missingKeysTotal": 904
     },
     {
       "lang": "pa",
@@ -110,7 +238,21 @@
       "totalKeys": 1153,
       "matchedKeys": 1138,
       "coveragePct": 56,
-      "missingCount": 903
+      "missingCount": 903,
+      "status": "FAIL_MISSING_KEYS",
+      "missingKeysSample": [
+        "tabs.community",
+        "tabs.live",
+        "map.loadingBoundaries",
+        "map.boundariesFailed",
+        "mapLegend.seatCategory",
+        "mapLegend.competitiveness",
+        "mapLegend.seatStatus",
+        "mapLegend.stateParties",
+        "mapLegend.parties",
+        "mapLegend.favorite"
+      ],
+      "missingKeysTotal": 903
     },
     {
       "lang": "as",
@@ -119,7 +261,21 @@
       "totalKeys": 1153,
       "matchedKeys": 1138,
       "coveragePct": 56,
-      "missingCount": 903
+      "missingCount": 903,
+      "status": "FAIL_MISSING_KEYS",
+      "missingKeysSample": [
+        "tabs.community",
+        "tabs.live",
+        "map.loadingBoundaries",
+        "map.boundariesFailed",
+        "mapLegend.seatCategory",
+        "mapLegend.competitiveness",
+        "mapLegend.seatStatus",
+        "mapLegend.stateParties",
+        "mapLegend.parties",
+        "mapLegend.favorite"
+      ],
+      "missingKeysTotal": 903
     },
     {
       "lang": "ne",
@@ -128,8 +284,21 @@
       "totalKeys": 1153,
       "matchedKeys": 1138,
       "coveragePct": 56,
-      "missingCount": 903
+      "missingCount": 903,
+      "status": "FAIL_MISSING_KEYS",
+      "missingKeysSample": [
+        "tabs.community",
+        "tabs.live",
+        "map.loadingBoundaries",
+        "map.boundariesFailed",
+        "mapLegend.seatCategory",
+        "mapLegend.competitiveness",
+        "mapLegend.seatStatus",
+        "mapLegend.stateParties",
+        "mapLegend.parties",
+        "mapLegend.favorite"
+      ],
+      "missingKeysTotal": 903
     }
-  ],
-  "allPassed": false
+  ]
 }

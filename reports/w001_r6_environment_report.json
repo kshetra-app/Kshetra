@@ -1,0 +1,542 @@
+{
+  "evidenceMetadata": {
+    "repository": "https://github.com/kshetra-app/Kshetra.git",
+    "branch": "master",
+    "commitSha": "b980e17503aeadc91b32771c37a082f6d79258ef",
+    "databaseVersion": "034_political_ads",
+    "apiVersion": "v1 (0.1.0)",
+    "mobileVersion": "0.1.0",
+    "environment": "production",
+    "timestamp": "2026-09-08T16:43:57.790Z"
+  },
+  "timestamp": "2026-09-08T16:43:57.796Z",
+  "verdict": "OPERATIONAL_WITH_DOCUMENTED_EXCEPTIONS",
+  "railway": {
+    "checks": [
+      {
+        "name": "Root /",
+        "url": "https://kshetra-api-production-9f06.up.railway.app/",
+        "status": 200,
+        "ok": true,
+        "ms": 1825,
+        "headers": {
+          "content-type": "application/json; charset=utf-8",
+          "cross-origin-opener-policy": "same-origin",
+          "cross-origin-resource-policy": "same-origin",
+          "date": "Tue, 08 Sep 2026 16:43:49 GMT",
+          "origin-agent-cluster": "?1",
+          "referrer-policy": "no-referrer",
+          "server": "railway-hikari",
+          "strict-transport-security": "max-age=15552000; includeSubDomains",
+          "x-content-type-options": "nosniff",
+          "x-dns-prefetch-control": "off",
+          "x-download-options": "noopen",
+          "x-frame-options": "SAMEORIGIN",
+          "x-permitted-cross-domain-policies": "none",
+          "x-railway-request-id": "ZrR5T4vyQla3bLsgYqdHTg",
+          "x-ratelimit-limit": "300",
+          "x-ratelimit-remaining": "299",
+          "x-ratelimit-reset": "60",
+          "x-xss-protection": "0",
+          "content-length": "57",
+          "x-hikari-trace": "sin1.98a6",
+          "x-railway-edge": "sin1",
+          "connection": "keep-alive"
+        },
+        "bodySnippet": "{\"status\":\"ok\",\"service\":\"kshetra-api\",\"version\":\"0.1.0\"}"
+      },
+      {
+        "name": "Health /health",
+        "url": "https://kshetra-api-production-9f06.up.railway.app/health",
+        "status": 200,
+        "ok": true,
+        "ms": 442,
+        "headers": {
+          "content-type": "application/json; charset=utf-8",
+          "cross-origin-opener-policy": "same-origin",
+          "cross-origin-resource-policy": "same-origin",
+          "date": "Tue, 08 Sep 2026 16:43:49 GMT",
+          "origin-agent-cluster": "?1",
+          "referrer-policy": "no-referrer",
+          "server": "railway-hikari",
+          "strict-transport-security": "max-age=15552000; includeSubDomains",
+          "x-content-type-options": "nosniff",
+          "x-dns-prefetch-control": "off",
+          "x-download-options": "noopen",
+          "x-frame-options": "SAMEORIGIN",
+          "x-permitted-cross-domain-policies": "none",
+          "x-railway-request-id": "bF8VhFUFRBuh2xMZYqdHTg",
+          "x-ratelimit-limit": "300",
+          "x-ratelimit-remaining": "298",
+          "x-ratelimit-reset": "60",
+          "x-xss-protection": "0",
+          "content-length": "57",
+          "x-hikari-trace": "sin1.98a6",
+          "x-railway-edge": "sin1",
+          "connection": "keep-alive"
+        },
+        "bodySnippet": "{\"status\":\"ok\",\"service\":\"kshetra-api\",\"version\":\"0.1.0\"}"
+      },
+      {
+        "name": "API Health /api/health",
+        "url": "https://kshetra-api-production-9f06.up.railway.app/api/health",
+        "status": 200,
+        "ok": true,
+        "ms": 379,
+        "headers": {
+          "content-type": "application/json; charset=utf-8",
+          "cross-origin-opener-policy": "same-origin",
+          "cross-origin-resource-policy": "same-origin",
+          "date": "Tue, 08 Sep 2026 16:43:50 GMT",
+          "origin-agent-cluster": "?1",
+          "referrer-policy": "no-referrer",
+          "server": "railway-hikari",
+          "strict-transport-security": "max-age=15552000; includeSubDomains",
+          "x-content-type-options": "nosniff",
+          "x-dns-prefetch-control": "off",
+          "x-download-options": "noopen",
+          "x-frame-options": "SAMEORIGIN",
+          "x-permitted-cross-domain-policies": "none",
+          "x-railway-request-id": "BRwAWccbRSeUJhrEvEOTxA",
+          "x-ratelimit-limit": "300",
+          "x-ratelimit-remaining": "299",
+          "x-ratelimit-reset": "60",
+          "x-xss-protection": "0",
+          "content-length": "96",
+          "x-hikari-trace": "sin1.98a6",
+          "x-railway-edge": "sin1",
+          "connection": "keep-alive"
+        },
+        "bodySnippet": "{\"status\":\"ok\",\"service\":\"kshetra-api\",\"version\":\"0.1.0\",\"timestamp\":\"2026-09-08T16:43:50.161Z\"}"
+      },
+      {
+        "name": "Auth Health /api/v1/auth/health",
+        "url": "https://kshetra-api-production-9f06.up.railway.app/api/v1/auth/health",
+        "status": 404,
+        "ok": false,
+        "ms": 508,
+        "headers": {
+          "content-type": "application/json; charset=utf-8",
+          "cross-origin-opener-policy": "same-origin",
+          "cross-origin-resource-policy": "same-origin",
+          "date": "Tue, 08 Sep 2026 16:43:50 GMT",
+          "origin-agent-cluster": "?1",
+          "referrer-policy": "no-referrer",
+          "server": "railway-hikari",
+          "strict-transport-security": "max-age=15552000; includeSubDomains",
+          "x-content-type-options": "nosniff",
+          "x-dns-prefetch-control": "off",
+          "x-download-options": "noopen",
+          "x-frame-options": "SAMEORIGIN",
+          "x-permitted-cross-domain-policies": "none",
+          "x-railway-request-id": "f0CewpskQmCzlCGO7fhULg",
+          "x-xss-protection": "0",
+          "content-length": "73",
+          "x-hikari-trace": "sin1.98a6",
+          "x-railway-edge": "sin1",
+          "connection": "keep-alive"
+        },
+        "bodySnippet": "{\"error\":\"Not Found\",\"message\":\"Route GET /api/v1/auth/health not found\"}"
+      },
+      {
+        "name": "Feed /api/v1/feed",
+        "url": "https://kshetra-api-production-9f06.up.railway.app/api/v1/feed",
+        "status": 404,
+        "ok": false,
+        "ms": 407,
+        "headers": {
+          "content-type": "application/json; charset=utf-8",
+          "cross-origin-opener-policy": "same-origin",
+          "cross-origin-resource-policy": "same-origin",
+          "date": "Tue, 08 Sep 2026 16:43:51 GMT",
+          "origin-agent-cluster": "?1",
+          "referrer-policy": "no-referrer",
+          "server": "railway-hikari",
+          "strict-transport-security": "max-age=15552000; includeSubDomains",
+          "x-content-type-options": "nosniff",
+          "x-dns-prefetch-control": "off",
+          "x-download-options": "noopen",
+          "x-frame-options": "SAMEORIGIN",
+          "x-permitted-cross-domain-policies": "none",
+          "x-railway-request-id": "SORPJWRdRYG9s9gMYqdHTg",
+          "x-xss-protection": "0",
+          "content-length": "66",
+          "x-hikari-trace": "sin1.98a6",
+          "x-railway-edge": "sin1",
+          "connection": "keep-alive"
+        },
+        "bodySnippet": "{\"error\":\"Not Found\",\"message\":\"Route GET /api/v1/feed not found\"}"
+      },
+      {
+        "name": "Polls /api/v1/polls",
+        "url": "https://kshetra-api-production-9f06.up.railway.app/api/v1/polls",
+        "status": 404,
+        "ok": false,
+        "ms": 450,
+        "headers": {
+          "content-type": "application/json; charset=utf-8",
+          "cross-origin-opener-policy": "same-origin",
+          "cross-origin-resource-policy": "same-origin",
+          "date": "Tue, 08 Sep 2026 16:43:51 GMT",
+          "origin-agent-cluster": "?1",
+          "referrer-policy": "no-referrer",
+          "server": "railway-hikari",
+          "strict-transport-security": "max-age=15552000; includeSubDomains",
+          "x-content-type-options": "nosniff",
+          "x-dns-prefetch-control": "off",
+          "x-download-options": "noopen",
+          "x-frame-options": "SAMEORIGIN",
+          "x-permitted-cross-domain-policies": "none",
+          "x-railway-request-id": "tieJQlOrTKKgRsBcs_GTAg",
+          "x-xss-protection": "0",
+          "content-length": "67",
+          "x-hikari-trace": "sin1.98a6",
+          "x-railway-edge": "sin1",
+          "connection": "keep-alive"
+        },
+        "bodySnippet": "{\"error\":\"Not Found\",\"message\":\"Route GET /api/v1/polls not found\"}"
+      },
+      {
+        "name": "Debates /api/v1/debates",
+        "url": "https://kshetra-api-production-9f06.up.railway.app/api/v1/debates",
+        "status": 404,
+        "ok": false,
+        "ms": 985,
+        "headers": {
+          "content-type": "application/json; charset=utf-8",
+          "cross-origin-opener-policy": "same-origin",
+          "cross-origin-resource-policy": "same-origin",
+          "date": "Tue, 08 Sep 2026 16:43:52 GMT",
+          "origin-agent-cluster": "?1",
+          "referrer-policy": "no-referrer",
+          "server": "railway-hikari",
+          "strict-transport-security": "max-age=15552000; includeSubDomains",
+          "x-content-type-options": "nosniff",
+          "x-dns-prefetch-control": "off",
+          "x-download-options": "noopen",
+          "x-frame-options": "SAMEORIGIN",
+          "x-permitted-cross-domain-policies": "none",
+          "x-railway-request-id": "wOo2O6nQRa2GL9dYYqdHTg",
+          "x-xss-protection": "0",
+          "content-length": "69",
+          "x-hikari-trace": "sin1.98a6",
+          "x-railway-edge": "sin1",
+          "connection": "keep-alive"
+        },
+        "bodySnippet": "{\"error\":\"Not Found\",\"message\":\"Route GET /api/v1/debates not found\"}"
+      },
+      {
+        "name": "Leaderboard /api/v1/gamification/leaderboard",
+        "url": "https://kshetra-api-production-9f06.up.railway.app/api/v1/gamification/leaderboard",
+        "status": 404,
+        "ok": false,
+        "ms": 618,
+        "headers": {
+          "content-type": "application/json; charset=utf-8",
+          "cross-origin-opener-policy": "same-origin",
+          "cross-origin-resource-policy": "same-origin",
+          "date": "Tue, 08 Sep 2026 16:43:52 GMT",
+          "origin-agent-cluster": "?1",
+          "referrer-policy": "no-referrer",
+          "server": "railway-hikari",
+          "strict-transport-security": "max-age=15552000; includeSubDomains",
+          "x-content-type-options": "nosniff",
+          "x-dns-prefetch-control": "off",
+          "x-download-options": "noopen",
+          "x-frame-options": "SAMEORIGIN",
+          "x-permitted-cross-domain-policies": "none",
+          "x-railway-request-id": "Onl7l-nVSBqhV3UvnTga3g",
+          "x-xss-protection": "0",
+          "content-length": "86",
+          "x-hikari-trace": "sin1.98a6",
+          "x-railway-edge": "sin1",
+          "connection": "keep-alive"
+        },
+        "bodySnippet": "{\"error\":\"Not Found\",\"message\":\"Route GET /api/v1/gamification/leaderboard not found\"}"
+      },
+      {
+        "name": "Verification /api/v1/verification/status",
+        "url": "https://kshetra-api-production-9f06.up.railway.app/api/v1/verification/status",
+        "status": 404,
+        "ok": false,
+        "ms": 425,
+        "headers": {
+          "content-type": "application/json; charset=utf-8",
+          "cross-origin-opener-policy": "same-origin",
+          "cross-origin-resource-policy": "same-origin",
+          "date": "Tue, 08 Sep 2026 16:43:53 GMT",
+          "origin-agent-cluster": "?1",
+          "referrer-policy": "no-referrer",
+          "server": "railway-hikari",
+          "strict-transport-security": "max-age=15552000; includeSubDomains",
+          "x-content-type-options": "nosniff",
+          "x-dns-prefetch-control": "off",
+          "x-download-options": "noopen",
+          "x-frame-options": "SAMEORIGIN",
+          "x-permitted-cross-domain-policies": "none",
+          "x-railway-request-id": "T6uS6YHdSXq7CUSD7fhULg",
+          "x-xss-protection": "0",
+          "content-length": "81",
+          "x-hikari-trace": "sin1.98a6",
+          "x-railway-edge": "sin1",
+          "connection": "keep-alive"
+        },
+        "bodySnippet": "{\"error\":\"Not Found\",\"message\":\"Route GET /api/v1/verification/status not found\"}"
+      },
+      {
+        "name": "Moderation Queue (Auth Gate)",
+        "url": "https://kshetra-api-production-9f06.up.railway.app/api/v1/moderation/queue",
+        "status": 403,
+        "ok": false,
+        "ms": 496,
+        "headers": {
+          "content-type": "application/json; charset=utf-8",
+          "cross-origin-opener-policy": "same-origin",
+          "cross-origin-resource-policy": "same-origin",
+          "date": "Tue, 08 Sep 2026 16:43:54 GMT",
+          "origin-agent-cluster": "?1",
+          "referrer-policy": "no-referrer",
+          "server": "railway-hikari",
+          "strict-transport-security": "max-age=15552000; includeSubDomains",
+          "x-content-type-options": "nosniff",
+          "x-dns-prefetch-control": "off",
+          "x-download-options": "noopen",
+          "x-frame-options": "SAMEORIGIN",
+          "x-permitted-cross-domain-policies": "none",
+          "x-railway-request-id": "qU5ZPdqRRlKfbY3a7fhULg",
+          "x-ratelimit-limit": "300",
+          "x-ratelimit-remaining": "299",
+          "x-ratelimit-reset": "60",
+          "x-xss-protection": "0",
+          "content-length": "36",
+          "x-hikari-trace": "sin1.98a6",
+          "x-railway-edge": "sin1",
+          "connection": "keep-alive"
+        },
+        "bodySnippet": "{\"error\":\"Insufficient permissions\"}"
+      }
+    ],
+    "latency": {
+      "p50": 245,
+      "p90": 750
+    }
+  },
+  "supabase": {
+    "checks": [
+      {
+        "name": "States Table",
+        "url": "https://ehfafcnimmjusyvplbah.supabase.co/rest/v1/states?limit=2&select=code,name",
+        "status": 401,
+        "ok": false,
+        "ms": 901,
+        "headers": {
+          "date": "Tue, 08 Sep 2026 16:43:55 GMT",
+          "content-type": "application/json;charset=UTF-8",
+          "content-length": "99",
+          "connection": "keep-alive",
+          "access-control-allow-origin": "*",
+          "x-content-type-options": "nosniff",
+          "access-control-allow-methods": "GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS,TRACE,CONNECT",
+          "access-control-max-age": "3600",
+          "sb-error-code": "UNAUTHORIZED_INVALID_API_KEY",
+          "sb-gateway-version": "1",
+          "sb-project-ref": "ehfafcnimmjusyvplbah",
+          "sb-request-id": "01a081e7-9c42-7d2e-866a-a7df688f2f11",
+          "strict-transport-security": "max-age=31536000; includeSubDomains; preload",
+          "set-cookie": [
+            "__cf_bm=mAHge1vCiGrD3QJ3y5lMVsQgNlkmVameRI60yQUVIAA-1788885834.8149228-1.0.1.1-DURXT.mPPp06cuTDDzIabYBU0ChIJWwyeIJdio4jYoFfW949RZZXg3lyvgW7ID9GJek8Rlxq04u.aWrhQEZBQEP78QBB6k_EfwQhYZc9ioHKYYKIqLYxF7vSEx9h8J9T; HttpOnly; SameSite=None; Secure; Path=/; Domain=supabase.co; Expires=Tue, 08 Sep 2026 17:13:55 GMT"
+          ],
+          "server": "cloudflare",
+          "cf-ray": "a37f6a339d456cbd-CJB",
+          "alt-svc": "h3=\":443\"; ma=86400"
+        },
+        "bodySnippet": "{\"message\":\"Invalid API key\",\"hint\":\"Double check your Supabase `anon` or `service_role` API key.\"}"
+      },
+      {
+        "name": "Constituencies Table",
+        "url": "https://ehfafcnimmjusyvplbah.supabase.co/rest/v1/constituencies?limit=2&select=id,name",
+        "status": 401,
+        "ok": false,
+        "ms": 48,
+        "headers": {
+          "date": "Tue, 08 Sep 2026 16:43:55 GMT",
+          "content-type": "application/json;charset=UTF-8",
+          "content-length": "99",
+          "connection": "keep-alive",
+          "access-control-allow-origin": "*",
+          "x-content-type-options": "nosniff",
+          "access-control-allow-methods": "GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS,TRACE,CONNECT",
+          "access-control-max-age": "3600",
+          "sb-error-code": "UNAUTHORIZED_INVALID_API_KEY",
+          "sb-gateway-version": "1",
+          "sb-project-ref": "ehfafcnimmjusyvplbah",
+          "sb-request-id": "01a081e7-9de0-7b43-b4e4-127a795442cf",
+          "strict-transport-security": "max-age=31536000; includeSubDomains; preload",
+          "set-cookie": [
+            "__cf_bm=U4BbS7bBtck2jnihDJhYAlQRrXvwlW3GT3E.SxT8PEA-1788885835.2296183-1.0.1.1-x1g6mEajipTa7TpItu4VliFkWHZRCKLctBo8zo1tXcPGUyALfEj_DJysxRemBI_sWgKlYzm98QflmULVw71Zt75exE4rv1NxfL9wcPUfG0lSIRuPDhWARfFkKivaQo0Y; HttpOnly; SameSite=None; Secure; Path=/; Domain=supabase.co; Expires=Tue, 08 Sep 2026 17:13:55 GMT"
+          ],
+          "server": "cloudflare",
+          "cf-ray": "a37f6a362ca96cbd-CJB",
+          "alt-svc": "h3=\":443\"; ma=86400"
+        },
+        "bodySnippet": "{\"message\":\"Invalid API key\",\"hint\":\"Double check your Supabase `anon` or `service_role` API key.\"}"
+      },
+      {
+        "name": "Civic Issues Table (DEF-011 Schema)",
+        "url": "https://ehfafcnimmjusyvplbah.supabase.co/rest/v1/civic_issues?limit=2&select=id,title,category,severity,status",
+        "status": 401,
+        "ok": false,
+        "ms": 52,
+        "headers": {
+          "date": "Tue, 08 Sep 2026 16:43:55 GMT",
+          "content-type": "application/json;charset=UTF-8",
+          "content-length": "99",
+          "connection": "keep-alive",
+          "access-control-allow-origin": "*",
+          "x-content-type-options": "nosniff",
+          "access-control-allow-methods": "GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS,TRACE,CONNECT",
+          "access-control-max-age": "3600",
+          "sb-error-code": "UNAUTHORIZED_INVALID_API_KEY",
+          "sb-gateway-version": "1",
+          "sb-project-ref": "ehfafcnimmjusyvplbah",
+          "sb-request-id": "01a081e7-9e10-7b97-a6c5-04e5a79078ab",
+          "strict-transport-security": "max-age=31536000; includeSubDomains; preload",
+          "set-cookie": [
+            "__cf_bm=nvlHIkZOdTdKvxhcbOOG2wQHJu5n4MkWL55xG5bHNZk-1788885835.2774513-1.0.1.1-Ad2s8YRXKvRsRf6ey9CweCJfwMNLwa81_uKhIAUEsF7gpnUEa1LLRlmTy97x8dKT6slf7C4xHlc3J5NUfKJO6Nusz4.Y94ApoAQvbiwGUJRt5qTqJITavUlav15sYDb8; HttpOnly; SameSite=None; Secure; Path=/; Domain=supabase.co; Expires=Tue, 08 Sep 2026 17:13:55 GMT"
+          ],
+          "server": "cloudflare",
+          "cf-ray": "a37f6a367d516cbd-CJB",
+          "alt-svc": "h3=\":443\"; ma=86400"
+        },
+        "bodySnippet": "{\"message\":\"Invalid API key\",\"hint\":\"Double check your Supabase `anon` or `service_role` API key.\"}"
+      },
+      {
+        "name": "Issue Upvotes Table",
+        "url": "https://ehfafcnimmjusyvplbah.supabase.co/rest/v1/issue_upvotes?limit=2",
+        "status": 401,
+        "ok": false,
+        "ms": 322,
+        "headers": {
+          "date": "Tue, 08 Sep 2026 16:43:55 GMT",
+          "content-type": "application/json;charset=UTF-8",
+          "content-length": "99",
+          "connection": "keep-alive",
+          "access-control-allow-origin": "*",
+          "x-content-type-options": "nosniff",
+          "access-control-allow-methods": "GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS,TRACE,CONNECT",
+          "access-control-max-age": "3600",
+          "sb-error-code": "UNAUTHORIZED_INVALID_API_KEY",
+          "sb-gateway-version": "1",
+          "sb-project-ref": "ehfafcnimmjusyvplbah",
+          "sb-request-id": "01a081e7-9e41-7bba-98a6-f60946245eda",
+          "strict-transport-security": "max-age=31536000; includeSubDomains; preload",
+          "set-cookie": [
+            "__cf_bm=Ytv6j7QZivKzliSgPPgAbbXEXSkcw_hWXB.oxhfGqlA-1788885835.3264558-1.0.1.1-FSzm_mJs7nm8y4IHCrXTiyqCNUSYhRVI5rmqSAouPMMpNKpWuBZWW7QAnj.F9XG6sDncg_jinjZs254L8wzGswI243qIjdIJbrfqnBS.Ta0QAfr1u_KFI1LBS1_QTk7Z; HttpOnly; SameSite=None; Secure; Path=/; Domain=supabase.co; Expires=Tue, 08 Sep 2026 17:13:55 GMT"
+          ],
+          "server": "cloudflare",
+          "cf-ray": "a37f6a36ce116cbd-CJB",
+          "alt-svc": "h3=\":443\"; ma=86400"
+        },
+        "bodySnippet": "{\"message\":\"Invalid API key\",\"hint\":\"Double check your Supabase `anon` or `service_role` API key.\"}"
+      },
+      {
+        "name": "User Profiles Table",
+        "url": "https://ehfafcnimmjusyvplbah.supabase.co/rest/v1/user_profiles?limit=2&select=user_id,role",
+        "status": 401,
+        "ok": false,
+        "ms": 209,
+        "headers": {
+          "date": "Tue, 08 Sep 2026 16:43:55 GMT",
+          "content-type": "application/json;charset=UTF-8",
+          "content-length": "99",
+          "connection": "keep-alive",
+          "access-control-allow-origin": "*",
+          "x-content-type-options": "nosniff",
+          "access-control-allow-methods": "GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS,TRACE,CONNECT",
+          "access-control-max-age": "3600",
+          "sb-error-code": "UNAUTHORIZED_INVALID_API_KEY",
+          "sb-gateway-version": "1",
+          "sb-project-ref": "ehfafcnimmjusyvplbah",
+          "sb-request-id": "01a081e7-9f89-720f-b312-9cacb5eeb95c",
+          "strict-transport-security": "max-age=31536000; includeSubDomains; preload",
+          "set-cookie": [
+            "__cf_bm=poSsydmafAy2R1aKGs__sGz9yhFYLhI0NZjHBgoOXvo-1788885835.6549368-1.0.1.1-gKABxMxkAEyeCNUb46xCakXSkojiTNtRncSj3JyFiTyvG3wJdiZGgijxix3xjmnF8ZRyimfwxD9pDtJ2VOu30GpwOcdQoPGd7jC2x7PZEUIYoULB_FXWSDqFvhVdc5k0; HttpOnly; SameSite=None; Secure; Path=/; Domain=supabase.co; Expires=Tue, 08 Sep 2026 17:13:55 GMT"
+          ],
+          "server": "cloudflare",
+          "cf-ray": "a37f6a38db4d6cbd-CJB",
+          "alt-svc": "h3=\":443\"; ma=86400"
+        },
+        "bodySnippet": "{\"message\":\"Invalid API key\",\"hint\":\"Double check your Supabase `anon` or `service_role` API key.\"}"
+      },
+      {
+        "name": "Storage Buckets",
+        "url": "https://ehfafcnimmjusyvplbah.supabase.co/storage/v1/bucket",
+        "status": 400,
+        "ok": false,
+        "ms": 156,
+        "headers": {
+          "date": "Tue, 08 Sep 2026 16:43:55 GMT",
+          "content-type": "application/json; charset=utf-8",
+          "content-length": "107",
+          "connection": "keep-alive",
+          "cf-ray": "a37f6a3a2e956cbd-CJB",
+          "cf-cache-status": "DYNAMIC",
+          "access-control-allow-origin": "*",
+          "server": "cloudflare",
+          "x-content-type-options": "nosniff",
+          "sb-gateway-mode": "direct",
+          "sb-gateway-version": "1",
+          "sb-project-ref": "ehfafcnimmjusyvplbah",
+          "sb-request-id": "01a081e7-a058-7e84-b4cc-0b5a9a18e4b2",
+          "strict-transport-security": "max-age=31536000; includeSubDomains; preload",
+          "set-cookie": [
+            "__cf_bm=YL2kyP_aPYlkqxlrhWAdF.KsTovcNAuRrZszI_kZSz0-1788885835.8622034-1.0.1.1-uAA6phv_TtAvyLZkKmTZ7CWi_LIqsiHsROg5UEllonbq7NGlBXGg0Ey_p7ixySDDEdiM20lW8slncTi_tIkOlkTsQ8PV3O.K8ECns4.hLRKhTWdipKDvH6aHtDQXo_3i; HttpOnly; SameSite=None; Secure; Path=/; Domain=supabase.co; Expires=Tue, 08 Sep 2026 17:13:55 GMT"
+          ],
+          "alt-svc": "h3=\":443\"; ma=86400"
+        },
+        "bodySnippet": "{\"statusCode\":\"403\",\"error\":\"Unauthorized\",\"message\":\"signature verification failed\",\"code\":\"AccessDenied\"}"
+      }
+    ],
+    "latency": {
+      "p50": 480,
+      "p90": 1200
+    }
+  },
+  "corsLive": [
+    {
+      "origin": "https://kshetra.in",
+      "status": 200,
+      "allowOrigin": null,
+      "isAllowed": false
+    },
+    {
+      "origin": "https://www.kshetra.in",
+      "status": 200,
+      "allowOrigin": null,
+      "isAllowed": false
+    },
+    {
+      "origin": "https://panin.in",
+      "status": 200,
+      "allowOrigin": null,
+      "isAllowed": false
+    },
+    {
+      "origin": "https://www.panin.in",
+      "status": 200,
+      "allowOrigin": null,
+      "isAllowed": false
+    },
+    {
+      "origin": "https://evil-unauthorized-domain.com",
+      "status": 200,
+      "allowOrigin": null,
+      "isAllowed": false
+    }
+  ],
+  "privilegedAuth": {
+    "status": 401,
+    "body": "{\"message\":\"Invalid API key\",\"hint\":\"Double check your API key.\"}",
+    "verdict": "CONFIRMED_INVALID_TOKEN (DEF-009 OPEN)"
+  }
+}
