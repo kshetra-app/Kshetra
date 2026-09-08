@@ -38,9 +38,26 @@ const envToLogger: Record<string, object | boolean> = {
 };
 
 /**
- * Resolve allowed CORS origins. In production an explicit allow-list is
- * required via CORS_ORIGINS (comma-separated); dev/test reflect the origin
- * for local convenience (Gold Standard Ch. 6 — no implicit trust in prod).
+ * Default production and trusted application origins.
+ * Ensures official product domains are always authorized even if CORS_ORIGINS
+ * is omitted from container environment variables.
+ */
+const DEFAULT_ALLOWED_ORIGINS = [
+  'https://kshetra.in',
+  'https://www.kshetra.in',
+  'https://panin.in',
+  'https://www.panin.in',
+  'https://kshetra.app',
+  'https://www.kshetra.app',
+  'http://localhost:3000',
+  'http://localhost:8081',
+  'http://localhost:19006',
+  'http://localhost:5173',
+];
+
+/**
+ * Resolve allowed CORS origins. In production, combines explicit CORS_ORIGINS
+ * with DEFAULT_ALLOWED_ORIGINS. In dev/test, permits local callers while preserving credentials.
  */
 function resolveCorsOrigin(env: string): boolean | string[] {
   const configured = (process.env.CORS_ORIGINS ?? '')
@@ -48,8 +65,10 @@ function resolveCorsOrigin(env: string): boolean | string[] {
     .map((o) => o.trim())
     .filter(Boolean);
 
-  if (configured.length > 0) return configured;
-  if (env === 'production') return false;
+  const combined = Array.from(new Set([...DEFAULT_ALLOWED_ORIGINS, ...configured]));
+  if (configured.length > 0 || env === 'production') {
+    return combined;
+  }
   return true;
 }
 
