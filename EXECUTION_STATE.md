@@ -14,7 +14,7 @@ LAST_COMPLETED_JOB:    W001 (Production Environment Verification)
 NEXT_PERMITTED_JOB:    W002 (Production/Staging Environment Separation)
 
 CURRENT_BRANCH:        main
-CURRENT_COMMIT:        0f7e104
+CURRENT_COMMIT:        77fb553
 API_VERSION:           v1 (Fastify 5.2 on Railway)
 MOBILE_VERSION:        0.1.0 (Expo 54, React Native 0.81.5)
 DATABASE_MIGRATIONS:   36 applied (001_initial_schema to 034_political_ads)
