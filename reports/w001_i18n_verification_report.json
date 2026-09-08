@@ -1,0 +1,135 @@
+{
+  "evidenceMetadata": {
+    "repository": "https://github.com/kshetra-app/Kshetra.git",
+    "branch": "master",
+    "commitSha": "77fb553",
+    "databaseVersion": "034_political_ads",
+    "apiVersion": "v1 (0.1.0)",
+    "mobileVersion": "0.1.0",
+    "environment": "production",
+    "verifiedBy": "DEVOPS+QA",
+    "timestamp": "2026-09-08T15:52:48.982Z"
+  },
+  "timestamp": "2026-09-08T10:57:41.060Z",
+  "canonicalKeyCount": 2041,
+  "results": [
+    {
+      "lang": "en",
+      "exists": true,
+      "fileSizeKB": 106,
+      "totalKeys": 2041,
+      "matchedKeys": 2041,
+      "coveragePct": 100,
+      "missingCount": 0
+    },
+    {
+      "lang": "te",
+      "exists": true,
+      "fileSizeKB": 168,
+      "totalKeys": 1844,
+      "matchedKeys": 1841,
+      "coveragePct": 90,
+      "missingCount": 200
+    },
+    {
+      "lang": "hi",
+      "exists": true,
+      "fileSizeKB": 146,
+      "totalKeys": 1756,
+      "matchedKeys": 1753,
+      "coveragePct": 86,
+      "missingCount": 288
+    },
+    {
+      "lang": "ta",
+      "exists": true,
+      "fileSizeKB": 129,
+      "totalKeys": 1162,
+      "matchedKeys": 1147,
+      "coveragePct": 56,
+      "missingCount": 894
+    },
+    {
+      "lang": "kn",
+      "exists": true,
+      "fileSizeKB": 133,
+      "totalKeys": 1669,
+      "matchedKeys": 1667,
+      "coveragePct": 82,
+      "missingCount": 374
+    },
+    {
+      "lang": "ml",
+      "exists": true,
+      "fileSizeKB": 124,
+      "totalKeys": 1154,
+      "matchedKeys": 1139,
+      "coveragePct": 56,
+      "missingCount": 902
+    },
+    {
+      "lang": "mr",
+      "exists": true,
+      "fileSizeKB": 127,
+      "totalKeys": 1677,
+      "matchedKeys": 1675,
+      "coveragePct": 82,
+      "missingCount": 366
+    },
+    {
+      "lang": "bn",
+      "exists": true,
+      "fileSizeKB": 114,
+      "totalKeys": 1154,
+      "matchedKeys": 1139,
+      "coveragePct": 56,
+      "missingCount": 902
+    },
+    {
+      "lang": "gu",
+      "exists": true,
+      "fileSizeKB": 106,
+      "totalKeys": 1153,
+      "matchedKeys": 1138,
+      "coveragePct": 56,
+      "missingCount": 903
+    },
+    {
+      "lang": "or",
+      "exists": true,
+      "fileSizeKB": 116,
+      "totalKeys": 1152,
+      "matchedKeys": 1137,
+      "coveragePct": 56,
+      "missingCount": 904
+    },
+    {
+      "lang": "pa",
+      "exists": true,
+      "fileSizeKB": 107,
+      "totalKeys": 1153,
+      "matchedKeys": 1138,
+      "coveragePct": 56,
+      "missingCount": 903
+    },
+    {
+      "lang": "as",
+      "exists": true,
+      "fileSizeKB": 112,
+      "totalKeys": 1153,
+      "matchedKeys": 1138,
+      "coveragePct": 56,
+      "missingCount": 903
+    },
+    {
+      "lang": "ne",
+      "exists": true,
+      "fileSizeKB": 115,
+      "totalKeys": 1153,
+      "matchedKeys": 1138,
+      "coveragePct": 56,
+      "missingCount": 903
+    }
+  ],
+  "allPassed": false
+}

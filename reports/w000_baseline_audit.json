@@ -1,0 +1,1063 @@
+{
+  "evidenceMetadata": {
+    "repository": "https://github.com/kshetra-app/Kshetra.git",
+    "branch": "master",
+    "commitSha": "0f7e104",
+    "databaseVersion": "034_political_ads",
+    "apiVersion": "v1 (0.1.0)",
+    "mobileVersion": "0.1.0",
+    "environment": "production",
+    "verifiedBy": "ARCH",
+    "timestamp": "2026-09-08T15:52:48.982Z"
+  },
+  "timestamp": "2026-09-08T09:06:22.084Z",
+  "mobileRoutes": {
+    "total": 53,
+    "routes": [
+      "(tabs)/_layout.tsx",
+      "(tabs)/community.tsx",
+      "(tabs)/dashboard.tsx",
+      "(tabs)/explore.tsx",
+      "(tabs)/feed.tsx",
+      "(tabs)/index.tsx",
+      "(tabs)/intelligence.tsx",
+      "(tabs)/live.tsx",
+      "(tabs)/more.tsx",
+      "(tabs)/news.tsx",
+      "(tabs)/profile.tsx",
+      "(tabs)/shorts.tsx",
+      "_layout.tsx",
+      "ai-chat.tsx",
+      "auth/edit-profile.tsx",
+      "auth/onboarding.tsx",
+      "auth/sign-in.tsx",
+      "campaign-manager/index.tsx",
+      "candidate-xray/[id].tsx",
+      "civic-metrics/index.tsx",
+      "constituency/[id].tsx",
+      "delimitation/index.tsx",
+      "delimitation/my-impact.tsx",
+      "delimitation/simulator.tsx",
+      "delimitation/state/[code].tsx",
+      "departments/dashboard.tsx",
+      "edit-profile.tsx",
+      "hierarchy/[id].tsx",
+      "issue/[id].tsx",
+      "journalist/index.tsx",
+      "leadership-academy.tsx",
+      "legislator/[id].tsx",
+      "live-election/index.tsx",
+      "live/[id].tsx",
+      "live/distribution.tsx",
+      "live/go-live.tsx",
+      "live/moderation-queue.tsx",
+      "local-bodies/index.tsx",
+      "messages/[conversationId].tsx",
+      "messages/index.tsx",
+      "moderation/index.tsx",
+      "notification-settings.tsx",
+      "notifications.tsx",
+      "onboarding.tsx",
+      "pages/index.tsx",
+      "parliament/index.tsx",
+      "politician-portal/index.tsx",
+      "reader.tsx",
+      "representative/[id].tsx",
+      "representative/edit/[id].tsx",
+      "search.tsx",
+      "user/[id].tsx",
+      "user/[userId].tsx"
+    ]
+  },
+  "mobileStores": {
+    "total": 29,
+    "stores": [
+      "activeState.ts",
+      "affidavits.ts",
+      "aspirant.ts",
+      "auth.ts",
+      "campaign.ts",
+      "civic.ts",
+      "civicMetrics.ts",
+      "contentPromotion.ts",
+      "contributorVerification.ts",
+      "delimitation.ts",
+      "dmStore.ts",
+      "electionLive.ts",
+      "favorites.ts",
+      "feed.ts",
+      "journalist.ts",
+      "legislatorProfiles.ts",
+      "liveExchange.ts",
+      "myConstituency.ts",
+      "news.ts",
+      "notifications.ts",
+      "outreach.ts",
+      "politicalShorts.ts",
+      "politicianPortal.ts",
+      "preferences.ts",
+      "promises.ts",
+      "recents.ts",
+      "subscription.ts",
+      "triviaHistory.ts",
+      "userProfile.ts"
+    ]
+  },
+  "apiEndpoints": {
+    "total": 106,
+    "endpoints": [
+      {
+        "file": "politicalAds.ts",
+        "method": "GET",
+        "path": "/ad-library",
+        "line": 361
+      },
+      {
+        "file": "politicalAds.ts",
+        "method": "GET",
+        "path": "/api/v1/admin/political-ads/review-queue",
+        "line": 186
+      },
+      {
+        "file": "ai.ts",
+        "method": "GET",
+        "path": "/api/v1/ai/analyze/constituency/:acNo",
+        "line": 58
+      },
+      {
+        "file": "ai.ts",
+        "method": "GET",
+        "path": "/api/v1/ai/analyze/trends",
+        "line": 70
+      },
+      {
+        "file": "ai.ts",
+        "method": "POST",
+        "path": "/api/v1/ai/campaign-copy",
+        "line": 101
+      },
+      {
+        "file": "ai.ts",
+        "method": "POST",
+        "path": "/api/v1/ai/chat",
+        "line": 44
+      },
+      {
+        "file": "ai.ts",
+        "method": "POST",
+        "path": "/api/v1/ai/smart-search",
+        "line": 76
+      },
+      {
+        "file": "ai.ts",
+        "method": "GET",
+        "path": "/api/v1/ai/status",
+        "line": 133
+      },
+      {
+        "file": "ai.ts",
+        "method": "POST",
+        "path": "/api/v1/ai/summarize-issues",
+        "line": 87
+      },
+      {
+        "file": "broadcast.ts",
+        "method": "GET",
+        "path": "/api/v1/broadcast/state/:code",
+        "line": 92
+      },
+      {
+        "file": "broadcast.ts",
+        "method": "GET",
+        "path": "/api/v1/broadcast/state/:code/constituency/:acNo",
+        "line": 135
+      },
+      {
+        "file": "broadcast.ts",
+        "method": "GET",
+        "path": "/api/v1/broadcast/summary",
+        "line": 68
+      },
+      {
+        "file": "campaign.ts",
+        "method": "GET",
+        "path": "/api/v1/campaign/booths",
+        "line": 357
+      },
+      {
+        "file": "campaign.ts",
+        "method": "PATCH",
+        "path": "/api/v1/campaign/booths/:id",
+        "line": 385
+      },
+      {
+        "file": "campaign.ts",
+        "method": "GET",
+        "path": "/api/v1/campaign/campaigns",
+        "line": 314
+      },
+      {
+        "file": "campaign.ts",
+        "method": "GET",
+        "path": "/api/v1/campaign/obd/broadcasts",
+        "line": 515
+      },
+      {
+        "file": "campaign.ts",
+        "method": "POST",
+        "path": "/api/v1/campaign/obd/dispatch",
+        "line": 522
+      },
+      {
+        "file": "campaign.ts",
+        "method": "GET",
+        "path": "/api/v1/campaign/obd/trai-status",
+        "line": 509
+      },
+      {
+        "file": "campaign.ts",
+        "method": "GET",
+        "path": "/api/v1/campaign/pricing",
+        "line": 240
+      },
+      {
+        "file": "campaign.ts",
+        "method": "PATCH",
+        "path": "/api/v1/campaign/pricing",
+        "line": 252
+      },
+      {
+        "file": "campaign.ts",
+        "method": "GET",
+        "path": "/api/v1/campaign/users/check-kshetra",
+        "line": 274
+      },
+      {
+        "file": "campaign.ts",
+        "method": "GET",
+        "path": "/api/v1/campaign/volunteers",
+        "line": 413
+      },
+      {
+        "file": "campaign.ts",
+        "method": "POST",
+        "path": "/api/v1/campaign/volunteers",
+        "line": 434
+      },
+      {
+        "file": "campaign.ts",
+        "method": "GET",
+        "path": "/api/v1/campaign/wallet",
+        "line": 462
+      },
+      {
+        "file": "campaign.ts",
+        "method": "POST",
+        "path": "/api/v1/campaign/wallet/recharge/order",
+        "line": 476
+      },
+      {
+        "file": "campaign.ts",
+        "method": "POST",
+        "path": "/api/v1/campaign/wallet/recharge/verify",
+        "line": 489
+      },
+      {
+        "file": "campaign.ts",
+        "method": "GET",
+        "path": "/api/v1/campaign/wallet/transactions",
+        "line": 469
+      },
+      {
+        "file": "civic.ts",
+        "method": "GET",
+        "path": "/api/v1/civic/attendance",
+        "line": 14
+      },
+      {
+        "file": "civic.ts",
+        "method": "GET",
+        "path": "/api/v1/civic/bills",
+        "line": 24
+      },
+      {
+        "file": "civic.ts",
+        "method": "POST",
+        "path": "/api/v1/civic/bills/:id/opinion",
+        "line": 34
+      },
+      {
+        "file": "civic.ts",
+        "method": "GET",
+        "path": "/api/v1/civic/budget/:stateCode",
+        "line": 5
+      },
+      {
+        "file": "civic.ts",
+        "method": "GET",
+        "path": "/api/v1/civic/cdi/:constituencyId",
+        "line": 98
+      },
+      {
+        "file": "civic.ts",
+        "method": "GET",
+        "path": "/api/v1/civic/hearings",
+        "line": 88
+      },
+      {
+        "file": "civic.ts",
+        "method": "GET",
+        "path": "/api/v1/civic/projects",
+        "line": 51
+      },
+      {
+        "file": "civic.ts",
+        "method": "GET",
+        "path": "/api/v1/civic/rti",
+        "line": 66
+      },
+      {
+        "file": "civic.ts",
+        "method": "POST",
+        "path": "/api/v1/civic/rti",
+        "line": 76
+      },
+      {
+        "file": "civic.ts",
+        "method": "POST",
+        "path": "/api/v1/civic/rti/:id/upvote",
+        "line": 82
+      },
+      {
+        "file": "civic.ts",
+        "method": "GET",
+        "path": "/api/v1/civic/schemes",
+        "line": 41
+      },
+      {
+        "file": "config.ts",
+        "method": "GET",
+        "path": "/api/v1/config/flags",
+        "line": 12
+      },
+      {
+        "file": "config.ts",
+        "method": "PATCH",
+        "path": "/api/v1/config/flags",
+        "line": 24
+      },
+      {
+        "file": "delimitation.ts",
+        "method": "GET",
+        "path": "/api/v1/delimitation/compare",
+        "line": 520
+      },
+      {
+        "file": "delimitation.ts",
+        "method": "GET",
+        "path": "/api/v1/delimitation/gainers-losers",
+        "line": 224
+      },
+      {
+        "file": "delimitation.ts",
+        "method": "GET",
+        "path": "/api/v1/delimitation/impact/:pinCode",
+        "line": 285
+      },
+      {
+        "file": "delimitation.ts",
+        "method": "GET",
+        "path": "/api/v1/delimitation/methodology",
+        "line": 635
+      },
+      {
+        "file": "delimitation.ts",
+        "method": "GET",
+        "path": "/api/v1/delimitation/mla-impact/:stateCode",
+        "line": 541
+      },
+      {
+        "file": "delimitation.ts",
+        "method": "POST",
+        "path": "/api/v1/delimitation/monitor-webhook",
+        "line": 248
+      },
+      {
+        "file": "delimitation.ts",
+        "method": "GET",
+        "path": "/api/v1/delimitation/party-projections/:stateCode",
+        "line": 596
+      },
+      {
+        "file": "delimitation.ts",
+        "method": "GET",
+        "path": "/api/v1/delimitation/projections",
+        "line": 147
+      },
+      {
+        "file": "delimitation.ts",
+        "method": "GET",
+        "path": "/api/v1/delimitation/projections/:stateCode",
+        "line": 174
+      },
+      {
+        "file": "delimitation.ts",
+        "method": "GET",
+        "path": "/api/v1/delimitation/reservation",
+        "line": 456
+      },
+      {
+        "file": "delimitation.ts",
+        "method": "GET",
+        "path": "/api/v1/delimitation/reservation/:stateCode",
+        "line": 484
+      },
+      {
+        "file": "delimitation.ts",
+        "method": "GET",
+        "path": "/api/v1/delimitation/simulate/:stateCode",
+        "line": 371
+      },
+      {
+        "file": "delimitation.ts",
+        "method": "GET",
+        "path": "/api/v1/delimitation/status",
+        "line": 211
+      },
+      {
+        "file": "delimitation.ts",
+        "method": "GET",
+        "path": "/api/v1/delimitation/timeline",
+        "line": 188
+      },
+      {
+        "file": "dm.ts",
+        "method": "GET",
+        "path": "/api/v1/dm/unread-count",
+        "line": 137
+      },
+      {
+        "file": "journalist.ts",
+        "method": "GET",
+        "path": "/api/v1/journalist/articles",
+        "line": 5
+      },
+      {
+        "file": "journalist.ts",
+        "method": "GET",
+        "path": "/api/v1/journalist/articles/:id",
+        "line": 16
+      },
+      {
+        "file": "journalist.ts",
+        "method": "POST",
+        "path": "/api/v1/journalist/articles/:id/flag",
+        "line": 57
+      },
+      {
+        "file": "journalist.ts",
+        "method": "POST",
+        "path": "/api/v1/journalist/articles/:id/tip",
+        "line": 64
+      },
+      {
+        "file": "journalist.ts",
+        "method": "POST",
+        "path": "/api/v1/journalist/articles/:id/vouch",
+        "line": 51
+      },
+      {
+        "file": "journalist.ts",
+        "method": "GET",
+        "path": "/api/v1/journalist/breaking",
+        "line": 33
+      },
+      {
+        "file": "journalist.ts",
+        "method": "GET",
+        "path": "/api/v1/journalist/fact-checks",
+        "line": 22
+      },
+      {
+        "file": "journalist.ts",
+        "method": "GET",
+        "path": "/api/v1/journalist/profiles",
+        "line": 41
+      },
+      {
+        "file": "lmx.ts",
+        "method": "POST",
+        "path": "/api/v1/lmx/alerts",
+        "line": 207
+      },
+      {
+        "file": "lmx.ts",
+        "method": "POST",
+        "path": "/api/v1/lmx/alerts/:id/acknowledge",
+        "line": 219
+      },
+      {
+        "file": "lmx.ts",
+        "method": "GET",
+        "path": "/api/v1/lmx/departments",
+        "line": 188
+      },
+      {
+        "file": "lmx.ts",
+        "method": "POST",
+        "path": "/api/v1/lmx/departments",
+        "line": 194
+      },
+      {
+        "file": "lmx.ts",
+        "method": "POST",
+        "path": "/api/v1/lmx/distribution",
+        "line": 236
+      },
+      {
+        "file": "lmx.ts",
+        "method": "GET",
+        "path": "/api/v1/lmx/live",
+        "line": 32
+      },
+      {
+        "file": "lmx.ts",
+        "method": "POST",
+        "path": "/api/v1/lmx/live",
+        "line": 63
+      },
+      {
+        "file": "lmx.ts",
+        "method": "GET",
+        "path": "/api/v1/lmx/live/:streamId",
+        "line": 51
+      },
+      {
+        "file": "lmx.ts",
+        "method": "POST",
+        "path": "/api/v1/lmx/live/:streamId/end",
+        "line": 171
+      },
+      {
+        "file": "lmx.ts",
+        "method": "POST",
+        "path": "/api/v1/lmx/live/:streamId/moderate",
+        "line": 137
+      },
+      {
+        "file": "lmx.ts",
+        "method": "GET",
+        "path": "/api/v1/lmx/status",
+        "line": 21
+      },
+      {
+        "file": "moderation.ts",
+        "method": "GET",
+        "path": "/api/v1/moderation/actions",
+        "line": 225
+      },
+      {
+        "file": "moderation.ts",
+        "method": "GET",
+        "path": "/api/v1/moderation/queue",
+        "line": 185
+      },
+      {
+        "file": "moderation.ts",
+        "method": "GET",
+        "path": "/api/v1/moderation/reputation-rules",
+        "line": 416
+      },
+      {
+        "file": "news.ts",
+        "method": "GET",
+        "path": "/api/v1/news/feed",
+        "line": 12
+      },
+      {
+        "file": "news.ts",
+        "method": "POST",
+        "path": "/api/v1/news/refresh",
+        "line": 27
+      },
+      {
+        "file": "notifications.ts",
+        "method": "GET",
+        "path": "/api/v1/notifications/preferences",
+        "line": 111
+      },
+      {
+        "file": "notifications.ts",
+        "method": "GET",
+        "path": "/api/v1/notifications/triggers",
+        "line": 161
+      },
+      {
+        "file": "politicalAds.ts",
+        "method": "GET",
+        "path": "/api/v1/political-ads/library",
+        "line": 332
+      },
+      {
+        "file": "politician.ts",
+        "method": "GET",
+        "path": "/api/v1/politician/events",
+        "line": 21
+      },
+      {
+        "file": "politician.ts",
+        "method": "POST",
+        "path": "/api/v1/politician/events/:id/rsvp",
+        "line": 31
+      },
+      {
+        "file": "politician.ts",
+        "method": "POST",
+        "path": "/api/v1/politician/grievances",
+        "line": 71
+      },
+      {
+        "file": "politician.ts",
+        "method": "GET",
+        "path": "/api/v1/politician/manifestos",
+        "line": 37
+      },
+      {
+        "file": "politician.ts",
+        "method": "POST",
+        "path": "/api/v1/politician/manifestos/:manifestoId/items/:itemId/vote",
+        "line": 47
+      },
+      {
+        "file": "politician.ts",
+        "method": "GET",
+        "path": "/api/v1/politician/profiles",
+        "line": 5
+      },
+      {
+        "file": "politician.ts",
+        "method": "GET",
+        "path": "/api/v1/politician/profiles/:id",
+        "line": 15
+      },
+      {
+        "file": "politician.ts",
+        "method": "GET",
+        "path": "/api/v1/politician/surveys",
+        "line": 54
+      },
+      {
+        "file": "politician.ts",
+        "method": "POST",
+        "path": "/api/v1/politician/surveys/:id/respond",
+        "line": 64
+      },
+      {
+        "file": "states.ts",
+        "method": "GET",
+        "path": "/api/v1/states",
+        "line": 9
+      },
+      {
+        "file": "states.ts",
+        "method": "GET",
+        "path": "/api/v1/states/:code",
+        "line": 16
+      },
+      {
+        "file": "campaign.ts",
+        "method": "POST",
+        "path": "/api/v1/webhooks/voice/:provider",
+        "line": 581
+      },
+      {
+        "file": "constituencies.ts",
+        "method": "GET",
+        "path": "/constituencies/locate",
+        "line": 284
+      },
+      {
+        "file": "geo.ts",
+        "method": "GET",
+        "path": "/geo/manifest.json",
+        "line": 57
+      },
+      {
+        "file": "health.ts",
+        "method": "GET",
+        "path": "/health",
+        "line": 4
+      },
+      {
+        "file": "manage.ts",
+        "method": "GET",
+        "path": "/manage",
+        "line": 10
+      },
+      {
+        "file": "policy.ts",
+        "method": "GET",
+        "path": "/policy/community-guidelines",
+        "line": 178
+      },
+      {
+        "file": "policy.ts",
+        "method": "GET",
+        "path": "/policy/grievance",
+        "line": 29
+      },
+      {
+        "file": "constituencies.ts",
+        "method": "GET",
+        "path": "/states/:stateCode/analytics",
+        "line": 203
+      },
+      {
+        "file": "constituencies.ts",
+        "method": "GET",
+        "path": "/states/:stateCode/constituencies",
+        "line": 68
+      },
+      {
+        "file": "constituencies.ts",
+        "method": "GET",
+        "path": "/states/:stateCode/constituencies/search",
+        "line": 131
+      },
+      {
+        "file": "constituencies.ts",
+        "method": "GET",
+        "path": "/states/:stateCode/elections",
+        "line": 267
+      },
+      {
+        "file": "constituencies.ts",
+        "method": "GET",
+        "path": "/states/:stateCode/mla",
+        "line": 250
+      },
+      {
+        "file": "constituencies.ts",
+        "method": "GET",
+        "path": "/states/:stateCode/mla/:acNo",
+        "line": 224
+      }
+    ]
+  },
+  "database": {
+    "totalMigrations": 36,
+    "migrations": [
+      "001_initial_schema.sql",
+      "002_seed_telangana.sql",
+      "0035_posts_polls_social.sql",
+      "003_multi_state.sql",
+      "004_civic_dashboard.sql",
+      "005_push_notifications.sql",
+      "006_trust_safety.sql",
+      "007_civic_engagement_pipeline.sql",
+      "008_election_affidavits.sql",
+      "009_promise_tracker.sql",
+      "010_aspiring_leaders.sql",
+      "011_delimitation.sql",
+      "012_legislator_profiles.sql",
+      "013_content_accountability.sql",
+      "014_content_promotion_pipeline.sql",
+      "015_journalist_platform.sql",
+      "016_politician_portal.sql",
+      "017_campaign_manager.sql",
+      "018_enhanced_civic.sql",
+      "019_live_election.sql",
+      "020_foundation_hardening.sql",
+      "021_seed_demo_data.sql",
+      "022_administrative_hierarchy.sql",
+      "023_data_api_grants.sql",
+      "023_local_body_representatives.sql",
+      "024_live_media_exchange.sql",
+      "025_feed_realtime_and_social.sql",
+      "026_campaign_wallet_and_obd.sql",
+      "027_extend_role_and_verification.sql",
+      "028_user_follows.sql",
+      "029_fix_auth_trigger.sql",
+      "030_trai_opt_outs.sql",
+      "031_direct_messages.sql",
+      "032_reports_extend_targets.sql",
+      "033_content_and_department_alerts.sql",
+      "034_political_ads.sql"
+    ],
+    "totalTables": 148,
+    "tables": [
+      "ab_tests",
+      "action_fingerprints",
+      "ad_creatives",
+      "ad_revenue_log",
+      "affidavit_criminal_cases",
+      "articles",
+      "aspirant_profiles",
+      "audit_log",
+      "bills",
+      "blocked_users",
+      "booth_candidate_votes",
+      "booth_election_results",
+      "booth_strategies",
+      "breaking_news",
+      "budget_allocations",
+      "campaign_volunteers",
+      "campaign_wallets",
+      "campaigns",
+      "candidate_affidavits",
+      "canvassing_records",
+      "challenge_participation",
+      "citizen_impact",
+      "civic_badges",
+      "civic_issues",
+      "comments",
+      "community_challenges",
+      "community_endorsements",
+      "constituencies",
+      "constituency_development_index",
+      "constituency_mapping",
+      "constituency_moderators",
+      "constituent_broadcasts",
+      "content_alerts",
+      "content_flags",
+      "content_visibility",
+      "content_vouches",
+      "contributor_devices",
+      "conversations",
+      "creator_kyc_records",
+      "data_pipeline_status",
+      "delimitation_events",
+      "delimitation_proposals",
+      "development_projects",
+      "e_manifestos",
+      "editorial_assignments",
+      "election_promises",
+      "election_results",
+      "elections",
+      "event_rsvps",
+      "fact_checks",
+      "favorites",
+      "fundraise_donations",
+      "fundraise_projects",
+      "government_schemes",
+      "gp_wards",
+      "gram_panchayats",
+      "hashtags",
+      "headlines",
+      "issue_comments",
+      "issue_disputes",
+      "issue_evidence",
+      "issue_follows",
+      "issue_status_history",
+      "issue_upvotes",
+      "journalist_profiles",
+      "key_contestants",
+      "leadership_modules",
+      "legislator_attendance",
+      "legislator_criminal_cases",
+      "legislator_elections",
+      "legislator_events",
+      "legislator_finances",
+      "legislator_profiles",
+      "live_candidate_results",
+      "live_constituency_results",
+      "live_elections",
+      "live_event_ai",
+      "live_events",
+      "live_party_tallies",
+      "lmx_affiliations",
+      "lmx_brand_kits",
+      "lmx_credibility",
+      "lmx_department_alerts",
+      "lmx_departments",
+      "lmx_distribution_destinations",
+      "lmx_moderation_events",
+      "lmx_org_relays",
+      "local_body_candidates",
+      "local_body_elections",
+      "mandal_constituency_map",
+      "mandal_parishads",
+      "mandals",
+      "mentorships",
+      "messages",
+      "moderation_actions",
+      "module_progress",
+      "mptc_divisions",
+      "notification_log",
+      "notification_preferences",
+      "pages",
+      "political_ads",
+      "political_endorsements",
+      "political_events",
+      "political_shorts",
+      "politician_portal_profiles",
+      "politician_surveys",
+      "poll_options",
+      "poll_votes",
+      "polling_booths",
+      "polls",
+      "post_hashtags",
+      "post_media",
+      "posts",
+      "promise_evidence",
+      "promise_follows",
+      "promise_updates",
+      "promotion_decisions",
+      "proposed_constituencies",
+      "public_hearings",
+      "push_tokens",
+      "reactions",
+      "reports",
+      "representative_edits",
+      "representatives",
+      "revenue_villages",
+      "rti_requests",
+      "scraper_runs",
+      "short_approvals",
+      "short_comments",
+      "short_flags",
+      "state_budget_summaries",
+      "states",
+      "survey_responses",
+      "tip_transactions",
+      "trai_opt_outs",
+      "ulb_wards",
+      "urban_local_bodies",
+      "user_favourites",
+      "user_follows",
+      "user_profiles",
+      "user_sessions",
+      "user_subscriptions",
+      "user_verification",
+      "voice_obd_broadcasts",
+      "wallet_transactions",
+      "ward_population",
+      "zilla_parishads",
+      "zptc_divisions"
+    ],
+    "totalViews": 20,
+    "views": [
+      "campaign_dashboard",
+      "constituency_moderation_stats",
+      "contributor_accountability_summary",
+      "current_legislators",
+      "data_health_by_state",
+      "lmx_department_inbox",
+      "lmx_live_tab_feed",
+      "moderator_queue",
+      "promotable_content",
+      "revenue_summary",
+      "state_feed",
+      "suspicious_ip_changes",
+      "suspicious_multi_device_users",
+      "v_booth_result_aggregation",
+      "v_constituency_booth_summary",
+      "v_constituency_hierarchy",
+      "v_mandal_summary",
+      "v_panchayat_summary",
+      "v_representative_coverage",
+      "v_representative_edit_queue"
+    ],
+    "totalFunctions": 46,
+    "functions": [
+      "check_dm_blocklist_trigger",
+      "fn_retire_prior_representative",
+      "fn_set_updated_at",
+      "fn_validate_booth_aggregation",
+      "fn_validate_booth_result",
+      "fn_validate_local_body_turnout",
+      "get_constituency_stats",
+      "get_feed",
+      "get_issues",
+      "get_trending_hashtags",
+      "get_user_dashboard",
+      "global_search",
+      "handle_alert",
+      "handle_new_user",
+      "increment_device_action_count",
+      "refresh_materialized_views",
+      "update_affidavit_timestamp",
+      "update_aspirant_endorsement_count",
+      "update_aspirant_timestamp",
+      "update_campaign_ad_count",
+      "update_campaign_volunteer_count",
+      "update_conversation_last_message",
+      "update_endorsement_count",
+      "update_event_rsvp_count",
+      "update_flag_count",
+      "update_fundraise_totals",
+      "update_hashtag_post_count",
+      "update_issue_comment_count",
+      "update_issue_dispute_count",
+      "update_issue_evidence_count",
+      "update_issue_follow_count",
+      "update_issue_upvote_count",
+      "update_journalist_article_count",
+      "update_journalist_tips",
+      "update_legislator_timestamp",
+      "update_poll_vote_counts",
+      "update_post_reaction_count",
+      "update_post_reply_count",
+      "update_promise_follow_count",
+      "update_promise_timestamp",
+      "update_short_approval_count",
+      "update_short_flag_count",
+      "update_survey_response_count",
+      "update_updated_at",
+      "update_user_post_count",
+      "update_vouch_count"
+    ]
+  },
+  "dependencies": {
+    "total": 47,
+    "list": [
+      "@babel/types",
+      "@expo/vector-icons",
+      "@gorhom/bottom-sheet",
+      "@kshetra/shared",
+      "@maplibre/maplibre-react-native",
+      "@react-native-async-storage/async-storage",
+      "@react-native-community/slider",
+      "@react-navigation/bottom-tabs",
+      "@react-navigation/native",
+      "@react-navigation/native-stack",
+      "@shopify/flash-list",
+      "@supabase/supabase-js",
+      "@tanstack/react-query",
+      "expo",
+      "expo-asset",
+      "expo-constants",
+      "expo-file-system",
+      "expo-haptics",
+      "expo-image",
+      "expo-image-picker",
+      "expo-linking",
+      "expo-localization",
+      "expo-location",
+      "expo-notifications",
+      "expo-print",
+      "expo-router",
+      "expo-secure-store",
+      "expo-sharing",
+      "expo-splash-screen",
+      "expo-sqlite",
+      "expo-status-bar",
+      "i18next",
+      "intl-pluralrules",
+      "react",
+      "react-i18next",
+      "react-native",
+      "react-native-gesture-handler",
+      "react-native-mmkv",
+      "react-native-reanimated",
+      "react-native-safe-area-context",
+      "react-native-screens",
+      "react-native-svg",
+      "react-native-url-polyfill",
+      "react-native-webrtc",
+      "react-native-webview",
+      "react-native-worklets",
+      "zustand"
+    ]
+  }
+}
