@@ -106,4 +106,18 @@
   4. **DEF-012 (13-Language Parity):** Retain status as `OPEN`. Canonical validator (`scripts/verify-13-locales.mjs --strict`) requires 100% key parity with zero missing keys and exits non-zero. No artificial 90% leniency threshold is permitted.
 - **Rationale:** Prevents deceptive defect closure and guarantees absolute truth in engineering status.
 
+---
+
+### DEC-012: Audit Method, Parser Rigor & Semantic State Governance (W000-REC2)
+- **Date:** 2026-09-08
+- **Authority:** Master Execution Framework Amendment v1.2 (Rule IV-001, Parts 7 & 8)
+- **Context:** Automated audit regex parsers must be algorithmically robust against SQL syntax variations (e.g. `IF NOT EXISTS` clauses on views). Furthermore, static source code counts must never be conflated with live production catalog objects.
+- **Decision:**
+  1. **Parser Robustness:** DDL parsers must handle all valid syntax clauses (e.g. `CREATE [OR REPLACE] [MATERIALIZED] VIEW [IF NOT EXISTS]`) and must include automated regression tests preventing false-positive object creation (e.g. object `"IF"`).
+  2. **Semantic Boundary:** Distinctly separate repository-defined source inventories from live production database catalog objects. Unverified live catalog states must be explicitly designated as `HUMAN ACTION REQUIRED` or `PENDING_PRIVILEGED_CATALOG_ACCESS`.
+  3. **Static Route Registration Semantics:** The 109 API endpoint count represents `STATIC HTTP ROUTE REGISTRATIONS` in Fastify source code, not live production endpoint availability.
+  4. **Commit Lineage Transparency:** Registers must explicitly record `AUDITED_CODE_COMMIT`, `EVIDENCE_COMMIT`, and `ACCEPTANCE_COMMIT` to prevent ambiguous commit tracking.
+- **Rationale:** Enforces absolute mathematical precision and eliminates semantic ambiguity across platform audit ledgers.
+
+
 

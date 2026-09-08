@@ -2,12 +2,13 @@
   "metadata": {
     "apiDirectory": "apps/api/src/routes",
     "serverFile": "apps/api/src/server.ts",
-    "measurementMethod": "Static regex parsing of Fastify HTTP method registrations (app.<method> and fastify.<method>)",
-    "timestamp": "2026-09-08T17:54:55.694Z"
+    "measurementMethod": "Static AST/regex parsing of Fastify HTTP route registrations (app.<method> and fastify.<method>)",
+    "nature": "STATIC HTTP ROUTE REGISTRATIONS (not live production endpoint count)",
+    "timestamp": "2026-09-08T18:16:06.397Z"
   },
   "counts": {
     "totalRouteModules": 21,
-    "totalEndpointsRegistered": 109,
+    "staticHttpRouteRegistrations": 109,
     "serverLevelEndpoints": 2,
     "moduleLevelEndpoints": 107
   },

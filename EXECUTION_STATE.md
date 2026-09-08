@@ -9,19 +9,23 @@
 PROJECT:               PANIN (formerly Kshetra)
 TARGET_DOMAIN:         India Political Geography, Intelligence, Participation & Media Platform
 CURRENT_PHASE:         W0 (Baseline Reconciliation & Ground-Truth Audit)
-CURRENT_JOB:           W002 (Staging / Prod Environment Separation)
+CURRENT_JOB:           W000-REC2 (Audit Method & State Reconciliation)
 LAST_COMPLETED_JOB:    W001-R6A (Independent Verification Re-execution & Final W001 Acceptance)
-NEXT_PERMITTED_JOB:    W002 (Staging / Prod Environment Separation — UNBLOCKED)
+NEXT_PERMITTED_JOB:    W000-REC2 Independent Verification (W002 BLOCKED until IV passes)
 
 CURRENT_BRANCH:        master
-CURRENT_COMMIT:        fad6025
+CURRENT_REMOTE_HEAD:   e0b67b9
+AUDITED_CODE_COMMIT:   e0b67b9
+EVIDENCE_COMMIT:       5b73d88
+ACCEPTANCE_COMMIT:     Pending Independent Verification
 API_VERSION:           v1 (Fastify 5.2 on Railway)
 MOBILE_VERSION:        0.1.0 (Expo 54, React Native 0.81.5)
-DATABASE_MIGRATIONS:   36 applied (001_initial_schema to 034_political_ads)
-DATABASE_TABLES:       148
-API_ENDPOINTS:         106
-MOBILE_ROUTES:         53
-MOBILE_STORES:         29
+DATABASE_MIGRATIONS:   36 migration files present in repository (001-034 + 0035 + duplicate 023; live catalog = HUMAN ACTION REQUIRED)
+DATABASE_TABLES:       148 unique tables defined in migration source
+DATABASE_VIEWS:        23 unique views defined in migration source (20 standard + 3 materialized; 0 false positives)
+API_ENDPOINTS:         109 static HTTP route registrations (not live production count)
+MOBILE_ROUTES:         53 application route files (all .tsx; 2 layouts, 51 route screens)
+MOBILE_STORES:         29 Zustand stores
 GOVERNANCE_FRAMEWORK:  Master Execution Framework Amendment v1.2 (Active)
 REMOTE_SYNC:           Up to date with origin/master
 ```
@@ -32,13 +36,14 @@ REMOTE_SYNC:           Up to date with origin/master
 
 | Job ID | Job Title | Status | Acceptance Date | Evidence / Notes |
 | :--- | :--- | :--- | :--- | :--- |
-| **W000** | Project Discovery & Ground-Truth Audit | **ACCEPTED (RECONCILED)** | 2026-09-08 | Audited 53 routes, 29 stores, 109 endpoints, 36 migrations, 148 tables, 47 deps; reconciled in-repo |
+| **W000** | Project Discovery & Ground-Truth Audit | **ACCEPTED (RECONCILED)** | 2026-09-08 | Audited 53 routes, 29 stores, 109 static registrations, 36 migrations, 148 tables, 47 deps; reconciled in-repo |
 | **W000-REC** | W000 Evidence Reconciliation | **COMPLETE** | 2026-09-08 | Reconciled via `scripts/reconcile-w000.mjs`; `reports/w000_*.json` & `reports/w000_acceptance_report.md` |
+| **W000-REC2**| Audit Method & State Reconciliation | **IN_VERIFICATION** | - | View parser fixed (0 "IF" views); strict source vs live terminology; regression test passed; pending IV |
 | **W001** | Production Environment Verification | **ACCEPTED (W/ EXCEPTIONS)** | 2026-09-08 | Verified live Railway & Supabase; W001-R6A IV Pass w/ non-blocking exceptions |
 | **W001-R5** | W001 Reconciliation & Remote Reproducibility | **COMPLETE** | 2026-09-08 | Reconciled evidence into in-repo `reports/` with Part 7 metadata per Amendment v1.2 |
 | **W001-R6** | Independent Verification & Final W001 Acceptance | **REOPENED** | - | Reopened per user governance review; superseded by W001-R6A |
 | **W001-R6A** | Independent Verification Re-execution | **COMPLETE** | 2026-09-08 | Independent Verifier Pass with Non-Blocking Exceptions per Amendment v1.2 Rule IV-001 |
-| **W002** | Staging / Prod Environment Separation | **READY** | - | UNBLOCKED: Prerequisite W001-R6A Independent Verification Passed |
+| **W002** | Staging / Prod Environment Separation | **BLOCKED** | - | BLOCKED: Prerequisite W000-REC2 Independent Verification required |
 
 | **W003** | CI/CD Quality Pipeline | NOT_STARTED | - | Prerequisite: W002 |
 | **W004** | Observability & Error Tracking | NOT_STARTED | - | Prerequisite: W003 |

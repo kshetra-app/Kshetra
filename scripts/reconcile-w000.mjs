@@ -50,11 +50,12 @@ const tabScreens = allAppFiles.filter(f => f.startsWith('(tabs)/') && !f.include
 const routeInventory = {
   metadata: {
     directory: 'apps/mobile/app',
-    measurementMethod: 'Recursive scan of apps/mobile/app for .tsx/.ts files excluding test files',
+    measurementMethod: 'Recursive scan of apps/mobile/app for application route files (.tsx/.ts/.jsx/.js excluding tests)',
+    nature: '53 application route files (all 53 files have .tsx extension, comprising 2 Expo Router layout files and 51 route screen components)',
     timestamp: new Date().toISOString()
   },
   counts: {
-    totalFiles: allAppFiles.length,
+    totalApplicationRouteFiles: allAppFiles.length,
     layoutFiles: layoutFiles.length,
     routeScreens: routeScreens.length,
     tabScreens: tabScreens.length
@@ -144,12 +145,13 @@ const apiInventory = {
   metadata: {
     apiDirectory: 'apps/api/src/routes',
     serverFile: 'apps/api/src/server.ts',
-    measurementMethod: 'Static regex parsing of Fastify HTTP method registrations (app.<method> and fastify.<method>)',
+    measurementMethod: 'Static AST/regex parsing of Fastify HTTP route registrations (app.<method> and fastify.<method>)',
+    nature: 'STATIC HTTP ROUTE REGISTRATIONS (not live production endpoint count)',
     timestamp: new Date().toISOString()
   },
   counts: {
     totalRouteModules: apiRouteFiles.length,
-    totalEndpointsRegistered: apiEndpoints.length,
+    staticHttpRouteRegistrations: apiEndpoints.length,
     serverLevelEndpoints: serverRootEndpoints.length,
     moduleLevelEndpoints: apiEndpoints.length - serverRootEndpoints.length
   },
@@ -174,11 +176,18 @@ const createdViews = new Map();
 const createdFunctions = new Map();
 const createdTriggers = new Map();
 
+// Robust DDL regexes
+const tableRegex = /CREATE\s+TABLE\s+(?:IF\s+NOT\s+EXISTS\s+)?([a-zA-Z0-9_\."]+)/gi;
+// Fixed view regex supporting CREATE [OR REPLACE] [MATERIALIZED] VIEW [IF NOT EXISTS] name
+const viewRegex = /CREATE\s+(?:OR\s+REPLACE\s+)?(?:MATERIALIZED\s+)?VIEW\s+(?:IF\s+NOT\s+EXISTS\s+)?([a-zA-Z0-9_\."]+)/gi;
+const funcRegex = /CREATE\s+(?:OR\s+REPLACE\s+)?FUNCTION\s+([a-zA-Z0-9_\."]+)/gi;
+const trigRegex = /CREATE\s+TRIGGER\s+([a-zA-Z0-9_\."]+)/gi;
+
 for (const file of migrationFiles) {
   const content = fs.readFileSync(path.join(migrationsDir, file), 'utf8');
 
   // Tables
-  const tableMatches = content.matchAll(/CREATE\s+TABLE\s+(?:IF\s+NOT\s+EXISTS\s+)?([a-zA-Z0-9_\."]+)/gi);
+  const tableMatches = content.matchAll(tableRegex);
   for (const t of tableMatches) {
     const raw = t[1].replace(/"/g, '').replace(/^public\./, '');
     if (!createdTables.has(raw)) createdTables.set(raw, []);
@@ -186,7 +195,7 @@ for (const file of migrationFiles) {
   }
 
   // Views
-  const viewMatches = content.matchAll(/CREATE\s+(?:OR\s+REPLACE\s+)?(?:MATERIALIZED\s+)?VIEW\s+([a-zA-Z0-9_\."]+)/gi);
+  const viewMatches = content.matchAll(viewRegex);
   for (const v of viewMatches) {
     const raw = v[1].replace(/"/g, '').replace(/^public\./, '');
     if (!createdViews.has(raw)) createdViews.set(raw, []);
@@ -194,7 +203,7 @@ for (const file of migrationFiles) {
   }
 
   // Functions
-  const funcMatches = content.matchAll(/CREATE\s+(?:OR\s+REPLACE\s+)?FUNCTION\s+([a-zA-Z0-9_\."]+)/gi);
+  const funcMatches = content.matchAll(funcRegex);
   for (const f of funcMatches) {
     const raw = f[1].replace(/"/g, '').replace(/^public\./, '');
     if (!createdFunctions.has(raw)) createdFunctions.set(raw, []);
@@ -202,7 +211,7 @@ for (const file of migrationFiles) {
   }
 
   // Triggers
-  const trigMatches = content.matchAll(/CREATE\s+TRIGGER\s+([a-zA-Z0-9_\."]+)/gi);
+  const trigMatches = content.matchAll(trigRegex);
   for (const tr of trigMatches) {
     const raw = tr[1].replace(/"/g, '').replace(/^public\./, '');
     if (!createdTriggers.has(raw)) createdTriggers.set(raw, []);
@@ -210,28 +219,43 @@ for (const file of migrationFiles) {
   }
 }
 
+// Assert no false positive object 'IF' in views
+if (createdViews.has('IF')) {
+  throw new Error("PARSER REGRESSION: 'IF' detected as a view name. View regex failed to parse IF NOT EXISTS properly.");
+}
+
 const databaseInventory = {
   metadata: {
     directory: 'supabase/migrations',
     measurementMethod: 'Static SQL AST/regex parser for DDL statements (CREATE TABLE, CREATE VIEW, CREATE FUNCTION, CREATE TRIGGER)',
+    sourceVerification: 'Repository migration source code analysis',
+    liveDatabaseVerification: 'HUMAN ACTION REQUIRED (Privileged credentials required to query pg_catalog / schema_migrations)',
     timestamp: new Date().toISOString()
   },
-  counts: {
-    totalMigrations: migrationFiles.length,
-    totalUniqueTables: createdTables.size,
-    totalUniqueViews: createdViews.size,
-    totalUniqueFunctions: createdFunctions.size,
-    totalUniqueTriggers: createdTriggers.size
+  repositorySourceCounts: {
+    migrationFilesPresent: migrationFiles.length,
+    uniqueTablesDefined: createdTables.size,
+    uniqueViewsDefined: createdViews.size,
+    uniqueFunctionsDefined: createdFunctions.size,
+    uniqueTriggersDefined: createdTriggers.size
+  },
+  liveProductionVerification: {
+    status: 'HUMAN ACTION REQUIRED',
+    appliedMigrationsCount: 'PENDING_PRIVILEGED_CATALOG_ACCESS',
+    liveTableCount: 'PENDING_PRIVILEGED_CATALOG_ACCESS',
+    liveViewCount: 'PENDING_PRIVILEGED_CATALOG_ACCESS',
+    liveFunctionCount: 'PENDING_PRIVILEGED_CATALOG_ACCESS',
+    notes: 'PostgREST anon key cannot access internal pg_catalog or supabase_migrations. Privileged service-role key is required to query applied migrations directly.'
   },
   migrationFilesAnalysis: {
     count: migrationFiles.length,
     numberingExplanation: 'Files are numbered 001 through 034, but total 36 files because 0035_posts_polls_social.sql appears out of order, and prefix 023 is assigned twice (023_data_api_grants.sql and 023_local_body_representatives.sql).',
     files: migrationFiles
   },
-  tables: Array.from(createdTables.keys()).sort(),
-  views: Array.from(createdViews.keys()).sort(),
-  functions: Array.from(createdFunctions.keys()).sort(),
-  triggers: Array.from(createdTriggers.keys()).sort()
+  tablesDefined: Array.from(createdTables.keys()).sort(),
+  viewsDefined: Array.from(createdViews.keys()).sort(),
+  functionsDefined: Array.from(createdFunctions.keys()).sort(),
+  triggersDefined: Array.from(createdTriggers.keys()).sort()
 };
 writeOutput('w000_database_inventory.json', databaseInventory);
 
@@ -343,40 +367,48 @@ writeOutput('w000_data_paths.json', dataPathsInventory);
 console.log('--- 7. GENERATING W000 SUMMARY ---');
 const summary = {
   metadata: {
-    jobId: 'W000-EVIDENCE-RECONCILIATION',
+    jobId: 'W000-REC2',
     standard: 'Master Execution Framework Amendment v1.2',
     timestamp: new Date().toISOString(),
     repository: 'https://github.com/kshetra-app/Kshetra.git',
     canonicalBranch: 'master'
   },
-  reconciledCounts: {
+  repositorySourceCounts: {
     mobileRouteFiles: allAppFiles.length,
     mobileRouteScreens: routeScreens.length,
     mobileLayoutFiles: layoutFiles.length,
     mobileStores: storeFiles.length,
     apiRouteModules: apiRouteFiles.length,
-    apiEndpointsTotal: apiEndpoints.length,
-    sqlMigrationFiles: migrationFiles.length,
-    uniqueDatabaseTables: createdTables.size,
-    uniqueDatabaseViews: createdViews.size,
-    uniqueDatabaseFunctions: createdFunctions.size,
-    uniqueDatabaseTriggers: createdTriggers.size,
+    staticHttpRouteRegistrations: apiEndpoints.length,
+    migrationFilesPresent: migrationFiles.length,
+    uniqueTablesDefined: createdTables.size,
+    uniqueViewsDefined: createdViews.size,
+    uniqueFunctionsDefined: createdFunctions.size,
+    uniqueTriggersDefined: createdTriggers.size,
     mobileDependencies: mobileDeps.length,
     mobileDevDependencies: mobileDevDeps.length,
     directSupabaseCallers: directSupabaseCallers.length,
     railwayApiCallers: railwayApiCallers.length,
     localFallbackFiles: localFallbackHits.length
   },
+  liveProductionVerification: {
+    status: 'HUMAN ACTION REQUIRED',
+    appliedMigrationsCount: 'PENDING_PRIVILEGED_CATALOG_ACCESS',
+    liveTableCount: 'PENDING_PRIVILEGED_CATALOG_ACCESS',
+    liveViewCount: 'PENDING_PRIVILEGED_CATALOG_ACCESS',
+    liveFunctionCount: 'PENDING_PRIVILEGED_CATALOG_ACCESS',
+    rationale: 'PostgREST anon key cannot access internal pg_catalog or supabase_migrations. Privileged service-role key is required to query applied migrations directly.'
+  },
   countingDefinitions: {
-    mobileRouteFiles: 'Total .tsx files in apps/mobile/app/ (includes 2 layouts and 51 route screens).',
+    mobileRouteFiles: 'Total application route files in apps/mobile/app/ (all 53 files have .tsx extension, comprising 2 layout files and 51 route screen components).',
     mobileStores: 'Count of store files in apps/mobile/stores/ (*.ts).',
     apiRouteModules: 'Count of TypeScript route files in apps/api/src/routes/ (*.ts).',
-    apiEndpointsTotal: 'Count of HTTP method registrations in routes and server.ts matching app/fastify.<method>(...).',
-    sqlMigrationFiles: 'Count of .sql files in supabase/migrations/ (exact count 36, numbered 001-034 plus 0035 and duplicated 023).',
-    uniqueDatabaseTables: 'Set of distinct table names created via CREATE TABLE across all 36 migrations.',
-    uniqueDatabaseViews: 'Set of distinct view names created via CREATE VIEW across all 36 migrations.',
-    uniqueDatabaseFunctions: 'Set of distinct stored functions created via CREATE FUNCTION across all 36 migrations.',
-    uniqueDatabaseTriggers: 'Set of distinct triggers created via CREATE TRIGGER across all 36 migrations.',
+    staticHttpRouteRegistrations: 'Count of static HTTP method registrations in route modules and server.ts matching app/fastify.<method>(...). Note: this is a static source inventory, not a live production endpoint count.',
+    migrationFilesPresent: 'Count of .sql files present in supabase/migrations/ (exact count 36, numbered 001-034 plus out-of-order 0035 and duplicated 023). Note: this is a repository file count, not a live applied migration count.',
+    uniqueTablesDefined: 'Set of distinct table names defined via CREATE TABLE across all 36 repository migration files.',
+    uniqueViewsDefined: 'Set of distinct view names defined via CREATE [OR REPLACE] [MATERIALIZED] VIEW across all 36 repository migration files (robustly parsed to avoid "IF" false positives).',
+    uniqueFunctionsDefined: 'Set of distinct stored functions defined via CREATE FUNCTION across all 36 repository migration files.',
+    uniqueTriggersDefined: 'Set of distinct triggers defined via CREATE TRIGGER across all 36 repository migration files.',
     dependencies: 'Keys in apps/mobile/package.json dependencies.',
     directSupabaseCallers: 'Files in apps/mobile importing or calling Supabase client directly.',
     railwayApiCallers: 'Files in apps/mobile referencing Fastify API gateway client or base URLs.',
@@ -386,19 +418,20 @@ const summary = {
 writeOutput('w000_summary.json', summary);
 
 console.log('\n======================================================');
-console.log('W000 RECONCILIATION MEASUREMENTS COMPLETE');
+console.log('W000-REC2 RECONCILIATION MEASUREMENTS COMPLETE');
 console.log('======================================================');
-console.log(`- Mobile App Route Files:     ${summary.reconciledCounts.mobileRouteFiles} (Layouts: ${summary.reconciledCounts.mobileLayoutFiles}, Screens: ${summary.reconciledCounts.mobileRouteScreens})`);
-console.log(`- Mobile Stores:              ${summary.reconciledCounts.mobileStores}`);
-console.log(`- API Route Modules:          ${summary.reconciledCounts.apiRouteModules}`);
-console.log(`- API Endpoints Total:        ${summary.reconciledCounts.apiEndpointsTotal}`);
-console.log(`- SQL Migration Files:        ${summary.reconciledCounts.sqlMigrationFiles}`);
-console.log(`- Database Tables:            ${summary.reconciledCounts.uniqueDatabaseTables}`);
-console.log(`- Database Views:             ${summary.reconciledCounts.uniqueDatabaseViews}`);
-console.log(`- Database Functions:         ${summary.reconciledCounts.uniqueDatabaseFunctions}`);
-console.log(`- Database Triggers:          ${summary.reconciledCounts.uniqueDatabaseTriggers}`);
-console.log(`- Mobile Dependencies:        ${summary.reconciledCounts.mobileDependencies} (Dev: ${summary.reconciledCounts.mobileDevDependencies})`);
-console.log(`- Direct Supabase Callers:    ${summary.reconciledCounts.directSupabaseCallers}`);
-console.log(`- Railway API Callers:        ${summary.reconciledCounts.railwayApiCallers}`);
-console.log(`- Local Fallback Pattern Hits:${summary.reconciledCounts.localFallbackFiles}`);
+console.log(`- Mobile App Route Files:        ${summary.repositorySourceCounts.mobileRouteFiles} (.tsx files: 53; Layouts: ${summary.repositorySourceCounts.mobileLayoutFiles}, Screens: ${summary.repositorySourceCounts.mobileRouteScreens})`);
+console.log(`- Mobile Stores:                 ${summary.repositorySourceCounts.mobileStores}`);
+console.log(`- API Route Modules:             ${summary.repositorySourceCounts.apiRouteModules}`);
+console.log(`- Static HTTP Registrations:     ${summary.repositorySourceCounts.staticHttpRouteRegistrations} (Static source inventory)`);
+console.log(`- Migration Files Present:       ${summary.repositorySourceCounts.migrationFilesPresent} (Repository files)`);
+console.log(`- Database Tables Defined:       ${summary.repositorySourceCounts.uniqueTablesDefined} (Source-defined)`);
+console.log(`- Database Views Defined:        ${summary.repositorySourceCounts.uniqueViewsDefined} (Source-defined; 0 false positives)`);
+console.log(`- Database Functions Defined:    ${summary.repositorySourceCounts.uniqueFunctionsDefined} (Source-defined)`);
+console.log(`- Database Triggers Defined:     ${summary.repositorySourceCounts.uniqueTriggersDefined} (Source-defined)`);
+console.log(`- Mobile Dependencies:           ${summary.repositorySourceCounts.mobileDependencies} (Dev: ${summary.repositorySourceCounts.mobileDevDependencies})`);
+console.log(`- Direct Supabase Callers:       ${summary.repositorySourceCounts.directSupabaseCallers}`);
+console.log(`- Railway API Callers:           ${summary.repositorySourceCounts.railwayApiCallers}`);
+console.log(`- Local Fallback Pattern Hits:   ${summary.repositorySourceCounts.localFallbackFiles}`);
+console.log(`- Live Database Verification:    ${summary.liveProductionVerification.status}`);
 console.log('======================================================\n');

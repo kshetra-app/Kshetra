@@ -1,0 +1,96 @@
+{
+  "evidenceMetadata": {
+    "jobId": "W000-REC2",
+    "jobTitle": "Audit Method & State Reconciliation",
+    "standard": "Master Execution Framework Amendment v1.2",
+    "repository": "https://github.com/kshetra-app/Kshetra.git",
+    "canonicalBranch": "master",
+    "timestamp": "2026-09-08T18:15:00.000Z",
+    "verifiedBy": "ARCH"
+  },
+  "parserFix": {
+    "component": "Database View DDL Parser",
+    "defect": "CREATE ... VIEW regex captured 'IF' as a view name when parsing 'IF NOT EXISTS' clauses, masking 3 materialized views",
+    "resolution": "Updated regex to /CREATE\\s+(?:OR\\s+REPLACE\\s+)?(?:MATERIALIZED\\s+)?VIEW\\s+(?:IF\\s+NOT\\s+EXISTS\\s+)?([a-zA-Z0-9_\\.\"]+)/gi",
+    "regressionTest": "tests/view-parser-regression.test.mjs",
+    "regressionTestStatus": "PASSED (9/9 test cases passed)"
+  },
+  "reconciledInventories": {
+    "repositorySourceCounts": {
+      "mobileRouteFiles": {
+        "count": 53,
+        "extensionBreakdown": { ".tsx": 53 },
+        "categoryBreakdown": { "layoutFiles": 2, "routeScreens": 51 },
+        "nature": "53 application route files in apps/mobile/app/ (all 53 files are .tsx, comprising 2 layouts and 51 route screen components)"
+      },
+      "mobileStores": {
+        "count": 29,
+        "nature": "29 distinct Zustand store files in apps/mobile/stores/*.ts"
+      },
+      "apiRouteModules": {
+        "count": 21,
+        "nature": "21 TypeScript route module files in apps/api/src/routes/*.ts"
+      },
+      "staticHttpRouteRegistrations": {
+        "count": 109,
+        "breakdown": {
+          "routeModuleEndpoints": 106,
+          "serverRootEndpoints": 2,
+          "remediationAliases": 1
+        },
+        "nature": "109 static HTTP route registrations in source code (not live production endpoint count)"
+      },
+      "migrationFilesPresent": {
+        "count": 36,
+        "numberingAnalysis": "34 sequential files (001-034) + 1 out-of-order file (0035_posts_polls_social.sql) + 1 duplicate prefix (023_data_api_grants.sql and 023_local_body_representatives.sql) = 36 files present in repository",
+        "nature": "36 migration files present in repository (not live applied migration count)"
+      },
+      "databaseObjectsDefined": {
+        "uniqueTablesDefined": 148,
+        "uniqueViewsDefined": 23,
+        "uniqueFunctionsDefined": 46,
+        "uniqueTriggersDefined": 61,
+        "nature": "Database objects defined in repository migration DDL sources"
+      },
+      "dependencies": {
+        "mobileRuntime": 47,
+        "mobileDev": 9,
+        "consumerDependenciesAlert": "react-native-webrtc is bundled in consumer mobile application (DEF-003)"
+      },
+      "clientDataPaths": {
+        "directSupabaseCallers": 12,
+        "railwayApiCallers": 11,
+        "localFallbackFiles": 15
+      }
+    },
+    "liveProductionVerification": {
+      "status": "HUMAN ACTION REQUIRED",
+      "appliedMigrations": "PENDING_PRIVILEGED_CATALOG_ACCESS",
+      "liveCatalogTables": "PENDING_PRIVILEGED_CATALOG_ACCESS",
+      "liveCatalogViews": "PENDING_PRIVILEGED_CATALOG_ACCESS",
+      "liveCatalogFunctions": "PENDING_PRIVILEGED_CATALOG_ACCESS",
+      "limitation": "PostgREST anon key cannot access internal pg_catalog or supabase_migrations schemas. Live catalog count requires privileged service-role JWT secret."
+    }
+  },
+  "verificationResults": {
+    "apiTypeScriptBuild": "PASS (Exit code 0, zero errors)",
+    "mobileTypeScriptTypecheck": "PASS (Exit code 0, zero errors)",
+    "viewParserRegressionTest": "PASS (Exit code 0, 9/9 tests passed)",
+    "reconciliationScript": "PASS (Exit code 0, all inventories generated)"
+  },
+  "continuityState": {
+    "governanceFiles": [
+      "EXECUTION_STATE.md",
+      "ACCEPTANCE_REGISTER.md",
+      "DEFECT_REGISTER.md",
+      "DECISION_LOG.md",
+      "RELEASE_REGISTER.md"
+    ],
+    "trackedInGit": true
+  },
+  "governanceStatus": {
+    "jobW000Status": "PREPARED FOR INDEPENDENT VERIFICATION (Rule IV-001)",
+    "implementingAgentSelfAcceptance": "DISALLOWED (Per Amendment v1.2 Rule IV-001)",
+    "jobW002Status": "BLOCKED (Pending Independent Verification of W000-REC2)"
+  }
+}

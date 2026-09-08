@@ -2,14 +2,24 @@
   "metadata": {
     "directory": "supabase/migrations",
     "measurementMethod": "Static SQL AST/regex parser for DDL statements (CREATE TABLE, CREATE VIEW, CREATE FUNCTION, CREATE TRIGGER)",
-    "timestamp": "2026-09-08T17:54:55.845Z"
+    "sourceVerification": "Repository migration source code analysis",
+    "liveDatabaseVerification": "HUMAN ACTION REQUIRED (Privileged credentials required to query pg_catalog / schema_migrations)",
+    "timestamp": "2026-09-08T18:16:06.513Z"
   },
-  "counts": {
-    "totalMigrations": 36,
-    "totalUniqueTables": 148,
-    "totalUniqueViews": 21,
-    "totalUniqueFunctions": 46,
-    "totalUniqueTriggers": 61
+  "repositorySourceCounts": {
+    "migrationFilesPresent": 36,
+    "uniqueTablesDefined": 148,
+    "uniqueViewsDefined": 23,
+    "uniqueFunctionsDefined": 46,
+    "uniqueTriggersDefined": 61
+  },
+  "liveProductionVerification": {
+    "status": "HUMAN ACTION REQUIRED",
+    "appliedMigrationsCount": "PENDING_PRIVILEGED_CATALOG_ACCESS",
+    "liveTableCount": "PENDING_PRIVILEGED_CATALOG_ACCESS",
+    "liveViewCount": "PENDING_PRIVILEGED_CATALOG_ACCESS",
+    "liveFunctionCount": "PENDING_PRIVILEGED_CATALOG_ACCESS",
+    "notes": "PostgREST anon key cannot access internal pg_catalog or supabase_migrations. Privileged service-role key is required to query applied migrations directly."
   },
   "migrationFilesAnalysis": {
     "count": 36,
@@ -53,7 +63,7 @@
       "034_political_ads.sql"
     ]
   },
-  "tables": [
+  "tablesDefined": [
     "ab_tests",
     "action_fingerprints",
     "ad_creatives",
@@ -203,16 +213,18 @@
     "zilla_parishads",
     "zptc_divisions"
   ],
-  "views": [
-    "IF",
+  "viewsDefined": [
     "campaign_dashboard",
     "constituency_moderation_stats",
+    "constituency_sentiment_mv",
     "contributor_accountability_summary",
     "current_legislators",
     "data_health_by_state",
     "lmx_department_inbox",
     "lmx_live_tab_feed",
     "moderator_queue",
+    "mv_platform_metrics",
+    "mv_state_election_summary",
     "promotable_content",
     "revenue_summary",
     "state_feed",
@@ -226,7 +238,7 @@
     "v_representative_coverage",
     "v_representative_edit_queue"
   ],
-  "functions": [
+  "functionsDefined": [
     "check_dm_blocklist_trigger",
     "fn_retire_prior_representative",
     "fn_set_updated_at",
@@ -274,7 +286,7 @@
     "update_user_post_count",
     "update_vouch_count"
   ],
-  "triggers": [
+  "triggersDefined": [
     "action_fp_increment_device",
     "alert_raised",
     "civic_issues_updated_at",

@@ -8,6 +8,7 @@
 | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- |
 | **W000** | Ground-Truth Baseline & Codebase Audit | ARCH | ACCEPTED (RECONCILED) | `fad6025` | `tsc --noEmit` (API + Mobile); `scripts/reconcile-w000.mjs` | `reports/w000_*.json`, `reports/w000_acceptance_report.md` | In-repo verified | 2026-09-08 |
 | **W000-REC** | W000 Evidence Reconciliation & Reproducibility | ARCH | COMPLETE | `fad6025` | `scripts/reconcile-w000.mjs`; `tsc` API (0 err) & Mobile (0 err) | `scratch/w000_*.json`, `reports/w000_*.json`, `reports/w000_acceptance_report.md` | Fully reconciled & reproducible | 2026-09-08 |
+| **W000-REC2**| Audit Method & State Reconciliation | ARCH | IN_VERIFICATION | `5b73d88` | `tests/view-parser-regression.test.mjs`; `scripts/reconcile-w000.mjs` | `reports/w000_rec2_report.*`, `reports/w000_acceptance_report.md` | In-repo verified | Pending IV |
 | **W001** | Production Environment Verification | DEVOPS | ACCEPTED (W/ EXCEPTIONS) | `7e39635` | Live contract verified; Supabase 200 OK; W001-R6A IV Pass w/ non-blocking exceptions | `reports/w001_r6a_*.json`, `reports/w001_r6a_independent_verification.md` | Verified live Railway (10/13 operational) & Supabase REST (200 OK) | 2026-09-08 |
 | **W001-R1** | Supabase Service-Role Auth Fallback (DEF-009) | SEC+BE | COMPLETE | `77fb553` | JWT validation & anon key fallback; Fastify compile & tests pass | `apps/api/src/lib/supabase.ts` | Graceful fallback prevents 401 DB crash | 2026-09-08 |
 | **W001-R2** | Civic Schema Investigation (DEF-011) | DB | COMPLETE | `77fb553` | Verified `civic_issues` table exists (200 OK); no schema drift | Direct PostgREST query on `civic_issues` | Table operational in production | 2026-09-08 |
@@ -19,7 +20,7 @@
 
 
 
-| **W002** | Staging / Prod Separation | DEVOPS | READY | - | W001-R6A Independent Verification Passed; Job W002 Unblocked | - | Prerequisite W001 satisfied | Ready to start |
+| **W002** | Staging / Prod Separation | DEVOPS | BLOCKED | - | - | - | - | Prerequisite W000-REC2 IV pending |
 | **W003** | CI/CD Quality Pipeline | DEVOPS | NOT_STARTED | - | - | - | - | - |
 | **W004** | Observability & Error Tracking | DEVOPS | NOT_STARTED | - | - | - | - | - |
 | **W005** | Backup & Recovery Verification | DEVOPS | NOT_STARTED | - | - | - | - | - |
