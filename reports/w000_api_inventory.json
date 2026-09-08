@@ -1,0 +1,1455 @@
+{
+  "metadata": {
+    "apiDirectory": "apps/api/src/routes",
+    "serverFile": "apps/api/src/server.ts",
+    "measurementMethod": "Static regex parsing of Fastify HTTP method registrations (app.<method> and fastify.<method>)",
+    "timestamp": "2026-09-08T17:54:55.694Z"
+  },
+  "counts": {
+    "totalRouteModules": 21,
+    "totalEndpointsRegistered": 109,
+    "serverLevelEndpoints": 2,
+    "moduleLevelEndpoints": 107
+  },
+  "routeModules": [
+    "ai.ts",
+    "broadcast.ts",
+    "campaign.ts",
+    "civic.ts",
+    "config.ts",
+    "constituencies.ts",
+    "delimitation.ts",
+    "dm.ts",
+    "geo.ts",
+    "health.ts",
+    "journalist.ts",
+    "lmx.ts",
+    "manage.ts",
+    "moderation.ts",
+    "news.ts",
+    "notifications.ts",
+    "pages.ts",
+    "policy.ts",
+    "politicalAds.ts",
+    "politician.ts",
+    "states.ts"
+  ],
+  "serverEndpoints": [
+    {
+      "file": "server.ts",
+      "method": "GET",
+      "path": "/",
+      "fullPath": "/"
+    },
+    {
+      "file": "server.ts",
+      "method": "GET",
+      "path": "/health",
+      "fullPath": "/health"
+    }
+  ],
+  "moduleBreakdown": {
+    "ai.ts": {
+      "count": 7,
+      "endpoints": [
+        {
+          "file": "ai.ts",
+          "method": "POST",
+          "path": "/api/v1/ai/chat",
+          "line": 44
+        },
+        {
+          "file": "ai.ts",
+          "method": "GET",
+          "path": "/api/v1/ai/analyze/constituency/:acNo",
+          "line": 58
+        },
+        {
+          "file": "ai.ts",
+          "method": "GET",
+          "path": "/api/v1/ai/analyze/trends",
+          "line": 70
+        },
+        {
+          "file": "ai.ts",
+          "method": "POST",
+          "path": "/api/v1/ai/smart-search",
+          "line": 76
+        },
+        {
+          "file": "ai.ts",
+          "method": "POST",
+          "path": "/api/v1/ai/summarize-issues",
+          "line": 87
+        },
+        {
+          "file": "ai.ts",
+          "method": "POST",
+          "path": "/api/v1/ai/campaign-copy",
+          "line": 101
+        },
+        {
+          "file": "ai.ts",
+          "method": "GET",
+          "path": "/api/v1/ai/status",
+          "line": 133
+        }
+      ]
+    },
+    "broadcast.ts": {
+      "count": 3,
+      "endpoints": [
+        {
+          "file": "broadcast.ts",
+          "method": "GET",
+          "path": "/api/v1/broadcast/summary",
+          "line": 68
+        },
+        {
+          "file": "broadcast.ts",
+          "method": "GET",
+          "path": "/api/v1/broadcast/state/:code",
+          "line": 92
+        },
+        {
+          "file": "broadcast.ts",
+          "method": "GET",
+          "path": "/api/v1/broadcast/state/:code/constituency/:acNo",
+          "line": 135
+        }
+      ]
+    },
+    "campaign.ts": {
+      "count": 16,
+      "endpoints": [
+        {
+          "file": "campaign.ts",
+          "method": "GET",
+          "path": "/api/v1/campaign/pricing",
+          "line": 240
+        },
+        {
+          "file": "campaign.ts",
+          "method": "PATCH",
+          "path": "/api/v1/campaign/pricing",
+          "line": 252
+        },
+        {
+          "file": "campaign.ts",
+          "method": "GET",
+          "path": "/api/v1/campaign/users/check-kshetra",
+          "line": 274
+        },
+        {
+          "file": "campaign.ts",
+          "method": "GET",
+          "path": "/api/v1/campaign/campaigns",
+          "line": 314
+        },
+        {
+          "file": "campaign.ts",
+          "method": "GET",
+          "path": "/api/v1/campaign/booths",
+          "line": 357
+        },
+        {
+          "file": "campaign.ts",
+          "method": "PATCH",
+          "path": "/api/v1/campaign/booths/:id",
+          "line": 385
+        },
+        {
+          "file": "campaign.ts",
+          "method": "GET",
+          "path": "/api/v1/campaign/volunteers",
+          "line": 413
+        },
+        {
+          "file": "campaign.ts",
+          "method": "POST",
+          "path": "/api/v1/campaign/volunteers",
+          "line": 434
+        },
+        {
+          "file": "campaign.ts",
+          "method": "GET",
+          "path": "/api/v1/campaign/wallet",
+          "line": 462
+        },
+        {
+          "file": "campaign.ts",
+          "method": "GET",
+          "path": "/api/v1/campaign/wallet/transactions",
+          "line": 469
+        },
+        {
+          "file": "campaign.ts",
+          "method": "POST",
+          "path": "/api/v1/campaign/wallet/recharge/order",
+          "line": 476
+        },
+        {
+          "file": "campaign.ts",
+          "method": "POST",
+          "path": "/api/v1/campaign/wallet/recharge/verify",
+          "line": 489
+        },
+        {
+          "file": "campaign.ts",
+          "method": "GET",
+          "path": "/api/v1/campaign/obd/trai-status",
+          "line": 509
+        },
+        {
+          "file": "campaign.ts",
+          "method": "GET",
+          "path": "/api/v1/campaign/obd/broadcasts",
+          "line": 515
+        },
+        {
+          "file": "campaign.ts",
+          "method": "POST",
+          "path": "/api/v1/campaign/obd/dispatch",
+          "line": 522
+        },
+        {
+          "file": "campaign.ts",
+          "method": "POST",
+          "path": "/api/v1/webhooks/voice/:provider",
+          "line": 581
+        }
+      ]
+    },
+    "civic.ts": {
+      "count": 11,
+      "endpoints": [
+        {
+          "file": "civic.ts",
+          "method": "GET",
+          "path": "/api/v1/civic/budget/:stateCode",
+          "line": 5
+        },
+        {
+          "file": "civic.ts",
+          "method": "GET",
+          "path": "/api/v1/civic/attendance",
+          "line": 14
+        },
+        {
+          "file": "civic.ts",
+          "method": "GET",
+          "path": "/api/v1/civic/bills",
+          "line": 24
+        },
+        {
+          "file": "civic.ts",
+          "method": "POST",
+          "path": "/api/v1/civic/bills/:id/opinion",
+          "line": 34
+        },
+        {
+          "file": "civic.ts",
+          "method": "GET",
+          "path": "/api/v1/civic/schemes",
+          "line": 41
+        },
+        {
+          "file": "civic.ts",
+          "method": "GET",
+          "path": "/api/v1/civic/projects",
+          "line": 51
+        },
+        {
+          "file": "civic.ts",
+          "method": "GET",
+          "path": "/api/v1/civic/rti",
+          "line": 66
+        },
+        {
+          "file": "civic.ts",
+          "method": "POST",
+          "path": "/api/v1/civic/rti",
+          "line": 76
+        },
+        {
+          "file": "civic.ts",
+          "method": "POST",
+          "path": "/api/v1/civic/rti/:id/upvote",
+          "line": 82
+        },
+        {
+          "file": "civic.ts",
+          "method": "GET",
+          "path": "/api/v1/civic/hearings",
+          "line": 88
+        },
+        {
+          "file": "civic.ts",
+          "method": "GET",
+          "path": "/api/v1/civic/cdi/:constituencyId",
+          "line": 98
+        }
+      ]
+    },
+    "config.ts": {
+      "count": 3,
+      "endpoints": [
+        {
+          "file": "config.ts",
+          "method": "GET",
+          "path": "/config/flags",
+          "line": 18
+        },
+        {
+          "file": "config.ts",
+          "method": "GET",
+          "path": "/api/v1/config/flags",
+          "line": 19
+        },
+        {
+          "file": "config.ts",
+          "method": "PATCH",
+          "path": "/api/v1/config/flags",
+          "line": 26
+        }
+      ]
+    },
+    "constituencies.ts": {
+      "count": 7,
+      "endpoints": [
+        {
+          "file": "constituencies.ts",
+          "method": "GET",
+          "path": "/states/:stateCode/constituencies",
+          "line": 68
+        },
+        {
+          "file": "constituencies.ts",
+          "method": "GET",
+          "path": "/states/:stateCode/constituencies/search",
+          "line": 131
+        },
+        {
+          "file": "constituencies.ts",
+          "method": "GET",
+          "path": "/states/:stateCode/analytics",
+          "line": 203
+        },
+        {
+          "file": "constituencies.ts",
+          "method": "GET",
+          "path": "/states/:stateCode/mla/:acNo",
+          "line": 224
+        },
+        {
+          "file": "constituencies.ts",
+          "method": "GET",
+          "path": "/states/:stateCode/mla",
+          "line": 250
+        },
+        {
+          "file": "constituencies.ts",
+          "method": "GET",
+          "path": "/states/:stateCode/elections",
+          "line": 267
+        },
+        {
+          "file": "constituencies.ts",
+          "method": "GET",
+          "path": "/constituencies/locate",
+          "line": 284
+        }
+      ]
+    },
+    "delimitation.ts": {
+      "count": 14,
+      "endpoints": [
+        {
+          "file": "delimitation.ts",
+          "method": "GET",
+          "path": "/api/v1/delimitation/projections",
+          "line": 147
+        },
+        {
+          "file": "delimitation.ts",
+          "method": "GET",
+          "path": "/api/v1/delimitation/projections/:stateCode",
+          "line": 174
+        },
+        {
+          "file": "delimitation.ts",
+          "method": "GET",
+          "path": "/api/v1/delimitation/timeline",
+          "line": 188
+        },
+        {
+          "file": "delimitation.ts",
+          "method": "GET",
+          "path": "/api/v1/delimitation/status",
+          "line": 211
+        },
+        {
+          "file": "delimitation.ts",
+          "method": "GET",
+          "path": "/api/v1/delimitation/gainers-losers",
+          "line": 224
+        },
+        {
+          "file": "delimitation.ts",
+          "method": "POST",
+          "path": "/api/v1/delimitation/monitor-webhook",
+          "line": 248
+        },
+        {
+          "file": "delimitation.ts",
+          "method": "GET",
+          "path": "/api/v1/delimitation/impact/:pinCode",
+          "line": 285
+        },
+        {
+          "file": "delimitation.ts",
+          "method": "GET",
+          "path": "/api/v1/delimitation/simulate/:stateCode",
+          "line": 371
+        },
+        {
+          "file": "delimitation.ts",
+          "method": "GET",
+          "path": "/api/v1/delimitation/reservation",
+          "line": 456
+        },
+        {
+          "file": "delimitation.ts",
+          "method": "GET",
+          "path": "/api/v1/delimitation/reservation/:stateCode",
+          "line": 484
+        },
+        {
+          "file": "delimitation.ts",
+          "method": "GET",
+          "path": "/api/v1/delimitation/compare",
+          "line": 520
+        },
+        {
+          "file": "delimitation.ts",
+          "method": "GET",
+          "path": "/api/v1/delimitation/mla-impact/:stateCode",
+          "line": 541
+        },
+        {
+          "file": "delimitation.ts",
+          "method": "GET",
+          "path": "/api/v1/delimitation/party-projections/:stateCode",
+          "line": 596
+        },
+        {
+          "file": "delimitation.ts",
+          "method": "GET",
+          "path": "/api/v1/delimitation/methodology",
+          "line": 635
+        }
+      ]
+    },
+    "dm.ts": {
+      "count": 1,
+      "endpoints": [
+        {
+          "file": "dm.ts",
+          "method": "GET",
+          "path": "/api/v1/dm/unread-count",
+          "line": 137
+        }
+      ]
+    },
+    "geo.ts": {
+      "count": 1,
+      "endpoints": [
+        {
+          "file": "geo.ts",
+          "method": "GET",
+          "path": "/geo/manifest.json",
+          "line": 57
+        }
+      ]
+    },
+    "health.ts": {
+      "count": 1,
+      "endpoints": [
+        {
+          "file": "health.ts",
+          "method": "GET",
+          "path": "/health",
+          "line": 4
+        }
+      ]
+    },
+    "journalist.ts": {
+      "count": 8,
+      "endpoints": [
+        {
+          "file": "journalist.ts",
+          "method": "GET",
+          "path": "/api/v1/journalist/articles",
+          "line": 5
+        },
+        {
+          "file": "journalist.ts",
+          "method": "GET",
+          "path": "/api/v1/journalist/articles/:id",
+          "line": 16
+        },
+        {
+          "file": "journalist.ts",
+          "method": "GET",
+          "path": "/api/v1/journalist/fact-checks",
+          "line": 22
+        },
+        {
+          "file": "journalist.ts",
+          "method": "GET",
+          "path": "/api/v1/journalist/breaking",
+          "line": 33
+        },
+        {
+          "file": "journalist.ts",
+          "method": "GET",
+          "path": "/api/v1/journalist/profiles",
+          "line": 41
+        },
+        {
+          "file": "journalist.ts",
+          "method": "POST",
+          "path": "/api/v1/journalist/articles/:id/vouch",
+          "line": 51
+        },
+        {
+          "file": "journalist.ts",
+          "method": "POST",
+          "path": "/api/v1/journalist/articles/:id/flag",
+          "line": 57
+        },
+        {
+          "file": "journalist.ts",
+          "method": "POST",
+          "path": "/api/v1/journalist/articles/:id/tip",
+          "line": 64
+        }
+      ]
+    },
+    "lmx.ts": {
+      "count": 11,
+      "endpoints": [
+        {
+          "file": "lmx.ts",
+          "method": "GET",
+          "path": "/api/v1/lmx/status",
+          "line": 21
+        },
+        {
+          "file": "lmx.ts",
+          "method": "GET",
+          "path": "/api/v1/lmx/live",
+          "line": 32
+        },
+        {
+          "file": "lmx.ts",
+          "method": "GET",
+          "path": "/api/v1/lmx/live/:streamId",
+          "line": 51
+        },
+        {
+          "file": "lmx.ts",
+          "method": "POST",
+          "path": "/api/v1/lmx/live",
+          "line": 63
+        },
+        {
+          "file": "lmx.ts",
+          "method": "POST",
+          "path": "/api/v1/lmx/live/:streamId/moderate",
+          "line": 137
+        },
+        {
+          "file": "lmx.ts",
+          "method": "POST",
+          "path": "/api/v1/lmx/live/:streamId/end",
+          "line": 171
+        },
+        {
+          "file": "lmx.ts",
+          "method": "GET",
+          "path": "/api/v1/lmx/departments",
+          "line": 188
+        },
+        {
+          "file": "lmx.ts",
+          "method": "POST",
+          "path": "/api/v1/lmx/departments",
+          "line": 194
+        },
+        {
+          "file": "lmx.ts",
+          "method": "POST",
+          "path": "/api/v1/lmx/alerts",
+          "line": 207
+        },
+        {
+          "file": "lmx.ts",
+          "method": "POST",
+          "path": "/api/v1/lmx/alerts/:id/acknowledge",
+          "line": 219
+        },
+        {
+          "file": "lmx.ts",
+          "method": "POST",
+          "path": "/api/v1/lmx/distribution",
+          "line": 236
+        }
+      ]
+    },
+    "manage.ts": {
+      "count": 1,
+      "endpoints": [
+        {
+          "file": "manage.ts",
+          "method": "GET",
+          "path": "/manage",
+          "line": 10
+        }
+      ]
+    },
+    "moderation.ts": {
+      "count": 3,
+      "endpoints": [
+        {
+          "file": "moderation.ts",
+          "method": "GET",
+          "path": "/api/v1/moderation/queue",
+          "line": 185
+        },
+        {
+          "file": "moderation.ts",
+          "method": "GET",
+          "path": "/api/v1/moderation/actions",
+          "line": 225
+        },
+        {
+          "file": "moderation.ts",
+          "method": "GET",
+          "path": "/api/v1/moderation/reputation-rules",
+          "line": 416
+        }
+      ]
+    },
+    "news.ts": {
+      "count": 2,
+      "endpoints": [
+        {
+          "file": "news.ts",
+          "method": "GET",
+          "path": "/api/v1/news/feed",
+          "line": 12
+        },
+        {
+          "file": "news.ts",
+          "method": "POST",
+          "path": "/api/v1/news/refresh",
+          "line": 27
+        }
+      ]
+    },
+    "notifications.ts": {
+      "count": 2,
+      "endpoints": [
+        {
+          "file": "notifications.ts",
+          "method": "GET",
+          "path": "/api/v1/notifications/preferences",
+          "line": 111
+        },
+        {
+          "file": "notifications.ts",
+          "method": "GET",
+          "path": "/api/v1/notifications/triggers",
+          "line": 161
+        }
+      ]
+    },
+    "pages.ts": {
+      "count": 0,
+      "endpoints": []
+    },
+    "policy.ts": {
+      "count": 2,
+      "endpoints": [
+        {
+          "file": "policy.ts",
+          "method": "GET",
+          "path": "/policy/grievance",
+          "line": 29
+        },
+        {
+          "file": "policy.ts",
+          "method": "GET",
+          "path": "/policy/community-guidelines",
+          "line": 178
+        }
+      ]
+    },
+    "politicalAds.ts": {
+      "count": 3,
+      "endpoints": [
+        {
+          "file": "politicalAds.ts",
+          "method": "GET",
+          "path": "/api/v1/admin/political-ads/review-queue",
+          "line": 186
+        },
+        {
+          "file": "politicalAds.ts",
+          "method": "GET",
+          "path": "/api/v1/political-ads/library",
+          "line": 332
+        },
+        {
+          "file": "politicalAds.ts",
+          "method": "GET",
+          "path": "/ad-library",
+          "line": 361
+        }
+      ]
+    },
+    "politician.ts": {
+      "count": 9,
+      "endpoints": [
+        {
+          "file": "politician.ts",
+          "method": "GET",
+          "path": "/api/v1/politician/profiles",
+          "line": 5
+        },
+        {
+          "file": "politician.ts",
+          "method": "GET",
+          "path": "/api/v1/politician/profiles/:id",
+          "line": 15
+        },
+        {
+          "file": "politician.ts",
+          "method": "GET",
+          "path": "/api/v1/politician/events",
+          "line": 21
+        },
+        {
+          "file": "politician.ts",
+          "method": "POST",
+          "path": "/api/v1/politician/events/:id/rsvp",
+          "line": 31
+        },
+        {
+          "file": "politician.ts",
+          "method": "GET",
+          "path": "/api/v1/politician/manifestos",
+          "line": 37
+        },
+        {
+          "file": "politician.ts",
+          "method": "POST",
+          "path": "/api/v1/politician/manifestos/:manifestoId/items/:itemId/vote",
+          "line": 47
+        },
+        {
+          "file": "politician.ts",
+          "method": "GET",
+          "path": "/api/v1/politician/surveys",
+          "line": 54
+        },
+        {
+          "file": "politician.ts",
+          "method": "POST",
+          "path": "/api/v1/politician/surveys/:id/respond",
+          "line": 64
+        },
+        {
+          "file": "politician.ts",
+          "method": "POST",
+          "path": "/api/v1/politician/grievances",
+          "line": 71
+        }
+      ]
+    },
+    "states.ts": {
+      "count": 2,
+      "endpoints": [
+        {
+          "file": "states.ts",
+          "method": "GET",
+          "path": "/api/v1/states",
+          "line": 9
+        },
+        {
+          "file": "states.ts",
+          "method": "GET",
+          "path": "/api/v1/states/:code",
+          "line": 16
+        }
+      ]
+    }
+  },
+  "allEndpoints": [
+    {
+      "file": "server.ts",
+      "method": "GET",
+      "path": "/",
+      "fullPath": "/"
+    },
+    {
+      "file": "politicalAds.ts",
+      "method": "GET",
+      "path": "/ad-library",
+      "line": 361
+    },
+    {
+      "file": "politicalAds.ts",
+      "method": "GET",
+      "path": "/api/v1/admin/political-ads/review-queue",
+      "line": 186
+    },
+    {
+      "file": "ai.ts",
+      "method": "GET",
+      "path": "/api/v1/ai/analyze/constituency/:acNo",
+      "line": 58
+    },
+    {
+      "file": "ai.ts",
+      "method": "GET",
+      "path": "/api/v1/ai/analyze/trends",
+      "line": 70
+    },
+    {
+      "file": "ai.ts",
+      "method": "POST",
+      "path": "/api/v1/ai/campaign-copy",
+      "line": 101
+    },
+    {
+      "file": "ai.ts",
+      "method": "POST",
+      "path": "/api/v1/ai/chat",
+      "line": 44
+    },
+    {
+      "file": "ai.ts",
+      "method": "POST",
+      "path": "/api/v1/ai/smart-search",
+      "line": 76
+    },
+    {
+      "file": "ai.ts",
+      "method": "GET",
+      "path": "/api/v1/ai/status",
+      "line": 133
+    },
+    {
+      "file": "ai.ts",
+      "method": "POST",
+      "path": "/api/v1/ai/summarize-issues",
+      "line": 87
+    },
+    {
+      "file": "broadcast.ts",
+      "method": "GET",
+      "path": "/api/v1/broadcast/state/:code",
+      "line": 92
+    },
+    {
+      "file": "broadcast.ts",
+      "method": "GET",
+      "path": "/api/v1/broadcast/state/:code/constituency/:acNo",
+      "line": 135
+    },
+    {
+      "file": "broadcast.ts",
+      "method": "GET",
+      "path": "/api/v1/broadcast/summary",
+      "line": 68
+    },
+    {
+      "file": "campaign.ts",
+      "method": "GET",
+      "path": "/api/v1/campaign/booths",
+      "line": 357
+    },
+    {
+      "file": "campaign.ts",
+      "method": "PATCH",
+      "path": "/api/v1/campaign/booths/:id",
+      "line": 385
+    },
+    {
+      "file": "campaign.ts",
+      "method": "GET",
+      "path": "/api/v1/campaign/campaigns",
+      "line": 314
+    },
+    {
+      "file": "campaign.ts",
+      "method": "GET",
+      "path": "/api/v1/campaign/obd/broadcasts",
+      "line": 515
+    },
+    {
+      "file": "campaign.ts",
+      "method": "POST",
+      "path": "/api/v1/campaign/obd/dispatch",
+      "line": 522
+    },
+    {
+      "file": "campaign.ts",
+      "method": "GET",
+      "path": "/api/v1/campaign/obd/trai-status",
+      "line": 509
+    },
+    {
+      "file": "campaign.ts",
+      "method": "GET",
+      "path": "/api/v1/campaign/pricing",
+      "line": 240
+    },
+    {
+      "file": "campaign.ts",
+      "method": "PATCH",
+      "path": "/api/v1/campaign/pricing",
+      "line": 252
+    },
+    {
+      "file": "campaign.ts",
+      "method": "GET",
+      "path": "/api/v1/campaign/users/check-kshetra",
+      "line": 274
+    },
+    {
+      "file": "campaign.ts",
+      "method": "GET",
+      "path": "/api/v1/campaign/volunteers",
+      "line": 413
+    },
+    {
+      "file": "campaign.ts",
+      "method": "POST",
+      "path": "/api/v1/campaign/volunteers",
+      "line": 434
+    },
+    {
+      "file": "campaign.ts",
+      "method": "GET",
+      "path": "/api/v1/campaign/wallet",
+      "line": 462
+    },
+    {
+      "file": "campaign.ts",
+      "method": "POST",
+      "path": "/api/v1/campaign/wallet/recharge/order",
+      "line": 476
+    },
+    {
+      "file": "campaign.ts",
+      "method": "POST",
+      "path": "/api/v1/campaign/wallet/recharge/verify",
+      "line": 489
+    },
+    {
+      "file": "campaign.ts",
+      "method": "GET",
+      "path": "/api/v1/campaign/wallet/transactions",
+      "line": 469
+    },
+    {
+      "file": "civic.ts",
+      "method": "GET",
+      "path": "/api/v1/civic/attendance",
+      "line": 14
+    },
+    {
+      "file": "civic.ts",
+      "method": "GET",
+      "path": "/api/v1/civic/bills",
+      "line": 24
+    },
+    {
+      "file": "civic.ts",
+      "method": "POST",
+      "path": "/api/v1/civic/bills/:id/opinion",
+      "line": 34
+    },
+    {
+      "file": "civic.ts",
+      "method": "GET",
+      "path": "/api/v1/civic/budget/:stateCode",
+      "line": 5
+    },
+    {
+      "file": "civic.ts",
+      "method": "GET",
+      "path": "/api/v1/civic/cdi/:constituencyId",
+      "line": 98
+    },
+    {
+      "file": "civic.ts",
+      "method": "GET",
+      "path": "/api/v1/civic/hearings",
+      "line": 88
+    },
+    {
+      "file": "civic.ts",
+      "method": "GET",
+      "path": "/api/v1/civic/projects",
+      "line": 51
+    },
+    {
+      "file": "civic.ts",
+      "method": "GET",
+      "path": "/api/v1/civic/rti",
+      "line": 66
+    },
+    {
+      "file": "civic.ts",
+      "method": "POST",
+      "path": "/api/v1/civic/rti",
+      "line": 76
+    },
+    {
+      "file": "civic.ts",
+      "method": "POST",
+      "path": "/api/v1/civic/rti/:id/upvote",
+      "line": 82
+    },
+    {
+      "file": "civic.ts",
+      "method": "GET",
+      "path": "/api/v1/civic/schemes",
+      "line": 41
+    },
+    {
+      "file": "config.ts",
+      "method": "GET",
+      "path": "/api/v1/config/flags",
+      "line": 19
+    },
+    {
+      "file": "config.ts",
+      "method": "PATCH",
+      "path": "/api/v1/config/flags",
+      "line": 26
+    },
+    {
+      "file": "delimitation.ts",
+      "method": "GET",
+      "path": "/api/v1/delimitation/compare",
+      "line": 520
+    },
+    {
+      "file": "delimitation.ts",
+      "method": "GET",
+      "path": "/api/v1/delimitation/gainers-losers",
+      "line": 224
+    },
+    {
+      "file": "delimitation.ts",
+      "method": "GET",
+      "path": "/api/v1/delimitation/impact/:pinCode",
+      "line": 285
+    },
+    {
+      "file": "delimitation.ts",
+      "method": "GET",
+      "path": "/api/v1/delimitation/methodology",
+      "line": 635
+    },
+    {
+      "file": "delimitation.ts",
+      "method": "GET",
+      "path": "/api/v1/delimitation/mla-impact/:stateCode",
+      "line": 541
+    },
+    {
+      "file": "delimitation.ts",
+      "method": "POST",
+      "path": "/api/v1/delimitation/monitor-webhook",
+      "line": 248
+    },
+    {
+      "file": "delimitation.ts",
+      "method": "GET",
+      "path": "/api/v1/delimitation/party-projections/:stateCode",
+      "line": 596
+    },
+    {
+      "file": "delimitation.ts",
+      "method": "GET",
+      "path": "/api/v1/delimitation/projections",
+      "line": 147
+    },
+    {
+      "file": "delimitation.ts",
+      "method": "GET",
+      "path": "/api/v1/delimitation/projections/:stateCode",
+      "line": 174
+    },
+    {
+      "file": "delimitation.ts",
+      "method": "GET",
+      "path": "/api/v1/delimitation/reservation",
+      "line": 456
+    },
+    {
+      "file": "delimitation.ts",
+      "method": "GET",
+      "path": "/api/v1/delimitation/reservation/:stateCode",
+      "line": 484
+    },
+    {
+      "file": "delimitation.ts",
+      "method": "GET",
+      "path": "/api/v1/delimitation/simulate/:stateCode",
+      "line": 371
+    },
+    {
+      "file": "delimitation.ts",
+      "method": "GET",
+      "path": "/api/v1/delimitation/status",
+      "line": 211
+    },
+    {
+      "file": "delimitation.ts",
+      "method": "GET",
+      "path": "/api/v1/delimitation/timeline",
+      "line": 188
+    },
+    {
+      "file": "dm.ts",
+      "method": "GET",
+      "path": "/api/v1/dm/unread-count",
+      "line": 137
+    },
+    {
+      "file": "journalist.ts",
+      "method": "GET",
+      "path": "/api/v1/journalist/articles",
+      "line": 5
+    },
+    {
+      "file": "journalist.ts",
+      "method": "GET",
+      "path": "/api/v1/journalist/articles/:id",
+      "line": 16
+    },
+    {
+      "file": "journalist.ts",
+      "method": "POST",
+      "path": "/api/v1/journalist/articles/:id/flag",
+      "line": 57
+    },
+    {
+      "file": "journalist.ts",
+      "method": "POST",
+      "path": "/api/v1/journalist/articles/:id/tip",
+      "line": 64
+    },
+    {
+      "file": "journalist.ts",
+      "method": "POST",
+      "path": "/api/v1/journalist/articles/:id/vouch",
+      "line": 51
+    },
+    {
+      "file": "journalist.ts",
+      "method": "GET",
+      "path": "/api/v1/journalist/breaking",
+      "line": 33
+    },
+    {
+      "file": "journalist.ts",
+      "method": "GET",
+      "path": "/api/v1/journalist/fact-checks",
+      "line": 22
+    },
+    {
+      "file": "journalist.ts",
+      "method": "GET",
+      "path": "/api/v1/journalist/profiles",
+      "line": 41
+    },
+    {
+      "file": "lmx.ts",
+      "method": "POST",
+      "path": "/api/v1/lmx/alerts",
+      "line": 207
+    },
+    {
+      "file": "lmx.ts",
+      "method": "POST",
+      "path": "/api/v1/lmx/alerts/:id/acknowledge",
+      "line": 219
+    },
+    {
+      "file": "lmx.ts",
+      "method": "GET",
+      "path": "/api/v1/lmx/departments",
+      "line": 188
+    },
+    {
+      "file": "lmx.ts",
+      "method": "POST",
+      "path": "/api/v1/lmx/departments",
+      "line": 194
+    },
+    {
+      "file": "lmx.ts",
+      "method": "POST",
+      "path": "/api/v1/lmx/distribution",
+      "line": 236
+    },
+    {
+      "file": "lmx.ts",
+      "method": "GET",
+      "path": "/api/v1/lmx/live",
+      "line": 32
+    },
+    {
+      "file": "lmx.ts",
+      "method": "POST",
+      "path": "/api/v1/lmx/live",
+      "line": 63
+    },
+    {
+      "file": "lmx.ts",
+      "method": "GET",
+      "path": "/api/v1/lmx/live/:streamId",
+      "line": 51
+    },
+    {
+      "file": "lmx.ts",
+      "method": "POST",
+      "path": "/api/v1/lmx/live/:streamId/end",
+      "line": 171
+    },
+    {
+      "file": "lmx.ts",
+      "method": "POST",
+      "path": "/api/v1/lmx/live/:streamId/moderate",
+      "line": 137
+    },
+    {
+      "file": "lmx.ts",
+      "method": "GET",
+      "path": "/api/v1/lmx/status",
+      "line": 21
+    },
+    {
+      "file": "moderation.ts",
+      "method": "GET",
+      "path": "/api/v1/moderation/actions",
+      "line": 225
+    },
+    {
+      "file": "moderation.ts",
+      "method": "GET",
+      "path": "/api/v1/moderation/queue",
+      "line": 185
+    },
+    {
+      "file": "moderation.ts",
+      "method": "GET",
+      "path": "/api/v1/moderation/reputation-rules",
+      "line": 416
+    },
+    {
+      "file": "news.ts",
+      "method": "GET",
+      "path": "/api/v1/news/feed",
+      "line": 12
+    },
+    {
+      "file": "news.ts",
+      "method": "POST",
+      "path": "/api/v1/news/refresh",
+      "line": 27
+    },
+    {
+      "file": "notifications.ts",
+      "method": "GET",
+      "path": "/api/v1/notifications/preferences",
+      "line": 111
+    },
+    {
+      "file": "notifications.ts",
+      "method": "GET",
+      "path": "/api/v1/notifications/triggers",
+      "line": 161
+    },
+    {
+      "file": "politicalAds.ts",
+      "method": "GET",
+      "path": "/api/v1/political-ads/library",
+      "line": 332
+    },
+    {
+      "file": "politician.ts",
+      "method": "GET",
+      "path": "/api/v1/politician/events",
+      "line": 21
+    },
+    {
+      "file": "politician.ts",
+      "method": "POST",
+      "path": "/api/v1/politician/events/:id/rsvp",
+      "line": 31
+    },
+    {
+      "file": "politician.ts",
+      "method": "POST",
+      "path": "/api/v1/politician/grievances",
+      "line": 71
+    },
+    {
+      "file": "politician.ts",
+      "method": "GET",
+      "path": "/api/v1/politician/manifestos",
+      "line": 37
+    },
+    {
+      "file": "politician.ts",
+      "method": "POST",
+      "path": "/api/v1/politician/manifestos/:manifestoId/items/:itemId/vote",
+      "line": 47
+    },
+    {
+      "file": "politician.ts",
+      "method": "GET",
+      "path": "/api/v1/politician/profiles",
+      "line": 5
+    },
+    {
+      "file": "politician.ts",
+      "method": "GET",
+      "path": "/api/v1/politician/profiles/:id",
+      "line": 15
+    },
+    {
+      "file": "politician.ts",
+      "method": "GET",
+      "path": "/api/v1/politician/surveys",
+      "line": 54
+    },
+    {
+      "file": "politician.ts",
+      "method": "POST",
+      "path": "/api/v1/politician/surveys/:id/respond",
+      "line": 64
+    },
+    {
+      "file": "states.ts",
+      "method": "GET",
+      "path": "/api/v1/states",
+      "line": 9
+    },
+    {
+      "file": "states.ts",
+      "method": "GET",
+      "path": "/api/v1/states/:code",
+      "line": 16
+    },
+    {
+      "file": "campaign.ts",
+      "method": "POST",
+      "path": "/api/v1/webhooks/voice/:provider",
+      "line": 581
+    },
+    {
+      "file": "config.ts",
+      "method": "GET",
+      "path": "/config/flags",
+      "line": 18
+    },
+    {
+      "file": "constituencies.ts",
+      "method": "GET",
+      "path": "/constituencies/locate",
+      "line": 284
+    },
+    {
+      "file": "geo.ts",
+      "method": "GET",
+      "path": "/geo/manifest.json",
+      "line": 57
+    },
+    {
+      "file": "server.ts",
+      "method": "GET",
+      "path": "/health",
+      "fullPath": "/health"
+    },
+    {
+      "file": "health.ts",
+      "method": "GET",
+      "path": "/health",
+      "line": 4
+    },
+    {
+      "file": "manage.ts",
+      "method": "GET",
+      "path": "/manage",
+      "line": 10
+    },
+    {
+      "file": "policy.ts",
+      "method": "GET",
+      "path": "/policy/community-guidelines",
+      "line": 178
+    },
+    {
+      "file": "policy.ts",
+      "method": "GET",
+      "path": "/policy/grievance",
+      "line": 29
+    },
+    {
+      "file": "constituencies.ts",
+      "method": "GET",
+      "path": "/states/:stateCode/analytics",
+      "line": 203
+    },
+    {
+      "file": "constituencies.ts",
+      "method": "GET",
+      "path": "/states/:stateCode/constituencies",
+      "line": 68
+    },
+    {
+      "file": "constituencies.ts",
+      "method": "GET",
+      "path": "/states/:stateCode/constituencies/search",
+      "line": 131
+    },
+    {
+      "file": "constituencies.ts",
+      "method": "GET",
+      "path": "/states/:stateCode/elections",
+      "line": 267
+    },
+    {
+      "file": "constituencies.ts",
+      "method": "GET",
+      "path": "/states/:stateCode/mla",
+      "line": 250
+    },
+    {
+      "file": "constituencies.ts",
+      "method": "GET",
+      "path": "/states/:stateCode/mla/:acNo",
+      "line": 224
+    }
+  ]
+}

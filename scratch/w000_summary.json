@@ -1,0 +1,42 @@
+{
+  "metadata": {
+    "jobId": "W000-EVIDENCE-RECONCILIATION",
+    "standard": "Master Execution Framework Amendment v1.2",
+    "timestamp": "2026-09-08T17:54:56.462Z",
+    "repository": "https://github.com/kshetra-app/Kshetra.git",
+    "canonicalBranch": "master"
+  },
+  "reconciledCounts": {
+    "mobileRouteFiles": 53,
+    "mobileRouteScreens": 51,
+    "mobileLayoutFiles": 2,
+    "mobileStores": 29,
+    "apiRouteModules": 21,
+    "apiEndpointsTotal": 109,
+    "sqlMigrationFiles": 36,
+    "uniqueDatabaseTables": 148,
+    "uniqueDatabaseViews": 21,
+    "uniqueDatabaseFunctions": 46,
+    "uniqueDatabaseTriggers": 61,
+    "mobileDependencies": 47,
+    "mobileDevDependencies": 9,
+    "directSupabaseCallers": 12,
+    "railwayApiCallers": 11,
+    "localFallbackFiles": 15
+  },
+  "countingDefinitions": {
+    "mobileRouteFiles": "Total .tsx files in apps/mobile/app/ (includes 2 layouts and 51 route screens).",
+    "mobileStores": "Count of store files in apps/mobile/stores/ (*.ts).",
+    "apiRouteModules": "Count of TypeScript route files in apps/api/src/routes/ (*.ts).",
+    "apiEndpointsTotal": "Count of HTTP method registrations in routes and server.ts matching app/fastify.<method>(...).",
+    "sqlMigrationFiles": "Count of .sql files in supabase/migrations/ (exact count 36, numbered 001-034 plus 0035 and duplicated 023).",
+    "uniqueDatabaseTables": "Set of distinct table names created via CREATE TABLE across all 36 migrations.",
+    "uniqueDatabaseViews": "Set of distinct view names created via CREATE VIEW across all 36 migrations.",
+    "uniqueDatabaseFunctions": "Set of distinct stored functions created via CREATE FUNCTION across all 36 migrations.",
+    "uniqueDatabaseTriggers": "Set of distinct triggers created via CREATE TRIGGER across all 36 migrations.",
+    "dependencies": "Keys in apps/mobile/package.json dependencies.",
+    "directSupabaseCallers": "Files in apps/mobile importing or calling Supabase client directly.",
+    "railwayApiCallers": "Files in apps/mobile referencing Fastify API gateway client or base URLs.",
+    "localFallbackFiles": "Files in apps/mobile with mock IDs, placeholders, or silent fallback returns."
+  }
+}

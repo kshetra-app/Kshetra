@@ -14,7 +14,7 @@ LAST_COMPLETED_JOB:    W001-R6A (Independent Verification Re-execution & Final W
 NEXT_PERMITTED_JOB:    W002 (Staging / Prod Environment Separation — UNBLOCKED)
 
 CURRENT_BRANCH:        master
-CURRENT_COMMIT:        7e39635
+CURRENT_COMMIT:        fad6025
 API_VERSION:           v1 (Fastify 5.2 on Railway)
 MOBILE_VERSION:        0.1.0 (Expo 54, React Native 0.81.5)
 DATABASE_MIGRATIONS:   36 applied (001_initial_schema to 034_political_ads)
@@ -32,7 +32,8 @@ REMOTE_SYNC:           Up to date with origin/master
 
 | Job ID | Job Title | Status | Acceptance Date | Evidence / Notes |
 | :--- | :--- | :--- | :--- | :--- |
-| **W000** | Project Discovery & Ground-Truth Audit | **COMPLETE** | 2026-09-08 | Audited 53 routes, 106 endpoints, 148 tables, 47 deps |
+| **W000** | Project Discovery & Ground-Truth Audit | **ACCEPTED (RECONCILED)** | 2026-09-08 | Audited 53 routes, 29 stores, 109 endpoints, 36 migrations, 148 tables, 47 deps; reconciled in-repo |
+| **W000-REC** | W000 Evidence Reconciliation | **COMPLETE** | 2026-09-08 | Reconciled via `scripts/reconcile-w000.mjs`; `reports/w000_*.json` & `reports/w000_acceptance_report.md` |
 | **W001** | Production Environment Verification | **ACCEPTED (W/ EXCEPTIONS)** | 2026-09-08 | Verified live Railway & Supabase; W001-R6A IV Pass w/ non-blocking exceptions |
 | **W001-R5** | W001 Reconciliation & Remote Reproducibility | **COMPLETE** | 2026-09-08 | Reconciled evidence into in-repo `reports/` with Part 7 metadata per Amendment v1.2 |
 | **W001-R6** | Independent Verification & Final W001 Acceptance | **REOPENED** | - | Reopened per user governance review; superseded by W001-R6A |

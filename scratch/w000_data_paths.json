@@ -1,0 +1,59 @@
+{
+  "metadata": {
+    "directory": "apps/mobile",
+    "measurementMethod": "Static regex scanning across all mobile TypeScript/JavaScript files for Supabase client, Railway API URLs, and synthetic mock patterns",
+    "timestamp": "2026-09-08T17:54:56.454Z"
+  },
+  "counts": {
+    "totalFilesScanned": 312,
+    "directSupabaseCallers": 12,
+    "railwayApiCallers": 11,
+    "localFallbackFiles": 15
+  },
+  "callers": {
+    "directSupabaseCallers": [
+      "app/user/[id].tsx",
+      "lib/aiService.ts",
+      "lib/favoritesSync.ts",
+      "lib/realtimeService.ts",
+      "lib/representativeEdits.ts",
+      "lib/supabase.ts",
+      "lib/supabaseBootstrap.ts",
+      "lib/supabaseDataService.ts",
+      "lib/useSupabaseQuery.ts",
+      "stores/auth.ts",
+      "stores/liveExchange.ts",
+      "stores/notifications.ts"
+    ],
+    "railwayApiCallers": [
+      "app/moderation/index.tsx",
+      "lib/constants.ts",
+      "lib/featureFlags.ts",
+      "lib/pageProEntitlement.ts",
+      "lib/pageService.ts",
+      "lib/remoteGeoLoader.ts",
+      "lib/supabaseDataService.ts",
+      "lib/usePushNotifications.ts",
+      "stores/campaign.ts",
+      "stores/dmStore.ts",
+      "stores/news.ts"
+    ],
+    "localFallbackHits": [
+      "__tests__/mapEnhancements.test.ts",
+      "app/user/[id].tsx",
+      "components/NewsCard.tsx",
+      "lib/aiService.ts",
+      "lib/favoritesSync.ts",
+      "lib/realtimeService.ts",
+      "lib/representativeEdits.ts",
+      "lib/supabase.ts",
+      "lib/supabaseBootstrap.ts",
+      "lib/supabaseDataService.ts",
+      "lib/useSupabaseQuery.ts",
+      "stores/auth.ts",
+      "stores/liveExchange.ts",
+      "stores/news.ts",
+      "stores/notifications.ts"
+    ]
+  }
+}
