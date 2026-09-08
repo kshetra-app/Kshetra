@@ -13,7 +13,8 @@
 | **W001-R3** | CORS Default Allowed Origins (DEF-010) | BE | COMPLETE | `77fb553` | Fastify inject tests for kshetra.in, panin.in, localhost:8081 | `apps/api/src/server.ts`, `test_local_cors.ts` | Default production allowlist active | 2026-09-08 |
 | **W001-R4** | Production Verification Suite Re-run | QA | COMPLETE | `77fb553` | Full suite across Railway & Supabase: PASSED (P50 241ms) | `reports/w001_production_verification_report.json` | Live production passed | 2026-09-08 |
 | **W001-R5** | W001 Reconciliation & Remote Reproducibility | DEVOPS+ARCH | COMPLETE | `94dd34b` | In-repo evidence reconciliation per Amendment v1.2 Part 7 & 8 | `reports/w001_production_verification_report.json`, `reports/w001_i18n_verification_report.json` | In-repo reports committed | 2026-09-08 |
-| **W001-R6** | Independent Verification & Final W001 Acceptance | INDEPENDENT_VERIFIER | IN_VERIFICATION | Pending commit | Complete evidence package prepared; awaiting independent verifier verdict | `reports/w001_r6_*.json`, `reports/w001_r6_independent_verification.md` | Verification Package Ready | Pending IV |
+| **W001-R6** | Independent Verification & Final W001 Acceptance | INDEPENDENT_VERIFIER | IN_VERIFICATION | `ba4f0c1` | Complete evidence package prepared; awaiting independent verifier verdict | `reports/w001_r6_*.json`, `reports/w001_r6_independent_verification.md` | Verification Package Ready | Pending IV |
+
 
 | **W002** | Staging / Prod Separation | DEVOPS | NOT_STARTED | - | - | - | - | - |
 | **W003** | CI/CD Quality Pipeline | DEVOPS | NOT_STARTED | - | - | - | - | - |
