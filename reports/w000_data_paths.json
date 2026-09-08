@@ -2,7 +2,7 @@
   "metadata": {
     "directory": "apps/mobile",
     "measurementMethod": "Static regex scanning across all mobile TypeScript/JavaScript files for Supabase client, Railway API URLs, and synthetic mock patterns",
-    "timestamp": "2026-09-08T18:16:07.082Z"
+    "timestamp": "2026-09-08T18:27:18.315Z"
   },
   "counts": {
     "totalFilesScanned": 312,

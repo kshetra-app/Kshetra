@@ -9,7 +9,8 @@
 | Release Tag | Target Env | Target Binary | Measured Size (AAB/APK) | JS Bundle Size | API Version | Git Commit | Release Gate Status | Verified By | Independent Verifier |
 | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- |
 | `v0.1.0-audit` | Dev Baseline | Android Universal | Pending measurement | TBD | v1 | `0f7e104` | Baseline Audit | ARCH / DEVOPS | N/A |
-| `v0.1.0-w000-rec2`| Dev Audit Reconciled | Monorepo Source | N/A | N/A | v1 (0.1.0) | `5b73d88` | W000-REC2 Reconciled | ARCH | Pending IV |
+| `v0.1.0-w000-rec2`| Dev Audit Reconciled | Monorepo Source | N/A | N/A | v1 (0.1.0) | `7d89b3e` | W000-REC2 (Superseded by REC2A) | ARCH | Reopened |
+| `v0.1.0-w000-rec2a`| Dev Audit Reconciled | Monorepo Source | N/A | N/A | v1 (0.1.0) | `b78376a` | W000-REC2A Reconciled | ARCH | Pending IV |
 | `v0.1.0-w001` | Production | Railway API + Supabase | Backend Gateway | N/A | v1 (0.1.0) | `77fb553` | W001-R1..R5 Verified | DEVOPS+QA | Reconciled via Amendment v1.2 |
 
 ---

@@ -4,7 +4,7 @@
     "serverFile": "apps/api/src/server.ts",
     "measurementMethod": "Static AST/regex parsing of Fastify HTTP route registrations (app.<method> and fastify.<method>)",
     "nature": "STATIC HTTP ROUTE REGISTRATIONS (not live production endpoint count)",
-    "timestamp": "2026-09-08T18:16:06.397Z"
+    "timestamp": "2026-09-08T18:27:17.181Z"
   },
   "counts": {
     "totalRouteModules": 21,

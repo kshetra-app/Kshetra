@@ -9,14 +9,14 @@
 PROJECT:               PANIN (formerly Kshetra)
 TARGET_DOMAIN:         India Political Geography, Intelligence, Participation & Media Platform
 CURRENT_PHASE:         W0 (Baseline Reconciliation & Ground-Truth Audit)
-CURRENT_JOB:           W000-REC2 (Audit Method & State Reconciliation)
+CURRENT_JOB:           W000-REC2A (Parser Implementation & Evidence Rebinding)
 LAST_COMPLETED_JOB:    W001-R6A (Independent Verification Re-execution & Final W001 Acceptance)
-NEXT_PERMITTED_JOB:    W000-REC2 Independent Verification (W002 BLOCKED until IV passes)
+NEXT_PERMITTED_JOB:    W000-REC2A Independent Verification (W002 BLOCKED until IV passes)
 
 CURRENT_BRANCH:        master
-CURRENT_REMOTE_HEAD:   e0b67b9
-AUDITED_CODE_COMMIT:   e0b67b9
-EVIDENCE_COMMIT:       5b73d88
+CURRENT_REMOTE_HEAD:   b78376a
+AUDITED_CODE_COMMIT:   b78376a
+EVIDENCE_COMMIT:       b78376a
 ACCEPTANCE_COMMIT:     Pending Independent Verification
 API_VERSION:           v1 (Fastify 5.2 on Railway)
 MOBILE_VERSION:        0.1.0 (Expo 54, React Native 0.81.5)
@@ -38,12 +38,13 @@ REMOTE_SYNC:           Up to date with origin/master
 | :--- | :--- | :--- | :--- | :--- |
 | **W000** | Project Discovery & Ground-Truth Audit | **ACCEPTED (RECONCILED)** | 2026-09-08 | Audited 53 routes, 29 stores, 109 static registrations, 36 migrations, 148 tables, 47 deps; reconciled in-repo |
 | **W000-REC** | W000 Evidence Reconciliation | **COMPLETE** | 2026-09-08 | Reconciled via `scripts/reconcile-w000.mjs`; `reports/w000_*.json` & `reports/w000_acceptance_report.md` |
-| **W000-REC2**| Audit Method & State Reconciliation | **IN_VERIFICATION** | - | View parser fixed (0 "IF" views); strict source vs live terminology; regression test passed; pending IV |
+| **W000-REC2**| Audit Method & State Reconciliation | **REOPENED** | - | Reopened per independent verification; superseded by W000-REC2A |
+| **W000-REC2A**| Parser Implementation & Evidence Rebinding | **IN_VERIFICATION** | - | View parser fixed in production & exported; test imports real parser; 23 views (0 "IF"); pending IV |
 | **W001** | Production Environment Verification | **ACCEPTED (W/ EXCEPTIONS)** | 2026-09-08 | Verified live Railway & Supabase; W001-R6A IV Pass w/ non-blocking exceptions |
 | **W001-R5** | W001 Reconciliation & Remote Reproducibility | **COMPLETE** | 2026-09-08 | Reconciled evidence into in-repo `reports/` with Part 7 metadata per Amendment v1.2 |
 | **W001-R6** | Independent Verification & Final W001 Acceptance | **REOPENED** | - | Reopened per user governance review; superseded by W001-R6A |
 | **W001-R6A** | Independent Verification Re-execution | **COMPLETE** | 2026-09-08 | Independent Verifier Pass with Non-Blocking Exceptions per Amendment v1.2 Rule IV-001 |
-| **W002** | Staging / Prod Environment Separation | **BLOCKED** | - | BLOCKED: Prerequisite W000-REC2 Independent Verification required |
+| **W002** | Staging / Prod Environment Separation | **BLOCKED** | - | BLOCKED: Prerequisite W000-REC2A Independent Verification required |
 
 | **W003** | CI/CD Quality Pipeline | NOT_STARTED | - | Prerequisite: W002 |
 | **W004** | Observability & Error Tracking | NOT_STARTED | - | Prerequisite: W003 |

@@ -1,96 +1,117 @@
 import assert from 'assert';
+// DIRECT IMPORT of the actual production parser implementation from scripts/reconcile-w000.mjs
+import { parseDatabaseViews, VIEW_REGEX } from '../scripts/reconcile-w000.mjs';
 
 /**
  * REGRESSION TEST: Database View DDL Parser
- * Purpose: Ensure regex accurately extracts view identifiers across all standard
- * PostgreSQL DDL variations, specifically preventing 'IF' false-positives caused by
- * 'IF NOT EXISTS' clauses.
+ * Purpose: Ensure scripts/reconcile-w000.mjs accurately extracts view identifiers
+ * across all standard PostgreSQL DDL variations, specifically preventing 'IF'
+ * false-positives caused by 'IF NOT EXISTS' clauses.
  */
 
-// Problematic Old Regex:
-// Does not account for 'IF NOT EXISTS' after VIEW / MATERIALIZED VIEW
-const oldRegex = /CREATE\s+(?:OR\s+REPLACE\s+)?(?:MATERIALIZED\s+)?VIEW\s+([a-zA-Z0-9_\."]+)/gi;
+console.log('=== RUNNING PRODUCTION DATABASE VIEW PARSER REGRESSION TESTS ===\n');
 
-// Corrected New Regex:
-// Explicitly handles optional (?:IF\s+NOT\s+EXISTS\s+)? before capturing the view name
-export const viewParserRegex = /CREATE\s+(?:OR\s+REPLACE\s+)?(?:MATERIALIZED\s+)?VIEW\s+(?:IF\s+NOT\s+EXISTS\s+)?([a-zA-Z0-9_\."]+)/gi;
-
-export function extractViews(sql, regex = viewParserRegex) {
-  const matches = sql.matchAll(regex);
-  const views = [];
-  for (const m of matches) {
-    const raw = m[1].replace(/"/g, '').replace(/^public\./, '');
-    views.push(raw);
-  }
-  return views;
+// 1. NEGATIVE REGRESSION PROOF:
+// Demonstrate that the unpatched legacy regex extracts 'IF' and would fail assertions.
+const brokenLegacyRegex = /CREATE\s+(?:OR\s+REPLACE\s+)?(?:MATERIALIZED\s+)?VIEW\s+([a-zA-Z0-9_\."]+)/gi;
+const snippet = 'CREATE MATERIALIZED VIEW IF NOT EXISTS example AS SELECT 1;';
+const legacyMatch = snippet.matchAll(brokenLegacyRegex);
+let legacyCaptured = null;
+for (const m of legacyMatch) {
+  legacyCaptured = m[1].replace(/"/g, '').replace(/^public\./, '');
 }
 
-console.log('=== RUNNING DATABASE VIEW PARSER REGRESSION TESTS ===\n');
+console.log(`[NEGATIVE REGRESSION TEST] Evaluating unpatched legacy regex on: '${snippet}'`);
+console.log(`  -> Unpatched regex extracted: '${legacyCaptured}'`);
+assert.strictEqual(legacyCaptured, 'IF', "Broken regex must capture 'IF' on IF NOT EXISTS clause");
+console.log('  -> CONFIRMED: Broken parser behavior extracts "IF". Testing production parser next.\n');
 
-// 1. Proving Old Regex Defect: MUST extract 'IF' under old regex
-const testSqlExample = 'CREATE MATERIALIZED VIEW IF NOT EXISTS example AS SELECT 1;';
-const oldResult = extractViews(testSqlExample, oldRegex);
-console.log(`[TEST 1] Old parser on 'CREATE MATERIALIZED VIEW IF NOT EXISTS example': extracted [${oldResult.join(', ')}]`);
-assert.strictEqual(oldResult[0], 'IF', "Old parser should have exhibited the known defect and extracted 'IF'");
-console.log('  -> CONFIRMED: Old parser produced false positive object "IF".');
-
-// 2. Testing New Regex on all standard DDL forms
+// 2. EXHAUSTIVE TEST OF PRODUCTION PARSER (Imported from scripts/reconcile-w000.mjs)
 const testCases = [
   {
+    id: 1,
     sql: 'CREATE VIEW simple_view AS SELECT 1;',
     expected: 'simple_view',
-    label: 'Standard CREATE VIEW'
+    label: '1. CREATE VIEW'
   },
   {
+    id: 2,
     sql: 'CREATE VIEW IF NOT EXISTS safe_view AS SELECT 1;',
     expected: 'safe_view',
-    label: 'CREATE VIEW IF NOT EXISTS'
+    label: '2. CREATE VIEW IF NOT EXISTS'
   },
   {
+    id: 3,
     sql: 'CREATE OR REPLACE VIEW replaced_view AS SELECT 1;',
     expected: 'replaced_view',
-    label: 'CREATE OR REPLACE VIEW'
+    label: '3. CREATE OR REPLACE VIEW'
   },
   {
+    id: 4,
     sql: 'CREATE MATERIALIZED VIEW mat_view AS SELECT 1;',
     expected: 'mat_view',
-    label: 'CREATE MATERIALIZED VIEW'
+    label: '4. CREATE MATERIALIZED VIEW'
   },
   {
+    id: 5,
     sql: 'CREATE MATERIALIZED VIEW IF NOT EXISTS example AS SELECT 1;',
     expected: 'example',
-    label: 'CREATE MATERIALIZED VIEW IF NOT EXISTS example'
+    label: '5. CREATE MATERIALIZED VIEW IF NOT EXISTS'
   },
   {
-    sql: 'CREATE MATERIALIZED VIEW IF NOT EXISTS constituency_sentiment_mv AS SELECT 1;',
-    expected: 'constituency_sentiment_mv',
-    label: 'Migration 007 real snippet'
-  },
-  {
-    sql: 'CREATE MATERIALIZED VIEW IF NOT EXISTS mv_state_election_summary AS SELECT 1;',
-    expected: 'mv_state_election_summary',
-    label: 'Migration 020 real snippet 1'
-  },
-  {
-    sql: 'CREATE MATERIALIZED VIEW IF NOT EXISTS mv_platform_metrics AS SELECT 1;',
-    expected: 'mv_platform_metrics',
-    label: 'Migration 020 real snippet 2'
-  },
-  {
-    sql: 'CREATE OR REPLACE VIEW "public"."quoted_view" AS SELECT 1;',
+    id: 6,
+    sql: 'CREATE OR REPLACE VIEW "quoted_view" AS SELECT 1;',
     expected: 'quoted_view',
-    label: 'Quoted schema qualified view'
+    label: '6. quoted identifier'
+  },
+  {
+    id: 7,
+    sql: 'CREATE VIEW "public"."schema_qualified_view" AS SELECT 1;',
+    expected: 'schema_qualified_view',
+    label: '7. schema-qualified identifier'
+  },
+  {
+    id: 8,
+    sql: 'CREATE MATERIALIZED VIEW IF NOT EXISTS constituency_sentiment_mv AS SELECT state_code, ac_no FROM civic_issues;',
+    expected: 'constituency_sentiment_mv',
+    label: '8. Migration 007 real snippet'
+  },
+  {
+    id: 9,
+    sql: 'CREATE MATERIALIZED VIEW IF NOT EXISTS mv_state_election_summary AS SELECT state_code, count(*) FROM election_results;',
+    expected: 'mv_state_election_summary',
+    label: '9. Migration 020 real snippet'
+  },
+  {
+    id: 10,
+    sql: 'CREATE MATERIALIZED VIEW IF NOT EXISTS mv_platform_metrics AS SELECT count(*) FROM user_profiles;',
+    expected: 'mv_platform_metrics',
+    label: '10. Migration 020 second materialized-view snippet'
   }
 ];
 
-let passed = 0;
+let passCount = 0;
 for (const tc of testCases) {
-  const result = extractViews(tc.sql, viewParserRegex);
-  assert.strictEqual(result.length, 1, `Failed to match exactly 1 view in: ${tc.label}`);
-  assert.strictEqual(result[0], tc.expected, `Expected '${tc.expected}', got '${result[0]}' in: ${tc.label}`);
-  assert.notStrictEqual(result[0], 'IF', `Regressed: Result should NEVER be 'IF' in: ${tc.label}`);
-  console.log(`[PASS] ${tc.label} -> extracted: '${result[0]}'`);
-  passed++;
+  // Execute the REAL production parser
+  const extracted = parseDatabaseViews(tc.sql);
+  
+  assert.strictEqual(extracted.length, 1, `Failed to extract exactly 1 view in case ${tc.id}: ${tc.label}`);
+  assert.strictEqual(extracted[0], tc.expected, `Expected '${tc.expected}', got '${extracted[0]}' in case ${tc.id}`);
+  assert.notStrictEqual(extracted[0], 'IF', `Regressed: Result should NEVER be 'IF' in case ${tc.id}`);
+  
+  console.log(`[PASS] Case ${tc.id} (${tc.label}) -> extracted: '${extracted[0]}'`);
+  passCount++;
 }
 
-console.log(`\nAll ${passed} parser test cases passed successfully! Defect prevented.`);
+// 3. MULTI-STATEMENT FULL SCRIPT TEST
+console.log('\n[MULTI-STATEMENT TEST] Executing parseDatabaseViews on combined DDL script...');
+const multiDdl = testCases.map(tc => tc.sql).join('\n');
+const allExtracted = parseDatabaseViews(multiDdl);
+assert.strictEqual(allExtracted.length, 10, 'Expected all 10 views to be extracted from multi-line DDL');
+assert.strictEqual(allExtracted.includes('IF'), false, "'IF' must never appear in extracted views");
+console.log(`[PASS] Multi-statement extracted 10/10 views with zero 'IF' false-positives.`);
+
+console.log(`\n======================================================`);
+console.log(`ALL 10 MANDATORY PARSER REGRESSION TESTS PASSED!`);
+console.log(`Production parser in scripts/reconcile-w000.mjs is verified.`);
+console.log(`======================================================\n`);

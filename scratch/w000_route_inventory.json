@@ -3,7 +3,7 @@
     "directory": "apps/mobile/app",
     "measurementMethod": "Recursive scan of apps/mobile/app for application route files (.tsx/.ts/.jsx/.js excluding tests)",
     "nature": "53 application route files (all 53 files have .tsx extension, comprising 2 Expo Router layout files and 51 route screen components)",
-    "timestamp": "2026-09-08T18:16:06.336Z"
+    "timestamp": "2026-09-08T18:27:17.096Z"
   },
   "counts": {
     "totalApplicationRouteFiles": 53,

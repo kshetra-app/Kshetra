@@ -4,7 +4,7 @@
     "measurementMethod": "Static SQL AST/regex parser for DDL statements (CREATE TABLE, CREATE VIEW, CREATE FUNCTION, CREATE TRIGGER)",
     "sourceVerification": "Repository migration source code analysis",
     "liveDatabaseVerification": "HUMAN ACTION REQUIRED (Privileged credentials required to query pg_catalog / schema_migrations)",
-    "timestamp": "2026-09-08T18:16:06.513Z"
+    "timestamp": "2026-09-08T18:27:17.344Z"
   },
   "repositorySourceCounts": {
     "migrationFilesPresent": 36,

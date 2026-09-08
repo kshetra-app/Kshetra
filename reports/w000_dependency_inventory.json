@@ -1,7 +1,7 @@
 {
   "metadata": {
     "measurementMethod": "Parsed dependencies and devDependencies from package.json files across root, apps/mobile, and apps/api",
-    "timestamp": "2026-09-08T18:16:06.526Z"
+    "timestamp": "2026-09-08T18:27:17.363Z"
   },
   "counts": {
     "mobileDependencies": 47,

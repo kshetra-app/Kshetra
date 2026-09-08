@@ -1,0 +1,78 @@
+{
+  "evidenceMetadata": {
+    "jobId": "W000-REC2A",
+    "jobTitle": "Parser Implementation & Evidence Rebinding",
+    "standard": "Master Execution Framework Amendment v1.2",
+    "repository": "https://github.com/kshetra-app/Kshetra.git",
+    "canonicalBranch": "master",
+    "timestamp": "2026-09-08T18:30:00.000Z",
+    "verifiedBy": "ARCH"
+  },
+  "parserImplementation": {
+    "file": "scripts/reconcile-w000.mjs",
+    "exportedFunction": "parseDatabaseViews(sqlContent)",
+    "regex": "/CREATE\\s+(?:OR\\s+REPLACE\\s+)?(?:MATERIALIZED\\s+)?VIEW\\s+(?:IF\\s+NOT\\s+EXISTS\\s+)?([a-zA-Z0-9_\\.\"]+)/gi",
+    "defensiveGuard": "Explicitly throws Error if 'IF' is captured as an object name",
+    "testFile": "tests/view-parser-regression.test.mjs",
+    "testImportsRealImplementation": true
+  },
+  "testExecutionResults": {
+    "viewParserRegression": {
+      "command": "node tests/view-parser-regression.test.mjs",
+      "casesTested": 10,
+      "negativeRegressionTested": true,
+      "multiStatementTested": true,
+      "result": "PASS (Exit code 0, 10/10 test cases passed)"
+    },
+    "reconciliationScript": {
+      "command": "node scripts/reconcile-w000.mjs",
+      "result": "PASS (Exit code 0, all 6 inventories generated)"
+    },
+    "apiTypeScriptBuild": {
+      "command": "npm run build --prefix apps/api",
+      "result": "PASS (Exit code 0, zero errors)"
+    },
+    "mobileTypeScriptCheck": {
+      "command": "npm run typecheck --prefix apps/mobile",
+      "result": "PASS (Exit code 0, zero errors)"
+    }
+  },
+  "correctedInventory": {
+    "repositorySourceCounts": {
+      "mobileRouteFiles": 53,
+      "mobileRouteScreens": 51,
+      "mobileLayoutFiles": 2,
+      "mobileStores": 29,
+      "apiRouteModules": 21,
+      "staticHttpRouteRegistrations": 109,
+      "migrationFilesPresent": 36,
+      "uniqueTablesDefined": 148,
+      "uniqueViewsDefined": 23,
+      "uniqueFunctionsDefined": 46,
+      "uniqueTriggersDefined": 61,
+      "mobileDependencies": 47,
+      "mobileDevDependencies": 9,
+      "directSupabaseCallers": 12,
+      "railwayApiCallers": 11,
+      "localFallbackFiles": 15
+    },
+    "liveProductionVerification": {
+      "status": "HUMAN ACTION REQUIRED",
+      "limitation": "PostgREST anon key cannot access internal pg_catalog or supabase_migrations schemas. Live database counts cannot be fabricated without privileged service-role credentials."
+    }
+  },
+  "evidenceFiles": [
+    "reports/w000_route_inventory.json",
+    "reports/w000_api_inventory.json",
+    "reports/w000_database_inventory.json",
+    "reports/w000_dependency_inventory.json",
+    "reports/w000_data_paths.json",
+    "reports/w000_summary.json",
+    "tests/view-parser-regression.test.mjs",
+    "scripts/reconcile-w000.mjs"
+  ],
+  "governanceStatus": {
+    "w000Status": "PREPARED FOR INDEPENDENT VERIFICATION (Rule IV-001)",
+    "w002Status": "BLOCKED (Pending Independent Verification of W000-REC2A)"
+  }
+}
