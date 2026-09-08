@@ -12,7 +12,7 @@
 | **W001-R2** | Civic Schema Investigation (DEF-011) | DB | COMPLETE | `77fb553` | Verified `civic_issues` table exists (200 OK); no schema drift | Direct PostgREST query on `civic_issues` | Table operational in production | 2026-09-08 |
 | **W001-R3** | CORS Default Allowed Origins (DEF-010) | BE | COMPLETE | `77fb553` | Fastify inject tests for kshetra.in, panin.in, localhost:8081 | `apps/api/src/server.ts`, `test_local_cors.ts` | Default production allowlist active | 2026-09-08 |
 | **W001-R4** | Production Verification Suite Re-run | QA | COMPLETE | `77fb553` | Full suite across Railway & Supabase: PASSED (P50 241ms) | `reports/w001_production_verification_report.json` | Live production passed | 2026-09-08 |
-| **W001-R5** | W001 Reconciliation & Remote Reproducibility | DEVOPS+ARCH | COMPLETE (ACCEPTED) | `a1435c1` | In-repo evidence reconciliation per Amendment v1.2 Part 7 & 8 | `reports/w001_production_verification_report.json`, `reports/w001_i18n_verification_report.json` | In-repo reports committed | 2026-09-08 |
+| **W001-R5** | W001 Reconciliation & Remote Reproducibility | DEVOPS+ARCH | COMPLETE (ACCEPTED) | `94dd34b` | In-repo evidence reconciliation per Amendment v1.2 Part 7 & 8 | `reports/w001_production_verification_report.json`, `reports/w001_i18n_verification_report.json` | In-repo reports committed | 2026-09-08 |
 | **W002** | Staging / Prod Separation | DEVOPS | NOT_STARTED | - | - | - | - | - |
 | **W003** | CI/CD Quality Pipeline | DEVOPS | NOT_STARTED | - | - | - | - | - |
 | **W004** | Observability & Error Tracking | DEVOPS | NOT_STARTED | - | - | - | - | - |

@@ -14,7 +14,7 @@ LAST_COMPLETED_JOB:    W001-R5 (W001 Reconciliation & Remote Reproducibility)
 NEXT_PERMITTED_JOB:    W002 (Production/Staging Environment Separation)
 
 CURRENT_BRANCH:        main
-CURRENT_COMMIT:        a1435c1
+CURRENT_COMMIT:        94dd34b
 API_VERSION:           v1 (Fastify 5.2 on Railway)
 MOBILE_VERSION:        0.1.0 (Expo 54, React Native 0.81.5)
 DATABASE_MIGRATIONS:   36 applied (001_initial_schema to 034_political_ads)
