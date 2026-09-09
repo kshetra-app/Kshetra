@@ -1,0 +1,72 @@
+﻿{
+  "metadata": {
+    "jobId": "W002-P0",
+    "jobTitle": "Governance Coordinate Normalization",
+    "standard": "Master Execution Framework Amendment v1.2",
+    "timestamp": "2026-09-09T03:42:00.000Z",
+    "auditor": "ARCH / DEVOPS",
+    "canonicalBranch": "master",
+    "repository": "https://github.com/kshetra-app/Kshetra.git"
+  },
+  "commitLineage": {
+    "currentRemoteHead": "8168676",
+    "currentRemoteHeadMessage": "docs(W000-REC2A): record independent verification pass and final W000-REC2A acceptance",
+    "auditedCodeCommit": "5f7c8a5",
+    "auditedCodeCommitRole": "Implementation commit containing modularized parseDatabaseViews export, defensive 'IF' assertion, and rebound regression tests in tests/view-parser-regression.test.mjs",
+    "evidenceCommit": "5f7c8a5",
+    "evidenceCommitRole": "Commit containing regenerated 6 raw inventory JSONs in reports/ and scratch/ with exact 23 view count",
+    "acceptanceCommit": "8168676",
+    "acceptanceCommitRole": "Commit containing independent verification report (reports/w000_rec2a_independent_verification.md) and accepted continuity registers"
+  },
+  "sourceDefinedMetrics": {
+    "migrationFilesPresent": {
+      "count": 36,
+      "definition": "Repository files in supabase/migrations/ (001-034 sequential + 0035 + duplicate 023). Not a live applied count."
+    },
+    "tablesDefined": {
+      "count": 148,
+      "definition": "Unique table names defined via CREATE TABLE in migration source. Not a live production catalog count."
+    },
+    "viewsDefined": {
+      "count": 23,
+      "definition": "Unique view names defined via CREATE [OR REPLACE] [MATERIALIZED] VIEW in migration source (20 standard + 3 materialized; 0 false positives). Not a live production catalog count."
+    },
+    "functionsDefined": {
+      "count": 46,
+      "definition": "Unique stored functions defined via CREATE FUNCTION in migration source. Not a live production catalog count."
+    },
+    "triggersDefined": {
+      "count": 61,
+      "definition": "Unique triggers defined via CREATE TRIGGER in migration source. Not a live production catalog count."
+    },
+    "staticHttpRouteRegistrations": {
+      "count": 109,
+      "definition": "Static AST/regex HTTP method registrations in Fastify source (106 in modules + 2 root health in server.ts + 1 config alias). Not a live production endpoint count."
+    },
+    "mobileRouteFiles": {
+      "count": 53,
+      "definition": "Total route files in apps/mobile/app/ (all .tsx; 2 layouts, 51 route screens)."
+    },
+    "mobileStores": {
+      "count": 29,
+      "definition": "Zustand store files in apps/mobile/stores/*.ts."
+    }
+  },
+  "liveProductionCatalogStatus": {
+    "status": "HUMAN ACTION REQUIRED",
+    "limitation": "PostgREST anon key cannot access internal pg_catalog or supabase_migrations schemas. Live database counts cannot be fabricated without privileged service-role credentials.",
+    "trackedUnder": "DEF-009 (OPEN / HUMAN ACTION REQUIRED)"
+  },
+  "registersNormalized": [
+    "EXECUTION_STATE.md",
+    "ACCEPTANCE_REGISTER.md",
+    "RELEASE_REGISTER.md",
+    "DECISION_LOG.md"
+  ],
+  "governanceGateStatus": {
+    "w000Status": "ACCEPTED",
+    "w000Rec2aStatus": "ACCEPTED",
+    "w001Status": "ACCEPTED (W/ EXCEPTIONS)",
+    "w002Status": "UNBLOCKED / READY_TO_START"
+  }
+}

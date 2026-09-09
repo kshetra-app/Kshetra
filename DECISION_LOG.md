@@ -119,5 +119,18 @@
   4. **Commit Lineage Transparency:** Registers must explicitly record `AUDITED_CODE_COMMIT`, `EVIDENCE_COMMIT`, and `ACCEPTANCE_COMMIT` to prevent ambiguous commit tracking.
 - **Rationale:** Enforces absolute mathematical precision and eliminates semantic ambiguity across platform audit ledgers.
 
+---
+
+### DEC-013: Governance Coordinate Normalization & Lineage Differentiation (W002-P0)
+- **Date:** 2026-09-09
+- **Authority:** Master Execution Framework Amendment v1.2 (Rule IV-001, Parts 7 & 8)
+- **Context:** Transitioning to W002 requires exact alignment of current remote Git HEAD with continuity registers without corrupting historical audit commit references.
+- **Decision:**
+  1. **Four-Point Commit Lineage:** Explicitly maintain `CURRENT_REMOTE_HEAD` (actual Git HEAD), `AUDITED_CODE_COMMIT` (commit containing verified code changes), `EVIDENCE_COMMIT` (commit containing generated test/audit evidence), and `ACCEPTANCE_COMMIT` (commit containing the independent verification verdict and register updates).
+  2. **Historical Integrity:** Do not overwrite or alter historical commit references for past completed jobs (`fad6025`, `77fb553`, `7e39635`, `5f7c8a5`).
+  3. **Source vs Live Catalog Clarity:** Reaffirm across all registers that 36 = migration files in repo, 148 = source-defined tables, 23 = source-defined views, 46 = source-defined functions, 61 = source-defined triggers, and 109 = static HTTP registrations, none of which represent unverified live production catalog counts.
+- **Rationale:** Ensures complete continuity hygiene, eliminates ambiguous HEAD tracking, and preserves immutable audit trails.
+
+
 
 

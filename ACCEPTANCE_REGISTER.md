@@ -21,7 +21,7 @@
 
 
 
-| **W002** | Staging / Prod Separation | DEVOPS | BLOCKED | - | - | - | - | Prerequisite W000-REC2A IV pending |
+| **W002** | Staging / Prod Separation | DEVOPS | READY_TO_START | - | - | - | - | UNBLOCKED: W000-REC2A accepted |
 | **W003** | CI/CD Quality Pipeline | DEVOPS | NOT_STARTED | - | - | - | - | - |
 | **W004** | Observability & Error Tracking | DEVOPS | NOT_STARTED | - | - | - | - | - |
 | **W005** | Backup & Recovery Verification | DEVOPS | NOT_STARTED | - | - | - | - | - |

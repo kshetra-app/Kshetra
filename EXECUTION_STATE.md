@@ -1,5 +1,5 @@
 # EXECUTION STATE: PANIN / KSHETRA
-**Last Updated:** 2026-09-08
+**Last Updated:** 2026-09-09
 **Authority:** Master Product Blueprint, AI Agent Master Execution Job Book & Amendment v1.2 (`AMENDMENT_v1.2.md`)
 
 ---
@@ -9,21 +9,21 @@
 PROJECT:               PANIN (formerly Kshetra)
 TARGET_DOMAIN:         India Political Geography, Intelligence, Participation & Media Platform
 CURRENT_PHASE:         W0 (Baseline Reconciliation & Ground-Truth Audit)
-CURRENT_JOB:           W000-REC2A (Parser Implementation & Evidence Rebinding)
+CURRENT_JOB:           W002-P0 (Governance Coordinate Normalization)
 LAST_COMPLETED_JOB:    W000-REC2A (Independent Verification & Final Acceptance)
 NEXT_PERMITTED_JOB:    W002 (Staging / Prod Environment Separation)
 
 CURRENT_BRANCH:        master
-CURRENT_REMOTE_HEAD:   5f7c8a5
-AUDITED_CODE_COMMIT:   5f7c8a5
-EVIDENCE_COMMIT:       5f7c8a5
-ACCEPTANCE_COMMIT:     Pending final commit
+CURRENT_REMOTE_HEAD:   8168676
+AUDITED_CODE_COMMIT:   5f7c8a5 (W000-REC2A implementation verified by regression suite and build checks)
+EVIDENCE_COMMIT:       5f7c8a5 (Regenerated in-repo inventory JSONs in reports/ and scratch/)
+ACCEPTANCE_COMMIT:     8168676 (Independent Verification PASS report and accepted registers)
 API_VERSION:           v1 (Fastify 5.2 on Railway)
 MOBILE_VERSION:        0.1.0 (Expo 54, React Native 0.81.5)
 DATABASE_MIGRATIONS:   36 migration files present in repository (001-034 + 0035 + duplicate 023; live catalog = HUMAN ACTION REQUIRED)
-DATABASE_TABLES:       148 unique tables defined in migration source
-DATABASE_VIEWS:        23 unique views defined in migration source (20 standard + 3 materialized; 0 false positives)
-API_ENDPOINTS:         109 static HTTP route registrations (not live production count)
+DATABASE_TABLES:       148 unique tables defined in migration source (source-defined, not live production catalog count)
+DATABASE_VIEWS:        23 unique views defined in migration source (20 standard + 3 materialized; 0 false positives; source-defined)
+API_ENDPOINTS:         109 static HTTP route registrations (static source inventory, not live production count)
 MOBILE_ROUTES:         53 application route files (all .tsx; 2 layouts, 51 route screens)
 MOBILE_STORES:         29 Zustand stores
 GOVERNANCE_FRAMEWORK:  Master Execution Framework Amendment v1.2 (Active)
