@@ -9,21 +9,21 @@
 PROJECT:               PANIN (formerly Kshetra)
 TARGET_DOMAIN:         India Political Geography, Intelligence, Participation & Media Platform
 CURRENT_PHASE:         W0 (Baseline Reconciliation & Ground-Truth Audit)
-CURRENT_JOB:           W002-R2 (Staging Cloud Provisioning & True Runtime Isolation)
-LAST_COMPLETED_JOB:    W000-REC2A (Independent Verification & Final Acceptance)
-NEXT_PERMITTED_JOB:    W002-R2 Independent Verification (W003 BLOCKED until W002 accepted)
+CURRENT_JOB:           W003 (CI/CD Quality Pipeline)
+LAST_COMPLETED_JOB:    W002-R2 (Staging Cloud Provisioning & True Runtime Isolation - ACCEPTED)
+NEXT_PERMITTED_JOB:    W003 (CI/CD Quality Pipeline)
 
 CURRENT_BRANCH:        master
-CURRENT_REMOTE_HEAD:   5cab5f9
-AUDITED_CODE_COMMIT:   5cab5f9
-EVIDENCE_COMMIT:       pending commit
-ACCEPTANCE_COMMIT:     pending independent verification
+CURRENT_REMOTE_HEAD:   c117f8c
+AUDITED_CODE_COMMIT:   c117f8c
+EVIDENCE_COMMIT:       c117f8c
+ACCEPTANCE_COMMIT:     pending acceptance commit
 API_VERSION:           v1 (Fastify 5.2 on Railway)
 MOBILE_VERSION:        0.1.0 (Expo 54, React Native 0.81.5)
-DATABASE_MIGRATIONS:   36 migration files present in repository (001-034 + 0035 + duplicate 023; live catalog = HUMAN ACTION REQUIRED)
-DATABASE_TABLES:       148 unique tables defined in migration source (source-defined, not live production catalog count)
-DATABASE_VIEWS:        23 unique views defined in migration source (20 standard + 3 materialized; 0 false positives; source-defined)
-API_ENDPOINTS:         109 static HTTP route registrations (static source inventory, not live production count)
+DATABASE_MIGRATIONS:   36 migration files present in repository (35 live applied to staging fkpigozcqnmcvofuksar)
+DATABASE_TABLES:       165 live tables in staging catalog (148 unique source tables)
+DATABASE_VIEWS:        9 live views in staging catalog (23 unique source-defined)
+API_ENDPOINTS:         109 static HTTP route registrations (12 active route groups verified)
 MOBILE_ROUTES:         53 application route files (all .tsx; 2 layouts, 51 route screens)
 MOBILE_STORES:         29 Zustand stores
 GOVERNANCE_FRAMEWORK:  Master Execution Framework Amendment v1.2 & v1.3 (`AGENT_EXECUTION_PROTOCOL.md` Active)
@@ -44,9 +44,9 @@ REMOTE_SYNC:           Up to date with origin/master
 | **W001-R5** | W001 Reconciliation & Remote Reproducibility | **COMPLETE** | 2026-09-08 | Reconciled evidence into in-repo `reports/` with Part 7 metadata per Amendment v1.2 |
 | **W001-R6** | Independent Verification & Final W001 Acceptance | **REOPENED** | - | Reopened per user governance review; superseded by W001-R6A |
 | **W001-R6A** | Independent Verification Re-execution | **COMPLETE** | 2026-09-08 | Independent Verifier Pass with Non-Blocking Exceptions per Amendment v1.2 Rule IV-001 |
-| **W002** | Staging / Prod Environment Separation | **READY_FOR_INDEPENDENT_VERIFICATION** | - | Real Staging provisioned & operational (Railway + Supabase fkpigozcqnmcvofuksar); sentinel runtime isolation passed 100% |
+| **W002** | Staging / Prod Environment Separation | **ACCEPTED** | 2026-09-09 | W002-R2 IV PASS; Real cloud staging operational (`kshetra-api-staging` & `fkpigozcqnmcvofuksar`); tests A-I pass; `reports/w002_r2_independent_verification.md` |
 
-| **W003** | CI/CD Quality Pipeline | NOT_STARTED | - | Prerequisite: W002 |
+| **W003** | CI/CD Quality Pipeline | **UNBLOCKED (READY_TO_START)** | - | Prerequisite W002 ACCEPTED |
 | **W004** | Observability & Error Tracking | NOT_STARTED | - | Prerequisite: W003 |
 | **W005** | Backup & Recovery Verification | NOT_STARTED | - | Prerequisite: W004 |
 | **W006** | API Architecture Audit & Separation | NOT_STARTED | - | Prerequisite: W005 |

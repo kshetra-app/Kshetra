@@ -145,6 +145,21 @@
   5. **Independent Verification Preservation:** Rule IV-001 independent verification remains mandatory at critical gates and milestones, but verifiers operate on remote Git commits using risk-based inspection rather than blindly re-running entire implementation jobs.
 - **Rationale:** Dramatically increases implementation precision, eliminates premature success reports, hardens negative-path testing, and eliminates recurring failure classes.
 
+---
+
+### DEC-015: Staging Cloud Provisioning & Empirical Runtime Isolation (W002-R2)
+- **Date:** 2026-09-09
+- **Authority:** Master Execution Framework Amendment v1.2 (Rule IV-001) & Amendment v1.3
+- **Context:** Environment separation cannot be certified via configuration files alone; real staging infrastructure and live cross-environment isolation must be empirically verified.
+- **Decision:**
+  1. **Dedicated Staging Infrastructure Coordinates:** Bind Staging to Railway Fastify service `kshetra-api-staging` (`https://kshetra-api-staging.up.railway.app`) and dedicated Supabase project `fkpigozcqnmcvofuksar` (`https://fkpigozcqnmcvofuksar.supabase.co`).
+  2. **EAS Build Profiles & Env Precedence:** Map EAS `preview` profile strictly to `staging` in `packages/shared/src/config/environments.ts`. Harmonize mobile resolution precedence in `apps/mobile/lib/environment.ts` and `apps/mobile/eas.json` as `EXPO_PUBLIC_APP_ENV ?? APP_ENV ?? NODE_ENV ?? 'development'`.
+  3. **CORS Hardening:** Completely eliminate `localhost:8081` from production allowed origins in `apps/api/src/server.ts`.
+  4. **Empirical Runtime Isolation (Tests A-I):** Require live cross-environment isolation verification including sentinel write (`STAGING_SENTINEL_W002`), cross-project credential rejection (HTTP 401), and auth JWT signature invalidation (HTTP 401/403).
+  5. **Unblocking W003:** With live staging confirmed operational and independently certified by Independent Verifier in `reports/w002_r2_independent_verification.md`, formally accept JOB W002 and unblock JOB W003 (CI/CD Quality Pipeline).
+- **Rationale:** Prevents accidental cross-environment data contamination, protects production integrity, and establishes true multi-stage cloud readiness.
+
+
 
 
 
