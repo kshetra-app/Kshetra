@@ -30,9 +30,6 @@ jobs:
       - name: Verify Governance Consistency
         run: node tests/governance-consistency.test.mjs
 
-      - name: Audit Migration Drift (Part 7 & 8)
-        run: node scripts/check-migration-drift.mjs
-
       - name: Audit Repository & Evidence Integrity (Part 34)
         run: node scripts/check-repo-evidence-integrity.mjs
 

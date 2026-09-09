@@ -2,14 +2,17 @@
   "evidenceMetadata": {
     "repository": "https://github.com/kshetra-app/Kshetra.git",
     "branch": "master",
-    "targetMandate": "CI/CD Migration Drift Automation (Amendment v1.4 Part 8)",
-    "timestamp": "2026-09-09T14:00:26.709Z"
+    "targetMandate": "Static Migration Snapshot Audit (Option B per W003-R3)",
+    "evaluationType": "STATIC_SNAPSHOT",
+    "snapshotSource": "reports/w002_r2_database_catalog.json",
+    "lastVerifiedDate": "2026-09-09",
+    "timestamp": "2026-09-09T15:03:16.816Z"
   },
   "repositoryMigrationCount": 36,
-  "stagingAppliedMigrationCount": 35,
-  "driftDelta": 1,
-  "isDriftDocumented": true,
-  "status": "DOCUMENTED_CONTROLLED_DRIFT",
+  "stagingAppliedMigrationSnapshot": 35,
+  "catalogDelta": 1,
+  "isDocumentedSnapshot": true,
+  "status": "STATIC_SNAPSHOT_VERIFIED",
   "migrationFiles": [
     {
       "sequence": 1,
@@ -192,10 +195,11 @@
       "sizeBytes": 3145
     }
   ],
-  "driftExplanation": [
-    "Repository contains 36 SQL files.",
-    "Staging Supabase (fkpigozcqnmcvofuksar) currently has 35 applied migrations from the initial bootstrap.",
-    "File 0035_posts_polls_social.sql represents the latest posts/polls extensions applied via client API or subsequent migration patch.",
-    "Two migrations share sequence prefix 023 (023_data_api_grants.sql and 023_local_body_representatives.sql)."
+  "snapshotNotes": [
+    "Repository currently contains 36 SQL migration files.",
+    "Staging Supabase (fkpigozcqnmcvofuksar) catalog snapshot recorded 35 applied migrations during W002-R2 on 2026-09-09.",
+    "Delta is +1 file: 0035_posts_polls_social.sql (social extensions bootstrap).",
+    "Sequence prefix 023 is shared by two files (023_data_api_grants.sql and 023_local_body_representatives.sql).",
+    "This is a static snapshot check and is intentionally decoupled from CI automated gates until live DB connectivity is configured."
   ]
 }

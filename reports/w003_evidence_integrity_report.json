@@ -3,13 +3,28 @@
     "repository": "https://github.com/kshetra-app/Kshetra.git",
     "branch": "master",
     "targetMandate": "CI/CD Repo & Evidence Integrity (Amendment v1.4 Part 34A & 34B)",
-    "timestamp": "2026-09-09T14:31:30.404Z"
+    "timestamp": "2026-09-09T15:06:32.795Z"
   },
   "workingTree": {
     "clean": false,
     "uncommittedEntries": [
-      "M ACCEPTANCE_REGISTER.md",
-      " M EXECUTION_STATE.md"
+      "M .github/workflows/ci.yml",
+      " M ACCEPTANCE_REGISTER.md",
+      " M DECISION_LOG.md",
+      " M DEFECT_REGISTER.md",
+      " M EXECUTION_STATE.md",
+      " M apps/api/src/lib/supabase.ts",
+      " M reports/w001_i18n_verification_report.json",
+      " M reports/w003_api_contract_drift_report.json",
+      " M reports/w003_completion_report.md",
+      " M reports/w003_evidence_integrity_report.json",
+      " M reports/w003_independent_verification.md",
+      "D  reports/w003_migration_drift_report.json",
+      "D  scripts/check-migration-drift.mjs",
+      " M scripts/check-repo-evidence-integrity.mjs",
+      "?? apps/api/src/__tests__/supabase-auth.test.ts",
+      "?? reports/w003_migration_snapshot_report.json",
+      "?? scripts/audit-migration-snapshot.mjs"
     ]
   },
   "referencedCommitsChecked": 11,

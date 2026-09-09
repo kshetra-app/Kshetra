@@ -41,21 +41,25 @@ if (fs.existsSync(executionStatePath)) {
 
 console.log(`\n2. Extracted ${referencedCommits.size} Referenced Commit Identifiers from registers.`);
 
-// Verify which commits exist in local git history
+// Verify which commits exist in branch history and are ancestors of HEAD
 const verifiedCommits = [];
 const missingCommits = [];
 
 referencedCommits.forEach(sha => {
   try {
     const rev = execSync(`git rev-parse --verify "${sha}"`, { encoding: 'utf8' }).trim();
-    verifiedCommits.push({ sha, resolvedFullSha: rev, exists: true });
-  } catch {
+    // Ensure the object is an actual commit
+    execSync(`git cat-file -e "${sha}^{commit}"`, { stdio: 'pipe' });
+    // Ensure the commit is actually in the ancestry of HEAD (not a dead/amended reflog object)
+    execSync(`git merge-base --is-ancestor "${sha}" HEAD`, { stdio: 'pipe' });
+    verifiedCommits.push({ sha, resolvedFullSha: rev, exists: true, isAncestor: true });
+  } catch (err) {
     missingCommits.push(sha);
   }
 });
 
-console.log(`   - Verified in Git history: ${verifiedCommits.length}`);
-console.log(`   - Unresolved / Pending:     ${missingCommits.length} (${missingCommits.join(', ') || 'none'})`);
+console.log(`   - Verified in Git ancestry: ${verifiedCommits.length}`);
+console.log(`   - Unresolved / Phantom:     ${missingCommits.length} (${missingCommits.join(', ') || 'none'})`);
 
 const report = {
   evidenceMetadata: {
@@ -78,4 +82,10 @@ const report = {
 const reportPath = path.resolve('reports/w003_evidence_integrity_report.json');
 fs.writeFileSync(reportPath, JSON.stringify(report, null, 2));
 console.log(`\nEvidence Integrity Report written to: reports/w003_evidence_integrity_report.json`);
+
+if (missingCommits.length > 0) {
+  console.error(`\n[FAIL] Found ${missingCommits.length} unresolved or non-ancestor commit(s) in registers: ${missingCommits.join(', ')}`);
+  process.exit(1);
+}
+
 console.log(`[PASS] Repository & Evidence Integrity check completed (${verifiedCommits.length}/${referencedCommits.size} commits verified).`);

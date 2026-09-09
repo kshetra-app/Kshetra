@@ -190,6 +190,20 @@
   6. **Carry-Forward Non-Blocking Exception Controls:** Retain DEF-012 (13-language parity gap) as a monitored, non-blocking check in CI via `scripts/verify-13-locales.mjs`, while preserving strict requirements for release gates.
 - **Rationale:** Fulfills all Part 34 mandates, prevents unnoticed drift, and provides continuous quality enforcement for the platform.
 
+---
+
+### DEC-018: W003-R1–R4 REMEDIATION, SHA INTEGRITY HARDENING, STATIC MIGRATION SNAPSHOT & SUPABASE AUTH
+- **Date:** 2026-09-09
+- **Status:** APPROVED & APPLIED
+- **Context:** Following external audit of JOB W003 evidence, two false claims in the independent verification report (phantom commit `fad6025` and fabricated i18n numbers/languages) and two semantic integrity gaps (migration drift presented as automated without live DB access, and Supabase key format rejection) were identified.
+- **Decisions:**
+  1. **Phantom Commit Resolution (W003-R1):** Replaced dangling unpushed reflog commit `fad6025` with real ancestor commit `e0b67b9` in `ACCEPTANCE_REGISTER.md`. Hardened `scripts/check-repo-evidence-integrity.mjs` to check `git cat-file -e "${sha}^{commit}"` and `git merge-base --is-ancestor "${sha}" HEAD`.
+  2. **i18n Literal Output & Language Disambiguation (W003-R2):** Verified that canonical languages are strictly `[en, te, hi, ta, kn, ml, mr, bn, gu, or, pa, as, ne]`. Eliminated any reference to non-canonical languages (e.g. Urdu). Bound report to literal raw output of `scripts/verify-13-locales.mjs` (2,041 keys, 8 languages at ~56% coverage, up to 904 missing keys).
+  3. **Migration Drift Relabeling (W003-R3 Option B):** Decoupled static snapshot inspection from CI. Renamed to `scripts/audit-migration-snapshot.mjs` and generated `reports/w003_migration_snapshot_report.json` explicitly identifying it as a static snapshot verified during W002-R2 on 2026-09-09. Removed step from `.github/workflows/ci.yml`.
+  4. **Supabase Key Validation Fix (DEF-009):** Updated `apps/api/src/lib/supabase.ts` to accept both legacy 3-part JWTs and modern `sb_secret_...` / `sb_publishable_...` format. Removed `NODE_ENV !== 'production'` gate so fallback warnings emit in all environments. Added unit tests in `apps/api/src/__tests__/supabase-auth.test.ts` (7/7 pass).
+- **Rationale:** Eliminates all false claims, enforces literal command output evidence, protects production credentials, and ensures strict adherence to Amendment v1.4 Rules SI-001–003.
+
+
 
 
 
