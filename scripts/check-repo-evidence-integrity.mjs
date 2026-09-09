@@ -80,8 +80,28 @@ const report = {
 };
 
 const reportPath = path.resolve('reports/w003_evidence_integrity_report.json');
-fs.writeFileSync(reportPath, JSON.stringify(report, null, 2));
-console.log(`\nEvidence Integrity Report written to: reports/w003_evidence_integrity_report.json`);
+let shouldWrite = true;
+if (fs.existsSync(reportPath)) {
+  try {
+    const existing = JSON.parse(fs.readFileSync(reportPath, 'utf8'));
+    if (
+      existing.workingTree?.clean === isWorkingTreeClean &&
+      existing.referencedCommitsChecked === referencedCommits.size &&
+      existing.verifiedCommitsCount === verifiedCommits.length &&
+      existing.missingCommitsCount === missingCommits.length &&
+      existing.status === (missingCommits.length === 0 ? 'PASS' : 'WARNING_PENDING_COMMITS')
+    ) {
+      shouldWrite = false;
+    }
+  } catch (err) {}
+}
+
+if (shouldWrite) {
+  fs.writeFileSync(reportPath, JSON.stringify(report, null, 2));
+  console.log(`\nEvidence Integrity Report written to: reports/w003_evidence_integrity_report.json`);
+} else {
+  console.log(`\nEvidence Integrity Report up to date: reports/w003_evidence_integrity_report.json`);
+}
 
 if (missingCommits.length > 0) {
   console.error(`\n[FAIL] Found ${missingCommits.length} unresolved or non-ancestor commit(s) in registers: ${missingCommits.join(', ')}`);
