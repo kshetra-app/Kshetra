@@ -1,0 +1,78 @@
+{
+  "evidenceMetadata": {
+    "repository": "https://github.com/kshetra-app/Kshetra.git",
+    "branch": "master",
+    "targetMandate": "CI/CD API Contract Drift Automation (Amendment v1.4 Part 34E)",
+    "timestamp": "2026-09-09T14:00:37.805Z"
+  },
+  "totalClientContractsAudited": 9,
+  "matchedContracts": 9,
+  "driftContracts": 0,
+  "parityPercentage": 100,
+  "status": "PASS",
+  "contracts": [
+    {
+      "method": "GET",
+      "path": "/health",
+      "purpose": "Root liveness probe",
+      "client": "Railway / Health check",
+      "status": "MATCHED"
+    },
+    {
+      "method": "GET",
+      "path": "/api/health",
+      "purpose": "API gateway liveness",
+      "client": "Mobile / Web gateway",
+      "status": "MATCHED"
+    },
+    {
+      "method": "GET",
+      "path": "/api/health/db",
+      "purpose": "Database connectivity readiness",
+      "client": "CI/CD & Monitoring",
+      "status": "MATCHED"
+    },
+    {
+      "method": "GET",
+      "path": "/config/flags",
+      "purpose": "Feature flags distribution",
+      "client": "Mobile featureFlags.ts",
+      "status": "MATCHED"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/config/flags",
+      "purpose": "Feature flags canonical path",
+      "client": "Mobile featureFlags.ts",
+      "status": "MATCHED"
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/moderation/check-content",
+      "purpose": "Content safety guard",
+      "client": "Mobile moderation",
+      "status": "MATCHED"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/states",
+      "purpose": "State list feed",
+      "client": "Mobile State Selector",
+      "status": "MATCHED"
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/notifications/register-token",
+      "purpose": "Push token registration",
+      "client": "Mobile push notification hook",
+      "status": "MATCHED"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/pages/:pageId/entitlement",
+      "purpose": "Page entitlement check",
+      "client": "Mobile pageService.ts",
+      "status": "MATCHED"
+    }
+  ]
+}

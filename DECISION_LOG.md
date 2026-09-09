@@ -175,6 +175,22 @@
   6. **Governing Principle:** Do not optimize for green reports; optimize for true reports.
 - **Rationale:** Eliminates recurring failure classes, ensures evidence cannot be faked or misinterpreted, and guides autonomous agent execution toward ground-truth engineering rigor.
 
+---
+
+### DEC-017: Implementation and Hardening of W003 CI/CD Quality Pipeline
+- **Date:** 2026-09-09
+- **Authority:** Master Execution Framework Amendment v1.4 (Parts 33 & 34) & `AGENT_EXECUTION_PROTOCOL.md`
+- **Context:** Delivering W003 requires continuous automated verification across all branches (specifically including `master`), detecting migration and API contract drift, verifying evidence and commit register integrity, and decoupling health liveness from database readiness.
+- **Decision:**
+  1. **Branch Modernization in GitHub Actions:** Update `.github/workflows/ci.yml` triggers to explicitly include `[master, main, develop]` so that PRs and merges to canonical branch `master` are continuously guarded.
+  2. **Migration Drift Automation (Part 8):** Implement `scripts/check-migration-drift.mjs` to compare repository migration files (36 files) against applied database catalogs (Staging: 35 applied) and emit structured drift reports (`reports/w003_migration_drift_report.json`).
+  3. **Repository & Evidence Integrity Automation (Part 34):** Implement `scripts/check-repo-evidence-integrity.mjs` to verify working tree status and validate that all referenced commit SHAs across `ACCEPTANCE_REGISTER.md` and `EXECUTION_STATE.md` exist in local Git history. Emits `reports/w003_evidence_integrity_report.json`.
+  4. **API Contract Drift Automation (Part 34E):** Implement `scripts/check-api-contract-drift.mjs` to scan route definitions directly and audit client-facing contracts (100% parity achieved across 9/9 client expectations). Emits `reports/w003_api_contract_drift_report.json`.
+  5. **Defined Health Endpoint Semantics (Part 18):** Upgrade `apps/api/src/routes/health.ts` to distinguish `GET /api/health` (process liveness) from `GET /api/health/db` (real Supabase PostgreSQL readiness roundtrip). Update `apps/api/src/__tests__/health.test.ts` to enforce semantic assertions.
+  6. **Carry-Forward Non-Blocking Exception Controls:** Retain DEF-012 (13-language parity gap) as a monitored, non-blocking check in CI via `scripts/verify-13-locales.mjs`, while preserving strict requirements for release gates.
+- **Rationale:** Fulfills all Part 34 mandates, prevents unnoticed drift, and provides continuous quality enforcement for the platform.
+
+
 
 
 

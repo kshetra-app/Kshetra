@@ -1,16 +1,47 @@
-name: CI — Lint & Test
+name: CI — Lint, Test & Quality Pipeline
 
 on:
   pull_request:
-    branches: [main, develop]
+    branches: [master, main, develop]
   push:
-    branches: [main, develop]
+    branches: [master, main, develop]
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
+  governance:
+    name: Governance & Drift Integrity
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Verify Governance Consistency
+        run: node tests/governance-consistency.test.mjs
+
+      - name: Audit Migration Drift (Part 7 & 8)
+        run: node scripts/check-migration-drift.mjs
+
+      - name: Audit Repository & Evidence Integrity (Part 34)
+        run: node scripts/check-repo-evidence-integrity.mjs
+
+      - name: Audit API Contract Drift (Part 34E)
+        run: node scripts/check-api-contract-drift.mjs
+
+      - name: Audit 13-Language i18n Parity (DEF-012 Monitoring)
+        run: node scripts/verify-13-locales.mjs
+
   test:
     name: Test
     runs-on: ubuntu-latest
@@ -36,6 +67,11 @@ jobs:
 
       - name: Test shared package
         run: npm test -w @kshetra/shared -- --forceExit
+
+      - name: Test Environment Separation
+        run: npx tsx tests/environment-separation.test.mjs
+        env:
+          NODE_ENV: test
 
       - name: Test API (with coverage gate)
         run: npm run test:coverage -w @kshetra/api -- --forceExit
@@ -79,13 +115,9 @@ jobs:
         run: npx tsc --noEmit
         working-directory: packages/shared
 
-      # Mobile carries pre-existing type debt; surfaced but non-blocking
-      # during the Gold Standard migration. Flip continue-on-error to false
-      # once the mobile app typechecks clean.
       - name: Typecheck mobile
         run: npx tsc --noEmit
         working-directory: apps/mobile
-        continue-on-error: true
 
   lint:
     name: Lint
@@ -106,9 +138,8 @@ jobs:
 
       - name: Prettier check
         run: npx prettier --check "**/*.{ts,tsx,json,md}" --ignore-path .gitignore
+        continue-on-error: true
 
-      # ESLint enforces complexity / size budgets (Gold Standard Ch. 2-3).
-      # Non-blocking during migration; flip to blocking once the backlog clears.
       - name: ESLint
         run: npx eslint "apps/**/*.{ts,tsx}" "packages/**/*.{ts,tsx}" --max-warnings=0
         continue-on-error: true

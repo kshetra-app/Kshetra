@@ -1,0 +1,201 @@
+{
+  "evidenceMetadata": {
+    "repository": "https://github.com/kshetra-app/Kshetra.git",
+    "branch": "master",
+    "targetMandate": "CI/CD Migration Drift Automation (Amendment v1.4 Part 8)",
+    "timestamp": "2026-09-09T14:00:26.709Z"
+  },
+  "repositoryMigrationCount": 36,
+  "stagingAppliedMigrationCount": 35,
+  "driftDelta": 1,
+  "isDriftDocumented": true,
+  "status": "DOCUMENTED_CONTROLLED_DRIFT",
+  "migrationFiles": [
+    {
+      "sequence": 1,
+      "filename": "001_initial_schema.sql",
+      "sizeBytes": 4044
+    },
+    {
+      "sequence": 2,
+      "filename": "002_seed_telangana.sql",
+      "sizeBytes": 985
+    },
+    {
+      "sequence": 3,
+      "filename": "0035_posts_polls_social.sql",
+      "sizeBytes": 10570
+    },
+    {
+      "sequence": 4,
+      "filename": "003_multi_state.sql",
+      "sizeBytes": 4211
+    },
+    {
+      "sequence": 5,
+      "filename": "004_civic_dashboard.sql",
+      "sizeBytes": 4414
+    },
+    {
+      "sequence": 6,
+      "filename": "005_push_notifications.sql",
+      "sizeBytes": 3837
+    },
+    {
+      "sequence": 7,
+      "filename": "006_trust_safety.sql",
+      "sizeBytes": 6884
+    },
+    {
+      "sequence": 8,
+      "filename": "007_civic_engagement_pipeline.sql",
+      "sizeBytes": 8904
+    },
+    {
+      "sequence": 9,
+      "filename": "008_election_affidavits.sql",
+      "sizeBytes": 3625
+    },
+    {
+      "sequence": 10,
+      "filename": "009_promise_tracker.sql",
+      "sizeBytes": 5403
+    },
+    {
+      "sequence": 11,
+      "filename": "010_aspiring_leaders.sql",
+      "sizeBytes": 7606
+    },
+    {
+      "sequence": 12,
+      "filename": "011_delimitation.sql",
+      "sizeBytes": 11280
+    },
+    {
+      "sequence": 13,
+      "filename": "012_legislator_profiles.sql",
+      "sizeBytes": 17623
+    },
+    {
+      "sequence": 14,
+      "filename": "013_content_accountability.sql",
+      "sizeBytes": 12175
+    },
+    {
+      "sequence": 15,
+      "filename": "014_content_promotion_pipeline.sql",
+      "sizeBytes": 19666
+    },
+    {
+      "sequence": 16,
+      "filename": "015_journalist_platform.sql",
+      "sizeBytes": 8240
+    },
+    {
+      "sequence": 17,
+      "filename": "016_politician_portal.sql",
+      "sizeBytes": 12644
+    },
+    {
+      "sequence": 18,
+      "filename": "017_campaign_manager.sql",
+      "sizeBytes": 12015
+    },
+    {
+      "sequence": 19,
+      "filename": "018_enhanced_civic.sql",
+      "sizeBytes": 11667
+    },
+    {
+      "sequence": 20,
+      "filename": "019_live_election.sql",
+      "sizeBytes": 5625
+    },
+    {
+      "sequence": 21,
+      "filename": "020_foundation_hardening.sql",
+      "sizeBytes": 34642
+    },
+    {
+      "sequence": 22,
+      "filename": "021_seed_demo_data.sql",
+      "sizeBytes": 20605
+    },
+    {
+      "sequence": 23,
+      "filename": "022_administrative_hierarchy.sql",
+      "sizeBytes": 48044
+    },
+    {
+      "sequence": 24,
+      "filename": "023_data_api_grants.sql",
+      "sizeBytes": 2038
+    },
+    {
+      "sequence": 25,
+      "filename": "023_local_body_representatives.sql",
+      "sizeBytes": 30977
+    },
+    {
+      "sequence": 26,
+      "filename": "024_live_media_exchange.sql",
+      "sizeBytes": 19768
+    },
+    {
+      "sequence": 27,
+      "filename": "025_feed_realtime_and_social.sql",
+      "sizeBytes": 2307
+    },
+    {
+      "sequence": 28,
+      "filename": "026_campaign_wallet_and_obd.sql",
+      "sizeBytes": 3609
+    },
+    {
+      "sequence": 29,
+      "filename": "027_extend_role_and_verification.sql",
+      "sizeBytes": 3411
+    },
+    {
+      "sequence": 30,
+      "filename": "028_user_follows.sql",
+      "sizeBytes": 1242
+    },
+    {
+      "sequence": 31,
+      "filename": "029_fix_auth_trigger.sql",
+      "sizeBytes": 1285
+    },
+    {
+      "sequence": 32,
+      "filename": "030_trai_opt_outs.sql",
+      "sizeBytes": 1024
+    },
+    {
+      "sequence": 33,
+      "filename": "031_direct_messages.sql",
+      "sizeBytes": 6207
+    },
+    {
+      "sequence": 34,
+      "filename": "032_reports_extend_targets.sql",
+      "sizeBytes": 1360
+    },
+    {
+      "sequence": 35,
+      "filename": "033_content_and_department_alerts.sql",
+      "sizeBytes": 3648
+    },
+    {
+      "sequence": 36,
+      "filename": "034_political_ads.sql",
+      "sizeBytes": 3145
+    }
+  ],
+  "driftExplanation": [
+    "Repository contains 36 SQL files.",
+    "Staging Supabase (fkpigozcqnmcvofuksar) currently has 35 applied migrations from the initial bootstrap.",
+    "File 0035_posts_polls_social.sql represents the latest posts/polls extensions applied via client API or subsequent migration patch.",
+    "Two migrations share sequence prefix 023 (023_data_api_grants.sql and 023_local_body_representatives.sql)."
+  ]
+}
