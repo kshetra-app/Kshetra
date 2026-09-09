@@ -1,4 +1,4 @@
-﻿import assert from 'assert';
+import assert from 'assert';
 import { resolveEnvironment, getEnvironmentConfig, ENVIRONMENT_CONFIGS } from '../packages/shared/src/config/environments.ts';
 import { buildApp } from '../apps/api/src/server.ts';
 
@@ -83,6 +83,7 @@ testCorsInjection().then(() => {
   console.log('\n======================================================');
   console.log('ALL W002-R1 RUNTIME ISOLATION TESTS PASSED!');
   console.log('======================================================\n');
+  process.exit(0);
 }).catch(err => {
   console.error(err);
   process.exit(1);

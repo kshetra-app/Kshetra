@@ -2,8 +2,8 @@
   "metadata": {
     "jobId": "W002-R1",
     "jobTitle": "Independent Verification Package",
-    "standard": "Master Execution Framework Amendment v1.2",
-    "timestamp": "2026-09-09T04:04:00.000Z",
+    "standard": "Master Execution Framework Amendment v1.3",
+    "timestamp": "2026-09-09T10:35:00.000Z",
     "repository": "https://github.com/kshetra-app/Kshetra.git",
     "canonicalBranch": "master"
   },
@@ -15,10 +15,11 @@
     "packages/shared/src/config/environments.ts",
     "apps/mobile/lib/environment.ts",
     "apps/api/src/server.ts",
-    "tests/environment-separation.test.mjs"
+    "tests/environment-separation.test.mjs",
+    "scripts/verify-sentinel-isolation.mjs"
   ],
   "governanceStatus": {
-    "w002Status": "IN_VERIFICATION (Conditional on Human Staging Cloud Provisioning)",
-    "w003Status": "BLOCKED"
+    "w002Status": "READY_FOR_INDEPENDENT_VERIFICATION",
+    "w003Status": "PENDING_W002_ACCEPTANCE"
   }
 }

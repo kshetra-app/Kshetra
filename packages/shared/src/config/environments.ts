@@ -1,4 +1,4 @@
-﻿export type Environment = 'development' | 'staging' | 'production' | 'test';
+export type Environment = 'development' | 'staging' | 'production' | 'test';
 
 export interface EnvironmentConfig {
   environment: Environment;
@@ -33,9 +33,10 @@ export const ENVIRONMENT_CONFIGS: Record<Environment, EnvironmentConfig> = {
     isProduction: false,
     isStaging: true,
     isDevelopment: false,
-    apiBaseUrl: 'https://staging-api.kshetra.in',
-    supabaseUrl: 'https://staging-db.kshetra.in',
+    apiBaseUrl: 'https://kshetra-api-staging.up.railway.app',
+    supabaseUrl: 'https://fkpigozcqnmcvofuksar.supabase.co',
     allowedOrigins: [
+      'https://kshetra-api-staging.up.railway.app',
       'https://staging.kshetra.in',
       'https://staging.panin.in',
       'http://localhost:8081',
@@ -48,7 +49,7 @@ export const ENVIRONMENT_CONFIGS: Record<Environment, EnvironmentConfig> = {
     isStaging: false,
     isDevelopment: false,
     apiBaseUrl: 'https://kshetra-api-production-9f06.up.railway.app',
-    supabaseUrl: 'https://cxhyqjfelcwkavbqwqap.supabase.co',
+    supabaseUrl: 'https://ehfafcnimmjusyvplbah.supabase.co',
     allowedOrigins: [
       'https://kshetra.in',
       'https://www.kshetra.in',

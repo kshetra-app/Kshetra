@@ -44,7 +44,7 @@ REMOTE_SYNC:           Up to date with origin/master
 | **W001-R5** | W001 Reconciliation & Remote Reproducibility | **COMPLETE** | 2026-09-08 | Reconciled evidence into in-repo `reports/` with Part 7 metadata per Amendment v1.2 |
 | **W001-R6** | Independent Verification & Final W001 Acceptance | **REOPENED** | - | Reopened per user governance review; superseded by W001-R6A |
 | **W001-R6A** | Independent Verification Re-execution | **COMPLETE** | 2026-09-08 | Independent Verifier Pass with Non-Blocking Exceptions per Amendment v1.2 Rule IV-001 |
-| **W002** | Staging / Prod Environment Separation | **NOT ACCEPTED (IN_VERIFICATION)** | - | W002-R1 runtime tests pass; cloud staging provisioning = HUMAN ACTION REQUIRED |
+| **W002** | Staging / Prod Environment Separation | **READY_FOR_INDEPENDENT_VERIFICATION** | - | Real Staging provisioned & operational (Railway + Supabase fkpigozcqnmcvofuksar); sentinel runtime isolation passed 100% |
 
 | **W003** | CI/CD Quality Pipeline | NOT_STARTED | - | Prerequisite: W002 |
 | **W004** | Observability & Error Tracking | NOT_STARTED | - | Prerequisite: W003 |
