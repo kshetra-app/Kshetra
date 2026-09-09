@@ -1,6 +1,6 @@
 -- ==============================================================================
 -- KSHETRA STAGING MASTER SCHEMA & SYNTHETIC SEED DATA (FULLY IDEMPOTENT)
--- Generated: 2026-09-09T09:23:51.247Z
+-- Generated: 2026-09-09T09:28:59.635Z
 -- Target: Supabase Staging (fkpigozcqnmcvofuksar)
 --
 -- Instructions:
@@ -503,10 +503,12 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
+DROP TRIGGER IF EXISTS posts_updated_at ON posts;
 CREATE TRIGGER posts_updated_at
   BEFORE UPDATE ON posts
   FOR EACH ROW EXECUTE FUNCTION update_updated_at();
 
+DROP TRIGGER IF EXISTS comments_updated_at ON comments;
 CREATE TRIGGER comments_updated_at
   BEFORE UPDATE ON comments
   FOR EACH ROW EXECUTE FUNCTION update_updated_at();
@@ -633,6 +635,7 @@ CREATE POLICY "Authors update own issues" ON civic_issues FOR UPDATE
   WITH CHECK (auth.uid() = reporter_id);
 
 -- Auto-update updated_at
+DROP TRIGGER IF EXISTS civic_issues_updated_at ON civic_issues;
 CREATE TRIGGER civic_issues_updated_at
   BEFORE UPDATE ON civic_issues
   FOR EACH ROW EXECUTE FUNCTION update_updated_at();
@@ -741,6 +744,7 @@ CREATE POLICY "Users manage own notification_preferences" ON notification_prefer
 -- Note: Service role bypasses RLS, so no explicit policy needed for server-side inserts.
 
 -- Auto-update updated_at on push_tokens
+DROP TRIGGER IF EXISTS push_tokens_updated_at ON push_tokens;
 CREATE TRIGGER push_tokens_updated_at
   BEFORE UPDATE ON push_tokens
   FOR EACH ROW EXECUTE FUNCTION update_updated_at();
@@ -926,10 +930,12 @@ CREATE POLICY "Users manage own blocks" ON blocked_users FOR ALL
   WITH CHECK (auth.uid() = blocker_id);
 
 -- Auto-update updated_at
+DROP TRIGGER IF EXISTS user_profiles_updated_at ON user_profiles;
 CREATE TRIGGER user_profiles_updated_at
   BEFORE UPDATE ON user_profiles
   FOR EACH ROW EXECUTE FUNCTION update_updated_at();
 
+DROP TRIGGER IF EXISTS user_verification_updated_at ON user_verification;
 CREATE TRIGGER user_verification_updated_at
   BEFORE UPDATE ON user_verification
   FOR EACH ROW EXECUTE FUNCTION update_updated_at();
@@ -1107,6 +1113,7 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
+DROP TRIGGER IF EXISTS issue_comment_count_trigger ON issue_comments;
 CREATE TRIGGER issue_comment_count_trigger
   AFTER INSERT OR DELETE ON issue_comments
   FOR EACH ROW EXECUTE FUNCTION update_issue_comment_count();
@@ -1126,6 +1133,7 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
+DROP TRIGGER IF EXISTS issue_follow_count_trigger ON issue_follows;
 CREATE TRIGGER issue_follow_count_trigger
   AFTER INSERT OR DELETE ON issue_follows
   FOR EACH ROW EXECUTE FUNCTION update_issue_follow_count();
@@ -1140,6 +1148,7 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
+DROP TRIGGER IF EXISTS issue_evidence_count_trigger ON issue_evidence;
 CREATE TRIGGER issue_evidence_count_trigger
   AFTER INSERT ON issue_evidence
   FOR EACH ROW EXECUTE FUNCTION update_issue_evidence_count();
@@ -1160,6 +1169,7 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
+DROP TRIGGER IF EXISTS issue_dispute_count_trigger ON issue_disputes;
 CREATE TRIGGER issue_dispute_count_trigger
   AFTER INSERT ON issue_disputes
   FOR EACH ROW EXECUTE FUNCTION update_issue_dispute_count();
@@ -1278,6 +1288,7 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
+DROP TRIGGER IF EXISTS trg_affidavit_updated_at ON candidate_affidavits;
 CREATE TRIGGER trg_affidavit_updated_at
   BEFORE UPDATE ON candidate_affidavits
   FOR EACH ROW EXECUTE FUNCTION update_affidavit_timestamp();
@@ -1419,6 +1430,7 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
+DROP TRIGGER IF EXISTS trg_promise_follow_count ON promise_follows;
 CREATE TRIGGER trg_promise_follow_count
   AFTER INSERT OR DELETE ON promise_follows
   FOR EACH ROW EXECUTE FUNCTION update_promise_follow_count();
@@ -1431,6 +1443,7 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
+DROP TRIGGER IF EXISTS trg_promise_updated_at ON election_promises;
 CREATE TRIGGER trg_promise_updated_at
   BEFORE UPDATE ON election_promises
   FOR EACH ROW EXECUTE FUNCTION update_promise_timestamp();
@@ -1622,6 +1635,7 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
+DROP TRIGGER IF EXISTS trg_endorsement_count ON community_endorsements;
 CREATE TRIGGER trg_endorsement_count
   AFTER INSERT OR DELETE ON community_endorsements
   FOR EACH ROW EXECUTE FUNCTION update_aspirant_endorsement_count();
@@ -1634,6 +1648,7 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
+DROP TRIGGER IF EXISTS trg_aspirant_updated_at ON aspirant_profiles;
 CREATE TRIGGER trg_aspirant_updated_at
   BEFORE UPDATE ON aspirant_profiles
   FOR EACH ROW EXECUTE FUNCTION update_aspirant_timestamp();
@@ -1907,6 +1922,7 @@ CREATE POLICY "Admin insert citizen_impact" ON citizen_impact FOR INSERT
   );
 
 -- ─── AUTO-UPDATE TRIGGER ───
+DROP TRIGGER IF EXISTS set_updated_at_delimitation_proposals ON delimitation_proposals;
 CREATE TRIGGER set_updated_at_delimitation_proposals
   BEFORE UPDATE ON delimitation_proposals
   FOR EACH ROW EXECUTE FUNCTION update_updated_at();
@@ -2291,6 +2307,7 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
+DROP TRIGGER IF EXISTS trg_legislator_profile_updated ON legislator_profiles;
 CREATE TRIGGER trg_legislator_profile_updated
   BEFORE UPDATE ON legislator_profiles
   FOR EACH ROW EXECUTE FUNCTION update_legislator_timestamp();
@@ -2586,6 +2603,7 @@ CREATE POLICY "Admins read all fingerprints" ON action_fingerprints FOR SELECT
 -- ─── TRIGGERS ───────────────────────────────────────────────────────────────
 
 -- Auto-update updated_at on KYC
+DROP TRIGGER IF EXISTS creator_kyc_updated_at ON creator_kyc_records;
 CREATE TRIGGER creator_kyc_updated_at
   BEFORE UPDATE ON creator_kyc_records
   FOR EACH ROW EXECUTE FUNCTION update_updated_at();
@@ -2603,6 +2621,7 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
+DROP TRIGGER IF EXISTS action_fp_increment_device ON action_fingerprints;
 CREATE TRIGGER action_fp_increment_device
   AFTER INSERT ON action_fingerprints
   FOR EACH ROW EXECUTE FUNCTION increment_device_action_count();
@@ -3053,6 +3072,7 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
+DROP TRIGGER IF EXISTS vouch_added ON content_vouches;
 CREATE TRIGGER vouch_added
   AFTER INSERT ON content_vouches
   FOR EACH ROW EXECUTE FUNCTION update_vouch_count();
@@ -3081,6 +3101,7 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
+DROP TRIGGER IF EXISTS flag_added ON content_flags;
 CREATE TRIGGER flag_added
   AFTER INSERT ON content_flags
   FOR EACH ROW EXECUTE FUNCTION update_flag_count();
@@ -3101,11 +3122,13 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
+DROP TRIGGER IF EXISTS alert_raised ON content_alerts;
 CREATE TRIGGER alert_raised
   AFTER INSERT ON content_alerts
   FOR EACH ROW EXECUTE FUNCTION handle_alert();
 
 -- Updated_at trigger for content_visibility
+DROP TRIGGER IF EXISTS cv_updated_at ON content_visibility;
 CREATE TRIGGER cv_updated_at
   BEFORE UPDATE ON content_visibility
   FOR EACH ROW EXECUTE FUNCTION update_updated_at();
@@ -3328,6 +3351,7 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
+DROP TRIGGER IF EXISTS trg_article_publish ON articles;
 CREATE TRIGGER trg_article_publish
   AFTER INSERT OR UPDATE ON articles
   FOR EACH ROW EXECUTE FUNCTION update_journalist_article_count();
@@ -3344,6 +3368,7 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
+DROP TRIGGER IF EXISTS trg_tip_received ON tip_transactions;
 CREATE TRIGGER trg_tip_received
   AFTER INSERT ON tip_transactions
   FOR EACH ROW EXECUTE FUNCTION update_journalist_tips();
@@ -3610,6 +3635,7 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
+DROP TRIGGER IF EXISTS trg_event_rsvp ON event_rsvps;
 CREATE TRIGGER trg_event_rsvp AFTER INSERT OR UPDATE ON event_rsvps FOR EACH ROW EXECUTE FUNCTION update_event_rsvp_count();
 
 CREATE OR REPLACE FUNCTION update_fundraise_totals()
@@ -3624,6 +3650,7 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
+DROP TRIGGER IF EXISTS trg_donation_received ON fundraise_donations;
 CREATE TRIGGER trg_donation_received AFTER INSERT ON fundraise_donations FOR EACH ROW EXECUTE FUNCTION update_fundraise_totals();
 
 CREATE OR REPLACE FUNCTION update_survey_response_count()
@@ -3634,6 +3661,7 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
+DROP TRIGGER IF EXISTS trg_survey_response ON survey_responses;
 CREATE TRIGGER trg_survey_response AFTER INSERT ON survey_responses FOR EACH ROW EXECUTE FUNCTION update_survey_response_count();
 
 CREATE OR REPLACE FUNCTION update_endorsement_count()
@@ -3644,6 +3672,7 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
+DROP TRIGGER IF EXISTS trg_endorsement_added ON political_endorsements;
 CREATE TRIGGER trg_endorsement_added AFTER INSERT ON political_endorsements FOR EACH ROW EXECUTE FUNCTION update_endorsement_count();
 
 -- ─── RLS ───
@@ -3921,6 +3950,7 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
+DROP TRIGGER IF EXISTS trg_ad_count ON ad_creatives;
 CREATE TRIGGER trg_ad_count AFTER INSERT OR DELETE ON ad_creatives FOR EACH ROW EXECUTE FUNCTION update_campaign_ad_count();
 
 CREATE OR REPLACE FUNCTION update_campaign_volunteer_count()
@@ -3931,6 +3961,7 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
+DROP TRIGGER IF EXISTS trg_volunteer_count ON campaign_volunteers;
 CREATE TRIGGER trg_volunteer_count AFTER INSERT OR UPDATE OR DELETE ON campaign_volunteers FOR EACH ROW EXECUTE FUNCTION update_campaign_volunteer_count();
 
 -- ─── RLS ───
@@ -4839,10 +4870,12 @@ CREATE TRIGGER trg_hashtag_post_count
 
 -- ── Auto-update updated_at for new tables ──
 
+DROP TRIGGER IF EXISTS user_subscriptions_updated_at ON user_subscriptions;
 CREATE TRIGGER user_subscriptions_updated_at
   BEFORE UPDATE ON user_subscriptions
   FOR EACH ROW EXECUTE FUNCTION update_updated_at();
 
+DROP TRIGGER IF EXISTS political_shorts_updated_at ON political_shorts;
 CREATE TRIGGER political_shorts_updated_at
   BEFORE UPDATE ON political_shorts
   FOR EACH ROW EXECUTE FUNCTION update_updated_at();
@@ -5983,6 +6016,7 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
+DROP TRIGGER IF EXISTS trg_validate_booth_result ON booth_election_results;
 CREATE TRIGGER trg_validate_booth_result
   BEFORE INSERT OR UPDATE ON booth_election_results
   FOR EACH ROW EXECUTE FUNCTION fn_validate_booth_result();
@@ -6010,6 +6044,7 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
+DROP TRIGGER IF EXISTS trg_validate_local_body_turnout ON local_body_elections;
 CREATE TRIGGER trg_validate_local_body_turnout
   BEFORE INSERT OR UPDATE ON local_body_elections
   FOR EACH ROW EXECUTE FUNCTION fn_validate_local_body_turnout();
@@ -6024,14 +6059,17 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
+DROP TRIGGER IF EXISTS trg_mandals_updated_at ON mandals;
 CREATE TRIGGER trg_mandals_updated_at
   BEFORE UPDATE ON mandals
   FOR EACH ROW EXECUTE FUNCTION fn_set_updated_at();
 
+DROP TRIGGER IF EXISTS trg_gram_panchayats_updated_at ON gram_panchayats;
 CREATE TRIGGER trg_gram_panchayats_updated_at
   BEFORE UPDATE ON gram_panchayats
   FOR EACH ROW EXECUTE FUNCTION fn_set_updated_at();
 
+DROP TRIGGER IF EXISTS trg_polling_booths_updated_at ON polling_booths;
 CREATE TRIGGER trg_polling_booths_updated_at
   BEFORE UPDATE ON polling_booths
   FOR EACH ROW EXECUTE FUNCTION fn_set_updated_at();
@@ -6978,27 +7016,35 @@ CREATE INDEX IF NOT EXISTS idx_rep_edits_submitted  ON representative_edits(subm
 -- ╚══════════════════════════════════════════════════════════════════════════╝
 
 -- Reuse fn_set_updated_at() defined in 022.
+DROP TRIGGER IF EXISTS trg_ulb_updated_at ON urban_local_bodies;
 CREATE TRIGGER trg_ulb_updated_at
   BEFORE UPDATE ON urban_local_bodies
   FOR EACH ROW EXECUTE FUNCTION fn_set_updated_at();
+DROP TRIGGER IF EXISTS trg_ulb_wards_updated_at ON ulb_wards;
 CREATE TRIGGER trg_ulb_wards_updated_at
   BEFORE UPDATE ON ulb_wards
   FOR EACH ROW EXECUTE FUNCTION fn_set_updated_at();
+DROP TRIGGER IF EXISTS trg_zp_updated_at ON zilla_parishads;
 CREATE TRIGGER trg_zp_updated_at
   BEFORE UPDATE ON zilla_parishads
   FOR EACH ROW EXECUTE FUNCTION fn_set_updated_at();
+DROP TRIGGER IF EXISTS trg_zptc_updated_at ON zptc_divisions;
 CREATE TRIGGER trg_zptc_updated_at
   BEFORE UPDATE ON zptc_divisions
   FOR EACH ROW EXECUTE FUNCTION fn_set_updated_at();
+DROP TRIGGER IF EXISTS trg_mp_updated_at ON mandal_parishads;
 CREATE TRIGGER trg_mp_updated_at
   BEFORE UPDATE ON mandal_parishads
   FOR EACH ROW EXECUTE FUNCTION fn_set_updated_at();
+DROP TRIGGER IF EXISTS trg_mptc_updated_at ON mptc_divisions;
 CREATE TRIGGER trg_mptc_updated_at
   BEFORE UPDATE ON mptc_divisions
   FOR EACH ROW EXECUTE FUNCTION fn_set_updated_at();
+DROP TRIGGER IF EXISTS trg_gp_wards_updated_at ON gp_wards;
 CREATE TRIGGER trg_gp_wards_updated_at
   BEFORE UPDATE ON gp_wards
   FOR EACH ROW EXECUTE FUNCTION fn_set_updated_at();
+DROP TRIGGER IF EXISTS trg_representatives_updated_at ON representatives;
 CREATE TRIGGER trg_representatives_updated_at
   BEFORE UPDATE ON representatives
   FOR EACH ROW EXECUTE FUNCTION fn_set_updated_at();
@@ -7024,6 +7070,7 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
+DROP TRIGGER IF EXISTS trg_retire_prior_representative ON representatives;
 CREATE TRIGGER trg_retire_prior_representative
   AFTER INSERT ON representatives
   FOR EACH ROW EXECUTE FUNCTION fn_retire_prior_representative();
