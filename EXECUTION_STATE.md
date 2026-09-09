@@ -9,9 +9,9 @@
 PROJECT:               PANIN (formerly Kshetra)
 TARGET_DOMAIN:         India Political Geography, Intelligence, Participation & Media Platform
 CURRENT_PHASE:         W0 (Baseline Reconciliation & Ground-Truth Audit)
-CURRENT_JOB:           W003 (CI/CD Quality Pipeline)
-LAST_COMPLETED_JOB:    W003-P0 (Amendment v1.4 Activation & Governance Sync - ACCEPTED)
-NEXT_PERMITTED_JOB:    W003 (CI/CD Quality Pipeline)
+CURRENT_JOB:           W004 (Observability & Error Tracking)
+LAST_COMPLETED_JOB:    W003 (CI/CD Quality Pipeline - ACCEPTED)
+NEXT_PERMITTED_JOB:    W004 (Observability & Error Tracking)
 
 CURRENT_BRANCH:        master
 CURRENT_REMOTE_HEAD:   ecad435
@@ -46,7 +46,7 @@ REMOTE_SYNC:           Up to date with origin/master
 | **W001-R6A** | Independent Verification Re-execution | **COMPLETE** | 2026-09-08 | Independent Verifier Pass with Non-Blocking Exceptions per Amendment v1.2 Rule IV-001 |
 | **W002** | Staging / Prod Environment Separation | **ACCEPTED** | 2026-09-09 | W002-R2 IV PASS; Real cloud staging operational (`kshetra-api-staging` & `fkpigozcqnmcvofuksar`); tests A-I pass; `reports/w002_r2_independent_verification.md` |
 | **W003-P0**| Amendment v1.4 Activation & Governance Sync | **ACCEPTED** | 2026-09-09 | Independent Verifier PASS; Amendment v1.4 operational governance authority active across all registers; `reports/w003_p0_independent_verification.md` |
-| **W003** | CI/CD Quality Pipeline | **READY_FOR_INDEPENDENT_VERIFICATION** | - | Complete CI/CD pipeline modernization, automated migration drift, contract drift, evidence integrity, semantic health probes |
+| **W003** | CI/CD Quality Pipeline | **ACCEPTED (W/ MONITORED EXCEPTIONS)** | 2026-09-09 | Independent Verifier PASS per Amendment v1.4 Parts 33 & 34; `reports/w003_independent_verification.md` |
 | **W004** | Observability & Error Tracking | NOT_STARTED | - | Prerequisite: W003 |
 | **W005** | Backup & Recovery Verification | NOT_STARTED | - | Prerequisite: W004 |
 | **W006** | API Architecture Audit & Separation | NOT_STARTED | - | Prerequisite: W005 |
