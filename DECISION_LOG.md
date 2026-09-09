@@ -166,11 +166,12 @@
 - **Authority:** Master Execution Framework Amendment v1.4 (`AMENDMENT_v1.4.md`)
 - **Context:** Incorporating engineering lessons from W000–W002 to eliminate false-positive verifications, align test names strictly with test executions (Rule SI-001/002/003), distinguish static/runtime/production evidence classes, mandate application-level isolation proofs, and establish intelligent carry-forward exception controls.
 - **Decision:**
+  **AMENDMENT_v1.4 = OPERATIONAL GOVERNANCE AUTHORITY** for all current and future jobs across PANIN / Kshetra.
   1. **Test Semantic Integrity (SI-001 - SI-003):** Prohibit using liveness/process health endpoints (e.g. `/health`) as proof of database or downstream connectivity. Inspect implementation before asserting behavior.
   2. **Evidence Taxonomy & Freshness:** Explicitly categorize all evidence into `SOURCE`, `CONFIGURATION`, `BUILD`, `LOCAL RUNTIME`, `STAGING RUNTIME`, `PRODUCTION RUNTIME`, `LIVE DATABASE`, or `EXTERNAL PROVIDER`. Invalidate evidence if implementation changes.
   3. **Object & Inventory Precision:** Distinguish repository migration files from applied environment migrations; distinguish source-defined tables/views/functions/triggers from PostgreSQL live catalog entities; distinguish static route registrations from deployed runtime endpoints; distinguish Expo route source files from registered screens.
   4. **Carry-Forward Controls (Parts 16 & 31):** Maintain known W002 exceptions (real DB-backed API operations, CI/CD migration drift detection, application vs database isolation) as forward implementation mandates for W003 without reopening closed jobs.
-  5. **Permanent Operating Loop (Part 36):** Adopt the 16-stage loop: Read -> Pre-Flight -> Inspect -> Implement -> Test -> Semantic Self-Audit -> Negative-Path Test -> Repair -> Retest -> Evidence Reconciliation -> Remote Verification -> Ready for Independent Verification -> Independent Verification -> Accept -> Next Job.
+  5. **Permanent Operating Loop (Part 36):** Adopt the permanent closed-loop lifecycle: Read -> Pre-Flight -> Inspect -> Implement -> Test -> Semantic Self-Audit -> Negative-Path Test -> Repair -> Retest -> Evidence Reconciliation -> Remote Verification -> Ready for Independent Verification -> Independent Verification -> Accept -> Next Job.
   6. **Governing Principle:** Do not optimize for green reports; optimize for true reports.
 - **Rationale:** Eliminates recurring failure classes, ensures evidence cannot be faked or misinterpreted, and guides autonomous agent execution toward ground-truth engineering rigor.
 

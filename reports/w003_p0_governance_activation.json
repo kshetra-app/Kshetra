@@ -1,0 +1,40 @@
+﻿{
+  "metadata": {
+    "jobId": "W003-P0",
+    "jobTitle": "Amendment v1.4 Activation & Governance Sync",
+    "standard": "Master Execution Framework Amendment v1.4",
+    "timestamp": "2026-09-09T12:06:00.000Z",
+    "canonicalBranch": "master",
+    "repository": "https://github.com/kshetra-app/Kshetra.git"
+  },
+  "governanceAuthority": {
+    "activeOperationalAuthority": "AMENDMENT_v1.4.md",
+    "historicalGoverningAmendments": [
+      "AMENDMENT_v1.2.md (Compliance, DPDP, Independent Verification & Launch Gates)",
+      "AMENDMENT_v1.3.md (Autonomous Closed-Loop Execution, Self-Audit and Efficiency Protocol)"
+    ],
+    "protocolStatus": "MANDATORY OPERATING CONSTITUTION FOR ALL AGENTS UNDER AMENDMENT v1.4"
+  },
+  "commitLineage": {
+    "CURRENT_REMOTE_HEAD": "5f333ba408e0da603b71bf16259d044ea7fe7a0c",
+    "AUDITED_CODE_COMMIT": "5f333ba408e0da603b71bf16259d044ea7fe7a0c",
+    "EVIDENCE_COMMIT": "pending commit",
+    "ACCEPTANCE_COMMIT": "pending independent verification"
+  },
+  "consistencyChecks": {
+    "amendmentFileExists": true,
+    "protocolAuthorityMatchesV1_4": true,
+    "preFlightReadingOrderIncludesV1_4": true,
+    "executionStateRecognizesV1_4AsActive": true,
+    "decisionLogRecordsAuthorityInDec016": true,
+    "closedLoopLifecycleNoHardcodedStageCount": true,
+    "gitHeadValid": true,
+    "testSuite": "tests/governance-consistency.test.mjs (100% PASS)"
+  },
+  "w002StatusPreservation": {
+    "w002Status": "ACCEPTED",
+    "reopened": false,
+    "notes": "W002 acceptance is preserved. W002 carry-forward exceptions (real DB operations, migration drift, application-layer isolation) transferred to W003 implementation mandates per Amendment v1.4 Part 31 & 33."
+  },
+  "nextPermittedJob": "W003 (CI/CD Quality Pipeline) - BLOCKED until W003-P0 accepted"
+}

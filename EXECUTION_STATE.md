@@ -9,15 +9,15 @@
 PROJECT:               PANIN (formerly Kshetra)
 TARGET_DOMAIN:         India Political Geography, Intelligence, Participation & Media Platform
 CURRENT_PHASE:         W0 (Baseline Reconciliation & Ground-Truth Audit)
-CURRENT_JOB:           W003 (CI/CD Quality Pipeline)
+CURRENT_JOB:           W003-P0 (Amendment v1.4 Activation & Governance Sync)
 LAST_COMPLETED_JOB:    W002-R2 (Staging Cloud Provisioning & True Runtime Isolation - ACCEPTED)
-NEXT_PERMITTED_JOB:    W003 (CI/CD Quality Pipeline)
+NEXT_PERMITTED_JOB:    W003-P0 Independent Verification (W003 Implementation BLOCKED until W003-P0 accepted)
 
 CURRENT_BRANCH:        master
-CURRENT_REMOTE_HEAD:   effce60
-AUDITED_CODE_COMMIT:   c117f8c
-EVIDENCE_COMMIT:       c117f8c
-ACCEPTANCE_COMMIT:     effce60
+CURRENT_REMOTE_HEAD:   5f333ba
+AUDITED_CODE_COMMIT:   5f333ba
+EVIDENCE_COMMIT:       pending commit
+ACCEPTANCE_COMMIT:     pending independent verification
 API_VERSION:           v1 (Fastify 5.2 on Railway)
 MOBILE_VERSION:        0.1.0 (Expo 54, React Native 0.81.5)
 DATABASE_MIGRATIONS:   36 migration files present in repository (35 live applied to staging fkpigozcqnmcvofuksar)
@@ -26,7 +26,7 @@ DATABASE_VIEWS:        9 live views in staging catalog (23 unique source-defined
 API_ENDPOINTS:         109 static HTTP route registrations (12 active route groups verified)
 MOBILE_ROUTES:         53 application route files (all .tsx; 2 layouts, 51 route screens)
 MOBILE_STORES:         29 Zustand stores
-GOVERNANCE_FRAMEWORK:  Master Execution Framework Amendment v1.2, v1.3 & v1.4 (`AGENT_EXECUTION_PROTOCOL.md` Active)
+GOVERNANCE_FRAMEWORK:  Amendment v1.2 (Active History) | Amendment v1.3 (Active History) | Amendment v1.4 (ACTIVE OPERATIONAL AUTHORITY)
 REMOTE_SYNC:           Up to date with origin/master
 ```
 
@@ -45,8 +45,9 @@ REMOTE_SYNC:           Up to date with origin/master
 | **W001-R6** | Independent Verification & Final W001 Acceptance | **REOPENED** | - | Reopened per user governance review; superseded by W001-R6A |
 | **W001-R6A** | Independent Verification Re-execution | **COMPLETE** | 2026-09-08 | Independent Verifier Pass with Non-Blocking Exceptions per Amendment v1.2 Rule IV-001 |
 | **W002** | Staging / Prod Environment Separation | **ACCEPTED** | 2026-09-09 | W002-R2 IV PASS; Real cloud staging operational (`kshetra-api-staging` & `fkpigozcqnmcvofuksar`); tests A-I pass; `reports/w002_r2_independent_verification.md` |
+| **W003-P0**| Amendment v1.4 Activation & Governance Sync | **READY_FOR_INDEPENDENT_VERIFICATION** | - | Amendment v1.4 activated as operational governance authority across all registers; consistency test passed |
 
-| **W003** | CI/CD Quality Pipeline | **UNBLOCKED (READY_TO_START)** | - | Prerequisite W002 ACCEPTED |
+| **W003** | CI/CD Quality Pipeline | **BLOCKED (PENDING_W003-P0)** | - | Prerequisite: W003-P0 ACCEPTED |
 | **W004** | Observability & Error Tracking | NOT_STARTED | - | Prerequisite: W003 |
 | **W005** | Backup & Recovery Verification | NOT_STARTED | - | Prerequisite: W004 |
 | **W006** | API Architecture Audit & Separation | NOT_STARTED | - | Prerequisite: W005 |

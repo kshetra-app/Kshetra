@@ -22,7 +22,8 @@
 
 
 | **W002** | Staging / Prod Separation | DEVOPS | ACCEPTED | `c117f8c` | `tests/environment-separation.test.mjs`; `scripts/verify-w002-r2-isolation.mjs` (Tests A-I pass 100%) | `reports/w002_r2_*.json`, `reports/w002_r2_independent_verification.md` | Staging Railway (`kshetra-api-staging`) & Supabase (`fkpigozcqnmcvofuksar`) verified operational; live sentinel write isolation verified | 2026-09-09 |
-| **W003** | CI/CD Quality Pipeline | DEVOPS | UNBLOCKED | - | - | - | - | - |
+| **W003-P0**| Amendment v1.4 Activation & Governance Sync | ARCH | READY_FOR_INDEPENDENT_VERIFICATION | `5f333ba` | `tests/governance-consistency.test.mjs` | `reports/w003_p0_governance_activation.json`, `reports/w003_p0_governance_activation.md` | Governance authority v1.4 confirmed active | Pending IV |
+| **W003** | CI/CD Quality Pipeline | DEVOPS | BLOCKED | - | - | - | - | Prerequisite: W003-P0 ACCEPTED |
 | **W004** | Observability & Error Tracking | DEVOPS | NOT_STARTED | - | - | - | - | - |
 | **W005** | Backup & Recovery Verification | DEVOPS | NOT_STARTED | - | - | - | - | - |
 | **W006** | API Architecture Audit & Separation | ARCH | NOT_STARTED | - | - | - | - | - |

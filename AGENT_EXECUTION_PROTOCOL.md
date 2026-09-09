@@ -1,8 +1,8 @@
 # AGENT EXECUTION PROTOCOL
 ## Autonomous Closed-Loop Execution, Self-Audit and Efficiency Protocol
 
-**Authority:** Master Execution Framework Amendment v1.3 (`AMENDMENT_v1.3.md`) & Amendment v1.4 (`AMENDMENT_v1.4.md`)  
-**Status:** MANDATORY OPERATING CONSTITUTION FOR ALL AGENTS  
+**Authority:** Master Execution Framework Amendment v1.4 (`AMENDMENT_v1.4.md`) (incorporating historical governing principles of `AMENDMENT_v1.2.md` and `AMENDMENT_v1.3.md`)  
+**Status:** MANDATORY OPERATING CONSTITUTION FOR ALL AGENTS UNDER AMENDMENT v1.4  
 **Scope:** All current and future jobs, remediations, verifications, and releases across PANIN / Kshetra.
 
 ---
@@ -14,7 +14,7 @@ Before starting ANY job, the agent must read the following documents in this exa
 1. `MASTER EXECUTION DOCUMENT` (`PANIN - Kshetra - AI Agent Master Execution Document and Sequential Job Book.md`)
 2. `AMENDMENT_v1.2.md` (Compliance, DPDP, Independent Verification & Launch Gates)
 3. `AMENDMENT_v1.3.md` (Autonomous Closed-Loop Execution, Self-Audit and Efficiency Protocol)
-4. `AMENDMENT_v1.4.md` (Evidence Semantics, Runtime Proof and Carry-Forward Controls)
+4. `AMENDMENT_v1.4.md` (Evidence Semantics, Runtime Proof and Carry-Forward Controls - OPERATIONAL GOVERNANCE AUTHORITY)
 5. `AGENT_EXECUTION_PROTOCOL.md` (This Operating Constitution)
 6. `EXECUTION_STATE.md` (Current Project & Execution Coordinates)
 7. `ACCEPTANCE_REGISTER.md` (Authoritative Milestone Acceptance Truth)
@@ -27,7 +27,7 @@ Before starting ANY job, the agent must read the following documents in this exa
 
 ## 2. Permanent Operating Lifecycle (Amendment v1.4 Part 36)
 
-Every job must execute through the permanent operating loop:
+Every job must execute through the full closed-loop lifecycle:
 
 ```text
 READ
