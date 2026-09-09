@@ -3,25 +3,17 @@
     "repository": "https://github.com/kshetra-app/Kshetra.git",
     "branch": "master",
     "targetMandate": "CI/CD Repo & Evidence Integrity (Amendment v1.4 Part 34A & 34B)",
-    "timestamp": "2026-09-09T14:00:32.812Z"
+    "timestamp": "2026-09-09T14:31:30.404Z"
   },
   "workingTree": {
     "clean": false,
     "uncommittedEntries": [
-      "M .github/workflows/ci.yml",
-      " M apps/api/src/__tests__/health.test.ts",
-      " M apps/api/src/routes/health.ts",
-      " M reports/w002_r2_database_catalog.json",
-      "?? reports/w003_api_contract_drift_report.json",
-      "?? reports/w003_evidence_integrity_report.json",
-      "?? reports/w003_migration_drift_report.json",
-      "?? scripts/check-api-contract-drift.mjs",
-      "?? scripts/check-migration-drift.mjs",
-      "?? scripts/check-repo-evidence-integrity.mjs"
+      "M ACCEPTANCE_REGISTER.md",
+      " M EXECUTION_STATE.md"
     ]
   },
-  "referencedCommitsChecked": 10,
-  "verifiedCommitsCount": 10,
+  "referencedCommitsChecked": 11,
+  "verifiedCommitsCount": 11,
   "missingCommitsCount": 0,
   "unresolvedCommits": [],
   "status": "PASS"
