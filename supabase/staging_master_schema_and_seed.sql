@@ -1,6 +1,6 @@
 -- ==============================================================================
 -- KSHETRA STAGING MASTER SCHEMA & SYNTHETIC SEED DATA
--- Generated: 2026-09-09T09:05:20.258Z
+-- Generated: 2026-09-09T09:12:24.358Z
 -- Target: Supabase Staging (fkpigozcqnmcvofuksar)
 --
 -- Instructions:
@@ -7640,7 +7640,7 @@ CREATE TRIGGER on_auth_user_created
 -- FILE: 030_trai_opt_outs.sql
 -- ========================================================
 
-﻿-- 030: TRAI Opt-Out Ledger for Voice OBD and SMS Outreach
+-- 030: TRAI Opt-Out Ledger for Voice OBD and SMS Outreach
 -- Enforces statutory National Do Not Call (NDNC) & recipient Press 9 opt-outs
 
 CREATE TABLE IF NOT EXISTS trai_opt_outs (

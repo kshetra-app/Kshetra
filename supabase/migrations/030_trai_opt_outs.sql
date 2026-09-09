@@ -1,4 +1,4 @@
-﻿-- 030: TRAI Opt-Out Ledger for Voice OBD and SMS Outreach
+-- 030: TRAI Opt-Out Ledger for Voice OBD and SMS Outreach
 -- Enforces statutory National Do Not Call (NDNC) & recipient Press 9 opt-outs
 
 CREATE TABLE IF NOT EXISTS trai_opt_outs (
