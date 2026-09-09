@@ -21,7 +21,7 @@
 
 
 
-| **W002** | Staging / Prod Separation | DEVOPS | READY_TO_START | - | - | - | - | UNBLOCKED: W000-REC2A accepted |
+| **W002** | Staging / Prod Separation | DEVOPS | TESTED | `fe4bddd` | `tests/environment-separation.test.mjs`; `tsc` shared/api/mobile | `reports/w002_environment_separation_report.*` | Configs & templates segregated | Ready for IV |
 | **W003** | CI/CD Quality Pipeline | DEVOPS | NOT_STARTED | - | - | - | - | - |
 | **W004** | Observability & Error Tracking | DEVOPS | NOT_STARTED | - | - | - | - | - |
 | **W005** | Backup & Recovery Verification | DEVOPS | NOT_STARTED | - | - | - | - | - |

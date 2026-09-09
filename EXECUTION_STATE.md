@@ -9,15 +9,15 @@
 PROJECT:               PANIN (formerly Kshetra)
 TARGET_DOMAIN:         India Political Geography, Intelligence, Participation & Media Platform
 CURRENT_PHASE:         W0 (Baseline Reconciliation & Ground-Truth Audit)
-CURRENT_JOB:           W002-P0 (Governance Coordinate Normalization)
+CURRENT_JOB:           W002 (Staging / Prod Environment Separation)
 LAST_COMPLETED_JOB:    W000-REC2A (Independent Verification & Final Acceptance)
-NEXT_PERMITTED_JOB:    W002 (Staging / Prod Environment Separation)
+NEXT_PERMITTED_JOB:    W002 Independent Verification / W003 (CI/CD Quality Pipeline)
 
 CURRENT_BRANCH:        master
-CURRENT_REMOTE_HEAD:   8168676
-AUDITED_CODE_COMMIT:   5f7c8a5 (W000-REC2A implementation verified by regression suite and build checks)
-EVIDENCE_COMMIT:       5f7c8a5 (Regenerated in-repo inventory JSONs in reports/ and scratch/)
-ACCEPTANCE_COMMIT:     8168676 (Independent Verification PASS report and accepted registers)
+CURRENT_REMOTE_HEAD:   fe4bddd
+AUDITED_CODE_COMMIT:   fe4bddd
+EVIDENCE_COMMIT:       fe4bddd
+ACCEPTANCE_COMMIT:     Pending Independent Verification
 API_VERSION:           v1 (Fastify 5.2 on Railway)
 MOBILE_VERSION:        0.1.0 (Expo 54, React Native 0.81.5)
 DATABASE_MIGRATIONS:   36 migration files present in repository (001-034 + 0035 + duplicate 023; live catalog = HUMAN ACTION REQUIRED)
@@ -44,7 +44,7 @@ REMOTE_SYNC:           Up to date with origin/master
 | **W001-R5** | W001 Reconciliation & Remote Reproducibility | **COMPLETE** | 2026-09-08 | Reconciled evidence into in-repo `reports/` with Part 7 metadata per Amendment v1.2 |
 | **W001-R6** | Independent Verification & Final W001 Acceptance | **REOPENED** | - | Reopened per user governance review; superseded by W001-R6A |
 | **W001-R6A** | Independent Verification Re-execution | **COMPLETE** | 2026-09-08 | Independent Verifier Pass with Non-Blocking Exceptions per Amendment v1.2 Rule IV-001 |
-| **W002** | Staging / Prod Environment Separation | **READY_TO_START** | - | UNBLOCKED: Phase W0 baseline & production verification accepted |
+| **W002** | Staging / Prod Environment Separation | **TESTED** | - | Implemented shared environment configs, mobile adapter, templates; tests pass; ready for IV |
 
 | **W003** | CI/CD Quality Pipeline | NOT_STARTED | - | Prerequisite: W002 |
 | **W004** | Observability & Error Tracking | NOT_STARTED | - | Prerequisite: W003 |

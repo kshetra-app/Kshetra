@@ -1,0 +1,69 @@
+﻿{
+  "metadata": {
+    "jobId": "W002",
+    "jobTitle": "Staging / Production Environment Separation",
+    "standard": "Master Execution Framework Amendment v1.2",
+    "timestamp": "2026-09-09T03:52:00.000Z",
+    "auditor": "DEVOPS+ARCH",
+    "canonicalBranch": "master",
+    "repository": "https://github.com/kshetra-app/Kshetra.git"
+  },
+  "environmentSeparation": {
+    "sharedConfigurationModule": "packages/shared/src/config/environments.ts",
+    "mobileEnvironmentAdapter": "apps/mobile/lib/environment.ts",
+    "templates": {
+      "apiStaging": "apps/api/.env.staging.example",
+      "apiProduction": "apps/api/.env.production.example",
+      "mobileStaging": "apps/mobile/.env.staging.example",
+      "mobileProduction": "apps/mobile/.env.production.example"
+    },
+    "environments": {
+      "development": {
+        "apiBaseUrl": "http://localhost:3001",
+        "supabaseUrl": "http://localhost:54321",
+        "isProduction": false,
+        "isStaging": false,
+        "isDevelopment": true
+      },
+      "staging": {
+        "apiBaseUrl": "https://staging-api.kshetra.in",
+        "supabaseUrl": "https://staging-db.kshetra.in",
+        "isProduction": false,
+        "isStaging": true,
+        "isDevelopment": false
+      },
+      "production": {
+        "apiBaseUrl": "https://kshetra-api-production-9f06.up.railway.app",
+        "supabaseUrl": "https://cxhyqjfelcwkavbqwqap.supabase.co",
+        "isProduction": true,
+        "isStaging": false,
+        "isDevelopment": false
+      }
+    }
+  },
+  "automatedTests": {
+    "environmentSeparationSuite": {
+      "command": "npx tsx tests/environment-separation.test.mjs",
+      "result": "PASS (4/4 test assertions passed)"
+    },
+    "apiTypeScriptBuild": {
+      "command": "npm run build --prefix apps/api",
+      "result": "PASS (0 errors)"
+    },
+    "mobileTypeScriptCheck": {
+      "command": "npm run typecheck --prefix apps/mobile",
+      "result": "PASS (0 errors)"
+    },
+    "sharedPackageBuild": {
+      "command": "npm run build --prefix packages/shared",
+      "result": "PASS (0 errors)"
+    }
+  },
+  "defectStatus": {
+    "DEF-009": "OPEN / HUMAN ACTION REQUIRED (Defensive anon-key fallback operational in apps/api/src/lib/supabase.ts)",
+    "DEF-010": "RESOLVED IN CODE / PENDING DEPLOYMENT (Committed code passes Fastify inject tests for kshetra.in, panin.in; live edge deployment pending Railway token refresh)",
+    "DEF-011": "CLOSED (INVALID DEFECT)",
+    "DEF-012": "OPEN (Launch Gate A blocker for mobile production release)"
+  },
+  "status": "IMPLEMENTED_AND_TESTED"
+}
