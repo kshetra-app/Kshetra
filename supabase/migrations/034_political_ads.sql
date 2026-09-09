@@ -42,7 +42,7 @@ CREATE POLICY political_ads_public_select_policy ON political_ads
         -- Admin and moderators can view all ads for the review queue
         OR EXISTS (
           SELECT 1 FROM user_profiles
-          WHERE user_profiles.id = auth.uid()
+          WHERE user_profiles.user_id = auth.uid()
             AND user_profiles.role IN ('admin', 'moderator')
         )
       )
@@ -69,7 +69,7 @@ CREATE POLICY political_ads_reviewer_update_policy ON political_ads
     auth.uid() IS NOT NULL
     AND EXISTS (
       SELECT 1 FROM user_profiles
-      WHERE user_profiles.id = auth.uid()
+      WHERE user_profiles.user_id = auth.uid()
         AND user_profiles.role IN ('admin', 'moderator')
     )
   )
@@ -77,7 +77,7 @@ CREATE POLICY political_ads_reviewer_update_policy ON political_ads
     auth.uid() IS NOT NULL
     AND EXISTS (
       SELECT 1 FROM user_profiles
-      WHERE user_profiles.id = auth.uid()
+      WHERE user_profiles.user_id = auth.uid()
         AND user_profiles.role IN ('admin', 'moderator')
     )
   );

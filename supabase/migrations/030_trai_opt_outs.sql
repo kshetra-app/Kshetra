@@ -17,8 +17,8 @@ CREATE INDEX IF NOT EXISTS idx_trai_opt_outs_date ON trai_opt_outs(opted_out_at)
 -- RLS: Service role can manage, authenticated users can check
 ALTER TABLE trai_opt_outs ENABLE ROW LEVEL SECURITY;
 
-CREATE POLICY Anyone can check opt-outs ON trai_opt_outs
+CREATE POLICY "Anyone can check opt-outs" ON trai_opt_outs
   FOR SELECT USING (true);
 
-CREATE POLICY Service role can insert opt-outs ON trai_opt_outs
+CREATE POLICY "Service role can insert opt-outs" ON trai_opt_outs
   FOR INSERT WITH CHECK (true);

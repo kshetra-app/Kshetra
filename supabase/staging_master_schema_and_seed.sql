@@ -1,6 +1,6 @@
 -- ==============================================================================
 -- KSHETRA STAGING MASTER SCHEMA & SYNTHETIC SEED DATA
--- Generated: 2026-09-09T09:12:24.358Z
+-- Generated: 2026-09-09T09:16:33.340Z
 -- Target: Supabase Staging (fkpigozcqnmcvofuksar)
 --
 -- Instructions:
@@ -7659,10 +7659,10 @@ CREATE INDEX IF NOT EXISTS idx_trai_opt_outs_date ON trai_opt_outs(opted_out_at)
 -- RLS: Service role can manage, authenticated users can check
 ALTER TABLE trai_opt_outs ENABLE ROW LEVEL SECURITY;
 
-CREATE POLICY Anyone can check opt-outs ON trai_opt_outs
+CREATE POLICY "Anyone can check opt-outs" ON trai_opt_outs
   FOR SELECT USING (true);
 
-CREATE POLICY Service role can insert opt-outs ON trai_opt_outs
+CREATE POLICY "Service role can insert opt-outs" ON trai_opt_outs
   FOR INSERT WITH CHECK (true);
 
 
@@ -8030,7 +8030,7 @@ CREATE POLICY political_ads_public_select_policy ON political_ads
         -- Admin and moderators can view all ads for the review queue
         OR EXISTS (
           SELECT 1 FROM user_profiles
-          WHERE user_profiles.id = auth.uid()
+          WHERE user_profiles.user_id = auth.uid()
             AND user_profiles.role IN ('admin', 'moderator')
         )
       )
@@ -8057,7 +8057,7 @@ CREATE POLICY political_ads_reviewer_update_policy ON political_ads
     auth.uid() IS NOT NULL
     AND EXISTS (
       SELECT 1 FROM user_profiles
-      WHERE user_profiles.id = auth.uid()
+      WHERE user_profiles.user_id = auth.uid()
         AND user_profiles.role IN ('admin', 'moderator')
     )
   )
@@ -8065,7 +8065,7 @@ CREATE POLICY political_ads_reviewer_update_policy ON political_ads
     auth.uid() IS NOT NULL
     AND EXISTS (
       SELECT 1 FROM user_profiles
-      WHERE user_profiles.id = auth.uid()
+      WHERE user_profiles.user_id = auth.uid()
         AND user_profiles.role IN ('admin', 'moderator')
     )
   );
