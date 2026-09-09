@@ -56,7 +56,6 @@ export const ENVIRONMENT_CONFIGS: Record<Environment, EnvironmentConfig> = {
       'https://www.panin.in',
       'https://kshetra.app',
       'https://www.kshetra.app',
-      'http://localhost:8081',
     ],
   },
   test: {
@@ -71,9 +70,17 @@ export const ENVIRONMENT_CONFIGS: Record<Environment, EnvironmentConfig> = {
 };
 
 export function resolveEnvironment(envStr?: string): Environment {
-  const norm = (envStr ?? process.env.APP_ENV ?? process.env.NODE_ENV ?? 'development').toLowerCase().trim();
+  const norm = (
+    envStr ??
+    (typeof process !== 'undefined'
+      ? process.env.EXPO_PUBLIC_APP_ENV ?? process.env.APP_ENV ?? process.env.NODE_ENV
+      : undefined) ??
+    'development'
+  ).toLowerCase().trim();
+
   if (norm === 'prod' || norm === 'production') return 'production';
-  if (norm === 'stage' || norm === 'staging') return 'staging';
+  // Explicit EAS Preview Profile mapping: preview builds map strictly to staging
+  if (norm === 'stage' || norm === 'staging' || norm === 'preview') return 'staging';
   if (norm === 'test') return 'test';
   return 'development';
 }

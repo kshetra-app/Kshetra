@@ -1,0 +1,30 @@
+﻿{
+  "metadata": {
+    "jobId": "W002-R1",
+    "jobTitle": "CORS Policy & Production Hardening Report",
+    "standard": "Master Execution Framework Amendment v1.2",
+    "timestamp": "2026-09-09T04:03:30.000Z",
+    "auditor": "SEC+BE+DEVOPS",
+    "canonicalBranch": "master",
+    "repository": "https://github.com/kshetra-app/Kshetra.git"
+  },
+  "step9_corsHardening": {
+    "localhost8081Removed": true,
+    "productionAllowedOrigins": [
+      "https://kshetra.in",
+      "https://www.kshetra.in",
+      "https://panin.in",
+      "https://www.panin.in",
+      "https://kshetra.app",
+      "https://www.kshetra.app"
+    ],
+    "verificationResults": {
+      "https://kshetra.in": { "expected": 204, "actual": 204, "allowOrigin": "https://kshetra.in", "result": "PASS" },
+      "https://panin.in": { "expected": 204, "actual": 204, "allowOrigin": "https://panin.in", "result": "PASS" },
+      "https://staging.kshetra.in": { "expected": 204, "actual": 204, "allowOrigin": null, "result": "PASS (Blocked)" },
+      "http://localhost:8081": { "expected": 204, "actual": 204, "allowOrigin": null, "result": "PASS (Blocked in Production)" },
+      "https://attacker.com": { "expected": 204, "actual": 204, "allowOrigin": null, "result": "PASS (Blocked)" }
+    }
+  },
+  "status": "PASS (Committed code fully verified via Fastify inject test)"
+}

@@ -1,0 +1,44 @@
+﻿{
+  "metadata": {
+    "jobId": "W002-R1",
+    "jobTitle": "Mobile Environment & EAS Profile Resolution Audit",
+    "standard": "Master Execution Framework Amendment v1.2",
+    "timestamp": "2026-09-09T04:03:00.000Z",
+    "auditor": "MOB+DEVOPS",
+    "canonicalBranch": "master",
+    "repository": "https://github.com/kshetra-app/Kshetra.git"
+  },
+  "step7_canonicalPrecedence": {
+    "resolutionOrder": "EXPO_PUBLIC_APP_ENV -> APP_ENV -> NODE_ENV -> 'development'",
+    "file": "apps/mobile/lib/environment.ts",
+    "implementation": "const rawEnv = process.env.EXPO_PUBLIC_APP_ENV ?? process.env.APP_ENV ?? process.env.NODE_ENV ?? 'development';",
+    "status": "PASS (Explicit and deterministic)"
+  },
+  "step8_easProfileMapping": {
+    "profile": "preview",
+    "configuredEnv": "APP_ENV: 'preview'",
+    "resolvedTarget": "staging",
+    "resolverLogic": "if (norm === 'stage' || norm === 'staging' || norm === 'preview') return 'staging';",
+    "status": "PASS (Verified via tests/environment-separation.test.mjs)"
+  },
+  "easProfilesSummary": {
+    "development": {
+      "channel": "development",
+      "resolvedEnvironment": "development",
+      "targetApi": "http://localhost:3001",
+      "targetSupabase": "http://localhost:54321"
+    },
+    "preview": {
+      "channel": "preview",
+      "resolvedEnvironment": "staging",
+      "targetApi": "https://staging-api.kshetra.in",
+      "targetSupabase": "https://staging-db.kshetra.in"
+    },
+    "production": {
+      "channel": "production",
+      "resolvedEnvironment": "production",
+      "targetApi": "https://kshetra-api-production-9f06.up.railway.app",
+      "targetSupabase": "https://cxhyqjfelcwkavbqwqap.supabase.co"
+    }
+  }
+}

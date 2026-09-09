@@ -49,10 +49,6 @@ const DEFAULT_ALLOWED_ORIGINS = [
   'https://www.panin.in',
   'https://kshetra.app',
   'https://www.kshetra.app',
-  'http://localhost:3000',
-  'http://localhost:8081',
-  'http://localhost:19006',
-  'http://localhost:5173',
 ];
 
 /**

@@ -9,14 +9,14 @@
 PROJECT:               PANIN (formerly Kshetra)
 TARGET_DOMAIN:         India Political Geography, Intelligence, Participation & Media Platform
 CURRENT_PHASE:         W0 (Baseline Reconciliation & Ground-Truth Audit)
-CURRENT_JOB:           W002 (Staging / Prod Environment Separation)
+CURRENT_JOB:           W002-R1 (Real Staging Provisioning & Runtime Isolation)
 LAST_COMPLETED_JOB:    W000-REC2A (Independent Verification & Final Acceptance)
-NEXT_PERMITTED_JOB:    W002 Independent Verification / W003 (CI/CD Quality Pipeline)
+NEXT_PERMITTED_JOB:    W002-R1 Independent Verification (W003 BLOCKED until W002 accepted)
 
 CURRENT_BRANCH:        master
-CURRENT_REMOTE_HEAD:   fe4bddd
-AUDITED_CODE_COMMIT:   fe4bddd
-EVIDENCE_COMMIT:       fe4bddd
+CURRENT_REMOTE_HEAD:   04b0188
+AUDITED_CODE_COMMIT:   04b0188
+EVIDENCE_COMMIT:       04b0188
 ACCEPTANCE_COMMIT:     Pending Independent Verification
 API_VERSION:           v1 (Fastify 5.2 on Railway)
 MOBILE_VERSION:        0.1.0 (Expo 54, React Native 0.81.5)
@@ -44,7 +44,7 @@ REMOTE_SYNC:           Up to date with origin/master
 | **W001-R5** | W001 Reconciliation & Remote Reproducibility | **COMPLETE** | 2026-09-08 | Reconciled evidence into in-repo `reports/` with Part 7 metadata per Amendment v1.2 |
 | **W001-R6** | Independent Verification & Final W001 Acceptance | **REOPENED** | - | Reopened per user governance review; superseded by W001-R6A |
 | **W001-R6A** | Independent Verification Re-execution | **COMPLETE** | 2026-09-08 | Independent Verifier Pass with Non-Blocking Exceptions per Amendment v1.2 Rule IV-001 |
-| **W002** | Staging / Prod Environment Separation | **TESTED** | - | Implemented shared environment configs, mobile adapter, templates; tests pass; ready for IV |
+| **W002** | Staging / Prod Environment Separation | **NOT ACCEPTED (IN_VERIFICATION)** | - | W002-R1 runtime tests pass; cloud staging provisioning = HUMAN ACTION REQUIRED |
 
 | **W003** | CI/CD Quality Pipeline | NOT_STARTED | - | Prerequisite: W002 |
 | **W004** | Observability & Error Tracking | NOT_STARTED | - | Prerequisite: W003 |

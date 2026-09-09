@@ -1,9 +1,15 @@
 ﻿import { getEnvironmentConfig, resolveEnvironment } from '@kshetra/shared';
 
-const envName = process.env.APP_ENV || process.env.NODE_ENV || 'development';
-const config = getEnvironmentConfig(envName);
+// Canonical resolution order: EXPO_PUBLIC_APP_ENV -> APP_ENV -> NODE_ENV -> 'development'
+const rawEnv =
+  process.env.EXPO_PUBLIC_APP_ENV ??
+  process.env.APP_ENV ??
+  process.env.NODE_ENV ??
+  'development';
 
-export const CURRENT_ENVIRONMENT = resolveEnvironment(envName);
+const config = getEnvironmentConfig(rawEnv);
+
+export const CURRENT_ENVIRONMENT = resolveEnvironment(rawEnv);
 export const IS_PRODUCTION = config.isProduction;
 export const IS_STAGING = config.isStaging;
 export const IS_DEVELOPMENT = config.isDevelopment;
