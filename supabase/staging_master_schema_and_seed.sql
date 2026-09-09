@@ -1,6 +1,6 @@
 -- ==============================================================================
 -- KSHETRA STAGING MASTER SCHEMA & SYNTHETIC SEED DATA (FULLY IDEMPOTENT)
--- Generated: 2026-09-09T09:56:33.470Z
+-- Generated: 2026-09-09T10:02:02.360Z
 -- Target: Supabase Staging (fkpigozcqnmcvofuksar)
 --
 -- Instructions:
@@ -1698,8 +1698,8 @@ CREATE TABLE IF NOT EXISTS delimitation_proposals (
   updated_at  TIMESTAMPTZ NOT NULL DEFAULT now()
 );
 
-CREATE INDEX idx_delim_proposals_state ON delimitation_proposals(state_code);
-CREATE INDEX idx_delim_proposals_status ON delimitation_proposals(status);
+CREATE INDEX IF NOT EXISTS idx_delim_proposals_state ON delimitation_proposals(state_code);
+CREATE INDEX IF NOT EXISTS idx_delim_proposals_status ON delimitation_proposals(status);
 
 -- ─── 2. PROPOSED CONSTITUENCIES ───
 CREATE TABLE IF NOT EXISTS proposed_constituencies (
@@ -1734,9 +1734,9 @@ CREATE TABLE IF NOT EXISTS proposed_constituencies (
   created_at  TIMESTAMPTZ NOT NULL DEFAULT now()
 );
 
-CREATE INDEX idx_proposed_ac_proposal ON proposed_constituencies(proposal_id);
-CREATE INDEX idx_proposed_ac_state ON proposed_constituencies(state_code);
-CREATE UNIQUE INDEX idx_proposed_ac_unique ON proposed_constituencies(proposal_id, new_ac_no);
+CREATE INDEX IF NOT EXISTS idx_proposed_ac_proposal ON proposed_constituencies(proposal_id);
+CREATE INDEX IF NOT EXISTS idx_proposed_ac_state ON proposed_constituencies(state_code);
+CREATE UNIQUE INDEX IF NOT EXISTS idx_proposed_ac_unique ON proposed_constituencies(proposal_id, new_ac_no);
 
 -- ─── 3. CONSTITUENCY MAPPING (old → new) ───
 CREATE TABLE IF NOT EXISTS constituency_mapping (
@@ -1754,9 +1754,9 @@ CREATE TABLE IF NOT EXISTS constituency_mapping (
   created_at  TIMESTAMPTZ NOT NULL DEFAULT now()
 );
 
-CREATE INDEX idx_mapping_proposal ON constituency_mapping(proposal_id);
-CREATE INDEX idx_mapping_old_ac ON constituency_mapping(state_code, old_ac_no);
-CREATE INDEX idx_mapping_new_ac ON constituency_mapping(state_code, new_ac_no);
+CREATE INDEX IF NOT EXISTS idx_mapping_proposal ON constituency_mapping(proposal_id);
+CREATE INDEX IF NOT EXISTS idx_mapping_old_ac ON constituency_mapping(state_code, old_ac_no);
+CREATE INDEX IF NOT EXISTS idx_mapping_new_ac ON constituency_mapping(state_code, new_ac_no);
 
 -- ─── 4. WARD / SUB-DISTRICT POPULATION ───
 CREATE TABLE IF NOT EXISTS ward_population (
@@ -1786,10 +1786,10 @@ CREATE TABLE IF NOT EXISTS ward_population (
   created_at  TIMESTAMPTZ NOT NULL DEFAULT now()
 );
 
-CREATE INDEX idx_ward_pop_state ON ward_population(state_code);
-CREATE INDEX idx_ward_pop_district ON ward_population(state_code, district_name);
-CREATE INDEX idx_ward_pop_census ON ward_population(census_year);
-CREATE INDEX idx_ward_pop_ac ON ward_population(current_ac_no);
+CREATE INDEX IF NOT EXISTS idx_ward_pop_state ON ward_population(state_code);
+CREATE INDEX IF NOT EXISTS idx_ward_pop_district ON ward_population(state_code, district_name);
+CREATE INDEX IF NOT EXISTS idx_ward_pop_census ON ward_population(census_year);
+CREATE INDEX IF NOT EXISTS idx_ward_pop_ac ON ward_population(current_ac_no);
 
 -- ─── 5. DELIMITATION EVENTS (timeline) ───
 CREATE TABLE IF NOT EXISTS delimitation_events (
@@ -1823,10 +1823,10 @@ CREATE TABLE IF NOT EXISTS delimitation_events (
   created_at  TIMESTAMPTZ NOT NULL DEFAULT now()
 );
 
-CREATE INDEX idx_delim_events_date ON delimitation_events(event_date DESC);
-CREATE INDEX idx_delim_events_state ON delimitation_events(state_code);
-CREATE INDEX idx_delim_events_type ON delimitation_events(event_type);
-CREATE INDEX idx_delim_events_significance ON delimitation_events(significance);
+CREATE INDEX IF NOT EXISTS idx_delim_events_date ON delimitation_events(event_date DESC);
+CREATE INDEX IF NOT EXISTS idx_delim_events_state ON delimitation_events(state_code);
+CREATE INDEX IF NOT EXISTS idx_delim_events_type ON delimitation_events(event_type);
+CREATE INDEX IF NOT EXISTS idx_delim_events_significance ON delimitation_events(significance);
 
 -- ─── 6. CITIZEN IMPACT LOOKUP ───
 CREATE TABLE IF NOT EXISTS citizen_impact (
@@ -1864,9 +1864,9 @@ CREATE TABLE IF NOT EXISTS citizen_impact (
   created_at  TIMESTAMPTZ NOT NULL DEFAULT now()
 );
 
-CREATE INDEX idx_citizen_impact_pin ON citizen_impact(pin_code);
-CREATE INDEX idx_citizen_impact_state ON citizen_impact(state_code);
-CREATE INDEX idx_citizen_impact_ac ON citizen_impact(current_ac_no);
+CREATE INDEX IF NOT EXISTS idx_citizen_impact_pin ON citizen_impact(pin_code);
+CREATE INDEX IF NOT EXISTS idx_citizen_impact_state ON citizen_impact(state_code);
+CREATE INDEX IF NOT EXISTS idx_citizen_impact_ac ON citizen_impact(current_ac_no);
 
 -- ─── RLS POLICIES ───
 ALTER TABLE delimitation_proposals ENABLE ROW LEVEL SECURITY;
@@ -3282,11 +3282,11 @@ CREATE TABLE IF NOT EXISTS articles (
   updated_at TIMESTAMPTZ DEFAULT NOW()
 );
 
-CREATE INDEX idx_articles_author ON articles(author_id);
-CREATE INDEX idx_articles_status ON articles(status);
-CREATE INDEX idx_articles_state ON articles(state_code);
-CREATE INDEX idx_articles_published ON articles(published_at DESC) WHERE status = 'published';
-CREATE INDEX idx_articles_breaking ON articles(is_breaking, breaking_priority) WHERE is_breaking = TRUE;
+CREATE INDEX IF NOT EXISTS idx_articles_author ON articles(author_id);
+CREATE INDEX IF NOT EXISTS idx_articles_status ON articles(status);
+CREATE INDEX IF NOT EXISTS idx_articles_state ON articles(state_code);
+CREATE INDEX IF NOT EXISTS idx_articles_published ON articles(published_at DESC) WHERE status = 'published';
+CREATE INDEX IF NOT EXISTS idx_articles_breaking ON articles(is_breaking, breaking_priority) WHERE is_breaking = TRUE;
 
 -- ─── Fact Checks ───
 CREATE TABLE IF NOT EXISTS fact_checks (
@@ -3461,10 +3461,10 @@ CREATE TABLE IF NOT EXISTS politician_portal_profiles (
   UNIQUE(user_id)
 );
 
-CREATE INDEX idx_politician_state ON politician_portal_profiles(state_code);
-CREATE INDEX idx_politician_tier ON politician_portal_profiles(tier);
-CREATE INDEX idx_politician_party ON politician_portal_profiles(party);
-CREATE INDEX idx_politician_ac ON politician_portal_profiles(constituency_ac_no);
+CREATE INDEX IF NOT EXISTS idx_politician_state ON politician_portal_profiles(state_code);
+CREATE INDEX IF NOT EXISTS idx_politician_tier ON politician_portal_profiles(tier);
+CREATE INDEX IF NOT EXISTS idx_politician_party ON politician_portal_profiles(party);
+CREATE INDEX IF NOT EXISTS idx_politician_ac ON politician_portal_profiles(constituency_ac_no);
 
 -- ─── Constituent Broadcasts ───
 CREATE TABLE IF NOT EXISTS constituent_broadcasts (
@@ -3514,9 +3514,9 @@ CREATE TABLE IF NOT EXISTS political_events (
   updated_at TIMESTAMPTZ DEFAULT NOW()
 );
 
-CREATE INDEX idx_events_state ON political_events(state_code);
-CREATE INDEX idx_events_date ON political_events(start_time DESC);
-CREATE INDEX idx_events_politician ON political_events(politician_id);
+CREATE INDEX IF NOT EXISTS idx_events_state ON political_events(state_code);
+CREATE INDEX IF NOT EXISTS idx_events_date ON political_events(start_time DESC);
+CREATE INDEX IF NOT EXISTS idx_events_politician ON political_events(politician_id);
 
 -- ─── Event RSVPs ───
 CREATE TABLE IF NOT EXISTS event_rsvps (
@@ -3772,9 +3772,9 @@ CREATE TABLE IF NOT EXISTS campaigns (
   updated_at TIMESTAMPTZ DEFAULT NOW()
 );
 
-CREATE INDEX idx_campaigns_politician ON campaigns(politician_id);
-CREATE INDEX idx_campaigns_state ON campaigns(state_code);
-CREATE INDEX idx_campaigns_status ON campaigns(status);
+CREATE INDEX IF NOT EXISTS idx_campaigns_politician ON campaigns(politician_id);
+CREATE INDEX IF NOT EXISTS idx_campaigns_state ON campaigns(state_code);
+CREATE INDEX IF NOT EXISTS idx_campaigns_status ON campaigns(status);
 
 -- ─── Ad Creatives ───
 CREATE TABLE IF NOT EXISTS ad_creatives (
@@ -3804,9 +3804,9 @@ CREATE TABLE IF NOT EXISTS ad_creatives (
   updated_at TIMESTAMPTZ DEFAULT NOW()
 );
 
-CREATE INDEX idx_ads_campaign ON ad_creatives(campaign_id);
-CREATE INDEX idx_ads_status ON ad_creatives(status);
-CREATE INDEX idx_ads_format ON ad_creatives(format);
+CREATE INDEX IF NOT EXISTS idx_ads_campaign ON ad_creatives(campaign_id);
+CREATE INDEX IF NOT EXISTS idx_ads_status ON ad_creatives(status);
+CREATE INDEX IF NOT EXISTS idx_ads_format ON ad_creatives(format);
 
 -- ─── A/B Tests ───
 CREATE TABLE IF NOT EXISTS ab_tests (
@@ -3842,7 +3842,7 @@ CREATE TABLE IF NOT EXISTS campaign_volunteers (
   UNIQUE(user_id, campaign_id)
 );
 
-CREATE INDEX idx_volunteers_campaign ON campaign_volunteers(campaign_id);
+CREATE INDEX IF NOT EXISTS idx_volunteers_campaign ON campaign_volunteers(campaign_id);
 
 -- ─── Booth Strategy ───
 CREATE TABLE IF NOT EXISTS booth_strategies (
@@ -3871,9 +3871,9 @@ CREATE TABLE IF NOT EXISTS booth_strategies (
   UNIQUE(campaign_id, booth_id)
 );
 
-CREATE INDEX idx_booths_campaign ON booth_strategies(campaign_id);
-CREATE INDEX idx_booths_ac ON booth_strategies(constituency_ac_no);
-CREATE INDEX idx_booths_priority ON booth_strategies(priority);
+CREATE INDEX IF NOT EXISTS idx_booths_campaign ON booth_strategies(campaign_id);
+CREATE INDEX IF NOT EXISTS idx_booths_ac ON booth_strategies(constituency_ac_no);
+CREATE INDEX IF NOT EXISTS idx_booths_priority ON booth_strategies(priority);
 
 -- ─── Canvassing Records ───
 CREATE TABLE IF NOT EXISTS canvassing_records (
@@ -3898,8 +3898,8 @@ CREATE TABLE IF NOT EXISTS canvassing_records (
   created_at TIMESTAMPTZ DEFAULT NOW()
 );
 
-CREATE INDEX idx_canvassing_campaign ON canvassing_records(campaign_id);
-CREATE INDEX idx_canvassing_booth ON canvassing_records(booth_id);
+CREATE INDEX IF NOT EXISTS idx_canvassing_campaign ON canvassing_records(campaign_id);
+CREATE INDEX IF NOT EXISTS idx_canvassing_booth ON canvassing_records(booth_id);
 
 -- ─── Ad Revenue Tracking ───
 CREATE TABLE IF NOT EXISTS ad_revenue_log (
@@ -3912,8 +3912,8 @@ CREATE TABLE IF NOT EXISTS ad_revenue_log (
   created_at TIMESTAMPTZ DEFAULT NOW()
 );
 
-CREATE INDEX idx_revenue_campaign ON ad_revenue_log(campaign_id);
-CREATE INDEX idx_revenue_date ON ad_revenue_log(created_at DESC);
+CREATE INDEX IF NOT EXISTS idx_revenue_campaign ON ad_revenue_log(campaign_id);
+CREATE INDEX IF NOT EXISTS idx_revenue_date ON ad_revenue_log(created_at DESC);
 
 -- ─── Views ───
 DROP VIEW IF EXISTS campaign_dashboard CASCADE;
@@ -4042,9 +4042,9 @@ CREATE TABLE IF NOT EXISTS budget_allocations (
   created_at TIMESTAMPTZ DEFAULT NOW()
 );
 
-CREATE INDEX idx_budget_state_year ON budget_allocations(state_code, fiscal_year);
-CREATE INDEX idx_budget_category ON budget_allocations(category);
-CREATE INDEX idx_budget_ac ON budget_allocations(constituency_ac_no);
+CREATE INDEX IF NOT EXISTS idx_budget_state_year ON budget_allocations(state_code, fiscal_year);
+CREATE INDEX IF NOT EXISTS idx_budget_category ON budget_allocations(category);
+CREATE INDEX IF NOT EXISTS idx_budget_ac ON budget_allocations(constituency_ac_no);
 
 -- ─── State Budget Summaries ───
 CREATE TABLE IF NOT EXISTS state_budget_summaries (
@@ -4093,9 +4093,9 @@ CREATE TABLE IF NOT EXISTS rti_requests (
   updated_at TIMESTAMPTZ DEFAULT NOW()
 );
 
-CREATE INDEX idx_rti_user ON rti_requests(user_id);
-CREATE INDEX idx_rti_state ON rti_requests(state_code);
-CREATE INDEX idx_rti_status ON rti_requests(status);
+CREATE INDEX IF NOT EXISTS idx_rti_user ON rti_requests(user_id);
+CREATE INDEX IF NOT EXISTS idx_rti_state ON rti_requests(state_code);
+CREATE INDEX IF NOT EXISTS idx_rti_status ON rti_requests(status);
 
 -- ─── Legislator Attendance ───
 CREATE TABLE IF NOT EXISTS legislator_attendance (
@@ -4118,8 +4118,8 @@ CREATE TABLE IF NOT EXISTS legislator_attendance (
   UNIQUE(legislator_name, state_code, session_year, type)
 );
 
-CREATE INDEX idx_attendance_state ON legislator_attendance(state_code);
-CREATE INDEX idx_attendance_ac ON legislator_attendance(constituency_ac_no);
+CREATE INDEX IF NOT EXISTS idx_attendance_state ON legislator_attendance(state_code);
+CREATE INDEX IF NOT EXISTS idx_attendance_ac ON legislator_attendance(constituency_ac_no);
 
 -- ─── Bills / Legislation ───
 CREATE TABLE IF NOT EXISTS bills (
@@ -4150,9 +4150,9 @@ CREATE TABLE IF NOT EXISTS bills (
   updated_at TIMESTAMPTZ DEFAULT NOW()
 );
 
-CREATE INDEX idx_bills_status ON bills(status);
-CREATE INDEX idx_bills_state ON bills(state_code);
-CREATE INDEX idx_bills_date ON bills(introduced_date DESC);
+CREATE INDEX IF NOT EXISTS idx_bills_status ON bills(status);
+CREATE INDEX IF NOT EXISTS idx_bills_state ON bills(state_code);
+CREATE INDEX IF NOT EXISTS idx_bills_date ON bills(introduced_date DESC);
 
 -- ─── Government Schemes ───
 CREATE TABLE IF NOT EXISTS government_schemes (
@@ -4180,9 +4180,9 @@ CREATE TABLE IF NOT EXISTS government_schemes (
   created_at TIMESTAMPTZ DEFAULT NOW()
 );
 
-CREATE INDEX idx_schemes_category ON government_schemes(category);
-CREATE INDEX idx_schemes_state ON government_schemes(state_code);
-CREATE INDEX idx_schemes_status ON government_schemes(status);
+CREATE INDEX IF NOT EXISTS idx_schemes_category ON government_schemes(category);
+CREATE INDEX IF NOT EXISTS idx_schemes_state ON government_schemes(state_code);
+CREATE INDEX IF NOT EXISTS idx_schemes_status ON government_schemes(status);
 
 -- ─── Development Projects ───
 CREATE TABLE IF NOT EXISTS development_projects (
@@ -4216,10 +4216,10 @@ CREATE TABLE IF NOT EXISTS development_projects (
   created_at TIMESTAMPTZ DEFAULT NOW()
 );
 
-CREATE INDEX idx_projects_state ON development_projects(state_code);
-CREATE INDEX idx_projects_ac ON development_projects(constituency_ac_no);
-CREATE INDEX idx_projects_phase ON development_projects(phase);
-CREATE INDEX idx_projects_category ON development_projects(category);
+CREATE INDEX IF NOT EXISTS idx_projects_state ON development_projects(state_code);
+CREATE INDEX IF NOT EXISTS idx_projects_ac ON development_projects(constituency_ac_no);
+CREATE INDEX IF NOT EXISTS idx_projects_phase ON development_projects(phase);
+CREATE INDEX IF NOT EXISTS idx_projects_category ON development_projects(category);
 
 -- ─── Public Hearings ───
 CREATE TABLE IF NOT EXISTS public_hearings (
@@ -4244,9 +4244,9 @@ CREATE TABLE IF NOT EXISTS public_hearings (
   created_at TIMESTAMPTZ DEFAULT NOW()
 );
 
-CREATE INDEX idx_hearings_state ON public_hearings(state_code);
-CREATE INDEX idx_hearings_date ON public_hearings(date DESC);
-CREATE INDEX idx_hearings_ac ON public_hearings(constituency_ac_no);
+CREATE INDEX IF NOT EXISTS idx_hearings_state ON public_hearings(state_code);
+CREATE INDEX IF NOT EXISTS idx_hearings_date ON public_hearings(date DESC);
+CREATE INDEX IF NOT EXISTS idx_hearings_ac ON public_hearings(constituency_ac_no);
 
 -- ─── Constituency Development Index ───
 CREATE TABLE IF NOT EXISTS constituency_development_index (
@@ -4266,8 +4266,8 @@ CREATE TABLE IF NOT EXISTS constituency_development_index (
   UNIQUE(constituency_ac_no, state_code)
 );
 
-CREATE INDEX idx_cdi_state ON constituency_development_index(state_code);
-CREATE INDEX idx_cdi_score ON constituency_development_index(overall_score DESC);
+CREATE INDEX IF NOT EXISTS idx_cdi_state ON constituency_development_index(state_code);
+CREATE INDEX IF NOT EXISTS idx_cdi_score ON constituency_development_index(overall_score DESC);
 
 -- ─── RLS ───
 ALTER TABLE budget_allocations ENABLE ROW LEVEL SECURITY;
@@ -4330,8 +4330,8 @@ CREATE TABLE IF NOT EXISTS live_elections (
   created_at TIMESTAMPTZ DEFAULT NOW()
 );
 
-CREATE INDEX idx_live_elections_state ON live_elections(state_code);
-CREATE INDEX idx_live_elections_live ON live_elections(is_live) WHERE is_live = TRUE;
+CREATE INDEX IF NOT EXISTS idx_live_elections_state ON live_elections(state_code);
+CREATE INDEX IF NOT EXISTS idx_live_elections_live ON live_elections(is_live) WHERE is_live = TRUE;
 
 -- ─── Live Party Tallies ───
 CREATE TABLE IF NOT EXISTS live_party_tallies (
@@ -4371,8 +4371,8 @@ CREATE TABLE IF NOT EXISTS live_constituency_results (
   UNIQUE(election_id, ac_no)
 );
 
-CREATE INDEX idx_live_results_election ON live_constituency_results(election_id);
-CREATE INDEX idx_live_results_status ON live_constituency_results(counting_status);
+CREATE INDEX IF NOT EXISTS idx_live_results_election ON live_constituency_results(election_id);
+CREATE INDEX IF NOT EXISTS idx_live_results_status ON live_constituency_results(counting_status);
 
 -- ─── Live Candidate Results ───
 CREATE TABLE IF NOT EXISTS live_candidate_results (
@@ -4391,7 +4391,7 @@ CREATE TABLE IF NOT EXISTS live_candidate_results (
   updated_at TIMESTAMPTZ DEFAULT NOW()
 );
 
-CREATE INDEX idx_live_candidates_result ON live_candidate_results(constituency_result_id);
+CREATE INDEX IF NOT EXISTS idx_live_candidates_result ON live_candidate_results(constituency_result_id);
 
 -- ─── Data Pipeline Status ───
 CREATE TABLE IF NOT EXISTS data_pipeline_status (
@@ -7243,7 +7243,7 @@ CREATE TABLE IF NOT EXISTS lmx_brand_kits (
   updated_at TIMESTAMPTZ DEFAULT NOW()
 );
 
-CREATE INDEX idx_lmx_brand_kits_org ON lmx_brand_kits(organization_id);
+CREATE INDEX IF NOT EXISTS idx_lmx_brand_kits_org ON lmx_brand_kits(organization_id);
 
 CREATE TABLE IF NOT EXISTS lmx_affiliations (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -7259,8 +7259,8 @@ CREATE TABLE IF NOT EXISTS lmx_affiliations (
   updated_at TIMESTAMPTZ DEFAULT NOW()
 );
 
-CREATE INDEX idx_lmx_affiliations_contributor ON lmx_affiliations(contributor_id);
-CREATE INDEX idx_lmx_affiliations_active ON lmx_affiliations(status) WHERE status = 'active';
+CREATE INDEX IF NOT EXISTS idx_lmx_affiliations_contributor ON lmx_affiliations(contributor_id);
+CREATE INDEX IF NOT EXISTS idx_lmx_affiliations_active ON lmx_affiliations(status) WHERE status = 'active';
 
 -- ─────────────────────────────────────────────────────────────────────────────
 -- 2. Government department subscriptions (doc Section 12)
@@ -7300,9 +7300,9 @@ CREATE TABLE IF NOT EXISTS lmx_departments (
   updated_at TIMESTAMPTZ DEFAULT NOW()
 );
 
-CREATE INDEX idx_lmx_departments_type ON lmx_departments(department_type);
-CREATE INDEX idx_lmx_departments_state ON lmx_departments(state_code);
-CREATE INDEX idx_lmx_departments_active ON lmx_departments(subscription_status) WHERE subscription_status = 'active';
+CREATE INDEX IF NOT EXISTS idx_lmx_departments_type ON lmx_departments(department_type);
+CREATE INDEX IF NOT EXISTS idx_lmx_departments_state ON lmx_departments(state_code);
+CREATE INDEX IF NOT EXISTS idx_lmx_departments_active ON lmx_departments(subscription_status) WHERE subscription_status = 'active';
 
 -- ─────────────────────────────────────────────────────────────────────────────
 -- 3. Reporter credibility (doc Section 14) — dynamic, behavioural layer that sits
@@ -7393,13 +7393,13 @@ CREATE TABLE IF NOT EXISTS live_events (
   updated_at TIMESTAMPTZ DEFAULT NOW()
 );
 
-CREATE INDEX idx_live_events_status ON live_events(status);
-CREATE INDEX idx_live_events_live ON live_events(status) WHERE status = 'live';
-CREATE INDEX idx_live_events_state ON live_events(state_code);
-CREATE INDEX idx_live_events_reporter ON live_events(reporter_id);
-CREATE INDEX idx_live_events_category ON live_events(issue_category);
-CREATE INDEX idx_live_events_visibility ON live_events(visibility_mode);
-CREATE INDEX idx_live_events_priority ON live_events(priority_score DESC);
+CREATE INDEX IF NOT EXISTS idx_live_events_status ON live_events(status);
+CREATE INDEX IF NOT EXISTS idx_live_events_live ON live_events(status) WHERE status = 'live';
+CREATE INDEX IF NOT EXISTS idx_live_events_state ON live_events(state_code);
+CREATE INDEX IF NOT EXISTS idx_live_events_reporter ON live_events(reporter_id);
+CREATE INDEX IF NOT EXISTS idx_live_events_category ON live_events(issue_category);
+CREATE INDEX IF NOT EXISTS idx_live_events_visibility ON live_events(visibility_mode);
+CREATE INDEX IF NOT EXISTS idx_live_events_priority ON live_events(priority_score DESC);
 
 -- ─────────────────────────────────────────────────────────────────────────────
 -- 5. AI enrichment (doc Section 3 `ai` block, Section 14) — OPTIONAL 1:1 record.
@@ -7449,10 +7449,10 @@ CREATE TABLE IF NOT EXISTS lmx_department_alerts (
   created_at TIMESTAMPTZ DEFAULT NOW()
 );
 
-CREATE INDEX idx_lmx_alerts_event ON lmx_department_alerts(live_event_id);
-CREATE INDEX idx_lmx_alerts_department ON lmx_department_alerts(department_id);
-CREATE INDEX idx_lmx_alerts_reporter ON lmx_department_alerts(reporter_id);
-CREATE INDEX idx_lmx_alerts_ack ON lmx_department_alerts(acknowledgment);
+CREATE INDEX IF NOT EXISTS idx_lmx_alerts_event ON lmx_department_alerts(live_event_id);
+CREATE INDEX IF NOT EXISTS idx_lmx_alerts_department ON lmx_department_alerts(department_id);
+CREATE INDEX IF NOT EXISTS idx_lmx_alerts_reporter ON lmx_department_alerts(reporter_id);
+CREATE INDEX IF NOT EXISTS idx_lmx_alerts_ack ON lmx_department_alerts(acknowledgment);
 
 -- ─────────────────────────────────────────────────────────────────────────────
 -- 7. Distribution destinations (doc Section 7, 7a) — output branches per event
@@ -7473,8 +7473,8 @@ CREATE TABLE IF NOT EXISTS lmx_distribution_destinations (
   created_at TIMESTAMPTZ DEFAULT NOW()
 );
 
-CREATE INDEX idx_lmx_dist_event ON lmx_distribution_destinations(live_event_id);
-CREATE INDEX idx_lmx_dist_org ON lmx_distribution_destinations(organization_id);
+CREATE INDEX IF NOT EXISTS idx_lmx_dist_event ON lmx_distribution_destinations(live_event_id);
+CREATE INDEX IF NOT EXISTS idx_lmx_dist_org ON lmx_distribution_destinations(organization_id);
 
 -- Org-level relay config (persists across events) — doc Section 7a.1 & 11 portal
 CREATE TABLE IF NOT EXISTS lmx_org_relays (
@@ -7489,7 +7489,7 @@ CREATE TABLE IF NOT EXISTS lmx_org_relays (
   updated_at TIMESTAMPTZ DEFAULT NOW()
 );
 
-CREATE INDEX idx_lmx_org_relays_org ON lmx_org_relays(organization_id);
+CREATE INDEX IF NOT EXISTS idx_lmx_org_relays_org ON lmx_org_relays(organization_id);
 
 -- ─────────────────────────────────────────────────────────────────────────────
 -- 8. Moderation events (doc Section 13) — immutable audit trail
@@ -7506,7 +7506,7 @@ CREATE TABLE IF NOT EXISTS lmx_moderation_events (
   created_at TIMESTAMPTZ DEFAULT NOW()
 );
 
-CREATE INDEX idx_lmx_moderation_event ON lmx_moderation_events(live_event_id);
+CREATE INDEX IF NOT EXISTS idx_lmx_moderation_event ON lmx_moderation_events(live_event_id);
 
 -- ─────────────────────────────────────────────────────────────────────────────
 -- 9. Views
@@ -7597,7 +7597,7 @@ BEGIN
   END IF;
 END $$;
 
--- 2. Create index on language and scope for high-performance localized queries
+-- 2. CREATE INDEX IF NOT EXISTS on language and scope for high-performance localized queries
 CREATE INDEX IF NOT EXISTS idx_posts_language ON posts(language);
 CREATE INDEX IF NOT EXISTS idx_posts_scope ON posts(state_code, constituency_id);
 CREATE INDEX IF NOT EXISTS idx_comments_post_created ON comments(post_id, created_at ASC);
