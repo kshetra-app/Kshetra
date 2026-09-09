@@ -14,9 +14,9 @@ LAST_COMPLETED_JOB:    W003-P0 (Amendment v1.4 Activation & Governance Sync - AC
 NEXT_PERMITTED_JOB:    W003 (CI/CD Quality Pipeline)
 
 CURRENT_BRANCH:        master
-CURRENT_REMOTE_HEAD:   5e567b2
-AUDITED_CODE_COMMIT:   04d60a0
-EVIDENCE_COMMIT:       5e567b2
+CURRENT_REMOTE_HEAD:   c6515d0
+AUDITED_CODE_COMMIT:   c6515d0
+EVIDENCE_COMMIT:       c6515d0
 ACCEPTANCE_COMMIT:     pending independent verification
 API_VERSION:           v1 (Fastify 5.2 on Railway)
 MOBILE_VERSION:        0.1.0 (Expo 54, React Native 0.81.5)
