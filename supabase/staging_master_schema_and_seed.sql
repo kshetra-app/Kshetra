@@ -1,12 +1,16 @@
 -- ==============================================================================
 -- KSHETRA STAGING MASTER SCHEMA & SYNTHETIC SEED DATA
--- Generated: 2026-09-09T08:34:26.797Z
+-- Generated: 2026-09-09T09:05:20.258Z
 -- Target: Supabase Staging (fkpigozcqnmcvofuksar)
 --
 -- Instructions:
 -- 1. Open Supabase Dashboard -> SQL Editor (for your staging project)
--- 2. Paste the contents of this file and click "Run"
+-- 2. Paste the entire contents of this file and click "Run"
 -- ==============================================================================
+
+-- Enable core extensions
+CREATE EXTENSION IF NOT EXISTS postgis;
+CREATE EXTENSION IF NOT EXISTS pgcrypto;
 
 
 -- ========================================================
@@ -8114,201 +8118,197 @@ ALTER DEFAULT PRIVILEGES IN SCHEMA public
 
 
 -- ==============================================================================
--- SYNTHETIC STAGING TEST DATA (SAFE FAKE TEST PROFILES & CONTENT)
+-- SYNTHETIC STAGING TEST DATA (SAFE MOCK TEST PROFILES & CONTENT)
 -- ==============================================================================
 
-DO $$
-BEGIN
-  -- 1. Insert Synthetic Auth Users into auth.users (if not already present)
-  INSERT INTO auth.users (
-    instance_id,
-    id,
-    aud,
-    role,
-    email,
-    encrypted_password,
-    email_confirmed_at,
-    raw_app_meta_data,
-    raw_user_meta_data,
-    created_at,
-    updated_at
+-- 1. Synthetic Auth Users in auth.users
+INSERT INTO auth.users (
+  instance_id,
+  id,
+  aud,
+  role,
+  email,
+  encrypted_password,
+  email_confirmed_at,
+  raw_app_meta_data,
+  raw_user_meta_data,
+  created_at,
+  updated_at
+)
+VALUES
+  (
+    '00000000-0000-0000-0000-000000000000',
+    'a0000000-0000-0000-0000-000000000001',
+    'authenticated',
+    'authenticated',
+    'test.citizen@kshetra.staging',
+    '$2a$10$wT1n0u9pZ0K4vJ8h1yF0xOuU3Wv2Q1qE4R5T6Y7U8I9O0P1A2S3D4',
+    now(),
+    '{"provider":"email","providers":["email"]}',
+    '{"display_name":"Aarav Sharma"}',
+    now(),
+    now()
+  ),
+  (
+    '00000000-0000-0000-0000-000000000000',
+    'a0000000-0000-0000-0000-000000000002',
+    'authenticated',
+    'authenticated',
+    'test.journalist@kshetra.staging',
+    '$2a$10$wT1n0u9pZ0K4vJ8h1yF0xOuU3Wv2Q1qE4R5T6Y7U8I9O0P1A2S3D4',
+    now(),
+    '{"provider":"email","providers":["email"]}',
+    '{"display_name":"Priya Rao"}',
+    now(),
+    now()
+  ),
+  (
+    '00000000-0000-0000-0000-000000000000',
+    'a0000000-0000-0000-0000-000000000003',
+    'authenticated',
+    'authenticated',
+    'test.politician@kshetra.staging',
+    '$2a$10$wT1n0u9pZ0K4vJ8h1yF0xOuU3Wv2Q1qE4R5T6Y7U8I9O0P1A2S3D4',
+    now(),
+    '{"provider":"email","providers":["email"]}',
+    '{"display_name":"Rajesh Kumar MLA"}',
+    now(),
+    now()
+  ),
+  (
+    '00000000-0000-0000-0000-000000000000',
+    'a0000000-0000-0000-0000-000000000004',
+    'authenticated',
+    'authenticated',
+    'test.moderator@kshetra.staging',
+    '$2a$10$wT1n0u9pZ0K4vJ8h1yF0xOuU3Wv2Q1qE4R5T6Y7U8I9O0P1A2S3D4',
+    now(),
+    '{"provider":"email","providers":["email"]}',
+    '{"display_name":"Kshetra Admin"}',
+    now(),
+    now()
   )
-  VALUES
-    (
-      '00000000-0000-0000-0000-000000000000',
-      'a0000000-0000-0000-0000-000000000001',
-      'authenticated',
-      'authenticated',
-      'test.citizen@kshetra.staging',
-      crypt('StagingPassword123!', gen_salt('bf')),
-      now(),
-      '{"provider":"email","providers":["email"]}',
-      '{"display_name":"Aarav Sharma (Test Citizen)"}',
-      now(),
-      now()
-    ),
-    (
-      '00000000-0000-0000-0000-000000000000',
-      'a0000000-0000-0000-0000-000000000002',
-      'authenticated',
-      'authenticated',
-      'test.journalist@kshetra.staging',
-      crypt('StagingPassword123!', gen_salt('bf')),
-      now(),
-      '{"provider":"email","providers":["email"]}',
-      '{"display_name":"Priya Rao (Test Journalist)"}',
-      now(),
-      now()
-    ),
-    (
-      '00000000-0000-0000-0000-000000000000',
-      'a0000000-0000-0000-0000-000000000003',
-      'authenticated',
-      'authenticated',
-      'test.politician@kshetra.staging',
-      crypt('StagingPassword123!', gen_salt('bf')),
-      now(),
-      '{"provider":"email","providers":["email"]}',
-      '{"display_name":"Rajesh Kumar MLA (Test Politician)"}',
-      now(),
-      now()
-    ),
-    (
-      '00000000-0000-0000-0000-000000000000',
-      'a0000000-0000-0000-0000-000000000004',
-      'authenticated',
-      'authenticated',
-      'test.moderator@kshetra.staging',
-      crypt('StagingPassword123!', gen_salt('bf')),
-      now(),
-      '{"provider":"email","providers":["email"]}',
-      '{"display_name":"Kshetra Admin (Test Moderator)"}',
-      now(),
-      now()
-    )
-  ON CONFLICT (id) DO NOTHING;
+ON CONFLICT (id) DO NOTHING;
 
-  -- 2. Populate user_profiles
-  INSERT INTO public.user_profiles (user_id, display_name, role, verification_status, state_code)
-  VALUES
-    ('a0000000-0000-0000-0000-000000000001', 'Aarav Sharma (Test Citizen)', 'citizen', 'verified', 'TS'),
-    ('a0000000-0000-0000-0000-000000000002', 'Priya Rao (Test Journalist)', 'journalist', 'verified', 'TS'),
-    ('a0000000-0000-0000-0000-000000000003', 'Rajesh Kumar MLA (Test Politician)', 'politician', 'verified', 'TS'),
-    ('a0000000-0000-0000-0000-000000000004', 'Kshetra Admin (Test Moderator)', 'moderator', 'verified', 'TS')
-  ON CONFLICT (user_id) DO UPDATE SET
-    display_name = EXCLUDED.display_name,
-    role = EXCLUDED.role,
-    verification_status = EXCLUDED.verification_status,
-    state_code = EXCLUDED.state_code;
+-- 2. Populate user_profiles
+INSERT INTO public.user_profiles (user_id, display_name, role, verification_status, state_code)
+VALUES
+  ('a0000000-0000-0000-0000-000000000001', 'Aarav Sharma', 'citizen', 'verified', 'TS'),
+  ('a0000000-0000-0000-0000-000000000002', 'Priya Rao', 'journalist', 'verified', 'TS'),
+  ('a0000000-0000-0000-0000-000000000003', 'Rajesh Kumar MLA', 'politician', 'verified', 'TS'),
+  ('a0000000-0000-0000-0000-000000000004', 'Kshetra Admin', 'moderator', 'verified', 'TS')
+ON CONFLICT (user_id) DO UPDATE SET
+  display_name = EXCLUDED.display_name,
+  role = EXCLUDED.role,
+  verification_status = EXCLUDED.verification_status,
+  state_code = EXCLUDED.state_code;
 
-  -- 3. Synthetic Posts (Discussions, News, Opinion, Polls)
-  INSERT INTO public.posts (id, author_id, state_code, content, type, reply_count, reaction_count)
-  VALUES
-    (
-      'b0000000-0000-0000-0000-000000000001',
-      'a0000000-0000-0000-0000-000000000001',
-      'TS',
-      'Road widening work near Jubilee Hills Checkpost is progressing rapidly. Expected to ease morning peak traffic by 40%.',
-      'discussion',
-      4,
-      28
-    ),
-    (
-      'b0000000-0000-0000-0000-000000000002',
-      'a0000000-0000-0000-0000-000000000002',
-      'TS',
-      'Investigative report: How municipal ward budget transparency improved grievance clearance turnaround from 14 days to 48 hours.',
-      'news',
-      12,
-      95
-    ),
-    (
-      'b0000000-0000-0000-0000-000000000003',
-      'a0000000-0000-0000-0000-000000000003',
-      'TS',
-      'Inaugurated the new modern community healthcare centre in Khairatabad today. Free diagnostics available 24/7 for all residents.',
-      'opinion',
-      18,
-      210
-    ),
-    (
-      'b0000000-0000-0000-0000-000000000004',
-      'a0000000-0000-0000-0000-000000000001',
-      'TS',
-      'Do you support 24/7 metro operations on weekends in Hyderabad?',
-      'poll',
-      32,
-      340
-    )
-  ON CONFLICT (id) DO NOTHING;
-
-  -- 4. Synthetic Poll & Poll Options
-  INSERT INTO public.polls (id, post_id, question, total_votes, is_closed)
-  VALUES
-    (
-      'c0000000-0000-0000-0000-000000000001',
-      'b0000000-0000-0000-0000-000000000004',
-      'Do you support 24/7 metro operations on weekends in Hyderabad?',
-      340,
-      false
-    )
-  ON CONFLICT (id) DO NOTHING;
-
-  INSERT INTO public.poll_options (id, poll_id, option_text, vote_count, sort_order)
-  VALUES
-    ('d0000000-0000-0000-0000-000000000001', 'c0000000-0000-0000-0000-000000000001', 'Yes, strongly needed', 260, 1),
-    ('d0000000-0000-0000-0000-000000000002', 'c0000000-0000-0000-0000-000000000001', 'No, not economical', 55, 2),
-    ('d0000000-0000-0000-0000-000000000003', 'c0000000-0000-0000-0000-000000000001', 'Only on Friday & Saturday nights', 25, 3)
-  ON CONFLICT (id) DO NOTHING;
-
-  -- 5. Synthetic Civic Issues
-  INSERT INTO public.civic_issues (
-    id, reporter_id, state_code, category, title, description, status, upvotes
+-- 3. Synthetic Posts (Discussions, News, Opinion, Polls)
+INSERT INTO public.posts (id, author_id, state_code, content, type, reply_count, reaction_count)
+VALUES
+  (
+    'b0000000-0000-0000-0000-000000000001',
+    'a0000000-0000-0000-0000-000000000001',
+    'TS',
+    'Road widening work near Jubilee Hills Checkpost is progressing rapidly. Expected to ease morning peak traffic by 40%.',
+    'discussion',
+    4,
+    28
+  ),
+  (
+    'b0000000-0000-0000-0000-000000000002',
+    'a0000000-0000-0000-0000-000000000002',
+    'TS',
+    'Investigative report: How municipal ward budget transparency improved grievance clearance turnaround from 14 days to 48 hours.',
+    'news',
+    12,
+    95
+  ),
+  (
+    'b0000000-0000-0000-0000-000000000003',
+    'a0000000-0000-0000-0000-000000000003',
+    'TS',
+    'Inaugurated the new modern community healthcare centre in Khairatabad today. Free diagnostics available 24/7 for all residents.',
+    'opinion',
+    18,
+    210
+  ),
+  (
+    'b0000000-0000-0000-0000-000000000004',
+    'a0000000-0000-0000-0000-000000000001',
+    'TS',
+    'Do you support 24/7 metro operations on weekends in Hyderabad?',
+    'poll',
+    32,
+    340
   )
-  VALUES
-    (
-      'e0000000-0000-0000-0000-000000000001',
-      'a0000000-0000-0000-0000-000000000001',
-      'TS',
-      'water',
-      'Low water pressure during morning hours',
-      'Sector 4 residents experiencing intermittent water supply for past 3 days.',
-      'in_progress',
-      42
-    ),
-    (
-      'e0000000-0000-0000-0000-000000000002',
-      'a0000000-0000-0000-0000-000000000001',
-      'TS',
-      'roads',
-      'Deep pothole near Metro Pillar 1142',
-      'Pothole causing severe slow-down during evening rush hour.',
-      'submitted',
-      19
-    )
-  ON CONFLICT (id) DO NOTHING;
+ON CONFLICT (id) DO NOTHING;
 
-  -- 6. Synthetic Moderation Reports
-  INSERT INTO public.reports (
-    id, reporter_id, post_id, reason, description, status
+-- 4. Synthetic Poll & Poll Options
+INSERT INTO public.polls (id, post_id, question, total_votes, is_closed)
+VALUES
+  (
+    'c0000000-0000-0000-0000-000000000001',
+    'b0000000-0000-0000-0000-000000000004',
+    'Do you support 24/7 metro operations on weekends in Hyderabad?',
+    340,
+    false
   )
-  VALUES
-    (
-      'f0000000-0000-0000-0000-000000000001',
-      'a0000000-0000-0000-0000-000000000001',
-      'b0000000-0000-0000-0000-000000000001',
-      'misinformation',
-      'Test report to verify moderation queue in staging environment.',
-      'pending'
-    )
-  ON CONFLICT (id) DO NOTHING;
+ON CONFLICT (id) DO NOTHING;
 
-  -- 7. Final Grants Verification
-  GRANT USAGE ON SCHEMA public TO anon, authenticated, service_role;
-  GRANT SELECT ON ALL TABLES IN SCHEMA public TO anon;
-  GRANT SELECT, INSERT, UPDATE, DELETE ON ALL TABLES IN SCHEMA public TO authenticated;
-  GRANT ALL ON ALL TABLES IN SCHEMA public TO service_role;
-  GRANT USAGE, SELECT ON ALL SEQUENCES IN SCHEMA public TO anon, authenticated, service_role;
-  GRANT EXECUTE ON ALL FUNCTIONS IN SCHEMA public TO anon, authenticated, service_role;
+INSERT INTO public.poll_options (id, poll_id, option_text, vote_count, sort_order)
+VALUES
+  ('d0000000-0000-0000-0000-000000000001', 'c0000000-0000-0000-0000-000000000001', 'Yes, strongly needed', 260, 1),
+  ('d0000000-0000-0000-0000-000000000002', 'c0000000-0000-0000-0000-000000000001', 'No, not economical', 55, 2),
+  ('d0000000-0000-0000-0000-000000000003', 'c0000000-0000-0000-0000-000000000001', 'Only on Friday & Saturday nights', 25, 3)
+ON CONFLICT (id) DO NOTHING;
 
-END $$;
+-- 5. Synthetic Civic Issues
+INSERT INTO public.civic_issues (
+  id, reporter_id, state_code, category, title, description, status, upvote_count
+)
+VALUES
+  (
+    'e0000000-0000-0000-0000-000000000001',
+    'a0000000-0000-0000-0000-000000000001',
+    'TS',
+    'water',
+    'Low water pressure during morning hours',
+    'Sector 4 residents experiencing intermittent water supply for past 3 days.',
+    'in_progress',
+    42
+  ),
+  (
+    'e0000000-0000-0000-0000-000000000002',
+    'a0000000-0000-0000-0000-000000000001',
+    'TS',
+    'roads',
+    'Deep pothole near Metro Pillar 1142',
+    'Pothole causing severe slow-down during evening rush hour.',
+    'open',
+    19
+  )
+ON CONFLICT (id) DO NOTHING;
+
+-- 6. Synthetic Moderation Reports
+INSERT INTO public.reports (
+  id, reporter_id, post_id, reason, description, status
+)
+VALUES
+  (
+    'f0000000-0000-0000-0000-000000000001',
+    'a0000000-0000-0000-0000-000000000001',
+    'b0000000-0000-0000-0000-000000000001',
+    'misinformation',
+    'Test report to verify moderation queue in staging environment.',
+    'pending'
+  )
+ON CONFLICT (id) DO NOTHING;
+
+-- 7. Final Grants
+GRANT USAGE ON SCHEMA public TO anon, authenticated, service_role;
+GRANT SELECT ON ALL TABLES IN SCHEMA public TO anon;
+GRANT SELECT, INSERT, UPDATE, DELETE ON ALL TABLES IN SCHEMA public TO authenticated;
+GRANT ALL ON ALL TABLES IN SCHEMA public TO service_role;
+GRANT USAGE, SELECT ON ALL SEQUENCES IN SCHEMA public TO anon, authenticated, service_role;
+GRANT EXECUTE ON ALL FUNCTIONS IN SCHEMA public TO anon, authenticated, service_role;
