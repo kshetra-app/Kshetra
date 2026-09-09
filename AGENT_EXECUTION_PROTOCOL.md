@@ -1,7 +1,7 @@
-﻿# AGENT EXECUTION PROTOCOL
+# AGENT EXECUTION PROTOCOL
 ## Autonomous Closed-Loop Execution, Self-Audit and Efficiency Protocol
 
-**Authority:** Master Execution Framework Amendment v1.3 (`AMENDMENT_v1.3.md`)  
+**Authority:** Master Execution Framework Amendment v1.3 (`AMENDMENT_v1.3.md`) & Amendment v1.4 (`AMENDMENT_v1.4.md`)  
 **Status:** MANDATORY OPERATING CONSTITUTION FOR ALL AGENTS  
 **Scope:** All current and future jobs, remediations, verifications, and releases across PANIN / Kshetra.
 
@@ -13,34 +13,36 @@ Before starting ANY job, the agent must read the following documents in this exa
 
 1. `MASTER EXECUTION DOCUMENT` (`PANIN - Kshetra - AI Agent Master Execution Document and Sequential Job Book.md`)
 2. `AMENDMENT_v1.2.md` (Compliance, DPDP, Independent Verification & Launch Gates)
-3. `AGENT_EXECUTION_PROTOCOL.md` (This Operating Constitution)
-4. `EXECUTION_STATE.md` (Current Project & Execution Coordinates)
-5. `ACCEPTANCE_REGISTER.md` (Authoritative Milestone Acceptance Truth)
-6. `DEFECT_REGISTER.md` (Known-Problem Ledger & Classification)
-7. `DECISION_LOG.md` (Architectural & Operational Decision Truth)
-8. `RELEASE_REGISTER.md` (Release & Artifact Ledger)
-9. The specific user prompt / job instruction.
+3. `AMENDMENT_v1.3.md` (Autonomous Closed-Loop Execution, Self-Audit and Efficiency Protocol)
+4. `AMENDMENT_v1.4.md` (Evidence Semantics, Runtime Proof and Carry-Forward Controls)
+5. `AGENT_EXECUTION_PROTOCOL.md` (This Operating Constitution)
+6. `EXECUTION_STATE.md` (Current Project & Execution Coordinates)
+7. `ACCEPTANCE_REGISTER.md` (Authoritative Milestone Acceptance Truth)
+8. `DEFECT_REGISTER.md` (Known-Problem Ledger & Carry-Forward Classification)
+9. `DECISION_LOG.md` (Architectural & Operational Decision Truth)
+10. `RELEASE_REGISTER.md` (Release & Artifact Ledger)
+11. The specific user prompt / job instruction.
 
 ---
 
-## 2. Autonomous Closed-Loop Lifecycle
+## 2. Permanent Operating Lifecycle (Amendment v1.4 Part 36)
 
-Every job must execute through the full 15-stage closed-loop lifecycle:
+Every job must execute through the permanent operating loop:
 
 ```text
 READ
   ↓
-UNDERSTAND
+PRE-FLIGHT
   ↓
 INSPECT
-  ↓
-PLAN
   ↓
 IMPLEMENT
   ↓
 TEST
   ↓
-ADVERSARIAL SELF-AUDIT
+SEMANTIC SELF-AUDIT (SI-001, SI-002, SI-003)
+  ↓
+NEGATIVE-PATH TEST
   ↓
 REPAIR
   ↓
@@ -48,16 +50,19 @@ RETEST
   ↓
 EVIDENCE RECONCILIATION
   ↓
-COMMIT
-  ↓
 REMOTE VERIFICATION
   ↓
-ACCEPTANCE PREPARATION
+READY FOR INDEPENDENT VERIFICATION
   ↓
-INDEPENDENT VERIFICATION WHERE REQUIRED
+INDEPENDENT VERIFICATION
+  ↓
+ACCEPT
+  ↓
+NEXT JOB
 ```
 
-The implementing agent must never halt after the first successful compile or test.
+The implementing agent must never halt after the first successful compile or test. Evidence must distinguish SOURCE, CONFIGURATION, BUILD, LOCAL RUNTIME, STAGING RUNTIME, PRODUCTION RUNTIME, LIVE DATABASE, and EXTERNAL PROVIDER evidence (Amendment v1.4 Part 2).
+
 
 ---
 
