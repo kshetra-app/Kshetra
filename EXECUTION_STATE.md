@@ -9,15 +9,15 @@
 PROJECT:               PANIN (formerly Kshetra)
 TARGET_DOMAIN:         India Political Geography, Intelligence, Participation & Media Platform
 CURRENT_PHASE:         W0 (Baseline Reconciliation & Ground-Truth Audit)
-CURRENT_JOB:           W002-R1 (Real Staging Provisioning & Runtime Isolation)
+CURRENT_JOB:           W002-R2 (Staging Cloud Provisioning & True Runtime Isolation)
 LAST_COMPLETED_JOB:    W000-REC2A (Independent Verification & Final Acceptance)
-NEXT_PERMITTED_JOB:    W002-R1 Independent Verification (W003 BLOCKED until W002 accepted)
+NEXT_PERMITTED_JOB:    W002-R2 Independent Verification (W003 BLOCKED until W002 accepted)
 
 CURRENT_BRANCH:        master
-CURRENT_REMOTE_HEAD:   b7d5764
-AUDITED_CODE_COMMIT:   41d025c (W002-R1 implementation and runtime isolation tests)
-EVIDENCE_COMMIT:       41d025c (W002-R1 reports and verification package)
-ACCEPTANCE_COMMIT:     b7d5764 (Independent verification report for W002-R1)
+CURRENT_REMOTE_HEAD:   5cab5f9
+AUDITED_CODE_COMMIT:   5cab5f9
+EVIDENCE_COMMIT:       pending commit
+ACCEPTANCE_COMMIT:     pending independent verification
 API_VERSION:           v1 (Fastify 5.2 on Railway)
 MOBILE_VERSION:        0.1.0 (Expo 54, React Native 0.81.5)
 DATABASE_MIGRATIONS:   36 migration files present in repository (001-034 + 0035 + duplicate 023; live catalog = HUMAN ACTION REQUIRED)

@@ -1,0 +1,28 @@
+﻿{
+  "metadata": {
+    "jobId": "W002-R2",
+    "jobTitle": "Independent Verification Package",
+    "standard": "Master Execution Framework Amendment v1.3",
+    "timestamp": "2026-09-09T10:41:00.000Z",
+    "repository": "https://github.com/kshetra-app/Kshetra.git",
+    "canonicalBranch": "master"
+  },
+  "packageContents": [
+    "reports/w002_r2_infrastructure_verification.json",
+    "reports/w002_r2_database_catalog.json",
+    "reports/w002_r2_runtime_isolation.json",
+    "reports/w002_r2_mobile_environment.json",
+    "reports/w002_r2_cors_verification.json",
+    "reports/w002_r2_environment_manifest.json",
+    "packages/shared/src/config/environments.ts",
+    "apps/mobile/lib/environment.ts",
+    "apps/mobile/eas.json",
+    "apps/api/src/server.ts",
+    "tests/environment-separation.test.mjs",
+    "scripts/verify-w002-r2-isolation.mjs"
+  ],
+  "governanceStatus": {
+    "w002Status": "READY_FOR_INDEPENDENT_VERIFICATION",
+    "w003Status": "PENDING_W002_ACCEPTANCE"
+  }
+}

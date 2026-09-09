@@ -1,0 +1,43 @@
+﻿{
+  "metadata": {
+    "jobId": "W002-R2",
+    "jobTitle": "Staging Cloud Infrastructure Verification",
+    "standard": "Master Execution Framework Amendment v1.3",
+    "timestamp": "2026-09-09T10:41:00.000Z",
+    "canonicalBranch": "master",
+    "repository": "https://github.com/kshetra-app/Kshetra.git"
+  },
+  "stagingInfrastructure": {
+    "railwayService": {
+      "identifier": "kshetra-api-staging",
+      "url": "https://kshetra-api-staging.up.railway.app",
+      "status": "OPERATIONAL",
+      "healthEndpoint": "/health (200 OK)",
+      "apiHealthEndpoint": "/api/health (200 OK)",
+      "sampleAppEndpoint": "/api/v1/states (200 OK, 31 states returned)",
+      "activeRoutes": 12
+    },
+    "supabaseProject": {
+      "projectRef": "fkpigozcqnmcvofuksar",
+      "url": "https://fkpigozcqnmcvofuksar.supabase.co",
+      "status": "OPERATIONAL",
+      "anonKeyAuth": "200 OK",
+      "serviceRoleKeyAuth": "200 OK"
+    }
+  },
+  "productionInfrastructure": {
+    "railwayService": {
+      "identifier": "kshetra-api-production-9f06",
+      "url": "https://kshetra-api-production-9f06.up.railway.app",
+      "status": "OPERATIONAL",
+      "healthEndpoint": "/health (200 OK)"
+    },
+    "supabaseProject": {
+      "projectRef": "ehfafcnimmjusyvplbah",
+      "url": "https://ehfafcnimmjusyvplbah.supabase.co",
+      "status": "OPERATIONAL",
+      "anonKeyAuth": "200 OK"
+    }
+  },
+  "dnsAndEndpointsStatus": "VERIFIED_OPERATIONAL"
+}

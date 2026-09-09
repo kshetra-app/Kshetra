@@ -10,6 +10,7 @@
       "channel": "development",
       "env": {
         "APP_ENV": "development",
+        "EXPO_PUBLIC_APP_ENV": "development",
         "EXPO_ROUTER_APP_ROOT": "../../app"
       }
     },
@@ -18,6 +19,7 @@
       "channel": "preview",
       "env": {
         "APP_ENV": "preview",
+        "EXPO_PUBLIC_APP_ENV": "preview",
         "EXPO_ROUTER_APP_ROOT": "../../app"
       }
     },
@@ -26,6 +28,7 @@
       "autoIncrement": true,
       "env": {
         "APP_ENV": "production",
+        "EXPO_PUBLIC_APP_ENV": "production",
         "EXPO_ROUTER_APP_ROOT": "../../app"
       }
     }

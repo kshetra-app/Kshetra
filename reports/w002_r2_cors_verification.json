@@ -1,0 +1,31 @@
+﻿{
+  "metadata": {
+    "jobId": "W002-R2",
+    "jobTitle": "Production & Staging CORS Verification Report",
+    "standard": "Master Execution Framework Amendment v1.3",
+    "timestamp": "2026-09-09T10:41:00.000Z",
+    "canonicalBranch": "master",
+    "repository": "https://github.com/kshetra-app/Kshetra.git"
+  },
+  "productionOrigins": [
+    "https://kshetra.in",
+    "https://www.kshetra.in",
+    "https://panin.in",
+    "https://www.panin.in",
+    "https://kshetra.app",
+    "https://www.kshetra.app"
+  ],
+  "stagingOrigins": [
+    "https://kshetra-api-staging.up.railway.app",
+    "https://staging.kshetra.in",
+    "https://staging.panin.in",
+    "http://localhost:8081",
+    "http://localhost:3000"
+  ],
+  "hardeningRules": {
+    "localhostInProduction": "STRICTLY_PROHIBITED (0 occurrences)",
+    "stagingOriginsInProduction": "REJECTED (Verified via Fastify inject test)",
+    "unauthorizedOrigins": "REJECTED (Verified via Fastify inject test with attacker.com)"
+  },
+  "verificationStatus": "PASS"
+}

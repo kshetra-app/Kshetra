@@ -1,0 +1,27 @@
+﻿{
+  "metadata": {
+    "jobId": "W002-R2",
+    "jobTitle": "Staging Database Catalog Audit",
+    "standard": "Master Execution Framework Amendment v1.3",
+    "timestamp": "2026-09-09T10:41:00.000Z",
+    "canonicalBranch": "master",
+    "repository": "https://github.com/kshetra-app/Kshetra.git"
+  },
+  "stagingSupabaseProject": "fkpigozcqnmcvofuksar",
+  "catalogCounts": {
+    "totalOpenApiDefinitions": 174,
+    "tables": 165,
+    "views": 9,
+    "migrationsApplied": 35,
+    "rlsPolicies": 267,
+    "triggers": 62
+  },
+  "representativeEndpoints": {
+    "/rest/v1/states": "200 OK",
+    "/rest/v1/civic_issues": "200 OK",
+    "/rest/v1/posts": "200 OK",
+    "/rest/v1/polls": "200 OK",
+    "/rest/v1/constituencies": "200 OK"
+  },
+  "dataSanitizationStatus": "SYNTHETIC_TEST_DATA_ONLY (Zero production personal or private user data copied)"
+}

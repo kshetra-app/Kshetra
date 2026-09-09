@@ -1,0 +1,37 @@
+﻿{
+  "metadata": {
+    "jobId": "W002-R2",
+    "jobTitle": "Redacted Environment Manifest",
+    "standard": "Master Execution Framework Amendment v1.3",
+    "timestamp": "2026-09-09T10:41:00.000Z",
+    "secretsIncluded": false
+  },
+  "environments": {
+    "DEVELOPMENT": {
+      "environment": "development",
+      "apiEndpoint": "http://localhost:3001",
+      "dbEndpoint": "http://localhost:54321",
+      "status": "LOCAL_MOCK_OR_EMULATOR"
+    },
+    "STAGING": {
+      "environment": "staging",
+      "apiEndpoint": "https://kshetra-api-staging.up.railway.app",
+      "dbEndpoint": "https://fkpigozcqnmcvofuksar.supabase.co",
+      "providerIdentifiers": {
+        "railwayService": "kshetra-api-staging",
+        "supabaseProjectRef": "fkpigozcqnmcvofuksar"
+      },
+      "status": "LIVE_CLOUD_OPERATIONAL"
+    },
+    "PRODUCTION": {
+      "environment": "production",
+      "apiEndpoint": "https://kshetra-api-production-9f06.up.railway.app",
+      "dbEndpoint": "https://ehfafcnimmjusyvplbah.supabase.co",
+      "providerIdentifiers": {
+        "railwayService": "kshetra-api-production-9f06",
+        "supabaseProjectRef": "ehfafcnimmjusyvplbah"
+      },
+      "status": "LIVE_CLOUD_OPERATIONAL"
+    }
+  }
+}

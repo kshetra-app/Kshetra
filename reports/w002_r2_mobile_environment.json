@@ -1,0 +1,39 @@
+﻿{
+  "metadata": {
+    "jobId": "W002-R2",
+    "jobTitle": "Mobile Environment Resolution & EAS Precedence",
+    "standard": "Master Execution Framework Amendment v1.3",
+    "timestamp": "2026-09-09T10:41:00.000Z",
+    "canonicalBranch": "master",
+    "repository": "https://github.com/kshetra-app/Kshetra.git"
+  },
+  "precedenceOrder": [
+    "EXPO_PUBLIC_APP_ENV",
+    "APP_ENV",
+    "NODE_ENV",
+    "default: 'development'"
+  ],
+  "easBuildProfiles": {
+    "development": {
+      "APP_ENV": "development",
+      "EXPO_PUBLIC_APP_ENV": "development",
+      "targetEnvironment": "development"
+    },
+    "preview": {
+      "APP_ENV": "preview",
+      "EXPO_PUBLIC_APP_ENV": "preview",
+      "targetEnvironment": "staging"
+    },
+    "production": {
+      "APP_ENV": "production",
+      "EXPO_PUBLIC_APP_ENV": "production",
+      "targetEnvironment": "production"
+    }
+  },
+  "previewMappingVerification": {
+    "input": "preview",
+    "resolvedEnvironment": "staging",
+    "verified": true
+  },
+  "typecheckStatus": "PASS (0 errors on @kshetra/mobile)"
+}
