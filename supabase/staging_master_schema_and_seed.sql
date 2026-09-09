@@ -1,6 +1,6 @@
 -- ==============================================================================
 -- KSHETRA STAGING MASTER SCHEMA & SYNTHETIC SEED DATA (FULLY IDEMPOTENT)
--- Generated: 2026-09-09T09:28:59.635Z
+-- Generated: 2026-09-09T09:56:33.470Z
 -- Target: Supabase Staging (fkpigozcqnmcvofuksar)
 --
 -- Instructions:
@@ -515,6 +515,7 @@ CREATE TRIGGER comments_updated_at
 
 -- ─── STATE-SCOPED FEED VIEW (moved here from 003_multi_state.sql) ───
 -- Lives here because it depends on the posts table created above.
+DROP VIEW IF EXISTS state_feed CASCADE;
 CREATE OR REPLACE VIEW state_feed AS
 SELECT
   p.*,
@@ -2315,6 +2316,7 @@ CREATE TRIGGER trg_legislator_profile_updated
 -- ─── USEFUL VIEWS ───
 
 -- Current sitting legislators with key stats
+DROP VIEW IF EXISTS current_legislators CASCADE;
 CREATE OR REPLACE VIEW current_legislators AS
 SELECT
   lp.id,
@@ -2343,6 +2345,7 @@ WHERE lp.is_current_member = true
 ORDER BY lp.state_code, lp.constituency_name;
 
 -- State-wise data health dashboard
+DROP VIEW IF EXISTS data_health_by_state CASCADE;
 CREATE OR REPLACE VIEW data_health_by_state AS
 SELECT
   state_code,
@@ -2629,6 +2632,7 @@ CREATE TRIGGER action_fp_increment_device
 -- ─── VIEWS ──────────────────────────────────────────────────────────────────
 
 -- Contributor accountability summary (for admin dashboard)
+DROP VIEW IF EXISTS contributor_accountability_summary CASCADE;
 CREATE OR REPLACE VIEW contributor_accountability_summary AS
 SELECT
   k.user_id,
@@ -2649,6 +2653,7 @@ FROM creator_kyc_records k
 LEFT JOIN user_profiles up ON up.user_id = k.user_id;
 
 -- Suspicious activity detector: users posting from many different devices
+DROP VIEW IF EXISTS suspicious_multi_device_users CASCADE;
 CREATE OR REPLACE VIEW suspicious_multi_device_users AS
 SELECT
   cd.user_id,
@@ -2663,6 +2668,7 @@ HAVING COUNT(DISTINCT cd.device_unique_id) >= 3
 ORDER BY COUNT(DISTINCT cd.device_unique_id) DESC;
 
 -- Suspicious activity detector: rapid IP changes
+DROP VIEW IF EXISTS suspicious_ip_changes CASCADE;
 CREATE OR REPLACE VIEW suspicious_ip_changes AS
 SELECT
   af.user_id,
@@ -3136,6 +3142,7 @@ CREATE TRIGGER cv_updated_at
 -- ─── VIEWS ──────────────────────────────────────────────────────────────────
 
 -- Moderator queue: content that needs attention
+DROP VIEW IF EXISTS moderator_queue CASCADE;
 CREATE OR REPLACE VIEW moderator_queue AS
 SELECT
   cv.id,
@@ -3165,6 +3172,7 @@ ORDER BY
   cv.review_started_at ASC;
 
 -- Content ready for auto-promotion
+DROP VIEW IF EXISTS promotable_content CASCADE;
 CREATE OR REPLACE VIEW promotable_content AS
 SELECT
   cv.*,
@@ -3179,6 +3187,7 @@ WHERE cv.review_status = 'open'
 ORDER BY cv.promotion_score DESC;
 
 -- Constituency moderation stats
+DROP VIEW IF EXISTS constituency_moderation_stats CASCADE;
 CREATE OR REPLACE VIEW constituency_moderation_stats AS
 SELECT
   cm.constituency_id,
@@ -3907,6 +3916,7 @@ CREATE INDEX idx_revenue_campaign ON ad_revenue_log(campaign_id);
 CREATE INDEX idx_revenue_date ON ad_revenue_log(created_at DESC);
 
 -- ─── Views ───
+DROP VIEW IF EXISTS campaign_dashboard CASCADE;
 CREATE OR REPLACE VIEW campaign_dashboard AS
 SELECT
   c.id,
@@ -3930,6 +3940,7 @@ SELECT
 FROM campaigns c
 JOIN politician_portal_profiles pp ON c.politician_id = pp.id;
 
+DROP VIEW IF EXISTS revenue_summary CASCADE;
 CREATE OR REPLACE VIEW revenue_summary AS
 SELECT
   DATE_TRUNC('month', created_at) as month,
@@ -6085,6 +6096,7 @@ CREATE TRIGGER trg_polling_booths_updated_at
 -- VIEW 1: v_constituency_booth_summary
 -- For each constituency: total booths, total voters, booth coverage metrics.
 -- ────────────────────────────────────────────────────────────────────────────
+DROP VIEW IF EXISTS v_constituency_booth_summary CASCADE;
 CREATE OR REPLACE VIEW v_constituency_booth_summary AS
 SELECT
   c.id                    AS constituency_id,
@@ -6118,6 +6130,7 @@ COMMENT ON VIEW v_constituency_booth_summary IS 'Per-constituency aggregation: b
 -- VIEW 2: v_mandal_summary
 -- For each mandal: panchayat count, booth count, voter totals, AC overlaps.
 -- ────────────────────────────────────────────────────────────────────────────
+DROP VIEW IF EXISTS v_mandal_summary CASCADE;
 CREATE OR REPLACE VIEW v_mandal_summary AS
 SELECT
   m.id                    AS mandal_id,
@@ -6162,6 +6175,7 @@ COMMENT ON VIEW v_mandal_summary IS 'Per-mandal aggregation: panchayat/booth/vil
 -- VIEW 3: v_panchayat_summary
 -- For each panchayat: booth count, voter totals, latest local body results.
 -- ────────────────────────────────────────────────────────────────────────────
+DROP VIEW IF EXISTS v_panchayat_summary CASCADE;
 CREATE OR REPLACE VIEW v_panchayat_summary AS
 SELECT
   gp.id                   AS panchayat_id,
@@ -6218,6 +6232,7 @@ COMMENT ON VIEW v_panchayat_summary IS 'Per-panchayat aggregation: booth/voter c
 -- Full denormalized view: constituency → mandals → panchayats → booths.
 -- Each row is one mandal-in-constituency with aggregated sub-counts.
 -- ────────────────────────────────────────────────────────────────────────────
+DROP VIEW IF EXISTS v_constituency_hierarchy CASCADE;
 CREATE OR REPLACE VIEW v_constituency_hierarchy AS
 SELECT
   c.id                    AS constituency_id,
@@ -6266,6 +6281,7 @@ COMMENT ON VIEW v_constituency_hierarchy IS 'Denormalized hierarchy: one row per
 -- Party-wise vote aggregation from booth level → constituency level.
 -- Used to VALIDATE that booth-level sums match official constituency totals.
 -- ────────────────────────────────────────────────────────────────────────────
+DROP VIEW IF EXISTS v_booth_result_aggregation CASCADE;
 CREATE OR REPLACE VIEW v_booth_result_aggregation AS
 SELECT
   ber.election_id,
@@ -7081,6 +7097,7 @@ CREATE TRIGGER trg_retire_prior_representative
 -- ╚══════════════════════════════════════════════════════════════════════════╝
 
 -- Coverage / completeness per state + office_type (drives "data pending" UX)
+DROP VIEW IF EXISTS v_representative_coverage CASCADE;
 CREATE OR REPLACE VIEW v_representative_coverage AS
 SELECT
   state_code,
@@ -7098,6 +7115,7 @@ GROUP BY state_code, office_type;
 COMMENT ON VIEW v_representative_coverage IS 'Per-state, per-office coverage counts — powers honest completeness badges & "data pending" states.';
 
 -- Moderation queue for pending crowdsourced edits
+DROP VIEW IF EXISTS v_representative_edit_queue CASCADE;
 CREATE OR REPLACE VIEW v_representative_edit_queue AS
 SELECT
   re.id,
@@ -7495,6 +7513,7 @@ CREATE INDEX idx_lmx_moderation_event ON lmx_moderation_events(live_event_id);
 -- ─────────────────────────────────────────────────────────────────────────────
 
 -- Public Live tab feed: public streams that have cleared moderation.
+DROP VIEW IF EXISTS lmx_live_tab_feed CASCADE;
 CREATE OR REPLACE VIEW lmx_live_tab_feed AS
 SELECT e.*, a.summary AS ai_summary, a.auto_headline, a.emergency_score, a.ai_enabled
 FROM live_events e
@@ -7505,6 +7524,7 @@ WHERE e.visibility_mode = 'public'
 ORDER BY (e.status = 'live') DESC, e.priority_score DESC, e.started_at DESC;
 
 -- Department alert inbox with acknowledgment status.
+DROP VIEW IF EXISTS lmx_department_inbox CASCADE;
 CREATE OR REPLACE VIEW lmx_department_inbox AS
 SELECT al.*, e.stream_id, e.reporter_name, e.accreditation_tier, e.credibility_score,
        e.issue_category, e.state_code, e.district_name, e.media_playback_hls
