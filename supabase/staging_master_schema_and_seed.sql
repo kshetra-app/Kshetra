@@ -1,6 +1,6 @@
 -- ==============================================================================
 -- KSHETRA STAGING MASTER SCHEMA & SYNTHETIC SEED DATA
--- Generated: 2026-09-09T09:16:33.340Z
+-- Generated: 2026-09-09T09:19:36.601Z
 -- Target: Supabase Staging (fkpigozcqnmcvofuksar)
 --
 -- Instructions:
@@ -8256,7 +8256,7 @@ VALUES
   )
 ON CONFLICT (id) DO NOTHING;
 
-INSERT INTO public.poll_options (id, poll_id, option_text, vote_count, sort_order)
+INSERT INTO public.poll_options (id, poll_id, label, vote_count, sort_order)
 VALUES
   ('d0000000-0000-0000-0000-000000000001', 'c0000000-0000-0000-0000-000000000001', 'Yes, strongly needed', 260, 1),
   ('d0000000-0000-0000-0000-000000000002', 'c0000000-0000-0000-0000-000000000001', 'No, not economical', 55, 2),
