@@ -1,6 +1,6 @@
 -- ==============================================================================
--- KSHETRA STAGING MASTER SCHEMA & SYNTHETIC SEED DATA
--- Generated: 2026-09-09T09:19:36.601Z
+-- KSHETRA STAGING MASTER SCHEMA & SYNTHETIC SEED DATA (FULLY IDEMPOTENT)
+-- Generated: 2026-09-09T09:23:51.247Z
 -- Target: Supabase Staging (fkpigozcqnmcvofuksar)
 --
 -- Instructions:
@@ -106,16 +106,16 @@ CREATE INDEX IF NOT EXISTS idx_favourites_user ON user_favourites(user_id);
 ALTER TABLE user_favourites ENABLE ROW LEVEL SECURITY;
 
 -- Users can only see and manage their own favourites
-CREATE POLICY "Users can read own favourites"
-  ON user_favourites FOR SELECT
+DROP POLICY IF EXISTS "Users can read own favourites" ON user_favourites;
+CREATE POLICY "Users can read own favourites" ON user_favourites FOR SELECT
   USING (auth.uid() = user_id);
 
-CREATE POLICY "Users can insert own favourites"
-  ON user_favourites FOR INSERT
+DROP POLICY IF EXISTS "Users can insert own favourites" ON user_favourites;
+CREATE POLICY "Users can insert own favourites" ON user_favourites FOR INSERT
   WITH CHECK (auth.uid() = user_id);
 
-CREATE POLICY "Users can delete own favourites"
-  ON user_favourites FOR DELETE
+DROP POLICY IF EXISTS "Users can delete own favourites" ON user_favourites;
+CREATE POLICY "Users can delete own favourites" ON user_favourites FOR DELETE
   USING (auth.uid() = user_id);
 
 -- Public read access to constituencies and elections
@@ -124,9 +124,13 @@ ALTER TABLE constituencies ENABLE ROW LEVEL SECURITY;
 ALTER TABLE elections ENABLE ROW LEVEL SECURITY;
 ALTER TABLE election_results ENABLE ROW LEVEL SECURITY;
 
+DROP POLICY IF EXISTS "Public read states" ON states;
 CREATE POLICY "Public read states" ON states FOR SELECT USING (true);
+DROP POLICY IF EXISTS "Public read constituencies" ON constituencies;
 CREATE POLICY "Public read constituencies" ON constituencies FOR SELECT USING (true);
+DROP POLICY IF EXISTS "Public read elections" ON elections;
 CREATE POLICY "Public read elections" ON elections FOR SELECT USING (true);
+DROP POLICY IF EXISTS "Public read election_results" ON election_results;
 CREATE POLICY "Public read election_results" ON election_results FOR SELECT USING (true);
 
 
@@ -213,12 +217,12 @@ CREATE INDEX IF NOT EXISTS idx_constituencies_state_district ON constituencies(s
 -- ── RLS policies for constituencies ─────────────────────────────────────────
 ALTER TABLE constituencies ENABLE ROW LEVEL SECURITY;
 
-CREATE POLICY "constituencies_read_all"
-  ON constituencies FOR SELECT
+DROP POLICY IF EXISTS "constituencies_read_all" ON constituencies;
+CREATE POLICY "constituencies_read_all" ON constituencies FOR SELECT
   USING (true);
 
-CREATE POLICY "constituencies_insert_admin"
-  ON constituencies FOR INSERT
+DROP POLICY IF EXISTS "constituencies_insert_admin" ON constituencies;
+CREATE POLICY "constituencies_insert_admin" ON constituencies FOR INSERT
   WITH CHECK (auth.role() = 'service_role');
 
 -- ── State-scoped feed view ──────────────────────────────────────────────────
@@ -424,48 +428,68 @@ ALTER TABLE post_hashtags ENABLE ROW LEVEL SECURITY;
 ALTER TABLE reports ENABLE ROW LEVEL SECURITY;
 
 -- Public read for posts, polls, comments, hashtags (non-deleted)
+DROP POLICY IF EXISTS "Public read posts" ON posts;
 CREATE POLICY "Public read posts" ON posts FOR SELECT
   USING (is_deleted = false);
+DROP POLICY IF EXISTS "Public read post_media" ON post_media;
 CREATE POLICY "Public read post_media" ON post_media FOR SELECT USING (true);
+DROP POLICY IF EXISTS "Public read polls" ON polls;
 CREATE POLICY "Public read polls" ON polls FOR SELECT USING (true);
+DROP POLICY IF EXISTS "Public read poll_options" ON poll_options;
 CREATE POLICY "Public read poll_options" ON poll_options FOR SELECT USING (true);
+DROP POLICY IF EXISTS "Public read comments" ON comments;
 CREATE POLICY "Public read comments" ON comments FOR SELECT
   USING (is_deleted = false);
+DROP POLICY IF EXISTS "Public read hashtags" ON hashtags;
 CREATE POLICY "Public read hashtags" ON hashtags FOR SELECT USING (true);
+DROP POLICY IF EXISTS "Public read post_hashtags" ON post_hashtags;
 CREATE POLICY "Public read post_hashtags" ON post_hashtags FOR SELECT USING (true);
+DROP POLICY IF EXISTS "Public read poll_votes" ON poll_votes;
 CREATE POLICY "Public read poll_votes" ON poll_votes FOR SELECT USING (true);
 
 -- Auth users can create
+DROP POLICY IF EXISTS "Auth users create posts" ON posts;
 CREATE POLICY "Auth users create posts" ON posts FOR INSERT
   WITH CHECK (auth.uid() = author_id);
+DROP POLICY IF EXISTS "Auth users create post_media" ON post_media;
 CREATE POLICY "Auth users create post_media" ON post_media FOR INSERT
   WITH CHECK (EXISTS (SELECT 1 FROM posts WHERE id = post_id AND author_id = auth.uid()));
+DROP POLICY IF EXISTS "Auth users create comments" ON comments;
 CREATE POLICY "Auth users create comments" ON comments FOR INSERT
   WITH CHECK (auth.uid() = author_id);
+DROP POLICY IF EXISTS "Auth users create reactions" ON reactions;
 CREATE POLICY "Auth users create reactions" ON reactions FOR INSERT
   WITH CHECK (auth.uid() = user_id);
+DROP POLICY IF EXISTS "Auth users create poll_votes" ON poll_votes;
 CREATE POLICY "Auth users create poll_votes" ON poll_votes FOR INSERT
   WITH CHECK (auth.uid() = user_id);
+DROP POLICY IF EXISTS "Auth users create reports" ON reports;
 CREATE POLICY "Auth users create reports" ON reports FOR INSERT
   WITH CHECK (auth.uid() = reporter_id);
 
 -- Auth users can update own content
+DROP POLICY IF EXISTS "Authors update own posts" ON posts;
 CREATE POLICY "Authors update own posts" ON posts FOR UPDATE
   USING (auth.uid() = author_id)
   WITH CHECK (auth.uid() = author_id);
+DROP POLICY IF EXISTS "Authors update own comments" ON comments;
 CREATE POLICY "Authors update own comments" ON comments FOR UPDATE
   USING (auth.uid() = author_id)
   WITH CHECK (auth.uid() = author_id);
 
 -- Auth users can delete own content
+DROP POLICY IF EXISTS "Authors delete own posts" ON posts;
 CREATE POLICY "Authors delete own posts" ON posts FOR DELETE
   USING (auth.uid() = author_id);
+DROP POLICY IF EXISTS "Authors delete own comments" ON comments;
 CREATE POLICY "Authors delete own comments" ON comments FOR DELETE
   USING (auth.uid() = author_id);
+DROP POLICY IF EXISTS "Users delete own reactions" ON reactions;
 CREATE POLICY "Users delete own reactions" ON reactions FOR DELETE
   USING (auth.uid() = user_id);
 
 -- Reports: users can see own reports only
+DROP POLICY IF EXISTS "Users read own reports" ON reports;
 CREATE POLICY "Users read own reports" ON reports FOR SELECT
   USING (auth.uid() = reporter_id);
 
@@ -584,19 +608,26 @@ ALTER TABLE issue_upvotes ENABLE ROW LEVEL SECURITY;
 ALTER TABLE headlines ENABLE ROW LEVEL SECURITY;
 
 -- Public read
+DROP POLICY IF EXISTS "Public read civic_issues" ON civic_issues;
 CREATE POLICY "Public read civic_issues" ON civic_issues FOR SELECT USING (true);
+DROP POLICY IF EXISTS "Public read issue_upvotes" ON issue_upvotes;
 CREATE POLICY "Public read issue_upvotes" ON issue_upvotes FOR SELECT USING (true);
+DROP POLICY IF EXISTS "Public read headlines" ON headlines;
 CREATE POLICY "Public read headlines" ON headlines FOR SELECT USING (true);
 
 -- Auth users can create issues & upvote
+DROP POLICY IF EXISTS "Auth users create issues" ON civic_issues;
 CREATE POLICY "Auth users create issues" ON civic_issues FOR INSERT
   WITH CHECK (auth.uid() = reporter_id);
+DROP POLICY IF EXISTS "Auth users upvote" ON issue_upvotes;
 CREATE POLICY "Auth users upvote" ON issue_upvotes FOR INSERT
   WITH CHECK (auth.uid() = user_id);
+DROP POLICY IF EXISTS "Auth users remove upvote" ON issue_upvotes;
 CREATE POLICY "Auth users remove upvote" ON issue_upvotes FOR DELETE
   USING (auth.uid() = user_id);
 
 -- Authors can update own issues
+DROP POLICY IF EXISTS "Authors update own issues" ON civic_issues;
 CREATE POLICY "Authors update own issues" ON civic_issues FOR UPDATE
   USING (auth.uid() = reporter_id)
   WITH CHECK (auth.uid() = reporter_id);
@@ -684,20 +715,24 @@ ALTER TABLE notification_log ENABLE ROW LEVEL SECURITY;
 ALTER TABLE notification_preferences ENABLE ROW LEVEL SECURITY;
 
 -- Users manage own tokens
+DROP POLICY IF EXISTS "Users manage own push_tokens" ON push_tokens;
 CREATE POLICY "Users manage own push_tokens" ON push_tokens FOR ALL
   USING (auth.uid() = user_id)
   WITH CHECK (auth.uid() = user_id);
 
 -- Users read own notifications
+DROP POLICY IF EXISTS "Users read own notification_log" ON notification_log;
 CREATE POLICY "Users read own notification_log" ON notification_log FOR SELECT
   USING (auth.uid() = user_id);
 
 -- Users update own notifications (mark read)
+DROP POLICY IF EXISTS "Users update own notification_log" ON notification_log;
 CREATE POLICY "Users update own notification_log" ON notification_log FOR UPDATE
   USING (auth.uid() = user_id)
   WITH CHECK (auth.uid() = user_id);
 
 -- Users manage own preferences
+DROP POLICY IF EXISTS "Users manage own notification_preferences" ON notification_preferences;
 CREATE POLICY "Users manage own notification_preferences" ON notification_preferences FOR ALL
   USING (auth.uid() = user_id)
   WITH CHECK (auth.uid() = user_id);
@@ -840,24 +875,30 @@ ALTER TABLE audit_log ENABLE ROW LEVEL SECURITY;
 ALTER TABLE blocked_users ENABLE ROW LEVEL SECURITY;
 
 -- Public read profiles (non-suspended)
+DROP POLICY IF EXISTS "Public read user_profiles" ON user_profiles;
 CREATE POLICY "Public read user_profiles" ON user_profiles FOR SELECT
   USING (is_suspended = false);
 
 -- Users manage own profile
+DROP POLICY IF EXISTS "Users manage own profile" ON user_profiles;
 CREATE POLICY "Users manage own profile" ON user_profiles FOR INSERT
   WITH CHECK (auth.uid() = user_id);
+DROP POLICY IF EXISTS "Users update own profile" ON user_profiles;
 CREATE POLICY "Users update own profile" ON user_profiles FOR UPDATE
   USING (auth.uid() = user_id)
   WITH CHECK (auth.uid() = user_id);
 
 -- Users can see own verification
+DROP POLICY IF EXISTS "Users read own verification" ON user_verification;
 CREATE POLICY "Users read own verification" ON user_verification FOR SELECT
   USING (auth.uid() = user_id);
+DROP POLICY IF EXISTS "Users submit verification" ON user_verification;
 CREATE POLICY "Users submit verification" ON user_verification FOR INSERT
   WITH CHECK (auth.uid() = user_id);
 
 -- Moderation: only moderators/admins can read (enforced at app level via role check)
 -- Service role bypasses RLS for server-side moderation operations
+DROP POLICY IF EXISTS "Moderators read moderation_actions" ON moderation_actions;
 CREATE POLICY "Moderators read moderation_actions" ON moderation_actions FOR SELECT
   USING (
     EXISTS (
@@ -868,6 +909,7 @@ CREATE POLICY "Moderators read moderation_actions" ON moderation_actions FOR SEL
   );
 
 -- Audit log: admin-only read
+DROP POLICY IF EXISTS "Admins read audit_log" ON audit_log;
 CREATE POLICY "Admins read audit_log" ON audit_log FOR SELECT
   USING (
     EXISTS (
@@ -878,6 +920,7 @@ CREATE POLICY "Admins read audit_log" ON audit_log FOR SELECT
   );
 
 -- Blocked users: users manage own blocks
+DROP POLICY IF EXISTS "Users manage own blocks" ON blocked_users;
 CREATE POLICY "Users manage own blocks" ON blocked_users FOR ALL
   USING (auth.uid() = blocker_id)
   WITH CHECK (auth.uid() = blocker_id);
@@ -1021,21 +1064,31 @@ ALTER TABLE issue_evidence ENABLE ROW LEVEL SECURITY;
 ALTER TABLE issue_status_history ENABLE ROW LEVEL SECURITY;
 
 -- Public read
+DROP POLICY IF EXISTS "Public read issue_comments" ON issue_comments;
 CREATE POLICY "Public read issue_comments" ON issue_comments FOR SELECT USING (true);
+DROP POLICY IF EXISTS "Public read issue_follows" ON issue_follows;
 CREATE POLICY "Public read issue_follows" ON issue_follows FOR SELECT USING (true);
+DROP POLICY IF EXISTS "Public read issue_disputes" ON issue_disputes;
 CREATE POLICY "Public read issue_disputes" ON issue_disputes FOR SELECT USING (true);
+DROP POLICY IF EXISTS "Public read issue_evidence" ON issue_evidence;
 CREATE POLICY "Public read issue_evidence" ON issue_evidence FOR SELECT USING (true);
+DROP POLICY IF EXISTS "Public read issue_status_history" ON issue_status_history;
 CREATE POLICY "Public read issue_status_history" ON issue_status_history FOR SELECT USING (true);
 
 -- Auth users can create
+DROP POLICY IF EXISTS "Auth users create comments" ON issue_comments;
 CREATE POLICY "Auth users create comments" ON issue_comments FOR INSERT
   WITH CHECK (auth.uid() = user_id);
+DROP POLICY IF EXISTS "Auth users follow issues" ON issue_follows;
 CREATE POLICY "Auth users follow issues" ON issue_follows FOR INSERT
   WITH CHECK (auth.uid() = user_id);
+DROP POLICY IF EXISTS "Auth users unfollow" ON issue_follows;
 CREATE POLICY "Auth users unfollow" ON issue_follows FOR DELETE
   USING (auth.uid() = user_id);
+DROP POLICY IF EXISTS "Auth users dispute" ON issue_disputes;
 CREATE POLICY "Auth users dispute" ON issue_disputes FOR INSERT
   WITH CHECK (auth.uid() = user_id);
+DROP POLICY IF EXISTS "Auth users add evidence" ON issue_evidence;
 CREATE POLICY "Auth users add evidence" ON issue_evidence FOR INSERT
   WITH CHECK (auth.uid() = user_id);
 
@@ -1195,17 +1248,21 @@ CREATE INDEX IF NOT EXISTS idx_affidavit_cases_affidavit ON affidavit_criminal_c
 ALTER TABLE candidate_affidavits ENABLE ROW LEVEL SECURITY;
 ALTER TABLE affidavit_criminal_cases ENABLE ROW LEVEL SECURITY;
 
+DROP POLICY IF EXISTS "Public read affidavits" ON candidate_affidavits;
 CREATE POLICY "Public read affidavits" ON candidate_affidavits
   FOR SELECT USING (true);
 
+DROP POLICY IF EXISTS "Public read criminal cases" ON affidavit_criminal_cases;
 CREATE POLICY "Public read criminal cases" ON affidavit_criminal_cases
   FOR SELECT USING (true);
 
+DROP POLICY IF EXISTS "Admin insert affidavits" ON candidate_affidavits;
 CREATE POLICY "Admin insert affidavits" ON candidate_affidavits
   FOR INSERT WITH CHECK (
     EXISTS (SELECT 1 FROM user_profiles WHERE user_id = auth.uid() AND role IN ('admin', 'moderator'))
   );
 
+DROP POLICY IF EXISTS "Admin insert criminal cases" ON affidavit_criminal_cases;
 CREATE POLICY "Admin insert criminal cases" ON affidavit_criminal_cases
   FOR INSERT WITH CHECK (
     EXISTS (SELECT 1 FROM user_profiles WHERE user_id = auth.uid() AND role IN ('admin', 'moderator'))
@@ -1327,17 +1384,24 @@ ALTER TABLE promise_updates ENABLE ROW LEVEL SECURITY;
 ALTER TABLE promise_evidence ENABLE ROW LEVEL SECURITY;
 ALTER TABLE promise_follows ENABLE ROW LEVEL SECURITY;
 
+DROP POLICY IF EXISTS "Public read promises" ON election_promises;
 CREATE POLICY "Public read promises" ON election_promises FOR SELECT USING (true);
+DROP POLICY IF EXISTS "Public read updates" ON promise_updates;
 CREATE POLICY "Public read updates" ON promise_updates FOR SELECT USING (true);
+DROP POLICY IF EXISTS "Public read evidence" ON promise_evidence;
 CREATE POLICY "Public read evidence" ON promise_evidence FOR SELECT USING (true);
 
+DROP POLICY IF EXISTS "Auth follow" ON promise_follows;
 CREATE POLICY "Auth follow" ON promise_follows
   FOR INSERT WITH CHECK (auth.uid() = user_id);
+DROP POLICY IF EXISTS "Auth unfollow" ON promise_follows;
 CREATE POLICY "Auth unfollow" ON promise_follows
   FOR DELETE USING (auth.uid() = user_id);
+DROP POLICY IF EXISTS "Own follows" ON promise_follows;
 CREATE POLICY "Own follows" ON promise_follows
   FOR SELECT USING (auth.uid() = user_id);
 
+DROP POLICY IF EXISTS "Auth submit evidence" ON promise_evidence;
 CREATE POLICY "Auth submit evidence" ON promise_evidence
   FOR INSERT WITH CHECK (auth.uid() = user_id);
 
@@ -1523,15 +1587,25 @@ ALTER TABLE challenge_participation ENABLE ROW LEVEL SECURITY;
 ALTER TABLE community_endorsements ENABLE ROW LEVEL SECURITY;
 
 -- Public read for public profiles and modules
+DROP POLICY IF EXISTS "Public aspirant profiles" ON aspirant_profiles;
 CREATE POLICY "Public aspirant profiles" ON aspirant_profiles FOR SELECT USING (is_public = true);
+DROP POLICY IF EXISTS "Own aspirant profile" ON aspirant_profiles;
 CREATE POLICY "Own aspirant profile" ON aspirant_profiles FOR ALL USING (auth.uid() = user_id);
+DROP POLICY IF EXISTS "Public badges" ON civic_badges;
 CREATE POLICY "Public badges" ON civic_badges FOR SELECT USING (true);
+DROP POLICY IF EXISTS "Public modules" ON leadership_modules;
 CREATE POLICY "Public modules" ON leadership_modules FOR SELECT USING (true);
+DROP POLICY IF EXISTS "Own progress" ON module_progress;
 CREATE POLICY "Own progress" ON module_progress FOR ALL USING (auth.uid() = user_id);
+DROP POLICY IF EXISTS "Public challenges" ON community_challenges;
 CREATE POLICY "Public challenges" ON community_challenges FOR SELECT USING (true);
+DROP POLICY IF EXISTS "Own participation" ON challenge_participation;
 CREATE POLICY "Own participation" ON challenge_participation FOR ALL USING (auth.uid() = user_id);
+DROP POLICY IF EXISTS "Public endorsements" ON community_endorsements;
 CREATE POLICY "Public endorsements" ON community_endorsements FOR SELECT USING (true);
+DROP POLICY IF EXISTS "Auth endorse" ON community_endorsements;
 CREATE POLICY "Auth endorse" ON community_endorsements FOR INSERT WITH CHECK (auth.uid() = endorser_id);
+DROP POLICY IF EXISTS "Auth unendorse" ON community_endorsements;
 CREATE POLICY "Auth unendorse" ON community_endorsements FOR DELETE USING (auth.uid() = endorser_id);
 
 -- ─── TRIGGERS ───
@@ -1787,47 +1861,47 @@ ALTER TABLE delimitation_events ENABLE ROW LEVEL SECURITY;
 ALTER TABLE citizen_impact ENABLE ROW LEVEL SECURITY;
 
 -- Public read access for all delimitation data
-CREATE POLICY "Public read delimitation_proposals"
-  ON delimitation_proposals FOR SELECT USING (true);
-CREATE POLICY "Public read proposed_constituencies"
-  ON proposed_constituencies FOR SELECT USING (true);
-CREATE POLICY "Public read constituency_mapping"
-  ON constituency_mapping FOR SELECT USING (true);
-CREATE POLICY "Public read ward_population"
-  ON ward_population FOR SELECT USING (true);
-CREATE POLICY "Public read delimitation_events"
-  ON delimitation_events FOR SELECT USING (true);
-CREATE POLICY "Public read citizen_impact"
-  ON citizen_impact FOR SELECT USING (true);
+DROP POLICY IF EXISTS "Public read delimitation_proposals" ON delimitation_proposals;
+CREATE POLICY "Public read delimitation_proposals" ON delimitation_proposals FOR SELECT USING (true);
+DROP POLICY IF EXISTS "Public read proposed_constituencies" ON proposed_constituencies;
+CREATE POLICY "Public read proposed_constituencies" ON proposed_constituencies FOR SELECT USING (true);
+DROP POLICY IF EXISTS "Public read constituency_mapping" ON constituency_mapping;
+CREATE POLICY "Public read constituency_mapping" ON constituency_mapping FOR SELECT USING (true);
+DROP POLICY IF EXISTS "Public read ward_population" ON ward_population;
+CREATE POLICY "Public read ward_population" ON ward_population FOR SELECT USING (true);
+DROP POLICY IF EXISTS "Public read delimitation_events" ON delimitation_events;
+CREATE POLICY "Public read delimitation_events" ON delimitation_events FOR SELECT USING (true);
+DROP POLICY IF EXISTS "Public read citizen_impact" ON citizen_impact;
+CREATE POLICY "Public read citizen_impact" ON citizen_impact FOR SELECT USING (true);
 
 -- Admin/moderator insert for managed data
-CREATE POLICY "Admin insert delimitation_proposals"
-  ON delimitation_proposals FOR INSERT
+DROP POLICY IF EXISTS "Admin insert delimitation_proposals" ON delimitation_proposals;
+CREATE POLICY "Admin insert delimitation_proposals" ON delimitation_proposals FOR INSERT
   WITH CHECK (
     EXISTS (SELECT 1 FROM user_profiles WHERE id = auth.uid() AND role IN ('admin', 'moderator'))
   );
-CREATE POLICY "Admin insert proposed_constituencies"
-  ON proposed_constituencies FOR INSERT
+DROP POLICY IF EXISTS "Admin insert proposed_constituencies" ON proposed_constituencies;
+CREATE POLICY "Admin insert proposed_constituencies" ON proposed_constituencies FOR INSERT
   WITH CHECK (
     EXISTS (SELECT 1 FROM user_profiles WHERE id = auth.uid() AND role IN ('admin', 'moderator'))
   );
-CREATE POLICY "Admin insert constituency_mapping"
-  ON constituency_mapping FOR INSERT
+DROP POLICY IF EXISTS "Admin insert constituency_mapping" ON constituency_mapping;
+CREATE POLICY "Admin insert constituency_mapping" ON constituency_mapping FOR INSERT
   WITH CHECK (
     EXISTS (SELECT 1 FROM user_profiles WHERE id = auth.uid() AND role IN ('admin', 'moderator'))
   );
-CREATE POLICY "Admin insert ward_population"
-  ON ward_population FOR INSERT
+DROP POLICY IF EXISTS "Admin insert ward_population" ON ward_population;
+CREATE POLICY "Admin insert ward_population" ON ward_population FOR INSERT
   WITH CHECK (
     EXISTS (SELECT 1 FROM user_profiles WHERE id = auth.uid() AND role IN ('admin', 'moderator'))
   );
-CREATE POLICY "Admin insert delimitation_events"
-  ON delimitation_events FOR INSERT
+DROP POLICY IF EXISTS "Admin insert delimitation_events" ON delimitation_events;
+CREATE POLICY "Admin insert delimitation_events" ON delimitation_events FOR INSERT
   WITH CHECK (
     EXISTS (SELECT 1 FROM user_profiles WHERE id = auth.uid() AND role IN ('admin', 'moderator'))
   );
-CREATE POLICY "Admin insert citizen_impact"
-  ON citizen_impact FOR INSERT
+DROP POLICY IF EXISTS "Admin insert citizen_impact" ON citizen_impact;
+CREATE POLICY "Admin insert citizen_impact" ON citizen_impact FOR INSERT
   WITH CHECK (
     EXISTS (SELECT 1 FROM user_profiles WHERE id = auth.uid() AND role IN ('admin', 'moderator'))
   );
@@ -2156,39 +2230,53 @@ ALTER TABLE legislator_events ENABLE ROW LEVEL SECURITY;
 ALTER TABLE scraper_runs ENABLE ROW LEVEL SECURITY;
 
 -- Public read access to all legislator data (transparency!)
+DROP POLICY IF EXISTS "Public read profiles" ON legislator_profiles;
 CREATE POLICY "Public read profiles" ON legislator_profiles FOR SELECT USING (true);
+DROP POLICY IF EXISTS "Public read elections" ON legislator_elections;
 CREATE POLICY "Public read elections" ON legislator_elections FOR SELECT USING (true);
+DROP POLICY IF EXISTS "Public read finances" ON legislator_finances;
 CREATE POLICY "Public read finances" ON legislator_finances FOR SELECT USING (true);
+DROP POLICY IF EXISTS "Public read criminal_cases" ON legislator_criminal_cases;
 CREATE POLICY "Public read criminal_cases" ON legislator_criminal_cases FOR SELECT USING (true);
+DROP POLICY IF EXISTS "Public read key_contestants" ON key_contestants;
 CREATE POLICY "Public read key_contestants" ON key_contestants FOR SELECT USING (true);
+DROP POLICY IF EXISTS "Public read events" ON legislator_events;
 CREATE POLICY "Public read events" ON legislator_events FOR SELECT USING (true);
+DROP POLICY IF EXISTS "Public read scraper_runs" ON scraper_runs;
 CREATE POLICY "Public read scraper_runs" ON scraper_runs FOR SELECT USING (true);
 
 -- Admin/moderator write access
+DROP POLICY IF EXISTS "Admin write profiles" ON legislator_profiles;
 CREATE POLICY "Admin write profiles" ON legislator_profiles FOR ALL
   USING (EXISTS (SELECT 1 FROM user_profiles WHERE user_id = auth.uid() AND role IN ('admin','moderator')))
   WITH CHECK (EXISTS (SELECT 1 FROM user_profiles WHERE user_id = auth.uid() AND role IN ('admin','moderator')));
 
+DROP POLICY IF EXISTS "Admin write elections" ON legislator_elections;
 CREATE POLICY "Admin write elections" ON legislator_elections FOR ALL
   USING (EXISTS (SELECT 1 FROM user_profiles WHERE user_id = auth.uid() AND role IN ('admin','moderator')))
   WITH CHECK (EXISTS (SELECT 1 FROM user_profiles WHERE user_id = auth.uid() AND role IN ('admin','moderator')));
 
+DROP POLICY IF EXISTS "Admin write finances" ON legislator_finances;
 CREATE POLICY "Admin write finances" ON legislator_finances FOR ALL
   USING (EXISTS (SELECT 1 FROM user_profiles WHERE user_id = auth.uid() AND role IN ('admin','moderator')))
   WITH CHECK (EXISTS (SELECT 1 FROM user_profiles WHERE user_id = auth.uid() AND role IN ('admin','moderator')));
 
+DROP POLICY IF EXISTS "Admin write criminal_cases" ON legislator_criminal_cases;
 CREATE POLICY "Admin write criminal_cases" ON legislator_criminal_cases FOR ALL
   USING (EXISTS (SELECT 1 FROM user_profiles WHERE user_id = auth.uid() AND role IN ('admin','moderator')))
   WITH CHECK (EXISTS (SELECT 1 FROM user_profiles WHERE user_id = auth.uid() AND role IN ('admin','moderator')));
 
+DROP POLICY IF EXISTS "Admin write key_contestants" ON key_contestants;
 CREATE POLICY "Admin write key_contestants" ON key_contestants FOR ALL
   USING (EXISTS (SELECT 1 FROM user_profiles WHERE user_id = auth.uid() AND role IN ('admin','moderator')))
   WITH CHECK (EXISTS (SELECT 1 FROM user_profiles WHERE user_id = auth.uid() AND role IN ('admin','moderator')));
 
+DROP POLICY IF EXISTS "Admin write events" ON legislator_events;
 CREATE POLICY "Admin write events" ON legislator_events FOR ALL
   USING (EXISTS (SELECT 1 FROM user_profiles WHERE user_id = auth.uid() AND role IN ('admin','moderator')))
   WITH CHECK (EXISTS (SELECT 1 FROM user_profiles WHERE user_id = auth.uid() AND role IN ('admin','moderator')));
 
+DROP POLICY IF EXISTS "Admin write scraper_runs" ON scraper_runs;
 CREATE POLICY "Admin write scraper_runs" ON scraper_runs FOR ALL
   USING (EXISTS (SELECT 1 FROM user_profiles WHERE user_id = auth.uid() AND role IN ('admin','moderator')))
   WITH CHECK (EXISTS (SELECT 1 FROM user_profiles WHERE user_id = auth.uid() AND role IN ('admin','moderator')));
@@ -2434,15 +2522,19 @@ ALTER TABLE contributor_devices ENABLE ROW LEVEL SECURITY;
 ALTER TABLE action_fingerprints ENABLE ROW LEVEL SECURITY;
 
 -- Users can view and insert their own KYC
+DROP POLICY IF EXISTS "Users read own KYC" ON creator_kyc_records;
 CREATE POLICY "Users read own KYC" ON creator_kyc_records FOR SELECT
   USING (auth.uid() = user_id);
+DROP POLICY IF EXISTS "Users submit KYC" ON creator_kyc_records;
 CREATE POLICY "Users submit KYC" ON creator_kyc_records FOR INSERT
   WITH CHECK (auth.uid() = user_id);
+DROP POLICY IF EXISTS "Users update own KYC" ON creator_kyc_records;
 CREATE POLICY "Users update own KYC" ON creator_kyc_records FOR UPDATE
   USING (auth.uid() = user_id)
   WITH CHECK (auth.uid() = user_id);
 
 -- Admin/moderator can read all KYC records (for investigations)
+DROP POLICY IF EXISTS "Admins read all KYC" ON creator_kyc_records;
 CREATE POLICY "Admins read all KYC" ON creator_kyc_records FOR SELECT
   USING (
     EXISTS (
@@ -2453,14 +2545,18 @@ CREATE POLICY "Admins read all KYC" ON creator_kyc_records FOR SELECT
   );
 
 -- Users can see own devices
+DROP POLICY IF EXISTS "Users read own devices" ON contributor_devices;
 CREATE POLICY "Users read own devices" ON contributor_devices FOR SELECT
   USING (auth.uid() = user_id);
+DROP POLICY IF EXISTS "Users register devices" ON contributor_devices;
 CREATE POLICY "Users register devices" ON contributor_devices FOR INSERT
   WITH CHECK (auth.uid() = user_id);
+DROP POLICY IF EXISTS "Users update own devices" ON contributor_devices;
 CREATE POLICY "Users update own devices" ON contributor_devices FOR UPDATE
   USING (auth.uid() = user_id);
 
 -- Admins can read all devices
+DROP POLICY IF EXISTS "Admins read all devices" ON contributor_devices;
 CREATE POLICY "Admins read all devices" ON contributor_devices FOR SELECT
   USING (
     EXISTS (
@@ -2471,10 +2567,13 @@ CREATE POLICY "Admins read all devices" ON contributor_devices FOR SELECT
   );
 
 -- Action fingerprints: users insert their own, only admins can read all
+DROP POLICY IF EXISTS "Users log own actions" ON action_fingerprints;
 CREATE POLICY "Users log own actions" ON action_fingerprints FOR INSERT
   WITH CHECK (auth.uid() = user_id);
+DROP POLICY IF EXISTS "Users read own fingerprints" ON action_fingerprints;
 CREATE POLICY "Users read own fingerprints" ON action_fingerprints FOR SELECT
   USING (auth.uid() = user_id);
+DROP POLICY IF EXISTS "Admins read all fingerprints" ON action_fingerprints;
 CREATE POLICY "Admins read all fingerprints" ON action_fingerprints FOR SELECT
   USING (
     EXISTS (
@@ -2838,9 +2937,12 @@ ALTER TABLE promotion_decisions ENABLE ROW LEVEL SECURITY;
 ALTER TABLE constituency_moderators ENABLE ROW LEVEL SECURITY;
 
 -- Content visibility: public read (feed filtering done in app), author + mod insert/update
+DROP POLICY IF EXISTS "Public read visibility" ON content_visibility;
 CREATE POLICY "Public read visibility" ON content_visibility FOR SELECT USING (true);
+DROP POLICY IF EXISTS "Authors create visibility" ON content_visibility;
 CREATE POLICY "Authors create visibility" ON content_visibility FOR INSERT
   WITH CHECK (auth.uid() = author_id);
+DROP POLICY IF EXISTS "Authors and mods update" ON content_visibility;
 CREATE POLICY "Authors and mods update" ON content_visibility FOR UPDATE
   USING (
     auth.uid() = author_id
@@ -2857,11 +2959,15 @@ CREATE POLICY "Authors and mods update" ON content_visibility FOR UPDATE
   );
 
 -- Vouches: auth insert own, public read
+DROP POLICY IF EXISTS "Auth vouch" ON content_vouches;
 CREATE POLICY "Auth vouch" ON content_vouches FOR INSERT WITH CHECK (auth.uid() = user_id);
+DROP POLICY IF EXISTS "Public read vouches" ON content_vouches;
 CREATE POLICY "Public read vouches" ON content_vouches FOR SELECT USING (true);
 
 -- Flags: auth insert own, read by moderators
+DROP POLICY IF EXISTS "Auth flag" ON content_flags;
 CREATE POLICY "Auth flag" ON content_flags FOR INSERT WITH CHECK (auth.uid() = user_id);
+DROP POLICY IF EXISTS "Moderators read flags" ON content_flags;
 CREATE POLICY "Moderators read flags" ON content_flags FOR SELECT
   USING (
     auth.uid() = user_id
@@ -2874,6 +2980,7 @@ CREATE POLICY "Moderators read flags" ON content_flags FOR SELECT
       WHERE user_id = auth.uid() AND is_active = true
     )
   );
+DROP POLICY IF EXISTS "Moderators resolve flags" ON content_flags;
 CREATE POLICY "Moderators resolve flags" ON content_flags FOR UPDATE
   USING (
     EXISTS (
@@ -2887,7 +2994,9 @@ CREATE POLICY "Moderators resolve flags" ON content_flags FOR UPDATE
   );
 
 -- Alerts: auth insert, moderators read
+DROP POLICY IF EXISTS "Auth alert" ON content_alerts;
 CREATE POLICY "Auth alert" ON content_alerts FOR INSERT WITH CHECK (auth.uid() = user_id);
+DROP POLICY IF EXISTS "Moderators read alerts" ON content_alerts;
 CREATE POLICY "Moderators read alerts" ON content_alerts FOR SELECT
   USING (
     auth.uid() = user_id
@@ -2902,7 +3011,9 @@ CREATE POLICY "Moderators read alerts" ON content_alerts FOR SELECT
   );
 
 -- Decisions: public read (transparency), moderator insert
+DROP POLICY IF EXISTS "Public read decisions" ON promotion_decisions;
 CREATE POLICY "Public read decisions" ON promotion_decisions FOR SELECT USING (true);
+DROP POLICY IF EXISTS "Moderators make decisions" ON promotion_decisions;
 CREATE POLICY "Moderators make decisions" ON promotion_decisions FOR INSERT
   WITH CHECK (
     EXISTS (
@@ -2916,7 +3027,9 @@ CREATE POLICY "Moderators make decisions" ON promotion_decisions FOR INSERT
   );
 
 -- Moderators: public read, admin manage
+DROP POLICY IF EXISTS "Public read moderators" ON constituency_moderators;
 CREATE POLICY "Public read moderators" ON constituency_moderators FOR SELECT USING (true);
+DROP POLICY IF EXISTS "Admins manage moderators" ON constituency_moderators;
 CREATE POLICY "Admins manage moderators" ON constituency_moderators FOR ALL
   USING (
     EXISTS (
@@ -3243,17 +3356,26 @@ ALTER TABLE breaking_news ENABLE ROW LEVEL SECURITY;
 ALTER TABLE tip_transactions ENABLE ROW LEVEL SECURITY;
 ALTER TABLE editorial_assignments ENABLE ROW LEVEL SECURITY;
 
+DROP POLICY IF EXISTS "Public read journalist profiles" ON journalist_profiles;
 CREATE POLICY "Public read journalist profiles" ON journalist_profiles FOR SELECT USING (true);
+DROP POLICY IF EXISTS "Users manage own journalist profile" ON journalist_profiles;
 CREATE POLICY "Users manage own journalist profile" ON journalist_profiles FOR ALL USING (auth.uid() = user_id);
 
+DROP POLICY IF EXISTS "Public read published articles" ON articles;
 CREATE POLICY "Public read published articles" ON articles FOR SELECT USING (status = 'published' OR author_id IN (SELECT id FROM journalist_profiles WHERE user_id = auth.uid()));
+DROP POLICY IF EXISTS "Authors manage own articles" ON articles;
 CREATE POLICY "Authors manage own articles" ON articles FOR ALL USING (author_id IN (SELECT id FROM journalist_profiles WHERE user_id = auth.uid()));
 
+DROP POLICY IF EXISTS "Public read fact checks" ON fact_checks;
 CREATE POLICY "Public read fact checks" ON fact_checks FOR SELECT USING (published_at IS NOT NULL);
+DROP POLICY IF EXISTS "Public read breaking news" ON breaking_news;
 CREATE POLICY "Public read breaking news" ON breaking_news FOR SELECT USING (is_active = TRUE);
+DROP POLICY IF EXISTS "Public read tips" ON tip_transactions;
 CREATE POLICY "Public read tips" ON tip_transactions FOR SELECT USING (true);
+DROP POLICY IF EXISTS "Auth insert tips" ON tip_transactions;
 CREATE POLICY "Auth insert tips" ON tip_transactions FOR INSERT WITH CHECK (auth.uid() = from_user_id);
 
+DROP POLICY IF EXISTS "Journalist read assignments" ON editorial_assignments;
 CREATE POLICY "Journalist read assignments" ON editorial_assignments FOR SELECT USING (
   journalist_id IN (SELECT id FROM journalist_profiles WHERE user_id = auth.uid()) OR
   editor_id IN (SELECT id FROM journalist_profiles WHERE user_id = auth.uid())
@@ -3537,27 +3659,42 @@ ALTER TABLE fundraise_donations ENABLE ROW LEVEL SECURITY;
 ALTER TABLE politician_surveys ENABLE ROW LEVEL SECURITY;
 ALTER TABLE survey_responses ENABLE ROW LEVEL SECURITY;
 
+DROP POLICY IF EXISTS "Public read politician profiles" ON politician_portal_profiles;
 CREATE POLICY "Public read politician profiles" ON politician_portal_profiles FOR SELECT USING (true);
+DROP POLICY IF EXISTS "Users manage own politician profile" ON politician_portal_profiles;
 CREATE POLICY "Users manage own politician profile" ON politician_portal_profiles FOR ALL USING (auth.uid() = user_id);
 
+DROP POLICY IF EXISTS "Public read broadcasts" ON constituent_broadcasts;
 CREATE POLICY "Public read broadcasts" ON constituent_broadcasts FOR SELECT USING (sent_at IS NOT NULL);
+DROP POLICY IF EXISTS "Politicians manage own broadcasts" ON constituent_broadcasts;
 CREATE POLICY "Politicians manage own broadcasts" ON constituent_broadcasts FOR ALL USING (politician_id IN (SELECT id FROM politician_portal_profiles WHERE user_id = auth.uid()));
 
+DROP POLICY IF EXISTS "Public read public events" ON political_events;
 CREATE POLICY "Public read public events" ON political_events FOR SELECT USING (is_public = TRUE);
+DROP POLICY IF EXISTS "Politicians manage own events" ON political_events;
 CREATE POLICY "Politicians manage own events" ON political_events FOR ALL USING (politician_id IN (SELECT id FROM politician_portal_profiles WHERE user_id = auth.uid()));
 
+DROP POLICY IF EXISTS "Auth RSVP events" ON event_rsvps;
 CREATE POLICY "Auth RSVP events" ON event_rsvps FOR ALL USING (auth.uid() = user_id);
 
+DROP POLICY IF EXISTS "Public read published manifestos" ON e_manifestos;
 CREATE POLICY "Public read published manifestos" ON e_manifestos FOR SELECT USING (status = 'published');
+DROP POLICY IF EXISTS "Politicians manage own manifestos" ON e_manifestos;
 CREATE POLICY "Politicians manage own manifestos" ON e_manifestos FOR ALL USING (politician_id IN (SELECT id FROM politician_portal_profiles WHERE user_id = auth.uid()));
 
+DROP POLICY IF EXISTS "Participants read mentorships" ON mentorships;
 CREATE POLICY "Participants read mentorships" ON mentorships FOR SELECT USING (true);
+DROP POLICY IF EXISTS "Public read endorsements" ON political_endorsements;
 CREATE POLICY "Public read endorsements" ON political_endorsements FOR SELECT USING (is_public = TRUE);
 
+DROP POLICY IF EXISTS "Public read fundraise projects" ON fundraise_projects;
 CREATE POLICY "Public read fundraise projects" ON fundraise_projects FOR SELECT USING (true);
+DROP POLICY IF EXISTS "Auth donate" ON fundraise_donations;
 CREATE POLICY "Auth donate" ON fundraise_donations FOR INSERT WITH CHECK (auth.uid() = user_id);
 
+DROP POLICY IF EXISTS "Public read active surveys" ON politician_surveys;
 CREATE POLICY "Public read active surveys" ON politician_surveys FOR SELECT USING (status = 'active' OR politician_id IN (SELECT id FROM politician_portal_profiles WHERE user_id = auth.uid()));
+DROP POLICY IF EXISTS "Auth respond to survey" ON survey_responses;
 CREATE POLICY "Auth respond to survey" ON survey_responses FOR INSERT WITH CHECK (auth.uid() = user_id);
 
 
@@ -3805,23 +3942,35 @@ ALTER TABLE booth_strategies ENABLE ROW LEVEL SECURITY;
 ALTER TABLE canvassing_records ENABLE ROW LEVEL SECURITY;
 ALTER TABLE ad_revenue_log ENABLE ROW LEVEL SECURITY;
 
+DROP POLICY IF EXISTS "Politicians read own campaigns" ON campaigns;
 CREATE POLICY "Politicians read own campaigns" ON campaigns FOR SELECT USING (politician_id IN (SELECT id FROM politician_portal_profiles WHERE user_id = auth.uid()));
+DROP POLICY IF EXISTS "Politicians manage own campaigns" ON campaigns;
 CREATE POLICY "Politicians manage own campaigns" ON campaigns FOR ALL USING (politician_id IN (SELECT id FROM politician_portal_profiles WHERE user_id = auth.uid()));
 
+DROP POLICY IF EXISTS "Campaign owners read ads" ON ad_creatives;
 CREATE POLICY "Campaign owners read ads" ON ad_creatives FOR SELECT USING (campaign_id IN (SELECT id FROM campaigns WHERE politician_id IN (SELECT id FROM politician_portal_profiles WHERE user_id = auth.uid())));
+DROP POLICY IF EXISTS "Campaign owners manage ads" ON ad_creatives;
 CREATE POLICY "Campaign owners manage ads" ON ad_creatives FOR ALL USING (campaign_id IN (SELECT id FROM campaigns WHERE politician_id IN (SELECT id FROM politician_portal_profiles WHERE user_id = auth.uid())));
 
+DROP POLICY IF EXISTS "Campaign owners read tests" ON ab_tests;
 CREATE POLICY "Campaign owners read tests" ON ab_tests FOR SELECT USING (campaign_id IN (SELECT id FROM campaigns WHERE politician_id IN (SELECT id FROM politician_portal_profiles WHERE user_id = auth.uid())));
 
+DROP POLICY IF EXISTS "Volunteers read own records" ON campaign_volunteers;
 CREATE POLICY "Volunteers read own records" ON campaign_volunteers FOR SELECT USING (auth.uid() = user_id);
+DROP POLICY IF EXISTS "Auth join as volunteer" ON campaign_volunteers;
 CREATE POLICY "Auth join as volunteer" ON campaign_volunteers FOR INSERT WITH CHECK (auth.uid() = user_id);
 
+DROP POLICY IF EXISTS "Campaign owners read booths" ON booth_strategies;
 CREATE POLICY "Campaign owners read booths" ON booth_strategies FOR SELECT USING (campaign_id IN (SELECT id FROM campaigns WHERE politician_id IN (SELECT id FROM politician_portal_profiles WHERE user_id = auth.uid())));
+DROP POLICY IF EXISTS "Campaign owners manage booths" ON booth_strategies;
 CREATE POLICY "Campaign owners manage booths" ON booth_strategies FOR ALL USING (campaign_id IN (SELECT id FROM campaigns WHERE politician_id IN (SELECT id FROM politician_portal_profiles WHERE user_id = auth.uid())));
 
+DROP POLICY IF EXISTS "Volunteers read canvassing" ON canvassing_records;
 CREATE POLICY "Volunteers read canvassing" ON canvassing_records FOR SELECT USING (volunteer_id IN (SELECT id FROM campaign_volunteers WHERE user_id = auth.uid()));
+DROP POLICY IF EXISTS "Volunteers insert canvassing" ON canvassing_records;
 CREATE POLICY "Volunteers insert canvassing" ON canvassing_records FOR INSERT WITH CHECK (volunteer_id IN (SELECT id FROM campaign_volunteers WHERE user_id = auth.uid()));
 
+DROP POLICY IF EXISTS "Admin read revenue" ON ad_revenue_log;
 CREATE POLICY "Admin read revenue" ON ad_revenue_log FOR SELECT USING (true);
 
 
@@ -4089,16 +4238,27 @@ ALTER TABLE development_projects ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public_hearings ENABLE ROW LEVEL SECURITY;
 ALTER TABLE constituency_development_index ENABLE ROW LEVEL SECURITY;
 
+DROP POLICY IF EXISTS "Public read budgets" ON budget_allocations;
 CREATE POLICY "Public read budgets" ON budget_allocations FOR SELECT USING (true);
+DROP POLICY IF EXISTS "Public read budget summaries" ON state_budget_summaries;
 CREATE POLICY "Public read budget summaries" ON state_budget_summaries FOR SELECT USING (true);
+DROP POLICY IF EXISTS "Public read RTI" ON rti_requests;
 CREATE POLICY "Public read RTI" ON rti_requests FOR SELECT USING (is_public = TRUE OR auth.uid() = user_id);
+DROP POLICY IF EXISTS "Auth file RTI" ON rti_requests;
 CREATE POLICY "Auth file RTI" ON rti_requests FOR INSERT WITH CHECK (auth.uid() = user_id);
+DROP POLICY IF EXISTS "Users manage own RTI" ON rti_requests;
 CREATE POLICY "Users manage own RTI" ON rti_requests FOR UPDATE USING (auth.uid() = user_id);
+DROP POLICY IF EXISTS "Public read attendance" ON legislator_attendance;
 CREATE POLICY "Public read attendance" ON legislator_attendance FOR SELECT USING (true);
+DROP POLICY IF EXISTS "Public read bills" ON bills;
 CREATE POLICY "Public read bills" ON bills FOR SELECT USING (true);
+DROP POLICY IF EXISTS "Public read schemes" ON government_schemes;
 CREATE POLICY "Public read schemes" ON government_schemes FOR SELECT USING (true);
+DROP POLICY IF EXISTS "Public read projects" ON development_projects;
 CREATE POLICY "Public read projects" ON development_projects FOR SELECT USING (true);
+DROP POLICY IF EXISTS "Public read hearings" ON public_hearings;
 CREATE POLICY "Public read hearings" ON public_hearings FOR SELECT USING (true);
+DROP POLICY IF EXISTS "Public read CDI" ON constituency_development_index;
 CREATE POLICY "Public read CDI" ON constituency_development_index FOR SELECT USING (true);
 
 
@@ -4224,10 +4384,15 @@ ALTER TABLE live_constituency_results ENABLE ROW LEVEL SECURITY;
 ALTER TABLE live_candidate_results ENABLE ROW LEVEL SECURITY;
 ALTER TABLE data_pipeline_status ENABLE ROW LEVEL SECURITY;
 
+DROP POLICY IF EXISTS "Public read live elections" ON live_elections;
 CREATE POLICY "Public read live elections" ON live_elections FOR SELECT USING (true);
+DROP POLICY IF EXISTS "Public read party tallies" ON live_party_tallies;
 CREATE POLICY "Public read party tallies" ON live_party_tallies FOR SELECT USING (true);
+DROP POLICY IF EXISTS "Public read constituency results" ON live_constituency_results;
 CREATE POLICY "Public read constituency results" ON live_constituency_results FOR SELECT USING (true);
+DROP POLICY IF EXISTS "Public read candidate results" ON live_candidate_results;
 CREATE POLICY "Public read candidate results" ON live_candidate_results FOR SELECT USING (true);
+DROP POLICY IF EXISTS "Public read pipeline status" ON data_pipeline_status;
 CREATE POLICY "Public read pipeline status" ON data_pipeline_status FOR SELECT USING (true);
 
 
@@ -4270,8 +4435,11 @@ CREATE TABLE IF NOT EXISTS user_subscriptions (
 );
 
 ALTER TABLE user_subscriptions ENABLE ROW LEVEL SECURITY;
+DROP POLICY IF EXISTS "Users read own subscription" ON user_subscriptions;
 CREATE POLICY "Users read own subscription" ON user_subscriptions FOR SELECT USING (auth.uid() = user_id);
+DROP POLICY IF EXISTS "Users insert own subscription" ON user_subscriptions;
 CREATE POLICY "Users insert own subscription" ON user_subscriptions FOR INSERT WITH CHECK (auth.uid() = user_id);
+DROP POLICY IF EXISTS "Users update own subscription" ON user_subscriptions;
 CREATE POLICY "Users update own subscription" ON user_subscriptions FOR UPDATE USING (auth.uid() = user_id);
 
 -- ── User Sessions (analytics / investor metrics) ──
@@ -4298,7 +4466,9 @@ CREATE INDEX IF NOT EXISTS idx_user_sessions_started ON user_sessions(started_at
 CREATE INDEX IF NOT EXISTS idx_user_sessions_state ON user_sessions(state_code);
 
 ALTER TABLE user_sessions ENABLE ROW LEVEL SECURITY;
+DROP POLICY IF EXISTS "Users read own sessions" ON user_sessions;
 CREATE POLICY "Users read own sessions" ON user_sessions FOR SELECT USING (auth.uid() = user_id);
+DROP POLICY IF EXISTS "Auth users insert sessions" ON user_sessions;
 CREATE POLICY "Auth users insert sessions" ON user_sessions FOR INSERT WITH CHECK (auth.uid() = user_id OR user_id IS NULL);
 
 -- ── Issue Follows (may not exist if 007 wasn't fully applied) ──
@@ -4320,8 +4490,11 @@ CREATE TABLE IF NOT EXISTS promise_follows (
 );
 
 ALTER TABLE promise_follows ENABLE ROW LEVEL SECURITY;
+DROP POLICY IF EXISTS "Public read promise_follows" ON promise_follows;
 CREATE POLICY "Public read promise_follows" ON promise_follows FOR SELECT USING (true);
+DROP POLICY IF EXISTS "Auth users follow promises" ON promise_follows;
 CREATE POLICY "Auth users follow promises" ON promise_follows FOR INSERT WITH CHECK (auth.uid() = user_id);
+DROP POLICY IF EXISTS "Auth users unfollow promises" ON promise_follows;
 CREATE POLICY "Auth users unfollow promises" ON promise_follows FOR DELETE USING (auth.uid() = user_id);
 
 -- ── Favorites (unified, may overlap with user_favourites) ──
@@ -4334,8 +4507,11 @@ CREATE TABLE IF NOT EXISTS favorites (
 );
 
 ALTER TABLE favorites ENABLE ROW LEVEL SECURITY;
+DROP POLICY IF EXISTS "Users read own favorites" ON favorites;
 CREATE POLICY "Users read own favorites" ON favorites FOR SELECT USING (auth.uid() = user_id);
+DROP POLICY IF EXISTS "Users add favorites" ON favorites;
 CREATE POLICY "Users add favorites" ON favorites FOR INSERT WITH CHECK (auth.uid() = user_id);
+DROP POLICY IF EXISTS "Users remove favorites" ON favorites;
 CREATE POLICY "Users remove favorites" ON favorites FOR DELETE USING (auth.uid() = user_id);
 
 -- ── Short Videos (political shorts) ──
@@ -4373,8 +4549,11 @@ CREATE INDEX IF NOT EXISTS idx_shorts_status ON political_shorts(status);
 CREATE INDEX IF NOT EXISTS idx_shorts_created ON political_shorts(created_at DESC);
 
 ALTER TABLE political_shorts ENABLE ROW LEVEL SECURITY;
+DROP POLICY IF EXISTS "Public read approved shorts" ON political_shorts;
 CREATE POLICY "Public read approved shorts" ON political_shorts FOR SELECT USING (status IN ('approved', 'pending'));
+DROP POLICY IF EXISTS "Auth users upload shorts" ON political_shorts;
 CREATE POLICY "Auth users upload shorts" ON political_shorts FOR INSERT WITH CHECK (auth.uid() = uploaded_by);
+DROP POLICY IF EXISTS "Authors update own shorts" ON political_shorts;
 CREATE POLICY "Authors update own shorts" ON political_shorts FOR UPDATE USING (auth.uid() = uploaded_by);
 
 -- ── Short Approvals & Flags ──
@@ -4397,9 +4576,13 @@ CREATE TABLE IF NOT EXISTS short_flags (
 
 ALTER TABLE short_approvals ENABLE ROW LEVEL SECURITY;
 ALTER TABLE short_flags ENABLE ROW LEVEL SECURITY;
+DROP POLICY IF EXISTS "Public read short_approvals" ON short_approvals;
 CREATE POLICY "Public read short_approvals" ON short_approvals FOR SELECT USING (true);
+DROP POLICY IF EXISTS "Auth approve shorts" ON short_approvals;
 CREATE POLICY "Auth approve shorts" ON short_approvals FOR INSERT WITH CHECK (auth.uid() = user_id);
+DROP POLICY IF EXISTS "Public read short_flags" ON short_flags;
 CREATE POLICY "Public read short_flags" ON short_flags FOR SELECT USING (true);
+DROP POLICY IF EXISTS "Auth flag shorts" ON short_flags;
 CREATE POLICY "Auth flag shorts" ON short_flags FOR INSERT WITH CHECK (auth.uid() = user_id);
 
 -- ── Short Comments ──
@@ -4416,7 +4599,9 @@ CREATE TABLE IF NOT EXISTS short_comments (
 
 CREATE INDEX IF NOT EXISTS idx_short_comments_short ON short_comments(short_id);
 ALTER TABLE short_comments ENABLE ROW LEVEL SECURITY;
+DROP POLICY IF EXISTS "Public read short_comments" ON short_comments;
 CREATE POLICY "Public read short_comments" ON short_comments FOR SELECT USING (true);
+DROP POLICY IF EXISTS "Auth post short_comments" ON short_comments;
 CREATE POLICY "Auth post short_comments" ON short_comments FOR INSERT WITH CHECK (auth.uid() = user_id);
 
 -- ─────────────────────────────────────────────────────────────────────────────
@@ -6258,78 +6443,78 @@ ALTER TABLE local_body_elections     ENABLE ROW LEVEL SECURITY;
 ALTER TABLE local_body_candidates    ENABLE ROW LEVEL SECURITY;
 
 -- Public read access (anonymous + authenticated users)
-CREATE POLICY "Public read mandals"
-  ON mandals FOR SELECT USING (true);
+DROP POLICY IF EXISTS "Public read mandals" ON mandals;
+CREATE POLICY "Public read mandals" ON mandals FOR SELECT USING (true);
 
-CREATE POLICY "Public read gram_panchayats"
-  ON gram_panchayats FOR SELECT USING (true);
+DROP POLICY IF EXISTS "Public read gram_panchayats" ON gram_panchayats;
+CREATE POLICY "Public read gram_panchayats" ON gram_panchayats FOR SELECT USING (true);
 
-CREATE POLICY "Public read revenue_villages"
-  ON revenue_villages FOR SELECT USING (true);
+DROP POLICY IF EXISTS "Public read revenue_villages" ON revenue_villages;
+CREATE POLICY "Public read revenue_villages" ON revenue_villages FOR SELECT USING (true);
 
-CREATE POLICY "Public read polling_booths"
-  ON polling_booths FOR SELECT USING (true);
+DROP POLICY IF EXISTS "Public read polling_booths" ON polling_booths;
+CREATE POLICY "Public read polling_booths" ON polling_booths FOR SELECT USING (true);
 
-CREATE POLICY "Public read mandal_constituency_map"
-  ON mandal_constituency_map FOR SELECT USING (true);
+DROP POLICY IF EXISTS "Public read mandal_constituency_map" ON mandal_constituency_map;
+CREATE POLICY "Public read mandal_constituency_map" ON mandal_constituency_map FOR SELECT USING (true);
 
-CREATE POLICY "Public read booth_election_results"
-  ON booth_election_results FOR SELECT USING (true);
+DROP POLICY IF EXISTS "Public read booth_election_results" ON booth_election_results;
+CREATE POLICY "Public read booth_election_results" ON booth_election_results FOR SELECT USING (true);
 
-CREATE POLICY "Public read booth_candidate_votes"
-  ON booth_candidate_votes FOR SELECT USING (true);
+DROP POLICY IF EXISTS "Public read booth_candidate_votes" ON booth_candidate_votes;
+CREATE POLICY "Public read booth_candidate_votes" ON booth_candidate_votes FOR SELECT USING (true);
 
-CREATE POLICY "Public read local_body_elections"
-  ON local_body_elections FOR SELECT USING (true);
+DROP POLICY IF EXISTS "Public read local_body_elections" ON local_body_elections;
+CREATE POLICY "Public read local_body_elections" ON local_body_elections FOR SELECT USING (true);
 
-CREATE POLICY "Public read local_body_candidates"
-  ON local_body_candidates FOR SELECT USING (true);
+DROP POLICY IF EXISTS "Public read local_body_candidates" ON local_body_candidates;
+CREATE POLICY "Public read local_body_candidates" ON local_body_candidates FOR SELECT USING (true);
 
 -- Service-role write access (INSERT, UPDATE, DELETE)
 -- Supabase service_role bypasses RLS by default, but we add explicit
 -- policies for defense-in-depth and to document intent.
-CREATE POLICY "Service role write mandals"
-  ON mandals FOR ALL
+DROP POLICY IF EXISTS "Service role write mandals" ON mandals;
+CREATE POLICY "Service role write mandals" ON mandals FOR ALL
   USING (auth.role() = 'service_role')
   WITH CHECK (auth.role() = 'service_role');
 
-CREATE POLICY "Service role write gram_panchayats"
-  ON gram_panchayats FOR ALL
+DROP POLICY IF EXISTS "Service role write gram_panchayats" ON gram_panchayats;
+CREATE POLICY "Service role write gram_panchayats" ON gram_panchayats FOR ALL
   USING (auth.role() = 'service_role')
   WITH CHECK (auth.role() = 'service_role');
 
-CREATE POLICY "Service role write revenue_villages"
-  ON revenue_villages FOR ALL
+DROP POLICY IF EXISTS "Service role write revenue_villages" ON revenue_villages;
+CREATE POLICY "Service role write revenue_villages" ON revenue_villages FOR ALL
   USING (auth.role() = 'service_role')
   WITH CHECK (auth.role() = 'service_role');
 
-CREATE POLICY "Service role write polling_booths"
-  ON polling_booths FOR ALL
+DROP POLICY IF EXISTS "Service role write polling_booths" ON polling_booths;
+CREATE POLICY "Service role write polling_booths" ON polling_booths FOR ALL
   USING (auth.role() = 'service_role')
   WITH CHECK (auth.role() = 'service_role');
 
-CREATE POLICY "Service role write mandal_constituency_map"
-  ON mandal_constituency_map FOR ALL
+DROP POLICY IF EXISTS "Service role write mandal_constituency_map" ON mandal_constituency_map;
+CREATE POLICY "Service role write mandal_constituency_map" ON mandal_constituency_map FOR ALL
   USING (auth.role() = 'service_role')
   WITH CHECK (auth.role() = 'service_role');
 
-CREATE POLICY "Service role write booth_election_results"
-  ON booth_election_results FOR ALL
+DROP POLICY IF EXISTS "Service role write booth_election_results" ON booth_election_results;
+CREATE POLICY "Service role write booth_election_results" ON booth_election_results FOR ALL
   USING (auth.role() = 'service_role')
   WITH CHECK (auth.role() = 'service_role');
 
-CREATE POLICY "Service role write booth_candidate_votes"
-  ON booth_candidate_votes FOR ALL
+DROP POLICY IF EXISTS "Service role write booth_candidate_votes" ON booth_candidate_votes;
+CREATE POLICY "Service role write booth_candidate_votes" ON booth_candidate_votes FOR ALL
   USING (auth.role() = 'service_role')
   WITH CHECK (auth.role() = 'service_role');
 
-CREATE POLICY "Service role write local_body_elections"
-  ON local_body_elections FOR ALL
+DROP POLICY IF EXISTS "Service role write local_body_elections" ON local_body_elections;
+CREATE POLICY "Service role write local_body_elections" ON local_body_elections FOR ALL
   USING (auth.role() = 'service_role')
   WITH CHECK (auth.role() = 'service_role');
 
-CREATE POLICY "Service role write local_body_candidates"
-  ON local_body_candidates FOR ALL
+DROP POLICY IF EXISTS "Service role write local_body_candidates" ON local_body_candidates;
+CREATE POLICY "Service role write local_body_candidates" ON local_body_candidates FOR ALL
   USING (auth.role() = 'service_role')
   WITH CHECK (auth.role() = 'service_role');
 
@@ -6902,35 +7087,51 @@ ALTER TABLE representatives      ENABLE ROW LEVEL SECURITY;
 ALTER TABLE representative_edits ENABLE ROW LEVEL SECURITY;
 
 -- Public read for structural + representative data
-CREATE POLICY "Public read urban_local_bodies"  ON urban_local_bodies  FOR SELECT USING (true);
-CREATE POLICY "Public read ulb_wards"            ON ulb_wards            FOR SELECT USING (true);
-CREATE POLICY "Public read zilla_parishads"      ON zilla_parishads      FOR SELECT USING (true);
-CREATE POLICY "Public read zptc_divisions"       ON zptc_divisions       FOR SELECT USING (true);
-CREATE POLICY "Public read mandal_parishads"     ON mandal_parishads     FOR SELECT USING (true);
-CREATE POLICY "Public read mptc_divisions"       ON mptc_divisions       FOR SELECT USING (true);
-CREATE POLICY "Public read gp_wards"             ON gp_wards             FOR SELECT USING (true);
-CREATE POLICY "Public read representatives"      ON representatives      FOR SELECT USING (true);
+DROP POLICY IF EXISTS "Public read urban_local_bodies" ON urban_local_bodies;
+CREATE POLICY "Public read urban_local_bodies" ON urban_local_bodies  FOR SELECT USING (true);
+DROP POLICY IF EXISTS "Public read ulb_wards" ON ulb_wards;
+CREATE POLICY "Public read ulb_wards" ON ulb_wards            FOR SELECT USING (true);
+DROP POLICY IF EXISTS "Public read zilla_parishads" ON zilla_parishads;
+CREATE POLICY "Public read zilla_parishads" ON zilla_parishads      FOR SELECT USING (true);
+DROP POLICY IF EXISTS "Public read zptc_divisions" ON zptc_divisions;
+CREATE POLICY "Public read zptc_divisions" ON zptc_divisions       FOR SELECT USING (true);
+DROP POLICY IF EXISTS "Public read mandal_parishads" ON mandal_parishads;
+CREATE POLICY "Public read mandal_parishads" ON mandal_parishads     FOR SELECT USING (true);
+DROP POLICY IF EXISTS "Public read mptc_divisions" ON mptc_divisions;
+CREATE POLICY "Public read mptc_divisions" ON mptc_divisions       FOR SELECT USING (true);
+DROP POLICY IF EXISTS "Public read gp_wards" ON gp_wards;
+CREATE POLICY "Public read gp_wards" ON gp_wards             FOR SELECT USING (true);
+DROP POLICY IF EXISTS "Public read representatives" ON representatives;
+CREATE POLICY "Public read representatives" ON representatives      FOR SELECT USING (true);
 
 -- Service-role write on structural + representative tables
+DROP POLICY IF EXISTS "Service write urban_local_bodies" ON urban_local_bodies;
 CREATE POLICY "Service write urban_local_bodies" ON urban_local_bodies  FOR ALL USING (auth.role() = 'service_role') WITH CHECK (auth.role() = 'service_role');
-CREATE POLICY "Service write ulb_wards"          ON ulb_wards            FOR ALL USING (auth.role() = 'service_role') WITH CHECK (auth.role() = 'service_role');
-CREATE POLICY "Service write zilla_parishads"    ON zilla_parishads      FOR ALL USING (auth.role() = 'service_role') WITH CHECK (auth.role() = 'service_role');
-CREATE POLICY "Service write zptc_divisions"     ON zptc_divisions       FOR ALL USING (auth.role() = 'service_role') WITH CHECK (auth.role() = 'service_role');
-CREATE POLICY "Service write mandal_parishads"   ON mandal_parishads     FOR ALL USING (auth.role() = 'service_role') WITH CHECK (auth.role() = 'service_role');
-CREATE POLICY "Service write mptc_divisions"     ON mptc_divisions       FOR ALL USING (auth.role() = 'service_role') WITH CHECK (auth.role() = 'service_role');
-CREATE POLICY "Service write gp_wards"           ON gp_wards             FOR ALL USING (auth.role() = 'service_role') WITH CHECK (auth.role() = 'service_role');
-CREATE POLICY "Service write representatives"    ON representatives      FOR ALL USING (auth.role() = 'service_role') WITH CHECK (auth.role() = 'service_role');
+DROP POLICY IF EXISTS "Service write ulb_wards" ON ulb_wards;
+CREATE POLICY "Service write ulb_wards" ON ulb_wards            FOR ALL USING (auth.role() = 'service_role') WITH CHECK (auth.role() = 'service_role');
+DROP POLICY IF EXISTS "Service write zilla_parishads" ON zilla_parishads;
+CREATE POLICY "Service write zilla_parishads" ON zilla_parishads      FOR ALL USING (auth.role() = 'service_role') WITH CHECK (auth.role() = 'service_role');
+DROP POLICY IF EXISTS "Service write zptc_divisions" ON zptc_divisions;
+CREATE POLICY "Service write zptc_divisions" ON zptc_divisions       FOR ALL USING (auth.role() = 'service_role') WITH CHECK (auth.role() = 'service_role');
+DROP POLICY IF EXISTS "Service write mandal_parishads" ON mandal_parishads;
+CREATE POLICY "Service write mandal_parishads" ON mandal_parishads     FOR ALL USING (auth.role() = 'service_role') WITH CHECK (auth.role() = 'service_role');
+DROP POLICY IF EXISTS "Service write mptc_divisions" ON mptc_divisions;
+CREATE POLICY "Service write mptc_divisions" ON mptc_divisions       FOR ALL USING (auth.role() = 'service_role') WITH CHECK (auth.role() = 'service_role');
+DROP POLICY IF EXISTS "Service write gp_wards" ON gp_wards;
+CREATE POLICY "Service write gp_wards" ON gp_wards             FOR ALL USING (auth.role() = 'service_role') WITH CHECK (auth.role() = 'service_role');
+DROP POLICY IF EXISTS "Service write representatives" ON representatives;
+CREATE POLICY "Service write representatives" ON representatives      FOR ALL USING (auth.role() = 'service_role') WITH CHECK (auth.role() = 'service_role');
 
 -- representative_edits: public read; authenticated users may submit; service/admin moderate.
-CREATE POLICY "Public read representative_edits"
-  ON representative_edits FOR SELECT USING (true);
+DROP POLICY IF EXISTS "Public read representative_edits" ON representative_edits;
+CREATE POLICY "Public read representative_edits" ON representative_edits FOR SELECT USING (true);
 
-CREATE POLICY "Authenticated submit representative_edits"
-  ON representative_edits FOR INSERT
+DROP POLICY IF EXISTS "Authenticated submit representative_edits" ON representative_edits;
+CREATE POLICY "Authenticated submit representative_edits" ON representative_edits FOR INSERT
   WITH CHECK (auth.uid() = editor_user_id);
 
-CREATE POLICY "Service moderate representative_edits"
-  ON representative_edits FOR UPDATE
+DROP POLICY IF EXISTS "Service moderate representative_edits" ON representative_edits;
+CREATE POLICY "Service moderate representative_edits" ON representative_edits FOR UPDATE
   USING (auth.role() = 'service_role')
   WITH CHECK (auth.role() = 'service_role');
 
@@ -7280,15 +7481,21 @@ ALTER TABLE lmx_org_relays ENABLE ROW LEVEL SECURITY;
 ALTER TABLE lmx_moderation_events ENABLE ROW LEVEL SECURITY;
 
 -- Public read only for public, cleared streams; everything else via service role.
+DROP POLICY IF EXISTS "Public read public live events" ON live_events;
 CREATE POLICY "Public read public live events" ON live_events
   FOR SELECT USING (visibility_mode = 'public' AND buffer_state IN ('cleared','bypassed'));
+DROP POLICY IF EXISTS "Public read live event ai" ON live_event_ai;
 CREATE POLICY "Public read live event ai" ON live_event_ai FOR SELECT USING (true);
+DROP POLICY IF EXISTS "Public read credibility" ON lmx_credibility;
 CREATE POLICY "Public read credibility" ON lmx_credibility FOR SELECT USING (true);
+DROP POLICY IF EXISTS "Public read brand kits" ON lmx_brand_kits;
 CREATE POLICY "Public read brand kits" ON lmx_brand_kits FOR SELECT USING (is_approved = true);
 
 -- Reporters can insert/update their own live events (auth.uid() as reporter_id).
+DROP POLICY IF EXISTS "Reporters manage own events" ON live_events;
 CREATE POLICY "Reporters manage own events" ON live_events
   FOR ALL USING (auth.uid()::text = reporter_id) WITH CHECK (auth.uid()::text = reporter_id);
+DROP POLICY IF EXISTS "Reporters manage own affiliations" ON lmx_affiliations;
 CREATE POLICY "Reporters manage own affiliations" ON lmx_affiliations
   FOR ALL USING (auth.uid()::text = contributor_id) WITH CHECK (auth.uid()::text = contributor_id);
 
@@ -7433,12 +7640,15 @@ ALTER TABLE campaign_wallets ENABLE ROW LEVEL SECURITY;
 ALTER TABLE wallet_transactions ENABLE ROW LEVEL SECURITY;
 ALTER TABLE voice_obd_broadcasts ENABLE ROW LEVEL SECURITY;
 
+DROP POLICY IF EXISTS "Politicians read own wallet" ON campaign_wallets;
 CREATE POLICY "Politicians read own wallet" ON campaign_wallets
   FOR SELECT USING (politician_id IN (SELECT id FROM politician_portal_profiles WHERE user_id = auth.uid()));
 
+DROP POLICY IF EXISTS "Politicians read own wallet transactions" ON wallet_transactions;
 CREATE POLICY "Politicians read own wallet transactions" ON wallet_transactions
   FOR SELECT USING (politician_id IN (SELECT id FROM politician_portal_profiles WHERE user_id = auth.uid()));
 
+DROP POLICY IF EXISTS "Politicians manage own obd broadcasts" ON voice_obd_broadcasts;
 CREATE POLICY "Politicians manage own obd broadcasts" ON voice_obd_broadcasts
   FOR ALL USING (politician_id IN (SELECT id FROM politician_portal_profiles WHERE user_id = auth.uid()));
 
@@ -7505,11 +7715,13 @@ CREATE INDEX IF NOT EXISTS idx_pages_state ON pages(state_code);
 ALTER TABLE pages ENABLE ROW LEVEL SECURITY;
 
 -- Anyone can view pages
-CREATE POLICY pages_select_policy ON pages
+DROP POLICY IF EXISTS "pages_select_policy" ON pages;
+CREATE POLICY "pages_select_policy" ON pages
   FOR SELECT USING (true);
 
 -- Only users with allowed roles (aspirant, politician, party, journalist) can create pages
-CREATE POLICY pages_insert_policy ON pages
+DROP POLICY IF EXISTS "pages_insert_policy" ON pages;
+CREATE POLICY "pages_insert_policy" ON pages
   FOR INSERT WITH CHECK (
     auth.uid() = owner_id AND
     EXISTS (
@@ -7520,7 +7732,8 @@ CREATE POLICY pages_insert_policy ON pages
   );
 
 -- Page owner can update their page
-CREATE POLICY pages_update_policy ON pages
+DROP POLICY IF EXISTS "pages_update_policy" ON pages;
+CREATE POLICY "pages_update_policy" ON pages
   FOR UPDATE USING (
     auth.uid() = owner_id OR
     EXISTS (
@@ -7531,7 +7744,8 @@ CREATE POLICY pages_update_policy ON pages
   );
 
 -- Page owner can delete their page
-CREATE POLICY pages_delete_policy ON pages
+DROP POLICY IF EXISTS "pages_delete_policy" ON pages;
+CREATE POLICY "pages_delete_policy" ON pages
   FOR DELETE USING (
     auth.uid() = owner_id OR
     EXISTS (
@@ -7566,15 +7780,18 @@ CREATE INDEX IF NOT EXISTS idx_user_follows_created ON user_follows(created_at D
 ALTER TABLE user_follows ENABLE ROW LEVEL SECURITY;
 
 -- Anyone can see who is following whom (public social graph)
-CREATE POLICY user_follows_select_policy ON user_follows
+DROP POLICY IF EXISTS "user_follows_select_policy" ON user_follows;
+CREATE POLICY "user_follows_select_policy" ON user_follows
   FOR SELECT USING (true);
 
 -- Authenticated user can only follow on behalf of themselves
-CREATE POLICY user_follows_insert_policy ON user_follows
+DROP POLICY IF EXISTS "user_follows_insert_policy" ON user_follows;
+CREATE POLICY "user_follows_insert_policy" ON user_follows
   FOR INSERT WITH CHECK (auth.uid() = follower_id);
 
 -- Authenticated user can only unfollow their own follow records
-CREATE POLICY user_follows_delete_policy ON user_follows
+DROP POLICY IF EXISTS "user_follows_delete_policy" ON user_follows;
+CREATE POLICY "user_follows_delete_policy" ON user_follows
   FOR DELETE USING (auth.uid() = follower_id);
 
 
@@ -7659,9 +7876,11 @@ CREATE INDEX IF NOT EXISTS idx_trai_opt_outs_date ON trai_opt_outs(opted_out_at)
 -- RLS: Service role can manage, authenticated users can check
 ALTER TABLE trai_opt_outs ENABLE ROW LEVEL SECURITY;
 
+DROP POLICY IF EXISTS "Anyone can check opt-outs" ON trai_opt_outs;
 CREATE POLICY "Anyone can check opt-outs" ON trai_opt_outs
   FOR SELECT USING (true);
 
+DROP POLICY IF EXISTS "Service role can insert opt-outs" ON trai_opt_outs;
 CREATE POLICY "Service role can insert opt-outs" ON trai_opt_outs
   FOR INSERT WITH CHECK (true);
 
@@ -7719,20 +7938,24 @@ ALTER TABLE conversations ENABLE ROW LEVEL SECURITY;
 ALTER TABLE messages ENABLE ROW LEVEL SECURITY;
 
 -- Conversations RLS: only participants can view, insert, or update
+DROP POLICY IF EXISTS "Participants view conversations" ON conversations;
 CREATE POLICY "Participants view conversations" ON conversations
   FOR SELECT
   USING (auth.uid() = participant_one OR auth.uid() = participant_two);
 
+DROP POLICY IF EXISTS "Participants insert conversations" ON conversations;
 CREATE POLICY "Participants insert conversations" ON conversations
   FOR INSERT
   WITH CHECK (auth.uid() = participant_one OR auth.uid() = participant_two);
 
+DROP POLICY IF EXISTS "Participants update conversations" ON conversations;
 CREATE POLICY "Participants update conversations" ON conversations
   FOR UPDATE
   USING (auth.uid() = participant_one OR auth.uid() = participant_two)
   WITH CHECK (auth.uid() = participant_one OR auth.uid() = participant_two);
 
 -- Messages RLS: only conversation participants can read & send messages
+DROP POLICY IF EXISTS "Participants view messages" ON messages;
 CREATE POLICY "Participants view messages" ON messages
   FOR SELECT
   USING (
@@ -7743,6 +7966,7 @@ CREATE POLICY "Participants view messages" ON messages
     )
   );
 
+DROP POLICY IF EXISTS "Participants send messages" ON messages;
 CREATE POLICY "Participants send messages" ON messages
   FOR INSERT
   WITH CHECK (
@@ -8015,7 +8239,8 @@ CREATE INDEX IF NOT EXISTS idx_political_ads_created_at ON political_ads(created
 ALTER TABLE political_ads ENABLE ROW LEVEL SECURITY;
 
 -- 1. Anyone (including unauthenticated visitors for the public Ad Library) can view active and ended political ads
-CREATE POLICY political_ads_public_select_policy ON political_ads
+DROP POLICY IF EXISTS "political_ads_public_select_policy" ON political_ads;
+CREATE POLICY "political_ads_public_select_policy" ON political_ads
   FOR SELECT
   USING (
     status IN ('active', 'ended')
@@ -8038,7 +8263,8 @@ CREATE POLICY political_ads_public_select_policy ON political_ads
   );
 
 -- 2. Page owners can submit an ad, but only with initial status 'pending_certification'
-CREATE POLICY political_ads_insert_policy ON political_ads
+DROP POLICY IF EXISTS "political_ads_insert_policy" ON political_ads;
+CREATE POLICY "political_ads_insert_policy" ON political_ads
   FOR INSERT
   WITH CHECK (
     auth.uid() IS NOT NULL
@@ -8051,7 +8277,8 @@ CREATE POLICY political_ads_insert_policy ON political_ads
   );
 
 -- 3. Only human reviewers (role IN ('admin', 'moderator')) can update political ad status to certified/rejected
-CREATE POLICY political_ads_reviewer_update_policy ON political_ads
+DROP POLICY IF EXISTS "political_ads_reviewer_update_policy" ON political_ads;
+CREATE POLICY "political_ads_reviewer_update_policy" ON political_ads
   FOR UPDATE
   USING (
     auth.uid() IS NOT NULL
@@ -8163,7 +8390,7 @@ VALUES
     now()
   ),
   (
-    '00000000-0000-0000-0000-000000000000',
+    '00000000-0000-0000-0000-000000000003',
     'a0000000-0000-0000-0000-000000000003',
     'authenticated',
     'authenticated',
@@ -8176,7 +8403,7 @@ VALUES
     now()
   ),
   (
-    '00000000-0000-0000-0000-000000000000',
+    '00000000-0000-0000-0000-000000000004',
     'a0000000-0000-0000-0000-000000000004',
     'authenticated',
     'authenticated',
