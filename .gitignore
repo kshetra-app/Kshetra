@@ -17,8 +17,8 @@ data/seed/*.d.ts
 
 # Environment
 .env
-.env.local
-.env.*.local
+.env.*
+!.env.example
 
 # IDE
 .vscode/
