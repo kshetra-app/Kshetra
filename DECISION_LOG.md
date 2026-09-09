@@ -203,6 +203,20 @@
   4. **Supabase Key Validation Fix (DEF-009):** Updated `apps/api/src/lib/supabase.ts` to accept both legacy 3-part JWTs and modern `sb_secret_...` / `sb_publishable_...` format. Removed `NODE_ENV !== 'production'` gate so fallback warnings emit in all environments. Added unit tests in `apps/api/src/__tests__/supabase-auth.test.ts` (7/7 pass).
 - **Rationale:** Eliminates all false claims, enforces literal command output evidence, protects production credentials, and ensures strict adherence to Amendment v1.4 Rules SI-001–003.
 
+---
+
+### DEC-019: W003-R5 EVIDENCE INTEGRITY ENFORCEMENT, FRESHNESS REBINDING & DECLARED CONTRACT SCOPE
+- **Date:** 2026-09-09
+- **Status:** APPROVED & APPLIED
+- **Context:** External review of W003 remediation identified: (1) `scripts/check-repo-evidence-integrity.mjs` printed DIRTY but did not fail with exit code 1; (2) `reports/w003_independent_verification.md` cited raw output bound to an older commit HEAD (`efd1b87`); (3) API contract check required accurate scope labelling as declared contract check.
+- **Decisions:**
+  1. **Strict Dirty-Tree Rejection:** Modified `scripts/check-repo-evidence-integrity.mjs` to fail (`exit 1`) with `[FAIL] Working tree is dirty; evidence integrity verification cannot pass.` unless both working tree is clean and 0 missing commits. Added regression suite `tests/repo-evidence-integrity.test.mjs`.
+  2. **Deterministic Freshness & Lineage Validator:** Created `tests/commit-freshness.test.mjs` validating the 4-coordinate commit model (`CURRENT_REMOTE_HEAD`, `AUDITED_CODE_COMMIT`, `EVIDENCE_COMMIT`, `ACCEPTANCE_COMMIT`) against live git ancestry.
+  3. **Declared API Contract Drift Check Scope:** Updated `scripts/check-api-contract-drift.mjs` to explicitly state its scope is 9 declared client contract expectations, formally deferring full dynamic AST-based caller discovery to W006/W007/W008.
+  4. **Strict Regeneration Sequence:** Committed all code changes, pushed to canonical remote, verified clean working tree, and executed all verification suites against the exact final commit HEAD.
+- **Rationale:** Ensures total mathematical truth between committed code, git ancestry, and reported evidence, preventing stale or phantom claims.
+
+
 
 
 

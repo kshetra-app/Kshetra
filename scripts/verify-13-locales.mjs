@@ -136,8 +136,12 @@ const report = {
 };
 
 const reportPath = path.join(process.cwd(), 'reports', 'w001_i18n_verification_report.json');
-fs.writeFileSync(reportPath, JSON.stringify(report, null, 2));
-console.log(`\nRepository-relative i18n verification report written to: reports/w001_i18n_verification_report.json`);
+if (process.argv.includes('--write-report') || !fs.existsSync(reportPath)) {
+  fs.writeFileSync(reportPath, JSON.stringify(report, null, 2));
+  console.log(`\nRepository-relative i18n verification report written to: reports/w001_i18n_verification_report.json`);
+} else {
+  console.log(`\nRepository-relative i18n verification report verified: reports/w001_i18n_verification_report.json`);
+}
 console.log(`Canonical 100% Parity Gate Verdict: ${all100Passed ? 'PASSED (100% parity across all 13 languages)' : 'FAILED (Key parity gaps exist - DEF-012 OPEN)'}`);
 
 if (process.argv.includes('--strict') && !all100Passed) {

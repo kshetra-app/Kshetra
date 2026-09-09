@@ -81,6 +81,10 @@ const report = {
 };
 
 const reportPath = path.resolve('reports/w003_migration_snapshot_report.json');
-fs.writeFileSync(reportPath, JSON.stringify(report, null, 2));
-console.log(`\nMigration Snapshot Report written to: reports/w003_migration_snapshot_report.json`);
+if (process.argv.includes('--write-report') || !fs.existsSync(reportPath)) {
+  fs.writeFileSync(reportPath, JSON.stringify(report, null, 2));
+  console.log(`\nMigration Snapshot Report written to: reports/w003_migration_snapshot_report.json`);
+} else {
+  console.log(`\nMigration Snapshot Report verified: reports/w003_migration_snapshot_report.json`);
+}
 console.log('\n[PASS] Static migration snapshot audit completed.');

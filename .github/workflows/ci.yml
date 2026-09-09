@@ -30,10 +30,16 @@ jobs:
       - name: Verify Governance Consistency
         run: node tests/governance-consistency.test.mjs
 
+      - name: Verify Commit Freshness & Lineage
+        run: node tests/commit-freshness.test.mjs
+
       - name: Audit Repository & Evidence Integrity (Part 34)
         run: node scripts/check-repo-evidence-integrity.mjs
 
-      - name: Audit API Contract Drift (Part 34E)
+      - name: Regression Test: Evidence Integrity & Dirty-Tree Rejection
+        run: node tests/repo-evidence-integrity.test.mjs
+
+      - name: Declared API Contract Drift Check (Part 34E)
         run: node scripts/check-api-contract-drift.mjs
 
       - name: Audit 13-Language i18n Parity (DEF-012 Monitoring)
