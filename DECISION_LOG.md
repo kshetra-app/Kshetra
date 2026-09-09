@@ -131,6 +131,21 @@
   3. **Source vs Live Catalog Clarity:** Reaffirm across all registers that 36 = migration files in repo, 148 = source-defined tables, 23 = source-defined views, 46 = source-defined functions, 61 = source-defined triggers, and 109 = static HTTP registrations, none of which represent unverified live production catalog counts.
 - **Rationale:** Ensures complete continuity hygiene, eliminates ambiguous HEAD tracking, and preserves immutable audit trails.
 
+---
+
+### DEC-014: Adoption of Master Execution Framework Amendment v1.3 & Agent Execution Protocol
+- **Date:** 2026-09-09
+- **Authority:** Master Execution Framework Amendment v1.3 (`AMENDMENT_v1.3.md`)
+- **Context:** Minimizing execution/verification roundtrips and eliminating recurring failure classes requires moving verification left into an autonomous closed-loop self-audit process.
+- **Decision:**
+  1. **Mandatory Operating Constitution:** Formally adopt `AMENDMENT_v1.3.md` and establish `AGENT_EXECUTION_PROTOCOL.md` as mandatory pre-flight reading for all agent operations across the platform.
+  2. **Pre-Flight Inspection & Reading Order:** Enforce strict 9-step document reading order and pre-flight metadata extraction prior to any code edits.
+  3. **15-Stage Closed Loop:** Implementing agents must execute full Read -> Understand -> Inspect -> Plan -> Implement -> Test -> Adversarial Self-Audit -> Repair -> Retest -> Evidence Reconciliation -> Commit -> Remote Verification -> Acceptance Preparation -> Independent Verification lifecycle. Premature reporting of COMPLETE or ACCEPTED without self-audit is strictly prohibited.
+  4. **Self-Healing & Defect Tiers:** Directly related discovered defects must be self-healed within the same job (Tier 1 & Tier 2) rather than spawning fragmented follow-up micro-jobs. Unrelated issues are logged as Tier 3 in `DEFECT_REGISTER.md`.
+  5. **Independent Verification Preservation:** Rule IV-001 independent verification remains mandatory at critical gates and milestones, but verifiers operate on remote Git commits using risk-based inspection rather than blindly re-running entire implementation jobs.
+- **Rationale:** Dramatically increases implementation precision, eliminates premature success reports, hardens negative-path testing, and eliminates recurring failure classes.
+
+
 
 
 

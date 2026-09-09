@@ -21,7 +21,7 @@
 
 
 
-| **W002** | Staging / Prod Separation | DEVOPS | NOT ACCEPTED | `04b0188` | `tests/environment-separation.test.mjs`; `tsc` shared/api/mobile | `reports/w002_r1_*.json` | Runtime tests PASS; Cloud Staging = HUMAN ACTION REQUIRED | Staging Provisioning Pending |
+| **W002** | Staging / Prod Separation | DEVOPS | NOT ACCEPTED | `b7d5764` | `tests/environment-separation.test.mjs`; `tsc` shared/api/mobile | `reports/w002_r1_*.json`, `reports/w002_r1_independent_verification.md` | Runtime tests PASS; Cloud Staging = HUMAN ACTION REQUIRED | Staging Provisioning Pending |
 | **W003** | CI/CD Quality Pipeline | DEVOPS | NOT_STARTED | - | - | - | - | - |
 | **W004** | Observability & Error Tracking | DEVOPS | NOT_STARTED | - | - | - | - | - |
 | **W005** | Backup & Recovery Verification | DEVOPS | NOT_STARTED | - | - | - | - | - |
