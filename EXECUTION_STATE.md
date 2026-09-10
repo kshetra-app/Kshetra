@@ -16,7 +16,7 @@ NEXT_PERMITTED_JOB:    W004 (Observability & Error Tracking)
 CURRENT_BRANCH:        master
 CURRENT_REMOTE_HEAD:   b1f2804
 AUDITED_CODE_COMMIT:   ef4622a
-EVIDENCE_COMMIT:       pending
+EVIDENCE_COMMIT:       19a5932
 ACCEPTANCE_COMMIT:     pending
 API_VERSION:           v1 (Fastify 5.2 on Railway)
 MOBILE_VERSION:        0.1.0 (Expo 54, React Native 0.81.5)
