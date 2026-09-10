@@ -1,0 +1,45 @@
+{
+  "reportType": "W004-R1A Coordinate Report",
+  "job": "W004-R1A",
+  "title": "Evidence Coordinate Rebinding & Four-Coordinate Commit Model",
+  "repository": "kshetra-app/Kshetra",
+  "branch": "master",
+  "currentRemoteHead": "b1f2804",
+  "auditedCodeCommit": "ef4622a",
+  "evidenceCommit": "pending-this-commit",
+  "acceptanceCommit": "pending",
+  "environment": "local (Windows 10, Node.js)",
+  "timestamp": "2026-09-10T16:12:00+05:30",
+  "coordinateModel": {
+    "CURRENT_REMOTE_HEAD": {
+      "value": "b1f2804",
+      "definition": "Exact current remote master HEAD",
+      "validation": "Must match actual origin/master HEAD via strict equality check"
+    },
+    "AUDITED_CODE_COMMIT": {
+      "value": "ef4622a",
+      "definition": "Exact code commit that was independently audited",
+      "validation": "Must be an ancestor of CURRENT_REMOTE_HEAD"
+    },
+    "EVIDENCE_COMMIT": {
+      "value": "pending-this-commit",
+      "definition": "Commit containing the evidence package",
+      "validation": "Must resolve in git history"
+    },
+    "ACCEPTANCE_COMMIT": {
+      "value": "pending",
+      "definition": "Final acceptance-state commit",
+      "validation": "Must resolve after final acceptance; 'pending' allowed before acceptance"
+    }
+  },
+  "lineageChain": [
+    "ef4622a (code changes) → b1f2804 (governance update) → evidence-commit (this report)"
+  ],
+  "validatorScript": "tests/commit-freshness.test.mjs",
+  "validatorChecks": [
+    "CHECK 1: CURRENT_REMOTE_HEAD == actual origin/master HEAD (strict equality)",
+    "CHECK 2: AUDITED_CODE_COMMIT is ancestor of CURRENT_REMOTE_HEAD",
+    "CHECK 3: EVIDENCE_COMMIT resolves in git history",
+    "CHECK 4: ACCEPTANCE_COMMIT resolves (or is 'pending' before acceptance)"
+  ]
+}

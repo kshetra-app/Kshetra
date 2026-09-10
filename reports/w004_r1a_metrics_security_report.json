@@ -1,0 +1,50 @@
+{
+  "reportType": "W004-R1A Metrics Security Report",
+  "job": "W004-R1A",
+  "title": "Metrics Credential Separation from Supabase Service-Role Key",
+  "repository": "kshetra-app/Kshetra",
+  "branch": "master",
+  "currentRemoteHead": "b1f2804",
+  "auditedCodeCommit": "ef4622a",
+  "evidenceCommit": "pending-this-commit",
+  "acceptanceCommit": "pending",
+  "environment": "local (Windows 10, Node.js)",
+  "timestamp": "2026-09-10T16:12:00+05:30",
+  "credentialModel": {
+    "before": {
+      "description": "W004-R1 accepted METRICS_AUTH_TOKEN OR SUPABASE_SERVICE_ROLE_KEY",
+      "risk": "Single leaked Supabase service-role key compromises both database and monitoring surfaces"
+    },
+    "after": {
+      "description": "W004-R1A accepts METRICS_AUTH_TOKEN exclusively",
+      "metricsAuthToken": "Dedicated monitoring credential, sole production auth for /api/metrics",
+      "supabaseServiceRoleKey": "NOT accepted as fallback for metrics auth",
+      "missingToken": "Production metrics access fails closed (401)"
+    }
+  },
+  "fileModified": "apps/api/src/routes/metrics.ts",
+  "changeDescription": "Line 22: Removed `|| process.env.SUPABASE_SERVICE_ROLE_KEY` fallback from expectedToken assignment",
+  "testsAdded": [
+    {
+      "name": "rejects wrong metrics token in production with 401",
+      "file": "apps/api/src/__tests__/observability.test.ts",
+      "purpose": "Verifies incorrect token is rejected"
+    },
+    {
+      "name": "rejects Supabase service-role key presented as metrics token in production (W004-R1A credential separation)",
+      "file": "apps/api/src/__tests__/observability.test.ts",
+      "purpose": "Proves SUPABASE_SERVICE_ROLE_KEY is not accepted as metrics credential"
+    },
+    {
+      "name": "fails closed when METRICS_AUTH_TOKEN is not configured in production",
+      "file": "apps/api/src/__tests__/observability.test.ts",
+      "purpose": "Proves absent METRICS_AUTH_TOKEN results in 401, not open access"
+    }
+  ],
+  "testResults": {
+    "totalTests": 19,
+    "passing": 19,
+    "failing": 0,
+    "suite": "observability.test.ts"
+  }
+}

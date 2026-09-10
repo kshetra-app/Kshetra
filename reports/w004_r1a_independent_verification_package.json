@@ -1,0 +1,51 @@
+{
+  "reportType": "W004-R1A Independent Verification Package",
+  "job": "W004-R1A",
+  "title": "Evidence Coordinate Rebinding & Monitoring Credential Hardening",
+  "repository": "kshetra-app/Kshetra",
+  "branch": "master",
+  "currentRemoteHead": "b1f2804",
+  "auditedCodeCommit": "ef4622a",
+  "evidenceCommit": "pending-this-commit",
+  "acceptanceCommit": "pending",
+  "environment": "local (Windows 10, Node.js)",
+  "timestamp": "2026-09-10T16:13:00+05:30",
+  "verificationPackage": {
+    "codeFiles": [
+      "apps/api/src/routes/metrics.ts",
+      "tests/commit-freshness.test.mjs",
+      "apps/api/src/__tests__/observability.test.ts"
+    ],
+    "governanceFiles": [
+      "EXECUTION_STATE.md",
+      "ACCEPTANCE_REGISTER.md",
+      "DECISION_LOG.md"
+    ],
+    "evidenceReports": [
+      "reports/w004_r1a_coordinate_report.json",
+      "reports/w004_r1a_metrics_security_report.json",
+      "reports/w004_r1a_independent_verification_package.json"
+    ],
+    "verificationCommands": [
+      "npm test --prefix apps/api -- src/__tests__/observability.test.ts",
+      "npm run build --prefix apps/api",
+      "node tests/commit-freshness.test.mjs",
+      "node scripts/check-repo-evidence-integrity.mjs",
+      "node tests/repo-evidence-integrity.test.mjs",
+      "node scripts/check-api-contract-drift.mjs"
+    ]
+  },
+  "independentVerificationInstructions": {
+    "scope": [
+      "Verify CURRENT_REMOTE_HEAD matches actual origin/master",
+      "Run commit-freshness validator (must PASS)",
+      "Confirm SUPABASE_SERVICE_ROLE_KEY is NOT accepted as metrics credential",
+      "Confirm METRICS_AUTH_TOKEN absence fails closed",
+      "Verify all 19 observability tests pass",
+      "Verify API TypeScript build succeeds",
+      "Confirm repository is clean and evidence is bound to final state"
+    ],
+    "expectedTestCount": 19,
+    "expectedBuildResult": "tsc --noEmit exit 0"
+  }
+}
