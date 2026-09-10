@@ -14,9 +14,9 @@ LAST_COMPLETED_JOB:    W003 (CI/CD Quality Pipeline - ACCEPTED)
 NEXT_PERMITTED_JOB:    W004 (Observability & Error Tracking)
 
 CURRENT_BRANCH:        master
-CURRENT_REMOTE_HEAD:   d81fd33
-AUDITED_CODE_COMMIT:   d81fd33
-EVIDENCE_COMMIT:       d81fd33
+CURRENT_REMOTE_HEAD:   f6571b3
+AUDITED_CODE_COMMIT:   f6571b3
+EVIDENCE_COMMIT:       f6571b3
 ACCEPTANCE_COMMIT:     pending
 API_VERSION:           v1 (Fastify 5.2 on Railway)
 MOBILE_VERSION:        0.1.0 (Expo 54, React Native 0.81.5)
