@@ -230,7 +230,20 @@
   5. **Centralized Error Envelope & Sanitization:** Global Fastify error handler structures 5xx and 4xx responses as `{ error, message, statusCode, requestId, timestamp }`, never leaking raw stack traces in production.
   6. **Controlled Error Generation Route (`GET /api/debug/error`):** Provide a deterministic test seam for synthetic errors to prove alerting, log capture, and status code propagation without crashing the process.
   7. **Mobile Telemetry Seam (`apps/mobile/lib/telemetry.ts`):** Lightweight client logger attaching `x-request-id` to outgoing API calls and capturing breadcrumbs with zero additional native dependencies.
-- **Rationale:** Fulfills Job Book W004 tasks, establishes operational observability, and provides proof-of-monitoring without increasing binary size or introducing external SaaS dependencies.
+---
+
+### DEC-021: PRODUCTION OBSERVABILITY HARDENING, ACCESS CONTROL & ERROR ROUTING (JOB W004-R1)
+- **Date:** 2026-09-10
+- **Status:** APPROVED & APPLIED
+- **Context:** External audit of initial W004 implementation identified production hardening gaps: public exposure of synthetic error triggers, unauthenticated metrics exposure, lack of error categorization, unhardened incoming request-ID handling, and un-wired mobile client telemetry.
+- **Decisions:**
+  1. **Production Debug-Route Protection:** In production, `GET /api/debug/error` is disabled (returns 404 Not Found) unless authenticated via privileged bypass secret header `x-debug-bypass-secret` matching `DEBUG_BYPASS_SECRET` (length ≥ 16). Enabled in dev, test, and staging.
+  2. **Production Metrics Authentication:** In production, `GET /api/metrics` is protected by bearer token (`Authorization: Bearer <token>`) or `x-metrics-token` matching `METRICS_AUTH_TOKEN` or `SUPABASE_SERVICE_ROLE_KEY`. Returns 401 Unauthorized for public/unauthenticated requests. Remains open in dev/test for local verification.
+  3. **Canonical Error Classification & External Sink Seam:** Created `apps/api/src/lib/errorTracker.ts` defining 8 canonical error categories (`CLIENT_VALIDATION`, `AUTHENTICATION`, `AUTHORIZATION`, `RATE_LIMIT`, `NOT_FOUND`, `DATABASE_FAILURE`, `UPSTREAM_PROVIDER`, `UNHANDLED_SERVER_ERROR`). Maps errors to structured `APPLICATION_ERROR_EVENT` logs and optional `@sentry/node` capture. Enforces that monitoring failures never disrupt API request handling.
+  4. **Request-ID Validation Hardening:** Enforced length ceiling (≤ 128 characters) and safe identifier regex (`^[a-zA-Z0-9_\-]+$`) on incoming `x-request-id` / `x-correlation-id` headers. Whitespace is trimmed, and invalid/oversized values fall back safely to `randomUUID()`. Set `requestIdHeader: false` in Fastify options so all ID extraction is strictly governed by `genReqId`.
+  5. **Mobile Telemetry Integration:** Classified `apps/mobile/lib/telemetry.ts` as a bounded client seam with zero native overhead. Wired `telemetry.getTracingHeaders()` into mobile HTTP client calls (`pageService.ts`, `featureFlags.ts`, `supabaseDataService.ts`).
+  6. **Database Failure Telemetry:** Integrated `errorTracker.captureError` into `/api/health/db` failure and catch branches, explicitly tagging database timeouts/errors as `DATABASE_FAILURE` with 503 HTTP status.
+- **Rationale:** Hardens API against information disclosure and synthetic denial-of-service, provides zero-cost cloud error tracking, and ensures reliable end-to-end request correlation.
 
 
 

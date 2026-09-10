@@ -1,0 +1,45 @@
+{
+  "jobId": "W004-R1",
+  "timestamp": "2026-09-10T05:07:09.646Z",
+  "architecture": {
+    "requestCorrelation": {
+      "inboundHeaders": [
+        "x-request-id",
+        "x-correlation-id"
+      ],
+      "outboundHeaders": [
+        "x-request-id",
+        "x-response-time",
+        "server-timing"
+      ],
+      "loggingBinding": "reqId",
+      "sanitization": {
+        "maxLength": 128,
+        "regexPattern": "^[a-zA-Z0-9_\\\\-]+$",
+        "fallbackStrategy": "crypto.randomUUID()"
+      }
+    },
+    "latencyMeasurement": {
+      "precision": "process.hrtime.bigint() (nanoseconds)",
+      "resolutionMs": "2 decimal floating-point ms"
+    },
+    "databaseReadiness": {
+      "endpoint": "/api/health/db",
+      "readinessAlias": "/api/health/ready",
+      "livenessEndpoint": "/health",
+      "semanticSeparationEnforced": true
+    },
+    "clientTelemetry": {
+      "platform": "apps/mobile",
+      "helper": "apps/mobile/lib/telemetry.ts",
+      "classification": "BOUNDED_CLIENT_SEAM",
+      "nativeOverheadBytes": 0,
+      "activeIntegration": [
+        "apps/mobile/lib/pageService.ts",
+        "apps/mobile/lib/featureFlags.ts",
+        "apps/mobile/lib/supabaseDataService.ts"
+      ]
+    }
+  },
+  "status": "PASS"
+}

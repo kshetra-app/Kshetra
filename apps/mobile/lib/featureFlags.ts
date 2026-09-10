@@ -17,6 +17,8 @@ import {
 } from '@kshetra/shared';
 import { API_BASE_URL } from './constants';
 
+import { telemetry } from './telemetry';
+
 interface FeatureFlagsState extends AppFeatureFlags {
   /** Timestamp of last remote sync */
   lastSyncedAt: number | null;
@@ -53,7 +55,10 @@ export const useFeatureFlagsStore = create<FeatureFlagsState>()(
       syncRemoteFlags: async () => {
         try {
           const res = await fetch(`${API_BASE_URL}/config/flags`, {
-            headers: { Accept: 'application/json' },
+            headers: {
+              Accept: 'application/json',
+              ...telemetry.getTracingHeaders(),
+            },
           });
           if (res.ok) {
             const data = (await res.json()) as { flags: Partial<AppFeatureFlags> };

@@ -42,6 +42,37 @@ describe('Observability, Tracing & Error Interception (JOB W004 / DEC-020)', () 
       expect(res.statusCode).toBe(200);
       expect(res.headers['x-request-id']).toBe(clientCorrelationId);
     });
+
+    it('sanitizes and replaces invalid or malicious request IDs with a UUID', async () => {
+      // Invalid characters (e.g. spaces, special chars, newline injection attempt)
+      const maliciousId = 'invalid id with spaces!@#$%^&*()';
+      const res = await app.inject({
+        method: 'GET',
+        url: '/health',
+        headers: {
+          'x-request-id': maliciousId,
+        },
+      });
+
+      expect(res.statusCode).toBe(200);
+      expect(res.headers['x-request-id']).not.toBe(maliciousId);
+      expect(res.headers['x-request-id']).toMatch(/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i);
+    });
+
+    it('replaces oversized request IDs (>128 chars) with a UUID', async () => {
+      const oversizedId = 'a'.repeat(129);
+      const res = await app.inject({
+        method: 'GET',
+        url: '/health',
+        headers: {
+          'x-request-id': oversizedId,
+        },
+      });
+
+      expect(res.statusCode).toBe(200);
+      expect(res.headers['x-request-id']).not.toBe(oversizedId);
+      expect(res.headers['x-request-id']).toMatch(/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i);
+    });
   });
 
   describe('Controlled Error Interception & Envelope Formatting', () => {
@@ -149,6 +180,130 @@ describe('Observability, Tracing & Error Interception (JOB W004 / DEC-020)', () 
       // Validate database telemetry
       expect(body.database).toBeDefined();
       expect(body.timestamp).toBeDefined();
+    });
+  });
+
+  describe('Production Route Protection & Hardening (W004-R1 Mandate)', () => {
+    const originalEnv = process.env.NODE_ENV;
+    const originalBypass = process.env.DEBUG_BYPASS_SECRET;
+    const originalMetricsToken = process.env.METRICS_AUTH_TOKEN;
+
+    afterEach(() => {
+      process.env.NODE_ENV = originalEnv;
+      process.env.DEBUG_BYPASS_SECRET = originalBypass;
+      process.env.METRICS_AUTH_TOKEN = originalMetricsToken;
+    });
+
+    it('rejects public requests to /api/debug/error with 404 in production environment', async () => {
+      process.env.NODE_ENV = 'production';
+      delete process.env.DEBUG_BYPASS_SECRET;
+
+      const res = await app.inject({
+        method: 'GET',
+        url: '/api/debug/error?type=bad_request',
+      });
+
+      expect(res.statusCode).toBe(404);
+      const body = JSON.parse(res.payload);
+      expect(body.error).toBe('Not Found');
+    });
+
+    it('allows privileged bypass to /api/debug/error in production with matching secret', async () => {
+      process.env.NODE_ENV = 'production';
+      process.env.DEBUG_BYPASS_SECRET = 'super-secret-bypass-token-12345';
+
+      const res = await app.inject({
+        method: 'GET',
+        url: '/api/debug/error?type=bad_request',
+        headers: {
+          'x-debug-bypass-secret': 'super-secret-bypass-token-12345',
+        },
+      });
+
+      expect(res.statusCode).toBe(400);
+      const body = JSON.parse(res.payload);
+      expect(body.error).toBe('Bad Request');
+    });
+
+    it('protects /api/metrics in production: rejects unauthorized requests with 401', async () => {
+      process.env.NODE_ENV = 'production';
+      process.env.METRICS_AUTH_TOKEN = 'production-metrics-bearer-key-999';
+
+      const res = await app.inject({
+        method: 'GET',
+        url: '/api/metrics',
+      });
+
+      expect(res.statusCode).toBe(401);
+      const body = JSON.parse(res.payload);
+      expect(body.error).toBe('Unauthorized');
+      expect(body.message).toMatch(/requires authorized monitoring credentials/i);
+    });
+
+    it('protects /api/metrics in production: permits authorized requests with Bearer token', async () => {
+      process.env.NODE_ENV = 'production';
+      process.env.METRICS_AUTH_TOKEN = 'production-metrics-bearer-key-999';
+
+      const res = await app.inject({
+        method: 'GET',
+        url: '/api/metrics',
+        headers: {
+          authorization: 'Bearer production-metrics-bearer-key-999',
+        },
+      });
+
+      expect(res.statusCode).toBe(200);
+      const body = JSON.parse(res.payload);
+      expect(body.uptimeSeconds).toBeGreaterThanOrEqual(0);
+    });
+
+    it('protects /api/metrics in production: permits authorized requests with x-metrics-token', async () => {
+      process.env.NODE_ENV = 'production';
+      process.env.METRICS_AUTH_TOKEN = 'production-metrics-bearer-key-999';
+
+      const res = await app.inject({
+        method: 'GET',
+        url: '/api/metrics',
+        headers: {
+          'x-metrics-token': 'production-metrics-bearer-key-999',
+        },
+      });
+
+      expect(res.statusCode).toBe(200);
+      const body = JSON.parse(res.payload);
+      expect(body.uptimeSeconds).toBeGreaterThanOrEqual(0);
+    });
+  });
+
+  describe('Error Classification & External Error Monitoring Engine (W004-R1 Mandate)', () => {
+    it('classifies all 8 standard operational error categories appropriately', () => {
+      const { classifyError } = require('../lib/errorTracker');
+
+      expect(classifyError(new Error('Validation failed'), 400).category).toBe('CLIENT_VALIDATION');
+      expect(classifyError(new Error('JWT expired'), 401).category).toBe('AUTHENTICATION');
+      expect(classifyError(new Error('Forbidden resource'), 403).category).toBe('AUTHORIZATION');
+      expect(classifyError(new Error('Rate limit exceeded'), 429).category).toBe('RATE_LIMIT');
+      expect(classifyError(new Error('Resource not found'), 404).category).toBe('NOT_FOUND');
+      expect(classifyError(new Error('Database query timed out'), 503).category).toBe('DATABASE_FAILURE');
+      expect(classifyError(new Error('Upstream provider unreachable'), 502).category).toBe('UPSTREAM_PROVIDER');
+      expect(classifyError(new Error('Unhandled pointer dereference'), 500).category).toBe('UNHANDLED_SERVER_ERROR');
+    });
+
+    it('safely captures error events without throwing even if monitoring sinks fail', () => {
+      const { errorTracker } = require('../lib/errorTracker');
+
+      const payload = errorTracker.captureError({
+        error: new Error('Simulated external sink error test'),
+        statusCode: 500,
+        requestId: 'req-safe-capture-test',
+        url: '/test/error',
+        method: 'GET',
+      });
+
+      expect(payload).toBeDefined();
+      expect(payload.category).toBe('UNHANDLED_SERVER_ERROR');
+      expect(payload.requestId).toBe('req-safe-capture-test');
+      expect(payload.eventId).toBeDefined();
     });
   });
 });

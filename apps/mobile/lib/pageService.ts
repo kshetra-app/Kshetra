@@ -6,6 +6,8 @@
  * Subscriptions are managed strictly on the web console (kshetra.app/manage).
  */
 
+import { telemetry } from './telemetry';
+
 export interface PageEntitlement {
   pageId: string;
   isPro: boolean;
@@ -20,7 +22,11 @@ const API_BASE_URL = process.env.EXPO_PUBLIC_API_URL || 'https://kshetra-api-pro
  */
 export async function fetchPageEntitlement(pageId: string): Promise<PageEntitlement> {
   try {
-    const res = await fetch(`${API_BASE_URL}/api/v1/pages/${pageId}/entitlement`);
+    const res = await fetch(`${API_BASE_URL}/api/v1/pages/${pageId}/entitlement`, {
+      headers: {
+        ...telemetry.getTracingHeaders(),
+      },
+    });
     if (!res.ok) {
       return { pageId, isPro: false, plan: 'free', expiresAt: null };
     }

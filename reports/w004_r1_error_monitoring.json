@@ -1,0 +1,40 @@
+{
+  "jobId": "W004-R1",
+  "timestamp": "2026-09-10T05:07:30.717Z",
+  "component": "apps/api/src/lib/errorTracker.ts",
+  "architecture": {
+    "primarySink": "Structured JSON event logging (Fastify/Pino) -> stdout / Railway ingestion",
+    "externalSinkSeam": "Optional @sentry/node seam via SENTRY_DSN (gracefully skipped if omitted)",
+    "resilience": "Zero disruption guarantee: sink failure NEVER throws or interrupts HTTP request handling",
+    "categories": [
+      "CLIENT_VALIDATION",
+      "AUTHENTICATION",
+      "AUTHORIZATION",
+      "RATE_LIMIT",
+      "NOT_FOUND",
+      "DATABASE_FAILURE",
+      "UPSTREAM_PROVIDER",
+      "UNHANDLED_SERVER_ERROR"
+    ],
+    "operationalIncidentRules": {
+      "client4xx": "Severity info/warn, isOperationalIncident=false (prevents alert fatigue)",
+      "databaseFailure503": "Severity critical, isOperationalIncident=true (triggers alerts)",
+      "unhandledServer500": "Severity error, isOperationalIncident=true (triggers alerts)",
+      "upstreamProvider502": "Severity error, isOperationalIncident=true (triggers alerts)"
+    },
+    "schema": {
+      "event": "APPLICATION_ERROR_EVENT",
+      "requiredFields": [
+        "eventId",
+        "category",
+        "severity",
+        "statusCode",
+        "message",
+        "requestId",
+        "environment",
+        "timestamp"
+      ]
+    }
+  },
+  "status": "PASS"
+}

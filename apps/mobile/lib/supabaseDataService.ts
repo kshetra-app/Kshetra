@@ -14,6 +14,7 @@
 import { supabase, isSupabaseConfigured } from './supabase';
 import { captureException, addBreadcrumb } from './errorReporting';
 import { API_BASE_URL } from './constants';
+import { telemetry } from './telemetry';
 
 // ─── Helpers ─────────────────────────────────────────────────────────
 
@@ -30,7 +31,10 @@ export async function checkContentModeration(
   try {
     const res = await fetch(`${API_BASE_URL}/api/v1/moderation/check-content`, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: {
+        'Content-Type': 'application/json',
+        ...telemetry.getTracingHeaders(),
+      },
       body: JSON.stringify({ content }),
     });
     if (res.ok) {

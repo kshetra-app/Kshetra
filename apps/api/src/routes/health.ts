@@ -1,6 +1,7 @@
 import type { FastifyInstance } from 'fastify';
 import { supabase, isSupabaseConfigured } from '../lib/supabase';
 import { metricsCollector } from '../lib/metrics';
+import { errorTracker } from '../lib/errorTracker';
 
 export async function healthRoutes(app: FastifyInstance) {
   /**
@@ -46,6 +47,14 @@ export async function healthRoutes(app: FastifyInstance) {
       const latencyMs = Date.now() - startTime;
       if (error) {
         metricsCollector.recordDatabaseCheck(false, latencyMs, 'degraded');
+        errorTracker.captureError({
+          error,
+          statusCode: 503,
+          requestId: request.id,
+          url: request.url,
+          method: request.method,
+          logger: request.log,
+        });
         return reply.status(503).send({
           status: 'error',
           semanticType: 'DATABASE CONNECTIVITY',
@@ -70,6 +79,14 @@ export async function healthRoutes(app: FastifyInstance) {
     } catch (err: any) {
       const latencyMs = Date.now() - startTime;
       metricsCollector.recordDatabaseCheck(false, latencyMs, 'unreachable');
+      errorTracker.captureError({
+        error: err,
+        statusCode: 503,
+        requestId: request.id,
+        url: request.url,
+        method: request.method,
+        logger: request.log,
+      });
       return reply.status(503).send({
         status: 'error',
         semanticType: 'DATABASE CONNECTIVITY',

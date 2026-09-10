@@ -28,6 +28,7 @@ import { politicalAdsRoutes } from './routes/politicalAds';
 import { metricsRoutes } from './routes/metrics';
 import { debugRoutes } from './routes/debug';
 import { metricsCollector } from './lib/metrics';
+import { errorTracker } from './lib/errorTracker';
 import { startNewsScheduler } from './services/news/newsService';
 
 const envToLogger: Record<string, object | boolean> = {
@@ -80,12 +81,17 @@ export async function buildApp() {
     genReqId: (req: any) => {
       const headers = req?.headers;
       const incomingId = (headers?.['x-request-id'] as string) || (headers?.['x-correlation-id'] as string);
-      if (incomingId && typeof incomingId === 'string' && incomingId.trim().length > 0) {
-        return incomingId.trim();
+      if (typeof incomingId === 'string') {
+        const trimmed = incomingId.trim();
+        // Enforce max length 128 chars and safe identifier character set [a-zA-Z0-9_-]
+        if (trimmed.length > 0 && trimmed.length <= 128 && /^[a-zA-Z0-9_\-]+$/.test(trimmed)) {
+          return trimmed;
+        }
       }
       return randomUUID();
     },
-    requestIdHeader: 'x-request-id',
+    // Set requestIdHeader to false so Fastify delegates ID resolution strictly to genReqId (enforcing length and regex rules)
+    requestIdHeader: false,
     requestIdLogLabel: 'reqId',
   });
 
@@ -150,16 +156,17 @@ export async function buildApp() {
   // Global error handler — never leak internal exception detail in production.
   app.setErrorHandler((error: FastifyError, request: FastifyRequest, reply: FastifyReply) => {
     const statusCode = error.statusCode ?? 500;
-    if (statusCode >= 500) {
-      request.log.error({
-        err: error,
-        requestId: request.id,
-        url: request.url,
-        method: request.method,
-        statusCode,
-        msg: 'Unhandled internal server error intercepted by global handler',
-      });
-    }
+
+    // Capture error via canonical errorTracker (dispatches structured APPLICATION_ERROR_EVENT and external sink)
+    errorTracker.captureError({
+      error,
+      statusCode,
+      requestId: request.id,
+      url: request.url,
+      method: request.method,
+      logger: request.log,
+    });
+
     const exposeDetail = env !== 'production';
     reply.status(statusCode).send({
       error: statusCode >= 500 ? 'Internal Server Error' : (error.name || 'Bad Request'),

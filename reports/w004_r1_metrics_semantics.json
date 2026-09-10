@@ -1,0 +1,39 @@
+{
+  "jobId": "W004-R1",
+  "timestamp": "2026-09-10T05:07:23.984Z",
+  "component": "apps/api/src/lib/metrics.ts",
+  "semantics": {
+    "collectorType": "IN_PROCESS_OPERATIONAL_TELEMETRY",
+    "storageMode": "in-memory ring buffer & atomic counters",
+    "persistence": "NON_PERSISTENT (cleared on process exit or worker restart)",
+    "clusterScope": "SINGLE_PROCESS_NODE (independent per container instance)",
+    "memoryCap": "1000 items sliding buffer (latency ring buffer)",
+    "cardinalityCeiling": "Fixed status classes (2xx, 3xx, 4xx, 5xx) and fixed metric keys",
+    "resetSemantics": "resetForTests() provided for test isolation"
+  },
+  "metricsExposed": [
+    "uptimeSeconds",
+    "memory.rssMb",
+    "memory.heapTotalMb",
+    "memory.heapUsedMb",
+    "memory.externalMb",
+    "requests.total",
+    "requests.byStatusClass.2xx",
+    "requests.byStatusClass.3xx",
+    "requests.byStatusClass.4xx",
+    "requests.byStatusClass.5xx",
+    "latency.p50Ms",
+    "latency.p95Ms",
+    "latency.p99Ms",
+    "latency.avgMs",
+    "latency.maxMs",
+    "latency.sampleCount",
+    "database.totalChecks",
+    "database.successChecks",
+    "database.failedChecks",
+    "database.lastStatus",
+    "database.lastLatencyMs",
+    "database.lastCheckedAt"
+  ],
+  "status": "PASS"
+}
