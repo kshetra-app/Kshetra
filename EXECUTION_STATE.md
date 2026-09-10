@@ -14,9 +14,9 @@ LAST_COMPLETED_JOB:    W003 (CI/CD Quality Pipeline - ACCEPTED)
 NEXT_PERMITTED_JOB:    W004 (Observability & Error Tracking)
 
 CURRENT_BRANCH:        master
-CURRENT_REMOTE_HEAD:   e76c744
-AUDITED_CODE_COMMIT:   e76c744
-EVIDENCE_COMMIT:       e76c744
+CURRENT_REMOTE_HEAD:   pending-push
+AUDITED_CODE_COMMIT:   ef4622a
+EVIDENCE_COMMIT:       pending
 ACCEPTANCE_COMMIT:     pending
 API_VERSION:           v1 (Fastify 5.2 on Railway)
 MOBILE_VERSION:        0.1.0 (Expo 54, React Native 0.81.5)
@@ -47,7 +47,7 @@ REMOTE_SYNC:           Up to date with origin/master
 | **W002** | Staging / Prod Separation | **ACCEPTED** | 2026-09-09 | W002-R2 IV PASS; Real cloud staging operational (`kshetra-api-staging` & `fkpigozcqnmcvofuksar`); tests A-I pass; `reports/w002_r2_independent_verification.md` |
 | **W003-P0**| Amendment v1.4 Activation & Governance Sync | **ACCEPTED** | 2026-09-09 | Independent Verifier PASS; Amendment v1.4 operational governance authority active across all registers; `reports/w003_p0_independent_verification.md` |
 | **W003** | CI/CD Quality Pipeline | **ACCEPTED** | 2026-09-10 | Independent Verifier PASS with Monitored Exceptions per Amendment v1.4 Parts 33 & 34; accepted by user (`reports/w003_r5_independent_verification.md`) |
-| **W004** | Observability & Error Tracking | **REOPENED (W004-R1)** | - | Reopened for targeted production hardening (W004-R1); W005 remains BLOCKED; independent audit pending |
+| **W004** | Observability & Error Tracking | **REOPENED (W004-R1A)** | - | W004-R1 independent PASS at `66993cd`; W004-R1A credential separation and governance hardening at `ef4622a`; independent audit pending |
 | **W005** | Backup & Recovery Verification | NOT_STARTED | - | Prerequisite: W004 |
 | **W006** | API Architecture Audit & Separation | NOT_STARTED | - | Prerequisite: W005 |
 | **W007** | Canonical API Client | NOT_STARTED | - | Prerequisite: W006 |

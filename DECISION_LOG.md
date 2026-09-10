@@ -245,9 +245,18 @@
   6. **Database Failure Telemetry:** Integrated `errorTracker.captureError` into `/api/health/db` failure and catch branches, explicitly tagging database timeouts/errors as `DATABASE_FAILURE` with 503 HTTP status.
 - **Rationale:** Hardens API against information disclosure and synthetic denial-of-service, provides zero-cost cloud error tracking, and ensures reliable end-to-end request correlation.
 
+---
 
-
-
+### DEC-022: METRICS CREDENTIAL SEPARATION & EVIDENCE COORDINATE REBINDING (JOB W004-R1A)
+- **Date:** 2026-09-10
+- **Status:** APPROVED & APPLIED
+- **Context:** Independent review of W004-R1 identified (a) unnecessary coupling between metrics access and Supabase service-role credential, and (b) evidence-lineage inconsistency where the independent verification report recorded `b052106` as CURRENT_REMOTE_HEAD while the report itself was committed at `66993cd`.
+- **Decisions:**
+  1. **Metrics Credential Separation:** Production `/api/metrics` now exclusively uses `METRICS_AUTH_TOKEN` as the dedicated monitoring credential. `SUPABASE_SERVICE_ROLE_KEY` is no longer accepted as a fallback. If `METRICS_AUTH_TOKEN` is absent, production metrics access fails closed (401). This prevents a single leaked credential from compromising both database and monitoring surfaces.
+  2. **Four-Coordinate Commit Model:** Governance metadata maintains four separate, non-collapsible fields: `CURRENT_REMOTE_HEAD` (actual remote master HEAD), `AUDITED_CODE_COMMIT` (exact commit independently audited), `EVIDENCE_COMMIT` (commit containing evidence package), `ACCEPTANCE_COMMIT` (final acceptance-state commit).
+  3. **Commit-Freshness Validator Hardening:** `tests/commit-freshness.test.mjs` now enforces strict equality `CURRENT_REMOTE_HEAD == actual origin/master HEAD` (fails on mismatch), verifies `AUDITED_CODE_COMMIT` is an ancestor of `CURRENT_REMOTE_HEAD`, and validates `EVIDENCE_COMMIT` and `ACCEPTANCE_COMMIT` resolve in git history when not "pending".
+  4. **Evidence Freshness Rule:** Evidence generation is deferred until after code changes are complete, tests pass, and the final commit is pushed. Evidence must reference the actual final state. No code modification permitted after evidence generation without re-generation.
+- **Rationale:** Enforces principle of least privilege for monitoring credentials, ensures governance metadata truthfully represents the repository timeline, and prevents stale evidence from passing validation.
 
 
 
