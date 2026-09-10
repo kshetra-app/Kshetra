@@ -216,6 +216,23 @@
   4. **Strict Regeneration Sequence:** Committed all code changes, pushed to canonical remote, verified clean working tree, and executed all verification suites against the exact final commit HEAD.
 - **Rationale:** Ensures total mathematical truth between committed code, git ancestry, and reported evidence, preventing stale or phantom claims.
 
+---
+
+### DEC-020: OBSERVABILITY, STRUCTURED LOGGING, CORRELATION IDS & CONTROLLED ERROR GENERATION ARCHITECTURE (JOB W004)
+- **Date:** 2026-09-10
+- **Status:** APPROVED & APPLIED
+- **Context:** Transitioning to production requires unified telemetry, request tracing across distributed boundaries, latency monitoring, database failure diagnostics, and zero-leak error handling.
+- **Decisions:**
+  1. **Structured JSON Logging:** Fastify uses Pino logger in JSON mode in production/staging with standard fields (`level`, `time`, `reqId`, `url`, `method`, `statusCode`, `responseTime`, `service`).
+  2. **Request ID Propagation:** Auto-generate UUID-based or `req-<counter>` identifiers, accept caller-provided `x-request-id` header for distributed tracing, and echo `x-request-id` in every HTTP response.
+  3. **High-Resolution Latency Tracking:** Compute millisecond execution times with sub-millisecond precision via `process.hrtime.bigint()`, inject `x-response-time` header, and record percentiles in an in-memory metrics collector.
+  4. **Metrics Summary Endpoint (`GET /api/metrics`):** Expose process uptime, memory metrics, request counts, HTTP status code distribution (2xx, 4xx, 5xx), and average latency for monitoring.
+  5. **Centralized Error Envelope & Sanitization:** Global Fastify error handler structures 5xx and 4xx responses as `{ error, message, statusCode, requestId, timestamp }`, never leaking raw stack traces in production.
+  6. **Controlled Error Generation Route (`GET /api/debug/error`):** Provide a deterministic test seam for synthetic errors to prove alerting, log capture, and status code propagation without crashing the process.
+  7. **Mobile Telemetry Seam (`apps/mobile/lib/telemetry.ts`):** Lightweight client logger attaching `x-request-id` to outgoing API calls and capturing breadcrumbs with zero additional native dependencies.
+- **Rationale:** Fulfills Job Book W004 tasks, establishes operational observability, and provides proof-of-monitoring without increasing binary size or introducing external SaaS dependencies.
+
+
 
 
 

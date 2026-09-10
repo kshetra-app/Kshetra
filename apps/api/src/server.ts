@@ -22,8 +22,12 @@ import { configRoutes } from './routes/config';
 import { manageRoutes } from './routes/manage';
 import { pagesRoutes } from './routes/pages';
 import { policyRoutes } from './routes/policy';
+import { randomUUID } from 'crypto';
 import { dmRoutes } from './routes/dm';
 import { politicalAdsRoutes } from './routes/politicalAds';
+import { metricsRoutes } from './routes/metrics';
+import { debugRoutes } from './routes/debug';
+import { metricsCollector } from './lib/metrics';
 import { startNewsScheduler } from './services/news/newsService';
 
 const envToLogger: Record<string, object | boolean> = {
@@ -73,6 +77,58 @@ export async function buildApp() {
 
   const app = Fastify({
     logger: envToLogger[env] ?? true,
+    genReqId: (req: any) => {
+      const headers = req?.headers;
+      const incomingId = (headers?.['x-request-id'] as string) || (headers?.['x-correlation-id'] as string);
+      if (incomingId && typeof incomingId === 'string' && incomingId.trim().length > 0) {
+        return incomingId.trim();
+      }
+      return randomUUID();
+    },
+    requestIdHeader: 'x-request-id',
+    requestIdLogLabel: 'reqId',
+  });
+
+  // Track request start time for high-resolution latency tracking and metrics collection
+  app.addHook('onRequest', async (request: FastifyRequest) => {
+    (request as any).startTime = process.hrtime.bigint();
+    metricsCollector.onRequestStart();
+  });
+
+  // Measure response duration, inject telemetry headers, and record metrics
+  app.addHook('onResponse', async (request: FastifyRequest, reply: FastifyReply) => {
+    const startTime = (request as any).startTime as bigint | undefined;
+    let durationMs = 0;
+    if (startTime) {
+      const elapsedNs = process.hrtime.bigint() - startTime;
+      durationMs = Number(elapsedNs) / 1_000_000;
+    }
+    
+    metricsCollector.onRequestEnd(reply.statusCode, durationMs);
+  });
+
+  // Inject x-request-id and x-response-time headers on all outgoing responses
+  app.addHook('onSend', async (request: FastifyRequest, reply: FastifyReply, payload) => {
+    reply.header('x-request-id', request.id);
+    
+    const startTime = (request as any).startTime as bigint | undefined;
+    if (startTime) {
+      const elapsedNs = process.hrtime.bigint() - startTime;
+      const durationMs = (Number(elapsedNs) / 1_000_000).toFixed(2);
+      reply.header('x-response-time', `${durationMs}ms`);
+      reply.header('Server-Timing', `total;dur=${durationMs}`);
+    }
+
+    const url = request.url;
+    if (
+      url.startsWith('/api/v1/states/') &&
+      !url.includes('/ai/') &&
+      request.method === 'GET' &&
+      reply.statusCode === 200
+    ) {
+      reply.header('Cache-Control', 'public, max-age=300, s-maxage=300');
+    }
+    return payload;
   });
 
   await app.register(cors, {
@@ -95,7 +151,14 @@ export async function buildApp() {
   app.setErrorHandler((error: FastifyError, request: FastifyRequest, reply: FastifyReply) => {
     const statusCode = error.statusCode ?? 500;
     if (statusCode >= 500) {
-      request.log.error(error);
+      request.log.error({
+        err: error,
+        requestId: request.id,
+        url: request.url,
+        method: request.method,
+        statusCode,
+        msg: 'Unhandled internal server error intercepted by global handler',
+      });
     }
     const exposeDetail = env !== 'production';
     reply.status(statusCode).send({
@@ -104,6 +167,9 @@ export async function buildApp() {
         statusCode >= 500 && !exposeDetail
           ? 'An unexpected error occurred. Please try again later.'
           : error.message,
+      statusCode,
+      requestId: request.id,
+      timestamp: new Date().toISOString(),
     });
   });
 
@@ -112,21 +178,10 @@ export async function buildApp() {
     reply.status(404).send({
       error: 'Not Found',
       message: `Route ${request.method} ${request.url} not found`,
+      statusCode: 404,
+      requestId: request.id,
+      timestamp: new Date().toISOString(),
     });
-  });
-
-  // Cache static seed-data responses (5 min)
-  app.addHook('onSend', async (request, reply, payload) => {
-    const url = request.url;
-    if (
-      url.startsWith('/api/v1/states/') &&
-      !url.includes('/ai/') &&
-      request.method === 'GET' &&
-      reply.statusCode === 200
-    ) {
-      reply.header('Cache-Control', 'public, max-age=300, s-maxage=300');
-    }
-    return payload;
   });
 
   // Root health endpoints for Cloud Container platforms (Railway, Render, Fly.io)
@@ -154,6 +209,8 @@ export async function buildApp() {
   await app.register(policyRoutes);
   await app.register(dmRoutes);
   await app.register(politicalAdsRoutes);
+  await app.register(metricsRoutes, { prefix: '/api' });
+  await app.register(debugRoutes, { prefix: '/api' });
 
   return app;
 }
@@ -176,8 +233,9 @@ export async function start() {
   return app;
 }
 
-// Only start automatically when not in test environment
-if (process.env.NODE_ENV !== 'test') {
+// Only start automatically when directly executed as the main entry point
+const isDirectExecution = typeof require !== 'undefined' && require.main === module;
+if (process.env.NODE_ENV !== 'test' && (process.env.START_SERVER === 'true' || isDirectExecution)) {
   start().catch((err) => {
     console.error('Fatal startup error in KSHETRA API server:', err);
     process.exit(1);

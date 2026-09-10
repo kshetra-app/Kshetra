@@ -1,5 +1,6 @@
 import type { FastifyInstance } from 'fastify';
 import { supabase, isSupabaseConfigured } from '../lib/supabase';
+import { metricsCollector } from '../lib/metrics';
 
 export async function healthRoutes(app: FastifyInstance) {
   /**
@@ -44,6 +45,7 @@ export async function healthRoutes(app: FastifyInstance) {
 
       const latencyMs = Date.now() - startTime;
       if (error) {
+        metricsCollector.recordDatabaseCheck(false, latencyMs, 'degraded');
         return reply.status(503).send({
           status: 'error',
           semanticType: 'DATABASE CONNECTIVITY',
@@ -55,6 +57,7 @@ export async function healthRoutes(app: FastifyInstance) {
         });
       }
 
+      metricsCollector.recordDatabaseCheck(true, latencyMs, 'healthy');
       return reply.status(200).send({
         status: 'ok',
         semanticType: 'DATABASE CONNECTIVITY',
@@ -65,13 +68,15 @@ export async function healthRoutes(app: FastifyInstance) {
         timestamp: new Date().toISOString(),
       });
     } catch (err: any) {
+      const latencyMs = Date.now() - startTime;
+      metricsCollector.recordDatabaseCheck(false, latencyMs, 'unreachable');
       return reply.status(503).send({
         status: 'error',
         semanticType: 'DATABASE CONNECTIVITY',
         service: 'kshetra-api',
         connected: false,
         error: err.message || 'Database connection failure',
-        latencyMs: Date.now() - startTime,
+        latencyMs,
         timestamp: new Date().toISOString(),
       });
     }
