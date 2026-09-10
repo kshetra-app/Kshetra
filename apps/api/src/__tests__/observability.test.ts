@@ -187,11 +187,13 @@ describe('Observability, Tracing & Error Interception (JOB W004 / DEC-020)', () 
     const originalEnv = process.env.NODE_ENV;
     const originalBypass = process.env.DEBUG_BYPASS_SECRET;
     const originalMetricsToken = process.env.METRICS_AUTH_TOKEN;
+    const originalServiceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
 
     afterEach(() => {
       process.env.NODE_ENV = originalEnv;
       process.env.DEBUG_BYPASS_SECRET = originalBypass;
       process.env.METRICS_AUTH_TOKEN = originalMetricsToken;
+      process.env.SUPABASE_SERVICE_ROLE_KEY = originalServiceRoleKey;
     });
 
     it('rejects public requests to /api/debug/error with 404 in production environment', async () => {
@@ -272,6 +274,59 @@ describe('Observability, Tracing & Error Interception (JOB W004 / DEC-020)', () 
       expect(res.statusCode).toBe(200);
       const body = JSON.parse(res.payload);
       expect(body.uptimeSeconds).toBeGreaterThanOrEqual(0);
+    });
+
+    it('rejects wrong metrics token in production with 401', async () => {
+      process.env.NODE_ENV = 'production';
+      process.env.METRICS_AUTH_TOKEN = 'correct-metrics-token-abc';
+
+      const res = await app.inject({
+        method: 'GET',
+        url: '/api/metrics',
+        headers: {
+          authorization: 'Bearer wrong-metrics-token-xyz',
+        },
+      });
+
+      expect(res.statusCode).toBe(401);
+      const body = JSON.parse(res.payload);
+      expect(body.error).toBe('Unauthorized');
+    });
+
+    it('rejects Supabase service-role key presented as metrics token in production (W004-R1A credential separation)', async () => {
+      process.env.NODE_ENV = 'production';
+      process.env.METRICS_AUTH_TOKEN = 'dedicated-metrics-token-only';
+      process.env.SUPABASE_SERVICE_ROLE_KEY = 'supabase-service-role-key-secret';
+
+      const res = await app.inject({
+        method: 'GET',
+        url: '/api/metrics',
+        headers: {
+          authorization: 'Bearer supabase-service-role-key-secret',
+        },
+      });
+
+      expect(res.statusCode).toBe(401);
+      const body = JSON.parse(res.payload);
+      expect(body.error).toBe('Unauthorized');
+    });
+
+    it('fails closed when METRICS_AUTH_TOKEN is not configured in production', async () => {
+      process.env.NODE_ENV = 'production';
+      delete process.env.METRICS_AUTH_TOKEN;
+      delete process.env.SUPABASE_SERVICE_ROLE_KEY;
+
+      const res = await app.inject({
+        method: 'GET',
+        url: '/api/metrics',
+        headers: {
+          authorization: 'Bearer any-token-here',
+        },
+      });
+
+      expect(res.statusCode).toBe(401);
+      const body = JSON.parse(res.payload);
+      expect(body.error).toBe('Unauthorized');
     });
   });
 

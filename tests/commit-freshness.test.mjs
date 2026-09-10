@@ -3,7 +3,7 @@ import fs from 'fs';
 import path from 'path';
 import { execSync } from 'child_process';
 
-console.log('=== RUNNING COMMIT FRESHNESS & LINEAGE VALIDATOR ===\n');
+console.log('=== RUNNING COMMIT FRESHNESS & LINEAGE VALIDATOR (W004-R1A) ===\n');
 
 const executionStatePath = path.resolve('EXECUTION_STATE.md');
 assert.ok(fs.existsSync(executionStatePath), 'EXECUTION_STATE.md must exist');
@@ -46,26 +46,44 @@ console.log('\nGit Reality:');
 console.log('  Local HEAD:          ', localHead);
 console.log('  origin/master HEAD:  ', originMasterHead);
 
-// Validate that remote head field resolves to or matches the remote commit
-try {
-  const resolvedRemote = execSync(`git rev-parse "${remoteHeadField}"`, { encoding: 'utf8' }).trim();
-  console.log(`[PASS] Check 1: CURRENT_REMOTE_HEAD resolves to ${resolvedRemote}`);
-  // In a clean synchronized state, resolvedRemote must match originMasterHead or be an active ancestor
-  assert.ok(
-    resolvedRemote === originMasterHead || execSync(`git merge-base --is-ancestor "${resolvedRemote}" HEAD`, { stdio: 'pipe' }) === 0 || true,
-    'CURRENT_REMOTE_HEAD must be a valid ancestor or match origin/master'
-  );
-} catch (err) {
-  assert.fail(`CURRENT_REMOTE_HEAD "${remoteHeadField}" cannot be resolved in Git history`);
-}
+// CHECK 1: CURRENT_REMOTE_HEAD must exactly match actual origin/master HEAD
+const resolvedRemote = execSync(`git rev-parse "${remoteHeadField}"`, { encoding: 'utf8' }).trim();
+assert.strictEqual(
+  resolvedRemote,
+  originMasterHead,
+  `[FAIL] CURRENT_REMOTE_HEAD mismatch: declared=${resolvedRemote}, actual origin/master=${originMasterHead}`
+);
+console.log(`[PASS] Check 1: CURRENT_REMOTE_HEAD (${remoteHeadField}) resolves to ${resolvedRemote} and matches origin/master`);
 
-// Validate that AUDITED_CODE_COMMIT resolves and is an ancestor
+// CHECK 2: AUDITED_CODE_COMMIT must resolve and be an ancestor of CURRENT_REMOTE_HEAD
 try {
   const resolvedAudited = execSync(`git rev-parse "${auditedCodeField}"`, { encoding: 'utf8' }).trim();
-  execSync(`git merge-base --is-ancestor "${resolvedAudited}" HEAD`, { stdio: 'pipe' });
-  console.log(`[PASS] Check 2: AUDITED_CODE_COMMIT ${resolvedAudited} is a verified ancestor of HEAD`);
+  execSync(`git merge-base --is-ancestor "${resolvedAudited}" "${originMasterHead}"`, { stdio: 'pipe' });
+  console.log(`[PASS] Check 2: AUDITED_CODE_COMMIT ${resolvedAudited} is a verified ancestor of CURRENT_REMOTE_HEAD`);
 } catch (err) {
-  assert.fail(`AUDITED_CODE_COMMIT "${auditedCodeField}" is not a valid ancestor of HEAD`);
+  assert.fail(`AUDITED_CODE_COMMIT "${auditedCodeField}" is not a valid ancestor of CURRENT_REMOTE_HEAD`);
+}
+
+// CHECK 3: EVIDENCE_COMMIT must resolve in git history
+try {
+  const resolvedEvidence = execSync(`git rev-parse "${evidenceCommitField}"`, { encoding: 'utf8' }).trim();
+  execSync(`git cat-file -e "${resolvedEvidence}^{commit}"`, { stdio: 'pipe' });
+  console.log(`[PASS] Check 3: EVIDENCE_COMMIT ${resolvedEvidence} exists in git history`);
+} catch (err) {
+  assert.fail(`EVIDENCE_COMMIT "${evidenceCommitField}" cannot be resolved in Git history`);
+}
+
+// CHECK 4: ACCEPTANCE_COMMIT — if not "pending", must resolve in git history
+if (acceptanceCommitField !== 'pending') {
+  try {
+    const resolvedAcceptance = execSync(`git rev-parse "${acceptanceCommitField}"`, { encoding: 'utf8' }).trim();
+    execSync(`git cat-file -e "${resolvedAcceptance}^{commit}"`, { stdio: 'pipe' });
+    console.log(`[PASS] Check 4: ACCEPTANCE_COMMIT ${resolvedAcceptance} exists in git history`);
+  } catch (err) {
+    assert.fail(`ACCEPTANCE_COMMIT "${acceptanceCommitField}" cannot be resolved in Git history`);
+  }
+} else {
+  console.log(`[INFO] Check 4: ACCEPTANCE_COMMIT is "pending" (acceptable before final acceptance)`);
 }
 
 console.log('\n===============================================================');

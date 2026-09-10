@@ -7,10 +7,11 @@ export async function metricsRoutes(app: FastifyInstance) {
    * Exposes operational telemetry, latency distributions, status code breakdowns,
    * process resource consumption, and database connectivity metrics.
    * 
-   * PRODUCTION PROTECTION MANDATE (W004-R1 Task 2):
+   * PRODUCTION PROTECTION MANDATE (W004-R1A / DEC-021):
    * Operational telemetry exposes internal memory, process IDs, and health statistics.
-   * In PRODUCTION, access requires an authorized monitoring token (Bearer token or x-metrics-token header)
-   * matching METRICS_AUTH_TOKEN or SUPABASE_SERVICE_ROLE_KEY.
+   * In PRODUCTION, access requires a dedicated monitoring token (Bearer token or x-metrics-token header)
+   * matching METRICS_AUTH_TOKEN exclusively. SUPABASE_SERVICE_ROLE_KEY is NOT accepted as a fallback.
+   * If METRICS_AUTH_TOKEN is not configured, production metrics access fails closed (401).
    * In TEST and DEVELOPMENT, open access is retained for local verification.
    */
   app.get('/metrics', async (request, reply) => {
@@ -19,7 +20,7 @@ export async function metricsRoutes(app: FastifyInstance) {
     if (env === 'production') {
       const authHeader = request.headers['authorization'] || '';
       const tokenHeader = request.headers['x-metrics-token'] as string | undefined;
-      const expectedToken = process.env.METRICS_AUTH_TOKEN || process.env.SUPABASE_SERVICE_ROLE_KEY;
+      const expectedToken = process.env.METRICS_AUTH_TOKEN;
 
       const bearerToken = authHeader.startsWith('Bearer ') ? authHeader.slice(7).trim() : null;
       const providedToken = bearerToken || tokenHeader;
