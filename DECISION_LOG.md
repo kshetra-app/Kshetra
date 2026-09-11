@@ -258,6 +258,27 @@
   4. **Evidence Freshness Rule:** Evidence generation is deferred until after code changes are complete, tests pass, and the final commit is pushed. Evidence must reference the actual final state. No code modification permitted after evidence generation without re-generation.
 - **Rationale:** Enforces principle of least privilege for monitoring credentials, ensures governance metadata truthfully represents the repository timeline, and prevents stale evidence from passing validation.
 
+---
+
+### DEC-023: W004 FINAL ACCEPTANCE, PERMANENT EVIDENCE COORDINATE MODEL & W005 UNBLOCKING
+- **Date:** 2026-09-11
+- **Status:** APPROVED & ACCEPTED BY USER
+- **Context:** JOB W004-R1A completed independent verification with a PASS verdict across all 13 verification gates at commit `811b5dd`. The user formally accepted W004-R1A and authorized finalizing W004 with no further remediation cycles.
+- **Decisions:**
+  1. **Final W004 Acceptance:** W004 (Observability & Error Tracking) is declared fully ACCEPTED. All observability capabilities (structured Pino logging, request ID propagation, error classification, production access control, mobile telemetry wiring, DB failure telemetry) are operational and independently audited.
+  2. **Permanent Four-Coordinate Lineage Model:** To eliminate self-referential git commit loops, the coordinate terminology is permanently established as:
+     - `VERIFIED_REMOTE_HEAD`: Exact remote HEAD against which verification evidence was executed (`1260f98`).
+     - `AUDITED_CODE_COMMIT`: Exact implementation commit audited (`ef4622a`).
+     - `EVIDENCE_COMMIT`: Commit containing evidence artifacts (`19a5932`).
+     - `ACCEPTANCE_COMMIT`: Commit containing final acceptance state (`HEAD` on final acceptance commit).
+     - *Freshness Invariance Rule:* A subsequent acceptance commit advances Git HEAD and does not invalidate the historical verification coordinate (`VERIFIED_REMOTE_HEAD`).
+  3. **Preserved Exceptions:**
+     - `DEF-009`: OPEN / HUMAN ACTION REQUIRED (Supabase service-role JWT configuration in .env; safe code fallback active).
+     - `DEF-012`: OPEN / Launch Gate A blocker (13-language translation key parity gap).
+  4. **Next Permitted Job:** JOB W005 (Backup & Recovery Verification) is UNBLOCKED and designated as the immediate next permitted job.
+- **Rationale:** Establishes rigorous mathematical and operational finality for W004, prevents infinite self-referential commit loops in CI/CD validation, and safely unlocks the milestone progression to W005.
+
+
 
 
 

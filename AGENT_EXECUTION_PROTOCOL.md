@@ -119,11 +119,12 @@ Immediately following implementation and initial testing, the agent must rigorou
 ## 6. Evidence, Lineage & Verification Standards
 
 1. **Evidence Follows Implementation:** Never generate final evidence before code changes are finalized.
-2. **Four-Point Commit Lineage:**
-   - `CURRENT_REMOTE_HEAD`: Actual Git HEAD on canonical branch.
-   - `AUDITED_CODE_COMMIT`: Commit containing implementation code under audit.
-   - `EVIDENCE_COMMIT`: Commit containing generated test/audit evidence.
-   - `ACCEPTANCE_COMMIT`: Commit containing independent verification verdict and accepted registers.
+2. **Four-Point Commit Lineage (Amendment v1.4 / DEC-023):**
+   - `VERIFIED_REMOTE_HEAD`: Exact remote HEAD against which verification evidence was executed.
+   - `AUDITED_CODE_COMMIT`: Exact implementation commit audited.
+   - `EVIDENCE_COMMIT`: Commit containing generated test/audit evidence artifacts.
+   - `ACCEPTANCE_COMMIT`: Commit containing final acceptance state and register updates (`HEAD` on final acceptance commit).
+   - *Freshness Invariance Rule:* The later acceptance commit advances Git HEAD and does not invalidate the historical verification coordinate (`VERIFIED_REMOTE_HEAD`), preventing self-referential commit loops.
 3. **Clean Repository Mandate:** `git status` must show a 100% clean working tree prior to declaring any milestone ready for verification.
 4. **Remote Synchronization:** Push commits to `origin/master` and verify remote HEAD before reporting completion.
 5. **Independent Verification (Rule IV-001):** The implementing agent cannot self-certify. Critical milestones, security architecture, migrations, and Launch Gates require independent verification.

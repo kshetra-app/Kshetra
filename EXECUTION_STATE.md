@@ -9,15 +9,16 @@
 PROJECT:               PANIN (formerly Kshetra)
 TARGET_DOMAIN:         India Political Geography, Intelligence, Participation & Media Platform
 CURRENT_PHASE:         W0 (Baseline Reconciliation & Ground-Truth Audit)
-CURRENT_JOB:           W004 (Observability & Error Tracking)
-LAST_COMPLETED_JOB:    W003 (CI/CD Quality Pipeline - ACCEPTED)
-NEXT_PERMITTED_JOB:    W004 (Observability & Error Tracking)
+CURRENT_JOB:           W005 (Backup & Recovery Verification)
+LAST_COMPLETED_JOB:    W004 (Observability & Error Tracking - ACCEPTED)
+NEXT_PERMITTED_JOB:    W005 (Backup & Recovery Verification)
 
 CURRENT_BRANCH:        master
+VERIFIED_REMOTE_HEAD:  1260f98
 CURRENT_REMOTE_HEAD:   1260f98
 AUDITED_CODE_COMMIT:   ef4622a
 EVIDENCE_COMMIT:       19a5932
-ACCEPTANCE_COMMIT:     pending
+ACCEPTANCE_COMMIT:     HEAD
 API_VERSION:           v1 (Fastify 5.2 on Railway)
 MOBILE_VERSION:        0.1.0 (Expo 54, React Native 0.81.5)
 DATABASE_MIGRATIONS:   36 migration files present in repository (35 live applied to staging fkpigozcqnmcvofuksar)
@@ -47,8 +48,8 @@ REMOTE_SYNC:           Up to date with origin/master
 | **W002** | Staging / Prod Separation | **ACCEPTED** | 2026-09-09 | W002-R2 IV PASS; Real cloud staging operational (`kshetra-api-staging` & `fkpigozcqnmcvofuksar`); tests A-I pass; `reports/w002_r2_independent_verification.md` |
 | **W003-P0**| Amendment v1.4 Activation & Governance Sync | **ACCEPTED** | 2026-09-09 | Independent Verifier PASS; Amendment v1.4 operational governance authority active across all registers; `reports/w003_p0_independent_verification.md` |
 | **W003** | CI/CD Quality Pipeline | **ACCEPTED** | 2026-09-10 | Independent Verifier PASS with Monitored Exceptions per Amendment v1.4 Parts 33 & 34; accepted by user (`reports/w003_r5_independent_verification.md`) |
-| **W004** | Observability & Error Tracking | **REOPENED (W004-R1A)** | - | W004-R1 independent PASS at `66993cd`; W004-R1A credential separation and governance hardening at `ef4622a`; independent audit pending |
-| **W005** | Backup & Recovery Verification | NOT_STARTED | - | Prerequisite: W004 |
+| **W004** | Observability & Error Tracking | **ACCEPTED** | 2026-09-11 | W004-R1A Independent Verifier PASS (13/13 gates at commit `811b5dd`); verified remote head `1260f98`; audited code `ef4622a`; evidence `19a5932`; user accepted; `reports/w004_r1a_independent_verification.md` |
+| **W005** | Backup & Recovery Verification | **UNBLOCKED** | - | Prerequisite W004 accepted; ready for execution |
 | **W006** | API Architecture Audit & Separation | NOT_STARTED | - | Prerequisite: W005 |
 | **W007** | Canonical API Client | NOT_STARTED | - | Prerequisite: W006 |
 | **W008** | API Contract Standardization | NOT_STARTED | - | Prerequisite: W007 |

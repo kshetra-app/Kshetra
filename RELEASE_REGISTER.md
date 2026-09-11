@@ -12,6 +12,9 @@
 | `v0.1.0-w000-rec2`| Dev Audit Reconciled | Monorepo Source | N/A | N/A | v1 (0.1.0) | `7d89b3e` | W000-REC2 (Superseded by REC2A) | ARCH | Reopened |
 | `v0.1.0-w000-rec2a`| Dev Audit Reconciled | Monorepo Source | N/A | N/A | v1 (0.1.0) | `5f7c8a5` | W000-REC2A Accepted | ARCH | PASS (IV Pass 2026-09-09) |
 | `v0.1.0-w001` | Production | Railway API + Supabase | Backend Gateway | N/A | v1 (0.1.0) | `77fb553` | W001-R1..R5 Verified | DEVOPS+QA | Reconciled via Amendment v1.2 |
+| `v0.1.0-w002` | Staging | Railway API + Supabase | Staging Gateway | N/A | v1 (0.1.0) | `c117f8c` | W002 Accepted (Staging Isolation) | DEVOPS | PASS (IV Pass 2026-09-09) |
+| `v0.1.0-w003` | CI/CD Pipeline | Automated Quality Gate | GitHub Actions | N/A | v1 (0.1.0) | `d81fd33` | W003 Accepted (CI/CD Pipeline) | DEVOPS | PASS (IV Pass 2026-09-10) |
+| `v0.1.0-w004` | Production/Staging | API Observability & Telemetry | Backend Gateway | N/A | v1 (0.1.0) | `811b5dd` | W004 Accepted (Observability & Metrics Hardening) | DEVOPS | PASS (IV Pass 2026-09-10) |
 
 ---
 
