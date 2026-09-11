@@ -15,10 +15,10 @@ NEXT_PERMITTED_JOB:    W006 (API Architecture Audit & Separation - UNBLOCKED)
 
 CURRENT_BRANCH:        master
 VERIFIED_REMOTE_HEAD:  f6ee696
-CURRENT_REMOTE_HEAD:   acc32fe
+CURRENT_REMOTE_HEAD:   ea4c1fd
 AUDITED_CODE_COMMIT:   943b026
 EVIDENCE_COMMIT:       b4f3133
-ACCEPTANCE_COMMIT:     pending
+ACCEPTANCE_COMMIT:     ea4c1fd
 API_VERSION:           v1 (Fastify 5.2 on Railway)
 MOBILE_VERSION:        0.1.0 (Expo 54, React Native 0.81.5)
 DATABASE_MIGRATIONS:   36 migration files present in repository (35 live applied to staging fkpigozcqnmcvofuksar)

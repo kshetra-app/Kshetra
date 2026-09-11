@@ -365,6 +365,6 @@
      - `VERIFIED_REMOTE_HEAD`: `f6ee696`
      - `AUDITED_CODE_COMMIT`: `943b026`
      - `EVIDENCE_COMMIT`: `b4f3133`
-     - `ACCEPTANCE_COMMIT`: `pending` (locked upon merge of this acceptance commit)
+     - `ACCEPTANCE_COMMIT`: `ea4c1fd` (final acceptance-state commit)
 - **Rationale:** Satisfies Launch Gate A disaster recovery and resilience criteria with complete truth in engineering, empirical proof, and strict governance transparency.
 
