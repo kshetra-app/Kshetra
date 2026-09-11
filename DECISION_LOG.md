@@ -343,3 +343,28 @@
   4. **Comprehensive Regression Suite (Tests A–H):** Expanded `tests/drill-coordinate-dynamism.test.mjs` to explicitly test: Test A (branch=master), Test B (local HEAD resolves), Test C (origin/master resolves), Test D (local HEAD == origin/master), Test E (report verifiedRemoteHead format and integrity), Test F (remote lookup failure exits non-zero with `REMOTE_VERIFICATION_FAILED`), Test G (mismatch exits non-zero with `COORDINATE_MISMATCH`), and Test H (dirty working tree exits non-zero with `WORKING_TREE_DIRTY`).
   5. **Governance State Alignment:** Maintained strict four-coordinate terminology (`VERIFIED_REMOTE_HEAD`, `AUDITED_CODE_COMMIT`, `EVIDENCE_COMMIT`, `ACCEPTANCE_COMMIT`). Set W005 to `NOT ACCEPTED / IN VERIFICATION` and kept W006 strictly `BLOCKED` until independent verification passes.
 - **Rationale:** Guarantees that recovery evidence can only ever be generated against an unblemished, fully pushed, verified canonical remote repository state with zero ambiguous fallbacks.
+
+---
+
+### DEC-028: FINAL ACCEPTANCE OF JOB W005 (BACKUP & RECOVERY VERIFICATION) WITH DOCUMENTED LIMITATIONS
+- **Date:** 2026-09-11
+- **Status:** APPROVED & ACCEPTED
+- **Authority:** Master Execution Framework Amendment v1.2 (Rule IV-001), Amendment v1.4, `AGENT_EXECUTION_PROTOCOL.md`
+- **Context:** Following completion of W005, W005-R1, W005-R1A, W005-R1B, and W005-R1C, all backup and disaster-recovery requirements, empirical drills, dynamic coordinate bindings, and strict remote fail-closed verifications have passed independent verification (`reports/w005_r1c_independent_verification.md`, commit `acc32fe`).
+- **Decisions:**
+  1. **Final Acceptance Status:** Set `JOB W005: BACKUP & RECOVERY VERIFICATION` = `ACCEPTED WITH DOCUMENTED LIMITATIONS`.
+  2. **Unblocking W006:** Formally transition `JOB W006: API ARCHITECTURE AUDIT & SEPARATION` from `BLOCKED` to `UNBLOCKED` and authorized for execution.
+  3. **Preserved Documented Limitations:**
+     - **PITR / RPO ≤ 5 min:** Retained as target objective; actual state classified as `NOT EMPIRICALLY VERIFIED` to prevent destructive point-in-time rewind drills against active cloud databases without dedicated sandboxes.
+     - **Multi-Cloud Standby:** Standby API container deployment on secondary cloud provider (Fly.io/Render) is `NOT IMPLEMENTED / HUMAN INFRASTRUCTURE REQUIRED`. Local Fastify process failover was empirically tested (4.57s).
+     - **DR-001 Scope:** Classified as `SCHEMA RECOVERY & API BOOTSTRAP` (`RECOVERY TESTED`, 7.29s); does not encompass zero-to-new-cloud provider provisioning from scratch.
+     - **DR-002 Scope:** Empirically proven logical backup artifact recovery for tested synthetic staging dataset (`civic_issues`, 0.32s restore, 100% SHA-256 match).
+     - **DR-004 Scope:** Empirically proven Supabase Storage bucket restore from disk artifact (`staging-dr-test`, 0.39s restore, 100% SHA-256 match).
+     - **DR-005 Scope:** Client offline resilience via local MMKV mutation queueing and idempotent sync (0.00s execution, 0 duplicate writes); not traditional cloud DR RTO.
+  4. **Four-Coordinate Lineage Lock:**
+     - `VERIFIED_REMOTE_HEAD`: `f6ee696`
+     - `AUDITED_CODE_COMMIT`: `943b026`
+     - `EVIDENCE_COMMIT`: `b4f3133`
+     - `ACCEPTANCE_COMMIT`: `pending` (locked upon merge of this acceptance commit)
+- **Rationale:** Satisfies Launch Gate A disaster recovery and resilience criteria with complete truth in engineering, empirical proof, and strict governance transparency.
+

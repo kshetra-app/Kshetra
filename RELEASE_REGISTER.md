@@ -15,6 +15,7 @@
 | `v0.1.0-w002` | Staging | Railway API + Supabase | Staging Gateway | N/A | v1 (0.1.0) | `c117f8c` | W002 Accepted (Staging Isolation) | DEVOPS | PASS (IV Pass 2026-09-09) |
 | `v0.1.0-w003` | CI/CD Pipeline | Automated Quality Gate | GitHub Actions | N/A | v1 (0.1.0) | `d81fd33` | W003 Accepted (CI/CD Pipeline) | DEVOPS | PASS (IV Pass 2026-09-10) |
 | `v0.1.0-w004` | Production/Staging | API Observability & Telemetry | Backend Gateway | N/A | v1 (0.1.0) | `811b5dd` | W004 Accepted (Observability & Metrics Hardening) | DEVOPS | PASS (IV Pass 2026-09-10) |
+| `v0.1.0-w005` | Staging / Recovery | Disaster Recovery & Backup Verification | Staging Gateway & Database | N/A | v1 (0.1.0) | `acc32fe` | W005 Accepted (w/ Documented Limitations) | DEVOPS | PASS (IV Pass 2026-09-11) |
 
 ---
 
