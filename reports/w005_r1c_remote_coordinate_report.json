@@ -1,0 +1,36 @@
+{
+  "job": "W005-R1C",
+  "title": "Strict Remote-Coordinate Verification & Provenance Report",
+  "timestamp": "2026-09-11T12:15:30.000Z",
+  "repository": "https://github.com/kshetra-app/Kshetra.git",
+  "branch": "master",
+  "localHead": "efb2765a5dd13f5edf06122f2c0933da44597bea",
+  "originMasterHead": "efb2765a5dd13f5edf06122f2c0933da44597bea",
+  "verifiedRemoteHead": "efb2765",
+  "auditedCodeCommit": "943b026",
+  "evidenceCommit": "pending",
+  "acceptanceCommit": "pending",
+  "workingTreeClean": true,
+  "remoteLookupSuccessful": true,
+  "headMatchesRemote": true,
+  "failClosedControls": {
+    "remoteFallbackEradicated": true,
+    "onRemoteLookupFailure": "FAIL CLOSED (process.exit(1), REMOTE_VERIFICATION_FAILED)",
+    "onCoordinateMismatch": "FAIL CLOSED (process.exit(1), COORDINATE_MISMATCH)",
+    "onDirtyWorkingTree": "FAIL CLOSED (process.exit(1), WORKING_TREE_DIRTY)"
+  },
+  "regressionSuite": {
+    "testFile": "tests/drill-coordinate-dynamism.test.mjs",
+    "testsExecuted": [
+      "Test A: current branch = master (PASS)",
+      "Test B: local HEAD resolves (PASS)",
+      "Test C: origin/master resolves (PASS)",
+      "Test D: local HEAD == origin/master (PASS)",
+      "Test E: generated verifiedRemoteHead in evidence reports matches actual origin/master format & integrity (PASS)",
+      "Test F: remote lookup failure causes non-zero exit with REMOTE_VERIFICATION_FAILED (PASS)",
+      "Test G: HEAD/origin mismatch causes non-zero exit with COORDINATE_MISMATCH (PASS)",
+      "Test H: dirty tree causes non-zero exit with WORKING_TREE_DIRTY (PASS)"
+    ],
+    "verdict": "PASS 100%"
+  }
+}
