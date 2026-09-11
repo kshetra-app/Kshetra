@@ -9,13 +9,13 @@
 PROJECT:               PANIN (formerly Kshetra)
 TARGET_DOMAIN:         India Political Geography, Intelligence, Participation & Media Platform
 CURRENT_PHASE:         W0 (Baseline Reconciliation & Ground-Truth Audit)
-CURRENT_JOB:           W005-R1A (Actual Recovery Evidence & DR Classification)
+CURRENT_JOB:           W005-R1B (Dynamic Evidence Coordinate Binding)
 LAST_COMPLETED_JOB:    W004 (Observability & Error Tracking - ACCEPTED)
 NEXT_PERMITTED_JOB:    W005 (Backup & Recovery Verification)
 
 CURRENT_BRANCH:        master
-VERIFIED_REMOTE_HEAD:  943a803
-CURRENT_REMOTE_HEAD:   943a803
+VERIFIED_REMOTE_HEAD:  96c96af
+CURRENT_REMOTE_HEAD:   96c96af
 AUDITED_CODE_COMMIT:   943b026
 EVIDENCE_COMMIT:       pending
 ACCEPTANCE_COMMIT:     pending

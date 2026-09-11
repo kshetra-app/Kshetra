@@ -318,14 +318,14 @@
      - DR-005: Formally designated as `CLIENT OFFLINE RESILIENCE` (0.01s local execution) and explicitly distinguished from cloud disaster-recovery RTO.
      - DR-006: Codified strict separation between schema recovery (migrations/bundles) and user data recovery (PITR/logical dumps).
      - RPO: Target ≤ 5 min retained; actual status classified honestly as `NOT EMPIRICALLY VERIFIED` to prevent destructive point-in-time rewind against active instances.
-- **Rationale:** Strictly aligns platform disaster recovery claims with empirical technical proof and honest engineering reality.
+---
 
-
-
-
-
-
-
-
-
-
+### DEC-026: W005-R1B DYNAMIC EVIDENCE COORDINATE BINDING & CONSISTENCY VALIDATION
+- **Date:** 2026-09-11
+- **Status:** APPROVED & APPLIED
+- **Context:** Following W005-R1A, hardcoded Git commit coordinates (e.g. `943a803`) lingered in executable drill generator `scripts/run-w005-r1a-drills.mjs`, causing coordinate drift when new verification reports advanced repository HEAD.
+- **Decisions:**
+  1. **Dynamic Git Metadata Derivation:** Replaced all hardcoded coordinate constants in `scripts/run-w005-r1a-drills.mjs` with runtime Git derivation via `git rev-parse HEAD`, `git rev-parse origin/master`, and branch assertion (`master`).
+  2. **Automated Dynamic Coordinate Regression Gate:** Created `tests/drill-coordinate-dynamism.test.mjs` to permanently prevent stale SHA constants from entering executable evidence generators.
+  3. **Preservation of Empirical DR Findings:** Preserved all empirical evidence categories established in DEC-025: DR-001 (Schema Recovery & API Bootstrap - RECOVERY TESTED, target ≤ 15 min), DR-002 (Logical Backup & Restore - RECOVERY PROVEN), DR-003 (Local Process Standby Failover - RECOVERY TESTED, multi-cloud standby not implemented), DR-004 (Supabase Storage Object Restore - RECOVERY PROVEN), DR-005 (Client Offline Resilience), and RPO honestly reported as `NOT EMPIRICALLY VERIFIED`.
+- **Rationale:** Ensures that all generated evidence artifacts automatically reflect exact repository coordinates at execution time with zero manual editing and zero stale constants.

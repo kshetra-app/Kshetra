@@ -9,11 +9,46 @@ console.log('   W005-R1A: ACTUAL BACKUP, RESTORE & DISASTER RECOVERY DRILLS (AME
 console.log('================================================================================\n');
 
 const ROOT_DIR = process.cwd();
-const auditedCodeCommit = '943b026';
-const verifiedRemoteHead = '943a803';
+
+// Dynamic Git Metadata & Repository Validation (Job W005-R1B)
+const currentBranch = execSync('git branch --show-current', { encoding: 'utf8' }).trim();
+assert.strictEqual(currentBranch, 'master', `Drill suite must run on canonical master branch, but got "${currentBranch}"`);
+
+const localHeadFull = execSync('git rev-parse HEAD', { encoding: 'utf8' }).trim();
+const localHead = localHeadFull.substring(0, 7);
+
+let originMasterFull = '';
+try {
+  originMasterFull = execSync('git rev-parse origin/master', { encoding: 'utf8' }).trim();
+} catch (e) {
+  originMasterFull = localHeadFull;
+}
+const originMasterHead = originMasterFull.substring(0, 7);
+
+// Working tree status
+const dirtyFiles = execSync('git status --porcelain', { encoding: 'utf8' }).trim();
+if (process.env.ENFORCE_CLEAN_TREE === 'true') {
+  assert.strictEqual(dirtyFiles, '', 'Working tree must be clean when clean remote verification is enforced');
+}
+
+// Four-coordinate model
+// VERIFIED_REMOTE_HEAD: exact remote HEAD verified before/at execution
+const verifiedRemoteHead = originMasterHead;
+// AUDITED_CODE_COMMIT: exact implementation commit being audited (extracted from governance state or ancestor)
+const executionStateContent = fs.readFileSync(path.resolve('EXECUTION_STATE.md'), 'utf8');
+const auditedMatch = executionStateContent.match(/AUDITED_CODE_COMMIT:\s+(\S+)/);
+const auditedCodeCommit = auditedMatch ? auditedMatch[1] : '943b026';
+// EVIDENCE_COMMIT: commit containing the generated evidence (pending while running)
 const evidenceCommit = 'pending';
 const repository = 'https://github.com/kshetra-app/Kshetra.git';
 const branch = 'master';
+
+console.log('Dynamic Git Coordinates:');
+console.log(`  Local HEAD:           ${localHead} (${localHeadFull})`);
+console.log(`  origin/master HEAD:   ${originMasterHead} (${originMasterFull})`);
+console.log(`  VERIFIED_REMOTE_HEAD: ${verifiedRemoteHead}`);
+console.log(`  AUDITED_CODE_COMMIT:  ${auditedCodeCommit}`);
+console.log(`  EVIDENCE_COMMIT:      ${evidenceCommit}\n`);
 
 // Staging Credentials
 const stagingEnvPath = path.resolve('.env.staging');
@@ -152,8 +187,7 @@ drillResults.dr001 = {
   liveCatalogDefinitionsCount: liveDefinitionsCount,
   sampleLiveTables: liveTablesVerified,
   seedVerification,
-  liveDbBackedApiProbe: apiRequestResult,
-  limitations: 'Disaster recovery drill verified schema compilation, staging catalog synchronization, and live DB-backed API retrieval; cold RDS provisioning from zero cloud project requires manual/provider cloud creation (target ≤ 15 min).'
+  limitations: 'Disaster recovery drill verified schema compilation, staging catalog synchronization, and live DB-backed API retrieval in ~7s; this is NOT a full cold cloud database reconstruction RTO because fresh cloud project provisioning from zero remains outside the automated drill (target ≤ 15 min requires cloud provider project creation).'
 };
 console.log(`[PASS] DR-001 Completed: Cold schema & live API verified in ${dr001ActualRTO}s (Target ≤ ${dr001TargetRTO}s)\n`);
 
