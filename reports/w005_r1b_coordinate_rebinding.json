@@ -1,0 +1,50 @@
+{
+  "job": "W005-R1B",
+  "title": "Dynamic Evidence Coordinate Binding & Lineage Report",
+  "timestamp": "2026-09-11T07:58:00.000Z",
+  "repository": "https://github.com/kshetra-app/Kshetra.git",
+  "branch": "master",
+  "coordinates": {
+    "verifiedRemoteHead": "aed3d99",
+    "auditedCodeCommit": "943b026",
+    "evidenceCommit": "pending",
+    "acceptanceCommit": "pending"
+  },
+  "staleCoordinateResolution": {
+    "staleVerifiedRemoteHead": "943a803",
+    "priorRemoteHead": "96c96af",
+    "newDynamicVerifiedRemoteHead": "aed3d99",
+    "mechanism": "Derived dynamically at runtime via git rev-parse origin/master with branch assertion (master)",
+    "hardcodedShasEliminated": [
+      "943a803",
+      "4bb8631",
+      "490ceb3",
+      "1260f98",
+      "ef4622a",
+      "19a5932",
+      "811b5dd",
+      "da82fbb",
+      "542013d"
+    ]
+  },
+  "regeneratedEvidenceReports": [
+    "reports/w005_r1a_dr001_cold_reconstruction.json",
+    "reports/w005_r1a_dr002_backup_restore.json",
+    "reports/w005_r1a_dr002_live_backup_artifact.json",
+    "reports/w005_r1a_dr003_api_failover.json",
+    "reports/w005_r1a_dr004_storage_restore.json",
+    "reports/w005_r1a_dr005_client_resilience.json",
+    "reports/w005_r1a_rpo_rto.json",
+    "reports/w005_r1a_recovery_matrix.json",
+    "reports/w005_r1a_independent_verification_package.json"
+  ],
+  "regressionTest": {
+    "testScript": "tests/drill-coordinate-dynamism.test.mjs",
+    "checks": [
+      "Audit scripts/run-w005-r1a-drills.mjs for hardcoded SHAs: PASS",
+      "Verify dynamic coordinate derivation against live Git: PASS",
+      "Validate report coordinate consistency across all generated JSONs: PASS"
+    ],
+    "verdict": "PASS 100%"
+  }
+}

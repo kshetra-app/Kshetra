@@ -2,12 +2,12 @@
   "manifestVersion": "1.0.0",
   "job": "W005-R1A",
   "title": "Actual Recovery Evidence & Disaster Recovery Classification Verification Package",
-  "generatedAt": "2026-09-11T07:24:36.943Z",
+  "generatedAt": "2026-09-11T07:56:37.155Z",
   "coordinates": {
     "repository": "https://github.com/kshetra-app/Kshetra.git",
     "branch": "master",
     "auditedCodeCommit": "943b026",
-    "verifiedRemoteHead": "943a803",
+    "verifiedRemoteHead": "aed3d99",
     "evidenceCommit": "pending"
   },
   "evidenceFiles": [
