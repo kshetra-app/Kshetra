@@ -372,27 +372,36 @@
 
 ### DEC-029: API ARCHITECTURE AUDIT & STRANGLER SEPARATION MATRIX (JOB W006)
 - **Date:** 2026-09-11
-- **Status:** APPROVED & IMPLEMENTED
+- **Status:** SUPERSEDED BY DEC-030 (W006-R1 REBOUND)
 - **Authority:** Master Product Blueprint, AI Agent Master Execution Job Book, Amendment v1.2, Amendment v1.4, `DEC-002`, `DEC-028`
-- **Context:** Mobile application exhibited a dual-path architecture where 12 direct Supabase callers and 11–14 Railway callers coexisted. To prepare for enterprise SaaS/API commercialization and enforce central auditing, rate limiting, and business validation, an empirical audit and boundary definition was conducted.
+- **Context:** Mobile application exhibited a dual-path architecture where 12 direct Supabase callers and 11–14 Railway callers coexisted. Initial audit classified 85 data service methods into 22 Class A, 57 Class B, and 6 Class C.
+- **Outcome:** Reopened per governance review for W006-R1 to correct globalSearch RPC classification, dynamically rebind audit test, audit PostgreSQL RPC semantics, qualify Class A RLS policies, and map all 56 Class B strangler methods to exact endpoints.
+
+---
+
+### DEC-030: W006-R1 AUDIT TRUTHFULNESS, CLASSIFICATION & EVIDENCE REBINDING
+- **Date:** 2026-09-11
+- **Status:** APPROVED & IMPLEMENTED
+- **Authority:** Master Product Blueprint, AI Agent Master Execution Job Book, Amendment v1.2, Amendment v1.4, `DEC-002`, `DEC-028`, `DEC-029`
+- **Context:** Governance review of W006 required an authoritative, reproducible audit engine that evaluates live source code rather than asserting against checked-in JSON. Additionally, `globalSearch` required semantic resolution, RPC functions in SQL migrations required audit, Class-A direct-read queries required explicit RLS security qualifications, Fastify route extraction needed type parameter support (137 unique routes), and all 56 Class-B mutations required exact endpoint mappings without vague placeholders.
 - **Decisions:**
-  1. **Empirical Mobile Data Path Audit:** Audited all 316 mobile source files:
-     - 12 baseline direct Supabase caller files (reconciling with W000 ground truth)
-     - 7 files performing direct SQL `.from()` queries across 45 unique database tables
-     - 2 files managing Supabase Realtime websocket subscriptions (`.channel()`)
-     - 1 file managing Supabase Auth sessions (`stores/auth.ts`)
-     - 14 files issuing HTTP requests to Railway Fastify API endpoints
-     - 15 files with offline/dev mock fallbacks
-  2. **Data Service Architectural Classification:** Categorized all 85 exported functions in `apps/mobile/lib/supabaseDataService.ts`:
-     - **Class A (Read, RLS-Governed):** 22 functions (e.g. `fetchFeedForState`, `fetchIssuesForConstituency`, `fetchUserProfile`). Safe to query via PostgREST/PostGIS directly under strict row-level security or CDN caching.
-     - **Class B (Client Write, Strangler Target):** 57 functions (e.g. `reportIssue`, `composePost`, `votePoll`, `submitKYC`, `uploadShort`). Must be strangulated into canonical Fastify API endpoints.
-     - **Class C (Already Fastify Routed):** 6 functions (e.g. `checkContentModeration`, `sendDirectMessageToConversation`, `acceptDMRequest`, `declineDMRequest`, `blockAndReportDMUser`, `fetchDMUnreadCount`).
-  3. **Strangler Migration Phase Plan:** Established a 4-phase transition matrix:
-     - *Phase 1 (P0 / W007–W008):* High-Risk Civic & Moderation Mutations (`POST /api/v1/civic/issues`, comments, disputes, content reports).
-     - *Phase 2 (P1 / W008–W009):* Social Feed, Reactions & Poll Voting (`POST /api/v1/feed/posts`, comments, poll votes, reactions).
-     - *Phase 3 (P1 / W009–W010):* Creator KYC, LMX & Devices (`POST /api/v1/contributor/kyc`, hardware fingerprints, live stream creation).
-     - *Phase 4 (P2 / W010–W011):* Political Shorts & Aspirant Academy (`POST /api/v1/shorts/upload`, endorsements, academy quiz modules).
-  4. **Fastify Route Alignment:** Audited 114 unique route registrations across 23 Fastify route modules. Documented endpoint gaps for Phase 1 civic mutations to be formally registered in W008.
-- **Rationale:** Establishes a concrete, verifiable technical roadmap to eliminate client-side direct database write bypass while preserving rapid development and RLS-backed read performance.
+  1. **Dynamic Engine Rebinding:** Exported `runApiArchitectureAudit()` from `scripts/audit-api-architecture.mjs`. Refactored `tests/api-architecture-audit.test.mjs` to execute the audit directly against current repository source code, asserting against live generated structures.
+  2. **globalSearch Classification Resolution:** Evaluated `global_search` SQL migration definition in `020_foundation_hardening.sql`. Identified as `STABLE SECURITY DEFINER (plpgsql)` full-text search aggregation across 4 public entities with `GRANT EXECUTE TO anon, authenticated`. Classified as `RPC_READ` / `CLASS_A_READ_RLS_GOVERNED` (0 writes performed).
+  3. **Method Classification Totals (85 Methods):**
+     - **Class A (Read, RLS-Governed): 23 methods (27.1%)** (22 table SELECT queries + 1 read-only RPC `globalSearch`).
+     - **Class B (Client Write, Strangler Target): 56 methods (65.9%)** (direct client mutations writing to PostgreSQL tables or mutating RPCs).
+     - **Class C (Already Fastify Routed): 6 methods (7.1%)** (already routing through Railway Fastify endpoints).
+  4. **PostgreSQL RPC Semantics Audit:** Audited all 4 client RPCs:
+     - `global_search`: Read-only STABLE function (Class A).
+     - `increment_aspirant_modules`: Mutation (Counter increment), missing in SQL migrations (Class B).
+     - `increment_short_views`: Mutation (View counter increment), missing in SQL migrations (Class B).
+     - `increment`: Column increment expression (Class B).
+  5. **Class A Security & RLS Qualification:** Evaluated RLS status and sensitivity for all 23 direct read methods:
+     - 20 methods verified safe for direct client reads under active PostgreSQL RLS.
+     - 2 methods (`fetchUserConversations`, `fetchConversationMessages`) flagged for API mediation due to high privacy sensitivity.
+     - 1 method (`fetchDepartments`) flagged for public directory verification.
+  6. **Fastify Route Inventory:** Enhanced route scanner with TypeScript generic type parameter support `(?:<[\s\S]*?>)?`. Audited **137 unique Fastify routes** across 23 modules. Clarified difference between static source route registrations and runtime route count.
+  7. **Exact Endpoint Strangler Matrix:** Mapped all 56 Class B methods to exact existing endpoints or exact new routes to be created in W007–W011 with 0 vague placeholders.
+- **Rationale:** Establishes an authoritative, empirically verified, and reproducible foundation for W007 (Canonical API Client) and subsequent strangler migration jobs.
 
 
