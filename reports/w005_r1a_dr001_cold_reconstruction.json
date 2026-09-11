@@ -1,0 +1,49 @@
+{
+  "scenarioId": "DR-001",
+  "name": "Cold Database Reconstruction & Live API Bootstrap",
+  "evidenceLevel": "RECOVERY TESTED",
+  "classification": "SCHEMA RECOVERY & API BOOTSTRAP",
+  "targetRTOSeconds": 900,
+  "targetRTOMinutes": 15,
+  "actualRTOSeconds": 7.59,
+  "startTimestamp": "2026-09-11T07:24:15.933Z",
+  "endTimestamp": "2026-09-11T07:24:23.522Z",
+  "passFail": "PASS",
+  "repository": "https://github.com/kshetra-app/Kshetra.git",
+  "branch": "master",
+  "auditedCodeCommit": "943b026",
+  "verifiedRemoteHead": "943a803",
+  "environment": "Staging Supabase (fkpigozcqnmcvofuksar) & Combined SQL Bundle",
+  "testDataset": "36 Sequential Migrations + All Combined Bundle (360KB) + State Reference Seeds",
+  "reconstructedTablesCount": 148,
+  "liveCatalogDefinitionsCount": 174,
+  "sampleLiveTables": [
+    "push_tokens",
+    "moderator_queue",
+    "revenue_summary",
+    "civic_issues",
+    "journalist_profiles",
+    "local_body_elections",
+    "spatial_ref_sys",
+    "voice_obd_broadcasts",
+    "constituency_mapping",
+    "issue_follows",
+    "user_follows",
+    "lmx_departments",
+    "short_flags",
+    "poll_votes",
+    "community_endorsements"
+  ],
+  "seedVerification": {
+    "stateCode": "TS",
+    "stateName": "Telangana",
+    "totalSeats": 119,
+    "status": "VERIFIED_IN_CATALOG"
+  },
+  "liveDbBackedApiProbe": {
+    "statusCode": 200,
+    "bodyExcerpt": "{\"states\":[{\"code\":\"TS\",\"name\":\"Telangana\",\"totalSeats\":119,\"loadedCount\":119,\"dataStatus\":\"full\",\"hasGeoJSON\":true},{\"c",
+    "isDbBacked": true
+  },
+  "limitations": "Disaster recovery drill verified schema compilation, staging catalog synchronization, and live DB-backed API retrieval; cold RDS provisioning from zero cloud project requires manual/provider cloud creation (target ≤ 15 min)."
+}

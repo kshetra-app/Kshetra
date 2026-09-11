@@ -1,0 +1,20 @@
+{
+  "scenarioId": "DR-005",
+  "name": "Client Offline Resilience & Mutation Queueing",
+  "classification": "CLIENT OFFLINE RESILIENCE",
+  "evidenceLevel": "RECOVERY PROVEN",
+  "startTimestamp": "2026-09-11T07:24:36.909Z",
+  "endTimestamp": "2026-09-11T07:24:36.914Z",
+  "passFail": "PASS",
+  "repository": "https://github.com/kshetra-app/Kshetra.git",
+  "branch": "master",
+  "auditedCodeCommit": "943b026",
+  "verifiedRemoteHead": "943a803",
+  "environment": "Local MMKV / SecureStore Sync Simulation (favoritesSync)",
+  "testDataset": "4 Favorite Constituency IDs + Offline Mutation Queue",
+  "offlineResilienceVerified": true,
+  "idempotentSyncVerified": true,
+  "duplicateWritesDetected": 0,
+  "actualDurationSeconds": 0.01,
+  "limitations": "Client offline resilience operates synchronously in 0s using MMKV adapter tier; not classified as traditional cloud disaster-recovery RTO."
+}

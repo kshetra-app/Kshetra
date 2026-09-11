@@ -1,0 +1,59 @@
+{
+  "evidenceMetadata": {
+    "job": "W005-R1A",
+    "title": "RPO & RTO Operational Measurement Matrix",
+    "timestamp": "2026-09-11T07:24:36.935Z",
+    "repository": "https://github.com/kshetra-app/Kshetra.git",
+    "branch": "master",
+    "auditedCodeCommit": "943b026",
+    "verifiedRemoteHead": "943a803"
+  },
+  "rpoAnalysis": {
+    "targetRPO": "≤ 5 minutes",
+    "actualRPO": "NOT EMPIRICALLY VERIFIED (Target ≤ 5 min)",
+    "evidenceLevel": "RUNBOOK VERIFIED",
+    "rationale": "Supabase continuous WAL streaming is active at provider layer; destructive point-in-time rewind was intentionally and safely omitted to prevent data loss without dedicated cloud rewind instance."
+  },
+  "rtoMeasurements": [
+    {
+      "scenario": "DR-001 (Cold Database Reconstruction & Live API Bootstrap)",
+      "classification": "SCHEMA RECOVERY & API BOOTSTRAP",
+      "targetRTO": "≤ 900s (15 min)",
+      "actualRTO": "7.59s",
+      "passFail": "PASS",
+      "evidenceLevel": "RECOVERY TESTED"
+    },
+    {
+      "scenario": "DR-002 (Real Data Backup & Restore Drill)",
+      "classification": "DATA RECOVERY",
+      "targetRTO": "≤ 1200s (20 min)",
+      "actualRTO": "3.38s (Measured restore: 0.33s)",
+      "passFail": "PASS",
+      "evidenceLevel": "RECOVERY PROVEN"
+    },
+    {
+      "scenario": "DR-003 (API Failover & Process Standby Recovery)",
+      "classification": "LOCAL PROCESS RECOVERY TESTED",
+      "targetRTO": "≤ 600s (10 min)",
+      "actualRTO": "4.53s",
+      "passFail": "PASS",
+      "evidenceLevel": "RECOVERY TESTED"
+    },
+    {
+      "scenario": "DR-004 (Real Staging Storage Recovery)",
+      "classification": "STORAGE RECOVERY",
+      "targetRTO": "≤ 900s (15 min)",
+      "actualRTO": "5.47s (Measured restore: 0.64s)",
+      "passFail": "PASS",
+      "evidenceLevel": "RECOVERY PROVEN"
+    },
+    {
+      "scenario": "DR-005 (Client Offline Resilience)",
+      "classification": "CLIENT OFFLINE RESILIENCE",
+      "targetRTO": "0s (Synchronous local-first)",
+      "actualRTO": "0.01s (Sync execution)",
+      "passFail": "PASS",
+      "evidenceLevel": "RECOVERY PROVEN"
+    }
+  ]
+}

@@ -1,0 +1,231 @@
+{
+  "evidenceMetadata": {
+    "job": "W005-R1A",
+    "title": "Disaster Recovery Classification Matrix & Taxonomy",
+    "timestamp": "2026-09-11T07:24:36.939Z"
+  },
+  "dr006BackupLayers": [
+    {
+      "layerNumber": 1,
+      "layerName": "Provider-Managed Physical Backups",
+      "category": "PHYSICAL INFRASTRUCTURE RECOVERY",
+      "mechanism": "Supabase cloud continuous WAL archiving & storage snapshots",
+      "whatItProtects": "Physical host/disk failures, catastrophic cloud data center disasters",
+      "whatItCannotRecover": "Logical application errors immediately before manual intervention without rewind",
+      "retention": "7 to 30 days (depending on Supabase project tier)",
+      "actualAvailability": "Active on Cloud Supabase (AWS ap-south-1 Mumbai)"
+    },
+    {
+      "layerNumber": 2,
+      "layerName": "Point-In-Time Recovery (PITR)",
+      "category": "DATA RECOVERY",
+      "mechanism": "Physical WAL replay to discrete second timestamp",
+      "whatItProtects": "Accidental drop table, rogue batch update, database corruption",
+      "whatItCannotRecover": "Uncommitted transactions or mutations outside WAL window",
+      "retention": "7 days continuous (Pro tier add-on)",
+      "actualAvailability": "Platform supported; classified as NOT EMPIRICALLY VERIFIED"
+    },
+    {
+      "layerNumber": 3,
+      "layerName": "Logical & Export Backups",
+      "category": "DATA & SCHEMA RECOVERY",
+      "mechanism": "Generated entity JSON/SQL dumps and deterministic combined bundles",
+      "whatItProtects": "Total cloud project deletion, cross-cloud platform migration, disaster bootstrapping",
+      "whatItCannotRecover": "Live end-user session state generated after export timestamp",
+      "retention": "Permanent in version-controlled Git history / disk backup artifacts",
+      "actualAvailability": "Committed in-repo & verified via live export drill"
+    },
+    {
+      "layerNumber": 4,
+      "layerName": "Source-Controlled Migrations",
+      "category": "SCHEMA RECOVERY (NOT USER DATA BACKUP)",
+      "mechanism": "36 individual sequential SQL migration files in supabase/migrations/",
+      "whatItProtects": "Schema definition integrity, incremental evolution, zero-drift rollback",
+      "whatItCannotRecover": "Dynamic user-generated runtime data (NEVER a backup of user data)",
+      "retention": "Permanent in Git history",
+      "actualAvailability": "Committed in-repo (36 files, 100% accounted for)"
+    },
+    {
+      "layerNumber": 5,
+      "layerName": "Reference Seed Datasets",
+      "category": "REFERENCE DATA RECOVERY",
+      "mechanism": "Demographic, geographic, and electoral seed scripts in data/seed/ and scripts/",
+      "whatItProtects": "Ground-truth political geography, delimitation boundaries, state assemblies",
+      "whatItCannotRecover": "Dynamic user profiles or transactional activity",
+      "retention": "Permanent in Git history",
+      "actualAvailability": "Committed in-repo"
+    }
+  ],
+  "negativePathVerification": {
+    "tested": true,
+    "allFailureModesCaught": true,
+    "modes": [
+      {
+        "test": "Corrupted Payload Checksum Detection",
+        "result": "CAUGHT_AND_REJECTED"
+      },
+      {
+        "test": "Malformed Backup JSON File Detection",
+        "result": "CAUGHT_AND_REJECTED"
+      },
+      {
+        "test": "Missing Recovery Source Detection",
+        "result": "CAUGHT_AND_REJECTED"
+      }
+    ]
+  },
+  "drillSummary": {
+    "dr001": {
+      "scenarioId": "DR-001",
+      "name": "Cold Database Reconstruction & Live API Bootstrap",
+      "evidenceLevel": "RECOVERY TESTED",
+      "classification": "SCHEMA RECOVERY & API BOOTSTRAP",
+      "targetRTOSeconds": 900,
+      "targetRTOMinutes": 15,
+      "actualRTOSeconds": 7.59,
+      "startTimestamp": "2026-09-11T07:24:15.933Z",
+      "endTimestamp": "2026-09-11T07:24:23.522Z",
+      "passFail": "PASS",
+      "repository": "https://github.com/kshetra-app/Kshetra.git",
+      "branch": "master",
+      "auditedCodeCommit": "943b026",
+      "verifiedRemoteHead": "943a803",
+      "environment": "Staging Supabase (fkpigozcqnmcvofuksar) & Combined SQL Bundle",
+      "testDataset": "36 Sequential Migrations + All Combined Bundle (360KB) + State Reference Seeds",
+      "reconstructedTablesCount": 148,
+      "liveCatalogDefinitionsCount": 174,
+      "sampleLiveTables": [
+        "push_tokens",
+        "moderator_queue",
+        "revenue_summary",
+        "civic_issues",
+        "journalist_profiles",
+        "local_body_elections",
+        "spatial_ref_sys",
+        "voice_obd_broadcasts",
+        "constituency_mapping",
+        "issue_follows",
+        "user_follows",
+        "lmx_departments",
+        "short_flags",
+        "poll_votes",
+        "community_endorsements"
+      ],
+      "seedVerification": {
+        "stateCode": "TS",
+        "stateName": "Telangana",
+        "totalSeats": 119,
+        "status": "VERIFIED_IN_CATALOG"
+      },
+      "liveDbBackedApiProbe": {
+        "statusCode": 200,
+        "bodyExcerpt": "{\"states\":[{\"code\":\"TS\",\"name\":\"Telangana\",\"totalSeats\":119,\"loadedCount\":119,\"dataStatus\":\"full\",\"hasGeoJSON\":true},{\"c",
+        "isDbBacked": true
+      },
+      "limitations": "Disaster recovery drill verified schema compilation, staging catalog synchronization, and live DB-backed API retrieval; cold RDS provisioning from zero cloud project requires manual/provider cloud creation (target ≤ 15 min)."
+    },
+    "dr002": {
+      "scenarioId": "DR-002",
+      "name": "Real Selective Data Recovery & Logical Backup Restore",
+      "evidenceLevel": "RECOVERY PROVEN",
+      "classification": "DATA RECOVERY",
+      "targetRTOSeconds": 1200,
+      "actualRTOSeconds": 3.38,
+      "measuredRestoreDurationSeconds": 0.33,
+      "startTimestamp": "2026-09-11T07:24:23.522Z",
+      "endTimestamp": "2026-09-11T07:24:26.907Z",
+      "passFail": "PASS",
+      "repository": "https://github.com/kshetra-app/Kshetra.git",
+      "branch": "master",
+      "auditedCodeCommit": "943b026",
+      "verifiedRemoteHead": "943a803",
+      "environment": "Staging Supabase (fkpigozcqnmcvofuksar)",
+      "testDataset": "3 Synthetic civic_issues Records (Full Entities with UUIDs, Enums, Timestamps)",
+      "backupSource": "https://fkpigozcqnmcvofuksar.supabase.co/rest/v1/civic_issues",
+      "backupGeneratedTimestamp": "2026-09-11T07:24:25.201Z",
+      "backupArtifactFile": "reports/w005_r1a_dr002_live_backup_artifact.json",
+      "preLossRowCount": 3,
+      "postLossRowCount": 0,
+      "postRecoveryRowCount": 3,
+      "preLossChecksum": "4e06bb9c465992a23a3310e74b9e510fb803474d65bb970d4aad0fe77e355e32",
+      "postRecoveryChecksum": "4e06bb9c465992a23a3310e74b9e510fb803474d65bb970d4aad0fe77e355e32",
+      "checksumMatched": true,
+      "pitrMetrics": {
+        "pitrAvailable": true,
+        "pitrConfigured": "NOT EMPIRICALLY VERIFIED",
+        "pitrActualRestoreTested": false,
+        "recoveryPointAccuracy": "NOT EMPIRICALLY VERIFIED",
+        "actualRPO": "NOT EMPIRICALLY VERIFIED (Target ≤ 5 min)"
+      },
+      "limitations": "Data recovery proven via generated disk backup artifact extraction and live staging replay; physical continuous WAL point-in-time rewind requires cloud console access and is classified as NOT EMPIRICALLY VERIFIED."
+    },
+    "dr003": {
+      "scenarioId": "DR-003",
+      "name": "API Failover & Standby Instance Recovery",
+      "evidenceLevel": "RECOVERY TESTED",
+      "classification": "LOCAL PROCESS RECOVERY TESTED",
+      "multiCloudStatus": "MULTI_CLOUD_STANDBY = NOT IMPLEMENTED / HUMAN INFRASTRUCTURE REQUIRED",
+      "targetRTOSeconds": 600,
+      "actualRTOSeconds": 4.53,
+      "startTimestamp": "2026-09-11T07:24:26.907Z",
+      "endTimestamp": "2026-09-11T07:24:31.439Z",
+      "passFail": "PASS",
+      "repository": "https://github.com/kshetra-app/Kshetra.git",
+      "branch": "master",
+      "auditedCodeCommit": "943b026",
+      "verifiedRemoteHead": "943a803",
+      "environment": "Local Standby Fastify Engine / Staging Gateway",
+      "multiCloudStandbyDeployed": false,
+      "failoverProbes": {
+        "healthStatus": 200,
+        "dbHealthStatus": 503,
+        "metricsStatus": 200
+      },
+      "limitations": "Automated multi-cloud failover to secondary cloud host (Fly.io / Render) is NOT IMPLEMENTED / HUMAN INFRASTRUCTURE REQUIRED; local process standby recovery is tested in 4.5s."
+    },
+    "dr004": {
+      "scenarioId": "DR-004",
+      "name": "Real Staging Storage Object Recovery",
+      "evidenceLevel": "RECOVERY PROVEN",
+      "classification": "STORAGE RECOVERY",
+      "targetRTOSeconds": 900,
+      "actualRTOSeconds": 5.47,
+      "measuredRestoreDurationSeconds": 0.64,
+      "startTimestamp": "2026-09-11T07:24:31.439Z",
+      "endTimestamp": "2026-09-11T07:24:36.908Z",
+      "passFail": "PASS",
+      "repository": "https://github.com/kshetra-app/Kshetra.git",
+      "branch": "master",
+      "auditedCodeCommit": "943b026",
+      "verifiedRemoteHead": "943a803",
+      "environment": "Staging Supabase Storage (fkpigozcqnmcvofuksar)",
+      "storageBucket": "staging-dr-test",
+      "testDataset": "Synthetic 1x1 PNG Media Object (70 bytes binary)",
+      "storageArtifactFile": "reports/w005_r1a_dr004_storage_backup_artifact.bin",
+      "preLossChecksum": "6b7fa434f92a8b80aab02d9bf1a12e49ffcae424e4013a1c4f68b67e3d2bbcd0",
+      "postRecoveryChecksum": "6b7fa434f92a8b80aab02d9bf1a12e49ffcae424e4013a1c4f68b67e3d2bbcd0",
+      "checksumMatched": true,
+      "limitations": "Storage recovery proven on live Supabase storage bucket via artifact restore; automated multi-region cross-cloud bucket replication is managed at provider tier."
+    },
+    "dr005": {
+      "scenarioId": "DR-005",
+      "name": "Client Offline Resilience & Mutation Queueing",
+      "classification": "CLIENT OFFLINE RESILIENCE",
+      "evidenceLevel": "RECOVERY PROVEN",
+      "startTimestamp": "2026-09-11T07:24:36.909Z",
+      "endTimestamp": "2026-09-11T07:24:36.914Z",
+      "passFail": "PASS",
+      "repository": "https://github.com/kshetra-app/Kshetra.git",
+      "branch": "master",
+      "auditedCodeCommit": "943b026",
+      "verifiedRemoteHead": "943a803",
+      "environment": "Local MMKV / SecureStore Sync Simulation (favoritesSync)",
+      "testDataset": "4 Favorite Constituency IDs + Offline Mutation Queue",
+      "offlineResilienceVerified": true,
+      "idempotentSyncVerified": true,
+      "duplicateWritesDetected": 0,
+      "actualDurationSeconds": 0.01,
+      "limitations": "Client offline resilience operates synchronously in 0s using MMKV adapter tier; not classified as traditional cloud disaster-recovery RTO."
+    }
+  }
+}

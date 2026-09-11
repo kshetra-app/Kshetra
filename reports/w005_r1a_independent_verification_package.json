@@ -1,0 +1,33 @@
+{
+  "manifestVersion": "1.0.0",
+  "job": "W005-R1A",
+  "title": "Actual Recovery Evidence & Disaster Recovery Classification Verification Package",
+  "generatedAt": "2026-09-11T07:24:36.943Z",
+  "coordinates": {
+    "repository": "https://github.com/kshetra-app/Kshetra.git",
+    "branch": "master",
+    "auditedCodeCommit": "943b026",
+    "verifiedRemoteHead": "943a803",
+    "evidenceCommit": "pending"
+  },
+  "evidenceFiles": [
+    "reports/w005_r1a_dr001_cold_reconstruction.json",
+    "reports/w005_r1a_dr002_backup_restore.json",
+    "reports/w005_r1a_dr003_api_failover.json",
+    "reports/w005_r1a_dr004_storage_restore.json",
+    "reports/w005_r1a_dr005_client_resilience.json",
+    "reports/w005_r1a_rpo_rto.json",
+    "reports/w005_r1a_recovery_matrix.json",
+    "reports/w005_r1a_dr002_live_backup_artifact.json",
+    "reports/w005_r1a_dr004_storage_backup_artifact.bin"
+  ],
+  "auditMandates": [
+    "Confirm DR-001 cold reconstruction validated schema, catalog definitions, and live DB-backed API retrieval",
+    "Confirm DR-002 performed genuine export to disk backup artifact, simulated deletion, and restored from disk artifact with SHA-256 match",
+    "Confirm DR-003 honestly records MULTI_CLOUD_STANDBY = NOT IMPLEMENTED / HUMAN INFRASTRUCTURE REQUIRED and classifies local process recovery",
+    "Confirm DR-004 executed real upload, loss, and restore on staging Supabase Storage bucket with SHA-256 match",
+    "Confirm DR-005 tests client offline resilience without masquerading as cloud RTO",
+    "Confirm RPO is honestly classified as NOT EMPIRICALLY VERIFIED",
+    "Confirm multi-mode negative path tests are caught"
+  ]
+}

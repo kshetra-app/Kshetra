@@ -296,6 +296,31 @@
   5. **Governance Lineage Maintenance:** Maintained strict four-coordinate lineage model during W005 progression with zero self-referential failure loops.
 - **Rationale:** Ensures complete resilience against data loss or infrastructure outages, provides a deterministic cold-start database recovery mechanism, and satisfies Launch Gate A operational readiness requirements.
 
+---
+
+### DEC-025: W005-R1A ACTUAL RECOVERY EVIDENCE, EMPIRICAL DRILLS & DR TAXONOMY
+- **Date:** 2026-09-11
+- **Status:** APPROVED & APPLIED
+- **Context:** Reopening of W005 as W005-R1A required moving beyond simulated or in-memory fixtures to empirical recovery evidence across live staging infrastructure, honest classification of unsupported capabilities, and strict demarcation between schema recovery and user data recovery.
+- **Decisions:**
+  1. **Standardized DR Evidence Hierarchy:**
+     - `RUNBOOK VERIFIED`: Procedures, steps, and commands documented and reviewed.
+     - `RECOVERY ARTIFACT VERIFIED`: Migration bundles, seed scripts, and snapshot artifacts syntactically valid and integrity verified.
+     - `RECOVERY TESTED`: A recovery workflow or instance failover executed in staging or isolated environment.
+     - `RECOVERY PROVEN`: Actual recovery drill executed with an actual recoverable source artifact, loss simulated, recovery executed using that source, data independently verified with matching SHA-256, and duration measured.
+     - `RECOVERY SIMULATED`: In-memory or client-side mockup not exercising actual remote infrastructure.
+  2. **Empirical Recovery Verification (DR-002 & DR-004):**
+     - DR-002: Real data backup generated to disk artifact file (`reports/w005_r1a_dr002_live_backup_artifact.json`), deletion simulated on live Staging Supabase, restored from disk artifact in 0.33s (total 3.38s), and confirmed with 100% SHA-256 match.
+     - DR-004: Real synthetic binary object uploaded to Staging Supabase Storage bucket (`staging-dr-test`), disk backup artifact saved, object deleted and confirmed absent via authenticated API, restored from disk artifact in 0.64s (total 5.47s), and verified with 100% SHA-256 match.
+  3. **Truth in Engineering & Honest Classifications:**
+     - DR-001: Classified as `SCHEMA RECOVERY & API BOOTSTRAP` (`RECOVERY TESTED`). Verified 36 migrations, 148 tables in combined bundle, 174 live staging catalog definitions, and live DB-backed API retrieval in 7.59s.
+     - DR-003: Honestly classified as `LOCAL PROCESS RECOVERY TESTED` with `MULTI_CLOUD_STANDBY = NOT IMPLEMENTED / HUMAN INFRASTRUCTURE REQUIRED`. Standby Fastify container recovery verified in 4.53s.
+     - DR-005: Formally designated as `CLIENT OFFLINE RESILIENCE` (0.01s local execution) and explicitly distinguished from cloud disaster-recovery RTO.
+     - DR-006: Codified strict separation between schema recovery (migrations/bundles) and user data recovery (PITR/logical dumps).
+     - RPO: Target ≤ 5 min retained; actual status classified honestly as `NOT EMPIRICALLY VERIFIED` to prevent destructive point-in-time rewind against active instances.
+- **Rationale:** Strictly aligns platform disaster recovery claims with empirical technical proof and honest engineering reality.
+
+
 
 
 

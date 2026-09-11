@@ -1,0 +1,9 @@
+{
+  "backupMetadata": {
+    "source": "https://fkpigozcqnmcvofuksar.supabase.co/rest/v1/civic_issues",
+    "exportedAt": "2026-09-11T07:17:50.812Z",
+    "rowCount": 0,
+    "format": "PostgREST Logical Table Export (JSON/SQL DDL Replay)"
+  },
+  "records": []
+}

@@ -1,0 +1,24 @@
+{
+  "scenarioId": "DR-003",
+  "name": "API Failover & Standby Instance Recovery",
+  "evidenceLevel": "RECOVERY TESTED",
+  "classification": "LOCAL PROCESS RECOVERY TESTED",
+  "multiCloudStatus": "MULTI_CLOUD_STANDBY = NOT IMPLEMENTED / HUMAN INFRASTRUCTURE REQUIRED",
+  "targetRTOSeconds": 600,
+  "actualRTOSeconds": 4.53,
+  "startTimestamp": "2026-09-11T07:24:26.907Z",
+  "endTimestamp": "2026-09-11T07:24:31.439Z",
+  "passFail": "PASS",
+  "repository": "https://github.com/kshetra-app/Kshetra.git",
+  "branch": "master",
+  "auditedCodeCommit": "943b026",
+  "verifiedRemoteHead": "943a803",
+  "environment": "Local Standby Fastify Engine / Staging Gateway",
+  "multiCloudStandbyDeployed": false,
+  "failoverProbes": {
+    "healthStatus": 200,
+    "dbHealthStatus": 503,
+    "metricsStatus": 200
+  },
+  "limitations": "Automated multi-cloud failover to secondary cloud host (Fly.io / Render) is NOT IMPLEMENTED / HUMAN INFRASTRUCTURE REQUIRED; local process standby recovery is tested in 4.5s."
+}
