@@ -9,22 +9,22 @@
 PROJECT:               PANIN (formerly Kshetra)
 TARGET_DOMAIN:         India Political Geography, Intelligence, Participation & Media Platform
 CURRENT_PHASE:         W0 (Baseline Reconciliation & Ground-Truth Audit)
-CURRENT_JOB:           W005 (Backup & Recovery Verification - ACCEPTED WITH DOCUMENTED LIMITATIONS)
-LAST_COMPLETED_JOB:    W005 (Backup & Recovery Verification - ACCEPTED)
-NEXT_PERMITTED_JOB:    W006 (API Architecture Audit & Separation - UNBLOCKED)
+CURRENT_JOB:           W006 (API Architecture Audit & Separation - IN PROGRESS)
+LAST_COMPLETED_JOB:    W005 (Backup & Recovery Verification - ACCEPTED WITH DOCUMENTED LIMITATIONS)
+NEXT_PERMITTED_JOB:    W007 (Canonical API Client - BLOCKED PENDING W006 ACCEPTANCE)
 
 CURRENT_BRANCH:        master
-VERIFIED_REMOTE_HEAD:  f6ee696
-CURRENT_REMOTE_HEAD:   ea4c1fd
-AUDITED_CODE_COMMIT:   943b026
-EVIDENCE_COMMIT:       b4f3133
-ACCEPTANCE_COMMIT:     ea4c1fd
+VERIFIED_REMOTE_HEAD:  838e851
+CURRENT_REMOTE_HEAD:   838e851
+AUDITED_CODE_COMMIT:   838e851
+EVIDENCE_COMMIT:       pending
+ACCEPTANCE_COMMIT:     pending
 API_VERSION:           v1 (Fastify 5.2 on Railway)
 MOBILE_VERSION:        0.1.0 (Expo 54, React Native 0.81.5)
 DATABASE_MIGRATIONS:   36 migration files present in repository (35 live applied to staging fkpigozcqnmcvofuksar)
 DATABASE_TABLES:       165 live tables in staging catalog (148 unique source tables)
 DATABASE_VIEWS:        9 live views in staging catalog (23 unique source-defined)
-API_ENDPOINTS:         111 static HTTP route registrations (including health semantic probes)
+API_ENDPOINTS:         114 unique HTTP route registrations (across 23 route modules)
 MOBILE_ROUTES:         53 application route files (all .tsx; 2 layouts, 51 route screens)
 MOBILE_STORES:         29 Zustand stores
 GOVERNANCE_FRAMEWORK:  Amendment v1.2 (Active History) | Amendment v1.3 (Active History) | Amendment v1.4 (ACTIVE OPERATIONAL AUTHORITY)
@@ -50,7 +50,7 @@ REMOTE_SYNC:           Up to date with origin/master
 | **W003** | CI/CD Quality Pipeline | **ACCEPTED** | 2026-09-10 | Independent Verifier PASS with Monitored Exceptions per Amendment v1.4 Parts 33 & 34; accepted by user (`reports/w003_r5_independent_verification.md`) |
 | **W004** | Observability & Error Tracking | **ACCEPTED** | 2026-09-11 | W004-R1A Independent Verifier PASS (13/13 gates at commit `811b5dd`); verified remote head `1260f98`; audited code `ef4622a`; evidence `19a5932`; user accepted; `reports/w004_r1a_independent_verification.md` |
 | **W005** | Backup & Recovery Verification | **ACCEPTED (W/ LIMITATIONS)** | 2026-09-11 | W005-R1C Independent Verifier PASS (commit `acc32fe`); verified remote head `f6ee696`; audited code `943b026`; evidence `b4f3133`; documented limitations: PITR/RPO ≤5m unverified, multi-cloud standby not implemented, DR-001 schema/API bootstrap, DR-002 synthetic staging, DR-004 staging storage, DR-005 client offline; user accepted |
-| **W006** | API Architecture Audit & Separation | **UNBLOCKED** | - | Ready for execution |
+| **W006** | API Architecture Audit & Separation | **IN PROGRESS** | - | Audited 316 mobile files, 12 direct Supabase callers, 14 Railway callers, 114 Fastify routes across 23 modules, classified 85 data service methods (22 Class A reads, 57 Class B mutation strangler targets, 6 Class C Fastify routed), defined 4-phase strangler migration plan; reports/w006_api_architecture_audit.json & reports/w006_api_architecture_report.md |
 | **W007** | Canonical API Client | NOT_STARTED | - | Prerequisite: W006 |
 | **W008** | API Contract Standardization | NOT_STARTED | - | Prerequisite: W007 |
 | **W009** | External Provider Abstraction | NOT_STARTED | - | Prerequisite: W008 |

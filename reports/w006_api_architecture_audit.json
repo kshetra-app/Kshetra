@@ -1,0 +1,2072 @@
+{
+  "evidenceMetadata": {
+    "jobId": "W006",
+    "title": "API Architecture Audit & Separation",
+    "authority": "Master Execution Framework Amendment v1.4 / DEC-002 / DEC-028",
+    "timestamp": "2026-09-11T13:09:37.761Z",
+    "commitCoordinates": {
+      "verifiedRemoteHead": "838e851",
+      "auditedCodeCommit": "838e851",
+      "evidenceCommit": "pending",
+      "acceptanceCommit": "pending"
+    }
+  },
+  "auditSummary": {
+    "totalMobileFilesScanned": 316,
+    "baselineDirectSupabaseCallersCount": 12,
+    "directSupabaseTableCallersCount": 7,
+    "railwayApiCallerFilesCount": 14,
+    "localFallbackFilesCount": 15,
+    "realtimeChannelFilesCount": 2,
+    "authCallerFilesCount": 1,
+    "totalRegisteredFastifyRoutes": 114,
+    "totalFastifyRouteModules": 23
+  },
+  "callers": {
+    "baselineDirectSupabaseCallers": [
+      "app/user/[id].tsx",
+      "lib/aiService.ts",
+      "lib/favoritesSync.ts",
+      "lib/realtimeService.ts",
+      "lib/representativeEdits.ts",
+      "lib/supabase.ts",
+      "lib/supabaseBootstrap.ts",
+      "lib/supabaseDataService.ts",
+      "lib/useSupabaseQuery.ts",
+      "stores/auth.ts",
+      "stores/liveExchange.ts",
+      "stores/notifications.ts"
+    ],
+    "directSupabaseTableCallers": [
+      "app/user/[id].tsx",
+      "lib/aiService.ts",
+      "lib/favoritesSync.ts",
+      "lib/representativeEdits.ts",
+      "lib/supabaseBootstrap.ts",
+      "lib/supabaseDataService.ts",
+      "stores/notifications.ts"
+    ],
+    "railwayApiCallers": [
+      "app/moderation/index.tsx",
+      "lib/candidatePhotos.ts",
+      "lib/constants.ts",
+      "lib/enrichedGeoCache.ts",
+      "lib/environment.ts",
+      "lib/featureFlags.ts",
+      "lib/pageProEntitlement.ts",
+      "lib/pageService.ts",
+      "lib/remoteGeoLoader.ts",
+      "lib/supabaseDataService.ts",
+      "lib/usePushNotifications.ts",
+      "stores/campaign.ts",
+      "stores/dmStore.ts",
+      "stores/news.ts"
+    ],
+    "realtimeCallers": [
+      "lib/realtimeService.ts",
+      "stores/notifications.ts"
+    ],
+    "authCallers": [
+      "stores/auth.ts"
+    ],
+    "localFallbackFiles": [
+      "__tests__/mapEnhancements.test.ts",
+      "app/user/[id].tsx",
+      "components/NewsCard.tsx",
+      "lib/aiService.ts",
+      "lib/favoritesSync.ts",
+      "lib/realtimeService.ts",
+      "lib/representativeEdits.ts",
+      "lib/supabase.ts",
+      "lib/supabaseBootstrap.ts",
+      "lib/supabaseDataService.ts",
+      "lib/useSupabaseQuery.ts",
+      "stores/auth.ts",
+      "stores/liveExchange.ts",
+      "stores/news.ts",
+      "stores/notifications.ts"
+    ]
+  },
+  "tableAccessMap": {
+    "user_profiles": [
+      "app/user/[id].tsx",
+      "lib/supabaseBootstrap.ts",
+      "lib/supabaseBootstrap.ts",
+      "lib/supabaseDataService.ts",
+      "lib/supabaseDataService.ts",
+      "lib/supabaseDataService.ts",
+      "lib/supabaseDataService.ts",
+      "lib/supabaseDataService.ts",
+      "lib/supabaseDataService.ts"
+    ],
+    "legislator_profiles": [
+      "lib/aiService.ts"
+    ],
+    "constituencies": [
+      "lib/aiService.ts"
+    ],
+    "states": [
+      "lib/aiService.ts"
+    ],
+    "favorites": [
+      "lib/favoritesSync.ts",
+      "lib/favoritesSync.ts",
+      "lib/favoritesSync.ts",
+      "lib/favoritesSync.ts",
+      "lib/supabaseDataService.ts",
+      "lib/supabaseDataService.ts"
+    ],
+    "representative_edits": [
+      "lib/representativeEdits.ts"
+    ],
+    "issue_upvotes": [
+      "lib/supabaseDataService.ts",
+      "lib/supabaseDataService.ts"
+    ],
+    "issue_follows": [
+      "lib/supabaseDataService.ts",
+      "lib/supabaseDataService.ts"
+    ],
+    "civic_issues": [
+      "lib/supabaseDataService.ts",
+      "lib/supabaseDataService.ts",
+      "lib/supabaseDataService.ts",
+      "lib/supabaseDataService.ts"
+    ],
+    "issue_comments": [
+      "lib/supabaseDataService.ts"
+    ],
+    "issue_disputes": [
+      "lib/supabaseDataService.ts"
+    ],
+    "notification_log": [
+      "lib/supabaseDataService.ts",
+      "lib/supabaseDataService.ts",
+      "lib/supabaseDataService.ts",
+      "lib/supabaseDataService.ts",
+      "lib/supabaseDataService.ts",
+      "lib/supabaseDataService.ts",
+      "lib/supabaseDataService.ts",
+      "stores/notifications.ts"
+    ],
+    "reactions": [
+      "lib/supabaseDataService.ts",
+      "lib/supabaseDataService.ts",
+      "lib/supabaseDataService.ts",
+      "lib/supabaseDataService.ts"
+    ],
+    "posts": [
+      "lib/supabaseDataService.ts",
+      "lib/supabaseDataService.ts",
+      "lib/supabaseDataService.ts",
+      "lib/supabaseDataService.ts",
+      "lib/supabaseDataService.ts",
+      "lib/supabaseDataService.ts",
+      "lib/supabaseDataService.ts",
+      "lib/supabaseDataService.ts"
+    ],
+    "poll_votes": [
+      "lib/supabaseDataService.ts"
+    ],
+    "comments": [
+      "lib/supabaseDataService.ts",
+      "lib/supabaseDataService.ts"
+    ],
+    "hashtags": [
+      "lib/supabaseDataService.ts"
+    ],
+    "post_hashtags": [
+      "lib/supabaseDataService.ts"
+    ],
+    "promise_follows": [
+      "lib/supabaseDataService.ts",
+      "lib/supabaseDataService.ts"
+    ],
+    "promise_evidence": [
+      "lib/supabaseDataService.ts"
+    ],
+    "political_shorts": [
+      "lib/supabaseDataService.ts",
+      "lib/supabaseDataService.ts",
+      "lib/supabaseDataService.ts",
+      "lib/supabaseDataService.ts"
+    ],
+    "short_approvals": [
+      "lib/supabaseDataService.ts"
+    ],
+    "short_flags": [
+      "lib/supabaseDataService.ts"
+    ],
+    "aspirant_profiles": [
+      "lib/supabaseDataService.ts",
+      "lib/supabaseDataService.ts",
+      "lib/supabaseDataService.ts"
+    ],
+    "module_progress": [
+      "lib/supabaseDataService.ts",
+      "lib/supabaseDataService.ts"
+    ],
+    "challenge_participation": [
+      "lib/supabaseDataService.ts"
+    ],
+    "community_endorsements": [
+      "lib/supabaseDataService.ts"
+    ],
+    "creator_kyc_records": [
+      "lib/supabaseDataService.ts"
+    ],
+    "action_fingerprints": [
+      "lib/supabaseDataService.ts"
+    ],
+    "contributor_devices": [
+      "lib/supabaseDataService.ts"
+    ],
+    "push_tokens": [
+      "lib/supabaseDataService.ts"
+    ],
+    "user_follows": [
+      "lib/supabaseDataService.ts",
+      "lib/supabaseDataService.ts",
+      "lib/supabaseDataService.ts"
+    ],
+    "reports": [
+      "lib/supabaseDataService.ts"
+    ],
+    "election_promises": [
+      "lib/supabaseDataService.ts"
+    ],
+    "leadership_modules": [
+      "lib/supabaseDataService.ts"
+    ],
+    "community_challenges": [
+      "lib/supabaseDataService.ts"
+    ],
+    "user_sessions": [
+      "lib/supabaseDataService.ts",
+      "lib/supabaseDataService.ts"
+    ],
+    "short_comments": [
+      "lib/supabaseDataService.ts"
+    ],
+    "live_events": [
+      "lib/supabaseDataService.ts",
+      "lib/supabaseDataService.ts",
+      "lib/supabaseDataService.ts",
+      "lib/supabaseDataService.ts",
+      "lib/supabaseDataService.ts",
+      "lib/supabaseDataService.ts"
+    ],
+    "lmx_departments": [
+      "lib/supabaseDataService.ts"
+    ],
+    "lmx_department_alerts": [
+      "lib/supabaseDataService.ts",
+      "lib/supabaseDataService.ts",
+      "lib/supabaseDataService.ts"
+    ],
+    "content_alerts": [
+      "lib/supabaseDataService.ts",
+      "lib/supabaseDataService.ts"
+    ],
+    "lmx_credibility": [
+      "lib/supabaseDataService.ts",
+      "lib/supabaseDataService.ts"
+    ],
+    "lmx_brand_kits": [
+      "lib/supabaseDataService.ts"
+    ],
+    "lmx_affiliations": [
+      "lib/supabaseDataService.ts"
+    ],
+    "lmx_distribution_destinations": [
+      "lib/supabaseDataService.ts"
+    ],
+    "lmx_moderation_events": [
+      "lib/supabaseDataService.ts"
+    ],
+    "conversations": [
+      "lib/supabaseDataService.ts"
+    ],
+    "messages": [
+      "lib/supabaseDataService.ts",
+      "lib/supabaseDataService.ts"
+    ]
+  },
+  "dataServiceClassification": {
+    "totalMethods": 85,
+    "classCounts": {
+      "CLASS_A_READ_RLS_GOVERNED": 22,
+      "CLASS_B_CLIENT_WRITE_STRANGLER_TARGET": 57,
+      "CLASS_C_ALREADY_FASTIFY_ROUTED": 6
+    },
+    "methods": [
+      {
+        "name": "checkContentModeration",
+        "parameters": "content: string,",
+        "tablesTouched": [],
+        "rpcsInvoked": [],
+        "hasFastifyFetch": true,
+        "isMutation": false,
+        "architecturalClass": "CLASS_C_ALREADY_FASTIFY_ROUTED",
+        "targetFastifyEndpoint": "/api/v1/moderation/check-content",
+        "rationale": "Already implemented to call Fastify HTTP endpoint directly"
+      },
+      {
+        "name": "upvoteIssue",
+        "parameters": "issueId: string, userId: string",
+        "tablesTouched": [
+          "issue_upvotes"
+        ],
+        "rpcsInvoked": [],
+        "hasFastifyFetch": false,
+        "isMutation": true,
+        "architecturalClass": "CLASS_B_CLIENT_WRITE_STRANGLER_TARGET",
+        "targetFastifyEndpoint": "/api/v1/civic/...",
+        "rationale": "Client-side mutation bypassing server validation, audit logging, and centralized rate limiting. Prime strangler migration candidate."
+      },
+      {
+        "name": "removeUpvote",
+        "parameters": "issueId: string, userId: string",
+        "tablesTouched": [
+          "issue_upvotes"
+        ],
+        "rpcsInvoked": [],
+        "hasFastifyFetch": false,
+        "isMutation": true,
+        "architecturalClass": "CLASS_B_CLIENT_WRITE_STRANGLER_TARGET",
+        "targetFastifyEndpoint": "/api/v1/civic/...",
+        "rationale": "Client-side mutation bypassing server validation, audit logging, and centralized rate limiting. Prime strangler migration candidate."
+      },
+      {
+        "name": "followIssue",
+        "parameters": "issueId: string, userId: string, follow: boolean",
+        "tablesTouched": [
+          "issue_follows"
+        ],
+        "rpcsInvoked": [],
+        "hasFastifyFetch": false,
+        "isMutation": true,
+        "architecturalClass": "CLASS_B_CLIENT_WRITE_STRANGLER_TARGET",
+        "targetFastifyEndpoint": "/api/v1/civic/...",
+        "rationale": "Client-side mutation bypassing server validation, audit logging, and centralized rate limiting. Prime strangler migration candidate."
+      },
+      {
+        "name": "reportIssue",
+        "parameters": "issue: { title: string; description: string; category: string; severity: string; constituencyId: string; stateCode: string; reporterId: string; reporterName: string; mediaUrls?: string[]; }",
+        "tablesTouched": [
+          "civic_issues"
+        ],
+        "rpcsInvoked": [],
+        "hasFastifyFetch": false,
+        "isMutation": true,
+        "architecturalClass": "CLASS_B_CLIENT_WRITE_STRANGLER_TARGET",
+        "targetFastifyEndpoint": "/api/v1/civic/...",
+        "rationale": "Client-side mutation bypassing server validation, audit logging, and centralized rate limiting. Prime strangler migration candidate."
+      },
+      {
+        "name": "addIssueComment",
+        "parameters": "issueId: string, userId: string, userName: string, body: string, imageUrl?: string,",
+        "tablesTouched": [
+          "issue_comments"
+        ],
+        "rpcsInvoked": [],
+        "hasFastifyFetch": false,
+        "isMutation": true,
+        "architecturalClass": "CLASS_B_CLIENT_WRITE_STRANGLER_TARGET",
+        "targetFastifyEndpoint": "/api/v1/civic/...",
+        "rationale": "Client-side mutation bypassing server validation, audit logging, and centralized rate limiting. Prime strangler migration candidate."
+      },
+      {
+        "name": "tagMLAOnIssue",
+        "parameters": "issueId: string",
+        "tablesTouched": [
+          "civic_issues"
+        ],
+        "rpcsInvoked": [],
+        "hasFastifyFetch": false,
+        "isMutation": true,
+        "architecturalClass": "CLASS_B_CLIENT_WRITE_STRANGLER_TARGET",
+        "targetFastifyEndpoint": "/api/v1/civic/...",
+        "rationale": "Client-side mutation bypassing server validation, audit logging, and centralized rate limiting. Prime strangler migration candidate."
+      },
+      {
+        "name": "disputeIssueResolution",
+        "parameters": "issueId: string, userId: string, reason: string,",
+        "tablesTouched": [
+          "issue_disputes"
+        ],
+        "rpcsInvoked": [],
+        "hasFastifyFetch": false,
+        "isMutation": true,
+        "architecturalClass": "CLASS_B_CLIENT_WRITE_STRANGLER_TARGET",
+        "targetFastifyEndpoint": "/api/v1/civic/...",
+        "rationale": "Client-side mutation bypassing server validation, audit logging, and centralized rate limiting. Prime strangler migration candidate."
+      },
+      {
+        "name": "updateIssueStatus",
+        "parameters": "issueId: string, newStatus: string, note?: string,",
+        "tablesTouched": [
+          "civic_issues",
+          "notification_log"
+        ],
+        "rpcsInvoked": [],
+        "hasFastifyFetch": false,
+        "isMutation": true,
+        "architecturalClass": "CLASS_B_CLIENT_WRITE_STRANGLER_TARGET",
+        "targetFastifyEndpoint": "/api/v1/civic/...",
+        "rationale": "Client-side mutation bypassing server validation, audit logging, and centralized rate limiting. Prime strangler migration candidate."
+      },
+      {
+        "name": "reactToPost",
+        "parameters": "postId: string, userId: string, reaction: string",
+        "tablesTouched": [
+          "reactions",
+          "posts",
+          "notification_log"
+        ],
+        "rpcsInvoked": [],
+        "hasFastifyFetch": false,
+        "isMutation": true,
+        "architecturalClass": "CLASS_B_CLIENT_WRITE_STRANGLER_TARGET",
+        "targetFastifyEndpoint": "/api/v1/feed/... (or /api/v1/posts/...)",
+        "rationale": "Client-side mutation bypassing server validation, audit logging, and centralized rate limiting. Prime strangler migration candidate."
+      },
+      {
+        "name": "removeReaction",
+        "parameters": "postId: string, userId: string",
+        "tablesTouched": [
+          "reactions"
+        ],
+        "rpcsInvoked": [],
+        "hasFastifyFetch": false,
+        "isMutation": true,
+        "architecturalClass": "CLASS_B_CLIENT_WRITE_STRANGLER_TARGET",
+        "targetFastifyEndpoint": "/api/v1/feed/... (or /api/v1/posts/...)",
+        "rationale": "Client-side mutation bypassing server validation, audit logging, and centralized rate limiting. Prime strangler migration candidate."
+      },
+      {
+        "name": "composePost",
+        "parameters": "post: { content: string; type: string; stateCode: string; authorId: string; hashtags?: string[]; constituencyId?: string; parentId?: string; language?: string; }",
+        "tablesTouched": [
+          "posts"
+        ],
+        "rpcsInvoked": [],
+        "hasFastifyFetch": false,
+        "isMutation": true,
+        "architecturalClass": "CLASS_B_CLIENT_WRITE_STRANGLER_TARGET",
+        "targetFastifyEndpoint": "/api/v1/feed/... (or /api/v1/posts/...)",
+        "rationale": "Client-side mutation bypassing server validation, audit logging, and centralized rate limiting. Prime strangler migration candidate."
+      },
+      {
+        "name": "editPost",
+        "parameters": "postId: string, content: string, userId: string",
+        "tablesTouched": [
+          "posts"
+        ],
+        "rpcsInvoked": [],
+        "hasFastifyFetch": false,
+        "isMutation": true,
+        "architecturalClass": "CLASS_B_CLIENT_WRITE_STRANGLER_TARGET",
+        "targetFastifyEndpoint": "/api/v1/feed/... (or /api/v1/posts/...)",
+        "rationale": "Client-side mutation bypassing server validation, audit logging, and centralized rate limiting. Prime strangler migration candidate."
+      },
+      {
+        "name": "deletePost",
+        "parameters": "postId: string, userId: string",
+        "tablesTouched": [
+          "posts"
+        ],
+        "rpcsInvoked": [],
+        "hasFastifyFetch": false,
+        "isMutation": true,
+        "architecturalClass": "CLASS_B_CLIENT_WRITE_STRANGLER_TARGET",
+        "targetFastifyEndpoint": "/api/v1/feed/... (or /api/v1/posts/...)",
+        "rationale": "Client-side mutation bypassing server validation, audit logging, and centralized rate limiting. Prime strangler migration candidate."
+      },
+      {
+        "name": "votePoll",
+        "parameters": "pollId: string, optionId: string, userId: string,",
+        "tablesTouched": [
+          "poll_votes"
+        ],
+        "rpcsInvoked": [],
+        "hasFastifyFetch": false,
+        "isMutation": true,
+        "architecturalClass": "CLASS_B_CLIENT_WRITE_STRANGLER_TARGET",
+        "targetFastifyEndpoint": "/api/v1/feed/... (or /api/v1/posts/...)",
+        "rationale": "Client-side mutation bypassing server validation, audit logging, and centralized rate limiting. Prime strangler migration candidate."
+      },
+      {
+        "name": "addPostComment",
+        "parameters": "postId: string, userId: string, content: string, language?: string,",
+        "tablesTouched": [
+          "comments",
+          "posts",
+          "notification_log"
+        ],
+        "rpcsInvoked": [],
+        "hasFastifyFetch": false,
+        "isMutation": true,
+        "architecturalClass": "CLASS_B_CLIENT_WRITE_STRANGLER_TARGET",
+        "targetFastifyEndpoint": "/api/v1/feed/... (or /api/v1/posts/...)",
+        "rationale": "Client-side mutation bypassing server validation, audit logging, and centralized rate limiting. Prime strangler migration candidate."
+      },
+      {
+        "name": "reactToComment",
+        "parameters": "commentId: string, userId: string, reaction: string,",
+        "tablesTouched": [
+          "reactions"
+        ],
+        "rpcsInvoked": [],
+        "hasFastifyFetch": false,
+        "isMutation": true,
+        "architecturalClass": "CLASS_B_CLIENT_WRITE_STRANGLER_TARGET",
+        "targetFastifyEndpoint": "/api/v1/feed/... (or /api/v1/posts/...)",
+        "rationale": "Client-side mutation bypassing server validation, audit logging, and centralized rate limiting. Prime strangler migration candidate."
+      },
+      {
+        "name": "removeCommentReaction",
+        "parameters": "commentId: string, userId: string,",
+        "tablesTouched": [
+          "reactions"
+        ],
+        "rpcsInvoked": [],
+        "hasFastifyFetch": false,
+        "isMutation": true,
+        "architecturalClass": "CLASS_B_CLIENT_WRITE_STRANGLER_TARGET",
+        "targetFastifyEndpoint": "/api/v1/feed/... (or /api/v1/posts/...)",
+        "rationale": "Client-side mutation bypassing server validation, audit logging, and centralized rate limiting. Prime strangler migration candidate."
+      },
+      {
+        "name": "deletePostComment",
+        "parameters": "commentId: string, userId: string,",
+        "tablesTouched": [
+          "comments",
+          "hashtags",
+          "post_hashtags"
+        ],
+        "rpcsInvoked": [],
+        "hasFastifyFetch": false,
+        "isMutation": true,
+        "architecturalClass": "CLASS_B_CLIENT_WRITE_STRANGLER_TARGET",
+        "targetFastifyEndpoint": "/api/v1/feed/... (or /api/v1/posts/...)",
+        "rationale": "Client-side mutation bypassing server validation, audit logging, and centralized rate limiting. Prime strangler migration candidate."
+      },
+      {
+        "name": "followPromise",
+        "parameters": "promiseId: string, userId: string, follow: boolean",
+        "tablesTouched": [
+          "promise_follows"
+        ],
+        "rpcsInvoked": [],
+        "hasFastifyFetch": false,
+        "isMutation": true,
+        "architecturalClass": "CLASS_B_CLIENT_WRITE_STRANGLER_TARGET",
+        "targetFastifyEndpoint": "/api/v1/...",
+        "rationale": "Client-side mutation bypassing server validation, audit logging, and centralized rate limiting. Prime strangler migration candidate."
+      },
+      {
+        "name": "submitEvidence",
+        "parameters": "evidence: { promiseId: string; userId: string; type: string; description: string; url?: string; }",
+        "tablesTouched": [
+          "promise_evidence"
+        ],
+        "rpcsInvoked": [],
+        "hasFastifyFetch": false,
+        "isMutation": true,
+        "architecturalClass": "CLASS_B_CLIENT_WRITE_STRANGLER_TARGET",
+        "targetFastifyEndpoint": "/api/v1/...",
+        "rationale": "Client-side mutation bypassing server validation, audit logging, and centralized rate limiting. Prime strangler migration candidate."
+      },
+      {
+        "name": "toggleFavorite",
+        "parameters": "constituencyId: string, userId: string, isFavorite: boolean,",
+        "tablesTouched": [
+          "favorites"
+        ],
+        "rpcsInvoked": [],
+        "hasFastifyFetch": false,
+        "isMutation": true,
+        "architecturalClass": "CLASS_B_CLIENT_WRITE_STRANGLER_TARGET",
+        "targetFastifyEndpoint": "/api/v1/...",
+        "rationale": "Client-side mutation bypassing server validation, audit logging, and centralized rate limiting. Prime strangler migration candidate."
+      },
+      {
+        "name": "uploadShort",
+        "parameters": "short: { title: string; videoUrl: string; channelName: string; uploadedBy: string; stateCode: string; stateName?: string; constituencyId?: string; districtName?: string; duration: number; hashtags?: string[]; gradientColors?: string[]; stateAccent?: string; }",
+        "tablesTouched": [
+          "political_shorts"
+        ],
+        "rpcsInvoked": [],
+        "hasFastifyFetch": false,
+        "isMutation": true,
+        "architecturalClass": "CLASS_B_CLIENT_WRITE_STRANGLER_TARGET",
+        "targetFastifyEndpoint": "/api/v1/shorts/...",
+        "rationale": "Client-side mutation bypassing server validation, audit logging, and centralized rate limiting. Prime strangler migration candidate."
+      },
+      {
+        "name": "approveShort",
+        "parameters": "shortId: string, userId: string, constituencyId?: string",
+        "tablesTouched": [
+          "short_approvals"
+        ],
+        "rpcsInvoked": [],
+        "hasFastifyFetch": false,
+        "isMutation": true,
+        "architecturalClass": "CLASS_B_CLIENT_WRITE_STRANGLER_TARGET",
+        "targetFastifyEndpoint": "/api/v1/shorts/...",
+        "rationale": "Client-side mutation bypassing server validation, audit logging, and centralized rate limiting. Prime strangler migration candidate."
+      },
+      {
+        "name": "flagShort",
+        "parameters": "shortId: string, userId: string, reason?: string",
+        "tablesTouched": [
+          "short_flags"
+        ],
+        "rpcsInvoked": [],
+        "hasFastifyFetch": false,
+        "isMutation": true,
+        "architecturalClass": "CLASS_B_CLIENT_WRITE_STRANGLER_TARGET",
+        "targetFastifyEndpoint": "/api/v1/shorts/...",
+        "rationale": "Client-side mutation bypassing server validation, audit logging, and centralized rate limiting. Prime strangler migration candidate."
+      },
+      {
+        "name": "updateUserProfile",
+        "parameters": "userId: string, updates: { displayName?: string; bio?: string; avatarUrl?: string; role?: string; stateCode?: string; constituencyId?: string; }",
+        "tablesTouched": [
+          "user_profiles"
+        ],
+        "rpcsInvoked": [],
+        "hasFastifyFetch": false,
+        "isMutation": true,
+        "architecturalClass": "CLASS_B_CLIENT_WRITE_STRANGLER_TARGET",
+        "targetFastifyEndpoint": "/api/v1/user/profile",
+        "rationale": "Client-side mutation bypassing server validation, audit logging, and centralized rate limiting. Prime strangler migration candidate."
+      },
+      {
+        "name": "updateMyProfile",
+        "parameters": "userId: string, updates: { displayName?: string; bio?: string }",
+        "tablesTouched": [
+          "user_profiles"
+        ],
+        "rpcsInvoked": [],
+        "hasFastifyFetch": false,
+        "isMutation": true,
+        "architecturalClass": "CLASS_B_CLIENT_WRITE_STRANGLER_TARGET",
+        "targetFastifyEndpoint": "/api/v1/user/profile",
+        "rationale": "Client-side mutation bypassing server validation, audit logging, and centralized rate limiting. Prime strangler migration candidate."
+      },
+      {
+        "name": "registerAspirant",
+        "parameters": "userId: string, profile: { displayName: string; bio?: string; stateCode: string; targetConstituencyAcNo?: number; targetConstituencyName?: string; partyAffiliation?: string; isIndependent?: boolean; }",
+        "tablesTouched": [
+          "aspirant_profiles"
+        ],
+        "rpcsInvoked": [],
+        "hasFastifyFetch": false,
+        "isMutation": true,
+        "architecturalClass": "CLASS_B_CLIENT_WRITE_STRANGLER_TARGET",
+        "targetFastifyEndpoint": "/api/v1/aspirant/... (Academy)",
+        "rationale": "Client-side mutation bypassing server validation, audit logging, and centralized rate limiting. Prime strangler migration candidate."
+      },
+      {
+        "name": "startModule",
+        "parameters": "userId: string, moduleId: string",
+        "tablesTouched": [
+          "module_progress"
+        ],
+        "rpcsInvoked": [],
+        "hasFastifyFetch": false,
+        "isMutation": true,
+        "architecturalClass": "CLASS_B_CLIENT_WRITE_STRANGLER_TARGET",
+        "targetFastifyEndpoint": "/api/v1/aspirant/... (Academy)",
+        "rationale": "Client-side mutation bypassing server validation, audit logging, and centralized rate limiting. Prime strangler migration candidate."
+      },
+      {
+        "name": "completeModule",
+        "parameters": "userId: string, moduleId: string, quizScore?: number",
+        "tablesTouched": [
+          "module_progress"
+        ],
+        "rpcsInvoked": [
+          "increment_aspirant_modules"
+        ],
+        "hasFastifyFetch": false,
+        "isMutation": true,
+        "architecturalClass": "CLASS_B_CLIENT_WRITE_STRANGLER_TARGET",
+        "targetFastifyEndpoint": "/api/v1/aspirant/... (Academy)",
+        "rationale": "Client-side mutation bypassing server validation, audit logging, and centralized rate limiting. Prime strangler migration candidate."
+      },
+      {
+        "name": "joinChallenge",
+        "parameters": "userId: string, challengeId: string",
+        "tablesTouched": [
+          "challenge_participation"
+        ],
+        "rpcsInvoked": [],
+        "hasFastifyFetch": false,
+        "isMutation": true,
+        "architecturalClass": "CLASS_B_CLIENT_WRITE_STRANGLER_TARGET",
+        "targetFastifyEndpoint": "/api/v1/aspirant/... (Academy)",
+        "rationale": "Client-side mutation bypassing server validation, audit logging, and centralized rate limiting. Prime strangler migration candidate."
+      },
+      {
+        "name": "endorseAspirant",
+        "parameters": "endorserId: string, aspirantId: string, message?: string",
+        "tablesTouched": [
+          "community_endorsements",
+          "aspirant_profiles",
+          "notification_log"
+        ],
+        "rpcsInvoked": [],
+        "hasFastifyFetch": false,
+        "isMutation": true,
+        "architecturalClass": "CLASS_B_CLIENT_WRITE_STRANGLER_TARGET",
+        "targetFastifyEndpoint": "/api/v1/aspirant/... (Academy)",
+        "rationale": "Client-side mutation bypassing server validation, audit logging, and centralized rate limiting. Prime strangler migration candidate."
+      },
+      {
+        "name": "submitKYC",
+        "parameters": "userId: string, kyc: { fullLegalName: string; phoneNumber: string; phoneVerified?: boolean; selfieUrl?: string | null; selfieHash?: string | null; deviceBrand?: string | null; deviceModel?: string | null; deviceOs?: string | null; deviceOsVersion?: string | null; deviceUniqueId?: string | null; deviceName?: string | null; ipAddress?: string | null; networkType?: string | null; carrierName?: string | null; latitude?: number | null; longitude?: number | null; locationAccuracy?: number | null; locationAddress?: string | null; appVersion?: string | null; appBuild?: string | null; status?: 'pending' | 'verified' | 'rejected' | 'suspended' | 'revoked'; termsAcceptedAt?: string; termsVersion?: string; }",
+        "tablesTouched": [
+          "creator_kyc_records"
+        ],
+        "rpcsInvoked": [],
+        "hasFastifyFetch": false,
+        "isMutation": true,
+        "architecturalClass": "CLASS_B_CLIENT_WRITE_STRANGLER_TARGET",
+        "targetFastifyEndpoint": "/api/v1/contributor/kyc",
+        "rationale": "Client-side mutation bypassing server validation, audit logging, and centralized rate limiting. Prime strangler migration candidate."
+      },
+      {
+        "name": "insertActionFingerprint",
+        "parameters": "fp: { userId: string; kycId?: string | null; actionType: string; contentType?: string | null; contentId?: string | null; contentHash?: string | null; deviceBrand?: string | null; deviceModel?: string | null; deviceOs?: string | null; deviceOsVersion?: string | null; deviceUniqueId?: string | null; deviceName?: string | null; ipAddress?: string | null; localIp?: string | null; networkType?: string | null; carrierName?: string | null; wifiSsid?: string | null; latitude?: number | null; longitude?: number | null; locationAccuracy?: number | null; appVersion?: string | null; appBuild?: string | null; sessionId?: string | null; screenName?: string | null; actionAt?: string; }",
+        "tablesTouched": [
+          "action_fingerprints"
+        ],
+        "rpcsInvoked": [],
+        "hasFastifyFetch": false,
+        "isMutation": true,
+        "architecturalClass": "CLASS_B_CLIENT_WRITE_STRANGLER_TARGET",
+        "targetFastifyEndpoint": "/api/v1/contributor/kyc",
+        "rationale": "Client-side mutation bypassing server validation, audit logging, and centralized rate limiting. Prime strangler migration candidate."
+      },
+      {
+        "name": "upsertContributorDevice",
+        "parameters": "device: { userId: string; deviceBrand?: string | null; deviceModel?: string | null; deviceOs?: string | null; deviceOsVersion?: string | null; deviceUniqueId: string; deviceName?: string | null; deviceMemoryMb?: number | null; isTrusted?: boolean; }",
+        "tablesTouched": [
+          "contributor_devices"
+        ],
+        "rpcsInvoked": [],
+        "hasFastifyFetch": false,
+        "isMutation": true,
+        "architecturalClass": "CLASS_B_CLIENT_WRITE_STRANGLER_TARGET",
+        "targetFastifyEndpoint": "/api/v1/contributor/kyc",
+        "rationale": "Client-side mutation bypassing server validation, audit logging, and centralized rate limiting. Prime strangler migration candidate."
+      },
+      {
+        "name": "markNotificationRead",
+        "parameters": "notificationId: string, userId: string",
+        "tablesTouched": [
+          "notification_log"
+        ],
+        "rpcsInvoked": [],
+        "hasFastifyFetch": false,
+        "isMutation": true,
+        "architecturalClass": "CLASS_B_CLIENT_WRITE_STRANGLER_TARGET",
+        "targetFastifyEndpoint": "/api/v1/notifications/...",
+        "rationale": "Client-side mutation bypassing server validation, audit logging, and centralized rate limiting. Prime strangler migration candidate."
+      },
+      {
+        "name": "markAllNotificationsRead",
+        "parameters": "userId: string",
+        "tablesTouched": [
+          "notification_log"
+        ],
+        "rpcsInvoked": [],
+        "hasFastifyFetch": false,
+        "isMutation": true,
+        "architecturalClass": "CLASS_B_CLIENT_WRITE_STRANGLER_TARGET",
+        "targetFastifyEndpoint": "/api/v1/notifications/...",
+        "rationale": "Client-side mutation bypassing server validation, audit logging, and centralized rate limiting. Prime strangler migration candidate."
+      },
+      {
+        "name": "registerPushToken",
+        "parameters": "userId: string, token: string, platform: 'ios' | 'android',",
+        "tablesTouched": [
+          "push_tokens"
+        ],
+        "rpcsInvoked": [],
+        "hasFastifyFetch": false,
+        "isMutation": true,
+        "architecturalClass": "CLASS_B_CLIENT_WRITE_STRANGLER_TARGET",
+        "targetFastifyEndpoint": "/api/v1/notifications/...",
+        "rationale": "Client-side mutation bypassing server validation, audit logging, and centralized rate limiting. Prime strangler migration candidate."
+      },
+      {
+        "name": "globalSearch",
+        "parameters": "query: string, stateCode?: string, limit = 20,",
+        "tablesTouched": [],
+        "rpcsInvoked": [
+          "global_search"
+        ],
+        "hasFastifyFetch": false,
+        "isMutation": false,
+        "architecturalClass": "CLASS_B_CLIENT_WRITE_STRANGLER_TARGET",
+        "targetFastifyEndpoint": "/api/v1/...",
+        "rationale": "Client-side mutation bypassing server validation, audit logging, and centralized rate limiting. Prime strangler migration candidate."
+      },
+      {
+        "name": "fetchIssuesForConstituency",
+        "parameters": "constituencyId: string, stateCode: string,",
+        "tablesTouched": [
+          "civic_issues"
+        ],
+        "rpcsInvoked": [],
+        "hasFastifyFetch": false,
+        "isMutation": false,
+        "architecturalClass": "CLASS_A_READ_RLS_GOVERNED",
+        "targetFastifyEndpoint": "Supabase PostgREST / RLS read (or optional CDN cache in W008)",
+        "rationale": "Read query governed by Supabase RLS and indexes; safe for direct client read"
+      },
+      {
+        "name": "followUser",
+        "parameters": "followerId: string, followedId: string",
+        "tablesTouched": [
+          "user_follows"
+        ],
+        "rpcsInvoked": [],
+        "hasFastifyFetch": false,
+        "isMutation": true,
+        "architecturalClass": "CLASS_B_CLIENT_WRITE_STRANGLER_TARGET",
+        "targetFastifyEndpoint": "/api/v1/...",
+        "rationale": "Client-side mutation bypassing server validation, audit logging, and centralized rate limiting. Prime strangler migration candidate."
+      },
+      {
+        "name": "unfollowUser",
+        "parameters": "followerId: string, followedId: string",
+        "tablesTouched": [
+          "user_follows"
+        ],
+        "rpcsInvoked": [],
+        "hasFastifyFetch": false,
+        "isMutation": true,
+        "architecturalClass": "CLASS_B_CLIENT_WRITE_STRANGLER_TARGET",
+        "targetFastifyEndpoint": "/api/v1/...",
+        "rationale": "Client-side mutation bypassing server validation, audit logging, and centralized rate limiting. Prime strangler migration candidate."
+      },
+      {
+        "name": "fetchFollowedUserIds",
+        "parameters": "followerId: string",
+        "tablesTouched": [
+          "user_follows"
+        ],
+        "rpcsInvoked": [],
+        "hasFastifyFetch": false,
+        "isMutation": false,
+        "architecturalClass": "CLASS_A_READ_RLS_GOVERNED",
+        "targetFastifyEndpoint": "Supabase PostgREST / RLS read (or optional CDN cache in W008)",
+        "rationale": "Read query governed by Supabase RLS and indexes; safe for direct client read"
+      },
+      {
+        "name": "fetchUserProfile",
+        "parameters": "userId: string",
+        "tablesTouched": [
+          "user_profiles"
+        ],
+        "rpcsInvoked": [],
+        "hasFastifyFetch": false,
+        "isMutation": false,
+        "architecturalClass": "CLASS_A_READ_RLS_GOVERNED",
+        "targetFastifyEndpoint": "Supabase PostgREST / RLS read (or optional CDN cache in W008)",
+        "rationale": "Read query governed by Supabase RLS and indexes; safe for direct client read"
+      },
+      {
+        "name": "fetchPostsByAuthor",
+        "parameters": "authorId: string, limit = 30",
+        "tablesTouched": [
+          "posts"
+        ],
+        "rpcsInvoked": [],
+        "hasFastifyFetch": false,
+        "isMutation": false,
+        "architecturalClass": "CLASS_A_READ_RLS_GOVERNED",
+        "targetFastifyEndpoint": "Supabase PostgREST / RLS read (or optional CDN cache in W008)",
+        "rationale": "Read query governed by Supabase RLS and indexes; safe for direct client read"
+      },
+      {
+        "name": "submitContentReport",
+        "parameters": "report: { reporterId: string; targetType: 'post' | 'comment'; targetId: string; reason: string; description?: string; }",
+        "tablesTouched": [
+          "reports"
+        ],
+        "rpcsInvoked": [],
+        "hasFastifyFetch": false,
+        "isMutation": true,
+        "architecturalClass": "CLASS_B_CLIENT_WRITE_STRANGLER_TARGET",
+        "targetFastifyEndpoint": "/api/v1/moderation/report",
+        "rationale": "Client-side mutation bypassing server validation, audit logging, and centralized rate limiting. Prime strangler migration candidate."
+      },
+      {
+        "name": "fetchBlendedFeed",
+        "parameters": "viewerId?: string | null, constituencyId?: string | null, stateCode?: string | null, limit = 50,",
+        "tablesTouched": [
+          "posts"
+        ],
+        "rpcsInvoked": [],
+        "hasFastifyFetch": false,
+        "isMutation": false,
+        "architecturalClass": "CLASS_A_READ_RLS_GOVERNED",
+        "targetFastifyEndpoint": "Supabase PostgREST / RLS read (or optional CDN cache in W008)",
+        "rationale": "Read query governed by Supabase RLS and indexes; safe for direct client read"
+      },
+      {
+        "name": "fetchFeedForState",
+        "parameters": "stateCode: string, limit = 50,",
+        "tablesTouched": [
+          "posts"
+        ],
+        "rpcsInvoked": [],
+        "hasFastifyFetch": false,
+        "isMutation": false,
+        "architecturalClass": "CLASS_A_READ_RLS_GOVERNED",
+        "targetFastifyEndpoint": "Supabase PostgREST / RLS read (or optional CDN cache in W008)",
+        "rationale": "Read query governed by Supabase RLS and indexes; safe for direct client read"
+      },
+      {
+        "name": "fetchPromisesForState",
+        "parameters": "stateCode: string",
+        "tablesTouched": [
+          "election_promises"
+        ],
+        "rpcsInvoked": [],
+        "hasFastifyFetch": false,
+        "isMutation": false,
+        "architecturalClass": "CLASS_A_READ_RLS_GOVERNED",
+        "targetFastifyEndpoint": "Supabase PostgREST / RLS read (or optional CDN cache in W008)",
+        "rationale": "Read query governed by Supabase RLS and indexes; safe for direct client read"
+      },
+      {
+        "name": "fetchNotifications",
+        "parameters": "userId: string, limit = 50",
+        "tablesTouched": [
+          "notification_log"
+        ],
+        "rpcsInvoked": [],
+        "hasFastifyFetch": false,
+        "isMutation": false,
+        "architecturalClass": "CLASS_A_READ_RLS_GOVERNED",
+        "targetFastifyEndpoint": "Supabase PostgREST / RLS read (or optional CDN cache in W008)",
+        "rationale": "Read query governed by Supabase RLS and indexes; safe for direct client read"
+      },
+      {
+        "name": "fetchLeadershipModules",
+        "parameters": "",
+        "tablesTouched": [
+          "leadership_modules"
+        ],
+        "rpcsInvoked": [],
+        "hasFastifyFetch": false,
+        "isMutation": false,
+        "architecturalClass": "CLASS_A_READ_RLS_GOVERNED",
+        "targetFastifyEndpoint": "Supabase PostgREST / RLS read (or optional CDN cache in W008)",
+        "rationale": "Read query governed by Supabase RLS and indexes; safe for direct client read"
+      },
+      {
+        "name": "fetchChallenges",
+        "parameters": "stateCode?: string",
+        "tablesTouched": [
+          "community_challenges"
+        ],
+        "rpcsInvoked": [],
+        "hasFastifyFetch": false,
+        "isMutation": false,
+        "architecturalClass": "CLASS_A_READ_RLS_GOVERNED",
+        "targetFastifyEndpoint": "Supabase PostgREST / RLS read (or optional CDN cache in W008)",
+        "rationale": "Read query governed by Supabase RLS and indexes; safe for direct client read"
+      },
+      {
+        "name": "fetchPublicAspirants",
+        "parameters": "stateCode?: string, acNo?: number",
+        "tablesTouched": [
+          "aspirant_profiles"
+        ],
+        "rpcsInvoked": [],
+        "hasFastifyFetch": false,
+        "isMutation": false,
+        "architecturalClass": "CLASS_A_READ_RLS_GOVERNED",
+        "targetFastifyEndpoint": "Supabase PostgREST / RLS read (or optional CDN cache in W008)",
+        "rationale": "Read query governed by Supabase RLS and indexes; safe for direct client read"
+      },
+      {
+        "name": "fetchVerifiedPoliticians",
+        "parameters": "stateCode?: string, acNo?: number",
+        "tablesTouched": [
+          "user_profiles"
+        ],
+        "rpcsInvoked": [],
+        "hasFastifyFetch": false,
+        "isMutation": false,
+        "architecturalClass": "CLASS_A_READ_RLS_GOVERNED",
+        "targetFastifyEndpoint": "Supabase PostgREST / RLS read (or optional CDN cache in W008)",
+        "rationale": "Read query governed by Supabase RLS and indexes; safe for direct client read"
+      },
+      {
+        "name": "recordSession",
+        "parameters": "session: { userId?: string; anonymousId?: string; stateCode?: string; platform?: string; appVersion?: string; deviceModel?: string; osVersion?: string; }",
+        "tablesTouched": [
+          "user_sessions"
+        ],
+        "rpcsInvoked": [],
+        "hasFastifyFetch": false,
+        "isMutation": true,
+        "architecturalClass": "CLASS_B_CLIENT_WRITE_STRANGLER_TARGET",
+        "targetFastifyEndpoint": "/api/v1/...",
+        "rationale": "Client-side mutation bypassing server validation, audit logging, and centralized rate limiting. Prime strangler migration candidate."
+      },
+      {
+        "name": "endSession",
+        "parameters": "sessionId: string, screensViewed: string[], actionsCount: number",
+        "tablesTouched": [
+          "user_sessions"
+        ],
+        "rpcsInvoked": [],
+        "hasFastifyFetch": false,
+        "isMutation": true,
+        "architecturalClass": "CLASS_B_CLIENT_WRITE_STRANGLER_TARGET",
+        "targetFastifyEndpoint": "/api/v1/...",
+        "rationale": "Client-side mutation bypassing server validation, audit logging, and centralized rate limiting. Prime strangler migration candidate."
+      },
+      {
+        "name": "fetchShorts",
+        "parameters": "stateCode?: string",
+        "tablesTouched": [
+          "political_shorts"
+        ],
+        "rpcsInvoked": [],
+        "hasFastifyFetch": false,
+        "isMutation": false,
+        "architecturalClass": "CLASS_A_READ_RLS_GOVERNED",
+        "targetFastifyEndpoint": "Supabase PostgREST / RLS read (or optional CDN cache in W008)",
+        "rationale": "Read query governed by Supabase RLS and indexes; safe for direct client read"
+      },
+      {
+        "name": "incrementShortView",
+        "parameters": "shortId: string",
+        "tablesTouched": [
+          "political_shorts"
+        ],
+        "rpcsInvoked": [
+          "increment_short_views",
+          "increment"
+        ],
+        "hasFastifyFetch": false,
+        "isMutation": true,
+        "architecturalClass": "CLASS_B_CLIENT_WRITE_STRANGLER_TARGET",
+        "targetFastifyEndpoint": "/api/v1/shorts/...",
+        "rationale": "Client-side mutation bypassing server validation, audit logging, and centralized rate limiting. Prime strangler migration candidate."
+      },
+      {
+        "name": "addShortComment",
+        "parameters": "shortId: string, userId: string, userName: string, text: string,",
+        "tablesTouched": [
+          "short_comments",
+          "political_shorts"
+        ],
+        "rpcsInvoked": [],
+        "hasFastifyFetch": false,
+        "isMutation": true,
+        "architecturalClass": "CLASS_B_CLIENT_WRITE_STRANGLER_TARGET",
+        "targetFastifyEndpoint": "/api/v1/shorts/...",
+        "rationale": "Client-side mutation bypassing server validation, audit logging, and centralized rate limiting. Prime strangler migration candidate."
+      },
+      {
+        "name": "fetchLiveEvents",
+        "parameters": "filters?: { category?: string; stateCode?: string; status?: string; }",
+        "tablesTouched": [
+          "live_events"
+        ],
+        "rpcsInvoked": [],
+        "hasFastifyFetch": false,
+        "isMutation": false,
+        "architecturalClass": "CLASS_A_READ_RLS_GOVERNED",
+        "targetFastifyEndpoint": "Supabase PostgREST / RLS read (or optional CDN cache in W008)",
+        "rationale": "Read query governed by Supabase RLS and indexes; safe for direct client read"
+      },
+      {
+        "name": "createLiveEvent",
+        "parameters": "event: Record<string, any>",
+        "tablesTouched": [
+          "live_events"
+        ],
+        "rpcsInvoked": [],
+        "hasFastifyFetch": false,
+        "isMutation": true,
+        "architecturalClass": "CLASS_B_CLIENT_WRITE_STRANGLER_TARGET",
+        "targetFastifyEndpoint": "/api/v1/lmx/...",
+        "rationale": "Client-side mutation bypassing server validation, audit logging, and centralized rate limiting. Prime strangler migration candidate."
+      },
+      {
+        "name": "updateLiveEvent",
+        "parameters": "eventId: string, updates: Record<string, any>",
+        "tablesTouched": [
+          "live_events"
+        ],
+        "rpcsInvoked": [],
+        "hasFastifyFetch": false,
+        "isMutation": true,
+        "architecturalClass": "CLASS_B_CLIENT_WRITE_STRANGLER_TARGET",
+        "targetFastifyEndpoint": "/api/v1/lmx/...",
+        "rationale": "Client-side mutation bypassing server validation, audit logging, and centralized rate limiting. Prime strangler migration candidate."
+      },
+      {
+        "name": "endLiveEvent",
+        "parameters": "eventId: string, contentHash: string",
+        "tablesTouched": [
+          "live_events"
+        ],
+        "rpcsInvoked": [],
+        "hasFastifyFetch": false,
+        "isMutation": true,
+        "architecturalClass": "CLASS_B_CLIENT_WRITE_STRANGLER_TARGET",
+        "targetFastifyEndpoint": "/api/v1/lmx/...",
+        "rationale": "Client-side mutation bypassing server validation, audit logging, and centralized rate limiting. Prime strangler migration candidate."
+      },
+      {
+        "name": "fetchDepartments",
+        "parameters": "stateCode?: string",
+        "tablesTouched": [
+          "lmx_departments"
+        ],
+        "rpcsInvoked": [],
+        "hasFastifyFetch": false,
+        "isMutation": false,
+        "architecturalClass": "CLASS_A_READ_RLS_GOVERNED",
+        "targetFastifyEndpoint": "Supabase PostgREST / RLS read (or optional CDN cache in W008)",
+        "rationale": "Read query governed by Supabase RLS and indexes; safe for direct client read"
+      },
+      {
+        "name": "dispatchDepartmentAlert",
+        "parameters": "alert: Record<string, any>",
+        "tablesTouched": [
+          "lmx_department_alerts"
+        ],
+        "rpcsInvoked": [],
+        "hasFastifyFetch": false,
+        "isMutation": true,
+        "architecturalClass": "CLASS_B_CLIENT_WRITE_STRANGLER_TARGET",
+        "targetFastifyEndpoint": "/api/v1/lmx/...",
+        "rationale": "Client-side mutation bypassing server validation, audit logging, and centralized rate limiting. Prime strangler migration candidate."
+      },
+      {
+        "name": "acknowledgeDepartmentAlert",
+        "parameters": "alertId: string, acknowledgment: string, acknowledgedBy: string",
+        "tablesTouched": [
+          "lmx_department_alerts"
+        ],
+        "rpcsInvoked": [],
+        "hasFastifyFetch": false,
+        "isMutation": true,
+        "architecturalClass": "CLASS_B_CLIENT_WRITE_STRANGLER_TARGET",
+        "targetFastifyEndpoint": "/api/v1/lmx/...",
+        "rationale": "Client-side mutation bypassing server validation, audit logging, and centralized rate limiting. Prime strangler migration candidate."
+      },
+      {
+        "name": "fetchDepartmentAlerts",
+        "parameters": "departmentId?: string, departmentType?: string",
+        "tablesTouched": [
+          "lmx_department_alerts"
+        ],
+        "rpcsInvoked": [],
+        "hasFastifyFetch": false,
+        "isMutation": false,
+        "architecturalClass": "CLASS_A_READ_RLS_GOVERNED",
+        "targetFastifyEndpoint": "Supabase PostgREST / RLS read (or optional CDN cache in W008)",
+        "rationale": "Read query governed by Supabase RLS and indexes; safe for direct client read"
+      },
+      {
+        "name": "createContentAlert",
+        "parameters": "alert: { contentVisibilityId?: string; contentType: string; contentId: string; userId: string; severity: string; reason: string; category: string; stateCode?: string; constituencyId?: string; }",
+        "tablesTouched": [
+          "content_alerts"
+        ],
+        "rpcsInvoked": [],
+        "hasFastifyFetch": false,
+        "isMutation": true,
+        "architecturalClass": "CLASS_B_CLIENT_WRITE_STRANGLER_TARGET",
+        "targetFastifyEndpoint": "/api/v1/lmx/...",
+        "rationale": "Client-side mutation bypassing server validation, audit logging, and centralized rate limiting. Prime strangler migration candidate."
+      },
+      {
+        "name": "acknowledgeContentAlert",
+        "parameters": "alertId: string, acknowledgedBy: string, actionTaken: string",
+        "tablesTouched": [
+          "content_alerts"
+        ],
+        "rpcsInvoked": [],
+        "hasFastifyFetch": false,
+        "isMutation": true,
+        "architecturalClass": "CLASS_B_CLIENT_WRITE_STRANGLER_TARGET",
+        "targetFastifyEndpoint": "/api/v1/lmx/...",
+        "rationale": "Client-side mutation bypassing server validation, audit logging, and centralized rate limiting. Prime strangler migration candidate."
+      },
+      {
+        "name": "fetchReporterCredibility",
+        "parameters": "reporterId: string",
+        "tablesTouched": [
+          "lmx_credibility"
+        ],
+        "rpcsInvoked": [],
+        "hasFastifyFetch": false,
+        "isMutation": false,
+        "architecturalClass": "CLASS_A_READ_RLS_GOVERNED",
+        "targetFastifyEndpoint": "Supabase PostgREST / RLS read (or optional CDN cache in W008)",
+        "rationale": "Read query governed by Supabase RLS and indexes; safe for direct client read"
+      },
+      {
+        "name": "updateReporterCredibility",
+        "parameters": "reporterId: string, updates: Record<string, any>",
+        "tablesTouched": [
+          "lmx_credibility"
+        ],
+        "rpcsInvoked": [],
+        "hasFastifyFetch": false,
+        "isMutation": true,
+        "architecturalClass": "CLASS_B_CLIENT_WRITE_STRANGLER_TARGET",
+        "targetFastifyEndpoint": "/api/v1/...",
+        "rationale": "Client-side mutation bypassing server validation, audit logging, and centralized rate limiting. Prime strangler migration candidate."
+      },
+      {
+        "name": "fetchBrandKits",
+        "parameters": "",
+        "tablesTouched": [
+          "lmx_brand_kits"
+        ],
+        "rpcsInvoked": [],
+        "hasFastifyFetch": false,
+        "isMutation": false,
+        "architecturalClass": "CLASS_A_READ_RLS_GOVERNED",
+        "targetFastifyEndpoint": "Supabase PostgREST / RLS read (or optional CDN cache in W008)",
+        "rationale": "Read query governed by Supabase RLS and indexes; safe for direct client read"
+      },
+      {
+        "name": "fetchAffiliations",
+        "parameters": "contributorId: string",
+        "tablesTouched": [
+          "lmx_affiliations"
+        ],
+        "rpcsInvoked": [],
+        "hasFastifyFetch": false,
+        "isMutation": false,
+        "architecturalClass": "CLASS_A_READ_RLS_GOVERNED",
+        "targetFastifyEndpoint": "Supabase PostgREST / RLS read (or optional CDN cache in W008)",
+        "rationale": "Read query governed by Supabase RLS and indexes; safe for direct client read"
+      },
+      {
+        "name": "addDistributionDestination",
+        "parameters": "dest: Record<string, any>",
+        "tablesTouched": [
+          "lmx_distribution_destinations"
+        ],
+        "rpcsInvoked": [],
+        "hasFastifyFetch": false,
+        "isMutation": true,
+        "architecturalClass": "CLASS_B_CLIENT_WRITE_STRANGLER_TARGET",
+        "targetFastifyEndpoint": "/api/v1/lmx/...",
+        "rationale": "Client-side mutation bypassing server validation, audit logging, and centralized rate limiting. Prime strangler migration candidate."
+      },
+      {
+        "name": "logModerationEvent",
+        "parameters": "event: Record<string, any>",
+        "tablesTouched": [
+          "lmx_moderation_events"
+        ],
+        "rpcsInvoked": [],
+        "hasFastifyFetch": false,
+        "isMutation": true,
+        "architecturalClass": "CLASS_B_CLIENT_WRITE_STRANGLER_TARGET",
+        "targetFastifyEndpoint": "/api/v1/lmx/...",
+        "rationale": "Client-side mutation bypassing server validation, audit logging, and centralized rate limiting. Prime strangler migration candidate."
+      },
+      {
+        "name": "incrementViewerCount",
+        "parameters": "eventId: string, delta: number",
+        "tablesTouched": [
+          "live_events"
+        ],
+        "rpcsInvoked": [],
+        "hasFastifyFetch": false,
+        "isMutation": true,
+        "architecturalClass": "CLASS_B_CLIENT_WRITE_STRANGLER_TARGET",
+        "targetFastifyEndpoint": "/api/v1/lmx/...",
+        "rationale": "Client-side mutation bypassing server validation, audit logging, and centralized rate limiting. Prime strangler migration candidate."
+      },
+      {
+        "name": "fetchUserConversations",
+        "parameters": "userId: string",
+        "tablesTouched": [
+          "conversations",
+          "user_profiles"
+        ],
+        "rpcsInvoked": [],
+        "hasFastifyFetch": false,
+        "isMutation": false,
+        "architecturalClass": "CLASS_A_READ_RLS_GOVERNED",
+        "targetFastifyEndpoint": "Supabase PostgREST / RLS read (or optional CDN cache in W008)",
+        "rationale": "Read query governed by Supabase RLS and indexes; safe for direct client read"
+      },
+      {
+        "name": "fetchConversationMessages",
+        "parameters": "conversationId: string",
+        "tablesTouched": [
+          "messages"
+        ],
+        "rpcsInvoked": [],
+        "hasFastifyFetch": false,
+        "isMutation": false,
+        "architecturalClass": "CLASS_A_READ_RLS_GOVERNED",
+        "targetFastifyEndpoint": "Supabase PostgREST / RLS read (or optional CDN cache in W008)",
+        "rationale": "Read query governed by Supabase RLS and indexes; safe for direct client read"
+      },
+      {
+        "name": "sendDirectMessageToConversation",
+        "parameters": "conversationId: string, senderId: string, content: string, mediaUrl?: string, mediaType?: 'image' | 'video' | 'audio' | 'document',",
+        "tablesTouched": [],
+        "rpcsInvoked": [],
+        "hasFastifyFetch": true,
+        "isMutation": false,
+        "architecturalClass": "CLASS_C_ALREADY_FASTIFY_ROUTED",
+        "targetFastifyEndpoint": "/api/v1/dm/conversations/",
+        "rationale": "Already implemented to call Fastify HTTP endpoint directly"
+      },
+      {
+        "name": "acceptDMRequest",
+        "parameters": "conversationId: string, userId: string",
+        "tablesTouched": [],
+        "rpcsInvoked": [],
+        "hasFastifyFetch": true,
+        "isMutation": false,
+        "architecturalClass": "CLASS_C_ALREADY_FASTIFY_ROUTED",
+        "targetFastifyEndpoint": "/api/v1/dm/conversations/",
+        "rationale": "Already implemented to call Fastify HTTP endpoint directly"
+      },
+      {
+        "name": "declineDMRequest",
+        "parameters": "conversationId: string, userId: string",
+        "tablesTouched": [],
+        "rpcsInvoked": [],
+        "hasFastifyFetch": true,
+        "isMutation": false,
+        "architecturalClass": "CLASS_C_ALREADY_FASTIFY_ROUTED",
+        "targetFastifyEndpoint": "/api/v1/dm/conversations/",
+        "rationale": "Already implemented to call Fastify HTTP endpoint directly"
+      },
+      {
+        "name": "blockAndReportDMUser",
+        "parameters": "userId: string, targetUserId: string, reason: string, description?: string, conversationId?: string,",
+        "tablesTouched": [],
+        "rpcsInvoked": [],
+        "hasFastifyFetch": true,
+        "isMutation": false,
+        "architecturalClass": "CLASS_C_ALREADY_FASTIFY_ROUTED",
+        "targetFastifyEndpoint": "/api/v1/dm/block-report",
+        "rationale": "Already implemented to call Fastify HTTP endpoint directly"
+      },
+      {
+        "name": "markConversationMessagesRead",
+        "parameters": "conversationId: string, userId: string",
+        "tablesTouched": [
+          "messages"
+        ],
+        "rpcsInvoked": [],
+        "hasFastifyFetch": false,
+        "isMutation": true,
+        "architecturalClass": "CLASS_B_CLIENT_WRITE_STRANGLER_TARGET",
+        "targetFastifyEndpoint": "/api/v1/...",
+        "rationale": "Client-side mutation bypassing server validation, audit logging, and centralized rate limiting. Prime strangler migration candidate."
+      },
+      {
+        "name": "fetchDMUnreadCount",
+        "parameters": "userId: string, token?: string | null",
+        "tablesTouched": [],
+        "rpcsInvoked": [],
+        "hasFastifyFetch": true,
+        "isMutation": false,
+        "architecturalClass": "CLASS_C_ALREADY_FASTIFY_ROUTED",
+        "targetFastifyEndpoint": "/api/v1/dm/unread-count",
+        "rationale": "Already implemented to call Fastify HTTP endpoint directly"
+      },
+      {
+        "name": "searchVerifiedProfiles",
+        "parameters": "query: string, limit = 10",
+        "tablesTouched": [
+          "user_profiles"
+        ],
+        "rpcsInvoked": [],
+        "hasFastifyFetch": false,
+        "isMutation": false,
+        "architecturalClass": "CLASS_A_READ_RLS_GOVERNED",
+        "targetFastifyEndpoint": "Supabase PostgREST / RLS read (or optional CDN cache in W008)",
+        "rationale": "Read query governed by Supabase RLS and indexes; safe for direct client read"
+      }
+    ]
+  },
+  "strangulationMigrationPlan": [
+    {
+      "phase": "Phase 1: High-Risk Civic & Moderation Mutations",
+      "priority": "P0 (Immediate / W007-W008)",
+      "rationale": "Public-facing civic issues, comments, disputes, and content reports must be moderated and rate-limited at the API gateway.",
+      "methods": [
+        "reportIssue",
+        "addIssueComment",
+        "tagMLAOnIssue",
+        "disputeIssueResolution",
+        "submitContentReport"
+      ],
+      "canonicalFastifyEndpoints": [
+        "POST /api/v1/civic/issues",
+        "POST /api/v1/civic/issues/:id/comments",
+        "POST /api/v1/civic/issues/:id/dispute",
+        "POST /api/v1/moderation/report"
+      ]
+    },
+    {
+      "phase": "Phase 2: Social Feed, Reactions & Poll Voting",
+      "priority": "P1 (W008-W009)",
+      "rationale": "Prevent vote stuffing, malicious post injections, and unmoderated comments by centralizing write validation in Fastify.",
+      "methods": [
+        "reactToPost",
+        "composePost",
+        "editPost",
+        "deletePost",
+        "votePoll",
+        "addPostComment",
+        "reactToComment",
+        "deletePostComment"
+      ],
+      "canonicalFastifyEndpoints": [
+        "POST /api/v1/feed/posts",
+        "PUT /api/v1/feed/posts/:id",
+        "DELETE /api/v1/feed/posts/:id",
+        "POST /api/v1/feed/polls/:id/vote",
+        "POST /api/v1/feed/posts/:id/comments",
+        "POST /api/v1/feed/reactions"
+      ]
+    },
+    {
+      "phase": "Phase 3: Creator KYC, LMX & Devices",
+      "priority": "P1 (W009-W010)",
+      "rationale": "Sensitive identity data (KYC, biometric selfies, forensic device fingerprints) must never be written directly from client without strict server-side schema verification and encryption.",
+      "methods": [
+        "submitKYC",
+        "insertActionFingerprint",
+        "upsertContributorDevice",
+        "createLiveEvent",
+        "updateLiveEvent",
+        "endLiveEvent",
+        "dispatchDepartmentAlert",
+        "acknowledgeDepartmentAlert"
+      ],
+      "canonicalFastifyEndpoints": [
+        "POST /api/v1/contributor/kyc",
+        "POST /api/v1/devices/fingerprint",
+        "POST /api/v1/lmx/live",
+        "POST /api/v1/lmx/alerts"
+      ]
+    },
+    {
+      "phase": "Phase 4: Political Shorts & Aspirant Leadership Academy",
+      "priority": "P2 (W010-W011)",
+      "rationale": "Video shorts uploads, endorsements, and leadership academy quiz grading.",
+      "methods": [
+        "uploadShort",
+        "approveShort",
+        "flagShort",
+        "registerAspirant",
+        "startModule",
+        "completeModule",
+        "joinChallenge",
+        "endorseAspirant",
+        "addShortComment"
+      ],
+      "canonicalFastifyEndpoints": [
+        "POST /api/v1/shorts/upload",
+        "POST /api/v1/shorts/:id/comments",
+        "POST /api/v1/academy/register",
+        "POST /api/v1/academy/modules/:id/complete"
+      ]
+    }
+  ],
+  "registeredFastifyRoutes": [
+    {
+      "method": "GET",
+      "path": "/",
+      "file": "server.ts"
+    },
+    {
+      "method": "GET",
+      "path": "/health",
+      "file": "server.ts"
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/ai/chat",
+      "file": "ai.ts"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/ai/analyze/constituency/:acNo",
+      "file": "ai.ts"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/ai/analyze/trends",
+      "file": "ai.ts"
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/ai/smart-search",
+      "file": "ai.ts"
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/ai/summarize-issues",
+      "file": "ai.ts"
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/ai/campaign-copy",
+      "file": "ai.ts"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/ai/status",
+      "file": "ai.ts"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/broadcast/summary",
+      "file": "broadcast.ts"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/broadcast/state/:code",
+      "file": "broadcast.ts"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/broadcast/state/:code/constituency/:acNo",
+      "file": "broadcast.ts"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/campaign/pricing",
+      "file": "campaign.ts"
+    },
+    {
+      "method": "PATCH",
+      "path": "/api/v1/campaign/pricing",
+      "file": "campaign.ts"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/campaign/users/check-kshetra",
+      "file": "campaign.ts"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/campaign/campaigns",
+      "file": "campaign.ts"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/campaign/booths",
+      "file": "campaign.ts"
+    },
+    {
+      "method": "PATCH",
+      "path": "/api/v1/campaign/booths/:id",
+      "file": "campaign.ts"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/campaign/volunteers",
+      "file": "campaign.ts"
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/campaign/volunteers",
+      "file": "campaign.ts"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/campaign/wallet",
+      "file": "campaign.ts"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/campaign/wallet/transactions",
+      "file": "campaign.ts"
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/campaign/wallet/recharge/order",
+      "file": "campaign.ts"
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/campaign/wallet/recharge/verify",
+      "file": "campaign.ts"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/campaign/obd/trai-status",
+      "file": "campaign.ts"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/campaign/obd/broadcasts",
+      "file": "campaign.ts"
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/campaign/obd/dispatch",
+      "file": "campaign.ts"
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/webhooks/voice/:provider",
+      "file": "campaign.ts"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/civic/budget/:stateCode",
+      "file": "civic.ts"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/civic/attendance",
+      "file": "civic.ts"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/civic/bills",
+      "file": "civic.ts"
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/civic/bills/:id/opinion",
+      "file": "civic.ts"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/civic/schemes",
+      "file": "civic.ts"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/civic/projects",
+      "file": "civic.ts"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/civic/rti",
+      "file": "civic.ts"
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/civic/rti",
+      "file": "civic.ts"
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/civic/rti/:id/upvote",
+      "file": "civic.ts"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/civic/hearings",
+      "file": "civic.ts"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/civic/cdi/:constituencyId",
+      "file": "civic.ts"
+    },
+    {
+      "method": "GET",
+      "path": "/config/flags",
+      "file": "config.ts"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/config/flags",
+      "file": "config.ts"
+    },
+    {
+      "method": "PATCH",
+      "path": "/api/v1/config/flags",
+      "file": "config.ts"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/states/:stateCode/constituencies",
+      "file": "constituencies.ts"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/states/:stateCode/constituencies/:constituencyId",
+      "file": "constituencies.ts"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/states/:stateCode/constituencies/search",
+      "file": "constituencies.ts"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/states/:stateCode/analytics",
+      "file": "constituencies.ts"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/states/:stateCode/mla/:acNo",
+      "file": "constituencies.ts"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/states/:stateCode/mla",
+      "file": "constituencies.ts"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/states/:stateCode/elections",
+      "file": "constituencies.ts"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/constituencies/locate",
+      "file": "constituencies.ts"
+    },
+    {
+      "method": "GET",
+      "path": "/api/debug/error",
+      "file": "debug.ts"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/delimitation/projections",
+      "file": "delimitation.ts"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/delimitation/projections/:stateCode",
+      "file": "delimitation.ts"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/delimitation/timeline",
+      "file": "delimitation.ts"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/delimitation/status",
+      "file": "delimitation.ts"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/delimitation/gainers-losers",
+      "file": "delimitation.ts"
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/delimitation/monitor-webhook",
+      "file": "delimitation.ts"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/delimitation/impact/:pinCode",
+      "file": "delimitation.ts"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/delimitation/simulate/:stateCode",
+      "file": "delimitation.ts"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/delimitation/reservation",
+      "file": "delimitation.ts"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/delimitation/reservation/:stateCode",
+      "file": "delimitation.ts"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/delimitation/compare",
+      "file": "delimitation.ts"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/delimitation/mla-impact/:stateCode",
+      "file": "delimitation.ts"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/delimitation/party-projections/:stateCode",
+      "file": "delimitation.ts"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/delimitation/methodology",
+      "file": "delimitation.ts"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/dm/unread-count",
+      "file": "dm.ts"
+    },
+    {
+      "method": "GET",
+      "path": "/geo/manifest.json",
+      "file": "geo.ts"
+    },
+    {
+      "method": "GET",
+      "path": "/api/health",
+      "file": "health.ts"
+    },
+    {
+      "method": "GET",
+      "path": "/api/health/db",
+      "file": "health.ts"
+    },
+    {
+      "method": "GET",
+      "path": "/api/health/ready",
+      "file": "health.ts"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/journalist/articles",
+      "file": "journalist.ts"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/journalist/articles/:id",
+      "file": "journalist.ts"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/journalist/fact-checks",
+      "file": "journalist.ts"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/journalist/breaking",
+      "file": "journalist.ts"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/journalist/profiles",
+      "file": "journalist.ts"
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/journalist/articles/:id/vouch",
+      "file": "journalist.ts"
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/journalist/articles/:id/flag",
+      "file": "journalist.ts"
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/journalist/articles/:id/tip",
+      "file": "journalist.ts"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/lmx/status",
+      "file": "lmx.ts"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/lmx/live",
+      "file": "lmx.ts"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/lmx/live/:streamId",
+      "file": "lmx.ts"
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/lmx/live",
+      "file": "lmx.ts"
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/lmx/live/:streamId/moderate",
+      "file": "lmx.ts"
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/lmx/live/:streamId/end",
+      "file": "lmx.ts"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/lmx/departments",
+      "file": "lmx.ts"
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/lmx/departments",
+      "file": "lmx.ts"
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/lmx/alerts",
+      "file": "lmx.ts"
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/lmx/alerts/:id/acknowledge",
+      "file": "lmx.ts"
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/lmx/distribution",
+      "file": "lmx.ts"
+    },
+    {
+      "method": "GET",
+      "path": "/manage",
+      "file": "manage.ts"
+    },
+    {
+      "method": "GET",
+      "path": "/api/metrics",
+      "file": "metrics.ts"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/moderation/queue",
+      "file": "moderation.ts"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/moderation/actions",
+      "file": "moderation.ts"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/moderation/reputation-rules",
+      "file": "moderation.ts"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/news/feed",
+      "file": "news.ts"
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/news/refresh",
+      "file": "news.ts"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/notifications/preferences",
+      "file": "notifications.ts"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/notifications/triggers",
+      "file": "notifications.ts"
+    },
+    {
+      "method": "GET",
+      "path": "/policy/grievance",
+      "file": "policy.ts"
+    },
+    {
+      "method": "GET",
+      "path": "/policy/community-guidelines",
+      "file": "policy.ts"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/admin/political-ads/review-queue",
+      "file": "politicalAds.ts"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/political-ads/library",
+      "file": "politicalAds.ts"
+    },
+    {
+      "method": "GET",
+      "path": "/ad-library",
+      "file": "politicalAds.ts"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/politician/profiles",
+      "file": "politician.ts"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/politician/profiles/:id",
+      "file": "politician.ts"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/politician/events",
+      "file": "politician.ts"
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/politician/events/:id/rsvp",
+      "file": "politician.ts"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/politician/manifestos",
+      "file": "politician.ts"
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/politician/manifestos/:manifestoId/items/:itemId/vote",
+      "file": "politician.ts"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/politician/surveys",
+      "file": "politician.ts"
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/politician/surveys/:id/respond",
+      "file": "politician.ts"
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/politician/grievances",
+      "file": "politician.ts"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/states",
+      "file": "states.ts"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/states/:code",
+      "file": "states.ts"
+    }
+  ]
+}

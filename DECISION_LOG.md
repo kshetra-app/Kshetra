@@ -368,3 +368,31 @@
      - `ACCEPTANCE_COMMIT`: `ea4c1fd` (final acceptance-state commit)
 - **Rationale:** Satisfies Launch Gate A disaster recovery and resilience criteria with complete truth in engineering, empirical proof, and strict governance transparency.
 
+---
+
+### DEC-029: API ARCHITECTURE AUDIT & STRANGLER SEPARATION MATRIX (JOB W006)
+- **Date:** 2026-09-11
+- **Status:** APPROVED & IMPLEMENTED
+- **Authority:** Master Product Blueprint, AI Agent Master Execution Job Book, Amendment v1.2, Amendment v1.4, `DEC-002`, `DEC-028`
+- **Context:** Mobile application exhibited a dual-path architecture where 12 direct Supabase callers and 11–14 Railway callers coexisted. To prepare for enterprise SaaS/API commercialization and enforce central auditing, rate limiting, and business validation, an empirical audit and boundary definition was conducted.
+- **Decisions:**
+  1. **Empirical Mobile Data Path Audit:** Audited all 316 mobile source files:
+     - 12 baseline direct Supabase caller files (reconciling with W000 ground truth)
+     - 7 files performing direct SQL `.from()` queries across 45 unique database tables
+     - 2 files managing Supabase Realtime websocket subscriptions (`.channel()`)
+     - 1 file managing Supabase Auth sessions (`stores/auth.ts`)
+     - 14 files issuing HTTP requests to Railway Fastify API endpoints
+     - 15 files with offline/dev mock fallbacks
+  2. **Data Service Architectural Classification:** Categorized all 85 exported functions in `apps/mobile/lib/supabaseDataService.ts`:
+     - **Class A (Read, RLS-Governed):** 22 functions (e.g. `fetchFeedForState`, `fetchIssuesForConstituency`, `fetchUserProfile`). Safe to query via PostgREST/PostGIS directly under strict row-level security or CDN caching.
+     - **Class B (Client Write, Strangler Target):** 57 functions (e.g. `reportIssue`, `composePost`, `votePoll`, `submitKYC`, `uploadShort`). Must be strangulated into canonical Fastify API endpoints.
+     - **Class C (Already Fastify Routed):** 6 functions (e.g. `checkContentModeration`, `sendDirectMessageToConversation`, `acceptDMRequest`, `declineDMRequest`, `blockAndReportDMUser`, `fetchDMUnreadCount`).
+  3. **Strangler Migration Phase Plan:** Established a 4-phase transition matrix:
+     - *Phase 1 (P0 / W007–W008):* High-Risk Civic & Moderation Mutations (`POST /api/v1/civic/issues`, comments, disputes, content reports).
+     - *Phase 2 (P1 / W008–W009):* Social Feed, Reactions & Poll Voting (`POST /api/v1/feed/posts`, comments, poll votes, reactions).
+     - *Phase 3 (P1 / W009–W010):* Creator KYC, LMX & Devices (`POST /api/v1/contributor/kyc`, hardware fingerprints, live stream creation).
+     - *Phase 4 (P2 / W010–W011):* Political Shorts & Aspirant Academy (`POST /api/v1/shorts/upload`, endorsements, academy quiz modules).
+  4. **Fastify Route Alignment:** Audited 114 unique route registrations across 23 Fastify route modules. Documented endpoint gaps for Phase 1 civic mutations to be formally registered in W008.
+- **Rationale:** Establishes a concrete, verifiable technical roadmap to eliminate client-side direct database write bypass while preserving rapid development and RLS-backed read performance.
+
+
