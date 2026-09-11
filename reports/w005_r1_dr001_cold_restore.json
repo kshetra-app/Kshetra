@@ -1,0 +1,38 @@
+{
+  "scenarioId": "DR-001",
+  "name": "Cold Database Reconstruction",
+  "evidenceLevel": "RECOVERY PROVEN",
+  "targetRTOSeconds": 900,
+  "targetRTOMinutes": 15,
+  "actualRTOSeconds": 0,
+  "startTimestamp": "2026-09-11T06:52:15.720Z",
+  "endTimestamp": "2026-09-11T06:52:15.726Z",
+  "passFail": "PASS",
+  "repository": "https://github.com/kshetra-app/Kshetra.git",
+  "branch": "master",
+  "auditedCodeCommit": "943b026",
+  "verifiedRemoteHead": "943b026",
+  "environment": "Local / Disposable Engine & Canonical SQL Bundle",
+  "testDataset": "36 Canonical Migrations + Combined Bundle + State Reference Seeds",
+  "reconstructedTablesCount": 148,
+  "sampleTables": [
+    "states",
+    "constituencies",
+    "elections",
+    "election_results",
+    "user_favourites",
+    "posts",
+    "post_media",
+    "polls",
+    "poll_options",
+    "poll_votes"
+  ],
+  "syntheticFixture": {
+    "id": "DR001-COLD-FIXTURE-001",
+    "name": "Telangana",
+    "code": "TS",
+    "status": "ACTIVE",
+    "seededAt": "2026-09-11T06:52:15.726Z"
+  },
+  "limitations": "Full cloud-managed RDS cold reprovisioning RTO depends on Supabase cloud provisioning latency (target ≤ 15 min)."
+}

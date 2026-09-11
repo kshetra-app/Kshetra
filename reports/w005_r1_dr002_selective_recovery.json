@@ -1,0 +1,30 @@
+{
+  "scenarioId": "DR-002",
+  "name": "Selective Data Recovery",
+  "evidenceLevel": "RECOVERY PROVEN",
+  "targetRTOSeconds": 1200,
+  "actualRTOSeconds": 4.74,
+  "startTimestamp": "2026-09-11T06:52:15.726Z",
+  "endTimestamp": "2026-09-11T06:52:20.469Z",
+  "passFail": "PASS",
+  "repository": "https://github.com/kshetra-app/Kshetra.git",
+  "branch": "master",
+  "auditedCodeCommit": "943b026",
+  "verifiedRemoteHead": "943b026",
+  "environment": "Staging Supabase (fkpigozcqnmcvofuksar)",
+  "testDataset": "3 Synthetic civic_issues Records",
+  "preLossRowCount": 3,
+  "postLossRowCount": 0,
+  "postRecoveryRowCount": 3,
+  "preLossChecksum": "4e06bb9c465992a23a3310e74b9e510fb803474d65bb970d4aad0fe77e355e32",
+  "postRecoveryChecksum": "4e06bb9c465992a23a3310e74b9e510fb803474d65bb970d4aad0fe77e355e32",
+  "checksumMatched": true,
+  "pitrMetrics": {
+    "pitrAvailable": true,
+    "pitrConfigured": "NOT EMPIRICALLY VERIFIED",
+    "pitrActualRestoreTested": false,
+    "recoveryPointAccuracy": "NOT EMPIRICALLY VERIFIED",
+    "actualRPO": "NOT EMPIRICALLY VERIFIED (Target ≤ 5 min)"
+  },
+  "limitations": "Automated selective restore verified via backup payload replay; Supabase physical PITR rewind requires Pro tier cloud dashboard access and is classified as NOT EMPIRICALLY VERIFIED."
+}

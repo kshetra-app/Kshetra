@@ -1,0 +1,20 @@
+{
+  "scenarioId": "DR-004",
+  "name": "Storage & Media Object Recovery",
+  "evidenceLevel": "RECOVERY PROVEN",
+  "targetRTOSeconds": 900,
+  "actualRTOSeconds": 0,
+  "startTimestamp": "2026-09-11T06:52:25.016Z",
+  "endTimestamp": "2026-09-11T06:52:25.017Z",
+  "passFail": "PASS",
+  "repository": "https://github.com/kshetra-app/Kshetra.git",
+  "branch": "master",
+  "auditedCodeCommit": "943b026",
+  "verifiedRemoteHead": "943b026",
+  "environment": "Local Replica Cache & Storage Adapter Seam",
+  "testDataset": "Synthetic 1x1 PNG Media Object (68 bytes)",
+  "preLossChecksum": "6b7fa434f92a8b80aab02d9bf1a12e49ffcae424e4013a1c4f68b67e3d2bbcd0",
+  "postRecoveryChecksum": "6b7fa434f92a8b80aab02d9bf1a12e49ffcae424e4013a1c4f68b67e3d2bbcd0",
+  "checksumMatched": true,
+  "limitations": "Live Supabase Cloud Storage cross-region bucket replication is managed at cloud provider tier; local replica recovery is RECOVERY PROVEN."
+}

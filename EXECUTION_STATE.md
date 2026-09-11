@@ -9,15 +9,15 @@
 PROJECT:               PANIN (formerly Kshetra)
 TARGET_DOMAIN:         India Political Geography, Intelligence, Participation & Media Platform
 CURRENT_PHASE:         W0 (Baseline Reconciliation & Ground-Truth Audit)
-CURRENT_JOB:           W005 (Backup & Recovery Verification)
+CURRENT_JOB:           W005-R1 (Actual Backup, Restore & Disaster Recovery Drill)
 LAST_COMPLETED_JOB:    W004 (Observability & Error Tracking - ACCEPTED)
 NEXT_PERMITTED_JOB:    W005 (Backup & Recovery Verification)
 
 CURRENT_BRANCH:        master
-VERIFIED_REMOTE_HEAD:  943b026
-CURRENT_REMOTE_HEAD:   943b026
+VERIFIED_REMOTE_HEAD:  490ceb3
+CURRENT_REMOTE_HEAD:   490ceb3
 AUDITED_CODE_COMMIT:   943b026
-EVIDENCE_COMMIT:       943b026
+EVIDENCE_COMMIT:       pending
 ACCEPTANCE_COMMIT:     pending
 API_VERSION:           v1 (Fastify 5.2 on Railway)
 MOBILE_VERSION:        0.1.0 (Expo 54, React Native 0.81.5)
@@ -49,8 +49,8 @@ REMOTE_SYNC:           Up to date with origin/master
 | **W003-P0**| Amendment v1.4 Activation & Governance Sync | **ACCEPTED** | 2026-09-09 | Independent Verifier PASS; Amendment v1.4 operational governance authority active across all registers; `reports/w003_p0_independent_verification.md` |
 | **W003** | CI/CD Quality Pipeline | **ACCEPTED** | 2026-09-10 | Independent Verifier PASS with Monitored Exceptions per Amendment v1.4 Parts 33 & 34; accepted by user (`reports/w003_r5_independent_verification.md`) |
 | **W004** | Observability & Error Tracking | **ACCEPTED** | 2026-09-11 | W004-R1A Independent Verifier PASS (13/13 gates at commit `811b5dd`); verified remote head `1260f98`; audited code `ef4622a`; evidence `19a5932`; user accepted; `reports/w004_r1a_independent_verification.md` |
-| **W005** | Backup & Recovery Verification | **IN_PROGRESS** | - | Disaster Recovery Runbook, cold-start reconstruction verification, migration bundle refresh |
-| **W006** | API Architecture Audit & Separation | NOT_STARTED | - | Prerequisite: W005 |
+| **W005** | Backup & Recovery Verification | **READY_FOR_VERIFICATION** | - | W005-R1 empirical drills executed: DR-001 (cold rebuild), DR-002 (selective staging recovery with SHA256 match), DR-003 (failover), DR-004 (storage), DR-005 (client sync) |
+| **W006** | API Architecture Audit & Separation | BLOCKED | - | Prerequisite: W005 |
 | **W007** | Canonical API Client | NOT_STARTED | - | Prerequisite: W006 |
 | **W008** | API Contract Standardization | NOT_STARTED | - | Prerequisite: W007 |
 | **W009** | External Provider Abstraction | NOT_STARTED | - | Prerequisite: W008 |

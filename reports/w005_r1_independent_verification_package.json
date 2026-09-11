@@ -1,0 +1,30 @@
+{
+  "manifestVersion": "1.0.0",
+  "job": "W005-R1",
+  "title": "Actual Backup, Restore & Disaster Recovery Drill Verification Package",
+  "generatedAt": "2026-09-11T06:52:25.046Z",
+  "coordinates": {
+    "repository": "https://github.com/kshetra-app/Kshetra.git",
+    "branch": "master",
+    "auditedCodeCommit": "943b026",
+    "verifiedRemoteHead": "943b026",
+    "evidenceCommit": "pending"
+  },
+  "evidenceFiles": [
+    "reports/w005_r1_dr001_cold_restore.json",
+    "reports/w005_r1_dr002_selective_recovery.json",
+    "reports/w005_r1_dr003_api_failover.json",
+    "reports/w005_r1_dr004_storage_recovery.json",
+    "reports/w005_r1_dr005_client_resilience.json",
+    "reports/w005_r1_rpo_rto.json",
+    "reports/w005_r1_recovery_matrix.json"
+  ],
+  "auditMandates": [
+    "Confirm disposable staging/local infrastructure was used (zero production disruption)",
+    "Confirm DR-002 selective restore actually inserted, deleted, restored and verified checksums on staging",
+    "Confirm RTO was measured and recorded for every scenario",
+    "Confirm RPO is honestly classified as NOT EMPIRICALLY VERIFIED rather than assumed",
+    "Confirm API failover limitations are explicitly documented (no live multi-cloud standby)",
+    "Confirm intentional negative path failure was caught"
+  ]
+}
