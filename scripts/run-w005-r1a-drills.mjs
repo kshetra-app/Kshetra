@@ -10,30 +10,48 @@ console.log('===================================================================
 
 const ROOT_DIR = process.cwd();
 
-// Dynamic Git Metadata & Repository Validation (Job W005-R1B)
+// Dynamic Git Metadata & Repository Validation (Job W005-R1C: Strict Remote-Coordinate Verification)
 const currentBranch = execSync('git branch --show-current', { encoding: 'utf8' }).trim();
 assert.strictEqual(currentBranch, 'master', `Drill suite must run on canonical master branch, but got "${currentBranch}"`);
 
-const localHeadFull = execSync('git rev-parse HEAD', { encoding: 'utf8' }).trim();
+let localHeadFull = '';
+try {
+  localHeadFull = execSync('git rev-parse HEAD', { encoding: 'utf8' }).trim();
+} catch (err) {
+  console.error('[FAIL CLOSED] LOCAL_VERIFICATION_FAILED: Unable to resolve local HEAD via git rev-parse HEAD:', err.message);
+  process.exit(1);
+}
 const localHead = localHeadFull.substring(0, 7);
 
 let originMasterFull = '';
 try {
   originMasterFull = execSync('git rev-parse origin/master', { encoding: 'utf8' }).trim();
-} catch (e) {
-  originMasterFull = localHeadFull;
+} catch (err) {
+  console.error('[FAIL CLOSED] REMOTE_VERIFICATION_FAILED: Unable to resolve remote reference origin/master via git rev-parse origin/master:', err.message);
+  process.exit(1);
 }
 const originMasterHead = originMasterFull.substring(0, 7);
 
-// Working tree status
+// Mandatory clean working tree requirement (Step 4)
 const dirtyFiles = execSync('git status --porcelain', { encoding: 'utf8' }).trim();
-if (process.env.ENFORCE_CLEAN_TREE === 'true') {
-  assert.strictEqual(dirtyFiles, '', 'Working tree must be clean when clean remote verification is enforced');
+if (dirtyFiles.length > 0) {
+  console.error('[FAIL CLOSED] WORKING_TREE_DIRTY: Working tree must be clean for evidence generation. Unstaged/uncommitted files detected:\n' + dirtyFiles);
+  process.exit(1);
 }
 
+// Mandatory exact local/remote match requirement (Step 2)
+if (localHeadFull !== originMasterFull) {
+  console.error(`[FAIL CLOSED] COORDINATE_MISMATCH: Local HEAD (${localHeadFull}) does not match origin/master (${originMasterFull}). Remote and local must be identical.`);
+  process.exit(1);
+}
+
+// Explicit Remote Verification (Step 3)
+const LOCAL_HEAD = localHead;
+const ORIGIN_MASTER_HEAD = originMasterHead;
+const VERIFIED_REMOTE_HEAD = ORIGIN_MASTER_HEAD;
+const verifiedRemoteHead = VERIFIED_REMOTE_HEAD;
+
 // Four-coordinate model
-// VERIFIED_REMOTE_HEAD: exact remote HEAD verified before/at execution
-const verifiedRemoteHead = originMasterHead;
 // AUDITED_CODE_COMMIT: exact implementation commit being audited (extracted from governance state or ancestor)
 const executionStateContent = fs.readFileSync(path.resolve('EXECUTION_STATE.md'), 'utf8');
 const auditedMatch = executionStateContent.match(/AUDITED_CODE_COMMIT:\s+(\S+)/);

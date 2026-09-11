@@ -329,3 +329,17 @@
   2. **Automated Dynamic Coordinate Regression Gate:** Created `tests/drill-coordinate-dynamism.test.mjs` to permanently prevent stale SHA constants from entering executable evidence generators.
   3. **Preservation of Empirical DR Findings:** Preserved all empirical evidence categories established in DEC-025: DR-001 (Schema Recovery & API Bootstrap - RECOVERY TESTED, target ≤ 15 min), DR-002 (Logical Backup & Restore - RECOVERY PROVEN), DR-003 (Local Process Standby Failover - RECOVERY TESTED, multi-cloud standby not implemented), DR-004 (Supabase Storage Object Restore - RECOVERY PROVEN), DR-005 (Client Offline Resilience), and RPO honestly reported as `NOT EMPIRICALLY VERIFIED`.
 - **Rationale:** Ensures that all generated evidence artifacts automatically reflect exact repository coordinates at execution time with zero manual editing and zero stale constants.
+
+---
+
+### DEC-027: W005-R1C STRICT REMOTE-COORDINATE VERIFICATION & FAIL-CLOSED DRILL INTEGRITY
+- **Date:** 2026-09-11
+- **Status:** APPROVED & APPLIED
+- **Context:** While W005-R1B removed hardcoded coordinates, the drill runner still contained a fallback (`originMasterFull = localHeadFull`) if remote resolution failed, and tests did not assert strict equality between local HEAD and origin/master or enforce a clean working tree unconditionally.
+- **Decisions:**
+  1. **Eradication of Local Fallback:** Eliminated the remote-to-local fallback in `scripts/run-w005-r1a-drills.mjs`. If `git rev-parse origin/master` fails, the drill script exits immediately with `[FAIL CLOSED] REMOTE_VERIFICATION_FAILED` (exit code 1).
+  2. **Mandatory Exact Local/Remote Alignment:** Enforced `localHeadFull === originMasterFull`. If local and remote commits diverge, the script fails closed with `COORDINATE_MISMATCH` (exit code 1).
+  3. **Mandatory Clean Working Tree:** Eliminated dependency on optional environment variables. Any uncommitted/unstaged changes immediately abort execution with `WORKING_TREE_DIRTY` (exit code 1).
+  4. **Comprehensive Regression Suite (Tests A–H):** Expanded `tests/drill-coordinate-dynamism.test.mjs` to explicitly test: Test A (branch=master), Test B (local HEAD resolves), Test C (origin/master resolves), Test D (local HEAD == origin/master), Test E (report verifiedRemoteHead format and integrity), Test F (remote lookup failure exits non-zero with `REMOTE_VERIFICATION_FAILED`), Test G (mismatch exits non-zero with `COORDINATE_MISMATCH`), and Test H (dirty working tree exits non-zero with `WORKING_TREE_DIRTY`).
+  5. **Governance State Alignment:** Maintained strict four-coordinate terminology (`VERIFIED_REMOTE_HEAD`, `AUDITED_CODE_COMMIT`, `EVIDENCE_COMMIT`, `ACCEPTANCE_COMMIT`). Set W005 to `NOT ACCEPTED / IN VERIFICATION` and kept W006 strictly `BLOCKED` until independent verification passes.
+- **Rationale:** Guarantees that recovery evidence can only ever be generated against an unblemished, fully pushed, verified canonical remote repository state with zero ambiguous fallbacks.

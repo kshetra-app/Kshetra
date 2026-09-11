@@ -9,13 +9,13 @@
 PROJECT:               PANIN (formerly Kshetra)
 TARGET_DOMAIN:         India Political Geography, Intelligence, Participation & Media Platform
 CURRENT_PHASE:         W0 (Baseline Reconciliation & Ground-Truth Audit)
-CURRENT_JOB:           W005-R1B (Dynamic Evidence Coordinate Binding)
+CURRENT_JOB:           W005-R1C (Strict Remote-Coordinate Verification)
 LAST_COMPLETED_JOB:    W004 (Observability & Error Tracking - ACCEPTED)
-NEXT_PERMITTED_JOB:    W005 (Backup & Recovery Verification)
+NEXT_PERMITTED_JOB:    W006 (API Architecture Audit & Separation - BLOCKED PENDING W005 ACCEPTANCE)
 
 CURRENT_BRANCH:        master
-VERIFIED_REMOTE_HEAD:  aed3d99
-CURRENT_REMOTE_HEAD:   b4f3133
+VERIFIED_REMOTE_HEAD:  2e9f84c
+CURRENT_REMOTE_HEAD:   2e9f84c
 AUDITED_CODE_COMMIT:   943b026
 EVIDENCE_COMMIT:       b4f3133
 ACCEPTANCE_COMMIT:     pending
@@ -49,8 +49,8 @@ REMOTE_SYNC:           Up to date with origin/master
 | **W003-P0**| Amendment v1.4 Activation & Governance Sync | **ACCEPTED** | 2026-09-09 | Independent Verifier PASS; Amendment v1.4 operational governance authority active across all registers; `reports/w003_p0_independent_verification.md` |
 | **W003** | CI/CD Quality Pipeline | **ACCEPTED** | 2026-09-10 | Independent Verifier PASS with Monitored Exceptions per Amendment v1.4 Parts 33 & 34; accepted by user (`reports/w003_r5_independent_verification.md`) |
 | **W004** | Observability & Error Tracking | **ACCEPTED** | 2026-09-11 | W004-R1A Independent Verifier PASS (13/13 gates at commit `811b5dd`); verified remote head `1260f98`; audited code `ef4622a`; evidence `19a5932`; user accepted; `reports/w004_r1a_independent_verification.md` |
-| **W005** | Backup & Recovery Verification | **READY_FOR_VERIFICATION** | - | W005-R1A empirical drills executed: DR-001 (cold schema & live DB-backed API), DR-002 (real disk backup artifact & staging data restore with SHA256 match), DR-003 (honest multi-cloud classification & local process standby), DR-004 (real Supabase Storage bucket backup & restore with SHA256 match), DR-005 (client offline sync) |
-| **W006** | API Architecture Audit & Separation | BLOCKED | - | Prerequisite: W005 |
+| **W005** | Backup & Recovery Verification | **NOT ACCEPTED / IN VERIFICATION** | - | W005-R1A empirical drills executed (DR-001 through DR-005); W005-R1B dynamic coordinate binding; W005-R1C strict remote verification (fail-closed, local HEAD == origin/master, clean tree mandatory) |
+| **W006** | API Architecture Audit & Separation | BLOCKED | - | Prerequisite: W005 acceptance |
 | **W007** | Canonical API Client | NOT_STARTED | - | Prerequisite: W006 |
 | **W008** | API Contract Standardization | NOT_STARTED | - | Prerequisite: W007 |
 | **W009** | External Provider Abstraction | NOT_STARTED | - | Prerequisite: W008 |
