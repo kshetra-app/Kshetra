@@ -1,6 +1,6 @@
 -- ========================================================
--- KSHETRA ALL MIGRATIONS COMBINED (001 - 028)
--- Generated at: 2026-09-04T14:38:40.738Z
+-- KSHETRA ALL MIGRATIONS COMBINED (001 - 034, 36 FILES)
+-- Generated at: 2026-09-11T06:04:35.995Z
 -- Run this script in the Supabase SQL Editor to provision
 -- the entire database schema, roles, RLS, and seed data.
 -- ========================================================
@@ -7671,5 +7671,441 @@ DROP TRIGGER IF EXISTS on_auth_user_created ON auth.users;
 CREATE TRIGGER on_auth_user_created
   AFTER INSERT ON auth.users
   FOR EACH ROW EXECUTE FUNCTION public.handle_new_user();
+
+
+
+-- ────────────────────────────────────────────────────────
+-- START MIGRATION: 030_trai_opt_outs.sql
+-- ────────────────────────────────────────────────────────
+
+-- 030: TRAI Opt-Out Ledger for Voice OBD and SMS Outreach
+-- Enforces statutory National Do Not Call (NDNC) & recipient Press 9 opt-outs
+
+CREATE TABLE IF NOT EXISTS trai_opt_outs (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  phone_number_hash TEXT NOT NULL UNIQUE,
+  phone_number TEXT,
+  opted_out_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+  source_broadcast_id TEXT,
+  channel TEXT NOT NULL DEFAULT 'voice_press_9' CHECK (channel IN ('voice_press_9', 'sms_stop', 'manual_admin', 'web_form')),
+  created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+
+CREATE INDEX IF NOT EXISTS idx_trai_opt_outs_hash ON trai_opt_outs(phone_number_hash);
+CREATE INDEX IF NOT EXISTS idx_trai_opt_outs_date ON trai_opt_outs(opted_out_at);
+
+-- RLS: Service role can manage, authenticated users can check
+ALTER TABLE trai_opt_outs ENABLE ROW LEVEL SECURITY;
+
+CREATE POLICY "Anyone can check opt-outs" ON trai_opt_outs
+  FOR SELECT USING (true);
+
+CREATE POLICY "Service role can insert opt-outs" ON trai_opt_outs
+  FOR INSERT WITH CHECK (true);
+
+
+
+-- ────────────────────────────────────────────────────────
+-- START MIGRATION: 031_direct_messages.sql
+-- ────────────────────────────────────────────────────────
+
+-- 031: Direct Messages (Tickets 3.1 & 3.2)
+-- Depends on: 001_initial_schema.sql, 006_trust_safety.sql (blocked_users)
+
+-- ─── CONVERSATIONS TABLE ───
+CREATE TABLE IF NOT EXISTS conversations (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  participant_one UUID NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
+  participant_two UUID NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
+  status TEXT NOT NULL DEFAULT 'pending' CHECK (status IN ('pending', 'accepted', 'declined')),
+  initiated_by UUID NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
+  last_message_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+  last_message_preview TEXT,
+  media_accepted_by_one BOOLEAN NOT NULL DEFAULT false,
+  media_accepted_by_two BOOLEAN NOT NULL DEFAULT false,
+  first_notification_sent BOOLEAN NOT NULL DEFAULT false,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+  updated_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+  CONSTRAINT unique_participants UNIQUE (participant_one, participant_two),
+  CONSTRAINT check_different_participants CHECK (participant_one != participant_two)
+);
+
+CREATE INDEX IF NOT EXISTS idx_conversations_participant_one ON conversations(participant_one);
+CREATE INDEX IF NOT EXISTS idx_conversations_participant_two ON conversations(participant_two);
+CREATE INDEX IF NOT EXISTS idx_conversations_last_message_at ON conversations(last_message_at DESC);
+CREATE INDEX IF NOT EXISTS idx_conversations_status ON conversations(status);
+
+-- ─── MESSAGES TABLE ───
+CREATE TABLE IF NOT EXISTS messages (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  conversation_id UUID NOT NULL REFERENCES conversations(id) ON DELETE CASCADE,
+  sender_id UUID NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
+  content TEXT NOT NULL,
+  media_url TEXT,
+  media_type TEXT CHECK (media_type IN ('image', 'video', 'audio', 'document')),
+  is_media_locked BOOLEAN NOT NULL DEFAULT false,
+  read_at TIMESTAMPTZ,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT now()
+);
+
+CREATE INDEX IF NOT EXISTS idx_messages_conversation ON messages(conversation_id);
+CREATE INDEX IF NOT EXISTS idx_messages_sender ON messages(sender_id);
+CREATE INDEX IF NOT EXISTS idx_messages_created_at ON messages(created_at DESC);
+
+-- ─── ROW LEVEL SECURITY ───
+ALTER TABLE conversations ENABLE ROW LEVEL SECURITY;
+ALTER TABLE messages ENABLE ROW LEVEL SECURITY;
+
+-- Conversations RLS: only participants can view, insert, or update
+CREATE POLICY "Participants view conversations" ON conversations
+  FOR SELECT
+  USING (auth.uid() = participant_one OR auth.uid() = participant_two);
+
+CREATE POLICY "Participants insert conversations" ON conversations
+  FOR INSERT
+  WITH CHECK (auth.uid() = participant_one OR auth.uid() = participant_two);
+
+CREATE POLICY "Participants update conversations" ON conversations
+  FOR UPDATE
+  USING (auth.uid() = participant_one OR auth.uid() = participant_two)
+  WITH CHECK (auth.uid() = participant_one OR auth.uid() = participant_two);
+
+-- Messages RLS: only conversation participants can read & send messages
+CREATE POLICY "Participants view messages" ON messages
+  FOR SELECT
+  USING (
+    EXISTS (
+      SELECT 1 FROM conversations c
+      WHERE c.id = messages.conversation_id
+      AND (c.participant_one = auth.uid() OR c.participant_two = auth.uid())
+    )
+  );
+
+CREATE POLICY "Participants send messages" ON messages
+  FOR INSERT
+  WITH CHECK (
+    auth.uid() = sender_id AND
+    EXISTS (
+      SELECT 1 FROM conversations c
+      WHERE c.id = messages.conversation_id
+      AND (c.participant_one = auth.uid() OR c.participant_two = auth.uid())
+    )
+  );
+
+-- ─── BLOCKLIST ENFORCEMENT TRIGGER (Ticket 3.2) ───
+CREATE OR REPLACE FUNCTION check_dm_blocklist_trigger()
+RETURNS TRIGGER AS $$
+DECLARE
+  v_other_user UUID;
+  v_is_blocked BOOLEAN;
+BEGIN
+  -- For conversations: determine the other participant
+  IF TG_TABLE_NAME = 'conversations' THEN
+    IF NEW.initiated_by = NEW.participant_one THEN
+      v_other_user := NEW.participant_two;
+    ELSE
+      v_other_user := NEW.participant_one;
+    END IF;
+
+    SELECT EXISTS (
+      SELECT 1 FROM blocked_users
+      WHERE (blocker_id = v_other_user AND blocked_id = NEW.initiated_by)
+         OR (blocker_id = NEW.initiated_by AND blocked_id = v_other_user)
+    ) INTO v_is_blocked;
+
+    IF v_is_blocked THEN
+      RAISE EXCEPTION 'Cannot initiate direct messaging: user is blocked.';
+    END IF;
+
+  -- For messages: find conversation participants and verify recipient block status
+  ELSIF TG_TABLE_NAME = 'messages' THEN
+    SELECT (CASE WHEN participant_one = NEW.sender_id THEN participant_two ELSE participant_one END)
+    INTO v_other_user
+    FROM conversations
+    WHERE id = NEW.conversation_id;
+
+    IF v_other_user IS NOT NULL THEN
+      SELECT EXISTS (
+        SELECT 1 FROM blocked_users
+        WHERE (blocker_id = v_other_user AND blocked_id = NEW.sender_id)
+           OR (blocker_id = NEW.sender_id AND blocked_id = v_other_user)
+      ) INTO v_is_blocked;
+
+      IF v_is_blocked THEN
+        RAISE EXCEPTION 'Cannot send message: user is blocked.';
+      END IF;
+    END IF;
+  END IF;
+
+  RETURN NEW;
+END;
+$$ LANGUAGE plpgsql SECURITY DEFINER;
+
+DROP TRIGGER IF EXISTS trg_check_conversation_blocklist ON conversations;
+CREATE TRIGGER trg_check_conversation_blocklist
+  BEFORE INSERT ON conversations
+  FOR EACH ROW
+  EXECUTE FUNCTION check_dm_blocklist_trigger();
+
+DROP TRIGGER IF EXISTS trg_check_message_blocklist ON messages;
+CREATE TRIGGER trg_check_message_blocklist
+  BEFORE INSERT ON messages
+  FOR EACH ROW
+  EXECUTE FUNCTION check_dm_blocklist_trigger();
+
+-- ─── AUTO-UPDATE CONVERSATION LAST MESSAGE TRIGGER ───
+CREATE OR REPLACE FUNCTION update_conversation_last_message()
+RETURNS TRIGGER AS $$
+BEGIN
+  UPDATE conversations
+  SET last_message_at = NEW.created_at,
+      last_message_preview = LEFT(NEW.content, 120),
+      updated_at = now()
+  WHERE id = NEW.conversation_id;
+  RETURN NEW;
+END;
+$$ LANGUAGE plpgsql SECURITY DEFINER;
+
+DROP TRIGGER IF EXISTS trg_update_conversation_last_message ON messages;
+CREATE TRIGGER trg_update_conversation_last_message
+  AFTER INSERT ON messages
+  FOR EACH ROW
+  EXECUTE FUNCTION update_conversation_last_message();
+
+
+
+-- ────────────────────────────────────────────────────────
+-- START MIGRATION: 032_reports_extend_targets.sql
+-- ────────────────────────────────────────────────────────
+
+-- 032_reports_extend_targets.sql
+-- Extend reports table to support user and direct message conversation targets (FIX-7)
+
+ALTER TABLE reports ADD COLUMN IF NOT EXISTS reported_user_id UUID REFERENCES auth.users(id) ON DELETE CASCADE;
+ALTER TABLE reports ADD COLUMN IF NOT EXISTS conversation_id UUID REFERENCES conversations(id) ON DELETE SET NULL;
+
+-- Drop existing inline check constraint if named or alter with drop constraint
+DO $$
+DECLARE
+  r RECORD;
+BEGIN
+  FOR r IN (
+    SELECT conname
+    FROM pg_constraint
+    WHERE conrelid = 'reports'::regclass
+      AND contype = 'c'
+      AND (
+        conname = 'reports_check'
+        OR pg_get_constraintdef(oid) LIKE '%post_id IS NOT NULL%'
+      )
+  ) LOOP
+    EXECUTE 'ALTER TABLE reports DROP CONSTRAINT IF EXISTS ' || quote_ident(r.conname);
+  END LOOP;
+END $$;
+
+-- Add updated target constraint allowing post, comment, OR user target
+ALTER TABLE reports ADD CONSTRAINT reports_target_check CHECK (
+  (post_id IS NOT NULL AND comment_id IS NULL AND reported_user_id IS NULL) OR
+  (post_id IS NULL AND comment_id IS NOT NULL AND reported_user_id IS NULL) OR
+  (post_id IS NULL AND comment_id IS NULL AND reported_user_id IS NOT NULL)
+);
+
+CREATE INDEX IF NOT EXISTS idx_reports_reported_user ON reports(reported_user_id);
+CREATE INDEX IF NOT EXISTS idx_reports_conversation ON reports(conversation_id);
+
+
+
+-- ────────────────────────────────────────────────────────
+-- START MIGRATION: 033_content_and_department_alerts.sql
+-- ────────────────────────────────────────────────────────
+
+-- Migration 033: Content and Department Alerts Pipeline
+-- Enables real bi-directional persistence for citizen content alerts and department acknowledgments.
+
+-- 1. Extend content_alerts for generic content references & location context
+ALTER TABLE content_alerts ALTER COLUMN content_visibility_id DROP NOT NULL;
+ALTER TABLE content_alerts ADD COLUMN IF NOT EXISTS content_type TEXT;
+ALTER TABLE content_alerts ADD COLUMN IF NOT EXISTS content_id TEXT;
+ALTER TABLE content_alerts ADD COLUMN IF NOT EXISTS state_code TEXT;
+ALTER TABLE content_alerts ADD COLUMN IF NOT EXISTS constituency_id TEXT;
+
+-- Update trigger function to tolerate null content_visibility_id
+CREATE OR REPLACE FUNCTION handle_alert()
+RETURNS TRIGGER AS $$
+BEGIN
+  IF NEW.content_visibility_id IS NOT NULL THEN
+    UPDATE content_visibility
+    SET alert_count = alert_count + 1,
+        review_status = CASE
+          WHEN review_status NOT IN ('restricted') THEN 'held'
+          ELSE review_status
+        END,
+        updated_at = now()
+    WHERE id = NEW.content_visibility_id;
+  END IF;
+  RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+-- 2. Allow moderators, admins, and department officials to update content_alerts (to acknowledge)
+DO $$
+BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_policies WHERE tablename = 'content_alerts' AND policyname = 'Moderators update content_alerts'
+  ) THEN
+    CREATE POLICY "Moderators update content_alerts" ON content_alerts
+      FOR UPDATE
+      USING (
+        auth.uid() = user_id
+        OR EXISTS (
+          SELECT 1 FROM user_profiles
+          WHERE user_id = auth.uid() AND role IN ('admin', 'moderator', 'official')
+        )
+        OR EXISTS (
+          SELECT 1 FROM constituency_moderators
+          WHERE user_id = auth.uid() AND is_active = true
+        )
+      )
+      WITH CHECK (true);
+  END IF;
+END $$;
+
+-- 3. Extend lmx_department_alerts
+ALTER TABLE lmx_department_alerts ALTER COLUMN live_event_id DROP NOT NULL;
+ALTER TABLE lmx_department_alerts ADD COLUMN IF NOT EXISTS content_alert_id UUID;
+ALTER TABLE lmx_department_alerts ADD COLUMN IF NOT EXISTS content_type TEXT;
+ALTER TABLE lmx_department_alerts ADD COLUMN IF NOT EXISTS content_id TEXT;
+
+-- 4. Enable RLS policies on lmx_department_alerts for real reads, inserts, and acknowledgments
+DO $$
+BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_policies WHERE tablename = 'lmx_department_alerts' AND policyname = 'Authenticated insert department alerts'
+  ) THEN
+    CREATE POLICY "Authenticated insert department alerts" ON lmx_department_alerts
+      FOR INSERT
+      WITH CHECK (auth.role() = 'authenticated' OR auth.uid()::text = reporter_id);
+  END IF;
+
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_policies WHERE tablename = 'lmx_department_alerts' AND policyname = 'Read department alerts'
+  ) THEN
+    CREATE POLICY "Read department alerts" ON lmx_department_alerts
+      FOR SELECT
+      USING (
+        auth.role() = 'authenticated'
+        OR auth.uid()::text = reporter_id
+        OR EXISTS (
+          SELECT 1 FROM user_profiles
+          WHERE user_id = auth.uid() AND role IN ('admin', 'moderator', 'official')
+        )
+      );
+  END IF;
+
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_policies WHERE tablename = 'lmx_department_alerts' AND policyname = 'Officials acknowledge department alerts'
+  ) THEN
+    CREATE POLICY "Officials acknowledge department alerts" ON lmx_department_alerts
+      FOR UPDATE
+      USING (
+        auth.role() = 'authenticated'
+        OR EXISTS (
+          SELECT 1 FROM user_profiles
+          WHERE user_id = auth.uid() AND role IN ('admin', 'moderator', 'official')
+        )
+      )
+      WITH CHECK (true);
+  END IF;
+END $$;
+
+
+
+-- ────────────────────────────────────────────────────────
+-- START MIGRATION: 034_political_ads.sql
+-- ────────────────────────────────────────────────────────
+
+-- ============================================================
+-- Migration 034: Political Ad Promotion Infrastructure (Lane 2)
+-- ============================================================
+
+CREATE TABLE IF NOT EXISTS political_ads (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  page_id UUID NOT NULL REFERENCES pages(id) ON DELETE CASCADE,
+  post_id TEXT NOT NULL,
+  mcmc_certificate_id TEXT NOT NULL,
+  status TEXT NOT NULL DEFAULT 'pending_certification' 
+    CHECK (status IN ('pending_certification', 'certified', 'rejected', 'active', 'ended')),
+  amount_paid INTEGER NOT NULL DEFAULT 0,
+  target_scope TEXT NOT NULL CHECK (target_scope IN ('state', 'constituency')),
+  target_value TEXT,
+  impressions INTEGER NOT NULL DEFAULT 0,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+  reviewed_by UUID REFERENCES auth.users(id),
+  reviewed_at TIMESTAMPTZ
+);
+
+CREATE INDEX IF NOT EXISTS idx_political_ads_page ON political_ads(page_id);
+CREATE INDEX IF NOT EXISTS idx_political_ads_status ON political_ads(status);
+CREATE INDEX IF NOT EXISTS idx_political_ads_scope ON political_ads(target_scope, target_value);
+CREATE INDEX IF NOT EXISTS idx_political_ads_created_at ON political_ads(created_at DESC);
+
+-- Enable Row Level Security
+ALTER TABLE political_ads ENABLE ROW LEVEL SECURITY;
+
+-- 1. Anyone (including unauthenticated visitors for the public Ad Library) can view active and ended political ads
+CREATE POLICY political_ads_public_select_policy ON political_ads
+  FOR SELECT
+  USING (
+    status IN ('active', 'ended')
+    OR (
+      auth.uid() IS NOT NULL AND (
+        -- Page owner can view all of their own ads regardless of status
+        EXISTS (
+          SELECT 1 FROM pages
+          WHERE pages.id = political_ads.page_id
+            AND pages.owner_id = auth.uid()
+        )
+        -- Admin and moderators can view all ads for the review queue
+        OR EXISTS (
+          SELECT 1 FROM user_profiles
+          WHERE user_profiles.user_id = auth.uid()
+            AND user_profiles.role IN ('admin', 'moderator')
+        )
+      )
+    )
+  );
+
+-- 2. Page owners can submit an ad, but only with initial status 'pending_certification'
+CREATE POLICY political_ads_insert_policy ON political_ads
+  FOR INSERT
+  WITH CHECK (
+    auth.uid() IS NOT NULL
+    AND status = 'pending_certification'
+    AND EXISTS (
+      SELECT 1 FROM pages
+      WHERE pages.id = political_ads.page_id
+        AND pages.owner_id = auth.uid()
+    )
+  );
+
+-- 3. Only human reviewers (role IN ('admin', 'moderator')) can update political ad status to certified/rejected
+CREATE POLICY political_ads_reviewer_update_policy ON political_ads
+  FOR UPDATE
+  USING (
+    auth.uid() IS NOT NULL
+    AND EXISTS (
+      SELECT 1 FROM user_profiles
+      WHERE user_profiles.user_id = auth.uid()
+        AND user_profiles.role IN ('admin', 'moderator')
+    )
+  )
+  WITH CHECK (
+    auth.uid() IS NOT NULL
+    AND EXISTS (
+      SELECT 1 FROM user_profiles
+      WHERE user_profiles.user_id = auth.uid()
+        AND user_profiles.role IN ('admin', 'moderator')
+    )
+  );
 
 

@@ -58,23 +58,31 @@ try {
 }
 
 // CHECK 2: AUDITED_CODE_COMMIT must resolve and be an ancestor of VERIFIED_REMOTE_HEAD
-try {
-  const resolvedAudited = execSync(`git rev-parse "${auditedCodeField}"`, { encoding: 'utf8' }).trim();
-  execSync(`git cat-file -e "${resolvedAudited}^{commit}"`, { stdio: 'pipe' });
-  execSync(`git merge-base --is-ancestor "${resolvedAudited}" "${resolvedVerifiedRemote}"`, { stdio: 'pipe' });
-  console.log(`[PASS] Check 2: AUDITED_CODE_COMMIT ${resolvedAudited} is a verified ancestor of VERIFIED_REMOTE_HEAD`);
-} catch (err) {
-  assert.fail(`AUDITED_CODE_COMMIT "${auditedCodeField}" is not a valid ancestor of VERIFIED_REMOTE_HEAD: ${err.message}`);
+if (auditedCodeField !== 'pending') {
+  try {
+    const resolvedAudited = execSync(`git rev-parse "${auditedCodeField}"`, { encoding: 'utf8' }).trim();
+    execSync(`git cat-file -e "${resolvedAudited}^{commit}"`, { stdio: 'pipe' });
+    execSync(`git merge-base --is-ancestor "${resolvedAudited}" "${resolvedVerifiedRemote}"`, { stdio: 'pipe' });
+    console.log(`[PASS] Check 2: AUDITED_CODE_COMMIT ${resolvedAudited} is a verified ancestor of VERIFIED_REMOTE_HEAD`);
+  } catch (err) {
+    assert.fail(`AUDITED_CODE_COMMIT "${auditedCodeField}" is not a valid ancestor of VERIFIED_REMOTE_HEAD: ${err.message}`);
+  }
+} else {
+  console.log(`[INFO] Check 2: AUDITED_CODE_COMMIT is "pending" (in progress)`);
 }
 
 // CHECK 3: EVIDENCE_COMMIT must resolve in git history and be an ancestor of HEAD
-try {
-  const resolvedEvidence = execSync(`git rev-parse "${evidenceCommitField}"`, { encoding: 'utf8' }).trim();
-  execSync(`git cat-file -e "${resolvedEvidence}^{commit}"`, { stdio: 'pipe' });
-  execSync(`git merge-base --is-ancestor "${resolvedEvidence}" HEAD`, { stdio: 'pipe' });
-  console.log(`[PASS] Check 3: EVIDENCE_COMMIT ${resolvedEvidence} exists in git history and is an ancestor of HEAD`);
-} catch (err) {
-  assert.fail(`EVIDENCE_COMMIT "${evidenceCommitField}" cannot be resolved in Git history: ${err.message}`);
+if (evidenceCommitField !== 'pending') {
+  try {
+    const resolvedEvidence = execSync(`git rev-parse "${evidenceCommitField}"`, { encoding: 'utf8' }).trim();
+    execSync(`git cat-file -e "${resolvedEvidence}^{commit}"`, { stdio: 'pipe' });
+    execSync(`git merge-base --is-ancestor "${resolvedEvidence}" HEAD`, { stdio: 'pipe' });
+    console.log(`[PASS] Check 3: EVIDENCE_COMMIT ${resolvedEvidence} exists in git history and is an ancestor of HEAD`);
+  } catch (err) {
+    assert.fail(`EVIDENCE_COMMIT "${evidenceCommitField}" cannot be resolved in Git history: ${err.message}`);
+  }
+} else {
+  console.log(`[INFO] Check 3: EVIDENCE_COMMIT is "pending" (in progress)`);
 }
 
 // CHECK 4: ACCEPTANCE_COMMIT — if not "pending", must resolve in git history

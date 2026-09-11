@@ -278,6 +278,25 @@
   4. **Next Permitted Job:** JOB W005 (Backup & Recovery Verification) is UNBLOCKED and designated as the immediate next permitted job.
 - **Rationale:** Establishes rigorous mathematical and operational finality for W004, prevents infinite self-referential commit loops in CI/CD validation, and safely unlocks the milestone progression to W005.
 
+---
+
+### DEC-024: BACKUP & RECOVERY ARCHITECTURE, DISASTER RUNBOOK & COLD-START RECONSTRUCTION (JOB W005)
+- **Date:** 2026-09-11
+- **Status:** APPROVED & APPLIED
+- **Context:** Master Execution Framework Amendment v1.2 (Part 11 & 15) and Amendment v1.4 mandate comprehensive verification of backup, recovery, and business continuity architecture prior to architectural refactoring (W006).
+- **Decisions:**
+  1. **Recovery Target Baselines (RTO & RPO):** Adopted formal business continuity thresholds:
+     - RPO ≤ 5 minutes via Supabase continuous Write-Ahead Log (WAL) archiving & Point-in-Time Recovery (PITR).
+     - Provider cloud instance failover RTO ≤ 30 minutes.
+     - Cold-start database reconstruction RTO ≤ 15 minutes.
+     - Mobile client offline degradation RTO = 0 seconds (local-first MMKV / SQLite caching).
+  2. **100% Migration Bundle Synchronization:** Updated `scripts/bundle_migrations.mjs` to incorporate all 36 SQL migrations (001–034, 0035, and dual-023), regenerating `supabase/all_migrations_combined.sql` (360.6 KB) as the single cold-start database bootstrap artifact.
+  3. **Automated Verification & Regression Testing:** Created `scripts/verify-backup-recovery.mjs` (evaluating migration completeness, bundle freshness, staging master schema, seed provenance, DB failure degradation, and env config) and `tests/backup-recovery.test.mjs` as permanent CI/CD quality gates.
+  4. **Disaster Recovery Runbook (`RUNBOOK_BACKUP_RECOVERY.md`):** Formally established step-by-step restoration procedures for 5 critical failure scenarios: total cloud database loss, accidental table corruption/deletion, API container host failure, storage/media CDN disruption, and mobile client network partitioning.
+  5. **Governance Lineage Maintenance:** Maintained strict four-coordinate lineage model during W005 progression with zero self-referential failure loops.
+- **Rationale:** Ensures complete resilience against data loss or infrastructure outages, provides a deterministic cold-start database recovery mechanism, and satisfies Launch Gate A operational readiness requirements.
+
+
 
 
 

@@ -37,12 +37,17 @@ const ORDERED_FILES = [
   '027_extend_role_and_verification.sql',
   '028_user_follows.sql',
   '029_fix_auth_trigger.sql',
+  '030_trai_opt_outs.sql',
+  '031_direct_messages.sql',
+  '032_reports_extend_targets.sql',
+  '033_content_and_department_alerts.sql',
+  '034_political_ads.sql',
 ];
 
 console.log(`Combining ${ORDERED_FILES.length} migrations...`);
 
 let combinedSql = `-- ========================================================\n`;
-combinedSql += `-- KSHETRA ALL MIGRATIONS COMBINED (001 - 028)\n`;
+combinedSql += `-- KSHETRA ALL MIGRATIONS COMBINED (001 - 034, 36 FILES)\n`;
 combinedSql += `-- Generated at: ${new Date().toISOString()}\n`;
 combinedSql += `-- Run this script in the Supabase SQL Editor to provision\n`;
 combinedSql += `-- the entire database schema, roles, RLS, and seed data.\n`;

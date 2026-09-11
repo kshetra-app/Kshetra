@@ -14,11 +14,11 @@ LAST_COMPLETED_JOB:    W004 (Observability & Error Tracking - ACCEPTED)
 NEXT_PERMITTED_JOB:    W005 (Backup & Recovery Verification)
 
 CURRENT_BRANCH:        master
-VERIFIED_REMOTE_HEAD:  1260f98
-CURRENT_REMOTE_HEAD:   1260f98
-AUDITED_CODE_COMMIT:   ef4622a
-EVIDENCE_COMMIT:       19a5932
-ACCEPTANCE_COMMIT:     HEAD
+VERIFIED_REMOTE_HEAD:  e98ee6b
+CURRENT_REMOTE_HEAD:   e98ee6b
+AUDITED_CODE_COMMIT:   pending
+EVIDENCE_COMMIT:       pending
+ACCEPTANCE_COMMIT:     pending
 API_VERSION:           v1 (Fastify 5.2 on Railway)
 MOBILE_VERSION:        0.1.0 (Expo 54, React Native 0.81.5)
 DATABASE_MIGRATIONS:   36 migration files present in repository (35 live applied to staging fkpigozcqnmcvofuksar)
@@ -49,7 +49,7 @@ REMOTE_SYNC:           Up to date with origin/master
 | **W003-P0**| Amendment v1.4 Activation & Governance Sync | **ACCEPTED** | 2026-09-09 | Independent Verifier PASS; Amendment v1.4 operational governance authority active across all registers; `reports/w003_p0_independent_verification.md` |
 | **W003** | CI/CD Quality Pipeline | **ACCEPTED** | 2026-09-10 | Independent Verifier PASS with Monitored Exceptions per Amendment v1.4 Parts 33 & 34; accepted by user (`reports/w003_r5_independent_verification.md`) |
 | **W004** | Observability & Error Tracking | **ACCEPTED** | 2026-09-11 | W004-R1A Independent Verifier PASS (13/13 gates at commit `811b5dd`); verified remote head `1260f98`; audited code `ef4622a`; evidence `19a5932`; user accepted; `reports/w004_r1a_independent_verification.md` |
-| **W005** | Backup & Recovery Verification | **UNBLOCKED** | - | Prerequisite W004 accepted; ready for execution |
+| **W005** | Backup & Recovery Verification | **IN_PROGRESS** | - | Disaster Recovery Runbook, cold-start reconstruction verification, migration bundle refresh |
 | **W006** | API Architecture Audit & Separation | NOT_STARTED | - | Prerequisite: W005 |
 | **W007** | Canonical API Client | NOT_STARTED | - | Prerequisite: W006 |
 | **W008** | API Contract Standardization | NOT_STARTED | - | Prerequisite: W007 |
