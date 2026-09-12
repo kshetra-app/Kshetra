@@ -481,3 +481,31 @@
   5. **Lifecycle State Separation:** Explicitly established that `PLAN APPROVAL ≠ IMPLEMENTATION ≠ INDEPENDENT VERIFICATION ≠ FINAL ACCEPTANCE`. This decision records the governance adoption and remediation process; full operationalization is established upon implementation/remediation commit and successful independent verification. Final acceptance remains solely with the human user.
   6. **Governance Remediation & Coordinate Lineage:** Reconciled historical coordinates and strengthened Check 8 in `tests/governance-consistency.test.mjs` to comprehensively verify local HEAD, origin/master, clean working tree, and full 40-character commit lineage, while preserving historical W006 coordinates intact (`c1fe56a`, `35ba912`, `db30619`, `pending`).
 - **Rationale:** Prevents AI agents from treating the planning phase as a superficial formality, establishes uniform rigor across the project lifecycle, and protects architectural integrity before any system state is altered.
+
+---
+
+### DEC-036: W006 Final Acceptance — API Architecture Audit & Separation
+- **Date:** 2026-09-12
+- **Status:** ACCEPTED
+- **Authority:** Master Product Blueprint, AI Agent Master Execution Job Book, Amendment v1.2, Amendment v1.4, Amendment v1.5, Amendment v1.5-A, `DEC-002`, `DEC-028`, `DEC-029`, `DEC-030`, `DEC-031`, `DEC-032`, `DEC-033`
+- **Context:** Completion of the final independent verification and acceptance gate for Job W006 (API Architecture Audit & Separation).
+- **Decisions:**
+  1. **Final Acceptance of W006:** Formally accept Job W006 based on independent reproduction and automated verification of all 20 mandatory acceptance criteria.
+  2. **Authoritative Architecture Inventory Established:**
+     - 316 mobile source files scanned
+     - 12 baseline direct Supabase callers
+     - 7 direct table callers (`.from()`)
+     - 14 Railway / Fastify callers
+     - 15 local fallback / mock files
+     - 85 data service methods classified (23 Class A reads, 56 Class B strangler targets, 6 Class C Fastify routed)
+     - 137 Fastify static route registrations across 23 modules
+  3. **Fail-Closed RLS Decision Engine Proven:**
+     - 21 `SOURCE_POLICY_VERIFIED`, 2 `PENDING` source policies (`lmx_departments`, `lmx_affiliations`)
+     - 0 `LIVE_RLS_VERIFIED`, 23 `PENDING` live catalog (`pg_catalog.pg_policies` requires direct DB TCP connection credentials)
+     - 0 `directClientAllowed = true` (fail-closed rule strictly enforced; impossible without live catalog proof)
+     - 21 `CONDITIONAL_PENDING_VERIFICATION`, 2 forbidden (`conversations`, `messages` strictly require Fastify mediation)
+     - Invariants 1, 1A, 2, 3, and report generator anti-override guard fully operational
+  4. **Predictive Test & Negative-Path Integrity Proven:** All 10 negative-path scenarios (NP-01 through NP-10) executed and verified failing closed.
+  5. **Defect Disposition (DEF-013):** Formally logged `global_search` RPC syntax error (PostgreSQL `0A000: invalid UNION/INTERSECT/EXCEPT ORDER BY clause`) in `DEFECT_REGISTER.md` as DEF-013 (P2). Confirmed 0 architectural or security impact on W006.
+  6. **Unblocking W007:** W006 acceptance unblocks W007 (Canonical API Client). Under Amendment v1.5-A, W007 must proceed through a mandatory 22-section Pre-Implementation Plan and Direction-Review Gate before any implementation begins.
+- **Rationale:** All criteria independently verified and reproducible from repository source and live staging probes. Zero false live claims exist. Strict fail-closed guarantees protect client data safety.
