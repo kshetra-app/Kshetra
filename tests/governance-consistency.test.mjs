@@ -120,15 +120,16 @@ assert.ok(
 );
 console.log('[PASS] Check 6: EXECUTION_STATE.md recognizes Amendment v1.5-A and strictly preserves historical W006 coordinates.');
 
-// 7. DECISION_LOG.md DEC-016, DEC-034, DEC-035 & DEC-036 Semantic Integrity
+// 7. DECISION_LOG.md DEC-016, DEC-034, DEC-035, DEC-036 & DEC-037 Semantic Integrity
 assert.ok(fs.existsSync('DECISION_LOG.md'), 'DECISION_LOG.md must exist');
 const decisionContent = fs.readFileSync('DECISION_LOG.md', 'utf8');
 assert.ok(decisionContent.includes('DEC-016'), 'DECISION_LOG.md must record DEC-016');
 assert.ok(decisionContent.includes('DEC-034: AMENDMENT v1.5 MANDATORY PRE-IMPLEMENTATION PLANNING'), 'DECISION_LOG.md must record DEC-034');
 assert.ok(decisionContent.includes('DEC-035: AMENDMENT v1.5-A ADOPTION'), 'DECISION_LOG.md must record DEC-035');
 assert.ok(decisionContent.includes('DEC-036: W006 FINAL ACCEPTANCE') || decisionContent.includes('DEC-036'), 'DECISION_LOG.md must record DEC-036');
+assert.ok(decisionContent.includes('DEC-037: W006 Final Technical Acceptance') || decisionContent.includes('DEC-037'), 'DECISION_LOG.md must record DEC-037');
 assert.ok(decisionContent.includes('PLAN APPROVAL ≠ IMPLEMENTATION ≠ INDEPENDENT VERIFICATION ≠ FINAL ACCEPTANCE'), 'DEC-035 must record lifecycle separation invariant');
-console.log('[PASS] Check 7: DECISION_LOG.md records DEC-016, DEC-034, DEC-035, and DEC-036 with correct lifecycle separation semantics.');
+console.log('[PASS] Check 7: DECISION_LOG.md records DEC-016, DEC-034, DEC-035, DEC-036, and DEC-037 with correct lifecycle separation semantics.');
 
 // 8. Comprehensive Git HEAD, Remote Consistency & Fail-Closed Provenance Invariant (DEC-013 / DEC-022)
 const localHead = execSync('git rev-parse HEAD', { encoding: 'utf8' }).trim();

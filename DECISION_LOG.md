@@ -509,3 +509,19 @@
   5. **Defect Disposition (DEF-013):** Formally logged `global_search` RPC syntax error (PostgreSQL `0A000: invalid UNION/INTERSECT/EXCEPT ORDER BY clause`) in `DEFECT_REGISTER.md` as DEF-013 (P2). Confirmed 0 architectural or security impact on W006.
   6. **W007 Gate Status:** W007 (Canonical API Client) remains strictly blocked from implementation pending final human acceptance of W006. Upon human acceptance, W007 must proceed through the mandatory Amendment v1.5-A 22-section Pre-Implementation Plan and Direction-Review Gate before any implementation begins.
 - **Rationale:** All criteria independently verified and reproducible from repository source and live staging probes. Zero false live claims exist. Strict fail-closed guarantees protect client data safety while upholding human governance sovereignty.
+
+---
+
+### DEC-037: W006 Final Technical Acceptance & W007 Planning Transition
+- **Date:** 2026-09-12
+- **Status:** FORMALLY ACCEPTED (JOB CLOSED)
+- **Authority:** CTO / Technical Authority Instruction (W006 Formal Closure -> W007 Planning Transition), Master Product Blueprint, AI Agent Master Execution Job Book, Amendment v1.2, Amendment v1.4, Amendment v1.5, Amendment v1.5-A, `DEC-035`, `DEC-036`
+- **Context:** Formal technical acceptance and closure of Job W006 (API Architecture Audit & Separation) following technical review of verification packages, provenance checks, fail-closed negative path tests, and governance reconciliation.
+- **Decisions:**
+  1. **Formal Technical Acceptance of W006:** The CTO / Technical Authority has reviewed the W006 technical verification package, reconciliation, evidence, fail-closed tests, provenance checks, and governance records, determining that W006 is formally and technically ACCEPTED.
+  2. **Preservation of W006 Evidence & Lineage:** All W006 evidence artifacts (`reports/w006_final_*`, `reports/w006_api_architecture_*`, `reports/w006_r1_*`), negative-path test specifications (NP-01 through NP-10 in `tests/w006-final-acceptance.test.mjs`), defect disposition (`DEF-013`), and historical coordinates (`VERIFIED_REMOTE_HEAD: c1fe56a`, `AUDITED_CODE_COMMIT: 35ba912`, `EVIDENCE_COMMIT: db30619`) are permanently preserved and remain historically attributable.
+  3. **Acceptance Coordinate Recorded:** The acceptance coordinate is formally recorded in `EXECUTION_STATE.md` and `ACCEPTANCE_REGISTER.md` as the commit encapsulating this formal acceptance transition (`f5b8a09` baseline / closure commit).
+  4. **W007 Transition to Planning / Inspection Only:** Job W007 (Canonical API Client) is unblocked for repository inspection, architectural analysis, dependency analysis, risk analysis, and drafting the mandatory Amendment v1.5-A 22-section Pre-Implementation Plan ONLY.
+  5. **W007 Implementation Forbidden:** W007 implementation is strictly NOT authorized. Zero production code, migration, refactoring, database modification, API implementation, or client migration may occur until the W007 plan has undergone independent review and explicit approval by the CTO / Technical Authority.
+- **Rationale:** Separates architectural definition (W006) from client implementation (W007) and enforces the mandatory pre-implementation planning gate to protect repository integrity.
+
