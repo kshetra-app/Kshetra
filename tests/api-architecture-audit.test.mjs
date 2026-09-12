@@ -5,7 +5,7 @@ import { runApiArchitectureAudit } from '../scripts/audit-api-architecture.mjs';
 
 import { execSync, spawnSync } from 'child_process';
 
-console.log('=== RUNNING W006-R1A API ARCHITECTURE AUDIT & PROVENANCE INTEGRITY TEST ===\n');
+console.log('=== RUNNING W006-R1B API ARCHITECTURE AUDIT & PROVENANCE INTEGRITY TEST ===\n');
 
 // 1. REBINDING TO REAL AUDIT IMPLEMENTATION
 console.log('1. Executing real audit implementation directly against repository source...');
@@ -16,7 +16,7 @@ console.log('[PASS] Check 1: Real audit implementation executed dynamically agai
 
 // 2. EVIDENCE METADATA & REPOSITORY PROVENANCE
 const { evidenceMetadata, auditSummary, callers, rpcSemantics, dataServiceClassification, strangulationMigrationPlan, registeredFastifyRoutes } = liveAudit;
-assert.ok(evidenceMetadata.jobId === 'W006-R1A' || evidenceMetadata.jobId === 'W006-R1' || evidenceMetadata.jobId === 'W006', 'Job ID must be W006-R1A');
+assert.ok(evidenceMetadata.jobId === 'W006-R1B' || evidenceMetadata.jobId === 'W006-R1A' || evidenceMetadata.jobId === 'W006-R1' || evidenceMetadata.jobId === 'W006', 'Job ID must be W006-R1B');
 assert.ok(evidenceMetadata.commitCoordinates.verifiedRemoteHead, 'verifiedRemoteHead coordinate must be present');
 assert.ok(evidenceMetadata.timestamp, 'Timestamp must be present');
 console.log(`[PASS] Check 2: Evidence metadata verified (Job: ${evidenceMetadata.jobId}, Head: ${evidenceMetadata.commitCoordinates.verifiedRemoteHead}).`);
@@ -75,28 +75,37 @@ classAMethods.forEach(m => {
   // PART C / D Rule: If live RLS is pending, directClientAllowed must NOT be true!
   if (m.rlsQualification.rlsStatus.includes('PENDING') || m.rlsQualification.rlsStatus.includes('pending')) {
     assert.notStrictEqual(m.rlsQualification.directClientAllowed, true, `Method ${m.name} has RLS pending but falsely set directClientAllowed = true`);
-    assert.strictEqual(m.rlsQualification.directClientAllowed, 'CONDITIONAL_PENDING_VERIFICATION', `Method ${m.name} must use CONDITIONAL_PENDING_VERIFICATION`);
-    assert.strictEqual(m.rlsQualification.apiMediationRequired, 'REVIEW_REQUIRED', `Method ${m.name} must use apiMediationRequired = REVIEW_REQUIRED`);
+    if (m.name === 'fetchUserConversations' || m.name === 'fetchConversationMessages') {
+      assert.strictEqual(m.rlsQualification.directClientAllowed, false, `Method ${m.name} is confidential messaging and must have directClientAllowed = false`);
+      assert.strictEqual(m.rlsQualification.apiMediationRequired, true, `Method ${m.name} is confidential messaging and must have apiMediationRequired = true`);
+    } else {
+      assert.strictEqual(m.rlsQualification.directClientAllowed, 'CONDITIONAL_PENDING_VERIFICATION', `Method ${m.name} must use CONDITIONAL_PENDING_VERIFICATION`);
+      assert.strictEqual(m.rlsQualification.apiMediationRequired, 'REVIEW_REQUIRED', `Method ${m.name} must use apiMediationRequired = REVIEW_REQUIRED`);
+    }
   }
 
   // PART D Rule: No generic statements like "Verified RLS enabled on table. Direct client read safe"
   assert.ok(!m.rlsQualification.rationale.includes('Verified RLS enabled on table. Direct client read safe'), `Method ${m.name} must not contain generic RLS safe claims`);
 });
 
-// Verify explicit counts of verified vs pending
-const verifiedRls = classAMethods.filter(m => m.rlsQualification.rlsStatus.startsWith('RLS_LIVE_VERIFIED'));
-const pendingRls = classAMethods.filter(m => !m.rlsQualification.rlsStatus.startsWith('RLS_LIVE_VERIFIED'));
-assert.strictEqual(verifiedRls.length, 21, 'Must have 21 RLS_LIVE_VERIFIED Class A methods');
-assert.strictEqual(pendingRls.length, 2, 'Must have 2 RLS_LIVE_VERIFICATION_PENDING Class A methods (lmx_departments, lmx_affiliations)');
+// Verify explicit counts of source verified vs pending (W006-R1B Part A & C standards)
+const sourceVerifiedRls = classAMethods.filter(m => m.rlsQualification.sourcePolicyStatus === 'SOURCE_POLICY_VERIFIED');
+const sourcePendingRls = classAMethods.filter(m => m.rlsQualification.sourcePolicyStatus === 'PENDING');
+const liveVerifiedRls = classAMethods.filter(m => m.rlsQualification.livePolicyStatus === 'LIVE_RLS_VERIFIED');
+const livePendingRls = classAMethods.filter(m => m.rlsQualification.livePolicyStatus.includes('PENDING'));
+assert.strictEqual(sourceVerifiedRls.length, 21, 'Must have 21 SOURCE_POLICY_VERIFIED Class A methods');
+assert.strictEqual(sourcePendingRls.length, 2, 'Must have 2 source PENDING Class A methods (lmx_departments, lmx_affiliations)');
+assert.strictEqual(liveVerifiedRls.length, 0, 'Must have 0 LIVE_RLS_VERIFIED methods pending direct database catalog query');
+assert.strictEqual(livePendingRls.length, 23, 'Must have 23 live PENDING Class A methods');
 
-// Verify directClientAllowed breakdown
+// Verify directClientAllowed breakdown (Part C Rule)
 const directTrue = classAMethods.filter(m => m.rlsQualification.directClientAllowed === true);
 const directConditional = classAMethods.filter(m => m.rlsQualification.directClientAllowed === 'CONDITIONAL_PENDING_VERIFICATION');
 const directForbidden = classAMethods.filter(m => m.rlsQualification.directClientAllowed === false);
-assert.strictEqual(directTrue.length, 19, 'Must have 19 Class A methods with directClientAllowed = true');
-assert.strictEqual(directConditional.length, 2, 'Must have 2 Class A methods with directClientAllowed = CONDITIONAL_PENDING_VERIFICATION');
+assert.strictEqual(directTrue.length, 0, 'Must have 0 Class A methods with directClientAllowed = true (requires LIVE_RLS_VERIFIED)');
+assert.strictEqual(directConditional.length, 21, 'Must have 21 Class A methods with directClientAllowed = CONDITIONAL_PENDING_VERIFICATION');
 assert.strictEqual(directForbidden.length, 2, 'Must have 2 Class A methods with directClientAllowed = false (conversations, messages)');
-console.log(`[PASS] Check 7: Class A security & RLS qualifications verified (${verifiedRls.length} verified, ${pendingRls.length} pending, ${directTrue.length} allowed, ${directConditional.length} conditional, ${directForbidden.length} forbidden).`);
+console.log(`[PASS] Check 7: Class A security & RLS qualifications verified (${sourceVerifiedRls.length} source verified, ${sourcePendingRls.length} source pending, ${liveVerifiedRls.length} live verified, ${directTrue.length} allowed, ${directConditional.length} conditional, ${directForbidden.length} forbidden).`);
 
 // 8. FASTIFY ROUTE INVENTORY (Requirement 6)
 assert.ok(auditSummary.staticSourceRouteRegistrationsCount >= 135, 'Static route registrations must capture at least 135 routes');
@@ -235,6 +244,81 @@ for (const sha of forbiddenShas) {
 }
 console.log('[PASS] Check 19: Zero hard-coded fallback SHAs exist in scripts/audit-api-architecture.mjs.');
 
+// -----------------------------------------------------------------------------
+// PART H — W006-R1B LIVE RLS TAXONOMY & PROVENANCE REBINDING TESTS (Checks 20 to 27)
+// -----------------------------------------------------------------------------
+console.log('\n--- Running W006-R1B Live RLS Taxonomy & Provenance Tests (Checks 20 - 27) ---');
+
+// Check 20: Source-only policy is labeled SOURCE_POLICY_VERIFIED and never LIVE_RLS_VERIFIED
+classAMethods.forEach(m => {
+  if (m.rlsQualification.sourcePolicyStatus === 'SOURCE_POLICY_VERIFIED') {
+    assert.notStrictEqual(m.rlsQualification.livePolicyStatus, 'LIVE_RLS_VERIFIED',
+      `Check 20 failed: Method ${m.name} is only verified from migration source, cannot be labeled LIVE_RLS_VERIFIED`);
+  }
+});
+console.log(`[PASS] Check 20: Source-only policies (${sourceVerifiedRls.length} methods) are strictly labeled SOURCE_POLICY_VERIFIED and never LIVE_RLS_VERIFIED.`);
+
+// Check 21: Live inspected policy is labeled LIVE_RLS_VERIFIED only when actual live catalog is inspected
+classAMethods.forEach(m => {
+  if (m.rlsQualification.livePolicyStatus === 'LIVE_RLS_VERIFIED') {
+    assert.fail(`Check 21 failed: Method ${m.name} was labeled LIVE_RLS_VERIFIED without live direct PostgreSQL catalog connection`);
+  }
+});
+console.log('[PASS] Check 21: Live inspected policy requires actual direct catalog verification (0 prematurely marked LIVE_RLS_VERIFIED).');
+
+// Check 22: Pending policy is never labeled live verified
+classAMethods.forEach(m => {
+  if (m.rlsQualification.sourcePolicyStatus.includes('PENDING') || m.rlsQualification.livePolicyStatus.includes('PENDING')) {
+    assert.notStrictEqual(m.rlsQualification.livePolicyStatus, 'LIVE_RLS_VERIFIED',
+      `Check 22 failed: Method ${m.name} has pending status but was marked LIVE_RLS_VERIFIED`);
+  }
+});
+console.log('[PASS] Check 22: Pending policy is never labeled live verified.');
+
+// Check 23: Pending policy never becomes direct-client-safe
+classAMethods.forEach(m => {
+  if (m.rlsQualification.livePolicyStatus.includes('PENDING')) {
+    assert.notStrictEqual(m.rlsQualification.directClientAllowed, true,
+      `Check 23 failed: Method ${m.name} has pending live RLS but directClientAllowed was true`);
+  }
+});
+console.log('[PASS] Check 23: Pending policy never becomes direct-client-safe (all 21 non-confidential reads are CONDITIONAL_PENDING_VERIFICATION).');
+
+// Check 24: All 23 Class-A methods have an explicit RLS evidence state and deterministic matrix entry
+assert.strictEqual(liveAudit.classAMatrix.length, 23, 'Check 24 failed: classAMatrix must contain all 23 Class-A methods');
+liveAudit.classAMatrix.forEach(entry => {
+  assert.ok(entry.method, 'Matrix entry must have method');
+  assert.ok(entry.primaryTableOrRpc, 'Matrix entry must have primaryTableOrRpc');
+  assert.ok(['SOURCE_POLICY_VERIFIED', 'PENDING', 'RLS_UNKNOWN'].includes(entry.sourcePolicyStatus),
+    `Invalid sourcePolicyStatus in ${entry.method}: ${entry.sourcePolicyStatus}`);
+  assert.ok(entry.livePolicyStatus, 'Matrix entry must have livePolicyStatus');
+  assert.ok(entry.sensitivity, 'Matrix entry must have sensitivity');
+  assert.ok([true, false, 'CONDITIONAL_PENDING_VERIFICATION'].includes(entry.directClientAllowed),
+    `Invalid directClientAllowed in ${entry.method}: ${entry.directClientAllowed}`);
+  assert.ok([true, false, 'REVIEW_REQUIRED'].includes(entry.apiMediationRequired),
+    `Invalid apiMediationRequired in ${entry.method}: ${entry.apiMediationRequired}`);
+  assert.ok(entry.evidenceSource, 'Matrix entry must have evidenceSource');
+  assert.ok(entry.rationale, 'Matrix entry must have rationale');
+});
+console.log('[PASS] Check 24: All 23 Class-A methods have explicit RLS evidence states and deterministic matrix entries.');
+
+// Check 25: Audited code commit identifies the actual R1A implementation state (35ba912)
+const auditedCode = liveAudit.evidenceMetadata.commitCoordinates.auditedCodeCommit;
+assert.ok(/^[0-9a-f]{7,40}$/.test(auditedCode), `Check 25 failed: auditedCodeCommit must be a valid commit SHA, got: ${auditedCode}`);
+assert.notStrictEqual(auditedCode, '5754fa2', 'Check 25 failed: auditedCodeCommit must NOT be stale pre-R1A commit 5754fa2');
+assert.strictEqual(auditedCode, '35ba912', 'Check 25 failed: auditedCodeCommit must identify the actual R1A implementation commit (35ba912)');
+console.log(`[PASS] Check 25: Audited code commit accurately identifies actual R1A implementation state (${auditedCode}).`);
+
+// Check 26: Evidence commit lineage is valid (auditedCodeCommit is ancestor of HEAD)
+execSync(`git cat-file -e "${auditedCode}^{commit}"`, { stdio: 'pipe' });
+execSync(`git merge-base --is-ancestor "${auditedCode}" HEAD`, { stdio: 'pipe' });
+console.log(`[PASS] Check 26: Evidence commit lineage verified (${auditedCode} is a confirmed ancestor of HEAD).`);
+
+// Check 27: Current verified remote state is accurate
+assert.strictEqual(liveAudit.evidenceMetadata.commitCoordinates.verifiedRemoteHead, originMasterFull.slice(0, 7),
+  'Check 27 failed: verifiedRemoteHead must equal current origin/master short SHA');
+console.log(`[PASS] Check 27: Current verified remote state is accurate (${liveAudit.evidenceMetadata.commitCoordinates.verifiedRemoteHead}).`);
+
 console.log('\n========================================================================');
-console.log('   ALL 19 W006-R1A API ARCHITECTURE AUDIT & INTEGRITY CHECKS PASSED!   ');
+console.log('   ALL 27 W006-R1B API ARCHITECTURE AUDIT & INTEGRITY CHECKS PASSED!   ');
 console.log('========================================================================\n');

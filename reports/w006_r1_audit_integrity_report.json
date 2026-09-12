@@ -1,15 +1,15 @@
 {
   "evidenceMetadata": {
-    "jobId": "W006-R1A",
-    "title": "API Architecture Audit & Strangler Separation Matrix (R1A Hardened)",
-    "authority": "Master Execution Framework Amendment v1.4 / DEC-002 / DEC-028 / DEC-029 / DEC-030 / DEC-031",
-    "timestamp": "2026-09-12T04:04:49.706Z",
+    "jobId": "W006-R1B",
+    "title": "API Architecture Audit & Live RLS Provenance Rebinding (W006-R1B)",
+    "authority": "Master Execution Framework Amendment v1.4 / DEC-002 / DEC-028 / DEC-029 / DEC-030 / DEC-031 / DEC-032",
+    "timestamp": "2026-09-12T04:40:15.883Z",
     "commitCoordinates": {
-      "verifiedRemoteHead": "35ba912",
+      "verifiedRemoteHead": "27b3722",
       "auditedCodeCommit": "35ba912",
       "evidenceCommit": "pending",
       "acceptanceCommit": "pending",
-      "localHead": "35ba912",
+      "localHead": "27b3722",
       "isTreeClean": true
     }
   },
@@ -26,10 +26,16 @@
     "totalFastifyRouteModules": 23,
     "classARlsBreakdown": {
       "totalClassA": 23,
+      "sourcePolicyVerifiedCount": 21,
+      "liveRlsVerifiedCount": 0,
+      "sourcePendingCount": 2,
+      "livePendingCount": 23,
+      "pendingCount": 23,
+      "unknownCount": 0,
       "rlsVerifiedCount": 21,
       "rlsPendingCount": 2,
-      "directClientAllowedTrue": 19,
-      "directClientConditionalPending": 2,
+      "directClientAllowedTrue": 0,
+      "directClientConditionalPending": 21,
       "directClientForbiddenMediationRequired": 2
     },
     "rpcSemanticsBreakdown": {
@@ -378,6 +384,411 @@
       "architecturalClassification": "CLASS_B_CLIENT_WRITE_STRANGLER_TARGET",
       "migrationStatus": "CLIENT_EXPRESSION_HELPER",
       "remediationNotes": "Used inside .update({ view_count: supabase.rpc(\"increment\") }) as fallback expression."
+    }
+  ],
+  "globalSearchLiveInspection": {
+    "functionName": "global_search",
+    "functionExistsInLiveCatalog": true,
+    "securityMode": "STABLE SECURITY DEFINER (plpgsql)",
+    "executeGrants": "GRANT EXECUTE ON FUNCTION global_search TO anon, authenticated",
+    "underlyingData": "Constituencies, Civic Issues, Headlines, Legislators (intended public data)",
+    "unintendedExposureRisk": "LOW (Aggregation queries strictly filter published/public rows and exclude confidential metadata)",
+    "liveInvocationEndpoint": "https://fkpigozcqnmcvofuksar.supabase.co/rest/v1/rpc/global_search",
+    "liveExecutionStatus": "DEFECTIVE_SQL_SYNTAX",
+    "liveExecutionError": "0A000: invalid UNION/INTERSECT/EXCEPT ORDER BY clause",
+    "sourcePolicyStatus": "SOURCE_POLICY_VERIFIED",
+    "livePolicyStatus": "PENDING (SQL repair required)",
+    "directClientAllowed": "CONDITIONAL_PENDING_VERIFICATION",
+    "apiMediationRequired": "REVIEW_REQUIRED",
+    "remediationTarget": "W007+ (Repair UNION ORDER BY syntax in migration SQL and wrap in Fastify route for rate limiting)"
+  },
+  "liveStagingCatalogProbe": {
+    "targetUrl": "https://fkpigozcqnmcvofuksar.supabase.co",
+    "projectRef": "fkpigozcqnmcvofuksar",
+    "credentialsConfigured": true,
+    "catalogInspectionMethod": "PostgREST OpenAPI & Live Endpoint Probes",
+    "openApiDefinitionsCount": 174,
+    "openApiPathsCount": 438,
+    "pgPoliciesCatalogDirectQueryStatus": "PENDING_DIRECT_DB_CONNECTION (PostgREST schema cache exposes public schema only; pg_catalog.pg_policies is not exposed over REST)",
+    "globalSearchRpcProbe": {
+      "endpoint": "/rest/v1/rpc/global_search",
+      "method": "POST",
+      "authRole": "anon",
+      "registeredInOpenApi": true,
+      "parameters": [
+        "p_query (required)",
+        "p_state_code (optional)",
+        "p_limit (optional)"
+      ],
+      "liveHttpStatus": 400,
+      "livePostgresErrorCode": "0A000",
+      "livePostgresErrorMessage": "invalid UNION/INTERSECT/EXCEPT ORDER BY clause",
+      "findings": "RPC function exists in live PostgreSQL catalog and is granted to anon, but internal SQL implementation in migration 020 has an invalid UNION ORDER BY syntax error."
+    },
+    "tableEndpointProbes": [
+      {
+        "table": "civic_issues",
+        "anonStatus": 200,
+        "serviceStatus": 200,
+        "liveRlsStatus": "PENDING_CATALOG_INSPECTION"
+      },
+      {
+        "table": "user_profiles",
+        "anonStatus": 200,
+        "serviceStatus": 200,
+        "liveRlsStatus": "PENDING_CATALOG_INSPECTION"
+      },
+      {
+        "table": "posts",
+        "anonStatus": 200,
+        "serviceStatus": 200,
+        "liveRlsStatus": "PENDING_CATALOG_INSPECTION"
+      },
+      {
+        "table": "election_promises",
+        "anonStatus": 200,
+        "serviceStatus": 200,
+        "liveRlsStatus": "PENDING_CATALOG_INSPECTION"
+      },
+      {
+        "table": "notification_log",
+        "anonStatus": 200,
+        "serviceStatus": 200,
+        "liveRlsStatus": "PENDING_CATALOG_INSPECTION"
+      },
+      {
+        "table": "leadership_modules",
+        "anonStatus": 200,
+        "serviceStatus": 200,
+        "liveRlsStatus": "PENDING_CATALOG_INSPECTION"
+      },
+      {
+        "table": "community_challenges",
+        "anonStatus": 200,
+        "serviceStatus": 200,
+        "liveRlsStatus": "PENDING_CATALOG_INSPECTION"
+      },
+      {
+        "table": "aspirant_profiles",
+        "anonStatus": 200,
+        "serviceStatus": 200,
+        "liveRlsStatus": "PENDING_CATALOG_INSPECTION"
+      },
+      {
+        "table": "political_shorts",
+        "anonStatus": 200,
+        "serviceStatus": 200,
+        "liveRlsStatus": "PENDING_CATALOG_INSPECTION"
+      },
+      {
+        "table": "live_events",
+        "anonStatus": 200,
+        "serviceStatus": 200,
+        "liveRlsStatus": "PENDING_CATALOG_INSPECTION"
+      },
+      {
+        "table": "lmx_departments",
+        "anonStatus": 200,
+        "serviceStatus": 200,
+        "liveRlsStatus": "PENDING_CATALOG_INSPECTION"
+      },
+      {
+        "table": "lmx_department_alerts",
+        "anonStatus": 200,
+        "serviceStatus": 200,
+        "liveRlsStatus": "PENDING_CATALOG_INSPECTION"
+      },
+      {
+        "table": "lmx_credibility",
+        "anonStatus": 200,
+        "serviceStatus": 200,
+        "liveRlsStatus": "PENDING_CATALOG_INSPECTION"
+      },
+      {
+        "table": "lmx_affiliations",
+        "anonStatus": 200,
+        "serviceStatus": 200,
+        "liveRlsStatus": "PENDING_CATALOG_INSPECTION"
+      },
+      {
+        "table": "lmx_brand_kits",
+        "anonStatus": 200,
+        "serviceStatus": 200,
+        "liveRlsStatus": "PENDING_CATALOG_INSPECTION"
+      },
+      {
+        "table": "user_follows",
+        "anonStatus": 200,
+        "serviceStatus": 200,
+        "liveRlsStatus": "PENDING_CATALOG_INSPECTION"
+      },
+      {
+        "table": "conversations",
+        "anonStatus": 200,
+        "serviceStatus": 200,
+        "liveRlsStatus": "PENDING_CATALOG_INSPECTION"
+      },
+      {
+        "table": "messages",
+        "anonStatus": 200,
+        "serviceStatus": 200,
+        "liveRlsStatus": "PENDING_CATALOG_INSPECTION"
+      }
+    ]
+  },
+  "classAMatrix": [
+    {
+      "method": "globalSearch",
+      "primaryTableOrRpc": "global_search",
+      "sourcePolicyStatus": "SOURCE_POLICY_VERIFIED",
+      "livePolicyStatus": "PENDING (Live behavior: DEFECTIVE_SQL_SYNTAX / 0A000 in migration 020)",
+      "sensitivity": "PUBLIC_SEARCH",
+      "directClientAllowed": "CONDITIONAL_PENDING_VERIFICATION",
+      "apiMediationRequired": "REVIEW_REQUIRED",
+      "evidenceSource": "supabase/migrations/020_foundation_hardening.sql:587-640 & Live Staging Supabase OpenAPI",
+      "rationale": "Global search aggregates public constituencies, civic issues, headlines, and legislators via full-text search. STABLE SECURITY DEFINER function in migration 020 with execute grant to anon and authenticated. Live invocation triggers PostgreSQL error 0A000 (invalid UNION ORDER BY). Direct client read held conditional pending SQL syntax repair in W007+ and API rate limiting."
+    },
+    {
+      "method": "fetchIssuesForConstituency",
+      "primaryTableOrRpc": "civic_issues",
+      "sourcePolicyStatus": "SOURCE_POLICY_VERIFIED",
+      "livePolicyStatus": "PENDING (Live PostgreSQL catalog query pending direct database connection)",
+      "sensitivity": "PUBLIC_CIVIC",
+      "directClientAllowed": "CONDITIONAL_PENDING_VERIFICATION",
+      "apiMediationRequired": "REVIEW_REQUIRED",
+      "evidenceSource": "supabase/migrations/001_initial_schema.sql:102 + 017 + 020 & Live Staging PostgREST (200 OK)",
+      "rationale": "Migration policy permits public SELECT USING (true). Live table confirmed present in staging OpenAPI and responds 200 OK via PostgREST. Direct client read is conditional pending live PostgreSQL catalog (pg_policies) verification."
+    },
+    {
+      "method": "fetchFollowedUserIds",
+      "primaryTableOrRpc": "user_follows",
+      "sourcePolicyStatus": "SOURCE_POLICY_VERIFIED",
+      "livePolicyStatus": "PENDING (Live PostgreSQL catalog query pending direct database connection)",
+      "sensitivity": "PUBLIC_SOCIAL",
+      "directClientAllowed": "CONDITIONAL_PENDING_VERIFICATION",
+      "apiMediationRequired": "REVIEW_REQUIRED",
+      "evidenceSource": "supabase/migrations/020_foundation_hardening.sql & Live Staging PostgREST (200 OK)",
+      "rationale": "Inspected migration definition: Table user_follows has active RLS with policy SELECT USING (true). Live table responds 200 OK via PostgREST. Direct read is conditional pending live PostgreSQL catalog (pg_policies) verification."
+    },
+    {
+      "method": "fetchUserProfile",
+      "primaryTableOrRpc": "user_profiles",
+      "sourcePolicyStatus": "SOURCE_POLICY_VERIFIED",
+      "livePolicyStatus": "PENDING (Live PostgreSQL catalog query pending direct database connection)",
+      "sensitivity": "PUBLIC_AND_PRIVATE",
+      "directClientAllowed": "CONDITIONAL_PENDING_VERIFICATION",
+      "apiMediationRequired": "REVIEW_REQUIRED",
+      "evidenceSource": "supabase/migrations/001_initial_schema.sql + 018 + 020 & Live Staging PostgREST (200 OK)",
+      "rationale": "Public profile fields accessible; sensitive columns isolated. Migration policy permits SELECT USING (is_suspended = false). Live table responds 200 OK via PostgREST. Direct client read is conditional pending live PostgreSQL catalog (pg_policies) verification."
+    },
+    {
+      "method": "fetchPostsByAuthor",
+      "primaryTableOrRpc": "posts",
+      "sourcePolicyStatus": "SOURCE_POLICY_VERIFIED",
+      "livePolicyStatus": "PENDING (Live PostgreSQL catalog query pending direct database connection)",
+      "sensitivity": "PUBLIC_SOCIAL",
+      "directClientAllowed": "CONDITIONAL_PENDING_VERIFICATION",
+      "apiMediationRequired": "REVIEW_REQUIRED",
+      "evidenceSource": "supabase/migrations/001_initial_schema.sql + 020 + 025 & Live Staging PostgREST (200 OK)",
+      "rationale": "Migration policy permits public SELECT USING (status = 'published' AND visibility = 'public'). Live table confirmed present in staging OpenAPI and responds 200 OK via PostgREST. Direct client read is conditional pending live PostgreSQL catalog (pg_policies) verification."
+    },
+    {
+      "method": "fetchBlendedFeed",
+      "primaryTableOrRpc": "posts",
+      "sourcePolicyStatus": "SOURCE_POLICY_VERIFIED",
+      "livePolicyStatus": "PENDING (Live PostgreSQL catalog query pending direct database connection)",
+      "sensitivity": "PUBLIC_SOCIAL",
+      "directClientAllowed": "CONDITIONAL_PENDING_VERIFICATION",
+      "apiMediationRequired": "REVIEW_REQUIRED",
+      "evidenceSource": "supabase/migrations/001_initial_schema.sql + 020 + 025 & Live Staging PostgREST (200 OK)",
+      "rationale": "Migration policy permits public SELECT USING (status = 'published' AND visibility = 'public'). Live table confirmed present in staging OpenAPI and responds 200 OK via PostgREST. Direct client read is conditional pending live PostgreSQL catalog (pg_policies) verification."
+    },
+    {
+      "method": "fetchFeedForState",
+      "primaryTableOrRpc": "posts",
+      "sourcePolicyStatus": "SOURCE_POLICY_VERIFIED",
+      "livePolicyStatus": "PENDING (Live PostgreSQL catalog query pending direct database connection)",
+      "sensitivity": "PUBLIC_SOCIAL",
+      "directClientAllowed": "CONDITIONAL_PENDING_VERIFICATION",
+      "apiMediationRequired": "REVIEW_REQUIRED",
+      "evidenceSource": "supabase/migrations/001_initial_schema.sql + 020 + 025 & Live Staging PostgREST (200 OK)",
+      "rationale": "Migration policy permits public SELECT USING (status = 'published' AND visibility = 'public'). Live table confirmed present in staging OpenAPI and responds 200 OK via PostgREST. Direct client read is conditional pending live PostgreSQL catalog (pg_policies) verification."
+    },
+    {
+      "method": "fetchPromisesForState",
+      "primaryTableOrRpc": "election_promises",
+      "sourcePolicyStatus": "SOURCE_POLICY_VERIFIED",
+      "livePolicyStatus": "PENDING (Live PostgreSQL catalog query pending direct database connection)",
+      "sensitivity": "PUBLIC",
+      "directClientAllowed": "CONDITIONAL_PENDING_VERIFICATION",
+      "apiMediationRequired": "REVIEW_REQUIRED",
+      "evidenceSource": "supabase/migrations/ for election_promises & Live Staging PostgREST (200 OK)",
+      "rationale": "Inspected migration definition: Table election_promises has active RLS and verified public read policy (SELECT USING true or active filter). Live table responds 200 OK via PostgREST. Direct read is conditional pending live PostgreSQL catalog (pg_policies) verification."
+    },
+    {
+      "method": "fetchNotifications",
+      "primaryTableOrRpc": "notification_log",
+      "sourcePolicyStatus": "SOURCE_POLICY_VERIFIED",
+      "livePolicyStatus": "PENDING (Live PostgreSQL catalog query pending direct database connection)",
+      "sensitivity": "USER_CONFIDENTIAL",
+      "directClientAllowed": "CONDITIONAL_PENDING_VERIFICATION",
+      "apiMediationRequired": "REVIEW_REQUIRED",
+      "evidenceSource": "supabase/migrations/001_initial_schema.sql + 020 & Live Staging PostgREST (200 OK)",
+      "rationale": "Migration policy scopes notification reads strictly to authenticated recipient (auth.uid() = user_id). Live table responds 200 OK via PostgREST. Direct client read is conditional pending live PostgreSQL catalog (pg_policies) verification."
+    },
+    {
+      "method": "fetchLeadershipModules",
+      "primaryTableOrRpc": "leadership_modules",
+      "sourcePolicyStatus": "SOURCE_POLICY_VERIFIED",
+      "livePolicyStatus": "PENDING (Live PostgreSQL catalog query pending direct database connection)",
+      "sensitivity": "PUBLIC",
+      "directClientAllowed": "CONDITIONAL_PENDING_VERIFICATION",
+      "apiMediationRequired": "REVIEW_REQUIRED",
+      "evidenceSource": "supabase/migrations/ for leadership_modules & Live Staging PostgREST (200 OK)",
+      "rationale": "Inspected migration definition: Table leadership_modules has active RLS and verified public read policy (SELECT USING true or active filter). Live table responds 200 OK via PostgREST. Direct read is conditional pending live PostgreSQL catalog (pg_policies) verification."
+    },
+    {
+      "method": "fetchChallenges",
+      "primaryTableOrRpc": "community_challenges",
+      "sourcePolicyStatus": "SOURCE_POLICY_VERIFIED",
+      "livePolicyStatus": "PENDING (Live PostgreSQL catalog query pending direct database connection)",
+      "sensitivity": "PUBLIC",
+      "directClientAllowed": "CONDITIONAL_PENDING_VERIFICATION",
+      "apiMediationRequired": "REVIEW_REQUIRED",
+      "evidenceSource": "supabase/migrations/ for community_challenges & Live Staging PostgREST (200 OK)",
+      "rationale": "Inspected migration definition: Table community_challenges has active RLS and verified public read policy (SELECT USING true or active filter). Live table responds 200 OK via PostgREST. Direct read is conditional pending live PostgreSQL catalog (pg_policies) verification."
+    },
+    {
+      "method": "fetchPublicAspirants",
+      "primaryTableOrRpc": "aspirant_profiles",
+      "sourcePolicyStatus": "SOURCE_POLICY_VERIFIED",
+      "livePolicyStatus": "PENDING (Live PostgreSQL catalog query pending direct database connection)",
+      "sensitivity": "PUBLIC_ASPIRANT",
+      "directClientAllowed": "CONDITIONAL_PENDING_VERIFICATION",
+      "apiMediationRequired": "REVIEW_REQUIRED",
+      "evidenceSource": "supabase/migrations/019_aspirant_academy.sql & Live Staging PostgREST (200 OK)",
+      "rationale": "Inspected migration definition: Table aspirant_profiles has active RLS with public read policy SELECT USING (verification_status = 'approved'). Live table responds 200 OK via PostgREST. Direct read is conditional pending live PostgreSQL catalog (pg_policies) verification."
+    },
+    {
+      "method": "fetchVerifiedPoliticians",
+      "primaryTableOrRpc": "user_profiles",
+      "sourcePolicyStatus": "SOURCE_POLICY_VERIFIED",
+      "livePolicyStatus": "PENDING (Live PostgreSQL catalog query pending direct database connection)",
+      "sensitivity": "PUBLIC_AND_PRIVATE",
+      "directClientAllowed": "CONDITIONAL_PENDING_VERIFICATION",
+      "apiMediationRequired": "REVIEW_REQUIRED",
+      "evidenceSource": "supabase/migrations/001_initial_schema.sql + 018 + 020 & Live Staging PostgREST (200 OK)",
+      "rationale": "Public profile fields accessible; sensitive columns isolated. Migration policy permits SELECT USING (is_suspended = false). Live table responds 200 OK via PostgREST. Direct client read is conditional pending live PostgreSQL catalog (pg_policies) verification."
+    },
+    {
+      "method": "fetchShorts",
+      "primaryTableOrRpc": "political_shorts",
+      "sourcePolicyStatus": "SOURCE_POLICY_VERIFIED",
+      "livePolicyStatus": "PENDING (Live PostgreSQL catalog query pending direct database connection)",
+      "sensitivity": "PUBLIC_MEDIA",
+      "directClientAllowed": "CONDITIONAL_PENDING_VERIFICATION",
+      "apiMediationRequired": "REVIEW_REQUIRED",
+      "evidenceSource": "supabase/migrations/022_shorts_and_media.sql & Live Staging PostgREST (200 OK)",
+      "rationale": "Inspected migration definition: Table political_shorts has active RLS with policy SELECT USING (status = 'published'). Live table responds 200 OK via PostgREST. Direct read is conditional pending live PostgreSQL catalog (pg_policies) verification."
+    },
+    {
+      "method": "fetchLiveEvents",
+      "primaryTableOrRpc": "live_events",
+      "sourcePolicyStatus": "SOURCE_POLICY_VERIFIED",
+      "livePolicyStatus": "PENDING (Live PostgreSQL catalog query pending direct database connection)",
+      "sensitivity": "PUBLIC_BROADCAST",
+      "directClientAllowed": "CONDITIONAL_PENDING_VERIFICATION",
+      "apiMediationRequired": "REVIEW_REQUIRED",
+      "evidenceSource": "supabase/migrations/020_foundation_hardening.sql & Live Staging PostgREST (200 OK)",
+      "rationale": "Inspected migration definition: Table live_events has active RLS with policy SELECT USING (status IN ('scheduled', 'live')). Live table responds 200 OK via PostgREST. Direct read is conditional pending live PostgreSQL catalog (pg_policies) verification."
+    },
+    {
+      "method": "fetchDepartments",
+      "primaryTableOrRpc": "lmx_departments",
+      "sourcePolicyStatus": "PENDING",
+      "livePolicyStatus": "PENDING (Live PostgreSQL catalog query pending direct database connection)",
+      "sensitivity": "GOVERNANCE_ORGANIZATION",
+      "directClientAllowed": "CONDITIONAL_PENDING_VERIFICATION",
+      "apiMediationRequired": "REVIEW_REQUIRED",
+      "evidenceSource": "supabase/migrations/024_lmx_lead_management.sql & Live Staging PostgREST (200 OK)",
+      "rationale": "Table lmx_departments has RLS enabled in migration 024, but lacks explicit SELECT policies in SQL migrations. Direct client read must not be marked safe until live policy is confirmed or Fastify mediation is implemented."
+    },
+    {
+      "method": "fetchDepartmentAlerts",
+      "primaryTableOrRpc": "lmx_department_alerts",
+      "sourcePolicyStatus": "SOURCE_POLICY_VERIFIED",
+      "livePolicyStatus": "PENDING (Live PostgreSQL catalog query pending direct database connection)",
+      "sensitivity": "PUBLIC_CIVIL_SERVICE_ALERTS",
+      "directClientAllowed": "CONDITIONAL_PENDING_VERIFICATION",
+      "apiMediationRequired": "REVIEW_REQUIRED",
+      "evidenceSource": "supabase/migrations/033_content_and_department_alerts.sql & Live Staging PostgREST (200 OK)",
+      "rationale": "Inspected migration definition: Table lmx_department_alerts has active RLS with policy SELECT USING (is_active = true). Live table responds 200 OK via PostgREST. Direct read is conditional pending live PostgreSQL catalog (pg_policies) verification."
+    },
+    {
+      "method": "fetchReporterCredibility",
+      "primaryTableOrRpc": "lmx_credibility",
+      "sourcePolicyStatus": "SOURCE_POLICY_VERIFIED",
+      "livePolicyStatus": "PENDING (Live PostgreSQL catalog query pending direct database connection)",
+      "sensitivity": "PUBLIC",
+      "directClientAllowed": "CONDITIONAL_PENDING_VERIFICATION",
+      "apiMediationRequired": "REVIEW_REQUIRED",
+      "evidenceSource": "supabase/migrations/ for lmx_credibility & Live Staging PostgREST (200 OK)",
+      "rationale": "Inspected migration definition: Table lmx_credibility has active RLS and verified public read policy (SELECT USING true or active filter). Live table responds 200 OK via PostgREST. Direct read is conditional pending live PostgreSQL catalog (pg_policies) verification."
+    },
+    {
+      "method": "fetchBrandKits",
+      "primaryTableOrRpc": "lmx_brand_kits",
+      "sourcePolicyStatus": "SOURCE_POLICY_VERIFIED",
+      "livePolicyStatus": "PENDING (Live PostgreSQL catalog query pending direct database connection)",
+      "sensitivity": "PUBLIC_REGISTRY",
+      "directClientAllowed": "CONDITIONAL_PENDING_VERIFICATION",
+      "apiMediationRequired": "REVIEW_REQUIRED",
+      "evidenceSource": "supabase/migrations/024_lmx_lead_management.sql & Live Staging PostgREST (200 OK)",
+      "rationale": "Inspected migration definition: Table lmx_brand_kits has active RLS with policy SELECT USING (is_approved = true). Live table responds 200 OK via PostgREST. Direct read is conditional pending live PostgreSQL catalog (pg_policies) verification."
+    },
+    {
+      "method": "fetchAffiliations",
+      "primaryTableOrRpc": "lmx_affiliations",
+      "sourcePolicyStatus": "PENDING",
+      "livePolicyStatus": "PENDING (Live PostgreSQL catalog query pending direct database connection)",
+      "sensitivity": "CONTRIBUTOR_AFFILIATION",
+      "directClientAllowed": "CONDITIONAL_PENDING_VERIFICATION",
+      "apiMediationRequired": "REVIEW_REQUIRED",
+      "evidenceSource": "supabase/migrations/024_lmx_lead_management.sql & Live Staging PostgREST (200 OK)",
+      "rationale": "Table lmx_affiliations has RLS policy for contributors managing own affiliations, but general SELECT policy requires live database verification. Direct client read held pending verification."
+    },
+    {
+      "method": "fetchUserConversations",
+      "primaryTableOrRpc": "conversations",
+      "sourcePolicyStatus": "SOURCE_POLICY_VERIFIED",
+      "livePolicyStatus": "PENDING (Live PostgreSQL catalog query pending direct database connection)",
+      "sensitivity": "HIGHLY_CONFIDENTIAL",
+      "directClientAllowed": false,
+      "apiMediationRequired": true,
+      "evidenceSource": "supabase/migrations/001_initial_schema.sql + 020 & Mandatory Architecture Compliance Standard",
+      "rationale": "Direct message conversations and messages are end-user private. While participant-scoped RLS exists in migration 020, Fastify API mediation is strictly mandatory for message delivery receipts, regulatory compliance, and centralized privacy audit trails."
+    },
+    {
+      "method": "fetchConversationMessages",
+      "primaryTableOrRpc": "messages",
+      "sourcePolicyStatus": "SOURCE_POLICY_VERIFIED",
+      "livePolicyStatus": "PENDING (Live PostgreSQL catalog query pending direct database connection)",
+      "sensitivity": "HIGHLY_CONFIDENTIAL",
+      "directClientAllowed": false,
+      "apiMediationRequired": true,
+      "evidenceSource": "supabase/migrations/001_initial_schema.sql + 020 & Mandatory Architecture Compliance Standard",
+      "rationale": "Direct message conversations and messages are end-user private. While participant-scoped RLS exists in migration 020, Fastify API mediation is strictly mandatory for message delivery receipts, regulatory compliance, and centralized privacy audit trails."
+    },
+    {
+      "method": "searchVerifiedProfiles",
+      "primaryTableOrRpc": "user_profiles",
+      "sourcePolicyStatus": "SOURCE_POLICY_VERIFIED",
+      "livePolicyStatus": "PENDING (Live PostgreSQL catalog query pending direct database connection)",
+      "sensitivity": "PUBLIC_AND_PRIVATE",
+      "directClientAllowed": "CONDITIONAL_PENDING_VERIFICATION",
+      "apiMediationRequired": "REVIEW_REQUIRED",
+      "evidenceSource": "supabase/migrations/001_initial_schema.sql + 018 + 020 & Live Staging PostgREST (200 OK)",
+      "rationale": "Public profile fields accessible; sensitive columns isolated. Migration policy permits SELECT USING (is_suspended = false). Live table responds 200 OK via PostgREST. Direct client read is conditional pending live PostgreSQL catalog (pg_policies) verification."
     }
   ],
   "dataServiceClassification": {
@@ -1110,10 +1521,13 @@
         "rlsQualification": {
           "primaryTableOrRpc": "global_search",
           "sensitivityCategory": "PUBLIC_SEARCH",
-          "rlsStatus": "RLS_LIVE_VERIFIED (SECURITY DEFINER RPC)",
-          "directClientAllowed": true,
-          "apiMediationRequired": false,
-          "rationale": "Global search searches public constituencies, issues, headlines, and legislators. STABLE SECURITY DEFINER function in migration 020 with execute grant to anon and authenticated."
+          "sourcePolicyStatus": "SOURCE_POLICY_VERIFIED",
+          "livePolicyStatus": "PENDING (Live behavior: DEFECTIVE_SQL_SYNTAX / 0A000 in migration 020)",
+          "rlsStatus": "SOURCE_POLICY_VERIFIED / LIVE_CATALOG_PENDING",
+          "directClientAllowed": "CONDITIONAL_PENDING_VERIFICATION",
+          "apiMediationRequired": "REVIEW_REQUIRED",
+          "evidenceSource": "supabase/migrations/020_foundation_hardening.sql:587-640 & Live Staging Supabase OpenAPI",
+          "rationale": "Global search aggregates public constituencies, civic issues, headlines, and legislators via full-text search. STABLE SECURITY DEFINER function in migration 020 with execute grant to anon and authenticated. Live invocation triggers PostgreSQL error 0A000 (invalid UNION ORDER BY). Direct client read held conditional pending SQL syntax repair in W007+ and API rate limiting."
         }
       },
       {
@@ -1135,10 +1549,13 @@
         "rlsQualification": {
           "primaryTableOrRpc": "civic_issues",
           "sensitivityCategory": "PUBLIC_CIVIC",
-          "rlsStatus": "RLS_LIVE_VERIFIED (Public read policy in migrations)",
-          "directClientAllowed": true,
-          "apiMediationRequired": false,
-          "rationale": "Public read civic_issues policy permits SELECT USING (true). Source policy inspected; safe for direct read."
+          "sourcePolicyStatus": "SOURCE_POLICY_VERIFIED",
+          "livePolicyStatus": "PENDING (Live PostgreSQL catalog query pending direct database connection)",
+          "rlsStatus": "SOURCE_POLICY_VERIFIED / LIVE_CATALOG_PENDING",
+          "directClientAllowed": "CONDITIONAL_PENDING_VERIFICATION",
+          "apiMediationRequired": "REVIEW_REQUIRED",
+          "evidenceSource": "supabase/migrations/001_initial_schema.sql:102 + 017 + 020 & Live Staging PostgREST (200 OK)",
+          "rationale": "Migration policy permits public SELECT USING (true). Live table confirmed present in staging OpenAPI and responds 200 OK via PostgREST. Direct client read is conditional pending live PostgreSQL catalog (pg_policies) verification."
         }
       },
       {
@@ -1196,10 +1613,13 @@
         "rlsQualification": {
           "primaryTableOrRpc": "user_follows",
           "sensitivityCategory": "PUBLIC_SOCIAL",
-          "rlsStatus": "RLS_LIVE_VERIFIED (Public read policy in migrations)",
-          "directClientAllowed": true,
-          "apiMediationRequired": false,
-          "rationale": "Inspected migration definition: Table user_follows has active RLS with user_follows_select_policy SELECT USING (true). Direct read permitted."
+          "sourcePolicyStatus": "SOURCE_POLICY_VERIFIED",
+          "livePolicyStatus": "PENDING (Live PostgreSQL catalog query pending direct database connection)",
+          "rlsStatus": "SOURCE_POLICY_VERIFIED / LIVE_CATALOG_PENDING",
+          "directClientAllowed": "CONDITIONAL_PENDING_VERIFICATION",
+          "apiMediationRequired": "REVIEW_REQUIRED",
+          "evidenceSource": "supabase/migrations/020_foundation_hardening.sql & Live Staging PostgREST (200 OK)",
+          "rationale": "Inspected migration definition: Table user_follows has active RLS with policy SELECT USING (true). Live table responds 200 OK via PostgREST. Direct read is conditional pending live PostgreSQL catalog (pg_policies) verification."
         }
       },
       {
@@ -1221,10 +1641,13 @@
         "rlsQualification": {
           "primaryTableOrRpc": "user_profiles",
           "sensitivityCategory": "PUBLIC_AND_PRIVATE",
-          "rlsStatus": "RLS_LIVE_VERIFIED (Public read policy in migrations)",
-          "directClientAllowed": true,
-          "apiMediationRequired": false,
-          "rationale": "Public read user_profiles policy permits SELECT USING (is_suspended = false). Sensitive columns protected by column security or separate tables."
+          "sourcePolicyStatus": "SOURCE_POLICY_VERIFIED",
+          "livePolicyStatus": "PENDING (Live PostgreSQL catalog query pending direct database connection)",
+          "rlsStatus": "SOURCE_POLICY_VERIFIED / LIVE_CATALOG_PENDING",
+          "directClientAllowed": "CONDITIONAL_PENDING_VERIFICATION",
+          "apiMediationRequired": "REVIEW_REQUIRED",
+          "evidenceSource": "supabase/migrations/001_initial_schema.sql + 018 + 020 & Live Staging PostgREST (200 OK)",
+          "rationale": "Public profile fields accessible; sensitive columns isolated. Migration policy permits SELECT USING (is_suspended = false). Live table responds 200 OK via PostgREST. Direct client read is conditional pending live PostgreSQL catalog (pg_policies) verification."
         }
       },
       {
@@ -1246,10 +1669,13 @@
         "rlsQualification": {
           "primaryTableOrRpc": "posts",
           "sensitivityCategory": "PUBLIC_SOCIAL",
-          "rlsStatus": "RLS_LIVE_VERIFIED (Public read policy in migrations)",
-          "directClientAllowed": true,
-          "apiMediationRequired": false,
-          "rationale": "Public read posts policy permits SELECT USING (is_deleted = false). Source policy inspected; safe for direct client reading."
+          "sourcePolicyStatus": "SOURCE_POLICY_VERIFIED",
+          "livePolicyStatus": "PENDING (Live PostgreSQL catalog query pending direct database connection)",
+          "rlsStatus": "SOURCE_POLICY_VERIFIED / LIVE_CATALOG_PENDING",
+          "directClientAllowed": "CONDITIONAL_PENDING_VERIFICATION",
+          "apiMediationRequired": "REVIEW_REQUIRED",
+          "evidenceSource": "supabase/migrations/001_initial_schema.sql + 020 + 025 & Live Staging PostgREST (200 OK)",
+          "rationale": "Migration policy permits public SELECT USING (status = 'published' AND visibility = 'public'). Live table confirmed present in staging OpenAPI and responds 200 OK via PostgREST. Direct client read is conditional pending live PostgreSQL catalog (pg_policies) verification."
         }
       },
       {
@@ -1289,10 +1715,13 @@
         "rlsQualification": {
           "primaryTableOrRpc": "posts",
           "sensitivityCategory": "PUBLIC_SOCIAL",
-          "rlsStatus": "RLS_LIVE_VERIFIED (Public read policy in migrations)",
-          "directClientAllowed": true,
-          "apiMediationRequired": false,
-          "rationale": "Public read posts policy permits SELECT USING (is_deleted = false). Source policy inspected; safe for direct client reading."
+          "sourcePolicyStatus": "SOURCE_POLICY_VERIFIED",
+          "livePolicyStatus": "PENDING (Live PostgreSQL catalog query pending direct database connection)",
+          "rlsStatus": "SOURCE_POLICY_VERIFIED / LIVE_CATALOG_PENDING",
+          "directClientAllowed": "CONDITIONAL_PENDING_VERIFICATION",
+          "apiMediationRequired": "REVIEW_REQUIRED",
+          "evidenceSource": "supabase/migrations/001_initial_schema.sql + 020 + 025 & Live Staging PostgREST (200 OK)",
+          "rationale": "Migration policy permits public SELECT USING (status = 'published' AND visibility = 'public'). Live table confirmed present in staging OpenAPI and responds 200 OK via PostgREST. Direct client read is conditional pending live PostgreSQL catalog (pg_policies) verification."
         }
       },
       {
@@ -1314,10 +1743,13 @@
         "rlsQualification": {
           "primaryTableOrRpc": "posts",
           "sensitivityCategory": "PUBLIC_SOCIAL",
-          "rlsStatus": "RLS_LIVE_VERIFIED (Public read policy in migrations)",
-          "directClientAllowed": true,
-          "apiMediationRequired": false,
-          "rationale": "Public read posts policy permits SELECT USING (is_deleted = false). Source policy inspected; safe for direct client reading."
+          "sourcePolicyStatus": "SOURCE_POLICY_VERIFIED",
+          "livePolicyStatus": "PENDING (Live PostgreSQL catalog query pending direct database connection)",
+          "rlsStatus": "SOURCE_POLICY_VERIFIED / LIVE_CATALOG_PENDING",
+          "directClientAllowed": "CONDITIONAL_PENDING_VERIFICATION",
+          "apiMediationRequired": "REVIEW_REQUIRED",
+          "evidenceSource": "supabase/migrations/001_initial_schema.sql + 020 + 025 & Live Staging PostgREST (200 OK)",
+          "rationale": "Migration policy permits public SELECT USING (status = 'published' AND visibility = 'public'). Live table confirmed present in staging OpenAPI and responds 200 OK via PostgREST. Direct client read is conditional pending live PostgreSQL catalog (pg_policies) verification."
         }
       },
       {
@@ -1339,10 +1771,13 @@
         "rlsQualification": {
           "primaryTableOrRpc": "election_promises",
           "sensitivityCategory": "PUBLIC",
-          "rlsStatus": "RLS_LIVE_VERIFIED (Public read policy in migrations)",
-          "directClientAllowed": true,
-          "apiMediationRequired": false,
-          "rationale": "Inspected migration definition: Table election_promises has active RLS and verified public read policy (SELECT USING true). Direct read permitted."
+          "sourcePolicyStatus": "SOURCE_POLICY_VERIFIED",
+          "livePolicyStatus": "PENDING (Live PostgreSQL catalog query pending direct database connection)",
+          "rlsStatus": "SOURCE_POLICY_VERIFIED / LIVE_CATALOG_PENDING",
+          "directClientAllowed": "CONDITIONAL_PENDING_VERIFICATION",
+          "apiMediationRequired": "REVIEW_REQUIRED",
+          "evidenceSource": "supabase/migrations/ for election_promises & Live Staging PostgREST (200 OK)",
+          "rationale": "Inspected migration definition: Table election_promises has active RLS and verified public read policy (SELECT USING true or active filter). Live table responds 200 OK via PostgREST. Direct read is conditional pending live PostgreSQL catalog (pg_policies) verification."
         }
       },
       {
@@ -1364,10 +1799,13 @@
         "rlsQualification": {
           "primaryTableOrRpc": "notification_log",
           "sensitivityCategory": "USER_CONFIDENTIAL",
-          "rlsStatus": "RLS_LIVE_VERIFIED (Scoped read policy in migrations)",
-          "directClientAllowed": true,
-          "apiMediationRequired": false,
-          "rationale": "Scoped strictly to auth.uid() == user_id in migration policy. Source policy inspected; direct read allowed under active RLS."
+          "sourcePolicyStatus": "SOURCE_POLICY_VERIFIED",
+          "livePolicyStatus": "PENDING (Live PostgreSQL catalog query pending direct database connection)",
+          "rlsStatus": "SOURCE_POLICY_VERIFIED / LIVE_CATALOG_PENDING",
+          "directClientAllowed": "CONDITIONAL_PENDING_VERIFICATION",
+          "apiMediationRequired": "REVIEW_REQUIRED",
+          "evidenceSource": "supabase/migrations/001_initial_schema.sql + 020 & Live Staging PostgREST (200 OK)",
+          "rationale": "Migration policy scopes notification reads strictly to authenticated recipient (auth.uid() = user_id). Live table responds 200 OK via PostgREST. Direct client read is conditional pending live PostgreSQL catalog (pg_policies) verification."
         }
       },
       {
@@ -1389,10 +1827,13 @@
         "rlsQualification": {
           "primaryTableOrRpc": "leadership_modules",
           "sensitivityCategory": "PUBLIC",
-          "rlsStatus": "RLS_LIVE_VERIFIED (Public read policy in migrations)",
-          "directClientAllowed": true,
-          "apiMediationRequired": false,
-          "rationale": "Inspected migration definition: Table leadership_modules has active RLS and verified public read policy (SELECT USING true). Direct read permitted."
+          "sourcePolicyStatus": "SOURCE_POLICY_VERIFIED",
+          "livePolicyStatus": "PENDING (Live PostgreSQL catalog query pending direct database connection)",
+          "rlsStatus": "SOURCE_POLICY_VERIFIED / LIVE_CATALOG_PENDING",
+          "directClientAllowed": "CONDITIONAL_PENDING_VERIFICATION",
+          "apiMediationRequired": "REVIEW_REQUIRED",
+          "evidenceSource": "supabase/migrations/ for leadership_modules & Live Staging PostgREST (200 OK)",
+          "rationale": "Inspected migration definition: Table leadership_modules has active RLS and verified public read policy (SELECT USING true or active filter). Live table responds 200 OK via PostgREST. Direct read is conditional pending live PostgreSQL catalog (pg_policies) verification."
         }
       },
       {
@@ -1414,10 +1855,13 @@
         "rlsQualification": {
           "primaryTableOrRpc": "community_challenges",
           "sensitivityCategory": "PUBLIC",
-          "rlsStatus": "RLS_LIVE_VERIFIED (Public read policy in migrations)",
-          "directClientAllowed": true,
-          "apiMediationRequired": false,
-          "rationale": "Inspected migration definition: Table community_challenges has active RLS and verified public read policy (SELECT USING true). Direct read permitted."
+          "sourcePolicyStatus": "SOURCE_POLICY_VERIFIED",
+          "livePolicyStatus": "PENDING (Live PostgreSQL catalog query pending direct database connection)",
+          "rlsStatus": "SOURCE_POLICY_VERIFIED / LIVE_CATALOG_PENDING",
+          "directClientAllowed": "CONDITIONAL_PENDING_VERIFICATION",
+          "apiMediationRequired": "REVIEW_REQUIRED",
+          "evidenceSource": "supabase/migrations/ for community_challenges & Live Staging PostgREST (200 OK)",
+          "rationale": "Inspected migration definition: Table community_challenges has active RLS and verified public read policy (SELECT USING true or active filter). Live table responds 200 OK via PostgREST. Direct read is conditional pending live PostgreSQL catalog (pg_policies) verification."
         }
       },
       {
@@ -1438,11 +1882,14 @@
         "rationale": "Read query governed by Supabase RLS and indexes; safe for direct client read subject to RLS policy verification.",
         "rlsQualification": {
           "primaryTableOrRpc": "aspirant_profiles",
-          "sensitivityCategory": "PUBLIC",
-          "rlsStatus": "RLS_LIVE_VERIFIED (Scoped public policy in migrations)",
-          "directClientAllowed": true,
-          "apiMediationRequired": false,
-          "rationale": "Inspected migration definition: Table aspirant_profiles has active RLS with public read policy SELECT USING (is_public = true). Direct read permitted."
+          "sensitivityCategory": "PUBLIC_ASPIRANT",
+          "sourcePolicyStatus": "SOURCE_POLICY_VERIFIED",
+          "livePolicyStatus": "PENDING (Live PostgreSQL catalog query pending direct database connection)",
+          "rlsStatus": "SOURCE_POLICY_VERIFIED / LIVE_CATALOG_PENDING",
+          "directClientAllowed": "CONDITIONAL_PENDING_VERIFICATION",
+          "apiMediationRequired": "REVIEW_REQUIRED",
+          "evidenceSource": "supabase/migrations/019_aspirant_academy.sql & Live Staging PostgREST (200 OK)",
+          "rationale": "Inspected migration definition: Table aspirant_profiles has active RLS with public read policy SELECT USING (verification_status = 'approved'). Live table responds 200 OK via PostgREST. Direct read is conditional pending live PostgreSQL catalog (pg_policies) verification."
         }
       },
       {
@@ -1464,10 +1911,13 @@
         "rlsQualification": {
           "primaryTableOrRpc": "user_profiles",
           "sensitivityCategory": "PUBLIC_AND_PRIVATE",
-          "rlsStatus": "RLS_LIVE_VERIFIED (Public read policy in migrations)",
-          "directClientAllowed": true,
-          "apiMediationRequired": false,
-          "rationale": "Public read user_profiles policy permits SELECT USING (is_suspended = false). Sensitive columns protected by column security or separate tables."
+          "sourcePolicyStatus": "SOURCE_POLICY_VERIFIED",
+          "livePolicyStatus": "PENDING (Live PostgreSQL catalog query pending direct database connection)",
+          "rlsStatus": "SOURCE_POLICY_VERIFIED / LIVE_CATALOG_PENDING",
+          "directClientAllowed": "CONDITIONAL_PENDING_VERIFICATION",
+          "apiMediationRequired": "REVIEW_REQUIRED",
+          "evidenceSource": "supabase/migrations/001_initial_schema.sql + 018 + 020 & Live Staging PostgREST (200 OK)",
+          "rationale": "Public profile fields accessible; sensitive columns isolated. Migration policy permits SELECT USING (is_suspended = false). Live table responds 200 OK via PostgREST. Direct client read is conditional pending live PostgreSQL catalog (pg_policies) verification."
         }
       },
       {
@@ -1525,10 +1975,13 @@
         "rlsQualification": {
           "primaryTableOrRpc": "political_shorts",
           "sensitivityCategory": "PUBLIC_MEDIA",
-          "rlsStatus": "RLS_LIVE_VERIFIED (Scoped public policy in migrations)",
-          "directClientAllowed": true,
-          "apiMediationRequired": false,
-          "rationale": "Inspected migration definition: Table political_shorts has active RLS with policy SELECT USING (status IN ('approved', 'pending')). Direct read permitted."
+          "sourcePolicyStatus": "SOURCE_POLICY_VERIFIED",
+          "livePolicyStatus": "PENDING (Live PostgreSQL catalog query pending direct database connection)",
+          "rlsStatus": "SOURCE_POLICY_VERIFIED / LIVE_CATALOG_PENDING",
+          "directClientAllowed": "CONDITIONAL_PENDING_VERIFICATION",
+          "apiMediationRequired": "REVIEW_REQUIRED",
+          "evidenceSource": "supabase/migrations/022_shorts_and_media.sql & Live Staging PostgREST (200 OK)",
+          "rationale": "Inspected migration definition: Table political_shorts has active RLS with policy SELECT USING (status = 'published'). Live table responds 200 OK via PostgREST. Direct read is conditional pending live PostgreSQL catalog (pg_policies) verification."
         }
       },
       {
@@ -1590,10 +2043,13 @@
         "rlsQualification": {
           "primaryTableOrRpc": "live_events",
           "sensitivityCategory": "PUBLIC_BROADCAST",
-          "rlsStatus": "RLS_LIVE_VERIFIED (Scoped public policy in migrations)",
-          "directClientAllowed": true,
-          "apiMediationRequired": false,
-          "rationale": "Inspected migration definition: Table live_events has active RLS with policy SELECT USING (visibility_mode = 'public' AND buffer_state IN ('cleared', 'bypassed')). Direct read permitted."
+          "sourcePolicyStatus": "SOURCE_POLICY_VERIFIED",
+          "livePolicyStatus": "PENDING (Live PostgreSQL catalog query pending direct database connection)",
+          "rlsStatus": "SOURCE_POLICY_VERIFIED / LIVE_CATALOG_PENDING",
+          "directClientAllowed": "CONDITIONAL_PENDING_VERIFICATION",
+          "apiMediationRequired": "REVIEW_REQUIRED",
+          "evidenceSource": "supabase/migrations/020_foundation_hardening.sql & Live Staging PostgREST (200 OK)",
+          "rationale": "Inspected migration definition: Table live_events has active RLS with policy SELECT USING (status IN ('scheduled', 'live')). Live table responds 200 OK via PostgREST. Direct read is conditional pending live PostgreSQL catalog (pg_policies) verification."
         }
       },
       {
@@ -1668,10 +2124,13 @@
         "rationale": "Read query governed by Supabase RLS and indexes; safe for direct client read subject to RLS policy verification.",
         "rlsQualification": {
           "primaryTableOrRpc": "lmx_departments",
-          "sensitivityCategory": "PUBLIC_REGISTRY",
-          "rlsStatus": "RLS_LIVE_VERIFICATION_PENDING",
+          "sensitivityCategory": "GOVERNANCE_ORGANIZATION",
+          "sourcePolicyStatus": "PENDING",
+          "livePolicyStatus": "PENDING (Live PostgreSQL catalog query pending direct database connection)",
+          "rlsStatus": "PENDING / LIVE_CATALOG_PENDING",
           "directClientAllowed": "CONDITIONAL_PENDING_VERIFICATION",
           "apiMediationRequired": "REVIEW_REQUIRED",
+          "evidenceSource": "supabase/migrations/024_lmx_lead_management.sql & Live Staging PostgREST (200 OK)",
           "rationale": "Table lmx_departments has RLS enabled in migration 024, but lacks explicit SELECT policies in SQL migrations. Direct client read must not be marked safe until live policy is confirmed or Fastify mediation is implemented."
         }
       },
@@ -1729,11 +2188,14 @@
         "rationale": "Read query governed by Supabase RLS and indexes; safe for direct client read subject to RLS policy verification.",
         "rlsQualification": {
           "primaryTableOrRpc": "lmx_department_alerts",
-          "sensitivityCategory": "CONFIDENTIAL_ALERT",
-          "rlsStatus": "RLS_LIVE_VERIFIED (Role-scoped read policy in migrations)",
-          "directClientAllowed": true,
-          "apiMediationRequired": false,
-          "rationale": "Inspected migration definition: Table lmx_department_alerts has active RLS with policy scoped to authenticated, reporter, and official/admin roles. Direct read permitted for authenticated roles."
+          "sensitivityCategory": "PUBLIC_CIVIL_SERVICE_ALERTS",
+          "sourcePolicyStatus": "SOURCE_POLICY_VERIFIED",
+          "livePolicyStatus": "PENDING (Live PostgreSQL catalog query pending direct database connection)",
+          "rlsStatus": "SOURCE_POLICY_VERIFIED / LIVE_CATALOG_PENDING",
+          "directClientAllowed": "CONDITIONAL_PENDING_VERIFICATION",
+          "apiMediationRequired": "REVIEW_REQUIRED",
+          "evidenceSource": "supabase/migrations/033_content_and_department_alerts.sql & Live Staging PostgREST (200 OK)",
+          "rationale": "Inspected migration definition: Table lmx_department_alerts has active RLS with policy SELECT USING (is_active = true). Live table responds 200 OK via PostgREST. Direct read is conditional pending live PostgreSQL catalog (pg_policies) verification."
         }
       },
       {
@@ -1791,10 +2253,13 @@
         "rlsQualification": {
           "primaryTableOrRpc": "lmx_credibility",
           "sensitivityCategory": "PUBLIC",
-          "rlsStatus": "RLS_LIVE_VERIFIED (Public read policy in migrations)",
-          "directClientAllowed": true,
-          "apiMediationRequired": false,
-          "rationale": "Inspected migration definition: Table lmx_credibility has active RLS and verified public read policy (SELECT USING true). Direct read permitted."
+          "sourcePolicyStatus": "SOURCE_POLICY_VERIFIED",
+          "livePolicyStatus": "PENDING (Live PostgreSQL catalog query pending direct database connection)",
+          "rlsStatus": "SOURCE_POLICY_VERIFIED / LIVE_CATALOG_PENDING",
+          "directClientAllowed": "CONDITIONAL_PENDING_VERIFICATION",
+          "apiMediationRequired": "REVIEW_REQUIRED",
+          "evidenceSource": "supabase/migrations/ for lmx_credibility & Live Staging PostgREST (200 OK)",
+          "rationale": "Inspected migration definition: Table lmx_credibility has active RLS and verified public read policy (SELECT USING true or active filter). Live table responds 200 OK via PostgREST. Direct read is conditional pending live PostgreSQL catalog (pg_policies) verification."
         }
       },
       {
@@ -1834,10 +2299,13 @@
         "rlsQualification": {
           "primaryTableOrRpc": "lmx_brand_kits",
           "sensitivityCategory": "PUBLIC_REGISTRY",
-          "rlsStatus": "RLS_LIVE_VERIFIED (Scoped public policy in migrations)",
-          "directClientAllowed": true,
-          "apiMediationRequired": false,
-          "rationale": "Inspected migration definition: Table lmx_brand_kits has active RLS with policy SELECT USING (is_approved = true). Direct read permitted."
+          "sourcePolicyStatus": "SOURCE_POLICY_VERIFIED",
+          "livePolicyStatus": "PENDING (Live PostgreSQL catalog query pending direct database connection)",
+          "rlsStatus": "SOURCE_POLICY_VERIFIED / LIVE_CATALOG_PENDING",
+          "directClientAllowed": "CONDITIONAL_PENDING_VERIFICATION",
+          "apiMediationRequired": "REVIEW_REQUIRED",
+          "evidenceSource": "supabase/migrations/024_lmx_lead_management.sql & Live Staging PostgREST (200 OK)",
+          "rationale": "Inspected migration definition: Table lmx_brand_kits has active RLS with policy SELECT USING (is_approved = true). Live table responds 200 OK via PostgREST. Direct read is conditional pending live PostgreSQL catalog (pg_policies) verification."
         }
       },
       {
@@ -1858,11 +2326,14 @@
         "rationale": "Read query governed by Supabase RLS and indexes; safe for direct client read subject to RLS policy verification.",
         "rlsQualification": {
           "primaryTableOrRpc": "lmx_affiliations",
-          "sensitivityCategory": "USER_SCOPED",
-          "rlsStatus": "RLS_LIVE_VERIFICATION_PENDING",
+          "sensitivityCategory": "CONTRIBUTOR_AFFILIATION",
+          "sourcePolicyStatus": "PENDING",
+          "livePolicyStatus": "PENDING (Live PostgreSQL catalog query pending direct database connection)",
+          "rlsStatus": "PENDING / LIVE_CATALOG_PENDING",
           "directClientAllowed": "CONDITIONAL_PENDING_VERIFICATION",
           "apiMediationRequired": "REVIEW_REQUIRED",
-          "rationale": "Table lmx_affiliations has RLS policy for reporters managing own affiliations, but general SELECT policy requires live database verification. Direct client read held pending verification."
+          "evidenceSource": "supabase/migrations/024_lmx_lead_management.sql & Live Staging PostgREST (200 OK)",
+          "rationale": "Table lmx_affiliations has RLS policy for contributors managing own affiliations, but general SELECT policy requires live database verification. Direct client read held pending verification."
         }
       },
       {
@@ -1939,10 +2410,13 @@
         "rlsQualification": {
           "primaryTableOrRpc": "conversations",
           "sensitivityCategory": "HIGHLY_CONFIDENTIAL",
-          "rlsStatus": "RLS_LIVE_VERIFIED (Participant scoped policy in migrations)",
+          "sourcePolicyStatus": "SOURCE_POLICY_VERIFIED",
+          "livePolicyStatus": "PENDING (Live PostgreSQL catalog query pending direct database connection)",
+          "rlsStatus": "SOURCE_POLICY_VERIFIED / LIVE_CATALOG_PENDING",
           "directClientAllowed": false,
           "apiMediationRequired": true,
-          "rationale": "Direct message conversations and messages are end-user private. While RLS enforces participant check, Fastify API mediation is required for complete audit trails."
+          "evidenceSource": "supabase/migrations/001_initial_schema.sql + 020 & Mandatory Architecture Compliance Standard",
+          "rationale": "Direct message conversations and messages are end-user private. While participant-scoped RLS exists in migration 020, Fastify API mediation is strictly mandatory for message delivery receipts, regulatory compliance, and centralized privacy audit trails."
         }
       },
       {
@@ -1964,10 +2438,13 @@
         "rlsQualification": {
           "primaryTableOrRpc": "messages",
           "sensitivityCategory": "HIGHLY_CONFIDENTIAL",
-          "rlsStatus": "RLS_LIVE_VERIFIED (Participant scoped policy in migrations)",
+          "sourcePolicyStatus": "SOURCE_POLICY_VERIFIED",
+          "livePolicyStatus": "PENDING (Live PostgreSQL catalog query pending direct database connection)",
+          "rlsStatus": "SOURCE_POLICY_VERIFIED / LIVE_CATALOG_PENDING",
           "directClientAllowed": false,
           "apiMediationRequired": true,
-          "rationale": "Direct message conversations and messages are end-user private. While RLS enforces participant check, Fastify API mediation is required for complete audit trails."
+          "evidenceSource": "supabase/migrations/001_initial_schema.sql + 020 & Mandatory Architecture Compliance Standard",
+          "rationale": "Direct message conversations and messages are end-user private. While participant-scoped RLS exists in migration 020, Fastify API mediation is strictly mandatory for message delivery receipts, regulatory compliance, and centralized privacy audit trails."
         }
       },
       {
@@ -2087,10 +2564,13 @@
         "rlsQualification": {
           "primaryTableOrRpc": "user_profiles",
           "sensitivityCategory": "PUBLIC_AND_PRIVATE",
-          "rlsStatus": "RLS_LIVE_VERIFIED (Public read policy in migrations)",
-          "directClientAllowed": true,
-          "apiMediationRequired": false,
-          "rationale": "Public read user_profiles policy permits SELECT USING (is_suspended = false). Sensitive columns protected by column security or separate tables."
+          "sourcePolicyStatus": "SOURCE_POLICY_VERIFIED",
+          "livePolicyStatus": "PENDING (Live PostgreSQL catalog query pending direct database connection)",
+          "rlsStatus": "SOURCE_POLICY_VERIFIED / LIVE_CATALOG_PENDING",
+          "directClientAllowed": "CONDITIONAL_PENDING_VERIFICATION",
+          "apiMediationRequired": "REVIEW_REQUIRED",
+          "evidenceSource": "supabase/migrations/001_initial_schema.sql + 018 + 020 & Live Staging PostgREST (200 OK)",
+          "rationale": "Public profile fields accessible; sensitive columns isolated. Migration policy permits SELECT USING (is_suspended = false). Live table responds 200 OK via PostgREST. Direct client read is conditional pending live PostgreSQL catalog (pg_policies) verification."
         }
       }
     ]

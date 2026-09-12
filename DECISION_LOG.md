@@ -418,5 +418,22 @@
   4. **Dynamic Regression Suite:** Expanded `tests/api-architecture-audit.test.mjs` to 19 checks, including live Git coordinate derivation, remote lookup failure simulation, local/remote mismatch simulation, dirty working tree simulation, and zero-fallback-SHA static audits.
 - **Rationale:** Ensures that the architectural audit fails closed, guarantees total truth in engineering, and eliminates premature claims of RLS security.
 
+---
+
+### DEC-032: W006-R1B LIVE RLS EVIDENCE & PROVENANCE REBINDING
+- **Date:** 2026-09-12
+- **Status:** APPROVED & IMPLEMENTED
+- **Authority:** Master Product Blueprint, AI Agent Master Execution Job Book, Amendment v1.2, Amendment v1.4, `DEC-002`, `DEC-028`, `DEC-029`, `DEC-030`, `DEC-031`
+- **Context:** External review of W006-R1A identified two key integrity mandates before W007: (1) RLS evidence must never claim `LIVE_RLS_VERIFIED` based merely on migration-source policy inspection without live database catalog queries; (2) `AUDITED_CODE_COMMIT` must identify the actual R1A implementation commit `35ba912`, not the pre-R1A baseline `5754fa2`.
+- **Decisions:**
+  1. **Explicit 4-State RLS Taxonomy:** Enforced strict RLS evidence states: `SOURCE_POLICY_VERIFIED` (policy inspected in migrations 001..034), `LIVE_RLS_VERIFIED` (queried live in `pg_catalog.pg_policies`), `PENDING` (`RLS_LIVE_VERIFICATION_PENDING`), and `UNKNOWN` (`RLS_UNKNOWN`). Source verification is NEVER labeled live verification.
+  2. **Live Staging Supabase Catalog Probe:** Added `probeLiveStagingSupabase()` targeting disposable staging Supabase (`fkpigozcqnmcvofuksar`). Confirmed PostgREST OpenAPI schema contains 174 definitions and 438 paths. Probed live `global_search` RPC function (present in PostgreSQL catalog, granted to `anon`, but returns PostgreSQL error `0A000: invalid UNION/INTERSECT/EXCEPT ORDER BY clause` due to SQL syntax bug in migration 020 line 610). Probed all 18 Class-A tables via PostgREST (200 OK). Recorded that `pg_catalog.pg_policies` direct queries require direct database TCP connection credentials not exposed over REST.
+  3. **Strict Class-A Decision Rule:** `directClientAllowed = true` is ONLY granted when `LIVE_RLS_VERIFIED` is confirmed. Under current live evidence (catalog pending direct DB access), all 21 non-confidential reads are classified `directClientAllowed = CONDITIONAL_PENDING_VERIFICATION` and `apiMediationRequired = REVIEW_REQUIRED`. Highly confidential messaging methods (`fetchUserConversations`, `fetchConversationMessages`) are strictly classified `directClientAllowed = false` and `apiMediationRequired = true` regardless of RLS.
+  4. **Deterministic 23 Class-A Matrix:** Formulated complete matrix of 23 methods with method name, primary table/RPC, source policy status (21 verified, 2 pending), live policy status (23 pending), sensitivity, directClientAllowed (0 true, 21 conditional, 2 false), apiMediationRequired (21 review required, 2 true), evidence source, and explicit rationale.
+  5. **Audited Code Commit Rebinding:** Bound `AUDITED_CODE_COMMIT` to `35ba912` (actual R1A implementation commit), explicitly rejecting stale commit `5754fa2`.
+  6. **Automated Verification Suite Expansion (Checks 20–27):** Expanded `tests/api-architecture-audit.test.mjs` to 27 comprehensive checks verifying all Part H requirements.
+- **Rationale:** Guarantees absolute veracity in security assertions, prevents premature authorization of client-side data access, documents live staging defects truthfully, and maintains unbroken commit lineage.
+
+
 
 

@@ -9,15 +9,15 @@
 PROJECT:               PANIN (formerly Kshetra)
 TARGET_DOMAIN:         India Political Geography, Intelligence, Participation & Media Platform
 CURRENT_PHASE:         W0 (Baseline Reconciliation & Ground-Truth Audit)
-CURRENT_JOB:           W006-R1A (Audit Provenance & RLS Qualification Hardening - IN PROGRESS)
+CURRENT_JOB:           W006-R1B (Live RLS Evidence & Provenance Rebinding - IN VERIFICATION)
 LAST_COMPLETED_JOB:    W005 (Backup & Recovery Verification - ACCEPTED WITH DOCUMENTED LIMITATIONS)
 NEXT_PERMITTED_JOB:    W007 (Canonical API Client - BLOCKED PENDING W006 ACCEPTANCE)
 
 CURRENT_BRANCH:        master
-VERIFIED_REMOTE_HEAD:  5754fa2
-CURRENT_REMOTE_HEAD:   74121a7
-AUDITED_CODE_COMMIT:   5754fa2
-EVIDENCE_COMMIT:       35ba912
+VERIFIED_REMOTE_HEAD:  27b3722
+CURRENT_REMOTE_HEAD:   27b3722
+AUDITED_CODE_COMMIT:   35ba912
+EVIDENCE_COMMIT:       pending
 ACCEPTANCE_COMMIT:     pending
 API_VERSION:           v1 (Fastify 5.2 on Railway)
 MOBILE_VERSION:        0.1.0 (Expo 54, React Native 0.81.5)
@@ -50,7 +50,7 @@ REMOTE_SYNC:           Up to date with origin/master
 | **W003** | CI/CD Quality Pipeline | **ACCEPTED** | 2026-09-10 | Independent Verifier PASS with Monitored Exceptions per Amendment v1.4 Parts 33 & 34; accepted by user (`reports/w003_r5_independent_verification.md`) |
 | **W004** | Observability & Error Tracking | **ACCEPTED** | 2026-09-11 | W004-R1A Independent Verifier PASS (13/13 gates at commit `811b5dd`); verified remote head `1260f98`; audited code `ef4622a`; evidence `19a5932`; user accepted; `reports/w004_r1a_independent_verification.md` |
 | **W005** | Backup & Recovery Verification | **ACCEPTED (W/ LIMITATIONS)** | 2026-09-11 | W005-R1C Independent Verifier PASS (commit `acc32fe`); verified remote head `f6ee696`; audited code `943b026`; evidence `b4f3133`; documented limitations: PITR/RPO ≤5m unverified, multi-cloud standby not implemented, DR-001 schema/API bootstrap, DR-002 synthetic staging, DR-004 staging storage, DR-005 client offline; user accepted |
-| **W006** | API Architecture Audit & Separation | **IN PROGRESS (W006-R1A)** | - | Audited 316 mobile files, 12 direct Supabase callers, 14 Railway callers, 137 Fastify routes across 23 modules, 85 data service methods classified (23 Class A reads, 56 Class B mutation strangler targets, 6 Class C Fastify routed). Hardened fail-closed Git provenance (0 fallback SHAs), hardened Class A RLS qualification (21 verified, 2 pending; pending never marked safe), missing RPCs marked UNKNOWN; reports/w006_r1a_provenance_rls_report.* |
+| **W006** | API Architecture Audit & Separation | **IN VERIFICATION (W006-R1B)** | - | Audited 316 mobile files, 12 direct Supabase callers, 14 Railway callers, 137 Fastify routes across 23 modules, 85 data service methods classified (23 Class A reads, 56 Class B mutation strangler targets, 6 Class C Fastify routed). Part A RLS taxonomy: 21 source verified, 2 source pending, 0 live verified, 23 live pending (pg_policies not exposed over REST); 0 directClientAllowed=true, 21 conditional pending, 2 forbidden (conversations/messages). Verified live global_search defect (0A000 union order by); auditedCodeCommit=35ba912, verifiedRemoteHead=27b3722; 27/27 tests pass; reports/w006_r1b_live_rls_provenance_report.* |
 | **W007** | Canonical API Client | NOT_STARTED | - | Prerequisite: W006 |
 | **W008** | API Contract Standardization | NOT_STARTED | - | Prerequisite: W007 |
 | **W009** | External Provider Abstraction | NOT_STARTED | - | Prerequisite: W008 |
