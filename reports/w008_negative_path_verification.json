@@ -1,0 +1,113 @@
+{
+  "evidenceMetadata": {
+    "job": "W008",
+    "title": "API Contract Standardization Negative Path Verification",
+    "specification": "Master Execution Framework Amendment v1.5-A / DEC-041",
+    "timestamp": "2026-09-12T17:00:59.995Z",
+    "gitHead": "f022e853904b438ed59e309cf9fbfa3a8f14d429"
+  },
+  "summary": {
+    "totalNegativePathsAudited": 16,
+    "passedNegativePaths": 16,
+    "failedNegativePaths": 0,
+    "verdict": "ALL_NEGATIVE_PATHS_SATISFIED"
+  },
+  "matrix": [
+    {
+      "id": "NP-01",
+      "description": "Config flag string value rejected with 400 ApiErrorEnvelope and FST_ERR_VALIDATION",
+      "verifiedIn": "apps/api/src/__tests__/contracts.test.ts",
+      "status": "PASS"
+    },
+    {
+      "id": "NP-02",
+      "description": "Config flag number value rejected with 400 ApiErrorEnvelope and FST_ERR_VALIDATION",
+      "verifiedIn": "apps/api/src/__tests__/contracts.test.ts",
+      "status": "PASS"
+    },
+    {
+      "id": "NP-03",
+      "description": "Config flag null value rejected with 400 ApiErrorEnvelope and FST_ERR_VALIDATION",
+      "verifiedIn": "apps/api/src/__tests__/contracts.test.ts",
+      "status": "PASS"
+    },
+    {
+      "id": "NP-04",
+      "description": "News feed negative limit query parameter rejected with 400 ApiErrorEnvelope",
+      "verifiedIn": "apps/api/src/__tests__/contracts.test.ts",
+      "status": "PASS"
+    },
+    {
+      "id": "NP-05",
+      "description": "News feed limit exceeding 100 rejected with 400 ApiErrorEnvelope",
+      "verifiedIn": "apps/api/src/__tests__/contracts.test.ts",
+      "status": "PASS"
+    },
+    {
+      "id": "NP-06",
+      "description": "News feed lang query parameter exceeding 10 chars rejected with 400 ApiErrorEnvelope",
+      "verifiedIn": "apps/api/src/__tests__/contracts.test.ts",
+      "status": "PASS"
+    },
+    {
+      "id": "NP-07",
+      "description": "News feed scope query parameter not in enum rejected with 400 ApiErrorEnvelope",
+      "verifiedIn": "apps/api/src/__tests__/contracts.test.ts",
+      "status": "PASS"
+    },
+    {
+      "id": "NP-08",
+      "description": "States unknown state code returns 404 ApiErrorEnvelope; oversized code returns 400",
+      "verifiedIn": "apps/api/src/__tests__/contracts.test.ts",
+      "status": "PASS"
+    },
+    {
+      "id": "NP-09",
+      "description": "Unhandled route returns structured 404 error envelope with correlation ID",
+      "verifiedIn": "apps/api/src/__tests__/observability.test.ts",
+      "status": "PASS"
+    },
+    {
+      "id": "NP-10",
+      "description": "Correlation ID echoed on 400 validation error envelope (header and body)",
+      "verifiedIn": "apps/api/src/__tests__/contracts.test.ts",
+      "status": "PASS"
+    },
+    {
+      "id": "NP-11",
+      "description": "Correlation ID echoed on 404 not found error envelope (header and body)",
+      "verifiedIn": "apps/api/src/__tests__/contracts.test.ts",
+      "status": "PASS"
+    },
+    {
+      "id": "NP-12",
+      "description": "Correlation ID echoed on 500 internal error envelope",
+      "verifiedIn": "apps/api/src/__tests__/observability.test.ts",
+      "status": "PASS"
+    },
+    {
+      "id": "NP-13",
+      "description": "Fastify genReqId sanitizes and replaces malicious request IDs with UUID",
+      "verifiedIn": "apps/api/src/__tests__/contracts.test.ts",
+      "status": "PASS"
+    },
+    {
+      "id": "NP-14",
+      "description": "Canonical ApiSuccessEnvelope structure bitwise validated in @kshetra/shared",
+      "verifiedIn": "packages/shared/src/contracts/envelopes.ts",
+      "status": "PASS"
+    },
+    {
+      "id": "NP-15",
+      "description": "Canonical ApiErrorEnvelope structure bitwise validated in @kshetra/shared",
+      "verifiedIn": "packages/shared/src/contracts/envelopes.ts",
+      "status": "PASS"
+    },
+    {
+      "id": "NP-16",
+      "description": "Mobile client runtime validation throws ApiValidationError on corrupted state/list payload",
+      "verifiedIn": "apps/mobile/__tests__/apiClient.test.ts",
+      "status": "PASS"
+    }
+  ]
+}

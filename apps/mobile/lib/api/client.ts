@@ -36,6 +36,7 @@ import {
 import { ConfigEndpoint } from './endpoints/config';
 import { PagesEndpoint } from './endpoints/pages';
 import { NewsEndpoint } from './endpoints/news';
+import { StatesEndpoint } from './endpoints/states';
 
 export class ApiClient {
   readonly baseUrl: string;
@@ -46,6 +47,7 @@ export class ApiClient {
   readonly config: ConfigEndpoint;
   readonly pages: PagesEndpoint;
   readonly news: NewsEndpoint;
+  readonly states: StatesEndpoint;
 
   constructor(config: ApiClientConfig) {
     this.baseUrl = config.baseUrl.replace(/\/+$/, '');
@@ -56,6 +58,7 @@ export class ApiClient {
     this.config = new ConfigEndpoint(this);
     this.pages = new PagesEndpoint(this);
     this.news = new NewsEndpoint(this);
+    this.states = new StatesEndpoint(this);
   }
 
   /**

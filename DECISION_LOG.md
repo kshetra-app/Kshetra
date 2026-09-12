@@ -590,3 +590,24 @@
   4. **Defect Disposition:** Preserved DEF-005 as in progress (partially mitigated by W007 pioneer migrations; full strangler migration deferred to W008–W014). Preserved DEF-013 (`global_search` 0A000 SQL error) as OPEN/MONITORED without premature alteration.
   5. **W008 Transition to Planning Only:** Job W008 (API Contract Standardization) transitions to `PLANNING / NOT AUTHORIZED FOR IMPLEMENTATION`. Implementation of W008 is strictly forbidden until an Amendment v1.5-A 22-section Pre-Implementation Plan is formulated, submitted, and explicitly approved by the CTO.
 - **Rationale:** Establishes unambiguous closure for W007, protects the repository with automated controls to prevent repeated review cycles, and maintains rigorous discipline across the architectural boundary.
+
+---
+
+### DEC-042: W008 API CONTRACT STANDARDIZATION, SHARED ENVELOPES, FASTIFY SCHEMA VALIDATION & NEGATIVE-PATH VERIFICATION
+- **Date:** 2026-09-12
+- **Status:** IMPLEMENTED (SUBMITTED FOR INDEPENDENT VERIFICATION & CTO ACCEPTANCE)
+- **Authority:** Approved W008 Pre-Implementation Plan (Amendment v1.5-A / DEC-041), Master Execution Framework Amendment v1.5-A
+- **Context:** Following CTO approval of the W008 22-section Pre-Implementation Plan, implement canonical contract envelopes, Fastify schema validation, mobile client typed endpoints, negative-path matrix, and contract drift inventory.
+- **Decisions:**
+  1. **Canonical Contract Envelopes in `@kshetra/shared`:** Exported `ApiSuccessEnvelope<T>`, `ApiErrorEnvelope`, `ApiErrorDetail`, and `ApiResponseEnvelope<T>` in `packages/shared/src/contracts/envelopes.ts`. Exported `PaginationQuery`, `PaginationMeta`, and `PaginatedResponse<T>` in `packages/shared/src/contracts/pagination.ts`.
+  2. **Standardized Fastify Error Reply Helper & Global Error Handler:** Created `apps/api/src/lib/replyHelper.ts` exporting `sendApiError()` to guarantee uniform error formatting. Enhanced `app.setErrorHandler` in `apps/api/src/server.ts` to unwrap Fastify/Ajv schema validation errors into structured `details: [{ path, message }]` and attach error codes while echoing correlation IDs.
+  3. **Fastify Route Schema Hardening:** Attached Fastify route schemas and validation hooks to:
+     - `GET /api/v1/config/flags` & `PATCH /api/v1/config/flags` (with preValidation enforcing strict boolean types without coercion)
+     - `GET /api/v1/news/feed` (with query parameter schemas enforcing integer limit 1..100, scope enums, and string length limits)
+     - `GET /api/v1/states` & `GET /api/v1/states/:code` (with parameter length constraints and 404 error envelope via `sendApiError()`)
+  4. **Canonical Mobile Client Endpoint Extension:** Implemented `StatesEndpoint` in `apps/mobile/lib/api/endpoints/states.ts` with strict runtime validation functions `validateStateInfo` and `validateStatesListResponse`. Wired `states: StatesEndpoint` into `ApiClient` and re-exported from `apps/mobile/lib/api/index.ts`.
+  5. **Complete Negative-Path Matrix (NP-01 .. NP-16):** Implemented automated tests covering all 16 negative paths in `apps/api/src/__tests__/contracts.test.ts` (15/15 PASS), `apps/mobile/__tests__/apiClient.test.ts` (52/52 PASS), and `tests/w008-contract-negative-paths.test.mjs` (16/16 PASS).
+  6. **Comprehensive Route Inventory & Contract Drift Upgrade:** Upgraded `scripts/check-api-contract-drift.mjs` to inventory all registered Fastify routes (`reports/w008_api_contract_inventory.json`) and audit standardized endpoints against the D0-D9 drift taxonomy (`reports/w008_contract_drift_report.json`), verifying ZERO drift across all audited endpoints.
+  7. **Strict Out-of-Scope Boundary Preservation:** Zero database migrations in `supabase/migrations/`, zero npm dependencies added to any `package.json`, and DM store / RLS policies untouched.
+- **Rationale:** Establishes a hardened, bidirectional contract foundation between the Fastify backend and mobile client, eliminating contract drift and guaranteeing predictable error deserialization across the system.
+

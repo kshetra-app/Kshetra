@@ -954,4 +954,58 @@ describe('W007 Canonical API Client', () => {
       expect(entitlement.expiresAt).toBe(expiresAt);
     });
   });
+
+  describe('11. States Endpoint & Runtime Contract Validation', () => {
+    it('apiClient.states.listStates returns validated states array', async () => {
+      mockFetch.mockImplementation(async (_url: string, init: RequestInit) => {
+        const reqId = (init.headers as Record<string, string>)['x-request-id'];
+        return createMockResponse(200, {
+          states: [
+            { code: 'TS', name: 'Telangana', rulingParty: 'INC' },
+            { code: 'AP', name: 'Andhra Pradesh', rulingParty: 'TDP' },
+          ],
+        }, { 'x-request-id': reqId });
+      });
+
+      const res = await apiClient.states.listStates();
+      expect(res.states).toHaveLength(2);
+      expect(res.states[0].code).toBe('TS');
+      expect(res.states[0].name).toBe('Telangana');
+    });
+
+    it('apiClient.states.getState returns validated state info', async () => {
+      mockFetch.mockImplementation(async (_url: string, init: RequestInit) => {
+        const reqId = (init.headers as Record<string, string>)['x-request-id'];
+        return createMockResponse(200, {
+          code: 'TS',
+          name: 'Telangana',
+          capital: 'Hyderabad',
+          totalACs: 119,
+        }, { 'x-request-id': reqId });
+      });
+
+      const res = await apiClient.states.getState('TS');
+      expect(res.code).toBe('TS');
+      expect(res.name).toBe('Telangana');
+      expect(res.totalACs).toBe(119);
+    });
+
+    it('STATES NP-1: rejects malformed states payload when not an object', async () => {
+      mockFetch.mockImplementation(async (_url: string, init: RequestInit) => {
+        const reqId = (init.headers as Record<string, string>)['x-request-id'];
+        return createMockResponse(200, "invalid-string", { 'x-request-id': reqId });
+      });
+
+      await expect(apiClient.states.listStates()).rejects.toThrow(ApiValidationError);
+    });
+
+    it('STATES NP-2: rejects state info when code is missing', async () => {
+      mockFetch.mockImplementation(async (_url: string, init: RequestInit) => {
+        const reqId = (init.headers as Record<string, string>)['x-request-id'];
+        return createMockResponse(200, { name: 'Telangana' }, { 'x-request-id': reqId });
+      });
+
+      await expect(apiClient.states.getState('TS')).rejects.toThrow(ApiValidationError);
+    });
+  });
 });

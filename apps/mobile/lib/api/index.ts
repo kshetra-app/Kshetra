@@ -25,6 +25,7 @@ export * from './authManager';
 export * from './endpoints/config';
 export * from './endpoints/pages';
 export * from './endpoints/news';
+export * from './endpoints/states';
 export {
   resolveRequestId,
   injectTracingHeaders,

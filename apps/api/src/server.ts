@@ -168,8 +168,21 @@ export async function buildApp() {
     });
 
     const exposeDetail = env !== 'production';
+    const validationErrors = (error as any).validation as Array<{ instancePath?: string; message?: string; params?: any }> | undefined;
+    const details = validationErrors?.map((v) => ({
+      path: v.instancePath || (v.params?.missingProperty ? `.${v.params.missingProperty}` : '') || '',
+      message: v.message || 'Validation error',
+    }));
+
     reply.status(statusCode).send({
-      error: statusCode >= 500 ? 'Internal Server Error' : (error.name || 'Bad Request'),
+      error:
+        statusCode >= 500
+          ? 'Internal Server Error'
+          : statusCode === 400
+          ? 'Bad Request'
+          : error.name && error.name !== 'Error'
+          ? error.name
+          : 'Bad Request',
       message:
         statusCode >= 500 && !exposeDetail
           ? 'An unexpected error occurred. Please try again later.'
@@ -177,6 +190,8 @@ export async function buildApp() {
       statusCode,
       requestId: request.id,
       timestamp: new Date().toISOString(),
+      ...(details && details.length > 0 ? { details } : {}),
+      ...(error.code ? { code: error.code } : {}),
     });
   });
 

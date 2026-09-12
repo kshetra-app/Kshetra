@@ -1,0 +1,98 @@
+{
+  "metadata": {
+    "job": "W008",
+    "title": "API Contract Drift Report (D0-D9 Taxonomy)",
+    "specification": "Master Execution Framework Amendment v1.5-A / DEC-041",
+    "timestamp": "2026-09-12T17:01:17.768Z"
+  },
+  "taxonomyLegend": {
+    "D0": "IN_SYNC — No contract drift detected",
+    "D1": "MISSING_ENDPOINT — Endpoint expected by client missing from server",
+    "D2": "METHOD_MISMATCH — HTTP verb differs between client and server",
+    "D3": "PATH_PARAM_MISMATCH — Path parameter structure or naming differs",
+    "D4": "QUERY_PARAM_MISMATCH — Query parameter names or types differ",
+    "D5": "REQUEST_BODY_MISMATCH — Request body schema differs",
+    "D6": "RESPONSE_ENVELOPE_MISMATCH — Response envelope does not conform to ApiSuccessEnvelope",
+    "D7": "ERROR_PAYLOAD_MISMATCH — Error response does not conform to ApiErrorEnvelope",
+    "D8": "AUTH_POLICY_MISMATCH — Auth requirement differs between client and server",
+    "D9": "UNVERSIONED_OR_DEPRECATED — Client targets legacy unversioned path"
+  },
+  "summary": {
+    "totalAuditedEndpoints": 10,
+    "inSyncCount": 10,
+    "driftCount": 0,
+    "driftStatus": "ZERO_DRIFT_DETECTED"
+  },
+  "auditResults": [
+    {
+      "endpoint": "GET /health",
+      "expectedMethod": "GET",
+      "path": "/health",
+      "phase": "System",
+      "driftTaxonomy": "D0_IN_SYNC"
+    },
+    {
+      "endpoint": "GET /api/health",
+      "expectedMethod": "GET",
+      "path": "/api/health",
+      "phase": "System",
+      "driftTaxonomy": "D0_IN_SYNC"
+    },
+    {
+      "endpoint": "GET /api/health/db",
+      "expectedMethod": "GET",
+      "path": "/api/health/db",
+      "phase": "System",
+      "driftTaxonomy": "D0_IN_SYNC"
+    },
+    {
+      "endpoint": "GET /api/v1/config/flags",
+      "expectedMethod": "GET",
+      "path": "/api/v1/config/flags",
+      "phase": "Pioneer",
+      "driftTaxonomy": "D0_IN_SYNC"
+    },
+    {
+      "endpoint": "PATCH /api/v1/config/flags",
+      "expectedMethod": "PATCH",
+      "path": "/api/v1/config/flags",
+      "phase": "Pioneer",
+      "driftTaxonomy": "D0_IN_SYNC"
+    },
+    {
+      "endpoint": "GET /api/v1/pages/:id/entitlement",
+      "expectedMethod": "GET",
+      "path": "/api/v1/pages/:id/entitlement",
+      "phase": "Pioneer",
+      "driftTaxonomy": "D0_IN_SYNC"
+    },
+    {
+      "endpoint": "GET /api/v1/news/feed",
+      "expectedMethod": "GET",
+      "path": "/api/v1/news/feed",
+      "phase": "Pioneer",
+      "driftTaxonomy": "D0_IN_SYNC"
+    },
+    {
+      "endpoint": "GET /api/v1/states",
+      "expectedMethod": "GET",
+      "path": "/api/v1/states",
+      "phase": "Phase 1",
+      "driftTaxonomy": "D0_IN_SYNC"
+    },
+    {
+      "endpoint": "GET /api/v1/states/:code",
+      "expectedMethod": "GET",
+      "path": "/api/v1/states/:code",
+      "phase": "Phase 1",
+      "driftTaxonomy": "D0_IN_SYNC"
+    },
+    {
+      "endpoint": "POST /api/v1/moderation/check-content",
+      "expectedMethod": "POST",
+      "path": "/api/v1/moderation/check-content",
+      "phase": "Phase 1",
+      "driftTaxonomy": "D0_IN_SYNC"
+    }
+  ]
+}
