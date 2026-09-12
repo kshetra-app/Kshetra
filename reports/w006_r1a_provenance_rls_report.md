@@ -20,7 +20,7 @@ In accordance with **W006-R1A (Audit Provenance & RLS Qualification Hardening)**
 | Coordinate | Value | Description |
 | :--- | :--- | :--- |
 | **CANONICAL_BRANCH** | `master` | Primary production branch |
-| **VERIFIED_REMOTE_HEAD** | `f4f122f` | Remote HEAD against which W006-R1 verification was established |
+| **VERIFIED_REMOTE_HEAD** | `35ba912` | Remote HEAD against which W006-R1 verification was established |
 | **AUDITED_CODE_COMMIT** | `5754fa2` | Exact implementation commit audited for baseline architecture |
 | **EVIDENCE_COMMIT** | `pending` | Commit containing regenerated W006-R1A audit reports |
 | **ACCEPTANCE_COMMIT** | `pending` | Commit containing final user acceptance state |
