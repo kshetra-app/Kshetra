@@ -111,7 +111,7 @@ assert.ok(
   'Historical W006 ACCEPTANCE_COMMIT must remain pending or valid commit'
 );
 assert.ok(
-  stateContent.includes('W006') && (stateContent.includes('ACCEPTED') || stateContent.includes('VERIFIED / PENDING ACCEPTANCE')),
+  stateContent.includes('W006') && (stateContent.includes('ACCEPTED') || stateContent.includes('VERIFIED') || stateContent.includes('RECOMMENDED FOR HUMAN ACCEPTANCE')),
   'W006 status must be recorded in EXECUTION_STATE.md'
 );
 assert.ok(

@@ -7,17 +7,16 @@
 ## 1. Project & Execution Coordinates
 ```text
 PROJECT:               PANIN (formerly Kshetra)
-TARGET_DOMAIN:         India Political Geography, Intelligence, Participation & Media Platform
-CURRENT_JOB:           W006 (API Architecture Audit & Separation - ACCEPTED)
-LAST_COMPLETED_JOB:    W006 (API Architecture Audit & Separation - ACCEPTED)
-NEXT_PERMITTED_JOB:    W007 (Canonical API Client - UNBLOCKED / PRE-IMPLEMENTATION PLANNING GATE ACTIVE)
+CURRENT_JOB:           W006 (API Architecture Audit & Separation - INDEPENDENT VERIFICATION PASSED / RECOMMENDED FOR HUMAN ACCEPTANCE)
+LAST_COMPLETED_JOB:    W005 (Backup & Recovery Verification - ACCEPTED WITH DOCUMENTED LIMITATIONS)
+NEXT_PERMITTED_JOB:    W007 (Canonical API Client - BLOCKED PENDING W006 HUMAN ACCEPTANCE)
 
 CURRENT_BRANCH:        master
 VERIFIED_REMOTE_HEAD:  c1fe56a
 CURRENT_REMOTE_HEAD:   origin/master
 AUDITED_CODE_COMMIT:   35ba912
 EVIDENCE_COMMIT:       db30619
-ACCEPTANCE_COMMIT:     04be40b
+ACCEPTANCE_COMMIT:     pending
 API_VERSION:           v1 (Fastify 5.2 on Railway)
 MOBILE_VERSION:        0.1.0 (Expo 54, React Native 0.81.5)
 DATABASE_MIGRATIONS:   36 migration files present in repository (35 live applied to staging fkpigozcqnmcvofuksar)
@@ -29,6 +28,14 @@ MOBILE_STORES:         29 Zustand stores
 GOVERNANCE_FRAMEWORK:  Amendment v1.2 (Active History) | Amendment v1.3 (Active History) | Amendment v1.4 (Active History) | Amendment v1.5 (Parent Baseline) | Amendment v1.5-A (ACTIVE OPERATIONAL AUTHORITY)
 REMOTE_SYNC:           Up to date with origin/master
 ```
+
+> **Evidence Lineage & Coordinate Reconciliation (DEC-035 / DEC-036):**
+> - `c1fe56a` = Historical W006 baseline remote HEAD at start of qualification.
+> - `35ba912` = Audited code commit implementing 85-method data service architecture.
+> - `db30619` = Historical W006-R1C qualification evidence coordinate.
+> - `04be40b` = Final W006 independent-verification evidence package (`reports/w006_final_*`).
+> - `716070f` = Repository commit integrating W006 verification artifacts.
+> - `ACCEPTANCE_COMMIT: pending` = Final human user acceptance decision pending (DEC-035 rule).
 
 ---
 
@@ -49,8 +56,8 @@ REMOTE_SYNC:           Up to date with origin/master
 | **W003** | CI/CD Quality Pipeline | **ACCEPTED** | 2026-09-10 | Independent Verifier PASS with Monitored Exceptions per Amendment v1.4 Parts 33 & 34; accepted by user (`reports/w003_r5_independent_verification.md`) |
 | **W004** | Observability & Error Tracking | **ACCEPTED** | 2026-09-11 | W004-R1A Independent Verifier PASS (13/13 gates at commit `811b5dd`); verified remote head `1260f98`; audited code `ef4622a`; evidence `19a5932`; user accepted; `reports/w004_r1a_independent_verification.md` |
 | **W005** | Backup & Recovery Verification | **ACCEPTED (W/ LIMITATIONS)** | 2026-09-11 | W005-R1C Independent Verifier PASS (commit `acc32fe`); verified remote head `f6ee696`; audited code `943b026`; evidence `b4f3133`; documented limitations: PITR/RPO ≤5m unverified, multi-cloud standby not implemented, DR-001 schema/API bootstrap, DR-002 synthetic staging, DR-004 staging storage, DR-005 client offline; user accepted |
-| **W006** | API Architecture Audit & Separation | **ACCEPTED** | 2026-09-12 | Audited 316 mobile files, 12 direct Supabase callers, 14 Railway callers, 137 Fastify routes across 23 modules, 85 data service methods classified (23 Class A reads, 56 Class B mutation strangler targets, 6 Class C Fastify routed). Fail-closed RLS decision engine: 21 source verified, 2 source pending, 0 live verified, 23 live pending; 0 directClientAllowed=true, 21 conditional pending, 2 forbidden (conversations/messages). Anti-override guard active. Tests NP-01 to NP-10 pass. global_search defect documented as DEF-013; auditedCodeCommit=35ba912, evidenceCommit=04be40b, acceptanceCommit=04be40b; reports/w006_final_acceptance_report.* & reports/w006_final_independent_verification.md |
-| **W007** | Canonical API Client | READY_FOR_PLANNING | - | Prerequisite W006 ACCEPTED; unblocked to enter Amendment v1.5-A Pre-Implementation Planning Gate |
+| **W006** | API Architecture Audit & Separation | **INDEPENDENT VERIFICATION PASSED (RECOMMENDED FOR HUMAN ACCEPTANCE)** | - (PENDING HUMAN ACCEPTANCE) | Audited 316 mobile files, 12 direct Supabase callers, 14 Railway callers, 137 Fastify routes across 23 modules, 85 data service methods classified (23 Class A reads, 56 Class B mutation strangler targets, 6 Class C Fastify routed). Fail-closed RLS decision engine: 21 source verified, 2 source pending, 0 live verified, 23 live pending; 0 directClientAllowed=true, 21 conditional pending, 2 forbidden (conversations/messages). Anti-override guard active. Tests NP-01 to NP-10 pass. global_search defect documented as DEF-013; auditedCodeCommit=35ba912, evidenceCommit=04be40b; reports/w006_final_acceptance_report.* & reports/w006_final_independent_verification.md |
+| **W007** | Canonical API Client | NOT_STARTED (BLOCKED PENDING W006 HUMAN ACCEPTANCE) | - | Prerequisite: W006 human acceptance; strictly blocked from implementation until human sign-off |
 | **W008** | API Contract Standardization | NOT_STARTED | - | Prerequisite: W007 |
 | **W009** | External Provider Abstraction | NOT_STARTED | - | Prerequisite: W008 |
 | **W010** | Security Baseline & RLS Hardening | NOT_STARTED | - | Prerequisite: W009 |

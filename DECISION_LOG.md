@@ -484,13 +484,13 @@
 
 ---
 
-### DEC-036: W006 Final Acceptance — API Architecture Audit & Separation
+### DEC-036: W006 Independent Verification & Acceptance Recommendation — API Architecture Audit & Separation
 - **Date:** 2026-09-12
-- **Status:** ACCEPTED
-- **Authority:** Master Product Blueprint, AI Agent Master Execution Job Book, Amendment v1.2, Amendment v1.4, Amendment v1.5, Amendment v1.5-A, `DEC-002`, `DEC-028`, `DEC-029`, `DEC-030`, `DEC-031`, `DEC-032`, `DEC-033`
-- **Context:** Completion of the final independent verification and acceptance gate for Job W006 (API Architecture Audit & Separation).
+- **Status:** INDEPENDENT VERIFICATION PASSED / RECOMMENDED FOR HUMAN ACCEPTANCE
+- **Authority:** Master Product Blueprint, AI Agent Master Execution Job Book, Amendment v1.2, Amendment v1.4, Amendment v1.5, Amendment v1.5-A, `DEC-002`, `DEC-028`, `DEC-029`, `DEC-030`, `DEC-031`, `DEC-032`, `DEC-033`, `DEC-035`
+- **Context:** Completion of the final independent verification and acceptance recommendation gate for Job W006 (API Architecture Audit & Separation).
 - **Decisions:**
-  1. **Final Acceptance of W006:** Formally accept Job W006 based on independent reproduction and automated verification of all 20 mandatory acceptance criteria.
+  1. **Independent Verification Passed & Recommendation for Human Acceptance:** Independent reproduction and automated verification of all 20 mandatory acceptance criteria has successfully passed. The completed verification package is recommended for final human acceptance per `DEC-035` (`PLAN APPROVAL ≠ IMPLEMENTATION ≠ INDEPENDENT VERIFICATION ≠ FINAL ACCEPTANCE`, where final acceptance remains solely with the human user).
   2. **Authoritative Architecture Inventory Established:**
      - 316 mobile source files scanned
      - 12 baseline direct Supabase callers
@@ -507,5 +507,5 @@
      - Invariants 1, 1A, 2, 3, and report generator anti-override guard fully operational
   4. **Predictive Test & Negative-Path Integrity Proven:** All 10 negative-path scenarios (NP-01 through NP-10) executed and verified failing closed.
   5. **Defect Disposition (DEF-013):** Formally logged `global_search` RPC syntax error (PostgreSQL `0A000: invalid UNION/INTERSECT/EXCEPT ORDER BY clause`) in `DEFECT_REGISTER.md` as DEF-013 (P2). Confirmed 0 architectural or security impact on W006.
-  6. **Unblocking W007:** W006 acceptance unblocks W007 (Canonical API Client). Under Amendment v1.5-A, W007 must proceed through a mandatory 22-section Pre-Implementation Plan and Direction-Review Gate before any implementation begins.
-- **Rationale:** All criteria independently verified and reproducible from repository source and live staging probes. Zero false live claims exist. Strict fail-closed guarantees protect client data safety.
+  6. **W007 Gate Status:** W007 (Canonical API Client) remains strictly blocked from implementation pending final human acceptance of W006. Upon human acceptance, W007 must proceed through the mandatory Amendment v1.5-A 22-section Pre-Implementation Plan and Direction-Review Gate before any implementation begins.
+- **Rationale:** All criteria independently verified and reproducible from repository source and live staging probes. Zero false live claims exist. Strict fail-closed guarantees protect client data safety while upholding human governance sovereignty.
