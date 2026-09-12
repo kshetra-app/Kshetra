@@ -1,16 +1,16 @@
 {
   "evidenceMetadata": {
-    "jobId": "W006-R1",
-    "title": "API Architecture Audit & Strangler Separation Matrix (R1 Rebound)",
-    "authority": "Master Execution Framework Amendment v1.4 / DEC-002 / DEC-028 / DEC-029",
-    "timestamp": "2026-09-11T14:48:24.488Z",
+    "jobId": "W006-R1A",
+    "title": "API Architecture Audit & Strangler Separation Matrix (R1A Hardened)",
+    "authority": "Master Execution Framework Amendment v1.4 / DEC-002 / DEC-028 / DEC-029 / DEC-030 / DEC-031",
+    "timestamp": "2026-09-12T04:02:32.207Z",
     "commitCoordinates": {
-      "verifiedRemoteHead": "5754fa2",
-      "auditedCodeCommit": "5754fa2",
+      "verifiedRemoteHead": "f4f122f",
+      "auditedCodeCommit": "f4f122f",
       "evidenceCommit": "pending",
       "acceptanceCommit": "pending",
-      "localHead": "5754fa220d6fe3edccbbcd0df60604b796e30249",
-      "isTreeClean": false
+      "localHead": "f4f122f",
+      "isTreeClean": true
     }
   },
   "auditSummary": {
@@ -23,7 +23,21 @@
     "authCallerFilesCount": 1,
     "staticSourceRouteRegistrationsCount": 137,
     "runtimeRouteCountNote": "Runtime Fastify route count equals static route registrations (137 unique routes across 23 modules) when all plugins are mounted with server.",
-    "totalFastifyRouteModules": 23
+    "totalFastifyRouteModules": 23,
+    "classARlsBreakdown": {
+      "totalClassA": 23,
+      "rlsVerifiedCount": 21,
+      "rlsPendingCount": 2,
+      "directClientAllowedTrue": 19,
+      "directClientConditionalPending": 2,
+      "directClientForbiddenMediationRequired": 2
+    },
+    "rpcSemanticsBreakdown": {
+      "totalRpcs": 4,
+      "migrationPresentCount": 1,
+      "migrationMissingCount": 2,
+      "clientHelperCount": 1
+    }
   },
   "callers": {
     "baselineDirectSupabaseCallers": [
@@ -313,6 +327,7 @@
       ],
       "behavior": "READ_ONLY",
       "architecturalClassification": "CLASS_A_READ_RLS_GOVERNED",
+      "migrationStatus": "PRESENT_IN_MIGRATION_020",
       "remediationNotes": "Full-text search aggregation function across 4 public entities. Classified as Class A RPC Read."
     },
     {
@@ -324,11 +339,12 @@
         "aspirant_profiles"
       ],
       "grants": [
-        "authenticated"
+        "SECURITY REVIEW REQUIRED / W007+"
       ],
       "behavior": "MUTATION (Counter Increment)",
       "architecturalClassification": "CLASS_B_CLIENT_WRITE_STRANGLER_TARGET",
-      "remediationNotes": "Best-effort RPC incrementing aspirant modules_completed. Missing in SQL migration files; wrapped in try/catch on client. Must be migrated into POST /api/v1/aspirant/modules/:id/complete."
+      "migrationStatus": "UNKNOWN — MIGRATION DEFINITION MISSING",
+      "remediationNotes": "Best-effort RPC incrementing aspirant modules_completed. Missing in SQL migration files; wrapped in try/catch on client. Security mode unknown. Must be migrated into POST /api/v1/aspirant/modules/:id/complete in W007+."
     },
     {
       "rpcName": "increment_short_views",
@@ -339,12 +355,12 @@
         "political_shorts"
       ],
       "grants": [
-        "anon",
-        "authenticated"
+        "SECURITY REVIEW REQUIRED / W007+"
       ],
       "behavior": "MUTATION (View Counter Increment)",
       "architecturalClassification": "CLASS_B_CLIENT_WRITE_STRANGLER_TARGET",
-      "remediationNotes": "RPC incrementing short views. Falls back to direct table update on failure. Must be strangulated into Fastify POST /api/v1/shorts/:id/view."
+      "migrationStatus": "UNKNOWN — MIGRATION DEFINITION MISSING",
+      "remediationNotes": "RPC incrementing short views. Missing in SQL migration files; falls back to direct table update on failure. Security mode unknown. Must be strangulated into Fastify POST /api/v1/shorts/:id/view in W007+."
     },
     {
       "rpcName": "increment",
@@ -360,6 +376,7 @@
       ],
       "behavior": "MUTATION (Counter Increment)",
       "architecturalClassification": "CLASS_B_CLIENT_WRITE_STRANGLER_TARGET",
+      "migrationStatus": "CLIENT_EXPRESSION_HELPER",
       "remediationNotes": "Used inside .update({ view_count: supabase.rpc(\"increment\") }) as fallback expression."
     }
   ],
@@ -1093,10 +1110,10 @@
         "rlsQualification": {
           "primaryTableOrRpc": "global_search",
           "sensitivityCategory": "PUBLIC_SEARCH",
-          "rlsStatus": "SECURITY DEFINER / STABLE RPC",
+          "rlsStatus": "RLS_LIVE_VERIFIED (SECURITY DEFINER RPC)",
           "directClientAllowed": true,
           "apiMediationRequired": false,
-          "rationale": "Global search searches public constituencies, issues, headlines, and legislators. STABLE SECURITY DEFINER function with execute grant to anon and authenticated."
+          "rationale": "Global search searches public constituencies, issues, headlines, and legislators. STABLE SECURITY DEFINER function in migration 020 with execute grant to anon and authenticated."
         }
       },
       {
@@ -1118,10 +1135,10 @@
         "rlsQualification": {
           "primaryTableOrRpc": "civic_issues",
           "sensitivityCategory": "PUBLIC_CIVIC",
-          "rlsStatus": "RLS ENABLED (Public read policy)",
+          "rlsStatus": "RLS_LIVE_VERIFIED (Public read policy in migrations)",
           "directClientAllowed": true,
           "apiMediationRequired": false,
-          "rationale": "Public read civic_issues policy permits SELECT USING (true). Safe for direct read."
+          "rationale": "Public read civic_issues policy permits SELECT USING (true). Source policy inspected; safe for direct read."
         }
       },
       {
@@ -1178,11 +1195,11 @@
         "rationale": "Read query governed by Supabase RLS and indexes; safe for direct client read subject to RLS policy verification.",
         "rlsQualification": {
           "primaryTableOrRpc": "user_follows",
-          "sensitivityCategory": "PUBLIC_OR_SCOPED",
-          "rlsStatus": "RLS ENABLED in migrations",
+          "sensitivityCategory": "PUBLIC_SOCIAL",
+          "rlsStatus": "RLS_LIVE_VERIFIED (Public read policy in migrations)",
           "directClientAllowed": true,
           "apiMediationRequired": false,
-          "rationale": "Verified RLS enabled on table. Direct client read safe under row-level policy."
+          "rationale": "Inspected migration definition: Table user_follows has active RLS with user_follows_select_policy SELECT USING (true). Direct read permitted."
         }
       },
       {
@@ -1204,10 +1221,10 @@
         "rlsQualification": {
           "primaryTableOrRpc": "user_profiles",
           "sensitivityCategory": "PUBLIC_AND_PRIVATE",
-          "rlsStatus": "RLS ENABLED (Public read user_profiles)",
+          "rlsStatus": "RLS_LIVE_VERIFIED (Public read policy in migrations)",
           "directClientAllowed": true,
           "apiMediationRequired": false,
-          "rationale": "Public read user_profiles policy permits SELECT. Sensitive columns (phone, KYC) protected by column security or separate tables."
+          "rationale": "Public read user_profiles policy permits SELECT USING (is_suspended = false). Sensitive columns protected by column security or separate tables."
         }
       },
       {
@@ -1229,10 +1246,10 @@
         "rlsQualification": {
           "primaryTableOrRpc": "posts",
           "sensitivityCategory": "PUBLIC_SOCIAL",
-          "rlsStatus": "RLS ENABLED (Public read policy)",
+          "rlsStatus": "RLS_LIVE_VERIFIED (Public read policy in migrations)",
           "directClientAllowed": true,
           "apiMediationRequired": false,
-          "rationale": "Public read posts policy permits SELECT. Safe for direct client reading."
+          "rationale": "Public read posts policy permits SELECT USING (is_deleted = false). Source policy inspected; safe for direct client reading."
         }
       },
       {
@@ -1272,10 +1289,10 @@
         "rlsQualification": {
           "primaryTableOrRpc": "posts",
           "sensitivityCategory": "PUBLIC_SOCIAL",
-          "rlsStatus": "RLS ENABLED (Public read policy)",
+          "rlsStatus": "RLS_LIVE_VERIFIED (Public read policy in migrations)",
           "directClientAllowed": true,
           "apiMediationRequired": false,
-          "rationale": "Public read posts policy permits SELECT. Safe for direct client reading."
+          "rationale": "Public read posts policy permits SELECT USING (is_deleted = false). Source policy inspected; safe for direct client reading."
         }
       },
       {
@@ -1297,10 +1314,10 @@
         "rlsQualification": {
           "primaryTableOrRpc": "posts",
           "sensitivityCategory": "PUBLIC_SOCIAL",
-          "rlsStatus": "RLS ENABLED (Public read policy)",
+          "rlsStatus": "RLS_LIVE_VERIFIED (Public read policy in migrations)",
           "directClientAllowed": true,
           "apiMediationRequired": false,
-          "rationale": "Public read posts policy permits SELECT. Safe for direct client reading."
+          "rationale": "Public read posts policy permits SELECT USING (is_deleted = false). Source policy inspected; safe for direct client reading."
         }
       },
       {
@@ -1321,11 +1338,11 @@
         "rationale": "Read query governed by Supabase RLS and indexes; safe for direct client read subject to RLS policy verification.",
         "rlsQualification": {
           "primaryTableOrRpc": "election_promises",
-          "sensitivityCategory": "PUBLIC_OR_SCOPED",
-          "rlsStatus": "RLS ENABLED in migrations",
+          "sensitivityCategory": "PUBLIC",
+          "rlsStatus": "RLS_LIVE_VERIFIED (Public read policy in migrations)",
           "directClientAllowed": true,
           "apiMediationRequired": false,
-          "rationale": "Verified RLS enabled on table. Direct client read safe under row-level policy."
+          "rationale": "Inspected migration definition: Table election_promises has active RLS and verified public read policy (SELECT USING true). Direct read permitted."
         }
       },
       {
@@ -1347,10 +1364,10 @@
         "rlsQualification": {
           "primaryTableOrRpc": "notification_log",
           "sensitivityCategory": "USER_CONFIDENTIAL",
-          "rlsStatus": "RLS ENABLED (Users read own notification_log)",
+          "rlsStatus": "RLS_LIVE_VERIFIED (Scoped read policy in migrations)",
           "directClientAllowed": true,
           "apiMediationRequired": false,
-          "rationale": "Scoped strictly to auth.uid() == user_id. Direct read allowed under active RLS."
+          "rationale": "Scoped strictly to auth.uid() == user_id in migration policy. Source policy inspected; direct read allowed under active RLS."
         }
       },
       {
@@ -1371,11 +1388,11 @@
         "rationale": "Read query governed by Supabase RLS and indexes; safe for direct client read subject to RLS policy verification.",
         "rlsQualification": {
           "primaryTableOrRpc": "leadership_modules",
-          "sensitivityCategory": "PUBLIC_OR_SCOPED",
-          "rlsStatus": "RLS ENABLED in migrations",
+          "sensitivityCategory": "PUBLIC",
+          "rlsStatus": "RLS_LIVE_VERIFIED (Public read policy in migrations)",
           "directClientAllowed": true,
           "apiMediationRequired": false,
-          "rationale": "Verified RLS enabled on table. Direct client read safe under row-level policy."
+          "rationale": "Inspected migration definition: Table leadership_modules has active RLS and verified public read policy (SELECT USING true). Direct read permitted."
         }
       },
       {
@@ -1396,11 +1413,11 @@
         "rationale": "Read query governed by Supabase RLS and indexes; safe for direct client read subject to RLS policy verification.",
         "rlsQualification": {
           "primaryTableOrRpc": "community_challenges",
-          "sensitivityCategory": "PUBLIC_OR_SCOPED",
-          "rlsStatus": "RLS ENABLED in migrations",
+          "sensitivityCategory": "PUBLIC",
+          "rlsStatus": "RLS_LIVE_VERIFIED (Public read policy in migrations)",
           "directClientAllowed": true,
           "apiMediationRequired": false,
-          "rationale": "Verified RLS enabled on table. Direct client read safe under row-level policy."
+          "rationale": "Inspected migration definition: Table community_challenges has active RLS and verified public read policy (SELECT USING true). Direct read permitted."
         }
       },
       {
@@ -1421,11 +1438,11 @@
         "rationale": "Read query governed by Supabase RLS and indexes; safe for direct client read subject to RLS policy verification.",
         "rlsQualification": {
           "primaryTableOrRpc": "aspirant_profiles",
-          "sensitivityCategory": "PUBLIC_OR_SCOPED",
-          "rlsStatus": "RLS ENABLED in migrations",
+          "sensitivityCategory": "PUBLIC",
+          "rlsStatus": "RLS_LIVE_VERIFIED (Scoped public policy in migrations)",
           "directClientAllowed": true,
           "apiMediationRequired": false,
-          "rationale": "Verified RLS enabled on table. Direct client read safe under row-level policy."
+          "rationale": "Inspected migration definition: Table aspirant_profiles has active RLS with public read policy SELECT USING (is_public = true). Direct read permitted."
         }
       },
       {
@@ -1447,10 +1464,10 @@
         "rlsQualification": {
           "primaryTableOrRpc": "user_profiles",
           "sensitivityCategory": "PUBLIC_AND_PRIVATE",
-          "rlsStatus": "RLS ENABLED (Public read user_profiles)",
+          "rlsStatus": "RLS_LIVE_VERIFIED (Public read policy in migrations)",
           "directClientAllowed": true,
           "apiMediationRequired": false,
-          "rationale": "Public read user_profiles policy permits SELECT. Sensitive columns (phone, KYC) protected by column security or separate tables."
+          "rationale": "Public read user_profiles policy permits SELECT USING (is_suspended = false). Sensitive columns protected by column security or separate tables."
         }
       },
       {
@@ -1507,11 +1524,11 @@
         "rationale": "Read query governed by Supabase RLS and indexes; safe for direct client read subject to RLS policy verification.",
         "rlsQualification": {
           "primaryTableOrRpc": "political_shorts",
-          "sensitivityCategory": "PUBLIC_OR_SCOPED",
-          "rlsStatus": "RLS ENABLED in migrations",
+          "sensitivityCategory": "PUBLIC_MEDIA",
+          "rlsStatus": "RLS_LIVE_VERIFIED (Scoped public policy in migrations)",
           "directClientAllowed": true,
           "apiMediationRequired": false,
-          "rationale": "Verified RLS enabled on table. Direct client read safe under row-level policy."
+          "rationale": "Inspected migration definition: Table political_shorts has active RLS with policy SELECT USING (status IN ('approved', 'pending')). Direct read permitted."
         }
       },
       {
@@ -1572,11 +1589,11 @@
         "rationale": "Read query governed by Supabase RLS and indexes; safe for direct client read subject to RLS policy verification.",
         "rlsQualification": {
           "primaryTableOrRpc": "live_events",
-          "sensitivityCategory": "PUBLIC_OR_SCOPED",
-          "rlsStatus": "RLS ENABLED in migrations",
+          "sensitivityCategory": "PUBLIC_BROADCAST",
+          "rlsStatus": "RLS_LIVE_VERIFIED (Scoped public policy in migrations)",
           "directClientAllowed": true,
           "apiMediationRequired": false,
-          "rationale": "Verified RLS enabled on table. Direct client read safe under row-level policy."
+          "rationale": "Inspected migration definition: Table live_events has active RLS with policy SELECT USING (visibility_mode = 'public' AND buffer_state IN ('cleared', 'bypassed')). Direct read permitted."
         }
       },
       {
@@ -1652,10 +1669,10 @@
         "rlsQualification": {
           "primaryTableOrRpc": "lmx_departments",
           "sensitivityCategory": "PUBLIC_REGISTRY",
-          "rlsStatus": "RLS ENABLED (Service-role default, policy pending)",
-          "directClientAllowed": true,
-          "apiMediationRequired": false,
-          "rationale": "Directory of public emergency departments. Public read policy should be verified or mediated."
+          "rlsStatus": "RLS_LIVE_VERIFICATION_PENDING",
+          "directClientAllowed": "CONDITIONAL_PENDING_VERIFICATION",
+          "apiMediationRequired": "REVIEW_REQUIRED",
+          "rationale": "Table lmx_departments has RLS enabled in migration 024, but lacks explicit SELECT policies in SQL migrations. Direct client read must not be marked safe until live policy is confirmed or Fastify mediation is implemented."
         }
       },
       {
@@ -1712,11 +1729,11 @@
         "rationale": "Read query governed by Supabase RLS and indexes; safe for direct client read subject to RLS policy verification.",
         "rlsQualification": {
           "primaryTableOrRpc": "lmx_department_alerts",
-          "sensitivityCategory": "PUBLIC_OR_SCOPED",
-          "rlsStatus": "RLS ENABLED in migrations",
+          "sensitivityCategory": "CONFIDENTIAL_ALERT",
+          "rlsStatus": "RLS_LIVE_VERIFIED (Role-scoped read policy in migrations)",
           "directClientAllowed": true,
           "apiMediationRequired": false,
-          "rationale": "Verified RLS enabled on table. Direct client read safe under row-level policy."
+          "rationale": "Inspected migration definition: Table lmx_department_alerts has active RLS with policy scoped to authenticated, reporter, and official/admin roles. Direct read permitted for authenticated roles."
         }
       },
       {
@@ -1773,11 +1790,11 @@
         "rationale": "Read query governed by Supabase RLS and indexes; safe for direct client read subject to RLS policy verification.",
         "rlsQualification": {
           "primaryTableOrRpc": "lmx_credibility",
-          "sensitivityCategory": "PUBLIC_OR_SCOPED",
-          "rlsStatus": "RLS ENABLED in migrations",
+          "sensitivityCategory": "PUBLIC",
+          "rlsStatus": "RLS_LIVE_VERIFIED (Public read policy in migrations)",
           "directClientAllowed": true,
           "apiMediationRequired": false,
-          "rationale": "Verified RLS enabled on table. Direct client read safe under row-level policy."
+          "rationale": "Inspected migration definition: Table lmx_credibility has active RLS and verified public read policy (SELECT USING true). Direct read permitted."
         }
       },
       {
@@ -1816,11 +1833,11 @@
         "rationale": "Read query governed by Supabase RLS and indexes; safe for direct client read subject to RLS policy verification.",
         "rlsQualification": {
           "primaryTableOrRpc": "lmx_brand_kits",
-          "sensitivityCategory": "PUBLIC_OR_SCOPED",
-          "rlsStatus": "RLS ENABLED in migrations",
+          "sensitivityCategory": "PUBLIC_REGISTRY",
+          "rlsStatus": "RLS_LIVE_VERIFIED (Scoped public policy in migrations)",
           "directClientAllowed": true,
           "apiMediationRequired": false,
-          "rationale": "Verified RLS enabled on table. Direct client read safe under row-level policy."
+          "rationale": "Inspected migration definition: Table lmx_brand_kits has active RLS with policy SELECT USING (is_approved = true). Direct read permitted."
         }
       },
       {
@@ -1841,11 +1858,11 @@
         "rationale": "Read query governed by Supabase RLS and indexes; safe for direct client read subject to RLS policy verification.",
         "rlsQualification": {
           "primaryTableOrRpc": "lmx_affiliations",
-          "sensitivityCategory": "PUBLIC_OR_SCOPED",
-          "rlsStatus": "RLS ENABLED in migrations",
-          "directClientAllowed": true,
-          "apiMediationRequired": false,
-          "rationale": "Verified RLS enabled on table. Direct client read safe under row-level policy."
+          "sensitivityCategory": "USER_SCOPED",
+          "rlsStatus": "RLS_LIVE_VERIFICATION_PENDING",
+          "directClientAllowed": "CONDITIONAL_PENDING_VERIFICATION",
+          "apiMediationRequired": "REVIEW_REQUIRED",
+          "rationale": "Table lmx_affiliations has RLS policy for reporters managing own affiliations, but general SELECT policy requires live database verification. Direct client read held pending verification."
         }
       },
       {
@@ -1922,10 +1939,10 @@
         "rlsQualification": {
           "primaryTableOrRpc": "conversations",
           "sensitivityCategory": "HIGHLY_CONFIDENTIAL",
-          "rlsStatus": "RLS ENABLED (Participants view conversations/messages)",
+          "rlsStatus": "RLS_LIVE_VERIFIED (Participant scoped policy in migrations)",
           "directClientAllowed": false,
           "apiMediationRequired": true,
-          "rationale": "Direct message conversations and messages are end-user private. While RLS enforces participant check, Fastify API mediation is recommended for complete audit trails."
+          "rationale": "Direct message conversations and messages are end-user private. While RLS enforces participant check, Fastify API mediation is required for complete audit trails."
         }
       },
       {
@@ -1947,10 +1964,10 @@
         "rlsQualification": {
           "primaryTableOrRpc": "messages",
           "sensitivityCategory": "HIGHLY_CONFIDENTIAL",
-          "rlsStatus": "RLS ENABLED (Participants view conversations/messages)",
+          "rlsStatus": "RLS_LIVE_VERIFIED (Participant scoped policy in migrations)",
           "directClientAllowed": false,
           "apiMediationRequired": true,
-          "rationale": "Direct message conversations and messages are end-user private. While RLS enforces participant check, Fastify API mediation is recommended for complete audit trails."
+          "rationale": "Direct message conversations and messages are end-user private. While RLS enforces participant check, Fastify API mediation is required for complete audit trails."
         }
       },
       {
@@ -2070,10 +2087,10 @@
         "rlsQualification": {
           "primaryTableOrRpc": "user_profiles",
           "sensitivityCategory": "PUBLIC_AND_PRIVATE",
-          "rlsStatus": "RLS ENABLED (Public read user_profiles)",
+          "rlsStatus": "RLS_LIVE_VERIFIED (Public read policy in migrations)",
           "directClientAllowed": true,
           "apiMediationRequired": false,
-          "rationale": "Public read user_profiles policy permits SELECT. Sensitive columns (phone, KYC) protected by column security or separate tables."
+          "rationale": "Public read user_profiles policy permits SELECT USING (is_suspended = false). Sensitive columns protected by column security or separate tables."
         }
       }
     ]

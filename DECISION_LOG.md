@@ -404,4 +404,19 @@
   7. **Exact Endpoint Strangler Matrix:** Mapped all 56 Class B methods to exact existing endpoints or exact new routes to be created in W007–W011 with 0 vague placeholders.
 - **Rationale:** Establishes an authoritative, empirically verified, and reproducible foundation for W007 (Canonical API Client) and subsequent strangler migration jobs.
 
+---
+
+### DEC-031: W006-R1A AUDIT PROVENANCE & RLS QUALIFICATION HARDENING
+- **Date:** 2026-09-12
+- **Status:** APPROVED & IMPLEMENTED
+- **Authority:** Master Product Blueprint, AI Agent Master Execution Job Book, Amendment v1.2, Amendment v1.4, `DEC-002`, `DEC-028`, `DEC-029`, `DEC-030`
+- **Context:** Review of W006-R1 identified two residual audit-integrity weaknesses: (1) `scripts/audit-api-architecture.mjs` retained a hardcoded fallback SHA (`5754fa2`) if Git metadata resolution failed; (2) generic Class A RLS qualifications permitted `directClientAllowed = true` while simultaneously reporting `RLS LIVE VERIFICATION PENDING`.
+- **Decisions:**
+  1. **Fail-Closed Git Provenance:** Completely eliminated all hard-coded fallback SHAs from `scripts/audit-api-architecture.mjs`. Enforced fail-closed Git validation: requires canonical branch `master`, clean working tree for evidence generation, strict `localHead === originMaster`, throwing explicit typed errors (`REMOTE_VERIFICATION_FAILED`, `COORDINATE_MISMATCH`, `WORKING_TREE_DIRTY`, `NON_CANONICAL_BRANCH`) and exiting non-zero.
+  2. **Class A RLS Qualification Hardening:** Strictly distinguished `RLS_LIVE_VERIFIED` from `RLS_LIVE_VERIFICATION_PENDING`. If live RLS policy is pending (e.g. `lmx_departments`, `lmx_affiliations`), `directClientAllowed` is set to `CONDITIONAL_PENDING_VERIFICATION` and `apiMediationRequired` is set to `REVIEW_REQUIRED`. Removed all generic "Verified RLS enabled on table. Direct client read safe" assertions.
+  3. **RPC Unknown Handling:** Rigorously marked RPCs missing from SQL migrations (`increment_aspirant_modules`, `increment_short_views`) as `UNKNOWN — MIGRATION DEFINITION MISSING` with `SECURITY REVIEW REQUIRED / W007+`.
+  4. **Dynamic Regression Suite:** Expanded `tests/api-architecture-audit.test.mjs` to 19 checks, including live Git coordinate derivation, remote lookup failure simulation, local/remote mismatch simulation, dirty working tree simulation, and zero-fallback-SHA static audits.
+- **Rationale:** Ensures that the architectural audit fails closed, guarantees total truth in engineering, and eliminates premature claims of RLS security.
+
+
 
