@@ -28,7 +28,7 @@ In accordance with **W006-R1B (Live RLS Evidence & Provenance Rebinding)**, this
 | Coordinate | Value | Description |
 | :--- | :--- | :--- |
 | **CANONICAL_BRANCH** | `master` | Primary production branch |
-| **VERIFIED_REMOTE_HEAD** | `27b3722` | Verified remote canonical HEAD against which evidence is generated |
+| **VERIFIED_REMOTE_HEAD** | `c7374ef` | Verified remote canonical HEAD against which evidence is generated |
 | **AUDITED_CODE_COMMIT** | `35ba912` | Exact R1A implementation commit containing the hardened audit implementation actually inspected |
 | **EVIDENCE_COMMIT** | `pending` | Commit containing regenerated W006-R1B evidence reports |
 | **ACCEPTANCE_COMMIT** | `pending` | Commit containing final user acceptance state |
@@ -37,7 +37,7 @@ In accordance with **W006-R1B (Live RLS Evidence & Provenance Rebinding)**, this
 - **`5754fa2`**: Baseline code state at the start of W006.
 - **`35ba912`**: Exact R1A implementation commit containing the hardened fail-closed git provenance logic and RLS qualification structure.
 - **`ac63682`**: Live synchronization commit binding W006-R1A reports.
-- **`27b3722`**: Live origin/master canonical HEAD.
+- **`c7374ef`**: Live origin/master canonical HEAD.
 - The verifier now audits the actual R1A/R1B implementation state (`35ba912` / live), resolving the lineage coordinate discrepancy.
 
 ---
