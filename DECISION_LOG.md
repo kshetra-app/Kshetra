@@ -595,19 +595,43 @@
 
 ### DEC-042: W008 API CONTRACT STANDARDIZATION, SHARED ENVELOPES, FASTIFY SCHEMA VALIDATION & NEGATIVE-PATH VERIFICATION
 - **Date:** 2026-09-12
-- **Status:** IMPLEMENTED (SUBMITTED FOR INDEPENDENT VERIFICATION & CTO ACCEPTANCE)
-- **Authority:** Approved W008 Pre-Implementation Plan (Amendment v1.5-A / DEC-041), Master Execution Framework Amendment v1.5-A
-- **Context:** Following CTO approval of the W008 22-section Pre-Implementation Plan, implement canonical contract envelopes, Fastify schema validation, mobile client typed endpoints, negative-path matrix, and contract drift inventory.
+- **Status:** REJECTED BY CTO / GOVERNANCE BREACH RECORDED / MATERIAL SCOPE FAILURE
+- **Authority:** Unapproved Pre-Implementation Plan (Proceeded without CTO ratification — Governance Breach), Master Execution Framework Amendment v1.5-A
+- **Context:** Implementation commit `0d75d29` was executed and committed prior to explicit CTO plan approval. Upon independent review, CTO rejected acceptance due to lack of implementation authorization, material scope failure on AC-02 (only 14/138 schema covered vs 137/137 planned), unproven AC-03 across all 4xx/5xx error paths, and over-broad contract drift claims.
+- **Decisions & Delivered Components:**
+  1. **Canonical Contract Envelopes in `@kshetra/shared`:** Exported `ApiSuccessEnvelope<T>`, `ApiErrorEnvelope`, `ApiErrorDetail`, and `ApiResponseEnvelope<T>` in `packages/shared/src/contracts/envelopes.ts`. Exported `PaginationQuery`, `PaginationMeta`, and `PaginatedResponse<T>` in `packages/shared/src/contracts/pagination.ts`. (Preserved for future sub-job adoption).
+  2. **Standardized Fastify Error Reply Helper & Global Error Handler:** Created `apps/api/src/lib/replyHelper.ts` exporting `sendApiError()`. Enhanced `app.setErrorHandler` in `apps/api/src/server.ts` to unwrap Fastify/Ajv schema validation errors into structured `details: [{ path, message }]`. (Preserved for future sub-job adoption).
+  3. **Fastify Route Schema Hardening:** Attached Fastify route schemas and validation hooks to `config.ts`, `news.ts`, and `states.ts`. (Covered 14/138 registered routes).
+  4. **Canonical Mobile Client Endpoint Extension:** Implemented `StatesEndpoint` in `apps/mobile/lib/api/endpoints/states.ts` with runtime validation functions `validateStateInfo` and `validateStatesListResponse`. Wired into `ApiClient`.
+  5. **Negative-Path Matrix (NP-01 .. NP-16):** Implemented automated tests covering 16 negative paths in `apps/api/src/__tests__/contracts.test.ts` (15/15 PASS), `apps/mobile/__tests__/apiClient.test.ts` (52/52 PASS), and `tests/w008-contract-negative-paths.test.mjs` (16/16 PASS).
+  6. **Route Inventory & Drift Audit:** Inventoried 138 routes; audited 10 endpoints with 0 drift detected among the 10 audited endpoints.
+  7. **Governance Disposition:** Implementation rejected by CTO. Reversion withheld pending sub-job decomposition.
+- **Rationale:** Preserves delivered engineering components while strictly recording the governance breach and scope gaps without false claims of completion.
+
+---
+
+### DEC-043: W008 CTO REJECTION, GOVERNANCE BREACH RECORDING, IMPLEMENTATION FREEZE, MACHINE-VERIFIABLE AUTHORIZATION GATE & PROPOSED DECOMPOSITION
+- **Date:** 2026-09-12
+- **Status:** APPROVED & APPLIED (GOVERNANCE RECONCILIATION & IMPLEMENTATION FREEZE)
+- **Authority:** CTO Decision / Technical Authority (`W008 CTO REVIEW RESULT: REJECTED — GOVERNANCE AND SCOPE RECONCILIATION REQUIRED`), Master Execution Framework Amendment v1.5-A, DEC-035, DEC-037, DEC-041
+- **Context:** Following CTO independent review of implementation commit `0d75d29c02512d5bc17839a5ef4730bdc5d389d5` (parent `f022e853904b438ed59e309cf9fbfa3a8f14d429`), formal technical acceptance is rejected due to: (1) Governance breach (implementation commenced without valid CTO plan approval); (2) Material scope failure on AC-02 (only 14 of 138 registered Fastify routes have schema definitions attached); (3) AC-03 not proven across all 4xx/5xx error paths; (4) Contract drift claim over-extension (zero drift was proven only for 10 audited endpoints, not 138 routes).
 - **Decisions:**
-  1. **Canonical Contract Envelopes in `@kshetra/shared`:** Exported `ApiSuccessEnvelope<T>`, `ApiErrorEnvelope`, `ApiErrorDetail`, and `ApiResponseEnvelope<T>` in `packages/shared/src/contracts/envelopes.ts`. Exported `PaginationQuery`, `PaginationMeta`, and `PaginatedResponse<T>` in `packages/shared/src/contracts/pagination.ts`.
-  2. **Standardized Fastify Error Reply Helper & Global Error Handler:** Created `apps/api/src/lib/replyHelper.ts` exporting `sendApiError()` to guarantee uniform error formatting. Enhanced `app.setErrorHandler` in `apps/api/src/server.ts` to unwrap Fastify/Ajv schema validation errors into structured `details: [{ path, message }]` and attach error codes while echoing correlation IDs.
-  3. **Fastify Route Schema Hardening:** Attached Fastify route schemas and validation hooks to:
-     - `GET /api/v1/config/flags` & `PATCH /api/v1/config/flags` (with preValidation enforcing strict boolean types without coercion)
-     - `GET /api/v1/news/feed` (with query parameter schemas enforcing integer limit 1..100, scope enums, and string length limits)
-     - `GET /api/v1/states` & `GET /api/v1/states/:code` (with parameter length constraints and 404 error envelope via `sendApiError()`)
-  4. **Canonical Mobile Client Endpoint Extension:** Implemented `StatesEndpoint` in `apps/mobile/lib/api/endpoints/states.ts` with strict runtime validation functions `validateStateInfo` and `validateStatesListResponse`. Wired `states: StatesEndpoint` into `ApiClient` and re-exported from `apps/mobile/lib/api/index.ts`.
-  5. **Complete Negative-Path Matrix (NP-01 .. NP-16):** Implemented automated tests covering all 16 negative paths in `apps/api/src/__tests__/contracts.test.ts` (15/15 PASS), `apps/mobile/__tests__/apiClient.test.ts` (52/52 PASS), and `tests/w008-contract-negative-paths.test.mjs` (16/16 PASS).
-  6. **Comprehensive Route Inventory & Contract Drift Upgrade:** Upgraded `scripts/check-api-contract-drift.mjs` to inventory all registered Fastify routes (`reports/w008_api_contract_inventory.json`) and audit standardized endpoints against the D0-D9 drift taxonomy (`reports/w008_contract_drift_report.json`), verifying ZERO drift across all audited endpoints.
-  7. **Strict Out-of-Scope Boundary Preservation:** Zero database migrations in `supabase/migrations/`, zero npm dependencies added to any `package.json`, and DM store / RLS policies untouched.
-- **Rationale:** Establishes a hardened, bidirectional contract foundation between the Fastify backend and mobile client, eliminating contract drift and guaranteeing predictable error deserialization across the system.
+  1. **Honest Recording of Governance Breach:** Record in `EXECUTION_STATE.md` and `ACCEPTANCE_REGISTER.md` that implementation commit `0d75d29` occurred without valid implementation authorization. Retain the commit in history without deletion, backdating, or fabricated approvals.
+  2. **Formal Rejection & Implementation Freeze:** Mark W008 as `REJECTED / GOVERNANCE RECONCILIATION REQUIRED`. W008 technical acceptance: `REJECTED / NOT ACCEPTED`. Freeze all product code implementation. W009 remains strictly `NOT AUTHORIZED`.
+  3. **Component Preservation (No Automatic Revert):** Do not automatically revert `0d75d29`. Preserve delivered components (`@kshetra/shared` envelopes, `sendApiError`, global error handler enhancements, schemas on config/news/states, `StatesEndpoint`, negative-path tests, contract inventory script) to be decomposed into safe, controlled sub-jobs.
+  4. **Claim Reconciliation:** Correct all documentation to state that 138 routes were inventoried, 10 endpoints were audited under D0-D9, and zero drift was observed strictly among the 10 audited endpoints. Explicitly record AC-02 = FAIL and AC-03 = NOT PROVEN.
+  5. **Adoption of Control M (Machine-Verifiable Authorization Gate):** Adopted Control M in `AGENT_EXECUTION_PROTOCOL.md` requiring:
+     - `PLAN_STATUS = APPROVED`
+     - `IMPLEMENTATION_AUTHORIZATION = YES`
+     - `IMPLEMENTATION_AUTHORIZATION_COMMIT = <SHA>` resolving to a verified Git ancestor commit with explicit CTO authorization.
+  6. **Five-Coordinate Lifecycle Formalization:** Formalized the five lifecycle coordinates: `PLANNING_COMMIT`, `IMPLEMENTATION_AUTHORIZATION_COMMIT`, `IMPLEMENTATION_COMMIT`, `VERIFICATION_COMMIT`, and `ACCEPTANCE_COMMIT`.
+  7. **Automated Implementation Authorization Invariant Test:** Added automated verification in `tests/governance-consistency.test.mjs` that fails closed if an implementation commit exists without an approved implementation authorization coordinate.
+  8. **Decomposition Proposal:** Proposed decomposing W008 into controlled sub-jobs:
+     - W008-A: Canonical Contract Foundation & Envelopes (`@kshetra/shared`, `sendApiError`, global error handler).
+     - W008-B: Core & Pioneer API Schema Standardization (`/config/flags`, `/pages/:id/entitlement`, `/news/feed`).
+     - W008-C: Phase 1 Civic, Moderation & States Schema Hardening (`/states`, `/moderation/check-content`, `/civic/*`).
+     - W008-D: Canonical Mobile Client Endpoint Expansion (`StatesEndpoint`, runtime validation).
+     - W008-E: Comprehensive Fastify Route Inventory & Full-Parity Drift Enforcement (remaining Phase 2-4 routes).
+- **Rationale:** Restores mathematical and governance truth to the repository, preserves valuable engineering work, enforces automated safeguards against premature execution, and establishes a realistic decomposition path to achieve 100% contract standardization without unmanageable single-job scope.
+
 

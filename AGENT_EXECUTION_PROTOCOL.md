@@ -335,6 +335,15 @@ Before any future CTO submission, the implementing agent must verify this checkl
 
 Only when all 15 items are verified may the agent submit for CTO review.
 
+### CONTROL M — MACHINE-VERIFIABLE IMPLEMENTATION AUTHORIZATION GATE
+No agent may modify product code or create an implementation commit without an explicit, machine-verifiable implementation authorization coordinate.
+Transition from `PLAN_SUBMITTED` to `IMPLEMENTATION_AUTHORIZED` strictly requires:
+1. `PLAN_STATUS = APPROVED` in `EXECUTION_STATE.md`.
+2. `IMPLEMENTATION_AUTHORIZATION = YES` in `EXECUTION_STATE.md`.
+3. `IMPLEMENTATION_AUTHORIZATION_COMMIT = <SHA>` resolving to a verified Git commit in ancestry whose commit message or associated `DECISION_LOG.md` entry records explicit CTO authorization.
+
+Natural language claims of "approved" without a resolving `IMPLEMENTATION_AUTHORIZATION_COMMIT` are strictly invalid. Any implementation occurring without this coordinate constitutes a GOVERNANCE BREACH, freezing implementation and blocking CTO acceptance.
+
 ---
 
 ## 9. Eight-Tier Evidence Hierarchy
@@ -365,3 +374,17 @@ Every acceptance-critical test or evidence artifact must record an exact provena
 `[COMMIT, COMMAND, TIMESTAMP, RESULT]`
 
 **Freshness Invariant Rule:** If source code changes after a test is executed, that evidence is **STALE** and **INVALID**. The test must be re-run against the new commit, and evidence must be regenerated.
+
+---
+
+## 11. Five-Coordinate Lifecycle Model
+
+Every job must pass through five distinct, sequentially verifiable commit coordinates:
+1. **PLANNING_COMMIT:** Contains the initial draft plan or plan revision submitted for review.
+2. **IMPLEMENTATION_AUTHORIZATION_COMMIT:** The exact Git commit at which the CTO / Technical Authority formally ratifies the plan and explicitly sets `IMPLEMENTATION_AUTHORIZATION = YES`.
+3. **IMPLEMENTATION_COMMIT:** The exact Git commit containing the completed product implementation changes.
+4. **VERIFICATION_COMMIT:** The exact Git commit containing executed test artifacts, independent verification reports, and regenerated evidence.
+5. **ACCEPTANCE_COMMIT:** The exact Git commit containing formal CTO closure and acceptance recording in all governance registers.
+
+A job may never advance to `IMPLEMENTATION_COMMIT` without a valid, ancestor `IMPLEMENTATION_AUTHORIZATION_COMMIT`.
+

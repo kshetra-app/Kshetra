@@ -3,7 +3,7 @@
     "job": "W008",
     "title": "API Contract Drift Report (D0-D9 Taxonomy)",
     "specification": "Master Execution Framework Amendment v1.5-A / DEC-041",
-    "timestamp": "2026-09-12T17:01:17.768Z"
+    "timestamp": "2026-09-12T17:18:17.809Z"
   },
   "taxonomyLegend": {
     "D0": "IN_SYNC — No contract drift detected",
@@ -21,7 +21,8 @@
     "totalAuditedEndpoints": 10,
     "inSyncCount": 10,
     "driftCount": 0,
-    "driftStatus": "ZERO_DRIFT_DETECTED"
+    "driftStatus": "ZERO_DRIFT_AMONG_AUDITED_ENDPOINTS",
+    "scopeNote": "Audit is strictly restricted to 10 declared endpoints under D0-D9 taxonomy. Does not prove zero drift across the entire 138-route catalog."
   },
   "auditResults": [
     {

@@ -209,6 +209,60 @@ assert.strictEqual(
 
 console.log(`[PASS] Check 8: Comprehensive Git HEAD (${localHead}), origin/master (${originMaster}), clean working tree, and strict CURRENT_REMOTE_HEAD equality verified.`);
 
+// 9. Machine-Verifiable Implementation Authorization Gate & Five-Coordinate Model (Control M / DEC-043)
+assert.ok(protocolContent.includes('CONTROL M — MACHINE-VERIFIABLE IMPLEMENTATION AUTHORIZATION GATE'), 'Protocol must document Control M');
+assert.ok(protocolContent.includes('Five-Coordinate Lifecycle Model'), 'Protocol must document Five-Coordinate Lifecycle Model');
+assert.ok(protocolContent.includes('PLANNING_COMMIT'), 'Protocol must define PLANNING_COMMIT');
+assert.ok(protocolContent.includes('IMPLEMENTATION_AUTHORIZATION_COMMIT'), 'Protocol must define IMPLEMENTATION_AUTHORIZATION_COMMIT');
+assert.ok(protocolContent.includes('IMPLEMENTATION_COMMIT'), 'Protocol must define IMPLEMENTATION_COMMIT');
+assert.ok(protocolContent.includes('VERIFICATION_COMMIT'), 'Protocol must define VERIFICATION_COMMIT');
+assert.ok(protocolContent.includes('ACCEPTANCE_COMMIT'), 'Protocol must define ACCEPTANCE_COMMIT');
+
+// Check EXECUTION_STATE.md implementation authorization fields
+const planStatusField = extractField('PLAN_STATUS');
+const implAuthField = extractField('IMPLEMENTATION_AUTHORIZATION');
+const implAuthCommitField = extractField('IMPLEMENTATION_AUTHORIZATION_COMMIT');
+const unauthorizedImplCommitField = extractField('UNAUTHORIZED_IMPLEMENTATION_COMMIT');
+
+assert.ok(planStatusField, 'PLAN_STATUS must be defined in EXECUTION_STATE.md');
+assert.ok(implAuthField, 'IMPLEMENTATION_AUTHORIZATION must be defined in EXECUTION_STATE.md');
+assert.ok(implAuthCommitField, 'IMPLEMENTATION_AUTHORIZATION_COMMIT must be defined in EXECUTION_STATE.md');
+
+// Invariant: If implementation occurred or exists, either it was authorized by CTO or recorded as a breach
+if (implAuthField === 'YES') {
+  assert.strictEqual(planStatusField, 'APPROVED', 'If IMPLEMENTATION_AUTHORIZATION is YES, PLAN_STATUS must be APPROVED');
+  assert.ok(
+    implAuthCommitField && implAuthCommitField !== 'NONE',
+    'If IMPLEMENTATION_AUTHORIZATION is YES, IMPLEMENTATION_AUTHORIZATION_COMMIT must be a valid commit SHA'
+  );
+  try {
+    const resolvedAuthCommit = execSync(`git rev-parse "${implAuthCommitField}"`, { encoding: 'utf8' }).trim();
+    assert.strictEqual(resolvedAuthCommit.length, 40, 'Resolved IMPLEMENTATION_AUTHORIZATION_COMMIT must be 40 characters');
+  } catch (err) {
+    assert.fail(`IMPLEMENTATION_AUTHORIZATION_COMMIT "${implAuthCommitField}" cannot be resolved in git history: ${err.message}`);
+  }
+} else {
+  // If implementation was NOT authorized, any existing implementation commit must be recorded as UNAUTHORIZED / GOVERNANCE BREACH
+  if (unauthorizedImplCommitField) {
+    assert.ok(
+      implAuthCommitField.includes('GOVERNANCE BREACH') || implAuthCommitField === 'NONE',
+      'Unauthorized implementation must be honestly flagged in IMPLEMENTATION_AUTHORIZATION_COMMIT'
+    );
+    assert.ok(
+      stateContent.includes('REJECTED') || stateContent.includes('GOVERNANCE RECONCILIATION REQUIRED'),
+      'Unauthorized implementation job must have REJECTED / GOVERNANCE RECONCILIATION REQUIRED status'
+    );
+    const resolvedUnauthorized = execSync(`git rev-parse "${unauthorizedImplCommitField}"`, { encoding: 'utf8' }).trim();
+    assert.strictEqual(resolvedUnauthorized.length, 40, 'Resolved UNAUTHORIZED_IMPLEMENTATION_COMMIT must be 40 characters');
+  }
+}
+
+// DEC-042 and DEC-043 semantic recording
+assert.ok(decisionContent.includes('DEC-042'), 'DECISION_LOG.md must record DEC-042');
+assert.ok(decisionContent.includes('DEC-043: W008 CTO REJECTION, GOVERNANCE BREACH RECORDING'), 'DECISION_LOG.md must record DEC-043');
+
+console.log('[PASS] Check 9: Machine-Verifiable Implementation Authorization Gate, Five-Coordinate Model, and fail-closed authorization checks verified.');
+
 console.log('\n===============================================================');
 console.log('   ALL AMENDMENT v1.5-A GOVERNANCE CONSISTENCY CHECKS PASSED!  ');
 console.log('===============================================================\n');

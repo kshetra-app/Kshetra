@@ -207,12 +207,13 @@ const driftReport = {
     totalAuditedEndpoints: auditedContracts.length,
     inSyncCount: auditedContracts.filter(c => c.driftTaxonomy === 'D0_IN_SYNC').length,
     driftCount: auditedContracts.filter(c => c.driftTaxonomy !== 'D0_IN_SYNC').length,
-    driftStatus: 'ZERO_DRIFT_DETECTED',
+    driftStatus: 'ZERO_DRIFT_AMONG_AUDITED_ENDPOINTS',
+    scopeNote: 'Audit is strictly restricted to 10 declared endpoints under D0-D9 taxonomy. Does not prove zero drift across the entire 138-route catalog.',
   },
   auditResults: auditedContracts,
 };
 
 const driftReportPath = path.resolve('reports/w008_contract_drift_report.json');
 fs.writeFileSync(driftReportPath, JSON.stringify(driftReport, null, 2));
-console.log(`   [DRIFT] Zero drift detected across all ${auditedContracts.length} audited endpoints.`);
+console.log(`   [DRIFT] Zero drift detected strictly across the ${auditedContracts.length} audited endpoints (does not prove zero drift across 138 routes).`);
 console.log(`   [DRIFT] Report written to: reports/w008_contract_drift_report.json\n`);

@@ -7,9 +7,14 @@
 ## 1. Project & Execution Coordinates
 ```text
 PROJECT:               PANIN (formerly Kshetra)
-CURRENT_JOB:           W008 (API Contract Standardization - IMPLEMENTED & UNDER VERIFICATION)
+CURRENT_JOB:           W008 (API Contract Standardization - REJECTED / GOVERNANCE RECONCILIATION REQUIRED)
 LAST_COMPLETED_JOB:    W007 (Canonical API Client - ACCEPTED / CLOSED)
-NEXT_PERMITTED_JOB:    W008 (API Contract Standardization - VERIFICATION & ACCEPTANCE)
+NEXT_PERMITTED_JOB:    W008 (API Contract Standardization - GOVERNANCE RECONCILIATION & DECOMPOSITION ONLY)
+
+PLAN_STATUS:           REJECTED / DECOMPOSITION REQUIRED
+IMPLEMENTATION_AUTHORIZATION: NO
+IMPLEMENTATION_AUTHORIZATION_COMMIT: NONE (GOVERNANCE BREACH: IMPLEMENTATION OCCURRED WITHOUT CTO AUTHORIZATION)
+UNAUTHORIZED_IMPLEMENTATION_COMMIT: 0d75d29c02512d5bc17839a5ef4730bdc5d389d5
 
 CURRENT_BRANCH:        master
 CURRENT_REMOTE_HEAD:   origin/master
@@ -70,8 +75,8 @@ REMOTE_SYNC:           Up to date with origin/master
 | **W005** | Backup & Recovery Verification | **ACCEPTED (W/ LIMITATIONS)** | 2026-09-11 | W005-R1C Independent Verifier PASS (commit `acc32fe`); verified remote head `f6ee696`; audited code `943b026`; evidence `b4f3133`; documented limitations: PITR/RPO ≤5m unverified, multi-cloud standby not implemented, DR-001 schema/API bootstrap, DR-002 synthetic staging, DR-004 staging storage, DR-005 client offline; user accepted |
 | **W006** | API Architecture Audit & Separation | **ACCEPTED** | 2026-09-12 | Audited 316 mobile files, 12 direct Supabase callers, 14 Railway callers, 137 Fastify routes across 23 modules, 85 data service methods classified (23 Class A reads, 56 Class B mutation strangler targets, 6 Class C Fastify routed). Fail-closed RLS decision engine: 21 source verified, 2 source pending, 0 live verified, 23 live pending; 0 directClientAllowed=true, 21 conditional pending, 2 forbidden (conversations/messages). Anti-override guard active. Tests NP-01 to NP-10 pass. global_search defect documented as DEF-013; auditedCodeCommit=35ba912, evidenceCommit=04be40b; formally accepted by CTO / Technical Authority per DEC-037; reports/w006_final_acceptance_report.* & reports/w006_final_independent_verification.md |
 | **W007** | Canonical API Client | **ACCEPTED / CLOSED** | 2026-09-12 | Canonical API client implemented in apps/mobile/lib/api/ (apiClient, AuthManager, ConfigEndpoint, PagesEndpoint, NewsEndpoint). Technically accepted by CTO at implementation commit `1d253cd454effb441e7f01e846a568eeddc7f57e`. Real single-flight token deduplication verified; fail-safe auth policy; Fastify UUID correlation with strict response validation on all statuses (2xx, 4xx, 5xx); total request deadline budget (18s GET, attempt ceiling 8s); caller cancellation semantics (0 retries); zero mutation retries (NP-08); strict runtime response validation (NewsSource object, NewsFeed schema, boolean flags, page entitlement); 48/48 unit tests pass (including 16 negative-path tests NP-1 through NP-16); 9 master integration checks pass; 3 pioneer callers migrated (pageService, featureFlags, news) with 100% fallback preservation; DM callers, DB migrations, Fastify routes, and npm dependencies untouched; IV-01 through IV-23 verified |
-| **W008** | API Contract Standardization | **IMPLEMENTED / UNDER VERIFICATION** | - | Prerequisite: W007 (Closed). Approved 22-section Pre-Implementation Plan under Amendment v1.5-A / DEC-041. Canonical contracts in @kshetra/shared (ApiSuccessEnvelope, ApiErrorEnvelope, Pagination). Standardized Fastify reply helper and Ajv schema validation on config, news, states. Canonical mobile API client extended with StatesEndpoint and runtime validation. Complete negative-path matrix (NP-01 .. NP-16) verified with 100% pass. Zero route contract drift detected across audited endpoints. |
-| **W009** | External Provider Abstraction | NOT_STARTED | - | Prerequisite: W008 |
+| **W008** | API Contract Standardization | **REJECTED / GOVERNANCE RECONCILIATION REQUIRED** | - | Implementation commit `0d75d29` occurred without valid implementation authorization (Governance breach). CTO Technical Acceptance: REJECTED. Material scope failure: AC-02 failed (only 14/138 schema covered); AC-03 not proven across all 4xx/5xx paths; contract drift verified for 10/10 audited endpoints only (not 138/138). Implementation frozen; delivered components preserved for decomposition into controlled sub-jobs (W008-A through W008-E). W009 strictly not authorized. |
+| **W009** | External Provider Abstraction | **NOT AUTHORIZED** | - | Blocked pending W008 reconciliation and closure |
 | **W010** | Security Baseline & RLS Hardening | NOT_STARTED | - | Prerequisite: W009 |
 | **W011** | Deceptive Fallback Remediation | NOT_STARTED | - | Prerequisite: W010 |
 | ... | ... | ... | ... | ... |
