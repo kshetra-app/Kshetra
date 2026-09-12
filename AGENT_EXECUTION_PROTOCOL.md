@@ -89,28 +89,28 @@ The agent must formulate and submit a comprehensive Pre-Implementation Plan cont
 ```text
 PRE-IMPLEMENTATION PLAN — <JOB ID>
 
-1. Task Understanding
-2. Current-State Findings
-3. Facts / Inferences / Assumptions / Unknowns
-4. Root-Cause Interpretation
-5. Proposed Technical Solution
-6. Alternatives Considered
-7. Exact Files / Components Expected to Change
-8. Explicit Non-Change Boundary
-9. Test Strategy
-10. Negative-Path Strategy
-11. Test Integrity Strategy
-12. Evidence Strategy
-13. Provenance Strategy
-14. Security / Privacy / Data Considerations
-15. Risks and Assumptions
-16. Scope Boundaries
-17. Dependency / Blocking Analysis
-18. Downstream Impact
-19. Rollback / Recovery Considerations
-20. Acceptance Criteria
-21. Questions / Decisions Requiring Review
-22. Plan-Approval State
+1. Document Title & Metadata
+2. Problem Statement (Task Understanding & Core Objectives)
+3. Current State Analysis (Repository Inspection, Root-Cause Interpretation & Dependency/Blocking Analysis)
+4. Fact / Inference / Assumption / Unknown Register
+5. Target Architecture & Intended Outcome (Proposed Technical Solution & Alternatives Considered)
+6. Governing Rules & Constraints (Security, Privacy, Compliance & Data Considerations)
+7. Full Scope of Work (Exact Files & Components Expected to Change)
+8. Explicit Out-of-Scope Boundaries (Explicit Non-Change Boundaries)
+9. Step-by-Step Implementation Plan (Detailed Execution Phases & Sequencing)
+10. Verification & Testing Strategy (Test Strategy, Test Integrity Strategy & Assertions)
+11. Negative-Path Testing Specification (Fail-Closed Validations & Invariant Proofs)
+12. Evidence Generation Plan (Evidence & Provenance Strategy)
+13. Reconciliation Plan (Coordinate, Register & Document Reconciliation)
+14. Independent Verification Specification (Third-Party Audit Standards & Replicability)
+15. Risks, Failure Modes & Mitigations (Risk, Assumption & Failure Mode Analysis)
+16. Rollback & Recovery Strategy (File-Scoped Rollback & Recovery Considerations)
+17. Impact Assessment (Downstream Impact & System Boundary Evaluation)
+18. Acceptance Criteria (Claim-Based Binary Verifiable Criteria)
+19. Artifact & Commit Lineage Map (Commit Lineage, Hashes & Evidence Provenance)
+20. Amendment Compliance Matrix (Clause-by-Clause Governance Verification)
+21. Operational Declarations (Pre-Implementation Declarations per Section 27)
+22. Plan Sign-Off & Review Request (Questions/Decisions Requiring Review & Plan-Approval State)
 ```
 
 The agent must STOP and await explicit authorization:
