@@ -16,17 +16,36 @@ import { ApiValidationError } from '../errors';
  * Throws ApiValidationError if the structure is malformed.
  */
 export function validateFeatureFlagsResponse(data: unknown): FeatureFlagsResponseDTO {
-  if (typeof data !== 'object' || data === null) {
+  if (typeof data !== 'object' || data === null || Array.isArray(data)) {
     throw new ApiValidationError('Invalid feature flags response: expected object payload');
   }
   const payload = data as Record<string, unknown>;
-  if (typeof payload.status !== 'string') {
+  if (typeof payload.status !== 'string' || !payload.status.trim()) {
     throw new ApiValidationError('Invalid feature flags response: missing or invalid "status" field');
   }
   if (typeof payload.flags !== 'object' || payload.flags === null || Array.isArray(payload.flags)) {
     throw new ApiValidationError('Invalid feature flags response: missing or invalid "flags" object');
   }
-  return data as FeatureFlagsResponseDTO;
+
+  const rawFlags = payload.flags as Record<string, unknown>;
+  const validatedFlags: Record<string, boolean> = {};
+
+  for (const [key, val] of Object.entries(rawFlags)) {
+    if (typeof val !== 'boolean') {
+      throw new ApiValidationError(`Invalid feature flags response: flag "${key}" must be a boolean, received ${val === null ? 'null' : typeof val}`);
+    }
+    validatedFlags[key] = val;
+  }
+
+  if (payload.syncedAt !== undefined && typeof payload.syncedAt !== 'string') {
+    throw new ApiValidationError('Invalid feature flags response: "syncedAt" must be a string if provided');
+  }
+
+  return {
+    status: payload.status,
+    flags: validatedFlags,
+    syncedAt: payload.syncedAt as string | undefined,
+  };
 }
 
 export class ConfigEndpoint {

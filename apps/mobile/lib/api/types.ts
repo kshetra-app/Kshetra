@@ -66,10 +66,10 @@ export interface PageEntitlementResponseDTO {
 
 // 3. News Feed DTOs (aligned with apps/api/src/services/news/newsService.ts & mobile newsTypes.ts)
 export interface NewsSourceDTO {
-  id?: string;
+  id: string;
   name: string;
-  domain?: string;
-  language?: string;
+  domain: string;
+  language: 'en' | 'hi' | 'te' | 'ta' | 'kn' | 'ml' | 'mr' | 'bn' | 'gu';
   accent?: string;
   verified?: boolean;
 }
@@ -80,19 +80,17 @@ export interface NewsItemDTO {
   summary?: string;
   imageUrl?: string;
   sourceUrl: string;
-  source: NewsSourceDTO | string;
-  language: string;
-  category: string;
+  source: NewsSourceDTO;
+  language: 'en' | 'hi' | 'te' | 'ta' | 'kn' | 'ml' | 'mr' | 'bn' | 'gu';
+  category: 'top' | 'politics' | 'elections' | 'economy' | 'governance' | 'regional' | 'video';
   scope: 'national' | 'state' | 'constituency';
   stateCode?: string;
   constituencyId?: string;
   publishedAt: string;
   video?: {
-    provider?: 'youtube' | 'native';
-    embedId?: string;
+    provider: 'youtube' | 'native';
+    embedId: string;
     durationSec?: number;
-    youtubeId?: string;
-    streamUrl?: string;
   };
 }
 

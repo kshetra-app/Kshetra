@@ -70,7 +70,7 @@ Following CTO verification review, 9 core hardening corrections were applied:
 
 | Test Suite | Command | Result | Detail |
 | :--- | :--- | :---: | :--- |
-| **Mobile API Client Unit Tests** | `npm test --prefix apps/mobile -- __tests__/apiClient.test.ts` | **PASS** | 29/29 passed (real AuthManager single flight, cancellation, error correlation, runtime validation) |
+| **Mobile API Client Unit Tests** | `npm test --prefix apps/mobile -- __tests__/apiClient.test.ts` | **PASS** | 48/48 passed (real AuthManager single flight, cancellation, error correlation, 16 mandatory negative-path tests NP-1 through NP-16, positive path schemas) |
 | **W007 Master Verification Test** | `node tests/w007-api-client-verification.test.mjs` | **PASS** | 9/9 checks passed (module structure, pioneer migration, boundary immutability, validation) |
 | **W006 Final Acceptance Suite** | `node tests/w006-final-acceptance.test.mjs` | **PASS** | 10/10 negative-path tests passed; 12 baseline Supabase callers preserved |
 | **API Architecture Audit Suite** | `node tests/api-architecture-audit.test.mjs` | **PASS** | 36/36 checks passed (all RLS and caller checks intact) |

@@ -95,8 +95,8 @@
   "verificationResults": {
     "unitTests": {
       "file": "apps/mobile/__tests__/apiClient.test.ts",
-      "total": 29,
-      "passed": 29,
+      "total": 48,
+      "passed": 48,
       "failed": 0
     },
     "masterIntegrationTest": {

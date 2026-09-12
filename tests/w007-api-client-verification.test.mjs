@@ -192,7 +192,12 @@ assert.ok(pagesEndpointContent.includes('validatePageEntitlementResponse'), 'Pag
 
 const newsEndpointContent = fs.readFileSync(path.join(apiDir, 'endpoints/news.ts'), 'utf8');
 assert.ok(newsEndpointContent.includes('validateNewsFeedResponse'), 'NewsEndpoint must implement validateNewsFeedResponse');
+assert.ok(newsEndpointContent.includes('validateNewsSource'), 'NewsEndpoint must implement validateNewsSource');
 assert.ok(newsEndpointContent.includes('mapNewsFeedDTOToNewsFeed'), 'NewsEndpoint must implement mapNewsFeedDTOToNewsFeed');
+assert.ok(newsEndpointContent.includes('"source" must be a structured object, not a string'), 'NewsEndpoint must reject string source');
+
+const apiTypesContent = fs.readFileSync(path.join(apiDir, 'types.ts'), 'utf8');
+assert.ok(!apiTypesContent.includes('source: NewsSourceDTO | string'), 'types.ts must not allow string escape in NewsItemDTO.source');
 
 // Verify stores/news.ts has zero unsafe casts
 assert.ok(!newsStoreContent.includes('as unknown as NewsFeed'), 'stores/news.ts must NOT contain "as unknown as NewsFeed"');

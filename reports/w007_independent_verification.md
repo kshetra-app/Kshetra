@@ -47,7 +47,7 @@ All 23 verification gates have been empirically validated through live execution
 | **IV-20** | **Dependency Boundary** | **PASS** | `package.json`, `apps/mobile/package.json`, `apps/api/package.json` have 0 diff against baseline `2f5ec43`. Exactly 0 npm dependencies added. Verified by Check 3 of `w007-api-client-verification.test.mjs`. |
 | **IV-21** | **Mobile TypeScript** | **PASS** | `npx tsc --noEmit -p apps/mobile/tsconfig.json` executed and exited with code 0 (clean compilation, zero errors). |
 | **IV-22** | **API TypeScript** | **PASS** | `npm run build --prefix apps/api` (`tsc --noEmit`) executed and exited with code 0 (clean compilation, zero errors). |
-| **IV-23** | **Regression Suites** | **PASS** | All regression suites passed: `apiClient.test.ts` (29/29), `w007-api-client-verification.test.mjs` (9/9), `w006-final-acceptance.test.mjs` (10/10), `api-architecture-audit.test.mjs` (36/36), `observability.test.ts` (19/19), `check-api-contract-drift.mjs` (9/9). |
+| **IV-23** | **Regression Suites** | **PASS** | All regression suites passed: `apiClient.test.ts` (48/48, including 16 mandatory negative-path tests NP-1 through NP-16), `w007-api-client-verification.test.mjs` (9/9), `w006-final-acceptance.test.mjs` (10/10), `api-architecture-audit.test.mjs` (36/36), `observability.test.ts` (19/19), `check-api-contract-drift.mjs` (9/9). |
 
 ---
 

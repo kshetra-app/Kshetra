@@ -549,22 +549,21 @@
 
 ---
 
-### DEC-039: W007 Canonical API Client Verification Hardening & Remediation
+### DEC-040: W007 Canonical API Boundary & Strict Runtime Contract Hardening
 - **Date:** 2026-09-12
 - **Status:** IMPLEMENTED (SUBMITTED FOR CTO FINAL ACCEPTANCE)
-- **Authority:** CTO Verification Correction Directive (W007 — Canonical API Client), Master Execution Framework Amendment v1.5-A, `DEC-035`, `DEC-037`, `DEC-038`
-- **Context:** Hardening and remediation of 9 verification and evidence defects identified by the CTO / Technical Authority in the W007 implementation commit (`aa33d2e`).
+- **Authority:** CTO Final Correction Instruction (W007 — Canonical API Client), Master Execution Framework Amendment v1.5-A, `DEC-035`, `DEC-037`, `DEC-038`, `DEC-039`
+- **Context:** Final hardening of runtime response validation, eliminating string source escapes, enforcing typed boolean dictionaries, exact plan enums, and comprehensive negative-path tests (NP-1 through NP-16).
 - **Decisions:**
-  1. **Real AuthManager Single-Flight Token Resolution:** Verified that 10 concurrent requests to the real `AuthManager.getAccessToken()` dispatch exactly 1 call to the underlying `auth.getSession()` with all 10 calls resolving to the identical token, clearing the in-flight promise upon completion, and allowing subsequent calls to resolve fresh tokens.
-  2. **Authoritative Fastify News Contract & DTO:** Aligned `NewsItemDTO` and `NewsFeedResponseDTO` with the authoritative backend contract in `apps/api/src/services/news/newsService.ts` (`version`, `generatedAt`, `refreshIntervalMin`, `sources`, `items`). Removed unauthorized fields (`total`, `filters`, `url`).
-  3. **Elimination of Unsafe Casts:** Implemented runtime mapper `mapNewsFeedDTOToNewsFeed()` in `endpoints/news.ts`, eliminating the `as unknown as NewsFeed` escape hatch in `apps/mobile/stores/news.ts`.
-  4. **Runtime Response Contract Validation:** Implemented strict response validation functions (`validateFeatureFlagsResponse`, `validatePageEntitlementResponse`, `validateNewsFeedResponse`) that raise typed `ApiValidationError` if server responses deviate from expected schemas.
-  5. **Caller Cancellation Semantics:** Implemented `ApiCancellationError`. Explicitly excluded caller-cancelled requests from retry loops (0 retries) and ensured immediate abort.
-  6. **Error-Response Correlation Invariant:** Enforced mandatory `x-request-id` header validation across all Fastify response codes (2xx, 4xx, 5xx), raising `ApiCorrelationError` on missing or mismatched headers.
-  7. **Mobile TypeScript Verification:** Verified clean compilation via `npx tsc --noEmit -p apps/mobile/tsconfig.json` with exit code 0.
-  8. **Independent Verification Execution (IV-01 through IV-23):** Produced independent verification evidence report `reports/w007_independent_verification.md` evaluating all 23 binary gates as PASS.
-  9. **Governance Gate Invariant:** W007 remains strictly `IN VERIFICATION / PENDING ACCEPTANCE`. W008 remains strictly `NOT AUTHORIZED` pending explicit CTO final acceptance.
-- **Rationale:** Ensures that all verification claims are empirically true and reproducible from repository source code, upholding truth in engineering and human governance authority.
+  1. **Strict NewsSource Object Contract:** Eliminated the string escape from `NewsItemDTO.source`. Enforced structured object validation (`id`, `name`, `domain`, `language`, optional `accent`, optional `verified`). String source values are strictly rejected with `ApiValidationError`.
+  2. **NewsItem & Feed Runtime Validation:** Enforced strict type guards on `version` (strictly number), `generatedAt` (valid date string), `refreshIntervalMin` (number), `scope` (exact enum `'national' | 'state' | 'constituency'`), `language` (supported 9-language enum), and nested `video` object (`provider: 'youtube' | 'native'`, non-empty `embedId`, optional `durationSec`).
+  3. **Strict Boolean Flags:** Updated `validateFeatureFlagsResponse` to recursively validate every property in `flags`, strictly rejecting non-boolean values (strings, numbers, nulls).
+  4. **Strict Page Entitlement Schema:** Enforced boolean `success`, non-empty string `pageId`, boolean `isPro`, plan enum (`'free' | 'pro'`), and nullable ISO date string `expiresAt`.
+  5. **16 Mandatory Negative-Path Tests:** Added unit test suite covering NEWS NP-1 through NP-8, CONFIG NP-9 through NP-11, and PAGE NP-12 through NP-16. Total unit test suite expanded to 48/48 PASS.
+  6. **Zero Unsafe Coercions:** Verified 0 occurrences of `as unknown as NewsFeed` or equivalent unvalidated coercions across `apps/mobile/`.
+  7. **Governance Disposition:** W007 remains `IN VERIFICATION / CORRECTIONS REQUIRED` and is submitted for final CTO review. W008 remains strictly `NOT AUTHORIZED`.
+- **Rationale:** Guarantees that untrusted network payloads are strictly validated before conversion to canonical DTOs and mobile domain types, preventing malformed data from silently propagating into application state.
+
 
 
 

@@ -584,4 +584,374 @@ describe('W007 Canonical API Client', () => {
       expect(useFeatureFlagsStore.getState().enableMap).toBe(true);
     });
   });
+
+  describe('9. Mandatory Negative-Path Runtime Contract Validation', () => {
+    const validNewsSource = {
+      id: 'the-hindu',
+      name: 'The Hindu',
+      domain: 'thehindu.com',
+      language: 'en',
+      accent: '#C8102E',
+      verified: true,
+    };
+
+    const validNewsItem = {
+      id: 'n-1234',
+      title: 'Valid Headline',
+      sourceUrl: 'https://thehindu.com/news/1234',
+      source: validNewsSource,
+      language: 'en',
+      category: 'top',
+      scope: 'national',
+      publishedAt: '2026-09-12T12:00:00.000Z',
+    };
+
+    const validFeed = {
+      version: 1,
+      generatedAt: '2026-09-12T12:00:00.000Z',
+      refreshIntervalMin: 60,
+      sources: [validNewsSource],
+      items: [validNewsItem],
+    };
+
+    // NEWS NEGATIVE TESTS
+    it('NEWS NP-1: rejects when source is a string instead of structured object', async () => {
+      mockFetch.mockImplementation(async (_url: string, init: RequestInit) => {
+        const reqId = (init.headers as Record<string, string>)['x-request-id'];
+        const badFeed = {
+          ...validFeed,
+          items: [{ ...validNewsItem, source: 'The Hindu' }], // string source forbidden
+        };
+        return createMockResponse(200, badFeed, { 'x-request-id': reqId });
+      });
+
+      await expect(apiClient.news.getFeed()).rejects.toThrow(ApiValidationError);
+      await expect(apiClient.news.getFeed()).rejects.toThrow(/structured object, not a string/);
+    });
+
+    it('NEWS NP-2: rejects when source object is missing required field (domain)', async () => {
+      mockFetch.mockImplementation(async (_url: string, init: RequestInit) => {
+        const reqId = (init.headers as Record<string, string>)['x-request-id'];
+        const badFeed = {
+          ...validFeed,
+          items: [{
+            ...validNewsItem,
+            source: { id: 'the-hindu', name: 'The Hindu', language: 'en' }, // missing domain
+          }],
+        };
+        return createMockResponse(200, badFeed, { 'x-request-id': reqId });
+      });
+
+      await expect(apiClient.news.getFeed()).rejects.toThrow(ApiValidationError);
+      await expect(apiClient.news.getFeed()).rejects.toThrow(/missing or empty "domain"/);
+    });
+
+    it('NEWS NP-3: rejects when source field has wrong type (verified is string instead of boolean)', async () => {
+      mockFetch.mockImplementation(async (_url: string, init: RequestInit) => {
+        const reqId = (init.headers as Record<string, string>)['x-request-id'];
+        const badFeed = {
+          ...validFeed,
+          items: [{
+            ...validNewsItem,
+            source: { ...validNewsSource, verified: 'true' }, // wrong type
+          }],
+        };
+        return createMockResponse(200, badFeed, { 'x-request-id': reqId });
+      });
+
+      await expect(apiClient.news.getFeed()).rejects.toThrow(ApiValidationError);
+      await expect(apiClient.news.getFeed()).rejects.toThrow(/"verified" must be a boolean/);
+    });
+
+    it('NEWS NP-4: rejects when version is numeric string ("1") instead of number', async () => {
+      mockFetch.mockImplementation(async (_url: string, init: RequestInit) => {
+        const reqId = (init.headers as Record<string, string>)['x-request-id'];
+        const badFeed = { ...validFeed, version: '1' }; // string version forbidden
+        return createMockResponse(200, badFeed, { 'x-request-id': reqId });
+      });
+
+      await expect(apiClient.news.getFeed()).rejects.toThrow(ApiValidationError);
+      await expect(apiClient.news.getFeed()).rejects.toThrow(/must be a number/);
+    });
+
+    it('NEWS NP-5: rejects invalid scope (district, local, or arbitrary string)', async () => {
+      mockFetch.mockImplementation(async (_url: string, init: RequestInit) => {
+        const reqId = (init.headers as Record<string, string>)['x-request-id'];
+        const badFeed = {
+          ...validFeed,
+          items: [{ ...validNewsItem, scope: 'district' }], // invalid scope
+        };
+        return createMockResponse(200, badFeed, { 'x-request-id': reqId });
+      });
+
+      await expect(apiClient.news.getFeed()).rejects.toThrow(ApiValidationError);
+      await expect(apiClient.news.getFeed()).rejects.toThrow(/invalid or unsupported "scope"/);
+    });
+
+    it('NEWS NP-6: rejects missing or invalid publishedAt', async () => {
+      mockFetch.mockImplementation(async (_url: string, init: RequestInit) => {
+        const reqId = (init.headers as Record<string, string>)['x-request-id'];
+        const badFeed = {
+          ...validFeed,
+          items: [{ ...validNewsItem, publishedAt: 'invalid-date-not-an-iso' }],
+        };
+        return createMockResponse(200, badFeed, { 'x-request-id': reqId });
+      });
+
+      await expect(apiClient.news.getFeed()).rejects.toThrow(ApiValidationError);
+      await expect(apiClient.news.getFeed()).rejects.toThrow(/missing or invalid "publishedAt"/);
+    });
+
+    it('NEWS NP-7: rejects malformed video object (invalid provider or missing embedId)', async () => {
+      mockFetch.mockImplementation(async (_url: string, init: RequestInit) => {
+        const reqId = (init.headers as Record<string, string>)['x-request-id'];
+        const badFeed = {
+          ...validFeed,
+          items: [{
+            ...validNewsItem,
+            video: { provider: 'vimeo', embedId: '123' }, // invalid provider
+          }],
+        };
+        return createMockResponse(200, badFeed, { 'x-request-id': reqId });
+      });
+
+      await expect(apiClient.news.getFeed()).rejects.toThrow(ApiValidationError);
+      await expect(apiClient.news.getFeed()).rejects.toThrow(/"video.provider" must be "youtube" or "native"/);
+    });
+
+    it('NEWS NP-8: rejects malformed nested source in sources array', async () => {
+      mockFetch.mockImplementation(async (_url: string, init: RequestInit) => {
+        const reqId = (init.headers as Record<string, string>)['x-request-id'];
+        const badFeed = {
+          ...validFeed,
+          sources: [{ id: 'hindu', name: 'The Hindu', domain: 'thehindu.com', language: 'unsupported-lang' }],
+        };
+        return createMockResponse(200, badFeed, { 'x-request-id': reqId });
+      });
+
+      await expect(apiClient.news.getFeed()).rejects.toThrow(ApiValidationError);
+      await expect(apiClient.news.getFeed()).rejects.toThrow(/invalid or unsupported "language"/);
+    });
+
+    // CONFIG NEGATIVE TESTS
+    it('CONFIG NP-9: rejects flag value when string instead of boolean', async () => {
+      mockFetch.mockImplementation(async (_url: string, init: RequestInit) => {
+        const reqId = (init.headers as Record<string, string>)['x-request-id'];
+        return createMockResponse(200, {
+          status: 'ok',
+          flags: { featureA: 'true' }, // string boolean forbidden
+        }, { 'x-request-id': reqId });
+      });
+
+      await expect(apiClient.config.getFlags()).rejects.toThrow(ApiValidationError);
+      await expect(apiClient.config.getFlags()).rejects.toThrow(/must be a boolean/);
+    });
+
+    it('CONFIG NP-10: rejects flag value when number instead of boolean', async () => {
+      mockFetch.mockImplementation(async (_url: string, init: RequestInit) => {
+        const reqId = (init.headers as Record<string, string>)['x-request-id'];
+        return createMockResponse(200, {
+          status: 'ok',
+          flags: { featureA: 1 }, // number forbidden
+        }, { 'x-request-id': reqId });
+      });
+
+      await expect(apiClient.config.getFlags()).rejects.toThrow(ApiValidationError);
+      await expect(apiClient.config.getFlags()).rejects.toThrow(/must be a boolean/);
+    });
+
+    it('CONFIG NP-11: rejects flag value when null instead of boolean', async () => {
+      mockFetch.mockImplementation(async (_url: string, init: RequestInit) => {
+        const reqId = (init.headers as Record<string, string>)['x-request-id'];
+        return createMockResponse(200, {
+          status: 'ok',
+          flags: { featureA: null }, // null forbidden
+        }, { 'x-request-id': reqId });
+      });
+
+      await expect(apiClient.config.getFlags()).rejects.toThrow(ApiValidationError);
+      await expect(apiClient.config.getFlags()).rejects.toThrow(/must be a boolean, received null/);
+    });
+
+    // PAGE NEGATIVE TESTS
+    it('PAGE NP-12: rejects when success is wrong type (string instead of boolean)', async () => {
+      mockFetch.mockImplementation(async (_url: string, init: RequestInit) => {
+        const reqId = (init.headers as Record<string, string>)['x-request-id'];
+        return createMockResponse(200, {
+          success: 'true',
+          pageId: 'pg-1',
+          isPro: false,
+          plan: 'free',
+          expiresAt: null,
+        }, { 'x-request-id': reqId });
+      });
+
+      await expect(apiClient.pages.getEntitlement('pg-1')).rejects.toThrow(ApiValidationError);
+      await expect(apiClient.pages.getEntitlement('pg-1')).rejects.toThrow(/expected boolean, received string/);
+    });
+
+    it('PAGE NP-13: rejects when isPro is wrong type (string instead of boolean)', async () => {
+      mockFetch.mockImplementation(async (_url: string, init: RequestInit) => {
+        const reqId = (init.headers as Record<string, string>)['x-request-id'];
+        return createMockResponse(200, {
+          success: true,
+          pageId: 'pg-1',
+          isPro: 'false',
+          plan: 'free',
+          expiresAt: null,
+        }, { 'x-request-id': reqId });
+      });
+
+      await expect(apiClient.pages.getEntitlement('pg-1')).rejects.toThrow(ApiValidationError);
+      await expect(apiClient.pages.getEntitlement('pg-1')).rejects.toThrow(/missing or invalid "isPro" field/);
+    });
+
+    it('PAGE NP-14: rejects invalid plan (not free or pro)', async () => {
+      mockFetch.mockImplementation(async (_url: string, init: RequestInit) => {
+        const reqId = (init.headers as Record<string, string>)['x-request-id'];
+        return createMockResponse(200, {
+          success: true,
+          pageId: 'pg-1',
+          isPro: true,
+          plan: 'premium', // invalid enum
+          expiresAt: null,
+        }, { 'x-request-id': reqId });
+      });
+
+      await expect(apiClient.pages.getEntitlement('pg-1')).rejects.toThrow(ApiValidationError);
+      await expect(apiClient.pages.getEntitlement('pg-1')).rejects.toThrow(/"plan" must be "free" or "pro", received "premium"/);
+    });
+
+    it('PAGE NP-15: rejects when pageId is wrong type (number instead of string)', async () => {
+      mockFetch.mockImplementation(async (_url: string, init: RequestInit) => {
+        const reqId = (init.headers as Record<string, string>)['x-request-id'];
+        return createMockResponse(200, {
+          success: true,
+          pageId: 12345,
+          isPro: false,
+          plan: 'free',
+          expiresAt: null,
+        }, { 'x-request-id': reqId });
+      });
+
+      await expect(apiClient.pages.getEntitlement('pg-1')).rejects.toThrow(ApiValidationError);
+      await expect(apiClient.pages.getEntitlement('pg-1')).rejects.toThrow(/missing or invalid "pageId" field/);
+    });
+
+    it('PAGE NP-16: rejects invalid expiresAt representation (number or non-date string)', async () => {
+      mockFetch.mockImplementation(async (_url: string, init: RequestInit) => {
+        const reqId = (init.headers as Record<string, string>)['x-request-id'];
+        return createMockResponse(200, {
+          success: true,
+          pageId: 'pg-1',
+          isPro: true,
+          plan: 'pro',
+          expiresAt: 1726147200, // timestamp number instead of ISO string
+        }, { 'x-request-id': reqId });
+      });
+
+      await expect(apiClient.pages.getEntitlement('pg-1')).rejects.toThrow(ApiValidationError);
+      await expect(apiClient.pages.getEntitlement('pg-1')).rejects.toThrow(/"expiresAt" must be a string or null/);
+    });
+  });
+
+  describe('10. Positive-Path Full Canonical Schema Validation', () => {
+    it('validates complete canonical NewsFeed with optional video and sources', async () => {
+      const now = new Date().toISOString();
+      const validPayload = {
+        version: 1,
+        generatedAt: now,
+        refreshIntervalMin: 60,
+        sources: [
+          {
+            id: 'hindu',
+            name: 'The Hindu',
+            domain: 'thehindu.com',
+            language: 'en',
+            accent: '#C8102E',
+            verified: true,
+          },
+        ],
+        items: [
+          {
+            id: 'item-video-1',
+            title: 'Election Results Live Video',
+            summary: 'Comprehensive analysis of polling trends.',
+            imageUrl: 'https://thehindu.com/img/thumb.jpg',
+            sourceUrl: 'https://thehindu.com/video/1',
+            source: {
+              id: 'hindu',
+              name: 'The Hindu',
+              domain: 'thehindu.com',
+              language: 'en',
+              accent: '#C8102E',
+              verified: true,
+            },
+            language: 'en',
+            category: 'video',
+            scope: 'national',
+            publishedAt: now,
+            video: {
+              provider: 'youtube',
+              embedId: 'dQw4w9WgXcQ',
+              durationSec: 120,
+            },
+          },
+        ],
+      };
+
+      mockFetch.mockImplementation(async (_url: string, init: RequestInit) => {
+        const reqId = (init.headers as Record<string, string>)['x-request-id'];
+        return createMockResponse(200, validPayload, { 'x-request-id': reqId });
+      });
+
+      const feed = await apiClient.news.getFeed();
+      expect(feed.version).toBe(1);
+      expect(feed.items[0].video?.provider).toBe('youtube');
+      expect(feed.items[0].video?.embedId).toBe('dQw4w9WgXcQ');
+      expect(feed.items[0].source.name).toBe('The Hindu');
+      expect(feed.items[0].source.domain).toBe('thehindu.com');
+    });
+
+    it('validates complete canonical Config Flags with multiple booleans', async () => {
+      mockFetch.mockImplementation(async (_url: string, init: RequestInit) => {
+        const reqId = (init.headers as Record<string, string>)['x-request-id'];
+        return createMockResponse(200, {
+          status: 'ok',
+          flags: {
+            enableFeed: true,
+            enableMap: false,
+            enableDMs: true,
+          },
+          syncedAt: new Date().toISOString(),
+        }, { 'x-request-id': reqId });
+      });
+
+      const config = await apiClient.config.getFlags();
+      expect(config.status).toBe('ok');
+      expect(config.flags.enableFeed).toBe(true);
+      expect(config.flags.enableMap).toBe(false);
+      expect(config.flags.enableDMs).toBe(true);
+    });
+
+    it('validates complete canonical Page Entitlement for Pro plan with expiration', async () => {
+      const expiresAt = new Date(Date.now() + 86400000).toISOString();
+      mockFetch.mockImplementation(async (_url: string, init: RequestInit) => {
+        const reqId = (init.headers as Record<string, string>)['x-request-id'];
+        return createMockResponse(200, {
+          success: true,
+          pageId: 'page-pro-xyz',
+          isPro: true,
+          plan: 'pro',
+          expiresAt,
+        }, { 'x-request-id': reqId });
+      });
+
+      const entitlement = await apiClient.pages.getEntitlement('page-pro-xyz');
+      expect(entitlement.success).toBe(true);
+      expect(entitlement.isPro).toBe(true);
+      expect(entitlement.plan).toBe('pro');
+      expect(entitlement.expiresAt).toBe(expiresAt);
+    });
+  });
 });
