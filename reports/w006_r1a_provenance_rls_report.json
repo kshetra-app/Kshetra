@@ -1,15 +1,15 @@
 {
   "evidenceMetadata": {
-    "jobId": "W006-R1B",
-    "title": "API Architecture Audit & Live RLS Provenance Rebinding (W006-R1B)",
-    "authority": "Master Execution Framework Amendment v1.4 / DEC-002 / DEC-028 / DEC-029 / DEC-030 / DEC-031 / DEC-032",
-    "timestamp": "2026-09-12T04:43:21.079Z",
+    "jobId": "W006-R1C",
+    "title": "API Architecture Audit & Semantic Integrity Remediation (W006-R1C)",
+    "authority": "Master Execution Framework Amendment v1.4 / DEC-002 / DEC-028 / DEC-029 / DEC-030 / DEC-031 / DEC-032 / DEC-033",
+    "timestamp": "2026-09-12T08:45:43.132Z",
     "commitCoordinates": {
-      "verifiedRemoteHead": "c7374ef",
+      "verifiedRemoteHead": "c1fe56a",
       "auditedCodeCommit": "35ba912",
       "evidenceCommit": "pending",
       "acceptanceCommit": "pending",
-      "localHead": "c7374ef",
+      "localHead": "c1fe56a",
       "isTreeClean": true
     }
   },

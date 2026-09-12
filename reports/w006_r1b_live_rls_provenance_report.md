@@ -1,13 +1,14 @@
-# JOB W006-R1B: LIVE RLS EVIDENCE & PROVENANCE REBINDING REPORT
-**Execution Authority:** Master Product Blueprint, AI Agent Master Execution Job Book, Amendment v1.2, Amendment v1.4, AGENT_EXECUTION_PROTOCOL.md, DEC-002, DEC-028, DEC-029, DEC-030, DEC-031, DEC-032
-**Status:** IMPLEMENTED & REBOUND — READY FOR INDEPENDENT VERIFICATION (W006-R1B)
+# JOB W006-R1C: AUDIT SEMANTIC INTEGRITY & FAIL-CLOSED PROVENANCE REPORT
+**Execution Authority:** Master Product Blueprint, AI Agent Master Execution Job Book, Amendment v1.2, Amendment v1.4, AGENT_EXECUTION_PROTOCOL.md, DEC-002, DEC-028, DEC-029, DEC-030, DEC-031, DEC-032, DEC-033
+**Status:** IMPLEMENTED — READY FOR INDEPENDENT VERIFICATION (W006-R1C)
+**W007 Status:** STRICTLY BLOCKED pending independent W006 acceptance
 **Date:** 2026-09-12
 
 ---
 
 ## 1. Executive Summary & RLS Evidence Taxonomy
 
-In accordance with **W006-R1B (Live RLS Evidence & Provenance Rebinding)**, this report establishes the strict separation between migration-source policy inspection and live PostgreSQL catalog policy verification:
+In accordance with **W006-R1C (Audit Semantic Integrity & Fail-Closed Provenance Remediation)**, this report establishes strict fail-closed Git provenance, fail-closed Class-A RLS qualification, dynamic coordinate binding, and truthful catalog inspection:
 
 ### RLS Evidence Taxonomy (Part A Standards)
 1. **`SOURCE_POLICY_VERIFIED`**: Policy exists in repository migrations (001..034) and has been explicitly inspected.
@@ -28,7 +29,7 @@ In accordance with **W006-R1B (Live RLS Evidence & Provenance Rebinding)**, this
 | Coordinate | Value | Description |
 | :--- | :--- | :--- |
 | **CANONICAL_BRANCH** | `master` | Primary production branch |
-| **VERIFIED_REMOTE_HEAD** | `c7374ef` | Verified remote canonical HEAD against which evidence is generated |
+| **VERIFIED_REMOTE_HEAD** | `c1fe56a` | Verified remote canonical HEAD against which evidence is generated |
 | **AUDITED_CODE_COMMIT** | `35ba912` | Exact R1A implementation commit containing the hardened audit implementation actually inspected |
 | **EVIDENCE_COMMIT** | `pending` | Commit containing regenerated W006-R1B evidence reports |
 | **ACCEPTANCE_COMMIT** | `pending` | Commit containing final user acceptance state |
@@ -37,7 +38,7 @@ In accordance with **W006-R1B (Live RLS Evidence & Provenance Rebinding)**, this
 - **`5754fa2`**: Baseline code state at the start of W006.
 - **`35ba912`**: Exact R1A implementation commit containing the hardened fail-closed git provenance logic and RLS qualification structure.
 - **`ac63682`**: Live synchronization commit binding W006-R1A reports.
-- **`c7374ef`**: Live origin/master canonical HEAD.
+- **`c1fe56a`**: Live origin/master canonical HEAD.
 - The verifier now audits the actual R1A/R1B implementation state (`35ba912` / live), resolving the lineage coordinate discrepancy.
 
 ---
