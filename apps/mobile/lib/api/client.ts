@@ -18,9 +18,12 @@ import type {
   RequestOptions,
 } from './types';
 import {
+  ApiCancellationError,
+  ApiCorrelationError,
   ApiError,
   ApiNetworkError,
   ApiTimeoutError,
+  ApiValidationError,
   createApiErrorFromResponse,
 } from './errors';
 import { applyAuthHeaders } from './interceptors/auth';
@@ -115,6 +118,7 @@ export class ApiClient {
       const currentAttemptTimeout = Math.min(attemptCeilingMs, remainingBudget);
       const controller = new AbortController();
       let timedOut = false;
+      let callerCancelled = false;
 
       const timeoutId = setTimeout(() => {
         timedOut = true;
@@ -122,13 +126,14 @@ export class ApiClient {
       }, currentAttemptTimeout);
 
       const onCallerAbort = () => {
+        callerCancelled = true;
         controller.abort();
       };
 
       if (options.signal) {
         if (options.signal.aborted) {
           clearTimeout(timeoutId);
-          throw new ApiError('Request aborted by caller', 0, requestId);
+          throw new ApiCancellationError('Request cancelled by caller', requestId);
         }
         options.signal.addEventListener('abort', onCallerAbort);
       }
@@ -148,10 +153,10 @@ export class ApiClient {
 
         const durationMs = Date.now() - startTime;
 
-        if (response.ok) {
-          // Validate correlation ID (fails closed on missing or mismatch)
-          const verifiedRequestId = validateResponseCorrelation(response.headers, requestId);
+        // Invariant: EVERY Fastify response (2xx, 4xx, 5xx) MUST include matching x-request-id
+        const verifiedRequestId = validateResponseCorrelation(response.headers, requestId);
 
+        if (response.ok) {
           let data: TResponse;
           const contentType = response.headers.get('content-type') || '';
           if (contentType.includes('application/json')) {
@@ -183,12 +188,12 @@ export class ApiClient {
           errorPayload = await response.text();
         }
 
-        const apiError = createApiErrorFromResponse(response.status, errorPayload, requestId);
-        recordNetworkBreadcrumb(method, path, response.status, requestId, durationMs);
+        const apiError = createApiErrorFromResponse(response.status, errorPayload, verifiedRequestId);
+        recordNetworkBreadcrumb(method, path, response.status, verifiedRequestId, durationMs);
 
-        // Check if retryable
+        // Check if retryable (only 502/503/504 for idempotent requests, if budget permits and caller hasn't aborted)
         const isRetryableStatus = response.status === 502 || response.status === 503 || response.status === 504;
-        if (isRetryableStatus && isIdempotent && attempt < maxRetries) {
+        if (isRetryableStatus && isIdempotent && attempt < maxRetries && !options.signal?.aborted) {
           const backoff = retryDelayMs * Math.pow(2, attempt) + Math.random() * 50;
           if (Date.now() + backoff < deadline) {
             await new Promise((resolve) => setTimeout(resolve, backoff));
@@ -203,12 +208,32 @@ export class ApiClient {
           options.signal.removeEventListener('abort', onCallerAbort);
         }
 
-        // Rethrow if already an ApiError (e.g. from correlation validation or non-retryable response)
+        const durationMs = Date.now() - startTime;
+
+        // 1. Caller cancellation: NEVER retry, fail immediately with ApiCancellationError
+        if (callerCancelled || options.signal?.aborted) {
+          const cancelError = new ApiCancellationError('Request cancelled by caller', requestId);
+          recordNetworkBreadcrumb(method, path, 0, requestId, durationMs);
+          throw cancelError;
+        }
+
+        // 2. Correlation error: protocol error, fail closed immediately — NEVER retry
+        if (err instanceof ApiCorrelationError) {
+          recordNetworkBreadcrumb(method, path, err.statusCode, requestId, durationMs);
+          throw err;
+        }
+
+        // 3. Validation error: fail closed immediately — NEVER retry
+        if (err instanceof ApiValidationError) {
+          recordNetworkBreadcrumb(method, path, err.statusCode, requestId, durationMs);
+          throw err;
+        }
+
+        // 4. Rethrow if already an ApiError (e.g. from non-retryable response)
         if (err instanceof ApiError && !(err instanceof ApiTimeoutError) && !(err instanceof ApiNetworkError)) {
           throw err;
         }
 
-        const durationMs = Date.now() - startTime;
         let mappedError: ApiError;
 
         if (timedOut) {
@@ -226,7 +251,7 @@ export class ApiClient {
         recordNetworkBreadcrumb(method, path, mappedError.statusCode, requestId, durationMs);
         lastError = mappedError;
 
-        if (isIdempotent && attempt < maxRetries) {
+        if (isIdempotent && attempt < maxRetries && !options.signal?.aborted) {
           const backoff = retryDelayMs * Math.pow(2, attempt) + Math.random() * 50;
           if (Date.now() + backoff < deadline) {
             await new Promise((resolve) => setTimeout(resolve, backoff));

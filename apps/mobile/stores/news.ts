@@ -50,7 +50,7 @@ async function fetchBackendFeed(lang: NewsLanguageCode | null): Promise<NewsFeed
   if (!REMOTE_API_URL) return null;
   try {
     const feed = await apiClient.news.getFeed(lang ? { lang } : undefined);
-    if (feed?.items?.length) return feed as unknown as NewsFeed;
+    if (feed?.items?.length) return feed;
   } catch {
     // fall through
   }

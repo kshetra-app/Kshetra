@@ -9,6 +9,25 @@
 
 import type { ApiClient } from '../client';
 import type { FeatureFlagsResponseDTO } from '../types';
+import { ApiValidationError } from '../errors';
+
+/**
+ * Validates the runtime schema of FeatureFlagsResponseDTO.
+ * Throws ApiValidationError if the structure is malformed.
+ */
+export function validateFeatureFlagsResponse(data: unknown): FeatureFlagsResponseDTO {
+  if (typeof data !== 'object' || data === null) {
+    throw new ApiValidationError('Invalid feature flags response: expected object payload');
+  }
+  const payload = data as Record<string, unknown>;
+  if (typeof payload.status !== 'string') {
+    throw new ApiValidationError('Invalid feature flags response: missing or invalid "status" field');
+  }
+  if (typeof payload.flags !== 'object' || payload.flags === null || Array.isArray(payload.flags)) {
+    throw new ApiValidationError('Invalid feature flags response: missing or invalid "flags" object');
+  }
+  return data as FeatureFlagsResponseDTO;
+}
 
 export class ConfigEndpoint {
   constructor(private readonly client: ApiClient) {}
@@ -18,10 +37,10 @@ export class ConfigEndpoint {
    * Explicitly declared as a PUBLIC endpoint.
    */
   async getFlags(): Promise<FeatureFlagsResponseDTO> {
-    const response = await this.client.get<FeatureFlagsResponseDTO>('/api/v1/config/flags', {
+    const response = await this.client.get<unknown>('/api/v1/config/flags', {
       authPolicy: 'public',
     });
-    return response.data;
+    return validateFeatureFlagsResponse(response.data);
   }
 
   /**

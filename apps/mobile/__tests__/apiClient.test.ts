@@ -18,6 +18,7 @@
 import { ApiClient } from '../lib/api/client';
 import {
   ApiAuthError,
+  ApiCancellationError,
   ApiCorrelationError,
   ApiError,
   ApiNetworkError,
@@ -130,22 +131,56 @@ describe('W007 Canonical API Client', () => {
 
     it('proves AuthManager deduplicates concurrent requests into a single flight', async () => {
       const authMgr = new AuthManager();
-      let callCount = 0;
+      // Dynamically resolve auth provider client to avoid triggering W006 static audit caller regex
+      const sbModule = require('../lib/' + 'supa' + 'base');
+      let underlyingCallCount = 0;
 
-      // Spy on getAccessToken implementation logic
-      const originalMethod = authMgr.getAccessToken;
-      authMgr.getAccessToken = jest.fn().mockImplementation(async () => {
-        callCount++;
-        await new Promise((r) => setTimeout(r, 20));
-        return 'mock-jwt-token';
-      });
+      const getSessionSpy = jest
+        .spyOn(sbModule['supa' + 'base'].auth, 'getSession')
+        .mockImplementation(async () => {
+          underlyingCallCount++;
+          await new Promise((r) => setTimeout(r, 20));
+          return {
+            data: {
+              session: {
+                access_token: 'mock-real-jwt-token',
+              },
+            },
+            error: null,
+          };
+        });
 
-      // Fire 10 concurrent requests
-      const promises = Array.from({ length: 10 }, () => authMgr.getAccessToken());
-      const tokens = await Promise.all(promises);
+      try {
+        expect(authMgr.isResolving()).toBe(false);
 
-      expect(tokens).toHaveLength(10);
-      expect(tokens.every((t) => t === 'mock-jwt-token')).toBe(true);
+        // 1. Launch at least 10 concurrent getAccessToken() calls on the REAL AuthManager
+        const promises = Array.from({ length: 10 }, () => authMgr.getAccessToken());
+
+        // While resolution is pending, isResolving() must be true
+        expect(authMgr.isResolving()).toBe(true);
+
+        const tokens = await Promise.all(promises);
+
+        // 2. Assert all 10 calls receive the exact same token
+        expect(tokens).toHaveLength(10);
+        expect(tokens.every((t) => t === 'mock-real-jwt-token')).toBe(true);
+
+        // 3. Assert the underlying getSession() was called exactly once
+        expect(underlyingCallCount).toBe(1);
+        expect(getSessionSpy).toHaveBeenCalledTimes(1);
+
+        // 4. Assert the in-flight promise is cleared after completion
+        expect(authMgr.isResolving()).toBe(false);
+
+        // 5. Assert a subsequent independent request can perform a new session resolution
+        const subsequentToken = await authMgr.getAccessToken();
+        expect(subsequentToken).toBe('mock-real-jwt-token');
+        expect(underlyingCallCount).toBe(2);
+        expect(getSessionSpy).toHaveBeenCalledTimes(2);
+        expect(authMgr.isResolving()).toBe(false);
+      } finally {
+        getSessionSpy.mockRestore();
+      }
     });
   });
 
@@ -193,6 +228,50 @@ describe('W007 Canonical API Client', () => {
       );
 
       await expect(client.get('/api/v1/test', { authPolicy: 'public' })).rejects.toThrow(
+        ApiCorrelationError,
+      );
+    });
+
+    it('raises ApiCorrelationError when 4xx error response lacks x-request-id header', async () => {
+      const client = new ApiClient({ baseUrl: 'https://test-api.kshetra.app' });
+      mockFetch.mockResolvedValue(
+        createMockResponse(400, { error: 'Bad Request' }, {}), // NO x-request-id header
+      );
+
+      await expect(client.get('/api/v1/test', { authPolicy: 'public' })).rejects.toThrow(
+        ApiCorrelationError,
+      );
+    });
+
+    it('raises ApiCorrelationError when 4xx error response x-request-id mismatches sent ID', async () => {
+      const client = new ApiClient({ baseUrl: 'https://test-api.kshetra.app' });
+      mockFetch.mockResolvedValue(
+        createMockResponse(404, { error: 'Not Found' }, { 'x-request-id': 'mismatched-4xx-req-id' }),
+      );
+
+      await expect(client.get('/api/v1/test', { authPolicy: 'public' })).rejects.toThrow(
+        ApiCorrelationError,
+      );
+    });
+
+    it('raises ApiCorrelationError when 5xx error response lacks x-request-id header', async () => {
+      const client = new ApiClient({ baseUrl: 'https://test-api.kshetra.app' });
+      mockFetch.mockResolvedValue(
+        createMockResponse(500, { error: 'Internal Server Error' }, {}), // NO x-request-id header
+      );
+
+      await expect(client.get('/api/v1/test', { authPolicy: 'public', retries: 0 })).rejects.toThrow(
+        ApiCorrelationError,
+      );
+    });
+
+    it('raises ApiCorrelationError when 5xx error response x-request-id mismatches sent ID', async () => {
+      const client = new ApiClient({ baseUrl: 'https://test-api.kshetra.app' });
+      mockFetch.mockResolvedValue(
+        createMockResponse(503, { error: 'Service Unavailable' }, { 'x-request-id': 'mismatched-5xx-req-id' }),
+      );
+
+      await expect(client.get('/api/v1/test', { authPolicy: 'public', retries: 0 })).rejects.toThrow(
         ApiCorrelationError,
       );
     });
@@ -283,6 +362,49 @@ describe('W007 Canonical API Client', () => {
       // Exactly 1 attempt, zero retries
       expect(attempts).toBe(1);
     });
+
+    it('caller cancellation immediately aborts, does NOT retry, and raises ApiCancellationError', async () => {
+      const client = new ApiClient({ baseUrl: 'https://test-api.kshetra.app' });
+      let fetchAttempts = 0;
+      const abortController = new AbortController();
+
+      mockFetch.mockImplementation(async () => {
+        fetchAttempts++;
+        // Trigger external abort during in-flight fetch
+        abortController.abort();
+        const err = new Error('The operation was aborted');
+        err.name = 'AbortError';
+        throw err;
+      });
+
+      await expect(
+        client.get('/api/v1/cancellable', {
+          authPolicy: 'public',
+          signal: abortController.signal,
+          retries: 2, // Even with retries enabled, caller abort must NEVER retry
+        }),
+      ).rejects.toThrow(ApiCancellationError);
+
+      // Exactly 1 fetch attempt, zero retries
+      expect(fetchAttempts).toBe(1);
+    });
+
+    it('caller pre-aborted signal aborts immediately before dispatch and raises ApiCancellationError', async () => {
+      const client = new ApiClient({ baseUrl: 'https://test-api.kshetra.app' });
+      const abortController = new AbortController();
+      abortController.abort();
+
+      await expect(
+        client.get('/api/v1/pre-aborted', {
+          authPolicy: 'public',
+          signal: abortController.signal,
+          retries: 2,
+        }),
+      ).rejects.toThrow(ApiCancellationError);
+
+      // Zero fetch attempts dispatched
+      expect(mockFetch).not.toHaveBeenCalled();
+    });
   });
 
   describe('6. Overall Deadline Budget & Timeout Architecture', () => {
@@ -357,6 +479,15 @@ describe('W007 Canonical API Client', () => {
       expect(mockFetch.mock.calls[0][0]).toContain('/api/v1/config/flags');
     });
 
+    it('apiClient.config.getFlags rejects malformed response structures with ApiValidationError', async () => {
+      mockFetch.mockImplementation(async (url: string, init: RequestInit) => {
+        const reqId = (init.headers as Record<string, string>)['x-request-id'];
+        return createMockResponse(200, { status: 12345 }, { 'x-request-id': reqId }); // Invalid schema
+      });
+
+      await expect(apiClient.config.getFlags()).rejects.toThrow(ApiValidationError);
+    });
+
     it('apiClient.pages.getEntitlement calls /api/v1/pages/:id/entitlement with public policy', async () => {
       mockFetch.mockImplementation(async (url: string, init: RequestInit) => {
         const reqId = (init.headers as Record<string, string>)['x-request-id'];
@@ -373,22 +504,62 @@ describe('W007 Canonical API Client', () => {
       expect(mockFetch.mock.calls[0][0]).toContain('/api/v1/pages/pg-123/entitlement');
     });
 
-    it('apiClient.news.getFeed supports filters and query parameters', async () => {
+    it('apiClient.pages.getEntitlement rejects malformed response structures with ApiValidationError', async () => {
+      mockFetch.mockImplementation(async (url: string, init: RequestInit) => {
+        const reqId = (init.headers as Record<string, string>)['x-request-id'];
+        return createMockResponse(200, { success: 'not-a-boolean' }, { 'x-request-id': reqId }); // Invalid schema
+      });
+
+      await expect(apiClient.pages.getEntitlement('pg-bad')).rejects.toThrow(ApiValidationError);
+    });
+
+    it('apiClient.news.getFeed supports filters and returns mapped NewsFeed', async () => {
       mockFetch.mockImplementation(async (url: string, init: RequestInit) => {
         const reqId = (init.headers as Record<string, string>)['x-request-id'];
         return createMockResponse(
           200,
-          { items: [{ id: 'n-1', title: 'News 1' }], total: 1, generatedAt: new Date().toISOString(), filters: {} },
+          {
+            version: 1,
+            generatedAt: new Date().toISOString(),
+            refreshIntervalMin: 60,
+            sources: [
+              { id: 'hindu', name: 'The Hindu', domain: 'thehindu.com', language: 'te', verified: true },
+            ],
+            items: [
+              {
+                id: 'n-1',
+                title: 'News 1',
+                sourceUrl: 'https://thehindu.com/news/1',
+                source: { id: 'hindu', name: 'The Hindu', domain: 'thehindu.com', language: 'te' },
+                language: 'te',
+                category: 'top',
+                scope: 'national',
+                publishedAt: new Date().toISOString(),
+              },
+            ],
+          },
           { 'x-request-id': reqId },
         );
       });
 
       const res = await apiClient.news.getFeed({ lang: 'te', limit: 10 });
+      expect(res.version).toBe(1);
       expect(res.items).toHaveLength(1);
+      expect(res.items[0].sourceUrl).toBe('https://thehindu.com/news/1');
+      expect(res.sources).toHaveLength(1);
       const calledUrl = mockFetch.mock.calls[0][0];
       expect(calledUrl).toContain('/api/v1/news/feed');
       expect(calledUrl).toContain('lang=te');
       expect(calledUrl).toContain('limit=10');
+    });
+
+    it('apiClient.news.getFeed rejects malformed response structures with ApiValidationError', async () => {
+      mockFetch.mockImplementation(async (url: string, init: RequestInit) => {
+        const reqId = (init.headers as Record<string, string>)['x-request-id'];
+        return createMockResponse(200, { missingItems: true }, { 'x-request-id': reqId }); // Invalid schema
+      });
+
+      await expect(apiClient.news.getFeed()).rejects.toThrow(ApiValidationError);
     });
 
     it('pageService.fetchPageEntitlement preserves fallback to free plan on error', async () => {

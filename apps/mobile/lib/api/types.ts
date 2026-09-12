@@ -64,32 +64,50 @@ export interface PageEntitlementResponseDTO {
   expiresAt: string | null;
 }
 
-// 3. News Feed DTOs
+// 3. News Feed DTOs (aligned with apps/api/src/services/news/newsService.ts & mobile newsTypes.ts)
+export interface NewsSourceDTO {
+  id?: string;
+  name: string;
+  domain?: string;
+  language?: string;
+  accent?: string;
+  verified?: boolean;
+}
+
 export interface NewsItemDTO {
   id: string;
   title: string;
   summary?: string;
-  url?: string;
-  source?: string;
-  publishedAt?: string;
-  category?: string;
-  state?: string;
   imageUrl?: string;
-  language?: string;
+  sourceUrl: string;
+  source: NewsSourceDTO | string;
+  language: string;
+  category: string;
+  scope: 'national' | 'state' | 'constituency';
+  stateCode?: string;
+  constituencyId?: string;
+  publishedAt: string;
+  video?: {
+    provider?: 'youtube' | 'native';
+    embedId?: string;
+    durationSec?: number;
+    youtubeId?: string;
+    streamUrl?: string;
+  };
 }
 
 export interface NewsFeedFiltersDTO {
   lang?: string;
-  scope?: 'national' | 'state';
+  scope?: string;
   state?: string;
   category?: string;
   limit?: number;
 }
 
 export interface NewsFeedResponseDTO {
-  items: NewsItemDTO[];
-  total?: number;
+  version: number;
   generatedAt: string;
-  filters?: Record<string, unknown>;
-  sources?: unknown[];
+  refreshIntervalMin: number;
+  sources: NewsSourceDTO[];
+  items: NewsItemDTO[];
 }

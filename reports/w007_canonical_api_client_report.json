@@ -2,8 +2,10 @@
   "jobId": "W007",
   "title": "Canonical API Client (Unified Mobile-to-Backend HTTP Architecture Foundation)",
   "authority": "Master Execution Framework Amendment v1.5-A / DEC-037 / DEC-038",
-  "timestamp": "2026-09-12T13:16:00.000Z",
+  "status": "IN VERIFICATION / PENDING ACCEPTANCE",
+  "timestamp": "2026-09-12T13:42:00.000Z",
   "baselineCommit": "2f5ec43251fb7a8d323a029640576cc777fc79cf",
+  "implementationCommit": "aa33d2e380e18f9316edacb150695c3d706c8904",
   "architecture": {
     "modulePath": "apps/mobile/lib/api",
     "exportedSingleton": "apiClient",
@@ -22,7 +24,8 @@
       "ApiValidationError",
       "ApiNotFoundError",
       "ApiServerError",
-      "ApiCorrelationError"
+      "ApiCorrelationError",
+      "ApiCancellationError"
     ],
     "authPolicy": {
       "default": "authenticated",
@@ -38,7 +41,7 @@
       "headerName": "x-request-id",
       "generator": "telemetry.generateRequestId() (RFC4122 v4 UUID)",
       "formatConstraint": "^[a-zA-Z0-9_\\-]+$ (length <= 128)",
-      "responseValidation": "STRICT_MATCH_OR_FAIL_CLOSED",
+      "responseValidation": "STRICT_MATCH_OR_FAIL_CLOSED_ALL_STATUSES (2xx, 4xx, 5xx)",
       "protocolErrorClass": "ApiCorrelationError"
     },
     "timeoutAndRetry": {
@@ -46,7 +49,13 @@
       "defaultAttemptCeilingMs": 8000,
       "defaultGetRetries": 2,
       "defaultMutationRetries": 0,
-      "cancellationMechanism": "AbortController"
+      "cancellationMechanism": "AbortController (ApiCancellationError, strictly 0 retries on caller abort)"
+    },
+    "runtimeValidation": {
+      "config": "validateFeatureFlagsResponse (checks status and flags object)",
+      "pages": "validatePageEntitlementResponse (checks success, pageId, isPro, plan)",
+      "news": "validateNewsFeedResponse (checks version, generatedAt, refreshIntervalMin, sources, items)",
+      "newsMapping": "mapNewsFeedDTOToNewsFeed (explicit typed mapping, zero unsafe casts)"
     },
     "telemetryPrivacy": {
       "loggedFields": ["method", "path", "statusCode", "requestId", "durationMs"],
@@ -85,14 +94,14 @@
   "verificationResults": {
     "unitTests": {
       "file": "apps/mobile/__tests__/apiClient.test.ts",
-      "total": 20,
-      "passed": 20,
+      "total": 29,
+      "passed": 29,
       "failed": 0
     },
     "masterIntegrationTest": {
       "file": "tests/w007-api-client-verification.test.mjs",
-      "checks": 8,
-      "passed": 8,
+      "checks": 9,
+      "passed": 9,
       "failed": 0
     },
     "w006FinalAcceptanceSuite": {
@@ -116,6 +125,16 @@
     "contractDriftCheck": {
       "file": "scripts/check-api-contract-drift.mjs",
       "matches": "9/9 (100% parity)"
+    },
+    "mobileTypeScript": {
+      "command": "npx tsc --noEmit -p apps/mobile/tsconfig.json",
+      "exitCode": 0,
+      "status": "PASS"
+    },
+    "apiTypeScript": {
+      "command": "npm run build --prefix apps/api",
+      "exitCode": 0,
+      "status": "PASS"
     }
   }
 }

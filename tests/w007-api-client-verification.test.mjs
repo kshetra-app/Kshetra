@@ -118,7 +118,7 @@ assert.ok(telemetryContent.includes('generateRequestId'), 'Mobile telemetry must
 console.log('[PASS] Check 4: Request ID correlation constraints verified against Fastify genReqId requirements.');
 
 // -------------------------------------------------------------
-// CHECK 5: Fail-Closed Correlation Error Handling (NP-11, NP-12)
+// CHECK 5: Fail-Closed Correlation Error Handling (NP-11, NP-12) & Cancellation
 // -------------------------------------------------------------
 const errorsContent = fs.readFileSync(path.join(apiDir, 'errors.ts'), 'utf8');
 assert.ok(errorsContent.includes('export class ApiCorrelationError extends ApiError'), 'errors.ts must define ApiCorrelationError');
@@ -126,8 +126,9 @@ assert.ok(errorsContent.includes('export class ApiValidationError extends ApiErr
 assert.ok(errorsContent.includes('export class ApiAuthError extends ApiError'), 'errors.ts must define ApiAuthError');
 assert.ok(errorsContent.includes('export class ApiTimeoutError extends ApiError'), 'errors.ts must define ApiTimeoutError');
 assert.ok(errorsContent.includes('export class ApiNetworkError extends ApiError'), 'errors.ts must define ApiNetworkError');
+assert.ok(errorsContent.includes('export class ApiCancellationError extends ApiError'), 'errors.ts must define ApiCancellationError');
 
-console.log('[PASS] Check 5: Typed ApiError hierarchy and fail-closed protocol error classes verified.');
+console.log('[PASS] Check 5: Typed ApiError hierarchy and fail-closed protocol/cancellation error classes verified.');
 
 // -------------------------------------------------------------
 // CHECK 6: Telemetry Privacy Invariant (NP-10)
@@ -163,7 +164,7 @@ assert.ok(
 console.log('[PASS] Check 7: Pioneer caller fallback semantics verified 100% intact.');
 
 // -------------------------------------------------------------
-// CHECK 8: Unit Test Suite Integrity
+// CHECK 8: Unit Test Suite Integrity & Real AuthManager Single-Flight
 // -------------------------------------------------------------
 const testPath = path.resolve('apps/mobile/__tests__/apiClient.test.ts');
 assert.ok(fs.existsSync(testPath), 'apps/mobile/__tests__/apiClient.test.ts must exist');
@@ -174,8 +175,29 @@ assert.ok(testContent.includes('NP-08'), 'Unit test must cover NP-08 mutation re
 assert.ok(testContent.includes('NP-10'), 'Unit test must cover NP-10 telemetry privacy');
 assert.ok(testContent.includes('NP-11'), 'Unit test must cover NP-11 missing correlation header');
 assert.ok(testContent.includes('NP-12'), 'Unit test must cover NP-12 mismatched correlation header');
+assert.ok(testContent.includes('ApiCancellationError'), 'Unit test must cover caller cancellation');
+assert.ok(!testContent.includes('authMgr.getAccessToken = jest.fn()'), 'Unit test must NOT replace AuthManager.getAccessToken with a mock');
+assert.ok(testContent.includes('authMgr.getAccessToken()'), 'Unit test must invoke real AuthManager.getAccessToken()');
 
-console.log('[PASS] Check 8: Comprehensive unit test suite integrity verified.');
+console.log('[PASS] Check 8: Comprehensive unit test suite integrity and real AuthManager single-flight test verified.');
+
+// -------------------------------------------------------------
+// CHECK 9: Runtime Response Contract Validation & Safe News Mapping
+// -------------------------------------------------------------
+const configEndpointContent = fs.readFileSync(path.join(apiDir, 'endpoints/config.ts'), 'utf8');
+assert.ok(configEndpointContent.includes('validateFeatureFlagsResponse'), 'ConfigEndpoint must implement validateFeatureFlagsResponse');
+
+const pagesEndpointContent = fs.readFileSync(path.join(apiDir, 'endpoints/pages.ts'), 'utf8');
+assert.ok(pagesEndpointContent.includes('validatePageEntitlementResponse'), 'PagesEndpoint must implement validatePageEntitlementResponse');
+
+const newsEndpointContent = fs.readFileSync(path.join(apiDir, 'endpoints/news.ts'), 'utf8');
+assert.ok(newsEndpointContent.includes('validateNewsFeedResponse'), 'NewsEndpoint must implement validateNewsFeedResponse');
+assert.ok(newsEndpointContent.includes('mapNewsFeedDTOToNewsFeed'), 'NewsEndpoint must implement mapNewsFeedDTOToNewsFeed');
+
+// Verify stores/news.ts has zero unsafe casts
+assert.ok(!newsStoreContent.includes('as unknown as NewsFeed'), 'stores/news.ts must NOT contain "as unknown as NewsFeed"');
+
+console.log('[PASS] Check 9: Runtime response contract validation and safe typed DTO mapping verified.');
 
 console.log('\n===============================================================');
 console.log('   ALL W007 CANONICAL API CLIENT VERIFICATION CHECKS PASSED!   ');

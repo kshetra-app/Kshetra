@@ -69,6 +69,13 @@ export class ApiCorrelationError extends ApiError {
   }
 }
 
+export class ApiCancellationError extends ApiError {
+  constructor(message: string = 'Request cancelled by caller', requestId?: string) {
+    super(message, 0, requestId);
+    this.name = 'ApiCancellationError';
+  }
+}
+
 /**
  * Maps HTTP status code and response payload into the appropriate ApiError subclass.
  */

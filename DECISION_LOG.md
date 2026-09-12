@@ -547,4 +547,24 @@
   9. **Boundary Immutability:** Maintained 0 changes to direct messaging (`dmStore.ts` and DM methods in `supabaseDataService.ts`), database migrations, Fastify route implementations, and package dependencies.
 - **Rationale:** Resolves dual-path network fragmentation, enforces correlation tracing and privacy invariants, and establishes a rock-solid foundation for subsequent Strangler Fig migrations (W008+).
 
+---
+
+### DEC-039: W007 Canonical API Client Verification Hardening & Remediation
+- **Date:** 2026-09-12
+- **Status:** IMPLEMENTED (SUBMITTED FOR CTO FINAL ACCEPTANCE)
+- **Authority:** CTO Verification Correction Directive (W007 — Canonical API Client), Master Execution Framework Amendment v1.5-A, `DEC-035`, `DEC-037`, `DEC-038`
+- **Context:** Hardening and remediation of 9 verification and evidence defects identified by the CTO / Technical Authority in the W007 implementation commit (`aa33d2e`).
+- **Decisions:**
+  1. **Real AuthManager Single-Flight Token Resolution:** Verified that 10 concurrent requests to the real `AuthManager.getAccessToken()` dispatch exactly 1 call to the underlying `auth.getSession()` with all 10 calls resolving to the identical token, clearing the in-flight promise upon completion, and allowing subsequent calls to resolve fresh tokens.
+  2. **Authoritative Fastify News Contract & DTO:** Aligned `NewsItemDTO` and `NewsFeedResponseDTO` with the authoritative backend contract in `apps/api/src/services/news/newsService.ts` (`version`, `generatedAt`, `refreshIntervalMin`, `sources`, `items`). Removed unauthorized fields (`total`, `filters`, `url`).
+  3. **Elimination of Unsafe Casts:** Implemented runtime mapper `mapNewsFeedDTOToNewsFeed()` in `endpoints/news.ts`, eliminating the `as unknown as NewsFeed` escape hatch in `apps/mobile/stores/news.ts`.
+  4. **Runtime Response Contract Validation:** Implemented strict response validation functions (`validateFeatureFlagsResponse`, `validatePageEntitlementResponse`, `validateNewsFeedResponse`) that raise typed `ApiValidationError` if server responses deviate from expected schemas.
+  5. **Caller Cancellation Semantics:** Implemented `ApiCancellationError`. Explicitly excluded caller-cancelled requests from retry loops (0 retries) and ensured immediate abort.
+  6. **Error-Response Correlation Invariant:** Enforced mandatory `x-request-id` header validation across all Fastify response codes (2xx, 4xx, 5xx), raising `ApiCorrelationError` on missing or mismatched headers.
+  7. **Mobile TypeScript Verification:** Verified clean compilation via `npx tsc --noEmit -p apps/mobile/tsconfig.json` with exit code 0.
+  8. **Independent Verification Execution (IV-01 through IV-23):** Produced independent verification evidence report `reports/w007_independent_verification.md` evaluating all 23 binary gates as PASS.
+  9. **Governance Gate Invariant:** W007 remains strictly `IN VERIFICATION / PENDING ACCEPTANCE`. W008 remains strictly `NOT AUTHORIZED` pending explicit CTO final acceptance.
+- **Rationale:** Ensures that all verification claims are empirically true and reproducible from repository source code, upholding truth in engineering and human governance authority.
+
+
 
