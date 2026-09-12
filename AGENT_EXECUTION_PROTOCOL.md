@@ -1,8 +1,8 @@
 # AGENT EXECUTION PROTOCOL
 ## Autonomous Closed-Loop Execution, Self-Audit and Efficiency Protocol
 
-**Authority:** Master Execution Framework Amendment v1.4 (`AMENDMENT_v1.4.md`) (incorporating historical governing principles of `AMENDMENT_v1.2.md` and `AMENDMENT_v1.3.md`)  
-**Status:** MANDATORY OPERATING CONSTITUTION FOR ALL AGENTS UNDER AMENDMENT v1.4  
+**Authority:** Master Execution Framework Amendment v1.5 (`AMENDMENT_v1.5.md`) (incorporating governing principles of `AMENDMENT_v1.4.md`, `AMENDMENT_v1.3.md`, and `AMENDMENT_v1.2.md`)  
+**Status:** MANDATORY OPERATING CONSTITUTION FOR ALL AGENTS UNDER AMENDMENT v1.5  
 **Scope:** All current and future jobs, remediations, verifications, and releases across PANIN / Kshetra.
 
 ---
@@ -14,55 +14,95 @@ Before starting ANY job, the agent must read the following documents in this exa
 1. `MASTER EXECUTION DOCUMENT` (`PANIN - Kshetra - AI Agent Master Execution Document and Sequential Job Book.md`)
 2. `AMENDMENT_v1.2.md` (Compliance, DPDP, Independent Verification & Launch Gates)
 3. `AMENDMENT_v1.3.md` (Autonomous Closed-Loop Execution, Self-Audit and Efficiency Protocol)
-4. `AMENDMENT_v1.4.md` (Evidence Semantics, Runtime Proof and Carry-Forward Controls - OPERATIONAL GOVERNANCE AUTHORITY)
-5. `AGENT_EXECUTION_PROTOCOL.md` (This Operating Constitution)
-6. `EXECUTION_STATE.md` (Current Project & Execution Coordinates)
-7. `ACCEPTANCE_REGISTER.md` (Authoritative Milestone Acceptance Truth)
-8. `DEFECT_REGISTER.md` (Known-Problem Ledger & Carry-Forward Classification)
-9. `DECISION_LOG.md` (Architectural & Operational Decision Truth)
-10. `RELEASE_REGISTER.md` (Release & Artifact Ledger)
-11. The specific user prompt / job instruction.
+4. `AMENDMENT_v1.4.md` (Evidence Semantics, Runtime Proof and Carry-Forward Controls)
+5. `AMENDMENT_v1.5.md` (Mandatory Pre-Implementation Planning & Direction-Review Gate - OPERATIONAL GOVERNANCE AUTHORITY)
+6. `AGENT_EXECUTION_PROTOCOL.md` (This Operating Constitution)
+7. `EXECUTION_STATE.md` (Current Project & Execution Coordinates)
+8. `ACCEPTANCE_REGISTER.md` (Authoritative Milestone Acceptance Truth)
+9. `DEFECT_REGISTER.md` (Known-Problem Ledger & Carry-Forward Classification)
+10. `DECISION_LOG.md` (Architectural & Operational Decision Truth)
+11. `RELEASE_REGISTER.md` (Release & Artifact Ledger)
+12. The specific user prompt / job instruction.
 
 ---
 
-## 2. Permanent Operating Lifecycle (Amendment v1.4 Part 36)
+## 2. Permanent Operating Lifecycle (Amendment v1.5)
 
-Every job must execute through the full closed-loop lifecycle:
+For every substantive implementation job, the lifecycle is:
 
 ```text
-READ
-  ↓
-PRE-FLIGHT
-  ↓
-INSPECT
-  ↓
-IMPLEMENT
-  ↓
-TEST
-  ↓
-SEMANTIC SELF-AUDIT (SI-001, SI-002, SI-003)
-  ↓
-NEGATIVE-PATH TEST
-  ↓
-REPAIR
-  ↓
-RETEST
-  ↓
-EVIDENCE RECONCILIATION
-  ↓
-REMOTE VERIFICATION
-  ↓
-READY FOR INDEPENDENT VERIFICATION
-  ↓
-INDEPENDENT VERIFICATION
-  ↓
-ACCEPT
-  ↓
-NEXT JOB
+1. TASK ISSUED
+        ↓
+2. PRE-FLIGHT
+        ↓
+3. REPOSITORY / SYSTEM INSPECTION
+        ↓
+4. PRE-IMPLEMENTATION PLAN
+        ↓
+5. PLAN REVIEW
+        ↓
+6. PLAN CORRECTION, IF REQUIRED
+        ↓
+7. PLAN APPROVAL
+        ↓
+8. IMPLEMENTATION
+        ↓
+9. TEST
+        ↓
+10. SEMANTIC SELF-AUDIT (SI-001, SI-002, SI-003)
+        ↓
+11. NEGATIVE-PATH TEST
+        ↓
+12. REPAIR
+        ↓
+13. RETEST
+        ↓
+14. EVIDENCE RECONCILIATION
+        ↓
+15. REMOTE VERIFICATION
+        ↓
+16. READY FOR INDEPENDENT VERIFICATION
+        ↓
+17. INDEPENDENT VERIFICATION
+        ↓
+18. ACCEPTANCE
+        ↓
+19. NEXT JOB
 ```
 
-The implementing agent must never halt after the first successful compile or test. Evidence must distinguish SOURCE, CONFIGURATION, BUILD, LOCAL RUNTIME, STAGING RUNTIME, PRODUCTION RUNTIME, LIVE DATABASE, and EXTERNAL PROVIDER evidence (Amendment v1.4 Part 2).
+No substantive implementation may bypass steps 3–7. The implementing agent must never halt after the first successful compile or test. Evidence must distinguish SOURCE, CONFIGURATION, BUILD, LOCAL RUNTIME, STAGING RUNTIME, PRODUCTION RUNTIME, LIVE DATABASE, and EXTERNAL PROVIDER evidence (Amendment v1.4 Part 2).
 
+---
+
+## 2.1 Pre-Implementation Planning & Direction-Review Gate (Amendment v1.5)
+
+For all substantive implementation jobs, the implementing agent operates in `PLAN ONLY` mode upon receiving a task.
+The first response from the agent must be:
+
+```text
+PRE-IMPLEMENTATION PLAN — <JOB ID>
+
+1. Task Understanding
+2. Current-State Findings
+3. Root Cause
+4. Proposed Technical Solution
+5. Files Expected to Change
+6. Test Strategy
+7. Negative-Path Strategy
+8. Evidence Strategy
+9. Provenance Strategy
+10. Risks
+11. Assumptions
+12. Scope Boundaries
+13. Dependencies / Blocking Analysis
+14. Acceptance Criteria
+15. Questions / Decisions Requiring Review
+```
+
+The agent must STOP and await explicit authorization:
+> **PLAN APPROVED — PROCEED WITH IMPLEMENTATION ACCORDING TO THE APPROVED PLAN.**
+
+Implementation begins ONLY after this authorization is granted.
 
 ---
 

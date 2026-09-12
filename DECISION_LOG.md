@@ -451,3 +451,18 @@
   4. **Dynamic Semantic Regression Suite (Checks 28–36 / Tests A–I):** Expanded `tests/api-architecture-audit.test.mjs` to 36 checks covering: Live RLS unavailable (Test A), Source-only evidence (Test B), Controlled live verification fixture (Test C), Messaging mediation invariant (Test D), Fail-closed Git failure simulation (Test E), Remote coordinate mismatch simulation (Test F), Dirty working tree simulation (Test G), Blanket assertion eradication (Test H), and Report generator anti-override guard (Test I).
   5. **Truthful Catalog Documentation:** Preserved live PostgREST probe results and `global_search` defect (`0A000: invalid UNION/INTERSECT/EXCEPT ORDER BY clause`) truthfully without premature alteration.
 - **Rationale:** Technical enforcement guarantees that neither the decision engine nor the report generator can falsely assert client-side data safety or remote provenance. W007 remains strictly blocked until formal acceptance.
+
+---
+
+### DEC-034: AMENDMENT v1.5 MANDATORY PRE-IMPLEMENTATION PLANNING & DIRECTION-REVIEW GATE
+- **Date:** 2026-09-12
+- **Status:** APPROVED & OPERATIONAL (ACTIVE OPERATIONAL AUTHORITY)
+- **Authority:** Master Product Blueprint, AI Agent Master Execution Job Book, `AMENDMENT_v1.5.md`, `AGENT_EXECUTION_PROTOCOL.md`
+- **Context:** Formal ratification of Amendment v1.5 to introduce a mandatory Pre-Implementation Planning & Direction-Review Gate into the AI-agent execution lifecycle, preventing technically capable agents from executing incorrect interpretations of substantive tasks.
+- **Decisions:**
+  1. **Amendment v1.5 Operational Authority:** Ratified `AMENDMENT_v1.5.md` as active operational authority across the project.
+  2. **19-Stage Lifecycle:** Expanded operating lifecycle to include formal Pre-Implementation Planning and Direction-Review (Steps 3–7: Repository Inspection, Pre-Implementation Plan, Plan Review, Plan Correction, Plan Approval) before substantive code modification.
+  3. **Plan-Only Mode & 15-Section Standard:** Mandated that upon receiving any substantive job, the agent must initially operate in `PLAN ONLY` mode, responding with a 15-section structured document titled `Pre-Implementation Plan & Technical Interpretation — <JOB ID>` and awaiting explicit authorization (`PLAN APPROVED — PROCEED WITH IMPLEMENTATION ACCORDING TO THE APPROVED PLAN.`).
+  4. **Material Deviation Guard:** Any deviation changing root-cause, architecture, security, database, API contract, scope, or evidence requires an immediate halt, plan revision, and re-approval.
+- **Rationale:** One hour spent preventing an incorrect implementation avoids many hours spent repairing a correct implementation of the wrong idea. Guarantees tight architectural alignment before code is written.
+
