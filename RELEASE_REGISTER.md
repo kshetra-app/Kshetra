@@ -16,6 +16,7 @@
 | `v0.1.0-w003` | CI/CD Pipeline | Automated Quality Gate | GitHub Actions | N/A | v1 (0.1.0) | `d81fd33` | W003 Accepted (CI/CD Pipeline) | DEVOPS | PASS (IV Pass 2026-09-10) |
 | `v0.1.0-w004` | Production/Staging | API Observability & Telemetry | Backend Gateway | N/A | v1 (0.1.0) | `811b5dd` | W004 Accepted (Observability & Metrics Hardening) | DEVOPS | PASS (IV Pass 2026-09-10) |
 | `v0.1.0-w005` | Staging / Recovery | Disaster Recovery & Backup Verification | Staging Gateway & Database | N/A | v1 (0.1.0) | `acc32fe` | W005 Accepted (w/ Documented Limitations) | DEVOPS | PASS (IV Pass 2026-09-11) |
+| `v0.1.0-w007` | Mobile Client | Canonical API Client Layer (`apps/mobile/lib/api`) | Monorepo Source | N/A | v1 (0.1.0) | `1d253cd` | W007 Accepted / Closed | BE+MOB | PASS (CTO Accepted 2026-09-12) |
 
 ---
 
@@ -34,4 +35,3 @@
 - **Launch Gate B (Full Platform):** Final independent verification across Aspirants, Groups, Live, Broadcasting, Academy, Campaign, Political Ads, Commercial Ads, SaaS/API, Analytics, DPDP compliance, and Recovery.
 - **Rule IV-001 Enforcement:** Implementing agent ≠ final acceptance authority. Independent verifier (clean AI session, separate audit workflow, or human QA) must issue `PASS` or `PASS WITH NON-BLOCKING EXCEPTIONS`.
 - **Remote Reproducibility & Freshness (Parts 7 & 8):** All evidence must be committed in `reports/` with metadata (repo, branch, commit, DB version, API version, mobile version, env, timestamp). Stale evidence is automatically invalid upon code changes.
-

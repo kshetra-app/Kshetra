@@ -7,9 +7,9 @@
 ## 1. Project & Execution Coordinates
 ```text
 PROJECT:               PANIN (formerly Kshetra)
-CURRENT_JOB:           W007 (Canonical API Client - IN VERIFICATION / CORRECTIONS REQUIRED)
-LAST_COMPLETED_JOB:    W006 (API Architecture Audit & Separation - ACCEPTED)
-NEXT_PERMITTED_JOB:    W007 (Canonical API Client - INDEPENDENT VERIFICATION)
+CURRENT_JOB:           W008 (API Contract Standardization - PLANNING)
+LAST_COMPLETED_JOB:    W007 (Canonical API Client - ACCEPTED / CLOSED)
+NEXT_PERMITTED_JOB:    W008 (API Contract Standardization - PLANNING & SPECIFICATION)
 
 CURRENT_BRANCH:        master
 VERIFIED_REMOTE_HEAD:  c1fe56a
@@ -29,7 +29,7 @@ GOVERNANCE_FRAMEWORK:  Amendment v1.2 (Active History) | Amendment v1.3 (Active 
 REMOTE_SYNC:           Up to date with origin/master
 ```
 
-> **Evidence Lineage & Coordinate Reconciliation (DEC-035 / DEC-036 / DEC-037):**
+> **Evidence Lineage & Coordinate Reconciliation (DEC-035 / DEC-036 / DEC-037 / DEC-041):**
 > - `c1fe56a` = Historical W006 baseline remote HEAD at start of qualification.
 > - `35ba912` = Audited code commit implementing 85-method data service architecture.
 > - `db30619` = Historical W006-R1C qualification evidence coordinate.
@@ -37,6 +37,7 @@ REMOTE_SYNC:           Up to date with origin/master
 > - `716070f` = Repository commit integrating W006 verification artifacts.
 > - `f5b8a09` = Formal W006 technical acceptance and governance reconciliation baseline commit.
 > - `ACCEPTANCE_COMMIT: f5b8a09` = Formal CTO / Technical Authority acceptance of W006.
+> - `1d253cd454effb441e7f01e846a568eeddc7f57e` = Accepted W007 implementation commit (Technically Accepted by CTO).
 
 ---
 
@@ -58,8 +59,8 @@ REMOTE_SYNC:           Up to date with origin/master
 | **W004** | Observability & Error Tracking | **ACCEPTED** | 2026-09-11 | W004-R1A Independent Verifier PASS (13/13 gates at commit `811b5dd`); verified remote head `1260f98`; audited code `ef4622a`; evidence `19a5932`; user accepted; `reports/w004_r1a_independent_verification.md` |
 | **W005** | Backup & Recovery Verification | **ACCEPTED (W/ LIMITATIONS)** | 2026-09-11 | W005-R1C Independent Verifier PASS (commit `acc32fe`); verified remote head `f6ee696`; audited code `943b026`; evidence `b4f3133`; documented limitations: PITR/RPO ≤5m unverified, multi-cloud standby not implemented, DR-001 schema/API bootstrap, DR-002 synthetic staging, DR-004 staging storage, DR-005 client offline; user accepted |
 | **W006** | API Architecture Audit & Separation | **ACCEPTED** | 2026-09-12 | Audited 316 mobile files, 12 direct Supabase callers, 14 Railway callers, 137 Fastify routes across 23 modules, 85 data service methods classified (23 Class A reads, 56 Class B mutation strangler targets, 6 Class C Fastify routed). Fail-closed RLS decision engine: 21 source verified, 2 source pending, 0 live verified, 23 live pending; 0 directClientAllowed=true, 21 conditional pending, 2 forbidden (conversations/messages). Anti-override guard active. Tests NP-01 to NP-10 pass. global_search defect documented as DEF-013; auditedCodeCommit=35ba912, evidenceCommit=04be40b; formally accepted by CTO / Technical Authority per DEC-037; reports/w006_final_acceptance_report.* & reports/w006_final_independent_verification.md |
-| **W007** | Canonical API Client | **IN VERIFICATION / CORRECTIONS REQUIRED** | - | Implementation completed and hardened; 3 pioneer callers migrated (pageService, featureFlags, news); 48 unit tests pass (including 16 negative-path tests); 9 master verification checks pass; runtime response validation active; caller cancellation semantics enforced; IV-01 through IV-23 verified at `reports/w007_independent_verification.md`; submitted for CTO final acceptance |
-| **W008** | API Contract Standardization | NOT_STARTED | - | Prerequisite: W007 |
+| **W007** | Canonical API Client | **ACCEPTED / CLOSED** | 2026-09-12 | Canonical API client implemented in apps/mobile/lib/api/ (apiClient, AuthManager, ConfigEndpoint, PagesEndpoint, NewsEndpoint). Technically accepted by CTO at implementation commit `1d253cd454effb441e7f01e846a568eeddc7f57e`. Real single-flight token deduplication verified; fail-safe auth policy; Fastify UUID correlation with strict response validation on all statuses (2xx, 4xx, 5xx); total request deadline budget (18s GET, attempt ceiling 8s); caller cancellation semantics (0 retries); zero mutation retries (NP-08); strict runtime response validation (NewsSource object, NewsFeed schema, boolean flags, page entitlement); 48/48 unit tests pass (including 16 negative-path tests NP-1 through NP-16); 9 master integration checks pass; 3 pioneer callers migrated (pageService, featureFlags, news) with 100% fallback preservation; DM callers, DB migrations, Fastify routes, and npm dependencies untouched; IV-01 through IV-23 verified |
+| **W008** | API Contract Standardization | **PLANNING / NOT AUTHORIZED FOR IMPLEMENTATION** | - | Prerequisite: W007 (Closed). Status: Planning & Specification only. Implementation strictly forbidden until Amendment v1.5-A 22-section Pre-Implementation Plan is submitted and explicitly approved by CTO. |
 | **W009** | External Provider Abstraction | NOT_STARTED | - | Prerequisite: W008 |
 | **W010** | Security Baseline & RLS Hardening | NOT_STARTED | - | Prerequisite: W009 |
 | **W011** | Deceptive Fallback Remediation | NOT_STARTED | - | Prerequisite: W010 |

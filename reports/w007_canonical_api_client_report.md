@@ -1,13 +1,13 @@
 # JOB W007: CANONICAL API CLIENT IMPLEMENTATION & EVIDENCE REPORT
 
-**Authority:** Master Execution Framework Amendment v1.5-A / `DEC-037` / `DEC-038`  
-**Job Identifier:** `W007`  
-**Job Title:** Canonical API Client (Unified Mobile-to-Backend HTTP Architecture Foundation)  
-**Date:** 2026-09-12  
-**Starting Baseline Remote HEAD:** `2f5ec43251fb7a8d323a029640576cc777fc79cf` (`2f5ec43`)  
-**Previous Implementation Commit:** `aa33d2e380e18f9316edacb150695c3d706c8904` (`aa33d2e`)  
-**Corrected Implementation Commit:** `169f8fd44c15a5bbdd48f7a660003f7d3db078ad` (`169f8fd`)  
-**Status:** `IN VERIFICATION / CORRECTIONS REQUIRED`
+**Authority:** Master Execution Framework Amendment v1.5-A / `DEC-037` / `DEC-038` / `DEC-040` / `DEC-041`
+**Job Identifier:** `W007`
+**Job Title:** Canonical API Client (Unified Mobile-to-Backend HTTP Architecture Foundation)
+**Date:** 2026-09-12
+**Starting Baseline Remote HEAD:** `2f5ec43251fb7a8d323a029640576cc777fc79cf` (`2f5ec43`)
+**Accepted Implementation Commit:** `1d253cd454effb441e7f01e846a568eeddc7f57e` (`1d253cd`)
+**Acceptance Authority:** CTO / Technical Authority
+**Status:** `ACCEPTED / CLOSED`
 
 ---
 
@@ -87,4 +87,3 @@ Following CTO verification review, 9 core hardening corrections were applied:
 - **Fastify Server Routes:** `apps/api/src/routes/` has 0 diff against baseline `2f5ec43`.
 - **Database Migrations:** `supabase/migrations/` has 0 diff against baseline `2f5ec43`.
 - **Package Dependencies:** `package.json`, `apps/mobile/package.json`, `apps/api/package.json` have 0 diff against baseline `2f5ec43`.
-

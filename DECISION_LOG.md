@@ -564,6 +564,29 @@
   7. **Governance Disposition:** W007 remains `IN VERIFICATION / CORRECTIONS REQUIRED` and is submitted for final CTO review. W008 remains strictly `NOT AUTHORIZED`.
 - **Rationale:** Guarantees that untrusted network payloads are strictly validated before conversion to canonical DTOs and mobile domain types, preventing malformed data from silently propagating into application state.
 
+---
 
-
-
+### DEC-041: W007 Formal Technical Closure, Governance Hardening & Transition to W008 Planning
+- **Date:** 2026-09-12
+- **Status:** APPROVED & APPLIED (FORMAL TECHNICAL CLOSURE OF W007)
+- **Authority:** CTO / Technical Authority Direction (`JOB: W007 FINAL CLOSURE + GOVERNANCE HARDENING + W008 TRANSITION PREPARATION`), Master Execution Framework Amendment v1.5-A, `DEC-035`, `DEC-037`, `DEC-038`, `DEC-039`, `DEC-040`
+- **Context:** Formal technical acceptance of Job W007 (Canonical API Client) by the CTO following independent review and empirical verification of implementation commit `1d253cd454effb441e7f01e846a568eeddc7f57e`, comprehensive governance hardening to eliminate future review cycles, and controlled transition to Job W008 in planning mode only.
+- **Decisions:**
+  1. **Formal Technical Acceptance of W007:** W007 is formally declared `ACCEPTED / CLOSED` following CTO technical acceptance of implementation commit `1d253cd454effb441e7f01e846a568eeddc7f57e`. All 48 unit tests (including 16 negative-path tests NP-1 to NP-16), 9 master integration checks, 10 W006 final acceptance checks, 36 API architecture checks, and TypeScript compilation gates pass cleanly.
+  2. **Adoption of Execution Controls A through L:** Integrated 12 permanent execution hardening controls into `AGENT_EXECUTION_PROTOCOL.md` Section 8:
+     - Control A: Mandatory Pre-Submission Self-Audit (`Claim → Source → Test → Evidence`).
+     - Control B: Claim/Source Consistency Gate (Reports cannot substitute for source/test proof).
+     - Control C: Provenance Freeze (Invalidates verification if code changes post-verification).
+     - Control D: Machine-Readable Acceptance Matrix (`AC-ID | Req | Impl | Test | Evidence | Status | Commit`).
+     - Control E: Negative-Path-First Requirement (Mandatory fail-closed testing across 13 failure dimensions).
+     - Control F: Test the Implementation, Not the Mock (Mocks allowed only for external boundaries).
+     - Control G: Strict Runtime Contract Requirement (`Untrusted Response → Validation → DTO → Mapping → Domain Type`).
+     - Control H: Scope & Boundary Immutability (Automated diff check against declared boundaries).
+     - Control I: Implementation Stop Conditions (Immediate stop and report upon ambiguity/clash/dirty tree).
+     - Control J: Linear State Machine (`NOT_STARTED → PLANNING → PLAN_SUBMITTED → PLAN_APPROVED → IMPLEMENTATION_AUTHORIZED → IMPLEMENTED → INDEPENDENTLY_VERIFIED → CTO_ACCEPTANCE_PENDING → ACCEPTED/CLOSED`).
+     - Control K: Plan Predictive-Integrity Check (Pre-approval verification of testability).
+     - Control L: Final Pre-CTO Submission Checklist (15-point mandatory self-verification).
+  3. **Formalization of 8-Tier Evidence Hierarchy & Freshness Coordinate Rule:** Formally codified the 8 evidence tiers in `AGENT_EXECUTION_PROTOCOL.md` Section 9, prohibiting representation of lower classes as higher classes. Formally codified the Freshness Coordinate Rule (`[COMMIT, COMMAND, TIMESTAMP, RESULT]`) in Section 10.
+  4. **Defect Disposition:** Preserved DEF-005 as in progress (partially mitigated by W007 pioneer migrations; full strangler migration deferred to W008–W014). Preserved DEF-013 (`global_search` 0A000 SQL error) as OPEN/MONITORED without premature alteration.
+  5. **W008 Transition to Planning Only:** Job W008 (API Contract Standardization) transitions to `PLANNING / NOT AUTHORIZED FOR IMPLEMENTATION`. Implementation of W008 is strictly forbidden until an Amendment v1.5-A 22-section Pre-Implementation Plan is formulated, submitted, and explicitly approved by the CTO.
+- **Rationale:** Establishes unambiguous closure for W007, protects the repository with automated controls to prevent repeated review cycles, and maintains rigorous discipline across the architectural boundary.

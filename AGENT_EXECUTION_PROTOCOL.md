@@ -218,3 +218,148 @@ Before declaring any job **"READY FOR INDEPENDENT VERIFICATION"**, the implement
 > *"If another engineer receives only the remote repository, evidence files and acceptance criteria, can they independently reproduce my conclusion?"*
 
 If the answer is **NO**, the job is NOT ready.
+
+---
+
+## 8. Permanent Execution Hardening Controls (Controls A through L)
+
+To eliminate claim-vs-source discrepancies, prevent premature implementation, ensure test integrity, and reduce back-and-forth review cycles, all agents must strictly adhere to Controls A through L:
+
+### CONTROL A — PRE-SUBMISSION SELF-AUDIT
+Before an implementing agent submits any job for CTO review or independent verification, it MUST perform a formal self-audit comparing:
+1. Approved plan
+2. Acceptance criteria
+3. Actual source code
+4. Actual automated tests
+5. Actual runtime evidence
+6. Evidence report
+7. Governance state
+8. Git provenance
+
+The agent must explicitly establish:
+`CLAIM → SOURCE PROOF → TEST PROOF → EVIDENCE REFERENCE`
+for every material acceptance criterion. If any criterion lacks proof: **SUBMISSION BLOCKED**.
+
+### CONTROL B — CLAIM/SOURCE CONSISTENCY GATE
+**NO ACCEPTANCE CLAIM MAY BE MADE FROM A REPORT ALONE.**
+For every material claim:
+`REPORT CLAIM` must correspond to `ACTUAL SOURCE` AND `ACTUAL EXECUTED TEST` AND `CORRECT COMMIT`.
+A report cannot be used as substitute proof of source behavior.
+
+### CONTROL C — PROVENANCE FREEZE
+At submission time, the coordinates (`AUDITED_CODE_COMMIT`, `EVIDENCE_COMMIT`, `VERIFIED_REMOTE_HEAD`) must be immutable coordinates for that submission. If source code changes after verification, the previous verification becomes **INVALID** and a new verification run is mandatory.
+
+### CONTROL D — MACHINE-READABLE ACCEPTANCE MATRIX
+Every future job must maintain an acceptance matrix containing:
+`AC-ID | Requirement | Implementation Location | Test Location | Evidence Location | Status | Commit`
+This is the mandatory mechanism preventing unverified or omitted acceptance criteria.
+
+### CONTROL E — NEGATIVE-PATH-FIRST REQUIREMENT
+For security, API, data integrity, auth, validation, and governance-sensitive work, negative-path tests must be designed and passing BEFORE implementation is declared complete.
+Required negative-path categories where applicable:
+- Malformed input
+- Missing field
+- Wrong type
+- Unauthorized access
+- Unauthenticated access
+- Timeout
+- Cancellation
+- Dependency failure
+- Stale data
+- Mismatched correlation
+- Invalid state
+- Duplicate operation
+- Mutation retry behavior (strictly 0 retries on mutations)
+
+A green happy-path test suite alone cannot qualify as sufficient evidence.
+
+### CONTROL F — TEST THE IMPLEMENTATION, NOT THE MOCK
+Tests must exercise the actual implementation under test. A test that replaces the function or method being tested with a mock cannot be used as primary proof of that function's behavior. Mocks may be used for external dependencies only; they must never replace the subject under test.
+
+### CONTROL G — RUNTIME CONTRACT REQUIREMENT
+For network and API boundaries: TypeScript types are NOT runtime validation.
+Where acceptance requires runtime contract validation:
+`UNTRUSTED RESPONSE → RUNTIME VALIDATION → TRUSTED DTO → EXPLICIT MAPPING → APPLICATION TYPE`
+No unsafe type cast (e.g. `as unknown as Type`) may substitute for runtime validation.
+
+### CONTROL H — SCOPE & BOUNDARY IMMUTABILITY
+Before implementation starts, the approved plan establishes:
+- IN-SCOPE FILES
+- OUT-OF-SCOPE FILES
+- BOUNDARY FILES
+At submission, changed files are automatically compared against those declarations. Unexpected boundary modifications cause **SUBMISSION BLOCKED** unless an explicit approved plan amendment exists.
+
+### CONTROL I — IMPLEMENTATION STOP CONDITIONS
+The implementing agent must immediately STOP and report rather than improvising upon encountering any of:
+- Ambiguous requirement
+- Conflicting source contracts
+- Missing evidence
+- Failed test
+- Unexpected dependency change
+- Unexpected boundary file modification
+- Provenance mismatch
+- Dirty working tree
+- Remote HEAD mismatch
+- Evidence generated from a different commit
+
+### CONTROL J — NO PREMATURE JOB ADVANCEMENT (STRICT STATE MACHINE)
+The project workflow enforces a strict linear state machine:
+`NOT_STARTED → PLANNING → PLAN_SUBMITTED → PLAN_APPROVED → IMPLEMENTATION_AUTHORIZED → IMPLEMENTED → INDEPENDENTLY_VERIFIED → CTO_ACCEPTANCE_PENDING → ACCEPTED/CLOSED`
+No agent may skip `PLAN_APPROVED` or `CTO_ACCEPTANCE_PENDING`. No implementation may begin from `PLAN_SUBMITTED` alone.
+
+### CONTROL K — PLAN PREDICTIVE-INTEGRITY CHECK
+Before submitting or approving any future plan, verify:
+*"If this plan were implemented exactly as written, would the resulting evidence actually prove every acceptance criterion?"*
+The plan must identify exact source locations, exact tests, exact negative paths, exact evidence files, exact runtime requirements, and exact non-change boundaries. If a plan says "validate", it must specify how validation will be tested. If it says "single-flight", it must specify the underlying operation and invocation count. If it says "runtime validation", it must specify malformed payload tests.
+
+### CONTROL L — FINAL PRE-CTO SUBMISSION CHECKLIST
+Before any future CTO submission, the implementing agent must verify this checklist:
+- [ ] Approved plan followed
+- [ ] No unapproved scope expansion
+- [ ] All acceptance criteria mapped
+- [ ] All claims have source proof
+- [ ] All claims have test proof
+- [ ] Negative paths tested
+- [ ] Runtime requirements tested
+- [ ] Full regression run passed
+- [ ] Boundary files unchanged
+- [ ] Working tree clean
+- [ ] Remote HEAD verified
+- [ ] Evidence commit verified
+- [ ] Report matches source
+- [ ] Report matches test output
+- [ ] Governance state matches reality
+- [ ] No future job started prematurely
+
+Only when all 15 items are verified may the agent submit for CTO review.
+
+---
+
+## 9. Eight-Tier Evidence Hierarchy
+
+Governance documents and reports must strictly distinguish among the 8 evidence tiers:
+1. **SOURCE EVIDENCE:** AST, regex, or static inspection of repository source files.
+2. **CONFIGURATION EVIDENCE:** Inspection of config files, environment templates, or flags.
+3. **BUILD EVIDENCE:** Compiler output (`tsc --noEmit`), packaging, or bundle metrics.
+4. **LOCAL RUNTIME EVIDENCE:** Node.js/Jest local execution, unit tests, in-memory fixtures.
+5. **STAGING RUNTIME EVIDENCE:** Real HTTP probes against deployed staging infrastructure.
+6. **PRODUCTION RUNTIME EVIDENCE:** Probes against production endpoints.
+7. **LIVE DATABASE EVIDENCE:** Direct SQL catalog probes against live PostgreSQL (`pg_catalog`).
+8. **EXTERNAL PROVIDER EVIDENCE:** Real integration proofs with external cloud APIs.
+
+**Hierarchy Invariant Rule:** A lower evidence class can NEVER be silently represented as a higher evidence class.
+- Source route ≠ Deployed route
+- Migration file ≠ Applied migration
+- Backup file ≠ Successful restore
+- Unit test ≠ Staging verification
+- Staging verification ≠ Production verification
+- Configuration template ≠ Operational capability
+
+---
+
+## 10. Evidence Freshness Coordinate Rule
+
+Every acceptance-critical test or evidence artifact must record an exact provenance coordinate tuple:
+`[COMMIT, COMMAND, TIMESTAMP, RESULT]`
+
+**Freshness Invariant Rule:** If source code changes after a test is executed, that evidence is **STALE** and **INVALID**. The test must be re-run against the new commit, and evidence must be regenerated.
