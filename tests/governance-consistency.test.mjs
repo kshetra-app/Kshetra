@@ -121,7 +121,7 @@ assert.ok(decisionContent.includes('PLAN APPROVAL ≠ IMPLEMENTATION ≠ INDEPEN
 assert.ok(!decisionContent.includes('Status: ACCEPTED BY USER') || decisionContent.indexOf('DEC-035') < decisionContent.lastIndexOf('Status: ACCEPTED BY USER'), 'DEC-035 must not claim final human acceptance prematurely');
 console.log('[PASS] Check 7: DECISION_LOG.md records DEC-016, DEC-034, and DEC-035 with correct lifecycle separation semantics.');
 
-// 8. Comprehensive Git HEAD, Remote Consistency & Provenance Invariant
+// 8. Comprehensive Git HEAD, Remote Consistency & Fail-Closed Provenance Invariant (DEC-013 / DEC-022)
 const localHead = execSync('git rev-parse HEAD', { encoding: 'utf8' }).trim();
 assert.strictEqual(localHead.length, 40, 'Local HEAD SHA must be a valid 40-character SHA');
 
@@ -133,13 +133,23 @@ try {
   assert.fail(`origin/master could not be resolved: ${err.message}`);
 }
 
-// In verification mode, local HEAD must strictly match origin/master (or ancestor during pre-push inspection)
-const isLocalSynced = (localHead === originMaster);
+// Local HEAD must strictly match origin/master (fail-closed, no exceptions)
+assert.strictEqual(
+  localHead,
+  originMaster,
+  `Local HEAD (${localHead}) must strictly match origin/master (${originMaster})`
+);
 
-// Check working tree cleanliness
+// Working tree must be completely clean (fail-closed, no exceptions)
 const porcelainStatus = execSync('git status --porcelain', { encoding: 'utf8' }).trim();
+assert.strictEqual(
+  porcelainStatus,
+  '',
+  `Working tree must be 100% clean; observed uncommitted changes:\n${porcelainStatus}`
+);
 
-// Verify CURRENT_REMOTE_HEAD resolves in Git history
+// Verify CURRENT_REMOTE_HEAD is defined and resolves in Git history
+assert.ok(currentRemoteHeadField, 'CURRENT_REMOTE_HEAD must be defined in EXECUTION_STATE.md');
 let currentRemoteHeadResolved = '';
 try {
   currentRemoteHeadResolved = execSync(`git rev-parse "${currentRemoteHeadField}"`, { encoding: 'utf8' }).trim();
@@ -148,19 +158,14 @@ try {
   assert.fail(`CURRENT_REMOTE_HEAD "${currentRemoteHeadField}" cannot be resolved in git history: ${err.message}`);
 }
 
-// Verify Option B provenance: CURRENT_REMOTE_HEAD is a verified ancestor of or equal to origin/master
-try {
-  execSync(`git merge-base --is-ancestor "${currentRemoteHeadResolved}" "${originMaster}"`, { stdio: 'pipe' });
-} catch (err) {
-  assert.fail(`CURRENT_REMOTE_HEAD "${currentRemoteHeadResolved}" is not an ancestor of origin/master "${originMaster}"`);
-}
+// CURRENT_REMOTE_HEAD must strictly match origin/master (DEC-013 / DEC-022)
+assert.strictEqual(
+  currentRemoteHeadResolved,
+  originMaster,
+  `CURRENT_REMOTE_HEAD (${currentRemoteHeadResolved}) must strictly match origin/master (${originMaster})`
+);
 
-// Report findings
-if (porcelainStatus === '' && isLocalSynced) {
-  console.log(`[PASS] Check 8: Comprehensive Git HEAD (${localHead}), origin/master (${originMaster}), clean working tree, and coordinate provenance verified.`);
-} else {
-  console.log(`[PASS] Check 8: Coordinate provenance verified (Resolved: ${currentRemoteHeadResolved}). Git status: ${porcelainStatus ? 'DIRTY (in progress)' : 'CLEAN'}, Local HEAD: ${localHead.slice(0, 7)}, Remote: ${originMaster.slice(0, 7)}.`);
-}
+console.log(`[PASS] Check 8: Comprehensive Git HEAD (${localHead}), origin/master (${originMaster}), clean working tree, and strict CURRENT_REMOTE_HEAD equality verified.`);
 
 console.log('\n===============================================================');
 console.log('   ALL AMENDMENT v1.5-A GOVERNANCE CONSISTENCY CHECKS PASSED!  ');
