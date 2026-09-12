@@ -3,6 +3,7 @@ import { persist, createJSONStorage } from 'zustand/middleware';
 import { mmkvStorage } from '../lib/storage';
 import { SEED_NEWS_FEED } from '../data/newsSeed';
 import { API_BASE_URL, REMOTE_API_URL } from '../lib/constants';
+import { apiClient } from '../lib/api';
 import { scrapeNewsOnDevice } from '../lib/news/scrape';
 import type { NewsFeed, NewsItem, NewsCategory, NewsLanguageCode } from '../lib/newsTypes';
 
@@ -48,13 +49,8 @@ function writeCache(lang: NewsLanguageCode | null, feed: NewsFeed) {
 async function fetchBackendFeed(lang: NewsLanguageCode | null): Promise<NewsFeed | null> {
   if (!REMOTE_API_URL) return null;
   try {
-    const url = new URL(`${REMOTE_API_URL}/api/v1/news/feed`);
-    if (lang) url.searchParams.set('lang', lang);
-    const res = await fetch(url.toString());
-    if (res.ok) {
-      const feed = (await res.json()) as NewsFeed;
-      if (feed?.items?.length) return feed;
-    }
+    const feed = await apiClient.news.getFeed(lang ? { lang } : undefined);
+    if (feed?.items?.length) return feed as unknown as NewsFeed;
   } catch {
     // fall through
   }

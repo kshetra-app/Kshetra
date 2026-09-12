@@ -525,3 +525,26 @@
   5. **W007 Implementation Forbidden:** W007 implementation is strictly NOT authorized. Zero production code, migration, refactoring, database modification, API implementation, or client migration may occur until the W007 plan has undergone independent review and explicit approval by the CTO / Technical Authority.
 - **Rationale:** Separates architectural definition (W006) from client implementation (W007) and enforces the mandatory pre-implementation planning gate to protect repository integrity.
 
+---
+
+### DEC-038: W007 Canonical API Client Architecture & Pioneer Caller Adoption
+- **Date:** 2026-09-12
+- **Status:** IMPLEMENTED (SUBMITTED FOR INDEPENDENT VERIFICATION)
+- **Authority:** CTO Approved Plan REV 3, Master Product Blueprint, AI Agent Master Execution Job Book, Amendment v1.2, Amendment v1.4, Amendment v1.5, Amendment v1.5-A, `DEC-035`, `DEC-036`, `DEC-037`
+- **Context:** Implementation of Job W007 (Canonical API Client) establishing the unified, strongly-typed, observable, and resilient HTTP client layer for the PANIN mobile application following CTO plan approval.
+- **Decisions:**
+  1. **Canonical API Client Foundation (`apps/mobile/lib/api/`):** Implemented centralized client module exporting singleton `apiClient` and classes `ApiClient`, `AuthManager`, `ConfigEndpoint`, `PagesEndpoint`, and `NewsEndpoint`.
+  2. **Fail-Safe Authentication Policy:** Enforced default `authenticated` policy requiring valid Supabase bearer tokens and failing closed before network dispatch if session is absent (`ApiAuthError`). Public access is permitted ONLY when explicitly declared on endpoint wrappers.
+  3. **Single-Flight Concurrency Coordinator (`AuthManager`):** Deduplicates concurrent token acquisition requests to a single in-flight promise around `supabase.auth.getSession()` without rebuilding or replacing Supabase Auth storage/lifecycle.
+  4. **Strict Correlation Lifecycle & Protocol Error Invariant:** Generated RFC4122 v4 UUIDs satisfying Fastify `genReqId` regex (`^[a-zA-Z0-9_\-]+$`, length ≤ 128) via `x-request-id`. Captured and verified server response `x-request-id`. Fails closed with typed `ApiCorrelationError` on missing (NP-11) or mismatched (NP-12) response headers.
+  5. **Overall Request Deadline Budget Model:** Enforced `TOTAL_GET_BUDGET = 18,000ms` with per-attempt timeout ceilings (default 8,000ms) and clean `AbortController` cancellation.
+  6. **Deterministic Retry & Mutation Safety:** Allowed max 2 retries for transient 502/503/504 errors on idempotent GET/HEAD requests. Enforced strictly 0 automatic retries for POST/PUT/PATCH/DELETE mutations (NP-08).
+  7. **Telemetry Privacy Invariant (NP-10):** Sanitized network breadcrumbs in `MobileTelemetry`. Strictly excluded `Authorization` headers, bearer tokens, request payloads, and response bodies.
+  8. **Pioneer Caller Migration:** Migrated 3 low-risk callers to `apiClient` while 100% preserving their exact offline/fallback semantics:
+     - `apps/mobile/lib/pageService.ts` (`GET /api/v1/pages/:pageId/entitlement`, PUBLIC)
+     - `apps/mobile/lib/featureFlags.ts` (`GET /api/v1/config/flags`, PUBLIC)
+     - `apps/mobile/stores/news.ts` (`GET /api/v1/news/feed`, PUBLIC)
+  9. **Boundary Immutability:** Maintained 0 changes to direct messaging (`dmStore.ts` and DM methods in `supabaseDataService.ts`), database migrations, Fastify route implementations, and package dependencies.
+- **Rationale:** Resolves dual-path network fragmentation, enforces correlation tracing and privacy invariants, and establishes a rock-solid foundation for subsequent Strangler Fig migrations (W008+).
+
+

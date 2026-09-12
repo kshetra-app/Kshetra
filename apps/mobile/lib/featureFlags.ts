@@ -15,9 +15,8 @@ import {
   type AppFeatureFlags,
   DEFAULT_FEATURE_FLAGS,
 } from '@kshetra/shared';
-import { API_BASE_URL } from './constants';
-
-import { telemetry } from './telemetry';
+import { apiClient } from './api';
+// Migrated from legacy ad-hoc API_BASE_URL endpoint to canonical apiClient
 
 interface FeatureFlagsState extends AppFeatureFlags {
   /** Timestamp of last remote sync */
@@ -54,20 +53,12 @@ export const useFeatureFlagsStore = create<FeatureFlagsState>()(
 
       syncRemoteFlags: async () => {
         try {
-          const res = await fetch(`${API_BASE_URL}/config/flags`, {
-            headers: {
-              Accept: 'application/json',
-              ...telemetry.getTracingHeaders(),
-            },
-          });
-          if (res.ok) {
-            const data = (await res.json()) as { flags: Partial<AppFeatureFlags> };
-            if (data && data.flags) {
-              set({
-                ...data.flags,
-                lastSyncedAt: Date.now(),
-              } as unknown as Partial<FeatureFlagsState>);
-            }
+          const data = await apiClient.config.getFlags();
+          if (data && data.flags) {
+            set({
+              ...data.flags,
+              lastSyncedAt: Date.now(),
+            } as unknown as Partial<FeatureFlagsState>);
           }
         } catch {
           // Offline fallback — keep persisted/default flags

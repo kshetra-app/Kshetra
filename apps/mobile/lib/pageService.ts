@@ -6,7 +6,8 @@
  * Subscriptions are managed strictly on the web console (kshetra.app/manage).
  */
 
-import { telemetry } from './telemetry';
+import { apiClient } from './api';
+// Migrated from legacy ad-hoc API_BASE_URL endpoint to canonical apiClient
 
 export interface PageEntitlement {
   pageId: string;
@@ -15,22 +16,13 @@ export interface PageEntitlement {
   expiresAt: string | null;
 }
 
-const API_BASE_URL = process.env.EXPO_PUBLIC_API_URL || 'https://kshetra-api-production-9f06.up.railway.app';
-
 /**
  * Query whether a Page has Page Pro unlocked.
+ * Uses canonical apiClient with fail-closed fallback to free plan on any error/offline condition.
  */
 export async function fetchPageEntitlement(pageId: string): Promise<PageEntitlement> {
   try {
-    const res = await fetch(`${API_BASE_URL}/api/v1/pages/${pageId}/entitlement`, {
-      headers: {
-        ...telemetry.getTracingHeaders(),
-      },
-    });
-    if (!res.ok) {
-      return { pageId, isPro: false, plan: 'free', expiresAt: null };
-    }
-    const data = await res.json();
+    const data = await apiClient.pages.getEntitlement(pageId);
     return {
       pageId: data.pageId ?? pageId,
       isPro: !!data.isPro,
@@ -38,7 +30,7 @@ export async function fetchPageEntitlement(pageId: string): Promise<PageEntitlem
       expiresAt: data.expiresAt ?? null,
     };
   } catch (_) {
-    // Offline / fallback default
+    // Offline / fallback default — strictly preserves fallback semantics
     return { pageId, isPro: false, plan: 'free', expiresAt: null };
   }
 }

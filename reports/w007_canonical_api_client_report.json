@@ -1,0 +1,121 @@
+{
+  "jobId": "W007",
+  "title": "Canonical API Client (Unified Mobile-to-Backend HTTP Architecture Foundation)",
+  "authority": "Master Execution Framework Amendment v1.5-A / DEC-037 / DEC-038",
+  "timestamp": "2026-09-12T13:16:00.000Z",
+  "baselineCommit": "2f5ec43251fb7a8d323a029640576cc777fc79cf",
+  "architecture": {
+    "modulePath": "apps/mobile/lib/api",
+    "exportedSingleton": "apiClient",
+    "exportedClasses": [
+      "ApiClient",
+      "AuthManager",
+      "ConfigEndpoint",
+      "PagesEndpoint",
+      "NewsEndpoint"
+    ],
+    "errorHierarchy": [
+      "ApiError",
+      "ApiNetworkError",
+      "ApiAuthError",
+      "ApiTimeoutError",
+      "ApiValidationError",
+      "ApiNotFoundError",
+      "ApiServerError",
+      "ApiCorrelationError"
+    ],
+    "authPolicy": {
+      "default": "authenticated",
+      "failClosedWithoutSession": true,
+      "publicAllowedOnlyExplicit": true,
+      "pioneerMatrix": {
+        "GET /api/v1/config/flags": "public",
+        "GET /api/v1/pages/:pageId/entitlement": "public",
+        "GET /api/v1/news/feed": "public"
+      }
+    },
+    "correlation": {
+      "headerName": "x-request-id",
+      "generator": "telemetry.generateRequestId() (RFC4122 v4 UUID)",
+      "formatConstraint": "^[a-zA-Z0-9_\\-]+$ (length <= 128)",
+      "responseValidation": "STRICT_MATCH_OR_FAIL_CLOSED",
+      "protocolErrorClass": "ApiCorrelationError"
+    },
+    "timeoutAndRetry": {
+      "defaultTotalBudgetMs": 18000,
+      "defaultAttemptCeilingMs": 8000,
+      "defaultGetRetries": 2,
+      "defaultMutationRetries": 0,
+      "cancellationMechanism": "AbortController"
+    },
+    "telemetryPrivacy": {
+      "loggedFields": ["method", "path", "statusCode", "requestId", "durationMs"],
+      "strictlyExcludedFields": ["Authorization", "Bearer tokens", "Request bodies", "Response bodies"]
+    }
+  },
+  "pioneerCallersMigrated": [
+    {
+      "file": "apps/mobile/lib/pageService.ts",
+      "endpoint": "GET /api/v1/pages/:pageId/entitlement",
+      "method": "apiClient.pages.getEntitlement(pageId)",
+      "policy": "public",
+      "fallbackPreserved": "{ pageId, isPro: false, plan: 'free', expiresAt: null }"
+    },
+    {
+      "file": "apps/mobile/lib/featureFlags.ts",
+      "endpoint": "GET /api/v1/config/flags",
+      "method": "apiClient.config.getFlags()",
+      "policy": "public",
+      "fallbackPreserved": "Retains MMKV persisted/default flags"
+    },
+    {
+      "file": "apps/mobile/stores/news.ts",
+      "endpoint": "GET /api/v1/news/feed",
+      "method": "apiClient.news.getFeed(filters)",
+      "policy": "public",
+      "fallbackPreserved": "Returns null; falls through to on-device scrape / MMKV cache / bundled seed"
+    }
+  ],
+  "boundariesPreserved": {
+    "dmMessagingModified": false,
+    "fastifyRoutesModified": false,
+    "databaseMigrationsModified": false,
+    "npmDependenciesAdded": 0
+  },
+  "verificationResults": {
+    "unitTests": {
+      "file": "apps/mobile/__tests__/apiClient.test.ts",
+      "total": 20,
+      "passed": 20,
+      "failed": 0
+    },
+    "masterIntegrationTest": {
+      "file": "tests/w007-api-client-verification.test.mjs",
+      "checks": 8,
+      "passed": 8,
+      "failed": 0
+    },
+    "w006FinalAcceptanceSuite": {
+      "file": "tests/w006-final-acceptance.test.mjs",
+      "negativePathTests": 10,
+      "passed": 10,
+      "failed": 0
+    },
+    "apiArchitectureAuditSuite": {
+      "file": "tests/api-architecture-audit.test.mjs",
+      "checks": 36,
+      "passed": 36,
+      "failed": 0
+    },
+    "observabilitySuite": {
+      "file": "apps/api/src/__tests__/observability.test.ts",
+      "tests": 19,
+      "passed": 19,
+      "failed": 0
+    },
+    "contractDriftCheck": {
+      "file": "scripts/check-api-contract-drift.mjs",
+      "matches": "9/9 (100% parity)"
+    }
+  }
+}

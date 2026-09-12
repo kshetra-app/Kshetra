@@ -7,9 +7,9 @@
 ## 1. Project & Execution Coordinates
 ```text
 PROJECT:               PANIN (formerly Kshetra)
-CURRENT_JOB:           W007 (Canonical API Client - PLANNING / INSPECTION ONLY)
+CURRENT_JOB:           W007 (Canonical API Client - IN VERIFICATION / PENDING ACCEPTANCE)
 LAST_COMPLETED_JOB:    W006 (API Architecture Audit & Separation - ACCEPTED)
-NEXT_PERMITTED_JOB:    W007 (Canonical API Client - PLANNING / INSPECTION ONLY)
+NEXT_PERMITTED_JOB:    W007 (Canonical API Client - INDEPENDENT VERIFICATION)
 
 CURRENT_BRANCH:        master
 VERIFIED_REMOTE_HEAD:  c1fe56a
@@ -58,7 +58,7 @@ REMOTE_SYNC:           Up to date with origin/master
 | **W004** | Observability & Error Tracking | **ACCEPTED** | 2026-09-11 | W004-R1A Independent Verifier PASS (13/13 gates at commit `811b5dd`); verified remote head `1260f98`; audited code `ef4622a`; evidence `19a5932`; user accepted; `reports/w004_r1a_independent_verification.md` |
 | **W005** | Backup & Recovery Verification | **ACCEPTED (W/ LIMITATIONS)** | 2026-09-11 | W005-R1C Independent Verifier PASS (commit `acc32fe`); verified remote head `f6ee696`; audited code `943b026`; evidence `b4f3133`; documented limitations: PITR/RPO ≤5m unverified, multi-cloud standby not implemented, DR-001 schema/API bootstrap, DR-002 synthetic staging, DR-004 staging storage, DR-005 client offline; user accepted |
 | **W006** | API Architecture Audit & Separation | **ACCEPTED** | 2026-09-12 | Audited 316 mobile files, 12 direct Supabase callers, 14 Railway callers, 137 Fastify routes across 23 modules, 85 data service methods classified (23 Class A reads, 56 Class B mutation strangler targets, 6 Class C Fastify routed). Fail-closed RLS decision engine: 21 source verified, 2 source pending, 0 live verified, 23 live pending; 0 directClientAllowed=true, 21 conditional pending, 2 forbidden (conversations/messages). Anti-override guard active. Tests NP-01 to NP-10 pass. global_search defect documented as DEF-013; auditedCodeCommit=35ba912, evidenceCommit=04be40b; formally accepted by CTO / Technical Authority per DEC-037; reports/w006_final_acceptance_report.* & reports/w006_final_independent_verification.md |
-| **W007** | Canonical API Client | READY_FOR_PLANNING (PLANNING / INSPECTION ONLY) | - | Prerequisite W006 ACCEPTED; unblocked for Pre-Implementation Planning & Architecture Inspection ONLY; implementation strictly NOT authorized |
+| **W007** | Canonical API Client | **IN VERIFICATION / PENDING ACCEPTANCE** | - | Implementation complete per approved Plan REV 3 & DEC-038; 3 pioneer callers migrated (pageService, featureFlags, news); 20 unit tests pass; 8 master verification checks pass; evidence generated at `reports/w007_canonical_api_client_report.*`; awaiting independent verification |
 | **W008** | API Contract Standardization | NOT_STARTED | - | Prerequisite: W007 |
 | **W009** | External Provider Abstraction | NOT_STARTED | - | Prerequisite: W008 |
 | **W010** | Security Baseline & RLS Hardening | NOT_STARTED | - | Prerequisite: W009 |
