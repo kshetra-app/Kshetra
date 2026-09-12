@@ -12,11 +12,18 @@ LAST_COMPLETED_JOB:    W007 (Canonical API Client - ACCEPTED / CLOSED)
 NEXT_PERMITTED_JOB:    W008 (API Contract Standardization - PLANNING & SPECIFICATION)
 
 CURRENT_BRANCH:        master
-VERIFIED_REMOTE_HEAD:  c1fe56a
 CURRENT_REMOTE_HEAD:   origin/master
-AUDITED_CODE_COMMIT:   35ba912
-EVIDENCE_COMMIT:       db30619
-ACCEPTANCE_COMMIT:     f5b8a09
+VERIFIED_REMOTE_HEAD:  origin/master
+ACCEPTED_W007_IMPLEMENTATION_COMMIT: 1d253cd454effb441e7f01e846a568eeddc7f57e
+GOVERNANCE_COMMIT:     origin/master
+EVIDENCE_COMMIT:       1d253cd454effb441e7f01e846a568eeddc7f57e
+
+# HISTORICAL W006 PROVENANCE (Preserved Prior Milestone Lineage - DEC-035 / DEC-037)
+HISTORICAL_W006_VERIFIED_REMOTE_HEAD: c1fe56a
+HISTORICAL_W006_AUDITED_CODE_COMMIT:  35ba912
+HISTORICAL_W006_EVIDENCE_COMMIT:      db30619
+HISTORICAL_W006_ACCEPTANCE_COMMIT:    f5b8a09
+
 API_VERSION:           v1 (Fastify 5.2 on Railway)
 MOBILE_VERSION:        0.1.0 (Expo 54, React Native 0.81.5)
 DATABASE_MIGRATIONS:   36 migration files present in repository (35 live applied to staging fkpigozcqnmcvofuksar)
@@ -30,14 +37,17 @@ REMOTE_SYNC:           Up to date with origin/master
 ```
 
 > **Evidence Lineage & Coordinate Reconciliation (DEC-035 / DEC-036 / DEC-037 / DEC-041):**
-> - `c1fe56a` = Historical W006 baseline remote HEAD at start of qualification.
-> - `35ba912` = Audited code commit implementing 85-method data service architecture.
-> - `db30619` = Historical W006-R1C qualification evidence coordinate.
+> - `HISTORICAL_W006_VERIFIED_REMOTE_HEAD: c1fe56a` = Historical W006 baseline remote HEAD at start of qualification.
+> - `HISTORICAL_W006_AUDITED_CODE_COMMIT: 35ba912` = Audited code commit implementing 85-method data service architecture.
+> - `HISTORICAL_W006_EVIDENCE_COMMIT: db30619` = Historical W006-R1C qualification evidence coordinate.
 > - `04be40b` = Final W006 independent-verification evidence package (`reports/w006_final_*`).
 > - `716070f` = Repository commit integrating W006 verification artifacts.
 > - `f5b8a09` = Formal W006 technical acceptance and governance reconciliation baseline commit.
-> - `ACCEPTANCE_COMMIT: f5b8a09` = Formal CTO / Technical Authority acceptance of W006.
-> - `1d253cd454effb441e7f01e846a568eeddc7f57e` = Accepted W007 implementation commit (Technically Accepted by CTO).
+> - `HISTORICAL_W006_ACCEPTANCE_COMMIT: f5b8a09` = Formal CTO / Technical Authority acceptance of W006.
+> - `ACCEPTED_W007_IMPLEMENTATION_COMMIT: 1d253cd454effb441e7f01e846a568eeddc7f57e` = Accepted W007 implementation commit (Technically Accepted by CTO).
+> - `EVIDENCE_COMMIT: 1d253cd454effb441e7f01e846a568eeddc7f57e` = Verified W007 runtime and contract evidence commit.
+> - `GOVERNANCE_COMMIT: origin/master` = Active governance closure & provenance commit.
+
 
 ---
 

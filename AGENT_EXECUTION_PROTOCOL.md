@@ -196,18 +196,20 @@ Immediately following implementation and initial testing, the agent must rigorou
 
 ---
 
-## 6. Evidence, Lineage & Verification Standards
+## 6. Evidence, Lineage & Provenance Standards
 
 1. **Evidence Follows Implementation:** Never generate final evidence before code changes are finalized.
-2. **Four-Point Commit Lineage (Amendment v1.4 / DEC-023):**
-   - `VERIFIED_REMOTE_HEAD`: Exact remote HEAD against which verification evidence was executed.
-   - `AUDITED_CODE_COMMIT`: Exact implementation commit audited.
-   - `EVIDENCE_COMMIT`: Commit containing generated test/audit evidence artifacts.
-   - `ACCEPTANCE_COMMIT`: Commit containing final acceptance state and register updates (`HEAD` on final acceptance commit).
-   - *Freshness Invariance Rule:* The later acceptance commit advances Git HEAD and does not invalidate the historical verification coordinate (`VERIFIED_REMOTE_HEAD`), preventing self-referential commit loops.
-3. **Clean Repository Mandate:** `git status` must show a 100% clean working tree prior to declaring any milestone ready for verification.
-4. **Remote Synchronization:** Push commits to `origin/master` and verify remote HEAD before reporting completion.
-5. **Independent Verification (Rule IV-001):** The implementing agent cannot self-certify. Critical milestones, security architecture, migrations, and Launch Gates require independent verification.
+2. **Current vs. Historical Provenance Coordinates Semantics:**
+   - `CURRENT_REMOTE_HEAD`: Current `origin/master` HEAD. In a synchronized repository state, matches local `HEAD`.
+   - `VERIFIED_REMOTE_HEAD`: Exact current repository commit against which the current governance state was verified. Must equal `CURRENT_REMOTE_HEAD` for a declared synchronized governance state.
+   - `ACCEPTED_W007_IMPLEMENTATION_COMMIT`: The exact W007 implementation commit technically accepted by the CTO (`1d253cd454effb441e7f01e846a568eeddc7f57e`).
+   - `GOVERNANCE_COMMIT`: The commit containing the current authoritative governance state.
+   - `EVIDENCE_COMMIT`: The exact commit containing the evidence artifacts used for the relevant acceptance claim.
+   - `HISTORICAL_*` Coordinates: Prior job-specific provenance (e.g. `HISTORICAL_W006_VERIFIED_REMOTE_HEAD: c1fe56a`, `HISTORICAL_W006_AUDITED_CODE_COMMIT: 35ba912`, `HISTORICAL_W006_EVIDENCE_COMMIT: db30619`, `HISTORICAL_W006_ACCEPTANCE_COMMIT: f5b8a09`). Historical coordinates represent past milestone truths and MUST NOT be interpreted as or substituted for current project coordinates.
+3. **Freshness Invariance Rule:** The later acceptance or governance commit advances Git HEAD and does not invalidate historical verification coordinates of prior jobs, preventing self-referential commit loops while maintaining mathematical freshness of current coordinates.
+4. **Clean Repository Mandate:** `git status` must show a 100% clean working tree prior to declaring any milestone ready for verification.
+5. **Remote Synchronization:** Push commits to `origin/master` and verify remote HEAD matches local HEAD before reporting completion.
+6. **Independent Verification (Rule IV-001):** The implementing agent cannot self-certify. Critical milestones, security architecture, migrations, and Launch Gates require independent verification. Final acceptance remains solely with the CTO / human authority.
 
 ---
 

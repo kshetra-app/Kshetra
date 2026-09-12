@@ -96,29 +96,40 @@ assert.ok(stateContent.includes('Amendment v1.5-A (ACTIVE OPERATIONAL AUTHORITY)
 assert.ok(stateContent.includes('Amendment v1.5 (Parent Baseline)'), 'EXECUTION_STATE.md must recognize Amendment v1.5 as Parent Baseline');
 
 function extractField(fieldName) {
-  const regex = new RegExp(`^${fieldName}:\\s+(\\S+)`, 'm');
+  const regex = new RegExp(`^${fieldName}:\\s*(.+)`, 'm');
   const match = stateContent.match(regex);
-  return match ? match[1] : null;
+  return match ? match[1].trim() : null;
 }
 
 const currentRemoteHeadField = extractField('CURRENT_REMOTE_HEAD');
+const verifiedRemoteHeadField = extractField('VERIFIED_REMOTE_HEAD');
 assert.ok(currentRemoteHeadField, 'CURRENT_REMOTE_HEAD must be defined in EXECUTION_STATE.md');
-assert.strictEqual(extractField('VERIFIED_REMOTE_HEAD'), 'c1fe56a', 'Historical W006 VERIFIED_REMOTE_HEAD must remain c1fe56a');
-assert.strictEqual(extractField('AUDITED_CODE_COMMIT'), '35ba912', 'Historical W006 AUDITED_CODE_COMMIT must remain 35ba912');
-assert.strictEqual(extractField('EVIDENCE_COMMIT'), 'db30619', 'Historical W006 EVIDENCE_COMMIT must remain db30619');
-assert.ok(
-  extractField('ACCEPTANCE_COMMIT') === 'pending' || extractField('ACCEPTANCE_COMMIT') === '04be40b' || /^[0-9a-f]{7,40}$/.test(extractField('ACCEPTANCE_COMMIT')),
-  'Historical W006 ACCEPTANCE_COMMIT must remain pending or valid commit'
+assert.ok(verifiedRemoteHeadField, 'VERIFIED_REMOTE_HEAD must be defined in EXECUTION_STATE.md');
+
+// Historical W006 coordinates must NOT masquerade as current coordinates
+assert.notStrictEqual(verifiedRemoteHeadField, 'c1fe56a', 'VERIFIED_REMOTE_HEAD must not be historical W006 coordinate c1fe56a');
+assert.ok(!verifiedRemoteHeadField.startsWith('c1fe56a'), 'VERIFIED_REMOTE_HEAD must not start with c1fe56a');
+assert.strictEqual(extractField('HISTORICAL_W006_VERIFIED_REMOTE_HEAD'), 'c1fe56a', 'HISTORICAL_W006_VERIFIED_REMOTE_HEAD must remain c1fe56a');
+assert.strictEqual(extractField('HISTORICAL_W006_AUDITED_CODE_COMMIT'), '35ba912', 'HISTORICAL_W006_AUDITED_CODE_COMMIT must remain 35ba912');
+assert.strictEqual(extractField('HISTORICAL_W006_EVIDENCE_COMMIT'), 'db30619', 'HISTORICAL_W006_EVIDENCE_COMMIT must remain db30619');
+assert.strictEqual(extractField('HISTORICAL_W006_ACCEPTANCE_COMMIT'), 'f5b8a09', 'HISTORICAL_W006_ACCEPTANCE_COMMIT must remain f5b8a09');
+
+// Accepted W007 implementation commit must be recorded
+assert.strictEqual(
+  extractField('ACCEPTED_W007_IMPLEMENTATION_COMMIT'),
+  '1d253cd454effb441e7f01e846a568eeddc7f57e',
+  'ACCEPTED_W007_IMPLEMENTATION_COMMIT must be 1d253cd454effb441e7f01e846a568eeddc7f57e'
 );
+
 assert.ok(
   stateContent.includes('W006') && (stateContent.includes('ACCEPTED') || stateContent.includes('VERIFIED') || stateContent.includes('RECOMMENDED FOR HUMAN ACCEPTANCE')),
   'W006 status must be recorded in EXECUTION_STATE.md'
 );
 assert.ok(
-  stateContent.includes('W007') && (stateContent.includes('Canonical API Client')),
-  'W007 must be recorded in EXECUTION_STATE.md'
+  stateContent.includes('W007') && (stateContent.includes('Canonical API Client') && stateContent.includes('ACCEPTED / CLOSED')),
+  'W007 must be recorded as ACCEPTED / CLOSED in EXECUTION_STATE.md'
 );
-console.log('[PASS] Check 6: EXECUTION_STATE.md recognizes Amendment v1.5-A and strictly preserves historical W006 coordinates.');
+console.log('[PASS] Check 6: EXECUTION_STATE.md recognizes Amendment v1.5-A, enforces current vs historical coordinate separation, and strictly preserves historical W006 coordinates.');
 
 // 7. DECISION_LOG.md DEC-016, DEC-034, DEC-035, DEC-036 & DEC-037 Semantic Integrity
 assert.ok(fs.existsSync('DECISION_LOG.md'), 'DECISION_LOG.md must exist');
@@ -173,6 +184,27 @@ assert.strictEqual(
   currentRemoteHeadResolved,
   originMaster,
   `CURRENT_REMOTE_HEAD (${currentRemoteHeadResolved}) must strictly match origin/master (${originMaster})`
+);
+
+// VERIFIED_REMOTE_HEAD must strictly match origin/master
+let verifiedRemoteHeadResolved = '';
+try {
+  verifiedRemoteHeadResolved = execSync(`git rev-parse "${verifiedRemoteHeadField}"`, { encoding: 'utf8' }).trim();
+  assert.strictEqual(verifiedRemoteHeadResolved.length, 40, 'Resolved VERIFIED_REMOTE_HEAD must be 40 characters');
+} catch (err) {
+  assert.fail(`VERIFIED_REMOTE_HEAD "${verifiedRemoteHeadField}" cannot be resolved in git history: ${err.message}`);
+}
+assert.strictEqual(
+  verifiedRemoteHeadResolved,
+  originMaster,
+  `VERIFIED_REMOTE_HEAD (${verifiedRemoteHeadResolved}) must strictly match origin/master (${originMaster})`
+);
+
+// CURRENT_REMOTE_HEAD must strictly match VERIFIED_REMOTE_HEAD
+assert.strictEqual(
+  currentRemoteHeadResolved,
+  verifiedRemoteHeadResolved,
+  `CURRENT_REMOTE_HEAD (${currentRemoteHeadResolved}) must strictly match VERIFIED_REMOTE_HEAD (${verifiedRemoteHeadResolved})`
 );
 
 console.log(`[PASS] Check 8: Comprehensive Git HEAD (${localHead}), origin/master (${originMaster}), clean working tree, and strict CURRENT_REMOTE_HEAD equality verified.`);
