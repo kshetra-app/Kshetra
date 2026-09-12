@@ -179,12 +179,17 @@ export function evaluateClassARlsQualification({
   }
 
   // Controlled fixture support: if live RLS verification is explicitly confirmed and sensitivity is compatible with public direct read
-  if (livePolicyStatus === 'LIVE_RLS_VERIFIED') {
+  if (livePolicyStatus === 'LIVE_RLS_VERIFIED' && sourcePolicyStatus === 'SOURCE_POLICY_VERIFIED') {
     if (primaryTable !== 'conversations' && primaryTable !== 'messages' && sensitivity !== 'HIGHLY_CONFIDENTIAL') {
       directAllowed = true;
       apiMediationRequired = false;
       rlsRationale = `Table ${primaryTable} live PostgreSQL policy independently verified in pg_catalog.pg_policies and confirmed safe for direct public client read.`;
     }
+  }
+
+  // HARD INVARIANT 1A (Fail-Closed on Unverified Source):
+  if (sourcePolicyStatus !== 'SOURCE_POLICY_VERIFIED' && directAllowed === true) {
+    throw new Error(`[FAIL CLOSED] RLS_INVARIANT_VIOLATION: Method ${fnName} on unverified table ${primaryTable} cannot receive directClientAllowed=true when sourcePolicyStatus is "${sourcePolicyStatus}"`);
   }
 
   // HARD INVARIANT 1 (Fail-Closed on Live Verification):
