@@ -3,9 +3,9 @@ import path from 'path';
 import { execSync } from 'child_process';
 
 /**
- * JOB W006-R1B: API ARCHITECTURE AUDIT & LIVE RLS PROVENANCE REBINDING
- * Authority: Master Execution Framework Amendment v1.4 / DEC-002 / DEC-028 / DEC-029 / DEC-030 / DEC-031 / DEC-032
- * Exports runApiArchitectureAudit() and probeLiveStagingSupabase() for CLI generation and regression tests.
+ * JOB W006-R1C: API ARCHITECTURE AUDIT & SEMANTIC INTEGRITY REMEDIATION
+ * Authority: Master Execution Framework Amendment v1.4 / DEC-002 / DEC-028 / DEC-029 / DEC-030 / DEC-031 / DEC-032 / DEC-033
+ * Exports runApiArchitectureAudit(), evaluateClassARlsQualification(), and probeLiveStagingSupabase() for CLI generation and regression tests.
  */
 
 export function probeLiveStagingSupabase(rootDir = process.cwd()) {
@@ -63,6 +63,160 @@ export function probeLiveStagingSupabase(rootDir = process.cwd()) {
   };
 
   return probeResults;
+}
+
+
+export function evaluateClassARlsQualification({
+  fnName,
+  primaryTable,
+  liveOverride = null
+}) {
+  let sourcePolicyStatus = 'SOURCE_POLICY_VERIFIED';
+  let livePolicyStatus = 'PENDING (Live PostgreSQL catalog query pending direct database connection)';
+  let sensitivity = 'PUBLIC';
+  let directAllowed = 'CONDITIONAL_PENDING_VERIFICATION';
+  let apiMediationRequired = 'REVIEW_REQUIRED';
+  let evidenceSource = '';
+  let rlsRationale = '';
+
+  if (liveOverride && liveOverride.livePolicyStatus) {
+    livePolicyStatus = liveOverride.livePolicyStatus;
+  }
+
+  if (fnName === 'globalSearch') {
+    sourcePolicyStatus = 'SOURCE_POLICY_VERIFIED';
+    if (!liveOverride) {
+      livePolicyStatus = 'PENDING (Live behavior: DEFECTIVE_SQL_SYNTAX / 0A000 in migration 020)';
+    }
+    sensitivity = 'PUBLIC_SEARCH';
+    directAllowed = 'CONDITIONAL_PENDING_VERIFICATION';
+    apiMediationRequired = 'REVIEW_REQUIRED';
+    evidenceSource = 'supabase/migrations/020_foundation_hardening.sql:587-640 & Live Staging Supabase OpenAPI';
+    rlsRationale = 'Global search aggregates public constituencies, civic issues, headlines, and legislators via full-text search. STABLE SECURITY DEFINER function in migration 020 with execute grant to anon and authenticated. Live invocation triggers PostgreSQL error 0A000 (invalid UNION ORDER BY). Direct client read held conditional pending SQL syntax repair in W007+ and API rate limiting.';
+  } else if (primaryTable === 'civic_issues') {
+    sourcePolicyStatus = 'SOURCE_POLICY_VERIFIED';
+    sensitivity = 'PUBLIC_CIVIC';
+    evidenceSource = 'supabase/migrations/001_initial_schema.sql:102 + 017 + 020 & Live Staging PostgREST (200 OK)';
+    rlsRationale = 'Migration policy permits public SELECT USING (true). Live table confirmed present in staging OpenAPI and responds 200 OK via PostgREST. Direct client read is conditional pending live PostgreSQL catalog (pg_policies) verification.';
+  } else if (primaryTable === 'posts') {
+    sourcePolicyStatus = 'SOURCE_POLICY_VERIFIED';
+    sensitivity = 'PUBLIC_SOCIAL';
+    evidenceSource = 'supabase/migrations/001_initial_schema.sql + 020 + 025 & Live Staging PostgREST (200 OK)';
+    rlsRationale = 'Migration policy permits public SELECT USING (status = \'published\' AND visibility = \'public\'). Live table confirmed present in staging OpenAPI and responds 200 OK via PostgREST. Direct client read is conditional pending live PostgreSQL catalog (pg_policies) verification.';
+  } else if (primaryTable === 'user_profiles') {
+    sourcePolicyStatus = 'SOURCE_POLICY_VERIFIED';
+    sensitivity = 'PUBLIC_AND_PRIVATE';
+    evidenceSource = 'supabase/migrations/001_initial_schema.sql + 018 + 020 & Live Staging PostgREST (200 OK)';
+    rlsRationale = 'Public profile fields accessible; sensitive columns isolated. Migration policy permits SELECT USING (is_suspended = false). Live table responds 200 OK via PostgREST. Direct client read is conditional pending live PostgreSQL catalog (pg_policies) verification.';
+  } else if (primaryTable === 'notification_log') {
+    sourcePolicyStatus = 'SOURCE_POLICY_VERIFIED';
+    sensitivity = 'USER_CONFIDENTIAL';
+    evidenceSource = 'supabase/migrations/001_initial_schema.sql + 020 & Live Staging PostgREST (200 OK)';
+    rlsRationale = 'Migration policy scopes notification reads strictly to authenticated recipient (auth.uid() = user_id). Live table responds 200 OK via PostgREST. Direct client read is conditional pending live PostgreSQL catalog (pg_policies) verification.';
+  } else if (primaryTable === 'conversations' || primaryTable === 'messages') {
+    sourcePolicyStatus = 'SOURCE_POLICY_VERIFIED';
+    sensitivity = 'HIGHLY_CONFIDENTIAL';
+    directAllowed = false;
+    apiMediationRequired = true;
+    evidenceSource = 'supabase/migrations/001_initial_schema.sql + 020 & Mandatory Architecture Compliance Standard';
+    rlsRationale = 'Direct message conversations and messages are end-user private. While participant-scoped RLS exists in migration 020, Fastify API mediation is strictly mandatory for message delivery receipts, regulatory compliance, and centralized privacy audit trails.';
+  } else if (primaryTable === 'election_promises' || primaryTable === 'leadership_modules' || primaryTable === 'community_challenges' || primaryTable === 'lmx_credibility') {
+    sourcePolicyStatus = 'SOURCE_POLICY_VERIFIED';
+    sensitivity = 'PUBLIC';
+    evidenceSource = `supabase/migrations/ for ${primaryTable} & Live Staging PostgREST (200 OK)`;
+    rlsRationale = `Inspected migration definition: Table ${primaryTable} has active RLS and verified public read policy (SELECT USING true or active filter). Live table responds 200 OK via PostgREST. Direct read is conditional pending live PostgreSQL catalog (pg_policies) verification.`;
+  } else if (primaryTable === 'aspirant_profiles') {
+    sourcePolicyStatus = 'SOURCE_POLICY_VERIFIED';
+    sensitivity = 'PUBLIC_ASPIRANT';
+    evidenceSource = 'supabase/migrations/019_aspirant_academy.sql & Live Staging PostgREST (200 OK)';
+    rlsRationale = 'Inspected migration definition: Table aspirant_profiles has active RLS with public read policy SELECT USING (verification_status = \'approved\'). Live table responds 200 OK via PostgREST. Direct read is conditional pending live PostgreSQL catalog (pg_policies) verification.';
+  } else if (primaryTable === 'political_shorts') {
+    sourcePolicyStatus = 'SOURCE_POLICY_VERIFIED';
+    sensitivity = 'PUBLIC_MEDIA';
+    evidenceSource = 'supabase/migrations/022_shorts_and_media.sql & Live Staging PostgREST (200 OK)';
+    rlsRationale = 'Inspected migration definition: Table political_shorts has active RLS with policy SELECT USING (status = \'published\'). Live table responds 200 OK via PostgREST. Direct read is conditional pending live PostgreSQL catalog (pg_policies) verification.';
+  } else if (primaryTable === 'live_events') {
+    sourcePolicyStatus = 'SOURCE_POLICY_VERIFIED';
+    sensitivity = 'PUBLIC_BROADCAST';
+    evidenceSource = 'supabase/migrations/020_foundation_hardening.sql & Live Staging PostgREST (200 OK)';
+    rlsRationale = 'Inspected migration definition: Table live_events has active RLS with policy SELECT USING (status IN (\'scheduled\', \'live\')). Live table responds 200 OK via PostgREST. Direct read is conditional pending live PostgreSQL catalog (pg_policies) verification.';
+  } else if (primaryTable === 'lmx_brand_kits') {
+    sourcePolicyStatus = 'SOURCE_POLICY_VERIFIED';
+    sensitivity = 'PUBLIC_REGISTRY';
+    evidenceSource = 'supabase/migrations/024_lmx_lead_management.sql & Live Staging PostgREST (200 OK)';
+    rlsRationale = 'Inspected migration definition: Table lmx_brand_kits has active RLS with policy SELECT USING (is_approved = true). Live table responds 200 OK via PostgREST. Direct read is conditional pending live PostgreSQL catalog (pg_policies) verification.';
+  } else if (primaryTable === 'user_follows') {
+    sourcePolicyStatus = 'SOURCE_POLICY_VERIFIED';
+    sensitivity = 'PUBLIC_SOCIAL';
+    evidenceSource = 'supabase/migrations/020_foundation_hardening.sql & Live Staging PostgREST (200 OK)';
+    rlsRationale = 'Inspected migration definition: Table user_follows has active RLS with policy SELECT USING (true). Live table responds 200 OK via PostgREST. Direct read is conditional pending live PostgreSQL catalog (pg_policies) verification.';
+  } else if (primaryTable === 'lmx_department_alerts') {
+    sourcePolicyStatus = 'SOURCE_POLICY_VERIFIED';
+    sensitivity = 'PUBLIC_CIVIL_SERVICE_ALERTS';
+    evidenceSource = 'supabase/migrations/033_content_and_department_alerts.sql & Live Staging PostgREST (200 OK)';
+    rlsRationale = 'Inspected migration definition: Table lmx_department_alerts has active RLS with policy SELECT USING (is_active = true). Live table responds 200 OK via PostgREST. Direct read is conditional pending live PostgreSQL catalog (pg_policies) verification.';
+  } else if (primaryTable === 'lmx_departments') {
+    sourcePolicyStatus = 'PENDING';
+    sensitivity = 'GOVERNANCE_ORGANIZATION';
+    directAllowed = 'CONDITIONAL_PENDING_VERIFICATION';
+    apiMediationRequired = 'REVIEW_REQUIRED';
+    evidenceSource = 'supabase/migrations/024_lmx_lead_management.sql & Live Staging PostgREST (200 OK)';
+    rlsRationale = 'Table lmx_departments has RLS enabled in migration 024, but lacks explicit SELECT policies in SQL migrations. Direct client read must not be marked safe until live policy is confirmed or Fastify mediation is implemented.';
+  } else if (primaryTable === 'lmx_affiliations') {
+    sourcePolicyStatus = 'PENDING';
+    sensitivity = 'CONTRIBUTOR_AFFILIATION';
+    directAllowed = 'CONDITIONAL_PENDING_VERIFICATION';
+    apiMediationRequired = 'REVIEW_REQUIRED';
+    evidenceSource = 'supabase/migrations/024_lmx_lead_management.sql & Live Staging PostgREST (200 OK)';
+    rlsRationale = 'Table lmx_affiliations has RLS policy for contributors managing own affiliations, but general SELECT policy requires live database verification. Direct client read held pending verification.';
+  } else {
+    sourcePolicyStatus = 'PENDING';
+    sensitivity = 'PUBLIC_OR_SCOPED';
+    directAllowed = 'CONDITIONAL_PENDING_VERIFICATION';
+    apiMediationRequired = 'REVIEW_REQUIRED';
+    evidenceSource = 'Migration SQL + Live Staging PostgREST';
+    rlsRationale = `RLS enabled on table ${primaryTable} in migrations, but specific policy verification is pending. Direct client access is conditional pending live policy inspection.`;
+  }
+
+  // Controlled fixture support: if live RLS verification is explicitly confirmed and sensitivity is compatible with public direct read
+  if (livePolicyStatus === 'LIVE_RLS_VERIFIED') {
+    if (primaryTable !== 'conversations' && primaryTable !== 'messages' && sensitivity !== 'HIGHLY_CONFIDENTIAL') {
+      directAllowed = true;
+      apiMediationRequired = false;
+      rlsRationale = `Table ${primaryTable} live PostgreSQL policy independently verified in pg_catalog.pg_policies and confirmed safe for direct public client read.`;
+    }
+  }
+
+  // HARD INVARIANT 1 (Fail-Closed on Live Verification):
+  if (livePolicyStatus !== 'LIVE_RLS_VERIFIED' && directAllowed === true) {
+    throw new Error(`[FAIL CLOSED] RLS_INVARIANT_VIOLATION: Method ${fnName} cannot receive directClientAllowed=true when livePolicyStatus is "${livePolicyStatus}"`);
+  }
+
+  // HARD INVARIANT 2 (Fail-Closed on Sensitive / Messaging Operations):
+  if ((primaryTable === 'conversations' || primaryTable === 'messages') && (directAllowed === true || apiMediationRequired !== true)) {
+    throw new Error(`[FAIL CLOSED] SENSITIVE_OPERATION_INVARIANT_VIOLATION: Messaging method ${fnName} must have directClientAllowed=false and apiMediationRequired=true`);
+  }
+
+  // HARD INVARIANT 3 (Fail-Closed on Blanket Claims):
+  if (rlsRationale.includes('Verified RLS enabled on table. Direct client read safe') || rlsRationale.includes('Direct client read safe under row-level policy')) {
+    throw new Error(`[FAIL CLOSED] BLANKET_ASSERTION_VIOLATION: Method ${fnName} rationale contains prohibited blanket claim`);
+  }
+
+  const rlsStatus = livePolicyStatus === 'LIVE_RLS_VERIFIED'
+    ? 'LIVE_RLS_VERIFIED'
+    : `${sourcePolicyStatus} / LIVE_CATALOG_PENDING`;
+
+  return {
+    primaryTableOrRpc: primaryTable,
+    sensitivityCategory: sensitivity,
+    sourcePolicyStatus,
+    livePolicyStatus,
+    rlsStatus,
+    directClientAllowed: directAllowed,
+    apiMediationRequired,
+    evidenceSource,
+    rationale: rlsRationale
+  };
 }
 
 export function runApiArchitectureAudit(options = {}) {
@@ -546,122 +700,16 @@ export function runApiArchitectureAudit(options = {}) {
       rationale = 'Read query governed by Supabase RLS and indexes; safe for direct client read subject to RLS policy verification.';
     }
 
-    // Class A Security & RLS Qualification (PARTS A, B, C, D, E Hardening for W006-R1B)
+    // Class A Security & RLS Qualification (Fail-Closed Decision Engine for W006-R1C)
     let rlsQualification = null;
     if (architecturalClass === 'CLASS_A_READ_RLS_GOVERNED') {
       const primaryTable = tables[0] || (fnName === 'globalSearch' ? 'global_search' : 'unknown');
-      let sourcePolicyStatus = 'SOURCE_POLICY_VERIFIED';
-      let livePolicyStatus = 'PENDING (Live PostgreSQL catalog query pending direct database connection)';
-      let sensitivity = 'PUBLIC';
-      let directAllowed = 'CONDITIONAL_PENDING_VERIFICATION';
-      let apiMediationRequired = 'REVIEW_REQUIRED';
-      let evidenceSource = '';
-      let rlsRationale = '';
-
-      if (fnName === 'globalSearch') {
-        sourcePolicyStatus = 'SOURCE_POLICY_VERIFIED';
-        livePolicyStatus = 'PENDING (Live behavior: DEFECTIVE_SQL_SYNTAX / 0A000 in migration 020)';
-        sensitivity = 'PUBLIC_SEARCH';
-        directAllowed = 'CONDITIONAL_PENDING_VERIFICATION';
-        apiMediationRequired = 'REVIEW_REQUIRED';
-        evidenceSource = 'supabase/migrations/020_foundation_hardening.sql:587-640 & Live Staging Supabase OpenAPI';
-        rlsRationale = 'Global search aggregates public constituencies, civic issues, headlines, and legislators via full-text search. STABLE SECURITY DEFINER function in migration 020 with execute grant to anon and authenticated. Live invocation triggers PostgreSQL error 0A000 (invalid UNION ORDER BY). Direct client read held conditional pending SQL syntax repair in W007+ and API rate limiting.';
-      } else if (primaryTable === 'civic_issues') {
-        sourcePolicyStatus = 'SOURCE_POLICY_VERIFIED';
-        sensitivity = 'PUBLIC_CIVIC';
-        evidenceSource = 'supabase/migrations/001_initial_schema.sql:102 + 017 + 020 & Live Staging PostgREST (200 OK)';
-        rlsRationale = 'Migration policy permits public SELECT USING (true). Live table confirmed present in staging OpenAPI and responds 200 OK via PostgREST. Direct client read is conditional pending live PostgreSQL catalog (pg_policies) verification.';
-      } else if (primaryTable === 'posts') {
-        sourcePolicyStatus = 'SOURCE_POLICY_VERIFIED';
-        sensitivity = 'PUBLIC_SOCIAL';
-        evidenceSource = 'supabase/migrations/001_initial_schema.sql + 020 + 025 & Live Staging PostgREST (200 OK)';
-        rlsRationale = 'Migration policy permits public SELECT USING (status = \'published\' AND visibility = \'public\'). Live table confirmed present in staging OpenAPI and responds 200 OK via PostgREST. Direct client read is conditional pending live PostgreSQL catalog (pg_policies) verification.';
-      } else if (primaryTable === 'user_profiles') {
-        sourcePolicyStatus = 'SOURCE_POLICY_VERIFIED';
-        sensitivity = 'PUBLIC_AND_PRIVATE';
-        evidenceSource = 'supabase/migrations/001_initial_schema.sql + 018 + 020 & Live Staging PostgREST (200 OK)';
-        rlsRationale = 'Public profile fields accessible; sensitive columns isolated. Migration policy permits SELECT USING (is_suspended = false). Live table responds 200 OK via PostgREST. Direct client read is conditional pending live PostgreSQL catalog (pg_policies) verification.';
-      } else if (primaryTable === 'notification_log') {
-        sourcePolicyStatus = 'SOURCE_POLICY_VERIFIED';
-        sensitivity = 'USER_CONFIDENTIAL';
-        evidenceSource = 'supabase/migrations/001_initial_schema.sql + 020 & Live Staging PostgREST (200 OK)';
-        rlsRationale = 'Migration policy scopes notification reads strictly to authenticated recipient (auth.uid() = user_id). Live table responds 200 OK via PostgREST. Direct client read is conditional pending live PostgreSQL catalog (pg_policies) verification.';
-      } else if (primaryTable === 'conversations' || primaryTable === 'messages') {
-        sourcePolicyStatus = 'SOURCE_POLICY_VERIFIED';
-        sensitivity = 'HIGHLY_CONFIDENTIAL';
-        directAllowed = false;
-        apiMediationRequired = true;
-        evidenceSource = 'supabase/migrations/001_initial_schema.sql + 020 & Mandatory Architecture Compliance Standard';
-        rlsRationale = 'Direct message conversations and messages are end-user private. While participant-scoped RLS exists in migration 020, Fastify API mediation is strictly mandatory for message delivery receipts, regulatory compliance, and centralized privacy audit trails.';
-      } else if (primaryTable === 'election_promises' || primaryTable === 'leadership_modules' || primaryTable === 'community_challenges' || primaryTable === 'lmx_credibility') {
-        sourcePolicyStatus = 'SOURCE_POLICY_VERIFIED';
-        sensitivity = 'PUBLIC';
-        evidenceSource = `supabase/migrations/ for ${primaryTable} & Live Staging PostgREST (200 OK)`;
-        rlsRationale = `Inspected migration definition: Table ${primaryTable} has active RLS and verified public read policy (SELECT USING true or active filter). Live table responds 200 OK via PostgREST. Direct read is conditional pending live PostgreSQL catalog (pg_policies) verification.`;
-      } else if (primaryTable === 'aspirant_profiles') {
-        sourcePolicyStatus = 'SOURCE_POLICY_VERIFIED';
-        sensitivity = 'PUBLIC_ASPIRANT';
-        evidenceSource = 'supabase/migrations/019_aspirant_academy.sql & Live Staging PostgREST (200 OK)';
-        rlsRationale = 'Inspected migration definition: Table aspirant_profiles has active RLS with public read policy SELECT USING (verification_status = \'approved\'). Live table responds 200 OK via PostgREST. Direct read is conditional pending live PostgreSQL catalog (pg_policies) verification.';
-      } else if (primaryTable === 'political_shorts') {
-        sourcePolicyStatus = 'SOURCE_POLICY_VERIFIED';
-        sensitivity = 'PUBLIC_MEDIA';
-        evidenceSource = 'supabase/migrations/022_shorts_and_media.sql & Live Staging PostgREST (200 OK)';
-        rlsRationale = 'Inspected migration definition: Table political_shorts has active RLS with policy SELECT USING (status = \'published\'). Live table responds 200 OK via PostgREST. Direct read is conditional pending live PostgreSQL catalog (pg_policies) verification.';
-      } else if (primaryTable === 'live_events') {
-        sourcePolicyStatus = 'SOURCE_POLICY_VERIFIED';
-        sensitivity = 'PUBLIC_BROADCAST';
-        evidenceSource = 'supabase/migrations/020_foundation_hardening.sql & Live Staging PostgREST (200 OK)';
-        rlsRationale = 'Inspected migration definition: Table live_events has active RLS with policy SELECT USING (status IN (\'scheduled\', \'live\')). Live table responds 200 OK via PostgREST. Direct read is conditional pending live PostgreSQL catalog (pg_policies) verification.';
-      } else if (primaryTable === 'lmx_brand_kits') {
-        sourcePolicyStatus = 'SOURCE_POLICY_VERIFIED';
-        sensitivity = 'PUBLIC_REGISTRY';
-        evidenceSource = 'supabase/migrations/024_lmx_lead_management.sql & Live Staging PostgREST (200 OK)';
-        rlsRationale = 'Inspected migration definition: Table lmx_brand_kits has active RLS with policy SELECT USING (is_approved = true). Live table responds 200 OK via PostgREST. Direct read is conditional pending live PostgreSQL catalog (pg_policies) verification.';
-      } else if (primaryTable === 'user_follows') {
-        sourcePolicyStatus = 'SOURCE_POLICY_VERIFIED';
-        sensitivity = 'PUBLIC_SOCIAL';
-        evidenceSource = 'supabase/migrations/020_foundation_hardening.sql & Live Staging PostgREST (200 OK)';
-        rlsRationale = 'Inspected migration definition: Table user_follows has active RLS with policy SELECT USING (true). Live table responds 200 OK via PostgREST. Direct read is conditional pending live PostgreSQL catalog (pg_policies) verification.';
-      } else if (primaryTable === 'lmx_department_alerts') {
-        sourcePolicyStatus = 'SOURCE_POLICY_VERIFIED';
-        sensitivity = 'PUBLIC_CIVIL_SERVICE_ALERTS';
-        evidenceSource = 'supabase/migrations/033_content_and_department_alerts.sql & Live Staging PostgREST (200 OK)';
-        rlsRationale = 'Inspected migration definition: Table lmx_department_alerts has active RLS with policy SELECT USING (is_active = true). Live table responds 200 OK via PostgREST. Direct read is conditional pending live PostgreSQL catalog (pg_policies) verification.';
-      } else if (primaryTable === 'lmx_departments') {
-        sourcePolicyStatus = 'PENDING';
-        sensitivity = 'GOVERNANCE_ORGANIZATION';
-        directAllowed = 'CONDITIONAL_PENDING_VERIFICATION';
-        apiMediationRequired = 'REVIEW_REQUIRED';
-        evidenceSource = 'supabase/migrations/024_lmx_lead_management.sql & Live Staging PostgREST (200 OK)';
-        rlsRationale = 'Table lmx_departments has RLS enabled in migration 024, but lacks explicit SELECT policies in SQL migrations. Direct client read must not be marked safe until live policy is confirmed or Fastify mediation is implemented.';
-      } else if (primaryTable === 'lmx_affiliations') {
-        sourcePolicyStatus = 'PENDING';
-        sensitivity = 'CONTRIBUTOR_AFFILIATION';
-        directAllowed = 'CONDITIONAL_PENDING_VERIFICATION';
-        apiMediationRequired = 'REVIEW_REQUIRED';
-        evidenceSource = 'supabase/migrations/024_lmx_lead_management.sql & Live Staging PostgREST (200 OK)';
-        rlsRationale = 'Table lmx_affiliations has RLS policy for contributors managing own affiliations, but general SELECT policy requires live database verification. Direct client read held pending verification.';
-      } else {
-        sourcePolicyStatus = 'PENDING';
-        sensitivity = 'PUBLIC_OR_SCOPED';
-        directAllowed = 'CONDITIONAL_PENDING_VERIFICATION';
-        apiMediationRequired = 'REVIEW_REQUIRED';
-        evidenceSource = 'Migration SQL + Live Staging PostgREST';
-        rlsRationale = `RLS enabled on table ${primaryTable} in migrations, but specific policy verification is pending. Direct client access is conditional pending live policy inspection.`;
-      }
-
-      rlsQualification = {
-        primaryTableOrRpc: primaryTable,
-        sensitivityCategory: sensitivity,
-        sourcePolicyStatus,
-        livePolicyStatus,
-        rlsStatus: `${sourcePolicyStatus} / LIVE_CATALOG_PENDING`,
-        directClientAllowed: directAllowed,
-        apiMediationRequired,
-        evidenceSource,
-        rationale: rlsRationale
-      };
+      const liveOverride = (options.rlsFixtures && (options.rlsFixtures[primaryTable] || options.rlsFixtures[fnName])) || null;
+      rlsQualification = evaluateClassARlsQualification({
+        fnName,
+        primaryTable,
+        liveOverride
+      });
     }
 
     classifiedFunctions.push({
@@ -909,9 +957,9 @@ export function runApiArchitectureAudit(options = {}) {
 
   const auditReport = {
     evidenceMetadata: {
-      jobId: 'W006-R1B',
-      title: 'API Architecture Audit & Live RLS Provenance Rebinding (W006-R1B)',
-      authority: 'Master Execution Framework Amendment v1.4 / DEC-002 / DEC-028 / DEC-029 / DEC-030 / DEC-031 / DEC-032',
+      jobId: 'W006-R1C',
+      title: 'API Architecture Audit & Semantic Integrity Remediation (W006-R1C)',
+      authority: 'Master Execution Framework Amendment v1.4 / DEC-002 / DEC-028 / DEC-029 / DEC-030 / DEC-031 / DEC-032 / DEC-033',
       timestamp: new Date().toISOString(),
       commitCoordinates: {
         verifiedRemoteHead,
@@ -1001,16 +1049,23 @@ export function generateMarkdownReports(auditReport, rootDir = process.cwd()) {
   const gs = auditReport.globalSearchLiveInspection;
   const probe = auditReport.liveStagingCatalogProbe;
 
-  lines.push('# JOB W006-R1B: LIVE RLS EVIDENCE & PROVENANCE REBINDING REPORT');
-  lines.push('**Execution Authority:** Master Product Blueprint, AI Agent Master Execution Job Book, Amendment v1.2, Amendment v1.4, AGENT_EXECUTION_PROTOCOL.md, DEC-002, DEC-028, DEC-029, DEC-030, DEC-031, DEC-032');
-  lines.push('**Status:** IMPLEMENTED & REBOUND — READY FOR INDEPENDENT VERIFICATION (W006-R1B)');
+  // Anti-Override Guard (Fail-Closed on Report Generation)
+  for (const entry of matrix) {
+    if (entry.livePolicyStatus !== 'LIVE_RLS_VERIFIED' && entry.directClientAllowed === true) {
+      throw new Error(`[FAIL CLOSED] REPORT_GENERATOR_OVERRIDE_VIOLATION: Class A method ${entry.method} has livePolicyStatus "${entry.livePolicyStatus}" but directClientAllowed is true`);
+    }
+  }
+
+  lines.push('# JOB W006-R1C: AUDIT SEMANTIC INTEGRITY & FAIL-CLOSED PROVENANCE REPORT');
+  lines.push('**Execution Authority:** Master Product Blueprint, AI Agent Master Execution Job Book, Amendment v1.2, Amendment v1.4, AGENT_EXECUTION_PROTOCOL.md, DEC-002, DEC-028, DEC-029, DEC-030, DEC-031, DEC-032, DEC-033');
+  lines.push('**Status:** IMPLEMENTED — READY FOR INDEPENDENT VERIFICATION (W006-R1C)\n**W007 Status:** STRICTLY BLOCKED pending independent W006 acceptance');
   lines.push(`**Date:** ${auditReport.evidenceMetadata.timestamp.slice(0, 10)}`);
   lines.push('');
   lines.push('---');
   lines.push('');
   lines.push('## 1. Executive Summary & RLS Evidence Taxonomy');
   lines.push('');
-  lines.push('In accordance with **W006-R1B (Live RLS Evidence & Provenance Rebinding)**, this report establishes the strict separation between migration-source policy inspection and live PostgreSQL catalog policy verification:');
+  lines.push('In accordance with **W006-R1C (Audit Semantic Integrity & Fail-Closed Provenance Remediation)**, this report establishes strict fail-closed Git provenance, fail-closed Class-A RLS qualification, dynamic coordinate binding, and truthful catalog inspection:');
   lines.push('');
   lines.push('### RLS Evidence Taxonomy (Part A Standards)');
   lines.push('1. **`SOURCE_POLICY_VERIFIED`**: Policy exists in repository migrations (001..034) and has been explicitly inspected.');
@@ -1125,7 +1180,7 @@ export function generateMarkdownReports(auditReport, rootDir = process.cwd()) {
 
 // CLI mode
 if (process.argv[1] && process.argv[1].endsWith('audit-api-architecture.mjs')) {
-  console.log('=== KSHETRA API ARCHITECTURE AUDIT GENERATOR (W006-R1B) ===\n');
+  console.log('=== KSHETRA API ARCHITECTURE AUDIT GENERATOR (W006-R1C) ===\n');
   const auditReport = runApiArchitectureAudit();
   const rootDir = process.cwd();
 
@@ -1134,6 +1189,7 @@ if (process.argv[1] && process.argv[1].endsWith('audit-api-architecture.mjs')) {
   fs.writeFileSync(path.join(rootDir, 'reports/w006_r1_audit_integrity_report.json'), JSON.stringify(auditReport, null, 2));
   fs.writeFileSync(path.join(rootDir, 'reports/w006_r1a_provenance_rls_report.json'), JSON.stringify(auditReport, null, 2));
   fs.writeFileSync(path.join(rootDir, 'reports/w006_r1b_live_rls_provenance_report.json'), JSON.stringify(auditReport, null, 2));
+  fs.writeFileSync(path.join(rootDir, 'reports/w006_r1c_semantic_provenance_report.json'), JSON.stringify(auditReport, null, 2));
 
   // Write Markdown reports
   const mdContent = generateMarkdownReports(auditReport, rootDir);
@@ -1141,8 +1197,9 @@ if (process.argv[1] && process.argv[1].endsWith('audit-api-architecture.mjs')) {
   fs.writeFileSync(path.join(rootDir, 'reports/w006_r1_audit_integrity_report.md'), mdContent);
   fs.writeFileSync(path.join(rootDir, 'reports/w006_r1a_provenance_rls_report.md'), mdContent);
   fs.writeFileSync(path.join(rootDir, 'reports/w006_r1b_live_rls_provenance_report.md'), mdContent);
+  fs.writeFileSync(path.join(rootDir, 'reports/w006_r1c_semantic_provenance_report.md'), mdContent);
 
-  console.log(`[SUCCESS] Generated W006-R1B audit reports across 85 methods:`);
+  console.log(`[SUCCESS] Generated W006-R1C audit reports across 85 methods:`);
   console.log(`   - Class A (Read, RLS-Governed): ${auditReport.dataServiceClassification.classCounts.CLASS_A_READ_RLS_GOVERNED}`);
   console.log(`     * Source Policy Verified (SOURCE_POLICY_VERIFIED): ${auditReport.auditSummary.classARlsBreakdown.sourcePolicyVerifiedCount}`);
   console.log(`     * Source Policy Pending (PENDING): ${auditReport.auditSummary.classARlsBreakdown.sourcePendingCount}`);
@@ -1157,5 +1214,5 @@ if (process.argv[1] && process.argv[1].endsWith('audit-api-architecture.mjs')) {
   console.log(`   - Static Fastify Route Registrations: ${auditReport.auditSummary.staticSourceRouteRegistrationsCount}`);
   console.log(`   - Audited Code Commit: ${auditReport.evidenceMetadata.commitCoordinates.auditedCodeCommit}`);
   console.log(`   - Verified Remote Head: ${auditReport.evidenceMetadata.commitCoordinates.verifiedRemoteHead}`);
-  console.log('All 8 report artifacts (4 JSON + 4 MD) written to reports/ directory.');
+  console.log('All 10 report artifacts (5 JSON + 5 MD) written to reports/ directory.');
 }

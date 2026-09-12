@@ -434,6 +434,20 @@
   6. **Automated Verification Suite Expansion (Checks 20–27):** Expanded `tests/api-architecture-audit.test.mjs` to 27 comprehensive checks verifying all Part H requirements.
 - **Rationale:** Guarantees absolute veracity in security assertions, prevents premature authorization of client-side data access, documents live staging defects truthfully, and maintains unbroken commit lineage.
 
+---
 
-
-
+### DEC-033: W006-R1C AUDIT SEMANTIC INTEGRITY & FAIL-CLOSED PROVENANCE REMEDIATION
+- **Date:** 2026-09-12
+- **Status:** APPROVED & IMPLEMENTED (READY FOR INDEPENDENT VERIFICATION)
+- **Authority:** Master Product Blueprint, AI Agent Master Execution Job Book, Amendment v1.2, Amendment v1.4, `AGENT_EXECUTION_PROTOCOL.md`, `DEC-002`, `DEC-028`, `DEC-029`, `DEC-030`, `DEC-031`, `DEC-032`
+- **Context:** Independent review of W006-R1B identified remaining semantic and provenance vulnerabilities: (1) need for modular pure decision engine `evaluateClassARlsQualification()` with enforced fail-closed invariants; (2) absolute technical impossibility of `directClientAllowed = true` whenever live RLS verification is pending; (3) report generator anti-override guards; (4) explicit semantic regression suite testing Section 14 Tests A through I.
+- **Decisions:**
+  1. **Fail-Closed RLS Decision Engine (`evaluateClassARlsQualification`):** Extracted Class-A qualification into a dedicated exported function enforcing three hard runtime invariants:
+     - Invariant 1: If `livePolicyStatus !== 'LIVE_RLS_VERIFIED'`, `directClientAllowed` CANNOT be true (throws `RLS_INVARIANT_VIOLATION`).
+     - Invariant 2: Messaging tables (`conversations`, `messages`) strictly enforce `directClientAllowed = false` and `apiMediationRequired = true` regardless of policy (throws `SENSITIVE_OPERATION_INVARIANT_VIOLATION`).
+     - Invariant 3: Rationale cannot contain generic blanket claims ("Verified RLS enabled on table. Direct client read safe") (throws `BLANKET_ASSERTION_VIOLATION`).
+  2. **Report Generator Anti-Override Guard:** Added pre-generation validation in `generateMarkdownReports()` that throws `REPORT_GENERATOR_OVERRIDE_VIOLATION` if any entry in `classAMatrix` contains `directClientAllowed = true` while `livePolicyStatus` is not `LIVE_RLS_VERIFIED`.
+  3. **Controlled Fixture Verification (Test C):** Implemented controlled fixture support in `evaluateClassARlsQualification()` and `runApiArchitectureAudit()` to prove `directClientAllowed = true` IS technically possible when genuine `LIVE_RLS_VERIFIED` evidence is established for public reads.
+  4. **Dynamic Semantic Regression Suite (Checks 28–36 / Tests A–I):** Expanded `tests/api-architecture-audit.test.mjs` to 36 checks covering: Live RLS unavailable (Test A), Source-only evidence (Test B), Controlled live verification fixture (Test C), Messaging mediation invariant (Test D), Fail-closed Git failure simulation (Test E), Remote coordinate mismatch simulation (Test F), Dirty working tree simulation (Test G), Blanket assertion eradication (Test H), and Report generator anti-override guard (Test I).
+  5. **Truthful Catalog Documentation:** Preserved live PostgREST probe results and `global_search` defect (`0A000: invalid UNION/INTERSECT/EXCEPT ORDER BY clause`) truthfully without premature alteration.
+- **Rationale:** Technical enforcement guarantees that neither the decision engine nor the report generator can falsely assert client-side data safety or remote provenance. W007 remains strictly blocked until formal acceptance.

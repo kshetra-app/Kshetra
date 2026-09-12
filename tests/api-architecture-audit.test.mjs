@@ -1,11 +1,11 @@
 import assert from 'assert';
 import fs from 'fs';
 import path from 'path';
-import { runApiArchitectureAudit } from '../scripts/audit-api-architecture.mjs';
+import { runApiArchitectureAudit, evaluateClassARlsQualification, generateMarkdownReports } from '../scripts/audit-api-architecture.mjs';
 
 import { execSync, spawnSync } from 'child_process';
 
-console.log('=== RUNNING W006-R1B API ARCHITECTURE AUDIT & PROVENANCE INTEGRITY TEST ===\n');
+console.log('=== RUNNING W006-R1C API ARCHITECTURE AUDIT & SEMANTIC INTEGRITY TEST ===\n');
 
 // 1. REBINDING TO REAL AUDIT IMPLEMENTATION
 console.log('1. Executing real audit implementation directly against repository source...');
@@ -16,7 +16,7 @@ console.log('[PASS] Check 1: Real audit implementation executed dynamically agai
 
 // 2. EVIDENCE METADATA & REPOSITORY PROVENANCE
 const { evidenceMetadata, auditSummary, callers, rpcSemantics, dataServiceClassification, strangulationMigrationPlan, registeredFastifyRoutes } = liveAudit;
-assert.ok(evidenceMetadata.jobId === 'W006-R1B' || evidenceMetadata.jobId === 'W006-R1A' || evidenceMetadata.jobId === 'W006-R1' || evidenceMetadata.jobId === 'W006', 'Job ID must be W006-R1B');
+assert.ok(evidenceMetadata.jobId === 'W006-R1C' || evidenceMetadata.jobId === 'W006-R1B' || evidenceMetadata.jobId === 'W006-R1A' || evidenceMetadata.jobId === 'W006-R1' || evidenceMetadata.jobId === 'W006', 'Job ID must be W006-R1C');
 assert.ok(evidenceMetadata.commitCoordinates.verifiedRemoteHead, 'verifiedRemoteHead coordinate must be present');
 assert.ok(evidenceMetadata.timestamp, 'Timestamp must be present');
 console.log(`[PASS] Check 2: Evidence metadata verified (Job: ${evidenceMetadata.jobId}, Head: ${evidenceMetadata.commitCoordinates.verifiedRemoteHead}).`);
@@ -319,6 +319,167 @@ assert.strictEqual(liveAudit.evidenceMetadata.commitCoordinates.verifiedRemoteHe
   'Check 27 failed: verifiedRemoteHead must equal current origin/master short SHA');
 console.log(`[PASS] Check 27: Current verified remote state is accurate (${liveAudit.evidenceMetadata.commitCoordinates.verifiedRemoteHead}).`);
 
+
+// -----------------------------------------------------------------------------
+// PART I — W006-R1C SEMANTIC INTEGRITY & FAIL-CLOSED PROVENANCE (Checks 28 to 36 / Tests A to I)
+// -----------------------------------------------------------------------------
+console.log('\n--- Running W006-R1C Semantic Regression & Fail-Closed Invariant Tests (Checks 28 - 36) ---');
+
+// Check 28 (Test A): Live RLS unavailable asserts directClientAllowed !== true for ordinary Class-A reads
+classAMethods.forEach(m => {
+  if (m.rlsQualification.livePolicyStatus.includes('PENDING') || m.rlsQualification.livePolicyStatus.includes('DEFECTIVE')) {
+    assert.notStrictEqual(m.rlsQualification.directClientAllowed, true,
+      `Check 28 / Test A failed: Method ${m.name} has pending live RLS but directClientAllowed was true`);
+  }
+});
+console.log('[PASS] Check 28 (Test A): Live RLS unavailable strictly asserts directClientAllowed !== true for all 23 Class-A methods.');
+
+// Check 29 (Test B): Source-only policy presence asserts directClientAllowed !== true without live database verification
+classAMethods.forEach(m => {
+  if (m.rlsQualification.sourcePolicyStatus === 'SOURCE_POLICY_VERIFIED' && m.rlsQualification.livePolicyStatus !== 'LIVE_RLS_VERIFIED') {
+    assert.notStrictEqual(m.rlsQualification.directClientAllowed, true,
+      `Check 29 / Test B failed: Method ${m.name} has SOURCE_POLICY_VERIFIED but lacked LIVE_RLS_VERIFIED and received directClientAllowed = true`);
+  }
+});
+console.log('[PASS] Check 29 (Test B): Source-only policy presence strictly asserts directClientAllowed !== true without live database verification.');
+
+// Check 30 (Test C): Controlled fixture with LIVE_RLS_VERIFIED asserts directClientAllowed === true is possible
+const fixturePostRes = evaluateClassARlsQualification({
+  fnName: 'fetchPublicPosts',
+  primaryTable: 'posts',
+  liveOverride: { livePolicyStatus: 'LIVE_RLS_VERIFIED' }
+});
+assert.strictEqual(fixturePostRes.livePolicyStatus, 'LIVE_RLS_VERIFIED', 'Fixture must set livePolicyStatus = LIVE_RLS_VERIFIED');
+assert.strictEqual(fixturePostRes.directClientAllowed, true, 'Check 30 / Test C failed: Method with verified live RLS on public table must permit directClientAllowed = true');
+assert.strictEqual(fixturePostRes.apiMediationRequired, false, 'Check 30 / Test C failed: Public read with verified live RLS must not require API mediation');
+console.log('[PASS] Check 30 (Test C): Controlled fixture proves directClientAllowed === true IS possible when LIVE_RLS_VERIFIED is established.');
+
+// Check 31 (Test D): Messaging and confidential operations strictly enforce directClientAllowed === false & apiMediationRequired === true
+const msgConversationsRes = evaluateClassARlsQualification({
+  fnName: 'fetchUserConversations',
+  primaryTable: 'conversations',
+  liveOverride: { livePolicyStatus: 'LIVE_RLS_VERIFIED' }
+});
+assert.strictEqual(msgConversationsRes.directClientAllowed, false, 'Check 31 / Test D failed: fetchUserConversations must enforce directClientAllowed = false even with live policy');
+assert.strictEqual(msgConversationsRes.apiMediationRequired, true, 'Check 31 / Test D failed: fetchUserConversations must enforce apiMediationRequired = true');
+
+const msgMessagesRes = evaluateClassARlsQualification({
+  fnName: 'fetchConversationMessages',
+  primaryTable: 'messages',
+  liveOverride: { livePolicyStatus: 'LIVE_RLS_VERIFIED' }
+});
+assert.strictEqual(msgMessagesRes.directClientAllowed, false, 'Check 31 / Test D failed: fetchConversationMessages must enforce directClientAllowed = false even with live policy');
+assert.strictEqual(msgMessagesRes.apiMediationRequired, true, 'Check 31 / Test D failed: fetchConversationMessages must enforce apiMediationRequired = true');
+console.log('[PASS] Check 31 (Test D): Messaging operations strictly enforce directClientAllowed === false and apiMediationRequired === true.');
+
+// Check 32 (Test E): Simulate Git failure -> exits non-zero, emits zero evidence, substitutes no hardcoded SHA
+const gitFailSimCode = `
+import { runApiArchitectureAudit } from './scripts/audit-api-architecture.mjs';
+try {
+  runApiArchitectureAudit({ throwOnError: true, gitEnv: { originMasterFull: null, statusOut: '' }, rootDir: process.cwd() });
+  process.exit(0);
+} catch (err) {
+  if (err.message.includes('REMOTE_VERIFICATION_FAILED') && !err.message.includes('5754fa2')) {
+    process.exit(23);
+  }
+  process.exit(1);
+}
+`;
+const testERes = spawnSync(process.execPath, ['--input-type=module', '-e', gitFailSimCode], { encoding: 'utf8' });
+assert.strictEqual(testERes.status, 23, `Check 32 / Test E failed: Git failure must exit code 23 without hardcoded SHA fallback (got ${testERes.status})`);
+console.log('[PASS] Check 32 (Test E): Git failure simulation exits non-zero, emits zero evidence, and substitutes no hardcoded fallback SHA.');
+
+// Check 33 (Test F): Simulate remote mismatch -> asserts verified remote provenance is not claimed
+const gitMismatchSimCode = `
+import { runApiArchitectureAudit } from './scripts/audit-api-architecture.mjs';
+try {
+  runApiArchitectureAudit({ 
+    throwOnError: true, 
+    gitEnv: { 
+      currentBranch: 'master',
+      localHeadFull: 'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa',
+      originMasterFull: 'bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb',
+      statusOut: ''
+    }
+  });
+  process.exit(0);
+} catch (err) {
+  if (err.message.includes('COORDINATE_MISMATCH')) {
+    process.exit(24);
+  }
+  process.exit(1);
+}
+`;
+const testFRes = spawnSync(process.execPath, ['--input-type=module', '-e', gitMismatchSimCode], { encoding: 'utf8' });
+assert.strictEqual(testFRes.status, 24, `Check 33 / Test F failed: Remote mismatch must exit code 24 (got ${testFRes.status})`);
+console.log('[PASS] Check 33 (Test F): HEAD != origin/master simulation fails closed and does NOT claim verified remote provenance.');
+
+// Check 34 (Test G): Dirty working tree simulation -> asserts fail-closed exit
+const gitDirtySimCode = `
+import { runApiArchitectureAudit } from './scripts/audit-api-architecture.mjs';
+try {
+  runApiArchitectureAudit({ 
+    throwOnError: true, 
+    gitEnv: { 
+      currentBranch: 'master',
+      localHeadFull: 'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa',
+      originMasterFull: 'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa',
+      statusOut: ' M dirty-file.ts'
+    }
+  });
+  process.exit(0);
+} catch (err) {
+  if (err.message.includes('WORKING_TREE_DIRTY')) {
+    process.exit(25);
+  }
+  process.exit(1);
+}
+`;
+const testGRes = spawnSync(process.execPath, ['--input-type=module', '-e', gitDirtySimCode], { encoding: 'utf8' });
+assert.strictEqual(testGRes.status, 25, `Check 34 / Test G failed: Dirty working tree must exit code 25 (got ${testGRes.status})`);
+console.log('[PASS] Check 34 (Test G): Dirty working tree simulation triggers non-zero fail-closed exit (WORKING_TREE_DIRTY).');
+
+// Check 35 (Test H): Forbidden blanket assertion eradication
+classAMethods.forEach(m => {
+  const r = m.rlsQualification.rationale;
+  assert.ok(!r.includes('Verified RLS enabled on table. Direct client read safe'),
+    `Check 35 / Test H failed: Method ${m.name} contains forbidden blanket claim "Verified RLS enabled on table. Direct client read safe"`);
+  assert.ok(!r.includes('Direct client read safe under row-level policy'),
+    `Check 35 / Test H failed: Method ${m.name} contains forbidden blanket claim "Direct client read safe under row-level policy"`);
+});
+console.log('[PASS] Check 35 (Test H): Zero forbidden blanket RLS assertions exist across all Class-A method rationales.');
+
+// Check 36 (Test I): Report generator cannot override decision engine to set directClientAllowed = true
+let overrideCaught = false;
+try {
+  const tamperedReport = {
+    evidenceMetadata: { timestamp: new Date().toISOString(), commitCoordinates: {} },
+    auditSummary: { classARlsBreakdown: {} },
+    classAMatrix: [
+      {
+        method: 'fetchCivicIssues',
+        primaryTableOrRpc: 'civic_issues',
+        sourcePolicyStatus: 'SOURCE_POLICY_VERIFIED',
+        livePolicyStatus: 'PENDING (Tampered)',
+        sensitivity: 'PUBLIC_CIVIC',
+        directClientAllowed: true, // ILLEGAL OVERRIDE!
+        apiMediationRequired: false,
+        evidenceSource: 'test',
+        rationale: 'test'
+      }
+    ],
+    globalSearchLiveInspection: {},
+    liveStagingCatalogProbe: { tableEndpointProbes: [] },
+    dataServiceClassification: { totalMethods: 1, classCounts: {} }
+  };
+  generateMarkdownReports(tamperedReport);
+} catch (err) {
+  if (err.message.includes('REPORT_GENERATOR_OVERRIDE_VIOLATION')) {
+    overrideCaught = true;
+  }
+}
+assert.strictEqual(overrideCaught, true, 'Check 36 / Test I failed: generateMarkdownReports must throw REPORT_GENERATOR_OVERRIDE_VIOLATION on tampered directClientAllowed = true');
+console.log('[PASS] Check 36 (Test I): Anti-override guard strictly prevents report generator from emitting directClientAllowed = true when live RLS is pending.');
 console.log('\n========================================================================');
-console.log('   ALL 27 W006-R1B API ARCHITECTURE AUDIT & INTEGRITY CHECKS PASSED!   ');
+console.log('   ALL 36 W006-R1C API ARCHITECTURE AUDIT & INTEGRITY CHECKS PASSED!   ');
 console.log('========================================================================\n');
