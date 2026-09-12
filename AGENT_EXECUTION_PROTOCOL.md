@@ -1,8 +1,8 @@
 # AGENT EXECUTION PROTOCOL
 ## Autonomous Closed-Loop Execution, Self-Audit and Efficiency Protocol
 
-**Authority:** Master Execution Framework Amendment v1.5 (`AMENDMENT_v1.5.md`) (incorporating governing principles of `AMENDMENT_v1.4.md`, `AMENDMENT_v1.3.md`, and `AMENDMENT_v1.2.md`)  
-**Status:** MANDATORY OPERATING CONSTITUTION FOR ALL AGENTS UNDER AMENDMENT v1.5  
+**Authority:** Master Execution Framework Amendment v1.5 (`AMENDMENT_v1.5.md`) & Amendment v1.5-A (`AMENDMENT_v1.5-A.md`) (incorporating governing principles of `AMENDMENT_v1.4.md`, `AMENDMENT_v1.3.md`, and `AMENDMENT_v1.2.md`)  
+**Status:** MANDATORY OPERATING CONSTITUTION FOR ALL AGENTS UNDER AMENDMENT v1.5 & v1.5-A  
 **Scope:** All current and future jobs, remediations, verifications, and releases across PANIN / Kshetra.
 
 ---
@@ -15,94 +15,134 @@ Before starting ANY job, the agent must read the following documents in this exa
 2. `AMENDMENT_v1.2.md` (Compliance, DPDP, Independent Verification & Launch Gates)
 3. `AMENDMENT_v1.3.md` (Autonomous Closed-Loop Execution, Self-Audit and Efficiency Protocol)
 4. `AMENDMENT_v1.4.md` (Evidence Semantics, Runtime Proof and Carry-Forward Controls)
-5. `AMENDMENT_v1.5.md` (Mandatory Pre-Implementation Planning & Direction-Review Gate - OPERATIONAL GOVERNANCE AUTHORITY)
-6. `AGENT_EXECUTION_PROTOCOL.md` (This Operating Constitution)
-7. `EXECUTION_STATE.md` (Current Project & Execution Coordinates)
-8. `ACCEPTANCE_REGISTER.md` (Authoritative Milestone Acceptance Truth)
-9. `DEFECT_REGISTER.md` (Known-Problem Ledger & Carry-Forward Classification)
-10. `DECISION_LOG.md` (Architectural & Operational Decision Truth)
-11. `RELEASE_REGISTER.md` (Release & Artifact Ledger)
-12. The specific user prompt / job instruction.
+5. `AMENDMENT_v1.5.md` (Mandatory Pre-Implementation Planning & Direction-Review Gate — Immutable Parent Baseline)
+6. `AMENDMENT_v1.5-A.md` (Strengthening Pre-Implementation Planning — ACTIVE OPERATIONAL AUTHORITY)
+7. `AGENT_EXECUTION_PROTOCOL.md` (This Operating Constitution)
+8. `EXECUTION_STATE.md` (Current Project & Execution Coordinates)
+9. `ACCEPTANCE_REGISTER.md` (Authoritative Milestone Acceptance Truth)
+10. `DEFECT_REGISTER.md` (Known-Problem Ledger & Carry-Forward Classification)
+11. `DECISION_LOG.md` (Architectural & Operational Decision Truth)
+12. `RELEASE_REGISTER.md` (Release & Artifact Ledger)
+13. The specific user prompt / job instruction.
 
 ---
 
-## 2. Permanent Operating Lifecycle (Amendment v1.5)
+## 2. Permanent Operating Lifecycle & State Machine (Amendment v1.5 & v1.5-A)
 
-For every substantive implementation job, the lifecycle is:
+For every substantive implementation job, the execution model distinguishes between **intra-job operational states** and the **project-wide sequential workflow**:
+
+### 2.1 Intra-Job Operational Execution Cycle (18 States)
+An operational state represents an active or holding condition of the agent and repository during the lifecycle of a specific task:
 
 ```text
-1. TASK ISSUED
+1. TASK_DEFINED
         ↓
 2. PRE-FLIGHT
         ↓
-3. REPOSITORY / SYSTEM INSPECTION
+3. INSPECTION
         ↓
-4. PRE-IMPLEMENTATION PLAN
+4. PLAN_DRAFTED
         ↓
-5. PLAN REVIEW
+5. PLAN_REVIEW
         ↓
-6. PLAN CORRECTION, IF REQUIRED
+6. PLAN_CORRECTED (if required)
         ↓
-7. PLAN APPROVAL
+7. PLAN_APPROVED
         ↓
 8. IMPLEMENTATION
         ↓
 9. TEST
         ↓
-10. SEMANTIC SELF-AUDIT (SI-001, SI-002, SI-003)
+10. SEMANTIC_SELF_AUDIT (SI-001, SI-002, SI-003)
         ↓
-11. NEGATIVE-PATH TEST
+11. NEGATIVE_PATH_TEST
         ↓
-12. REPAIR
+12. REPAIR (if required)
         ↓
-13. RETEST
+13. RETEST (if required)
         ↓
-14. EVIDENCE RECONCILIATION
+14. EVIDENCE_RECONCILIATION
         ↓
-15. REMOTE VERIFICATION
+15. REMOTE_VERIFICATION
         ↓
-16. READY FOR INDEPENDENT VERIFICATION
+16. READY_FOR_INDEPENDENT_VERIFICATION
         ↓
-17. INDEPENDENT VERIFICATION
+17. INDEPENDENT_VERIFICATION
         ↓
 18. ACCEPTANCE
-        ↓
-19. NEXT JOB
 ```
 
-No substantive implementation may bypass steps 3–7. The implementing agent must never halt after the first successful compile or test. Evidence must distinguish SOURCE, CONFIGURATION, BUILD, LOCAL RUNTIME, STAGING RUNTIME, PRODUCTION RUNTIME, LIVE DATABASE, and EXTERNAL PROVIDER evidence (Amendment v1.4 Part 2).
+No substantive implementation may bypass states 3–7. The implementing agent must never halt after the first successful compile or test. Evidence must distinguish SOURCE, CONFIGURATION, BUILD, LOCAL RUNTIME, STAGING RUNTIME, PRODUCTION RUNTIME, LIVE DATABASE, and EXTERNAL PROVIDER evidence (Amendment v1.4 Part 2).
+
+### 2.2 Sequential Project Workflow & Gating (19 Steps)
+In the master project job book, the lifecycle defines 19 sequential steps:
+- **Steps 1–18:** The 18 intra-job operational states above (from `TASK_DEFINED` to `ACCEPTANCE`).
+- **Step 19:** `NEXT_JOB_TRANSITION` (workflow transition and prerequisite gating point; commencing the next job book milestone is strictly blocked until Step 18 `ACCEPTANCE` is verified and ratified).
 
 ---
 
-## 2.1 Pre-Implementation Planning & Direction-Review Gate (Amendment v1.5)
+## 2.3 Pre-Implementation Planning Specification (Amendment v1.5-A)
 
-For all substantive implementation jobs, the implementing agent operates in `PLAN ONLY` mode upon receiving a task.
-The first response from the agent must be:
+For all substantive implementation jobs, the implementing agent operates strictly in `PLAN ONLY` mode upon receiving a task.
+The agent must formulate and submit a comprehensive Pre-Implementation Plan containing the mandatory 22 sections specified by `AMENDMENT_v1.5-A.md` Section 26:
 
 ```text
 PRE-IMPLEMENTATION PLAN — <JOB ID>
 
 1. Task Understanding
 2. Current-State Findings
-3. Root Cause
-4. Proposed Technical Solution
-5. Files Expected to Change
-6. Test Strategy
-7. Negative-Path Strategy
-8. Evidence Strategy
-9. Provenance Strategy
-10. Risks
-11. Assumptions
-12. Scope Boundaries
-13. Dependencies / Blocking Analysis
-14. Acceptance Criteria
-15. Questions / Decisions Requiring Review
+3. Facts / Inferences / Assumptions / Unknowns
+4. Root-Cause Interpretation
+5. Proposed Technical Solution
+6. Alternatives Considered
+7. Exact Files / Components Expected to Change
+8. Explicit Non-Change Boundary
+9. Test Strategy
+10. Negative-Path Strategy
+11. Test Integrity Strategy
+12. Evidence Strategy
+13. Provenance Strategy
+14. Security / Privacy / Data Considerations
+15. Risks and Assumptions
+16. Scope Boundaries
+17. Dependency / Blocking Analysis
+18. Downstream Impact
+19. Rollback / Recovery Considerations
+20. Acceptance Criteria
+21. Questions / Decisions Requiring Review
+22. Plan-Approval State
 ```
 
 The agent must STOP and await explicit authorization:
 > **PLAN APPROVED — PROCEED WITH IMPLEMENTATION ACCORDING TO THE APPROVED PLAN.**
 
-Implementation begins ONLY after this authorization is granted.
+Implementation begins ONLY after this canonical authorization is granted.
+
+---
+
+## 2.4 Mandatory Implementation Declarations (Amendment v1.5-A Sections 27 & 28)
+
+### Required Pre-Implementation Declaration (Section 27)
+Before any implementation begins, the agent must formally declare:
+```text
+PLAN STATUS: APPROVED
+APPROVED PLAN VERSION: <identifier>
+PLAN APPROVAL EVIDENCE: <reference>
+IMPLEMENTATION MAY BEGIN: YES
+```
+If these fields are absent, implementation is not authorized.
+
+### Required Post-Implementation Declaration (Section 28)
+After implementation completes and before independent verification, the agent must report:
+```text
+APPROVED PLAN FOLLOWED: YES / NO
+MATERIAL PLAN DEVIATION: YES / NO
+IF YES:
+    DEVIATION APPROVED: YES / NO
+    REVISED PLAN REFERENCE: <identifier>
+IMPLEMENTATION COMPLETE: YES / NO
+```
+This creates explicit traceability between architectural direction and actual implementation.
 
 ---
 

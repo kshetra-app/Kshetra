@@ -466,3 +466,18 @@
   4. **Material Deviation Guard:** Any deviation changing root-cause, architecture, security, database, API contract, scope, or evidence requires an immediate halt, plan revision, and re-approval.
 - **Rationale:** One hour spent preventing an incorrect implementation avoids many hours spent repairing a correct implementation of the wrong idea. Guarantees tight architectural alignment before code is written.
 
+---
+
+### DEC-035: AMENDMENT v1.5-A ADOPTION & OPERATIONAL GOVERNANCE STRENGTHENING
+- **Date:** 2026-09-12
+- **Status:** APPROVED & IMPLEMENTED (PENDING VERIFICATION & FORMAL ACCEPTANCE)
+- **Authority:** Master Product Blueprint, AI Agent Master Execution Job Book, `AMENDMENT_v1.5.md`, `AMENDMENT_v1.5-A.md`, `AGENT_EXECUTION_PROTOCOL.md`
+- **Context:** While Amendment v1.5 established the mandatory planning gate, Amendment v1.5-A strengthens the gate to ensure planning does not become a procedural formality, establishing standardized structure, lifecycle precision, and verifiable declarations.
+- **Decisions:**
+  1. **Amendment v1.5-A Operational Authority:** Ratified `AMENDMENT_v1.5-A.md` as supplemental active operational authority, with `AMENDMENT_v1.5.md` preserved as an immutable parent baseline anchored by cryptographic SHA-256 provenance (`8b3505eee995adebd92ba2139173f0a0ab68cdcd0ed6f19f10cdcab3c7a2bfe2` at commit `795b9af`).
+  2. **Mandatory 22-Section Pre-Implementation Plan Specification:** Mandated that every future substantive implementation plan must contain the 22 standardized sections defined in `AMENDMENT_v1.5-A.md` Section 26.
+  3. **Lifecycle Model Proof & Arithmetic Reconciliation:** Operationally codified the 18 intra-job operational states (from `TASK_DEFINED` to `ACCEPTANCE`) and the 19-step sequential project workflow in `AGENT_EXECUTION_PROTOCOL.md`, explicitly recognizing Step 19 (`NEXT_JOB_TRANSITION`) as the inter-job gating mechanism.
+  4. **Pre- and Post-Implementation Declarations:** Formally operationalized Section 27 (Required Implementation Declaration before modifying code) and Section 28 (Required Post-Implementation Declaration upon completion) to ensure complete direction-to-implementation traceability.
+  5. **Lifecycle State Separation:** Explicitly established that `PLAN APPROVAL ≠ IMPLEMENTATION ≠ VERIFICATION ≠ FINAL ACCEPTANCE`. This decision records the governance adoption process; full operationalization is established upon implementation commit and successful independent verification.
+- **Rationale:** Prevents AI agents from treating the planning phase as a superficial formality, establishes uniform rigor across the project lifecycle, and protects architectural integrity before any system state is altered.
+
