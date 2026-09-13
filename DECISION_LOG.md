@@ -648,3 +648,37 @@
   4. **Foundation Verification:** Verified canonical contract envelopes (`packages/shared/src/contracts/`), replyHelper (`apps/api/src/lib/replyHelper.ts`), and global error handling (`apps/api/src/server.ts`). Automated suites (`contracts.test.ts`, `w008-contract-negative-paths.test.mjs`, `verify_reconciliation.mjs`) pass 100%. TypeScript compilation passes across `@kshetra/shared` and `@kshetra/api`.
   5. **Submission for Independent CTO Verification:** The implementation is submitted for independent CTO verification. W008-B remains blocked until W008-A is formally verified and accepted.
 - **Rationale:** Ensures strict adherence to Control M governance, prevents scope bleed into unauthorized modules, and provides verifiable provenance for contract foundation adoption.
+
+---
+
+### DEC-045: W008-A FINAL CTO ACCEPTANCE & W008-B PRE-AUTHORIZATION GATE
+- **Date:** 2026-09-13
+- **Status:** APPROVED & ACCEPTED BY CTO / W008-B PRE-AUTHORIZATION GATE OPENED
+- **Authority:** CTO Formal Decision / Technical Authority (Rule IV-001)
+- **Context:** Following independent technical review of the W008-A implementation, verification evidence, and CA-05 runtime compatibility proof, the CTO formally accepted and closed Sub-Job W008-A (API Contract Foundation Reconciliation & Adoption).
+- **Decisions:**
+  1. **Formal W008-A Acceptance & Closure:** W008-A is formally marked `ACCEPTED / CLOSED`. The CTO confirmed:
+     - CA-01: PASS (canonical contract envelopes and pagination interfaces in `@kshetra/shared`)
+     - CA-02: PASS (`apps/api/src/lib/replyHelper.ts` canonical error helper)
+     - CA-03: PASS (global Fastify `setErrorHandler` with Ajv error unwrapping)
+     - CA-04: PASS (NP-01..NP-06 foundation negative-path test suite pass)
+     - CA-05: PASS (zero breaking changes to existing Fastify route handlers; runtime compatibility proven)
+  2. **Accepted Coordinate Lineage:**
+     - Accepted Implementation Coordinate: `be9cb85fafce85c56b1ccac3ee7b6137bbbba7e7`
+     - Evidence & Governance Coordinate: `dc61d69c0f9bc3087f13a5cb2d82d9f1e9cf9bf3`
+     - Authorized Scope Hash: `5fb6dd58d10d9b46bdb9e45589af0f65595a11cac952b315e3f00c1b65f9f34f`
+  3. **W008-B Pre-Authorization Gate Opened:**
+     - Next candidate sub-job: Sub-Job W008-B (Pioneer API Contract Reconciliation & Standardization).
+     - Registration scope: exactly 3 Fastify route registrations (`config.ts`, `news.ts`, `pages.ts`) / 4 HTTP contract operations (`GET /config/flags`, `PATCH /config/flags`, `GET /news/feed`, `GET /pages/:pageId/entitlement`).
+     - Canonical W008-B Scope Hash: `98c1253721bd0b6302a88acef6b2c18701beee635074b4c94586192443d66d0a`.
+     - Provenance boundary: includes candidate adoption (`config.ts`, `news.ts`) and genuine new authorized engineering scope (`pages.ts` entitlement endpoint).
+  4. **Strict Implementation Freeze on W008-B:**
+     - W008-B is **NOT AUTHORIZED FOR IMPLEMENTATION**.
+     - `PLAN_STATUS: APPROVED`
+     - `IMPLEMENTATION_AUTHORIZATION: NO`
+     - `AUTHORIZED_JOB: NONE`
+     - `AUTHORIZED_SCOPE_HASH: NONE`
+     - Zero product code modifications permitted.
+     - Sub-jobs W008-B, W008-C, W008-D, W008-E and W009 remain strictly unauthorized.
+- **Rationale:** Complies with Master Execution Framework Amendment v1.5-A and Rule IV-001 by recording formal CTO acceptance without self-certification, closing W008-A with cryptographic provenance, and opening the W008-B pre-authorization gate under strict fail-closed freeze.
+
