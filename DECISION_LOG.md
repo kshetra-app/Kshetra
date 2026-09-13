@@ -682,3 +682,28 @@
      - Sub-jobs W008-B, W008-C, W008-D, W008-E and W009 remain strictly unauthorized.
 - **Rationale:** Complies with Master Execution Framework Amendment v1.5-A and Rule IV-001 by recording formal CTO acceptance without self-certification, closing W008-A with cryptographic provenance, and opening the W008-B pre-authorization gate under strict fail-closed freeze.
 
+---
+
+### DEC-046: W008-B FORMAL CTO IMPLEMENTATION AUTHORIZATION
+- **Date:** 2026-09-13
+- **Status:** APPROVED & AUTHORIZED FOR IMPLEMENTATION (CTO MANDATE)
+- **Authority:** CTO Decision / Formal Implementation Authorization Mandate (Rule IV-001)
+- **Context:** Following independent technical review of the W008-B Pre-Authorization Gate Report, the CTO formally authorized implementation of Sub-Job W008-B (Pioneer API Contract Reconciliation & Standardization).
+- **Decisions:**
+  1. **Sub-Job Implementation Authorization:** Authorize implementation strictly for `W008-B` under canonical scope hash `98c1253721bd0b6302a88acef6b2c18701beee635074b4c94586192443d66d0a`.
+  2. **Authorized Scope:** Exactly 4 HTTP operations across 3 Fastify route registrations:
+     - `GET /api/v1/config/flags`
+     - `PATCH /api/v1/config/flags`
+     - `GET /api/v1/news/feed`
+     - `GET /api/v1/pages/:pageId/entitlement` (NEW authorized engineering scope)
+  3. **Authorized Product Files:**
+     - `apps/api/src/routes/config.ts`
+     - `apps/api/src/routes/news.ts` (GET feed region only; POST refresh forbidden)
+     - `apps/api/src/routes/pages.ts` (GET entitlement region only; details/pro order/verify forbidden)
+  4. **Strict Scope Boundaries:**
+     - Zero product edits to `apps/mobile/**`, `supabase/migrations/**`, `apps/api/src/server.ts`, or any Phase 1 domain routes (`states.ts`, `moderation.ts`, `civic.ts`, `notifications.ts`).
+     - Sub-jobs W008-C, W008-D, W008-E and W009 remain strictly unauthorized and frozen.
+  5. **Commit-Bound Governance Lineage:** Implementation authorization commit is established as an ancestor of eventual implementation/evidence commits, bound to `AUTHORIZATION_TYPE: IMPLEMENTATION`, `AUTHORIZED_JOB: W008-B`, `APPROVED_PLAN_VERSION: REV-7.0`, and `AUTHORIZED_SCOPE_HASH: 98c1253721bd0b6302a88acef6b2c18701beee635074b4c94586192443d66d0a`.
+- **Rationale:** Ensures strict compliance with Control M and Amendment v1.5-A before product code modification begins.
+
+
