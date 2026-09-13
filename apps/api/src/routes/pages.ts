@@ -1,6 +1,7 @@
 import crypto from 'node:crypto';
 import type { FastifyPluginAsync } from 'fastify';
 import { supabase, isSupabaseConfigured } from '../lib/supabase';
+import { sendApiError } from '../lib/replyHelper';
 
 export interface PageEntitlement {
   pageId: string;
@@ -16,6 +17,29 @@ export interface PageEntitlement {
 // Short-lived cache in front of Supabase database reads
 const ENTITLEMENT_CACHE = new Map<string, PageEntitlement>();
 
+const getPageEntitlementSchema = {
+  params: {
+    type: 'object',
+    properties: {
+      pageId: { type: 'string', minLength: 1, maxLength: 128 },
+    },
+    required: ['pageId'],
+  },
+  response: {
+    200: {
+      type: 'object',
+      properties: {
+        success: { type: 'boolean' },
+        pageId: { type: 'string' },
+        isPro: { type: 'boolean' },
+        plan: { type: 'string', enum: ['free', 'pro'] },
+        expiresAt: { type: ['string', 'null'] },
+      },
+      required: ['success', 'pageId', 'isPro', 'plan', 'expiresAt'],
+    },
+  },
+};
+
 export const pagesRoutes: FastifyPluginAsync = async (app) => {
   /**
    * GET /api/v1/pages/:pageId/entitlement
@@ -24,6 +48,7 @@ export const pagesRoutes: FastifyPluginAsync = async (app) => {
    */
   app.get<{ Params: { pageId: string } }>(
     '/api/v1/pages/:pageId/entitlement',
+    { schema: getPageEntitlementSchema },
     async (request, reply) => {
       const { pageId } = request.params;
 
@@ -63,10 +88,13 @@ export const pagesRoutes: FastifyPluginAsync = async (app) => {
       const { data: page, error } = await query.maybeSingle();
 
       if (error) {
-        return reply.status(500).send({
-          success: false,
-          error: `Database query error: ${error.message}`,
-        });
+        return sendApiError(
+          reply,
+          request,
+          500,
+          'Internal Server Error',
+          'An error occurred while retrieving page entitlement',
+        );
       }
 
       const isProActive = Boolean(

@@ -255,4 +255,80 @@ describe('W008 API Contract Standardization & Schema Envelopes', () => {
       expect(assignedId).toMatch(/^[a-zA-Z0-9_\-]+$/);
     });
   });
+
+  describe('Pages Entitlement Schema & Negative Paths (CB-03 / NP-07 / NP-09)', () => {
+    it('CB-03a / NP-07a: returns 400 Bad Request envelope when pageId is empty / fails schema minLength', async () => {
+      const res = await app.inject({
+        method: 'GET',
+        url: '/api/v1/pages//entitlement',
+      });
+
+      expect(res.statusCode).toBe(400);
+      const body = JSON.parse(res.payload);
+      expect(body.statusCode).toBe(400);
+      expect(body.error).toBe('Bad Request');
+      expect(body.code).toBe('FST_ERR_VALIDATION');
+      expect(body.requestId).toBeDefined();
+    });
+
+    it('CB-03b: returns 200 with schema-validated entitlement object for non-pro page / fallback', async () => {
+      const pageId = 'test-non-pro-page-handle';
+      const res = await app.inject({
+        method: 'GET',
+        url: `/api/v1/pages/${pageId}/entitlement`,
+      });
+
+      expect(res.statusCode).toBe(200);
+      const body = JSON.parse(res.payload);
+      expect(body.success).toBe(true);
+      expect(body.pageId).toBe(pageId);
+      expect(body.isPro).toBe(false);
+      expect(body.plan).toBe('free');
+      expect(body.expiresAt).toBeNull();
+    });
+
+    it('CB-03c: returns 200 with schema-validated entitlement object for UUID pageId', async () => {
+      const uuid = '11111111-2222-3333-4444-555555555555';
+      const res = await app.inject({
+        method: 'GET',
+        url: `/api/v1/pages/${uuid}/entitlement`,
+      });
+
+      expect(res.statusCode).toBe(200);
+      const body = JSON.parse(res.payload);
+      expect(body.success).toBe(true);
+      expect(body.pageId).toBe(uuid);
+      expect(typeof body.isPro).toBe('boolean');
+      expect(['free', 'pro']).toContain(body.plan);
+      expect(body.expiresAt === null || typeof body.expiresAt === 'string').toBe(true);
+    });
+
+    it('CB-03d: cached response conforms exactly to 200 schema without metadata leaks', async () => {
+      const pageId = 'test-cached-page-handle';
+      const res1 = await app.inject({
+        method: 'GET',
+        url: `/api/v1/pages/${pageId}/entitlement`,
+      });
+      expect(res1.statusCode).toBe(200);
+
+      // Second request hits in-memory ENTITLEMENT_CACHE
+      const res2 = await app.inject({
+        method: 'GET',
+        url: `/api/v1/pages/${pageId}/entitlement`,
+      });
+      expect(res2.statusCode).toBe(200);
+      const body = JSON.parse(res2.payload);
+      expect(body.success).toBe(true);
+      expect(body.pageId).toBe(pageId);
+      expect(body.isPro).toBe(false);
+      expect(body.plan).toBe('free');
+      expect(body.expiresAt).toBeNull();
+      // Verify internal cache fields (ownerId, role, title, handle) are NOT exposed in response
+      expect(body.ownerId).toBeUndefined();
+      expect(body.title).toBeUndefined();
+      expect(body.handle).toBeUndefined();
+      expect(body.role).toBeUndefined();
+    });
+  });
 });
+
