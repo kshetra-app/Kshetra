@@ -3,7 +3,7 @@
     "job": "W008",
     "title": "API Contract Drift Report (D0-D9 Taxonomy)",
     "specification": "Master Execution Framework Amendment v1.5-A / DEC-041",
-    "timestamp": "2026-09-13T16:08:32.732Z"
+    "timestamp": "2026-09-13T17:06:30.733Z"
   },
   "taxonomyLegend": {
     "D0": "IN_SYNC — No contract drift detected",
@@ -18,6 +18,25 @@
     "D9": "UNVERSIONED_OR_DEPRECATED — Client targets legacy unversioned path"
   },
   "summary": {
+    "dualLayerAuditReconciliation": {
+      "layer1_legacyDeclaredClientContractsCheck": {
+        "sourceArtifact": "reports/w003_api_contract_drift_report.json",
+        "auditedContracts": 9,
+        "matchedContracts": 9,
+        "driftCount": 0,
+        "parityPercentage": 100,
+        "note": "Verifies 9 explicitly declared client contract expectations against registered server routes (Part 34E baseline)."
+      },
+      "layer2_w008D0D9TaxonomyAudit": {
+        "sourceArtifact": "reports/w008_contract_drift_report.json",
+        "auditedEndpoints": 10,
+        "inSyncCount": 10,
+        "driftCount": 0,
+        "taxonomy": "D0-D9",
+        "status": "D0_IN_SYNC",
+        "note": "Audits 10 core standardized pioneer & Phase 1 endpoints under strict D0-D9 drift taxonomy (including method, path, param, schema, envelope, and auth)."
+      }
+    },
     "totalAuditedEndpoints": 10,
     "inSyncCount": 10,
     "driftCount": 0,

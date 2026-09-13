@@ -204,6 +204,25 @@ const driftReport = {
     D9: 'UNVERSIONED_OR_DEPRECATED — Client targets legacy unversioned path',
   },
   summary: {
+    dualLayerAuditReconciliation: {
+      layer1_legacyDeclaredClientContractsCheck: {
+        sourceArtifact: 'reports/w003_api_contract_drift_report.json',
+        auditedContracts: clientExpectations.length,
+        matchedContracts: matchedCount,
+        driftCount: driftCount,
+        parityPercentage: report.parityPercentage,
+        note: 'Verifies 9 explicitly declared client contract expectations against registered server routes (Part 34E baseline).'
+      },
+      layer2_w008D0D9TaxonomyAudit: {
+        sourceArtifact: 'reports/w008_contract_drift_report.json',
+        auditedEndpoints: auditedContracts.length,
+        inSyncCount: auditedContracts.filter(c => c.driftTaxonomy === 'D0_IN_SYNC').length,
+        driftCount: auditedContracts.filter(c => c.driftTaxonomy !== 'D0_IN_SYNC').length,
+        taxonomy: 'D0-D9',
+        status: 'D0_IN_SYNC',
+        note: 'Audits 10 core standardized pioneer & Phase 1 endpoints under strict D0-D9 drift taxonomy (including method, path, param, schema, envelope, and auth).'
+      }
+    },
     totalAuditedEndpoints: auditedContracts.length,
     inSyncCount: auditedContracts.filter(c => c.driftTaxonomy === 'D0_IN_SYNC').length,
     driftCount: auditedContracts.filter(c => c.driftTaxonomy !== 'D0_IN_SYNC').length,

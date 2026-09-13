@@ -706,4 +706,36 @@
   5. **Commit-Bound Governance Lineage:** Implementation authorization commit is established as an ancestor of eventual implementation/evidence commits, bound to `AUTHORIZATION_TYPE: IMPLEMENTATION`, `AUTHORIZED_JOB: W008-B`, `APPROVED_PLAN_VERSION: REV-7.0`, and `AUTHORIZED_SCOPE_HASH: 98c1253721bd0b6302a88acef6b2c18701beee635074b4c94586192443d66d0a`.
 - **Rationale:** Ensures strict compliance with Control M and Amendment v1.5-A before product code modification begins.
 
+---
+
+### DEC-047: W008-B FORMAL CTO TECHNICAL ACCEPTANCE & CLOSURE
+- **Date:** 2026-09-13
+- **Status:** ACCEPTED / CLOSED (CTO FORMAL ACCEPTANCE)
+- **Authority:** CTO Decision / Formal Technical Acceptance under Rule IV-001
+- **Context:** Independent CTO technical audit of Sub-Job W008-B (Pioneer API Contract Reconciliation & Standardization) completed.
+- **Decisions:**
+  1. **Formal W008-B Acceptance & Closure:** W008-B is formally marked `ACCEPTED / CLOSED`. The CTO confirmed:
+     - CB-01: PASS / CTO ACCEPTED (100% schema coverage across 3 registrations / 4 operations)
+     - CB-02: PASS / CTO ACCEPTED (`GET /api/v1/news/feed` schema matches `NewsFeedResponseDTO` without unsafe casts)
+     - CB-03: PASS / CTO ACCEPTED (`GET /api/v1/pages/:pageId/entitlement` request param & response validation; database error leakage eliminated)
+     - CB-04: PASS / CTO ACCEPTED (API contract drift check confirms `D0_IN_SYNC`)
+     - CB-05: PASS / CTO ACCEPTED (Zero breaking changes or regressions across callers: mobile `apiClient.test.ts` 52/52 pass, `pageService.ts` and `featureFlags.ts` fallback semantics preserved)
+  2. **Accepted Coordinate Lineage:**
+     - Implementation Authorization Coordinate: `86a0fa5762494036b15831feee888e4466e67d2d`
+     - Accepted Implementation Coordinate: `f4d4095b9447c4d82b132808313ec0d7309ca135`
+     - Approved Plan Version: `REV-7.0`
+     - Authorized Scope Hash: `98c1253721bd0b6302a88acef6b2c18701beee635074b4c94586192443d66d0a`
+     - Evidence Coordinates: `reports/w008_contract_drift_report.json`, `reports/w008_api_contract_inventory.json`, `reports/w008_negative_path_verification.json`
+  3. **Non-Blocking Evidence-Quality Reconciliation:**
+     - Clarified and reconciled the dual-layer audit counts in `reports/w008_contract_drift_report.json` and `scripts/check-api-contract-drift.mjs`:
+       - **Layer 1 (Declared Client Contracts Baseline):** 9 client contract expectations audited against registered server routes -> 9/9 matched (100% parity).
+       - **Layer 2 (W008 D0-D9 Taxonomy Audit):** 10 core standardized pioneer and Phase 1 endpoints audited against the comprehensive D0-D9 drift taxonomy -> 10/10 endpoints in sync (`D0_IN_SYNC`). Zero drift detected.
+  4. **Strict Follow-On Boundary Enforcement:**
+     - Product implementation scope of W008-B is CLOSED.
+     - Sub-jobs W008-C, W008-D, and W008-E remain strictly **NOT AUTHORIZED / FROZEN**.
+     - Job W009 remains strictly **NOT AUTHORIZED / BLOCKED**.
+     - No implementation may begin without dedicated pre-authorization gate and explicit CTO implementation authorization.
+- **Rationale:** Complies with Master Execution Framework Amendment v1.5-A and Rule IV-001 by recording formal CTO technical acceptance, preserving immutable lineage coordinates, and maintaining strict fail-closed boundaries on unapproved sub-jobs.
+
+
 
