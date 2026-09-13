@@ -196,7 +196,8 @@
       "CD-05"
     ],
     "approvedPlanVersion": "REV-7.0",
-    "inScopeRoutes": [
+    "inScopeRoutes": [],
+    "verificationTargetRoutes": [
       "GET /api/v1/states",
       "GET /api/v1/states/:code"
     ],

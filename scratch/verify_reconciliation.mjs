@@ -2,16 +2,63 @@ import fs from 'fs';
 import path from 'path';
 import crypto from 'crypto';
 import assert from 'assert';
+import { execSync } from 'child_process';
 
 console.log('=== KSHETRA W008 REVISION 7: THREE-WAY RECONCILIATION & SCOPE INTEGRITY TEST ===\n');
 
 // ============================================================================
-// BLOCKER 3: TRUE SOURCE-DERIVED ROUTE DISCOVERY AT PINNED BASELINE HEAD 81ad5b5
+// FINDING 4: SOURCE-BASELINE PROVENANCE VERIFICATION
+// Establish that scanned product source corresponds exactly to pinned baseline 81ad5b5
 // ============================================================================
-console.log('1. Discovering Fastify route registrations directly from repository source (81ad5b5)...');
+console.log('1. Verifying source baseline provenance against pinned coordinate 81ad5b5...');
 
-const fullInventory = [];
-function scanDetailedRoutes(filePath) {
+const EXPECTED_BASELINE_COMMIT = '81ad5b5da49c49524427f64bb4595c473237c573';
+let currentHead = '';
+try {
+  currentHead = execSync('git rev-parse HEAD', { encoding: 'utf8' }).trim();
+} catch (err) {
+  console.error('FAIL CLOSED: Unable to determine git HEAD.');
+  process.exit(1);
+}
+
+// Verify that the current tree is either at the baseline commit OR is a governance commit directly descending from baseline with ZERO product code changes
+if (currentHead === EXPECTED_BASELINE_COMMIT) {
+  console.log(`   [PASS] Current HEAD matches pinned baseline commit: ${currentHead}`);
+} else {
+  // Check that EXPECTED_BASELINE_COMMIT is an ancestor of currentHead
+  try {
+    const isAncestor = execSync(`git merge-base --is-ancestor "${EXPECTED_BASELINE_COMMIT}" "${currentHead}" && echo YES`, { encoding: 'utf8' }).trim();
+    assert.strictEqual(isAncestor, 'YES', `Expected baseline ${EXPECTED_BASELINE_COMMIT} must be an ancestor of HEAD ${currentHead}`);
+  } catch (err) {
+    console.error(`FAIL CLOSED: Pinned baseline ${EXPECTED_BASELINE_COMMIT} is NOT in the ancestry of HEAD (${currentHead})!`);
+    process.exit(1);
+  }
+
+  // Verify that ZERO product code has changed between EXPECTED_BASELINE_COMMIT and currentHead
+  const productDiff = execSync(`git diff --name-only "${EXPECTED_BASELINE_COMMIT}" "${currentHead}" -- apps/ packages/ supabase/`, { encoding: 'utf8' }).trim();
+  if (productDiff.length > 0) {
+    console.error(`FAIL CLOSED: Product code was modified between baseline ${EXPECTED_BASELINE_COMMIT} and HEAD ${currentHead}:\n${productDiff}`);
+    process.exit(1);
+  }
+  console.log(`   [PASS] Pinned baseline ${EXPECTED_BASELINE_COMMIT.slice(0, 7)} is proven ancestor of HEAD (${currentHead.slice(0, 7)}), with 0 product code modifications.`);
+}
+
+// Check uncommitted product code modifications in working tree
+const workingTreeProductDiff = execSync('git diff --name-only HEAD -- apps/ packages/ supabase/', { encoding: 'utf8' }).trim();
+if (workingTreeProductDiff.length > 0) {
+  console.error(`FAIL CLOSED: Uncommitted product code modifications detected in working tree:\n${workingTreeProductDiff}`);
+  process.exit(1);
+}
+console.log('   [PASS] Working tree contains 0 uncommitted product code modifications.');
+
+// ============================================================================
+// FINDING 5: SEPARATE DIRECT SOURCE REGISTRATIONS FROM DERIVED MOUNTED-PREFIX ROUTES
+// Discover direct route registrations and deterministically derive mounted-prefix routes from server.ts
+// ============================================================================
+console.log('\n2. Discovering direct Fastify route registrations and deriving mounted-prefix routes...');
+
+const directRegistrations = [];
+function scanDirectRoutes(filePath) {
   if (!fs.existsSync(filePath)) return;
   const content = fs.readFileSync(filePath, 'utf8');
   const filename = path.basename(filePath);
@@ -35,7 +82,8 @@ function scanDetailedRoutes(filePath) {
       phase = 'Phase 1 (Standardized)';
     }
 
-    fullInventory.push({
+    directRegistrations.push({
+      registrationType: 'DIRECT_SOURCE_REGISTRATION',
       method,
       path: routePath,
       file: filename,
@@ -51,26 +99,69 @@ function scanDetailedRoutes(filePath) {
 const serverFilePath = path.resolve('apps/api/src/server.ts');
 const apiRoutesDir = path.resolve('apps/api/src/routes');
 
-scanDetailedRoutes(serverFilePath);
+scanDirectRoutes(serverFilePath);
 if (fs.existsSync(apiRoutesDir)) {
   fs.readdirSync(apiRoutesDir)
     .filter(f => f.endsWith('.ts') && !f.endsWith('.test.ts'))
     .sort()
-    .forEach(f => scanDetailedRoutes(path.join(apiRoutesDir, f)));
+    .forEach(f => scanDirectRoutes(path.join(apiRoutesDir, f)));
 }
 
-// Add the 3 runtime prefix alias registrations mounted via await app.register(healthRoutes, { prefix: '/api' })
-fullInventory.push({ method: 'GET', path: '/api/health', file: 'health.ts', sourceFile: 'apps/api/src/routes/health.ts', phase: 'System & Diagnostics', schemaDefined: true, preValidationDefined: false, standardizedEnvelope: true });
-fullInventory.push({ method: 'GET', path: '/api/health/db', file: 'health.ts', sourceFile: 'apps/api/src/routes/health.ts', phase: 'System & Diagnostics', schemaDefined: true, preValidationDefined: false, standardizedEnvelope: true });
-fullInventory.push({ method: 'GET', path: '/api/health/ready', file: 'health.ts', sourceFile: 'apps/api/src/routes/health.ts', phase: 'System & Diagnostics', schemaDefined: true, preValidationDefined: false, standardizedEnvelope: true });
+console.log(`   Direct source scan discovered ${directRegistrations.length} route registrations.`);
+assert.strictEqual(directRegistrations.length, 135, 'Direct source scan must discover exactly 135 registrations');
 
-console.log(`   Source discovery discovered ${fullInventory.length} Fastify route registrations.`);
-assert.strictEqual(fullInventory.length, 138, 'Source discovery must discover exactly 138 registrations');
+// Deterministically parse server.ts to extract mounted prefix registrations
+const serverContent = fs.readFileSync(serverFilePath, 'utf8');
+const mountedPrefixRegistrations = [];
+
+// Match: await app.register(pluginFunction, { prefix: '/prefix' })
+const prefixRegisterRegex = /(?:await\s+)?(?:app|fastify)\.register\s*\(\s*([a-zA-Z0-9_]+)\s*,\s*\{\s*prefix:\s*['"`]([^'"`]+)['"`]\s*\}\s*\)/g;
+let prefixMatch;
+const mountedPlugins = [];
+while ((prefixMatch = prefixRegisterRegex.exec(serverContent)) !== null) {
+  mountedPlugins.push({
+    pluginName: prefixMatch[1],
+    prefix: prefixMatch[2]
+  });
+}
+
+// Verify that healthRoutes is mounted with prefix '/api' in server.ts
+const healthMount = mountedPlugins.find(p => p.pluginName === 'healthRoutes');
+assert.ok(healthMount, 'server.ts must contain registration of healthRoutes with a prefix');
+assert.strictEqual(healthMount.prefix, '/api', 'healthRoutes in server.ts must be mounted with prefix /api');
+
+// Deterministically derive mounted prefix routes from routes defined inside health.ts
+const healthDirect = directRegistrations.filter(r => r.file === 'health.ts');
+assert.strictEqual(healthDirect.length, 3, 'health.ts must contain 3 direct route definitions (/health, /health/db, /health/ready)');
+
+for (const hdr of healthDirect) {
+  const derivedPath = healthMount.prefix + hdr.path; // e.g. '/api' + '/health' = '/api/health'
+  mountedPrefixRegistrations.push({
+    registrationType: 'DERIVED_MOUNTED_PREFIX_ROUTE',
+    method: hdr.method,
+    path: derivedPath,
+    file: 'health.ts',
+    sourceFile: 'apps/api/src/routes/health.ts',
+    phase: hdr.phase,
+    schemaDefined: hdr.schemaDefined,
+    preValidationDefined: hdr.preValidationDefined,
+    standardizedEnvelope: hdr.standardizedEnvelope,
+    derivedFromPrefix: healthMount.prefix,
+    originalPath: hdr.path
+  });
+}
+
+console.log(`   Deterministically derived ${mountedPrefixRegistrations.length} mounted-prefix routes from server.ts (prefix: '${healthMount.prefix}'):`);
+mountedPrefixRegistrations.forEach(r => console.log(`     - [DERIVED] ${r.method} ${r.path} (from ${r.file} ${r.originalPath})`));
+
+const fullInventory = [...directRegistrations, ...mountedPrefixRegistrations];
+assert.strictEqual(fullInventory.length, 138, 'Total Fastify registrations (135 direct + 3 derived) must equal exactly 138');
+console.log(`   [PASS] Total Fastify route catalog verified: ${fullInventory.length} (135 direct registrations + 3 derived prefix routes).`);
 
 // ============================================================================
-// BLOCKER 1 & 2: LOAD MASTER 138 LEDGER & VERIFY EQUALITY WITH SOURCE
+// LOAD MASTER 138 LEDGER & VERIFY EQUALITY WITH SOURCE
 // ============================================================================
-console.log('\n2. Comparing independently discovered source routes against scratch/master_138_ledger.json...');
+console.log('\n3. Comparing discovered catalog against scratch/master_138_ledger.json...');
 const ledgerPath = path.resolve('scratch/master_138_ledger.json');
 assert.ok(fs.existsSync(ledgerPath), 'scratch/master_138_ledger.json must exist');
 const ledger = JSON.parse(fs.readFileSync(ledgerPath, 'utf8'));
@@ -92,30 +183,46 @@ assert.deepStrictEqual(sourceIdentities, ledgerIdentities, 'SOURCE_DISCOVERY mus
 console.log('   [PASS] SOURCE_DISCOVERY == MASTER_LEDGER (Zero omissions, zero additions, exact identity equality).');
 
 // ============================================================================
-// BLOCKER 4: THREE-WAY RECONCILIATION
-// SOURCE ROUTES == MASTER LEDGER == SUBJOB UNION
-// B ∩ C = ∅, B ∩ E = ∅, C ∩ E = ∅, B ∪ C ∪ E == SOURCE ROUTES
+// FINDING 2 & 3: VALIDATE SUB-JOB OWNERSHIP, DISJOINTNESS & D VERIFICATION SEMANTICS
 // ============================================================================
-console.log('\n3. Performing Three-Way Reconciliation (Source == Ledger == Sub-Job Union)...');
+console.log('\n4. Validating B/C/E Implementation Ownership and W008-D Verification Semantics...');
 
 const manifestsPath = path.resolve('scratch/manifests_rev7.json');
 assert.ok(fs.existsSync(manifestsPath), 'scratch/manifests_rev7.json must exist');
 const manifests = JSON.parse(fs.readFileSync(manifestsPath, 'utf8'));
 
-// Verify W008-A inScopeRoutes is strictly empty (Blocker 2)
-assert.deepStrictEqual(manifests['W008-A'].inScopeRoutes, [], 'W008-A inScopeRoutes must be []');
+// 1. W008-D modificationScope === []
+assert.deepStrictEqual(manifests['W008-D'].modificationScope, [], 'FAIL CLOSED: W008-D modificationScope must be []');
+console.log('   [PASS] 1. W008-D modificationScope === [] (Verification-Only proven).');
 
+// 2. W008-D inScopeRoutes === []
+assert.deepStrictEqual(manifests['W008-D'].inScopeRoutes, [], 'FAIL CLOSED: W008-D inScopeRoutes must be []');
+console.log('   [PASS] 2. W008-D inScopeRoutes === [] (Zero implementation route ownership).');
+
+// 3. W008-D verificationTargetRoutes explicitly declared separately
+const expectedVerificationTargets = [
+  'GET /api/v1/states',
+  'GET /api/v1/states/:code'
+];
+assert.ok(Array.isArray(manifests['W008-D'].verificationTargetRoutes), 'FAIL CLOSED: W008-D verificationTargetRoutes must be an array');
+assert.deepStrictEqual(manifests['W008-D'].verificationTargetRoutes.sort(), expectedVerificationTargets.sort(), 'FAIL CLOSED: W008-D verificationTargetRoutes mismatch');
+console.log('   [PASS] 3. W008-D verificationTargetRoutes explicitly declared separately (2 targets).');
+
+// 4. W008-A inScopeRoutes === []
+assert.deepStrictEqual(manifests['W008-A'].inScopeRoutes, [], 'FAIL CLOSED: W008-A inScopeRoutes must be []');
+
+// 5. Check implementation ownership distribution across B, C, E
 const ledgerB = ledger.filter(r => r.subJob === 'W008-B').map(r => getCanonicalIdentity(r)).sort();
 const ledgerC = ledger.filter(r => r.subJob === 'W008-C').map(r => getCanonicalIdentity(r)).sort();
 const ledgerE = ledger.filter(r => r.subJob === 'W008-E').map(r => getCanonicalIdentity(r)).sort();
 
-console.log(`   Ledger sub-job distribution: W008-B=${ledgerB.length}, W008-C=${ledgerC.length}, W008-E=${ledgerE.length}`);
+console.log(`   Implementation ownership distribution: W008-B=${ledgerB.length}, W008-C=${ledgerC.length}, W008-E=${ledgerE.length}`);
 assert.strictEqual(ledgerB.length, 3, 'W008-B ledger routes must be 3');
 assert.strictEqual(ledgerC.length, 27, 'W008-C ledger routes must be 27');
 assert.strictEqual(ledgerE.length, 108, 'W008-E ledger routes must be 108');
-assert.strictEqual(ledgerB.length + ledgerC.length + ledgerE.length, 138, 'Ledger B+C+E sum must be 138');
+assert.strictEqual(ledgerB.length + ledgerC.length + ledgerE.length, 138, 'Ledger B+C+E sum must be exactly 138');
 
-// Pairwise disjointness
+// 6. Pairwise disjointness of implementation ownership
 const setB = new Set(ledgerB);
 const setC = new Set(ledgerC);
 const setE = new Set(ledgerE);
@@ -124,21 +231,34 @@ const b_intersect_c = ledgerB.filter(x => setC.has(x));
 const b_intersect_e = ledgerB.filter(x => setE.has(x));
 const c_intersect_e = ledgerC.filter(x => setE.has(x));
 
-assert.strictEqual(b_intersect_c.length, 0, 'B ∩ C must be empty');
-assert.strictEqual(b_intersect_e.length, 0, 'B ∩ E must be empty');
-assert.strictEqual(c_intersect_e.length, 0, 'C ∩ E must be empty');
-console.log('   [PASS] Pairwise intersections are strictly empty: B ∩ C = ∅, B ∩ E = ∅, C ∩ E = ∅');
+assert.strictEqual(b_intersect_c.length, 0, 'FAIL CLOSED: B ∩ C must be empty');
+assert.strictEqual(b_intersect_e.length, 0, 'FAIL CLOSED: B ∩ E must be empty');
+assert.strictEqual(c_intersect_e.length, 0, 'FAIL CLOSED: C ∩ E must be empty');
+console.log('   [PASS] 4. Every implementation-owned route belongs to exactly one sub-job (B ∩ C = ∅, B ∩ E = ∅, C ∩ E = ∅).');
 
-// Union equality
+// 7. Verify D verification targets overlap implementation ownership ONLY through verificationTargetRoutes
+const manifestC_inScope = manifests['W008-C'].inScopeRoutes || [];
+for (const target of manifests['W008-D'].verificationTargetRoutes) {
+  assert.ok(manifestC_inScope.includes(target), `Verification target '${target}' must be owned by W008-C in inScopeRoutes`);
+  assert.ok(!manifests['W008-B'].inScopeRoutes.includes(target), `Verification target '${target}' must not appear in W008-B inScopeRoutes`);
+  assert.ok(!manifests['W008-E'].inScopeRoutes.includes(target), `Verification target '${target}' must not appear in W008-E inScopeRoutes`);
+}
+console.log('   [PASS] 5. D verification targets overlap implementation owner (W008-C) ONLY through explicit verificationTargetRoutes.');
+
+// 8. D verification targets do not alter implementation ownership arithmetic
+assert.strictEqual(ledgerB.length + ledgerC.length + ledgerE.length, 138, 'Implementation arithmetic remains unchanged (B+C+E = 138)');
+console.log('   [PASS] 6. D verification targets do not alter implementation ownership arithmetic (138 total).');
+
+// 9. Union equality
 const subjobUnion = new Set([...ledgerB, ...ledgerC, ...ledgerE]);
 assert.strictEqual(subjobUnion.size, 138, 'Sub-job union size must be 138');
-assert.deepStrictEqual([...subjobUnion].sort(), sourceIdentities, 'Sub-job union must equal source routes');
-console.log('   [PASS] Three-way equality established: SOURCE ROUTES == MASTER LEDGER == SUBJOB UNION (138 identities).');
+assert.deepStrictEqual([...subjobUnion].sort(), sourceIdentities, 'Sub-job union must equal source catalog');
+console.log('   [PASS] 7. Three-way equality proven: SOURCE ROUTES == MASTER LEDGER == SUBJOB UNION (138 identities).');
 
 // ============================================================================
-// BLOCKER 5 & 6: MANIFEST RECONCILIATION & SCOPE CONTRADICTION VALIDATION
+// MANIFEST RECONCILIATION & SCOPE CONTRADICTION VALIDATION
 // ============================================================================
-console.log('\n4. Validating manifest consistency and scope contradiction invariants...');
+console.log('\n5. Validating manifest consistency and scope contradiction invariants...');
 
 let scopeContradictions = 0;
 for (const [subJob, m] of Object.entries(manifests)) {
@@ -196,7 +316,7 @@ console.log('   [PASS] All specific route ownership invariants verified (campaig
 // ============================================================================
 // CANONICAL HASH DERIVATION & CONTROL-M PRE-FLIGHT VERIFICATION
 // ============================================================================
-console.log('\n5. Deriving canonical scope hashes and verifying Control M enforcement...');
+console.log('\n6. Deriving canonical scope hashes and verifying Control M enforcement...');
 
 function canonicalize(obj) {
   if (obj === null || typeof obj !== 'object') return JSON.stringify(obj);
@@ -219,10 +339,10 @@ for (const [subJob, m] of Object.entries(manifests)) {
 }
 
 const computedHashesPath = path.resolve('scratch/computed_hashes_rev7.json');
-fs.writeFileSync(computedHashesPath, JSON.stringify(derivedHashes, null, 2));
+fs.writeFileSync(computedHashesPath, JSON.stringify(derivedHashes, null, 2) + '\n');
 
 // Control M Pre-Flight Block Check (BLOCKER 7)
-console.log('\n6. Executing Control M Pre-Flight Verification on Current State...');
+console.log('\n7. Executing Control M Pre-Flight Verification on Current State...');
 
 function runControlMCheck(subJob, expectedPlanVersion, manifest) {
   const stateContent = fs.readFileSync('EXECUTION_STATE.md', 'utf8');

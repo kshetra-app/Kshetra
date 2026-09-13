@@ -11,35 +11,16 @@ W008 SUB-JOB MASTER PLAN REVISION 7
 IMPLEMENTATION AUTHORIZATION STATUS
 ============================================================
 
-PLAN STATUS:
-DRAFT / SUBMITTED FOR CTO FINAL RATIFICATION
-
-IMPLEMENTATION AUTHORIZATION:
-NO
-
-AUTHORIZED_JOB:
-NONE
-
-APPROVED_PLAN_VERSION:
-NONE
-
-IMPLEMENTATION_AUTHORIZATION_COMMIT:
-NONE
-
-AUTHORIZED_SCOPE_HASH:
-NONE
-
-IMPLEMENTATION MAY BEGIN:
-NO
-
-W008 PRODUCT CODE MODIFICATION:
-FROZEN
-
-W009:
-STRICTLY NOT AUTHORIZED
-
-NEXT ACTION:
-CTO FINAL RATIFICATION REVIEW
+PLAN STATUS: REJECTED / DECOMPOSITION REQUIRED
+IMPLEMENTATION AUTHORIZATION: NO
+AUTHORIZED JOB: NONE
+APPROVED PLAN VERSION: NONE
+IMPLEMENTATION AUTHORIZATION COMMIT: NONE
+AUTHORIZED SCOPE HASH: NONE
+IMPLEMENTATION MAY BEGIN: NO
+W008 PRODUCT CODE: FROZEN
+W009: STRICTLY NOT AUTHORIZED
+STOP: YES
 
 ============================================================
 ```
@@ -60,7 +41,7 @@ CTO FINAL RATIFICATION REVIEW
 - **Unauthorized W008 Implementation Coordinate:** `0d75d29c02512d5bc17839a5ef4730bdc5d389d5` (`0d75d29` — REJECTED / NOT ACCEPTED)
 - **Parent Governance Coordinate:** `f022e853904b438ed59e309cf9fbfa3a8f14d429` (`f022e85`)
 - **Active Governance Coordinate:** `81ad5b5da49c49524427f64bb4595c473237c573` (`81ad5b5`)
-- **Document Status:** `DRAFT / SUBMITTED FOR CTO FINAL RATIFICATION`
+- **Document Status:** `REJECTED / DECOMPOSITION REQUIRED`
 - **Implementation Authorization:** `NO (ABSOLUTE FREEZE)`
 
 > [!IMPORTANT]
@@ -310,7 +291,8 @@ graph TD
   - `apps/mobile/__tests__/apiClient.test.ts`
   - `apps/mobile/lib/api/types.ts`
   - `tests/w008-contract-negative-paths.test.mjs`
-- **In-Scope Routes:** `/api/v1/states`, `/api/v1/states/:code`.
+- **In-Scope Routes:** `[]` (Empty array — W008-D possesses zero route implementation ownership; implementation ownership belongs exclusively to W008-C).
+- **Verification-Target Routes:** `GET /api/v1/states`, `GET /api/v1/states/:code` (routes tested and verified against mobile client contracts).
 - **Dependencies:** W008-B, W008-C.
 - **Expected Outputs:** Independent verification report and adoption recommendation for `StatesEndpoint` with proven fail-closed runtime validation.
 
@@ -1138,7 +1120,8 @@ Every sub-job scope manifest uses `approvedPlanVersion: "REV-7.0"`, deterministi
     "CD-05"
   ],
   "approvedPlanVersion": "REV-7.0",
-  "inScopeRoutes": [
+  "inScopeRoutes": [],
+  "verificationTargetRoutes": [
     "GET /api/v1/states",
     "GET /api/v1/states/:code"
   ],
@@ -1162,7 +1145,7 @@ Every sub-job scope manifest uses `approvedPlanVersion: "REV-7.0"`, deterministi
   ]
 }
 ```
-- **Canonical Scope Hash (SHA-256):** `af2debdb8e5864a3c648d0d1144007454a17b7aeadb98604d3bf59661bdcd3dc`
+- **Canonical Scope Hash (SHA-256):** `421e6563a831e1b50e746fb9f28a189a5b8441e2dae38026b8183f43d30cd7b4`
 
 ---
 
