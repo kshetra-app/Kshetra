@@ -1,0 +1,415 @@
+{
+  "W008-R": {
+    "acceptanceCriteriaIDs": [
+      "CR-01",
+      "CR-02",
+      "CR-03",
+      "CR-04",
+      "CR-05"
+    ],
+    "approvedPlanVersion": "REV-7.0",
+    "inScopeRoutes": [],
+    "modificationScope": [
+      "ACCEPTANCE_REGISTER.md",
+      "DECISION_LOG.md",
+      "EXECUTION_STATE.md"
+    ],
+    "outOfScopeBoundaries": [
+      "apps/api/**",
+      "apps/mobile/**",
+      "packages/shared/**",
+      "supabase/migrations/**"
+    ],
+    "sharedFileRegionRestrictions": {},
+    "subJobID": "W008-R",
+    "verificationOnlyScope": [
+      "tests/governance-consistency.test.mjs"
+    ]
+  },
+  "W008-A": {
+    "acceptanceCriteriaIDs": [
+      "CA-01",
+      "CA-02",
+      "CA-03",
+      "CA-04",
+      "CA-05"
+    ],
+    "approvedPlanVersion": "REV-7.0",
+    "inScopeRoutes": [],
+    "modificationScope": [
+      "apps/api/src/lib/replyHelper.ts",
+      "apps/api/src/server.ts",
+      "packages/shared/src/contracts/envelopes.ts",
+      "packages/shared/src/contracts/index.ts",
+      "packages/shared/src/contracts/pagination.ts",
+      "packages/shared/src/index.ts"
+    ],
+    "outOfScopeBoundaries": [
+      "apps/api/src/routes/ai.ts",
+      "apps/api/src/routes/campaign.ts",
+      "apps/api/src/routes/civic.ts",
+      "apps/api/src/routes/dm.ts",
+      "apps/mobile/**",
+      "supabase/migrations/**"
+    ],
+    "sharedFileRegionRestrictions": {
+      "apps/api/src/server.ts": {
+        "authorizedRegions": [
+          "global setErrorHandler / Ajv error-unwrapping region"
+        ],
+        "forbiddenRegions": [
+          "GET /health root probe registration",
+          "any other route registrations",
+          "root GET / route registration"
+        ]
+      }
+    },
+    "subJobID": "W008-A",
+    "verificationOnlyScope": [
+      "apps/api/src/__tests__/contracts.test.ts",
+      "tests/w008-contract-negative-paths.test.mjs"
+    ]
+  },
+  "W008-B": {
+    "acceptanceCriteriaIDs": [
+      "CB-01",
+      "CB-02",
+      "CB-03",
+      "CB-04",
+      "CB-05"
+    ],
+    "approvedPlanVersion": "REV-7.0",
+    "inScopeRoutes": [
+      "GET /api/v1/config/flags",
+      "GET /api/v1/news/feed",
+      "GET /api/v1/pages/:pageId/entitlement",
+      "PATCH /api/v1/config/flags"
+    ],
+    "modificationScope": [
+      "apps/api/src/routes/config.ts",
+      "apps/api/src/routes/news.ts",
+      "apps/api/src/routes/pages.ts"
+    ],
+    "outOfScopeBoundaries": [
+      "apps/api/src/routes/civic.ts",
+      "apps/api/src/routes/moderation.ts",
+      "apps/api/src/routes/states.ts",
+      "apps/mobile/**",
+      "supabase/migrations/**"
+    ],
+    "sharedFileRegionRestrictions": {
+      "apps/api/src/routes/news.ts": {
+        "authorizedRegions": [
+          "GET /api/v1/news/feed route handler and schemas"
+        ],
+        "forbiddenRegions": [
+          "POST /api/v1/news/refresh route handler and schemas"
+        ]
+      },
+      "apps/api/src/routes/pages.ts": {
+        "authorizedRegions": [
+          "GET /api/v1/pages/:pageId/entitlement route handler and schemas"
+        ],
+        "forbiddenRegions": [
+          "GET /api/v1/pages/details/:pageId",
+          "POST /api/v1/pages/:pageId/pro/order",
+          "POST /api/v1/pages/:pageId/pro/verify"
+        ]
+      }
+    },
+    "subJobID": "W008-B",
+    "verificationOnlyScope": [
+      "apps/api/src/__tests__/contracts.test.ts",
+      "apps/mobile/lib/api/endpoints/news.ts",
+      "apps/mobile/lib/featureFlags.ts",
+      "apps/mobile/lib/pageService.ts",
+      "scripts/check-api-contract-drift.mjs"
+    ]
+  },
+  "W008-C": {
+    "acceptanceCriteriaIDs": [
+      "CC-01",
+      "CC-02",
+      "CC-03",
+      "CC-04",
+      "CC-05",
+      "CC-06"
+    ],
+    "approvedPlanVersion": "REV-7.0",
+    "inScopeRoutes": [
+      "DELETE /api/v1/moderation/block/:userId",
+      "GET /api/v1/civic/attendance",
+      "GET /api/v1/civic/bills",
+      "GET /api/v1/civic/budget/:stateCode",
+      "GET /api/v1/civic/cdi/:constituencyId",
+      "GET /api/v1/civic/hearings",
+      "GET /api/v1/civic/projects",
+      "GET /api/v1/civic/rti",
+      "GET /api/v1/civic/schemes",
+      "GET /api/v1/moderation/actions",
+      "GET /api/v1/moderation/audit-log",
+      "GET /api/v1/moderation/queue",
+      "GET /api/v1/moderation/reputation-rules",
+      "GET /api/v1/notifications/preferences",
+      "GET /api/v1/notifications/triggers",
+      "GET /api/v1/states",
+      "GET /api/v1/states/:code",
+      "POST /api/v1/civic/bills/:id/opinion",
+      "POST /api/v1/civic/rti",
+      "POST /api/v1/civic/rti/:id/upvote",
+      "POST /api/v1/moderation/action",
+      "POST /api/v1/moderation/block",
+      "POST /api/v1/moderation/check-content",
+      "POST /api/v1/moderation/verify-request",
+      "POST /api/v1/notifications/register-token",
+      "POST /api/v1/notifications/send",
+      "PUT /api/v1/notifications/preferences"
+    ],
+    "modificationScope": [
+      "apps/api/src/routes/civic.ts",
+      "apps/api/src/routes/moderation.ts",
+      "apps/api/src/routes/notifications.ts",
+      "apps/api/src/routes/states.ts"
+    ],
+    "outOfScopeBoundaries": [
+      "apps/api/src/routes/ai.ts",
+      "apps/api/src/routes/campaign.ts",
+      "apps/api/src/routes/delimitation.ts",
+      "apps/api/src/routes/dm.ts",
+      "apps/mobile/**",
+      "supabase/migrations/**"
+    ],
+    "sharedFileRegionRestrictions": {},
+    "subJobID": "W008-C",
+    "verificationOnlyScope": [
+      "apps/api/src/__tests__/contracts.test.ts",
+      "scripts/check-api-contract-drift.mjs",
+      "tests/w008-contract-negative-paths.test.mjs"
+    ]
+  },
+  "W008-D": {
+    "acceptanceCriteriaIDs": [
+      "CD-01",
+      "CD-02",
+      "CD-03",
+      "CD-04",
+      "CD-05"
+    ],
+    "approvedPlanVersion": "REV-7.0",
+    "inScopeRoutes": [
+      "GET /api/v1/states",
+      "GET /api/v1/states/:code"
+    ],
+    "modificationScope": [],
+    "outOfScopeBoundaries": [
+      "apps/api/**",
+      "apps/mobile/app/**",
+      "apps/mobile/components/**",
+      "packages/shared/**",
+      "supabase/migrations/**"
+    ],
+    "sharedFileRegionRestrictions": {},
+    "subJobID": "W008-D",
+    "verificationOnlyScope": [
+      "apps/mobile/__tests__/apiClient.test.ts",
+      "apps/mobile/lib/api/client.ts",
+      "apps/mobile/lib/api/endpoints/states.ts",
+      "apps/mobile/lib/api/index.ts",
+      "apps/mobile/lib/api/types.ts",
+      "tests/w008-contract-negative-paths.test.mjs"
+    ]
+  },
+  "W008-E": {
+    "acceptanceCriteriaIDs": [
+      "CE-01",
+      "CE-02",
+      "CE-03",
+      "CE-04",
+      "CE-05",
+      "CE-06"
+    ],
+    "approvedPlanVersion": "REV-7.0",
+    "inScopeRoutes": [
+      "GET /",
+      "GET /ad-library",
+      "GET /api/health",
+      "GET /api/health/db",
+      "GET /api/health/ready",
+      "GET /api/v1/admin/political-ads/review-queue",
+      "GET /api/v1/ai/analyze/constituency/:acNo",
+      "GET /api/v1/ai/analyze/trends",
+      "GET /api/v1/ai/status",
+      "GET /api/v1/broadcast/state/:code",
+      "GET /api/v1/broadcast/state/:code/constituency/:acNo",
+      "GET /api/v1/broadcast/summary",
+      "GET /api/v1/campaign/booths",
+      "GET /api/v1/campaign/campaigns",
+      "GET /api/v1/campaign/obd/broadcasts",
+      "GET /api/v1/campaign/obd/trai-status",
+      "GET /api/v1/campaign/pricing",
+      "GET /api/v1/campaign/users/check-kshetra",
+      "GET /api/v1/campaign/volunteers",
+      "GET /api/v1/campaign/wallet",
+      "GET /api/v1/campaign/wallet/transactions",
+      "GET /api/v1/delimitation/compare",
+      "GET /api/v1/delimitation/gainers-losers",
+      "GET /api/v1/delimitation/impact/:pinCode",
+      "GET /api/v1/delimitation/methodology",
+      "GET /api/v1/delimitation/mla-impact/:stateCode",
+      "GET /api/v1/delimitation/party-projections/:stateCode",
+      "GET /api/v1/delimitation/projections",
+      "GET /api/v1/delimitation/projections/:stateCode",
+      "GET /api/v1/delimitation/reservation",
+      "GET /api/v1/delimitation/reservation/:stateCode",
+      "GET /api/v1/delimitation/simulate/:stateCode",
+      "GET /api/v1/delimitation/status",
+      "GET /api/v1/delimitation/timeline",
+      "GET /api/v1/dm/unread-count",
+      "GET /api/v1/journalist/articles",
+      "GET /api/v1/journalist/articles/:id",
+      "GET /api/v1/journalist/breaking",
+      "GET /api/v1/journalist/fact-checks",
+      "GET /api/v1/journalist/profiles",
+      "GET /api/v1/lmx/departments",
+      "GET /api/v1/lmx/live",
+      "GET /api/v1/lmx/live/:streamId",
+      "GET /api/v1/lmx/status",
+      "GET /api/v1/pages/details/:pageId",
+      "GET /api/v1/political-ads/active",
+      "GET /api/v1/political-ads/library",
+      "GET /api/v1/politician/events",
+      "GET /api/v1/politician/manifestos",
+      "GET /api/v1/politician/profiles",
+      "GET /api/v1/politician/profiles/:id",
+      "GET /api/v1/politician/surveys",
+      "GET /constituencies/locate",
+      "GET /debug/error",
+      "GET /geo/:file",
+      "GET /geo/manifest.json",
+      "GET /health (health.ts prefix alias)",
+      "GET /health (server.ts root probe)",
+      "GET /health/db",
+      "GET /health/ready",
+      "GET /manage",
+      "GET /metrics",
+      "GET /policy/community-guidelines",
+      "GET /policy/grievance",
+      "GET /states/:stateCode/analytics",
+      "GET /states/:stateCode/constituencies",
+      "GET /states/:stateCode/constituencies/:constituencyId",
+      "GET /states/:stateCode/constituencies/search",
+      "GET /states/:stateCode/elections",
+      "GET /states/:stateCode/mla",
+      "GET /states/:stateCode/mla/:acNo",
+      "PATCH /api/v1/campaign/booths/:id",
+      "PATCH /api/v1/campaign/pricing",
+      "POST /api/v1/admin/political-ads/:adId/certify",
+      "POST /api/v1/ai/campaign-copy",
+      "POST /api/v1/ai/chat",
+      "POST /api/v1/ai/smart-search",
+      "POST /api/v1/ai/summarize-issues",
+      "POST /api/v1/campaign/obd/dispatch",
+      "POST /api/v1/campaign/volunteers",
+      "POST /api/v1/campaign/wallet/recharge/order",
+      "POST /api/v1/campaign/wallet/recharge/verify",
+      "POST /api/v1/delimitation/monitor-webhook",
+      "POST /api/v1/dm/block-report",
+      "POST /api/v1/dm/conversations",
+      "POST /api/v1/dm/conversations/:id/accept",
+      "POST /api/v1/dm/conversations/:id/decline",
+      "POST /api/v1/dm/conversations/:id/messages",
+      "POST /api/v1/grievances/intake",
+      "POST /api/v1/journalist/articles/:id/flag",
+      "POST /api/v1/journalist/articles/:id/tip",
+      "POST /api/v1/journalist/articles/:id/vouch",
+      "POST /api/v1/lmx/alerts",
+      "POST /api/v1/lmx/alerts/:id/acknowledge",
+      "POST /api/v1/lmx/departments",
+      "POST /api/v1/lmx/distribution",
+      "POST /api/v1/lmx/live",
+      "POST /api/v1/lmx/live/:streamId/end",
+      "POST /api/v1/lmx/live/:streamId/moderate",
+      "POST /api/v1/news/refresh",
+      "POST /api/v1/pages/:pageId/political-ads",
+      "POST /api/v1/pages/:pageId/pro/order",
+      "POST /api/v1/pages/:pageId/pro/verify",
+      "POST /api/v1/politician/events/:id/rsvp",
+      "POST /api/v1/politician/grievances",
+      "POST /api/v1/politician/manifestos/:manifestoId/items/:itemId/vote",
+      "POST /api/v1/politician/surveys/:id/respond",
+      "POST /api/v1/webhooks/voice/:provider"
+    ],
+    "modificationScope": [
+      "apps/api/src/routes/ai.ts",
+      "apps/api/src/routes/broadcast.ts",
+      "apps/api/src/routes/campaign.ts",
+      "apps/api/src/routes/constituencies.ts",
+      "apps/api/src/routes/debug.ts",
+      "apps/api/src/routes/delimitation.ts",
+      "apps/api/src/routes/dm.ts",
+      "apps/api/src/routes/geo.ts",
+      "apps/api/src/routes/health.ts",
+      "apps/api/src/routes/journalist.ts",
+      "apps/api/src/routes/lmx.ts",
+      "apps/api/src/routes/manage.ts",
+      "apps/api/src/routes/metrics.ts",
+      "apps/api/src/routes/news.ts",
+      "apps/api/src/routes/pages.ts",
+      "apps/api/src/routes/policy.ts",
+      "apps/api/src/routes/politicalAds.ts",
+      "apps/api/src/routes/politician.ts",
+      "apps/api/src/server.ts",
+      "scripts/check-api-contract-drift.mjs"
+    ],
+    "outOfScopeBoundaries": [
+      "apps/api/src/routes/dm.ts (WebRTC/WebSocket signaling and protocol architecture)",
+      "apps/mobile/**",
+      "supabase/migrations/**",
+      "W009"
+    ],
+    "sharedFileRegionRestrictions": {
+      "apps/api/src/routes/dm.ts": {
+        "authorizedRegions": [
+          "HTTP schema/error/parameter regions for the 6 explicitly enumerated DM routes"
+        ],
+        "forbiddenRegions": [
+          "DM business logic",
+          "WebRTC signaling",
+          "WebSocket lifecycle",
+          "signaling protocol semantics",
+          "transport logic"
+        ]
+      },
+      "apps/api/src/routes/news.ts": {
+        "authorizedRegions": [
+          "POST /api/v1/news/refresh route handler and schemas"
+        ],
+        "forbiddenRegions": [
+          "GET /api/v1/news/feed route handler and schemas"
+        ]
+      },
+      "apps/api/src/routes/pages.ts": {
+        "authorizedRegions": [
+          "remaining 3 explicitly enumerated routes: GET /api/v1/pages/details/:pageId, POST /api/v1/pages/:pageId/pro/order, POST /api/v1/pages/:pageId/pro/verify"
+        ],
+        "forbiddenRegions": [
+          "GET /api/v1/pages/:pageId/entitlement"
+        ]
+      },
+      "apps/api/src/server.ts": {
+        "authorizedRegions": [
+          "GET /health route(s) explicitly identified by method + path",
+          "root GET / route"
+        ],
+        "forbiddenRegions": [
+          "global setErrorHandler / Ajv error-unwrapping region"
+        ]
+      }
+    },
+    "subJobID": "W008-E",
+    "verificationOnlyScope": [
+      "reports/w008_api_contract_inventory.json",
+      "reports/w008_contract_drift_report.json"
+    ]
+  }
+}
