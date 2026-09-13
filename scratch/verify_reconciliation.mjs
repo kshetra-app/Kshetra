@@ -473,13 +473,24 @@ export function verifyImplementationAuthorization(targetSubJob, expectedPlanVers
 }
 
 // ============================================================================
-// 7. CURRENT REPOSITORY STATE CHECK (MUST FAIL CLOSED)
+// 7. CURRENT REPOSITORY STATE CHECK
 // ============================================================================
 console.log('\n7. Executing Control M Verification on Current Repository State...');
 const currentStateCheck = verifyImplementationAuthorization('W008-A', 'REV-7.0', manifests['W008-A']);
 console.log(`   Control M Status: ${currentStateCheck.status}`);
-console.log(`   Control M Reason: ${currentStateCheck.reason}`);
-assert.strictEqual(currentStateCheck.status, 'BLOCKED_FAIL_CLOSED', 'FAIL CLOSED: Control M must fail closed in current state');
+if (currentStateCheck.reason) console.log(`   Control M Reason: ${currentStateCheck.reason}`);
+if (currentStateCheck.authorizationCommit) console.log(`   Control M Authorization Commit: ${currentStateCheck.authorizationCommit}`);
+if (currentStateCheck.derivedScopeHash) console.log(`   Control M Derived Scope Hash: ${currentStateCheck.derivedScopeHash}`);
+
+const stateContentCurrent = fs.readFileSync('EXECUTION_STATE.md', 'utf8');
+const isAuthorizedState = stateContentCurrent.includes('IMPLEMENTATION_AUTHORIZATION: YES') && stateContentCurrent.includes('PLAN_STATUS:           APPROVED');
+if (isAuthorizedState) {
+  assert.strictEqual(currentStateCheck.status, 'AUTHORIZED', 'Control M must return AUTHORIZED when state file and commit authorize W008-A');
+  console.log('   [PASS] Current repository state is verified AUTHORIZED for W008-A implementation.');
+} else {
+  assert.strictEqual(currentStateCheck.status, 'BLOCKED_FAIL_CLOSED', 'FAIL CLOSED: Control M must fail closed in current state');
+  console.log('   [PASS] Current repository state is verified BLOCKED_FAIL_CLOSED.');
+}
 
 // ============================================================================
 // 8. CONTROL M POSITIVE AND NEGATIVE PATH TEST SUITE (12 SCENARIOS)

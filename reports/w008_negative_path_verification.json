@@ -3,8 +3,8 @@
     "job": "W008",
     "title": "API Contract Standardization Negative Path Verification",
     "specification": "Master Execution Framework Amendment v1.5-A / DEC-041",
-    "timestamp": "2026-09-12T17:00:59.995Z",
-    "gitHead": "f022e853904b438ed59e309cf9fbfa3a8f14d429"
+    "timestamp": "2026-09-13T10:39:33.129Z",
+    "gitHead": "bffd242ed11ead715e77b4a6bf8dc2900ff4ae04"
   },
   "summary": {
     "totalNegativePathsAudited": 16,

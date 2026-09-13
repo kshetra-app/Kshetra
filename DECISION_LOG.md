@@ -634,4 +634,17 @@
      - W008-E: Comprehensive Fastify Route Inventory & Full-Parity Drift Enforcement (remaining Phase 2-4 routes).
 - **Rationale:** Restores mathematical and governance truth to the repository, preserves valuable engineering work, enforces automated safeguards against premature execution, and establishes a realistic decomposition path to achieve 100% contract standardization without unmanageable single-job scope.
 
+---
 
+### DEC-044: W008-A FORMAL PLAN APPROVAL, IMPLEMENTATION AUTHORIZATION & FOUNDATION ADOPTION
+- **Date:** 2026-09-13
+- **Status:** APPROVED & IMPLEMENTATION SUBMITTED FOR CTO VERIFICATION
+- **Authority:** CTO Decision / Formal Plan Approval & Implementation Authorization Mandate
+- **Context:** Following technical ratification of W008-R7 governance artifacts, master 138-route ledger, disjoint module ownership, and commit-bound Control M verification, the CTO formally approved W008 Plan REV-7.0 and authorized implementation strictly for Sub-Job W008-A (API Contract Foundation Reconciliation & Adoption).
+- **Decisions:**
+  1. **Plan Approval:** Formally record plan approval for `REV-7.0` in `EXECUTION_STATE.md` and `ACCEPTANCE_REGISTER.md`.
+  2. **Sub-Job Implementation Authorization:** Authorize implementation strictly for `W008-A` under cryptographic scope hash `5fb6dd58d10d9b46bdb9e45589af0f65595a11cac952b315e3f00c1b65f9f34f`. All other sub-jobs (`W008-B`, `W008-C`, `W008-D`, `W008-E`) and `W009` remain strictly unauthorized and frozen.
+  3. **Commit-Bound Governance Lineage:** Record implementation authorization commit `7790b58192948b8d5760fc800d26436624cf2b71` declaring `AUTHORIZATION_TYPE: IMPLEMENTATION`, `AUTHORIZED_JOB: W008-A`, `APPROVED_PLAN_VERSION: REV-7.0`, and `AUTHORIZED_SCOPE_HASH: 5fb6dd58d10d9b46bdb9e45589af0f65595a11cac952b315e3f00c1b65f9f34f`.
+  4. **Foundation Verification:** Verified canonical contract envelopes (`packages/shared/src/contracts/`), replyHelper (`apps/api/src/lib/replyHelper.ts`), and global error handling (`apps/api/src/server.ts`). Automated suites (`contracts.test.ts`, `w008-contract-negative-paths.test.mjs`, `verify_reconciliation.mjs`) pass 100%. TypeScript compilation passes across `@kshetra/shared` and `@kshetra/api`.
+  5. **Submission for Independent CTO Verification:** The implementation is submitted for independent CTO verification. W008-B remains blocked until W008-A is formally verified and accepted.
+- **Rationale:** Ensures strict adherence to Control M governance, prevents scope bleed into unauthorized modules, and provides verifiable provenance for contract foundation adoption.
