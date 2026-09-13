@@ -314,11 +314,11 @@ assert.ok(dmRoutes.every(r => r.subJob === 'W008-E'), 'All dm routes must be in 
 console.log('   [PASS] All specific route ownership invariants verified (campaign: 16, politicalAds: 6, pages: 1/3, dm: 6).');
 
 // ============================================================================
-// CANONICAL HASH DERIVATION & CONTROL-M PRE-FLIGHT VERIFICATION
+// CANONICAL HASH DERIVATION & READ-ONLY INTEGRITY COMPARISON (SECONDARY FIX)
 // ============================================================================
-console.log('\n6. Deriving canonical scope hashes and verifying Control M enforcement...');
+console.log('\n6. Deriving canonical scope hashes and verifying read-only equality against stored hashes...');
 
-function canonicalize(obj) {
+export function canonicalize(obj) {
   if (obj === null || typeof obj !== 'object') return JSON.stringify(obj);
   if (Array.isArray(obj)) {
     const arr = [...obj].map(item => typeof item === 'string' ? item.replace(/\\/g, '/') : item);
@@ -335,50 +335,301 @@ for (const [subJob, m] of Object.entries(manifests)) {
   const canon = canonicalize(m);
   const hash = crypto.createHash('sha256').update(canon, 'utf8').digest('hex');
   derivedHashes[subJob] = hash;
-  console.log(`   ${subJob}: ${hash}`);
+  console.log(`   [DERIVED] ${subJob}: ${hash}`);
 }
 
+// Side-effect-free, read-only comparison against scratch/computed_hashes_rev7.json
 const computedHashesPath = path.resolve('scratch/computed_hashes_rev7.json');
-fs.writeFileSync(computedHashesPath, JSON.stringify(derivedHashes, null, 2) + '\n');
+assert.ok(fs.existsSync(computedHashesPath), 'scratch/computed_hashes_rev7.json must exist');
+const storedHashes = JSON.parse(fs.readFileSync(computedHashesPath, 'utf8'));
 
-// Control M Pre-Flight Block Check (BLOCKER 7)
-console.log('\n7. Executing Control M Pre-Flight Verification on Current State...');
+for (const [subJob, derivedHash] of Object.entries(derivedHashes)) {
+  assert.strictEqual(
+    storedHashes[subJob],
+    derivedHash,
+    `FAIL CLOSED: Stored hash for ${subJob} (${storedHashes[subJob]}) differs from independently derived hash (${derivedHash})`
+  );
+}
+console.log('   [PASS] Read-only integrity proven: All independently derived hashes match scratch/computed_hashes_rev7.json bitwise (Zero file mutations).');
 
-function runControlMCheck(subJob, expectedPlanVersion, manifest) {
-  const stateContent = fs.readFileSync('EXECUTION_STATE.md', 'utf8');
+// ============================================================================
+// FULL COMMIT-BOUND CONTROL M IMPLEMENTATION ENGINE
+// ============================================================================
+export function verifyImplementationAuthorization(targetSubJob, expectedPlanVersion, targetSubJobManifest, options = {}) {
+  const stateContent = options.stateContentOverride ?? fs.readFileSync('EXECUTION_STATE.md', 'utf8');
+  const execCmd = options.execCmdOverride ?? ((cmd) => execSync(cmd, { encoding: 'utf8' }));
+
   function extract(field) {
     const match = stateContent.match(new RegExp(`^${field}:\\s*(.+)`, 'm'));
     return match ? match[1].trim() : null;
   }
 
-  const derivedHash = crypto.createHash('sha256').update(canonicalize(manifest), 'utf8').digest('hex');
+  // 1. Manifest verification
+  if (!targetSubJobManifest) {
+    return { status: 'BLOCKED_FAIL_CLOSED', reason: 'Target sub-job scope manifest is required for authorization verification' };
+  }
+  if (targetSubJobManifest.subJobID !== targetSubJob) {
+    return { status: 'BLOCKED_FAIL_CLOSED', reason: `Manifest subJobID mismatch: expected ${targetSubJob}, got ${targetSubJobManifest.subJobID}` };
+  }
+  if (targetSubJobManifest.approvedPlanVersion !== expectedPlanVersion) {
+    return { status: 'BLOCKED_FAIL_CLOSED', reason: `Manifest plan version mismatch: expected ${expectedPlanVersion}, got ${targetSubJobManifest.approvedPlanVersion}` };
+  }
 
-  // Verify that Control M does NOT trust caller-provided hashes
+  // 2. Independently derive canonical scope hash
+  const canonicalManifest = canonicalize(targetSubJobManifest);
+  const derivedScopeHash = crypto.createHash('sha256').update(canonicalManifest, 'utf8').digest('hex');
+
+  // 3. State File Checks
   const planStatus = extract('PLAN_STATUS');
   const implAuth = extract('IMPLEMENTATION_AUTHORIZATION');
   const authJob = extract('AUTHORIZED_JOB');
+  const planVersion = extract('APPROVED_PLAN_VERSION');
   const authCommit = extract('IMPLEMENTATION_AUTHORIZATION_COMMIT');
-  const stateHash = extract('AUTHORIZED_SCOPE_HASH');
+  const stateScopeHash = extract('AUTHORIZED_SCOPE_HASH');
 
-  // Assert fail-closed when implementation is unauthorized
+  // Fail-closed immediately if implementation authorization is not active
   if (implAuth !== 'YES' || planStatus !== 'APPROVED') {
     return {
       status: 'BLOCKED_FAIL_CLOSED',
       reason: `Plan status is '${planStatus}', authorization is '${implAuth}'. Implementation strictly frozen.`,
-      subJob,
-      derivedHash
+      targetSubJob,
+      derivedScopeHash
     };
   }
 
-  assert.strictEqual(stateHash, derivedHash, 'State hash must match derived hash');
-  return { status: 'AUTHORIZED', subJob, derivedHash };
+  if (authJob !== targetSubJob) {
+    return { status: 'BLOCKED_FAIL_CLOSED', reason: `Authorized job mismatch: state has '${authJob}', expected '${targetSubJob}'` };
+  }
+
+  if (planVersion !== expectedPlanVersion) {
+    return { status: 'BLOCKED_FAIL_CLOSED', reason: `Approved plan version mismatch: state has '${planVersion}', expected '${expectedPlanVersion}'` };
+  }
+
+  if (!stateScopeHash || stateScopeHash !== derivedScopeHash) {
+    return { status: 'BLOCKED_FAIL_CLOSED', reason: `State scope hash mismatch: state has '${stateScopeHash}', derived is '${derivedScopeHash}'` };
+  }
+
+  // 4. Authorization Commit Format Check (exactly 40 hexadecimal characters)
+  if (!authCommit || !/^[0-9a-f]{40}$/i.test(authCommit)) {
+    return { status: 'BLOCKED_FAIL_CLOSED', reason: `Invalid authorization commit SHA format: '${authCommit}'` };
+  }
+
+  // 5. Git Object Existence & Type Verification (must be 'commit')
+  try {
+    const objType = execCmd(`git cat-file -t "${authCommit}"`).trim();
+    if (objType !== 'commit') {
+      return { status: 'BLOCKED_FAIL_CLOSED', reason: `Object ${authCommit} is a ${objType}, expected commit` };
+    }
+  } catch (err) {
+    return { status: 'BLOCKED_FAIL_CLOSED', reason: `Authorization commit ${authCommit} does not exist in Git object database` };
+  }
+
+  // 6. Ancestry Verification (must be ancestor of current HEAD)
+  try {
+    const isAncestor = execCmd(`git merge-base --is-ancestor "${authCommit}" HEAD && echo YES`).trim();
+    if (isAncestor !== 'YES') {
+      return { status: 'BLOCKED_FAIL_CLOSED', reason: `Authorization commit ${authCommit} is not an ancestor of current HEAD` };
+    }
+  } catch (err) {
+    return { status: 'BLOCKED_FAIL_CLOSED', reason: `Failed to verify ancestry for authorization commit ${authCommit}` };
+  }
+
+  // 7. Commit-Bound Declaration Inspection (Commit Message Inspection)
+  let commitLog = '';
+  try {
+    commitLog = execCmd(`git show -s --format=%B "${authCommit}"`);
+  } catch (err) {
+    return { status: 'BLOCKED_FAIL_CLOSED', reason: `Failed to read commit message for ${authCommit}` };
+  }
+
+  if (!commitLog.includes('AUTHORIZATION_TYPE: IMPLEMENTATION')) {
+    return { status: 'BLOCKED_FAIL_CLOSED', reason: `Commit ${authCommit} lacks 'AUTHORIZATION_TYPE: IMPLEMENTATION' declaration` };
+  }
+
+  const commitJobMatch = commitLog.match(/AUTHORIZED_JOB:\s*(.+)/);
+  const commitJob = commitJobMatch ? commitJobMatch[1].trim() : null;
+  if (commitJob !== targetSubJob) {
+    return { status: 'BLOCKED_FAIL_CLOSED', reason: `Commit ${authCommit} declares AUTHORIZED_JOB '${commitJob}', expected '${targetSubJob}'` };
+  }
+
+  const commitVersionMatch = commitLog.match(/APPROVED_PLAN_VERSION:\s*(.+)/);
+  const commitVersion = commitVersionMatch ? commitVersionMatch[1].trim() : null;
+  if (commitVersion !== expectedPlanVersion) {
+    return { status: 'BLOCKED_FAIL_CLOSED', reason: `Commit ${authCommit} declares APPROVED_PLAN_VERSION '${commitVersion}', expected '${expectedPlanVersion}'` };
+  }
+
+  const commitHashMatch = commitLog.match(/AUTHORIZED_SCOPE_HASH:\s*(.+)/);
+  const commitScopeHash = commitHashMatch ? commitHashMatch[1].trim() : null;
+  if (commitScopeHash !== derivedScopeHash) {
+    return { status: 'BLOCKED_FAIL_CLOSED', reason: `Commit ${authCommit} declares AUTHORIZED_SCOPE_HASH '${commitScopeHash}', expected '${derivedScopeHash}'` };
+  }
+
+  return {
+    status: 'AUTHORIZED',
+    targetSubJob,
+    derivedScopeHash,
+    authorizationCommit: authCommit
+  };
 }
 
-const controlMResult = runControlMCheck('W008-A', 'REV-7.0', manifests['W008-A']);
-console.log(`   Control M Status: ${controlMResult.status}`);
-console.log(`   Control M Reason: ${controlMResult.reason}`);
-assert.strictEqual(controlMResult.status, 'BLOCKED_FAIL_CLOSED', 'Control M must fail closed in current state');
+// ============================================================================
+// 7. CURRENT REPOSITORY STATE CHECK (MUST FAIL CLOSED)
+// ============================================================================
+console.log('\n7. Executing Control M Verification on Current Repository State...');
+const currentStateCheck = verifyImplementationAuthorization('W008-A', 'REV-7.0', manifests['W008-A']);
+console.log(`   Control M Status: ${currentStateCheck.status}`);
+console.log(`   Control M Reason: ${currentStateCheck.reason}`);
+assert.strictEqual(currentStateCheck.status, 'BLOCKED_FAIL_CLOSED', 'FAIL CLOSED: Control M must fail closed in current state');
+
+// ============================================================================
+// 8. CONTROL M POSITIVE AND NEGATIVE PATH TEST SUITE (12 SCENARIOS)
+// ============================================================================
+console.log('\n8. Executing Comprehensive 12-Scenario Control M Verification Test Suite...');
+
+const sampleManifest = manifests['W008-A'];
+const sampleHash = derivedHashes['W008-A'];
+const validMockCommitSha = '1111111111111111111111111111111111111111';
+
+function buildMockState(overrides = {}) {
+  const fields = {
+    PLAN_STATUS: 'APPROVED',
+    IMPLEMENTATION_AUTHORIZATION: 'YES',
+    AUTHORIZED_JOB: 'W008-A',
+    APPROVED_PLAN_VERSION: 'REV-7.0',
+    IMPLEMENTATION_AUTHORIZATION_COMMIT: validMockCommitSha,
+    AUTHORIZED_SCOPE_HASH: sampleHash,
+    ...overrides
+  };
+  return Object.entries(fields).map(([k, v]) => `${k}: ${v}`).join('\n');
+}
+
+function buildMockGit(overrides = {}) {
+  return (cmd) => {
+    if (cmd.startsWith('git cat-file -t')) {
+      if (overrides.catFileError) throw new Error('Object not found');
+      return overrides.catFileType ?? 'commit\n';
+    }
+    if (cmd.startsWith('git merge-base --is-ancestor')) {
+      if (overrides.ancestryError) throw new Error('Not an ancestor');
+      return overrides.isAncestor ?? 'YES\n';
+    }
+    if (cmd.startsWith('git show -s --format=%B')) {
+      if (overrides.commitMsgError) throw new Error('Failed to read commit');
+      if (overrides.commitMsg !== undefined) return overrides.commitMsg;
+      return [
+        'docs(governance): authorize implementation of W008-A',
+        'AUTHORIZATION_TYPE: IMPLEMENTATION',
+        'AUTHORIZED_JOB: W008-A',
+        'APPROVED_PLAN_VERSION: REV-7.0',
+        `AUTHORIZED_SCOPE_HASH: ${sampleHash}`
+      ].join('\n');
+    }
+    return '';
+  };
+}
+
+// Scenario 1: Unauthorized state -> BLOCKED_FAIL_CLOSED
+const test1 = verifyImplementationAuthorization('W008-A', 'REV-7.0', sampleManifest, {
+  stateContentOverride: buildMockState({ PLAN_STATUS: 'REJECTED / DECOMPOSITION REQUIRED', IMPLEMENTATION_AUTHORIZATION: 'NO' })
+});
+assert.strictEqual(test1.status, 'BLOCKED_FAIL_CLOSED', 'Test 1 must fail closed');
+console.log('   [PASS] Scenario 1: Unauthorized state -> BLOCKED_FAIL_CLOSED');
+
+// Scenario 2: Missing authorization commit -> BLOCKED
+const test2 = verifyImplementationAuthorization('W008-A', 'REV-7.0', sampleManifest, {
+  stateContentOverride: buildMockState({ IMPLEMENTATION_AUTHORIZATION_COMMIT: '' })
+});
+assert.strictEqual(test2.status, 'BLOCKED_FAIL_CLOSED', 'Test 2 must fail closed');
+console.log('   [PASS] Scenario 2: Missing authorization commit -> BLOCKED');
+
+// Scenario 3: Malformed authorization commit SHA -> BLOCKED
+const test3 = verifyImplementationAuthorization('W008-A', 'REV-7.0', sampleManifest, {
+  stateContentOverride: buildMockState({ IMPLEMENTATION_AUTHORIZATION_COMMIT: 'not-a-sha-1234' })
+});
+assert.strictEqual(test3.status, 'BLOCKED_FAIL_CLOSED', 'Test 3 must fail closed');
+console.log('   [PASS] Scenario 3: Malformed authorization commit SHA -> BLOCKED');
+
+// Scenario 4: Nonexistent authorization commit -> BLOCKED
+const test4 = verifyImplementationAuthorization('W008-A', 'REV-7.0', sampleManifest, {
+  stateContentOverride: buildMockState(),
+  execCmdOverride: buildMockGit({ catFileError: true })
+});
+assert.strictEqual(test4.status, 'BLOCKED_FAIL_CLOSED', 'Test 4 must fail closed');
+console.log('   [PASS] Scenario 4: Nonexistent authorization commit -> BLOCKED');
+
+// Scenario 5: Authorization commit not ancestor -> BLOCKED
+const test5 = verifyImplementationAuthorization('W008-A', 'REV-7.0', sampleManifest, {
+  stateContentOverride: buildMockState(),
+  execCmdOverride: buildMockGit({ isAncestor: 'NO\n' })
+});
+assert.strictEqual(test5.status, 'BLOCKED_FAIL_CLOSED', 'Test 5 must fail closed');
+console.log('   [PASS] Scenario 5: Authorization commit not ancestor -> BLOCKED');
+
+// Scenario 6: Missing AUTHORIZATION_TYPE in commit message -> BLOCKED
+const test6 = verifyImplementationAuthorization('W008-A', 'REV-7.0', sampleManifest, {
+  stateContentOverride: buildMockState(),
+  execCmdOverride: buildMockGit({ commitMsg: 'docs: some commit without authorization type' })
+});
+assert.strictEqual(test6.status, 'BLOCKED_FAIL_CLOSED', 'Test 6 must fail closed');
+console.log('   [PASS] Scenario 6: Missing AUTHORIZATION_TYPE in commit -> BLOCKED');
+
+// Scenario 7: Wrong AUTHORIZED_JOB in commit / state -> BLOCKED
+const test7 = verifyImplementationAuthorization('W008-A', 'REV-7.0', sampleManifest, {
+  stateContentOverride: buildMockState({ AUTHORIZED_JOB: 'W008-B' })
+});
+assert.strictEqual(test7.status, 'BLOCKED_FAIL_CLOSED', 'Test 7 must fail closed');
+console.log('   [PASS] Scenario 7: Wrong AUTHORIZED_JOB -> BLOCKED');
+
+// Scenario 8: Wrong APPROVED_PLAN_VERSION in commit / state -> BLOCKED
+const test8 = verifyImplementationAuthorization('W008-A', 'REV-7.0', sampleManifest, {
+  stateContentOverride: buildMockState({ APPROVED_PLAN_VERSION: 'REV-6.0' })
+});
+assert.strictEqual(test8.status, 'BLOCKED_FAIL_CLOSED', 'Test 8 must fail closed');
+console.log('   [PASS] Scenario 8: Wrong APPROVED_PLAN_VERSION -> BLOCKED');
+
+// Scenario 9: Wrong authorization-commit scope hash -> BLOCKED
+const test9 = verifyImplementationAuthorization('W008-A', 'REV-7.0', sampleManifest, {
+  stateContentOverride: buildMockState(),
+  execCmdOverride: buildMockGit({
+    commitMsg: [
+      'AUTHORIZATION_TYPE: IMPLEMENTATION',
+      'AUTHORIZED_JOB: W008-A',
+      'APPROVED_PLAN_VERSION: REV-7.0',
+      'AUTHORIZED_SCOPE_HASH: 0000000000000000000000000000000000000000000000000000000000000000'
+    ].join('\n')
+  })
+});
+assert.strictEqual(test9.status, 'BLOCKED_FAIL_CLOSED', 'Test 9 must fail closed');
+console.log('   [PASS] Scenario 9: Wrong authorization-commit scope hash -> BLOCKED');
+
+// Scenario 10: Wrong EXECUTION_STATE scope hash -> BLOCKED
+const test10 = verifyImplementationAuthorization('W008-A', 'REV-7.0', sampleManifest, {
+  stateContentOverride: buildMockState({ AUTHORIZED_SCOPE_HASH: '9999999999999999999999999999999999999999999999999999999999999999' })
+});
+assert.strictEqual(test10.status, 'BLOCKED_FAIL_CLOSED', 'Test 10 must fail closed');
+console.log('   [PASS] Scenario 10: Wrong EXECUTION_STATE scope hash -> BLOCKED');
+
+// Scenario 11: Manifest-derived hash mismatch (corrupted manifest) -> BLOCKED
+const corruptedManifest = { ...sampleManifest, inScopeRoutes: ['GET /corrupted'] };
+const test11 = verifyImplementationAuthorization('W008-A', 'REV-7.0', corruptedManifest, {
+  stateContentOverride: buildMockState(),
+  execCmdOverride: buildMockGit()
+});
+assert.strictEqual(test11.status, 'BLOCKED_FAIL_CLOSED', 'Test 11 must fail closed');
+console.log('   [PASS] Scenario 11: Manifest-derived hash mismatch -> BLOCKED');
+
+// Scenario 12: Fully valid authorization state -> AUTHORIZED
+const test12 = verifyImplementationAuthorization('W008-A', 'REV-7.0', sampleManifest, {
+  stateContentOverride: buildMockState(),
+  execCmdOverride: buildMockGit()
+});
+assert.strictEqual(test12.status, 'AUTHORIZED', 'Test 12 must succeed with AUTHORIZED');
+assert.strictEqual(test12.targetSubJob, 'W008-A');
+assert.strictEqual(test12.derivedScopeHash, sampleHash);
+assert.strictEqual(test12.authorizationCommit, validMockCommitSha);
+console.log('   [PASS] Scenario 12: Fully valid authorization state -> AUTHORIZED');
 
 console.log('\n======================================================================');
-console.log('ALL INVARIANTS & THREE-WAY RECONCILIATIONS SATISFIED WITHOUT EXCEPTION');
-console.log('======================================================================');
+console.log('ALL INVARIANTS, RECONCILIATIONS & 12 CONTROL-M TESTS SATISFIED (PASS)');
+console.log('======================================================================\n');
+
