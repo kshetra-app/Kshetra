@@ -176,8 +176,8 @@ flowchart TD
     S7 --> S8[8. ACCEPTED]
     S8 --> S9[9. COMPLETE]
 
-    S2 -. Rejected .-> S1
     S3 -. Revisions Required .-> S2
+    S4 -. Revocation / Rescope .-> S2
     S5 -. Defect / Breach .-> S4
     S6 -. Verification Fail .-> S5
     S7 -. Production Fail .-> S5
@@ -203,13 +203,24 @@ flowchart TD
 9. **COMPLETE:** All continuity registers updated; historical baseline closed and immutable; next job transition cleared.
    - *Exit Gate:* Closure commit recorded; working tree clean; local HEAD == origin/master.
 
-### 4.4 Prohibited Lifecycle Transitions
+### 4.4 Permitted Backward Regressions & Technical Rationale:
+Backward regressions are strictly controlled to maintain integrity and prevent uncontrolled jumping:
+1. **PLAN_REVIEWED -> PLANNED (Revisions Required):** Occurs when the CTO Technical Authority reviews a submitted plan and issues feedback or directives requiring revisions (e.g., scope adjustments, missing test specifications) before implementation can be authorized.
+2. **AUTHORIZED -> PLANNED (Revocation / Rescope):** Occurs if newly discovered architectural constraints or dependencies invalidate an authorized plan prior to code completion, requiring plan re-specification.
+3. **IMPLEMENTED -> AUTHORIZED (Defect / Scope Breach):** Occurs when an implementation breach, scope leakage, or unresolvable blocker is identified during code generation, halting the implementation and returning to the authorized gate for remediation.
+4. **TESTED_AND_VERIFIED -> IMPLEMENTED (Verification Failure):** Occurs when automated unit/integration tests or independent verifier checks fail, requiring code modification within the authorized scope to rectify defects.
+5. **PRODUCTION_VERIFIED -> IMPLEMENTED (Production Failure):** Occurs when post-deployment smoke tests or live telemetry reveal regressions, requiring immediate rollback and implementation patch.
+
+*Note on PLANNED -> DEFINED:* Once a problem is defined and enters planning, planning artifacts are revised iteratively under PLANNED or returned via PLAN_REVIEWED. Reversion from PLANNED back to DEFINED is prohibited unless the core business problem statement itself is canceled.
+
+### 4.5 Prohibited Lifecycle Transitions
 The following transitions are strictly forbidden and will be rejected fail-closed:
 - `DEFINED -> IMPLEMENTED` (Bypassing Planning and Authorization)
 - `PLANNED -> IMPLEMENTED` (Bypassing Authorization; the W008 breach)
 - `AUTHORIZED -> ACCEPTED` (Bypassing Implementation and Verification)
 - `IMPLEMENTED -> ACCEPTED` (Bypassing Independent Verification; Rule IV-001 violation)
 - `TESTED_AND_VERIFIED -> COMPLETE` (Bypassing CTO Acceptance)
+- `PLANNED -> DEFINED` (Uncontrolled problem rollback without cancellation directive)
 - Implementation agent attempting self-transition to `ACCEPTED` or `COMPLETE` (Rule IV-001 violation)
 
 ---
@@ -329,12 +340,13 @@ To ensure machine-verifiability of Amendment v1.6, the following automated test 
 2. **Dedicated Semantic Governance Suite (`tests/governance-v16.test.mjs`):**
    - Negative-path proof that UNKNOWN cannot be treated as PASS.
    - Negative-path proof that unexecuted tests cannot be represented as PASS.
-   - Negative-path proof that Control M rejects missing/mismatched authorization tuple coordinates.
-   - Negative-path proof that unauthorized implementation triggers governance breach.
-   - Negative-path proof that scope leakage triggers rejection.
-   - Negative-path proof that evidence with mismatched Git commit, corrupted checksum, or missing environment identity fails validation.
+   - Real-state and mutation proof that Control M rejects missing/mismatched authorization tuple coordinates.
+   - Real-state and mutation proof that unauthorized implementation triggers governance breach.
+   - Scope compliance verification against derived Git diff from authorized base HEAD.
+   - Real-state and tampering proof that evidence with mismatched Git commit, corrupted checksum, or missing environment identity fails validation.
    - Rule IV-001 preservation and CTO-only technical authority validation.
    - 9-stage lifecycle transition validation and prohibited skip rejections.
+   - Structured parsing of continuity registers distinguishing current vs historical states.
    - Clean working tree and remote synchronization assertion.
 3. **Immutable Parent Provenance:**
    - Re-verify byte-for-byte SHA-256 hash of `AMENDMENT_v1.5.md` (`8b3505eee995adebd92ba2139173f0a0ab68cdcd0ed6f19f10cdcab3c7a2bfe2`).
