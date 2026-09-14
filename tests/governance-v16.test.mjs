@@ -391,7 +391,7 @@ export function independentlyVerifyEvidencePackage(evidence, rawStdout, rawStder
     throw new Error(`EVIDENCE_REJECTED: rawStderrSha256 mismatch! Expected ${recomputedStderrSha256}, recorded ${evidence.rawStderrSha256}`);
   }
 
-  // Step 4: Verify recorded Git HEAD against expected Git HEAD (CTO REV-5 REQ 2 Step 5)
+  // Step 4: Verify recorded Git HEAD against expected Git HEAD (CTO REV-5 REQ 2 Step 5 & Negative Test D)
   if (!evidence.repositoryHead || evidence.repositoryHead !== expectedGitHead) {
     throw new Error(`EVIDENCE_REJECTED: repositoryHead mismatch! Expected ${expectedGitHead}, got ${evidence.repositoryHead}`);
   }
@@ -406,7 +406,7 @@ export function independentlyVerifyEvidencePackage(evidence, rawStdout, rawStder
     throw new Error(`EVIDENCE_REJECTED: repositoryHead '${evidence.repositoryHead}' does not exist in Git repository`);
   }
 
-  // Step 5: Verify recorded origin/master against actual origin/master (CTO REV-5 REQ 2 Step 6)
+  // Step 5: Verify recorded origin/master against actual origin/master (CTO REV-5 REQ 2 Step 6 & Negative Test E)
   if (!evidence.originMasterHead || evidence.originMasterHead !== expectedOriginHead) {
     throw new Error(`EVIDENCE_REJECTED: originMasterHead mismatch! Expected ${expectedOriginHead}, got ${evidence.originMasterHead}`);
   }
