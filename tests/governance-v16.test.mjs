@@ -933,7 +933,7 @@ console.log('[PASS] [NEGATIVE TEST I] Execution source tree dirty strictly rejec
 // Negative Test J: evidence persistence commit dirty/invalid -> REJECT (CTO REV-8 REQ 12-J)
 assert.throws(
   () => independentlyVerifyEvidencePackage(
-    { ...liveEvidencePackage, executionCommitSha: recordedExecutionCommit, executionOriginMasterHead: recordedExecutionCommit, evidenceCommitSha: actualHead, evidenceWorkingTreeClean: false, evidenceArtifactSha256: calculateEvidenceArtifactSha256({ ...liveEvidencePackage, executionCommitSha: recordedExecutionCommit, executionOriginMasterHead: recordedExecutionCommit, evidenceCommitSha: liveEvidencePackage.evidenceCommitSha, evidenceWorkingTreeClean: false }) },
+    { ...liveEvidencePackage, executionCommitSha: recordedExecutionCommit, executionOriginMasterHead: recordedExecutionCommit, evidenceCommitSha: actualHead, evidenceOriginMasterHead: actualHead, evidenceWorkingTreeClean: false, evidenceArtifactSha256: calculateEvidenceArtifactSha256({ ...liveEvidencePackage, executionCommitSha: recordedExecutionCommit, executionOriginMasterHead: recordedExecutionCommit, evidenceCommitSha: actualHead, evidenceOriginMasterHead: actualHead, evidenceWorkingTreeClean: false }) },
     persistedRawStdout,
     persistedRawStderr,
     recordedExecutionCommit,
