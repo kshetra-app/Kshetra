@@ -671,7 +671,7 @@ export function independentlyVerifyEvidenceArtifact(artifactPath = path.resolve(
     {
       assertPersistence: true,
       requireCommittedArtifact: options.requireCommittedArtifact ?? false,
-      expectedOriginHead: currentOrigin,
+      expectedOriginHead: options.expectedOriginHead ?? evidence.evidenceOriginMasterHead,
       ...options
     }
   );
