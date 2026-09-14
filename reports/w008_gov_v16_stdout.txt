@@ -1,0 +1,68 @@
+=== RUNNING DEDICATED INDEPENDENT GOVERNANCE REGRESSION SUITE (AMENDMENT v1.6 - REV-5) ===
+
+[REPOSITORY STATE] Branch: master
+[REPOSITORY STATE] Local HEAD: 982cebc160c9e9fcd545f1fb07ad4adffd6d6fee
+[REPOSITORY STATE] origin/master: 982cebc160c9e9fcd545f1fb07ad4adffd6d6fee
+
+[AUTHORITATIVE V1.6 SCOPE MANIFEST]: [
+  'AMENDMENT_v1.6.md',
+  'tests/governance-consistency.test.mjs',
+  'tests/governance-v16.test.mjs'
+]
+[LIVE CANONICAL SCOPE HASH]: 3982c4d717339e83a7f968c148feb49e915b5b60e58ede94b4509adbbbb1f444
+[CANONICAL SERIALIZATION]:
+AMENDMENT_v1.6.md:28ff7b2fc1c457d0d2427ae1f181a3d7e79efcf61b8975f13ce13c182978e6c4
+tests/governance-consistency.test.mjs:71c4e48fd0be92c84cab8789f2022f0576adafa29fe7ef68bfe17f56fe69fca9
+tests/governance-v16.test.mjs:50cddbe0e110704af31e6167eaec1dcb5b97036ac77c32a746e2078c8b536e4f
+
+[PASS] [STRUCTURAL] Test S1: Amendment identity, title, and resubmission status verified.
+[PASS] [STRUCTURAL] Test S2: Parent amendment v1.5 immutability verified (SHA-256: 8b3505eee..., Commit: 795b9af).
+[PASS] [STRUCTURAL] Test S3: Rule IV-001 preservation and CTO-only technical authority verified.
+[PASS] [STRUCTURAL] Test S4: Authoritative file metrics reconciled (376 logical lines, 375 physical newlines, 303 non-empty lines, 33949 bytes).
+[PASS] [UNIT / MODEL] Test M1: Lifecycle model forward progression and all 5 permitted regressions verified.
+[PASS] [UNIT / MODEL] Test M2: Verification result evaluator baseline verified.
+[PASS] [UNIT / MODEL] Test M3: Pre-implementation claim evaluator baseline verified.
+[ACTUAL GIT CHANGED FILES FROM BASE]: [
+  'AMENDMENT_v1.6.md',
+  'tests/governance-consistency.test.mjs',
+  'tests/governance-v16.test.mjs'
+]
+[PASS] [REPOSITORY INTEGRATION] Test R1: Scope chain of custody verified (Git changed files -> authorized manifest -> derived canonical scope hash).
+[REAL-STATE CONTROL M] Current Job: W008-C (Phase-1 Domain API Contract Reconciliation & Standardization - ACCEPTED / CLOSED)
+[REAL-STATE CONTROL M] Plan Status: APPROVED
+[REAL-STATE CONTROL M] Impl Auth: NO
+[REAL-STATE CONTROL M] Auth Commit: NONE
+[PASS] [REPOSITORY INTEGRATION] Test R2: Real-state Control M freeze verified, and historical W008-C CTO authorization commit and DEC-048 verified from actual repository state.
+[PASS] [REPOSITORY INTEGRATION] Test R3: Structured register state parsing proves W008-C ACCEPTED, W008-D/E/W009 strictly NOT AUTHORIZED / FROZEN.
+[PASS] [NEGATIVE / ADVERSARIAL] Test N1: Prohibited lifecycle transitions (skips, PLANNED->DEFINED, and implementing self-acceptance) rejected fail-closed.
+[PASS] [NEGATIVE / ADVERSARIAL] Test N2: UNKNOWN, UNVERIFIED, and FAIL statuses strictly rejected.
+[PASS] [NEGATIVE / ADVERSARIAL] Test N3: Pre-implementation PASS, ZERO (PASS), and PROVISIONAL PASS claims strictly rejected.
+[PASS] [NEGATIVE / ADVERSARIAL] Test N4: Scope leakage mutations across server, mobile, routes, and migrations strictly rejected.
+[PASS] [EVIDENCE / PROVENANCE] Actual execution evidence artifact (reports/w008_gov_v16_evidence.json) verified with complete 11-step chain of custody.
+[PASS] [NEGATIVE TEST A] Fake synthetic stdout with valid checksum strictly rejected.
+[PASS] [NEGATIVE TEST B] Altered persisted stdout strictly rejected.
+[PASS] [NEGATIVE TEST C] Altered persisted stderr strictly rejected.
+[PASS] [NEGATIVE TEST D] Stale execution HEAD strictly rejected.
+[PASS] [NEGATIVE TEST E] Stale origin/master strictly rejected.
+[PASS] [NEGATIVE TEST F] Stale canonical scope hash strictly rejected.
+[PASS] [NEGATIVE TEST G] Canonical Mutation E: Manifest modification (both added file and changed file) via canonical derivation strictly rejected.
+[PASS] [NEGATIVE TEST N] Repository dirty state strictly rejected fail-closed.
+
+--- EXECUTING ISOLATED CONTROL-M AUTHORIZATION FIXTURE (REQ 5) ---
+NOTE: Real repository state remains strictly frozen (IMPLEMENTATION_AUTHORIZATION = NO).
+      This fixture proves the 7-coordinate Control M YES-path with committed git object provenance.
+
+[PASS] [CONTROL M FIXTURE] Positive 7-coordinate YES-path with committed git object provenance verified.
+[PASS] [NEGATIVE TEST H] Modified committed authorization record strictly rejected.
+[PASS] [NEGATIVE TEST I] External uncommitted CTO-looking decision record strictly rejected (provenance bound to commit).
+[PASS] [NEGATIVE TEST J] Authorization commit not in ancestry strictly rejected.
+[PASS] [NEGATIVE TEST K] Authorization commit with wrong job strictly rejected.
+[PASS] [NEGATIVE TEST L] Authorization commit with wrong scope hash strictly rejected.
+[PASS] [NEGATIVE TEST M] Authorization base HEAD not ancestor strictly rejected.
+[PASS] [CONTROL M FIXTURE] All negative tests H through M strictly rejected fail-closed.
+[PASS] [CONTROL M FIXTURE] Isolated temporary fixture cleaned up successfully.
+
+========================================================================================
+   ALL DEDICATED v1.6 INDEPENDENT GOVERNANCE TESTS PASSED (100% EMPIRICALLY VERIFIED)!  
+========================================================================================
+
