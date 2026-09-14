@@ -7,16 +7,21 @@
 ## 1. Project & Execution Coordinates
 ```text
 PROJECT:               PANIN (formerly Kshetra)
-CURRENT_JOB:           W008-B (Pioneer API Contract Reconciliation & Standardization - ACCEPTED / CLOSED)
+CURRENT_JOB:           W008-C (Phase-1 Domain API Contract Reconciliation & Standardization - Implementation Active)
 LAST_COMPLETED_JOB:    W008-B (Pioneer API Contract Reconciliation & Standardization - ACCEPTED / CLOSED)
-NEXT_PERMITTED_JOB:    NONE (W008-C/D/E and W009 NOT AUTHORIZED - STRICT STOP)
+NEXT_PERMITTED_JOB:    W008-C (Phase-1 Domain API Contract Reconciliation & Standardization)
 
 PLAN_STATUS:           APPROVED
 APPROVED_PLAN_VERSION: REV-7.0
-IMPLEMENTATION_AUTHORIZATION: NO
-AUTHORIZED_JOB:        NONE
-AUTHORIZED_SCOPE_HASH: NONE
-IMPLEMENTATION_AUTHORIZATION_COMMIT: NONE
+IMPLEMENTATION_AUTHORIZATION: YES
+AUTHORIZED_JOB:        W008-C
+AUTHORIZED_SCOPE_HASH: 36de3d19127019ae00d7900e7d515e74e5892e18adcd991b606338fe5be04b49
+IMPLEMENTATION_AUTHORIZATION_COMMIT: PENDING_AUTHORIZATION_COMMIT
+
+# W008-C AUTHORIZED COORDINATES (AUTHORIZED FOR IMPLEMENTATION BY CTO - DEC-048)
+W008_C_AUTHORIZED_SCOPE_HASH:          36de3d19127019ae00d7900e7d515e74e5892e18adcd991b606338fe5be04b49
+W008_C_AUTHORIZED_BASE_HEAD:           70b18f55dc9864070688a0949aaf60c79a9c0657
+W008_C_IMPLEMENTATION_AUTHORIZATION_COMMIT: PENDING_AUTHORIZATION_COMMIT
 
 # W008-B ACCEPTED COORDINATES (ACCEPTED / CLOSED BY CTO)
 ACCEPTED_W008_B_IMPLEMENTATION_COMMIT: f4d4095b9447c4d82b132808313ec0d7309ca135
@@ -61,9 +66,11 @@ GOVERNANCE_FRAMEWORK:  Amendment v1.2 (Active History) | Amendment v1.3 (Active 
 REMOTE_SYNC:           Up to date with origin/master
 ```
 
-> **Evidence Lineage & Coordinate Reconciliation (DEC-035 / DEC-036 / DEC-037 / DEC-041 / DEC-044 / DEC-045 / DEC-046 / DEC-047):**
+> **Evidence Lineage & Coordinate Reconciliation (DEC-035 / DEC-036 / DEC-037 / DEC-041 / DEC-044 / DEC-045 / DEC-046 / DEC-047 / DEC-048):**
+> - `W008_C_AUTHORIZED_SCOPE_HASH: 36de3d19127019ae00d7900e7d515e74e5892e18adcd991b606338fe5be04b49` = Authorized W008-C scope hash under REV-7.0 (DEC-048).
+> - `W008_C_AUTHORIZED_BASE_HEAD: 70b18f55dc9864070688a0949aaf60c79a9c0657` = Authorized base HEAD for W008-C implementation.
 > - `ACCEPTED_W008_B_IMPLEMENTATION_COMMIT: f4d4095` = Formally accepted W008-B implementation commit (Accepted by CTO per DEC-047).
-> - `W008_B_IMPLEMENTATION_AUTHORIZATION_COMMIT: 86a0fa5` = Implementation authorization commit for W008-B (DEC-046).
+> - `W008_B_IMPLEMENTATION_AUTHORIZATION_COMMIT: 86a0fa5762494036b15831feee888e4466e67d2d` = Implementation authorization commit for W008-B (DEC-046).
 > - `W008_B_AUTHORIZED_SCOPE_HASH: 98c1253721bd0b6302a88acef6b2c18701beee635074b4c94586192443d66d0a` = Authorized W008-B scope hash under REV-7.0.
 > - `ACCEPTED_W008_A_IMPLEMENTATION_COMMIT: be9cb85` = Formally accepted W008-A implementation commit (Accepted by CTO per DEC-045).
 > - `RATIFIED_W008_R7_GOVERNANCE_BASELINE: bffd242` = Ratified W008-R7 governance reconciliation and commit-bound Control M verifier.
@@ -101,7 +108,7 @@ REMOTE_SYNC:           Up to date with origin/master
 | **W005** | Backup & Recovery Verification | **ACCEPTED (W/ LIMITATIONS)** | 2026-09-11 | W005-R1C Independent Verifier PASS (commit `acc32fe`); verified remote head `f6ee696`; audited code `943b026`; evidence `b4f3133`; documented limitations: PITR/RPO ≤5m unverified, multi-cloud standby not implemented, DR-001 schema/API bootstrap, DR-002 synthetic staging, DR-004 staging storage, DR-005 client offline; user accepted |
 | **W006** | API Architecture Audit & Separation | **ACCEPTED** | 2026-09-12 | Audited 316 mobile files, 12 direct Supabase callers, 14 Railway callers, 137 Fastify routes across 23 modules, 85 data service methods classified (23 Class A reads, 56 Class B mutation strangler targets, 6 Class C Fastify routed). Fail-closed RLS decision engine: 21 source verified, 2 source pending, 0 live verified, 23 live pending; 0 directClientAllowed=true, 21 conditional pending, 2 forbidden (conversations/messages). Anti-override guard active. Tests NP-01 to NP-10 pass. global_search defect documented as DEF-013; auditedCodeCommit=35ba912, evidenceCommit=04be40b; formally accepted by CTO / Technical Authority per DEC-037; reports/w006_final_acceptance_report.* & reports/w006_final_independent_verification.md |
 | **W007** | Canonical API Client | **ACCEPTED / CLOSED** | 2026-09-12 | Canonical API client implemented in apps/mobile/lib/api/ (apiClient, AuthManager, ConfigEndpoint, PagesEndpoint, NewsEndpoint). Technically accepted by CTO at implementation commit `1d253cd454effb441e7f01e846a568eeddc7f57e`. Real single-flight token deduplication verified; fail-safe auth policy; Fastify UUID correlation with strict response validation on all statuses (2xx, 4xx, 5xx); total request deadline budget (18s GET, attempt ceiling 8s); caller cancellation semantics (0 retries); zero mutation retries (NP-08); strict runtime response validation (NewsSource object, NewsFeed schema, boolean flags, page entitlement); 48/48 unit tests pass (including 16 negative-path tests NP-1 through NP-16); 9 master integration checks pass; 3 pioneer callers migrated (pageService, featureFlags, news) with 100% fallback preservation; DM callers, DB migrations, Fastify routes, and npm dependencies untouched; IV-01 through IV-23 verified |
-| **W008** | API Contract Standardization | **ACCEPTED / CLOSED** | 2026-09-13 | Plan REV-7.0 formally approved by CTO. W008-A accepted and closed by CTO (DEC-045). W008-B (Pioneer API Contract Reconciliation & Standardization) accepted and closed by CTO (DEC-047) at implementation coordinate `f4d4095b9447c4d82b132808313ec0d7309ca135` under authorization `86a0fa5762494036b15831feee888e4466e67d2d` and scope hash `98c1253721bd0b6302a88acef6b2c18701beee635074b4c94586192443d66d0a`. CB-01..CB-05 pass 100%. Dual-layer contract drift check reconciled: Layer 1 declared client contracts 9/9 matched (100% parity); Layer 2 D0-D9 taxonomy 10/10 endpoints in sync (`D0_IN_SYNC`). Sub-Jobs W008-C/D/E and W009 remain strictly unauthorized / frozen. |
+| **W008** | API Contract Standardization | **IN PROGRESS (W008-C AUTHORIZED)** | 2026-09-14 | Plan REV-7.0 formally approved by CTO. W008-A accepted and closed by CTO (DEC-045). W008-B accepted and closed by CTO (DEC-047). W008-C (Phase-1 Domain API Contract Reconciliation & Standardization) authorized for implementation under scope hash `36de3d19127019ae00d7900e7d515e74e5892e18adcd991b606338fe5be04b49` (DEC-048). CB-01..CB-05 pass 100%. Dual-layer contract drift check reconciled: Layer 1 declared client contracts 9/9 matched (100% parity); Layer 2 D0-D9 taxonomy 10/10 endpoints in sync (`D0_IN_SYNC`). Sub-Jobs W008-D/E and W009 remain strictly unauthorized / frozen. |
 | **W009** | External Provider Abstraction | **NOT AUTHORIZED** | - | Blocked pending W008 reconciliation, sub-job completion, and closure |
 | **W010** | Security Baseline & RLS Hardening | NOT_STARTED | - | Prerequisite: W009 |
 | **W011** | Deceptive Fallback Remediation | NOT_STARTED | - | Prerequisite: W010 |

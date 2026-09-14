@@ -737,5 +737,49 @@
      - No implementation may begin without dedicated pre-authorization gate and explicit CTO implementation authorization.
 - **Rationale:** Complies with Master Execution Framework Amendment v1.5-A and Rule IV-001 by recording formal CTO technical acceptance, preserving immutable lineage coordinates, and maintaining strict fail-closed boundaries on unapproved sub-jobs.
 
+---
+
+### DEC-048: W008-C FORMAL CTO IMPLEMENTATION AUTHORIZATION
+- **Date:** 2026-09-14
+- **Status:** APPROVED & AUTHORIZED FOR IMPLEMENTATION (CTO MANDATE)
+- **Authority:** CTO Decision / Formal Implementation Authorization Mandate (Rule IV-001)
+- **Context:** Following independent technical review of the approved pre-authorization gate report `GATE-REPORT-W008-C-PRE-AUTH-REV-8` under `PLAN-W008-MASTER-REV-7.md` (REV-7.0), the CTO formally authorized implementation of Sub-Job W008-C (Phase-1 Domain API Contract Reconciliation & Standardization).
+- **Decisions:**
+  1. **Sub-Job Implementation Authorization:** Authorize implementation strictly for `W008-C` under canonical scope hash `36de3d19127019ae00d7900e7d515e74e5892e18adcd991b606338fe5be04b49`.
+  2. **Authorized Scope:** Exactly 27 HTTP operations across 4 Fastify route files:
+     - `apps/api/src/routes/states.ts` (2 operations: `GET /api/v1/states`, `GET /api/v1/states/:code`)
+     - `apps/api/src/routes/moderation.ts` (9 operations: `POST /api/v1/moderation/check/text`, `POST /api/v1/moderation/check/image`, `POST /api/v1/moderation/check/video`, `POST /api/v1/moderation/action`, `GET /api/v1/moderation/queue`, `GET /api/v1/moderation/audit-log`, `POST /api/v1/moderation/verify-request`, `POST /api/v1/moderation/block`, `DELETE /api/v1/moderation/block/:userId`)
+     - `apps/api/src/routes/notifications.ts` (5 operations: `POST /api/v1/notifications/send`, `POST /api/v1/notifications/register-token`, `GET /api/v1/notifications/preferences`, `PUT /api/v1/notifications/preferences`, `GET /api/v1/notifications/triggers`)
+     - `apps/api/src/routes/civic.ts` (11 operations: `GET /api/v1/civic/issues`, `POST /api/v1/civic/issues`, `GET /api/v1/civic/issues/:id`, `PATCH /api/v1/civic/issues/:id`, `POST /api/v1/civic/issues/:id/upvote`, `DELETE /api/v1/civic/issues/:id/upvote`, `GET /api/v1/civic/announcements`, `POST /api/v1/civic/announcements`, `GET /api/v1/civic/announcements/:id`, `GET /api/v1/civic/projects`, `GET /api/v1/civic/projects/:id`)
+  3. **Authorized Product Modification Files (EXACTLY FOUR):**
+     - `apps/api/src/routes/states.ts`
+     - `apps/api/src/routes/moderation.ts`
+     - `apps/api/src/routes/notifications.ts`
+     - `apps/api/src/routes/civic.ts`
+  4. **Verification-Only Scope (EXACTLY THREE):**
+     - `apps/api/src/__tests__/contracts.test.ts`
+     - `scripts/check-api-contract-drift.mjs`
+     - `tests/w008-contract-negative-paths.test.mjs`
+  5. **Strict Mandatory Implementation Invariants:**
+     - Moderation Identity: `POST /action` enforces `auth.userId === payload.moderatorId` fail-closed (HTTP 400 `VALIDATION_ERROR` on mismatch).
+     - Moderation Persistence Failure: Both Supabase `{ error }` and thrown exceptions must fail closed with sanitized HTTP 500 `sendApiError` (zero SQL/PostgREST leak; never HTTP 200).
+     - Moderation Queue: Return `{ queue: [], totalPending: 0 }` on empty DB result; fail closed with sanitized HTTP 500 on DB error in production (never synthetic mock data).
+     - `resolveModeratorRole()`: Preserve 401 on unauthenticated; profile DB lookup failure returns sanitized HTTP 500 (never silent downgrade to citizen).
+     - Notifications `register-token`: Maintained as Non-DB route (zero fabricated DB upsert).
+     - States Regex: `GET /states/:code` enforces `^[A-Z]{2}$` uppercase regex.
+     - Civic Pagination: `page >= 1`, `limit >= 1 && limit <= 100`.
+     - Error Envelopes: Exclusively canonical `sendApiError` from `apps/api/src/lib/replyHelper.ts`.
+  6. **Strict Scope Boundaries:**
+     - Zero product edits to `apps/mobile/**`, `packages/shared/**`, `supabase/migrations/**`, `apps/api/src/server.ts`, or any non-authorized routes (`pages.ts`, `config.ts`, `campaign.ts`, `ai.ts`, `delimitation.ts`, `dm.ts`, `feed.ts`).
+     - Sub-jobs W008-D, W008-E and W009 remain strictly unauthorized and frozen.
+  7. **Commit-Bound Governance Lineage:** Dedicated authorization record commit created and pushed to `origin/master` prior to any product file modifications, bound to:
+     - `AUTHORIZATION_TYPE: IMPLEMENTATION`
+     - `AUTHORIZED_JOB: W008-C`
+     - `APPROVED_PLAN_VERSION: REV-7.0`
+     - `AUTHORIZED_SCOPE_HASH: 36de3d19127019ae00d7900e7d515e74e5892e18adcd991b606338fe5be04b49`
+     - `AUTHORIZED_BASE_HEAD: 70b18f55dc9864070688a0949aaf60c79a9c0657`
+- **Rationale:** Strict compliance with Master Execution Framework Amendment v1.5-A, Control M, and Rule IV-001 before W008-C product code modification begins.
+
+
 
 
