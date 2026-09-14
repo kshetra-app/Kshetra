@@ -1,19 +1,25 @@
-=== RUNNING DEDICATED INDEPENDENT GOVERNANCE REGRESSION SUITE (AMENDMENT v1.6 - REV-6) ===
+=== RUNNING DEDICATED INDEPENDENT GOVERNANCE REGRESSION SUITE (AMENDMENT v1.6 - REV-8) ===
 
 [REPOSITORY STATE] Branch: master
-[REPOSITORY STATE] Local HEAD: af1c7863550212160d142f92c7bc846e2c6b955e
-[REPOSITORY STATE] origin/master: af1c7863550212160d142f92c7bc846e2c6b955e
+[REPOSITORY STATE] Local HEAD: 8854615b6427057ee77e663d2b3a553982414f63
+[REPOSITORY STATE] origin/master: 8854615b6427057ee77e663d2b3a553982414f63
+EXECUTION_COMMIT: 8854615b6427057ee77e663d2b3a553982414f63
+EXECUTION_ORIGIN_MASTER: 8854615b6427057ee77e663d2b3a553982414f63
+EXECUTION_COMMIT=8854615b6427057ee77e663d2b3a553982414f63
+EXECUTION_ORIGIN_MASTER=8854615b6427057ee77e663d2b3a553982414f63
 
 [AUTHORITATIVE V1.6 SCOPE MANIFEST]: [
   'AMENDMENT_v1.6.md',
   'tests/governance-consistency.test.mjs',
   'tests/governance-v16.test.mjs'
 ]
-[LIVE CANONICAL SCOPE HASH]: 36dd0008adc4b1addea93b2e476c71aa77f43f71f90df685365bf42b73dc4a5e
+[LIVE CANONICAL SCOPE HASH]: 880c39a6d6bd336c78ce03cadb69e4c1e91bf0c3276e9dd1e745715a3e3f067a
+CANONICAL_SCOPE_HASH: 880c39a6d6bd336c78ce03cadb69e4c1e91bf0c3276e9dd1e745715a3e3f067a
+CANONICAL_SCOPE_HASH=880c39a6d6bd336c78ce03cadb69e4c1e91bf0c3276e9dd1e745715a3e3f067a
 [CANONICAL SERIALIZATION]:
 AMENDMENT_v1.6.md:28ff7b2fc1c457d0d2427ae1f181a3d7e79efcf61b8975f13ce13c182978e6c4
 tests/governance-consistency.test.mjs:71c4e48fd0be92c84cab8789f2022f0576adafa29fe7ef68bfe17f56fe69fca9
-tests/governance-v16.test.mjs:0dc28d32be33da36d55bdc5d8340c386768e4f352d314224243836bda8bbc3ab
+tests/governance-v16.test.mjs:df1751ff1fe9b3a13fb65c0e108e6526aa9cb02229477a80bccd35db9bcaeb5f
 
 [PASS] [STRUCTURAL] Test S1: Amendment identity, title, and resubmission status verified.
 [PASS] [STRUCTURAL] Test S2: Parent amendment v1.5 immutability verified (SHA-256: 8b3505eee..., Commit: 795b9af).
@@ -41,17 +47,17 @@ tests/governance-v16.test.mjs:0dc28d32be33da36d55bdc5d8340c386768e4f352d31422424
 [PASS] [NEGATIVE / ADVERSARIAL] Test N2: UNKNOWN, UNVERIFIED, and FAIL statuses strictly rejected.
 [PASS] [NEGATIVE / ADVERSARIAL] Test N3: Pre-implementation PASS, ZERO (PASS), and PROVISIONAL PASS claims strictly rejected.
 [PASS] [NEGATIVE / ADVERSARIAL] Test N4: Scope leakage mutations across server, mobile, routes, and migrations strictly rejected.
-[PASS] [EVIDENCE / PROVENANCE] Actual execution evidence artifact (reports/w008_gov_v16_evidence.json) verified with complete 11-step chain of custody.
-[PASS] [NEGATIVE TEST A] Fake synthetic stdout with valid checksum strictly rejected.
-[PASS] [NEGATIVE TEST B] Altered persisted stdout strictly rejected.
-[PASS] [NEGATIVE TEST C] Altered persisted stderr strictly rejected.
-[PASS] [NEGATIVE TEST D] Stale execution HEAD strictly rejected.
-[PASS] [NEGATIVE TEST E] Stale origin/master strictly rejected.
-[PASS] [NEGATIVE TEST F] Stale canonical scope hash strictly rejected.
-[PASS] [NEGATIVE TEST G] Canonical Mutation E: Manifest modification (both added file and changed file) via canonical derivation strictly rejected.
-[PASS] [NEGATIVE TEST N] Repository dirty state strictly rejected fail-closed.
-[PASS] [NEGATIVE TEST O] rawStdout with tampered Local HEAD strictly rejected by coordinate cross-consistency.
-[PASS] [NEGATIVE TEST P] rawStdout with tampered origin/master strictly rejected by coordinate cross-consistency.
+[PASS] [EVIDENCE / PROVENANCE] Actual execution evidence artifact (reports/w008_gov_v16_evidence.json) verified with complete two-chain cross-consistency.
+[PASS] [NEGATIVE TEST A] executionCommitSha differs from evidenceCommitSha -> ACCEPTED (proves two-chain model).
+[PASS] [NEGATIVE TEST B] executionCommitSha differs from raw stdout executionCommitSha strictly rejected.
+[PASS] [NEGATIVE TEST C] executionCommitSha differs from executionOriginMasterHead strictly rejected.
+[PASS] [NEGATIVE TEST D] Canonical scope hash calculated from evidence commit instead of execution commit strictly rejected.
+[PASS] [NEGATIVE TEST E] evidenceCommitSha does not equal actual persistence commit strictly rejected.
+[PASS] [NEGATIVE TEST F] Evidence artifact modified after evidenceCommitSha strictly rejected.
+[PASS] [NEGATIVE TEST G] Raw stdout claiming evidence commit as execution commit strictly rejected.
+[PASS] [NEGATIVE TEST H] Execution commit as only an ancestor strictly rejected fail-closed.
+[PASS] [NEGATIVE TEST I] Execution source tree dirty strictly rejected.
+[PASS] [NEGATIVE TEST J] Evidence persistence commit dirty strictly rejected.
 
 --- EXECUTING ISOLATED CONTROL-M AUTHORIZATION FIXTURE (REQ 5) ---
 NOTE: Real repository state remains strictly frozen (IMPLEMENTATION_AUTHORIZATION = NO).
@@ -67,11 +73,15 @@ NOTE: Real repository state remains strictly frozen (IMPLEMENTATION_AUTHORIZATIO
 [PASS] [CONTROL M FIXTURE] All negative tests H through M strictly rejected fail-closed.
 [PASS] [CONTROL M FIXTURE] Isolated temporary fixture cleaned up successfully.
 
---- EXECUTING ISOLATED STALE-ANCESTOR FIXTURE (REV-6 SECTION 3) ---
+--- EXECUTING ISOLATED STALE-ANCESTOR FIXTURE (CTO REV-8) ---
 Proving that an evidence package generated at an ancestor commit is strictly rejected fail-closed.
 
-[PASS] [STALE ANCESTOR FIXTURE] Stale ancestor execution evidence strictly rejected across repositoryHead, gitCommitSha, originMasterHead, and stdout coordinates.
+[PASS] [STALE ANCESTOR FIXTURE] Stale ancestor execution evidence strictly rejected fail-closed across execution coordinates.
 [PASS] [STALE ANCESTOR FIXTURE] Isolated temporary fixture cleaned up successfully.
+
+--- EXECUTING DEDICATED EXECUTION/EVIDENCE IDENTITY TWO-CHAIN TEST (CTO REV-8 SECTION 14) ---
+[PASS] [TWO-CHAIN MODEL PROOF] Chain A (Execution) and Chain B (Persistence) proven independently and linked cryptographically.
+[PASS] [TWO-CHAIN MODEL PROOF] Isolated temporary fixture cleaned up successfully.
 
 ========================================================================================
    ALL DEDICATED v1.6 INDEPENDENT GOVERNANCE TESTS PASSED (100% EMPIRICALLY VERIFIED)!  
