@@ -1,19 +1,19 @@
-=== RUNNING DEDICATED INDEPENDENT GOVERNANCE REGRESSION SUITE (AMENDMENT v1.6 - REV-5) ===
+=== RUNNING DEDICATED INDEPENDENT GOVERNANCE REGRESSION SUITE (AMENDMENT v1.6 - REV-6) ===
 
 [REPOSITORY STATE] Branch: master
-[REPOSITORY STATE] Local HEAD: 2244808ecf56d5cd6c427e88749ee46d84bd63ae
-[REPOSITORY STATE] origin/master: 2244808ecf56d5cd6c427e88749ee46d84bd63ae
+[REPOSITORY STATE] Local HEAD: 4909f5198198d1d1c1c151fd02e76d30aec4d364
+[REPOSITORY STATE] origin/master: 4909f5198198d1d1c1c151fd02e76d30aec4d364
 
 [AUTHORITATIVE V1.6 SCOPE MANIFEST]: [
   'AMENDMENT_v1.6.md',
   'tests/governance-consistency.test.mjs',
   'tests/governance-v16.test.mjs'
 ]
-[LIVE CANONICAL SCOPE HASH]: 9c9ac4aa2bd0078993077ea42861ae892547a7f1040da45a400bfe1b8ddd6617
+[LIVE CANONICAL SCOPE HASH]: 36dd0008adc4b1addea93b2e476c71aa77f43f71f90df685365bf42b73dc4a5e
 [CANONICAL SERIALIZATION]:
 AMENDMENT_v1.6.md:28ff7b2fc1c457d0d2427ae1f181a3d7e79efcf61b8975f13ce13c182978e6c4
 tests/governance-consistency.test.mjs:71c4e48fd0be92c84cab8789f2022f0576adafa29fe7ef68bfe17f56fe69fca9
-tests/governance-v16.test.mjs:d0a061b637616ae53e2c8dc004384563d333e6d8138fd9df448fd784c3c0ec32
+tests/governance-v16.test.mjs:0dc28d32be33da36d55bdc5d8340c386768e4f352d314224243836bda8bbc3ab
 
 [PASS] [STRUCTURAL] Test S1: Amendment identity, title, and resubmission status verified.
 [PASS] [STRUCTURAL] Test S2: Parent amendment v1.5 immutability verified (SHA-256: 8b3505eee..., Commit: 795b9af).
@@ -50,6 +50,8 @@ tests/governance-v16.test.mjs:d0a061b637616ae53e2c8dc004384563d333e6d8138fd9df44
 [PASS] [NEGATIVE TEST F] Stale canonical scope hash strictly rejected.
 [PASS] [NEGATIVE TEST G] Canonical Mutation E: Manifest modification (both added file and changed file) via canonical derivation strictly rejected.
 [PASS] [NEGATIVE TEST N] Repository dirty state strictly rejected fail-closed.
+[PASS] [NEGATIVE TEST O] rawStdout with tampered Local HEAD strictly rejected by coordinate cross-consistency.
+[PASS] [NEGATIVE TEST P] rawStdout with tampered origin/master strictly rejected by coordinate cross-consistency.
 
 --- EXECUTING ISOLATED CONTROL-M AUTHORIZATION FIXTURE (REQ 5) ---
 NOTE: Real repository state remains strictly frozen (IMPLEMENTATION_AUTHORIZATION = NO).
@@ -64,6 +66,12 @@ NOTE: Real repository state remains strictly frozen (IMPLEMENTATION_AUTHORIZATIO
 [PASS] [NEGATIVE TEST M] Authorization base HEAD not ancestor strictly rejected.
 [PASS] [CONTROL M FIXTURE] All negative tests H through M strictly rejected fail-closed.
 [PASS] [CONTROL M FIXTURE] Isolated temporary fixture cleaned up successfully.
+
+--- EXECUTING ISOLATED STALE-ANCESTOR FIXTURE (REV-6 SECTION 3) ---
+Proving that an evidence package generated at an ancestor commit is strictly rejected fail-closed.
+
+[PASS] [STALE ANCESTOR FIXTURE] Stale ancestor execution evidence strictly rejected across repositoryHead, gitCommitSha, originMasterHead, and stdout coordinates.
+[PASS] [STALE ANCESTOR FIXTURE] Isolated temporary fixture cleaned up successfully.
 
 ========================================================================================
    ALL DEDICATED v1.6 INDEPENDENT GOVERNANCE TESTS PASSED (100% EMPIRICALLY VERIFIED)!  
