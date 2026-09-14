@@ -1,19 +1,19 @@
 === RUNNING DEDICATED INDEPENDENT GOVERNANCE REGRESSION SUITE (AMENDMENT v1.6 - REV-5) ===
 
 [REPOSITORY STATE] Branch: master
-[REPOSITORY STATE] Local HEAD: df5f644f4ebef889d962ff894155fa6d04814580
-[REPOSITORY STATE] origin/master: df5f644f4ebef889d962ff894155fa6d04814580
+[REPOSITORY STATE] Local HEAD: 2244808ecf56d5cd6c427e88749ee46d84bd63ae
+[REPOSITORY STATE] origin/master: 2244808ecf56d5cd6c427e88749ee46d84bd63ae
 
 [AUTHORITATIVE V1.6 SCOPE MANIFEST]: [
   'AMENDMENT_v1.6.md',
   'tests/governance-consistency.test.mjs',
   'tests/governance-v16.test.mjs'
 ]
-[LIVE CANONICAL SCOPE HASH]: abb09dac2fe20f1358feed5540bd0944a1d4f68119ffbeb969bcc912d2d35e7d
+[LIVE CANONICAL SCOPE HASH]: 9c9ac4aa2bd0078993077ea42861ae892547a7f1040da45a400bfe1b8ddd6617
 [CANONICAL SERIALIZATION]:
 AMENDMENT_v1.6.md:28ff7b2fc1c457d0d2427ae1f181a3d7e79efcf61b8975f13ce13c182978e6c4
 tests/governance-consistency.test.mjs:71c4e48fd0be92c84cab8789f2022f0576adafa29fe7ef68bfe17f56fe69fca9
-tests/governance-v16.test.mjs:ae72c05da7ef5e20e64dadeb8bc3519c1c2a2b3308216959a868391527ccaaea
+tests/governance-v16.test.mjs:d0a061b637616ae53e2c8dc004384563d333e6d8138fd9df448fd784c3c0ec32
 
 [PASS] [STRUCTURAL] Test S1: Amendment identity, title, and resubmission status verified.
 [PASS] [STRUCTURAL] Test S2: Parent amendment v1.5 immutability verified (SHA-256: 8b3505eee..., Commit: 795b9af).

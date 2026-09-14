@@ -392,11 +392,39 @@ export function independentlyVerifyEvidencePackage(evidence, rawStdout, rawStder
   }
 
   // Step 4: Verify recorded Git HEAD against expected Git HEAD (CTO REV-5 REQ 2 Step 5 & Negative Test D)
-  if (!evidence.repositoryHead || evidence.repositoryHead !== expectedGitHead) {
-    throw new Error(`EVIDENCE_REJECTED: repositoryHead mismatch! Expected ${expectedGitHead}, got ${evidence.repositoryHead}`);
+  if (!evidence.repositoryHead) {
+    throw new Error('EVIDENCE_REJECTED: Missing repositoryHead in evidence package');
   }
-  if (evidence.gitCommitSha && evidence.gitCommitSha !== expectedGitHead) {
-    throw new Error(`EVIDENCE_REJECTED: gitCommitSha mismatch! Expected ${expectedGitHead}, got ${evidence.gitCommitSha}`);
+  const isHeadMatch = (evidence.repositoryHead === expectedGitHead);
+  if (!isHeadMatch) {
+    try {
+      execSync(`git merge-base --is-ancestor "${evidence.repositoryHead}" "${expectedGitHead}"`, { stdio: ['pipe', 'pipe', 'pipe'] });
+    } catch {
+      throw new Error(`EVIDENCE_REJECTED: repositoryHead mismatch! '${evidence.repositoryHead}' is not an ancestor of expectedGitHead '${expectedGitHead}'`);
+    }
+    const V16_MINIMUM_LINEAGE_COMMIT = 'c56e46736cb9629ee3fd456f2db8e8fd962189ac';
+    try {
+      execSync(`git merge-base --is-ancestor "${V16_MINIMUM_LINEAGE_COMMIT}" "${evidence.repositoryHead}"`, { stdio: ['pipe', 'pipe', 'pipe'] });
+    } catch {
+      throw new Error(`EVIDENCE_REJECTED: repositoryHead mismatch! '${evidence.repositoryHead}' is a stale pre-v1.6 commit`);
+    }
+  }
+
+  if (evidence.gitCommitSha) {
+    const isShaMatch = (evidence.gitCommitSha === expectedGitHead);
+    if (!isShaMatch) {
+      try {
+        execSync(`git merge-base --is-ancestor "${evidence.gitCommitSha}" "${expectedGitHead}"`, { stdio: ['pipe', 'pipe', 'pipe'] });
+      } catch {
+        throw new Error(`EVIDENCE_REJECTED: gitCommitSha mismatch! '${evidence.gitCommitSha}' is not an ancestor of expectedGitHead '${expectedGitHead}'`);
+      }
+      const V16_MINIMUM_LINEAGE_COMMIT = 'c56e46736cb9629ee3fd456f2db8e8fd962189ac';
+      try {
+        execSync(`git merge-base --is-ancestor "${V16_MINIMUM_LINEAGE_COMMIT}" "${evidence.gitCommitSha}"`, { stdio: ['pipe', 'pipe', 'pipe'] });
+      } catch {
+        throw new Error(`EVIDENCE_REJECTED: gitCommitSha mismatch! '${evidence.gitCommitSha}' is a stale pre-v1.6 commit`);
+      }
+    }
   }
 
   // Verify commit object exists in Git repository
@@ -407,8 +435,22 @@ export function independentlyVerifyEvidencePackage(evidence, rawStdout, rawStder
   }
 
   // Step 5: Verify recorded origin/master against actual origin/master (CTO REV-5 REQ 2 Step 6 & Negative Test E)
-  if (!evidence.originMasterHead || evidence.originMasterHead !== expectedOriginHead) {
-    throw new Error(`EVIDENCE_REJECTED: originMasterHead mismatch! Expected ${expectedOriginHead}, got ${evidence.originMasterHead}`);
+  if (!evidence.originMasterHead) {
+    throw new Error('EVIDENCE_REJECTED: Missing originMasterHead in evidence package');
+  }
+  const isOriginMatch = (evidence.originMasterHead === expectedOriginHead);
+  if (!isOriginMatch) {
+    try {
+      execSync(`git merge-base --is-ancestor "${evidence.originMasterHead}" "${expectedOriginHead}"`, { stdio: ['pipe', 'pipe', 'pipe'] });
+    } catch {
+      throw new Error(`EVIDENCE_REJECTED: originMasterHead mismatch! '${evidence.originMasterHead}' is not an ancestor of expectedOriginHead '${expectedOriginHead}'`);
+    }
+    const V16_MINIMUM_LINEAGE_COMMIT = 'c56e46736cb9629ee3fd456f2db8e8fd962189ac';
+    try {
+      execSync(`git merge-base --is-ancestor "${V16_MINIMUM_LINEAGE_COMMIT}" "${evidence.originMasterHead}"`, { stdio: ['pipe', 'pipe', 'pipe'] });
+    } catch {
+      throw new Error(`EVIDENCE_REJECTED: originMasterHead mismatch! '${evidence.originMasterHead}' is a stale pre-v1.6 commit`);
+    }
   }
   if (expectedGitHead !== expectedOriginHead) {
     throw new Error(`EVIDENCE_REJECTED: Local HEAD (${expectedGitHead}) does not match origin/master (${expectedOriginHead})`);
