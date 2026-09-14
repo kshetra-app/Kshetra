@@ -1,5 +1,5 @@
 # DEFECT REGISTER: PANIN / KSHETRA
-**Last Updated:** 2026-09-08
+**Last Updated:** 2026-09-14
 **Classification:** P0 (Production Blocker), P1 (Major / Architectural), P2 (Moderate / Debt), P3 (Minor / Polish)
 
 ---

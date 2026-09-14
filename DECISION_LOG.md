@@ -1,5 +1,5 @@
 # DECISION LOG: PANIN / KSHETRA
-**Last Updated:** 2026-09-08
+**Last Updated:** 2026-09-14
 **Standard:** AI Agent Master Execution Job Book (Section 0.9, 0.10, Part 12)
 
 ---
@@ -779,6 +779,44 @@
      - `AUTHORIZED_SCOPE_HASH: 36de3d19127019ae00d7900e7d515e74e5892e18adcd991b606338fe5be04b49`
      - `AUTHORIZED_BASE_HEAD: 70b18f55dc9864070688a0949aaf60c79a9c0657`
 - **Rationale:** Strict compliance with Master Execution Framework Amendment v1.5-A, Control M, and Rule IV-001 before W008-C product code modification begins.
+
+---
+
+### DEC-049: W008-C FORMAL CTO TECHNICAL ACCEPTANCE & CLOSURE
+- **Date:** 2026-09-14
+- **Status:** ACCEPTED / COMPLETE (CTO FORMAL ACCEPTANCE)
+- **Authority:** CTO Directive / Formal Acceptance under Rule IV-001
+- **Context:** Independent CTO technical audit of Sub-Job W008-C (Phase-1 Domain API Contract Reconciliation & Standardization) completed and accepted.
+- **Decisions:**
+  1. **Formal W008-C Acceptance & Closure:** W008-C is formally marked `ACCEPTED / COMPLETE`. The CTO confirmed:
+     - CC-01: PASS / CTO ACCEPTED (Complete fastify-schema coverage across all 27 Phase-1 domain operations)
+     - CC-02: PASS / CTO ACCEPTED (`GET /api/v1/states/:code` enforces `^[A-Z]{2}$` uppercase regex param schema)
+     - CC-03: PASS / CTO ACCEPTED (`POST /api/v1/moderation/action` enforces `auth.userId === payload.moderatorId` fail-closed identity verification)
+     - CC-04: PASS / CTO ACCEPTED (Moderation persistence failures fail-closed with sanitized HTTP 500 `sendApiError`, zero SQL/PostgREST leakage)
+     - CC-05: PASS / CTO ACCEPTED (API contract drift check confirms `D0_IN_SYNC` across all 34 audited operations)
+     - CC-06: PASS / CTO ACCEPTED (All database interactions verified: moderation queue 3-state handling with empty queue `{ queue: [], totalPending: 0 }`, `resolveModeratorRole` fail-closed 401 unauth & 500 DB error without downgrade, and notifications non-DB token registration preserved)
+     - NP-07..NP-12 & NP-01..NP-18: PASS / CTO ACCEPTED (100% pass across master negative path suite)
+     - Staging & Production Runtime Verification: PASS / CTO ACCEPTED (Active across Railway deployments)
+  2. **Accepted Coordinate Lineage:**
+     - Authorized Base HEAD: `70b18f55dc9864070688a0949aaf60c79a9c0657`
+     - Implementation Authorization Commit: `e6d4c6449175ee250eb93855ff99008bc0a2ea99`
+     - Governance Binding Commit: `cbe21df03dfaa42c242835ddb7cd6d2ba5925d74`
+     - Accepted Implementation Commit: `89847041d0d9d93d348ed7bc2a5556dcc2c74f8b`
+     - Authorized Scope Hash: `36de3d19127019ae00d7900e7d515e74e5892e18adcd991b606338fe5be04b49`
+     - Approved Plan Version: `REV-7.0` (`PLAN-W008-MASTER-REV-7.md`)
+     - Acceptance Date: `2026-09-14`
+  3. **Reconciliation of Generated Evidence Artifacts:**
+     - `reports/w008_api_contract_inventory.json`
+     - `reports/w008_contract_drift_report.json`
+     - `reports/w008_negative_path_verification.json`
+     - Explicitly reconciled as generated evidence artifacts produced by the verification suite, not unauthorized product modifications.
+  4. **Strict Follow-On Boundary Enforcement:**
+     - Product implementation scope of W008-C is CLOSED.
+     - Sub-jobs W008-D, W008-E remain strictly **NOT AUTHORIZED / FROZEN**.
+     - Job W009 remains strictly **NOT AUTHORIZED / BLOCKED**.
+     - No implementation may begin without dedicated pre-authorization gate and explicit CTO implementation authorization.
+- **Rationale:** Complies with Master Execution Framework Amendment v1.5-A and Rule IV-001 by recording formal CTO technical acceptance, preserving immutable lineage coordinates, and maintaining strict fail-closed boundaries on unapproved successor jobs.
+
 
 
 
