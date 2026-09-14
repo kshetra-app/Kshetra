@@ -20,9 +20,9 @@
   "rawStderr": "",
   "rawStdoutSha256": "f9240bd478976c37a7c3c64d085e47bef854cbb593a3a8aba927146e7d0cff14",
   "rawStderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-  "evidenceCommitSha": "0000000000000000000000000000000000000000",
-  "evidenceOriginMasterHead": "0000000000000000000000000000000000000000",
-  "evidenceArtifactSha256": "9724b45f9fad37cb591d6149e6f19d84a35a0a52f95aa132bd960a7e5a9c8bd5",
+  "evidenceCommitSha": "04e78899d1bb3ca60890a6f6f7622c6347313c9c",
+  "evidenceOriginMasterHead": "04e78899d1bb3ca60890a6f6f7622c6347313c9c",
+  "evidenceArtifactSha256": "2c203c698a7a68a4a69f84ec8fbbf7ac90071ca0b2829056715da1682de55960",
   "evidenceBranch": "master",
   "evidenceWorkingTreeClean": true,
   "environment": {
