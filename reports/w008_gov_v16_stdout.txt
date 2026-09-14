@@ -1,25 +1,25 @@
 === RUNNING DEDICATED INDEPENDENT GOVERNANCE REGRESSION SUITE (AMENDMENT v1.6 - REV-8) ===
 
 [REPOSITORY STATE] Branch: master
-[REPOSITORY STATE] Local HEAD: 2a1c81bcd02515b5daa6a32cda3bdd13db6ebbf2
-[REPOSITORY STATE] origin/master: 2a1c81bcd02515b5daa6a32cda3bdd13db6ebbf2
-EXECUTION_COMMIT: 2a1c81bcd02515b5daa6a32cda3bdd13db6ebbf2
-EXECUTION_ORIGIN_MASTER: 2a1c81bcd02515b5daa6a32cda3bdd13db6ebbf2
-EXECUTION_COMMIT=2a1c81bcd02515b5daa6a32cda3bdd13db6ebbf2
-EXECUTION_ORIGIN_MASTER=2a1c81bcd02515b5daa6a32cda3bdd13db6ebbf2
+[REPOSITORY STATE] Local HEAD: e9b9d27edb85eac25ed5c3bf8fab7abc65908053
+[REPOSITORY STATE] origin/master: e9b9d27edb85eac25ed5c3bf8fab7abc65908053
+EXECUTION_COMMIT: e9b9d27edb85eac25ed5c3bf8fab7abc65908053
+EXECUTION_ORIGIN_MASTER: e9b9d27edb85eac25ed5c3bf8fab7abc65908053
+EXECUTION_COMMIT=e9b9d27edb85eac25ed5c3bf8fab7abc65908053
+EXECUTION_ORIGIN_MASTER=e9b9d27edb85eac25ed5c3bf8fab7abc65908053
 
 [AUTHORITATIVE V1.6 SCOPE MANIFEST]: [
   'AMENDMENT_v1.6.md',
   'tests/governance-consistency.test.mjs',
   'tests/governance-v16.test.mjs'
 ]
-[LIVE CANONICAL SCOPE HASH]: 6431b01d79ccd0cb6e20e332c6f4c07cc31da21315f11410869ab73c7c2f6221
-CANONICAL_SCOPE_HASH: 6431b01d79ccd0cb6e20e332c6f4c07cc31da21315f11410869ab73c7c2f6221
-CANONICAL_SCOPE_HASH=6431b01d79ccd0cb6e20e332c6f4c07cc31da21315f11410869ab73c7c2f6221
+[LIVE CANONICAL SCOPE HASH]: da6cb981c81206b5387211a494b0291548205058c9eb6ebb7e021c9c70ced8c7
+CANONICAL_SCOPE_HASH: da6cb981c81206b5387211a494b0291548205058c9eb6ebb7e021c9c70ced8c7
+CANONICAL_SCOPE_HASH=da6cb981c81206b5387211a494b0291548205058c9eb6ebb7e021c9c70ced8c7
 [CANONICAL SERIALIZATION]:
 AMENDMENT_v1.6.md:28ff7b2fc1c457d0d2427ae1f181a3d7e79efcf61b8975f13ce13c182978e6c4
 tests/governance-consistency.test.mjs:71c4e48fd0be92c84cab8789f2022f0576adafa29fe7ef68bfe17f56fe69fca9
-tests/governance-v16.test.mjs:5fccb8dac6378c6a515e4bc09803f29fb57943e7f092c622c6e429d90fe76e73
+tests/governance-v16.test.mjs:52609d04056c517dc17d85781c850b52f421ff9f1f9b80143639e4ef2d008290
 
 [PASS] [STRUCTURAL] Test S1: Amendment identity, title, and resubmission status verified.
 [PASS] [STRUCTURAL] Test S2: Parent amendment v1.5 immutability verified (SHA-256: 8b3505eee..., Commit: 795b9af).
@@ -58,6 +58,13 @@ tests/governance-v16.test.mjs:5fccb8dac6378c6a515e4bc09803f29fb57943e7f092c622c6
 [PASS] [NEGATIVE TEST H] Execution commit as only an ancestor strictly rejected fail-closed.
 [PASS] [NEGATIVE TEST I] Execution source tree dirty strictly rejected.
 [PASS] [NEGATIVE TEST J] Evidence persistence commit dirty strictly rejected.
+[PASS] [NEGATIVE TEST K] Symbolic evidenceCommitSha = origin/master strictly rejected fail-closed.
+[PASS] [NEGATIVE TEST L] Symbolic evidenceCommitSha = HEAD strictly rejected fail-closed.
+[PASS] [NEGATIVE TEST M] Malformed evidence commit SHA strictly rejected fail-closed.
+[PASS] [NEGATIVE TEST N] evidenceOriginMasterHead != evidenceCommitSha strictly rejected fail-closed.
+[PASS] [NEGATIVE TEST O] Recorded evidenceArtifactSha256 differs from actual artifact bytes strictly rejected fail-closed.
+[PASS] [NEGATIVE TEST P] Modify one byte of persisted evidence artifact after evidenceCommitSha strictly rejected fail-closed.
+[PASS] [NEGATIVE TEST Q] Evidence artifact hash corresponds to one artifact while repository persistence commit contains another strictly rejected fail-closed.
 
 --- EXECUTING ISOLATED CONTROL-M AUTHORIZATION FIXTURE (REQ 5) ---
 NOTE: Real repository state remains strictly frozen (IMPLEMENTATION_AUTHORIZATION = NO).
