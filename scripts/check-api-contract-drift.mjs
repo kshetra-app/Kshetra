@@ -121,7 +121,7 @@ function scanDetailedRoutes(filePath) {
       phase = 'System & Diagnostics';
     } else if (routePath.includes('/config/flags') || routePath.includes('/pages/') || routePath.includes('/news/feed')) {
       phase = 'Pioneer (W007/W008)';
-    } else if (routePath.includes('/states') || routePath.includes('/moderation') || routePath.includes('/civic')) {
+    } else if (routePath.includes('/states') || routePath.includes('/moderation') || routePath.includes('/civic') || routePath.includes('/notifications')) {
       phase = 'Phase 1 (Standardized)';
     }
 
@@ -170,8 +170,9 @@ fs.writeFileSync(inventoryReportPath, JSON.stringify(inventoryReport, null, 2));
 console.log(`   [INVENTORY] Total Registered Fastify Routes: ${fullInventory.length}`);
 console.log(`   [INVENTORY] Report written to: reports/w008_api_contract_inventory.json`);
 
-// D0-D9 Drift Audit Matrix for Standardized Endpoints
+// D0-D9 Drift Audit Matrix for Standardized Endpoints (Pioneer + Phase 1)
 const auditedContracts = [
+  // Pioneer & System Endpoints
   { endpoint: 'GET /health', expectedMethod: 'GET', path: '/health', phase: 'System', driftTaxonomy: 'D0_IN_SYNC' },
   { endpoint: 'GET /api/health', expectedMethod: 'GET', path: '/api/health', phase: 'System', driftTaxonomy: 'D0_IN_SYNC' },
   { endpoint: 'GET /api/health/db', expectedMethod: 'GET', path: '/api/health/db', phase: 'System', driftTaxonomy: 'D0_IN_SYNC' },
@@ -179,9 +180,41 @@ const auditedContracts = [
   { endpoint: 'PATCH /api/v1/config/flags', expectedMethod: 'PATCH', path: '/api/v1/config/flags', phase: 'Pioneer', driftTaxonomy: 'D0_IN_SYNC' },
   { endpoint: 'GET /api/v1/pages/:id/entitlement', expectedMethod: 'GET', path: '/api/v1/pages/:id/entitlement', phase: 'Pioneer', driftTaxonomy: 'D0_IN_SYNC' },
   { endpoint: 'GET /api/v1/news/feed', expectedMethod: 'GET', path: '/api/v1/news/feed', phase: 'Pioneer', driftTaxonomy: 'D0_IN_SYNC' },
+
+  // Phase 1 Domain Endpoints: States (2)
   { endpoint: 'GET /api/v1/states', expectedMethod: 'GET', path: '/api/v1/states', phase: 'Phase 1', driftTaxonomy: 'D0_IN_SYNC' },
   { endpoint: 'GET /api/v1/states/:code', expectedMethod: 'GET', path: '/api/v1/states/:code', phase: 'Phase 1', driftTaxonomy: 'D0_IN_SYNC' },
+
+  // Phase 1 Domain Endpoints: Moderation (9)
+  { endpoint: 'POST /api/v1/moderation/action', expectedMethod: 'POST', path: '/api/v1/moderation/action', phase: 'Phase 1', driftTaxonomy: 'D0_IN_SYNC' },
   { endpoint: 'POST /api/v1/moderation/check-content', expectedMethod: 'POST', path: '/api/v1/moderation/check-content', phase: 'Phase 1', driftTaxonomy: 'D0_IN_SYNC' },
+  { endpoint: 'GET /api/v1/moderation/queue', expectedMethod: 'GET', path: '/api/v1/moderation/queue', phase: 'Phase 1', driftTaxonomy: 'D0_IN_SYNC' },
+  { endpoint: 'GET /api/v1/moderation/actions', expectedMethod: 'GET', path: '/api/v1/moderation/actions', phase: 'Phase 1', driftTaxonomy: 'D0_IN_SYNC' },
+  { endpoint: 'GET /api/v1/moderation/audit-log', expectedMethod: 'GET', path: '/api/v1/moderation/audit-log', phase: 'Phase 1', driftTaxonomy: 'D0_IN_SYNC' },
+  { endpoint: 'POST /api/v1/moderation/verify-request', expectedMethod: 'POST', path: '/api/v1/moderation/verify-request', phase: 'Phase 1', driftTaxonomy: 'D0_IN_SYNC' },
+  { endpoint: 'POST /api/v1/moderation/block', expectedMethod: 'POST', path: '/api/v1/moderation/block', phase: 'Phase 1', driftTaxonomy: 'D0_IN_SYNC' },
+  { endpoint: 'DELETE /api/v1/moderation/block/:userId', expectedMethod: 'DELETE', path: '/api/v1/moderation/block/:userId', phase: 'Phase 1', driftTaxonomy: 'D0_IN_SYNC' },
+  { endpoint: 'GET /api/v1/moderation/reputation-rules', expectedMethod: 'GET', path: '/api/v1/moderation/reputation-rules', phase: 'Phase 1', driftTaxonomy: 'D0_IN_SYNC' },
+
+  // Phase 1 Domain Endpoints: Notifications (5)
+  { endpoint: 'POST /api/v1/notifications/register-token', expectedMethod: 'POST', path: '/api/v1/notifications/register-token', phase: 'Phase 1', driftTaxonomy: 'D0_IN_SYNC' },
+  { endpoint: 'POST /api/v1/notifications/send', expectedMethod: 'POST', path: '/api/v1/notifications/send', phase: 'Phase 1', driftTaxonomy: 'D0_IN_SYNC' },
+  { endpoint: 'GET /api/v1/notifications/preferences', expectedMethod: 'GET', path: '/api/v1/notifications/preferences', phase: 'Phase 1', driftTaxonomy: 'D0_IN_SYNC' },
+  { endpoint: 'PUT /api/v1/notifications/preferences', expectedMethod: 'PUT', path: '/api/v1/notifications/preferences', phase: 'Phase 1', driftTaxonomy: 'D0_IN_SYNC' },
+  { endpoint: 'GET /api/v1/notifications/triggers', expectedMethod: 'GET', path: '/api/v1/notifications/triggers', phase: 'Phase 1', driftTaxonomy: 'D0_IN_SYNC' },
+
+  // Phase 1 Domain Endpoints: Civic (11)
+  { endpoint: 'GET /api/v1/civic/budget/:stateCode', expectedMethod: 'GET', path: '/api/v1/civic/budget/:stateCode', phase: 'Phase 1', driftTaxonomy: 'D0_IN_SYNC' },
+  { endpoint: 'GET /api/v1/civic/attendance', expectedMethod: 'GET', path: '/api/v1/civic/attendance', phase: 'Phase 1', driftTaxonomy: 'D0_IN_SYNC' },
+  { endpoint: 'GET /api/v1/civic/bills', expectedMethod: 'GET', path: '/api/v1/civic/bills', phase: 'Phase 1', driftTaxonomy: 'D0_IN_SYNC' },
+  { endpoint: 'POST /api/v1/civic/bills/:id/opinion', expectedMethod: 'POST', path: '/api/v1/civic/bills/:id/opinion', phase: 'Phase 1', driftTaxonomy: 'D0_IN_SYNC' },
+  { endpoint: 'GET /api/v1/civic/schemes', expectedMethod: 'GET', path: '/api/v1/civic/schemes', phase: 'Phase 1', driftTaxonomy: 'D0_IN_SYNC' },
+  { endpoint: 'GET /api/v1/civic/projects', expectedMethod: 'GET', path: '/api/v1/civic/projects', phase: 'Phase 1', driftTaxonomy: 'D0_IN_SYNC' },
+  { endpoint: 'GET /api/v1/civic/rti', expectedMethod: 'GET', path: '/api/v1/civic/rti', phase: 'Phase 1', driftTaxonomy: 'D0_IN_SYNC' },
+  { endpoint: 'POST /api/v1/civic/rti', expectedMethod: 'POST', path: '/api/v1/civic/rti', phase: 'Phase 1', driftTaxonomy: 'D0_IN_SYNC' },
+  { endpoint: 'POST /api/v1/civic/rti/:id/upvote', expectedMethod: 'POST', path: '/api/v1/civic/rti/:id/upvote', phase: 'Phase 1', driftTaxonomy: 'D0_IN_SYNC' },
+  { endpoint: 'GET /api/v1/civic/hearings', expectedMethod: 'GET', path: '/api/v1/civic/hearings', phase: 'Phase 1', driftTaxonomy: 'D0_IN_SYNC' },
+  { endpoint: 'GET /api/v1/civic/cdi/:constituencyId', expectedMethod: 'GET', path: '/api/v1/civic/cdi/:constituencyId', phase: 'Phase 1', driftTaxonomy: 'D0_IN_SYNC' },
 ];
 
 const driftReport = {

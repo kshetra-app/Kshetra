@@ -3,7 +3,7 @@
     "job": "W008",
     "title": "API Contract Drift Report (D0-D9 Taxonomy)",
     "specification": "Master Execution Framework Amendment v1.5-A / DEC-041",
-    "timestamp": "2026-09-13T17:06:30.733Z"
+    "timestamp": "2026-09-14T03:58:12.832Z"
   },
   "taxonomyLegend": {
     "D0": "IN_SYNC — No contract drift detected",
@@ -29,16 +29,16 @@
       },
       "layer2_w008D0D9TaxonomyAudit": {
         "sourceArtifact": "reports/w008_contract_drift_report.json",
-        "auditedEndpoints": 10,
-        "inSyncCount": 10,
+        "auditedEndpoints": 34,
+        "inSyncCount": 34,
         "driftCount": 0,
         "taxonomy": "D0-D9",
         "status": "D0_IN_SYNC",
         "note": "Audits 10 core standardized pioneer & Phase 1 endpoints under strict D0-D9 drift taxonomy (including method, path, param, schema, envelope, and auth)."
       }
     },
-    "totalAuditedEndpoints": 10,
-    "inSyncCount": 10,
+    "totalAuditedEndpoints": 34,
+    "inSyncCount": 34,
     "driftCount": 0,
     "driftStatus": "ZERO_DRIFT_AMONG_AUDITED_ENDPOINTS",
     "scopeNote": "Audit is strictly restricted to 10 declared endpoints under D0-D9 taxonomy. Does not prove zero drift across the entire 138-route catalog."
@@ -108,9 +108,177 @@
       "driftTaxonomy": "D0_IN_SYNC"
     },
     {
+      "endpoint": "POST /api/v1/moderation/action",
+      "expectedMethod": "POST",
+      "path": "/api/v1/moderation/action",
+      "phase": "Phase 1",
+      "driftTaxonomy": "D0_IN_SYNC"
+    },
+    {
       "endpoint": "POST /api/v1/moderation/check-content",
       "expectedMethod": "POST",
       "path": "/api/v1/moderation/check-content",
+      "phase": "Phase 1",
+      "driftTaxonomy": "D0_IN_SYNC"
+    },
+    {
+      "endpoint": "GET /api/v1/moderation/queue",
+      "expectedMethod": "GET",
+      "path": "/api/v1/moderation/queue",
+      "phase": "Phase 1",
+      "driftTaxonomy": "D0_IN_SYNC"
+    },
+    {
+      "endpoint": "GET /api/v1/moderation/actions",
+      "expectedMethod": "GET",
+      "path": "/api/v1/moderation/actions",
+      "phase": "Phase 1",
+      "driftTaxonomy": "D0_IN_SYNC"
+    },
+    {
+      "endpoint": "GET /api/v1/moderation/audit-log",
+      "expectedMethod": "GET",
+      "path": "/api/v1/moderation/audit-log",
+      "phase": "Phase 1",
+      "driftTaxonomy": "D0_IN_SYNC"
+    },
+    {
+      "endpoint": "POST /api/v1/moderation/verify-request",
+      "expectedMethod": "POST",
+      "path": "/api/v1/moderation/verify-request",
+      "phase": "Phase 1",
+      "driftTaxonomy": "D0_IN_SYNC"
+    },
+    {
+      "endpoint": "POST /api/v1/moderation/block",
+      "expectedMethod": "POST",
+      "path": "/api/v1/moderation/block",
+      "phase": "Phase 1",
+      "driftTaxonomy": "D0_IN_SYNC"
+    },
+    {
+      "endpoint": "DELETE /api/v1/moderation/block/:userId",
+      "expectedMethod": "DELETE",
+      "path": "/api/v1/moderation/block/:userId",
+      "phase": "Phase 1",
+      "driftTaxonomy": "D0_IN_SYNC"
+    },
+    {
+      "endpoint": "GET /api/v1/moderation/reputation-rules",
+      "expectedMethod": "GET",
+      "path": "/api/v1/moderation/reputation-rules",
+      "phase": "Phase 1",
+      "driftTaxonomy": "D0_IN_SYNC"
+    },
+    {
+      "endpoint": "POST /api/v1/notifications/register-token",
+      "expectedMethod": "POST",
+      "path": "/api/v1/notifications/register-token",
+      "phase": "Phase 1",
+      "driftTaxonomy": "D0_IN_SYNC"
+    },
+    {
+      "endpoint": "POST /api/v1/notifications/send",
+      "expectedMethod": "POST",
+      "path": "/api/v1/notifications/send",
+      "phase": "Phase 1",
+      "driftTaxonomy": "D0_IN_SYNC"
+    },
+    {
+      "endpoint": "GET /api/v1/notifications/preferences",
+      "expectedMethod": "GET",
+      "path": "/api/v1/notifications/preferences",
+      "phase": "Phase 1",
+      "driftTaxonomy": "D0_IN_SYNC"
+    },
+    {
+      "endpoint": "PUT /api/v1/notifications/preferences",
+      "expectedMethod": "PUT",
+      "path": "/api/v1/notifications/preferences",
+      "phase": "Phase 1",
+      "driftTaxonomy": "D0_IN_SYNC"
+    },
+    {
+      "endpoint": "GET /api/v1/notifications/triggers",
+      "expectedMethod": "GET",
+      "path": "/api/v1/notifications/triggers",
+      "phase": "Phase 1",
+      "driftTaxonomy": "D0_IN_SYNC"
+    },
+    {
+      "endpoint": "GET /api/v1/civic/budget/:stateCode",
+      "expectedMethod": "GET",
+      "path": "/api/v1/civic/budget/:stateCode",
+      "phase": "Phase 1",
+      "driftTaxonomy": "D0_IN_SYNC"
+    },
+    {
+      "endpoint": "GET /api/v1/civic/attendance",
+      "expectedMethod": "GET",
+      "path": "/api/v1/civic/attendance",
+      "phase": "Phase 1",
+      "driftTaxonomy": "D0_IN_SYNC"
+    },
+    {
+      "endpoint": "GET /api/v1/civic/bills",
+      "expectedMethod": "GET",
+      "path": "/api/v1/civic/bills",
+      "phase": "Phase 1",
+      "driftTaxonomy": "D0_IN_SYNC"
+    },
+    {
+      "endpoint": "POST /api/v1/civic/bills/:id/opinion",
+      "expectedMethod": "POST",
+      "path": "/api/v1/civic/bills/:id/opinion",
+      "phase": "Phase 1",
+      "driftTaxonomy": "D0_IN_SYNC"
+    },
+    {
+      "endpoint": "GET /api/v1/civic/schemes",
+      "expectedMethod": "GET",
+      "path": "/api/v1/civic/schemes",
+      "phase": "Phase 1",
+      "driftTaxonomy": "D0_IN_SYNC"
+    },
+    {
+      "endpoint": "GET /api/v1/civic/projects",
+      "expectedMethod": "GET",
+      "path": "/api/v1/civic/projects",
+      "phase": "Phase 1",
+      "driftTaxonomy": "D0_IN_SYNC"
+    },
+    {
+      "endpoint": "GET /api/v1/civic/rti",
+      "expectedMethod": "GET",
+      "path": "/api/v1/civic/rti",
+      "phase": "Phase 1",
+      "driftTaxonomy": "D0_IN_SYNC"
+    },
+    {
+      "endpoint": "POST /api/v1/civic/rti",
+      "expectedMethod": "POST",
+      "path": "/api/v1/civic/rti",
+      "phase": "Phase 1",
+      "driftTaxonomy": "D0_IN_SYNC"
+    },
+    {
+      "endpoint": "POST /api/v1/civic/rti/:id/upvote",
+      "expectedMethod": "POST",
+      "path": "/api/v1/civic/rti/:id/upvote",
+      "phase": "Phase 1",
+      "driftTaxonomy": "D0_IN_SYNC"
+    },
+    {
+      "endpoint": "GET /api/v1/civic/hearings",
+      "expectedMethod": "GET",
+      "path": "/api/v1/civic/hearings",
+      "phase": "Phase 1",
+      "driftTaxonomy": "D0_IN_SYNC"
+    },
+    {
+      "endpoint": "GET /api/v1/civic/cdi/:constituencyId",
+      "expectedMethod": "GET",
+      "path": "/api/v1/civic/cdi/:constituencyId",
       "phase": "Phase 1",
       "driftTaxonomy": "D0_IN_SYNC"
     }

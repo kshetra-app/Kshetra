@@ -3,12 +3,12 @@
     "job": "W008",
     "title": "API Contract Standardization Negative Path Verification",
     "specification": "Master Execution Framework Amendment v1.5-A / DEC-041",
-    "timestamp": "2026-09-13T16:08:30.133Z",
-    "gitHead": "40c572c9d0ba5d00ce03dafe81cfced656f7539d"
+    "timestamp": "2026-09-14T03:57:47.478Z",
+    "gitHead": "cbe21df03dfaa42c242835ddb7cd6d2ba5925d74"
   },
   "summary": {
-    "totalNegativePathsAudited": 16,
-    "passedNegativePaths": 16,
+    "totalNegativePathsAudited": 18,
+    "passedNegativePaths": 18,
     "failedNegativePaths": 0,
     "verdict": "ALL_NEGATIVE_PATHS_SATISFIED"
   },
@@ -57,7 +57,7 @@
     },
     {
       "id": "NP-08",
-      "description": "States unknown state code returns 404 ApiErrorEnvelope; oversized code returns 400",
+      "description": "States unknown state code returns 404 ApiErrorEnvelope; lowercase/numeric/oversized returns 400",
       "verifiedIn": "apps/api/src/__tests__/contracts.test.ts",
       "status": "PASS"
     },
@@ -87,7 +87,7 @@
     },
     {
       "id": "NP-13",
-      "description": "Fastify genReqId sanitizes and replaces malicious request IDs with UUID",
+      "description": "Authenticated moderator with mismatched client moderatorId rejected with 400 VALIDATION_ERROR",
       "verifiedIn": "apps/api/src/__tests__/contracts.test.ts",
       "status": "PASS"
     },
@@ -107,6 +107,18 @@
       "id": "NP-16",
       "description": "Mobile client runtime validation throws ApiValidationError on corrupted state/list payload",
       "verifiedIn": "apps/mobile/__tests__/apiClient.test.ts",
+      "status": "PASS"
+    },
+    {
+      "id": "NP-17",
+      "description": "Notification endpoint with missing identity header rejected with 401 ApiErrorEnvelope",
+      "verifiedIn": "apps/api/src/__tests__/contracts.test.ts",
+      "status": "PASS"
+    },
+    {
+      "id": "NP-18",
+      "description": "Notification service endpoint with missing API key rejected with 401 ApiErrorEnvelope",
+      "verifiedIn": "apps/api/src/__tests__/contracts.test.ts",
       "status": "PASS"
     }
   ]

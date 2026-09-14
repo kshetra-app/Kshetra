@@ -21,9 +21,24 @@ const getStateSchema = {
   params: {
     type: 'object',
     properties: {
-      code: { type: 'string', minLength: 2, maxLength: 5 },
+      code: { type: 'string', pattern: '^[A-Z]{2}$' },
     },
     required: ['code'],
+  },
+  response: {
+    200: {
+      type: 'object',
+      properties: {
+        code: { type: 'string' },
+        name: { type: 'string' },
+        totalSeats: { type: 'number' },
+        dataStatus: { type: 'string' },
+        hasAnalytics: { type: 'boolean' },
+        hasDelimitationSimulation: { type: 'boolean' },
+        hasCandidates: { type: 'boolean' },
+      },
+      required: ['code', 'name', 'totalSeats', 'dataStatus'],
+    },
   },
 };
 

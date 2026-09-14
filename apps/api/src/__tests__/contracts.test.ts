@@ -330,5 +330,227 @@ describe('W008 API Contract Standardization & Schema Envelopes', () => {
       expect(body.role).toBeUndefined();
     });
   });
+
+  describe('W008-C Phase 1 Domain Contracts & Negative Paths (CC-01..CC-06, NP-07..NP-18)', () => {
+    // CC-02: State code parameters validated against ^[A-Z]{2}$ uppercase regex
+    it('CC-02 / NP-08c: rejects lowercase state code with 400 validation error', async () => {
+      const res = await app.inject({
+        method: 'GET',
+        url: '/api/v1/states/ts',
+      });
+      expect(res.statusCode).toBe(400);
+      const body = JSON.parse(res.payload);
+      expect(body.statusCode).toBe(400);
+      expect(body.error).toBe('Bad Request');
+      expect(body.code).toBe('FST_ERR_VALIDATION');
+    });
+
+    it('CC-02 / NP-08d: rejects numeric state code with 400 validation error', async () => {
+      const res = await app.inject({
+        method: 'GET',
+        url: '/api/v1/states/12',
+      });
+      expect(res.statusCode).toBe(400);
+      const body = JSON.parse(res.payload);
+      expect(body.statusCode).toBe(400);
+      expect(body.error).toBe('Bad Request');
+      expect(body.code).toBe('FST_ERR_VALIDATION');
+    });
+
+    it('CC-02 / NP-08e: rejects civic budget with invalid state code regex', async () => {
+      const res = await app.inject({
+        method: 'GET',
+        url: '/api/v1/civic/budget/toolong',
+      });
+      expect(res.statusCode).toBe(400);
+      const body = JSON.parse(res.payload);
+      expect(body.statusCode).toBe(400);
+      expect(body.code).toBe('FST_ERR_VALIDATION');
+    });
+
+    // CC-03: Moderation content check endpoints reject empty or oversized payloads fail-closed
+    it('CC-03 / NP-10b: rejects empty content in moderation check-content with 400', async () => {
+      const res = await app.inject({
+        method: 'POST',
+        url: '/api/v1/moderation/check-content',
+        payload: { content: '' },
+      });
+      expect(res.statusCode).toBe(400);
+      const body = JSON.parse(res.payload);
+      expect(body.statusCode).toBe(400);
+      expect(body.error).toBe('Bad Request');
+      expect(body.code).toBe('FST_ERR_VALIDATION');
+    });
+
+    it('CC-03: rejects oversized content (>10,000 chars) in moderation check-content with 400', async () => {
+      const res = await app.inject({
+        method: 'POST',
+        url: '/api/v1/moderation/check-content',
+        payload: { content: 'a'.repeat(10001) },
+      });
+      expect(res.statusCode).toBe(400);
+      const body = JSON.parse(res.payload);
+      expect(body.statusCode).toBe(400);
+      expect(body.code).toBe('FST_ERR_VALIDATION');
+    });
+
+    // CC-04: Moderation queue and audit log routes enforce role-based authorization fail-closed
+    it('CC-04 / NP-11b: unauthenticated access to moderation queue returns 401', async () => {
+      const res = await app.inject({
+        method: 'GET',
+        url: '/api/v1/moderation/queue',
+      });
+      expect(res.statusCode).toBe(401);
+      const body = JSON.parse(res.payload);
+      expect(body.statusCode).toBe(401);
+      expect(body.error).toBe('Unauthorized');
+      expect(body.requestId).toBeDefined();
+    });
+
+    it('CC-04: non-moderator role access to moderation queue returns 403', async () => {
+      const res = await app.inject({
+        method: 'GET',
+        url: '/api/v1/moderation/queue',
+        headers: {
+          'x-user-id': 'citizen-user-1',
+          'x-test-role': 'citizen',
+        },
+      });
+      expect(res.statusCode).toBe(403);
+      const body = JSON.parse(res.payload);
+      expect(body.statusCode).toBe(403);
+      expect(body.error).toBe('Forbidden');
+    });
+
+    it('CC-04: non-admin access to audit log returns 403', async () => {
+      const res = await app.inject({
+        method: 'GET',
+        url: '/api/v1/moderation/audit-log',
+        headers: {
+          'x-user-id': 'moderator-user-1',
+          'x-test-role': 'moderator',
+        },
+      });
+      expect(res.statusCode).toBe(403);
+      const body = JSON.parse(res.payload);
+      expect(body.statusCode).toBe(403);
+      expect(body.error).toBe('Forbidden');
+    });
+
+    // NP-13: Authenticated moderator with mismatched client-supplied moderatorId rejected with 400
+    it('NP-13: rejects mismatched moderatorId attribution with 400 VALIDATION_ERROR', async () => {
+      const res = await app.inject({
+        method: 'POST',
+        url: '/api/v1/moderation/action',
+        headers: {
+          'x-user-id': 'real-moderator-id',
+          'x-test-role': 'moderator',
+        },
+        payload: {
+          moderatorId: 'spoofed-moderator-id',
+          actionType: 'warn',
+          reason: 'Policy violation',
+          targetUserId: 'target-user-1',
+        },
+      });
+      expect(res.statusCode).toBe(400);
+      const body = JSON.parse(res.payload);
+      expect(body.statusCode).toBe(400);
+      expect(body.error).toBe('Bad Request');
+      expect(body.code).toBe('VALIDATION_ERROR');
+      expect(body.message).toContain('Invalid moderator attribution');
+    });
+
+    // NP-17: Notification register-token with missing auth returns 401
+    it('NP-17: rejects unauthenticated register-token with 401 ApiErrorEnvelope', async () => {
+      const res = await app.inject({
+        method: 'POST',
+        url: '/api/v1/notifications/register-token',
+        payload: {
+          token: 'ExponentPushToken[xxxxxxxxxxxxxxxxxxxxxx]',
+          platform: 'android',
+        },
+      });
+      expect(res.statusCode).toBe(401);
+      const body = JSON.parse(res.payload);
+      expect(body.statusCode).toBe(401);
+      expect(body.error).toBe('Unauthorized');
+      expect(body.requestId).toBeDefined();
+    });
+
+    // NP-18: Notification send with missing API key returns 401
+    it('NP-18: rejects notification send without x-api-key with 401 ApiErrorEnvelope', async () => {
+      const res = await app.inject({
+        method: 'POST',
+        url: '/api/v1/notifications/send',
+        payload: {
+          userId: 'user-1',
+          trigger: 'post_upvoted',
+          title: 'Post Upvoted',
+          body: 'Someone upvoted your post',
+        },
+      });
+      expect(res.statusCode).toBe(401);
+      const body = JSON.parse(res.payload);
+      expect(body.statusCode).toBe(401);
+      expect(body.error).toBe('Unauthorized');
+      expect(body.code).toBe('UNAUTHORIZED');
+    });
+
+    // Civic Pagination Bounds
+    it('Civic: rejects attendance query with limit > 100 with 400', async () => {
+      const res = await app.inject({
+        method: 'GET',
+        url: '/api/v1/civic/attendance?limit=150',
+      });
+      expect(res.statusCode).toBe(400);
+      const body = JSON.parse(res.payload);
+      expect(body.statusCode).toBe(400);
+      expect(body.code).toBe('FST_ERR_VALIDATION');
+    });
+
+    it('Civic: rejects bills query with page < 1 with 400', async () => {
+      const res = await app.inject({
+        method: 'GET',
+        url: '/api/v1/civic/bills?page=0',
+      });
+      expect(res.statusCode).toBe(400);
+      const body = JSON.parse(res.payload);
+      expect(body.statusCode).toBe(400);
+      expect(body.code).toBe('FST_ERR_VALIDATION');
+    });
+
+    // Positive paths for notifications and civic
+    it('Positive: notifications register-token logs and echoes truncated token (Non-DB)', async () => {
+      const res = await app.inject({
+        method: 'POST',
+        url: '/api/v1/notifications/register-token',
+        headers: { 'x-user-id': 'user-notif-1' },
+        payload: {
+          token: 'ExponentPushToken[1234567890abcdef1234567890]',
+          platform: 'android',
+          deviceName: 'Pixel 8',
+        },
+      });
+      expect(res.statusCode).toBe(200);
+      const body = JSON.parse(res.payload);
+      expect(body.success).toBe(true);
+      expect(body.data.userId).toBe('user-notif-1');
+      expect(body.data.platform).toBe('android');
+      expect(body.data.token).toContain('...');
+    });
+
+    it('Positive: civic budget returns valid summary with uppercase state code', async () => {
+      const res = await app.inject({
+        method: 'GET',
+        url: '/api/v1/civic/budget/TS',
+      });
+      expect(res.statusCode).toBe(200);
+      const body = JSON.parse(res.payload);
+      expect(body.stateCode).toBe('TS');
+      expect(body.message).toBeDefined();
+    });
+  });
 });
+
 

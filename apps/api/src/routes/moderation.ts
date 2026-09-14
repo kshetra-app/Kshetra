@@ -1,9 +1,9 @@
 import type { FastifyInstance } from 'fastify';
 import { supabase, isSupabaseConfigured } from '../lib/supabase';
+import { sendApiError } from '../lib/replyHelper';
 import {
   canModerate,
   canPerformAction,
-  flagContent,
   ACTION_CONFIG,
   REPUTATION_RULES,
   type ModerationAction,
@@ -31,6 +31,288 @@ let MOCK_REPORTS_QUEUE = [
   },
 ];
 
+// Re-usable schema definitions for moderation routes
+const moderationActionSchema = {
+  body: {
+    type: 'object',
+    required: ['moderatorId', 'actionType', 'reason'],
+    properties: {
+      moderatorId: { type: 'string', minLength: 1 },
+      targetUserId: { type: 'string' },
+      targetPostId: { type: 'string' },
+      targetCommentId: { type: 'string' },
+      reportId: { type: 'string' },
+      actionType: {
+        type: 'string',
+        enum: [
+          'warn',
+          'mute',
+          'suspend',
+          'ban',
+          'unsuspend',
+          'delete_content',
+          'hide_content',
+          'restore_content',
+          'verify_user',
+          'revoke_verification',
+          'escalate',
+          'dismiss',
+        ],
+      },
+      reason: { type: 'string', minLength: 1 },
+      durationHours: { type: 'number' },
+    },
+  },
+  response: {
+    200: {
+      type: 'object',
+      properties: {
+        success: { type: 'boolean' },
+        data: {
+          type: 'object',
+          properties: {
+            actionType: { type: 'string' },
+            reason: { type: 'string' },
+            moderatorId: { type: 'string' },
+            reportId: { type: 'string' },
+            timestamp: { type: 'string' },
+          },
+          required: ['actionType', 'reason', 'moderatorId', 'timestamp'],
+        },
+      },
+      required: ['success', 'data'],
+    },
+  },
+};
+
+const checkContentSchema = {
+  body: {
+    type: 'object',
+    required: ['content'],
+    properties: {
+      content: { type: 'string', minLength: 1, maxLength: 10000 },
+    },
+  },
+  response: {
+    200: {
+      type: 'object',
+      properties: {
+        success: { type: 'boolean' },
+        data: {
+          type: 'object',
+          properties: {
+            flagged: { type: 'boolean' },
+            reasons: { type: 'array', items: { type: 'string' } },
+            provider: { type: 'string' },
+            confidence: { type: 'number' },
+            categories: { type: 'object', additionalProperties: true },
+          },
+          required: ['flagged', 'reasons', 'provider'],
+        },
+      },
+      required: ['success', 'data'],
+    },
+  },
+};
+
+const moderationQueueSchema = {
+  response: {
+    200: {
+      type: 'object',
+      properties: {
+        success: { type: 'boolean' },
+        data: {
+          type: 'object',
+          properties: {
+            queue: { type: 'array' },
+            totalPending: { type: 'number' },
+            message: { type: 'string' },
+          },
+          required: ['queue', 'totalPending'],
+        },
+      },
+      required: ['success', 'data'],
+    },
+  },
+};
+
+const moderationActionsSchema = {
+  response: {
+    200: {
+      type: 'object',
+      properties: {
+        success: { type: 'boolean' },
+        data: {
+          type: 'array',
+          items: {
+            type: 'object',
+            properties: {
+              action: { type: 'string' },
+              label: { type: 'string' },
+              description: { type: 'string' },
+              icon: { type: 'string' },
+              color: { type: 'string' },
+              requiresReason: { type: 'boolean' },
+              requiresDuration: { type: 'boolean' },
+            },
+            required: ['action', 'label', 'description'],
+          },
+        },
+      },
+      required: ['success', 'data'],
+    },
+  },
+};
+
+const auditLogSchema = {
+  querystring: {
+    type: 'object',
+    properties: {
+      limit: { type: 'integer', minimum: 1, maximum: 100 },
+      offset: { type: 'integer', minimum: 0 },
+      entityType: { type: 'string' },
+    },
+  },
+  response: {
+    200: {
+      type: 'object',
+      properties: {
+        success: { type: 'boolean' },
+        data: {
+          type: 'object',
+          properties: {
+            entries: { type: 'array' },
+            total: { type: 'number' },
+            message: { type: 'string' },
+          },
+          required: ['entries', 'total'],
+        },
+      },
+      required: ['success', 'data'],
+    },
+  },
+};
+
+const verifyRequestSchema = {
+  body: {
+    type: 'object',
+    required: ['verificationType'],
+    properties: {
+      verificationType: {
+        type: 'string',
+        enum: ['identity', 'journalist', 'politician', 'government_official', 'organization'],
+      },
+      documentUrl: { type: 'string' },
+      notes: { type: 'string', maxLength: 1000 },
+    },
+  },
+  response: {
+    200: {
+      type: 'object',
+      properties: {
+        success: { type: 'boolean' },
+        data: {
+          type: 'object',
+          properties: {
+            id: { type: 'string' },
+            userId: { type: 'string' },
+            verificationType: { type: 'string' },
+            status: { type: 'string' },
+            submittedAt: { type: 'string' },
+          },
+          required: ['userId', 'verificationType', 'status', 'submittedAt'],
+        },
+      },
+      required: ['success', 'data'],
+    },
+  },
+};
+
+const blockUserSchema = {
+  body: {
+    type: 'object',
+    required: ['blockedUserId'],
+    properties: {
+      blockedUserId: { type: 'string', minLength: 1 },
+    },
+  },
+  response: {
+    200: {
+      type: 'object',
+      properties: {
+        success: { type: 'boolean' },
+        data: {
+          type: 'object',
+          properties: {
+            blockerId: { type: 'string' },
+            blockedId: { type: 'string' },
+          },
+          required: ['blockerId', 'blockedId'],
+        },
+      },
+      required: ['success', 'data'],
+    },
+  },
+};
+
+const unblockUserSchema = {
+  params: {
+    type: 'object',
+    required: ['userId'],
+    properties: {
+      userId: { type: 'string', minLength: 1 },
+    },
+  },
+  response: {
+    200: {
+      type: 'object',
+      properties: {
+        success: { type: 'boolean' },
+        data: {
+          type: 'object',
+          properties: {
+            unblocked: { type: 'string' },
+          },
+          required: ['unblocked'],
+        },
+      },
+      required: ['success', 'data'],
+    },
+  },
+};
+
+const reputationRulesSchema = {
+  response: {
+    200: {
+      type: 'object',
+      properties: {
+        success: { type: 'boolean' },
+        data: {
+          type: 'array',
+          items: {
+            type: 'object',
+            properties: {
+              action: { type: 'string' },
+              points: { type: 'number' },
+              effect: { type: 'string', enum: ['positive', 'negative'] },
+            },
+            required: ['action', 'points', 'effect'],
+          },
+        },
+      },
+      required: ['success', 'data'],
+    },
+  },
+};
+
+/**
+ * Result of resolving moderator identity and verified role
+ */
+type ResolveModeratorResult =
+  | { state: 'UNAUTHENTICATED' }
+  | { state: 'DB_ERROR' }
+  | { state: 'RESOLVED'; userId: string; role: UserRole };
+
 /**
  * Moderation API Routes
  */
@@ -38,8 +320,13 @@ export async function moderationRoutes(app: FastifyInstance) {
   /**
    * Helper: Securely resolve authenticated user and their verified role from database.
    * Eliminates insecure client-supplied role headers (FIX-7 / FIX-3b pattern).
+   * 
+   * Distinct states:
+   * A. Invalid/missing authentication -> state: 'UNAUTHENTICATED'
+   * B. Authenticated user + profile lookup failure -> state: 'DB_ERROR' (MUST NOT downgrade to citizen!)
+   * C. Authenticated user + verified role -> state: 'RESOLVED'
    */
-  async function resolveModeratorRole(request: any): Promise<{ userId: string; role: UserRole } | null> {
+  async function resolveModeratorRole(request: any): Promise<ResolveModeratorResult> {
     let userId: string | null = null;
     const authHeader = request.headers.authorization;
 
@@ -55,56 +342,71 @@ export async function moderationRoutes(app: FastifyInstance) {
       userId = request.headers['x-user-id'] as string;
     }
 
-    if (!userId) return null;
+    if (!userId) return { state: 'UNAUTHENTICATED' };
 
     if (!isSupabaseConfigured) {
       // In-memory test fallback: allow dev/test role if provided outside production, default to moderator
       const testRole = (process.env.NODE_ENV !== 'production' && request.headers['x-test-role'])
         ? (request.headers['x-test-role'] as UserRole)
         : 'moderator';
-      return { userId, role: testRole };
+      return { state: 'RESOLVED', userId, role: testRole };
     }
 
-    const { data: profile } = await supabase
-      .from('user_profiles')
-      .select('role')
-      .eq('user_id', userId)
-      .maybeSingle();
+    try {
+      const { data: profile, error } = await supabase
+        .from('user_profiles')
+        .select('role')
+        .eq('user_id', userId)
+        .maybeSingle();
 
-    const verifiedRole = (profile?.role as UserRole) || 'citizen';
-    return { userId, role: verifiedRole };
+      if (error) {
+        app.log.error({ err: error.message, userId }, 'Failed to query user_profiles for role resolution');
+        return { state: 'DB_ERROR' };
+      }
+
+      const verifiedRole = (profile?.role as UserRole) || 'citizen';
+      return { state: 'RESOLVED', userId, role: verifiedRole };
+    } catch (err: any) {
+      app.log.error({ err: err?.message, userId }, 'Exception querying user_profiles for role resolution');
+      return { state: 'DB_ERROR' };
+    }
   }
 
-  // Perform moderation action
+  // 1. Perform moderation action
   app.post<{
     Body: ModerationActionPayload;
   }>('/api/v1/moderation/action', {
-    schema: {
-      body: {
-        type: 'object',
-        required: ['moderatorId', 'actionType', 'reason'],
-        properties: {
-          moderatorId: { type: 'string' },
-          targetUserId: { type: 'string' },
-          targetPostId: { type: 'string' },
-          targetCommentId: { type: 'string' },
-          reportId: { type: 'string' },
-          actionType: { type: 'string' },
-          reason: { type: 'string' },
-          durationHours: { type: 'number' },
-        },
-      },
-    },
+    schema: moderationActionSchema,
   }, async (request, reply) => {
     const auth = await resolveModeratorRole(request);
-    if (!auth || !canModerate(auth.role)) {
-      return reply.status(403).send({ error: 'Insufficient permissions' });
+    if (auth.state === 'UNAUTHENTICATED') {
+      return sendApiError(reply, request, 401, 'Unauthorized', 'Authentication required', { code: 'UNAUTHORIZED' });
+    }
+    if (auth.state === 'DB_ERROR') {
+      return sendApiError(reply, request, 500, 'Internal Server Error', 'Failed to verify moderator role', { code: 'DATABASE_ERROR' });
+    }
+
+    if (!canModerate(auth.role)) {
+      return sendApiError(reply, request, 403, 'Forbidden', 'Insufficient permissions', { code: 'FORBIDDEN' });
+    }
+
+    const payload = request.body;
+
+    // Invariant: Authenticated identity MUST be authoritative. Client-supplied moderatorId cannot spoof another moderator.
+    if (payload.moderatorId && payload.moderatorId !== auth.userId) {
+      return sendApiError(
+        reply,
+        request,
+        400,
+        'Bad Request',
+        'Invalid moderator attribution: moderatorId must match authenticated identity',
+        { code: 'VALIDATION_ERROR' },
+      );
     }
 
     const moderatorRole = auth.role;
-    const payload = request.body;
     if (!canPerformAction(moderatorRole, payload.actionType)) {
-      return reply.status(403).send({ error: `Action '${payload.actionType}' requires admin role` });
+      return sendApiError(reply, request, 403, 'Forbidden', `Action '${payload.actionType}' requires admin role`, { code: 'FORBIDDEN' });
     }
 
     if (isSupabaseConfigured) {
@@ -112,32 +414,45 @@ export async function moderationRoutes(app: FastifyInstance) {
         // If removing content: soft-delete post or comment
         if (payload.actionType === 'delete_content' || payload.actionType === 'hide_content') {
           if (payload.targetPostId) {
-            await supabase
+            const { error: postErr } = await supabase
               .from('posts')
               .update({ is_deleted: true, content: '[Removed by Moderator: Policy Violation]' })
               .eq('id', payload.targetPostId);
+            if (postErr) {
+              app.log.error({ err: postErr.message }, 'Failed to soft-delete post in Supabase');
+              return sendApiError(reply, request, 500, 'Internal Server Error', 'Failed to persist moderation action', { code: 'PERSISTENCE_ERROR' });
+            }
           } else if (payload.targetCommentId) {
-            await supabase
+            const { error: commentErr } = await supabase
               .from('comments')
               .update({ is_deleted: true, content: '[Removed by Moderator]' })
               .eq('id', payload.targetCommentId);
+            if (commentErr) {
+              app.log.error({ err: commentErr.message }, 'Failed to soft-delete comment in Supabase');
+              return sendApiError(reply, request, 500, 'Internal Server Error', 'Failed to persist moderation action', { code: 'PERSISTENCE_ERROR' });
+            }
           }
         }
 
         // Update report status
         if (payload.reportId) {
           const newStatus = payload.actionType === 'dismiss' ? 'dismissed' : 'action_taken';
-          await supabase
+          const { error: reportErr } = await supabase
             .from('reports')
             .update({
               status: newStatus,
-              reviewed_by: payload.moderatorId,
+              reviewed_by: auth.userId,
               reviewed_at: new Date().toISOString(),
             })
             .eq('id', payload.reportId);
+          if (reportErr) {
+            app.log.error({ err: reportErr.message }, 'Failed to update report status in Supabase');
+            return sendApiError(reply, request, 500, 'Internal Server Error', 'Failed to persist moderation action', { code: 'PERSISTENCE_ERROR' });
+          }
         }
       } catch (err: any) {
-        app.log.warn({ err: err.message }, 'Failed to persist moderation action in Supabase');
+        app.log.error({ err: err?.message }, 'Exception persisting moderation action in Supabase');
+        return sendApiError(reply, request, 500, 'Internal Server Error', 'Failed to persist moderation action', { code: 'PERSISTENCE_ERROR' });
       }
     }
 
@@ -147,7 +462,7 @@ export async function moderationRoutes(app: FastifyInstance) {
     }
 
     app.log.info(
-      { moderator: payload.moderatorId, action: payload.actionType, target: payload.targetUserId || payload.targetPostId },
+      { moderator: auth.userId, action: payload.actionType, target: payload.targetUserId || payload.targetPostId },
       'Moderation action executed',
     );
 
@@ -156,36 +471,37 @@ export async function moderationRoutes(app: FastifyInstance) {
       data: {
         actionType: payload.actionType,
         reason: payload.reason,
-        moderatorId: payload.moderatorId,
+        moderatorId: auth.userId,
         reportId: payload.reportId,
         timestamp: new Date().toISOString(),
       },
     });
   });
 
-  // Check content for policy violations (automated OpenAI moderation + rule engine fallback)
+  // 2. Check content for policy violations (automated OpenAI moderation + rule engine fallback)
   app.post<{
     Body: { content: string };
   }>('/api/v1/moderation/check-content', {
-    schema: {
-      body: {
-        type: 'object',
-        required: ['content'],
-        properties: {
-          content: { type: 'string' },
-        },
-      },
-    },
+    schema: checkContentSchema,
   }, async (request, reply) => {
     const result = await moderateContent(request.body.content);
     return reply.send({ success: true, data: result });
   });
 
-  // Get pending reports queue (moderator+)
-  app.get('/api/v1/moderation/queue', async (request, reply) => {
+  // 3. Get pending reports queue (moderator+)
+  app.get('/api/v1/moderation/queue', {
+    schema: moderationQueueSchema,
+  }, async (request, reply) => {
     const auth = await resolveModeratorRole(request);
-    if (!auth || !canModerate(auth.role)) {
-      return reply.status(403).send({ error: 'Insufficient permissions' });
+    if (auth.state === 'UNAUTHENTICATED') {
+      return sendApiError(reply, request, 401, 'Unauthorized', 'Authentication required', { code: 'UNAUTHORIZED' });
+    }
+    if (auth.state === 'DB_ERROR') {
+      return sendApiError(reply, request, 500, 'Internal Server Error', 'Failed to verify moderator role', { code: 'DATABASE_ERROR' });
+    }
+
+    if (!canModerate(auth.role)) {
+      return sendApiError(reply, request, 403, 'Forbidden', 'Insufficient permissions', { code: 'FORBIDDEN' });
     }
 
     if (isSupabaseConfigured) {
@@ -197,7 +513,23 @@ export async function moderationRoutes(app: FastifyInstance) {
           .order('created_at', { ascending: false })
           .limit(50);
 
-        if (!error && data && data.length > 0) {
+        if (error) {
+          app.log.error({ err: error.message }, 'Failed to retrieve moderation queue from Supabase');
+          return sendApiError(reply, request, 500, 'Internal Server Error', 'Failed to retrieve moderation queue', { code: 'DATABASE_ERROR' });
+        }
+
+        // Legitimate empty result from database -> MUST NOT return mock reports!
+        if (data && data.length === 0) {
+          return reply.send({
+            success: true,
+            data: {
+              queue: [],
+              totalPending: 0,
+            },
+          });
+        }
+
+        if (data && data.length > 0) {
           return reply.send({
             success: true,
             data: {
@@ -207,7 +539,8 @@ export async function moderationRoutes(app: FastifyInstance) {
           });
         }
       } catch (err: any) {
-        app.log.warn({ err: err.message }, 'Falling back to mock moderation queue');
+        app.log.error({ err: err?.message }, 'Exception querying moderation queue from Supabase');
+        return sendApiError(reply, request, 500, 'Internal Server Error', 'Failed to retrieve moderation queue', { code: 'DATABASE_ERROR' });
       }
     }
 
@@ -221,8 +554,10 @@ export async function moderationRoutes(app: FastifyInstance) {
     });
   });
 
-  // List available moderation actions
-  app.get('/api/v1/moderation/actions', async (_request, reply) => {
+  // 4. List available moderation actions
+  app.get('/api/v1/moderation/actions', {
+    schema: moderationActionsSchema,
+  }, async (_request, reply) => {
     const actions = Object.entries(ACTION_CONFIG).map(([key, config]) => ({
       action: key,
       ...config,
@@ -230,13 +565,22 @@ export async function moderationRoutes(app: FastifyInstance) {
     return reply.send({ success: true, data: actions });
   });
 
-  // View audit log (admin only)
+  // 5. View audit log (admin only)
   app.get<{
     Querystring: { limit?: number; offset?: number; entityType?: string };
-  }>('/api/v1/moderation/audit-log', async (request, reply) => {
+  }>('/api/v1/moderation/audit-log', {
+    schema: auditLogSchema,
+  }, async (request, reply) => {
     const auth = await resolveModeratorRole(request);
-    if (!auth || auth.role !== 'admin') {
-      return reply.status(403).send({ error: 'Admin access required' });
+    if (auth.state === 'UNAUTHENTICATED') {
+      return sendApiError(reply, request, 401, 'Unauthorized', 'Authentication required', { code: 'UNAUTHORIZED' });
+    }
+    if (auth.state === 'DB_ERROR') {
+      return sendApiError(reply, request, 500, 'Internal Server Error', 'Failed to verify admin role', { code: 'DATABASE_ERROR' });
+    }
+
+    if (auth.role !== 'admin') {
+      return sendApiError(reply, request, 403, 'Forbidden', 'Admin access required', { code: 'FORBIDDEN' });
     }
 
     // In production: fetch from audit_log with pagination
@@ -250,33 +594,22 @@ export async function moderationRoutes(app: FastifyInstance) {
     });
   });
 
-  // Submit verification request
+  // 6. Submit verification request
   app.post<{
     Body: { verificationType: string; documentUrl?: string; notes?: string };
   }>('/api/v1/moderation/verify-request', {
-    schema: {
-      body: {
-        type: 'object',
-        required: ['verificationType'],
-        properties: {
-          verificationType: { type: 'string' },
-          documentUrl: { type: 'string' },
-          notes: { type: 'string' },
-        },
-      },
-    },
+    schema: verifyRequestSchema,
   }, async (request, reply) => {
     const auth = await resolveModeratorRole(request);
-    if (!auth?.userId) {
-      return reply.status(401).send({ error: 'Authentication required' });
+    if (auth.state === 'UNAUTHENTICATED') {
+      return sendApiError(reply, request, 401, 'Unauthorized', 'Authentication required', { code: 'UNAUTHORIZED' });
     }
-    const userId = auth.userId;
+    if (auth.state === 'DB_ERROR') {
+      return sendApiError(reply, request, 500, 'Internal Server Error', 'Failed to resolve user session', { code: 'DATABASE_ERROR' });
+    }
 
+    const userId = auth.userId;
     const { verificationType, documentUrl, notes } = request.body;
-    const allowedTypes = ['identity', 'journalist', 'politician', 'government_official', 'organization'];
-    if (!allowedTypes.includes(verificationType)) {
-      return reply.status(400).send({ error: `Invalid verificationType. Must be one of: ${allowedTypes.join(', ')}` });
-    }
 
     if (isSupabaseConfigured) {
       try {
@@ -295,7 +628,7 @@ export async function moderationRoutes(app: FastifyInstance) {
 
         if (error) {
           app.log.error({ err: error.message }, 'Failed to persist user verification request');
-          return reply.status(500).send({ error: 'Failed to record verification request' });
+          return sendApiError(reply, request, 500, 'Internal Server Error', 'Failed to record verification request', { code: 'DATABASE_ERROR' });
         }
 
         app.log.info({ userId, verificationType, id: data.id }, 'Verification request persisted to database');
@@ -310,14 +643,15 @@ export async function moderationRoutes(app: FastifyInstance) {
           },
         });
       } catch (err: any) {
-        app.log.error({ err: err.message }, 'Unexpected error in verify-request');
-        return reply.status(500).send({ error: 'Internal server error processing verification request' });
+        app.log.error({ err: err?.message }, 'Unexpected error in verify-request');
+        return sendApiError(reply, request, 500, 'Internal Server Error', 'Internal server error processing verification request', { code: 'DATABASE_ERROR' });
       }
     }
 
     return reply.send({
       success: true,
       data: {
+        id: `mock-verif-${Date.now()}`,
         userId,
         verificationType,
         status: 'pending',
@@ -326,29 +660,24 @@ export async function moderationRoutes(app: FastifyInstance) {
     });
   });
 
-  // Block a user
+  // 7. Block a user
   app.post<{
     Body: { blockedUserId: string };
   }>('/api/v1/moderation/block', {
-    schema: {
-      body: {
-        type: 'object',
-        required: ['blockedUserId'],
-        properties: {
-          blockedUserId: { type: 'string' },
-        },
-      },
-    },
+    schema: blockUserSchema,
   }, async (request, reply) => {
     const auth = await resolveModeratorRole(request);
-    if (!auth?.userId) {
-      return reply.status(401).send({ error: 'Authentication required' });
+    if (auth.state === 'UNAUTHENTICATED') {
+      return sendApiError(reply, request, 401, 'Unauthorized', 'Authentication required', { code: 'UNAUTHORIZED' });
     }
-    const userId = auth.userId;
+    if (auth.state === 'DB_ERROR') {
+      return sendApiError(reply, request, 500, 'Internal Server Error', 'Failed to resolve user session', { code: 'DATABASE_ERROR' });
+    }
 
+    const userId = auth.userId;
     const { blockedUserId } = request.body;
     if (userId === blockedUserId) {
-      return reply.status(400).send({ error: 'Cannot block yourself' });
+      return sendApiError(reply, request, 400, 'Bad Request', 'Cannot block yourself', { code: 'VALIDATION_ERROR' });
     }
 
     if (isSupabaseConfigured) {
@@ -363,11 +692,11 @@ export async function moderationRoutes(app: FastifyInstance) {
 
         if (error) {
           app.log.error({ err: error.message }, 'Failed to insert blocked user in Supabase');
-          return reply.status(500).send({ error: 'Failed to block user' });
+          return sendApiError(reply, request, 500, 'Internal Server Error', 'Failed to block user', { code: 'DATABASE_ERROR' });
         }
       } catch (err: any) {
-        app.log.error({ err: err.message }, 'Unexpected error blocking user');
-        return reply.status(500).send({ error: 'Internal server error blocking user' });
+        app.log.error({ err: err?.message }, 'Unexpected error blocking user');
+        return sendApiError(reply, request, 500, 'Internal Server Error', 'Internal server error blocking user', { code: 'DATABASE_ERROR' });
       }
     }
 
@@ -377,14 +706,20 @@ export async function moderationRoutes(app: FastifyInstance) {
     });
   });
 
-  // Unblock a user
+  // 8. Unblock a user
   app.delete<{
     Params: { userId: string };
-  }>('/api/v1/moderation/block/:userId', async (request, reply) => {
+  }>('/api/v1/moderation/block/:userId', {
+    schema: unblockUserSchema,
+  }, async (request, reply) => {
     const auth = await resolveModeratorRole(request);
-    if (!auth?.userId) {
-      return reply.status(401).send({ error: 'Authentication required' });
+    if (auth.state === 'UNAUTHENTICATED') {
+      return sendApiError(reply, request, 401, 'Unauthorized', 'Authentication required', { code: 'UNAUTHORIZED' });
     }
+    if (auth.state === 'DB_ERROR') {
+      return sendApiError(reply, request, 500, 'Internal Server Error', 'Failed to resolve user session', { code: 'DATABASE_ERROR' });
+    }
+
     const currentUserId = auth.userId;
     const targetUserId = request.params.userId;
 
@@ -398,11 +733,11 @@ export async function moderationRoutes(app: FastifyInstance) {
 
         if (error) {
           app.log.error({ err: error.message }, 'Failed to remove blocked user in Supabase');
-          return reply.status(500).send({ error: 'Failed to unblock user' });
+          return sendApiError(reply, request, 500, 'Internal Server Error', 'Failed to unblock user', { code: 'DATABASE_ERROR' });
         }
       } catch (err: any) {
-        app.log.error({ err: err.message }, 'Unexpected error unblocking user');
-        return reply.status(500).send({ error: 'Internal server error unblocking user' });
+        app.log.error({ err: err?.message }, 'Unexpected error unblocking user');
+        return sendApiError(reply, request, 500, 'Internal Server Error', 'Internal server error unblocking user', { code: 'DATABASE_ERROR' });
       }
     }
 
@@ -412,8 +747,10 @@ export async function moderationRoutes(app: FastifyInstance) {
     });
   });
 
-  // Get reputation rules (public)
-  app.get('/api/v1/moderation/reputation-rules', async (_request, reply) => {
+  // 9. Get reputation rules (public)
+  app.get('/api/v1/moderation/reputation-rules', {
+    schema: reputationRulesSchema,
+  }, async (_request, reply) => {
     const rules = Object.entries(REPUTATION_RULES).map(([action, points]) => ({
       action,
       points,

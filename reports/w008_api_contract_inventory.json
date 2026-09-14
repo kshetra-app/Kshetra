@@ -3,12 +3,12 @@
     "job": "W008",
     "title": "Fastify API Route Contract Inventory",
     "specification": "Master Execution Framework Amendment v1.5-A / DEC-041",
-    "timestamp": "2026-09-13T17:06:30.728Z"
+    "timestamp": "2026-09-14T03:58:12.827Z"
   },
   "summary": {
     "totalRoutesRegistered": 138,
-    "pioneerAndPhase1Routes": 45,
-    "schemaCoveredRoutes": 15
+    "pioneerAndPhase1Routes": 50,
+    "schemaCoveredRoutes": 33
   },
   "routes": [
     {
@@ -268,99 +268,99 @@
       "path": "/api/v1/civic/budget/:stateCode",
       "file": "civic.ts",
       "phase": "Phase 1 (Standardized)",
-      "schemaDefined": false,
+      "schemaDefined": true,
       "preValidationDefined": false,
-      "standardizedEnvelope": false
+      "standardizedEnvelope": true
     },
     {
       "method": "GET",
       "path": "/api/v1/civic/attendance",
       "file": "civic.ts",
       "phase": "Phase 1 (Standardized)",
-      "schemaDefined": false,
+      "schemaDefined": true,
       "preValidationDefined": false,
-      "standardizedEnvelope": false
+      "standardizedEnvelope": true
     },
     {
       "method": "GET",
       "path": "/api/v1/civic/bills",
       "file": "civic.ts",
       "phase": "Phase 1 (Standardized)",
-      "schemaDefined": false,
+      "schemaDefined": true,
       "preValidationDefined": false,
-      "standardizedEnvelope": false
+      "standardizedEnvelope": true
     },
     {
       "method": "POST",
       "path": "/api/v1/civic/bills/:id/opinion",
       "file": "civic.ts",
       "phase": "Phase 1 (Standardized)",
-      "schemaDefined": false,
+      "schemaDefined": true,
       "preValidationDefined": false,
-      "standardizedEnvelope": false
+      "standardizedEnvelope": true
     },
     {
       "method": "GET",
       "path": "/api/v1/civic/schemes",
       "file": "civic.ts",
       "phase": "Phase 1 (Standardized)",
-      "schemaDefined": false,
+      "schemaDefined": true,
       "preValidationDefined": false,
-      "standardizedEnvelope": false
+      "standardizedEnvelope": true
     },
     {
       "method": "GET",
       "path": "/api/v1/civic/projects",
       "file": "civic.ts",
       "phase": "Phase 1 (Standardized)",
-      "schemaDefined": false,
+      "schemaDefined": true,
       "preValidationDefined": false,
-      "standardizedEnvelope": false
+      "standardizedEnvelope": true
     },
     {
       "method": "GET",
       "path": "/api/v1/civic/rti",
       "file": "civic.ts",
       "phase": "Phase 1 (Standardized)",
-      "schemaDefined": false,
+      "schemaDefined": true,
       "preValidationDefined": false,
-      "standardizedEnvelope": false
+      "standardizedEnvelope": true
     },
     {
       "method": "POST",
       "path": "/api/v1/civic/rti",
       "file": "civic.ts",
       "phase": "Phase 1 (Standardized)",
-      "schemaDefined": false,
+      "schemaDefined": true,
       "preValidationDefined": false,
-      "standardizedEnvelope": false
+      "standardizedEnvelope": true
     },
     {
       "method": "POST",
       "path": "/api/v1/civic/rti/:id/upvote",
       "file": "civic.ts",
       "phase": "Phase 1 (Standardized)",
-      "schemaDefined": false,
+      "schemaDefined": true,
       "preValidationDefined": false,
-      "standardizedEnvelope": false
+      "standardizedEnvelope": true
     },
     {
       "method": "GET",
       "path": "/api/v1/civic/hearings",
       "file": "civic.ts",
       "phase": "Phase 1 (Standardized)",
-      "schemaDefined": false,
+      "schemaDefined": true,
       "preValidationDefined": false,
-      "standardizedEnvelope": false
+      "standardizedEnvelope": true
     },
     {
       "method": "GET",
       "path": "/api/v1/civic/cdi/:constituencyId",
       "file": "civic.ts",
       "phase": "Phase 1 (Standardized)",
-      "schemaDefined": false,
+      "schemaDefined": true,
       "preValidationDefined": false,
-      "standardizedEnvelope": false
+      "standardizedEnvelope": true
     },
     {
       "method": "GET",
@@ -889,27 +889,27 @@
       "path": "/api/v1/moderation/queue",
       "file": "moderation.ts",
       "phase": "Phase 1 (Standardized)",
-      "schemaDefined": false,
+      "schemaDefined": true,
       "preValidationDefined": false,
-      "standardizedEnvelope": false
+      "standardizedEnvelope": true
     },
     {
       "method": "GET",
       "path": "/api/v1/moderation/actions",
       "file": "moderation.ts",
       "phase": "Phase 1 (Standardized)",
-      "schemaDefined": false,
+      "schemaDefined": true,
       "preValidationDefined": false,
-      "standardizedEnvelope": false
+      "standardizedEnvelope": true
     },
     {
       "method": "GET",
       "path": "/api/v1/moderation/audit-log",
       "file": "moderation.ts",
       "phase": "Phase 1 (Standardized)",
-      "schemaDefined": false,
+      "schemaDefined": true,
       "preValidationDefined": false,
-      "standardizedEnvelope": false
+      "standardizedEnvelope": true
     },
     {
       "method": "POST",
@@ -934,18 +934,18 @@
       "path": "/api/v1/moderation/block/:userId",
       "file": "moderation.ts",
       "phase": "Phase 1 (Standardized)",
-      "schemaDefined": false,
+      "schemaDefined": true,
       "preValidationDefined": false,
-      "standardizedEnvelope": false
+      "standardizedEnvelope": true
     },
     {
       "method": "GET",
       "path": "/api/v1/moderation/reputation-rules",
       "file": "moderation.ts",
       "phase": "Phase 1 (Standardized)",
-      "schemaDefined": false,
+      "schemaDefined": true,
       "preValidationDefined": false,
-      "standardizedEnvelope": false
+      "standardizedEnvelope": true
     },
     {
       "method": "GET",
@@ -969,7 +969,7 @@
       "method": "POST",
       "path": "/api/v1/notifications/register-token",
       "file": "notifications.ts",
-      "phase": "Phase 2-4",
+      "phase": "Phase 1 (Standardized)",
       "schemaDefined": true,
       "preValidationDefined": false,
       "standardizedEnvelope": true
@@ -978,7 +978,7 @@
       "method": "POST",
       "path": "/api/v1/notifications/send",
       "file": "notifications.ts",
-      "phase": "Phase 2-4",
+      "phase": "Phase 1 (Standardized)",
       "schemaDefined": true,
       "preValidationDefined": false,
       "standardizedEnvelope": true
@@ -987,16 +987,16 @@
       "method": "GET",
       "path": "/api/v1/notifications/preferences",
       "file": "notifications.ts",
-      "phase": "Phase 2-4",
-      "schemaDefined": false,
+      "phase": "Phase 1 (Standardized)",
+      "schemaDefined": true,
       "preValidationDefined": false,
-      "standardizedEnvelope": false
+      "standardizedEnvelope": true
     },
     {
       "method": "PUT",
       "path": "/api/v1/notifications/preferences",
       "file": "notifications.ts",
-      "phase": "Phase 2-4",
+      "phase": "Phase 1 (Standardized)",
       "schemaDefined": true,
       "preValidationDefined": false,
       "standardizedEnvelope": true
@@ -1005,10 +1005,10 @@
       "method": "GET",
       "path": "/api/v1/notifications/triggers",
       "file": "notifications.ts",
-      "phase": "Phase 2-4",
-      "schemaDefined": false,
+      "phase": "Phase 1 (Standardized)",
+      "schemaDefined": true,
       "preValidationDefined": false,
-      "standardizedEnvelope": false
+      "standardizedEnvelope": true
     },
     {
       "method": "GET",
