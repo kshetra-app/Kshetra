@@ -1,8 +1,8 @@
 === RUNNING DEDICATED INDEPENDENT GOVERNANCE REGRESSION SUITE (AMENDMENT v1.6 - REV-5) ===
 
 [REPOSITORY STATE] Branch: master
-[REPOSITORY STATE] Local HEAD: 982cebc160c9e9fcd545f1fb07ad4adffd6d6fee
-[REPOSITORY STATE] origin/master: 982cebc160c9e9fcd545f1fb07ad4adffd6d6fee
+[REPOSITORY STATE] Local HEAD: ed85f6b417e9632d30c4ee8067921e53a3b31863
+[REPOSITORY STATE] origin/master: ed85f6b417e9632d30c4ee8067921e53a3b31863
 
 [AUTHORITATIVE V1.6 SCOPE MANIFEST]: [
   'AMENDMENT_v1.6.md',
@@ -24,6 +24,9 @@ tests/governance-v16.test.mjs:50cddbe0e110704af31e6167eaec1dcb5b97036ac77c32a746
 [PASS] [UNIT / MODEL] Test M3: Pre-implementation claim evaluator baseline verified.
 [ACTUAL GIT CHANGED FILES FROM BASE]: [
   'AMENDMENT_v1.6.md',
+  'reports/w008_gov_v16_evidence.json',
+  'reports/w008_gov_v16_stderr.txt',
+  'reports/w008_gov_v16_stdout.txt',
   'tests/governance-consistency.test.mjs',
   'tests/governance-v16.test.mjs'
 ]
