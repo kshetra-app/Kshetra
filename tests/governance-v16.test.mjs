@@ -776,7 +776,7 @@ console.log('[PASS] [NEGATIVE TEST E] evidenceCommitSha does not equal actual pe
 const previousEvidenceCommit = 'af1c7863550212160d142f92c7bc846e2c6b955e'; // Previous commit that touched evidence artifact
 assert.throws(
   () => independentlyVerifyEvidencePackage(
-    { ...liveEvidencePackage, executionCommitSha: recordedExecutionCommit, executionOriginMasterHead: recordedExecutionCommit, evidenceCommitSha: previousEvidenceCommit },
+    { ...liveEvidencePackage, executionCommitSha: recordedExecutionCommit, executionOriginMasterHead: recordedExecutionCommit, evidenceCommitSha: previousEvidenceCommit, evidenceOriginMasterHead: previousEvidenceCommit },
     persistedRawStdout,
     persistedRawStderr,
     recordedExecutionCommit,
