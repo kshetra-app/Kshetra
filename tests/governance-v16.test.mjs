@@ -5,7 +5,7 @@ import path from 'path';
 import crypto from 'crypto';
 import { execSync } from 'child_process';
 
-console.log('=== RUNNING DEDICATED INDEPENDENT GOVERNANCE REGRESSION SUITE (AMENDMENT v1.6 - REV-5) ===\n');
+console.log('=== RUNNING DEDICATED INDEPENDENT GOVERNANCE REGRESSION SUITE (AMENDMENT v1.6 - REV-6) ===\n');
 
 // =============================================================================
 // INDEPENDENT RUNTIME & GIT REPOSITORY STATE DERIVATION
@@ -366,7 +366,8 @@ console.log('[PASS] [NEGATIVE / ADVERSARIAL] Test N4: Scope leakage mutations ac
 // 5. EVIDENCE VERIFICATION ENGINE (CTO REV-5 REQ 1 & 2 - 11-STEP CHAIN OF CUSTODY)
 // =============================================================================
 
-export function independentlyVerifyEvidencePackage(evidence, rawStdout, rawStderr, expectedGitHead, expectedOriginHead, expectedCanonicalScopeHash) {
+export function independentlyVerifyEvidencePackage(evidence, rawStdout, rawStderr, expectedGitHead, expectedOriginHead, expectedCanonicalScopeHash, options = {}) {
+  const repoDir = options.cwd || process.cwd();
   // Step 1: Read persisted stdout and stderr (must be provided and non-empty/valid)
   if (typeof rawStdout !== 'string' || rawStdout.trim().length === 0) {
     throw new Error('EVIDENCE_REJECTED: Persisted raw stdout is missing or empty');
@@ -391,69 +392,37 @@ export function independentlyVerifyEvidencePackage(evidence, rawStdout, rawStder
     throw new Error(`EVIDENCE_REJECTED: rawStderrSha256 mismatch! Expected ${recomputedStderrSha256}, recorded ${evidence.rawStderrSha256}`);
   }
 
-  // Step 4: Verify recorded Git HEAD against expected Git HEAD (CTO REV-5 REQ 2 Step 5 & Negative Test D)
+  // Step 4: Verify recorded Git HEAD against expected Git HEAD (CTO REV-6 REQ 1)
   if (!evidence.repositoryHead) {
-    throw new Error('EVIDENCE_REJECTED: Missing repositoryHead in evidence package');
+    throw new Error('STALE_EXECUTION_EVIDENCE_REJECTED: Missing repositoryHead in evidence package');
   }
-  const isHeadMatch = (evidence.repositoryHead === expectedGitHead);
-  if (!isHeadMatch) {
-    try {
-      execSync(`git merge-base --is-ancestor "${evidence.repositoryHead}" "${expectedGitHead}"`, { stdio: ['pipe', 'pipe', 'pipe'] });
-    } catch {
-      throw new Error(`EVIDENCE_REJECTED: repositoryHead mismatch! '${evidence.repositoryHead}' is not an ancestor of expectedGitHead '${expectedGitHead}'`);
-    }
-    const V16_MINIMUM_LINEAGE_COMMIT = 'c56e46736cb9629ee3fd456f2db8e8fd962189ac';
-    try {
-      execSync(`git merge-base --is-ancestor "${V16_MINIMUM_LINEAGE_COMMIT}" "${evidence.repositoryHead}"`, { stdio: ['pipe', 'pipe', 'pipe'] });
-    } catch {
-      throw new Error(`EVIDENCE_REJECTED: repositoryHead mismatch! '${evidence.repositoryHead}' is a stale pre-v1.6 commit`);
-    }
+  if (evidence.repositoryHead !== expectedGitHead) {
+    throw new Error(`STALE_EXECUTION_EVIDENCE_REJECTED: repositoryHead mismatch! Expected ${expectedGitHead}, got ${evidence.repositoryHead}`);
   }
 
   if (evidence.gitCommitSha) {
-    const isShaMatch = (evidence.gitCommitSha === expectedGitHead);
-    if (!isShaMatch) {
-      try {
-        execSync(`git merge-base --is-ancestor "${evidence.gitCommitSha}" "${expectedGitHead}"`, { stdio: ['pipe', 'pipe', 'pipe'] });
-      } catch {
-        throw new Error(`EVIDENCE_REJECTED: gitCommitSha mismatch! '${evidence.gitCommitSha}' is not an ancestor of expectedGitHead '${expectedGitHead}'`);
-      }
-      const V16_MINIMUM_LINEAGE_COMMIT = 'c56e46736cb9629ee3fd456f2db8e8fd962189ac';
-      try {
-        execSync(`git merge-base --is-ancestor "${V16_MINIMUM_LINEAGE_COMMIT}" "${evidence.gitCommitSha}"`, { stdio: ['pipe', 'pipe', 'pipe'] });
-      } catch {
-        throw new Error(`EVIDENCE_REJECTED: gitCommitSha mismatch! '${evidence.gitCommitSha}' is a stale pre-v1.6 commit`);
-      }
+    if (evidence.gitCommitSha !== expectedGitHead) {
+      throw new Error(`STALE_EXECUTION_EVIDENCE_REJECTED: gitCommitSha mismatch! Expected ${expectedGitHead}, got ${evidence.gitCommitSha}`);
     }
   }
 
   // Verify commit object exists in Git repository
   try {
-    execSync(`git cat-file -e "${evidence.repositoryHead}^{commit}"`, { encoding: 'utf8', stdio: ['pipe', 'pipe', 'pipe'] });
+    execSync(`git cat-file -e "${evidence.repositoryHead}^{commit}"`, { cwd: repoDir, encoding: 'utf8', stdio: ['pipe', 'pipe', 'pipe'] });
   } catch (err) {
     throw new Error(`EVIDENCE_REJECTED: repositoryHead '${evidence.repositoryHead}' does not exist in Git repository`);
   }
 
-  // Step 5: Verify recorded origin/master against actual origin/master (CTO REV-5 REQ 2 Step 6 & Negative Test E)
+  // Step 5: Verify recorded origin/master against actual origin/master (CTO REV-6 REQ 1)
   if (!evidence.originMasterHead) {
-    throw new Error('EVIDENCE_REJECTED: Missing originMasterHead in evidence package');
+    throw new Error('STALE_EXECUTION_EVIDENCE_REJECTED: Missing originMasterHead in evidence package');
   }
-  const isOriginMatch = (evidence.originMasterHead === expectedOriginHead);
-  if (!isOriginMatch) {
-    try {
-      execSync(`git merge-base --is-ancestor "${evidence.originMasterHead}" "${expectedOriginHead}"`, { stdio: ['pipe', 'pipe', 'pipe'] });
-    } catch {
-      throw new Error(`EVIDENCE_REJECTED: originMasterHead mismatch! '${evidence.originMasterHead}' is not an ancestor of expectedOriginHead '${expectedOriginHead}'`);
-    }
-    const V16_MINIMUM_LINEAGE_COMMIT = 'c56e46736cb9629ee3fd456f2db8e8fd962189ac';
-    try {
-      execSync(`git merge-base --is-ancestor "${V16_MINIMUM_LINEAGE_COMMIT}" "${evidence.originMasterHead}"`, { stdio: ['pipe', 'pipe', 'pipe'] });
-    } catch {
-      throw new Error(`EVIDENCE_REJECTED: originMasterHead mismatch! '${evidence.originMasterHead}' is a stale pre-v1.6 commit`);
-    }
+  if (evidence.originMasterHead !== expectedOriginHead) {
+    throw new Error(`STALE_EXECUTION_EVIDENCE_REJECTED: originMasterHead mismatch! Expected ${expectedOriginHead}, got ${evidence.originMasterHead}`);
   }
+
   if (expectedGitHead !== expectedOriginHead) {
-    throw new Error(`EVIDENCE_REJECTED: Local HEAD (${expectedGitHead}) does not match origin/master (${expectedOriginHead})`);
+    throw new Error(`STALE_EXECUTION_EVIDENCE_REJECTED: Local HEAD (${expectedGitHead}) does not match origin/master (${expectedOriginHead})`);
   }
 
   // Step 6: Verify repository cleanliness (CTO REV-5 REQ 2 Step 7)
@@ -507,6 +476,31 @@ export function independentlyVerifyEvidencePackage(evidence, rawStdout, rawStder
     throw new Error(`EVIDENCE_REJECTED: exactCommand mismatch! Expected 'node tests/governance-v16.test.mjs', got '${evidence.exactCommand}'`);
   }
 
+  // Step 12: Verify 6-Way Coordinate Cross-Consistency (CTO REV-6 Section 5 & Section 8)
+  const stdoutLocalHeadMatch = rawStdout.match(/\[REPOSITORY STATE\] Local HEAD: ([0-9a-f]{40})/);
+  const stdoutOriginMasterMatch = rawStdout.match(/\[REPOSITORY STATE\] origin\/master: ([0-9a-f]{40})/);
+  if (!stdoutLocalHeadMatch || !stdoutOriginMasterMatch) {
+    throw new Error('STALE_EXECUTION_EVIDENCE_REJECTED: Unable to extract Local HEAD and origin/master from rawStdout');
+  }
+  const stdoutLocalHead = stdoutLocalHeadMatch[1];
+  const stdoutOriginMaster = stdoutOriginMasterMatch[1];
+
+  const coordinates = [
+    { name: 'expectedGitHead', val: expectedGitHead },
+    { name: 'expectedOriginHead', val: expectedOriginHead },
+    { name: 'evidence.repositoryHead', val: evidence.repositoryHead },
+    { name: 'evidence.gitCommitSha', val: evidence.gitCommitSha },
+    { name: 'evidence.originMasterHead', val: evidence.originMasterHead },
+    { name: 'stdoutLocalHead', val: stdoutLocalHead },
+    { name: 'stdoutOriginMaster', val: stdoutOriginMaster }
+  ];
+
+  for (const coord of coordinates) {
+    if (coord.val !== expectedGitHead) {
+      throw new Error(`STALE_EXECUTION_EVIDENCE_REJECTED: Coordinate cross-consistency failed for ${coord.name}! Expected ${expectedGitHead}, got ${coord.val}`);
+    }
+  }
+
   return true;
 }
 
@@ -529,10 +523,10 @@ export function independentlyVerifyEvidenceArtifact(artifactPath = path.resolve(
 
 // CLI Standalone Evidence Verifier Entrypoint (CTO REV-5 REQ 8)
 if (process.argv.includes('--verify-evidence')) {
-  console.log('=== RUNNING STANDALONE EVIDENCE ARTIFACT VERIFIER (AMENDMENT v1.6 - REV-5) ===\n');
+  console.log('=== RUNNING STANDALONE EVIDENCE ARTIFACT VERIFIER (AMENDMENT v1.6 - REV-6) ===\n');
   const artifactPath = path.resolve('reports/w008_gov_v16_evidence.json');
   independentlyVerifyEvidenceArtifact(artifactPath);
-  console.log('[PASS] Standalone evidence artifact verification completed successfully (11/11 checks verified).\n');
+  console.log('[PASS] Standalone evidence artifact verification completed successfully (12/12 checks verified).\n');
   process.exit(0);
 }
 
@@ -619,7 +613,7 @@ assert.throws(
     actualOriginMaster,
     ACTUAL_CANONICAL_SCOPE_HASH
   ),
-  /repositoryHead mismatch/
+  /STALE_EXECUTION_EVIDENCE_REJECTED: repositoryHead mismatch/
 );
 console.log('[PASS] [NEGATIVE TEST D] Stale execution HEAD strictly rejected.');
 
@@ -633,7 +627,7 @@ assert.throws(
     actualOriginMaster,
     ACTUAL_CANONICAL_SCOPE_HASH
   ),
-  /originMasterHead mismatch/
+  /STALE_EXECUTION_EVIDENCE_REJECTED: originMasterHead mismatch/
 );
 console.log('[PASS] [NEGATIVE TEST E] Stale origin/master strictly rejected.');
 
@@ -706,6 +700,44 @@ assert.throws(
   /Working tree was dirty during execution/
 );
 console.log('[PASS] [NEGATIVE TEST N] Repository dirty state strictly rejected fail-closed.');
+
+// Negative Test O: rawStdout with tampered Local HEAD (CTO REV-6 Section 8)
+const tamperedStdoutLocalHead = persistedRawStdout.replace(
+  `[REPOSITORY STATE] Local HEAD: ${actualHead}`,
+  '[REPOSITORY STATE] Local HEAD: 0000000000000000000000000000000000000000'
+);
+const tamperedStdoutLocalHeadChecksum = crypto.createHash('sha256').update(tamperedStdoutLocalHead).digest('hex').toLowerCase();
+assert.throws(
+  () => independentlyVerifyEvidencePackage(
+    { ...liveEvidencePackage, rawStdoutSha256: tamperedStdoutLocalHeadChecksum },
+    tamperedStdoutLocalHead,
+    persistedRawStderr,
+    actualHead,
+    actualOriginMaster,
+    ACTUAL_CANONICAL_SCOPE_HASH
+  ),
+  /STALE_EXECUTION_EVIDENCE_REJECTED: Coordinate cross-consistency failed for stdoutLocalHead/
+);
+console.log('[PASS] [NEGATIVE TEST O] rawStdout with tampered Local HEAD strictly rejected by coordinate cross-consistency.');
+
+// Negative Test P: rawStdout with tampered origin/master (CTO REV-6 Section 8)
+const tamperedStdoutOriginMaster = persistedRawStdout.replace(
+  `[REPOSITORY STATE] origin/master: ${actualOriginMaster}`,
+  '[REPOSITORY STATE] origin/master: 0000000000000000000000000000000000000000'
+);
+const tamperedStdoutOriginMasterChecksum = crypto.createHash('sha256').update(tamperedStdoutOriginMaster).digest('hex').toLowerCase();
+assert.throws(
+  () => independentlyVerifyEvidencePackage(
+    { ...liveEvidencePackage, rawStdoutSha256: tamperedStdoutOriginMasterChecksum },
+    tamperedStdoutOriginMaster,
+    persistedRawStderr,
+    actualHead,
+    actualOriginMaster,
+    ACTUAL_CANONICAL_SCOPE_HASH
+  ),
+  /STALE_EXECUTION_EVIDENCE_REJECTED: Coordinate cross-consistency failed for stdoutOriginMaster/
+);
+console.log('[PASS] [NEGATIVE TEST P] rawStdout with tampered origin/master strictly rejected by coordinate cross-consistency.');
 
 // =============================================================================
 // 7. ISOLATED CONTROL-M AUTHORIZATION FIXTURE (CTO REV-5 REQ 5 & NEGATIVE TESTS H-M)
@@ -919,6 +951,104 @@ AUTHORITY: CTO Decision / Formal Implementation Authorization Mandate (Rule IV-0
 }
 
 runIsolatedControlMFixture();
+
+// =============================================================================
+// 8. ISOLATED STALE-ANCESTOR FIXTURE (CTO REV-6 SECTION 3)
+// =============================================================================
+console.log('\n--- EXECUTING ISOLATED STALE-ANCESTOR FIXTURE (REV-6 SECTION 3) ---');
+console.log('Proving that an evidence package generated at an ancestor commit is strictly rejected fail-closed.\n');
+
+function runIsolatedStaleAncestorFixture() {
+  const tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), 'stale-ancestor-fixture-'));
+  try {
+    // 1. Initialize isolated git repo
+    execSync('git init -b master', { cwd: tmpDir, stdio: 'pipe' });
+    execSync('git config user.name "CTO-Fixture"', { cwd: tmpDir, stdio: 'pipe' });
+    execSync('git config user.email "cto@fixture.kshetra.in"', { cwd: tmpDir, stdio: 'pipe' });
+
+    // 2. Commit A exists
+    fs.writeFileSync(path.join(tmpDir, 'governance.txt'), 'Governance Version A\n');
+    execSync('git add governance.txt && git commit -m "docs(governance): version A initial commit"', { cwd: tmpDir, stdio: 'pipe' });
+    const commitA = execSync('git rev-parse HEAD', { cwd: tmpDir, encoding: 'utf8' }).trim();
+
+    // 3. Evidence is generated at A
+    const stdoutA = `=== RUNNING DEDICATED INDEPENDENT GOVERNANCE REGRESSION SUITE (AMENDMENT v1.6 - REV-6) ===\n\n[REPOSITORY STATE] Branch: master\n[REPOSITORY STATE] Local HEAD: ${commitA}\n[REPOSITORY STATE] origin/master: ${commitA}\n\n[PASS] All checks passed.\n`;
+    const stderrA = '';
+    const stdoutSha256A = crypto.createHash('sha256').update(stdoutA).digest('hex').toLowerCase();
+    const stderrSha256A = crypto.createHash('sha256').update(stderrA).digest('hex').toLowerCase();
+
+    const evidenceA = {
+      jobId: 'W008-GOV-v1.6',
+      executionTimestamp: new Date().toISOString(),
+      repositoryHead: commitA,
+      gitCommitSha: commitA,
+      originMasterHead: commitA,
+      branch: 'master',
+      workingTreeClean: true,
+      canonicalScopeManifest: [...AUTHORITATIVE_V16_SCOPE_MANIFEST],
+      canonicalScopeHash: ACTUAL_CANONICAL_SCOPE_HASH,
+      exactCommand: 'node tests/governance-v16.test.mjs',
+      rawStdout: stdoutA,
+      rawStderr: stderrA,
+      rawStdoutSha256: stdoutSha256A,
+      rawStderrSha256: stderrSha256A,
+      environment: {
+        host: 'Fixture-Host',
+        runtime: 'node-fixture',
+        databaseTarget: 'fixture-db'
+      }
+    };
+
+    // 4. Commit B is created after A
+    fs.writeFileSync(path.join(tmpDir, 'governance.txt'), 'Governance Version B\n');
+    execSync('git add governance.txt && git commit -m "docs(governance): version B follow-up commit"', { cwd: tmpDir, stdio: 'pipe' });
+    const commitB = execSync('git rev-parse HEAD', { cwd: tmpDir, encoding: 'utf8' }).trim();
+
+    // 5. Verify A is an ancestor of B (proving historical lineage)
+    let isAncestor = false;
+    try {
+      execSync(`git merge-base --is-ancestor "${commitA}" "${commitB}"`, { cwd: tmpDir, stdio: 'pipe' });
+      isAncestor = true;
+    } catch {
+      isAncestor = false;
+    }
+    assert.strictEqual(isAncestor, true, 'Commit A must be an ancestor of Commit B');
+    assert.notStrictEqual(commitA, commitB, 'Commit A must not equal Commit B');
+
+    // 6. Current HEAD becomes B, but evidence still identifies A
+    // Verification against B MUST fail with STALE_EXECUTION_EVIDENCE_REJECTED
+    assert.throws(
+      () => independentlyVerifyEvidencePackage(evidenceA, stdoutA, stderrA, commitB, commitB, ACTUAL_CANONICAL_SCOPE_HASH, { cwd: tmpDir }),
+      /STALE_EXECUTION_EVIDENCE_REJECTED: repositoryHead mismatch! Expected .* got .*/
+    );
+
+    // 7. Test when repositoryHead is updated to B but gitCommitSha remains ancestor A
+    assert.throws(
+      () => independentlyVerifyEvidencePackage({ ...evidenceA, repositoryHead: commitB }, stdoutA, stderrA, commitB, commitB, ACTUAL_CANONICAL_SCOPE_HASH, { cwd: tmpDir }),
+      /STALE_EXECUTION_EVIDENCE_REJECTED: gitCommitSha mismatch! Expected .* got .*/
+    );
+
+    // 8. Test when repositoryHead and gitCommitSha are B but originMasterHead remains ancestor A
+    assert.throws(
+      () => independentlyVerifyEvidencePackage({ ...evidenceA, repositoryHead: commitB, gitCommitSha: commitB }, stdoutA, stderrA, commitB, commitB, ACTUAL_CANONICAL_SCOPE_HASH, { cwd: tmpDir }),
+      /STALE_EXECUTION_EVIDENCE_REJECTED: originMasterHead mismatch! Expected .* got .*/
+    );
+
+    // 9. Test when evidence package has B, but rawStdout reports ancestor A
+    assert.throws(
+      () => independentlyVerifyEvidencePackage({ ...evidenceA, repositoryHead: commitB, gitCommitSha: commitB, originMasterHead: commitB }, stdoutA, stderrA, commitB, commitB, ACTUAL_CANONICAL_SCOPE_HASH, { cwd: tmpDir }),
+      /STALE_EXECUTION_EVIDENCE_REJECTED: Coordinate cross-consistency failed for stdoutLocalHead/
+    );
+
+    console.log('[PASS] [STALE ANCESTOR FIXTURE] Stale ancestor execution evidence strictly rejected across repositoryHead, gitCommitSha, originMasterHead, and stdout coordinates.');
+
+  } finally {
+    fs.rmSync(tmpDir, { recursive: true, force: true });
+    console.log('[PASS] [STALE ANCESTOR FIXTURE] Isolated temporary fixture cleaned up successfully.');
+  }
+}
+
+runIsolatedStaleAncestorFixture();
 
 console.log('\n========================================================================================');
 console.log('   ALL DEDICATED v1.6 INDEPENDENT GOVERNANCE TESTS PASSED (100% EMPIRICALLY VERIFIED)!  ');
