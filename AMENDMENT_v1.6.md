@@ -2,7 +2,7 @@
 **Governance Evolution After W000–W008-C: Systemic Resilience, Ground-Truth Verification, and Fail-Closed Engineering Controls**
 
 - **Document Identifier:** AMENDMENT_v1.6.md
-- **Status:** IMPLEMENTED / TESTED / VERIFIED / SUBMITTED FOR CTO RATIFICATION
+- **Status:** IMPLEMENTED / TESTED / VERIFIED / RESUBMITTED FOR CTO RATIFICATION
 - **Authority:** CTO Technical Authority
 - **Effective Baseline:** Prospective application following formal CTO ratification. Preceding jobs W000 through W008-C remain immutable historical records.
 - **Parent Governance Baseline:**
@@ -31,6 +31,7 @@ Amendment v1.6 establishes systemic architectural invariants that render such fa
 1. Every claim of fact requires machine-verifiable empirical proof directly traceable to immutable source code or live runtime telemetry.
 2. "Green" is worthless unless the test execution has proven it can fail on invalid inputs, corrupted states, and unexpected network behaviors.
 3. Silence, omission, or unexecuted paths are treated strictly as UNKNOWN or DEFECT, never as PASS.
+4. Technical review, technical verification, implementation authorization, and final technical acceptance reside exclusively with the CTO Technical Authority under Rule IV-001.
 
 ---
 
@@ -44,7 +45,7 @@ Amendment v1.6 is directly derived from concrete, documented operational inciden
 | **W001** | DEF-009, DEF-010, DEF-011: Defensive client fallbacks masked missing backend endpoints, giving illusion of working features. | Optimistic fallbacks returning mock data when HTTP requests failed. | **ECC-001**: Defensive fallbacks forbidden from masquerading as operational success; must surface telemetry error events. |
 | **W002** | Sentinel write test contaminated staging database state across environments due to lack of environment key scoping. | Shared credentials or lack of environment prefix isolation on synthetic test writes. | **RDB-001 / ECC-001**: Cross-environment write isolation; test synthetic writes must be sandboxed and self-reconciling. |
 | **W003** | Git commit coordinates became orphaned during rebinding, pointing to unpushed or ephemeral commits. | Manual string entry of Git commit hashes into governance registers without ancestor validation. | **GTR-001**: Four-coordinate & five-coordinate Git lineage models enforced by automated commit freshness assertions. |
-| **W004** | Metrics route credential fallback allowed service-role keys to access operational telemetry; ambiguous host attribution. | Fallback chaining (`token || serviceRoleKey`) creating privilege escalation. | **ECC-001 / RDB-001**: Strict credential separation; no credential fallback across authorization boundaries. |
+| **W004** | W004-R1 allowed metrics endpoint to fall back to `SUPABASE_SERVICE_ROLE_KEY` if `METRICS_AUTH_TOKEN` was missing; coordinate rebinding discrepancy across commits. | Fallback chaining (`token = METRICS_AUTH_TOKEN || SUPABASE_SERVICE_ROLE_KEY`) conflating telemetry monitoring credentials with database superuser access. | **ECC-001 / RDB-001**: Strict credential separation; no credential fallback across authorization boundaries; fail closed with 401 when dedicated token is absent. |
 | **W005** | Migration bundle claimed as data backup; schema reconstruction conflated with user data restoration; unverified RPO claimed. | Conflating schema DDL with logical/physical state dumps; claiming theoretical cloud SLA without drill. | **ACB-001 / SDB-001**: Schema recovery vs Data recovery hard distinction; unverified SLAs must be declared UNVERIFIED. |
 | **W006** | RPC functions (`global_search`) misclassified as client writes due to regex matching `supabase.rpc()` as potential mutation. | Superficial syntactic pattern matching ignoring SQL volatility declarations (`STABLE`). | **SCI-001**: Semantic code inspection requiring AST or DDL-level verification, not superficial regex. |
 | **W007** | TypeScript type definitions drifted from runtime Fastify schemas, passing compilation but failing runtime payloads. | Static TypeScript types not enforced at runtime boundaries; schema drift between client and server. | **SSV-001**: Runtime schema validation (DTO validation) mandatory on all external network interfaces. |
@@ -97,11 +98,11 @@ Amendment v1.6 codifies twelve non-negotiable control domains that govern all en
 - **Rules:**
   1. No cross-environment credentials: Dev/staging keys must never connect to production instances; production tokens must never exist in local or CI environments.
   2. No credential fallbacks: As proven in W004, routes must not fallback to `SUPABASE_SERVICE_ROLE_KEY` if dedicated credentials (e.g. `METRICS_AUTH_TOKEN`) are missing. If an authorization token is missing, the route must fail closed with 401/500.
-  3. Environment Attribution: Telemetry, logs, and evidence reports must record the verified environment identifier, database project ref, and runtime host.
+  3. Environment Attribution: Telemetry, logs, and evidence reports must record the verified environment identifier, database project ref, and runtime host. Missing environment identity invalidates evidence.
 
 ### 3.7 Control Domain 7: Automated Continuous Verification (ACB-001)
 - **Mandate:** Governance rules are not passive guidelines; they are actively executable test suites run continuously during CI and pre-commit gates.
-- **Tooling:** All repositories must maintain executable consistency test suites (e.g., `tests/governance-consistency.test.mjs`, `tests/commit-freshness.test.mjs`, `scripts/check-repo-evidence-integrity.mjs`).
+- **Tooling:** All repositories must maintain executable consistency test suites (e.g., `tests/governance-consistency.test.mjs`, `tests/governance-v16.test.mjs`, `tests/commit-freshness.test.mjs`, `scripts/check-repo-evidence-integrity.mjs`).
 - **Zero-Bypass:** No code or governance document may be pushed or accepted if any automated governance check fails.
 
 ### 3.8 Control Domain 8: Storage, State & Data Resilience (SDB-001)
@@ -115,7 +116,7 @@ Amendment v1.6 codifies twelve non-negotiable control domains that govern all en
 ### 3.9 Control Domain 9: Unambiguous Scope & Interface Boundary (USI-001)
 - **Mandate:** Every authorized job must possess a cryptographically locked, canonical scope hash derived from an explicit manifest of modified files, affected routes, and database tables.
 - **Disjointness Invariant:** Sub-jobs executing concurrently or sequentially within a phase must be provably disjoint in their modified files and database schemas.
-- **Boundary Enforcement:** Any modification to a file outside the authorized job scope constitutes an immediate governance breach and invalidates the implementation.
+- **Boundary Enforcement:** Any modification to a file outside the authorized job scope constitutes an immediate governance breach and invalidates the implementation. Scope leakage is rejected fail-closed.
 
 ### 3.10 Control Domain 10: Immutable Audit Trails & Evidence Lineage (ISA-001)
 - **Mandate:** All verification evidence, test outputs, execution logs, and architecture reports must be saved as permanent, commit-bound artifacts in the repository.
@@ -124,31 +125,45 @@ Amendment v1.6 codifies twelve non-negotiable control domains that govern all en
   - `timestamp`: ISO 8601 UTC timestamp of execution.
   - `environment`: Host, OS, node version, and database target.
   - `rawOutputChecksum`: Cryptographic hash of the raw test execution stdout/stderr.
+- **Chain of Custody Invariants:** Evidence is strictly rejected if:
+  1. `gitCommitSha` does not resolve in Git history or does not match active execution HEAD;
+  2. `rawOutputChecksum` does not match the SHA-256 hash of the verbatim stdout/stderr;
+  3. `environment`, `host`, or `databaseTarget` is missing or empty;
+  4. `timestamp` is malformed or absent;
+  5. Any byte of the evidence file is altered after test execution.
 - **Prohibition:** Modifying, deleting, or fabricating historical evidence files is strictly prohibited.
 
 ### 3.11 Control Domain 11: Governance Authorization Control (GAC-001 / Control M)
-- **Mandate:** Absolute machine-verifiable implementation gate.
-- **The Invariant:**
+- **Mandate:** Absolute machine-verifiable implementation authorization gate governed exclusively by the CTO Technical Authority.
+- **Machine-Verifiable Authority Invariant:**
+  To prevent agent-generated self-authorization, stale authorizations, or mismatched scope execution, `IMPLEMENTATION_AUTHORIZATION = YES` is valid IF AND ONLY IF all of the following machine-verifiable conditions are satisfied:
   ```
-  IMPLEMENTATION_AUTHORIZATION == 'YES'
-  <=>
-  PLAN_STATUS == 'APPROVED'
-  AND
-  IMPLEMENTATION_AUTHORIZATION_COMMIT is valid commit SHA in Git history
-  AND
-  CTO explicit authorization record exists
+  1. PLAN_STATUS == 'APPROVED' in EXECUTION_STATE.md
+  2. IMPLEMENTATION_AUTHORIZATION == 'YES' in EXECUTION_STATE.md
+  3. IMPLEMENTATION_AUTHORIZATION_COMMIT is a valid 40-character commit SHA in Git ancestry
+  4. The commit pointed to by IMPLEMENTATION_AUTHORIZATION_COMMIT contains an explicit CTO Decision in DECISION_LOG.md (e.g. DEC-048) or signed authorization record
+  5. The authorized record explicitly matches the active job identifier (e.g. AUTHORIZED_JOB == CURRENT_JOB)
+  6. The authorized record contains the exact canonical scope hash matching the approved plan (AUTHORIZED_SCOPE_HASH == CANONICAL_SCOPE_HASH)
+  7. The authorized base HEAD in the authorization record matches the active base commit in Git ancestry (AUTHORIZED_BASE_HEAD is ancestor of HEAD)
   ```
-- **Enforcement:** If `IMPLEMENTATION_AUTHORIZATION` is `NO` or `BLOCKED`, agents are strictly forbidden from modifying product code, creating implementation commits, or editing routes. Any product modification executed without this condition is classified as a GOVERNANCE BREACH, immediately rejected, and recorded in the Defect Register.
+- **Enforcement:** If `IMPLEMENTATION_AUTHORIZATION` is `NO` or `BLOCKED`, or if any coordinate of the tuple above fails validation, product code is strictly frozen. Any product code change executed without satisfying all seven conditions constitutes a GOVERNANCE BREACH, immediately halting all execution and triggering an immediate rejection.
 
 ### 3.12 Control Domain 12: Standing Technical Lineage & Replayability (STL-001)
 - **Mandate:** Any historical state of the system, from W000 through the current HEAD, must remain reproducible and verifiable through Git history and checked-in migrations.
-- **Immutability of Closed Work:** Once a job is accepted (`ACCEPTED / COMPLETE`), its code, tests, and evidence are immutable. Future enhancements, refactorings, or fixes must occur in newly authorized, distinct jobs.
+- **Immutability of Closed Work:** Once a job is accepted (`ACCEPTED / COMPLETE`), its code, tests, and evidence are immutable. Future enhancements, refactorings, or fixes must occur in newly authorized, distinct jobs. Historical baselines cannot be reopened.
 
 ---
 
 ## 4. Nine-Stage Job Lifecycle State Machine
 
-Amendment v1.6 formalizes the 9-stage Job Lifecycle State Machine. Transitions between states are unidirectional and strictly gated:
+### 4.1 Relationship to Historical Acceptance Model
+Amendment v1.2 (DEC-009) established the 6-stage product acceptance lifecycle:
+`IMPLEMENTED -> TESTED -> VERIFIED -> PRODUCTION -> ACCEPTED -> COMPLETE`
+
+Amendment v1.6 **refines and operationalizes** this model into an end-to-end 9-stage engineering lifecycle by formally adding the pre-implementation governance stages (DEFINED, PLANNED, PLAN_REVIEWED, AUTHORIZED). The final 5 stages of the 9-stage lifecycle correspond directly to the historical 6-stage acceptance model (with TESTED and VERIFIED paired in Stage 6). Preceding jobs executed under the 6-stage model remain fully valid and immutable.
+
+### 4.2 State Machine Flow
+Transitions between states are strictly unidirectional, sequential, and gated:
 
 ```mermaid
 flowchart TD
@@ -168,25 +183,34 @@ flowchart TD
     S7 -. Production Fail .-> S5
 ```
 
-### State Definitions & Transition Criteria:
+### 4.3 State Definitions & Transition Criteria:
 1. **DEFINED:** Problem statement, target systems, and initial scope identified.
-   - *Exit Gate:* Problem statement accepted; scope boundaries drafted.
+   - *Exit Gate:* Problem statement approved; scope boundaries drafted.
 2. **PLANNED:** 22-section canonical plan produced with complete scope manifest, SHA-256 scope hash, risk matrix, and rollback plan.
    - *Exit Gate:* Plan submitted for review; all 22 sections fully articulated.
-3. **PLAN_REVIEWED:** Independent technical review conducted by CTO/User.
-   - *Exit Gate:* Formal review feedback issued.
-4. **AUTHORIZED:** Explicit implementation authorization issued by CTO.
-   - *Exit Gate:* Dedicated authorization commit recorded in Git history; Control M set to YES; canonical scope hash locked.
+3. **PLAN_REVIEWED:** Independent technical review conducted exclusively by the CTO Technical Authority.
+   - *Exit Gate:* Formal technical review feedback or directive issued.
+4. **AUTHORIZED:** Explicit implementation authorization issued exclusively by the CTO Technical Authority.
+   - *Exit Gate:* Dedicated authorization commit recorded in Git history; Control M machine verification satisfied; canonical scope hash locked.
 5. **IMPLEMENTED:** Product source code modified strictly within the authorized scope manifest.
-   - *Exit Gate:* Clean compilation; no scope leakage; implementation commit created.
-6. **TESTED_AND_VERIFIED:** Full automated test suite executed; 100% pass on negative path tests; independent verification report generated and committed.
+   - *Exit Gate:* Clean compilation; zero scope leakage; implementation commit created.
+6. **TESTED_AND_VERIFIED:** Full automated test suite executed; 100% pass on negative path tests; independent verification report generated and committed by non-implementing verifier.
    - *Exit Gate:* Verification commit created; all TSI-001, ECC-001, SSV-001 assertions satisfied.
 7. **PRODUCTION_VERIFIED (or STAGING_VERIFIED):** Runtime deployment confirmed on target environment; smoke tests pass; telemetry validated.
    - *Exit Gate:* Deployment confirmation; zero 5xx errors in telemetry.
-8. **ACCEPTED:** Formal CTO / User acceptance granted based on independent evidence review.
-   - *Exit Gate:* Formal acceptance directive issued; ACCEPTANCE_COMMIT recorded.
+8. **ACCEPTED:** Formal acceptance granted exclusively by the CTO Technical Authority based on independent evidence review under Rule IV-001.
+   - *Exit Gate:* Formal acceptance directive issued by CTO; ACCEPTANCE_COMMIT recorded.
 9. **COMPLETE:** All continuity registers updated; historical baseline closed and immutable; next job transition cleared.
    - *Exit Gate:* Closure commit recorded; working tree clean; local HEAD == origin/master.
+
+### 4.4 Prohibited Lifecycle Transitions
+The following transitions are strictly forbidden and will be rejected fail-closed:
+- `DEFINED -> IMPLEMENTED` (Bypassing Planning and Authorization)
+- `PLANNED -> IMPLEMENTED` (Bypassing Authorization; the W008 breach)
+- `AUTHORIZED -> ACCEPTED` (Bypassing Implementation and Verification)
+- `IMPLEMENTED -> ACCEPTED` (Bypassing Independent Verification; Rule IV-001 violation)
+- `TESTED_AND_VERIFIED -> COMPLETE` (Bypassing CTO Acceptance)
+- Implementation agent attempting self-transition to `ACCEPTED` or `COMPLETE` (Rule IV-001 violation)
 
 ---
 
@@ -209,7 +233,7 @@ All architectural, structural, and governance choices must be permanently memori
 - **Decision ID:** `DEC-XXX` (monotonically increasing integer).
 - **Title:** Succinct, unambiguous name of the decision.
 - **Date:** ISO 8601 UTC date.
-- **Author / Authority:** Proposer and approving authority (CTO).
+- **Author / Authority:** Proposer and approving authority (CTO Technical Authority).
 - **Context & Problem Statement:** Why this decision was required.
 - **Alternatives Considered:** Technical options evaluated and rejected, with explicit rationale.
 - **Decision:** Exact binding policy, architectural choice, or governance rule adopted.
@@ -223,9 +247,10 @@ All architectural, structural, and governance choices must be permanently memori
 Autonomous AI engineering agents operate under strict constitutional boundaries:
 
 1. **No Implied Authority:** An AI agent possesses zero authority to approve plans, authorize implementations, waive governance requirements, or declare jobs accepted. All authorization and acceptance derives exclusively from explicit human CTO directives.
-2. **Strict Product Freeze by Default:** Unless an explicit implementation authorization commit exists for the active job, product code is strictly read-only.
+2. **Strict Product Freeze by Default:** Unless an explicit, machine-verified implementation authorization commit exists for the active job under Control M, product code is strictly read-only.
 3. **No Optimization for Completion:** When an agent discovers an ambiguity, inconsistency, missing requirement, or test failure, it must STOP and report the ground truth. It is strictly forbidden to silently patch around the problem, invent mock fallbacks, or declare provisional success.
 4. **Mandatory Fail-Closed Behavior:** If any automated governance test fails, the agent must treat the environment as compromised or out-of-sync and halt execution.
+5. **Separation of Implementing and Verifying Roles (Rule IV-001):** The agent or session implementing product code cannot certify final acceptance. Final technical acceptance is reserved exclusively for the CTO Technical Authority.
 
 ---
 
@@ -267,7 +292,7 @@ The twelve controls codified in Section 3 are indexed for automated verification
 | **CR-04** | Test Semantic Integrity | Guarantee meaningful tests; prohibit pre-implementation PASS. | Pre-auth report verification gates; negative test suites |
 | **CR-05** | Error Classification & Contract | Canonical `ApiErrorEnvelope` and PostgREST error handling. | `sendApiError` assertions in route unit tests |
 | **CR-06** | Runtime & Environment Isolation | Prevent cross-environment pollution and credential fallback. | Environment config audit; credential separation tests |
-| **CR-07** | Automated Continuous Verification | Continuously execute governance tests in CI and pre-commit. | Automated test runners (`governance-consistency`) |
+| **CR-07** | Automated Continuous Verification | Continuously execute governance tests in CI and pre-commit. | Automated test runners (`governance-v16.test.mjs`) |
 | **CR-08** | Storage & State Resilience | Distinct taxonomy for schema vs data recovery; true SLAs. | DR drill suites (`scripts/run-w005-r1a-drills.mjs`) |
 | **CR-09** | Unambiguous Scope Boundary | Prevent unauthorized scope expansion; verify disjointness. | Canonical scope hash verification; file manifests |
 | **CR-10** | Immutable Audit Lineage | Ensure immutable, commit-bound evidence artifacts. | `scripts/check-repo-evidence-integrity.mjs` |
@@ -281,7 +306,7 @@ The twelve controls codified in Section 3 are indexed for automated verification
 | Existing Rule / Protocol Document | Impact of Amendment v1.6 | Action Required |
 |---|---|---|
 | **AGENT_EXECUTION_PROTOCOL.md** | Augmented. Formalizes 9-stage lifecycle; integrates 12 control domains; references Amendment v1.6. | Reading order updated; core invariants preserved and strengthened. |
-| **AMENDMENT_v1.2.md (Rule IV-001)** | Preserved. Rule IV-001 remains in full operational effect. | None. Byte-for-byte immutable. |
+| **AMENDMENT_v1.2.md (Rule IV-001)** | Preserved. Rule IV-001 remains in full operational effect. Implementing agent != final acceptance authority. | None. Byte-for-byte immutable. |
 | **AMENDMENT_v1.3.md** | Preserved. Continuous verification and branch integrity rules remain in effect. | None. Byte-for-byte immutable. |
 | **AMENDMENT_v1.4.md** | Preserved. Multi-layer evidence verification and commit freshness rules remain in effect. | None. Byte-for-byte immutable. |
 | **AMENDMENT_v1.5.md** | Preserved. Planning baseline remains in effect; parent hash locked. | None. Byte-for-byte immutable (SHA-256: `8b3505eee...`). |
@@ -294,32 +319,36 @@ The twelve controls codified in Section 3 are indexed for automated verification
 
 ## 12. Governance Test Plan
 
-To ensure machine-verifiability of Amendment v1.6, the following automated test assertions are integrated into `tests/governance-consistency.test.mjs` and `tests/governance-v16.test.mjs`:
+To ensure machine-verifiability of Amendment v1.6, the following automated test assertions are executed across `tests/governance-consistency.test.mjs` and dedicated suite `tests/governance-v16.test.mjs`:
 
-1. **Existence and Integrity of AMENDMENT_v1.6.md:**
+1. **Existence and Structural Integrity (Check 10 of `governance-consistency.test.mjs`):**
    - Verify `AMENDMENT_v1.6.md` exists in repository root.
    - Verify title matches `AGENT EXECUTION PROTOCOL — AMENDMENT v1.6`.
    - Verify all 12 control domains (GTR-001 through STL-001) are documented.
    - Verify the 9-stage lifecycle state machine is documented.
-2. **Immutable Parent Provenance:**
+2. **Dedicated Semantic Governance Suite (`tests/governance-v16.test.mjs`):**
+   - Negative-path proof that UNKNOWN cannot be treated as PASS.
+   - Negative-path proof that unexecuted tests cannot be represented as PASS.
+   - Negative-path proof that Control M rejects missing/mismatched authorization tuple coordinates.
+   - Negative-path proof that unauthorized implementation triggers governance breach.
+   - Negative-path proof that scope leakage triggers rejection.
+   - Negative-path proof that evidence with mismatched Git commit, corrupted checksum, or missing environment identity fails validation.
+   - Rule IV-001 preservation and CTO-only technical authority validation.
+   - 9-stage lifecycle transition validation and prohibited skip rejections.
+   - Clean working tree and remote synchronization assertion.
+3. **Immutable Parent Provenance:**
    - Re-verify byte-for-byte SHA-256 hash of `AMENDMENT_v1.5.md` (`8b3505eee995adebd92ba2139173f0a0ab68cdcd0ed6f19f10cdcab3c7a2bfe2`).
    - Re-verify ratification commit `795b9af`.
-3. **Control Register Completeness:**
-   - Verify CR-01 through CR-12 are fully articulated with objective and verification mechanisms.
-4. **Clean Working Tree & Remote Synchronization:**
-   - Fail-closed assertion that `git status --porcelain` is empty and local HEAD matches `origin/master`.
-5. **Control M Fail-Closed Enforcement:**
-   - Assert implementation authorization requires valid authorization commit in history.
 
 ---
 
 ## 13. Migration & Adoption Plan
 
-1. **Submission for CTO Review:** Amendment v1.6 is submitted as `IMPLEMENTED / TESTED / VERIFIED / SUBMITTED FOR CTO RATIFICATION`.
+1. **Submission for CTO Review:** Amendment v1.6 is submitted as `IMPLEMENTED / TESTED / VERIFIED / RESUBMITTED FOR CTO RATIFICATION`.
 2. **CTO Ratification:** The CTO reviews the amendment and verification evidence, and issues a formal ratification directive.
 3. **Active Authority Transition:** Upon ratification:
    - `EXECUTION_STATE.md` will be updated to record Amendment v1.6 as active operational authority.
-   - A dedicated ratification decision (`DEC-048`) will be logged in `DECISION_LOG.md`.
+   - A dedicated ratification decision (`DEC-050`) will be logged in `DECISION_LOG.md`.
    - Subsequent jobs (W008-D, W008-E, W009) will be planned and executed under Amendment v1.6 governance.
 4. **Historical Isolation:** Closed jobs W000 through W008-C remain locked and immutable.
 
@@ -327,7 +356,8 @@ To ensure machine-verifiability of Amendment v1.6, the following automated test 
 
 ## 14. Ratification Boundary Declaration
 
-This document represents the complete, fully articulated text of Amendment v1.6. In accordance with Section 7 (AI Authority Boundaries):
+This document represents the complete, fully articulated text of Amendment v1.6. In accordance with Section 7 (AI Authority Boundaries) and Rule IV-001:
 - **THIS DOCUMENT IS NOT SELF-RATIFYING.**
-- **AGENT STATUS:** SUBMITTED FOR CTO RATIFICATION.
+- **AGENT STATUS:** RESUBMITTED FOR CTO RATIFICATION.
+- **TECHNICAL ACCEPTANCE AUTHORITY:** EXCLUSIVELY CTO TECHNICAL AUTHORITY.
 - **IMPLEMENTATION AUTHORIZATION FOR SUBSEQUENT JOBS:** STRICTLY FROZEN / BLOCKED.

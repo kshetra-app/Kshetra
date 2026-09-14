@@ -270,7 +270,8 @@ assert.ok(decisionContent.includes('DEC-043: W008 CTO REJECTION, GOVERNANCE BREA
 
 console.log('[PASS] Check 9: Machine-Verifiable Implementation Authorization Gate, Five-Coordinate Model, and fail-closed authorization checks verified.');
 
-// 10. Amendment v1.6 Comprehensive Control Architecture & Control Register Verification
+// 10. Amendment v1.6 Structural Architecture & Control Register Verification (STRUCTURAL ONLY)
+// Note: Check 10 proves structural text presence. Full semantic enforcement is proven by tests/governance-v16.test.mjs.
 const requiredControls = [
   'GTR-001', 'SCI-001', 'SSV-001', 'TSI-001',
   'ECC-001', 'RDB-001', 'ACB-001', 'SDB-001',
@@ -299,9 +300,23 @@ for (const state of requiredLifecycleStates) {
 }
 
 assert.ok(amendment16Content.includes('THIS DOCUMENT IS NOT SELF-RATIFYING'), 'AMENDMENT_v1.6.md must declare non-self-ratifying status');
-assert.ok(amendment16Content.includes('SUBMITTED FOR CTO RATIFICATION'), 'AMENDMENT_v1.6.md must declare SUBMITTED FOR CTO RATIFICATION');
-console.log('[PASS] Check 10: AMENDMENT_v1.6.md control architecture (12 domains, CR-01..CR-12, 9-stage lifecycle, non-self-ratifying boundary) verified.');
+assert.ok(
+  amendment16Content.includes('SUBMITTED FOR CTO RATIFICATION') || amendment16Content.includes('RESUBMITTED FOR CTO RATIFICATION'),
+  'AMENDMENT_v1.6.md must declare SUBMITTED / RESUBMITTED FOR CTO RATIFICATION'
+);
+console.log('[PASS] Check 10 (STRUCTURAL): AMENDMENT_v1.6.md structural control architecture (12 domains, CR-01..CR-12, 9-stage lifecycle, non-self-ratifying boundary) verified.');
+
+// 11. Invocation of Dedicated Semantic v1.6 Governance Suite (tests/governance-v16.test.mjs)
+assert.ok(fs.existsSync('tests/governance-v16.test.mjs'), 'tests/governance-v16.test.mjs must exist in repository');
+console.log('Invoking dedicated semantic v1.6 test suite (tests/governance-v16.test.mjs)...');
+try {
+  const v16Output = execSync('node tests/governance-v16.test.mjs', { encoding: 'utf8' });
+  console.log(v16Output);
+  console.log('[PASS] Check 11 (SEMANTIC): Dedicated v1.6 semantic governance suite (tests/governance-v16.test.mjs) passed 100%.');
+} catch (err) {
+  assert.fail(`tests/governance-v16.test.mjs execution failed: ${err.message}\nStdout/Stderr:\n${err.stdout}\n${err.stderr}`);
+}
 
 console.log('\n===============================================================');
-console.log('   ALL GOVERNANCE CONSISTENCY CHECKS PASSED (INCLUDING v1.6)!  ');
+console.log('   ALL GOVERNANCE CONSISTENCY CHECKS PASSED (STRUCTURAL + v1.6 SEMANTIC)!  ');
 console.log('===============================================================\n');
