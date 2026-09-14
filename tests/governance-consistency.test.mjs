@@ -19,7 +19,14 @@ assert.ok(fs.existsSync('AMENDMENT_v1.5-A.md'), 'AMENDMENT_v1.5-A.md must exist 
 const amendment15AContent = fs.readFileSync('AMENDMENT_v1.5-A.md', 'utf8');
 assert.ok(amendment15AContent.includes('AGENT EXECUTION GOVERNANCE AMENDMENT v1.5-A'), 'Amendment v1.5-A title valid');
 assert.ok(amendment15AContent.includes('Strengthening the Mandatory Pre-Implementation Planning & Direction-Review Gate'), 'Amendment v1.5-A subtitle valid');
-console.log('[PASS] Check 1: AMENDMENT_v1.4.md, AMENDMENT_v1.5.md, and AMENDMENT_v1.5-A.md exist with valid titles.');
+
+assert.ok(fs.existsSync('AMENDMENT_v1.6.md'), 'AMENDMENT_v1.6.md must exist in repository root');
+const amendment16Content = fs.readFileSync('AMENDMENT_v1.6.md', 'utf8');
+assert.ok(amendment16Content.includes('AGENT EXECUTION PROTOCOL — AMENDMENT v1.6'), 'Amendment v1.6 title valid');
+assert.ok(amendment16Content.includes('Governance Evolution After W000–W008-C'), 'Amendment v1.6 subtitle valid');
+assert.ok(amendment16Content.includes('Optimize for true reports, not green reports'), 'Amendment v1.6 prime axiom valid');
+assert.ok(amendment16Content.includes('Nine-Stage Job Lifecycle State Machine'), 'Amendment v1.6 9-stage lifecycle valid');
+console.log('[PASS] Check 1: AMENDMENT_v1.4.md, AMENDMENT_v1.5.md, AMENDMENT_v1.5-A.md, and AMENDMENT_v1.6.md exist with valid titles.');
 
 // 2. Parent Immutability Provenance Check
 const EXPECTED_V15_HASH = '8b3505eee995adebd92ba2139173f0a0ab68cdcd0ed6f19f10cdcab3c7a2bfe2';
@@ -263,6 +270,38 @@ assert.ok(decisionContent.includes('DEC-043: W008 CTO REJECTION, GOVERNANCE BREA
 
 console.log('[PASS] Check 9: Machine-Verifiable Implementation Authorization Gate, Five-Coordinate Model, and fail-closed authorization checks verified.');
 
+// 10. Amendment v1.6 Comprehensive Control Architecture & Control Register Verification
+const requiredControls = [
+  'GTR-001', 'SCI-001', 'SSV-001', 'TSI-001',
+  'ECC-001', 'RDB-001', 'ACB-001', 'SDB-001',
+  'USI-001', 'ISA-001', 'GAC-001', 'STL-001'
+];
+for (const ctrl of requiredControls) {
+  assert.ok(amendment16Content.includes(ctrl), `AMENDMENT_v1.6.md must codify control domain: ${ctrl}`);
+}
+
+const requiredControlRegisters = [
+  'CR-01', 'CR-02', 'CR-03', 'CR-04',
+  'CR-05', 'CR-06', 'CR-07', 'CR-08',
+  'CR-09', 'CR-10', 'CR-11', 'CR-12'
+];
+for (const cr of requiredControlRegisters) {
+  assert.ok(amendment16Content.includes(cr), `AMENDMENT_v1.6.md must include control register: ${cr}`);
+}
+
+const requiredLifecycleStates = [
+  '1. DEFINED', '2. PLANNED', '3. PLAN_REVIEWED', '4. AUTHORIZED',
+  '5. IMPLEMENTED', '6. TESTED_AND_VERIFIED', '7. PRODUCTION_VERIFIED',
+  '8. ACCEPTED', '9. COMPLETE'
+];
+for (const state of requiredLifecycleStates) {
+  assert.ok(amendment16Content.includes(state), `AMENDMENT_v1.6.md must define lifecycle state: ${state}`);
+}
+
+assert.ok(amendment16Content.includes('THIS DOCUMENT IS NOT SELF-RATIFYING'), 'AMENDMENT_v1.6.md must declare non-self-ratifying status');
+assert.ok(amendment16Content.includes('SUBMITTED FOR CTO RATIFICATION'), 'AMENDMENT_v1.6.md must declare SUBMITTED FOR CTO RATIFICATION');
+console.log('[PASS] Check 10: AMENDMENT_v1.6.md control architecture (12 domains, CR-01..CR-12, 9-stage lifecycle, non-self-ratifying boundary) verified.');
+
 console.log('\n===============================================================');
-console.log('   ALL AMENDMENT v1.5-A GOVERNANCE CONSISTENCY CHECKS PASSED!  ');
+console.log('   ALL GOVERNANCE CONSISTENCY CHECKS PASSED (INCLUDING v1.6)!  ');
 console.log('===============================================================\n');
