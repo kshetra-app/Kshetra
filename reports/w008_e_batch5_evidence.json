@@ -1,0 +1,134 @@
+{
+  "governance": {
+    "job": "W008-E",
+    "batch": 5,
+    "title": "High-Risk Mutations / Transactions / Management",
+    "status": "IMPLEMENTED_AND_VERIFIED",
+    "ctoAcceptance": "PENDING",
+    "productionRuntime": "UNKNOWN / NOT VERIFIED",
+    "baselineCommit": "1d58a3ed157215f15a792312b3aec7854ae4f7d4",
+    "implementationCommit": "f17dde9dac3332263d5bb4bcc8dc45253d18f2c5",
+    "parentCommit": "1d58a3ed157215f15a792312b3aec7854ae4f7d4",
+    "branch": "master",
+    "remote": "origin/master",
+    "cleanWorkingTree": true
+  },
+  "fileProvenance": {
+    "targetFiles": [
+      {
+        "file": "apps/api/src/routes/manage.ts",
+        "preflightSha256": "4b7b518296a84eb815ca85ec6da558778f773426e2ef3d91cfcb215ff51a44e5",
+        "postImplementationSha256": "27cd5ce370764feef09d4112cdbc633515bcf2769c820a949e127512d03c51c5",
+        "candidateRoutes": 1
+      },
+      {
+        "file": "apps/api/src/routes/pages.ts",
+        "preflightSha256": "c49397636e2f1e6fbe5fa4cfb9cb480e64177d853fa7c6717fa0dbe26715fbc3",
+        "postImplementationSha256": "5cfeb2fc0d4bd439ea90d0f79bf7a27b4aef2b014b00cf7f7796e4e9e88c11bc",
+        "candidateRoutes": 3
+      },
+      {
+        "file": "apps/api/src/routes/politicalAds.ts",
+        "preflightSha256": "3cb40db0a4a8da928db64b1f63ba3172e27b4fae0a2933bb97096d29d3cf4cb9",
+        "postImplementationSha256": "580b01509156b6b3a07499c4c8c8494668941fb4f9744f06197c40212326c9e7",
+        "candidateRoutes": 6
+      },
+      {
+        "file": "apps/api/src/routes/dm.ts",
+        "preflightSha256": "fa0daae6f108d447d6387071db197d156faeb7a419fc6384a515865a71a9386d",
+        "postImplementationSha256": "378ac8a0dbb16fb1d39c3d0823258b9b8e92894497a1b934afbaefb53e2bea87",
+        "candidateRoutes": 6
+      },
+      {
+        "file": "apps/api/src/routes/campaign.ts",
+        "preflightSha256": "4b68bb9ee27438bf214d025170d10b7db0a2d59ca1eeff38841a1eb40a33118d",
+        "postImplementationSha256": "7c4eff9a40442fd8aa695e804eb196dcd31bb44f2cdf5ff81011c8692356d033",
+        "candidateRoutes": 16
+      }
+    ],
+    "totalCandidateRoutes": 32
+  },
+  "candidateRoutesInventory": [
+    { "id": 1, "file": "manage.ts", "method": "GET", "path": "/manage", "auth": "ROLE_GATED_SHELL", "schema": "NONE (HTML)" },
+    { "id": 2, "file": "pages.ts", "method": "GET", "path": "/api/v1/pages/details/:pageId", "auth": "PUBLIC", "schema": "getPageDetailsSchema" },
+    { "id": 3, "file": "pages.ts", "method": "POST", "path": "/api/v1/pages/:pageId/pro/order", "auth": "PUBLIC", "schema": "proOrderSchema" },
+    { "id": 4, "file": "pages.ts", "method": "POST", "path": "/api/v1/pages/:pageId/pro/verify", "auth": "PUBLIC", "schema": "proVerifySchema" },
+    { "id": 5, "file": "politicalAds.ts", "method": "POST", "path": "/api/v1/pages/:pageId/political-ads", "auth": "OWNER_OR_ADMIN", "schema": "submitPoliticalAdSchema" },
+    { "id": 6, "file": "politicalAds.ts", "method": "GET", "path": "/api/v1/admin/political-ads/review-queue", "auth": "ADMIN_OR_MODERATOR", "schema": "NONE" },
+    { "id": 7, "file": "politicalAds.ts", "method": "POST", "path": "/api/v1/admin/political-ads/:adId/certify", "auth": "ADMIN_OR_MODERATOR", "schema": "certifyPoliticalAdSchema" },
+    { "id": 8, "file": "politicalAds.ts", "method": "GET", "path": "/api/v1/political-ads/active", "auth": "PUBLIC", "schema": "activeAdsQuerySchema" },
+    { "id": 9, "file": "politicalAds.ts", "method": "GET", "path": "/api/v1/political-ads/library", "auth": "PUBLIC", "schema": "libraryAdsQuerySchema" },
+    { "id": 10, "file": "politicalAds.ts", "method": "GET", "path": "/ad-library", "auth": "PUBLIC", "schema": "NONE (HTML)" },
+    { "id": 11, "file": "dm.ts", "method": "GET", "path": "/api/v1/dm/unread-count", "auth": "AUTHENTICATED", "schema": "NONE" },
+    { "id": 12, "file": "dm.ts", "method": "POST", "path": "/api/v1/dm/conversations", "auth": "AUTHENTICATED", "schema": "createConversationSchema" },
+    { "id": 13, "file": "dm.ts", "method": "POST", "path": "/api/v1/dm/conversations/:id/messages", "auth": "PARTICIPANT", "schema": "sendMessageSchema" },
+    { "id": 14, "file": "dm.ts", "method": "POST", "path": "/api/v1/dm/conversations/:id/accept", "auth": "PARTICIPANT", "schema": "paramsOnly" },
+    { "id": 15, "file": "dm.ts", "method": "POST", "path": "/api/v1/dm/conversations/:id/decline", "auth": "PARTICIPANT", "schema": "paramsOnly" },
+    { "id": 16, "file": "dm.ts", "method": "POST", "path": "/api/v1/dm/block-report", "auth": "AUTHENTICATED", "schema": "blockReportSchema" },
+    { "id": 17, "file": "campaign.ts", "method": "GET", "path": "/api/v1/campaign/pricing", "auth": "PUBLIC", "schema": "NONE" },
+    { "id": 18, "file": "campaign.ts", "method": "PATCH", "path": "/api/v1/campaign/pricing", "auth": "ADMIN_ONLY", "schema": "pricingPatchSchema" },
+    { "id": 19, "file": "campaign.ts", "method": "GET", "path": "/api/v1/campaign/users/check-kshetra", "auth": "PUBLIC", "schema": "checkKshetraQuerySchema" },
+    { "id": 20, "file": "campaign.ts", "method": "GET", "path": "/api/v1/campaign/campaigns", "auth": "PUBLIC", "schema": "campaignsQuerySchema" },
+    { "id": 21, "file": "campaign.ts", "method": "GET", "path": "/api/v1/campaign/booths", "auth": "PUBLIC", "schema": "boothsQuerySchema" },
+    { "id": 22, "file": "campaign.ts", "method": "PATCH", "path": "/api/v1/campaign/booths/:id", "auth": "PUBLIC", "schema": "boothPatchSchema" },
+    { "id": 23, "file": "campaign.ts", "method": "GET", "path": "/api/v1/campaign/volunteers", "auth": "PUBLIC", "schema": "volunteersQuerySchema" },
+    { "id": 24, "file": "campaign.ts", "method": "POST", "path": "/api/v1/campaign/volunteers", "auth": "PUBLIC", "schema": "volunteerCreateSchema" },
+    { "id": 25, "file": "campaign.ts", "method": "GET", "path": "/api/v1/campaign/wallet", "auth": "PUBLIC", "schema": "walletQuerySchema" },
+    { "id": 26, "file": "campaign.ts", "method": "GET", "path": "/api/v1/campaign/wallet/transactions", "auth": "PUBLIC", "schema": "walletQuerySchema" },
+    { "id": 27, "file": "campaign.ts", "method": "POST", "path": "/api/v1/campaign/wallet/recharge/order", "auth": "PUBLIC", "schema": "rechargeOrderSchema" },
+    { "id": 28, "file": "campaign.ts", "method": "POST", "path": "/api/v1/campaign/wallet/recharge/verify", "auth": "PUBLIC", "schema": "rechargeVerifySchema" },
+    { "id": 29, "file": "campaign.ts", "method": "GET", "path": "/api/v1/campaign/obd/trai-status", "auth": "PUBLIC", "schema": "NONE" },
+    { "id": 30, "file": "campaign.ts", "method": "GET", "path": "/api/v1/campaign/obd/broadcasts", "auth": "PUBLIC", "schema": "walletQuerySchema" },
+    { "id": 31, "file": "campaign.ts", "method": "POST", "path": "/api/v1/campaign/obd/dispatch", "auth": "PUBLIC", "schema": "obdDispatchSchema" },
+    { "id": 32, "file": "campaign.ts", "method": "POST", "path": "/api/v1/webhooks/voice/:provider", "auth": "WEBHOOK", "schema": "webhookVoiceSchema" }
+  ],
+  "verificationResults": {
+    "typescriptCompilation": {
+      "command": "npm run build --prefix apps/api",
+      "exitCode": 0,
+      "verdict": "PASS"
+    },
+    "batch5ComprehensiveSuite": {
+      "command": "npx --prefix apps/api tsx scratch/verify_batch5_comprehensive.mjs",
+      "totalTests": 40,
+      "passed": 40,
+      "failed": 0,
+      "verdict": "PASS"
+    },
+    "tickets0405Suite": {
+      "command": "npm test --prefix apps/api -- src/__tests__/tickets-04-05.test.ts",
+      "totalTests": 7,
+      "passed": 7,
+      "failed": 0,
+      "verdict": "PASS"
+    },
+    "politicalAdsSuite": {
+      "command": "npm test --prefix apps/api -- src/__tests__/political-ads.test.ts",
+      "totalTests": 9,
+      "passed": 9,
+      "failed": 0,
+      "verdict": "PASS"
+    },
+    "dmRateLimitsSuite": {
+      "command": "npm test --prefix apps/api -- src/__tests__/dm-rate-limits.test.ts",
+      "totalTests": 7,
+      "passed": 7,
+      "failed": 0,
+      "verdict": "PASS"
+    },
+    "canonicalContractsSuite": {
+      "command": "npm test --prefix apps/api -- src/__tests__/contracts.test.ts",
+      "totalTests": 34,
+      "passed": 34,
+      "failed": 0,
+      "verdict": "PASS"
+    },
+    "contractDriftAudit": {
+      "command": "node scripts/check-api-contract-drift.mjs",
+      "registeredRoutes": 138,
+      "matchedContracts": 9,
+      "totalAudited": 9,
+      "verdict": "PASS"
+    }
+  }
+}
