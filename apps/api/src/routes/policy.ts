@@ -1,4 +1,5 @@
 import type { FastifyPluginAsync } from 'fastify';
+import { sendApiError } from '../lib/replyHelper';
 
 /**
  * Grievance Officer & Content Policy Routes (Ticket 0.5)
@@ -216,22 +217,62 @@ export const policyRoutes: FastifyPluginAsync = async (app) => {
    * POST /api/v1/grievances/intake
    * Legal & community grievance complaint intake
    */
+  const grievanceIntakeSchema = {
+    body: {
+      type: 'object',
+      required: ['complainantName', 'email', 'contentUrl', 'description'],
+      properties: {
+        complainantName: { type: 'string', minLength: 1, maxLength: 200 },
+        email: { type: 'string', format: 'email', minLength: 5, maxLength: 255 },
+        phone: { type: 'string', maxLength: 30 },
+        category: {
+          type: 'string',
+          enum: ['copyright', 'defamation', 'harassment', 'misinformation', 'hate_speech', 'impersonation', 'other'],
+        },
+        contentUrl: { type: 'string', minLength: 1, maxLength: 2000 },
+        description: { type: 'string', minLength: 1, maxLength: 10000 },
+      },
+    },
+    response: {
+      200: {
+        type: 'object',
+        properties: {
+          success: { type: 'boolean' },
+          ticketNumber: { type: 'string' },
+          message: { type: 'string' },
+          estimatedResolutionDays: { type: 'integer' },
+          grievanceOfficer: {
+            type: 'object',
+            properties: {
+              name: { type: 'string' },
+              email: { type: 'string' },
+              title: { type: 'string' },
+            },
+            required: ['name', 'email', 'title'],
+          },
+        },
+        required: ['success', 'ticketNumber', 'message', 'estimatedResolutionDays', 'grievanceOfficer'],
+      },
+    },
+  };
+
   app.post<{
     Body: {
       complainantName: string;
       email: string;
       phone?: string;
-      category: 'copyright' | 'defamation' | 'harassment' | 'misinformation' | 'hate_speech' | 'impersonation' | 'other';
+      category?: 'copyright' | 'defamation' | 'harassment' | 'misinformation' | 'hate_speech' | 'impersonation' | 'other';
       contentUrl: string;
       description: string;
     };
-  }>('/api/v1/grievances/intake', async (request, reply) => {
+  }>('/api/v1/grievances/intake', {
+    schema: grievanceIntakeSchema,
+  }, async (request, reply) => {
     const { complainantName, email, phone, category, contentUrl, description } = request.body ?? {};
 
     if (!complainantName || !email || !contentUrl || !description) {
-      return reply.status(400).send({
-        success: false,
-        message: 'complainantName, email, contentUrl, and description are required',
+      return sendApiError(reply, request, 400, 'Bad Request', 'complainantName, email, contentUrl, and description are required', {
+        code: 'FST_ERR_VALIDATION',
       });
     }
 

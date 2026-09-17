@@ -1,5 +1,6 @@
 import type { FastifyInstance } from 'fastify';
 import { getFeed, refreshNews, type FeedFilters } from '../services/news/newsService';
+import { sendApiError } from '../lib/replyHelper';
 
 const newsFeedSchema = {
   querystring: {
@@ -61,6 +62,21 @@ const newsFeedSchema = {
   },
 };
 
+const newsRefreshSchema = {
+  response: {
+    200: {
+      type: 'object',
+      properties: {
+        ok: { type: 'boolean' },
+        generatedAt: { type: 'string' },
+        items: { type: 'integer' },
+        sources: { type: 'integer' },
+      },
+      required: ['ok', 'generatedAt', 'items', 'sources'],
+    },
+  },
+};
+
 /**
  * News aggregation endpoints.
  *
@@ -84,8 +100,15 @@ export async function newsRoutes(app: FastifyInstance) {
     return feed;
   });
 
-  app.post('/api/v1/news/refresh', async () => {
-    const feed = await refreshNews();
-    return { ok: true, generatedAt: feed.generatedAt, items: feed.items.length, sources: feed.sources.length };
+  app.post('/api/v1/news/refresh', { schema: newsRefreshSchema }, async (request, reply) => {
+    try {
+      const feed = await refreshNews();
+      return { ok: true, generatedAt: feed.generatedAt, items: feed.items.length, sources: feed.sources.length };
+    } catch (err: unknown) {
+      const message = err instanceof Error ? err.message : 'Internal news refresh error';
+      return sendApiError(reply, request, 500, 'Internal Server Error', message, {
+        code: 'NEWS_REFRESH_ERROR',
+      });
+    }
   });
 }
