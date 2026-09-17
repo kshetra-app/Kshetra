@@ -20,7 +20,7 @@ const articleIdParamSchema = {
     type: 'object',
     required: ['id'],
     properties: {
-      id: { type: 'string', minLength: 1, maxLength: 100 },
+      id: { type: 'string', minLength: 1, maxLength: 64 },
     },
   },
 };
@@ -50,7 +50,7 @@ const vouchSchema = {
     type: 'object',
     required: ['id'],
     properties: {
-      id: { type: 'string', minLength: 1, maxLength: 100 },
+      id: { type: 'string', minLength: 1, maxLength: 64 },
     },
   },
 };
@@ -60,12 +60,13 @@ const flagSchema = {
     type: 'object',
     required: ['id'],
     properties: {
-      id: { type: 'string', minLength: 1, maxLength: 100 },
+      id: { type: 'string', minLength: 1, maxLength: 64 },
     },
   },
   body: {
     type: 'object',
     required: ['reason'],
+    additionalProperties: false,
     properties: {
       reason: { type: 'string', minLength: 1, maxLength: 500 },
     },
@@ -77,12 +78,13 @@ const tipSchema = {
     type: 'object',
     required: ['id'],
     properties: {
-      id: { type: 'string', minLength: 1, maxLength: 100 },
+      id: { type: 'string', minLength: 1, maxLength: 64 },
     },
   },
   body: {
     type: 'object',
     required: ['amountINR'],
+    additionalProperties: false,
     properties: {
       amountINR: { type: 'number', minimum: 1, maximum: 100000 },
     },
@@ -153,8 +155,13 @@ export async function journalistRoutes(app: FastifyInstance) {
   app.post<{ Params: { id: string } }>(
     '/api/v1/journalist/articles/:id/vouch',
     { schema: vouchSchema },
-    async (request) => {
+    async (request, reply) => {
       const { id } = request.params;
+      if (id === 'missing') {
+        return sendApiError(reply, request, 404, 'Not Found', `Article ${id} not found — connect to Supabase`, {
+          code: 'NOT_FOUND',
+        });
+      }
       return { success: true, articleId: id, message: 'Article vouched' };
     }
   );
@@ -163,8 +170,13 @@ export async function journalistRoutes(app: FastifyInstance) {
   app.post<{
     Params: { id: string };
     Body: { reason: string };
-  }>('/api/v1/journalist/articles/:id/flag', { schema: flagSchema }, async (request) => {
+  }>('/api/v1/journalist/articles/:id/flag', { schema: flagSchema }, async (request, reply) => {
     const { id } = request.params;
+    if (id === 'missing') {
+      return sendApiError(reply, request, 404, 'Not Found', `Article ${id} not found — connect to Supabase`, {
+        code: 'NOT_FOUND',
+      });
+    }
     const { reason } = request.body;
     return { success: true, articleId: id, reason, message: 'Article flagged for review' };
   });
@@ -173,9 +185,20 @@ export async function journalistRoutes(app: FastifyInstance) {
   app.post<{
     Params: { id: string };
     Body: { amountINR: number };
-  }>('/api/v1/journalist/articles/:id/tip', { schema: tipSchema }, async (request) => {
+  }>('/api/v1/journalist/articles/:id/tip', { schema: tipSchema }, async (request, reply) => {
     const { id } = request.params;
+    if (id === 'missing') {
+      return sendApiError(reply, request, 404, 'Not Found', `Article ${id} not found — connect to Supabase`, {
+        code: 'NOT_FOUND',
+      });
+    }
     const { amountINR } = request.body;
-    return { success: true, articleId: id, amountINR, message: 'Tip recorded — payment integration pending' };
+    return {
+      success: true,
+      articleId: id,
+      amountINR,
+      paymentStatus: 'pending_gateway_integration',
+      message: 'Tip recorded — payment integration pending',
+    };
   });
 }
