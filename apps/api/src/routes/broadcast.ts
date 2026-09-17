@@ -3,6 +3,7 @@ import { STATES } from '@kshetra/shared';
 import { TELANGANA_CONSTITUENCIES } from '../../../../data/seed/telangana-constituencies';
 import { AP_CONSTITUENCIES } from '../../../../data/seed/andhra-pradesh-constituencies';
 import { KA_CONSTITUENCIES } from '../../../../data/seed/karnataka-constituencies';
+import { sendApiError } from '../lib/replyHelper';
 
 interface BroadcastConstituency {
   acNo: number;
@@ -63,8 +64,31 @@ function getDetailedConstituencies(stateCode: string): BroadcastConstituency[] {
   }
 }
 
+// ─── AJV SCHEMAS FOR BROADCAST ROUTES ───
+
+const broadcastStateParamsSchema = {
+  params: {
+    type: 'object',
+    required: ['code'],
+    properties: {
+      code: { type: 'string', pattern: '^[A-Z]{2}$' },
+    },
+  },
+};
+
+const broadcastConstituencyParamsSchema = {
+  params: {
+    type: 'object',
+    required: ['code', 'acNo'],
+    properties: {
+      code: { type: 'string', pattern: '^[A-Z]{2}$' },
+      acNo: { type: 'integer', minimum: 1, maximum: 1000 },
+    },
+  },
+};
+
 export async function broadcastRoutes(app: FastifyInstance) {
-  /** GET /api/v1/broadcast/summary */
+  /** 1. GET /api/v1/broadcast/summary — statewide ruling party standings summary */
   app.get('/api/v1/broadcast/summary', async () => {
     const summary: Record<string, number> = {};
     for (const state of Object.values(STATES)) {
@@ -88,66 +112,87 @@ export async function broadcastRoutes(app: FastifyInstance) {
     };
   });
 
-  /** GET /api/v1/broadcast/state/:code */
-  app.get('/api/v1/broadcast/state/:code', async (request, reply) => {
-    const { code } = request.params as { code: string };
-    const stateInfo = STATES[code.toUpperCase()];
+  /** 2. GET /api/v1/broadcast/state/:code — detailed standings & constituencies for a state */
+  app.get<{ Params: { code: string } }>(
+    '/api/v1/broadcast/state/:code',
+    { schema: broadcastStateParamsSchema },
+    async (request, reply) => {
+      const { code } = request.params;
+      const stateInfo = STATES[code.toUpperCase()];
 
-    if (!stateInfo) {
-      return reply.code(404).send({ error: `State ${code} not found` });
-    }
-
-    const constituencies = getDetailedConstituencies(code);
-
-    // Compute standings
-    const partyCounts: Record<string, { won: number; leading: number }> = {};
-    for (const c of constituencies) {
-      const p = c.winnerParty;
-      if (!partyCounts[p]) {
-        partyCounts[p] = { won: 0, leading: 0 };
+      if (!stateInfo) {
+        return sendApiError(reply, request, 404, 'Not Found', `State ${code} not found`, {
+          code: 'NOT_FOUND',
+        });
       }
-      if (c.status === 'WON') {
-        partyCounts[p].won += 1;
-      } else {
-        partyCounts[p].leading += 1;
+
+      const constituencies = getDetailedConstituencies(code);
+
+      // Compute standings
+      const partyCounts: Record<string, { won: number; leading: number }> = {};
+      for (const c of constituencies) {
+        const p = c.winnerParty;
+        if (!partyCounts[p]) {
+          partyCounts[p] = { won: 0, leading: 0 };
+        }
+        if (c.status === 'WON') {
+          partyCounts[p].won += 1;
+        } else {
+          partyCounts[p].leading += 1;
+        }
       }
+
+      const standings = Object.entries(partyCounts)
+        .map(([party, counts]) => ({
+          party,
+          won: counts.won,
+          leading: counts.leading,
+          total: counts.won + counts.leading,
+        }))
+        .sort((a, b) => b.won - a.won);
+
+      return {
+        stateCode: stateInfo.code,
+        stateName: stateInfo.name,
+        totalSeats: stateInfo.assemblySeats,
+        standings,
+        constituencies,
+      };
     }
+  );
 
-    const standings = Object.entries(partyCounts)
-      .map(([party, counts]) => ({
-        party,
-        won: counts.won,
-        leading: counts.leading,
-        total: counts.won + counts.leading,
-      }))
-      .sort((a, b) => b.won - a.won);
+  /** 3. GET /api/v1/broadcast/state/:code/constituency/:acNo — specific assembly constituency in state */
+  app.get<{ Params: { code: string; acNo: number } }>(
+    '/api/v1/broadcast/state/:code/constituency/:acNo',
+    { schema: broadcastConstituencyParamsSchema },
+    async (request, reply) => {
+      const { code, acNo } = request.params;
+      const stateInfo = STATES[code.toUpperCase()];
 
-    return {
-      stateCode: stateInfo.code,
-      stateName: stateInfo.name,
-      totalSeats: stateInfo.assemblySeats,
-      standings,
-      constituencies,
-    };
-  });
+      if (!stateInfo) {
+        return sendApiError(reply, request, 404, 'Not Found', `State ${code} not found`, {
+          code: 'NOT_FOUND',
+        });
+      }
 
-  /** GET /api/v1/broadcast/state/:code/constituency/:acNo */
-  app.get('/api/v1/broadcast/state/:code/constituency/:acNo', async (request, reply) => {
-    const { code, acNo } = request.params as { code: string; acNo: string };
-    const stateInfo = STATES[code.toUpperCase()];
+      const constituencies = getDetailedConstituencies(code);
+      const parsedAcNo = typeof acNo === 'number' ? acNo : parseInt(acNo as any, 10);
+      const constituency = constituencies.find((c) => c.acNo === parsedAcNo);
 
-    if (!stateInfo) {
-      return reply.code(404).send({ error: `State ${code} not found` });
+      if (!constituency) {
+        return sendApiError(
+          reply,
+          request,
+          404,
+          'Not Found',
+          `Constituency #${acNo} not found in state ${code}`,
+          {
+            code: 'NOT_FOUND',
+          }
+        );
+      }
+
+      return constituency;
     }
-
-    const constituencies = getDetailedConstituencies(code);
-    const parsedAcNo = parseInt(acNo, 10);
-    const constituency = constituencies.find((c) => c.acNo === parsedAcNo);
-
-    if (!constituency) {
-      return reply.code(404).send({ error: `Constituency #${acNo} not found in state ${code}` });
-    }
-
-    return constituency;
-  });
+  );
 }
