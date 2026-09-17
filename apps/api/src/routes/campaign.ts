@@ -1,5 +1,6 @@
 import type { FastifyInstance } from 'fastify';
 import { supabase, isSupabaseConfigured } from '../lib/supabase';
+import { sendApiError } from '../lib/replyHelper';
 import {
   getPoliticianWallet,
   createWalletRechargeOrder,
@@ -13,6 +14,215 @@ import {
   isWithinTraiWindow,
   processTelecomWebhook,
 } from '../services/outreach/obdTelecomService';
+
+// Ajv Schemas for Campaign Route Validation
+const pricingPatchSchema = {
+  body: {
+    type: 'object',
+    additionalProperties: false,
+    properties: {
+      voiceObd: { type: 'object' },
+      metaPublishing: { type: 'object' },
+      whatsappOrganic: { type: 'object' },
+      segmentationGuidance: { type: 'object' },
+    },
+  },
+};
+
+const checkKshetraQuerySchema = {
+  querystring: {
+    type: 'object',
+    additionalProperties: false,
+    properties: {
+      phone: { type: 'string', minLength: 10, maxLength: 20 },
+    },
+  },
+};
+
+const campaignsQuerySchema = {
+  querystring: {
+    type: 'object',
+    additionalProperties: false,
+    properties: {
+      status: { type: 'string', enum: ['active', 'paused', 'completed', 'draft'] },
+      politicianId: { type: 'string', minLength: 1, maxLength: 64 },
+      limit: { type: 'integer', minimum: 1, maximum: 100 },
+    },
+  },
+};
+
+const boothsQuerySchema = {
+  querystring: {
+    type: 'object',
+    additionalProperties: false,
+    properties: {
+      campaignId: { type: 'string', minLength: 1, maxLength: 64 },
+      priority: { type: 'string', enum: ['critical', 'high', 'medium', 'low'] },
+    },
+  },
+};
+
+const boothPatchSchema = {
+  params: {
+    type: 'object',
+    required: ['id'],
+    properties: {
+      id: { type: 'string', minLength: 1, maxLength: 64 },
+    },
+  },
+  body: {
+    type: 'object',
+    additionalProperties: false,
+    properties: {
+      priority: { type: 'string', enum: ['critical', 'high', 'medium', 'low'] },
+      status: { type: 'string', enum: ['not_started', 'canvassing', 'ready', 'completed'] },
+      canvassingCompletion: { type: 'number', minimum: 0, maximum: 100 },
+      agentName: { type: 'string', maxLength: 100 },
+      agentPhone: { type: 'string', maxLength: 20 },
+      isKshetraUser: { type: 'boolean' },
+      notes: { type: 'string', maxLength: 1000 },
+      totalVoters: { type: 'integer', minimum: 0 },
+      targetVotes: { type: 'integer', minimum: 0 },
+      supportEstimate: { type: 'number', minimum: 0, maximum: 100 },
+    },
+  },
+};
+
+const volunteersQuerySchema = {
+  querystring: {
+    type: 'object',
+    additionalProperties: false,
+    properties: {
+      campaignId: { type: 'string', minLength: 1, maxLength: 64 },
+      role: { type: 'string', enum: ['booth_agent', 'coordinator', 'canvasser', 'volunteer'] },
+    },
+  },
+};
+
+const volunteerCreateSchema = {
+  body: {
+    type: 'object',
+    required: ['name', 'phone'],
+    additionalProperties: false,
+    properties: {
+      campaignId: { type: 'string', minLength: 1, maxLength: 64 },
+      name: { type: 'string', minLength: 1, maxLength: 100 },
+      phone: { type: 'string', minLength: 10, maxLength: 20 },
+      role: { type: 'string', enum: ['booth_agent', 'coordinator', 'canvasser', 'volunteer'] },
+      assignedBooths: { type: 'array', items: { type: 'string' } },
+      assignedWards: { type: 'array', items: { type: 'integer' } },
+      isKshetraUser: { type: 'boolean' },
+    },
+  },
+};
+
+const walletQuerySchema = {
+  querystring: {
+    type: 'object',
+    additionalProperties: false,
+    properties: {
+      politicianId: { type: 'string', minLength: 1, maxLength: 64 },
+    },
+  },
+};
+
+const rechargeOrderSchema = {
+  body: {
+    type: 'object',
+    additionalProperties: false,
+    properties: {
+      politicianId: { type: 'string', minLength: 1, maxLength: 64 },
+      amountINR: { type: 'number', minimum: 100, maximum: 1000000 },
+    },
+  },
+};
+
+const rechargeVerifySchema = {
+  body: {
+    type: 'object',
+    required: ['amountINR', 'paymentReference'],
+    additionalProperties: false,
+    properties: {
+      politicianId: { type: 'string', minLength: 1, maxLength: 64 },
+      amountINR: { type: 'number', minimum: 100, maximum: 1000000 },
+      paymentReference: { type: 'string', minLength: 1, maxLength: 128 },
+    },
+  },
+};
+
+const obdDispatchSchema = {
+  body: {
+    type: 'object',
+    required: ['targetSegment'],
+    additionalProperties: false,
+    properties: {
+      campaignId: { type: 'string', minLength: 1, maxLength: 64 },
+      politicianId: { type: 'string', minLength: 1, maxLength: 64 },
+      audioUrl: { type: 'string', maxLength: 500 },
+      title: { type: 'string', maxLength: 200 },
+      targetSegment: {
+        type: 'object',
+        required: ['voterCount'],
+        additionalProperties: false,
+        properties: {
+          type: { type: 'string' },
+          wardNo: { type: 'integer' },
+          boothNumbers: { type: 'array', items: { type: 'string' } },
+          voterCount: { type: 'integer', minimum: 1, maximum: 500000 },
+        },
+      },
+    },
+  },
+};
+
+const webhookVoiceSchema = {
+  params: {
+    type: 'object',
+    required: ['provider'],
+    properties: {
+      provider: { type: 'string', minLength: 1, maxLength: 64 },
+    },
+  },
+};
+
+/**
+ * Helper: Resolve authenticated user and verify role against real DB record.
+ * Never trusts client-sent roles or permissions.
+ */
+async function resolveAuthUser(request: any): Promise<{ userId: string; role: string } | null> {
+  let userId: string | null = null;
+  const authHeader = request.headers.authorization;
+
+  if (authHeader && authHeader.startsWith('Bearer ')) {
+    const token = authHeader.replace('Bearer ', '').trim();
+    const { data: { user }, error } = await supabase.auth.getUser(token);
+    if (!error && user) {
+      userId = user.id;
+    }
+  }
+
+  if (!userId && process.env.NODE_ENV !== 'production' && (request.headers['x-user-id'] as string)) {
+    userId = request.headers['x-user-id'] as string;
+  }
+
+  if (!userId) return null;
+
+  if (!isSupabaseConfigured) {
+    const testRole = (request.headers['x-user-role'] as string) || (process.env.NODE_ENV === 'test' ? 'citizen' : undefined);
+    return { userId, role: testRole || 'citizen' };
+  }
+
+  const { data: profile } = await supabase
+    .from('user_profiles')
+    .select('role')
+    .eq('user_id', userId)
+    .maybeSingle();
+
+  return {
+    userId,
+    role: profile?.role ?? 'citizen',
+  };
+}
 
 /**
  * Service-specific pricing configuration.
@@ -249,10 +459,22 @@ export async function campaignRoutes(app: FastifyInstance) {
    * PATCH /api/v1/campaign/pricing
    * Admin-only endpoint to update service pricing on the fly.
    */
-  app.patch('/api/v1/campaign/pricing', async (request, reply) => {
+  app.patch('/api/v1/campaign/pricing', { schema: pricingPatchSchema }, async (request, reply) => {
+    const auth = await resolveAuthUser(request);
+    if (!auth) {
+      return sendApiError(reply, request, 401, 'Unauthorized', 'Authentication required', { code: 'UNAUTHORIZED' });
+    }
+    if (auth.role !== 'admin') {
+      return sendApiError(reply, request, 403, 'Forbidden', 'Pricing updates require admin privileges', {
+        code: 'FORBIDDEN',
+      });
+    }
+
     const updates = request.body as Partial<typeof campaignPricing>;
     if (!updates || typeof updates !== 'object') {
-      return reply.code(400).send({ error: 'Invalid pricing update payload' });
+      return sendApiError(reply, request, 400, 'Bad Request', 'Invalid pricing update payload', {
+        code: 'VALIDATION_ERROR',
+      });
     }
 
     campaignPricing = {
@@ -271,12 +493,14 @@ export async function campaignRoutes(app: FastifyInstance) {
    * GET /api/v1/campaign/users/check-kshetra
    * Checks if a phone number belongs to an active, registered Kshetra user.
    */
-  app.get('/api/v1/campaign/users/check-kshetra', async (request) => {
+  app.get('/api/v1/campaign/users/check-kshetra', { schema: checkKshetraQuerySchema }, async (request, reply) => {
     const { phone } = request.query as { phone?: string };
     const cleaned = (phone || '').replace(/\D/g, '').slice(-10);
 
     if (!cleaned) {
-      return { isKshetraUser: false, message: 'Phone number required' };
+      return sendApiError(reply, request, 400, 'Bad Request', 'Valid phone number required', {
+        code: 'VALIDATION_ERROR',
+      });
     }
 
     if (isSupabaseConfigured) {
@@ -311,7 +535,7 @@ export async function campaignRoutes(app: FastifyInstance) {
   });
 
   /** GET /api/v1/campaign/campaigns — list campaigns */
-  app.get('/api/v1/campaign/campaigns', async (request) => {
+  app.get('/api/v1/campaign/campaigns', { schema: campaignsQuerySchema }, async (request) => {
     const { status, politicianId } = request.query as { status?: string; politicianId?: string };
 
     if (isSupabaseConfigured) {
@@ -354,7 +578,7 @@ export async function campaignRoutes(app: FastifyInstance) {
   });
 
   /** GET /api/v1/campaign/booths — booth strategy and in-charge management */
-  app.get('/api/v1/campaign/booths', async (request) => {
+  app.get('/api/v1/campaign/booths', { schema: boothsQuerySchema }, async (request) => {
     const { campaignId, priority } = request.query as { campaignId?: string; priority?: string };
 
     if (isSupabaseConfigured) {
@@ -382,7 +606,7 @@ export async function campaignRoutes(app: FastifyInstance) {
   });
 
   /** PATCH /api/v1/campaign/booths/:id — assign in-charge or update notes */
-  app.patch('/api/v1/campaign/booths/:id', async (request, reply) => {
+  app.patch('/api/v1/campaign/booths/:id', { schema: boothPatchSchema }, async (request, reply) => {
     const { id } = request.params as { id: string };
     const updates = request.body as Record<string, any>;
 
@@ -406,11 +630,11 @@ export async function campaignRoutes(app: FastifyInstance) {
       return { success: true, booth: inMemoryBooths[idx] };
     }
 
-    return reply.code(404).send({ error: 'Booth not found' });
+    return sendApiError(reply, request, 404, 'Not Found', 'Booth not found', { code: 'NOT_FOUND' });
   });
 
   /** GET /api/v1/campaign/volunteers — list ground cadre */
-  app.get('/api/v1/campaign/volunteers', async (request) => {
+  app.get('/api/v1/campaign/volunteers', { schema: volunteersQuerySchema }, async (request) => {
     const { campaignId, role } = request.query as { campaignId?: string; role?: string };
 
     if (isSupabaseConfigured) {
@@ -431,8 +655,14 @@ export async function campaignRoutes(app: FastifyInstance) {
   });
 
   /** POST /api/v1/campaign/volunteers — add new cadre member */
-  app.post('/api/v1/campaign/volunteers', async (request) => {
+  app.post('/api/v1/campaign/volunteers', { schema: volunteerCreateSchema }, async (request, reply) => {
     const body = request.body as Record<string, any>;
+    if (!body.name || !body.phone) {
+      return sendApiError(reply, request, 400, 'Bad Request', 'Name and phone are required', {
+        code: 'VALIDATION_ERROR',
+      });
+    }
+
     const newVol = {
       id: `v-${Date.now().toString(36)}`,
       campaignId: body.campaignId || 'c1',
@@ -455,25 +685,25 @@ export async function campaignRoutes(app: FastifyInstance) {
       } catch {}
     }
 
-    return { success: true, volunteer: newVol, message: 'Cadre member registered successfully' };
+    return reply.status(201).send({ success: true, volunteer: newVol, message: 'Cadre member registered successfully' });
   });
 
   /** GET /api/v1/campaign/wallet — get campaign prepaid balance */
-  app.get('/api/v1/campaign/wallet', async (request) => {
+  app.get('/api/v1/campaign/wallet', { schema: walletQuerySchema }, async (request) => {
     const { politicianId } = request.query as { politicianId?: string };
     const wallet = await getPoliticianWallet(politicianId || 'pp1');
     return { status: 'ok', wallet };
   });
 
   /** GET /api/v1/campaign/wallet/transactions — get wallet transaction history */
-  app.get('/api/v1/campaign/wallet/transactions', async (request) => {
+  app.get('/api/v1/campaign/wallet/transactions', { schema: walletQuerySchema }, async (request) => {
     const { politicianId } = request.query as { politicianId?: string };
     const transactions = await getWalletTransactions(politicianId || 'pp1');
     return { status: 'ok', transactions, total: transactions.length };
   });
 
   /** POST /api/v1/campaign/wallet/recharge/order — create Razorpay / UPI recharge order */
-  app.post('/api/v1/campaign/wallet/recharge/order', async (request, reply) => {
+  app.post('/api/v1/campaign/wallet/recharge/order', { schema: rechargeOrderSchema }, async (request, reply) => {
     const body = request.body as { politicianId?: string; amountINR?: number };
     const amountINR = body.amountINR || 1000;
 
@@ -481,12 +711,14 @@ export async function campaignRoutes(app: FastifyInstance) {
       const order = await createWalletRechargeOrder(body.politicianId || 'pp1', amountINR);
       return { success: true, order };
     } catch (err: any) {
-      return reply.code(400).send({ error: err.message || 'Failed to create order' });
+      return sendApiError(reply, request, 400, 'Bad Request', err.message || 'Failed to create order', {
+        code: 'PAYMENT_ORDER_ERROR',
+      });
     }
   });
 
   /** POST /api/v1/campaign/wallet/recharge/verify — verify payment and credit wallet balance */
-  app.post('/api/v1/campaign/wallet/recharge/verify', async (request, reply) => {
+  app.post('/api/v1/campaign/wallet/recharge/verify', { schema: rechargeVerifySchema }, async (request, reply) => {
     const body = request.body as {
       politicianId?: string;
       amountINR: number;
@@ -494,7 +726,9 @@ export async function campaignRoutes(app: FastifyInstance) {
     };
 
     if (!body.amountINR || !body.paymentReference) {
-      return reply.code(400).send({ error: 'amountINR and paymentReference required' });
+      return sendApiError(reply, request, 400, 'Bad Request', 'amountINR and paymentReference required', {
+        code: 'VALIDATION_ERROR',
+      });
     }
 
     const updatedWallet = await creditWallet(body.politicianId || 'pp1', body.amountINR, body.paymentReference);
@@ -512,14 +746,14 @@ export async function campaignRoutes(app: FastifyInstance) {
   });
 
   /** GET /api/v1/campaign/obd/broadcasts — list past and active voice call broadcasts */
-  app.get('/api/v1/campaign/obd/broadcasts', async (request) => {
+  app.get('/api/v1/campaign/obd/broadcasts', { schema: walletQuerySchema }, async (request) => {
     const { politicianId } = request.query as { politicianId?: string };
     const broadcasts = await getOBDBroadcasts(politicianId || 'pp1');
     return { status: 'ok', broadcasts, total: broadcasts.length };
   });
 
   /** POST /api/v1/campaign/obd/dispatch — check wallet, check TRAI, deduct funds, and dispatch voice broadcast */
-  app.post('/api/v1/campaign/obd/dispatch', async (request, reply) => {
+  app.post('/api/v1/campaign/obd/dispatch', { schema: obdDispatchSchema }, async (request, reply) => {
     const body = request.body as {
       campaignId?: string;
       politicianId?: string;
@@ -531,7 +765,9 @@ export async function campaignRoutes(app: FastifyInstance) {
     const politicianId = body.politicianId || 'pp1';
 
     if (!body.targetSegment || !body.targetSegment.voterCount) {
-      return reply.code(400).send({ error: 'Target segment and voter count required' });
+      return sendApiError(reply, request, 400, 'Bad Request', 'Target segment and voter count required', {
+        code: 'VALIDATION_ERROR',
+      });
     }
 
     const voterCount = body.targetSegment.voterCount;
@@ -549,10 +785,9 @@ export async function campaignRoutes(app: FastifyInstance) {
         `Voice Call: ${body.title || 'Voter Appeal'} (${voterCount.toLocaleString('en-IN')} voters @ ₹${rate.toFixed(2)})`,
       );
     } catch (err: any) {
-      return reply.code(402).send({
-        error: err.message,
-        requiredAmountINR: totalCostINR,
-        insufficientBalance: true,
+      return sendApiError(reply, request, 402, 'Payment Required', err.message, {
+        code: 'INSUFFICIENT_FUNDS',
+        details: [{ path: 'wallet', message: `Required amount: ₹${totalCostINR}` }],
       });
     }
 
@@ -578,7 +813,7 @@ export async function campaignRoutes(app: FastifyInstance) {
   });
 
   /** POST /api/v1/webhooks/voice/:provider — receive real-time telecom delivery status reports */
-  app.post('/api/v1/webhooks/voice/:provider', async (request) => {
+  app.post('/api/v1/webhooks/voice/:provider', { schema: webhookVoiceSchema }, async (request) => {
     const payload = (request.body as Record<string, any>) || {};
     const result = await processTelecomWebhook(payload);
     return { status: 'acknowledged', ...result };

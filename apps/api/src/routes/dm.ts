@@ -1,5 +1,6 @@
 import type { FastifyPluginAsync } from 'fastify';
 import { supabase, isSupabaseConfigured } from '../lib/supabase';
+import { sendApiError } from '../lib/replyHelper';
 
 interface RateLimitBucket {
   hourTimestamp: number;
@@ -7,6 +8,54 @@ interface RateLimitBucket {
   dayTimestamp: number;
   dailyStrangerCount: number;
 }
+
+const conversationIdParamSchema = {
+  type: 'object',
+  required: ['id'],
+  properties: {
+    id: { type: 'string', minLength: 1, maxLength: 64 },
+  },
+};
+
+const createConversationSchema = {
+  body: {
+    type: 'object',
+    required: ['recipientId'],
+    additionalProperties: false,
+    properties: {
+      recipientId: { type: 'string', minLength: 1, maxLength: 64 },
+      initialMessage: { type: 'string', minLength: 1, maxLength: 2000 },
+    },
+  },
+};
+
+const sendMessageSchema = {
+  params: conversationIdParamSchema,
+  body: {
+    type: 'object',
+    additionalProperties: false,
+    properties: {
+      content: { type: 'string', maxLength: 5000 },
+      mediaUrl: { type: 'string', maxLength: 500 },
+      mediaType: { type: 'string', enum: ['image', 'video', 'audio', 'document'] },
+    },
+  },
+};
+
+const blockReportSchema = {
+  body: {
+    type: 'object',
+    required: ['targetUserId'],
+    additionalProperties: false,
+    properties: {
+      targetUserId: { type: 'string', minLength: 1, maxLength: 64 },
+      reason: { type: 'string', maxLength: 500 },
+      description: { type: 'string', maxLength: 1000 },
+      conversationId: { type: 'string', maxLength: 64 },
+      action: { type: 'string', enum: ['block', 'report', 'both'] },
+    },
+  },
+};
 
 // In-memory rate limiting state per user
 const RATE_LIMIT_CACHE = new Map<string, RateLimitBucket>();
@@ -137,7 +186,7 @@ export const dmRoutes: FastifyPluginAsync = async (app) => {
   app.get('/api/v1/dm/unread-count', async (request, reply) => {
     const auth = await resolveAuthUser(request);
     if (!auth) {
-      return reply.status(401).send({ error: 'Authentication required' });
+      return sendApiError(reply, request, 401, 'Unauthorized', 'Authentication required', { code: 'UNAUTHORIZED' });
     }
 
     if (!isSupabaseConfigured) {
@@ -182,15 +231,17 @@ export const dmRoutes: FastifyPluginAsync = async (app) => {
    */
   app.post<{
     Body: { recipientId: string; initialMessage?: string };
-  }>('/api/v1/dm/conversations', async (request, reply) => {
+  }>('/api/v1/dm/conversations', { schema: createConversationSchema }, async (request, reply) => {
     const auth = await resolveAuthUser(request);
     if (!auth) {
-      return reply.status(401).send({ error: 'Authentication required', code: 'UNAUTHORIZED' });
+      return sendApiError(reply, request, 401, 'Unauthorized', 'Authentication required', { code: 'UNAUTHORIZED' });
     }
 
     const { recipientId, initialMessage } = request.body || {};
     if (!recipientId || recipientId === auth.userId) {
-      return reply.status(400).send({ error: 'Valid recipientId is required and cannot be self' });
+      return sendApiError(reply, request, 400, 'Bad Request', 'Valid recipientId is required and cannot be self', {
+        code: 'VALIDATION_ERROR',
+      });
     }
 
     if (!isSupabaseConfigured) {
@@ -216,10 +267,14 @@ export const dmRoutes: FastifyPluginAsync = async (app) => {
       .maybeSingle();
 
     if (isBlocked) {
-      return reply.status(403).send({
-        error: 'Direct messaging is unavailable between these accounts.',
-        code: 'USER_BLOCKED',
-      });
+      return sendApiError(
+        reply,
+        request,
+        403,
+        'Forbidden',
+        'Direct messaging is unavailable between these accounts.',
+        { code: 'USER_BLOCKED' },
+      );
     }
 
     // Order participants deterministically to satisfy UNIQUE constraint
@@ -262,11 +317,14 @@ export const dmRoutes: FastifyPluginAsync = async (app) => {
       if (rateCheck.retryAfterSeconds) {
         reply.header('Retry-After', rateCheck.retryAfterSeconds);
       }
-      return reply.status(429).send({
-        error: rateCheck.error,
-        code: 'RATE_LIMIT_EXCEEDED',
-        retryAfter: rateCheck.retryAfterSeconds,
-      });
+      return sendApiError(
+        reply,
+        request,
+        429,
+        'Too Many Requests',
+        rateCheck.error || 'Rate limit exceeded',
+        { code: 'RATE_LIMIT_EXCEEDED', details: [{ path: 'rate_limit', message: `Retry after ${rateCheck.retryAfterSeconds}s` }] },
+      );
     }
 
     // Status: if recipient follows sender, accepted; otherwise pending (lands in Requests)
@@ -285,7 +343,7 @@ export const dmRoutes: FastifyPluginAsync = async (app) => {
       .single();
 
     if (createErr) {
-      return reply.status(500).send({ error: createErr.message });
+      return sendApiError(reply, request, 500, 'Internal Server Error', createErr.message, { code: 'DATABASE_ERROR' });
     }
 
     // If initial message provided, insert it
@@ -307,17 +365,19 @@ export const dmRoutes: FastifyPluginAsync = async (app) => {
   app.post<{
     Params: { id: string };
     Body: { content: string; mediaUrl?: string; mediaType?: 'image' | 'video' | 'audio' | 'document' };
-  }>('/api/v1/dm/conversations/:id/messages', async (request, reply) => {
+  }>('/api/v1/dm/conversations/:id/messages', { schema: sendMessageSchema }, async (request, reply) => {
     const auth = await resolveAuthUser(request);
     if (!auth) {
-      return reply.status(401).send({ error: 'Authentication required', code: 'UNAUTHORIZED' });
+      return sendApiError(reply, request, 401, 'Unauthorized', 'Authentication required', { code: 'UNAUTHORIZED' });
     }
 
     const conversationId = request.params.id;
     const { content, mediaUrl, mediaType } = request.body || {};
 
     if (!content && !mediaUrl) {
-      return reply.status(400).send({ error: 'Message content or media is required' });
+      return sendApiError(reply, request, 400, 'Bad Request', 'Message content or media is required', {
+        code: 'VALIDATION_ERROR',
+      });
     }
 
     if (!isSupabaseConfigured) {
@@ -344,11 +404,11 @@ export const dmRoutes: FastifyPluginAsync = async (app) => {
       .maybeSingle();
 
     if (convErr || !conv) {
-      return reply.status(404).send({ error: 'Conversation not found' });
+      return sendApiError(reply, request, 404, 'Not Found', 'Conversation not found', { code: 'NOT_FOUND' });
     }
 
     if (conv.participant_one !== auth.userId && conv.participant_two !== auth.userId) {
-      return reply.status(403).send({ error: 'Not a conversation participant' });
+      return sendApiError(reply, request, 403, 'Forbidden', 'Not a conversation participant', { code: 'FORBIDDEN' });
     }
 
     const recipientId = conv.participant_one === auth.userId ? conv.participant_two : conv.participant_one;
@@ -361,7 +421,7 @@ export const dmRoutes: FastifyPluginAsync = async (app) => {
       .maybeSingle();
 
     if (isBlocked) {
-      return reply.status(403).send({ error: 'Cannot message a blocked user', code: 'USER_BLOCKED' });
+      return sendApiError(reply, request, 403, 'Forbidden', 'Cannot message a blocked user', { code: 'USER_BLOCKED' });
     }
 
     // Ticket 3.3: Mutual-accept for unsolicited media
@@ -387,7 +447,7 @@ export const dmRoutes: FastifyPluginAsync = async (app) => {
       .single();
 
     if (msgErr) {
-      return reply.status(500).send({ error: msgErr.message });
+      return sendApiError(reply, request, 500, 'Internal Server Error', msgErr.message, { code: 'DATABASE_ERROR' });
     }
 
     // Ticket 3.6: Notification dispatch treatment
@@ -445,10 +505,10 @@ export const dmRoutes: FastifyPluginAsync = async (app) => {
    */
   app.post<{
     Params: { id: string };
-  }>('/api/v1/dm/conversations/:id/accept', async (request, reply) => {
+  }>('/api/v1/dm/conversations/:id/accept', { schema: { params: conversationIdParamSchema } }, async (request, reply) => {
     const auth = await resolveAuthUser(request);
     if (!auth) {
-      return reply.status(401).send({ error: 'Authentication required' });
+      return sendApiError(reply, request, 401, 'Unauthorized', 'Authentication required', { code: 'UNAUTHORIZED' });
     }
 
     const conversationId = request.params.id;
@@ -464,7 +524,7 @@ export const dmRoutes: FastifyPluginAsync = async (app) => {
       .maybeSingle();
 
     if (!conv || (conv.participant_one !== auth.userId && conv.participant_two !== auth.userId)) {
-      return reply.status(404).send({ error: 'Conversation not found' });
+      return sendApiError(reply, request, 404, 'Not Found', 'Conversation not found', { code: 'NOT_FOUND' });
     }
 
     // Move to accepted and enable media for this participant
@@ -481,7 +541,7 @@ export const dmRoutes: FastifyPluginAsync = async (app) => {
       .eq('id', conversationId);
 
     if (error) {
-      return reply.status(500).send({ error: error.message });
+      return sendApiError(reply, request, 500, 'Internal Server Error', error.message, { code: 'DATABASE_ERROR' });
     }
 
     // Unlock media for messages in this thread
@@ -499,10 +559,10 @@ export const dmRoutes: FastifyPluginAsync = async (app) => {
    */
   app.post<{
     Params: { id: string };
-  }>('/api/v1/dm/conversations/:id/decline', async (request, reply) => {
+  }>('/api/v1/dm/conversations/:id/decline', { schema: { params: conversationIdParamSchema } }, async (request, reply) => {
     const auth = await resolveAuthUser(request);
     if (!auth) {
-      return reply.status(401).send({ error: 'Authentication required' });
+      return sendApiError(reply, request, 401, 'Unauthorized', 'Authentication required', { code: 'UNAUTHORIZED' });
     }
 
     const conversationId = request.params.id;
@@ -518,7 +578,7 @@ export const dmRoutes: FastifyPluginAsync = async (app) => {
       .or(`participant_one.eq.${auth.userId},participant_two.eq.${auth.userId}`);
 
     if (error) {
-      return reply.status(500).send({ error: error.message });
+      return sendApiError(reply, request, 500, 'Internal Server Error', error.message, { code: 'DATABASE_ERROR' });
     }
 
     return reply.send({ success: true, status: 'declined' });
@@ -530,15 +590,17 @@ export const dmRoutes: FastifyPluginAsync = async (app) => {
    */
   app.post<{
     Body: { targetUserId: string; reason?: string; description?: string; conversationId?: string };
-  }>('/api/v1/dm/block-report', async (request, reply) => {
+  }>('/api/v1/dm/block-report', { schema: blockReportSchema }, async (request, reply) => {
     const auth = await resolveAuthUser(request);
     if (!auth) {
-      return reply.status(401).send({ error: 'Authentication required' });
+      return sendApiError(reply, request, 401, 'Unauthorized', 'Authentication required', { code: 'UNAUTHORIZED' });
     }
 
     const { targetUserId, reason = 'harassment', description, conversationId } = request.body || {};
     if (!targetUserId || targetUserId === auth.userId) {
-      return reply.status(400).send({ error: 'Valid targetUserId required' });
+      return sendApiError(reply, request, 400, 'Bad Request', 'Valid targetUserId required and cannot be self', {
+        code: 'VALIDATION_ERROR',
+      });
     }
 
     if (isSupabaseConfigured) {

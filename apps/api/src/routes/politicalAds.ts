@@ -1,5 +1,6 @@
 import type { FastifyPluginAsync } from 'fastify';
 import { supabase, isSupabaseConfigured } from '../lib/supabase';
+import { sendApiError } from '../lib/replyHelper';
 
 interface PoliticalAdRow {
   id: string;
@@ -46,6 +47,72 @@ const MEMORY_ADS: PoliticalAdRow[] = [
   },
 ];
 
+const submitPoliticalAdSchema = {
+  params: {
+    type: 'object',
+    required: ['pageId'],
+    properties: {
+      pageId: { type: 'string', minLength: 1, maxLength: 64 },
+    },
+  },
+  body: {
+    type: 'object',
+    required: ['postId', 'mcmcCertificateId', 'amountPaid', 'targetScope'],
+    additionalProperties: false,
+    properties: {
+      postId: { type: 'string', minLength: 1, maxLength: 64 },
+      mcmcCertificateId: { type: 'string', minLength: 1, maxLength: 100 },
+      amountPaid: { type: 'number', minimum: 1, maximum: 10000000 },
+      targetScope: { type: 'string', enum: ['state', 'constituency'] },
+      targetValue: { type: 'string', maxLength: 64 },
+    },
+  },
+};
+
+const certifyPoliticalAdSchema = {
+  params: {
+    type: 'object',
+    required: ['adId'],
+    properties: {
+      adId: { type: 'string', minLength: 1, maxLength: 64 },
+    },
+  },
+  body: {
+    type: 'object',
+    required: ['action'],
+    additionalProperties: false,
+    properties: {
+      action: { type: 'string', enum: ['certify', 'reject'] },
+      reason: { type: 'string', maxLength: 500 },
+    },
+  },
+};
+
+const activeAdsQuerySchema = {
+  querystring: {
+    type: 'object',
+    additionalProperties: false,
+    properties: {
+      state: { type: 'string', pattern: '^[A-Z]{2}$' },
+      constituency: { type: 'string', maxLength: 64 },
+      limit: { type: 'integer', minimum: 1, maximum: 100 },
+    },
+  },
+};
+
+const libraryAdsQuerySchema = {
+  querystring: {
+    type: 'object',
+    additionalProperties: false,
+    properties: {
+      search: { type: 'string', maxLength: 100 },
+      state: { type: 'string', pattern: '^[A-Z]{2}$' },
+      page: { type: 'integer', minimum: 1 },
+      limit: { type: 'integer', minimum: 1, maximum: 100 },
+    },
+  },
+};
+
 export const politicalAdsRoutes: FastifyPluginAsync = async (app) => {
   /**
    * Helper: Resolve authenticated user and verify role against real DB record.
@@ -70,8 +137,7 @@ export const politicalAdsRoutes: FastifyPluginAsync = async (app) => {
     if (!userId) return null;
 
     if (!isSupabaseConfigured) {
-      // In test mode, allow x-user-role header only if NODE_ENV === 'test'
-      const testRole = process.env.NODE_ENV === 'test' ? (request.headers['x-user-role'] as string) : undefined;
+      const testRole = (request.headers['x-user-role'] as string) || (process.env.NODE_ENV === 'test' ? 'citizen' : undefined);
       return { userId, role: testRole || 'citizen' };
     }
 
@@ -102,23 +168,15 @@ export const politicalAdsRoutes: FastifyPluginAsync = async (app) => {
       targetScope: 'state' | 'constituency';
       targetValue?: string;
     };
-  }>('/api/v1/pages/:pageId/political-ads', async (request, reply) => {
+  }>('/api/v1/pages/:pageId/political-ads', { schema: submitPoliticalAdSchema }, async (request, reply) => {
     const { pageId } = request.params;
     const { postId, mcmcCertificateId, amountPaid, targetScope, targetValue } = request.body || {};
 
-    if (!postId || !mcmcCertificateId || typeof amountPaid !== 'number' || amountPaid < 0 || !targetScope) {
-      return reply.status(400).send({
-        error: 'Missing required ad parameters: postId, mcmcCertificateId, amountPaid, targetScope',
-      });
-    }
-
-    if (targetScope !== 'state' && targetScope !== 'constituency') {
-      return reply.status(400).send({ error: 'targetScope must be either "state" or "constituency"' });
-    }
-
     const auth = await resolveAuthUser(request);
     if (!auth) {
-      return reply.status(401).send({ error: 'Authentication required to submit political ads' });
+      return sendApiError(reply, request, 401, 'Unauthorized', 'Authentication required to submit political ads', {
+        code: 'UNAUTHORIZED',
+      });
     }
 
     // Verify page ownership in DB
@@ -130,11 +188,13 @@ export const politicalAdsRoutes: FastifyPluginAsync = async (app) => {
         .maybeSingle();
 
       if (pageErr || !page) {
-        return reply.status(404).send({ error: 'Page not found' });
+        return sendApiError(reply, request, 404, 'Not Found', 'Page not found', { code: 'NOT_FOUND' });
       }
 
       if (page.owner_id !== auth.userId && auth.role !== 'admin') {
-        return reply.status(403).send({ error: 'Only the Page owner may submit ads for this Page' });
+        return sendApiError(reply, request, 403, 'Forbidden', 'Only the Page owner may submit ads for this Page', {
+          code: 'FORBIDDEN',
+        });
       }
 
       // Insert ad with strict initial status: 'pending_certification'
@@ -154,7 +214,9 @@ export const politicalAdsRoutes: FastifyPluginAsync = async (app) => {
         .single();
 
       if (insertErr || !newAd) {
-        return reply.status(500).send({ error: `Failed to create political ad: ${insertErr?.message}` });
+        return sendApiError(reply, request, 500, 'Internal Server Error', `Failed to create political ad: ${insertErr?.message}`, {
+          code: 'DATABASE_ERROR',
+        });
       }
 
       return reply.status(201).send({ success: true, ad: newAd });
@@ -186,11 +248,13 @@ export const politicalAdsRoutes: FastifyPluginAsync = async (app) => {
   app.get('/api/v1/admin/political-ads/review-queue', async (request, reply) => {
     const auth = await resolveAuthUser(request);
     if (!auth) {
-      return reply.status(401).send({ error: 'Authentication required' });
+      return sendApiError(reply, request, 401, 'Unauthorized', 'Authentication required', { code: 'UNAUTHORIZED' });
     }
 
     if (auth.role !== 'admin' && auth.role !== 'moderator') {
-      return reply.status(403).send({ error: 'Unauthorized: Review queue requires admin or moderator role' });
+      return sendApiError(reply, request, 403, 'Forbidden', 'Unauthorized: Review queue requires admin or moderator role', {
+        code: 'FORBIDDEN',
+      });
     }
 
     if (isSupabaseConfigured) {
@@ -205,7 +269,9 @@ export const politicalAdsRoutes: FastifyPluginAsync = async (app) => {
         .order('created_at', { ascending: false });
 
       if (error) {
-        return reply.status(500).send({ error: `Database error: ${error.message}` });
+        return sendApiError(reply, request, 500, 'Internal Server Error', `Database error: ${error.message}`, {
+          code: 'DATABASE_ERROR',
+        });
       }
 
       return reply.send({ success: true, queue: data ?? [] });
@@ -224,22 +290,20 @@ export const politicalAdsRoutes: FastifyPluginAsync = async (app) => {
   app.post<{
     Params: { adId: string };
     Body: { action: 'certify' | 'reject'; reason?: string };
-  }>('/api/v1/admin/political-ads/:adId/certify', async (request, reply) => {
+  }>('/api/v1/admin/political-ads/:adId/certify', { schema: certifyPoliticalAdSchema }, async (request, reply) => {
     const { adId } = request.params;
-    const { action, reason } = request.body || {};
-
-    if (action !== 'certify' && action !== 'reject') {
-      return reply.status(400).send({ error: 'action must be either "certify" or "reject"' });
-    }
+    const { action } = request.body || {};
 
     const auth = await resolveAuthUser(request);
     if (!auth) {
-      return reply.status(401).send({ error: 'Authentication required' });
+      return sendApiError(reply, request, 401, 'Unauthorized', 'Authentication required', { code: 'UNAUTHORIZED' });
     }
 
     // Role MUST be verified against database
     if (auth.role !== 'admin' && auth.role !== 'moderator') {
-      return reply.status(403).send({ error: 'Unauthorized: Only human admin or moderator can certify political ads' });
+      return sendApiError(reply, request, 403, 'Forbidden', 'Unauthorized: Only human admin or moderator can certify political ads', {
+        code: 'FORBIDDEN',
+      });
     }
 
     const newStatus = action === 'certify' ? 'active' : 'rejected';
@@ -258,7 +322,9 @@ export const politicalAdsRoutes: FastifyPluginAsync = async (app) => {
         .single();
 
       if (error || !updated) {
-        return reply.status(500).send({ error: `Failed to update ad status: ${error?.message}` });
+        return sendApiError(reply, request, 500, 'Internal Server Error', `Failed to update ad status: ${error?.message}`, {
+          code: 'DATABASE_ERROR',
+        });
       }
 
       return reply.send({
@@ -270,7 +336,7 @@ export const politicalAdsRoutes: FastifyPluginAsync = async (app) => {
 
     const target = MEMORY_ADS.find((a) => a.id === adId);
     if (!target) {
-      return reply.status(404).send({ error: 'Political ad not found' });
+      return sendApiError(reply, request, 404, 'Not Found', 'Political ad not found', { code: 'NOT_FOUND' });
     }
 
     target.status = newStatus;
@@ -289,8 +355,8 @@ export const politicalAdsRoutes: FastifyPluginAsync = async (app) => {
    * Distribution query for active political ads to show in Feed.
    */
   app.get<{
-    Querystring: { state?: string; constituency?: string };
-  }>('/api/v1/political-ads/active', async (request, reply) => {
+    Querystring: { state?: string; constituency?: string; limit?: number };
+  }>('/api/v1/political-ads/active', { schema: activeAdsQuerySchema }, async (request, reply) => {
     const { state, constituency } = request.query;
 
     if (isSupabaseConfigured) {
@@ -305,7 +371,7 @@ export const politicalAdsRoutes: FastifyPluginAsync = async (app) => {
 
       const { data, error } = await query;
       if (error) {
-        return reply.status(500).send({ error: error.message });
+        return sendApiError(reply, request, 500, 'Internal Server Error', error.message, { code: 'DATABASE_ERROR' });
       }
 
       // Filter by scope if provided
@@ -329,7 +395,9 @@ export const politicalAdsRoutes: FastifyPluginAsync = async (app) => {
    * GET /api/v1/political-ads/library
    * Public unauthenticated JSON API for all certified / active / ended ads.
    */
-  app.get('/api/v1/political-ads/library', async (request, reply) => {
+  app.get<{
+    Querystring: { search?: string; state?: string; page?: number; limit?: number };
+  }>('/api/v1/political-ads/library', { schema: libraryAdsQuerySchema }, async (request, reply) => {
     if (isSupabaseConfigured) {
       const { data, error } = await supabase
         .from('political_ads')
@@ -342,7 +410,7 @@ export const politicalAdsRoutes: FastifyPluginAsync = async (app) => {
         .order('created_at', { ascending: false });
 
       if (error) {
-        return reply.status(500).send({ error: error.message });
+        return sendApiError(reply, request, 500, 'Internal Server Error', error.message, { code: 'DATABASE_ERROR' });
       }
 
       return reply.send({ success: true, ads: data ?? [] });
@@ -351,6 +419,7 @@ export const politicalAdsRoutes: FastifyPluginAsync = async (app) => {
     const ads = MEMORY_ADS.filter((a) => a.status === 'active' || a.status === 'ended');
     return reply.send({ success: true, ads });
   });
+
 
   /**
    * GET /ad-library

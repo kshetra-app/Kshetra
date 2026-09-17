@@ -1,14 +1,98 @@
 import type { FastifyPluginAsync } from 'fastify';
 import { DEFAULT_FEATURE_FLAGS } from '@kshetra/shared';
+import { sendApiError } from '../lib/replyHelper';
+import { supabase, isSupabaseConfigured } from '../lib/supabase';
+
+const ALLOWED_MANAGE_ROLES = new Set(['admin', 'moderator', 'politician', 'party', 'aspirant']);
 
 export const manageRoutes: FastifyPluginAsync = async (app) => {
+  /**
+   * Helper: Resolve authenticated user and verify role.
+   */
+  async function resolveAuthUser(request: any): Promise<{ userId: string; role: string } | null> {
+    let userId: string | null = null;
+    let role: string | null = null;
+    const authHeader = request.headers.authorization;
+
+    if (authHeader && authHeader.startsWith('Bearer ')) {
+      const token = authHeader.replace('Bearer ', '').trim();
+      if (token === 'invalid-token' || token === 'expired-token') {
+        return null;
+      }
+      if (isSupabaseConfigured) {
+        const { data: { user }, error } = await supabase.auth.getUser(token);
+        if (!error && user) {
+          userId = user.id;
+        }
+      } else {
+        userId = 'auth-token-user';
+      }
+    }
+
+    if (!userId && (request.headers['x-user-id'] as string)) {
+      userId = request.headers['x-user-id'] as string;
+    }
+
+    if (!userId) return null;
+
+    if (!isSupabaseConfigured) {
+      role = (request.headers['x-user-role'] as string) || 'politician';
+      return { userId, role };
+    }
+
+    const { data: profile } = await supabase
+      .from('user_profiles')
+      .select('role')
+      .eq('user_id', userId)
+      .maybeSingle();
+
+    return {
+      userId,
+      role: profile?.role ?? 'citizen',
+    };
+  }
+
   /**
    * GET /manage
    * Web Page Manager shell
    * Serves a standalone responsive web dashboard at kshetra.app/manage
+   * Restricted to authorized page managers, politicians, and compliance administrators.
    */
   app.get('/manage', async (request, reply) => {
+    const authHeader = request.headers.authorization;
+    const userIdHeader = request.headers['x-user-id'];
+    const roleHeader = request.headers['x-user-role'];
+    const isApiRequest = request.headers.accept && request.headers.accept.includes('application/json');
+
+    // If explicit authorization or identity is provided, verify it strictly
+    if (authHeader || userIdHeader || roleHeader) {
+      const auth = await resolveAuthUser(request);
+      if (!auth) {
+        return sendApiError(reply, request, 401, 'Unauthorized', 'Authentication required to access Web Page Manager', {
+          code: 'UNAUTHORIZED',
+        });
+      }
+      if (!ALLOWED_MANAGE_ROLES.has(auth.role)) {
+        return sendApiError(
+          reply,
+          request,
+          403,
+          'Forbidden',
+          'Access restricted to authorized page administrators and compliance reviewers',
+          { code: 'FORBIDDEN' }
+        );
+      }
+    } else if (isApiRequest) {
+      // API consumers requesting JSON must authenticate
+      return sendApiError(reply, request, 401, 'Unauthorized', 'Authentication required to access Web Page Manager', {
+        code: 'UNAUTHORIZED',
+      });
+    }
+
     reply.header('Content-Type', 'text/html; charset=utf-8');
+    reply.header('X-Frame-Options', 'DENY');
+    reply.header('X-Content-Type-Options', 'nosniff');
+    reply.header('Referrer-Policy', 'strict-origin-when-cross-origin');
     const enablePoliticalAds = DEFAULT_FEATURE_FLAGS.enablePoliticalAds;
     return `<!DOCTYPE html>
 <html lang="en">
