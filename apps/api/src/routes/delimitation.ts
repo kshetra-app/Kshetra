@@ -21,6 +21,7 @@ import {
   type CensusStateData,
 } from '../../../../data/census/india-district-population-2011';
 import { getConstituencies as getStateConstituencies } from '../services/stateData';
+import { sendApiError } from '../lib/replyHelper';
 
 interface DynamicSeatProjection {
   stateCode: string;
@@ -141,10 +142,93 @@ const PIN_PREFIX_MAPPING: Record<string, { stateCode: string; stateName: string;
   '452': { stateCode: 'MP', stateName: 'Madhya Pradesh', district: 'Indore', region: 'Indore' },
 };
 
+// ─── AJV SCHEMAS FOR DELIMITATION ROUTES ───
+
+const projectionsQuerySchema = {
+  querystring: {
+    type: 'object',
+    properties: {
+      model: { type: 'string', enum: ['expansion_safe', 'constitutional_proportional'] },
+    },
+  },
+};
+
+const stateCodeParamSchema = {
+  params: {
+    type: 'object',
+    required: ['stateCode'],
+    properties: {
+      stateCode: { type: 'string', pattern: '^[a-zA-Z]{2}$' },
+    },
+  },
+};
+
+const pinCodeParamSchema = {
+  params: {
+    type: 'object',
+    required: ['pinCode'],
+    properties: {
+      pinCode: { type: 'string', pattern: '^\\d{6}$' },
+    },
+  },
+};
+
+const simulateQuerySchema = {
+  params: {
+    type: 'object',
+    required: ['stateCode'],
+    properties: {
+      stateCode: { type: 'string', pattern: '^[a-zA-Z]{2}$' },
+    },
+  },
+  querystring: {
+    type: 'object',
+    properties: {
+      mode: { type: 'string', enum: ['equal_population', 'compactness', 'administrative_contiguity'] },
+      seats: { type: 'string', pattern: '^\\d{1,4}$' },
+      maxDeviation: { type: 'string' },
+    },
+  },
+};
+
+const compareQuerySchema = {
+  querystring: {
+    type: 'object',
+    required: ['states'],
+    properties: {
+      states: { type: 'string', minLength: 2, maxLength: 50 },
+    },
+  },
+};
+
+const monitorWebhookSchema = {
+  body: {
+    type: 'object',
+    required: ['type', 'entries'],
+    properties: {
+      type: { type: 'string', minLength: 1, maxLength: 50 },
+      entries: {
+        type: 'array',
+        items: {
+          type: 'object',
+          required: ['id', 'title', 'date'],
+          properties: {
+            id: { type: 'string' },
+            title: { type: 'string' },
+            date: { type: 'string' },
+            relevanceScore: { type: 'number' },
+          },
+        },
+      },
+      timestamp: { type: 'string' },
+    },
+  },
+};
+
 export async function delimitationRoutes(app: FastifyInstance) {
 
-  /** GET /api/v1/delimitation/projections — All state seat projections dynamically calculated */
-  app.get('/api/v1/delimitation/projections', async (request) => {
+  /** 1. GET /api/v1/delimitation/projections — All state seat projections dynamically calculated */
+  app.get('/api/v1/delimitation/projections', { schema: projectionsQuerySchema }, async (request) => {
     const query = request.query as { model?: string };
     const isExpansionSafe = query.model === 'expansion_safe';
     const projections = getAllProjections(isExpansionSafe);
@@ -170,21 +254,23 @@ export async function delimitationRoutes(app: FastifyInstance) {
     };
   });
 
-  /** GET /api/v1/delimitation/projections/:stateCode — Single state projection */
-  app.get('/api/v1/delimitation/projections/:stateCode', async (request, reply) => {
-    const { stateCode } = request.params as { stateCode: string };
+  /** 2. GET /api/v1/delimitation/projections/:stateCode — Single state projection */
+  app.get<{ Params: { stateCode: string } }>('/api/v1/delimitation/projections/:stateCode', { schema: stateCodeParamSchema }, async (request, reply) => {
+    const { stateCode } = request.params;
     const code = stateCode.toUpperCase();
     const state = CENSUS_2011_STATES.find((s) => s.stateCode === code);
 
     if (!state) {
-      return reply.status(404).send({ error: `No projection data for state: ${stateCode}` });
+      return sendApiError(reply, request, 404, 'Not Found', `No projection data for state: ${stateCode}`, {
+        code: 'NOT_FOUND',
+      });
     }
 
     const projection = calculateStateProjection(state, IDEAL_POP_PER_AC_SEAT_2011);
     return { projection };
   });
 
-  /** GET /api/v1/delimitation/timeline — Timeline events */
+  /** 3. GET /api/v1/delimitation/timeline — Timeline events */
   app.get('/api/v1/delimitation/timeline', async () => {
     return {
       status: 'pre_census',
@@ -207,7 +293,7 @@ export async function delimitationRoutes(app: FastifyInstance) {
     };
   });
 
-  /** GET /api/v1/delimitation/status — Current national delimitation status */
+  /** 4. GET /api/v1/delimitation/status — Current national delimitation status */
   app.get('/api/v1/delimitation/status', async () => {
     return {
       nationalStatus: 'pre_census',
@@ -220,7 +306,7 @@ export async function delimitationRoutes(app: FastifyInstance) {
     };
   });
 
-  /** GET /api/v1/delimitation/gainers-losers — Quick gainers/losers summary */
+  /** 5. GET /api/v1/delimitation/gainers-losers — Quick gainers/losers summary */
   app.get('/api/v1/delimitation/gainers-losers', async () => {
     const projections = getAllProjections();
     const gainers = projections.filter((p) => p.seatChange > 0).sort((a, b) => b.seatChange - a.seatChange);
@@ -244,49 +330,55 @@ export async function delimitationRoutes(app: FastifyInstance) {
     };
   });
 
-  /** POST /api/v1/delimitation/monitor-webhook — Receive alerts from cron monitors */
-  app.post('/api/v1/delimitation/monitor-webhook', async (request, reply) => {
+  /** 6. POST /api/v1/delimitation/monitor-webhook — Receive alerts from cron monitors */
+  app.post('/api/v1/delimitation/monitor-webhook', { schema: monitorWebhookSchema }, async (request, reply) => {
     const auth = request.headers.authorization;
     const expectedSecret = process.env.KSHETRA_MONITOR_SECRET;
 
     if (expectedSecret && auth !== `Bearer ${expectedSecret}`) {
-      return reply.status(401).send({ error: 'Unauthorized' });
+      return sendApiError(reply, request, 401, 'Unauthorized', 'Unauthorized monitor webhook access', {
+        code: 'UNAUTHORIZED',
+      });
     }
 
     const body = request.body as {
-      type?: string;
-      entries?: Array<{ id: string; title: string; date: string; relevanceScore: number }>;
+      type: string;
+      entries: Array<{ id: string; title: string; date: string; relevanceScore?: number }>;
       timestamp?: string;
     };
 
     if (!body.type || !body.entries) {
-      return reply.status(400).send({ error: 'type and entries required' });
+      return sendApiError(reply, request, 400, 'Bad Request', 'type and entries required', {
+        code: 'FST_ERR_VALIDATION',
+      });
     }
 
     app.log.info({
       msg: 'Delimitation monitor webhook received',
       type: body.type,
       entryCount: body.entries.length,
-      highRelevance: body.entries.filter((e) => e.relevanceScore >= 50).length,
+      highRelevance: body.entries.filter((e) => (e.relevanceScore ?? 0) >= 50).length,
     });
 
     return {
       received: true,
       processed: body.entries.length,
-      highRelevance: body.entries.filter((e) => e.relevanceScore >= 50).length,
+      highRelevance: body.entries.filter((e) => (e.relevanceScore ?? 0) >= 50).length,
       timestamp: new Date().toISOString(),
     };
   });
 
   /**
-   * GET /api/v1/delimitation/impact/:pinCode — 100% Functional Citizen impact lookup
+   * 7. GET /api/v1/delimitation/impact/:pinCode — 100% Functional Citizen impact lookup
    * No stubs, no dummies: resolves PIN code to state/district/constituency and calculates transition impact.
    */
-  app.get('/api/v1/delimitation/impact/:pinCode', async (request, reply) => {
-    const { pinCode } = request.params as { pinCode: string };
+  app.get<{ Params: { pinCode: string } }>('/api/v1/delimitation/impact/:pinCode', { schema: pinCodeParamSchema }, async (request, reply) => {
+    const { pinCode } = request.params;
 
     if (!/^\d{6}$/.test(pinCode)) {
-      return reply.status(400).send({ error: 'Invalid PIN code. Must be 6 digits.' });
+      return sendApiError(reply, request, 400, 'Bad Request', 'Invalid PIN code. Must be 6 digits.', {
+        code: 'FST_ERR_VALIDATION',
+      });
     }
 
     const prefix3 = pinCode.substring(0, 3);
@@ -365,17 +457,19 @@ export async function delimitationRoutes(app: FastifyInstance) {
   });
 
   /**
-   * GET /api/v1/delimitation/simulate/:stateCode — 100% Functional boundary simulation
+   * 8. GET /api/v1/delimitation/simulate/:stateCode — 100% Functional boundary simulation
    * Calculates Hare-Niemeyer seat allocation and district breakdown across multiple simulation modes.
    */
-  app.get('/api/v1/delimitation/simulate/:stateCode', async (request, reply) => {
-    const { stateCode } = request.params as { stateCode: string };
-    const query = request.query as { mode?: string; seats?: string; maxDeviation?: string };
+  app.get<{ Params: { stateCode: string }; Querystring: { mode?: string; seats?: string; maxDeviation?: string } }>('/api/v1/delimitation/simulate/:stateCode', { schema: simulateQuerySchema }, async (request, reply) => {
+    const { stateCode } = request.params;
+    const query = request.query;
     const code = stateCode.toUpperCase();
     const state = CENSUS_2011_STATES.find((s) => s.stateCode === code);
 
     if (!state) {
-      return reply.status(404).send({ error: `No simulation data for state: ${stateCode}` });
+      return sendApiError(reply, request, 404, 'Not Found', `No simulation data for state: ${stateCode}`, {
+        code: 'NOT_FOUND',
+      });
     }
 
     const defaultProj = calculateStateProjection(state);
@@ -452,7 +546,7 @@ export async function delimitationRoutes(app: FastifyInstance) {
     };
   });
 
-  /** GET /api/v1/delimitation/reservation — National reservation analysis */
+  /** 9. GET /api/v1/delimitation/reservation — National reservation analysis */
   app.get('/api/v1/delimitation/reservation', async () => {
     const projections = getAllProjections();
     const profiles = projections.map((p) => ({
@@ -480,14 +574,16 @@ export async function delimitationRoutes(app: FastifyInstance) {
     };
   });
 
-  /** GET /api/v1/delimitation/reservation/:stateCode — State reservation detail */
-  app.get('/api/v1/delimitation/reservation/:stateCode', async (request, reply) => {
-    const { stateCode } = request.params as { stateCode: string };
+  /** 10. GET /api/v1/delimitation/reservation/:stateCode — State reservation detail */
+  app.get<{ Params: { stateCode: string } }>('/api/v1/delimitation/reservation/:stateCode', { schema: stateCodeParamSchema }, async (request, reply) => {
+    const { stateCode } = request.params;
     const code = stateCode.toUpperCase();
     const state = CENSUS_2011_STATES.find((s) => s.stateCode === code);
 
     if (!state) {
-      return reply.status(404).send({ error: `No data for state: ${stateCode}` });
+      return sendApiError(reply, request, 404, 'Not Found', `No data for state: ${stateCode}`, {
+        code: 'NOT_FOUND',
+      });
     }
 
     const p = calculateStateProjection(state);
@@ -516,14 +612,16 @@ export async function delimitationRoutes(app: FastifyInstance) {
     };
   });
 
-  /** GET /api/v1/delimitation/compare — Compare two to four states */
-  app.get('/api/v1/delimitation/compare', async (request, reply) => {
-    const query = request.query as { states?: string };
-    if (!query.states) {
-      return reply.status(400).send({ error: 'Provide ?states=TS,AP (comma-separated, max 4)' });
+  /** 11. GET /api/v1/delimitation/compare — Compare two to four states */
+  app.get<{ Querystring: { states?: string } }>('/api/v1/delimitation/compare', { schema: compareQuerySchema }, async (request, reply) => {
+    const { states } = request.query;
+    if (!states) {
+      return sendApiError(reply, request, 400, 'Bad Request', 'Provide ?states=TS,AP (comma-separated, max 4)', {
+        code: 'FST_ERR_VALIDATION',
+      });
     }
 
-    const codes = query.states.split(',').map((s) => s.trim().toUpperCase()).slice(0, 4);
+    const codes = states.split(',').map((s) => s.trim().toUpperCase()).slice(0, 4);
     const results = codes.map((code) => {
       const state = CENSUS_2011_STATES.find((s) => s.stateCode === code);
       if (!state) return null;
@@ -531,20 +629,24 @@ export async function delimitationRoutes(app: FastifyInstance) {
     }).filter(Boolean);
 
     if (results.length === 0) {
-      return reply.status(404).send({ error: 'No matching states found' });
+      return sendApiError(reply, request, 404, 'Not Found', 'No matching states found', {
+        code: 'NOT_FOUND',
+      });
     }
 
     return { comparison: results, statesCompared: results.length };
   });
 
-  /** GET /api/v1/delimitation/mla-impact/:stateCode — Sitting MLA risk evaluation */
-  app.get('/api/v1/delimitation/mla-impact/:stateCode', async (request, reply) => {
-    const { stateCode } = request.params as { stateCode: string };
+  /** 12. GET /api/v1/delimitation/mla-impact/:stateCode — Sitting MLA risk evaluation */
+  app.get<{ Params: { stateCode: string } }>('/api/v1/delimitation/mla-impact/:stateCode', { schema: stateCodeParamSchema }, async (request, reply) => {
+    const { stateCode } = request.params;
     const code = stateCode.toUpperCase();
     const constituencies = getStateConstituencies(code);
 
     if (!constituencies.length) {
-      return reply.status(404).send({ error: `No constituency records found for state: ${stateCode}` });
+      return sendApiError(reply, request, 404, 'Not Found', `No constituency records found for state: ${stateCode}`, {
+        code: 'NOT_FOUND',
+      });
     }
 
     const mlaProfiles = constituencies.map((c: any) => {
@@ -592,14 +694,16 @@ export async function delimitationRoutes(app: FastifyInstance) {
     };
   });
 
-  /** GET /api/v1/delimitation/party-projections/:stateCode — Projected party seat share */
-  app.get('/api/v1/delimitation/party-projections/:stateCode', async (request, reply) => {
-    const { stateCode } = request.params as { stateCode: string };
+  /** 13. GET /api/v1/delimitation/party-projections/:stateCode — Projected party seat share */
+  app.get<{ Params: { stateCode: string } }>('/api/v1/delimitation/party-projections/:stateCode', { schema: stateCodeParamSchema }, async (request, reply) => {
+    const { stateCode } = request.params;
     const code = stateCode.toUpperCase();
     const state = CENSUS_2011_STATES.find((s) => s.stateCode === code);
 
     if (!state) {
-      return reply.status(404).send({ error: `State not found: ${stateCode}` });
+      return sendApiError(reply, request, 404, 'Not Found', `State not found: ${stateCode}`, {
+        code: 'NOT_FOUND',
+      });
     }
 
     const proj = calculateStateProjection(state);
@@ -631,7 +735,7 @@ export async function delimitationRoutes(app: FastifyInstance) {
     };
   });
 
-  /** GET /api/v1/delimitation/methodology — Complete mathematical documentation */
+  /** 14. GET /api/v1/delimitation/methodology — Complete mathematical documentation */
   app.get('/api/v1/delimitation/methodology', async () => {
     return {
       title: 'Delimitation Mathematical & Constitutional Architecture',
