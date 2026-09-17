@@ -158,7 +158,7 @@ const stateCodeParamSchema = {
     type: 'object',
     required: ['stateCode'],
     properties: {
-      stateCode: { type: 'string', pattern: '^[a-zA-Z]{2}$' },
+      stateCode: { type: 'string', pattern: '^[A-Z]{2}$' },
     },
   },
 };
@@ -178,7 +178,7 @@ const simulateQuerySchema = {
     type: 'object',
     required: ['stateCode'],
     properties: {
-      stateCode: { type: 'string', pattern: '^[a-zA-Z]{2}$' },
+      stateCode: { type: 'string', pattern: '^[A-Z]{2}$' },
     },
   },
   querystring: {
