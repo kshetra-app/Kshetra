@@ -1,0 +1,100 @@
+{
+  "jobId": "W008-D",
+  "lifecycleStatus": "IMPLEMENTED_TESTED_VERIFIED_SUBMITTED",
+  "executionCommitSha": "e236e78ffc57f212699f76f7d3dcfae41d0389b8",
+  "executionCommitTreeSha": "78d1a34d8d9e48e00d1e84dcda26aeb9ec07b403",
+  "executionBranch": "master",
+  "executionTimestamp": "2026-09-17T07:57:46.625Z",
+  "planSha256": "a00a7a289916bc928ce0579e2976a15394277bdf2b04912a909e9afbd05b52cd",
+  "canonicalScopeHash": "7ea8addf41526144db192959360c5ada9ecfc06a5e1770d430b2d1bdf6992805",
+  "canonicalVerificationManifest": [
+    "apps/api/src/routes/states.ts",
+    "apps/mobile/__tests__/apiClient.test.ts",
+    "apps/mobile/lib/api/client.ts",
+    "apps/mobile/lib/api/endpoints/states.ts",
+    "apps/mobile/lib/api/index.ts",
+    "apps/mobile/lib/api/types.ts",
+    "scripts/check-api-contract-drift.mjs",
+    "tests/w008-contract-negative-paths.test.mjs"
+  ],
+  "canonicalFileHashes": {
+    "apps/api/src/routes/states.ts": "2534d0bb4e5d66db4ad1f8770a85d63c97d1962b6dc7c57f138b6561adae50ba",
+    "apps/mobile/__tests__/apiClient.test.ts": "64e98c17dd51c1337936b624b62fcc871c22c81ed6573afa2e16ddf274bd40bb",
+    "apps/mobile/lib/api/client.ts": "2515efdee7a89d13c75ed0ac2b02bb18e7e5911a58d51e1487116618bd480da6",
+    "apps/mobile/lib/api/endpoints/states.ts": "d48b3e8feebec4666b2ac525cf86fa71f59b30b4a0b6d4e93766000684ff1541",
+    "apps/mobile/lib/api/index.ts": "24656d353c1d52098197b876df891000ee991863f51dbfa57de274d8c44cdce6",
+    "apps/mobile/lib/api/types.ts": "8ed3cbd3e1a11d7369ed8e066030bdd90c1bb9d65a1f4ea53a30d91fb25c5d6d",
+    "scripts/check-api-contract-drift.mjs": "2f28af4b05c13623d18d964084c86aa9e35f48a709161fc86535903bf61d8ae9",
+    "tests/w008-contract-negative-paths.test.mjs": "f1f5b769c4e5895eafc5f369c9d2bde05d6d8bfeea223f387c35fb1219133db4"
+  },
+  "canonicalSerializedManifest": "apps/api/src/routes/states.ts:2534d0bb4e5d66db4ad1f8770a85d63c97d1962b6dc7c57f138b6561adae50ba\napps/mobile/__tests__/apiClient.test.ts:64e98c17dd51c1337936b624b62fcc871c22c81ed6573afa2e16ddf274bd40bb\napps/mobile/lib/api/client.ts:2515efdee7a89d13c75ed0ac2b02bb18e7e5911a58d51e1487116618bd480da6\napps/mobile/lib/api/endpoints/states.ts:d48b3e8feebec4666b2ac525cf86fa71f59b30b4a0b6d4e93766000684ff1541\napps/mobile/lib/api/index.ts:24656d353c1d52098197b876df891000ee991863f51dbfa57de274d8c44cdce6\napps/mobile/lib/api/types.ts:8ed3cbd3e1a11d7369ed8e066030bdd90c1bb9d65a1f4ea53a30d91fb25c5d6d\nscripts/check-api-contract-drift.mjs:2f28af4b05c13623d18d964084c86aa9e35f48a709161fc86535903bf61d8ae9\ntests/w008-contract-negative-paths.test.mjs:f1f5b769c4e5895eafc5f369c9d2bde05d6d8bfeea223f387c35fb1219133db4\n",
+  "executedCommands": [
+    {
+      "command": "npm run build --prefix apps/api",
+      "exitCode": 0,
+      "stdoutSha256": "83525cd2d5c8d0cde07f3d7c8593863b31428eb83deb99ffdb427af28959586c"
+    },
+    {
+      "command": "npx tsc --noEmit -p apps/mobile/tsconfig.json",
+      "exitCode": 0,
+      "stdoutSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "command": "npm test --prefix apps/mobile -- __tests__/apiClient.test.ts",
+      "exitCode": 0,
+      "stdoutSha256": "97afd08d22de03d732aed2d5a6217308e672d97e18954ec175d30f37e6a4fdc3"
+    },
+    {
+      "command": "node tests/w008-contract-negative-paths.test.mjs",
+      "exitCode": 0,
+      "stdoutSha256": "033061f06382173d408705eea2ca4b8d9adc815dc6fe0e82727056a4788dd5c3"
+    },
+    {
+      "command": "node scripts/check-api-contract-drift.mjs",
+      "exitCode": 0,
+      "stdoutSha256": "7518be71367c560d4acfb44d9388d2dcab4807770e5980c1a00e8774cd957978"
+    },
+    {
+      "command": "git diff e236e78ffc57f212699f76f7d3dcfae41d0389b8 -- apps/ packages/ supabase/ PLAN-W008-D.md",
+      "exitCode": 0,
+      "stdoutSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "diffOutput": ""
+    }
+  ],
+  "semanticContractParity": {
+    "endpoints": [
+      {
+        "path": "/api/v1/states",
+        "method": "GET",
+        "serverRoute": "apps/api/src/routes/states.ts",
+        "clientMethod": "apiClient.states.listStates()",
+        "authPolicy": "public",
+        "status": "VERIFIED_EQUIVALENT"
+      },
+      {
+        "path": "/api/v1/states/:code",
+        "method": "GET",
+        "serverRoute": "apps/api/src/routes/states.ts",
+        "clientMethod": "apiClient.states.getState(code)",
+        "paramRegex": "^[A-Z]{2}$",
+        "authPolicy": "public",
+        "status": "VERIFIED_EQUIVALENT"
+      }
+    ],
+    "driftStatus": "D0_IN_SYNC",
+    "negativePathsPassed": 18,
+    "unitTestsPassed": 52
+  },
+  "mutationBoundaryResult": {
+    "productCodeDiff": "",
+    "planDiff": "",
+    "status": "ZERO_MUTATIONS_RELATIVE_TO_AUTHORIZATION_COMMIT"
+  },
+  "governance": {
+    "implementationAuthorization": "AUTHORIZED_BY_CTO_FOR_W008_D_ONLY",
+    "ctoRatificationPending": true,
+    "w008eAuthorized": false,
+    "w009Authorized": false,
+    "stop": true
+  }
+}

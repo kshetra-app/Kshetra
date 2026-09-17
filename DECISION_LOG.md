@@ -817,6 +817,30 @@
      - No implementation may begin without dedicated pre-authorization gate and explicit CTO implementation authorization.
 - **Rationale:** Complies with Master Execution Framework Amendment v1.5-A and Rule IV-001 by recording formal CTO technical acceptance, preserving immutable lineage coordinates, and maintaining strict fail-closed boundaries on unapproved successor jobs.
 
+---
+
+### DEC-050: W008-D RATIFICATION AND FORMAL IMPLEMENTATION AUTHORIZATION
+- **Date:** 2026-09-17
+- **Authority:** CTO Implementation Authorization Directive (bound to `e236e78ffc57f212699f76f7d3dcfae41d0389b8`)
+- **Decisions:**
+  1. `PLAN-W008-D.md` Revision 2.3 ratified as the binding verification specification.
+  2. Formal authorization coordinate committed at `e236e78ffc57f212699f76f7d3dcfae41d0389b8` with tree `78d1a34d8d9e48e00d1e84dcda26aeb9ec07b403`.
+  3. Scope strictly restricted to the 8-file verification manifest (`CANONICAL_SCOPE_HASH: 7ea8addf41526144db192959360c5ada9ecfc06a5e1770d430b2d1bdf6992805`).
+  4. W008-E and W009 remain strictly unauthorized and frozen.
+
+---
+
+### DEC-051: W008-D VERIFICATION EXECUTION & EVIDENCE SUBMISSION
+- **Date:** 2026-09-17
+- **Status:** IMPLEMENTED / TESTED / VERIFIED / RESUBMITTED FOR CTO RATIFICATION
+- **Authority:** Rule IV-001 / Amendment v1.5-A / REV-8 Provenance Model
+- **Decisions:**
+  1. StatesEndpoint adoption empirically verified against Fastify states contracts (`GET /api/v1/states`, `GET /api/v1/states/:code`).
+  2. Zero product code modifications occurred across `apps/`, `packages/`, or `supabase/`.
+  3. Evidence generated in `reports/w008_d_states_verification.json` and `reports/w008_d_states_verification.md` under the non-self-referential REV-8 model.
+  4. Submitted for independent CTO technical acceptance decision.
+
+
 
 
 
