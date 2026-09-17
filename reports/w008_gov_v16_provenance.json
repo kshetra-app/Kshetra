@@ -1,0 +1,9 @@
+{
+  "jobId": "W008-GOV-v1.6",
+  "executionCommitSha": "387b790f0237ee4c05b85f88a2eb23d994833e51",
+  "executionCommitTreeSha": "c24c190a316c2a55c9f2c4853f57dac4c9194407",
+  "canonicalScopeHash": "2df0a15edb132efe4754a331e3147e1473b5add2ff770683790fde2b47fe9bf7",
+  "evidenceArtifactSha256": "879a104947f442bccad06e3640775341e15a99d81879337aff8aac0fcaadffae",
+  "rawStdoutSha256": "0326103e5e510cf4d26e777ac3bc40bb5c6640bf8b429a0c02920ba09c569b9e",
+  "rawStderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+}

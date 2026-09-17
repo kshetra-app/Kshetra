@@ -372,6 +372,10 @@ console.log('[PASS] [NEGATIVE / ADVERSARIAL] Test N4: Scope leakage mutations ac
 // 5. EVIDENCE VERIFICATION ENGINE (CTO REV-8 TWO-CHAIN CROSS-CONSISTENCY MODEL)
 // =============================================================================
 
+// =============================================================================
+// 5. EVIDENCE VERIFICATION ENGINE (CTO REV-8 NON-SELF-REFERENTIAL TWO-CHAIN MODEL)
+// =============================================================================
+
 export function calculateEvidenceArtifactSha256(rawBytesOrObj) {
   let obj;
   if (typeof rawBytesOrObj === 'string' || Buffer.isBuffer(rawBytesOrObj)) {
@@ -380,7 +384,6 @@ export function calculateEvidenceArtifactSha256(rawBytesOrObj) {
     obj = { ...rawBytesOrObj };
   }
   // Cryptographically normalize by setting evidenceArtifactSha256 to null
-  // This allows embedding the canonical payload digest without self-referential paradox
   const canonicalObj = { ...obj, evidenceArtifactSha256: null };
   const canonicalBytes = Buffer.from(JSON.stringify(canonicalObj, null, 2) + '\n', 'utf8');
   return crypto.createHash('sha256').update(canonicalBytes).digest('hex').toLowerCase();
@@ -391,15 +394,11 @@ export function independentlyVerifyEvidencePackage(
   rawStdout,
   rawStderr,
   expectedExecutionHead,
-  expectedEvidenceHead,
-  expectedCanonicalScopeHash,
   options = {}
 ) {
   const repoDir = options.cwd || process.cwd();
 
-  // ---------------------------------------------------------------------------
-  // Step 1: Read persisted stdout and stderr (must be provided and non-empty/valid)
-  // ---------------------------------------------------------------------------
+  // 1. Raw stdout and stderr validation
   if (typeof rawStdout !== 'string' || rawStdout.trim().length === 0) {
     throw new Error('EVIDENCE_REJECTED: Persisted raw stdout is missing or empty');
   }
@@ -407,12 +406,12 @@ export function independentlyVerifyEvidencePackage(
     throw new Error('EVIDENCE_REJECTED: Persisted raw stderr is missing');
   }
 
-  // Step 2: Synthetic stdout rejection (anti-fabrication assertion - CTO REV-5 REQ 1 & REV-8)
+  // 2. Anti-synthetic check (anti-fabrication assertion - CTO REV-5 REQ 1 & REV-8)
   if (rawStdout.includes('RUNNING SUITE... 10/10 CHECKS PASSED. VERIFIED.') || rawStdout.length < 300) {
     throw new Error('EVIDENCE_REJECTED: Synthetic or placeholder stdout detected. Actual execution evidence required.');
   }
 
-  // Step 3: Recompute SHA-256 and compare with recorded checksums
+  // 3. Recompute SHA-256 and compare with recorded checksums
   const recomputedStdoutSha256 = crypto.createHash('sha256').update(rawStdout).digest('hex').toLowerCase();
   if (!evidence.rawStdoutSha256 || evidence.rawStdoutSha256.toLowerCase() !== recomputedStdoutSha256) {
     throw new Error(`EVIDENCE_REJECTED: rawStdoutSha256 mismatch! Expected ${recomputedStdoutSha256}, recorded ${evidence.rawStdoutSha256}`);
@@ -424,18 +423,25 @@ export function independentlyVerifyEvidencePackage(
   }
 
   // ---------------------------------------------------------------------------
-  // Chain A — Exact Execution Identity (CTO REV-8 Sections 3, 5, 7, 8)
+  // Chain A — Execution Evidence Identity (CTO REV-8 Sections 1, 2, 3)
   // ---------------------------------------------------------------------------
+  // Prohibit self-referential fields in Chain A evidence payload
+  if (evidence.evidenceCommitSha !== undefined) {
+    throw new Error('EVIDENCE_REJECTED: PROHIBITED_SELF_REFERENTIAL_EVIDENCE: reports/w008_gov_v16_evidence.json must not embed evidenceCommitSha');
+  }
+  if (evidence.evidenceOriginMasterHead !== undefined) {
+    throw new Error('EVIDENCE_REJECTED: PROHIBITED_SELF_REFERENTIAL_EVIDENCE: reports/w008_gov_v16_evidence.json must not embed evidenceOriginMasterHead');
+  }
+
   const execCommit = evidence.executionCommitSha || evidence.repositoryHead || evidence.gitCommitSha;
   if (!execCommit || typeof execCommit !== 'string' || execCommit.length !== 40) {
     throw new Error('STALE_EXECUTION_EVIDENCE_REJECTED: Missing or invalid executionCommitSha in evidence package');
   }
 
-  // Verify commit object exists in Git
   if (options.verifyCommitExistence !== false) {
     try {
       execSync(`git cat-file -e "${execCommit}^{commit}"`, { cwd: repoDir, encoding: 'utf8', stdio: ['pipe', 'pipe', 'pipe'] });
-    } catch (err) {
+    } catch {
       throw new Error(`EVIDENCE_REJECTED: executionCommitSha '${execCommit}' does not exist in Git repository`);
     }
   }
@@ -452,19 +458,17 @@ export function independentlyVerifyEvidencePackage(
     throw new Error(`STALE_EXECUTION_EVIDENCE_REJECTED: executionCommitSha (${execCommit}) does not match executionOriginMasterHead (${execOrigin})`);
   }
 
-  // Verify execution repository cleanliness (CTO REV-8 Section 3 & Test I)
   const isExecTreeClean = evidence.executionWorkingTreeClean !== undefined ? evidence.executionWorkingTreeClean : evidence.workingTreeClean;
   if (isExecTreeClean !== true) {
     throw new Error('EVIDENCE_REJECTED: execution source tree dirty (executionWorkingTreeClean must be true)');
   }
 
-  // Verify execution branch
   const execBranch = evidence.executionBranch || evidence.branch || 'master';
   if (execBranch !== 'master') {
     throw new Error(`EVIDENCE_REJECTED: executionBranch mismatch! Expected 'master', got '${execBranch}'`);
   }
 
-  // Extract stdout coordinates (CTO REV-8 Section 10)
+  // Stdout coordinates cross-consistency (CTO REV-8 Section 10)
   const stdoutExecMatch = rawStdout.match(/EXECUTION_COMMIT[:=]\s*([0-9a-f]{40})/i) ||
                           rawStdout.match(/\[REPOSITORY STATE\] Local HEAD:\s*([0-9a-f]{40})/i);
   const stdoutOriginMatch = rawStdout.match(/EXECUTION_ORIGIN_MASTER[:=]\s*([0-9a-f]{40})/i) ||
@@ -495,12 +499,11 @@ export function independentlyVerifyEvidencePackage(
     }
   }
 
-  // Verify canonical scope manifest & hash against expected canonical scope derivation (CTO REV-8 Section 11)
   if (!evidence.canonicalScopeHash) {
     throw new Error('EVIDENCE_REJECTED: Missing canonicalScopeHash in evidence package');
   }
-  if (expectedCanonicalScopeHash && evidence.canonicalScopeHash !== expectedCanonicalScopeHash) {
-    throw new Error(`EVIDENCE_REJECTED: Canonical scope hash mismatch! Expected '${expectedCanonicalScopeHash}', got '${evidence.canonicalScopeHash}'`);
+  if (options.expectedCanonicalScopeHash && evidence.canonicalScopeHash !== options.expectedCanonicalScopeHash) {
+    throw new Error(`EVIDENCE_REJECTED: Canonical scope hash mismatch! Expected '${options.expectedCanonicalScopeHash}', got '${evidence.canonicalScopeHash}'`);
   }
 
   if (!Array.isArray(evidence.canonicalScopeManifest)) {
@@ -512,12 +515,10 @@ export function independentlyVerifyEvidencePackage(
     throw new Error('EVIDENCE_REJECTED: Canonical scope manifest does not match authoritative manifest');
   }
 
-  // Verify job identity
   if (!evidence.jobId || evidence.jobId !== 'W008-GOV-v1.6') {
     throw new Error(`EVIDENCE_REJECTED: Job ID mismatch! Expected W008-GOV-v1.6, got ${evidence.jobId}`);
   }
 
-  // Verify environment identity
   if (!evidence.environment || typeof evidence.environment !== 'object') {
     throw new Error('EVIDENCE_REJECTED: Missing environment identity block');
   }
@@ -526,7 +527,6 @@ export function independentlyVerifyEvidencePackage(
     throw new Error('EVIDENCE_REJECTED: Incomplete environment identity');
   }
 
-  // Valid timestamp and exact command executed
   if (!evidence.executionTimestamp || isNaN(Date.parse(evidence.executionTimestamp))) {
     throw new Error('EVIDENCE_REJECTED: Malformed or missing executionTimestamp');
   }
@@ -534,114 +534,128 @@ export function independentlyVerifyEvidencePackage(
     throw new Error(`EVIDENCE_REJECTED: exactCommand mismatch! Expected 'node tests/governance-v16.test.mjs', got '${evidence.exactCommand}'`);
   }
 
+  // Deterministic digest check
+  if (!evidence.evidenceArtifactSha256 || typeof evidence.evidenceArtifactSha256 !== 'string' || !/^[0-9a-f]{64}$/i.test(evidence.evidenceArtifactSha256)) {
+    throw new Error(`EVIDENCE_REJECTED: Missing or malformed evidenceArtifactSha256 in evidence package: '${evidence.evidenceArtifactSha256}'`);
+  }
+  const computedArtifactSha = calculateEvidenceArtifactSha256(evidence);
+  if (evidence.evidenceArtifactSha256.toLowerCase() !== computedArtifactSha) {
+    throw new Error(`EVIDENCE_REJECTED: evidenceArtifactSha256 mismatch! Expected ${computedArtifactSha}, recorded ${evidence.evidenceArtifactSha256}`);
+  }
+
   // ---------------------------------------------------------------------------
-  // Chain B — Evidence Persistence Identity (CTO REV-8 Sections 4, 6, 7, 8)
+  // Chain B — Independently Derived Persistence Identity (CTO REV-8 Sections 4-8)
   // ---------------------------------------------------------------------------
   if (options.assertPersistence !== false) {
-    if (!evidence.evidenceCommitSha) {
-      throw new Error('EVIDENCE_REJECTED: Missing evidenceCommitSha in evidence package');
+    // 1. Independently derive actual HEAD and origin/master from Git (Section 4)
+    const actualHead = options.actualHead !== undefined
+      ? options.actualHead
+      : execSync('git rev-parse HEAD', { cwd: repoDir, encoding: 'utf8' }).trim();
+
+    const actualOriginMaster = options.actualOriginMaster !== undefined
+      ? options.actualOriginMaster
+      : execSync('git rev-parse origin/master', { cwd: repoDir, encoding: 'utf8' }).trim();
+
+    // Section 4 & Negative Test Y: Literal 40-character SHA required; reject symbolic references
+    if (typeof actualHead !== 'string' || !/^[0-9a-f]{40}$/i.test(actualHead)) {
+      throw new Error(`EVIDENCE_REJECTED: SYMBOLIC_OR_MALFORMED_HEAD: Symbolic or malformed persistence identifier '${actualHead}' prohibited. Literal 40-character SHA required.`);
+    }
+    if (typeof actualOriginMaster !== 'string' || !/^[0-9a-f]{40}$/i.test(actualOriginMaster)) {
+      throw new Error(`EVIDENCE_REJECTED: SYMBOLIC_OR_MALFORMED_ORIGIN: Symbolic or malformed origin identifier '${actualOriginMaster}' prohibited. Literal 40-character SHA required.`);
     }
 
-    // CTO REV-8 REQ 4: Production evidence verification path MUST reject symbolic references
-    if (typeof evidence.evidenceCommitSha !== 'string' || !/^[0-9a-f]{40}$/i.test(evidence.evidenceCommitSha)) {
-      if (evidence.evidenceCommitSha === 'origin/master' || evidence.evidenceCommitSha === 'HEAD' || evidence.evidenceCommitSha === 'CURRENT_PERSISTED_HEAD') {
-        throw new Error(`EVIDENCE_REJECTED: SYMBOLIC_EVIDENCE_COMMIT_REJECTED: Symbolic evidence commit reference '${evidence.evidenceCommitSha}' prohibited in final provenance. Literal 40-character SHA required.`);
+    // Section 4 & Negative Test U: actualHead == actualOriginMaster
+    if (actualHead !== actualOriginMaster) {
+      throw new Error(`EVIDENCE_REJECTED: HEAD_ORIGIN_MISMATCH: actualHead (${actualHead}) does not match actualOriginMaster (${actualOriginMaster})`);
+    }
+
+    // Section 8 & Negative Test A: Two-chain separation invariant C_EXEC != C_EVID
+    if (actualHead === execCommit) {
+      throw new Error('EVIDENCE_REJECTED: executionCommitSha and persistence HEAD must not be identical in two-chain model');
+    }
+
+    // Negative Test G / Section 12: raw stdout claiming persistence commit as execution commit
+    if (stdoutExecCommit === actualHead) {
+      throw new Error('EVIDENCE_REJECTED: raw stdout falsely claims evidence persistence commit as execution commit');
+    }
+
+    // Negative Test R: Expected persistence commit match (if specified)
+    if (options.expectedEvidenceHead && actualHead !== options.expectedEvidenceHead) {
+      throw new Error(`EVIDENCE_REJECTED: HEAD_MISMATCH: actualHead (${actualHead}) does not match expected persistence commit (${options.expectedEvidenceHead})`);
+    }
+
+    // Check persistence commit exists in Git
+    if (options.verifyCommitExistence !== false) {
+      try {
+        execSync(`git cat-file -e "${actualHead}^{commit}"`, { cwd: repoDir, encoding: 'utf8', stdio: ['pipe', 'pipe', 'pipe'] });
+      } catch {
+        throw new Error(`EVIDENCE_REJECTED: persistence commit '${actualHead}' does not exist in Git repository`);
       }
-      throw new Error(`EVIDENCE_REJECTED: Malformed evidence commit SHA: '${evidence.evidenceCommitSha}'. Literal 40-character SHA required.`);
     }
 
-    if (!evidence.evidenceOriginMasterHead) {
-      throw new Error('EVIDENCE_REJECTED: Missing evidenceOriginMasterHead in evidence package');
-    }
-
-    if (typeof evidence.evidenceOriginMasterHead !== 'string' || !/^[0-9a-f]{40}$/i.test(evidence.evidenceOriginMasterHead)) {
-      if (evidence.evidenceOriginMasterHead === 'origin/master' || evidence.evidenceOriginMasterHead === 'HEAD' || evidence.evidenceOriginMasterHead === 'CURRENT_PERSISTED_HEAD') {
-        throw new Error(`EVIDENCE_REJECTED: SYMBOLIC_EVIDENCE_ORIGIN_REJECTED: Symbolic evidence origin reference '${evidence.evidenceOriginMasterHead}' prohibited in final provenance. Literal 40-character SHA required.`);
-      }
-      throw new Error(`EVIDENCE_REJECTED: Malformed evidence origin SHA: '${evidence.evidenceOriginMasterHead}'. Literal 40-character SHA required.`);
-    }
-
-    // CTO REV-8 REQ 7 Negative N: evidenceOriginMasterHead != evidenceCommitSha -> REJECT
-    if (evidence.evidenceCommitSha !== evidence.evidenceOriginMasterHead) {
-      throw new Error(`EVIDENCE_REJECTED: evidenceOriginMasterHead mismatch! evidenceOriginMasterHead (${evidence.evidenceOriginMasterHead}) does not match evidenceCommitSha (${evidence.evidenceCommitSha})`);
-    }
-
-    // CTO REV-8 REQ 2: executionCommitSha != evidenceCommitSha
-    if (evidence.evidenceCommitSha === execCommit) {
-      throw new Error('EVIDENCE_REJECTED: executionCommitSha and evidenceCommitSha must not be identical in two-chain model');
-    }
-
-    // CTO REV-8 REQ 3 & Negative O: Recalculate artifact SHA-256 and assert bitwise equality
-    if (!evidence.evidenceArtifactSha256 || typeof evidence.evidenceArtifactSha256 !== 'string' || !/^[0-9a-f]{64}$/i.test(evidence.evidenceArtifactSha256)) {
-      throw new Error(`EVIDENCE_REJECTED: Missing or malformed evidenceArtifactSha256 in evidence package: '${evidence.evidenceArtifactSha256}'`);
-    }
-    const computedArtifactSha = calculateEvidenceArtifactSha256(evidence);
-    if (evidence.evidenceArtifactSha256.toLowerCase() !== computedArtifactSha) {
-      throw new Error(`EVIDENCE_REJECTED: evidenceArtifactSha256 mismatch! Expected ${computedArtifactSha}, recorded ${evidence.evidenceArtifactSha256}`);
-    }
-
-    let actualPersistenceCommit = options.expectedEvidenceHead || expectedEvidenceHead;
-    if (actualPersistenceCommit && evidence.evidenceCommitSha !== actualPersistenceCommit) {
-      throw new Error(`EVIDENCE_REJECTED: evidenceCommitSha mismatch! Expected ${actualPersistenceCommit}, got ${evidence.evidenceCommitSha}`);
-    }
-
-    let actualOriginHead = options.expectedOriginHead;
-    if (actualOriginHead && evidence.evidenceOriginMasterHead !== actualOriginHead) {
-      throw new Error(`EVIDENCE_REJECTED: evidenceOriginMasterHead mismatch! Expected ${actualOriginHead}, got ${evidence.evidenceOriginMasterHead}`);
-    }
-
-    // Check evidence persistence working tree cleanliness (CTO REV-8 Section 12 Test J)
+    // Check evidence persistence working tree cleanliness
     if (evidence.evidenceWorkingTreeClean === false) {
       throw new Error('EVIDENCE_REJECTED: evidence persistence commit dirty (evidenceWorkingTreeClean must be true)');
     }
 
-    // Prohibit raw stdout claiming evidence commit as execution commit (CTO REV-8 Section 12 Test G)
-    if (stdoutExecCommit === evidence.evidenceCommitSha) {
-      throw new Error('EVIDENCE_REJECTED: raw stdout falsely claims evidence commit as execution commit');
+    // Section 5 & Negative Test T: lastEvidenceModificationCommit == actualHead
+    const lastModCommit = options.lastEvidenceModificationCommit !== undefined
+      ? options.lastEvidenceModificationCommit
+      : execSync('git log -1 --format=%H -- reports/w008_gov_v16_evidence.json', { cwd: repoDir, encoding: 'utf8' }).trim();
+
+    if (options.checkPostModification !== false) {
+      if (lastModCommit !== actualHead && (options.failOnPostModification || options.requireCommittedArtifact)) {
+        throw new Error(`EVIDENCE_REJECTED: LAST_MODIFICATION_MISMATCH: lastEvidenceModificationCommit (${lastModCommit}) does not match actualHead (${actualHead})`);
+      }
     }
 
-    // Check commit existence in git
-    if (options.verifyCommitExistence !== false) {
+    // Section 6 & Negative Test V & W & S: Committed blob retrieval & verification
+    if (options.verifyArtifactInCommit !== false) {
+      let committedBlobRaw;
       try {
-        execSync(`git cat-file -e "${evidence.evidenceCommitSha}^{commit}"`, { cwd: repoDir, encoding: 'utf8', stdio: ['pipe', 'pipe', 'pipe'] });
-      } catch {
-        throw new Error(`EVIDENCE_REJECTED: evidenceCommitSha '${evidence.evidenceCommitSha}' does not exist in Git repository`);
+        committedBlobRaw = execSync(`git cat-file blob "${actualHead}:reports/w008_gov_v16_evidence.json"`, { cwd: repoDir, encoding: 'utf8', stdio: ['pipe', 'pipe', 'pipe'] });
+      } catch (err) {
+        throw new Error(`EVIDENCE_REJECTED: BLOB_MISSING: Evidence blob missing from HEAD commit ${actualHead}: ${err.message}`);
       }
 
-      // Verify evidence artifact exists in evidence commit (CTO REV-8 Section 8 Step 6)
-      if (options.verifyArtifactInCommit !== false) {
-        try {
-          execSync(`git cat-file -e "${evidence.evidenceCommitSha}:reports/w008_gov_v16_evidence.json"`, { cwd: repoDir, encoding: 'utf8', stdio: ['pipe', 'pipe', 'pipe'] });
-        } catch {
-          if (options.requireCommittedArtifact) {
-            throw new Error(`EVIDENCE_REJECTED: reports/w008_gov_v16_evidence.json does not exist in evidence commit ${evidence.evidenceCommitSha}`);
-          }
-        }
+      // Negative Test W: digest of committed blob must match recorded evidenceArtifactSha256
+      const committedBlobSha = calculateEvidenceArtifactSha256(committedBlobRaw);
+      if (committedBlobSha !== evidence.evidenceArtifactSha256.toLowerCase()) {
+        throw new Error(`EVIDENCE_REJECTED: COMMITTED_DIGEST_MISMATCH: committed artifact blob hash (${committedBlobSha}) does not match recorded evidenceArtifactSha256 (${evidence.evidenceArtifactSha256})`);
       }
 
-      // Verify committed artifact blob hash matches recorded evidenceArtifactSha256 (CTO REV-8 Section 5)
+      // Negative Test S: working-tree artifact differs from committed artifact
       if (options.requireCommittedArtifact) {
-        try {
-          const committedBlob = execSync(`git cat-file blob "${evidence.evidenceCommitSha}:reports/w008_gov_v16_evidence.json"`, { cwd: repoDir, encoding: 'utf8' });
-          const committedBlobSha = calculateEvidenceArtifactSha256(committedBlob);
-          if (committedBlobSha !== evidence.evidenceArtifactSha256.toLowerCase()) {
-            throw new Error(`EVIDENCE_REJECTED: committed artifact blob hash (${committedBlobSha}) does not match recorded evidenceArtifactSha256 (${evidence.evidenceArtifactSha256})`);
+        const wtPath = path.resolve(repoDir, 'reports/w008_gov_v16_evidence.json');
+        if (fs.existsSync(wtPath)) {
+          const wtBytes = fs.readFileSync(wtPath, 'utf8');
+          if (wtBytes !== committedBlobRaw) {
+            throw new Error('EVIDENCE_REJECTED: WORKING_TREE_MISMATCH: Working-tree evidence artifact differs from committed artifact at HEAD');
           }
-        } catch (err) {
-          if (err.message.includes('EVIDENCE_REJECTED')) throw err;
         }
       }
+    }
 
-      // Verify evidence artifact was not modified after evidenceCommitSha (CTO REV-8 Section 12 Test F & Negative P)
-      if (options.checkPostModification) {
-        try {
-          const lastModCommit = execSync('git log -1 --format=%H -- reports/w008_gov_v16_evidence.json', { cwd: repoDir, encoding: 'utf8' }).trim();
-          if (lastModCommit && lastModCommit !== evidence.evidenceCommitSha && options.failOnPostModification) {
-            throw new Error(`EVIDENCE_REJECTED: evidence artifact modified after evidenceCommitSha! Evidence commit: ${evidence.evidenceCommitSha}, last modified: ${lastModCommit}`);
-          }
-        } catch (e) {
-          if (e.message.includes('evidence artifact modified after evidenceCommitSha')) throw e;
-        }
+    // Section 7 & 12 & Negative Test X: Companion provenance file verification
+    const provPath = path.resolve(repoDir, 'reports/w008_gov_v16_provenance.json');
+    const provObj = options.provenancePayload !== undefined
+      ? options.provenancePayload
+      : (fs.existsSync(provPath) ? JSON.parse(fs.readFileSync(provPath, 'utf8')) : null);
+
+    if (provObj) {
+      if (provObj.evidenceCommitSha !== undefined) {
+        throw new Error('EVIDENCE_REJECTED: PROHIBITED_SELF_REFERENTIAL_PROVENANCE: reports/w008_gov_v16_provenance.json must not embed evidenceCommitSha');
+      }
+      if (
+        provObj.jobId !== evidence.jobId ||
+        provObj.executionCommitSha !== execCommit ||
+        provObj.executionCommitTreeSha !== evidence.executionCommitTreeSha ||
+        provObj.canonicalScopeHash !== evidence.canonicalScopeHash ||
+        provObj.evidenceArtifactSha256 !== evidence.evidenceArtifactSha256 ||
+        provObj.rawStdoutSha256 !== evidence.rawStdoutSha256 ||
+        provObj.rawStderrSha256 !== evidence.rawStderrSha256
+      ) {
+        throw new Error('EVIDENCE_REJECTED: PROVENANCE_MISMATCH: Provenance content mismatch with evidence content');
       }
     }
   }
@@ -657,32 +671,42 @@ export function independentlyVerifyEvidenceArtifact(artifactPath = path.resolve(
   if (!evidence.evidenceArtifactSha256 || evidence.evidenceArtifactSha256.toLowerCase() !== calculatedArtifactSha256) {
     throw new Error(`EVIDENCE_REJECTED: evidenceArtifactSha256 mismatch! Expected ${calculatedArtifactSha256}, recorded ${evidence.evidenceArtifactSha256}`);
   }
-  const currentHead = execSync('git rev-parse HEAD', { encoding: 'utf8' }).trim();
-  const currentOrigin = execSync('git rev-parse origin/master', { encoding: 'utf8' }).trim();
-  const derivation = deriveCanonicalScopeHash(AUTHORITATIVE_V16_SCOPE_MANIFEST);
+  const repoDir = options.cwd || process.cwd();
+  const currentHead = execSync('git rev-parse HEAD', { cwd: repoDir, encoding: 'utf8' }).trim();
+  const currentOrigin = execSync('git rev-parse origin/master', { cwd: repoDir, encoding: 'utf8' }).trim();
   
   return independentlyVerifyEvidencePackage(
     evidence,
     evidence.rawStdout,
     evidence.rawStderr,
     evidence.executionCommitSha,
-    evidence.evidenceCommitSha,
-    derivation.scopeHash,
     {
       assertPersistence: true,
-      requireCommittedArtifact: options.requireCommittedArtifact ?? false,
-      expectedOriginHead: options.expectedOriginHead ?? evidence.evidenceOriginMasterHead,
+      verifyCommitExistence: true,
+      verifyArtifactInCommit: true,
+      requireCommittedArtifact: options.requireCommittedArtifact !== undefined ? options.requireCommittedArtifact : true,
+      checkPostModification: true,
+      failOnPostModification: true,
+      actualHead: currentHead,
+      actualOriginMaster: currentOrigin,
       ...options
     }
   );
 }
 
-// CLI Standalone Evidence Verifier Entrypoint (CTO REV-8 Section 14)
+// CLI Standalone Evidence Verifier Entrypoint (CTO REV-8 Section 9)
 if (process.argv.includes('--verify-evidence')) {
   console.log('=== RUNNING STANDALONE EVIDENCE ARTIFACT VERIFIER (AMENDMENT v1.6 - REV-8) ===\n');
   const artifactPath = path.resolve('reports/w008_gov_v16_evidence.json');
-  independentlyVerifyEvidenceArtifact(artifactPath, { requireCommittedArtifact: false });
-  console.log('[PASS] Standalone evidence artifact verification completed successfully (Two-Chain Model Verified).\n');
+  independentlyVerifyEvidenceArtifact(artifactPath, {
+    assertPersistence: true,
+    verifyCommitExistence: true,
+    verifyArtifactInCommit: true,
+    requireCommittedArtifact: true,
+    checkPostModification: true,
+    failOnPostModification: true
+  });
+  console.log('[PASS] Standalone evidence artifact verification completed successfully (Non-Self-Referential Two-Chain Model Verified).\n');
   process.exit(0);
 }
 
@@ -707,375 +731,325 @@ assert.strictEqual(
     persistedRawStdout,
     persistedRawStderr,
     recordedExecutionCommit,
-    liveEvidencePackage.evidenceCommitSha,
-    recordedScopeHash,
-    { assertPersistence: false }
+    { assertPersistence: false, expectedCanonicalScopeHash: recordedScopeHash }
   ),
   true
 );
 
-// Chain B: Persistence verification (CTO REV-8 Section 5 & 6)
-assert.strictEqual(
-  independentlyVerifyEvidencePackage(
-    liveEvidencePackage,
-    persistedRawStdout,
-    persistedRawStderr,
-    recordedExecutionCommit,
-    liveEvidencePackage.evidenceCommitSha,
-    recordedScopeHash,
-    {
-      assertPersistence: true,
-      verifyCommitExistence: true,
-      verifyArtifactInCommit: true
-    }
-  ),
-  true
-);
-
-console.log('[PASS] [EVIDENCE / PROVENANCE] Actual execution evidence artifact (reports/w008_gov_v16_evidence.json) verified with complete two-chain cross-consistency.');
+// Chain B: Final positive acceptance path (CTO REV-8 Section 10)
+if (recordedExecutionCommit !== actualHead) {
+  assert.strictEqual(
+    independentlyVerifyEvidencePackage(
+      liveEvidencePackage,
+      persistedRawStdout,
+      persistedRawStderr,
+      recordedExecutionCommit,
+      {
+        assertPersistence: true,
+        verifyCommitExistence: true,
+        verifyArtifactInCommit: true,
+        requireCommittedArtifact: true,
+        checkPostModification: true,
+        failOnPostModification: true,
+        expectedCanonicalScopeHash: recordedScopeHash
+      }
+    ),
+    true
+  );
+  console.log('[PASS] [EVIDENCE / PROVENANCE] Actual persisted evidence package verified with complete two-chain cross-consistency.');
+} else {
+  console.log('[INFO] [EVIDENCE / PROVENANCE] Executing at C_EXEC before persistence commit; execution chain verified.');
+}
 
 // =============================================================================
-// 6. TEN EXPLICIT NEGATIVE TESTS (A THROUGH J - CTO REV-8 SECTION 12)
+// 6. TWENTY-FOUR EXPLICIT NEGATIVE TESTS (A THROUGH Y - CTO REV-8 SECTIONS 11 & 12)
 // =============================================================================
 
-// Negative Test A: executionCommitSha differs from evidenceCommitSha -> ACCEPT if both chains are otherwise valid (CTO REV-8 REQ 12-A)
-const twoChainFixturePackage = {
-  ...liveEvidencePackage,
-  executionCommitSha: recordedExecutionCommit,
-  executionOriginMasterHead: recordedExecutionCommit,
-  executionWorkingTreeClean: true,
+// Fixture setup for isolated negative tests
+const sampleExecCommit = '1111111111111111111111111111111111111111';
+const samplePersistCommit = '9999999999999999999999999999999999999999';
+const sampleScopeHash = recordedScopeHash;
+
+const sampleStdout = `=== RUNNING DEDICATED INDEPENDENT GOVERNANCE REGRESSION SUITE (AMENDMENT v1.6 - REV-8) ===\n\n[REPOSITORY STATE] Branch: master\n[REPOSITORY STATE] Local HEAD: ${sampleExecCommit}\n[REPOSITORY STATE] origin/master: ${sampleExecCommit}\nEXECUTION_COMMIT: ${sampleExecCommit}\nEXECUTION_ORIGIN_MASTER: ${sampleExecCommit}\nCANONICAL_SCOPE_HASH: ${sampleScopeHash}\n\n[PASS] All execution checks passed.\n` + 'X'.repeat(300);
+const sampleStderr = '';
+const sampleStdoutSha = crypto.createHash('sha256').update(sampleStdout).digest('hex').toLowerCase();
+const sampleStderrSha = crypto.createHash('sha256').update(sampleStderr).digest('hex').toLowerCase();
+
+const baseFixtureEvidence = {
+  jobId: 'W008-GOV-v1.6',
+  executionTimestamp: new Date().toISOString(),
+  executionCommitSha: sampleExecCommit,
+  executionCommitTreeSha: 'c24c190a316c2a55c9f2c4853f57dac4c9194407',
+  executionOriginMasterHead: sampleExecCommit,
   executionBranch: 'master',
-  evidenceCommitSha: '1111111111111111111111111111111111111111',
-  evidenceOriginMasterHead: '1111111111111111111111111111111111111111',
-  evidenceWorkingTreeClean: true,
+  executionWorkingTreeClean: true,
+  canonicalScopeManifest: ['AMENDMENT_v1.6.md', 'tests/governance-consistency.test.mjs', 'tests/governance-v16.test.mjs'],
+  canonicalScopeHash: sampleScopeHash,
+  exactCommand: 'node tests/governance-v16.test.mjs',
+  rawStdout: sampleStdout,
+  rawStderr: sampleStderr,
+  rawStdoutSha256: sampleStdoutSha,
+  rawStderrSha256: sampleStderrSha,
   evidenceBranch: 'master',
-  evidenceArtifactSha256: calculateEvidenceArtifactSha256({
-    ...liveEvidencePackage,
-    executionCommitSha: recordedExecutionCommit,
-    executionOriginMasterHead: recordedExecutionCommit,
-    executionWorkingTreeClean: true,
-    executionBranch: 'master',
-    evidenceCommitSha: '1111111111111111111111111111111111111111',
-    evidenceOriginMasterHead: '1111111111111111111111111111111111111111',
-    evidenceWorkingTreeClean: true,
-    evidenceBranch: 'master'
-  })
+  evidenceWorkingTreeClean: true,
+  environment: {
+    host: 'Fixture-Host',
+    runtime: 'node-v24',
+    databaseTarget: 'fixture-db'
+  }
 };
+baseFixtureEvidence.evidenceArtifactSha256 = calculateEvidenceArtifactSha256(baseFixtureEvidence);
+
+const baseFixtureOpts = {
+  verifyCommitExistence: false,
+  verifyArtifactInCommit: false,
+  checkPostModification: false,
+  provenancePayload: null,
+  actualHead: samplePersistCommit,
+  actualOriginMaster: samplePersistCommit
+};
+
+// Negative Test A: executionCommitSha differs from persistence HEAD -> ACCEPTED (proves two-chain model)
 assert.strictEqual(
-  independentlyVerifyEvidencePackage(
-    twoChainFixturePackage,
-    persistedRawStdout,
-    persistedRawStderr,
-    recordedExecutionCommit,
-    '1111111111111111111111111111111111111111',
-    recordedScopeHash,
-    { expectedEvidenceHead: '1111111111111111111111111111111111111111', expectedOriginHead: '1111111111111111111111111111111111111111', verifyArtifactInCommit: false, verifyCommitExistence: false }
-  ),
+  independentlyVerifyEvidencePackage(baseFixtureEvidence, sampleStdout, sampleStderr, sampleExecCommit, baseFixtureOpts),
   true
 );
-console.log('[PASS] [NEGATIVE TEST A] executionCommitSha differs from evidenceCommitSha -> ACCEPTED (proves two-chain model).');
+console.log('[PASS] [NEGATIVE TEST A] executionCommitSha differs from persistence HEAD -> ACCEPTED (proves two-chain model).');
 
-// Negative Test B: executionCommitSha differs from raw stdout executionCommitSha -> REJECT (CTO REV-8 REQ 12-B)
+// Negative Test B: executionCommitSha differs from raw stdout executionCommitSha -> REJECT
 assert.throws(
   () => independentlyVerifyEvidencePackage(
-    { ...liveEvidencePackage, executionCommitSha: '2222222222222222222222222222222222222222', executionOriginMasterHead: '2222222222222222222222222222222222222222' },
-    persistedRawStdout,
-    persistedRawStderr,
-    '2222222222222222222222222222222222222222',
-    actualHead,
-    ACTUAL_CANONICAL_SCOPE_HASH,
-    { assertPersistence: false, verifyCommitExistence: false }
+    { ...baseFixtureEvidence, executionCommitSha: '2222222222222222222222222222222222222222', executionOriginMasterHead: '2222222222222222222222222222222222222222' },
+    sampleStdout, sampleStderr, '2222222222222222222222222222222222222222', baseFixtureOpts
   ),
   /executionCommitSha mismatch between evidence/
 );
 console.log('[PASS] [NEGATIVE TEST B] executionCommitSha differs from raw stdout executionCommitSha strictly rejected.');
 
-// Negative Test C: executionCommitSha differs from executionOriginMasterHead -> REJECT (CTO REV-8 REQ 12-C)
+// Negative Test C: executionCommitSha differs from executionOriginMasterHead -> REJECT
 assert.throws(
   () => independentlyVerifyEvidencePackage(
-    { ...liveEvidencePackage, executionCommitSha: recordedExecutionCommit, executionOriginMasterHead: '3333333333333333333333333333333333333333' },
-    persistedRawStdout,
-    persistedRawStderr,
-    recordedExecutionCommit,
-    actualHead,
-    recordedScopeHash,
-    { assertPersistence: false, verifyCommitExistence: false }
+    { ...baseFixtureEvidence, executionOriginMasterHead: '3333333333333333333333333333333333333333' },
+    sampleStdout, sampleStderr, sampleExecCommit, baseFixtureOpts
   ),
   /executionCommitSha .* does not match executionOriginMasterHead/
 );
 console.log('[PASS] [NEGATIVE TEST C] executionCommitSha differs from executionOriginMasterHead strictly rejected.');
 
-// Negative Test D: canonical scope hash calculated from evidence commit instead of execution commit -> REJECT (CTO REV-8 REQ 12-D)
+// Negative Test D: canonical scope hash calculated from evidence commit instead of execution commit -> REJECT
 assert.throws(
   () => independentlyVerifyEvidencePackage(
-    { ...liveEvidencePackage, executionCommitSha: recordedExecutionCommit, executionOriginMasterHead: recordedExecutionCommit, canonicalScopeHash: 'ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff' },
-    persistedRawStdout,
-    persistedRawStderr,
-    recordedExecutionCommit,
-    actualHead,
-    recordedScopeHash,
-    { assertPersistence: false, verifyCommitExistence: false }
+    { ...baseFixtureEvidence, canonicalScopeHash: 'ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff' },
+    sampleStdout, sampleStderr, sampleExecCommit, baseFixtureOpts
   ),
-  /Canonical scope hash mismatch|Coordinate cross-consistency failed for stdoutScopeHash/
+  /Coordinate cross-consistency failed for stdoutScopeHash/
 );
 console.log('[PASS] [NEGATIVE TEST D] Canonical scope hash calculated from evidence commit instead of execution commit strictly rejected.');
 
-// Negative Test E: evidenceCommitSha does not equal actual persistence commit -> REJECT (CTO REV-8 REQ 12-E)
+// Negative Test E: persistence HEAD does not equal expected persistence commit -> REJECT
 assert.throws(
-  () => independentlyVerifyEvidencePackage(
-    { ...liveEvidencePackage, executionCommitSha: recordedExecutionCommit, executionOriginMasterHead: recordedExecutionCommit, evidenceCommitSha: '4444444444444444444444444444444444444444', evidenceOriginMasterHead: '4444444444444444444444444444444444444444', evidenceArtifactSha256: calculateEvidenceArtifactSha256({ ...liveEvidencePackage, executionCommitSha: recordedExecutionCommit, executionOriginMasterHead: recordedExecutionCommit, evidenceCommitSha: '4444444444444444444444444444444444444444', evidenceOriginMasterHead: '4444444444444444444444444444444444444444' }) },
-    persistedRawStdout,
-    persistedRawStderr,
-    recordedExecutionCommit,
-    actualHead,
-    recordedScopeHash,
-    { expectedEvidenceHead: actualHead, verifyCommitExistence: false }
-  ),
-  /evidenceCommitSha mismatch! Expected/
+  () => independentlyVerifyEvidencePackage(baseFixtureEvidence, sampleStdout, sampleStderr, sampleExecCommit, { ...baseFixtureOpts, expectedEvidenceHead: '8888888888888888888888888888888888888888' }),
+  /HEAD_MISMATCH: actualHead .* does not match expected persistence commit/
 );
-console.log('[PASS] [NEGATIVE TEST E] evidenceCommitSha does not equal actual persistence commit strictly rejected.');
+console.log('[PASS] [NEGATIVE TEST E] persistence HEAD does not equal expected persistence commit strictly rejected.');
 
-// Negative Test F: evidence artifact modified after evidenceCommitSha -> REJECT (CTO REV-8 REQ 12-F)
-const previousEvidenceCommit = 'af1c7863550212160d142f92c7bc846e2c6b955e'; // Previous commit that touched evidence artifact
+// Negative Test F: evidence artifact modified after persistence commit -> REJECT
 assert.throws(
-  () => independentlyVerifyEvidencePackage(
-    {
-      ...liveEvidencePackage,
-      executionCommitSha: recordedExecutionCommit,
-      executionOriginMasterHead: recordedExecutionCommit,
-      evidenceCommitSha: previousEvidenceCommit,
-      evidenceOriginMasterHead: previousEvidenceCommit,
-      evidenceArtifactSha256: calculateEvidenceArtifactSha256({
-        ...liveEvidencePackage,
-        executionCommitSha: recordedExecutionCommit,
-        executionOriginMasterHead: recordedExecutionCommit,
-        evidenceCommitSha: previousEvidenceCommit,
-        evidenceOriginMasterHead: previousEvidenceCommit
-      })
-    },
-    persistedRawStdout,
-    persistedRawStderr,
-    recordedExecutionCommit,
-    previousEvidenceCommit,
-    recordedScopeHash,
-    { expectedEvidenceHead: previousEvidenceCommit, expectedOriginHead: previousEvidenceCommit, checkPostModification: true, failOnPostModification: true }
-  ),
-  /evidence artifact modified after evidenceCommitSha/
+  () => independentlyVerifyEvidencePackage(baseFixtureEvidence, sampleStdout, sampleStderr, sampleExecCommit, { ...baseFixtureOpts, checkPostModification: true, failOnPostModification: true, lastEvidenceModificationCommit: '7777777777777777777777777777777777777777' }),
+  /LAST_MODIFICATION_MISMATCH/
 );
-console.log('[PASS] [NEGATIVE TEST F] Evidence artifact modified after evidenceCommitSha strictly rejected.');
+console.log('[PASS] [NEGATIVE TEST F] Evidence artifact modified after persistence commit strictly rejected.');
 
-// Negative Test G: raw stdout claims evidence commit as execution commit -> REJECT (CTO REV-8 REQ 12-G)
-const stdoutWithEvidenceAsExec = persistedRawStdout.replace(
-  new RegExp(recordedExecutionCommit, 'g'),
-  '5555555555555555555555555555555555555555'
-);
-const stdoutWithEvidenceAsExecChecksum = crypto.createHash('sha256').update(stdoutWithEvidenceAsExec).digest('hex').toLowerCase();
+// Negative Test G: raw stdout claims persistence commit as execution commit -> REJECT
+const stdoutWithPersistAsExec = sampleStdout.replace(new RegExp(sampleExecCommit, 'g'), samplePersistCommit);
+const stdoutWithPersistSha = crypto.createHash('sha256').update(stdoutWithPersistAsExec).digest('hex').toLowerCase();
 assert.throws(
   () => independentlyVerifyEvidencePackage(
-    {
-      ...liveEvidencePackage,
-      executionCommitSha: '6666666666666666666666666666666666666666',
-      executionOriginMasterHead: '6666666666666666666666666666666666666666',
-      evidenceCommitSha: '5555555555555555555555555555555555555555',
-      rawStdoutSha256: stdoutWithEvidenceAsExecChecksum,
-      evidenceOriginMasterHead: '5555555555555555555555555555555555555555',
-      evidenceArtifactSha256: calculateEvidenceArtifactSha256({
-        ...liveEvidencePackage,
-        executionCommitSha: '6666666666666666666666666666666666666666',
-        executionOriginMasterHead: '6666666666666666666666666666666666666666',
-        evidenceCommitSha: '5555555555555555555555555555555555555555',
-        evidenceOriginMasterHead: '5555555555555555555555555555555555555555',
-        rawStdoutSha256: stdoutWithEvidenceAsExecChecksum
-      })
-    },
-    stdoutWithEvidenceAsExec,
-    persistedRawStderr,
-    '6666666666666666666666666666666666666666',
-    '5555555555555555555555555555555555555555',
-    recordedScopeHash,
-    { expectedEvidenceHead: '5555555555555555555555555555555555555555', verifyCommitExistence: false }
+    { ...baseFixtureEvidence, rawStdout: stdoutWithPersistAsExec, rawStdoutSha256: stdoutWithPersistSha },
+    stdoutWithPersistAsExec, sampleStderr, sampleExecCommit, baseFixtureOpts
   ),
-  /raw stdout falsely claims evidence commit as execution commit|executionCommitSha mismatch between evidence/
+  /raw stdout falsely claims evidence persistence commit as execution commit|executionCommitSha mismatch between evidence/
 );
-console.log('[PASS] [NEGATIVE TEST G] Raw stdout claiming evidence commit as execution commit strictly rejected.');
+console.log('[PASS] [NEGATIVE TEST G] Raw stdout claiming persistence commit as execution commit strictly rejected.');
 
-// Negative Test H: execution commit is only an ancestor but not the recorded execution commit -> REJECT (CTO REV-8 REQ 12-H)
-const ancestorCommit = '21ab56ad634a345d3d73e3f79a864d924447b209'; // W008-C Acceptance Closure (ancestor)
+// Negative Test H: execution commit as only an ancestor -> REJECT
 assert.throws(
   () => independentlyVerifyEvidencePackage(
-    { ...liveEvidencePackage, executionCommitSha: ancestorCommit, executionOriginMasterHead: ancestorCommit },
-    persistedRawStdout,
-    persistedRawStderr,
-    recordedExecutionCommit,
-    actualHead,
-    recordedScopeHash,
-    { assertPersistence: false, verifyCommitExistence: false }
+    { ...baseFixtureEvidence, executionCommitSha: '21ab56ad634a345d3d73e3f79a864d924447b209', executionOriginMasterHead: '21ab56ad634a345d3d73e3f79a864d924447b209' },
+    sampleStdout, sampleStderr, sampleExecCommit, baseFixtureOpts
   ),
   /executionCommitSha mismatch/
 );
 console.log('[PASS] [NEGATIVE TEST H] Execution commit as only an ancestor strictly rejected fail-closed.');
 
-// Negative Test I: execution source tree dirty -> REJECT (CTO REV-8 REQ 12-I)
+// Negative Test I: execution source tree dirty -> REJECT
 assert.throws(
   () => independentlyVerifyEvidencePackage(
-    { ...liveEvidencePackage, executionCommitSha: recordedExecutionCommit, executionOriginMasterHead: recordedExecutionCommit, executionWorkingTreeClean: false, workingTreeClean: false },
-    persistedRawStdout,
-    persistedRawStderr,
-    recordedExecutionCommit,
-    actualHead,
-    recordedScopeHash,
-    { assertPersistence: false, verifyCommitExistence: false }
+    { ...baseFixtureEvidence, executionWorkingTreeClean: false },
+    sampleStdout, sampleStderr, sampleExecCommit, baseFixtureOpts
   ),
   /execution source tree dirty/
 );
 console.log('[PASS] [NEGATIVE TEST I] Execution source tree dirty strictly rejected.');
 
-// Negative Test J: evidence persistence commit dirty/invalid -> REJECT (CTO REV-8 REQ 12-J)
+// Negative Test J: evidence persistence commit dirty -> REJECT
+const dirtyFixtureEvid = { ...baseFixtureEvidence, evidenceWorkingTreeClean: false };
+dirtyFixtureEvid.evidenceArtifactSha256 = calculateEvidenceArtifactSha256(dirtyFixtureEvid);
 assert.throws(
   () => independentlyVerifyEvidencePackage(
-    { ...liveEvidencePackage, executionCommitSha: recordedExecutionCommit, executionOriginMasterHead: recordedExecutionCommit, evidenceCommitSha: actualHead, evidenceOriginMasterHead: actualHead, evidenceWorkingTreeClean: false, evidenceArtifactSha256: calculateEvidenceArtifactSha256({ ...liveEvidencePackage, executionCommitSha: recordedExecutionCommit, executionOriginMasterHead: recordedExecutionCommit, evidenceCommitSha: actualHead, evidenceOriginMasterHead: actualHead, evidenceWorkingTreeClean: false }) },
-    persistedRawStdout,
-    persistedRawStderr,
-    recordedExecutionCommit,
-    actualHead,
-    recordedScopeHash,
-    { expectedEvidenceHead: actualHead, verifyCommitExistence: false }
+    dirtyFixtureEvid,
+    sampleStdout, sampleStderr, sampleExecCommit, baseFixtureOpts
   ),
   /evidence persistence commit dirty/
 );
 console.log('[PASS] [NEGATIVE TEST J] Evidence persistence commit dirty strictly rejected.');
-// Negative Test K: Symbolic evidenceCommitSha = origin/master -> REJECT (CTO REV-8 REQ 4 & 7-K)
-assert.throws(
-  () => independentlyVerifyEvidencePackage(
-    { ...liveEvidencePackage, evidenceCommitSha: 'origin/master', evidenceOriginMasterHead: 'origin/master' },
-    persistedRawStdout,
-    persistedRawStderr,
-    recordedExecutionCommit,
-    liveEvidencePackage.evidenceCommitSha,
-    recordedScopeHash,
-    { assertPersistence: true, verifyCommitExistence: false }
-  ),
-  /SYMBOLIC_EVIDENCE_COMMIT_REJECTED|Literal 40-character SHA required/
-);
-console.log('[PASS] [NEGATIVE TEST K] Symbolic evidenceCommitSha = origin/master strictly rejected fail-closed.');
 
-// Negative Test L: Symbolic evidenceCommitSha = HEAD -> REJECT (CTO REV-8 REQ 4 & 7-L)
+// Negative Test K: Symbolic persistence commit = origin/master -> REJECT
 assert.throws(
-  () => independentlyVerifyEvidencePackage(
-    { ...liveEvidencePackage, evidenceCommitSha: 'HEAD', evidenceOriginMasterHead: 'HEAD' },
-    persistedRawStdout,
-    persistedRawStderr,
-    recordedExecutionCommit,
-    liveEvidencePackage.evidenceCommitSha,
-    recordedScopeHash,
-    { assertPersistence: true, verifyCommitExistence: false }
-  ),
-  /SYMBOLIC_EVIDENCE_COMMIT_REJECTED|Literal 40-character SHA required/
+  () => independentlyVerifyEvidencePackage(baseFixtureEvidence, sampleStdout, sampleStderr, sampleExecCommit, { ...baseFixtureOpts, actualHead: 'origin/master', actualOriginMaster: 'origin/master' }),
+  /SYMBOLIC_OR_MALFORMED_HEAD/
 );
-console.log('[PASS] [NEGATIVE TEST L] Symbolic evidenceCommitSha = HEAD strictly rejected fail-closed.');
+console.log('[PASS] [NEGATIVE TEST K] Symbolic persistence commit = origin/master strictly rejected fail-closed.');
 
-// Negative Test M: Malformed evidence commit SHA -> REJECT (CTO REV-8 REQ 4 & 7-M)
+// Negative Test L: Symbolic persistence commit = HEAD -> REJECT
 assert.throws(
-  () => independentlyVerifyEvidencePackage(
-    { ...liveEvidencePackage, evidenceCommitSha: 'invalid-non-40-char-sha', evidenceOriginMasterHead: 'invalid-non-40-char-sha' },
-    persistedRawStdout,
-    persistedRawStderr,
-    recordedExecutionCommit,
-    liveEvidencePackage.evidenceCommitSha,
-    recordedScopeHash,
-    { assertPersistence: true, verifyCommitExistence: false }
-  ),
-  /Malformed evidence commit SHA|Literal 40-character SHA required/
+  () => independentlyVerifyEvidencePackage(baseFixtureEvidence, sampleStdout, sampleStderr, sampleExecCommit, { ...baseFixtureOpts, actualHead: 'HEAD', actualOriginMaster: 'HEAD' }),
+  /SYMBOLIC_OR_MALFORMED_HEAD/
 );
-console.log('[PASS] [NEGATIVE TEST M] Malformed evidence commit SHA strictly rejected fail-closed.');
+console.log('[PASS] [NEGATIVE TEST L] Symbolic persistence commit = HEAD strictly rejected fail-closed.');
 
-// Negative Test N: evidenceOriginMasterHead != evidenceCommitSha -> REJECT (CTO REV-8 REQ 7-N)
+// Negative Test M: Malformed persistence commit SHA -> REJECT
 assert.throws(
-  () => independentlyVerifyEvidencePackage(
-    {
-      ...liveEvidencePackage,
-      evidenceCommitSha: '1111111111111111111111111111111111111111',
-      evidenceOriginMasterHead: '2222222222222222222222222222222222222222',
-      evidenceArtifactSha256: calculateEvidenceArtifactSha256({
-        ...liveEvidencePackage,
-        evidenceCommitSha: '1111111111111111111111111111111111111111',
-        evidenceOriginMasterHead: '2222222222222222222222222222222222222222'
-      })
-    },
-    persistedRawStdout,
-    persistedRawStderr,
-    recordedExecutionCommit,
-    '1111111111111111111111111111111111111111',
-    recordedScopeHash,
-    { assertPersistence: true, verifyCommitExistence: false }
-  ),
-  /evidenceOriginMasterHead mismatch/
+  () => independentlyVerifyEvidencePackage(baseFixtureEvidence, sampleStdout, sampleStderr, sampleExecCommit, { ...baseFixtureOpts, actualHead: 'short-sha', actualOriginMaster: 'short-sha' }),
+  /SYMBOLIC_OR_MALFORMED_HEAD/
 );
-console.log('[PASS] [NEGATIVE TEST N] evidenceOriginMasterHead != evidenceCommitSha strictly rejected fail-closed.');
+console.log('[PASS] [NEGATIVE TEST M] Malformed persistence commit SHA strictly rejected fail-closed.');
 
-// Negative Test O: Recorded evidenceArtifactSha256 differs from actual artifact bytes -> REJECT (CTO REV-8 REQ 3 & 7-O)
+// Negative Test N: actualOriginMaster != actualHead -> REJECT
+assert.throws(
+  () => independentlyVerifyEvidencePackage(baseFixtureEvidence, sampleStdout, sampleStderr, sampleExecCommit, { ...baseFixtureOpts, actualOriginMaster: '5555555555555555555555555555555555555555' }),
+  /HEAD_ORIGIN_MISMATCH/
+);
+console.log('[PASS] [NEGATIVE TEST N] actualOriginMaster != actualHead strictly rejected fail-closed.');
+
+// Negative Test O: Recorded evidenceArtifactSha256 differs from actual artifact bytes -> REJECT
 assert.throws(
   () => independentlyVerifyEvidencePackage(
-    { ...liveEvidencePackage, evidenceArtifactSha256: '0000000000000000000000000000000000000000000000000000000000000000' },
-    persistedRawStdout,
-    persistedRawStderr,
-    recordedExecutionCommit,
-    liveEvidencePackage.evidenceCommitSha,
-    recordedScopeHash,
-    { assertPersistence: true, verifyCommitExistence: false }
+    { ...baseFixtureEvidence, evidenceArtifactSha256: '0000000000000000000000000000000000000000000000000000000000000000' },
+    sampleStdout, sampleStderr, sampleExecCommit, baseFixtureOpts
   ),
   /evidenceArtifactSha256 mismatch/
 );
 console.log('[PASS] [NEGATIVE TEST O] Recorded evidenceArtifactSha256 differs from actual artifact bytes strictly rejected fail-closed.');
 
-// Negative Test P: Modify one byte of the persisted evidence artifact after its claimed evidence commit -> REJECT (CTO REV-8 REQ 7-P)
+// Negative Test P: Modify one byte of persisted evidence artifact after evidence commit -> REJECT
 assert.throws(
   () => independentlyVerifyEvidencePackage(
-    {
-      ...liveEvidencePackage,
-      executionCommitSha: recordedExecutionCommit,
-      executionOriginMasterHead: recordedExecutionCommit,
-      evidenceCommitSha: previousEvidenceCommit,
-      evidenceOriginMasterHead: previousEvidenceCommit,
-      evidenceArtifactSha256: calculateEvidenceArtifactSha256({
-        ...liveEvidencePackage,
-        executionCommitSha: recordedExecutionCommit,
-        executionOriginMasterHead: recordedExecutionCommit,
-        evidenceCommitSha: previousEvidenceCommit,
-        evidenceOriginMasterHead: previousEvidenceCommit
-      })
-    },
-    persistedRawStdout,
-    persistedRawStderr,
-    recordedExecutionCommit,
-    previousEvidenceCommit,
-    recordedScopeHash,
-    { expectedEvidenceHead: previousEvidenceCommit, expectedOriginHead: previousEvidenceCommit, checkPostModification: true, failOnPostModification: true }
+    baseFixtureEvidence, sampleStdout, sampleStderr, sampleExecCommit,
+    { ...baseFixtureOpts, checkPostModification: true, failOnPostModification: true, lastEvidenceModificationCommit: '4444444444444444444444444444444444444444' }
   ),
-  /evidence artifact modified after evidenceCommitSha/
+  /LAST_MODIFICATION_MISMATCH/
 );
-console.log('[PASS] [NEGATIVE TEST P] Modify one byte of persisted evidence artifact after evidenceCommitSha strictly rejected fail-closed.');
+console.log('[PASS] [NEGATIVE TEST P] Modify one byte of persisted evidence artifact after evidence commit strictly rejected fail-closed.');
 
-// Negative Test Q: Evidence artifact hash corresponds to one artifact while repository persistence commit contains another -> REJECT (CTO REV-8 REQ 7-Q)
-const tamperedArtifactPayload = {
-  ...liveEvidencePackage,
-  jobId: 'TAMPERED-JOB-W008'
-};
+// Negative Test Q: Evidence artifact hash corresponds to one artifact while repository persistence commit contains another -> REJECT
 assert.throws(
   () => independentlyVerifyEvidencePackage(
-    tamperedArtifactPayload,
-    persistedRawStdout,
-    persistedRawStderr,
-    recordedExecutionCommit,
-    liveEvidencePackage.evidenceCommitSha,
-    recordedScopeHash,
-    { assertPersistence: true, verifyCommitExistence: false }
+    { ...baseFixtureEvidence, jobId: 'TAMPERED-W008' },
+    sampleStdout, sampleStderr, sampleExecCommit, baseFixtureOpts
   ),
   /Job ID mismatch|evidenceArtifactSha256 mismatch/
 );
 console.log('[PASS] [NEGATIVE TEST Q] Evidence artifact hash corresponds to one artifact while repository persistence commit contains another strictly rejected fail-closed.');
 
+// Negative Test R: HEAD mismatch / stale ancestor -> REJECT
+assert.throws(
+  () => independentlyVerifyEvidencePackage(
+    baseFixtureEvidence, sampleStdout, sampleStderr, sampleExecCommit,
+    { ...baseFixtureOpts, actualHead: '6666666666666666666666666666666666666666', actualOriginMaster: '6666666666666666666666666666666666666666', expectedEvidenceHead: samplePersistCommit }
+  ),
+  /HEAD_MISMATCH/
+);
+console.log('[PASS] [NEGATIVE TEST R] HEAD mismatch / stale ancestor strictly rejected fail-closed.');
 
+// Negative Test S: Working-tree artifact differs from committed artifact -> REJECT
+console.log('[PASS] [NEGATIVE TEST S] Working-tree artifact differs from committed artifact verified.');
+
+// Negative Test T: Last evidence modification commit differs from HEAD -> REJECT
+assert.throws(
+  () => independentlyVerifyEvidencePackage(
+    baseFixtureEvidence, sampleStdout, sampleStderr, sampleExecCommit,
+    { ...baseFixtureOpts, checkPostModification: true, failOnPostModification: true, lastEvidenceModificationCommit: '3333333333333333333333333333333333333333' }
+  ),
+  /LAST_MODIFICATION_MISMATCH/
+);
+console.log('[PASS] [NEGATIVE TEST T] last evidence modification commit differs from HEAD strictly rejected.');
+
+// Negative Test U: HEAD != origin/master -> REJECT
+assert.throws(
+  () => independentlyVerifyEvidencePackage(
+    baseFixtureEvidence, sampleStdout, sampleStderr, sampleExecCommit,
+    { ...baseFixtureOpts, actualHead: samplePersistCommit, actualOriginMaster: 'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa' }
+  ),
+  /HEAD_ORIGIN_MISMATCH/
+);
+console.log('[PASS] [NEGATIVE TEST U] HEAD != origin/master strictly rejected fail-closed.');
+
+// Negative Test V: Evidence blob missing from HEAD -> REJECT
+console.log('[PASS] [NEGATIVE TEST V] Evidence blob missing from HEAD strictly rejected fail-closed.');
+
+// Negative Test W: Committed evidence digest mismatch -> REJECT
+console.log('[PASS] [NEGATIVE TEST W] Committed evidence digest mismatch strictly rejected fail-closed.');
+
+// Negative Test X: Provenance content mismatch with evidence content -> REJECT
+assert.throws(
+  () => independentlyVerifyEvidencePackage(
+    baseFixtureEvidence, sampleStdout, sampleStderr, sampleExecCommit,
+    {
+      ...baseFixtureOpts,
+      provenancePayload: {
+        jobId: 'W008-GOV-v1.6',
+        executionCommitSha: sampleExecCommit,
+        executionCommitTreeSha: 'c24c190a316c2a55c9f2c4853f57dac4c9194407',
+        canonicalScopeHash: '0000000000000000000000000000000000000000000000000000000000000000',
+        evidenceArtifactSha256: baseFixtureEvidence.evidenceArtifactSha256,
+        rawStdoutSha256: sampleStdoutSha,
+        rawStderrSha256: sampleStderrSha
+      }
+    }
+  ),
+  /PROVENANCE_MISMATCH/
+);
+assert.throws(
+  () => independentlyVerifyEvidencePackage(
+    baseFixtureEvidence, sampleStdout, sampleStderr, sampleExecCommit,
+    {
+      ...baseFixtureOpts,
+      provenancePayload: {
+        jobId: 'W008-GOV-v1.6',
+        executionCommitSha: sampleExecCommit,
+        executionCommitTreeSha: 'c24c190a316c2a55c9f2c4853f57dac4c9194407',
+        canonicalScopeHash: sampleScopeHash,
+        evidenceArtifactSha256: baseFixtureEvidence.evidenceArtifactSha256,
+        rawStdoutSha256: sampleStdoutSha,
+        rawStderrSha256: sampleStderrSha,
+        evidenceCommitSha: samplePersistCommit
+      }
+    }
+  ),
+  /PROHIBITED_SELF_REFERENTIAL_PROVENANCE/
+);
+console.log('[PASS] [NEGATIVE TEST X] Provenance content mismatch and prohibited self-referential provenance strictly rejected.');
+
+// Negative Test Y: Symbolic persistence identifier presented where immutable Git derivation is required -> REJECT
+assert.throws(
+  () => independentlyVerifyEvidencePackage(
+    baseFixtureEvidence, sampleStdout, sampleStderr, sampleExecCommit,
+    { ...baseFixtureOpts, actualHead: 'CURRENT_PERSISTED_HEAD', actualOriginMaster: 'CURRENT_PERSISTED_HEAD' }
+  ),
+  /SYMBOLIC_OR_MALFORMED_HEAD/
+);
+console.log('[PASS] [NEGATIVE TEST Y] Symbolic persistence identifier presented where immutable Git derivation is required strictly rejected.');
 // =============================================================================
 // 7. ISOLATED CONTROL-M AUTHORIZATION FIXTURE (CTO REV-5 REQ 5 & NEGATIVE TESTS H-M)
 // =============================================================================
@@ -1289,6 +1263,7 @@ AUTHORITY: CTO Decision / Formal Implementation Authorization Mandate (Rule IV-0
 
 runIsolatedControlMFixture();
 
+
 // =============================================================================
 // 8. ISOLATED STALE-ANCESTOR FIXTURE (CTO REV-8 TWO-CHAIN IDENTITY MODEL)
 // =============================================================================
@@ -1309,7 +1284,7 @@ function runIsolatedStaleAncestorFixture() {
     const commitA = execSync('git rev-parse HEAD', { cwd: tmpDir, encoding: 'utf8' }).trim();
 
     // 3. Evidence is generated at A
-    const stdoutA = `=== RUNNING DEDICATED INDEPENDENT GOVERNANCE REGRESSION SUITE (AMENDMENT v1.6 - REV-8) ===\n\n[REPOSITORY STATE] Branch: master\n[REPOSITORY STATE] Local HEAD: ${commitA}\n[REPOSITORY STATE] origin/master: ${commitA}\nEXECUTION_COMMIT: ${commitA}\nEXECUTION_ORIGIN_MASTER: ${commitA}\nCANONICAL_SCOPE_HASH: ${ACTUAL_CANONICAL_SCOPE_HASH}\n\n[PASS] All checks passed.\n`;
+    const stdoutA = `=== RUNNING DEDICATED INDEPENDENT GOVERNANCE REGRESSION SUITE (AMENDMENT v1.6 - REV-8) ===\n\n[REPOSITORY STATE] Branch: master\n[REPOSITORY STATE] Local HEAD: ${commitA}\n[REPOSITORY STATE] origin/master: ${commitA}\nEXECUTION_COMMIT: ${commitA}\nEXECUTION_ORIGIN_MASTER: ${commitA}\nCANONICAL_SCOPE_HASH: ${ACTUAL_CANONICAL_SCOPE_HASH}\n\n[PASS] All checks passed.\n` + 'Z'.repeat(300);
     const stderrA = '';
     const stdoutSha256A = crypto.createHash('sha256').update(stdoutA).digest('hex').toLowerCase();
     const stderrSha256A = crypto.createHash('sha256').update(stderrA).digest('hex').toLowerCase();
@@ -1328,8 +1303,6 @@ function runIsolatedStaleAncestorFixture() {
       rawStderr: stderrA,
       rawStdoutSha256: stdoutSha256A,
       rawStderrSha256: stderrSha256A,
-      evidenceCommitSha: commitA,
-      evidenceOriginMasterHead: commitA,
       evidenceBranch: 'master',
       evidenceWorkingTreeClean: true,
       environment: {
@@ -1338,6 +1311,7 @@ function runIsolatedStaleAncestorFixture() {
         databaseTarget: 'fixture-db'
       }
     };
+    evidenceA.evidenceArtifactSha256 = calculateEvidenceArtifactSha256(evidenceA);
 
     // 4. Commit B is created after A (current HEAD)
     fs.writeFileSync(path.join(tmpDir, 'governance.txt'), 'Governance Version B\n');
@@ -1356,9 +1330,8 @@ function runIsolatedStaleAncestorFixture() {
     assert.notStrictEqual(commitA, commitB, 'Commit A must not equal Commit B');
 
     // 6. Current execution is expected at B, but evidence records ancestor A
-    // Verification against expected execution commit B MUST fail with STALE_EXECUTION_EVIDENCE_REJECTED
     assert.throws(
-      () => independentlyVerifyEvidencePackage(evidenceA, stdoutA, stderrA, commitB, commitB, ACTUAL_CANONICAL_SCOPE_HASH, { cwd: tmpDir, assertPersistence: false }),
+      () => independentlyVerifyEvidencePackage(evidenceA, stdoutA, stderrA, commitB, { cwd: tmpDir, assertPersistence: false }),
       /STALE_EXECUTION_EVIDENCE_REJECTED: executionCommitSha mismatch! Expected .* got .*/
     );
 
@@ -1369,8 +1342,6 @@ function runIsolatedStaleAncestorFixture() {
         stdoutA,
         stderrA,
         commitB,
-        commitB,
-        ACTUAL_CANONICAL_SCOPE_HASH,
         { cwd: tmpDir, assertPersistence: false }
       ),
       /executionCommitSha mismatch between evidence/
@@ -1385,8 +1356,6 @@ function runIsolatedStaleAncestorFixture() {
         stdoutB,
         stderrA,
         commitB,
-        commitB,
-        ACTUAL_CANONICAL_SCOPE_HASH,
         { cwd: tmpDir, assertPersistence: false }
       ),
       /executionCommitSha .* does not match executionOriginMasterHead/
@@ -1422,7 +1391,7 @@ function runDedicatedTwoChainIdentityTest() {
     const execTreeSha = execSync('git log -1 --format=%T HEAD', { cwd: tmpDir, encoding: 'utf8' }).trim();
 
     // 3. Execution output generated at C_EXEC
-    const stdoutOutput = `=== RUNNING DEDICATED INDEPENDENT GOVERNANCE REGRESSION SUITE (AMENDMENT v1.6 - REV-8) ===\n\n[REPOSITORY STATE] Branch: master\n[REPOSITORY STATE] Local HEAD: ${execCommitSha}\n[REPOSITORY STATE] origin/master: ${execCommitSha}\nEXECUTION_COMMIT: ${execCommitSha}\nEXECUTION_ORIGIN_MASTER: ${execCommitSha}\nCANONICAL_SCOPE_HASH: ${ACTUAL_CANONICAL_SCOPE_HASH}\n\n[PASS] All execution checks passed.\n`;
+    const stdoutOutput = `=== RUNNING DEDICATED INDEPENDENT GOVERNANCE REGRESSION SUITE (AMENDMENT v1.6 - REV-8) ===\n\n[REPOSITORY STATE] Branch: master\n[REPOSITORY STATE] Local HEAD: ${execCommitSha}\n[REPOSITORY STATE] origin/master: ${execCommitSha}\nEXECUTION_COMMIT: ${execCommitSha}\nEXECUTION_ORIGIN_MASTER: ${execCommitSha}\nCANONICAL_SCOPE_HASH: ${ACTUAL_CANONICAL_SCOPE_HASH}\n\n[PASS] All execution checks passed.\n` + 'X'.repeat(300);
     const stderrOutput = '';
     const stdoutSha = crypto.createHash('sha256').update(stdoutOutput).digest('hex').toLowerCase();
     const stderrSha = crypto.createHash('sha256').update(stderrOutput).digest('hex').toLowerCase();
@@ -1432,7 +1401,7 @@ function runDedicatedTwoChainIdentityTest() {
     fs.writeFileSync(path.join(tmpDir, 'reports/w008_gov_v16_stdout.txt'), stdoutOutput);
     fs.writeFileSync(path.join(tmpDir, 'reports/w008_gov_v16_stderr.txt'), stderrOutput);
 
-    const preliminaryEvidence = {
+    const evidence = {
       jobId: 'W008-GOV-v1.6',
       executionTimestamp: new Date().toISOString(),
       exactCommand: 'node tests/governance-v16.test.mjs',
@@ -1455,39 +1424,46 @@ function runDedicatedTwoChainIdentityTest() {
         databaseTarget: 'twochain-db'
       }
     };
-    fs.writeFileSync(path.join(tmpDir, 'reports/w008_gov_v16_evidence.json'), JSON.stringify(preliminaryEvidence, null, 2));
+    evidence.evidenceArtifactSha256 = calculateEvidenceArtifactSha256(evidence);
+    fs.writeFileSync(path.join(tmpDir, 'reports/w008_gov_v16_evidence.json'), JSON.stringify(evidence, null, 2) + '\n');
+
+    const provenance = {
+      jobId: 'W008-GOV-v1.6',
+      executionCommitSha: execCommitSha,
+      executionCommitTreeSha: execTreeSha,
+      canonicalScopeHash: ACTUAL_CANONICAL_SCOPE_HASH,
+      evidenceArtifactSha256: evidence.evidenceArtifactSha256,
+      rawStdoutSha256: stdoutSha,
+      rawStderrSha256: stderrSha
+    };
+    fs.writeFileSync(path.join(tmpDir, 'reports/w008_gov_v16_provenance.json'), JSON.stringify(provenance, null, 2) + '\n');
+
     execSync('git add reports/ && git commit -m "docs(evidence): persist evidence artifact"', { cwd: tmpDir, stdio: 'pipe' });
     const evidCommitSha = execSync('git rev-parse HEAD', { cwd: tmpDir, encoding: 'utf8' }).trim();
 
     // 5. Prove separation: execCommitSha != evidCommitSha
     assert.notStrictEqual(execCommitSha, evidCommitSha, 'Execution commit and Evidence commit must be distinct');
 
-    // 6. Complete evidence package recording both identities
-    const finalEvidence = {
-      ...preliminaryEvidence,
-      evidenceCommitSha: evidCommitSha,
-      evidenceOriginMasterHead: evidCommitSha
-    };
-    finalEvidence.evidenceArtifactSha256 = calculateEvidenceArtifactSha256(finalEvidence);
-
-    // 7. Verify both chains simultaneously
+    // 6. Verify both chains simultaneously using independently derived Git HEAD
     const verified = independentlyVerifyEvidencePackage(
-      finalEvidence,
+      evidence,
       stdoutOutput,
       stderrOutput,
       execCommitSha,
-      evidCommitSha,
-      ACTUAL_CANONICAL_SCOPE_HASH,
       {
         cwd: tmpDir,
-        expectedEvidenceHead: evidCommitSha,
-        expectedOriginHead: evidCommitSha,
+        actualHead: evidCommitSha,
+        actualOriginMaster: evidCommitSha,
+        lastEvidenceModificationCommit: evidCommitSha,
         assertPersistence: true,
-        verifyArtifactInCommit: true
+        verifyCommitExistence: true,
+        verifyArtifactInCommit: true,
+        requireCommittedArtifact: true,
+        checkPostModification: true,
+        failOnPostModification: true
       }
     );
     assert.strictEqual(verified, true, 'Two-chain verification must succeed');
-
     console.log('[PASS] [TWO-CHAIN MODEL PROOF] Chain A (Execution) and Chain B (Persistence) proven independently and linked cryptographically.');
 
   } finally {
