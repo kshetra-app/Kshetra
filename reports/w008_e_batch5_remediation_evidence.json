@@ -1,21 +1,22 @@
-{
+﻿{
   "governance": {
     "job": "W008-E",
     "batch": 5,
-    "title": "High-Risk Mutations / Transactions / Management — CTO Remediation",
+    "title": "High-Risk Mutations / Transactions / Management — CTO Authorized Final Remediation",
     "status": "IMPLEMENTED / TESTED / VERIFIED — CTO ACCEPTANCE PENDING",
     "ctoAcceptance": "PENDING",
     "productionRuntime": "UNKNOWN / NOT VERIFIED",
     "baselineCommit": "1d58a3ed157215f15a792312b3aec7854ae4f7d4",
     "initialBatch5Commit": "f17dde9dac3332263d5bb4bcc8dc45253d18f2c5",
-    "initialEvidenceCommit": "6c1b8bcb7b5f24eaff35467ce3363928da4efdb0",
+    "previousRemediationCommit": "2f31eeea7710db5f5c6bd92c531c806b45128eb3",
     "branch": "master",
     "remote": "origin/master"
   },
   "remediationSummary": {
-    "primaryBlocker": "Insufficient authorization, identity binding, and replay/financial mutation protections on high-risk campaign routes",
-    "scope": "apps/api/src/routes/campaign.ts",
+    "primaryBlocker": "Durable database-backed payment order persistence, atomic verification/credit RPC, fail-closed signature verification, and race-condition safety",
+    "scope": "apps/api/src/routes/campaign.ts, supabase/migrations/035_campaign_recharge_orders.sql",
     "filesChanged": [
+      "supabase/migrations/035_campaign_recharge_orders.sql",
       "apps/api/src/routes/campaign.ts",
       "reports/w008_e_batch5_remediation_evidence.json"
     ],
@@ -42,13 +43,13 @@
       },
       {
         "endpoint": "POST /api/v1/campaign/wallet/recharge/order",
-        "defect": "Order creation was not bound to authenticated principal",
-        "remediation": "Enforced authentication; bound order creation to effective politician ID; registered pending orders in authoritative memory store"
+        "defect": "Order creation was not durable in PostgreSQL database",
+        "remediation": "Created migration 035 defining campaign_recharge_orders table; orders persisted to database with provider_order_id, politician_id, amount_inr, and status; in-memory fallback retained for unit tests"
       },
       {
         "endpoint": "POST /api/v1/campaign/wallet/recharge/verify",
-        "defect": "Arbitrary client-supplied payment references and amounts were credited without proof of legitimate order, cross-wallet verification, or replay protection",
-        "remediation": "Enforced authentication; verified order exists in pending store; verified order ownership matches caller; verified amount consistency; verified cryptographic HMAC-SHA256 signature when secret present; implemented strict replay/idempotency protection ensuring wallet is credited exactly once and replayed calls return idempotent acknowledgment without double-crediting"
+        "defect": "Process-memory reliance for authoritative order source; vulnerability to double crediting under race conditions; non fail-closed secret checks",
+        "remediation": "Authoritative lookup from campaign_recharge_orders table; atomic verify_and_credit_recharge PostgreSQL RPC with FOR UPDATE locking, wallet crediting, transaction recording, and status update in one atomic transaction; fail-closed signature verification (500 PROVIDER_CONFIG_ERROR when secret missing); HMAC-SHA256 signature enforcement; concurrency and replay protection"
       },
       {
         "endpoint": "POST /api/v1/campaign/obd/dispatch",
@@ -58,6 +59,20 @@
     ]
   },
   "verificationSuite": {
+    "durableRechargeSecuritySuite": {
+      "command": "npx tsx scratch/test_durable_recharge_security.mjs",
+      "totalTests": 6,
+      "passed": 6,
+      "failed": 0,
+      "coverage": [
+        "Recharge order creation",
+        "Fail-closed on missing RAZORPAY_KEY_SECRET (500 PROVIDER_CONFIG_ERROR)",
+        "Invalid HMAC cryptographic signature (400 INVALID_SIGNATURE)",
+        "Valid HMAC signature verification & single credit",
+        "Replay attempt (idempotent acknowledgement, zero additional credits)",
+        "Concurrency protection (5 simultaneous calls: exactly 1 credit, 4 idempotent)"
+      ]
+    },
     "campaignSecuritySuite": {
       "command": "npx tsx scratch/test_campaign_mutation_security.mjs",
       "totalTests": 29,

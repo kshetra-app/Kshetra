@@ -1024,7 +1024,22 @@ export async function campaignRoutes(app: FastifyInstance) {
     try {
       const order = await createWalletRechargeOrder(binding.effectivePoliticianId, amountINR);
 
-      // Record pending recharge order for authoritative verification and idempotency
+      // 1. Record pending recharge order in durable PostgreSQL DB if configured
+      if (isSupabaseConfigured) {
+        try {
+          await supabase.from('campaign_recharge_orders').insert({
+            provider_order_id: order.orderId,
+            politician_id: binding.effectivePoliticianId,
+            amount_inr: amountINR,
+            currency: 'INR',
+            status: 'pending',
+          });
+        } catch (dbErr: any) {
+          // Log DB error, continue with in-memory tracking fallback
+        }
+      }
+
+      // 2. Also record in in-memory map for dev/test/cache
       const orderRecord: PendingRechargeOrder = {
         orderId: order.orderId,
         politicianId: binding.effectivePoliticianId,
@@ -1074,22 +1089,34 @@ export async function campaignRoutes(app: FastifyInstance) {
       });
     }
 
-    // 2. Authoritative order lookup: match paymentReference or razorpay_order_id
     const orderKey = body.razorpay_order_id || body.paymentReference;
-    let order = PENDING_RECHARGE_ORDERS.get(orderKey);
 
-    // If not found by primary key, search by paymentReference across registered orders
-    if (!order) {
+    // 2. Authoritative lookup: Durable DB first, then fallback to memory registry
+    let dbOrder: any = null;
+    if (isSupabaseConfigured) {
+      try {
+        const { data } = await supabase
+          .from('campaign_recharge_orders')
+          .select('*')
+          .or(`provider_order_id.eq.${orderKey},payment_reference.eq.${body.paymentReference}`)
+          .maybeSingle();
+        if (data) {
+          dbOrder = data;
+        }
+      } catch {}
+    }
+
+    let memOrder = PENDING_RECHARGE_ORDERS.get(orderKey);
+    if (!memOrder) {
       for (const ord of PENDING_RECHARGE_ORDERS.values()) {
         if (ord.orderId === body.paymentReference || ord.paymentReference === body.paymentReference) {
-          order = ord;
+          memOrder = ord;
           break;
         }
       }
     }
 
-    // Reject forged / unassociated payment references
-    if (!order) {
+    if (!dbOrder && !memOrder) {
       return sendApiError(
         reply,
         request,
@@ -1100,40 +1127,45 @@ export async function campaignRoutes(app: FastifyInstance) {
       );
     }
 
-    // 3. Verify order belongs to the effective politician
-    if (order.politicianId !== binding.effectivePoliticianId && auth.role !== 'admin') {
+    const effectiveOrderId = dbOrder?.provider_order_id || memOrder?.orderId || orderKey;
+    const orderPoliticianId = dbOrder?.politician_id || memOrder?.politicianId;
+    const orderAmount = dbOrder ? Number(dbOrder.amount_inr) : (memOrder?.amountINR ?? 0);
+
+    // 3. Verify order ownership
+    if (orderPoliticianId !== binding.effectivePoliticianId && auth.role !== 'admin') {
       return sendApiError(reply, request, 403, 'Forbidden', 'Cross-wallet recharge verification rejected', {
         code: 'FORBIDDEN',
       });
     }
 
-    // 4. Amount consistency check
-    if (order.amountINR !== body.amountINR) {
+    // 4. Verify amount consistency
+    if (orderAmount !== body.amountINR) {
       return sendApiError(
         reply,
         request,
         400,
         'Bad Request',
-        `Amount mismatch. Expected ₹${order.amountINR}, received ₹${body.amountINR}`,
+        `Amount mismatch. Expected ₹${orderAmount}, received ₹${body.amountINR}`,
         { code: 'AMOUNT_MISMATCH' }
       );
     }
 
-    // 5. Replay / Idempotency check: if order is already completed, return idempotent success WITHOUT crediting again
-    if (order.status === 'completed') {
-      const existingWallet = await getPoliticianWallet(binding.effectivePoliticianId);
-      return {
-        success: true,
-        wallet: existingWallet,
-        idempotent: true,
-        message: `Payment already verified and credited previously. Idempotent replay acknowledged.`,
-      };
-    }
-
-    // 6. Cryptographic signature check if Razorpay secret is configured
+    // 5. Fail-Closed Cryptographic Verification
     const razorpaySecret = process.env.RAZORPAY_KEY_SECRET;
-    if (razorpaySecret && body.razorpay_signature) {
-      const orderIdForSig = body.razorpay_order_id || order.orderId;
+    if (body.razorpay_signature) {
+      if (!razorpaySecret) {
+        // Fail closed: if a signature verification was requested or supplied, but secret is missing, do not credit!
+        return sendApiError(
+          reply,
+          request,
+          500,
+          'Internal Server Error',
+          'Payment verification service configuration missing (RAZORPAY_KEY_SECRET). Wallet crediting aborted.',
+          { code: 'PROVIDER_CONFIG_ERROR' }
+        );
+      }
+
+      const orderIdForSig = body.razorpay_order_id || effectiveOrderId;
       const paymentIdForSig = body.razorpay_payment_id || body.paymentReference;
       const expectedSignature = crypto
         .createHmac('sha256', razorpaySecret)
@@ -1147,17 +1179,92 @@ export async function campaignRoutes(app: FastifyInstance) {
       }
     }
 
-    // 7. Mark order completed FIRST (re-entrancy protection) and credit wallet exactly once
-    order.status = 'completed';
-    order.completedAt = new Date().toISOString();
-    order.paymentReference = body.paymentReference;
+    // 6. Atomic DB execution if Supabase is configured
+    if (isSupabaseConfigured && dbOrder) {
+      try {
+        const { data: rpcRes, error: rpcErr } = await supabase.rpc('verify_and_credit_recharge', {
+          p_provider_order_id: effectiveOrderId,
+          p_politician_id: binding.effectivePoliticianId,
+          p_amount_inr: body.amountINR,
+          p_payment_reference: body.paymentReference,
+          p_provider_payment_id: body.razorpay_payment_id || null,
+        });
 
-    const updatedWallet = await creditWallet(binding.effectivePoliticianId, body.amountINR, body.paymentReference);
-    return {
-      success: true,
-      wallet: updatedWallet,
-      message: `Successfully added ₹${body.amountINR.toLocaleString('en-IN')} to Campaign Wallet!`,
-    };
+        if (rpcErr) {
+          return sendApiError(reply, request, 500, 'Database Error', rpcErr.message, { code: 'DATABASE_ERROR' });
+        }
+
+        if (!rpcRes.success) {
+          const statusMap: Record<string, number> = {
+            PAYMENT_ORDER_NOT_FOUND: 400,
+            FORBIDDEN: 403,
+            AMOUNT_MISMATCH: 400,
+          };
+          return sendApiError(
+            reply,
+            request,
+            statusMap[rpcRes.code] || 400,
+            'Bad Request',
+            rpcRes.message,
+            { code: rpcRes.code }
+          );
+        }
+
+        if (memOrder) {
+          memOrder.status = 'completed';
+          memOrder.completedAt = new Date().toISOString();
+          memOrder.paymentReference = body.paymentReference;
+        }
+
+        if (rpcRes.idempotent) {
+          return {
+            success: true,
+            wallet: rpcRes.wallet,
+            idempotent: true,
+            message: rpcRes.message || 'Payment already verified and credited previously. Idempotent replay acknowledged.',
+          };
+        }
+
+        return {
+          success: true,
+          wallet: rpcRes.wallet,
+          message: `Successfully added ₹${body.amountINR.toLocaleString('en-IN')} to Campaign Wallet!`,
+        };
+      } catch (err: any) {
+        return sendApiError(reply, request, 500, 'Internal Server Error', err.message || 'Atomic wallet verification failed', {
+          code: 'VERIFICATION_FAILED',
+        });
+      }
+    }
+
+    // 7. Concurrency-safe in-memory fallback (for offline / unit-test execution)
+    if (memOrder) {
+      if (memOrder.status === 'completed') {
+        const existingWallet = await getPoliticianWallet(binding.effectivePoliticianId);
+        return {
+          success: true,
+          wallet: existingWallet,
+          idempotent: true,
+          message: `Payment already verified and credited previously. Idempotent replay acknowledged.`,
+        };
+      }
+
+      // Re-entrancy & race condition protection: mark completed synchronously
+      memOrder.status = 'completed';
+      memOrder.completedAt = new Date().toISOString();
+      memOrder.paymentReference = body.paymentReference;
+
+      const updatedWallet = await creditWallet(binding.effectivePoliticianId, body.amountINR, body.paymentReference);
+      return {
+        success: true,
+        wallet: updatedWallet,
+        message: `Successfully added ₹${body.amountINR.toLocaleString('en-IN')} to Campaign Wallet!`,
+      };
+    }
+
+    return sendApiError(reply, request, 400, 'Bad Request', 'Unable to complete payment verification', {
+      code: 'VERIFICATION_FAILED',
+    });
   });
 
   /** GET /api/v1/campaign/obd/trai-status — check current TRAI calling window */
