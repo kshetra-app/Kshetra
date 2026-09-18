@@ -127,6 +127,8 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql STABLE SECURITY DEFINER;
 
+-- Explicitly enforce least-privilege execution boundary for SECURITY DEFINER RPC
+REVOKE EXECUTE ON FUNCTION global_search(TEXT, TEXT, INTEGER) FROM PUBLIC;
 GRANT EXECUTE ON FUNCTION global_search(TEXT, TEXT, INTEGER) TO anon, authenticated, service_role;
 ```
 
@@ -141,11 +143,11 @@ GRANT EXECUTE ON FUNCTION global_search(TEXT, TEXT, INTEGER) TO anon, authentica
   - Arguments: `p_query text, p_state_code text, p_limit integer`
   - Return Type: `TABLE(entity_type text, entity_id text, title text, subtitle text, relevance real)`
 - **Routine Privileges (`routine_privileges`):**
-  - `anon`: `EXECUTE` (Verified)
-  - `authenticated`: `EXECUTE` (Verified)
-  - `service_role`: `EXECUTE` (Verified)
-  - `postgres`: `EXECUTE` (Verified)
-  - `PUBLIC`: `EXECUTE` (Verified)
+  - `PUBLIC`: `EXECUTE = FALSE` (Explicitly Revoked & Verified)
+  - `anon`: `EXECUTE = TRUE` (Verified)
+  - `authenticated`: `EXECUTE = TRUE` (Verified)
+  - `service_role`: `EXECUTE = TRUE` (Verified)
+  - `postgres`: `EXECUTE = TRUE` (Verified)
 
 ---
 

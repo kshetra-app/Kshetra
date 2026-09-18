@@ -98,9 +98,9 @@
       "reproducedInPostgres": true
     },
     "migration036Application": {
-      "firstApplication": "PASS (CREATE FUNCTION, GRANT executed with exit code 0)",
-      "secondApplication": "PASS (CREATE FUNCTION, GRANT executed with exit code 0)",
-      "idempotencyResult": "PASS (Zero errors, schema/grants identical after repeat apply)"
+      "firstApplication": "PASS (CREATE FUNCTION, REVOKE FROM PUBLIC, GRANT executed with exit code 0)",
+      "secondApplication": "PASS (CREATE FUNCTION, REVOKE FROM PUBLIC, GRANT executed with exit code 0)",
+      "idempotencyResult": "PASS (Zero errors, schema/grants identical after repeat apply, PUBLIC remains false)"
     },
     "catalogVerification": {
       "functionName": "global_search",
@@ -112,11 +112,12 @@
       "returnColumns": "TABLE(entity_type text, entity_id text, title text, subtitle text, relevance real)"
     },
     "grantVerification": {
+      "publicExecute": false,
       "anonExecute": true,
       "authenticatedExecute": true,
       "serviceRoleExecute": true,
       "postgresExecute": true,
-      "publicExecute": true
+      "revokedFromPublic": true
     },
     "semanticExecutionTests": {
       "testA_GeneralSearch": {

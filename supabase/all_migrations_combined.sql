@@ -1,6 +1,6 @@
 -- ========================================================
 -- KSHETRA ALL MIGRATIONS COMBINED (001 - 036, 38 FILES)
--- Generated at: 2026-09-18T08:51:22.448Z
+-- Generated at: 2026-09-18T13:25:57.054Z
 -- Run this script in the Supabase SQL Editor to provision
 -- the entire database schema, roles, RLS, and seed data.
 -- ========================================================
@@ -8372,7 +8372,8 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql STABLE SECURITY DEFINER;
 
--- Explicitly ensure execution grants for Data API roles
+-- Explicitly enforce least-privilege execution boundary for SECURITY DEFINER RPC
+REVOKE EXECUTE ON FUNCTION global_search(TEXT, TEXT, INTEGER) FROM PUBLIC;
 GRANT EXECUTE ON FUNCTION global_search(TEXT, TEXT, INTEGER) TO anon, authenticated, service_role;
 
 
