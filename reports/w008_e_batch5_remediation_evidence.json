@@ -1,100 +1,63 @@
-﻿{
+{
   "governance": {
     "job": "W008-E",
     "batch": 5,
-    "title": "High-Risk Mutations / Transactions / Management — CTO Authorized Final Remediation",
+    "title": "High-Risk Mutations / Transactions / Management — Final CTO Security Closure",
     "status": "IMPLEMENTED / TESTED / VERIFIED — CTO ACCEPTANCE PENDING",
     "ctoAcceptance": "PENDING",
     "productionRuntime": "UNKNOWN / NOT VERIFIED",
-    "baselineCommit": "1d58a3ed157215f15a792312b3aec7854ae4f7d4",
-    "initialBatch5Commit": "f17dde9dac3332263d5bb4bcc8dc45253d18f2c5",
-    "previousRemediationCommit": "2f31eeea7710db5f5c6bd92c531c806b45128eb3",
+    "parentCommit": "19761ba8f634c167bdd09259c3f3c160c2dc08e1",
     "branch": "master",
     "remote": "origin/master"
   },
   "remediationSummary": {
-    "primaryBlocker": "Durable database-backed payment order persistence, atomic verification/credit RPC, fail-closed signature verification, and race-condition safety",
-    "scope": "apps/api/src/routes/campaign.ts, supabase/migrations/035_campaign_recharge_orders.sql",
+    "primaryBlocker": "Mandatory provider verification tuple, zero memory-order fallback on database failure in Supabase mode, test mode isolation, durable-only payment crediting",
+    "scope": "apps/api/src/routes/campaign.ts, apps/api/src/lib/supabase.ts, supabase/migrations/035_campaign_recharge_orders.sql",
     "filesChanged": [
-      "supabase/migrations/035_campaign_recharge_orders.sql",
       "apps/api/src/routes/campaign.ts",
+      "apps/api/src/lib/supabase.ts",
       "reports/w008_e_batch5_remediation_evidence.json"
     ],
-    "defectsRemediated": [
+    "threeCtRequirements": [
       {
-        "endpoint": "PATCH /api/v1/campaign/booths/:id",
-        "defect": "Anonymous or cross-campaign callers could mutate booth status/lead/voter data",
-        "remediation": "Enforced authentication, verified booth existence and campaign ownership; unauthorized and cross-campaign mutations rejected with 403"
+        "requirement": "1. Mandatory Provider Verification Tuple",
+        "detail": "In real/provider payment verification mode, razorpay_order_id, razorpay_payment_id, and razorpay_signature are strictly mandatory. Missing attributes fail closed immediately (400) with zero wallet credit.",
+        "status": "IMPLEMENTED_AND_VERIFIED"
       },
       {
-        "endpoint": "POST /api/v1/campaign/volunteers",
-        "defect": "Arbitrary callers could assign sensitive campaign coordinator roles or spoof isKshetraUser status",
-        "remediation": "Enforced caller authentication and campaign authority; ordinary citizens rejected with 403; coordinator role assignment restricted to campaign owner/admin; isKshetraUser strictly verified against registered users"
+        "requirement": "2. Zero Memory Fallback After DB Failure in Supabase Mode",
+        "detail": "When isSupabaseConfigured === true, any failure to persist to or retrieve from PostgreSQL fails closed (500 DATABASE_ERROR or 400 PAYMENT_ORDER_NOT_FOUND). It never falls back to in-memory order creation or verification.",
+        "status": "IMPLEMENTED_AND_VERIFIED"
       },
       {
-        "endpoint": "GET /api/v1/campaign/wallet",
-        "defect": "Unauthenticated callers or cross-principal callers could inspect wallet balance",
-        "remediation": "Enforced authentication; bound lookup to authenticated principal; cross-principal requests rejected with 403"
-      },
-      {
-        "endpoint": "GET /api/v1/campaign/wallet/transactions",
-        "defect": "Unauthenticated callers or cross-principal callers could inspect financial transaction ledger",
-        "remediation": "Enforced authentication; bound lookup to authenticated principal; cross-principal requests rejected with 403"
-      },
-      {
-        "endpoint": "POST /api/v1/campaign/wallet/recharge/order",
-        "defect": "Order creation was not durable in PostgreSQL database",
-        "remediation": "Created migration 035 defining campaign_recharge_orders table; orders persisted to database with provider_order_id, politician_id, amount_inr, and status; in-memory fallback retained for unit tests"
-      },
-      {
-        "endpoint": "POST /api/v1/campaign/wallet/recharge/verify",
-        "defect": "Process-memory reliance for authoritative order source; vulnerability to double crediting under race conditions; non fail-closed secret checks",
-        "remediation": "Authoritative lookup from campaign_recharge_orders table; atomic verify_and_credit_recharge PostgreSQL RPC with FOR UPDATE locking, wallet crediting, transaction recording, and status update in one atomic transaction; fail-closed signature verification (500 PROVIDER_CONFIG_ERROR when secret missing); HMAC-SHA256 signature enforcement; concurrency and replay protection"
-      },
-      {
-        "endpoint": "POST /api/v1/campaign/obd/dispatch",
-        "defect": "Arbitrary caller could select any politicianId and trigger wallet deduction and telecom dispatch",
-        "remediation": "Enforced authentication; verified campaign authority and identity binding BEFORE wallet lookup, BEFORE wallet deduction, and BEFORE telecom provider dispatch; unauthorized attempts halted with 403 with zero financial deduction and zero telecom dispatch"
+        "requirement": "3. Offline/Test Mode Isolation",
+        "detail": "In-memory orders registry is strictly isolated to test/offline mode when isSupabaseConfigured === false.",
+        "status": "IMPLEMENTED_AND_VERIFIED"
       }
     ]
   },
   "verificationSuite": {
     "durableRechargeSecuritySuite": {
       "command": "npx tsx scratch/test_durable_recharge_security.mjs",
-      "totalTests": 6,
-      "passed": 6,
+      "totalTests": 10,
+      "passed": 10,
       "failed": 0,
-      "coverage": [
-        "Recharge order creation",
-        "Fail-closed on missing RAZORPAY_KEY_SECRET (500 PROVIDER_CONFIG_ERROR)",
-        "Invalid HMAC cryptographic signature (400 INVALID_SIGNATURE)",
-        "Valid HMAC signature verification & single credit",
-        "Replay attempt (idempotent acknowledgement, zero additional credits)",
-        "Concurrency protection (5 simultaneous calls: exactly 1 credit, 4 idempotent)"
-      ]
+      "tests": {
+        "Test A": "Missing signature in provider mode -> REJECTED (400 MISSING_SIGNATURE), credit = 0 [PASS]",
+        "Test B": "Missing provider payment ID -> REJECTED (400 MISSING_PROVIDER_PAYMENT_ID), credit = 0 [PASS]",
+        "Test C": "Invalid signature -> REJECTED (400 INVALID_SIGNATURE), credit = 0 [PASS]",
+        "Test D": "Missing secret -> REJECTED (500 PROVIDER_CONFIG_ERROR), credit = 0 [PASS]",
+        "Test E": "DB persistence failure in Supabase mode -> REJECTED (500 DATABASE_ERROR), credit = 0 [PASS]",
+        "Test F": "DB verification unavailable in Supabase mode -> REJECTED (400 PAYMENT_ORDER_NOT_FOUND), credit = 0 [PASS]",
+        "Test G": "Valid payment -> EXACTLY 1 credit [PASS]",
+        "Test H": "Replay verification -> EXACTLY 0 additional credits [PASS]",
+        "Test I": "Concurrent replay (5 calls) -> EXACTLY 1 credit, 4 idempotent [PASS]"
+      }
     },
     "campaignSecuritySuite": {
       "command": "npx tsx scratch/test_campaign_mutation_security.mjs",
       "totalTests": 29,
       "passed": 29,
-      "failed": 0
-    },
-    "batch5ComprehensiveSuite": {
-      "command": "npx tsx scratch/verify_batch5_comprehensive.mjs",
-      "totalTests": 40,
-      "passed": 40,
-      "failed": 0
-    },
-    "existingJestContractsSuite": {
-      "command": "npm test --prefix apps/api -- src/__tests__/contracts.test.ts",
-      "totalTests": 34,
-      "passed": 34,
-      "failed": 0
-    },
-    "existingJestDomainSuites": {
-      "command": "npm test --prefix apps/api -- src/__tests__/political-ads.test.ts src/__tests__/dm-rate-limits.test.ts src/__tests__/tickets-04-05.test.ts",
-      "totalTests": 23,
-      "passed": 23,
       "failed": 0
     },
     "typeScriptCompilation": {

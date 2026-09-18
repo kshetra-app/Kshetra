@@ -24,8 +24,12 @@ const resolvedKey = hasValidServiceKey
   ? rawServiceKey
   : (hasValidAnonKey ? rawAnonKey : (rawServiceKey || 'placeholder-key'));
 
-export const isSupabaseConfigured = !!(supabaseUrl && (hasValidServiceKey || hasValidAnonKey));
+export let isSupabaseConfigured = !!(supabaseUrl && (hasValidServiceKey || hasValidAnonKey));
 export const isUsingServiceRole = hasValidServiceKey;
+
+export const setSupabaseConfiguredForTesting = (configured: boolean) => {
+  isSupabaseConfigured = configured;
+};
 
 if (!hasValidServiceKey && hasValidAnonKey) {
   console.warn(

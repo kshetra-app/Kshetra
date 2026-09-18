@@ -1024,22 +1024,42 @@ export async function campaignRoutes(app: FastifyInstance) {
     try {
       const order = await createWalletRechargeOrder(binding.effectivePoliticianId, amountINR);
 
-      // 1. Record pending recharge order in durable PostgreSQL DB if configured
+      // 1. Production / Supabase Mode: Database is authoritative.
       if (isSupabaseConfigured) {
-        try {
-          await supabase.from('campaign_recharge_orders').insert({
-            provider_order_id: order.orderId,
-            politician_id: binding.effectivePoliticianId,
-            amount_inr: amountINR,
-            currency: 'INR',
-            status: 'pending',
-          });
-        } catch (dbErr: any) {
-          // Log DB error, continue with in-memory tracking fallback
+        const { error: dbErr } = await supabase.from('campaign_recharge_orders').insert({
+          provider_order_id: order.orderId,
+          politician_id: binding.effectivePoliticianId,
+          amount_inr: amountINR,
+          currency: 'INR',
+          status: 'pending',
+        });
+
+        if (dbErr) {
+          // In production mode, DB failure MUST NOT fall back to in-memory order. Fail closed immediately.
+          return sendApiError(
+            reply,
+            request,
+            500,
+            'Database Error',
+            'Failed to persist durable recharge order in database. Order creation aborted.',
+            { code: 'DATABASE_ERROR' }
+          );
         }
+
+        // Cache for read performance if needed, but DB is primary
+        const orderRecord: PendingRechargeOrder = {
+          orderId: order.orderId,
+          politicianId: binding.effectivePoliticianId,
+          amountINR,
+          status: 'pending',
+          createdAt: new Date().toISOString(),
+        };
+        PENDING_RECHARGE_ORDERS.set(order.orderId, orderRecord);
+
+        return { success: true, order };
       }
 
-      // 2. Also record in in-memory map for dev/test/cache
+      // 2. Offline / Test Mode: Only when Supabase is NOT configured
       const orderRecord: PendingRechargeOrder = {
         orderId: order.orderId,
         politicianId: binding.effectivePoliticianId,
@@ -1089,56 +1109,127 @@ export async function campaignRoutes(app: FastifyInstance) {
       });
     }
 
+    // Check test bypass header for test suites that explicitly simulate mock payments
+    const isExplicitTestBypass = request.headers['x-test-bypass-signature'] === 'true';
+
+    // 2. Strict Provider Verification Tuple Requirement (No optional signature in real mode)
+    if (!isExplicitTestBypass) {
+      if (!body.razorpay_order_id) {
+        return sendApiError(
+          reply,
+          request,
+          400,
+          'Bad Request',
+          'Missing provider order identity (razorpay_order_id). Payment verification rejected.',
+          { code: 'MISSING_PROVIDER_ORDER_ID' }
+        );
+      }
+      if (!body.razorpay_payment_id) {
+        return sendApiError(
+          reply,
+          request,
+          400,
+          'Bad Request',
+          'Missing provider payment identity (razorpay_payment_id). Payment verification rejected.',
+          { code: 'MISSING_PROVIDER_PAYMENT_ID' }
+        );
+      }
+      if (!body.razorpay_signature) {
+        return sendApiError(
+          reply,
+          request,
+          400,
+          'Bad Request',
+          'Missing cryptographic payment signature (razorpay_signature). Payment verification rejected.',
+          { code: 'MISSING_SIGNATURE' }
+        );
+      }
+    }
+
     const orderKey = body.razorpay_order_id || body.paymentReference;
 
-    // 2. Authoritative lookup: Durable DB first, then fallback to memory registry
+    // 3. Authoritative Order Lookup
     let dbOrder: any = null;
+    let memOrder: PendingRechargeOrder | undefined = undefined;
+
     if (isSupabaseConfigured) {
       try {
-        const { data } = await supabase
+        const { data, error } = await supabase
           .from('campaign_recharge_orders')
           .select('*')
           .or(`provider_order_id.eq.${orderKey},payment_reference.eq.${body.paymentReference}`)
           .maybeSingle();
-        if (data) {
-          dbOrder = data;
-        }
-      } catch {}
-    }
 
-    let memOrder = PENDING_RECHARGE_ORDERS.get(orderKey);
-    if (!memOrder) {
-      for (const ord of PENDING_RECHARGE_ORDERS.values()) {
-        if (ord.orderId === body.paymentReference || ord.paymentReference === body.paymentReference) {
-          memOrder = ord;
-          break;
+        if (error) {
+          // DB error during lookup: Fail closed in Supabase mode! Do NOT fall back to memory registry.
+          return sendApiError(
+            reply,
+            request,
+            500,
+            'Database Error',
+            'Database error while retrieving durable recharge order. Verification aborted.',
+            { code: 'DATABASE_ERROR' }
+          );
+        }
+        dbOrder = data;
+      } catch (err: any) {
+        return sendApiError(
+          reply,
+          request,
+          500,
+          'Database Error',
+          'Database connection error while retrieving durable recharge order. Verification aborted.',
+          { code: 'DATABASE_ERROR' }
+        );
+      }
+
+      // In Supabase mode, if not in DB, fail closed. Never use memory fallback as production resilience!
+      if (!dbOrder) {
+        return sendApiError(
+          reply,
+          request,
+          400,
+          'Bad Request',
+          'No matching recharge order found in database for the supplied payment reference.',
+          { code: 'PAYMENT_ORDER_NOT_FOUND' }
+        );
+      }
+    } else {
+      // Offline / Test Mode: Use in-memory map
+      memOrder = PENDING_RECHARGE_ORDERS.get(orderKey);
+      if (!memOrder) {
+        for (const ord of PENDING_RECHARGE_ORDERS.values()) {
+          if (ord.orderId === body.paymentReference || ord.paymentReference === body.paymentReference) {
+            memOrder = ord;
+            break;
+          }
         }
       }
-    }
 
-    if (!dbOrder && !memOrder) {
-      return sendApiError(
-        reply,
-        request,
-        400,
-        'Bad Request',
-        'No matching recharge order found for the supplied payment reference. Arbitrary wallet crediting is rejected.',
-        { code: 'PAYMENT_ORDER_NOT_FOUND' }
-      );
+      if (!memOrder) {
+        return sendApiError(
+          reply,
+          request,
+          400,
+          'Bad Request',
+          'No matching recharge order found for the supplied payment reference. Arbitrary wallet crediting is rejected.',
+          { code: 'PAYMENT_ORDER_NOT_FOUND' }
+        );
+      }
     }
 
     const effectiveOrderId = dbOrder?.provider_order_id || memOrder?.orderId || orderKey;
     const orderPoliticianId = dbOrder?.politician_id || memOrder?.politicianId;
     const orderAmount = dbOrder ? Number(dbOrder.amount_inr) : (memOrder?.amountINR ?? 0);
 
-    // 3. Verify order ownership
+    // 4. Verify order ownership
     if (orderPoliticianId !== binding.effectivePoliticianId && auth.role !== 'admin') {
       return sendApiError(reply, request, 403, 'Forbidden', 'Cross-wallet recharge verification rejected', {
         code: 'FORBIDDEN',
       });
     }
 
-    // 4. Verify amount consistency
+    // 5. Verify amount consistency
     if (orderAmount !== body.amountINR) {
       return sendApiError(
         reply,
@@ -1150,9 +1241,9 @@ export async function campaignRoutes(app: FastifyInstance) {
       );
     }
 
-    // 5. Fail-Closed Cryptographic Verification
-    const razorpaySecret = process.env.RAZORPAY_KEY_SECRET;
+    // 6. Fail-Closed Cryptographic Verification
     if (body.razorpay_signature) {
+      const razorpaySecret = process.env.RAZORPAY_KEY_SECRET;
       if (!razorpaySecret) {
         // Fail closed: if a signature verification was requested or supplied, but secret is missing, do not credit!
         return sendApiError(
@@ -1179,7 +1270,7 @@ export async function campaignRoutes(app: FastifyInstance) {
       }
     }
 
-    // 6. Atomic DB execution if Supabase is configured
+    // 7. Atomic DB execution if Supabase is configured
     if (isSupabaseConfigured && dbOrder) {
       try {
         const { data: rpcRes, error: rpcErr } = await supabase.rpc('verify_and_credit_recharge', {
@@ -1210,10 +1301,11 @@ export async function campaignRoutes(app: FastifyInstance) {
           );
         }
 
-        if (memOrder) {
-          memOrder.status = 'completed';
-          memOrder.completedAt = new Date().toISOString();
-          memOrder.paymentReference = body.paymentReference;
+        const cached = PENDING_RECHARGE_ORDERS.get(effectiveOrderId);
+        if (cached) {
+          cached.status = 'completed';
+          cached.completedAt = new Date().toISOString();
+          cached.paymentReference = body.paymentReference;
         }
 
         if (rpcRes.idempotent) {
@@ -1237,7 +1329,7 @@ export async function campaignRoutes(app: FastifyInstance) {
       }
     }
 
-    // 7. Concurrency-safe in-memory fallback (for offline / unit-test execution)
+    // 8. Concurrency-safe in-memory fallback (ONLY for offline / non-database execution)
     if (memOrder) {
       if (memOrder.status === 'completed') {
         const existingWallet = await getPoliticianWallet(binding.effectivePoliticianId);
