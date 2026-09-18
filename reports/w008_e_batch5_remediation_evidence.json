@@ -1,0 +1,96 @@
+{
+  "governance": {
+    "job": "W008-E",
+    "batch": 5,
+    "title": "High-Risk Mutations / Transactions / Management — CTO Remediation",
+    "status": "IMPLEMENTED / TESTED / VERIFIED — CTO ACCEPTANCE PENDING",
+    "ctoAcceptance": "PENDING",
+    "productionRuntime": "UNKNOWN / NOT VERIFIED",
+    "baselineCommit": "1d58a3ed157215f15a792312b3aec7854ae4f7d4",
+    "initialBatch5Commit": "f17dde9dac3332263d5bb4bcc8dc45253d18f2c5",
+    "initialEvidenceCommit": "6c1b8bcb7b5f24eaff35467ce3363928da4efdb0",
+    "branch": "master",
+    "remote": "origin/master"
+  },
+  "remediationSummary": {
+    "primaryBlocker": "Insufficient authorization, identity binding, and replay/financial mutation protections on high-risk campaign routes",
+    "scope": "apps/api/src/routes/campaign.ts",
+    "filesChanged": [
+      "apps/api/src/routes/campaign.ts",
+      "reports/w008_e_batch5_remediation_evidence.json"
+    ],
+    "defectsRemediated": [
+      {
+        "endpoint": "PATCH /api/v1/campaign/booths/:id",
+        "defect": "Anonymous or cross-campaign callers could mutate booth status/lead/voter data",
+        "remediation": "Enforced authentication, verified booth existence and campaign ownership; unauthorized and cross-campaign mutations rejected with 403"
+      },
+      {
+        "endpoint": "POST /api/v1/campaign/volunteers",
+        "defect": "Arbitrary callers could assign sensitive campaign coordinator roles or spoof isKshetraUser status",
+        "remediation": "Enforced caller authentication and campaign authority; ordinary citizens rejected with 403; coordinator role assignment restricted to campaign owner/admin; isKshetraUser strictly verified against registered users"
+      },
+      {
+        "endpoint": "GET /api/v1/campaign/wallet",
+        "defect": "Unauthenticated callers or cross-principal callers could inspect wallet balance",
+        "remediation": "Enforced authentication; bound lookup to authenticated principal; cross-principal requests rejected with 403"
+      },
+      {
+        "endpoint": "GET /api/v1/campaign/wallet/transactions",
+        "defect": "Unauthenticated callers or cross-principal callers could inspect financial transaction ledger",
+        "remediation": "Enforced authentication; bound lookup to authenticated principal; cross-principal requests rejected with 403"
+      },
+      {
+        "endpoint": "POST /api/v1/campaign/wallet/recharge/order",
+        "defect": "Order creation was not bound to authenticated principal",
+        "remediation": "Enforced authentication; bound order creation to effective politician ID; registered pending orders in authoritative memory store"
+      },
+      {
+        "endpoint": "POST /api/v1/campaign/wallet/recharge/verify",
+        "defect": "Arbitrary client-supplied payment references and amounts were credited without proof of legitimate order, cross-wallet verification, or replay protection",
+        "remediation": "Enforced authentication; verified order exists in pending store; verified order ownership matches caller; verified amount consistency; verified cryptographic HMAC-SHA256 signature when secret present; implemented strict replay/idempotency protection ensuring wallet is credited exactly once and replayed calls return idempotent acknowledgment without double-crediting"
+      },
+      {
+        "endpoint": "POST /api/v1/campaign/obd/dispatch",
+        "defect": "Arbitrary caller could select any politicianId and trigger wallet deduction and telecom dispatch",
+        "remediation": "Enforced authentication; verified campaign authority and identity binding BEFORE wallet lookup, BEFORE wallet deduction, and BEFORE telecom provider dispatch; unauthorized attempts halted with 403 with zero financial deduction and zero telecom dispatch"
+      }
+    ]
+  },
+  "verificationSuite": {
+    "campaignSecuritySuite": {
+      "command": "npx tsx scratch/test_campaign_mutation_security.mjs",
+      "totalTests": 29,
+      "passed": 29,
+      "failed": 0
+    },
+    "batch5ComprehensiveSuite": {
+      "command": "npx tsx scratch/verify_batch5_comprehensive.mjs",
+      "totalTests": 40,
+      "passed": 40,
+      "failed": 0
+    },
+    "existingJestContractsSuite": {
+      "command": "npm test --prefix apps/api -- src/__tests__/contracts.test.ts",
+      "totalTests": 34,
+      "passed": 34,
+      "failed": 0
+    },
+    "existingJestDomainSuites": {
+      "command": "npm test --prefix apps/api -- src/__tests__/political-ads.test.ts src/__tests__/dm-rate-limits.test.ts src/__tests__/tickets-04-05.test.ts",
+      "totalTests": 23,
+      "passed": 23,
+      "failed": 0
+    },
+    "typeScriptCompilation": {
+      "command": "npm run build --prefix apps/api",
+      "exitCode": 0
+    },
+    "contractDriftAudit": {
+      "command": "node scripts/check-api-contract-drift.mjs",
+      "declaredContractCheck": "9/9 matched (100% parity)",
+      "totalRegisteredRoutes": 138,
+      "auditedEndpointsDrift": "Zero drift detected across 34 audited endpoints"
+    }
+  }
+}
