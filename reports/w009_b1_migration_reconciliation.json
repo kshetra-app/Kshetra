@@ -1,0 +1,78 @@
+{
+  "meta": {
+    "batchId": "W009-B1",
+    "title": "Migration Normalization, Safety & Foundation Repair Evidence Report",
+    "timestamp": "2026-09-18T14:30:00.000Z",
+    "baseCommit": "e39767183c38917e706395ead09c8ab45aa41f1c",
+    "baseTree": "47d46dd94690e66dae0b1859e3186556e1100b5a",
+    "targetEnvironment": "repository_and_migration_pipeline",
+    "executionAuthority": "PLAN-W009-MASTER-REV-2 / CTO_AUTHORIZATION_W009_B1"
+  },
+  "migrationInventory": {
+    "totalIndividualMigrations": 38,
+    "bundleTotalFiles": 38,
+    "historicalMigrationsPreserved": true,
+    "historical023Renamed": false,
+    "duplicate023Files": [
+      {
+        "filename": "023_local_body_representatives.sql",
+        "sizeBytes": 30977,
+        "sha256": "c870c08ba3951eb9b8258c8df3fd3da18a78155f62f0028b51076524f48eab77",
+        "bundleOrderIndex": 23,
+        "description": "Local body governance hierarchy, tables, RLS and seed data"
+      },
+      {
+        "filename": "023_data_api_grants.sql",
+        "sizeBytes": 2038,
+        "sha256": "d9bd73ac7ddd88ea03d2de0f0e6096e936b99b8801dd07fce6feebe7699b2120",
+        "bundleOrderIndex": 24,
+        "description": "Schema public usage and default privileges grant for anon/authenticated/service_role"
+      }
+    ],
+    "tailMigrations": [
+      {
+        "filename": "035_campaign_recharge_orders.sql",
+        "sizeBytes": 5388,
+        "sha256": "2bec35dc014c45733a84ebe14a4a9dc09b9ac4bce3be8502fe808cc656227953",
+        "bundleOrderIndex": 36
+      },
+      {
+        "filename": "036_foundation_and_grants_repair.sql",
+        "sizeBytes": 3034,
+        "sha256": "af6b56414eeec3c9ec96f5317e2038e256b293b226fe3a71667c5656c2b34a06",
+        "bundleOrderIndex": 37
+      }
+    ]
+  },
+  "bundleVerification": {
+    "scriptPath": "scripts/bundle_migrations.mjs",
+    "scriptSha256": "7e4ed4f973e230fc73f936fdd4514eca41b3f0cdbb0bea64c337879b59df1395",
+    "outputPath": "supabase/all_migrations_combined.sql",
+    "outputBytes": 378516,
+    "outputSha256": "d28731b4246283b6a4226f4d0a32343d7480a02f697d4d7ef58fa0ea69fbd43d",
+    "deterministicOrderingPreserved": true,
+    "bundleContains023RepresentativesBefore023Grants": true,
+    "bundleContains035And036InTail": true
+  },
+  "defectRemediation": {
+    "defectId": "DEF-013",
+    "component": "Database / SQL / RPC",
+    "functionName": "global_search",
+    "rootCause": "Trailing ORDER BY clause terminating chained UNION ALL subqueries without outer SELECT wrapper causing PostgreSQL error 0A000",
+    "remediationStrategy": "Enclosed 4-branch UNION ALL query within SELECT search_results.* FROM (...) search_results ORDER BY search_results.relevance DESC LIMIT p_limit;",
+    "migrationFile": "supabase/migrations/036_foundation_and_grants_repair.sql",
+    "permissionsGranted": "GRANT EXECUTE ON FUNCTION global_search(TEXT, TEXT, INTEGER) TO anon, authenticated, service_role;",
+    "status": "RESOLVED_IN_MIGRATION_036_PENDING_LIVE_APPLICATION"
+  },
+  "historicalReportIntegrity": {
+    "w003ReportUntouched": true,
+    "w003ReportPath": "reports/w003_migration_snapshot_report.json"
+  },
+  "verificationSummary": {
+    "apiContractsTestsPassed": true,
+    "apiBuildClean": true,
+    "repoIntegrityEnforced": true,
+    "zeroLiveDbMutations": true,
+    "status": "COMPLETE_PENDING_CTO_ACCEPTANCE"
+  }
+}
