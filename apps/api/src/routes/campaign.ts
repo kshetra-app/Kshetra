@@ -15,6 +15,9 @@ import {
   isWithinTraiWindow,
   processTelecomWebhook,
 } from '../services/outreach/obdTelecomService';
+import { RazorpayProvider } from '../providers/razorpayProvider';
+import { TelecomProvider } from '../providers/telecomProvider';
+import type { PaymentProvider, VoiceObdProvider } from '../providers/types';
 
 // Ajv Schemas for Campaign Route Validation
 const pricingPatchSchema = {
@@ -606,6 +609,9 @@ function resolveEffectivePoliticianId(
 }
 
 export async function campaignRoutes(app: FastifyInstance) {
+  const paymentProvider: PaymentProvider = new RazorpayProvider();
+  const voiceObdProvider: VoiceObdProvider = new TelecomProvider();
+
   /**
    * GET /api/v1/campaign/pricing
    * Returns individual pricing per service (Voice OBD, Meta Boost, WhatsApp Organic)
@@ -1021,8 +1027,18 @@ export async function campaignRoutes(app: FastifyInstance) {
 
     const amountINR = body.amountINR || 1000;
 
+    if (amountINR < 500) {
+      return sendApiError(reply, request, 400, 'Bad Request', 'Minimum wallet recharge is ₹500', {
+        code: 'PAYMENT_ORDER_ERROR',
+      });
+    }
+
     try {
-      const order = await createWalletRechargeOrder(binding.effectivePoliticianId, amountINR);
+      const order = await paymentProvider.createOrder({
+        amountINR,
+        currency: 'INR',
+        politicianId: binding.effectivePoliticianId,
+      });
 
       // 1. Production / Supabase Mode: Database is authoritative.
       if (isSupabaseConfigured) {
@@ -1243,27 +1259,32 @@ export async function campaignRoutes(app: FastifyInstance) {
 
     // 6. Fail-Closed Cryptographic Verification
     if (body.razorpay_signature) {
-      const razorpaySecret = process.env.RAZORPAY_KEY_SECRET;
-      if (!razorpaySecret) {
-        // Fail closed: if a signature verification was requested or supplied, but secret is missing, do not credit!
-        return sendApiError(
-          reply,
-          request,
-          500,
-          'Internal Server Error',
-          'Payment verification service configuration missing (RAZORPAY_KEY_SECRET). Wallet crediting aborted.',
-          { code: 'PROVIDER_CONFIG_ERROR' }
-        );
-      }
-
       const orderIdForSig = body.razorpay_order_id || effectiveOrderId;
       const paymentIdForSig = body.razorpay_payment_id || body.paymentReference;
-      const expectedSignature = crypto
-        .createHmac('sha256', razorpaySecret)
-        .update(`${orderIdForSig}|${paymentIdForSig}`)
-        .digest('hex');
+      try {
+        const verifyResult = await paymentProvider.verifyPaymentSignature({
+          orderId: orderIdForSig,
+          paymentId: paymentIdForSig,
+          signature: body.razorpay_signature,
+        });
 
-      if (expectedSignature !== body.razorpay_signature) {
+        if (!verifyResult.valid) {
+          return sendApiError(reply, request, 400, 'Bad Request', 'Invalid cryptographic payment signature', {
+            code: 'INVALID_SIGNATURE',
+          });
+        }
+      } catch (err: any) {
+        if (err.message && err.message.includes('PROVIDER_CONFIG_ERROR')) {
+          // Fail closed: if a signature verification was requested or supplied, but secret is missing, do not credit!
+          return sendApiError(
+            reply,
+            request,
+            500,
+            'Internal Server Error',
+            'Payment verification service configuration missing (RAZORPAY_KEY_SECRET). Wallet crediting aborted.',
+            { code: 'PROVIDER_CONFIG_ERROR' }
+          );
+        }
         return sendApiError(reply, request, 400, 'Bad Request', 'Invalid cryptographic payment signature', {
           code: 'INVALID_SIGNATURE',
         });
@@ -1434,7 +1455,23 @@ export async function campaignRoutes(app: FastifyInstance) {
     const rate = campaignPricing.voiceObd.finalRatePerCallINR;
     const totalCostINR = Math.round(voterCount * rate);
 
-    // 4. Check wallet and deduct funds (Throws error if insufficient)
+    // 4. Statutory TRAI Calling Window Check (08:00–21:00 IST)
+    const traiCheck = voiceObdProvider.isWithinTraiCallingWindow();
+    if (!traiCheck.permitted) {
+      return sendApiError(
+        reply,
+        request,
+        400,
+        'Bad Request',
+        traiCheck.message || 'Outbound voice calls are prohibited outside the TRAI window (08:00–21:00 IST)',
+        {
+          code: 'OUTSIDE_TRAI_WINDOW',
+          details: [{ path: 'timing', message: `Current IST hour: ${traiCheck.currentISTHour}:00` }],
+        }
+      );
+    }
+
+    // 5. Check wallet and deduct funds (Throws error if insufficient)
     let updatedWallet;
     try {
       updatedWallet = await deductWalletForService(
@@ -1451,7 +1488,7 @@ export async function campaignRoutes(app: FastifyInstance) {
       });
     }
 
-    // 5. Dispatch via telecom gateway (with TRAI checks)
+    // 6. Dispatch via telecom gateway (with TRAI checks)
     const result = await dispatchOBDBroadcast({
       campaignId,
       politicianId: effectivePoliticianId,
@@ -1473,9 +1510,20 @@ export async function campaignRoutes(app: FastifyInstance) {
   });
 
   /** POST /api/v1/webhooks/voice/:provider — receive real-time telecom delivery status reports */
-  app.post('/api/v1/webhooks/voice/:provider', { schema: webhookVoiceSchema }, async (request) => {
+  app.post('/api/v1/webhooks/voice/:provider', { schema: webhookVoiceSchema }, async (request, reply) => {
+    const isValid = voiceObdProvider.validateWebhook({
+      headers: request.headers as Record<string, any>,
+      body: request.body,
+    });
+    if (!isValid) {
+      return sendApiError(reply, request, 400, 'Bad Request', 'Invalid webhook payload structure', {
+        code: 'INVALID_WEBHOOK_PAYLOAD',
+      });
+    }
+
     const payload = (request.body as Record<string, any>) || {};
+    const report = voiceObdProvider.parseDeliveryReport(payload);
     const result = await processTelecomWebhook(payload);
-    return { status: 'acknowledged', ...result };
+    return { status: 'acknowledged', reportParsed: Boolean(report), ...result };
   });
 }

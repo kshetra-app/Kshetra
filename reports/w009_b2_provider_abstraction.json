@@ -1,0 +1,75 @@
+{
+  "jobId": "W009-B2",
+  "jobName": "Bounded Provider Abstraction (Razorpay & Voice OBD)",
+  "timestamp": "2026-09-18T14:27:00Z",
+  "governance": {
+    "planVersion": "PLAN-W009-MASTER-REV-2",
+    "authorizedBaseline": "fb2fb4378b59f40050b803fb1388234cf7eb11a2",
+    "baseTree": "460459a9fa05f4c5e3170e43d9bf6c1ec588e3fa",
+    "status": "IMPLEMENTED_TESTED_VERIFIED_SUBMITTED",
+    "ctoAcceptance": "PENDING"
+  },
+  "authorizedScopeFiles": [
+    "apps/api/src/providers/types.ts",
+    "apps/api/src/providers/razorpayProvider.ts",
+    "apps/api/src/providers/telecomProvider.ts",
+    "apps/api/src/providers/mockProvider.ts",
+    "apps/api/src/routes/campaign.ts",
+    "apps/api/src/routes/pages.ts",
+    "apps/api/src/__tests__/providers.test.ts",
+    "ACCEPTANCE_REGISTER.md",
+    "EXECUTION_STATE.md"
+  ],
+  "verificationResults": {
+    "typeCheck": {
+      "command": "npm run build --prefix apps/api",
+      "exitCode": 0,
+      "errors": 0
+    },
+    "providersTestSuite": {
+      "command": "npm test --prefix apps/api -- providers.test.ts",
+      "totalTests": 17,
+      "passed": 17,
+      "failed": 0,
+      "tests": [
+        "TEST-W009-B2-01a: createOrder generates valid order structure and public key",
+        "TEST-W009-B2-01b: verifyPaymentSignature correctly verifies valid HMAC-SHA256 signature",
+        "TEST-W009-B2-01c: verifyWebhookSignature validates authentic webhook payloads",
+        "TEST-W009-B2-02: verifyPaymentSignature fails closed when RAZORPAY_KEY_SECRET is missing",
+        "TEST-W009-B2-03a: verifyPaymentSignature rejects invalid signature",
+        "TEST-W009-B2-03b: verifyPaymentSignature rejects empty or missing signature",
+        "TEST-W009-B2-04: permits calling inside TRAI window (08:00–21:00 IST)",
+        "TEST-W009-B2-05: rejects calling outside TRAI window (before 08:00 IST or at/after 21:00 IST)",
+        "TEST-W009-B2-05b: POST /api/v1/campaign/obd/dispatch rejects outside TRAI window with 400 OUTSIDE_TRAI_WINDOW",
+        "TEST-W009-B2-06a: parseDeliveryReport correctly parses answered, busy, unreachable, and IVR opt-outs",
+        "TEST-W009-B2-06b: validateWebhook validates structured request objects",
+        "TEST-W009-B2-06c: POST /api/v1/webhooks/voice/exotel validates webhook and parses delivery report",
+        "TEST-W009-B2-07a: MockProvider throws if instantiated in production environment",
+        "TEST-W009-B2-07b: MockVoiceObdProvider simulated TRAI window and carrier timeout",
+        "TEST-W009-B2-08a: POST /api/v1/pages/:pageId/pro/order uses provider order structure",
+        "TEST-W009-B2-08b: POST /api/v1/pages/:pageId/pro/verify rejects invalid signature with 400",
+        "TEST-W009-B2-08c: POST /api/v1/pages/:pageId/pro/verify fails closed (500) if RAZORPAY_KEY_SECRET missing"
+      ]
+    },
+    "rechargeSecuritySuite": {
+      "command": "npx tsx scratch/test_durable_recharge_security.mjs",
+      "totalTests": 10,
+      "passed": 10,
+      "failed": 0
+    },
+    "contractsTestSuite": {
+      "command": "npm test --prefix apps/api -- contracts.test.ts",
+      "totalTests": 34,
+      "passed": 34,
+      "failed": 0
+    }
+  },
+  "securityGuards": {
+    "failClosedPaymentVerification": true,
+    "statutoryTraiWindowEnforced": "08:00–21:00 IST (UTC+5:30)",
+    "mockProviderAntiProductionViolationGuard": true,
+    "liveMutationsStaging": 0,
+    "liveMutationsProduction": 0,
+    "downstreamExecutionState": "STOPPED"
+  }
+}

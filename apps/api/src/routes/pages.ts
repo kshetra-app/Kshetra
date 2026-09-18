@@ -2,6 +2,8 @@ import crypto from 'node:crypto';
 import type { FastifyPluginAsync } from 'fastify';
 import { supabase, isSupabaseConfigured } from '../lib/supabase';
 import { sendApiError } from '../lib/replyHelper';
+import { RazorpayProvider } from '../providers/razorpayProvider';
+import type { PaymentProvider } from '../providers/types';
 
 export interface PageEntitlement {
   pageId: string;
@@ -210,6 +212,8 @@ const proVerifySchema = {
     },
   );
 
+  const paymentProvider: PaymentProvider = new RazorpayProvider();
+
   /**
    * POST /api/v1/pages/:pageId/pro/order
    * Razorpay order creation for Page Pro subscription (Monthly: ₹499, Annual: ₹4,999).
@@ -223,17 +227,21 @@ const proVerifySchema = {
       const amount = request.body?.amount ?? (billingCycle === 'annual' ? 499900 : 49900); // ₹4,999 or ₹499 in paise
       const currency = request.body?.currency ?? 'INR';
 
-      const razorpayKey = process.env.RAZORPAY_KEY_ID;
-      const orderId = `order_${Date.now()}_${Math.random().toString(36).substring(2, 8)}`;
+      const orderResult = await paymentProvider.createOrder({
+        amountINR: Math.round(amount / 100),
+        currency,
+        pageId,
+        billingCycle,
+      });
 
       return reply.send({
         success: true,
-        orderId,
+        orderId: orderResult.orderId,
         amount,
         currency,
         billingCycle,
-        key: razorpayKey || 'rzp_test_placeholder_key',
-        isSandbox: !razorpayKey,
+        key: orderResult.key,
+        isSandbox: orderResult.isSandbox,
       });
     },
   );
@@ -255,19 +263,33 @@ const proVerifySchema = {
     const { pageId } = request.params;
     const body = request.body ?? {};
 
-    // Validate payment: HMAC-SHA256 signature check if secret is configured, or payment id check
-    const secret = process.env.RAZORPAY_KEY_SECRET;
+    // Validate payment using PaymentProvider abstraction
     let isValid = false;
 
     if (body.sandboxBypass) {
       isValid = true;
     } else if (body.razorpay_payment_id && body.razorpay_order_id) {
-      if (secret && body.razorpay_signature) {
-        const expectedSignature = crypto
-          .createHmac('sha256', secret)
-          .update(`${body.razorpay_order_id}|${body.razorpay_payment_id}`)
-          .digest('hex');
-        isValid = expectedSignature === body.razorpay_signature;
+      if (body.razorpay_signature) {
+        try {
+          const verifyResult = await paymentProvider.verifyPaymentSignature({
+            orderId: body.razorpay_order_id,
+            paymentId: body.razorpay_payment_id,
+            signature: body.razorpay_signature,
+          });
+          isValid = verifyResult.valid;
+        } catch (err: any) {
+          if (err.message && err.message.includes('PROVIDER_CONFIG_ERROR')) {
+            return sendApiError(
+              reply,
+              request,
+              500,
+              'Internal Server Error',
+              'Payment verification service configuration missing (RAZORPAY_KEY_SECRET)',
+              { code: 'PROVIDER_CONFIG_ERROR' }
+            );
+          }
+          isValid = false;
+        }
       } else {
         isValid = true;
       }
