@@ -10,7 +10,7 @@ import {
   type ModerationActionPayload,
   type UserRole,
 } from '../services/moderation';
-import { moderateContent } from '../services/contentModeration';
+import { moderateContent, ModerationUnavailableError } from '../services/contentModeration';
 
 // In-memory fallback queue for testing or offline mode
 let MOCK_REPORTS_QUEUE = [
@@ -479,13 +479,37 @@ export async function moderationRoutes(app: FastifyInstance) {
   });
 
   // 2. Check content for policy violations (automated OpenAI moderation + rule engine fallback)
+  // DEF-004: Fail-closed semantics. Network/provider failure != content violation.
+  // When automated moderation is unavailable, return HTTP 503 with canonical code MODERATION_UNAVAILABLE.
   app.post<{
     Body: { content: string };
   }>('/api/v1/moderation/check-content', {
     schema: checkContentSchema,
   }, async (request, reply) => {
-    const result = await moderateContent(request.body.content);
-    return reply.send({ success: true, data: result });
+    try {
+      const result = await moderateContent(request.body.content);
+      return reply.send({ success: true, data: result });
+    } catch (err: any) {
+      if (err instanceof ModerationUnavailableError) {
+        return sendApiError(
+          reply,
+          request,
+          503,
+          'Service Unavailable',
+          err.message || 'Content moderation service is temporarily unavailable',
+          { code: 'MODERATION_UNAVAILABLE' }
+        );
+      }
+      app.log.error({ err: err?.message || err }, 'Unexpected moderation failure in check-content');
+      return sendApiError(
+        reply,
+        request,
+        503,
+        'Service Unavailable',
+        'Content moderation service is temporarily unavailable',
+        { code: 'MODERATION_UNAVAILABLE' }
+      );
+    }
   });
 
   // 3. Get pending reports queue (moderator+)

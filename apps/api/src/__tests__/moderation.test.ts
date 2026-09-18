@@ -23,7 +23,10 @@ describe('Moderation Routes', () => {
       const res = await app.inject({
         method: 'POST',
         url: '/api/v1/moderation/action',
-        headers: { 'x-user-role': 'citizen' },
+        headers: {
+          'x-user-id': 'm1',
+          'x-test-role': 'citizen',
+        },
         payload: body,
       });
       expect(res.statusCode).toBe(403);
@@ -33,7 +36,10 @@ describe('Moderation Routes', () => {
       const res = await app.inject({
         method: 'POST',
         url: '/api/v1/moderation/action',
-        headers: { 'x-user-role': 'admin' },
+        headers: {
+          'x-user-id': 'm1',
+          'x-test-role': 'admin',
+        },
         payload: body,
       });
       expect(res.statusCode).toBe(200);
@@ -44,7 +50,10 @@ describe('Moderation Routes', () => {
       const res = await app.inject({
         method: 'POST',
         url: '/api/v1/moderation/action',
-        headers: { 'x-user-role': 'moderator' },
+        headers: {
+          'x-user-id': 'm1',
+          'x-test-role': 'moderator',
+        },
         payload: { moderatorId: 'm1', actionType: 'ban', reason: 'x' },
       });
       expect(res.statusCode).toBe(403);
@@ -73,23 +82,202 @@ describe('Moderation Routes', () => {
     });
   });
 
+  describe('DEF-004: Moderation Fail-Closed & Unavailable Semantics (W009-B3)', () => {
+    it('TEST-W009-B3-01: Compliant content returns 200 with flagged: false', async () => {
+      const res = await app.inject({
+        method: 'POST',
+        url: '/api/v1/moderation/check-content',
+        payload: { content: 'This is completely benign, policy-compliant community news.' },
+      });
+      expect(res.statusCode).toBe(200);
+      const body = JSON.parse(res.payload);
+      expect(body.success).toBe(true);
+      expect(body.data.flagged).toBe(false);
+      expect(body.data.reasons).toEqual([]);
+      expect(body.data.provider).toBeDefined();
+    });
+
+    it('TEST-W009-B3-02: Prohibited / policy-violating content returns 200 with flagged: true', async () => {
+      const res = await app.inject({
+        method: 'POST',
+        url: '/api/v1/moderation/check-content',
+        payload: { content: 'I will murder you tonight' },
+      });
+      expect(res.statusCode).toBe(200);
+      const body = JSON.parse(res.payload);
+      expect(body.success).toBe(true);
+      expect(body.data.flagged).toBe(true);
+      expect(body.data.reasons.length).toBeGreaterThan(0);
+    });
+
+    it('TEST-W009-B3-03: Provider failure / network outage returns HTTP 503 MODERATION_UNAVAILABLE', async () => {
+      // Simulate provider failure via test mock hook
+      const { setMockModerationProvider } = await import('../services/contentModeration');
+      setMockModerationProvider(async () => {
+        throw new Error('EAI_AGAIN: DNS resolution failed for api.openai.com');
+      });
+
+      try {
+        const res = await app.inject({
+          method: 'POST',
+          url: '/api/v1/moderation/check-content',
+          payload: { content: 'Benign query during external provider network partition' },
+        });
+
+        expect(res.statusCode).toBe(503);
+        const body = JSON.parse(res.payload);
+        expect(body.statusCode).toBe(503);
+        expect(body.error).toBe('Service Unavailable');
+        expect(body.code).toBe('MODERATION_UNAVAILABLE');
+        expect(body.message).toContain('Content moderation service is temporarily unavailable');
+        expect(body.requestId).toBeDefined();
+        expect(body.timestamp).toBeDefined();
+      } finally {
+        setMockModerationProvider(null);
+      }
+    });
+
+    it('TEST-W009-B3-04: Provider timeout returns HTTP 503 MODERATION_UNAVAILABLE', async () => {
+      const { setMockModerationProvider, ModerationUnavailableError } = await import('../services/contentModeration');
+      setMockModerationProvider(async () => {
+        throw new ModerationUnavailableError('Content moderation request timed out after 5000ms');
+      });
+
+      try {
+        const res = await app.inject({
+          method: 'POST',
+          url: '/api/v1/moderation/check-content',
+          payload: { content: 'Benign query during upstream timeout' },
+        });
+
+        expect(res.statusCode).toBe(503);
+        const body = JSON.parse(res.payload);
+        expect(body.statusCode).toBe(503);
+        expect(body.code).toBe('MODERATION_UNAVAILABLE');
+      } finally {
+        setMockModerationProvider(null);
+      }
+    });
+
+    it('TEST-W009-B3-05: Network/provider failure != content violation (no false accusation)', async () => {
+      const { setMockModerationProvider } = await import('../services/contentModeration');
+      setMockModerationProvider(async () => {
+        throw new Error('Upstream provider 500 Internal Error');
+      });
+
+      try {
+        const res = await app.inject({
+          method: 'POST',
+          url: '/api/v1/moderation/check-content',
+          payload: { content: 'Valid user submission' },
+        });
+
+        // Must NOT return 200 with flagged: true (which would falsely accuse the user)
+        // Must NOT return 400 or 403 policy violation
+        expect(res.statusCode).toBe(503);
+        const body = JSON.parse(res.payload);
+        expect(body.data).toBeUndefined();
+        expect(body.code).toBe('MODERATION_UNAVAILABLE');
+      } finally {
+        setMockModerationProvider(null);
+      }
+    });
+
+    it('TEST-W009-B3-06: Local rule violations are caught immediately before external provider call', async () => {
+      const { setMockModerationProvider } = await import('../services/contentModeration');
+      let providerCalled = false;
+      setMockModerationProvider(async () => {
+        providerCalled = true;
+        return { flagged: false, reasons: [], provider: 'openai' };
+      });
+
+      try {
+        const res = await app.inject({
+          method: 'POST',
+          url: '/api/v1/moderation/check-content',
+          payload: { content: 'You should assault that person' },
+        });
+
+        expect(res.statusCode).toBe(200);
+        const body = JSON.parse(res.payload);
+        expect(body.data.flagged).toBe(true);
+        expect(body.data.provider).toBe('rule_engine');
+        expect(providerCalled).toBe(false);
+      } finally {
+        setMockModerationProvider(null);
+      }
+    });
+
+    it('TEST-W009-B3-07: Publication safety - fail closed when moderation unavailable', async () => {
+      // Simulates an application flow that checks content before publishing
+      const { moderateContent, setMockModerationProvider } = await import('../services/contentModeration');
+      setMockModerationProvider(async () => {
+        throw new Error('Connection refused to moderation service');
+      });
+
+      try {
+        let publicationAllowed = false;
+        try {
+          const modResult = await moderateContent('New post submission text');
+          if (!modResult.flagged) {
+            publicationAllowed = true;
+          }
+        } catch (err: any) {
+          // Fail closed: if moderation fails, publication cannot proceed
+          publicationAllowed = false;
+        }
+
+        expect(publicationAllowed).toBe(false);
+      } finally {
+        setMockModerationProvider(null);
+      }
+    });
+  });
+
   describe('authorization guards', () => {
     it('queue requires moderator', async () => {
-      expect((await app.inject({ method: 'GET', url: '/api/v1/moderation/queue' })).statusCode).toBe(403);
+      expect((await app.inject({ method: 'GET', url: '/api/v1/moderation/queue' })).statusCode).toBe(401);
+      const forbidden = await app.inject({
+        method: 'GET',
+        url: '/api/v1/moderation/queue',
+        headers: {
+          'x-user-id': 'citizen-1',
+          'x-test-role': 'citizen',
+        },
+      });
+      expect(forbidden.statusCode).toBe(403);
+
       const ok = await app.inject({
         method: 'GET',
         url: '/api/v1/moderation/queue',
-        headers: { 'x-user-role': 'moderator' },
+        headers: {
+          'x-user-id': 'mod-1',
+          'x-test-role': 'moderator',
+        },
       });
       expect(ok.statusCode).toBe(200);
     });
 
     it('audit-log requires admin', async () => {
       expect(
-        (await app.inject({ method: 'GET', url: '/api/v1/moderation/audit-log', headers: { 'x-user-role': 'moderator' } })).statusCode,
+        (await app.inject({
+          method: 'GET',
+          url: '/api/v1/moderation/audit-log',
+          headers: {
+            'x-user-id': 'mod-1',
+            'x-test-role': 'moderator',
+          },
+        })).statusCode,
       ).toBe(403);
       expect(
-        (await app.inject({ method: 'GET', url: '/api/v1/moderation/audit-log', headers: { 'x-user-role': 'admin' } })).statusCode,
+        (await app.inject({
+          method: 'GET',
+          url: '/api/v1/moderation/audit-log',
+          headers: {
+            'x-user-id': 'admin-1',
+            'x-test-role': 'admin',
+          },
+        })).statusCode,
       ).toBe(200);
     });
 
