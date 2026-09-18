@@ -73,6 +73,109 @@
     "apiBuildClean": true,
     "repoIntegrityEnforced": true,
     "zeroLiveDbMutations": true,
-    "status": "COMPLETE_PENDING_CTO_ACCEPTANCE"
+    "status": "READY_FOR_INDEPENDENT_CTO_ACCEPTANCE",
+    "localRuntimeDatabaseVerified": true
+  },
+  "runtimeVerification": {
+    "status": "PASS",
+    "environment": {
+      "isolatedDatabase": true,
+      "containerEngine": "Docker Desktop 4.45.0 (Engine 28.3.3)",
+      "postgresImage": "postgis/postgis:16-3.4-alpine",
+      "postgresVersion": "PostgreSQL 16.15 on x86_64-pc-linux-musl, compiled by gcc (Alpine 15.2.0) 15.2.0, 64-bit",
+      "containerName": "w009-b1-postgres",
+      "hostPort": 55432,
+      "disposalStatus": "CONTAINER_STOPPED_AND_REMOVED"
+    },
+    "preRepairDefectReproduction": {
+      "status": "PASS",
+      "defectId": "DEF-013",
+      "command": "SELECT * FROM global_search('Telangana', NULL, 10);",
+      "sqlState": "0A000",
+      "errorMessage": "invalid UNION/INTERSECT/EXCEPT ORDER BY clause",
+      "errorDetail": "Only result column names can be used, not expressions or functions.",
+      "errorHint": "Add the expression/function to every SELECT, or move the UNION into a FROM clause.",
+      "reproducedInPostgres": true
+    },
+    "migration036Application": {
+      "firstApplication": "PASS (CREATE FUNCTION, GRANT executed with exit code 0)",
+      "secondApplication": "PASS (CREATE FUNCTION, GRANT executed with exit code 0)",
+      "idempotencyResult": "PASS (Zero errors, schema/grants identical after repeat apply)"
+    },
+    "catalogVerification": {
+      "functionName": "global_search",
+      "functionOwner": "postgres",
+      "language": "plpgsql",
+      "volatility": "STABLE (s)",
+      "securityDefiner": true,
+      "argumentSignature": "p_query text, p_state_code text, p_limit integer",
+      "returnColumns": "TABLE(entity_type text, entity_id text, title text, subtitle text, relevance real)"
+    },
+    "grantVerification": {
+      "anonExecute": true,
+      "authenticatedExecute": true,
+      "serviceRoleExecute": true,
+      "postgresExecute": true,
+      "publicExecute": true
+    },
+    "semanticExecutionTests": {
+      "testA_GeneralSearch": {
+        "query": "Telangana",
+        "returnedRows": 6,
+        "status": "PASS"
+      },
+      "testB_ConstituencyAndIssue": {
+        "query": "Sirpur",
+        "returnedRows": 2,
+        "entityTypes": [
+          "constituency",
+          "issue"
+        ],
+        "status": "PASS"
+      },
+      "testC_JubileeHills": {
+        "query": "Jubilee",
+        "returnedRows": 2,
+        "entityTypes": [
+          "constituency",
+          "issue"
+        ],
+        "status": "PASS"
+      },
+      "testE_Legislator": {
+        "query": "Reddy",
+        "returnedRows": 1,
+        "entityTypes": [
+          "legislator"
+        ],
+        "relevance": 1,
+        "status": "PASS"
+      },
+      "testF_RelevanceOrdering": {
+        "status": "PASS",
+        "verifiedDescending": true
+      },
+      "testG_LimitEnforcement": {
+        "limitRequested": 2,
+        "rowsReturned": 2,
+        "status": "PASS"
+      },
+      "testH_StateFilter": {
+        "validStateTS_rows": 2,
+        "otherStateKA_rows": 0,
+        "status": "PASS"
+      },
+      "testI_NoResults": {
+        "query": "xyzunmatchednonexistentterm",
+        "rowsReturned": 0,
+        "status": "PASS"
+      }
+    },
+    "safetySummary": {
+      "stagingConnections": 0,
+      "stagingMutations": 0,
+      "productionConnections": 0,
+      "productionMutations": 0
+    }
   }
 }
