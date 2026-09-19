@@ -1,14 +1,15 @@
 # W009-B3: Moderation Fail-Closed & Unavailable Semantics Report (Remediated)
 
 **Job ID:** W009-B3  
-**Status:** IMPLEMENTED_TESTED_VERIFIED_SUBMITTED  
-**Authority:** CTO Remediation Instruction W009-B3  
+**Status:** ACCEPTED / COMPLETE  
+**Authority:** CTO Final Acceptance Record W009-B3  
 **Defect Remediated:** DEF-004 (Moderation Fail-Closed & Semantic Distinction - Unconfigured Provider Silent Approval Fix)  
-**Timestamp:** 2026-09-19T05:15:00.000Z  
+**Timestamp:** 2026-09-19T05:25:00.000Z  
+**Accepted Implementation Commit:** `2ff4f40130df3b1fb516c29902742653d7749427`  
+**Governance Reconciliation Commit:** `079134a8234326f8cb9fa79d58ca9cb3c0ddf7c1`  
 **Base Commit:** `09cbf4bf27eb677d3bdda93032c4491924ec417a`  
 **Base Tree:** `4a649d4035825b92df8e191d8976bb68290c7dbe`  
-**Prior B3 Commit:** `c8a905a7109d913e8e24a55745c46e07a9e56512`  
-**CTO Acceptance:** PENDING  
+**CTO Acceptance:** GRANTED / COMPLETE  
 
 ---
 
@@ -88,5 +89,5 @@ All tests executed cleanly with zero errors:
 - **W009-B2 Provider Files Modified:** 0
 - **Database Migrations Modified:** 0
 - **Mobile Files Modified:** 0
-- **CTO Acceptance Gate:** PENDING (Submitted for CTO acceptance)
+- **CTO Acceptance Gate:** GRANTED / COMPLETE (Formally accepted by CTO)
 
