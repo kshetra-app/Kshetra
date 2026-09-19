@@ -30,17 +30,17 @@ In accordance with architectural directives:
 
 | # | Operation Name | Route | HTTP | Auth | Target Table / Mechanism | Mobile Client Binding | Store / DataService Caller | Status |
 |---|---|---|---|---|---|---|---|---|
-| 1 | upvoteIssue | /api/v1/civic/issues/:id/upvote | POST | Yes | civic_issue_upvotes (upsert) | apiClient.civic.upvoteIssue(id) | supabaseDataService.upvoteIssue / civicStore.upvoteIssue | MIGRATED |
-| 2 | removeUpvote | /api/v1/civic/issues/:id/upvote | DELETE | Yes | civic_issue_upvotes (delete) | apiClient.civic.removeUpvote(id) | supabaseDataService.removeUpvote / civicStore.removeUpvote | MIGRATED |
-| 3 | followIssue | /api/v1/civic/issues/:id/follow | POST | Yes | civic_issue_followers (insert) | apiClient.civic.followIssue(id) | supabaseDataService.followIssue | MIGRATED |
+| 1 | upvoteIssue | /api/v1/civic/issues/:id/upvote | POST | Yes | issue_upvotes (insert) | apiClient.civic.upvoteIssue(id) | supabaseDataService.upvoteIssue / civicStore.upvoteIssue | MIGRATED |
+| 2 | removeUpvote | /api/v1/civic/issues/:id/upvote | DELETE | Yes | issue_upvotes (delete) | apiClient.civic.removeUpvote(id) | supabaseDataService.removeUpvote / civicStore.removeUpvote | MIGRATED |
+| 3 | followIssue | /api/v1/civic/issues/:id/follow | POST | Yes | issue_follows (insert) | apiClient.civic.followIssue(id) | supabaseDataService.followIssue | MIGRATED |
 | 4 | reportIssue | /api/v1/civic/issues | POST | Yes | civic_issues (insert) | apiClient.civic.reportIssue(payload) | supabaseDataService.reportIssue | MIGRATED |
-| 5 | updateIssueStatus | /api/v1/civic/issues/:id/status | PATCH | Yes | civic_issues (update) | apiClient.civic.updateIssueStatus(id, s) | supabaseDataService.updateIssueStatus / civicStore.updateIssueStatus | MIGRATED |
-| 6 | addIssueComment | /api/v1/civic/issues/:id/comments | POST | Yes | civic_issue_comments (insert) | apiClient.civic.addIssueComment(id, c) | supabaseDataService.addIssueComment / civicStore.addComment | MIGRATED |
+| 5 | updateIssueStatus | /api/v1/civic/issues/:id/status | PATCH | Yes | civic_issues (update) + issue_status_history (audit) | apiClient.civic.updateIssueStatus(id, s) | supabaseDataService.updateIssueStatus / civicStore.updateIssueStatus | MIGRATED |
+| 6 | addIssueComment | /api/v1/civic/issues/:id/comments | POST | Yes | issue_comments (insert) | apiClient.civic.addIssueComment(id, c) | supabaseDataService.addIssueComment / civicStore.addComment | MIGRATED |
 | 7 | Event RSVP | /api/v1/politician/events/:id/rsvp | POST | Yes | event_rsvps (upsert) | apiClient.politician.rsvpEvent(id, s) | politicianPortalStore.rsvpEvent | MIGRATED |
-| 8 | Survey Response | /api/v1/politician/surveys/:id/respond | POST | Yes | survey_responses (upsert) | apiClient.politician.respondSurvey(id, a) | politicianPortalStore.respondSurvey | MIGRATED |
-| 9 | Bill Opinion | /api/v1/civic/bills/:id/opinion | POST | Yes | bill_opinions (upsert) | apiClient.civic.recordBillOpinion(id, s) | civicMetricsStore.supportBill / opposeBill | MIGRATED |
-| 10 | RTI Filing | /api/v1/civic/rti | POST | Yes | rti_queries (insert) | apiClient.civic.fileRTI(payload) | civicMetricsStore.fileRTI | MIGRATED |
-| 11 | RTI Upvote | /api/v1/civic/rti/:id/upvote | POST | Yes | rti_upvotes (upsert) | apiClient.civic.upvoteRTI(id) | civicMetricsStore.upvoteRTI | MIGRATED |
+| 8 | Survey Response | /api/v1/politician/surveys/:id/respond | POST | Yes | survey_responses (insert) | apiClient.politician.respondSurvey(id, a) | politicianPortalStore.respondSurvey | MIGRATED |
+| 9 | Bill Opinion | /api/v1/civic/bills/:id/opinion | POST | Yes | bills.public_opinion (aggregate JSONB update) | apiClient.civic.postCitizenOpinion(id, s) | civicMetricsStore.supportBill / opposeBill | MIGRATED |
+| 10 | RTI Filing | /api/v1/civic/rti | POST | Yes | rti_requests (insert) | apiClient.civic.submitRtiQuery(payload) | civicMetricsStore.fileRTI | MIGRATED |
+| 11 | RTI Upvote | /api/v1/civic/rti/:id/upvote | POST | Yes | rti_requests.upvotes (aggregate counter increment) | apiClient.civic.upvoteRtiQuery(id) | civicMetricsStore.upvoteRTI | MIGRATED |
 | - | Vote Manifesto Item | /api/v1/politician/manifestos/:id/items/:itemId/vote | POST | Yes | NONE | N/A | Fastify API fail-closed | BLOCKED (501) |
 | - | Submit Grievance | /api/v1/politician/grievances | POST | Yes | NONE | N/A | Fastify API fail-closed | BLOCKED (501) |
 
