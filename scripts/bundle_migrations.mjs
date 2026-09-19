@@ -61,7 +61,7 @@ for (const file of ORDERED_FILES) {
     console.error(`Warning: Migration file missing: ${file}`);
     continue;
   }
-  const content = fs.readFileSync(filePath, 'utf8');
+  const content = fs.readFileSync(filePath, 'utf8').replace(/^\uFEFF/, '');
   combinedSql += `\n-- ────────────────────────────────────────────────────────\n`;
   combinedSql += `-- START MIGRATION: ${file}\n`;
   combinedSql += `-- ────────────────────────────────────────────────────────\n\n`;

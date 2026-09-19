@@ -1,6 +1,6 @@
 -- ========================================================
 -- KSHETRA ALL MIGRATIONS COMBINED (001 - 036, 38 FILES)
--- Generated at: 2026-09-18T13:25:57.054Z
+-- Generated at: 2026-09-19T06:33:30.945Z
 -- Run this script in the Supabase SQL Editor to provision
 -- the entire database schema, roles, RLS, and seed data.
 -- ========================================================
@@ -8114,7 +8114,7 @@ CREATE POLICY political_ads_reviewer_update_policy ON political_ads
 -- START MIGRATION: 035_campaign_recharge_orders.sql
 -- ────────────────────────────────────────────────────────
 
-﻿-- ============================================================
+-- ============================================================
 -- Migration 035: Durable Campaign Recharge Orders & Atomic Verification
 -- Authoritative persistence for wallet recharge lifecycle and idempotency
 -- ============================================================
