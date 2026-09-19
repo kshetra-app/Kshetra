@@ -1,50 +1,66 @@
 {
   "jobId": "W009-B3",
-  "timestamp": "2026-09-18T16:55:24.300Z",
-  "authority": "CTO Authorization W009-B3",
+  "timestamp": "2026-09-19T05:15:00.000Z",
+  "authority": "CTO Remediation Instruction W009-B3",
   "status": "IMPLEMENTED_TESTED_VERIFIED_SUBMITTED",
   "ctoAcceptance": "PENDING",
   "baselineCommit": "09cbf4bf27eb677d3bdda93032c4491924ec417a",
   "baselineTree": "4a649d4035825b92df8e191d8976bb68290c7dbe",
-  "defectRemediated": "DEF-004 (Moderation Fail-Closed & Semantic Distinction)",
+  "priorB3Commit": "c8a905a7109d913e8e24a55745c46e07a9e56512",
+  "defectRemediated": "DEF-004 (Moderation Fail-Closed & Semantic Distinction - Unconfigured Provider Silent Approval Fix)",
+  "rootCauseAnalysis": "In apps/api/src/services/contentModeration.ts, when no external moderation provider was configured (OPENAI_API_KEY unset and no mock provider), Step 4 previously fell through to return { flagged: false, provider: 'rule_engine' }. This constituted a silent compliance bypass for all content passing local regex checks whenever the external provider was absent.",
+  "remediationSummary": "Eliminated Step 4 fallback in apps/api/src/services/contentModeration.ts by throwing ModerationUnavailableError('Content moderation provider is not configured or unavailable'). All content requiring external moderation strictly fails closed (HTTP 503 MODERATION_UNAVAILABLE) without falsely marking content as violating policy, while preventing unmoderated publication.",
   "semanticOutcomes": [
     {
+      "state": 1,
       "code": 200,
       "semantic": "COMPLIANT",
-      "description": "Content meets community guidelines without violation (flagged: false)"
+      "flagged": false,
+      "description": "Provider is available and content is verified compliant with community standards."
     },
     {
+      "state": 2,
       "code": 200,
       "semantic": "PROHIBITED",
-      "description": "Content violates policy rules or automated checks (flagged: true)"
+      "flagged": true,
+      "description": "Provider is available and content is flagged for policy violation (or violates local rules)."
     },
     {
+      "state": 3,
       "code": 503,
       "semantic": "MODERATION_UNAVAILABLE",
-      "description": "Network/provider failure != content violation; fail closed with HTTP 503"
+      "flagged": null,
+      "description": "Provider missing, unconfigured, network down, or timed out; fail closed with HTTP 503 without falsely accusing user or permitting publication."
     }
   ],
   "changes": [
     {
       "file": "apps/api/src/services/contentModeration.ts",
       "type": "MODIFY",
-      "summary": "Added ModerationUnavailableError class, timeout support, test mock hooks, and strict fail-closed exception throwing instead of silent compliant bypass."
+      "summary": "Defined ModerationUnavailableError class, timeout support, test mock hooks, and strict fail-closed exception throwing when external provider is absent, failed, or timed out."
     },
     {
       "file": "apps/api/src/routes/moderation.ts",
       "type": "MODIFY",
-      "summary": "Wrapped moderateContent in check-content route with try-catch returning HTTP 503 MODERATION_UNAVAILABLE on ModerationUnavailableError."
+      "summary": "Wrapped check-content endpoint in try-catch to return HTTP 503 MODERATION_UNAVAILABLE when ModerationUnavailableError is caught."
     },
     {
       "file": "apps/api/src/__tests__/moderation.test.ts",
       "type": "MODIFY",
-      "summary": "Added comprehensive DEF-004 test suite verifying 7 distinct test cases for compliant, prohibited, unavailable, timeout, no-false-accusation, and publication safety."
+      "summary": "Corrected test path notation to apps/api/src/__tests__/moderation.test.ts; added TEST-W009-B3-01 through TEST-W009-B3-08 covering all 3 semantic states, timeout, network failure, local rules, publication safety, and explicit unconfigured/absent provider regression."
     }
   ],
   "testResults": {
-    "moderationSuite": "19/19 passing",
-    "contractsSuite": "34/34 passing",
-    "providersSuite": "17/17 passing",
+    "moderationSuite": "20/20 passing (apps/api/src/__tests__/moderation.test.ts)",
+    "unconfiguredProviderTest": "TEST-W009-B3-08 passing (HTTP 503, MODERATION_UNAVAILABLE, no false accusation, publication blocked)",
+    "contractsSuite": "34/34 passing (apps/api/src/__tests__/contracts.test.ts)",
+    "providersSuite": "17/17 passing (apps/api/src/__tests__/providers.test.ts)",
     "apiTypecheck": "0 errors (tsc --noEmit)"
+  },
+  "scopeIntegrity": {
+    "unauthorizedMutations": 0,
+    "b2FilesModified": 0,
+    "mobileFilesModified": 0,
+    "dbMigrationsModified": 0
   }
 }

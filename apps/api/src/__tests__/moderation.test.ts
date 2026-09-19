@@ -72,29 +72,99 @@ describe('Moderation Routes', () => {
     });
 
     it('passes clean content', async () => {
-      const res = await app.inject({
-        method: 'POST',
-        url: '/api/v1/moderation/check-content',
-        payload: { content: 'The election results were announced today.' },
-      });
-      expect(res.statusCode).toBe(200);
-      expect(JSON.parse(res.payload).data.flagged).toBe(false);
+      const { setMockModerationProvider } = await import('../services/contentModeration');
+      setMockModerationProvider(async () => ({
+        flagged: false,
+        reasons: [],
+        provider: 'openai',
+      }));
+      try {
+        const res = await app.inject({
+          method: 'POST',
+          url: '/api/v1/moderation/check-content',
+          payload: { content: 'The election results were announced today.' },
+        });
+        expect(res.statusCode).toBe(200);
+        expect(JSON.parse(res.payload).data.flagged).toBe(false);
+      } finally {
+        setMockModerationProvider(null);
+      }
     });
   });
 
   describe('DEF-004: Moderation Fail-Closed & Unavailable Semantics (W009-B3)', () => {
-    it('TEST-W009-B3-01: Compliant content returns 200 with flagged: false', async () => {
-      const res = await app.inject({
-        method: 'POST',
-        url: '/api/v1/moderation/check-content',
-        payload: { content: 'This is completely benign, policy-compliant community news.' },
-      });
-      expect(res.statusCode).toBe(200);
-      const body = JSON.parse(res.payload);
-      expect(body.success).toBe(true);
-      expect(body.data.flagged).toBe(false);
-      expect(body.data.reasons).toEqual([]);
-      expect(body.data.provider).toBeDefined();
+    it('TEST-W009-B3-01: Compliant content returns 200 with flagged: false when provider is available', async () => {
+      const { setMockModerationProvider } = await import('../services/contentModeration');
+      setMockModerationProvider(async () => ({
+        flagged: false,
+        reasons: [],
+        provider: 'openai',
+      }));
+
+      try {
+        const res = await app.inject({
+          method: 'POST',
+          url: '/api/v1/moderation/check-content',
+          payload: { content: 'This is completely benign, policy-compliant community news.' },
+        });
+        expect(res.statusCode).toBe(200);
+        const body = JSON.parse(res.payload);
+        expect(body.success).toBe(true);
+        expect(body.data.flagged).toBe(false);
+        expect(body.data.reasons).toEqual([]);
+        expect(body.data.provider).toBe('openai');
+      } finally {
+        setMockModerationProvider(null);
+      }
+    });
+
+    it('TEST-W009-B3-08: Required moderation provider absent/unconfigured returns HTTP 503 MODERATION_UNAVAILABLE', async () => {
+      // Ensure no mock provider and no external provider API key configured
+      const { setMockModerationProvider, moderateContent } = await import('../services/contentModeration');
+      setMockModerationProvider(null);
+      const originalApiKey = process.env.OPENAI_API_KEY;
+      delete process.env.OPENAI_API_KEY;
+
+      try {
+        const res = await app.inject({
+          method: 'POST',
+          url: '/api/v1/moderation/check-content',
+          payload: { content: 'Benign content submitted when no external moderation provider is configured.' },
+        });
+
+        // 1. Moderation does NOT return flagged: false (silent compliance prevented)
+        // 2. Moderation does NOT return HTTP 200
+        expect(res.statusCode).toBe(503);
+        const body = JSON.parse(res.payload);
+        expect(body.data).toBeUndefined();
+
+        // 3. MODERATION_UNAVAILABLE is produced
+        expect(body.code).toBe('MODERATION_UNAVAILABLE');
+
+        // 4. HTTP status is 503
+        expect(body.statusCode).toBe(503);
+        expect(body.error).toBe('Service Unavailable');
+
+        // 5. The content is NOT treated as a content violation merely because provider is unavailable
+        expect(body.message).toContain('Content moderation provider is not configured or unavailable');
+
+        // 6. Publication is not permitted when required moderation cannot be performed
+        let publicationAllowed = false;
+        try {
+          const modResult = await moderateContent('Benign user post content');
+          if (!modResult.flagged) {
+            publicationAllowed = true;
+          }
+        } catch (err: any) {
+          publicationAllowed = false;
+        }
+        expect(publicationAllowed).toBe(false);
+      } finally {
+        if (originalApiKey !== undefined) {
+          process.env.OPENAI_API_KEY = originalApiKey;
+        }
+        setMockModerationProvider(null);
+      }
     });
 
     it('TEST-W009-B3-02: Prohibited / policy-violating content returns 200 with flagged: true', async () => {

@@ -134,10 +134,10 @@ export async function moderateContent(text: string, options?: { timeoutMs?: numb
     }
   }
 
-  // Step 4: When no external provider is configured, local rule engine result stands
-  return {
-    flagged: false,
-    reasons: [],
-    provider: 'rule_engine',
-  };
+  // Step 4: When no external moderation provider is configured (e.g. OPENAI_API_KEY missing/unset)
+  // DEF-004 Remediation: No required moderation decision may silently resolve to compliant!
+  // Failing closed means the action/publication cannot proceed without required moderation.
+  throw new ModerationUnavailableError(
+    'Content moderation provider is not configured or unavailable'
+  );
 }
