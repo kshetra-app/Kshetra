@@ -12,6 +12,7 @@ import type {
   ConstituencyDevelopmentIndex,
   RTIStatus,
 } from '../lib/civicMetricsTypes';
+import { apiClient } from '../lib/api';
 
 // ─── Seed Budget Data ───
 const SEED_BUDGET_SUMMARIES: StateBudgetSummary[] = [
@@ -251,10 +252,10 @@ interface CivicMetricsState {
   getCDI: (acNo: number, stateCode: string) => ConstituencyDevelopmentIndex | undefined;
 
   // Actions
-  fileRTI: (rti: Partial<RTIRequest>) => void;
-  upvoteRTI: (rtiId: string) => void;
-  supportBill: (billId: string) => void;
-  opposeBill: (billId: string) => void;
+  fileRTI: (rti: Partial<RTIRequest>) => Promise<boolean>;
+  upvoteRTI: (rtiId: string) => Promise<boolean>;
+  supportBill: (billId: string) => Promise<boolean>;
+  opposeBill: (billId: string) => Promise<boolean>;
 }
 
 export const useCivicMetricsStore = create<CivicMetricsState>((set, get) => ({
@@ -283,11 +284,132 @@ export const useCivicMetricsStore = create<CivicMetricsState>((set, get) => ({
   getUpcomingHearings: (stateCode) => get().hearings.filter((h) => (stateCode ? h.stateCode === stateCode : true) && new Date(h.date).getTime() > Date.now()).sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime()),
   getCDI: (acNo, stateCode) => get().cdiList.find((c) => c.constituencyAcNo === acNo && c.stateCode === stateCode),
 
-  fileRTI: (rti) => set((s) => ({ rtiRequests: [...s.rtiRequests, { id: `rti-${Date.now()}`, userId: '', status: 'draft' as RTIStatus, department: '', authority: '', subject: '', questionText: '', stateCode: '', filedDate: new Date().toISOString().split('T')[0], fees: 10, isPublic: true, upvotes: 0, views: 0, tags: [], attachmentUrls: [], responseAttachmentUrls: [], createdAt: new Date().toISOString(), ...rti } as RTIRequest] })),
+  fileRTI: async (rti) => {
+    try {
+      const res = await apiClient.civic.submitRtiQuery({
+        department: rti.department || 'General Administration',
+        subject: rti.subject || 'RTI Request',
+        description: rti.questionText || '',
+        state: rti.stateCode || 'TS',
+      });
+      const newId = res.id;
+      set((s) => ({
+        rtiRequests: [
+          ...s.rtiRequests,
+          {
+            id: newId,
+            userId: '',
+            status: 'draft' as RTIStatus,
+            department: '',
+            authority: '',
+            subject: '',
+            questionText: '',
+            stateCode: '',
+            filedDate: new Date().toISOString().split('T')[0],
+            fees: 10,
+            isPublic: true,
+            upvotes: 0,
+            views: 0,
+            tags: [],
+            attachmentUrls: [],
+            responseAttachmentUrls: [],
+            createdAt: new Date().toISOString(),
+            ...rti,
+          } as RTIRequest,
+        ],
+      }));
+      return true;
+    } catch {
+      return false;
+    }
+  },
 
-  upvoteRTI: (rtiId) => set((s) => ({ rtiRequests: s.rtiRequests.map((r) => r.id === rtiId ? { ...r, upvotes: r.upvotes + 1 } : r) })),
+  upvoteRTI: async (rtiId) => {
+    set((s) => ({
+      rtiRequests: s.rtiRequests.map((r) =>
+        r.id === rtiId ? { ...r, upvotes: r.upvotes + 1 } : r
+      ),
+    }));
+    try {
+      await apiClient.civic.upvoteRtiQuery(rtiId);
+      return true;
+    } catch {
+      set((s) => ({
+        rtiRequests: s.rtiRequests.map((r) =>
+          r.id === rtiId ? { ...r, upvotes: Math.max(0, r.upvotes - 1) } : r
+        ),
+      }));
+      return false;
+    }
+  },
 
-  supportBill: (billId) => set((s) => ({ bills: s.bills.map((b) => b.id === billId ? { ...b, publicOpinion: { ...b.publicOpinion, support: b.publicOpinion.support + 1 } } : b) })),
+  supportBill: async (billId) => {
+    set((s) => ({
+      bills: s.bills.map((b) =>
+        b.id === billId
+          ? {
+              ...b,
+              publicOpinion: {
+                ...b.publicOpinion,
+                support: (b.publicOpinion?.support || 0) + 1,
+              },
+            }
+          : b
+      ),
+    }));
+    try {
+      await apiClient.civic.postCitizenOpinion(billId, true);
+      return true;
+    } catch {
+      set((s) => ({
+        bills: s.bills.map((b) =>
+          b.id === billId
+            ? {
+                ...b,
+                publicOpinion: {
+                  ...b.publicOpinion,
+                  support: Math.max(0, (b.publicOpinion?.support || 1) - 1),
+                },
+              }
+            : b
+        ),
+      }));
+      return false;
+    }
+  },
 
-  opposeBill: (billId) => set((s) => ({ bills: s.bills.map((b) => b.id === billId ? { ...b, publicOpinion: { ...b.publicOpinion, oppose: b.publicOpinion.oppose + 1 } } : b) })),
+  opposeBill: async (billId) => {
+    set((s) => ({
+      bills: s.bills.map((b) =>
+        b.id === billId
+          ? {
+              ...b,
+              publicOpinion: {
+                ...b.publicOpinion,
+                oppose: (b.publicOpinion?.oppose || 0) + 1,
+              },
+            }
+          : b
+      ),
+    }));
+    try {
+      await apiClient.civic.postCitizenOpinion(billId, false);
+      return true;
+    } catch {
+      set((s) => ({
+        bills: s.bills.map((b) =>
+          b.id === billId
+            ? {
+                ...b,
+                publicOpinion: {
+                  ...b.publicOpinion,
+                  oppose: Math.max(0, (b.publicOpinion?.oppose || 1) - 1),
+                },
+              }
+            : b
+        ),
+      }));
+      return false;
+    }
+  },
 }));

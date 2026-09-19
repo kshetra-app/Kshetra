@@ -15,6 +15,7 @@ import { supabase, isSupabaseConfigured } from './supabase';
 import { captureException, addBreadcrumb } from './errorReporting';
 import { API_BASE_URL } from './constants';
 import { telemetry } from './telemetry';
+import { apiClient } from './api';
 
 // ─── Helpers ─────────────────────────────────────────────────────────
 
@@ -62,54 +63,33 @@ function uid(): string | null {
 
 // ─── Civic Issues ────────────────────────────────────────────────────
 
-export async function upvoteIssue(issueId: string, userId: string): Promise<boolean> {
-  if (!guard()) return true;
+export async function upvoteIssue(issueId: string, _userId?: string): Promise<boolean> {
   try {
-    addBreadcrumb('civic', 'upvote_issue', { issueId, userId });
-    const { error } = await supabase
-      .from('issue_upvotes')
-      .upsert({ issue_id: issueId, user_id: userId }, { onConflict: 'issue_id,user_id' });
-    if (error) throw error;
-    return true;
+    addBreadcrumb('civic', 'upvote_issue', { issueId });
+    const res = await apiClient.civic.upvoteIssue(issueId);
+    return res.success;
   } catch (err) {
     captureException(err as Error, { op: 'upvote_issue', issueId });
     return false;
   }
 }
 
-export async function removeUpvote(issueId: string, userId: string): Promise<boolean> {
-  if (!guard()) return true;
+export async function removeUpvote(issueId: string, _userId?: string): Promise<boolean> {
   try {
     addBreadcrumb('civic', 'remove_upvote', { issueId });
-    const { error } = await supabase
-      .from('issue_upvotes')
-      .delete()
-      .match({ issue_id: issueId, user_id: userId });
-    if (error) throw error;
-    return true;
+    const res = await apiClient.civic.removeUpvote(issueId);
+    return res.success;
   } catch (err) {
     captureException(err as Error, { op: 'remove_upvote', issueId });
     return false;
   }
 }
 
-export async function followIssue(issueId: string, userId: string, follow: boolean): Promise<boolean> {
-  if (!guard()) return true;
+export async function followIssue(issueId: string, _userId: string, follow: boolean): Promise<boolean> {
   try {
     addBreadcrumb('civic', follow ? 'follow_issue' : 'unfollow_issue', { issueId });
-    if (follow) {
-      const { error } = await supabase
-        .from('issue_follows')
-        .upsert({ issue_id: issueId, user_id: userId }, { onConflict: 'issue_id,user_id' });
-      if (error) throw error;
-    } else {
-      const { error } = await supabase
-        .from('issue_follows')
-        .delete()
-        .match({ issue_id: issueId, user_id: userId });
-      if (error) throw error;
-    }
-    return true;
+    const res = await apiClient.civic.followIssue(issueId, follow);
+    return res.success;
   } catch (err) {
     captureException(err as Error, { op: 'follow_issue', issueId });
     return false;
@@ -127,27 +107,18 @@ export async function reportIssue(issue: {
   reporterName: string;
   mediaUrls?: string[];
 }): Promise<{ id: string | null; success: boolean }> {
-  if (!guard()) return { id: `local-${Date.now()}`, success: true };
   try {
     addBreadcrumb('civic', 'report_issue', { title: issue.title });
-    const { data, error } = await supabase
-      .from('civic_issues')
-      .insert({
-        title: issue.title,
-        description: issue.description,
-        category: issue.category,
-        severity: issue.severity,
-        constituency_id: issue.constituencyId,
-        state_code: issue.stateCode,
-        reporter_id: issue.reporterId,
-        reporter_name: issue.reporterName,
-        media_urls: issue.mediaUrls ?? [],
-        status: 'open',
-      })
-      .select('id')
-      .single();
-    if (error) throw error;
-    return { id: data?.id ?? null, success: true };
+    const res = await apiClient.civic.reportIssue({
+      title: issue.title,
+      description: issue.description,
+      category: issue.category,
+      severity: issue.severity,
+      constituencyId: issue.constituencyId,
+      stateCode: issue.stateCode,
+      mediaUrls: issue.mediaUrls,
+    });
+    return { id: res.id ?? null, success: res.success };
   } catch (err) {
     captureException(err as Error, { op: 'report_issue', title: issue.title });
     return { id: null, success: false };
@@ -156,27 +127,20 @@ export async function reportIssue(issue: {
 
 export async function addIssueComment(
   issueId: string,
-  userId: string,
+  _userId: string,
   userName: string,
   body: string,
   imageUrl?: string,
 ): Promise<{ id: string | null; success: boolean }> {
-  if (!guard()) return { id: `local-cmt-${Date.now()}`, success: true };
   try {
     addBreadcrumb('civic', 'add_issue_comment', { issueId });
-    const { data, error } = await supabase
-      .from('issue_comments')
-      .insert({
-        issue_id: issueId,
-        user_id: userId,
-        user_name: userName,
-        body,
-        image_url: imageUrl ?? null,
-      })
-      .select('id')
-      .single();
-    if (error) throw error;
-    return { id: data?.id ?? null, success: true };
+    const res = await apiClient.civic.addIssueComment(
+      issueId,
+      body,
+      userName,
+      imageUrl,
+    );
+    return { id: res.id ?? null, success: res.success };
   } catch (err) {
     captureException(err as Error, { op: 'add_issue_comment', issueId });
     return { id: null, success: false };
@@ -227,37 +191,14 @@ export async function updateIssueStatus(
   newStatus: string,
   note?: string,
 ): Promise<boolean> {
-  if (!guard()) return true;
   try {
     addBreadcrumb('civic', 'update_issue_status', { issueId, newStatus });
-    const update: Record<string, unknown> = { status: newStatus };
-    if (newStatus === 'resolved') {
-      update.resolved_at = new Date().toISOString();
-      update.resolution_note = note;
-    }
-    const { data: issueData, error } = await supabase
-      .from('civic_issues')
-      .update(update)
-      .eq('id', issueId)
-      .select('reporter_id, title')
-      .maybeSingle();
-    if (error) throw error;
-
-    // Notify issue reporter of status update
-    if (issueData?.reporter_id) {
-      supabase.from('notification_log').insert({
-        user_id: issueData.reporter_id,
-        trigger_type: 'issue_status_change',
-        title: 'Issue Status Updated',
-        body: `Your issue "${issueData.title || 'Civic Issue'}" was marked as ${newStatus}.`,
-        source_issue_id: issueId,
-        read: false,
-      }).then(({ error: notifErr }) => {
-        if (notifErr) console.warn('[Notification] Failed to log issue status notification:', notifErr.message);
-      });
-    }
-
-    return true;
+    const res = await apiClient.civic.updateIssueStatus(
+      issueId,
+      newStatus,
+      note,
+    );
+    return res.success;
   } catch (err) {
     captureException(err as Error, { op: 'update_issue_status', issueId });
     return false;

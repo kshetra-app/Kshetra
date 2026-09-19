@@ -9,6 +9,7 @@ import type {
   FundraiseProject,
   PoliticianSurvey,
 } from '../lib/politicianPortalTypes';
+import { apiClient } from '../lib/api';
 
 // Fictional demo data only — no real, named public figures permitted here.
 // ─── Seed Politicians ───
@@ -153,12 +154,12 @@ interface PoliticianPortalState {
   setCurrentPolitician: (id: string) => void;
   createBroadcast: (broadcast: Partial<ConstituentBroadcast>) => void;
   createEvent: (event: Partial<PoliticalEvent>) => void;
-  rsvpEvent: (eventId: string) => void;
+  rsvpEvent: (eventId: string) => Promise<boolean>;
   publishManifesto: (manifestoId: string) => void;
   voteManifestoItem: (manifestoId: string, itemId: string, support: boolean) => void;
   endorsePolitician: (endorsement: Partial<Endorsement>) => void;
   donateFundraise: (projectId: string, amount: number) => void;
-  respondSurvey: (surveyId: string, answers: Record<string, any>) => void;
+  respondSurvey: (surveyId: string, answers: Record<string, any>) => Promise<boolean>;
 }
 
 export const usePoliticianPortalStore = create<PoliticianPortalState>((set, get) => ({
@@ -189,7 +190,24 @@ export const usePoliticianPortalStore = create<PoliticianPortalState>((set, get)
 
   createEvent: (event) => set((s) => ({ events: [...s.events, { id: `pe-${Date.now()}`, politicianId: '', politicianName: '', type: 'meeting', status: 'planned', title: '', description: '', venue: '', address: '', stateCode: '', startTime: '', endTime: '', isPublic: true, rsvpCount: 0, mediaUrls: [], createdAt: new Date().toISOString(), updatedAt: new Date().toISOString(), ...event } as PoliticalEvent] })),
 
-  rsvpEvent: (eventId) => set((s) => ({ events: s.events.map((e) => e.id === eventId ? { ...e, rsvpCount: e.rsvpCount + 1 } : e) })),
+  rsvpEvent: async (eventId) => {
+    set((s) => ({
+      events: s.events.map((e) =>
+        e.id === eventId ? { ...e, rsvpCount: e.rsvpCount + 1 } : e
+      ),
+    }));
+    try {
+      await apiClient.politician.rsvpEvent(eventId);
+      return true;
+    } catch {
+      set((s) => ({
+        events: s.events.map((e) =>
+          e.id === eventId ? { ...e, rsvpCount: Math.max(0, e.rsvpCount - 1) } : e
+        ),
+      }));
+      return false;
+    }
+  },
 
   publishManifesto: (manifestoId) => set((s) => ({ manifestos: s.manifestos.map((m) => m.id === manifestoId ? { ...m, status: 'published' as const, publishedAt: new Date().toISOString() } : m) })),
 
@@ -203,5 +221,22 @@ export const usePoliticianPortalStore = create<PoliticianPortalState>((set, get)
 
   donateFundraise: (projectId, amount) => set((s) => ({ fundraiseProjects: s.fundraiseProjects.map((f) => f.id === projectId ? { ...f, raisedAmount: f.raisedAmount + amount, donorCount: f.donorCount + 1 } : f) })),
 
-  respondSurvey: (surveyId, _answers) => set((s) => ({ surveys: s.surveys.map((sv) => sv.id === surveyId ? { ...sv, responseCount: sv.responseCount + 1 } : sv) })),
+  respondSurvey: async (surveyId, answers) => {
+    set((s) => ({
+      surveys: s.surveys.map((sv) =>
+        sv.id === surveyId ? { ...sv, responseCount: sv.responseCount + 1 } : sv
+      ),
+    }));
+    try {
+      await apiClient.politician.respondSurvey(surveyId, answers);
+      return true;
+    } catch {
+      set((s) => ({
+        surveys: s.surveys.map((sv) =>
+          sv.id === surveyId ? { ...sv, responseCount: Math.max(0, sv.responseCount - 1) } : sv
+        ),
+      }));
+      return false;
+    }
+  },
 }));

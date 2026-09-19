@@ -724,7 +724,7 @@ interface CivicState {
   addEvidence: (issueId: string, imageUrl: string, userName: string, caption?: string) => void;
   tagMLA: (issueId: string) => void;
   disputeResolution: (issueId: string, reason?: string) => void;
-  updateIssueStatus: (issueId: string, newStatus: IssueStatus, note?: string, changedByName?: string) => void;
+  updateIssueStatus: (issueId: string, newStatus: IssueStatus, note?: string, changedByName?: string) => Promise<boolean>;
   shareIssue: (issueId: string) => string; // returns share text
   hydrateFromServer: (serverIssues: any[]) => void;
 }
@@ -840,14 +840,11 @@ export const useCivicStore = create<CivicState>()((set, get) => ({
 
   addComment: async (issueId, body, userName, imageUrl) => {
     const userId = useAuthStore.getState().user?.id ?? 'current-user';
-    let commentId = `cmt-${Date.now()}`;
-    if (userId !== 'current-user') {
-      const res = await dataService.addIssueComment(issueId, userId, userName, body, imageUrl);
-      if (!res.success) {
-        throw new Error('Failed to post comment to server');
-      }
-      if (res.id) commentId = res.id;
+    const res = await dataService.addIssueComment(issueId, userId, userName, body, imageUrl);
+    if (!res.success) {
+      throw new Error('Failed to post comment to server');
     }
+    const commentId = res.id || `cmt-${Date.now()}`;
     const comment: IssueComment = {
       id: commentId,
       issueId,
@@ -933,34 +930,51 @@ export const useCivicStore = create<CivicState>()((set, get) => ({
     }
   },
 
-  updateIssueStatus: (issueId, newStatus, note, changedByName) => {
-    set((state) => {
-      const issue = state.issues.find((i) => i.id === issueId);
-      if (!issue) return state;
+  updateIssueStatus: async (issueId, newStatus, note, changedByName) => {
+    const issue = get().issues.find((i) => i.id === issueId);
+    if (!issue) return false;
+    const oldStatus = issue.status;
 
-      const historyEntry: IssueStatusChange = {
-        id: `sh-${Date.now()}`,
-        issueId,
-        fromStatus: issue.status,
-        toStatus: newStatus,
-        changedByName,
-        note,
-        createdAt: new Date().toISOString(),
-      };
+    const historyEntry: IssueStatusChange = {
+      id: `sh-${Date.now()}`,
+      issueId,
+      fromStatus: oldStatus,
+      toStatus: newStatus,
+      changedByName,
+      note,
+      createdAt: new Date().toISOString(),
+    };
 
-      return {
+    // Optimistic update
+    set((state) => ({
+      issues: state.issues.map((i) => {
+        if (i.id !== issueId) return i;
+        return {
+          ...i,
+          status: newStatus,
+          updatedAt: new Date().toISOString(),
+          ...(newStatus === 'resolved' ? { resolvedAt: new Date().toISOString(), resolutionNote: note } : {}),
+        };
+      }),
+      statusHistory: [...state.statusHistory, historyEntry],
+    }));
+
+    const success = await dataService.updateIssueStatus(issueId, newStatus, note);
+    if (!success) {
+      // Rollback on failure
+      set((state) => ({
         issues: state.issues.map((i) => {
           if (i.id !== issueId) return i;
           return {
             ...i,
-            status: newStatus,
-            updatedAt: new Date().toISOString(),
-            ...(newStatus === 'resolved' ? { resolvedAt: new Date().toISOString(), resolutionNote: note } : {}),
+            status: oldStatus,
           };
         }),
-        statusHistory: [...state.statusHistory, historyEntry],
-      };
-    });
+        statusHistory: state.statusHistory.filter((h) => h.id !== historyEntry.id),
+      }));
+      return false;
+    }
+    return true;
   },
 
   addIssue: (issue) => {
