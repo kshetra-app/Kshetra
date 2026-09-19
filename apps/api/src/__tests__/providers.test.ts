@@ -271,6 +271,7 @@ describe('W009-B2 Provider Abstraction & Security Gates', () => {
       const res = await app.inject({
         method: 'POST',
         url: '/api/v1/pages/my-page/pro/order',
+        headers: { 'x-user-id': 'test-owner-1' },
         payload: { billingCycle: 'annual' },
       });
 
@@ -290,6 +291,7 @@ describe('W009-B2 Provider Abstraction & Security Gates', () => {
       const res = await app.inject({
         method: 'POST',
         url: '/api/v1/pages/my-page/pro/verify',
+        headers: { 'x-user-id': 'test-owner-1' },
         payload: {
           razorpay_order_id: 'order_page_123',
           razorpay_payment_id: 'pay_page_456',
@@ -308,6 +310,7 @@ describe('W009-B2 Provider Abstraction & Security Gates', () => {
       const res = await app.inject({
         method: 'POST',
         url: '/api/v1/pages/my-page/pro/verify',
+        headers: { 'x-user-id': 'test-owner-1' },
         payload: {
           razorpay_order_id: 'order_page_123',
           razorpay_payment_id: 'pay_page_456',
@@ -319,6 +322,246 @@ describe('W009-B2 Provider Abstraction & Security Gates', () => {
       expect(res.statusCode).toBe(500);
       const body = JSON.parse(res.payload);
       expect(body.code).toBe('PROVIDER_CONFIG_ERROR');
+    });
+
+    describe('DEF-B5-PAY-01 & DEF-B5-PAY-02: Security Verification Suite', () => {
+      const secSecret = 'test_sec_secret_pages_12345';
+
+      beforeEach(() => {
+        process.env.RAZORPAY_KEY_SECRET = secSecret;
+      });
+
+      it('TEST-W009-B5-SEC-01: Unauthenticated order -> 401 UNAUTHORIZED', async () => {
+        const res = await app.inject({
+          method: 'POST',
+          url: '/api/v1/pages/sec-test-page/pro/order',
+          payload: { billingCycle: 'monthly' },
+        });
+
+        expect(res.statusCode).toBe(401);
+        const body = JSON.parse(res.payload);
+        expect(body.code).toBe('UNAUTHORIZED');
+      });
+
+      it('TEST-W009-B5-SEC-02: Unauthenticated verify -> 401 UNAUTHORIZED', async () => {
+        const res = await app.inject({
+          method: 'POST',
+          url: '/api/v1/pages/sec-test-page/pro/verify',
+          payload: {
+            razorpay_order_id: 'order_sec_1',
+            razorpay_payment_id: 'pay_sec_1',
+            razorpay_signature: 'sig_sec_1',
+          },
+        });
+
+        expect(res.statusCode).toBe(401);
+        const body = JSON.parse(res.payload);
+        expect(body.code).toBe('UNAUTHORIZED');
+      });
+
+      it('TEST-W009-B5-SEC-03: Unauthorized principal -> 403 FORBIDDEN', async () => {
+        const resOrder = await app.inject({
+          method: 'POST',
+          url: '/api/v1/pages/sec-test-page/pro/order',
+          headers: { 'x-user-id': 'attacker_user', 'x-page-owner-id': 'victim_owner' },
+          payload: { billingCycle: 'monthly' },
+        });
+
+        expect(resOrder.statusCode).toBe(403);
+        const bodyOrder = JSON.parse(resOrder.payload);
+        expect(bodyOrder.code).toBe('FORBIDDEN');
+
+        const resVerify = await app.inject({
+          method: 'POST',
+          url: '/api/v1/pages/sec-test-page/pro/verify',
+          headers: { 'x-user-id': 'attacker_user', 'x-page-owner-id': 'victim_owner' },
+          payload: {
+            razorpay_order_id: 'order_sec_1',
+            razorpay_payment_id: 'pay_sec_1',
+            razorpay_signature: 'sig_sec_1',
+          },
+        });
+
+        expect(resVerify.statusCode).toBe(403);
+        const bodyVerify = JSON.parse(resVerify.payload);
+        expect(bodyVerify.code).toBe('FORBIDDEN');
+      });
+
+      it('TEST-W009-B5-SEC-04: Authorized principal order -> 200', async () => {
+        const res = await app.inject({
+          method: 'POST',
+          url: '/api/v1/pages/sec-test-page/pro/order',
+          headers: { 'x-user-id': 'authorized_owner', 'x-page-owner-id': 'authorized_owner' },
+          payload: { billingCycle: 'monthly' },
+        });
+
+        expect(res.statusCode).toBe(200);
+        const body = JSON.parse(res.payload);
+        expect(body.success).toBe(true);
+        expect(body.orderId).toBeDefined();
+        expect(body.amount).toBe(49900);
+        expect(body.currency).toBe('INR');
+        expect(body.billingCycle).toBe('monthly');
+      });
+
+      it('TEST-W009-B5-SEC-05: Missing signature -> 400 MISSING_SIGNATURE', async () => {
+        const res = await app.inject({
+          method: 'POST',
+          url: '/api/v1/pages/sec-test-page/pro/verify',
+          headers: { 'x-user-id': 'authorized_owner', 'x-page-owner-id': 'authorized_owner' },
+          payload: {
+            razorpay_order_id: 'order_sec_missing_sig',
+            razorpay_payment_id: 'pay_sec_missing_sig',
+          },
+        });
+
+        expect(res.statusCode).toBe(400);
+        const body = JSON.parse(res.payload);
+        expect(body.code).toBe('MISSING_SIGNATURE');
+      });
+
+      it('TEST-W009-B5-SEC-06: Invalid signature -> 400 INVALID_SIGNATURE', async () => {
+        const res = await app.inject({
+          method: 'POST',
+          url: '/api/v1/pages/sec-test-page/pro/verify',
+          headers: { 'x-user-id': 'authorized_owner', 'x-page-owner-id': 'authorized_owner' },
+          payload: {
+            razorpay_order_id: 'order_sec_invalid_sig',
+            razorpay_payment_id: 'pay_sec_invalid_sig',
+            razorpay_signature: 'bad_signature_hex_value',
+          },
+        });
+
+        expect(res.statusCode).toBe(400);
+        const body = JSON.parse(res.payload);
+        expect(body.code).toBe('INVALID_SIGNATURE');
+      });
+
+      it('TEST-W009-B5-SEC-07: Valid signature -> 200 and Pro activated', async () => {
+        const orderId = 'order_sec_valid_777';
+        const paymentId = 'pay_sec_valid_888';
+        const validSignature = crypto
+          .createHmac('sha256', secSecret)
+          .update(`${orderId}|${paymentId}`)
+          .digest('hex');
+
+        const res = await app.inject({
+          method: 'POST',
+          url: '/api/v1/pages/sec-page-valid-7/pro/verify',
+          headers: { 'x-user-id': 'authorized_owner', 'x-page-owner-id': 'authorized_owner' },
+          payload: {
+            razorpay_order_id: orderId,
+            razorpay_payment_id: paymentId,
+            razorpay_signature: validSignature,
+            billingCycle: 'annual',
+          },
+        });
+
+        expect(res.statusCode).toBe(200);
+        const body = JSON.parse(res.payload);
+        expect(body.success).toBe(true);
+        expect(body.entitlement.isPro).toBe(true);
+        expect(body.entitlement.plan).toBe('pro');
+
+        // Verify entitlement lookup reflects pro status
+        const entRes = await app.inject({
+          method: 'GET',
+          url: '/api/v1/pages/sec-page-valid-7/entitlement',
+        });
+        expect(entRes.statusCode).toBe(200);
+        const entBody = JSON.parse(entRes.payload);
+        expect(entBody.isPro).toBe(true);
+        expect(entBody.plan).toBe('pro');
+      });
+
+      it('TEST-W009-B5-SEC-08: Missing Razorpay secret -> 500 PROVIDER_CONFIG_ERROR', async () => {
+        delete process.env.RAZORPAY_KEY_SECRET;
+
+        const res = await app.inject({
+          method: 'POST',
+          url: '/api/v1/pages/sec-test-page/pro/verify',
+          headers: { 'x-user-id': 'authorized_owner', 'x-page-owner-id': 'authorized_owner' },
+          payload: {
+            razorpay_order_id: 'order_sec_no_secret',
+            razorpay_payment_id: 'pay_sec_no_secret',
+            razorpay_signature: 'any_signature',
+          },
+        });
+
+        expect(res.statusCode).toBe(500);
+        const body = JSON.parse(res.payload);
+        expect(body.code).toBe('PROVIDER_CONFIG_ERROR');
+      });
+
+      it('TEST-W009-B5-SEC-09: Invalid signature never mutates pages.is_pro / entitlement', async () => {
+        const pageId = 'sec-page-never-mutated-invalid';
+
+        // Check initial entitlement is free
+        const initRes = await app.inject({
+          method: 'GET',
+          url: `/api/v1/pages/${pageId}/entitlement`,
+        });
+        expect(initRes.statusCode).toBe(200);
+        expect(JSON.parse(initRes.payload).isPro).toBe(false);
+
+        // Attempt verify with invalid signature
+        const verifyRes = await app.inject({
+          method: 'POST',
+          url: `/api/v1/pages/${pageId}/pro/verify`,
+          headers: { 'x-user-id': 'owner_sec_9', 'x-page-owner-id': 'owner_sec_9' },
+          payload: {
+            razorpay_order_id: 'order_sec_9',
+            razorpay_payment_id: 'pay_sec_9',
+            razorpay_signature: 'forged_signature_hex',
+          },
+        });
+        expect(verifyRes.statusCode).toBe(400);
+
+        // Check entitlement remains unmutated (free)
+        const afterRes = await app.inject({
+          method: 'GET',
+          url: `/api/v1/pages/${pageId}/entitlement`,
+        });
+        expect(afterRes.statusCode).toBe(200);
+        const afterBody = JSON.parse(afterRes.payload);
+        expect(afterBody.isPro).toBe(false);
+        expect(afterBody.plan).toBe('free');
+      });
+
+      it('TEST-W009-B5-SEC-10: Missing signature never mutates pages.is_pro / entitlement', async () => {
+        const pageId = 'sec-page-never-mutated-missing';
+
+        // Check initial entitlement is free
+        const initRes = await app.inject({
+          method: 'GET',
+          url: `/api/v1/pages/${pageId}/entitlement`,
+        });
+        expect(initRes.statusCode).toBe(200);
+        expect(JSON.parse(initRes.payload).isPro).toBe(false);
+
+        // Attempt verify with missing signature
+        const verifyRes = await app.inject({
+          method: 'POST',
+          url: `/api/v1/pages/${pageId}/pro/verify`,
+          headers: { 'x-user-id': 'owner_sec_10', 'x-page-owner-id': 'owner_sec_10' },
+          payload: {
+            razorpay_order_id: 'order_sec_10',
+            razorpay_payment_id: 'pay_sec_10',
+          },
+        });
+        expect(verifyRes.statusCode).toBe(400);
+        expect(JSON.parse(verifyRes.payload).code).toBe('MISSING_SIGNATURE');
+
+        // Check entitlement remains unmutated (free)
+        const afterRes = await app.inject({
+          method: 'GET',
+          url: `/api/v1/pages/${pageId}/entitlement`,
+        });
+        expect(afterRes.statusCode).toBe(200);
+        const afterBody = JSON.parse(afterRes.payload);
+        expect(afterBody.isPro).toBe(false);
+        expect(afterBody.plan).toBe('free');
+      });
     });
 
     it('TEST-W009-B2-05b: POST /api/v1/campaign/obd/dispatch rejects outside TRAI window with 400 OUTSIDE_TRAI_WINDOW', async () => {

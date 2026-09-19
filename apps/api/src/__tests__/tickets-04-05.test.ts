@@ -44,6 +44,7 @@ describe('Tickets 0.4 & 0.5: Web Page Manager & Grievance Policy Routes', () => 
       const response = await app.inject({
         method: 'POST',
         url: '/api/v1/pages/test-page-1/pro/order',
+        headers: { 'x-user-id': 'user-1' },
         payload: { amount: 199900 },
       });
 
@@ -58,6 +59,7 @@ describe('Tickets 0.4 & 0.5: Web Page Manager & Grievance Policy Routes', () => 
       const verifyRes = await app.inject({
         method: 'POST',
         url: '/api/v1/pages/test-page-1/pro/verify',
+        headers: { 'x-user-id': 'user-1' },
         payload: {
           razorpay_order_id: 'order_test_123',
           razorpay_payment_id: 'pay_test_123',
