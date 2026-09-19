@@ -5,6 +5,7 @@
 - **Authority:** CTO Implementation Authorization W009-B4
 - **Authoritative Baseline Commit:** 1a715c87f50a5006a7020a7047794daa3542d798
 - **Authoritative Baseline Tree:** c111e3de8ecd41dc66aa66ee0d8bd25451065e49
+- **Implementation Commit:** 0c628d7cf26fdfe4a82f9aa40b25317c25987549
 - **Status:** **IMPLEMENTED / TESTED / VERIFIED / SUBMITTED FOR CTO ACCEPTANCE** (CTO ACCEPTANCE: PENDING)
 - **Successor Status:** W009-B5 remains strictly **FROZEN / NOT AUTHORIZED**.
 - **Scope Compliance:**
