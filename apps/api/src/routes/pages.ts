@@ -391,10 +391,36 @@ export const pagesRoutes: FastifyPluginAsync = async (app) => {
         billingCycle,
       });
 
-      // Remediation C: Bind orderId to pageId, userId, product, billingCycle, and amount
+      const targetPageId = authority.page?.id || pageId;
+
+      if (isSupabaseConfigured) {
+        const { error: insertError } = await supabase.from('page_pro_orders').insert({
+          provider_order_id: orderResult.orderId,
+          page_id: targetPageId,
+          user_id: auth.userId,
+          product: 'pages_pro',
+          billing_cycle: billingCycle,
+          amount_paise: amount,
+          currency,
+          status: 'created',
+        });
+
+        if (insertError) {
+          return sendApiError(
+            reply,
+            request,
+            500,
+            'Internal Server Error',
+            `Failed to persist Page Pro order: ${insertError.message}`,
+            { code: 'DATABASE_ERROR' }
+          );
+        }
+      }
+
+      // Memory cache for fast lookups & backwards compatibility in non-DB tests
       PRO_ORDER_REGISTRY.set(orderResult.orderId, {
         orderId: orderResult.orderId,
-        pageId,
+        pageId: targetPageId,
         userId: auth.userId,
         billingCycle,
         amount,
@@ -487,11 +513,42 @@ export const pagesRoutes: FastifyPluginAsync = async (app) => {
       );
     }
 
-    // Remediation C: Payment/Order/Page Association Binding Check
-    const registeredOrder = PRO_ORDER_REGISTRY.get(body.razorpay_order_id);
-    if (registeredOrder) {
+    const targetPageId = authority.page?.id || pageId;
+    let dbOrder: any = null;
+
+    if (isSupabaseConfigured) {
+      const { data, error: orderFetchErr } = await supabase
+        .from('page_pro_orders')
+        .select('*')
+        .eq('provider_order_id', body.razorpay_order_id)
+        .maybeSingle();
+
+      if (orderFetchErr) {
+        return sendApiError(
+          reply,
+          request,
+          500,
+          'Internal Server Error',
+          `Database error querying payment order: ${orderFetchErr.message}`,
+          { code: 'DATABASE_ERROR' }
+        );
+      }
+
+      if (!data) {
+        return sendApiError(
+          reply,
+          request,
+          400,
+          'Bad Request',
+          'Payment order was not found for verification',
+          { code: 'ORDER_NOT_FOUND' }
+        );
+      }
+
+      dbOrder = data;
+
       // 1. Target pageId association check
-      if (registeredOrder.pageId !== pageId) {
+      if (dbOrder.page_id !== targetPageId) {
         return sendApiError(
           reply,
           request,
@@ -503,7 +560,7 @@ export const pagesRoutes: FastifyPluginAsync = async (app) => {
       }
 
       // 2. Authenticated principal association check
-      if (registeredOrder.userId !== auth.userId && auth.role !== 'admin') {
+      if (dbOrder.user_id !== auth.userId && auth.role !== 'admin') {
         return sendApiError(
           reply,
           request,
@@ -515,7 +572,7 @@ export const pagesRoutes: FastifyPluginAsync = async (app) => {
       }
 
       // 3. Billing cycle association check
-      if (body.billingCycle && body.billingCycle !== registeredOrder.billingCycle) {
+      if (body.billingCycle && body.billingCycle !== dbOrder.billing_cycle) {
         return sendApiError(
           reply,
           request,
@@ -527,7 +584,7 @@ export const pagesRoutes: FastifyPluginAsync = async (app) => {
       }
 
       // 4. Idempotency / replay check
-      if (registeredOrder.status === 'verified' && registeredOrder.paymentId !== body.razorpay_payment_id) {
+      if (dbOrder.status === 'completed' && dbOrder.provider_payment_id !== body.razorpay_payment_id) {
         return sendApiError(
           reply,
           request,
@@ -536,6 +593,58 @@ export const pagesRoutes: FastifyPluginAsync = async (app) => {
           'Payment order has already been verified with a different payment',
           { code: 'ORDER_ALREADY_CONSUMED' }
         );
+      }
+    } else {
+      // In-process fallback for headless unit tests without database runtime
+      const registeredOrder = PRO_ORDER_REGISTRY.get(body.razorpay_order_id);
+      if (registeredOrder) {
+        // 1. Target pageId association check
+        if (registeredOrder.pageId !== targetPageId && registeredOrder.pageId !== pageId) {
+          return sendApiError(
+            reply,
+            request,
+            400,
+            'Bad Request',
+            'Payment order was not created for this page',
+            { code: 'PAGE_ORDER_MISMATCH' }
+          );
+        }
+
+        // 2. Authenticated principal association check
+        if (registeredOrder.userId !== auth.userId && auth.role !== 'admin') {
+          return sendApiError(
+            reply,
+            request,
+            403,
+            'Forbidden',
+            'Payment order was created by a different user',
+            { code: 'ORDER_PRINCIPAL_MISMATCH' }
+          );
+        }
+
+        // 3. Billing cycle association check
+        if (body.billingCycle && body.billingCycle !== registeredOrder.billingCycle) {
+          return sendApiError(
+            reply,
+            request,
+            400,
+            'Bad Request',
+            'Billing cycle does not match the created order',
+            { code: 'BILLING_CYCLE_MISMATCH' }
+          );
+        }
+
+        // 4. Idempotency / replay check
+        if (registeredOrder.status === 'verified' && registeredOrder.paymentId !== body.razorpay_payment_id) {
+          return sendApiError(
+            reply,
+            request,
+            400,
+            'Bad Request',
+            'Payment order has already been verified with a different payment',
+            { code: 'ORDER_ALREADY_CONSUMED' }
+          );
+        }
       }
     }
 
@@ -606,64 +715,73 @@ export const pagesRoutes: FastifyPluginAsync = async (app) => {
       );
     }
 
-    const expiryDate = new Date();
-    if (body.billingCycle === 'annual') {
-      expiryDate.setFullYear(expiryDate.getFullYear() + 1); // 365-day annual cycle
-    } else {
-      expiryDate.setDate(expiryDate.getDate() + 30); // 30-day monthly cycle
-    }
+    let finalExpiresAt: string;
 
-    // Persist entitlement durably into Supabase pages table
     if (isSupabaseConfigured) {
-      const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(pageId);
-      let updateQuery = supabase
-        .from('pages')
-        .update({
-          is_pro: true,
-          pro_subscription_id: body.razorpay_payment_id,
-          pro_expires_at: expiryDate.toISOString(),
-          updated_at: new Date().toISOString(),
-        });
+      const { data: rpcResult, error: rpcError } = await supabase.rpc('verify_and_activate_page_pro', {
+        p_provider_order_id: body.razorpay_order_id,
+        p_page_id: targetPageId,
+        p_user_id: auth.userId,
+        p_provider_payment_id: body.razorpay_payment_id,
+        p_billing_cycle: body.billingCycle || dbOrder?.billing_cycle || 'monthly',
+        p_is_admin: auth.role === 'admin',
+      });
 
-      if (isUuid) {
-        updateQuery = updateQuery.eq('id', pageId);
-      } else {
-        updateQuery = updateQuery.eq('handle', pageId);
-      }
-
-      const { error: dbError } = await updateQuery;
-      if (dbError) {
+      if (rpcError) {
         return sendApiError(
           reply,
           request,
           500,
           'Internal Server Error',
-          `Failed to persist Pro entitlement to database: ${dbError.message}`,
+          `Failed to persist Pro entitlement to database: ${rpcError.message}`,
           { code: 'DATABASE_ERROR' }
         );
       }
+
+      if (!rpcResult?.success) {
+        const statusCode = rpcResult?.code === 'ORDER_PRINCIPAL_MISMATCH' ? 403 : 400;
+        return sendApiError(
+          reply,
+          request,
+          statusCode,
+          statusCode === 403 ? 'Forbidden' : 'Bad Request',
+          rpcResult?.message || 'Failed to activate Page Pro entitlement',
+          { code: rpcResult?.code || 'ACTIVATION_FAILED' }
+        );
+      }
+
+      finalExpiresAt = rpcResult.expiresAt;
+    } else {
+      const expiryDate = new Date();
+      if (body.billingCycle === 'annual') {
+        expiryDate.setFullYear(expiryDate.getFullYear() + 1); // 365-day annual cycle
+      } else {
+        expiryDate.setDate(expiryDate.getDate() + 30); // 30-day monthly cycle
+      }
+      finalExpiresAt = expiryDate.toISOString();
     }
 
+    const registeredOrder = PRO_ORDER_REGISTRY.get(body.razorpay_order_id);
     if (registeredOrder) {
       registeredOrder.status = 'verified';
       registeredOrder.paymentId = body.razorpay_payment_id;
     }
 
     ENTITLEMENT_CACHE.set(pageId, {
-      pageId,
+      pageId: targetPageId,
       isPro: true,
       plan: 'pro',
-      expiresAt: expiryDate.toISOString(),
+      expiresAt: finalExpiresAt,
     });
 
     return reply.send({
       success: true,
       message: 'Page Pro subscription successfully activated',
       entitlement: {
-        pageId,
+        pageId: targetPageId,
         isPro: true,
         plan: 'pro',
-        expiresAt: expiryDate.toISOString(),
+        expiresAt: finalExpiresAt,
       },
     });
   });

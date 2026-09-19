@@ -44,6 +44,7 @@ const ORDERED_FILES = [
   '034_political_ads.sql',
   '035_campaign_recharge_orders.sql',
   '036_foundation_and_grants_repair.sql',
+  '037_page_pro_orders.sql',
 ];
 
 console.log(`Combining ${ORDERED_FILES.length} migrations...`);

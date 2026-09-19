@@ -1,0 +1,232 @@
+{
+  "job": "W009-B5-R4",
+  "title": "Durable Pages Pro Payment Persistence Verification",
+  "timestamp": "2026-09-19T11:55:53.746Z",
+  "environment": {
+    "postgresContainer": "w009-b5-postgres (postgis/postgis:16-3.4-alpine)",
+    "postgrestContainer": "w009-b5-postgrest (public.ecr.aws/supabase/postgrest:v14.13)",
+    "databaseName": "w009_b5_test",
+    "databaseVersion": "PostgreSQL 16.4 on x86_64-pc-linux-musl, compiled by gcc (Alpine 13.2.1_git20240309) 13.2.1 20240309, 64-bit"
+  },
+  "migrations": {
+    "bundledFile": "supabase/all_migrations_combined.sql",
+    "totalMigrations": 39,
+    "migration037IdempotentPass": true
+  },
+  "schemaInspection": {
+    "table": "page_pro_orders",
+    "columns": [
+      {
+        "column_name": "id",
+        "data_type": "uuid",
+        "is_nullable": "NO",
+        "column_default": "gen_random_uuid()"
+      },
+      {
+        "column_name": "provider_order_id",
+        "data_type": "text",
+        "is_nullable": "NO",
+        "column_default": null
+      },
+      {
+        "column_name": "page_id",
+        "data_type": "uuid",
+        "is_nullable": "NO",
+        "column_default": null
+      },
+      {
+        "column_name": "user_id",
+        "data_type": "uuid",
+        "is_nullable": "NO",
+        "column_default": null
+      },
+      {
+        "column_name": "product",
+        "data_type": "text",
+        "is_nullable": "NO",
+        "column_default": "'pages_pro'::text"
+      },
+      {
+        "column_name": "billing_cycle",
+        "data_type": "text",
+        "is_nullable": "NO",
+        "column_default": null
+      },
+      {
+        "column_name": "amount_paise",
+        "data_type": "integer",
+        "is_nullable": "NO",
+        "column_default": null
+      },
+      {
+        "column_name": "currency",
+        "data_type": "text",
+        "is_nullable": "NO",
+        "column_default": "'INR'::text"
+      },
+      {
+        "column_name": "status",
+        "data_type": "text",
+        "is_nullable": "NO",
+        "column_default": "'created'::text"
+      },
+      {
+        "column_name": "provider_payment_id",
+        "data_type": "text",
+        "is_nullable": "YES",
+        "column_default": null
+      },
+      {
+        "column_name": "signature_verified",
+        "data_type": "boolean",
+        "is_nullable": "NO",
+        "column_default": "false"
+      },
+      {
+        "column_name": "created_at",
+        "data_type": "timestamp with time zone",
+        "is_nullable": "NO",
+        "column_default": "now()"
+      },
+      {
+        "column_name": "updated_at",
+        "data_type": "timestamp with time zone",
+        "is_nullable": "NO",
+        "column_default": "now()"
+      },
+      {
+        "column_name": "completed_at",
+        "data_type": "timestamp with time zone",
+        "is_nullable": "YES",
+        "column_default": null
+      }
+    ],
+    "indexes": [
+      {
+        "indexname": "page_pro_orders_pkey",
+        "indexdef": "CREATE UNIQUE INDEX page_pro_orders_pkey ON public.page_pro_orders USING btree (id)"
+      },
+      {
+        "indexname": "page_pro_orders_provider_order_id_key",
+        "indexdef": "CREATE UNIQUE INDEX page_pro_orders_provider_order_id_key ON public.page_pro_orders USING btree (provider_order_id)"
+      },
+      {
+        "indexname": "idx_page_pro_orders_provider_order",
+        "indexdef": "CREATE INDEX idx_page_pro_orders_provider_order ON public.page_pro_orders USING btree (provider_order_id)"
+      },
+      {
+        "indexname": "idx_page_pro_orders_page",
+        "indexdef": "CREATE INDEX idx_page_pro_orders_page ON public.page_pro_orders USING btree (page_id)"
+      },
+      {
+        "indexname": "idx_page_pro_orders_user",
+        "indexdef": "CREATE INDEX idx_page_pro_orders_user ON public.page_pro_orders USING btree (user_id)"
+      },
+      {
+        "indexname": "idx_page_pro_orders_payment_id",
+        "indexdef": "CREATE UNIQUE INDEX idx_page_pro_orders_payment_id ON public.page_pro_orders USING btree (provider_payment_id) WHERE (provider_payment_id IS NOT NULL)"
+      }
+    ],
+    "rlsEnabled": true,
+    "rpc": {
+      "name": "verify_and_activate_page_pro",
+      "securityDefiner": true
+    }
+  },
+  "tests": [
+    {
+      "testId": "TEST-B5-PERSIST-01",
+      "description": "POST /order durably persists order in page_pro_orders with status created",
+      "httpStatus": 200,
+      "orderId": "order_1789819027453_18kv8",
+      "dbRecord": {
+        "id": "4d6af3ce-93bd-46f0-8a6e-3f8b152b962f",
+        "provider_order_id": "order_1789819027453_18kv8",
+        "page_id": "11111111-1111-1111-1111-111111111111",
+        "user_id": "00000000-0000-0000-0000-000000000001",
+        "product": "pages_pro",
+        "billing_cycle": "monthly",
+        "amount_paise": 49900,
+        "currency": "INR",
+        "status": "created",
+        "provider_payment_id": null,
+        "signature_verified": false,
+        "created_at": "2026-09-19T11:57:07.678979+00:00",
+        "updated_at": "2026-09-19T11:57:07.678979+00:00",
+        "completed_at": null
+      },
+      "passed": true
+    },
+    {
+      "testId": "TEST-B5-PERSIST-02",
+      "description": "Simulate application process restart / cold container: PRO_ORDER_REGISTRY cleared",
+      "memoryOrderCount": 0,
+      "passed": true
+    },
+    {
+      "testId": "TEST-B5-PERSIST-03",
+      "description": "Payment verification succeeds from durable DB after memory registry purge and activates page entitlement",
+      "httpStatus": 200,
+      "orderStatusInDb": "completed",
+      "pageIsProInDb": true,
+      "pageProExpiresAt": "2026-10-19T11:57:08.73839+00:00",
+      "passed": true
+    },
+    {
+      "testId": "TEST-B5-PERSIST-04",
+      "description": "Idempotent replay with identical order + payment tuple succeeds without error",
+      "httpStatus": 200,
+      "passed": true
+    },
+    {
+      "testId": "TEST-B5-PERSIST-05",
+      "description": "Replay of completed order with different payment ID rejected with ORDER_ALREADY_CONSUMED",
+      "httpStatus": 400,
+      "errorCode": "ORDER_ALREADY_CONSUMED",
+      "passed": true
+    },
+    {
+      "testId": "TEST-B5-PERSIST-06",
+      "description": "Order created for Page A rejected when verified for Page B (PAGE_ORDER_MISMATCH)",
+      "httpStatus": 400,
+      "errorCode": "PAGE_ORDER_MISMATCH",
+      "passed": true
+    },
+    {
+      "testId": "TEST-B5-PERSIST-07",
+      "description": "Unrelated user attempting to verify another user order rejected with 403",
+      "httpStatus": 403,
+      "errorCode": "FORBIDDEN",
+      "passed": true
+    },
+    {
+      "testId": "TEST-B5-PERSIST-08",
+      "description": "Payment verification for non-existent order rejected with 400 ORDER_NOT_FOUND",
+      "httpStatus": 400,
+      "errorCode": "ORDER_NOT_FOUND",
+      "passed": true
+    },
+    {
+      "testId": "TEST-B5-PERSIST-09",
+      "description": "Billing cycle mismatch between created order and verify payload rejected with BILLING_CYCLE_MISMATCH",
+      "httpStatus": 400,
+      "errorCode": "BILLING_CYCLE_MISMATCH",
+      "passed": true
+    },
+    {
+      "testId": "TEST-B5-PERSIST-10",
+      "description": "Invalid signature rejected with 400 INVALID_SIGNATURE with zero database mutation",
+      "httpStatus": 400,
+      "errorCode": "INVALID_SIGNATURE",
+      "orderStatusUnchanged": true,
+      "passed": true
+    },
+    {
+      "testId": "TEST-B5-PERSIST-11",
+      "description": "Direct table INSERT by anon/authenticated blocked by Row Level Security",
+      "rlsBlocked": true,
+      "passed": true
+    }
+  ],
+  "overallPassed": true
+}
