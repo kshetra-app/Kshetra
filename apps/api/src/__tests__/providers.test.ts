@@ -17,6 +17,13 @@ import { TelecomProvider } from '../providers/telecomProvider';
 import { MockPaymentProvider, MockVoiceObdProvider } from '../providers/mockProvider';
 import { buildApp } from '../server';
 import type { FastifyInstance } from 'fastify';
+import {
+  setTestAuthResolver,
+  setTestPageAuthorityResolver,
+  resetPagesTestResolvers,
+  PRO_ORDER_REGISTRY,
+} from '../routes/pages';
+import { setSupabaseConfiguredForTesting } from '../lib/supabase';
 
 describe('W009-B2 Provider Abstraction & Security Gates', () => {
   let app: FastifyInstance;
@@ -28,6 +35,8 @@ describe('W009-B2 Provider Abstraction & Security Gates', () => {
   });
 
   afterAll(async () => {
+    resetPagesTestResolvers();
+    setSupabaseConfiguredForTesting(false);
     process.env.RAZORPAY_KEY_SECRET = originalSecret;
     process.env.RAZORPAY_KEY_ID = originalKey;
     await app.close();
@@ -268,10 +277,16 @@ describe('W009-B2 Provider Abstraction & Security Gates', () => {
 
   describe('Route Consumption (Pages Pro & Campaign Voice OBD)', () => {
     it('TEST-W009-B2-08a: POST /api/v1/pages/:pageId/pro/order uses provider order structure', async () => {
+      setTestAuthResolver(async () => ({ userId: 'test-owner-1', role: 'politician' }));
+      setTestPageAuthorityResolver(async (auth, pageId) => ({
+        authorized: true,
+        notFound: false,
+        page: { id: pageId, owner_id: auth.userId },
+      }));
+
       const res = await app.inject({
         method: 'POST',
         url: '/api/v1/pages/my-page/pro/order',
-        headers: { 'x-user-id': 'test-owner-1' },
         payload: { billingCycle: 'annual' },
       });
 
@@ -287,11 +302,16 @@ describe('W009-B2 Provider Abstraction & Security Gates', () => {
 
     it('TEST-W009-B2-08b: POST /api/v1/pages/:pageId/pro/verify rejects invalid signature with 400', async () => {
       process.env.RAZORPAY_KEY_SECRET = 'test_secret_for_pages';
+      setTestAuthResolver(async () => ({ userId: 'test-owner-1', role: 'politician' }));
+      setTestPageAuthorityResolver(async (auth, pageId) => ({
+        authorized: true,
+        notFound: false,
+        page: { id: pageId, owner_id: auth.userId },
+      }));
 
       const res = await app.inject({
         method: 'POST',
         url: '/api/v1/pages/my-page/pro/verify',
-        headers: { 'x-user-id': 'test-owner-1' },
         payload: {
           razorpay_order_id: 'order_page_123',
           razorpay_payment_id: 'pay_page_456',
@@ -306,11 +326,16 @@ describe('W009-B2 Provider Abstraction & Security Gates', () => {
 
     it('TEST-W009-B2-08c: POST /api/v1/pages/:pageId/pro/verify fails closed (500) if RAZORPAY_KEY_SECRET missing', async () => {
       delete process.env.RAZORPAY_KEY_SECRET;
+      setTestAuthResolver(async () => ({ userId: 'test-owner-1', role: 'politician' }));
+      setTestPageAuthorityResolver(async (auth, pageId) => ({
+        authorized: true,
+        notFound: false,
+        page: { id: pageId, owner_id: auth.userId },
+      }));
 
       const res = await app.inject({
         method: 'POST',
         url: '/api/v1/pages/my-page/pro/verify',
-        headers: { 'x-user-id': 'test-owner-1' },
         payload: {
           razorpay_order_id: 'order_page_123',
           razorpay_payment_id: 'pay_page_456',
@@ -324,12 +349,324 @@ describe('W009-B2 Provider Abstraction & Security Gates', () => {
       expect(body.code).toBe('PROVIDER_CONFIG_ERROR');
     });
 
-    describe('DEF-B5-PAY-01 & DEF-B5-PAY-02: Security Verification Suite', () => {
+    describe('DEF-B5-PAY-01 & DEF-B5-PAY-02: Security Verification Suite (Round 2)', () => {
       const secSecret = 'test_sec_secret_pages_12345';
 
       beforeEach(() => {
+        resetPagesTestResolvers();
         process.env.RAZORPAY_KEY_SECRET = secSecret;
       });
+
+      afterEach(() => {
+        resetPagesTestResolvers();
+      });
+
+      // --- Remediation A & B: Header-Spoofing Resistance & Trust Boundary Isolation ---
+
+      it('TEST-B5-R2-01: Request contains x-user-id but no valid authentication -> 401 UNAUTHORIZED, no order creation', async () => {
+        resetPagesTestResolvers();
+        const ordersBefore = PRO_ORDER_REGISTRY.size;
+
+        const res = await app.inject({
+          method: 'POST',
+          url: '/api/v1/pages/sec-test-page/pro/order',
+          headers: { 'x-user-id': 'spoofed-attacker-id' },
+          payload: { billingCycle: 'monthly' },
+        });
+
+        expect(res.statusCode).toBe(401);
+        const body = JSON.parse(res.payload);
+        expect(body.code).toBe('UNAUTHORIZED');
+        expect(PRO_ORDER_REGISTRY.size).toBe(ordersBefore);
+      });
+
+      it('TEST-B5-R2-02: Request contains x-user-id + x-user-role: admin but no valid authentication -> 401 UNAUTHORIZED, no order creation', async () => {
+        resetPagesTestResolvers();
+        const ordersBefore = PRO_ORDER_REGISTRY.size;
+
+        const res = await app.inject({
+          method: 'POST',
+          url: '/api/v1/pages/sec-test-page/pro/order',
+          headers: { 'x-user-id': 'spoofed-attacker-id', 'x-user-role': 'admin' },
+          payload: { billingCycle: 'monthly' },
+        });
+
+        expect(res.statusCode).toBe(401);
+        const body = JSON.parse(res.payload);
+        expect(body.code).toBe('UNAUTHORIZED');
+        expect(PRO_ORDER_REGISTRY.size).toBe(ordersBefore);
+      });
+
+      it('TEST-B5-R2-03: Request contains x-page-owner-id but no valid authentication -> 401 UNAUTHORIZED', async () => {
+        resetPagesTestResolvers();
+
+        const res = await app.inject({
+          method: 'POST',
+          url: '/api/v1/pages/sec-test-page/pro/verify',
+          headers: { 'x-page-owner-id': 'spoofed-owner-id' },
+          payload: {
+            razorpay_order_id: 'order_sec_1',
+            razorpay_payment_id: 'pay_sec_1',
+            razorpay_signature: 'sig_sec_1',
+          },
+        });
+
+        expect(res.statusCode).toBe(401);
+        const body = JSON.parse(res.payload);
+        expect(body.code).toBe('UNAUTHORIZED');
+      });
+
+      it('TEST-B5-R2-04: Supabase/authentication infrastructure is unavailable. Attempt to authenticate using spoofed identity headers -> NOT authenticated, NO payment order, NO entitlement, NO page mutation', async () => {
+        resetPagesTestResolvers();
+        setSupabaseConfiguredForTesting(false);
+        const pageId = 'sec-page-unavail-test';
+
+        // Initial state: not pro
+        const initRes = await app.inject({
+          method: 'GET',
+          url: `/api/v1/pages/${pageId}/entitlement`,
+        });
+        expect(initRes.statusCode).toBe(200);
+        expect(JSON.parse(initRes.payload).isPro).toBe(false);
+
+        // Attempt order creation with spoofed headers
+        const orderRes = await app.inject({
+          method: 'POST',
+          url: `/api/v1/pages/${pageId}/pro/order`,
+          headers: {
+            'x-user-id': 'spoofed-user',
+            'x-user-role': 'admin',
+            'x-page-owner-id': 'spoofed-user',
+          },
+          payload: { billingCycle: 'annual' },
+        });
+        expect(orderRes.statusCode).toBe(401);
+
+        // Attempt verification with spoofed headers
+        const verifyRes = await app.inject({
+          method: 'POST',
+          url: `/api/v1/pages/${pageId}/pro/verify`,
+          headers: {
+            'x-user-id': 'spoofed-user',
+            'x-user-role': 'admin',
+            'x-page-owner-id': 'spoofed-user',
+          },
+          payload: {
+            razorpay_order_id: 'order_spoofed_123',
+            razorpay_payment_id: 'pay_spoofed_123',
+            razorpay_signature: 'sig_spoofed_123',
+          },
+        });
+        expect(verifyRes.statusCode).toBe(401);
+
+        // Final state: entitlement remains false, zero mutation
+        const finalRes = await app.inject({
+          method: 'GET',
+          url: `/api/v1/pages/${pageId}/entitlement`,
+        });
+        expect(finalRes.statusCode).toBe(200);
+        const finalBody = JSON.parse(finalRes.payload);
+        expect(finalBody.isPro).toBe(false);
+        expect(finalBody.plan).toBe('free');
+      });
+
+      it('TEST-B5-R2-05: Authenticated non-owner attempts Pages Pro order/verification -> 403 FORBIDDEN', async () => {
+        setTestAuthResolver(async () => ({ userId: 'non-owner-user', role: 'citizen' }));
+        setTestPageAuthorityResolver(async () => ({ authorized: false, notFound: false }));
+
+        const resOrder = await app.inject({
+          method: 'POST',
+          url: '/api/v1/pages/victim-page-1/pro/order',
+          payload: { billingCycle: 'monthly' },
+        });
+        expect(resOrder.statusCode).toBe(403);
+        expect(JSON.parse(resOrder.payload).code).toBe('FORBIDDEN');
+
+        const resVerify = await app.inject({
+          method: 'POST',
+          url: '/api/v1/pages/victim-page-1/pro/verify',
+          payload: {
+            razorpay_order_id: 'order_1',
+            razorpay_payment_id: 'pay_1',
+            razorpay_signature: 'sig_1',
+          },
+        });
+        expect(resVerify.statusCode).toBe(403);
+        expect(JSON.parse(resVerify.payload).code).toBe('FORBIDDEN');
+      });
+
+      it('TEST-B5-R2-06: Authenticated owner performs legitimate order/verification through canonical/authorized path -> success', async () => {
+        const ownerId = 'legit_owner_user';
+        const pageId = 'legit-page-06';
+        setTestAuthResolver(async () => ({ userId: ownerId, role: 'politician' }));
+        setTestPageAuthorityResolver(async (auth, pId) => ({
+          authorized: true,
+          notFound: false,
+          page: { id: pId, owner_id: auth.userId },
+        }));
+
+        // 1. Legitimate order creation
+        const orderRes = await app.inject({
+          method: 'POST',
+          url: `/api/v1/pages/${pageId}/pro/order`,
+          payload: { billingCycle: 'annual' },
+        });
+        expect(orderRes.statusCode).toBe(200);
+        const orderBody = JSON.parse(orderRes.payload);
+        expect(orderBody.success).toBe(true);
+        const orderId = orderBody.orderId;
+        expect(orderId).toBeDefined();
+
+        // 2. Legitimate payment verification with cryptographically valid HMAC
+        const paymentId = 'pay_legit_success_06';
+        const validSig = crypto
+          .createHmac('sha256', secSecret)
+          .update(`${orderId}|${paymentId}`)
+          .digest('hex');
+
+        const verifyRes = await app.inject({
+          method: 'POST',
+          url: `/api/v1/pages/${pageId}/pro/verify`,
+          payload: {
+            razorpay_order_id: orderId,
+            razorpay_payment_id: paymentId,
+            razorpay_signature: validSig,
+            billingCycle: 'annual',
+          },
+        });
+        expect(verifyRes.statusCode).toBe(200);
+        const verifyBody = JSON.parse(verifyRes.payload);
+        expect(verifyBody.success).toBe(true);
+        expect(verifyBody.entitlement.isPro).toBe(true);
+        expect(verifyBody.entitlement.plan).toBe('pro');
+
+        // 3. Entitlement lookup reflects pro status
+        const entRes = await app.inject({
+          method: 'GET',
+          url: `/api/v1/pages/${pageId}/entitlement`,
+        });
+        expect(entRes.statusCode).toBe(200);
+        const entBody = JSON.parse(entRes.payload);
+        expect(entBody.isPro).toBe(true);
+        expect(entBody.plan).toBe('pro');
+      });
+
+      // --- Remediation C: Payment/Order/Page Association Binding Tests ---
+
+      it('TEST-B5-R2-07: Payment order cannot be verified for unrelated pageId (PAGE_ORDER_MISMATCH) -> 400', async () => {
+        setTestAuthResolver(async () => ({ userId: 'owner_shared', role: 'politician' }));
+        setTestPageAuthorityResolver(async () => ({ authorized: true, notFound: false }));
+
+        // Create order for page-A
+        const orderRes = await app.inject({
+          method: 'POST',
+          url: '/api/v1/pages/page-A/pro/order',
+          payload: { billingCycle: 'monthly' },
+        });
+        const orderId = JSON.parse(orderRes.payload).orderId;
+        const paymentId = 'pay_unrelated_page_test';
+        const validSig = crypto
+          .createHmac('sha256', secSecret)
+          .update(`${orderId}|${paymentId}`)
+          .digest('hex');
+
+        // Attempt verify on page-B using order from page-A
+        const verifyRes = await app.inject({
+          method: 'POST',
+          url: '/api/v1/pages/page-B/pro/verify',
+          payload: {
+            razorpay_order_id: orderId,
+            razorpay_payment_id: paymentId,
+            razorpay_signature: validSig,
+          },
+        });
+        expect(verifyRes.statusCode).toBe(400);
+        const body = JSON.parse(verifyRes.payload);
+        expect(body.code).toBe('PAGE_ORDER_MISMATCH');
+      });
+
+      it('TEST-B5-R2-08: Payment order cannot be verified by unrelated principal (ORDER_PRINCIPAL_MISMATCH) -> 403', async () => {
+        // Create order as legitimate user
+        setTestAuthResolver(async () => ({ userId: 'legit_user_8', role: 'politician' }));
+        setTestPageAuthorityResolver(async () => ({ authorized: true, notFound: false }));
+
+        const orderRes = await app.inject({
+          method: 'POST',
+          url: '/api/v1/pages/page-8/pro/order',
+          payload: { billingCycle: 'monthly' },
+        });
+        const orderId = JSON.parse(orderRes.payload).orderId;
+        const paymentId = 'pay_principal_mismatch_8';
+        const validSig = crypto
+          .createHmac('sha256', secSecret)
+          .update(`${orderId}|${paymentId}`)
+          .digest('hex');
+
+        // Switch to different user trying to claim the order
+        setTestAuthResolver(async () => ({ userId: 'different_user_8', role: 'politician' }));
+        const verifyRes = await app.inject({
+          method: 'POST',
+          url: '/api/v1/pages/page-8/pro/verify',
+          payload: {
+            razorpay_order_id: orderId,
+            razorpay_payment_id: paymentId,
+            razorpay_signature: validSig,
+          },
+        });
+        expect(verifyRes.statusCode).toBe(403);
+        const body = JSON.parse(verifyRes.payload);
+        expect(body.code).toBe('ORDER_PRINCIPAL_MISMATCH');
+      });
+
+      it('TEST-B5-R2-09: Payment order cannot be re-verified with different payment id (ORDER_ALREADY_CONSUMED) -> 400', async () => {
+        setTestAuthResolver(async () => ({ userId: 'owner_9', role: 'politician' }));
+        setTestPageAuthorityResolver(async () => ({ authorized: true, notFound: false }));
+
+        const orderRes = await app.inject({
+          method: 'POST',
+          url: '/api/v1/pages/page-9/pro/order',
+          payload: { billingCycle: 'monthly' },
+        });
+        const orderId = JSON.parse(orderRes.payload).orderId;
+        const paymentId1 = 'pay_consumed_1';
+        const validSig1 = crypto
+          .createHmac('sha256', secSecret)
+          .update(`${orderId}|${paymentId1}`)
+          .digest('hex');
+
+        // First verification succeeds
+        const res1 = await app.inject({
+          method: 'POST',
+          url: '/api/v1/pages/page-9/pro/verify',
+          payload: {
+            razorpay_order_id: orderId,
+            razorpay_payment_id: paymentId1,
+            razorpay_signature: validSig1,
+          },
+        });
+        expect(res1.statusCode).toBe(200);
+
+        // Second verification with different payment ID rejected
+        const paymentId2 = 'pay_consumed_2';
+        const validSig2 = crypto
+          .createHmac('sha256', secSecret)
+          .update(`${orderId}|${paymentId2}`)
+          .digest('hex');
+
+        const res2 = await app.inject({
+          method: 'POST',
+          url: '/api/v1/pages/page-9/pro/verify',
+          payload: {
+            razorpay_order_id: orderId,
+            razorpay_payment_id: paymentId2,
+            razorpay_signature: validSig2,
+          },
+        });
+        expect(res2.statusCode).toBe(400);
+        expect(JSON.parse(res2.payload).code).toBe('ORDER_ALREADY_CONSUMED');
+      });
+
+      // --- Existing Security Invariant Tests ---
 
       it('TEST-W009-B5-SEC-01: Unauthenticated order -> 401 UNAUTHORIZED', async () => {
         const res = await app.inject({
@@ -359,56 +696,17 @@ describe('W009-B2 Provider Abstraction & Security Gates', () => {
         expect(body.code).toBe('UNAUTHORIZED');
       });
 
-      it('TEST-W009-B5-SEC-03: Unauthorized principal -> 403 FORBIDDEN', async () => {
-        const resOrder = await app.inject({
-          method: 'POST',
-          url: '/api/v1/pages/sec-test-page/pro/order',
-          headers: { 'x-user-id': 'attacker_user', 'x-page-owner-id': 'victim_owner' },
-          payload: { billingCycle: 'monthly' },
-        });
-
-        expect(resOrder.statusCode).toBe(403);
-        const bodyOrder = JSON.parse(resOrder.payload);
-        expect(bodyOrder.code).toBe('FORBIDDEN');
-
-        const resVerify = await app.inject({
-          method: 'POST',
-          url: '/api/v1/pages/sec-test-page/pro/verify',
-          headers: { 'x-user-id': 'attacker_user', 'x-page-owner-id': 'victim_owner' },
-          payload: {
-            razorpay_order_id: 'order_sec_1',
-            razorpay_payment_id: 'pay_sec_1',
-            razorpay_signature: 'sig_sec_1',
-          },
-        });
-
-        expect(resVerify.statusCode).toBe(403);
-        const bodyVerify = JSON.parse(resVerify.payload);
-        expect(bodyVerify.code).toBe('FORBIDDEN');
-      });
-
-      it('TEST-W009-B5-SEC-04: Authorized principal order -> 200', async () => {
-        const res = await app.inject({
-          method: 'POST',
-          url: '/api/v1/pages/sec-test-page/pro/order',
-          headers: { 'x-user-id': 'authorized_owner', 'x-page-owner-id': 'authorized_owner' },
-          payload: { billingCycle: 'monthly' },
-        });
-
-        expect(res.statusCode).toBe(200);
-        const body = JSON.parse(res.payload);
-        expect(body.success).toBe(true);
-        expect(body.orderId).toBeDefined();
-        expect(body.amount).toBe(49900);
-        expect(body.currency).toBe('INR');
-        expect(body.billingCycle).toBe('monthly');
-      });
-
       it('TEST-W009-B5-SEC-05: Missing signature -> 400 MISSING_SIGNATURE', async () => {
+        setTestAuthResolver(async () => ({ userId: 'authorized_owner', role: 'politician' }));
+        setTestPageAuthorityResolver(async (auth, pageId) => ({
+          authorized: true,
+          notFound: false,
+          page: { id: pageId, owner_id: auth.userId },
+        }));
+
         const res = await app.inject({
           method: 'POST',
           url: '/api/v1/pages/sec-test-page/pro/verify',
-          headers: { 'x-user-id': 'authorized_owner', 'x-page-owner-id': 'authorized_owner' },
           payload: {
             razorpay_order_id: 'order_sec_missing_sig',
             razorpay_payment_id: 'pay_sec_missing_sig',
@@ -421,10 +719,16 @@ describe('W009-B2 Provider Abstraction & Security Gates', () => {
       });
 
       it('TEST-W009-B5-SEC-06: Invalid signature -> 400 INVALID_SIGNATURE', async () => {
+        setTestAuthResolver(async () => ({ userId: 'authorized_owner', role: 'politician' }));
+        setTestPageAuthorityResolver(async (auth, pageId) => ({
+          authorized: true,
+          notFound: false,
+          page: { id: pageId, owner_id: auth.userId },
+        }));
+
         const res = await app.inject({
           method: 'POST',
           url: '/api/v1/pages/sec-test-page/pro/verify',
-          headers: { 'x-user-id': 'authorized_owner', 'x-page-owner-id': 'authorized_owner' },
           payload: {
             razorpay_order_id: 'order_sec_invalid_sig',
             razorpay_payment_id: 'pay_sec_invalid_sig',
@@ -437,50 +741,18 @@ describe('W009-B2 Provider Abstraction & Security Gates', () => {
         expect(body.code).toBe('INVALID_SIGNATURE');
       });
 
-      it('TEST-W009-B5-SEC-07: Valid signature -> 200 and Pro activated', async () => {
-        const orderId = 'order_sec_valid_777';
-        const paymentId = 'pay_sec_valid_888';
-        const validSignature = crypto
-          .createHmac('sha256', secSecret)
-          .update(`${orderId}|${paymentId}`)
-          .digest('hex');
-
-        const res = await app.inject({
-          method: 'POST',
-          url: '/api/v1/pages/sec-page-valid-7/pro/verify',
-          headers: { 'x-user-id': 'authorized_owner', 'x-page-owner-id': 'authorized_owner' },
-          payload: {
-            razorpay_order_id: orderId,
-            razorpay_payment_id: paymentId,
-            razorpay_signature: validSignature,
-            billingCycle: 'annual',
-          },
-        });
-
-        expect(res.statusCode).toBe(200);
-        const body = JSON.parse(res.payload);
-        expect(body.success).toBe(true);
-        expect(body.entitlement.isPro).toBe(true);
-        expect(body.entitlement.plan).toBe('pro');
-
-        // Verify entitlement lookup reflects pro status
-        const entRes = await app.inject({
-          method: 'GET',
-          url: '/api/v1/pages/sec-page-valid-7/entitlement',
-        });
-        expect(entRes.statusCode).toBe(200);
-        const entBody = JSON.parse(entRes.payload);
-        expect(entBody.isPro).toBe(true);
-        expect(entBody.plan).toBe('pro');
-      });
-
       it('TEST-W009-B5-SEC-08: Missing Razorpay secret -> 500 PROVIDER_CONFIG_ERROR', async () => {
         delete process.env.RAZORPAY_KEY_SECRET;
+        setTestAuthResolver(async () => ({ userId: 'authorized_owner', role: 'politician' }));
+        setTestPageAuthorityResolver(async (auth, pageId) => ({
+          authorized: true,
+          notFound: false,
+          page: { id: pageId, owner_id: auth.userId },
+        }));
 
         const res = await app.inject({
           method: 'POST',
           url: '/api/v1/pages/sec-test-page/pro/verify',
-          headers: { 'x-user-id': 'authorized_owner', 'x-page-owner-id': 'authorized_owner' },
           payload: {
             razorpay_order_id: 'order_sec_no_secret',
             razorpay_payment_id: 'pay_sec_no_secret',
@@ -495,6 +767,12 @@ describe('W009-B2 Provider Abstraction & Security Gates', () => {
 
       it('TEST-W009-B5-SEC-09: Invalid signature never mutates pages.is_pro / entitlement', async () => {
         const pageId = 'sec-page-never-mutated-invalid';
+        setTestAuthResolver(async () => ({ userId: 'owner_sec_9', role: 'politician' }));
+        setTestPageAuthorityResolver(async (auth, pId) => ({
+          authorized: true,
+          notFound: false,
+          page: { id: pId, owner_id: auth.userId },
+        }));
 
         // Check initial entitlement is free
         const initRes = await app.inject({
@@ -508,7 +786,6 @@ describe('W009-B2 Provider Abstraction & Security Gates', () => {
         const verifyRes = await app.inject({
           method: 'POST',
           url: `/api/v1/pages/${pageId}/pro/verify`,
-          headers: { 'x-user-id': 'owner_sec_9', 'x-page-owner-id': 'owner_sec_9' },
           payload: {
             razorpay_order_id: 'order_sec_9',
             razorpay_payment_id: 'pay_sec_9',
@@ -530,6 +807,12 @@ describe('W009-B2 Provider Abstraction & Security Gates', () => {
 
       it('TEST-W009-B5-SEC-10: Missing signature never mutates pages.is_pro / entitlement', async () => {
         const pageId = 'sec-page-never-mutated-missing';
+        setTestAuthResolver(async () => ({ userId: 'owner_sec_10', role: 'politician' }));
+        setTestPageAuthorityResolver(async (auth, pId) => ({
+          authorized: true,
+          notFound: false,
+          page: { id: pId, owner_id: auth.userId },
+        }));
 
         // Check initial entitlement is free
         const initRes = await app.inject({
@@ -543,7 +826,6 @@ describe('W009-B2 Provider Abstraction & Security Gates', () => {
         const verifyRes = await app.inject({
           method: 'POST',
           url: `/api/v1/pages/${pageId}/pro/verify`,
-          headers: { 'x-user-id': 'owner_sec_10', 'x-page-owner-id': 'owner_sec_10' },
           payload: {
             razorpay_order_id: 'order_sec_10',
             razorpay_payment_id: 'pay_sec_10',

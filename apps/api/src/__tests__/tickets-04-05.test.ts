@@ -1,14 +1,22 @@
 import { buildApp } from '../server';
 import type { FastifyInstance } from 'fastify';
+import { setTestAuthResolver, setTestPageAuthorityResolver, resetPagesTestResolvers } from '../routes/pages';
 
 describe('Tickets 0.4 & 0.5: Web Page Manager & Grievance Policy Routes', () => {
   let app: FastifyInstance;
 
   beforeAll(async () => {
+    setTestAuthResolver(async () => ({ userId: 'user-1', role: 'politician' }));
+    setTestPageAuthorityResolver(async (auth, pageId) => ({
+      authorized: true,
+      notFound: false,
+      page: { id: pageId, owner_id: auth.userId },
+    }));
     app = await buildApp();
   });
 
   afterAll(async () => {
+    resetPagesTestResolvers();
     await app.close();
   });
 

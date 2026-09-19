@@ -42,6 +42,52 @@ const getPageEntitlementSchema = {
   },
 };
 
+export type AuthResolver = (request: any) => Promise<{ userId: string; role: string } | null>;
+export type PageAuthorityResolver = (
+  auth: { userId: string; role: string },
+  pageId: string,
+  request?: any
+) => Promise<{ authorized: boolean; notFound: boolean; page?: any }>;
+
+let testAuthResolver: AuthResolver | null = null;
+let testPageAuthorityResolver: PageAuthorityResolver | null = null;
+
+/**
+ * Test-only isolation hook: allows test suites to inject mock auth/authority resolvers
+ * strictly below the HTTP trust boundary.
+ * Never accessible or activatable by external HTTP callers.
+ */
+export function setTestAuthResolver(resolver: AuthResolver | null) {
+  if (process.env.NODE_ENV !== 'production') {
+    testAuthResolver = resolver;
+  }
+}
+
+export function setTestPageAuthorityResolver(resolver: PageAuthorityResolver | null) {
+  if (process.env.NODE_ENV !== 'production') {
+    testPageAuthorityResolver = resolver;
+  }
+}
+
+export function resetPagesTestResolvers() {
+  testAuthResolver = null;
+  testPageAuthorityResolver = null;
+}
+
+export interface ProOrderRecord {
+  orderId: string;
+  pageId: string;
+  userId: string;
+  billingCycle: 'monthly' | 'annual';
+  amount: number;
+  product: 'pages_pro';
+  createdAt: number;
+  status: 'created' | 'verified';
+  paymentId?: string;
+}
+
+export const PRO_ORDER_REGISTRY = new Map<string, ProOrderRecord>();
+
 export const pagesRoutes: FastifyPluginAsync = async (app) => {
   /**
    * GET /api/v1/pages/:pageId/entitlement
@@ -124,45 +170,45 @@ export const pagesRoutes: FastifyPluginAsync = async (app) => {
     },
   );
 
-const pageIdParamSchema = {
-  type: 'object',
-  required: ['pageId'],
-  properties: {
-    pageId: { type: 'string', minLength: 1, maxLength: 128 },
-  },
-};
-
-const getPageDetailsSchema = {
-  params: pageIdParamSchema,
-};
-
-const proOrderSchema = {
-  params: pageIdParamSchema,
-  body: {
+  const pageIdParamSchema = {
     type: 'object',
-    additionalProperties: false,
+    required: ['pageId'],
     properties: {
-      amount: { type: 'number', minimum: 100, maximum: 10000000 },
-      currency: { type: 'string', enum: ['INR'] },
-      billingCycle: { type: 'string', enum: ['monthly', 'annual'] },
+      pageId: { type: 'string', minLength: 1, maxLength: 128 },
     },
-  },
-};
+  };
 
-const proVerifySchema = {
-  params: pageIdParamSchema,
-  body: {
-    type: 'object',
-    additionalProperties: false,
-    properties: {
-      razorpay_payment_id: { type: 'string', maxLength: 128 },
-      razorpay_order_id: { type: 'string', maxLength: 128 },
-      razorpay_signature: { type: 'string', maxLength: 128 },
-      sandboxBypass: { type: 'boolean' },
-      billingCycle: { type: 'string', enum: ['monthly', 'annual'] },
+  const getPageDetailsSchema = {
+    params: pageIdParamSchema,
+  };
+
+  const proOrderSchema = {
+    params: pageIdParamSchema,
+    body: {
+      type: 'object',
+      additionalProperties: false,
+      properties: {
+        amount: { type: 'number', minimum: 100, maximum: 10000000 },
+        currency: { type: 'string', enum: ['INR'] },
+        billingCycle: { type: 'string', enum: ['monthly', 'annual'] },
+      },
     },
-  },
-};
+  };
+
+  const proVerifySchema = {
+    params: pageIdParamSchema,
+    body: {
+      type: 'object',
+      additionalProperties: false,
+      properties: {
+        razorpay_payment_id: { type: 'string', maxLength: 128 },
+        razorpay_order_id: { type: 'string', maxLength: 128 },
+        razorpay_signature: { type: 'string', maxLength: 128 },
+        sandboxBypass: { type: 'boolean' },
+        billingCycle: { type: 'string', enum: ['monthly', 'annual'] },
+      },
+    },
+  };
 
   /**
    * GET /api/v1/pages/details/:pageId
@@ -215,71 +261,63 @@ const proVerifySchema = {
   const paymentProvider: PaymentProvider = new RazorpayProvider();
 
   /**
-   * Helper: Resolve authenticated user and verify role.
+   * Canonical Auth Resolver: Authenticates caller via Supabase JWT Bearer token.
+   * Never trusts x-user-id or x-user-role headers.
+   * Fails closed when authoritative Supabase authentication infrastructure is unconfigured.
    */
   async function resolveAuthUser(request: any): Promise<{ userId: string; role: string } | null> {
-    let userId: string | null = null;
+    if (process.env.NODE_ENV === 'test' && testAuthResolver) {
+      return testAuthResolver(request);
+    }
+
     const authHeader = request.headers.authorization;
-
-    if (authHeader && authHeader.startsWith('Bearer ')) {
-      const token = authHeader.replace('Bearer ', '').trim();
-      if (token === 'invalid-token' || token === 'expired-token') {
-        return null;
-      }
-      if (isSupabaseConfigured) {
-        const { data: { user }, error } = await supabase.auth.getUser(token);
-        if (!error && user) {
-          userId = user.id;
-        }
-      } else {
-        userId = 'auth-token-user';
-      }
+    if (!authHeader || !authHeader.startsWith('Bearer ')) {
+      return null;
     }
 
-    if (!userId && (request.headers['x-user-id'] as string)) {
-      userId = request.headers['x-user-id'] as string;
+    const token = authHeader.replace('Bearer ', '').trim();
+    if (!token || token === 'invalid-token' || token === 'expired-token') {
+      return null;
     }
-
-    if (!userId) return null;
 
     if (!isSupabaseConfigured) {
-      const testRole = (request.headers['x-user-role'] as string) || 'citizen';
-      return { userId, role: testRole };
+      // Authoritative infrastructure unavailable -> fail closed
+      return null;
+    }
+
+    const { data: { user }, error } = await supabase.auth.getUser(token);
+    if (error || !user) {
+      return null;
     }
 
     const { data: profile } = await supabase
       .from('user_profiles')
       .select('role')
-      .eq('user_id', userId)
+      .eq('user_id', user.id)
       .maybeSingle();
 
     return {
-      userId,
+      userId: user.id,
       role: profile?.role ?? 'citizen',
     };
   }
 
   /**
-   * Helper: Verify that the authenticated caller has authority to manage the page.
-   * Caller must be the page owner or an admin.
+   * Canonical Page Authority Resolver: Verifies page ownership or admin authority in database.
+   * Never trusts x-page-owner-id header.
+   * Fails closed when authoritative database infrastructure is unconfigured.
    */
   async function verifyPageAuthority(
     auth: { userId: string; role: string },
     pageId: string,
     request: any
   ): Promise<{ authorized: boolean; notFound: boolean; page?: any }> {
+    if (process.env.NODE_ENV === 'test' && testPageAuthorityResolver) {
+      return testPageAuthorityResolver(auth, pageId, request);
+    }
+
     if (!isSupabaseConfigured) {
-      if (pageId === 'missing' || pageId === 'nonexistent') {
-        return { authorized: false, notFound: true };
-      }
-      const pageOwnerHeader = request.headers['x-page-owner-id'] as string | undefined;
-      if (pageOwnerHeader && pageOwnerHeader !== auth.userId && auth.role !== 'admin') {
-        return { authorized: false, notFound: false };
-      }
-      if (pageId === 'unauthorized-page' && auth.role !== 'admin') {
-        return { authorized: false, notFound: false };
-      }
-      return { authorized: true, notFound: false, page: { id: pageId, owner_id: auth.userId } };
+      return { authorized: false, notFound: true };
     }
 
     const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(pageId);
@@ -351,6 +389,18 @@ const proVerifySchema = {
         currency,
         pageId,
         billingCycle,
+      });
+
+      // Remediation C: Bind orderId to pageId, userId, product, billingCycle, and amount
+      PRO_ORDER_REGISTRY.set(orderResult.orderId, {
+        orderId: orderResult.orderId,
+        pageId,
+        userId: auth.userId,
+        billingCycle,
+        amount,
+        product: 'pages_pro',
+        createdAt: Date.now(),
+        status: 'created',
       });
 
       return reply.send({
@@ -437,6 +487,58 @@ const proVerifySchema = {
       );
     }
 
+    // Remediation C: Payment/Order/Page Association Binding Check
+    const registeredOrder = PRO_ORDER_REGISTRY.get(body.razorpay_order_id);
+    if (registeredOrder) {
+      // 1. Target pageId association check
+      if (registeredOrder.pageId !== pageId) {
+        return sendApiError(
+          reply,
+          request,
+          400,
+          'Bad Request',
+          'Payment order was not created for this page',
+          { code: 'PAGE_ORDER_MISMATCH' }
+        );
+      }
+
+      // 2. Authenticated principal association check
+      if (registeredOrder.userId !== auth.userId && auth.role !== 'admin') {
+        return sendApiError(
+          reply,
+          request,
+          403,
+          'Forbidden',
+          'Payment order was created by a different user',
+          { code: 'ORDER_PRINCIPAL_MISMATCH' }
+        );
+      }
+
+      // 3. Billing cycle association check
+      if (body.billingCycle && body.billingCycle !== registeredOrder.billingCycle) {
+        return sendApiError(
+          reply,
+          request,
+          400,
+          'Bad Request',
+          'Billing cycle does not match the created order',
+          { code: 'BILLING_CYCLE_MISMATCH' }
+        );
+      }
+
+      // 4. Idempotency / replay check
+      if (registeredOrder.status === 'verified' && registeredOrder.paymentId !== body.razorpay_payment_id) {
+        return sendApiError(
+          reply,
+          request,
+          400,
+          'Bad Request',
+          'Payment order has already been verified with a different payment',
+          { code: 'ORDER_ALREADY_CONSUMED' }
+        );
+      }
+    }
+
     let isValid = false;
 
     if (isTestSandboxBypass) {
@@ -492,6 +594,18 @@ const proVerifySchema = {
       );
     }
 
+    // Authoritative persistence check: fail closed if Supabase is unconfigured (unless test fixture is active)
+    if (!isSupabaseConfigured && !(process.env.NODE_ENV === 'test' && testPageAuthorityResolver)) {
+      return sendApiError(
+        reply,
+        request,
+        503,
+        'Service Unavailable',
+        'Database service unavailable. Cannot persist Pro entitlement.',
+        { code: 'DATABASE_UNAVAILABLE' }
+      );
+    }
+
     const expiryDate = new Date();
     if (body.billingCycle === 'annual') {
       expiryDate.setFullYear(expiryDate.getFullYear() + 1); // 365-day annual cycle
@@ -528,6 +642,11 @@ const proVerifySchema = {
           { code: 'DATABASE_ERROR' }
         );
       }
+    }
+
+    if (registeredOrder) {
+      registeredOrder.status = 'verified';
+      registeredOrder.paymentId = body.razorpay_payment_id;
     }
 
     ENTITLEMENT_CACHE.set(pageId, {
