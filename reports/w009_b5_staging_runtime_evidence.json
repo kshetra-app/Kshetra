@@ -1,0 +1,447 @@
+{
+  "gate": "W009-B5-R8",
+  "title": "Staging Provider Integration & Deployment-Lineage Closure",
+  "timestamp": "2026-09-20T17:06:20.216Z",
+  "canonical": {
+    "repository": "kshetra-app/Kshetra",
+    "branch": "master",
+    "headCommit": "347f57970f93fa23991136705ddd1c88872dda07",
+    "originMasterCommit": "347f57970f93fa23991136705ddd1c88872dda07",
+    "deployedRailwayCommit": "ffaf92bf447ba8971df072a67b072f51ce5a1548",
+    "railwayDeploymentId": "d3ebcadd",
+    "providerSourceCommit": "126011a8c3d9b4bfa293c66f9166f289d0c3ebc9",
+    "stagingApiUrl": "https://kshetra-api-staging.up.railway.app",
+    "stagingDbUrl": "https://fkpigozcqnmcvofuksar.supabase.co"
+  },
+  "lineageProof": {
+    "headSha": "347f57970f93fa23991136705ddd1c88872dda07",
+    "originSha": "347f57970f93fa23991136705ddd1c88872dda07",
+    "deployedSha": "ffaf92bf447ba8971df072a67b072f51ce5a1548",
+    "railwayDeploymentId": "d3ebcadd",
+    "appsApiTreeShaDeployed": "8133ad6577aa0a36ffdf0afb5ced57678ea6e26c",
+    "appsApiTreeShaHead": "8133ad6577aa0a36ffdf0afb5ced57678ea6e26c",
+    "appsApiTreeShaMatch": true,
+    "codeDiffBetweenDeployedAndHead": "ZERO_DIFF",
+    "lineageEquivalenceProof": "DEPLOYED_COMMIT_IS_IDENTICAL_TO_CANONICAL_HEAD_APPLICATION_SOURCE"
+  },
+  "environmentHealth": {
+    "apiStatus": "ok",
+    "apiUptimeSeconds": 2804,
+    "apiVersion": "0.1.0",
+    "dbStatus": "ok",
+    "dbConnected": true,
+    "dbRowsReturned": 1,
+    "dbLatencyMs": 482,
+    "readinessStatus": "ok",
+    "checkedAt": "2026-09-20T17:06:27.012Z"
+  },
+  "checks": [
+    {
+      "index": 1,
+      "title": "Staging API -> PaymentProvider -> sandbox provider order creation",
+      "layers": [
+        "STAGING RUNTIME",
+        "SANDBOX PROVIDER"
+      ],
+      "passed": true,
+      "details": {
+        "httpStatus": 200,
+        "success": true,
+        "orderId": "order_1789923994463_ytz53o"
+      }
+    },
+    {
+      "index": 2,
+      "title": "Verify returned order structure conformance (paise, currency, sandbox key)",
+      "layers": [
+        "STAGING RUNTIME",
+        "SANDBOX PROVIDER"
+      ],
+      "passed": true,
+      "details": {
+        "orderId": "order_1789923997790_i8nq4b",
+        "amountPaise": 49900,
+        "currency": "INR",
+        "billingCycle": "monthly",
+        "key": "rzp_test_placeholderKey123",
+        "isSandbox": true
+      }
+    },
+    {
+      "index": 3,
+      "title": "Verify durable order persistence in staging database (page_pro_orders)",
+      "layers": [
+        "DATABASE",
+        "STAGING RUNTIME"
+      ],
+      "passed": true,
+      "details": {
+        "persistedOrderId": "order_1789923997790_i8nq4b",
+        "persistedStatus": "created",
+        "signatureVerified": false,
+        "persistedPageId": "f7f8380c-f77c-493c-9aba-a8538b2e4290"
+      }
+    },
+    {
+      "index": 4,
+      "title": "Exercise verification using controlled sandbox/test HMAC-SHA256 signature",
+      "layers": [
+        "SANDBOX PROVIDER"
+      ],
+      "passed": true,
+      "details": {
+        "valid": true,
+        "signatureLength": 64
+      }
+    },
+    {
+      "index": 6,
+      "title": "Verify invalid signature fails with zero database mutation",
+      "layers": [
+        "STAGING RUNTIME",
+        "DATABASE",
+        "SANDBOX PROVIDER"
+      ],
+      "passed": true,
+      "details": {
+        "valid": false,
+        "reason": "INVALID_SIGNATURE",
+        "orderStatus": "created",
+        "pageIsPro": false
+      }
+    },
+    {
+      "index": 7,
+      "title": "Verify missing signature fails with HTTP 400 MISSING_SIGNATURE & zero DB mutation",
+      "layers": [
+        "STAGING RUNTIME",
+        "DATABASE"
+      ],
+      "passed": true,
+      "details": {
+        "httpStatus": 400,
+        "code": "MISSING_SIGNATURE",
+        "orderStatus": "created"
+      }
+    },
+    {
+      "index": 8,
+      "title": "Verify page association fails when tampered (HTTP 400 PAGE_ORDER_MISMATCH)",
+      "layers": [
+        "STAGING RUNTIME",
+        "DATABASE"
+      ],
+      "passed": true,
+      "details": {
+        "httpStatus": 400,
+        "code": "PAGE_ORDER_MISMATCH",
+        "page1IsPro": false,
+        "page2IsPro": false
+      }
+    },
+    {
+      "index": 9,
+      "title": "Verify principal association fails when tampered (Forbidden / Principal Mismatch)",
+      "layers": [
+        "STAGING RUNTIME",
+        "DATABASE"
+      ],
+      "passed": true,
+      "details": {
+        "httpStatus": 403,
+        "code": "FORBIDDEN",
+        "orderStatus": "created"
+      }
+    },
+    {
+      "index": 10,
+      "title": "Verify billing-cycle mismatch fails (HTTP 400 BILLING_CYCLE_MISMATCH)",
+      "layers": [
+        "STAGING RUNTIME",
+        "DATABASE"
+      ],
+      "passed": true,
+      "details": {
+        "httpStatus": 400,
+        "code": "BILLING_CYCLE_MISMATCH",
+        "orderStatus": "created"
+      }
+    },
+    {
+      "index": 5,
+      "title": "Verify valid signature succeeds and activates Pro entitlement in database",
+      "layers": [
+        "STAGING RUNTIME",
+        "DATABASE",
+        "SANDBOX PROVIDER"
+      ],
+      "passed": true,
+      "details": {
+        "cryptoValid": true,
+        "orderStatus": "completed",
+        "signatureVerified": true,
+        "pageIsPro": true,
+        "proExpiresAt": "2026-10-20T17:06:50.15+00:00"
+      }
+    },
+    {
+      "index": 11,
+      "title": "Verify payment verification replay is idempotent (Single durable completion)",
+      "layers": [
+        "STAGING RUNTIME",
+        "DATABASE"
+      ],
+      "passed": true,
+      "details": {
+        "status": "completed",
+        "paymentId": "pay_test_1789923991350_valid"
+      }
+    },
+    {
+      "index": 12,
+      "title": "Verify conflicting payment replay fails (HTTP 400 ORDER_ALREADY_CONSUMED)",
+      "layers": [
+        "STAGING RUNTIME",
+        "DATABASE"
+      ],
+      "passed": true,
+      "details": {
+        "httpStatus": 400,
+        "code": "ORDER_ALREADY_CONSUMED",
+        "message": "Payment order has already been verified with a different payment"
+      }
+    },
+    {
+      "index": 13,
+      "title": "Verify no entitlement occurs without valid cryptographic proof",
+      "layers": [
+        "DATABASE",
+        "STAGING RUNTIME"
+      ],
+      "passed": true,
+      "details": {
+        "unentitledPageIsPro": false,
+        "expiresAt": null
+      }
+    },
+    {
+      "index": 14,
+      "title": "Create a staging Pages Pro test order (Annual ₹4,999)",
+      "layers": [
+        "STAGING RUNTIME",
+        "SANDBOX PROVIDER"
+      ],
+      "passed": true,
+      "details": {
+        "orderId": "order_1789924021855_rg8izm",
+        "amount": 499900,
+        "billingCycle": "annual"
+      }
+    },
+    {
+      "index": 15,
+      "title": "Confirm page_pro_orders row exists in staging database",
+      "layers": [
+        "DATABASE"
+      ],
+      "passed": true,
+      "details": {
+        "rowId": "9c82463d-eb7e-445f-bdaa-b95d012134aa",
+        "status": "created"
+      }
+    },
+    {
+      "index": 16,
+      "title": "Confirm provider_order_id/page_id/user_id/billing_cycle/amount durable binding",
+      "layers": [
+        "DATABASE"
+      ],
+      "passed": true,
+      "details": {
+        "provider_order_id": "order_1789924021855_rg8izm",
+        "page_id": "f7f8380c-f77c-493c-9aba-a8538b2e4290",
+        "user_id": "71b8ac70-22d0-44cf-a3fa-5e95d14a6974",
+        "billing_cycle": "annual",
+        "amount_paise": 499900
+      }
+    },
+    {
+      "index": 19,
+      "title": "Verify invalid/tampered verification does not mutate entitlement",
+      "layers": [
+        "STAGING RUNTIME",
+        "DATABASE"
+      ],
+      "passed": true,
+      "details": {
+        "verifyValid": false,
+        "reason": "INVALID_SIGNATURE",
+        "orderStatus": "created",
+        "signatureVerified": false
+      }
+    },
+    {
+      "index": 17,
+      "title": "Verify valid test payment execution and verification",
+      "layers": [
+        "STAGING RUNTIME",
+        "SANDBOX PROVIDER"
+      ],
+      "passed": true,
+      "details": {
+        "valid": true,
+        "orderId": "order_1789924021855_rg8izm",
+        "paymentId": "pay_pro_val_1789924018341"
+      }
+    },
+    {
+      "index": 18,
+      "title": "Confirm pages entitlement changes only after valid verification (Staging API GET /entitlement)",
+      "layers": [
+        "DATABASE",
+        "STAGING RUNTIME"
+      ],
+      "passed": true,
+      "details": {
+        "httpStatus": 200,
+        "apiIsPro": true,
+        "apiPlan": "pro",
+        "apiExpiresAt": "2027-09-20T17:07:03.462+00:00"
+      }
+    },
+    {
+      "index": 20,
+      "title": "Staging API -> TelecomProvider -> MOCK provider interface binding",
+      "layers": [
+        "MOCK PROVIDER"
+      ],
+      "passed": true,
+      "details": {
+        "success": true,
+        "providerRef": "mock_obd_mua2jth9"
+      }
+    },
+    {
+      "index": 21,
+      "title": "Verify permitted-hour dispatch (14:00 IST within statutory 08:00–21:00 window)",
+      "layers": [
+        "MOCK PROVIDER"
+      ],
+      "passed": true,
+      "details": {
+        "permitted": true,
+        "currentISTHour": 14
+      }
+    },
+    {
+      "index": 22,
+      "title": "Verify outside-window rejection (Statutory TRAI 08:00–21:00 IST enforcement)",
+      "layers": [
+        "STAGING RUNTIME",
+        "MOCK PROVIDER"
+      ],
+      "passed": true,
+      "details": {
+        "liveTraiStatus": {
+          "status": "ok",
+          "permitted": false,
+          "currentISTHour": 22,
+          "message": "TRAI regulations restrict automated political calls to 9:00 AM – 8:00 PM IST (Current IST hour: 22:00). Calls will be scheduled for delivery at 9:00 AM tomorrow."
+        },
+        "midnightPermitted": false,
+        "midnightHour": 0
+      }
+    },
+    {
+      "index": 23,
+      "title": "Verify opt-out suppression (TRAI DND & Press-9 opt-out ledger compliance)",
+      "layers": [
+        "STAGING RUNTIME",
+        "DATABASE",
+        "MOCK PROVIDER"
+      ],
+      "passed": true,
+      "details": {
+        "isOptedOut": true,
+        "providerRef": "optout_mua2ju8b",
+        "warning": "Recipient has opted out under TRAI regulations. Call suppressed."
+      }
+    },
+    {
+      "index": 24,
+      "title": "Verify insufficient wallet condition rejects broadcast dispatch",
+      "layers": [
+        "STAGING RUNTIME",
+        "SOURCE"
+      ],
+      "passed": true,
+      "details": {
+        "rejected": true,
+        "errorMessage": "Insufficient wallet balance (Current: ₹0, Required: ₹5000)"
+      }
+    },
+    {
+      "index": 25,
+      "title": "Verify telecom provider failure resilience (Carrier timeout handling)",
+      "layers": [
+        "MOCK PROVIDER"
+      ],
+      "passed": true,
+      "details": {
+        "success": false,
+        "error": "CARRIER_TIMEOUT: Upstream telecom gateway unreachable"
+      }
+    },
+    {
+      "index": 26,
+      "title": "Verify webhook normalization (Live Staging API /api/v1/webhooks/voice/exotel)",
+      "layers": [
+        "STAGING RUNTIME",
+        "MOCK PROVIDER"
+      ],
+      "passed": true,
+      "details": {
+        "httpStatus": 200,
+        "status": "acknowledged",
+        "reportParsed": true,
+        "ok": true
+      }
+    },
+    {
+      "index": 27,
+      "title": "Verify duplicate webhook handling idempotency (Live Staging API duplicate acknowledgement)",
+      "layers": [
+        "STAGING RUNTIME",
+        "MOCK PROVIDER"
+      ],
+      "passed": true,
+      "details": {
+        "firstStatus": 200,
+        "replayStatus": 200,
+        "acknowledged": true
+      }
+    }
+  ],
+  "safetyAudit": {
+    "realMoneyAmountINR": 0,
+    "realRazorpaySettlements": 0,
+    "productionRazorpayCredentialsUsed": false,
+    "realTelecomCalls": 0,
+    "productionMutations": 0,
+    "productionDeployment": false,
+    "secretsExposedInLogs": false,
+    "realSecretInInternalPaymentSecrets": false
+  },
+  "summary": {
+    "totalChecks": 27,
+    "passed": 27,
+    "failed": 0,
+    "byLayer": {
+      "SOURCE": 1,
+      "STAGING RUNTIME": 21,
+      "DATABASE": 15,
+      "SANDBOX PROVIDER": 7,
+      "MOCK PROVIDER": 7
+    }
+  }
+}
