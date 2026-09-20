@@ -1,15 +1,16 @@
 -- ==============================================================================
--- W009-B5-R3A-R3: STAGING DETERMINISTIC MIGRATION APPLICATION PACKAGE (035 -> 037)
--- Canonical Git Commit: 966b992b5c7e12118d9cb0565968eb6386f51470
+-- W009-B5-R3A-R4: STAGING DETERMINISTIC MIGRATION APPLICATION PACKAGE (035 -> 037)
+-- Remediation: Authoritative Migration 035 UTF-8 BOM (U+FEFF) Defect Eliminated
 -- Target Supabase Project: panIN-staging (fkpigozcqnmcvofuksar)
 -- Order: 035_campaign_recharge_orders.sql -> 036_foundation_and_grants_repair.sql -> 037_page_pro_orders.sql
--- Invariant: Migration bodies are 100% byte-for-byte exact matches of source files.
+-- Invariant: Migration bodies are 100% byte-for-byte exact matches of corrected sources.
 -- Transaction: Atomic (all 3 migrations apply together or rollback).
+-- Zero BOM Guarantee: Exactly 0 U+FEFF characters across the entire file.
 -- ==============================================================================
 
 BEGIN;
 
-﻿-- ============================================================
+-- ============================================================
 -- Migration 035: Durable Campaign Recharge Orders & Atomic Verification
 -- Authoritative persistence for wallet recharge lifecycle and idempotency
 -- ============================================================

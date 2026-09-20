@@ -1,4 +1,4 @@
-﻿-- ============================================================
+-- ============================================================
 -- Migration 035: Durable Campaign Recharge Orders & Atomic Verification
 -- Authoritative persistence for wallet recharge lifecycle and idempotency
 -- ============================================================
