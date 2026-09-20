@@ -1,7 +1,7 @@
 {
   "job": "W009-B5-R4",
   "title": "Durable Pages Pro Payment Persistence Verification",
-  "timestamp": "2026-09-20T08:38:21.165Z",
+  "timestamp": "2026-09-20T08:55:05.877Z",
   "environment": {
     "postgresContainer": "w009-b5-postgres (postgis/postgis:16-3.4-alpine)",
     "postgrestContainer": "w009-b5-postgrest (public.ecr.aws/supabase/postgrest:v14.13)",
@@ -135,7 +135,7 @@
       "searchPathConfig": [
         "search_path=public, pg_temp"
       ],
-      "identityArgs": "p_provider_order_id text, p_page_id uuid, p_user_id uuid, p_provider_payment_id text, p_signature text, p_key_secret text, p_billing_cycle text, p_is_admin boolean"
+      "identityArgs": "p_provider_order_id text, p_page_id uuid, p_user_id uuid, p_provider_payment_id text, p_signature text, p_billing_cycle text, p_is_admin boolean"
     },
     "rpcPrivileges": {
       "public_exec": false,
@@ -143,6 +143,13 @@
       "authenticated_exec": false,
       "service_role_exec": true,
       "postgres_exec": true
+    },
+    "secretsTablePrivileges": {
+      "public_select": false,
+      "anon_select": false,
+      "authenticated_select": false,
+      "service_role_select": false,
+      "postgres_select": true
     },
     "defaultAcl": [
       {
@@ -158,10 +165,10 @@
       "testId": "TEST-B5-PERSIST-01",
       "description": "POST /order durably persists order in page_pro_orders with status created",
       "httpStatus": 200,
-      "orderId": "order_1789893590327_kpzop",
+      "orderId": "order_1789894595372_bytqu",
       "dbRecord": {
-        "id": "517fc780-5d6e-4d0e-b641-6d2215d52454",
-        "provider_order_id": "order_1789893590327_kpzop",
+        "id": "56c9e1ea-49cb-469e-b9d9-26e260ac414c",
+        "provider_order_id": "order_1789894595372_bytqu",
         "page_id": "11111111-1111-1111-1111-111111111111",
         "user_id": "00000000-0000-0000-0000-000000000001",
         "product": "pages_pro",
@@ -171,8 +178,8 @@
         "status": "created",
         "provider_payment_id": null,
         "signature_verified": false,
-        "created_at": "2026-09-20T08:39:50.496945+00:00",
-        "updated_at": "2026-09-20T08:39:50.496945+00:00",
+        "created_at": "2026-09-20T08:56:35.764917+00:00",
+        "updated_at": "2026-09-20T08:56:35.764917+00:00",
         "completed_at": null
       },
       "passed": true
@@ -190,7 +197,7 @@
       "httpStatus": 200,
       "orderStatusInDb": "completed",
       "pageIsProInDb": true,
-      "pageProExpiresAt": "2026-10-20T08:39:51.581233+00:00",
+      "pageProExpiresAt": "2026-10-20T08:56:36.774207+00:00",
       "passed": true
     },
     {
@@ -256,7 +263,7 @@
         "pageId": "11111111-1111-1111-1111-111111111111",
         "message": "Page Pro subscription successfully activated",
         "success": true,
-        "expiresAt": "2026-10-20T08:39:55.510449+00:00",
+        "expiresAt": "2026-10-20T08:56:41.611026+00:00",
         "idempotent": false
       },
       "orderStatus": "completed",
@@ -360,7 +367,7 @@
         "pageId": "11111111-1111-1111-1111-111111111111",
         "message": "Payment already verified and Pro entitlement activated previously. Idempotent replay acknowledged.",
         "success": true,
-        "expiresAt": "2026-10-20T08:39:55.510449+00:00",
+        "expiresAt": "2026-10-20T08:56:41.611026+00:00",
         "idempotent": true
       },
       "consumedResult": {
@@ -378,7 +385,7 @@
         "pageId": "11111111-1111-1111-1111-111111111111",
         "message": "Page Pro subscription successfully activated",
         "success": true,
-        "expiresAt": "2026-10-20T08:40:01.789943+00:00",
+        "expiresAt": "2026-10-20T08:56:48.864985+00:00",
         "idempotent": false
       },
       "worker2Result": {
@@ -391,25 +398,69 @@
       "passed": true
     },
     {
-      "testId": "INVARIANT-M",
-      "description": "Direct service-role RPC invocation without valid cryptographic proof MUST NOT activate Pages Pro",
-      "bogusSignatureResult": {
-        "code": "INVALID_SIGNATURE",
-        "message": "Cryptographic payment signature verification failed at transaction boundary",
-        "success": false
-      },
-      "missingSignatureResult": {
-        "code": "MISSING_SIGNATURE",
-        "message": "Cryptographic payment signature is required",
-        "success": false
-      },
-      "wrongSecretResult": {
+      "testId": "INVARIANT-M1",
+      "description": "Attacker-selected secret with attacker-generated signature rejected with INVALID_SIGNATURE; zero database mutation",
+      "rpcResult": {
         "code": "INVALID_SIGNATURE",
         "message": "Cryptographic payment signature verification failed at transaction boundary",
         "success": false
       },
       "orderRemainsCreated": true,
-      "signatureVerifiedIsFalse": true,
+      "passed": true
+    },
+    {
+      "testId": "INVARIANT-M2",
+      "description": "Genuine server secret and valid signature succeeds with ENTITLEMENT_ACTIVATED and commits page entitlement",
+      "rpcResult": {
+        "code": "ENTITLEMENT_ACTIVATED",
+        "pageId": "22222222-2222-2222-2222-222222222222",
+        "message": "Page Pro subscription successfully activated",
+        "success": true,
+        "expiresAt": "2026-10-20T08:56:50.189329+00:00",
+        "idempotent": false
+      },
+      "orderCompleted": true,
+      "pageIsPro": true,
+      "passed": true
+    },
+    {
+      "testId": "INVARIANT-M3",
+      "description": "Genuine signature with tampered order/payment tuple fails HMAC check at transaction boundary",
+      "rpcResult": {
+        "code": "INVALID_SIGNATURE",
+        "message": "Cryptographic payment signature verification failed at transaction boundary",
+        "success": false
+      },
+      "passed": true
+    },
+    {
+      "testId": "INVARIANT-M4",
+      "description": "Attacker corrupted signature against genuine server secret rejected with INVALID_SIGNATURE",
+      "rpcResult": {
+        "code": "INVALID_SIGNATURE",
+        "message": "Cryptographic payment signature verification failed at transaction boundary",
+        "success": false
+      },
+      "passed": true
+    },
+    {
+      "testId": "INVARIANT-M5",
+      "description": "Caller session injection (SET app.settings.razorpay_key_secret) cannot override internal_payment_secrets; rejected with INVALID_SIGNATURE",
+      "rpcResult": {
+        "code": "INVALID_SIGNATURE",
+        "message": "Cryptographic payment signature verification failed at transaction boundary",
+        "success": false
+      },
+      "passed": true
+    },
+    {
+      "testId": "INVARIANT-M6",
+      "description": "Missing cryptographic secret in DB store returns KEY_SECRET_MISSING with zero database mutation",
+      "rpcResult": {
+        "code": "KEY_SECRET_MISSING",
+        "message": "Cryptographic verification key secret is missing or unconfigured",
+        "success": false
+      },
       "passed": true
     },
     {
@@ -417,6 +468,14 @@
       "description": "Non-service roles (anon, authenticated, PUBLIC) denied EXECUTE privilege on RPC at database catalog boundary",
       "anonCallBlocked": true,
       "authCallBlocked": true,
+      "passed": true
+    },
+    {
+      "testId": "INVARIANT-O",
+      "description": "Non-owner roles (anon, authenticated, service_role) strictly denied SELECT on internal_payment_secrets table",
+      "anonSecretsBlocked": true,
+      "authSecretsBlocked": true,
+      "serviceRoleSecretsBlocked": true,
       "passed": true
     }
   ],

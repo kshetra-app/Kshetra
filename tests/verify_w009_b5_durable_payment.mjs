@@ -166,6 +166,12 @@ try {
     GRANT ALL ON ALL TABLES IN SCHEMA public TO service_role;
     GRANT ALL ON ALL SEQUENCES IN SCHEMA public TO service_role;
     GRANT ALL ON ALL ROUTINES IN SCHEMA public TO service_role;
+
+    -- Seed trusted internal payment secrets and strictly isolate from client-accessible roles
+    INSERT INTO internal_payment_secrets (provider, key_secret)
+    VALUES ('razorpay', '${RAZORPAY_KEY_SECRET}')
+    ON CONFLICT (provider) DO UPDATE SET key_secret = EXCLUDED.key_secret, updated_at = now();
+    REVOKE ALL ON TABLE internal_payment_secrets FROM PUBLIC, anon, authenticated, service_role;
   `);
 
   // Step 6: Start PostgREST container
@@ -174,6 +180,7 @@ try {
 
   // Wait for PostgREST
   console.log('Waiting for PostgREST to be ready...');
+  await new Promise((r) => setTimeout(r, 2000));
   let pgrstReady = false;
   for (let i = 0; i < 30; i++) {
     try {
@@ -279,13 +286,23 @@ try {
 
   const rpcPrivileges = queryDb(`
     SELECT
-      has_function_privilege('public', 'verify_and_activate_page_pro(text,uuid,uuid,text,text,text,text,boolean)', 'execute') as public_exec,
-      has_function_privilege('anon', 'verify_and_activate_page_pro(text,uuid,uuid,text,text,text,text,boolean)', 'execute') as anon_exec,
-      has_function_privilege('authenticated', 'verify_and_activate_page_pro(text,uuid,uuid,text,text,text,text,boolean)', 'execute') as authenticated_exec,
-      has_function_privilege('service_role', 'verify_and_activate_page_pro(text,uuid,uuid,text,text,text,text,boolean)', 'execute') as service_role_exec,
-      has_function_privilege('postgres', 'verify_and_activate_page_pro(text,uuid,uuid,text,text,text,text,boolean)', 'execute') as postgres_exec;
+      has_function_privilege('public', 'verify_and_activate_page_pro(text,uuid,uuid,text,text,text,boolean)', 'execute') as public_exec,
+      has_function_privilege('anon', 'verify_and_activate_page_pro(text,uuid,uuid,text,text,text,boolean)', 'execute') as anon_exec,
+      has_function_privilege('authenticated', 'verify_and_activate_page_pro(text,uuid,uuid,text,text,text,boolean)', 'execute') as authenticated_exec,
+      has_function_privilege('service_role', 'verify_and_activate_page_pro(text,uuid,uuid,text,text,text,boolean)', 'execute') as service_role_exec,
+      has_function_privilege('postgres', 'verify_and_activate_page_pro(text,uuid,uuid,text,text,text,boolean)', 'execute') as postgres_exec;
   `);
   console.log('RPC Privileges Matrix:', rpcPrivileges[0]);
+
+  const secretsPrivileges = queryDb(`
+    SELECT
+      has_table_privilege('public', 'internal_payment_secrets', 'select') as public_select,
+      has_table_privilege('anon', 'internal_payment_secrets', 'select') as anon_select,
+      has_table_privilege('authenticated', 'internal_payment_secrets', 'select') as authenticated_select,
+      has_table_privilege('service_role', 'internal_payment_secrets', 'select') as service_role_select,
+      has_table_privilege('postgres', 'internal_payment_secrets', 'select') as postgres_select;
+  `);
+  console.log('Secrets Table Privileges Matrix:', secretsPrivileges[0]);
 
   const defaultAcl = queryDb(`
     SELECT defaclobjtype, defaclrole::regrole::text as defaclrole, defaclnamespace::regnamespace::text as defaclnamespace, defaclacl::text as defaclacl
@@ -307,6 +324,7 @@ try {
       identityArgs: rpcInfo[0]?.identity_args,
     },
     rpcPrivileges: rpcPrivileges[0],
+    secretsTablePrivileges: secretsPrivileges[0],
     defaultAcl,
   };
 
@@ -806,7 +824,7 @@ try {
   `);
   const sigA = computeValidSig('order_direct_inv_a', 'pay_direct_inv_a');
   const rpcResA = queryDb(`
-    SELECT verify_and_activate_page_pro('order_direct_inv_a', '${PAGE_A_ID}', '${USER1_ID}', 'pay_direct_inv_a', '${sigA}', '${RAZORPAY_KEY_SECRET}', 'monthly', false) AS result;
+    SELECT verify_and_activate_page_pro('order_direct_inv_a', '${PAGE_A_ID}', '${USER1_ID}', 'pay_direct_inv_a', '${sigA}', 'monthly', false) AS result;
   `)[0]?.result;
   const dbOrderA = queryDb(`SELECT * FROM page_pro_orders WHERE provider_order_id = 'order_direct_inv_a'`)[0];
   const dbPageA = queryDb(`SELECT is_pro, pro_subscription_id FROM pages WHERE id = '${PAGE_A_ID}'`)[0];
@@ -839,7 +857,7 @@ try {
     ON CONFLICT (provider_order_id) DO NOTHING;
   `);
   const rpcResB = queryDb(`
-    SELECT verify_and_activate_page_pro('order_direct_inv_b', '${PAGE_A_ID}', '${USER1_ID}', 'pay_direct_inv_b', NULL, '${RAZORPAY_KEY_SECRET}', 'monthly', false) AS result;
+    SELECT verify_and_activate_page_pro('order_direct_inv_b', '${PAGE_A_ID}', '${USER1_ID}', 'pay_direct_inv_b', NULL, 'monthly', false) AS result;
   `)[0]?.result;
   const dbOrderB = queryDb(`SELECT * FROM page_pro_orders WHERE provider_order_id = 'order_direct_inv_b'`)[0];
 
@@ -866,7 +884,7 @@ try {
     ON CONFLICT (provider_order_id) DO NOTHING;
   `);
   const rpcResC = queryDb(`
-    SELECT verify_and_activate_page_pro('order_direct_inv_c', '${PAGE_A_ID}', '${USER1_ID}', 'pay_direct_inv_c', 'deadbeef_invalid_hmac_hex', '${RAZORPAY_KEY_SECRET}', 'monthly', false) AS result;
+    SELECT verify_and_activate_page_pro('order_direct_inv_c', '${PAGE_A_ID}', '${USER1_ID}', 'pay_direct_inv_c', 'deadbeef_invalid_hmac_hex', 'monthly', false) AS result;
   `)[0]?.result;
   const dbOrderC = queryDb(`SELECT * FROM page_pro_orders WHERE provider_order_id = 'order_direct_inv_c'`)[0];
 
@@ -889,7 +907,7 @@ try {
   console.log('\n--- INVARIANT D: Tampered Order ID Fails HMAC Verification ---');
   const sigD = computeValidSig('order_direct_inv_d', 'pay_direct_inv_d');
   const rpcResD = queryDb(`
-    SELECT verify_and_activate_page_pro('order_direct_inv_d_TAMPERED', '${PAGE_A_ID}', '${USER1_ID}', 'pay_direct_inv_d', '${sigD}', '${RAZORPAY_KEY_SECRET}', 'monthly', false) AS result;
+    SELECT verify_and_activate_page_pro('order_direct_inv_d_TAMPERED', '${PAGE_A_ID}', '${USER1_ID}', 'pay_direct_inv_d', '${sigD}', 'monthly', false) AS result;
   `)[0]?.result;
 
   const invDPassed =
@@ -908,7 +926,7 @@ try {
   console.log('\n--- INVARIANT E: Tampered Payment ID Fails HMAC Verification ---');
   const sigE = computeValidSig('order_direct_inv_a', 'pay_direct_inv_a');
   const rpcResE = queryDb(`
-    SELECT verify_and_activate_page_pro('order_direct_inv_a', '${PAGE_A_ID}', '${USER1_ID}', 'pay_direct_inv_a_TAMPERED', '${sigE}', '${RAZORPAY_KEY_SECRET}', 'monthly', false) AS result;
+    SELECT verify_and_activate_page_pro('order_direct_inv_a', '${PAGE_A_ID}', '${USER1_ID}', 'pay_direct_inv_a_TAMPERED', '${sigE}', 'monthly', false) AS result;
   `)[0]?.result;
 
   const invEPassed =
@@ -932,7 +950,7 @@ try {
   `);
   const sigF = computeValidSig('order_direct_inv_f', 'pay_direct_inv_f');
   const rpcResF = queryDb(`
-    SELECT verify_and_activate_page_pro('order_direct_inv_f', '${PAGE_B_ID}', '${USER1_ID}', 'pay_direct_inv_f', '${sigF}', '${RAZORPAY_KEY_SECRET}', 'monthly', false) AS result;
+    SELECT verify_and_activate_page_pro('order_direct_inv_f', '${PAGE_B_ID}', '${USER1_ID}', 'pay_direct_inv_f', '${sigF}', 'monthly', false) AS result;
   `)[0]?.result;
   const dbOrderF = queryDb(`SELECT * FROM page_pro_orders WHERE provider_order_id = 'order_direct_inv_f'`)[0];
 
@@ -960,7 +978,7 @@ try {
   `);
   const sigG = computeValidSig('order_direct_inv_g', 'pay_direct_inv_g');
   const rpcResG = queryDb(`
-    SELECT verify_and_activate_page_pro('order_direct_inv_g', '${PAGE_A_ID}', '${USER2_ID}', 'pay_direct_inv_g', '${sigG}', '${RAZORPAY_KEY_SECRET}', 'monthly', false) AS result;
+    SELECT verify_and_activate_page_pro('order_direct_inv_g', '${PAGE_A_ID}', '${USER2_ID}', 'pay_direct_inv_g', '${sigG}', 'monthly', false) AS result;
   `)[0]?.result;
   const dbOrderG = queryDb(`SELECT * FROM page_pro_orders WHERE provider_order_id = 'order_direct_inv_g'`)[0];
 
@@ -988,7 +1006,7 @@ try {
   `);
   const sigH = computeValidSig('order_direct_inv_h', 'pay_direct_inv_h');
   const rpcResH = queryDb(`
-    SELECT verify_and_activate_page_pro('order_direct_inv_h', '${PAGE_A_ID}', '${USER1_ID}', 'pay_direct_inv_h', '${sigH}', '${RAZORPAY_KEY_SECRET}', 'annual', false) AS result;
+    SELECT verify_and_activate_page_pro('order_direct_inv_h', '${PAGE_A_ID}', '${USER1_ID}', 'pay_direct_inv_h', '${sigH}', 'annual', false) AS result;
   `)[0]?.result;
   const dbOrderH = queryDb(`SELECT * FROM page_pro_orders WHERE provider_order_id = 'order_direct_inv_h'`)[0];
 
@@ -1061,12 +1079,12 @@ try {
   // Invariant K: Replay Protection via Direct SQL RPC
   console.log('\n--- INVARIANT K: Replay Protection via Direct SQL RPC ---');
   const rpcResKIdempotent = queryDb(`
-    SELECT verify_and_activate_page_pro('order_direct_inv_a', '${PAGE_A_ID}', '${USER1_ID}', 'pay_direct_inv_a', '${sigA}', '${RAZORPAY_KEY_SECRET}', 'monthly', false) AS result;
+    SELECT verify_and_activate_page_pro('order_direct_inv_a', '${PAGE_A_ID}', '${USER1_ID}', 'pay_direct_inv_a', '${sigA}', 'monthly', false) AS result;
   `)[0]?.result;
 
   const sigKFraud = computeValidSig('order_direct_inv_a', 'pay_fraud_different_payment');
   const rpcResKConsumed = queryDb(`
-    SELECT verify_and_activate_page_pro('order_direct_inv_a', '${PAGE_A_ID}', '${USER1_ID}', 'pay_fraud_different_payment', '${sigKFraud}', '${RAZORPAY_KEY_SECRET}', 'monthly', false) AS result;
+    SELECT verify_and_activate_page_pro('order_direct_inv_a', '${PAGE_A_ID}', '${USER1_ID}', 'pay_fraud_different_payment', '${sigKFraud}', 'monthly', false) AS result;
   `)[0]?.result;
 
   const invKPassed =
@@ -1097,13 +1115,13 @@ try {
   const sigL2 = computeValidSig('order_direct_inv_l', 'pay_concurrent_2');
 
   const worker1 = new Promise((resolve) => {
-    exec(`docker exec w009-b5-postgres psql -U postgres -d w009_b5_test -t -A -c "SELECT verify_and_activate_page_pro('order_direct_inv_l', '${PAGE_A_ID}', '${USER1_ID}', 'pay_concurrent_1', '${sigL1}', '${RAZORPAY_KEY_SECRET}', 'monthly', false);"`, (err, stdout) => {
+    exec(`docker exec w009-b5-postgres psql -U postgres -d w009_b5_test -t -A -c "SELECT verify_and_activate_page_pro('order_direct_inv_l', '${PAGE_A_ID}', '${USER1_ID}', 'pay_concurrent_1', '${sigL1}', 'monthly', false);"`, (err, stdout) => {
       resolve(JSON.parse(stdout.trim()));
     });
   });
 
   const worker2 = new Promise((resolve) => {
-    exec(`docker exec w009-b5-postgres psql -U postgres -d w009_b5_test -t -A -c "SELECT verify_and_activate_page_pro('order_direct_inv_l', '${PAGE_A_ID}', '${USER1_ID}', 'pay_concurrent_2', '${sigL2}', '${RAZORPAY_KEY_SECRET}', 'monthly', false);"`, (err, stdout) => {
+    exec(`docker exec w009-b5-postgres psql -U postgres -d w009_b5_test -t -A -c "SELECT verify_and_activate_page_pro('order_direct_inv_l', '${PAGE_A_ID}', '${USER1_ID}', 'pay_concurrent_2', '${sigL2}', 'monthly', false);"`, (err, stdout) => {
       resolve(JSON.parse(stdout.trim()));
     });
   });
@@ -1127,56 +1145,180 @@ try {
   });
   console.log('INVARIANT-L PASSED:', invLPassed);
 
-  // Invariant M: Direct Service-Role RPC Invocation Without Valid Cryptographic Proof (Critical New Acceptance Test)
-  console.log('\n--- INVARIANT M: Direct Service-Role RPC Without Cryptographic Proof FAILS ---');
+  // Invariant M1: Attacker-Selected Secret + Attacker HMAC FAILS (INVALID_SIGNATURE)
+  console.log('\n--- INVARIANT M1: Attacker-Selected Secret + Attacker HMAC FAILS ---');
   execPsql(`
     INSERT INTO page_pro_orders (provider_order_id, page_id, user_id, billing_cycle, amount_paise, status)
-    VALUES ('order_direct_inv_m', '${PAGE_A_ID}', '${USER1_ID}', 'monthly', 49900, 'created')
+    VALUES ('order_m1', '${PAGE_A_ID}', '${USER1_ID}', 'monthly', 49900, 'created')
     ON CONFLICT (provider_order_id) DO NOTHING;
   `);
-
-  // Direct call 1: Bogus signature
-  const resMBogus = queryDb(`
-    SELECT verify_and_activate_page_pro('order_direct_inv_m', '${PAGE_A_ID}', '${USER1_ID}', 'pay_direct_inv_m', 'attacker_fake_signature_without_proof', '${RAZORPAY_KEY_SECRET}', 'monthly', false) AS result;
+  const attackerSecretM1 = 'attacker_malicious_secret_666';
+  const attackerSigM1 = computeValidSig('order_m1', 'pay_m1', attackerSecretM1);
+  const resM1 = queryDb(`
+    SELECT verify_and_activate_page_pro('order_m1', '${PAGE_A_ID}', '${USER1_ID}', 'pay_m1', '${attackerSigM1}', 'monthly', false) AS result;
   `)[0]?.result;
-
-  // Direct call 2: Missing signature
-  const resMMissing = queryDb(`
-    SELECT verify_and_activate_page_pro('order_direct_inv_m', '${PAGE_A_ID}', '${USER1_ID}', 'pay_direct_inv_m', NULL, '${RAZORPAY_KEY_SECRET}', 'monthly', false) AS result;
-  `)[0]?.result;
-
-  // Direct call 3: Wrong secret signature
-  const wrongSecretSig = computeValidSig('order_direct_inv_m', 'pay_direct_inv_m', 'wrong_secret_123');
-  const resMWrongSecret = queryDb(`
-    SELECT verify_and_activate_page_pro('order_direct_inv_m', '${PAGE_A_ID}', '${USER1_ID}', 'pay_direct_inv_m', '${wrongSecretSig}', '${RAZORPAY_KEY_SECRET}', 'monthly', false) AS result;
-  `)[0]?.result;
-
-  // Confirm database order and page remain completely unmodified
-  const dbOrderM = queryDb(`SELECT * FROM page_pro_orders WHERE provider_order_id = 'order_direct_inv_m'`)[0];
-  const dbPageM = queryDb(`SELECT is_pro, pro_subscription_id FROM pages WHERE id = '${PAGE_A_ID}'`)[0];
-
-  const invMPassed =
-    resMBogus?.success === false &&
-    resMBogus?.code === 'INVALID_SIGNATURE' &&
-    resMMissing?.success === false &&
-    resMMissing?.code === 'MISSING_SIGNATURE' &&
-    resMWrongSecret?.success === false &&
-    resMWrongSecret?.code === 'INVALID_SIGNATURE' &&
-    dbOrderM?.status === 'created' &&
-    dbOrderM?.signature_verified === false &&
-    dbOrderM?.provider_payment_id === null;
+  const dbOrderM1 = queryDb(`SELECT * FROM page_pro_orders WHERE provider_order_id = 'order_m1'`)[0];
+  const invM1Passed =
+    resM1?.success === false &&
+    resM1?.code === 'INVALID_SIGNATURE' &&
+    dbOrderM1?.status === 'created' &&
+    dbOrderM1?.signature_verified === false &&
+    dbOrderM1?.provider_payment_id === null;
 
   report.tests.push({
-    testId: 'INVARIANT-M',
-    description: 'Direct service-role RPC invocation without valid cryptographic proof MUST NOT activate Pages Pro',
-    bogusSignatureResult: resMBogus,
-    missingSignatureResult: resMMissing,
-    wrongSecretResult: resMWrongSecret,
-    orderRemainsCreated: dbOrderM?.status === 'created',
-    signatureVerifiedIsFalse: dbOrderM?.signature_verified === false,
-    passed: invMPassed,
+    testId: 'INVARIANT-M1',
+    description: 'Attacker-selected secret with attacker-generated signature rejected with INVALID_SIGNATURE; zero database mutation',
+    rpcResult: resM1,
+    orderRemainsCreated: dbOrderM1?.status === 'created',
+    passed: invM1Passed,
   });
-  console.log('INVARIANT-M PASSED:', invMPassed);
+  console.log('INVARIANT-M1 PASSED:', invM1Passed);
+
+  // Invariant M2: Genuine Server Secret SUCCEEDS (ENTITLEMENT_ACTIVATED)
+  console.log('\n--- INVARIANT M2: Genuine Server Secret SUCCEEDS ---');
+  execPsql(`
+    INSERT INTO page_pro_orders (provider_order_id, page_id, user_id, billing_cycle, amount_paise, status)
+    VALUES ('order_m2', '${PAGE_B_ID}', '${USER1_ID}', 'monthly', 49900, 'created')
+    ON CONFLICT (provider_order_id) DO NOTHING;
+  `);
+  const genuineSigM2 = computeValidSig('order_m2', 'pay_m2', RAZORPAY_KEY_SECRET);
+  const resM2 = queryDb(`
+    SELECT verify_and_activate_page_pro('order_m2', '${PAGE_B_ID}', '${USER1_ID}', 'pay_m2', '${genuineSigM2}', 'monthly', false) AS result;
+  `)[0]?.result;
+  const dbOrderM2 = queryDb(`SELECT * FROM page_pro_orders WHERE provider_order_id = 'order_m2'`)[0];
+  const dbPageM2 = queryDb(`SELECT is_pro, pro_subscription_id FROM pages WHERE id = '${PAGE_B_ID}'`)[0];
+  const invM2Passed =
+    resM2?.success === true &&
+    resM2?.code === 'ENTITLEMENT_ACTIVATED' &&
+    dbOrderM2?.status === 'completed' &&
+    dbOrderM2?.signature_verified === true &&
+    dbOrderM2?.provider_payment_id === 'pay_m2' &&
+    dbPageM2?.is_pro === true &&
+    dbPageM2?.pro_subscription_id === 'pay_m2';
+
+  report.tests.push({
+    testId: 'INVARIANT-M2',
+    description: 'Genuine server secret and valid signature succeeds with ENTITLEMENT_ACTIVATED and commits page entitlement',
+    rpcResult: resM2,
+    orderCompleted: dbOrderM2?.status === 'completed',
+    pageIsPro: dbPageM2?.is_pro,
+    passed: invM2Passed,
+  });
+  console.log('INVARIANT-M2 PASSED:', invM2Passed);
+
+  // Invariant M3: Genuine Signature with Tampered Tuple FAILS
+  console.log('\n--- INVARIANT M3: Genuine Signature with Tampered Tuple FAILS ---');
+  execPsql(`
+    INSERT INTO page_pro_orders (provider_order_id, page_id, user_id, billing_cycle, amount_paise, status)
+    VALUES ('order_m3', '${PAGE_A_ID}', '${USER1_ID}', 'monthly', 49900, 'created')
+    ON CONFLICT (provider_order_id) DO NOTHING;
+  `);
+  const genuineSigM3 = computeValidSig('order_m3', 'pay_m3', RAZORPAY_KEY_SECRET);
+  const resM3 = queryDb(`
+    SELECT verify_and_activate_page_pro('order_m3', '${PAGE_A_ID}', '${USER1_ID}', 'pay_m3_TAMPERED', '${genuineSigM3}', 'monthly', false) AS result;
+  `)[0]?.result;
+  const dbOrderM3 = queryDb(`SELECT * FROM page_pro_orders WHERE provider_order_id = 'order_m3'`)[0];
+  const invM3Passed =
+    resM3?.success === false &&
+    resM3?.code === 'INVALID_SIGNATURE' &&
+    dbOrderM3?.status === 'created' &&
+    dbOrderM3?.signature_verified === false;
+
+  report.tests.push({
+    testId: 'INVARIANT-M3',
+    description: 'Genuine signature with tampered order/payment tuple fails HMAC check at transaction boundary',
+    rpcResult: resM3,
+    passed: invM3Passed,
+  });
+  console.log('INVARIANT-M3 PASSED:', invM3Passed);
+
+  // Invariant M4: Corrupted Attacker Signature FAILS
+  console.log('\n--- INVARIANT M4: Corrupted Attacker Signature FAILS ---');
+  const resM4 = queryDb(`
+    SELECT verify_and_activate_page_pro('order_m3', '${PAGE_A_ID}', '${USER1_ID}', 'pay_m3', 'deadbeef_attacker_bogus_signature', 'monthly', false) AS result;
+  `)[0]?.result;
+  const invM4Passed =
+    resM4?.success === false &&
+    resM4?.code === 'INVALID_SIGNATURE';
+
+  report.tests.push({
+    testId: 'INVARIANT-M4',
+    description: 'Attacker corrupted signature against genuine server secret rejected with INVALID_SIGNATURE',
+    rpcResult: resM4,
+    passed: invM4Passed,
+  });
+  console.log('INVARIANT-M4 PASSED:', invM4Passed);
+
+  // Invariant M5: Caller GUC Session Injection FAILS
+  console.log('\n--- INVARIANT M5: Caller GUC Session Injection FAILS ---');
+  const attackerSecretM5 = 'attacker_injected_session_secret';
+  const attackerSigM5 = computeValidSig('order_m3', 'pay_m3', attackerSecretM5);
+  let resM5;
+  try {
+    const rawM5 = execSync('docker exec -i w009-b5-postgres psql -U postgres -d w009_b5_test -t -A', {
+      input: `
+        SET app.settings.razorpay_key_secret = '${attackerSecretM5}';
+        SELECT verify_and_activate_page_pro('order_m3', '${PAGE_A_ID}', '${USER1_ID}', 'pay_m3', '${attackerSigM5}', 'monthly', false);
+        RESET app.settings.razorpay_key_secret;
+      `,
+      encoding: 'utf8',
+    });
+    const lines = rawM5.trim().split('\n').filter(l => l.startsWith('{'));
+    resM5 = JSON.parse(lines[0]);
+  } catch (err) {
+    console.error('M5 execution error:', err);
+  }
+  const dbOrderM5 = queryDb(`SELECT * FROM page_pro_orders WHERE provider_order_id = 'order_m3'`)[0];
+  const invM5Passed =
+    resM5?.success === false &&
+    resM5?.code === 'INVALID_SIGNATURE' &&
+    dbOrderM5?.status === 'created' &&
+    dbOrderM5?.signature_verified === false;
+
+  report.tests.push({
+    testId: 'INVARIANT-M5',
+    description: 'Caller session injection (SET app.settings.razorpay_key_secret) cannot override internal_payment_secrets; rejected with INVALID_SIGNATURE',
+    rpcResult: resM5,
+    passed: invM5Passed,
+  });
+  console.log('INVARIANT-M5 PASSED:', invM5Passed);
+
+  // Invariant M6: Missing Secret in DB FAILS KEY_SECRET_MISSING
+  console.log('\n--- INVARIANT M6: Missing Secret in DB FAILS KEY_SECRET_MISSING ---');
+  execPsql(`
+    INSERT INTO page_pro_orders (provider_order_id, page_id, user_id, billing_cycle, amount_paise, status)
+    VALUES ('order_m6', '${PAGE_A_ID}', '${USER1_ID}', 'monthly', 49900, 'created')
+    ON CONFLICT (provider_order_id) DO NOTHING;
+  `);
+  let resM6;
+  try {
+    const rawM6 = execSync('docker exec -i w009-b5-postgres psql -U postgres -d w009_b5_test -t -A', {
+      input: `
+        BEGIN;
+        DELETE FROM internal_payment_secrets WHERE provider = 'razorpay';
+        SELECT verify_and_activate_page_pro('order_m6', '${PAGE_A_ID}', '${USER1_ID}', 'pay_m6', 'any_signature', 'monthly', false);
+        ROLLBACK;
+      `,
+      encoding: 'utf8',
+    });
+    const lines = rawM6.trim().split('\n').filter(l => l.startsWith('{'));
+    resM6 = JSON.parse(lines[0]);
+  } catch (err) {
+    console.error('M6 execution error:', err);
+  }
+  const dbOrderM6 = queryDb(`SELECT * FROM page_pro_orders WHERE provider_order_id = 'order_m6'`)[0];
+  const invM6Passed =
+    resM6?.success === false &&
+    resM6?.code === 'KEY_SECRET_MISSING' &&
+    dbOrderM6?.status === 'created';
+
+  report.tests.push({
+    testId: 'INVARIANT-M6',
+    description: 'Missing cryptographic secret in DB store returns KEY_SECRET_MISSING with zero database mutation',
+    rpcResult: resM6,
+    passed: invM6Passed,
+  });
+  console.log('INVARIANT-M6 PASSED:', invM6Passed);
 
   // Invariant N: Non-Service Roles Denied EXECUTE at Privilege Boundary
   console.log('\n--- INVARIANT N: Non-Service Roles Denied EXECUTE at Privilege Boundary ---');
@@ -1185,7 +1327,7 @@ try {
     execSync('docker exec -i w009-b5-postgres psql -v ON_ERROR_STOP=1 -U postgres -d w009_b5_test', {
       input: `
         SET ROLE anon;
-        SELECT verify_and_activate_page_pro('order_direct_inv_a', '${PAGE_A_ID}', '${USER1_ID}', 'pay_anon', '${sigA}', '${RAZORPAY_KEY_SECRET}', 'monthly', false);
+        SELECT verify_and_activate_page_pro('order_direct_inv_a', '${PAGE_A_ID}', '${USER1_ID}', 'pay_anon', '${sigA}', 'monthly', false);
         RESET ROLE;
       `,
       encoding: 'utf8',
@@ -1199,7 +1341,7 @@ try {
     execSync('docker exec -i w009-b5-postgres psql -v ON_ERROR_STOP=1 -U postgres -d w009_b5_test', {
       input: `
         SET ROLE authenticated;
-        SELECT verify_and_activate_page_pro('order_direct_inv_a', '${PAGE_A_ID}', '${USER1_ID}', 'pay_auth', '${sigA}', '${RAZORPAY_KEY_SECRET}', 'monthly', false);
+        SELECT verify_and_activate_page_pro('order_direct_inv_a', '${PAGE_A_ID}', '${USER1_ID}', 'pay_auth', '${sigA}', 'monthly', false);
         RESET ROLE;
       `,
       encoding: 'utf8',
@@ -1217,6 +1359,61 @@ try {
     passed: invNPassed,
   });
   console.log('INVARIANT-N PASSED:', invNPassed);
+
+  // Invariant O: Non-Owner Roles Denied Access to internal_payment_secrets Table
+  console.log('\n--- INVARIANT O: Client Roles Denied Access to internal_payment_secrets ---');
+  let anonSecretsBlocked = false;
+  try {
+    execSync('docker exec -i w009-b5-postgres psql -v ON_ERROR_STOP=1 -U postgres -d w009_b5_test', {
+      input: `
+        SET ROLE anon;
+        SELECT * FROM internal_payment_secrets;
+        RESET ROLE;
+      `,
+      encoding: 'utf8',
+    });
+  } catch (err) {
+    anonSecretsBlocked = (err.stderr || err.message).includes('permission denied for table internal_payment_secrets');
+  }
+
+  let authSecretsBlocked = false;
+  try {
+    execSync('docker exec -i w009-b5-postgres psql -v ON_ERROR_STOP=1 -U postgres -d w009_b5_test', {
+      input: `
+        SET ROLE authenticated;
+        SELECT * FROM internal_payment_secrets;
+        RESET ROLE;
+      `,
+      encoding: 'utf8',
+    });
+  } catch (err) {
+    authSecretsBlocked = (err.stderr || err.message).includes('permission denied for table internal_payment_secrets');
+  }
+
+  let serviceRoleSecretsBlocked = false;
+  try {
+    execSync('docker exec -i w009-b5-postgres psql -v ON_ERROR_STOP=1 -U postgres -d w009_b5_test', {
+      input: `
+        SET ROLE service_role;
+        SELECT * FROM internal_payment_secrets;
+        RESET ROLE;
+      `,
+      encoding: 'utf8',
+    });
+  } catch (err) {
+    serviceRoleSecretsBlocked = (err.stderr || err.message).includes('permission denied for table internal_payment_secrets');
+  }
+
+  const invOPassed = anonSecretsBlocked && authSecretsBlocked && serviceRoleSecretsBlocked;
+  report.tests.push({
+    testId: 'INVARIANT-O',
+    description: 'Non-owner roles (anon, authenticated, service_role) strictly denied SELECT on internal_payment_secrets table',
+    anonSecretsBlocked,
+    authSecretsBlocked,
+    serviceRoleSecretsBlocked,
+    passed: invOPassed,
+  });
+  console.log('INVARIANT-O PASSED:', invOPassed);
 
   // ================================================================
   // Summary & Report Generation

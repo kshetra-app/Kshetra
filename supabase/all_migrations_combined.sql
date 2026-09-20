@@ -8425,17 +8425,29 @@ CREATE POLICY "Users and page owners read own pro orders" ON page_pro_orders
 
 CREATE EXTENSION IF NOT EXISTS pgcrypto;
 
--- Drop older overload if present
-DROP FUNCTION IF EXISTS verify_and_activate_page_pro(TEXT, UUID, UUID, TEXT, TEXT, BOOLEAN);
+-- Internal server secrets table accessible ONLY to db owner / superuser and SECURITY DEFINER functions.
+-- Client-accessible roles (PUBLIC, anon, authenticated, service_role) have ALL privileges revoked.
+CREATE TABLE IF NOT EXISTS internal_payment_secrets (
+  provider TEXT PRIMARY KEY,
+  key_secret TEXT NOT NULL,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+  updated_at TIMESTAMPTZ NOT NULL DEFAULT now()
+);
 
--- Atomic verification and entitlement activation RPC with cryptographic boundary invariant
+ALTER TABLE internal_payment_secrets ENABLE ROW LEVEL SECURITY;
+REVOKE ALL ON TABLE internal_payment_secrets FROM PUBLIC, anon, authenticated, service_role;
+
+-- Drop older overloads if present
+DROP FUNCTION IF EXISTS verify_and_activate_page_pro(TEXT, UUID, UUID, TEXT, TEXT, BOOLEAN);
+DROP FUNCTION IF EXISTS verify_and_activate_page_pro(TEXT, UUID, UUID, TEXT, TEXT, TEXT, TEXT, BOOLEAN);
+
+-- Atomic verification and entitlement activation RPC with authoritative server-held secret
 CREATE OR REPLACE FUNCTION verify_and_activate_page_pro(
   p_provider_order_id TEXT,
   p_page_id UUID,
   p_user_id UUID,
   p_provider_payment_id TEXT,
   p_signature TEXT,
-  p_key_secret TEXT DEFAULT NULL,
   p_billing_cycle TEXT DEFAULT NULL,
   p_is_admin BOOLEAN DEFAULT false
 )
@@ -8451,8 +8463,15 @@ DECLARE
   v_secret TEXT;
   v_expected_signature TEXT;
 BEGIN
-  -- 0. Cryptographic Payment Verification Invariant at Transaction Boundary
-  v_secret := COALESCE(NULLIF(trim(p_key_secret), ''), current_setting('app.settings.razorpay_key_secret', true));
+  -- 0. Authoritative Cryptographic Payment Verification Invariant at Transaction Boundary
+  -- Retrieve secret exclusively from trusted database store / server configuration
+  SELECT key_secret INTO v_secret
+  FROM internal_payment_secrets
+  WHERE provider = 'razorpay';
+
+  IF v_secret IS NULL OR v_secret = '' THEN
+    v_secret := NULLIF(current_setting('app.settings.razorpay_key_secret', true), '');
+  END IF;
 
   IF v_secret IS NULL OR v_secret = '' THEN
     RETURN jsonb_build_object(
@@ -8595,7 +8614,5 @@ END;
 $$;
 
 -- Revoke execution from public/anon/authenticated; restrict to service role
-REVOKE ALL ON FUNCTION verify_and_activate_page_pro(TEXT, UUID, UUID, TEXT, TEXT, TEXT, TEXT, BOOLEAN) FROM PUBLIC, anon, authenticated;
-GRANT EXECUTE ON FUNCTION verify_and_activate_page_pro(TEXT, UUID, UUID, TEXT, TEXT, TEXT, TEXT, BOOLEAN) TO service_role;
-
-
+REVOKE ALL ON FUNCTION verify_and_activate_page_pro(TEXT, UUID, UUID, TEXT, TEXT, TEXT, BOOLEAN) FROM PUBLIC, anon, authenticated;
+GRANT EXECUTE ON FUNCTION verify_and_activate_page_pro(TEXT, UUID, UUID, TEXT, TEXT, TEXT, BOOLEAN) TO service_role;
