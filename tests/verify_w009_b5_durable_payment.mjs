@@ -231,7 +231,7 @@ try {
   process.env.RAZORPAY_KEY_SECRET = RAZORPAY_KEY_SECRET;
 
   const { buildApp } = await import('../apps/api/src/server.ts');
-  const { setSupabaseConfiguredForTesting } = await import('../apps/api/src/lib/supabase.ts');
+  const { supabase, setSupabaseConfiguredForTesting } = await import('../apps/api/src/lib/supabase.ts');
   const { PRO_ORDER_REGISTRY, setTestAuthResolver, setTestPageAuthorityResolver, resetPagesTestResolvers } = await import('../apps/api/src/routes/pages.ts');
 
   setSupabaseConfiguredForTesting(true);
@@ -1415,9 +1415,72 @@ try {
   });
   console.log('INVARIANT-O PASSED:', invOPassed);
 
-  // ================================================================
-  // Summary & Report Generation
-  // ================================================================
+  // Invariant P: Fastify Application Client Isolation (Cannot Query Secrets via PostgREST / Supabase Client)
+  console.log('\n--- INVARIANT P: Fastify Application Client Cannot Query internal_payment_secrets ---');
+  const { data: appData, error: appError } = await supabase.from('internal_payment_secrets').select('*');
+  const invPPassed = appData === null && (appError !== null || appData === null);
+  report.tests.push({
+    testId: 'INVARIANT-P',
+    description: 'Fastify application client (service_role) cannot read internal_payment_secrets table via API/PostgREST layer',
+    appQueryBlocked: invPPassed,
+    errorMessage: appError?.message,
+    passed: invPPassed,
+  });
+  console.log('INVARIANT-P PASSED:', invPPassed);
+
+  // Invariant Q: Operational Secret Rotation Verification (Test F)
+  console.log('\n--- INVARIANT Q: Operational Secret Rotation Verification ---');
+  const ROTATED_TEST_SECRET = 'disposable_test_rotated_secret_99999';
+
+  // 1. Admin updates secret in internal store using standard administrative mechanism
+  execPsql(`
+    INSERT INTO internal_payment_secrets (provider, key_secret)
+    VALUES ('razorpay', '${ROTATED_TEST_SECRET}')
+    ON CONFLICT (provider) DO UPDATE SET key_secret = EXCLUDED.key_secret, updated_at = now();
+  `);
+
+  // 2. New order verified with signature computed under the new rotated secret succeeds
+  execPsql(`
+    INSERT INTO page_pro_orders (provider_order_id, page_id, user_id, billing_cycle, amount_paise, status)
+    VALUES ('order_rot_new', '${PAGE_A_ID}', '${USER1_ID}', 'monthly', 49900, 'created')
+    ON CONFLICT (provider_order_id) DO NOTHING;
+  `);
+  const newRotSig = computeValidSig('order_rot_new', 'pay_rot_new', ROTATED_TEST_SECRET);
+  const resRotNew = queryDb(`
+    SELECT verify_and_activate_page_pro('order_rot_new', '${PAGE_A_ID}', '${USER1_ID}', 'pay_rot_new', '${newRotSig}', 'monthly', false) AS result;
+  `)[0]?.result;
+
+  // 3. New order verified with signature computed under the old retired secret FAILS
+  execPsql(`
+    INSERT INTO page_pro_orders (provider_order_id, page_id, user_id, billing_cycle, amount_paise, status)
+    VALUES ('order_rot_old', '${PAGE_A_ID}', '${USER1_ID}', 'monthly', 49900, 'created')
+    ON CONFLICT (provider_order_id) DO NOTHING;
+  `);
+  const oldRetiredSig = computeValidSig('order_rot_old', 'pay_rot_old', RAZORPAY_KEY_SECRET);
+  const resRotOld = queryDb(`
+    SELECT verify_and_activate_page_pro('order_rot_old', '${PAGE_A_ID}', '${USER1_ID}', 'pay_rot_old', '${oldRetiredSig}', 'monthly', false) AS result;
+  `)[0]?.result;
+
+  // 4. Verify historically completed orders remain completed
+  const dbHistoricalOrder = queryDb(`SELECT status, signature_verified FROM page_pro_orders WHERE provider_order_id = 'order_direct_inv_a'`)[0];
+
+  const invQPassed =
+    resRotNew?.success === true &&
+    resRotNew?.code === 'ENTITLEMENT_ACTIVATED' &&
+    resRotOld?.success === false &&
+    resRotOld?.code === 'INVALID_SIGNATURE' &&
+    dbHistoricalOrder?.status === 'completed' &&
+    dbHistoricalOrder?.signature_verified === true;
+
+  report.tests.push({
+    testId: 'INVARIANT-Q',
+    description: 'Secret rotation: new secret activates subsequent payments, retired secret fails, past completed orders remain unaffected',
+    newSecretSuccess: resRotNew?.success === true,
+    oldSecretFailed: resRotOld?.code === 'INVALID_SIGNATURE',
+    historicalCompletedPreserved: dbHistoricalOrder?.status === 'completed',
+    passed: invQPassed,
+  });
+  console.log('INVARIANT-Q PASSED:', invQPassed);
   const allPassed = report.tests.every((t) => t.passed) && report.migrations.migration037IdempotentPass;
   report.overallPassed = allPassed;
   console.log('\n================================================================');
