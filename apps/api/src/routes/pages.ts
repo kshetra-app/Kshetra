@@ -723,6 +723,8 @@ export const pagesRoutes: FastifyPluginAsync = async (app) => {
         p_page_id: targetPageId,
         p_user_id: auth.userId,
         p_provider_payment_id: body.razorpay_payment_id,
+        p_signature: body.razorpay_signature,
+        p_key_secret: process.env.RAZORPAY_KEY_SECRET,
         p_billing_cycle: body.billingCycle || dbOrder?.billing_cycle || 'monthly',
         p_is_admin: auth.role === 'admin',
       });

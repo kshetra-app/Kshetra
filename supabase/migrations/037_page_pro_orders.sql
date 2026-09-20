@@ -39,12 +39,19 @@ CREATE POLICY "Users and page owners read own pro orders" ON page_pro_orders
     OR EXISTS (SELECT 1 FROM user_profiles WHERE user_id = auth.uid() AND role = 'admin')
   );
 
--- Atomic verification and entitlement activation RPC
+CREATE EXTENSION IF NOT EXISTS pgcrypto;
+
+-- Drop older overload if present
+DROP FUNCTION IF EXISTS verify_and_activate_page_pro(TEXT, UUID, UUID, TEXT, TEXT, BOOLEAN);
+
+-- Atomic verification and entitlement activation RPC with cryptographic boundary invariant
 CREATE OR REPLACE FUNCTION verify_and_activate_page_pro(
   p_provider_order_id TEXT,
   p_page_id UUID,
   p_user_id UUID,
   p_provider_payment_id TEXT,
+  p_signature TEXT,
+  p_key_secret TEXT DEFAULT NULL,
   p_billing_cycle TEXT DEFAULT NULL,
   p_is_admin BOOLEAN DEFAULT false
 )
@@ -57,7 +64,55 @@ DECLARE
   v_order RECORD;
   v_now TIMESTAMPTZ := NOW();
   v_expiry TIMESTAMPTZ;
+  v_secret TEXT;
+  v_expected_signature TEXT;
 BEGIN
+  -- 0. Cryptographic Payment Verification Invariant at Transaction Boundary
+  v_secret := COALESCE(NULLIF(trim(p_key_secret), ''), current_setting('app.settings.razorpay_key_secret', true));
+
+  IF v_secret IS NULL OR v_secret = '' THEN
+    RETURN jsonb_build_object(
+      'success', false,
+      'code', 'KEY_SECRET_MISSING',
+      'message', 'Cryptographic verification key secret is missing or unconfigured'
+    );
+  END IF;
+
+  IF p_signature IS NULL OR trim(p_signature) = '' THEN
+    RETURN jsonb_build_object(
+      'success', false,
+      'code', 'MISSING_SIGNATURE',
+      'message', 'Cryptographic payment signature is required'
+    );
+  END IF;
+
+  IF p_provider_order_id IS NULL OR trim(p_provider_order_id) = '' THEN
+    RETURN jsonb_build_object(
+      'success', false,
+      'code', 'MISSING_ORDER_ID',
+      'message', 'Provider order ID is required'
+    );
+  END IF;
+
+  IF p_provider_payment_id IS NULL OR trim(p_provider_payment_id) = '' THEN
+    RETURN jsonb_build_object(
+      'success', false,
+      'code', 'MISSING_PAYMENT_ID',
+      'message', 'Provider payment ID is required'
+    );
+  END IF;
+
+  -- Independently compute HMAC-SHA256(order_id|payment_id, secret) using pgcrypto
+  v_expected_signature := encode(hmac((p_provider_order_id || '|' || p_provider_payment_id)::bytea, v_secret::bytea, 'sha256'), 'hex');
+
+  IF lower(trim(p_signature)) <> lower(v_expected_signature) THEN
+    RETURN jsonb_build_object(
+      'success', false,
+      'code', 'INVALID_SIGNATURE',
+      'message', 'Cryptographic payment signature verification failed at transaction boundary'
+    );
+  END IF;
+
   -- 1. Lock and retrieve the order row
   SELECT * INTO v_order
   FROM page_pro_orders
@@ -156,5 +211,5 @@ END;
 $$;
 
 -- Revoke execution from public/anon/authenticated; restrict to service role
-REVOKE ALL ON FUNCTION verify_and_activate_page_pro FROM PUBLIC, anon, authenticated;
-GRANT EXECUTE ON FUNCTION verify_and_activate_page_pro TO service_role;
+REVOKE ALL ON FUNCTION verify_and_activate_page_pro(TEXT, UUID, UUID, TEXT, TEXT, TEXT, TEXT, BOOLEAN) FROM PUBLIC, anon, authenticated;
+GRANT EXECUTE ON FUNCTION verify_and_activate_page_pro(TEXT, UUID, UUID, TEXT, TEXT, TEXT, TEXT, BOOLEAN) TO service_role;

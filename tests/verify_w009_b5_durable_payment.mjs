@@ -279,11 +279,11 @@ try {
 
   const rpcPrivileges = queryDb(`
     SELECT
-      has_function_privilege('public', 'verify_and_activate_page_pro(text,uuid,uuid,text,text,boolean)', 'execute') as public_exec,
-      has_function_privilege('anon', 'verify_and_activate_page_pro(text,uuid,uuid,text,text,boolean)', 'execute') as anon_exec,
-      has_function_privilege('authenticated', 'verify_and_activate_page_pro(text,uuid,uuid,text,text,boolean)', 'execute') as authenticated_exec,
-      has_function_privilege('service_role', 'verify_and_activate_page_pro(text,uuid,uuid,text,text,boolean)', 'execute') as service_role_exec,
-      has_function_privilege('postgres', 'verify_and_activate_page_pro(text,uuid,uuid,text,text,boolean)', 'execute') as postgres_exec;
+      has_function_privilege('public', 'verify_and_activate_page_pro(text,uuid,uuid,text,text,text,text,boolean)', 'execute') as public_exec,
+      has_function_privilege('anon', 'verify_and_activate_page_pro(text,uuid,uuid,text,text,text,text,boolean)', 'execute') as anon_exec,
+      has_function_privilege('authenticated', 'verify_and_activate_page_pro(text,uuid,uuid,text,text,text,text,boolean)', 'execute') as authenticated_exec,
+      has_function_privilege('service_role', 'verify_and_activate_page_pro(text,uuid,uuid,text,text,text,text,boolean)', 'execute') as service_role_exec,
+      has_function_privilege('postgres', 'verify_and_activate_page_pro(text,uuid,uuid,text,text,text,text,boolean)', 'execute') as postgres_exec;
   `);
   console.log('RPC Privileges Matrix:', rpcPrivileges[0]);
 
@@ -783,23 +783,30 @@ try {
   console.log('TEST-B5-PERSIST-11 PASSED:', test11Passed);
 
   // ================================================================
-  // DIRECT SQL RPC BOUNDARY INVARIANT TESTS (A - I)
+  // DIRECT SQL RPC BOUNDARY INVARIANT TESTS (A - M)
   // Testing verify_and_activate_page_pro directly at the PostgreSQL
-  // transaction boundary, bypassing Fastify HTTP routes completely.
+  // transaction boundary, asserting that the database transaction itself
+  // independently verifies cryptographic payment signatures and enforces
+  // all transaction invariants.
   // ================================================================
   console.log('\n================================================================');
-  console.log('DIRECT POSTGRESQL TRANSACTION BOUNDARY INVARIANT TESTS (A - I)');
+  console.log('DIRECT POSTGRESQL TRANSACTION BOUNDARY INVARIANT TESTS (A - M)');
   console.log('================================================================');
 
-  // Invariant A: Valid Order Activation via Direct SQL RPC
-  console.log('\n--- INVARIANT A: Valid Order Activation via Direct SQL RPC ---');
+  function computeValidSig(oId, pId, secret = RAZORPAY_KEY_SECRET) {
+    return crypto.createHmac('sha256', secret).update(`${oId}|${pId}`).digest('hex');
+  }
+
+  // Invariant A: Valid Cryptographic Verification via Direct SQL RPC
+  console.log('\n--- INVARIANT A: Valid Cryptographic Verification via Direct SQL RPC ---');
   execPsql(`
     INSERT INTO page_pro_orders (provider_order_id, page_id, user_id, billing_cycle, amount_paise, status)
     VALUES ('order_direct_inv_a', '${PAGE_A_ID}', '${USER1_ID}', 'monthly', 49900, 'created')
     ON CONFLICT (provider_order_id) DO NOTHING;
   `);
+  const sigA = computeValidSig('order_direct_inv_a', 'pay_direct_inv_a');
   const rpcResA = queryDb(`
-    SELECT verify_and_activate_page_pro('order_direct_inv_a', '${PAGE_A_ID}', '${USER1_ID}', 'pay_direct_inv_a', 'monthly', false) AS result;
+    SELECT verify_and_activate_page_pro('order_direct_inv_a', '${PAGE_A_ID}', '${USER1_ID}', 'pay_direct_inv_a', '${sigA}', '${RAZORPAY_KEY_SECRET}', 'monthly', false) AS result;
   `)[0]?.result;
   const dbOrderA = queryDb(`SELECT * FROM page_pro_orders WHERE provider_order_id = 'order_direct_inv_a'`)[0];
   const dbPageA = queryDb(`SELECT is_pro, pro_subscription_id FROM pages WHERE id = '${PAGE_A_ID}'`)[0];
@@ -815,7 +822,7 @@ try {
 
   report.tests.push({
     testId: 'INVARIANT-A',
-    description: 'Direct SQL RPC execution activates valid order and commits page Pro entitlement',
+    description: 'Direct SQL RPC execution with valid cryptographic proof activates order and commits page Pro entitlement',
     rpcResult: rpcResA,
     orderStatus: dbOrderA?.status,
     signatureVerified: dbOrderA?.signature_verified,
@@ -824,123 +831,189 @@ try {
   });
   console.log('INVARIANT-A PASSED:', invAPassed);
 
-  // Invariant B: Cross-Page Attack via Direct SQL RPC
-  console.log('\n--- INVARIANT B: Cross-Page Attack Rejected by RPC (PAGE_ORDER_MISMATCH) ---');
+  // Invariant B: Missing Signature Fails
+  console.log('\n--- INVARIANT B: Missing Signature Fails at RPC Boundary ---');
   execPsql(`
     INSERT INTO page_pro_orders (provider_order_id, page_id, user_id, billing_cycle, amount_paise, status)
     VALUES ('order_direct_inv_b', '${PAGE_A_ID}', '${USER1_ID}', 'monthly', 49900, 'created')
     ON CONFLICT (provider_order_id) DO NOTHING;
   `);
   const rpcResB = queryDb(`
-    SELECT verify_and_activate_page_pro('order_direct_inv_b', '${PAGE_B_ID}', '${USER1_ID}', 'pay_direct_inv_b', 'monthly', false) AS result;
+    SELECT verify_and_activate_page_pro('order_direct_inv_b', '${PAGE_A_ID}', '${USER1_ID}', 'pay_direct_inv_b', NULL, '${RAZORPAY_KEY_SECRET}', 'monthly', false) AS result;
   `)[0]?.result;
   const dbOrderB = queryDb(`SELECT * FROM page_pro_orders WHERE provider_order_id = 'order_direct_inv_b'`)[0];
 
   const invBPassed =
     rpcResB?.success === false &&
-    rpcResB?.code === 'PAGE_ORDER_MISMATCH' &&
+    rpcResB?.code === 'MISSING_SIGNATURE' &&
     dbOrderB?.status === 'created' &&
     dbOrderB?.signature_verified === false;
 
   report.tests.push({
     testId: 'INVARIANT-B',
-    description: 'Direct SQL RPC rejects cross-page verification attempt with PAGE_ORDER_MISMATCH',
+    description: 'Missing cryptographic signature rejected at database boundary with MISSING_SIGNATURE',
     rpcResult: rpcResB,
     orderStatusUnchanged: dbOrderB?.status === 'created',
     passed: invBPassed,
   });
   console.log('INVARIANT-B PASSED:', invBPassed);
 
-  // Invariant C: Cross-Principal Attack via Direct SQL RPC
-  console.log('\n--- INVARIANT C: Cross-Principal Attack Rejected by RPC (ORDER_PRINCIPAL_MISMATCH) ---');
+  // Invariant C: Invalid Signature Fails
+  console.log('\n--- INVARIANT C: Invalid Signature Fails at RPC Boundary ---');
   execPsql(`
     INSERT INTO page_pro_orders (provider_order_id, page_id, user_id, billing_cycle, amount_paise, status)
     VALUES ('order_direct_inv_c', '${PAGE_A_ID}', '${USER1_ID}', 'monthly', 49900, 'created')
     ON CONFLICT (provider_order_id) DO NOTHING;
   `);
   const rpcResC = queryDb(`
-    SELECT verify_and_activate_page_pro('order_direct_inv_c', '${PAGE_A_ID}', '${USER2_ID}', 'pay_direct_inv_c', 'monthly', false) AS result;
+    SELECT verify_and_activate_page_pro('order_direct_inv_c', '${PAGE_A_ID}', '${USER1_ID}', 'pay_direct_inv_c', 'deadbeef_invalid_hmac_hex', '${RAZORPAY_KEY_SECRET}', 'monthly', false) AS result;
   `)[0]?.result;
   const dbOrderC = queryDb(`SELECT * FROM page_pro_orders WHERE provider_order_id = 'order_direct_inv_c'`)[0];
 
   const invCPassed =
     rpcResC?.success === false &&
-    rpcResC?.code === 'ORDER_PRINCIPAL_MISMATCH' &&
+    rpcResC?.code === 'INVALID_SIGNATURE' &&
     dbOrderC?.status === 'created' &&
     dbOrderC?.signature_verified === false;
 
   report.tests.push({
     testId: 'INVARIANT-C',
-    description: 'Direct SQL RPC rejects cross-principal attempt with ORDER_PRINCIPAL_MISMATCH',
+    description: 'Invalid cryptographic signature rejected at database boundary with INVALID_SIGNATURE',
     rpcResult: rpcResC,
     orderStatusUnchanged: dbOrderC?.status === 'created',
     passed: invCPassed,
   });
   console.log('INVARIANT-C PASSED:', invCPassed);
 
-  // Invariant D: Billing-Cycle Tampering via Direct SQL RPC
-  console.log('\n--- INVARIANT D: Billing-Cycle Tampering Rejected by RPC (BILLING_CYCLE_MISMATCH) ---');
-  execPsql(`
-    INSERT INTO page_pro_orders (provider_order_id, page_id, user_id, billing_cycle, amount_paise, status)
-    VALUES ('order_direct_inv_d', '${PAGE_A_ID}', '${USER1_ID}', 'monthly', 49900, 'created')
-    ON CONFLICT (provider_order_id) DO NOTHING;
-  `);
+  // Invariant D: Tampered Order ID Fails
+  console.log('\n--- INVARIANT D: Tampered Order ID Fails HMAC Verification ---');
+  const sigD = computeValidSig('order_direct_inv_d', 'pay_direct_inv_d');
   const rpcResD = queryDb(`
-    SELECT verify_and_activate_page_pro('order_direct_inv_d', '${PAGE_A_ID}', '${USER1_ID}', 'pay_direct_inv_d', 'annual', false) AS result;
+    SELECT verify_and_activate_page_pro('order_direct_inv_d_TAMPERED', '${PAGE_A_ID}', '${USER1_ID}', 'pay_direct_inv_d', '${sigD}', '${RAZORPAY_KEY_SECRET}', 'monthly', false) AS result;
   `)[0]?.result;
-  const dbOrderD = queryDb(`SELECT * FROM page_pro_orders WHERE provider_order_id = 'order_direct_inv_d'`)[0];
 
   const invDPassed =
     rpcResD?.success === false &&
-    rpcResD?.code === 'BILLING_CYCLE_MISMATCH' &&
-    dbOrderD?.status === 'created';
+    rpcResD?.code === 'INVALID_SIGNATURE';
 
   report.tests.push({
     testId: 'INVARIANT-D',
-    description: 'Direct SQL RPC rejects billing cycle mismatch with BILLING_CYCLE_MISMATCH',
+    description: 'Tampered order ID fails cryptographic HMAC verification at database boundary',
     rpcResult: rpcResD,
-    orderStatusUnchanged: dbOrderD?.status === 'created',
     passed: invDPassed,
   });
   console.log('INVARIANT-D PASSED:', invDPassed);
 
-  // Invariant E: Amount Tampering
-  console.log('\n--- INVARIANT E: Amount Tampering Blocked by Database CHECK Constraint & RPC Immutability ---');
-  let amtTamperBlocked = false;
-  try {
-    execSync('docker exec -i w009-b5-postgres psql -v ON_ERROR_STOP=1 -U postgres -d w009_b5_test', {
-      input: `
-        INSERT INTO page_pro_orders (provider_order_id, page_id, user_id, billing_cycle, amount_paise, status)
-        VALUES ('order_direct_inv_e', '${PAGE_A_ID}', '${USER1_ID}', 'monthly', 100, 'created');
-      `,
-      encoding: 'utf8',
-    });
-  } catch (err) {
-    amtTamperBlocked = (err.stderr || err.message).includes('page_pro_orders_amount_paise_check');
-  }
+  // Invariant E: Tampered Payment ID Fails
+  console.log('\n--- INVARIANT E: Tampered Payment ID Fails HMAC Verification ---');
+  const sigE = computeValidSig('order_direct_inv_a', 'pay_direct_inv_a');
+  const rpcResE = queryDb(`
+    SELECT verify_and_activate_page_pro('order_direct_inv_a', '${PAGE_A_ID}', '${USER1_ID}', 'pay_direct_inv_a_TAMPERED', '${sigE}', '${RAZORPAY_KEY_SECRET}', 'monthly', false) AS result;
+  `)[0]?.result;
 
-  // Confirm RPC signature takes no amount parameter (amount is locked in database row)
-  const rpcArgs = report.schemaInspection.rpc.identityArgs;
-  const rpcHasNoAmountParam = !rpcArgs.includes('amount');
+  const invEPassed =
+    rpcResE?.success === false &&
+    rpcResE?.code === 'INVALID_SIGNATURE';
 
-  const invEPassed = amtTamperBlocked && rpcHasNoAmountParam;
   report.tests.push({
     testId: 'INVARIANT-E',
-    description: 'Amount tampering blocked: table CHECK constraint enforces ₹499/₹4999 in paise, and RPC takes no caller amount parameter',
-    amtTamperBlocked,
-    rpcHasNoAmountParam,
+    description: 'Tampered payment ID fails cryptographic HMAC verification at database boundary',
+    rpcResult: rpcResE,
     passed: invEPassed,
   });
   console.log('INVARIANT-E PASSED:', invEPassed);
 
-  // Invariant F: Product Tampering
-  console.log('\n--- INVARIANT F: Product Tampering Blocked by Database CHECK Constraint ---');
+  // Invariant F: Cross-Page Order Fails
+  console.log('\n--- INVARIANT F: Cross-Page Order Fails PAGE_ORDER_MISMATCH ---');
+  execPsql(`
+    INSERT INTO page_pro_orders (provider_order_id, page_id, user_id, billing_cycle, amount_paise, status)
+    VALUES ('order_direct_inv_f', '${PAGE_A_ID}', '${USER1_ID}', 'monthly', 49900, 'created')
+    ON CONFLICT (provider_order_id) DO NOTHING;
+  `);
+  const sigF = computeValidSig('order_direct_inv_f', 'pay_direct_inv_f');
+  const rpcResF = queryDb(`
+    SELECT verify_and_activate_page_pro('order_direct_inv_f', '${PAGE_B_ID}', '${USER1_ID}', 'pay_direct_inv_f', '${sigF}', '${RAZORPAY_KEY_SECRET}', 'monthly', false) AS result;
+  `)[0]?.result;
+  const dbOrderF = queryDb(`SELECT * FROM page_pro_orders WHERE provider_order_id = 'order_direct_inv_f'`)[0];
+
+  const invFPassed =
+    rpcResF?.success === false &&
+    rpcResF?.code === 'PAGE_ORDER_MISMATCH' &&
+    dbOrderF?.status === 'created' &&
+    dbOrderF?.signature_verified === false;
+
+  report.tests.push({
+    testId: 'INVARIANT-F',
+    description: 'Direct SQL RPC rejects cross-page verification attempt with PAGE_ORDER_MISMATCH even with valid HMAC',
+    rpcResult: rpcResF,
+    orderStatusUnchanged: dbOrderF?.status === 'created',
+    passed: invFPassed,
+  });
+  console.log('INVARIANT-F PASSED:', invFPassed);
+
+  // Invariant G: Cross-Principal Attack Rejected
+  console.log('\n--- INVARIANT G: Cross-Principal Attack Rejected ORDER_PRINCIPAL_MISMATCH ---');
+  execPsql(`
+    INSERT INTO page_pro_orders (provider_order_id, page_id, user_id, billing_cycle, amount_paise, status)
+    VALUES ('order_direct_inv_g', '${PAGE_A_ID}', '${USER1_ID}', 'monthly', 49900, 'created')
+    ON CONFLICT (provider_order_id) DO NOTHING;
+  `);
+  const sigG = computeValidSig('order_direct_inv_g', 'pay_direct_inv_g');
+  const rpcResG = queryDb(`
+    SELECT verify_and_activate_page_pro('order_direct_inv_g', '${PAGE_A_ID}', '${USER2_ID}', 'pay_direct_inv_g', '${sigG}', '${RAZORPAY_KEY_SECRET}', 'monthly', false) AS result;
+  `)[0]?.result;
+  const dbOrderG = queryDb(`SELECT * FROM page_pro_orders WHERE provider_order_id = 'order_direct_inv_g'`)[0];
+
+  const invGPassed =
+    rpcResG?.success === false &&
+    rpcResG?.code === 'ORDER_PRINCIPAL_MISMATCH' &&
+    dbOrderG?.status === 'created' &&
+    dbOrderG?.signature_verified === false;
+
+  report.tests.push({
+    testId: 'INVARIANT-G',
+    description: 'Direct SQL RPC rejects cross-principal attempt with ORDER_PRINCIPAL_MISMATCH even with valid HMAC',
+    rpcResult: rpcResG,
+    orderStatusUnchanged: dbOrderG?.status === 'created',
+    passed: invGPassed,
+  });
+  console.log('INVARIANT-G PASSED:', invGPassed);
+
+  // Invariant H: Billing-Cycle Mismatch Rejected
+  console.log('\n--- INVARIANT H: Billing-Cycle Mismatch Rejected BILLING_CYCLE_MISMATCH ---');
+  execPsql(`
+    INSERT INTO page_pro_orders (provider_order_id, page_id, user_id, billing_cycle, amount_paise, status)
+    VALUES ('order_direct_inv_h', '${PAGE_A_ID}', '${USER1_ID}', 'monthly', 49900, 'created')
+    ON CONFLICT (provider_order_id) DO NOTHING;
+  `);
+  const sigH = computeValidSig('order_direct_inv_h', 'pay_direct_inv_h');
+  const rpcResH = queryDb(`
+    SELECT verify_and_activate_page_pro('order_direct_inv_h', '${PAGE_A_ID}', '${USER1_ID}', 'pay_direct_inv_h', '${sigH}', '${RAZORPAY_KEY_SECRET}', 'annual', false) AS result;
+  `)[0]?.result;
+  const dbOrderH = queryDb(`SELECT * FROM page_pro_orders WHERE provider_order_id = 'order_direct_inv_h'`)[0];
+
+  const invHPassed =
+    rpcResH?.success === false &&
+    rpcResH?.code === 'BILLING_CYCLE_MISMATCH' &&
+    dbOrderH?.status === 'created';
+
+  report.tests.push({
+    testId: 'INVARIANT-H',
+    description: 'Direct SQL RPC rejects billing cycle mismatch with BILLING_CYCLE_MISMATCH',
+    rpcResult: rpcResH,
+    orderStatusUnchanged: dbOrderH?.status === 'created',
+    passed: invHPassed,
+  });
+  console.log('INVARIANT-H PASSED:', invHPassed);
+
+  // Invariant I: Product Mismatch Blocked by Table Constraint
+  console.log('\n--- INVARIANT I: Product Tampering Blocked by Database CHECK Constraint ---');
   let prodTamperBlocked = false;
   try {
     execSync('docker exec -i w009-b5-postgres psql -v ON_ERROR_STOP=1 -U postgres -d w009_b5_test', {
       input: `
         INSERT INTO page_pro_orders (provider_order_id, page_id, user_id, billing_cycle, amount_paise, product, status)
-        VALUES ('order_direct_inv_f', '${PAGE_A_ID}', '${USER1_ID}', 'monthly', 49900, 'pages_enterprise', 'created');
+        VALUES ('order_direct_inv_i', '${PAGE_A_ID}', '${USER1_ID}', 'monthly', 49900, 'pages_enterprise', 'created');
       `,
       encoding: 'utf8',
     });
@@ -948,23 +1021,171 @@ try {
     prodTamperBlocked = (err.stderr || err.message).includes('page_pro_orders_product_check');
   }
 
-  const invFPassed = prodTamperBlocked;
+  const invIPassed = prodTamperBlocked;
   report.tests.push({
-    testId: 'INVARIANT-F',
+    testId: 'INVARIANT-I',
     description: 'Product tampering blocked: table CHECK constraint restricts product strictly to pages_pro',
     prodTamperBlocked,
-    passed: invFPassed,
+    passed: invIPassed,
   });
-  console.log('INVARIANT-F PASSED:', invFPassed);
+  console.log('INVARIANT-I PASSED:', invIPassed);
 
-  // Invariant G: Signature-State Bypass
-  console.log('\n--- INVARIANT G: Signature-State Bypass Blocked at Privilege Boundary ---');
+  // Invariant J: Amount Mismatch Blocked by Table Constraint & RPC Immutability
+  console.log('\n--- INVARIANT J: Amount Tampering Blocked by Database CHECK Constraint & RPC Immutability ---');
+  let amtTamperBlocked = false;
+  try {
+    execSync('docker exec -i w009-b5-postgres psql -v ON_ERROR_STOP=1 -U postgres -d w009_b5_test', {
+      input: `
+        INSERT INTO page_pro_orders (provider_order_id, page_id, user_id, billing_cycle, amount_paise, status)
+        VALUES ('order_direct_inv_j', '${PAGE_A_ID}', '${USER1_ID}', 'monthly', 100, 'created');
+      `,
+      encoding: 'utf8',
+    });
+  } catch (err) {
+    amtTamperBlocked = (err.stderr || err.message).includes('page_pro_orders_amount_paise_check');
+  }
+
+  const rpcArgs = report.schemaInspection.rpc.identityArgs;
+  const rpcHasNoAmountParam = !rpcArgs.includes('amount');
+
+  const invJPassed = amtTamperBlocked && rpcHasNoAmountParam;
+  report.tests.push({
+    testId: 'INVARIANT-J',
+    description: 'Amount tampering blocked: table CHECK constraint enforces ₹499/₹4999 in paise, and RPC takes no caller amount parameter',
+    amtTamperBlocked,
+    rpcHasNoAmountParam,
+    passed: invJPassed,
+  });
+  console.log('INVARIANT-J PASSED:', invJPassed);
+
+  // Invariant K: Replay Protection via Direct SQL RPC
+  console.log('\n--- INVARIANT K: Replay Protection via Direct SQL RPC ---');
+  const rpcResKIdempotent = queryDb(`
+    SELECT verify_and_activate_page_pro('order_direct_inv_a', '${PAGE_A_ID}', '${USER1_ID}', 'pay_direct_inv_a', '${sigA}', '${RAZORPAY_KEY_SECRET}', 'monthly', false) AS result;
+  `)[0]?.result;
+
+  const sigKFraud = computeValidSig('order_direct_inv_a', 'pay_fraud_different_payment');
+  const rpcResKConsumed = queryDb(`
+    SELECT verify_and_activate_page_pro('order_direct_inv_a', '${PAGE_A_ID}', '${USER1_ID}', 'pay_fraud_different_payment', '${sigKFraud}', '${RAZORPAY_KEY_SECRET}', 'monthly', false) AS result;
+  `)[0]?.result;
+
+  const invKPassed =
+    rpcResKIdempotent?.success === true &&
+    rpcResKIdempotent?.idempotent === true &&
+    rpcResKIdempotent?.code === 'ENTITLEMENT_ALREADY_ACTIVE' &&
+    rpcResKConsumed?.success === false &&
+    rpcResKConsumed?.code === 'ORDER_ALREADY_CONSUMED';
+
+  report.tests.push({
+    testId: 'INVARIANT-K',
+    description: 'Replay protection in RPC: identical payment tuple succeeds idempotently; different payment rejected with ORDER_ALREADY_CONSUMED',
+    idempotentResult: rpcResKIdempotent,
+    consumedResult: rpcResKConsumed,
+    passed: invKPassed,
+  });
+  console.log('INVARIANT-K PASSED:', invKPassed);
+
+  // Invariant L: Concurrent Verification (FOR UPDATE serialization)
+  console.log('\n--- INVARIANT L: Concurrent Verification Under Row Lock (FOR UPDATE) ---');
+  execPsql(`
+    INSERT INTO page_pro_orders (provider_order_id, page_id, user_id, billing_cycle, amount_paise, status)
+    VALUES ('order_direct_inv_l', '${PAGE_A_ID}', '${USER1_ID}', 'monthly', 49900, 'created')
+    ON CONFLICT (provider_order_id) DO NOTHING;
+  `);
+
+  const sigL1 = computeValidSig('order_direct_inv_l', 'pay_concurrent_1');
+  const sigL2 = computeValidSig('order_direct_inv_l', 'pay_concurrent_2');
+
+  const worker1 = new Promise((resolve) => {
+    exec(`docker exec w009-b5-postgres psql -U postgres -d w009_b5_test -t -A -c "SELECT verify_and_activate_page_pro('order_direct_inv_l', '${PAGE_A_ID}', '${USER1_ID}', 'pay_concurrent_1', '${sigL1}', '${RAZORPAY_KEY_SECRET}', 'monthly', false);"`, (err, stdout) => {
+      resolve(JSON.parse(stdout.trim()));
+    });
+  });
+
+  const worker2 = new Promise((resolve) => {
+    exec(`docker exec w009-b5-postgres psql -U postgres -d w009_b5_test -t -A -c "SELECT verify_and_activate_page_pro('order_direct_inv_l', '${PAGE_A_ID}', '${USER1_ID}', 'pay_concurrent_2', '${sigL2}', '${RAZORPAY_KEY_SECRET}', 'monthly', false);"`, (err, stdout) => {
+      resolve(JSON.parse(stdout.trim()));
+    });
+  });
+
+  const [resConcurrent1, resConcurrent2] = await Promise.all([worker1, worker2]);
+  console.log('Concurrent RPC Results:', { worker1: resConcurrent1, worker2: resConcurrent2 });
+
+  const resultsList = [resConcurrent1, resConcurrent2];
+  const activatedCount = resultsList.filter((r) => r.code === 'ENTITLEMENT_ACTIVATED').length;
+  const consumedCount = resultsList.filter((r) => r.code === 'ORDER_ALREADY_CONSUMED').length;
+
+  const invLPassed = activatedCount === 1 && consumedCount === 1;
+  report.tests.push({
+    testId: 'INVARIANT-L',
+    description: 'Concurrent verification calls serialized by FOR UPDATE: exactly one activates, other receives ORDER_ALREADY_CONSUMED with zero deadlock',
+    worker1Result: resConcurrent1,
+    worker2Result: resConcurrent2,
+    activatedCount,
+    consumedCount,
+    passed: invLPassed,
+  });
+  console.log('INVARIANT-L PASSED:', invLPassed);
+
+  // Invariant M: Direct Service-Role RPC Invocation Without Valid Cryptographic Proof (Critical New Acceptance Test)
+  console.log('\n--- INVARIANT M: Direct Service-Role RPC Without Cryptographic Proof FAILS ---');
+  execPsql(`
+    INSERT INTO page_pro_orders (provider_order_id, page_id, user_id, billing_cycle, amount_paise, status)
+    VALUES ('order_direct_inv_m', '${PAGE_A_ID}', '${USER1_ID}', 'monthly', 49900, 'created')
+    ON CONFLICT (provider_order_id) DO NOTHING;
+  `);
+
+  // Direct call 1: Bogus signature
+  const resMBogus = queryDb(`
+    SELECT verify_and_activate_page_pro('order_direct_inv_m', '${PAGE_A_ID}', '${USER1_ID}', 'pay_direct_inv_m', 'attacker_fake_signature_without_proof', '${RAZORPAY_KEY_SECRET}', 'monthly', false) AS result;
+  `)[0]?.result;
+
+  // Direct call 2: Missing signature
+  const resMMissing = queryDb(`
+    SELECT verify_and_activate_page_pro('order_direct_inv_m', '${PAGE_A_ID}', '${USER1_ID}', 'pay_direct_inv_m', NULL, '${RAZORPAY_KEY_SECRET}', 'monthly', false) AS result;
+  `)[0]?.result;
+
+  // Direct call 3: Wrong secret signature
+  const wrongSecretSig = computeValidSig('order_direct_inv_m', 'pay_direct_inv_m', 'wrong_secret_123');
+  const resMWrongSecret = queryDb(`
+    SELECT verify_and_activate_page_pro('order_direct_inv_m', '${PAGE_A_ID}', '${USER1_ID}', 'pay_direct_inv_m', '${wrongSecretSig}', '${RAZORPAY_KEY_SECRET}', 'monthly', false) AS result;
+  `)[0]?.result;
+
+  // Confirm database order and page remain completely unmodified
+  const dbOrderM = queryDb(`SELECT * FROM page_pro_orders WHERE provider_order_id = 'order_direct_inv_m'`)[0];
+  const dbPageM = queryDb(`SELECT is_pro, pro_subscription_id FROM pages WHERE id = '${PAGE_A_ID}'`)[0];
+
+  const invMPassed =
+    resMBogus?.success === false &&
+    resMBogus?.code === 'INVALID_SIGNATURE' &&
+    resMMissing?.success === false &&
+    resMMissing?.code === 'MISSING_SIGNATURE' &&
+    resMWrongSecret?.success === false &&
+    resMWrongSecret?.code === 'INVALID_SIGNATURE' &&
+    dbOrderM?.status === 'created' &&
+    dbOrderM?.signature_verified === false &&
+    dbOrderM?.provider_payment_id === null;
+
+  report.tests.push({
+    testId: 'INVARIANT-M',
+    description: 'Direct service-role RPC invocation without valid cryptographic proof MUST NOT activate Pages Pro',
+    bogusSignatureResult: resMBogus,
+    missingSignatureResult: resMMissing,
+    wrongSecretResult: resMWrongSecret,
+    orderRemainsCreated: dbOrderM?.status === 'created',
+    signatureVerifiedIsFalse: dbOrderM?.signature_verified === false,
+    passed: invMPassed,
+  });
+  console.log('INVARIANT-M PASSED:', invMPassed);
+
+  // Invariant N: Non-Service Roles Denied EXECUTE at Privilege Boundary
+  console.log('\n--- INVARIANT N: Non-Service Roles Denied EXECUTE at Privilege Boundary ---');
   let anonCallBlocked = false;
   try {
     execSync('docker exec -i w009-b5-postgres psql -v ON_ERROR_STOP=1 -U postgres -d w009_b5_test', {
       input: `
         SET ROLE anon;
-        SELECT verify_and_activate_page_pro('order_direct_inv_a', '${PAGE_A_ID}', '${USER1_ID}', 'pay_anon', 'monthly', false);
+        SELECT verify_and_activate_page_pro('order_direct_inv_a', '${PAGE_A_ID}', '${USER1_ID}', 'pay_anon', '${sigA}', '${RAZORPAY_KEY_SECRET}', 'monthly', false);
         RESET ROLE;
       `,
       encoding: 'utf8',
@@ -978,7 +1199,7 @@ try {
     execSync('docker exec -i w009-b5-postgres psql -v ON_ERROR_STOP=1 -U postgres -d w009_b5_test', {
       input: `
         SET ROLE authenticated;
-        SELECT verify_and_activate_page_pro('order_direct_inv_a', '${PAGE_A_ID}', '${USER1_ID}', 'pay_auth', 'monthly', false);
+        SELECT verify_and_activate_page_pro('order_direct_inv_a', '${PAGE_A_ID}', '${USER1_ID}', 'pay_auth', '${sigA}', '${RAZORPAY_KEY_SECRET}', 'monthly', false);
         RESET ROLE;
       `,
       encoding: 'utf8',
@@ -987,80 +1208,15 @@ try {
     authCallBlocked = (err.stderr || err.message).includes('permission denied for function verify_and_activate_page_pro');
   }
 
-  const invGPassed = anonCallBlocked && authCallBlocked;
+  const invNPassed = anonCallBlocked && authCallBlocked;
   report.tests.push({
-    testId: 'INVARIANT-G',
-    description: 'Signature-state bypass prevented: non-service roles (anon, authenticated, PUBLIC) denied EXECUTE privilege on RPC',
+    testId: 'INVARIANT-N',
+    description: 'Non-service roles (anon, authenticated, PUBLIC) denied EXECUTE privilege on RPC at database catalog boundary',
     anonCallBlocked,
     authCallBlocked,
-    passed: invGPassed,
+    passed: invNPassed,
   });
-  console.log('INVARIANT-G PASSED:', invGPassed);
-
-  // Invariant H: Replay Protection via Direct SQL RPC
-  console.log('\n--- INVARIANT H: Replay Protection via Direct SQL RPC ---');
-  const rpcResHIdempotent = queryDb(`
-    SELECT verify_and_activate_page_pro('order_direct_inv_a', '${PAGE_A_ID}', '${USER1_ID}', 'pay_direct_inv_a', 'monthly', false) AS result;
-  `)[0]?.result;
-
-  const rpcResHConsumed = queryDb(`
-    SELECT verify_and_activate_page_pro('order_direct_inv_a', '${PAGE_A_ID}', '${USER1_ID}', 'pay_fraud_different_payment', 'monthly', false) AS result;
-  `)[0]?.result;
-
-  const invHPassed =
-    rpcResHIdempotent?.success === true &&
-    rpcResHIdempotent?.idempotent === true &&
-    rpcResHIdempotent?.code === 'ENTITLEMENT_ALREADY_ACTIVE' &&
-    rpcResHConsumed?.success === false &&
-    rpcResHConsumed?.code === 'ORDER_ALREADY_CONSUMED';
-
-  report.tests.push({
-    testId: 'INVARIANT-H',
-    description: 'Replay protection in RPC: identical payment tuple succeeds idempotently; different payment rejected with ORDER_ALREADY_CONSUMED',
-    idempotentResult: rpcResHIdempotent,
-    consumedResult: rpcResHConsumed,
-    passed: invHPassed,
-  });
-  console.log('INVARIANT-H PASSED:', invHPassed);
-
-  // Invariant I: Concurrent Verification (FOR UPDATE serialization)
-  console.log('\n--- INVARIANT I: Concurrent Verification Under Row Lock (FOR UPDATE) ---');
-  execPsql(`
-    INSERT INTO page_pro_orders (provider_order_id, page_id, user_id, billing_cycle, amount_paise, status)
-    VALUES ('order_direct_inv_i', '${PAGE_A_ID}', '${USER1_ID}', 'monthly', 49900, 'created')
-    ON CONFLICT (provider_order_id) DO NOTHING;
-  `);
-
-  const worker1 = new Promise((resolve) => {
-    exec(`docker exec w009-b5-postgres psql -U postgres -d w009_b5_test -t -A -c "SELECT verify_and_activate_page_pro('order_direct_inv_i', '${PAGE_A_ID}', '${USER1_ID}', 'pay_concurrent_1', 'monthly', false);"`, (err, stdout) => {
-      resolve(JSON.parse(stdout.trim()));
-    });
-  });
-
-  const worker2 = new Promise((resolve) => {
-    exec(`docker exec w009-b5-postgres psql -U postgres -d w009_b5_test -t -A -c "SELECT verify_and_activate_page_pro('order_direct_inv_i', '${PAGE_A_ID}', '${USER1_ID}', 'pay_concurrent_2', 'monthly', false);"`, (err, stdout) => {
-      resolve(JSON.parse(stdout.trim()));
-    });
-  });
-
-  const [resConcurrent1, resConcurrent2] = await Promise.all([worker1, worker2]);
-  console.log('Concurrent RPC Results:', { worker1: resConcurrent1, worker2: resConcurrent2 });
-
-  const resultsList = [resConcurrent1, resConcurrent2];
-  const activatedCount = resultsList.filter((r) => r.code === 'ENTITLEMENT_ACTIVATED').length;
-  const consumedCount = resultsList.filter((r) => r.code === 'ORDER_ALREADY_CONSUMED').length;
-
-  const invIPassed = activatedCount === 1 && consumedCount === 1;
-  report.tests.push({
-    testId: 'INVARIANT-I',
-    description: 'Concurrent verification calls serialized by FOR UPDATE: exactly one activates, other receives ORDER_ALREADY_CONSUMED with zero deadlock',
-    worker1Result: resConcurrent1,
-    worker2Result: resConcurrent2,
-    activatedCount,
-    consumedCount,
-    passed: invIPassed,
-  });
-  console.log('INVARIANT-I PASSED:', invIPassed);
+  console.log('INVARIANT-N PASSED:', invNPassed);
 
   // ================================================================
   // Summary & Report Generation
