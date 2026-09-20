@@ -1,7 +1,7 @@
 {
   "job": "W009-B5-R4",
   "title": "Durable Pages Pro Payment Persistence Verification",
-  "timestamp": "2026-09-19T11:55:53.746Z",
+  "timestamp": "2026-09-20T04:34:11.999Z",
   "environment": {
     "postgresContainer": "w009-b5-postgres (postgis/postgis:16-3.4-alpine)",
     "postgrestContainer": "w009-b5-postgrest (public.ecr.aws/supabase/postgrest:v14.13)",
@@ -130,18 +130,38 @@
     "rlsEnabled": true,
     "rpc": {
       "name": "verify_and_activate_page_pro",
-      "securityDefiner": true
-    }
+      "securityDefiner": true,
+      "owner": "postgres",
+      "searchPathConfig": [
+        "search_path=public, pg_temp"
+      ],
+      "identityArgs": "p_provider_order_id text, p_page_id uuid, p_user_id uuid, p_provider_payment_id text, p_billing_cycle text, p_is_admin boolean"
+    },
+    "rpcPrivileges": {
+      "public_exec": false,
+      "anon_exec": false,
+      "authenticated_exec": false,
+      "service_role_exec": true,
+      "postgres_exec": true
+    },
+    "defaultAcl": [
+      {
+        "defaclobjtype": "f",
+        "defaclrole": "postgres",
+        "defaclnamespace": "public",
+        "defaclacl": "{anon=X/postgres,authenticated=X/postgres,service_role=X/postgres}"
+      }
+    ]
   },
   "tests": [
     {
       "testId": "TEST-B5-PERSIST-01",
       "description": "POST /order durably persists order in page_pro_orders with status created",
       "httpStatus": 200,
-      "orderId": "order_1789819027453_18kv8",
+      "orderId": "order_1789878922871_0rozjv",
       "dbRecord": {
-        "id": "4d6af3ce-93bd-46f0-8a6e-3f8b152b962f",
-        "provider_order_id": "order_1789819027453_18kv8",
+        "id": "998a7f1c-f2b3-436f-9a78-2304ba8fab11",
+        "provider_order_id": "order_1789878922871_0rozjv",
         "page_id": "11111111-1111-1111-1111-111111111111",
         "user_id": "00000000-0000-0000-0000-000000000001",
         "product": "pages_pro",
@@ -151,15 +171,16 @@
         "status": "created",
         "provider_payment_id": null,
         "signature_verified": false,
-        "created_at": "2026-09-19T11:57:07.678979+00:00",
-        "updated_at": "2026-09-19T11:57:07.678979+00:00",
+        "created_at": "2026-09-20T04:35:23.015146+00:00",
+        "updated_at": "2026-09-20T04:35:23.015146+00:00",
         "completed_at": null
       },
       "passed": true
     },
     {
       "testId": "TEST-B5-PERSIST-02",
-      "description": "Simulate application process restart / cold container: PRO_ORDER_REGISTRY cleared",
+      "description": "Process destroy, fresh application rebuild, and empty memory registry verified",
+      "processDestroyedAndRebuilt": true,
       "memoryOrderCount": 0,
       "passed": true
     },
@@ -169,7 +190,7 @@
       "httpStatus": 200,
       "orderStatusInDb": "completed",
       "pageIsProInDb": true,
-      "pageProExpiresAt": "2026-10-19T11:57:08.73839+00:00",
+      "pageProExpiresAt": "2026-10-20T04:35:24.857172+00:00",
       "passed": true
     },
     {
@@ -225,6 +246,113 @@
       "testId": "TEST-B5-PERSIST-11",
       "description": "Direct table INSERT by anon/authenticated blocked by Row Level Security",
       "rlsBlocked": true,
+      "passed": true
+    },
+    {
+      "testId": "INVARIANT-A",
+      "description": "Direct SQL RPC execution activates valid order and commits page Pro entitlement",
+      "rpcResult": {
+        "code": "ENTITLEMENT_ACTIVATED",
+        "pageId": "11111111-1111-1111-1111-111111111111",
+        "message": "Page Pro subscription successfully activated",
+        "success": true,
+        "expiresAt": "2026-10-20T04:35:30.994948+00:00",
+        "idempotent": false
+      },
+      "orderStatus": "completed",
+      "signatureVerified": true,
+      "pageIsPro": true,
+      "passed": true
+    },
+    {
+      "testId": "INVARIANT-B",
+      "description": "Direct SQL RPC rejects cross-page verification attempt with PAGE_ORDER_MISMATCH",
+      "rpcResult": {
+        "code": "PAGE_ORDER_MISMATCH",
+        "message": "Payment order was not created for this page",
+        "success": false
+      },
+      "orderStatusUnchanged": true,
+      "passed": true
+    },
+    {
+      "testId": "INVARIANT-C",
+      "description": "Direct SQL RPC rejects cross-principal attempt with ORDER_PRINCIPAL_MISMATCH",
+      "rpcResult": {
+        "code": "ORDER_PRINCIPAL_MISMATCH",
+        "message": "Payment order was created by a different user",
+        "success": false
+      },
+      "orderStatusUnchanged": true,
+      "passed": true
+    },
+    {
+      "testId": "INVARIANT-D",
+      "description": "Direct SQL RPC rejects billing cycle mismatch with BILLING_CYCLE_MISMATCH",
+      "rpcResult": {
+        "code": "BILLING_CYCLE_MISMATCH",
+        "message": "Billing cycle does not match the created order",
+        "success": false
+      },
+      "orderStatusUnchanged": true,
+      "passed": true
+    },
+    {
+      "testId": "INVARIANT-E",
+      "description": "Amount tampering blocked: table CHECK constraint enforces ₹499/₹4999 in paise, and RPC takes no caller amount parameter",
+      "amtTamperBlocked": true,
+      "rpcHasNoAmountParam": true,
+      "passed": true
+    },
+    {
+      "testId": "INVARIANT-F",
+      "description": "Product tampering blocked: table CHECK constraint restricts product strictly to pages_pro",
+      "prodTamperBlocked": true,
+      "passed": true
+    },
+    {
+      "testId": "INVARIANT-G",
+      "description": "Signature-state bypass prevented: non-service roles (anon, authenticated, PUBLIC) denied EXECUTE privilege on RPC",
+      "anonCallBlocked": true,
+      "authCallBlocked": true,
+      "passed": true
+    },
+    {
+      "testId": "INVARIANT-H",
+      "description": "Replay protection in RPC: identical payment tuple succeeds idempotently; different payment rejected with ORDER_ALREADY_CONSUMED",
+      "idempotentResult": {
+        "code": "ENTITLEMENT_ALREADY_ACTIVE",
+        "pageId": "11111111-1111-1111-1111-111111111111",
+        "message": "Payment already verified and Pro entitlement activated previously. Idempotent replay acknowledged.",
+        "success": true,
+        "expiresAt": "2026-10-20T04:35:30.994948+00:00",
+        "idempotent": true
+      },
+      "consumedResult": {
+        "code": "ORDER_ALREADY_CONSUMED",
+        "message": "Payment order has already been verified with a different payment",
+        "success": false
+      },
+      "passed": true
+    },
+    {
+      "testId": "INVARIANT-I",
+      "description": "Concurrent verification calls serialized by FOR UPDATE: exactly one activates, other receives ORDER_ALREADY_CONSUMED with zero deadlock",
+      "worker1Result": {
+        "code": "ENTITLEMENT_ACTIVATED",
+        "pageId": "11111111-1111-1111-1111-111111111111",
+        "message": "Page Pro subscription successfully activated",
+        "success": true,
+        "expiresAt": "2026-10-20T04:35:36.687323+00:00",
+        "idempotent": false
+      },
+      "worker2Result": {
+        "code": "ORDER_ALREADY_CONSUMED",
+        "message": "Payment order has already been verified with a different payment",
+        "success": false
+      },
+      "activatedCount": 1,
+      "consumedCount": 1,
       "passed": true
     }
   ],
