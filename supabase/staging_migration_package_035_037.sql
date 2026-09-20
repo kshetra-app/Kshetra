@@ -1,18 +1,18 @@
 -- ==============================================================================
--- W009-B5-R3A: STAGING DETERMINISTIC MIGRATION APPLICATION PACKAGE (035 -> 037)
+-- W009-B5-R3A-R3: STAGING DETERMINISTIC MIGRATION APPLICATION PACKAGE (035 -> 037)
+-- Canonical Git Commit: 966b992b5c7e12118d9cb0565968eb6386f51470
 -- Target Supabase Project: panIN-staging (fkpigozcqnmcvofuksar)
--- Repository Commit SHA: 1d29b06
 -- Order: 035_campaign_recharge_orders.sql -> 036_foundation_and_grants_repair.sql -> 037_page_pro_orders.sql
--- Credential Free: 100% (Contains ZERO secrets, passwords, or API keys)
--- Destructive SQL: ZERO (All statements are additive / idempotent)
+-- Invariant: Migration bodies are 100% byte-for-byte exact matches of source files.
+-- Transaction: Atomic (all 3 migrations apply together or rollback).
 -- ==============================================================================
 
 BEGIN;
 
--- ==============================================================================
--- SECTION 1: MIGRATION 035 — Durable Campaign Recharge Orders & Atomic Verification
--- Source: supabase/migrations/035_campaign_recharge_orders.sql (Git Blob SHA: c4461bc98c1ce87ec4a52d4e74cf8c422914cc18)
--- ==============================================================================
+﻿-- ============================================================
+-- Migration 035: Durable Campaign Recharge Orders & Atomic Verification
+-- Authoritative persistence for wallet recharge lifecycle and idempotency
+-- ============================================================
 
 CREATE TABLE IF NOT EXISTS campaign_recharge_orders (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -39,11 +39,9 @@ CREATE UNIQUE INDEX IF NOT EXISTS idx_recharge_orders_payment_id
 -- Enable Row Level Security
 ALTER TABLE campaign_recharge_orders ENABLE ROW LEVEL SECURITY;
 
-DROP POLICY IF EXISTS "Politicians read own recharge orders" ON campaign_recharge_orders;
 CREATE POLICY "Politicians read own recharge orders" ON campaign_recharge_orders
   FOR SELECT USING (politician_id IN (SELECT id FROM politician_portal_profiles WHERE user_id = auth.uid()));
 
-DROP POLICY IF EXISTS "Politicians create own recharge orders" ON campaign_recharge_orders;
 CREATE POLICY "Politicians create own recharge orders" ON campaign_recharge_orders
   FOR INSERT WITH CHECK (politician_id IN (SELECT id FROM politician_portal_profiles WHERE user_id = auth.uid()));
 
@@ -166,12 +164,14 @@ BEGIN
   );
 END;
 $$;
+-- ============================================================
+-- Migration 036: Foundation and Grants Repair
+-- Remediates DEF-013: Syntax error 0A000 in global_search RPC
+-- ============================================================
 
-
--- ==============================================================================
--- SECTION 2: MIGRATION 036 — Foundation and Grants Repair (global_search RPC)
--- Source: supabase/migrations/036_foundation_and_grants_repair.sql (Git Blob SHA: 0f99d3175a1a01ab69fdc71ac5a570476ca659ce)
--- ==============================================================================
+-- In PostgreSQL, an ORDER BY clause cannot directly terminate a series of
+-- UNION ALL subqueries without enclosing the unified set in an outer SELECT.
+-- This migration replaces global_search with the properly parenthesized query.
 
 CREATE OR REPLACE FUNCTION global_search(
   p_query TEXT,
@@ -263,12 +263,11 @@ $$ LANGUAGE plpgsql STABLE SECURITY DEFINER;
 -- Explicitly enforce least-privilege execution boundary for SECURITY DEFINER RPC
 REVOKE EXECUTE ON FUNCTION global_search(TEXT, TEXT, INTEGER) FROM PUBLIC;
 GRANT EXECUTE ON FUNCTION global_search(TEXT, TEXT, INTEGER) TO anon, authenticated, service_role;
-
-
--- ==============================================================================
--- SECTION 3: MIGRATION 037 — Durable Pages Pro Payment Orders & Verification
--- Source: supabase/migrations/037_page_pro_orders.sql (Git Blob SHA: dcbb61fce95365b66f847b7cd065b1c05e2f2b73)
--- ==============================================================================
+-- ============================================================
+-- Migration 037: Durable Pages Pro Payment Orders & Verification
+-- Replaces in-memory order registry with durable PostgreSQL table
+-- and provides atomic verify_and_activate_page_pro RPC.
+-- ============================================================
 
 CREATE TABLE IF NOT EXISTS page_pro_orders (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -498,5 +497,4 @@ $$;
 -- Revoke execution from public/anon/authenticated; restrict to service role
 REVOKE ALL ON FUNCTION verify_and_activate_page_pro(TEXT, UUID, UUID, TEXT, TEXT, TEXT, BOOLEAN) FROM PUBLIC, anon, authenticated;
 GRANT EXECUTE ON FUNCTION verify_and_activate_page_pro(TEXT, UUID, UUID, TEXT, TEXT, TEXT, BOOLEAN) TO service_role;
-
 COMMIT;
