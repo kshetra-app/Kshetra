@@ -1,0 +1,268 @@
+{
+  "gate": "W009-B5",
+  "title": "Provider Sandbox / Mock Readiness Verification",
+  "timestamp": "2026-09-20T16:17:44.540Z",
+  "canonical": {
+    "repository": "kshetra-app/Kshetra",
+    "branch": "master",
+    "commitSha": "ff5921d4906b3334208a0d4cfd940656a1b2413a",
+    "stagingApiUrl": "https://kshetra-api-staging.up.railway.app",
+    "stagingDbUrl": "https://fkpigozcqnmcvofuksar.supabase.co"
+  },
+  "environmentVerification": {
+    "liveApiReachable": true,
+    "service": "kshetra-api",
+    "version": "0.1.0",
+    "uptimeSeconds": 10632,
+    "databaseConnectivity": true,
+    "databaseRowsReturned": 1,
+    "databaseLatencyMs": 1158,
+    "readinessStatus": "ok",
+    "lmxSupabaseStatus": "connected",
+    "authEnforcedOnPagesPro": true,
+    "observedAt": "2026-09-20T16:17:50.505Z"
+  },
+  "paymentTests": [
+    {
+      "id": "PC-01",
+      "title": "Order Creation Structure & Field Conformance",
+      "layer": "SANDBOX PROVIDER",
+      "passed": true,
+      "details": {
+        "orderId": "order_1789921070604_ez005",
+        "amountINR": 499,
+        "amountPaise": 49900,
+        "key": "rzp_test_w009_sandbox"
+      }
+    },
+    {
+      "id": "PC-02",
+      "title": "Cryptographic HMAC-SHA256 Valid Signature Verification",
+      "layer": "SANDBOX PROVIDER",
+      "passed": true,
+      "details": {
+        "valid": true,
+        "orderId": "order_test_98765",
+        "paymentId": "pay_test_54321"
+      }
+    },
+    {
+      "id": "PC-03",
+      "title": "Tampered Signature Cryptographic Rejection",
+      "layer": "SANDBOX PROVIDER",
+      "passed": true,
+      "details": {
+        "valid": false,
+        "reason": "INVALID_SIGNATURE"
+      }
+    },
+    {
+      "id": "PC-04",
+      "title": "Missing Signature Rejection",
+      "layer": "SANDBOX PROVIDER",
+      "passed": true,
+      "details": {
+        "valid": false,
+        "reason": "MISSING_SIGNATURE"
+      }
+    },
+    {
+      "id": "PC-05",
+      "title": "Provider Fail-Closed Behavior on Missing Secret",
+      "layer": "SOURCE",
+      "passed": true,
+      "details": {
+        "failClosedConfirmed": true
+      }
+    },
+    {
+      "id": "PC-06",
+      "title": "Order-to-Page Association Isolation Check",
+      "layer": "SOURCE",
+      "passed": true,
+      "details": {
+        "expectedCode": "PAGE_ORDER_MISMATCH",
+        "orderPageId": "11111111-1111-1111-1111-111111111111",
+        "attemptedPageId": "22222222-2222-2222-2222-222222222222"
+      }
+    },
+    {
+      "id": "PC-07",
+      "title": "Order Principal Association Isolation Check",
+      "layer": "SOURCE",
+      "passed": true,
+      "details": {
+        "expectedCode": "ORDER_PRINCIPAL_MISMATCH",
+        "orderUserId": "00000000-0000-0000-0000-000000000001",
+        "callerUserId": "00000000-0000-0000-0000-000000000002"
+      }
+    },
+    {
+      "id": "PC-08",
+      "title": "Billing Cycle Integrity & Association Check",
+      "layer": "SOURCE",
+      "passed": true,
+      "details": {
+        "expectedCode": "BILLING_CYCLE_MISMATCH",
+        "orderBillingCycle": "monthly",
+        "claimBillingCycle": "annual"
+      }
+    },
+    {
+      "id": "PC-09",
+      "title": "Payment Replay & Idempotent Verification Semantics",
+      "layer": "SOURCE",
+      "passed": true,
+      "details": {
+        "idempotentReplayAllowed": true,
+        "conflictingReplayRejected": true,
+        "rejectionCode": "ORDER_ALREADY_CONSUMED"
+      }
+    },
+    {
+      "id": "PC-10",
+      "title": "Amount Integrity & Allowed Pricing Tier Invariant",
+      "layer": "DATABASE",
+      "passed": true,
+      "details": {
+        "allowedPaise": [
+          49900,
+          499900
+        ],
+        "checkConstraintEnforced": "CHECK (amount_paise IN (49900, 499900))"
+      }
+    },
+    {
+      "id": "PC-11",
+      "title": "Concurrent Verification Row-Locking & Mutual Exclusion",
+      "layer": "DATABASE",
+      "passed": true,
+      "details": {
+        "lockMechanism": "SELECT ... FOR UPDATE at transaction start in verify_and_activate_page_pro RPC"
+      }
+    },
+    {
+      "id": "PC-12",
+      "title": "Zero Entitlement Without Authoritative Cryptographic Proof",
+      "layer": "SOURCE",
+      "passed": true,
+      "details": {
+        "invariant": "pages.is_pro updated ONLY after pgcrypto.hmac verification returns true inside atomic RPC"
+      }
+    }
+  ],
+  "voiceTests": [
+    {
+      "id": "VC-01",
+      "title": "Voice OBD Dispatch Structure & Reference Generation",
+      "layer": "MOCK PROVIDER",
+      "passed": true,
+      "details": {
+        "callSid": "mock_call_mua0si47",
+        "providerRef": "mock_exo_camp_voice_001",
+        "success": true
+      }
+    },
+    {
+      "id": "VC-02",
+      "title": "TRAI Statutory Calling Window Evaluation (08:00 to 21:00 IST)",
+      "layer": "SOURCE",
+      "passed": true,
+      "details": {
+        "activeCheckISTHour": 10,
+        "activePermitted": true,
+        "inactiveCheckISTHour": 22,
+        "inactivePermitted": false
+      }
+    },
+    {
+      "id": "VC-03",
+      "title": "Rejection Outside Legal TRAI Calling Window",
+      "layer": "MOCK PROVIDER",
+      "passed": true,
+      "details": {
+        "success": false,
+        "error": "OUTSIDE_TRAI_WINDOW",
+        "warning": "TRAI regulations restrict automated political calls to 8:00 AM – 9:00 PM IST (Current IST hour: 21:00). Calls will be scheduled for delivery at 8:00 AM tomorrow."
+      }
+    },
+    {
+      "id": "VC-04",
+      "title": "TRAI Opt-Out Phone Number Hashing & Suppression Mapping",
+      "layer": "SOURCE",
+      "passed": true,
+      "details": {
+        "rawNumber": "+91 98765-43210",
+        "expectedClean": "9876543210",
+        "hashMatched": true
+      }
+    },
+    {
+      "id": "VC-05",
+      "title": "Wallet Balance Deduction Precondition Check",
+      "layer": "SOURCE",
+      "passed": true,
+      "details": {
+        "walletBalanceINR": 500,
+        "estimatedCallCostINR": 750,
+        "dispatchBlocked": true
+      }
+    },
+    {
+      "id": "VC-06",
+      "title": "Telecom Provider Fail-Closed on Missing Credentials",
+      "layer": "SOURCE",
+      "passed": true,
+      "details": {
+        "windowCheckPermitted": true,
+        "credentialsEnforcedAtDispatch": true
+      }
+    },
+    {
+      "id": "VC-07",
+      "title": "Carrier Webhook Delivery Report Parsing & Schema Normalization",
+      "layer": "MOCK PROVIDER",
+      "passed": true,
+      "details": {
+        "callSid": "call_exotel_12345",
+        "status": "completed",
+        "duration": 45
+      }
+    },
+    {
+      "id": "VC-08",
+      "title": "Webhook Idempotency & Duplicate Delivery Deduplication",
+      "layer": "SOURCE",
+      "passed": true,
+      "details": {
+        "firstDeliveryProcessed": true,
+        "duplicateDeliverySuppressed": true
+      }
+    },
+    {
+      "id": "VC-09",
+      "title": "Carrier Failure Status Normalization (busy / no-answer / failed)",
+      "layer": "MOCK PROVIDER",
+      "passed": true,
+      "details": {
+        "busyParsedStatus": "busy",
+        "noAnswerParsedStatus": "other",
+        "failedParsedStatus": "unreachable"
+      }
+    },
+    {
+      "id": "VC-10",
+      "title": "Production Guard Assertion on Mock Providers",
+      "layer": "SOURCE",
+      "passed": true,
+      "details": {
+        "guardBlocked": true
+      }
+    }
+  ],
+  "summary": {
+    "totalTests": 22,
+    "passed": 22,
+    "failed": 0
+  }
+}
