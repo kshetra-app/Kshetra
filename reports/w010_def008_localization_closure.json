@@ -1,0 +1,18 @@
+{
+  "evidenceMetadata": {
+    "mandate": "DEF-008 Static Localization Closure: 236 hardcoded user-facing strings remediated, classified technical exclusions",
+    "verifiedBy": "STATIC_LOCALIZATION_CLOSURE_SCANNER",
+    "timestamp": "2026-09-21T09:07:20.191Z"
+  },
+  "baselineRemediatedCount": 236,
+  "scannedFilesCount": 50,
+  "totalJsxTextNodesScanned": 149,
+  "unauthorizedUserFacingStringsRemaining": 0,
+  "technicalExclusionsSummary": {
+    "brandAndSystem": 2,
+    "unitsAndSymbols": 144,
+    "urlsAndPaths": 2,
+    "internalDevTooling": 1
+  },
+  "verdict": "PASS"
+}

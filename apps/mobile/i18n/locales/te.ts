@@ -76,9 +76,7 @@ const te = {
     },
     "collapse": "కుదించు",
     "expandAll": "అన్నీ విస్తరించు",
-    "hide": "దాచు",
-    "article": "వ్యాసం",
-    "articles": "వ్యాసాలు"
+    "hide": "దాచు"
   },
   "tabs": {
     "map": "మ్యాప్",
@@ -257,6 +255,7 @@ const te = {
     },
     "emptyFeed": "ఇంకా పోస్ట్‌లు లేవు. మొదటివారు కండి!",
     "trending": "ట్రెండింగ్",
+    "trendingIn": "{{state}} లో ట్రెండింగ్",
     "sort": {
       "latest": "తాజావి",
       "top": "అత్యధిక స్పందనలు",
@@ -614,6 +613,7 @@ const te = {
     "restrictedNotice": "జనరల్ మోడరేషన్ క్యూ ఐటీ నిబంధనలు 2021 ప్రకారం ధృవీకరించబడిన గ్రీవెన్స్ అధికారులు, మోడరేటర్లు మరియు నిర్వాహకులకు మాత్రమే కేటాయించబడింది.",
     "returnToFeed": "ఫీడ్‌కి తిరిగి వెళ్లండి",
     "contentModerationQueue": "కంటెంట్ మోడరేషన్ క్యూ",
+    "statutoryNotice": "చట్టబద్ధమైన ఫిర్యాదు మరియు కంటెంట్ సమీక్ష క్యూ ({{count}} పెండింగ్‌లో ఉన్నాయి). ఐటీ నిబంధనలు 2021 ప్రకారం అన్ని చర్యలు రికార్డ్ చేయబడతాయి.",
     "fetchingReports": "పెండింగ్ నివేదికలను పొందుతోంది...",
     "queueAllClear": "క్యూ పూర్తిగా క్లియర్ అయింది!",
     "noPendingReports": "మోడరేషన్ అవసరమైన పెండింగ్ నివేదికలు ఏవీ లేవు.",
@@ -908,6 +908,26 @@ const te = {
       "headline": "Siddaramaiah — The Guarantee Man",
       "body": "Siddaramaiah won Badami with 42,567 margin. His 5 guarantee schemes drove INC's 135-seat landslide."
     },
+    "KA-T-003": {
+      "headline": "Deve Gowda Dynasty — Three Generations",
+      "body": "H.D. Deve Gowda (ప్రధానమంత్రి), son Kumaraswamy (ముఖ్యమంత్రి), grandson Prajwal — all held elected office."
+    },
+    "KA-T-004": {
+      "headline": "బీజేపీ: From 104 to 66",
+      "body": "BJP కోల్పోయింది 38 సీట్లు (2018→2023). \"40% commission\" charges and 3 ముఖ్యమంత్రులు in one term were key factors."
+    },
+    "KA-T-005": {
+      "headline": "Three ముఖ్యమంత్రులు in One Term",
+      "body": "Karnataka had 3 BJP ముఖ్యమంత్రులు in 2018-2023: Yediyurappa, Bommai, and brief considerations for Sadananda Gowda."
+    },
+    "KA-T-006": {
+      "headline": "Jarkiholi Brothers — On Opposite Sides",
+      "body": "Ramesh in BJP (Gokak), Balachandra in INC (Arabhavi). Political rivalry within the family!"
+    },
+    "KA-T-007": {
+      "headline": "Coastal Karnataka — BJP's Fortress",
+      "body": "In 2023, BJP గెలిచింది all 8 coastal సీట్లు despite losing the state overall."
+    },
     "MH-T-001": {
       "headline": "The Great Shiv Sena Split",
       "body": "Eknath Shinde led 40 of 56 Shiv Sena MLAs in rebellion (June 2022). ECI awarded the name to Shinde faction."
@@ -915,6 +935,30 @@ const te = {
     "MH-T-002": {
       "headline": "Pawar vs Pawar — Uncle vs Nephew",
       "body": "Ajit Pawar split NCP taking 40+ MLAs to BJP. Uncle Sharad Pawar (83) founded NCP(SP)."
+    },
+    "MH-T-003": {
+      "headline": "Fadnavis — The Comeback Man",
+      "body": "Fadnavis గెలిచింది Nagpur South West with a massive margin. Became ముఖ్యమంత్రి for the 3rd time."
+    },
+    "MH-T-004": {
+      "headline": "కాంగ్రెస్: From 44 to 16",
+      "body": "Congress decimated — from 44 సీట్లు (2019) to just 16 (2024), their worst performance in Maharashtra."
+    },
+    "MH-T-005": {
+      "headline": "Aaditya Thackeray — The Worli Prince",
+      "body": "Aaditya retained Worli even as his father's faction was decimated statewide."
+    },
+    "MH-T-006": {
+      "headline": "Mahayuti Tsunami — 230/288",
+      "body": "BJP-SHS-NCP (Mahayuti) గెలిచింది 230/288 సీట్లు in 2024 — most lopsided result in MH history."
+    },
+    "MH-T-007": {
+      "headline": "Two Parties, Same Name",
+      "body": "Both Shiv Sena and NCP split into two, each claiming the original name. Courts had to adjudicate."
+    },
+    "MH-T-008": {
+      "headline": "Mumbai — 36 Seats, BJP Dominates",
+      "body": "BJP గెలిచింది majority of Mumbai's 36 assembly సీట్లు in 2024, consolidating urban dominance."
     }
   },
   "seedPosts": {
@@ -1085,6 +1129,7 @@ const te = {
     "reservation": "రిజర్వేషన్",
     "totalSeats": "మొత్తం సీట్లు",
     "seatsWon": "గెలిచిన సీట్లు",
+    "assemblyElection": "{{year}} అసెంబ్లీ ఎన్నికలు",
     "ruling": "అధికారంలో ఉన్నది",
     "defections": "ఫిరాయింపులు",
     "keyInsights": "కీలక అంతర్దృష్టులు",
@@ -1098,6 +1143,7 @@ const te = {
     "dominant": "ఆధిపత్యం",
     "competitiveIndexDesc": "పోటీ సూచిక: ఎక్కువ = మరింత తీవ్రమైన పోటీ",
     "swingSeatsTitle": "స్వింగ్ సీట్లు (మార్జిన్ < 8 వేలు)",
+    "seatsCouldFlip": "{{count}} సీట్లు మారే అవకాశం ఉంది",
     "antiIncumbencyIndicators": "ప్రభుత్వ వ్యతిరేకత సూచికలు",
     "defectionRate": "ఫిరాయింపు రేటు",
     "vulnerableSeats": "ప్రమాదంలో ఉన్న సీట్లు (<5%)",
@@ -1187,10 +1233,10 @@ const te = {
     "thTotal": "మొత్తం",
     "showTop15": "టాప్ 15 పార్టీలను చూపించు",
     "viewAllParties": "అన్ని {{count}} భాగస్వామ్య పార్టీలను చూడండి (వైసీపీ, బిఆర్ఎస్, టిడిపి...)",
-    "lokSabhaMPsCount": "18వ లోక్‌సభ ఎంపీలు (543 లో {{count}})",
+    "lokSabhaMPsCount": "18th Lok Sabha MPs ({{count}} of {{total}})",
     "stateLokSabhaCount": "లోక్‌సభ ఎంపీలు — {{state}} ({{count}})",
     "noMPsMatch": "మీ శోధనకు సరిపోలే ఎంపీలు ఎవరూ లేరు.",
-    "rajyaSabhaMPsCount": "రాజ్యసభ ఎంపీలు (142 లో {{count}})",
+    "rajyaSabhaMPsCount": "Rajya Sabha MPs ({{count}} of {{total}})",
     "stateRajyaSabhaCount": "రాజ్యసభ ఎంపీలు — {{state}} ({{count}})",
     "noRajyaSabhaMatch": "మీ శోధనకు సరిపోలే రాజ్యసభ ఎంపీలు ఎవరూ లేరు.",
     "termsElected": "ఎన్నికైన పర్యాయాలు",
@@ -1342,12 +1388,14 @@ const te = {
     "hierarchyLabel": "పరిపాలనా సోపానక్రమం",
     "gp": "గ్రామ పంచాయతీ",
     "pop": "జనాభా",
+    "noPanchayatSamples": "ఈ {{mandal}} కోసం {{panchayat}} నమూనా రికార్డులు అందుబాటులో లేవు",
     "mandalLower": "మండలం",
     "voters": "ఓటర్లు",
     "sarpanch": "సర్పంచ్",
     "noBoothSamples": "ఈ డివిజన్ కోసం పోలింగ్ బూత్ రికార్డులు లేవు",
     "urban": "పట్టణ",
     "rural": "గ్రామీణ",
+    "footer": "{{stateName}} స్థానిక పాలనా నిర్మాణం",
     "title": "పరిపాలనా క్రమం",
     "subtitle": "బూత్ నుండి నియోజకవర్గం వరకు అన్వేషించండి",
     "booth": "బూత్",
@@ -1410,6 +1458,8 @@ const te = {
     "allEvents": "ప్రజా కార్యక్రమాలు",
     "eManifestos": "డిజిటల్ మేనిఫెస్టోలు & హామీలు",
     "opinionSurveys": "నియోజకవర్గ సర్వేలు & పోల్స్",
+    "responsesCount": "{{count}} స్పందనలు",
+    "completedResponses": "{{count}} మంది పౌరులు ఈ సర్వేను పూర్తి చేశారు",
     "title": "రాజకీయ నాయకుల పోర్టల్",
     "subtitle": "మీ నియోజకవర్గ ఆవుట్‌రీచ్ నిర్వహించండి",
     "tabs": {
@@ -1437,7 +1487,8 @@ const te = {
     "morePromises": "మరిన్ని హామీలు",
     "independent": "స్వతంత్ర",
     "responseRate": "స్పందన రేటు",
-    "issuesHandled": "పరిష్కరించిన సమస్యలు"
+    "issuesHandled": "పరిష్కరించిన సమస్యలు",
+    "avgResponseTime": "సగటు స్పందన సమయం: {{hours}} గంటలు"
   },
   "campaignManager": {
     "screenTitle": "ప్రచార కమాండ్ సెంటర్",
@@ -1445,6 +1496,13 @@ const te = {
     "total": "మొత్తం",
     "booths": "బూత్‌లు",
     "otherCampaigns": "ఇతర క్రియాశీల ప్రచారాలు",
+    "activeAds": "క్రియాశీల ప్రచారాలు & ప్రకటనలు ({{count}})",
+    "boothStrategy": "బూత్ వ్యూహం & ప్రచారం ({{count}})",
+    "boothMeta": "బూత్ #{{boothNumber}} · నియోజకవర్గం #{{acNo}} · వార్డు {{wardNo}}",
+    "voters": "{{count}} మంది ఓటర్లు",
+    "target": "లక్ష్యం: {{count}}",
+    "support": "మద్దతు: {{pct}}%",
+    "canvas": "కాన్వాస్: {{pct}}%",
     "title": "ప్రచార నిర్వాహకుడు",
     "subtitle": "వ్యూహం, ప్రకటనలు & వాలంటీర్ నిర్వహణ",
     "tabs": {
@@ -1611,6 +1669,14 @@ const te = {
     "screenSubtitle": "బడ్జెట్, హాజరు, బిల్లులు & పథకాలు",
     "stateBudgetOverview": "రాష్ట్ర బడ్జెట్ అవలోకనం",
     "noBudgetData": "ఈ రాష్ట్రానికి బడ్జెట్ వివరాలు అందుబాటులో లేవు",
+    "legislatorAttendance": "శాసనసభ్యుల హాజరు ({{count}})",
+    "activeBills": "క్రియాశీల బిల్లులు & చట్టాలు ({{count}})",
+    "governmentSchemes": "ప్రభుత్వ పథకాలు & సంక్షేమం ({{count}})",
+    "developmentProjects": "మౌలిక సదుపాయాలు & అభివృద్ధి ప్రాజెక్టులు ({{count}})",
+    "publicRTIRequests": "ప్రజా ఆర్టీఐ అభ్యర్థనలు ({{count}})",
+    "response": "స్పందన: {{text}}",
+    "views": "{{count}} వీక్షణలు",
+    "filed": "{{date}} న దాఖలు చేయబడింది",
     "title": "పౌర కొలమానాలు",
     "subtitle": "బడ్జెట్, హాజరు, బిల్లులు & పథకాలు",
     "tabs": {
@@ -1859,7 +1925,9 @@ const te = {
     "noLiveElection": "ప్రస్తుతం ఎటువంటి లైవ్ ఎన్నికలు జరగడం లేదు",
     "noLiveElectionDesc": "ఎన్నికలు జరుగుతున్నప్పుడు లెక్కింపు, ఆధిక్యాలు మరియు ఓట్ల శాతాలు నిజ-సమయంలో నవీకరించబడతాయి.",
     "voteShareComparison": "ఓట్ల శాతం పోలిక",
+    "constituencyResults": "నియోజకవర్గ ఫలితాలు ({{count}})",
     "noConstituencyData": "ఇంకా నియోజకవర్గ సమాచారం అందుబాటులో లేదు",
+    "systemHealth": "కౌంటింగ్ పైప్‌లైన్: {{status}} ({{healthy}}/{{total}} మూలాలు పనిచేస్తున్నాయి)",
     "title": "లైవ్ ఎన్నిక",
     "subtitle": "నిజ-సమయ లెక్కింపు & ఫలితాలు",
     "live": "LIVE",
@@ -2310,7 +2378,7 @@ const te = {
     "northSouthBody": "దక్షిణాది రాష్ట్రాలు కుటుంబ నియంత్రణ విజయవంతంగా అమలు చేయడం వల్ల స్థానాలు తగ్గే ప్రమాదం ఉంది, ఉత్తరాది రాష్ట్రాలు సీట్లు పెరిగే అవకాశం ఉంది.",
     "north": "ఉత్తర భారతదేశం",
     "south": "దక్షిణ భారతదేశం",
-    "seats": "స్థానాలు",
+    "seats": "{{count}} సీట్లు",
     "comingSoon": "త్వరలో అందుబాటులోకి",
     "featureWhatChanges": "మీ ప్రాంతంలో ఏమి మారుతుంది",
     "featureMLARisk": "ఎమ్మెల్యే రిస్క్ విశ్లేషణ",
@@ -2483,7 +2551,8 @@ const te = {
     "agreement": "జవాబుదారీ ఒప్పందం",
     "agreementText": "అందించిన మొత్తం సమాచారం ఖచ్చితమైనదని నేను ధృవీకరిస్తున్నాను. నా పోస్ట్‌లు నా ధృవీకరించబడిన గుర్తింపుతో ముడిపడి ఉన్నాయని నేను అర్థం చేసుకున్నాను.",
     "agreeAndVerify": "అంగీకరించి ధృవీకరించు",
-    "submitting": "ధృవీకరిస్తోంది..."
+    "submitting": "ధృవీకరిస్తోంది...",
+    "step": "దశ {{current}} / {{total}}"
   },
   "contentGate": {
     "promote": "ప్రచారం చేయండి",
@@ -2504,6 +2573,7 @@ const te = {
     "alertThankYou": "ప్రాధాన్యతా సమీక్ష కోసం మోడరేటర్‌లకు హెచ్చరిక పంపబడింది.",
     "promoteContent": "కంటెంట్‌ను ప్రచారం చేయండి",
     "boostReach": "ఈ కంటెంట్ దృశ్యమానతను పెంచండి",
+    "creditsRequired": "{{count}} క్రెడిట్లు అవసరం",
     "promoteNow": "ఇప్పుడే ప్రచారం చేయండి",
     "vouch": "సమర్థించండి",
     "vouched": "సమర్థించారు",
@@ -2536,7 +2606,8 @@ const te = {
     "videoUnavailableDesc": "ఈ వీడియోను లోడ్ చేయడం సాధ్యం కాలేదు. ఇది తీసివేయబడి ఉండవచ్చు లేదా ప్రాంతీయ పరిమితి ఉండవచ్చు.",
     "alertReportedTitle": "నివేదించబడింది",
     "alertReportedMessage": "ఈ షార్ట్ సమీక్ష కోసం నివేదించబడింది.",
-    "alertShareTitle": "షేర్ లింక్ సృష్టించబడింది"
+    "alertShareTitle": "షేర్ లింక్ సృష్టించబడింది",
+    "alertShareMessage": "\"{{title}}\" కోసం షేర్ లింక్ క్లిప్‌బోర్డ్‌కి కాపీ చేయబడింది."
   },
   "uploadShort": {
     "title": "రాజకీయ షార్ట్ అప్లోడ్ చేయండి",
@@ -2577,11 +2648,13 @@ const te = {
     "sources": "మూలాలు & అదనపు పఠనం",
     "moduleCompleted": "మాడ్యూల్ పూర్తయింది",
     "tapToWatch": "YouTubeలో చూడటానికి నొక్కండి",
+    "score": "స్కోరు: {{score}}%",
     "passed": "ఉత్తీర్ణులయ్యారు!",
     "failed": "ఉత్తీర్ణత సాధించలేదు",
     "submitQuiz": "సమాధానాలు సమర్పించు",
     "markComplete": "పూర్తయినట్లు గుర్తించు",
-    "alreadyCompleted": "✓ ఇప్పటికే పూర్తయింది"
+    "alreadyCompleted": "✓ ఇప్పటికే పూర్తయింది",
+    "questionOf": "ప్రశ్న {{current}} / {{total}}"
   },
   "outreachPanel": {
     "compose": "రాయండి",
@@ -2605,12 +2678,15 @@ const te = {
     "sendBroadcast": "ప్రసారం పంపండి",
     "scheduleBroadcast": "ప్రసారాన్ని షెడ్యూల్ చేయండి",
     "confirmSend": "పంపడాన్ని నిర్ధారించండి",
+    "confirmMsg": "ఈ ప్రసారాన్ని {{count}} మంది స్వీకర్తలకు పంపాలా?",
     "sent": "ప్రసారం పంపబడింది!",
     "scheduled": "ప్రసారం షెడ్యూల్ చేయబడింది!",
     "allFollowers": "అనుచరులందరూ",
     "boothVolunteers": "బూత్ వాలంటీర్లు",
     "youthVoters": "యువ ఓటర్లు (18-25)",
     "womenVoters": "మహిళా ఓటర్లు",
+    "sendBroadcastConfirm": "ఈ ప్రసారాన్ని ఇప్పుడే {{count}} మంది స్వీకర్తలకు పంపాలా?",
+    "scheduleBroadcastConfirm": "{{count}} మంది స్వీకర్తల కోసం ఈ ప్రసారాన్ని షెడ్యూల్ చేయాలా?",
     "simulationNote": "ఇది అనుకరణ మాత్రమే. ఎటువంటి వాస్తవ సందేశాలు పంపబడవు.",
     "dltApproval": "DLT ఆమోదించబడింది",
     "optedInOnly": "సమ్మతించిన గ్రహీతలు మాత్రమే",

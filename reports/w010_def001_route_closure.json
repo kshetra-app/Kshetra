@@ -1,0 +1,49 @@
+{
+  "evidenceMetadata": {
+    "mandate": "DEF-001 Route Closure: zero duplicate routes, zero stale references, canonical routing verified",
+    "verifiedBy": "ROUTE_CLOSURE_VALIDATOR",
+    "timestamp": "2026-09-21T09:06:37.779Z"
+  },
+  "verdict": "PASS",
+  "deletedFileChecks": [
+    {
+      "file": "apps/mobile/app/user/[id].tsx",
+      "exists": false,
+      "status": "PASS_ABSENT"
+    },
+    {
+      "file": "apps/mobile/app/auth/edit-profile.tsx",
+      "exists": false,
+      "status": "PASS_ABSENT"
+    },
+    {
+      "file": "apps/mobile/app/auth/onboarding.tsx",
+      "exists": false,
+      "status": "PASS_ABSENT"
+    }
+  ],
+  "canonicalFileChecks": [
+    {
+      "file": "apps/mobile/app/user/[userId].tsx",
+      "exists": true,
+      "status": "PASS_EXISTS"
+    },
+    {
+      "file": "apps/mobile/app/edit-profile.tsx",
+      "exists": true,
+      "status": "PASS_EXISTS"
+    },
+    {
+      "file": "apps/mobile/app/onboarding.tsx",
+      "exists": true,
+      "status": "PASS_EXISTS"
+    }
+  ],
+  "staleReferencesCount": 0,
+  "staleReferences": [],
+  "layoutVerification": {
+    "layoutHasEditProfile": true,
+    "layoutHasUserDetail": true,
+    "layoutHasAuthGuard": true
+  }
+}

@@ -1,0 +1,168 @@
+{
+  "evidenceMetadata": {
+    "mandate": "DEF-012 Locale Closure: 100% semantic parity & token integrity across all 13 official languages",
+    "verifiedBy": "SEMANTIC_TOKEN_INTEGRITY_VALIDATOR",
+    "timestamp": "2026-09-21T09:04:23.476Z"
+  },
+  "canonicalKeyCount": 2371,
+  "keysWithTokensCount": 147,
+  "allPassed100Percent": true,
+  "results": [
+    {
+      "lang": "en",
+      "totalKeys": 2371,
+      "canonicalKeys": 2371,
+      "missingCount": 0,
+      "extraCount": 0,
+      "tokenMismatchCount": 0,
+      "status": "PASS",
+      "missingKeys": [],
+      "extraKeys": [],
+      "tokenMismatches": []
+    },
+    {
+      "lang": "te",
+      "totalKeys": 2371,
+      "canonicalKeys": 2371,
+      "missingCount": 0,
+      "extraCount": 0,
+      "tokenMismatchCount": 0,
+      "status": "PASS",
+      "missingKeys": [],
+      "extraKeys": [],
+      "tokenMismatches": []
+    },
+    {
+      "lang": "hi",
+      "totalKeys": 2371,
+      "canonicalKeys": 2371,
+      "missingCount": 0,
+      "extraCount": 0,
+      "tokenMismatchCount": 0,
+      "status": "PASS",
+      "missingKeys": [],
+      "extraKeys": [],
+      "tokenMismatches": []
+    },
+    {
+      "lang": "ta",
+      "totalKeys": 2371,
+      "canonicalKeys": 2371,
+      "missingCount": 0,
+      "extraCount": 0,
+      "tokenMismatchCount": 0,
+      "status": "PASS",
+      "missingKeys": [],
+      "extraKeys": [],
+      "tokenMismatches": []
+    },
+    {
+      "lang": "kn",
+      "totalKeys": 2371,
+      "canonicalKeys": 2371,
+      "missingCount": 0,
+      "extraCount": 0,
+      "tokenMismatchCount": 0,
+      "status": "PASS",
+      "missingKeys": [],
+      "extraKeys": [],
+      "tokenMismatches": []
+    },
+    {
+      "lang": "ml",
+      "totalKeys": 2371,
+      "canonicalKeys": 2371,
+      "missingCount": 0,
+      "extraCount": 0,
+      "tokenMismatchCount": 0,
+      "status": "PASS",
+      "missingKeys": [],
+      "extraKeys": [],
+      "tokenMismatches": []
+    },
+    {
+      "lang": "mr",
+      "totalKeys": 2371,
+      "canonicalKeys": 2371,
+      "missingCount": 0,
+      "extraCount": 0,
+      "tokenMismatchCount": 0,
+      "status": "PASS",
+      "missingKeys": [],
+      "extraKeys": [],
+      "tokenMismatches": []
+    },
+    {
+      "lang": "bn",
+      "totalKeys": 2371,
+      "canonicalKeys": 2371,
+      "missingCount": 0,
+      "extraCount": 0,
+      "tokenMismatchCount": 0,
+      "status": "PASS",
+      "missingKeys": [],
+      "extraKeys": [],
+      "tokenMismatches": []
+    },
+    {
+      "lang": "gu",
+      "totalKeys": 2371,
+      "canonicalKeys": 2371,
+      "missingCount": 0,
+      "extraCount": 0,
+      "tokenMismatchCount": 0,
+      "status": "PASS",
+      "missingKeys": [],
+      "extraKeys": [],
+      "tokenMismatches": []
+    },
+    {
+      "lang": "or",
+      "totalKeys": 2371,
+      "canonicalKeys": 2371,
+      "missingCount": 0,
+      "extraCount": 0,
+      "tokenMismatchCount": 0,
+      "status": "PASS",
+      "missingKeys": [],
+      "extraKeys": [],
+      "tokenMismatches": []
+    },
+    {
+      "lang": "pa",
+      "totalKeys": 2371,
+      "canonicalKeys": 2371,
+      "missingCount": 0,
+      "extraCount": 0,
+      "tokenMismatchCount": 0,
+      "status": "PASS",
+      "missingKeys": [],
+      "extraKeys": [],
+      "tokenMismatches": []
+    },
+    {
+      "lang": "as",
+      "totalKeys": 2371,
+      "canonicalKeys": 2371,
+      "missingCount": 0,
+      "extraCount": 0,
+      "tokenMismatchCount": 0,
+      "status": "PASS",
+      "missingKeys": [],
+      "extraKeys": [],
+      "tokenMismatches": []
+    },
+    {
+      "lang": "ne",
+      "totalKeys": 2371,
+      "canonicalKeys": 2371,
+      "missingCount": 0,
+      "extraCount": 0,
+      "tokenMismatchCount": 0,
+      "status": "PASS",
+      "missingKeys": [],
+      "extraKeys": [],
+      "tokenMismatches": []
+    }
+  ]
+}

@@ -76,9 +76,7 @@ const hi = {
     },
     "collapse": "संक्षिप्त करें",
     "expandAll": "सभी विस्तार करें",
-    "hide": "छिपाएं",
-    "article": "लेख",
-    "articles": "लेख"
+    "hide": "छिपाएं"
   },
   "tabs": {
     "map": "मानचित्र",
@@ -137,10 +135,7 @@ const hi = {
     "favourite": "पसंदीदा",
     "gen": "सामान्य (GEN)",
     "sc": "अनुसूचित जाति (SC)",
-    "st": "अनुसूचित जनजाति (ST)",
-    "allSeats": "सभी सीटें",
-    "contested": "कड़ा मुकाबला",
-    "reserved": "आरक्षित सीटें"
+    "st": "अनुसूचित जनजाति (ST)"
   },
   "mapSearch": {
     "placeholder": "निर्वाचन क्षेत्र, विधायक, जिला खोजें...",
@@ -149,6 +144,7 @@ const hi = {
   },
   "mapSheet": {
     "winner2023": "2023 विजेता",
+    "winnerYear": "{{year}} विजेता",
     "winnerVotes": "विजेता के मत",
     "margin": "अंतर",
     "runnerUp": "उपविजेता",
@@ -291,14 +287,7 @@ const hi = {
     "nowPlaying": "अब चल रहा है",
     "upload": "अपलोड करें",
     "noShorts": "इस दायरे में कोई शॉर्ट्स नहीं हैं",
-    "uploadFirst": "पहला शॉर्ट अपलोड करें",
-    "filterAll": "सभी",
-    "filterTrending": "ट्रेंडिंग",
-    "filterLocal": "स्थानीय",
-    "filterVerified": "सत्यापित",
-    "emptyTitle": "अभी कोई शॉर्ट्स नहीं हैं",
-    "emptySubtitle": "अपने निर्वाचन क्षेत्र से पहला राजनीतिक अपडेट साझा करें।",
-    "camera": "कैमरा"
+    "uploadFirst": "पहला शॉर्ट अपलोड करें"
   },
   "postCard": {
     "pinned": "पिन किया गया",
@@ -624,6 +613,7 @@ const hi = {
     "restrictedNotice": "सामान्य मॉडरेशन कतार विशेष रूप से आईटी नियम 2021 के तहत सत्यापित शिकायत अधिकारियों, मॉडरेटर और प्रशासकों के लिए आरक्षित है।",
     "returnToFeed": "फ़ीड पर वापस जाएं",
     "contentModerationQueue": "सामग्री मॉडरेशन कतार",
+    "statutoryNotice": "वैधानिक शिकायत और सामग्री समीक्षा कतार ({{count}} लंबित)। आईटी नियम 2021 के अनुपालन में सभी कार्रवाइयाँ दर्ज की जाती हैं।",
     "fetchingReports": "लंबित रिपोर्ट प्राप्त की जा रही हैं...",
     "queueAllClear": "कतार पूरी तरह स्पष्ट है!",
     "noPendingReports": "मॉडरेशन की आवश्यकता वाली कोई लंबित उपयोगकर्ता रिपोर्ट नहीं है।",
@@ -690,12 +680,7 @@ const hi = {
     "legal_status": "दल-बदल विरोधी कार्यवाही",
     "sources": "स्रोत",
     "by_elections_held": "उप-चुनाव संपन्न",
-    "politicalEvents": "राजनीतिक घटनाएं",
-    "defection": "दल-बदल",
-    "split": "विभाजन",
-    "expulsion": "निष्कासन",
-    "dissolution": "विधानसभा भंग",
-    "presidents_rule": "राष्ट्रपति शासन"
+    "politicalEvents": "राजनीतिक घटनाएं"
   },
   "intelligence": {
     "party_strength_title": "दल की ताकत: वर्तमान बनाम चुनाव दिवस",
@@ -713,8 +698,7 @@ const hi = {
     "closestContest": "कड़ा मुकाबला",
     "majorityParty": "बहुमत दल",
     "electionTimeline": "चुनाव समयरेखा",
-    "defectionTracker": "दल-बदल ट्रैकर",
-    "aiInsights": "AI अंतर्दृष्टि"
+    "defectionTracker": "दल-बदल ट्रैकर"
   },
   "content": {
     "issueCategories": {
@@ -844,6 +828,14 @@ const hi = {
       "headline": "ऑपरेशन आकर्ष: सीक्वल",
       "body": "2016 में TRS ने 12 TDP विधायक खींचे। 2024 में INC ने 10 BRS विधायक खींचे — मीडिया ने इसे \"ऑपरेशन आकर्ष 2.0\" कहा।"
     },
+    "TRV-DEF-004": {
+      "headline": "Like Father, Like Son",
+      "body": "When Nagarjuna Sagar MLA Nomula Narsimhaiah (TRS) died in 2021, his son Nomula Bhagath जीता the by-election on the same ticket."
+    },
+    "TRV-DEF-005": {
+      "headline": "The Defection Boomerang",
+      "body": "Arekapudi Gandhi's constituency has been \"represented\" by 4 parties without a single by-election."
+    },
     "TRV-REC-001": {
       "headline": "अभेद्य किला",
       "body": "AIMIM ने हैदराबाद पुराने शहर की 7 सीटें लगातार 3 चुनावों में रखीं — 21/21 का रिकॉर्ड।"
@@ -852,9 +844,37 @@ const hi = {
       "headline": "सबसे बड़ी वापसी",
       "body": "INC 6 सीटों से 2023 चुनाव में 64 सीटों तक — 967% वृद्धि, तेलंगाना इतिहास का सबसे बड़ा बदलाव।"
     },
+    "TRV-REC-003": {
+      "headline": "From MLA to मुख्यमंत्री in 9 Years",
+      "body": "Revanth Reddy: TDP MLA (2014) → joined INC (2017) → हारा (2018) → TPCC president → मुख्यमंत्री (2023)."
+    },
+    "TRV-REC-004": {
+      "headline": "The Sircilla King",
+      "body": "KTR has जीता Sircilla in all 3 Telangana elections — 2014, 2018, and 2023."
+    },
+    "TRV-REC-005": {
+      "headline": "Harish Rao's Siddipet Streak",
+      "body": "T. Harish Rao has represented Siddipet since 2004 — winning 5 consecutive elections."
+    },
     "TRV-ELE-001": {
       "headline": "जल्दी भंग का जुआ",
       "body": "KCR ने 2018 में विधानसभा 9 महीने पहले भंग की। TRS ने 88/119 सीटें जीतीं। 2023 में पूरा कार्यकाल सिर्फ 39 सीटें।"
+    },
+    "TRV-ELE-002": {
+      "headline": "Similar Votes, Wildly Different Seats",
+      "body": "In 2023, INC got 39.4% votes → 64 सीटें, BRS got 37.4% → 39 सीटें. 2% difference = 25 सीटें."
+    },
+    "TRV-ELE-003": {
+      "headline": "The Red Bastion",
+      "body": "Ramagundam is Telangana's sole left-party constituency. Coal belt keeps leftist politics alive."
+    },
+    "TRV-HIS-001": {
+      "headline": "The Youngest State's First Vote",
+      "body": "2014 was the first-ever Telangana Assembly election after statehood on June 2, 2014."
+    },
+    "TRV-HIS-002": {
+      "headline": "What's in a Name?",
+      "body": "TRS became BRS in October 2022 — \"Telangana\" replaced with \"Bharat\" for national ambitions that flopped."
     },
     "AP-T-001": {
       "headline": "चंद्रबाबू नायडू — वापसी के राजा",
@@ -868,6 +888,18 @@ const hi = {
       "headline": "YSRCP: 151 से 11",
       "body": "2019 में YSRCP ने 151/175 सीटें जीतीं। 2024 में सिर्फ 11 — एक चुनाव में 140 सीटें गँवाईं।"
     },
+    "AP-T-004": {
+      "headline": "NDA Triple Alliance Sweep",
+      "body": "TDP-JSP-BJP जीता 164/175 सीटें in 2024 — 93.7% of all सीटें, most lopsided result in AP post-bifurcation."
+    },
+    "AP-T-005": {
+      "headline": "Pulivendula — Jagan's Last Bastion",
+      "body": "Even in the 2024 wipeout, Jagan held Pulivendula by 45,678 votes. His family has held this seat 40+ years."
+    },
+    "AP-T-006": {
+      "headline": "Operation Akarsh 2.0",
+      "body": "6 YSRCP MLAs defected to TDP before 2024 elections, mirroring 2017's \"Operation Akarsh.\""
+    },
     "KA-T-001": {
       "headline": "ऑपरेशन कमल — सबसे बड़ा दलबदल नाटक",
       "body": "17 JDS-INC विधायकों ने जुलाई 2019 में इस्तीफा दिया। 12 ने BJP टिकट पर उपचुनाव जीता।"
@@ -875,6 +907,26 @@ const hi = {
     "KA-T-002": {
       "headline": "सिद्धरामैया — गारंटी मैन",
       "body": "सिद्धरामैया ने बदामी 42,567 अंतर से जीता। उनकी 5 गारंटी योजनाओं ने INC को 135 सीटें दिलाईं।"
+    },
+    "KA-T-003": {
+      "headline": "Deve Gowda Dynasty — Three Generations",
+      "body": "H.D. Deve Gowda (प्रधानमंत्री), son Kumaraswamy (मुख्यमंत्री), grandson Prajwal — all held elected office."
+    },
+    "KA-T-004": {
+      "headline": "भाजपा: From 104 to 66",
+      "body": "BJP हारा 38 सीटें (2018→2023). \"40% commission\" charges and 3 मुख्यमंत्री in one term were key factors."
+    },
+    "KA-T-005": {
+      "headline": "Three मुख्यमंत्री in One Term",
+      "body": "Karnataka had 3 BJP मुख्यमंत्री in 2018-2023: Yediyurappa, Bommai, and brief considerations for Sadananda Gowda."
+    },
+    "KA-T-006": {
+      "headline": "Jarkiholi Brothers — On Opposite Sides",
+      "body": "Ramesh in BJP (Gokak), Balachandra in INC (Arabhavi). Political rivalry within the family!"
+    },
+    "KA-T-007": {
+      "headline": "Coastal Karnataka — BJP's Fortress",
+      "body": "In 2023, BJP जीता all 8 coastal सीटें despite losing the state overall."
     },
     "MH-T-001": {
       "headline": "शिवसेना का महाविभाजन",
@@ -884,9 +936,29 @@ const hi = {
       "headline": "पवार बनाम पवार — चाचा बनाम भतीजा",
       "body": "अजित पवार ने NCP तोड़कर 40+ विधायकों को BJP में ले गए। चाचा शरद पवार (83) ने NCP(SP) बनाई।"
     },
+    "MH-T-003": {
+      "headline": "Fadnavis — The Comeback Man",
+      "body": "Fadnavis जीता Nagpur South West with a massive margin. Became मुख्यमंत्री for the 3rd time."
+    },
+    "MH-T-004": {
+      "headline": "कांग्रेस: From 44 to 16",
+      "body": "Congress decimated — from 44 सीटें (2019) to just 16 (2024), their worst performance in Maharashtra."
+    },
+    "MH-T-005": {
+      "headline": "Aaditya Thackeray — The Worli Prince",
+      "body": "Aaditya retained Worli even as his father's faction was decimated statewide."
+    },
     "MH-T-006": {
       "headline": "महायुति सुनामी — 230/288",
       "body": "BJP-SHS-NCP (महायुति) ने 2024 में 230/288 सीटें जीतीं — MH इतिहास का सबसे एकतरफा परिणाम।"
+    },
+    "MH-T-007": {
+      "headline": "Two Parties, Same Name",
+      "body": "Both Shiv Sena and NCP split into two, each claiming the original name. Courts had to adjudicate."
+    },
+    "MH-T-008": {
+      "headline": "Mumbai — 36 Seats, BJP Dominates",
+      "body": "BJP जीता majority of Mumbai's 36 assembly सीटें in 2024, consolidating urban dominance."
     }
   },
   "seedPosts": {
@@ -1057,6 +1129,7 @@ const hi = {
     "reservation": "आरक्षण",
     "totalSeats": "कुल सीटें",
     "seatsWon": "सीटें जीतीं",
+    "assemblyElection": "{{year}} विधानसभा चुनाव",
     "ruling": "सत्तारूढ़ दल",
     "defections": "दल-बदल",
     "keyInsights": "प्रमुख अंतर्दृष्टि",
@@ -1070,6 +1143,7 @@ const hi = {
     "dominant": "प्रभावी",
     "competitiveIndexDesc": "प्रतिस्पर्धा सूचकांक: उच्च = अधिक कड़ा मुकाबला",
     "swingSeatsTitle": "झूला सीटें (अंतर < 8K)",
+    "seatsCouldFlip": "{{count}} सीटें बदल सकती हैं",
     "antiIncumbencyIndicators": "सत्ता विरोधी रुझान",
     "defectionRate": "दल-बदल दर",
     "vulnerableSeats": "जोखिम वाली सीटें (<5%)",
@@ -1159,10 +1233,10 @@ const hi = {
     "thTotal": "कुल",
     "showTop15": "शीर्ष 15 दल दिखाएं",
     "viewAllParties": "सभी {{count}} घटक दल देखें (YSRCP, BRS, TDP सहित…)",
-    "lokSabhaMPsCount": "18वीं लोकसभा सांसद (543 में से {{count}})",
+    "lokSabhaMPsCount": "18th Lok Sabha MPs ({{count}} of {{total}})",
     "stateLokSabhaCount": "लोकसभा सांसद — {{state}} ({{count}})",
     "noMPsMatch": "आपकी खोज या फ़िल्टर से कोई सांसद मेल नहीं खाता।",
-    "rajyaSabhaMPsCount": "राज्यसभा सांसद (142 में से {{count}})",
+    "rajyaSabhaMPsCount": "Rajya Sabha MPs ({{count}} of {{total}})",
     "stateRajyaSabhaCount": "राज्यसभा सांसद — {{state}} ({{count}})",
     "noRajyaSabhaMatch": "आपकी खोज से कोई राज्यसभा सांसद मेल नहीं खाता।",
     "termsElected": "निर्वाचित कार्यकाल",
@@ -1314,12 +1388,14 @@ const hi = {
     "hierarchyLabel": "प्रशासनिक पदानुक्रम",
     "gp": "ग्राम पंचायत",
     "pop": "जनसंख्या",
+    "noPanchayatSamples": "इस {{mandal}} के लिए कोई {{panchayat}} नमूना रिकॉर्ड उपलब्ध नहीं है",
     "mandalLower": "मंडल",
     "voters": "मतदाता",
     "sarpanch": "सरपंच",
     "noBoothSamples": "इस प्रभाग के लिए मतदान केंद्र रिकॉर्ड उपलब्ध नहीं हैं",
     "urban": "शहरी",
     "rural": "ग्रामीण",
+    "footer": "{{stateName}} के लिए स्थानीय शासन संरचना",
     "title": "प्रशासनिक पदानुक्रम",
     "subtitle": "बूथ से लेकर निर्वाचन क्षेत्र तक देखें",
     "booth": "बूथ",
@@ -1382,6 +1458,8 @@ const hi = {
     "allEvents": "सार्वजनिक कार्यक्रम",
     "eManifestos": "डिजिटल घोषणापत्र व वादे",
     "opinionSurveys": "मतदाता सर्वेक्षण व पोल",
+    "responsesCount": "{{count}} प्रतिक्रियाएँ",
+    "completedResponses": "{{count}} नागरिकों ने यह सर्वेक्षण पूरा किया",
     "title": "नेता पोर्टल",
     "subtitle": "अपने निर्वाचन क्षेत्र की जन-संपर्क व्यवस्था",
     "tabs": {
@@ -1418,6 +1496,13 @@ const hi = {
     "total": "कुल",
     "booths": "बूथ",
     "otherCampaigns": "अन्य सक्रिय अभियान",
+    "activeAds": "सक्रिय अभियान और विज्ञापन ({{count}})",
+    "boothStrategy": "बूथ रणनीति और प्रचार ({{count}})",
+    "boothMeta": "बूथ #{{boothNumber}} · निर्वाचन #{{acNo}} · वार्ड {{wardNo}}",
+    "voters": "{{count}} मतदाता",
+    "target": "लक्ष्य: {{count}}",
+    "support": "समर्थन: {{pct}}%",
+    "canvas": "कैनवस: {{pct}}%",
     "title": "अभियान प्रबंधक",
     "subtitle": "रणनीति, विज्ञापन और स्वयंसेवक प्रबंधन",
     "tabs": {
@@ -1584,6 +1669,14 @@ const hi = {
     "screenSubtitle": "बजट, उपस्थिति, विधेयक और योजनाएं",
     "stateBudgetOverview": "राज्य बजट अवलोकन",
     "noBudgetData": "इस राज्य के लिए बजट डेटा उपलब्ध नहीं है",
+    "legislatorAttendance": "विधायक उपस्थिति ({{count}})",
+    "activeBills": "सक्रिय विधेयक और विधान ({{count}})",
+    "governmentSchemes": "सरकारी योजनाएँ और कल्याण ({{count}})",
+    "developmentProjects": "बुनियादी ढांचा और विकास परियोजनाएँ ({{count}})",
+    "publicRTIRequests": "सार्वजनिक आरटीआई अनुरोध ({{count}})",
+    "response": "प्रतिक्रिया: {{text}}",
+    "views": "{{count}} बार देखा गया",
+    "filed": "{{date}} को दाखिल",
     "title": "नागरिक मेट्रिक्स",
     "subtitle": "बजट, उपस्थिति, विधेयक और योजनाएँ",
     "tabs": {
@@ -1832,7 +1925,9 @@ const hi = {
     "noLiveElection": "कोई लाइव चुनाव जारी नहीं है",
     "noLiveElectionDesc": "सक्रिय होने पर मतगणना, बढ़त और वोट शेयर रीयल-टाइम अपडेट होंगे।",
     "voteShareComparison": "वोट शेयर तुलना",
+    "constituencyResults": "निर्वाचन क्षेत्र परिणाम ({{count}})",
     "noConstituencyData": "अभी कोई क्षेत्र डेटा उपलब्ध नहीं है",
+    "systemHealth": "गणना पाइपलाइन: {{status}} ({{healthy}}/{{total}} स्रोत चालू)",
     "title": "लाइव चुनाव",
     "subtitle": "रियल-टाइम मतगणना और परिणाम",
     "live": "लाइव",
@@ -2019,6 +2114,7 @@ const hi = {
     "show": "दिखाएँ",
     "pollingBooth": "मतदान बूथ #{{n}}",
     "registeredVoters": "पंजीकृत मतदाता",
+    "boothHistorical": "{{year}} ईसीआई स्थान · ऐतिहासिक",
     "seatDensityOverlay": "सीट घनत्व ओवरले",
     "projected": "अनुमानित",
     "underRepresented": "कम प्रतिनिधित्व",
@@ -2282,7 +2378,7 @@ const hi = {
     "northSouthBody": "दक्षिणी राज्यों में जनसंख्या नियंत्रण के कारण सीटों में कमी की संभावना है, जबकि उत्तरी राज्यों में सीटें बढ़ेंगी।",
     "north": "उत्तर भारत",
     "south": "दक्षिण भारत",
-    "seats": "सीटें",
+    "seats": "{{count}} सीटें",
     "comingSoon": "शीघ्र उपलब्ध",
     "featureWhatChanges": "आपके क्षेत्र में क्या बदलेगा",
     "featureMLARisk": "विधायक जोखिम विश्लेषण",
@@ -2456,18 +2552,7 @@ const hi = {
     "agreementText": "मैं पुष्टि करता हूँ कि दी गई सभी जानकारी सटीक है। मेरी पोस्ट मेरी सत्यापित पहचान से जुड़ी हैं।",
     "agreeAndVerify": "सहमत हों एवं सत्यापित करें",
     "submitting": "सत्यापित किया जा रहा है...",
-    "subtitle": "सुरक्षित योगदान के लिए अपनी पहचान सत्यापित करें",
-    "step1": "फ़ोन नंबर",
-    "step2": "OTP दर्ज करें",
-    "step3": "सेल्फी जांच",
-    "step4": "समीक्षा में",
-    "submitButton": "सत्यापन सबमिट करें",
-    "cancelButton": "रद्द करें",
-    "resendOtp": "OTP पुनः भेजें",
-    "otpSent": "OTP आपके फ़ोन पर भेजा गया है",
-    "invalidOtp": "अमान्य OTP। पुनः प्रयास करें।",
-    "verifying": "सत्यापित किया जा रहा है...",
-    "success": "सत्यापन सफल!"
+    "step": "चरण {{current}} / {{total}}"
   },
   "contentGate": {
     "promote": "प्रचार करें",
@@ -2488,6 +2573,7 @@ const hi = {
     "alertThankYou": "प्राथमिकता समीक्षा के लिए मॉडरेटर को अलर्ट भेजा गया।",
     "promoteContent": "सामग्री का प्रचार करें",
     "boostReach": "इस सामग्री की पहुंच बढ़ाएं",
+    "creditsRequired": "{{count}} क्रेडिट आवश्यक",
     "promoteNow": "अभी प्रचार करें",
     "vouch": "समर्थन करें",
     "vouched": "समर्थन किया",
@@ -2499,17 +2585,7 @@ const hi = {
     "flagPlaceholder": "मुद्दे का विवरण दें...",
     "alertWarning": "अलर्ट केवल समय-संवेदनशील या खतरनाक सामग्री के लिए हैं।",
     "alertPlaceholder": "यह समय-संवेदनशील क्यों है?",
-    "alertSubmittedMessage": "प्राथमिकता समीक्षा के लिए मॉडरेटर को अलर्ट भेजा गया।",
-    "gateTitle": "सत्यापित सामग्री गेट",
-    "gateSubtitle": "नागरिक अखंडता सुनिश्चित करना",
-    "confirmButton": "पुष्टि करें",
-    "cancelButton": "रद्द करें",
-    "termsNotice": "सामुदायिक दिशानिर्देशों का पालन करें।",
-    "thankYou": "सहयोग के लिए धन्यवाद।",
-    "moderationInProgress": "समीक्षा प्रगति पर है",
-    "reachBoosted": "पहुंच बढ़ा दी गई है",
-    "pointsDeducted": "अंक काटे गए",
-    "reportClosed": "रिपोर्ट बंद"
+    "alertSubmittedMessage": "प्राथमिकता समीक्षा के लिए मॉडरेटर को अलर्ट भेजा गया।"
   },
   "shortsPlayer": {
     "branding": "शॉर्ट्स",
@@ -2531,14 +2607,7 @@ const hi = {
     "alertReportedTitle": "रिपोर्ट किया गया",
     "alertReportedMessage": "इस शॉर्ट को समीक्षा के लिए रिपोर्ट किया गया है।",
     "alertShareTitle": "शेयर लिंक बनाया गया",
-    "like": "पसंद करें",
-    "liked": "पसंद किया",
-    "flag": "फ़्लैग करें",
-    "more": "अधिक",
-    "volume": "ध्वनि",
-    "autoPlay": "ऑटो-प्ले",
-    "pause": "रोकें",
-    "play": "चलाएं"
+    "alertShareMessage": "\"{{title}}\" के लिए शेयर लिंक क्लिपबोर्ड पर कॉपी हो गया।"
   },
   "uploadShort": {
     "title": "राजनीतिक शॉर्ट अपलोड करें",
@@ -2570,17 +2639,7 @@ const hi = {
     "alertTermsRequired": "अपलोड करने के लिए कृपया शर्तों को स्वीकार करें।",
     "alertConstituencyRequired": "अपलोड करने से पहले आपका निर्वाचन क्षेत्र सत्यापित होना चाहिए।",
     "alertSuccessTitle": "अपलोड सफल",
-    "alertSuccessMessage": "आपका राजनीतिक शॉर्ट अब आपके निर्वाचन क्षेत्र के फ़ीड में लाइव है।",
-    "step1Title": "वीडियो विवरण",
-    "step2Title": "सत्यापन",
-    "selectFile": "फ़ाइल चुनें",
-    "maxDuration": "अधिकतम 60 सेकंड",
-    "guidelines": "सामुदायिक दिशा-निर्देश पढ़ें",
-    "agreeTerms": "मैं नियमों से सहमत हूँ",
-    "preview": "पूर्वावलोकन",
-    "publish": "प्रकाशित करें",
-    "discard": "खारिज करें",
-    "savingDraft": "ड्राफ्ट सहेजा जा रहा है..."
+    "alertSuccessMessage": "आपका राजनीतिक शॉर्ट अब आपके निर्वाचन क्षेत्र के फ़ीड में लाइव है।"
   },
   "moduleDetail": {
     "keyTakeaways": "मुख्य बिंदु",
@@ -2595,13 +2654,7 @@ const hi = {
     "submitQuiz": "उत्तर सबमिट करें",
     "markComplete": "पूर्ण चिह्नित करें",
     "alreadyCompleted": "✓ पहले ही पूर्ण",
-    "startQuiz": "क्विज़ शुरू करें",
-    "retakeQuiz": "पुनः क्विज़ लें",
-    "question": "प्रश्न {{current}} का {{total}}",
-    "certificate": "प्रमाणपत्र प्राप्त करें",
-    "overview": "मॉड्यूल अवलोकन",
-    "readingTime": "{{mins}} मिनट पठन",
-    "keyLearnings": "मुख्य सीख"
+    "questionOf": "प्रश्न {{current}} / {{total}}"
   },
   "outreachPanel": {
     "compose": "संदेश लिखें",
@@ -2625,12 +2678,15 @@ const hi = {
     "sendBroadcast": "प्रसारण भेजें",
     "scheduleBroadcast": "प्रसारण शेड्यूल करें",
     "confirmSend": "भेजने की पुष्टि करें",
+    "confirmMsg": "क्या यह प्रसारण {{count}} प्राप्तकर्ताओं को भेजें?",
     "sent": "प्रसारण भेजा गया!",
     "scheduled": "प्रसारण शेड्यूल किया गया!",
     "allFollowers": "सभी फॉलोअर्स",
     "boothVolunteers": "बूथ स्वयंसेवक",
     "youthVoters": "युवा मतदाता (18-25)",
     "womenVoters": "महिला मतदाता",
+    "sendBroadcastConfirm": "क्या यह प्रसारण अभी {{count}} प्राप्तकर्ताओं को भेजें?",
+    "scheduleBroadcastConfirm": "क्या यह प्रसारण {{count}} प्राप्तकर्ताओं के लिए निर्धारित करें?",
     "simulationNote": "यह एक सिमुलेशन है। कोई वास्तविक संदेश नहीं भेजा जाएगा।",
     "dltApproval": "DLT स्वीकृत",
     "optedInOnly": "केवल सहमति प्राप्त प्राप्तकर्ता",
@@ -2641,22 +2697,7 @@ const hi = {
     "close": "बंद करें",
     "newTemplate": "नया टेम्पलेट",
     "missingFields": "अधूरी जानकारी",
-    "missingFieldsMessage": "कृपया टेम्पलेट नाम और संदेश भरें।",
-    "templateSaved": "टेम्पलेट सहेजा गया",
-    "deleteTemplate": "टेम्पलेट हटाएं",
-    "analytics": "प्रसारण विश्लेषण",
-    "deliveryRate": "वितरण दर",
-    "openRate": "ओपन दर",
-    "clickRate": "क्लिक दर",
-    "senderId": "प्रेषक आईडी",
-    "charCount": "{{count}}/160 वर्ण",
-    "smsPreview": "SMS पूर्वावलोकन",
-    "whatsappPreview": "WhatsApp पूर्वावलोकन",
-    "campaignName": "अभियान का नाम",
-    "targetAudience": "लक्षित दर्शक",
-    "estimatedCost": "अनुमानित लागत: ₹{{cost}}",
-    "balance": "वॉलेट शेष: ₹{{balance}}",
-    "recharge": "रिचार्ज करें"
+    "missingFieldsMessage": "कृपया टेम्पलेट नाम और संदेश भरें।"
   },
   "localBodies": {
     "screenTitle": "स्थानीय निकाय",

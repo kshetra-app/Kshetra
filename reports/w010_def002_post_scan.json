@@ -1,0 +1,26 @@
+{
+  "evidenceMetadata": {
+    "mandate": "DEF-002 Independent Post-Scan: zero deceptive fallback success semantics",
+    "verifiedBy": "DECEPTIVE_FALLBACK_SCANNER",
+    "timestamp": "2026-09-21T09:06:25.434Z"
+  },
+  "scannedFilesCount": 2,
+  "totalViolations": 0,
+  "verdict": "PASS",
+  "results": [
+    {
+      "file": "apps/mobile/lib/supabaseDataService.ts",
+      "scannedLines": 2127,
+      "violationsCount": 0,
+      "violations": [],
+      "status": "CLEAN"
+    },
+    {
+      "file": "apps/mobile/lib/pageService.ts",
+      "scannedLines": 37,
+      "violationsCount": 0,
+      "violations": [],
+      "status": "CLEAN"
+    }
+  ]
+}

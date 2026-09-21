@@ -1,0 +1,168 @@
+{
+  "closureMetadata": {
+    "job": "W010-P0",
+    "title": "CTO Verification Closure Directive — W010-P0 Historical Defect Remediation",
+    "repository": "https://github.com/kshetra-app/Kshetra.git",
+    "branch": "master",
+    "timestamp": "2026-09-21T14:45:00.000Z",
+    "authority": "Master Execution Framework v1.4 / CTO Verification Closure Directive",
+    "status": "SUBMITTED_FOR_CTO_FINAL_ACCEPTANCE"
+  },
+  "def002Reconciliation": {
+    "totalInventoryOccurrences": 42,
+    "totalReconciled": 42,
+    "batchL1RemediatedCount": 7,
+    "batchL3RemediatedCount": 35,
+    "remainingDefects": 0,
+    "occurrences": [
+      { "id": 1, "file": "apps/mobile/lib/supabaseDataService.ts", "line": 151, "operation": "upvoteComment", "originalPattern": "if (!guard()) return true;", "disposition": "REMEDIATED_BATCH_L3", "currentBehavior": "returns boolean false on unauthenticated/unconfigured guard check" },
+      { "id": 2, "file": "apps/mobile/lib/supabaseDataService.ts", "line": 171, "operation": "removeCommentUpvote", "originalPattern": "if (!guard()) return true;", "disposition": "REMEDIATED_BATCH_L3", "currentBehavior": "returns boolean false on unauthenticated/unconfigured guard check" },
+      { "id": 3, "file": "apps/mobile/lib/supabaseDataService.ts", "line": 211, "operation": "postComment", "originalPattern": "if (!guard()) return true;", "disposition": "REMEDIATED_BATCH_L3", "currentBehavior": "returns boolean false on unauthenticated/unconfigured guard check" },
+      { "id": 4, "file": "apps/mobile/lib/supabaseDataService.ts", "line": 251, "operation": "deleteComment", "originalPattern": "if (!guard()) return true;", "disposition": "REMEDIATED_BATCH_L3", "currentBehavior": "returns boolean false on unauthenticated/unconfigured guard check" },
+      { "id": 5, "file": "apps/mobile/lib/supabaseDataService.ts", "line": 282, "operation": "createPost", "originalPattern": "if (!guard()) return { id: `local-${Date.now()}`, success: true };", "disposition": "REMEDIATED_BATCH_L3", "currentBehavior": "returns { id: null, success: false } on unauthenticated/unconfigured guard check" },
+      { "id": 6, "file": "apps/mobile/lib/supabaseDataService.ts", "line": 313, "operation": "upvotePost", "originalPattern": "if (!guard()) return true;", "disposition": "REMEDIATED_BATCH_L3", "currentBehavior": "returns boolean false on unauthenticated/unconfigured guard check" },
+      { "id": 7, "file": "apps/mobile/lib/supabaseDataService.ts", "line": 330, "operation": "removePostUpvote", "originalPattern": "if (!guard()) return true;", "disposition": "REMEDIATED_BATCH_L3", "currentBehavior": "returns boolean false on unauthenticated/unconfigured guard check" },
+      { "id": 8, "file": "apps/mobile/lib/supabaseDataService.ts", "line": 351, "operation": "deletePost", "originalPattern": "if (!guard()) return true;", "disposition": "REMEDIATED_BATCH_L3", "currentBehavior": "returns boolean false on unauthenticated/unconfigured guard check" },
+      { "id": 9, "file": "apps/mobile/lib/supabaseDataService.ts", "line": 377, "operation": "commentOnPost", "originalPattern": "if (!guard()) return { id: `local-cmt-${Date.now()}`, success: true };", "disposition": "REMEDIATED_BATCH_L3", "currentBehavior": "returns { id: null, success: false } on unauthenticated/unconfigured guard check" },
+      { "id": 10, "file": "apps/mobile/lib/supabaseDataService.ts", "line": 421, "operation": "followPromise", "originalPattern": "if (!guard()) return true;", "disposition": "REMEDIATED_BATCH_L3", "currentBehavior": "returns boolean false on unauthenticated/unconfigured guard check" },
+      { "id": 11, "file": "apps/mobile/lib/supabaseDataService.ts", "line": 442, "operation": "unfollowPromise", "originalPattern": "if (!guard()) return true;", "disposition": "REMEDIATED_BATCH_L3", "currentBehavior": "returns boolean false on unauthenticated/unconfigured guard check" },
+      { "id": 12, "file": "apps/mobile/lib/supabaseDataService.ts", "line": 461, "operation": "completeLeadershipModule", "originalPattern": "if (!guard()) return true;", "disposition": "REMEDIATED_BATCH_L3", "currentBehavior": "returns boolean false on unauthenticated/unconfigured guard check" },
+      { "id": 13, "file": "apps/mobile/lib/supabaseDataService.ts", "line": 497, "operation": "joinCommunityChallenge", "originalPattern": "if (!guard()) return true;", "disposition": "REMEDIATED_BATCH_L3", "currentBehavior": "returns boolean false on unauthenticated/unconfigured guard check" },
+      { "id": 14, "file": "apps/mobile/lib/supabaseDataService.ts", "line": 526, "operation": "completeCommunityChallenge", "originalPattern": "if (!guard()) return true;", "disposition": "REMEDIATED_BATCH_L3", "currentBehavior": "returns boolean false on unauthenticated/unconfigured guard check" },
+      { "id": 15, "file": "apps/mobile/lib/supabaseDataService.ts", "line": 553, "operation": "voteInPoll", "originalPattern": "if (!guard()) return true;", "disposition": "REMEDIATED_BATCH_L3", "currentBehavior": "returns boolean false on unauthenticated/unconfigured guard check" },
+      { "id": 16, "file": "apps/mobile/lib/supabaseDataService.ts", "line": 594, "operation": "createShort", "originalPattern": "if (!guard()) return { id: `local-short-${Date.now()}`, success: true };", "disposition": "REMEDIATED_BATCH_L1", "currentBehavior": "returns { id: null, success: false } on unauthenticated/unconfigured guard check" },
+      { "id": 17, "file": "apps/mobile/lib/supabaseDataService.ts", "line": 625, "operation": "likeShort", "originalPattern": "if (!guard()) return true;", "disposition": "REMEDIATED_BATCH_L1", "currentBehavior": "returns boolean false on unauthenticated/unconfigured guard check" },
+      { "id": 18, "file": "apps/mobile/lib/supabaseDataService.ts", "line": 640, "operation": "unlikeShort", "originalPattern": "if (!guard()) return true;", "disposition": "REMEDIATED_BATCH_L1", "currentBehavior": "returns boolean false on unauthenticated/unconfigured guard check" },
+      { "id": 19, "file": "apps/mobile/lib/supabaseDataService.ts", "line": 665, "operation": "recordShortView", "originalPattern": "if (!guard()) return true;", "disposition": "REMEDIATED_BATCH_L3", "currentBehavior": "returns boolean false on unauthenticated/unconfigured guard check" },
+      { "id": 20, "file": "apps/mobile/lib/supabaseDataService.ts", "line": 712, "operation": "createAspirantProfile", "originalPattern": "if (!guard()) return { id: `local-asp-${Date.now()}`, success: true };", "disposition": "REMEDIATED_BATCH_L3", "currentBehavior": "returns { id: null, success: false } on unauthenticated/unconfigured guard check" },
+      { "id": 21, "file": "apps/mobile/lib/supabaseDataService.ts", "line": 738, "operation": "updateAspirantProfile", "originalPattern": "if (!guard()) return true;", "disposition": "REMEDIATED_BATCH_L3", "currentBehavior": "returns boolean false on unauthenticated/unconfigured guard check" },
+      { "id": 22, "file": "apps/mobile/lib/supabaseDataService.ts", "line": 757, "operation": "endorseAspirant", "originalPattern": "if (!guard()) return true;", "disposition": "REMEDIATED_BATCH_L3", "currentBehavior": "returns boolean false on unauthenticated/unconfigured guard check" },
+      { "id": 23, "file": "apps/mobile/lib/supabaseDataService.ts", "line": 786, "operation": "unendorseAspirant", "originalPattern": "if (!guard()) return true;", "disposition": "REMEDIATED_BATCH_L3", "currentBehavior": "returns boolean false on unauthenticated/unconfigured guard check" },
+      { "id": 24, "file": "apps/mobile/lib/supabaseDataService.ts", "line": 801, "operation": "createFundraisingCampaign", "originalPattern": "if (!guard()) return true;", "disposition": "REMEDIATED_BATCH_L3", "currentBehavior": "returns boolean false on unauthenticated/unconfigured guard check" },
+      { "id": 25, "file": "apps/mobile/lib/supabaseDataService.ts", "line": 864, "operation": "submitAspirantKyc", "originalPattern": "if (!guard()) return { id: `local-kyc-${Date.now()}`, success: true };", "disposition": "REMEDIATED_BATCH_L3", "currentBehavior": "returns { id: null, success: false } on unauthenticated/unconfigured guard check" },
+      { "id": 26, "file": "apps/mobile/lib/supabaseDataService.ts", "line": 934, "operation": "saveDelimitationFingerprint", "originalPattern": "if (!guard()) return { id: `local-fp-${Date.now()}`, success: true };", "disposition": "REMEDIATED_BATCH_L3", "currentBehavior": "returns { id: null, success: false } on unauthenticated/unconfigured guard check" },
+      { "id": 27, "file": "apps/mobile/lib/supabaseDataService.ts", "line": 987, "operation": "castCivicVote", "originalPattern": "if (!guard()) return true;", "disposition": "REMEDIATED_BATCH_L3", "currentBehavior": "returns boolean false on unauthenticated/unconfigured guard check" },
+      { "id": 28, "file": "apps/mobile/lib/supabaseDataService.ts", "line": 1015, "operation": "followUser", "originalPattern": "if (!guard()) return true;", "disposition": "REMEDIATED_BATCH_L3", "currentBehavior": "returns boolean false on unauthenticated/unconfigured guard check" },
+      { "id": 29, "file": "apps/mobile/lib/supabaseDataService.ts", "line": 1031, "operation": "unfollowUser", "originalPattern": "if (!guard()) return true;", "disposition": "REMEDIATED_BATCH_L3", "currentBehavior": "returns boolean false on unauthenticated/unconfigured guard check" },
+      { "id": 30, "file": "apps/mobile/lib/supabaseDataService.ts", "line": 1052, "operation": "updateMyProfile", "originalPattern": "if (!guard()) return true;", "disposition": "REMEDIATED_BATCH_L3", "currentBehavior": "returns boolean false on unauthenticated/unconfigured guard check" },
+      { "id": 31, "file": "apps/mobile/lib/supabaseDataService.ts", "line": 1116, "operation": "blockUser", "originalPattern": "if (!guard()) return true;", "disposition": "REMEDIATED_BATCH_L3", "currentBehavior": "returns boolean false on unauthenticated/unconfigured guard check" },
+      { "id": 32, "file": "apps/mobile/lib/supabaseDataService.ts", "line": 1131, "operation": "unblockUser", "originalPattern": "if (!guard()) return true;", "disposition": "REMEDIATED_BATCH_L3", "currentBehavior": "returns boolean false on unauthenticated/unconfigured guard check" },
+      { "id": 33, "file": "apps/mobile/lib/supabaseDataService.ts", "line": 1202, "operation": "markNotificationAsRead", "originalPattern": "if (!guard()) return true;", "disposition": "REMEDIATED_BATCH_L3", "currentBehavior": "returns boolean false on unauthenticated/unconfigured guard check" },
+      { "id": 34, "file": "apps/mobile/lib/supabaseDataService.ts", "line": 1500, "operation": "incrementShortView (guard check)", "originalPattern": "if (!guard()) return true;", "disposition": "REMEDIATED_BATCH_L1", "currentBehavior": "returns boolean false on unauthenticated/unconfigured guard check" },
+      { "id": 35, "file": "apps/mobile/lib/supabaseDataService.ts", "line": 1503, "operation": "incrementShortView (UUID check)", "originalPattern": "if (!isUuid) return true;", "disposition": "REMEDIATED_BATCH_L1", "currentBehavior": "returns boolean false on non-UUID identifier" },
+      { "id": 36, "file": "apps/mobile/lib/supabaseDataService.ts", "line": 1530, "operation": "addShortComment (guard check)", "originalPattern": "if (!guard()) return { id: `local-cmt-${Date.now()}`, success: true };", "disposition": "REMEDIATED_BATCH_L1", "currentBehavior": "returns { id: null, success: false } on unauthenticated/unconfigured guard check" },
+      { "id": 37, "file": "apps/mobile/lib/supabaseDataService.ts", "line": 1533, "operation": "addShortComment (UUID check)", "originalPattern": "if (!isUuid) return { id: `local-cmt-${Date.now()}`, success: true };", "disposition": "REMEDIATED_BATCH_L1", "currentBehavior": "returns { id: null, success: false } on non-UUID identifier" },
+      { "id": 38, "file": "apps/mobile/lib/supabaseDataService.ts", "line": 1719, "operation": "createDepartmentAlert", "originalPattern": "if (!guard()) return { id: `local-alert-${Date.now()}`, success: true };", "disposition": "REMEDIATED_BATCH_L3", "currentBehavior": "returns { id: null, success: false } on unauthenticated/unconfigured guard check" },
+      { "id": 39, "file": "apps/mobile/lib/supabaseDataService.ts", "line": 1750, "operation": "resolveDepartmentAlert", "originalPattern": "if (!guard()) return true;", "disposition": "REMEDIATED_BATCH_L3", "currentBehavior": "returns boolean false on unauthenticated/unconfigured guard check" },
+      { "id": 40, "file": "apps/mobile/lib/supabaseDataService.ts", "line": 1994, "operation": "followPage", "originalPattern": "if (!guard()) return true;", "disposition": "REMEDIATED_BATCH_L3", "currentBehavior": "returns boolean false on unauthenticated/unconfigured guard check" },
+      { "id": 41, "file": "apps/mobile/lib/supabaseDataService.ts", "line": 2012, "operation": "unfollowPage", "originalPattern": "if (!guard()) return true;", "disposition": "REMEDIATED_BATCH_L3", "currentBehavior": "returns boolean false on unauthenticated/unconfigured guard check" },
+      { "id": 42, "file": "apps/mobile/lib/supabaseDataService.ts", "line": 2036, "operation": "reviewPage", "originalPattern": "if (!guard()) return true;", "disposition": "REMEDIATED_BATCH_L3", "currentBehavior": "returns boolean false on unauthenticated/unconfigured guard check" }
+    ]
+  },
+  "def002PostScanEvidence": {
+    "scannedFiles": [
+      "apps/mobile/lib/supabaseDataService.ts",
+      "apps/mobile/lib/pageService.ts"
+    ],
+    "totalViolations": 0,
+    "deceptiveSuccessBranchesRemaining": 0,
+    "verdict": "PASS"
+  },
+  "def001RouteClosureEvidence": {
+    "deletedFilesAbsent": [
+      { "file": "apps/mobile/app/user/[id].tsx", "status": "CONFIRMED_ABSENT" },
+      { "file": "apps/mobile/app/auth/edit-profile.tsx", "status": "CONFIRMED_ABSENT" },
+      { "file": "apps/mobile/app/auth/onboarding.tsx", "status": "CONFIRMED_ABSENT" }
+    ],
+    "canonicalFilesPresent": [
+      { "file": "apps/mobile/app/user/[userId].tsx", "status": "CONFIRMED_PRESENT" },
+      { "file": "apps/mobile/app/edit-profile.tsx", "status": "CONFIRMED_PRESENT" },
+      { "file": "apps/mobile/app/onboarding.tsx", "status": "CONFIRMED_PRESENT" }
+    ],
+    "staleReferencesCount": 0,
+    "layoutWiringVerified": true,
+    "authGuardsIntact": true,
+    "verdict": "PASS"
+  },
+  "def008LocalizationClosureEvidence": {
+    "baselineRemediatedCount": 236,
+    "unauthorizedUserFacingStringsRemaining": 0,
+    "technicalExclusionsCataloged": 149,
+    "verdict": "PASS"
+  },
+  "def012LocaleClosureEvidence": {
+    "totalLanguagesAudited": 13,
+    "canonicalEnglishKeys": 2371,
+    "parityPercentage": 100,
+    "totalMissingKeysAcross13Languages": 0,
+    "totalExtraKeysAcross13Languages": 0,
+    "interpolationTokensAudited": 169,
+    "tokenMismatchesAcross13Languages": 0,
+    "strictValidatorExitCode": 0,
+    "verdict": "PASS"
+  },
+  "def003ArtifactEvidence": {
+    "packageDependencies": {
+      "react-native-webrtc": "^124.0.5",
+      "@config-plugins/react-native-webrtc": "^12.0.0"
+    },
+    "broadcasterBoundary": "apps/mobile/components/LiveBroadcaster.tsx",
+    "whipProtocolModule": "apps/mobile/lib/whipClient.ts",
+    "measuredArtifactSize": "UNKNOWN",
+    "measuredArtifactSizeReason": "Windows local host environment lacks native Android/macOS EAS build toolchain for release APK/AAB compilation",
+    "status": "DEFERRED — EXPLICIT FUTURE JOB / ACCEPTED DEPENDENCY",
+    "destinationJob": "W052 (Professional Broadcast Architecture)"
+  },
+  "def006ContaminationGuardEvidence": {
+    "guardDocument": "reports/w010_geography_contamination_guard.md",
+    "rulesEnforced": [
+      "GUARD-GEO-1: Zero Flat Column Mutations",
+      "GUARD-GEO-2: Read-Only Consumption",
+      "GUARD-GEO-3: Foreign Key Lockout",
+      "GUARD-GEO-4: Dedicated Job Execution Quarantined to W013-W017"
+    ],
+    "protectedConsumers": [
+      "apps/api/src/routes/constituencies.ts",
+      "apps/api/src/routes/broadcast.ts",
+      "apps/api/src/routes/ai.ts",
+      "apps/mobile/app/hierarchy/[id].tsx",
+      "apps/mobile/app/local-bodies/index.tsx",
+      "apps/mobile/lib/aiService.ts"
+    ],
+    "status": "DEFERRED — EXPLICIT FUTURE JOB / ACCEPTED DEPENDENCY",
+    "destinationJobs": "Jobs W013 through W017"
+  },
+  "regressionBattery": {
+    "apiUnitTests": { "command": "npm test --prefix apps/api -- src/__tests__/civic-mutations.test.ts src/__tests__/providers.test.ts src/__tests__/moderation.test.ts", "passed": 75, "total": 75, "verdict": "PASS" },
+    "w010MobileTests": { "command": "node ../../node_modules/jest/bin/jest.js __tests__/w010-batch-l1.test.ts __tests__/w010-batch-l2.test.ts __tests__/w010-batch-l3.test.ts --forceExit", "passed": 22, "total": 22, "verdict": "PASS" },
+    "apiContractDrift": { "command": "node scripts/check-api-contract-drift.mjs", "declaredMatched": "9/9", "auditedDrift": "34/34 D0_IN_SYNC", "verdict": "PASS" },
+    "apiBuild": { "command": "npm run build --prefix apps/api", "exitCode": 0, "verdict": "PASS" },
+    "mobileTypecheck": { "command": "npm run typecheck --prefix apps/mobile", "exitCode": 0, "verdict": "PASS" },
+    "legacyLocaleValidator": { "command": "node scripts/verify-13-locales.mjs --strict", "result": "2,128/2,128 keys (100% parity across 13/13 locales)", "verdict": "PASS" },
+    "semanticLocaleValidator": { "command": "node scripts/verify-locale-semantic-integrity.mjs --strict", "result": "2,371/2,371 leaf keys, 169/169 tokens (100% dual parity across 13/13 locales)", "verdict": "PASS" }
+  },
+  "defectRegisterReconciliation": {
+    "DEF-001": "RESOLVED — VERIFIED",
+    "DEF-002": "RESOLVED — VERIFIED",
+    "DEF-003": "DEFERRED — EXPLICIT FUTURE JOB / ACCEPTED DEPENDENCY",
+    "DEF-004": "RESOLVED — VERIFIED",
+    "DEF-005": "SUPERSEDED — VERIFIED",
+    "DEF-006": "DEFERRED — EXPLICIT FUTURE JOB / ACCEPTED DEPENDENCY",
+    "DEF-007": "RESOLVED — VERIFIED",
+    "DEF-008": "RESOLVED — VERIFIED",
+    "DEF-009": "RESOLVED — VERIFIED",
+    "DEF-010": "RESOLVED — VERIFIED",
+    "DEF-011": "INVALID — VERIFIED",
+    "DEF-012": "RESOLVED — VERIFIED",
+    "DEF-013": "RESOLVED — VERIFIED",
+    "DEF-014": "OPEN — VALID (W010 SCOPE)",
+    "DEF-015": "OPEN — VALID (W010 SCOPE)",
+    "DEF-016": "OPEN — VALID (W010 SCOPE)",
+    "DEF-017": "OPEN — VALID (W010 SCOPE)"
+  },
+  "governanceGateStatus": {
+    "migration038Executed": false,
+    "w011Started": false,
+    "verdict": "W010-P0 VERIFICATION CLOSURE COMPLETE — AWAITING CTO FINAL ACCEPTANCE"
+  }
+}

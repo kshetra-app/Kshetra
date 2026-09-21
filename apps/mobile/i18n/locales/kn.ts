@@ -76,9 +76,7 @@ const kn = {
     },
     "collapse": "ಕುಗ್ಗಿಸು",
     "expandAll": "ಎಲ್ಲವನ್ನೂ ವಿಸ್ತರಿಸಿ",
-    "hide": "ಮರೆಮಾಡು",
-    "article": "ಲೇಖನ",
-    "articles": "ಲೇಖನಗಳು"
+    "hide": "ಮರೆಮಾಡು"
   },
   "tabs": {
     "map": "ನಕ್ಷೆ",
@@ -137,10 +135,7 @@ const kn = {
     "favourite": "ಮೆಚ್ಚಿನ",
     "gen": "ಸಾಮಾನ್ಯ (GEN)",
     "sc": "ಎಸ್ಸಿ (SC)",
-    "st": "ಎಸ್ಟಿ (ST)",
-    "allSeats": "ಎಲ್ಲಾ ಕ್ಷೇತ್ರಗಳು",
-    "contested": "ತೀವ್ರ ಸ್ಪರ್ಧೆ",
-    "reserved": "ಮೀಸಲು ಕ್ಷೇತ್ರಗಳು"
+    "st": "ಎಸ್ಟಿ (ST)"
   },
   "mapSearch": {
     "placeholder": "ಕ್ಷೇತ್ರ, ಶಾಸಕ, ಜಿಲ್ಲೆ ಹುಡುಕಿ...",
@@ -149,6 +144,7 @@ const kn = {
   },
   "mapSheet": {
     "winner2023": "2023 ವಿಜೇತ",
+    "winnerYear": "{{year}} ವಿಜೇತ",
     "winnerVotes": "ವಿಜೇತರ ಮತಗಳು",
     "margin": "ಅಂತರ",
     "runnerUp": "ರನ್ನರ್ ಅಪ್",
@@ -553,6 +549,8 @@ const kn = {
   },
   "ai": {
     "title": "Kshetra AI Assistant",
+    "askAboutConstituency": "{{name}} ಎನ್ನಿಕಲು, ಅಭ್ಯర್ಥುಲು, ಜನಾಭಾ ವಿವరಾಲ ಗುరಿಂಚಿ ಏದೈನಾ ಅಡಗಂಡಿ",
+    "askAboutState": "{{state}} ಲೋ ಎನ್ನಿಕಲು, ಪಾర್ಟೀಲು, రಾಜಕೀಯಾಲ ಗುరಿಂಚಿ ಏದೈನಾ ಅಡಗಂಡಿ",
     "suggestedQuestions": "Suggested Questions",
     "askPlaceholder": "Ask a question about politics, candidates, or constituencies…",
     "chatTitle": "AI ಸಹಾಯಕ",
@@ -582,6 +580,10 @@ const kn = {
     "thinkingSearch": "KSHETRA AI is thinking...",
     "noResponse": "No response received. Try a different query.",
     "poweredBy": "ಕ್ಷೇತ್ರ AI ಚಾಲಿತ • Google Gemini",
+    "qWinner2023": "2023 ಲೋ {{name}} ಎವరು ಗೆಲಿಚಾరು?",
+    "qMarginTrend": "{{name}} ಲೋ ಆధಿಕ್ಯ ధೋరಣಿ ಏమಿಟಿ?",
+    "qTellAboutMLA": "{{name}} ಎమ್మೆಲ್ಯೇ ಗುరಿಂಚಿ ಚೆಪ್ಪಂಡಿ",
+    "qDefections": "{{name}} ಲೋ ಏವೈನಾ ಪಾర್ಟೀ ಫಿరಾಯಿಂಪುಲು ಜరಿಗಾಯಾ?",
     "qKeyTakeaways": "What were the key takeaways from the last election?",
     "qConsistentParty": "Which party has been most consistent across elections?",
     "qStronghold": "Explain the AIMIM stronghold in Hyderabad",
@@ -611,6 +613,7 @@ const kn = {
     "restrictedNotice": "ಸಾಮಾನ್ಯ ಮಾಡರೇಶನ್ ಸರತಿಯು ಐಟಿ ನಿಯಮಗಳು 2021 ರ ಅಡಿಯಲ್ಲಿ ಪರಿಶೀಲಿಸಲಾದ ಕುಂದುಕೊರತೆ ಅಧಿಕಾರಿಗಳು, ಮಾಡರೇಟರ್‌ಗಳು ಮತ್ತು ನಿರ್ವಾಹಕರಿಗೆ ಮಾತ್ರ ಸೀಮಿತವಾಗಿದೆ.",
     "returnToFeed": "ಫೀಡ್‌ಗೆ ಹಿಂತಿರುಗಿ",
     "contentModerationQueue": "ವಿಷಯ ಮಾಡರೇಶನ್ ಸರತಿ",
+    "statutoryNotice": "ಚಟ್ಟಬದ್ధమೈನ ಫಿర್ಯಾದು మరಿಯು ಕಂಟೆಂಟ್ సమೀಕ್ಷ ಕ್ಯೂ ({{count}} ಪೆಂಡಿಂಗ್‌ಲೋ ಉನ್ನಾಯಿ). ಐಟೀ ನಿಬಂధನಲು 2021 ಪ್రಕಾరಂ ಅನ್ನಿ ಚర್ಯಲು రಿಕಾర್ಡ್ ಚೇಯಬಡತಾಯಿ.",
     "fetchingReports": "ಬಾಕಿ ಇರುವ ವರದಿಗಳನ್ನು ಪಡೆಯಲಾಗುತ್ತಿದೆ...",
     "queueAllClear": "ಸರತಿ ಸಂಪೂರ್ಣ ಮುಕ್ತಾಯವಾಗಿದೆ!",
     "noPendingReports": "ಮಾಡರೇಶನ್ ಅಗತ್ಯವಿರುವ ಯಾವುದೇ ಬಾಕಿ ವರದಿಗಳಿಲ್ಲ.",
@@ -817,13 +820,85 @@ const kn = {
       "headline": "4 ಪಕ್ಷಗಳ ವ್ಯಕ್ತಿ",
       "body": "ಟಿ. ಪ್ರಕಾಶ್ ಗೌಡ್ 10 ವರ್ಷಗಳಲ್ಲಿ 4 ಪಕ್ಷಗಳಲ್ಲಿ: TDP → TRS → BRS → INC."
     },
+    "TRV-DEF-002": {
+      "headline": "The Mirror Mergers",
+      "body": "12 TDP MLAs merged with TRS in 2016, and then 12 INC MLAs merged with TRS in 2019. Both used the same 2/3 threshold loophole."
+    },
+    "TRV-DEF-003": {
+      "headline": "Operation Akarsh: The Sequel",
+      "body": "In 2016, TRS pulled 12 TDP MLAs. In 2024, INC pulled 10 BRS MLAs — the media called it \"Operation Akarsh 2.0.\""
+    },
+    "TRV-DEF-004": {
+      "headline": "Like Father, Like Son",
+      "body": "When Nagarjuna Sagar MLA Nomula Narsimhaiah (TRS) died in 2021, his son Nomula Bhagath ಗೆಲಿಚಿಂದಿ the by-election on the same ticket."
+    },
+    "TRV-DEF-005": {
+      "headline": "The Defection Boomerang",
+      "body": "Arekapudi Gandhi's constituency has been \"represented\" by 4 parties without a single by-election."
+    },
+    "TRV-REC-001": {
+      "headline": "The Unbreakable Fortress",
+      "body": "AIMIM has held all 7 Old City Hyderabad సೀಟ್ಲು for 3 consecutive elections — a perfect 21/21 record."
+    },
     "TRV-REC-002": {
       "headline": "ಅತ್ಯಂತ ದೊಡ್ಡ ವಾಪಸಿ",
       "body": "INC 6 ಸ್ಥಾನಗಳಿಂದ 2023 ಚುನಾವಣೆಯಲ್ಲಿ 64 ಕ್ಕೆ — 967% ಹೆಚ್ಚಳ."
     },
+    "TRV-REC-003": {
+      "headline": "From MLA to మುಖ್ಯమಂತ್రಿ in 9 Years",
+      "body": "Revanth Reddy: TDP MLA (2014) → joined INC (2017) → ಕೋಲ್ಪೋಯಿಂದಿ (2018) → TPCC president → మುಖ್ಯమಂತ್రಿ (2023)."
+    },
+    "TRV-REC-004": {
+      "headline": "The Sircilla King",
+      "body": "KTR has ಗೆಲಿಚಿಂದಿ Sircilla in all 3 Telangana elections — 2014, 2018, and 2023."
+    },
+    "TRV-REC-005": {
+      "headline": "Harish Rao's Siddipet Streak",
+      "body": "T. Harish Rao has represented Siddipet since 2004 — winning 5 consecutive elections."
+    },
+    "TRV-ELE-001": {
+      "headline": "The Early Dissolution Gamble",
+      "body": "KCR dissolved the Assembly 9 months early in 2018. TRS ಗೆಲಿಚಿಂದಿ 88/119 సೀಟ್ಲು. In 2023, full term brought just 39."
+    },
+    "TRV-ELE-002": {
+      "headline": "Similar Votes, Wildly Different Seats",
+      "body": "In 2023, INC got 39.4% votes → 64 సೀಟ್ಲು, BRS got 37.4% → 39 సೀಟ್ಲು. 2% difference = 25 సೀಟ್ಲು."
+    },
+    "TRV-ELE-003": {
+      "headline": "The Red Bastion",
+      "body": "Ramagundam is Telangana's sole left-party constituency. Coal belt keeps leftist politics alive."
+    },
+    "TRV-HIS-001": {
+      "headline": "The Youngest State's First Vote",
+      "body": "2014 was the first-ever Telangana Assembly election after statehood on June 2, 2014."
+    },
+    "TRV-HIS-002": {
+      "headline": "What's in a Name?",
+      "body": "TRS became BRS in October 2022 — \"Telangana\" replaced with \"Bharat\" for national ambitions that flopped."
+    },
     "AP-T-001": {
       "headline": "Chandrababu Naidu — The Comeback King",
       "body": "Naidu won Kuppam in 2024 with the highest margin — over 72,000 votes."
+    },
+    "AP-T-002": {
+      "headline": "Pawan Kalyan — From Reel to Real",
+      "body": "JSP chief Pawan Kalyan ಗೆಲಿಚಿಂದಿ Pithapuram with 67,890 margin. JSP achieved 100% strike rate — 21/21 సೀಟ್ಲು."
+    },
+    "AP-T-003": {
+      "headline": "YSRCP: From 151 to 11",
+      "body": "In 2019, YSRCP ಗೆಲಿಚಿಂದಿ 151/175 సೀಟ್ಲು. In 2024, reduced to just 11 — losing 140 సೀಟ್ಲು in one cycle."
+    },
+    "AP-T-004": {
+      "headline": "NDA Triple Alliance Sweep",
+      "body": "TDP-JSP-BJP ಗೆಲಿಚಿಂದಿ 164/175 సೀಟ್ಲು in 2024 — 93.7% of all సೀಟ್ಲು, most lopsided result in AP post-bifurcation."
+    },
+    "AP-T-005": {
+      "headline": "Pulivendula — Jagan's Last Bastion",
+      "body": "Even in the 2024 wipeout, Jagan held Pulivendula by 45,678 votes. His family has held this seat 40+ years."
+    },
+    "AP-T-006": {
+      "headline": "Operation Akarsh 2.0",
+      "body": "6 YSRCP MLAs defected to TDP before 2024 elections, mirroring 2017's \"Operation Akarsh.\""
     },
     "KA-T-001": {
       "headline": "ಆಪರೇಷನ್ ಕಮಲ — ಅತಿದೊಡ್ಡ ಪಕ್ಷಾಂತರ ನಾಟಕ",
@@ -856,6 +931,34 @@ const kn = {
     "MH-T-001": {
       "headline": "The Great Shiv Sena Split",
       "body": "Eknath Shinde led 40 of 56 Shiv Sena MLAs in rebellion (June 2022)."
+    },
+    "MH-T-002": {
+      "headline": "Pawar vs Pawar — Uncle vs Nephew",
+      "body": "Ajit Pawar split NCP taking 40+ MLAs to BJP. Uncle Sharad Pawar (83) founded NCP(SP)."
+    },
+    "MH-T-003": {
+      "headline": "Fadnavis — The Comeback Man",
+      "body": "Fadnavis ಗೆಲಿಚಿಂದಿ Nagpur South West with a massive margin. Became మುಖ್ಯమಂತ್రಿ for the 3rd time."
+    },
+    "MH-T-004": {
+      "headline": "ಕಾಂಗ್రೆస್: From 44 to 16",
+      "body": "Congress decimated — from 44 సೀಟ್ಲು (2019) to just 16 (2024), their worst performance in Maharashtra."
+    },
+    "MH-T-005": {
+      "headline": "Aaditya Thackeray — The Worli Prince",
+      "body": "Aaditya retained Worli even as his father's faction was decimated statewide."
+    },
+    "MH-T-006": {
+      "headline": "Mahayuti Tsunami — 230/288",
+      "body": "BJP-SHS-NCP (Mahayuti) ಗೆಲಿಚಿಂದಿ 230/288 సೀಟ್ಲು in 2024 — most lopsided result in MH history."
+    },
+    "MH-T-007": {
+      "headline": "Two Parties, Same Name",
+      "body": "Both Shiv Sena and NCP split into two, each claiming the original name. Courts had to adjudicate."
+    },
+    "MH-T-008": {
+      "headline": "Mumbai — 36 Seats, BJP Dominates",
+      "body": "BJP ಗೆಲಿಚಿಂದಿ majority of Mumbai's 36 assembly సೀಟ್ಲು in 2024, consolidating urban dominance."
     }
   },
   "seedPosts": {
@@ -1130,10 +1233,10 @@ const kn = {
     "thTotal": "ಒಟ್ಟು",
     "showTop15": "ಟಾಪ್ 15 ಪಕ್ಷಗಳನ್ನು ತೋರಿಸಿ",
     "viewAllParties": "ಎಲ್ಲಾ {{count}} ಪಕ್ಷಗಳನ್ನು ವೀಕ್ಷಿಸಿ (YSRCP, BRS, TDP ಸೇರಿದಂತೆ…)",
-    "lokSabhaMPsCount": "18ನೇ ಲೋಕಸಭಾ ಸಂಸದರು (543 ರಲ್ಲಿ {{count}})",
+    "lokSabhaMPsCount": "18th Lok Sabha MPs ({{count}} of {{total}})",
     "stateLokSabhaCount": "ಲೋಕಸಭಾ ಸಂಸದರು — {{state}} ({{count}})",
     "noMPsMatch": "ನಿಮ್ಮ ಹುಡುಕಾಟಕ್ಕೆ ಹೊಂದಿಕೆಯಾಗುವ ಯಾವುದೇ ಸಂಸದರಿಲ್ಲ.",
-    "rajyaSabhaMPsCount": "ರಾಜ್ಯಸಭಾ ಸಂಸದರು (142 ರಲ್ಲಿ {{count}})",
+    "rajyaSabhaMPsCount": "Rajya Sabha MPs ({{count}} of {{total}})",
     "stateRajyaSabhaCount": "ರಾಜ್ಯಸಭಾ ಸಂಸದರು — {{state}} ({{count}})",
     "noRajyaSabhaMatch": "ನಿಮ್ಮ ಹುಡುಕಾಟಕ್ಕೆ ಯಾವುದೇ ರಾಜ್ಯಸಭಾ ಸಂಸದರಿಲ್ಲ.",
     "termsElected": "ಚುನಾಯಿತ ಅವಧಿಗಳು",
@@ -1285,12 +1388,14 @@ const kn = {
     "hierarchyLabel": "ಆಡಳಿತ ಶ್ರೇಣಿ",
     "gp": "ಗ್ರಾಮ ಪಂಚಾಯಿತಿ",
     "pop": "ಜನಸಂಖ್ಯೆ",
+    "noPanchayatSamples": "ಈ {{mandal}} ಕೋసಂ {{panchayat}} ನమೂನಾ రಿಕಾర್ಡುಲು ಅಂದುಬಾಟುಲೋ ಲೇವು",
     "mandalLower": "ತಾಲೂಕು",
     "voters": "ಮತದಾರರು",
     "sarpanch": "ಅಧ್ಯಕ್ಷರು / ಸರಪಂಚ್",
     "noBoothSamples": "ಈ ವಿಭಾಗಕ್ಕೆ ಯಾವುದೇ ಮತಗಟ್ಟೆ ದಾಖಲೆಗಳಿಲ್ಲ",
     "urban": "ನಗರ",
     "rural": "ಗ್ರಾಮೀಣ",
+    "footer": "{{stateName}} స್ಥಾನಿಕ ಪಾಲನಾ ನಿర್మಾಣಂ",
     "title": "ಆಡಳಿತ ಶ್ರೇಣಿ",
     "subtitle": "ಬೂತ್‌ನಿಂದ ಕ್ಷೇತ್ರದವರೆಗೆ ಅನ್ವೇಷಿಸಿ",
     "booth": "ಬೂತ್",
@@ -1353,6 +1458,8 @@ const kn = {
     "allEvents": "ಸಾರ್ವಜನಿಕ ಕಾರ್ಯಕ್ರಮಗಳು",
     "eManifestos": "ಡಿಜಿಟಲ್ ಪ್ರಣಾಳಿಕೆಗಳು & ಭರವಸೆಗಳು",
     "opinionSurveys": "ಕ್ಷೇತ್ರದ ಸಮೀಕ್ಷೆಗಳು & ಮತಗಳು",
+    "responsesCount": "{{count}} స್ಪಂದನಲು",
+    "completedResponses": "{{count}} మಂದಿ ಪೌరುಲು ಈ సర್ವೇನು ಪೂర್ತಿ ಚೇಶಾరು",
     "title": "ರಾಜಕಾರಣಿ ಪೋರ್ಟಲ್",
     "subtitle": "ನಿಮ್ಮ ಕ್ಷೇತ್ರ ಸಂವಹನ ನಿರ್ವಹಿಸಿ",
     "tabs": {
@@ -1380,7 +1487,8 @@ const kn = {
     "morePromises": "ಹೆಚ್ಚಿನ ಭರವಸೆಗಳು",
     "independent": "ಪಕ್ಷೇತರ",
     "responseRate": "ಪ್ರತಿಕ್ರಿಯೆ ದರ",
-    "issuesHandled": "ಪರಿಹರಿಸಿದ ಸಮಸ್ಯೆಗಳು"
+    "issuesHandled": "ಪರಿಹರಿಸಿದ ಸಮಸ್ಯೆಗಳು",
+    "avgResponseTime": "సಗಟು స್ಪಂದನ సమಯಂ: {{hours}} ಗಂಟಲು"
   },
   "campaignManager": {
     "screenTitle": "Campaign Manager",
@@ -1388,6 +1496,13 @@ const kn = {
     "total": "ಒಟ್ಟು",
     "booths": "ಮತಗಟ್ಟೆಗಳು",
     "otherCampaigns": "ಇತರ ಸಕ್ರಿಯ ಪ್ರಚಾರಗಳು",
+    "activeAds": "ಕ್రಿಯಾಶೀಲ ಪ್రಚಾరಾಲು & ಪ್రಕಟನಲು ({{count}})",
+    "boothStrategy": "ಬೂತ್ ವ್ಯೂಹಂ & ಪ್రಚಾరಂ ({{count}})",
+    "boothMeta": "ಬೂತ್ #{{boothNumber}} · ನಿಯೋಜಕವర್ಗಂ #{{acNo}} · ವಾర್ಡು {{wardNo}}",
+    "voters": "{{count}} మಂದಿ ಓಟర್ಲು",
+    "target": "ಲಕ್ಷ್ಯಂ: {{count}}",
+    "support": "మದ್ದತು: {{pct}}%",
+    "canvas": "ಕಾನ್ವಾస್: {{pct}}%",
     "title": "ಪ್ರಚಾರ ನಿರ್ವಾಹಕ",
     "subtitle": "ತಂತ್ರ, ಜಾಹೀರಾತು ಮತ್ತು ಸ್ವಯಂಸೇವಕ ನಿರ್ವಹಣೆ",
     "tabs": {
@@ -1413,6 +1528,7 @@ const kn = {
     "voiceCallDesc": "Send 30s recorded message via phone call",
     "whatsappStatusTitle": "WhatsApp Status Poster",
     "whatsappStatusDesc": "1-tap share branded card to Status & Groups",
+    "boothsNeedingAttention": "{{count}} ಪೋಲಿಂಗ್ ಬೂತ್‌ಲಕು ಇನ್‌ಛಾర್ಜ್ ಕೇಟಾಯಿಂಚಬಡಲೇದು!",
     "boothsNeedingAttentionDesc": "Appoint verified Kshetra users as Booth In-charges to track local voters and lead door-to-door canvassing.",
     "appointInchargeNow": "Assign In-charges Now →",
     "serviceWhatsApp": "WhatsApp",
@@ -1435,16 +1551,22 @@ const kn = {
     "allWards": "All Constituency",
     "groupFilterLabel": "Target Group:",
     "groupAll": "All Voters",
+    "groupCadre": "ಕೇಡర್ మಾತ್రమೇ ({{count}})",
     "groupWomen": "Women",
     "voiceGuidanceTitle": "Voice Call Rules & TRAI Guidelines",
     "recordAudioHeading": "2. Personal Voice Recording",
     "callTitlePlaceholder": "Call Title (e.g. Rally Invitation & Manifesto Promises)",
     "recordedVoiceSample": "Candidate 30s Appeal (Telugu/Hindi)",
+    "dispatchVoiceCallBtn": "ಕಾಲ್ ಬ್ಲಾస್ಟ್ ಷೆಡ್ಯೂಲ್ ಚೇಯಂಡಿ (₹{{cost}})",
     "metaPublishTitle": "Organic Publishing (₹0) + Optional Boost",
     "metaPublishDesc": "Publish speeches and rally photos directly to your connected Facebook Page and Instagram with optional audience boost.",
     "metaGuidanceTitle": "Meta Rules & Political Verification",
     "metaPackagesHeading": "Choose a Targeted Boost Package",
     "selectPackageBtn": "Boost Post with this Package",
+    "filterUnassigned": "ಇನ್‌ಛಾర್ಜ್ ಲೇನಿವಿ ({{count}})",
+    "filterCritical": "ಬಲಹೀನ / ಶ್రದ್ధ ಪೆಟ್ಟವಲసಿನವಿ ({{count}})",
+    "filterStrong": "ಬಲమೈನ ಕೋಟ ({{count}})",
+    "filterAll": "ಅನ್ನೀ ({{count}})",
     "noInchargeAssigned": "⚠️ No Booth In-charge Appointed",
     "appointToTrack": "Appoint a worker to manage canvassing",
     "assignInchargeBtn": "Appoint",
@@ -1547,6 +1669,14 @@ const kn = {
     "screenSubtitle": "ಬಜೆಟ್, ಹಾಜರಾತಿ, ಮಸೂದೆಗಳು ಮತ್ತು ಯೋಜನೆಗಳು",
     "stateBudgetOverview": "ರಾಜ್ಯ ಬಜೆಟ್ ಅವಲೋಕನ",
     "noBudgetData": "ಈ ರಾಜ್ಯಕ್ಕೆ ಬಜೆಟ್ ಮಾಹಿತಿ ಲಭ್ಯವಿಲ್ಲ",
+    "legislatorAttendance": "ಶಾసನసಭ್ಯುಲ ಹಾಜరು ({{count}})",
+    "activeBills": "ಕ್రಿಯಾಶೀಲ ಬಿಲ್ಲುಲು & ಚಟ್ಟಾಲು ({{count}})",
+    "governmentSchemes": "ಪ್రಭುತ್ವ ಪಥಕಾಲು & సಂಕ್ಷೇమಂ ({{count}})",
+    "developmentProjects": "మೌಲಿಕ సದುಪಾಯಾಲು & ಅಭಿವೃದ್ధಿ ಪ್రಾಜೆಕ್ಟುಲು ({{count}})",
+    "publicRTIRequests": "ಪ್రಜಾ ಆర್ಟೀಐ ಅಭ್ಯర್ಥನಲು ({{count}})",
+    "response": "స್ಪಂದನ: {{text}}",
+    "views": "{{count}} ವೀಕ್ಷಣಲು",
+    "filed": "{{date}} ನ ದಾಖಲು ಚೇಯಬಡಿಂದಿ",
     "title": "ನಾಗರಿಕ ಮಾನದಂಡಗಳು",
     "subtitle": "ಬಜೆಟ್, ಹಾಜರಾತಿ, ವಿಧೇಯಕಗಳು ಮತ್ತು ಯೋಜನೆಗಳು",
     "tabs": {
@@ -1795,7 +1925,9 @@ const kn = {
     "noLiveElection": "ಯಾವುದೇ ನೇರ ಚುನಾವಣೆ ನಡೆಯುತ್ತಿಲ್ಲ",
     "noLiveElectionDesc": "ಚುನಾವಣೆ ಸಕ್ರಿಯವಾದಾಗ ನೈಜ ಸಮಯದಲ್ಲಿ ನವೀಕರಣಗೊಳ್ಳುತ್ತದೆ.",
     "voteShareComparison": "ಮತ ಹಂಚಿಕೆ ಹೋಲಿಕೆ",
+    "constituencyResults": "ನಿಯೋಜಕವర್ಗ ಫಲಿತಾಲು ({{count}})",
     "noConstituencyData": "ಕ್ಷೇತ್ರದ ದತ್ತಾಂಶ ಇನ್ನೂ ಲಭ್ಯವಿಲ್ಲ",
+    "systemHealth": "ಕೌಂಟಿಂಗ್ ಪೈಪ್‌ಲೈನ್: {{status}} ({{healthy}}/{{total}} మೂಲಾಲು ಪನಿಚೇస್ತುನ್ನಾಯಿ)",
     "title": "ಲೈವ್ ಚುನಾವಣೆ",
     "subtitle": "ನೈಜ-ಸಮಯ ಎಣಿಕೆ ಮತ್ತು ಫಲಿತಾಂಶ",
     "live": "LIVE",
@@ -1982,6 +2114,7 @@ const kn = {
     "show": "ತೋರಿಸಿ",
     "pollingBooth": "ಮತದಾನ ಬೂತ್ #{{n}}",
     "registeredVoters": "ನೋಂದಾಯಿತ ಮತದಾರರು",
+    "boothHistorical": "{{year}} ಈసೀಐ స್ಥಾನಂ · ಚಾరಿತ್రಕ",
     "seatDensityOverlay": "ಸ್ಥಾನ ಸಾಂದ್ರತೆ ಓವರ್‌ಲೇ",
     "projected": "ಅಂದಾಜಿತ",
     "underRepresented": "ಕಡಿಮೆ ಪ್ರಾತಿನಿಧ್ಯ",
@@ -2245,6 +2378,7 @@ const kn = {
     "northSouthBody": "Northern states with higher population growth are projected to gain seats, while southern states with effective population control face decreased share in Parliament.",
     "north": "North",
     "south": "South",
+    "seats": "{{count}} సೀಟ್ಲು",
     "comingSoon": "Coming Soon",
     "featureWhatChanges": "What Changes in My Constituency",
     "featureMLARisk": "MLA / MP Seat Risk Assessment",
@@ -2288,6 +2422,7 @@ const kn = {
     "seat": "seat",
     "reservationHotspots": "Reservation Hotspots",
     "fullDetail": "Full Detail",
+    "simulatorDisclaimer": "{{mode}} మೋಡ್‌ನಿ ಉಪಯೋಗಿಂಚಿ 2011 ಜನಾಭಾ ಲೆಕ್ಕಲ ಆధಾరಂಗಾ. ಅసಲು ಪುನర್ವಿಭಜನ 2026 ಜನಾಭಾ ಲೆಕ್ಕಲ ಆధಾరಂಗಾ ಉಂಟುಂದಿ.",
     "equalPopulationDesc": "Each constituency has roughly equal population (constitutional default)",
     "minimalChange": "Minimal Change",
     "minimalChangeDesc": "Preserve existing boundaries where possible, minimize disruption",
@@ -2298,12 +2433,15 @@ const kn = {
     "heroImpactTitle": "How will delimitation affect YOUR constituency?",
     "heroImpactDesc": "Enter your PIN code or use your saved constituency to see how boundary changes may impact your area — your MLA, your constituency name, and your reservation status.",
     "enterPinCode": "Enter your PIN Code",
+    "useMyConstituency": "ನಾ ನಿಯೋಜಕವర್ಗಾನ್ನಿ ಉಪಯೋಗಿಂಚಂಡಿ: {{name}}",
     "proposed": "Proposed",
     "mlaMayChange": "MLA May Change",
     "impactDataSoon": "Impact Data Coming Soon",
     "impactDataSoonDesc": "Delimitation proposals haven't been published yet. Once the Delimitation Commission releases draft boundaries, we'll calculate the exact impact for your PIN code.",
+    "currentStatus": "ಪ್రస್ತುತ స್ಥಿತಿ: {{status}}",
     "notifyMe": "Notify Me When Available",
     "notifyNote": "We'll send a push notification the moment impact data becomes available for your area.",
+    "yourState": "మೀ రಾಷ್ಟ್రಂ: {{state}}",
     "change": "Change",
     "comingSoonTitle": "Coming When Proposals Publish",
     "comingSoon1": "Your old vs new constituency name & boundaries",
@@ -2312,20 +2450,7 @@ const kn = {
     "comingSoon4": "Population & voter count of new constituency",
     "comingSoon5": "Overlap map showing boundary changes",
     "comingSoon6": "Political impact for all parties in your area",
-    "myImpactDisclaimer": "All projections are simulations based on Census 2011 data. Actual delimitation will use Census 2026 data and may follow different methodology.",
-    "noChange": "ಬದಲಾವಣೆಯಿಲ್ಲದ ರಾಜ್ಯಗಳು",
-    "totalLokSabhaSeats": "ಒಟ್ಟು ಲೋಕಸಭಾ ಸ್ಥಾನಗಳು",
-    "projectedTotalSeats": "ಅಂದಾಜು ಒಟ್ಟು ಸ್ಥಾನಗಳು",
-    "populationCensus": "ಜನಗಣತಿ ಜನಸಂಖ್ಯೆ",
-    "currentSeats": "ಪ್ರಸ್ತುತ ಸ್ಥಾನಗಳು",
-    "projectedSeats": "ಅಂದಾಜು ಸ್ಥಾನಗಳು",
-    "seatChange": "ಸ್ಥಾನಗಳ ಬದಲಾವಣೆ",
-    "constitutionalArticles": "ಸಾಂವಿಧಾನಿಕ ವಿಧಿಗಳು 81, 82, 170",
-    "delimitCommission": "ಕ್ಷೇತ್ರ ಪುನರ್ವಿಂಗಡಣಾ ಆಯೋಗ",
-    "historicOverview": "ಇತಿಹಾಸ ಮತ್ತು ಹಿನ್ನೆಲೆ",
-    "interactiveMap": "ಪುನರ್ವಿಂಗಡಣೆ ನಕ್ಷೆ",
-    "impactAnalysis": "ರಾಜ್ಯಗಳ ಮೇಲಿನ ಪ್ರಭಾವ",
-    "seatCalculator": "ಸ್ಥಾನ ಲೆಕ್ಕಾಚಾರ"
+    "myImpactDisclaimer": "All projections are simulations based on Census 2011 data. Actual delimitation will use Census 2026 data and may follow different methodology."
   },
   "sentimentBar": {
     "positive": "ಸಕಾರಾತ್ಮಕ",
@@ -2426,7 +2551,8 @@ const kn = {
     "agreement": "ಜವಾಬ್ದಾರಿ ಒಪ್ಪಂದ",
     "agreementText": "ನೀಡಿದ ಎಲ್ಲಾ ಮಾಹಿತಿಯು ನಿಖರವಾಗಿದೆ ಎಂದು ನಾನು ದೃಢೀಕರಿಸುತ್ತೇನೆ.",
     "agreeAndVerify": "ಒಪ್ಪಿ & ಪರಿಶೀಲಿಸಿ",
-    "submitting": "ಪರಿಶೀಲಿಸಲಾಗುತ್ತಿದೆ..."
+    "submitting": "ಪರಿಶೀಲಿಸಲಾಗುತ್ತಿದೆ...",
+    "step": "ದಶ {{current}} / {{total}}"
   },
   "contentGate": {
     "promote": "ಪ್ರಚಾರ ಮಾಡಿ",
@@ -2447,6 +2573,7 @@ const kn = {
     "alertThankYou": "ಆದ್ಯತೆಯ ಪರಿಶೀಲನೆಗಾಗಿ ಕಳುಹಿಸಲಾಗಿದೆ.",
     "promoteContent": "ವಿಷಯವನ್ನು ಪ್ರಚಾರ ಮಾಡಿ",
     "boostReach": "ತಲುಪುವಿಕೆ ಹೆಚ್ಚಿಸಿ",
+    "creditsRequired": "{{count}} ಕ್రೆಡಿಟ್ಲು ಅವసరಂ",
     "promoteNow": "ಈಗಲೇ ಪ್ರಚಾರ ಮಾಡಿ",
     "vouch": "ಬೆಂಬಲಿಸಿ",
     "vouched": "ಬೆಂಬಲಿಸಲಾಗಿದೆ",
@@ -2458,11 +2585,7 @@ const kn = {
     "flagPlaceholder": "ಸಮಸ್ಯೆಯನ್ನು ವಿವರಿಸಿ...",
     "alertWarning": "ಎಚ್ಚರಿಕೆಗಳು ತುರ್ತು ಅಥವಾ ಅಪಾಯಕಾರಿ ವಿಷಯಗಳಿಗೆ ಮಾತ್ರ.",
     "alertPlaceholder": "ಇದು ಏಕೆ ತುರ್ತು?",
-    "alertSubmittedMessage": "ಪರಿಶೀಲನೆಗಾಗಿ ಕಳುಹಿಸಲಾಗಿದೆ.",
-    "gateTitle": "ಪರಿಶೀಲಿಸಿದ ವಿಷಯ ಗೇಟ್",
-    "gateSubtitle": "ನಾಗರಿಕ ಸಮಗ್ರತೆ ಕಾಪಾಡುವುದು",
-    "confirmButton": "ಖಚಿತಪಡಿಸಿ",
-    "cancelButton": "ರದ್ದುಮಾಡಿ"
+    "alertSubmittedMessage": "ಪರಿಶೀಲನೆಗಾಗಿ ಕಳುಹಿಸಲಾಗಿದೆ."
   },
   "shortsPlayer": {
     "branding": "ಶಾರ್ಟ್ಸ್",
@@ -2484,14 +2607,7 @@ const kn = {
     "alertReportedTitle": "ವರದಿ ಮಾಡಲಾಗಿದೆ",
     "alertReportedMessage": "ಪರಿಶೀಲನೆಗಾಗಿ ಕಳುಹಿಸಲಾಗಿದೆ.",
     "alertShareTitle": "ಲಿಂಕ್ ರಚಿಸಲಾಗಿದೆ",
-    "like": "ಇಷ್ಟಪಡಿ",
-    "liked": "ಇಷ್ಟಪಟ್ಟಿದ್ದೀರಿ",
-    "flag": "ವರದಿ ಮಾಡಿ",
-    "more": "ಇನ್ನಷ್ಟು",
-    "volume": "ಶಬ್ದ",
-    "autoPlay": "ಸ್ವಯಂ ಚಾಲನೆ",
-    "pause": "ವಿರಾಮ",
-    "play": "ಪ್ಲೇ ಮಾಡಿ"
+    "alertShareMessage": "\"{{title}}\" ಕೋసಂ ಷೇర್ ಲಿಂಕ್ ಕ್ಲಿಪ್‌ಬೋర್ಡ್‌ಕಿ ಕಾಪೀ ಚೇಯಬಡಿಂದಿ."
   },
   "uploadShort": {
     "title": "ರಾಜಕೀಯ ಶಾರ್ಟ್ ಅಪ್‌ಲೋಡ್ ಮಾಡಿ",
@@ -2532,11 +2648,13 @@ const kn = {
     "sources": "ಮೂಲಗಳು ಮತ್ತು ಉಲ್ಲೇಖಗಳು",
     "moduleCompleted": "ಮಾಡ್ಯೂಲ್ ಪೂರ್ಣಗೊಂಡಿದೆ",
     "tapToWatch": "YouTube ನಲ್ಲಿ ವೀಕ್ಷಿಸಿ",
+    "score": "స್ಕೋరು: {{score}}%",
     "passed": "ತೇರ್ಗಡೆ!",
     "failed": "ತೇರ್ಗಡೆಯಾಗಿಲ್ಲ",
     "submitQuiz": "ಉತ್ತರಗಳನ್ನು ಸಲ್ಲಿಸಿ",
     "markComplete": "ಪೂರ್ಣಗೊಂಡಿದೆ ಎಂದು ಗುರುತಿಸಿ",
-    "alreadyCompleted": "✓ ಈಗಾಗಲೇ ಪೂರ್ಣಗೊಂಡಿದೆ"
+    "alreadyCompleted": "✓ ಈಗಾಗಲೇ ಪೂರ್ಣಗೊಂಡಿದೆ",
+    "questionOf": "ಪ್రಶ್ನ {{current}} / {{total}}"
   },
   "outreachPanel": {
     "compose": "ಸಂದೇಶ ರಚಿಸಿ",
@@ -2560,12 +2678,15 @@ const kn = {
     "sendBroadcast": "ಪ್ರಸಾರ ಕಳುಹಿಸಿ",
     "scheduleBroadcast": "ಪ್ರಸಾರ ನಿಗದಿಪಡಿಸಿ",
     "confirmSend": "ಕಳುಹಿಸುವುದನ್ನು ಖಚಿತಪಡಿಸಿ",
+    "confirmMsg": "ಈ ಪ್రసಾరಾನ್ನಿ {{count}} మಂದಿ స್ವೀಕర್ತಲಕು ಪಂಪಾಲಾ?",
     "sent": "ಪ್ರಸಾರ ಕಳುಹಿಸಲಾಗಿದೆ!",
     "scheduled": "ಪ್ರಸಾರ ನಿಗದಿಪಡಿಸಲಾಗಿದೆ!",
     "allFollowers": "ಎಲ್ಲಾ ಅನುಯಾಯಿಗಳು",
     "boothVolunteers": "ಮತಗಟ್ಟೆ ಸ್ವಯಂಸೇವಕರು",
     "youthVoters": "ಯುವ ಮತದಾರರು (18-25)",
     "womenVoters": "ಮಹಿಳಾ ಮತದಾರರು",
+    "sendBroadcastConfirm": "ಈ ಪ್రసಾరಾನ್ನಿ ಇಪ್ಪುಡೇ {{count}} మಂದಿ స್ವೀಕర್ತಲಕು ಪಂಪಾಲಾ?",
+    "scheduleBroadcastConfirm": "{{count}} మಂದಿ స್ವೀಕర್ತಲ ಕೋసಂ ಈ ಪ್రసಾరಾನ್ನಿ ಷೆಡ್ಯೂಲ್ ಚೇಯಾಲಾ?",
     "simulationNote": "ಇದು ಕೇವಲ ಅನುಕರಣೆ. ಯಾವುದೇ ನೈಜ ಸಂದೇಶ ಕಳುಹಿಸುವುದಿಲ್ಲ.",
     "dltApproval": "DLT ಅನುಮೋದಿತ",
     "optedInOnly": "ಸಮ್ಮತಿಸಿದ ಸ್ವೀಕೃತದಾರರು ಮಾತ್ರ",
