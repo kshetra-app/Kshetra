@@ -1,5 +1,5 @@
 # RELEASE REGISTER: PANIN / KSHETRA
-**Last Updated:** 2026-09-14
+**Last Updated:** 2026-09-21
 **Standard:** AI Agent Master Execution Job Book & Amendment v1.2 (Sections 0.8, Parts 9–14)
 
 ---
@@ -18,6 +18,7 @@
 | `v0.1.0-w005` | Staging / Recovery | Disaster Recovery & Backup Verification | Staging Gateway & Database | N/A | v1 (0.1.0) | `acc32fe` | W005 Accepted (w/ Documented Limitations) | DEVOPS | PASS (IV Pass 2026-09-11) |
 | `v0.1.0-w007` | Mobile Client | Canonical API Client Layer (`apps/mobile/lib/api`) | Monorepo Source | N/A | v1 (0.1.0) | `1d253cd` | W007 Accepted / Closed | BE+MOB | PASS (CTO Accepted 2026-09-12) |
 | `v0.1.0-w008-c` | Production / Staging | Phase-1 Domain API Contracts (`states`, `moderation`, `notifications`, `civic`) | Backend Gateway | N/A | v1 (0.1.0) | `8984704` | W008-C Accepted / Complete | BE | PASS (CTO Accepted 2026-09-14) |
+| `v0.1.0-w009-b5` | Staging | Railway API + Supabase | Backend Gateway + Staging DB | N/A | v1 (0.1.0) | `45ebb7d` | W009-B5 Accepted (Migrations 035-037, Provider Sandbox/Mock, Lineage Closure) | BE+DEVOPS | PASS (CTO Accepted 2026-09-21) |
 
 ---
 

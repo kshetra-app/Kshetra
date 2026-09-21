@@ -840,8 +840,50 @@
   3. Evidence generated in `reports/w008_d_states_verification.json` and `reports/w008_d_states_verification.md` under the non-self-referential REV-8 model.
   4. Submitted for independent CTO technical acceptance decision.
 
+---
 
+### DEC-052: W009-B4 FORMAL CTO ACCEPTANCE & TRANSITION TO W009-B5
+- **Date:** 2026-09-20
+- **Status:** ACCEPTED / COMPLETE (CTO FORMAL ACCEPTANCE)
+- **Authority:** CTO Decision / Technical Authority (Rule IV-001, Master Execution Framework)
+- **Context:** Following the completion of the mobile strangler and mutation consolidation in W009-B4, with 11 real database mutations verified and comprehensive regression testing, the CTO formally accepted and closed W009-B4.
+- **Decisions:**
+  1. **Formal W009-B4 Acceptance:** W009-B4 marked `ACCEPTED / COMPLETE`.
+  2. **Delivered Capabilities:** Verified 11 real DB mutation strangler targets migrated off direct client callers and consolidated through API gateway/contracts.
+  3. **Verification & Testing:** All mobile and backend contract test suites verified at baseline commit `1a715c87f50a5006a7020a7047794daa3542d798`.
+  4. **Next Phase Transition:** Transition authorized to W009-B5 (Provider Sandbox / Mock Readiness & Staging Closure).
+- **Rationale:** Completes the mobile mutation consolidation phase, eliminating unsafe direct mobile database mutations and establishing gateway mediation before external provider integration.
 
+---
 
-
-
+### DEC-053: W009-B5 FORMAL CTO ACCEPTANCE, EVIDENCE RECONCILIATION, STAGING TEST DATA QUARANTINE & CONTINUITY TRANSITION TO W010
+- **Date:** 2026-09-21
+- **Status:** ACCEPTED / COMPLETE (CTO FORMAL ACCEPTANCE)
+- **Authority:** CTO Directive / Formal Technical Acceptance (`W009-B5 — CTO FINAL ACCEPTANCE / CONTINUITY TRANSITION`)
+- **Context:** Formal technical review and validation of W009-B5-R8 staging provider integration, deployment lineage proof, and runtime verification against live staging infrastructure (`panIN-staging` Supabase and `kshetra-api-staging` on Railway).
+- **Decisions:**
+  1. **Formal Acceptance of W009-B5-R8 and W009-B5:** W009-B5-R8 = ACCEPTED / COMPLETE and W009-B5 = ACCEPTED / COMPLETE. Full Job W009 (External Provider Abstraction & Strangler Migration) is formally ACCEPTED / COMPLETE.
+  2. **Authoritative Evidence & Coordinates:**
+     - Canonical Repository HEAD: `45ebb7dfd2f78c807b57b1348ba9e1be4caaa504`
+     - Deployed Railway Commit: `ffaf92bf447ba8971df072a67b072f51ce5a1548`
+     - Active Railway Deployment: `d3ebcadd`
+     - Provider Implementation Source: `126011a8c3d9b4bfa293c66f9166f289d0c3ebc9`
+     - Deployment Lineage Tree SHA: `8133ad6577aa0a36ffdf0afb5ced57678ea6e26c` (Identical between deployed container and canonical HEAD; 0 files changed, 0 lines diff in `apps/api`)
+     - Staging Verification Suite: 27/27 checks passed (100% PASS across Staging Runtime, Staging DB, Sandbox Provider, Mock Provider, Source Lineage) in `tests/verify_w009_b5_staging_runtime.mjs`
+     - Verification Evidence: Committed in `reports/w009_b5_staging_runtime_evidence.json` and `reports/w009_b5_staging_runtime_report.md` at `45ebb7d`.
+  3. **Delivered & Live Verified Staging Capabilities:**
+     - Live staging database (`fkpigozcqnmcvofuksar.supabase.co`) with migrations 035 (`campaign_recharge_orders`), 036 (`foundation_and_grants_repair`), 037 (`page_pro_orders`) applied and verified.
+     - Zero U+FEFF BOM defects in migration scripts.
+     - Pages Pro durable persistence verified: cryptographic transaction boundary, schema/security verification, order-entitlement lifecycle.
+     - Sandbox payment integration (Razorpay) and mock voice OBD (Exotel) staging runtime integration verified.
+     - Invariant verified: `internal_payment_secrets` table revoked from `service_role`; zero production secrets stored.
+     - Invariant verified: Zero real financial transactions, ₹0 real money transacted, zero real telecom calls, production completely untouched.
+  4. **Staging Test Artifacts Identification & Quarantine:**
+     - All records created during R8 verification (including Pages Pro test order `order_1789922113927_v4j5si`, row ID `ef18fd7c-1bd9-4b2a-912e-d654559e6cb0`, status `created`, and related test probe records) are explicitly categorized as `STAGING TEST DATA`.
+     - Strict policy: No staging test data may be mutated or deleted without a documented cleanup decision approved by Technical Authority.
+  5. **Continuity & Next Authorized Job Determination:**
+     - Next authorized job in the Master Roadmap is `W010: Security Baseline & RLS Hardening`.
+     - Prerequisite status: W009 is fully COMPLETE.
+     - Implementation authorization status: W010 is strictly `NOT_STARTED (PENDING CTO AUTHORIZATION)`.
+     - Strict execution freeze: Zero product code modifications permitted. No self-acceptance. Awaiting explicit CTO authorization before preflight execution.
+- **Rationale:** Complies with Master Execution Framework Amendment v1.5-A and Rule IV-001 by recording formal CTO acceptance with cryptographic lineage proof, quarantining staging test data, closing Job W009, and enforcing fail-closed boundaries on W010.

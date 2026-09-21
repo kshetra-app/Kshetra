@@ -7,25 +7,34 @@
 ## 1. Project & Execution Coordinates
 ```text
 PROJECT:               PANIN (formerly Kshetra)
-CURRENT_JOB:           W009-B4 (AWAITING CTO ACCEPTANCE)
-LAST_COMPLETED_JOB:    W009-B3 (Moderation Fail-Closed & Unavailable Semantics - ACCEPTED / COMPLETE)
-NEXT_PERMITTED_JOB:    NONE (W009-B5 strictly NOT AUTHORIZED / FROZEN pending explicit CTO directive)
+CURRENT_JOB:           W009-B5 (ACCEPTED / COMPLETE)
+LAST_COMPLETED_JOB:    W009-B5 (Provider Sandbox / Mock Readiness & Staging Integration - ACCEPTED / COMPLETE)
+NEXT_PERMITTED_JOB:    W010 (Security Baseline & RLS Hardening - PENDING CTO AUTHORIZATION)
 
-PLAN_STATUS:           RATIFIED (Revision 2.0)
+PLAN_STATUS:           RATIFIED / COMPLETE (Revision 2.0)
 APPROVED_PLAN_VERSION: PLAN-W009-MASTER-REV-2
-IMPLEMENTATION_AUTHORIZATION: W009-B4 AUTHORIZED (W009-B5 FROZEN / NOT AUTHORIZED)
-AUTHORIZED_JOB:        W009-B4
+IMPLEMENTATION_AUTHORIZATION: W009-B1..B5 ALL COMPLETE (W010 PENDING CTO AUTHORIZATION)
+AUTHORIZED_JOB:        W009-B5 (ACCEPTED / COMPLETE)
 W009_B1_STATUS:        ACCEPTED_COMPLETE
 W009_B2_STATUS:        ACCEPTED_COMPLETE
 W009_B3_STATUS:        ACCEPTED_COMPLETE
-W009_B4_STATUS:        IMPLEMENTED_TESTED_VERIFIED_AWAITING_CTO_ACCEPTANCE
-W009_B5_STATUS:        FROZEN_NOT_AUTHORIZED
+W009_B4_STATUS:        ACCEPTED_COMPLETE
+W009_B5_STATUS:        ACCEPTED_COMPLETE
 
-# W009-B4 COORDINATES (AWAITING CTO ACCEPTANCE)
+# W009-B5 ACCEPTED COORDINATES (ACCEPTED / COMPLETE BY CTO)
+ACCEPTED_W009_B5_HEAD_COMMIT:           45ebb7dfd2f78c807b57b1348ba9e1be4caaa504
+ACCEPTED_W009_B5_RAILWAY_COMMIT:        ffaf92bf447ba8971df072a67b072f51ce5a1548
+ACCEPTED_W009_B5_RAILWAY_DEPLOYMENT:    d3ebcadd
+ACCEPTED_W009_B5_PROVIDER_SOURCE:       126011a8c3d9b4bfa293c66f9166f289d0c3ebc9
+W009_B5_STAGING_CHECKS:                 27/27 PASSED (100%)
+W009_B5_STATUS:                         ACCEPTED_COMPLETE
+W009_B5_CTO_ACCEPTANCE:                 ACCEPTED_COMPLETE (2026-09-21)
+
+# W009-B4 ACCEPTED COORDINATES (ACCEPTED / COMPLETE BY CTO)
 W009_B4_BASELINE_COMMIT:                1a715c87f50a5006a7020a7047794daa3542d798
 W009_B4_BASELINE_TREE:                  c111e3de8ecd41dc66aa66ee0d8bd25451065e49
-W009_B4_STATUS:                         IMPLEMENTED_TESTED_VERIFIED_AWAITING_CTO_ACCEPTANCE
-W009_B4_CTO_ACCEPTANCE:                 PENDING
+W009_B4_STATUS:                         ACCEPTED_COMPLETE
+W009_B4_CTO_ACCEPTANCE:                 ACCEPTED_COMPLETE (2026-09-20)
 
 # W009-B3 ACCEPTED COORDINATES (ACCEPTED / COMPLETE BY CTO)
 ACCEPTED_W009_B3_IMPLEMENTATION_COMMIT: 2ff4f40130df3b1fb516c29902742653d7749427
@@ -150,9 +159,14 @@ REMOTE_SYNC:           Up to date with origin/master
 | **W005** | Backup & Recovery Verification | **ACCEPTED (W/ LIMITATIONS)** | 2026-09-11 | W005-R1C Independent Verifier PASS (commit `acc32fe`); verified remote head `f6ee696`; audited code `943b026`; evidence `b4f3133`; documented limitations: PITR/RPO ≤5m unverified, multi-cloud standby not implemented, DR-001 schema/API bootstrap, DR-002 synthetic staging, DR-004 staging storage, DR-005 client offline; user accepted |
 | **W006** | API Architecture Audit & Separation | **ACCEPTED** | 2026-09-12 | Audited 316 mobile files, 12 direct Supabase callers, 14 Railway callers, 137 Fastify routes across 23 modules, 85 data service methods classified (23 Class A reads, 56 Class B mutation strangler targets, 6 Class C Fastify routed). Fail-closed RLS decision engine: 21 source verified, 2 source pending, 0 live verified, 23 live pending; 0 directClientAllowed=true, 21 conditional pending, 2 forbidden (conversations/messages). Anti-override guard active. Tests NP-01 to NP-10 pass. global_search defect documented as DEF-013; auditedCodeCommit=35ba912, evidenceCommit=04be40b; formally accepted by CTO / Technical Authority per DEC-037; reports/w006_final_acceptance_report.* & reports/w006_final_independent_verification.md |
 | **W007** | Canonical API Client | **ACCEPTED / CLOSED** | 2026-09-12 | Canonical API client implemented in apps/mobile/lib/api/ (apiClient, AuthManager, ConfigEndpoint, PagesEndpoint, NewsEndpoint). Technically accepted by CTO at implementation commit `1d253cd454effb441e7f01e846a568eeddc7f57e`. Real single-flight token deduplication verified; fail-safe auth policy; Fastify UUID correlation with strict response validation on all statuses (2xx, 4xx, 5xx); total request deadline budget (18s GET, attempt ceiling 8s); caller cancellation semantics (0 retries); zero mutation retries (NP-08); strict runtime response validation (NewsSource object, NewsFeed schema, boolean flags, page entitlement); 48/48 unit tests pass (including 16 negative-path tests NP-1 through NP-16); 9 master integration checks pass; 3 pioneer callers migrated (pageService, featureFlags, news) with 100% fallback preservation; DM callers, DB migrations, Fastify routes, and npm dependencies untouched; IV-01 through IV-23 verified |
-| **W008** | API Contract Standardization | **IN PROGRESS (W008-C ACCEPTED / COMPLETE)** | 2026-09-14 | Plan REV-7.0 formally approved by CTO. W008-A accepted and closed by CTO (DEC-045). W008-B accepted and closed by CTO (DEC-047). W008-C (Phase-1 Domain API Contract Reconciliation & Standardization) formally accepted and complete by CTO (DEC-049) at implementation commit `89847041d0d9d93d348ed7bc2a5556dcc2c74f8b` under scope hash `36de3d19127019ae00d7900e7d515e74e5892e18adcd991b606338fe5be04b49` from base HEAD `70b18f55dc9864070688a0949aaf60c79a9c0657`. Authoritative CC-01..CC-06 PASS, NP-01..NP-18 PASS, Staging & Prod runtime PASS. Successor sub-jobs W008-D, W008-E and W009 remain strictly unauthorized / frozen. |
-| **W009** | External Provider Abstraction | **NOT AUTHORIZED** | - | Blocked pending W008 reconciliation, sub-job completion, and closure |
-| **W010** | Security Baseline & RLS Hardening | NOT_STARTED | - | Prerequisite: W009 |
+| **W008** | API Contract Standardization | **ACCEPTED / COMPLETE** | 2026-09-18 | W008-A, B, C, D, E all complete. W008-E mobile mutation strangler and migration 035 recharge orders complete; accepted by CTO |
+| **W009-B1** | Migration Normalization, Safety & Foundation Repair | **ACCEPTED / COMPLETE** | 2026-09-18 | 38 migrations normalized; DEF-013 syntax error repaired in migration 036; accepted by CTO |
+| **W009-B2** | Bounded Provider Abstraction (Razorpay & Voice OBD) | **ACCEPTED / COMPLETE** | 2026-09-18 | Provider interfaces implemented; fail-closed signature verification; TRAI window checks; accepted by CTO |
+| **W009-B3** | Moderation Fail-Closed & Unavailable Semantics | **ACCEPTED / COMPLETE** | 2026-09-19 | DEF-004 resolved; fail-closed moderation semantics; accepted by CTO |
+| **W009-B4** | Mobile Strangler / Mutation Consolidation | **ACCEPTED / COMPLETE** | 2026-09-20 | 11 real DB mutations verified; mobile strangler complete; accepted by CTO |
+| **W009-B5** | Provider Sandbox/Mock Readiness & Staging Closure | **ACCEPTED / COMPLETE** | 2026-09-21 | Staging DB migrations 035-037 applied; Railway staging connected; 27/27 staging runtime & sandbox checks PASS; deployment lineage closed; accepted by CTO |
+| **W009** | External Provider Abstraction & Strangler Migration | **ACCEPTED / COMPLETE** | 2026-09-21 | W009-B1 through W009-B5 all complete and accepted by CTO |
+| **W010** | Security Baseline & RLS Hardening | **NOT_STARTED (PENDING CTO AUTHORIZATION)** | - | Next Job in Master Roadmap (Prerequisite W009 COMPLETE) |
 | **W011** | Deceptive Fallback Remediation | NOT_STARTED | - | Prerequisite: W010 |
 | ... | ... | ... | ... | ... |
 | **W051** | API Customer Acquisition | NOT_STARTED | - | Commercial API/SaaS customer onboarding |
