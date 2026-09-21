@@ -568,13 +568,8 @@ export async function moderationRoutes(app: FastifyInstance) {
       }
     }
 
-    return reply.send({
-      success: true,
-      data: {
-        queue: MOCK_REPORTS_QUEUE,
-        totalPending: MOCK_REPORTS_QUEUE.length,
-        message: 'Loaded moderation queue',
-      },
+    return sendApiError(reply, request, 503, 'Service Unavailable', 'Database service unavailable. Moderation queue unavailable.', {
+      code: 'DATABASE_UNAVAILABLE',
     });
   });
 
@@ -672,15 +667,8 @@ export async function moderationRoutes(app: FastifyInstance) {
       }
     }
 
-    return reply.send({
-      success: true,
-      data: {
-        id: `mock-verif-${Date.now()}`,
-        userId,
-        verificationType,
-        status: 'pending',
-        submittedAt: new Date().toISOString(),
-      },
+    return sendApiError(reply, request, 503, 'Service Unavailable', 'Database service unavailable. Cannot record verification request.', {
+      code: 'DATABASE_UNAVAILABLE',
     });
   });
 
@@ -704,24 +692,28 @@ export async function moderationRoutes(app: FastifyInstance) {
       return sendApiError(reply, request, 400, 'Bad Request', 'Cannot block yourself', { code: 'VALIDATION_ERROR' });
     }
 
-    if (isSupabaseConfigured) {
-      try {
-        const { error } = await supabase
-          .from('blocked_users')
-          .upsert({
-            blocker_id: userId,
-            blocked_id: blockedUserId,
-            created_at: new Date().toISOString(),
-          }, { onConflict: 'blocker_id,blocked_id' });
+    if (!isSupabaseConfigured) {
+      return sendApiError(reply, request, 503, 'Service Unavailable', 'Database service unavailable. Cannot block user.', {
+        code: 'DATABASE_UNAVAILABLE',
+      });
+    }
 
-        if (error) {
-          app.log.error({ err: error.message }, 'Failed to insert blocked user in Supabase');
-          return sendApiError(reply, request, 500, 'Internal Server Error', 'Failed to block user', { code: 'DATABASE_ERROR' });
-        }
-      } catch (err: any) {
-        app.log.error({ err: err?.message }, 'Unexpected error blocking user');
-        return sendApiError(reply, request, 500, 'Internal Server Error', 'Internal server error blocking user', { code: 'DATABASE_ERROR' });
+    try {
+      const { error } = await supabase
+        .from('blocked_users')
+        .upsert({
+          blocker_id: userId,
+          blocked_id: blockedUserId,
+          created_at: new Date().toISOString(),
+        }, { onConflict: 'blocker_id,blocked_id' });
+
+      if (error) {
+        app.log.error({ err: error.message }, 'Failed to insert blocked user in Supabase');
+        return sendApiError(reply, request, 500, 'Internal Server Error', 'Failed to block user', { code: 'DATABASE_ERROR' });
       }
+    } catch (err: any) {
+      app.log.error({ err: err?.message }, 'Unexpected error blocking user');
+      return sendApiError(reply, request, 500, 'Internal Server Error', 'Internal server error blocking user', { code: 'DATABASE_ERROR' });
     }
 
     return reply.send({
@@ -747,22 +739,26 @@ export async function moderationRoutes(app: FastifyInstance) {
     const currentUserId = auth.userId;
     const targetUserId = request.params.userId;
 
-    if (isSupabaseConfigured) {
-      try {
-        const { error } = await supabase
-          .from('blocked_users')
-          .delete()
-          .eq('blocker_id', currentUserId)
-          .eq('blocked_id', targetUserId);
+    if (!isSupabaseConfigured) {
+      return sendApiError(reply, request, 503, 'Service Unavailable', 'Database service unavailable. Cannot unblock user.', {
+        code: 'DATABASE_UNAVAILABLE',
+      });
+    }
 
-        if (error) {
-          app.log.error({ err: error.message }, 'Failed to remove blocked user in Supabase');
-          return sendApiError(reply, request, 500, 'Internal Server Error', 'Failed to unblock user', { code: 'DATABASE_ERROR' });
-        }
-      } catch (err: any) {
-        app.log.error({ err: err?.message }, 'Unexpected error unblocking user');
-        return sendApiError(reply, request, 500, 'Internal Server Error', 'Internal server error unblocking user', { code: 'DATABASE_ERROR' });
+    try {
+      const { error } = await supabase
+        .from('blocked_users')
+        .delete()
+        .eq('blocker_id', currentUserId)
+        .eq('blocked_id', targetUserId);
+
+      if (error) {
+        app.log.error({ err: error.message }, 'Failed to remove blocked user in Supabase');
+        return sendApiError(reply, request, 500, 'Internal Server Error', 'Failed to unblock user', { code: 'DATABASE_ERROR' });
       }
+    } catch (err: any) {
+      app.log.error({ err: err?.message }, 'Unexpected error unblocking user');
+      return sendApiError(reply, request, 500, 'Internal Server Error', 'Internal server error unblocking user', { code: 'DATABASE_ERROR' });
     }
 
     return reply.send({

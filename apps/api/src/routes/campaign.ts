@@ -213,8 +213,6 @@ async function resolveAuthUser(
       if (!error && user) {
         userId = user.id;
       }
-    } else {
-      userId = 'auth-token-user';
     }
   }
 
@@ -835,12 +833,22 @@ export async function campaignRoutes(app: FastifyInstance) {
         if (!error && data) {
           return { success: true, booth: data };
         }
-      } catch {}
+        if (error) {
+          return sendApiError(reply, request, 500, 'Internal Server Error', `Failed to update booth strategy: ${error.message}`, {
+            code: 'DATABASE_ERROR',
+          });
+        }
+      } catch (err: any) {
+        return sendApiError(reply, request, 500, 'Internal Server Error', err?.message || 'Failed to update booth strategy', {
+          code: 'DATABASE_ERROR',
+        });
+      }
     }
 
-    if (memIdx >= 0) {
-      inMemoryBooths[memIdx] = { ...inMemoryBooths[memIdx], ...updates };
-      return { success: true, booth: inMemoryBooths[memIdx] };
+    if (!isSupabaseConfigured) {
+      return sendApiError(reply, request, 503, 'Service Unavailable', 'Database persistence unavailable. Cannot update booth strategy.', {
+        code: 'DATABASE_UNAVAILABLE',
+      });
     }
 
     return sendApiError(reply, request, 404, 'Not Found', 'Booth not found', { code: 'NOT_FOUND' });
@@ -941,29 +949,40 @@ export async function campaignRoutes(app: FastifyInstance) {
       }
     }
 
-    const newVol = {
-      id: `v-${Date.now().toString(36)}`,
-      campaignId,
-      name: body.name || '',
-      phone: body.phone || '',
-      role: assignedRole,
-      status: 'active',
-      assignedBooths: body.assignedBooths || [],
-      assignedWards: body.assignedWards || [],
-      isKshetraUser: verifiedKshetraUser,
-      tasksCompleted: 0,
-      createdAt: new Date().toISOString(),
-    };
-
-    inMemoryVolunteers.unshift(newVol);
-
-    if (isSupabaseConfigured) {
-      try {
-        await supabase.from('campaign_volunteers').insert(newVol);
-      } catch {}
+    if (!isSupabaseConfigured) {
+      return sendApiError(reply, request, 503, 'Service Unavailable', 'Database persistence unavailable. Cannot register volunteer.', {
+        code: 'DATABASE_UNAVAILABLE',
+      });
     }
 
-    return reply.status(201).send({ success: true, volunteer: newVol, message: 'Cadre member registered successfully' });
+    try {
+      const { data, error } = await supabase
+        .from('campaign_volunteers')
+        .insert({
+          campaign_id: campaignId,
+          user_id: auth.userId,
+          name: body.name || '',
+          phone: body.phone || '',
+          role: assignedRole,
+          status: 'active',
+          assigned_booths: body.assignedBooths || [],
+          assigned_wards: body.assignedWards || [],
+        })
+        .select()
+        .single();
+
+      if (error || !data) {
+        return sendApiError(reply, request, 500, 'Internal Server Error', error?.message || 'Failed to persist campaign volunteer', {
+          code: 'DATABASE_ERROR',
+        });
+      }
+
+      return reply.status(201).send({ success: true, volunteer: data, message: 'Cadre member registered successfully' });
+    } catch (err: any) {
+      return sendApiError(reply, request, 500, 'Internal Server Error', err?.message || 'Failed to register volunteer', {
+        code: 'DATABASE_ERROR',
+      });
+    }
   });
 
   /** GET /api/v1/campaign/wallet — get campaign prepaid balance */

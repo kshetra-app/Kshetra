@@ -190,7 +190,9 @@ export const dmRoutes: FastifyPluginAsync = async (app) => {
     }
 
     if (!isSupabaseConfigured) {
-      return reply.send({ success: true, count: 0 });
+      return sendApiError(reply, request, 503, 'Service Unavailable', 'Database service unavailable', {
+        code: 'DATABASE_UNAVAILABLE',
+      });
     }
 
     try {
@@ -220,8 +222,10 @@ export const dmRoutes: FastifyPluginAsync = async (app) => {
 
       return reply.send({ success: true, count: count ?? 0 });
     } catch (err: any) {
-      app.log.warn({ err: err.message }, 'Failed to compute DM unread count');
-      return reply.send({ success: true, count: 0 });
+      app.log.error({ err: err?.message }, 'Failed to compute DM unread count');
+      return sendApiError(reply, request, 500, 'Internal Server Error', 'Failed to retrieve unread count', {
+        code: 'DATABASE_ERROR',
+      });
     }
   });
 

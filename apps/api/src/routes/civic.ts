@@ -467,8 +467,6 @@ async function resolveAuthUser(
       if (!error && user) {
         userId = user.id;
       }
-    } else {
-      userId = 'auth-token-user';
     }
   }
 

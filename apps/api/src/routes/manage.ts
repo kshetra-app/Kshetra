@@ -24,8 +24,6 @@ export const manageRoutes: FastifyPluginAsync = async (app) => {
         if (!error && user) {
           userId = user.id;
         }
-      } else {
-        userId = 'auth-token-user';
       }
     }
 

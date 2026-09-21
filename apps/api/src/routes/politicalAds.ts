@@ -222,22 +222,29 @@ export const politicalAdsRoutes: FastifyPluginAsync = async (app) => {
       return reply.status(201).send({ success: true, ad: newAd });
     }
 
-    // Non-DB fallback
-    const newAd: PoliticalAdRow = {
-      id: `pad-${Date.now()}`,
-      page_id: pageId,
-      post_id: postId,
-      mcmc_certificate_id: mcmcCertificateId.trim(),
-      status: 'pending_certification',
-      amount_paid: Math.round(amountPaid),
-      target_scope: targetScope,
-      target_value: targetValue?.trim(),
-      impressions: 0,
-      created_at: new Date().toISOString(),
-    };
-    MEMORY_ADS.push(newAd);
+    if (!isSupabaseConfigured) {
+      if (process.env.NODE_ENV === 'test') {
+        // Isolated test-only fallback (Section 14)
+        const newAd: PoliticalAdRow = {
+          id: `pad-${Date.now()}`,
+          page_id: pageId,
+          post_id: postId,
+          mcmc_certificate_id: mcmcCertificateId.trim(),
+          status: 'pending_certification',
+          amount_paid: Math.round(amountPaid),
+          target_scope: targetScope,
+          target_value: targetValue?.trim(),
+          impressions: 0,
+          created_at: new Date().toISOString(),
+        };
+        MEMORY_ADS.push(newAd);
+        return reply.status(201).send({ success: true, ad: newAd });
+      }
 
-    return reply.status(201).send({ success: true, ad: newAd });
+      return sendApiError(reply, request, 503, 'Service Unavailable', 'Database persistence unavailable. Cannot create political ad.', {
+        code: 'DATABASE_UNAVAILABLE',
+      });
+    }
   });
 
   /**
@@ -334,20 +341,28 @@ export const politicalAdsRoutes: FastifyPluginAsync = async (app) => {
       });
     }
 
-    const target = MEMORY_ADS.find((a) => a.id === adId);
-    if (!target) {
-      return sendApiError(reply, request, 404, 'Not Found', 'Political ad not found', { code: 'NOT_FOUND' });
+    if (!isSupabaseConfigured) {
+      if (process.env.NODE_ENV === 'test') {
+        const target = MEMORY_ADS.find((a) => a.id === adId);
+        if (!target) {
+          return sendApiError(reply, request, 404, 'Not Found', 'Political ad not found', { code: 'NOT_FOUND' });
+        }
+
+        target.status = newStatus;
+        target.reviewed_by = auth.userId;
+        target.reviewed_at = now;
+
+        return reply.send({
+          success: true,
+          ad: target,
+          message: `Political ad ${action === 'certify' ? 'certified and activated' : 'rejected'} by reviewer ${auth.userId}`,
+        });
+      }
+
+      return sendApiError(reply, request, 503, 'Service Unavailable', 'Database persistence unavailable. Cannot update ad certification.', {
+        code: 'DATABASE_UNAVAILABLE',
+      });
     }
-
-    target.status = newStatus;
-    target.reviewed_by = auth.userId;
-    target.reviewed_at = now;
-
-    return reply.send({
-      success: true,
-      ad: target,
-      message: `Political ad ${action === 'certify' ? 'certified and activated' : 'rejected'} by reviewer ${auth.userId}`,
-    });
   });
 
   /**
