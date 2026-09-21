@@ -83,6 +83,8 @@ export interface PromiseEvidence {
   isSupporting: boolean;
   upvotes: number;
   createdAt: string;
+  syncStatus?: 'FAILED' | 'QUEUED' | 'SYNCING' | 'SYNCED';
+  clientToken?: string;
 }
 
 /** Promise Delivery Index — computed per party/MLA/government */

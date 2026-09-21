@@ -21,6 +21,8 @@ function writeQueue(data: string): void {
   if (isMMKVAvailable && mmkv) mmkv.set(QUEUE_KEY, data);
 }
 
+export type SyncStatus = 'FAILED' | 'QUEUED' | 'SYNCING' | 'SYNCED';
+
 export type SyncOpType =
   | 'upvote_issue'
   | 'follow_issue'
@@ -143,6 +145,8 @@ async function executeOp(op: SyncOperation): Promise<boolean> {
         return (await svc.reportIssue(p)).success;
       case 'compose_post':
         return (await svc.composePost(p)).success;
+      case 'add_comment':
+        return (await svc.addPostComment(p.postId as string, p.userId as string, p.content as string, p.language as string | undefined)).success;
       case 'issue_comment':
         return (await svc.addIssueComment(p.issueId as string, p.userId as string, p.userName as string, p.body as string, p.imageUrl as string | undefined)).success;
       case 'upload_short':

@@ -71,6 +71,8 @@ export interface CivicIssue {
   userUpvoted?: boolean;
   userFollowing?: boolean;
   userDisputed?: boolean;
+  syncStatus?: 'FAILED' | 'QUEUED' | 'SYNCING' | 'SYNCED';
+  clientToken?: string;
 }
 
 export interface IssueComment {
@@ -82,6 +84,8 @@ export interface IssueComment {
   imageUrl?: string;
   isOfficial: boolean;
   createdAt: string;
+  syncStatus?: 'FAILED' | 'QUEUED' | 'SYNCING' | 'SYNCED';
+  clientToken?: string;
 }
 
 export interface IssueEvidence {
