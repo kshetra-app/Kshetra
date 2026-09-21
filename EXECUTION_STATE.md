@@ -7,21 +7,36 @@
 ## 1. Project & Execution Coordinates
 ```text
 PROJECT:               PANIN (formerly Kshetra)
-CURRENT_JOB:           W010 (BOUNDED REMEDIATION COMPLETE / SUBMITTED FOR CTO REVIEW)
-LAST_COMPLETED_JOB:    W009-B5 (Provider Sandbox / Mock Readiness & Staging Integration - ACCEPTED / COMPLETE)
-NEXT_PERMITTED_JOB:    W010 (PENDING CTO REVIEW & STAGING EXECUTION AUTHORIZATION)
+CURRENT_JOB:           W010 (ACCEPTED / COMPLETE)
+LAST_COMPLETED_JOB:    W010 (Security Baseline & RLS Hardening - ACCEPTED / COMPLETE)
+NEXT_PERMITTED_JOB:    W011
+IMPLEMENTATION_AUTHORIZATION_W011: NOT YET GRANTED
 
 PLAN_STATUS:           RATIFIED / COMPLETE (Revision 2.0)
 APPROVED_PLAN_VERSION: PLAN-W010-MASTER-REV-2
 IMPLEMENTATION_AUTHORIZATION: GRANTED (CTO DIRECTIVE W010 IMPLEMENTATION AUTHORIZATION)
 IMPLEMENTATION_AUTHORIZATION_COMMIT: 879fb532acfd43b7caca41ad25fc36312587264b
 AUTHORIZED_JOB:        W010 (Security Baseline & RLS Hardening)
-W010_STATUS:           BOUNDED_REMEDIATION_COMPLETE_SUBMITTED_FOR_CTO_REVIEW
+W010_STATUS:           ACCEPTED_COMPLETE
+W010_CTO_ACCEPTANCE:   ACCEPTED_COMPLETE (2026-09-21)
+ACCEPTED_W010_COMMIT:  75b0ba2896c8d5295559c5635812c7ddfbf4f740
+W010_STAGING_CHECKS:   CHECKS 1–7 PASSED (100%), 36/36 PENETRATION SUITE PASSED (100%)
+W011_STATUS:           NOT_STARTED
 W009_B1_STATUS:        ACCEPTED_COMPLETE
 W009_B2_STATUS:        ACCEPTED_COMPLETE
 W009_B3_STATUS:        ACCEPTED_COMPLETE
 W009_B4_STATUS:        ACCEPTED_COMPLETE
 W009_B5_STATUS:        ACCEPTED_COMPLETE
+
+# W010 ACCEPTED COORDINATES (ACCEPTED / COMPLETE BY CTO)
+ACCEPTED_W010_IMPLEMENTATION_COMMIT:    75b0ba2896c8d5295559c5635812c7ddfbf4f740
+ACCEPTED_W010_STAGING_MIGRATION:        038_security_baseline_and_rls_hardening.sql
+ACCEPTED_W010_VERIFICATION_SCRIPT:      supabase/verify_staging_migration_package_038.sql
+W010_STAGING_PENETRATION_TESTS:         36/36 PASSED (100%)
+W010_CATALOG_AUDIT:                     21/21 TABLES FORCED RLS (100%)
+W010_DEFECTS_RESOLVED:                  DEF-014, DEF-015, DEF-016, DEF-017 (RESOLVED / VERIFIED)
+W010_STATUS:                            ACCEPTED_COMPLETE
+W010_CTO_ACCEPTANCE:                    ACCEPTED_COMPLETE (2026-09-21)
 
 # W009-B5 ACCEPTED COORDINATES (ACCEPTED / COMPLETE BY CTO)
 ACCEPTED_W009_B5_HEAD_COMMIT:           45ebb7dfd2f78c807b57b1348ba9e1be4caaa504
@@ -106,7 +121,7 @@ HISTORICAL_W006_ACCEPTANCE_COMMIT:    f5b8a09
 
 API_VERSION:           v1 (Fastify 5.2 on Railway)
 MOBILE_VERSION:        0.1.0 (Expo 54, React Native 0.81.5)
-DATABASE_MIGRATIONS:   36 migration files present in repository (35 live applied to staging fkpigozcqnmcvofuksar)
+DATABASE_MIGRATIONS:   38 migration files present in repository (36 live applied to staging fkpigozcqnmcvofuksar including 038)
 DATABASE_TABLES:       165 live tables in staging catalog (148 unique source tables)
 DATABASE_VIEWS:        9 live views in staging catalog (23 unique source-defined)
 API_ENDPOINTS:         138 unique Fastify route registrations (135 direct registrations + 3 derived /api health-prefix routes across 24 source files/modules)
@@ -168,8 +183,8 @@ REMOTE_SYNC:           Up to date with origin/master
 | **W009-B4** | Mobile Strangler / Mutation Consolidation | **ACCEPTED / COMPLETE** | 2026-09-20 | 11 real DB mutations verified; mobile strangler complete; accepted by CTO |
 | **W009-B5** | Provider Sandbox/Mock Readiness & Staging Closure | **ACCEPTED / COMPLETE** | 2026-09-21 | Staging DB migrations 035-037 applied; Railway staging connected; 27/27 staging runtime & sandbox checks PASS; deployment lineage closed; accepted by CTO |
 | **W009** | External Provider Abstraction & Strangler Migration | **ACCEPTED / COMPLETE** | 2026-09-21 | W009-B1 through W009-B5 all complete and accepted by CTO |
-| **W010** | Security Baseline & RLS Hardening | **NOT_STARTED (PENDING CTO AUTHORIZATION)** | - | Next Job in Master Roadmap (Prerequisite W009 COMPLETE) |
-| **W011** | Deceptive Fallback Remediation | NOT_STARTED | - | Prerequisite: W010 |
+| **W010** | Security Baseline & RLS Hardening | **ACCEPTED / COMPLETE** | 2026-09-21 | Migration 038 applied & verified on panIN-staging (Checks 1–7 PASS); 36/36 penetration tests PASS; 21/21 tables RLS forced; DEF-014..DEF-017 resolved; DEF-003 & DEF-006 deferred; 0 prod mutations; accepted by CTO |
+| **W011** | Deceptive Fallback Remediation | NOT_STARTED | - | NEXT_PERMITTED_JOB (Implementation Authorization NOT YET GRANTED) |
 | ... | ... | ... | ... | ... |
 | **W051** | API Customer Acquisition | NOT_STARTED | - | Commercial API/SaaS customer onboarding |
 | **W051.5** | Compliance, DPDP & Data Governance Readiness | NOT_STARTED | - | **NEW JOB (Amendment v1.2 Part 2)**: DPDP Act 2023, personal data inventory, retention, deletion, consent, 13-lang privacy UI. Owners: COMPLIANCE+ARCH+SEC |
@@ -179,20 +194,25 @@ REMOTE_SYNC:           Up to date with origin/master
 
 ## 3. Defect & Blocker Summary
 - **Open P0 (Production Blockers):** 0
-- **Open P1 (Major Architectural Flaws):** 5
-  - DEF-001: Duplicate routes (`user/[id]` vs `user/[userId]`, `edit-profile`, `onboarding`)
-  - DEF-002: Deceptive local fallback returns in `supabaseDataService.ts` (`if (!guard()) return true;`)
-  - DEF-003: Bloated native dependency (`react-native-webrtc` in consumer bundle)
-  - DEF-004: Silent bypass in moderation check on network error
-  - DEF-009: Invalid `SUPABASE_SERVICE_ROLE_KEY` in `apps/api/.env` (**OPEN - HUMAN ACTION REQUIRED**: Code fallback active; real secret extraction required)
-- **Open P2 (Moderate Technical Debt):** 6
-  - DEF-005: Unstandardized dual-backend data paths (12 Supabase direct vs 8 Railway API callers)
-  - DEF-006: Unformalized versioned geography tables (`geography_entity`, `geography_version`)
-  - DEF-007: Short ID UUID check causing diverging identifier semantics
-  - DEF-008: Residual unlocalized strings across screens bypassing 13-language translations
-  - DEF-010: Missing `CORS_ORIGINS` on Railway container (**RESOLVED IN CODE / PENDING DEPLOYMENT**: Committed code passes inject tests; live container awaits deployment refresh)
-  - DEF-012: 13-language translation key parity gap (**OPEN**: 8 languages at 56% coverage; 904 keys missing in `ta`, `ml`, `bn`, `gu`, `or`, `pa`, `as`, `ne`)
-  - *(DEF-011: **CLOSED - INVALID DEFECT**: Schema confirms intentional category enum on `civic_issues` table)*
+- **Open P1 (Major Architectural Flaws):** 0
+  - *(DEF-001: RESOLVED — VERIFIED in W010 Batch L1)*
+  - *(DEF-002: RESOLVED — VERIFIED in W010 Batch L3)*
+  - *(DEF-003: DEFERRED — EXPLICIT FUTURE JOB / ACCEPTED DEPENDENCY to W052)*
+  - *(DEF-004: RESOLVED — VERIFIED in W009-B3)*
+  - *(DEF-009: RESOLVED — VERIFIED in W001-R1)*
+  - *(DEF-014: RESOLVED — VERIFIED in W010 / Migration 038)*
+  - *(DEF-015: RESOLVED — VERIFIED in W010 / Migration 038)*
+- **Open P2 (Moderate Technical Debt):** 0 (excluding accepted deferred dependencies)
+  - *(DEF-005: SUPERSEDED — VERIFIED by W006, W007, W008-E, W009-B4)*
+  - *(DEF-006: DEFERRED — EXPLICIT FUTURE JOB / ACCEPTED DEPENDENCY to W013–W017)*
+  - *(DEF-007: RESOLVED — VERIFIED in W010 Batch L1)*
+  - *(DEF-008: RESOLVED — VERIFIED in W010 Batch L2)*
+  - *(DEF-010: RESOLVED — VERIFIED in W001-R3)*
+  - *(DEF-011: INVALID — VERIFIED in W001-R2)*
+  - *(DEF-012: RESOLVED — VERIFIED in W010 Batch L2)*
+  - *(DEF-013: RESOLVED — VERIFIED in W009-B1)*
+  - *(DEF-016: RESOLVED — VERIFIED in W010 / Migration 038)*
+  - *(DEF-017: RESOLVED — VERIFIED in W010 / Migration 038)*
 
 
 ---
@@ -264,5 +284,10 @@ REMOTE_SYNC:           Up to date with origin/master
   - [`reports/w010_legacy_remediation_l3.json`](file:///c:/Users/Laven/OneDrive/Desktop/Kshetra/reports/w010_legacy_remediation_l3.json) — Batch L3 Remediation Evidence
   - [`reports/w010_def003_decoupling.json`](file:///c:/Users/Laven/OneDrive/Desktop/Kshetra/reports/w010_def003_decoupling.json) — DEF-003 Decoupling Audit
   - [`reports/w010_geography_contamination_guard.json`](file:///c:/Users/Laven/OneDrive/Desktop/Kshetra/reports/w010_geography_contamination_guard.json) — DEF-006 Contamination Guard
+  - [`reports/w010_staging_security_verification_report.md`](file:///c:/Users/Laven/OneDrive/Desktop/Kshetra/reports/w010_staging_security_verification_report.md) — Staging Security Verification Report (Commit `75b0ba2`)
+  - [`reports/w010_staging_security_verification_report.json`](file:///c:/Users/Laven/OneDrive/Desktop/Kshetra/reports/w010_staging_security_verification_report.json) — Staging Security Verification Evidence (Commit `75b0ba2`)
+  - [`reports/w010_rls_penetration_probe.json`](file:///c:/Users/Laven/OneDrive/Desktop/Kshetra/reports/w010_rls_penetration_probe.json) — 36/36 Penetration Probe Evidence (Commit `75b0ba2`)
+  - [`reports/w010_rls_catalog_audit.json`](file:///c:/Users/Laven/OneDrive/Desktop/Kshetra/reports/w010_rls_catalog_audit.json) — 21/21 RLS Table Catalog Audit (Commit `75b0ba2`)
+  - [`supabase/verify_staging_migration_package_038.sql`](file:///c:/Users/Laven/OneDrive/Desktop/Kshetra/supabase/verify_staging_migration_package_038.sql) — Migration 038 Checks 1–7 Staging Verification Script (Commit `75b0ba2`)
 
 

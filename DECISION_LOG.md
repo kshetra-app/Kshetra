@@ -1,5 +1,5 @@
 # DECISION LOG: PANIN / KSHETRA
-**Last Updated:** 2026-09-14
+**Last Updated:** 2026-09-21
 **Standard:** AI Agent Master Execution Job Book (Section 0.9, 0.10, Part 12)
 
 ---
@@ -981,3 +981,30 @@
      - Submitted to CTO for independent review and acceptance.
 - **Rationale:** Fulfills all conditions of the CTO Bounded Legacy Remediation Directive, resolving longstanding technical debt while maintaining strict quality, security, and governance boundaries.
 
+---
+
+### DEC-058: CTO ACCEPTANCE OF W010 (SECURITY BASELINE & RLS HARDENING) AND STAGING VERIFICATION CLOSURE
+- **Date:** 2026-09-21
+- **Status:** ACCEPTED / COMPLETE
+- **Authority:** CTO Acceptance Directive (`W010 CTO ACCEPTANCE — GOVERNANCE RECONCILIATION ONLY`)
+- **Context:** Formal CTO acceptance of Master Job W010 (Security Baseline & RLS Hardening) based on submitted evidence at commit `75b0ba2896c8d5295559c5635812c7ddfbf4f740`. Verification confirms execution of Migration 038 on `panIN-staging` (`fkpigozcqnmcvofuksar`) and passes all empirical penetration and catalog validation gates.
+- **Decisions & Findings:**
+  1. **W010 Job Acceptance:** Master Job W010 is formally declared `ACCEPTED / COMPLETE`.
+  2. **Migration 038 Staging Verification:** PASS. Verification script `supabase/verify_staging_migration_package_038.sql` passed all Checks 1–7 against staging. The authoritative penetration test suite `tests/verify_w010_rls_hardening.mjs` passed 36/36 tests (100%), and catalog audit `scripts/audit_w010_catalog.mjs` confirmed 21/21 tables have RLS enabled and forced (`relforcerowsecurity = true`).
+  3. **Target Defect Resolutions (DEF-014 through DEF-017):**
+     - **DEF-014 (Plain-text citizen phone number leak on `trai_opt_outs`):** `RESOLVED — VERIFIED`. Public SELECT revoked; table restricted strictly to `service_role`; `check_phone_opt_out` RPC verified.
+     - **DEF-015 (Unrestricted anonymous execution of administrative SECURITY DEFINER RPCs):** `RESOLVED — VERIFIED`. `refresh_materialized_views` revoked from anon/public; `SET search_path = public, pg_temp` applied; `get_user_dashboard` bounded to caller's own UUID.
+     - **DEF-016 (Missing explicit SELECT policy on `lmx_departments`):** `RESOLVED — VERIFIED`. Explicit public SELECT policy added for active verified departments; sensitive columns (`webhook_url`, contacts) revoked from anon/auth.
+     - **DEF-017 (Omission of FORCE ROW LEVEL SECURITY):** `RESOLVED — VERIFIED`. `FORCE ROW LEVEL SECURITY` applied across all 21 reconciled tables with explicit table owner safeguard policies.
+  4. **Deferred Defects:**
+     - **DEF-003 (`react-native-webrtc` in consumer bundle):** Confirmed `DEFERRED` to Master Job W052 (Professional Broadcast Architecture).
+     - **DEF-006 (Missing versioned geography tables):** Confirmed `DEFERRED` to Master Jobs W013–W017 (Geographic Foundation & Delimitation Graph).
+  5. **Production Invariants Preserved:**
+     - Production database remains completely untouched (0 mutations).
+     - Production Railway API container remains untouched.
+     - Zero real money transactions, zero telecom calls, zero real settlements (₹0).
+  6. **Next Milestones & Authorizations:**
+     - W011 has NOT started.
+     - `NEXT_PERMITTED_JOB = W011`.
+     - Implementation authorization for W011 = `NOT YET GRANTED`.
+- **Rationale:** Satisfies all conditions of the CTO acceptance directive, confirming complete and verified remediation of critical database security defects while preserving strict lifecycle boundaries and preventing premature W011 execution.
