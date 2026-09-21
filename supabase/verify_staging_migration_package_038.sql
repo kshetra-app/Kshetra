@@ -94,7 +94,7 @@ ORDER BY tablename;
 -- ------------------------------------------------------------------------------
 -- CHECK 7: FORCE ROW LEVEL SECURITY Verification on all 21 Reconciled Tables (DEF-017)
 -- ------------------------------------------------------------------------------
-SELECT c.relname AS table_name, c.rowsecurity AS rls_enabled, c.relforcerowsecurity AS rls_forced
+SELECT c.relname AS table_name, c.relrowsecurity AS rls_enabled, c.relforcerowsecurity AS rls_forced
 FROM pg_class c
 JOIN pg_namespace n ON n.oid = c.relnamespace
 WHERE n.nspname = 'public'
