@@ -1,0 +1,384 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "reportType": "PREFLIGHT_INSPECTION_REPORT",
+  "job": "W011",
+  "jobTitle": "Production Fallback Repair",
+  "date": "2026-09-21",
+  "status": "PREFLIGHT_COMPLETE_AWAITING_CTO_AUTHORIZATION",
+  "implementationAuthorization": "NOT_YET_GRANTED",
+  "gitCoordinates": {
+    "baseCommit": "f80b585a8c1dcb2458f1964255b0d8e9bc200285",
+    "branch": "master"
+  },
+  "masterSpecification": {
+    "document": "PANIN - Kshetra - AI Agent Master Execution Document and Sequential Job Book.md",
+    "section": "JOB 011 PRODUCTION FALLBACK REPAIR",
+    "owners": ["BE", "MOB"],
+    "objective": "Eliminate misleading local-success semantics.",
+    "tasks": [
+      "Review all fallback behavior.",
+      "Replace false success with explicit: FAILED, QUEUED, SYNCING, SYNCED."
+    ],
+    "evidenceStandard": [
+      "Backend-disabled tests.",
+      "No successful persistence claim when server persistence failed."
+    ]
+  },
+  "inventorySummary": {
+    "totalFilesScanned": 395,
+    "mobileFilesScanned": 331,
+    "apiFilesScanned": 64,
+    "totalFindings": 26,
+    "byClassification": {
+      "VERIFIED_CURRENT_DEFECT": 15,
+      "ALREADY_RESOLVED": 6,
+      "INTENTIONAL_SAFE_FALLBACK": 4,
+      "OUT_OF_W011_SCOPE": 3,
+      "UNKNOWN_REQUIRES_RUNTIME_EVIDENCE": 2
+    }
+  },
+  "findings": [
+    {
+      "id": "W011-DEF-01",
+      "classification": "VERIFIED_CURRENT_DEFECT",
+      "domain": "Mobile / UI Components",
+      "file": "apps/mobile/components/ComposeSheet.tsx",
+      "lines": "180, 202, 205",
+      "symbol": "ComposeSheet.handleSubmit",
+      "description": "Generates synthetic IDs (local-${Date.now()}, poll-local-..., opt-local-...) that are passed to store and never updated when server returns authoritative UUIDs.",
+      "impact": "Leaves posts permanently in store with local- IDs, causing feed filtering logic (localOnly) to treat them as local-only permanently."
+    },
+    {
+      "id": "W011-DEF-02",
+      "classification": "VERIFIED_CURRENT_DEFECT",
+      "domain": "Mobile / UI Components",
+      "file": "apps/mobile/components/PostDetailModal.tsx",
+      "lines": "83",
+      "symbol": "PostDetailModal.handleSendComment",
+      "description": "Generates synthetic ID local-c-${Date.now()} for new comments that is never reconciled with server-returned comment UUID.",
+      "impact": "Subsequent actions on this comment (deletions, reactions) fail or operate on non-existent database identifiers."
+    },
+    {
+      "id": "W011-DEF-03",
+      "classification": "VERIFIED_CURRENT_DEFECT",
+      "domain": "Mobile / Store",
+      "file": "apps/mobile/stores/promises.ts",
+      "lines": "555-579",
+      "symbol": "usePromiseStore.submitEvidence / toggleFollowPromise",
+      "description": "submitEvidence generates synthetic ID pe-${Date.now()} and stores in local state only; toggleFollowPromise toggles local state only. Neither calls backend or dataService.",
+      "impact": "User evidence submissions and promise follows are completely lost on app refresh / multi-device; zero server persistence."
+    },
+    {
+      "id": "W011-DEF-04",
+      "classification": "VERIFIED_CURRENT_DEFECT",
+      "domain": "Mobile / Store",
+      "file": "apps/mobile/stores/politicalShorts.ts",
+      "lines": "46-60",
+      "symbol": "usePoliticalShortsStore.addShort / approveShort / flagShort",
+      "description": "addShort generates short-user-${Date.now()} and writes solely to MMKV; approveShort and flagShort mutate local MMKV state only without calling DataService.",
+      "impact": "Citizen shorts uploads and community moderation approvals/flags are isolated to local device with zero backend propagation."
+    },
+    {
+      "id": "W011-DEF-05",
+      "classification": "VERIFIED_CURRENT_DEFECT",
+      "domain": "Mobile / Store",
+      "file": "apps/mobile/stores/aspirant.ts",
+      "lines": "438-480",
+      "symbol": "useAspirantStore.completeModule / startModule / joinChallenge",
+      "description": "Module progress and challenges are mutated exclusively in local Zustand/MMKV state; corresponding dataService methods are never invoked.",
+      "impact": "Leadership academy progress exists only in client storage; not synchronized with aspirant database profile."
+    },
+    {
+      "id": "W011-DEF-06",
+      "classification": "VERIFIED_CURRENT_DEFECT",
+      "domain": "Mobile / Queue",
+      "file": "apps/mobile/lib/offlineSync.ts",
+      "lines": "129-168",
+      "symbol": "executeOp",
+      "description": "SyncOpType defines add_comment, but executeOp omits case 'add_comment' and falls through to default: return true.",
+      "impact": "Offline queued post comments are silently dropped while reporting false success."
+    },
+    {
+      "id": "W011-DEF-07",
+      "classification": "VERIFIED_CURRENT_DEFECT",
+      "domain": "Mobile / Store",
+      "file": "apps/mobile/stores/feed.ts",
+      "lines": "1353, 1362",
+      "symbol": "useFeedStore.addPost",
+      "description": "Calls enqueue('compose_post') (which executes composePost immediately if online) and then immediately calls dataService.composePost a second time.",
+      "impact": "Causes redundant duplicate post creation requests on online networks."
+    },
+    {
+      "id": "W011-DEF-08",
+      "classification": "VERIFIED_CURRENT_DEFECT",
+      "domain": "Mobile / Architecture",
+      "file": "apps/mobile/stores/*.ts & lib/offlineSync.ts",
+      "lines": "Monorepo-wide",
+      "symbol": "SyncStatus",
+      "description": "Absence of the required 4-state lifecycle (FAILED, QUEUED, SYNCING, SYNCED) across all 29 mobile Zustand stores and offline queue models.",
+      "impact": "Violates primary Job 011 specification; optimistic writes are either assumed fully synced or silently discarded without user visibility."
+    },
+    {
+      "id": "W011-DEF-09",
+      "classification": "VERIFIED_CURRENT_DEFECT",
+      "domain": "Backend API / Routes",
+      "file": "apps/api/src/routes/campaign.ts",
+      "lines": "838-844",
+      "symbol": "PATCH /api/v1/campaign/booths/:id",
+      "description": "Catches database update failure, modifies inMemoryBooths array, and returns HTTP 200 { success: true, booth: inMemoryBooths[memIdx] }.",
+      "impact": "Falsely reports successful server persistence to client when PostgreSQL write failed."
+    },
+    {
+      "id": "W011-DEF-10",
+      "classification": "VERIFIED_CURRENT_DEFECT",
+      "domain": "Backend API / Routes",
+      "file": "apps/api/src/routes/campaign.ts",
+      "lines": "944-966",
+      "symbol": "POST /api/v1/campaign/volunteers",
+      "description": "Generates synthetic ID v-${Date.now().toString(36)}, unshifts to inMemoryVolunteers, swallows DB insert error with empty catch, and returns HTTP 201 { success: true, volunteer }.",
+      "impact": "Cadre registrations appear successful to caller even when unpersisted in PostgreSQL."
+    },
+    {
+      "id": "W011-DEF-11",
+      "classification": "VERIFIED_CURRENT_DEFECT",
+      "domain": "Backend API / Routes",
+      "file": "apps/api/src/routes/politicalAds.ts",
+      "lines": "225-240",
+      "symbol": "POST /api/v1/admin/political-ads",
+      "description": "When !isSupabaseConfigured, generates synthetic ID pad-${Date.now()}, pushes to MEMORY_ADS, and returns HTTP 201 { success: true, ad }.",
+      "impact": "Falsely certifies political ad creation when database is completely disconnected."
+    },
+    {
+      "id": "W011-DEF-12",
+      "classification": "VERIFIED_CURRENT_DEFECT",
+      "domain": "Backend API / Routes",
+      "file": "apps/api/src/routes/moderation.ts",
+      "lines": "675-684",
+      "symbol": "POST /api/v1/moderation/verify-request",
+      "description": "Returns synthetic ID mock-verif-${Date.now()} and HTTP 200 { success: true } when Supabase is unconfigured.",
+      "impact": "Falsely acknowledges citizen identity verification submission without persistence."
+    },
+    {
+      "id": "W011-DEF-13",
+      "classification": "VERIFIED_CURRENT_DEFECT",
+      "domain": "Backend API / Routes",
+      "file": "apps/api/src/routes/moderation.ts",
+      "lines": "725-731, 768-770",
+      "symbol": "POST /api/v1/moderation/block & DELETE /block/:userId",
+      "description": "Skips database mutation when !isSupabaseConfigured and returns HTTP 200 { success: true }.",
+      "impact": "Falsely confirms blocking/unblocking a user when no database record was modified."
+    },
+    {
+      "id": "W011-DEF-14",
+      "classification": "VERIFIED_CURRENT_DEFECT",
+      "domain": "Backend API / Auth",
+      "file": "apps/api/src/routes/politician.ts",
+      "lines": "21-23",
+      "symbol": "resolveAuthUser",
+      "description": "Injects mock user 'auth-token-user' for any Bearer token when !isSupabaseConfigured.",
+      "impact": "Permits unauthenticated requests to bypass authentication checks during database disconnection."
+    },
+    {
+      "id": "W011-DEF-15",
+      "classification": "VERIFIED_CURRENT_DEFECT",
+      "domain": "Mobile / Network",
+      "file": "apps/mobile/lib/supabaseDataService.ts",
+      "lines": "1986, 2010, 2028",
+      "symbol": "sendDirectMessageToConversation / acceptDMRequest / declineDMRequest",
+      "description": "Hardcodes fallback URL 'https://kshetra-api-production-9f06.up.railway.app' and uses raw ad-hoc fetch() with x-user-id header, bypassing canonical apiClient.",
+      "impact": "Direct message operations bypass apiClient token handling, deadline budgets, and staging environment isolation."
+    },
+    {
+      "id": "W011-RES-01",
+      "classification": "ALREADY_RESOLVED",
+      "domain": "Mobile / DataService",
+      "file": "apps/mobile/lib/supabaseDataService.ts",
+      "lines": "Throughout",
+      "symbol": "29 if (!guard()) return true cases",
+      "description": "All 29 deceptive return true cases were eliminated in W010 Batch L3 and now fail-closed honestly.",
+      "impact": "Zero deceptive return true cases remain in DataService."
+    },
+    {
+      "id": "W011-RES-02",
+      "classification": "ALREADY_RESOLVED",
+      "domain": "Mobile / DataService",
+      "file": "apps/mobile/lib/supabaseDataService.ts",
+      "lines": "Throughout",
+      "symbol": "6 synthetic ID generation cases",
+      "description": "All 6 synthetic ID cases in DataService were eliminated in W010 Batch L3, now returning { id: null, success: false }.",
+      "impact": "DataService no longer generates local-* IDs."
+    },
+    {
+      "id": "W011-RES-03",
+      "classification": "ALREADY_RESOLVED",
+      "domain": "Mobile / DataService",
+      "file": "apps/mobile/lib/supabaseDataService.ts",
+      "lines": "792",
+      "symbol": "completeModule",
+      "description": "Verified legitimate non-defect: return true occurs after confirmed PostgreSQL update; best-effort non-fatal RPC is safely isolated.",
+      "impact": "Not a defect."
+    },
+    {
+      "id": "W011-RES-04",
+      "classification": "ALREADY_RESOLVED",
+      "domain": "Backend API / Routes",
+      "file": "apps/api/src/routes/civic.ts",
+      "lines": "465-960",
+      "symbol": "Civic mutations",
+      "description": "All civic routes enforce fail-closed 503 when !isSupabaseConfigured and 501 for unpersisted operations (Operations 8 & 10).",
+      "impact": "Verified fail-closed in W009-B4."
+    },
+    {
+      "id": "W011-RES-05",
+      "classification": "ALREADY_RESOLVED",
+      "domain": "Backend API / Routes",
+      "file": "apps/api/src/routes/pages.ts",
+      "lines": "707",
+      "symbol": "Page Pro activation",
+      "description": "Enforces fail-closed 503 when !isSupabaseConfigured; orders persist atomically via Migration 035.",
+      "impact": "Verified in W008-E and W009-B5."
+    },
+    {
+      "id": "W011-RES-06",
+      "classification": "ALREADY_RESOLVED",
+      "domain": "Backend API / Routes",
+      "file": "apps/api/src/routes/campaign.ts",
+      "lines": "1040-1350",
+      "symbol": "Wallet & Recharge Orders",
+      "description": "Prepaid wallet and campaign recharge orders use durable PostgreSQL tables with fail-closed signature verification.",
+      "impact": "Verified in W008-E and W009-B2."
+    },
+    {
+      "id": "W011-SAFE-01",
+      "classification": "INTENTIONAL_SAFE_FALLBACK",
+      "domain": "Mobile / Notifications",
+      "file": "apps/mobile/lib/notificationTriggers.ts",
+      "lines": "37-46",
+      "symbol": "dispatchIfEnabled",
+      "description": "scheduleLocalNotification wrapped in catch; returns true because in-app inbox notification was persisted.",
+      "impact": "Safe degraded UX: in-app notification delivered even if device OS notification permission denied."
+    },
+    {
+      "id": "W011-SAFE-02",
+      "classification": "INTENTIONAL_SAFE_FALLBACK",
+      "domain": "Mobile / AI",
+      "file": "apps/mobile/lib/aiService.ts",
+      "lines": "11, 96",
+      "symbol": "FALLBACK_MODELS",
+      "description": "Iterates through candidate LLM models on API rate limit or error.",
+      "impact": "Standard resilient model fallback."
+    },
+    {
+      "id": "W011-SAFE-03",
+      "classification": "INTENTIONAL_SAFE_FALLBACK",
+      "domain": "Backend API / Providers",
+      "file": "apps/api/src/providers/mockProvider.ts",
+      "lines": "35-185",
+      "symbol": "MockProvider",
+      "description": "Test sandbox provider with strict anti-production guard throwing if process.env.NODE_ENV === 'production'.",
+      "impact": "Accepted in W009-B2 and W009-B5 for CI/staging testing."
+    },
+    {
+      "id": "W011-SAFE-04",
+      "classification": "INTENTIONAL_SAFE_FALLBACK",
+      "domain": "Backend API / Routes",
+      "file": "apps/api/src/routes/debug.ts",
+      "lines": "64",
+      "symbol": "PGRST_MOCK_TIMEOUT",
+      "description": "Controlled diagnostic error generator locked behind x-debug-bypass-secret and returning 404 in production.",
+      "impact": "Accepted in W004-R1."
+    },
+    {
+      "id": "W011-OOS-01",
+      "classification": "OUT_OF_W011_SCOPE",
+      "domain": "Mobile / Campaign Outreach",
+      "file": "apps/mobile/lib/outreachProvider.ts & stores/outreach.ts",
+      "lines": "Throughout",
+      "symbol": "MockOutreachProvider & runDeliverySimulation",
+      "description": "Simulated telecom delivery percentages on client side; scheduled under Master Jobs W025–W029 (Campaign / Broadcast).",
+      "impact": "Does not block core social/civic fallback repair."
+    },
+    {
+      "id": "W011-OOS-02",
+      "classification": "OUT_OF_W011_SCOPE",
+      "domain": "Database / Geography",
+      "file": "DEF-006",
+      "lines": "N/A",
+      "symbol": "Versioned Geography Tables",
+      "description": "Scheduled under Master Jobs W013–W017.",
+      "impact": "Contamination guards active."
+    },
+    {
+      "id": "W011-OOS-03",
+      "classification": "OUT_OF_W011_SCOPE",
+      "domain": "Mobile / Binary Size",
+      "file": "DEF-003",
+      "lines": "N/A",
+      "symbol": "WebRTC Decoupling",
+      "description": "Scheduled under Master Job W052.",
+      "impact": "Runtime boundary active."
+    },
+    {
+      "id": "W011-UNK-01",
+      "classification": "UNKNOWN_REQUIRES_RUNTIME_EVIDENCE",
+      "domain": "Backend API / Routes",
+      "file": "apps/api/src/routes/dm.ts",
+      "lines": "224",
+      "symbol": "GET /api/v1/dm/unread-count",
+      "description": "Returns { success: true, count: 0 } on database exception. Requires runtime probe to verify if mobile client requires 503 or degrades cleanly with { count: 0, status: 'unavailable' }.",
+      "impact": "May mask database outages or prevent unread badge errors."
+    },
+    {
+      "id": "W011-UNK-02",
+      "classification": "UNKNOWN_REQUIRES_RUNTIME_EVIDENCE",
+      "domain": "Backend API / Routes",
+      "file": "apps/api/src/routes/moderation.ts",
+      "lines": "571-578",
+      "symbol": "GET /api/v1/moderation/queue",
+      "description": "Returns MOCK_REPORTS_QUEUE when database query returns empty or unconfigured. Requires runtime probe to determine if admin panel relies on mock queue for empty states.",
+      "impact": "May present fabricated reports in production admin view."
+    }
+  ],
+  "proposedRemediationBatches": [
+    {
+      "batch": "Batch W011-B1",
+      "name": "Backend Fastify Fail-Closed Fallback Elimination",
+      "scope": [
+        "apps/api/src/routes/campaign.ts (remove inMemoryBooths / inMemoryVolunteers mutation fallbacks)",
+        "apps/api/src/routes/politicalAds.ts (remove MEMORY_ADS mutation fallbacks)",
+        "apps/api/src/routes/moderation.ts (remove MOCK_REPORTS_QUEUE and mock-verif-* fallback)",
+        "apps/api/src/routes/politician.ts (remove auth-token-user fake auth fallback)",
+        "apps/api/src/routes/dm.ts (fail-closed unread-count error response)"
+      ]
+    },
+    {
+      "batch": "Batch W011-B2",
+      "name": "Mobile UI Synthetic ID Elimination & ID Reconciliation",
+      "scope": [
+        "apps/mobile/components/ComposeSheet.tsx (generate RFC-4122 UUID v4 or client temp token, reconcile with server ID on submit)",
+        "apps/mobile/components/PostDetailModal.tsx (reconcile comment ID with server-returned UUID)",
+        "apps/mobile/stores/promises.ts (wire submitEvidence & toggleFollow to DataService; eliminate pe-*)",
+        "apps/mobile/stores/politicalShorts.ts (wire addShort, approveShort, flagShort to DataService; eliminate short-user-*)",
+        "apps/mobile/stores/aspirant.ts (wire completeModule, startModule, joinChallenge to DataService)"
+      ]
+    },
+    {
+      "batch": "Batch W011-B3",
+      "name": "Canonical 4-State Synchronization Lifecycle (FAILED, QUEUED, SYNCING, SYNCED)",
+      "scope": [
+        "apps/mobile/lib/offlineSync.ts (implement SyncStatus enum, fix add_comment switch case, eliminate double-execution)",
+        "apps/mobile/stores/feed.ts (add syncStatus: 'SYNCED' | 'QUEUED' | 'SYNCING' | 'FAILED' to posts and comments)",
+        "apps/mobile/stores/civic.ts (wire explicit syncStatus to issues and civic comments)",
+        "apps/mobile/stores/promises.ts & politicalShorts.ts (wire explicit syncStatus)"
+      ]
+    },
+    {
+      "batch": "Batch W011-B4",
+      "name": "Canonical API Client Routing & Direct-Calling Strangler Alignment (DEF-005)",
+      "scope": [
+        "apps/mobile/lib/supabaseDataService.ts (migrate raw fetch DM calls to canonical apiClient)",
+        "apps/mobile/lib/supabaseDataService.ts:49 (align checkContentModeration client catch to explicit fail-closed policy)"
+      ]
+    }
+  ]
+}
