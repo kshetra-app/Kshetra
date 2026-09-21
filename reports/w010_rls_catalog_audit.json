@@ -1,5 +1,5 @@
 {
-  "timestamp": "2026-09-21T06:00:38.954Z",
+  "timestamp": "2026-09-21T10:51:48.093Z",
   "databaseTarget": "https://fkpigozcqnmcvofuksar.supabase.co",
   "tableCount": 21,
   "tables": [
@@ -98,8 +98,8 @@
       "classType": "CLASS_A_DOMAIN",
       "serviceRoleStatus": 200,
       "serviceRoleError": null,
-      "anonStatus": 200,
-      "anonError": null,
+      "anonStatus": 401,
+      "anonError": "",
       "rlsEnforced": true
     },
     {
@@ -170,9 +170,9 @@
       "classType": "STATUTORY_PRIVACY",
       "serviceRoleStatus": 200,
       "serviceRoleError": null,
-      "anonStatus": 200,
-      "anonError": null,
-      "rlsEnforced": false
+      "anonStatus": 401,
+      "anonError": "",
+      "rlsEnforced": true
     },
     {
       "table": "page_pro_orders",
@@ -196,11 +196,11 @@
   "rpcs": [
     {
       "rpc": "refresh_materialized_views",
-      "anonStatus": 204,
-      "anonError": null,
+      "anonStatus": 401,
+      "anonError": "permission denied for function refresh_materialized_views",
       "adminStatus": 204,
       "adminError": null,
-      "securedAgainstAnon": null
+      "securedAgainstAnon": true
     },
     {
       "rpc": "global_search",

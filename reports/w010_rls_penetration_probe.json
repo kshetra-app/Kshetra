@@ -1,18 +1,18 @@
 {
-  "timestamp": "2026-09-21T06:00:51.691Z",
+  "timestamp": "2026-09-21T10:50:51.432Z",
   "target": "https://fkpigozcqnmcvofuksar.supabase.co",
   "tests": [
     {
       "id": "TEST-10-01",
       "title": "Anonymous direct SELECT on trai_opt_outs denied / zero plaintext phone leakage",
       "category": "DEF-014",
-      "passed": false,
+      "passed": true,
       "expected": "HTTP 401/403 or 42501 or 0 rows and zero plaintext phone numbers",
       "observed": {
-        "status": 200,
-        "error": null,
-        "rowCount": 1,
-        "leakedPhone": true
+        "status": 401,
+        "error": "permission denied for table trai_opt_outs",
+        "rowCount": 0,
+        "leakedPhone": false
       },
       "details": null
     },
@@ -20,16 +20,12 @@
       "id": "TEST-10-02",
       "title": "Plaintext phone_number column completely unavailable to untrusted callers",
       "category": "DEF-014",
-      "passed": false,
+      "passed": true,
       "expected": "Column access rejected or returns 0 rows",
       "observed": {
-        "status": 200,
-        "error": null,
-        "data": [
-          {
-            "phone_number": "9848099999"
-          }
-        ]
+        "status": 401,
+        "error": "permission denied for table trai_opt_outs",
+        "data": null
       },
       "details": null
     },
@@ -40,8 +36,8 @@
       "passed": true,
       "expected": "HTTP 401/403/404 or 42501 permission denied",
       "observed": {
-        "status": 404,
-        "error": "Could not find the function public.check_phone_opt_out(p_phone_number_hash) in the schema cache"
+        "status": 401,
+        "error": "permission denied for function check_phone_opt_out"
       },
       "details": null
     },
@@ -68,9 +64,9 @@
       "passed": true,
       "expected": "Service role execution permitted without 42501 permission denied",
       "observed": {
-        "status": 404,
-        "error": "Could not find the function public.check_phone_opt_out(p_phone_number_hash) in the schema cache",
-        "returned": null
+        "status": 200,
+        "error": null,
+        "returned": false
       },
       "details": null
     },
@@ -78,11 +74,11 @@
       "id": "TEST-10-06",
       "title": "Anonymous execution of refresh_materialized_views() rejected with permission denied",
       "category": "DEF-015",
-      "passed": false,
+      "passed": true,
       "expected": "HTTP 401/403 or error 42501 permission denied",
       "observed": {
-        "status": 204,
-        "error": null,
+        "status": 401,
+        "error": "permission denied for function refresh_materialized_views",
         "data": null
       },
       "details": null
@@ -103,11 +99,11 @@
       "id": "TEST-10-08",
       "title": "Anonymous / unauthorized caller rejected from get_user_dashboard (Caller-bound gate)",
       "category": "DEF-015",
-      "passed": false,
+      "passed": true,
       "expected": "Access denied exception or permission error",
       "observed": {
-        "status": 200,
-        "error": null
+        "status": 400,
+        "error": "Access denied: cannot inspect another user dashboard"
       },
       "details": null
     },
@@ -141,11 +137,11 @@
       "id": "TEST-10-11",
       "title": "Anonymous query selecting sensitive webhook_url column rejected with permission denied",
       "category": "DEF-016",
-      "passed": false,
+      "passed": true,
       "expected": "HTTP 401/403 or error 42501 permission denied for column webhook_url",
       "observed": {
-        "status": 200,
-        "error": null
+        "status": 401,
+        "error": "permission denied for table lmx_departments"
       },
       "details": null
     },
@@ -157,7 +153,7 @@
       "expected": "HTTP 401/403 or 42501 permission denied",
       "observed": {
         "status": 401,
-        "error": "new row violates row-level security policy for table \"lmx_departments\""
+        "error": "permission denied for table lmx_departments"
       },
       "details": null
     },
@@ -452,7 +448,7 @@
   ],
   "summary": {
     "total": 36,
-    "passed": 31,
-    "failed": 5
+    "passed": 36,
+    "failed": 0
   }
 }

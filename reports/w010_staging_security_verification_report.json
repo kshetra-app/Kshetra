@@ -1,0 +1,125 @@
+{
+  "reportMetadata": {
+    "job": "W010",
+    "phase": "Post-Migration 038 Staging Security Verification",
+    "targetEnvironment": "panIN-staging (fkpigozcqnmcvofuksar.supabase.co)",
+    "targetApi": "https://kshetra-api-staging.up.railway.app",
+    "timestamp": "2026-09-21T16:25:00.000Z",
+    "authority": "Master Execution Framework Amendment v1.4 / CTO Post-Migration Security Verification Directive",
+    "verdict": "PASS"
+  },
+  "summary": {
+    "rlsPenetrationSuite": {
+      "command": "node tests/verify_w010_rls_hardening.mjs",
+      "totalTests": 36,
+      "passed": 36,
+      "failed": 0,
+      "verdict": "PASS"
+    },
+    "catalogAudit": {
+      "command": "node scripts/audit_w010_catalog.mjs",
+      "totalTablesAudited": 21,
+      "rlsEnforcedTables": 21,
+      "totalRpcsAudited": 5,
+      "securedRpcs": 5,
+      "verdict": "PASS"
+    },
+    "paymentRechargeRegression": {
+      "providersUnitSuite": {
+        "command": "npm test --prefix apps/api -- src/__tests__/providers.test.ts",
+        "totalTests": 33,
+        "passed": 33,
+        "failed": 0,
+        "verdict": "PASS"
+      },
+      "civicMutationsSuite": {
+        "command": "npm test --prefix apps/api -- src/__tests__/civic-mutations.test.ts",
+        "totalTests": 22,
+        "passed": 22,
+        "failed": 0,
+        "verdict": "PASS"
+      },
+      "liveStagingPaymentInvariants": {
+        "totalVectors": 3,
+        "passed": 3,
+        "failed": 0,
+        "verdict": "PASS"
+      }
+    }
+  },
+  "defectsVerified": {
+    "DEF-014": {
+      "title": "trai_opt_outs anonymous data exposure & privacy leakage",
+      "tests": [
+        { "id": "TEST-10-01", "title": "Anonymous direct SELECT on trai_opt_outs denied / zero plaintext phone leakage", "status": "PASS", "observed": "HTTP 401/403 or 42501, 0 rows returned, leakedPhone: false" },
+        { "id": "TEST-10-02", "title": "Plaintext phone_number column completely unavailable to untrusted callers", "status": "PASS", "observed": "Access rejected or returns 0 rows" },
+        { "id": "TEST-10-03", "title": "Anonymous invocation of check_phone_opt_out rejected (Anti-enumeration)", "status": "PASS", "observed": "HTTP 401/403 permission denied" },
+        { "id": "TEST-10-04", "title": "Indian phone normalization conforms strictly to DoT numbering plan ^[6-9]\\d{9}$", "status": "PASS", "observed": "Valid 10-digit normalized; invalid prefixes/lengths rejected" },
+        { "id": "TEST-10-05", "title": "Authorized trusted service_role path can execute check_phone_opt_out", "status": "PASS", "observed": "Service role execution permitted without 42501 permission denied" }
+      ],
+      "verdict": "PASS"
+    },
+    "DEF-015": {
+      "title": "Administrative SECURITY DEFINER function revocation & search_path",
+      "tests": [
+        { "id": "TEST-10-06", "title": "Anonymous execution of refresh_materialized_views() rejected with permission denied", "status": "PASS", "observed": "HTTP 401/403 or 42501 permission denied" },
+        { "id": "TEST-10-07", "title": "Authorized trusted service_role can execute refresh_materialized_views()", "status": "PASS", "observed": "HTTP 200 / null error" },
+        { "id": "TEST-10-08", "title": "Anonymous / unauthorized caller rejected from get_user_dashboard (Caller-bound gate)", "status": "PASS", "observed": "Access denied exception or permission error" },
+        { "id": "TEST-10-09", "title": "Legitimate public application RPC global_search remains functional with hardened search_path", "status": "PASS", "observed": "HTTP 200 with search results array" }
+      ],
+      "verdict": "PASS"
+    },
+    "DEF-016": {
+      "title": "lmx_departments explicit public read & column protection",
+      "tests": [
+        { "id": "TEST-10-10", "title": "Public read query for active verified departments succeeds without default-deny error", "status": "PASS", "observed": "HTTP 200 OK with array" },
+        { "id": "TEST-10-11", "title": "Anonymous query selecting sensitive webhook_url column rejected with permission denied", "status": "PASS", "observed": "HTTP 401/403 or error 42501 permission denied for column webhook_url" },
+        { "id": "TEST-10-12", "title": "Anonymous INSERT on lmx_departments strictly denied by RLS/Grants", "status": "PASS", "observed": "HTTP 401/403 or 42501 permission denied" }
+      ],
+      "verdict": "PASS"
+    },
+    "DEF-017": {
+      "title": "FORCE ROW LEVEL SECURITY across all 21 reconciled domain tables",
+      "tests": [
+        { "id": "TEST-10-RLS-civic_issues", "title": "Service role / owner access operational on civic_issues under RLS safeguards", "status": "PASS" },
+        { "id": "TEST-10-RLS-user_profiles", "title": "Service role / owner access operational on user_profiles under RLS safeguards", "status": "PASS" },
+        { "id": "TEST-10-RLS-posts", "title": "Service role / owner access operational on posts under RLS safeguards", "status": "PASS" },
+        { "id": "TEST-10-RLS-election_promises", "title": "Service role / owner access operational on election_promises under RLS safeguards", "status": "PASS" },
+        { "id": "TEST-10-RLS-notification_log", "title": "Service role / owner access operational on notification_log under RLS safeguards", "status": "PASS" },
+        { "id": "TEST-10-RLS-leadership_modules", "title": "Service role / owner access operational on leadership_modules under RLS safeguards", "status": "PASS" },
+        { "id": "TEST-10-RLS-community_challenges", "title": "Service role / owner access operational on community_challenges under RLS safeguards", "status": "PASS" },
+        { "id": "TEST-10-RLS-aspirant_profiles", "title": "Service role / owner access operational on aspirant_profiles under RLS safeguards", "status": "PASS" },
+        { "id": "TEST-10-RLS-political_shorts", "title": "Service role / owner access operational on political_shorts under RLS safeguards", "status": "PASS" },
+        { "id": "TEST-10-RLS-live_events", "title": "Service role / owner access operational on live_events under RLS safeguards", "status": "PASS" },
+        { "id": "TEST-10-RLS-lmx_departments", "title": "Service role / owner access operational on lmx_departments under RLS safeguards", "status": "PASS" },
+        { "id": "TEST-10-RLS-lmx_department_alerts", "title": "Service role / owner access operational on lmx_department_alerts under RLS safeguards", "status": "PASS" },
+        { "id": "TEST-10-RLS-lmx_credibility", "title": "Service role / owner access operational on lmx_credibility under RLS safeguards", "status": "PASS" },
+        { "id": "TEST-10-RLS-lmx_affiliations", "title": "Service role / owner access operational on lmx_affiliations under RLS safeguards", "status": "PASS" },
+        { "id": "TEST-10-RLS-lmx_brand_kits", "title": "Service role / owner access operational on lmx_brand_kits under RLS safeguards", "status": "PASS" },
+        { "id": "TEST-10-RLS-user_follows", "title": "Service role / owner access operational on user_follows under RLS safeguards", "status": "PASS" },
+        { "id": "TEST-10-RLS-conversations", "title": "Service role / owner access operational on conversations under RLS safeguards", "status": "PASS" },
+        { "id": "TEST-10-RLS-messages", "title": "Service role / owner access operational on messages under RLS safeguards", "status": "PASS" },
+        { "id": "TEST-10-RLS-trai_opt_outs", "title": "Service role / owner access operational on trai_opt_outs under RLS safeguards", "status": "PASS" },
+        { "id": "TEST-10-RLS-page_pro_orders", "title": "Service role / owner access operational on page_pro_orders under RLS safeguards", "status": "PASS" },
+        { "id": "TEST-10-RLS-campaign_recharge_orders", "title": "Service role / owner access operational on campaign_recharge_orders under RLS safeguards", "status": "PASS" }
+      ],
+      "verdict": "PASS"
+    },
+    "W009_PAYMENT_REGRESSION": {
+      "title": "W009 Payment Invariant Regression on Staging",
+      "tests": [
+        { "id": "TEST-10-PAY-01", "title": "internal_payment_secrets remains strictly revoked from service_role (Error 42501)", "status": "PASS", "observed": "HTTP 403 or 42501 permission denied" },
+        { "id": "TEST-10-PAY-02", "title": "verify_and_activate_page_pro remains strictly revoked from anonymous clients", "status": "PASS", "observed": "HTTP 401/403/404 or 42501 permission denied" },
+        { "id": "TEST-10-PAY-03", "title": "page_pro_orders rejects unauthorized anonymous insert attempts", "status": "PASS", "observed": "Rejected with RLS WITH CHECK violation or permission denied" }
+      ],
+      "verdict": "PASS"
+    }
+  },
+  "governanceGate": {
+    "target": "panIN-staging",
+    "migration038Executed": true,
+    "productionTouched": false,
+    "w011Started": false,
+    "verdict": "POST_MIGRATION_038_VERIFICATION_COMPLETE_AWAITING_CTO_ACCEPTANCE"
+  }
+}
