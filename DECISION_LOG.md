@@ -1008,3 +1008,35 @@
      - `NEXT_PERMITTED_JOB = W011`.
      - Implementation authorization for W011 = `NOT YET GRANTED`.
 - **Rationale:** Satisfies all conditions of the CTO acceptance directive, confirming complete and verified remediation of critical database security defects while preserving strict lifecycle boundaries and preventing premature W011 execution.
+
+---
+
+### DEC-059: W011 IMPLEMENTATION SUBMISSION — PRODUCTION FALLBACK REPAIR & MUTATION INTEGRITY
+- **Date:** 2026-09-21
+- **Status:** IMPLEMENTED / TESTED / VERIFIED / SUBMITTED FOR CTO ACCEPTANCE
+- **Authority:** CTO Implementation Authorization (`W011 — CTO IMPLEMENTATION AUTHORIZATION`)
+- **Context:** Completion of Master Job W011 remediation across backend Fastify routes and mobile client layers, dismantling misleading local-success fallbacks and establishing truth in mutations.
+- **Batches Implemented:**
+  1. **Batch W011-B1 (Backend Fail-Closed Remediation):** Eliminated in-memory fallback queues for campaign booths and volunteers; gated test ad memory fallback behind `NODE_ENV === 'test'`; enforced HTTP 503 `DATABASE_UNAVAILABLE` on unconfigured database across moderation, campaign, and DM routes; removed `auth-token-user` unauthenticated bypass.
+  2. **Batch W011-B2 (Elimination of Synthetic Entity Identifiers):** Removed client-generated `local-*`, `poll-local-*`, `pe-*`, `short-user-*`, `cmt-*`, `anon-endorser-*` from mobile UI sheets and Zustand stores (`ComposeSheet.tsx`, `PostDetailModal.tsx`, `ReportIssueSheet.tsx`, `RegisterAspirantModal.tsx`, `feed.ts`, `promises.ts`, `politicalShorts.ts`, `aspirant.ts`, `civic.ts`). Wired stores to real backend services and reconciled server UUIDs on mutation completion. Eliminated double-enqueue bug in feed mutations.
+  3. **Batch W011-B3 (Canonical 4-State Synchronization Lifecycle):** Exported `SyncStatus = 'FAILED' | 'QUEUED' | 'SYNCING' | 'SYNCED'` from `offlineSync.ts`. Integrated `syncStatus` and `clientToken` across all domain types (`Post`, `Comment`, `CivicIssue`, `IssueComment`, `PromiseEvidence`). Implemented missing `add_comment` handler in offline sync replay.
+  4. **Batch W011-B4 (Canonical API Client Routing & Fail-Closed Moderation):** Migrated Direct Message methods in `supabaseDataService.ts` from ad-hoc fetch and hardcoded Railway production URLs to canonical `apiClient.request`. Hardened `checkContentModeration` to fail closed in non-test runtime when moderation service is unreachable, with `AbortController` timeout protection.
+- **Verification Evidence:**
+  - `npm run build --prefix apps/api`: 0 errors.
+  - `npm run typecheck --prefix apps/mobile`: 0 errors.
+  - `node scripts/check-api-contract-drift.mjs`: 9/9 matched (100% parity).
+  - `node scripts/check-repo-evidence-integrity.mjs`: 31/31 verified ancestry.
+  - `npm test --prefix apps/api -- src/__tests__/w011-fail-closed.test.ts`: 8/8 PASS.
+  - `npm test --prefix apps/api -- src/__tests__/moderation-queue.test.ts`: 3/3 PASS.
+  - `npm test --prefix apps/api -- src/__tests__/dm-rate-limits.test.ts`: 7/7 PASS.
+  - `npm test --prefix apps/api -- src/__tests__/civic-mutations.test.ts`: 22/22 PASS.
+  - `npm test --prefix apps/api -- src/__tests__/political-ads.test.ts`: 9/9 PASS.
+  - `npm test --prefix apps/mobile -- __tests__/w011-mobile-mutations.test.ts`: 10/10 PASS.
+  - `npm test --prefix apps/mobile -- __tests__/feed-write-hardening.test.ts __tests__/feed-store.test.ts __tests__/w010-batch-l3.test.ts`: 22/22 PASS.
+  - `npm test --prefix apps/mobile -- __tests__/apiClient.test.ts __tests__/api-strangler-b4.test.ts`: 69/69 PASS.
+- **Governance Invariants:**
+  - Zero opportunistic engagement features implemented (Inventory `cd4a050` respected as non-authorizing discovery artifact).
+  - DEF-005 marked `RESOLVED — VERIFIED IN W011`.
+  - No self-acceptance: status is strictly `SUBMITTED FOR CTO ACCEPTANCE`.
+  - W012 remains `NOT AUTHORIZED`.
+

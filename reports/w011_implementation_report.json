@@ -1,0 +1,136 @@
+{
+  "job": "W011",
+  "jobName": "Production Fallback Repair / Mutation Integrity",
+  "status": "IMPLEMENTED_TESTED_VERIFIED_SUBMITTED",
+  "date": "2026-09-21",
+  "branch": "master",
+  "baseCommit": "f80b585a8c1dcb2458f1964255b0d8e9bc200285",
+  "headCommit": "cd6f04e",
+  "acceptanceAuthority": "CTO / Independent Verifier",
+  "governanceBoundary": {
+    "zeroOpportunisticFeatures": true,
+    "engagementInfrastructureInventoryHonored": true,
+    "noSelfAcceptance": true,
+    "nextJobAuthorized": false,
+    "nextJob": "W012 (NOT AUTHORIZED)"
+  },
+  "batches": [
+    {
+      "batch": "W011-B1",
+      "name": "Backend Fail-Closed Remediation",
+      "commit": "453255ff4de85681a16ad8dfdfefd6bade26d81d",
+      "remediatedFiles": [
+        "apps/api/src/routes/campaign.ts",
+        "apps/api/src/routes/politicalAds.ts",
+        "apps/api/src/routes/moderation.ts",
+        "apps/api/src/routes/politician.ts",
+        "apps/api/src/routes/civic.ts",
+        "apps/api/src/routes/manage.ts",
+        "apps/api/src/routes/dm.ts"
+      ],
+      "actions": [
+        "Eliminated in-memory booth update and volunteer creation fallback in campaign.ts; fails closed with 503 DATABASE_UNAVAILABLE",
+        "Gated MEMORY_ADS fallback strictly behind NODE_ENV === 'test'; returns 503 in production and staging",
+        "Replaced mock verification requests, mock queue returns, and mock block/unblock with 503 DATABASE_UNAVAILABLE",
+        "Removed auth-token-user fallback across civic, manage, and politician routes",
+        "Added targeted test suite apps/api/src/__tests__/w011-fail-closed.test.ts"
+      ],
+      "verification": {
+        "suite": "npm test --prefix apps/api -- src/__tests__/w011-fail-closed.test.ts",
+        "passed": 8,
+        "total": 8,
+        "status": "PASS"
+      }
+    },
+    {
+      "batch": "W011-B2",
+      "name": "Eliminate Synthetic Entity Identifiers Across Mobile Forms and Stores",
+      "commit": "3d7a9b5",
+      "remediatedFiles": [
+        "apps/mobile/components/ComposeSheet.tsx",
+        "apps/mobile/components/PostDetailModal.tsx",
+        "apps/mobile/components/ReportIssueSheet.tsx",
+        "apps/mobile/components/RegisterAspirantModal.tsx",
+        "apps/mobile/stores/feed.ts",
+        "apps/mobile/stores/promises.ts",
+        "apps/mobile/stores/politicalShorts.ts",
+        "apps/mobile/stores/aspirant.ts",
+        "apps/mobile/stores/civic.ts"
+      ],
+      "actions": [
+        "Eliminated local-${Date.now()}, poll-local-*, and opt-local-* in ComposeSheet.tsx; assigned clientToken with temporary local ID and initial SYNCING state",
+        "Eliminated local-c-${Date.now()} in PostDetailModal.tsx; assigned clientToken and SYNCING status",
+        "Eliminated issue-local-${Date.now()} in ReportIssueSheet.tsx; assigned clientToken and SYNCING status",
+        "Eliminated synthetic fallback me-${Date.now()} in RegisterAspirantModal.tsx; enforced authenticated user requirement",
+        "Replaced synthetic pe-${Date.now()} in promises.ts with dataService.submitEvidence and dataService.followPromise",
+        "Replaced short-user-${Date.now()} in politicalShorts.ts with uploadShort and real offline sync queue",
+        "Replaced anon-endorser-${Date.now()} in aspirant.ts with authenticated user check and backend calls",
+        "Replaced cmt-${Date.now()} in civic.ts with server-reconciled UUID and clientToken tracking",
+        "Eliminated duplicated post and comment enqueuing in feed.ts (was enqueuing twice on write)"
+      ],
+      "verification": {
+        "status": "PASS"
+      }
+    },
+    {
+      "batch": "W011-B3",
+      "name": "Implement Canonical Four-State Sync Lifecycle and add_comment Replay",
+      "commit": "88fb107",
+      "remediatedFiles": [
+        "apps/mobile/lib/offlineSync.ts",
+        "apps/mobile/lib/feedTypes.ts",
+        "apps/mobile/lib/civicTypes.ts",
+        "apps/mobile/lib/promiseTypes.ts"
+      ],
+      "actions": [
+        "Exported canonical SyncStatus = 'FAILED' | 'QUEUED' | 'SYNCING' | 'SYNCED' from offlineSync.ts",
+        "Added syncStatus and clientToken fields to Post, Comment, CivicIssue, IssueComment, and PromiseEvidence interfaces",
+        "Added missing case 'add_comment' in offlineSync.ts executeOp executing dataService.addPostComment"
+      ],
+      "verification": {
+        "status": "PASS"
+      }
+    },
+    {
+      "batch": "W011-B4",
+      "name": "Canonical API Client Routing, Fail-Closed Moderation Seam, and Mobile Test Suite",
+      "commit": "31427f8",
+      "remediatedFiles": [
+        "apps/mobile/lib/supabaseDataService.ts",
+        "apps/mobile/__tests__/w011-mobile-mutations.test.ts"
+      ],
+      "actions": [
+        "Migrated Direct Message methods in supabaseDataService.ts from ad-hoc fetch and hardcoded Railway production URLs to canonical apiClient.request",
+        "Hardened checkContentModeration to fail closed in non-test runtime when moderation service is unreachable",
+        "Created apps/mobile/__tests__/w011-mobile-mutations.test.ts covering 10 mutation integrity checks"
+      ],
+      "verification": {
+        "suite": "npm test --prefix apps/mobile -- __tests__/w011-mobile-mutations.test.ts",
+        "passed": 10,
+        "total": 10,
+        "status": "PASS"
+      }
+    }
+  ],
+  "verificationSummary": {
+    "apiBuild": { "command": "npm run build --prefix apps/api", "result": "PASS (0 errors)" },
+    "mobileTypecheck": { "command": "npm run typecheck --prefix apps/mobile", "result": "PASS (0 errors)" },
+    "contractDrift": { "command": "node scripts/check-api-contract-drift.mjs", "result": "PASS (9/9 matched, 100% parity)" },
+    "evidenceIntegrity": { "command": "node scripts/check-repo-evidence-integrity.mjs", "result": "PASS (31/31 verified ancestors, 0 phantom)" },
+    "apiFailClosedSuite": { "command": "npm test --prefix apps/api -- src/__tests__/w011-fail-closed.test.ts", "result": "PASS (8/8)" },
+    "apiPoliticalAdsSuite": { "command": "npm test --prefix apps/api -- src/__tests__/political-ads.test.ts", "result": "PASS (9/9)" },
+    "apiCivicMutationsSuite": { "command": "npm test --prefix apps/api -- src/__tests__/civic-mutations.test.ts", "result": "PASS (22/22)" },
+    "apiModerationQueueSuite": { "command": "npm test --prefix apps/api -- src/__tests__/moderation-queue.test.ts", "result": "PASS (3/3)" },
+    "apiDmRateLimitsSuite": { "command": "npm test --prefix apps/api -- src/__tests__/dm-rate-limits.test.ts", "result": "PASS (7/7)" },
+    "mobileMutationsSuite": { "command": "npm test --prefix apps/mobile -- __tests__/w011-mobile-mutations.test.ts", "result": "PASS (10/10)" },
+    "mobileFeedStoresSuite": { "command": "npm test --prefix apps/mobile -- __tests__/feed-write-hardening.test.ts __tests__/feed-store.test.ts __tests__/w010-batch-l3.test.ts", "result": "PASS (22/22)" },
+    "mobileApiClientSuite": { "command": "npm test --prefix apps/mobile -- __tests__/apiClient.test.ts __tests__/api-strangler-b4.test.ts", "result": "PASS (69/69)" }
+  },
+  "defectsReconciled": [
+    {
+      "id": "DEF-005",
+      "disposition": "REMEDIATED_IN_W011",
+      "description": "Deceptive mock-success fallbacks and dual-calling strangler migration gaps eliminated; truth in mutations enforced across backend routes and mobile stores."
+    }
+  ]
+}
