@@ -69,11 +69,11 @@ export default function IssueDetailScreen() {
   if (!issue) {
     return (
       <View style={[styles.errorContainer, { backgroundColor: colors.background }]}>
-        <Stack.Screen options={{ headerShown: true, title: 'Issue Not Found', headerStyle: { backgroundColor: colors.surface }, headerTintColor: colors.primary }} />
+        <Stack.Screen options={{ headerShown: true, title: t('issueDetail.notFound', { defaultValue: 'Issue Not Found' }), headerStyle: { backgroundColor: colors.surface }, headerTintColor: colors.primary }} />
         <Ionicons name="alert-circle-outline" size={48} color={colors.primary} />
-        <Text style={[styles.errorText, { color: colors.textSecondary }]}>Issue not found</Text>
+        <Text style={[styles.errorText, { color: colors.textSecondary }]}>{t('issueDetail.notFound', { defaultValue: 'Issue not found' })}</Text>
         <Pressable style={[styles.backButton, { backgroundColor: colors.surfaceElevated }]} onPress={() => router.back()}>
-          <Text style={[styles.backButtonText, { color: colors.primary }]}>Go Back</Text>
+          <Text style={[styles.backButtonText, { color: colors.primary }]}>{t('common.back')}</Text>
         </Pressable>
       </View>
     );
@@ -92,17 +92,17 @@ export default function IssueDetailScreen() {
 
   const handleTagMLA = () => {
     if (issue.mlaTagged) {
-      Alert.alert('Already Tagged', 'MLA has already been tagged on this issue.');
+      Alert.alert(t('issueDetail.mlaTagged', { defaultValue: 'Already Tagged' }), 'MLA has already been tagged on this issue.');
       return;
     }
     if (!gateContentAction('tag_mla')) return;
     Alert.alert(
-      'Tag MLA',
+      t('issueDetail.tagMla', { defaultValue: 'Tag MLA' }),
       `This will send a notification to your constituency MLA about "${issue.title}". Continue?`,
       [
-        { text: 'Cancel', style: 'cancel' },
+        { text: t('common.cancel'), style: 'cancel' },
         {
-          text: 'Tag MLA',
+          text: t('issueDetail.tagMla', { defaultValue: 'Tag MLA' }),
           onPress: () => {
             tagMLA(issue.id);
             logContentAction('tag_mla', {
@@ -199,7 +199,7 @@ export default function IssueDetailScreen() {
           {issue.isVerifiedReport && (
             <View style={[styles.badge, { backgroundColor: '#10B98120' }]}>
               <Ionicons name="shield-checkmark" size={12} color="#10B981" />
-              <Text style={[styles.badgeText, { color: '#10B981' }]}>Verified</Text>
+              <Text style={[styles.badgeText, { color: '#10B981' }]}>{t('issueDetail.verified', { defaultValue: 'Verified' })}</Text>
             </View>
           )}
         </View>
@@ -226,22 +226,22 @@ export default function IssueDetailScreen() {
           <View style={styles.statItem}>
             <Ionicons name="arrow-up-circle" size={16} color="#10B981" />
             <Text style={styles.statValue}>{issue.upvoteCount}</Text>
-            <Text style={styles.statLabel}>Upvotes</Text>
+            <Text style={styles.statLabel}>{t('issueDetail.upvotes', { defaultValue: 'Upvotes' })}</Text>
           </View>
           <View style={styles.statItem}>
             <Ionicons name="chatbubble" size={16} color="#3B82F6" />
             <Text style={styles.statValue}>{issue.commentCount}</Text>
-            <Text style={styles.statLabel}>Comments</Text>
+            <Text style={styles.statLabel}>{t('issueDetail.comments', { defaultValue: 'Comments' })}</Text>
           </View>
           <View style={styles.statItem}>
             <Ionicons name="people" size={16} color="#8B5CF6" />
             <Text style={styles.statValue}>{issue.followCount}</Text>
-            <Text style={styles.statLabel}>Following</Text>
+            <Text style={styles.statLabel}>{t('common.following')}</Text>
           </View>
           <View style={styles.statItem}>
             <Ionicons name="camera" size={16} color="#F59E0B" />
             <Text style={styles.statValue}>{issue.evidenceCount}</Text>
-            <Text style={styles.statLabel}>Evidence</Text>
+            <Text style={styles.statLabel}>{t('issueDetail.evidence', { defaultValue: 'Evidence' })}</Text>
           </View>
         </View>
 
@@ -261,7 +261,7 @@ export default function IssueDetailScreen() {
             }}
           >
             <Ionicons name={issue.userUpvoted ? 'arrow-up-circle' : 'arrow-up-circle-outline'} size={20} color={issue.userUpvoted ? '#10B981' : '#9CA3AF'} />
-            <Text style={[styles.actionBtnText, issue.userUpvoted && { color: '#10B981' }]}>Upvote</Text>
+            <Text style={[styles.actionBtnText, issue.userUpvoted && { color: '#10B981' }]}>{t('issueDetail.upvote', { defaultValue: 'Upvote' })}</Text>
           </Pressable>
           <Pressable
             style={[styles.actionBtn, issue.userFollowing && styles.actionBtnActive]}
@@ -278,12 +278,12 @@ export default function IssueDetailScreen() {
           >
             <Ionicons name={issue.userFollowing ? 'notifications' : 'notifications-outline'} size={18} color={issue.userFollowing ? '#3B82F6' : '#9CA3AF'} />
             <Text style={[styles.actionBtnText, issue.userFollowing && { color: '#3B82F6' }]}>
-              {issue.userFollowing ? 'Following' : 'Follow'}
+              {issue.userFollowing ? t('common.following') : t('common.follow', { defaultValue: 'Follow' })}
             </Text>
           </Pressable>
           <Pressable style={styles.actionBtn} onPress={handleShare}>
             <Ionicons name="share-outline" size={18} color="#9CA3AF" />
-            <Text style={styles.actionBtnText}>Share</Text>
+            <Text style={styles.actionBtnText}>{t('common.share')}</Text>
           </Pressable>
           <Pressable
             style={[styles.actionBtn, issue.mlaTagged && styles.actionBtnActive]}
@@ -291,7 +291,7 @@ export default function IssueDetailScreen() {
           >
             <Ionicons name="megaphone" size={18} color={issue.mlaTagged ? '#F59E0B' : '#9CA3AF'} />
             <Text style={[styles.actionBtnText, issue.mlaTagged && { color: '#F59E0B' }]}>
-              {issue.mlaTagged ? 'MLA Tagged' : 'Tag MLA'}
+              {issue.mlaTagged ? t('issueDetail.mlaTagged', { defaultValue: 'MLA Tagged' }) : t('issueDetail.tagMla', { defaultValue: 'Tag MLA' })}
             </Text>
           </Pressable>
         </View>

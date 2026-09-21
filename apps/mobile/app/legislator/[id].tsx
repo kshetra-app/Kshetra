@@ -18,6 +18,7 @@ import PerformanceCard from '../../components/legislator/PerformanceCard';
 import RedFlagsBanner from '../../components/legislator/RedFlagsBanner';
 import DefectionJourneyCard from '../../components/legislator/DefectionJourneyCard';
 import { useTheme } from '../../lib/theme';
+import i18n from '../../i18n';
 
 
 export default function LegislatorProfileScreen() {
@@ -111,11 +112,11 @@ export default function LegislatorProfileScreen() {
         <Stack.Screen options={{ title: 'Legislator Profile', headerStyle: { backgroundColor: colors.surface }, headerTintColor: colors.primary }} />
         <View style={styles.center}>
           <Ionicons name="person-circle" size={56} color={colors.textMuted} />
-          <Text style={[styles.emptyTitle, { color: colors.text }]}>Profile Not Found</Text>
+          <Text style={[styles.emptyTitle, { color: colors.text }]}>{i18n.t('legislator.profileNotFound')}</Text>
           <Text style={[styles.emptySubtitle, { color: colors.textMuted }]}>Could not find data for AC #{acNo}</Text>
           <Pressable style={[styles.backButton, { backgroundColor: colors.surface, borderColor: colors.goldBorder || colors.border, borderWidth: 1 }]} onPress={() => router.back()}>
             <Ionicons name="arrow-back" size={18} color={colors.primary} />
-            <Text style={[styles.backButtonText, { color: colors.primary }]}>Go Back</Text>
+            <Text style={[styles.backButtonText, { color: colors.primary }]}>{i18n.t('common.back')}</Text>
           </Pressable>
         </View>
       </View>
@@ -249,7 +250,7 @@ export default function LegislatorProfileScreen() {
           <View style={styles.sectionCard}>
             <View style={styles.sectionHeader}>
               <Ionicons name="school" size={18} color="#10B981" />
-              <Text style={styles.sectionTitle}>Education & Profession</Text>
+              <Text style={styles.sectionTitle}>{i18n.t('legislator.educationProfession')}</Text>
             </View>
             <View style={styles.infoGrid}>
               <InfoRow label="Education" value={formatEducation(winnerAffidavit?.education || mla?.education)} />
@@ -285,34 +286,33 @@ export default function LegislatorProfileScreen() {
         {/* Disclaimer */}
         {winnerAffidavit && (
           <Text style={[styles.disclaimer, { color: colors.textMuted }]}>
-            Data sourced from candidate self-declarations filed with the Election Commission of India.
-            Figures are approximations from MyNeta/ADR summaries. Always verify with official records.
+            {i18n.t('legislator.dataDisclaimer')}
           </Text>
         )}
 
         {/* Sources */}
         <View style={[styles.sourcesSection, { borderTopColor: colors.border }]}>
-          <Text style={[styles.sourcesTitle, { color: colors.textMuted }]}>Data Sources</Text>
+          <Text style={[styles.sourcesTitle, { color: colors.textMuted }]}>{i18n.t('legislator.dataSources')}</Text>
           <View style={styles.sourceChips}>
             <View style={[styles.sourceChip, { backgroundColor: colors.surfaceElevated, borderColor: colors.border, borderWidth: 1 }]}>
               <View style={[styles.sourceChipDot, { backgroundColor: colors.success }]} />
-              <Text style={[styles.sourceChipText, { color: colors.textSecondary }]}>MLA Profiles (Seed)</Text>
+              <Text style={[styles.sourceChipText, { color: colors.textSecondary }]}>{i18n.t('legislator.mlaProfilesSeed')}</Text>
             </View>
             {winnerAffidavit && (
               <View style={[styles.sourceChip, { backgroundColor: colors.surfaceElevated, borderColor: colors.border, borderWidth: 1 }]}>
                 <View style={[styles.sourceChipDot, { backgroundColor: colors.success }]} />
-                <Text style={[styles.sourceChipText, { color: colors.textSecondary }]}>MyNeta Affidavit</Text>
+                <Text style={[styles.sourceChipText, { color: colors.textSecondary }]}>{i18n.t('legislator.myNetaAffidavit')}</Text>
               </View>
             )}
             <View style={[styles.sourceChip, { backgroundColor: colors.surfaceElevated, borderColor: colors.border, borderWidth: 1 }]}>
               <View style={[styles.sourceChipDot, { backgroundColor: colors.success }]} />
-              <Text style={[styles.sourceChipText, { color: colors.textSecondary }]}>ECI Results</Text>
+              <Text style={[styles.sourceChipText, { color: colors.textSecondary }]}>{i18n.t('legislator.eciResults')}</Text>
             </View>
           </View>
           {winnerAffidavit?.sourceUrl && (
             <Pressable style={styles.sourceLink} onPress={handleSourceLink}>
               <Ionicons name="open-outline" size={14} color={colors.primary} />
-              <Text style={[styles.sourceLinkText, { color: colors.primary }]}>View Full Affidavit on MyNeta</Text>
+              <Text style={[styles.sourceLinkText, { color: colors.primary }]}>{i18n.t('legislator.viewOnMyNeta')}</Text>
             </Pressable>
           )}
         </View>

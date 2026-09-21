@@ -19,6 +19,7 @@
 | `v0.1.0-w007` | Mobile Client | Canonical API Client Layer (`apps/mobile/lib/api`) | Monorepo Source | N/A | v1 (0.1.0) | `1d253cd` | W007 Accepted / Closed | BE+MOB | PASS (CTO Accepted 2026-09-12) |
 | `v0.1.0-w008-c` | Production / Staging | Phase-1 Domain API Contracts (`states`, `moderation`, `notifications`, `civic`) | Backend Gateway | N/A | v1 (0.1.0) | `8984704` | W008-C Accepted / Complete | BE | PASS (CTO Accepted 2026-09-14) |
 | `v0.1.0-w009-b5` | Staging | Railway API + Supabase | Backend Gateway + Staging DB | N/A | v1 (0.1.0) | `45ebb7d` | W009-B5 Accepted (Migrations 035-037, Provider Sandbox/Mock, Lineage Closure) | BE+DEVOPS | PASS (CTO Accepted 2026-09-21) |
+| `v0.1.0-w010-remediation` | Monorepo / Mobile | Bounded Legacy Remediation (Batches L1–L3, DEF-003, DEF-006) | In repo | 100% 13-locale parity | v1 (0.1.0) | In-flight | W010 Bounded Remediation Complete / Submitted for CTO Acceptance | MOB+ARCH | Unit suites 22/22 pass; verify-13-locales 13/13 pass |
 
 ---
 

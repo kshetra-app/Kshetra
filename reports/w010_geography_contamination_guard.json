@@ -1,0 +1,41 @@
+{
+  "defect": "DEF-006",
+  "batch": "GEOGRAPHY_CONTAMINATION_GUARD",
+  "status": "GUARD_ESTABLISHED_AND_DOCUMENTED",
+  "targetJobs": ["W013", "W014", "W015", "W016", "W017"],
+  "timestamp": "2026-09-21T14:14:00+05:30",
+  "inventory": {
+    "flatTables": ["public.constituencies", "public.mandals", "public.states"],
+    "currentConsumers": {
+      "apiRoutes": [
+        "apps/api/src/routes/constituencies.ts",
+        "apps/api/src/routes/broadcast.ts",
+        "apps/api/src/routes/ai.ts"
+      ],
+      "mobileClients": [
+        "apps/mobile/lib/aiService.ts",
+        "apps/mobile/app/hierarchy/[id].tsx",
+        "apps/mobile/app/local-bodies/index.tsx",
+        "apps/mobile/app/live-election/index.tsx"
+      ],
+      "seedDataSources": [
+        "data/seed/telangana-constituencies.ts",
+        "data/seed/andhra-pradesh-constituencies.ts",
+        "data/seed/karnataka-constituencies.ts"
+      ]
+    }
+  },
+  "contaminationGuards": {
+    "guardRule1": "NO NEW flat geography columns or ad-hoc delimitation fields may be added to public.constituencies or public.mandals prior to W013",
+    "guardRule2": "All temporal changes, boundary revisions, and historic delimitation variations MUST be reserved for the Versioned Delimitation Graph in Jobs W013–W017",
+    "guardRule3": "Feature work in W010-W012 must treat public.constituencies strictly as read-only spatial lookup endpoints",
+    "guardRule4": "No migration in W010-W012 may alter foreign key constraints pointing to public.constituencies.id without CTO approval"
+  },
+  "masterPlanAlignment": {
+    "W013": "Geographic Foundation & TopoJSON Topology Engine",
+    "W014": "Delimitation Version Graph Schema & Temporal Validity Intervals",
+    "W015": "Multi-Year Delimitation Ingestion (1951, 1976, 2008, 2026 Projection)",
+    "W016": "Hierarchical Geo-Containment (State -> District -> AC -> Mandal -> GP -> Booth)",
+    "W017": "Spatial Query APIs & Boundary Diff RPCs"
+  }
+}

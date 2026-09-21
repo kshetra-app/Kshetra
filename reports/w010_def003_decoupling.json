@@ -1,0 +1,41 @@
+{
+  "defect": "DEF-003",
+  "batch": "DECOUPLING_AUDIT",
+  "status": "BOUNDED_AUDIT_COMPLETE",
+  "targetDestination": "W052",
+  "timestamp": "2026-09-21T14:13:00+05:30",
+  "audit": {
+    "packageDependencies": {
+      "direct": "react-native-webrtc@^124.0.5",
+      "configPlugin": "@config-plugins/react-native-webrtc@^12.0.0"
+    },
+    "runtimeCalls": [
+      {
+        "file": "apps/mobile/components/LiveBroadcaster.tsx",
+        "mechanism": "Guarded dynamic require('react-native-webrtc') inside try/catch",
+        "consumerRuntimeLeakage": false,
+        "fallback": "isBroadcastSupported() returns false when native binary omitted; displays graceful UI message"
+      }
+    ],
+    "consumerPlaybackDecoupling": {
+      "playbackMechanism": "HLS over standard video player / ExoPlayer / AVPlayer",
+      "webrtcDependencyForViewers": false,
+      "files": ["apps/mobile/components/HlsPlayer.tsx", "apps/mobile/components/LivePlayer.tsx"]
+    },
+    "binaryOverhead": {
+      "androidLibWebRTC_APK_Impact": "approx 18-22 MB per ABI (arm64-v8a, armeabi-v7a)",
+      "iosFrameworkImpact": "approx 25-30 MB uncompressed WebRTC.xcframework",
+      "javascriptBundleImpact": "minimal (<15 KB pure JS wrapper due to native bindings)"
+    },
+    "isolationGuardsVerified": [
+      "No top-level static import of react-native-webrtc exists anywhere in JS codebase",
+      "Consumer viewer routes ((tabs)/index, (tabs)/shorts, live/[id].tsx) have zero runtime WebRTC imports",
+      "Broadcaster path isolated strictly to Creator route (app/live/go-live.tsx -> components/LiveBroadcaster.tsx)"
+    ],
+    "w052DecouplingStrategy": {
+      "phase1": "Extract broadcaster workflow to standalone Kshetra Creator Studio app or mobile-responsive Web WHIP client",
+      "phase2": "Remove react-native-webrtc and @config-plugins/react-native-webrtc from consumer mobile package.json",
+      "phase3": "Reduce consumer mobile binary size by ~20MB, eliminating native WebRTC compilation constraints"
+    }
+  }
+}

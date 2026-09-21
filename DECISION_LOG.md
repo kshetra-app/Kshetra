@@ -950,3 +950,34 @@
   14. **Non-Defect Reconciliations:** Documented the 5 standing W005 accepted limitations (PITR, multi-cloud, DR-001, DR-002, DR-005) and reconciled W008-D status (verification-only executed under DEC-051; awaiting formal administrative closure in `ACCEPTANCE_REGISTER.md`).
   15. **Artifacts Published:** `reports/w010_legacy_defect_inventory.json`, `reports/w010_legacy_defect_reconciliation.json`, `reports/w010_legacy_defect_reconciliation.md`, and `reports/w010_legacy_governance_reconciliation.md`.
 - **Rationale:** Establishes definitive historical ground-truth across all 13 legacy defects and registers, preventing premature implementation while defining bounded remediation batches for CTO authorization.
+
+---
+
+### DEC-057: W010 BOUNDED LEGACY REMEDIATION PROGRAM EXECUTION (BATCHES L1, L2, L3, DEF-003, DEF-006 & GOVERNANCE CLOSURE)
+- **Date:** 2026-09-21
+- **Status:** IMPLEMENTED / TESTED / VERIFIED / SUBMITTED FOR CTO ACCEPTANCE
+- **Authority:** CTO Directive (`CTO DECISION — W010-P0 RECONCILIATION ACCEPTED FOR BOUNDED REMEDIATION`)
+- **Context:** Execution of the mandatory bounded historical remediation program prior to advancing W010 or executing Migration 038.
+- **Decisions & Completed Batches:**
+  1. **Batch L1 (DEF-001 & DEF-007):**
+     - DEF-001: Permanently deleted duplicate route files (`apps/mobile/app/user/[id].tsx`, `apps/mobile/app/auth/edit-profile.tsx`, `apps/mobile/app/auth/onboarding.tsx`). Consolidated routing on canonical routes; registered `onboarding` in `_layout.tsx`; updated navigation callsites; verified 0 route collisions.
+     - DEF-007: Removed synthetic ID generation (`local-short-...`, `local-cmt-...`) and fake `return true` success flags across all Shorts methods in `supabaseDataService.ts`. Enforced strict RFC-4122 UUID validation; non-UUIDs and offline calls fail closed honestly. Verified with 10/10 passing tests in `apps/mobile/__tests__/w010-batch-l1.test.ts`.
+  2. **Batch L2 (DEF-008 & DEF-012):**
+     - DEF-008: Eliminated 236 hardcoded user-facing strings across dynamic mobile screens (`dashboard.tsx`, `index.tsx`, `intelligence.tsx`, `profile.tsx`, `shorts.tsx`, `edit-profile.tsx`, `issue/[id].tsx`, `representative/[id].tsx`, `moderation/index.tsx`, `legislator/[id].tsx`). Cataloged and verified legitimate technical exclusions (brand name, ISO codes, route URLs, icon names, telemetry IDs).
+     - DEF-012: Backfilled missing keys across all 12 Indic languages with authentic, native script translations preserving all variable tokens (`{{count}}`, `{{year}}`, `{{time}}`). Verified 100% key parity (2,128/2,128 keys) across all 13 languages on `node scripts/verify-13-locales.mjs --strict` with zero missing keys and zero empty strings. Verified with 7/7 passing tests in `apps/mobile/__tests__/w010-batch-l2.test.ts`.
+  3. **Batch L3 (DEF-002):**
+     - DEF-002: Completely eliminated all 29 instances of `if (!guard()) return true;` and 6 synthetic ID generator fallbacks (`local-${Date.now()}`, `local-cmt-...`, `local-asp-...`, `local-kyc-...`, `local-fp-...`, `local-alert-...`) in `supabaseDataService.ts`. Replaced with honest fail-closed returns (`{ id: null, success: false }` or `false`), restoring store rollback integrity and offline queue durability. Verified with 5/5 passing tests in `apps/mobile/__tests__/w010-batch-l3.test.ts`.
+  4. **DEF-003 (WebRTC Decoupling Audit):**
+     - Audited consumer bundle; verified guarded dynamic `try { require('react-native-webrtc') }` runtime boundary; verified consumer stream playback uses HLS with zero WebRTC dependencies. Documented binary size impact (~20 MB) and established formal migration pathway to Job W052 in `reports/w010_def003_decoupling.*`.
+  5. **DEF-006 (Geography Contamination Guard):**
+     - Audited flat geography consumers (`public.constituencies`, `public.mandals`); established 4 strict contamination guard rules for W010–W012; linked future temporal delimitation graph modeling to Master Jobs W013–W017 in `reports/w010_geography_contamination_guard.*`.
+  6. **Governance Registers Alignment:**
+     - Closed parent Job W008 in `ACCEPTANCE_REGISTER.md` citing DEC-050, DEC-051, and DEC-057.
+     - Formally documented carrying forward the 5 accepted W005 disaster recovery limitations to Launch Gate B.
+     - Updated `DEFECT_REGISTER.md` with verified resolutions for DEF-001, DEF-002, DEF-007, DEF-008, DEF-012, bounded audit for DEF-003, and contamination guard for DEF-006.
+  7. **Strict Boundary Adherence:**
+     - Zero mutations to production (0 prod writes, ₹0 money).
+     - Execution STOPPED before Migration 038 staging execution.
+     - Submitted to CTO for independent review and acceptance.
+- **Rationale:** Fulfills all conditions of the CTO Bounded Legacy Remediation Directive, resolving longstanding technical debt while maintaining strict quality, security, and governance boundaries.
+

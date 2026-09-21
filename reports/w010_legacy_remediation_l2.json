@@ -1,0 +1,60 @@
+{
+  "batch": "L2",
+  "defects": ["DEF-008", "DEF-012"],
+  "status": "IMPLEMENTED_AND_TESTED",
+  "timestamp": "2026-09-21T14:07:00+05:30",
+  "def008": {
+    "eliminatedStringCount": 236,
+    "mechanism": "i18n.t() and useTranslation t() canonical internationalization hooks",
+    "updatedScreens": [
+      "apps/mobile/app/(tabs)/dashboard.tsx",
+      "apps/mobile/app/(tabs)/index.tsx",
+      "apps/mobile/app/(tabs)/intelligence.tsx",
+      "apps/mobile/app/(tabs)/profile.tsx",
+      "apps/mobile/app/(tabs)/shorts.tsx",
+      "apps/mobile/app/edit-profile.tsx",
+      "apps/mobile/app/issue/[id].tsx",
+      "apps/mobile/app/representative/[id].tsx",
+      "apps/mobile/app/moderation/index.tsx",
+      "apps/mobile/app/legislator/[id].tsx"
+    ],
+    "technicalExclusions": [
+      "Brand name 'Kshetra'",
+      "ISO 639-1 language codes ('en', 'te', 'hi', 'ta', 'kn', 'ml', 'mr', 'bn', 'gu', 'or', 'pa', 'as', 'ne')",
+      "Route paths and URL schemes ('/edit-profile', '/onboarding', etc.)",
+      "Icon names and vector glyph identifiers ('person', 'checkmark', etc.)",
+      "Numeric constants, formatting units, and percentages ('100%', '200')",
+      "Telemetry event types, error codes, and log tags",
+      "Test fixtures and mock database identifiers"
+    ]
+  },
+  "def012": {
+    "canonicalKeyCount": 2128,
+    "languagesCovered": 13,
+    "localeCoverage": {
+      "en": { "keys": 2128, "missing": 0, "parity": "100%" },
+      "te": { "keys": 2128, "missing": 0, "parity": "100%" },
+      "hi": { "keys": 2128, "missing": 0, "parity": "100%" },
+      "ta": { "keys": 2128, "missing": 0, "parity": "100%" },
+      "kn": { "keys": 2128, "missing": 0, "parity": "100%" },
+      "ml": { "keys": 2128, "missing": 0, "parity": "100%" },
+      "mr": { "keys": 2128, "missing": 0, "parity": "100%" },
+      "bn": { "keys": 2128, "missing": 0, "parity": "100%" },
+      "gu": { "keys": 2128, "missing": 0, "parity": "100%" },
+      "or": { "keys": 2128, "missing": 0, "parity": "100%" },
+      "pa": { "keys": 2128, "missing": 0, "parity": "100%" },
+      "as": { "keys": 2128, "missing": 0, "parity": "100%" },
+      "ne": { "keys": 2128, "missing": 0, "parity": "100%" }
+    },
+    "zeroEnglishPlaceholders": true,
+    "zeroEmptyStrings": true,
+    "variableInterpolationPreserved": true
+  },
+  "verification": {
+    "strictValidator": "node scripts/verify-13-locales.mjs --strict (PASSED 100% parity across all 13 languages)",
+    "testSuite": "apps/mobile/__tests__/w010-batch-l2.test.ts",
+    "testCount": 7,
+    "testsPassed": 7,
+    "typecheck": "tsc --noEmit passed (exit code 0)"
+  }
+}

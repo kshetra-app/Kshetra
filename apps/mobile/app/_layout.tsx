@@ -234,6 +234,13 @@ export default function RootLayout() {
           }}
         />
         <Stack.Screen
+          name="onboarding"
+          options={{
+            headerShown: false,
+            animation: 'fade',
+          }}
+        />
+        <Stack.Screen
           name="leadership-academy"
           options={{
             headerShown: false,

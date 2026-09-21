@@ -27,6 +27,7 @@ import { useMyConstituencyStore } from '../../stores/myConstituency';
 import { usePromiseStore } from '../../stores/promises';
 import { PROMISE_STATUS_CONFIG, type PromiseStatus as PStatus } from '../../lib/promiseTypes';
 import { STATES } from '@kshetra/shared';
+import i18n from '../../i18n';
 import { useTheme } from '../../lib/theme';
 import { gateContentAction, logContentAction } from '../../lib/contentAccountability';
 
@@ -50,13 +51,13 @@ class DashboardErrorBoundary extends Component<
       return (
         <View style={{ flex: 1, backgroundColor: '#FAF6EE', justifyContent: 'center', alignItems: 'center', padding: 20 }}>
           <Ionicons name="warning" size={48} color="#A8201A" />
-          <Text style={{ color: '#16100E', fontSize: 18, fontWeight: '700', marginTop: 12 }}>Dashboard Error</Text>
+          <Text style={{ color: '#16100E', fontSize: 18, fontWeight: '700', marginTop: 12 }}>{i18n.t('common.error', { defaultValue: 'Dashboard Error' })}</Text>
           <Text style={{ color: '#5C554E', fontSize: 13, marginTop: 8, textAlign: 'center' }}>{this.state.error}</Text>
           <Pressable
             style={{ marginTop: 16, backgroundColor: '#A8201A', borderRadius: 10, paddingHorizontal: 20, paddingVertical: 10 }}
             onPress={() => this.setState({ hasError: false, error: '' })}
           >
-            <Text style={{ color: '#FAF6EE', fontWeight: '700' }}>Retry</Text>
+            <Text style={{ color: '#FAF6EE', fontWeight: '700' }}>{i18n.t('common.retry', { defaultValue: 'Retry' })}</Text>
           </Pressable>
         </View>
       );

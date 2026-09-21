@@ -16,6 +16,7 @@ import { useUserProfileStore } from '../../stores/userProfile';
 import { useAuthStore } from '../../stores/auth';
 import { useTheme } from '../../lib/theme';
 import { useFeedStore } from '../../stores/feed';
+import i18n from '../../i18n';
 
 interface ReportItem {
   id: string;
@@ -144,16 +145,16 @@ export default function GeneralModerationQueueScreen() {
       <View style={[styles.container, { backgroundColor: colors.background, justifyContent: 'center', alignItems: 'center', padding: 24 }]}>
         <Ionicons name="shield-outline" size={64} color={colors.textMuted} />
         <Text style={[styles.title, { color: colors.text, marginTop: 16, textAlign: 'center' }]}>
-          Access Restricted
+          {i18n.t('moderation.accessRestricted')}
         </Text>
         <Text style={{ color: colors.textMuted, textAlign: 'center', marginTop: 8, fontSize: 14 }}>
-          The General Moderation Queue is strictly reserved for verified Grievance Officers, Moderators, and Administrators under IT Rules 2021.
+          {i18n.t('moderation.restrictedNotice')}
         </Text>
         <Pressable
           style={[styles.backBtn, { backgroundColor: colors.primary, marginTop: 24 }]}
           onPress={() => router.back()}
         >
-          <Text style={{ color: '#fff', fontWeight: '600' }}>Return to Feed</Text>
+          <Text style={{ color: '#fff', fontWeight: '600' }}>{i18n.t('moderation.returnToFeed')}</Text>
         </Pressable>
       </View>
     );
@@ -166,7 +167,7 @@ export default function GeneralModerationQueueScreen() {
         <Pressable onPress={() => router.back()} hitSlop={10}>
           <Ionicons name="chevron-back" size={26} color={colors.primary} />
         </Pressable>
-        <Text style={[styles.title, { color: colors.text }]}>Content Moderation Queue</Text>
+        <Text style={[styles.title, { color: colors.text }]}>{i18n.t('moderation.contentModerationQueue')}</Text>
         <Pressable onPress={() => { setRefreshing(true); loadQueue(); }} hitSlop={10}>
           <Ionicons name="refresh" size={22} color={colors.primary} />
         </Pressable>
@@ -176,23 +177,23 @@ export default function GeneralModerationQueueScreen() {
       <View style={[styles.banner, { backgroundColor: '#FEF3C7', borderColor: '#FDE68A' }]}>
         <Ionicons name="shield-checkmark" size={18} color="#D97706" />
         <Text style={{ fontSize: 13, color: '#92400E', flex: 1, marginLeft: 8 }}>
-          Statutory Grievance & Content Review Queue ({reports.length} pending). All actions are recorded in compliance with IT Rules 2021.
+          {i18n.t('moderation.statutoryNotice', { count: reports.length })}
         </Text>
       </View>
 
       {loading ? (
         <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
           <ActivityIndicator size="large" color={colors.primary} />
-          <Text style={{ marginTop: 12, color: colors.textMuted }}>Fetching pending reports...</Text>
+          <Text style={{ marginTop: 12, color: colors.textMuted }}>{i18n.t('moderation.fetchingReports')}</Text>
         </View>
       ) : reports.length === 0 ? (
         <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', padding: 32 }}>
           <Ionicons name="checkmark-done-circle" size={60} color="#10B981" />
           <Text style={{ fontSize: 18, fontWeight: '700', color: colors.text, marginTop: 12 }}>
-            Queue All Clear!
+            {i18n.t('moderation.queueAllClear')}
           </Text>
           <Text style={{ fontSize: 14, color: colors.textMuted, textAlign: 'center', marginTop: 6 }}>
-            No pending user reports requiring moderation.
+            {i18n.t('moderation.noPendingReports')}
           </Text>
         </View>
       ) : (
@@ -226,7 +227,7 @@ export default function GeneralModerationQueueScreen() {
                   <View style={[styles.snippetContainer, { backgroundColor: colors.background, borderColor: colors.border }]}>
                     <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 6 }}>
                       <Text style={{ fontSize: 11, fontWeight: '700', color: colors.primary }}>
-                        REPORTED USER / DIRECT MESSAGE:
+                        {i18n.t('moderation.reportedUser')}
                       </Text>
                       {report.reported_user?.role && (
                         <View style={[styles.roleTag, { backgroundColor: colors.border }]}>
@@ -248,7 +249,7 @@ export default function GeneralModerationQueueScreen() {
                       >
                         <Ionicons name="chatbubbles-outline" size={14} color={colors.primary} />
                         <Text style={{ color: colors.primary, fontSize: 12, fontWeight: '600' }}>
-                          Review Direct Message Thread
+                          {i18n.t('moderation.reviewThread')}
                         </Text>
                         <Ionicons name="open-outline" size={12} color={colors.primary} />
                       </Pressable>
@@ -257,10 +258,10 @@ export default function GeneralModerationQueueScreen() {
                 ) : (
                   <View style={[styles.snippetContainer, { backgroundColor: colors.background, borderColor: colors.border }]}>
                     <Text style={{ fontSize: 11, fontWeight: '700', color: colors.primary, marginBottom: 4 }}>
-                      REPORTED {report.post_id ? 'POST' : 'COMMENT'}:
+                      {report.post_id ? i18n.t('moderation.reportedPost') : i18n.t('moderation.reportedComment')}
                     </Text>
                     <Text style={{ fontSize: 13, color: colors.text }} numberOfLines={4}>
-                      {report.post?.content || report.comment?.content || 'Content preview not available or already archived.'}
+                      {report.post?.content || report.comment?.content || i18n.t('moderation.previewUnavailable')}
                     </Text>
                   </View>
                 )}
@@ -274,7 +275,7 @@ export default function GeneralModerationQueueScreen() {
                       disabled={isActing}
                     >
                       <Ionicons name="trash-outline" size={14} color="#fff" />
-                      <Text style={styles.actionBtnText}>Remove Content</Text>
+                      <Text style={styles.actionBtnText}>{i18n.t('moderation.removeContent')}</Text>
                     </Pressable>
                   )}
 
@@ -284,7 +285,7 @@ export default function GeneralModerationQueueScreen() {
                     disabled={isActing}
                   >
                     <Ionicons name="warning-outline" size={14} color="#fff" />
-                    <Text style={styles.actionBtnText}>Warn User</Text>
+                    <Text style={styles.actionBtnText}>{i18n.t('moderation.warnUser')}</Text>
                   </Pressable>
 
                   <Pressable
@@ -293,7 +294,7 @@ export default function GeneralModerationQueueScreen() {
                     disabled={isActing}
                   >
                     <Ionicons name="close-circle-outline" size={14} color="#fff" />
-                    <Text style={styles.actionBtnText}>Dismiss</Text>
+                    <Text style={styles.actionBtnText}>{i18n.t('moderation.dismiss')}</Text>
                   </Pressable>
 
                   <Pressable
@@ -302,7 +303,7 @@ export default function GeneralModerationQueueScreen() {
                     disabled={isActing}
                   >
                     <Ionicons name="arrow-up-circle-outline" size={14} color="#fff" />
-                    <Text style={styles.actionBtnText}>Escalate</Text>
+                    <Text style={styles.actionBtnText}>{i18n.t('moderation.escalate')}</Text>
                   </Pressable>
                 </View>
               </View>

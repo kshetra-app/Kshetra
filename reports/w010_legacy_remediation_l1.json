@@ -1,0 +1,75 @@
+{
+  "batch": "L1",
+  "defects": ["DEF-001", "DEF-007"],
+  "status": "IMPLEMENTED_AND_TESTED",
+  "timestamp": "2026-09-21T13:33:00+05:30",
+  "def001": {
+    "removedRoutes": [
+      "apps/mobile/app/user/[id].tsx",
+      "apps/mobile/app/auth/edit-profile.tsx",
+      "apps/mobile/app/auth/onboarding.tsx"
+    ],
+    "canonicalRoutesPreserved": [
+      "apps/mobile/app/user/[userId].tsx",
+      "apps/mobile/app/edit-profile.tsx",
+      "apps/mobile/app/onboarding.tsx"
+    ],
+    "navigationReferencesUpdated": [
+      {
+        "file": "apps/mobile/app/(tabs)/profile.tsx",
+        "line": 194,
+        "old": "router.push('/auth/edit-profile' as any)",
+        "new": "router.push('/edit-profile' as any)"
+      }
+    ],
+    "layoutRegistration": {
+      "file": "apps/mobile/app/_layout.tsx",
+      "registeredRoutes": ["edit-profile", "onboarding", "user/[userId]"],
+      "collisionCount": 0
+    }
+  },
+  "def007": {
+    "module": "apps/mobile/lib/supabaseDataService.ts",
+    "uuidValidation": "Enforced via isValidUuid regex check on all short persistence & mutation methods",
+    "hardenedMethods": [
+      {
+        "name": "uploadShort",
+        "offlineBehavior": "returns { id: null, success: false }",
+        "invalidIdBehavior": "rejects non-UUID uploadedBy with { id: null, success: false }",
+        "syntheticSuccessRemoved": true
+      },
+      {
+        "name": "approveShort",
+        "offlineBehavior": "returns false",
+        "invalidIdBehavior": "rejects non-UUID shortId or userId with false",
+        "syntheticSuccessRemoved": true
+      },
+      {
+        "name": "flagShort",
+        "offlineBehavior": "returns false",
+        "invalidIdBehavior": "rejects non-UUID shortId or userId with false",
+        "syntheticSuccessRemoved": true
+      },
+      {
+        "name": "incrementShortView",
+        "offlineBehavior": "returns false",
+        "invalidIdBehavior": "rejects non-UUID shortId with false",
+        "syntheticSuccessRemoved": true
+      },
+      {
+        "name": "addShortComment",
+        "offlineBehavior": "returns { id: null, success: false }",
+        "invalidIdBehavior": "rejects non-UUID shortId or userId with { id: null, success: false }",
+        "syntheticSuccessRemoved": true
+      }
+    ],
+    "clientModalHardened": "apps/mobile/components/UploadShortModal.tsx requires res.success && res.id; propagates DB UUID to optimistic store",
+    "storeHardened": "apps/mobile/stores/politicalShorts.ts addShort accepts and preserves authoritative database UUID"
+  },
+  "verification": {
+    "testSuite": "apps/mobile/__tests__/w010-batch-l1.test.ts",
+    "testCount": 10,
+    "testsPassed": 10,
+    "typecheck": "tsc --noEmit passed (exit code 0)"
+  }
+}

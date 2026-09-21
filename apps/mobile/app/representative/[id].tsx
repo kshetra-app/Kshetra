@@ -21,6 +21,7 @@ import {
 import { representativeToProfile, type RepresentativeProfile, type Representative } from '@kshetra/shared';
 import ProfileHeroCard from '../../components/legislator/ProfileHeroCard';
 import DataPendingCard, { SourceAttributionFooter } from '../../components/DataPendingCard';
+import i18n from '../../i18n';
 
 export default function RepresentativeProfileScreen() {
   const { id, jurisdiction, office, state } = useLocalSearchParams<{
@@ -76,10 +77,10 @@ export default function RepresentativeProfileScreen() {
         <Stack.Screen options={{ title: 'Representative' }} />
         <View style={styles.center}>
           <Ionicons name="person-circle-outline" size={56} color={colors.textMuted} />
-          <Text style={[styles.emptyTitle, { color: colors.text }]}>Profile Not Found</Text>
+          <Text style={[styles.emptyTitle, { color: colors.text }]}>{i18n.t('representative.profileNotFound')}</Text>
           <Pressable style={styles.backBtn} onPress={() => router.back()}>
             <Ionicons name="arrow-back" size={18} color={colors.primary} />
-            <Text style={[styles.backBtnText, { color: colors.primary }]}>Go Back</Text>
+            <Text style={[styles.backBtnText, { color: colors.primary }]}>{i18n.t('common.back')}</Text>
           </Pressable>
         </View>
       </View>
@@ -157,43 +158,43 @@ export default function RepresentativeProfileScreen() {
 
             {/* Verified Election & Mandate Details */}
             <View style={[styles.section, { backgroundColor: colors.surface, borderColor: colors.border }]}>
-              <Text style={[styles.sectionTitle, { color: colors.text }]}>Election & Mandate Details</Text>
+              <Text style={[styles.sectionTitle, { color: colors.text }]}>{i18n.t('representative.electionDetails')}</Text>
               
               <View style={styles.kvRow}>
-                <Text style={[styles.kvLabel, { color: colors.textSecondary }]}>Designation</Text>
+                <Text style={[styles.kvLabel, { color: colors.textSecondary }]}>{i18n.t('representative.designation')}</Text>
                 <Text style={[styles.kvValue, { color: colors.text }]}>{profile.officeLabel}</Text>
               </View>
 
               {rep?.gramPanchayat ? (
                 <View style={styles.kvRow}>
-                  <Text style={[styles.kvLabel, { color: colors.textSecondary }]}>Gram Panchayat</Text>
+                  <Text style={[styles.kvLabel, { color: colors.textSecondary }]}>{i18n.t('representative.gramPanchayat')}</Text>
                   <Text style={[styles.kvValue, { color: colors.text }]}>{rep.gramPanchayat}</Text>
                 </View>
               ) : null}
 
               {rep?.wardNo ? (
                 <View style={styles.kvRow}>
-                  <Text style={[styles.kvLabel, { color: colors.textSecondary }]}>Ward Number</Text>
+                  <Text style={[styles.kvLabel, { color: colors.textSecondary }]}>{i18n.t('representative.wardNumber')}</Text>
                   <Text style={[styles.kvValue, { color: colors.text }]}>Ward {rep.wardNo}</Text>
                 </View>
               ) : null}
 
               {rep?.mandal ? (
                 <View style={styles.kvRow}>
-                  <Text style={[styles.kvLabel, { color: colors.textSecondary }]}>Mandal / Block</Text>
+                  <Text style={[styles.kvLabel, { color: colors.textSecondary }]}>{i18n.t('representative.mandalBlock')}</Text>
                   <Text style={[styles.kvValue, { color: colors.text }]}>{rep.mandal}</Text>
                 </View>
               ) : null}
 
               {rep?.district ? (
                 <View style={styles.kvRow}>
-                  <Text style={[styles.kvLabel, { color: colors.textSecondary }]}>District</Text>
+                  <Text style={[styles.kvLabel, { color: colors.textSecondary }]}>{i18n.t('representative.district')}</Text>
                   <Text style={[styles.kvValue, { color: colors.text }]}>{rep.district}</Text>
                 </View>
               ) : null}
 
               <View style={styles.kvRow}>
-                <Text style={[styles.kvLabel, { color: colors.textSecondary }]}>State</Text>
+                <Text style={[styles.kvLabel, { color: colors.textSecondary }]}>{i18n.t('representative.state')}</Text>
                 <Text style={[styles.kvValue, { color: colors.text }]}>
                   {profile.stateCode === 'TS' ? 'Telangana' : profile.stateCode === 'AP' ? 'Andhra Pradesh' : profile.stateCode}
                 </Text>
@@ -201,25 +202,25 @@ export default function RepresentativeProfileScreen() {
 
               {rep?.reservation ? (
                 <View style={styles.kvRow}>
-                  <Text style={[styles.kvLabel, { color: colors.textSecondary }]}>Seat Reservation</Text>
+                  <Text style={[styles.kvLabel, { color: colors.textSecondary }]}>{i18n.t('representative.seatReservation')}</Text>
                   <Text style={[styles.kvValue, { color: colors.primary, fontWeight: '800' }]}>{rep.reservation}</Text>
                 </View>
               ) : null}
 
               {rep?.electionYear ? (
                 <View style={styles.kvRow}>
-                  <Text style={[styles.kvLabel, { color: colors.textSecondary }]}>Election Year</Text>
+                  <Text style={[styles.kvLabel, { color: colors.textSecondary }]}>{i18n.t('representative.electionYear')}</Text>
                   <Text style={[styles.kvValue, { color: colors.text }]}>{rep.electionYear}</Text>
                 </View>
               ) : null}
 
               <View style={styles.kvRow}>
-                <Text style={[styles.kvLabel, { color: colors.textSecondary }]}>Status</Text>
-                <Text style={[styles.kvValue, { color: '#10B981', fontWeight: '800' }]}>Officially Elected Winner</Text>
+                <Text style={[styles.kvLabel, { color: colors.textSecondary }]}>{i18n.t('representative.status')}</Text>
+                <Text style={[styles.kvValue, { color: '#10B981', fontWeight: '800' }]}>{i18n.t('representative.officiallyElected')}</Text>
               </View>
 
               <View style={styles.kvRow}>
-                <Text style={[styles.kvLabel, { color: colors.textSecondary }]}>Party Status</Text>
+                <Text style={[styles.kvLabel, { color: colors.textSecondary }]}>{i18n.t('representative.partyStatus')}</Text>
                 <Text style={[styles.kvValue, { color: colors.text }]}>
                   {rep?.party
                     ? `${rep.party}${rep.partyOfficial ? '' : ' (Unofficial / De-facto)'}`
@@ -231,16 +232,16 @@ export default function RepresentativeProfileScreen() {
             {/* Financials (only if declared) */}
             {(profile.totalAssets != null || profile.totalLiabilities != null) && (
               <View style={[styles.section, { backgroundColor: colors.surface, borderColor: colors.border }]}>
-                <Text style={[styles.sectionTitle, { color: colors.text }]}>Declared Assets</Text>
+                <Text style={[styles.sectionTitle, { color: colors.text }]}>{i18n.t('representative.declaredAssets')}</Text>
                 {profile.totalAssets != null && (
                   <View style={styles.kvRow}>
-                    <Text style={[styles.kvLabel, { color: colors.textSecondary }]}>Total Assets</Text>
+                    <Text style={[styles.kvLabel, { color: colors.textSecondary }]}>{i18n.t('representative.totalAssets')}</Text>
                     <Text style={[styles.kvValue, { color: colors.text }]}>{formatINR(profile.totalAssets)}</Text>
                   </View>
                 )}
                 {profile.totalLiabilities != null && (
                   <View style={styles.kvRow}>
-                    <Text style={[styles.kvLabel, { color: colors.textSecondary }]}>Total Liabilities</Text>
+                    <Text style={[styles.kvLabel, { color: colors.textSecondary }]}>{i18n.t('representative.totalLiabilities')}</Text>
                     <Text style={[styles.kvValue, { color: colors.text }]}>{formatINR(profile.totalLiabilities)}</Text>
                   </View>
                 )}
@@ -250,7 +251,7 @@ export default function RepresentativeProfileScreen() {
             {/* Criminal Record (only if declared) */}
             {profile.criminalCases != null && (
               <View style={[styles.section, { backgroundColor: colors.surface, borderColor: colors.border }]}>
-                <Text style={[styles.sectionTitle, { color: colors.text }]}>Criminal Record</Text>
+                <Text style={[styles.sectionTitle, { color: colors.text }]}>{i18n.t('representative.criminalRecord')}</Text>
                 <Text style={[styles.kvValue, { color: profile.criminalCases > 0 ? colors.danger : colors.success }]}>
                   {profile.criminalCases} declared case{profile.criminalCases === 1 ? '' : 's'}
                 </Text>
@@ -260,7 +261,7 @@ export default function RepresentativeProfileScreen() {
             {/* Contact (only if present) */}
             {(profile.phone || profile.email) && (
               <View style={[styles.section, { backgroundColor: colors.surface, borderColor: colors.border }]}>
-                <Text style={[styles.sectionTitle, { color: colors.text }]}>Contact</Text>
+                <Text style={[styles.sectionTitle, { color: colors.text }]}>{i18n.t('representative.contact')}</Text>
                 {profile.phone && (
                   <Pressable onPress={() => Linking.openURL(`tel:${profile.phone}`)}>
                     <Text style={[styles.link, { color: colors.primary }]}>{profile.phone}</Text>
@@ -276,7 +277,7 @@ export default function RepresentativeProfileScreen() {
 
             {/* Source & Provenance */}
             <View style={[styles.section, { backgroundColor: colors.surface, borderColor: colors.border }]}>
-              <Text style={[styles.sectionTitle, { color: colors.text }]}>Official Source & Verification</Text>
+              <Text style={[styles.sectionTitle, { color: colors.text }]}>{i18n.t('representative.officialSource')}</Text>
               <Text style={[styles.secSourceText, { color: colors.textSecondary }]}>
                 {profile.stateCode === 'AP'
                   ? 'Official Election Results from Andhra Pradesh State Election Commission (APSEC)'

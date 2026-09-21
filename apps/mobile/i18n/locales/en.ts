@@ -32,6 +32,9 @@ const en =  {
     "select": "Select",
     "filter": "Filter",
     "sort": "Sort",
+    "compare": "Compare",
+    "reset": "Reset",
+    "follow": "Follow",
     "refresh": "Refresh",
     "viewAll": "View All",
     "learnMore": "Learn More",
@@ -71,7 +74,6 @@ const en =  {
       "message": "An unexpected error occurred",
       "retry": "Try Again"
     },
-    "reset": "Reset",
     "collapse": "Collapse",
     "expandAll": "Expand All",
     "hide": "Hide"
@@ -282,7 +284,10 @@ const en =  {
     "comments": "comments",
     "share": "Share",
     "bookmark": "Save",
-    "nowPlaying": "Now Playing"
+    "nowPlaying": "Now Playing",
+    "upload": "Upload",
+    "noShorts": "No shorts at this scope",
+    "uploadFirst": "Upload the first one"
   },
   "postCard": {
     "pinned": "Pinned",
@@ -432,11 +437,14 @@ const en =  {
   },
   "editProfile": {
     "title": "Edit Profile",
+    "changePhoto": "Change Photo",
     "displayName": "Display Name",
     "bio": "Bio",
     "bioPlaceholder": "Tell us about yourself…",
     "role": "Role",
+    "rolePrompt": "I am a...",
     "interests": "Interests",
+    "selectInterests": "Select topics you care about",
     "save": "Save",
     "nameRequired": "Name Required",
     "nameRequiredMsg": "Please enter your display name.",
@@ -600,7 +608,24 @@ const en =  {
       "other": "Other"
     },
     "submit": "Submit Report",
-    "thankYou": "Thank you for reporting"
+    "thankYou": "Thank you for reporting",
+    "accessRestricted": "Access Restricted",
+    "restrictedNotice": "The General Moderation Queue is strictly reserved for verified Grievance Officers, Moderators, and Administrators under IT Rules 2021.",
+    "returnToFeed": "Return to Feed",
+    "contentModerationQueue": "Content Moderation Queue",
+    "statutoryNotice": "Statutory Grievance & Content Review Queue ({{count}} pending). All actions are recorded in compliance with IT Rules 2021.",
+    "fetchingReports": "Fetching pending reports...",
+    "queueAllClear": "Queue All Clear!",
+    "noPendingReports": "No pending user reports requiring moderation.",
+    "reportedUser": "REPORTED USER / DIRECT MESSAGE:",
+    "reviewThread": "Review Direct Message Thread",
+    "reportedPost": "REPORTED POST:",
+    "reportedComment": "REPORTED COMMENT:",
+    "previewUnavailable": "Content preview not available or already archived.",
+    "removeContent": "Remove Content",
+    "warnUser": "Warn User",
+    "dismiss": "Dismiss",
+    "escalate": "Escalate"
   },
   "verification": {
     "verified": "Verified",
@@ -658,7 +683,22 @@ const en =  {
     "politicalEvents": "Political Events"
   },
   "intelligence": {
-    "party_strength_title": "Party Strength: Current vs Election Day"
+    "party_strength_title": "Party Strength: Current vs Election Day",
+    "title": "Intelligence",
+    "mps": "MPs",
+    "ai": "AI",
+    "constituencies": "Constituencies",
+    "districts": "Districts",
+    "partiesWon": "Parties Won",
+    "seatDistribution": "Party Seat Distribution",
+    "reservationStatus": "Reservation Status",
+    "districtBreakdown": "District Breakdown",
+    "keyInsights": "Key Insights",
+    "biggestVictory": "Biggest Victory",
+    "closestContest": "Closest Contest",
+    "majorityParty": "Majority Party",
+    "electionTimeline": "Election Timeline",
+    "defectionTracker": "Defection Tracker"
   },
   "content": {
     "issueCategories": {
@@ -1218,7 +1258,15 @@ const en =  {
     "othersAlliance": "Others"
   },
   "legislator": {
-    "party_switch_history": "Party Switch History"
+    "party_switch_history": "Party Switch History",
+    "profileNotFound": "Profile Not Found",
+    "educationProfession": "Education & Profession",
+    "dataDisclaimer": "Data sourced from candidate self-declarations filed with the Election Commission of India. Figures are approximations from MyNeta/ADR summaries. Always verify with official records.",
+    "dataSources": "Data Sources",
+    "mlaProfilesSeed": "MLA Profiles (Seed)",
+    "myNetaAffidavit": "MyNeta Affidavit",
+    "eciResults": "ECI Results",
+    "viewOnMyNeta": "View Full Affidavit on MyNeta"
   },
   "leadershipAcademy": {
     "title": "Leadership Academy",
@@ -2088,7 +2136,14 @@ const en =  {
     "tapToCompare": "Tap another constituency on the map to compare…",
     "demographicsVoters": "Demographics & Voters",
     "voterTurnout": "Voter Turnout",
-    "literacyRate": "Literacy Rate"
+    "literacyRate": "Literacy Rate",
+    "maleVoters": "Male Voters",
+    "femaleVoters": "Female Voters",
+    "exploreBoothHierarchy": "Explore Hierarchy of this Booth",
+    "view3D": "3D View",
+    "district": "District",
+    "density": "Density",
+    "locate": "Locate"
   },
   "dashboardExtended": {
     "electionAnalytics": "Election Analytics",
@@ -2738,6 +2793,43 @@ const en =  {
     "done": "Done",
     "reset": "Reset All",
     "enableAll": "Enable All"
+  },
+  "representative": {
+    "profileNotFound": "Profile Not Found",
+    "electionDetails": "Election & Mandate Details",
+    "designation": "Designation",
+    "gramPanchayat": "Gram Panchayat",
+    "wardNumber": "Ward Number",
+    "mandalBlock": "Mandal / Block",
+    "district": "District",
+    "state": "State",
+    "seatReservation": "Seat Reservation",
+    "electionYear": "Election Year",
+    "status": "Status",
+    "officiallyElected": "Officially Elected Winner",
+    "partyStatus": "Party Status",
+    "declaredAssets": "Declared Assets",
+    "totalAssets": "Total Assets",
+    "totalLiabilities": "Total Liabilities",
+    "criminalRecord": "Criminal Record",
+    "contact": "Contact",
+    "officialSource": "Official Source & Verification"
+  },
+  "issueDetail": {
+    "notFound": "Issue not found",
+    "verified": "Verified",
+    "upvotes": "Upvotes",
+    "comments": "Comments",
+    "evidence": "Evidence",
+    "upvote": "Upvote",
+    "tagMla": "Tag MLA",
+    "mlaTagged": "MLA Tagged",
+    "mlaResponse": "MLA Response",
+    "responded": "Responded",
+    "awaitingMla": "Awaiting response from MLA...",
+    "resolution": "Resolution",
+    "disputeFiled": "Dispute Filed",
+    "disputeResolution": "Dispute Resolution"
   }
 }
 

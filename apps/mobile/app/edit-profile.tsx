@@ -15,6 +15,7 @@ import { useUserProfileStore } from '../stores/userProfile';
 import { useAuthStore } from '../stores/auth';
 import { updateMyProfile } from '../lib/supabaseDataService';
 import { ROLE_CONFIG, type UserRole } from '../lib/moderationTypes';
+import { useTranslation } from 'react-i18next';
 import { useTheme } from '../lib/theme';
 
 const INTEREST_OPTIONS = [
@@ -41,6 +42,7 @@ const ROLE_OPTIONS: { key: UserRole; label: string; desc: string }[] = [
 
 export default function EditProfileScreen() {
   const router = useRouter();
+  const { t } = useTranslation();
   const { colors } = useTheme();
   const profile = useUserProfileStore((s) => s.profile);
   const updateProfile = useUserProfileStore((s) => s.updateProfile);
@@ -60,35 +62,43 @@ export default function EditProfileScreen() {
 
   const handleSave = useCallback(async () => {
     if (!displayName.trim()) {
-      Alert.alert('Required', 'Please enter a display name');
+      Alert.alert(t('editProfile.nameRequired', { defaultValue: 'Required' }), t('editProfile.nameRequiredMsg', { defaultValue: 'Please enter a display name' }));
       return;
     }
     setIsSaving(true);
     try {
       if (authUser?.id) {
-        await updateMyProfile(authUser.id, { displayName: displayName.trim(), bio: bio.trim() });
+        await updateMyProfile(authUser.id, {
+          displayName: displayName.trim(),
+          bio: bio.trim(),
+        });
       }
-      updateProfile({ displayName: displayName.trim(), bio: bio.trim(), role, interests }); // keep local store in sync for instant UI reflect
+      updateProfile({
+        displayName: displayName.trim(),
+        bio: bio.trim(),
+        role,
+        interests,
+      });
       router.back();
-    } catch (err) {
-      Alert.alert('Could not save', 'Something went wrong. Please try again.');
+    } catch {
+      Alert.alert(t('common.error'), t('common.error'));
     } finally {
       setIsSaving(false);
     }
-  }, [displayName, bio, role, interests, updateProfile, router, authUser]);
+  }, [displayName, bio, role, interests, authUser, updateProfile, router, t]);
 
   return (
     <View style={[styles.container, { backgroundColor: colors.background }]}>
       <Stack.Screen
         options={{
           headerShown: true,
-          title: 'Edit Profile',
+          title: t('editProfile.title', { defaultValue: 'Edit Profile' }),
           headerStyle: { backgroundColor: colors.surface },
           headerTintColor: colors.primary,
           headerRight: () => (
             <Pressable onPress={handleSave} hitSlop={8} disabled={isSaving} style={{ opacity: isSaving ? 0.5 : 1 }}>
               <Text style={[styles.saveButton, { color: colors.primary }]}>
-                {isSaving ? 'Saving...' : 'Save'}
+                {isSaving ? t('common.loading') : t('common.save')}
               </Text>
             </Pressable>
           ),
@@ -102,13 +112,13 @@ export default function EditProfileScreen() {
             <Ionicons name="person" size={40} color="#4F8EF7" />
           </View>
           <Pressable style={styles.changePhotoButton}>
-            <Text style={styles.changePhotoText}>Change Photo</Text>
+            <Text style={styles.changePhotoText}>{t('editProfile.changePhoto', { defaultValue: 'Change Photo' })}</Text>
           </Pressable>
         </View>
 
         {/* Display Name */}
         <View style={styles.field}>
-          <Text style={styles.fieldLabel}>Display Name</Text>
+          <Text style={styles.fieldLabel}>{t('editProfile.displayName', { defaultValue: 'Display Name' })}</Text>
           <TextInput
             style={styles.textInput}
             value={displayName}
@@ -122,7 +132,7 @@ export default function EditProfileScreen() {
 
         {/* Bio */}
         <View style={styles.field}>
-          <Text style={styles.fieldLabel}>Bio</Text>
+          <Text style={styles.fieldLabel}>{t('editProfile.bio', { defaultValue: 'Bio' })}</Text>
           <TextInput
             style={[styles.textInput, styles.textArea]}
             value={bio}
@@ -138,7 +148,7 @@ export default function EditProfileScreen() {
 
         {/* Role */}
         <View style={styles.field}>
-          <Text style={styles.fieldLabel}>I am a...</Text>
+          <Text style={styles.fieldLabel}>{t('editProfile.rolePrompt', { defaultValue: 'I am a...' })}</Text>
           <View style={styles.roleGrid}>
             {ROLE_OPTIONS.map((opt) => {
               const config = ROLE_CONFIG[opt.key];
@@ -169,8 +179,8 @@ export default function EditProfileScreen() {
 
         {/* Interests */}
         <View style={styles.field}>
-          <Text style={styles.fieldLabel}>Interests</Text>
-          <Text style={styles.fieldHint}>Select topics you care about</Text>
+          <Text style={styles.fieldLabel}>{t('editProfile.interests', { defaultValue: 'Interests' })}</Text>
+          <Text style={styles.fieldHint}>{t('editProfile.selectInterests', { defaultValue: 'Select topics you care about' })}</Text>
           <View style={styles.interestGrid}>
             {INTEREST_OPTIONS.map((interest) => {
               const active = interests.includes(interest);

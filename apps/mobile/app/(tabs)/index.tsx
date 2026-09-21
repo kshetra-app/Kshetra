@@ -1425,13 +1425,13 @@ function FullMapScreen() {
             {(selectedBooth.maleVoters != null || selectedBooth.femaleVoters != null) && (
               <>
                 <View style={{ flex: 1, backgroundColor: '#1E293B', borderRadius: 10, padding: 10, borderWidth: 1, borderColor: '#334155' }}>
-                  <Text style={{ fontSize: 10, color: '#60A5FA', fontWeight: '600' }}>Male Voters</Text>
+                  <Text style={{ fontSize: 10, color: '#60A5FA', fontWeight: '600' }}>{t('mapExtended.maleVoters', { defaultValue: 'Male Voters' })}</Text>
                   <Text style={{ fontSize: 15, fontWeight: '700', color: '#60A5FA', marginTop: 2 }}>
                     {(selectedBooth.maleVoters || 0).toLocaleString()}
                   </Text>
                 </View>
                 <View style={{ flex: 1, backgroundColor: '#1E293B', borderRadius: 10, padding: 10, borderWidth: 1, borderColor: '#334155' }}>
-                  <Text style={{ fontSize: 10, color: '#F472B6', fontWeight: '600' }}>Female Voters</Text>
+                  <Text style={{ fontSize: 10, color: '#F472B6', fontWeight: '600' }}>{t('mapExtended.femaleVoters', { defaultValue: 'Female Voters' })}</Text>
                   <Text style={{ fontSize: 15, fontWeight: '700', color: '#F472B6', marginTop: 2 }}>
                     {(selectedBooth.femaleVoters || 0).toLocaleString()}
                   </Text>
@@ -1462,7 +1462,7 @@ function FullMapScreen() {
             >
               <Ionicons name="git-branch" size={15} color="#60A5FA" />
               <Text style={{ fontSize: 12, fontWeight: '700', color: '#60A5FA' }}>
-                Explore Hierarchy of this Booth
+                {t('mapExtended.exploreBoothHierarchy', { defaultValue: 'Explore Hierarchy of this Booth' })}
               </Text>
             </Pressable>
           )}
@@ -1480,7 +1480,7 @@ function FullMapScreen() {
               >
                 <Ionicons name="search" size={19} color="#60A5FA" />
               </Pressable>
-              <Text style={styles.actionButtonLabel}>Search</Text>
+              <Text style={styles.actionButtonLabel}>{t('common.search')}</Text>
             </View>
           )}
 
@@ -1492,7 +1492,7 @@ function FullMapScreen() {
               >
                 <Ionicons name="git-compare" size={19} color="#A78BFA" />
               </Pressable>
-              <Text style={styles.actionButtonLabel}>Compare</Text>
+              <Text style={styles.actionButtonLabel}>{t('common.compare', { defaultValue: 'Compare' })}</Text>
             </View>
           )}
 
@@ -1501,7 +1501,7 @@ function FullMapScreen() {
               <Pressable style={[styles.actionButton, styles.resetButton]} onPress={handleReset}>
                 <Ionicons name="refresh" size={19} color="#F1F5F9" />
               </Pressable>
-              <Text style={styles.actionButtonLabel}>Reset</Text>
+              <Text style={styles.actionButtonLabel}>{t('common.reset', { defaultValue: 'Reset' })}</Text>
             </View>
           )}
 
@@ -1516,7 +1516,7 @@ function FullMapScreen() {
             >
               <Ionicons name="cube" size={19} color={is3DMode ? '#FCD34D' : '#FFFFFF'} />
             </Pressable>
-            <Text style={[styles.actionButtonLabel, is3DMode && { color: '#FCD34D' }]}>3D View</Text>
+            <Text style={[styles.actionButtonLabel, is3DMode && { color: '#FCD34D' }]}>{t('mapExtended.view3D', { defaultValue: '3D View' })}</Text>
           </View>
 
           {/* District Focus Toggle */}
@@ -1541,7 +1541,7 @@ function FullMapScreen() {
                   color={focusedDistrict !== '' ? '#FCD34D' : selected ? '#FFFFFF' : '#475569'}
                 />
               </Pressable>
-              <Text style={[styles.actionButtonLabel, focusedDistrict !== '' && { color: '#FCD34D' }]}>District</Text>
+              <Text style={[styles.actionButtonLabel, focusedDistrict !== '' && { color: '#FCD34D' }]}>{t('mapExtended.district', { defaultValue: 'District' })}</Text>
             </View>
           )}
 
@@ -1557,7 +1557,7 @@ function FullMapScreen() {
               >
                 <Ionicons name="layers" size={19} color={showDelimitation ? '#34D399' : '#FFFFFF'} />
               </Pressable>
-              <Text style={[styles.actionButtonLabel, showDelimitation && { color: '#34D399' }]}>Density</Text>
+              <Text style={[styles.actionButtonLabel, showDelimitation && { color: '#34D399' }]}>{t('mapExtended.density', { defaultValue: 'Density' })}</Text>
             </View>
           )}
 
@@ -1578,7 +1578,7 @@ function FullMapScreen() {
                 <Ionicons name="navigate" size={19} color="#FFFFFF" />
               )}
             </Pressable>
-            <Text style={styles.actionButtonLabel}>Locate</Text>
+            <Text style={styles.actionButtonLabel}>{t('mapExtended.locate', { defaultValue: 'Locate' })}</Text>
           </View>
         </View>
       )}

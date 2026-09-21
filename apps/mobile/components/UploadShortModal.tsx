@@ -136,20 +136,21 @@ export default function UploadShortModal({ visible, onClose }: UploadShortModalP
         stateAccent: '#4F8EF7',
       });
 
-      if (!res.success) {
+      if (!res.success || !res.id) {
         throw new Error('Upload failed');
       }
 
       // Log action fingerprint with full forensic snapshot & GPS
       logContentAction('create_post', {
         type: 'short',
-        id: res.id ?? `short-${Date.now()}`,
+        id: res.id,
         body: title.trim(),
         screenName: 'upload_short',
       });
 
       // Optimistic-UI store cache
       addShort({
+        id: res.id,
         title,
         description,
         channelName,

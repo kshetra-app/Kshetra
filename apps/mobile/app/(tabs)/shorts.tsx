@@ -87,7 +87,7 @@ export default function ShortsScreen({ hideHeader = false }: ShortsScreenProps =
         </View>
         <Pressable style={[styles.uploadBtn, { backgroundColor: colors.primary }]} onPress={() => setUploadVisible(true)}>
           <Ionicons name="add" size={18} color="#FFFFFF" />
-          <Text style={styles.uploadText}>Upload</Text>
+          <Text style={styles.uploadText}>{t('shorts.upload', { defaultValue: 'Upload' })}</Text>
         </Pressable>
       </View>
 
@@ -136,9 +136,9 @@ export default function ShortsScreen({ hideHeader = false }: ShortsScreenProps =
         ListEmptyComponent={
           <View style={styles.empty}>
             <Ionicons name="videocam-outline" size={48} color={colors.textMuted} />
-            <Text style={[styles.emptyText, { color: colors.textSecondary }]}>No shorts at this scope</Text>
+            <Text style={[styles.emptyText, { color: colors.textSecondary }]}>{t('shorts.noShorts', { defaultValue: 'No shorts at this scope' })}</Text>
             <Pressable style={[styles.emptyBtn, { backgroundColor: colors.primary }]} onPress={() => setUploadVisible(true)}>
-              <Text style={styles.emptyBtnText}>Upload the first one</Text>
+              <Text style={styles.emptyBtnText}>{t('shorts.uploadFirst', { defaultValue: 'Upload the first one' })}</Text>
             </Pressable>
           </View>
         }

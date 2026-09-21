@@ -191,7 +191,7 @@ export default function ProfileScreen() {
           />
           <Pressable
             style={styles.editProfileButton}
-            onPress={() => router.push('/auth/edit-profile' as any)}
+            onPress={() => router.push('/edit-profile' as any)}
           >
             <Ionicons name="create-outline" size={16} color="#4F8EF7" />
             <Text style={styles.editProfileText}>{t('profile.editProfile')}</Text>

@@ -55,6 +55,12 @@ function guard(): boolean {
   return isSupabaseConfigured;
 }
 
+const UUID_REGEX = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+export function isValidUuid(id?: string | null): boolean {
+  if (!id || typeof id !== 'string') return false;
+  return UUID_REGEX.test(id);
+}
+
 function uid(): string | null {
   // The authenticated user id is resolved asynchronously elsewhere; callers
   // always pass an explicit userId, so this synchronous helper returns null.
@@ -148,7 +154,7 @@ export async function addIssueComment(
 }
 
 export async function tagMLAOnIssue(issueId: string): Promise<boolean> {
-  if (!guard()) return true;
+  if (!guard()) return false;
   try {
     addBreadcrumb('civic', 'tag_mla', { issueId });
     const { error } = await supabase
@@ -168,7 +174,7 @@ export async function disputeIssueResolution(
   userId: string,
   reason: string,
 ): Promise<boolean> {
-  if (!guard()) return true;
+  if (!guard()) return false;
   try {
     addBreadcrumb('civic', 'dispute_resolution', { issueId });
     const { error } = await supabase
@@ -208,7 +214,7 @@ export async function updateIssueStatus(
 // ─── Feed / Posts ────────────────────────────────────────────────────
 
 export async function reactToPost(postId: string, userId: string, reaction: string): Promise<boolean> {
-  if (!guard()) return true;
+  if (!guard()) return false;
   try {
     addBreadcrumb('feed', 'react_post', { postId, reaction });
     const { error } = await supabase
@@ -248,7 +254,7 @@ export async function reactToPost(postId: string, userId: string, reaction: stri
 }
 
 export async function removeReaction(postId: string, userId: string): Promise<boolean> {
-  if (!guard()) return true;
+  if (!guard()) return false;
   try {
     addBreadcrumb('feed', 'remove_reaction', { postId });
     const { error } = await supabase
@@ -279,7 +285,7 @@ export async function composePost(post: {
     throw new Error(`This content could not be posted — it violates community guidelines (${modCheck.reason || 'moderation policy'}).`);
   }
 
-  if (!guard()) return { id: `local-${Date.now()}`, success: true };
+  if (!guard()) return { id: null, success: false };
   try {
     addBreadcrumb('feed', 'compose_post', { type: post.type });
     const { data, error } = await supabase
@@ -310,7 +316,7 @@ export async function composePost(post: {
 }
 
 export async function editPost(postId: string, content: string, userId: string): Promise<boolean> {
-  if (!guard()) return true;
+  if (!guard()) return false;
   try {
     addBreadcrumb('feed', 'edit_post', { postId });
     const { error } = await supabase
@@ -327,7 +333,7 @@ export async function editPost(postId: string, content: string, userId: string):
 }
 
 export async function deletePost(postId: string, userId: string): Promise<boolean> {
-  if (!guard()) return true;
+  if (!guard()) return false;
   try {
     addBreadcrumb('feed', 'delete_post', { postId });
     const { error } = await supabase
@@ -348,7 +354,7 @@ export async function votePoll(
   optionId: string,
   userId: string,
 ): Promise<boolean> {
-  if (!guard()) return true;
+  if (!guard()) return false;
   try {
     addBreadcrumb('feed', 'vote_poll', { pollId, optionId });
     const { error } = await supabase
@@ -374,7 +380,7 @@ export async function addPostComment(
     throw new Error(`This content could not be posted — it violates community guidelines (${modCheck.reason || 'moderation policy'}).`);
   }
 
-  if (!guard()) return { id: `local-cmt-${Date.now()}`, success: true };
+  if (!guard()) return { id: null, success: false };
   try {
     addBreadcrumb('feed', 'add_comment', { postId });
     const { data, error } = await supabase
@@ -418,7 +424,7 @@ export async function reactToComment(
   userId: string,
   reaction: string,
 ): Promise<boolean> {
-  if (!guard()) return true;
+  if (!guard()) return false;
   try {
     addBreadcrumb('feed', 'react_comment', { commentId, reaction });
     const { error } = await supabase
@@ -439,7 +445,7 @@ export async function removeCommentReaction(
   commentId: string,
   userId: string,
 ): Promise<boolean> {
-  if (!guard()) return true;
+  if (!guard()) return false;
   try {
     addBreadcrumb('feed', 'remove_comment_reaction', { commentId });
     const { error } = await supabase
@@ -458,7 +464,7 @@ export async function deletePostComment(
   commentId: string,
   userId: string,
 ): Promise<boolean> {
-  if (!guard()) return true;
+  if (!guard()) return false;
   try {
     addBreadcrumb('feed', 'delete_comment', { commentId });
     const { error } = await supabase
@@ -494,7 +500,7 @@ async function syncHashtags(postId: string, tags: string[]): Promise<void> {
 // ─── Promises ────────────────────────────────────────────────────────
 
 export async function followPromise(promiseId: string, userId: string, follow: boolean): Promise<boolean> {
-  if (!guard()) return true;
+  if (!guard()) return false;
   try {
     addBreadcrumb('promises', follow ? 'follow_promise' : 'unfollow_promise', { promiseId });
     if (follow) {
@@ -523,7 +529,7 @@ export async function submitEvidence(evidence: {
   description: string;
   url?: string;
 }): Promise<boolean> {
-  if (!guard()) return true;
+  if (!guard()) return false;
   try {
     addBreadcrumb('promises', 'submit_evidence', { promiseId: evidence.promiseId });
     const { error } = await supabase
@@ -550,7 +556,7 @@ export async function toggleFavorite(
   userId: string,
   isFavorite: boolean,
 ): Promise<boolean> {
-  if (!guard()) return true;
+  if (!guard()) return false;
   try {
     addBreadcrumb('favorites', isFavorite ? 'add' : 'remove', { constituencyId });
     if (isFavorite) {
@@ -591,7 +597,10 @@ export async function uploadShort(short: {
   gradientColors?: string[];
   stateAccent?: string;
 }): Promise<{ id: string | null; success: boolean }> {
-  if (!guard()) return { id: `local-short-${Date.now()}`, success: true };
+  if (!guard()) return { id: null, success: false };
+  if (!isValidUuid(short.uploadedBy)) {
+    return { id: null, success: false };
+  }
   try {
     addBreadcrumb('shorts', 'upload', { title: short.title });
     const { data, error } = await supabase
@@ -614,7 +623,10 @@ export async function uploadShort(short: {
       .select('id')
       .single();
     if (error) throw error;
-    return { id: data?.id ?? null, success: true };
+    if (!data?.id || !isValidUuid(data.id)) {
+      return { id: null, success: false };
+    }
+    return { id: data.id, success: true };
   } catch (err) {
     captureException(err as Error, { op: 'upload_short' });
     return { id: null, success: false };
@@ -622,7 +634,8 @@ export async function uploadShort(short: {
 }
 
 export async function approveShort(shortId: string, userId: string, constituencyId?: string): Promise<boolean> {
-  if (!guard()) return true;
+  if (!guard()) return false;
+  if (!isValidUuid(shortId) || !isValidUuid(userId)) return false;
   try {
     addBreadcrumb('shorts', 'approve', { shortId });
     const { error } = await supabase
@@ -637,7 +650,8 @@ export async function approveShort(shortId: string, userId: string, constituency
 }
 
 export async function flagShort(shortId: string, userId: string, reason?: string): Promise<boolean> {
-  if (!guard()) return true;
+  if (!guard()) return false;
+  if (!isValidUuid(shortId) || !isValidUuid(userId)) return false;
   try {
     addBreadcrumb('shorts', 'flag', { shortId });
     const { error } = await supabase
@@ -662,7 +676,7 @@ export async function updateUserProfile(userId: string, updates: {
   stateCode?: string;
   constituencyId?: string;
 }): Promise<boolean> {
-  if (!guard()) return true;
+  if (!guard()) return false;
   try {
     addBreadcrumb('profile', 'update', { userId });
     const row: Record<string, unknown> = {};
@@ -709,7 +723,7 @@ export async function registerAspirant(userId: string, profile: {
   partyAffiliation?: string;
   isIndependent?: boolean;
 }): Promise<{ id: string | null; success: boolean }> {
-  if (!guard()) return { id: `local-asp-${Date.now()}`, success: true };
+  if (!guard()) return { id: null, success: false };
   try {
     addBreadcrumb('aspirant', 'register', { userId });
     const { data, error } = await supabase
@@ -735,7 +749,7 @@ export async function registerAspirant(userId: string, profile: {
 }
 
 export async function startModule(userId: string, moduleId: string): Promise<boolean> {
-  if (!guard()) return true;
+  if (!guard()) return false;
   try {
     addBreadcrumb('academy', 'start_module', { moduleId });
     const { error } = await supabase
@@ -754,7 +768,7 @@ export async function startModule(userId: string, moduleId: string): Promise<boo
 }
 
 export async function completeModule(userId: string, moduleId: string, quizScore?: number): Promise<boolean> {
-  if (!guard()) return true;
+  if (!guard()) return false;
   try {
     addBreadcrumb('academy', 'complete_module', { moduleId });
     const { error } = await supabase
@@ -783,7 +797,7 @@ export async function completeModule(userId: string, moduleId: string, quizScore
 }
 
 export async function joinChallenge(userId: string, challengeId: string): Promise<boolean> {
-  if (!guard()) return true;
+  if (!guard()) return false;
   try {
     addBreadcrumb('academy', 'join_challenge', { challengeId });
     const { error } = await supabase
@@ -798,7 +812,7 @@ export async function joinChallenge(userId: string, challengeId: string): Promis
 }
 
 export async function endorseAspirant(endorserId: string, aspirantId: string, message?: string): Promise<boolean> {
-  if (!guard()) return true;
+  if (!guard()) return false;
   try {
     addBreadcrumb('aspirant', 'endorse', { aspirantId });
     const { error } = await supabase
@@ -861,7 +875,7 @@ export async function submitKYC(userId: string, kyc: {
   termsAcceptedAt?: string;
   termsVersion?: string;
 }): Promise<{ id: string | null; success: boolean }> {
-  if (!guard()) return { id: `local-kyc-${Date.now()}`, success: true };
+  if (!guard()) return { id: null, success: false };
   try {
     addBreadcrumb('kyc', 'submit', { userId });
     const { data, error } = await supabase
@@ -931,7 +945,7 @@ export async function insertActionFingerprint(fp: {
   screenName?: string | null;
   actionAt?: string;
 }): Promise<{ id: string | null; success: boolean }> {
-  if (!guard()) return { id: `local-fp-${Date.now()}`, success: true };
+  if (!guard()) return { id: null, success: false };
   try {
     addBreadcrumb('cca', 'insert_action_fingerprint', { actionType: fp.actionType, userId: fp.userId });
     const { data, error } = await supabase
@@ -984,7 +998,7 @@ export async function upsertContributorDevice(device: {
   deviceMemoryMb?: number | null;
   isTrusted?: boolean;
 }): Promise<boolean> {
-  if (!guard()) return true;
+  if (!guard()) return false;
   try {
     addBreadcrumb('cca', 'upsert_contributor_device', { userId: device.userId, deviceUniqueId: device.deviceUniqueId });
     const { error } = await supabase
@@ -1012,7 +1026,7 @@ export async function upsertContributorDevice(device: {
 // ─── Notifications ───────────────────────────────────────────────────
 
 export async function markNotificationRead(notificationId: string, userId: string): Promise<boolean> {
-  if (!guard()) return true;
+  if (!guard()) return false;
   try {
     const { error } = await supabase
       .from('notification_log')
@@ -1028,7 +1042,7 @@ export async function markNotificationRead(notificationId: string, userId: strin
 }
 
 export async function markAllNotificationsRead(userId: string): Promise<boolean> {
-  if (!guard()) return true;
+  if (!guard()) return false;
   try {
     const { error } = await supabase
       .from('notification_log')
@@ -1049,7 +1063,7 @@ export async function registerPushToken(
   token: string,
   platform: 'ios' | 'android',
 ): Promise<boolean> {
-  if (!guard()) return true;
+  if (!guard()) return false;
   try {
     addBreadcrumb('notifications', 'register_push_token', { platform });
     const { error } = await supabase
@@ -1113,7 +1127,7 @@ export async function fetchIssuesForConstituency(
 // ─── User & Page Follow Graph (Ticket 0.3) ──────────────────────────
 
 export async function followUser(followerId: string, followedId: string): Promise<boolean> {
-  if (!guard()) return true;
+  if (!guard()) return false;
   try {
     addBreadcrumb('social', 'follow_user', { followerId, followedId });
     const { error } = await supabase
@@ -1128,7 +1142,7 @@ export async function followUser(followerId: string, followedId: string): Promis
 }
 
 export async function unfollowUser(followerId: string, followedId: string): Promise<boolean> {
-  if (!guard()) return true;
+  if (!guard()) return false;
   try {
     addBreadcrumb('social', 'unfollow_user', { followerId, followedId });
     const { error } = await supabase
@@ -1199,7 +1213,7 @@ export async function submitContentReport(report: {
   reason: string;
   description?: string;
 }): Promise<boolean> {
-  if (!guard()) return true;
+  if (!guard()) return false;
   try {
     addBreadcrumb('moderation', 'submit_report', { targetId: report.targetId });
     const payload: any = {
@@ -1497,10 +1511,9 @@ export async function fetchShorts(stateCode?: string): Promise<any[]> {
 }
 
 export async function incrementShortView(shortId: string): Promise<boolean> {
-  if (!guard()) return true;
+  if (!guard()) return false;
+  if (!isValidUuid(shortId)) return false;
   try {
-    const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(shortId);
-    if (!isUuid) return true;
     const { error } = await supabase.rpc('increment_short_views', { p_short_id: shortId });
     if (error) {
       // Fallback direct update
@@ -1527,11 +1540,11 @@ export async function addShortComment(
     throw new Error(`This content could not be posted — it violates community guidelines (${modCheck.reason || 'moderation policy'}).`);
   }
 
-  if (!guard()) return { id: `local-cmt-${Date.now()}`, success: true };
+  if (!guard()) return { id: null, success: false };
+  if (!isValidUuid(shortId) || !isValidUuid(userId)) {
+    return { id: null, success: false };
+  }
   try {
-    const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(shortId);
-    if (!isUuid) return { id: `local-cmt-${Date.now()}`, success: true };
-
     const { data, error } = await supabase
       .from('short_comments')
       .insert({
@@ -1544,6 +1557,7 @@ export async function addShortComment(
       .single();
 
     if (error) throw error;
+    if (!data?.id || !isValidUuid(data.id)) return { id: null, success: false };
 
     // Increment comment_count on short
     await supabase
@@ -1551,7 +1565,7 @@ export async function addShortComment(
       .update({ updated_at: new Date().toISOString() })
       .eq('id', shortId);
 
-    return { id: data?.id ?? null, success: true };
+    return { id: data.id, success: true };
   } catch (err) {
     captureException(err as Error, { op: 'add_short_comment', shortId });
     return { id: null, success: false };
@@ -1716,7 +1730,7 @@ export async function createContentAlert(alert: {
   stateCode?: string;
   constituencyId?: string;
 }): Promise<{ id: string | null; success: boolean }> {
-  if (!guard()) return { id: `local-alert-${Date.now()}`, success: true };
+  if (!guard()) return { id: null, success: false };
   try {
     addBreadcrumb('content_alerts', 'create', { contentId: alert.contentId, category: alert.category });
     const isUuid = alert.contentVisibilityId && alert.contentVisibilityId.length === 36 && alert.contentVisibilityId.includes('-');
@@ -1747,7 +1761,7 @@ export async function acknowledgeContentAlert(
   acknowledgedBy: string,
   actionTaken: string
 ): Promise<boolean> {
-  if (!guard()) return true;
+  if (!guard()) return false;
   try {
     const isUuid = acknowledgedBy && acknowledgedBy.length === 36 && acknowledgedBy.includes('-');
     const { error } = await supabase
@@ -1991,7 +2005,7 @@ export async function sendDirectMessageToConversation(
 }
 
 export async function acceptDMRequest(conversationId: string, userId: string): Promise<boolean> {
-  if (!guard()) return true;
+  if (!guard()) return false;
   try {
     const apiUrl = process.env.EXPO_PUBLIC_API_URL || 'https://kshetra-api-production-9f06.up.railway.app';
     const res = await fetch(`${apiUrl}/api/v1/dm/conversations/${conversationId}/accept`, {
@@ -2009,7 +2023,7 @@ export async function acceptDMRequest(conversationId: string, userId: string): P
 }
 
 export async function declineDMRequest(conversationId: string, userId: string): Promise<boolean> {
-  if (!guard()) return true;
+  if (!guard()) return false;
   try {
     const apiUrl = process.env.EXPO_PUBLIC_API_URL || 'https://kshetra-api-production-9f06.up.railway.app';
     const res = await fetch(`${apiUrl}/api/v1/dm/conversations/${conversationId}/decline`, {
@@ -2033,7 +2047,7 @@ export async function blockAndReportDMUser(
   description?: string,
   conversationId?: string,
 ): Promise<boolean> {
-  if (!guard()) return true;
+  if (!guard()) return false;
   try {
     const apiUrl = process.env.EXPO_PUBLIC_API_URL || 'https://kshetra-api-production-9f06.up.railway.app';
     const res = await fetch(`${apiUrl}/api/v1/dm/block-report`, {

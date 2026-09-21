@@ -3,12 +3,12 @@
     "job": "W008",
     "title": "Fastify API Route Contract Inventory",
     "specification": "Master Execution Framework Amendment v1.5-A / DEC-041",
-    "timestamp": "2026-09-18T04:24:30.436Z"
+    "timestamp": "2026-09-21T08:46:47.631Z"
   },
   "summary": {
-    "totalRoutesRegistered": 138,
-    "pioneerAndPhase1Routes": 50,
-    "schemaCoveredRoutes": 108
+    "totalRoutesRegistered": 144,
+    "pioneerAndPhase1Routes": 56,
+    "schemaCoveredRoutes": 114
   },
   "routes": [
     {
@@ -356,6 +356,60 @@
     {
       "method": "GET",
       "path": "/api/v1/civic/cdi/:constituencyId",
+      "file": "civic.ts",
+      "phase": "Phase 1 (Standardized)",
+      "schemaDefined": true,
+      "preValidationDefined": false,
+      "standardizedEnvelope": true
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/civic/issues/:id/upvote",
+      "file": "civic.ts",
+      "phase": "Phase 1 (Standardized)",
+      "schemaDefined": true,
+      "preValidationDefined": false,
+      "standardizedEnvelope": true
+    },
+    {
+      "method": "DELETE",
+      "path": "/api/v1/civic/issues/:id/upvote",
+      "file": "civic.ts",
+      "phase": "Phase 1 (Standardized)",
+      "schemaDefined": true,
+      "preValidationDefined": false,
+      "standardizedEnvelope": true
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/civic/issues/:id/follow",
+      "file": "civic.ts",
+      "phase": "Phase 1 (Standardized)",
+      "schemaDefined": true,
+      "preValidationDefined": false,
+      "standardizedEnvelope": true
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/civic/issues",
+      "file": "civic.ts",
+      "phase": "Phase 1 (Standardized)",
+      "schemaDefined": true,
+      "preValidationDefined": false,
+      "standardizedEnvelope": true
+    },
+    {
+      "method": "PATCH",
+      "path": "/api/v1/civic/issues/:id/status",
+      "file": "civic.ts",
+      "phase": "Phase 1 (Standardized)",
+      "schemaDefined": true,
+      "preValidationDefined": false,
+      "standardizedEnvelope": true
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/civic/issues/:id/comments",
       "file": "civic.ts",
       "phase": "Phase 1 (Standardized)",
       "schemaDefined": true,

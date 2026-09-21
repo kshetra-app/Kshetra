@@ -17,6 +17,7 @@ import { useActiveStateStore } from '../../stores/activeState';
 import { STATES } from '@kshetra/shared';
 import { useResponsive } from '../../lib/responsive';
 import PartyStrengthChart from '../../components/PartyStrengthChart';
+import { useTranslation } from 'react-i18next';
 import { useTheme } from '../../lib/theme';
 
 /** Compute analytics from seed data — recomputed when state changes */
@@ -95,6 +96,7 @@ function useElectionAnalytics(stateCode: string) {
 
 export default function IntelligenceScreen() {
   const router = useRouter();
+  const { t } = useTranslation();
   const { colors } = useTheme();
   const stateCode = useActiveStateStore((s) => s.stateCode);
   const currentState = STATES[stateCode];
@@ -159,21 +161,21 @@ export default function IntelligenceScreen() {
       {/* Header */}
       <View style={styles.header}>
         <View style={styles.headerTop}>
-          <Text style={[styles.headerTitle, { color: colors.text }]}>Intelligence</Text>
+          <Text style={[styles.headerTitle, { color: colors.text }]}>{t('intelligence.title', { defaultValue: 'Intelligence' })}</Text>
           <View style={styles.headerActions}>
             <Pressable
               style={[styles.aiButton, { backgroundColor: colors.surface, borderColor: colors.goldBorder || colors.border, borderWidth: 1 }]}
               onPress={() => router.push('/parliament' as any)}
             >
               <Ionicons name="business" size={16} color={colors.teal} />
-              <Text style={[styles.aiButtonText, { color: colors.teal }]}>MPs</Text>
+              <Text style={[styles.aiButtonText, { color: colors.teal }]}>{t('intelligence.mps', { defaultValue: 'MPs' })}</Text>
             </Pressable>
             <Pressable
               style={[styles.aiButton, { backgroundColor: colors.surface, borderColor: colors.goldBorder || colors.border, borderWidth: 1 }]}
               onPress={() => router.push('/ai-chat')}
             >
               <Ionicons name="sparkles" size={16} color={colors.gold} />
-              <Text style={[styles.aiButtonText, { color: colors.gold }]}>AI</Text>
+              <Text style={[styles.aiButtonText, { color: colors.gold }]}>{t('intelligence.ai', { defaultValue: 'AI' })}</Text>
             </Pressable>
             <StateSwitcher />
           </View>
@@ -188,25 +190,25 @@ export default function IntelligenceScreen() {
         <View style={[styles.summaryCard, { backgroundColor: colors.surface, borderColor: colors.goldBorder || colors.border, borderWidth: 1 }]}>
           <Ionicons name="people" size={20} color={colors.primary} />
           <Text style={[styles.summaryValue, { color: colors.text }]}>{analytics.totalConstituencies}</Text>
-          <Text style={[styles.summaryLabel, { color: colors.textMuted }]}>Constituencies</Text>
+          <Text style={[styles.summaryLabel, { color: colors.textMuted }]}>{t('intelligence.constituencies', { defaultValue: 'Constituencies' })}</Text>
         </View>
         <View style={[styles.summaryCard, { backgroundColor: colors.surface, borderColor: colors.goldBorder || colors.border, borderWidth: 1 }]}>
           <Ionicons name="location" size={20} color={colors.teal} />
           <Text style={[styles.summaryValue, { color: colors.text }]}>{analytics.districtCount}</Text>
-          <Text style={[styles.summaryLabel, { color: colors.textMuted }]}>Districts</Text>
+          <Text style={[styles.summaryLabel, { color: colors.textMuted }]}>{t('intelligence.districts', { defaultValue: 'Districts' })}</Text>
         </View>
         <View style={[styles.summaryCard, { backgroundColor: colors.surface, borderColor: colors.goldBorder || colors.border, borderWidth: 1 }]}>
           <Ionicons name="flag" size={20} color={colors.gold} />
           <Text style={[styles.summaryValue, { color: colors.text }]}>
             {analytics.partyBreakdown.length}
           </Text>
-          <Text style={[styles.summaryLabel, { color: colors.textMuted }]}>Parties Won</Text>
+          <Text style={[styles.summaryLabel, { color: colors.textMuted }]}>{t('intelligence.partiesWon', { defaultValue: 'Parties Won' })}</Text>
         </View>
       </View>
 
       {/* Party Seat Distribution */}
       <View style={styles.section}>
-        <Text style={styles.sectionTitle}>Party Seat Distribution</Text>
+        <Text style={styles.sectionTitle}>{t('intelligence.seatDistribution', { defaultValue: 'Party Seat Distribution' })}</Text>
         {analytics.partyBreakdown.map(({ party, seats, pct }) => (
           <View key={party} style={styles.partyRow}>
             <View style={styles.partyInfo}>
@@ -239,7 +241,7 @@ export default function IntelligenceScreen() {
 
       {/* Reservation Breakdown */}
       <View style={styles.section}>
-        <Text style={styles.sectionTitle}>Reservation Status</Text>
+        <Text style={styles.sectionTitle}>{t('intelligence.reservationStatus', { defaultValue: 'Reservation Status' })}</Text>
         <View style={styles.reservationRow}>
           {(
             [
@@ -260,7 +262,7 @@ export default function IntelligenceScreen() {
 
       {/* District Breakdown — Top 10 */}
       <View style={styles.section}>
-        <Text style={styles.sectionTitle}>District Breakdown</Text>
+        <Text style={styles.sectionTitle}>{t('intelligence.districtBreakdown', { defaultValue: 'District Breakdown' })}</Text>
         {analytics.districtBreakdown.slice(0, 10).map((d) => (
           <View key={d.district} style={styles.districtRow}>
             <View style={styles.districtInfo}>
@@ -297,12 +299,12 @@ export default function IntelligenceScreen() {
 
       {/* Key Insights */}
       <View style={styles.section}>
-        <Text style={styles.sectionTitle}>Key Insights</Text>
+        <Text style={styles.sectionTitle}>{t('intelligence.keyInsights', { defaultValue: 'Key Insights' })}</Text>
 
         <View style={styles.insightCard}>
           <Ionicons name="trophy" size={18} color="#FFD700" />
           <View style={styles.insightText}>
-            <Text style={styles.insightTitle}>Biggest Victory</Text>
+            <Text style={styles.insightTitle}>{t('intelligence.biggestVictory', { defaultValue: 'Biggest Victory' })}</Text>
             <Text style={styles.insightValue}>
               {analytics.biggestAC} — margin of{' '}
               {analytics.biggestMargin.toLocaleString()} votes
@@ -313,7 +315,7 @@ export default function IntelligenceScreen() {
         <View style={styles.insightCard}>
           <Ionicons name="flash" size={18} color="#EF4444" />
           <View style={styles.insightText}>
-            <Text style={styles.insightTitle}>Closest Contest</Text>
+            <Text style={styles.insightTitle}>{t('intelligence.closestContest', { defaultValue: 'Closest Contest' })}</Text>
             <Text style={styles.insightValue}>
               {analytics.closestAC} — margin of{' '}
               {analytics.closestMargin.toLocaleString()} votes
@@ -324,7 +326,7 @@ export default function IntelligenceScreen() {
         <View style={styles.insightCard}>
           <Ionicons name="pie-chart" size={18} color="#8B5CF6" />
           <View style={styles.insightText}>
-            <Text style={styles.insightTitle}>Majority Party</Text>
+            <Text style={styles.insightTitle}>{t('intelligence.majorityParty', { defaultValue: 'Majority Party' })}</Text>
             <Text style={styles.insightValue}>
               {analytics.partyBreakdown[0].party} with{' '}
               {analytics.partyBreakdown[0].seats} seats (
@@ -339,7 +341,7 @@ export default function IntelligenceScreen() {
         const stateHistory = getElectionHistoryForState(stateCode);
         if (stateHistory.length === 0) return null;
         return <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Election Timeline</Text>
+          <Text style={styles.sectionTitle}>{t('intelligence.electionTimeline', { defaultValue: 'Election Timeline' })}</Text>
           {stateHistory.map((election) => {
           const top3 = [...election.partyResults]
             .sort((a, b) => b.seatsWon - a.seatsWon)
@@ -385,7 +387,7 @@ export default function IntelligenceScreen() {
       {/* Defection Tracker Section */}
       {hasFull && (
         <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Defection Tracker</Text>
+          <Text style={styles.sectionTitle}>{t('intelligence.defectionTracker', { defaultValue: 'Defection Tracker' })}</Text>
           <PartyStrengthChart
             electionSeats={electionSeats}
             currentSeats={currentSeats}

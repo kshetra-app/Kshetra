@@ -26,7 +26,7 @@ interface PoliticalShortsState {
       | 'createdAt'
       | 'visibilityLevel'
       | 'uploadedBy'
-    > & { uploadedBy: string }
+    > & { uploadedBy: string; id?: string }
   ) => void;
   
   approveShort: (shortId: string, userId: string, userConstituencyId: string) => void;
@@ -47,7 +47,7 @@ export const usePoliticalShortsStore = create<PoliticalShortsState>()(
         set((state) => {
           const newShort: PoliticalShort = {
             ...newShortData,
-            id: `short-user-${Date.now()}`,
+            id: newShortData.id || `short-user-${Date.now()}`,
             viewCount: 0,
             likeCount: 0,
             commentCount: 0,
