@@ -882,8 +882,27 @@
      - All records created during R8 verification (including Pages Pro test order `order_1789922113927_v4j5si`, row ID `ef18fd7c-1bd9-4b2a-912e-d654559e6cb0`, status `created`, and related test probe records) are explicitly categorized as `STAGING TEST DATA`.
      - Strict policy: No staging test data may be mutated or deleted without a documented cleanup decision approved by Technical Authority.
   5. **Continuity & Next Authorized Job Determination:**
-     - Next authorized job in the Master Roadmap is `W010: Security Baseline & RLS Hardening`.
-     - Prerequisite status: W009 is fully COMPLETE.
-     - Implementation authorization status: W010 is strictly `NOT_STARTED (PENDING CTO AUTHORIZATION)`.
-     - Strict execution freeze: Zero product code modifications permitted. No self-acceptance. Awaiting explicit CTO authorization before preflight execution.
+      - Next authorized job in the Master Roadmap is `W010: Security Baseline & RLS Hardening`.
+      - Prerequisite status: W009 is fully COMPLETE.
+      - Implementation authorization status: W010 is strictly `NOT_STARTED (PENDING CTO AUTHORIZATION)`.
+      - Strict execution freeze: Zero product code modifications permitted. No self-acceptance. Awaiting explicit CTO authorization before preflight execution.
 - **Rationale:** Complies with Master Execution Framework Amendment v1.5-A and Rule IV-001 by recording formal CTO acceptance with cryptographic lineage proof, quarantining staging test data, closing Job W009, and enforcing fail-closed boundaries on W010.
+
+---
+
+### DEC-054: W010 SECURITY BASELINE & RLS HARDENING IMPLEMENTATION PREPARATION, TABLE-SCOPE RECONCILIATION & STAGING PACKAGE ASSEMBLY
+- **Date:** 2026-09-21
+- **Status:** IMPLEMENTED / TESTED / VERIFIED / SUBMITTED FOR CTO ACCEPTANCE
+- **Authority:** CTO Directive (`CTO DIRECTIVE — W010 IMPLEMENTATION AUTHORIZATION`)
+- **Context:** Controlled implementation of W010 security baseline, RLS hardening, and defect remediation across DEF-014, DEF-015, DEF-016, DEF-017 under strict fail-closed governance.
+- **Decisions:**
+  1. **Table-Scope Reconciliation:** Resolved arithmetic discrepancy: 18 Authoritative W006 Class-A domain tables + 1 Statutory Privacy table (`trai_opt_outs`, Migration 030) + 2 W009 Payment tables (`page_pro_orders`, `campaign_recharge_orders`) = exactly 21 tables receiving `FORCE ROW LEVEL SECURITY`.
+  2. **Migration 038 Creation:** Created `supabase/migrations/038_security_baseline_and_rls_hardening.sql` (0 BOM) encapsulating:
+     - DEF-014: `trai_opt_outs` public SELECT dropped, table revoked from PUBLIC/anon/authenticated, granted to service_role, `check_phone_opt_out` RPC restricted to service_role.
+     - DEF-015: `refresh_materialized_views` revoked from PUBLIC/anon/authenticated, minimal `SET search_path = public, pg_temp` applied to domain SECURITY DEFINER routines, `get_user_dashboard` caller-bound to own UUID.
+     - DEF-016: `lmx_departments` explicit public read policy added for active verified departments, sensitive delivery columns (`webhook_url`, contacts) revoked from anon/auth.
+     - DEF-017: Table owner safeguard policies added for `postgres` on `page_pro_orders`, `campaign_recharge_orders`, `user_profiles`; `FORCE ROW LEVEL SECURITY` applied across all 21 reconciled tables.
+  3. **Staging Packages Prepared:** Prepared `supabase/staging_migration_package_038.sql` (0 BOM, atomic transaction) and companion verification script `supabase/verify_staging_migration_package_038.sql`.
+  4. **Empirical Test Suite Execution:** Automated suite `tests/verify_w010_rls_hardening.mjs` executed against staging database; pre-migration baseline confirms 31/36 passing, exactly reproducing the 4 target defects.
+  5. **Governance Compliance:** Zero product code modifications (`apps/**`, `packages/**` untouched), zero production mutation, ₹0 real money, zero credentials committed.
+- **Rationale:** Establishes rigorous, defense-in-depth database security without compromising accepted W009 payment boundaries or mobile runtime contracts.

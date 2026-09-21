@@ -1,0 +1,458 @@
+{
+  "timestamp": "2026-09-21T04:52:52.246Z",
+  "target": "https://fkpigozcqnmcvofuksar.supabase.co",
+  "tests": [
+    {
+      "id": "TEST-10-01",
+      "title": "Anonymous direct SELECT on trai_opt_outs denied / zero plaintext phone leakage",
+      "category": "DEF-014",
+      "passed": false,
+      "expected": "HTTP 401/403 or 42501 or 0 rows and zero plaintext phone numbers",
+      "observed": {
+        "status": 200,
+        "error": null,
+        "rowCount": 1,
+        "leakedPhone": true
+      },
+      "details": null
+    },
+    {
+      "id": "TEST-10-02",
+      "title": "Plaintext phone_number column completely unavailable to untrusted callers",
+      "category": "DEF-014",
+      "passed": false,
+      "expected": "Column access rejected or returns 0 rows",
+      "observed": {
+        "status": 200,
+        "error": null,
+        "data": [
+          {
+            "phone_number": "9848099999"
+          }
+        ]
+      },
+      "details": null
+    },
+    {
+      "id": "TEST-10-03",
+      "title": "Anonymous invocation of check_phone_opt_out rejected (Anti-enumeration)",
+      "category": "DEF-014",
+      "passed": true,
+      "expected": "HTTP 401/403/404 or 42501 permission denied",
+      "observed": {
+        "status": 404,
+        "error": "Could not find the function public.check_phone_opt_out(p_phone_number_hash) in the schema cache"
+      },
+      "details": null
+    },
+    {
+      "id": "TEST-10-04",
+      "title": "Indian phone normalization conforms strictly to DoT numbering plan ^[6-9]\\d{9}$",
+      "category": "DEF-014",
+      "passed": true,
+      "expected": "Valid 10-digit starting 6-9 normalized; invalid prefixes/lengths rejected",
+      "observed": {
+        "valid1": "9848012345",
+        "valid2": "9848012345",
+        "valid3": "9848012345",
+        "invalidShort": null,
+        "invalidPrefix": null,
+        "invalidLetters": null
+      },
+      "details": null
+    },
+    {
+      "id": "TEST-10-05",
+      "title": "Authorized trusted service_role path can execute check_phone_opt_out",
+      "category": "DEF-014",
+      "passed": true,
+      "expected": "Service role execution permitted without 42501 permission denied",
+      "observed": {
+        "status": 404,
+        "error": "Could not find the function public.check_phone_opt_out(p_phone_number_hash) in the schema cache",
+        "returned": null
+      },
+      "details": null
+    },
+    {
+      "id": "TEST-10-06",
+      "title": "Anonymous execution of refresh_materialized_views() rejected with permission denied",
+      "category": "DEF-015",
+      "passed": false,
+      "expected": "HTTP 401/403 or error 42501 permission denied",
+      "observed": {
+        "status": 204,
+        "error": null,
+        "data": null
+      },
+      "details": null
+    },
+    {
+      "id": "TEST-10-07",
+      "title": "Authorized trusted service_role can execute refresh_materialized_views()",
+      "category": "DEF-015",
+      "passed": true,
+      "expected": "HTTP 200 / null error",
+      "observed": {
+        "status": 204,
+        "error": null
+      },
+      "details": null
+    },
+    {
+      "id": "TEST-10-08",
+      "title": "Anonymous / unauthorized caller rejected from get_user_dashboard (Caller-bound gate)",
+      "category": "DEF-015",
+      "passed": false,
+      "expected": "Access denied exception or permission error",
+      "observed": {
+        "status": 200,
+        "error": null
+      },
+      "details": null
+    },
+    {
+      "id": "TEST-10-09",
+      "title": "Legitimate public application RPC global_search remains functional with hardened search_path",
+      "category": "DEF-015",
+      "passed": true,
+      "expected": "HTTP 200 with search results array",
+      "observed": {
+        "status": 200,
+        "error": null,
+        "resultCount": 0
+      },
+      "details": null
+    },
+    {
+      "id": "TEST-10-10",
+      "title": "Public read query for active verified departments succeeds without default-deny error",
+      "category": "DEF-016",
+      "passed": true,
+      "expected": "HTTP 200 OK with array",
+      "observed": {
+        "status": 200,
+        "error": null,
+        "rowCount": 0
+      },
+      "details": null
+    },
+    {
+      "id": "TEST-10-11",
+      "title": "Anonymous query selecting sensitive webhook_url column rejected with permission denied",
+      "category": "DEF-016",
+      "passed": false,
+      "expected": "HTTP 401/403 or error 42501 permission denied for column webhook_url",
+      "observed": {
+        "status": 200,
+        "error": null
+      },
+      "details": null
+    },
+    {
+      "id": "TEST-10-12",
+      "title": "Anonymous INSERT on lmx_departments strictly denied by RLS/Grants",
+      "category": "DEF-016",
+      "passed": true,
+      "expected": "HTTP 401/403 or 42501 permission denied",
+      "observed": {
+        "status": 401,
+        "error": "new row violates row-level security policy for table \"lmx_departments\""
+      },
+      "details": null
+    },
+    {
+      "id": "TEST-10-RLS-civic_issues",
+      "title": "Service role / owner access operational on civic_issues under RLS safeguards",
+      "category": "DEF-017",
+      "passed": true,
+      "expected": "HTTP 200 OK without RLS lockout",
+      "observed": {
+        "status": 200,
+        "error": null
+      },
+      "details": null
+    },
+    {
+      "id": "TEST-10-RLS-user_profiles",
+      "title": "Service role / owner access operational on user_profiles under RLS safeguards",
+      "category": "DEF-017",
+      "passed": true,
+      "expected": "HTTP 200 OK without RLS lockout",
+      "observed": {
+        "status": 200,
+        "error": null
+      },
+      "details": null
+    },
+    {
+      "id": "TEST-10-RLS-posts",
+      "title": "Service role / owner access operational on posts under RLS safeguards",
+      "category": "DEF-017",
+      "passed": true,
+      "expected": "HTTP 200 OK without RLS lockout",
+      "observed": {
+        "status": 200,
+        "error": null
+      },
+      "details": null
+    },
+    {
+      "id": "TEST-10-RLS-election_promises",
+      "title": "Service role / owner access operational on election_promises under RLS safeguards",
+      "category": "DEF-017",
+      "passed": true,
+      "expected": "HTTP 200 OK without RLS lockout",
+      "observed": {
+        "status": 200,
+        "error": null
+      },
+      "details": null
+    },
+    {
+      "id": "TEST-10-RLS-notification_log",
+      "title": "Service role / owner access operational on notification_log under RLS safeguards",
+      "category": "DEF-017",
+      "passed": true,
+      "expected": "HTTP 200 OK without RLS lockout",
+      "observed": {
+        "status": 200,
+        "error": null
+      },
+      "details": null
+    },
+    {
+      "id": "TEST-10-RLS-leadership_modules",
+      "title": "Service role / owner access operational on leadership_modules under RLS safeguards",
+      "category": "DEF-017",
+      "passed": true,
+      "expected": "HTTP 200 OK without RLS lockout",
+      "observed": {
+        "status": 200,
+        "error": null
+      },
+      "details": null
+    },
+    {
+      "id": "TEST-10-RLS-community_challenges",
+      "title": "Service role / owner access operational on community_challenges under RLS safeguards",
+      "category": "DEF-017",
+      "passed": true,
+      "expected": "HTTP 200 OK without RLS lockout",
+      "observed": {
+        "status": 200,
+        "error": null
+      },
+      "details": null
+    },
+    {
+      "id": "TEST-10-RLS-aspirant_profiles",
+      "title": "Service role / owner access operational on aspirant_profiles under RLS safeguards",
+      "category": "DEF-017",
+      "passed": true,
+      "expected": "HTTP 200 OK without RLS lockout",
+      "observed": {
+        "status": 200,
+        "error": null
+      },
+      "details": null
+    },
+    {
+      "id": "TEST-10-RLS-political_shorts",
+      "title": "Service role / owner access operational on political_shorts under RLS safeguards",
+      "category": "DEF-017",
+      "passed": true,
+      "expected": "HTTP 200 OK without RLS lockout",
+      "observed": {
+        "status": 200,
+        "error": null
+      },
+      "details": null
+    },
+    {
+      "id": "TEST-10-RLS-live_events",
+      "title": "Service role / owner access operational on live_events under RLS safeguards",
+      "category": "DEF-017",
+      "passed": true,
+      "expected": "HTTP 200 OK without RLS lockout",
+      "observed": {
+        "status": 200,
+        "error": null
+      },
+      "details": null
+    },
+    {
+      "id": "TEST-10-RLS-lmx_departments",
+      "title": "Service role / owner access operational on lmx_departments under RLS safeguards",
+      "category": "DEF-017",
+      "passed": true,
+      "expected": "HTTP 200 OK without RLS lockout",
+      "observed": {
+        "status": 200,
+        "error": null
+      },
+      "details": null
+    },
+    {
+      "id": "TEST-10-RLS-lmx_department_alerts",
+      "title": "Service role / owner access operational on lmx_department_alerts under RLS safeguards",
+      "category": "DEF-017",
+      "passed": true,
+      "expected": "HTTP 200 OK without RLS lockout",
+      "observed": {
+        "status": 200,
+        "error": null
+      },
+      "details": null
+    },
+    {
+      "id": "TEST-10-RLS-lmx_credibility",
+      "title": "Service role / owner access operational on lmx_credibility under RLS safeguards",
+      "category": "DEF-017",
+      "passed": true,
+      "expected": "HTTP 200 OK without RLS lockout",
+      "observed": {
+        "status": 200,
+        "error": null
+      },
+      "details": null
+    },
+    {
+      "id": "TEST-10-RLS-lmx_affiliations",
+      "title": "Service role / owner access operational on lmx_affiliations under RLS safeguards",
+      "category": "DEF-017",
+      "passed": true,
+      "expected": "HTTP 200 OK without RLS lockout",
+      "observed": {
+        "status": 200,
+        "error": null
+      },
+      "details": null
+    },
+    {
+      "id": "TEST-10-RLS-lmx_brand_kits",
+      "title": "Service role / owner access operational on lmx_brand_kits under RLS safeguards",
+      "category": "DEF-017",
+      "passed": true,
+      "expected": "HTTP 200 OK without RLS lockout",
+      "observed": {
+        "status": 200,
+        "error": null
+      },
+      "details": null
+    },
+    {
+      "id": "TEST-10-RLS-user_follows",
+      "title": "Service role / owner access operational on user_follows under RLS safeguards",
+      "category": "DEF-017",
+      "passed": true,
+      "expected": "HTTP 200 OK without RLS lockout",
+      "observed": {
+        "status": 200,
+        "error": null
+      },
+      "details": null
+    },
+    {
+      "id": "TEST-10-RLS-conversations",
+      "title": "Service role / owner access operational on conversations under RLS safeguards",
+      "category": "DEF-017",
+      "passed": true,
+      "expected": "HTTP 200 OK without RLS lockout",
+      "observed": {
+        "status": 200,
+        "error": null
+      },
+      "details": null
+    },
+    {
+      "id": "TEST-10-RLS-messages",
+      "title": "Service role / owner access operational on messages under RLS safeguards",
+      "category": "DEF-017",
+      "passed": true,
+      "expected": "HTTP 200 OK without RLS lockout",
+      "observed": {
+        "status": 200,
+        "error": null
+      },
+      "details": null
+    },
+    {
+      "id": "TEST-10-RLS-trai_opt_outs",
+      "title": "Service role / owner access operational on trai_opt_outs under RLS safeguards",
+      "category": "DEF-017",
+      "passed": true,
+      "expected": "HTTP 200 OK without RLS lockout",
+      "observed": {
+        "status": 200,
+        "error": null
+      },
+      "details": null
+    },
+    {
+      "id": "TEST-10-RLS-page_pro_orders",
+      "title": "Service role / owner access operational on page_pro_orders under RLS safeguards",
+      "category": "DEF-017",
+      "passed": true,
+      "expected": "HTTP 200 OK without RLS lockout",
+      "observed": {
+        "status": 200,
+        "error": null
+      },
+      "details": null
+    },
+    {
+      "id": "TEST-10-RLS-campaign_recharge_orders",
+      "title": "Service role / owner access operational on campaign_recharge_orders under RLS safeguards",
+      "category": "DEF-017",
+      "passed": true,
+      "expected": "HTTP 200 OK without RLS lockout",
+      "observed": {
+        "status": 200,
+        "error": null
+      },
+      "details": null
+    },
+    {
+      "id": "TEST-10-PAY-01",
+      "title": "internal_payment_secrets remains strictly revoked from service_role (Error 42501)",
+      "category": "W009_REGRESSION",
+      "passed": true,
+      "expected": "HTTP 403 or 42501 permission denied",
+      "observed": {
+        "status": 403,
+        "error": "permission denied for table internal_payment_secrets"
+      },
+      "details": null
+    },
+    {
+      "id": "TEST-10-PAY-02",
+      "title": "verify_and_activate_page_pro remains strictly revoked from anonymous clients",
+      "category": "W009_REGRESSION",
+      "passed": true,
+      "expected": "HTTP 401/403/404 or 42501 permission denied",
+      "observed": {
+        "status": 401,
+        "error": "permission denied for function verify_and_activate_page_pro"
+      },
+      "details": null
+    },
+    {
+      "id": "TEST-10-PAY-03",
+      "title": "page_pro_orders rejects unauthorized anonymous insert attempts",
+      "category": "W009_REGRESSION",
+      "passed": true,
+      "expected": "Rejected with RLS WITH CHECK violation or permission denied",
+      "observed": {
+        "status": 400,
+        "error": "Could not find the 'amount_inr' column of 'page_pro_orders' in the schema cache"
+      },
+      "details": null
+    }
+  ],
+  "summary": {
+    "total": 36,
+    "passed": 31,
+    "failed": 5
+  }
+}
