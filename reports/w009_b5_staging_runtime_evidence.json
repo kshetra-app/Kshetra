@@ -1,12 +1,12 @@
 {
   "gate": "W009-B5-R8",
   "title": "Staging Provider Integration & Deployment-Lineage Closure",
-  "timestamp": "2026-09-20T17:06:20.216Z",
+  "timestamp": "2026-09-21T03:13:56.138Z",
   "canonical": {
     "repository": "kshetra-app/Kshetra",
     "branch": "master",
-    "headCommit": "347f57970f93fa23991136705ddd1c88872dda07",
-    "originMasterCommit": "347f57970f93fa23991136705ddd1c88872dda07",
+    "headCommit": "2a8d29548c1c0873d6007a940285b21bd9634405",
+    "originMasterCommit": "2a8d29548c1c0873d6007a940285b21bd9634405",
     "deployedRailwayCommit": "ffaf92bf447ba8971df072a67b072f51ce5a1548",
     "railwayDeploymentId": "d3ebcadd",
     "providerSourceCommit": "126011a8c3d9b4bfa293c66f9166f289d0c3ebc9",
@@ -14,8 +14,8 @@
     "stagingDbUrl": "https://fkpigozcqnmcvofuksar.supabase.co"
   },
   "lineageProof": {
-    "headSha": "347f57970f93fa23991136705ddd1c88872dda07",
-    "originSha": "347f57970f93fa23991136705ddd1c88872dda07",
+    "headSha": "2a8d29548c1c0873d6007a940285b21bd9634405",
+    "originSha": "2a8d29548c1c0873d6007a940285b21bd9634405",
     "deployedSha": "ffaf92bf447ba8971df072a67b072f51ce5a1548",
     "railwayDeploymentId": "d3ebcadd",
     "appsApiTreeShaDeployed": "8133ad6577aa0a36ffdf0afb5ced57678ea6e26c",
@@ -26,14 +26,14 @@
   },
   "environmentHealth": {
     "apiStatus": "ok",
-    "apiUptimeSeconds": 2804,
+    "apiUptimeSeconds": 49,
     "apiVersion": "0.1.0",
     "dbStatus": "ok",
     "dbConnected": true,
     "dbRowsReturned": 1,
-    "dbLatencyMs": 482,
+    "dbLatencyMs": 1601,
     "readinessStatus": "ok",
-    "checkedAt": "2026-09-20T17:06:27.012Z"
+    "checkedAt": "2026-09-21T03:14:00.962Z"
   },
   "checks": [
     {
@@ -47,7 +47,7 @@
       "details": {
         "httpStatus": 200,
         "success": true,
-        "orderId": "order_1789923994463_ytz53o"
+        "orderId": "order_1789960448809_hvc9ez"
       }
     },
     {
@@ -59,7 +59,7 @@
       ],
       "passed": true,
       "details": {
-        "orderId": "order_1789923997790_i8nq4b",
+        "orderId": "order_1789960451217_1f9txa",
         "amountPaise": 49900,
         "currency": "INR",
         "billingCycle": "monthly",
@@ -76,10 +76,10 @@
       ],
       "passed": true,
       "details": {
-        "persistedOrderId": "order_1789923997790_i8nq4b",
+        "persistedOrderId": "order_1789960451217_1f9txa",
         "persistedStatus": "created",
         "signatureVerified": false,
-        "persistedPageId": "f7f8380c-f77c-493c-9aba-a8538b2e4290"
+        "persistedPageId": "fc423a17-817b-42a2-9ecd-f9aac4673445"
       }
     },
     {
@@ -181,7 +181,7 @@
         "orderStatus": "completed",
         "signatureVerified": true,
         "pageIsPro": true,
-        "proExpiresAt": "2026-10-20T17:06:50.15+00:00"
+        "proExpiresAt": "2026-10-21T03:14:35.212+00:00"
       }
     },
     {
@@ -194,7 +194,7 @@
       "passed": true,
       "details": {
         "status": "completed",
-        "paymentId": "pay_test_1789923991350_valid"
+        "paymentId": "pay_test_1789960445371_valid"
       }
     },
     {
@@ -233,7 +233,7 @@
       ],
       "passed": true,
       "details": {
-        "orderId": "order_1789924021855_rg8izm",
+        "orderId": "order_1789960484928_znz53o",
         "amount": 499900,
         "billingCycle": "annual"
       }
@@ -246,7 +246,7 @@
       ],
       "passed": true,
       "details": {
-        "rowId": "9c82463d-eb7e-445f-bdaa-b95d012134aa",
+        "rowId": "116e9da7-bd9a-4b1c-8945-0d483ebf042b",
         "status": "created"
       }
     },
@@ -258,9 +258,9 @@
       ],
       "passed": true,
       "details": {
-        "provider_order_id": "order_1789924021855_rg8izm",
-        "page_id": "f7f8380c-f77c-493c-9aba-a8538b2e4290",
-        "user_id": "71b8ac70-22d0-44cf-a3fa-5e95d14a6974",
+        "provider_order_id": "order_1789960484928_znz53o",
+        "page_id": "fc423a17-817b-42a2-9ecd-f9aac4673445",
+        "user_id": "f78b92ed-26b0-470e-91e2-a323b98dbd42",
         "billing_cycle": "annual",
         "amount_paise": 499900
       }
@@ -290,8 +290,8 @@
       "passed": true,
       "details": {
         "valid": true,
-        "orderId": "order_1789924021855_rg8izm",
-        "paymentId": "pay_pro_val_1789924018341"
+        "orderId": "order_1789960484928_znz53o",
+        "paymentId": "pay_pro_val_1789960479487"
       }
     },
     {
@@ -306,7 +306,7 @@
         "httpStatus": 200,
         "apiIsPro": true,
         "apiPlan": "pro",
-        "apiExpiresAt": "2027-09-20T17:07:03.462+00:00"
+        "apiExpiresAt": "2027-09-21T03:14:51.875+00:00"
       }
     },
     {
@@ -318,7 +318,7 @@
       "passed": true,
       "details": {
         "success": true,
-        "providerRef": "mock_obd_mua2jth9"
+        "providerRef": "mock_obd_muao9i0q"
       }
     },
     {
@@ -345,8 +345,8 @@
         "liveTraiStatus": {
           "status": "ok",
           "permitted": false,
-          "currentISTHour": 22,
-          "message": "TRAI regulations restrict automated political calls to 9:00 AM – 8:00 PM IST (Current IST hour: 22:00). Calls will be scheduled for delivery at 9:00 AM tomorrow."
+          "currentISTHour": 8,
+          "message": "TRAI regulations restrict automated political calls to 9:00 AM – 8:00 PM IST (Current IST hour: 8:00). Calls will be scheduled for delivery at 9:00 AM tomorrow."
         },
         "midnightPermitted": false,
         "midnightHour": 0
@@ -363,7 +363,7 @@
       "passed": true,
       "details": {
         "isOptedOut": true,
-        "providerRef": "optout_mua2ju8b",
+        "providerRef": "optout_muao9ino",
         "warning": "Recipient has opted out under TRAI regulations. Call suppressed."
       }
     },
