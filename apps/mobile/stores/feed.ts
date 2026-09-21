@@ -1342,7 +1342,7 @@ export const useFeedStore = create<FeedState>()((set, get) => ({
     }
 
     set((state) => ({
-      posts: [post, ...state.posts],
+      posts: [{ ...post, syncStatus: post.syncStatus ?? 'SYNCING' }, ...state.posts],
       lastPostTime: now,
       lastError: null,
     }));
@@ -1350,15 +1350,6 @@ export const useFeedStore = create<FeedState>()((set, get) => ({
     const userId = useAuthStore.getState().user?.id;
     if (userId) {
       try {
-        enqueue('compose_post', {
-          content: post.content,
-          type: post.type,
-          stateCode: post.stateCode,
-          authorId: userId,
-          hashtags: post.hashtags ?? [],
-          constituencyId: post.constituencyId,
-          language: post.language ?? 'en',
-        });
         const res = await dataService.composePost({
           content: post.content,
           type: post.type,
@@ -1368,21 +1359,47 @@ export const useFeedStore = create<FeedState>()((set, get) => ({
           constituencyId: post.constituencyId,
           language: post.language ?? 'en',
         });
-        if (!res.success) {
-          // Rollback optimistic addition if server explicitly fails and not queued
+        if (res.success) {
+          // Reconcile client temporary token with authoritative server UUID
+          set((state) => ({
+            posts: state.posts.map((p) =>
+              p.id === post.id
+                ? { ...p, id: res.id ?? p.id, syncStatus: 'SYNCED' }
+                : p,
+            ),
+          }));
+        } else {
+          // Rollback optimistic addition if server explicitly fails
           set((state) => ({
             posts: state.posts.filter((p) => p.id !== post.id),
             lastError: 'Could not submit post. Please try again.',
           }));
         }
       } catch (err: any) {
-        const errorMsg = err?.message && err.message.includes('community guidelines')
-          ? err.message
-          : 'Network error while posting. Post not published.';
-        set((state) => ({
-          posts: state.posts.filter((p) => p.id !== post.id),
-          lastError: errorMsg,
-        }));
+        const isModViolation = err?.message && err.message.includes('community guidelines');
+        if (isModViolation) {
+          set((state) => ({
+            posts: state.posts.filter((p) => p.id !== post.id),
+            lastError: err.message,
+          }));
+        } else {
+          // Enqueue for offline sync and mark QUEUED
+          enqueue('compose_post', {
+            content: post.content,
+            type: post.type,
+            stateCode: post.stateCode,
+            authorId: userId,
+            hashtags: post.hashtags ?? [],
+            constituencyId: post.constituencyId,
+            language: post.language ?? 'en',
+          });
+          set((state) => ({
+            posts: state.posts.map((p) =>
+              p.id === post.id ? { ...p, syncStatus: 'QUEUED' } : p,
+            ),
+            lastError: null,
+          }));
+        }
       }
     }
   },
@@ -1553,13 +1570,19 @@ export const useFeedStore = create<FeedState>()((set, get) => ({
     if (userId) {
       try {
         const res = await dataService.addPostComment(postId, userId, comment.content, comment.language);
-        enqueue('add_comment', {
-          postId,
-          userId,
-          content: comment.content,
-          language: comment.language,
-        });
-        if (!res.success) {
+        if (res.success) {
+          // Reconcile client comment token with authoritative server UUID
+          set((state) => ({
+            comments: {
+              ...state.comments,
+              [postId]: (state.comments[postId] ?? []).map((c) =>
+                c.id === comment.id
+                  ? { ...c, id: res.id ?? c.id, syncStatus: 'SYNCED' }
+                  : c,
+              ),
+            },
+          }));
+        } else {
           // Rollback comment
           set((state) => ({
             comments: {
@@ -1573,19 +1596,36 @@ export const useFeedStore = create<FeedState>()((set, get) => ({
           }));
         }
       } catch (err: any) {
-        const errorMsg = err?.message && err.message.includes('community guidelines')
-          ? err.message
-          : 'Network error while adding comment.';
-        set((state) => ({
-          comments: {
-            ...state.comments,
-            [postId]: (state.comments[postId] ?? []).filter((c) => c.id !== comment.id),
-          },
-          posts: state.posts.map((p) =>
-            p.id === postId ? { ...p, replyCount: Math.max(0, p.replyCount - 1) } : p,
-          ),
-          lastError: errorMsg,
-        }));
+        const isModViolation = err?.message && err.message.includes('community guidelines');
+        if (isModViolation) {
+          set((state) => ({
+            comments: {
+              ...state.comments,
+              [postId]: (state.comments[postId] ?? []).filter((c) => c.id !== comment.id),
+            },
+            posts: state.posts.map((p) =>
+              p.id === postId ? { ...p, replyCount: Math.max(0, p.replyCount - 1) } : p,
+            ),
+            lastError: err.message,
+          }));
+        } else {
+          // Enqueue for offline sync and mark QUEUED
+          enqueue('add_comment', {
+            postId,
+            userId,
+            content: comment.content,
+            language: comment.language,
+          });
+          set((state) => ({
+            comments: {
+              ...state.comments,
+              [postId]: (state.comments[postId] ?? []).map((c) =>
+                c.id === comment.id ? { ...c, syncStatus: 'QUEUED' } : c,
+              ),
+            },
+            lastError: null,
+          }));
+        }
       }
     }
   },

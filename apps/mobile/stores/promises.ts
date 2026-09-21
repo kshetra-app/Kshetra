@@ -15,6 +15,9 @@ import type {
   PromiseDeliveryIndex,
 } from '../lib/promiseTypes';
 import { computePDI, buildReportCard } from '../lib/promiseTypes';
+import * as dataService from '../lib/supabaseDataService';
+import { enqueue } from '../lib/offlineSync';
+import { useAuthStore } from './auth';
 
 interface PromiseState {
   promises: ElectionPromise[];
@@ -33,8 +36,8 @@ interface PromiseState {
   getStatusBreakdown: (stateCode: string) => Record<PromiseStatus, number>;
 
   // Actions
-  toggleFollowPromise: (promiseId: string) => void;
-  submitEvidence: (evidence: Omit<PromiseEvidence, 'id' | 'upvotes' | 'createdAt'>) => void;
+  toggleFollowPromise: (promiseId: string) => Promise<void>;
+  submitEvidence: (evidence: Omit<PromiseEvidence, 'id' | 'upvotes' | 'createdAt'>) => Promise<void>;
 }
 
 // ─── SEED: INC Telangana 2023 "6 Guarantees" + key promises ───
@@ -552,29 +555,99 @@ export const usePromiseStore = create<PromiseState>()((set, get) => ({
     return breakdown;
   },
 
-  toggleFollowPromise: (promiseId) =>
+  toggleFollowPromise: async (promiseId: string) => {
+    const promise = get().promises.find((p) => p.id === promiseId);
+    if (!promise) return;
+    const nextFollowing = !promise.userFollowing;
+
     set((state) => ({
       promises: state.promises.map((p) =>
         p.id === promiseId
           ? {
               ...p,
-              userFollowing: !p.userFollowing,
-              followCount: p.userFollowing ? p.followCount - 1 : p.followCount + 1,
+              userFollowing: nextFollowing,
+              followCount: nextFollowing ? p.followCount + 1 : Math.max(0, p.followCount - 1),
             }
           : p,
       ),
-    })),
+    }));
 
-  submitEvidence: (ev) =>
+    const userId = useAuthStore.getState().user?.id;
+    if (userId) {
+      try {
+        const ok = await dataService.followPromise(promiseId, userId, nextFollowing);
+        if (!ok) {
+          enqueue('follow_promise', { promiseId, userId, follow: nextFollowing });
+        }
+      } catch {
+        enqueue('follow_promise', { promiseId, userId, follow: nextFollowing });
+      }
+    }
+  },
+
+  submitEvidence: async (ev) => {
+    const userId = useAuthStore.getState().user?.id || ev.userId;
+    if (!userId || userId === 'anon') {
+      throw new Error('Authentication required to submit evidence');
+    }
+
+    const clientToken = `pe_pending_${Date.now()}_${Math.random().toString(36).slice(2, 7)}`;
+    const newEntry: PromiseEvidence = {
+      ...ev,
+      id: clientToken,
+      clientToken,
+      userId,
+      upvotes: 0,
+      createdAt: new Date().toISOString(),
+      syncStatus: 'SYNCING',
+    };
+
     set((state) => ({
-      evidence: [
-        ...state.evidence,
-        {
-          ...ev,
-          id: `pe-${Date.now()}`,
-          upvotes: 0,
-          createdAt: new Date().toISOString(),
-        },
-      ],
-    })),
+      evidence: [...state.evidence, newEntry],
+    }));
+
+    try {
+      const ok = await dataService.submitEvidence({
+        promiseId: ev.promiseId,
+        userId,
+        type: ev.evidenceType,
+        description: ev.caption || '',
+        url: ev.url,
+      });
+
+      if (ok) {
+        set((state) => ({
+          evidence: state.evidence.map((e) =>
+            e.id === clientToken ? { ...e, syncStatus: 'SYNCED' } : e
+          ),
+        }));
+      } else {
+        enqueue('submit_evidence', {
+          promiseId: ev.promiseId,
+          userId,
+          type: ev.evidenceType,
+          description: ev.caption || '',
+          url: ev.url,
+        });
+        set((state) => ({
+          evidence: state.evidence.map((e) =>
+            e.id === clientToken ? { ...e, syncStatus: 'QUEUED' } : e
+          ),
+        }));
+      }
+    } catch {
+      enqueue('submit_evidence', {
+        promiseId: ev.promiseId,
+        userId,
+        type: ev.evidenceType,
+        description: ev.caption || '',
+        url: ev.url,
+      });
+      set((state) => ({
+        evidence: state.evidence.map((e) =>
+          e.id === clientToken ? { ...e, syncStatus: 'QUEUED' } : e
+        ),
+      }));
+    }
+  },
 }));

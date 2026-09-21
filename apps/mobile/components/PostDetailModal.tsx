@@ -79,8 +79,11 @@ export default function PostDetailModal({
     if (!gateContentAction('create_comment')) return;
 
     const authorName = user?.email?.split('@')[0] ?? 'Citizen';
+    const clientToken = `client_cmt_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`;
     const newComment: Comment = {
-      id: `local-c-${Date.now()}`,
+      id: clientToken,
+      clientToken,
+      syncStatus: 'SYNCING',
       postId: post.id,
       author: {
         id: userId,

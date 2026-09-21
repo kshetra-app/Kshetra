@@ -844,9 +844,11 @@ export const useCivicStore = create<CivicState>()((set, get) => ({
     if (!res.success) {
       throw new Error('Failed to post comment to server');
     }
-    const commentId = res.id || `cmt-${Date.now()}`;
+    const commentId = res.id || `client_cmt_${Date.now()}_${Math.random().toString(36).slice(2, 7)}`;
     const comment: IssueComment = {
       id: commentId,
+      clientToken: commentId,
+      syncStatus: res.id ? 'SYNCED' : 'QUEUED',
       issueId,
       userId,
       userName,
@@ -977,21 +979,64 @@ export const useCivicStore = create<CivicState>()((set, get) => ({
     return true;
   },
 
-  addIssue: (issue) => {
-    set((state) => ({ issues: [issue, ...state.issues] }));
+  addIssue: async (issue) => {
+    set((state) => ({ issues: [{ ...issue, syncStatus: issue.syncStatus ?? 'SYNCING' }, ...state.issues] }));
     const userId = useAuthStore.getState().user?.id;
     if (userId) {
-      enqueue('report_issue', {
-        title: issue.title,
-        description: issue.description ?? '',
-        category: issue.category,
-        severity: issue.severity,
-        constituencyId: issue.constituencyId ?? '',
-        stateCode: issue.stateCode,
-        reporterId: userId,
-        reporterName: issue.reporterName ?? 'Anonymous',
-        mediaUrls: issue.mediaUrls ?? [],
-      });
+      try {
+        const res = await dataService.reportIssue({
+          title: issue.title,
+          description: issue.description ?? '',
+          category: issue.category,
+          severity: issue.severity,
+          constituencyId: issue.constituencyId ?? '',
+          stateCode: issue.stateCode,
+          reporterId: userId,
+          reporterName: issue.reporterName ?? 'Anonymous',
+          mediaUrls: issue.mediaUrls ?? [],
+        });
+        if (res.success) {
+          set((state) => ({
+            issues: state.issues.map((i) =>
+              i.id === issue.id ? { ...i, id: res.id ?? i.id, syncStatus: 'SYNCED' } : i
+            ),
+          }));
+        } else {
+          enqueue('report_issue', {
+            title: issue.title,
+            description: issue.description ?? '',
+            category: issue.category,
+            severity: issue.severity,
+            constituencyId: issue.constituencyId ?? '',
+            stateCode: issue.stateCode,
+            reporterId: userId,
+            reporterName: issue.reporterName ?? 'Anonymous',
+            mediaUrls: issue.mediaUrls ?? [],
+          });
+          set((state) => ({
+            issues: state.issues.map((i) =>
+              i.id === issue.id ? { ...i, syncStatus: 'QUEUED' } : i
+            ),
+          }));
+        }
+      } catch {
+        enqueue('report_issue', {
+          title: issue.title,
+          description: issue.description ?? '',
+          category: issue.category,
+          severity: issue.severity,
+          constituencyId: issue.constituencyId ?? '',
+          stateCode: issue.stateCode,
+          reporterId: userId,
+          reporterName: issue.reporterName ?? 'Anonymous',
+          mediaUrls: issue.mediaUrls ?? [],
+        });
+        set((state) => ({
+          issues: state.issues.map((i) =>
+            i.id === issue.id ? { ...i, syncStatus: 'QUEUED' } : i
+          ),
+        }));
+      }
     }
   },
 

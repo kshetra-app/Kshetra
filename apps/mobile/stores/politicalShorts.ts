@@ -3,7 +3,8 @@ import { persist, createJSONStorage } from 'zustand/middleware';
 import { mmkvStorage } from '../lib/storage';
 import POLITICAL_SHORTS from '../data/politicalShortsData';
 import type { PoliticalShort } from '../data/politicalShortsData';
-import { fetchShorts, incrementShortView } from '../lib/supabaseDataService';
+import { fetchShorts, incrementShortView, uploadShort, approveShort as approveShortApi, flagShort as flagShortApi } from '../lib/supabaseDataService';
+import { enqueue } from '../lib/offlineSync';
 
 interface ApprovalRecord {
   userId: string;
@@ -27,10 +28,10 @@ interface PoliticalShortsState {
       | 'visibilityLevel'
       | 'uploadedBy'
     > & { uploadedBy: string; id?: string }
-  ) => void;
+  ) => Promise<void>;
   
-  approveShort: (shortId: string, userId: string, userConstituencyId: string) => void;
-  flagShort: (shortId: string, userId: string) => void;
+  approveShort: (shortId: string, userId: string, userConstituencyId: string) => Promise<void>;
+  flagShort: (shortId: string, userId: string) => Promise<void>;
   incrementViews: (shortId: string) => void;
   hydrateShorts: (stateCode?: string) => Promise<void>;
   resetShorts: () => void;
@@ -43,23 +44,59 @@ export const usePoliticalShortsStore = create<PoliticalShortsState>()(
       userApprovals: {},
       flaggedShorts: {},
 
-      addShort: (newShortData) =>
-        set((state) => {
-          const newShort: PoliticalShort = {
-            ...newShortData,
-            id: newShortData.id || `short-user-${Date.now()}`,
-            viewCount: 0,
-            likeCount: 0,
-            commentCount: 0,
-            createdAt: new Date().toISOString(),
-            visibilityLevel: 'constituency',
-          };
-          return {
-            shorts: [newShort, ...state.shorts],
-          };
-        }),
+      addShort: async (newShortData) => {
+        const clientToken = newShortData.id || `short_client_${Date.now()}_${Math.random().toString(36).slice(2, 7)}`;
+        const newShort: PoliticalShort = {
+          ...newShortData,
+          id: clientToken,
+          viewCount: 0,
+          likeCount: 0,
+          commentCount: 0,
+          createdAt: new Date().toISOString(),
+          visibilityLevel: 'constituency',
+        };
 
-      approveShort: (shortId, userId, userConstituencyId) =>
+        set((state) => ({
+          shorts: [newShort, ...state.shorts],
+        }));
+
+        try {
+          const res = await uploadShort({
+            title: newShortData.title,
+            videoUrl: newShortData.videoUrl,
+            channelName: newShortData.channelName,
+            uploadedBy: newShortData.uploadedBy,
+            stateCode: newShortData.stateCode,
+            stateName: newShortData.stateName,
+            constituencyId: newShortData.constituencyId,
+            districtName: newShortData.districtName,
+            duration: newShortData.duration,
+            hashtags: newShortData.hashtags,
+            gradientColors: newShortData.gradientColors,
+            stateAccent: newShortData.stateAccent,
+          });
+
+          if (res.success && res.id) {
+            set((state) => ({
+              shorts: state.shorts.map((s) =>
+                s.id === clientToken ? { ...s, id: res.id! } : s
+              ),
+            }));
+          } else {
+            enqueue('upload_short', {
+              ...newShortData,
+              id: clientToken,
+            });
+          }
+        } catch {
+          enqueue('upload_short', {
+            ...newShortData,
+            id: clientToken,
+          });
+        }
+      },
+
+      approveShort: async (shortId, userId, userConstituencyId) => {
         set((state) => {
           const currentApprovals = state.userApprovals[shortId] || [];
           
@@ -113,9 +150,19 @@ export const usePoliticalShortsStore = create<PoliticalShortsState>()(
             },
             shorts: updatedShorts,
           };
-        }),
+        });
 
-      flagShort: (shortId, userId) =>
+        try {
+          const ok = await approveShortApi(shortId, userId, userConstituencyId);
+          if (!ok) {
+            enqueue('approve_short', { shortId, userId, constituencyId: userConstituencyId });
+          }
+        } catch {
+          enqueue('approve_short', { shortId, userId, constituencyId: userConstituencyId });
+        }
+      },
+
+      flagShort: async (shortId, userId) => {
         set((state) => {
           const currentFlags = state.flaggedShorts[shortId] || [];
           if (currentFlags.includes(userId)) {
@@ -144,7 +191,17 @@ export const usePoliticalShortsStore = create<PoliticalShortsState>()(
             },
             shorts: updatedShorts,
           };
-        }),
+        });
+
+        try {
+          const ok = await flagShortApi(shortId, userId);
+          if (!ok) {
+            enqueue('flag_short', { shortId, userId });
+          }
+        } catch {
+          enqueue('flag_short', { shortId, userId });
+        }
+      },
 
       incrementViews: (shortId) => {
         incrementShortView(shortId).catch(() => {});

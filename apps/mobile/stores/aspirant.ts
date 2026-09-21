@@ -16,6 +16,8 @@ import type {
 import { computeCivicScore } from '../lib/aspirantTypes';
 import { MODULE_CONTENT } from '../data/leadershipContent';
 import * as dataService from '../lib/supabaseDataService';
+import { enqueue } from '../lib/offlineSync';
+import { useAuthStore } from './auth';
 
 interface AspirantState {
   // Current user aspirant profile (null if not registered)
@@ -39,9 +41,9 @@ interface AspirantState {
   // Actions
   registerAsAspirant: (profile: Omit<AspirantProfile, 'id' | 'civicScore' | 'issuesReported' | 'issuesResolved' | 'commentsCount' | 'evidenceSubmitted' | 'promisesTracked' | 'communityEndorsements' | 'modulesCompleted' | 'challengesCompleted'>) => Promise<void>;
   updateProfile: (updates: Partial<AspirantProfile>) => void;
-  startModule: (moduleId: string) => void;
+  startModule: (moduleId: string) => Promise<void>;
   completeModule: (moduleId: string, quizScore?: number) => void;
-  joinChallenge: (challengeId: string) => void;
+  joinChallenge: (challengeId: string) => Promise<void>;
   updateChallengeProgress: (challengeId: string, progress: number) => void;
   earnBadge: (badgeType: BadgeType) => void;
   endorseAspirant: (aspirantId: string, endorserId?: string) => Promise<void>;
@@ -419,21 +421,32 @@ export const useAspirantStore = create<AspirantState>()((set, get) => ({
       profile: state.profile ? { ...state.profile, ...updates } : null,
     })),
 
-  startModule: (moduleId) =>
-    set((state) => {
-      const exists = state.moduleProgress.find((mp) => mp.moduleId === moduleId);
-      if (exists) return state;
-      return {
-        moduleProgress: [
-          ...state.moduleProgress,
-          {
-            moduleId,
-            completed: false,
-            startedAt: new Date().toISOString(),
-          },
-        ],
-      };
-    }),
+  startModule: async (moduleId) => {
+    const exists = get().moduleProgress.find((mp) => mp.moduleId === moduleId);
+    if (exists) return;
+    set((state) => ({
+      moduleProgress: [
+        ...state.moduleProgress,
+        {
+          moduleId,
+          completed: false,
+          startedAt: new Date().toISOString(),
+        },
+      ],
+    }));
+
+    const userId = useAuthStore.getState().user?.id;
+    if (userId) {
+      try {
+        const ok = await dataService.startModule(userId, moduleId);
+        if (!ok) {
+          enqueue('start_module', { userId, moduleId });
+        }
+      } catch {
+        enqueue('start_module', { userId, moduleId });
+      }
+    }
+  },
 
   completeModule: (moduleId, quizScore) =>
     set((state) => ({
@@ -447,17 +460,28 @@ export const useAspirantStore = create<AspirantState>()((set, get) => ({
         : null,
     })),
 
-  joinChallenge: (challengeId) =>
-    set((state) => {
-      const exists = state.challengeProgress.find((cp) => cp.challengeId === challengeId);
-      if (exists) return state;
-      return {
-        challengeProgress: [
-          ...state.challengeProgress,
-          { challengeId, progress: 0, completed: false },
-        ],
-      };
-    }),
+  joinChallenge: async (challengeId) => {
+    const exists = get().challengeProgress.find((cp) => cp.challengeId === challengeId);
+    if (exists) return;
+    set((state) => ({
+      challengeProgress: [
+        ...state.challengeProgress,
+        { challengeId, progress: 0, completed: false },
+      ],
+    }));
+
+    const userId = useAuthStore.getState().user?.id;
+    if (userId) {
+      try {
+        const ok = await dataService.joinChallenge(userId, challengeId);
+        if (!ok) {
+          enqueue('join_challenge', { userId, challengeId });
+        }
+      } catch {
+        enqueue('join_challenge', { userId, challengeId });
+      }
+    }
+  },
 
   updateChallengeProgress: (challengeId, progress) =>
     set((state) => {
@@ -493,6 +517,12 @@ export const useAspirantStore = create<AspirantState>()((set, get) => ({
     const currentEndorsed = get().endorsedIds;
     if (currentEndorsed.includes(aspirantId)) return;
 
+    const user = useAuthStore.getState().user;
+    const eId = endorserId || user?.id;
+    if (!eId || eId === 'anon') {
+      throw new Error('Authentication required to endorse an aspirant');
+    }
+
     // Optimistic local update
     set((state) => ({
       endorsedIds: [...state.endorsedIds, aspirantId],
@@ -508,8 +538,14 @@ export const useAspirantStore = create<AspirantState>()((set, get) => ({
     }));
 
     // Real backend call
-    const eId = endorserId || `anon-endorser-${Date.now()}`;
-    await dataService.endorseAspirant(eId, aspirantId);
+    try {
+      const ok = await dataService.endorseAspirant(eId, aspirantId);
+      if (!ok) {
+        enqueue('endorse_aspirant', { endorserId: eId, aspirantId });
+      }
+    } catch {
+      enqueue('endorse_aspirant', { endorserId: eId, aspirantId });
+    }
   },
 
   hydrateAspirants: async (stateCode, acNo) => {

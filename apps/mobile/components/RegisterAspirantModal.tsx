@@ -23,6 +23,7 @@ import { useAspirantStore } from '../stores/aspirant';
 import { useActiveStateStore } from '../stores/activeState';
 import { useMyConstituencyStore } from '../stores/myConstituency';
 import { useContributorVerificationStore } from '../stores/contributorVerification';
+import { useAuthStore } from '../stores/auth';
 import { STATES } from '@kshetra/shared';
 
 interface RegisterAspirantModalProps {
@@ -72,10 +73,17 @@ export default function RegisterAspirantModal({ visible, onClose }: RegisterAspi
       return;
     }
 
+    const currentAuthUser = useAuthStore.getState().user;
+    const realUserId = kycRecord?.userId || currentAuthUser?.id;
+    if (!realUserId || realUserId === 'anon') {
+      Alert.alert(t('common.error', 'Authentication Required'), 'Please log in before registering as an aspirant.');
+      return;
+    }
+
     setIsSubmitting(true);
     try {
       await registerAsAspirant({
-        userId: kycRecord?.userId ?? `me-${Date.now()}`,
+        userId: realUserId,
         displayName: displayName.trim(),
         bio: bio.trim(),
         stateCode,

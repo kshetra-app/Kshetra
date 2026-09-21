@@ -176,8 +176,11 @@ export default function ComposeSheet({
       constituencyName = activeConstituency.name;
     }
 
+    const clientToken = `client_post_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`;
     const newPost: Post = {
-      id: `local-${Date.now()}`,
+      id: clientToken,
+      clientToken,
+      syncStatus: 'SYNCING',
       author: {
         id: user?.id ?? 'anon',
         displayName: authorName,
@@ -199,10 +202,10 @@ export default function ComposeSheet({
       media: mediaItems.length > 0 ? mediaItems : undefined,
       poll: isPoll
         ? {
-            id: `poll-local-${Date.now()}`,
+            id: `poll_client_${Date.now()}`,
             question: content.trim(),
             options: validPollOptions.map((label, idx) => ({
-              id: `opt-local-${Date.now()}-${idx}`,
+              id: `opt_client_${Date.now()}_${idx}`,
               label,
               voteCount: 0,
               sortOrder: idx,

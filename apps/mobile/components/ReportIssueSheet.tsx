@@ -111,8 +111,11 @@ export default function ReportIssueSheet({ visible, onClose, onSubmit }: ReportI
     const now = new Date().toISOString();
     const authorName = user?.email?.split('@')[0] ?? 'Anonymous';
 
+    const clientToken = `issue_client_${Date.now()}_${Math.random().toString(36).slice(2, 7)}`;
     const newIssue: CivicIssue = {
-      id: `issue-local-${Date.now()}`,
+      id: clientToken,
+      clientToken,
+      syncStatus: 'SYNCING',
       reporterId: user?.id ?? 'anon',
       reporterName: authorName,
       stateCode,
