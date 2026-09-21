@@ -260,23 +260,28 @@ REVOKE EXECUTE ON FUNCTION public.refresh_materialized_views() FROM PUBLIC, anon
 GRANT EXECUTE ON FUNCTION public.refresh_materialized_views() TO service_role;
 
 ALTER FUNCTION public.refresh_materialized_views() SET search_path = public, pg_temp;
-ALTER FUNCTION public.get_feed(TEXT, TEXT, TEXT, INTEGER, INTEGER) SET search_path = public, pg_temp;
-ALTER FUNCTION public.get_issues(TEXT, TEXT, TEXT, INTEGER, INTEGER) SET search_path = public, pg_temp;
+ALTER FUNCTION public.get_feed(TEXT, TEXT, TEXT, TIMESTAMPTZ, INTEGER) SET search_path = public, pg_temp;
+ALTER FUNCTION public.get_issues(TEXT, TEXT, TEXT, TEXT, TIMESTAMPTZ, INTEGER) SET search_path = public, pg_temp;
 ALTER FUNCTION public.global_search(TEXT, TEXT, INTEGER) SET search_path = public, pg_temp;
 ALTER FUNCTION public.get_trending_hashtags(TEXT, INTEGER) SET search_path = public, pg_temp;
 ALTER FUNCTION public.get_constituency_stats(TEXT) SET search_path = public, pg_temp;
 ALTER FUNCTION public.check_dm_blocklist_trigger() SET search_path = public, pg_temp;
 ALTER FUNCTION public.update_conversation_last_message() SET search_path = public, pg_temp;
 
--- Hardened get_user_dashboard with caller authorization check
+-- Hardened get_user_dashboard with caller authorization check (preserving authentic 11-column return table)
 CREATE OR REPLACE FUNCTION public.get_user_dashboard(p_user_id UUID)
 RETURNS TABLE (
   posts_count INTEGER,
   issues_reported INTEGER,
-  issues_upvoted INTEGER,
-  promises_followed INTEGER,
-  modules_completed INTEGER,
-  reputation_score INTEGER
+  issues_resolved INTEGER,
+  upvotes_received BIGINT,
+  comments_given BIGINT,
+  reputation_score INTEGER,
+  civic_score INTEGER,
+  favorites_count BIGINT,
+  tier TEXT,
+  display_name TEXT,
+  role TEXT
 ) AS $$
 BEGIN
   IF auth.uid() IS NULL OR (auth.uid() != p_user_id AND auth.role() != 'service_role') THEN
@@ -285,12 +290,21 @@ BEGIN
 
   RETURN QUERY
   SELECT
-    (SELECT COUNT(*)::INTEGER FROM posts WHERE author_id = p_user_id AND is_deleted = false),
-    (SELECT COUNT(*)::INTEGER FROM civic_issues WHERE reporter_id = p_user_id),
-    (SELECT COUNT(*)::INTEGER FROM issue_upvotes WHERE user_id = p_user_id),
-    (SELECT COUNT(*)::INTEGER FROM promise_follows WHERE user_id = p_user_id),
-    (SELECT COUNT(*)::INTEGER FROM module_progress WHERE user_id = p_user_id AND is_completed = true),
-    (SELECT COALESCE(up.reputation_score, 0) FROM user_profiles up WHERE up.user_id = p_user_id);
+    COALESCE(up.post_count, 0) AS posts_count,
+    (SELECT COUNT(*)::INTEGER FROM civic_issues ci WHERE ci.reporter_id = p_user_id) AS issues_reported,
+    (SELECT COUNT(*)::INTEGER FROM civic_issues ci WHERE ci.reporter_id = p_user_id AND ci.status = 'resolved') AS issues_resolved,
+    (SELECT COUNT(*) FROM issue_upvotes iu JOIN civic_issues ci ON ci.id = iu.issue_id WHERE ci.reporter_id = p_user_id) AS upvotes_received,
+    (SELECT COUNT(*) FROM issue_comments ic WHERE ic.user_id = p_user_id) AS comments_given,
+    COALESCE(up.reputation_score, 0) AS reputation_score,
+    COALESCE(ap.civic_score, 0) AS civic_score,
+    (SELECT COUNT(*) FROM favorites f WHERE f.user_id = p_user_id) AS favorites_count,
+    COALESCE(us.tier, 'free') AS tier,
+    COALESCE(up.display_name, 'Anonymous') AS display_name,
+    COALESCE(up.role, 'citizen') AS role
+  FROM user_profiles up
+  LEFT JOIN aspirant_profiles ap ON ap.user_id = p_user_id
+  LEFT JOIN user_subscriptions us ON us.user_id = p_user_id
+  WHERE up.user_id = p_user_id;
 END;
 $$ LANGUAGE plpgsql STABLE SECURITY DEFINER
 SET search_path = public, pg_temp;

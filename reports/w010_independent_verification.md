@@ -1,6 +1,6 @@
 # W010: SECURITY BASELINE & RLS HARDENING INDEPENDENT VERIFICATION REPORT
 
-**Status:** `IMPLEMENTED / TESTED / VERIFIED / SUBMITTED FOR CTO ACCEPTANCE`  
+**Status:** `RECONCILED / SUBMITTED FOR CTO REVIEW`  
 **Standard:** AI Agent Master Execution Job Book & Amendment v1.5-A / Rule IV-001  
 **Target Repository:** `https://github.com/kshetra-app/Kshetra.git`  
 **Canonical Branch:** `master`  
@@ -80,8 +80,15 @@ The CTO Directive flagged an arithmetic discrepancy between the 18 Class-A table
   - `REVOKE EXECUTE ON FUNCTION public.refresh_materialized_views() FROM PUBLIC, anon, authenticated;`
   - `GRANT EXECUTE ON FUNCTION public.refresh_materialized_views() TO service_role;`
   - `ALTER FUNCTION public.refresh_materialized_views() SET search_path = public, pg_temp;`
-  - Explicit `SET search_path = public, pg_temp` applied to: `get_feed`, `get_issues`, `global_search`, `get_trending_hashtags`, `get_constituency_stats`, `check_dm_blocklist_trigger`, `update_conversation_last_message`.
-  - `get_user_dashboard(p_user_id)` rewritten with internal caller authorization: callers can only inspect their own metrics (`auth.uid() = p_user_id` or `service_role`).
+  - Explicit `SET search_path = public, pg_temp` applied to authoritative domain routines with reconciled signatures:
+    - `public.get_feed(TEXT, TEXT, TEXT, TIMESTAMPTZ, INTEGER)` (020:433)
+    - `public.get_issues(TEXT, TEXT, TEXT, TEXT, TIMESTAMPTZ, INTEGER)` (020:516)
+    - `public.global_search(TEXT, TEXT, INTEGER)` (036:10)
+    - `public.get_trending_hashtags(TEXT, INTEGER)` (020:650)
+    - `public.get_constituency_stats(TEXT)` (020:712)
+    - `public.check_dm_blocklist_trigger()` (031:85)
+    - `public.update_conversation_last_message()` (031:146)
+  - `get_user_dashboard(p_user_id UUID)` hardened with internal caller authorization (`auth.uid() = p_user_id` or `service_role`), preserving the authentic 11-column table return structure from `020_foundation_hardening.sql:675` and preventing `42P13` return-type conflicts.
 - **Empirical Baseline Evidence:** `anonClient.rpc('refresh_materialized_views')` currently executes with status 204 OK, proving unauthenticated DoS exposure prior to Migration 038.
 
 ### DEF-016: Missing Explicit SELECT Policy on `lmx_departments` Table

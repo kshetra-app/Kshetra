@@ -906,3 +906,21 @@
   4. **Empirical Test Suite Execution:** Automated suite `tests/verify_w010_rls_hardening.mjs` executed against staging database; pre-migration baseline confirms 31/36 passing, exactly reproducing the 4 target defects.
   5. **Governance Compliance:** Zero product code modifications (`apps/**`, `packages/**` untouched), zero production mutation, ₹0 real money, zero credentials committed.
 - **Rationale:** Establishes rigorous, defense-in-depth database security without compromising accepted W009 payment boundaries or mobile runtime contracts.
+
+---
+
+### DEC-055: W010 MIGRATION 038 FUNCTION SIGNATURE RECONCILIATION & RETURN TABLE CONTRACT INTEGRITY
+- **Date:** 2026-09-21
+- **Status:** IMPLEMENTED / VERIFIED / READY FOR OPERATOR STAGING EXECUTION
+- **Authority:** CTO Directive (`W010 operator staging execution has been STOPPED`)
+- **Context:** Staging application of Migration 038 halted on `ERROR: 42883: function public.get_feed(text, text, text, integer, integer) does not exist`. Investigation required identifying exact authoritative signatures in repository/staging baseline and eliminating signature mismatch risks across all altered functions.
+- **Root Cause Analysis:**
+  1. `get_feed`: In `020_foundation_hardening.sql:433`, the 4th parameter `p_cursor` is `TIMESTAMPTZ`, not `INTEGER`. The actual signature in `pg_proc` is `(TEXT, TEXT, TEXT, TIMESTAMPTZ, INTEGER)`.
+  2. `get_issues`: In `020_foundation_hardening.sql:516`, the signature contains 6 parameters `(TEXT, TEXT, TEXT, TEXT, TIMESTAMPTZ, INTEGER)`. Draft 038 mistakenly had 5 parameters `(TEXT, TEXT, TEXT, INTEGER, INTEGER)`, omitting `p_category` and typing `p_cursor` as `INTEGER`.
+  3. `get_user_dashboard`: In `020_foundation_hardening.sql:675`, the function returns an 11-column table. Attempting to recreate it with an altered 6-column table would trigger PostgreSQL `ERROR: 42P13: cannot change return type of existing function`.
+- **Decisions & Actions:**
+  1. **Signature Alignment:** Corrected `ALTER FUNCTION public.get_feed(TEXT, TEXT, TEXT, TIMESTAMPTZ, INTEGER) SET search_path = public, pg_temp;` and `ALTER FUNCTION public.get_issues(TEXT, TEXT, TEXT, TEXT, TIMESTAMPTZ, INTEGER) SET search_path = public, pg_temp;` in both `supabase/migrations/038_security_baseline_and_rls_hardening.sql` and `supabase/staging_migration_package_038.sql`.
+  2. **Audit of All Altered Functions:** Audited all remaining functions (`global_search(TEXT, TEXT, INTEGER)`, `get_trending_hashtags(TEXT, INTEGER)`, `get_constituency_stats(TEXT)`, `check_dm_blocklist_trigger()`, `update_conversation_last_message()`, `refresh_materialized_views()`, `check_phone_opt_out(TEXT)`) and confirmed 100% parameter signature parity with PostgreSQL catalogs.
+  3. **Return Table Schema Preservation:** Rebuilt `get_user_dashboard(p_user_id UUID)` maintaining the authoritative 11-column return table structure from `020_foundation_hardening.sql:675` while enforcing internal caller identity isolation (`auth.uid() = p_user_id` or `service_role`) and `SET search_path = public, pg_temp`.
+  4. **Package Integrity:** Regenerated `supabase/staging_migration_package_038.sql` (8,507 bytes, 0 BOM, atomic transaction).
+  5. **Governance Compliance:** Zero manual SQL editing instructed; zero product code changes; zero scope expansion; W010 remains unaccepted pending staging execution and verification.
