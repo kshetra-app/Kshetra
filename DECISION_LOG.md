@@ -924,3 +924,29 @@
   3. **Return Table Schema Preservation:** Rebuilt `get_user_dashboard(p_user_id UUID)` maintaining the authoritative 11-column return table structure from `020_foundation_hardening.sql:675` while enforcing internal caller identity isolation (`auth.uid() = p_user_id` or `service_role`) and `SET search_path = public, pg_temp`.
   4. **Package Integrity:** Regenerated `supabase/staging_migration_package_038.sql` (8,507 bytes, 0 BOM, atomic transaction).
   5. **Governance Compliance:** Zero manual SQL editing instructed; zero product code changes; zero scope expansion; W010 remains unaccepted pending staging execution and verification.
+- **Rationale:** Preserves schema contract integrity, adheres to fail-closed change control, and eliminates signature-mismatch risks across all altered database routines.
+
+---
+
+### DEC-056: W010-P0 HISTORICAL DEFECT (DEF-001..DEF-013) & CARRY-FORWARD RECONCILIATION
+- **Date:** 2026-09-21
+- **Status:** RECONCILED / SUBMITTED FOR CTO REVIEW
+- **Authority:** CTO DIRECTIVE — W010-P0 LEGACY DEFECT CARRY-FORWARD RECONCILIATION
+- **Context:** Bounded audit and reconciliation of all legacy defects covering W000–W009, non-defect carry-forward items (W005 limitations, W008 status), and cross-register governance consistency.
+- **Decisions & Classifications:**
+  1. **DEF-001 (Duplicate Mobile Routes):** Classified as `OPEN — VALID`. Identified 3 duplicate pairs: `app/user/[id].tsx` vs `[userId].tsx`, `app/edit-profile.tsx` vs `app/auth/edit-profile.tsx`, `app/onboarding.tsx` vs `app/auth/onboarding.tsx`. Proposed bounded remediation in Batch 1.
+  2. **DEF-002 (Deceptive Local Success Fallbacks):** Classified as `OPEN — VALID`. Completed comprehensive inventory across `supabaseDataService.ts` identifying 42 instances of `if (!guard()) return true;` and synthetic IDs. Bound to Master Job W011.
+  3. **DEF-003 (WebRTC in Consumer Mobile):** Classified as `OPEN — VALID`. Confirmed `react-native-webrtc` in `apps/mobile/package.json:61` (omitted from `app.json` plugins; invoked only in `LiveBroadcaster.tsx`). Bound to Master Job W052 / Bounded Decoupling.
+  4. **DEF-004 (Silent Moderation Bypass):** Classified as `RESOLVED — VERIFIED`. Confirmed backend fail-closed enforcement accepted in W009-B3 (`2ff4f40`, 20/20 tests pass).
+  5. **DEF-005 (Dual-Backend Calling):** Classified as `SUPERSEDED — VERIFIED`. Formalized by W006 classification, W007 canonical client, and W008-E/W009-B4 strangler migrations; residual mutations assigned to W011.
+  6. **DEF-006 (Missing Versioned Geography):** Classified as `DEFERRED — EXPLICIT FUTURE JOB / ACCEPTED DEPENDENCY`. Bound to Master Jobs W013–W017.
+  7. **DEF-007 (Shorts Synthetic UUID Check):** Classified as `OPEN — VALID`. Confirmed `!isUuid` bypass in `supabaseDataService.ts:1503, 1533` combined with offline creation line 594. Proposed bounded remediation in Batch 1.
+  8. **DEF-008 (Hardcoded UI Strings):** Classified as `OPEN — VALID`. Static scan identified 236 hardcoded user-facing strings across dynamic screens. Proposed bounded remediation in Batch 2.
+  9. **DEF-009 (Supabase sb_secret_ Format):** Classified as `RESOLVED — VERIFIED`. Reconciled contradiction: accepted in W001-R1 (`77fb553`), 7/7 unit tests passing on 2026-09-21.
+  10. **DEF-010 (Missing CORS Allowed Origins):** Classified as `RESOLVED — VERIFIED`. Reconciled contradiction: accepted in W001-R3 (`77fb553`); live HTTP probe to `https://kshetra-api-production-9f06.up.railway.app` confirmed active allowlist.
+  11. **DEF-011 (Missing issue_categories Table):** Classified as `INVALID — VERIFIED`. Confirmed schema intentionally uses inline CHECK constraint in `004_civic_dashboard.sql:15`.
+  12. **DEF-012 (13-Language Parity Gap):** Classified as `OPEN — VALID`. Canonical validator confirmed: 2,041 English keys; 8 Indic languages have ~904 missing keys (56% parity). Proposed bounded remediation in Batch 2.
+  13. **DEF-013 (global_search Syntax Error 0A000):** Classified as `RESOLVED — VERIFIED`. Confirmed repaired in Migration 036, accepted in W009-B1/B5, live staging RPC returns HTTP 200.
+  14. **Non-Defect Reconciliations:** Documented the 5 standing W005 accepted limitations (PITR, multi-cloud, DR-001, DR-002, DR-005) and reconciled W008-D status (verification-only executed under DEC-051; awaiting formal administrative closure in `ACCEPTANCE_REGISTER.md`).
+  15. **Artifacts Published:** `reports/w010_legacy_defect_inventory.json`, `reports/w010_legacy_defect_reconciliation.json`, `reports/w010_legacy_defect_reconciliation.md`, and `reports/w010_legacy_governance_reconciliation.md`.
+- **Rationale:** Establishes definitive historical ground-truth across all 13 legacy defects and registers, preventing premature implementation while defining bounded remediation batches for CTO authorization.

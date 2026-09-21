@@ -1,0 +1,229 @@
+{
+  "timestamp": "2026-09-21T06:30:00.000Z",
+  "repository": "https://github.com/kshetra-app/Kshetra.git",
+  "branch": "master",
+  "commit": "385e5f8a5ad0402d668e2e5cf3614e7a2aaf45c3",
+  "authoritativeDefects": {
+    "DEF-001": {
+      "title": "Duplicate route files in apps/mobile/app/",
+      "severity": "P1",
+      "domain": "Mobile / Routing",
+      "classification": "OPEN — VALID",
+      "duplicates": [
+        {
+          "canonical": "apps/mobile/app/user/[userId].tsx",
+          "duplicate": "apps/mobile/app/user/[id].tsx",
+          "layoutReference": "apps/mobile/app/_layout.tsx:343 (name=\"user/[userId]\")",
+          "conflictDescription": "Expo Router ambiguous dynamic route collision [id] vs [userId] in same folder"
+        },
+        {
+          "canonical": "apps/mobile/app/edit-profile.tsx",
+          "duplicate": "apps/mobile/app/auth/edit-profile.tsx",
+          "layoutReference": "apps/mobile/app/_layout.tsx:228 (name=\"edit-profile\")",
+          "conflictDescription": "app/(tabs)/profile.tsx links to /auth/edit-profile while _layout registers edit-profile"
+        },
+        {
+          "canonical": "apps/mobile/app/onboarding.tsx",
+          "duplicate": "apps/mobile/app/auth/onboarding.tsx",
+          "layoutReference": "Unregistered in _layout; app/onboarding.tsx has full i18n while app/auth/onboarding.tsx has hardcoded English",
+          "conflictDescription": "Two divergent onboarding implementations with different step state and i18n support"
+        }
+      ]
+    },
+    "DEF-002": {
+      "title": "Deceptive local success / offline fallback semantics",
+      "severity": "P1",
+      "domain": "Mobile / Data",
+      "classification": "OPEN — VALID",
+      "destinationJob": "W011 (Deceptive Fallback Remediation)",
+      "totalInventoryCount": 42,
+      "occurrences": [
+        { "file": "apps/mobile/lib/supabaseDataService.ts", "line": 151, "operation": "upvoteComment", "pattern": "if (!guard()) return true;" },
+        { "file": "apps/mobile/lib/supabaseDataService.ts", "line": 171, "operation": "removeCommentUpvote", "pattern": "if (!guard()) return true;" },
+        { "file": "apps/mobile/lib/supabaseDataService.ts", "line": 211, "operation": "postComment", "pattern": "if (!guard()) return true;" },
+        { "file": "apps/mobile/lib/supabaseDataService.ts", "line": 251, "operation": "deleteComment", "pattern": "if (!guard()) return true;" },
+        { "file": "apps/mobile/lib/supabaseDataService.ts", "line": 282, "operation": "createPost", "pattern": "if (!guard()) return { id: `local-${Date.now()}`, success: true };" },
+        { "file": "apps/mobile/lib/supabaseDataService.ts", "line": 313, "operation": "upvotePost", "pattern": "if (!guard()) return true;" },
+        { "file": "apps/mobile/lib/supabaseDataService.ts", "line": 330, "operation": "removePostUpvote", "pattern": "if (!guard()) return true;" },
+        { "file": "apps/mobile/lib/supabaseDataService.ts", "line": 351, "operation": "deletePost", "pattern": "if (!guard()) return true;" },
+        { "file": "apps/mobile/lib/supabaseDataService.ts", "line": 377, "operation": "commentOnPost", "pattern": "if (!guard()) return { id: `local-cmt-${Date.now()}`, success: true };" },
+        { "file": "apps/mobile/lib/supabaseDataService.ts", "line": 421, "operation": "followPromise", "pattern": "if (!guard()) return true;" },
+        { "file": "apps/mobile/lib/supabaseDataService.ts", "line": 442, "operation": "unfollowPromise", "pattern": "if (!guard()) return true;" },
+        { "file": "apps/mobile/lib/supabaseDataService.ts", "line": 461, "operation": "completeLeadershipModule", "pattern": "if (!guard()) return true;" },
+        { "file": "apps/mobile/lib/supabaseDataService.ts", "line": 497, "operation": "joinCommunityChallenge", "pattern": "if (!guard()) return true;" },
+        { "file": "apps/mobile/lib/supabaseDataService.ts", "line": 526, "operation": "completeCommunityChallenge", "pattern": "if (!guard()) return true;" },
+        { "file": "apps/mobile/lib/supabaseDataService.ts", "line": 553, "operation": "voteInPoll", "pattern": "if (!guard()) return true;" },
+        { "file": "apps/mobile/lib/supabaseDataService.ts", "line": 594, "operation": "createShort", "pattern": "if (!guard()) return { id: `local-short-${Date.now()}`, success: true };" },
+        { "file": "apps/mobile/lib/supabaseDataService.ts", "line": 625, "operation": "likeShort", "pattern": "if (!guard()) return true;" },
+        { "file": "apps/mobile/lib/supabaseDataService.ts", "line": 640, "operation": "unlikeShort", "pattern": "if (!guard()) return true;" },
+        { "file": "apps/mobile/lib/supabaseDataService.ts", "line": 665, "operation": "recordShortView", "pattern": "if (!guard()) return true;" },
+        { "file": "apps/mobile/lib/supabaseDataService.ts", "line": 712, "operation": "createAspirantProfile", "pattern": "if (!guard()) return { id: `local-asp-${Date.now()}`, success: true };" },
+        { "file": "apps/mobile/lib/supabaseDataService.ts", "line": 738, "operation": "updateAspirantProfile", "pattern": "if (!guard()) return true;" },
+        { "file": "apps/mobile/lib/supabaseDataService.ts", "line": 757, "operation": "endorseAspirant", "pattern": "if (!guard()) return true;" },
+        { "file": "apps/mobile/lib/supabaseDataService.ts", "line": 786, "operation": "unendorseAspirant", "pattern": "if (!guard()) return true;" },
+        { "file": "apps/mobile/lib/supabaseDataService.ts", "line": 801, "operation": "createFundraisingCampaign", "pattern": "if (!guard()) return true;" },
+        { "file": "apps/mobile/lib/supabaseDataService.ts", "line": 864, "operation": "submitAspirantKyc", "pattern": "if (!guard()) return { id: `local-kyc-${Date.now()}`, success: true };" },
+        { "file": "apps/mobile/lib/supabaseDataService.ts", "line": 934, "operation": "saveDelimitationFingerprint", "pattern": "if (!guard()) return { id: `local-fp-${Date.now()}`, success: true };" },
+        { "file": "apps/mobile/lib/supabaseDataService.ts", "line": 987, "operation": "castCivicVote", "pattern": "if (!guard()) return true;" },
+        { "file": "apps/mobile/lib/supabaseDataService.ts", "line": 1015, "operation": "followUser", "pattern": "if (!guard()) return true;" },
+        { "file": "apps/mobile/lib/supabaseDataService.ts", "line": 1031, "operation": "unfollowUser", "pattern": "if (!guard()) return true;" },
+        { "file": "apps/mobile/lib/supabaseDataService.ts", "line": 1052, "operation": "updateMyProfile", "pattern": "if (!guard()) return true;" },
+        { "file": "apps/mobile/lib/supabaseDataService.ts", "line": 1116, "operation": "blockUser", "pattern": "if (!guard()) return true;" },
+        { "file": "apps/mobile/lib/supabaseDataService.ts", "line": 1131, "operation": "unblockUser", "pattern": "if (!guard()) return true;" },
+        { "file": "apps/mobile/lib/supabaseDataService.ts", "line": 1202, "operation": "markNotificationAsRead", "pattern": "if (!guard()) return true;" },
+        { "file": "apps/mobile/lib/supabaseDataService.ts", "line": 1500, "operation": "incrementShortView (guard check)", "pattern": "if (!guard()) return true;" },
+        { "file": "apps/mobile/lib/supabaseDataService.ts", "line": 1503, "operation": "incrementShortView (UUID check)", "pattern": "if (!isUuid) return true;" },
+        { "file": "apps/mobile/lib/supabaseDataService.ts", "line": 1530, "operation": "addShortComment (guard check)", "pattern": "if (!guard()) return { id: `local-cmt-${Date.now()}`, success: true };" },
+        { "file": "apps/mobile/lib/supabaseDataService.ts", "line": 1533, "operation": "addShortComment (UUID check)", "pattern": "if (!isUuid) return { id: `local-cmt-${Date.now()}`, success: true };" },
+        { "file": "apps/mobile/lib/supabaseDataService.ts", "line": 1719, "operation": "createDepartmentAlert", "pattern": "if (!guard()) return { id: `local-alert-${Date.now()}`, success: true };" },
+        { "file": "apps/mobile/lib/supabaseDataService.ts", "line": 1750, "operation": "resolveDepartmentAlert", "pattern": "if (!guard()) return true;" },
+        { "file": "apps/mobile/lib/supabaseDataService.ts", "line": 1994, "operation": "followPage", "pattern": "if (!guard()) return true;" },
+        { "file": "apps/mobile/lib/supabaseDataService.ts", "line": 2012, "operation": "unfollowPage", "pattern": "if (!guard()) return true;" },
+        { "file": "apps/mobile/lib/supabaseDataService.ts", "line": 2036, "operation": "reviewPage", "pattern": "if (!guard()) return true;" }
+      ]
+    },
+    "DEF-003": {
+      "title": "WebRTC bundled in consumer mobile application",
+      "severity": "P1",
+      "domain": "Mobile / Binary Size",
+      "classification": "OPEN — VALID",
+      "destinationJob": "W052 (Professional Broadcast Architecture) / Bounded Remediation",
+      "findings": {
+        "packageJsonDependency": "apps/mobile/package.json:61 (\"react-native-webrtc\": \"^124.0.5\")",
+        "configPluginDependency": "apps/mobile/package.json:68 (\"@config-plugins/react-native-webrtc\": \"^12.0.0\")",
+        "appJsonStatus": "Omitted from apps/mobile/app.json plugins list",
+        "consumerTouchpoint": "Only apps/mobile/components/LiveBroadcaster.tsx uses require('react-native-webrtc'), guarded for go-live creator flow",
+        "measurementPlan": "Measure APK/AAB size with and without react-native-webrtc via npx react-native-bundle-visualizer or EAS build artifact inspection to ensure <= 25MB consumer target"
+      }
+    },
+    "DEF-004": {
+      "title": "Silent moderation bypass on network failure",
+      "severity": "P1",
+      "domain": "Backend / Trust",
+      "classification": "RESOLVED — VERIFIED",
+      "evidence": {
+        "acceptedJob": "W009-B3",
+        "acceptedCommit": "2ff4f40130df3b1fb516c29902742653d7749427",
+        "authority": "CTO Formal Acceptance W009-B3 (DEC-052)",
+        "behavior": "apps/api/src/services/contentModeration.ts throws ModerationUnavailableError; POST /api/v1/moderation/check-content returns HTTP 503 MODERATION_UNAVAILABLE fail-closed"
+      }
+    },
+    "DEF-005": {
+      "title": "Ambiguous dual-backend calling convention",
+      "severity": "P2",
+      "domain": "Architecture",
+      "classification": "SUPERSEDED — VERIFIED",
+      "evidence": {
+        "auditBaseline": "W006 (DEC-037) classified 85 data service methods into 23 Class-A reads and 56 Class-B mutations",
+        "canonicalClient": "W007 implemented apps/mobile/lib/api/apiClient.ts with pioneer routes",
+        "mutationStrangler": "W008-E and W009-B4 migrated civic and payment mutations to Fastify",
+        "residualScope": "Remaining unmigrated Class-B mutations are scheduled under Master Job W011"
+      }
+    },
+    "DEF-006": {
+      "title": "Missing versioned geography tables specified in Master Blueprint",
+      "severity": "P2",
+      "domain": "Database / GIS",
+      "classification": "DEFERRED — EXPLICIT FUTURE JOB / ACCEPTED DEPENDENCY",
+      "evidence": {
+        "blueprintMapping": "Master Jobs W013, W014, W015, W016, W017 explicitly establish the Geographic Foundation, Boundary Graph, and Delimitation Engine",
+        "currentBaseline": "002_core_geography.sql flat tables remain authoritative until W013 activation"
+      }
+    },
+    "DEF-007": {
+      "title": "Synthetic UUID check causing diverging identifier semantics in shorts",
+      "severity": "P2",
+      "domain": "Mobile / Shorts",
+      "classification": "OPEN — VALID",
+      "evidence": {
+        "line1503": "apps/mobile/lib/supabaseDataService.ts:1503 (if (!isUuid) return true; in incrementShortView)",
+        "line1533": "apps/mobile/lib/supabaseDataService.ts:1533 (if (!isUuid) return { id: `local-cmt-${Date.now()}`, success: true }; in addShortComment)",
+        "line594": "apps/mobile/lib/supabaseDataService.ts:594 (returns non-UUID `local-short-${Date.now()}` on offline create)"
+      }
+    },
+    "DEF-008": {
+      "title": "Residual hardcoded strings across screens",
+      "severity": "P2",
+      "domain": "Mobile / i18n",
+      "classification": "OPEN — VALID",
+      "evidence": {
+        "hardcodedTextCount": 236,
+        "sampleFiles": [
+          "apps/mobile/app/(tabs)/dashboard.tsx ('Dashboard Error', 'Retry')",
+          "apps/mobile/app/(tabs)/index.tsx ('Male Voters', 'Female Voters', 'Compare', 'Reset', '3D View')",
+          "apps/mobile/app/(tabs)/intelligence.tsx ('MPs', 'Constituencies', 'Parties Won', 'Key Insights')"
+        ]
+      }
+    },
+    "DEF-009": {
+      "title": "Rejection of modern sb_secret_ Supabase service-role format",
+      "severity": "P1",
+      "domain": "Backend / Security",
+      "classification": "RESOLVED — VERIFIED",
+      "evidence": {
+        "acceptedJob": "W001-R1",
+        "commit": "77fb553",
+        "implementation": "apps/api/src/lib/supabase.ts:10-17 (isValidSupabaseKey accommodates sb_secret_ and 3-part JWTs)",
+        "automatedTests": "apps/api/src/__tests__/supabase-auth.test.ts (7/7 PASS on 2026-09-21)"
+      }
+    },
+    "DEF-010": {
+      "title": "Missing CORS_ORIGINS on Railway production deployment",
+      "severity": "P2",
+      "domain": "DevOps / CORS",
+      "classification": "RESOLVED — VERIFIED",
+      "evidence": {
+        "acceptedJob": "W001-R3",
+        "commit": "77fb553",
+        "liveProductionProbe": "2026-09-21 probe to https://kshetra-api-production-9f06.up.railway.app/health returns Access-Control-Allow-Origin: https://kshetra.in and blocks evil.com"
+      }
+    },
+    "DEF-011": {
+      "title": "Missing public.issue_categories table",
+      "severity": "P2",
+      "domain": "Database / Civic",
+      "classification": "INVALID — VERIFIED",
+      "evidence": {
+        "acceptedJob": "W001-R2",
+        "commit": "77fb553",
+        "schema": "004_civic_dashboard.sql:15 enforces categories via inline CHECK constraint on civic_issues.category; table was never intended"
+      }
+    },
+    "DEF-012": {
+      "title": "13-language translation key parity gap",
+      "severity": "P2",
+      "domain": "Mobile / i18n",
+      "classification": "OPEN — VALID",
+      "evidence": {
+        "validatorCommand": "node scripts/verify-13-locales.mjs --strict",
+        "canonicalEnglishKeys": 2041,
+        "languageParity": {
+          "en": { "count": 2041, "missing": 0, "pct": 100 },
+          "te": { "count": 1841, "missing": 200, "pct": 90 },
+          "hi": { "count": 1753, "missing": 288, "pct": 86 },
+          "ta": { "count": 1147, "missing": 894, "pct": 56 },
+          "kn": { "count": 1667, "missing": 374, "pct": 82 },
+          "ml": { "count": 1139, "missing": 902, "pct": 56 },
+          "mr": { "count": 1675, "missing": 366, "pct": 82 },
+          "bn": { "count": 1139, "missing": 902, "pct": 56 },
+          "gu": { "count": 1138, "missing": 903, "pct": 56 },
+          "or": { "count": 1137, "missing": 904, "pct": 56 },
+          "pa": { "count": 1138, "missing": 903, "pct": 56 },
+          "as": { "count": 1138, "missing": 903, "pct": 56 },
+          "ne": { "count": 1138, "missing": 903, "pct": 56 }
+        }
+      }
+    },
+    "DEF-013": {
+      "title": "Invalid UNION ORDER BY clause in global_search RPC function",
+      "severity": "P2",
+      "domain": "Database / SQL",
+      "classification": "RESOLVED — VERIFIED",
+      "evidence": {
+        "migration": "supabase/migrations/036_foundation_and_grants_repair.sql",
+        "acceptedJobs": "W009-B1 (DEC-053) & W009-B5 (DEC-054)",
+        "liveProbe": "2026-09-21 PostgREST RPC call returns HTTP 200 with zero PostgreSQL syntax error 0A000"
+      }
+    }
+  }
+}
