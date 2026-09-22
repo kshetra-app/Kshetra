@@ -1,7 +1,7 @@
 {
-  "timestamp": "2026-09-22T09:02:06.483Z",
+  "timestamp": "2026-09-22T09:43:44.934Z",
   "target": "https://fkpigozcqnmcvofuksar.supabase.co",
-  "testRunId": "8dddbcd6",
+  "testRunId": "550f558b",
   "summary": {
     "total": 13,
     "passed": 13,
@@ -76,55 +76,80 @@
     },
     {
       "id": "TEST-13-F",
-      "name": "100% of 119 ACs have valid parliamentary_constituency_id and district_id",
+      "name": "Relational integrity: 100% of 119 ACs resolve valid district_id and parliamentary_constituency_id FKs",
       "category": "RELATIONAL_INTEGRITY",
       "status": "PASS",
-      "expected": "0 unlinked ACs; all 119 resolve to both a District and a PC",
+      "expected": "Exactly 119 ACs with state_code TS resolving to existing districts.id and parliamentary_constituencies.id; 0 orphans",
       "observed": {
-        "total": 119,
-        "unlinkedDistrictCount": 0,
-        "unlinkedPcCount": 0
+        "expectedCount": 119,
+        "observedCount": 119,
+        "orphanCount": 0,
+        "invalidFkCount": 0,
+        "invalidDistFkCount": 0,
+        "invalidPcFkCount": 0,
+        "invalidStateCodeCount": 0
       },
-      "details": null
+      "details": "All 119 Telangana ACs strictly resolve to existing District and PC primary keys."
     },
     {
       "id": "TEST-13-G",
-      "name": "W012 dataset-version foreign keys resolve",
+      "name": "Pilot entity primary_dataset_version_id references and assignment semantics",
       "category": "LINEAGE_INTEGRITY",
       "status": "PASS",
-      "expected": "All 6 W013 dataset versions exist in dataset_versions catalog",
+      "expected": "All 170 pilot entities resolve to dataset_versions; 31 districts to 2016, 2 to 2019 additions, 17 PCs and 119 ACs to ECI 2008",
       "observed": {
-        "expectedCount": 6,
-        "foundCount": 6,
-        "missing": []
+        "expectedCount": 170,
+        "observedCount": 170,
+        "orphanCount": 0,
+        "invalidFkCount": 0,
+        "semanticsPassed": true,
+        "assignmentCounts": {
+          "stateMha2014": 1,
+          "districts2016": 31,
+          "districts2019Additions": 2,
+          "pcsEci2008": 17,
+          "acsEci2008": 119
+        }
       },
-      "details": null
+      "details": "100% of pilot entities resolve valid primary dataset versions with correct statutory/electoral semantics."
     },
     {
       "id": "TEST-13-H",
-      "name": "W012 record_provenance_linkages resolve for all pilot entities",
+      "name": "Provenance linkage resolution test (Zero orphaned linkages)",
       "category": "PROVENANCE_INTEGRITY",
       "status": "PASS",
-      "expected": "Linkages: 1 State, 33 Districts, 17 PCs, 119 ACs",
+      "expected": "Exactly 170 linkages resolving to valid domain records, valid provenance records, and UNVERIFIED status; 0 orphans",
       "observed": {
-        "stateLinks": 1,
-        "distLinks": 33,
-        "pcLinks": 17,
-        "acLinks": 119
+        "expectedCount": 170,
+        "observedCount": 170,
+        "orphanCount": 0,
+        "domainOrphanCount": 0,
+        "invalidProvenanceCount": 0,
+        "versionOrphanCount": 0,
+        "invalidStatusCount": 0,
+        "breakdown": {
+          "states": 1,
+          "districts": 33,
+          "parliamentaryConstituencies": 17,
+          "constituencies": 119
+        }
       },
-      "details": null
+      "details": "All 170 pilot linkages bidirectionally resolve to existing domain rows and valid provenance records."
     },
     {
       "id": "TEST-13-I",
-      "name": "All pilot entities have UNVERIFIED data status; zero elevation to OFFICIAL",
+      "name": "Lineage-aware governance verification: 100% pilot lineage UNVERIFIED, zero OFFICIAL",
       "category": "GOVERNANCE_SECURITY",
       "status": "PASS",
-      "expected": "100% of pilot dataset versions and provenance records are UNVERIFIED",
+      "expected": "170/170 complete lineage chains verify provenance.status = UNVERIFIED and version.default_status = UNVERIFIED; 0 OFFICIAL",
       "observed": {
-        "nonUnverifiedProvCount": 0,
-        "nonUnverifiedVersionCount": 0
+        "expectedCount": 170,
+        "observedCount": 170,
+        "officialCount": 0,
+        "invalidStatusCount": 0,
+        "orphanCount": 0
       },
-      "details": null
+      "details": "Complete pilot lineage chain verified: zero records elevated to OFFICIAL, 100% strictly UNVERIFIED."
     },
     {
       "id": "TEST-13-J",
@@ -142,17 +167,19 @@
     },
     {
       "id": "TEST-13-K",
-      "name": "Backwards compatibility: domain FKs and application queries unaffected",
+      "name": "Existing domain read compatibility smoke test",
       "category": "REGRESSION_INTEGRITY",
       "status": "PASS",
-      "expected": "All pre-existing domain queries continue returning HTTP 200",
+      "expected": "HTTP 200 responses on 4 representative domain reads (states, constituencies, civic_issues, posts)",
       "observed": {
+        "expectedCount": 4,
+        "observedCount": 4,
         "statesStatus": 200,
         "constituenciesStatus": 200,
         "civicIssuesStatus": 200,
         "postsStatus": 200
       },
-      "details": null
+      "details": "Smoke test: confirms basic unauthenticated read availability across existing domain paths. Does not constitute exhaustive backwards-compatibility proof."
     },
     {
       "id": "TEST-13-L",

@@ -227,28 +227,54 @@ async function runTests() {
   );
 
   // --------------------------------------------------------------------------
-  // TEST-13-F: 100% of 119 ACs have valid parliamentary_constituency_id and district_id
+  // TEST-13-F: Relational integrity of all 119 ACs to District and PC
   // --------------------------------------------------------------------------
-  const { data: acRelations, error: acRelErr } = await adminClient
+  const { data: allDistricts, error: distFkErr } = await adminClient
+    .from('districts')
+    .select('id, code, state_code');
+  const { data: allPcs, error: pcFkErr } = await adminClient
+    .from('parliamentary_constituencies')
+    .select('id, code, state_code');
+  const { data: acRows, error: acRelErr } = await adminClient
     .from('constituencies')
-    .select('id, district_id, parliamentary_constituency_id')
+    .select('id, state_code, district_id, parliamentary_constituency_id')
     .eq('state_code', 'TS');
 
-  const unlinkedDistrict = (acRelations || []).filter(r => !r.district_id);
-  const unlinkedPc = (acRelations || []).filter(r => !r.parliamentary_constituency_id);
-  const fPassed = !acRelErr && (acRelations || []).length === 119 && unlinkedDistrict.length === 0 && unlinkedPc.length === 0;
+  const validDistrictIds = new Set((allDistricts || []).map(d => d.id));
+  const validPcIds = new Set((allPcs || []).map(p => p.id));
+
+  const invalidDistRows = (acRows || []).filter(r => !r.district_id || !validDistrictIds.has(r.district_id));
+  const invalidPcRows = (acRows || []).filter(r => !r.parliamentary_constituency_id || !validPcIds.has(r.parliamentary_constituency_id));
+  const invalidStateRows = (acRows || []).filter(r => r.state_code !== 'TS');
+
+  const orphanCountF = invalidDistRows.length + invalidPcRows.length;
+  const invalidFkCountF = orphanCountF;
+  const fPassed = !distFkErr && !pcFkErr && !acRelErr &&
+    (acRows || []).length === 119 &&
+    invalidDistRows.length === 0 &&
+    invalidPcRows.length === 0 &&
+    invalidStateRows.length === 0;
 
   recordTest(
     'TEST-13-F',
-    '100% of 119 ACs have valid parliamentary_constituency_id and district_id',
+    'Relational integrity: 100% of 119 ACs resolve valid district_id and parliamentary_constituency_id FKs',
     'RELATIONAL_INTEGRITY',
     fPassed ? 'PASS' : 'FAIL',
-    '0 unlinked ACs; all 119 resolve to both a District and a PC',
-    { total: acRelations?.length, unlinkedDistrictCount: unlinkedDistrict.length, unlinkedPcCount: unlinkedPc.length }
+    'Exactly 119 ACs with state_code TS resolving to existing districts.id and parliamentary_constituencies.id; 0 orphans',
+    {
+      expectedCount: 119,
+      observedCount: acRows?.length || 0,
+      orphanCount: orphanCountF,
+      invalidFkCount: invalidFkCountF,
+      invalidDistFkCount: invalidDistRows.length,
+      invalidPcFkCount: invalidPcRows.length,
+      invalidStateCodeCount: invalidStateRows.length
+    },
+    'All 119 Telangana ACs strictly resolve to existing District and PC primary keys.'
   );
 
   // --------------------------------------------------------------------------
-  // TEST-13-G: W012 dataset-version foreign keys resolve
+  // TEST-13-G: Pilot entity primary_dataset_version_id references and assignment semantics
   // --------------------------------------------------------------------------
   const expectedVersions = [
     'mha_ts_2014_v1',
@@ -261,63 +287,221 @@ async function runTests() {
 
   const { data: versionsFound, error: verErr } = await adminClient
     .from('dataset_versions')
-    .select('id, default_status, record_count')
-    .in('id', expectedVersions);
+    .select('id, default_status, record_count');
 
-  const foundIds = new Set((versionsFound || []).map(v => v.id));
-  const allVersionsPresent = expectedVersions.every(id => foundIds.has(id));
-  const gPassed = !verErr && allVersionsPresent;
+  const validVersionIds = new Set((versionsFound || []).map(v => v.id));
+
+  const { data: statePilot, error: stErr } = await adminClient
+    .from('states')
+    .select('code, primary_dataset_version_id')
+    .eq('code', 'TS')
+    .single();
+
+  const { data: distPilot, error: dtErr } = await adminClient
+    .from('districts')
+    .select('code, name, primary_dataset_version_id')
+    .eq('state_code', 'TS');
+
+  const { data: pcPilot, error: ptErr } = await adminClient
+    .from('parliamentary_constituencies')
+    .select('code, pc_number, primary_dataset_version_id')
+    .eq('state_code', 'TS');
+
+  const { data: acPilot, error: atErr } = await adminClient
+    .from('constituencies')
+    .select('id, primary_dataset_version_id')
+    .eq('state_code', 'TS');
+
+  const allPilotEntities = [
+    ...(statePilot ? [{ type: 'state', id: statePilot.code, version: statePilot.primary_dataset_version_id }] : []),
+    ...(distPilot || []).map(d => ({ type: 'district', id: d.code, name: d.name, version: d.primary_dataset_version_id })),
+    ...(pcPilot || []).map(p => ({ type: 'pc', id: p.code, version: p.primary_dataset_version_id })),
+    ...(acPilot || []).map(a => ({ type: 'ac', id: a.id, version: a.primary_dataset_version_id }))
+  ];
+
+  const unresolvableVersions = allPilotEntities.filter(e => !e.version || !validVersionIds.has(e.version));
+  const orphanCountG = unresolvableVersions.length;
+  const invalidFkCountG = orphanCountG;
+
+  const stateSemanticsOk = statePilot?.primary_dataset_version_id === 'mha_ts_2014_v1';
+  const dist2016 = (distPilot || []).filter(d => d.primary_dataset_version_id === 'ts_districts_2016_v1');
+  const dist2019 = (distPilot || []).filter(d => d.primary_dataset_version_id === 'ts_districts_2019_additions_v1');
+  const pcs2008 = (pcPilot || []).filter(p => p.primary_dataset_version_id === 'eci_ts_pc_2008_v1');
+  const acs2008 = (acPilot || []).filter(a => a.primary_dataset_version_id === 'eci_ts_ac_2008_v1');
+
+  const additionsMatch = dist2019.length === 2 &&
+    dist2019.some(d => d.name === 'Mulugu') &&
+    dist2019.some(d => d.name === 'Narayanpet');
+
+  const semanticsOk = stateSemanticsOk &&
+    dist2016.length === 31 &&
+    additionsMatch &&
+    pcs2008.length === 17 &&
+    acs2008.length === 119;
+
+  const gPassed = !verErr && !stErr && !dtErr && !ptErr && !atErr &&
+    allPilotEntities.length === 170 &&
+    orphanCountG === 0 &&
+    semanticsOk;
 
   recordTest(
     'TEST-13-G',
-    'W012 dataset-version foreign keys resolve',
+    'Pilot entity primary_dataset_version_id references and assignment semantics',
     'LINEAGE_INTEGRITY',
     gPassed ? 'PASS' : 'FAIL',
-    'All 6 W013 dataset versions exist in dataset_versions catalog',
-    { expectedCount: expectedVersions.length, foundCount: versionsFound?.length, missing: expectedVersions.filter(id => !foundIds.has(id)) }
+    'All 170 pilot entities resolve to dataset_versions; 31 districts to 2016, 2 to 2019 additions, 17 PCs and 119 ACs to ECI 2008',
+    {
+      expectedCount: 170,
+      observedCount: allPilotEntities.length,
+      orphanCount: orphanCountG,
+      invalidFkCount: invalidFkCountG,
+      semanticsPassed: semanticsOk,
+      assignmentCounts: {
+        stateMha2014: stateSemanticsOk ? 1 : 0,
+        districts2016: dist2016.length,
+        districts2019Additions: dist2019.length,
+        pcsEci2008: pcs2008.length,
+        acsEci2008: acs2008.length
+      }
+    },
+    '100% of pilot entities resolve valid primary dataset versions with correct statutory/electoral semantics.'
   );
 
   // --------------------------------------------------------------------------
-  // TEST-13-H: W012 record_provenance_linkages resolve for all pilot entities
+  // TEST-13-H: Provenance linkage resolution test (Zero orphaned linkages)
   // --------------------------------------------------------------------------
   const { data: linkages, error: linkErr } = await adminClient
     .from('record_provenance_linkages')
-    .select('domain_table, domain_record_id, provenance_id');
+    .select('id, domain_table, domain_record_id, provenance_id, is_canonical');
 
-  const stateLinks = (linkages || []).filter(l => l.domain_table === 'states' && l.domain_record_id === 'TS');
-  const distLinks = (linkages || []).filter(l => l.domain_table === 'districts');
-  const pcLinks = (linkages || []).filter(l => l.domain_table === 'parliamentary_constituencies');
-  const acLinks = (linkages || []).filter(l => l.domain_table === 'constituencies');
+  const { data: provRecords, error: prErr } = await adminClient
+    .from('provenance_records')
+    .select('id, dataset_version_id, status');
 
-  const hPassed = !linkErr && stateLinks.length >= 1 && distLinks.length === 33 && pcLinks.length === 17 && acLinks.length === 119;
+  const provMap = new Map((provRecords || []).map(p => [p.id, p]));
+
+  const stateCodeSet = new Set(['TS']);
+  const distCodeSet = new Set((distPilot || []).map(d => d.code));
+  const pcCodeSet = new Set((pcPilot || []).map(p => p.code));
+  const acIdSet = new Set((acPilot || []).map(a => a.id));
+
+  let domainOrphanCount = 0;
+  let provOrphanCount = 0;
+  let verOrphanCount = 0;
+  let invalidStatusCountH = 0;
+
+  const validDomains = new Set(['states', 'districts', 'parliamentary_constituencies', 'constituencies']);
+  let stateLinkCount = 0;
+  let distLinkCount = 0;
+  let pcLinkCount = 0;
+  let acLinkCount = 0;
+
+  for (const l of (linkages || [])) {
+    if (!validDomains.has(l.domain_table)) {
+      domainOrphanCount++;
+      continue;
+    }
+
+    if (l.domain_table === 'states') {
+      stateLinkCount++;
+      if (!stateCodeSet.has(l.domain_record_id)) domainOrphanCount++;
+    } else if (l.domain_table === 'districts') {
+      distLinkCount++;
+      if (!distCodeSet.has(l.domain_record_id)) domainOrphanCount++;
+    } else if (l.domain_table === 'parliamentary_constituencies') {
+      pcLinkCount++;
+      if (!pcCodeSet.has(l.domain_record_id)) domainOrphanCount++;
+    } else if (l.domain_table === 'constituencies') {
+      acLinkCount++;
+      if (!acIdSet.has(l.domain_record_id)) domainOrphanCount++;
+    }
+
+    const pr = provMap.get(l.provenance_id);
+    if (!pr) {
+      provOrphanCount++;
+    } else {
+      if (!validVersionIds.has(pr.dataset_version_id)) verOrphanCount++;
+      if (pr.status !== 'UNVERIFIED') invalidStatusCountH++;
+    }
+  }
+
+  const totalLinkages = (linkages || []).length;
+  const totalOrphanCountH = domainOrphanCount + provOrphanCount + verOrphanCount;
+  const countsExactH = stateLinkCount === 1 && distLinkCount === 33 && pcLinkCount === 17 && acLinkCount === 119 && totalLinkages === 170;
+
+  const hPassed = !linkErr && !prErr &&
+    countsExactH &&
+    domainOrphanCount === 0 &&
+    provOrphanCount === 0 &&
+    verOrphanCount === 0 &&
+    invalidStatusCountH === 0;
+
   recordTest(
     'TEST-13-H',
-    'W012 record_provenance_linkages resolve for all pilot entities',
+    'Provenance linkage resolution test (Zero orphaned linkages)',
     'PROVENANCE_INTEGRITY',
     hPassed ? 'PASS' : 'FAIL',
-    'Linkages: 1 State, 33 Districts, 17 PCs, 119 ACs',
-    { stateLinks: stateLinks.length, distLinks: distLinks.length, pcLinks: pcLinks.length, acLinks: acLinks.length }
+    'Exactly 170 linkages resolving to valid domain records, valid provenance records, and UNVERIFIED status; 0 orphans',
+    {
+      expectedCount: 170,
+      observedCount: totalLinkages,
+      orphanCount: totalOrphanCountH,
+      domainOrphanCount,
+      invalidProvenanceCount: provOrphanCount,
+      versionOrphanCount: verOrphanCount,
+      invalidStatusCount: invalidStatusCountH,
+      breakdown: {
+        states: stateLinkCount,
+        districts: distLinkCount,
+        parliamentaryConstituencies: pcLinkCount,
+        constituencies: acLinkCount
+      }
+    },
+    'All 170 pilot linkages bidirectionally resolve to existing domain rows and valid provenance records.'
   );
 
   // --------------------------------------------------------------------------
-  // TEST-13-I: All pilot entities have UNVERIFIED data status; zero elevation to OFFICIAL
+  // TEST-13-I: Lineage-aware governance verification (Full chain: entity -> linkage -> provenance -> version)
   // --------------------------------------------------------------------------
-  const { data: provRecords, error: provErr } = await adminClient
-    .from('provenance_records')
-    .select('id, dataset_version_id, status')
-    .in('dataset_version_id', expectedVersions);
+  const versionMap = new Map((versionsFound || []).map(v => [v.id, v]));
 
-  const nonUnverified = (provRecords || []).filter(p => p.status !== 'UNVERIFIED');
-  const versionNonUnverified = (versionsFound || []).filter(v => v.default_status !== 'UNVERIFIED');
-  const iPassed = !provErr && nonUnverified.length === 0 && versionNonUnverified.length === 0;
+  let chainVerifiedCount = 0;
+  let officialCountI = 0;
+  let nonUnverifiedStatusCountI = 0;
+
+  for (const l of (linkages || [])) {
+    const pr = provMap.get(l.provenance_id);
+    if (!pr) continue;
+
+    const ver = versionMap.get(pr.dataset_version_id);
+    if (!ver) continue;
+
+    chainVerifiedCount++;
+
+    if (pr.status === 'OFFICIAL' || ver.default_status === 'OFFICIAL') {
+      officialCountI++;
+    }
+    if (pr.status !== 'UNVERIFIED' || ver.default_status !== 'UNVERIFIED') {
+      nonUnverifiedStatusCountI++;
+    }
+  }
+
+  const iPassed = chainVerifiedCount === 170 && officialCountI === 0 && nonUnverifiedStatusCountI === 0;
 
   recordTest(
     'TEST-13-I',
-    'All pilot entities have UNVERIFIED data status; zero elevation to OFFICIAL',
+    'Lineage-aware governance verification: 100% pilot lineage UNVERIFIED, zero OFFICIAL',
     'GOVERNANCE_SECURITY',
     iPassed ? 'PASS' : 'FAIL',
-    '100% of pilot dataset versions and provenance records are UNVERIFIED',
-    { nonUnverifiedProvCount: nonUnverified.length, nonUnverifiedVersionCount: versionNonUnverified.length }
+    '170/170 complete lineage chains verify provenance.status = UNVERIFIED and version.default_status = UNVERIFIED; 0 OFFICIAL',
+    {
+      expectedCount: 170,
+      observedCount: chainVerifiedCount,
+      officialCount: officialCountI,
+      invalidStatusCount: nonUnverifiedStatusCountI,
+      orphanCount: 170 - chainVerifiedCount
+    },
+    'Complete pilot lineage chain verified: zero records elevated to OFFICIAL, 100% strictly UNVERIFIED.'
   );
 
   // --------------------------------------------------------------------------
@@ -350,7 +534,7 @@ async function runTests() {
   );
 
   // --------------------------------------------------------------------------
-  // TEST-13-K: Backwards compatibility: domain FKs and application queries unaffected
+  // TEST-13-K: Existing domain read compatibility smoke test
   // --------------------------------------------------------------------------
   const { status: kStates } = await anonClient.from('states').select('code, name').limit(5);
   const { status: kAcs } = await anonClient.from('constituencies').select('id, name').limit(5);
@@ -360,22 +544,30 @@ async function runTests() {
   const kPassed = kStates === 200 && kAcs === 200 && kCivic === 200 && kPosts === 200;
   recordTest(
     'TEST-13-K',
-    'Backwards compatibility: domain FKs and application queries unaffected',
+    'Existing domain read compatibility smoke test',
     'REGRESSION_INTEGRITY',
     kPassed ? 'PASS' : 'FAIL',
-    'All pre-existing domain queries continue returning HTTP 200',
-    { statesStatus: kStates, constituenciesStatus: kAcs, civicIssuesStatus: kCivic, postsStatus: kPosts }
+    'HTTP 200 responses on 4 representative domain reads (states, constituencies, civic_issues, posts)',
+    {
+      expectedCount: 4,
+      observedCount: [kStates, kAcs, kCivic, kPosts].filter(s => s === 200).length,
+      statesStatus: kStates,
+      constituenciesStatus: kAcs,
+      civicIssuesStatus: kCivic,
+      postsStatus: kPosts
+    },
+    'Smoke test: confirms basic unauthenticated read availability across existing domain paths. Does not constitute exhaustive backwards-compatibility proof.'
   );
 
   // --------------------------------------------------------------------------
   // TEST-13-L: District chronology and dataset semantics verified
   // --------------------------------------------------------------------------
-  const { data: dist2016 } = await adminClient.from('districts').select('code').eq('primary_dataset_version_id', 'ts_districts_2016_v1');
-  const { data: dist2019 } = await adminClient.from('districts').select('code, name').eq('primary_dataset_version_id', 'ts_districts_2019_additions_v1');
+  const { data: dist2016L } = await adminClient.from('districts').select('code').eq('primary_dataset_version_id', 'ts_districts_2016_v1');
+  const { data: dist2019L } = await adminClient.from('districts').select('code, name').eq('primary_dataset_version_id', 'ts_districts_2019_additions_v1');
 
-  const additionsNames = (dist2019 || []).map(d => d.name).sort();
+  const additionsNames = (dist2019L || []).map(d => d.name).sort();
   const additionsCorrect = additionsNames.length === 2 && additionsNames[0] === 'Mulugu' && additionsNames[1] === 'Narayanpet';
-  const baseCountCorrect = (dist2016 || []).length === 31;
+  const baseCountCorrect = (dist2016L || []).length === 31;
   const lPassed = additionsCorrect && baseCountCorrect;
 
   recordTest(
@@ -384,7 +576,7 @@ async function runTests() {
     'CHRONOLOGY_INTEGRITY',
     lPassed ? 'PASS' : 'FAIL',
     '31 base districts from ts_districts_2016_v1; 2 addition districts (Mulugu, Narayanpet) from ts_districts_2019_additions_v1',
-    { baseCount: dist2016?.length, additionsCount: dist2019?.length, additionsNames }
+    { baseCount: dist2016L?.length, additionsCount: dist2019L?.length, additionsNames }
   );
 
   // --------------------------------------------------------------------------
