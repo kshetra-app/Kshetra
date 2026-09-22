@@ -1045,3 +1045,46 @@
   - No self-acceptance: status is strictly `SUBMITTED FOR CTO ACCEPTANCE`.
   - W012 remains `NOT AUTHORIZED`.
 
+---
+
+### DEC-060: W015 IMPLEMENTATION & VERIFICATION SUBMISSION — GEOGRAPHY RELATIONSHIP ENGINE
+- **Date:** 2026-09-22
+- **Status:** IMPLEMENTED / TESTED / VERIFIED / SUBMITTED FOR CTO ACCEPTANCE
+- **Authority:** CTO Implementation Authorization (W015 Revision 5 Approved Preflight)
+- **Context:** Completion of Master Job W015 implementing referential and hierarchical relationships across the 7 mandated semantics (parent, child, contains, part-of, predecessor, successor, old-to-new mapping) with zero scope leakage into spatial topology, PostGIS, quantitative overlap calculations, or mobile changes.
+- **Authoritative Submission Coordinates:**
+  - Authorized Baseline: `bb7c6ec`
+  - Implementation Commit: `8766c65`
+  - Migration Package: `supabase/staging_migration_package_042.sql` (SHA-256: `01FF5E8A47E6326A9195141C02CBD1D1C5D3F2C2985D6F00C8F7EEC4DCF49AF8`)
+  - Target Database: `panIN-staging` (`fkpigozcqnmcvofuksar.supabase.co`)
+  - CTO Acceptance: `PENDING`
+- **Capabilities Implemented:**
+  1. **Parent / Child & Contains / Part-Of Referential Schema (DEF-15-01 & DEF-15-02):**
+     - Enhanced `public.mandals` with `district_id UUID REFERENCES public.districts(id) ON DELETE RESTRICT`.
+     - Enhanced `public.mandal_constituency_map` with `constituency_internal_id UUID REFERENCES public.constituencies(internal_id) ON DELETE RESTRICT`.
+     - Enhanced `public.polling_booths` with `constituency_internal_id UUID REFERENCES public.constituencies(internal_id) ON DELETE RESTRICT`.
+  2. **W012 Lineage & Data Governance Integration:**
+     - Registered data source `mopr_lgd`, datasets `ts_lgd_mandals`, `ts_mandal_ac_mappings`, `eci_polling_stations`.
+     - Registered dataset versions `ts_lgd_mandals_2023_v1`, `ts_mandal_ac_mappings_2023_v1`, `eci_ts_booths_2023_v1` strictly with `default_status = 'UNVERIFIED'`; 0 records elevated to `OFFICIAL`.
+     - Registered 26 provenance records and 26 record provenance linkages.
+  3. **Authoritative Seed Ground Truth:**
+     - Seeded 12 authoritative mandals across Kumuram Bheem Asifabad and Mancherial districts with statutory LGD codes.
+     - Seeded 10 authoritative mandal-AC containment links (discrete `full` and `partial`).
+     - Seeded 4 authoritative polling booths for Sirpur (AC 1) and Chennur (AC 2).
+  4. **Row Level Security (RLS):**
+     - Enabled and forced RLS across `mandals`, `mandal_constituency_map`, and `polling_booths`.
+     - Configured public read access and denied client mutations (`WITH CHECK false`), restricting modifications to `service_role`.
+- **Verification Evidence:**
+  - `node tests/verify_w015_relationship_engine.mjs`: 9/9 PASS (TEST-A through TEST-E, TEST-SUPP-1 through TEST-SUPP-4).
+  - `node tests/verify_w013_canonical_geography.mjs`: 13/13 PASS (100% regression parity).
+  - `node tests/verify_w014_temporal_validity.mjs`: 9/9 PASS (100% regression parity).
+  - `npm run build --prefix apps/api`: 0 errors (`tsc --noEmit`).
+- **Governance Invariants:**
+  - Production UNTOUCHED (0 mutations).
+  - Mobile UNTOUCHED (0 file changes).
+  - W016 / W017 strictly UNTOUCHED (zero PostGIS ST_Contains/ST_Intersects, zero quantitative overlap percentage calculations, zero automated anomaly engines).
+  - No customer-facing hierarchy traversal APIs introduced.
+  - DEF-15-01 and DEF-15-02 marked `RESOLVED — VERIFIED IN W015`.
+  - Final status strictly `SUBMITTED FOR CTO ACCEPTANCE` (CTO decision PENDING).
+
+

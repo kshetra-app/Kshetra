@@ -102,7 +102,7 @@ async function runBattery() {
   // Check 4: District -> Mandal parentage (DEF-15-01)
   const { data: mandals, error: mandalErr } = await adminClient
     .from('mandals')
-    .select('id, name, district_id, district, state_code, lgd_code')
+    .select('id, name, district_id, district, state_code, lgd_code, primary_dataset_version_id')
     .eq('state_code', 'TS');
   const mandalCountOk = (mandals || []).length >= 12;
   const mandalDistrictFkOk = (mandals || []).every(m => m.district_id !== null);
@@ -158,7 +158,7 @@ async function runBattery() {
   // Check 3: Polling Booths -> AC containment (ECI fundamental invariant)
   const { data: booths, error: boothErr } = await adminClient
     .from('polling_booths')
-    .select('id, booth_number, constituency_id, constituency_internal_id, state_code');
+    .select('id, booth_number, constituency_id, constituency_internal_id, state_code, primary_dataset_version_id');
   const boothCountOk = (booths || []).length >= 4;
   const acInternalIdSet = new Set((acs || []).map(a => a.internal_id));
   const acIdSet = new Set((acs || []).map(a => a.id));
@@ -171,7 +171,7 @@ async function runBattery() {
   // Check 4: Mandal ↔ AC Containment (DEF-15-02)
   const { data: mcm, error: mcmErr } = await adminClient
     .from('mandal_constituency_map')
-    .select('id, mandal_id, constituency_id, constituency_internal_id, overlap_type');
+    .select('id, mandal_id, constituency_id, constituency_internal_id, overlap_type, primary_dataset_version_id');
   const mcmCountOk = (mcm || []).length >= 9;
   const mandalIdSet = new Set((mandals || []).map(m => m.id));
   const mcmFkOk = (mcm || []).every(m =>

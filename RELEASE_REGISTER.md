@@ -20,6 +20,7 @@
 | `v0.1.0-w008-c` | Production / Staging | Phase-1 Domain API Contracts (`states`, `moderation`, `notifications`, `civic`) | Backend Gateway | N/A | v1 (0.1.0) | `8984704` | W008-C Accepted / Complete | BE | PASS (CTO Accepted 2026-09-14) |
 | `v0.1.0-w009-b5` | Staging | Railway API + Supabase | Backend Gateway + Staging DB | N/A | v1 (0.1.0) | `45ebb7d` | W009-B5 Accepted (Migrations 035-037, Provider Sandbox/Mock, Lineage Closure) | BE+DEVOPS | PASS (CTO Accepted 2026-09-21) |
 | `v0.1.0-w010` | Staging DB / Monorepo | Security Baseline & RLS Hardening (Migration 038, Batches L1–L3, DEF-014..DEF-017) | N/A | 100% 13-locale parity (2,371 keys) | v1 (0.1.0) | `75b0ba2` | W010 Accepted / Complete | SEC+ARCH | PASS (CTO Accepted 2026-09-21; 36/36 security tests pass; Checks 1–7 pass) |
+| `v0.1.0-w015` | Staging DB | Geography Relationship Engine (Migration 042, DEF-15-01, DEF-15-02) | N/A | N/A | v1 (0.1.0) | `8766c65` | W015 Submitted / Pending CTO | DATA+BE | PENDING CTO ACCEPTANCE (9/9 battery pass, 13/13 W013 pass, 9/9 W014 pass) |
 
 ---
 
