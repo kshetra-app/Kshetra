@@ -1,0 +1,302 @@
+{
+  "job": "W012",
+  "task": "DATA GOVERNANCE FOUNDATION PREFLIGHT",
+  "generated_at": "2026-09-22T03:15:00.000Z",
+  "git_coordinates": {
+    "repository": "kshetra-app/Kshetra",
+    "branch": "master",
+    "head_commit": "5bee882f32bbd77875c1f2b2f558abfeaeee719d",
+    "accepted_baseline": "5bee882f32bbd77875c1f2b2f558abfeaeee719d",
+    "working_tree_clean": true
+  },
+  "authorization_boundary": {
+    "w012_preflight": "AUTHORIZED",
+    "w012_implementation": "NOT_AUTHORIZED",
+    "w013_w017": "NOT_AUTHORIZED",
+    "code_mutations": 0,
+    "database_mutations": 0
+  },
+  "summary": {
+    "total_migrations_audited": 40,
+    "total_tables_parsed": 151,
+    "total_scripts_audited": 122,
+    "canonical_source_registry_exists": false,
+    "universal_data_status_model_exists": false,
+    "canonical_provenance_structure_exists": false,
+    "dataset_version_tracking_exists": false,
+    "transformation_lineage_recorded": false
+  },
+  "capabilities_classification": [
+    {
+      "capability": "Source Registry (Canonical DB)",
+      "classification": "DOES NOT EXIST",
+      "evidence": "supabase/migrations/** contains no data_sources or source_registry table."
+    },
+    {
+      "capability": "News Feed Source Registry",
+      "classification": "EXISTS — PARTIAL",
+      "evidence": "apps/api/src/services/news/sources.ts contains hardcoded FEED_SOURCES TypeScript array."
+    },
+    {
+      "capability": "Pipeline Health & Source Status",
+      "classification": "EXISTS — PARTIAL",
+      "evidence": "supabase/migrations/019_live_election.sql:86 contains data_pipeline_status with 9 seeded sources."
+    },
+    {
+      "capability": "Universal Data Status Model",
+      "classification": "DOES NOT EXIST",
+      "evidence": "No global enum or check for OFFICIAL, DERIVED, VERIFIED, ESTIMATE, SCENARIO, INFERRED, UNVERIFIED, UNKNOWN."
+    },
+    {
+      "capability": "Local Body Representative Status",
+      "classification": "EXISTS — PARTIAL",
+      "evidence": "supabase/migrations/023_local_body_representatives.sql:374 data_status CHECK ('verified', 'data_pending', 'crowdsourced_unverified')."
+    },
+    {
+      "capability": "Legislator Verification Status",
+      "classification": "EXISTS — PARTIAL",
+      "evidence": "supabase/migrations/012_legislator_profiles.sql:124 verification_status CHECK ('verified', 'partial', 'unverified')."
+    },
+    {
+      "capability": "Delimitation Proposal Status",
+      "classification": "EXISTS — NOT SUITABLE",
+      "evidence": "supabase/migrations/011_delimitation.sql:15 status CHECK ('draft', 'final', 'superseded', 'rejected') confuses simulation with official draft."
+    },
+    {
+      "capability": "Scraper Output Status Enforcement",
+      "classification": "EXISTS — DEFECTIVE",
+      "evidence": "scrapers/output/myneta/TamilNadu2026.json marks unheld 2026 election candidates as isWinner: true without SCENARIO flag."
+    },
+    {
+      "capability": "Canonical Provenance Model",
+      "classification": "DOES NOT EXIST",
+      "evidence": "No universal link between database records and dataset/version/source/transformation."
+    },
+    {
+      "capability": "Local Body Representative Edit Lineage",
+      "classification": "EXISTS — PARTIAL",
+      "evidence": "supabase/migrations/023_local_body_representatives.sql:404 representative_edits table records diffs and fingerprints."
+    },
+    {
+      "capability": "Moderation Action Audit Log",
+      "classification": "EXISTS — NOT SUITABLE",
+      "evidence": "supabase/migrations/006_trust_safety.sql:82 audit_log records user moderation actions, not data lineage."
+    },
+    {
+      "capability": "Dataset Version Snapshots",
+      "classification": "DOES NOT EXIST",
+      "evidence": "No table or metadata tracking immutable dataset versions, hashes, or snapshot files."
+    },
+    {
+      "capability": "Transformation History Recording",
+      "classification": "DOES NOT EXIST",
+      "evidence": "Scripts in scripts/ and scrapers/ run imperatively; transformation parameters and intermediate diffs are not logged."
+    },
+    {
+      "capability": "Scraper Execution Metrics",
+      "classification": "EXISTS — PARTIAL",
+      "evidence": "supabase/migrations/012_legislator_profiles.sql:254 scraper_runs table logs records_scraped, records_updated, and status."
+    },
+    {
+      "capability": "Freshness & Effective Date Tracking",
+      "classification": "EXISTS — PARTIAL",
+      "evidence": "Pipeline freshness in migration 019; domain dates in affidavits and bills; no temporal validity on geography."
+    },
+    {
+      "capability": "Automated Continuous Data Quality Gates",
+      "classification": "DOES NOT EXIST",
+      "evidence": "Scripts in scripts/ (audit-data-quality.js, validate-data.js) are manually executed; no CI/CD data quality gate."
+    },
+    {
+      "capability": "Privacy / Personal Data Boundary",
+      "classification": "EXISTS — PARTIAL",
+      "evidence": "PII segregated in creator_kyc_records, action_fingerprints, trai_opt_outs with RLS; lack of metadata classification tag."
+    },
+    {
+      "capability": "AI Data Segregation",
+      "classification": "EXISTS — PARTIAL",
+      "evidence": "Quarantined in live_event_ai table (024); prompt-grounded in ai.ts; absent across articles and posts."
+    }
+  ],
+  "representative_datasets_audit": [
+    {
+      "dataset_name": "Geography — Assembly Constituencies",
+      "storage_location": "supabase/migrations/001_initial_schema.sql (constituencies), data/geo/telangana-assembly.geojson",
+      "source": "datta07/INDIAN-SHAPEFILES (in data/geo/ATTRIBUTION.md)",
+      "retrieval_date": "MISSING",
+      "effective_date": "MISSING (Comment states pre-delimitation 2008)",
+      "version": "MISSING",
+      "status": "MISSING (Assumed FACT)",
+      "transformation_history": "MISSING",
+      "verification_state": "MISSING",
+      "current_consumers": ["apps/mobile (Maps)", "apps/api/src/routes/geo.ts"]
+    },
+    {
+      "dataset_name": "Election / Political — Legislator Profiles",
+      "storage_location": "supabase/migrations/012_legislator_profiles.sql (legislator_profiles), data/seed/*-mla-profiles.ts",
+      "source": "myneta.info, prsindia.org, sansad.in",
+      "retrieval_date": "MISSING",
+      "effective_date": "term_start_date / term_end_date (Domain dates only)",
+      "version": "MISSING",
+      "status": "verification_status ('unverified', 'partial', 'verified')",
+      "transformation_history": "MISSING",
+      "verification_state": "Partially recorded via verification_status enum",
+      "current_consumers": ["apps/mobile (Politician screens)", "apps/api/src/routes/politician.ts"]
+    },
+    {
+      "dataset_name": "Civic — Bills & Government Schemes",
+      "storage_location": "supabase/migrations/018_enhanced_civic.sql (bills, government_schemes)",
+      "source": "free text source column / full_text_url",
+      "retrieval_date": "MISSING",
+      "effective_date": "introduced_date / launched_date (Domain dates only)",
+      "version": "MISSING",
+      "status": "Legislative lifecycle status ('introduced', 'passed', 'enacted')",
+      "transformation_history": "MISSING",
+      "verification_state": "MISSING",
+      "current_consumers": ["apps/mobile (Civic Dashboard)", "apps/api/src/routes/civic.ts"]
+    },
+    {
+      "dataset_name": "External Feed — RSS News Headlines",
+      "storage_location": "apps/api/src/services/news/sources.ts, in-memory cache in newsService.ts",
+      "source": "18 RSS feeds (The Hindu, Indian Express, NDTV, Aaj Tak, etc.)",
+      "retrieval_date": "Hourly dynamic retrieval timestamp",
+      "effective_date": "publishedAt (from RSS item)",
+      "version": "version: 1 (In-memory feed payload version)",
+      "status": "verified: boolean on source definition",
+      "transformation_history": "SHA1 URL hashing and deduplication only",
+      "verification_state": "Source domain verified flag",
+      "current_consumers": ["apps/mobile (News Feed)", "apps/api/src/routes/news.ts"]
+    },
+    {
+      "dataset_name": "Projections / Future Elections — Tamil Nadu 2026",
+      "storage_location": "scrapers/output/myneta/TamilNadu2026.json",
+      "source": "https://www.myneta.info/TamilNadu2026",
+      "retrieval_date": "MISSING",
+      "effective_date": "MISSING (Year 2026 implied)",
+      "version": "MISSING",
+      "status": "MISSING (DEFECT: isWinner: true recorded on future unheld election)",
+      "transformation_history": "MISSING",
+      "verification_state": "MISSING",
+      "current_consumers": ["scripts/validate-data.js"]
+    }
+  ],
+  "external_providers_inquiry_findings": {
+    "NewsAPI": { "present": false, "details": "Direct RSS XML feeds used; NewsAPI client does not exist." },
+    "Reddit": { "present": false, "details": "No Reddit ingestion, scraper, or API client exists." },
+    "SEC_EDGAR": { "present": false, "details": "No US SEC EDGAR ingestion exists. SEC references in repo refer exclusively to Indian State Election Commissions." },
+    "Binance": { "present": false, "details": "No cryptocurrency feeds, Binance clients, or market tracking exist." }
+  },
+  "gap_matrix": [
+    {
+      "id": "W012-GAP-01",
+      "area": "Source Registry",
+      "current_state": "Absent in PostgreSQL",
+      "gap": "No canonical source registry table with authority levels, licenses, and URLs",
+      "impact": "Cannot uniformly link records to authoritative publishers",
+      "remediation_job": "W012"
+    },
+    {
+      "id": "W012-GAP-02",
+      "area": "Data Status Model",
+      "current_state": "Fragmented & Defective",
+      "gap": "Missing universal 8-tier status model; unheld elections record isWinner: true",
+      "impact": "High risk of confusing SCENARIO or ESTIMATE with OFFICIAL facts",
+      "remediation_job": "W012"
+    },
+    {
+      "id": "W012-GAP-03",
+      "area": "Provenance Structure",
+      "current_state": "Absent across core entities",
+      "gap": "No universal link between records and dataset versions, sources, and dates",
+      "impact": "Inability to answer 'Where did this fact come from?'",
+      "remediation_job": "W012"
+    },
+    {
+      "id": "W012-GAP-04",
+      "area": "Dataset & Version Tracking",
+      "current_state": "No dataset entities",
+      "gap": "Datasets are unversioned and uncataloged",
+      "impact": "Updates overwrite historical state without auditability",
+      "remediation_job": "W012"
+    },
+    {
+      "id": "W012-GAP-05",
+      "area": "Transformation Lineage",
+      "current_state": "Imperative unrecorded scripts",
+      "gap": "Script parameters, input hashes, and output hashes are not recorded",
+      "impact": "Unreproducible data transformations",
+      "remediation_job": "W012 / W017"
+    },
+    {
+      "id": "W012-GAP-06",
+      "area": "Geography Temporal Validity",
+      "current_state": "Flat geography schema",
+      "gap": "Constituencies and mandals lack effective_from and effective_to dates",
+      "impact": "Cannot represent boundary changes over time without data destruction",
+      "remediation_job": "W013 / W014"
+    },
+    {
+      "id": "W012-GAP-07",
+      "area": "Automated Quality Gates",
+      "current_state": "Ad-hoc CLI scripts",
+      "gap": "Validation scripts are manual and not integrated into CI/CD gates",
+      "impact": "Ingestion errors or bad seeds can reach production silently",
+      "remediation_job": "W017"
+    },
+    {
+      "id": "W012-GAP-08",
+      "area": "External Provider Misconceptions",
+      "current_state": "Providers in directive not in repo",
+      "gap": "NewsAPI, Reddit, EDGAR, Binance do not exist in codebase",
+      "impact": "Architecture documentation must reflect actual RSS and scraper reality",
+      "remediation_job": "W012"
+    },
+    {
+      "id": "W012-GAP-09",
+      "area": "AI Provenance Quarantine",
+      "current_state": "Quarantined in LMX, absent elsewhere",
+      "gap": "Articles and summaries lack is_ai_generated flags or model attribution",
+      "impact": "Inability to prove content origin or human authorship across platform",
+      "remediation_job": "W012 / W015"
+    },
+    {
+      "id": "W012-GAP-10",
+      "area": "Universal Verification Trail",
+      "current_state": "Only in local-body (023)",
+      "gap": "Assembly/Parliament legislators, elections, and civic issues lack verification logs",
+      "impact": "Asymmetric verification auditing across tiers",
+      "remediation_job": "W012"
+    }
+  ],
+  "proposed_minimal_architecture": {
+    "tables": [
+      {
+        "name": "data_sources",
+        "description": "Canonical registry of official and external publishers",
+        "key_columns": ["id", "name", "publisher", "authority_level", "canonical_url", "license", "retrieval_method", "refresh_frequency", "is_active"]
+      },
+      {
+        "name": "datasets",
+        "description": "Governed dataset catalog across domains",
+        "key_columns": ["id", "name", "domain", "description", "source_id", "license"]
+      },
+      {
+        "name": "dataset_versions",
+        "description": "Immutable version snapshots with temporal validity and checksums",
+        "key_columns": ["id", "dataset_id", "version_tag", "effective_from", "effective_to", "retrieved_at", "record_count", "checksum_sha256", "default_status"]
+      },
+      {
+        "name": "provenance_records",
+        "description": "Granular record-level linkage to version and transformation",
+        "key_columns": ["id", "dataset_version_id", "source_record_id", "status", "transformation_type", "transform_version", "operator", "verified_by"]
+      }
+    ],
+    "enums": [
+      {
+        "name": "data_status_enum",
+        "values": ["OFFICIAL", "DERIVED", "VERIFIED", "ESTIMATE", "SCENARIO", "INFERRED", "UNVERIFIED", "UNKNOWN"]
+      }
+    ],
+    "hot_path_impact": "Zero overhead on consumer queries (reads query base table directly; joins to provenance are on-demand only)"
+  }
+}
