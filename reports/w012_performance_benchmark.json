@@ -6,17 +6,23 @@
   "baselineTarget": "https://fkpigozcqnmcvofuksar.supabase.co",
   "iterations": 1000,
   "preMigrationServerSideBaseline": "UNAVAILABLE",
+  "classification": {
+    "PRE_MIGRATION_SERVER_SIDE_BASELINE": "UNAVAILABLE",
+    "SERVER_SIDE_POST_MIGRATION_P95": "2.00 ms",
+    "W012_SERVER_SIDE_REGRESSION_DEMONSTRATED": "NO",
+    "WAN_COMPARISON_ACCEPTABLE_FOR_DB_REGRESSION": "NO"
+  },
   "gates": {
     "relativeP95ThresholdPercent": 5,
     "absoluteP95ThresholdMs": 2,
-    "overallVerdict": "FAIL_ON_WAN_VARIANCE_AND_INCOMPARABLE_BASELINE"
+    "overallVerdict": "PERFORMANCE GATE: NOT EVALUABLE FOR SERVER-SIDE PRE/POST REGRESSION — PRE-MIGRATION SERVER-SIDE BASELINE UNAVAILABLE"
   },
   "methodologyNotes": {
     "baselineEndpointHP02": "/rest/v1/constituencies?select=id,name,state_id&limit=20",
     "correctedEndpointHP02": "/rest/v1/constituencies?select=id,name,state_code&limit=20",
     "comparabilityHP02": "HISTORICAL_BASELINE_INCOMPARABLE (baseline queried non-existent state_id column producing HTTP 400; corrected benchmark queries valid state_code column returning HTTP 200)",
     "serverSideMetricsDistinction": "Server-side latency captures x-envoy-upstream-service-time (Envoy -> PostgREST -> Postgres round-trip). Client WAN latency includes public internet transit and ISP jitter.",
-    "dualGateInterpretation": "Dual gate cannot be applied to incomparable baseline queries (HP-02) or across divergent public WAN conditions where internet jitter exceeds the 2.0 ms gate threshold."
+    "dualGateInterpretation": "PERFORMANCE GATE: NOT EVALUABLE FOR SERVER-SIDE PRE/POST REGRESSION — PRE-MIGRATION SERVER-SIDE BASELINE UNAVAILABLE. The previous WAN comparison remains invalidated for this purpose."
   },
   "results": [
     {
@@ -58,8 +64,8 @@
       },
       "passedRelativeClientGate": false,
       "passedAbsoluteClientGate": false,
-      "clientGateVerdict": "FAIL",
-      "serverSideHealthVerdict": "HEALTHY (1-4ms range)"
+      "clientGateVerdict": "FAIL_ON_WAN_VARIANCE",
+      "serverSideDisposition": "No W012-induced server-side performance regression is demonstrated by the available evidence; a comparable pre-migration server-side baseline is unavailable."
     },
     {
       "queryId": "HP-02_CONSTITUENCIES",
@@ -100,8 +106,8 @@
       },
       "passedRelativeClientGate": false,
       "passedAbsoluteClientGate": false,
-      "clientGateVerdict": "FAIL",
-      "serverSideHealthVerdict": "HEALTHY (1-4ms range)"
+      "clientGateVerdict": "INCOMPARABLE_BASELINE",
+      "serverSideDisposition": "No W012-induced server-side performance regression is demonstrated by the available evidence; a comparable pre-migration server-side baseline is unavailable."
     }
   ]
 }

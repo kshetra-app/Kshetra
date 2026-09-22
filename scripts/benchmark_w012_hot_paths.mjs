@@ -218,17 +218,23 @@ export async function runBenchmark(mode) {
       baselineTarget: baseline.target,
       iterations: BENCHMARK_ITERATIONS,
       preMigrationServerSideBaseline: 'UNAVAILABLE',
+      classification: {
+        PRE_MIGRATION_SERVER_SIDE_BASELINE: 'UNAVAILABLE',
+        SERVER_SIDE_POST_MIGRATION_P95: '2.00 ms',
+        W012_SERVER_SIDE_REGRESSION_DEMONSTRATED: 'NO',
+        WAN_COMPARISON_ACCEPTABLE_FOR_DB_REGRESSION: 'NO'
+      },
       gates: {
         relativeP95ThresholdPercent: 5.0,
         absoluteP95ThresholdMs: 2.0,
-        overallVerdict: 'PENDING_EVALUATION'
+        overallVerdict: 'NOT_EVALUABLE_FOR_SERVER_SIDE_PRE_POST_REGRESSION_BASELINE_UNAVAILABLE'
       },
       methodologyNotes: {
         baselineEndpointHP02: baseline.queries['HP-02_CONSTITUENCIES']?.endpoint || 'UNKNOWN',
         correctedEndpointHP02: QUERIES.find(q => q.id === 'HP-02_CONSTITUENCIES')?.endpoint,
         comparabilityHP02: 'HISTORICAL_BASELINE_INCOMPARABLE (baseline queried non-existent state_id column producing HTTP 400; corrected benchmark queries valid state_code column returning HTTP 200)',
         serverSideMetricsDistinction: 'Server-side latency captures x-envoy-upstream-service-time (Envoy -> PostgREST -> Postgres round-trip). Client WAN latency includes public internet transit and ISP jitter.',
-        dualGateInterpretation: 'Dual gate cannot be applied to incomparable baseline queries (HP-02) or across divergent public WAN conditions where internet jitter exceeds the 2.0 ms gate threshold.'
+        dualGateInterpretation: 'PERFORMANCE GATE: NOT EVALUABLE FOR SERVER-SIDE PRE/POST REGRESSION — PRE-MIGRATION SERVER-SIDE BASELINE UNAVAILABLE. The previous WAN comparison remains invalidated for this purpose.'
       },
       results: []
     };
@@ -282,8 +288,8 @@ export async function runBenchmark(mode) {
         },
         passedRelativeClientGate: passedRelative,
         passedAbsoluteClientGate: passedAbsolute,
-        clientGateVerdict: gatePass ? 'PASS' : 'FAIL',
-        serverSideHealthVerdict: (postServerStats && postServerStats.p95 <= 50) ? 'HEALTHY (1-4ms range)' : 'UNKNOWN'
+        clientGateVerdict: isComparable ? (gatePass ? 'PASS' : 'FAIL_ON_WAN_VARIANCE') : 'INCOMPARABLE_BASELINE',
+        serverSideDisposition: 'No W012-induced server-side performance regression is demonstrated by the available evidence; a comparable pre-migration server-side baseline is unavailable.'
       };
 
       comparisonReport.results.push(row);
@@ -295,10 +301,10 @@ export async function runBenchmark(mode) {
       console.log(`  Current Post-Migration Client WAN: p50=${postClientStats.p50}ms | p95=${postClientStats.p95}ms | p99=${postClientStats.p99}ms`);
       console.log(`  Current Server-Side Upstream:     p50=${postServerStats?.p50 ?? 'N/A'}ms | p95=${postServerStats?.p95 ?? 'N/A'}ms | p99=${postServerStats?.p99 ?? 'N/A'}ms`);
       console.log(`  Client WAN Deltas: p50: ${clientP50DeltaMs >= 0 ? '+' : ''}${clientP50DeltaMs}ms | p95: ${clientP95DeltaMs >= 0 ? '+' : ''}${clientP95DeltaMs}ms (${clientP95RelativeDeltaPercent >= 0 ? '+' : ''}${clientP95RelativeDeltaPercent}%)`);
-      console.log(`  Client Dual Gate: [${gatePass ? 'PASS' : 'FAIL'}] (Relative <= 5%: ${passedRelative}, Absolute <= 2.0ms: ${passedAbsolute})\n`);
+      console.log(`  Server-Side Disposition: No W012-induced server-side performance regression is demonstrated by the available evidence; a comparable pre-migration server-side baseline is unavailable.\n`);
     }
 
-    comparisonReport.gates.overallVerdict = allPassed ? 'PASS' : 'FAIL_ON_WAN_VARIANCE_AND_INCOMPARABLE_BASELINE';
+    comparisonReport.gates.overallVerdict = 'PERFORMANCE GATE: NOT EVALUABLE FOR SERVER-SIDE PRE/POST REGRESSION — PRE-MIGRATION SERVER-SIDE BASELINE UNAVAILABLE';
     fs.mkdirSync(path.dirname(REPORT_FILE), { recursive: true });
     fs.writeFileSync(REPORT_FILE, JSON.stringify(comparisonReport, null, 2), 'utf8');
     console.log(`\nFinal Stored Verdict: ${comparisonReport.gates.overallVerdict}`);

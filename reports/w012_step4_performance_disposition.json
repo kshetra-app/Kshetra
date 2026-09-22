@@ -1,0 +1,83 @@
+{
+  "job": "W012",
+  "title": "Data Governance Foundation",
+  "subJob": "Step 4 — Performance Benchmark Evidence Disposition",
+  "dispositionStatus": "STEP_4_PERFORMANCE_EVIDENCE_DISPOSITION_COMPLETE — AWAITING CTO REVIEW",
+  "timestamp": "2026-09-22T06:53:00.000Z",
+  "targetEnvironment": "panIN-staging",
+  "targetProjectId": "fkpigozcqnmcvofuksar",
+  "targetUrl": "https://fkpigozcqnmcvofuksar.supabase.co",
+  "productionStatus": "STRICTLY UNTOUCHED",
+  "migration039Status": "STRICTLY UNTOUCHED",
+  "stagingSchemaStatus": "STRICTLY UNTOUCHED",
+  "rollbackStatus": "NO ROLLBACK PERFORMED",
+  "historicalBaseline": {
+    "artifact": "reports/w012_hot_path_baseline.json",
+    "sha256": "8F44169136FA745081DE87F390271BDF3F5A8610500B796780B8301B83FD0A0D",
+    "timestamp": "2026-09-22T04:07:13.651Z",
+    "immutableStatus": "VERIFIED_UNCHANGED",
+    "serverSideBaseline": "UNAVAILABLE"
+  },
+  "correctedBenchmark": {
+    "artifact": "reports/w012_performance_benchmark.json",
+    "sha256": "0D9E2ABDDA3A516BE723D88A0F08EA66FD870373B7887D0E4CB23ADFEEF97AE6",
+    "script": "scripts/benchmark_w012_hot_paths.mjs",
+    "harnessTestScript": "tests/benchmark_harness_semantics.test.mjs",
+    "harnessTestResults": "10/10 PASS",
+    "httpSemanticValidation": "ENFORCED (non-2xx responses rejected and fail benchmark run)"
+  },
+  "evidenceClassification": {
+    "PRE_MIGRATION_SERVER_SIDE_BASELINE": "UNAVAILABLE",
+    "SERVER_SIDE_POST_MIGRATION_P95": "2.00 ms",
+    "W012_SERVER_SIDE_REGRESSION_DEMONSTRATED": "NO",
+    "WAN_COMPARISON_ACCEPTABLE_FOR_DB_REGRESSION": "NO"
+  },
+  "hotPathResults": {
+    "HP-01_STATES": {
+      "endpoint": "/rest/v1/states?select=code,name,total_seats&limit=20",
+      "iterations": 1000,
+      "http200Validated": "1000/1000",
+      "httpErrors": 0,
+      "serverSideUpstreamLatencyMs": {
+        "p50": 1.0,
+        "p95": 2.0,
+        "p99": 3.0,
+        "mean": 1.13
+      },
+      "clientObservedWanLatencyMs": {
+        "p50": 282.33,
+        "p95": 309.7,
+        "p99": 334.45,
+        "mean": 285.44
+      }
+    },
+    "HP-02_CONSTITUENCIES": {
+      "endpoint": "/rest/v1/constituencies?select=id,name,state_code&limit=20",
+      "iterations": 1000,
+      "http200Validated": "1000/1000",
+      "httpErrors": 0,
+      "correctionApplied": "Corrected column selection from state_id (HTTP 400 in baseline) to state_code (HTTP 200)",
+      "serverSideUpstreamLatencyMs": {
+        "p50": 1.0,
+        "p95": 2.0,
+        "p99": 2.0,
+        "mean": 1.07
+      },
+      "clientObservedWanLatencyMs": {
+        "p50": 280.63,
+        "p95": 309.63,
+        "p99": 381.1,
+        "mean": 286.06
+      }
+    }
+  },
+  "performanceGateEvaluation": {
+    "thresholds": {
+      "relativeP95RegressionPercent": 5.0,
+      "absoluteP95RegressionMs": 2.0
+    },
+    "gateStatus": "NOT EVALUABLE FOR SERVER-SIDE PRE/POST REGRESSION — PRE-MIGRATION SERVER-SIDE BASELINE UNAVAILABLE",
+    "wanComparisonValidity": "NOT VALID FOR DB REGRESSION ACCEPTANCE (WAN measurements subject to external public internet variance; HP-02 historical baseline was an HTTP 400 error payload)"
+  },
+  "officialDispositionStatement": "Current post-migration server-side execution latency is 2 ms p95 for both measured hot paths. No W012-induced server-side performance regression is demonstrated by the available evidence; a comparable pre-migration server-side baseline is unavailable. This is not proof of zero historical regression."
+}
