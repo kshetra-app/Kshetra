@@ -1,18 +1,19 @@
 {
   "job": "W012",
-  "task": "DATA GOVERNANCE FOUNDATION PREFLIGHT (CORRECTED)",
-  "generated_at": "2026-09-22T03:39:00.000Z",
+  "task": "DATA GOVERNANCE FOUNDATION PREFLIGHT (FINAL CORRECTIONS)",
+  "generated_at": "2026-09-22T03:47:00.000Z",
   "git_coordinates": {
     "repository": "kshetra-app/Kshetra",
     "branch": "master",
-    "current_artifact_commit": "caef871516b252f4121a10ee84d4b4e4e2d2857a",
+    "current_artifact_commit": "4e139eb3b4eede1163561f2780a454ccdb57ff60",
+    "preceding_correction_baseline": "caef871516b252f4121a10ee84d4b4e4e2d2857a",
     "historical_discovery_baseline": "ee87ec72cef81d724abf928ee250c19033ee9d41",
     "accepted_w011_baseline": "5bee882f32bbd77875c1f2b2f558abfeaeee719d",
     "working_tree_clean": true
   },
   "authorization_boundary": {
     "w012_preflight": "ACCEPTED_SUBSTANTIALLY_COMPLETE",
-    "w012_implementation": "NOT_GRANTED",
+    "w012_implementation_authorization": "NOT_YET_GRANTED",
     "migration_039_authorized": false,
     "w013_w017": "NOT_AUTHORIZED",
     "code_mutations": 0,
@@ -30,9 +31,9 @@
     "transformation_lineage_recorded": false
   },
   "corrections_applied": {
-    "correction_1_head_metadata_reconciled": "Current artifact commit recorded as exact full SHA caef871516b252f4121a10ee84d4b4e4e2d2857a; historical discovery baseline preserved as ee87ec72cef81d724abf928ee250c19033ee9d41.",
-    "correction_2_source_authority_taxonomy_normalized": "Source authority taxonomy normalized to 6 canonical categories: constitutional, statutory, academic, media_ngo, crowdsourced, synthetic_model. Geography source datta07/INDIAN-SHAPEFILES classified strictly as 'crowdsourced'. Decoupled from data status.",
-    "correction_3_performance_criterion_corrected": "Absolute claim of 'zero additional query latency' replaced with measurable staging benchmark delta contract comparing p50/p95/p99 before and after migration across 1,000 iterations. Acceptance threshold marked as PRE-IMPLEMENTATION DECISION REQUIRED (proposed <= 5% delta or <= 2.0ms p95 variance).",
+    "correction_1_head_metadata_reconciled": "Current artifact commit recorded as exact full SHA 4e139eb3b4eede1163561f2780a454ccdb57ff60; preceding correction baseline preserved as caef871516b252f4121a10ee84d4b4e4e2d2857a; historical discovery baseline preserved as ee87ec72cef81d724abf928ee250c19033ee9d41.",
+    "correction_2_source_authority_vs_data_type_separated": "Decoupled Source Authority (media_ngo for MyNeta) from Dataset Type (election_projection) and Transformation (synthetic_projection_simulation). MyNeta source authority is media_ngo, data status remains strictly SCENARIO, and simulation treatment is tracked via transformation_type.",
+    "correction_3_performance_acceptance_dual_gate": "Performance acceptance threshold hardened to strict dual requirement: relative p95 regression <= 5% AND absolute p95 regression <= 2.0 ms across 1,000 warm iterations in staging. Marked as PRE-IMPLEMENTATION DECISION REQUIRED for formal CTO confirmation.",
     "correction_4_official_transition_security_model": "Authoritative transition chain enforced: Actor (service_role/authorized admin) -> Authorization -> Verification Evidence (authoritative DB evidence record with artifact hash) -> Permitted Transition. Direct update blocked by trigger and RLS; verification_id alone fails closed; SCENARIO -> OFFICIAL permanently prohibited.",
     "correction_5_status_default_invariant": "Newly registered dataset versions and provenance records default strictly to UNKNOWN (not OFFICIAL). No record becomes OFFICIAL merely by catalog insertion.",
     "correction_6_provenance_cardinality_reconciled": "Multi-source lineage supported via M:N table (record_provenance_linkages) with is_canonical flag; sequential multi-step transformation chains preserved via append-only parent_provenance_id DAG.",
@@ -47,6 +48,8 @@
       "observed_location": "supabase/migrations/001_initial_schema.sql (constituencies), data/geo/telangana-assembly.geojson",
       "actual_source": "datta07/INDIAN-SHAPEFILES (documented in data/geo/ATTRIBUTION.md)",
       "source_authority": "crowdsourced",
+      "dataset_domain": "geography",
+      "transformation_type": "raw_shapefile_import",
       "retrieval_date": "UNKNOWN / NOT ESTABLISHED",
       "effective_date": "UNKNOWN (Note mentions pre-2008 delimitation)",
       "version": "UNKNOWN / NOT ESTABLISHED",
@@ -60,6 +63,8 @@
       "observed_location": "supabase/migrations/012_legislator_profiles.sql (legislator_profiles), data/seed/*-mla-profiles.ts",
       "actual_source": "myneta.info, prsindia.org, sansad.in",
       "source_authority": "media_ngo / academic",
+      "dataset_domain": "political_profiles",
+      "transformation_type": "web_scrape_profile_build",
       "retrieval_date": "UNKNOWN / NOT ESTABLISHED",
       "effective_date": "term_start_date / term_end_date (Domain dates only)",
       "version": "UNKNOWN / NOT ESTABLISHED",
@@ -73,6 +78,8 @@
       "observed_location": "supabase/migrations/018_enhanced_civic.sql (bills, government_schemes)",
       "actual_source": "Unspecified seed in migration 018",
       "source_authority": "UNKNOWN / NOT ESTABLISHED",
+      "dataset_domain": "civic_governance",
+      "transformation_type": "mock_seed_insert",
       "retrieval_date": "UNKNOWN / NOT ESTABLISHED",
       "effective_date": "introduced_date / launched_date (Domain dates only)",
       "version": "UNKNOWN / NOT ESTABLISHED",
@@ -84,8 +91,10 @@
     {
       "dataset_name": "Projections / Future Elections — Tamil Nadu 2026",
       "observed_location": "scrapers/output/myneta/TamilNadu2026.json",
-      "actual_source": "https://www.myneta.info/TamilNadu2026",
-      "source_authority": "synthetic_model",
+      "actual_source": "https://www.myneta.info/TamilNadu2026 (Association for Democratic Reforms / MyNeta)",
+      "source_authority": "media_ngo",
+      "dataset_domain": "election_projection",
+      "transformation_type": "synthetic_projection_simulation",
       "retrieval_date": "UNKNOWN / NOT ESTABLISHED",
       "effective_date": "UNKNOWN (2026 future projection)",
       "version": "UNKNOWN / NOT ESTABLISHED",
@@ -141,7 +150,8 @@
     "staging_performance_contract": {
       "hot_path_isolation": "Governance tables are not joined on normal consumer hot paths.",
       "benchmark_protocol": "1,000 warm iterations measuring p50, p95, p99 before and after migration.",
-      "acceptance_threshold": "PRE-IMPLEMENTATION DECISION REQUIRED: Proposed <= 5% delta or <= 2.0ms p95 variance, subject to CTO confirmation."
+      "acceptance_rule": "relative p95 regression <= 5% AND absolute p95 regression <= 2.0 ms (both conditions MUST pass).",
+      "acceptance_threshold": "PRE-IMPLEMENTATION DECISION REQUIRED: Proposed relative p95 regression <= 5% AND absolute p95 regression <= 2.0 ms, subject to CTO confirmation."
     },
     "production_impact": {
       "design": "Additive schema design with nullable references.",

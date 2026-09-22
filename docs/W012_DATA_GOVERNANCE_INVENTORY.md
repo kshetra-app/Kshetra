@@ -1,10 +1,11 @@
 # PANIN / KSHETRA — DATA GOVERNANCE & PROVENANCE INVENTORY
-## Job W012 Preflight Discovery Artifact (Corrected per CTO Directive)
+## Job W012 Preflight Discovery Artifact (Final Corrections per CTO Directive)
 
 - **Date:** 2026-09-22
 - **Repository:** `kshetra-app/Kshetra`
 - **Branch:** `master`
-- **Current Artifact Commit:** `caef871516b252f4121a10ee84d4b4e4e2d2857a`
+- **Current Artifact Commit:** `4e139eb3b4eede1163561f2780a454ccdb57ff60`
+- **Preceding Correction Baseline:** `caef871516b252f4121a10ee84d4b4e4e2d2857a` (Pre-implementation correction baseline)
 - **Historical Discovery Baseline:** `ee87ec72cef81d724abf928ee250c19033ee9d41` (Initial preflight discovery commit)
 - **Accepted W011 Baseline:** `5bee882f32bbd77875c1f2b2f558abfeaeee719d`
 - **Working Tree Status:** Clean (0 uncommitted changes)
@@ -14,11 +15,11 @@
 
 ## 1. Executive Summary & Authorization Boundary
 
-Pursuant to the CTO Preflight Directive, Pre-Implementation Correction Directive, and subsequent review under the Master Execution Document, this artifact provides an authoritative, source-of-truth inspection of the existing data architecture across the PANIN / Kshetra repository.
+Pursuant to the CTO Preflight Directive, Pre-Implementation Correction Directives, and final pre-implementation review under the Master Execution Document, this artifact provides an authoritative, source-of-truth inspection of the existing data architecture across the PANIN / Kshetra repository.
 
 ### Authorization Boundary
-- **W012 Preflight:** **ACCEPTED — SUBSTANTIALLY COMPLETE** (Subject to these documented pre-implementation corrections).
-- **W012 Implementation:** **NOT GRANTED** (Zero database migrations, zero schema edits, zero backend route changes, zero UI modifications, zero deployments).
+- **W012 Preflight:** **ACCEPTED — SUBSTANTIALLY COMPLETE** (Subject to these final pre-implementation corrections).
+- **W012 Implementation Authorization:** **NOT YET GRANTED — AWAITING FINAL CTO REVIEW** (Zero database migrations, zero schema edits, zero backend route changes, zero UI modifications, zero deployments).
 - **Migration 039:** **NOT AUTHORIZED / NOT CREATED**.
 - **W013–W017 & W052:** **NOT AUTHORIZED**.
 
@@ -26,7 +27,7 @@ Pursuant to the CTO Preflight Directive, Pre-Implementation Correction Directive
 
 ## 2. Methodology & Files Inspected
 
-Every finding in this inventory is grounded strictly in source-of-truth inspection of the repository at the authoritative baseline commit `caef871516b252f4121a10ee84d4b4e4e2d2857a`.
+Every finding in this inventory is grounded strictly in source-of-truth inspection of the repository at the authoritative baseline commit `4e139eb3b4eede1163561f2780a454ccdb57ff60`.
 
 ### Primary Subsystems & Files Inspected
 1. **Database Migrations (`supabase/migrations/**` — 40 files / 151 tables):**
@@ -98,7 +99,7 @@ Each data governance capability is strictly classified into one of the 6 authori
 
 ---
 
-## 4. Source Registry & Source Authority vs Data Status Separation
+## 4. Source Registry & Separation of Authority, Status, Transformation, and Verification
 
 ### A. Current State: `DOES NOT EXIST` (Canonical DB Registry)
 The repository does not possess a centralized, unified data source registry table in PostgreSQL.
@@ -113,21 +114,31 @@ CREATE TYPE source_authority_enum AS ENUM (
   'academic',         -- e.g. Trivedi Centre (TCPD) / Ashoka University
   'media_ngo',        -- e.g. Association for Democratic Reforms (ADR/MyNeta), Press Outlets
   'crowdsourced',     -- e.g. Community repositories, citizen contributors, GitHub repos
-  'synthetic_model'   -- e.g. Algorithmic simulation, test projections
+  'synthetic_model'   -- e.g. Internal algorithmic simulation, test fixture generation
 );
 ```
 
-### C. Explicit Separation: Source Authority vs Data Status
-A core requirement of PANIN data governance is the total decoupling of **Source Authority** from **Data Status**:
-1. **Source Authority (`source_authority_enum`):** Pertains strictly to the institutional standing and legal basis of the publisher or origin entity.
-2. **Data Status (`data_status_enum`):** Pertains to the factual and epistemic certainty of a specific dataset version or individual record (`OFFICIAL`, `DERIVED`, `VERIFIED`, `ESTIMATE`, `SCENARIO`, `INFERRED`, `UNVERIFIED`, `UNKNOWN`).
-3. **Core Invariant:** An authoritative source (e.g. ECI: `constitutional`) does **not** automatically confer `OFFICIAL` data status on every dataset extracted from it. Extracted data, scraped HTML, normalized results, or analytical summaries are `DERIVED`, `UNVERIFIED`, or `ESTIMATE` until independently verified or matched against an official gazette record.
-4. **Normalized Geography Source Authority:** The repository source `datta07/INDIAN-SHAPEFILES` (documented in `data/geo/ATTRIBUTION.md`) is classified strictly as:
+### C. Explicit Separation: Four Orthogonal Governance Dimensions
+A fundamental architectural principle of PANIN data governance is the strict separation of four orthogonal dimensions:
+$$\mathbf{Source\ Authority} \ne \mathbf{Data\ Status} \ne \mathbf{Transformation\ /\ Dataset\ Type} \ne \mathbf{Verification\ State}$$
+
+1. **Source Authority (`source_authority_enum`):** Pertains strictly to the institutional standing and legal basis of the publisher/origin entity.
+   - For example, Association for Democratic Reforms (ADR / MyNeta) is an NGO publisher, classified as `media_ngo`.
+   - The publisher is **never** classified as `synthetic_model` merely because an analytical projection or simulation dataset was built from or hosted on its platform.
+2. **Data Status (`data_status_enum`):** Pertains to the factual certainty of a specific record or version (`OFFICIAL`, `DERIVED`, `VERIFIED`, `ESTIMATE`, `SCENARIO`, `INFERRED`, `UNVERIFIED`, `UNKNOWN`).
+   - For unheld future election models (e.g. Tamil Nadu 2026), the factual status is strictly:
+     ```text
+     data_status = SCENARIO
+     ```
+3. **Transformation / Dataset Type (`transformation_type`, `domain`):** Pertains to the mathematical or computational operation performed on the data (e.g. `raw_ingest`, `normalization`, `entity_resolution`, `projection_simulation`).
+   - The simulation nature of Tamil Nadu 2026 is properly tracked here: `transformation_type = 'synthetic_projection_simulation'`.
+4. **Verification State (`verification_state`):** Pertains to whether an independent audit/corroboration has taken place (`unverified`, `partially_verified`, `fully_verified`, `revoked`).
+5. **Normalized Geography Source Authority:** The repository source `datta07/INDIAN-SHAPEFILES` (documented in `data/geo/ATTRIBUTION.md`) is classified strictly as:
    ```text
    crowdsourced
    ```
-   It is an open-source community GitHub repository, not an official government release. It carries source authority `crowdsourced` and data status `UNVERIFIED`.
-5. **Status Default Rule:** Newly registered dataset versions and records MUST default strictly to:
+   It carries source authority `crowdsourced` and data status `UNVERIFIED`.
+6. **Status Default Invariant:** Newly registered dataset versions and records MUST default strictly to:
    ```text
    UNKNOWN
    ```
@@ -235,20 +246,22 @@ Reconciling the four representative datasets against actual verified evidence cu
 | Requirement | Dataset 1: Geography (Assembly Boundaries) | Dataset 2: Political (MLA Profiles) | Dataset 3: Civic (Bills & Schemes) | Dataset 4: Projection (TN 2026 Simulation) |
 | :--- | :--- | :--- | :--- | :--- |
 | **Observed Entity** | `constituencies` / `data/geo/telangana-assembly.geojson` | `legislator_profiles` / `data/seed/*-mla-profiles.ts` | `bills`, `government_schemes` / `018_enhanced_civic.sql` | `scrapers/output/myneta/TamilNadu2026.json` |
-| **Actual Source** | `datta07/INDIAN-SHAPEFILES` (in `data/geo/ATTRIBUTION.md`) | `myneta.info`, `prsindia.org`, `sansad.in` | Unspecified mock seed in migration 018 | `https://www.myneta.info/TamilNadu2026` |
-| **Source Authority** | `crowdsourced` (GitHub repository) | `media_ngo` (ADR/MyNeta), `academic` (PRS) | `UNKNOWN` / `NOT ESTABLISHED` | `synthetic_model` (Test projection fixture) |
+| **Actual Source** | `datta07/INDIAN-SHAPEFILES` (in `data/geo/ATTRIBUTION.md`) | `myneta.info`, `prsindia.org`, `sansad.in` | Unspecified mock seed in migration 018 | `https://www.myneta.info/TamilNadu2026` (ADR / MyNeta) |
+| **Source Authority** | `crowdsourced` (GitHub repository) | `media_ngo` (ADR/MyNeta), `academic` (PRS) | `UNKNOWN` / `NOT ESTABLISHED` | `media_ngo` (ADR / MyNeta publisher) |
+| **Dataset Domain / Type** | `geography` | `political_profiles` | `civic_governance` | `election_projection` |
+| **Transformation / Treatment** | `raw_shapefile_import` | `web_scrape_profile_build` | `mock_seed_insert` | `synthetic_projection_simulation` |
 | **Retrieval Date** | `UNKNOWN` / `NOT ESTABLISHED` | `UNKNOWN` / `NOT ESTABLISHED` | `UNKNOWN` / `NOT ESTABLISHED` | `UNKNOWN` / `NOT ESTABLISHED` |
 | **Effective Date** | `UNKNOWN` (Note mentions pre-2008 delimitation) | `term_start_date` / `term_end_date` (Domain dates only) | `introduced_date` / `launched_date` (Domain dates only) | `UNKNOWN` (2026 future projection) |
 | **Version** | `UNKNOWN` / `NOT ESTABLISHED` | `UNKNOWN` / `NOT ESTABLISHED` | `UNKNOWN` / `NOT ESTABLISHED` | `UNKNOWN` / `NOT ESTABLISHED` |
-| **Status** | `UNVERIFIED` | `UNVERIFIED` (Field enum contains partial values) | `UNKNOWN` | `SCENARIO` (Explicitly categorized; was defective `isWinner`) |
+| **Status** | `UNVERIFIED` | `UNVERIFIED` (Field enum contains partial values) | `UNKNOWN` | `SCENARIO` (Strictly classified as simulation) |
 | **Transformation History** | `UNKNOWN` / `NOT ESTABLISHED` | `UNKNOWN` / `NOT ESTABLISHED` | `UNKNOWN` / `NOT ESTABLISHED` | `UNKNOWN` / `NOT ESTABLISHED` |
 | **Verification State** | `unverified` | `unverified` | `unverified` | `unverified` |
 | **Current Consumer** | Mobile Maps, API `/api/v1/geo/*` | Mobile Profile Screen, API `/api/v1/politicians` | Civic Dashboard, API `/api/v1/civic/*` | `scripts/validate-data.js` |
 
 *Reconciliation Rules Strictly Applied:*
-- Unsupported claim of `Survey of India / 2008 Delimitation → OFFICIAL` has been purged. Actual source is `datta07/INDIAN-SHAPEFILES`, authority is `crowdsourced`, status is `UNVERIFIED`.
-- Missing values are explicitly recorded as `UNKNOWN` or `NOT ESTABLISHED`. No timestamps, versions, or transformation histories have been fabricated.
-- `TamilNadu2026.json` is strictly classified as `SCENARIO` and will serve as the test fixture proving that ordinary updates cannot elevate scenarios to `OFFICIAL`.
+- **Source Authority vs Data Type Decoupled:** Tamil Nadu 2026 publisher (ADR / MyNeta) is classified as `media_ngo` (its true institutional standing). Its projection/simulation nature is properly captured in its dataset type (`election_projection`) and transformation (`synthetic_projection_simulation`), with factual status strictly set to `SCENARIO`.
+- **Zero Manufactured Claims:** Missing values are explicitly recorded as `UNKNOWN` or `NOT ESTABLISHED`. No timestamps, versions, or transformation histories have been fabricated.
+- **Scenario Protection Test Fixture:** `TamilNadu2026.json` is strictly classified as `SCENARIO` and will serve as the test fixture proving that ordinary updates cannot elevate scenarios to `OFFICIAL`.
 
 ---
 
@@ -369,22 +382,25 @@ The corrected W012 architecture in PostgreSQL models governance with strict stat
 └────────────────────────────────────────────────────────┘
 ```
 
-### Staging Performance Requirement (Replacing "Zero Latency" Claim):
-The requirement to prove "zero additional query latency" has been replaced with an explicit staging performance contract:
+### Staging Performance Requirement (Strict Dual P95 Acceptance Gate):
+The acceptance requirement is defined as a measurable staging performance benchmark contract:
 1. **Hot-Path Isolation:** Governed domain tables query base records directly. The `record_provenance_linkages` table is never joined on hot consumer query paths (e.g. `GET /api/v1/geo/constituencies`, `GET /api/v1/news/feed`, `GET /api/v1/politician/:id`).
 2. **Measurable Staging Baseline Benchmark:**
    - Representative hot-path queries will be benchmarked in staging **BEFORE** and **AFTER** migration execution across 1,000 warm iterations.
    - The test records: query identity, pre-migration baseline execution (p50, p95, p99 ms), post-migration execution (p50, p95, p99 ms), test environment conditions, index utilization, observed latency delta, and pass/fail evaluation.
-3. **Acceptance Threshold:**
-   - **PRE-IMPLEMENTATION DECISION REQUIRED:** Hot-path execution time regression threshold is proposed at:
-     $$\Delta \text{p95} \le 5\% \quad \text{or} \quad \Delta \text{p95} \le 2.0\text{ ms}$$
-     Subject to formal CTO confirmation prior to staging execution.
+3. **Primary P95 Acceptance Condition (Dual Gate):**
+   - Both conditions MUST pass:
+     $$\mathbf{relative\ p95\ regression} \le 5\% \quad \mathbf{AND} \quad \mathbf{absolute\ p95\ regression} \le 2.0\text{ ms}$$
+   - **PRE-IMPLEMENTATION DECISION REQUIRED:** Staging benchmark threshold contract requires:
+     - `relative p95 regression <= 5%` **AND** `absolute p95 regression <= 2.0 ms`
+     - p95 is the primary acceptance gate; p50 and p99 remain supporting evidence.
+     - Subject to formal CTO confirmation prior to staging execution.
 
 ---
 
 ## 14. Detailed Migration 039 Implementation Plan
 
-When W012 implementation is authorized by the CTO, Migration `039_data_governance_foundation.sql` will execute the following strictly structured plan:
+When W012 implementation is authorized by the CTO, Migration `039_data_governance_foundation.sql` will execute the following strictly structured 20-point plan:
 
 1. **Dependency Inspection:** Pre-flight assertion verifying that core domain tables (`states`, `constituencies`, `legislator_profiles`, `representatives`) exist and have no name clashes.
 2. **Enum Creation:**
@@ -437,10 +453,10 @@ To achieve unambiguous CTO acceptance, the verification suite must prove all 16 
 - **G. SCENARIO → OFFICIAL Protection:** Executing an update attempting to change a `SCENARIO` record to `OFFICIAL` is rejected and fails closed.
 - **H. Historical Integrity:** An earlier dataset version remains queryable and unaltered after a newer version is registered.
 - **I. Provenance Immutability:** Historical provenance records cannot be overwritten; mutation attempts fail or force an append.
-- **J. Hot-Path Performance:** Pre- and post-migration benchmarks prove consumer queries incur no material regression within the established threshold.
+- **J. Hot-Path Performance:** Pre- and post-migration benchmarks prove consumer queries satisfy the primary p95 dual gate: `relative p95 regression <= 5%` **AND** `absolute p95 regression <= 2.0 ms` across 1,000 iterations in staging.
 - **K. Unauthorized OFFICIAL Transition Denied:** Direct `UPDATE` to `OFFICIAL` by unprivileged callers is rejected by trigger and RLS.
 - **L. Authorized/Evidenced OFFICIAL Transition Succeeds:** Elevation with valid DB evidence record and authorized role succeeds cleanly.
 - **M. Verification ID Alone Insufficient:** Supplying an unverified or arbitrary `verification_id` without an authoritative DB evidence record fails closed.
 - **N. RLS Invariant Protection:** Anonymous and standard authenticated roles cannot bypass governance invariants.
 - **O. Preservation of Application Behavior:** Existing mobile and API functionality behaves identically before and after governance tables are added.
-- **P. Zero Fabricated Metadata:** Representative datasets contain only verified evidence from the repository, with unverified fields explicitly recorded as `UNKNOWN`.
+- **P. Zero Fabricated Metadata:** Representative datasets contain only verified evidence from the repository, with unverified fields explicitly recorded as `UNKNOWN / NOT ESTABLISHED`.
