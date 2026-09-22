@@ -1,0 +1,118 @@
+{
+  "job": "W015",
+  "title": "Geography Relationship Engine",
+  "phase": "PREFLIGHT_REVISION_5_FINAL_MICRO_CORRECTION",
+  "status": "W015_PREFLIGHT_REVISION_5_AWAITING_CTO_REVIEW",
+  "implementation_authorized": false,
+  "cto_review_required": true,
+  "database_modification_authorized": false,
+  "staging_mutation_authorized": false,
+  "production_mutation_authorized": false,
+  "target_environment": "panIN-staging (fkpigozcqnmcvofuksar.supabase.co)",
+  "production_status": "STRICTLY_UNTOUCHED",
+  "authorized_baseline_commit": "bb7c6ec6abebe478a2b5d2c1839b68521dfa855a",
+  "authoritative_master_specification": {
+    "job_id": "JOB 015",
+    "name": "GEOGRAPHY RELATIONSHIP ENGINE",
+    "owner": "DATA + BE",
+    "mandated_relationship_semantics": [
+      "parent",
+      "child",
+      "contains",
+      "part-of",
+      "predecessor",
+      "successor",
+      "old-to-new mapping"
+    ],
+    "evidence": "Known geography relationships reconcile correctly."
+  },
+  "scope_clarification": {
+    "geography_pairs_note": "Neither Mandal-AC, PC-District, nor any other geography pair is an independent W015 scope item. Specific administrative/electoral relationship pairs are in scope ONLY when required to implement and reconcile one of the seven W015 master relationship semantics.",
+    "traceability_rule": "Every proposed element must answer: 'What exact master relationship cannot be correctly implemented or reconciled without this element?' If no exact answer exists: CLASSIFIED D / DEFERRED."
+  },
+  "items_removed_from_w015_scope": [
+    "Standalone 'relational adjacency' capability (not one of the 7 master relationship types)",
+    "Quantitative 'overlap_percentage' calculation / weighting (classified as Category D / Deferred; discrete full/partial containment is sufficient)",
+    "Standalone PC ↔ District cross-tree relationship catalogue (classified as Category D / Deferred; not an independent master requirement)",
+    "Product hierarchy traversal capabilities / dedicated customer-facing APIs (AC -> Mandal -> GP -> Booth) (classified as Category D / Deferred)",
+    "Mandatory 'Telangana Pilot' scope mandate (bounded sample is a verification technique, not a master requirement)",
+    "Mandatory new backend API routes or service filenames (labeled candidate implementation mechanism — conditional only)",
+    "Redundant delimitation_constituency_mapping table (geography_entity_lineage from W014 satisfies old-to-new transitions)",
+    "Invented mandatory performance thresholds (P95 <30ms, <50ms, <100ms, <120ms)",
+    "Mobile client modifications / screen rewrites (W015 owner is DATA + BE)",
+    "Spatial inference, PostGIS geometry operations, GPS geocoding, PIN mapping (strictly quarantined to W016)",
+    "Broad automated data-quality anomaly detection engine (strictly quarantined to W017)"
+  ],
+  "scope_classification": {
+    "category_A_directly_mandated": [
+      "parent relationship modeling and reconciliation",
+      "child relationship modeling and reconciliation",
+      "contains relationship modeling and reconciliation",
+      "part-of relationship modeling and reconciliation",
+      "predecessor relationship modeling and reconciliation",
+      "successor relationship modeling and reconciliation",
+      "old-to-new mapping across statutory and delimitation reorganizations",
+      "reconciliation test proving known geography relationships reconcile correctly"
+    ],
+    "category_B_necessary_implementation_mechanisms": [
+      "Dual-table anchor reference model (relationships link stable anchor UUIDs/codes, not ephemeral version rows)",
+      "Temporal validity intervals [valid_from, valid_to) and PostgreSQL GiST exclusion: Category B ONLY where demonstrated that a relationship changes over time with coexisting historical records (e.g. constituency_district_timeline); not automatically required for static relationships",
+      "Canonical use of geography_entity_lineage (W014) to satisfy predecessor, successor, and old-to-new transitions without duplicate tables",
+      "Inherited W012 dataset_version registration and UNVERIFIED data status enforcement",
+      "Inherited W014 scenario isolation (WHERE NOT is_scenario)",
+      "Row Level Security (RLS) security policies: Inherited project-wide mandatory constraint; Category B only where required to safely implement newly authorized W015 relationship storage (zero security redesign)",
+      "Candidate backend relationship traversal queries: Candidate implementation mechanism — conditional. Category B only if repository inspection demonstrates backend code is required to implement or verify a master relationship; direct SQL query is sufficient where no backend behavior is required"
+    ],
+    "category_C_existing_defects_to_fix": [
+      "DEF-15-01: mandals table (Migration 022) has denormalized text 'district' column lacking FK to public.districts(id)",
+      "DEF-15-02: mandal_constituency_map table (Migration 022) uses legacy text ID instead of internal_id UUID"
+    ],
+    "category_D_out_of_w015_deferred": [
+      "Standalone relational adjacency capability",
+      "Quantitative overlap_percentage calculation / weighting",
+      "Standalone PC ↔ District cross-tree relationship catalogue",
+      "Product hierarchy traversal APIs / endpoints (AC -> Mandal -> GP -> Booth)",
+      "Mobile client changes, mobile API migration, offline seed migration, UI screens",
+      "Spatial inference, PostGIS geometry calculations, ST_Contains, ST_Intersects (quarantined to W016)",
+      "GPS coordinate reverse geocoding, PIN code lookup, address matching (quarantined to W016)",
+      "Broad automated data-quality anomaly detection engine (quarantined to W017)",
+      "Arbitrary numeric latency thresholds"
+    ]
+  },
+  "acceptance_evidence_chain": {
+    "four_link_chain": "AUTHORITATIVE SOURCE RELATIONSHIP -> CANONICAL STORED RELATIONSHIP -> RELATIONAL INTEGRITY -> RECONCILIATION RESULT",
+    "mandatory_seed_documentation": [
+      "authoritative_source",
+      "source_identifier_or_document",
+      "retrieval_date",
+      "effective_date",
+      "dataset_version",
+      "provenance",
+      "specific_relationship_demonstrated"
+    ],
+    "old_to_new_mapping_evidence_fields": [
+      "old_entity",
+      "new_entity",
+      "transition_type",
+      "effective_date",
+      "statutory_or_electoral_source",
+      "dataset_version",
+      "provenance"
+    ]
+  },
+  "acceptance_test_mapping": {
+    "core_master_tests": {
+      "TEST-A": "parent / child relationship reconciliation",
+      "TEST-B": "contains / part-of relationship reconciliation",
+      "TEST-C": "predecessor / successor relationship reconciliation (geography_entity_lineage)",
+      "TEST-D": "old-to-new mapping reconciliation (constituency_district_timeline & geography_entity_lineage)",
+      "TEST-E": "empirical reconciliation of known geography relationships (Master Evidence Gate)"
+    },
+    "supporting_tests": {
+      "TEST-SUPP-1": "Temporal GiST Non-Overlap Invariant (where temporal storage is demonstrated)",
+      "TEST-SUPP-2": "Scenario Isolation & Inherited RLS Security",
+      "TEST-SUPP-3": "W012 Lineage & Governance Integrity (100% UNVERIFIED)",
+      "TEST-SUPP-4": "Regression Suite & General Performance Observation"
+    }
+  }
+}
