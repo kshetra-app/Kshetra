@@ -181,7 +181,9 @@ async function runTests() {
   } else {
     try {
       const fakeId = crypto.randomUUID();
-      const { error: gErr } = await adminClient.from('provenance_records').update({ status: 'OFFICIAL', verification_evidence_id: fakeId }).limit(1);
+      const { error: gErr } = await adminClient.from('provenance_records')
+        .update({ status: 'OFFICIAL', verification_evidence_id: fakeId })
+        .eq('dataset_version_id', testVersionId);
       const passed = gErr && gErr.message.includes('EVIDENCE NOT FOUND');
       recordTest('TEST-12-G', 'Caller-supplied verification_id alone cannot elevate without DB evidence', 'EVIDENCE_INTEGRITY', passed ? 'PASS' : 'FAIL', 'EVIDENCE NOT FOUND', gErr?.message);
     } catch (e) {

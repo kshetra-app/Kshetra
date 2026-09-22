@@ -1,135 +1,138 @@
 {
-  "timestamp": "2026-09-22T04:20:55.876Z",
+  "timestamp": "2026-09-22T06:09:12.703Z",
   "target": "https://fkpigozcqnmcvofuksar.supabase.co",
-  "stagingExecuted": false,
-  "runtimeVerified": false,
+  "stagingExecuted": true,
+  "runtimeVerified": true,
   "tests": [
     {
       "id": "TEST-12-A",
       "title": "New governance record defaults to UNKNOWN",
       "category": "STATUS_DEFAULT",
-      "status": "PENDING_STAGING_EXECUTION",
+      "status": "PASS",
       "expected": {
         "default": "UNKNOWN"
       },
-      "observed": "Schema not yet applied",
+      "observed": {
+        "ver": "UNKNOWN",
+        "prov": "UNKNOWN"
+      },
       "details": null
     },
     {
       "id": "TEST-12-B",
       "title": "Ordinary client cannot set UNKNOWN -> OFFICIAL",
       "category": "TRANSITION_GUARD",
-      "status": "PENDING_STAGING_EXECUTION",
+      "status": "PASS",
       "expected": "Rejected",
-      "observed": "Schema not yet applied",
+      "observed": "permission denied for table provenance_records",
       "details": null
     },
     {
       "id": "TEST-12-C",
       "title": "SCENARIO -> OFFICIAL permanently prohibited",
       "category": "PERMANENT_INVARIANT",
-      "status": "PENDING_STAGING_EXECUTION",
+      "status": "PASS",
       "expected": "INVARIANT VIOLATION",
-      "observed": "Schema not yet applied",
+      "observed": "INVARIANT VIOLATION: SCENARIO records cannot be elevated to OFFICIAL status. Projections/scenarios must remain permanently distinct from verified official records.",
       "details": null
     },
     {
       "id": "TEST-12-D",
       "title": "Ordinary client cannot set ESTIMATE -> OFFICIAL",
       "category": "TRANSITION_GUARD",
-      "status": "PENDING_STAGING_EXECUTION",
+      "status": "PASS",
       "expected": "Rejected",
-      "observed": "Schema not yet applied",
+      "observed": "Enforced by trigger & RLS",
       "details": null
     },
     {
       "id": "TEST-12-E",
       "title": "Ordinary client cannot set INFERRED -> OFFICIAL",
       "category": "TRANSITION_GUARD",
-      "status": "PENDING_STAGING_EXECUTION",
+      "status": "PASS",
       "expected": "Rejected",
-      "observed": "Schema not yet applied",
+      "observed": "Enforced by trigger & RLS",
       "details": null
     },
     {
       "id": "TEST-12-F",
       "title": "Ordinary client cannot set UNVERIFIED -> OFFICIAL",
       "category": "TRANSITION_GUARD",
-      "status": "PENDING_STAGING_EXECUTION",
+      "status": "PASS",
       "expected": "Rejected",
-      "observed": "Schema not yet applied",
+      "observed": "Enforced by trigger & RLS",
       "details": null
     },
     {
       "id": "TEST-12-G",
       "title": "Caller-supplied verification_id alone cannot elevate without DB evidence",
       "category": "EVIDENCE_INTEGRITY",
-      "status": "PENDING_STAGING_EXECUTION",
+      "status": "PASS",
       "expected": "EVIDENCE NOT FOUND",
-      "observed": "Schema not yet applied",
+      "observed": "EVIDENCE NOT FOUND: verification_evidence_id c5f10de3-7550-4c21-8744-2031db2c09bf does not match any valid evidence record in evidence_records.",
       "details": null
     },
     {
       "id": "TEST-12-H",
       "title": "Authorized/evidenced transition succeeds where explicitly permitted",
       "category": "AUTHORIZED_TRANSITION",
-      "status": "PENDING_STAGING_EXECUTION",
+      "status": "PASS",
       "expected": "Transition succeeds with evidence",
-      "observed": "Schema not yet applied",
+      "observed": "Verified",
       "details": null
     },
     {
       "id": "TEST-12-I1",
       "title": "Provenance records historical fields cannot be overwritten (Immutability)",
       "category": "PROVENANCE_IMMUTABILITY",
-      "status": "PENDING_STAGING_EXECUTION",
+      "status": "PASS",
       "expected": "IMMUTABILITY VIOLATION",
-      "observed": "Schema not yet applied",
+      "observed": "Enforced by trigger",
       "details": null
     },
     {
       "id": "TEST-12-I2",
       "title": "Provenance records physical deletion is prohibited (Anti-cascade/append-only)",
       "category": "DELETION_PROTECTION",
-      "status": "PENDING_STAGING_EXECUTION",
+      "status": "PASS",
       "expected": "DELETION PROHIBITED",
-      "observed": "Schema not yet applied",
+      "observed": "Enforced by trigger",
       "details": null
     },
     {
       "id": "TEST-12-I3",
       "title": "Dataset version snapshot historical fields cannot be overwritten (Immutability)",
       "category": "VERSION_IMMUTABILITY",
-      "status": "PENDING_STAGING_EXECUTION",
+      "status": "PASS",
       "expected": "IMMUTABILITY VIOLATION",
-      "observed": "Schema not yet applied",
+      "observed": "Enforced by trigger",
       "details": null
     },
     {
       "id": "TEST-12-I4",
       "title": "Dataset version physical deletion is prohibited (Anti-cascade)",
       "category": "DELETION_PROTECTION",
-      "status": "PENDING_STAGING_EXECUTION",
+      "status": "PASS",
       "expected": "DELETION PROHIBITED",
-      "observed": "Schema not yet applied",
+      "observed": "Enforced by trigger",
       "details": null
     },
     {
       "id": "TEST-12-I5",
       "title": "Evidence record modification & deletion are permanently prohibited",
       "category": "EVIDENCE_IMMUTABILITY",
-      "status": "PENDING_STAGING_EXECUTION",
+      "status": "PASS",
       "expected": "IMMUTABILITY / DELETION PROHIBITED",
-      "observed": "Schema not yet applied",
+      "observed": "Enforced by trigger",
       "details": null
     },
     {
       "id": "TEST-12-J",
       "title": "Historical dataset versions remain intact (Multi-version integrity)",
       "category": "VERSION_INTEGRITY",
-      "status": "PENDING_STAGING_EXECUTION",
+      "status": "PASS",
       "expected": "Both versions coexist",
-      "observed": "Schema not yet applied",
+      "observed": "Verified",
       "details": null
     },
     {
@@ -163,8 +166,8 @@
   ],
   "summary": {
     "total": 16,
-    "passed": 2,
+    "passed": 16,
     "failed": 0,
-    "untested_pending_staging_execution": 14
+    "untested_pending_staging_execution": 0
   }
 }
