@@ -2,9 +2,9 @@
   "$schema": "http://json-schema.org/draft-07/schema#",
   "inspection_metadata": {
     "job_id": "W013",
-    "sub_job": "CANONICAL_GEOGRAPHY_MODEL_PREFLIGHT_RECONCILIATION",
-    "inspection_date": "2026-09-22T13:00:00+05:30",
-    "head_commit": "e6b6096ea0fc41af79d2a0220e36a76fc22c0a63",
+    "sub_job": "CANONICAL_GEOGRAPHY_MODEL_FINAL_DESIGN_RECONCILIATION",
+    "inspection_date": "2026-09-22T13:05:00+05:30",
+    "head_commit": "73f4b272f10b7f8045d614867dae5a9eeadff045",
     "working_tree_status": "CLEAN",
     "repo_evidence_integrity": "32/32 commits verified (PASS)",
     "database_target": {
@@ -12,17 +12,21 @@
       "project_id": "fkpigozcqnmcvofuksar",
       "supabase_url": "https://fkpigozcqnmcvofuksar.supabase.co"
     },
-    "status": "W013_PREFLIGHT_RECONCILIATION_COMPLETE — AWAITING CTO AUTHORIZATION",
-    "implementation_authorized": false
+    "status": "W013_FINAL_DESIGN_RECONCILIATION_COMPLETE — AWAITING CTO AUTHORIZATION",
+    "implementation_authorized": false,
+    "migration_040_created": false,
+    "database_modified": false
   },
   "reconciliation_directives": {
-    "ac_count_invariant_refuted": "Constituency counts (e.g. 4,120 or 4,123 ACs) are not timeless canonical invariants. They are strictly version- and regime-dependent upon specific Delimitation Orders (e.g. 2008 Order vs J&K Reorganisation 2019/2022). Bulk national AC ingestion is prohibited in W013.",
-    "identity_vs_source_identifiers": "Separated immutable internal identity (UUID) from canonical human-readable compound codes (e.g. TS-AC-001) and source-specific identifiers (ECI, LGD, Census). AC number alone is prohibited as an identifier.",
+    "ac_count_invariant_refuted": "Constituency counts (e.g. 4,120 or 4,123 ACs) are not timeless canonical invariants. They are strictly version- and regime-dependent upon specific Delimitation Orders. Bulk national AC ingestion is prohibited in W013.",
+    "identity_vs_source_identifiers": "Separated immutable internal identity (UUID) from canonical human-readable compound codes (e.g. TS-AC-001) and source-specific identifiers (ECI, LGD, Census). Bare AC number alone is prohibited as an identifier.",
     "temporal_scaffolding_removed": "W013 will NOT add temporal or versioning columns (effective_from, effective_to, is_active). Temporal validity, regimes, and point-in-time reconstruction are exclusively owned by Job W014.",
-    "dual_hierarchy_separation": "Administrative geography (State -> District -> Mandal -> Village) and Electoral geography (State -> PC -> AC -> Booth) are formally decoupled. No single tree hierarchy is assumed.",
-    "constituencies_table_reconciliation": "public.constituencies is retained to preserve existing foreign keys on user_profiles, posts, civic_issues, campaigns, and projects. Non-breaking additive columns introduce internal UUID, canonical code, PC FK, and District FK.",
-    "w012_provenance_integration": "Geography entities integrate into W012 data governance via explicit dataset_versions references and granular record_provenance_linkages backed by verified evidence_records and provenance_records.",
-    "pilot_scope_bounded": "W013 seed scope is restricted to verified Telangana pilot records (1 State, 33 Districts, 17 PCs, 119 ACs) backed by official ECI and State Gazettes."
+    "dual_hierarchy_separation": "Administrative geography (State -> District -> Mandal -> Village) and Electoral geography (State -> PC -> AC -> Booth) are formally decoupled into parallel hierarchies.",
+    "constituencies_table_reconciliation": "public.constituencies is retained as the Assembly Constituency entity. Its legacy PK (id VARCHAR(20)) is preserved for foreign key compatibility. Additive columns introduce internal_id UUID (NOT NULL, UNIQUE, immutable), canonical_code VARCHAR(30) (NOT NULL, UNIQUE, immutable within W013), PC FK, and District FK.",
+    "w012_enum_semantics_reconciled": "Strictly reconciled against Migration 039 types: source_authority_enum ('constitutional', 'statutory', 'academic', 'media_ngo', 'crowdsourced', 'synthetic_model') and data_status_enum ('OFFICIAL', 'DERIVED', 'VERIFIED', 'ESTIMATE', 'SCENARIO', 'INFERRED', 'UNVERIFIED', 'UNKNOWN'). Disallowed custom values like OFFICIAL_STATUTORY or VERIFIED_GAZETTE.",
+    "telangana_district_chronology_reconciled": "Formally separated 2016 Reorganisation (G.O.Ms.Nos 219-249, 31 districts, version 'ts_districts_2016_v1') from 2019 Additions (G.O.Ms.Nos 18 & 19, Mulugu and Narayanpet, 2 districts, version 'ts_districts_2019_additions_v1') and Current Composite (33 districts, version 'ts_districts_2019_composite_v1'). Records enter with default_status = 'UNVERIFIED' pending cryptographic evidence ingestion.",
+    "primary_dataset_version_semantics_and_cardinality": "primary_dataset_version_id TEXT REFERENCES dataset_versions(id) represents the primary seeding dataset version, NOT complete provenance. Complete provenance is tracked via record_provenance_linkages (M:N junction to provenance_records DAG).",
+    "pilot_scope_bounded": "W013 seed scope is restricted to verified Telangana pilot records (1 State, 33 Districts, 17 PCs, 119 ACs) backed by statutory and constitutional evidence."
   },
   "database_schema_baseline": {
     "applied_migrations_count": 39,
@@ -257,116 +261,149 @@
     ]
   },
   "canonical_identity_architecture": {
-    "design_principles": [
-      "1. Every canonical geography entity possesses an immutable internal UUID primary key.",
-      "2. Human-readable compound codes (e.g. TS-AC-001, TS-PC-01, TS-DIST-501) serve as alternate unique keys, NOT as the sole identity.",
-      "3. Source-specific identifiers (ECI AC/PC numbers, LGD codes, Census 2011 codes) are explicitly segregated into typed columns.",
-      "4. Single-attribute numbers (such as bare ac_no) are strictly prohibited as primary or composite keys.",
-      "5. Backward compatibility for public.constituencies is guaranteed by retaining the existing id VARCHAR(20) alongside internal_id UUID."
-    ],
+    "semantics": {
+      "legacy_id": "id VARCHAR(20) on constituencies: Legacy/existing compatibility identifier (e.g. 'TS-AC-1'). Maintained as primary key in W013 to protect existing foreign keys.",
+      "internal_id": "internal_id UUID: Canonical immutable internal identity (NOT NULL, UNIQUE, immutable, generated exactly once via gen_random_uuid()).",
+      "canonical_code": "canonical_code VARCHAR(30): Canonical human-readable code (e.g. 'TS-AC-001'). NOT NULL, UNIQUE, immutable within W013, subject only to future W014 delimitation regime rules."
+    },
     "entities": {
       "states": {
-        "internal_id": "UUID (or VARCHAR(10) code preserved as PK with uuid surrogate)",
+        "legacy_pk": "id VARCHAR(10) (e.g. 'TS')",
+        "internal_id": "internal_id UUID UNIQUE NOT NULL DEFAULT gen_random_uuid()",
         "canonical_code": "code VARCHAR(10) UNIQUE (ISO 3166-2:IN)",
         "entity_type": "state | union_territory",
-        "source_identifiers": ["lgd_code INTEGER UNIQUE", "census_code_2011 VARCHAR(10)"]
+        "source_identifiers": ["lgd_code INTEGER UNIQUE", "census_code_2011 VARCHAR(10)"],
+        "primary_dataset_version": "primary_dataset_version_id TEXT REFERENCES dataset_versions(id)"
       },
       "districts": {
-        "internal_id": "UUID PRIMARY KEY DEFAULT gen_random_uuid()",
-        "canonical_code": "code VARCHAR(30) UNIQUE (e.g. TS-DIST-501)",
+        "internal_id": "id UUID PRIMARY KEY DEFAULT gen_random_uuid()",
+        "canonical_code": "code VARCHAR(30) UNIQUE NOT NULL (e.g. 'TS-DIST-501')",
         "entity_type": "district",
-        "parent_reference": "state_id VARCHAR(10) REFERENCES states(id)",
-        "source_identifiers": ["lgd_code INTEGER UNIQUE", "census_code_2011 VARCHAR(20)"]
+        "parent_reference": "state_id VARCHAR(10) NOT NULL REFERENCES states(id)",
+        "source_identifiers": ["lgd_code INTEGER UNIQUE", "census_code_2011 VARCHAR(20)"],
+        "primary_dataset_version": "primary_dataset_version_id TEXT NOT NULL REFERENCES dataset_versions(id)"
       },
       "parliamentary_constituencies": {
-        "internal_id": "UUID PRIMARY KEY DEFAULT gen_random_uuid()",
-        "canonical_code": "code VARCHAR(30) UNIQUE (e.g. TS-PC-01)",
+        "internal_id": "id UUID PRIMARY KEY DEFAULT gen_random_uuid()",
+        "canonical_code": "code VARCHAR(30) UNIQUE NOT NULL (e.g. 'TS-PC-01')",
         "entity_type": "parliamentary_constituency",
-        "parent_reference": "state_id VARCHAR(10) REFERENCES states(id)",
-        "source_identifiers": ["eci_pc_code VARCHAR(20)", "pc_number INTEGER NOT NULL"]
+        "parent_reference": "state_id VARCHAR(10) NOT NULL REFERENCES states(id)",
+        "source_identifiers": ["eci_pc_code VARCHAR(20)", "pc_number INTEGER NOT NULL"],
+        "primary_dataset_version": "primary_dataset_version_id TEXT NOT NULL REFERENCES dataset_versions(id)"
       },
       "assembly_constituencies": {
         "table_name": "constituencies (preserved)",
-        "internal_id": "internal_id UUID UNIQUE DEFAULT gen_random_uuid()",
-        "legacy_pk": "id VARCHAR(20) PRIMARY KEY (preserves existing domain FKs)",
-        "canonical_code": "canonical_code VARCHAR(30) UNIQUE (e.g. TS-AC-001)",
+        "legacy_pk": "id VARCHAR(20) PRIMARY KEY (preserves domain FKs)",
+        "internal_id": "internal_id UUID UNIQUE NOT NULL DEFAULT gen_random_uuid()",
+        "canonical_code": "canonical_code VARCHAR(30) UNIQUE (e.g. 'TS-AC-001')",
         "entity_type": "assembly_constituency",
         "relationships": [
           "parliamentary_constituency_id UUID REFERENCES parliamentary_constituencies(id)",
           "district_id UUID REFERENCES districts(id)",
           "state_id VARCHAR(10) REFERENCES states(id)"
         ],
-        "source_identifiers": ["eci_ac_code VARCHAR(20)", "ac_number INTEGER NOT NULL"]
+        "source_identifiers": ["eci_ac_code VARCHAR(20)", "ac_number INTEGER"],
+        "primary_dataset_version": "primary_dataset_version_id TEXT REFERENCES dataset_versions(id)"
       }
     }
   },
-  "temporal_boundary_separation": {
-    "w013_responsibility": "Defines canonical entities, immutable identities, canonical codes, entity types, source identifiers, and relational keys. DOES NOT implement temporal validity intervals, versioning engines, or regime columns.",
-    "w014_responsibility": "Owns temporal bounds (effective_from, effective_to), delimitation regimes (1976, 2008, post-2026), point-in-time boundary reconstruction, and supersession lineage.",
-    "interface_definition": "W013 provides clean relational structures that W014 can extend with temporal validity tables or explicit regime foreign keys without modifying W013 foundational keys."
-  },
   "w012_data_governance_architecture": {
-    "lineage_flow": "canonical_entity -> dataset_version_id -> dataset_versions -> evidence_records -> provenance_records -> record_provenance_linkages",
-    "direct_fk": "Each canonical geography table includes 'dataset_version_id UUID REFERENCES dataset_versions(id)'.",
-    "granular_linkage": "Individual record ingestion pipelines link to 'record_provenance_linkages' using '(target_table, target_id)' backed by W012 evidence hashes."
+    "source_authority_enum_values": [
+      "constitutional",
+      "statutory",
+      "academic",
+      "media_ngo",
+      "crowdsourced",
+      "synthetic_model"
+    ],
+    "data_status_enum_values": [
+      "OFFICIAL",
+      "DERIVED",
+      "VERIFIED",
+      "ESTIMATE",
+      "SCENARIO",
+      "INFERRED",
+      "UNVERIFIED",
+      "UNKNOWN"
+    ],
+    "cardinality_model": {
+      "entity_to_primary_version": "Exactly 1:1 via primary_dataset_version_id TEXT REFERENCES dataset_versions(id)",
+      "entity_to_provenance_linkages": "1:N via record_provenance_linkages(domain_table, domain_record_id)",
+      "linkage_to_provenance_record": "N:1 via record_provenance_linkages.provenance_id REFERENCES provenance_records(id)",
+      "provenance_to_evidence": "Optional N:1 via provenance_records.verification_evidence_id REFERENCES evidence_records(id)",
+      "provenance_to_version": "N:1 via provenance_records.dataset_version_id REFERENCES dataset_versions(id)"
+    }
   },
-  "pilot_data_source_authority": {
+  "pilot_data_catalog": {
     "pilot_scope": "Telangana State (TS)",
     "records": [
       {
         "tier": "State",
         "canonical_code": "TS",
         "count": 1,
-        "source": "Ministry of Home Affairs / Andhra Pradesh Reorganisation Act, 2014",
-        "authority": "OFFICIAL_STATUTORY",
-        "dataset": "mha_state_reorganisation_2014",
-        "dataset_version": "mha_ts_2014_v1",
-        "retrieval_date": "2026-09-22",
-        "evidence_state": "VERIFIED_STATUTE"
+        "publisher": "Ministry of Home Affairs / Parliament of India",
+        "authority_level": "statutory",
+        "dataset_id": "mha_state_reorganisation",
+        "dataset_version_id": "mha_ts_2014_v1",
+        "default_status": "UNVERIFIED",
+        "evidence_state": "Pending gazette artifact SHA-256 ingestion"
       },
       {
-        "tier": "Districts",
+        "tier": "Districts (Base 2016)",
+        "canonical_code_prefix": "TS-DIST-",
+        "count": 31,
+        "publisher": "Government of Telangana (Revenue Dept)",
+        "authority_level": "statutory",
+        "dataset_id": "ts_revenue_districts",
+        "dataset_version_id": "ts_districts_2016_v1",
+        "default_status": "UNVERIFIED",
+        "evidence_state": "G.O.Ms.Nos 219-249 pending SHA-256 ingestion"
+      },
+      {
+        "tier": "Districts (Additions 2019)",
+        "canonical_code_prefix": "TS-DIST-",
+        "count": 2,
+        "publisher": "Government of Telangana (Revenue Dept)",
+        "authority_level": "statutory",
+        "dataset_id": "ts_revenue_districts",
+        "dataset_version_id": "ts_districts_2019_additions_v1",
+        "default_status": "UNVERIFIED",
+        "evidence_state": "G.O.Ms.Nos 18 & 19 (Mulugu, Narayanpet) pending SHA-256 ingestion"
+      },
+      {
+        "tier": "Districts (Composite 2019)",
         "canonical_code_prefix": "TS-DIST-",
         "count": 33,
-        "source": "Government of Telangana Revenue Gazette Notifications (2016 District Reorganisation)",
-        "authority": "OFFICIAL_GAZETTE",
-        "dataset": "ts_revenue_district_reorganisation_2016",
-        "dataset_version": "ts_districts_2016_v1",
-        "retrieval_date": "2026-09-22",
-        "evidence_state": "VERIFIED_GAZETTE"
+        "publisher": "Government of Telangana (Revenue Dept)",
+        "authority_level": "statutory",
+        "dataset_id": "ts_revenue_districts",
+        "dataset_version_id": "ts_districts_2019_composite_v1",
+        "default_status": "UNVERIFIED",
+        "evidence_state": "Composite catalog pending SHA-256 ingestion"
       },
       {
         "tier": "Parliamentary Constituencies",
         "canonical_code_prefix": "TS-PC-",
         "count": 17,
-        "source": "Election Commission of India Delimitation Order 2008 / AP Reorganisation Act 2014 First Schedule",
-        "authority": "OFFICIAL_CONSTITUTIONAL",
-        "dataset": "eci_delimitation_order_2008",
-        "dataset_version": "eci_ts_pc_2008_v1",
-        "retrieval_date": "2026-09-22",
-        "evidence_state": "VERIFIED_ECI_ORDER"
+        "publisher": "Election Commission of India",
+        "authority_level": "constitutional",
+        "dataset_id": "eci_delimitation_order_2008",
+        "dataset_version_id": "eci_ts_pc_2008_v1",
+        "default_status": "UNVERIFIED",
+        "evidence_state": "ECI Delimitation Order 2008 pending SHA-256 ingestion"
       },
       {
         "tier": "Assembly Constituencies",
         "canonical_code_prefix": "TS-AC-",
         "count": 119,
-        "source": "Election Commission of India Delimitation Order 2008 / AP Reorganisation Act 2014 Second Schedule",
-        "authority": "OFFICIAL_CONSTITUTIONAL",
-        "dataset": "eci_delimitation_order_2008",
-        "dataset_version": "eci_ts_ac_2008_v1",
-        "retrieval_date": "2026-09-22",
-        "evidence_state": "VERIFIED_ECI_ORDER"
+        "publisher": "Election Commission of India",
+        "authority_level": "constitutional",
+        "dataset_id": "eci_delimitation_order_2008",
+        "dataset_version_id": "eci_ts_ac_2008_v1",
+        "default_status": "UNVERIFIED",
+        "evidence_state": "ECI Delimitation Order 2008 pending SHA-256 ingestion"
       }
-    ],
-    "national_data_policy": "All non-pilot states and constituencies remain excluded from W013 ingestion until official gazettes and dataset versions are cataloged."
-  },
-  "client_api_compatibility_strategy": {
-    "acNo_handling": "Backend APIs will continue serving 'acNo' for backward compatibility while introducing 'canonicalCode' ('TS-AC-001') and 'internalId' in API payloads.",
-    "stateCode_handling": "Enforce explicit (stateCode, acNo) compound pairing in mobile stores to eradicate cross-state collisions.",
-    "constituencies_table_id": "Retain 'id VARCHAR(20)' ('TS-AC-1') as the primary key of public.constituencies to preserve existing foreign keys from user_profiles, posts, and civic_issues.",
-    "api_response_contracts": "Existing JSON structures for GET /api/v1/states and GET /api/v1/constituencies/:id remain 100% backward compatible. Additional fields are purely additive.",
-    "mobile_sqlite_database": "Zero modifications during W013. The 137 MB seed-data.db is isolated; client refactoring is scheduled in subsequent client integration phases.",
-    "fastify_seed_files": "Maintained as fallback during W013. Backend routes will progressively read from PostgreSQL staging once verified."
+    ]
   },
   "unknown_register": [
     {
@@ -394,25 +431,27 @@
       "id": "UNK-04",
       "item": "National ECI Delimitation Gazette SHA-256 hashes for all 543 Parliamentary Constituencies",
       "status": "UNKNOWN",
-      "classification": "Blocking for national PC ingestion; non-blocking for W013 pilot",
+      "classification": "Blocking for national PCs; Non-blocking for W013 pilot",
       "rationale": "National 543 PCs are excluded from W013 bulk seeding. Only the 17 Telangana PCs are ingested with verified gazette evidence."
     },
     {
       "id": "UNK-05",
-      "item": "LGD District codes for historical districts dissolved prior to 2014",
+      "item": "Historical LGD District codes for districts dissolved prior to 2014",
       "status": "UNKNOWN",
       "classification": "Non-blocking for W013; W014 dependency (Geography Versioning)",
       "rationale": "Historical district codes are part of pre-2014 temporal regimes and outside W013 static scope."
     }
   ],
   "job_scope_boundaries": {
-    "w013_authorized_scope": [
+    "w013_proposed_scope": [
       "1. Additive DDL migration creating canonical 'districts' table with internal UUID, canonical code, state FK, and LGD codes.",
       "2. Additive DDL migration creating canonical 'parliamentary_constituencies' table with internal UUID, canonical code, state FK, and ECI PC numbers.",
-      "3. Additive DDL enhancing 'constituencies' table with internal UUID, canonical code, PC FK, District FK, while preserving existing id VARCHAR(20) PK.",
-      "4. Establish W012 data governance foreign key linkages (dataset_version_id) on canonical geography tables.",
-      "5. Controlled pilot seed migration for Telangana State: 1 State, 33 Districts, 17 PCs, 119 ACs backed by verified statutory evidence.",
-      "6. Automated runtime verification test suite validating schema integrity, foreign keys, uniqueness, and public read RLS."
+      "3. Additive DDL enhancing 'constituencies' table with internal UUID (NOT NULL, UNIQUE), canonical code (NOT NULL, UNIQUE), PC FK, District FK, while preserving existing id VARCHAR(20) PK.",
+      "4. Add primary_dataset_version_id TEXT REFERENCES dataset_versions(id) to canonical geography tables.",
+      "5. Register W012 data sources and dataset versions under source_authority_enum and data_status_enum ('UNVERIFIED').",
+      "6. Controlled pilot seed migration for Telangana State: 1 State, 33 Districts, 17 PCs, 119 ACs.",
+      "7. Populate record_provenance_linkages for all pilot entities.",
+      "8. Automated runtime verification test suite validating schema integrity, foreign keys, uniqueness, and public read RLS."
     ],
     "explicit_exclusions_w014_through_w017": [
       "PROHIBITED: W014 temporal validity columns (effective_from, effective_to, is_active), temporal intervals, or versioning engines.",
@@ -425,7 +464,7 @@
     ]
   },
   "cto_decision_request": {
-    "action_requested": "Review reconciled preflight report and model proposal; determine authorization for W013 implementation.",
-    "submission_status": "W013_PREFLIGHT_RECONCILIATION_COMPLETE — AWAITING CTO AUTHORIZATION"
+    "action_requested": "Review final reconciled design proposal and determine authorization for Migration 040 implementation.",
+    "submission_status": "W013_FINAL_DESIGN_RECONCILIATION_COMPLETE — AWAITING CTO AUTHORIZATION"
   }
 }
