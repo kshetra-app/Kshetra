@@ -18,6 +18,7 @@
  *   TEST-13-J: Row Level Security enabled: public read succeeds; anonymous mutation denied
  *   TEST-13-K: Backwards compatibility: domain FKs and application queries unaffected
  *   TEST-13-L: District chronology and dataset semantics verified
+ *   TEST-13-M: Canonical identifier width sufficiency (Full Jayashankar Bhupalpally length 31 verified)
  */
 
 import fs from 'node:fs';
@@ -60,7 +61,7 @@ const results = {
   target: supabaseUrl,
   testRunId,
   summary: {
-    total: 12,
+    total: 13,
     passed: 0,
     failed: 0,
     pending: 0
@@ -115,7 +116,8 @@ async function runTests() {
       ['TEST-13-I', 'All pilot entities have UNVERIFIED data status; zero elevation to OFFICIAL', 'GOVERNANCE_SECURITY'],
       ['TEST-13-J', 'Row Level Security enabled: public read succeeds; anonymous mutation denied', 'RLS_SECURITY'],
       ['TEST-13-K', 'Backwards compatibility: domain FKs and application queries unaffected', 'REGRESSION_INTEGRITY'],
-      ['TEST-13-L', 'District chronology and dataset semantics verified', 'CHRONOLOGY_INTEGRITY']
+      ['TEST-13-L', 'District chronology and dataset semantics verified', 'CHRONOLOGY_INTEGRITY'],
+      ['TEST-13-M', 'Canonical identifier width sufficiency (Full Jayashankar Bhupalpally length 31 verified)', 'IDENTIFIER_WIDTH_INTEGRITY']
     ];
 
     for (const [id, name, cat] of pendingTests) {
@@ -383,6 +385,25 @@ async function runTests() {
     lPassed ? 'PASS' : 'FAIL',
     '31 base districts from ts_districts_2016_v1; 2 addition districts (Mulugu, Narayanpet) from ts_districts_2019_additions_v1',
     { baseCount: dist2016?.length, additionsCount: dist2019?.length, additionsNames }
+  );
+
+  // --------------------------------------------------------------------------
+  // TEST-13-M: Canonical identifier width sufficiency
+  // --------------------------------------------------------------------------
+  const { data: bhupalpally, error: bhuErr } = await adminClient
+    .from('districts')
+    .select('code, name')
+    .eq('code', 'TS-DIST-JAYASHANKAR-BHUPALPALLY')
+    .single();
+
+  const mPassed = !bhuErr && bhupalpally && bhupalpally.code === 'TS-DIST-JAYASHANKAR-BHUPALPALLY' && bhupalpally.code.length === 31;
+  recordTest(
+    'TEST-13-M',
+    'Canonical identifier width sufficiency (Full Jayashankar Bhupalpally length 31 verified)',
+    'IDENTIFIER_WIDTH_INTEGRITY',
+    mPassed ? 'PASS' : 'FAIL',
+    "Full untruncated code 'TS-DIST-JAYASHANKAR-BHUPALPALLY' (31 chars) successfully persisted and retrieved",
+    { code: bhupalpally?.code, length: bhupalpally?.code?.length, name: bhupalpally?.name }
   );
 
   printSummaryAndSave();

@@ -59,9 +59,9 @@ COMMENT ON COLUMN public.states.primary_dataset_version_id IS 'W012 primary data
 
 CREATE TABLE IF NOT EXISTS public.districts (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  code VARCHAR(30) UNIQUE NOT NULL,
+  code VARCHAR(50) UNIQUE NOT NULL,
   state_code TEXT NOT NULL REFERENCES public.states(code) ON DELETE RESTRICT,
-  entity_type VARCHAR(30) NOT NULL DEFAULT 'district',
+  entity_type VARCHAR(50) NOT NULL DEFAULT 'district',
   name TEXT NOT NULL,
   name_te TEXT,
   headquarters TEXT,
@@ -85,9 +85,9 @@ COMMENT ON COLUMN public.districts.primary_dataset_version_id IS 'W012 primary d
 
 CREATE TABLE IF NOT EXISTS public.parliamentary_constituencies (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  code VARCHAR(30) UNIQUE NOT NULL,
+  code VARCHAR(50) UNIQUE NOT NULL,
   state_code TEXT NOT NULL REFERENCES public.states(code) ON DELETE RESTRICT,
-  entity_type VARCHAR(30) NOT NULL DEFAULT 'parliamentary_constituency',
+  entity_type VARCHAR(50) NOT NULL DEFAULT 'parliamentary_constituency',
   pc_number INTEGER NOT NULL,
   name TEXT NOT NULL,
   name_te TEXT,
@@ -112,8 +112,8 @@ COMMENT ON COLUMN public.parliamentary_constituencies.primary_dataset_version_id
 -- Preserves existing id PRIMARY KEY (e.g. 'TS-AC-1') to protect domain foreign keys
 ALTER TABLE public.constituencies
   ADD COLUMN IF NOT EXISTS internal_id UUID DEFAULT gen_random_uuid(),
-  ADD COLUMN IF NOT EXISTS canonical_code VARCHAR(30),
-  ADD COLUMN IF NOT EXISTS entity_type VARCHAR(30) DEFAULT 'assembly_constituency',
+  ADD COLUMN IF NOT EXISTS canonical_code VARCHAR(50),
+  ADD COLUMN IF NOT EXISTS entity_type VARCHAR(50) DEFAULT 'assembly_constituency',
   ADD COLUMN IF NOT EXISTS eci_ac_code VARCHAR(20),
   ADD COLUMN IF NOT EXISTS parliamentary_constituency_id UUID REFERENCES public.parliamentary_constituencies(id) ON DELETE RESTRICT,
   ADD COLUMN IF NOT EXISTS district_id UUID REFERENCES public.districts(id) ON DELETE RESTRICT,

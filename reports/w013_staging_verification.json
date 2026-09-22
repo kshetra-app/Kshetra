@@ -1,12 +1,12 @@
 {
-  "timestamp": "2026-09-22T08:14:56.020Z",
+  "timestamp": "2026-09-22T08:43:30.808Z",
   "target": "https://fkpigozcqnmcvofuksar.supabase.co",
-  "testRunId": "c309e031",
+  "testRunId": "3242a8ee",
   "summary": {
-    "total": 12,
+    "total": 13,
     "passed": 0,
     "failed": 0,
-    "pending": 12
+    "pending": 13
   },
   "tests": [
     {
@@ -112,6 +112,15 @@
       "id": "TEST-13-L",
       "name": "District chronology and dataset semantics verified",
       "category": "CHRONOLOGY_INTEGRITY",
+      "status": "PENDING_STAGING_EXECUTION",
+      "expected": "Migration 040 applied to panIN-staging",
+      "observed": "Table public.districts not found in schema cache",
+      "details": null
+    },
+    {
+      "id": "TEST-13-M",
+      "name": "Canonical identifier width sufficiency (Full Jayashankar Bhupalpally length 31 verified)",
+      "category": "IDENTIFIER_WIDTH_INTEGRITY",
       "status": "PENDING_STAGING_EXECUTION",
       "expected": "Migration 040 applied to panIN-staging",
       "observed": "Table public.districts not found in schema cache",

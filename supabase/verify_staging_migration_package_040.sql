@@ -240,3 +240,27 @@ ORDER BY rpl.domain_table, pr.dataset_version_id;
 -- districts | UNVERIFIED | ts_districts_2019_additions_v1 | 2
 -- parliamentary_constituencies | UNVERIFIED | eci_ts_pc_2008_v1 | 17
 -- states | UNVERIFIED | mha_ts_2014_v1 | 1
+
+-- ------------------------------------------------------------------------------
+-- CHECK 11: Schema Column Width Sufficiency & Jayashankar Bhupalpally Verification
+-- ------------------------------------------------------------------------------
+SELECT
+  table_name,
+  column_name,
+  data_type,
+  character_maximum_length
+FROM information_schema.columns
+WHERE table_schema = 'public'
+  AND (
+    (table_name = 'districts' AND column_name IN ('code', 'entity_type')) OR
+    (table_name = 'parliamentary_constituencies' AND column_name IN ('code', 'entity_type')) OR
+    (table_name = 'constituencies' AND column_name IN ('canonical_code', 'entity_type'))
+  )
+ORDER BY table_name, column_name;
+-- EXPECTED: character_maximum_length = 50 for all 6 columns.
+
+SELECT code, name, LENGTH(code) AS code_length
+FROM public.districts
+WHERE code = 'TS-DIST-JAYASHANKAR-BHUPALPALLY';
+-- EXPECTED: 1 row, code = 'TS-DIST-JAYASHANKAR-BHUPALPALLY', code_length = 31.
+
