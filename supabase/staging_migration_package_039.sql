@@ -88,7 +88,7 @@ COMMENT ON TABLE datasets IS 'Governed dataset entities across all civic and ele
 
 CREATE TABLE IF NOT EXISTS dataset_versions (
   id TEXT PRIMARY KEY,
-  dataset_id TEXT NOT NULL REFERENCES datasets(id) ON DELETE CASCADE,
+  dataset_id TEXT NOT NULL REFERENCES datasets(id) ON DELETE RESTRICT,
   version_tag TEXT NOT NULL,
   effective_from DATE,
   effective_to DATE,
@@ -97,6 +97,7 @@ CREATE TABLE IF NOT EXISTS dataset_versions (
   checksum_sha256 TEXT,
   storage_path TEXT,
   default_status data_status_enum NOT NULL DEFAULT 'UNKNOWN',
+  verification_evidence_id UUID,
   metadata JSONB NOT NULL DEFAULT '{}'::jsonb,
   created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
   UNIQUE(dataset_id, version_tag)
@@ -109,7 +110,7 @@ COMMENT ON COLUMN dataset_versions.default_status IS 'Default factual status for
 
 CREATE TABLE IF NOT EXISTS evidence_records (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  dataset_version_id TEXT REFERENCES dataset_versions(id) ON DELETE SET NULL,
+  dataset_version_id TEXT REFERENCES dataset_versions(id) ON DELETE RESTRICT,
   artifact_name TEXT NOT NULL,
   artifact_sha256 TEXT NOT NULL,
   verification_authority TEXT NOT NULL,
@@ -121,13 +122,24 @@ CREATE TABLE IF NOT EXISTS evidence_records (
 
 COMMENT ON TABLE evidence_records IS 'Cryptographically auditable evidence records required for status elevation to OFFICIAL.';
 
+-- Add reciprocal foreign key on dataset_versions now that evidence_records exists
+DO $$ BEGIN
+  ALTER TABLE dataset_versions
+    ADD CONSTRAINT fk_dataset_versions_evidence
+    FOREIGN KEY (verification_evidence_id)
+    REFERENCES evidence_records(id)
+    ON DELETE RESTRICT;
+EXCEPTION
+  WHEN duplicate_object THEN null;
+END $$;
+
 -- ─── 6. PROVENANCE RECORDS (APPEND-ONLY LINEAGE DAG) ───────────────────────────
 
 CREATE TABLE IF NOT EXISTS provenance_records (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  dataset_version_id TEXT NOT NULL REFERENCES dataset_versions(id) ON DELETE CASCADE,
+  dataset_version_id TEXT NOT NULL REFERENCES dataset_versions(id) ON DELETE RESTRICT,
   source_record_id TEXT,
-  parent_provenance_id UUID REFERENCES provenance_records(id) ON DELETE SET NULL,
+  parent_provenance_id UUID REFERENCES provenance_records(id) ON DELETE RESTRICT,
   status data_status_enum NOT NULL DEFAULT 'UNKNOWN',
   transformation_type TEXT NOT NULL DEFAULT 'raw_ingest',
   transform_version TEXT,
@@ -148,7 +160,7 @@ CREATE TABLE IF NOT EXISTS record_provenance_linkages (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   domain_table TEXT NOT NULL,
   domain_record_id TEXT NOT NULL,
-  provenance_id UUID NOT NULL REFERENCES provenance_records(id) ON DELETE CASCADE,
+  provenance_id UUID NOT NULL REFERENCES provenance_records(id) ON DELETE RESTRICT,
   is_canonical BOOLEAN NOT NULL DEFAULT true,
   created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
   UNIQUE(domain_table, domain_record_id, provenance_id)
@@ -163,6 +175,8 @@ CREATE INDEX IF NOT EXISTS idx_datasets_source ON datasets(source_id);
 CREATE INDEX IF NOT EXISTS idx_datasets_domain ON datasets(domain);
 CREATE INDEX IF NOT EXISTS idx_dataset_versions_dataset ON dataset_versions(dataset_id);
 CREATE INDEX IF NOT EXISTS idx_dataset_versions_status ON dataset_versions(default_status);
+CREATE INDEX IF NOT EXISTS idx_dataset_versions_evidence ON dataset_versions(verification_evidence_id);
+CREATE INDEX IF NOT EXISTS idx_evidence_records_version ON evidence_records(dataset_version_id);
 CREATE INDEX IF NOT EXISTS idx_provenance_records_version ON provenance_records(dataset_version_id);
 CREATE INDEX IF NOT EXISTS idx_provenance_records_parent ON provenance_records(parent_provenance_id);
 CREATE INDEX IF NOT EXISTS idx_provenance_records_status ON provenance_records(status);
@@ -172,7 +186,145 @@ CREATE INDEX IF NOT EXISTS idx_record_provenance_prov ON record_provenance_linka
 
 -- ─── 9. SECURITY & INVARIANT FUNCTIONS AND TRIGGERS ────────────────────────────
 
--- Trigger Function: Enforce status transition security and permanently block SCENARIO -> OFFICIAL
+-- Trigger Function: Enforce evidence_records immutability (No updates, no deletions)
+CREATE OR REPLACE FUNCTION prevent_evidence_mutation()
+RETURNS TRIGGER
+LANGUAGE plpgsql
+SECURITY DEFINER
+SET search_path = public, pg_temp
+AS $$
+BEGIN
+  IF TG_OP = 'DELETE' THEN
+    RAISE EXCEPTION 'DELETION PROHIBITED: Authoritative verification evidence records are permanent and cannot be deleted.';
+  END IF;
+
+  IF TG_OP = 'UPDATE' THEN
+    RAISE EXCEPTION 'IMMUTABILITY VIOLATION: Authoritative verification evidence records are immutable and cannot be modified in place. Register a new evidence record instead.';
+  END IF;
+
+  RETURN NULL;
+END;
+$$;
+
+DROP TRIGGER IF EXISTS trg_prevent_evidence_mutation ON evidence_records;
+CREATE TRIGGER trg_prevent_evidence_mutation
+  BEFORE UPDATE OR DELETE ON evidence_records
+  FOR EACH ROW
+  EXECUTE FUNCTION prevent_evidence_mutation();
+
+-- Trigger Function: Enforce dataset_versions snapshot immutability
+CREATE OR REPLACE FUNCTION prevent_dataset_version_mutation()
+RETURNS TRIGGER
+LANGUAGE plpgsql
+SECURITY DEFINER
+SET search_path = public, pg_temp
+AS $$
+BEGIN
+  IF TG_OP = 'DELETE' THEN
+    RAISE EXCEPTION 'DELETION PROHIBITED: Historical dataset versions are immutable and cannot be deleted. Archive or supersede instead.';
+  END IF;
+
+  IF TG_OP = 'UPDATE' THEN
+    IF OLD.id != NEW.id OR
+       OLD.dataset_id != NEW.dataset_id OR
+       OLD.version_tag != NEW.version_tag OR
+       OLD.effective_from IS DISTINCT FROM NEW.effective_from OR
+       OLD.effective_to IS DISTINCT FROM NEW.effective_to OR
+       OLD.retrieved_at != NEW.retrieved_at OR
+       OLD.record_count != NEW.record_count OR
+       OLD.checksum_sha256 IS DISTINCT FROM NEW.checksum_sha256 OR
+       OLD.storage_path IS DISTINCT FROM NEW.storage_path OR
+       OLD.metadata != NEW.metadata OR
+       OLD.created_at != NEW.created_at THEN
+      RAISE EXCEPTION 'IMMUTABILITY VIOLATION: Historical dataset version snapshots cannot be modified in place. Register a new version snapshot instead.';
+    END IF;
+  END IF;
+
+  RETURN NEW;
+END;
+$$;
+
+DROP TRIGGER IF EXISTS trg_prevent_dataset_version_mutation ON dataset_versions;
+CREATE TRIGGER trg_prevent_dataset_version_mutation
+  BEFORE UPDATE OR DELETE ON dataset_versions
+  FOR EACH ROW
+  EXECUTE FUNCTION prevent_dataset_version_mutation();
+
+-- Trigger Function: Enforce dataset_versions status transition invariants & mandatory evidence
+CREATE OR REPLACE FUNCTION check_version_status_transition_invariant()
+RETURNS TRIGGER
+LANGUAGE plpgsql
+SECURITY DEFINER
+SET search_path = public, pg_temp
+AS $$
+BEGIN
+  -- Invariant 1: SCENARIO -> OFFICIAL is PERMANENTLY PROHIBITED
+  IF OLD.default_status = 'SCENARIO' AND NEW.default_status = 'OFFICIAL' THEN
+    RAISE EXCEPTION 'INVARIANT VIOLATION: SCENARIO dataset versions cannot be elevated to OFFICIAL status. Projections/scenarios must remain permanently distinct from verified official records.';
+  END IF;
+
+  -- Invariant 2: Transition to OFFICIAL requires authorized role AND authoritative evidence record
+  IF NEW.default_status = 'OFFICIAL' AND (OLD.default_status IS DISTINCT FROM 'OFFICIAL') THEN
+    IF current_user NOT IN ('service_role', 'postgres', 'supabase_admin') AND coalesce(auth.role(), '') != 'service_role' THEN
+      RAISE EXCEPTION 'AUTHORIZATION DENIED: Elevating dataset version to OFFICIAL status requires authorized administrative role (current_user: %, auth.role: %)', current_user, coalesce(auth.role(), 'none');
+    END IF;
+
+    IF NEW.verification_evidence_id IS NULL THEN
+      RAISE EXCEPTION 'EVIDENCE REQUIRED: Elevating dataset version to OFFICIAL requires an authoritative verification_evidence_id link.';
+    END IF;
+
+    IF NOT EXISTS (SELECT 1 FROM evidence_records WHERE id = NEW.verification_evidence_id) THEN
+      RAISE EXCEPTION 'EVIDENCE NOT FOUND: verification_evidence_id % does not match any valid evidence record in evidence_records.', NEW.verification_evidence_id;
+    END IF;
+  END IF;
+
+  RETURN NEW;
+END;
+$$;
+
+DROP TRIGGER IF EXISTS trg_check_version_status_transition ON dataset_versions;
+CREATE TRIGGER trg_check_version_status_transition
+  BEFORE UPDATE ON dataset_versions
+  FOR EACH ROW
+  EXECUTE FUNCTION check_version_status_transition_invariant();
+
+-- Trigger Function: Enforce append-only immutability of historical provenance lineage fields
+CREATE OR REPLACE FUNCTION prevent_provenance_mutation()
+RETURNS TRIGGER
+LANGUAGE plpgsql
+SECURITY DEFINER
+SET search_path = public, pg_temp
+AS $$
+BEGIN
+  IF TG_OP = 'DELETE' THEN
+    RAISE EXCEPTION 'DELETION PROHIBITED: Provenance lineage records are append-only and cannot be deleted.';
+  END IF;
+
+  IF TG_OP = 'UPDATE' THEN
+    -- Immutable historical fields (Classification A)
+    IF OLD.id != NEW.id OR
+       OLD.dataset_version_id != NEW.dataset_version_id OR
+       OLD.source_record_id IS DISTINCT FROM NEW.source_record_id OR
+       OLD.parent_provenance_id IS DISTINCT FROM NEW.parent_provenance_id OR
+       OLD.transformation_type != NEW.transformation_type OR
+       OLD.transform_version IS DISTINCT FROM NEW.transform_version OR
+       OLD.operator != NEW.operator OR
+       OLD.created_at != NEW.created_at THEN
+      RAISE EXCEPTION 'IMMUTABILITY VIOLATION: Historical provenance lineage fields cannot be modified in place. Append a new provenance record instead.';
+    END IF;
+  END IF;
+
+  RETURN NEW;
+END;
+$$;
+
+DROP TRIGGER IF EXISTS trg_prevent_provenance_mutation ON provenance_records;
+CREATE TRIGGER trg_prevent_provenance_mutation
+  BEFORE UPDATE OR DELETE ON provenance_records
+  FOR EACH ROW
+  EXECUTE FUNCTION prevent_provenance_mutation();
+
+-- Trigger Function: Enforce status transition security and permanently block SCENARIO -> OFFICIAL on provenance
 CREATE OR REPLACE FUNCTION check_status_transition_invariant()
 RETURNS TRIGGER
 LANGUAGE plpgsql
@@ -187,21 +339,16 @@ BEGIN
 
   -- Invariant 2: Transition to OFFICIAL from non-official requires authoritative evidence and authorized service_role
   IF NEW.status = 'OFFICIAL' AND (OLD.status IS DISTINCT FROM 'OFFICIAL') THEN
-    -- Check caller role
     IF current_user NOT IN ('service_role', 'postgres', 'supabase_admin') AND coalesce(auth.role(), '') != 'service_role' THEN
       RAISE EXCEPTION 'AUTHORIZATION DENIED: Elevating record to OFFICIAL status requires authorized administrative role (current_user: %, auth.role: %)', current_user, coalesce(auth.role(), 'none');
     END IF;
 
-    -- Check verification evidence link on provenance_records
-    IF TG_TABLE_NAME = 'provenance_records' THEN
-      IF NEW.verification_evidence_id IS NULL THEN
-        RAISE EXCEPTION 'EVIDENCE REQUIRED: Elevating status to OFFICIAL requires an authoritative verification_evidence_id link.';
-      END IF;
+    IF NEW.verification_evidence_id IS NULL THEN
+      RAISE EXCEPTION 'EVIDENCE REQUIRED: Elevating status to OFFICIAL requires an authoritative verification_evidence_id link.';
+    END IF;
 
-      -- Check that the evidence record exists in DB
-      IF NOT EXISTS (SELECT 1 FROM evidence_records WHERE id = NEW.verification_evidence_id) THEN
-        RAISE EXCEPTION 'EVIDENCE NOT FOUND: verification_evidence_id % does not match any valid evidence record in evidence_records.', NEW.verification_evidence_id;
-      END IF;
+    IF NOT EXISTS (SELECT 1 FROM evidence_records WHERE id = NEW.verification_evidence_id) THEN
+      RAISE EXCEPTION 'EVIDENCE NOT FOUND: verification_evidence_id % does not match any valid evidence record in evidence_records.', NEW.verification_evidence_id;
     END IF;
   END IF;
 
@@ -215,59 +362,7 @@ CREATE TRIGGER trg_check_provenance_status_transition
   FOR EACH ROW
   EXECUTE FUNCTION check_status_transition_invariant();
 
--- Trigger Function: Enforce dataset_versions status transition invariants
-CREATE OR REPLACE FUNCTION check_version_status_transition_invariant()
-RETURNS TRIGGER
-LANGUAGE plpgsql
-SECURITY DEFINER
-SET search_path = public, pg_temp
-AS $$
-BEGIN
-  IF OLD.default_status = 'SCENARIO' AND NEW.default_status = 'OFFICIAL' THEN
-    RAISE EXCEPTION 'INVARIANT VIOLATION: SCENARIO dataset versions cannot be elevated to OFFICIAL status.';
-  END IF;
-
-  IF NEW.default_status = 'OFFICIAL' AND (OLD.default_status IS DISTINCT FROM 'OFFICIAL') THEN
-    IF current_user NOT IN ('service_role', 'postgres', 'supabase_admin') AND coalesce(auth.role(), '') != 'service_role' THEN
-      RAISE EXCEPTION 'AUTHORIZATION DENIED: Elevating dataset version to OFFICIAL status requires authorized administrative role (current_user: %, auth.role: %)', current_user, coalesce(auth.role(), 'none');
-    END IF;
-  END IF;
-
-  RETURN NEW;
-END;
-$$;
-
-DROP TRIGGER IF EXISTS trg_check_version_status_transition ON dataset_versions;
-CREATE TRIGGER trg_check_version_status_transition
-  BEFORE UPDATE ON dataset_versions
-  FOR EACH ROW
-  EXECUTE FUNCTION check_version_status_transition_invariant();
-
--- Trigger Function: Enforce append-only immutability of historical provenance lineage
-CREATE OR REPLACE FUNCTION prevent_provenance_mutation()
-RETURNS TRIGGER
-LANGUAGE plpgsql
-SECURITY DEFINER
-SET search_path = public, pg_temp
-AS $$
-BEGIN
-  IF OLD.dataset_version_id != NEW.dataset_version_id OR
-     OLD.parent_provenance_id IS DISTINCT FROM NEW.parent_provenance_id OR
-     OLD.transformation_type != NEW.transformation_type OR
-     OLD.created_at != NEW.created_at THEN
-    RAISE EXCEPTION 'IMMUTABILITY VIOLATION: Historical provenance lineage fields cannot be modified in place. Append a new provenance record instead.';
-  END IF;
-  RETURN NEW;
-END;
-$$;
-
-DROP TRIGGER IF EXISTS trg_prevent_provenance_mutation ON provenance_records;
-CREATE TRIGGER trg_prevent_provenance_mutation
-  BEFORE UPDATE ON provenance_records
-  FOR EACH ROW
-  EXECUTE FUNCTION prevent_provenance_mutation();
-
--- ─── 10. ROW LEVEL SECURITY (RLS) POLICIES ─────────────────────────────────────
+-- ─── 10. ROW LEVEL SECURITY (RLS) & PUBLIC VISIBILITY GOVERNANCE ────────────────
 
 ALTER TABLE data_sources ENABLE ROW LEVEL SECURITY;
 ALTER TABLE datasets ENABLE ROW LEVEL SECURITY;
@@ -283,24 +378,54 @@ ALTER TABLE evidence_records FORCE ROW LEVEL SECURITY;
 ALTER TABLE provenance_records FORCE ROW LEVEL SECURITY;
 ALTER TABLE record_provenance_linkages FORCE ROW LEVEL SECURITY;
 
--- Public read policies (SELECT)
+-- 10.1 Column-Level Privilege Classification:
+-- Untrusted roles (anon, authenticated, PUBLIC) receive SELECT on public transparency columns ONLY.
+-- Internal administrative columns (operator, verified_by, verification_notes, storage_path, metadata)
+-- are strictly restricted to service_role and administrative roles.
+
+REVOKE ALL ON data_sources FROM PUBLIC, anon, authenticated;
+GRANT SELECT (id, name, publisher, authority_level, canonical_url, license, retrieval_method, refresh_frequency, is_active, created_at, updated_at) ON data_sources TO anon, authenticated;
+GRANT ALL ON data_sources TO service_role;
+
+REVOKE ALL ON datasets FROM PUBLIC, anon, authenticated;
+GRANT SELECT (id, name, domain, description, source_id, license, created_at, updated_at) ON datasets TO anon, authenticated;
+GRANT ALL ON datasets TO service_role;
+
+REVOKE ALL ON dataset_versions FROM PUBLIC, anon, authenticated;
+GRANT SELECT (id, dataset_id, version_tag, effective_from, effective_to, retrieved_at, record_count, checksum_sha256, default_status, verification_evidence_id, created_at) ON dataset_versions TO anon, authenticated;
+GRANT ALL ON dataset_versions TO service_role;
+
+REVOKE ALL ON evidence_records FROM PUBLIC, anon, authenticated;
+GRANT SELECT (id, dataset_version_id, artifact_name, artifact_sha256, verification_authority, verified_at, created_at) ON evidence_records TO anon, authenticated;
+GRANT ALL ON evidence_records TO service_role;
+
+REVOKE ALL ON provenance_records FROM PUBLIC, anon, authenticated;
+GRANT SELECT (id, dataset_version_id, source_record_id, parent_provenance_id, status, transformation_type, transform_version, verification_evidence_id, created_at) ON provenance_records TO anon, authenticated;
+GRANT ALL ON provenance_records TO service_role;
+
+REVOKE ALL ON record_provenance_linkages FROM PUBLIC, anon, authenticated;
+GRANT SELECT (id, domain_table, domain_record_id, provenance_id, is_canonical, created_at) ON record_provenance_linkages TO anon, authenticated;
+GRANT ALL ON record_provenance_linkages TO service_role;
+
+-- 10.2 Row Level Security Policies:
+-- Public read policies for transparency
 DROP POLICY IF EXISTS "Public read data_sources" ON data_sources;
-CREATE POLICY "Public read data_sources" ON data_sources FOR SELECT USING (true);
+CREATE POLICY "Public read data_sources" ON data_sources FOR SELECT TO anon, authenticated USING (is_active = true);
 
 DROP POLICY IF EXISTS "Public read datasets" ON datasets;
-CREATE POLICY "Public read datasets" ON datasets FOR SELECT USING (true);
+CREATE POLICY "Public read datasets" ON datasets FOR SELECT TO anon, authenticated USING (true);
 
 DROP POLICY IF EXISTS "Public read dataset_versions" ON dataset_versions;
-CREATE POLICY "Public read dataset_versions" ON dataset_versions FOR SELECT USING (true);
+CREATE POLICY "Public read dataset_versions" ON dataset_versions FOR SELECT TO anon, authenticated USING (true);
 
 DROP POLICY IF EXISTS "Public read evidence_records" ON evidence_records;
-CREATE POLICY "Public read evidence_records" ON evidence_records FOR SELECT USING (true);
+CREATE POLICY "Public read evidence_records" ON evidence_records FOR SELECT TO anon, authenticated USING (true);
 
 DROP POLICY IF EXISTS "Public read provenance_records" ON provenance_records;
-CREATE POLICY "Public read provenance_records" ON provenance_records FOR SELECT USING (true);
+CREATE POLICY "Public read provenance_records" ON provenance_records FOR SELECT TO anon, authenticated USING (true);
 
 DROP POLICY IF EXISTS "Public read record_provenance_linkages" ON record_provenance_linkages;
-CREATE POLICY "Public read record_provenance_linkages" ON record_provenance_linkages FOR SELECT USING (true);
+CREATE POLICY "Public read record_provenance_linkages" ON record_provenance_linkages FOR SELECT TO anon, authenticated USING (true);
 
 -- Service role full access policies
 DROP POLICY IF EXISTS "Service role full access on data_sources" ON data_sources;

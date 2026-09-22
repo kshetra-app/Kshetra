@@ -1,109 +1,143 @@
 {
-  "timestamp": "2026-09-22T04:06:54.406Z",
+  "timestamp": "2026-09-22T04:20:55.876Z",
   "target": "https://fkpigozcqnmcvofuksar.supabase.co",
+  "stagingExecuted": false,
+  "runtimeVerified": false,
   "tests": [
     {
       "id": "TEST-12-A",
       "title": "New governance record defaults to UNKNOWN",
       "category": "STATUS_DEFAULT",
-      "passed": false,
+      "status": "PENDING_STAGING_EXECUTION",
       "expected": {
-        "versionDefault": "UNKNOWN",
-        "provenanceDefault": "UNKNOWN"
+        "default": "UNKNOWN"
       },
-      "observed": {},
-      "details": "Errors: Could not find the table 'public.dataset_versions' in the schema cache Could not find the table 'public.provenance_records' in the schema cache"
+      "observed": "Schema not yet applied",
+      "details": null
     },
     {
       "id": "TEST-12-B",
       "title": "Ordinary client cannot set UNKNOWN -> OFFICIAL",
       "category": "TRANSITION_GUARD",
-      "passed": false,
-      "expected": "Request rejected",
-      "observed": "Requires provData from TEST-12-A",
-      "details": "Prerequisite unavailable"
+      "status": "PENDING_STAGING_EXECUTION",
+      "expected": "Rejected",
+      "observed": "Schema not yet applied",
+      "details": null
     },
     {
       "id": "TEST-12-C",
-      "title": "Permanent block on SCENARIO -> OFFICIAL transition",
+      "title": "SCENARIO -> OFFICIAL permanently prohibited",
       "category": "PERMANENT_INVARIANT",
-      "passed": false,
-      "expected": "Trigger error containing INVARIANT VIOLATION",
-      "observed": "Cannot read properties of null (reading 'id')",
-      "details": "Exception during test"
+      "status": "PENDING_STAGING_EXECUTION",
+      "expected": "INVARIANT VIOLATION",
+      "observed": "Schema not yet applied",
+      "details": null
     },
     {
       "id": "TEST-12-D",
       "title": "Ordinary client cannot set ESTIMATE -> OFFICIAL",
       "category": "TRANSITION_GUARD",
-      "passed": false,
-      "expected": "Request rejected",
-      "observed": "Cannot read properties of null (reading 'id')",
-      "details": "Exception during test"
+      "status": "PENDING_STAGING_EXECUTION",
+      "expected": "Rejected",
+      "observed": "Schema not yet applied",
+      "details": null
     },
     {
       "id": "TEST-12-E",
       "title": "Ordinary client cannot set INFERRED -> OFFICIAL",
       "category": "TRANSITION_GUARD",
-      "passed": false,
-      "expected": "Request rejected",
-      "observed": "Cannot read properties of null (reading 'id')",
-      "details": "Exception during test"
+      "status": "PENDING_STAGING_EXECUTION",
+      "expected": "Rejected",
+      "observed": "Schema not yet applied",
+      "details": null
     },
     {
       "id": "TEST-12-F",
       "title": "Ordinary client cannot set UNVERIFIED -> OFFICIAL",
       "category": "TRANSITION_GUARD",
-      "passed": false,
-      "expected": "Request rejected",
-      "observed": "Cannot read properties of null (reading 'id')",
-      "details": "Exception during test"
+      "status": "PENDING_STAGING_EXECUTION",
+      "expected": "Rejected",
+      "observed": "Schema not yet applied",
+      "details": null
     },
     {
       "id": "TEST-12-G",
       "title": "Caller-supplied verification_id alone cannot elevate without DB evidence",
       "category": "EVIDENCE_INTEGRITY",
-      "passed": false,
-      "expected": "Trigger/FK error denying elevation",
-      "observed": "Requires unverProv from TEST-12-F",
-      "details": "Exception during test"
+      "status": "PENDING_STAGING_EXECUTION",
+      "expected": "EVIDENCE NOT FOUND",
+      "observed": "Schema not yet applied",
+      "details": null
     },
     {
       "id": "TEST-12-H",
       "title": "Authorized/evidenced transition succeeds where explicitly permitted",
       "category": "AUTHORIZED_TRANSITION",
-      "passed": false,
-      "expected": "Update succeeds with status OFFICIAL",
-      "observed": "Requires unverProv from TEST-12-F",
-      "details": "Exception during test"
+      "status": "PENDING_STAGING_EXECUTION",
+      "expected": "Transition succeeds with evidence",
+      "observed": "Schema not yet applied",
+      "details": null
     },
     {
-      "id": "TEST-12-I",
-      "title": "Provenance records cannot be overwritten (Immutability invariant)",
+      "id": "TEST-12-I1",
+      "title": "Provenance records historical fields cannot be overwritten (Immutability)",
       "category": "PROVENANCE_IMMUTABILITY",
-      "passed": false,
-      "expected": "Trigger error containing IMMUTABILITY VIOLATION",
-      "observed": "Requires unverProv from TEST-12-F",
-      "details": "Exception during test"
+      "status": "PENDING_STAGING_EXECUTION",
+      "expected": "IMMUTABILITY VIOLATION",
+      "observed": "Schema not yet applied",
+      "details": null
+    },
+    {
+      "id": "TEST-12-I2",
+      "title": "Provenance records physical deletion is prohibited (Anti-cascade/append-only)",
+      "category": "DELETION_PROTECTION",
+      "status": "PENDING_STAGING_EXECUTION",
+      "expected": "DELETION PROHIBITED",
+      "observed": "Schema not yet applied",
+      "details": null
+    },
+    {
+      "id": "TEST-12-I3",
+      "title": "Dataset version snapshot historical fields cannot be overwritten (Immutability)",
+      "category": "VERSION_IMMUTABILITY",
+      "status": "PENDING_STAGING_EXECUTION",
+      "expected": "IMMUTABILITY VIOLATION",
+      "observed": "Schema not yet applied",
+      "details": null
+    },
+    {
+      "id": "TEST-12-I4",
+      "title": "Dataset version physical deletion is prohibited (Anti-cascade)",
+      "category": "DELETION_PROTECTION",
+      "status": "PENDING_STAGING_EXECUTION",
+      "expected": "DELETION PROHIBITED",
+      "observed": "Schema not yet applied",
+      "details": null
+    },
+    {
+      "id": "TEST-12-I5",
+      "title": "Evidence record modification & deletion are permanently prohibited",
+      "category": "EVIDENCE_IMMUTABILITY",
+      "status": "PENDING_STAGING_EXECUTION",
+      "expected": "IMMUTABILITY / DELETION PROHIBITED",
+      "observed": "Schema not yet applied",
+      "details": null
     },
     {
       "id": "TEST-12-J",
       "title": "Historical dataset versions remain intact (Multi-version integrity)",
       "category": "VERSION_INTEGRITY",
-      "passed": false,
-      "expected": "Both v1.0 and v2.0 coexist independently without overwrite",
-      "observed": {
-        "v1Exists": false,
-        "v2Exists": false
-      },
-      "details": "Adding newer dataset version preserved previous version."
+      "status": "PENDING_STAGING_EXECUTION",
+      "expected": "Both versions coexist",
+      "observed": "Schema not yet applied",
+      "details": null
     },
     {
       "id": "TEST-12-K",
-      "title": "RLS enforcement: Anonymous callers denied mutation on governance tables",
+      "title": "RLS & Column Protection: Anonymous denied mutation on governance tables",
       "category": "RLS_SECURITY",
-      "passed": true,
-      "expected": "All anonymous mutations rejected by RLS policy",
+      "status": "PASS",
+      "expected": "All anonymous mutations rejected by RLS / permissions",
       "observed": {
         "srcRejected": true,
         "dsRejected": true,
@@ -115,7 +149,7 @@
       "id": "TEST-12-L",
       "title": "Existing application data remains readable through existing paths",
       "category": "REGRESSION_INTEGRITY",
-      "passed": true,
+      "status": "PASS",
       "expected": "All existing domain queries return HTTP 200",
       "observed": {
         "states": 200,
@@ -128,9 +162,9 @@
     }
   ],
   "summary": {
-    "total": 12,
+    "total": 16,
     "passed": 2,
-    "failed": 10,
-    "unknown": 0
+    "failed": 0,
+    "untested_pending_staging_execution": 14
   }
 }

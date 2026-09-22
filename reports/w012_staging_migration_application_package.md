@@ -1,4 +1,4 @@
-# W012: STAGING MIGRATION APPLICATION PACKAGE (039)
+# W012: STAGING MIGRATION APPLICATION PACKAGE (039) — HARDENED
 ## Data Governance Foundation & Provenance Architecture
 
 ```
@@ -11,7 +11,7 @@ VERIFICATION SQL:        supabase/verify_staging_migration_package_039.sql
 TEST SUITE:              tests/verify_w012_data_governance.mjs
 BENCHMARK SUITE:         scripts/benchmark_w012_hot_paths.mjs
 BOM ENFORCEMENT:         0 U+FEFF characters across all SQL files (100% verified)
-AUTHORIZATION:           CTO Implementation Authorization (Staging Only)
+EXECUTION STATUS:        DO NOT EXECUTE YET (Awaiting CTO Pre-Staging Authorization)
 ```
 
 ---
@@ -20,86 +20,72 @@ AUTHORIZATION:           CTO Implementation Authorization (Staging Only)
 
 | File Path | Description | Size (Bytes) | SHA-256 Checksum | BOM |
 | :--- | :--- | :--- | :--- | :--- |
-| `supabase/migrations/039_data_governance_foundation.sql` | Canonical Migration 039 | 21,576 | `59a6c4f23e7ce436be54224400492951f3f3fa9d30086a5a97dd50e20b48a236` | 0 |
-| `supabase/staging_migration_package_039.sql` | Atomic Staging Application Package | 21,847 | `b4a40af0050f14bd15b52860629541f3337308816e42cb734c78c9b72c433f22` | 0 |
-| `supabase/verify_staging_migration_package_039.sql` | Verification SQL Suite (Checks 1–10) | 9,115 | `4910298cc196ab9390e132fbf4d0264ed170e532c752492c22e9e194d61d758b` | 0 |
-| `tests/verify_w012_data_governance.mjs` | Node Automated Test Suite (Tests A–L) | 21,290 | `651d84e7338b25bcb26ad79cd6b0645c5088468fcaf732eb004e766ccac4e484` | 0 |
+| `supabase/migrations/039_data_governance_foundation.sql` | Canonical Migration 039 | 28,333 | `74eb7540609228245559f4e58f7bde3083e36389f99d4790a9f1f3295279d0e4` | 0 |
+| `supabase/staging_migration_package_039.sql` | Atomic Staging Application Package | 27,938 | `9ca7fb30477cea6ea0850adc4e5572129104334e5c372a1638ea0758b7e54be8` | 0 |
+| `supabase/verify_staging_migration_package_039.sql` | Verification SQL Suite (Checks 1–10) | 10,169 | `54acfafc6f89fcdaa17f08b170c6141737501c6cc78482c59f63eb1bf612e12b` | 0 |
+| `tests/verify_w012_data_governance.mjs` | Node Test Suite (Tests A–L) | 18,068 | `494414d6e4a4e021078779432b53700394f104f2cb02f4be843926321ce423f4` | 0 |
 | `scripts/benchmark_w012_hot_paths.mjs` | Hot-Path Performance Benchmark Suite | 8,726 | `7fd336fd6d242d0da69a373594fdd2922cf5e88d78372c775bb6ba78d23c146e` | 0 |
 | `reports/w012_hot_path_baseline.json` | Pre-Migration Baseline Benchmark (1000 iter) | 941 | `8f44169136fa745081de87f390271bdf3f5a8610500b796780b8301b83fd0a0d` | 0 |
 
 ---
 
-## 2. Structural Schema Specification
+## 2. Hardened Architecture & Security Invariants
 
-### A. Enums Created
-1. `source_authority_enum`:
-   - `'constitutional'`
-   - `'statutory'`
-   - `'academic'`
-   - `'media_ngo'`
-   - `'crowdsourced'`
-   - `'synthetic_model'`
-2. `data_status_enum`:
-   - `'OFFICIAL'`
-   - `'DERIVED'`
-   - `'VERIFIED'`
-   - `'ESTIMATE'`
-   - `'SCENARIO'`
-   - `'INFERRED'`
-   - `'UNVERIFIED'`
-   - `'UNKNOWN'`
+### A. Restrictive Deletion & Anti-Cascade Architecture (Zero Cascading Deletes)
+1. `datasets.source_id -> data_sources(id)`: `ON DELETE RESTRICT`
+2. `dataset_versions.dataset_id -> datasets(id)`: `ON DELETE RESTRICT`
+3. `dataset_versions.verification_evidence_id -> evidence_records(id)`: `ON DELETE RESTRICT`
+4. `evidence_records.dataset_version_id -> dataset_versions(id)`: `ON DELETE RESTRICT`
+5. `provenance_records.dataset_version_id -> dataset_versions(id)`: `ON DELETE RESTRICT`
+6. `provenance_records.parent_provenance_id -> provenance_records(id)`: `ON DELETE RESTRICT`
+7. `provenance_records.verification_evidence_id -> evidence_records(id)`: `ON DELETE RESTRICT`
+8. `record_provenance_linkages.provenance_id -> provenance_records(id)`: `ON DELETE RESTRICT`
+- **Permanent Anti-Deletion Triggers**: Physical deletion on `evidence_records`, `dataset_versions`, and `provenance_records` is permanently prohibited by database triggers.
 
-### B. Tables Created
-1. `data_sources`: Canonical registry of primary data publishers and institutional authority levels.
-2. `datasets`: Governed dataset entities across civic, electoral, and geographic domains.
-3. `dataset_versions`: Immutable snapshots with checksums, temporal validity, and `default_status DEFAULT 'UNKNOWN'`.
-4. `evidence_records`: Cryptographically auditable evidence records required for status elevation to `OFFICIAL`.
-5. `provenance_records`: Append-only provenance lineage nodes forming a DAG (`status DEFAULT 'UNKNOWN'`).
-6. `record_provenance_linkages`: M:N association connecting domain records to provenance lineage nodes.
+### B. Dataset Version Snapshot Immutability
+- Snapshot historical fields (`dataset_id`, `version_tag`, `effective_from`, `effective_to`, `retrieved_at`, `record_count`, `checksum_sha256`, `storage_path`, `metadata`, `created_at`) are permanently frozen against in-place modification. Trigger `prevent_dataset_version_mutation()` raises `IMMUTABILITY VIOLATION`.
 
-### C. Security Invariants & Triggers
-1. `check_status_transition_invariant()`:
-   - **SCENARIO -> OFFICIAL**: Permanently prohibited (`INVARIANT VIOLATION`).
-   - **Transition to OFFICIAL**: Requires authorized administrative role (`service_role`, `postgres`, `supabase_admin`) **AND** an authoritative, existing record in `evidence_records`. Caller-supplied fake IDs fail closed.
-2. `check_version_status_transition_invariant()`:
-   - Blocks `SCENARIO -> OFFICIAL` on dataset versions.
-   - Enforces administrative authorization for `OFFICIAL` elevation.
-3. `prevent_provenance_mutation()`:
-   - Enforces append-only immutability of historical lineage fields (`dataset_version_id`, `parent_provenance_id`, `transformation_type`, `created_at`). In-place edits raise `IMMUTABILITY VIOLATION`.
-4. `FORCE ROW LEVEL SECURITY`:
-   - Forced across all 6 tables.
-   - Public read policy for transparent governance inquiry.
-   - `service_role` full access policy.
-   - Untrusted anonymous mutations denied.
+### C. Provenance Lineage Append-Only Invariant
+- Explicitly bifurcated:
+  - **A. Immutable Historical Fields:** `dataset_version_id`, `source_record_id`, `parent_provenance_id`, `transformation_type`, `transform_version`, `operator`, `created_at`.
+  - **B. Controlled Lifecycle Fields:** `status`, `verification_evidence_id`, `verified_by`.
+- Trigger `prevent_provenance_mutation()` prohibits modifying historical fields even by `service_role`.
 
-### D. Controlled Source Seeds & Representative Datasets
-1. Sources:
-   - `eci` (constitutional)
-   - `prs_india` (academic)
-   - `myneta` (media_ngo)
-   - `datta07_shapefiles` (crowdsourced)
-   - `synthetic_projection_model` (synthetic_model)
-2. Bounded Representative Datasets:
-   - `geo_assembly_boundaries` (geography, source: `datta07_shapefiles`, authority: `crowdsourced`, status: `UNVERIFIED`)
-   - `telangana_2023_mla_profiles` (political_profiles, source: `myneta`, authority: `media_ngo`, status: `UNVERIFIED`)
-   - `civic_bills_schemes` (civic_governance, source: `prs_india`, authority: `academic`, status: `UNKNOWN`)
-   - `tamil_nadu_2026_projection` (election_projection, source: `myneta`, authority: `media_ngo`, type: `synthetic_projection_simulation`, status: `SCENARIO`)
+### D. Evidence Record Immutability
+- All verification evidence records in `evidence_records` are permanently immutable. Neither in-place modification nor deletion is permitted (`prevent_evidence_mutation()`).
+
+### E. Mandatory Evidence for All OFFICIAL Transitions
+- Transition to `OFFICIAL` on **both** `dataset_versions` and `provenance_records` strictly requires:
+  1. Administrative authorization (`service_role`, `postgres`, `supabase_admin`).
+  2. Non-null `verification_evidence_id`.
+  3. Existence of matching, authentic record in `evidence_records`.
+- `SCENARIO -> OFFICIAL` remains permanently prohibited across both tables.
+
+### F. Public Governance Visibility Classification
+- **Public Transparency Fields:**
+  - `data_sources`: `id`, `name`, `publisher`, `authority_level`, `canonical_url`, `license`, `retrieval_method`, `refresh_frequency`, `is_active`, `created_at`, `updated_at`.
+  - `datasets`: `id`, `name`, `domain`, `description`, `source_id`, `license`, `created_at`, `updated_at`.
+  - `dataset_versions`: `id`, `dataset_id`, `version_tag`, `effective_from`, `effective_to`, `retrieved_at`, `record_count`, `checksum_sha256`, `default_status`, `verification_evidence_id`, `created_at`.
+  - `evidence_records`: `id`, `dataset_version_id`, `artifact_name`, `artifact_sha256`, `verification_authority`, `verified_at`, `created_at`.
+  - `provenance_records`: `id`, `dataset_version_id`, `source_record_id`, `parent_provenance_id`, `status`, `transformation_type`, `transform_version`, `verification_evidence_id`, `created_at`.
+  - `record_provenance_linkages`: `id`, `domain_table`, `domain_record_id`, `provenance_id`, `is_canonical`, `created_at`.
+- **Internal / Administrative Fields (Revoked from `PUBLIC`, `anon`, `authenticated`):**
+  - `operator`, `verified_by`, `verification_notes`, `storage_path`, internal `metadata`.
+
+### G. Hardened SECURITY DEFINER Boundaries
+- All 5 security functions explicitly declare `SET search_path = public, pg_temp` and contain no dynamic SQL or caller-controlled execution branches.
 
 ---
 
-## 3. Staging Execution Protocol
+## 3. Governance Semantics Verification
 
-The staging migration package is staged at:
-[`supabase/staging_migration_package_039.sql`](file:///c:/Users/Laven/OneDrive/Desktop/Kshetra/supabase/staging_migration_package_039.sql)
-
-### Operator Execution Steps:
-1. Open Supabase Dashboard for project `fkpigozcqnmcvofuksar` (`panIN-staging`).
-2. Navigate to the **SQL Editor**.
-3. Paste and execute the exact contents of `supabase/staging_migration_package_039.sql`.
-4. Paste and execute the verification query `supabase/verify_staging_migration_package_039.sql` to verify all 10 checks pass.
-5. Re-run:
-   ```bash
-   node tests/verify_w012_data_governance.mjs
-   node scripts/benchmark_w012_hot_paths.mjs --compare
-   ```
-6. Verify all 12 security tests pass and both dual p95 performance gates pass.
+```
+IMPLEMENTED:          YES
+STATICALLY VALIDATED: YES
+STAGING EXECUTED:     NO
+RUNTIME VERIFIED:     NO
+CTO ACCEPTANCE:       NO
+```
+- Staging database has **NOT** been modified.
+- Production database remains **UNTOUCHED**.
+- Migration 039 will **NOT** be executed until explicit CTO pre-staging acceptance is granted.

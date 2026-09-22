@@ -1,16 +1,16 @@
 -- ==============================================================================
--- W012: POST-MIGRATION 039 VERIFICATION SQL SUITE
+-- W012: POST-MIGRATION 039 VERIFICATION SQL SUITE (HARDENED)
 -- Target Supabase Project: panIN-staging (fkpigozcqnmcvofuksar)
 -- Authoritative Architecture: docs/W012_DATA_GOVERNANCE_INVENTORY.md
 -- Checks:
 --   1. Enum definitions and members (source_authority_enum, data_status_enum)
 --   2. Governance catalog tables existence (6 tables)
 --   3. Column defaults and non-null constraints (safe UNKNOWN default)
---   4. Foreign key integrity and constraints
+--   4. Foreign key integrity and RESTRICT delete rules (Zero destructive cascades)
 --   5. Index catalog verification
---   6. Security triggers and SECURITY DEFINER search_path enforcement
+--   6. Security functions and invariant triggers (Immutability + Transition)
 --   7. FORCE ROW LEVEL SECURITY verification across all 6 tables
---   8. Row Level Security policies verification
+--   8. Column privilege classification & RLS policies verification
 --   9. Controlled source seeds verification (5 canonical sources)
 --  10. Representative bounded datasets verification (4 domains)
 -- ==============================================================================
@@ -62,7 +62,7 @@ ORDER BY table_name, column_name;
 -- provenance_records.status: default ''UNKNOWN''::data_status_enum, is_nullable NO
 
 -- ------------------------------------------------------------------------------
--- CHECK 4: Foreign Key Constraints
+-- CHECK 4: Foreign Key Constraints & Restrictive Deletion (Zero Cascades)
 -- ------------------------------------------------------------------------------
 SELECT
   tc.table_name,
@@ -91,12 +91,14 @@ WHERE tc.constraint_type = 'FOREIGN KEY'
 ORDER BY tc.table_name, kcu.column_name;
 -- EXPECTED:
 -- datasets.source_id -> data_sources.id (RESTRICT)
--- dataset_versions.dataset_id -> datasets.id (CASCADE)
--- evidence_records.dataset_version_id -> dataset_versions.id (SET NULL)
--- provenance_records.dataset_version_id -> dataset_versions.id (CASCADE)
--- provenance_records.parent_provenance_id -> provenance_records.id (SET NULL)
+-- dataset_versions.dataset_id -> datasets.id (RESTRICT)
+-- dataset_versions.verification_evidence_id -> evidence_records.id (RESTRICT)
+-- evidence_records.dataset_version_id -> dataset_versions.id (RESTRICT)
+-- provenance_records.dataset_version_id -> dataset_versions.id (RESTRICT)
+-- provenance_records.parent_provenance_id -> provenance_records.id (RESTRICT)
 -- provenance_records.verification_evidence_id -> evidence_records.id (RESTRICT)
--- record_provenance_linkages.provenance_id -> provenance_records.id (CASCADE)
+-- record_provenance_linkages.provenance_id -> provenance_records.id (RESTRICT)
+-- ALL delete_rules MUST be 'RESTRICT' (Zero destructive cascades).
 
 -- ------------------------------------------------------------------------------
 -- CHECK 5: Governance Indexes Verification
@@ -123,22 +125,26 @@ FROM pg_proc p
 JOIN pg_namespace n ON p.pronamespace = n.oid
 WHERE n.nspname = 'public'
   AND p.proname IN (
-    'check_status_transition_invariant',
+    'prevent_evidence_mutation',
+    'prevent_dataset_version_mutation',
     'check_version_status_transition_invariant',
-    'prevent_provenance_mutation'
+    'prevent_provenance_mutation',
+    'check_status_transition_invariant'
   )
 ORDER BY p.proname;
--- EXPECTED: 3 rows with prosecdef = true, has_search_path = true.
+-- EXPECTED: Exactly 5 functions with prosecdef = true, has_search_path = true.
 
 SELECT event_object_table, trigger_name, action_timing, event_manipulation
 FROM information_schema.triggers
 WHERE trigger_schema = 'public'
-  AND event_object_table IN ('provenance_records', 'dataset_versions')
+  AND event_object_table IN ('evidence_records', 'dataset_versions', 'provenance_records')
 ORDER BY event_object_table, trigger_name;
 -- EXPECTED:
+-- evidence_records: trg_prevent_evidence_mutation (BEFORE UPDATE, BEFORE DELETE)
+-- dataset_versions: trg_prevent_dataset_version_mutation (BEFORE UPDATE, BEFORE DELETE)
 -- dataset_versions: trg_check_version_status_transition (BEFORE UPDATE)
+-- provenance_records: trg_prevent_provenance_mutation (BEFORE UPDATE, BEFORE DELETE)
 -- provenance_records: trg_check_provenance_status_transition (BEFORE UPDATE)
--- provenance_records: trg_prevent_provenance_mutation (BEFORE UPDATE)
 
 -- ------------------------------------------------------------------------------
 -- CHECK 7: FORCE ROW LEVEL SECURITY Verification
@@ -159,8 +165,17 @@ ORDER BY c.relname;
 -- EXPECTED: Exactly 6 rows, all with rls_enabled = true and rls_forced = true.
 
 -- ------------------------------------------------------------------------------
--- CHECK 8: Row Level Security Policies
+-- CHECK 8: Column-Level Privilege Classification & Row Level Security Policies
 -- ------------------------------------------------------------------------------
+-- Ensure internal administrative columns are NOT granted to untrusted roles
+SELECT table_name, column_name, grantee, privilege_type
+FROM information_schema.column_privileges
+WHERE table_schema = 'public'
+  AND table_name IN ('evidence_records', 'provenance_records', 'dataset_versions')
+  AND column_name IN ('verified_by', 'verification_notes', 'operator', 'storage_path')
+  AND grantee IN ('PUBLIC', 'anon', 'authenticated');
+-- EXPECTED: Exactly 0 rows.
+
 SELECT tablename, policyname, cmd, roles
 FROM pg_policies
 WHERE schemaname = 'public'
@@ -173,7 +188,7 @@ WHERE schemaname = 'public'
     'record_provenance_linkages'
   )
 ORDER BY tablename, policyname;
--- EXPECTED: 12 policies (Public read + Service role full access for each of 6 tables).
+-- EXPECTED: 12 policies (Public read + Service role full access across all 6 tables).
 
 -- ------------------------------------------------------------------------------
 -- CHECK 9: Controlled Source Seeds Verification
