@@ -82,13 +82,13 @@ async function runBattery() {
   const validVersionIds = new Set((versions || []).map(v => v.id));
 
   const regimesFound = regimes || [];
-  const requiredRegimes = ['eci_delimitation_1976', 'eci_delimitation_2008', 'prospective_delimitation_post2026', 'scenario_delimitation_draft_prop_1'];
+  const requiredRegimes = ['eci_delimitation_1976', 'eci_delimitation_2008', 'eci_delimitation_post2026', 'scenario_delimitation_draft_prop_1'];
   const allRequiredPresent = requiredRegimes.every(r => regimesFound.some(rg => rg.id === r));
   const allVersionsValidA = regimesFound.every(rg => validVersionIds.has(rg.dataset_version_id));
 
   const eci2008 = regimesFound.find(r => r.id === 'eci_delimitation_2008');
   const eci2008StatusOk = eci2008?.legal_status === 'CURRENT_LEGAL_REGIME';
-  const post2026 = regimesFound.find(r => r.id === 'prospective_delimitation_post2026');
+  const post2026 = regimesFound.find(r => r.id === 'eci_delimitation_post2026');
   const post2026StatusOk = post2026?.legal_status === 'FUTURE_ANTICIPATED_REGIME';
   const scenarioProp1 = regimesFound.find(r => r.id === 'scenario_delimitation_draft_prop_1');
   const scenarioStatusOk = scenarioProp1?.legal_status === 'SCENARIO_PROPOSED_REGIME';
@@ -175,34 +175,38 @@ async function runBattery() {
       overlapRejectedWith23P01 = true;
     }
 
-    // 2. Positive Test: Insert two strictly adjacent, non-overlapping intervals for a dedicated test entity
-    // Using a future date window: [2040-01-01, 2040-06-01) and [2040-06-01, 2040-12-31)
-    const testCode1 = `ADJ-TEST-1-${Date.now()}`;
-    const testCode2 = `ADJ-TEST-2-${Date.now()}`;
+    // 2. Positive Test: Insert two strictly adjacent, non-overlapping intervals for a sample district
+    // Existing active version is [2016-10-11, NULL) which represents [2016-10-11, infinity).
+    // Therefore, adjacent intervals must lie prior to 2016-10-11:
+    // Interval 1: [1990-01-01, 2000-01-01)
+    // Interval 2: [2000-01-01, 2010-01-01)
+    // Under '[)' semantics, 2000-01-01 is exclusive in (1) and inclusive in (2), so they abut without overlap.
+    const testCode1 = `ADJ-HIST-1-${Date.now()}`;
+    const testCode2 = `ADJ-HIST-2-${Date.now()}`;
 
     // Insert interval 1
     const { data: ins1, error: adjErr1 } = await adminClient.from('district_versions').insert({
       district_id: sampleDistrict.id,
       version_code: testCode1,
       name: 'Adjacent Test 1',
-      valid_from: '2040-01-01',
-      valid_to: '2040-06-01',
+      valid_from: '1990-01-01',
+      valid_to: '2000-01-01',
       is_current: false,
       primary_dataset_version_id: 'ts_districts_2016_v1'
     }).select('id');
 
-    // Insert interval 2 (strictly abutting / adjacent at 2040-06-01)
+    // Insert interval 2 (strictly abutting / adjacent at 2000-01-01)
     const { data: ins2, error: adjErr2 } = await adminClient.from('district_versions').insert({
       district_id: sampleDistrict.id,
       version_code: testCode2,
       name: 'Adjacent Test 2',
-      valid_from: '2040-06-01',
-      valid_to: '2040-12-31',
+      valid_from: '2000-01-01',
+      valid_to: '2010-01-01',
       is_current: false,
       primary_dataset_version_id: 'ts_districts_2016_v1'
     }).select('id');
 
-    if (!adjErr1 && !adjErr2) {
+    if (!adjErr1 && !adjErr2 && ins1?.length && ins2?.length) {
       adjacentInsertSucceeded = true;
       // Clean up adjacent test records immediately
       await adminClient.from('district_versions').delete().in('version_code', [testCode1, testCode2]);

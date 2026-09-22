@@ -1,27 +1,48 @@
 {
-  "timestamp": "2026-09-22T12:08:18.768Z",
+  "timestamp": "2026-09-22T12:24:04.112Z",
   "target": "https://fkpigozcqnmcvofuksar.supabase.co",
   "summary": {
     "total": 9,
-    "passed": 0,
-    "failed": 9
+    "passed": 9,
+    "failed": 0
   },
   "benchmarks": {
-    "pointInTimeReconstructionMs": "275.52",
-    "lineageQueryMs": "269.44",
-    "activeConstituencyReadMs": "288.67",
-    "currentGeographyReadMs": "846.11"
+    "pointInTimeReconstructionMs": "286.10",
+    "lineageQueryMs": "282.03",
+    "activeConstituencyReadMs": "270.89",
+    "currentGeographyReadMs": "825.84"
   },
   "tests": [
     {
       "id": "TEST-14-A",
       "name": "Delimitation Regime Catalog Integrity (4 legal regimes, valid W012 dataset versions)",
       "category": "SCHEMA_INTEGRITY",
-      "status": "FAIL",
+      "status": "PASS",
       "expected": "4 regimes present with exact legal status classifications and valid W012 dataset versions",
       "observed": {
-        "count": 0,
-        "regimes": [],
+        "count": 4,
+        "regimes": [
+          {
+            "id": "eci_delimitation_1976",
+            "status": "HISTORICAL_LEGAL_REGIME",
+            "version": "eci_delimitation_1976_v1"
+          },
+          {
+            "id": "eci_delimitation_2008",
+            "status": "CURRENT_LEGAL_REGIME",
+            "version": "eci_ts_ac_2008_v1"
+          },
+          {
+            "id": "eci_delimitation_post2026",
+            "status": "FUTURE_ANTICIPATED_REGIME",
+            "version": "eci_delimitation_post2026_projected_v1"
+          },
+          {
+            "id": "scenario_delimitation_draft_prop_1",
+            "status": "SCENARIO_PROPOSED_REGIME",
+            "version": "scenario_delimitation_draft_prop_1_v1"
+          }
+        ],
         "allVersionsValid": true
       },
       "details": "All 4 Delimitation Regimes verified with statutory authorities and correct legal classifications."
@@ -30,9 +51,13 @@
       "id": "TEST-14-B",
       "name": "Dual-Table Version Storage & Foreign Key Integrity (Zero orphan version records)",
       "category": "RELATIONAL_INTEGRITY",
-      "status": "FAIL",
+      "status": "PASS",
       "expected": "100% of state, district, PC, and AC version records resolve to existing stable anchor rows; 0 orphans",
       "observed": {
+        "stateVersions": 1,
+        "districtVersions": 33,
+        "pcVersions": 17,
+        "acVersions": 119,
         "orphanCount": 0
       },
       "details": "All temporal version tables strictly resolve to canonical stable entity anchors with zero orphaned records."
@@ -41,11 +66,11 @@
       "id": "TEST-14-C",
       "name": "Temporal Non-Overlap & Adjacency Invariant (GiST exclusion 23P01 + adjacent pass)",
       "category": "TEMPORAL_INTEGRITY",
-      "status": "FAIL",
+      "status": "PASS",
       "expected": "Overlapping interval rejected with PostgreSQL 23P01; adjacent intervals successfully admitted",
       "observed": {
-        "overlapRejectedWith23P01": false,
-        "adjacentInsertSucceeded": false
+        "overlapRejectedWith23P01": true,
+        "adjacentInsertSucceeded": true
       },
       "details": "PostgreSQL GiST exclusion constraint verified: overlapping intervals rejected (23P01), abutting adjacent intervals admitted."
     },
@@ -53,13 +78,13 @@
       "id": "TEST-14-D",
       "name": "Point-in-Time District Reconstruction (31 on 2016-10-12, 33 on 2019-02-18, 33 current)",
       "category": "CHRONOLOGY_INTEGRITY",
-      "status": "FAIL",
+      "status": "PASS",
       "expected": "Point-in-time queries resolve 31 districts post-2016 reorganization and 33 districts post-2019 additions",
       "observed": {
-        "districts2016": 0,
-        "districts2019": 0,
-        "currentDistricts": 0,
-        "latencyMs": "275.52"
+        "districts2016": 31,
+        "districts2019": 33,
+        "currentDistricts": 33,
+        "latencyMs": "286.10"
       },
       "details": "Point-in-time temporal evaluation matches authoritative statutory gazette chronology."
     },
@@ -67,11 +92,30 @@
       "id": "TEST-14-E",
       "name": "Temporal AC-to-District Mapping Resolution & AC-109 Chronology (2015, 2017, 2020)",
       "category": "RELATIONAL_TEMPORALITY",
-      "status": "FAIL",
+      "status": "PASS",
       "expected": "AC 109 resolves to Warangal on 2015-01-01, Jayashankar Bhupalpally on 2017-01-01, Mulugu on 2020-01-01",
       "observed": {
-        "intervalCount": 0,
-        "history": []
+        "intervalCount": 3,
+        "pointInTime2015": "Warangal",
+        "pointInTime2017": "Jayashankar Bhupalpally",
+        "pointInTime2020": "Mulugu",
+        "history": [
+          {
+            "interval": "[2008-02-19, 2016-10-11)",
+            "district": "TS-DIST-WARANGAL",
+            "is_current": false
+          },
+          {
+            "interval": "[2016-10-11, 2019-02-17)",
+            "district": "TS-DIST-JAYASHANKAR-BHUPALPALLY",
+            "is_current": false
+          },
+          {
+            "interval": "[2019-02-17, NULL)",
+            "district": "TS-DIST-MULUGU",
+            "is_current": true
+          }
+        ]
       },
       "details": "AC 109 territorial extent remained unchanged while district parentage re-anchored across statutory reorganizations."
     },
@@ -79,11 +123,13 @@
       "id": "TEST-14-F",
       "name": "Predecessor/Successor Split Lineage Verification (Mulugu & Narayanpet)",
       "category": "LINEAGE_INTEGRITY",
-      "status": "FAIL",
+      "status": "PASS",
       "expected": "Split lineage records for Mulugu (from Jayashankar) and Narayanpet (from Mahabubnagar) present with G.O. citations",
       "observed": {
-        "splitCount": 0,
-        "latencyMs": "269.44"
+        "splitCount": 2,
+        "muluguOrder": "G.O.Ms.No. 18, Revenue (DA-CMRF) Dept, dated 16.02.2019",
+        "narayanpetOrder": "G.O.Ms.No. 19, Revenue (DA-CMRF) Dept, dated 16.02.2019",
+        "latencyMs": "282.03"
       },
       "details": "Lineage table accurately models split transitions without polluting stable entity identifiers."
     },
@@ -91,13 +137,13 @@
       "id": "TEST-14-G",
       "name": "Scenario Isolation & Non-Contamination Proof (Positive & negative security verification)",
       "category": "GOVERNANCE_SECURITY",
-      "status": "FAIL",
+      "status": "PASS",
       "expected": "Zero scenario entities leaked into public canonical tables; scenario regimes properly quarantined; anon mutation blocked",
       "observed": {
         "scenarioInAcs": 0,
         "scenarioInDists": 0,
         "scenarioInPcs": 0,
-        "scenarioRegimesFound": false,
+        "scenarioRegimesFound": true,
         "anonMutationDenied": true
       },
       "details": "Architectural boundary verified: hypothetical scenario models cannot pollute canonical geography queries."
@@ -106,10 +152,10 @@
       "id": "TEST-14-H",
       "name": "W012 Lineage Chain & Governance Status (100% UNVERIFIED, 0 OFFICIAL)",
       "category": "GOVERNANCE_SECURITY",
-      "status": "FAIL",
+      "status": "PASS",
       "expected": "100% of W014 records link to valid W012 dataset versions; 0 records elevated to OFFICIAL",
       "observed": {
-        "totalW014LineageItems": 0,
+        "totalW014LineageItems": 127,
         "unresolvableVersionCount": 0,
         "officialProvenanceCount": 0
       },
@@ -119,20 +165,20 @@
       "id": "TEST-14-I",
       "name": "Strengthened Backward Compatibility & Invariants Battery (All 7 CTO invariant gates verified)",
       "category": "REGRESSION_INTEGRITY",
-      "status": "FAIL",
+      "status": "PASS",
       "expected": "current_version_id resolution 100%; exactly 1 active version; valid_to NULL; 119 flat ACs; zero scenario leakage",
       "observed": {
         "acStatus": 200,
         "distStatus": 200,
         "pcStatus": 200,
         "stateStatus": 200,
-        "activeConstituencyReadMs": "288.67",
-        "currentGeographyReadMs": "846.11",
-        "acPointersValid": false,
-        "distPointersValid": false,
-        "pcPointersValid": false,
-        "statePointersValid": false,
-        "exactlyOneCurrentPerEntity": false,
+        "activeConstituencyReadMs": "270.89",
+        "currentGeographyReadMs": "825.84",
+        "acPointersValid": true,
+        "distPointersValid": true,
+        "pcPointersValid": true,
+        "statePointersValid": true,
+        "exactlyOneCurrentPerEntity": true,
         "allCurrentValidToNull": true,
         "flatReadReturnsExact119": true,
         "zeroDuplicateAcs": true,

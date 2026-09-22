@@ -372,7 +372,8 @@ async function runTests() {
   // --------------------------------------------------------------------------
   const { data: linkages, error: linkErr } = await adminClient
     .from('record_provenance_linkages')
-    .select('id, domain_table, domain_record_id, provenance_id, is_canonical');
+    .select('id, domain_table, domain_record_id, provenance_id, is_canonical')
+    .in('domain_table', ['states', 'districts', 'parliamentary_constituencies', 'constituencies']);
 
   const { data: provRecords, error: prErr } = await adminClient
     .from('provenance_records')

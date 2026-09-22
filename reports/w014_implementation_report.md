@@ -66,7 +66,7 @@ Pursuant to CTO Implementation Authorization for **W014 — Geography Versioning
 | `supabase/staging_migration_package_041.sql` | Atomic Staging Package | 33,135 | `b80620a947dcf308827acfd246089bc6f9f57540c93aaacde4784070bc626fd4` | 0 |
 | `supabase/verify_staging_migration_package_041.sql` | SQL Verification Battery (Checks 1–10) | 4,579 | `6d435faba67cc3fe30dec73a7591652697b62e1d5c5eb3919a0553c2341d3094` | 0 |
 | `scripts/verify_w014_temporal_validity.mjs` | Static Preflight & Syntax Validator | 2,034 | `2583ccf450cb5798962c0ea827f74c97ecd941eaa074b3f078e1374b6665cf12` | 0 |
-| `tests/verify_w014_temporal_validity.mjs` | Node Runtime Verification Battery (TEST-14-A – TEST-14-I) | 29,107 | `31d2b6cf8ca699c6844510af7d224968bf0803abd903c714a1614de0f32e13d6` | 0 |
+| `tests/verify_w014_temporal_validity.mjs` | Node Runtime Verification Battery (TEST-14-A – TEST-14-I) | 29,389 | `c08674d213b21e4de491ca92900bc65bc6f688afdade692460b59bb39920dd46` | 0 |
 | `reports/w014_staging_migration_application_package.md` | Staging Application Package Documentation | 8,495 | `7cdfe53ccd69971aff06da98c76c47b10bbaba1675ea561024f52baa2e64f687` | 0 |
 
 ---
