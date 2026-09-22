@@ -25,8 +25,8 @@
     "constituencies_table_reconciliation": "public.constituencies is retained as the Assembly Constituency entity. Its legacy PK (id VARCHAR(20)) is preserved for foreign key compatibility. Additive columns introduce internal_id UUID (NOT NULL, UNIQUE, immutable), canonical_code VARCHAR(30) (NOT NULL, UNIQUE, immutable within W013), PC FK, and District FK.",
     "w012_enum_semantics_reconciled": "Strictly reconciled against Migration 039 types: source_authority_enum ('constitutional', 'statutory', 'academic', 'media_ngo', 'crowdsourced', 'synthetic_model') and data_status_enum ('OFFICIAL', 'DERIVED', 'VERIFIED', 'ESTIMATE', 'SCENARIO', 'INFERRED', 'UNVERIFIED', 'UNKNOWN'). Disallowed custom values like OFFICIAL_STATUTORY or VERIFIED_GAZETTE.",
     "telangana_district_chronology_reconciled": "Formally separated 2016 Reorganisation (G.O.Ms.Nos 219-249, 31 districts, version 'ts_districts_2016_v1') from 2019 Additions (G.O.Ms.Nos 18 & 19, Mulugu and Narayanpet, 2 districts, version 'ts_districts_2019_additions_v1') and Current Composite (33 districts, version 'ts_districts_2019_composite_v1'). Records enter with default_status = 'UNVERIFIED' pending cryptographic evidence ingestion.",
-    "primary_dataset_version_semantics_and_cardinality": "primary_dataset_version_id TEXT REFERENCES dataset_versions(id) represents the primary seeding dataset version, NOT complete provenance. Complete provenance is tracked via record_provenance_linkages (M:N junction to provenance_records DAG).",
-    "pilot_scope_bounded": "W013 seed scope is restricted to verified Telangana pilot records (1 State, 33 Districts, 17 PCs, 119 ACs) backed by statutory and constitutional evidence."
+    "primary_dataset_version_semantics_and_cardinality": "primary_dataset_version_id TEXT REFERENCES dataset_versions(id) is an N:1 relationship from canonical geography entities to dataset_versions representing the primary seeding dataset version, NOT complete provenance. Complete provenance is tracked via record_provenance_linkages (M:N junction to provenance_records DAG).",
+    "pilot_scope_bounded": "Statutory source material has been identified for the Telangana pilot (1 State, 33 Districts, 17 PCs, 119 ACs), but the dataset remains UNVERIFIED until the corresponding immutable evidence artifact has been captured and verified. Initial state: authority = statutory/constitutional, status = UNVERIFIED, evidence = identified but not yet cryptographically verified."
   },
   "database_schema_baseline": {
     "applied_migrations_count": 39,
@@ -327,7 +327,7 @@
       "UNKNOWN"
     ],
     "cardinality_model": {
-      "entity_to_primary_version": "Exactly 1:1 via primary_dataset_version_id TEXT REFERENCES dataset_versions(id)",
+      "entity_to_primary_version": "Many-to-One (N:1) via primary_dataset_version_id TEXT REFERENCES dataset_versions(id) (identifies primary dataset version from which record was seeded; not complete provenance)",
       "entity_to_provenance_linkages": "1:N via record_provenance_linkages(domain_table, domain_record_id)",
       "linkage_to_provenance_record": "N:1 via record_provenance_linkages.provenance_id REFERENCES provenance_records(id)",
       "provenance_to_evidence": "Optional N:1 via provenance_records.verification_evidence_id REFERENCES evidence_records(id)",

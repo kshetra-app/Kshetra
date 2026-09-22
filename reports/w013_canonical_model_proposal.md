@@ -75,19 +75,34 @@ primary_dataset_version_id TEXT REFERENCES public.dataset_versions(id)
 ```
 *(Note: `dataset_versions.id` in Migration 039 is `TEXT PRIMARY KEY`, not UUID).*
 
-#### Explicit Semantics:
-`primary_dataset_version_id` denotes:
-> **The primary/canonical dataset version from which the entity record was seeded or instantiated.**
+#### Explicit Semantics & Cardinality:
+`primary_dataset_version_id` identifies the primary dataset version from which the canonical geography record was seeded or instantiated. It is not the complete provenance of the record.
 
-It is **NOT** the complete provenance of the entity. Complete provenance is represented through W012's `record_provenance_linkages`, which connects domain records to the append-only `provenance_records` DAG and `evidence_records`.
+```text
+Many canonical geography entities
+        ↓
+One primary_dataset_version
+```
 
-#### Cardinality Analysis:
+Therefore, `canonical geography entity → primary_dataset_version_id` is an **N:1 relationship** from canonical geography entities to `dataset_versions`.
+
+Complete provenance remains represented through W012:
+```text
+domain record
+    ↓
+record_provenance_linkages
+    ↓
+provenance_records
+    ↓
+dataset_versions / evidence_records
+```
+
 ```
 ┌─────────────────────────────────────────────────────────────────────────┐
 │ PROVENANCE CARDINALITY MODEL                                            │
 ├─────────────────────────────────────────────────────────────────────────┤
-│ 1. Canonical Entity → primary_dataset_version_id:                       │
-│    - Exactly ONE (1:1 direct foreign key for foundational seed lineage).│
+│ 1. Canonical Entities → primary_dataset_version_id:                     │
+│    - Many-to-One (N:1 foreign key from entities to dataset_versions).   │
 ├─────────────────────────────────────────────────────────────────────────┤
 │ 2. Canonical Entity → record_provenance_linkages:                       │
 │    - Zero, One, or MANY (1:N junction via domain_table + domain_record_id│
@@ -137,13 +152,16 @@ The historical and legal chronology of Telangana districts is formally separated
 ```
 
 ### Data Status & Evidence Rules for Pilot:
-- In W013, the 33 districts of Telangana are represented as originating from the composite dataset version `ts_districts_2019_composite_v1`.
-- Because the raw gazette PDF files and cryptographic verification evidence records are not yet ingested into `evidence_records`, their `default_status` in `dataset_versions` will be strictly recorded as:
-  ```text
-  default_status = 'UNVERIFIED'
-  ```
-  *(or `'UNKNOWN'` pending ingestion of gazette SHA-256 evidence records).*
-- **Under no circumstances will data status be labeled `'OFFICIAL'` without an attached `evidence_records` row.**
+> **Statutory source material has been identified, but the dataset remains UNVERIFIED until the corresponding immutable evidence artifact has been captured and verified.**
+
+The intended initial state is:
+```text
+source authority = statutory / constitutional as appropriate
+data status = UNVERIFIED
+evidence state = identified but not yet cryptographically verified
+```
+
+Do not elevate any geography dataset or record to `OFFICIAL` merely because the publisher is an authoritative institution. W012's evidence-gated status model remains authoritative.
 
 ---
 
@@ -254,7 +272,7 @@ COMMENT ON COLUMN public.constituencies.canonical_code IS 'Human-readable canoni
 | **PCs** | Telangana Lok Sabha | 17 | Election Commission of India | `constitutional` | `eci_delimitation_order_2008` | `eci_ts_pc_2008_v1` | `UNVERIFIED` | ECI Order 2008 pending SHA-256 |
 | **ACs** | Telangana Vidhan Sabha | 119 | Election Commission of India | `constitutional` | `eci_delimitation_order_2008` | `eci_ts_ac_2008_v1` | `UNVERIFIED` | ECI Order 2008 pending SHA-256 |
 
-*Rule*: All pilot records will enter with `data_status_enum = 'UNVERIFIED'`. Elevation to `'OFFICIAL'` will occur strictly when cryptographically verified `evidence_records` are registered under W012 governance protocols.
+*Rule*: Statutory source material has been identified, but the dataset remains UNVERIFIED until the corresponding immutable evidence artifact has been captured and verified. Do not elevate any geography dataset or record to OFFICIAL merely because the publisher is an authoritative institution. Elevation to OFFICIAL will occur strictly when cryptographically verified evidence_records are registered under W012 governance protocols.
 
 ---
 

@@ -107,18 +107,39 @@ The following domain tables declare foreign keys referencing `constituencies(id)
 | **PCs** | Telangana Lok Sabha | 17 | Election Commission of India | `constitutional` | `eci_delimitation_order_2008` | `eci_ts_pc_2008_v1` | `UNVERIFIED` | ECI Delimitation Order 2008 pending SHA-256 |
 | **ACs** | Telangana Vidhan Sabha | 119 | Election Commission of India | `constitutional` | `eci_delimitation_order_2008` | `eci_ts_ac_2008_v1` | `UNVERIFIED` | ECI Delimitation Order 2008 pending SHA-256 |
 
-*Rule*: All pilot records enter with `default_status = 'UNVERIFIED'`. Elevation to `'OFFICIAL'` will occur strictly when cryptographically verified `evidence_records` are registered under W012 governance protocols.
+*Rule*: Statutory source material has been identified, but the dataset remains UNVERIFIED until the corresponding immutable evidence artifact has been captured and verified. The intended initial state is: source authority = statutory / constitutional as appropriate, data status = UNVERIFIED, evidence state = identified but not yet cryptographically verified. Do not elevate any geography dataset or record to OFFICIAL merely because the publisher is an authoritative institution. Elevation to OFFICIAL will occur strictly when cryptographically verified evidence_records are registered under W012 governance protocols.
 
 ---
 
 ## 5. Provenance Cardinality Model
 
+`primary_dataset_version_id` identifies the primary dataset version from which the canonical geography record was seeded or instantiated. It is not the complete provenance of the record.
+
+```text
+Many canonical geography entities
+        ↓
+One primary_dataset_version
+```
+
+Therefore, `canonical geography entity → primary_dataset_version_id` is an **N:1 relationship** from canonical geography entities to `dataset_versions`.
+
+Complete provenance remains represented through W012:
+```text
+domain record
+    ↓
+record_provenance_linkages
+    ↓
+provenance_records
+    ↓
+dataset_versions / evidence_records
+```
+
 ```
 ┌─────────────────────────────────────────────────────────────────────────┐
 │ PROVENANCE CARDINALITY MODEL                                            │
 ├─────────────────────────────────────────────────────────────────────────┤
-│ 1. Canonical Entity → primary_dataset_version_id:                       │
-│    - Exactly ONE (1:1 direct foreign key for foundational seed lineage).│
+│ 1. Canonical Entities → primary_dataset_version_id:                     │
+│    - Many-to-One (N:1 foreign key from entities to dataset_versions).   │
 ├─────────────────────────────────────────────────────────────────────────┤
 │ 2. Canonical Entity → record_provenance_linkages:                       │
 │    - Zero, One, or MANY (1:N junction via domain_table + domain_record_id│
