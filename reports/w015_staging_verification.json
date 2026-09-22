@@ -1,5 +1,5 @@
 {
-  "timestamp": "2026-09-22T15:00:30.566Z",
+  "timestamp": "2026-09-22T15:22:09.436Z",
   "target": "https://fkpigozcqnmcvofuksar.supabase.co",
   "summary": {
     "total": 9,
@@ -7,18 +7,18 @@
     "failed": 0
   },
   "benchmarks": {
-    "parentChildResolutionMs": "2124.54",
-    "containsPartOfResolutionMs": "2197.44",
-    "lineageTraversalMs": "612.34",
-    "oldToNewReconciliationMs": "612.97",
-    "overallReconciliationMs": "1.15",
-    "gistValidationMs": "2266.60",
-    "rlsSecurityMs": "869.21",
-    "governanceIntegrityMs": "1714.98",
-    "constituencyWithRelationsMs": "358.18",
-    "mandalWithDistrictMs": "1141.66",
-    "mandalAcMappingMs": "275.98",
-    "regressionEvaluationMs": "1775.93"
+    "parentChildResolutionMs": "1503.92",
+    "containsPartOfResolutionMs": "1158.15",
+    "lineageTraversalMs": "569.67",
+    "oldToNewReconciliationMs": "562.68",
+    "overallReconciliationMs": "565.24",
+    "gistValidationMs": "3112.06",
+    "rlsSecurityMs": "2305.60",
+    "governanceIntegrityMs": "272.09",
+    "constituencyWithRelationsMs": "282.61",
+    "mandalWithDistrictMs": "278.09",
+    "mandalAcMappingMs": "272.27",
+    "regressionEvaluationMs": "833.10"
   },
   "tests": [
     {
@@ -33,7 +33,7 @@
         "acCount": 119,
         "mandalCount": 12,
         "mandalsResolveDistrict": true,
-        "latencyMs": "2124.54"
+        "latencyMs": "1503.92"
       },
       "details": "Direct parent/child administrative and electoral relationships reconciled across State, District, PC, AC, and Mandal tiers."
     },
@@ -42,19 +42,21 @@
       "name": "contains / part-of relationship reconciliation",
       "category": "MASTER_RELATIONSHIP",
       "status": "PASS",
-      "expected": "100% of ACs contained in valid PC and District; 100% of booths contained in exactly one AC; discrete full/partial Mandal-AC containment verified",
+      "expected": "100% of ACs contained in valid PC and District; 100% of booths contained in exactly one AC; dual constituency identity strictly coherent; discrete full/partial Mandal-AC containment verified",
       "observed": {
         "allAcsHavePc": true,
         "allAcsHaveDist": true,
         "boothCount": 4,
         "allBoothsResolveAc": true,
+        "boothDualIdentityOk": true,
         "mcmCount": 10,
         "mcmFkOk": true,
+        "mcmDualIdentityOk": true,
         "hasFullOverlap": true,
         "hasPartialOverlap": true,
-        "latencyMs": "2197.44"
+        "latencyMs": "1158.15"
       },
-      "details": "Cross-tree containment verified: PCs contain ACs, Districts contain ACs, ACs contain Booths, and Mandals map to ACs discretely."
+      "details": "Cross-tree containment verified: PCs contain ACs, Districts contain ACs, ACs contain Booths, Mandals map to ACs discretely, and dual constituency identities resolve to the exact same canonical AC."
     },
     {
       "id": "TEST-C",
@@ -68,7 +70,7 @@
         "narayanpetPredOk": true,
         "traversalOk": true,
         "muluguOrder": "G.O.Ms.No. 18, Revenue (DA-CMRF) Dept, dated 16.02.2019",
-        "latencyMs": "612.34"
+        "latencyMs": "569.67"
       },
       "details": "Predecessor/successor transitions successfully reconciled with bidirectional resolution and statutory order citations."
     },
@@ -84,7 +86,7 @@
         "era2": "Jayashankar Bhupalpally (2016-10-11 to 2019-02-17)",
         "era3": "Mulugu (2019-02-17 to null)",
         "regimeCount": 4,
-        "latencyMs": "612.97"
+        "latencyMs": "562.68"
       },
       "details": "Old-to-new mappings reconciled across statutory reorganisations with continuous chronological integrity."
     },
@@ -93,17 +95,21 @@
       "name": "empirical reconciliation of known geography relationships (Master Evidence Gate)",
       "category": "MASTER_RECONCILIATION_GATE",
       "status": "PASS",
-      "expected": "100% of known geography relationships reconcile with 0 orphans and 0 broken foreign keys",
+      "expected": "100% of known geography relationships reconcile across the 4-tier chain (Authoritative Source -> Canonical Stored -> Relational Integrity -> Reconciliation Result) with 0 orphans and 0 broken foreign keys",
       "observed": {
+        "mandalsReconciled": true,
+        "mcmReconciled": true,
+        "boothsReconciled": true,
+        "splitsReconciled": true,
         "orphanDistricts": 0,
         "orphanPCs": 0,
         "orphanACs": 0,
         "orphanMandals": 0,
         "orphanBooths": 0,
         "orphanMcm": 0,
-        "latencyMs": "1.15"
+        "latencyMs": "565.24"
       },
-      "details": "Master Evidence requirement fully satisfied: Known geography relationships reconcile correctly across the entire hierarchy."
+      "details": "Master Evidence requirement fully satisfied: 4-tier source-backed chain verified with zero orphans and zero broken foreign keys across the entire bounded hierarchy."
     },
     {
       "id": "TEST-SUPP-1",
@@ -114,7 +120,7 @@
       "observed": {
         "adjacentInsertSucceeded": true,
         "overlappingInsertRejected": true,
-        "latencyMs": "2266.60"
+        "latencyMs": "3112.06"
       },
       "details": "PostgreSQL GiST temporal non-overlap invariant rigorously verified on temporal relationship storage."
     },
@@ -123,43 +129,59 @@
       "name": "Scenario Isolation & Inherited RLS Security",
       "category": "SUPPORTING_SECURITY",
       "status": "PASS",
-      "expected": "Anonymous read succeeds; anonymous mutation denied by RLS; scenario isolation intact",
+      "expected": "Anonymous read succeeds; anonymous mutation denied by RLS; database-level scenario isolation verified with zero scenario records in canonical tables",
       "observed": {
         "anonReadOk": true,
         "mutationDenied": true,
-        "scenarioInMandals": 0,
-        "latencyMs": "869.21"
+        "totalMandalsInspected": 12,
+        "scenarioMandalsCount": 0,
+        "totalMcmInspected": 10,
+        "scenarioMcmCount": 0,
+        "totalBoothsInspected": 4,
+        "scenarioBoothsCount": 0,
+        "scenarioRegimesIsolated": true,
+        "latencyMs": "2305.60"
       },
-      "details": "Security requirements upheld: public read permitted, client mutation denied, scenario records isolated."
+      "details": "Security requirements upheld: public read permitted, client mutation denied, zero scenario records in canonical tables across the entire population."
     },
     {
       "id": "TEST-SUPP-3",
       "name": "W012 Lineage & Governance Integrity (100% UNVERIFIED, 0 OFFICIAL)",
       "category": "SUPPORTING_GOVERNANCE",
       "status": "PASS",
-      "expected": "100% of W015 relationship records reference valid W012 dataset versions; 0 records elevated to OFFICIAL",
+      "expected": "100% of W015 relationship records reference valid W012 dataset versions; exact 26 provenance records and 26 linkages resolve bidirectionally; 0 records elevated to OFFICIAL",
       "observed": {
         "allMandalVersionsValid": true,
         "allMcmVersionsValid": true,
         "allBoothVersionsValid": true,
         "allUnverified": true,
+        "exactProvCountOk": true,
+        "exactLinkageCountOk": true,
+        "allLinkagesValid": true,
+        "allMandalsLinked": true,
+        "allMcmLinked": true,
+        "allBoothsLinked": true,
+        "zeroOfficial": true,
         "provenanceRecords": 26,
         "provenanceLinkages": 26,
-        "latencyMs": "1714.98"
+        "latencyMs": "272.09"
       },
-      "details": "W012 governance protocol strictly enforced: complete lineage chain intact, 100% strictly UNVERIFIED."
+      "details": "W012 governance protocol strictly enforced: exact semantic completeness verified with 26/26 provenance linkages, zero orphans, and 100% strictly UNVERIFIED."
     },
     {
       "id": "TEST-SUPP-4",
       "name": "Regression Suite & General Performance Observation",
       "category": "SUPPORTING_REGRESSION",
       "status": "PASS",
-      "expected": "Empirical latencies measured on panIN-staging; baseline tables preserved with zero regressions",
+      "expected": "Benchmark queries execute successfully; result sets valid; empirical latencies measured and recorded on panIN-staging with zero subjective conclusions",
       "observed": {
-        "constituencyWithRelationsMs": "358.18",
-        "mandalWithDistrictMs": "1141.66",
-        "mandalAcMappingMs": "275.98",
-        "latencyMs": "1775.93"
+        "queriesSucceeded": true,
+        "resultSetsValid": true,
+        "latenciesRecorded": true,
+        "constituencyWithRelationsMs": "282.61",
+        "mandalWithDistrictMs": "278.09",
+        "mandalAcMappingMs": "272.27",
+        "latencyMs": "833.10"
       },
       "details": "Empirical relationship query performance observed and recorded under project performance guidelines."
     }

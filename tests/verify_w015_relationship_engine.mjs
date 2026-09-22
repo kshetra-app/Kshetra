@@ -162,11 +162,18 @@ async function runBattery() {
   const boothCountOk = (booths || []).length >= 4;
   const acInternalIdSet = new Set((acs || []).map(a => a.internal_id));
   const acIdSet = new Set((acs || []).map(a => a.id));
+  const acInternalIdMap = new Map((acs || []).map(a => [a.id, a.internal_id]));
 
   // Invariant: 100% of booths resolve to valid AC, and each booth belongs to exactly one AC
   const allBoothsResolveAc = (booths || []).every(b =>
     acIdSet.has(b.constituency_id) && (b.constituency_internal_id ? acInternalIdSet.has(b.constituency_internal_id) : true)
   );
+
+  // Blocker 3: Dual Constituency Identity check for 100% of Polling Booths
+  const boothDualIdentityOk = (booths || []).every(b => {
+    if (!b.constituency_id || !b.constituency_internal_id) return false;
+    return acInternalIdMap.get(b.constituency_id) === b.constituency_internal_id;
+  });
 
   // Check 4: Mandal ↔ AC Containment (DEF-15-02)
   const { data: mcm, error: mcmErr } = await adminClient
@@ -178,6 +185,13 @@ async function runBattery() {
     mandalIdSet.has(m.mandal_id) && acIdSet.has(m.constituency_id) &&
     (!m.constituency_internal_id || acInternalIdSet.has(m.constituency_internal_id))
   );
+
+  // Blocker 3: Dual Constituency Identity check for 100% of MCM population
+  const mcmDualIdentityOk = (mcm || []).every(m => {
+    if (!m.constituency_id || !m.constituency_internal_id) return false;
+    return acInternalIdMap.get(m.constituency_id) === m.constituency_internal_id;
+  });
+
   const mcmDiscreteTypesOk = (mcm || []).every(m => m.overlap_type === 'full' || m.overlap_type === 'partial');
   const hasFull = (mcm || []).some(m => m.overlap_type === 'full');
   const hasPartial = (mcm || []).some(m => m.overlap_type === 'partial');
@@ -185,27 +199,29 @@ async function runBattery() {
   benchmarkMetrics.containsPartOfResolutionMs = (performance.now() - tB0).toFixed(2);
 
   const bPassed = allAcsHavePc && allAcsHaveDist &&
-    !boothErr && boothCountOk && allBoothsResolveAc &&
-    !mcmErr && mcmCountOk && mcmFkOk && mcmDiscreteTypesOk && hasFull && hasPartial;
+    !boothErr && boothCountOk && allBoothsResolveAc && boothDualIdentityOk &&
+    !mcmErr && mcmCountOk && mcmFkOk && mcmDualIdentityOk && mcmDiscreteTypesOk && hasFull && hasPartial;
 
   recordTest(
     'TEST-B',
     'contains / part-of relationship reconciliation',
     'MASTER_RELATIONSHIP',
     bPassed ? 'PASS' : 'FAIL',
-    '100% of ACs contained in valid PC and District; 100% of booths contained in exactly one AC; discrete full/partial Mandal-AC containment verified',
+    '100% of ACs contained in valid PC and District; 100% of booths contained in exactly one AC; dual constituency identity strictly coherent; discrete full/partial Mandal-AC containment verified',
     {
       allAcsHavePc,
       allAcsHaveDist,
       boothCount: booths?.length,
       allBoothsResolveAc,
+      boothDualIdentityOk,
       mcmCount: mcm?.length,
       mcmFkOk,
+      mcmDualIdentityOk,
       hasFullOverlap: hasFull,
       hasPartialOverlap: hasPartial,
       latencyMs: benchmarkMetrics.containsPartOfResolutionMs
     },
-    'Cross-tree containment verified: PCs contain ACs, Districts contain ACs, ACs contain Booths, and Mandals map to ACs discretely.'
+    'Cross-tree containment verified: PCs contain ACs, Districts contain ACs, ACs contain Booths, Mandals map to ACs discretely, and dual constituency identities resolve to the exact same canonical AC.'
   );
 
   // ==========================================================================
@@ -306,36 +322,90 @@ async function runBattery() {
   // TEST-E: overall empirical reconciliation gate (Master Evidence Gate)
   // ==========================================================================
   const tE0 = performance.now();
-  // Invariant: Known geography relationships reconcile correctly.
-  // 1. Zero orphan districts (every district references valid state)
+  // Master Chain: AUTHORITATIVE SOURCE -> CANONICAL STORED RELATIONSHIP -> RELATIONAL INTEGRITY -> RECONCILIATION RESULT
+
+  // Fetch W015 provenance records and linkages
+  const { data: w015Linkages } = await adminClient
+    .from('record_provenance_linkages')
+    .select('id, domain_table, domain_record_id, provenance_id')
+    .in('domain_table', ['mandals', 'mandal_constituency_map', 'polling_booths']);
+
+  const { data: w015ProvRecords } = await adminClient
+    .from('provenance_records')
+    .select('id, dataset_version_id, source_record_id, status')
+    .in('dataset_version_id', ['ts_lgd_mandals_2023_v1', 'ts_mandal_ac_mappings_2023_v1', 'eci_ts_booths_2023_v1']);
+
+  const provMap = new Map((w015ProvRecords || []).map(p => [p.id, p]));
+  const linkageMapByRecord = new Map();
+  for (const l of (w015Linkages || [])) {
+    linkageMapByRecord.set(`${l.domain_table}:${l.domain_record_id}`, l);
+  }
+
+  // Tier 1: Mandals (12) — MoPR LGD Authority -> Canonical Mandals -> Parent District FK
+  const mandalsReconciled = (mandals || []).length === 12 && (mandals || []).every(m => {
+    const link = linkageMapByRecord.get(`mandals:${m.id}`);
+    const prov = link ? provMap.get(link.provenance_id) : null;
+    const hasValidDistrict = districtIdSet.has(m.district_id);
+    const hasSource = prov?.dataset_version_id === 'ts_lgd_mandals_2023_v1' && prov?.source_record_id === m.id;
+    const hasValidLgd = typeof m.lgd_code === 'number' && m.lgd_code > 0;
+    return hasValidDistrict && hasSource && hasValidLgd;
+  });
+
+  // Tier 2: Mandal-AC Mappings (10) — ECI Delimitation Order 2008 -> Discrete Containment -> Dual Identity Coherence
+  const mcmReconciled = (mcm || []).length === 10 && (mcm || []).every(m => {
+    const link = linkageMapByRecord.get(`mandal_constituency_map:${m.id}`);
+    const prov = link ? provMap.get(link.provenance_id) : null;
+    const hasMandal = mandalIdSet.has(m.mandal_id);
+    const hasAc = acIdSet.has(m.constituency_id);
+    const dualIdentityMatches = acInternalIdMap.get(m.constituency_id) === m.constituency_internal_id;
+    const hasSource = prov?.dataset_version_id === 'ts_mandal_ac_mappings_2023_v1';
+    const discreteTypeOk = m.overlap_type === 'full' || m.overlap_type === 'partial';
+    return hasMandal && hasAc && dualIdentityMatches && hasSource && discreteTypeOk;
+  });
+
+  // Tier 3: Polling Booths (4) — ECI Polling Stations List -> Canonical Booths -> AC Containment & Dual Identity
+  const boothsReconciled = (booths || []).length === 4 && (booths || []).every(b => {
+    const link = linkageMapByRecord.get(`polling_booths:${b.id}`);
+    const prov = link ? provMap.get(link.provenance_id) : null;
+    const hasAc = acIdSet.has(b.constituency_id);
+    const dualIdentityMatches = acInternalIdMap.get(b.constituency_id) === b.constituency_internal_id;
+    const hasSource = prov?.dataset_version_id === 'eci_ts_booths_2023_v1';
+    return hasAc && dualIdentityMatches && hasSource;
+  });
+
+  // Tier 4: Reorganisation Splits & Lineage (2) — Gazette G.O.Ms.No. 18 & 19 -> Lineage Traversal
+  const splitsReconciled = muluguPredOk && narayanpetPredOk && traversalOk;
+
+  // Global Referential & Zero Orphan Invariant
   const orphanDists = (districts || []).filter(d => d.state_code !== 'TS').length;
-  // 2. Zero orphan PCs (every PC references valid state)
   const orphanPcs = (pcs || []).filter(p => p.state_code !== 'TS').length;
-  // 3. Zero orphan ACs (every AC references valid state, PC, and district)
   const orphanAcs = (acs || []).filter(a =>
     a.state_code !== 'TS' ||
     !acPcLinks?.some(l => l.id === a.id && l.parliamentary_constituency_id) ||
     !acDistLinks?.some(l => l.id === a.id && l.district_id)
   ).length;
-  // 4. Zero orphan mandals (every mandal references valid district)
   const orphanMandals = (mandals || []).filter(m => !districtIdSet.has(m.district_id)).length;
-  // 5. Zero orphan booths (every booth references valid AC)
   const orphanBooths = (booths || []).filter(b => !acIdSet.has(b.constituency_id)).length;
-  // 6. Zero orphan MCM links (every link references valid mandal and AC)
   const orphanMcm = (mcm || []).filter(m => !mandalIdSet.has(m.mandal_id) || !acIdSet.has(m.constituency_id)).length;
+
+  const noOrphans = orphanDists === 0 && orphanPcs === 0 && orphanAcs === 0 &&
+    orphanMandals === 0 && orphanBooths === 0 && orphanMcm === 0;
 
   benchmarkMetrics.overallReconciliationMs = (performance.now() - tE0).toFixed(2);
 
-  const ePassed = orphanDists === 0 && orphanPcs === 0 && orphanAcs === 0 &&
-    orphanMandals === 0 && orphanBooths === 0 && orphanMcm === 0;
+  const ePassed = mandalsReconciled && mcmReconciled && boothsReconciled && splitsReconciled && noOrphans;
 
   recordTest(
     'TEST-E',
     'empirical reconciliation of known geography relationships (Master Evidence Gate)',
     'MASTER_RECONCILIATION_GATE',
     ePassed ? 'PASS' : 'FAIL',
-    '100% of known geography relationships reconcile with 0 orphans and 0 broken foreign keys',
+    '100% of known geography relationships reconcile across the 4-tier chain (Authoritative Source -> Canonical Stored -> Relational Integrity -> Reconciliation Result) with 0 orphans and 0 broken foreign keys',
     {
+      mandalsReconciled,
+      mcmReconciled,
+      boothsReconciled,
+      splitsReconciled,
       orphanDistricts: orphanDists,
       orphanPCs: orphanPcs,
       orphanACs: orphanAcs,
@@ -344,7 +414,7 @@ async function runBattery() {
       orphanMcm,
       latencyMs: benchmarkMetrics.overallReconciliationMs
     },
-    'Master Evidence requirement fully satisfied: Known geography relationships reconcile correctly across the entire hierarchy.'
+    'Master Evidence requirement fully satisfied: 4-tier source-backed chain verified with zero orphans and zero broken foreign keys across the entire bounded hierarchy.'
   );
 
   // ==========================================================================
@@ -436,12 +506,37 @@ async function runBattery() {
   // TEST-SUPP-2: Scenario Isolation & Inherited RLS Security
   // ==========================================================================
   const tSupp2 = performance.now();
-  // Check 1: Anonymous read succeeds for mandals and booths
-  const { data: anonMandals, error: anonMandalsErr } = await anonClient.from('mandals').select('id, name').limit(5);
-  const { data: anonBooths, error: anonBoothsErr } = await anonClient.from('polling_booths').select('id, booth_name').limit(5);
+  // Blocker 5: Complete database-level assertion over all canonical W015 tables
+  const { data: allMandals } = await adminClient.from('mandals').select('id, name, primary_dataset_version_id');
+  const { data: allMcm } = await adminClient.from('mandal_constituency_map').select('id, primary_dataset_version_id');
+  const { data: allBooths } = await adminClient.from('polling_booths').select('id, primary_dataset_version_id');
+
+  // Identify scenario datasets and dataset versions
+  const { data: allVersions } = await adminClient.from('dataset_versions').select('id, dataset_id, default_status');
+  const scenarioVersionIds = new Set(
+    (allVersions || [])
+      .filter(v => v.default_status === 'SCENARIO' || v.dataset_id === 'panin_delimitation_scenarios' || v.dataset_id === 'tamil_nadu_2026_projection')
+      .map(v => v.id)
+  );
+
+  // Assert ZERO canonical rows reference scenario versions
+  const scenarioMandalsCount = (allMandals || []).filter(m => scenarioVersionIds.has(m.primary_dataset_version_id)).length;
+  const scenarioMcmCount = (allMcm || []).filter(m => scenarioVersionIds.has(m.primary_dataset_version_id)).length;
+  const scenarioBoothsCount = (allBooths || []).filter(b => scenarioVersionIds.has(b.primary_dataset_version_id)).length;
+
+  // Delimitation regimes: ensure SCENARIO_PROPOSED_REGIME is isolated and not marked as CURRENT_LEGAL_REGIME
+  const { data: scenarioRegimes } = await adminClient
+    .from('delimitation_regimes')
+    .select('id, legal_status')
+    .eq('legal_status', 'SCENARIO_PROPOSED_REGIME');
+  const scenarioRegimesIsolated = (scenarioRegimes || []).length === 1 && scenarioRegimes[0].legal_status !== 'CURRENT_LEGAL_REGIME';
+
+  // RLS Checks: Anonymous read succeeds across canonical tables
+  const { data: anonMandals, error: anonMandalsErr } = await anonClient.from('mandals').select('id, name').limit(10);
+  const { data: anonBooths, error: anonBoothsErr } = await anonClient.from('polling_booths').select('id, booth_name').limit(10);
   const anonReadOk = !anonMandalsErr && !anonBoothsErr && (anonMandals || []).length > 0 && (anonBooths || []).length > 0;
 
-  // Check 2: Anonymous mutation fails (WITH CHECK false)
+  // Anonymous mutation denied
   const { error: anonMutationErr } = await anonClient.from('mandals').insert({
     id: 'TS-MDL-MALICIOUS',
     name: 'Malicious Mandal',
@@ -451,33 +546,38 @@ async function runBattery() {
   });
   const mutationDenied = !!anonMutationErr;
 
-  // Check 3: Scenario isolation (zero scenario rows in canonical tables)
-  const scenarioInMandals = (anonMandals || []).filter(m => m.id?.toLowerCase().includes('scenario')).length;
-
   benchmarkMetrics.rlsSecurityMs = (performance.now() - tSupp2).toFixed(2);
 
-  const supp2Passed = anonReadOk && mutationDenied && scenarioInMandals === 0;
+  const supp2Passed = anonReadOk && mutationDenied &&
+    scenarioMandalsCount === 0 && scenarioMcmCount === 0 && scenarioBoothsCount === 0 &&
+    scenarioRegimesIsolated;
+
   recordTest(
     'TEST-SUPP-2',
     'Scenario Isolation & Inherited RLS Security',
     'SUPPORTING_SECURITY',
     supp2Passed ? 'PASS' : 'FAIL',
-    'Anonymous read succeeds; anonymous mutation denied by RLS; scenario isolation intact',
+    'Anonymous read succeeds; anonymous mutation denied by RLS; database-level scenario isolation verified with zero scenario records in canonical tables',
     {
       anonReadOk,
       mutationDenied,
-      scenarioInMandals,
+      totalMandalsInspected: allMandals?.length,
+      scenarioMandalsCount,
+      totalMcmInspected: allMcm?.length,
+      scenarioMcmCount,
+      totalBoothsInspected: allBooths?.length,
+      scenarioBoothsCount,
+      scenarioRegimesIsolated,
       latencyMs: benchmarkMetrics.rlsSecurityMs
     },
-    'Security requirements upheld: public read permitted, client mutation denied, scenario records isolated.'
+    'Security requirements upheld: public read permitted, client mutation denied, zero scenario records in canonical tables across the entire population.'
   );
 
   // ==========================================================================
   // TEST-SUPP-3: W012 Lineage & Governance Integrity
   // ==========================================================================
   const tSupp3 = performance.now();
-  const { data: dsVersions } = await adminClient.from('dataset_versions').select('id, default_status');
-  const validVersionIds = new Set((dsVersions || []).map(v => v.id));
+  const validVersionIds = new Set((allVersions || []).map(v => v.id));
 
   // Verify all mandals, mcm, and booths reference valid dataset versions
   const allMandalVersionsValid = (mandals || []).every(m => m.primary_dataset_version_id && validVersionIds.has(m.primary_dataset_version_id));
@@ -490,69 +590,115 @@ async function runBattery() {
     .select('id, default_status')
     .in('id', ['ts_lgd_mandals_2023_v1', 'ts_mandal_ac_mappings_2023_v1', 'eci_ts_booths_2023_v1']);
 
-  const allUnverified = (unverifiedVersions || []).every(v => v.default_status === 'UNVERIFIED');
+  const allUnverified = (unverifiedVersions || []).length === 3 && (unverifiedVersions || []).every(v => v.default_status === 'UNVERIFIED');
 
-  // Verify provenance records and linkages exist
-  const { count: provCount } = await adminClient
-    .from('provenance_records')
-    .select('*', { count: 'exact', head: true })
-    .in('dataset_version_id', ['ts_lgd_mandals_2023_v1', 'ts_mandal_ac_mappings_2023_v1', 'eci_ts_booths_2023_v1']);
+  // Blocker 4: Exact semantic completeness (exact 26 provenance records, exact 26 linkages)
+  const exactProvCountOk = (w015ProvRecords || []).length === 26;
+  const exactLinkageCountOk = (w015Linkages || []).length === 26;
 
-  const { count: linkageCount } = await adminClient
-    .from('record_provenance_linkages')
-    .select('*', { count: 'exact', head: true })
-    .in('domain_table', ['mandals', 'mandal_constituency_map', 'polling_booths']);
+  // Bidirectional resolution: every linkage resolves to an existing domain row and provenance record
+  const mandalIdSetAll = new Set((mandals || []).map(m => m.id));
+  const mcmIdSetAll = new Set((mcm || []).map(m => String(m.id)));
+  const boothIdSetAll = new Set((booths || []).map(b => b.id));
+  const provIdSet = new Set((w015ProvRecords || []).map(p => p.id));
+
+  const allLinkagesValid = (w015Linkages || []).every(l => {
+    const provValid = provIdSet.has(l.provenance_id);
+    let domainValid = false;
+    if (l.domain_table === 'mandals') domainValid = mandalIdSetAll.has(l.domain_record_id);
+    else if (l.domain_table === 'mandal_constituency_map') domainValid = mcmIdSetAll.has(l.domain_record_id);
+    else if (l.domain_table === 'polling_booths') domainValid = boothIdSetAll.has(l.domain_record_id);
+    return provValid && domainValid;
+  });
+
+  // Every W015 domain record has an exact provenance linkage
+  const allMandalsLinked = (mandals || []).every(m => (w015Linkages || []).some(l => l.domain_table === 'mandals' && l.domain_record_id === m.id));
+  const allMcmLinked = (mcm || []).every(m => (w015Linkages || []).some(l => l.domain_table === 'mandal_constituency_map' && l.domain_record_id === String(m.id)));
+  const allBoothsLinked = (booths || []).every(b => (w015Linkages || []).some(l => l.domain_table === 'polling_booths' && l.domain_record_id === b.id));
+
+  const zeroOfficial = (w015ProvRecords || []).every(p => p.status !== 'OFFICIAL');
 
   benchmarkMetrics.governanceIntegrityMs = (performance.now() - tSupp3).toFixed(2);
 
   const supp3Passed = allMandalVersionsValid && allMcmVersionsValid && allBoothVersionsValid &&
-    allUnverified && (provCount || 0) >= 25 && (linkageCount || 0) >= 25;
+    allUnverified && zeroOfficial &&
+    exactProvCountOk && exactLinkageCountOk && allLinkagesValid &&
+    allMandalsLinked && allMcmLinked && allBoothsLinked;
 
   recordTest(
     'TEST-SUPP-3',
     'W012 Lineage & Governance Integrity (100% UNVERIFIED, 0 OFFICIAL)',
     'SUPPORTING_GOVERNANCE',
     supp3Passed ? 'PASS' : 'FAIL',
-    '100% of W015 relationship records reference valid W012 dataset versions; 0 records elevated to OFFICIAL',
+    '100% of W015 relationship records reference valid W012 dataset versions; exact 26 provenance records and 26 linkages resolve bidirectionally; 0 records elevated to OFFICIAL',
     {
       allMandalVersionsValid,
       allMcmVersionsValid,
       allBoothVersionsValid,
       allUnverified,
-      provenanceRecords: provCount,
-      provenanceLinkages: linkageCount,
+      exactProvCountOk,
+      exactLinkageCountOk,
+      allLinkagesValid,
+      allMandalsLinked,
+      allMcmLinked,
+      allBoothsLinked,
+      zeroOfficial,
+      provenanceRecords: w015ProvRecords?.length,
+      provenanceLinkages: w015Linkages?.length,
       latencyMs: benchmarkMetrics.governanceIntegrityMs
     },
-    'W012 governance protocol strictly enforced: complete lineage chain intact, 100% strictly UNVERIFIED.'
+    'W012 governance protocol strictly enforced: exact semantic completeness verified with 26/26 provenance linkages, zero orphans, and 100% strictly UNVERIFIED.'
   );
 
   // ==========================================================================
   // TEST-SUPP-4: Regression Suite & General Performance Observation
   // ==========================================================================
   const tSupp4 = performance.now();
-  // Measure read latencies for key relationship queries
+  // Blocker 1: Genuine assertions that benchmark queries execute successfully and result sets are valid
   const tR1 = performance.now();
-  await anonClient.from('constituencies').select('id, name, parliamentary_constituency_id, district_id').limit(119);
+  const { data: acResult, error: acQueryErr } = await anonClient
+    .from('constituencies')
+    .select('id, name, parliamentary_constituency_id, district_id')
+    .limit(119);
   benchmarkMetrics.constituencyWithRelationsMs = (performance.now() - tR1).toFixed(2);
 
   const tR2 = performance.now();
-  await anonClient.from('mandals').select('id, name, district_id').limit(12);
+  const { data: mdlResult, error: mdlQueryErr } = await anonClient
+    .from('mandals')
+    .select('id, name, district_id')
+    .limit(12);
   benchmarkMetrics.mandalWithDistrictMs = (performance.now() - tR2).toFixed(2);
 
   const tR3 = performance.now();
-  await anonClient.from('mandal_constituency_map').select('mandal_id, constituency_id, overlap_type').limit(10);
+  const { data: mcmResult, error: mcmQueryErr } = await anonClient
+    .from('mandal_constituency_map')
+    .select('mandal_id, constituency_id, overlap_type')
+    .limit(10);
   benchmarkMetrics.mandalAcMappingMs = (performance.now() - tR3).toFixed(2);
 
   benchmarkMetrics.regressionEvaluationMs = (performance.now() - tSupp4).toFixed(2);
 
-  const supp4Passed = true;
+  const queriesSucceeded = !acQueryErr && !mdlQueryErr && !mcmQueryErr;
+  const resultSetsValid = (acResult || []).length === 119 &&
+    (mdlResult || []).length >= 12 &&
+    (mcmResult || []).length >= 10;
+  const latenciesRecorded = parseFloat(benchmarkMetrics.constituencyWithRelationsMs) > 0 &&
+    parseFloat(benchmarkMetrics.mandalWithDistrictMs) > 0 &&
+    parseFloat(benchmarkMetrics.mandalAcMappingMs) > 0 &&
+    parseFloat(benchmarkMetrics.regressionEvaluationMs) > 0;
+
+  const supp4Passed = queriesSucceeded && resultSetsValid && latenciesRecorded;
+
   recordTest(
     'TEST-SUPP-4',
     'Regression Suite & General Performance Observation',
     'SUPPORTING_REGRESSION',
     supp4Passed ? 'PASS' : 'FAIL',
-    'Empirical latencies measured on panIN-staging; baseline tables preserved with zero regressions',
+    'Benchmark queries execute successfully; result sets valid; empirical latencies measured and recorded on panIN-staging with zero subjective conclusions',
     {
+      queriesSucceeded,
+      resultSetsValid,
+      latenciesRecorded,
       constituencyWithRelationsMs: benchmarkMetrics.constituencyWithRelationsMs,
       mandalWithDistrictMs: benchmarkMetrics.mandalWithDistrictMs,
       mandalAcMappingMs: benchmarkMetrics.mandalAcMappingMs,

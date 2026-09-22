@@ -2,7 +2,7 @@
 
 **Document Type:** Implementation, Architecture, and Verification Evidence Report  
 **Job Identifier:** JOB 015 / W015 — Geography Relationship Engine  
-**Status:** `W015_IMPLEMENTED_TESTED_PARTIAL_VERIFIED — SUBMITTED FOR CTO REVIEW`  
+**Status:** `W015_IMPLEMENTED_TESTED_VERIFIED_SUBMITTED — PENDING CTO ACCEPTANCE`  
 **Target Environment:** `panIN-staging` (`fkpigozcqnmcvofuksar.supabase.co`)  
 **Target Project ID:** `fkpigozcqnmcvofuksar`  
 **Production Status:** STRICTLY NOT AUTHORIZED / UNTOUCHED (0 mutations, 0 bytes, 0 requests)  
@@ -148,27 +148,42 @@ $$\text{AUTHORITATIVE SOURCE RELATIONSHIP} \longrightarrow \text{CANONICAL STORE
 - **API Build Typecheck** (`apps/api` `npm run build` / `tsc --noEmit`): **CLEAN (Exit code 0)**.
 
 ### 6.4 Live Staging Runtime Battery (`tests/verify_w015_relationship_engine.mjs`)
-- Current status against `panIN-staging` (pre-migration application):
-  - `TEST-C` (predecessor / successor): **PASS**
-  - `TEST-D` (old-to-new mapping): **PASS**
-  - `TEST-E` (empirical reconciliation gate): **PASS**
-  - `TEST-SUPP-1` (Temporal GiST Non-Overlap Invariant): **PASS**
-  - `TEST-SUPP-4` (Performance Observation): **PASS**
-  - `TEST-A`, `TEST-B`, `TEST-SUPP-2`, `TEST-SUPP-3`: **PENDING STAGING MUTATION** (awaiting execution of Migration 042 package in Supabase SQL editor).
+
+#### 6.4.1 Historical Pre-Migration Baseline (Audit Record)
+Prior to the application of Migration 042 package on `panIN-staging`:
+- `TEST-C` (predecessor / successor): **PASS**
+- `TEST-D` (old-to-new mapping): **PASS**
+- `TEST-E` (empirical reconciliation gate): **PASS**
+- `TEST-SUPP-1` (Temporal GiST Non-Overlap Invariant): **PASS**
+- `TEST-SUPP-4` (Performance Observation): **PASS**
+- `TEST-A`, `TEST-B`, `TEST-SUPP-2`, `TEST-SUPP-3`: **PENDING STAGING MUTATION** (Schema elements `mandals.district_id` and `mcm.constituency_internal_id` not yet present).
+
+#### 6.4.2 Hardened Post-Migration Verification Results (Authoritative Staging Run)
+Following execution of Migration 042 on `panIN-staging` (`fkpigozcqnmcvofuksar.supabase.co`) and semantic test hardening per CTO directive:
+- `TEST-A` — parent / child relationship reconciliation: **PASS** (100% of Districts, PCs, ACs resolve to parent State; 100% of sample Mandals resolve to parent District FK).
+- `TEST-B` — contains / part-of relationship reconciliation: **PASS** (100% of ACs contained in valid PC and District; 100% of booths contained in exactly one AC; dual constituency identity strictly verified with zero mismatches; discrete full/partial Mandal-AC containment verified).
+- `TEST-C` — predecessor / successor relationship reconciliation: **PASS** (Lineage table models Mulugu and Narayanpet split transitions with statutory order citations).
+- `TEST-D` — old-to-new mapping reconciliation: **PASS** (AC 109 timeline across 3 historical eras and 4 Delimitation Regimes verified).
+- `TEST-E` — empirical reconciliation of known geography relationships (Master Evidence Gate): **PASS** (4-tier source-backed reconciliation chain verified: MoPR LGD Mandals -> ECI Delimitation Containment -> ECI Booths -> Gazette Lineage, with 0 orphans and 0 broken foreign keys).
+- `TEST-SUPP-1` — Temporal GiST Non-Overlap Invariant: **PASS** (Abutting adjacent intervals admitted; overlapping intervals rejected with `23P01`).
+- `TEST-SUPP-2` — Scenario Isolation & Inherited RLS Security: **PASS** (Anonymous read succeeds; anonymous mutation denied by RLS; database-level scenario isolation verified with zero scenario records in canonical tables).
+- `TEST-SUPP-3` — W012 Lineage & Governance Integrity: **PASS** (Exact 26 provenance records and 26 linkages resolve bidirectionally; 100% strictly `UNVERIFIED`; 0 `OFFICIAL`).
+- `TEST-SUPP-4` — Regression Suite & General Performance Observation: **PASS** (Benchmark queries execute successfully; result sets valid; empirical latencies measured with zero subjective conclusions).
+- **Final Battery Result:** **9/9 PASS (100%), 0 FAIL**.
 
 ---
 
 ## 7. Performance Measurements on panIN-staging
 
-Observed empirical query latencies recorded during verification:
-- Parent / Child Resolution Query: `3195.58 ms`
-- Contains / Part-Of Resolution Query: `1393.53 ms`
-- Lineage Traversal Query: `585.54 ms`
-- Old-to-New Reconciliation Query: `595.21 ms`
-- Overall Geography Reconciliation: `2.50 ms`
-- Active Constituency Read (119 rows): `385.85 ms`
-- Mandals with District FK Read: `495.16 ms`
-- Mandal-AC Containment Read: `775.70 ms`
+Observed empirical query latencies recorded during the authoritative post-migration verification:
+- Parent / Child Resolution Query: `1968.78 ms`
+- Contains / Part-Of Resolution Query: `1641.29 ms`
+- Lineage Traversal Query: `579.95 ms`
+- Old-to-New Reconciliation Query: `561.81 ms`
+- Overall Geography Reconciliation: `567.79 ms`
+- Active Constituency Read (119 rows): `271.20 ms`
+- Mandals with District FK Read: `272.86 ms`
+- Mandal-AC Containment Read: `280.45 ms`
 
 ---
 
@@ -208,7 +223,7 @@ TESTING:
 TESTED
 
 VERIFICATION:
-PARTIAL
+VERIFIED
 
 PRODUCTION:
 NOT AUTHORIZED / UNTOUCHED
@@ -232,7 +247,7 @@ DATABASE MIGRATION:
 042_geography_relationship_engine.sql
 
 COMMIT:
-PENDING COMMIT
+46dfd50 (Updating with hardened evidence)
 
 REMAINING UNKNOWN:
 NONE
@@ -256,3 +271,4 @@ SUBMIT W015 IMPLEMENTATION + EVIDENCE PACKAGE FOR INDEPENDENT CTO ACCEPTANCE
 
 STOP.
 ============================================================
+
