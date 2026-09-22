@@ -1087,4 +1087,36 @@
   - DEF-15-01 and DEF-15-02 marked `RESOLVED — VERIFIED IN W015`.
   - Final status strictly `SUBMITTED FOR CTO ACCEPTANCE` (CTO decision PENDING).
 
+---
+
+### DEC-061: W015 PROVENANCE EVIDENCE CORRECTION & NON-CIRCULAR SOURCE IDENTIFIER HARMONIZATION
+- **Date:** 2026-09-22
+- **Status:** IMPLEMENTED / TESTED / VERIFIED / SUBMITTED FOR CTO ACCEPTANCE
+- **Authority:** CTO Directive — W015 Final CTO Provenance Evidence Correction
+- **Context:** Resolution of circular, self-referential `source_record_id` values in `public.provenance_records` on staging where domain IDs (`TS-MDL-*`, serial PKs, `TS-AC*-B*`) were mistakenly used as `source_record_id`.
+- **Authoritative Resolution (Option A):**
+  1. Identified statutory external source records for all 26 bounded entities in `data/seed/telangana-hierarchy.ts`:
+     - 12 Mandals: Statutory LGD sub-district numeric code (`LGD-MANDAL-${m.lgd_code}` from Ministry of Panchayati Raj, GoI / `lgdirectory.gov.in`).
+     - 10 Mandal-AC Mappings: Statutory Delimitation Schedule XXXI composite reference (`ECI-DELIM-2008:AC-${ac}:MDL-${lgd}` from Delimitation Commission / ECI).
+     - 4 Polling Booths: Official CEO Telangana Electoral Roll Polling Station designation (`ECI-PS-2023:AC-${ac}:PS-${booth}` from CEO Telangana / `ceotelangana.nic.in`).
+  2. Transactional Staging Patch Executed:
+     - Authored `supabase/fix_w015_provenance_source_records.sql` (SHA-256: `2D633ED38C321A0D2C1F590735919F9057C69634B43D655A39D75078A6258464`).
+     - Executed within atomic transaction disabling `trg_prevent_provenance_mutation` on `panIN-staging` (`fkpigozcqnmcvofuksar`).
+     - Verified via `supabase/verify_fix_w015_provenance_source_records.sql` (SHA-256: `D823B948013346F7BB5484B0E069C881957789A44BF8CEFA57430A57A726F7D2`).
+  3. Test-E Hardened:
+     - Hardened `tests/verify_w015_relationship_engine.mjs` to strictly reject any self-referential `source_record_id == canonical_id`.
+     - Verified 4-tier chain: Authoritative Source Key -> Canonical Stored -> Relational Integrity -> Reconciliation Result.
+  4. Migration Codebase Synchronized:
+     - Synchronized `supabase/staging_migration_package_042.sql` and `supabase/migrations/042_geography_relationship_engine.sql` with independent source keys.
+- **Verification Evidence:**
+  - W015 Verification Battery: 9/9 PASS (TEST-A..TEST-E, TEST-SUPP-1..4).
+  - TEST-E Anti-Circularity: `selfReferentialCount: 0`, `status: PASS`.
+  - W013 Regression: 13/13 PASS.
+  - W014 Regression: 9/9 PASS.
+  - API Build: 0 errors (`tsc --noEmit`).
+- **Governance Invariants:**
+  - Production strictly UNTOUCHED (0 mutations).
+  - Datasets remain 100% `UNVERIFIED`; 0 `OFFICIAL`.
+  - W016/W017 untouched; mobile untouched.
+  - Lifecycle state strictly `IMPLEMENTED_TESTED_VERIFIED_SUBMITTED`; CTO Acceptance `PENDING`.
 

@@ -332,7 +332,7 @@ async function runBattery() {
 
   const { data: w015ProvRecords } = await adminClient
     .from('provenance_records')
-    .select('id, dataset_version_id, source_record_id, status')
+    .select('id, dataset_version_id, source_record_id, status, operator, transformation_type, metadata')
     .in('dataset_version_id', ['ts_lgd_mandals_2023_v1', 'ts_mandal_ac_mappings_2023_v1', 'eci_ts_booths_2023_v1']);
 
   const provMap = new Map((w015ProvRecords || []).map(p => [p.id, p]));
@@ -341,36 +341,68 @@ async function runBattery() {
     linkageMapByRecord.set(`${l.domain_table}:${l.domain_record_id}`, l);
   }
 
+  // Anti-circularity check: Assert ZERO provenance records use self-referential canonical IDs as source_record_id
+  let selfReferentialCount = 0;
+  for (const link of (w015Linkages || [])) {
+    const prov = provMap.get(link.provenance_id);
+    if (prov && prov.source_record_id === link.domain_record_id) {
+      selfReferentialCount++;
+    }
+  }
+
   // Tier 1: Mandals (12) — MoPR LGD Authority -> Canonical Mandals -> Parent District FK
   const mandalsReconciled = (mandals || []).length === 12 && (mandals || []).every(m => {
     const link = linkageMapByRecord.get(`mandals:${m.id}`);
     const prov = link ? provMap.get(link.provenance_id) : null;
     const hasValidDistrict = districtIdSet.has(m.district_id);
-    const hasSource = prov?.dataset_version_id === 'ts_lgd_mandals_2023_v1' && prov?.source_record_id === m.id;
+    const expectedSourceRecordId = `LGD-MANDAL-${m.lgd_code}`;
+    const nonSelfReferential = prov?.source_record_id !== m.id;
+    const hasSource = prov?.dataset_version_id === 'ts_lgd_mandals_2023_v1' &&
+      prov?.source_record_id === expectedSourceRecordId &&
+      prov?.operator === 'system:w015_authoritative_sync' &&
+      prov?.transformation_type === 'source_backed_seed';
     const hasValidLgd = typeof m.lgd_code === 'number' && m.lgd_code > 0;
-    return hasValidDistrict && hasSource && hasValidLgd;
+    return hasValidDistrict && nonSelfReferential && hasSource && hasValidLgd;
   });
 
   // Tier 2: Mandal-AC Mappings (10) — ECI Delimitation Order 2008 -> Discrete Containment -> Dual Identity Coherence
   const mcmReconciled = (mcm || []).length === 10 && (mcm || []).every(m => {
     const link = linkageMapByRecord.get(`mandal_constituency_map:${m.id}`);
     const prov = link ? provMap.get(link.provenance_id) : null;
+    const mInfo = (mandals || []).find(man => man.id === m.mandal_id);
+    const cInfo = (acs || []).find(ac => ac.id === m.constituency_id);
+    const acNum = cInfo ? String(cInfo.canonical_code.replace('TS-AC-', '')).padStart(3, '0') : '';
+    const expectedSourceRecordId = `ECI-DELIM-2008:AC-${acNum}:MDL-${mInfo?.lgd_code}`;
+
     const hasMandal = mandalIdSet.has(m.mandal_id);
     const hasAc = acIdSet.has(m.constituency_id);
     const dualIdentityMatches = acInternalIdMap.get(m.constituency_id) === m.constituency_internal_id;
-    const hasSource = prov?.dataset_version_id === 'ts_mandal_ac_mappings_2023_v1';
+    const nonSelfReferential = prov?.source_record_id !== String(m.id);
+    const hasSource = prov?.dataset_version_id === 'ts_mandal_ac_mappings_2023_v1' &&
+      prov?.source_record_id === expectedSourceRecordId &&
+      prov?.operator === 'system:w015_authoritative_sync' &&
+      prov?.transformation_type === 'source_backed_seed';
     const discreteTypeOk = m.overlap_type === 'full' || m.overlap_type === 'partial';
-    return hasMandal && hasAc && dualIdentityMatches && hasSource && discreteTypeOk;
+    return hasMandal && hasAc && dualIdentityMatches && nonSelfReferential && hasSource && discreteTypeOk;
   });
 
   // Tier 3: Polling Booths (4) — ECI Polling Stations List -> Canonical Booths -> AC Containment & Dual Identity
   const boothsReconciled = (booths || []).length === 4 && (booths || []).every(b => {
     const link = linkageMapByRecord.get(`polling_booths:${b.id}`);
     const prov = link ? provMap.get(link.provenance_id) : null;
+    const cInfo = (acs || []).find(ac => ac.id === b.constituency_id);
+    const acNum = cInfo ? String(cInfo.canonical_code.replace('TS-AC-', '')).padStart(3, '0') : '';
+    const boothPad = String(b.booth_number).padStart(3, '0');
+    const expectedSourceRecordId = `ECI-PS-2023:AC-${acNum}:PS-${boothPad}`;
+
     const hasAc = acIdSet.has(b.constituency_id);
     const dualIdentityMatches = acInternalIdMap.get(b.constituency_id) === b.constituency_internal_id;
-    const hasSource = prov?.dataset_version_id === 'eci_ts_booths_2023_v1';
-    return hasAc && dualIdentityMatches && hasSource;
+    const nonSelfReferential = prov?.source_record_id !== b.id;
+    const hasSource = prov?.dataset_version_id === 'eci_ts_booths_2023_v1' &&
+      prov?.source_record_id === expectedSourceRecordId &&
+      prov?.operator === 'system:w015_authoritative_sync' &&
+      prov?.transformation_type === 'source_backed_seed';
+    return hasAc && dualIdentityMatches && nonSelfReferential && hasSource;
   });
 
   // Tier 4: Reorganisation Splits & Lineage (2) — Gazette G.O.Ms.No. 18 & 19 -> Lineage Traversal
@@ -393,15 +425,16 @@ async function runBattery() {
 
   benchmarkMetrics.overallReconciliationMs = (performance.now() - tE0).toFixed(2);
 
-  const ePassed = mandalsReconciled && mcmReconciled && boothsReconciled && splitsReconciled && noOrphans;
+  const ePassed = selfReferentialCount === 0 && mandalsReconciled && mcmReconciled && boothsReconciled && splitsReconciled && noOrphans;
 
   recordTest(
     'TEST-E',
     'empirical reconciliation of known geography relationships (Master Evidence Gate)',
     'MASTER_RECONCILIATION_GATE',
     ePassed ? 'PASS' : 'FAIL',
-    '100% of known geography relationships reconcile across the 4-tier chain (Authoritative Source -> Canonical Stored -> Relational Integrity -> Reconciliation Result) with 0 orphans and 0 broken foreign keys',
+    '100% of known geography relationships reconcile across the 4-tier chain (Authoritative Source -> Canonical Stored -> Relational Integrity -> Reconciliation Result) with 0 self-referential provenance records, 0 orphans, and 0 broken foreign keys',
     {
+      selfReferentialCount,
       mandalsReconciled,
       mcmReconciled,
       boothsReconciled,
@@ -414,7 +447,7 @@ async function runBattery() {
       orphanMcm,
       latencyMs: benchmarkMetrics.overallReconciliationMs
     },
-    'Master Evidence requirement fully satisfied: 4-tier source-backed chain verified with zero orphans and zero broken foreign keys across the entire bounded hierarchy.'
+    'Master Evidence requirement fully satisfied: 4-tier source-backed chain verified with zero self-referential IDs, zero orphans, and zero broken foreign keys across the entire bounded hierarchy.'
   );
 
   // ==========================================================================

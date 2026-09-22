@@ -43,12 +43,14 @@ Pursuant to CTO Implementation Authorization for **W015 — Geography Relationsh
 
 | File Path | Status | SHA-256 Checksum | Description |
 | :--- | :---: | :--- | :--- |
-| `supabase/migrations/042_geography_relationship_engine.sql` | NEW | `01ff5e8a47e6326a9195141c02cbd1d1c5d3f2c2985d6f00c8f7eec4dcf49af8` | Canonical Migration 042 DDL, RLS, and seed package |
-| `supabase/staging_migration_package_042.sql` | NEW | `01ff5e8a47e6326a9195141c02cbd1d1c5d3f2c2985d6f00c8f7eec4dcf49af8` | Atomic Staging Migration Package |
+| `supabase/migrations/042_geography_relationship_engine.sql` | NEW | `31f18dc148e1482b2cfb1e66a229562451a8ace36378859f99ef6eeb73db7e5f` | Canonical Migration 042 DDL, RLS, and source-backed seed package |
+| `supabase/staging_migration_package_042.sql` | NEW | `31f18dc148e1482b2cfb1e66a229562451a8ace36378859f99ef6eeb73db7e5f` | Atomic Staging Migration Package |
 | `supabase/verify_staging_migration_package_042.sql` | NEW | `645f36b60be7778c2cdaf68a8170ba49ace0e525ea9120610666e1c0566bb8a0` | SQL-level verification checks (Checks 1–6) |
+| `supabase/fix_w015_provenance_source_records.sql` | NEW | `2d633ed38c321a0d2c1f590735919f9057c69634b43d655a39d75078a6258464` | Transactional patch updating staging provenance with independent source IDs |
+| `supabase/verify_fix_w015_provenance_source_records.sql` | NEW | `d823b948013346f7bb5484b0e069c881957789a44bf8cefa57430a57a726f7d2` | SQL verification confirming non-self-referential source IDs on staging |
 | `supabase/rollback_staging_migration_package_042.sql` | NEW | `b024f721dc9968fbc8a034c6aae25594e335e41367df147f4fab70e769ed965b` | Deterministic rollback script restoring baseline |
 | `scripts/verify_w015_relationship_engine.mjs` | NEW | `1ba45ac414f490a7a8fd6b588ff6c9a7a1e25bc69a011d9acadf3ed56e017637` | Static preflight & BOM verification harness |
-| `tests/verify_w015_relationship_engine.mjs` | NEW | `a7d11e6664e41f59b1c40da89564613822f48316bc3b2192a6c708ca1807e113` | Authoritative runtime verification battery (TEST-A – TEST-E) |
+| `tests/verify_w015_relationship_engine.mjs` | NEW | `206ffad50cd2e4709c9a2cd9b3a6f7ae8ecd45c0ef95aef0799840b7eff70d70` | Authoritative runtime verification battery (TEST-A – TEST-E) |
 | `reports/w015_staging_migration_application_package.md` | NEW | — | Staging migration documentation |
 | `reports/w015_preflight_inspection_report.md` | NEW | — | Preflight Revision 5 approved design document |
 | `reports/w015_preflight_inspection.json` | NEW | — | Machine-readable preflight taxonomy coordinates |
@@ -158,13 +160,13 @@ Prior to the application of Migration 042 package on `panIN-staging`:
 - `TEST-SUPP-4` (Performance Observation): **PASS**
 - `TEST-A`, `TEST-B`, `TEST-SUPP-2`, `TEST-SUPP-3`: **PENDING STAGING MUTATION** (Schema elements `mandals.district_id` and `mcm.constituency_internal_id` not yet present).
 
-#### 6.4.2 Hardened Post-Migration Verification Results (Authoritative Staging Run)
-Following execution of Migration 042 on `panIN-staging` (`fkpigozcqnmcvofuksar.supabase.co`) and semantic test hardening per CTO directive:
+##### 6.4.2 Hardened Post-Migration Verification Results (Authoritative Staging Run)
+Following execution of Migration 042 and the transactional provenance remediation (`supabase/fix_w015_provenance_source_records.sql`) on `panIN-staging` (`fkpigozcqnmcvofuksar.supabase.co`) per CTO directives:
 - `TEST-A` — parent / child relationship reconciliation: **PASS** (100% of Districts, PCs, ACs resolve to parent State; 100% of sample Mandals resolve to parent District FK).
 - `TEST-B` — contains / part-of relationship reconciliation: **PASS** (100% of ACs contained in valid PC and District; 100% of booths contained in exactly one AC; dual constituency identity strictly verified with zero mismatches; discrete full/partial Mandal-AC containment verified).
 - `TEST-C` — predecessor / successor relationship reconciliation: **PASS** (Lineage table models Mulugu and Narayanpet split transitions with statutory order citations).
 - `TEST-D` — old-to-new mapping reconciliation: **PASS** (AC 109 timeline across 3 historical eras and 4 Delimitation Regimes verified).
-- `TEST-E` — empirical reconciliation of known geography relationships (Master Evidence Gate): **PASS** (4-tier source-backed reconciliation chain verified: MoPR LGD Mandals -> ECI Delimitation Containment -> ECI Booths -> Gazette Lineage, with 0 orphans and 0 broken foreign keys).
+- `TEST-E` — empirical reconciliation of known geography relationships (Master Evidence Gate): **PASS** (Strict 4-tier source-backed reconciliation chain verified: MoPR LGD Mandals [`LGD-MANDAL-*`] -> ECI Delimitation Containment [`ECI-DELIM-2008:*`] -> CEO Electoral Roll Booths [`ECI-PS-2023:*`] -> Gazette Lineage, with 0 self-referential provenance records, 0 orphans, and 0 broken foreign keys).
 - `TEST-SUPP-1` — Temporal GiST Non-Overlap Invariant: **PASS** (Abutting adjacent intervals admitted; overlapping intervals rejected with `23P01`).
 - `TEST-SUPP-2` — Scenario Isolation & Inherited RLS Security: **PASS** (Anonymous read succeeds; anonymous mutation denied by RLS; database-level scenario isolation verified with zero scenario records in canonical tables).
 - `TEST-SUPP-3` — W012 Lineage & Governance Integrity: **PASS** (Exact 26 provenance records and 26 linkages resolve bidirectionally; 100% strictly `UNVERIFIED`; 0 `OFFICIAL`).
@@ -176,14 +178,14 @@ Following execution of Migration 042 on `panIN-staging` (`fkpigozcqnmcvofuksar.s
 ## 7. Performance Measurements on panIN-staging
 
 Observed empirical query latencies recorded during the authoritative post-migration verification:
-- Parent / Child Resolution Query: `1968.78 ms`
-- Contains / Part-Of Resolution Query: `1641.29 ms`
-- Lineage Traversal Query: `579.95 ms`
-- Old-to-New Reconciliation Query: `561.81 ms`
-- Overall Geography Reconciliation: `567.79 ms`
-- Active Constituency Read (119 rows): `271.20 ms`
-- Mandals with District FK Read: `272.86 ms`
-- Mandal-AC Containment Read: `280.45 ms`
+- Parent / Child Resolution Query: `1555.76 ms`
+- Contains / Part-Of Resolution Query: `1206.14 ms`
+- Lineage Traversal Query: `610.64 ms`
+- Old-to-New Reconciliation Query: `603.97 ms`
+- Overall Geography Reconciliation: `609.41 ms`
+- Active Constituency Read (119 rows): `295.05 ms`
+- Mandals with District FK Read: `293.69 ms`
+- Mandal-AC Containment Read: `295.83 ms`
 
 ---
 
@@ -247,7 +249,7 @@ DATABASE MIGRATION:
 042_geography_relationship_engine.sql
 
 COMMIT:
-be5e7c4 (Hardened post-migration verification suite & reconciled report)
+PENDING_COMMIT (Hardened post-migration verification suite & non-circular provenance evidence)
 
 REMAINING UNKNOWN:
 NONE
@@ -259,6 +261,8 @@ EVIDENCE PACKAGE:
 - supabase/migrations/042_geography_relationship_engine.sql
 - supabase/staging_migration_package_042.sql
 - supabase/verify_staging_migration_package_042.sql
+- supabase/fix_w015_provenance_source_records.sql
+- supabase/verify_fix_w015_provenance_source_records.sql
 - supabase/rollback_staging_migration_package_042.sql
 - scripts/verify_w015_relationship_engine.mjs
 - tests/verify_w015_relationship_engine.mjs

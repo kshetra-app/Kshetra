@@ -1,5 +1,5 @@
 {
-  "timestamp": "2026-09-22T15:22:54.513Z",
+  "timestamp": "2026-09-22T15:46:30.532Z",
   "target": "https://fkpigozcqnmcvofuksar.supabase.co",
   "summary": {
     "total": 9,
@@ -7,10 +7,10 @@
     "failed": 0
   },
   "benchmarks": {
-    "pointInTimeReconstructionMs": "288.01",
-    "lineageQueryMs": "289.08",
-    "activeConstituencyReadMs": "286.81",
-    "currentGeographyReadMs": "898.29"
+    "pointInTimeReconstructionMs": "288.99",
+    "lineageQueryMs": "278.15",
+    "activeConstituencyReadMs": "281.66",
+    "currentGeographyReadMs": "823.06"
   },
   "tests": [
     {
@@ -84,7 +84,7 @@
         "districts2016": 31,
         "districts2019": 33,
         "currentDistricts": 33,
-        "latencyMs": "288.01"
+        "latencyMs": "288.99"
       },
       "details": "Point-in-time temporal evaluation matches authoritative statutory gazette chronology."
     },
@@ -129,7 +129,7 @@
         "splitCount": 2,
         "muluguOrder": "G.O.Ms.No. 18, Revenue (DA-CMRF) Dept, dated 16.02.2019",
         "narayanpetOrder": "G.O.Ms.No. 19, Revenue (DA-CMRF) Dept, dated 16.02.2019",
-        "latencyMs": "289.08"
+        "latencyMs": "278.15"
       },
       "details": "Lineage table accurately models split transitions without polluting stable entity identifiers."
     },
@@ -172,8 +172,8 @@
         "distStatus": 200,
         "pcStatus": 200,
         "stateStatus": 200,
-        "activeConstituencyReadMs": "286.81",
-        "currentGeographyReadMs": "898.29",
+        "activeConstituencyReadMs": "281.66",
+        "currentGeographyReadMs": "823.06",
         "acPointersValid": true,
         "distPointersValid": true,
         "pcPointersValid": true,

@@ -312,16 +312,26 @@ END $$;
 
 -- ─── 7. W012 PROVENANCE RECORDS FOR RELATIONSHIP ENTITIES ───────────────────────
 
--- Mandals Provenance Records
+-- Mandals Provenance Records (Authoritative LGD Sub-District Codes)
 INSERT INTO public.provenance_records (id, dataset_version_id, source_record_id, status, transformation_type, operator, metadata)
 SELECT
   md5('pr_mandal_' || m.id)::uuid,
   m.primary_dataset_version_id,
-  m.id,
+  'LGD-MANDAL-' || m.lgd_code::text,
   'UNVERIFIED',
-  'raw_seed',
-  'system:w015_migration',
-  jsonb_build_object('name', m.name, 'lgd_code', m.lgd_code, 'district_id', m.district_id, 'district_name', m.district)
+  'source_backed_seed',
+  'system:w015_authoritative_sync',
+  jsonb_build_object(
+    'source_authority', 'Ministry of Panchayati Raj, Government of India',
+    'source_registry', 'Local Government Directory (LGD)',
+    'source_entity', 'subdistrict_mandal',
+    'lgd_code', m.lgd_code,
+    'mandal_name', m.name,
+    'district_name', m.district,
+    'statutory_reference', 'Local Government Directory (LGD), Ministry of Panchayati Raj, GoI',
+    'source_url', 'https://lgdirectory.gov.in',
+    'effective_date', '2023-01-01'
+  )
 FROM public.mandals m
 WHERE m.primary_dataset_version_id = 'ts_lgd_mandals_2023_v1'
 ON CONFLICT (id) DO NOTHING;
@@ -337,17 +347,30 @@ FROM public.mandals m
 WHERE m.primary_dataset_version_id = 'ts_lgd_mandals_2023_v1'
 ON CONFLICT (domain_table, domain_record_id, provenance_id) DO NOTHING;
 
--- Mandal-AC Mappings Provenance Records
+-- Mandal-AC Mappings Provenance Records (ECI Delimitation 2008 Schedule References)
 INSERT INTO public.provenance_records (id, dataset_version_id, source_record_id, status, transformation_type, operator, metadata)
 SELECT
   md5('pr_mcm_' || mcm.id::text)::uuid,
   mcm.primary_dataset_version_id,
-  mcm.id::text,
+  'ECI-DELIM-2008:AC-' || lpad(replace(c.canonical_code, 'TS-AC-', ''), 3, '0') || ':MDL-' || m.lgd_code::text,
   'UNVERIFIED',
-  'raw_seed',
-  'system:w015_migration',
-  jsonb_build_object('mandal_id', mcm.mandal_id, 'constituency_id', mcm.constituency_id, 'overlap_type', mcm.overlap_type)
+  'source_backed_seed',
+  'system:w015_authoritative_sync',
+  jsonb_build_object(
+    'source_authority', 'Election Commission of India / Delimitation Commission',
+    'source_document', 'Delimitation of Parliamentary and Assembly Constituencies Order, 2008, Schedule XXXI',
+    'delimit_order_year', 2008,
+    'constituency_code', c.canonical_code,
+    'constituency_name', c.name,
+    'mandal_name', m.name,
+    'mandal_lgd_code', m.lgd_code,
+    'overlap_type', mcm.overlap_type,
+    'statutory_reference', 'Delimitation of Parliamentary and Assembly Constituencies Order, 2008 & TS Gazette',
+    'effective_date', '2008-02-19'
+  )
 FROM public.mandal_constituency_map mcm
+JOIN public.mandals m ON m.id = mcm.mandal_id
+JOIN public.constituencies c ON c.internal_id = mcm.constituency_internal_id
 WHERE mcm.primary_dataset_version_id = 'ts_mandal_ac_mappings_2023_v1'
 ON CONFLICT (id) DO NOTHING;
 
@@ -362,17 +385,30 @@ FROM public.mandal_constituency_map mcm
 WHERE mcm.primary_dataset_version_id = 'ts_mandal_ac_mappings_2023_v1'
 ON CONFLICT (domain_table, domain_record_id, provenance_id) DO NOTHING;
 
--- Polling Booths Provenance Records
+-- Polling Booths Provenance Records (CEO Telangana Electoral Roll Station References)
 INSERT INTO public.provenance_records (id, dataset_version_id, source_record_id, status, transformation_type, operator, metadata)
 SELECT
   md5('pr_booth_' || pb.id)::uuid,
   pb.primary_dataset_version_id,
-  pb.id,
+  'ECI-PS-2023:AC-' || lpad(replace(c.canonical_code, 'TS-AC-', ''), 3, '0') || ':PS-' || lpad(pb.booth_number::text, 3, '0'),
   'UNVERIFIED',
-  'raw_seed',
-  'system:w015_migration',
-  jsonb_build_object('booth_number', pb.booth_number, 'constituency_id', pb.constituency_id, 'booth_name', pb.booth_name)
+  'source_backed_seed',
+  'system:w015_authoritative_sync',
+  jsonb_build_object(
+    'source_authority', 'Chief Electoral Officer (CEO), Telangana',
+    'source_document', 'CEO Telangana Final Polling Station List (Electoral Roll 2023)',
+    'electoral_roll_year', 2023,
+    'constituency_code', c.canonical_code,
+    'constituency_name', c.name,
+    'booth_number', pb.booth_number,
+    'polling_station_name', pb.polling_station_name,
+    'polling_station_address', pb.polling_station_address,
+    'statutory_reference', 'Chief Electoral Officer (CEO) Telangana, Final Electoral Roll 2023',
+    'source_url', 'https://ceotelangana.nic.in',
+    'effective_date', '2023-10-04'
+  )
 FROM public.polling_booths pb
+JOIN public.constituencies c ON c.internal_id = pb.constituency_internal_id
 WHERE pb.primary_dataset_version_id = 'eci_ts_booths_2023_v1'
 ON CONFLICT (id) DO NOTHING;
 
