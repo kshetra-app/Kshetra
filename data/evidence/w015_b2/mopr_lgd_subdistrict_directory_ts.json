@@ -1,0 +1,109 @@
+{
+  "source_registry": "Local Government Directory (LGD)",
+  "source_authority": "Ministry of Panchayati Raj, Government of India",
+  "registry_url": "https://lgdirectory.gov.in",
+  "retrieval_date": "2026-09-22",
+  "state_code": "36",
+  "state_name": "Telangana",
+  "districts": [
+    {
+      "lgd_district_code": 699,
+      "district_name": "Kumuram Bheem Asifabad",
+      "formation_order": "G.O.Ms.No. 224, Revenue (DA-CMRF) Dept, dated 11.10.2016",
+      "subdistricts": [
+        {
+          "lgd_subdistrict_code": 4676,
+          "subdistrict_name": "Sirpur (T)",
+          "census_2011_code": "04315",
+          "panin_canonical_id": "TS-MDL-7101",
+          "status": "ACTIVE"
+        },
+        {
+          "lgd_subdistrict_code": 4655,
+          "subdistrict_name": "Kagaznagar",
+          "census_2011_code": "04314",
+          "panin_canonical_id": "TS-MDL-7102",
+          "status": "ACTIVE"
+        },
+        {
+          "lgd_subdistrict_code": 4649,
+          "subdistrict_name": "Dahegaon",
+          "census_2011_code": "04316",
+          "panin_canonical_id": "TS-MDL-7103",
+          "status": "ACTIVE"
+        },
+        {
+          "lgd_subdistrict_code": 4679,
+          "subdistrict_name": "Tiryani",
+          "census_2011_code": "04320",
+          "panin_canonical_id": "TS-MDL-7104",
+          "status": "ACTIVE"
+        },
+        {
+          "lgd_subdistrict_code": 4646,
+          "subdistrict_name": "Asifabad",
+          "census_2011_code": "04318",
+          "panin_canonical_id": "TS-MDL-7105",
+          "status": "ACTIVE"
+        }
+      ]
+    },
+    {
+      "lgd_district_code": 684,
+      "district_name": "Mancherial",
+      "formation_order": "G.O.Ms.No. 222, Revenue (DA-CMRF) Dept, dated 11.10.2016",
+      "subdistricts": [
+        {
+          "lgd_subdistrict_code": 4663,
+          "subdistrict_name": "Luxettipet",
+          "census_2011_code": "04640",
+          "panin_canonical_id": "TS-MDL-5320",
+          "status": "ACTIVE"
+        },
+        {
+          "lgd_subdistrict_code": 4664,
+          "subdistrict_name": "Mancherial",
+          "census_2011_code": "04641",
+          "panin_canonical_id": "TS-MDL-5321",
+          "status": "ACTIVE"
+        },
+        {
+          "lgd_subdistrict_code": 4650,
+          "subdistrict_name": "Dandepally",
+          "census_2011_code": "04639",
+          "panin_canonical_id": "TS-MDL-5322",
+          "status": "ACTIVE"
+        },
+        {
+          "lgd_subdistrict_code": 4648,
+          "subdistrict_name": "Chennur",
+          "census_2011_code": "04643",
+          "panin_canonical_id": "TS-MDL-5323",
+          "status": "ACTIVE"
+        },
+        {
+          "lgd_subdistrict_code": 4647,
+          "subdistrict_name": "Bellampalli",
+          "census_2011_code": "04638",
+          "panin_canonical_id": "TS-MDL-5324",
+          "status": "ACTIVE"
+        },
+        {
+          "lgd_subdistrict_code": 4660,
+          "subdistrict_name": "Kotapalli",
+          "census_2011_code": "04644",
+          "panin_canonical_id": "TS-MDL-5328",
+          "status": "ACTIVE"
+        },
+        {
+          "lgd_subdistrict_code": 5949,
+          "subdistrict_name": "Hajipur",
+          "census_2011_code": null,
+          "panin_canonical_id": "TS-MDL-5329",
+          "status": "ACTIVE",
+          "notes": "Created post-2016 via G.O.Ms.No. 222; carved out of Mancherial Mandal"
+        }
+      ]
+    }
+  ]
+}

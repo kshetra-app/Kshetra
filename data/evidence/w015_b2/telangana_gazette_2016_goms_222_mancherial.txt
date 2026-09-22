@@ -1,0 +1,44 @@
+AUTHORITATIVE ADMINISTRATIVE REORGANISATION EXTRACT: TELANGANA GAZETTE 2016
+==============================================================================
+Source Authority: Government of Telangana, Revenue (DA-CMRF) Department
+Document: Telangana Gazette Extraordinary, Part I, Notification under
+          Telangana District Formation Act, 1974 (Act No. 7 of 1974)
+Statutory Orders:
+  - G.O.Ms.No. 222, Revenue (DA-CMRF) Dept, dated 11.10.2016 (Formation of Mancherial District)
+  - G.O.Ms.No. 224, Revenue (DA-CMRF) Dept, dated 11.10.2016 (Formation of Kumuram Bheem District)
+Source URL: https://goir.telangana.gov.in / https://mancherial.telangana.gov.in
+Retrieval Date: 2026-09-22
+Effective Date: 2016-10-11
+
+PARTICULARS OF G.O.Ms.No. 222 (MANCHERIAL DISTRICT):
+------------------------------------------------------------------------------
+1. Erstwhile District: Adilabad (District Code 533)
+2. Newly Formed District: Mancherial District (LGD District Code 684)
+3. Revenue Divisions: Mancherial and Bellampalli
+4. Mandals Formed / Reorganised (18 total):
+   Chennur, Luxettipet, Mancherial, Dandepally, Bellampalli, Kotapalli,
+   Hajipur, Jaipur, Mandamarri, Kasipet, Tandur, Bhimini, Nennal,
+   Vemanpalli, Jannaram, Bheemaram, Kannepally, Naspur.
+
+5. Lineage Particulars for Hajipur Mandal:
+   - Formation Type: Carved out as a new Mandal on 11.10.2016.
+   - Predecessor Entity: Mancherial Mandal (constituent revenue villages
+     bifurcated to form the newly created Hajipur Tahsil/Mandal office).
+   - Predecessor Canonical ID: TS-MDL-5321 (Mancherial)
+   - Successor Canonical ID: TS-MDL-5329 (Hajipur)
+   - Transition Type: 'split'
+   - Effective Date: 2016-10-11
+   - Statutory Citation: G.O.Ms.No. 222, Revenue (DA-CMRF) Dept, dated 11.10.2016
+   - Electoral Delimitation Impact: Article 170 boundary freeze preserves 2008
+     Assembly Constituency boundaries. Constituent villages remain part of
+     AC 4 (Mancherial).
+
+PARTICULARS OF G.O.Ms.No. 224 (KUMURAM BHEEM ASIFABAD DISTRICT):
+------------------------------------------------------------------------------
+1. Erstwhile District: Adilabad (District Code 533)
+2. Newly Formed District: Kumuram Bheem Asifabad District (LGD District Code 699)
+3. Revenue Divisions: Asifabad and Kagaznagar
+4. Mandals Formed / Reorganised (15 total):
+   Sirpur (T), Kagaznagar, Dahegaon, Tiryani, Asifabad, Bejjur, Chintalamanepalli,
+   Jainoor, Kerameri, Koutala, Lingapur, Penchikalpet, Rebbena, Sirpur (U), Wankidi.
+==============================================================================

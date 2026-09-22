@@ -1,0 +1,79 @@
+{
+  "test_battery": "W015-B2_AUTHORITATIVE_SOURCE_RECONCILIATION",
+  "timestamp": "2026-09-22T16:37:27.143Z",
+  "environment": "https://fkpigozcqnmcvofuksar.supabase.co",
+  "overall_status": "GATES_FAILED",
+  "results": [
+    {
+      "id": "TEST-B2-A",
+      "name": "LGD authenticity",
+      "status": "FAIL",
+      "details": "All 12 Mandals match authentic MoPR LGD codes with 0 synthetic placeholders remaining and pilot history preserved",
+      "metrics": {
+        "mandalCount": 12,
+        "zeroSynthetic": false,
+        "authenticCodesMatch": false,
+        "provSourceIdsMatch": true,
+        "previousCodesPreserved": false
+      }
+    },
+    {
+      "id": "TEST-B2-B",
+      "name": "MCM evidence/provenance resolution",
+      "status": "FAIL",
+      "details": "All 8 active MCM mappings resolve bidirectionally with authoritative foreign keys",
+      "metrics": {
+        "activeMcmCount": 10,
+        "expectedCount": 8,
+        "mcmFkOk": true
+      }
+    },
+    {
+      "id": "TEST-B2-C",
+      "name": "spurious relationship removal + audit preservation",
+      "status": "FAIL",
+      "details": "Spurious mappings purged from domain tables; audit preserved with status = PURGED; valid overlaps corrected to full",
+      "metrics": {
+        "spuriousKotapalliAbsent": false,
+        "spuriousHajipurAbsent": false,
+        "kotapalliAc2Overlap": "partial",
+        "hajipurAc4Overlap": "partial"
+      }
+    },
+    {
+      "id": "TEST-B2-D",
+      "name": "W014 temporal lineage",
+      "status": "FAIL",
+      "details": "Mancherial -> Hajipur split transition accurately registered under W014 geography_entity_lineage with G.O.Ms.No. 222 citation",
+      "metrics": {
+        "mandalLineageCount": 0,
+        "splitRecordOk": false,
+        "dateOk": false
+      }
+    },
+    {
+      "id": "TEST-B2-E",
+      "name": "no false OFFICIAL promotion",
+      "status": "PASS",
+      "details": "Strict W012 governance enforced: 0 records elevated to OFFICIAL, 100% UNVERIFIED or PURGED",
+      "metrics": {
+        "officialCount": 0,
+        "unverifiedCount": 26,
+        "purgedCount": 0,
+        "dvAllUnverified": true
+      }
+    },
+    {
+      "id": "TEST-B2-F",
+      "name": "fixture isolation",
+      "status": "FAIL",
+      "details": "The 4 pilot polling booths are strictly isolated as synthetic_test_fixture with FIXTURE: identifiers",
+      "metrics": {
+        "boothCount": 4,
+        "allSyntheticType": false,
+        "allFixturePrefixed": false,
+        "allIsSynthetic": false
+      }
+    }
+  ]
+}

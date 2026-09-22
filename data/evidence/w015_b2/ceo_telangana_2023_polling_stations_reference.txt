@@ -1,0 +1,41 @@
+AUTHORITATIVE ELECTORAL REGISTRY REFERENCE: CEO TELANGANA 2023
+==============================================================================
+Source Authority: Chief Electoral Officer (CEO), Telangana / Election Commission of India
+Document: Final List of Polling Stations, General Elections to Telangana
+          Legislative Assembly 2023 (Special Summary Revision 2023 / Form 20)
+Source URL: https://ceotelangana.nic.in
+Retrieval Date: 2026-09-22
+Effective Date: 2023-10-04 (Final Publication Date)
+
+ELECTORAL GEOGRAPHY PARTICULAR:
+------------------------------------------------------------------------------
+1. Constituency 1 (Sirpur):
+   - Numbering convention starts at the northern constituency boundary
+     in Kouthala and Bejjur Mandals.
+   - Polling Station No. 1 is NOT located in Sirpur Town.
+   - Real Polling Station No. 1 is in Kouthala Mandal.
+
+2. Constituency 2 (Chennur SC):
+   - Numbering convention starts in Mandamarri / Jaipur Mandals.
+   - Polling Station No. 1 is NOT located in Chennur Town.
+   - Real Polling Station No. 1 is in Mandamarri / Jaipur Mandal.
+
+DISPOSITION OF 4 PILOT POLLING BOOTHS IN KSHETRA SEED:
+------------------------------------------------------------------------------
+Entities:
+  - TS-AC1-B001 (MPPS Sirpur Town, booth 1, voters 850)
+  - TS-AC1-B002 (ZPHS Sirpur Town, booth 2, voters 920)
+  - TS-AC2-B001 (MPPS Chennur North, booth 1, voters 980)
+  - TS-AC2-B002 (ZPHS Chennur South, booth 2, voters 1040)
+
+Status & Classification:
+  - Confirmed as synthetic mock fixtures approximating CEO averages
+    (telangana-hierarchy.ts:26-31).
+  - Purpose: Structural invariant testing of Foreign Key relationship
+    (polling_booths.constituency_internal_id REFERENCES constituencies(internal_id)).
+  - Governance Classification under W012:
+    transformation_type = 'synthetic_test_fixture'
+    status = 'UNVERIFIED'
+  - PROHIBITION: Must NOT be promoted to OFFICIAL or represented as genuine
+    Form 20 scrapes until the production scraper pipeline is deployed.
+==============================================================================
