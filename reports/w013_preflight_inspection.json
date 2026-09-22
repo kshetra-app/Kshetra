@@ -1,0 +1,746 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "inspection_metadata": {
+    "job_id": "W013",
+    "sub_job": "CANONICAL_GEOGRAPHY_MODEL_PREFLIGHT_INSPECTION",
+    "inspection_date": "2026-09-22T12:50:00+05:30",
+    "head_commit": "fc8c56a0bfb32f71441dfbf0585290972791f870",
+    "working_tree_status": "CLEAN",
+    "repo_evidence_integrity": "32/32 commits verified (PASS)",
+    "database_target": {
+      "environment": "panIN-staging",
+      "project_id": "fkpigozcqnmcvofuksar",
+      "supabase_url": "https://fkpigozcqnmcvofuksar.supabase.co"
+    },
+    "status": "W013_PREFLIGHT_COMPLETE — AWAITING CTO AUTHORIZATION",
+    "implementation_authorized": false
+  },
+  "database_schema_baseline": {
+    "applied_migrations_count": 39,
+    "geography_migrations": [
+      {
+        "migration": "001_initial_schema.sql",
+        "description": "Foundational schema introducing states and constituencies tables, basic enums and indexes",
+        "entities": ["states", "constituencies"]
+      },
+      {
+        "migration": "011_delimitation.sql",
+        "description": "Delimitation simulation engine with PostGIS extension, proposed boundaries and ward populations",
+        "entities": ["delimitation_proposals", "proposed_constituencies", "constituency_mapping", "ward_population"]
+      },
+      {
+        "migration": "022_panchayat_tier.sql",
+        "description": "Rural local governance hierarchy (mandals, gram panchayats, revenue villages, polling booths, and mandal-constituency overlap mapping)",
+        "entities": ["mandals", "gram_panchayats", "revenue_villages", "polling_booths", "mandal_constituency_map"]
+      },
+      {
+        "migration": "023_local_governance.sql",
+        "description": "Urban local bodies and 3-tier Panchayati Raj institutions (ULBs, wards, Zilla Parishads, Mandal Parishads, divisions, and representatives)",
+        "entities": ["urban_local_bodies", "ulb_wards", "zilla_parishads", "zptc_divisions", "mandal_parishads", "mptc_divisions", "gp_wards", "representatives"]
+      }
+    ],
+    "postgis_status": {
+      "extension_installed": true,
+      "srid": 4326,
+      "geometry_types_used": ["MultiPolygon", "Point"],
+      "spatial_indexes": [
+        "idx_mandals_boundary (GIST)",
+        "idx_gram_panchayats_boundary (GIST)",
+        "idx_revenue_villages_boundary (GIST)",
+        "idx_polling_booths_location (GIST)",
+        "idx_proposed_constituencies_boundary (GIST)",
+        "idx_ward_population_boundary (GIST)",
+        "idx_urban_local_bodies_boundary (GIST)",
+        "idx_ulb_wards_boundary (GIST)"
+      ]
+    },
+    "staging_table_inventory": [
+      {
+        "table_name": "states",
+        "row_count": 20,
+        "primary_key": "id (VARCHAR(10))",
+        "unique_constraints": ["code"],
+        "foreign_keys": [],
+        "notes": "TS status='full', MH status='planned', 18 states status='stub'. 16 Indian states/UTs missing entirely."
+      },
+      {
+        "table_name": "constituencies",
+        "row_count": 0,
+        "primary_key": "id (VARCHAR(20))",
+        "unique_constraints": [],
+        "foreign_keys": ["state_id REFERENCES states(id)"],
+        "notes": "Completely empty in staging DB. Models ONLY Assembly Constituencies. No Parliamentary Constituency entity exists."
+      },
+      {
+        "table_name": "mandals",
+        "row_count": 0,
+        "primary_key": "id (VARCHAR(30))",
+        "unique_constraints": ["lgd_code"],
+        "foreign_keys": ["state_id REFERENCES states(id)"],
+        "notes": "Completely empty in staging DB."
+      },
+      {
+        "table_name": "gram_panchayats",
+        "row_count": 0,
+        "primary_key": "id (VARCHAR(30))",
+        "unique_constraints": ["lgd_code"],
+        "foreign_keys": ["mandal_id REFERENCES mandals(id)"],
+        "notes": "Completely empty in staging DB."
+      },
+      {
+        "table_name": "revenue_villages",
+        "row_count": 0,
+        "primary_key": "id (VARCHAR(30))",
+        "unique_constraints": ["census_code_2011"],
+        "foreign_keys": ["mandal_id REFERENCES mandals(id)", "gram_panchayat_id REFERENCES gram_panchayats(id)"],
+        "notes": "Completely empty in staging DB."
+      },
+      {
+        "table_name": "polling_booths",
+        "row_count": 0,
+        "primary_key": "id (VARCHAR(30))",
+        "unique_constraints": ["(constituency_id, booth_number)"],
+        "foreign_keys": ["constituency_id REFERENCES constituencies(id)", "mandal_id REFERENCES mandals(id)", "revenue_village_id REFERENCES revenue_villages(id)"],
+        "notes": "Completely empty in staging DB."
+      },
+      {
+        "table_name": "mandal_constituency_map",
+        "row_count": 0,
+        "primary_key": "id (SERIAL)",
+        "unique_constraints": ["(mandal_id, constituency_id)"],
+        "foreign_keys": ["mandal_id REFERENCES mandals(id)", "constituency_id REFERENCES constituencies(id)"],
+        "notes": "Completely empty in staging DB. Intended for M:N administrative-to-electoral overlap mapping."
+      },
+      {
+        "table_name": "urban_local_bodies",
+        "row_count": 0,
+        "primary_key": "id (VARCHAR(30))",
+        "unique_constraints": ["lgd_code"],
+        "foreign_keys": ["state_id REFERENCES states(id)"],
+        "notes": "Completely empty in staging DB."
+      },
+      {
+        "table_name": "ulb_wards",
+        "row_count": 0,
+        "primary_key": "id (VARCHAR(30))",
+        "unique_constraints": [],
+        "foreign_keys": ["ulb_id REFERENCES urban_local_bodies(id)"],
+        "notes": "Completely empty in staging DB."
+      },
+      {
+        "table_name": "zilla_parishads",
+        "row_count": 0,
+        "primary_key": "id (VARCHAR(30))",
+        "unique_constraints": [],
+        "foreign_keys": ["state_id REFERENCES states(id)"],
+        "notes": "Completely empty in staging DB."
+      },
+      {
+        "table_name": "zptc_divisions",
+        "row_count": 0,
+        "primary_key": "id (VARCHAR(30))",
+        "unique_constraints": [],
+        "foreign_keys": ["zilla_parishad_id REFERENCES zilla_parishads(id)", "mandal_id REFERENCES mandals(id)"],
+        "notes": "Completely empty in staging DB."
+      },
+      {
+        "table_name": "mandal_parishads",
+        "row_count": 0,
+        "primary_key": "id (VARCHAR(30))",
+        "unique_constraints": ["mandal_id"],
+        "foreign_keys": ["mandal_id REFERENCES mandals(id)"],
+        "notes": "Completely empty in staging DB."
+      },
+      {
+        "table_name": "mptc_divisions",
+        "row_count": 0,
+        "primary_key": "id (VARCHAR(30))",
+        "unique_constraints": [],
+        "foreign_keys": ["mandal_parishad_id REFERENCES mandal_parishads(id)"],
+        "notes": "Completely empty in staging DB."
+      },
+      {
+        "table_name": "gp_wards",
+        "row_count": 0,
+        "primary_key": "id (VARCHAR(30))",
+        "unique_constraints": [],
+        "foreign_keys": ["gram_panchayat_id REFERENCES gram_panchayats(id)"],
+        "notes": "Completely empty in staging DB."
+      },
+      {
+        "table_name": "representatives",
+        "row_count": 0,
+        "primary_key": "id (UUID)",
+        "unique_constraints": [],
+        "foreign_keys": [],
+        "notes": "Completely empty in staging DB. Uses polymorphic links (entity_type, entity_id)."
+      },
+      {
+        "table_name": "delimitation_proposals",
+        "row_count": 0,
+        "primary_key": "id (UUID)",
+        "unique_constraints": [],
+        "foreign_keys": ["author_id REFERENCES user_profiles(id)"],
+        "notes": "Completely empty in staging DB."
+      },
+      {
+        "table_name": "proposed_constituencies",
+        "row_count": 0,
+        "primary_key": "id (UUID)",
+        "unique_constraints": [],
+        "foreign_keys": ["proposal_id REFERENCES delimitation_proposals(id) ON DELETE CASCADE"],
+        "notes": "Completely empty in staging DB."
+      },
+      {
+        "table_name": "constituency_mapping",
+        "row_count": 0,
+        "primary_key": "id (UUID)",
+        "unique_constraints": [],
+        "foreign_keys": ["proposal_id REFERENCES delimitation_proposals(id) ON DELETE CASCADE", "proposed_constituency_id REFERENCES proposed_constituencies(id) ON DELETE CASCADE"],
+        "notes": "Completely empty in staging DB."
+      },
+      {
+        "table_name": "ward_population",
+        "row_count": 0,
+        "primary_key": "id (UUID)",
+        "unique_constraints": [],
+        "foreign_keys": [],
+        "notes": "Completely empty in staging DB."
+      },
+      {
+        "table_name": "districts",
+        "row_count": null,
+        "primary_key": null,
+        "unique_constraints": [],
+        "foreign_keys": [],
+        "notes": "TABLE DOES NOT EXIST in PostgreSQL. Districts are represented only as unnormalized TEXT columns across constituencies, mandals, and zilla_parishads."
+      },
+      {
+        "table_name": "parliamentary_constituencies",
+        "row_count": null,
+        "primary_key": null,
+        "unique_constraints": [],
+        "foreign_keys": [],
+        "notes": "TABLE DOES NOT EXIST in PostgreSQL. PCs exist only as an integer seat count on states(parliamentary_seats)."
+      }
+    ],
+    "dependent_foreign_keys": [
+      {
+        "table": "user_profiles",
+        "column": "constituency_id",
+        "target": "constituencies(id)",
+        "live_records_null_count": "100%",
+        "impact": "Zero broken FKs in live staging data."
+      },
+      {
+        "table": "posts",
+        "column": "constituency_id",
+        "target": "constituencies(id)",
+        "live_records_null_count": "100%",
+        "impact": "Zero broken FKs in live staging data."
+      },
+      {
+        "table": "civic_issues",
+        "column": "constituency_id",
+        "target": "constituencies(id)",
+        "live_records_null_count": "100%",
+        "impact": "Zero broken FKs in live staging data."
+      },
+      {
+        "table": "campaigns",
+        "column": "constituency_id",
+        "target": "constituencies(id)",
+        "live_records_null_count": "100%",
+        "impact": "Zero broken FKs in live staging data."
+      },
+      {
+        "table": "projects",
+        "column": "constituency_id",
+        "target": "constituencies(id)",
+        "live_records_null_count": "100%",
+        "impact": "Zero broken FKs in live staging data."
+      }
+    ]
+  },
+  "canonicality_analysis": {
+    "competing_sources_of_truth": [
+      {
+        "source": "PostgreSQL Database (Supabase staging)",
+        "state_count": 20,
+        "constituency_count": 0,
+        "mandal_count": 0,
+        "district_representation": "TEXT column only (no table)",
+        "active_usage": "Target of foreign keys from domain tables (all currently null)"
+      },
+      {
+        "source": "Static TypeScript Seed Modules (data/seed/*-constituencies.ts)",
+        "state_count": 31,
+        "constituency_count": 4120,
+        "mandal_count": 0,
+        "district_representation": "district property in constituency object",
+        "active_usage": "Directly loaded by Fastify backend (apps/api/src/services/stateData.ts)"
+      },
+      {
+        "source": "Bundled SQLite Database (apps/mobile/data/seed-data.db)",
+        "state_count": 31,
+        "constituency_count": 4120,
+        "mandal_count": 612,
+        "district_representation": "Districts embedded in constituency records",
+        "size_bytes": 143654912,
+        "active_usage": "Mobile app offline database loaded via seedDataLoader.ts"
+      },
+      {
+        "source": "Pre-built GeoJSON Assets (apps/api/public/geo/)",
+        "state_count": 32,
+        "placeholder_states_count": 9,
+        "has_polygons_count": 23,
+        "district_representation": "Individual *-districts.geojson feature collections",
+        "active_usage": "Served by GET /api/v1/geo/* and cached on mobile via remoteGeoLoader.ts"
+      },
+      {
+        "source": "Shared Library Constants (packages/shared/src/types/geography.ts)",
+        "state_count": 36,
+        "constituency_count": "Not defined",
+        "district_representation": "Defined as abstract tier in 8-tier hierarchy",
+        "active_usage": "Type checking and state code union"
+      },
+      {
+        "source": "Web Admin Mock Data (apps/web-admin/src/pages/Constituencies.tsx)",
+        "state_count": 16,
+        "constituency_count": 20,
+        "district_representation": "Mock district names with synthetic IDs (e.g., TS-PC-09)",
+        "active_usage": "Hardcoded UI presentation"
+      }
+    ],
+    "fragmentation_severity": "CRITICAL",
+    "summary": "There is currently NO single canonical source of truth for geography. The backend serves static TypeScript files, the mobile app queries a 137 MB shipped SQLite database, the database schema is almost completely unpopulated (0 constituencies, 0 mandals), and the web admin displays hardcoded mock data. State counts range from 16 to 36 across subsystems."
+  },
+  "identifier_analysis": {
+    "existing_schemes": {
+      "state_identifiers": {
+        "scheme": "2-letter ISO/Postal code (e.g., 'TS', 'AP', 'MH', 'KA')",
+        "status": "Authoritative & universally accepted across all tiers",
+        "stability": "HIGH"
+      },
+      "constituency_identifiers": {
+        "migration_001_db_format": "<state_code>-AC-<ac_no> (e.g., 'TS-AC-1')",
+        "seed_and_sqlite_format": "Number acNo (1..119) with stateCode stored separately",
+        "mobile_store_format": "acNo only (causes cross-state collision when switching states)",
+        "legislator_profile_format": "Custom slug 'MLA_TS_2023_KODANGAL_141'",
+        "web_admin_format": "Synthetic slug 'TS-PC-09' (confuses PC and AC)",
+        "status": "FRAGMENTED & INCONSISTENT",
+        "recommendation": "Adopt canonical compound code '<state_code>-AC-<3-digit-padded-ac_no>' (e.g., 'TS-AC-001') and maintain ECI AC code as explicit attribute"
+      },
+      "mandal_identifiers": {
+        "migration_022_db_format": "<state_code>-MDL-<lgd_code> (e.g., 'TS-MDL-501')",
+        "sqlite_format": "Numeric LGD code or local ID",
+        "status": "UNPOPULATED IN DB",
+        "recommendation": "Preserve LGD code as authoritative administrative identifier"
+      },
+      "polling_booth_identifiers": {
+        "migration_022_format": "<constituency_id>-B<booth_number> (e.g., 'TS-AC-1-B001')",
+        "seed_format": "Inconsistent hyphenation 'TS-AC1-B001'",
+        "status": "FORMAT INCONSISTENCY"
+      },
+      "district_identifiers": {
+        "current_status": "NONE. No district table, no district codes, no LGD district codes in DB.",
+        "recommendation": "W013 must establish canonical 'districts' table with LGD district codes and compound ID '<state_code>-DIST-<lgd_code>'"
+      },
+      "parliamentary_constituency_identifiers": {
+        "current_status": "NONE. No PC entity exists in DB.",
+        "recommendation": "W013 must establish canonical 'parliamentary_constituencies' table with ECI PC numbers and compound ID '<state_code>-PC-<pc_no>'"
+      }
+    }
+  },
+  "temporal_and_versioning_analysis": {
+    "temporal_columns_present": false,
+    "effective_dates_in_db": "Missing effective_from, effective_to, is_active, version, and boundary_regime on official geography tables",
+    "scenario_vs_official_isolation": {
+      "status": "PROPERLY ISOLATED AT DDL LEVEL",
+      "findings": "Delimitation simulation tables (delimitation_proposals, proposed_constituencies, constituency_mapping) are isolated in Migration 011. However, Fastify route /api/v1/delimitation/simulate operates entirely in-memory using static 2011 Census JSON data, completely bypassing PostgreSQL."
+    },
+    "w013_vs_w014_boundary": "W013 establishes the canonical geography entities, codes, and static schema. W014 will introduce temporal bounds, versioning, delimitation regimes (1976 vs 2008 vs post-2026), and effective date intervals. W013 MUST include nullable temporal scaffold columns (effective_from, effective_to, is_active) to avoid schema breakage in W014."
+  },
+  "political_geography_graph_analysis": {
+    "hierarchy_type": "DUAL DIVERGENT HIERARCHY (Administrative vs Electoral)",
+    "structure": {
+      "administrative_tree": "Country -> State/UT -> District (MISSING IN DB) -> Revenue Division -> Mandal/Tehsil -> Revenue Village / Gram Panchayat -> Habitation/Ward",
+      "electoral_tree": "Country -> Parliamentary Constituency (MISSING IN DB) -> Assembly Constituency -> Polling Booth (Section/Part)",
+      "urban_local_governance": "State/UT -> District -> Urban Local Body (Municipal Corp / Municipality / Nagar Panchayat) -> ULB Ward",
+      "rural_local_governance": "State/UT -> Zilla Parishad (District) -> Mandal Parishad (Block) -> Gram Panchayat -> GP Ward"
+    },
+    "intersection_complexity": {
+      "mandal_to_ac_relationship": "MANY-TO-MANY (M:N). A mandal may be split across 2 or more Assembly Constituencies, and an AC contains parts of multiple mandals. Migration 022 created 'mandal_constituency_map' with 'overlap_type' (full, partial), but 0 rows are populated.",
+      "district_to_ac_relationship": "PREDOMINANTLY 1:N but occasionally M:N across state administrative reorganizations.",
+      "pc_to_ac_relationship": "STRICT 1:N within state boundaries (each AC belongs to exactly one PC under ECI delimitation orders)."
+    }
+  },
+  "data_quality_and_duplication_audit": {
+    "findings": [
+      {
+        "id": "DQ-01",
+        "severity": "CRITICAL",
+        "description": "Database geography tables are completely empty in staging (0 constituencies, 0 mandals, 0 local bodies, 0 polling booths). Only 20 state rows exist."
+      },
+      {
+        "id": "DQ-02",
+        "severity": "CRITICAL",
+        "description": "State count discrepancy: DB has 20 states, Seed has 31 states, GeoJSON has 32 states, Shared library has 36 states, Web admin has 16 states."
+      },
+      {
+        "id": "DQ-03",
+        "severity": "CRITICAL",
+        "description": "Districts and Parliamentary Constituencies have NO tables in PostgreSQL schema. They are modeled as unnormalized TEXT strings or integers."
+      },
+      {
+        "id": "DQ-04",
+        "severity": "HIGH",
+        "description": "Mobile app stores 'acNo: number' without stateCode in myConstituency store, causing cross-state constituency ID collision."
+      },
+      {
+        "id": "DQ-05",
+        "severity": "HIGH",
+        "description": "Mobile aiService queries non-existent columns 'district_name, reservation_type, total_electors' from constituencies table (actual columns: district, reservation, total_voters), failing at runtime."
+      },
+      {
+        "id": "DQ-06",
+        "severity": "HIGH",
+        "description": "Mobile app ships with a 137 MB SQLite database (seed-data.db), creating an unmaintainable client-side divergence from backend and DB."
+      },
+      {
+        "id": "DQ-07",
+        "severity": "MEDIUM",
+        "description": "GeoJSON manifest has 9 states marked as placeholder with hasPolygons=false (PY, TR, ML, MN, NL, UK, SK, AR, MZ)."
+      },
+      {
+        "id": "DQ-08",
+        "severity": "MEDIUM",
+        "description": "Web admin hardcodes mock constituency data with synthetic non-canonical identifiers like 'TS-PC-09'."
+      }
+    ]
+  },
+  "api_inventory": [
+    {
+      "route": "/api/v1/states",
+      "method": "GET",
+      "source": "Static seed file (apps/api/src/services/stateData.ts)",
+      "db_dependency": false,
+      "params": "None",
+      "response_shape": "Array<{ id, name, code, capital, districtsCount, assemblySeats, parliamentarySeats, status }>",
+      "auth": "Public",
+      "rls": false,
+      "caching": "In-memory Fastify service",
+      "consumers": ["Mobile onboarding", "Web admin state selector", "Public API"]
+    },
+    {
+      "route": "/api/v1/states/:stateCode",
+      "method": "GET",
+      "source": "Static seed file (apps/api/src/services/stateData.ts)",
+      "db_dependency": false,
+      "params": "stateCode (path)",
+      "response_shape": "State object",
+      "auth": "Public",
+      "rls": false,
+      "caching": "In-memory",
+      "consumers": ["Mobile state overview", "Web admin"]
+    },
+    {
+      "route": "/api/v1/states/:stateCode/constituencies",
+      "method": "GET",
+      "source": "Static seed file (apps/api/src/services/stateData.ts)",
+      "db_dependency": false,
+      "params": "stateCode (path), district (query optional)",
+      "response_shape": "Array<{ id, name, stateId, district, type, reservation, totalVoters }>",
+      "auth": "Public",
+      "rls": false,
+      "caching": "In-memory",
+      "consumers": ["Mobile constituency picker", "Web admin list"]
+    },
+    {
+      "route": "/api/v1/constituencies/:id",
+      "method": "GET",
+      "source": "Static seed file (apps/api/src/services/stateData.ts)",
+      "db_dependency": false,
+      "params": "id (path)",
+      "response_shape": "Constituency detail object",
+      "auth": "Public",
+      "rls": false,
+      "caching": "In-memory",
+      "consumers": ["Mobile My Kshetra", "Constituency profile page"]
+    },
+    {
+      "route": "/api/v1/geo/states",
+      "method": "GET",
+      "source": "Static file (apps/api/public/geo/manifest.json)",
+      "db_dependency": false,
+      "params": "None",
+      "response_shape": "GeoJSON Manifest object",
+      "auth": "Public",
+      "rls": false,
+      "caching": "Static asset serve",
+      "consumers": ["Mobile map loader", "Web admin map"]
+    },
+    {
+      "route": "/api/v1/geo/states/:stateCode",
+      "method": "GET",
+      "source": "Static GeoJSON files (apps/api/public/geo/*.geojson)",
+      "db_dependency": false,
+      "params": "stateCode (path), type (query: 'districts' | 'assembly')",
+      "response_shape": "GeoJSON FeatureCollection",
+      "auth": "Public",
+      "rls": false,
+      "caching": "Static asset serve",
+      "consumers": ["Mobile map vector rendering", "Web admin boundary visualizer"]
+    },
+    {
+      "route": "/api/v1/geo/manifest",
+      "method": "GET",
+      "source": "Static file (apps/api/public/geo/manifest.json)",
+      "db_dependency": false,
+      "params": "None",
+      "response_shape": "Manifest object",
+      "auth": "Public",
+      "rls": false,
+      "caching": "Static asset serve",
+      "consumers": ["Mobile cache sync"]
+    },
+    {
+      "route": "/api/v1/delimitation/simulate",
+      "method": "POST",
+      "source": "In-memory calculation (apps/api/src/routes/delimitation.ts)",
+      "db_dependency": false,
+      "params": "body: { year, growthRates, totalSeats, method }",
+      "response_shape": "{ simulationResults, seatAllocation, populationProjections }",
+      "auth": "Public / Optional JWT",
+      "rls": false,
+      "caching": "None",
+      "consumers": ["Mobile delimitation lab", "Web admin delimitation dashboard"]
+    },
+    {
+      "route": "/api/v1/delimitation/scenarios",
+      "method": "GET",
+      "source": "Static TypeScript definitions (data/census/delimitationScenarios.ts)",
+      "db_dependency": false,
+      "params": "None",
+      "response_shape": "Array<ScenarioDefinition>",
+      "auth": "Public",
+      "rls": false,
+      "caching": "In-memory",
+      "consumers": ["Mobile delimitation scenarios", "Web admin"]
+    }
+  ],
+  "geography_consumer_dependency_matrix": [
+    {
+      "consumer": "My Kshetra (Mobile)",
+      "current_geography_dependency": "myConstituency store -> seedDataLoader (SQLite) / stateData API",
+      "risk": "HIGH: State switching collision; SQLite db drift from server",
+      "required_w013_change": "Define canonical compound constituency ID; prepare API contract for server-backed lookup"
+    },
+    {
+      "consumer": "Constituency Detail Page",
+      "current_geography_dependency": "GET /api/v1/constituencies/:id (static seed TS files)",
+      "risk": "HIGH: Returns static data only; cannot query newly added DB attributes",
+      "required_w013_change": "Maintain backward-compatible response shape while establishing DB schema parity"
+    },
+    {
+      "consumer": "Civic Issues / Citizen Reports",
+      "current_geography_dependency": "civic_issues.constituency_id REFERENCES constituencies(id)",
+      "risk": "CRITICAL: Live staging table has 0 constituencies; foreign key restricts inserting valid constituency IDs into civic issues",
+      "required_w013_change": "Canonical constituency table must be populated with verified ECI AC keys"
+    },
+    {
+      "consumer": "User Profiles",
+      "current_geography_dependency": "user_profiles.constituency_id REFERENCES constituencies(id)",
+      "risk": "CRITICAL: Users cannot bind profile to constituency in PostgreSQL staging DB",
+      "required_w013_change": "Enable user profile constituency association with canonical IDs"
+    },
+    {
+      "consumer": "Representatives / MLA Profiles",
+      "current_geography_dependency": "Custom slug 'MLA_TS_2023_KODANGAL_141' in seed files; polymorphic representatives table empty in DB",
+      "risk": "HIGH: Inability to join representatives to constituencies via standard foreign key",
+      "required_w013_change": "Establish canonical AC and PC foreign keys for representative bindings"
+    },
+    {
+      "consumer": "Delimitation Simulator",
+      "current_geography_dependency": "Pure in-memory calculations against 2011 Census JSON",
+      "risk": "LOW: Completely decoupled from current database schema",
+      "required_w013_change": "Ensure delimitation proposals remain isolated in scenario tables without official schema contamination"
+    },
+    {
+      "consumer": "Map Visualizer / Boundary Layers",
+      "current_geography_dependency": "Static GeoJSON boundary files served from disk",
+      "risk": "MEDIUM: 9 states have placeholder boundaries; discrepancies between GeoJSON AC codes and seed AC codes",
+      "required_w013_change": "Standardize geometry SRID and link boundary feature properties to canonical IDs"
+    },
+    {
+      "consumer": "Web Admin Dashboard",
+      "current_geography_dependency": "Hardcoded mock sample data (16 states, 20 constituencies)",
+      "risk": "MEDIUM: Admin displays synthetic non-production data",
+      "required_w013_change": "Prepare admin API integration with canonical geography endpoints"
+    }
+  ],
+  "w012_data_governance_integration": {
+    "compatibility_status": "FULL ALIGNMENT — ZERO SCHEMA DRIFT REQUIRED",
+    "seam_analysis": {
+      "record_provenance_linkages": "Uses polymorphic target pointer (target_table TEXT, target_id TEXT). Canonical geography entities (e.g., target_table: 'constituencies', target_id: 'TS-AC-001') can immediately link to W012 provenance records.",
+      "data_sources": "Pre-configured sources in W012 (ECI, Census of India, Local Government Directory) will provide authoritative provenance for canonical geography entities.",
+      "evidence_records": "W012 evidence_records will store raw gazette notifications, delimitation orders, and census tables without modifying W012 DDL.",
+      "provenance_records": "W012 provenance records will track extraction pipelines, transformers, and verification hashes for all imported geography boundaries."
+    }
+  },
+  "job_boundaries": {
+    "W013": {
+      "name": "Canonical Geography Model",
+      "scope": [
+        "Create canonical districts table (with LGD codes)",
+        "Create canonical parliamentary_constituencies table (with ECI PC numbers)",
+        "Normalize and formalize constituencies table (Assembly Constituencies)",
+        "Standardize canonical identifier formats across all geography tiers",
+        "Establish foreign keys and relationship tables (PC -> AC, AC -> District)",
+        "Add nullable temporal scaffold columns (effective_from, effective_to, is_active)",
+        "Establish W012 data governance provenance linkage interfaces"
+      ]
+    },
+    "W014": {
+      "name": "Geography Versioning & Temporal Bounds",
+      "scope": [
+        "Delimitation regimes (1976, 2008, post-2026)",
+        "Temporal boundary validity intervals",
+        "Point-in-time boundary reconstruction",
+        "Superseded boundary lineage tracking"
+      ]
+    },
+    "W015": {
+      "name": "Geography Relationship Engine",
+      "scope": [
+        "Graph traversal algorithms across administrative and electoral hierarchies",
+        "M:N Mandal-to-AC overlap calculation and population weighting",
+        "Spatial containment inference and hierarchical rollup aggregations"
+      ]
+    },
+    "W016": {
+      "name": "Real Geographic Mapping",
+      "scope": [
+        "PostGIS spatial query optimization and spatial indexing",
+        "Simplification, topojson encoding, and vector tile generation",
+        "Elimination of 9 placeholder state boundaries in GeoJSON assets"
+      ]
+    },
+    "W017": {
+      "name": "Geography Quality Engine",
+      "scope": [
+        "Automated geometric gap and sliver detection",
+        "Cross-source reconciliation (LGD vs ECI vs Survey of India)",
+        "Continuous integrity and boundary self-intersection audit pipelines"
+      ]
+    }
+  },
+  "security_and_rls_analysis": {
+    "current_state": "All geography tables in Migration 001, 011, 022, and 023 have RLS enabled with permissive public read access (FOR SELECT USING (true)).",
+    "mutation_security": "No INSERT/UPDATE/DELETE policies exist for public/authenticated users. Only service_role can mutate geography data.",
+    "w013_security_plan": "Maintain public read access for all canonical geography entities. Restrict all DDL/DML mutation strictly to service_role and verified data governance migration pipelines."
+  },
+  "performance_implications": {
+    "current_status": "Hot-path performance benchmark in W012 demonstrated ~2 ms server-side latency on PostgreSQL staging queries.",
+    "proposed_index_strategy": [
+      "B-Tree index on states(code)",
+      "B-Tree index on districts(state_id, code)",
+      "B-Tree index on parliamentary_constituencies(state_id, pc_number)",
+      "B-Tree index on constituencies(state_id, ac_number)",
+      "B-Tree index on constituencies(district_id)",
+      "B-Tree index on constituencies(parliamentary_constituency_id)",
+      "GIST spatial indexes on boundary columns"
+    ],
+    "no_speculative_indexing": "Indexes will be introduced strictly to support known primary key, foreign key, and traversal lookups."
+  },
+  "migration_and_rollback_strategy": {
+    "migration_type": "ADDITIVE, NON-DESTRUCTIVE EXTENSION",
+    "rules": [
+      "DO NOT DROP or RENAME existing tables (states, constituencies, mandals).",
+      "DO NOT BREAK existing foreign keys on user_profiles, posts, civic_issues.",
+      "Add missing tables (districts, parliamentary_constituencies) with clean foreign key relationships.",
+      "Add standardized canonical columns to existing tables using nullable defaults.",
+      "Maintain 100% backward compatibility with existing API response schemas."
+    ],
+    "rollback_plan": "Each migration statement will be paired with an exact, tested idempotent DOWN script. If any staging verification check fails, rollback restores database to exact baseline without data loss."
+  },
+  "open_defects": [
+    {
+      "defect_id": "DEF-01",
+      "component": "Database Schema",
+      "summary": "districts table is completely absent from database schema; referenced as unnormalized TEXT",
+      "severity": "CRITICAL"
+    },
+    {
+      "defect_id": "DEF-02",
+      "component": "Database Schema",
+      "summary": "parliamentary_constituencies table is completely absent from database schema",
+      "severity": "CRITICAL"
+    },
+    {
+      "defect_id": "DEF-03",
+      "component": "Staging Database",
+      "summary": "constituencies, mandals, local bodies tables have 0 rows in staging DB",
+      "severity": "CRITICAL"
+    },
+    {
+      "defect_id": "DEF-04",
+      "component": "Mobile Client",
+      "summary": "myConstituency store causes cross-state AC collision due to single integer acNo key",
+      "severity": "HIGH"
+    },
+    {
+      "defect_id": "DEF-05",
+      "component": "Mobile Client",
+      "summary": "aiService queries non-existent columns (district_name, reservation_type, total_electors)",
+      "severity": "HIGH"
+    },
+    {
+      "defect_id": "DEF-06",
+      "component": "GeoJSON Assets",
+      "summary": "9 states have placeholder GeoJSON files without polygon boundaries",
+      "severity": "MEDIUM"
+    }
+  ],
+  "unknown_items": [
+    {
+      "item": "LGD Code mappings for 100% of historical Assembly Constituencies",
+      "status": "UNKNOWN",
+      "rationale": "LGD primarily tracks administrative units (Districts, Sub-districts, Blocks, Villages, ULBs). ECI tracks electoral units (PCs, ACs). Cross-reference mapping for every AC across all 36 states requires external verification."
+    },
+    {
+      "item": "Authoritative MultiPolygon geometries for 9 placeholder states (PY, TR, ML, MN, NL, UK, SK, AR, MZ)",
+      "status": "UNKNOWN",
+      "rationale": "Source files in apps/api/public/geo/ contain empty FeatureCollections. Official Survey of India / ECI shapefiles have not yet been imported into staging."
+    },
+    {
+      "item": "Exact population weights for partial mandal-to-AC intersections",
+      "status": "UNKNOWN",
+      "rationale": "Requires Census 2011 village-level aggregation mapped against ECI delimitation boundary descriptions; out of scope for W013 preflight."
+    }
+  ],
+  "proposed_w013_scope": {
+    "in_scope": [
+      "1. Comprehensive DDL migration creating canonical 'districts' table with state FK and LGD codes.",
+      "2. Comprehensive DDL migration creating canonical 'parliamentary_constituencies' table with state FK and ECI PC numbers.",
+      "3. Additive DDL enhancing 'constituencies' table with canonical codes, district FK, PC FK, and nullable temporal scaffolds.",
+      "4. Complete seed data migration populating all 36 Indian States and Union Territories.",
+      "5. Complete seed data migration populating all 543 Parliamentary Constituencies (ECI 2008 Delimitation order).",
+      "6. Complete seed data migration populating canonical Assembly Constituencies for authorized pilot states (e.g. Telangana / TS - 119 ACs) with verified ECI codes.",
+      "7. Link canonical geography records to W012 data governance provenance records.",
+      "8. Runtime verification test suite validating foreign keys, constraints, and query performance."
+    ],
+    "explicitly_not_authorized_in_w013": [
+      "DO NOT implement W014 temporal validity engines or multi-regime time travel.",
+      "DO NOT implement W015 M:N spatial traversal graph calculations.",
+      "DO NOT rewrite or delete the 137 MB SQLite database in the mobile app during W013.",
+      "DO NOT modify Fastify API route implementations to drop existing response formats.",
+      "DO NOT rewrite GeoJSON vector assets in apps/api/public/geo/ (deferred to W016).",
+      "DO NOT modify production database under any circumstances."
+    ]
+  },
+  "cto_decision_request": {
+    "action_requested": "Review preflight report and authorize bounded implementation scope for Job W013.",
+    "submission_status": "W013_PREFLIGHT_COMPLETE — AWAITING CTO AUTHORIZATION"
+  }
+}
