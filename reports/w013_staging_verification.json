@@ -1,0 +1,121 @@
+{
+  "timestamp": "2026-09-22T08:14:56.020Z",
+  "target": "https://fkpigozcqnmcvofuksar.supabase.co",
+  "testRunId": "c309e031",
+  "summary": {
+    "total": 12,
+    "passed": 0,
+    "failed": 0,
+    "pending": 12
+  },
+  "tests": [
+    {
+      "id": "TEST-13-A",
+      "name": "Canonical tables exist (districts, parliamentary_constituencies)",
+      "category": "SCHEMA",
+      "status": "PENDING_STAGING_EXECUTION",
+      "expected": "Migration 040 applied to panIN-staging",
+      "observed": "Table public.districts not found in schema cache",
+      "details": null
+    },
+    {
+      "id": "TEST-13-B",
+      "name": "Additive columns exist; constituencies.id primary key preserved",
+      "category": "SCHEMA",
+      "status": "PENDING_STAGING_EXECUTION",
+      "expected": "Migration 040 applied to panIN-staging",
+      "observed": "Table public.districts not found in schema cache",
+      "details": null
+    },
+    {
+      "id": "TEST-13-C",
+      "name": "internal_id is NOT NULL, UUID format, and UNIQUE",
+      "category": "IDENTITY_INTEGRITY",
+      "status": "PENDING_STAGING_EXECUTION",
+      "expected": "Migration 040 applied to panIN-staging",
+      "observed": "Table public.districts not found in schema cache",
+      "details": null
+    },
+    {
+      "id": "TEST-13-D",
+      "name": "canonical_code is correctly formatted and UNIQUE",
+      "category": "IDENTITY_INTEGRITY",
+      "status": "PENDING_STAGING_EXECUTION",
+      "expected": "Migration 040 applied to panIN-staging",
+      "observed": "Table public.districts not found in schema cache",
+      "details": null
+    },
+    {
+      "id": "TEST-13-E",
+      "name": "Telangana pilot entity row counts (1 State, 33 Districts, 17 PCs, 119 ACs)",
+      "category": "ROW_COUNTS",
+      "status": "PENDING_STAGING_EXECUTION",
+      "expected": "Migration 040 applied to panIN-staging",
+      "observed": "Table public.districts not found in schema cache",
+      "details": null
+    },
+    {
+      "id": "TEST-13-F",
+      "name": "100% of 119 ACs have valid parliamentary_constituency_id and district_id",
+      "category": "RELATIONAL_INTEGRITY",
+      "status": "PENDING_STAGING_EXECUTION",
+      "expected": "Migration 040 applied to panIN-staging",
+      "observed": "Table public.districts not found in schema cache",
+      "details": null
+    },
+    {
+      "id": "TEST-13-G",
+      "name": "W012 dataset-version foreign keys resolve",
+      "category": "LINEAGE_INTEGRITY",
+      "status": "PENDING_STAGING_EXECUTION",
+      "expected": "Migration 040 applied to panIN-staging",
+      "observed": "Table public.districts not found in schema cache",
+      "details": null
+    },
+    {
+      "id": "TEST-13-H",
+      "name": "W012 record_provenance_linkages resolve for all pilot entities",
+      "category": "PROVENANCE_INTEGRITY",
+      "status": "PENDING_STAGING_EXECUTION",
+      "expected": "Migration 040 applied to panIN-staging",
+      "observed": "Table public.districts not found in schema cache",
+      "details": null
+    },
+    {
+      "id": "TEST-13-I",
+      "name": "All pilot entities have UNVERIFIED data status; zero elevation to OFFICIAL",
+      "category": "GOVERNANCE_SECURITY",
+      "status": "PENDING_STAGING_EXECUTION",
+      "expected": "Migration 040 applied to panIN-staging",
+      "observed": "Table public.districts not found in schema cache",
+      "details": null
+    },
+    {
+      "id": "TEST-13-J",
+      "name": "Row Level Security enabled: public read succeeds; anonymous mutation denied",
+      "category": "RLS_SECURITY",
+      "status": "PENDING_STAGING_EXECUTION",
+      "expected": "Migration 040 applied to panIN-staging",
+      "observed": "Table public.districts not found in schema cache",
+      "details": null
+    },
+    {
+      "id": "TEST-13-K",
+      "name": "Backwards compatibility: domain FKs and application queries unaffected",
+      "category": "REGRESSION_INTEGRITY",
+      "status": "PENDING_STAGING_EXECUTION",
+      "expected": "Migration 040 applied to panIN-staging",
+      "observed": "Table public.districts not found in schema cache",
+      "details": null
+    },
+    {
+      "id": "TEST-13-L",
+      "name": "District chronology and dataset semantics verified",
+      "category": "CHRONOLOGY_INTEGRITY",
+      "status": "PENDING_STAGING_EXECUTION",
+      "expected": "Migration 040 applied to panIN-staging",
+      "observed": "Table public.districts not found in schema cache",
+      "details": null
+    }
+  ]
+}
