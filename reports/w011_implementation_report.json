@@ -5,7 +5,8 @@
   "date": "2026-09-21",
   "branch": "master",
   "baseCommit": "f80b585a8c1dcb2458f1964255b0d8e9bc200285",
-  "headCommit": "cd6f04e",
+  "headCommit": "ca062d1",
+  "implementationCommit": "cd6f04e",
   "acceptanceAuthority": "CTO / Independent Verifier",
   "governanceBoundary": {
     "zeroOpportunisticFeatures": true,
@@ -116,7 +117,7 @@
     "apiBuild": { "command": "npm run build --prefix apps/api", "result": "PASS (0 errors)" },
     "mobileTypecheck": { "command": "npm run typecheck --prefix apps/mobile", "result": "PASS (0 errors)" },
     "contractDrift": { "command": "node scripts/check-api-contract-drift.mjs", "result": "PASS (9/9 matched, 100% parity)" },
-    "evidenceIntegrity": { "command": "node scripts/check-repo-evidence-integrity.mjs", "result": "PASS (31/31 verified ancestors, 0 phantom)" },
+    "evidenceIntegrity": { "command": "node scripts/check-repo-evidence-integrity.mjs", "result": "PASS (32/32 verified ancestors, 0 phantom)" },
     "apiFailClosedSuite": { "command": "npm test --prefix apps/api -- src/__tests__/w011-fail-closed.test.ts", "result": "PASS (8/8)" },
     "apiPoliticalAdsSuite": { "command": "npm test --prefix apps/api -- src/__tests__/political-ads.test.ts", "result": "PASS (9/9)" },
     "apiCivicMutationsSuite": { "command": "npm test --prefix apps/api -- src/__tests__/civic-mutations.test.ts", "result": "PASS (22/22)" },

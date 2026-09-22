@@ -6,6 +6,8 @@
 **Acceptance Authority:** CTO / Independent Verifier (No Self-Acceptance)  
 **Date:** September 21, 2026  
 **Base Commit:** `f80b585a8c1dcb2458f1964255b0d8e9bc200285` (`f80b585`)  
+**Submitted HEAD Commit:** [`ca062d1`](file:///c:/Users/Laven/OneDrive/Desktop/Kshetra)  
+**Substantive Implementation Commit:** [`cd6f04e`](file:///c:/Users/Laven/OneDrive/Desktop/Kshetra)  
 **Target Branch:** `master`  
 **Sub-Jobs Completed:** W011-B1, W011-B2, W011-B3, W011-B4  
 
@@ -104,7 +106,7 @@ Pursuant to the **PanIN-Kshetra Master Execution Document and Sequential Job Boo
 | **API TypeScript Compilation** | `npm run build --prefix apps/api` | Clean (0 errors) | 100% |
 | **Mobile TypeScript Compilation** | `npm run typecheck --prefix apps/mobile` | Clean (0 errors) | 100% |
 | **API Contract Drift Check** | `node scripts/check-api-contract-drift.mjs` | Clean (9/9 matched) | 100% |
-| **Repo & Evidence Integrity** | `node scripts/check-repo-evidence-integrity.mjs` | Clean (31/31 verified ancestors, 0 phantom) | 100% |
+| **Repo & Evidence Integrity** | `node scripts/check-repo-evidence-integrity.mjs` | Clean (32/32 verified ancestors, 0 phantom) | 100% |
 | **API W011 Fail-Closed Suite** | `npm test --prefix apps/api -- src/__tests__/w011-fail-closed.test.ts` | 8 passed, 0 failed | 100% |
 | **API Moderation Queue Suite** | `npm test --prefix apps/api -- src/__tests__/moderation-queue.test.ts` | 3 passed, 0 failed | 100% |
 | **API DM Rate Limits Suite** | `npm test --prefix apps/api -- src/__tests__/dm-rate-limits.test.ts` | 7 passed, 0 failed | 100% |

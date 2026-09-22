@@ -1016,6 +1016,11 @@
 - **Status:** IMPLEMENTED / TESTED / VERIFIED / SUBMITTED FOR CTO ACCEPTANCE
 - **Authority:** CTO Implementation Authorization (`W011 — CTO IMPLEMENTATION AUTHORIZATION`)
 - **Context:** Completion of Master Job W011 remediation across backend Fastify routes and mobile client layers, dismantling misleading local-success fallbacks and establishing truth in mutations.
+- **Authoritative Submission Coordinates:**
+  - Submitted HEAD Commit: `ca062d1`
+  - Substantive Implementation Code Commit: `cd6f04e`
+  - CTO Acceptance: `PENDING`
+  - W012 Status: `NOT AUTHORIZED`
 - **Batches Implemented:**
   1. **Batch W011-B1 (Backend Fail-Closed Remediation):** Eliminated in-memory fallback queues for campaign booths and volunteers; gated test ad memory fallback behind `NODE_ENV === 'test'`; enforced HTTP 503 `DATABASE_UNAVAILABLE` on unconfigured database across moderation, campaign, and DM routes; removed `auth-token-user` unauthenticated bypass.
   2. **Batch W011-B2 (Elimination of Synthetic Entity Identifiers):** Removed client-generated `local-*`, `poll-local-*`, `pe-*`, `short-user-*`, `cmt-*`, `anon-endorser-*` from mobile UI sheets and Zustand stores (`ComposeSheet.tsx`, `PostDetailModal.tsx`, `ReportIssueSheet.tsx`, `RegisterAspirantModal.tsx`, `feed.ts`, `promises.ts`, `politicalShorts.ts`, `aspirant.ts`, `civic.ts`). Wired stores to real backend services and reconciled server UUIDs on mutation completion. Eliminated double-enqueue bug in feed mutations.
@@ -1025,7 +1030,7 @@
   - `npm run build --prefix apps/api`: 0 errors.
   - `npm run typecheck --prefix apps/mobile`: 0 errors.
   - `node scripts/check-api-contract-drift.mjs`: 9/9 matched (100% parity).
-  - `node scripts/check-repo-evidence-integrity.mjs`: 31/31 verified ancestry.
+  - `node scripts/check-repo-evidence-integrity.mjs`: 32/32 verified ancestry (100% pass, 0 phantom).
   - `npm test --prefix apps/api -- src/__tests__/w011-fail-closed.test.ts`: 8/8 PASS.
   - `npm test --prefix apps/api -- src/__tests__/moderation-queue.test.ts`: 3/3 PASS.
   - `npm test --prefix apps/api -- src/__tests__/dm-rate-limits.test.ts`: 7/7 PASS.
