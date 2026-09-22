@@ -1,129 +1,186 @@
 {
-  "timestamp": "2026-09-22T08:43:30.808Z",
+  "timestamp": "2026-09-22T09:02:06.483Z",
   "target": "https://fkpigozcqnmcvofuksar.supabase.co",
-  "testRunId": "3242a8ee",
+  "testRunId": "8dddbcd6",
   "summary": {
     "total": 13,
-    "passed": 0,
+    "passed": 13,
     "failed": 0,
-    "pending": 13
+    "pending": 0
   },
   "tests": [
     {
       "id": "TEST-13-A",
       "name": "Canonical tables exist (districts, parliamentary_constituencies)",
       "category": "SCHEMA",
-      "status": "PENDING_STAGING_EXECUTION",
-      "expected": "Migration 040 applied to panIN-staging",
-      "observed": "Table public.districts not found in schema cache",
+      "status": "PASS",
+      "expected": "Both tables accessible via service_role with required columns",
+      "observed": {
+        "districtsFound": true,
+        "pcFound": true
+      },
       "details": null
     },
     {
       "id": "TEST-13-B",
       "name": "Additive columns exist; constituencies.id primary key preserved",
       "category": "SCHEMA",
-      "status": "PENDING_STAGING_EXECUTION",
-      "expected": "Migration 040 applied to panIN-staging",
-      "observed": "Table public.districts not found in schema cache",
+      "status": "PASS",
+      "expected": "constituencies.id preserved as VARCHAR/string; internal_id and canonical_code present",
+      "observed": {
+        "sampleAcId": "TS-AC-1",
+        "internalId": "f4506198-ad3f-4c50-add7-16a9e6eb76d1",
+        "canonicalCode": "TS-AC-001"
+      },
       "details": null
     },
     {
       "id": "TEST-13-C",
       "name": "internal_id is NOT NULL, UUID format, and UNIQUE",
       "category": "IDENTITY_INTEGRITY",
-      "status": "PENDING_STAGING_EXECUTION",
-      "expected": "Migration 040 applied to panIN-staging",
-      "observed": "Table public.districts not found in schema cache",
+      "status": "PASS",
+      "expected": "119 valid, non-null, unique UUIDs across Telangana ACs",
+      "observed": {
+        "count": 119,
+        "allMatchRegex": true,
+        "allUnique": true
+      },
       "details": null
     },
     {
       "id": "TEST-13-D",
       "name": "canonical_code is correctly formatted and UNIQUE",
       "category": "IDENTITY_INTEGRITY",
-      "status": "PENDING_STAGING_EXECUTION",
-      "expected": "Migration 040 applied to panIN-staging",
-      "observed": "Table public.districts not found in schema cache",
+      "status": "PASS",
+      "expected": "119 padded unique canonical codes (TS-AC-001 to TS-AC-119)",
+      "observed": {
+        "count": 119,
+        "allMatchPattern": true,
+        "allUnique": true
+      },
       "details": null
     },
     {
       "id": "TEST-13-E",
       "name": "Telangana pilot entity row counts (1 State, 33 Districts, 17 PCs, 119 ACs)",
       "category": "ROW_COUNTS",
-      "status": "PENDING_STAGING_EXECUTION",
-      "expected": "Migration 040 applied to panIN-staging",
-      "observed": "Table public.districts not found in schema cache",
+      "status": "PASS",
+      "expected": "States: 1, Districts: 33, PCs: 17, ACs: 119",
+      "observed": {
+        "observedStates": 1,
+        "observedDistricts": 33,
+        "observedPCs": 17,
+        "observedACs": 119
+      },
       "details": null
     },
     {
       "id": "TEST-13-F",
       "name": "100% of 119 ACs have valid parliamentary_constituency_id and district_id",
       "category": "RELATIONAL_INTEGRITY",
-      "status": "PENDING_STAGING_EXECUTION",
-      "expected": "Migration 040 applied to panIN-staging",
-      "observed": "Table public.districts not found in schema cache",
+      "status": "PASS",
+      "expected": "0 unlinked ACs; all 119 resolve to both a District and a PC",
+      "observed": {
+        "total": 119,
+        "unlinkedDistrictCount": 0,
+        "unlinkedPcCount": 0
+      },
       "details": null
     },
     {
       "id": "TEST-13-G",
       "name": "W012 dataset-version foreign keys resolve",
       "category": "LINEAGE_INTEGRITY",
-      "status": "PENDING_STAGING_EXECUTION",
-      "expected": "Migration 040 applied to panIN-staging",
-      "observed": "Table public.districts not found in schema cache",
+      "status": "PASS",
+      "expected": "All 6 W013 dataset versions exist in dataset_versions catalog",
+      "observed": {
+        "expectedCount": 6,
+        "foundCount": 6,
+        "missing": []
+      },
       "details": null
     },
     {
       "id": "TEST-13-H",
       "name": "W012 record_provenance_linkages resolve for all pilot entities",
       "category": "PROVENANCE_INTEGRITY",
-      "status": "PENDING_STAGING_EXECUTION",
-      "expected": "Migration 040 applied to panIN-staging",
-      "observed": "Table public.districts not found in schema cache",
+      "status": "PASS",
+      "expected": "Linkages: 1 State, 33 Districts, 17 PCs, 119 ACs",
+      "observed": {
+        "stateLinks": 1,
+        "distLinks": 33,
+        "pcLinks": 17,
+        "acLinks": 119
+      },
       "details": null
     },
     {
       "id": "TEST-13-I",
       "name": "All pilot entities have UNVERIFIED data status; zero elevation to OFFICIAL",
       "category": "GOVERNANCE_SECURITY",
-      "status": "PENDING_STAGING_EXECUTION",
-      "expected": "Migration 040 applied to panIN-staging",
-      "observed": "Table public.districts not found in schema cache",
+      "status": "PASS",
+      "expected": "100% of pilot dataset versions and provenance records are UNVERIFIED",
+      "observed": {
+        "nonUnverifiedProvCount": 0,
+        "nonUnverifiedVersionCount": 0
+      },
       "details": null
     },
     {
       "id": "TEST-13-J",
       "name": "Row Level Security enabled: public read succeeds; anonymous mutation denied",
       "category": "RLS_SECURITY",
-      "status": "PENDING_STAGING_EXECUTION",
-      "expected": "Migration 040 applied to panIN-staging",
-      "observed": "Table public.districts not found in schema cache",
+      "status": "PASS",
+      "expected": "Public read returns 200; anonymous insertions rejected by RLS",
+      "observed": {
+        "districtsRead": 200,
+        "pcRead": 200,
+        "districtsMutRejected": true,
+        "pcMutRejected": true
+      },
       "details": null
     },
     {
       "id": "TEST-13-K",
       "name": "Backwards compatibility: domain FKs and application queries unaffected",
       "category": "REGRESSION_INTEGRITY",
-      "status": "PENDING_STAGING_EXECUTION",
-      "expected": "Migration 040 applied to panIN-staging",
-      "observed": "Table public.districts not found in schema cache",
+      "status": "PASS",
+      "expected": "All pre-existing domain queries continue returning HTTP 200",
+      "observed": {
+        "statesStatus": 200,
+        "constituenciesStatus": 200,
+        "civicIssuesStatus": 200,
+        "postsStatus": 200
+      },
       "details": null
     },
     {
       "id": "TEST-13-L",
       "name": "District chronology and dataset semantics verified",
       "category": "CHRONOLOGY_INTEGRITY",
-      "status": "PENDING_STAGING_EXECUTION",
-      "expected": "Migration 040 applied to panIN-staging",
-      "observed": "Table public.districts not found in schema cache",
+      "status": "PASS",
+      "expected": "31 base districts from ts_districts_2016_v1; 2 addition districts (Mulugu, Narayanpet) from ts_districts_2019_additions_v1",
+      "observed": {
+        "baseCount": 31,
+        "additionsCount": 2,
+        "additionsNames": [
+          "Mulugu",
+          "Narayanpet"
+        ]
+      },
       "details": null
     },
     {
       "id": "TEST-13-M",
       "name": "Canonical identifier width sufficiency (Full Jayashankar Bhupalpally length 31 verified)",
       "category": "IDENTIFIER_WIDTH_INTEGRITY",
-      "status": "PENDING_STAGING_EXECUTION",
-      "expected": "Migration 040 applied to panIN-staging",
-      "observed": "Table public.districts not found in schema cache",
+      "status": "PASS",
+      "expected": "Full untruncated code 'TS-DIST-JAYASHANKAR-BHUPALPALLY' (31 chars) successfully persisted and retrieved",
+      "observed": {
+        "code": "TS-DIST-JAYASHANKAR-BHUPALPALLY",
+        "length": 31,
+        "name": "Jayashankar Bhupalpally"
+      },
       "details": null
     }
   ]
