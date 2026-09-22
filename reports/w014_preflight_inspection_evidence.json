@@ -1,0 +1,124 @@
+{
+  "timestamp": "2026-09-22T10:05:00.000Z",
+  "job": "W014",
+  "phase": "PREFLIGHT_ONLY",
+  "status": "W014_PREFLIGHT_INSPECTION_COMPLETE — AWAITING CTO REVIEW",
+  "mandate": {
+    "implementation_authorized": false,
+    "database_mutation_authorized": false,
+    "production_prohibited": true,
+    "staging_mutation_prohibited": true
+  },
+  "coordinates": {
+    "gitHead": "d0f3fcd5188eb70d0f5b9d157888a7b247bd572f",
+    "originMaster": "d0f3fcd5188eb70d0f5b9d157888a7b247bd572f",
+    "workingTreeStatus": "CLEAN",
+    "w013AcceptedCommit": "d0f3fcd5188eb70d0f5b9d157888a7b247bd572f",
+    "w013RuntimeBatteryResult": "13/13 PASS",
+    "targetStagingProjectId": "fkpigozcqnmcvofuksar",
+    "targetProductionProjectId": "zcqbswsuyqchqocjhyec (UNTOUCHED)"
+  },
+  "databaseInventory": {
+    "stagingObservedCounts": {
+      "states": 20,
+      "districts": 33,
+      "parliamentary_constituencies": 17,
+      "constituencies": 119,
+      "mandals": 0,
+      "gram_panchayats": 0,
+      "revenue_villages": 0,
+      "polling_booths": 0,
+      "mandal_constituency_map": 0,
+      "delimitation_proposals": 0,
+      "proposed_constituencies": 0,
+      "constituency_mapping": 0,
+      "ward_population": 0,
+      "delimitation_events": 0,
+      "citizen_impact": 0,
+      "data_sources": 7,
+      "datasets": 11,
+      "dataset_versions": 14,
+      "provenance_records": 13,
+      "record_provenance_linkages": 170
+    },
+    "classification": {
+      "administrativeGeography": ["states", "districts", "mandals", "gram_panchayats", "revenue_villages"],
+      "electoralGeography": ["states", "parliamentary_constituencies", "constituencies", "polling_booths"],
+      "junctionAndOverlap": ["mandal_constituency_map"],
+      "scenarioAndDelimitation": [
+        "delimitation_proposals",
+        "proposed_constituencies",
+        "constituency_mapping",
+        "ward_population",
+        "delimitation_events",
+        "citizen_impact"
+      ],
+      "governanceLineage": [
+        "data_sources",
+        "datasets",
+        "dataset_versions",
+        "provenance_records",
+        "record_provenance_linkages"
+      ]
+    }
+  },
+  "temporalGapMatrix": [
+    {
+      "gapId": "GAP-W014-01",
+      "concept": "Entity Historical Versions",
+      "currentSourceTruth": "Each entity exists as exactly one row in districts, parliamentary_constituencies, constituencies. Overwriting attributes destroys history.",
+      "requiredCapability": "Model multiple temporal versions of the same entity across distinct statutory or electoral regimes.",
+      "evidence": "W013 schema defines UNIQUE(code) on districts and UNIQUE(internal_id) on constituencies with single scalar attributes.",
+      "riskIfNotAddressed": "HIGH — Inability to query historical boundaries, past election results in historical constituency definitions, or administrative district splits without data destruction."
+    },
+    {
+      "gapId": "GAP-W014-02",
+      "concept": "Temporal Validity Intervals (valid_from, valid_to, is_current)",
+      "currentSourceTruth": "Entities have created_at and updated_at (system audit timestamps only). No statutory or operational validity intervals.",
+      "requiredCapability": "Explicit valid_from (DATE NOT NULL) and valid_to (DATE, NULL for active) defining entity lifespan.",
+      "evidence": "districts and constituencies contain only TIMESTAMPTZ system timestamps; no calendar validity columns exist.",
+      "riskIfNotAddressed": "HIGH — Point-in-time reconstruction is impossible; cannot determine which district or constituency was legally in effect on a given date."
+    },
+    {
+      "gapId": "GAP-W014-03",
+      "concept": "Predecessor and Successor Lineage",
+      "currentSourceTruth": "Tables have zero self-referencing lineage pointers to track entity evolution (splits, mergers, renames, abolitions).",
+      "requiredCapability": "Explicit predecessor/successor relationship graph (e.g. entity_lineage or predecessor_entity_id).",
+      "evidence": "districts table has no parent_district_id, predecessor_id, or split/merger metadata.",
+      "riskIfNotAddressed": "MEDIUM — Users cannot trace how historical entities evolved into present ones (e.g. Warangal split into 5 districts in 2016)."
+    },
+    {
+      "gapId": "GAP-W014-04",
+      "concept": "Relationship Temporality (AC -> District, AC -> PC, Mandal -> District)",
+      "currentSourceTruth": "Foreign keys are hardcoded 1:1 or N:1 column references on the child table (e.g. constituencies.district_id).",
+      "requiredCapability": "Temporal relationship mapping. When administrative districts split, electoral ACs remain unchanged but their parent district mapping changes over time.",
+      "evidence": "constituencies.district_id is a single static UUID foreign key.",
+      "riskIfNotAddressed": "CRITICAL — Reorganizing administrative districts forces destructive updates to constituencies.district_id, corrupting historical electoral reports."
+    },
+    {
+      "gapId": "GAP-W014-05",
+      "concept": "Scenario vs. Official Isolation",
+      "currentSourceTruth": "delimitation_proposals exists in DDL with status in ('draft', 'final', 'superseded', 'rejected'), but has no formal linkage to W012 provenance or canonical entities.",
+      "requiredCapability": "Strict architectural barrier preventing hypothetical delimitation simulations from polluting canonical tables or being marked OFFICIAL.",
+      "evidence": "011_delimitation.sql proposed_constituencies table uses integer new_ac_no without canonical UUID or W012 governance checks.",
+      "riskIfNotAddressed": "HIGH — Contamination of official public geography by unnotified draft delimitation proposals."
+    }
+  ],
+  "governanceDistinction": {
+    "datasetVersionVsEntityVersion": {
+      "datasetVersion": "W012 concept: Represents an ingested source package (e.g. eci_ts_ac_2008_v1, published by ECI in 2008).",
+      "entityVersion": "W014 concept: Represents a specific statutory/electoral manifestation of an entity during a real-world time interval.",
+      "cardinality": "N:M or N:1. A single dataset version can publish attributes for multiple entity versions, and a long-lived entity version may be re-affirmed across multiple dataset releases."
+    }
+  },
+  "defectsIdentified": [
+    {
+      "defId": "DEF-006",
+      "title": "Flat Geography Schema vs Versioned Delimitation Graph",
+      "severity": "P2",
+      "status": "IN_PROGRESS (Quarantined to W013–W017; W014 preflight addresses core temporal graph)",
+      "disposition": "W014 will design the temporal entity and relationship versioning schema to resolve the temporal dimension of DEF-006."
+    }
+  ],
+  "preflightVerdict": "W014_PREFLIGHT_INSPECTION_COMPLETE — AWAITING CTO REVIEW"
+}
