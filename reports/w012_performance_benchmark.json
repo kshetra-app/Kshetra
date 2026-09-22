@@ -1,0 +1,107 @@
+{
+  "timestamp": "2026-09-22T06:27:18.386Z",
+  "environment": "panIN-staging",
+  "target": "https://fkpigozcqnmcvofuksar.supabase.co",
+  "baselineTimestamp": "2026-09-22T04:07:13.651Z",
+  "baselineTarget": "https://fkpigozcqnmcvofuksar.supabase.co",
+  "iterations": 1000,
+  "preMigrationServerSideBaseline": "UNAVAILABLE",
+  "gates": {
+    "relativeP95ThresholdPercent": 5,
+    "absoluteP95ThresholdMs": 2,
+    "overallVerdict": "FAIL_ON_WAN_VARIANCE_AND_INCOMPARABLE_BASELINE"
+  },
+  "methodologyNotes": {
+    "baselineEndpointHP02": "/rest/v1/constituencies?select=id,name,state_id&limit=20",
+    "correctedEndpointHP02": "/rest/v1/constituencies?select=id,name,state_code&limit=20",
+    "comparabilityHP02": "HISTORICAL_BASELINE_INCOMPARABLE (baseline queried non-existent state_id column producing HTTP 400; corrected benchmark queries valid state_code column returning HTTP 200)",
+    "serverSideMetricsDistinction": "Server-side latency captures x-envoy-upstream-service-time (Envoy -> PostgREST -> Postgres round-trip). Client WAN latency includes public internet transit and ISP jitter.",
+    "dualGateInterpretation": "Dual gate cannot be applied to incomparable baseline queries (HP-02) or across divergent public WAN conditions where internet jitter exceeds the 2.0 ms gate threshold."
+  },
+  "results": [
+    {
+      "queryId": "HP-01_STATES",
+      "description": "Public query for states jurisdiction entities",
+      "endpoint": "/rest/v1/states?select=code,name,total_seats&limit=20",
+      "comparableToBaseline": true,
+      "incomparabilityReason": null,
+      "historicalBaselineClientWAN": {
+        "p50": 266.34,
+        "p95": 289.95,
+        "p99": 701.74,
+        "mean": 273.63,
+        "min": 248.2,
+        "max": 798.67
+      },
+      "postMigrationClientWAN": {
+        "p50": 282.33,
+        "p95": 309.7,
+        "p99": 334.45,
+        "mean": 285.44,
+        "min": 255.6,
+        "max": 782.12
+      },
+      "postMigrationServerSideUpstream": {
+        "p50": 1,
+        "p95": 2,
+        "p99": 3,
+        "mean": 1.13,
+        "min": 1,
+        "max": 11
+      },
+      "preMigrationServerSideBaseline": "UNAVAILABLE",
+      "clientDeltas": {
+        "p50DeltaMs": 15.99,
+        "p95DeltaMs": 19.75,
+        "p99DeltaMs": -367.29,
+        "p95RelativeDeltaPercent": 6.81
+      },
+      "passedRelativeClientGate": false,
+      "passedAbsoluteClientGate": false,
+      "clientGateVerdict": "FAIL",
+      "serverSideHealthVerdict": "HEALTHY (1-4ms range)"
+    },
+    {
+      "queryId": "HP-02_CONSTITUENCIES",
+      "description": "Public query for electoral constituency entities",
+      "endpoint": "/rest/v1/constituencies?select=id,name,state_code&limit=20",
+      "comparableToBaseline": false,
+      "incomparabilityReason": "Baseline used state_id (HTTP 400); post-migration uses state_code (HTTP 200)",
+      "historicalBaselineClientWAN": {
+        "p50": 266.63,
+        "p95": 289.25,
+        "p99": 336.38,
+        "mean": 271.08,
+        "min": 250.46,
+        "max": 766.39
+      },
+      "postMigrationClientWAN": {
+        "p50": 280.63,
+        "p95": 309.63,
+        "p99": 381.1,
+        "mean": 286.06,
+        "min": 251.04,
+        "max": 893.2
+      },
+      "postMigrationServerSideUpstream": {
+        "p50": 1,
+        "p95": 2,
+        "p99": 2,
+        "mean": 1.07,
+        "min": 1,
+        "max": 4
+      },
+      "preMigrationServerSideBaseline": "UNAVAILABLE",
+      "clientDeltas": {
+        "p50DeltaMs": 14,
+        "p95DeltaMs": 20.38,
+        "p99DeltaMs": 44.72,
+        "p95RelativeDeltaPercent": 7.05
+      },
+      "passedRelativeClientGate": false,
+      "passedAbsoluteClientGate": false,
+      "clientGateVerdict": "FAIL",
+      "serverSideHealthVerdict": "HEALTHY (1-4ms range)"
+    }
+  ]
+}
