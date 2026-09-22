@@ -1,0 +1,136 @@
+{
+  "timestamp": "2026-09-22T04:06:54.406Z",
+  "target": "https://fkpigozcqnmcvofuksar.supabase.co",
+  "tests": [
+    {
+      "id": "TEST-12-A",
+      "title": "New governance record defaults to UNKNOWN",
+      "category": "STATUS_DEFAULT",
+      "passed": false,
+      "expected": {
+        "versionDefault": "UNKNOWN",
+        "provenanceDefault": "UNKNOWN"
+      },
+      "observed": {},
+      "details": "Errors: Could not find the table 'public.dataset_versions' in the schema cache Could not find the table 'public.provenance_records' in the schema cache"
+    },
+    {
+      "id": "TEST-12-B",
+      "title": "Ordinary client cannot set UNKNOWN -> OFFICIAL",
+      "category": "TRANSITION_GUARD",
+      "passed": false,
+      "expected": "Request rejected",
+      "observed": "Requires provData from TEST-12-A",
+      "details": "Prerequisite unavailable"
+    },
+    {
+      "id": "TEST-12-C",
+      "title": "Permanent block on SCENARIO -> OFFICIAL transition",
+      "category": "PERMANENT_INVARIANT",
+      "passed": false,
+      "expected": "Trigger error containing INVARIANT VIOLATION",
+      "observed": "Cannot read properties of null (reading 'id')",
+      "details": "Exception during test"
+    },
+    {
+      "id": "TEST-12-D",
+      "title": "Ordinary client cannot set ESTIMATE -> OFFICIAL",
+      "category": "TRANSITION_GUARD",
+      "passed": false,
+      "expected": "Request rejected",
+      "observed": "Cannot read properties of null (reading 'id')",
+      "details": "Exception during test"
+    },
+    {
+      "id": "TEST-12-E",
+      "title": "Ordinary client cannot set INFERRED -> OFFICIAL",
+      "category": "TRANSITION_GUARD",
+      "passed": false,
+      "expected": "Request rejected",
+      "observed": "Cannot read properties of null (reading 'id')",
+      "details": "Exception during test"
+    },
+    {
+      "id": "TEST-12-F",
+      "title": "Ordinary client cannot set UNVERIFIED -> OFFICIAL",
+      "category": "TRANSITION_GUARD",
+      "passed": false,
+      "expected": "Request rejected",
+      "observed": "Cannot read properties of null (reading 'id')",
+      "details": "Exception during test"
+    },
+    {
+      "id": "TEST-12-G",
+      "title": "Caller-supplied verification_id alone cannot elevate without DB evidence",
+      "category": "EVIDENCE_INTEGRITY",
+      "passed": false,
+      "expected": "Trigger/FK error denying elevation",
+      "observed": "Requires unverProv from TEST-12-F",
+      "details": "Exception during test"
+    },
+    {
+      "id": "TEST-12-H",
+      "title": "Authorized/evidenced transition succeeds where explicitly permitted",
+      "category": "AUTHORIZED_TRANSITION",
+      "passed": false,
+      "expected": "Update succeeds with status OFFICIAL",
+      "observed": "Requires unverProv from TEST-12-F",
+      "details": "Exception during test"
+    },
+    {
+      "id": "TEST-12-I",
+      "title": "Provenance records cannot be overwritten (Immutability invariant)",
+      "category": "PROVENANCE_IMMUTABILITY",
+      "passed": false,
+      "expected": "Trigger error containing IMMUTABILITY VIOLATION",
+      "observed": "Requires unverProv from TEST-12-F",
+      "details": "Exception during test"
+    },
+    {
+      "id": "TEST-12-J",
+      "title": "Historical dataset versions remain intact (Multi-version integrity)",
+      "category": "VERSION_INTEGRITY",
+      "passed": false,
+      "expected": "Both v1.0 and v2.0 coexist independently without overwrite",
+      "observed": {
+        "v1Exists": false,
+        "v2Exists": false
+      },
+      "details": "Adding newer dataset version preserved previous version."
+    },
+    {
+      "id": "TEST-12-K",
+      "title": "RLS enforcement: Anonymous callers denied mutation on governance tables",
+      "category": "RLS_SECURITY",
+      "passed": true,
+      "expected": "All anonymous mutations rejected by RLS policy",
+      "observed": {
+        "srcRejected": true,
+        "dsRejected": true,
+        "evRejected": true
+      },
+      "details": "Anonymous callers cannot insert or mutate governance catalogs."
+    },
+    {
+      "id": "TEST-12-L",
+      "title": "Existing application data remains readable through existing paths",
+      "category": "REGRESSION_INTEGRITY",
+      "passed": true,
+      "expected": "All existing domain queries return HTTP 200",
+      "observed": {
+        "states": 200,
+        "constituencies": 200,
+        "civic_issues": 200,
+        "posts": 200,
+        "user_profiles": 200
+      },
+      "details": "Zero regression on pre-existing application tables."
+    }
+  ],
+  "summary": {
+    "total": 12,
+    "passed": 2,
+    "failed": 10,
+    "unknown": 0
+  }
+}

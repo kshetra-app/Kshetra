@@ -1,0 +1,35 @@
+{
+  "timestamp": "2026-09-22T04:07:13.651Z",
+  "environment": "panIN-staging",
+  "target": "https://fkpigozcqnmcvofuksar.supabase.co",
+  "mode": "baseline",
+  "warmupIterations": 50,
+  "benchmarkIterations": 1000,
+  "concurrency": 10,
+  "queries": {
+    "HP-01_STATES": {
+      "description": "Public query for states jurisdiction entities",
+      "endpoint": "/rest/v1/states?select=code,name,total_seats&limit=20",
+      "stats": {
+        "p50": 266.34,
+        "p95": 289.95,
+        "p99": 701.74,
+        "mean": 273.63,
+        "min": 248.2,
+        "max": 798.67
+      }
+    },
+    "HP-02_CONSTITUENCIES": {
+      "description": "Public query for electoral constituency entities",
+      "endpoint": "/rest/v1/constituencies?select=id,name,state_id&limit=20",
+      "stats": {
+        "p50": 266.63,
+        "p95": 289.25,
+        "p99": 336.38,
+        "mean": 271.08,
+        "min": 250.46,
+        "max": 766.39
+      }
+    }
+  }
+}
