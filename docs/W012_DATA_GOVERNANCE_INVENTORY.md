@@ -4,8 +4,9 @@
 - **Date:** 2026-09-22
 - **Repository:** `kshetra-app/Kshetra`
 - **Branch:** `master`
-- **Current HEAD Commit:** `ee87ec72cef81d724abf928ee250c19033ee9d41`
-- **Accepted Baseline:** W011 (`5bee882f32bbd77875c1f2b2f558abfeaeee719d`)
+- **Current Artifact Commit:** `caef871516b252f4121a10ee84d4b4e4e2d2857a`
+- **Historical Discovery Baseline:** `ee87ec72cef81d724abf928ee250c19033ee9d41` (Initial preflight discovery commit)
+- **Accepted W011 Baseline:** `5bee882f32bbd77875c1f2b2f558abfeaeee719d`
 - **Working Tree Status:** Clean (0 uncommitted changes)
 - **Execution Mode:** READ-ONLY PREFLIGHT (Zero mutations, Zero migrations, Zero application code edits)
 
@@ -13,18 +14,19 @@
 
 ## 1. Executive Summary & Authorization Boundary
 
-Pursuant to the CTO Preflight Directive and Pre-Implementation Correction Directive for **Job W012 (Data Governance Foundation)** under the Master Execution Document, this artifact provides an authoritative, corrected source-of-truth inspection of the existing data architecture across the PANIN / Kshetra repository.
+Pursuant to the CTO Preflight Directive, Pre-Implementation Correction Directive, and subsequent review under the Master Execution Document, this artifact provides an authoritative, source-of-truth inspection of the existing data architecture across the PANIN / Kshetra repository.
 
 ### Authorization Boundary
-- **W012 Preflight:** **ACCEPTED — SUBSTANTIALLY COMPLETE** (Subject to these pre-implementation corrections).
-- **W012 Implementation:** **NOT AUTHORIZED** (Zero database migrations, zero schema edits, zero backend route changes, zero UI modifications, zero deployments).
+- **W012 Preflight:** **ACCEPTED — SUBSTANTIALLY COMPLETE** (Subject to these documented pre-implementation corrections).
+- **W012 Implementation:** **NOT GRANTED** (Zero database migrations, zero schema edits, zero backend route changes, zero UI modifications, zero deployments).
+- **Migration 039:** **NOT AUTHORIZED / NOT CREATED**.
 - **W013–W017 & W052:** **NOT AUTHORIZED**.
 
 ---
 
 ## 2. Methodology & Files Inspected
 
-Every finding in this inventory is grounded strictly in source-of-truth inspection of the repository at commit `ee87ec72cef81d724abf928ee250c19033ee9d41`.
+Every finding in this inventory is grounded strictly in source-of-truth inspection of the repository at the authoritative baseline commit `caef871516b252f4121a10ee84d4b4e4e2d2857a`.
 
 ### Primary Subsystems & Files Inspected
 1. **Database Migrations (`supabase/migrations/**` — 40 files / 151 tables):**
@@ -101,29 +103,46 @@ Each data governance capability is strictly classified into one of the 6 authori
 ### A. Current State: `DOES NOT EXIST` (Canonical DB Registry)
 The repository does not possess a centralized, unified data source registry table in PostgreSQL.
 
-### B. Crucial Architectural Separation: Source Authority vs Data Status
-A fundamental architectural correction required by the CTO is the strict decoupling of **Source Authority** from **Data Status**:
-1. **Source Authority (`authority_level`):** Pertains to the institutional and legal standing of the publisher/origin.
-   - Example values: `constitutional` (e.g. ECI), `statutory` (e.g. State Election Commissions, Census of India, Survey of India), `academic` (e.g. Trivedi Centre / Ashoka University), `media_ngo` (e.g. The Hindu, ADR / MyNeta), `crowdsourced` (e.g. citizen edits), `synthetic_model` (e.g. delimitation projection algorithms).
-2. **Data Status (`data_status`):** Pertains to the factual and epistemic certainty of a specific dataset version or individual record.
-   - Values: `OFFICIAL`, `DERIVED`, `VERIFIED`, `ESTIMATE`, `SCENARIO`, `INFERRED`, `UNVERIFIED`, `UNKNOWN`.
-3. **Core Invariant:** A source may possess the highest institutional authority (e.g. Election Commission of India: `constitutional`), but a dataset extracted from it via a web scraper, an unverified summary, or a simulation based on its past data does **not** automatically inherit `OFFICIAL` data status. It may be `DERIVED`, `UNVERIFIED`, or `ESTIMATE` until independently corroborated or published as an official gazette record.
-4. **Status Default Invariant:** Newly registered dataset versions or records MUST default to:
+### B. Normalized Source Authority Taxonomy
+To eliminate taxonomy drift and prevent unclassified vocabulary, the source authority taxonomy is strictly defined using the following 6 canonical categories:
+
+```sql
+CREATE TYPE source_authority_enum AS ENUM (
+  'constitutional',   -- e.g. Election Commission of India (ECI)
+  'statutory',        -- e.g. State Election Commissions, Census of India, Survey of India
+  'academic',         -- e.g. Trivedi Centre (TCPD) / Ashoka University
+  'media_ngo',        -- e.g. Association for Democratic Reforms (ADR/MyNeta), Press Outlets
+  'crowdsourced',     -- e.g. Community repositories, citizen contributors, GitHub repos
+  'synthetic_model'   -- e.g. Algorithmic simulation, test projections
+);
+```
+
+### C. Explicit Separation: Source Authority vs Data Status
+A core requirement of PANIN data governance is the total decoupling of **Source Authority** from **Data Status**:
+1. **Source Authority (`source_authority_enum`):** Pertains strictly to the institutional standing and legal basis of the publisher or origin entity.
+2. **Data Status (`data_status_enum`):** Pertains to the factual and epistemic certainty of a specific dataset version or individual record (`OFFICIAL`, `DERIVED`, `VERIFIED`, `ESTIMATE`, `SCENARIO`, `INFERRED`, `UNVERIFIED`, `UNKNOWN`).
+3. **Core Invariant:** An authoritative source (e.g. ECI: `constitutional`) does **not** automatically confer `OFFICIAL` data status on every dataset extracted from it. Extracted data, scraped HTML, normalized results, or analytical summaries are `DERIVED`, `UNVERIFIED`, or `ESTIMATE` until independently verified or matched against an official gazette record.
+4. **Normalized Geography Source Authority:** The repository source `datta07/INDIAN-SHAPEFILES` (documented in `data/geo/ATTRIBUTION.md`) is classified strictly as:
+   ```text
+   crowdsourced
+   ```
+   It is an open-source community GitHub repository, not an official government release. It carries source authority `crowdsourced` and data status `UNVERIFIED`.
+5. **Status Default Rule:** Newly registered dataset versions and records MUST default strictly to:
    ```text
    UNKNOWN
    ```
-   or require an explicit, validated status at creation. Under no circumstances may any record become `OFFICIAL` simply by being inserted into the catalog.
+   No dataset or record can become `OFFICIAL` merely by virtue of catalog registration.
 
 ---
 
-## 5. Data Status Model & Scenario / Official Invariant Controls
+## 5. Data Status Model & Security-Enforced Official Status Transitions
 
 ### Current State: `DOES NOT EXIST` (Universal Model) / `EXISTS — DEFECTIVE` (Political Invariants)
 
 The Master Execution Document mandates that PANIN distinguish:
 `OFFICIAL`, `DERIVED`, `VERIFIED`, `ESTIMATE`, `SCENARIO`, `INFERRED`, `UNVERIFIED`, `UNKNOWN`.
 
-### Critical Invariant Transition Protection:
+### Critical Invariant Transitions Blocked:
 The system must structurally prohibit unvalidated status elevation:
 $$\text{SCENARIO} \not\to \text{OFFICIAL}$$
 $$\text{ESTIMATE} \not\to \text{OFFICIAL}$$
@@ -131,74 +150,118 @@ $$\text{INFERRED} \not\to \text{OFFICIAL}$$
 $$\text{UNVERIFIED} \not\to \text{OFFICIAL}$$
 $$\text{UNKNOWN} \not\to \text{OFFICIAL}$$
 
-#### Architectural Enforcement:
-1. **No Relying Solely on Enums:** A PostgreSQL enum only defines acceptable values; it does not govern transitions.
-2. **Database Transition Function & Trigger:** A database trigger (`check_status_transition_invariant`) must reject any update that transitions an existing record's `data_status` to `'OFFICIAL'` from `'SCENARIO'`, `'ESTIMATE'`, `'INFERRED'`, `'UNVERIFIED'`, or `'UNKNOWN'` unless:
-   - An authorized administrative role executes the change.
-   - A valid `verification_id` or signed cryptographic evidence reference is supplied.
-   - If `data_status = 'SCENARIO'`, transition to `'OFFICIAL'` is **permanently blocked** (a scenario can never become official; an official record must be ingested as a new official record from an official source).
+### Security-Enforced Transition Model:
+An ordinary status update cannot elevate records to `OFFICIAL`. A caller-supplied string or unverified `verification_id` alone MUST NOT authorize an `OFFICIAL` transition.
+
+The authoritative transition path is defined as:
+$$\mathbf{Actor} \longrightarrow \mathbf{Authorization} \longrightarrow \mathbf{Verification\ Evidence} \longrightarrow \mathbf{Permitted\ Status\ Transition}$$
+
+```
+┌────────────────────────────────────────────────────────┐
+│               1. ACTOR & AUTHORIZATION                 │
+│  - Caller must be authenticated service_role or        │
+│    authorized governance admin (session / JWT claim)   │
+│  - Ordinary authenticated/anon clients DENIED by RLS   │
+└───────────────────────────┬────────────────────────────┘
+                            │
+┌───────────────────────────▼────────────────────────────┐
+│               2. VERIFICATION EVIDENCE                 │
+│  - Authoritative evidence record in DB                 │
+│    (evidence_records table or signed audit entry)      │
+│  - Linked directly to target record & dataset version  │
+│  - Cryptographic hash of primary source artifact       │
+│  - Verifier identity + timestamp logged                │
+└───────────────────────────┬────────────────────────────┘
+                            │
+┌───────────────────────────▼────────────────────────────┐
+│             3. DATABASE INVARIANT TRIGGER              │
+│  check_status_transition_invariant() executes:         │
+│  a. If old_status = 'SCENARIO':                        │
+│     PERMANENTLY BLOCK transition to 'OFFICIAL'         │
+│  b. If new_status = 'OFFICIAL':                        │
+│     Verify evidence record exists in DB                │
+│     Verify caller role is authorized service_role      │
+│     Verify evidence record hash matches target         │
+│     Else: FAIL CLOSED (RAISE EXCEPTION)                │
+└───────────────────────────┬────────────────────────────┘
+                            │
+┌───────────────────────────▼────────────────────────────┐
+│             4. STATUS LIFECYCLE STAGES                 │
+│  - Record Creation: Defaults strictly to 'UNKNOWN'     │
+│  - Ordinary Update: Permitted within non-official      │
+│    statuses (e.g. UNKNOWN -> UNVERIFIED -> DERIVED)    │
+│  - Verified Elevation: Requires evidence record        │
+│  - OFFICIAL Designation: Requires dual proof           │
+│    (authorized actor + verified evidence in DB)        │
+│  - Correction / Revocation / Supersession:             │
+│    Permitted transition from OFFICIAL -> SUPERSEDED   │
+│    or OFFICIAL -> REVOKED with audit reason logged     │
+└────────────────────────────────────────────────────────┘
+```
 
 ---
 
-## 6. Provenance Model & Cardinality Architecture
+## 6. Provenance Model & Lineage Cardinality Architecture
 
 ### Current State: `DOES NOT EXIST` (Canonical Provenance Structure)
 
-### Provenance Cardinality & Lineage Design:
-To prevent forcing an artificial 1:1 model onto complex domain facts, the W012 provenance architecture implements an **append-only Directed Acyclic Graph (DAG)** model:
+### Multi-Source & Multi-Transformation Lineage (Append-Only DAG):
+To reflect real-world civic and political data pipelines, the W012 provenance architecture avoids forcing an artificial 1:1 constraint and implements an **append-only Directed Acyclic Graph (DAG)**:
 
-1. **Multiple Source Records per Domain Fact:**
-   - A candidate profile (e.g., in `legislator_profiles`) draws data from multiple source records simultaneously:
-     - Electoral victory & votes from ECI results;
-     - Assets and criminal cases from ADR / MyNeta affidavits;
-     - Assembly attendance and debates from PRS India or Sansad.
-   - The architecture supports multiple provenance inputs per domain record via an M:N linkage table (`record_provenance_sources`) or an append-only provenance chain.
-2. **Multiple Transformations in Lineage:**
-   - A raw scraped HTML/CSV passes through ingestion, parsing, normalization, and entity-resolution before application consumption.
-   - Each transformation creates an immutable transformation record linked via `parent_provenance_id`.
-3. **Canonical Provenance Determination:**
-   - If multiple provenance records attach to a domain record, the active canonical provenance is determined by an explicit `is_canonical: BOOLEAN` flag or by the latest verified node in the active lineage chain.
-4. **Append-Only Immutability:**
-   - Historical provenance records are **immutable**. Updates never mutate existing provenance rows in place; new provenance records are appended with references to the previous state (`parent_provenance_id`).
-5. **Full Chain Preservation:**
-   - A complete audit query can traverse from the live domain record backwards through each normalization step to the raw ingested artifact and canonical source URL.
+1. **One Governed Record with Multiple Source Records:**
+   - A single legislator profile derives facts from multiple sources simultaneously:
+     - Electoral victory & vote counts from ECI (`constitutional`);
+     - Financial assets and criminal affidavits from ADR / MyNeta (`media_ngo`);
+     - Legislative attendance and debates from PRS Legislative Research (`academic`).
+   - Modeled via an explicit M:N linkage table: `record_provenance_linkages(domain_table, domain_record_id, provenance_id, is_canonical)`.
+2. **One Dataset Version Derived from Multiple Source Datasets:**
+   - A merged demographic constituency dataset merges boundary shapes from GIS with census demographics from Census 2011.
+   - Modeled via `dataset_version_dependencies(parent_version_id, dependent_version_id)`.
+3. **Multi-Input & Sequential Transformations:**
+   - Ingestion, parsing, normalization, and enrichment form sequential stages.
+   - Each transformation creates an immutable provenance node linked via `parent_provenance_id UUID REFERENCES provenance_records(id)`.
+4. **Canonical Provenance Designation:**
+   - When multiple provenance records attach to a domain fact, `is_canonical = TRUE` designates the active primary source.
+5. **Immutable Append-Only Evidence:**
+   - Historical provenance records are **never mutated or overwritten in place**.
+   - Corrections append a new provenance record referencing the superseded record, ensuring full historical reconstructability.
 
 ---
 
-## 7. Representative Dataset Reconciliation (Actual Source Truth)
+## 7. Representative Dataset Reconciliation (Actual Repository Evidence)
 
-Reconciling the representative datasets against actual verified evidence currently present in the repository, with no manufactured claims and no invented values:
+Reconciling the four representative datasets against actual verified evidence currently present in the repository, with zero manufactured claims and zero invented metadata:
 
 | Requirement | Dataset 1: Geography (Assembly Boundaries) | Dataset 2: Political (MLA Profiles) | Dataset 3: Civic (Bills & Schemes) | Dataset 4: Projection (TN 2026 Simulation) |
 | :--- | :--- | :--- | :--- | :--- |
 | **Observed Entity** | `constituencies` / `data/geo/telangana-assembly.geojson` | `legislator_profiles` / `data/seed/*-mla-profiles.ts` | `bills`, `government_schemes` / `018_enhanced_civic.sql` | `scrapers/output/myneta/TamilNadu2026.json` |
 | **Actual Source** | `datta07/INDIAN-SHAPEFILES` (in `data/geo/ATTRIBUTION.md`) | `myneta.info`, `prsindia.org`, `sansad.in` | Unspecified mock seed in migration 018 | `https://www.myneta.info/TamilNadu2026` |
-| **Source Authority** | `crowdsourced` / `open_source_repo` (GitHub repo) | `media_ngo` (ADR/MyNeta), `academic` (PRS) | `UNKNOWN` | `synthetic_model` / `test_fixture` |
-| **Retrieval Date** | `UNKNOWN` | `UNKNOWN` | `UNKNOWN` | `UNKNOWN` |
-| **Effective Date** | `UNKNOWN` (Note mentions pre-2008 delimitation) | `term_start_date` / `term_end_date` (Domain dates only) | `introduced_date` / `launched_date` | `UNKNOWN` (2026 future projection) |
-| **Version** | `UNKNOWN` | `UNKNOWN` | `UNKNOWN` | `UNKNOWN` |
-| **Status** | `UNVERIFIED` | `UNVERIFIED` (or `partial` per verification_status) | `UNKNOWN` | `SCENARIO` (Explicitly categorized; was defective `isWinner`) |
-| **Transformation History** | `UNKNOWN` (Local scripts exist, execution unrecorded) | `UNKNOWN` (Unrecorded scrapers/seed builders) | `UNKNOWN` (Seeded in SQL) | `UNKNOWN` |
-| **Verification State** | `unverified` | `unverified` (Stored enum on record) | `unverified` | `unverified` |
+| **Source Authority** | `crowdsourced` (GitHub repository) | `media_ngo` (ADR/MyNeta), `academic` (PRS) | `UNKNOWN` / `NOT ESTABLISHED` | `synthetic_model` (Test projection fixture) |
+| **Retrieval Date** | `UNKNOWN` / `NOT ESTABLISHED` | `UNKNOWN` / `NOT ESTABLISHED` | `UNKNOWN` / `NOT ESTABLISHED` | `UNKNOWN` / `NOT ESTABLISHED` |
+| **Effective Date** | `UNKNOWN` (Note mentions pre-2008 delimitation) | `term_start_date` / `term_end_date` (Domain dates only) | `introduced_date` / `launched_date` (Domain dates only) | `UNKNOWN` (2026 future projection) |
+| **Version** | `UNKNOWN` / `NOT ESTABLISHED` | `UNKNOWN` / `NOT ESTABLISHED` | `UNKNOWN` / `NOT ESTABLISHED` | `UNKNOWN` / `NOT ESTABLISHED` |
+| **Status** | `UNVERIFIED` | `UNVERIFIED` (Field enum contains partial values) | `UNKNOWN` | `SCENARIO` (Explicitly categorized; was defective `isWinner`) |
+| **Transformation History** | `UNKNOWN` / `NOT ESTABLISHED` | `UNKNOWN` / `NOT ESTABLISHED` | `UNKNOWN` / `NOT ESTABLISHED` | `UNKNOWN` / `NOT ESTABLISHED` |
+| **Verification State** | `unverified` | `unverified` | `unverified` | `unverified` |
 | **Current Consumer** | Mobile Maps, API `/api/v1/geo/*` | Mobile Profile Screen, API `/api/v1/politicians` | Civic Dashboard, API `/api/v1/civic/*` | `scripts/validate-data.js` |
 
-*Reconciliation Clarification:*
-- The prior preflight claim referencing `Survey of India / 2008 Delimitation → OFFICIAL` has been **removed**.
-- The actual observed source for geography in this repository is `datta07/INDIAN-SHAPEFILES` documented in `data/geo/ATTRIBUTION.md`, carrying an authority of open-source repository and status of `UNVERIFIED`.
-- If official Survey of India or Delimitation Commission shapefiles are later ingested, they will be registered independently with full source authority and provenance.
+*Reconciliation Rules Strictly Applied:*
+- Unsupported claim of `Survey of India / 2008 Delimitation → OFFICIAL` has been purged. Actual source is `datta07/INDIAN-SHAPEFILES`, authority is `crowdsourced`, status is `UNVERIFIED`.
+- Missing values are explicitly recorded as `UNKNOWN` or `NOT ESTABLISHED`. No timestamps, versions, or transformation histories have been fabricated.
+- `TamilNadu2026.json` is strictly classified as `SCENARIO` and will serve as the test fixture proving that ordinary updates cannot elevate scenarios to `OFFICIAL`.
 
 ---
 
 ## 8. Historical Backfill Boundary
 
-To prevent W012 from expanding into an uncontrolled data migration project:
-1. **W012 Mandatory Backfill:**
-   - Limited strictly to the **four representative acceptance datasets** required to verify and accept the governance foundation.
-   - Proves that the schema, foreign keys, enums, triggers, and query patterns function correctly in staging.
-2. **Future Work (Out of Scope for W012):**
-   - Bulk historical backfill across all 4,000+ national assembly constituencies, 543 Lok Sabha seats, 10,000+ candidate affidavits, and administrative local bodies is assigned to later specialized jobs:
+To prevent W012 from expanding into an unconstrained bulk data migration project:
+1. **W012 Mandatory Acceptance Backfill:**
+   - Strictly limited to the **four representative acceptance datasets** defined in Section 7.
+   - Purpose: Prove that the schema, foreign keys, enums, RLS policies, append-only lineage, and transition invariant triggers execute correctly and pass acceptance tests in staging.
+2. **Future Work (Explicitly Deferred):**
+   - Bulk historical backfill across all 4,000+ assembly constituencies, 543 Lok Sabha seats, 10,000+ candidate affidavits, and local-body administrative units is assigned to later specialized jobs:
      - Geography backfill $\to$ W013 / W014.
-     - Election / candidate results backfill $\to$ W016 / W017.
+     - Election results & affidavits backfill $\to$ W016 / W017.
 
 ---
 
@@ -267,14 +330,15 @@ To prevent W012 from expanding into an uncontrolled data migration project:
 
 ## 13. Proposed Minimal W012 Architecture (Corrected)
 
-The corrected W012 architecture in PostgreSQL models governance with strict status-default rules, decoupling of source authority from data status, and append-only multi-source lineage:
+The corrected W012 architecture in PostgreSQL models governance with strict status-default rules, decoupling of source authority from data status, security-enforced transition controls, and append-only multi-source lineage:
 
 ```
 ┌────────────────────────────────────────────────────────┐
 │                      data_sources                      │
 │ (id, name, publisher, authority_level, url, license)   │
-│ authority_level: constitutional | statutory | academic │
-│                  media_ngo | crowdsourced | synthetic  │
+│ authority_level [source_authority_enum]:               │
+│ constitutional | statutory | academic | media_ngo |     │
+│ crowdsourced | synthetic_model                         │
 └───────────────────────────┬────────────────────────────┘
                             │ 1:N
 ┌───────────────────────────▼────────────────────────────┐
@@ -286,7 +350,7 @@ The corrected W012 architecture in PostgreSQL models governance with strict stat
 │                    dataset_versions                    │
 │ (id, dataset_id, version_tag, effective_from/to,       │
 │  retrieved_at, record_count, checksum, default_status) │
-│ * default_status: DEFAULT 'UNKNOWN' (NOT 'OFFICIAL')   │
+│ * default_status: DEFAULT 'UNKNOWN'                    │
 └───────────────────────────┬────────────────────────────┘
                             │ 1:N
 ┌───────────────────────────▼────────────────────────────┐
@@ -295,7 +359,7 @@ The corrected W012 architecture in PostgreSQL models governance with strict stat
 │  parent_provenance_id [Self-FK for Lineage DAG],       │
 │  status [data_status_enum: DEFAULT 'UNKNOWN'],         │
 │  transformation_type, transform_version, operator,     │
-│  verified_by, verification_id, created_at)             │
+│  verified_by, verification_evidence_id, created_at)    │
 └───────────────────────────┬────────────────────────────┘
                             │ M:N Linkage
 ┌───────────────────────────▼────────────────────────────┐
@@ -305,67 +369,78 @@ The corrected W012 architecture in PostgreSQL models governance with strict stat
 └────────────────────────────────────────────────────────┘
 ```
 
-### Key Architectural Corrective Decisions:
-1. **Status Default Invariant:**
-   `default_status` in `dataset_versions` and `status` in `provenance_records` default strictly to:
-   ```sql
-   DEFAULT 'UNKNOWN'
-   ```
-   No dataset version or record can default to `OFFICIAL`.
-2. **Decoupled Source Authority vs Data Status:**
-   - `authority_level` is a property of `data_sources`.
-   - `data_status` is a property of `provenance_records` and `dataset_versions`.
-   - An authoritative source never automatically grants `OFFICIAL` status to a record.
-3. **Multi-Source & Append-Only Lineage:**
-   - `parent_provenance_id UUID REFERENCES provenance_records(id)` enables full transformation chains.
-   - `record_provenance_linkages` supports multiple source inputs per domain record (e.g. ECI + MyNeta + PRS for a single candidate).
-   - Provenance records are append-only; updates create new provenance entries, preserving history.
-4. **Transition Invariant Trigger:**
-   - A PostgreSQL trigger prohibits transitioning any status to `'OFFICIAL'` unless an authorized verification ID is supplied.
-   - Any attempt to update a `'SCENARIO'` record to `'OFFICIAL'` is rejected unconditionally.
-5. **Zero Hot-Path Join Overhead:**
-   - Normal consumer queries query base domain tables directly. They only join `record_provenance_linkages` when users open the "Fact Provenance" inspector.
+### Staging Performance Requirement (Replacing "Zero Latency" Claim):
+The requirement to prove "zero additional query latency" has been replaced with an explicit staging performance contract:
+1. **Hot-Path Isolation:** Governed domain tables query base records directly. The `record_provenance_linkages` table is never joined on hot consumer query paths (e.g. `GET /api/v1/geo/constituencies`, `GET /api/v1/news/feed`, `GET /api/v1/politician/:id`).
+2. **Measurable Staging Baseline Benchmark:**
+   - Representative hot-path queries will be benchmarked in staging **BEFORE** and **AFTER** migration execution across 1,000 warm iterations.
+   - The test records: query identity, pre-migration baseline execution (p50, p95, p99 ms), post-migration execution (p50, p95, p99 ms), test environment conditions, index utilization, observed latency delta, and pass/fail evaluation.
+3. **Acceptance Threshold:**
+   - **PRE-IMPLEMENTATION DECISION REQUIRED:** Hot-path execution time regression threshold is proposed at:
+     $$\Delta \text{p95} \le 5\% \quad \text{or} \quad \Delta \text{p95} \le 2.0\text{ ms}$$
+     Subject to formal CTO confirmation prior to staging execution.
 
 ---
 
-## 14. Implementation Plan & Staging Requirements (Corrected)
+## 14. Detailed Migration 039 Implementation Plan
 
-When W012 implementation is authorized by the CTO:
+When W012 implementation is authorized by the CTO, Migration `039_data_governance_foundation.sql` will execute the following strictly structured plan:
 
-### A. Detailed Migration Implementation Plan (`039_data_governance_foundation.sql`)
-1. **Dependency Inspection:** Pre-check ensuring existing tables (`states`, `constituencies`, `legislator_profiles`, `representatives`) exist without conflicting types.
-2. **Enum Creation:** Create `data_status_enum` (`'OFFICIAL'`, `'DERIVED'`, `'VERIFIED'`, `'ESTIMATE'`, `'SCENARIO'`, `'INFERRED'`, `'UNVERIFIED'`, `'UNKNOWN'`) and `source_authority_enum` (`'constitutional'`, `'statutory'`, `'academic'`, `'media_ngo'`, `'crowdsourced'`, `'synthetic_model'`).
-3. **Table Creation:** Create `data_sources`, `datasets`, `dataset_versions`, `provenance_records`, `record_provenance_linkages`.
-4. **Indexes:** B-tree indexes on `(dataset_id)`, `(dataset_version_id)`, `(parent_provenance_id)`, and composite index on `(domain_table, domain_record_id)`.
-5. **Foreign Keys:** Cascading deletes from versions to linkages, self-referencing FK on `parent_provenance_id`.
-6. **Row Level Security (RLS):** Enable RLS on all governance tables; grant `SELECT` to public/authenticated/anon; restrict `INSERT/UPDATE/DELETE` strictly to `service_role`.
-7. **Transition Invariants:** Deploy `check_status_transition_invariant()` trigger enforcing that transitions to `'OFFICIAL'` require verification evidence and permanently blocking `'SCENARIO'` elevation.
-8. **Seed Data:** Seed verified known sources:
-   - `eci`: Election Commission of India (`constitutional`)
-   - `prs_india`: PRS Legislative Research (`academic`)
-   - `myneta`: Association for Democratic Reforms (`media_ngo`)
-   - `datta07_shapefiles`: Indian Shapefiles GitHub Repository (`crowdsourced`)
-   - `synthetic_projection_model`: Internal delimitation simulation (`synthetic_model`)
-9. **Rollback Considerations:** Include an idempotent DOWN block capable of dropping tables, triggers, and types cleanly without affecting pre-existing data.
-10. **Staging Execution & Verification:** Execute against staging Supabase instance; verify schema, constraints, RLS policies, and transition invariant trigger before proposing production execution.
-11. **Production Impact Assessment:**
-    - Expected impact: additive schema design with nullable references.
-    - Production runtime impact: **UNKNOWN** until staging execution and verification.
+1. **Dependency Inspection:** Pre-flight assertion verifying that core domain tables (`states`, `constituencies`, `legislator_profiles`, `representatives`) exist and have no name clashes.
+2. **Enum Creation:**
+   - `source_authority_enum`: `'constitutional'`, `'statutory'`, `'academic'`, `'media_ngo'`, `'crowdsourced'`, `'synthetic_model'`.
+   - `data_status_enum`: `'OFFICIAL'`, `'DERIVED'`, `'VERIFIED'`, `'ESTIMATE'`, `'SCENARIO'`, `'INFERRED'`, `'UNVERIFIED'`, `'UNKNOWN'`.
+3. **Source Registry Table:** Create `data_sources` with full publisher and authority metadata.
+4. **Dataset Registry Table:** Create `datasets` categorizing governed datasets across domains.
+5. **Dataset Versions Table:** Create `dataset_versions` capturing immutable version tags, checksums, validity dates, and `default_status DEFAULT 'UNKNOWN'`.
+6. **Provenance Records Table:** Create `provenance_records` with append-only DAG lineage (`parent_provenance_id`), `status DEFAULT 'UNKNOWN'`, and foreign key to verified evidence records.
+7. **Record Linkages Table:** Create `record_provenance_linkages` supporting M:N relationships between domain records and provenance nodes.
+8. **Required Indexes:** B-tree indexes on foreign keys and compound lookup index on `record_provenance_linkages(domain_table, domain_record_id, is_canonical)`.
+9. **Foreign Keys:** Clean foreign key relationships with appropriate cascading on version removal and `ON DELETE RESTRICT` on active sources.
+10. **Row Level Security (RLS):**
+    - Enable RLS on all governance tables.
+    - Public read policies (`FOR SELECT USING (true)`).
+    - Insert/update/delete restricted exclusively to `service_role` and verified governance administrators.
+11. **Controlled Seed Data:** Seed canonical sources:
+    - `eci`: Election Commission of India (`constitutional`)
+    - `prs_india`: PRS Legislative Research (`academic`)
+    - `myneta`: Association for Democratic Reforms (`media_ngo`)
+    - `datta07_shapefiles`: Indian Shapefiles GitHub Repository (`crowdsourced`)
+    - `synthetic_projection_model`: Internal simulation test harness (`synthetic_model`)
+12. **Status-Transition Invariants Trigger:** Create `check_status_transition_invariant()` trigger:
+    - Blocks transitions from `SCENARIO`, `ESTIMATE`, `INFERRED`, `UNVERIFIED`, `UNKNOWN` to `OFFICIAL` unless backed by valid evidence.
+    - Permanently prohibits `SCENARIO → OFFICIAL`.
+13. **OFFICIAL Transition Authorization Model:** Trigger verifies that elevating status to `OFFICIAL` requires active `service_role` and an existing, valid `evidence_records` reference matching the record.
+14. **Provenance Immutability Model:** Append-only trigger on `provenance_records` prohibiting in-place `UPDATE` of historical lineage fields.
+15. **Representative-Data Backfill Boundaries:** Backfill strictly the 4 representative acceptance datasets (Geography, Election, Civic, Projection). Zero bulk backfill of legacy records.
+16. **Rollback Strategy:** Fully reversible idempotent DOWN block dropping tables, triggers, and enums cleanly in reverse dependency order without touching existing domain data.
+17. **Staging Execution:** Automated execution on staging Supabase instance.
+18. **Staging Verification:** Run `verify-w012-governance.mjs` against staging DB asserting all schema constraints, triggers, and queries.
+19. **Production Impact Assessment:**
+    - Expected impact: Additive schema design with nullable references.
+    - Production runtime impact: **UNKNOWN** until staging execution and benchmark verification.
     - Production execution: **NOT YET AUTHORIZED**.
+20. **Production Rollout & Recovery Prerequisites:** Staging acceptance gate signed off by CTO before production migration scheduling.
 
 ---
 
-## 15. Exact Acceptance Evidence Plan (Corrected)
+## 15. Exact Acceptance Evidence Plan (A through P)
 
-To achieve unambiguous CTO acceptance, the verification suite must prove all 10 mandated criteria:
+To achieve unambiguous CTO acceptance, the verification suite must prove all 16 mandated criteria:
 
-1. **A. Source:** The governed record points to a canonical source entity in `data_sources`.
-2. **B. Retrieval:** The retrieval timestamp (`retrieved_at`) is preserved and immutable.
-3. **C. Effective Period:** The effective date/period (`effective_from`, `effective_to`) is explicitly distinguishable from `retrieved_at`.
-4. **D. Version:** The exact immutable `dataset_version_id` and `version_tag` are identifiable.
-5. **E. Status:** The factual status (`data_status`) is explicit (e.g. `UNVERIFIED`, `SCENARIO`, `OFFICIAL`).
-6. **F. Transformation:** The transformation chain is represented via `parent_provenance_id` and `transformation_type`.
-7. **G. Scenario Protection:** Attempting to execute `UPDATE ... SET data_status = 'OFFICIAL' WHERE data_status = 'SCENARIO'` triggers an exception and fails closed.
-8. **H. Historical Integrity:** An earlier dataset version remains identifiable, queryable, and immutable after a newer version is registered.
-9. **I. Provenance Immutability:** Historical provenance records cannot silently be updated; attempts to overwrite raise an error or force an append.
-10. **J. Performance:** Normal application queries for constituencies, legislators, and bills execute without joining provenance tables, incurring zero additional query latency.
+- **A. Source Identity & Authority:** The governed record points to a canonical entry in `data_sources` with a valid `source_authority_enum`.
+- **B. Retrieval Metadata:** The retrieval timestamp (`retrieved_at`) is captured and preserved immutably.
+- **C. Effective Period:** The effective validity window (`effective_from`, `effective_to`) is explicitly distinguishable from retrieval time.
+- **D. Dataset/Version Identity:** The immutable `dataset_version_id`, version tag, and SHA-256 checksum are identifiable.
+- **E. Correct Data Status:** Factual status (`data_status_enum`) is explicit and defaults strictly to `UNKNOWN`.
+- **F. Transformation Lineage:** The transformation sequence is reconstructed via `parent_provenance_id` and `transformation_type`.
+- **G. SCENARIO → OFFICIAL Protection:** Executing an update attempting to change a `SCENARIO` record to `OFFICIAL` is rejected and fails closed.
+- **H. Historical Integrity:** An earlier dataset version remains queryable and unaltered after a newer version is registered.
+- **I. Provenance Immutability:** Historical provenance records cannot be overwritten; mutation attempts fail or force an append.
+- **J. Hot-Path Performance:** Pre- and post-migration benchmarks prove consumer queries incur no material regression within the established threshold.
+- **K. Unauthorized OFFICIAL Transition Denied:** Direct `UPDATE` to `OFFICIAL` by unprivileged callers is rejected by trigger and RLS.
+- **L. Authorized/Evidenced OFFICIAL Transition Succeeds:** Elevation with valid DB evidence record and authorized role succeeds cleanly.
+- **M. Verification ID Alone Insufficient:** Supplying an unverified or arbitrary `verification_id` without an authoritative DB evidence record fails closed.
+- **N. RLS Invariant Protection:** Anonymous and standard authenticated roles cannot bypass governance invariants.
+- **O. Preservation of Application Behavior:** Existing mobile and API functionality behaves identically before and after governance tables are added.
+- **P. Zero Fabricated Metadata:** Representative datasets contain only verified evidence from the repository, with unverified fields explicitly recorded as `UNKNOWN`.
