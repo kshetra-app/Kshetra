@@ -297,7 +297,7 @@
       "category": "B_ECI_2008_MANDAL_AC",
       "panin_entity": "mandal_constituency_map (mandal_id: 'TS-MDL-5329', constituency_internal_id: AC 3 Bellampalli SC)",
       "old_value": "overlap_type = 'partial', source_record_id = 'ECI-DELIM-2008:AC-003:MDL-5329'",
-      "proposed_value": "PURGED (Record removed from domain table; audit preserved in provenance)",
+      "proposed_value": "DOMAIN_ROW_DELETED (Record removed from domain table; audit preserved via transformation_type=spurious_relationship_purged)",
       "authoritative_identifier": "NOT_PRESENT_IN_2008_ORDER (Entity did not exist in 2008; predecessor territory is in AC 4)",
       "source_authority": "Delimitation Commission of India / Revenue Dept Govt of Telangana",
       "source_artifact": "data/evidence/w015_b2/eci_delimitation_2008_schedule_xxxi.txt & telangana_gazette_2016_goms_222_mancherial.txt",
@@ -307,7 +307,7 @@
       "exact_source_location": "Schedule XXXI, Table B, Serial 3 (Bellampalli SC does NOT contain Hajipur)",
       "reconciliation_status": "SPURIOUS_RELATIONSHIP_PURGED",
       "discrepancy": "AC 3 contains Kasipet, Tandur, Bellampalli, Bhimini, Nennal, Vemanpalli. Hajipur territory was never part of AC 3.",
-      "transformation_or_derivation": "Domain row deleted from mandal_constituency_map; provenance record preserved with status = 'PURGED'."
+      "transformation_or_derivation": "Domain row deleted from mandal_constituency_map; provenance record preserved with transformation_type='spurious_relationship_purged' and metadata.purged_reason."
     },
     {
       "record_index": 19,
@@ -331,7 +331,7 @@
       "category": "B_ECI_2008_MANDAL_AC",
       "panin_entity": "mandal_constituency_map (mandal_id: 'TS-MDL-5328', constituency_internal_id: AC 4 Mancherial)",
       "old_value": "overlap_type = 'partial', source_record_id = 'ECI-DELIM-2008:AC-004:MDL-5328'",
-      "proposed_value": "PURGED (Record removed from domain table; audit preserved in provenance)",
+      "proposed_value": "DOMAIN_ROW_DELETED (Record removed from domain table; audit preserved via transformation_type=spurious_relationship_purged)",
       "authoritative_identifier": "NOT_PRESENT_IN_2008_ORDER (AC 4 strictly contains Luxettipet, Mancherial, Dandepalli)",
       "source_authority": "Delimitation Commission of India / ECI",
       "source_artifact": "data/evidence/w015_b2/eci_delimitation_2008_schedule_xxxi.txt (SHA-256: 9123ecb5f9ea5414ee8b4e8cce92aed9e008f352a8924edb7dcb9c27d621737d)",
@@ -341,7 +341,7 @@
       "exact_source_location": "Schedule XXXI, Table B, Serial 4 (Mancherial AC does NOT contain Kotapalli)",
       "reconciliation_status": "SPURIOUS_RELATIONSHIP_PURGED",
       "discrepancy": "AC 4 comprises ONLY Luxettipet, Mancherial, and Dandepalli. Kotapalli is 100% in AC 2. Pilot record was legally non-existent.",
-      "transformation_or_derivation": "Domain row deleted from mandal_constituency_map; provenance record preserved with status = 'PURGED'."
+      "transformation_or_derivation": "Domain row deleted from mandal_constituency_map; provenance record preserved with transformation_type='spurious_relationship_purged' and metadata.purged_reason."
     },
     {
       "record_index": 21,

@@ -11,7 +11,7 @@
  *   TEST-B2-B: MCM evidence/provenance resolution (8 valid mappings, authentic keys)
  *   TEST-B2-C: Spurious relationship removal + audit preservation
  *   TEST-B2-D: W014 temporal lineage (Mancherial -> Hajipur split transition)
- *   TEST-B2-E: No false OFFICIAL promotion (100% UNVERIFIED / PURGED, 0 OFFICIAL)
+ *   TEST-B2-E: No false OFFICIAL promotion (100% UNVERIFIED, 0 OFFICIAL)
  *   TEST-B2-F: Fixture isolation (4 booths isolated as synthetic_test_fixture)
  *   TEST-B2-G: W013 regression (13/13)
  *   TEST-B2-H: W014 regression (9/9)
@@ -171,27 +171,31 @@ async function runBattery() {
   const hajipurAc4 = (mcms || []).find(m => m.mandal_id === 'TS-MDL-5329' && m.constituency_internal_id === ac4Internal);
   const hajipurOverlapOk = hajipurAc4?.overlap_type === 'full';
 
-  // 5. Audit preservation in provenance_records
+  // 5. Audit preservation in provenance_records via transformation_type (NOT status)
+  // W012 data_status_enum does not include PURGED; audit is captured via transformation_type
   const { data: purgedProv } = await adminClient
     .from('provenance_records')
     .select('id, status, transformation_type, metadata')
-    .eq('status', 'PURGED');
+    .eq('transformation_type', 'spurious_relationship_purged');
 
   const auditPreserved = (purgedProv || []).length >= 2;
+  // Verify the purged provenance records retained valid enum status (UNVERIFIED, not PURGED)
+  const allPurgedHaveValidStatus = (purgedProv || []).every(p => p.status === 'UNVERIFIED' || p.status === 'UNKNOWN');
 
-  const cPassed = !spuriousKotapalli && !spuriousHajipur && kotapalliOverlapOk && hajipurOverlapOk && auditPreserved;
+  const cPassed = !spuriousKotapalli && !spuriousHajipur && kotapalliOverlapOk && hajipurOverlapOk && auditPreserved && allPurgedHaveValidStatus;
 
   recordTest(
     'TEST-B2-C',
     'spurious relationship removal + audit preservation',
     cPassed ? 'PASS' : 'FAIL',
-    'Spurious mappings purged from domain tables; audit preserved with status = PURGED; valid overlaps corrected to full',
+    'Spurious mappings purged from domain tables; audit preserved with transformation_type=spurious_relationship_purged; valid overlaps corrected to full',
     {
       spuriousKotapalliAbsent: !spuriousKotapalli,
       spuriousHajipurAbsent: !spuriousHajipur,
       kotapalliAc2Overlap: kotapalliAc2?.overlap_type,
       hajipurAc4Overlap: hajipurAc4?.overlap_type,
-      purgedAuditCount: purgedProv?.length
+      purgedAuditCount: purgedProv?.length,
+      allPurgedHaveValidEnumStatus: allPurgedHaveValidStatus
     }
   );
 
@@ -247,7 +251,10 @@ async function runBattery() {
 
   const officialCount = (allProv || []).filter(p => p.status === 'OFFICIAL').length;
   const unverifiedCount = (allProv || []).filter(p => p.status === 'UNVERIFIED').length;
-  const purgedCount = (allProv || []).filter(p => p.status === 'PURGED').length;
+  const unknownCount = (allProv || []).filter(p => p.status === 'UNKNOWN').length;
+  // Verify ALL provenance records have valid data_status_enum values
+  const validStatuses = new Set(['OFFICIAL', 'DERIVED', 'VERIFIED', 'ESTIMATE', 'SCENARIO', 'INFERRED', 'UNVERIFIED', 'UNKNOWN']);
+  const allHaveValidStatus = (allProv || []).every(p => validStatuses.has(p.status));
 
   const { data: dv } = await adminClient
     .from('dataset_versions')
@@ -256,17 +263,18 @@ async function runBattery() {
 
   const dvAllUnverified = (dv || []).every(d => d.default_status === 'UNVERIFIED');
 
-  const ePassed = officialCount === 0 && dvAllUnverified && unverifiedCount > 0;
+  const ePassed = officialCount === 0 && dvAllUnverified && unverifiedCount > 0 && allHaveValidStatus;
 
   recordTest(
     'TEST-B2-E',
     'no false OFFICIAL promotion',
     ePassed ? 'PASS' : 'FAIL',
-    'Strict W012 governance enforced: 0 records elevated to OFFICIAL, 100% UNVERIFIED or PURGED',
+    'Strict W012 governance enforced: 0 records elevated to OFFICIAL, all status values within data_status_enum',
     {
       officialCount,
       unverifiedCount,
-      purgedCount,
+      unknownCount,
+      allHaveValidEnumStatus: allHaveValidStatus,
       dvAllUnverified
     }
   );

@@ -18,6 +18,25 @@
 
 BEGIN;
 
+-- ─── 0. PREFLIGHT: VALIDATE ALL ENUM LITERALS AGAINST data_status_enum ──────
+-- This assertion prevents 22P02 (invalid input value for enum) at migration time.
+DO $$
+DECLARE
+  v_valid_statuses TEXT[];
+BEGIN
+  SELECT array_agg(e.enumlabel ORDER BY e.enumsortorder)
+  INTO v_valid_statuses
+  FROM pg_type t
+  JOIN pg_enum e ON e.enumtypid = t.oid
+  WHERE t.typname = 'data_status_enum';
+
+  IF NOT ('UNVERIFIED' = ANY(v_valid_statuses)) THEN
+    RAISE EXCEPTION 'PREFLIGHT FAILED: UNVERIFIED is not a valid data_status_enum value. Actual values: %', v_valid_statuses;
+  END IF;
+
+  RAISE NOTICE 'PREFLIGHT PASSED: All status literals validated against data_status_enum: %', v_valid_statuses;
+END $$;
+
 -- ─── 1. SCHEMA ENHANCEMENT: PERMIT 'mandal' IN GEOGRAPHY ENTITY LINEAGE ────────
 
 -- Question: "What exact existing structure is insufficient?"
@@ -120,7 +139,6 @@ BEGIN
   IF v_spurious_mcm_kotapalli_id IS NOT NULL THEN
     UPDATE public.provenance_records pr
     SET
-      status = 'PURGED',
       transformation_type = 'spurious_relationship_purged',
       operator = 'system:w015_b2_reconciliation',
       metadata = metadata || jsonb_build_object(
@@ -142,7 +160,6 @@ BEGIN
   IF v_spurious_mcm_hajipur_id IS NOT NULL THEN
     UPDATE public.provenance_records pr
     SET
-      status = 'PURGED',
       transformation_type = 'spurious_relationship_purged',
       operator = 'system:w015_b2_reconciliation',
       metadata = metadata || jsonb_build_object(

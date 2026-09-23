@@ -101,7 +101,6 @@ END $$;
 -- 4. Revert MCM Provenance Records
 UPDATE public.provenance_records pr
 SET
-  status = 'UNVERIFIED',
   source_record_id = 'ECI-DELIM-2008:AC-' || lpad(replace(c.canonical_code, 'TS-AC-', ''), 3, '0') || ':MDL-' || m.lgd_code::text,
   transformation_type = 'source_backed_seed',
   operator = 'system:w015_authoritative_sync'

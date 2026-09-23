@@ -7,7 +7,7 @@
 --   3. MCM: Spurious mappings Kotapalli->AC4 and Hajipur->AC3 purged (0 rows)
 --   4. MCM: Kotapalli->AC2 is 'full', Hajipur->AC4 is 'full'
 --   5. Lineage: Mancherial -> Hajipur split transition recorded under W014
---   6. Governance: Zero records promoted to OFFICIAL (100% UNVERIFIED / PURGED)
+--   6. Governance: Zero records promoted to OFFICIAL (100% UNVERIFIED)
 -- ==============================================================================
 
 DO $$
@@ -104,5 +104,21 @@ BEGIN
     RAISE EXCEPTION 'CHECK 7 FAILED: Expected 4 synthetic_test_fixture booths, found %', v_booth_fixtures;
   END IF;
 
-  RAISE NOTICE 'SUCCESS: ALL 7 STAGING VERIFICATION CHECKS PASSED FOR MIGRATION 043!';
+  -- Check 8: Enum Preflight — no provenance records have invalid status values
+  IF EXISTS (
+    SELECT 1 FROM public.provenance_records pr
+    WHERE pr.dataset_version_id IN ('ts_lgd_mandals_2023_v1', 'ts_mandal_ac_mappings_2023_v1', 'eci_ts_booths_2023_v1')
+      AND pr.status::text NOT IN ('OFFICIAL', 'DERIVED', 'VERIFIED', 'ESTIMATE', 'SCENARIO', 'INFERRED', 'UNVERIFIED', 'UNKNOWN')
+  ) THEN
+    RAISE EXCEPTION 'CHECK 8 FAILED: Found provenance records with status values outside data_status_enum!';
+  END IF;
+
+  -- Check 9: Audit Preservation — spurious MCM provenance records preserved with correct transformation_type
+  IF (SELECT COUNT(*) FROM public.provenance_records
+      WHERE dataset_version_id = 'ts_mandal_ac_mappings_2023_v1'
+        AND transformation_type = 'spurious_relationship_purged') < 2 THEN
+    RAISE EXCEPTION 'CHECK 9 FAILED: Expected 2 provenance records with transformation_type=spurious_relationship_purged';
+  END IF;
+
+  RAISE NOTICE 'SUCCESS: ALL 9 STAGING VERIFICATION CHECKS PASSED FOR MIGRATION 043!';
 END $$;
