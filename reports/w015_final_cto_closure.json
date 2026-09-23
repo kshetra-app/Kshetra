@@ -1,0 +1,104 @@
+{
+  "report": "W015_FINAL_CTO_CLOSURE",
+  "generated_at": "2026-09-23T09:25:00Z",
+  "lifecycle": "ACCEPTED_COMPLETE",
+
+  "scope": {
+    "job": "W015 — Geography Relationship Engine",
+    "description": "Implement referential and hierarchical relationships across 7 mandated semantics (parent, child, contains, part-of, predecessor, successor, old-to-new mapping) within the bounded pilot geography set",
+    "authorized_baseline": "bb7c6ec",
+    "sub_jobs": ["W015-B1 (Source-Evidence Reconciliation Preflight)", "W015-B2 (Authoritative Source Reconciliation)"]
+  },
+
+  "b1_outcome": {
+    "status": "ACCEPTED_COMPLETE",
+    "summary": "Authoritative source-evidence reconciliation preflight completed",
+    "records_reconciled": 26,
+    "database_mutation": false,
+    "defects_identified": ["DEF-15-B2-01 (synthetic LGD codes)", "DEF-15-B2-02 (circular source_record_id)", "DEF-15-B2-03 (spurious MCM)", "DEF-15-B2-04 (missing lineage)", "DEF-15-B2-05 (fixture classification)", "DEF-15-B2-06 (PURGED enum failure)"],
+    "preflight_commit": "145f166"
+  },
+
+  "b2_outcome": {
+    "status": "ACCEPTED_COMPLETE",
+    "migration_043_executed": true,
+    "migration_043_executor": "CTO (manual Supabase SQL Editor)",
+    "migration_043_result": "SUCCESS",
+    "migration_043_verification": "SUCCESS (9 checks)",
+    "staging_package_sha256": "b32e409957dc323fa353493dc53ae9af291bf24d1a904db38c03407980f3fbc7",
+    "canonical_migration_sha256": "46e42d581b025398d0345cbda88bab3fbdf2cf74c3a2a8e92a344870dfe5efdc",
+    "verification_package_sha256": "6926f0a2d6f5b51d50f78833aed065da1990edde5bf59409de49fe46b34b7e9c",
+    "enum_fix_commit": "9c8c3fc",
+    "evidence_commit": "3748e46"
+  },
+
+  "cto_acceptance": {
+    "status": "GRANTED",
+    "date": "2026-09-23",
+    "accepted_evidence_commit": "3748e46",
+    "authority": "CTO Directive — W015 Final Governance Closure"
+  },
+
+  "test_results": {
+    "w015_b2_source_reconciliation": { "total": 6, "passed": 6, "failed": 0, "tests": ["B2-A (LGD authenticity)", "B2-B (MCM resolution)", "B2-C (spurious removal + audit)", "B2-D (temporal lineage)", "B2-E (no false OFFICIAL)", "B2-F (fixture isolation)"] },
+    "w015_relationship_engine": { "total": 9, "passed": 9, "failed": 0, "tests": ["A", "B", "C", "D", "E", "SUPP-1", "SUPP-2", "SUPP-3", "SUPP-4"] },
+    "w013_regression": { "total": 13, "passed": 13, "failed": 0 },
+    "w014_regression": { "total": 9, "passed": 9, "failed": 0 },
+    "typescript_build": { "exit_code": 0, "errors": 0 }
+  },
+
+  "provenance_state": {
+    "total_records": 27,
+    "total_linkages": 25,
+    "official_count": 0,
+    "unverified_count": 27,
+    "all_valid_enum_status": true,
+    "description": "100% UNVERIFIED — zero records promoted to OFFICIAL"
+  },
+
+  "lineage_state": {
+    "predecessor": "TS-MDL-5321 (Mancherial)",
+    "successor": "TS-MDL-5329 (Hajipur)",
+    "transition_type": "split",
+    "effective_date": "2016-10-11",
+    "statutory_order": "G.O.Ms.No. 222, Revenue (DA-CMRF) Dept, dated 11.10.2016",
+    "verified": true
+  },
+
+  "fixture_state": {
+    "synthetic_booths": 4,
+    "classification": "synthetic_test_fixture",
+    "prefix": "FIXTURE:",
+    "booth_acs": ["Sirpur (AC 1)", "Chennur (AC 2)"]
+  },
+
+  "production_boundary": {
+    "production_mutations": 0,
+    "production_deployment": "NOT PERFORMED",
+    "production_status": "STRICTLY UNTOUCHED"
+  },
+
+  "defects_resolved": {
+    "w015": ["DEF-15-01 (mandals.district_id FK)", "DEF-15-02 (MCM.constituency_internal_id FK)"],
+    "w015_b2": ["DEF-15-B2-01 (synthetic LGD codes)", "DEF-15-B2-02 (circular source_record_id)", "DEF-15-B2-03 (spurious MCM)", "DEF-15-B2-04 (missing lineage)", "DEF-15-B2-05 (fixture classification)", "DEF-15-B2-06 (PURGED enum)"]
+  },
+
+  "governance_closure": {
+    "execution_state_updated": true,
+    "acceptance_register_updated": true,
+    "defect_register_updated": true,
+    "decision_log_updated": true,
+    "release_register_updated": true,
+    "decisions_recorded": ["DEC-062 (W015 CTO Acceptance)", "DEC-063 (W015 Architectural Decisions)"]
+  },
+
+  "remaining_unknowns": [
+    "Whether other actors mutated staging outside this workflow",
+    "Whether Supabase internal processes modified schema concurrently",
+    "Performance acceptability (no authorized thresholds defined)"
+  ],
+
+  "next_permitted_job": "W016",
+  "w016_implementation_authorization": "NOT GRANTED — Requires own preflight and CTO authorization",
+  "w016_status": "PREFLIGHT ONLY"
+}

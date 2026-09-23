@@ -1,5 +1,5 @@
 # DECISION LOG: PANIN / KSHETRA
-**Last Updated:** 2026-09-21
+**Last Updated:** 2026-09-23
 **Standard:** AI Agent Master Execution Job Book (Section 0.9, 0.10, Part 12)
 
 ---
@@ -1119,4 +1119,43 @@
   - Datasets remain 100% `UNVERIFIED`; 0 `OFFICIAL`.
   - W016/W017 untouched; mobile untouched.
   - Lifecycle state strictly `IMPLEMENTED_TESTED_VERIFIED_SUBMITTED`; CTO Acceptance `PENDING`.
+
+---
+
+### DEC-062: W015 CTO ACCEPTANCE — GEOGRAPHY RELATIONSHIP ENGINE COMPLETE
+- **Date:** 2026-09-23
+- **Status:** ACCEPTED / COMPLETE
+- **Authority:** CTO Directive — W015 Final Governance Closure
+- **Context:** W015-B1 (source-evidence reconciliation preflight) and W015-B2 (authoritative source reconciliation via Migration 043) both completed, tested, verified, and independently reviewed. CTO granted acceptance for W015-B2 at evidence commit `3748e46`.
+- **CTO Acceptance Facts:**
+  1. **W015-B1:** Authoritative source-evidence reconciliation preflight completed; 26 bounded pilot records reconciled; synthetic/source-unknown issues identified; no database mutation during B1; B1 accepted by CTO.
+  2. **W015-B2:** Migration 043 executed successfully on panIN-staging by CTO; Migration 043 verification succeeded (9 checks); TEST-B2-A through TEST-B2-F = 6/6 PASS; W015 Relationship Engine = 9/9 PASS; W013 regression = 13/13 PASS; W014 regression = 9/9 PASS; TypeScript build = exit 0; provenance = 27 records / 25 linkages / 0 OFFICIAL / 100% UNVERIFIED; Mancherial→Hajipur split lineage verified; 4 booth records isolated as `synthetic_test_fixture`; production untouched.
+  3. **Evidence Commit:** `3748e46` accepted by CTO as authoritative evidence.
+  4. **DEF-15-01, DEF-15-02:** RESOLVED — VERIFIED IN W015.
+  5. **DEF-15-B2-01 through DEF-15-B2-06:** RESOLVED — VERIFIED IN W015-B2.
+- **Governance Closure:**
+  - W015 STATUS: `ACCEPTED_COMPLETE`
+  - W015 CTO ACCEPTANCE: `GRANTED (2026-09-23)`
+  - PRODUCTION: `STRICTLY UNTOUCHED`
+  - NEXT PERMITTED JOB: `W016`
+  - W016 IMPLEMENTATION AUTHORIZATION: `NOT GRANTED — PREFLIGHT REQUIRED`
+  - UNVERIFIED data remains UNVERIFIED; 0 records promoted to OFFICIAL.
+
+---
+
+### DEC-063: W015 ARCHITECTURAL DECISIONS — REUSE, ISOLATION & ANTI-INFLATION
+- **Date:** 2026-09-23
+- **Status:** RECORDED (Architectural decisions actually made during W015)
+- **Authority:** CTO Implementation Authorization (W015 Revision 5)
+- **Context:** During W015 implementation and B2 reconciliation, the following architectural decisions were actually made and enforced:
+- **Decisions:**
+  1. **Reuse of W014 Lineage Architecture:** The `entity_lineage` table established in W014 (Migration 041) was reused for the Mancherial→Hajipur mandal split. No duplicate lineage architecture was created. (Per CTO directive: *"Do not create a duplicate lineage/mapping/history architecture."*)
+  2. **Authoritative-Source Reconciliation Over Fabrication:** All 12 mandal LGD codes were corrected to authentic MoPR statutory codes rather than inventing codes. Source identifiers use external statutory references (LGD-MANDAL-*, ECI-DELIM-2008:*, ECI-PS-2023:*). (Per CTO directive: *"Do not manufacture, infer, or synthesize authoritative identifiers."*)
+  3. **Synthetic Booth Fixture Isolation:** 4 polling booth records were explicitly reclassified under `synthetic_test_fixture` dataset version with `FIXTURE:` prefix to prevent confusion with authoritative CEO data. (Per CTO directive: *"Do not promote the four pilot fixtures to authoritative CEO data."*)
+  4. **No False OFFICIAL Promotion:** All 27 provenance records remain `UNVERIFIED`. Zero records were elevated to `OFFICIAL` status. `default_status = 'UNVERIFIED'` enforced on all dataset versions.
+  5. **Production Remained Untouched:** Zero production mutations throughout W015, W015-B1, and W015-B2. All staging mutations confined to `panIN-staging` (`fkpigozcqnmcvofuksar`).
+  6. **Audit-Trail Preservation Over Destructive Deletion:** Spurious MCM domain rows were deleted but provenance records were preserved with `transformation_type = 'spurious_relationship_purged'` for audit trail. Status field was not mutated (remains `UNVERIFIED`).
+  7. **Enum Compliance:** Migration 043 includes a preflight DO block that validates all enum literals against `pg_enum` at migration time, preventing runtime enum value failures.
+  8. **No Scope Creep into W016/W017:** Zero PostGIS spatial operations (ST_Contains, ST_Intersects), zero quantitative overlap calculations, zero H3 hexagonal references, zero automated anomaly engines, zero customer-facing hierarchy traversal APIs.
+
 
