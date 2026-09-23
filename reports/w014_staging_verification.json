@@ -1,5 +1,5 @@
 {
-  "timestamp": "2026-09-23T03:44:09.509Z",
+  "timestamp": "2026-09-23T04:42:25.079Z",
   "target": "https://fkpigozcqnmcvofuksar.supabase.co",
   "summary": {
     "total": 9,
@@ -7,10 +7,10 @@
     "failed": 0
   },
   "benchmarks": {
-    "pointInTimeReconstructionMs": "286.39",
-    "lineageQueryMs": "292.09",
-    "activeConstituencyReadMs": "307.85",
-    "currentGeographyReadMs": "856.15"
+    "pointInTimeReconstructionMs": "791.94",
+    "lineageQueryMs": "300.04",
+    "activeConstituencyReadMs": "321.09",
+    "currentGeographyReadMs": "864.24"
   },
   "tests": [
     {
@@ -84,7 +84,7 @@
         "districts2016": 31,
         "districts2019": 33,
         "currentDistricts": 33,
-        "latencyMs": "286.39"
+        "latencyMs": "791.94"
       },
       "details": "Point-in-time temporal evaluation matches authoritative statutory gazette chronology."
     },
@@ -126,10 +126,10 @@
       "status": "PASS",
       "expected": "Split lineage records for Mulugu (from Jayashankar) and Narayanpet (from Mahabubnagar) present with G.O. citations",
       "observed": {
-        "splitCount": 2,
+        "splitCount": 3,
         "muluguOrder": "G.O.Ms.No. 18, Revenue (DA-CMRF) Dept, dated 16.02.2019",
         "narayanpetOrder": "G.O.Ms.No. 19, Revenue (DA-CMRF) Dept, dated 16.02.2019",
-        "latencyMs": "292.09"
+        "latencyMs": "300.04"
       },
       "details": "Lineage table accurately models split transitions without polluting stable entity identifiers."
     },
@@ -155,7 +155,7 @@
       "status": "PASS",
       "expected": "100% of W014 records link to valid W012 dataset versions; 0 records elevated to OFFICIAL",
       "observed": {
-        "totalW014LineageItems": 127,
+        "totalW014LineageItems": 128,
         "unresolvableVersionCount": 0,
         "officialProvenanceCount": 0
       },
@@ -172,8 +172,8 @@
         "distStatus": 200,
         "pcStatus": 200,
         "stateStatus": 200,
-        "activeConstituencyReadMs": "307.85",
-        "currentGeographyReadMs": "856.15",
+        "activeConstituencyReadMs": "321.09",
+        "currentGeographyReadMs": "864.24",
         "acPointersValid": true,
         "distPointersValid": true,
         "pcPointersValid": true,

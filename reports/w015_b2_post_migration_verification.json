@@ -1,0 +1,133 @@
+{
+  "report": "W015-B2_POST_MIGRATION_043_VERIFICATION",
+  "generated_at": "2026-09-23T04:46:00Z",
+  "environment": "https://fkpigozcqnmcvofuksar.supabase.co",
+  "lifecycle_state": "SUBMITTED_FOR_CTO_ACCEPTANCE",
+  "repository": {
+    "head_sha": "9c8c3fc25da6184d7f303435228b2ca06dd6bf12",
+    "branch": "master",
+    "origin_synchronized": true,
+    "working_tree": "clean"
+  },
+  "migration_043": {
+    "staging_package_sha256": "b32e409957dc323fa353493dc53ae9af291bf24d1a904db38c03407980f3fbc7",
+    "canonical_migration_sha256": "46e42d581b025398d0345cbda88bab3fbdf2cf74c3a2a8e92a344870dfe5efdc",
+    "verification_package_sha256": "6926f0a2d6f5b51d50f78833aed065da1990edde5bf59409de49fe46b34b7e9c",
+    "execution_result": "SUCCESS",
+    "verification_result": "SUCCESS (9 checks)",
+    "executed_by": "CTO (manual Supabase SQL Editor)"
+  },
+  "test_results": {
+    "w015_b2_source_reconciliation": {
+      "total": 6,
+      "passed": 6,
+      "failed": 0,
+      "tests": {
+        "TEST-B2-A": "PASS — LGD authenticity (12 mandals, 0 synthetic, authentic codes match)",
+        "TEST-B2-B": "PASS — MCM evidence/provenance resolution (8 active, FK resolved)",
+        "TEST-B2-C": "PASS — spurious removal + audit preservation (2 purged, enum valid)",
+        "TEST-B2-D": "PASS — W014 temporal lineage (Mancherial→Hajipur split, G.O.Ms.No. 222)",
+        "TEST-B2-E": "PASS — no false OFFICIAL (0 OFFICIAL, 27 UNVERIFIED, enum compliant)",
+        "TEST-B2-F": "PASS — fixture isolation (4 booths, synthetic_test_fixture)"
+      }
+    },
+    "w015_relationship_engine": {
+      "total": 9,
+      "passed": 9,
+      "failed": 0,
+      "tests": {
+        "TEST-A": "PASS",
+        "TEST-B": "PASS",
+        "TEST-C": "PASS",
+        "TEST-D": "PASS",
+        "TEST-E": "PASS",
+        "TEST-SUPP-1": "PASS",
+        "TEST-SUPP-2": "PASS",
+        "TEST-SUPP-3": "PASS",
+        "TEST-SUPP-4": "PASS"
+      }
+    },
+    "w013_regression": {
+      "total": 13,
+      "passed": 13,
+      "failed": 0
+    },
+    "w014_regression": {
+      "total": 9,
+      "passed": 9,
+      "failed": 0
+    }
+  },
+  "build": {
+    "tsc_exit_code": 0,
+    "syntax_checks": "all 4 .mjs files clean"
+  },
+  "provenance_reconciliation": {
+    "total_records": 26,
+    "lgd_mandals_corrected": 12,
+    "mcm_retained": 8,
+    "mcm_purged": 2,
+    "booths_fixture_isolated": 4,
+    "lineage_records_created": 1,
+    "provenance_records": 27,
+    "provenance_linkages": 25,
+    "official_count": 0,
+    "unverified_count": 27,
+    "all_valid_enum_status": true
+  },
+  "lineage_verification": {
+    "predecessor": "TS-MDL-5321 (Mancherial)",
+    "successor": "TS-MDL-5329 (Hajipur)",
+    "transition_type": "split",
+    "effective_date": "2016-10-11",
+    "statutory_order": "G.O.Ms.No. 222, Revenue (DA-CMRF) Dept, dated 11.10.2016",
+    "verified": true
+  },
+  "mutation_boundary": {
+    "verified": [
+      "Migration 043 only SQL executed on staging",
+      "No production mutation",
+      "No W016/W017 schema introduced",
+      "No unrelated tables modified",
+      "Verification package is read-only"
+    ],
+    "unknown": [
+      "Whether other actors mutated staging outside this workflow",
+      "Whether Supabase internal processes modified schema concurrently"
+    ]
+  },
+  "performance": {
+    "classification": "OBSERVED",
+    "note": "No authorized thresholds defined for comparison",
+    "measurements_ms": {
+      "parent_child_resolution": 2574.29,
+      "contains_part_of_resolution": 1714.06,
+      "lineage_traversal": 1147.64,
+      "old_to_new_reconciliation": 1151.29,
+      "overall_geography_reconciliation": 630.39,
+      "constituency_with_relations_119": 370.37,
+      "mandal_district_fk": 295.04,
+      "mandal_ac_containment": 304.52,
+      "active_entity_read_119": 321.09,
+      "point_in_time_reconstruction": 791.94,
+      "predecessor_lineage_traversal": 300.04
+    }
+  },
+  "semantic_test_audit": {
+    "hardcoded_true_values": false,
+    "never_fail_assertions": false,
+    "weak_ge_assertions": "1 instance (TEST-B2-C purgedAuditCount >= 2, acceptable)",
+    "id_heuristics_masquerading": false,
+    "partial_row_checks": false,
+    "self_referential_evidence": false,
+    "mocked_success_paths": false,
+    "swallowed_exceptions": false
+  },
+  "production_status": "STRICTLY UNAUTHORIZED / UNTOUCHED",
+  "remaining_unknowns": [
+    "Whether other actors mutated staging outside this workflow",
+    "Whether Supabase internal processes modified schema concurrently",
+    "Performance acceptability (no authorized thresholds defined)"
+  ],
+  "cto_acceptance": "PENDING — submitted for independent review"
+}

@@ -1,29 +1,29 @@
 {
   "test_battery": "W015-B2_AUTHORITATIVE_SOURCE_RECONCILIATION",
-  "timestamp": "2026-09-23T03:43:20.826Z",
+  "timestamp": "2026-09-23T04:41:47.876Z",
   "environment": "https://fkpigozcqnmcvofuksar.supabase.co",
-  "overall_status": "GATES_FAILED",
+  "overall_status": "ALL_GATES_PASSED",
   "results": [
     {
       "id": "TEST-B2-A",
       "name": "LGD authenticity",
-      "status": "FAIL",
+      "status": "PASS",
       "details": "All 12 Mandals match authentic MoPR LGD codes with 0 synthetic placeholders remaining and pilot history preserved",
       "metrics": {
         "mandalCount": 12,
-        "zeroSynthetic": false,
-        "authenticCodesMatch": false,
+        "zeroSynthetic": true,
+        "authenticCodesMatch": true,
         "provSourceIdsMatch": true,
-        "previousCodesPreserved": false
+        "previousCodesPreserved": true
       }
     },
     {
       "id": "TEST-B2-B",
       "name": "MCM evidence/provenance resolution",
-      "status": "FAIL",
+      "status": "PASS",
       "details": "All 8 active MCM mappings resolve bidirectionally with authoritative foreign keys",
       "metrics": {
-        "activeMcmCount": 10,
+        "activeMcmCount": 8,
         "expectedCount": 8,
         "mcmFkOk": true
       }
@@ -31,26 +31,28 @@
     {
       "id": "TEST-B2-C",
       "name": "spurious relationship removal + audit preservation",
-      "status": "FAIL",
+      "status": "PASS",
       "details": "Spurious mappings purged from domain tables; audit preserved with transformation_type=spurious_relationship_purged; valid overlaps corrected to full",
       "metrics": {
-        "spuriousKotapalliAbsent": false,
-        "spuriousHajipurAbsent": false,
-        "kotapalliAc2Overlap": "partial",
-        "hajipurAc4Overlap": "partial",
-        "purgedAuditCount": 0,
+        "spuriousKotapalliAbsent": true,
+        "spuriousHajipurAbsent": true,
+        "kotapalliAc2Overlap": "full",
+        "hajipurAc4Overlap": "full",
+        "purgedAuditCount": 2,
         "allPurgedHaveValidEnumStatus": true
       }
     },
     {
       "id": "TEST-B2-D",
       "name": "W014 temporal lineage",
-      "status": "FAIL",
+      "status": "PASS",
       "details": "Mancherial -> Hajipur split transition accurately registered under W014 geography_entity_lineage with G.O.Ms.No. 222 citation",
       "metrics": {
-        "mandalLineageCount": 0,
-        "splitRecordOk": false,
-        "dateOk": false
+        "mandalLineageCount": 1,
+        "splitRecordOk": true,
+        "citationOk": true,
+        "dateOk": true,
+        "statutoryOrder": "G.O.Ms.No. 222, Revenue (DA-CMRF) Dept, dated 11.10.2016"
       }
     },
     {
@@ -60,7 +62,7 @@
       "details": "Strict W012 governance enforced: 0 records elevated to OFFICIAL, all status values within data_status_enum",
       "metrics": {
         "officialCount": 0,
-        "unverifiedCount": 26,
+        "unverifiedCount": 27,
         "unknownCount": 0,
         "allHaveValidEnumStatus": true,
         "dvAllUnverified": true
@@ -69,13 +71,13 @@
     {
       "id": "TEST-B2-F",
       "name": "fixture isolation",
-      "status": "FAIL",
+      "status": "PASS",
       "details": "The 4 pilot polling booths are strictly isolated as synthetic_test_fixture with FIXTURE: identifiers",
       "metrics": {
         "boothCount": 4,
-        "allSyntheticType": false,
-        "allFixturePrefixed": false,
-        "allIsSynthetic": false
+        "allSyntheticType": true,
+        "allFixturePrefixed": true,
+        "allIsSynthetic": true
       }
     }
   ]
