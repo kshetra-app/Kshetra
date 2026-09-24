@@ -341,7 +341,7 @@ REMOTE_SYNC:           Up to date with origin/master
   - [`reports/w015_b2_post_migration_verification.json`](file:///c:/Users/Laven/OneDrive/Desktop/Kshetra/reports/w015_b2_post_migration_verification.json) — W015-B2 Post-Migration 043 Full Verification Battery (Commit `3748e46`)
   - [`reports/w015_b2_post_migration_verification.md`](file:///c:/Users/Laven/OneDrive/Desktop/Kshetra/reports/w015_b2_post_migration_verification.md) — W015-B2 Post-Migration Verification Summary (Commit `3748e46`)
   - [`reports/w015_b2_source_reconciliation_matrix.json`](file:///c:/Users/Laven/OneDrive/Desktop/Kshetra/reports/w015_b2_source_reconciliation_matrix.json) — W015-B2 26-Record Evidence Matrix
-  - [`reports/w015_final_cto_closure.json`](file:///c:/Users/Laven/OneDrive/Desktop/Kshetra/reports/w015_final_cto_closure.json) — W015 Final CTO Governance Closure (Commit `3e281fc`)
-  - [`reports/w015_final_cto_closure.md`](file:///c:/Users/Laven/OneDrive/Desktop/Kshetra/reports/w015_final_cto_closure.md) — W015 Final CTO Governance Closure Report (Commit `3e281fc`)
+  - [`reports/w015_final_cto_closure.json`](file:///c:/Users/Laven/OneDrive/Desktop/Kshetra/reports/w015_final_cto_closure.json) — W015 Final CTO Governance Closure (Commit `4d99dd3`)
+  - [`reports/w015_final_cto_closure.md`](file:///c:/Users/Laven/OneDrive/Desktop/Kshetra/reports/w015_final_cto_closure.md) — W015 Final CTO Governance Closure Report (Commit `4d99dd3`)
 
 
