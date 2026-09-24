@@ -1,0 +1,298 @@
+{
+  "schema_version": "1.0.0",
+  "job": "W016-B2",
+  "title": "Bounded Technical Spatial Rehearsal — Staging Only",
+  "timestamp": "2026-09-24T15:25:00+05:30",
+  "baseline_commit": "e240fc35d244abfb6d40de7a882d795a82c35402",
+  "authority": "Independent CTO Directive W016-B2",
+  "authoritative_state": {
+    "w015": "ACCEPTED_COMPLETE",
+    "w015_b1": "ACCEPTED_COMPLETE",
+    "w015_b2": "ACCEPTED_COMPLETE",
+    "w016_a1_preflight": "ACCEPTED",
+    "w016_b1_preflight": "ACCEPTED",
+    "w016_b2_technical_rehearsal": "SUBMITTED_FOR_CTO_REVIEW",
+    "w016_authoritative_implementation": "NOT_AUTHORIZED",
+    "production_environment": "STRICTLY_UNTOUCHED"
+  },
+  "mandatory_statements": {
+    "technical_capability_only": "W016-B2 proves technical spatial capability only.",
+    "no_authoritative_geographic_truth": "W016-B2 does NOT establish authoritative geographic truth.",
+    "unk_16_01_remains_open": "W016-B2 does NOT close UNK-16-01.",
+    "no_production_deployment": "W016-B2 does NOT authorize production deployment."
+  },
+  "layer_a_repository_geometry_baseline": {
+    "source_file": "data/geo/telangana-assembly.geojson",
+    "file_size_bytes": 3663116,
+    "sha256": "fc440af93a9d970e16fcc312adf8e6f53610446ce71230fffb34dfea238c17b6",
+    "features_count": 120,
+    "crs": {
+      "type": "name",
+      "properties": {
+        "name": "EPSG:4326"
+      }
+    },
+    "legal_and_authoritative_status": "UNVERIFIED_FIXTURE_GEOMETRY",
+    "quarantine_statement": "Fixture geometry is unverified third-party data from datta07/INDIAN-SHAPEFILES. It is NOT official ECI, CPH, SOI, or Census geometry. It is used here solely as a technical test fixture for software capability rehearsal.",
+    "fixtures": {
+      "ac_1": {
+        "feature_index": 3,
+        "properties": {
+          "FID": 297,
+          "OBJECTID": 298,
+          "ST_CODE": "36",
+          "ST_NAME": "TELANGANA",
+          "DT_CODE": "01",
+          "DIST_NAME": "ADILABAD",
+          "AC_NO": 1,
+          "AC_NAME": "Sirpur",
+          "PC_NO": 1,
+          "PC_NAME": "ADILABAD(ST)",
+          "PC_ID": 2801,
+          "STATUS": " ",
+          "Shape_Leng": 2.17769969212,
+          "Shape_Area": 0.181502592112,
+          "dtcode11": "532",
+          "dtname11": "Adilabad"
+        },
+        "geometry_type": "Polygon",
+        "vertex_count": 1090,
+        "bbox": [
+          79.36383540000008,
+          19.14559476300007,
+          79.97972268000005,
+          19.608905998000054
+        ]
+      },
+      "ac_2": {
+        "feature_index": 11,
+        "properties": {
+          "FID": 307,
+          "OBJECTID": 308,
+          "ST_CODE": "36",
+          "ST_NAME": "TELANGANA",
+          "DT_CODE": "01",
+          "DIST_NAME": "ADILABAD",
+          "AC_NO": 2,
+          "AC_NAME": "Chennur (SC)",
+          "PC_NO": 2,
+          "PC_NAME": "PEDDAPALLE (SC)",
+          "PC_ID": 2802,
+          "STATUS": " ",
+          "Shape_Leng": 2.17209244946,
+          "Shape_Area": 0.121736162081,
+          "dtcode11": "532",
+          "dtname11": "Adilabad"
+        },
+        "geometry_type": "Polygon",
+        "vertex_count": 1169,
+        "bbox": [
+          79.38235014600008,
+          18.670694496000053,
+          79.96316856500005,
+          19.058047372000026
+        ]
+      }
+    }
+  },
+  "layer_b_staging_postgis_environment": {
+    "project_ref": "fkpigozcqnmcvofuksar",
+    "url": "https://fkpigozcqnmcvofuksar.supabase.co",
+    "postgis_installed": true,
+    "postgis_schema": "public",
+    "postgis_full_version": "POSTGIS=\"3.3.7 a0c7967\" [EXTENSION] PGSQL=\"170\" GEOS=\"3.14.1-CAPI-1.20.5\" PROJ=\"9.7.1\" LIBXML=\"2.15.1\" LIBJSON=\"0.18\" LIBPROTOBUF=\"1.5.2\" WAGYU=\"0.5.0 (Internal)\"",
+    "spatial_ref_sys_4326_verified": true,
+    "available_spatial_types": [
+      "GEOMETRY",
+      "POINT",
+      "MULTIPOLYGON"
+    ],
+    "existing_geometry_columns": [
+      { "table": "constituencies", "column": "boundary", "type": "MULTIPOLYGON", "srid": 4326, "coord_dimension": 2 },
+      { "table": "mandals", "column": "centroid", "type": "POINT", "srid": 4326, "coord_dimension": 2 },
+      { "table": "mandals", "column": "boundary", "type": "MULTIPOLYGON", "srid": 4326, "coord_dimension": 2 },
+      { "table": "polling_booths", "column": "location", "type": "POINT", "srid": 4326, "coord_dimension": 2 },
+      { "table": "polling_booths", "column": "catchment_boundary", "type": "MULTIPOLYGON", "srid": 4326, "coord_dimension": 2 },
+      { "table": "mptc_divisions", "column": "boundary", "type": "MULTIPOLYGON", "srid": 4326, "coord_dimension": 2 },
+      { "table": "gp_wards", "column": "centroid", "type": "POINT", "srid": 4326, "coord_dimension": 2 },
+      { "table": "gp_wards", "column": "boundary", "type": "MULTIPOLYGON", "srid": 4326, "coord_dimension": 2 },
+      { "table": "gram_panchayats", "column": "centroid", "type": "POINT", "srid": 4326, "coord_dimension": 2 },
+      { "table": "urban_local_bodies", "column": "centroid", "type": "POINT", "srid": 4326, "coord_dimension": 2 }
+    ],
+    "column_population_status": {
+      "TS-AC-1_constituencies_boundary": "NULL",
+      "TS-AC-2_constituencies_boundary": "NULL",
+      "TS-MDL-7101_mandals_centroid": "NULL",
+      "TS-MDL-7101_mandals_boundary": "NULL",
+      "TS-MDL-7102_mandals_centroid": "NULL",
+      "TS-MDL-7102_mandals_boundary": "NULL"
+    }
+  },
+  "layer_c_technical_rehearsal_results": {
+    "test_battery": {
+      "test_b2_a": {
+        "test_id": "TEST-B2-A",
+        "operation": "ST_Intersects",
+        "description": "ST_Intersects execution capability on AC 1 polygon and interior point P1",
+        "inputs": {
+          "geom1": "AC 1 (Sirpur) Polygon (1090 vertices, SRID 4326)",
+          "geom2": "SRID=4326;POINT(79.671779 19.37725)"
+        },
+        "expected": true,
+        "actual": true,
+        "passed": true,
+        "latencies_ms": [741, 616, 349],
+        "average_latency_ms": 568.67
+      },
+      "test_b2_b": {
+        "test_id": "TEST-B2-B",
+        "operation": "ST_Contains",
+        "description": "ST_Contains execution capability (interior vs exterior points)",
+        "cases": [
+          {
+            "subcase": "inside_point",
+            "geom1": "AC 1 (Sirpur) Polygon (1090 vertices, SRID 4326)",
+            "geom2": "SRID=4326;POINT(79.671779 19.37725)",
+            "expected": true,
+            "actual": true,
+            "duration_ms": 417
+          },
+          {
+            "subcase": "outside_point",
+            "geom1": "AC 1 (Sirpur) Polygon (1090 vertices, SRID 4326)",
+            "geom2": "SRID=4326;POINT(79.672759 18.86437)",
+            "expected": false,
+            "actual": false,
+            "duration_ms": 353
+          }
+        ],
+        "passed": true
+      },
+      "test_b2_c": {
+        "test_id": "TEST-B2-C",
+        "operation": "ST_Within",
+        "description": "ST_Within execution capability (point within polygon)",
+        "cases": [
+          {
+            "subcase": "inside_point",
+            "geom1": "SRID=4326;POINT(79.671779 19.37725)",
+            "geom2": "AC 1 (Sirpur) Polygon (1090 vertices, SRID 4326)",
+            "expected": true,
+            "actual": true,
+            "duration_ms": 377
+          },
+          {
+            "subcase": "outside_point",
+            "geom1": "SRID=4326;POINT(79.672759 18.86437)",
+            "geom2": "AC 1 (Sirpur) Polygon (1090 vertices, SRID 4326)",
+            "expected": false,
+            "actual": false,
+            "duration_ms": 331
+          }
+        ],
+        "passed": true
+      },
+      "test_b2_d": {
+        "test_id": "TEST-B2-D",
+        "operation": "ST_SRID and ST_IsValidDetail",
+        "description": "Geometry type, SRID (4326) and topological validity reporting",
+        "results": {
+          "ac_1": {
+            "srid": 4326,
+            "validity": {
+              "valid": true,
+              "reason": null,
+              "location": null
+            },
+            "srid_duration_ms": 358,
+            "valid_duration_ms": 359
+          },
+          "ac_2": {
+            "srid": 4326,
+            "validity": {
+              "valid": true,
+              "reason": null,
+              "location": null
+            },
+            "srid_duration_ms": 1025,
+            "valid_duration_ms": 346
+          }
+        },
+        "passed": true
+      },
+      "test_b2_e": {
+        "test_id": "TEST-B2-E",
+        "operation": "Deterministic Consistency",
+        "description": "Deterministic consistency across consecutive invocations",
+        "runs": [true, true, true],
+        "passed": true
+      },
+      "test_b2_f": {
+        "test_id": "TEST-B2-F",
+        "operation": "ST_Intersects Disjoint Pair",
+        "description": "Disjoint polygon pair intersection returns false",
+        "inputs": {
+          "geom1": "AC 1 (Sirpur) Polygon (1090 vertices, SRID 4326)",
+          "geom2": "AC 2 (Chennur) Polygon (1169 vertices, SRID 4326)"
+        },
+        "expected": false,
+        "actual": false,
+        "duration_ms": 565,
+        "passed": true
+      }
+    },
+    "all_tests_passed": true
+  },
+  "w015_relational_baseline_reconciliation": {
+    "ac_1_canonical_mandals": [
+      { "mandal_id": "TS-MDL-7101", "name": "Sirpur (T)", "district": "Kumuram Bheem Asifabad", "lgd_code": 4676 },
+      { "mandal_id": "TS-MDL-7102", "name": "Kagaznagar", "district": "Kumuram Bheem Asifabad", "lgd_code": 4655 }
+    ],
+    "ac_2_canonical_mandals": [
+      { "mandal_id": "TS-MDL-5323", "name": "Chennur", "district": "Mancherial", "lgd_code": 4648 },
+      { "mandal_id": "TS-MDL-5328", "name": "Kotapalli", "district": "Mancherial", "lgd_code": 4660 }
+    ],
+    "spatial_verification_classification": "SPATIAL_NOT_AVAILABLE",
+    "rationale": "Mandal polygon geometries do NOT exist in the repository or staging database (mandals.boundary is NULL, corresponding to UNK-16-01). Centroid points are unverified/absent. Therefore, spatial verification of mandal containment against constituency polygons is SPATIAL_NOT_AVAILABLE.",
+    "relational_primacy_rule": "Relational evidence from W014/W015 remains authoritative. Spatial rehearsal does NOT override, modify, or validate relational records."
+  },
+  "w014_temporal_boundary_safety": {
+    "statutory_reorganization": "In 2016, Adilabad district was reorganized into 4 districts: Adilabad, Kumuram Bheem Asifabad, Mancherial, and Nirmal.",
+    "statutory_lineage": {
+      "ac_1": { "pre_2016_district": "Adilabad", "post_2016_district": "Kumuram Bheem Asifabad", "district_id": "208bc4a0-97e2-4cd9-9907-4ec586d52d69" },
+      "ac_2": { "pre_2016_district": "Adilabad", "post_2016_district": "Mancherial", "district_id": "fad43018-7df9-4fac-bb3e-fd9e6ed45bb8" }
+    },
+    "fixture_geojson_divergence": {
+      "ac_1_fixture_attributes": { "DIST_NAME": "ADILABAD", "DT_CODE": "01", "dtcode11": "532" },
+      "ac_2_fixture_attributes": { "DIST_NAME": "ADILABAD", "DT_CODE": "01", "dtcode11": "532" }
+    },
+    "finding": "SPATIAL RESULT != STATUTORY LINEAGE. Fixture GeoJSON attributes reflect pre-2016 administrative district boundaries. Blind reliance on spatial point-in-polygon without temporal regime tagging produces statutory errors."
+  },
+  "authoritative_status_safety": {
+    "geometries_promoted_to_official": 0,
+    "geometries_promoted_to_current_legal": 0,
+    "repository_authoritative_geometry_count": 0,
+    "fixture_classification_maintained": "UNVERIFIED_FIXTURE_GEOMETRY"
+  },
+  "unknown_register_status": {
+    "unk_16_01": {
+      "title": "Mandal polygon geometry source & availability",
+      "status": "OPEN / BLOCKED",
+      "finding": "Authoritative mandal polygon geometry does not exist in repository, SOI, or open government portals. W016-B2 technical rehearsal does NOT resolve or close UNK-16-01."
+    }
+  },
+  "layer_d_production_boundary_safety": {
+    "production_supabase_touched": false,
+    "production_requests_count": 0,
+    "production_schema_mutations": 0,
+    "production_data_mutations": 0,
+    "status": "STRICTLY_UNTOUCHED"
+  },
+  "performance_summary": {
+    "point_in_polygon_latency_ms": { "min": 331, "max": 417, "avg": 369.5 },
+    "polygon_intersection_latency_ms": { "actual": 565 },
+    "validity_check_latency_ms": { "min": 346, "max": 359, "avg": 352.5 },
+    "sample_size": "2 assembly constituencies (1090 and 1169 vertices), 2 test points, 6 test cases",
+    "observation": "PostGIS evaluates spatial functions with high reliability over PostgREST RPC, with latency dominated by HTTPS transport round-trip for multi-kilobyte WKT payloads."
+  }
+}
