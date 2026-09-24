@@ -1,0 +1,239 @@
+{
+  "document_id": "REPORT-W016-PREFLIGHT-DESIGN-v1.0",
+  "generated_at": "2026-09-24T07:50:00Z",
+  "job": "W016 — Spatial Geography / Spatial Relationship Foundation",
+  "lifecycle_state": {
+    "w015": "ACCEPTED_COMPLETE",
+    "w015_b1": "ACCEPTED_COMPLETE",
+    "w015_b2": "ACCEPTED_COMPLETE",
+    "w016_preflight": "SUBMITTED_FOR_CTO_REVIEW",
+    "w016_implementation": "NOT_AUTHORIZED",
+    "production": "STRICTLY_UNTOUCHED"
+  },
+  "coordinates": {
+    "w015_accepted_evidence_commit": "3748e46",
+    "w015_governance_closure_commit": "4d99dd3",
+    "w016_preflight_commit": "8736f6b",
+    "w016_preflight_correction_commit": "c4fb948"
+  },
+  "executive_summary": {
+    "purpose": "Technical design, architectural reconciliation, source acquisition plan, and authorization-preparation instrument for W016",
+    "postgis_status": "Enabled in migrations, but 0 ST_* functions used in repository code",
+    "staging_geometry_population": "Constituencies UNKNOWN, Mandals NULL, Districts no column, Polling booths scalar float",
+    "current_locate_implementation": "In-memory GeoJSON ray-casting in Node.js process without PostGIS queries",
+    "source_authenticity": "Crowdsourced datta07_shapefiles registered in Migration 039 as UNVERIFIED",
+    "quality_findings": "19/31 states clean; 12/31 states contain structural errors in client GeoJSON; Telangana 119/119 clean"
+  },
+  "master_requirements": [
+    {
+      "id": "REQ-W016-01",
+      "name": "Canonical Geometry Storage Schema",
+      "description": "Attach PostGIS geometry (MultiPolygon/Point, 4326) to canonical geography entities with strict EPSG:4326 SRID",
+      "source": "reports/w010_geography_contamination_guard.md"
+    },
+    {
+      "id": "REQ-W016-02",
+      "name": "Geometry Data Governance & Provenance",
+      "description": "Every stored geometry must link to a W012 provenance_records row tracking source authority, artifact hash, and status UNVERIFIED",
+      "source": "supabase/migrations/039_data_governance_foundation.sql"
+    },
+    {
+      "id": "REQ-W016-03",
+      "name": "Temporal Geometry Alignment",
+      "description": "Geometry must reconcile with W014 temporal validity and entity lineage without creating duplicate temporal models",
+      "source": "reports/w014_preflight_inspection_report.md"
+    },
+    {
+      "id": "REQ-W016-04",
+      "name": "Scenario & Delimitation Isolation",
+      "description": "Proposed or future delimitation boundaries must be partitioned from canonical geography and filtered from default queries",
+      "source": "supabase/migrations/011_delimitation.sql"
+    },
+    {
+      "id": "REQ-W016-05",
+      "name": "PostGIS Spatial Indexing",
+      "description": "Active geometry columns must be indexed with Generalized Search Trees (GiST) for 2D bounding-box queries",
+      "source": "supabase/migrations/001_initial_schema.sql"
+    },
+    {
+      "id": "REQ-W016-06",
+      "name": "Authoritative Source Acquisition & Quality Gates",
+      "description": "External spatial assets must pass formal OGC validity gates (ring closure, self-intersection, coordinate sanity) before ingestion",
+      "source": "scripts/audit-all-geojson.mjs"
+    },
+    {
+      "id": "REQ-W016-07",
+      "name": "Physical Containment & Ground Truth Verification",
+      "description": "Evaluate PostGIS spatial operators (ST_Contains, ST_Intersects) against geometry to ground truth W015 relational mappings",
+      "source": "reports/w015_preflight_inspection_report.md"
+    },
+    {
+      "id": "REQ-W016-08",
+      "name": "Mobile Bundle & App-Size Quarantine",
+      "description": "Raw spatial geometry payloads must not be bundled into the client application binary; streamed on-demand and cached remotely",
+      "source": "apps/mobile/lib/remoteGeoLoader.ts"
+    }
+  ],
+  "geometry_inventory": [
+    {
+      "entity": "State",
+      "table": "public.states",
+      "geometry_columns": ["centroid_lat", "centroid_lng"],
+      "geometry_type": "Scalar Float",
+      "srid": null,
+      "index": null,
+      "source": "Seed data (data/seed/)",
+      "population_status": "Populated (1 state)",
+      "evidence_class": "STATIC_REPOSITORY"
+    },
+    {
+      "entity": "District",
+      "table": "public.districts",
+      "geometry_columns": [],
+      "geometry_type": null,
+      "srid": null,
+      "index": null,
+      "source": "telangana-districts.geojson (unloaded)",
+      "population_status": "Unpopulated (0 columns)",
+      "evidence_class": "STATIC_REPOSITORY"
+    },
+    {
+      "entity": "Parliamentary Constituency",
+      "table": "public.parliamentary_constituencies",
+      "geometry_columns": [],
+      "geometry_type": null,
+      "srid": null,
+      "index": null,
+      "source": "None in repository",
+      "population_status": "Unpopulated (0 columns)",
+      "evidence_class": "STATIC_REPOSITORY"
+    },
+    {
+      "entity": "Assembly Constituency",
+      "table": "public.constituencies",
+      "geometry_columns": ["boundary"],
+      "geometry_type": "GEOMETRY(MultiPolygon, 4326)",
+      "srid": 4326,
+      "index": "idx_constituencies_boundary USING GIST",
+      "source": "telangana-assembly.geojson (datta07)",
+      "population_status": "UNKNOWN on staging; in-memory in API",
+      "evidence_class": "STATIC_REPOSITORY"
+    },
+    {
+      "entity": "Mandal",
+      "table": "public.mandals",
+      "geometry_columns": ["centroid", "boundary"],
+      "geometry_type": "Point / MultiPolygon",
+      "srid": 4326,
+      "index": "idx_mandals_centroid, idx_mandals_boundary USING GIST",
+      "source": "None in repository",
+      "population_status": "Inferred NULL (Migration 042/043 lack geometry inserts)",
+      "evidence_class": "INFERENCE"
+    },
+    {
+      "entity": "Polling Booth",
+      "table": "public.polling_booths",
+      "geometry_columns": ["latitude", "longitude"],
+      "geometry_type": "Scalar Float",
+      "srid": null,
+      "index": "idx_polling_booths_lat_long",
+      "source": "Synthetic test fixtures",
+      "population_status": "Populated (4 test rows)",
+      "evidence_class": "STATIC_REPOSITORY"
+    },
+    {
+      "entity": "Proposed Constituency",
+      "table": "public.proposed_constituencies",
+      "geometry_columns": ["boundary"],
+      "geometry_type": "JSONB",
+      "srid": null,
+      "index": null,
+      "source": "Scenario simulation",
+      "population_status": "Populated (simulation fixtures)",
+      "evidence_class": "STATIC_REPOSITORY"
+    }
+  ],
+  "geometry_status_model": {
+    "status_enum": "public.data_status_enum (8 states)",
+    "sufficiency": "100% SUFFICIENT — No enum additions permitted",
+    "state_mapping": {
+      "OFFICIAL": "Directly digitized from official SOI/ECI vector releases (0 records)",
+      "VERIFIED": "Cross-verified against statutory gazette boundary monument coordinates (0 records)",
+      "DERIVED": "Calculated via deterministic topological union (e.g. ST_Union of ACs) (0 records)",
+      "ESTIMATE": "Simplified/generalized polygons for low-bandwidth mobile display",
+      "SCENARIO": "Projected/hypothetical boundaries in proposed_constituencies",
+      "INFERRED": "Approximated boundaries calculated from point clusters",
+      "UNVERIFIED": "Default status for external community GIS data (all 119 Telangana ACs)",
+      "UNKNOWN": "Missing or placeholder geometry (all 12 pilot mandals)"
+    }
+  },
+  "spatial_relationship_semantics": [
+    { "operator": "Geometry Validity", "postgis": "ST_IsValid", "required_w016": true, "job": "W016" },
+    { "operator": "Point-in-Polygon (Locate)", "postgis": "ST_Contains", "required_w016": true, "job": "W016" },
+    { "operator": "Discrete Containment", "postgis": "ST_Contains", "required_w016": true, "job": "W016" },
+    { "operator": "Spatial Overlap", "postgis": "ST_Intersects", "required_w016": true, "job": "W016" },
+    { "operator": "Centroid Computation", "postgis": "ST_Centroid", "required_w016": true, "job": "W016" },
+    { "operator": "Boundary Adjacency", "postgis": "ST_Touches", "required_w016": false, "job": "W017" },
+    { "operator": "Proximity Search", "postgis": "ST_DWithin", "required_w016": false, "job": "W017" },
+    { "operator": "Quantitative Overlap %", "postgis": "ST_Area(ST_Intersection)/ST_Area", "required_w016": false, "job": "W017" },
+    { "operator": "Boundary Diff", "postgis": "ST_Difference", "required_w016": false, "job": "W017" },
+    { "operator": "Topological Mesh", "postgis": "postgis_topology", "required_w016": false, "job": "DEFERRED" },
+    { "operator": "Hexagonal Indexing", "postgis": "H3 (pg-h3)", "required_w016": false, "job": "DEFERRED" }
+  ],
+  "boundary_matrix": {
+    "w015_relationship_engine": ["Foreign key hierarchy", "Lineage predecessor/successor", "Discrete overlap_type (full/partial)"],
+    "w016_spatial_foundation": ["PostGIS column activation", "OGC geometry ingestion", "Spatial point-in-polygon grounding", "Containment verification vs MCM"],
+    "w017_spatial_gateway": ["Spatial query RPCs", "Quantitative overlap percentages", "Boundary diff engine", "Frontend map integration", "Vector tiles"],
+    "deferred_future": ["Topological mesh healing", "PostGIS topology extension", "H3 hexagonal indexing"]
+  },
+  "quality_gates": [
+    { "id": "GATE-GEO-01", "name": "SRID & Coordinate Bounds", "severity": "REQUIRED" },
+    { "id": "GATE-GEO-02", "name": "Geometry Type Strictness", "severity": "REQUIRED" },
+    { "id": "GATE-GEO-03", "name": "Ring Closure & Minimum Points", "severity": "REQUIRED" },
+    { "id": "GATE-GEO-04", "name": "OGC Validity (ST_IsValid)", "severity": "REQUIRED" },
+    { "id": "GATE-GEO-05", "name": "Non-Empty / Non-Null", "severity": "REQUIRED" },
+    { "id": "GATE-GEO-06", "name": "Entity Count & ID Match", "severity": "REQUIRED" },
+    { "id": "GATE-GEO-07", "name": "Centroid-Scatter Drift Detection", "severity": "SUPPORTING" },
+    { "id": "GATE-GEO-08", "name": "Micro-Sliver / Spike Detection", "severity": "SUPPORTING" },
+    { "id": "GATE-GEO-09", "name": "Automated Mesh Healing", "severity": "DEFERRED" }
+  ],
+  "acceptance_test_design": [
+    { "id": "TEST-W016-01", "name": "Geometry Column & SRID Integrity", "class": "STAGING_RUNTIME" },
+    { "id": "TEST-W016-02", "name": "OGC Simple Feature Validity", "class": "STAGING_RUNTIME" },
+    { "id": "TEST-W016-03", "name": "Data Governance & Provenance Linkage", "class": "STAGING_RUNTIME" },
+    { "id": "TEST-W016-04", "name": "Spatial Point-in-Polygon Locate", "class": "STAGING_RUNTIME" },
+    { "id": "TEST-W016-05", "name": "Spatial vs Relational MCM Alignment", "class": "STAGING_RUNTIME" },
+    { "id": "TEST-W016-06", "name": "Scenario Isolation Quarantine", "class": "STAGING_RUNTIME" },
+    { "id": "TEST-W016-07", "name": "W013 Canonical Geography Regression (13/13)", "class": "STATIC_REPOSITORY" },
+    { "id": "TEST-W016-08", "name": "W014 Temporal Model Regression (9/9)", "class": "STATIC_REPOSITORY" },
+    { "id": "TEST-W016-09", "name": "W015 Relationship Engine Regression (9/9)", "class": "STATIC_REPOSITORY" },
+    { "id": "TEST-W016-10", "name": "TypeScript Clean Build (0 errors)", "class": "STATIC_REPOSITORY" }
+  ],
+  "open_questions": [
+    { "id": "UNK-16-01", "type": "BLOCKER", "description": "No mandal polygon boundaries exist in repository" },
+    { "id": "UNK-16-02", "type": "UNKNOWN", "description": "Live staging PostGIS compilation and GiST index state unverified by direct query" },
+    { "id": "UNK-16-03", "type": "QUESTION", "description": "Whether district geometry column should be added in W016 or deferred to W017" },
+    { "id": "UNK-16-04", "type": "EXTERNAL_DEPENDENCY", "description": "Survey of India / ECI official vector data licensing and access terms" },
+    { "id": "UNK-16-05", "type": "DEFERRED", "description": "Quantitative overlap percentage calculation quarantined to W017" }
+  ],
+  "authorization_options": {
+    "option_1": {
+      "name": "Bounded Assembly Constituency Spatial Foundation",
+      "recommendation": "RECOMMENDED",
+      "scope": "Pilot ACs 1 & 2 boundary ingestion + 12 mandal centroids into existing schema columns; zero DDL migrations",
+      "risk": "LOW"
+    },
+    "option_2": {
+      "name": "Full State Assembly Constituencies",
+      "recommendation": "ALTERNATIVE",
+      "scope": "Ingest all 119 Telangana AC boundaries from telangana-assembly.geojson",
+      "risk": "MEDIUM"
+    },
+    "option_3": {
+      "name": "Multi-Level Geography",
+      "recommendation": "NOT RECOMMENDED AT THIS TIME",
+      "scope": "State + District + AC + Mandal (Blocked by missing mandal boundary data UNK-16-01)",
+      "risk": "HIGH"
+    }
+  }
+}
