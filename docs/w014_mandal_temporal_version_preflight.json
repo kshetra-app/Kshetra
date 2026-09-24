@@ -1,10 +1,10 @@
 {
-  "schema_version": "1.0.0",
-  "job": "W014-MANDAL-PREFLIGHT",
-  "title": "W014 Mandal Temporal Version Model Preflight",
-  "timestamp": "2026-09-24T18:45:00+05:30",
-  "baseline_commit": "8704afe55a67426b7d9a366402a4f1d5bae9788a",
-  "authority": "Independent CTO / Co-founder Directive W014 Mandal Version Prerequisite",
+  "schema_version": "2.0.0",
+  "job": "W014-MANDAL-PREFLIGHT-CORRECTION",
+  "title": "W014 Mandal Temporal Version Model Preflight (CTO Revision)",
+  "timestamp": "2026-09-24T19:05:00+05:30",
+  "baseline_commit": "2dabbf7dae4a76af56b831ca257f1b6d68d63b16",
+  "authority": "Independent CTO / Co-founder Directive W014 Mandal Version Preflight Correction Round",
   "authoritative_state": {
     "w015": "ACCEPTED_COMPLETE",
     "w015_b1": "ACCEPTED_COMPLETE",
@@ -55,18 +55,67 @@
       ],
       "rls_status": "Enabled; public read, service_role write"
     },
-    "w014_pattern_analysis": {
-      "state_versions": "id UUID PK, state_code TEXT FK, version_code VARCHAR(50) UNIQUE, name, valid_from, valid_to, is_current, primary_dataset_version_id, GiST exclusion constraint on daterange, single current unique index",
-      "district_versions": "id UUID PK, district_id UUID FK, version_code VARCHAR(50) UNIQUE, name, valid_from, valid_to, is_current, primary_dataset_version_id, GiST exclusion constraint on daterange, single current unique index",
-      "parliamentary_constituency_versions": "id UUID PK, pc_id UUID FK, delimitation_regime_id VARCHAR(50) FK, version_code VARCHAR(50) UNIQUE, valid_from, valid_to, is_current, primary_dataset_version_id, GiST exclusion constraint, single current unique index",
-      "constituency_versions": "id UUID PK, constituency_internal_id UUID FK, delimitation_regime_id VARCHAR(50) FK, version_code VARCHAR(50) UNIQUE, valid_from, valid_to, is_current, primary_dataset_version_id, GiST exclusion constraint, single current unique index"
-    },
-    "w015_mcm_reference": "public.mandal_constituency_map.mandal_id references public.mandals(id) (stable anchor)",
-    "w014_lineage_status": "public.geography_entity_lineage already supports entity_type='mandal' (expanded in Migration 043)"
+    "w014_anchor_pattern_analysis": {
+      "finding": "In Migration 041 (lines 369-395), current_version_id was added to states, districts, pcs, and constituencies as a plain nullable foreign key (REFERENCES <version_table>(id) ON DELETE SET NULL). However, plain foreign keys cannot declaratively enforce that current_version_id belongs to the same anchor entity or that is_current is true.",
+      "anchor_temporal_truth_evaluation": "Migration 041 added valid_from, valid_to, and is_current to anchor tables in addition to version tables. For mandals, duplicating valid_from and valid_to on the anchor introduces conflicting sources of truth. The refined architecture isolates temporal validity intervals (valid_from, valid_to) strictly to public.mandal_versions, while public.mandals holds only current_version_id and entity-level is_active."
+    }
   },
-  "stable_identity_evaluation": {
-    "finding": "public.mandals.id (TEXT PRIMARY KEY) provides sufficient stable anchor identity to support mandals -> mandal_versions without altering W013 identity semantics.",
-    "rationale": "Mirrors state_versions where state_code (TEXT PK of states) is referenced directly. Mandals id is immutable, referenced across all domain tables (mcm, gram_panchayats, polling_booths), and requires zero structural changes."
+  "current_version_id_integrity_design": {
+    "problem": "A plain FK public.mandals.current_version_id -> public.mandal_versions.id permits two integrity violations: (1) pointing to a version of a DIFFERENT mandal, and (2) pointing to a version where is_current = false.",
+    "solution_mechanism": {
+      "layer_1_composite_foreign_key": {
+        "mandal_versions_constraint": "CONSTRAINT uq_mandal_versions_id_mandal UNIQUE (id, mandal_id)",
+        "mandals_foreign_key": "FOREIGN KEY (current_version_id, id) REFERENCES public.mandal_versions(id, mandal_id) ON DELETE SET NULL",
+        "guarantee": "PostgreSQL engine guarantees that mandals.current_version_id MUST resolve to a mandal_versions row with the EXACT same mandal_id. Cross-mandal version assignment is physically impossible."
+      },
+      "layer_2_currentness_trigger": {
+        "trigger_name": "trg_guard_mandal_current_version",
+        "function_name": "fn_guard_mandal_current_version()",
+        "event": "BEFORE INSERT OR UPDATE OF current_version_id ON public.mandals",
+        "logic": "Asserts that when NEW.current_version_id IS NOT NULL, SELECT 1 FROM public.mandal_versions WHERE id = NEW.current_version_id AND is_current = true must return a row; otherwise aborts with exception 23514.",
+        "guarantee": "Guarantees that mandals.current_version_id points strictly to a version where is_current = true."
+      },
+      "layer_3_reciprocal_version_trigger": {
+        "trigger_name": "trg_sync_mandal_version_retirement",
+        "function_name": "fn_sync_mandal_version_retirement()",
+        "event": "AFTER UPDATE OF is_current ON public.mandal_versions",
+        "logic": "When a version transitions from is_current = true to false, if public.mandals.current_version_id pointed to this version, it is cleared (SET current_version_id = NULL) unless a successor active version is simultaneously assigned.",
+        "guarantee": "Prevents orphaned active pointers when a version is retired."
+      }
+    }
+  },
+  "field_ownership_matrix": {
+    "anchor_table_mandals": {
+      "owned_fields": [
+        "id TEXT PRIMARY KEY (Immutable stable canonical anchor identifier)",
+        "current_version_id UUID (Pointer to active version, enforced by composite FK and trigger)",
+        "is_active BOOLEAN DEFAULT true (Entity-level institutional existence)",
+        "state_code TEXT (Immutable state anchor)",
+        "type TEXT (Administrative designation: mandal)"
+      ],
+      "prohibited_duplicate_fields": [
+        "valid_from (Prohibited on anchor; lives exclusively on mandal_versions)",
+        "valid_to (Prohibited on anchor; lives exclusively on mandal_versions)"
+      ]
+    },
+    "version_table_mandal_versions": {
+      "owned_fields": [
+        "id UUID PRIMARY KEY (Immutable version surrogate key)",
+        "mandal_id TEXT (FK to anchor)",
+        "district_id UUID (Temporal district containment)",
+        "version_code VARCHAR(50) UNIQUE (Canonical version string)",
+        "name TEXT (Temporal statutory name)",
+        "name_te TEXT (Telugu name)",
+        "headquarters TEXT (Temporal HQ)",
+        "lgd_code INTEGER (Temporal MoPR code)",
+        "census_code_2011 VARCHAR(20) (Census code)",
+        "valid_from DATE NOT NULL (Statutory interval start)",
+        "valid_to DATE (Statutory interval end; NULL if current)",
+        "is_current BOOLEAN NOT NULL DEFAULT false (Fail-closed active flag)",
+        "primary_dataset_version_id TEXT (W012 dataset version FK)",
+        "metadata JSONB (Gazette citation and legal audit notes)"
+      ]
+    }
   },
   "minimum_w014_mandal_version_architecture": {
     "table_name": "public.mandal_versions",
@@ -82,7 +131,7 @@
       { "name": "census_code_2011", "type": "VARCHAR(20)", "nullable": true },
       { "name": "valid_from", "type": "DATE NOT NULL", "nullable": false },
       { "name": "valid_to", "type": "DATE", "nullable": true },
-      { "name": "is_current", "type": "BOOLEAN NOT NULL DEFAULT true", "nullable": false },
+      { "name": "is_current", "type": "BOOLEAN NOT NULL DEFAULT false", "nullable": false, "comment": "Fail-closed default: must be explicitly set to true" },
       { "name": "primary_dataset_version_id", "type": "TEXT NOT NULL REFERENCES public.dataset_versions(id) ON DELETE RESTRICT", "nullable": false },
       { "name": "metadata", "type": "JSONB NOT NULL DEFAULT '{}'::jsonb", "nullable": false },
       { "name": "created_at", "type": "TIMESTAMPTZ NOT NULL DEFAULT now()", "nullable": false },
@@ -93,6 +142,11 @@
         "name": "uq_mandal_versions_code",
         "type": "UNIQUE",
         "definition": "UNIQUE (version_code)"
+      },
+      {
+        "name": "uq_mandal_versions_id_mandal",
+        "type": "UNIQUE",
+        "definition": "UNIQUE (id, mandal_id)"
       },
       {
         "name": "uq_mandal_versions_no_overlap",
@@ -110,37 +164,38 @@
       { "name": "idx_mandal_versions_district_id", "type": "BTREE", "definition": "(district_id)" },
       { "name": "idx_mandal_versions_current", "type": "BTREE", "definition": "(mandal_id) WHERE is_current = true" },
       { "name": "uq_mandal_versions_single_current", "type": "UNIQUE_PARTIAL", "definition": "(mandal_id) WHERE is_current = true" }
-    ],
-    "anchor_table_enhancement": {
-      "table": "public.mandals",
-      "proposed_additions": [
-        "ADD COLUMN current_version_id UUID REFERENCES public.mandal_versions(id) ON DELETE SET NULL",
-        "ADD COLUMN valid_from DATE DEFAULT '2016-10-11'",
-        "ADD COLUMN valid_to DATE",
-        "ADD COLUMN is_current BOOLEAN DEFAULT true"
+    ]
+  },
+  "evidence_qualified_23_mandal_treatment": {
+    "framing": "W016-C2 identified 23 TGRAC-vs-historical discrepancies between the acquired 589-feature candidate snapshot and the statutory 612-mandal total.",
+    "evidence_qualification_protocol": {
+      "verified_statutory_reorganisations": [
+        {
+          "mandal_name": "Masaipet",
+          "district": "Medak",
+          "evidence_record": "G.O.Ms.No. 110 Revenue (DA) Dept dated 2020",
+          "classification": "VERIFIED_STATUTORY_REORGANISATION"
+        },
+        {
+          "group": "13 Revenue Mandals (Endapalli, Bheemaram, Nizampet, Gattuppal, Seerole, Inugurthy, Akbarpet-Bhoompally, Kukunoorpally, Dongli, Koukuntla, Aloor, Donkeshwar, Saloora)",
+          "evidence_record": "Telangana Gazette Notifications / G.O.Ms. Revenue (DA) Dept September 2022",
+          "classification": "VERIFIED_STATUTORY_REORGANISATION"
+        }
+      ],
+      "unresolved_chronology": [
+        {
+          "group": "Remaining 9 Mandals (Gundumal, Kothapalle, Dudyal, Sonala, Kothapalligori, Irwin, Bheemaram-Mancherial, Adilabad Rural, Nirmal Rural)",
+          "status": "UNKNOWN / UNVERIFIED (Lacks cryptographic Gazette citation in repo evidence registers)",
+          "classification": "CHRONOLOGY_UNRESOLVED"
+        }
       ]
-    }
-  },
-  "temporal_and_lineage_semantics": {
-    "interval_rules": "Valid intervals [valid_from, valid_to) are half-open. Overlapping intervals for the same mandal_id are strictly prohibited by GiST exclusion. Contiguous adjacent intervals (e.g. [2016-10-11, 2022-09-01) and [2022-09-01, NULL)) are fully permitted.",
-    "lifecycle_transitions": {
-      "rename": "New version record inserted with updated name, valid_from set to Gazette notification date; previous version updated with valid_to and is_current=false.",
-      "creation": "New mandals anchor inserted; initial mandal_version created with valid_from=effective_date, valid_to=NULL, is_current=true.",
-      "split": "Predecessor mandal_version closed (valid_to assigned); successor mandal versions created; lineage recorded in public.geography_entity_lineage with transition_type='split'.",
-      "merge": "Predecessor mandal versions closed; unified successor version created; lineage recorded in public.geography_entity_lineage with transition_type='merge'.",
-      "abolition": "Active mandal_version closed with statutory abolition date (valid_to assigned, is_current=false); anchor is_current set to false."
-    }
-  },
-  "snapshot_589_reconciliation": {
-    "regime_period": "2016-10-11 to 2022-09-01 (October 2016 31-district reorganisation baseline)",
-    "version_representation": "Each of the 589 mandals has a historical mandal_versions row with valid_from='2016-10-11', valid_to='2022-09-01', is_current=false.",
-    "geometry_attachment": "entity_geometries.mandal_version_id references this exact historical mandal_version UUID.",
-    "blocker_treatment_23_mandals": "The 23 post-2016 mandals did not exist during the 2016 snapshot. They possess NO historical version row for [2016-10-11, 2022-09-01). They remain UNKNOWN / BLOCKED for geometry (UNK-16-01). No synthetic polygons or inferred aggregation mappings are created in statutory tables."
-  },
-  "preservation_of_adjacent_layers": {
-    "w015_relational_primacy": "public.mandal_constituency_map and public.polling_booths continue referencing public.mandals(id) stable anchor. Zero schema or query changes to W015.",
-    "w012_data_governance": "mandal_versions links to dataset_versions via primary_dataset_version_id; provenance DAG records ingest/transition nodes. No duplicate governance structures.",
-    "scenario_isolation": "Scenario mandal projections (if any) are isolated via separate dataset_versions (source_authority='synthetic_model') with is_current=false, strictly separated from statutory legal versions."
+    },
+    "quarantine_rules": [
+      "No 2016 versions are fabricated for any of the 23 discrepancies.",
+      "No synthetic geometry splits are created.",
+      "No inferred spatial containment is encoded into statutory relationship tables (mandal_constituency_map).",
+      "Historical version rows are created ONLY for temporal intervals where authoritative statutory Gazette evidence is explicitly verified."
+    ]
   },
   "acceptance_matrix": [
     {
@@ -214,6 +269,36 @@
       "requirement": "Rollback semantics do not destroy W012 governance history",
       "design_requirement": "Rollback drops mandal_versions only; W012 dataset_versions and provenance records remain intact",
       "future_runtime_verification": "Executing rollback drops mandal_versions table while leaving dataset_versions untouched"
+    },
+    {
+      "assertion_id": "M",
+      "requirement": "current_version_id integrity matches established W014 pattern",
+      "design_requirement": "Composite FK (current_version_id, id) REFERENCES mandal_versions(id, mandal_id) and trigger fn_guard_mandal_current_version()",
+      "future_runtime_verification": "Setting current_version_id to a version belonging to a different mandal raises foreign key violation 23503"
+    },
+    {
+      "assertion_id": "N",
+      "requirement": "Stable mandal anchor does not contain duplicate temporal truth",
+      "design_requirement": "valid_from and valid_to live exclusively on mandal_versions; mandals anchor retains only current_version_id and is_active",
+      "future_runtime_verification": "Information schema audit confirms valid_from and valid_to columns do not exist on public.mandals"
+    },
+    {
+      "assertion_id": "O",
+      "requirement": "mandal_versions defaults is_current=false",
+      "design_requirement": "Column definition is_current BOOLEAN NOT NULL DEFAULT false (fail-closed)",
+      "future_runtime_verification": "INSERT into mandal_versions without specifying is_current results in is_current = false"
+    },
+    {
+      "assertion_id": "P",
+      "requirement": "The 23 discrepancy chronology is evidence-qualified",
+      "design_requirement": "Chronologies without verified Gazette citations classified as UNKNOWN/UNVERIFIED; zero unevidenced versions",
+      "future_runtime_verification": "Audit of seeded mandal_versions confirms 100% of rows have statutory_order citations in metadata"
+    },
+    {
+      "assertion_id": "Q",
+      "requirement": "Mandal versioning conforms to existing W014 temporal semantics",
+      "design_requirement": "GiST non-overlapping interval exclusion, calendar-independent currentness check, and partial unique index",
+      "future_runtime_verification": "Inserting conflicting version intervals or setting is_current=true with valid_to NOT NULL violates constraints"
     }
   ],
   "decision_matrix": {

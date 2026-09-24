@@ -1,252 +1,222 @@
-# W014: Mandal Temporal Version Model Preflight
+# W014: Mandal Temporal Version Model Preflight (CTO Revision)
 
-**Authority:** Independent CTO / Co-founder Directive — W014 Mandal Version Prerequisite  
+**Authority:** Independent CTO / Co-founder Directive — W014 Mandal Version Preflight Correction Round  
 **Status:** SUBMITTED FOR CTO REVIEW  
 **Scope:** Architectural & Technical Preflight Design Only (Zero DDL Execution / Zero DB Mutations / Production Untouched)  
-**Baseline Commit:** `8704afe55a67426b7d9a366402a4f1d5bae9788a`  
+**Baseline Commit:** `2dabbf7dae4a76af56b831ca257f1b6d68d63b16`  
 **Date:** September 2026  
 
 ---
 
-## 1. Executive Summary & Prerequisite Context
+## 1. Executive Summary & Authoritative Coordinates
 
-During the W016-C3 preflight review, the CTO conditionally accepted the geometry architecture with an explicit mandate: **geometry records must attach to canonical W014 version tables, never to unversioned stable anchor tables**.
+In accordance with the **CTO Directive on W014 Mandal Version Preflight Corrections**, this document delivers the revised preflight design for the canonical W014 sub-district mandal temporal version model.
 
-An exhaustive repository and database schema audit confirmed that while W014 (Migration 041) created temporal version tables for:
-- `public.state_versions`
-- `public.district_versions`
-- `public.parliamentary_constituency_versions`
-- `public.constituency_versions`
+### Authoritative State Matrix
 
-**`public.mandal_versions` does not currently exist.** Mandals currently exist exclusively as canonical anchor records in `public.mandals` (created in Migration 022, enhanced in Migration 042).
-
-This document establishes the **minimum canonical W014 temporal version model for sub-district revenue mandals** to satisfy the prerequisite for future geometry attachment without violating:
-1. **W012 Data Governance** (dataset versioning and cryptographic provenance).
-2. **W013 Stable Geography Identity** (immutable entity codes and anchor keys).
-3. **W014 Temporal Semantics** (GiST interval exclusion, calendar-independent currentness, entity lineage).
-4. **W015 Relational Primacy** (statutory administrative-to-electoral mappings).
-5. **W016 Geometry Attachment** (clean foreign key targeting).
+| Component | Status | Governance Authority |
+|---|---|---|
+| **W015 (Geography Relationship Engine)** | `ACCEPTED_COMPLETE` | Commit `4d99dd3` |
+| **W015-B1 (Preflight Inspection)** | `ACCEPTED_COMPLETE` | Commit `4d99dd3` |
+| **W015-B2 (Source Reconciliation)** | `ACCEPTED_COMPLETE` | Commit `4d99dd3` |
+| **W016-A1 (Preflight Correction)** | `ACCEPTED` | Commit `1f8bde8` |
+| **W016-B1 (Source Preflight)** | `ACCEPTED` | Commit `e240fc3` |
+| **W016-B2 (Technical Spatial Rehearsal)** | `ACCEPTED_COMPLETE` | Commit `4beb9a7` |
+| **W016-C1 (Candidate Acquisition)** | `ACCEPTED_COMPLETE` | Commit `46d4bcb` |
+| **W016-C2 (Reconciliation Package)** | `ACCEPTED` | Commit `3d30640` |
+| **W016-C3 (Geometry Preflight)** | `CONDITIONALLY_ACCEPTED` | Commit `8704afe` |
+| **W014 Mandal Temporal Preflight** | `SUBMITTED_FOR_CTO_REVIEW` | This Document |
+| **Migration 044 Execution** | `STRICTLY_NOT_AUTHORIZED` | Frozen |
+| **Database Mutations / Ingestion** | `STRICTLY_NOT_AUTHORIZED` | Frozen |
+| **Production Environment** | `STRICTLY_UNTOUCHED` | Air-Gapped |
 
 ---
 
-## 2. Current Schema Audit
+## 2. Actual Existing W014 Architecture & Anchor Analysis
 
-An exhaustive audit was conducted across all existing migrations (`001` through `043`):
+An inspection of Migration 041 (`041_geography_versioning_and_temporal_validity.sql`, Lines 369–395) reveals how W014 historically handled version pointers on stable anchor entities:
 
-### 2.1 Schema Analysis of `public.mandals`
-- **Creation:** Migration 022 (`022_administrative_hierarchy.sql`, Line 35).
-- **Primary Key:** `id TEXT` (Format: `<state_code>-MDL-<code_or_sno>`, e.g., `'TS-MDL-5321'`).
-- **Core Columns:**
-  - `name TEXT NOT NULL`
-  - `local_name TEXT`
-  - `state_code TEXT NOT NULL REFERENCES states(code)`
-  - `district TEXT NOT NULL` (denormalized name string from Migration 022)
-  - `lgd_code INTEGER` (Local Government Directory code)
-  - `type TEXT NOT NULL DEFAULT 'mandal'`
-  - `headquarters TEXT`
-  - `area_sq_km NUMERIC(10, 2)`
-  - `population_2011 INTEGER`
-  - `centroid GEOMETRY(Point, 4326)` (legacy fixture from Migration 022)
-  - `boundary GEOMETRY(MultiPolygon, 4326)` (legacy fixture from Migration 022)
-  - `created_at TIMESTAMPTZ`, `updated_at TIMESTAMPTZ`
-- **W015 Enhancements (Migration 042, Line 116):**
-  - `district_id UUID REFERENCES public.districts(id) ON DELETE RESTRICT`
-  - `primary_dataset_version_id TEXT REFERENCES public.dataset_versions(id) ON DELETE RESTRICT`
-- **Existing Date/Validity Fields:** **NONE.** `public.mandals` lacks `valid_from`, `valid_to`, `is_current`, and `current_version_id`.
-- **Existing Triggers & Indexes:**
-  - Trigger: `trg_mandals_updated_at`
-  - Indexes: `idx_mandals_state_code`, `idx_mandals_state_district`, `idx_mandals_lgd_code`, `idx_mandals_centroid`, `idx_mandals_boundary`, `idx_mandals_district_id`.
-- **Row Level Security (RLS):** Enabled. Public read for `anon` and `authenticated`; write restricted to `service_role`.
-
-### 2.2 Existing W014 Temporal Versioning Patterns
-Migration 041 established consistent temporal architectural patterns:
-1. **Primary Key:** `id UUID DEFAULT gen_random_uuid()`.
-2. **Anchor Foreign Key:** References the anchor table's primary key (`district_id UUID`, `state_code TEXT`, `constituency_internal_id UUID`) with `ON DELETE RESTRICT`.
-3. **Version Code:** `version_code VARCHAR(50) UNIQUE NOT NULL`.
-4. **Temporal Bounding:** `valid_from DATE NOT NULL`, `valid_to DATE`.
-5. **Current Flag:** `is_current BOOLEAN NOT NULL DEFAULT true`.
-6. **Non-Overlapping Interval Invariant:** PostgreSQL GiST exclusion constraint on `(anchor_id WITH =, daterange(valid_from, valid_to, '[)') WITH &&)`.
-7. **Single-Current Invariant:** Partial unique index on `anchor_id WHERE is_current = true`.
-8. **Provenance Linkage:** `primary_dataset_version_id TEXT NOT NULL REFERENCES public.dataset_versions(id) ON DELETE RESTRICT`.
-9. **Anchor Enhancement:** Anchor table updated with `current_version_id UUID`, `valid_from DATE`, `valid_to DATE`, `is_current BOOLEAN`.
-
-### 2.3 Existing W015 Relationship References
-In Migration 042 and 043:
-- `public.mandal_constituency_map.mandal_id` references `public.mandals(id)` (the stable anchor).
-- `public.polling_booths.mandal_id` references `public.mandals(id)`.
-- W015 relationships target the **stable anchor identity**, not a temporal version record.
-
-### 2.4 Existing Lineage Infrastructure
-Migration 043 (Line 48) expanded `public.geography_entity_lineage` to include `'mandal'`:
 ```sql
-CHECK (entity_type IN ('state', 'district', 'parliamentary_constituency', 'constituency', 'mandal'))
+-- Migration 041 Historical Pattern (states, districts, pcs, constituencies)
+ALTER TABLE public.states
+  ADD COLUMN IF NOT EXISTS current_version_id UUID REFERENCES public.state_versions(id) ON DELETE SET NULL,
+  ADD COLUMN IF NOT EXISTS valid_from DATE DEFAULT '2014-06-02',
+  ADD COLUMN IF NOT EXISTS valid_to DATE,
+  ADD COLUMN IF NOT EXISTS is_current BOOLEAN DEFAULT true;
+
+ALTER TABLE public.districts
+  ADD COLUMN IF NOT EXISTS current_version_id UUID REFERENCES public.district_versions(id) ON DELETE SET NULL,
+  ADD COLUMN IF NOT EXISTS valid_from DATE DEFAULT '2016-10-11',
+  ADD COLUMN IF NOT EXISTS valid_to DATE,
+  ADD COLUMN IF NOT EXISTS is_current BOOLEAN DEFAULT true,
+  ADD COLUMN IF NOT EXISTS predecessor_district_id UUID REFERENCES public.districts(id) ON DELETE SET NULL;
 ```
-Migration 043 already recorded an authentic historical mandal lineage transition: the `Mancherial -> Hajipur` split on `2016-10-11` under G.O.Ms.No. 222.
+
+### Critical Findings on Migration 041:
+1. **Unconstrained Foreign Key Weakness:** Migration 041 added `current_version_id` as a plain nullable foreign key. A plain foreign key in PostgreSQL enforces only that the target UUID exists in the version table; it **cannot declaratively verify** that:
+   - The version belongs to the *same* anchor entity (e.g. preventing a district from pointing to another district's version);
+   - The target version has `is_current = true`.
+2. **Duplicate Temporal Truth:** Migration 041 duplicated `valid_from`, `valid_to`, and `is_current` across both anchor tables and version tables. For mandals, replicating statutory dates (`valid_from`, `valid_to`) on the anchor creates competing sources of truth whenever a mandal is reorganised or renamed.
 
 ---
 
-## 3. Stable Identity Evaluation: Supporting `mandals -> mandal_versions`
+## 3. Current Version Integrity Design (`mandals.current_version_id`)
 
-**Finding:** `public.mandals.id` (`TEXT PRIMARY KEY`) possesses complete, stable identity information to anchor `mandal_versions` without altering W013 identity semantics.
-
-### Rationale:
-1. **Direct Precedent in `state_versions`:** In Migration 041, `state_versions` references `state_code TEXT REFERENCES public.states(code)` where `states.code` is `TEXT PRIMARY KEY`. Similarly, `mandals.id` is `TEXT PRIMARY KEY`.
-2. **Zero Anchor Renaming/Re-keying:** `mandals.id` remains the immutable anchor identifier (`'TS-MDL-5321'`), preserving all downstream foreign keys in `mandal_constituency_map`, `gram_panchayats`, and `polling_booths`.
-3. **Decoupled Attributes:** Mutable attributes (mandal name, headquarters town, LGD code updates, district containment changes) migrate to temporal rows in `mandal_versions`, while the immutable anchor `mandals.id` remains stable across reorganisations.
-
----
-
-## 4. Minimum Canonical W014 Mandal Version Architecture
-
-The minimum canonical model for `public.mandal_versions` mirrors the proven design of `district_versions`:
+To eliminate the unconstrained foreign key gap without introducing an untracked parallel system, mandal versioning introduces a **two-layer database integrity guarantee**:
 
 ```mermaid
-erDiagram
-    public_mandals ||--o{ public_mandal_versions : "versions (1:N)"
-    public_districts ||--o{ public_mandal_versions : "temporal district (N:1)"
-    public_dataset_versions ||--o{ public_mandal_versions : "governed source (N:1)"
-    public_mandal_versions ||--o{ public_entity_geometries : "geometry target (1:N)"
+flowchart TD
+    M["public.mandals<br>(id, current_version_id, is_active)"]
+    MV["public.mandal_versions<br>(id, mandal_id, valid_from, valid_to, is_current)"]
 
-    public_mandal_versions {
-        UUID id PK
-        TEXT mandal_id FK
-        UUID district_id FK
-        VARCHAR version_code UK
-        TEXT name
-        TEXT name_te
-        TEXT headquarters
-        INTEGER lgd_code
-        VARCHAR census_code_2011
-        DATE valid_from
-        DATE valid_to
-        BOOLEAN is_current
-        TEXT primary_dataset_version_id FK
-        JSONB metadata
-        TIMESTAMPTZ created_at
-        TIMESTAMPTZ updated_at
-    }
+    M -- "1. Declarative Composite FK: (current_version_id, id) -> (id, mandal_id)" --> MV
+    M -- "2. Check Trigger: asserts target is_current = true" --> MV
 ```
 
-### Table Column Specification:
-1. `id UUID PRIMARY KEY DEFAULT gen_random_uuid()`: Immutable version surrogate key.
-2. `mandal_id TEXT NOT NULL REFERENCES public.mandals(id) ON DELETE RESTRICT`: Foreign key to stable anchor.
-3. `district_id UUID NOT NULL REFERENCES public.districts(id) ON DELETE RESTRICT`: Captures temporal district reorganisation (e.g. transfer of mandals to Mulugu or Narayanpet in 2019).
-4. `version_code VARCHAR(50) NOT NULL UNIQUE`: Canonical version identifier (e.g. `'ts_mdl_5321_2016_v1'`).
-5. `name TEXT NOT NULL`: Statutory mandal name during this temporal interval.
-6. `name_te TEXT`: Telugu script name.
-7. `headquarters TEXT`: HQ settlement during this temporal interval.
-8. `lgd_code INTEGER`: Local Government Directory code assigned by MoPR during this interval.
-9. `census_code_2011 VARCHAR(20)`: Census sub-district code where applicable.
-10. `valid_from DATE NOT NULL`: Statutory enactment date of this version.
-11. `valid_to DATE`: Statutory supersession or abolition date (`NULL` if currently active).
-12. `is_current BOOLEAN NOT NULL DEFAULT true`: Active status flag.
-13. `primary_dataset_version_id TEXT NOT NULL REFERENCES public.dataset_versions(id) ON DELETE RESTRICT`: W012 dataset version provenance.
-14. `metadata JSONB NOT NULL DEFAULT '{}'::jsonb`: Statutory gazette citation and audit notes.
-15. `created_at TIMESTAMPTZ NOT NULL DEFAULT now()`, `updated_at TIMESTAMPTZ NOT NULL DEFAULT now()`.
-
----
-
-## 5. Temporal Semantics & Interval Constraints
-
-### 5.1 Non-Overlapping Interval Invariant
-A single physical mandal territory cannot exist in two conflicting version states on the same date. This is strictly enforced at the database engine level via PostgreSQL `btree_gist`:
+### Layer 1: Declarative Composite Foreign Key (Same-Anchor Guarantee)
+In `public.mandal_versions`, a unique constraint pairs the version ID with its mandal anchor:
 ```sql
-CONSTRAINT uq_mandal_versions_no_overlap EXCLUDE USING gist (
-  mandal_id WITH =,
-  (daterange(valid_from, valid_to, '[)')) WITH &&
-)
+CONSTRAINT uq_mandal_versions_id_mandal UNIQUE (id, mandal_id)
 ```
-- **Interval Semantics:** Uses half-open ranges `[valid_from, valid_to)`.
-- **Adjacent Intervals Permitted:** A historical version `[2016-10-11, 2022-09-01)` and a subsequent version `[2022-09-01, NULL)` touch at `2022-09-01` but do not overlap, which PostgreSQL allows without violation.
-
-### 5.2 Calendar-Independent Currentness Invariant
-In accordance with Blocker 2 and Blocker 4, `CURRENT_DATE` is completely excluded from database check constraints. Currentness is defined statically:
+On `public.mandals`, the foreign key is defined over the composite pair:
 ```sql
-CONSTRAINT chk_mandal_versions_current_invariants CHECK (
-  (is_current = false) OR (is_current = true AND valid_to IS NULL)
-)
+CONSTRAINT fk_mandals_current_version_same_anchor
+  FOREIGN KEY (current_version_id, id) 
+  REFERENCES public.mandal_versions(id, mandal_id) 
+  ON DELETE SET NULL
 ```
+- **Engine Guarantee:** PostgreSQL natively rejects any update where `current_version_id` references a version belonging to any other mandal. Cross-entity assignment is physically impossible.
 
-### 5.3 Single-Current Uniqueness
-At most one active version can exist per mandal anchor:
+### Layer 2: Database Check Trigger (Active Status Guarantee)
+A lightweight trigger on `public.mandals` asserts that the referenced version is actively current:
 ```sql
-CREATE UNIQUE INDEX uq_mandal_versions_single_current 
-  ON public.mandal_versions (mandal_id) 
-  WHERE is_current = true;
+CREATE OR REPLACE FUNCTION public.fn_guard_mandal_current_version()
+RETURNS TRIGGER AS $$
+BEGIN
+  IF NEW.current_version_id IS NOT NULL THEN
+    IF NOT EXISTS (
+      SELECT 1 FROM public.mandal_versions mv
+      WHERE mv.id = NEW.current_version_id
+        AND mv.mandal_id = NEW.id
+        AND mv.is_current = true
+    ) THEN
+      RAISE EXCEPTION 'INTEGRITY VIOLATION: current_version_id % must point to an active version (is_current = true) for mandal %',
+        NEW.current_version_id, NEW.id;
+    END IF;
+  END IF;
+  RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE TRIGGER trg_guard_mandal_current_version
+  BEFORE INSERT OR UPDATE OF current_version_id ON public.mandals
+  FOR EACH ROW
+  EXECUTE FUNCTION public.fn_guard_mandal_current_version();
 ```
 
 ---
 
-## 6. Administrative Lineage & Lifecycle Semantics
+## 4. Single Source of Temporal Truth: Field Ownership
 
-Mandal territorial reorganisations are represented through the synergy of `mandal_versions` and `public.geography_entity_lineage`:
+To eliminate competing sources of truth, field ownership is partitioned cleanly between the stable anchor and the temporal version table:
 
-| Administrative Event | Version Behavior | Lineage Registration in `geography_entity_lineage` |
-|---|---|---|
-| **Creation** | New `mandals` anchor inserted. New `mandal_versions` row with `valid_from = :effective_date`, `valid_to = NULL`, `is_current = true`. | Registered with `transition_type = 'creation'`, `statutory_order = :gazette_no`. |
-| **Rename** | Existing version closed (`valid_to = :effective_date`, `is_current = false`). New version inserted with new `name`, `valid_from = :effective_date`, `valid_to = NULL`, `is_current = true`. | Registered with `transition_type = 'rename'`. |
-| **District Transfer** | Existing version closed. New version inserted with new `district_id`, `valid_from = :effective_date`, `valid_to = NULL`, `is_current = true`. | Lineage notes district reorganisation (e.g. 2019 Mulugu/Narayanpet transfers). |
-| **Split** | Predecessor version closed (`valid_to = :effective_date`, `is_current = false`). Remainder version and new successor version created with `valid_from = :effective_date`. | Registered with `transition_type = 'split'`, linking predecessor to successor. |
-| **Merge** | Merging versions closed (`valid_to = :effective_date`, `is_current = false`). Unified version created with `valid_from = :effective_date`. | Registered with `transition_type = 'merge'`. |
-| **Abolition** | Version closed (`valid_to = :effective_date`, `is_current = false`). Anchor updated to `is_current = false`. | Registered with `transition_type = 'abolition'`. |
+### 4.1 Stable Anchor Table (`public.mandals`)
+Holds only institutional existence and routing pointers:
+- `id TEXT PRIMARY KEY`: Immutable canonical identifier (e.g. `'TS-MDL-5321'`).
+- `current_version_id UUID`: Foreign key pointer to the active version row.
+- `is_active BOOLEAN NOT NULL DEFAULT true`: Institutional operational status (toggled to `false` only if the mandal is permanently abolished).
+- `state_code TEXT NOT NULL REFERENCES states(code)`: Immutable state jurisdiction.
+- `type TEXT NOT NULL DEFAULT 'mandal'`: Regional administrative designation.
+- **PROHIBITED:** `valid_from` and `valid_to` are **strictly prohibited** on `public.mandals`. Statutory date intervals belong exclusively to the version table.
+
+### 4.2 Temporal Version Table (`public.mandal_versions`)
+Holds all mutable administrative attributes and exact statutory dates:
+- `id UUID PRIMARY KEY`: Surrogate version key.
+- `mandal_id TEXT NOT NULL REFERENCES public.mandals(id)`: Stable anchor key.
+- `district_id UUID NOT NULL REFERENCES public.districts(id)`: Captures temporal district reorganisations (e.g. transfers to Mulugu or Narayanpet).
+- `version_code VARCHAR(50) NOT NULL UNIQUE`: Canonical version identifier.
+- `name TEXT NOT NULL`: Statutory name during this interval.
+- `lgd_code INTEGER`: Local Government Directory code during this interval.
+- `valid_from DATE NOT NULL`: Enactment date of this version.
+- `valid_to DATE`: Supersession or abolition date (`NULL` if current).
+- `is_current BOOLEAN NOT NULL DEFAULT false`: **Fail-closed active flag**.
+- `primary_dataset_version_id TEXT NOT NULL REFERENCES public.dataset_versions(id)`.
+- `metadata JSONB NOT NULL DEFAULT '{}'::jsonb`: Gazette order reference and legal audit notes.
 
 ---
 
-## 7. Reconciling the 589 TGRAC Historical Snapshot
+## 5. Fail-Closed Currentness Default
 
-The acquired TGRAC mandal dataset contains exactly 589 features representing the initial **2016–2017 post-reorganisation baseline**:
-- **Temporal Validity Window:** `[2016-10-11, 2022-09-01)`.
-- **Historical Version Representation:**  
-  When `mandal_versions` is populated, each of the 589 mandals will possess a historical version row:
-  - `mandal_id = 'TS-MDL-<s_no>'`
+In accordance with CTO Directive Item 3, the default value for `is_current` on `public.mandal_versions` is defined as:
+```sql
+is_current BOOLEAN NOT NULL DEFAULT false
+```
+- **Rationale:** A fail-closed default ensures that any unverified, candidate, or historical row inserted into `mandal_versions` will **never accidentally become active** merely because an `INSERT` statement omitted the column.
+- **Authorization Barrier:** Elevation to `is_current = true` requires an explicit, verified administrative statement satisfying the currentness invariant (`valid_to IS NULL`).
+
+---
+
+## 6. Temporal Semantics & Calendar Independence
+
+1. **Non-Overlapping GiST Exclusion:**
+   ```sql
+   CONSTRAINT uq_mandal_versions_no_overlap EXCLUDE USING gist (
+     mandal_id WITH =,
+     (daterange(valid_from, valid_to, '[)')) WITH &&
+   )
+   ```
+2. **Calendar-Independent Currentness Check:** Zero occurrences of `CURRENT_DATE`:
+   ```sql
+   CONSTRAINT chk_mandal_versions_current_invariants CHECK (
+     (is_current = false) OR (is_current = true AND valid_to IS NULL)
+   )
+   ```
+3. **Single-Current Partial Unique Index:**
+   ```sql
+   CREATE UNIQUE INDEX uq_mandal_versions_single_current 
+     ON public.mandal_versions (mandal_id) 
+     WHERE is_current = true;
+   ```
+
+---
+
+## 7. Evidence-Qualified Treatment of the 23 Discrepancies
+
+The preflight reframes the 23-mandal discrepancy identified in W016-C2 strictly as **empirical source observations**, not authoritative historical reality:
+
+> **Finding:** W016-C2 identified 23 discrepancies between the acquired 589-feature TGRAC candidate layer and the current statutory 612-mandal total.
+
+### Categorized Evidence Status:
+1. **Verified Statutory Reorganisations (Gazette Documented):**
+   - **Masaipet Mandal (Medak District):** Statutory creation under G.O.Ms.No. 110, Revenue (DA) Dept, dated 2020 (carved out of Yeldurthy / Chegunta).
+   - **13 Mandals Created September 2022:** Endapalli, Bheemaram (Jagtial), Nizampet, Gattuppal, Seerole, Inugurthy, Akbarpet-Bhoompally, Kukunoorpally, Dongli, Koukuntla, Aloor, Donkeshwar, Saloora (Statutory notification in Telangana Gazette, September 2022).
+   - *Treatment:* When historical versions are formally seeded, these entities receive explicit statutory `valid_from` dates matching their respective Gazette enactments.
+2. **Chronology Unresolved (`UNK-16-01` Preserved):**
+   - **9 Remaining Mandals:** Gundumal, Kothapalle, Dudyal, Sonala, Kothapalligori, Irwin, Bheemaram (Mancherial), Adilabad Rural, Nirmal Rural.
+   - *Treatment:* Classified as `UNKNOWN / UNVERIFIED` until primary Gazette notifications are added to repo evidence registers.
+3. **Quarantine Invariants:**
+   - **Zero 2016 Versions:** No 2016 historical versions are fabricated for any of these 23 mandals.
+   - **Zero Geometry Fabrication:** No synthetic polygon splits or artificial boundaries are inferred.
+   - **Zero Statutory Inferences:** No inferred aggregation or containment is injected into `public.mandal_constituency_map`.
+
+---
+
+## 8. Preserving the 589 Historical TGRAC Snapshot
+
+- **Regime Window:** `[2016-10-11, 2022-09-01)` (representing the October 2016 31-district reorganisation baseline).
+- **Snapshot Representation:** The 589 mandals confirmed present in the 2016 baseline will be represented in `public.mandal_versions` with:
   - `valid_from = '2016-10-11'`
   - `valid_to = '2022-09-01'`
   - `is_current = false`
-  - `primary_dataset_version_id = 'tgrac_mandals_2016_candidate_v1'`
-- **Clean Geometry Attachment:**  
-  In future Migration 044, `entity_geometries.mandal_version_id` will reference this exact historical version UUID. Because `is_current = false` and `valid_to` is populated, it cannot satisfy current-geography queries.
+- **Future W016 Attachment Target:** When Migration 044 is authorized, `public.entity_geometries.mandal_version_id` will bind directly to these historical version UUIDs.
 
 ---
 
-## 8. Blocker Treatment: The 23 Post-2016 Mandals (`UNK-16-01` Quarantine)
-
-1. **Chronological Reality:** 23 mandals were created between 2018 and 2023 (e.g. G.O.Ms. Revenue Dept September 2022 creating 13 new mandals).
-2. **Zero Fabrication:** These 23 mandals did not exist during the 2016 snapshot. They possess **NO version record** for `[2016-10-11, 2022-09-01)` and **zero geometry records**.
-3. **No Synthetic Relational Encoding:** PANIN will NOT fabricate synthetic polygon splits or infer containment mappings in statutory tables (`mandal_constituency_map`).
-4. **Preservation of `UNK-16-01`:** Current legal mandal geometry remains `UNKNOWN / BLOCKED` until a certified 612-mandal vector dataset is acquired from CCLA or Survey of India.
-
----
-
-## 9. Preservation of W015 Relational Primacy
-
-- `public.mandal_constituency_map` and `public.polling_booths` link directly to `public.mandals(id)` (stable anchor).
-- Introducing `mandal_versions` leaves `mandal_constituency_map` **100% untouched**.
-- Spatial relationships remain purely observational and never mutate statutory containment mappings.
-
----
-
-## 10. Preservation of W012 Data Governance
-
-- `mandal_versions` requires a non-null foreign key `primary_dataset_version_id REFERENCES public.dataset_versions(id) ON DELETE RESTRICT`.
-- Ingestion and maintenance operations log transformation nodes in `public.provenance_records` and linkages in `public.record_provenance_linkages` (`domain_table = 'mandal_versions'`).
-- Zero parallel governance tables are created.
-
----
-
-## 11. Scenario Isolation & Prospective Modeling
-
-- If hypothetical or prospective mandal reorganisations (e.g. Delimitation Simulation Lab models) are modeled in the future:
-  1. They must link to a `dataset_versions` record whose source has `authority_level = 'synthetic_model'`.
-  2. They must have `is_current = false`.
-  3. They must never be co-mingled with statutory historical or current versions.
-
----
-
-## 12. Proposed DDL Specification for Future W014 Extension
+## 9. Proposed DDL Specification for Future W014 Extension
 
 > [!CAUTION]
 > **DESIGN ONLY — NOT AUTHORIZED FOR IMPLEMENTATION.**  
-> The following DDL represents the complete technical design for a future W014 mandal versioning migration. It must NOT be created or executed until authorized by the CTO.
+> The following DDL represents the complete technical design for a future W014 mandal versioning migration. It must NOT be executed or placed in `supabase/migrations/` until authorized by the CTO.
 
 ```sql
 -- ==============================================================================
@@ -257,7 +227,8 @@ The acquired TGRAC mandal dataset contains exactly 589 features representing the
 
 BEGIN;
 
--- 1. Create Mandal Versions Table
+-- ─── 1. CREATE MANDAL VERSIONS TABLE ───────────────────────────────────────────
+
 CREATE TABLE IF NOT EXISTS public.mandal_versions (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   mandal_id TEXT NOT NULL REFERENCES public.mandals(id) ON DELETE RESTRICT,
@@ -270,7 +241,7 @@ CREATE TABLE IF NOT EXISTS public.mandal_versions (
   census_code_2011 VARCHAR(20),
   valid_from DATE NOT NULL,
   valid_to DATE,
-  is_current BOOLEAN NOT NULL DEFAULT true,
+  is_current BOOLEAN NOT NULL DEFAULT false, -- Fail-closed default
   primary_dataset_version_id TEXT NOT NULL REFERENCES public.dataset_versions(id) ON DELETE RESTRICT,
   metadata JSONB NOT NULL DEFAULT '{}'::jsonb,
   created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
@@ -278,6 +249,9 @@ CREATE TABLE IF NOT EXISTS public.mandal_versions (
 
   -- Unique version code
   CONSTRAINT uq_mandal_versions_code UNIQUE (version_code),
+
+  -- Composite unique key to support composite FK from mandals
+  CONSTRAINT uq_mandal_versions_id_mandal UNIQUE (id, mandal_id),
 
   -- Temporal non-overlapping interval exclusion
   CONSTRAINT uq_mandal_versions_no_overlap EXCLUDE USING gist (
@@ -291,25 +265,62 @@ CREATE TABLE IF NOT EXISTS public.mandal_versions (
   )
 );
 
--- 2. Supporting Indexes
+-- ─── 2. INDEXING ───────────────────────────────────────────────────────────────
+
 CREATE INDEX IF NOT EXISTS idx_mandal_versions_mandal_id ON public.mandal_versions(mandal_id);
 CREATE INDEX IF NOT EXISTS idx_mandal_versions_district_id ON public.mandal_versions(district_id);
 CREATE INDEX IF NOT EXISTS idx_mandal_versions_dataset ON public.mandal_versions(primary_dataset_version_id);
 CREATE INDEX IF NOT EXISTS idx_mandal_versions_current ON public.mandal_versions(mandal_id) WHERE is_current = true;
 
--- Single-current partial unique index
 CREATE UNIQUE INDEX IF NOT EXISTS uq_mandal_versions_single_current 
   ON public.mandal_versions (mandal_id) 
   WHERE is_current = true;
 
--- 3. Enhance Anchor Table
-ALTER TABLE public.mandals
-  ADD COLUMN IF NOT EXISTS current_version_id UUID REFERENCES public.mandal_versions(id) ON DELETE SET NULL,
-  ADD COLUMN IF NOT EXISTS valid_from DATE DEFAULT '2016-10-11',
-  ADD COLUMN IF NOT EXISTS valid_to DATE,
-  ADD COLUMN IF NOT EXISTS is_current BOOLEAN DEFAULT true;
+-- ─── 3. ENHANCE MANDALS ANCHOR (INTEGRITY HARDENED) ────────────────────────────
 
--- 4. Row Level Security
+ALTER TABLE public.mandals
+  ADD COLUMN IF NOT EXISTS current_version_id UUID,
+  ADD COLUMN IF NOT EXISTS is_active BOOLEAN NOT NULL DEFAULT true;
+
+-- Enforce same-anchor composite FK
+ALTER TABLE public.mandals
+  DROP CONSTRAINT IF EXISTS fk_mandals_current_version_same_anchor;
+
+ALTER TABLE public.mandals
+  ADD CONSTRAINT fk_mandals_current_version_same_anchor
+  FOREIGN KEY (current_version_id, id)
+  REFERENCES public.mandal_versions(id, mandal_id)
+  ON DELETE SET NULL;
+
+CREATE INDEX IF NOT EXISTS idx_mandals_current_version_id ON public.mandals(current_version_id);
+
+-- Enforce active-version check trigger
+CREATE OR REPLACE FUNCTION public.fn_guard_mandal_current_version()
+RETURNS TRIGGER AS $$
+BEGIN
+  IF NEW.current_version_id IS NOT NULL THEN
+    IF NOT EXISTS (
+      SELECT 1 FROM public.mandal_versions mv
+      WHERE mv.id = NEW.current_version_id
+        AND mv.mandal_id = NEW.id
+        AND mv.is_current = true
+    ) THEN
+      RAISE EXCEPTION 'INTEGRITY VIOLATION: current_version_id % must point to an active version (is_current = true) for mandal %',
+        NEW.current_version_id, NEW.id;
+    END IF;
+  END IF;
+  RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+DROP TRIGGER IF EXISTS trg_guard_mandal_current_version ON public.mandals;
+CREATE TRIGGER trg_guard_mandal_current_version
+  BEFORE INSERT OR UPDATE OF current_version_id ON public.mandals
+  FOR EACH ROW
+  EXECUTE FUNCTION public.fn_guard_mandal_current_version();
+
+-- ─── 4. ROW LEVEL SECURITY (RLS) ───────────────────────────────────────────────
+
 ALTER TABLE public.mandal_versions ENABLE ROW LEVEL SECURITY;
 
 DROP POLICY IF EXISTS "Public read mandal_versions" ON public.mandal_versions;
@@ -330,32 +341,7 @@ COMMIT;
 
 ---
 
-## 13. Safe Rollback Strategy
-
-Rollback of any future mandal versioning migration is strictly non-destructive to W012 governance data:
-```sql
--- SAFE ROLLBACK SCRIPT FOR MANDAL VERSIONING (DESIGN ONLY)
-BEGIN;
-
--- 1. Remove Anchor Pointers
-ALTER TABLE public.mandals
-  DROP COLUMN IF EXISTS current_version_id,
-  DROP COLUMN IF EXISTS valid_from,
-  DROP COLUMN IF EXISTS valid_to,
-  DROP COLUMN IF EXISTS is_current;
-
--- 2. Drop Version Table
-DROP TABLE IF EXISTS public.mandal_versions CASCADE;
-
--- 3. Preserve W012 Records
--- Do NOT delete from dataset_versions, datasets, or data_sources.
-
-COMMIT;
-```
-
----
-
-## 14. Required Acceptance Matrix
+## 10. Comprehensive Acceptance Matrix (Assertions A Through Q)
 
 | Assertion | Requirement | Design Requirement | Future Runtime Verification |
 |---|---|---|---|
@@ -371,19 +357,23 @@ COMMIT;
 | **J** | No 589 geometry ingestion performed during this task | Scope strictly limited to preflight design; zero geometry tables created | Catalog queries confirm zero geometry tables or rows exist. |
 | **K** | No 23 missing mandals fabricated | Missing 23 mandals remain absent from 2016 snapshot; no inferred aggregation in MCM | Audit confirms zero synthetic 2016 version rows and zero fabricated polygons. |
 | **L** | Rollback does not destroy W012 governance history | Rollback drops `mandal_versions` only; W012 dataset and provenance records remain intact | Rollback script execution leaves `dataset_versions` and `provenance_records` untouched. |
+| **M** | `current_version_id` integrity matches established W014 pattern | Composite FK `(current_version_id, id)` and trigger `fn_guard_mandal_current_version()` | Setting `current_version_id` to a version belonging to a different mandal raises Foreign Key Violation (`23503`). |
+| **N** | Stable mandal anchor does not contain duplicate temporal truth | `valid_from` and `valid_to` live exclusively on `mandal_versions`; anchor holds only `current_version_id` and `is_active` | Information schema audit confirms `valid_from` and `valid_to` do not exist on `public.mandals`. |
+| **O** | `mandal_versions` defaults `is_current = false` | Column definition: `is_current BOOLEAN NOT NULL DEFAULT false` (fail-closed) | `INSERT` into `mandal_versions` without specifying `is_current` results in `is_current = false`. |
+| **P** | 23 discrepancy chronology is evidence-qualified | Unverified chronologies classified as `UNKNOWN/UNVERIFIED`; zero unevidenced versions seeded | Audit of seeded `mandal_versions` confirms 100% of rows have verified statutory Gazette citations in metadata. |
+| **Q** | Mandal versioning conforms to existing W014 temporal semantics | GiST non-overlapping interval exclusion, calendar-independent currentness, and partial unique index | Inserting conflicting intervals or setting `is_current = true` with `valid_to NOT NULL` violates constraints. |
 
 ---
 
-## 15. Governance Summary & Final Checklist
+## 11. Governance Summary & Final Checklist
 
-- [x] Inspected actual current schema for `public.mandals`, W014 version tables, W015 MCM, and W012 provenance.
-- [x] Verified that `public.mandals.id` provides complete stable identity to anchor `mandal_versions`.
-- [x] Defined minimum canonical W014 `public.mandal_versions` architecture.
-- [x] Applied GiST non-overlapping interval exclusion and calendar-independent currentness check.
-- [x] Designed seamless integration with `geography_entity_lineage` for renames, splits, and transfers.
-- [x] Reconciled 589-mandal historical snapshot attachment without fabricating the 23 missing post-2016 mandals.
+- [x] Inspected actual Migration 041 anchor implementation; discovered unconstrained plain FK gap and duplicate anchor dates.
+- [x] Hardened `mandals.current_version_id` integrity via composite foreign key `(current_version_id, id)` and active check trigger.
+- [x] Eliminated duplicate temporal truth: `valid_from` and `valid_to` live exclusively on `public.mandal_versions`.
+- [x] Implemented fail-closed default: `is_current BOOLEAN NOT NULL DEFAULT false`.
+- [x] Evidence-qualified the 23-mandal discrepancy; classified unverified chronologies as `UNKNOWN/UNVERIFIED` (`UNK-16-01`).
+- [x] Preserved the 589 historical TGRAC snapshot window `[2016-10-11, 2022-09-01)`.
 - [x] Preserved W015 relational primacy (`mandal_constituency_map` untouched).
-- [x] Preserved W012 data governance and provenance resolution.
-- [x] Produced complete acceptance matrix (Assertions A through L).
+- [x] Updated acceptance matrix with assertions M through Q.
 - [x] Zero application code changes, zero database mutations, zero migrations created.
 - [x] Migration 044 remains strictly unauthorized.
