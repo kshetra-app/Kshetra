@@ -1,0 +1,223 @@
+{
+  "schema_version": "1.0.0",
+  "job": "W014-MANDAL-PREFLIGHT",
+  "title": "W014 Mandal Temporal Version Model Preflight",
+  "timestamp": "2026-09-24T18:45:00+05:30",
+  "baseline_commit": "8704afe55a67426b7d9a366402a4f1d5bae9788a",
+  "authority": "Independent CTO / Co-founder Directive W014 Mandal Version Prerequisite",
+  "authoritative_state": {
+    "w015": "ACCEPTED_COMPLETE",
+    "w015_b1": "ACCEPTED_COMPLETE",
+    "w015_b2": "ACCEPTED_COMPLETE",
+    "w016_a1_preflight": "ACCEPTED",
+    "w016_b1_preflight": "ACCEPTED",
+    "w016_b2_rehearsal": "ACCEPTED_COMPLETE",
+    "w016_c1_acquisition": "ACCEPTED_COMPLETE",
+    "w016_c2_reconciliation": "ACCEPTED",
+    "w016_c3_preflight": "CONDITIONALLY_ACCEPTED",
+    "w014_mandal_version_preflight": "SUBMITTED_FOR_CTO_REVIEW",
+    "migration_044": "STRICTLY_NOT_AUTHORIZED",
+    "database_mutations": "STRICTLY_NOT_AUTHORIZED",
+    "geometry_ingestion": "STRICTLY_NOT_AUTHORIZED",
+    "production_environment": "STRICTLY_UNTOUCHED"
+  },
+  "current_schema_audit": {
+    "mandals_table": {
+      "primary_key": "id TEXT",
+      "canonical_identifier_format": "<state_code>-MDL-<code_or_sno>",
+      "existing_columns": [
+        "id TEXT PRIMARY KEY",
+        "name TEXT NOT NULL",
+        "local_name TEXT",
+        "state_code TEXT NOT NULL REFERENCES states(code)",
+        "district TEXT NOT NULL",
+        "lgd_code INTEGER",
+        "type TEXT NOT NULL DEFAULT 'mandal'",
+        "headquarters TEXT",
+        "area_sq_km NUMERIC(10, 2)",
+        "population_2011 INTEGER",
+        "centroid GEOMETRY(Point, 4326)",
+        "boundary GEOMETRY(MultiPolygon, 4326)",
+        "district_id UUID REFERENCES districts(id)",
+        "primary_dataset_version_id TEXT REFERENCES dataset_versions(id)",
+        "created_at TIMESTAMPTZ",
+        "updated_at TIMESTAMPTZ"
+      ],
+      "existing_validity_dates": "NONE (No valid_from, valid_to, is_current, or current_version_id columns currently exist on public.mandals)",
+      "triggers": ["trg_mandals_updated_at"],
+      "indexes": [
+        "idx_mandals_state_code",
+        "idx_mandals_state_district",
+        "idx_mandals_lgd_code",
+        "idx_mandals_centroid",
+        "idx_mandals_boundary",
+        "idx_mandals_district_id"
+      ],
+      "rls_status": "Enabled; public read, service_role write"
+    },
+    "w014_pattern_analysis": {
+      "state_versions": "id UUID PK, state_code TEXT FK, version_code VARCHAR(50) UNIQUE, name, valid_from, valid_to, is_current, primary_dataset_version_id, GiST exclusion constraint on daterange, single current unique index",
+      "district_versions": "id UUID PK, district_id UUID FK, version_code VARCHAR(50) UNIQUE, name, valid_from, valid_to, is_current, primary_dataset_version_id, GiST exclusion constraint on daterange, single current unique index",
+      "parliamentary_constituency_versions": "id UUID PK, pc_id UUID FK, delimitation_regime_id VARCHAR(50) FK, version_code VARCHAR(50) UNIQUE, valid_from, valid_to, is_current, primary_dataset_version_id, GiST exclusion constraint, single current unique index",
+      "constituency_versions": "id UUID PK, constituency_internal_id UUID FK, delimitation_regime_id VARCHAR(50) FK, version_code VARCHAR(50) UNIQUE, valid_from, valid_to, is_current, primary_dataset_version_id, GiST exclusion constraint, single current unique index"
+    },
+    "w015_mcm_reference": "public.mandal_constituency_map.mandal_id references public.mandals(id) (stable anchor)",
+    "w014_lineage_status": "public.geography_entity_lineage already supports entity_type='mandal' (expanded in Migration 043)"
+  },
+  "stable_identity_evaluation": {
+    "finding": "public.mandals.id (TEXT PRIMARY KEY) provides sufficient stable anchor identity to support mandals -> mandal_versions without altering W013 identity semantics.",
+    "rationale": "Mirrors state_versions where state_code (TEXT PK of states) is referenced directly. Mandals id is immutable, referenced across all domain tables (mcm, gram_panchayats, polling_booths), and requires zero structural changes."
+  },
+  "minimum_w014_mandal_version_architecture": {
+    "table_name": "public.mandal_versions",
+    "columns": [
+      { "name": "id", "type": "UUID PRIMARY KEY DEFAULT gen_random_uuid()", "nullable": false },
+      { "name": "mandal_id", "type": "TEXT NOT NULL REFERENCES public.mandals(id) ON DELETE RESTRICT", "nullable": false },
+      { "name": "district_id", "type": "UUID NOT NULL REFERENCES public.districts(id) ON DELETE RESTRICT", "nullable": false },
+      { "name": "version_code", "type": "VARCHAR(50) NOT NULL", "nullable": false },
+      { "name": "name", "type": "TEXT NOT NULL", "nullable": false },
+      { "name": "name_te", "type": "TEXT", "nullable": true },
+      { "name": "headquarters", "type": "TEXT", "nullable": true },
+      { "name": "lgd_code", "type": "INTEGER", "nullable": true },
+      { "name": "census_code_2011", "type": "VARCHAR(20)", "nullable": true },
+      { "name": "valid_from", "type": "DATE NOT NULL", "nullable": false },
+      { "name": "valid_to", "type": "DATE", "nullable": true },
+      { "name": "is_current", "type": "BOOLEAN NOT NULL DEFAULT true", "nullable": false },
+      { "name": "primary_dataset_version_id", "type": "TEXT NOT NULL REFERENCES public.dataset_versions(id) ON DELETE RESTRICT", "nullable": false },
+      { "name": "metadata", "type": "JSONB NOT NULL DEFAULT '{}'::jsonb", "nullable": false },
+      { "name": "created_at", "type": "TIMESTAMPTZ NOT NULL DEFAULT now()", "nullable": false },
+      { "name": "updated_at", "type": "TIMESTAMPTZ NOT NULL DEFAULT now()", "nullable": false }
+    ],
+    "constraints": [
+      {
+        "name": "uq_mandal_versions_code",
+        "type": "UNIQUE",
+        "definition": "UNIQUE (version_code)"
+      },
+      {
+        "name": "uq_mandal_versions_no_overlap",
+        "type": "EXCLUDE_GIST",
+        "definition": "EXCLUDE USING gist (mandal_id WITH =, (daterange(valid_from, valid_to, '[)')) WITH &&)"
+      },
+      {
+        "name": "chk_mandal_versions_current_invariants",
+        "type": "CHECK",
+        "definition": "CHECK ((is_current = false) OR (is_current = true AND valid_to IS NULL))"
+      }
+    ],
+    "indexes": [
+      { "name": "idx_mandal_versions_mandal_id", "type": "BTREE", "definition": "(mandal_id)" },
+      { "name": "idx_mandal_versions_district_id", "type": "BTREE", "definition": "(district_id)" },
+      { "name": "idx_mandal_versions_current", "type": "BTREE", "definition": "(mandal_id) WHERE is_current = true" },
+      { "name": "uq_mandal_versions_single_current", "type": "UNIQUE_PARTIAL", "definition": "(mandal_id) WHERE is_current = true" }
+    ],
+    "anchor_table_enhancement": {
+      "table": "public.mandals",
+      "proposed_additions": [
+        "ADD COLUMN current_version_id UUID REFERENCES public.mandal_versions(id) ON DELETE SET NULL",
+        "ADD COLUMN valid_from DATE DEFAULT '2016-10-11'",
+        "ADD COLUMN valid_to DATE",
+        "ADD COLUMN is_current BOOLEAN DEFAULT true"
+      ]
+    }
+  },
+  "temporal_and_lineage_semantics": {
+    "interval_rules": "Valid intervals [valid_from, valid_to) are half-open. Overlapping intervals for the same mandal_id are strictly prohibited by GiST exclusion. Contiguous adjacent intervals (e.g. [2016-10-11, 2022-09-01) and [2022-09-01, NULL)) are fully permitted.",
+    "lifecycle_transitions": {
+      "rename": "New version record inserted with updated name, valid_from set to Gazette notification date; previous version updated with valid_to and is_current=false.",
+      "creation": "New mandals anchor inserted; initial mandal_version created with valid_from=effective_date, valid_to=NULL, is_current=true.",
+      "split": "Predecessor mandal_version closed (valid_to assigned); successor mandal versions created; lineage recorded in public.geography_entity_lineage with transition_type='split'.",
+      "merge": "Predecessor mandal versions closed; unified successor version created; lineage recorded in public.geography_entity_lineage with transition_type='merge'.",
+      "abolition": "Active mandal_version closed with statutory abolition date (valid_to assigned, is_current=false); anchor is_current set to false."
+    }
+  },
+  "snapshot_589_reconciliation": {
+    "regime_period": "2016-10-11 to 2022-09-01 (October 2016 31-district reorganisation baseline)",
+    "version_representation": "Each of the 589 mandals has a historical mandal_versions row with valid_from='2016-10-11', valid_to='2022-09-01', is_current=false.",
+    "geometry_attachment": "entity_geometries.mandal_version_id references this exact historical mandal_version UUID.",
+    "blocker_treatment_23_mandals": "The 23 post-2016 mandals did not exist during the 2016 snapshot. They possess NO historical version row for [2016-10-11, 2022-09-01). They remain UNKNOWN / BLOCKED for geometry (UNK-16-01). No synthetic polygons or inferred aggregation mappings are created in statutory tables."
+  },
+  "preservation_of_adjacent_layers": {
+    "w015_relational_primacy": "public.mandal_constituency_map and public.polling_booths continue referencing public.mandals(id) stable anchor. Zero schema or query changes to W015.",
+    "w012_data_governance": "mandal_versions links to dataset_versions via primary_dataset_version_id; provenance DAG records ingest/transition nodes. No duplicate governance structures.",
+    "scenario_isolation": "Scenario mandal projections (if any) are isolated via separate dataset_versions (source_authority='synthetic_model') with is_current=false, strictly separated from statutory legal versions."
+  },
+  "acceptance_matrix": [
+    {
+      "assertion_id": "A",
+      "requirement": "mandal_versions has a real FK to mandals",
+      "design_requirement": "mandal_id TEXT NOT NULL REFERENCES public.mandals(id) ON DELETE RESTRICT",
+      "future_runtime_verification": "INSERT mandal_version with non-existent mandal_id fails with foreign key violation 23503"
+    },
+    {
+      "assertion_id": "B",
+      "requirement": "Every mandal_version resolves to exactly one stable mandal identity",
+      "design_requirement": "NOT NULL foreign key constraint on mandal_id ensures 100% resolution to public.mandals",
+      "future_runtime_verification": "Querying mandal_versions with LEFT JOIN mandals WHERE mandals.id IS NULL returns 0 rows"
+    },
+    {
+      "assertion_id": "C",
+      "requirement": "Historical intervals cannot overlap for the same stable mandal identity",
+      "design_requirement": "GiST exclusion constraint uq_mandal_versions_no_overlap on mandal_id with daterange",
+      "future_runtime_verification": "Inserting overlapping date ranges for the same mandal_id raises exclusion violation 23P01"
+    },
+    {
+      "assertion_id": "D",
+      "requirement": "Adjacent valid intervals are allowed",
+      "design_requirement": "Half-open daterange '[)' allows [2016-10-11, 2022-09-01) and [2022-09-01, NULL) without overlap",
+      "future_runtime_verification": "Inserting contiguous adjacent date ranges succeeds without exclusion error"
+    },
+    {
+      "assertion_id": "E",
+      "requirement": "Current version semantics match existing W014 patterns",
+      "design_requirement": "Partial unique index uq_mandal_versions_single_current and check constraint valid_to IS NULL",
+      "future_runtime_verification": "Setting is_current=true on two versions of the same mandal raises unique violation 23505"
+    },
+    {
+      "assertion_id": "F",
+      "requirement": "Historical 2016-2022 snapshot can attach to exact versions",
+      "design_requirement": "Historical version row has explicit valid_from='2016-10-11', valid_to='2022-09-01', is_current=false",
+      "future_runtime_verification": "entity_geometries.mandal_version_id successfully joins to mandal_versions with valid_to = '2022-09-01'"
+    },
+    {
+      "assertion_id": "G",
+      "requirement": "W015 relationships remain unchanged",
+      "design_requirement": "mandal_constituency_map and polling_booths maintain foreign keys to public.mandals(id)",
+      "future_runtime_verification": "MCM row count and integrity checks pass with zero modifications during mandal_versions creation"
+    },
+    {
+      "assertion_id": "H",
+      "requirement": "No current legal mandal geometry can be created without a W014 version",
+      "design_requirement": "entity_geometries.mandal_version_id is NOT NULL for mandal type and references mandal_versions.id",
+      "future_runtime_verification": "Inserting mandal geometry without mandal_version_id fails with check/FK violation"
+    },
+    {
+      "assertion_id": "I",
+      "requirement": "W012 provenance can resolve where required",
+      "design_requirement": "primary_dataset_version_id references dataset_versions(id) and linkages in record_provenance_linkages",
+      "future_runtime_verification": "Joining mandal_versions to dataset_versions and provenance_records resolves 100%"
+    },
+    {
+      "assertion_id": "J",
+      "requirement": "No 589 geometry ingestion is performed during this task",
+      "design_requirement": "Preflight scope strictly limited to documentation; zero geometry tables or rows created",
+      "future_runtime_verification": "SELECT count(*) FROM information_schema.tables WHERE table_name = 'entity_geometries' returns 0"
+    },
+    {
+      "assertion_id": "K",
+      "requirement": "No 23 missing mandals are fabricated",
+      "design_requirement": "Missing 23 mandals remain unrepresented in 2016 snapshot; no inferred spatial aggregation in MCM",
+      "future_runtime_verification": "Audit confirms zero synthetic geometry rows and zero fictitious 2016 version records"
+    },
+    {
+      "assertion_id": "L",
+      "requirement": "Rollback semantics do not destroy W012 governance history",
+      "design_requirement": "Rollback drops mandal_versions only; W012 dataset_versions and provenance records remain intact",
+      "future_runtime_verification": "Executing rollback drops mandal_versions table while leaving dataset_versions untouched"
+    }
+  ],
+  "decision_matrix": {
+    "mandal_version_model": "READY FOR PRE-IMPLEMENTATION GOVERNANCE REVIEW",
+    "notes": "Preflight only. Migration creation, database alteration, and geometry ingestion remain strictly prohibited."
+  }
+}
