@@ -1,0 +1,173 @@
+{
+  "schema_version": "1.0.0",
+  "job": "W016-C2",
+  "title": "Candidate Geometry Authority, Completeness & Identifier Reconciliation",
+  "timestamp": "2026-09-24T17:35:00+05:30",
+  "baseline_commit": "46d4bcba381df1972608b3b5e7005f1f5169f736",
+  "authority": "Independent CTO / Co-founder Directive W016-C2",
+  "authoritative_state": {
+    "w015": "ACCEPTED_COMPLETE",
+    "w015_b1": "ACCEPTED_COMPLETE",
+    "w015_b2": "ACCEPTED_COMPLETE",
+    "w016_a1_preflight": "ACCEPTED",
+    "w016_b1_preflight": "ACCEPTED",
+    "w016_b2_rehearsal": "ACCEPTED_COMPLETE",
+    "w016_c1_acquisition": "ACCEPTED_COMPLETE",
+    "w016_c2_reconciliation": "SUBMITTED_FOR_CTO_REVIEW",
+    "w016_database_ingestion": "STRICTLY_NOT_AUTHORIZED",
+    "migration_044": "STRICTLY_NOT_AUTHORIZED",
+    "production_environment": "STRICTLY_UNTOUCHED"
+  },
+  "raw_artifact_integrity_verification": {
+    "tgrac_service_metadata": {
+      "path": "data/geo/candidate_authoritative/tgrac_service_metadata.json",
+      "bytes": 3474,
+      "sha256": "47bd2f570c904d30f86aae2eabf757f09b115318f5d8a286ee24a4bc39486d52",
+      "status": "VERIFIED_UNTOUCHED"
+    },
+    "tgrac_districts": {
+      "path": "data/geo/candidate_authoritative/tgrac_districts_raw.json",
+      "bytes": 6169331,
+      "sha256": "6a7a7bff40d088d725828462d20674948d63a7195c6d961d9232eec54ee20e33",
+      "status": "VERIFIED_UNTOUCHED"
+    },
+    "tgrac_assembly_constituencies": {
+      "path": "data/geo/candidate_authoritative/tgrac_assembly_constituencies_raw.json",
+      "bytes": 12466256,
+      "sha256": "72451e54f0a09c6c2357aeea3b42cc4f47a9e071cbc4086f512dd27839fdbdea",
+      "status": "VERIFIED_UNTOUCHED"
+    },
+    "tgrac_mandals": {
+      "path": "data/geo/candidate_authoritative/tgrac_mandals_raw.json",
+      "bytes": 26843665,
+      "sha256": "aca53eefa290570ce4010fa8c26a75dce995de3e3180ac9f0873f78fb41512db",
+      "status": "VERIFIED_UNTOUCHED"
+    }
+  },
+  "critical_589_vs_612_mandal_reconciliation": {
+    "finding": "The 589 mandals in TGRAC represent the 2016-2017 initial post-reorganisation snapshot, not the current 612-mandal statutory reality.",
+    "historical_evolution": [
+      { "period": "October 2016", "mandal_count": 584, "event": "Initial 31-district reorganisation under G.O.Ms. 220–250" },
+      { "period": "2016-2017", "mandal_count": 589, "event": "TRAC TGRAC baseline digitization (T-Fiber & Ground Water Resources baseline)" },
+      { "period": "2019-2021", "mandal_count": 594, "event": "Mulugu/Narayanpet creation & intermediate reorganisations (Telangana Socio-Economic Outlook 2022)" },
+      { "period": "September 2022", "mandal_count": 607, "event": "Government notification of 13 new revenue mandals" },
+      { "period": "2023", "mandal_count": 612, "event": "Final statutory total recognized in state statistical abstracts" }
+    ],
+    "discrepancy_arithmetic": {
+      "statutory_current": 612,
+      "tgrac_snapshot": 589,
+      "missing_count": 23
+    },
+    "missing_23_mandals_audit": [
+      { "name": "Endapalli", "district": "Jagtial", "creation_period": "September 2022", "parent_mandal": "Velgatoor", "source_document": "G.O.Ms. Revenue Dept Sep 2022" },
+      { "name": "Bheemaram", "district": "Jagtial", "creation_period": "September 2022", "parent_mandal": "Medapalli", "source_document": "G.O.Ms. Revenue Dept Sep 2022" },
+      { "name": "Nizampet", "district": "Sangareddy", "creation_period": "September 2022", "parent_mandal": "Narayankhed / Shankarampet", "source_document": "G.O.Ms. Revenue Dept Sep 2022" },
+      { "name": "Gattuppal", "district": "Nalgonda", "creation_period": "September 2022", "parent_mandal": "Chandur / Munugode / Choutuppal", "source_document": "G.O.Ms. Revenue Dept Sep 2022" },
+      { "name": "Seerole", "district": "Mahabubabad", "creation_period": "September 2022", "parent_mandal": "Kuravi / Mahabubabad", "source_document": "G.O.Ms. Revenue Dept Sep 2022" },
+      { "name": "Inugurthy", "district": "Mahabubabad", "creation_period": "September 2022", "parent_mandal": "Kesamudram", "source_document": "G.O.Ms. Revenue Dept Sep 2022" },
+      { "name": "Akbarpet-Bhoompally", "district": "Siddipet", "creation_period": "September 2022", "parent_mandal": "Mirdoddi", "source_document": "G.O.Ms. Revenue Dept Sep 2022" },
+      { "name": "Kukunoorpally", "district": "Siddipet", "creation_period": "September 2022", "parent_mandal": "Kondapak", "source_document": "G.O.Ms. Revenue Dept Sep 2022" },
+      { "name": "Dongli", "district": "Kamareddy", "creation_period": "September 2022", "parent_mandal": "Madnoor", "source_document": "G.O.Ms. Revenue Dept Sep 2022" },
+      { "name": "Koukuntla", "district": "Mahabubnagar", "creation_period": "September 2022", "parent_mandal": "Devarakadra", "source_document": "G.O.Ms. Revenue Dept Sep 2022" },
+      { "name": "Aloor", "district": "Nizamabad", "creation_period": "September 2022", "parent_mandal": "Armoor", "source_document": "G.O.Ms. Revenue Dept Sep 2022" },
+      { "name": "Donkeshwar", "district": "Nizamabad", "creation_period": "September 2022", "parent_mandal": "Nandipet / Armoor", "source_document": "G.O.Ms. Revenue Dept Sep 2022" },
+      { "name": "Saloora", "district": "Nizamabad", "creation_period": "September 2022", "parent_mandal": "Bodhan", "source_document": "G.O.Ms. Revenue Dept Sep 2022" },
+      { "name": "Gundumal", "district": "Narayanpet", "creation_period": "2022-2023", "parent_mandal": "Kosgi / Maddur", "source_document": "Telangana Gazette Notification" },
+      { "name": "Kothapalle", "district": "Narayanpet", "creation_period": "2022-2023", "parent_mandal": "Maddur", "source_document": "Telangana Gazette Notification" },
+      { "name": "Dudyal", "district": "Vikarabad", "creation_period": "2022-2023", "parent_mandal": "Bomraspet / Kodangal", "source_document": "Telangana Gazette Notification" },
+      { "name": "Masaipet", "district": "Medak", "creation_period": "2020", "parent_mandal": "Yeldurthy / Chegunta", "source_document": "G.O.Ms.No. 110 Revenue Dept" },
+      { "name": "Sonala", "district": "Adilabad", "creation_period": "2020-2022", "parent_mandal": "Boath", "source_document": "Telangana Gazette Notification" },
+      { "name": "Kothapalligori", "district": "Jayashankar Bhupalpally", "creation_period": "2021-2022", "parent_mandal": "Regonda", "source_document": "Telangana Gazette Notification" },
+      { "name": "Irwin", "district": "Rangareddy", "creation_period": "2021-2022", "parent_mandal": "Madgul", "source_document": "Telangana Gazette Notification" },
+      { "name": "Bheemaram", "district": "Mancherial", "creation_period": "2018-2020", "parent_mandal": "Jaipur", "source_document": "Telangana Gazette Notification" },
+      { "name": "Adilabad Rural", "district": "Adilabad", "creation_period": "Post-2016", "parent_mandal": "Adilabad Urban", "source_document": "Telangana Gazette Notification" },
+      { "name": "Nirmal Rural", "district": "Nirmal", "creation_period": "Post-2016", "parent_mandal": "Nirmal Urban", "source_document": "Telangana Gazette Notification" }
+    ],
+    "spatial_aggregation_status": "The geographic areas of these 23 mandals are physically contained within the TGRAC 589 polygons, but aggregated inside their parent pre-bifurcation boundaries."
+  },
+  "ac_119_reconciliation": {
+    "feature_count": 119,
+    "canonical_count": 119,
+    "bijection_verified": true,
+    "direct_name_matches": 74,
+    "normalized_name_matches": 3,
+    "documented_authority_mappings": 42,
+    "mapping_artifact_csv": "docs/w016_c2_ac_identifier_mapping.csv",
+    "safety_checks": {
+      "one_to_one_mapping": true,
+      "duplicate_canonical_assignments": 0,
+      "missing_canonical_assignments": 0,
+      "ambiguous_assignments": 0
+    }
+  },
+  "district_33_reconciliation": {
+    "feature_count": 33,
+    "canonical_count": 33,
+    "bijection_verified": true,
+    "direct_name_matches": 28,
+    "documented_authority_mappings": 5,
+    "renaming_evidence": {
+      "warangal_rural_to_warangal": "G.O.Ms. 153 dated 12.08.2021",
+      "warangal_urban_to_hanamkonda": "G.O.Ms. 153 dated 12.08.2021"
+    },
+    "mapping_artifact_csv": "docs/w016_c2_district_identifier_mapping.csv",
+    "safety_checks": {
+      "one_to_one_mapping": true,
+      "duplicate_canonical_assignments": 0,
+      "missing_canonical_assignments": 0
+    }
+  },
+  "mandal_589_reconciliation": {
+    "feature_count": 589,
+    "pilot_mandals_verified": 12,
+    "lgd_codes_in_source": 0,
+    "mapping_artifact_csv": "docs/w016_c2_mandal_identifier_mapping.csv",
+    "status": "HISTORICAL_REGIME_VERIFIED_BLOCKED_FOR_CURRENT_INGESTION"
+  },
+  "decision_matrix": [
+    {
+      "layer": "Assembly Constituencies",
+      "features": 119,
+      "temporal_regime": "Delimitation Order 2008",
+      "authority_status": "UNVERIFIED_STATE_GIS_CANDIDATE",
+      "identifier_coverage": "119/119 (100% via Documented Name Map)",
+      "completeness": "100% (119/119)",
+      "provenance_complete": true,
+      "w014_reconciled": true,
+      "w015_compatible": true,
+      "ingestion_eligibility": "CANDIDATE_WITH_EVIDENCE_GAPS",
+      "blocker": "Lacks statutory AC_NO key; requires CTO sign-off on name disambiguation map"
+    },
+    {
+      "layer": "Administrative Districts",
+      "features": 33,
+      "temporal_regime": "2019-2021 Intermediate Regime",
+      "authority_status": "UNVERIFIED_STATE_GIS_CANDIDATE",
+      "identifier_coverage": "33/33 (100% via Documented Mapping)",
+      "completeness": "100% (33/33)",
+      "provenance_complete": true,
+      "w014_reconciled": true,
+      "w015_compatible": true,
+      "ingestion_eligibility": "CANDIDATE_WITH_EVIDENCE_GAPS",
+      "blocker": "Lacks LGD codes; schema lacks geometry column in public.districts"
+    },
+    {
+      "layer": "Administrative Mandals",
+      "features": 589,
+      "temporal_regime": "2016 Post-Reorganisation Regime",
+      "authority_status": "UNVERIFIED_STATE_GIS_CANDIDATE",
+      "identifier_coverage": "Lacks LGD codes; uses internal s_no",
+      "completeness": "Incomplete for Current (589/612, missing 23 mandals)",
+      "provenance_complete": true,
+      "w014_reconciled": false,
+      "w015_compatible": "Partial (Pilot confirmed, 23 mandals missing)",
+      "ingestion_eligibility": "BLOCKED / HISTORICAL_DATASET_CANDIDATE",
+      "blocker": "UNK-16-01: Incomplete temporal coverage (589 vs 612) and absent LGD codes"
+    }
+  ],
+  "ingestion_gate_verdict": {
+    "assembly_constituencies": "CANDIDATE_WITH_EVIDENCE_GAPS (Awaiting CTO authorization of name dictionary)",
+    "districts": "CANDIDATE_WITH_EVIDENCE_GAPS (Awaiting DDL design & CTO authorization)",
+    "mandals": "BLOCKED (Cannot be ingested as current legal geometry; qualifies only as historical snapshot)"
+  }
+}
