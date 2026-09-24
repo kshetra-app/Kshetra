@@ -1,24 +1,24 @@
-# W014: Mandal Temporal Version Model Preflight (Definitive Column-Level UPDATE Privilege Verification & Designated Canonical Transition Path)
+# W014: Mandal Temporal Version Model Implementation & Staging Verification Package
 
-**Authority:** Independent CTO / Co-founder Directive — W014 Final CTO Micro-Correction (Column-Level Privilege Verification)  
-**Status:** SUBMITTED FOR FINAL CTO REVIEW  
-**Scope:** Architectural & Technical Preflight Design Only (Zero DDL Execution / Zero DB Mutations / Production Untouched)  
-**Baseline Commit:** `82d68e6c77ae2dd6e95a6ce264b288e7246ce4ee`  
+**Authority:** Independent CTO / Co-founder Directive — `W014 CTO FINAL PREFLIGHT GATE — IMPLEMENTATION AUTHORIZED`  
+**Status:** IMPLEMENTATION COMPLETE — SUBMITTED FOR FINAL CTO ACCEPTANCE  
+**Authorized Scope:** W014 Mandal Temporal Version Architecture (Migration 041 Section 11)  
+**Baseline Commit:** `f29c58b92164566243b68c95fa9ef7ef081b1262`  
 **Date:** September 2026  
 
 ---
 
 ## 1. Executive Summary & Authoritative Coordinates
 
-In accordance with the **CTO Directive on W014 Final CTO Micro-Correction (Column-Level Privilege Verification)**, this document establishes the finalized, security-hardened preflight design for the canonical W014 sub-district mandal temporal version model.
+In accordance with the **CTO Implementation Authorization for W014 Mandal Temporal Version Architecture**, the approved architecture has been implemented directly into Section 11 of Canonical Migration 041 ([`supabase/migrations/041_geography_versioning_and_temporal_validity.sql`](file:///c:/Users/Laven/OneDrive/Desktop/Kshetra/supabase/migrations/041_geography_versioning_and_temporal_validity.sql)).
 
-This release:
-1. **Definitively Corrects PUBLIC ACL Verification:** Eliminates all procedural `has_function_privilege('public', ...)` checks. Implements definitive PostgreSQL catalog ACL inspection via `pg_proc.proacl` and `aclexplode()`, establishing that `PUBLIC` (`grantee = 0`) possesses zero `EXECUTE` privilege entries. Prohibits any runtime `SET ROLE PUBLIC` test.
-2. **Resolves Exact Function Signature from Source Truth:** Fully reconciles and documents the canonical 5-parameter signature: `public.fn_transition_mandal_current_version(p_mandal_id TEXT, p_new_version_id UUID, p_effective_date DATE, p_operator TEXT, p_provenance_id UUID DEFAULT NULL)`. Resolves the discrepancy regarding the 4-parameter variant `(TEXT, UUID, TEXT, UUID)` which erroneously omitted `p_effective_date DATE`, demonstrating why statutory temporal synchronization requires the DATE parameter. Establishes the exact PostgreSQL `regprocedure` identity: `public.fn_transition_mandal_current_version(text,uuid,date,text,uuid)` across all DDL, ACLs, and test specifications.
-3. **Preserves the 4-Class Role Verification Model:** Retains strict classification across **Class A** (PUBLIC catalog ACL inspection; anon/authenticated runtime tests $\to$ 42501; zero DML), **Class B** (`panin_boundary_admin` EXECUTE granted; direct DML denied $\to$ 42501; valid transition succeeds), **Class C** (`service_role` EXECUTE granted; direct DML classified as trusted infrastructure exception), and **Class D** (`panin_boundary_definer` NOLOGIN owner; catalog inspection of ownership, role attributes, zero role memberships, and least-privilege table grants).
-4. **Definitively Establishes Column-Level UPDATE Privilege Verification:** Restricts `has_table_privilege()` strictly to table-level assertions (`INSERT`, `DELETE`, `TRUNCATE`, `REFERENCES`, `TRIGGER`, `SELECT`), and implements definitive column-level verification via `has_column_privilege()` and `information_schema.column_privileges`. Explicitly proves that on `public.mandals`, UPDATE is granted ONLY on `(current_version_id, updated_at)` and evaluates to `false` on all other 15 columns (`id`, `name`, `local_name`, `state_code`, `district`, `lgd_code`, `type`, `headquarters`, `area_sq_km`, `population_2011`, `centroid`, `boundary`, `district_id`, `primary_dataset_version_id`, `created_at`). Explicitly proves that on `public.mandal_versions`, UPDATE is granted ONLY on `(is_current, valid_from, valid_to, updated_at)` and evaluates to `false` on all other 12 columns (`id`, `mandal_id`, `district_id`, `version_code`, `name`, `name_te`, `headquarters`, `lgd_code`, `census_code_2011`, `primary_dataset_version_id`, `metadata`, `created_at`). Establishes catalog exclusion queries asserting zero other columns are UPDATE-grantable to `panin_boundary_definer`.
-5. **Maintains Application Path vs. Infrastructure Exception Distinction:** Designates `public.fn_transition_mandal_current_version()` as the **"Designated Canonical Application Transition Path"** for all application workflows and administrative UIs.
-6. **Preserves All Baseline Governance:** W012 contract inheritance, narrowed M15 provenance semantics, and M14 zero-privilege `p_operator` semantics remain intact, with all M1–M15 assertions classified strictly as **`DESIGNED / TO-BE VERIFIED`**.
+This implementation:
+1. **Delivers Stable Anchor / Version Separation:** Adds `mandals.current_version_id` referencing `public.mandal_versions` with composite same-anchor foreign key `fk_mandals_current_version_same_anchor (current_version_id, id) REFERENCES public.mandal_versions(id, mandal_id) ON DELETE RESTRICT`.
+2. **Enforces Temporal Validity & Single-Current Partial Uniqueness:** Implements `[valid_from, valid_to)` half-open intervals, `uq_mandal_versions_no_overlap` GiST exclusion, `chk_mandal_versions_current_invariants` check constraint, and partial unique index `uq_mandal_versions_single_current ON (mandal_id) WHERE is_current = true`.
+3. **Implements Bidirectional Constraint Triggers:** Layer 2 (`trg_guard_mandal_current_version` on `mandals`) enforces `is_current = true` and W012 institutional authority (`dataset_versions.default_status = 'OFFICIAL'`). Layer 3 (`trg_guard_mandal_version_retirement` on `mandal_versions`) prevents retiring or deleting a version actively pointed to by `mandals.current_version_id`.
+4. **Delivers Canonical 5-Parameter Atomic Transition Function:** `public.fn_transition_mandal_current_version(p_mandal_id TEXT, p_new_version_id UUID, p_effective_date DATE, p_operator TEXT, p_provenance_id UUID DEFAULT NULL)` with `SECURITY DEFINER`, search_path `public, pg_temp`, row locking `FOR UPDATE`, and structured JSONB receipt with zero procedural role authorization checks.
+5. **Enforces Hardened Security Definer & ACL Boundary:** Dedicated owner `panin_boundary_definer` (`NOLOGIN`, `NOSUPERUSER`, `NOCREATEDB`, `NOCREATEROLE`, zero role memberships, not table owner). Definer has SELECT on required tables and column-level UPDATE ONLY on `mandals(current_version_id, updated_at)` and `mandal_versions(is_current, valid_from, valid_to, updated_at)`. Execution ACL: `REVOKE ALL FROM PUBLIC, anon, authenticated`; `GRANT EXECUTE TO service_role, panin_boundary_admin`.
+6. **Packages Staging Migration & Verification Scripts:** Accompanied by synchronized atomic staging package ([`supabase/staging_migration_package_041.sql`](file:///c:/Users/Laven/OneDrive/Desktop/Kshetra/supabase/staging_migration_package_041.sql)), 23-check SQL verification battery ([`supabase/verify_staging_migration_package_041.sql`](file:///c:/Users/Laven/OneDrive/Desktop/Kshetra/supabase/verify_staging_migration_package_041.sql)), deterministic rollback package ([`supabase/rollback_staging_migration_package_041.sql`](file:///c:/Users/Laven/OneDrive/Desktop/Kshetra/supabase/rollback_staging_migration_package_041.sql)), and M1–M15 test runner ([`tests/test_mandal_version_integrity.mjs`](file:///c:/Users/Laven/OneDrive/Desktop/Kshetra/tests/test_mandal_version_integrity.mjs)).
 
 ### Authoritative State Matrix
 
@@ -33,9 +33,9 @@ This release:
 | **W016-C1 (Candidate Acquisition)** | `ACCEPTED_COMPLETE` | Commit [`46d4bcb`](https://github.com/kshetra-app/Kshetra/commit/46d4bcb) |
 | **W016-C2 (Reconciliation Package)** | `ACCEPTED` | Commit [`3d30640`](https://github.com/kshetra-app/Kshetra/commit/3d30640) |
 | **W016-C3 (Geometry Preflight)** | `CONDITIONALLY_ACCEPTED` | Commit [`8704afe`](https://github.com/kshetra-app/Kshetra/commit/8704afe) |
-| **W014 Mandal Temporal Preflight (Round 8)** | `COLUMN_PRIVILEGE_CORRECTION_SUBMISSION` | This Document |
-| **Migration 044 Execution** | `STRICTLY_NOT_AUTHORIZED` | Frozen |
-| **Database Mutations / Ingestion** | `STRICTLY_NOT_AUTHORIZED` | Frozen |
+| **W014 Mandal Temporal Architecture** | `IMPLEMENTATION_PACKAGE_SUBMITTED_FOR_CTO_ACCEPTANCE` | Migration 041 Section 11 |
+| **Migration 044 Execution** | `STRICTLY_NOT_CREATED` | Frozen |
+| **Database Mutations / Ingestion** | `STAGING_PACKAGE_PREPARED` | Pending Staging Execution |
 | **Production Environment** | `STRICTLY_UNTOUCHED` | Air-Gapped |
 
 ---

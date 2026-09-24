@@ -1,125 +1,104 @@
-# W014: STAGING MIGRATION APPLICATION PACKAGE (041)
-## Geography Versioning / Temporal Validity Model & AC 109 Chronology Pilot
+# W014 Mandal Temporal Version Architecture: Staging Migration Application Package
 
-```
-JOB:                     W014 (Geography Versioning / Temporal Validity)
-TARGET ENVIRONMENT:      panIN-staging (fkpigozcqnmcvofuksar.supabase.co)
-TARGET PROJECT ID:       fkpigozcqnmcvofuksar
-AUTHORIZED BASELINE:     Migration 040 accepted on panIN-staging
-MIGRATION ID:            041_geography_versioning_and_temporal_validity
-CANONICAL MIGRATION:     supabase/migrations/041_geography_versioning_and_temporal_validity.sql
-ATOMIC STAGING PACKAGE:  supabase/staging_migration_package_041.sql
-VERIFICATION SQL:        supabase/verify_staging_migration_package_041.sql
-PREFLIGHT SUITE:         scripts/verify_w014_temporal_validity.mjs
-TEST BATTERY:            tests/verify_w014_temporal_validity.mjs
-BOM ENFORCEMENT:         0 U+FEFF characters across all files (100% verified)
-EXECUTION TARGET:        STAGING ONLY — PRODUCTION STRICTLY PROHIBITED
-```
+**Target Database:** `panIN-staging` (`fkpigozcqnmcvofuksar.supabase.co`)  
+**Authorized Scope:** W014 Mandal Temporal Version Architecture (Section 11 of Migration 041)  
+**Authorized Baseline Commit:** `f29c58b92164566243b68c95fa9ef7ef081b1262`  
+**Governance Authority:** CTO Directive — `W014 CTO FINAL PREFLIGHT GATE — IMPLEMENTATION AUTHORIZED`  
+**Environment Isolation:** Staging Only. Production remains 100% untouched.
 
 ---
 
-## 1. Executive Summary & Design Foundations
+## 1. Migration Package Registry & Cryptographic Fingerprints
 
-This staging package implements **W014 — Geography Versioning / Temporal Validity** under the approved Dual-Table Anchor Architecture:
+| File Path | Description | SHA-256 Checksum |
+|---|---|---|
+| [`supabase/migrations/041_geography_versioning_and_temporal_validity.sql`](file:///c:/Users/Laven/OneDrive/Desktop/Kshetra/supabase/migrations/041_geography_versioning_and_temporal_validity.sql) | Canonical Migration 041 (Sections 1–11) | `ab3567669e16fa8ed62bc4fcb00e72aed2ce40bb027c44387158392f1a402ba3` |
+| [`supabase/staging_migration_package_041.sql`](file:///c:/Users/Laven/OneDrive/Desktop/Kshetra/supabase/staging_migration_package_041.sql) | Synchronized Atomic Staging Migration Package | `ab3567669e16fa8ed62bc4fcb00e72aed2ce40bb027c44387158392f1a402ba3` |
+| [`supabase/verify_staging_migration_package_041.sql`](file:///c:/Users/Laven/OneDrive/Desktop/Kshetra/supabase/verify_staging_migration_package_041.sql) | Comprehensive 23-Check SQL Verification Battery | `bce98521a6a785b12132a926fadeaac848276e15aa5c609750ca86fa189bb889` |
+| [`supabase/rollback_staging_migration_package_041.sql`](file:///c:/Users/Laven/OneDrive/Desktop/Kshetra/supabase/rollback_staging_migration_package_041.sql) | Deterministic Rollback Package | `29ae29413c9655d8c8974534f3faecb7056d12968f53c2a0136451345b05caf2` |
+| [`tests/test_mandal_version_integrity.mjs`](file:///c:/Users/Laven/OneDrive/Desktop/Kshetra/tests/test_mandal_version_integrity.mjs) | Automated M1–M15 Acceptance Test Suite | `58300bc6020594ad1de64321d74bfbae363087662bcf1f2e6ab47aed68e7260c` |
+| [`scripts/verify_w014_temporal_validity.mjs`](file:///c:/Users/Laven/OneDrive/Desktop/Kshetra/scripts/verify_w014_temporal_validity.mjs) | Static Preflight & Integrity Validator | `f2661ef6a5e5f997c698fe22cd67c3d4167b15e7f5b85c5b9fe884e1eda6dd9b` |
 
-1. **Dual-Table Anchor Model**:
-   - Anchor tables (`states`, `districts`, `parliamentary_constituencies`, `constituencies`) provide stable persistent primary keys for foreign key references from existing domain tables (`users`, `issues`, `parties`, etc.).
-   - Version tables (`state_versions`, `district_versions`, `parliamentary_constituency_versions`, `constituency_versions`) store temporal slices and validity windows.
-   - Circular FK creation solved via a two-phase schema modification: create version tables referencing anchors, then alter anchors to add `current_version_id` FK references to the version tables.
-
-2. **Temporal Integrity & GiST Exclusion Constraints**:
-   - Validity periods use half-open intervals: `[valid_from, valid_to)` with `valid_to = NULL` representing open-ended intervals.
-   - Non-overlapping intervals enforced per entity using `EXCLUDE USING gist (entity_id WITH =, daterange(valid_from, valid_to, '[)') WITH &&)`.
-   - Exactly one current active version enforced per entity via partial unique index `WHERE is_current = true`.
-
-3. **Lineage & Chronology**:
-   - `geography_entity_lineage` models predecessor-successor transitions (`split`, `merge`, `rename`, `abolition`, `creation`) backed by statutory gazette orders.
-   - `constituency_district_timeline` models temporal assignment of constituencies to districts without mutating canonical delimitation boundaries.
-   - AC 109 (*Mulug*) verified through 3 district transitions: Warangal (2008–2016) -> Jayashankar Bhupalpally (2016–2019) -> Mulugu (2019–present).
-
-4. **Delimitation Regimes & Scenario Isolation**:
-   - `delimitation_regimes` models legal status categories (`HISTORICAL_LEGAL_REGIME`, `CURRENT_LEGAL_REGIME`, `FUTURE_ANTICIPATED_REGIME`, `SCENARIO_PROPOSED_REGIME`).
-   - Hard schema-level isolation: zero scenario rows in canonical tables; RLS policies strictly filter out scenario records from public reads.
-
-5. **Backwards Compatibility**:
-   - All existing domain reads against `constituencies`, `districts`, `parliamentary_constituencies`, and `states` continue functioning with zero breakage.
-   - Foreign key referential integrity remains 100% preserved.
+*Note: The canonical migration file and the atomic staging migration package are verified bit-for-bit identical with matching SHA-256 hashes.*
 
 ---
 
-## 2. Package File Registry & Cryptographic Fingerprints
+## 2. Summary of Authorized Changes in Migration 041 (Section 11)
 
-| File Path | Description | Size (Bytes) | SHA-256 Checksum | BOM |
-| :--- | :--- | :--- | :--- | :--- |
-| `supabase/migrations/041_geography_versioning_and_temporal_validity.sql` | Canonical Migration 041 | 33,135 | `b80620a947dcf308827acfd246089bc6f9f57540c93aaacde4784070bc626fd4` | 0 |
-| `supabase/staging_migration_package_041.sql` | Atomic Staging Package | 33,135 | `b80620a947dcf308827acfd246089bc6f9f57540c93aaacde4784070bc626fd4` | 0 |
-| `supabase/verify_staging_migration_package_041.sql` | SQL Verification Battery (Checks 1–10) | 4,579 | `6d435faba67cc3fe30dec73a7591652697b62e1d5c5eb3919a0553c2341d3094` | 0 |
-| `scripts/verify_w014_temporal_validity.mjs` | Static Preflight & Syntax Validator | 2,034 | `2583ccf450cb5798962c0ea827f74c97ecd941eaa074b3f078e1374b6665cf12` | 0 |
-| `tests/verify_w014_temporal_validity.mjs` | Node Runtime Verification Battery (TEST-14-A – TEST-14-I) | 29,389 | `c08674d213b21e4de491ca92900bc65bc6f688afdade692460b59bb39920dd46` | 0 |
+Section 11 implements the complete, authorized W014 Mandal Temporal Version Architecture:
 
----
-
-## 3. Preflight Validation Status
-
-The static syntax and rule validator (`scripts/verify_w014_temporal_validity.mjs`) verified:
-- Clean UTF-8 encoding (0 byte-order-marks `\uFEFF`).
-- Transactional atomicity: single top-level `BEGIN ... COMMIT` block.
-- Extension availability: `CREATE EXTENSION IF NOT EXISTS btree_gist;`.
-- GiST expression syntax: `(daterange(valid_from, valid_to, '[)')) WITH &&` fully parenthesized for PostgreSQL engine compatibility.
-- Delimitation regime definitions: all 4 required regimes present.
-- Scenario isolation: canonical table checks and RLS clauses isolating scenarios present.
-- AC 109 chronology and Mulugu/Narayanpet lineage assertions present.
-
-Execution output:
-```text
-[PASS] BOM check: clean UTF-8 (0 BOM bytes)
-[PASS] Transaction boundary check: valid BEGIN/COMMIT block
-[PASS] Extension check: btree_gist present
-[PASS] GiST exclusion syntax check: parenthesized daterange expressions verified
-[PASS] Regimes check: 4 delimitation regimes verified
-[PASS] Scenario isolation check: WHERE NOT is_scenario verified
-[PASS] AC 109 Mulug chronology check: statutory sequence verified
----
-W014 PREFLIGHT VALIDATION PASSED: All static checks verified.
-```
-
----
-
-## 4. Internal PostgreSQL 17 Execution Verification
-
-The complete atomic package `supabase/staging_migration_package_041.sql` was executed inside a clean PostgreSQL 17 staging-equivalent test environment (`public.ecr.aws/supabase/postgres:17.6.1.136`):
-1. Verified base schema and applied migrations 039 and 040.
-2. Executed `supabase/staging_migration_package_041.sql`:
-   - `CREATE EXTENSION` (`btree_gist`)
-   - `INSERT 0 1` (Data source: `delimit_sim_lab` with `synthetic_model` authority)
-   - `INSERT 0 2` (Datasets: `eci_delimitation_orders`, `panin_delimitation_scenarios`)
-   - `INSERT 0 5` (Dataset versions: 2014 state formation, 2021 renames, delimitation 2008, prospective delimitation, simulation scenario)
-   - `CREATE TABLE` (`delimitation_regimes`)
-   - `INSERT 0 4` (4 delimitation regimes: `HISTORICAL_LEGAL_REGIME`, `CURRENT_LEGAL_REGIME`, `FUTURE_ANTICIPATED_REGIME`, `SCENARIO_PROPOSED_REGIME`)
-   - `CREATE TABLE` (`state_versions`, `district_versions`, `parliamentary_constituency_versions`, `constituency_versions`, `constituency_district_timeline`, `geography_entity_lineage`)
-   - `ALTER TABLE` (Anchor tables updated with `current_version_id` foreign keys and temporal indexation)
-   - `INSERT 0 1` & `UPDATE 1` (State version TS and anchor pointer)
-   - `INSERT 0 33` & `UPDATE 33` (33 district versions and anchor pointers)
-   - `INSERT 0 17` & `UPDATE 17` (17 PC versions and anchor pointers)
-   - `INSERT 0 119` & `UPDATE 119` (119 AC versions and anchor pointers)
-   - `INSERT 0 119` (Constituency district timeline active mappings)
-   - `DO` (AC 109 3-interval chronology and Mulugu/Narayanpet split lineage)
-   - `ALTER TABLE` & `CREATE POLICY` (RLS enabled and 14 security policies created)
-   - `INSERT 0 4` (Provenance records with valid UUIDs)
-   - `INSERT 0 4` (Record provenance linkages)
-   - Transaction status: `COMMIT` with **0 errors**.
-3. Executed `supabase/verify_staging_migration_package_041.sql`:
-   - Checks 1 through 10 all executed and passed with **10/10 PASS**.
+1. **Security Definer & Admin Roles:**
+   - `panin_boundary_definer`: `NOLOGIN`, `NOSUPERUSER`, `NOCREATEDB`, `NOCREATEROLE`, zero role memberships, not owner of target tables.
+   - `panin_boundary_admin`: Dedicated application mutation role.
+2. **Schema Usage:**
+   - `GRANT USAGE ON SCHEMA public TO panin_boundary_definer;`
+3. **Table `public.mandal_versions`:**
+   - Columns: `id UUID`, `mandal_id TEXT`, `district_id TEXT`, `version_code TEXT`, `name TEXT`, `name_te TEXT`, `headquarters TEXT`, `lgd_code TEXT`, `census_code_2011 TEXT`, `valid_from DATE`, `valid_to DATE`, `is_current BOOLEAN`, `primary_dataset_version_id TEXT`, `metadata JSONB`, `created_at TIMESTAMPTZ`, `updated_at TIMESTAMPTZ`.
+   - Constraints:
+     - `uq_mandal_versions_code`: `UNIQUE (version_code)`
+     - `uq_mandal_versions_id_mandal`: `UNIQUE (id, mandal_id)` (Target for composite same-anchor FK)
+     - `uq_mandal_versions_no_overlap`: `EXCLUDE USING gist (mandal_id WITH =, (daterange(valid_from, valid_to, '[)')) WITH &&)`
+     - `chk_mandal_versions_current_invariants`: `CHECK ((is_current = false) OR (is_current = true AND valid_to IS NULL))`
+     - Partial Unique Index: `uq_mandal_versions_single_current` on `(mandal_id) WHERE is_current = true`
+4. **Stable Anchor `public.mandals`:**
+   - Additive column: `current_version_id UUID`
+   - Composite Foreign Key: `fk_mandals_current_version_same_anchor` `FOREIGN KEY (current_version_id, id) REFERENCES public.mandal_versions(id, mandal_id) ON DELETE RESTRICT DEFERRABLE INITIALLY IMMEDIATE`
+5. **Exact Least-Privilege Definer Grants:**
+   - `GRANT SELECT ON TABLE public.dataset_versions TO panin_boundary_definer;`
+   - `GRANT SELECT ON TABLE public.provenance_records TO panin_boundary_definer;`
+   - `GRANT SELECT ON TABLE public.mandals TO panin_boundary_definer;`
+   - `GRANT UPDATE (current_version_id, updated_at) ON TABLE public.mandals TO panin_boundary_definer;`
+   - `GRANT SELECT ON TABLE public.mandal_versions TO panin_boundary_definer;`
+   - `GRANT UPDATE (is_current, valid_from, valid_to, updated_at) ON TABLE public.mandal_versions TO panin_boundary_definer;`
+   - Table-level `INSERT`, `DELETE`, `TRUNCATE`, `REFERENCES`, `TRIGGER` are strictly omitted.
+6. **Constraint Triggers (Pointer & Currentness Protection):**
+   - `trg_guard_mandal_current_version` (Layer 2 on `mandals`): Enforces that `current_version_id` references a version with `is_current = true` AND that the version's `primary_dataset_version_id` resolves to a W012 dataset with `default_status = 'OFFICIAL'`.
+   - `trg_guard_mandal_version_retirement` (Layer 3 on `mandal_versions`): Prevents retiring (`is_current` set to `false`) or deleting any version actively referenced by `mandals.current_version_id`.
+7. **Atomic Transition Function:**
+   - Exact 5-parameter signature: `public.fn_transition_mandal_current_version(p_mandal_id TEXT, p_new_version_id UUID, p_effective_date DATE, p_operator TEXT, p_provenance_id UUID DEFAULT NULL)`
+   - Defined with `SECURITY DEFINER` and `SET search_path = public, pg_temp`.
+   - Owned by `panin_boundary_definer`.
+   - Acquires row-level locks on `mandals` and candidate `mandal_versions`.
+   - Enforces W012 OFFICIAL dataset status.
+   - Enforces candidate version is open-ended (`valid_to IS NULL`).
+   - If provenance UUID provided, validates existence against `provenance_records`.
+   - Performs atomic retirement of previous active version (`is_current = false, valid_to = p_effective_date`), activation of new version (`is_current = true, valid_from = p_effective_date, valid_to = NULL`), and assignment of stable anchor pointer (`current_version_id = p_new_version_id`).
+   - Emits structured JSONB receipt with `status = 'TRANSITION_COMPLETE'`, execution identity `SESSION_USER`, and audit metadata `operator = p_operator`.
+8. **Privilege Boundary & ACL Enforcement:**
+   - `REVOKE ALL ON FUNCTION public.fn_transition_mandal_current_version(text,uuid,date,text,uuid) FROM PUBLIC, anon, authenticated;`
+   - `GRANT EXECUTE ON FUNCTION public.fn_transition_mandal_current_version(text,uuid,date,text,uuid) TO service_role, panin_boundary_admin;`
+9. **Row-Level Security:**
+   - Enabled on `public.mandal_versions`: unauthenticated read permitted (`FOR SELECT USING (true)`), direct mutations restricted to `service_role`.
 
 ---
 
-## 5. Execution Instructions for panIN-staging
+## 3. Step-by-Step Staging Execution Instructions for User / CTO
 
-1. Open Supabase Dashboard for project `fkpigozcqnmcvofuksar` (`panIN-staging`).
-2. Navigate to SQL Editor.
-3. Paste the entire content of [`supabase/staging_migration_package_041.sql`](../supabase/staging_migration_package_041.sql) (SHA-256: `b80620a947dcf308827acfd246089bc6f9f57540c93aaacde4784070bc626fd4`).
-4. Click **Run** to execute the atomic transaction.
-5. Paste the verification script [`supabase/verify_staging_migration_package_041.sql`](../supabase/verify_staging_migration_package_041.sql) (SHA-256: `6d435faba67cc3fe30dec73a7591652697b62e1d5c5eb3919a0553c2341d3094`) and verify all 10 checks return `PASS`.
-6. Run runtime test battery: `node tests/verify_w014_temporal_validity.mjs`.
-7. Run regression suites: `node tests/verify_w013_canonical_geography.mjs` and `npm run build --prefix apps/api`.
+Because Supabase staging does not expose direct DDL endpoints over PostgREST and requires privileged dashboard execution:
 
+1. **Open Supabase SQL Editor:**
+   - Log into the Supabase Dashboard: [https://supabase.com/dashboard/project/fkpigozcqnmcvofuksar](https://supabase.com/dashboard/project/fkpigozcqnmcvofuksar)
+   - Navigate to **SQL Editor** -> **New Query**.
+2. **Execute Staging Migration Package:**
+   - Copy the entire contents of [`supabase/staging_migration_package_041.sql`](file:///c:/Users/Laven/OneDrive/Desktop/Kshetra/supabase/staging_migration_package_041.sql).
+   - Paste into the SQL Editor and click **Run**.
+   - Verify result: `Success. No rows returned.`
+3. **Execute SQL Verification Battery:**
+   - Open a new query in the SQL Editor.
+   - Copy the entire contents of [`supabase/verify_staging_migration_package_041.sql`](file:///c:/Users/Laven/OneDrive/Desktop/Kshetra/supabase/verify_staging_migration_package_041.sql).
+   - Click **Run**.
+   - Verify notices:
+     ```
+     NOTICE:  Check 1 PASS: Table public.mandal_versions exists
+     ...
+     NOTICE:  Check 23 PASS: PUBLIC has zero EXECUTE privilege on fn_transition_mandal_current_version
+     NOTICE:  SUCCESS: ALL 23 STAGING VERIFICATION CHECKS PASSED FOR MIGRATION 041!
+     ```
+4. **Run Live Acceptance Test Suite:**
+   - In terminal, execute:
+     ```bash
+     node tests/test_mandal_version_integrity.mjs
+     ```
+   - Verify that all M1–M15 test assertions execute cleanly against the live staging schema.
+5. **Rollback Instructions (If Required):**
+   - If rollback is necessary, copy and run [`supabase/rollback_staging_migration_package_041.sql`](file:///c:/Users/Laven/OneDrive/Desktop/Kshetra/supabase/rollback_staging_migration_package_041.sql) in the Supabase SQL Editor.

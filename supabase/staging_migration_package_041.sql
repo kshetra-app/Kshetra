@@ -686,4 +686,312 @@ SELECT
 FROM public.delimitation_regimes dr
 ON CONFLICT (domain_table, domain_record_id, provenance_id) DO NOTHING;
 
+-- ─── 11. MANDAL TEMPORAL VERSIONING & CANONICAL GOVERNANCE ARCHITECTURE ────────
+
+-- A. Dedicated Boundary Roles & Initialization
+DO $$
+BEGIN
+  IF NOT EXISTS (SELECT 1 FROM pg_roles WHERE rolname = 'panin_boundary_definer') THEN
+    CREATE ROLE panin_boundary_definer WITH NOLOGIN NOSUPERUSER NOCREATEDB NOCREATEROLE;
+  END IF;
+  IF NOT EXISTS (SELECT 1 FROM pg_roles WHERE rolname = 'panin_boundary_admin') THEN
+    CREATE ROLE panin_boundary_admin WITH NOLOGIN NOSUPERUSER NOCREATEDB NOCREATEROLE;
+  END IF;
+END $$;
+
+-- B. Grant Schema Usage
+GRANT USAGE ON SCHEMA public TO panin_boundary_definer;
+
+-- C. Create Mandal Versions Table
+CREATE TABLE IF NOT EXISTS public.mandal_versions (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  mandal_id TEXT NOT NULL REFERENCES public.mandals(id) ON DELETE RESTRICT,
+  district_id UUID NOT NULL REFERENCES public.districts(id) ON DELETE RESTRICT,
+  version_code VARCHAR(50) NOT NULL,
+  name TEXT NOT NULL,
+  name_te TEXT,
+  headquarters TEXT,
+  lgd_code INTEGER,
+  census_code_2011 VARCHAR(20),
+  valid_from DATE NOT NULL,
+  valid_to DATE,
+  is_current BOOLEAN NOT NULL DEFAULT false, -- Fail-closed default
+  primary_dataset_version_id TEXT NOT NULL REFERENCES public.dataset_versions(id) ON DELETE RESTRICT,
+  metadata JSONB NOT NULL DEFAULT '{}'::jsonb,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+  updated_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+
+  -- Unique version code
+  CONSTRAINT uq_mandal_versions_code UNIQUE (version_code),
+
+  -- Composite unique key to support composite FK from mandals
+  CONSTRAINT uq_mandal_versions_id_mandal UNIQUE (id, mandal_id),
+
+  -- Temporal non-overlapping interval exclusion
+  CONSTRAINT uq_mandal_versions_no_overlap EXCLUDE USING gist (
+    mandal_id WITH =,
+    (daterange(valid_from, valid_to, '[)')) WITH &&
+  ),
+
+  -- Calendar-independent currentness check: is_current = true <=> valid_to IS NULL
+  CONSTRAINT chk_mandal_versions_current_invariants CHECK (
+    (is_current = false) OR (is_current = true AND valid_to IS NULL)
+  )
+);
+
+-- Indexing on mandal_versions
+CREATE INDEX IF NOT EXISTS idx_mandal_versions_mandal_id ON public.mandal_versions(mandal_id);
+CREATE INDEX IF NOT EXISTS idx_mandal_versions_district_id ON public.mandal_versions(district_id);
+CREATE INDEX IF NOT EXISTS idx_mandal_versions_dataset ON public.mandal_versions(primary_dataset_version_id);
+CREATE INDEX IF NOT EXISTS idx_mandal_versions_current ON public.mandal_versions(mandal_id) WHERE is_current = true;
+
+CREATE UNIQUE INDEX IF NOT EXISTS uq_mandal_versions_single_current 
+  ON public.mandal_versions (mandal_id) 
+  WHERE is_current = true;
+
+-- D. Enhance Mandals Anchor Table (Integrity Hardened)
+ALTER TABLE public.mandals
+  ADD COLUMN IF NOT EXISTS current_version_id UUID,
+  ADD COLUMN IF NOT EXISTS is_active BOOLEAN NOT NULL DEFAULT true;
+
+-- Enforce same-anchor composite FK with RESTRICT on delete
+ALTER TABLE public.mandals
+  DROP CONSTRAINT IF EXISTS fk_mandals_current_version_same_anchor;
+
+ALTER TABLE public.mandals
+  ADD CONSTRAINT fk_mandals_current_version_same_anchor
+  FOREIGN KEY (current_version_id, id)
+  REFERENCES public.mandal_versions(id, mandal_id)
+  ON DELETE RESTRICT;
+
+CREATE INDEX IF NOT EXISTS idx_mandals_current_version_id ON public.mandals(current_version_id);
+
+-- E. Exact Least-Privilege Grants to panin_boundary_definer
+GRANT SELECT ON TABLE public.dataset_versions TO panin_boundary_definer;
+GRANT SELECT ON TABLE public.provenance_records TO panin_boundary_definer;
+GRANT SELECT, UPDATE (current_version_id, updated_at) ON TABLE public.mandals TO panin_boundary_definer;
+GRANT SELECT, UPDATE (is_current, valid_from, valid_to, updated_at) ON TABLE public.mandal_versions TO panin_boundary_definer;
+
+-- F. Bidirectional Deferred Constraint Triggers
+-- Layer 2: Anchor Constraint Trigger with W012 Authority Enforcement
+CREATE OR REPLACE FUNCTION public.fn_guard_mandal_current_version()
+RETURNS TRIGGER AS $$
+DECLARE
+  v_dataset_status TEXT;
+BEGIN
+  IF NEW.current_version_id IS NOT NULL THEN
+    SELECT dv.default_status INTO v_dataset_status
+    FROM public.mandal_versions mv
+    JOIN public.dataset_versions dv ON mv.primary_dataset_version_id = dv.id
+    WHERE mv.id = NEW.current_version_id
+      AND mv.mandal_id = NEW.id
+      AND mv.is_current = true;
+
+    IF NOT FOUND THEN
+      RAISE EXCEPTION 'INTEGRITY VIOLATION [ERR-W014-001]: mandals.current_version_id (%) must reference an active version (is_current = true) belonging to mandal %',
+        NEW.current_version_id, NEW.id
+        USING ERRCODE = '23514'; -- check_violation
+    END IF;
+
+    IF v_dataset_status <> 'OFFICIAL' THEN
+      RAISE EXCEPTION 'AUTHORITY VIOLATION [ERR-W014-003]: mandals.current_version_id (%) references dataset version with status "%". Canonical pointer requires W012 "OFFICIAL" authority.',
+        NEW.current_version_id, v_dataset_status
+        USING ERRCODE = '23514'; -- check_violation
+    END IF;
+  END IF;
+  RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+DROP TRIGGER IF EXISTS trg_guard_mandal_current_version ON public.mandals;
+CREATE CONSTRAINT TRIGGER trg_guard_mandal_current_version
+  AFTER INSERT OR UPDATE OF current_version_id ON public.mandals
+  DEFERRABLE INITIALLY DEFERRED
+  FOR EACH ROW
+  EXECUTE FUNCTION public.fn_guard_mandal_current_version();
+
+-- Layer 3: Reciprocal Version Retirement Guard Trigger
+CREATE OR REPLACE FUNCTION public.fn_guard_mandal_version_retirement()
+RETURNS TRIGGER AS $$
+BEGIN
+  IF (TG_OP = 'DELETE' AND OLD.is_current = true) OR
+     (TG_OP = 'UPDATE' AND OLD.is_current = true AND NEW.is_current = false) THEN
+    IF EXISTS (
+      SELECT 1 FROM public.mandals m
+      WHERE m.current_version_id = OLD.id
+    ) THEN
+      RAISE EXCEPTION 'INTEGRITY VIOLATION [ERR-W014-002]: Cannot deactivate (is_current=false) or delete mandal_version % while it is actively referenced by mandals.current_version_id. Transition mandal to an active successor version or clear current_version_id first via fn_transition_mandal_current_version().',
+        OLD.id
+        USING ERRCODE = '23514'; -- check_violation
+    END IF;
+  END IF;
+  RETURN COALESCE(NEW, OLD);
+END;
+$$ LANGUAGE plpgsql;
+
+DROP TRIGGER IF EXISTS trg_guard_mandal_version_retirement ON public.mandal_versions;
+CREATE CONSTRAINT TRIGGER trg_guard_mandal_version_retirement
+  AFTER UPDATE OF is_current OR DELETE ON public.mandal_versions
+  DEFERRABLE INITIALLY DEFERRED
+  FOR EACH ROW
+  EXECUTE FUNCTION public.fn_guard_mandal_version_retirement();
+
+-- G. Authoritative Atomic Transition Function (SECURITY DEFINER)
+CREATE OR REPLACE FUNCTION public.fn_transition_mandal_current_version(
+  p_mandal_id TEXT,
+  p_new_version_id UUID,
+  p_effective_date DATE,
+  p_operator TEXT,
+  p_provenance_id UUID DEFAULT NULL
+)
+RETURNS JSONB
+LANGUAGE plpgsql
+SECURITY DEFINER
+SET search_path = public, pg_temp
+AS $$
+DECLARE
+  v_old_version_id UUID;
+  v_new_mandal_id TEXT;
+  v_new_valid_to DATE;
+  v_dataset_status TEXT;
+BEGIN
+  -- 1. Narrow Provenance Existence Check: If provided, assert valid provenance record existence
+  IF p_provenance_id IS NOT NULL THEN
+    IF NOT EXISTS (
+      SELECT 1 FROM public.provenance_records pr WHERE pr.id = p_provenance_id
+    ) THEN
+      RAISE EXCEPTION 'PROVENANCE NOT FOUND [ERR-W014-005]: Specified provenance_id % does not exist in public.provenance_records',
+        p_provenance_id
+        USING ERRCODE = '23503';
+    END IF;
+  END IF;
+
+  -- 2. Lock the anchor row to serialize concurrent transitions
+  SELECT current_version_id INTO v_old_version_id
+  FROM public.mandals
+  WHERE id = p_mandal_id
+  FOR UPDATE;
+
+  IF NOT FOUND THEN
+    RAISE EXCEPTION 'MANDAL_NOT_FOUND: Mandal % does not exist', p_mandal_id
+      USING ERRCODE = '23503';
+  END IF;
+
+  -- 3. Validate target new version exists, fetch properties and dataset status
+  SELECT mv.mandal_id, mv.valid_to, dv.default_status
+  INTO v_new_mandal_id, v_new_valid_to, v_dataset_status
+  FROM public.mandal_versions mv
+  JOIN public.dataset_versions dv ON mv.primary_dataset_version_id = dv.id
+  WHERE mv.id = p_new_version_id
+  FOR UPDATE OF mv;
+
+  IF NOT FOUND THEN
+    RAISE EXCEPTION 'VERSION_NOT_FOUND: mandal_version % does not exist', p_new_version_id
+      USING ERRCODE = '23503';
+  END IF;
+
+  -- 4. Assert same-anchor ownership
+  IF v_new_mandal_id <> p_mandal_id THEN
+    RAISE EXCEPTION 'ANCHOR_MISMATCH [ERR-W014-004]: mandal_version % belongs to mandal %, not %',
+      p_new_version_id, v_new_mandal_id, p_mandal_id
+      USING ERRCODE = '23503';
+  END IF;
+
+  -- 5. Assert target version belongs to an OFFICIAL dataset (W012 Authority Boundary)
+  IF v_dataset_status <> 'OFFICIAL' THEN
+    RAISE EXCEPTION 'AUTHORITY VIOLATION [ERR-W014-003]: Cannot promote mandal_version % to current legal truth. Dataset status is "%", but W014 requires "OFFICIAL".',
+      p_new_version_id, v_dataset_status
+      USING ERRCODE = '23514';
+  END IF;
+
+  -- 6. Assert target version represents an open-ended interval
+  IF v_new_valid_to IS NOT NULL THEN
+    RAISE EXCEPTION 'INVALID_VALIDITY_INTERVAL: Target mandal_version % has valid_to = %. Active current version must be open-ended (valid_to IS NULL).',
+      p_new_version_id, v_new_valid_to
+      USING ERRCODE = '23514';
+  END IF;
+
+  -- 7. No-op short circuit
+  IF v_old_version_id = p_new_version_id THEN
+    RETURN jsonb_build_object(
+      'status', 'NO_OP',
+      'mandal_id', p_mandal_id,
+      'current_version_id', p_new_version_id,
+      'message', 'Version is already current'
+    );
+  END IF;
+
+  -- 8. Retire currently active version (if present)
+  IF v_old_version_id IS NOT NULL THEN
+    UPDATE public.mandal_versions
+    SET is_current = false,
+        valid_to = p_effective_date,
+        updated_at = now()
+    WHERE id = v_old_version_id;
+  END IF;
+
+  -- 9. Activate new version
+  UPDATE public.mandal_versions
+  SET is_current = true,
+      valid_from = COALESCE(p_effective_date, valid_from),
+      valid_to = NULL,
+      updated_at = now()
+  WHERE id = p_new_version_id;
+
+  -- 10. Point anchor to new version
+  UPDATE public.mandals
+  SET current_version_id = p_new_version_id,
+      updated_at = now()
+  WHERE id = p_mandal_id;
+
+  -- 11. Return structured audit receipt (SESSION_USER and p_operator recorded strictly as audit metadata)
+  RETURN jsonb_build_object(
+    'status', 'TRANSITION_COMPLETE',
+    'mandal_id', p_mandal_id,
+    'previous_version_id', v_old_version_id,
+    'current_version_id', p_new_version_id,
+    'effective_date', p_effective_date,
+    'session_user', SESSION_USER,
+    'operator', p_operator,
+    'provenance_id', p_provenance_id,
+    'timestamp', now()
+  );
+END;
+$$;
+
+-- Set ownership to dedicated non-login boundary owner
+ALTER FUNCTION public.fn_transition_mandal_current_version(TEXT, UUID, DATE, TEXT, UUID) 
+  OWNER TO panin_boundary_definer;
+
+-- Explicit Declarative ACL Configuration
+REVOKE ALL ON FUNCTION public.fn_transition_mandal_current_version(TEXT, UUID, DATE, TEXT, UUID) FROM PUBLIC;
+REVOKE ALL ON FUNCTION public.fn_transition_mandal_current_version(TEXT, UUID, DATE, TEXT, UUID) FROM anon;
+REVOKE ALL ON FUNCTION public.fn_transition_mandal_current_version(TEXT, UUID, DATE, TEXT, UUID) FROM authenticated;
+
+GRANT EXECUTE ON FUNCTION public.fn_transition_mandal_current_version(TEXT, UUID, DATE, TEXT, UUID) TO service_role;
+
+DO $$
+BEGIN
+  IF EXISTS (SELECT 1 FROM pg_roles WHERE rolname = 'panin_boundary_admin') THEN
+    GRANT EXECUTE ON FUNCTION public.fn_transition_mandal_current_version(TEXT, UUID, DATE, TEXT, UUID) TO panin_boundary_admin;
+  END IF;
+END $$;
+
+-- H. Row Level Security for mandal_versions
+ALTER TABLE public.mandal_versions ENABLE ROW LEVEL SECURITY;
+
+DROP POLICY IF EXISTS "Public read mandal_versions" ON public.mandal_versions;
+CREATE POLICY "Public read mandal_versions"
+  ON public.mandal_versions FOR SELECT
+  TO anon, authenticated
+  USING (true);
+
+DROP POLICY IF EXISTS "Service role write mandal_versions" ON public.mandal_versions;
+CREATE POLICY "Service role write mandal_versions"
+  ON public.mandal_versions FOR ALL
+  TO service_role
+  USING (true)
+  WITH CHECK (true);
+
 COMMIT;
+

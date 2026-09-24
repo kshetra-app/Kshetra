@@ -1,0 +1,151 @@
+{
+  "timestamp": "2026-09-24T17:36:41.115Z",
+  "target": "https://fkpigozcqnmcvofuksar.supabase.co",
+  "migration_status": "PACKAGE_PREPARED_PENDING_STAGING_EXECUTION",
+  "package_file": "supabase/staging_migration_package_041.sql",
+  "verification_file": "supabase/verify_staging_migration_package_041.sql",
+  "rollback_file": "supabase/rollback_staging_migration_package_041.sql",
+  "summary": {
+    "total": 15,
+    "passed": 0,
+    "failed": 0,
+    "pending": 15
+  },
+  "tests": [
+    {
+      "id": "M1",
+      "name": "Assertion M1",
+      "requirement": "W014 Mandal Temporal Invariant M1",
+      "status": "TO-BE VERIFIED",
+      "expected": "Migration package execution on staging",
+      "observed": "Table public.mandal_versions pending execution on staging",
+      "details": "Atomic migration package prepared in supabase/staging_migration_package_041.sql"
+    },
+    {
+      "id": "M2",
+      "name": "Assertion M2",
+      "requirement": "W014 Mandal Temporal Invariant M2",
+      "status": "TO-BE VERIFIED",
+      "expected": "Migration package execution on staging",
+      "observed": "Table public.mandal_versions pending execution on staging",
+      "details": "Atomic migration package prepared in supabase/staging_migration_package_041.sql"
+    },
+    {
+      "id": "M3",
+      "name": "Assertion M3",
+      "requirement": "W014 Mandal Temporal Invariant M3",
+      "status": "TO-BE VERIFIED",
+      "expected": "Migration package execution on staging",
+      "observed": "Table public.mandal_versions pending execution on staging",
+      "details": "Atomic migration package prepared in supabase/staging_migration_package_041.sql"
+    },
+    {
+      "id": "M4",
+      "name": "Assertion M4",
+      "requirement": "W014 Mandal Temporal Invariant M4",
+      "status": "TO-BE VERIFIED",
+      "expected": "Migration package execution on staging",
+      "observed": "Table public.mandal_versions pending execution on staging",
+      "details": "Atomic migration package prepared in supabase/staging_migration_package_041.sql"
+    },
+    {
+      "id": "M5",
+      "name": "Assertion M5",
+      "requirement": "W014 Mandal Temporal Invariant M5",
+      "status": "TO-BE VERIFIED",
+      "expected": "Migration package execution on staging",
+      "observed": "Table public.mandal_versions pending execution on staging",
+      "details": "Atomic migration package prepared in supabase/staging_migration_package_041.sql"
+    },
+    {
+      "id": "M6",
+      "name": "Assertion M6",
+      "requirement": "W014 Mandal Temporal Invariant M6",
+      "status": "TO-BE VERIFIED",
+      "expected": "Migration package execution on staging",
+      "observed": "Table public.mandal_versions pending execution on staging",
+      "details": "Atomic migration package prepared in supabase/staging_migration_package_041.sql"
+    },
+    {
+      "id": "M7",
+      "name": "Assertion M7",
+      "requirement": "W014 Mandal Temporal Invariant M7",
+      "status": "TO-BE VERIFIED",
+      "expected": "Migration package execution on staging",
+      "observed": "Table public.mandal_versions pending execution on staging",
+      "details": "Atomic migration package prepared in supabase/staging_migration_package_041.sql"
+    },
+    {
+      "id": "M8",
+      "name": "Assertion M8",
+      "requirement": "W014 Mandal Temporal Invariant M8",
+      "status": "TO-BE VERIFIED",
+      "expected": "Migration package execution on staging",
+      "observed": "Table public.mandal_versions pending execution on staging",
+      "details": "Atomic migration package prepared in supabase/staging_migration_package_041.sql"
+    },
+    {
+      "id": "M9",
+      "name": "Assertion M9",
+      "requirement": "W014 Mandal Temporal Invariant M9",
+      "status": "TO-BE VERIFIED",
+      "expected": "Migration package execution on staging",
+      "observed": "Table public.mandal_versions pending execution on staging",
+      "details": "Atomic migration package prepared in supabase/staging_migration_package_041.sql"
+    },
+    {
+      "id": "M10",
+      "name": "Assertion M10",
+      "requirement": "W014 Mandal Temporal Invariant M10",
+      "status": "TO-BE VERIFIED",
+      "expected": "Migration package execution on staging",
+      "observed": "Table public.mandal_versions pending execution on staging",
+      "details": "Atomic migration package prepared in supabase/staging_migration_package_041.sql"
+    },
+    {
+      "id": "M11",
+      "name": "Assertion M11",
+      "requirement": "W014 Mandal Temporal Invariant M11",
+      "status": "TO-BE VERIFIED",
+      "expected": "Migration package execution on staging",
+      "observed": "Table public.mandal_versions pending execution on staging",
+      "details": "Atomic migration package prepared in supabase/staging_migration_package_041.sql"
+    },
+    {
+      "id": "M12",
+      "name": "Assertion M12",
+      "requirement": "W014 Mandal Temporal Invariant M12",
+      "status": "TO-BE VERIFIED",
+      "expected": "Migration package execution on staging",
+      "observed": "Table public.mandal_versions pending execution on staging",
+      "details": "Atomic migration package prepared in supabase/staging_migration_package_041.sql"
+    },
+    {
+      "id": "M13",
+      "name": "Assertion M13",
+      "requirement": "W014 Mandal Temporal Invariant M13",
+      "status": "TO-BE VERIFIED",
+      "expected": "Migration package execution on staging",
+      "observed": "Table public.mandal_versions pending execution on staging",
+      "details": "Atomic migration package prepared in supabase/staging_migration_package_041.sql"
+    },
+    {
+      "id": "M14",
+      "name": "Assertion M14",
+      "requirement": "W014 Mandal Temporal Invariant M14",
+      "status": "TO-BE VERIFIED",
+      "expected": "Migration package execution on staging",
+      "observed": "Table public.mandal_versions pending execution on staging",
+      "details": "Atomic migration package prepared in supabase/staging_migration_package_041.sql"
+    },
+    {
+      "id": "M15",
+      "name": "Assertion M15",
+      "requirement": "W014 Mandal Temporal Invariant M15",
+      "status": "TO-BE VERIFIED",
+      "expected": "Migration package execution on staging",
+      "observed": "Table public.mandal_versions pending execution on staging",
+      "details": "Atomic migration package prepared in supabase/staging_migration_package_041.sql"
+    }
+  ]
+}

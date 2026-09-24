@@ -1,5 +1,5 @@
 {
-  "timestamp": "2026-09-23T04:42:02.368Z",
+  "timestamp": "2026-09-24T17:33:57.705Z",
   "target": "https://fkpigozcqnmcvofuksar.supabase.co",
   "summary": {
     "total": 9,
@@ -7,18 +7,18 @@
     "failed": 0
   },
   "benchmarks": {
-    "parentChildResolutionMs": "2574.29",
-    "containsPartOfResolutionMs": "1714.06",
-    "lineageTraversalMs": "1147.64",
-    "oldToNewReconciliationMs": "1151.29",
-    "overallReconciliationMs": "630.39",
-    "gistValidationMs": "1666.43",
-    "rlsSecurityMs": "3329.31",
-    "governanceIntegrityMs": "295.48",
-    "constituencyWithRelationsMs": "370.37",
-    "mandalWithDistrictMs": "295.04",
-    "mandalAcMappingMs": "304.52",
-    "regressionEvaluationMs": "970.07"
+    "parentChildResolutionMs": "1383.71",
+    "containsPartOfResolutionMs": "1187.09",
+    "lineageTraversalMs": "583.18",
+    "oldToNewReconciliationMs": "582.61",
+    "overallReconciliationMs": "596.24",
+    "gistValidationMs": "1600.25",
+    "rlsSecurityMs": "2317.43",
+    "governanceIntegrityMs": "285.93",
+    "constituencyWithRelationsMs": "296.83",
+    "mandalWithDistrictMs": "303.40",
+    "mandalAcMappingMs": "284.30",
+    "regressionEvaluationMs": "884.64"
   },
   "tests": [
     {
@@ -33,7 +33,7 @@
         "acCount": 119,
         "mandalCount": 12,
         "mandalsResolveDistrict": true,
-        "latencyMs": "2574.29"
+        "latencyMs": "1383.71"
       },
       "details": "Direct parent/child administrative and electoral relationships reconciled across State, District, PC, AC, and Mandal tiers."
     },
@@ -54,7 +54,7 @@
         "mcmDualIdentityOk": true,
         "hasFullOverlap": true,
         "hasPartialOverlap": false,
-        "latencyMs": "1714.06"
+        "latencyMs": "1187.09"
       },
       "details": "Cross-tree containment verified: PCs contain ACs, Districts contain ACs, ACs contain Booths, Mandals map to ACs discretely, and dual constituency identities resolve to the exact same canonical AC."
     },
@@ -70,7 +70,7 @@
         "narayanpetPredOk": true,
         "traversalOk": true,
         "muluguOrder": "G.O.Ms.No. 18, Revenue (DA-CMRF) Dept, dated 16.02.2019",
-        "latencyMs": "1147.64"
+        "latencyMs": "583.18"
       },
       "details": "Predecessor/successor transitions successfully reconciled with bidirectional resolution and statutory order citations."
     },
@@ -86,7 +86,7 @@
         "era2": "Jayashankar Bhupalpally (2016-10-11 to 2019-02-17)",
         "era3": "Mulugu (2019-02-17 to null)",
         "regimeCount": 4,
-        "latencyMs": "1151.29"
+        "latencyMs": "582.61"
       },
       "details": "Old-to-new mappings reconciled across statutory reorganisations with continuous chronological integrity."
     },
@@ -108,7 +108,7 @@
         "orphanMandals": 0,
         "orphanBooths": 0,
         "orphanMcm": 0,
-        "latencyMs": "630.39"
+        "latencyMs": "596.24"
       },
       "details": "Master Evidence requirement fully satisfied: 4-tier source-backed chain verified with zero self-referential IDs, zero orphans, and zero broken foreign keys across the entire bounded hierarchy."
     },
@@ -121,7 +121,7 @@
       "observed": {
         "adjacentInsertSucceeded": true,
         "overlappingInsertRejected": true,
-        "latencyMs": "1666.43"
+        "latencyMs": "1600.25"
       },
       "details": "PostgreSQL GiST temporal non-overlap invariant rigorously verified on temporal relationship storage."
     },
@@ -141,7 +141,7 @@
         "totalBoothsInspected": 4,
         "scenarioBoothsCount": 0,
         "scenarioRegimesIsolated": true,
-        "latencyMs": "3329.31"
+        "latencyMs": "2317.43"
       },
       "details": "Security requirements upheld: public read permitted, client mutation denied, zero scenario records in canonical tables across the entire population."
     },
@@ -165,7 +165,7 @@
         "zeroOfficial": true,
         "provenanceRecords": 27,
         "provenanceLinkages": 25,
-        "latencyMs": "295.48"
+        "latencyMs": "285.93"
       },
       "details": "W012 governance protocol strictly enforced: exact semantic completeness verified with 27 provenance records and 25 linkages resolving bidirectionally, zero orphans, and 100% strictly UNVERIFIED."
     },
@@ -179,10 +179,10 @@
         "queriesSucceeded": true,
         "resultSetsValid": true,
         "latenciesRecorded": true,
-        "constituencyWithRelationsMs": "370.37",
-        "mandalWithDistrictMs": "295.04",
-        "mandalAcMappingMs": "304.52",
-        "latencyMs": "970.07"
+        "constituencyWithRelationsMs": "296.83",
+        "mandalWithDistrictMs": "303.40",
+        "mandalAcMappingMs": "284.30",
+        "latencyMs": "884.64"
       },
       "details": "Empirical relationship query performance observed and recorded under project performance guidelines."
     }
