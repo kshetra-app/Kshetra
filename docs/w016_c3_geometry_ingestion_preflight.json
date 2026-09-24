@@ -1,0 +1,361 @@
+{
+  "schema_version": "1.0.0",
+  "job": "W016-C3",
+  "title": "Geometry Ingestion Preflight — Provenance, Temporal Attachment & Candidate-Status Quarantine",
+  "timestamp": "2026-09-24T17:55:00+05:30",
+  "baseline_commit": "3d30640ff8df344b5ba27b915398989ac61276bc",
+  "authority": "Independent CTO / Co-founder Directive W016-C3",
+  "authoritative_state": {
+    "w015": "ACCEPTED_COMPLETE",
+    "w015_b1": "ACCEPTED_COMPLETE",
+    "w015_b2": "ACCEPTED_COMPLETE",
+    "w016_a1_preflight": "ACCEPTED",
+    "w016_b1_preflight": "ACCEPTED",
+    "w016_b2_rehearsal": "ACCEPTED_COMPLETE",
+    "w016_c1_acquisition": "ACCEPTED_COMPLETE",
+    "w016_c2_reconciliation": "ACCEPTED",
+    "w016_c3_preflight": "SUBMITTED_FOR_CTO_REVIEW",
+    "w016_database_ingestion": "STRICTLY_NOT_AUTHORIZED",
+    "migration_044": "STRICTLY_NOT_AUTHORIZED",
+    "production_environment": "STRICTLY_UNTOUCHED"
+  },
+  "raw_artifact_integrity_verification": {
+    "tgrac_service_metadata": {
+      "path": "data/geo/candidate_authoritative/tgrac_service_metadata.json",
+      "bytes": 3474,
+      "sha256": "47bd2f570c904d30f86aae2eabf757f09b115318f5d8a286ee24a4bc39486d52",
+      "status": "VERIFIED_IMMUTABLE"
+    },
+    "tgrac_districts": {
+      "path": "data/geo/candidate_authoritative/tgrac_districts_raw.json",
+      "bytes": 6169331,
+      "sha256": "6a7a7bff40d088d725828462d20674948d63a7195c6d961d9232eec54ee20e33",
+      "status": "VERIFIED_IMMUTABLE"
+    },
+    "tgrac_assembly_constituencies": {
+      "path": "data/geo/candidate_authoritative/tgrac_assembly_constituencies_raw.json",
+      "bytes": 12466256,
+      "sha256": "72451e54f0a09c6c2357aeea3b42cc4f47a9e071cbc4086f512dd27839fdbdea",
+      "status": "VERIFIED_IMMUTABLE"
+    },
+    "tgrac_mandals": {
+      "path": "data/geo/candidate_authoritative/tgrac_mandals_raw.json",
+      "bytes": 26843665,
+      "sha256": "aca53eefa290570ce4010fa8c26a75dce995de3e3180ac9f0873f78fb41512db",
+      "status": "VERIFIED_IMMUTABLE"
+    }
+  },
+  "architectural_design": {
+    "geometry_storage_model": "Option B — Dedicated Versioned Geometry Relation (public.entity_geometries)",
+    "evaluation_vs_option_a": {
+      "option_a_direct_attachment": {
+        "description": "Adding GEOMETRY columns directly to W014 version tables (state_versions, district_versions, constituency_versions) or anchor tables",
+        "verdict": "REJECTED",
+        "reasons": [
+          "Prevents storing multiple geometry candidates (TGRAC candidate vs datta07 fixture vs future official ECI/CCLA)",
+          "Overwrites historical candidate geometry when new authoritative vector data is acquired",
+          "Causes severe table bloat and degradation of core relational/metadata query performance",
+          "Couples tabular lifecycle to geometry lifecycle"
+        ]
+      },
+      "option_b_dedicated_versioned_relation": {
+        "description": "Creating public.entity_geometries referencing canonical entity, W014 version, W012 dataset version, and W012 provenance",
+        "verdict": "ACCEPTED_AS_DESIGN_BASELINE",
+        "reasons": [
+          "Preserves complete provenance and SHA-256 artifact lineage per geometry record",
+          "Allows multi-source coexistence (TGRAC candidate + ECI constitutional + SoI statutory + fixture)",
+          "Supports side-by-side spatial comparison queries (ST_Difference, Hausdorff distance)",
+          "Prevents schema migration churn on existing W013/W014 core tables",
+          "Permits isolated PostGIS GiST spatial indexing without impacting non-spatial query plans",
+          "Enforces rigorous temporal validity and candidate status quarantine"
+        ]
+      }
+    },
+    "table_specification": {
+      "table_name": "public.entity_geometries",
+      "columns": [
+        { "name": "id", "type": "UUID PRIMARY KEY DEFAULT gen_random_uuid()", "nullable": false },
+        { "name": "entity_type", "type": "VARCHAR(50) NOT NULL CHECK (entity_type IN ('state', 'district', 'parliamentary_constituency', 'assembly_constituency', 'mandal'))", "nullable": false },
+        { "name": "entity_id", "type": "TEXT NOT NULL", "nullable": false, "comment": "Canonical anchor key (UUID or code)" },
+        { "name": "version_id", "type": "UUID", "nullable": true, "comment": "FK to W014 entity version (e.g. constituency_versions.id, district_versions.id)" },
+        { "name": "dataset_version_id", "type": "TEXT NOT NULL REFERENCES public.dataset_versions(id) ON DELETE RESTRICT", "nullable": false },
+        { "name": "provenance_id", "type": "UUID NOT NULL REFERENCES public.provenance_records(id) ON DELETE RESTRICT", "nullable": false },
+        { "name": "geometry", "type": "geometry(MultiPolygon, 4326) NOT NULL", "nullable": false },
+        { "name": "geometry_type", "type": "VARCHAR(50) NOT NULL CHECK (geometry_type IN ('Polygon', 'MultiPolygon'))", "nullable": false },
+        { "name": "status", "type": "data_status_enum NOT NULL DEFAULT 'UNVERIFIED'", "nullable": false },
+        { "name": "authority_classification", "type": "VARCHAR(50) NOT NULL CHECK (authority_classification IN ('UNVERIFIED_STATE_GIS_CANDIDATE', 'UNVERIFIED_FIXTURE_GEOMETRY', 'OFFICIAL_CONSTITUTIONAL_GEOMETRY', 'OFFICIAL_STATUTORY_GEOMETRY', 'SCENARIO_PROJECTION_GEOMETRY'))", "nullable": false },
+        { "name": "temporal_classification", "type": "VARCHAR(50) NOT NULL CHECK (temporal_classification IN ('CURRENT_LEGAL', 'HISTORICAL_LEGAL', 'UNVERIFIED_CANDIDATE', 'SCENARIO'))", "nullable": false },
+        { "name": "source_feature_id", "type": "TEXT", "nullable": true, "comment": "FID or s_no from raw GeoJSON" },
+        { "name": "raw_artifact_sha256", "type": "TEXT NOT NULL", "nullable": false, "comment": "SHA-256 hash of immutable source file" },
+        { "name": "valid_from", "type": "DATE NOT NULL", "nullable": false },
+        { "name": "valid_to", "type": "DATE", "nullable": true },
+        { "name": "is_current", "type": "BOOLEAN NOT NULL DEFAULT false", "nullable": false },
+        { "name": "metadata", "type": "JSONB NOT NULL DEFAULT '{}'::jsonb", "nullable": false },
+        { "name": "created_at", "type": "TIMESTAMPTZ NOT NULL DEFAULT now()", "nullable": false }
+      ],
+      "indexes": [
+        { "name": "idx_entity_geometries_geom", "type": "GIST", "definition": "GIST (geometry)" },
+        { "name": "idx_entity_geometries_entity", "type": "BTREE", "definition": "(entity_type, entity_id)" },
+        { "name": "idx_entity_geometries_version", "type": "BTREE", "definition": "(version_id)" },
+        { "name": "idx_entity_geometries_dataset", "type": "BTREE", "definition": "(dataset_version_id)" },
+        { "name": "idx_entity_geometries_provenance", "type": "BTREE", "definition": "(provenance_id)" },
+        { "name": "idx_entity_geometries_temporal", "type": "BTREE", "definition": "(temporal_classification, is_current)" },
+        { "name": "uq_entity_geometries_single_current", "type": "UNIQUE_PARTIAL", "definition": "(entity_type, entity_id, authority_classification) WHERE is_current = true" }
+      ]
+    }
+  },
+  "w012_provenance_integration": {
+    "data_sources": [
+      {
+        "id": "tgrac_gis",
+        "name": "Telangana Remote Sensing Applications Centre (TGRAC) GIS Portal",
+        "publisher": "Telangana Remote Sensing Applications Centre, Government of Telangana",
+        "authority_level": "statutory",
+        "canonical_url": "https://tgrac.telangana.gov.in",
+        "license": "State Government Spatial Data / Departmental Open Access",
+        "retrieval_method": "wfs_ogc_api",
+        "refresh_frequency": "as_amended",
+        "is_active": true
+      }
+    ],
+    "datasets": [
+      {
+        "id": "tgrac_assembly_constituencies",
+        "name": "TGRAC Assembly Constituencies Spatial Layer",
+        "domain": "geography",
+        "source_id": "tgrac_gis",
+        "description": "Telangana 119 Assembly Constituencies vector polygon boundaries published by TGRAC."
+      },
+      {
+        "id": "tgrac_revenue_districts",
+        "name": "TGRAC Revenue Districts Spatial Layer",
+        "domain": "geography",
+        "source_id": "tgrac_gis",
+        "description": "Telangana 33 Revenue Districts vector polygon boundaries published by TGRAC."
+      },
+      {
+        "id": "tgrac_historical_mandals",
+        "name": "TGRAC Historical Mandals Spatial Layer (589-Mandal Snapshot)",
+        "domain": "geography",
+        "source_id": "tgrac_gis",
+        "description": "Telangana 589 Sub-District Revenue Mandals historical baseline vector polygon boundaries (2016-2017 snapshot) published by TGRAC."
+      }
+    ],
+    "dataset_versions": [
+      {
+        "id": "tgrac_ac_2023_candidate_v1",
+        "dataset_id": "tgrac_assembly_constituencies",
+        "version_tag": "2023_candidate_raw",
+        "effective_from": "2008-02-19",
+        "effective_to": null,
+        "default_status": "UNVERIFIED",
+        "record_count": 119,
+        "checksum_sha256": "72451e54f0a09c6c2357aeea3b42cc4f47a9e071cbc4086f512dd27839fdbdea",
+        "storage_path": "data/geo/candidate_authoritative/tgrac_assembly_constituencies_raw.json",
+        "metadata": {
+          "authority_classification": "UNVERIFIED_STATE_GIS_CANDIDATE",
+          "delimitation_regime_id": "eci_delimitation_2008",
+          "feature_count": 119,
+          "name_reconciliation_csv": "docs/w016_c2_ac_identifier_mapping.csv"
+        }
+      },
+      {
+        "id": "tgrac_districts_2023_candidate_v1",
+        "dataset_id": "tgrac_revenue_districts",
+        "version_tag": "2023_candidate_raw",
+        "effective_from": "2019-02-17",
+        "effective_to": null,
+        "default_status": "UNVERIFIED",
+        "record_count": 33,
+        "checksum_sha256": "6a7a7bff40d088d725828462d20674948d63a7195c6d961d9232eec54ee20e33",
+        "storage_path": "data/geo/candidate_authoritative/tgrac_districts_raw.json",
+        "metadata": {
+          "authority_classification": "UNVERIFIED_STATE_GIS_CANDIDATE",
+          "district_count": 33,
+          "intermediate_regime_notes": "Contains Warangal Rural and Warangal Urban polygons corresponding to G.O.Ms. 220-250 / 2019 Mulugu reorganization prior to 2021 renamings (G.O.Ms. 153)",
+          "name_reconciliation_csv": "docs/w016_c2_district_identifier_mapping.csv"
+        }
+      },
+      {
+        "id": "tgrac_mandals_2016_candidate_v1",
+        "dataset_id": "tgrac_historical_mandals",
+        "version_tag": "2016_snapshot_raw",
+        "effective_from": "2016-10-11",
+        "effective_to": "2022-09-01",
+        "default_status": "UNVERIFIED",
+        "record_count": 589,
+        "checksum_sha256": "aca53eefa290570ce4010fa8c26a75dce995de3e3180ac9f0873f78fb41512db",
+        "storage_path": "data/geo/candidate_authoritative/tgrac_mandals_raw.json",
+        "metadata": {
+          "authority_classification": "UNVERIFIED_STATE_GIS_CANDIDATE",
+          "temporal_classification": "HISTORICAL_LEGAL",
+          "feature_count": 589,
+          "missing_mandals_count": 23,
+          "statutory_current_total": 612,
+          "current_legal_eligibility": "STRICTLY_BLOCKED",
+          "historical_legal_eligibility": "READY_FOR_HISTORICAL_INGESTION",
+          "reconciliation_csv": "docs/w016_c2_mandal_identifier_mapping.csv"
+        }
+      }
+    ],
+    "provenance_dag_structure": {
+      "raw_ingest_node": {
+        "transformation_type": "raw_tgrac_geojson_ingest",
+        "operator": "panin_geometry_ingest_pipeline",
+        "status": "UNVERIFIED",
+        "metadata": {
+          "crs": "EPSG:4326",
+          "source_encoding": "UTF-8",
+          "geometry_validation": "ST_IsValid, ST_MakeValid if needed, polygon winding check"
+        }
+      },
+      "linkage": "domain_table = 'entity_geometries', domain_record_id = entity_geometries.id"
+    }
+  },
+  "temporal_and_status_quarantine": {
+    "status_enforcement": "Every ingested TGRAC row receives status = 'UNVERIFIED' (from existing W012 data_status_enum) and authority_classification = 'UNVERIFIED_STATE_GIS_CANDIDATE'. No row receives 'OFFICIAL' without constitutional/statutory evidence verification.",
+    "ac_layer": {
+      "temporal_regime": "Delimitation Order 2008 (eci_delimitation_2008)",
+      "attachment_target": "public.constituency_versions (WHERE delimitation_regime_id = 'eci_delimitation_2008')",
+      "feature_count": 119,
+      "is_current": false,
+      "quarantine_rule": "Geometries remain candidate-only until CTO authorizes promoting them to active display; datta07 fixture remains active in frontend mock fixtures."
+    },
+    "district_layer": {
+      "temporal_regime": "2019-2021 Intermediate Regime (ts_districts_2016_v1 with Mulugu/Narayanpet)",
+      "attachment_target": "public.district_versions (via G.O.Ms. 153 lineage mapping for Warangal/Hanamkonda)",
+      "feature_count": 33,
+      "is_current": false,
+      "quarantine_rule": "Retains explicit distinction between historical polygon names and post-2021 gazette renames."
+    },
+    "mandal_layer": {
+      "temporal_regime": "2016-2017 Historical Snapshot (ts_mandals_2016_v1)",
+      "attachment_target": "public.mandal_versions (historical version window [2016-10-11, 2022-09-01))",
+      "feature_count": 589,
+      "is_current": false,
+      "quarantine_rule": "Strictly marked is_current = false and valid_to = '2022-09-01'. CANNOT satisfy current-geography queries. UNK-16-01 blocker preserved."
+    }
+  },
+  "authoritative_replacement_model": {
+    "principle": "Non-destructive additive versioning. Historical candidate geometries are NEVER overwritten.",
+    "future_eci_ac_arrival": {
+      "step_1": "Obtain certified ECI shapefile / GeoJSON with official publication metadata.",
+      "step_2": "Register new dataset_version 'eci_ts_ac_2008_official_v1' backed by an evidence_record (SHA-256, verified_by, gazette reference).",
+      "step_3": "Insert 119 new rows into public.entity_geometries with status = 'OFFICIAL', authority_classification = 'OFFICIAL_CONSTITUTIONAL_GEOMETRY', is_current = true.",
+      "step_4": "Update previous TGRAC candidate rows: is_current = false.",
+      "step_5": "Execute spatial comparison audit: SELECT c.name, ST_Area(c_eci.geometry), ST_Area(c_tgrac.geometry), ST_HausdorffDistance(c_eci.geometry, c_tgrac.geometry) FROM public.entity_geometries c_eci JOIN public.entity_geometries c_tgrac ON c_eci.entity_id = c_tgrac.entity_id WHERE c_eci.dataset_version_id = 'eci_ts_ac_2008_official_v1' AND c_tgrac.dataset_version_id = 'tgrac_ac_2023_candidate_v1';"
+    },
+    "future_ccla_612_mandal_arrival": {
+      "step_1": "Obtain complete 612-mandal cadastral/revenue boundary shapefile from CCLA / Survey of India.",
+      "step_2": "Register new dataset_version 'ts_ccla_mandals_2023_official_v1' with evidence_record.",
+      "step_3": "Insert 612 new rows into public.entity_geometries with status = 'OFFICIAL', authority_classification = 'OFFICIAL_STATUTORY_GEOMETRY', is_current = true, valid_from = '2022-09-01'.",
+      "step_4": "The 589-mandal historical TGRAC rows remain untouched in the database with is_current = false, valid_to = '2022-09-01', serving historical queries for the 2016-2022 temporal window."
+    }
+  },
+  "query_safety": {
+    "view_design": [
+      {
+        "view_name": "public.v_current_assembly_geometries",
+        "definition": "SELECT * FROM public.entity_geometries WHERE entity_type = 'assembly_constituency' AND is_current = true;"
+      },
+      {
+        "view_name": "public.v_candidate_assembly_geometries",
+        "definition": "SELECT eg.*, cv.name, cv.ac_no FROM public.entity_geometries eg JOIN public.constituency_versions cv ON eg.version_id = cv.id WHERE eg.dataset_version_id = 'tgrac_ac_2023_candidate_v1';"
+      },
+      {
+        "view_name": "public.v_current_mandal_geometries",
+        "definition": "SELECT * FROM public.entity_geometries WHERE entity_type = 'mandal' AND is_current = true;",
+        "behavior": "Returns 0 rows. Correctly signals that no current legal geometry exists for mandals, preventing historical 589-mandal leakage."
+      },
+      {
+        "view_name": "public.v_historical_2016_mandal_geometries",
+        "definition": "SELECT * FROM public.entity_geometries WHERE entity_type = 'mandal' AND dataset_version_id = 'tgrac_mandals_2016_candidate_v1';"
+      }
+    ]
+  },
+  "security_and_rls": {
+    "policy": "Minimum RLS: Public read (SELECT) for authenticated and anon users; mutation (INSERT, UPDATE, DELETE) restricted strictly to service_role.",
+    "justification": "Electoral and administrative boundaries are public non-sensitive civic information. Restricting write operations protects geographic integrity."
+  },
+  "performance_evaluation": {
+    "classification": "EXPECTED",
+    "storage_projection": {
+      "assembly_constituencies_119": "~12.5 MB raw GeoJSON (~6 MB binary EWKB in Postgres)",
+      "districts_33": "~6.2 MB raw GeoJSON (~3 MB binary EWKB in Postgres)",
+      "mandals_589": "~26.8 MB raw GeoJSON (~14 MB binary EWKB in Postgres)",
+      "total_table_size": "~23 MB binary geometry + indexes (~10 MB)",
+      "impact": "Negligible for PostgreSQL/PostGIS running on modern staging/production instances"
+    },
+    "indexing_strategy": "GiST index on geometry column enables sub-millisecond point-in-polygon (ST_Contains) and bounding-box overlap (&&) queries."
+  },
+  "acceptance_matrix": [
+    {
+      "layer": "Assembly Constituencies (AC)",
+      "requirement": "Preserve 119 AC boundaries under Delimitation 2008 without misrepresenting as official ECI geometry",
+      "existing_capability": "PostGIS runtime enabled, 119/119 bijective match established via CSV name dictionary",
+      "minimum_change": "Create public.entity_geometries, register W012 data_sources/datasets/versions, insert 119 rows with status='UNVERIFIED'",
+      "w012_dependency": "data_sources ('tgrac_gis'), datasets ('tgrac_assembly_constituencies'), dataset_versions ('tgrac_ac_2023_candidate_v1'), provenance_records",
+      "w014_dependency": "constituency_versions (under eci_delimitation_2008)",
+      "w015_dependency": "None (spatial calculations remain observational)",
+      "security": "RLS public read, service_role write",
+      "performance": "EXPECTED (GiST index, ~6 MB storage)",
+      "verification": "ST_IsValid check, 119-row count assertion, SHA-256 hash match",
+      "implementation_risk": "LOW (Clean 1:1 mapping, zero ambiguity)"
+    },
+    {
+      "layer": "Administrative Districts",
+      "requirement": "Preserve 33 District boundaries under 2019-2021 intermediate regime without conflating Warangal renames",
+      "existing_capability": "PostGIS runtime enabled, 33/33 bijective match established via CSV mapping",
+      "minimum_change": "Create public.entity_geometries, register W012 records, insert 33 rows with status='UNVERIFIED'",
+      "w012_dependency": "data_sources ('tgrac_gis'), datasets ('tgrac_revenue_districts'), dataset_versions ('tgrac_districts_2023_candidate_v1'), provenance_records",
+      "w014_dependency": "district_versions (mapped via G.O.Ms. 153 lineage)",
+      "w015_dependency": "None (spatial calculations remain observational)",
+      "security": "RLS public read, service_role write",
+      "performance": "EXPECTED (GiST index, ~3 MB storage)",
+      "verification": "ST_IsValid check, 33-row count assertion, SHA-256 hash match",
+      "implementation_risk": "LOW (Clean 1:1 mapping, documented renaming lineage)"
+    },
+    {
+      "layer": "Administrative Mandals",
+      "requirement": "Preserve 589 historical mandal boundaries without misrepresenting as current 612-mandal set",
+      "existing_capability": "PostGIS runtime enabled, 589 raw features preserved, discrepancy arithmetic proven (589 + 23 = 612)",
+      "minimum_change": "Create public.entity_geometries, register W012 records, insert 589 rows with temporal_classification='HISTORICAL_LEGAL', is_current=false, valid_to='2022-09-01'",
+      "w012_dependency": "data_sources ('tgrac_gis'), datasets ('tgrac_historical_mandals'), dataset_versions ('tgrac_mandals_2016_candidate_v1'), provenance_records",
+      "w014_dependency": "mandal_versions (historical version window 2016-2022)",
+      "w015_dependency": "None (MCM remains statutory authority, spatial intersection purely advisory)",
+      "security": "RLS public read, service_role write",
+      "performance": "EXPECTED (GiST index, ~14 MB storage)",
+      "verification": "ST_IsValid check, 589-row count assertion, UNK-16-01 quarantine check",
+      "implementation_risk": "MEDIUM (Temporal quarantine strictly required to prevent query contamination)"
+    }
+  ],
+  "decision_matrix": {
+    "assembly_constituencies": "READY FOR BOUNDED INGESTION",
+    "districts": "READY FOR BOUNDED INGESTION",
+    "mandals": "READY FOR HISTORICAL INGESTION",
+    "notes": "'READY FOR BOUNDED INGESTION' and 'READY FOR HISTORICAL INGESTION' signify technical, evidentiary, and architectural readiness for bounded quarantine ingestion under Migration 044. They do NOT imply official or current legal status."
+  },
+  "migration_044_design": {
+    "status": "DESIGN ONLY — NOT AUTHORIZED FOR IMPLEMENTATION",
+    "migration_filename_concept": "supabase/migrations/044_entity_geometries_quarantine.sql",
+    "ddl_summary": [
+      "CREATE TABLE IF NOT EXISTS public.entity_geometries (...)",
+      "CREATE INDEX idx_entity_geometries_geom ON public.entity_geometries USING gist (geometry);",
+      "CREATE INDEX idx_entity_geometries_lookup ON public.entity_geometries (entity_type, entity_id);",
+      "CREATE UNIQUE INDEX uq_entity_geometries_current ON public.entity_geometries (entity_type, entity_id, authority_classification) WHERE is_current = true;",
+      "ALTER TABLE public.entity_geometries ENABLE ROW LEVEL SECURITY;",
+      "CREATE POLICY \"Public read entity_geometries\" ON public.entity_geometries FOR SELECT TO anon, authenticated USING (true);",
+      "CREATE POLICY \"Service role manage entity_geometries\" ON public.entity_geometries FOR ALL TO service_role USING (true) WITH CHECK (true);"
+    ],
+    "rollback_strategy": [
+      "DROP TABLE IF EXISTS public.entity_geometries CASCADE;",
+      "DELETE FROM public.dataset_versions WHERE id IN ('tgrac_ac_2023_candidate_v1', 'tgrac_districts_2023_candidate_v1', 'tgrac_mandals_2016_candidate_v1');",
+      "DELETE FROM public.datasets WHERE id IN ('tgrac_assembly_constituencies', 'tgrac_revenue_districts', 'tgrac_historical_mandals');",
+      "DELETE FROM public.data_sources WHERE id = 'tgrac_gis';",
+      "DROP VIEW IF EXISTS public.v_current_assembly_geometries;",
+      "DROP VIEW IF EXISTS public.v_candidate_assembly_geometries;",
+      "DROP VIEW IF EXISTS public.v_current_mandal_geometries;",
+      "DROP VIEW IF EXISTS public.v_historical_2016_mandal_geometries;"
+    ]
+  }
+}
