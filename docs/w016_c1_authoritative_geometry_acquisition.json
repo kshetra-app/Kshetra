@@ -1,0 +1,244 @@
+{
+  "schema_version": "1.0.0",
+  "job": "W016-C1",
+  "title": "Authoritative Geometry Acquisition & Reconciliation Execution",
+  "timestamp": "2026-09-24T17:00:00+05:30",
+  "baseline_commit": "4beb9a7cd4b6dbb0f1532085a5928fa9ec22378a",
+  "authority": "Independent CTO / Co-founder Directive W016-C1",
+  "authoritative_state": {
+    "w015": "ACCEPTED_COMPLETE",
+    "w015_b1": "ACCEPTED_COMPLETE",
+    "w015_b2": "ACCEPTED_COMPLETE",
+    "w016_a1_preflight": "ACCEPTED",
+    "w016_b1_preflight": "ACCEPTED",
+    "w016_b2_rehearsal": "ACCEPTED_COMPLETE",
+    "w016_c1_acquisition": "SUBMITTED_FOR_CTO_REVIEW",
+    "w016_database_ingestion": "STRICTLY_NOT_AUTHORIZED",
+    "migration_044": "STRICTLY_NOT_AUTHORIZED",
+    "production_environment": "STRICTLY_UNTOUCHED"
+  },
+  "sources_attempted": [
+    {
+      "source_name": "Election Commission of India (ECI) Spatial Data Infrastructure",
+      "url": "https://eci.gov.in",
+      "target_geography": "Assembly Constituencies",
+      "plan": "PLAN_A",
+      "outcome": "ACCESS_RESTRICTED_NO_DIRECT_VECTOR_DOWNLOAD",
+      "findings": "ECI maintains internal GIS layers and publishes static web atlases and maps, but does not provide public unauthenticated direct vector downloads (Shapefile/GeoJSON)."
+    },
+    {
+      "source_name": "Office of the Chief Electoral Officer (CEO), Telangana",
+      "url": "https://ceotelangana.nic.in",
+      "target_geography": "Assembly Constituencies",
+      "plan": "PLAN_B",
+      "outcome": "NO_VECTOR_DOWNLOADS_ON_PORTAL",
+      "findings": "CEO Telangana portal hosts polling station lists, electoral rolls, and PDF maps, but does not provide downloadable vector boundary shapefiles."
+    },
+    {
+      "source_name": "Survey of India (SOI) NAKSHA & Online Maps Portal",
+      "url": "https://onlinemaps.surveyofindia.gov.in",
+      "target_geography": "Districts and Mandals",
+      "plan": "PLAN_B",
+      "outcome": "ACCESS_RESTRICTED_PORTAL_REGISTRATION_REQUIRED",
+      "findings": "SOI provides Open Series Maps (OSM) as PDFs (1:50k) and state administrative overview maps. Vector boundary downloads are governed by National Geospatial Policy and require registered institutional access or paid requisition; no open direct vector API for sub-districts."
+    },
+    {
+      "source_name": "Ministry of Panchayati Raj / Local Government Directory (LGD)",
+      "url": "https://lgdirectory.gov.in",
+      "target_geography": "Mandals and Districts",
+      "plan": "PLAN_B",
+      "outcome": "TABULAR_ONLY_GIS_RESTRICTED",
+      "findings": "LGD maintains authoritative directory codes (LGD codes) and administrative hierarchies, but its GIS spatial vector downloads for sub-districts require authenticated government enterprise GIS access."
+    },
+    {
+      "source_name": "Telangana State Remote Sensing Applications Centre (TRAC / TGRAC)",
+      "url": "https://tgrac.telangana.gov.in/arcgis/rest/services/DistrictFormation_Folder/DistrictFormation/MapServer",
+      "target_geography": "Districts, Assembly Constituencies, Mandals",
+      "plan": "PLAN_A (Districts/Mandals) / PLAN_B (Assembly)",
+      "outcome": "CANDIDATE_VECTORS_DOWNLOADED_AND_PRESERVED",
+      "findings": "TGRAC ArcGIS REST MapServer exposed public query endpoints for 33 Districts, 119 Assembly Constituencies, and 589 Mandals in EPSG:4326. Raw files downloaded, verified, and preserved."
+    }
+  ],
+  "source_authority_analysis": {
+    "tgrac": {
+      "publisher": "Telangana State Remote Sensing Applications Centre (TGRAC / TRAC), Planning Department, Government of Telangana",
+      "service_name": "DistrictFormation_Folder/DistrictFormation (MapServer)",
+      "server_version": "ArcGIS Server 10.22",
+      "legal_administrative_authority": {
+        "assembly_constituencies": "NONE (Statutory authority belongs to Delimitation Commission of India / ECI under Delimitation Act, 2002)",
+        "districts_and_mandals": "SECONDARY_TECHNICAL (Statutory authority belongs to Government of Telangana, Revenue Department under Telangana District Formation Act, 1974)"
+      },
+      "vector_geometry_authority": "PRIMARY_STATE_GIS_AGENCY (TGRAC is the state nodal scientific agency for spatial mapping and remote sensing)",
+      "identifier_authority": "DEFECTIVE (Lacks ECI AC_NO for ACs; lacks MoPR LGD codes for Mandals and Districts; uses internal serial numbers and English text names)",
+      "publication_authority": "INTERNAL_STATE_GIS_SERVER (Publicly readable over HTTPS, but lacks formal Open Government Data license, cryptographic signature, or legal gazette certification)"
+    }
+  },
+  "artifacts_obtained": [
+    {
+      "artifact_name": "tgrac_service_metadata.json",
+      "file_path": "data/geo/candidate_authoritative/tgrac_service_metadata.json",
+      "source_url": "https://tgrac.telangana.gov.in/arcgis/rest/services/DistrictFormation_Folder/DistrictFormation/MapServer?f=json",
+      "retrieval_timestamp": "2026-09-24T16:51:10+05:30",
+      "size_bytes": 3474,
+      "sha256": "47bd2f570c904d30f86aae2eabf757f09b115318f5d8a286ee24a4bc39486d52",
+      "format": "JSON (ArcGIS Server Service Metadata)",
+      "crs": "EPSG:4326"
+    },
+    {
+      "artifact_name": "tgrac_districts_raw.json",
+      "file_path": "data/geo/candidate_authoritative/tgrac_districts_raw.json",
+      "source_url": "https://tgrac.telangana.gov.in/arcgis/rest/services/DistrictFormation_Folder/DistrictFormation/MapServer/16/query?where=1=1&outFields=*&returnGeometry=true&f=json",
+      "retrieval_timestamp": "2026-09-24T16:51:11+05:30",
+      "size_bytes": 6169331,
+      "sha256": "6a7a7bff40d088d725828462d20674948d63a7195c6d961d9232eec54ee20e33",
+      "format": "Esri JSON (ArcGIS REST FeatureSet)",
+      "crs": "EPSG:4326 (WGS 84)",
+      "feature_count": 33,
+      "geometry_type": "esriGeometryPolygon"
+    },
+    {
+      "artifact_name": "tgrac_assembly_constituencies_raw.json",
+      "file_path": "data/geo/candidate_authoritative/tgrac_assembly_constituencies_raw.json",
+      "source_url": "https://tgrac.telangana.gov.in/arcgis/rest/services/DistrictFormation_Folder/DistrictFormation/MapServer/14/query?where=1=1&outFields=*&returnGeometry=true&f=json",
+      "retrieval_timestamp": "2026-09-24T16:51:21+05:30",
+      "size_bytes": 12466256,
+      "sha256": "72451e54f0a09c6c2357aeea3b42cc4f47a9e071cbc4086f512dd27839fdbdea",
+      "format": "Esri JSON (ArcGIS REST FeatureSet)",
+      "crs": "EPSG:4326 (WGS 84)",
+      "feature_count": 119,
+      "geometry_type": "esriGeometryPolygon"
+    },
+    {
+      "artifact_name": "tgrac_mandals_raw.json",
+      "file_path": "data/geo/candidate_authoritative/tgrac_mandals_raw.json",
+      "source_url": "https://tgrac.telangana.gov.in/arcgis/rest/services/DistrictFormation_Folder/DistrictFormation/MapServer/13/query?where=1=1&outFields=*&returnGeometry=true&f=json",
+      "retrieval_timestamp": "2026-09-24T16:51:45+05:30",
+      "size_bytes": 26843665,
+      "sha256": "aca53eefa290570ce4010fa8c26a75dce995de3e3180ac9f0873f78fb41512db",
+      "format": "Esri JSON (ArcGIS REST FeatureSet)",
+      "crs": "EPSG:4326 (WGS 84)",
+      "feature_count": 589,
+      "geometry_type": "esriGeometryPolygon"
+    }
+  ],
+  "geometry_quality_audit": {
+    "districts": {
+      "feature_count": 33,
+      "null_geometries": 0,
+      "total_rings": 33,
+      "total_vertices": 155237,
+      "topological_validity": "CLEAN_SIMPLE_POLYGONS",
+      "multipart_features": 0
+    },
+    "assembly_constituencies": {
+      "feature_count": 119,
+      "null_geometries": 0,
+      "total_rings": 123,
+      "total_vertices": 312088,
+      "topological_validity": "CLEAN_VALID_RINGS",
+      "multipart_features": 4,
+      "multipart_feature_examples": ["Bhadrachalam (St) Assembly"]
+    },
+    "mandals": {
+      "feature_count": 589,
+      "null_geometries": 0,
+      "total_rings": 605,
+      "total_vertices": 669821,
+      "topological_validity": "CLEAN_VALID_RINGS",
+      "multipart_features": 16
+    }
+  },
+  "identifier_reconciliation": {
+    "assembly_constituencies": {
+      "external_identifier_fields": ["ASSEMBLY_N", "DNAME1", "Parlament", "Ass_Name"],
+      "missing_statutory_key": "AC_NO (Statutory ECI Assembly Constituency Number 1..119 is absent)",
+      "canonical_target": "public.constituencies (ac_no, name)",
+      "direct_exact_name_matches": 74,
+      "normalized_name_matches": 3,
+      "name_discrepancies_requiring_mapping": 42,
+      "discrepancy_types": [
+        "Reservation suffixes attached in source: e.g. 'Bellampalle (Sc)', 'Chennur (Sc)', 'Boath (St)' vs canonical 'Bellampalli', 'Chennur', 'Boath'",
+        "Spelling/abbreviation variations: 'Lal Bahadur Nagar' vs 'LB Nagar', 'Secunderabad Cont (Sc)' vs 'Secunderabad Cantt', 'Sirisilla' vs 'Sircilla'"
+      ],
+      "status": "MATCH_REQUIRES_DOCUMENTED_MAPPING"
+    },
+    "districts": {
+      "external_identifier_fields": ["dist_name", "state"],
+      "missing_statutory_key": "LGD_CODE (MoPR Local Government Directory District Code is absent)",
+      "canonical_target": "public.districts (code, name)",
+      "direct_exact_name_matches": 28,
+      "documented_mapping_matches": 5,
+      "mapping_details": [
+        { "source_name": "Jangoan", "canonical_name": "Jangaon", "code": "TS-DIST-JANGAON" },
+        { "source_name": "Warangal Rural", "canonical_name": "Warangal", "code": "TS-DIST-WARANGAL", "note": "Renamed under G.O.Ms. 153 (2021)" },
+        { "source_name": "Warangal Urban", "canonical_name": "Hanamkonda", "code": "TS-DIST-HANAMKONDA", "note": "Renamed under G.O.Ms. 153 (2021)" },
+        { "source_name": "Medchal Malkajgiri", "canonical_name": "Medchal-Malkajgiri", "code": "TS-DIST-MEDCHAL-MALKAJGIRI" },
+        { "source_name": "Kumurambheem Asifabad", "canonical_name": "Kumuram Bheem Asifabad", "code": "TS-DIST-KUMURAM-BHEEM-ASIFABAD" }
+      ],
+      "status": "MATCH_BY_DOCUMENTED_MAPPING"
+    },
+    "mandals": {
+      "external_identifier_fields": ["mandal_nam", "s_no", "dist_name", "rev_div_na"],
+      "missing_statutory_key": "LGD_SUBDISTRICT_CODE (MoPR LGD Code is absent)",
+      "canonical_target": "public.mandals (id, name, lgd_code)",
+      "feature_count_vs_statutory": "589 acquired vs 594 post-2016 statutory baseline (and 612 current statutory total)",
+      "missing_mandals_count": 23,
+      "status": "DEFECTIVE_MISSING_LGD_KEYS_AND_TEMPORAL_COVERAGE"
+    }
+  },
+  "temporal_reconciliation": {
+    "assembly_constituencies": {
+      "regime": "Delimitation Order 2008 (Active Electoral)",
+      "temporal_anomaly": "Attributes embed pre-2016 10-district affiliations (DNAME1: 'ADILABAD'), reflecting 2008 gazette baseline prior to 2016 state reorganisation."
+    },
+    "districts": {
+      "regime": "2019–2021 Intermediate Statutory Regime",
+      "explanation": "Includes Mulugu and Narayanpet (formed in 2019, bringing total from 31 to 33), but retains 2016 names 'Warangal Rural' and 'Warangal Urban' prior to August 2021 G.O.Ms. 153 renaming to Warangal and Hanamkonda."
+    },
+    "mandals": {
+      "regime": "2016 Post-Reorganisation Initial Regime",
+      "explanation": "Contains 589 mandals created under G.O.Ms. 220–250 (October 2016). Does not capture the 23 subsequent mandal bifurcations notified between 2019 and 2023."
+    }
+  },
+  "w012_provenance_reconciliation": {
+    "proposed_source_id": "tgrac_gis_server",
+    "proposed_dataset_id": "ts_tgrac_admin_boundaries_v2016",
+    "status": "UNVERIFIED_STATE_GIS_CANDIDATE",
+    "authority_classification": "STATE_REMOTE_SENSING_CENTRE",
+    "missing_evidence": "Formal publication gazette / cryptographic release hash from Government of Telangana"
+  },
+  "w013_w014_entity_mapping": {
+    "districts_mapping": "Reconciles 33/33 features to W013 public.districts and W014 public.district_versions (with 2021 renaming record).",
+    "assembly_mapping": "Reconciles 119/119 features to W013 public.constituencies and W014 delimitation_regime_id 'eci_delimitation_2008' via name mapping dictionary.",
+    "mandals_mapping": "Reconciles 589 features to W014 post-2016 lineage; leaves 23 recently notified mandals without vector geometry."
+  },
+  "w015_relationship_comparison": {
+    "rule": "RELATIONAL_PRIMACY_RULE: Relational evidence from W014/W015 remains authoritative. Spatial evidence cannot silently overwrite W015 relationships.",
+    "pilot_mandals_verification": "All 12 pilot mandals (Sirpur T, Kagaznagar, Dahegaon, Asifabad, Chennur, Kotapalli, etc.) verified present in TGRAC candidate layer.",
+    "containment_classification": "SPATIAL_EVALUATION_DEFERRED_UNTIL_AUTHORIZATION"
+  },
+  "acceptance_gate_verdict": {
+    "classification": "UNVERIFIED_STATE_GIS_CANDIDATE",
+    "status": "CANDIDATE_ACQUIRED_BUT_NOT_OFFICIAL",
+    "authoritative_promotion_allowed": false,
+    "database_ingestion_allowed": false,
+    "blocker_unk_16_01": "OPEN / BLOCKED (Progressed to CANDIDATE_ACQUIRED_BLOCKED_ON_LGD_KEYS_AND_23_MISSING_MANDALS)"
+  },
+  "plan_outcomes": {
+    "plan_a": {
+      "assembly": "RESTRICTED (ECI GIS portal does not provide public shapefile downloads)",
+      "districts": "CANDIDATE_ACQUIRED (TGRAC 33 districts downloaded, 100% valid geometry)",
+      "mandals": "CANDIDATE_ACQUIRED_INCOMPLETE (TGRAC 589 mandals downloaded, missing 23 mandals and LGD keys)"
+    },
+    "plan_b": {
+      "assembly": "CANDIDATE_ACQUIRED (TGRAC 119 ACs downloaded; missing ECI AC_NO, requires name mapping)",
+      "districts": "RESTRICTED (SOI NAKSHA / Bhuvan require enterprise clearance)",
+      "mandals": "RESTRICTED (MoPR LGD vector downloads require authenticated state login)"
+    },
+    "plan_c": {
+      "requirement_status": "FORMAL_SPECIFICATION_PREPARED",
+      "description": "User-controlled evidence-import specification defined for obtaining official ECI-certified AC shapefiles and CCLA/SSLR 612-mandal cadastral shapefiles with statutory LGD codes."
+    }
+  },
+  "next_technical_action": "Submit acquisition findings to CTO for review. Await CTO determination on whether to: (A) accept TGRAC candidate geometry with documented name mapping under UNVERIFIED_STATE_GIS status, or (B) execute Plan C User-Controlled Import for official ECI and CCLA signed vectors."
+}
