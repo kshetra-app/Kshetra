@@ -1,10 +1,10 @@
 {
-  "schema_version": "2.2.0",
-  "job": "W014-MANDAL-PREFLIGHT-FINAL-INTEGRITY-CORRECTION-ROUND-2",
-  "title": "W014 Mandal Temporal Version Model Preflight (Comprehensive Authority & Security Hardening)",
-  "timestamp": "2026-09-24T20:05:00+05:30",
-  "baseline_commit": "fe93e0bdd101989ec9b6ec8d7dc8b59404833619",
-  "authority": "Independent CTO / Co-founder Directive W014 Mandal Version Preflight Correction Round 2",
+  "schema_version": "2.3.0",
+  "job": "W014-MANDAL-PREFLIGHT-SECURITY-HARDENING-ROUND-3",
+  "title": "W014 Mandal Temporal Version Model Preflight (Security Boundary Hardening & W012 Contract Inheritance)",
+  "timestamp": "2026-09-24T20:45:00+05:30",
+  "baseline_commit": "969852243d27a313bf6eebdbb1fe9b6a96c0a81c",
+  "authority": "Independent CTO / Co-founder Directive W014 Mandal Version Preflight Security Correction Round",
   "authoritative_state": {
     "w015": "ACCEPTED_COMPLETE",
     "w015_b1": "ACCEPTED_COMPLETE",
@@ -15,7 +15,7 @@
     "w016_c1_acquisition": "ACCEPTED_COMPLETE",
     "w016_c2_reconciliation": "ACCEPTED",
     "w016_c3_preflight": "CONDITIONALLY_ACCEPTED",
-    "w014_mandal_version_preflight": "REVISED_PREFLIGHT_SUBMISSION",
+    "w014_mandal_version_preflight": "REVISED_SECURITY_SUBMISSION",
     "migration_044": "STRICTLY_NOT_AUTHORIZED",
     "database_mutations": "STRICTLY_NOT_AUTHORIZED",
     "geometry_ingestion": "STRICTLY_NOT_AUTHORIZED",
@@ -42,6 +42,24 @@
       "is_current = true != OFFICIAL (A candidate version can be temporally current without being legally official)",
       "OFFICIAL dataset eligibility != temporal currentness (A historical version can belong to an OFFICIAL dataset without being temporally current)"
     ]
+  },
+  "w012_w014_contract_boundary": {
+    "w012_ownership": [
+      "Source and evidence acquisition and verification",
+      "Cryptographic provenance DAG verification",
+      "Statutory Gazette order validation and evidence_records creation",
+      "Promotion of dataset_versions to OFFICIAL status",
+      "Institutional dataset authority management"
+    ],
+    "w014_ownership": [
+      "Temporal version integrity (valid_from, valid_to)",
+      "Same-anchor identity enforcement via composite FK",
+      "Non-overlapping date intervals via GiST exclusion",
+      "Temporal currentness invariant (is_current = true <=> valid_to IS NULL)",
+      "Canonical pointer integrity (mandals.current_version_id)",
+      "Canonical pointer eligibility check against W012's OFFICIAL status"
+    ],
+    "contract_inheritance_rule": "W014 MUST NOT duplicate the W012 legal-evidence promotion workflow. W014 trusts the W012 contract: dataset_versions.default_status = 'OFFICIAL' certifies that W012 has already completed its required statutory promotion workflow. W014 never itself promotes UNVERIFIED/CANDIDATE data to OFFICIAL."
   },
   "current_schema_audit": {
     "mandals_table": {
@@ -79,6 +97,8 @@
     }
   },
   "bidirectional_current_version_integrity": {
+    "invariant_name": "Canonical Pointer -> Active Version Invariant",
+    "formal_statement": "mandals.current_version_id -> mandal_versions.is_current = true (Unidirectional implication; candidate datasets may have their own current version)",
     "layers": {
       "layer_1_composite_fk": {
         "mandal_versions_constraint": "CONSTRAINT uq_mandal_versions_id_mandal UNIQUE (id, mandal_id)",
@@ -114,18 +134,37 @@
   "transition_function_security_and_provenance": {
     "security_execution_model": {
       "execution_mode": "SECURITY DEFINER",
+      "dedicated_owner": {
+        "role_name": "panin_boundary_definer",
+        "attributes": "NOLOGIN",
+        "role_distinction": {
+          "function_owner": "panin_boundary_definer (non-login dedicated role owning boundary objects)",
+          "database_administrator": "postgres / supabase_admin (cluster infrastructure and DDL migrations; not an application caller)",
+          "trusted_application_execution_role": "service_role (backend worker / internal API service role)",
+          "boundary_admin_role": "panin_boundary_admin (human administrative role for boundary management)"
+        }
+      },
       "search_path": "SET search_path = public, pg_temp",
       "object_qualification": "All table and function references explicitly qualified as public.<object>",
-      "access_control": {
-        "revocations": "REVOKE ALL ON FUNCTION public.fn_transition_mandal_current_version(TEXT, UUID, DATE, TEXT, UUID) FROM PUBLIC, anon, authenticated;",
-        "grants": "GRANT EXECUTE ON FUNCTION public.fn_transition_mandal_current_version(TEXT, UUID, DATE, TEXT, UUID) TO service_role, panin_boundary_admin;"
+      "access_control_acls": {
+        "revocations": [
+          "REVOKE ALL ON FUNCTION public.fn_transition_mandal_current_version(TEXT, UUID, DATE, TEXT, UUID) FROM PUBLIC;",
+          "REVOKE ALL ON FUNCTION public.fn_transition_mandal_current_version(TEXT, UUID, DATE, TEXT, UUID) FROM anon;",
+          "REVOKE ALL ON FUNCTION public.fn_transition_mandal_current_version(TEXT, UUID, DATE, TEXT, UUID) FROM authenticated;"
+        ],
+        "grants": [
+          "GRANT EXECUTE ON FUNCTION public.fn_transition_mandal_current_version(TEXT, UUID, DATE, TEXT, UUID) TO service_role;",
+          "GRANT EXECUTE ON FUNCTION public.fn_transition_mandal_current_version(TEXT, UUID, DATE, TEXT, UUID) TO panin_boundary_admin;"
+        ]
       },
-      "runtime_role_authorization": "Enforces IF CURRENT_USER NOT IN ('postgres', 'service_role', 'panin_boundary_admin') THEN RAISE EXCEPTION ERR-W014-004 (42501);",
-      "p_operator_role": "AUDIT METADATA ONLY. Recorded in transition JSONB receipt and event audit logs. Provides ZERO authorization authority."
+      "caller_authentication_mechanism": "Declarative PostgreSQL EXECUTE privileges (ACLs). Unprivileged roles (PUBLIC, anon, authenticated) are blocked by PostgreSQL engine before entering function (42501). Defense-in-depth check evaluates SESSION_USER (the authentic session identity), NOT CURRENT_USER.",
+      "p_operator_semantics": {
+        "role": "AUDIT METADATA ONLY",
+        "authorization_power": "ZERO. Authorization is determined strictly by PostgreSQL session credentials. An unauthorized caller passing p_operator='admin' is rejected. An authorized caller passing p_operator='random' is permitted because the caller is authorized."
+      }
     },
     "provenance_semantics": {
-      "primary_delegation": "Primary statutory evidence validation belongs to the W012 dataset promotion workflow. A dataset version only achieves default_status = 'OFFICIAL' when evidence_records and record_provenance_linkages are cryptographically verified and signed.",
-      "p_provenance_id_rule": "Optional transition provenance tracking. If p_provenance_id IS NOT NULL, the function asserts that it exists in public.provenance_records; otherwise aborts with Foreign Key Violation (23503). It does NOT self-authorize promotion."
+      "narrow_scope": "If p_provenance_id is supplied, it must resolve to an existing public.provenance_records row (FK existence check; 23503). This check alone does NOT prove statutory authority; W012 remains exclusively responsible for evidence/provenance promotion."
     },
     "elimination_of_dead_governance_state": {
       "v_dataset_status": "Directly evaluated: IF v_dataset_status <> 'OFFICIAL' THEN RAISE EXCEPTION ERR-W014-003 (23514). Dead governance variables completely removed."
@@ -244,32 +283,32 @@
       "assertion_id": "M13",
       "status": "DESIGNED / TO-BE VERIFIED",
       "requirement": "Unauthorized role cannot execute the canonical transition function",
-      "enforcement_mechanism": "REVOKE ALL FROM PUBLIC/anon/authenticated + internal role check IF CURRENT_USER NOT IN ('postgres', 'service_role', 'panin_boundary_admin').",
-      "test_design": "SET ROLE authenticated; SELECT public.fn_transition_mandal_current_version(...);",
-      "expected_sqlstate_or_error": "42501 (insufficient_privilege)",
+      "enforcement_mechanism": "REVOKE ALL FROM PUBLIC/anon/authenticated; GRANT EXECUTE TO service_role, panin_boundary_admin; ownership by panin_boundary_definer (NOLOGIN).",
+      "test_design": "Test privilege boundary for all 5 roles: (1) PUBLIC -> 42501, (2) anon -> 42501, (3) authenticated -> 42501, (4) service_role -> SUCCESS, (5) panin_boundary_admin -> SUCCESS. Verify pg_proc.proowner = panin_boundary_definer.",
+      "expected_sqlstate_or_error": "42501 for unprivileged; SUCCESS for authorized",
       "evidence_artifact": "tests/test_mandal_version_integrity.sql (Test M13)"
     },
     {
       "assertion_id": "M14",
       "status": "DESIGNED / TO-BE VERIFIED",
       "requirement": "p_operator cannot be used to self-authorize a transition",
-      "enforcement_mechanism": "p_operator is treated strictly as audit metadata; authorization is checked purely against CURRENT_USER.",
-      "test_design": "SET ROLE anon; SELECT public.fn_transition_mandal_current_version(..., p_operator := 'superadmin@panin.gov');",
-      "expected_sqlstate_or_error": "42501 (insufficient_privilege)",
+      "enforcement_mechanism": "p_operator is treated strictly as audit metadata; authorization is checked purely against session credentials via PostgreSQL ACLs and SESSION_USER.",
+      "test_design": "Execute 3-case matrix: (1) unauth caller + p_operator='admin' -> 42501; (2) auth caller + p_operator='random' -> SUCCESS; (3) auth caller + p_operator='admin' -> SUCCESS (authorized purely by caller role).",
+      "expected_sqlstate_or_error": "42501 for Case 1; SUCCESS for Cases 2 and 3",
       "evidence_artifact": "tests/test_mandal_version_integrity.sql (Test M14)"
     },
     {
       "assertion_id": "M15",
       "status": "DESIGNED / TO-BE VERIFIED",
-      "requirement": "Provenance/evidence semantics are explicitly enforced or explicitly delegated to W012 promotion workflow",
-      "enforcement_mechanism": "Primary evidence validation delegated to W012 (dataset must be OFFICIAL); if p_provenance_id provided, foreign key existence in provenance_records is validated.",
-      "test_design": "Pass non-existent p_provenance_id to transition function; observe foreign key existence failure.",
+      "requirement": "Provenance semantics: optional p_provenance_id existence validated; statutory evidence delegated to W012",
+      "enforcement_mechanism": "If p_provenance_id provided, foreign key existence in provenance_records is validated; primary evidence validation is delegated to W012 dataset promotion.",
+      "test_design": "Call transition function with non-existent p_provenance_id; observe foreign key existence failure.",
       "expected_sqlstate_or_error": "ERR-W014-005 (23503 / foreign_key_violation)",
       "evidence_artifact": "tests/test_mandal_version_integrity.sql (Test M15)"
     }
   ],
   "decision_matrix": {
-    "mandal_version_model": "PREFLIGHT_COMPLETE_READY_FOR_CTO_AUTHORIZATION",
+    "mandal_version_model": "PREFLIGHT_SECURITY_HARDENED_READY_FOR_CTO_REVIEW",
     "notes": "Preflight only. Migration creation, database alteration, and geometry ingestion remain strictly prohibited."
   }
 }
