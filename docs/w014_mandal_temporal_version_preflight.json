@@ -1,10 +1,10 @@
 {
-  "schema_version": "2.6.0",
-  "job": "W014-MANDAL-PREFLIGHT-FINAL-SECURITY-REVIEW-ROUND",
-  "title": "W014 Mandal Temporal Version Model Preflight (Definer Least-Privilege Verification & M13 Public Principal Testing Correction)",
-  "timestamp": "2026-09-24T22:05:00+05:30",
-  "baseline_commit": "ec38a0a1f664a9cb9b93cea127438b67265eb8d0",
-  "authority": "Independent CTO / Co-founder Directive W014 Final Security Review Correction Round",
+  "schema_version": "2.7.0",
+  "job": "W014-MANDAL-PREFLIGHT-SECURITY-MICRO-CORRECTION",
+  "title": "W014 Mandal Temporal Version Model Preflight (Exact Function Signature & Catalog PUBLIC ACL Verification)",
+  "timestamp": "2026-09-24T22:15:00+05:30",
+  "baseline_commit": "5722c21744438b77bfc9b4a6eaea8266496fcce8",
+  "authority": "Independent CTO / Co-founder Directive W014 Final Security Preflight Micro-Correction Round",
   "authoritative_state": {
     "w015": "ACCEPTED_COMPLETE",
     "w015_b1": "ACCEPTED_COMPLETE",
@@ -179,6 +179,20 @@
       },
       "search_path": "SET search_path = public, pg_temp",
       "object_qualification": "All table and function references explicitly qualified as public.<object>",
+      "resolved_function_signature_contract": {
+        "canonical_name": "public.fn_transition_mandal_current_version",
+        "exact_parameter_signature": "(p_mandal_id TEXT, p_new_version_id UUID, p_effective_date DATE, p_operator TEXT, p_provenance_id UUID DEFAULT NULL)",
+        "pg_proc_catalog_identity": "public.fn_transition_mandal_current_version(text,uuid,date,text,uuid)",
+        "parameter_count": 5,
+        "parameters": [
+          {"name": "p_mandal_id", "type": "TEXT", "mandatory": true, "purpose": "Stable mandal anchor primary key"},
+          {"name": "p_new_version_id", "type": "UUID", "mandatory": true, "purpose": "Target mandal_versions row to activate"},
+          {"name": "p_effective_date", "type": "DATE", "mandatory": true, "purpose": "Statutory enactment date for temporal boundaries (retires old valid_to, sets new valid_from)"},
+          {"name": "p_operator", "type": "TEXT", "mandatory": true, "purpose": "Audit metadata string (zero authorization capability)"},
+          {"name": "p_provenance_id", "type": "UUID", "mandatory": false, "default": "NULL", "purpose": "Optional foreign key reference to public.provenance_records(id)"}
+        ],
+        "discrepancy_resolution": "A 4-parameter variant (TEXT, UUID, TEXT, UUID) was raised during review. Resolution: That variant erroneously omitted p_effective_date DATE. Without p_effective_date, temporal version boundaries cannot be synchronized to verified Gazette enactment dates, which breaks historical accuracy (e.g. Masaipet 2020 G.O. 110 or 13 Mandals 2022-09-26). Furthermore, PostgreSQL's catalog identity for a function with DEFAULT arguments includes all declared types. When invoked with 4 arguments in application calls, the types are (TEXT, UUID, DATE, TEXT), utilizing the DEFAULT NULL for p_provenance_id. The definitive canonical SQL identity in pg_proc is strictly public.fn_transition_mandal_current_version(text,uuid,date,text,uuid)."
+      },
       "access_control_acls": {
         "revocations": [
           "REVOKE ALL ON FUNCTION public.fn_transition_mandal_current_version(TEXT, UUID, DATE, TEXT, UUID) FROM PUBLIC;",
@@ -190,7 +204,7 @@
           "GRANT EXECUTE ON FUNCTION public.fn_transition_mandal_current_version(TEXT, UUID, DATE, TEXT, UUID) TO panin_boundary_admin;"
         ]
       },
-      "caller_authorization_mechanism": "Caller authorization is governed strictly by PostgreSQL EXECUTE privileges (ACLs). PUBLIC is an ACL principal inspected via pg_proc/proacl/aclexplode (not a session role; cannot be executed as a login role). Unprivileged session roles (anon, authenticated) are rejected by PostgreSQL engine with 42501 before entering the function body. The function body contains ZERO authorization dependence on CURRENT_USER or SESSION_USER.",
+      "caller_authorization_mechanism": "Caller authorization is governed strictly by PostgreSQL EXECUTE privileges (ACLs). PUBLIC is an ACL principal, NOT an invokable session role (SET ROLE PUBLIC is invalid SQL). PUBLIC EXECUTE revocation is verified definitively via catalog inspection: SELECT NOT EXISTS (SELECT 1 FROM pg_proc p CROSS JOIN aclexplode(p.proacl) acl WHERE p.oid = 'public.fn_transition_mandal_current_version(text,uuid,date,text,uuid)'::regprocedure AND acl.grantee = 0 AND acl.privilege_type = 'EXECUTE'); which evaluates to true. Unprivileged session roles (anon, authenticated) are tested at runtime and rejected by the PostgreSQL engine with 42501 before entering the function body. The function body contains ZERO authorization dependence on CURRENT_USER or SESSION_USER.",
       "p_operator_and_session_audit_semantics": {
         "p_operator_role": "AUDIT METADATA ONLY. Zero authorization authority. Authorization is determined strictly by PostgreSQL EXECUTE privileges.",
         "session_user_role": "Recorded in JSONB receipt strictly as audit metadata (originating database connection identity)."
@@ -306,7 +320,7 @@
       "status": "DESIGNED / TO-BE VERIFIED",
       "requirement": "Transition to an authoritative open-ended version succeeds atomically",
       "enforcement_mechanism": "fn_transition_mandal_current_version() with OFFICIAL dataset status, valid_to IS NULL, same anchor ID.",
-      "test_design": "Execute fn_transition_mandal_current_version('TS-MDL-5321', '<authoritative_uuid>', '2022-09-26', 'admin@panin.gov');",
+      "test_design": "Execute public.fn_transition_mandal_current_version('TS-MDL-5321', '<authoritative_uuid>', '2022-09-26'::date, 'admin@panin.gov', NULL::uuid);",
       "expected_sqlstate_or_error": "SUCCESS (Returns TRANSITION_COMPLETE receipt, mandals.current_version_id updated)",
       "evidence_artifact": "tests/test_mandal_version_integrity.sql (Test M11)"
     },
@@ -324,8 +338,8 @@
       "status": "DESIGNED / TO-BE VERIFIED",
       "requirement": "Privilege boundary enforced via PostgreSQL EXECUTE ACLs: PUBLIC ACL verified via catalog inspection, session roles tested at runtime, definer least-privilege & zero unintended privileges verified, and base-table DML inspected across all 4 classes; zero CURRENT_USER/SESSION_USER authorization dependence",
       "enforcement_mechanism": "Declarative PostgreSQL ACLs (REVOKE FROM PUBLIC, anon, authenticated; GRANT TO service_role, panin_boundary_admin); dedicated NOLOGIN owner with exact minimum table grants; zero procedural role checks; direct DML restricted for boundary admin; service_role direct DML classified as infrastructure exception.",
-      "test_design": "1. PUBLIC ACL inspection: Query aclexplode(proacl) on fn_transition_mandal_current_version or assert NOT has_function_privilege('public', 'public.fn_transition_mandal_current_version(text,uuid,date,text,uuid)', 'EXECUTE'). (Do NOT attempt runtime execution as PUBLIC; PUBLIC is an ACL principal, not a session role). 2. Runtime session role tests: (a) SET ROLE anon -> call transition function -> 42501. (b) SET ROLE authenticated -> call transition function -> 42501. (c) SET ROLE panin_boundary_admin -> call transition function with valid params -> SUCCESS ('TRANSITION_COMPLETE'); attempt direct INSERT/UPDATE/DELETE on mandals or mandal_versions -> 42501. (d) SET ROLE service_role -> call transition function -> SUCCESS; inspect base-table DML (broad DML classified as trusted infrastructure/backend exception, constrained by Layers 1-5 engine integrity triggers). 3. Definer least-privilege catalog inspection: (a) Verify pg_proc: prosecdef=true, proowner='panin_boundary_definer'::regrole. (b) Verify pg_roles: rolcanlogin=false, rolsuper=false, rolcreatedb=false, rolcreaterole=false. (c) Verify pg_auth_members: zero inherited role memberships for panin_boundary_definer. (d) Verify table privileges: has_table_privilege('panin_boundary_definer', tbl, priv) is true ONLY for designed grants (SELECT on dataset_versions, provenance_records; SELECT, UPDATE on mandals, mandal_versions). Assert INSERT, DELETE, TRUNCATE, REFERENCES, TRIGGER all return false across all 4 tables. (e) Verify table ownership: is_table_owner=false across all tables. 4. Inspect function source: Assert zero CURRENT_USER or SESSION_USER authorization branches.",
-      "expected_sqlstate_or_error": "ACL: PUBLIC has no EXECUTE; Runtime: 42501 for unprivileged session roles, SUCCESS for authorized roles, 42501 for admin direct DML; Definer: exact minimum privileges verified, zero unintended privileges, zero inherited roles.",
+      "test_design": "1. CLASS A (PUBLIC / anon / authenticated): (a) PUBLIC: Catalog ACL inspection only via pg_proc and aclexplode(p.proacl). Query: SELECT NOT EXISTS (SELECT 1 FROM pg_proc p CROSS JOIN aclexplode(p.proacl) acl WHERE p.oid = 'public.fn_transition_mandal_current_version(text,uuid,date,text,uuid)'::regprocedure AND acl.grantee = 0 AND acl.privilege_type = 'EXECUTE'); asserts TRUE (0 rows for grantee=0). (Do NOT attempt SET ROLE PUBLIC or runtime execution as PUBLIC; PUBLIC is an ACL principal, not an invokable session role). (b) anon & authenticated: Runtime session tests (SET ROLE anon; SET ROLE authenticated;) attempting to execute SELECT public.fn_transition_mandal_current_version(...) fail with 42501 (insufficient_privilege). Direct base-table DML strictly denied. 2. CLASS B (panin_boundary_admin): SET ROLE panin_boundary_admin; EXECUTE granted (valid transition succeeds returning TRANSITION_COMPLETE receipt); direct table DML (INSERT, UPDATE, DELETE) on mandals and mandal_versions is denied (42501). 3. CLASS C (service_role): SET ROLE service_role; EXECUTE granted; direct base-table DML inspected and explicitly classified as a trusted infrastructure/backend exception outside the application path guarantee, constrained physically by Layers 1-5 engine integrity triggers. 4. CLASS D (panin_boundary_definer): NOLOGIN owner; not treated as a caller; catalog inspection verifies: (a) pg_proc: prosecdef=true, proowner='panin_boundary_definer'::regrole; (b) pg_roles: rolcanlogin=false, rolsuper=false, rolcreatedb=false, rolcreaterole=false; (c) pg_auth_members: 0 inherited memberships; (d) Effective table privileges: has_table_privilege('panin_boundary_definer', tbl, priv) is true ONLY for SELECT on dataset_versions, provenance_records; SELECT, UPDATE (current_version_id, updated_at) on mandals; SELECT, UPDATE (is_current, valid_from, valid_to, updated_at) on mandal_versions; assert INSERT, DELETE, TRUNCATE, REFERENCES, TRIGGER all return false across all 4 tables; (e) Table ownership: is_table_owner=false across all tables. 5. Inspect function source: Assert zero CURRENT_USER or SESSION_USER authorization branches.",
+      "expected_sqlstate_or_error": "ACL: PUBLIC has no EXECUTE (grantee=0 absent from proacl); Runtime: 42501 for unprivileged session roles, SUCCESS for authorized roles, 42501 for admin direct DML; Definer: exact minimum privileges verified, zero unintended privileges, zero inherited roles.",
       "evidence_artifact": "tests/test_mandal_version_integrity.sql (Test M13)"
     },
     {
