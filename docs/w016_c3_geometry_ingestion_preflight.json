@@ -1,10 +1,10 @@
 {
-  "schema_version": "2.0.0",
+  "schema_version": "3.0.0",
   "job": "W016-C3",
-  "title": "Geometry Ingestion Preflight — Provenance, Temporal Attachment & Candidate-Status Quarantine (CTO Revision)",
-  "timestamp": "2026-09-24T18:25:00+05:30",
-  "baseline_commit": "0d5fac67cf16193cfb72db955be4f553360ede17",
-  "authority": "Independent CTO / Co-founder Directive W016-C3 Correction Round",
+  "title": "Geometry Ingestion Preflight — Provenance, Temporal Attachment & Candidate-Status Quarantine (CTO Surgical Revision)",
+  "timestamp": "2026-09-24T18:35:00+05:30",
+  "baseline_commit": "670bedbb93b50cb8e7a497650d0dda5672d59a68",
+  "authority": "Independent CTO / Co-founder Directive W016-C3 Final Surgical Correction Round",
   "authoritative_state": {
     "w015": "ACCEPTED_COMPLETE",
     "w015_b1": "ACCEPTED_COMPLETE",
@@ -45,43 +45,50 @@
       "status": "VERIFIED_IMMUTABLE"
     }
   },
+  "schema_dependency_reconciliation": {
+    "dataset_versions_verification_evidence_id": {
+      "source_migration": "039_data_governance_foundation.sql",
+      "line_number": 104,
+      "data_type": "UUID",
+      "foreign_key": "REFERENCES evidence_records(id) ON DELETE RESTRICT",
+      "status": "VERIFIED_EXISTS"
+    },
+    "provenance_records_verification_evidence_id": {
+      "source_migration": "039_data_governance_foundation.sql",
+      "line_number": 152,
+      "data_type": "UUID",
+      "foreign_key": "REFERENCES evidence_records(id) ON DELETE RESTRICT",
+      "status": "VERIFIED_EXISTS"
+    },
+    "provenance_records_status": {
+      "source_migration": "039_data_governance_foundation.sql",
+      "line_number": 147,
+      "data_type": "data_status_enum",
+      "status": "VERIFIED_EXISTS"
+    },
+    "delimitation_regimes_legal_status": {
+      "source_migration": "041_geography_versioning_and_temporal_validity.sql",
+      "line_number": 113,
+      "data_type": "VARCHAR(50)",
+      "check_constraint": "legal_status IN ('HISTORICAL_LEGAL_REGIME', 'CURRENT_LEGAL_REGIME', 'FUTURE_ANTICIPATED_REGIME', 'SCENARIO_PROPOSED_REGIME')",
+      "status": "VERIFIED_EXISTS"
+    },
+    "mandal_versions_table": {
+      "source_migration": "Not present in 039-043",
+      "data_type": "UUID PRIMARY KEY",
+      "status": "UNRESOLVED_PREREQUISITE",
+      "reconciliation_requirement": "public.mandal_versions must be formally provisioned under canonical W014 versioning before mandal geometry records can be attached via foreign key."
+    }
+  },
   "relational_integrity_architecture": {
-    "rejection_of_polymorphic_fk": "The generic entity_type + entity_id + version_id polymorphic design is completely removed. PostgreSQL cannot enforce FK integrity across different target tables with polymorphic columns.",
-    "evaluation_of_alternatives": {
-      "alternative_1_typed_nullable_fks_with_exact_one_check": {
-        "description": "Single relation public.entity_geometries containing explicit typed FK columns for each hierarchy level, bounded by CHECK (num_nonnulls(...) = 1) and type-alignment checks.",
-        "pros": [
-          "Preserves a single unified spatial relation for cross-hierarchy spatial analysis and spatial indexing",
-          "Every target is an authentic PostgreSQL FOREIGN KEY constraint with ON DELETE RESTRICT",
-          "Simplifies centralized RLS policies and spatial triggers"
-        ],
-        "cons": [
-          "Sparse nullable columns per row"
-        ],
-        "verdict": "SELECTED_PRIMARY_ARCHITECTURE"
-      },
-      "alternative_2_separate_typed_geometry_relations": {
-        "description": "Separate tables: constituency_geometries, district_geometries, mandal_geometries, each with a NOT NULL FK.",
-        "pros": [
-          "Zero nullable foreign keys",
-          "Independent schemas per hierarchy layer"
-        ],
-        "cons": [
-          "Requires duplicating RLS policies, spatial triggers, and catalog schemas across 4+ tables",
-          "Complicates cross-boundary spatial predicates (e.g. AC overlaps District)"
-        ],
-        "verdict": "VIABLE_ALTERNATIVE_DOCUMENTED"
-      }
-    },
-    "selected_fk_chain": {
-      "assembly_constituency": "entity_geometries.constituency_version_id -> public.constituency_versions(id) -> public.constituencies(internal_id)",
-      "district": "entity_geometries.district_version_id -> public.district_versions(id) -> public.districts(id)",
-      "state": "entity_geometries.state_version_id -> public.state_versions(id) -> public.states(code)",
-      "parliamentary_constituency": "entity_geometries.pc_version_id -> public.parliamentary_constituency_versions(id) -> public.parliamentary_constituencies(id)",
-      "mandal": "entity_geometries.mandal_id -> public.mandals(id) (anchored to MoPR statutory directory)",
-      "dataset_version": "entity_geometries.dataset_version_id -> public.dataset_versions(id)",
-      "provenance": "entity_geometries.provenance_id -> public.provenance_records(id)"
-    },
+    "mandal_w014_version_resolution": "entity_geometries.mandal_version_id references public.mandal_versions(id) ON DELETE RESTRICT. Stable mandal_id is completely eliminated from geometry targeting.",
+    "exact_one_geometry_target": [
+      "constituency_version_id",
+      "district_version_id",
+      "state_version_id",
+      "pc_version_id",
+      "mandal_version_id"
+    ],
     "table_specification": {
       "table_name": "public.entity_geometries",
       "columns": [
@@ -91,7 +98,7 @@
         { "name": "district_version_id", "type": "UUID REFERENCES public.district_versions(id) ON DELETE RESTRICT", "nullable": true },
         { "name": "state_version_id", "type": "UUID REFERENCES public.state_versions(id) ON DELETE RESTRICT", "nullable": true },
         { "name": "pc_version_id", "type": "UUID REFERENCES public.parliamentary_constituency_versions(id) ON DELETE RESTRICT", "nullable": true },
-        { "name": "mandal_id", "type": "TEXT REFERENCES public.mandals(id) ON DELETE RESTRICT", "nullable": true },
+        { "name": "mandal_version_id", "type": "UUID REFERENCES public.mandal_versions(id) ON DELETE RESTRICT", "nullable": true },
         { "name": "dataset_version_id", "type": "TEXT NOT NULL REFERENCES public.dataset_versions(id) ON DELETE RESTRICT", "nullable": false },
         { "name": "provenance_id", "type": "UUID NOT NULL REFERENCES public.provenance_records(id) ON DELETE RESTRICT", "nullable": false },
         { "name": "geometry", "type": "geometry(MultiPolygon, 4326) NOT NULL", "nullable": false },
@@ -110,15 +117,15 @@
       "check_constraints": [
         {
           "name": "chk_entity_geometries_exact_one_target",
-          "definition": "CHECK (num_nonnulls(constituency_version_id, district_version_id, state_version_id, pc_version_id, mandal_id) = 1)"
+          "definition": "CHECK (num_nonnulls(constituency_version_id, district_version_id, state_version_id, pc_version_id, mandal_version_id) = 1)"
         },
         {
           "name": "chk_entity_geometries_type_alignment",
-          "definition": "CHECK ((entity_type = 'assembly_constituency' AND constituency_version_id IS NOT NULL) OR (entity_type = 'district' AND district_version_id IS NOT NULL) OR (entity_type = 'state' AND state_version_id IS NOT NULL) OR (entity_type = 'parliamentary_constituency' AND pc_version_id IS NOT NULL) OR (entity_type = 'mandal' AND mandal_id IS NOT NULL))"
+          "definition": "CHECK ((entity_type = 'assembly_constituency' AND constituency_version_id IS NOT NULL) OR (entity_type = 'district' AND district_version_id IS NOT NULL) OR (entity_type = 'state' AND state_version_id IS NOT NULL) OR (entity_type = 'parliamentary_constituency' AND pc_version_id IS NOT NULL) OR (entity_type = 'mandal' AND mandal_version_id IS NOT NULL))"
         },
         {
           "name": "chk_geometry_current_invariants",
-          "definition": "CHECK ((is_current = false) OR (is_current = true AND status = 'OFFICIAL' AND temporal_classification = 'CURRENT_LEGAL' AND authority_classification IN ('OFFICIAL_CONSTITUTIONAL_GEOMETRY', 'OFFICIAL_STATUTORY_GEOMETRY') AND (valid_to IS NULL OR valid_to > CURRENT_DATE)))"
+          "definition": "CHECK ((is_current = false) OR (is_current = true AND status = 'OFFICIAL' AND temporal_classification = 'CURRENT_LEGAL' AND authority_classification IN ('OFFICIAL_CONSTITUTIONAL_GEOMETRY', 'OFFICIAL_STATUTORY_GEOMETRY') AND valid_to IS NULL))"
         },
         {
           "name": "chk_geometry_status_classification_consistency",
@@ -133,11 +140,16 @@
         { "name": "idx_entity_geometries_geom", "type": "GIST", "definition": "GIST (geometry)" },
         { "name": "idx_entity_geometries_constituency", "type": "BTREE", "definition": "(constituency_version_id) WHERE constituency_version_id IS NOT NULL" },
         { "name": "idx_entity_geometries_district", "type": "BTREE", "definition": "(district_version_id) WHERE district_version_id IS NOT NULL" },
-        { "name": "idx_entity_geometries_mandal", "type": "BTREE", "definition": "(mandal_id) WHERE mandal_id IS NOT NULL" },
+        { "name": "idx_entity_geometries_state", "type": "BTREE", "definition": "(state_version_id) WHERE state_version_id IS NOT NULL" },
+        { "name": "idx_entity_geometries_pc", "type": "BTREE", "definition": "(pc_version_id) WHERE pc_version_id IS NOT NULL" },
+        { "name": "idx_entity_geometries_mandal", "type": "BTREE", "definition": "(mandal_version_id) WHERE mandal_version_id IS NOT NULL" },
         { "name": "idx_entity_geometries_dataset", "type": "BTREE", "definition": "(dataset_version_id)" },
         { "name": "idx_entity_geometries_provenance", "type": "BTREE", "definition": "(provenance_id)" },
-        { "name": "uq_constituency_geometries_single_current", "type": "UNIQUE_PARTIAL", "definition": "(constituency_version_id) WHERE is_current = true" },
-        { "name": "uq_district_geometries_single_current", "type": "UNIQUE_PARTIAL", "definition": "(district_version_id) WHERE is_current = true" }
+        { "name": "uq_constituency_geometries_single_current", "type": "UNIQUE_PARTIAL", "definition": "(constituency_version_id) WHERE is_current = true AND constituency_version_id IS NOT NULL" },
+        { "name": "uq_district_geometries_single_current", "type": "UNIQUE_PARTIAL", "definition": "(district_version_id) WHERE is_current = true AND district_version_id IS NOT NULL" },
+        { "name": "uq_state_geometries_single_current", "type": "UNIQUE_PARTIAL", "definition": "(state_version_id) WHERE is_current = true AND state_version_id IS NOT NULL" },
+        { "name": "uq_pc_geometries_single_current", "type": "UNIQUE_PARTIAL", "definition": "(pc_version_id) WHERE is_current = true AND pc_version_id IS NOT NULL" },
+        { "name": "uq_mandal_geometries_single_current", "type": "UNIQUE_PARTIAL", "definition": "(mandal_version_id) WHERE is_current = true AND mandal_version_id IS NOT NULL" }
       ]
     }
   },
@@ -168,12 +180,12 @@
         "events": "BEFORE INSERT OR UPDATE OF status, authority_classification, dataset_version_id, provenance_id",
         "assertions": [
           "ST_IsValid(geometry) = true",
-          "dataset_versions.verification_evidence_id IS NOT NULL",
-          "evidence_records.verification_authority IS NOT NULL AND evidence_records.verified_by IS NOT NULL",
-          "data_sources.authority_level IN ('constitutional', 'statutory')",
-          "provenance_records.verification_evidence_id IS NOT NULL",
-          "provenance_records.status IN ('OFFICIAL', 'VERIFIED')",
-          "Target W014 version belongs to an active legal regime (delimitation_regimes.legal_status = 'CURRENT_LEGAL_REGIME')"
+          "dataset_versions.verification_evidence_id IS NOT NULL (Verified in 039)",
+          "evidence_records.verification_authority IS NOT NULL AND evidence_records.verified_by IS NOT NULL (Verified in 039)",
+          "data_sources.authority_level IN ('constitutional', 'statutory') (Verified in 039)",
+          "provenance_records.verification_evidence_id IS NOT NULL (Verified in 039)",
+          "provenance_records.status IN ('OFFICIAL', 'VERIFIED') (Verified in 039)",
+          "Target W014 version belongs to an active legal regime (delimitation_regimes.legal_status = 'CURRENT_LEGAL_REGIME') (Verified in 041)"
         ]
       },
       "rls": "Only service_role can execute INSERT/UPDATE on public.entity_geometries.",
@@ -181,44 +193,14 @@
     }
   },
   "current_semantics_and_invariants": {
-    "is_current_modeling": "Independently stored BOOLEAN, strictly constrained by database check constraint chk_geometry_current_invariants. Physically impossible for candidates or scenarios to have is_current = true.",
-    "state_matrix": [
-      {
-        "semantic_state": "CURRENT_LEGAL",
-        "status": "OFFICIAL",
-        "authority_classification": "OFFICIAL_CONSTITUTIONAL_GEOMETRY or OFFICIAL_STATUTORY_GEOMETRY",
-        "temporal_classification": "CURRENT_LEGAL",
-        "valid_to": "NULL or > CURRENT_DATE",
-        "is_current": true,
-        "public_visible": true
-      },
-      {
-        "semantic_state": "HISTORICAL_LEGAL",
-        "status": "OFFICIAL or UNVERIFIED",
-        "authority_classification": "OFFICIAL_STATUTORY_GEOMETRY, OFFICIAL_CONSTITUTIONAL_GEOMETRY, or UNVERIFIED_STATE_GIS_CANDIDATE",
-        "temporal_classification": "HISTORICAL_LEGAL",
-        "valid_to": "<= CURRENT_DATE (e.g. 2022-09-01 for 589 mandals)",
-        "is_current": false,
-        "public_visible": false
-      },
-      {
-        "semantic_state": "UNVERIFIED_CANDIDATE",
-        "status": "UNVERIFIED",
-        "authority_classification": "UNVERIFIED_STATE_GIS_CANDIDATE or UNVERIFIED_FIXTURE_GEOMETRY",
-        "temporal_classification": "UNVERIFIED_CANDIDATE",
-        "valid_to": "NULL or bounded",
-        "is_current": false,
-        "public_visible": false
-      },
-      {
-        "semantic_state": "SCENARIO",
-        "status": "SCENARIO",
-        "authority_classification": "SCENARIO_PROJECTION_GEOMETRY",
-        "temporal_classification": "SCENARIO",
-        "valid_to": "NULL or bounded",
-        "is_current": false,
-        "public_visible": false
-      }
+    "is_current_rule": "is_current = true -> status = OFFICIAL, temporal_classification = CURRENT_LEGAL, authority_classification = OFFICIAL_*, valid_to IS NULL.",
+    "time_dependence_removed": "Zero occurrences of CURRENT_DATE in check constraints. Point-in-time temporal queries evaluate valid_from <= d AND (valid_to IS NULL OR d < valid_to).",
+    "all_five_uniqueness_classes": [
+      "constituency_version_id",
+      "district_version_id",
+      "state_version_id",
+      "pc_version_id",
+      "mandal_version_id"
     ]
   },
   "authoritative_replacement_lifecycle": {
@@ -235,12 +217,6 @@
   },
   "performance_evaluation": {
     "status": "PERFORMANCE STATUS = UNKNOWN UNTIL IMPLEMENTED AND BENCHMARKED",
-    "unsupported_estimates_removed": [
-      "~33 MB total footprint (REMOVED)",
-      "~23 MB binary EWKB (REMOVED)",
-      "~10 MB indexes (REMOVED)",
-      "sub-millisecond ST_Contains (REMOVED)"
-    ],
     "future_benchmark_plan": {
       "categories": [
         "1. Point-in-polygon containment (ST_Contains on lat/lng coordinate)",
@@ -259,7 +235,7 @@
     "safe_rollback_scope": [
       "1. Drop views (v_current_assembly_geometries, etc.)",
       "2. Drop trigger and trigger function (trg_guard_geometry_official_promotion, fn_guard_geometry_official_promotion)",
-      "3. Drop table public.entity_geometries (drops all spatial indexes)",
+      "3. Drop table public.entity_geometries (drops all spatial indexes and partial unique indexes)",
       "4. Dependency Check: Query record_provenance_linkages and evidence_records to verify if W012 dataset versions are referenced elsewhere.",
       "5. If unreferenced and isolated, mark dataset_versions as is_active = false or delete; if referenced, preserve untouched."
     ],
@@ -268,7 +244,7 @@
   "mandal_historical_safety": {
     "temporal_window": "[2016-10-11, 2022-09-01)",
     "database_enforcement": "chk_mandal_historical_only requires temporal_classification = 'HISTORICAL_LEGAL', is_current = false, valid_to = '2022-09-01'.",
-    "current_attachment_prevented": "Cannot attach to current mandal entities; chk_geometry_current_invariants physically forbids is_current = true.",
+    "current_attachment_prevented": "Cannot attach to current mandal entities; chk_geometry_current_invariants physically forbids is_current = true because valid_to is NOT NULL.",
     "missing_23_mandals": "Remain UNKNOWN / BLOCKED (UNK-16-01). Inferred spatial aggregation is NOT encoded into statutory relationship tables."
   },
   "w015_relational_primacy": {
@@ -285,22 +261,11 @@
     ],
     "automatic_rewrite_prohibited": "Geometry computations NEVER automatically update relational tables."
   },
-  "w012_status_compatibility": {
-    "matrix": [
-      { "data_status": "OFFICIAL", "authority_classification": "OFFICIAL_CONSTITUTIONAL_GEOMETRY", "temporal_classification": "CURRENT_LEGAL", "is_current": true, "valid_to": null },
-      { "data_status": "OFFICIAL", "authority_classification": "OFFICIAL_STATUTORY_GEOMETRY", "temporal_classification": "CURRENT_LEGAL", "is_current": true, "valid_to": null },
-      { "data_status": "OFFICIAL", "authority_classification": "OFFICIAL_STATUTORY_GEOMETRY", "temporal_classification": "HISTORICAL_LEGAL", "is_current": false, "valid_to": "date" },
-      { "data_status": "UNVERIFIED", "authority_classification": "UNVERIFIED_STATE_GIS_CANDIDATE", "temporal_classification": "UNVERIFIED_CANDIDATE", "is_current": false, "valid_to": null },
-      { "data_status": "UNVERIFIED", "authority_classification": "UNVERIFIED_STATE_GIS_CANDIDATE", "temporal_classification": "HISTORICAL_LEGAL", "is_current": false, "valid_to": "2022-09-01" },
-      { "data_status": "UNVERIFIED", "authority_classification": "UNVERIFIED_FIXTURE_GEOMETRY", "temporal_classification": "UNVERIFIED_CANDIDATE", "is_current": false, "valid_to": null },
-      { "data_status": "SCENARIO", "authority_classification": "SCENARIO_PROJECTION_GEOMETRY", "temporal_classification": "SCENARIO", "is_current": false, "valid_to": null }
-    ]
-  },
   "acceptance_matrix": [
     {
       "assertion_id": "A",
       "requirement": "Exact W014 FK Resolution",
-      "design_mechanism": "Explicit FK columns constituency_version_id, district_version_id, state_version_id, pc_version_id with ON DELETE RESTRICT",
+      "design_mechanism": "Explicit FK columns constituency_version_id, district_version_id, state_version_id, pc_version_id, mandal_version_id with ON DELETE RESTRICT",
       "runtime_verification_test": "INSERT geometry with non-existent UUID fails with foreign key violation 23503"
     },
     {
@@ -330,19 +295,19 @@
     {
       "assertion_id": "F",
       "requirement": "Current/Legal Uniqueness",
-      "design_mechanism": "Partial unique indexes on (constituency_version_id) and (district_version_id) WHERE is_current = true",
+      "design_mechanism": "Five partial unique indexes on version IDs WHERE is_current = true AND <col> IS NOT NULL",
       "runtime_verification_test": "Setting is_current = true on two geometries for the same version fails with unique violation 23505"
     },
     {
       "assertion_id": "G",
       "requirement": "Historical Temporal Compatibility",
-      "design_mechanism": "CHECK (is_current = false) whenever temporal_classification = 'HISTORICAL_LEGAL' and valid_to <= CURRENT_DATE",
+      "design_mechanism": "CHECK (is_current = false) whenever temporal_classification = 'HISTORICAL_LEGAL' and valid_to IS NOT NULL",
       "runtime_verification_test": "Setting is_current = true on a historical geometry violates chk_geometry_current_invariants"
     },
     {
       "assertion_id": "H",
       "requirement": "589 Mandals Cannot Attach to Current Versions",
-      "design_mechanism": "CHECK chk_mandal_historical_only enforces temporal_classification = 'HISTORICAL_LEGAL' and is_current = false",
+      "design_mechanism": "CHECK chk_mandal_historical_only enforces temporal_classification = 'HISTORICAL_LEGAL', is_current = false, valid_to = '2022-09-01'",
       "runtime_verification_test": "INSERT mandal geometry with is_current = true fails with check violation 23514"
     },
     {
@@ -374,12 +339,42 @@
       "requirement": "Performance Remains UNKNOWN Pre-Runtime",
       "design_mechanism": "All speculative performance claims removed; comprehensive 7-category benchmark plan defined",
       "runtime_verification_test": "EXPLAIN (ANALYZE, BUFFERS) benchmarks executed post-implementation on staging"
+    },
+    {
+      "assertion_id": "N",
+      "requirement": "Mandal Geometry Resolves to mandal_versions.id",
+      "design_mechanism": "Explicit FK mandal_version_id REFERENCES public.mandal_versions(id) ON DELETE RESTRICT",
+      "runtime_verification_test": "INSERT geometry with non-existent mandal_version_id fails with foreign key violation 23503"
+    },
+    {
+      "assertion_id": "O",
+      "requirement": "No Time-Dependent CHECK Constraints",
+      "design_mechanism": "Static boolean constraints; zero occurrences of CURRENT_DATE or clock expressions in DDL",
+      "runtime_verification_test": "Catalog query pg_get_constraintdef() across entity_geometries confirms zero occurrences of CURRENT_DATE"
+    },
+    {
+      "assertion_id": "P",
+      "requirement": "Single-Current Uniqueness for All Five Geography Classes",
+      "design_mechanism": "Five dedicated partial unique indexes: uq_constituency_*, uq_district_*, uq_state_*, uq_pc_*, uq_mandal_* WHERE is_current = true",
+      "runtime_verification_test": "Inserting second is_current = true row for same version ID across any class raises unique violation 23505"
+    },
+    {
+      "assertion_id": "Q",
+      "requirement": "is_current=true Requires valid_to IS NULL",
+      "design_mechanism": "chk_geometry_current_invariants asserts valid_to IS NULL whenever is_current = true",
+      "runtime_verification_test": "UPDATE entity_geometries SET is_current = true WHERE valid_to IS NOT NULL raises check violation 23514"
+    },
+    {
+      "assertion_id": "R",
+      "requirement": "Every OFFICIAL Trigger Dependency Exists in Actual Schema",
+      "design_mechanism": "Schema audit verified dataset_versions.verification_evidence_id, provenance_records.verification_evidence_id, provenance_records.status, and delimitation_regimes.legal_status",
+      "runtime_verification_test": "Trigger fn_guard_geometry_official_promotion compiles cleanly against current schema without 42703 (undefined column)"
     }
   ],
   "decision_matrix": {
     "assembly_constituencies": "READY FOR BOUNDED INGESTION (DESIGN ONLY)",
     "districts": "READY FOR BOUNDED INGESTION (DESIGN ONLY)",
-    "mandals": "READY FOR HISTORICAL INGESTION (DESIGN ONLY)",
+    "mandals": "READY FOR HISTORICAL INGESTION (DESIGN ONLY - Awaiting mandal_versions DDL)",
     "notes": "Signifies architectural, relational, and design-time readiness only. Migration 044 remains STRICTLY UNAUTHORIZED."
   }
 }

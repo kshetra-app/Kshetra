@@ -1,16 +1,16 @@
-# W016-C3: Geometry Ingestion Preflight — Provenance, Temporal Attachment & Candidate-Status Quarantine (CTO Revision)
+# W016-C3: Geometry Ingestion Preflight — Provenance, Temporal Attachment & Candidate-Status Quarantine (Final Surgical Revision)
 
-**Authority:** Independent CTO / Co-founder Directive W016-C3 Correction Round  
+**Authority:** Independent CTO / Co-founder Directive W016-C3 Final Surgical Correction Round  
 **Status:** SUBMITTED FOR CTO REVIEW  
 **Scope:** Architecture & Technical Preflight Design Only (Zero DDL Execution / Zero DB Mutations / Production Untouched)  
-**Baseline Commit:** `0d5fac67cf16193cfb72db955be4f553360ede17`  
+**Baseline Commit:** `670bedbb93b50cb8e7a497650d0dda5672d59a68`  
 **Date:** September 2026  
 
 ---
 
 ## 1. Executive Summary & Authoritative Coordinates
 
-In accordance with the **W016-C3 CTO Correction Round Directive**, this document provides the revised, hardened architectural, relational, temporal, and security design for preserving acquired candidate vector geometries without misrepresenting them as official or current legal geography.
+In accordance with the **W016-C3 CTO Final Surgical Correction Round Directive**, this document provides the final, hardened preflight specification for ingesting candidate vector geometries into PANIN/Kshetra.
 
 ### Authoritative State Matrix
 
@@ -24,93 +24,167 @@ In accordance with the **W016-C3 CTO Correction Round Directive**, this document
 | **W016-B2 (Technical Spatial Rehearsal)** | `ACCEPTED_COMPLETE` | Commit `4beb9a7` |
 | **W016-C1 (Candidate Acquisition)** | `ACCEPTED_COMPLETE` | Commit `46d4bcb` |
 | **W016-C2 (Reconciliation Package)** | `ACCEPTED` | Commit `3d30640` |
-| **W016-C3 (Ingestion Preflight Revision)** | `SUBMITTED_FOR_CTO_REVIEW` | This Document |
+| **W016-C3 (Surgical Preflight Revision)** | `SUBMITTED_FOR_CTO_REVIEW` | This Document |
 | **Migration 044 Execution** | `STRICTLY_NOT_AUTHORIZED` | Design Only |
 | **Database Mutations / Ingestion** | `STRICTLY_NOT_AUTHORIZED` | Frozen |
 | **Production Environment** | `STRICTLY_UNTOUCHED` | Air-Gapped |
 
 ---
 
-## 2. Relational Integrity Architecture — Removal of Polymorphic Foreign Keys
+## 2. Actual Schema Dependency Reconciliation
 
-### 2.1 Rejection of Unenforceable Polymorphic Keys
-The initial draft utilized a generic polymorphic representation:
-```sql
--- REJECTED AS UNENFORCEABLE BY POSTGRESQL ENGINE:
-entity_type VARCHAR(50),
-entity_id TEXT,
-version_id UUID
-```
-In PostgreSQL, a polymorphic column tuple cannot be bound to target tables with declarative `FOREIGN KEY ... REFERENCES` constraints. Consequently, the database engine cannot verify whether `version_id` points to a genuine `constituency_versions`, `district_versions`, or `state_versions` record. This creates an unverified relational gap where orphan geometries or cross-entity mismatches can silently occur.
+Prior to finalizing the design of Migration 044 and the `OFFICIAL` promotion guards, an exhaustive schema audit was conducted against all migrations in `supabase/migrations/` (`039_data_governance_foundation.sql` through `043_w015_b2_source_reconciliation.sql`).
 
-### 2.2 Evaluation of Relational Alternatives
+### 2.1 Audit Findings for Trigger & Governance Dependencies
 
-#### Alternative 1: Typed Nullable Foreign Keys with an Exact-One CHECK Constraint (RECOMMENDED)
-Introduce explicit, strongly-typed foreign key columns into `public.entity_geometries`, guarded by a strict cardinality constraint:
-```sql
-constituency_version_id UUID REFERENCES public.constituency_versions(id) ON DELETE RESTRICT,
-district_version_id     UUID REFERENCES public.district_versions(id) ON DELETE RESTRICT,
-state_version_id        UUID REFERENCES public.state_versions(id) ON DELETE RESTRICT,
-pc_version_id           UUID REFERENCES public.parliamentary_constituency_versions(id) ON DELETE RESTRICT,
-mandal_id               TEXT REFERENCES public.mandals(id) ON DELETE RESTRICT,
+| Referenced Field | Migration & Line Number | Actual Data Type | Constraint / Semantics | Verification Verdict |
+|---|---|---|---|---|
+| `dataset_versions.verification_evidence_id` | `039` Line 104 | `UUID` | `REFERENCES evidence_records(id) ON DELETE RESTRICT` | **VERIFIED / EXISTS** |
+| `provenance_records.verification_evidence_id` | `039` Line 152 | `UUID` | `REFERENCES evidence_records(id) ON DELETE RESTRICT` | **VERIFIED / EXISTS** |
+| `provenance_records.status` | `039` Line 147 | `data_status_enum` | Defaults to `'UNKNOWN'` | **VERIFIED / EXISTS** |
+| `delimitation_regimes.legal_status` | `041` Line 113 | `VARCHAR(50)` | `CHECK (legal_status IN ('HISTORICAL_LEGAL_REGIME', 'CURRENT_LEGAL_REGIME', 'FUTURE_ANTICIPATED_REGIME', 'SCENARIO_PROPOSED_REGIME'))` | **VERIFIED / EXISTS** |
+| `data_sources.authority_level` | `039` Line 53 | `source_authority_enum` | Enums: `'constitutional'`, `'statutory'`, `'academic'`, etc. | **VERIFIED / EXISTS** |
 
-CONSTRAINT chk_entity_geometries_exact_one_target 
-  CHECK (num_nonnulls(constituency_version_id, district_version_id, state_version_id, pc_version_id, mandal_id) = 1)
-```
-- **Strengths:** 
-  1. Retains a unified PostGIS spatial table for cross-hierarchy spatial indexing, bounding-box searches, and geographic analysis.
-  2. Every relationship is an authentic PostgreSQL foreign key enforced with `ON DELETE RESTRICT`.
-  3. Centralized RLS policies and spatial integrity triggers avoid code duplication.
-- **Verdict:** Selected as the primary architectural design.
+### 2.2 Critical Schema Gap: `mandal_versions` Table
+An explicit inspection of Migration 041 (`041_geography_versioning_and_temporal_validity.sql`) reveals that while temporal version tables were created for:
+1. `public.state_versions` (Line 208)
+2. `public.district_versions` (Line 230)
+3. `public.parliamentary_constituency_versions` (Line 262)
+4. `public.constituency_versions` (Line 291)
 
-#### Alternative 2: Separate Typed Geometry Relations
-Create dedicated tables per geographic entity tier: `public.constituency_geometries`, `public.district_geometries`, `public.mandal_geometries`, each having a single `NOT NULL` foreign key.
-- **Strengths:** Eliminates sparse nullable columns; guarantees 100% column-level `NOT NULL` constraints.
-- **Weaknesses:** Requires duplicating RLS policies, spatial triggers, and catalog schemas across 4+ tables; complicates cross-boundary spatial queries (e.g., finding all mandals intersecting an assembly constituency).
-- **Verdict:** Documented as a fully viable alternative if the CTO prefers physical relation isolation over a unified table.
+No `public.mandal_versions` table was created in Migration 041. Mandals currently exist solely as canonical anchors in `public.mandals` (enhanced in Migration 042 with `district_id` and `primary_dataset_version_id`).
 
-### 2.3 The Verified Relational Chain
-Under Alternative 1, every geometry record establishes an unbroken, database-enforced relational chain back to its canonical anchor and statutory provenance:
+**Architectural Consequence:**  
+In accordance with Blocker 1, `public.entity_geometries` must target `mandal_version_id REFERENCES public.mandal_versions(id)`. Therefore, the creation of canonical `public.mandal_versions` (or an authoritative W014 mandal versioning extension) is an **explicit prerequisite dependency** before any mandal geometry rows can be physically inserted. This dependency is formally registered in this preflight.
+
+---
+
+## 3. Relational Integrity Architecture — Mandal W014 Version Target
+
+### 3.1 Elimination of Stable Anchor Substitution
+The prior draft utilized `mandal_id TEXT REFERENCES public.mandals(id)`. This was rejected by CTO directive because stable entity identity cannot substitute for W014 temporal version identity.
+
+Under the corrected architecture, the exact-one geometry target spans the full five-tier hierarchy exclusively through W014 temporal version foreign keys:
+- `constituency_version_id`
+- `district_version_id`
+- `state_version_id`
+- `pc_version_id`
+- `mandal_version_id`
+
+### 3.2 Canonical Mandal Relational Chain
+The 589 historical TGRAC mandal geometries must resolve to the exact historical `mandal_versions` rows:
 
 ```text
-GEOMETRY RECORD (public.entity_geometries)
+entity_geometries.mandal_version_id
   │
-  ├──► [FK: constituency_version_id] ──► public.constituency_versions(id)
-  │                                           │
-  │                                           └──► [FK: constituency_internal_id] ──► public.constituencies(internal_id) [STABLE IDENTITY]
-  │
-  ├──► [FK: district_version_id]     ──► public.district_versions(id)
-  │                                           │
-  │                                           └──► [FK: district_id] ───────────────► public.districts(id) [STABLE IDENTITY]
-  │
-  ├──► [FK: mandal_id]               ──► public.mandals(id) [STABLE STATUTORY LGD IDENTITY]
-  │
-  ├──► [FK: dataset_version_id]      ──► public.dataset_versions(id) [W012 GOVERNED DATASET]
-  │                                           │
-  │                                           └──► [FK: dataset_id] ────────────────► public.datasets(id)
-  │                                                                                        │
-  │                                                                                        └──► [FK: source_id] ──► public.data_sources(id)
-  │
-  └──► [FK: provenance_id]           ──► public.provenance_records(id) [W012 PROVENANCE DAG]
-                                              │
-                                              └──► [FK: verification_evidence_id] ──► public.evidence_records(id) [CRYPTOGRAPHIC AUDIT]
+  ▼ [FK: ON DELETE RESTRICT]
+public.mandal_versions.id
+  │ (holds valid_from: '2016-10-11', valid_to: '2022-09-01', is_current: false)
+  ▼ [FK: ON DELETE RESTRICT]
+public.mandals.id [STABLE STATUTORY IDENTITY]
+```
+
+### 3.3 Exact-One Target & Alignment CHECK Constraints
+```sql
+CONSTRAINT chk_entity_geometries_exact_one_target 
+  CHECK (num_nonnulls(constituency_version_id, district_version_id, state_version_id, pc_version_id, mandal_version_id) = 1),
+
+CONSTRAINT chk_entity_geometries_type_alignment CHECK (
+  (entity_type = 'assembly_constituency' AND constituency_version_id IS NOT NULL) OR
+  (entity_type = 'district' AND district_version_id IS NOT NULL) OR
+  (entity_type = 'state' AND state_version_id IS NOT NULL) OR
+  (entity_type = 'parliamentary_constituency' AND pc_version_id IS NOT NULL) OR
+  (entity_type = 'mandal' AND mandal_version_id IS NOT NULL)
+)
 ```
 
 ---
 
-## 3. Database-Level Quarantine & Row Level Security (RLS)
+## 4. Current Semantics & Invariants (Removal of `CURRENT_DATE`)
 
-Public access cannot rely solely on views to quarantine candidate data. If an anonymous or authenticated client queries the base table `public.entity_geometries` directly, the database must enforce quarantine at the row level.
+### 4.1 Resolution of Semantic Contradiction & Calendar Independence
+In accordance with Blocker 2 and Blocker 4:
+1. `CURRENT_DATE`, `now()`, or dynamic clock expressions are **strictly forbidden** from all PostgreSQL `CHECK` constraints. Calendar changes must never invalidate or mutate table check semantics.
+2. The semantic contradiction between `valid_to > CURRENT_DATE` and `valid_to IS NULL` is completely eliminated.
 
-### 3.1 RLS Semantic Behavior
+### 4.2 The Uncompromising Current-Legal Invariant
+A geometry record is current if and only if it represents an official, current legal boundary with unbounded statutory validity:
+
+$$\text{is\_current} = \text{true} \iff \begin{cases} \text{status} = \text{'OFFICIAL'} \\ \text{temporal\_classification} = \text{'CURRENT\_LEGAL'} \\ \text{authority\_classification} \in \{\text{'OFFICIAL\_CONSTITUTIONAL\_GEOMETRY'}, \text{'OFFICIAL\_STATUTORY\_GEOMETRY'}\} \\ \text{valid\_to IS NULL} \end{cases}$$
+
+Machine-verifiable database check constraint:
+```sql
+CONSTRAINT chk_geometry_current_invariants CHECK (
+  (is_current = false) OR (
+    is_current = true AND
+    status = 'OFFICIAL' AND
+    temporal_classification = 'CURRENT_LEGAL' AND
+    authority_classification IN ('OFFICIAL_CONSTITUTIONAL_GEOMETRY', 'OFFICIAL_STATUTORY_GEOMETRY') AND
+    valid_to IS NULL
+  )
+)
+```
+
+### 4.3 Historical Validity Evaluation
+Historical validity is purely date-range based and evaluated at query time via static parameters:
+```sql
+-- Historical Point-in-Time Query Pattern (e.g. for requested_date)
+SELECT * FROM public.entity_geometries
+WHERE valid_from <= :requested_date 
+  AND (valid_to IS NULL OR :requested_date < valid_to);
+```
+If an official boundary is superseded by a future delimitation order or gazette, the transition from current to historical is an **explicit authorized state transition** executed via administrative transaction (setting `is_current = false` and assigning statutory `valid_to`), never an automatic clock-dependent trigger.
+
+---
+
+## 5. Single-Current Uniqueness Across All Five Geography Classes
+
+In accordance with Blocker 3, single-current uniqueness is enforced across all five supported classes using PostgreSQL partial unique indexes.
+
+### 5.1 PostgreSQL Partial Unique Index NULL Semantics
+In PostgreSQL, standard unique constraints treat `NULL` values as distinct, which could lead to multiple rows if not bounded. By constructing partial unique indexes with explicit predicates `WHERE is_current = true AND <column> IS NOT NULL`, PostgreSQL indexes ONLY rows where `is_current = true` and the specific target version column is populated.
+
+Since `chk_entity_geometries_exact_one_target` guarantees that exactly one version column is non-NULL per row, each partial index strictly enforces that **at most one current geometry** can exist per version record:
 
 ```sql
--- Enable RLS on the base geometry table
+-- 1. Assembly Constituency Current Uniqueness
+CREATE UNIQUE INDEX IF NOT EXISTS uq_constituency_geometries_single_current 
+  ON public.entity_geometries (constituency_version_id) 
+  WHERE is_current = true AND constituency_version_id IS NOT NULL;
+
+-- 2. Revenue District Current Uniqueness
+CREATE UNIQUE INDEX IF NOT EXISTS uq_district_geometries_single_current 
+  ON public.entity_geometries (district_version_id) 
+  WHERE is_current = true AND district_version_id IS NOT NULL;
+
+-- 3. State Current Uniqueness
+CREATE UNIQUE INDEX IF NOT EXISTS uq_state_geometries_single_current 
+  ON public.entity_geometries (state_version_id) 
+  WHERE is_current = true AND state_version_id IS NOT NULL;
+
+-- 4. Parliamentary Constituency Current Uniqueness
+CREATE UNIQUE INDEX IF NOT EXISTS uq_pc_geometries_single_current 
+  ON public.entity_geometries (pc_version_id) 
+  WHERE is_current = true AND pc_version_id IS NOT NULL;
+
+-- 5. Sub-District Mandal Current Uniqueness
+CREATE UNIQUE INDEX IF NOT EXISTS uq_mandal_geometries_single_current 
+  ON public.entity_geometries (mandal_version_id) 
+  WHERE is_current = true AND mandal_version_id IS NOT NULL;
+```
+
+---
+
+## 6. Database-Level Quarantine & Row Level Security (RLS)
+
+Public access cannot bypass quarantine by selecting directly from the base table. RLS enforces isolation at the storage layer:
+
+```sql
 ALTER TABLE public.entity_geometries ENABLE ROW LEVEL SECURITY;
 
 -- 1. Public Read Policy (anon, authenticated)
--- RESTRICTION: Public users may ONLY select current, official legal geometries.
--- UNVERIFIED candidates, SCENARIOS, and HISTORICAL geometries are completely INVISIBLE.
+-- Public users may ONLY read approved, official, current legal geometry.
+-- UNVERIFIED candidates, SCENARIOS, and HISTORICAL geometries return 0 rows.
 DROP POLICY IF EXISTS "Public read official current geometries only" ON public.entity_geometries;
 CREATE POLICY "Public read official current geometries only"
   ON public.entity_geometries
@@ -118,12 +192,12 @@ CREATE POLICY "Public read official current geometries only"
   TO anon, authenticated
   USING (
     status = 'OFFICIAL' 
-    AND is_current = true
+    AND is_current = true 
     AND temporal_classification = 'CURRENT_LEGAL'
   );
 
 -- 2. Administrative Role Policy (service_role)
--- Controlled access for ingestion, governance audits, and internal research.
+-- Full access for administrative ingestion, evidence audits, and internal research.
 DROP POLICY IF EXISTS "Service role full access on entity_geometries" ON public.entity_geometries;
 CREATE POLICY "Service role full access on entity_geometries"
   ON public.entity_geometries
@@ -133,31 +207,12 @@ CREATE POLICY "Service role full access on entity_geometries"
   WITH CHECK (true);
 ```
 
-### 3.2 Compatibility with Kshetra W010 Security Model
-- Conforms directly to the established W010 security architecture (`anon` / `authenticated` / `service_role`).
-- Introduces zero custom PostgreSQL roles.
-- Eliminates candidate leakage: any query from the mobile app or public API requesting unverified candidate rows yields `0` rows by default.
-
 ---
 
-## 4. Database-Level Guards on OFFICIAL Promotion
+## 7. Official Promotion Guards & Verified Trigger Logic
 
-A geometry record must NEVER be promoted to `status = 'OFFICIAL'` simply by an administrative update or application script. The database engine itself must enforce the prerequisite governance chain.
+A geometry record cannot be elevated to `status = 'OFFICIAL'` without an unbroken chain of verified dependencies:
 
-### 4.1 Invariant Enforcement Breakdown
-
-| Requirement | Enforcing Mechanism | Failure Behavior |
-|---|---|---|
-| **Authoritative Dataset Version** | `FOREIGN KEY (dataset_version_id) REFERENCES public.dataset_versions(id)` | Foreign key violation `23503` |
-| **Cryptographic Evidence Record** | Trigger `fn_guard_geometry_official_promotion` asserts `dataset_versions.verification_evidence_id IS NOT NULL` | Exception `23514`: `OFFICIAL promotion rejected: Dataset version lacks verified evidence record` |
-| **Statutory Publisher Authority** | Trigger asserts `data_sources.authority_level IN ('constitutional', 'statutory')` | Exception `23514`: `OFFICIAL promotion rejected: Source publisher is not statutory or constitutional` |
-| **Approved Provenance Node** | Trigger asserts `provenance_records.verification_evidence_id IS NOT NULL` and `provenance_records.status IN ('OFFICIAL', 'VERIFIED')` | Exception `23514`: `OFFICIAL promotion rejected: Provenance node is unverified` |
-| **Constitutional Delimitation Regime** | Trigger asserts referenced `constituency_versions` belongs to `CURRENT_LEGAL_REGIME` (never `SCENARIO_PROPOSED_REGIME`) | Exception `23514`: `OFFICIAL promotion rejected: Target regime is not current legal` |
-| **Geometric Validity** | Trigger asserts `ST_IsValid(geometry) = true` | Exception `23514`: `OFFICIAL promotion rejected: Geometry is topologically invalid` |
-| **Consistent Authority Class** | Check constraint `chk_geometry_status_classification_consistency` | Check constraint violation `23514` |
-| **Write Authorization** | Row Level Security (RLS) restricts `INSERT`/`UPDATE` to `service_role` | Insufficient privilege error |
-
-### 4.2 Trigger Implementation (Design Only)
 ```sql
 -- DESIGN ONLY — NOT AUTHORIZED FOR IMPLEMENTATION
 CREATE OR REPLACE FUNCTION public.fn_guard_geometry_official_promotion()
@@ -170,12 +225,12 @@ DECLARE
   v_regime_status VARCHAR(50);
 BEGIN
   IF NEW.status = 'OFFICIAL' THEN
-    -- 1. Assert Topological Validity
+    -- 1. Topological Validity
     IF NOT ST_IsValid(NEW.geometry) THEN
       RAISE EXCEPTION 'OFFICIAL promotion rejected: Geometry is topologically invalid (ST_IsValid = false)';
     END IF;
 
-    -- 2. Inspect Dataset Version & Source Authority
+    -- 2. Inspect Dataset Version & Source Authority (Verified columns in Migration 039)
     SELECT ds.authority_level, dv.verification_evidence_id
     INTO v_source_authority, v_dataset_evidence
     FROM public.dataset_versions dv
@@ -191,7 +246,7 @@ BEGIN
       RAISE EXCEPTION 'OFFICIAL promotion rejected: Data source authority % is not constitutional or statutory', v_source_authority;
     END IF;
 
-    -- 3. Inspect Provenance Record Lineage
+    -- 3. Inspect Provenance Record Lineage (Verified columns in Migration 039)
     SELECT pr.verification_evidence_id, pr.status
     INTO v_provenance_evidence, v_provenance_status
     FROM public.provenance_records pr
@@ -201,7 +256,7 @@ BEGIN
       RAISE EXCEPTION 'OFFICIAL promotion rejected: Provenance node % is not verified/official', NEW.provenance_id;
     END IF;
 
-    -- 4. Prevent Scenario Contamination on Assembly Constituencies
+    -- 4. Prevent Scenario Contamination on Assembly Constituencies (Verified columns in Migration 041)
     IF NEW.constituency_version_id IS NOT NULL THEN
       SELECT dr.legal_status
       INTO v_regime_status
@@ -222,100 +277,27 @@ $$ LANGUAGE plpgsql SECURITY DEFINER;
 
 ---
 
-## 5. Current Semantics & Invariant Definitions
-
-To ensure state variables do not contradict each other, their relationships are mathematically and declaratively fixed.
-
-### 5.1 Storage & Derivation of `is_current`
-- `is_current` is stored as an explicit `BOOLEAN NOT NULL DEFAULT false` column to enable partial index optimization and sub-millisecond query planning.
-- However, `is_current` is **strictly constrained** by database-level check constraints so that it cannot be set to `true` independently of governing legal attributes.
-
-```sql
-CONSTRAINT chk_geometry_current_invariants CHECK (
-  (is_current = false) OR (
-    is_current = true AND
-    status = 'OFFICIAL' AND
-    temporal_classification = 'CURRENT_LEGAL' AND
-    authority_classification IN ('OFFICIAL_CONSTITUTIONAL_GEOMETRY', 'OFFICIAL_STATUTORY_GEOMETRY') AND
-    (valid_to IS NULL OR valid_to > CURRENT_DATE)
-  )
-)
-```
-
-### 5.2 Semantic State Classification Matrix
-
-| Semantic State | `status` | `authority_classification` | `temporal_classification` | `is_current` | `valid_to` | Public RLS Visibility |
-|---|---|---|---|---|---|---|
-| **`CURRENT_LEGAL`** | `OFFICIAL` | `OFFICIAL_CONSTITUTIONAL_GEOMETRY` or `OFFICIAL_STATUTORY_GEOMETRY` | `CURRENT_LEGAL` | `true` | `NULL` or `> CURRENT_DATE` | **VISIBLE** |
-| **`HISTORICAL_LEGAL` (Official)** | `OFFICIAL` | `OFFICIAL_STATUTORY_GEOMETRY` | `HISTORICAL_LEGAL` | `false` | `<= CURRENT_DATE` | **HIDDEN** |
-| **`HISTORICAL_LEGAL` (Candidate Snapshot)** | `UNVERIFIED` | `UNVERIFIED_STATE_GIS_CANDIDATE` | `HISTORICAL_LEGAL` | `false` | `<= CURRENT_DATE` (e.g. `2022-09-01`) | **HIDDEN** |
-| **`UNVERIFIED_CANDIDATE`** | `UNVERIFIED` | `UNVERIFIED_STATE_GIS_CANDIDATE` or `UNVERIFIED_FIXTURE_GEOMETRY` | `UNVERIFIED_CANDIDATE` | `false` | `NULL` or bounded | **HIDDEN** |
-| **`SCENARIO`** | `SCENARIO` | `SCENARIO_PROJECTION_GEOMETRY` | `SCENARIO` | `false` | `NULL` or bounded | **HIDDEN** |
-
-### 5.3 Partial Unique Indexes
-Because only official current geometries can have `is_current = true`, uniqueness is enforced at the entity level:
-```sql
-CREATE UNIQUE INDEX uq_constituency_geometries_single_current 
-  ON public.entity_geometries (constituency_version_id) 
-  WHERE is_current = true;
-
-CREATE UNIQUE INDEX uq_district_geometries_single_current 
-  ON public.entity_geometries (district_version_id) 
-  WHERE is_current = true;
-```
-
----
-
-## 6. Authoritative Replacement Lifecycle
+## 8. Authoritative Replacement Lifecycle
 
 > [!IMPORTANT]
 > **Spatial comparison is evidence only. Spatial similarity/difference MUST NOT automatically confer authority.**
 
-A high geometric correlation between an acquired polygon and a known boundary provides circumstantial technical data, but legal authority stems strictly from constitutional/statutory lineage.
+A geometric match provides technical data for human and legal review; sovereign legal authority originates exclusively from statutory enactments and constitutional orders.
 
 ### The 7-Stage Authoritative Lifecycle
-```mermaid
-flowchart TD
-    S1["1. Candidate Acquisition (TGRAC raw acquired, quarantined as UNVERIFIED, is_current=false)"]
-    S2["2. Certified Source Acquisition (Official ECI / Survey of India Gazette layer obtained)"]
-    S3["3. Coexistence (Certified geometry ingested as new dataset_version; candidate untouched)"]
-    S4["4. Spatial Audit (ST_Difference, Hausdorff distance run as observational evidence)"]
-    S5["5. Evidence Review (CTO / Legal team verifies Gazette notification & Delimitation Order)"]
-    S6["6. Authorized Promotion (Official row elevated to status='OFFICIAL', is_current=true)"]
-    S7["7. Official Current Geometry (Row becomes active and visible through Public RLS)"]
-
-    S1 --> S2 --> S3 --> S4 --> S5 --> S6 --> S7
-```
-
-Under no circumstances does spatial closeness trigger automated promotion.
+1. **Candidate Acquisition:** Raw vector layer ingested and quarantined as `UNVERIFIED` / `is_current = false`.
+2. **Certified Source Acquisition:** Official constitutional/statutory boundary artifact obtained.
+3. **Coexistence:** Certified geometry ingested under a new `dataset_versions` record without modifying candidate records.
+4. **Spatial Audit:** Automated spatial comparison (`ST_Difference`, Hausdorff distance) run as observational evidence.
+5. **Evidence Review:** Independent CTO / Legal audit verifies statutory Gazette / Delimitation Order lineage and creates an `evidence_records` entry.
+6. **Authorized Promotion:** Explicit governance decision elevates certified row to `status = 'OFFICIAL'`, `is_current = true`.
+7. **Official Current Geometry:** Row becomes active and visible through Public RLS.
 
 ---
 
-## 7. Performance Status & Benchmark Plan
+## 9. Safe Migration Rollback Architecture
 
-> [!NOTE]
-> **PERFORMANCE STATUS = UNKNOWN UNTIL IMPLEMENTED AND BENCHMARKED.**  
-> In accordance with CTO Directive item 6, all preliminary speculative estimates (e.g. storage megabytes, execution millisecond counts) are hereby removed from authoritative governance artifacts.
-
-### Future Benchmark Plan (Post-Authorization)
-When Migration 044 is authorized and executed on staging, formal benchmarks will be conducted using `EXPLAIN (ANALYZE, BUFFERS)` across the following 7 test categories:
-
-1. **Point-in-Polygon Containment:** `ST_Contains(geometry, ST_SetSRID(ST_Point(lng, lat), 4326))` for arbitrary points in Hyderabad, Warangal, and rural borders.
-2. **Bounding-Box Viewport Filter:** Bounding-box intersection (`&&`) across typical mobile map viewports at zoom levels 8, 10, 12, and 14.
-3. **Current Official Geometry Query:** Fetching active assembly boundaries via partial index `WHERE is_current = true`.
-4. **Candidate Geometry Lookup:** Retrieving candidate boundaries filtered by `dataset_version_id = 'tgrac_ac_2023_candidate_v1'`.
-5. **Historical Geometry Query:** Point-in-time temporal query (`valid_from <= target_date AND (valid_to IS NULL OR valid_to > target_date)`).
-6. **W014 Version Join:** Join efficiency between `entity_geometries` and `constituency_versions` / `district_versions`.
-7. **Representative Map Viewport Query:** Complex spatial query joining administrative boundaries with electoral polling station clusters.
-
----
-
-## 8. Safe Migration Rollback Architecture
-
-### 8.1 Protection of W012 Governance History
-The initial rollback proposed deleting rows from `dataset_versions`, `datasets`, and `data_sources`. This is unsafe because once governance entries are created, they may be referenced by `provenance_records`, `evidence_records`, or audit logs.
-
-### 8.2 Safe Rollback Specification
+### 9.1 Protection of W012 Governance History
 Rollback of Migration 044 is strictly confined to dropping W016 spatial objects:
 ```sql
 -- SAFE ROLLBACK SCRIPT (DESIGN ONLY)
@@ -336,7 +318,6 @@ DROP TABLE IF EXISTS public.entity_geometries CASCADE;
 
 -- 4. Dependency-Checked Catalog Retirement (Non-Destructive)
 -- Do NOT execute destructive DELETE on W012 governance tables.
--- If dataset_versions have external references, mark inactive rather than purging:
 UPDATE public.dataset_versions 
 SET metadata = metadata || '{"quarantine_status": "ROLLED_BACK"}'::jsonb 
 WHERE id IN ('tgrac_ac_2023_candidate_v1', 'tgrac_districts_2023_candidate_v1', 'tgrac_mandals_2016_candidate_v1');
@@ -348,9 +329,9 @@ COMMIT;
 
 ---
 
-## 9. Mandal Historical Safety (UNK-16-01 Quarantine)
+## 10. Mandal Historical Safety (UNK-16-01 Quarantine)
 
-1. **Historical Snapshot Window:** The 589 TGRAC mandals represent exclusively the `[2016-10-11, 2022-09-01)` post-reorganisation snapshot.
+1. **Temporal Snapshot Window:** Strictly bounded to `[2016-10-11, 2022-09-01)`.
 2. **Database Constraint:**
    ```sql
    CONSTRAINT chk_mandal_historical_only CHECK (
@@ -362,48 +343,19 @@ COMMIT;
      )
    )
    ```
-3. **Current Legal Block:** It is physically impossible under this schema for a 589-mandal record to be marked `is_current = true`.
-4. **Missing 23 Mandals:** Remain `UNKNOWN / BLOCKED` (`UNK-16-01`). Their inferred spatial aggregation is strictly documented as technical notes and NEVER encoded into statutory relationship tables (`mandal_constituency_map`).
+3. **Current Legal Block:** Because `valid_to` is `'2022-09-01'` (not NULL), `chk_geometry_current_invariants` physically prevents setting `is_current = true`.
+4. **Missing 23 Mandals:** Preserved as `UNKNOWN / BLOCKED` (`UNK-16-01`). Their inferred spatial aggregation is strictly documented as technical notes and NEVER encoded into statutory relationship tables (`mandal_constituency_map`).
 
 ---
 
-## 10. Preservation of W015 Relational Primacy
+## 11. Preservation of W015 Relational Primacy
 
 - The following remain the sole statutory ground truth for administrative and electoral containment:
   1. `public.mandal_constituency_map`
   2. `public.polling_booths`
   3. W015 verified relationship records
-- **Observational Taxonomy:** Spatial geometry evaluations are categorized into four explicit observational states:
-  - `CONFIRM`: Polygon intersection aligns with statutory containment.
-  - `CONTRADICT`: Polygon intersection deviates from statutory containment; **statutory containment prevails unconditionally**.
-  - `INCONCLUSIVE`: Border slivers or digitisation imprecision; statutory containment prevails.
-  - `UNAVAILABLE`: Geometry is absent; statutory relationships operate without degradation.
-- Under no circumstances does spatial calculation rewrite, update, or delete W015 relational mappings.
-
----
-
-## 11. W012 Status Compatibility & Permitted Combinations
-
-The design adheres strictly to the existing `data_status_enum`. The three classification axes interact according to the following permitted tuples:
-
-```sql
-CONSTRAINT chk_geometry_status_classification_consistency CHECK (
-  -- Tuple 1: Official Current Constitutional Geometry (e.g. Certified ECI AC boundaries)
-  (status = 'OFFICIAL' AND authority_classification = 'OFFICIAL_CONSTITUTIONAL_GEOMETRY' AND temporal_classification = 'CURRENT_LEGAL' AND is_current = true) OR
-  -- Tuple 2: Official Current Statutory Geometry (e.g. Certified CCLA District boundaries)
-  (status = 'OFFICIAL' AND authority_classification = 'OFFICIAL_STATUTORY_GEOMETRY' AND temporal_classification = 'CURRENT_LEGAL' AND is_current = true) OR
-  -- Tuple 3: Official Historical Statutory Geometry (e.g. 10-district 2014 gazette boundaries)
-  (status = 'OFFICIAL' AND authority_classification = 'OFFICIAL_STATUTORY_GEOMETRY' AND temporal_classification = 'HISTORICAL_LEGAL' AND is_current = false) OR
-  -- Tuple 4: Unverified State GIS Candidate (Current Delimitation Regime) (e.g. TGRAC 119 ACs)
-  (status = 'UNVERIFIED' AND authority_classification = 'UNVERIFIED_STATE_GIS_CANDIDATE' AND temporal_classification = 'UNVERIFIED_CANDIDATE' AND is_current = false) OR
-  -- Tuple 5: Unverified State GIS Candidate (Historical Snapshot) (e.g. TGRAC 589 Mandals)
-  (status = 'UNVERIFIED' AND authority_classification = 'UNVERIFIED_STATE_GIS_CANDIDATE' AND temporal_classification = 'HISTORICAL_LEGAL' AND is_current = false) OR
-  -- Tuple 6: Unverified Fixture Geometry (e.g. datta07 mock polygons)
-  (status = 'UNVERIFIED' AND authority_classification = 'UNVERIFIED_FIXTURE_GEOMETRY' AND temporal_classification = 'UNVERIFIED_CANDIDATE' AND is_current = false) OR
-  -- Tuple 7: Scenario Projection Geometry (e.g. Delimitation Simulation Lab models)
-  (status = 'SCENARIO' AND authority_classification = 'SCENARIO_PROJECTION_GEOMETRY' AND temporal_classification = 'SCENARIO' AND is_current = false)
-)
-```
+- **4-State Observational Taxonomy:** Spatial evaluations are categorized as `CONFIRM`, `CONTRADICT`, `INCONCLUSIVE`, or `UNAVAILABLE`.
+- Under no circumstances does spatial geometry calculation rewrite or update W015 relationships.
 
 ---
 
@@ -428,12 +380,12 @@ CREATE TABLE IF NOT EXISTS public.entity_geometries (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   entity_type VARCHAR(50) NOT NULL CHECK (entity_type IN ('state', 'district', 'parliamentary_constituency', 'assembly_constituency', 'mandal')),
   
-  -- Explicit typed foreign keys resolving to W014 version tables and statutory anchors
+  -- Explicit typed foreign keys resolving exclusively to W014 version tables
   constituency_version_id UUID REFERENCES public.constituency_versions(id) ON DELETE RESTRICT,
   district_version_id     UUID REFERENCES public.district_versions(id) ON DELETE RESTRICT,
   state_version_id        UUID REFERENCES public.state_versions(id) ON DELETE RESTRICT,
   pc_version_id           UUID REFERENCES public.parliamentary_constituency_versions(id) ON DELETE RESTRICT,
-  mandal_id               TEXT REFERENCES public.mandals(id) ON DELETE RESTRICT,
+  mandal_version_id       UUID REFERENCES public.mandal_versions(id) ON DELETE RESTRICT,
 
   -- W012 Governance & Provenance linkages
   dataset_version_id TEXT NOT NULL REFERENCES public.dataset_versions(id) ON DELETE RESTRICT,
@@ -469,24 +421,24 @@ CREATE TABLE IF NOT EXISTS public.entity_geometries (
 
   -- Cardinality and alignment constraints
   CONSTRAINT chk_entity_geometries_exact_one_target 
-    CHECK (num_nonnulls(constituency_version_id, district_version_id, state_version_id, pc_version_id, mandal_id) = 1),
+    CHECK (num_nonnulls(constituency_version_id, district_version_id, state_version_id, pc_version_id, mandal_version_id) = 1),
     
   CONSTRAINT chk_entity_geometries_type_alignment CHECK (
     (entity_type = 'assembly_constituency' AND constituency_version_id IS NOT NULL) OR
     (entity_type = 'district' AND district_version_id IS NOT NULL) OR
     (entity_type = 'state' AND state_version_id IS NOT NULL) OR
     (entity_type = 'parliamentary_constituency' AND pc_version_id IS NOT NULL) OR
-    (entity_type = 'mandal' AND mandal_id IS NOT NULL)
+    (entity_type = 'mandal' AND mandal_version_id IS NOT NULL)
   ),
 
-  -- Current legal invariants
+  -- Current legal invariants (Calendar-independent: zero CURRENT_DATE dependencies)
   CONSTRAINT chk_geometry_current_invariants CHECK (
     (is_current = false) OR (
       is_current = true AND
       status = 'OFFICIAL' AND
       temporal_classification = 'CURRENT_LEGAL' AND
       authority_classification IN ('OFFICIAL_CONSTITUTIONAL_GEOMETRY', 'OFFICIAL_STATUTORY_GEOMETRY') AND
-      (valid_to IS NULL OR valid_to > CURRENT_DATE)
+      valid_to IS NULL
     )
   ),
 
@@ -508,22 +460,37 @@ CREATE TABLE IF NOT EXISTS public.entity_geometries (
   )
 );
 
--- ─── 2. INDEXING ───────────────────────────────────────────────────────────────
+-- ─── 2. INDEXING & FIVE-TIER SINGLE-CURRENT UNIQUENESS ─────────────────────────
 
 CREATE INDEX IF NOT EXISTS idx_entity_geometries_geom ON public.entity_geometries USING gist (geometry);
 CREATE INDEX IF NOT EXISTS idx_entity_geometries_constituency ON public.entity_geometries (constituency_version_id) WHERE constituency_version_id IS NOT NULL;
 CREATE INDEX IF NOT EXISTS idx_entity_geometries_district ON public.entity_geometries (district_version_id) WHERE district_version_id IS NOT NULL;
-CREATE INDEX IF NOT EXISTS idx_entity_geometries_mandal ON public.entity_geometries (mandal_id) WHERE mandal_id IS NOT NULL;
+CREATE INDEX IF NOT EXISTS idx_entity_geometries_state ON public.entity_geometries (state_version_id) WHERE state_version_id IS NOT NULL;
+CREATE INDEX IF NOT EXISTS idx_entity_geometries_pc ON public.entity_geometries (pc_version_id) WHERE pc_version_id IS NOT NULL;
+CREATE INDEX IF NOT EXISTS idx_entity_geometries_mandal ON public.entity_geometries (mandal_version_id) WHERE mandal_version_id IS NOT NULL;
 CREATE INDEX IF NOT EXISTS idx_entity_geometries_dataset ON public.entity_geometries (dataset_version_id);
 CREATE INDEX IF NOT EXISTS idx_entity_geometries_provenance ON public.entity_geometries (provenance_id);
 
+-- Single-current partial unique indexes for all 5 geography classes
 CREATE UNIQUE INDEX IF NOT EXISTS uq_constituency_geometries_single_current 
   ON public.entity_geometries (constituency_version_id) 
-  WHERE is_current = true;
+  WHERE is_current = true AND constituency_version_id IS NOT NULL;
 
 CREATE UNIQUE INDEX IF NOT EXISTS uq_district_geometries_single_current 
   ON public.entity_geometries (district_version_id) 
-  WHERE is_current = true;
+  WHERE is_current = true AND district_version_id IS NOT NULL;
+
+CREATE UNIQUE INDEX IF NOT EXISTS uq_state_geometries_single_current 
+  ON public.entity_geometries (state_version_id) 
+  WHERE is_current = true AND state_version_id IS NOT NULL;
+
+CREATE UNIQUE INDEX IF NOT EXISTS uq_pc_geometries_single_current 
+  ON public.entity_geometries (pc_version_id) 
+  WHERE is_current = true AND pc_version_id IS NOT NULL;
+
+CREATE UNIQUE INDEX IF NOT EXISTS uq_mandal_geometries_single_current 
+  ON public.entity_geometries (mandal_version_id) 
+  WHERE is_current = true AND mandal_version_id IS NOT NULL;
 
 -- ─── 3. ROW LEVEL SECURITY (RLS) ───────────────────────────────────────────────
 
@@ -547,7 +514,7 @@ COMMIT;
 
 ---
 
-## 13. Revised Acceptance Matrix (Assertions A Through M)
+## 13. Comprehensive Acceptance Matrix (Assertions A Through R)
 
 | Assertion | Requirement | Design Mechanism | Future Runtime / Database Verification Test |
 |---|---|---|---|
@@ -564,6 +531,11 @@ COMMIT;
 | **K** | W015 Relational Primacy | Geometry schema completely decoupled from `mandal_constituency_map`; zero spatial triggers | Executing geometry ingestion leaves `mandal_constituency_map` and booth rows 100% unaltered. |
 | **L** | No Destructive W012 Rollback | Rollback script drops spatial tables only; W012 records preserved with dependency validation | Rollback script execution leaves `data_sources`, `datasets`, and `provenance_records` intact. |
 | **M** | Performance Remains UNKNOWN | All speculative numbers removed; 7-category PostGIS benchmark suite planned | Benchmarking conducted post-implementation via `EXPLAIN (ANALYZE, BUFFERS)` on staging PostGIS. |
+| **N** | Mandal Resolves to `mandal_versions.id` | Explicit FK `mandal_version_id REFERENCES public.mandal_versions(id) ON DELETE RESTRICT` | `INSERT` geometry referencing non-existent `mandal_version_id` fails with Foreign Key Violation (`23503`). |
+| **O** | No Time-Dependent CHECK Constraints | Zero occurrences of `CURRENT_DATE`, `now()`, or dynamic clock expressions in table DDL | Querying `pg_get_constraintdef()` across `entity_geometries` confirms zero occurrences of `CURRENT_DATE`. |
+| **P** | Single-Current Uniqueness for All 5 Classes | Dedicated partial unique indexes on version IDs `WHERE is_current = true AND <col> IS NOT NULL` | Attempting to insert a second `is_current = true` row across any of the 5 classes fails with `23505`. |
+| **Q** | `is_current=true` Requires `valid_to IS NULL` | `chk_geometry_current_invariants` enforces `valid_to IS NULL` whenever `is_current = true` | Setting `is_current = true` on a row where `valid_to` is populated fails with Check Violation (`23514`). |
+| **R** | OFFICIAL Trigger Dependencies Exist in Actual Schema | Schema audit verified columns in Migrations 039 and 041 (`verification_evidence_id`, `status`, `legal_status`) | Trigger `fn_guard_geometry_official_promotion` compiles cleanly against schema without error `42703`. |
 
 ---
 
@@ -575,22 +547,19 @@ In accordance with Section 22 of the CTO Directive:
 |---|---|---|
 | **AC Geometry** | **READY FOR BOUNDED INGESTION (DESIGN ONLY)** | Technically and relational-design ready for bounded candidate ingestion under Migration 044. Does NOT imply official or constitutional status. |
 | **District Geometry** | **READY FOR BOUNDED INGESTION (DESIGN ONLY)** | Technically and relational-design ready for bounded candidate ingestion under Migration 044. Does NOT imply official status. |
-| **Mandal Geometry** | **READY FOR HISTORICAL INGESTION (DESIGN ONLY)** | Technically and relational-design ready for historical snapshot ingestion [2016–2022] under Migration 044. Strictly BLOCKED for current legal geography queries. |
+| **Mandal Geometry** | **READY FOR HISTORICAL INGESTION (DESIGN ONLY — Awaiting `mandal_versions` DDL)** | Technically and relational-design ready for historical snapshot ingestion [2016–2022] under Migration 044. Strictly BLOCKED for current legal geography queries; requires prior provisioning of `public.mandal_versions`. |
 
 ---
 
 ## 15. Governance Summary & Final Checklist
 
-- [x] Polymorphic foreign key completely removed; typed nullable FKs with exact-one CHECK constraint designed.
-- [x] Database-level quarantine enforced via Row Level Security on base table `public.entity_geometries`.
-- [x] Database-level guards on `OFFICIAL` promotion specified (trigger, check constraints, foreign keys).
-- [x] Current/historical/candidate/scenario state invariants formally defined in state matrix.
-- [x] Authoritative replacement lifecycle explicitly models spatial comparison as evidence only.
-- [x] All speculative performance estimates removed; formal 7-category benchmark plan defined.
-- [x] Migration 044 rollback redesigned safely to prevent destruction of W012 governance history.
-- [x] Mandal historical safety strictly enforced by database check constraints.
-- [x] W015 relational primacy reinforced with 4-state observational taxonomy.
-- [x] Acceptance matrix updated with explicit design-time assertions A through M.
-- [x] Updated design artifacts: `docs/w016_c3_geometry_ingestion_preflight.md` & `.json`.
+- [x] Mandal geometry target replaced with canonical W014 relationship: `mandal_version_id REFERENCES public.mandal_versions(id)`.
+- [x] All five geography classes strictly bounded by exact-one target constraint.
+- [x] All time-dependent `CURRENT_DATE` expressions removed from check constraints.
+- [x] Contradiction between `valid_to > CURRENT_DATE` and `valid_to IS NULL` resolved: `is_current = true -> valid_to IS NULL`.
+- [x] Single-current partial unique indexes defined for all five geography classes with verified PostgreSQL NULL semantics.
+- [x] Actual schema dependencies verified for all trigger columns (`dataset_versions`, `provenance_records`, `delimitation_regimes`).
+- [x] `public.mandal_versions` gap identified and recorded as an unresolved prerequisite dependency.
+- [x] Acceptance matrix expanded with assertions N through R.
 - [x] Zero application code changes, zero database mutations, zero migrations created.
 - [x] Migration 044 remains strictly unauthorized.
