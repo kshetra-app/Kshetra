@@ -1,10 +1,10 @@
 {
-  "schema_version": "2.3.0",
-  "job": "W014-MANDAL-PREFLIGHT-SECURITY-HARDENING-ROUND-3",
-  "title": "W014 Mandal Temporal Version Model Preflight (Security Boundary Hardening & W012 Contract Inheritance)",
-  "timestamp": "2026-09-24T20:45:00+05:30",
-  "baseline_commit": "969852243d27a313bf6eebdbb1fe9b6a96c0a81c",
-  "authority": "Independent CTO / Co-founder Directive W014 Mandal Version Preflight Security Correction Round",
+  "schema_version": "2.4.0",
+  "job": "W014-MANDAL-PREFLIGHT-FINAL-SECURITY-BOUNDARY-CORRECTION",
+  "title": "W014 Mandal Temporal Version Model Preflight (Declarative EXECUTE ACL Boundary & Designated Canonical Transition Path)",
+  "timestamp": "2026-09-24T21:15:00+05:30",
+  "baseline_commit": "1bcb53b534db5a4c9a2a5fbe307752d80a46bd1c",
+  "authority": "Independent CTO / Co-founder Directive W014 Mandal Version Final Security Boundary Correction",
   "authoritative_state": {
     "w015": "ACCEPTED_COMPLETE",
     "w015_b1": "ACCEPTED_COMPLETE",
@@ -15,7 +15,7 @@
     "w016_c1_acquisition": "ACCEPTED_COMPLETE",
     "w016_c2_reconciliation": "ACCEPTED",
     "w016_c3_preflight": "CONDITIONALLY_ACCEPTED",
-    "w014_mandal_version_preflight": "REVISED_SECURITY_SUBMISSION",
+    "w014_mandal_version_preflight": "FINAL_SECURITY_CORRECTION_SUBMISSION",
     "migration_044": "STRICTLY_NOT_AUTHORIZED",
     "database_mutations": "STRICTLY_NOT_AUTHORIZED",
     "geometry_ingestion": "STRICTLY_NOT_AUTHORIZED",
@@ -138,10 +138,11 @@
         "role_name": "panin_boundary_definer",
         "attributes": "NOLOGIN",
         "role_distinction": {
-          "function_owner": "panin_boundary_definer (non-login dedicated role owning boundary objects)",
+          "function_owner": "panin_boundary_definer (non-login dedicated role owning boundary objects; cannot connect or execute independently)",
           "database_administrator": "postgres / supabase_admin (cluster infrastructure and DDL migrations; not an application caller)",
           "trusted_application_execution_role": "service_role (backend worker / internal API service role)",
-          "boundary_admin_role": "panin_boundary_admin (human administrative role for boundary management)"
+          "boundary_admin_role": "panin_boundary_admin (human administrative role for boundary management)",
+          "unprivileged_roles": "PUBLIC, anon, authenticated (zero execution privileges; rejected at database engine level)"
         }
       },
       "search_path": "SET search_path = public, pg_temp",
@@ -157,11 +158,18 @@
           "GRANT EXECUTE ON FUNCTION public.fn_transition_mandal_current_version(TEXT, UUID, DATE, TEXT, UUID) TO panin_boundary_admin;"
         ]
       },
-      "caller_authentication_mechanism": "Declarative PostgreSQL EXECUTE privileges (ACLs). Unprivileged roles (PUBLIC, anon, authenticated) are blocked by PostgreSQL engine before entering function (42501). Defense-in-depth check evaluates SESSION_USER (the authentic session identity), NOT CURRENT_USER.",
-      "p_operator_semantics": {
-        "role": "AUDIT METADATA ONLY",
-        "authorization_power": "ZERO. Authorization is determined strictly by PostgreSQL session credentials. An unauthorized caller passing p_operator='admin' is rejected. An authorized caller passing p_operator='random' is permitted because the caller is authorized."
+      "caller_authentication_mechanism": "Declarative PostgreSQL EXECUTE privileges (ACLs). Unprivileged roles (PUBLIC, anon, authenticated) are rejected by PostgreSQL engine with 42501 before entering the function body. The function body contains ZERO authorization dependence on CURRENT_USER or SESSION_USER.",
+      "p_operator_and_session_audit_semantics": {
+        "p_operator_role": "AUDIT METADATA ONLY. Zero authorization authority. Authorization is determined strictly by PostgreSQL EXECUTE privileges.",
+        "session_user_role": "Recorded in JSONB receipt strictly as audit metadata (originating database connection identity)."
       }
+    },
+    "table_dml_privilege_model": {
+      "designated_canonical_path": "public.fn_transition_mandal_current_version() is the designated canonical application transition path for all application services and administrative workflows.",
+      "public_anon_authenticated": "SELECT only via RLS. INSERT, UPDATE, DELETE are strictly denied.",
+      "panin_boundary_admin": "Granted EXECUTE on transition function. Base-table DML is restricted, mandating execution through the designated function.",
+      "service_role": "Possesses backend table DML for migration scripts and operational disaster recovery, but all application transitions must invoke fn_transition_mandal_current_version().",
+      "defense_in_depth": "Any direct DML by service_role or administrators remains physically constrained by Layers 1-5 integrity constraints (composite FK, deferred triggers, partial unique index, check constraint). Invalid direct mutations fail closed."
     },
     "provenance_semantics": {
       "narrow_scope": "If p_provenance_id is supplied, it must resolve to an existing public.provenance_records row (FK existence check; 23503). This check alone does NOT prove statutory authority; W012 remains exclusively responsible for evidence/provenance promotion."
@@ -219,7 +227,7 @@
     {
       "assertion_id": "M6",
       "status": "DESIGNED / TO-BE VERIFIED",
-      "requirement": "Version transition via authorized path succeeds atomically",
+      "requirement": "Version transition via designated canonical application path succeeds atomically",
       "enforcement_mechanism": "Stored function public.fn_transition_mandal_current_version() with row-level lock and atomic transaction block.",
       "test_design": "Call fn_transition_mandal_current_version() from authorized role with valid parameters.",
       "expected_sqlstate_or_error": "SUCCESS (Returns JSONB receipt with status 'TRANSITION_COMPLETE')",
@@ -282,18 +290,18 @@
     {
       "assertion_id": "M13",
       "status": "DESIGNED / TO-BE VERIFIED",
-      "requirement": "Unauthorized role cannot execute the canonical transition function",
-      "enforcement_mechanism": "REVOKE ALL FROM PUBLIC/anon/authenticated; GRANT EXECUTE TO service_role, panin_boundary_admin; ownership by panin_boundary_definer (NOLOGIN).",
-      "test_design": "Test privilege boundary for all 5 roles: (1) PUBLIC -> 42501, (2) anon -> 42501, (3) authenticated -> 42501, (4) service_role -> SUCCESS, (5) panin_boundary_admin -> SUCCESS. Verify pg_proc.proowner = panin_boundary_definer.",
-      "expected_sqlstate_or_error": "42501 for unprivileged; SUCCESS for authorized",
+      "requirement": "Privilege boundary enforced via PostgreSQL EXECUTE ACLs; zero dependence on CURRENT_USER/SESSION_USER",
+      "enforcement_mechanism": "REVOKE ALL FROM PUBLIC, anon, authenticated; GRANT EXECUTE TO service_role, panin_boundary_admin; OWNER TO panin_boundary_definer (NOLOGIN); zero internal role-branching; base table DML restricted.",
+      "test_design": "1. Verify pg_proc: prosecdef=true, owner='panin_boundary_definer'. 2. Test 5-role execution matrix: PUBLIC->42501, anon->42501, authenticated->42501, service_role->SUCCESS, panin_boundary_admin->SUCCESS. 3. Verify function source contains zero CURRENT_USER or SESSION_USER authorization branches. 4. Inspect base-table privileges confirming unprivileged roles have zero DML.",
+      "expected_sqlstate_or_error": "42501 for unprivileged roles; SUCCESS for authorized roles",
       "evidence_artifact": "tests/test_mandal_version_integrity.sql (Test M13)"
     },
     {
       "assertion_id": "M14",
       "status": "DESIGNED / TO-BE VERIFIED",
-      "requirement": "p_operator cannot be used to self-authorize a transition",
-      "enforcement_mechanism": "p_operator is treated strictly as audit metadata; authorization is checked purely against session credentials via PostgreSQL ACLs and SESSION_USER.",
-      "test_design": "Execute 3-case matrix: (1) unauth caller + p_operator='admin' -> 42501; (2) auth caller + p_operator='random' -> SUCCESS; (3) auth caller + p_operator='admin' -> SUCCESS (authorized purely by caller role).",
+      "requirement": "p_operator carries ZERO authorization power (audit metadata only)",
+      "enforcement_mechanism": "Authorization enforced purely by PostgreSQL EXECUTE ACLs prior to function entry; p_operator value never inspected for authorization.",
+      "test_design": "Execute 3-case matrix: (1) unauth caller + p_operator='admin' -> 42501; (2) auth caller + p_operator='random' -> SUCCESS; (3) auth caller + p_operator='admin' -> SUCCESS (authorized purely by caller role, never because p_operator says admin).",
       "expected_sqlstate_or_error": "42501 for Case 1; SUCCESS for Cases 2 and 3",
       "evidence_artifact": "tests/test_mandal_version_integrity.sql (Test M14)"
     },

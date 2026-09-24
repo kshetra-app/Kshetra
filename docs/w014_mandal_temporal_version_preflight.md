@@ -1,25 +1,25 @@
-# W014: Mandal Temporal Version Model Preflight (Security Boundary Hardening & W012 Contract Inheritance)
+# W014: Mandal Temporal Version Model Preflight (Declarative EXECUTE ACL Boundary & Designated Canonical Transition Path)
 
-**Authority:** Independent CTO / Co-founder Directive — W014 Mandal Version Preflight Security Correction Round  
+**Authority:** Independent CTO / Co-founder Directive — W014 Mandal Version Final Security Boundary Correction  
 **Status:** SUBMITTED FOR FINAL CTO REVIEW  
 **Scope:** Architectural & Technical Preflight Design Only (Zero DDL Execution / Zero DB Mutations / Production Untouched)  
-**Baseline Commit:** `969852243d27a313bf6eebdbb1fe9b6a96c0a81c`  
+**Baseline Commit:** `1bcb53b534db5a4c9a2a5fbe307752d80a46bd1c`  
 **Date:** September 2026  
 
 ---
 
 ## 1. Executive Summary & Authoritative Coordinates
 
-In accordance with the **CTO Directive on W014 Mandal Version Preflight Security Correction**, this document establishes the finalized, security-hardened preflight design for the canonical W014 sub-district mandal temporal version model.
+In accordance with the **CTO Directive on W014 Mandal Version Final Security Boundary Correction**, this document establishes the finalized, security-hardened preflight design for the canonical W014 sub-district mandal temporal version model.
 
 This release:
-1. **Hardens the Security Boundary:** Eliminates `CURRENT_USER` inside `SECURITY DEFINER` (which reflects the function owner, not the caller). Replaces it with declarative PostgreSQL EXECUTE privileges (ACLs) and a `SESSION_USER` defense-in-depth check.
-2. **Defines Dedicated Function Ownership:** Establishes `panin_boundary_definer` as a dedicated non-login (`NOLOGIN`) boundary owner role, clearly partitioned from cluster administrators (`postgres`/`supabase_admin`) and application roles (`service_role`, `panin_boundary_admin`).
-3. **Decouples `p_operator` Completely from Authorization:** Defines `p_operator` strictly as audit metadata with zero authorization privilege, backed by a 3-case verification matrix.
-4. **Formulates the W012 Contract Inheritance Boundary:** Formally distinguishes W012 ownership (evidence, provenance DAG, statutory validation, `OFFICIAL` promotion) from W014 ownership (temporal intervals, currentness, same-anchor composite FKs, canonical pointer eligibility). W014 trusts W012's `OFFICIAL` contract and never duplicates the promotion workflow.
-5. **Narrows Provenance Semantics (M15):** Constrains `p_provenance_id` to operational foreign key existence verification without conflating it with statutory evidence promotion.
-6. **Corrects Invariant Terminology:** Adopts the accurate designation **"Canonical Pointer $\to$ Active Version Invariant"** to reflect the unidirectional requirement.
-7. **Redesigns the Acceptance Matrix (M1–M15):** Includes comprehensive test matrices for M13 (5-role privilege boundary) and M14 (`p_operator` zero-privilege proof), with all assertions classified strictly as **`DESIGNED / TO-BE VERIFIED`**.
+1. **Eliminates `SESSION_USER` from Function Authorization:** Authoritative caller authentication is enforced purely and declaratively by **PostgreSQL EXECUTE privileges (ACLs)** before entering the `SECURITY DEFINER` function context. Unprivileged callers are rejected at the database engine level with SQLSTATE `42501` without entering the function.
+2. **Eliminates `CURRENT_USER` from Function Authorization:** Neither `CURRENT_USER` (which reflects the function owner) nor `SESSION_USER` is used as an authorization gate inside the function. `SESSION_USER` is utilized strictly as audit metadata in the structured transition receipt.
+3. **Resolves the "Sole Canonical Path" Architecture:** Accurately designates `public.fn_transition_mandal_current_version()` as the **"Designated Canonical Application Transition Path"** for all application workflows, administrative UIs, and automated pipelines. Explicitly documents the table-DML privilege model across Supabase roles, recognizing that backend infrastructure roles (`service_role`, `postgres`) retain direct DML for disaster recovery and migrations, while being physically constrained by Layers 1–5 database integrity guards.
+4. **Preserves the W012 Contract Inheritance Boundary:** Formally maintains that W012 owns evidence, provenance DAG, statutory validation, and `OFFICIAL` promotion. W014 trusts W012's `default_status = 'OFFICIAL'` contract and never duplicates the promotion workflow.
+5. **Narrows Provenance Semantics (M15):** Constrains `p_provenance_id` to foreign key existence verification in `provenance_records` without conflating it with statutory evidence promotion.
+6. **Maintains Corrected Invariant Terminology:** Uses the exact designation **"Canonical Pointer $\to$ Active Version Invariant"** to reflect the unidirectional requirement.
+7. **Redesigns M13 & M14:** Incorporates the complete 5-role privilege boundary test matrix for M13 and the 3-case zero-authority proof for M14, with all M1–M15 assertions classified strictly as **`DESIGNED / TO-BE VERIFIED`**.
 
 ### Authoritative State Matrix
 
@@ -34,7 +34,7 @@ This release:
 | **W016-C1 (Candidate Acquisition)** | `ACCEPTED_COMPLETE` | Commit [`46d4bcb`](https://github.com/kshetra-app/Kshetra/commit/46d4bcb) |
 | **W016-C2 (Reconciliation Package)** | `ACCEPTED` | Commit [`3d30640`](https://github.com/kshetra-app/Kshetra/commit/3d30640) |
 | **W016-C3 (Geometry Preflight)** | `CONDITIONALLY_ACCEPTED` | Commit [`8704afe`](https://github.com/kshetra-app/Kshetra/commit/8704afe) |
-| **W014 Mandal Temporal Preflight (Round 3)** | `REVISED_SECURITY_SUBMISSION` | This Document |
+| **W014 Mandal Temporal Preflight (Round 4)** | `FINAL_SECURITY_CORRECTION_SUBMISSION` | This Document |
 | **Migration 044 Execution** | `STRICTLY_NOT_AUTHORIZED` | Frozen |
 | **Database Mutations / Ingestion** | `STRICTLY_NOT_AUTHORIZED` | Frozen |
 | **Production Environment** | `STRICTLY_UNTOUCHED` | Air-Gapped |
@@ -261,26 +261,38 @@ CONSTRAINT chk_mandal_versions_current_invariants CHECK (
 
 ---
 
-## 6. Authoritative Atomic State-Transition Path & Hardened Security Model
+## 6. Designated Canonical Application Transition Path & Hardened Security Model
 
-### 6.1 Corrected Security Boundary & Ownership Architecture
+### 6.1 Corrected Declarative Security Boundary
 
-To resolve the architectural flaw of using `CURRENT_USER` inside `SECURITY DEFINER` (which reflects the function owner, not the caller), the security model establishes:
+To resolve the architectural error of evaluating `CURRENT_USER` or `SESSION_USER` inside function procedural code, caller authorization is governed purely by **declarative PostgreSQL EXECUTE privileges (ACLs)**:
 
-1. **Dedicated Function Owner:**
-   The function is owned by a dedicated, non-login role:
+```mermaid
+flowchart TD
+    Caller["Invoking Client / Caller"]
+    ACL{"PostgreSQL Engine<br>EXECUTE ACL Check"}
+    Func["SECURITY DEFINER Function Body<br>(Runs as panin_boundary_definer)"]
+    Checks["Relational / Temporal / W012 Invariants"]
+    Commit["Atomic Transaction Commit"]
+
+    Caller --> ACL
+    ACL -- "Unprivileged (PUBLIC, anon, authenticated)" --> Deny["REJECTED: SQLSTATE 42501<br>(Function Not Entered)"]
+    ACL -- "Authorized (service_role, panin_boundary_admin)" --> Func
+    Func --> Checks
+    Checks --> Commit
+```
+
+#### Key Architecture Principles:
+1. **Pre-Execution Privilege Gate:** PostgreSQL evaluates EXECUTE permissions *prior* to function invocation. Unprivileged callers are rejected by the engine with `42501` (`insufficient_privilege`) without executing a single instruction of procedural code.
+2. **Zero In-Body Role Dependencies:** The function body contains **zero authorization branching** on `CURRENT_USER` or `SESSION_USER`.
+3. **Audit Attribution Only:** `SESSION_USER` and `p_operator` are recorded in the transition JSONB receipt and event audit log purely as **audit metadata**. Neither provides authorization capability.
+4. **Dedicated Non-Login Owner:**
+   The function is owned by `panin_boundary_definer`:
    ```sql
    CREATE ROLE panin_boundary_definer WITH NOLOGIN NOSUPERUSER NOCREATEDB NOCREATEROLE;
    ```
-   `panin_boundary_definer` owns the boundary transition procedures and schema objects, but cannot be used to establish a client session.
-2. **Clear Role Distinctions:**
-   - **Function Owner (`panin_boundary_definer`):** Non-login system role owning the `SECURITY DEFINER` routine. Cannot connect or execute independently.
-   - **Database Administrator (`postgres` / `supabase_admin`):** Superuser / cluster maintenance roles used for migrations and DDL. Not treated as application callers.
-   - **Trusted Application Execution Role (`service_role`):** Backend execution identity for automated transitions and worker processes.
-   - **Boundary Admin Role (`panin_boundary_admin`):** Human boundary administrator role for authorized boundary interventions.
-   - **Unprivileged Roles (`PUBLIC`, `anon`, `authenticated`):** End-user, anonymous, and public web identities with zero execution privilege.
-3. **Declarative ACL Enforcement (The True Privilege Boundary):**
-   PostgreSQL executes privilege checks **before** entering the `SECURITY DEFINER` context. An unprivileged caller attempting `SELECT public.fn_transition_mandal_current_version(...)` is blocked by the storage engine with `42501` (`insufficient_privilege`) without executing a single line of function code:
+   `panin_boundary_definer` owns the boundary procedures, but cannot log in or establish client sessions.
+5. **Exact EXECUTE ACL Grants:**
    ```sql
    REVOKE ALL ON FUNCTION public.fn_transition_mandal_current_version(TEXT, UUID, DATE, TEXT, UUID) FROM PUBLIC;
    REVOKE ALL ON FUNCTION public.fn_transition_mandal_current_version(TEXT, UUID, DATE, TEXT, UUID) FROM anon;
@@ -289,23 +301,28 @@ To resolve the architectural flaw of using `CURRENT_USER` inside `SECURITY DEFIN
    GRANT EXECUTE ON FUNCTION public.fn_transition_mandal_current_version(TEXT, UUID, DATE, TEXT, UUID) TO service_role;
    GRANT EXECUTE ON FUNCTION public.fn_transition_mandal_current_version(TEXT, UUID, DATE, TEXT, UUID) TO panin_boundary_admin;
    ```
-4. **Defense-in-Depth Authentication Check (`SESSION_USER`):**
-   If an internal check is performed, it must evaluate `SESSION_USER` (the authentic login session role that initiated the query, which does NOT switch under `SECURITY DEFINER`), **never** `CURRENT_USER`:
-   ```sql
-   IF SESSION_USER NOT IN ('service_role', 'panin_boundary_admin') THEN
-     RAISE EXCEPTION 'PERMISSION DENIED [ERR-W014-004]: Session user "%" is not authorized to execute canonical version transitions.',
-       SESSION_USER
-       USING ERRCODE = '42501'; -- insufficient_privilege
-   END IF;
-   ```
-5. **Decoupling `p_operator` from Security:**
-   `p_operator TEXT` is **audit metadata only** (recorded in transition receipts and event logs). It carries **zero authorization power**.
-6. **Narrowed Provenance Semantics:**
-   `p_provenance_id` verifies foreign key existence in `public.provenance_records` (`ERR-W014-005` / `23503`). It does NOT prove statutory authority; W012 remains exclusively responsible for evidence and provenance promotion.
-7. **Elimination of Dead Governance State:**
-   `v_dataset_status` is evaluated directly: `IF v_dataset_status <> 'OFFICIAL' THEN RAISE EXCEPTION ERR-W014-003 (23514);`.
 
-### 6.2 Transition Function DDL
+### 6.2 Resolution of the "Sole Canonical Path" Architecture
+
+To avoid contradictory claims regarding database privileges:
+
+1. **Designated Canonical Application Transition Path:**  
+   `public.fn_transition_mandal_current_version()` is designated as the **sole authorized transition path for all application services, administrative interfaces, and operational batch pipelines**. All application code must execute version transitions through this routine to guarantee atomic pointer reassignment, version retirement, statutory date alignment, structured JSONB audit receipts, and provenance linkage.
+2. **Base-Table DML Privilege Realities:**
+   - **`PUBLIC`, `anon`, `authenticated`:** Zero table DML. Restricted to `SELECT` only via RLS.
+   - **`panin_boundary_admin`:** Granted `EXECUTE` on the transition function. Base-table DML on `mandals` and `mandal_versions` is restricted, channeling administrative changes through the designated function.
+   - **`service_role` & Database Administrators (`postgres`, `supabase_admin`):** In standard Supabase and PostgreSQL deployments, `service_role` and cluster administrators retain broad table DML for schema migrations, initial seeding, and disaster recovery. Therefore, direct table DML by infrastructure administrators is explicitly excluded from application path guarantees.
+3. **Defense-in-Depth Constraint Guarantee:**  
+   Even if an administrator or `service_role` executes direct out-of-band table DML, **it remains physically constrained by Layers 1–5 integrity rules**:
+   - Setting `mandals.current_version_id` to an inactive or non-OFFICIAL version fails closed at commit (`ERR-W014-001`, `ERR-W014-003`).
+   - Deactivating a version while still referenced fails closed at commit (`ERR-W014-002`).
+   - Setting a second version to `is_current = true` fails with unique violation (`23505`).
+   - Setting `valid_to` on an active version fails with check constraint violation (`23514`).
+
+### 6.3 Narrowed Provenance Semantics
+`p_provenance_id` verifies foreign key existence in `public.provenance_records` (`ERR-W014-005` / `23503`). It does NOT prove statutory authority; W012 remains exclusively responsible for evidence and provenance promotion.
+
+### 6.4 Transition Function DDL
 
 ```sql
 CREATE OR REPLACE FUNCTION public.fn_transition_mandal_current_version(
@@ -326,14 +343,7 @@ DECLARE
   v_new_valid_to DATE;
   v_dataset_status TEXT;
 BEGIN
-  -- 1. Defense-in-Depth Session Check (Evaluates authentic login session, NOT function owner)
-  IF SESSION_USER NOT IN ('service_role', 'panin_boundary_admin') THEN
-    RAISE EXCEPTION 'PERMISSION DENIED [ERR-W014-004]: Session user "%" is not authorized to execute canonical version transitions.',
-      SESSION_USER
-      USING ERRCODE = '42501'; -- insufficient_privilege
-  END IF;
-
-  -- 2. Narrow Provenance Existence Check: If provided, assert valid provenance record existence
+  -- 1. Narrow Provenance Existence Check: If provided, assert valid provenance record existence
   IF p_provenance_id IS NOT NULL THEN
     IF NOT EXISTS (
       SELECT 1 FROM public.provenance_records pr WHERE pr.id = p_provenance_id
@@ -344,7 +354,7 @@ BEGIN
     END IF;
   END IF;
 
-  -- 3. Lock the anchor row to serialize concurrent transitions
+  -- 2. Lock the anchor row to serialize concurrent transitions
   SELECT current_version_id INTO v_old_version_id
   FROM public.mandals
   WHERE id = p_mandal_id
@@ -355,7 +365,7 @@ BEGIN
       USING ERRCODE = '23503';
   END IF;
 
-  -- 4. Validate target new version exists, fetch properties and dataset status
+  -- 3. Validate target new version exists, fetch properties and dataset status
   SELECT mv.mandal_id, mv.valid_to, dv.default_status
   INTO v_new_mandal_id, v_new_valid_to, v_dataset_status
   FROM public.mandal_versions mv
@@ -367,28 +377,28 @@ BEGIN
       USING ERRCODE = '23503';
   END IF;
 
-  -- 5. Assert same-anchor ownership
+  -- 4. Assert same-anchor ownership
   IF v_new_mandal_id <> p_mandal_id THEN
     RAISE EXCEPTION 'ANCHOR_MISMATCH: mandal_version % belongs to mandal %, not %',
       p_new_version_id, v_new_mandal_id, p_mandal_id
       USING ERRCODE = '23514';
   END IF;
 
-  -- 6. Enforce W012 Authority: Candidate version must belong to an OFFICIAL dataset
+  -- 5. Enforce W012 Authority: Candidate version must belong to an OFFICIAL dataset
   IF v_dataset_status <> 'OFFICIAL' THEN
     RAISE EXCEPTION 'AUTHORITY VIOLATION [ERR-W014-003]: Candidate version % belongs to dataset with status "%". Canonical current transition requires W012 "OFFICIAL" status.',
       p_new_version_id, v_dataset_status
       USING ERRCODE = '23514';
   END IF;
 
-  -- 7. Assert new version is eligible for currentness (valid_to must be NULL)
+  -- 6. Assert new version is eligible for currentness (valid_to must be NULL)
   IF v_new_valid_to IS NOT NULL THEN
     RAISE EXCEPTION 'INVALID_VERSION_STATE: Candidate version % has closed valid_to (%). Only open-ended versions can become current.',
       p_new_version_id, v_new_valid_to
       USING ERRCODE = '23514';
   END IF;
 
-  -- 8. No-op check if already current
+  -- 7. No-op check if already current
   IF v_old_version_id = p_new_version_id THEN
     RETURN jsonb_build_object(
       'status', 'NO_OP',
@@ -397,7 +407,7 @@ BEGIN
     );
   END IF;
 
-  -- 9. Deactivate old current version (if one exists)
+  -- 8. Deactivate old current version (if one exists)
   IF v_old_version_id IS NOT NULL THEN
     UPDATE public.mandal_versions
     SET is_current = false,
@@ -406,7 +416,7 @@ BEGIN
     WHERE id = v_old_version_id;
   END IF;
 
-  -- 10. Activate new version
+  -- 9. Activate new version
   UPDATE public.mandal_versions
   SET is_current = true,
       valid_from = COALESCE(p_effective_date, valid_from),
@@ -414,19 +424,20 @@ BEGIN
       updated_at = now()
   WHERE id = p_new_version_id;
 
-  -- 11. Point anchor to new version
+  -- 10. Point anchor to new version
   UPDATE public.mandals
   SET current_version_id = p_new_version_id,
       updated_at = now()
   WHERE id = p_mandal_id;
 
-  -- 12. Return structured audit receipt
+  -- 11. Return structured audit receipt (SESSION_USER and p_operator recorded as audit metadata)
   RETURN jsonb_build_object(
     'status', 'TRANSITION_COMPLETE',
     'mandal_id', p_mandal_id,
     'previous_version_id', v_old_version_id,
     'current_version_id', p_new_version_id,
     'effective_date', p_effective_date,
+    'session_user', SESSION_USER,
     'operator', p_operator,
     'provenance_id', p_provenance_id,
     'timestamp', now()
@@ -434,11 +445,11 @@ BEGIN
 END;
 $$;
 
--- Transfer ownership to non-login boundary owner
+-- Set ownership to dedicated non-login boundary owner
 ALTER FUNCTION public.fn_transition_mandal_current_version(TEXT, UUID, DATE, TEXT, UUID) 
   OWNER TO panin_boundary_definer;
 
--- Explicit ACL Configuration
+-- Explicit Declarative ACL Configuration
 REVOKE ALL ON FUNCTION public.fn_transition_mandal_current_version(TEXT, UUID, DATE, TEXT, UUID) FROM PUBLIC;
 REVOKE ALL ON FUNCTION public.fn_transition_mandal_current_version(TEXT, UUID, DATE, TEXT, UUID) FROM anon;
 REVOKE ALL ON FUNCTION public.fn_transition_mandal_current_version(TEXT, UUID, DATE, TEXT, UUID) FROM authenticated;
@@ -653,14 +664,7 @@ DECLARE
   v_new_valid_to DATE;
   v_dataset_status TEXT;
 BEGIN
-  -- 1. Defense-in-Depth Session Check (Evaluates authentic login session, NOT function owner)
-  IF SESSION_USER NOT IN ('service_role', 'panin_boundary_admin') THEN
-    RAISE EXCEPTION 'PERMISSION DENIED [ERR-W014-004]: Session user "%" is not authorized to execute canonical version transitions.',
-      SESSION_USER
-      USING ERRCODE = '42501'; -- insufficient_privilege
-  END IF;
-
-  -- 2. Narrow Provenance Existence Check: If provided, assert valid provenance record existence
+  -- 1. Narrow Provenance Existence Check: If provided, assert valid provenance record existence
   IF p_provenance_id IS NOT NULL THEN
     IF NOT EXISTS (
       SELECT 1 FROM public.provenance_records pr WHERE pr.id = p_provenance_id
@@ -671,7 +675,7 @@ BEGIN
     END IF;
   END IF;
 
-  -- 3. Lock the anchor row to serialize concurrent transitions
+  -- 2. Lock the anchor row to serialize concurrent transitions
   SELECT current_version_id INTO v_old_version_id
   FROM public.mandals
   WHERE id = p_mandal_id
@@ -682,7 +686,7 @@ BEGIN
       USING ERRCODE = '23503';
   END IF;
 
-  -- 4. Validate target new version exists, fetch properties and dataset status
+  -- 3. Validate target new version exists, fetch properties and dataset status
   SELECT mv.mandal_id, mv.valid_to, dv.default_status
   INTO v_new_mandal_id, v_new_valid_to, v_dataset_status
   FROM public.mandal_versions mv
@@ -694,28 +698,28 @@ BEGIN
       USING ERRCODE = '23503';
   END IF;
 
-  -- 5. Assert same-anchor ownership
+  -- 4. Assert same-anchor ownership
   IF v_new_mandal_id <> p_mandal_id THEN
     RAISE EXCEPTION 'ANCHOR_MISMATCH: mandal_version % belongs to mandal %, not %',
       p_new_version_id, v_new_mandal_id, p_mandal_id
       USING ERRCODE = '23514';
   END IF;
 
-  -- 6. Enforce W012 Authority: Candidate version must belong to an OFFICIAL dataset
+  -- 5. Enforce W012 Authority: Candidate version must belong to an OFFICIAL dataset
   IF v_dataset_status <> 'OFFICIAL' THEN
     RAISE EXCEPTION 'AUTHORITY VIOLATION [ERR-W014-003]: Candidate version % belongs to dataset with status "%". Canonical current transition requires W012 "OFFICIAL" status.',
       p_new_version_id, v_dataset_status
       USING ERRCODE = '23514';
   END IF;
 
-  -- 7. Assert new version is eligible for currentness (valid_to must be NULL)
+  -- 6. Assert new version is eligible for currentness (valid_to must be NULL)
   IF v_new_valid_to IS NOT NULL THEN
     RAISE EXCEPTION 'INVALID_VERSION_STATE: Candidate version % has closed valid_to (%). Only open-ended versions can become current.',
       p_new_version_id, v_new_valid_to
       USING ERRCODE = '23514';
   END IF;
 
-  -- 8. No-op check if already current
+  -- 7. No-op check if already current
   IF v_old_version_id = p_new_version_id THEN
     RETURN jsonb_build_object(
       'status', 'NO_OP',
@@ -724,7 +728,7 @@ BEGIN
     );
   END IF;
 
-  -- 9. Deactivate old current version (if one exists)
+  -- 8. Deactivate old current version (if one exists)
   IF v_old_version_id IS NOT NULL THEN
     UPDATE public.mandal_versions
     SET is_current = false,
@@ -733,7 +737,7 @@ BEGIN
     WHERE id = v_old_version_id;
   END IF;
 
-  -- 10. Activate new version
+  -- 9. Activate new version
   UPDATE public.mandal_versions
   SET is_current = true,
       valid_from = COALESCE(p_effective_date, valid_from),
@@ -741,19 +745,20 @@ BEGIN
       updated_at = now()
   WHERE id = p_new_version_id;
 
-  -- 11. Point anchor to new version
+  -- 10. Point anchor to new version
   UPDATE public.mandals
   SET current_version_id = p_new_version_id,
       updated_at = now()
   WHERE id = p_mandal_id;
 
-  -- 12. Return structured audit receipt
+  -- 11. Return structured audit receipt (SESSION_USER and p_operator recorded strictly as audit metadata)
   RETURN jsonb_build_object(
     'status', 'TRANSITION_COMPLETE',
     'mandal_id', p_mandal_id,
     'previous_version_id', v_old_version_id,
     'current_version_id', p_new_version_id,
     'effective_date', p_effective_date,
+    'session_user', SESSION_USER,
     'operator', p_operator,
     'provenance_id', p_provenance_id,
     'timestamp', now()
@@ -807,31 +812,33 @@ In accordance with Item 8 of the CTO directive, all assertions are classified as
 | **M3** | `DESIGNED / TO-BE VERIFIED` | Active version cannot be retired while referenced | `trg_guard_mandal_version_retirement` (DEFERRED) | `UPDATE mandal_versions SET is_current = false WHERE id = <referenced_id>;` | `ERR-W014-002 (23514 / check_violation)` | `tests/test_mandal_version_integrity.sql (M3)` |
 | **M4** | `DESIGNED / TO-BE VERIFIED` | Single current version per mandal | `uq_mandal_versions_single_current` partial unique index | `UPDATE mandal_versions SET is_current = true WHERE id = <second_version_id>;` | `23505 (unique_violation)` | `tests/test_mandal_version_integrity.sql (M4)` |
 | **M5** | `DESIGNED / TO-BE VERIFIED` | Direct invalid mutations fail-closed | Engine constraints + explicit trigger error codes | Execute uncoordinated ad-hoc SQL leaving divergent state. | `23514 / ERR-W014-XXX` | `tests/test_mandal_version_integrity.sql (M5)` |
-| **M6** | `DESIGNED / TO-BE VERIFIED` | Authorized transition succeeds atomically | `fn_transition_mandal_current_version()` with row locking | Execute transition function from authorized role with valid parameters. | `SUCCESS ('TRANSITION_COMPLETE')` | `tests/test_mandal_version_integrity.sql (M6)` |
+| **M6** | `DESIGNED / TO-BE VERIFIED` | Version transition via designated canonical application path succeeds atomically | `fn_transition_mandal_current_version()` with row locking | Call `fn_transition_mandal_current_version()` from authorized role (`service_role` or `panin_boundary_admin`) with valid parameters. | `SUCCESS ('TRANSITION_COMPLETE')` | `tests/test_mandal_version_integrity.sql (M6)` |
 | **M7** | `DESIGNED / TO-BE VERIFIED` | Candidate versions quarantined from legal truth | Compound view filters (`is_current = true AND default_status = 'OFFICIAL'`) | Query canonical view `v_current_mandals` with candidate data seeded. | `ZERO candidate rows returned` | `tests/test_mandal_version_integrity.sql (M7)` |
 | **M8** | `DESIGNED / TO-BE VERIFIED` | `current_version_id` cannot reference non-OFFICIAL dataset | `trg_guard_mandal_current_version` joining `dataset_versions` | `UPDATE mandals SET current_version_id = <unverified_dataset_version_id>;` | `ERR-W014-003 (23514 / check_violation)` | `tests/test_mandal_version_integrity.sql (M8)` |
 | **M9** | `DESIGNED / TO-BE VERIFIED` | `is_current = true` with `valid_to IS NOT NULL` rejected | `chk_mandal_versions_current_invariants` | `UPDATE mandal_versions SET is_current = true WHERE valid_to IS NOT NULL;` | `23514 (check_violation)` | `tests/test_mandal_version_integrity.sql (M9)` |
 | **M10** | `DESIGNED / TO-BE VERIFIED` | Directly closing a current version is rejected | `chk_mandal_versions_current_invariants` + Layer 3 trigger | `UPDATE mandal_versions SET valid_to = '2026-01-01' WHERE is_current = true;` | `23514 (check_violation)` | `tests/test_mandal_version_integrity.sql (M10)` |
 | **M11** | `DESIGNED / TO-BE VERIFIED` | Transition to authoritative open-ended version succeeds | `fn_transition_mandal_current_version()` | Execute transition function with `valid_to IS NULL` and `default_status = 'OFFICIAL'`. | `SUCCESS ('TRANSITION_COMPLETE')` | `tests/test_mandal_version_integrity.sql (M11)` |
 | **M12** | `DESIGNED / TO-BE VERIFIED` | Transition to UNVERIFIED candidate version rejected | `fn_transition_mandal_current_version()` checking `v_dataset_status` | Call transition function pointing to candidate version from UNVERIFIED dataset. | `ERR-W014-003 (23514 / check_violation)` | `tests/test_mandal_version_integrity.sql (M12)` |
-| **M13** | `DESIGNED / TO-BE VERIFIED` | 5-Role privilege boundary & function ownership verified | REVOKE FROM PUBLIC/anon/authenticated; GRANT TO service_role, panin_boundary_admin; OWNER panin_boundary_definer | Execute test matrix across all 5 roles: (1) PUBLIC $\to$ 42501, (2) anon $\to$ 42501, (3) authenticated $\to$ 42501, (4) service_role $\to$ SUCCESS, (5) panin_boundary_admin $\to$ SUCCESS. Verify `prosecdef=true` and `owner='panin_boundary_definer'`. | `42501 (insufficient_privilege) for unprivileged; SUCCESS for authorized` | `tests/test_mandal_version_integrity.sql (M13)` |
-| **M14** | `DESIGNED / TO-BE VERIFIED` | `p_operator` carries ZERO authorization power | Authorization checked purely via PostgreSQL ACLs and session credentials | Execute 3-case matrix: (1) unauth caller + `p_operator='admin'` $\to$ 42501; (2) auth caller + `p_operator='random'` $\to$ SUCCESS; (3) auth caller + `p_operator='admin'` $\to$ SUCCESS (authorized purely by caller role). | `42501 for Case 1; SUCCESS for Cases 2 and 3` | `tests/test_mandal_version_integrity.sql (M14)` |
-| **M15** | `DESIGNED / TO-BE VERIFIED` | Narrow provenance existence validated; statutory evidence delegated to W012 | If `p_provenance_id` supplied, FK existence in `provenance_records` verified; primary evidence validation delegated to W012 | Call transition function with non-existent `p_provenance_id`; observe foreign key existence failure. | `ERR-W014-005 (23503 / foreign_key_violation)` | `tests/test_mandal_version_integrity.sql (M15)` |
+| **M13** | `DESIGNED / TO-BE VERIFIED` | Privilege boundary enforced via PostgreSQL EXECUTE ACLs; zero dependence on CURRENT_USER/SESSION_USER | REVOKE FROM PUBLIC/anon/authenticated; GRANT TO service_role, panin_boundary_admin; OWNER TO panin_boundary_definer (NOLOGIN); base table DML restricted | 1. Verify `pg_proc`: `prosecdef=true`, `owner='panin_boundary_definer'`. 2. Test 5-role execution matrix: PUBLIC $\to$ 42501, anon $\to$ 42501, authenticated $\to$ 42501, service_role $\to$ SUCCESS, panin_boundary_admin $\to$ SUCCESS. 3. Verify function source contains zero `CURRENT_USER` or `SESSION_USER` authorization branches. 4. Inspect base-table privileges confirming unprivileged roles have zero DML. | `42501 for unprivileged roles; SUCCESS for authorized roles` | `tests/test_mandal_version_integrity.sql (M13)` |
+| **M14** | `DESIGNED / TO-BE VERIFIED` | `p_operator` carries ZERO authorization power (audit metadata only) | Authorization checked purely via PostgreSQL EXECUTE ACLs prior to function entry; `p_operator` value never inspected for authorization | Execute 3-case matrix: (1) unauth caller + `p_operator='admin'` $\to$ 42501; (2) auth caller + `p_operator='random'` $\to$ SUCCESS; (3) auth caller + `p_operator='admin'` $\to$ SUCCESS (authorized purely by caller role, never because `p_operator` says admin). | `42501 for Case 1; SUCCESS for Cases 2 and 3` | `tests/test_mandal_version_integrity.sql (M14)` |
+| **M15** | `DESIGNED / TO-BE VERIFIED` | Provenance semantics: optional `p_provenance_id` existence validated; statutory evidence delegated to W012 | If `p_provenance_id` supplied, FK existence in `provenance_records` verified; primary evidence validation delegated to W012 | Call transition function with non-existent `p_provenance_id`; observe foreign key existence failure. | `ERR-W014-005 (23503 / foreign_key_violation)` | `tests/test_mandal_version_integrity.sql (M15)` |
 
 ---
 
 ## 10. Governance Summary & Final Checklist
 
 - [x] Corrected `SECURITY DEFINER` execution model: eliminated `CURRENT_USER` caller authentication.
+- [x] Eliminated `SESSION_USER` authorization check from procedural function code; authorization is enforced purely and declaratively via PostgreSQL EXECUTE ACLs.
+- [x] Recorded `SESSION_USER` and `p_operator` strictly as audit metadata in structured return JSONB.
 - [x] Defined dedicated non-login function owner: `panin_boundary_definer` (`NOLOGIN`).
 - [x] Enforced declarative PostgreSQL EXECUTE ACLs: revoked from `PUBLIC`, `anon`, `authenticated`; granted exclusively to `service_role`, `panin_boundary_admin`.
-- [x] Defense-in-depth session check evaluates `SESSION_USER`, not `CURRENT_USER`.
+- [x] Resolved "sole canonical path" contradiction: accurately designated `fn_transition_mandal_current_version` as the designated canonical application transition path, while documenting base-table DML privilege realities and Layers 1–5 defense-in-depth constraints.
 - [x] Formulated W012 Contract Inheritance boundary: W014 trusts W012 `OFFICIAL` status and never duplicates evidence promotion.
 - [x] Decoupled `p_operator` from authorization: verified across 3-case test matrix that `p_operator` carries zero privilege.
 - [x] Narrowed M15 provenance semantics to optional `provenance_records` existence check.
 - [x] Corrected invariant terminology to "Canonical Pointer $\to$ Active Version Invariant".
 - [x] Preserved 5-layer integrity architecture (composite FK, Layer 2 anchor trigger with W012 check, Layer 3 retirement trigger, Layer 4 unique index, Layer 5 check constraint).
-- [x] Expanded Acceptance Matrix M1–M15 with redesigned M13 and M14; all classified strictly as `DESIGNED / TO-BE VERIFIED`.
+- [x] Expanded Acceptance Matrix M1–M15 with rewritten M13 and M14; all classified strictly as `DESIGNED / TO-BE VERIFIED`.
 - [x] Preserved evidence qualifications for 23 discrepancies (Masaipet G.O. 110, 13 Mandals Gazette Sep 2022, 9 Mandals `UNK-16-01` prohibited from initial official seeding).
 - [x] Preserved all baseline architectural decisions (stable anchor, composite FK, `ON DELETE RESTRICT`, partial unique index, fail-closed `is_current DEFAULT false`, W015 relationships unchanged).
 - [x] Zero application code changes, zero database mutations, zero migrations created.
