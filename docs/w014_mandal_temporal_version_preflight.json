@@ -1,10 +1,10 @@
 {
-  "schema_version": "2.7.0",
-  "job": "W014-MANDAL-PREFLIGHT-SECURITY-MICRO-CORRECTION",
-  "title": "W014 Mandal Temporal Version Model Preflight (Exact Function Signature & Catalog PUBLIC ACL Verification)",
-  "timestamp": "2026-09-24T22:15:00+05:30",
-  "baseline_commit": "5722c21744438b77bfc9b4a6eaea8266496fcce8",
-  "authority": "Independent CTO / Co-founder Directive W014 Final Security Preflight Micro-Correction Round",
+  "schema_version": "2.8.0",
+  "job": "W014-MANDAL-PREFLIGHT-COLUMN-PRIVILEGE-CORRECTION",
+  "title": "W014 Mandal Temporal Version Model Preflight (Definitive Column-Level UPDATE Privilege Verification)",
+  "timestamp": "2026-09-24T22:30:00+05:30",
+  "baseline_commit": "82d68e6c77ae2dd6e95a6ce264b288e7246ce4ee",
+  "authority": "Independent CTO / Co-founder Directive W014 Final CTO Micro-Correction (Column-Level Privilege Verification)",
   "authoritative_state": {
     "w015": "ACCEPTED_COMPLETE",
     "w015_b1": "ACCEPTED_COMPLETE",
@@ -15,7 +15,7 @@
     "w016_c1_acquisition": "ACCEPTED_COMPLETE",
     "w016_c2_reconciliation": "ACCEPTED",
     "w016_c3_preflight": "CONDITIONALLY_ACCEPTED",
-    "w014_mandal_version_preflight": "FINAL_PRIVILEGE_DETAIL_SUBMISSION",
+    "w014_mandal_version_preflight": "COLUMN_PRIVILEGE_CORRECTION_SUBMISSION",
     "migration_044": "STRICTLY_NOT_AUTHORIZED",
     "database_mutations": "STRICTLY_NOT_AUTHORIZED",
     "geometry_ingestion": "STRICTLY_NOT_AUTHORIZED",
@@ -171,7 +171,24 @@
           "Any privilege on unrelated application or auth tables"
         ],
         "explicit_least_privilege_verification": {
-          "no_unintended_privileges_check": "Inspect has_table_privilege('panin_boundary_definer', tbl, priv) for INSERT, DELETE, TRUNCATE, REFERENCES, TRIGGER across dataset_versions, provenance_records, mandals, mandal_versions; assert all evaluate to false.",
+          "table_level_privileges_check": "Inspect has_table_privilege('panin_boundary_definer', tbl, priv) for INSERT, DELETE, TRUNCATE, REFERENCES, TRIGGER across dataset_versions, provenance_records, mandals, mandal_versions; assert all evaluate to false. SELECT evaluates to true across all 4 tables.",
+          "column_level_privileges_check": {
+            "mandals": {
+              "permitted_columns": ["current_version_id", "updated_at"],
+              "prohibited_columns": [
+                "id", "name", "local_name", "state_code", "district", "lgd_code", "type", "headquarters", "area_sq_km", "population_2011", "centroid", "boundary", "district_id", "primary_dataset_version_id", "created_at"
+              ],
+              "assertion": "has_column_privilege('panin_boundary_definer', 'public.mandals', col, 'UPDATE') evaluates to TRUE ONLY for permitted_columns and FALSE for all 15 prohibited_columns; exclusion query asserts 0 rows with UPDATE on columns NOT IN ('current_version_id', 'updated_at')."
+            },
+            "mandal_versions": {
+              "permitted_columns": ["is_current", "valid_from", "valid_to", "updated_at"],
+              "prohibited_columns": [
+                "id", "mandal_id", "district_id", "version_code", "name", "name_te", "headquarters", "lgd_code", "census_code_2011", "primary_dataset_version_id", "metadata", "created_at"
+              ],
+              "assertion": "has_column_privilege('panin_boundary_definer', 'public.mandal_versions', col, 'UPDATE') evaluates to TRUE ONLY for permitted_columns and FALSE for all 12 prohibited_columns; exclusion query asserts 0 rows with UPDATE on columns NOT IN ('is_current', 'valid_from', 'valid_to', 'updated_at')."
+            }
+          },
+          "no_other_column_grantable_check": "Assert that no other column on public.mandals or public.mandal_versions is UPDATE-grantable to panin_boundary_definer via information_schema.column_privileges or pg_attribute ACL inspection.",
           "no_inherited_memberships_check": "Query pg_auth_members where member = 'panin_boundary_definer'::regrole; assert count = 0 (no role inheritance / privilege escalation).",
           "table_ownership_check": "Query pg_class where relname IN ('mandals', 'mandal_versions', 'dataset_versions', 'provenance_records'); assert relowner::regrole != 'panin_boundary_definer'::regrole (is_table_owner = false).",
           "no_unrelated_schema_usage_check": "Query information_schema.schema_privileges; assert usage granted ONLY on schema public, zero CREATE on any schema."
@@ -336,10 +353,10 @@
     {
       "assertion_id": "M13",
       "status": "DESIGNED / TO-BE VERIFIED",
-      "requirement": "Privilege boundary enforced via PostgreSQL EXECUTE ACLs: PUBLIC ACL verified via catalog inspection, session roles tested at runtime, definer least-privilege & zero unintended privileges verified, and base-table DML inspected across all 4 classes; zero CURRENT_USER/SESSION_USER authorization dependence",
-      "enforcement_mechanism": "Declarative PostgreSQL ACLs (REVOKE FROM PUBLIC, anon, authenticated; GRANT TO service_role, panin_boundary_admin); dedicated NOLOGIN owner with exact minimum table grants; zero procedural role checks; direct DML restricted for boundary admin; service_role direct DML classified as infrastructure exception.",
-      "test_design": "1. CLASS A (PUBLIC / anon / authenticated): (a) PUBLIC: Catalog ACL inspection only via pg_proc and aclexplode(p.proacl). Query: SELECT NOT EXISTS (SELECT 1 FROM pg_proc p CROSS JOIN aclexplode(p.proacl) acl WHERE p.oid = 'public.fn_transition_mandal_current_version(text,uuid,date,text,uuid)'::regprocedure AND acl.grantee = 0 AND acl.privilege_type = 'EXECUTE'); asserts TRUE (0 rows for grantee=0). (Do NOT attempt SET ROLE PUBLIC or runtime execution as PUBLIC; PUBLIC is an ACL principal, not an invokable session role). (b) anon & authenticated: Runtime session tests (SET ROLE anon; SET ROLE authenticated;) attempting to execute SELECT public.fn_transition_mandal_current_version(...) fail with 42501 (insufficient_privilege). Direct base-table DML strictly denied. 2. CLASS B (panin_boundary_admin): SET ROLE panin_boundary_admin; EXECUTE granted (valid transition succeeds returning TRANSITION_COMPLETE receipt); direct table DML (INSERT, UPDATE, DELETE) on mandals and mandal_versions is denied (42501). 3. CLASS C (service_role): SET ROLE service_role; EXECUTE granted; direct base-table DML inspected and explicitly classified as a trusted infrastructure/backend exception outside the application path guarantee, constrained physically by Layers 1-5 engine integrity triggers. 4. CLASS D (panin_boundary_definer): NOLOGIN owner; not treated as a caller; catalog inspection verifies: (a) pg_proc: prosecdef=true, proowner='panin_boundary_definer'::regrole; (b) pg_roles: rolcanlogin=false, rolsuper=false, rolcreatedb=false, rolcreaterole=false; (c) pg_auth_members: 0 inherited memberships; (d) Effective table privileges: has_table_privilege('panin_boundary_definer', tbl, priv) is true ONLY for SELECT on dataset_versions, provenance_records; SELECT, UPDATE (current_version_id, updated_at) on mandals; SELECT, UPDATE (is_current, valid_from, valid_to, updated_at) on mandal_versions; assert INSERT, DELETE, TRUNCATE, REFERENCES, TRIGGER all return false across all 4 tables; (e) Table ownership: is_table_owner=false across all tables. 5. Inspect function source: Assert zero CURRENT_USER or SESSION_USER authorization branches.",
-      "expected_sqlstate_or_error": "ACL: PUBLIC has no EXECUTE (grantee=0 absent from proacl); Runtime: 42501 for unprivileged session roles, SUCCESS for authorized roles, 42501 for admin direct DML; Definer: exact minimum privileges verified, zero unintended privileges, zero inherited roles.",
+      "requirement": "Privilege boundary enforced via PostgreSQL EXECUTE ACLs: PUBLIC ACL verified via catalog inspection, session roles tested at runtime, definer least-privilege & zero unintended privileges verified (table-level via has_table_privilege, column-level via has_column_privilege), and base-table DML inspected across all 4 classes; zero CURRENT_USER/SESSION_USER authorization dependence",
+      "enforcement_mechanism": "Declarative PostgreSQL ACLs (REVOKE FROM PUBLIC, anon, authenticated; GRANT TO service_role, panin_boundary_admin); dedicated NOLOGIN owner with exact minimum table and column-level grants; zero procedural role checks; direct DML restricted for boundary admin; service_role direct DML classified as infrastructure exception.",
+      "test_design": "1. CLASS A (PUBLIC / anon / authenticated): (a) PUBLIC: Catalog ACL inspection only via pg_proc and aclexplode(p.proacl). Query: SELECT NOT EXISTS (SELECT 1 FROM pg_proc p CROSS JOIN aclexplode(p.proacl) acl WHERE p.oid = 'public.fn_transition_mandal_current_version(text,uuid,date,text,uuid)'::regprocedure AND acl.grantee = 0 AND acl.privilege_type = 'EXECUTE'); asserts TRUE (0 rows for grantee=0). (Do NOT attempt SET ROLE PUBLIC or runtime execution as PUBLIC; PUBLIC is an ACL principal, not an invokable session role). (b) anon & authenticated: Runtime session tests (SET ROLE anon; SET ROLE authenticated;) attempting to execute SELECT public.fn_transition_mandal_current_version(...) fail with 42501 (insufficient_privilege). Direct base-table DML strictly denied. 2. CLASS B (panin_boundary_admin): SET ROLE panin_boundary_admin; EXECUTE granted (valid transition succeeds returning TRANSITION_COMPLETE receipt); direct table DML (INSERT, UPDATE, DELETE) on mandals and mandal_versions is denied (42501). 3. CLASS C (service_role): SET ROLE service_role; EXECUTE granted; direct base-table DML inspected and explicitly classified as a trusted infrastructure/backend exception outside the application path guarantee, constrained physically by Layers 1-5 engine integrity triggers. 4. CLASS D (panin_boundary_definer): NOLOGIN owner; not treated as a caller; catalog inspection verifies: (a) pg_proc: prosecdef=true, proowner='panin_boundary_definer'::regrole; (b) pg_roles: rolcanlogin=false, rolsuper=false, rolcreatedb=false, rolcreaterole=false; (c) pg_auth_members: 0 inherited memberships; (d) Table-level privileges via has_table_privilege('panin_boundary_definer', tbl, priv): SELECT is true on dataset_versions, provenance_records, mandals, mandal_versions; INSERT, DELETE, TRUNCATE, REFERENCES, TRIGGER evaluate to false across all 4 tables; (e) Column-level UPDATE privileges via has_column_privilege('panin_boundary_definer', tbl, col, 'UPDATE'): on public.mandals, returns true for current_version_id and updated_at, returns false for all other 15 columns (id, name, local_name, state_code, district, lgd_code, type, headquarters, area_sq_km, population_2011, centroid, boundary, district_id, primary_dataset_version_id, created_at); on public.mandal_versions, returns true for is_current, valid_from, valid_to, updated_at, returns false for all other 12 columns (id, mandal_id, district_id, version_code, name, name_te, headquarters, lgd_code, census_code_2011, primary_dataset_version_id, metadata, created_at); exclusion queries assert zero other columns have UPDATE granted; (f) Table ownership: is_table_owner=false across all tables. 5. Inspect function source: Assert zero CURRENT_USER or SESSION_USER authorization branches.",
+      "expected_sqlstate_or_error": "ACL: PUBLIC has no EXECUTE (grantee=0 absent from proacl); Runtime: 42501 for unprivileged session roles, SUCCESS for authorized roles, 42501 for admin direct DML; Definer: exact minimum table privileges and column-level UPDATE privileges verified, zero unintended privileges, zero inherited roles.",
       "evidence_artifact": "tests/test_mandal_version_integrity.sql (Test M13)"
     },
     {
