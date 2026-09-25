@@ -167,12 +167,13 @@ BEGIN
     WHERE p.oid = 'public.fn_transition_mandal_current_version(text,uuid,date,text,uuid)'::regprocedure
       AND p.prosecdef = true
       AND p.proowner = 'panin_boundary_definer'::regrole
+      AND array_to_string(p.proconfig, ',') ILIKE '%search_path=public, pg_temp%'
   ) THEN
-    RAISE EXCEPTION 'Check 18 Failed: fn_transition_mandal_current_version(text,uuid,date,text,uuid) missing, not SECURITY DEFINER, or wrong owner';
+    RAISE EXCEPTION 'Check 18 Failed: fn_transition_mandal_current_version(text,uuid,date,text,uuid) missing, not SECURITY DEFINER, wrong search_path, or wrong owner';
   END IF;
-  RAISE NOTICE 'Check 18 PASS: Transition function identity, SECURITY DEFINER, and owner verified';
+  RAISE NOTICE 'Check 18 PASS: Transition function identity, SECURITY DEFINER, search_path, and owner verified';
 
-  -- Check 19: panin_boundary_definer role attributes and memberships
+  -- Check 19: panin_boundary_definer role attributes, memberships, and schema privileges
   IF NOT EXISTS (
     SELECT 1 FROM pg_roles 
     WHERE rolname = 'panin_boundary_definer' 
@@ -186,6 +187,13 @@ BEGIN
   IF EXISTS (SELECT 1 FROM pg_auth_members WHERE member = 'panin_boundary_definer'::regrole) THEN
     RAISE EXCEPTION 'Check 19 Failed: panin_boundary_definer inherits unintended role memberships';
   END IF;
+  -- Verify schema privileges: USAGE required, CREATE must NOT be present
+  IF NOT has_schema_privilege('panin_boundary_definer', 'public', 'USAGE') THEN
+    RAISE EXCEPTION 'Check 19 Failed: panin_boundary_definer missing required USAGE on schema public';
+  END IF;
+  IF has_schema_privilege('panin_boundary_definer', 'public', 'CREATE') THEN
+    RAISE EXCEPTION 'Check 19 Failed: panin_boundary_definer retains unintended permanent CREATE on schema public';
+  END IF;
   -- Empirical check: verify CURRENT_USER cannot SET ROLE to panin_boundary_definer (no temporary delegation leak)
   BEGIN
     SET LOCAL ROLE panin_boundary_definer;
@@ -195,7 +203,7 @@ BEGIN
     WHEN insufficient_privilege THEN
       NULL; -- Expected: fail-closed because temporary migration delegation was revoked
   END;
-  RAISE NOTICE 'Check 19 PASS: panin_boundary_definer role attributes, 0 memberships, and clean SET ROLE revocation verified';
+  RAISE NOTICE 'Check 19 PASS: panin_boundary_definer role attributes, 0 memberships, USAGE-only schema access, and clean SET ROLE revocation verified';
 
   -- Check 20: Table-level privileges on panin_boundary_definer
   IF NOT (

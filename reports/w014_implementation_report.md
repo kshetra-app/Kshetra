@@ -44,11 +44,11 @@ Key implementation guarantees delivered:
 
 | File Path | Purpose | SHA-256 Checksum |
 |---|---|---|
-| `supabase/migrations/041_geography_versioning_and_temporal_validity.sql` | Canonical Migration 041 | `7f20b798b167942c440a5cf3c48001bdd7980e8bdbade4795f3a8457379043e7` |
-| `supabase/staging_migration_package_041.sql` | Atomic Staging Migration Package | `7f20b798b167942c440a5cf3c48001bdd7980e8bdbade4795f3a8457379043e7` |
-| `supabase/verify_staging_migration_package_041.sql` | 23-Check SQL Verification Script | `ee7514bac8a6010e03606d5c7bc3d3e7ff8e25d7bb44cc3356284cd897a6dd6e` |
+| `supabase/migrations/041_geography_versioning_and_temporal_validity.sql` | Canonical Migration 041 | `45a0e87f9143687af7076432ee3d3454d76bd717c1f4505b4c0d07ae269ba529` |
+| `supabase/staging_migration_package_041.sql` | Atomic Staging Migration Package | `45a0e87f9143687af7076432ee3d3454d76bd717c1f4505b4c0d07ae269ba529` |
+| `supabase/verify_staging_migration_package_041.sql` | 23-Check SQL Verification Script | `868decc7e08202f7bdf98f320982b9c360c8dee19deaae3bfb8b641ca70290da` |
 | `supabase/rollback_staging_migration_package_041.sql` | Deterministic Rollback Package | `29ae29413c9655d8c8974534f3faecb7056d12968f53c2a0136451345b05caf2` |
-| `scripts/verify_w014_temporal_validity.mjs` | Static Preflight & Integrity Validator | `0751499929b51eab98c25332fbe79f063917de1c1e3c377131fece526ec34b55` |
+| `scripts/verify_w014_temporal_validity.mjs` | Static Preflight & Integrity Validator | `35266c7f231fabbce92c73ea662b721e81e735929cc56bfb1bc5c1f750abb707` |
 | `tests/test_mandal_version_integrity.mjs` | Live Staging M1–M15 Acceptance Test Battery | `9e4d4e3ebb0a9009c7d70289792f90eff7a0ddcf07824412098587acca7a34ba` |
 | `tests/test_dataset_version_reconciliation.mjs` | 10-field W014 dataset-definition reconciliation Semantic Test | `844c7fd72b675fb8461029d7d9a3c75563710e71e5108625b11b79e940ed7dab` |
 | `reports/w014_staging_migration_application_package.md` | Staging Application Package Guide | *Recorded in git tree* |

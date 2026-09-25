@@ -89,13 +89,20 @@ for (const file of migrationFiles) {
 
   // Security Definer Role Bootstrap & Clean Ownership Hand-off Assertions
   check(`Temporary GRANT panin_boundary_definer TO CURRENT_USER present in ${file}`, content.includes('GRANT panin_boundary_definer TO CURRENT_USER;'));
+  check(`Temporary GRANT CREATE ON SCHEMA public TO panin_boundary_definer present in ${file}`, content.includes('GRANT CREATE ON SCHEMA public TO panin_boundary_definer;'));
   check(`ALTER FUNCTION ... OWNER TO panin_boundary_definer present in ${file}`, content.includes('OWNER TO panin_boundary_definer;'));
+  check(`REVOKE CREATE ON SCHEMA public FROM panin_boundary_definer cleanup present in ${file}`, content.includes('REVOKE CREATE ON SCHEMA public FROM panin_boundary_definer;'));
   check(`REVOKE panin_boundary_definer FROM CURRENT_USER cleanup present in ${file}`, content.includes('REVOKE panin_boundary_definer FROM CURRENT_USER;'));
 
-  const grantIdx = content.indexOf('GRANT panin_boundary_definer TO CURRENT_USER;');
+  const grantRoleIdx = content.indexOf('GRANT panin_boundary_definer TO CURRENT_USER;');
+  const grantSchemaIdx = content.indexOf('GRANT CREATE ON SCHEMA public TO panin_boundary_definer;');
   const ownerIdx = content.indexOf('OWNER TO panin_boundary_definer;');
-  const revokeIdx = content.indexOf('REVOKE panin_boundary_definer FROM CURRENT_USER;');
-  check(`Strict transactional bootstrap ordering (GRANT < OWNER < REVOKE) in ${file}`, grantIdx !== -1 && ownerIdx !== -1 && revokeIdx !== -1 && grantIdx < ownerIdx && ownerIdx < revokeIdx);
+  const revokeSchemaIdx = content.indexOf('REVOKE CREATE ON SCHEMA public FROM panin_boundary_definer;');
+  const revokeRoleIdx = content.indexOf('REVOKE panin_boundary_definer FROM CURRENT_USER;');
+  check(`Strict transactional bootstrap ordering (GRANTS < OWNER < REVOKES) in ${file}`,
+    grantRoleIdx !== -1 && grantSchemaIdx !== -1 && ownerIdx !== -1 && revokeSchemaIdx !== -1 && revokeRoleIdx !== -1 &&
+    grantRoleIdx < ownerIdx && grantSchemaIdx < ownerIdx && ownerIdx < revokeSchemaIdx && ownerIdx < revokeRoleIdx
+  );
 }
 
 const verifyFile = 'supabase/verify_staging_migration_package_041.sql';
@@ -104,9 +111,10 @@ if (fs.existsSync(verifyFile)) {
   check(`No BOM in ${verifyFile}`, !content.startsWith('\uFEFF'));
   check(`Contains DO $$ block in ${verifyFile}`, content.includes('DO $$') && content.includes('END $$;'));
   check(`Contains Check 10 PASS in ${verifyFile}`, content.includes('Check 10 PASS'));
-  check(`Contains Check 18 PASS in ${verifyFile}`, content.includes('Check 18 PASS: Transition function identity, SECURITY DEFINER, and owner verified'));
-  check(`Contains Check 19 PASS in ${verifyFile}`, content.includes('Check 19 PASS: panin_boundary_definer role attributes, 0 memberships, and clean SET ROLE revocation verified'));
+  check(`Contains Check 18 PASS in ${verifyFile}`, content.includes('Check 18 PASS: Transition function identity, SECURITY DEFINER, search_path, and owner verified'));
+  check(`Contains Check 19 PASS in ${verifyFile}`, content.includes('Check 19 PASS: panin_boundary_definer role attributes, 0 memberships, USAGE-only schema access, and clean SET ROLE revocation verified'));
   check(`Check 19 contains empirical SET LOCAL ROLE test in ${verifyFile}`, content.includes('SET LOCAL ROLE panin_boundary_definer;') && content.includes('WHEN insufficient_privilege THEN'));
+  check(`Check 19 verifies USAGE-only schema access in ${verifyFile}`, content.includes("has_schema_privilege('panin_boundary_definer', 'public', 'USAGE')") && content.includes("has_schema_privilege('panin_boundary_definer', 'public', 'CREATE')"));
   check(`Contains Check 23 PASS in ${verifyFile}`, content.includes('Check 23 PASS'));
 }
 
