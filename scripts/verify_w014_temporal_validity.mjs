@@ -83,8 +83,15 @@ for (const file of migrationFiles) {
   check(`Exact 5-param signature fn_transition_mandal_current_version present in ${file}`, content.includes('fn_transition_mandal_current_version(') && content.includes('p_effective_date DATE'));
   check(`Definer column-level UPDATE grants on mandals present in ${file}`, content.includes('GRANT SELECT, UPDATE (current_version_id, updated_at) ON TABLE public.mandals TO panin_boundary_definer;'));
   check(`Definer column-level UPDATE grants on mandal_versions present in ${file}`, content.includes('GRANT SELECT, UPDATE (is_current, valid_from, valid_to, updated_at) ON TABLE public.mandal_versions TO panin_boundary_definer;'));
+  check(`Zero INSERT grants to panin_boundary_definer on mandal_versions in ${file}`,
+    !/GRANT\s+[^;]*\bINSERT\b[^;]*\bON\s+(TABLE\s+)?(public\.)?mandal_versions\b[^;]*\bTO\s+panin_boundary_definer\b/i.test(content) &&
+    !/GRANT\s+[^;]*\bINSERT\b[^;]*\bTO\s+panin_boundary_definer\b/i.test(content)
+  );
   check(`REVOKE ALL FROM PUBLIC on transition function present in ${file}`, content.includes('REVOKE ALL ON FUNCTION public.fn_transition_mandal_current_version(TEXT, UUID, DATE, TEXT, UUID) FROM PUBLIC;'));
+  check(`REVOKE ALL FROM anon on transition function present in ${file}`, content.includes('REVOKE ALL ON FUNCTION public.fn_transition_mandal_current_version(TEXT, UUID, DATE, TEXT, UUID) FROM anon;'));
+  check(`REVOKE ALL FROM authenticated on transition function present in ${file}`, content.includes('REVOKE ALL ON FUNCTION public.fn_transition_mandal_current_version(TEXT, UUID, DATE, TEXT, UUID) FROM authenticated;'));
   check(`GRANT EXECUTE TO service_role present in ${file}`, content.includes('GRANT EXECUTE ON FUNCTION public.fn_transition_mandal_current_version(TEXT, UUID, DATE, TEXT, UUID) TO service_role;'));
+  check(`GRANT EXECUTE TO panin_boundary_admin present in ${file}`, content.includes('GRANT EXECUTE ON FUNCTION public.fn_transition_mandal_current_version(TEXT, UUID, DATE, TEXT, UUID) TO panin_boundary_admin;'));
   check(`RLS enabled on mandal_versions in ${file}`, content.includes('ALTER TABLE public.mandal_versions ENABLE ROW LEVEL SECURITY;'));
 
   // Security Definer Role Bootstrap & Clean Ownership Hand-off Assertions
@@ -115,6 +122,17 @@ if (fs.existsSync(verifyFile)) {
   check(`Contains Check 19 PASS in ${verifyFile}`, content.includes('Check 19 PASS: panin_boundary_definer role attributes, 0 memberships, USAGE-only schema access, and clean SET ROLE revocation verified'));
   check(`Check 19 contains empirical SET LOCAL ROLE test in ${verifyFile}`, content.includes('SET LOCAL ROLE panin_boundary_definer;') && content.includes('WHEN insufficient_privilege THEN'));
   check(`Check 19 verifies USAGE-only schema access in ${verifyFile}`, content.includes("has_schema_privilege('panin_boundary_definer', 'public', 'USAGE')") && content.includes("has_schema_privilege('panin_boundary_definer', 'public', 'CREATE')"));
+  check(`Contains Check 20 PASS in ${verifyFile}`, content.includes('Check 20 PASS'));
+  check(`Check 20 verifies mandal_versions INSERT = FALSE in ${verifyFile}`, content.includes("has_table_privilege('panin_boundary_definer', 'public.mandal_versions', 'INSERT')") && content.includes('mandal_versions INSERT = FALSE'));
+  check(`Contains Check 21 PASS in ${verifyFile}`, content.includes('Check 21 PASS'));
+  check(`Contains Check 22 PASS in ${verifyFile}`, content.includes('Check 22 PASS'));
+  check(`Check 22 verifies complete 5-actor EXECUTE ACL in ${verifyFile}`,
+    content.includes("has_function_privilege('service_role'") &&
+    content.includes("has_function_privilege('panin_boundary_admin'") &&
+    content.includes("has_function_privilege('public'") &&
+    content.includes("has_function_privilege('anon'") &&
+    content.includes("has_function_privilege('authenticated'")
+  );
   check(`Contains Check 23 PASS in ${verifyFile}`, content.includes('Check 23 PASS'));
 }
 

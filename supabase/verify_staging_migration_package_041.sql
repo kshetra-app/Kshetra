@@ -214,14 +214,39 @@ BEGIN
   ) THEN
     RAISE EXCEPTION 'Check 20 Failed: panin_boundary_definer missing table-level SELECT on required tables';
   END IF;
+
+  -- Explicit assertion: mandal_versions INSERT = FALSE
+  IF has_table_privilege('panin_boundary_definer', 'public.mandal_versions', 'INSERT') THEN
+    RAISE EXCEPTION 'Check 20 Failed: panin_boundary_definer possesses prohibited INSERT privilege on public.mandal_versions (mandal_versions INSERT must be FALSE)';
+  END IF;
+
+  -- Prohibit all other non-SELECT table-level privileges across all boundary domain tables
+  IF has_table_privilege('panin_boundary_definer', 'public.mandal_versions', 'DELETE') OR
+     has_table_privilege('panin_boundary_definer', 'public.mandal_versions', 'TRUNCATE') OR
+     has_table_privilege('panin_boundary_definer', 'public.mandal_versions', 'REFERENCES') OR
+     has_table_privilege('panin_boundary_definer', 'public.mandal_versions', 'TRIGGER') OR
+     has_table_privilege('panin_boundary_definer', 'public.mandals', 'INSERT') OR
+     has_table_privilege('panin_boundary_definer', 'public.mandals', 'DELETE') OR
+     has_table_privilege('panin_boundary_definer', 'public.mandals', 'TRUNCATE') OR
+     has_table_privilege('panin_boundary_definer', 'public.mandals', 'REFERENCES') OR
+     has_table_privilege('panin_boundary_definer', 'public.mandals', 'TRIGGER') OR
+     has_table_privilege('panin_boundary_definer', 'public.dataset_versions', 'INSERT') OR
+     has_table_privilege('panin_boundary_definer', 'public.dataset_versions', 'UPDATE') OR
+     has_table_privilege('panin_boundary_definer', 'public.dataset_versions', 'DELETE') OR
+     has_table_privilege('panin_boundary_definer', 'public.provenance_records', 'INSERT') OR
+     has_table_privilege('panin_boundary_definer', 'public.provenance_records', 'UPDATE') OR
+     has_table_privilege('panin_boundary_definer', 'public.provenance_records', 'DELETE') THEN
+    RAISE EXCEPTION 'Check 20 Failed: panin_boundary_definer possesses prohibited table-level privileges';
+  END IF;
+
   IF EXISTS (
     SELECT 1 FROM information_schema.table_privileges 
     WHERE grantee = 'panin_boundary_definer' 
       AND privilege_type IN ('INSERT', 'DELETE', 'TRUNCATE', 'REFERENCES', 'TRIGGER')
   ) THEN
-    RAISE EXCEPTION 'Check 20 Failed: panin_boundary_definer has prohibited table-level privileges';
+    RAISE EXCEPTION 'Check 20 Failed: panin_boundary_definer has prohibited table-level privileges in information_schema';
   END IF;
-  RAISE NOTICE 'Check 20 PASS: Definer table-level privileges verified (SELECT only, zero INSERT/DELETE/TRUNCATE/REFERENCES/TRIGGER)';
+  RAISE NOTICE 'Check 20 PASS: Definer table-level privileges verified (SELECT only, mandal_versions INSERT = FALSE, zero DELETE/TRUNCATE/REFERENCES/TRIGGER)';
 
   -- Check 21: Column-level UPDATE privileges on panin_boundary_definer
   -- mandals: permitted (current_version_id, updated_at), prohibited (all other 15)
@@ -259,17 +284,39 @@ BEGIN
   END IF;
   RAISE NOTICE 'Check 21 PASS: Exactly 6 column-level UPDATE privileges on public.mandals and public.mandal_versions verified';
 
-  -- Check 22: Assert PUBLIC has no EXECUTE in catalog proacl
+  -- Check 22: Complete Function EXECUTE ACL Verification
+  -- 1. Assert service_role possesses EXECUTE privilege
+  IF NOT has_function_privilege('service_role', 'public.fn_transition_mandal_current_version(text,uuid,date,text,uuid)', 'EXECUTE') THEN
+    RAISE EXCEPTION 'Check 22 Failed: service_role missing EXECUTE privilege on fn_transition_mandal_current_version';
+  END IF;
+
+  -- 2. Assert panin_boundary_admin possesses EXECUTE privilege
+  IF NOT has_function_privilege('panin_boundary_admin', 'public.fn_transition_mandal_current_version(text,uuid,date,text,uuid)', 'EXECUTE') THEN
+    RAISE EXCEPTION 'Check 22 Failed: panin_boundary_admin missing EXECUTE privilege on fn_transition_mandal_current_version';
+  END IF;
+
+  -- 3. Assert PUBLIC (grantee=0) possesses zero EXECUTE in catalog proacl and has_function_privilege
   IF EXISTS (
     SELECT 1 FROM pg_proc p
     CROSS JOIN aclexplode(p.proacl) acl
     WHERE p.oid = 'public.fn_transition_mandal_current_version(text,uuid,date,text,uuid)'::regprocedure
       AND acl.grantee = 0
       AND acl.privilege_type = 'EXECUTE'
-  ) THEN
-    RAISE EXCEPTION 'Check 22 Failed: PUBLIC (grantee=0) possesses EXECUTE privilege on transition function in catalog proacl';
+  ) OR has_function_privilege('public', 'public.fn_transition_mandal_current_version(text,uuid,date,text,uuid)', 'EXECUTE') THEN
+    RAISE EXCEPTION 'Check 22 Failed: PUBLIC possesses EXECUTE privilege on fn_transition_mandal_current_version';
   END IF;
-  RAISE NOTICE 'Check 22 PASS: Catalog proacl confirms PUBLIC possesses zero EXECUTE entries';
+
+  -- 4. Assert anon possesses zero EXECUTE privilege
+  IF has_function_privilege('anon', 'public.fn_transition_mandal_current_version(text,uuid,date,text,uuid)', 'EXECUTE') THEN
+    RAISE EXCEPTION 'Check 22 Failed: anon possesses prohibited EXECUTE privilege on fn_transition_mandal_current_version';
+  END IF;
+
+  -- 5. Assert authenticated possesses zero EXECUTE privilege
+  IF has_function_privilege('authenticated', 'public.fn_transition_mandal_current_version(text,uuid,date,text,uuid)', 'EXECUTE') THEN
+    RAISE EXCEPTION 'Check 22 Failed: authenticated possesses prohibited EXECUTE privilege on fn_transition_mandal_current_version';
+  END IF;
+
+  RAISE NOTICE 'Check 22 PASS: Complete function EXECUTE ACL verified (service_role=EXECUTE, panin_boundary_admin=EXECUTE, PUBLIC=NO EXECUTE, anon=NO EXECUTE, authenticated=NO EXECUTE)';
 
   -- Check 23: RLS enabled on public.mandal_versions
   IF NOT EXISTS (

@@ -1240,13 +1240,7 @@ REVOKE ALL ON FUNCTION public.fn_transition_mandal_current_version(TEXT, UUID, D
 REVOKE ALL ON FUNCTION public.fn_transition_mandal_current_version(TEXT, UUID, DATE, TEXT, UUID) FROM authenticated;
 
 GRANT EXECUTE ON FUNCTION public.fn_transition_mandal_current_version(TEXT, UUID, DATE, TEXT, UUID) TO service_role;
-
-DO $$
-BEGIN
-  IF EXISTS (SELECT 1 FROM pg_roles WHERE rolname = 'panin_boundary_admin') THEN
-    GRANT EXECUTE ON FUNCTION public.fn_transition_mandal_current_version(TEXT, UUID, DATE, TEXT, UUID) TO panin_boundary_admin;
-  END IF;
-END $$;
+GRANT EXECUTE ON FUNCTION public.fn_transition_mandal_current_version(TEXT, UUID, DATE, TEXT, UUID) TO panin_boundary_admin;
 
 -- H. Row Level Security for mandal_versions
 ALTER TABLE public.mandal_versions ENABLE ROW LEVEL SECURITY;
