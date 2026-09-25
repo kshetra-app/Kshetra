@@ -23,7 +23,7 @@ WITH checks (check_id, check_name, expected) AS (
         (6, 'Function Owner Identity & NOLOGIN', 'owner = panin_boundary_definer AND rolcanlogin = false'),
         (7, 'SECURITY DEFINER Flag', 'prosecdef = true'),
         (8, 'Secure search_path Pinning', 'search_path=public, pg_temp (exact pinned setting, zero additional parameters)'),
-        (9, 'No Unintended Effective EXECUTE Grants', 'Explicit EXECUTE grantees strictly service_role and panin_boundary_admin; zero unauthorized grantees')
+        (9, 'No Unintended Effective EXECUTE Grants', 'Explicit EXECUTE grantees strictly panin_boundary_definer, service_role, and panin_boundary_admin; zero unauthorized grantees')
 ),
 fn AS (
     SELECT 
@@ -60,7 +60,7 @@ unintended_explicit_grantees AS (
     SELECT string_agg(grantee_name || ':' || privilege_type, ', ') AS unauthorized_entries
     FROM effective_acl_entries
     WHERE privilege_type = 'EXECUTE'
-      AND grantee_name NOT IN ('service_role', 'panin_boundary_admin')
+      AND grantee_name NOT IN ('service_role', 'panin_boundary_admin', 'panin_boundary_definer')
 )
 SELECT 
     c.check_id,
@@ -101,7 +101,9 @@ SELECT
                     THEN 'FAIL: service_role missing from explicit EXECUTE ACL'
                 WHEN NOT EXISTS (SELECT 1 FROM effective_acl_entries WHERE privilege_type = 'EXECUTE' AND grantee_name = 'panin_boundary_admin')
                     THEN 'FAIL: panin_boundary_admin missing from explicit EXECUTE ACL'
-                ELSE 'PASS: Explicit EXECUTE grantees are strictly service_role and panin_boundary_admin; zero unauthorized grantees'
+                WHEN NOT EXISTS (SELECT 1 FROM effective_acl_entries WHERE privilege_type = 'EXECUTE' AND grantee_name = 'panin_boundary_definer')
+                    THEN 'FAIL: panin_boundary_definer missing from explicit EXECUTE ACL'
+                ELSE 'PASS: Explicit EXECUTE grantees are strictly panin_boundary_definer, service_role, and panin_boundary_admin; zero unauthorized grantees'
             END
     END AS observed,
     CASE 
@@ -134,6 +136,7 @@ SELECT
                  AND (SELECT unintended_list FROM unintended_effective_roles) IS NULL
                  AND EXISTS (SELECT 1 FROM effective_acl_entries WHERE privilege_type = 'EXECUTE' AND grantee_name = 'service_role')
                  AND EXISTS (SELECT 1 FROM effective_acl_entries WHERE privilege_type = 'EXECUTE' AND grantee_name = 'panin_boundary_admin')
+                 AND EXISTS (SELECT 1 FROM effective_acl_entries WHERE privilege_type = 'EXECUTE' AND grantee_name = 'panin_boundary_definer')
                 THEN 'PASS' ELSE 'FAIL'
             END
     END AS verdict
