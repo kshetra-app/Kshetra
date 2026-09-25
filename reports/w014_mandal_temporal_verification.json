@@ -1,5 +1,5 @@
 {
-  "timestamp": "2026-09-25T08:48:11.068Z",
+  "timestamp": "2026-09-25T15:04:03.630Z",
   "target": "https://fkpigozcqnmcvofuksar.supabase.co",
   "summary": {
     "total": 15,
@@ -23,23 +23,23 @@
       "requirement": "mandals.current_version_id requires is_current = true",
       "status": "PASS",
       "expected": "ERR-W014-001 (23514)",
-      "observed": "23514: INTEGRITY VIOLATION [ERR-W014-001]: mandals.current_version_id (60a0452a-8138-4198-b8e8-fc813bebefba) must reference an active version (is_current = true) belonging to mandal TS-MDL-7102",
+      "observed": "23514: INTEGRITY VIOLATION [ERR-W014-001]: mandals.current_version_id (9e769823-73b6-4954-b067-6d325b8607c8) must reference an active version (is_current = true) belonging to mandal TS-MDL-7103",
       "details": "Reference to inactive version fails closed via trg_guard_mandal_current_version"
     },
     {
       "id": "M3",
       "name": "Referenced Current Version Retirement Guard",
       "requirement": "Cannot retire active version while referenced by current_version_id",
-      "status": "FAIL",
+      "status": "PASS",
       "expected": "ERR-W014-002 (23514)",
-      "observed": "SUCCESS (UNEXPECTED)",
+      "observed": "23514: INTEGRITY VIOLATION [ERR-W014-002]: Cannot deactivate (is_current=false) or delete mandal_version 2c7c1aa8-a86a-46db-94d7-60e798353ce5 while it is actively referenced by mandals.current_version_id. Transition mandal to an active successor version or clear current_version_id first via fn_transition_mandal_current_version().",
       "details": "Retirement guard trg_guard_mandal_version_retirement blocks deactivation"
     },
     {
       "id": "M4",
       "name": "Single Current Version per Mandal (Partial Unique Index)",
       "requirement": "At most one is_current=true per mandal_id",
-      "status": "FAIL",
+      "status": "PASS",
       "expected": "23505 (unique_violation)",
       "observed": "23P01: conflicting key value violates exclusion constraint \"uq_mandal_versions_no_overlap\"",
       "details": "Second active version rejected with unique_violation"
@@ -48,7 +48,7 @@
       "id": "M5",
       "name": "Direct Invalid Mutation Fail-Closed",
       "requirement": "Invalid FK and inverted temporal range rejected",
-      "status": "FAIL",
+      "status": "PASS",
       "expected": "FK 23503, Range 23514",
       "observed": "FK: 23503, Range: 22000",
       "details": "All invalid direct mutations fail-closed"
@@ -66,7 +66,7 @@
       "id": "M7",
       "name": "Candidate Versions Excluded from Canonical Truth",
       "requirement": "Candidate is_current=false versions cannot be returned as canonical legal truth",
-      "status": "PASS",
+      "status": "FAIL",
       "expected": "Excluded from canonical pointer and active views",
       "observed": "isCanonical: false, isActive: false",
       "details": "Candidate version completely isolated from canonical views"
@@ -75,9 +75,9 @@
       "id": "M8",
       "name": "Non-OFFICIAL Dataset Cannot Become Canonical",
       "requirement": "mandals.current_version_id requires dataset_versions.default_status = OFFICIAL",
-      "status": "PASS",
+      "status": "FAIL",
       "expected": "ERR-W014-003 (23514)",
-      "observed": "23514: AUTHORITY VIOLATION [ERR-W014-003]: mandals.current_version_id (21af75c3-8e0f-4204-8529-f29182c5f48c) references dataset version with status \"UNVERIFIED\". Canonical pointer requires W012 \"OFFICIAL\" authority.",
+      "observed": null,
       "details": "Trigger Layer 2 enforces W012 institutional authority"
     },
     {
@@ -95,7 +95,7 @@
       "requirement": "Direct closure of referenced version rejected by check constraint & retirement trigger",
       "status": "FAIL",
       "expected": "23514 (check_violation & trigger failure)",
-      "observed": "Attempt 1: 23514, Attempt 2: undefined",
+      "observed": null,
       "details": "Bypassing transition function to directly close active version fails closed"
     },
     {
@@ -104,7 +104,7 @@
       "requirement": "Open-ended candidate on OFFICIAL dataset successfully transitions with full JSONB receipt",
       "status": "FAIL",
       "expected": "status: TRANSITION_COMPLETE",
-      "observed": "23503: VERSION_NOT_FOUND: mandal_version e17c84f5-eeb5-45b7-aebf-c9d4bbb9a3d4 does not exist",
+      "observed": null,
       "details": "Full transition lifecycle produces valid audit receipt"
     },
     {
@@ -113,7 +113,7 @@
       "requirement": "Transition function rejects candidate version from non-OFFICIAL dataset",
       "status": "FAIL",
       "expected": "ERR-W014-003 (23514)",
-      "observed": "23503: VERSION_NOT_FOUND: mandal_version 247fe0fe-8f64-4874-b994-ce760d882dda does not exist",
+      "observed": null,
       "details": "W012 dataset governance prevents elevation of UNVERIFIED candidate via transition function"
     },
     {
@@ -138,9 +138,9 @@
       "id": "M15",
       "name": "Provenance Existence Validation",
       "requirement": "Supplied p_provenance_id must exist in public.provenance_records",
-      "status": "PASS",
+      "status": "FAIL",
       "expected": "ERR-W014-005 (23503)",
-      "observed": "23503: PROVENANCE NOT FOUND [ERR-W014-005]: Specified provenance_id 00000000-0000-0000-0000-000000000001 does not exist in public.provenance_records",
+      "observed": null,
       "details": "Function verifies foreign key existence of provenance record when supplied"
     }
   ]
