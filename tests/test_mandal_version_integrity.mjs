@@ -357,6 +357,24 @@ async function runTestSuite() {
       cleanupVersionIds.push(v6bId);
       m6SubResults.push('candidate_insert:PASS');
 
+      // 2b. Mandal Immutability: direct update attempting to mutate mandal_id fails with 23514 (ERR-W014-008)
+      const { error: errMandalIdMut } = await adminClient.from('mandal_versions').update({
+        mandal_id: mandalB.id
+      }).eq('id', v6aId);
+
+      const isMandalIdImmutOk = errMandalIdMut && (
+        errMandalIdMut.code === '23514' ||
+        errMandalIdMut.message?.includes('23514') ||
+        errMandalIdMut.message?.includes('ERR-W014-008') ||
+        errMandalIdMut.message?.includes('IMMUTABILITY VIOLATION') ||
+        errMandalIdMut.message?.includes('immutable')
+      );
+      if (isMandalIdImmutOk) {
+        m6SubResults.push('mandal_id_immutability_23514:PASS');
+      } else {
+        m6SubResults.push(`mandal_id_immutability_23514:FAIL(${errMandalIdMut?.code || 'SUCCESS_UNEXPECTED'})`);
+      }
+
       // 3. Direction A: Invalid direct write — closed historical version overlapping active current version fails with 23P01
       const { data: v6cBad, error: errV6cBad } = await adminClient.from('mandal_versions').insert({
         mandal_id: mandalA.id,
@@ -446,7 +464,7 @@ async function runTestSuite() {
       }
 
       m6Observed = m6SubResults.join(', ');
-      if (is23P01HistCurrent && transitionOk && boundaryEqualityOk && is23P01CurrentHist && is23P01Gist) {
+      if (isMandalIdImmutOk && is23P01HistCurrent && transitionOk && boundaryEqualityOk && is23P01CurrentHist && is23P01Gist) {
         m6Passed = true;
       }
     } catch (err) {
@@ -471,9 +489,9 @@ async function runTestSuite() {
       'Atomic Valid Transition Succeeds',
       'fn_transition_mandal_current_version atomically transitions version and pointer with strict temporal boundary enforcement',
       m6Passed ? 'PASS' : 'FAIL',
-      'Candidate allowed, 23P01 on overlap, TRANSITION_COMPLETE, boundary equality',
+      'Candidate allowed, mandal_id immutable (23514), 23P01 on overlap, TRANSITION_COMPLETE, boundary equality',
       m6Observed,
-      'Verified candidate insertion, transition, boundary equality, and reciprocal 23P01 overlap rejection'
+      'Verified candidate insertion, mandal_id immutability, transition, boundary equality, and reciprocal 23P01 overlap rejection'
     );
 
     // -------------------------------------------------------------------------

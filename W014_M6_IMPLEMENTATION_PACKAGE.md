@@ -19,6 +19,7 @@ Following CTO authorization of **Option A: BEFORE ROW Immediate Trigger Architec
    Closed historical intervals ($[T_1, T_2)$) are protected by a partial GiST exclusion constraint (`WHERE valid_to IS NOT NULL`). Open-ended candidate and current records ($[T_{\text{eff}}, +\infty)$) are excluded from the historical index, enabling candidate versions to be staged without premature overlap conflicts.
 2. **Direct-Write Temporal Guard Trigger (`trg_guard_mandal_version_temporal_bounds`):**
    A `BEFORE ROW` trigger on `INSERT` and `UPDATE` of `(mandal_id, valid_from, valid_to, is_current)` on table `public.mandal_versions` prevents any direct write (including `service_role`) from creating temporal overlap between current and historical records:
+   - **Deterministic Mandal Immutability Invariant:** Direct UPDATE attempting to mutate `mandal_versions.mandal_id` is rejected immediately with `ERR-W014-008` (`SQLSTATE 23514`). `mandal_id` is permanently bound to its parent anchor row at insertion.
    - **Per-Mandal Concurrency Serialization:** Every write path acquires `SELECT id FROM public.mandals WHERE id = NEW.mandal_id FOR UPDATE` before inspecting or modifying temporal intervals, eliminating concurrent race conditions.
    - **Direction A (Closed Historical NEW):** If `NEW.valid_to IS NOT NULL`, asserts that `daterange(NEW.valid_from, NEW.valid_to, '[)')` does not overlap any active current record (`is_current = true AND valid_to IS NULL`). Raises `ERR-W014-006` (`SQLSTATE 23P01`).
    - **Direction B (Active Current NEW):** If `NEW.is_current = true`, asserts that `daterange(NEW.valid_from, NULL, '[)')` does not overlap any closed historical record (`valid_to IS NOT NULL`). Raises `ERR-W014-006` (`SQLSTATE 23P01`).
@@ -49,10 +50,10 @@ Following CTO authorization of **Option A: BEFORE ROW Immediate Trigger Architec
 
 | Artifact Role | File Path | SHA-256 Checksum | Execution Status |
 | :--- | :--- | :--- | :--- |
-| **Remediation DDL** | `supabase/remediation_w014_m6_gist_boundary_041.sql` | `F1F4C964866651014E2C1047B0DB7D8DE71C5BB0F542980EF7A62C360622EF0A` | **PREPARED / UNEXECUTED** |
+| **Remediation DDL** | `supabase/remediation_w014_m6_gist_boundary_041.sql` | `632AA64A1EEDC8D282EE08052B567DBCD4626E4BBBC03B8D9CEE152EE0E72DA1` | **PREPARED / UNEXECUTED** |
 | **Rollback DDL** | `supabase/rollback_w014_m6_gist_boundary_041.sql` | `DF9D6CE37903E2AAFCCEB1AE991BB4A81AF37EAB77F6776670663F3CDCD6FFE9` | **PREPARED / UNEXECUTED** |
 | **23-Check Verifier** | `supabase/verification_w014_migration_041_23checks.sql` | `A4F31C66AE2C493E4D0277B3525412C88EB4B25ECE91EB767408DA0488DFFF82` | **PREPARED / UNEXECUTED** |
-| **Test Suite** | `tests/test_mandal_version_integrity.mjs` | `7C9FBAE79EF7F9EFB9725E4EDB1D781662DC58B9B73F2AF8743D0CA214B1EF26` | **PREPARED / UNEXECUTED** |
+| **Test Suite** | `tests/test_mandal_version_integrity.mjs` | `9A22761B1FE1B915983BD22B5F0E529095CCDA211940C756D0B879A1A42A4705` | **PREPARED / UNEXECUTED** |
 
 ---
 

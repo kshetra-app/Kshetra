@@ -92,6 +92,15 @@ DECLARE
   v_overlapping_hist_id UUID;
   v_overlapping_hist_range DATERANGE;
 BEGIN
+  -- 0. Deterministic Mandal Immutability Invariant:
+  -- mandal_versions.mandal_id is permanently bound to its anchor at insertion.
+  -- Cross-mandal version reassignment is prohibited for all roles (including service_role).
+  IF TG_OP = 'UPDATE' AND NEW.mandal_id IS DISTINCT FROM OLD.mandal_id THEN
+    RAISE EXCEPTION 'IMMUTABILITY VIOLATION [ERR-W014-008]: mandal_versions.mandal_id cannot be modified after insertion (attempted mutation from % to %)',
+      OLD.mandal_id, NEW.mandal_id
+      USING ERRCODE = '23514'; -- check_violation
+  END IF;
+
   -- 1. Deterministic Per-Mandal Concurrency Serialization:
   -- Lock parent mandal anchor row to serialize concurrent writes on the same mandal.
   -- This is the identical anchor row locked by fn_transition_mandal_current_version().
