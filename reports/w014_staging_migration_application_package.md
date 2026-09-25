@@ -12,12 +12,12 @@
 
 | File Path | Description | SHA-256 Checksum |
 |---|---|---|
-| [`supabase/migrations/041_geography_versioning_and_temporal_validity.sql`](file:///c:/Users/Laven/OneDrive/Desktop/Kshetra/supabase/migrations/041_geography_versioning_and_temporal_validity.sql) | Canonical Migration 041 (Sections 1–11) | `ab3567669e16fa8ed62bc4fcb00e72aed2ce40bb027c44387158392f1a402ba3` |
-| [`supabase/staging_migration_package_041.sql`](file:///c:/Users/Laven/OneDrive/Desktop/Kshetra/supabase/staging_migration_package_041.sql) | Synchronized Atomic Staging Migration Package | `ab3567669e16fa8ed62bc4fcb00e72aed2ce40bb027c44387158392f1a402ba3` |
+| [`supabase/migrations/041_geography_versioning_and_temporal_validity.sql`](file:///c:/Users/Laven/OneDrive/Desktop/Kshetra/supabase/migrations/041_geography_versioning_and_temporal_validity.sql) | Canonical Migration 041 (Sections 1–11) | `ff8d1bded5e892d9266dd9ad01b18937ee922451fe71990c032b43574e8d5c5e` |
+| [`supabase/staging_migration_package_041.sql`](file:///c:/Users/Laven/OneDrive/Desktop/Kshetra/supabase/staging_migration_package_041.sql) | Synchronized Atomic Staging Migration Package | `ff8d1bded5e892d9266dd9ad01b18937ee922451fe71990c032b43574e8d5c5e` |
 | [`supabase/verify_staging_migration_package_041.sql`](file:///c:/Users/Laven/OneDrive/Desktop/Kshetra/supabase/verify_staging_migration_package_041.sql) | Comprehensive 23-Check SQL Verification Battery | `bce98521a6a785b12132a926fadeaac848276e15aa5c609750ca86fa189bb889` |
 | [`supabase/rollback_staging_migration_package_041.sql`](file:///c:/Users/Laven/OneDrive/Desktop/Kshetra/supabase/rollback_staging_migration_package_041.sql) | Deterministic Rollback Package | `29ae29413c9655d8c8974534f3faecb7056d12968f53c2a0136451345b05caf2` |
-| [`tests/test_mandal_version_integrity.mjs`](file:///c:/Users/Laven/OneDrive/Desktop/Kshetra/tests/test_mandal_version_integrity.mjs) | Automated M1–M15 Acceptance Test Suite | `58300bc6020594ad1de64321d74bfbae363087662bcf1f2e6ab47aed68e7260c` |
-| [`scripts/verify_w014_temporal_validity.mjs`](file:///c:/Users/Laven/OneDrive/Desktop/Kshetra/scripts/verify_w014_temporal_validity.mjs) | Static Preflight & Integrity Validator | `f2661ef6a5e5f997c698fe22cd67c3d4167b15e7f5b85c5b9fe884e1eda6dd9b` |
+| [`tests/test_mandal_version_integrity.mjs`](file:///c:/Users/Laven/OneDrive/Desktop/Kshetra/tests/test_mandal_version_integrity.mjs) | Automated M1–M15 Acceptance Test Suite | `9e4d4e3ebb0a9009c7d70289792f90eff7a0ddcf07824412098587acca7a34ba` |
+| [`scripts/verify_w014_temporal_validity.mjs`](file:///c:/Users/Laven/OneDrive/Desktop/Kshetra/scripts/verify_w014_temporal_validity.mjs) | Static Preflight & Integrity Validator | `04de70053a114e3ea5a0320d971b312a0e232c9ff30bd47452707f404df69f8a` |
 
 *Note: The canonical migration file and the atomic staging migration package are verified bit-for-bit identical with matching SHA-256 hashes.*
 

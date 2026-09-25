@@ -36,6 +36,8 @@ for (const file of migrationFiles) {
   check(`Parenthesized daterange expression in exclusion constraints in ${file}`, content.includes('(daterange('));
   check(`Scenario regime is not OFFICIAL in ${file}`, !content.includes("'scenario_delimitation_draft_prop_1', 'OFFICIAL'"));
   check(`AC 109 chronology present in ${file}`, content.includes('Mulug') && content.includes('Warangal'));
+  check(`Zero ON CONFLICT DO UPDATE on dataset_versions in ${file}`, !content.includes('ON CONFLICT (id) DO UPDATE SET\n  dataset_id = EXCLUDED.dataset_id') && content.includes('ON CONFLICT (id) DO NOTHING;'));
+  check(`Post-registration reconciliation assertion present in ${file}`, content.includes('RECONCILIATION FAILURE: Expected dataset_version'));
 
   // Mandal Temporal Version Model Checks
   check(`mandal_versions table definition present in ${file}`, content.includes('CREATE TABLE IF NOT EXISTS public.mandal_versions'));

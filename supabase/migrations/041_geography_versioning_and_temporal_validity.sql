@@ -96,14 +96,81 @@ VALUES
     0,
     '{"simulation_name": "Hypothetical Population-Based Seat Reallocation Model 1", "legal_status": "NON_STATUTORY_SIMULATION", "evidence_state": "simulation_model"}'::jsonb
   )
-ON CONFLICT (id) DO UPDATE SET
-  dataset_id = EXCLUDED.dataset_id,
-  version_tag = EXCLUDED.version_tag,
-  effective_from = EXCLUDED.effective_from,
-  default_status = EXCLUDED.default_status,
-  record_count = EXCLUDED.record_count,
-  metadata = EXCLUDED.metadata,
-  retrieved_at = now();
+ON CONFLICT (id) DO NOTHING;
+
+-- Deterministic Post-Registration Reconciliation Assertion for W014 Dataset Versions
+-- Verifies that all expected W014 dataset_versions exist and their immutable fields match expected definition.
+-- If any field differs, fails closed with an explicit reconciliation exception without mutating the snapshot.
+DO $$
+DECLARE
+  v_rec RECORD;
+BEGIN
+  -- 1. ts_districts_2014_v1
+  SELECT * INTO v_rec FROM public.dataset_versions WHERE id = 'ts_districts_2014_v1';
+  IF NOT FOUND THEN
+    RAISE EXCEPTION 'RECONCILIATION FAILURE: Expected dataset_version ts_districts_2014_v1 not found';
+  END IF;
+  IF v_rec.dataset_id <> 'ts_revenue_districts' OR
+     v_rec.version_tag <> '2014_state_formation' OR
+     v_rec.effective_from <> '2014-06-02'::date OR
+     v_rec.default_status <> 'UNVERIFIED' THEN
+    RAISE EXCEPTION 'RECONCILIATION FAILURE: Existing dataset_version ts_districts_2014_v1 has conflicting immutable fields (dataset_id=%, version_tag=%, effective_from=%, default_status=%)',
+      v_rec.dataset_id, v_rec.version_tag, v_rec.effective_from, v_rec.default_status;
+  END IF;
+
+  -- 2. ts_districts_2021_renames_v1
+  SELECT * INTO v_rec FROM public.dataset_versions WHERE id = 'ts_districts_2021_renames_v1';
+  IF NOT FOUND THEN
+    RAISE EXCEPTION 'RECONCILIATION FAILURE: Expected dataset_version ts_districts_2021_renames_v1 not found';
+  END IF;
+  IF v_rec.dataset_id <> 'ts_revenue_districts' OR
+     v_rec.version_tag <> '2021_renames' OR
+     v_rec.effective_from <> '2021-08-12'::date OR
+     v_rec.default_status <> 'UNVERIFIED' THEN
+    RAISE EXCEPTION 'RECONCILIATION FAILURE: Existing dataset_version ts_districts_2021_renames_v1 has conflicting immutable fields (dataset_id=%, version_tag=%, effective_from=%, default_status=%)',
+      v_rec.dataset_id, v_rec.version_tag, v_rec.effective_from, v_rec.default_status;
+  END IF;
+
+  -- 3. eci_delimitation_1976_v1
+  SELECT * INTO v_rec FROM public.dataset_versions WHERE id = 'eci_delimitation_1976_v1';
+  IF NOT FOUND THEN
+    RAISE EXCEPTION 'RECONCILIATION FAILURE: Expected dataset_version eci_delimitation_1976_v1 not found';
+  END IF;
+  IF v_rec.dataset_id <> 'eci_delimitation_orders' OR
+     v_rec.version_tag <> '1976_order' OR
+     v_rec.effective_from <> '1976-01-01'::date OR
+     v_rec.default_status <> 'UNVERIFIED' THEN
+    RAISE EXCEPTION 'RECONCILIATION FAILURE: Existing dataset_version eci_delimitation_1976_v1 has conflicting immutable fields (dataset_id=%, version_tag=%, effective_from=%, default_status=%)',
+      v_rec.dataset_id, v_rec.version_tag, v_rec.effective_from, v_rec.default_status;
+  END IF;
+
+  -- 4. eci_delimitation_post2026_projected_v1
+  SELECT * INTO v_rec FROM public.dataset_versions WHERE id = 'eci_delimitation_post2026_projected_v1';
+  IF NOT FOUND THEN
+    RAISE EXCEPTION 'RECONCILIATION FAILURE: Expected dataset_version eci_delimitation_post2026_projected_v1 not found';
+  END IF;
+  IF v_rec.dataset_id <> 'eci_delimitation_orders' OR
+     v_rec.version_tag <> 'post2026_anticipated' OR
+     v_rec.effective_from <> '2026-01-01'::date OR
+     v_rec.default_status <> 'UNVERIFIED' THEN
+    RAISE EXCEPTION 'RECONCILIATION FAILURE: Existing dataset_version eci_delimitation_post2026_projected_v1 has conflicting immutable fields (dataset_id=%, version_tag=%, effective_from=%, default_status=%)',
+      v_rec.dataset_id, v_rec.version_tag, v_rec.effective_from, v_rec.default_status;
+  END IF;
+
+  -- 5. scenario_delimitation_draft_prop_1_v1
+  SELECT * INTO v_rec FROM public.dataset_versions WHERE id = 'scenario_delimitation_draft_prop_1_v1';
+  IF NOT FOUND THEN
+    RAISE EXCEPTION 'RECONCILIATION FAILURE: Expected dataset_version scenario_delimitation_draft_prop_1_v1 not found';
+  END IF;
+  IF v_rec.dataset_id <> 'panin_delimitation_scenarios' OR
+     v_rec.version_tag <> 'draft_prop_1' OR
+     v_rec.effective_from <> '2026-01-01'::date OR
+     v_rec.default_status <> 'UNVERIFIED' THEN
+    RAISE EXCEPTION 'RECONCILIATION FAILURE: Existing dataset_version scenario_delimitation_draft_prop_1_v1 has conflicting immutable fields (dataset_id=%, version_tag=%, effective_from=%, default_status=%)',
+      v_rec.dataset_id, v_rec.version_tag, v_rec.effective_from, v_rec.default_status;
+  END IF;
+END $$;
+
 
 -- ─── 3. DELIMITATION REGIMES TABLE ─────────────────────────────────────────────
 
