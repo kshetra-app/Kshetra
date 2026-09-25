@@ -50,7 +50,7 @@ Key implementation guarantees delivered:
 | `supabase/rollback_staging_migration_package_041.sql` | Deterministic Rollback Package | `29ae29413c9655d8c8974534f3faecb7056d12968f53c2a0136451345b05caf2` |
 | `scripts/verify_w014_temporal_validity.mjs` | Static Preflight & Integrity Validator | `b6634fb5594af2aaadc60c804358d05c14710463a367600d449310b573ec94b5` |
 | `tests/test_mandal_version_integrity.mjs` | Live Staging M1–M15 Acceptance Test Battery | `9e4d4e3ebb0a9009c7d70289792f90eff7a0ddcf07824412098587acca7a34ba` |
-| `tests/test_dataset_version_reconciliation.mjs` | W012 10-Field Immutable Reconciliation Semantic Test | `cf12077deb1826c246d8c05fb74655855ecccadca184957d62f812748338f423` |
+| `tests/test_dataset_version_reconciliation.mjs` | 10-field W014 dataset-definition reconciliation Semantic Test | `844c7fd72b675fb8461029d7d9a3c75563710e71e5108625b11b79e940ed7dab` |
 | `reports/w014_staging_migration_application_package.md` | Staging Application Package Guide | *Recorded in git tree* |
 
 ---

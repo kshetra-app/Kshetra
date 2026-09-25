@@ -103,7 +103,8 @@ const EXPECTED_DATASET_VERSIONS = {
   }
 };
 
-const IMMUTABLE_FIELDS = [
+// The ten W014 dataset-definition fields reconciled against expected values
+const W014_DATASET_DEFINITION_FIELDS = [
   'dataset_id',
   'version_tag',
   'effective_from',
@@ -114,6 +115,16 @@ const IMMUTABLE_FIELDS = [
   'default_status',
   'verification_evidence_id',
   'metadata'
+];
+
+// Immutable historical audit timestamps:
+// - retrieved_at and created_at must never be mutated.
+// - They are not compared against newly generated timestamps.
+// - Existing timestamp values are preserved.
+// - The reconciliation does not attempt to manufacture expected acquisition/ingestion timestamps.
+const IMMUTABLE_HISTORICAL_AUDIT_TIMESTAMPS = [
+  'retrieved_at',
+  'created_at'
 ];
 
 function areJsonObjectsEqual(obj1, obj2) {
@@ -142,7 +153,7 @@ function reconcileRow(existing, expected, versionId) {
     throw new Error(`RECONCILIATION FAILURE: dataset_version ${versionId} not found`);
   }
 
-  for (const field of IMMUTABLE_FIELDS) {
+  for (const field of W014_DATASET_DEFINITION_FIELDS) {
     const existingVal = existing[field];
     const expectedVal = expected[field];
 
@@ -164,7 +175,7 @@ function reconcileRow(existing, expected, versionId) {
 }
 
 async function run() {
-  console.log('=== SEMANTIC TEST: W012 DATASET_VERSIONS 10-FIELD IMMUTABLE RECONCILIATION ===\n');
+  console.log('=== SEMANTIC TEST: 10-FIELD W014 DATASET-DEFINITION RECONCILIATION ===\n');
 
   let passedTests = 0;
   let totalTests = 0;
@@ -195,8 +206,8 @@ async function run() {
   // Record initial timestamps to verify zero mutation at end of test
   const initialTimestamps = new Map((rows || []).map(r => [r.id, { retrieved_at: r.retrieved_at, created_at: r.created_at }]));
 
-  // Phase 2: Verify live staging rows pass 10-field reconciliation
-  console.log('\n--- Phase 2: Live Reconciliation of all 5 versions (10 fields each) ---');
+  // Phase 2: Verify live staging rows pass 10-field W014 dataset-definition reconciliation
+  console.log('\n--- Phase 2: Live Reconciliation of all 5 versions (10 W014 dataset-definition fields each) ---');
   for (const id of targetIds) {
     const existing = rowsById.get(id);
     const expected = EXPECTED_DATASET_VERSIONS[id];
@@ -208,10 +219,11 @@ async function run() {
     } catch (e) {
       errorMsg = e.message;
     }
-    assert(`Live row ${id} matches all 10 immutable fields`, reconciled, errorMsg);
+    assert(`Live row ${id} matches all 10 W014 dataset-definition fields`, reconciled, errorMsg);
 
-    // Explicitly verify retrieved_at is an acquisition timestamp and NOT compared to now()
-    assert(`Live row ${id} retrieved_at is valid timestamp (${existing?.retrieved_at})`, Boolean(existing?.retrieved_at && !isNaN(Date.parse(existing.retrieved_at))));
+    // Explicitly verify retrieved_at and created_at are immutable historical audit timestamps and NOT compared against newly generated timestamps
+    assert(`Live row ${id} retrieved_at is immutable historical audit timestamp (${existing?.retrieved_at})`, Boolean(existing?.retrieved_at && !isNaN(Date.parse(existing.retrieved_at))));
+    assert(`Live row ${id} created_at is immutable historical audit timestamp (${existing?.created_at})`, Boolean(existing?.created_at && !isNaN(Date.parse(existing.created_at))));
   }
 
   // Phase 3: Semantic Fail-Closed Verification on Previously Unchecked Fields
@@ -263,7 +275,7 @@ async function run() {
       console.error(`Timestamp mutation detected on ${pr.id}: before=${JSON.stringify(init)}, after=${JSON.stringify({ retrieved_at: pr.retrieved_at, created_at: pr.created_at })}`);
     }
   }
-  assert('Zero DB mutations confirmed: timestamps (retrieved_at, created_at) and row data unchanged', timestampsIdentical);
+  assert('Zero DB mutations confirmed: immutable historical audit timestamps (retrieved_at, created_at) and row data unchanged', timestampsIdentical);
 
   console.log('\n================================================================');
   console.log(`TOTAL CHECKS: ${totalTests} | PASSED: ${passedTests} | FAILED: ${totalTests - passedTests}`);
