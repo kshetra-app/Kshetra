@@ -307,22 +307,32 @@ async function runTestSuite() {
     let m6Observed = null;
     const testCodeM6a = `M6-V1-${Date.now()}`;
     const testCodeM6b = `M6-V2-${Date.now()}`;
+    let v6aId = null;
+    let v6bId = null;
 
-    const { data: v6a } = await adminClient.from('mandal_versions').insert({
-      mandal_id: mandalA.id,
-      district_id: mandalA.district_id,
-      version_code: testCodeM6a,
-      name: 'M6 V1 Active',
-      valid_from: '2010-01-01',
-      valid_to: null,
-      is_current: true,
-      primary_dataset_version_id: testOfficialDsId
-    }).select('id').single();
+    try {
+      const { data: v6a, error: errV6a } = await adminClient.from('mandal_versions').insert({
+        mandal_id: mandalA.id,
+        district_id: mandalA.district_id,
+        version_code: testCodeM6a,
+        name: 'M6 V1 Active',
+        valid_from: '2010-01-01',
+        valid_to: null,
+        is_current: true,
+        primary_dataset_version_id: testOfficialDsId
+      }).select('id').single();
 
-    if (v6a) {
-      await adminClient.from('mandals').update({ current_version_id: v6a.id }).eq('id', mandalA.id);
+      if (errV6a || !v6a) {
+        throw new Error(`M6 Setup Error (v6a insert): ${errV6a?.code}: ${errV6a?.message}`);
+      }
+      v6aId = v6a.id;
 
-      const { data: v6b } = await adminClient.from('mandal_versions').insert({
+      const { error: errPtrA } = await adminClient.from('mandals').update({ current_version_id: v6aId }).eq('id', mandalA.id);
+      if (errPtrA) {
+        throw new Error(`M6 Setup Error (mandal pointer update to v6a): ${errPtrA?.code}: ${errPtrA?.message}`);
+      }
+
+      const { data: v6b, error: errV6b } = await adminClient.from('mandal_versions').insert({
         mandal_id: mandalA.id,
         district_id: mandalA.district_id,
         version_code: testCodeM6b,
@@ -333,33 +343,55 @@ async function runTestSuite() {
         primary_dataset_version_id: testOfficialDsId
       }).select('id').single();
 
-      if (v6b) {
-        const { data: transReceipt, error: transErr } = await adminClient.rpc('fn_transition_mandal_current_version', {
-          p_mandal_id: mandalA.id,
-          p_new_version_id: v6b.id,
-          p_effective_date: '2026-01-01',
-          p_operator: 'm6_test_operator',
-          p_provenance_id: null
-        });
-
-        m6Observed = transErr ? `${transErr.code}: ${transErr.message}` : JSON.stringify(transReceipt);
-        if (!transErr && transReceipt && transReceipt.status === 'TRANSITION_COMPLETE') {
-          // Verify database state: pointer points to v6b, v6a retired
-          const { data: mCheck } = await adminClient.from('mandals').select('current_version_id').eq('id', mandalA.id).single();
-          const { data: v6aCheck } = await adminClient.from('mandal_versions').select('is_current, valid_to').eq('id', v6a.id).single();
-          const { data: v6bCheck } = await adminClient.from('mandal_versions').select('is_current, valid_to').eq('id', v6b.id).single();
-
-          if (mCheck?.current_version_id === v6b.id &&
-              v6aCheck?.is_current === false && v6aCheck?.valid_to === '2026-01-01' &&
-              v6bCheck?.is_current === true && v6bCheck?.valid_to === null) {
-            m6Passed = true;
-          }
-        }
-        // Cleanup
-        await adminClient.from('mandals').update({ current_version_id: null }).eq('id', mandalA.id);
-        await adminClient.from('mandal_versions').delete().eq('id', v6b.id);
+      if (errV6b || !v6b) {
+        throw new Error(`M6 Setup Error (v6b insert): ${errV6b?.code}: ${errV6b?.message}`);
       }
-      await adminClient.from('mandal_versions').delete().eq('id', v6a.id);
+      v6bId = v6b.id;
+
+      const { data: transReceipt, error: transErr } = await adminClient.rpc('fn_transition_mandal_current_version', {
+        p_mandal_id: mandalA.id,
+        p_new_version_id: v6bId,
+        p_effective_date: '2026-01-01',
+        p_operator: 'm6_test_operator',
+        p_provenance_id: null
+      });
+
+      m6Observed = transErr ? `${transErr.code}: ${transErr.message}` : JSON.stringify(transReceipt);
+      if (!transErr && transReceipt && transReceipt.status === 'TRANSITION_COMPLETE') {
+        // Verify database state: pointer points to v6b, v6a retired
+        const { data: mCheck } = await adminClient.from('mandals').select('current_version_id').eq('id', mandalA.id).single();
+        const { data: v6aCheck } = await adminClient.from('mandal_versions').select('is_current, valid_to').eq('id', v6aId).single();
+        const { data: v6bCheck } = await adminClient.from('mandal_versions').select('is_current, valid_to').eq('id', v6bId).single();
+
+        if (mCheck?.current_version_id === v6bId &&
+            v6aCheck?.is_current === false && v6aCheck?.valid_to === '2026-01-01' &&
+            v6bCheck?.is_current === true && v6bCheck?.valid_to === null) {
+          m6Passed = true;
+        }
+      }
+    } catch (err) {
+      m6Observed = `M6 EXCEPTION: ${err.message}`;
+    } finally {
+      // Unconditional teardown: Clear anchor pointer first to satisfy reciprocal trigger trg_guard_mandal_version_retirement
+      try {
+        await adminClient.from('mandals').update({ current_version_id: null }).eq('id', mandalA.id);
+      } catch (e) {
+        console.error('Failed to detach mandal pointer during M6 teardown:', e.message);
+      }
+      if (v6bId) {
+        try {
+          await adminClient.from('mandal_versions').delete().eq('id', v6bId);
+        } catch (e) {
+          console.error('Failed to delete v6b during M6 teardown:', e.message);
+        }
+      }
+      if (v6aId) {
+        try {
+          await adminClient.from('mandal_versions').delete().eq('id', v6aId);
+        } catch (e) {
+          console.error('Failed to delete v6a during M6 teardown:', e.message);
+        }
+      }
     }
     recordTest('M6', 'Atomic Valid Transition Succeeds', 'fn_transition_mandal_current_version atomically transitions version and pointer', m6Passed ? 'PASS' : 'FAIL', 'TRANSITION_COMPLETE', m6Observed, 'Atomic transition successfully retires previous version, activates new version, and updates pointer');
 

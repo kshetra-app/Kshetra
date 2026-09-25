@@ -22,7 +22,7 @@ WITH checks (check_id, check_name, expected) AS (
         (11, 'Mandal Versions Table Existence', 'public.mandal_versions table exists in catalog'),
         (12, 'Mandals Anchor Current Version Column', 'mandals.current_version_id column exists'),
         (13, 'Composite Same-Anchor Foreign Key Constraint', 'fk_mandals_current_version_same_anchor constraint exists on public.mandals'),
-        (14, 'Mandal Versions GiST Non-Overlap Exclusion', 'uq_mandal_versions_no_overlap GiST exclusion constraint exists on public.mandal_versions'),
+        (14, 'Mandal Versions Historical GiST Exclusion Constraint', 'uq_mandal_versions_historical_no_overlap on public.mandal_versions, contype=x, am=gist, index predicate exactly (valid_to IS NOT NULL)'),
         (15, 'Mandal Versions Single Current Unique Index', 'uq_mandal_versions_single_current unique index exists on public.mandal_versions'),
         (16, 'Mandal Versions Currentness Invariants Constraint', 'chk_mandal_versions_current_invariants check constraint exists on public.mandal_versions'),
         (17, 'Deferred Currentness & Retirement Constraint Triggers', 'Both trg_guard_mandal_current_version and trg_guard_mandal_version_retirement triggers exist'),
@@ -139,10 +139,28 @@ c13 AS (
     ) AS fk_exists
 ),
 c14 AS (
-    SELECT EXISTS (
-        SELECT 1 FROM pg_constraint 
-        WHERE conrelid = to_regclass('public.mandal_versions') AND conname = 'uq_mandal_versions_no_overlap'
-    ) AS gist_exists
+    SELECT 
+        c.oid IS NOT NULL AS constraint_exists,
+        COALESCE(c.contype = 'x', false) AS is_exclusion,
+        COALESCE(am.amname = 'gist', false) AS is_gist,
+        COALESCE(i.indexrelid IS NOT NULL, false) AS index_exists,
+        pg_get_expr(i.indpred, i.indrelid) AS predicate_expr,
+        COALESCE(pg_get_expr(i.indpred, i.indrelid) = '(valid_to IS NOT NULL)', false) AS predicate_matches,
+        (
+            c.oid IS NOT NULL AND
+            c.conrelid = to_regclass('public.mandal_versions') AND
+            c.contype = 'x' AND
+            am.amname = 'gist' AND
+            i.indexrelid IS NOT NULL AND
+            pg_get_expr(i.indpred, i.indrelid) = '(valid_to IS NOT NULL)'
+        ) AS is_valid
+    FROM (SELECT 1) dummy
+    LEFT JOIN pg_constraint c 
+      ON c.conrelid = to_regclass('public.mandal_versions')
+     AND c.conname = 'uq_mandal_versions_historical_no_overlap'
+    LEFT JOIN pg_class ic ON ic.oid = c.conindid
+    LEFT JOIN pg_am am ON am.oid = ic.relam
+    LEFT JOIN pg_index i ON i.indexrelid = c.conindid AND i.indrelid = c.conrelid
 ),
 c15 AS (
     SELECT EXISTS (
@@ -364,7 +382,7 @@ SELECT
         WHEN c.check_id = 13 THEN 
             'fk_mandals_current_version_same_anchor exists = ' || c13.fk_exists::text
         WHEN c.check_id = 14 THEN 
-            'uq_mandal_versions_no_overlap GiST exclusion exists = ' || c14.gist_exists::text
+            'exists=' || c14.constraint_exists::text || ', contype_x=' || c14.is_exclusion::text || ', am_gist=' || c14.is_gist::text || ', index_exists=' || c14.index_exists::text || ', predicate=' || COALESCE(c14.predicate_expr, 'NONE')
         WHEN c.check_id = 15 THEN 
             'uq_mandal_versions_single_current unique index exists = ' || c15.index_exists::text
         WHEN c.check_id = 16 THEN 
@@ -412,7 +430,7 @@ SELECT
         WHEN c.check_id = 13 THEN 
             CASE WHEN c13.fk_exists THEN 'PASS' ELSE 'FAIL' END
         WHEN c.check_id = 14 THEN 
-            CASE WHEN c14.gist_exists THEN 'PASS' ELSE 'FAIL' END
+            CASE WHEN c14.is_valid THEN 'PASS' ELSE 'FAIL' END
         WHEN c.check_id = 15 THEN 
             CASE WHEN c15.index_exists THEN 'PASS' ELSE 'FAIL' END
         WHEN c.check_id = 16 THEN 
