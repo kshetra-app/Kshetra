@@ -124,50 +124,22 @@ async function runTestSuite() {
   const mandalA = mandals[0];
   const mandalB = mandals[1];
 
-  // Set up authentic test-scoped OFFICIAL fixture under W012 institutional governance
-  // Using real repository evidence artifact: data/evidence/w015_b2/mopr_lgd_subdistrict_directory_ts.json
-  const evidenceRelPath = 'data/evidence/w015_b2/mopr_lgd_subdistrict_directory_ts.json';
-  const evidenceFullPath = path.resolve(evidenceRelPath);
-  if (!fs.existsSync(evidenceFullPath)) {
-    throw new Error(`FATAL: Authoritative evidence artifact not found: ${evidenceRelPath}`);
-  }
-  const evidenceBuf = fs.readFileSync(evidenceFullPath);
-  const authenticSha256 = crypto.createHash('sha256').update(evidenceBuf).digest('hex');
-
-  const testEvidenceId = crypto.randomUUID();
-  const testOfficialDsId = `test_w014_lgd_mandals_${Date.now()}`;
+  // Persistent staging acceptance fixture configured under W012 institutional governance
+  // Sourced from authentic repository evidence: data/evidence/w015_b2/mopr_lgd_subdistrict_directory_ts.json
+  const testOfficialDsId = 'ts_lgd_mandals_staging_official_v1';
   const unverifiedDsId = 'ts_districts_2016_v1'; // Standard UNVERIFIED dataset
 
-  let testFixtureCreated = false;
   try {
-    // 0. Register authentic test evidence record & official dataset version
-    const { error: evErr } = await adminClient.from('evidence_records').insert({
-      id: testEvidenceId,
-      artifact_name: 'mopr_lgd_subdistrict_directory_ts.json',
-      artifact_sha256: authenticSha256,
-      verification_authority: 'Ministry of Panchayati Raj, Government of India',
-      verified_by: 'LGD Subdistrict Directory Ingest Engine',
-      verification_notes: 'Statutory LGD subdistrict directory verification for Telangana mandals (W014 acceptance test execution)'
-    });
-    if (evErr) throw new Error(`Failed to create test evidence record: ${evErr.code} - ${evErr.message}`);
+    // Assert that the authoritative staging acceptance fixture exists and is OFFICIAL
+    const { data: dsVer, error: dsVerErr } = await adminClient
+      .from('dataset_versions')
+      .select('id, default_status, verification_evidence_id')
+      .eq('id', testOfficialDsId)
+      .single();
 
-    const { error: dsErr } = await adminClient.from('dataset_versions').insert({
-      id: testOfficialDsId,
-      dataset_id: 'ts_lgd_mandals',
-      version_tag: `test_v_${Date.now()}`,
-      effective_from: '2023-01-01',
-      record_count: 589,
-      checksum_sha256: authenticSha256,
-      default_status: 'OFFICIAL',
-      verification_evidence_id: testEvidenceId,
-      metadata: {
-        purpose: 'w014_temporal_integrity_verification',
-        evidence_source: evidenceRelPath
-      }
-    });
-    if (dsErr) throw new Error(`Failed to create test OFFICIAL dataset version: ${dsErr.code} - ${dsErr.message}`);
-
-    testFixtureCreated = true;
+    if (dsVerErr || !dsVer || dsVer.default_status !== 'OFFICIAL') {
+      throw new Error(`FATAL: Staging acceptance fixture "${testOfficialDsId}" is not configured or not OFFICIAL (code: ${dsVerErr?.code}, message: ${dsVerErr?.message}, status: ${dsVer?.default_status}). Remediation SQL supabase/remediation_w014_rls_boundary_041.sql must be applied to staging.`);
+    }
     // -------------------------------------------------------------------------
     // M1: Cross-mandal composite FK failure (23503)
     // -------------------------------------------------------------------------
@@ -672,12 +644,8 @@ async function runTestSuite() {
     recordTest('M15', 'Provenance Existence Validation', 'Supplied p_provenance_id must exist in public.provenance_records', m15Passed ? 'PASS' : 'FAIL', 'ERR-W014-005 (23503)', m15Observed, 'Function verifies foreign key existence of provenance record when supplied');
 
   } finally {
-    if (testFixtureCreated) {
-      const { error: delDsErr } = await adminClient.from('dataset_versions').delete().eq('id', testOfficialDsId);
-      if (delDsErr) console.warn(`Cleanup notice (dataset_versions): ${delDsErr.message}`);
-      const { error: delEvErr } = await adminClient.from('evidence_records').delete().eq('id', testEvidenceId);
-      if (delEvErr) console.warn(`Cleanup notice (evidence_records): ${delEvErr.message}`);
-    }
+    // Persistent staging acceptance infrastructure (evidence_records and dataset_versions)
+    // is permanently retained under W012 immutability rules. No deletion attempted.
   }
 
   // Save report
