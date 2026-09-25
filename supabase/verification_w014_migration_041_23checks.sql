@@ -16,7 +16,7 @@ WITH checks (check_id, check_name, expected) AS (
         (5, 'Current Assembly Constituency Versions Count', 'Exactly 119 current AC versions'),
         (6, 'Anchor Table Current Version Pointers', 'Zero NULL current_version_id on TS districts and TS constituencies'),
         (7, 'AC 109 (Mulug) Historical Timeline Intervals', 'Exactly 3 statutory intervals for AC 109 in constituency_district_timeline'),
-        (8, 'Entity Split Lineage Records', 'At least 2 split lineage records in public.geography_entity_lineage (Mulugu and Narayanpet)'),
+        (8, 'Entity Split Lineage Records (Mulugu & Narayanpet)', 'Split lineage records explicitly verified for Mulugu (from Jayashankar, G.O. 18) and Narayanpet (from Mahbubnagar, G.O. 19)'),
         (9, 'Delimitation Scenario Isolation Invariant', 'scenario_delimitation_draft_prop_1 legal_status != CURRENT_LEGAL_REGIME'),
         (10, 'Row Level Security on W014 Core Tables', 'RLS enabled (rowsecurity = true) on all 7 core W014 tables'),
         (11, 'Mandal Versions Table Existence', 'public.mandal_versions table exists in catalog'),
@@ -28,7 +28,7 @@ WITH checks (check_id, check_name, expected) AS (
         (17, 'Deferred Currentness & Retirement Constraint Triggers', 'Both trg_guard_mandal_current_version and trg_guard_mandal_version_retirement triggers exist'),
         (18, 'Transition Function Identity, Security Definer & Pinning', 'public.fn_transition_mandal_current_version(text,uuid,date,text,uuid) exists, prosecdef=true, owner=panin_boundary_definer, search_path=public, pg_temp'),
         (19, 'Boundary Definer Role Attributes & Schema Security', 'panin_boundary_definer has rolcanlogin=false, rolsuper=false, rolcreatedb=false, rolcreaterole=false, 0 inherited roles, USAGE on public, NO CREATE on public, CURRENT_USER cannot SET ROLE'),
-        (20, 'Boundary Definer Table-Level Least-Privilege Allocation', 'SELECT only on dataset_versions, provenance_records, mandals, mandal_versions (mandal_versions INSERT = FALSE, zero DELETE/TRUNCATE/REFERENCES/TRIGGER)'),
+        (20, 'Boundary Definer Table-Level Least-Privilege Allocation', 'SELECT only on dataset_versions, provenance_records, mandals, mandal_versions (NO table-level UPDATE, zero INSERT, zero DELETE/TRUNCATE/REFERENCES/TRIGGER)'),
         (21, 'Boundary Definer Column-Level UPDATE Privilege Pinning', 'UPDATE permitted strictly on mandals(current_version_id, updated_at) and mandal_versions(is_current, valid_from, valid_to, updated_at) (zero unintended column UPDATE grants)'),
         (22, 'Complete Transition Function EXECUTE Privilege Boundary', 'service_role=EXECUTE, panin_boundary_admin=EXECUTE, panin_boundary_definer=EXECUTE (owner), PUBLIC=NO EXECUTE, anon=NO EXECUTE, authenticated=NO EXECUTE (zero unauthorized grantees)'),
         (23, 'Row Level Security on Mandal Versions Table', 'RLS enabled (rowsecurity = true) on public.mandal_versions')
@@ -69,9 +69,32 @@ c7 AS (
     WHERE c.canonical_code = 'TS-AC-109'
 ),
 c8 AS (
-    SELECT count(*)::int AS split_lineage_count
-    FROM public.geography_entity_lineage
-    WHERE transition_type = 'split'
+    SELECT 
+        (SELECT count(*)::int FROM public.geography_entity_lineage WHERE transition_type = 'split') AS total_splits,
+        EXISTS (
+            SELECT 1 
+            FROM public.geography_entity_lineage l
+            JOIN public.districts pred ON l.predecessor_internal_id = pred.id
+            JOIN public.districts succ ON l.successor_internal_id = succ.id
+            WHERE l.entity_type = 'district'
+              AND l.transition_type = 'split'
+              AND pred.code = 'TS-DIST-JAYASHANKAR-BHUPALPALLY'
+              AND succ.code = 'TS-DIST-MULUGU'
+              AND l.effective_date = '2019-02-17'::date
+              AND l.statutory_order ILIKE '%G.O.Ms.No. 18%'
+        ) AS mulugu_split_verified,
+        EXISTS (
+            SELECT 1 
+            FROM public.geography_entity_lineage l
+            JOIN public.districts pred ON l.predecessor_internal_id = pred.id
+            JOIN public.districts succ ON l.successor_internal_id = succ.id
+            WHERE l.entity_type = 'district'
+              AND l.transition_type = 'split'
+              AND pred.code = 'TS-DIST-MAHABUBNAGAR'
+              AND succ.code = 'TS-DIST-NARAYANPET'
+              AND l.effective_date = '2019-02-17'::date
+              AND l.statutory_order ILIKE '%G.O.Ms.No. 19%'
+        ) AS narayanpet_split_verified
 ),
 c9 AS (
     SELECT (
@@ -180,14 +203,36 @@ c20 AS (
             has_table_privilege('panin_boundary_definer', 'public.mandals', 'SELECT') AND
             has_table_privilege('panin_boundary_definer', 'public.mandal_versions', 'SELECT')
         ) AS select_all_ok,
-        NOT has_table_privilege('panin_boundary_definer', 'public.mandal_versions', 'INSERT') AS mandal_versions_no_insert_ok,
+        NOT EXISTS (
+            SELECT 1 
+            FROM pg_class cl
+            JOIN pg_namespace n ON n.oid = cl.relnamespace
+            CROSS JOIN LATERAL aclexplode(COALESCE(cl.relacl, acldefault('r', cl.relowner))) acl
+            WHERE n.nspname = 'public'
+              AND cl.relname IN ('mandals', 'mandal_versions', 'dataset_versions', 'provenance_records')
+              AND acl.grantee = (SELECT oid FROM pg_roles WHERE rolname = 'panin_boundary_definer')
+              AND acl.privilege_type = 'UPDATE'
+        ) AS no_table_level_update,
+        (
+            SELECT count(*)::int
+            FROM pg_class cl
+            JOIN pg_namespace n ON n.oid = cl.relnamespace
+            CROSS JOIN LATERAL aclexplode(COALESCE(cl.relacl, acldefault('r', cl.relowner))) acl
+            WHERE n.nspname = 'public'
+              AND cl.relname IN ('mandals', 'mandal_versions', 'dataset_versions', 'provenance_records')
+              AND acl.grantee = (SELECT oid FROM pg_roles WHERE rolname = 'panin_boundary_definer')
+              AND acl.privilege_type IN ('INSERT', 'UPDATE', 'DELETE', 'TRUNCATE', 'REFERENCES', 'TRIGGER')
+        ) AS prohibited_relacl_count,
         (
             SELECT count(*)::int 
             FROM information_schema.table_privileges 
-            WHERE grantee = 'panin_boundary_definer' 
-              AND privilege_type IN ('INSERT', 'DELETE', 'TRUNCATE', 'REFERENCES', 'TRIGGER')
+            WHERE table_schema = 'public'
+              AND table_name IN ('mandals', 'mandal_versions', 'dataset_versions', 'provenance_records')
+              AND grantee = 'panin_boundary_definer' 
+              AND privilege_type IN ('INSERT', 'UPDATE', 'DELETE', 'TRUNCATE', 'REFERENCES', 'TRIGGER')
         ) AS prohibited_info_schema_count,
         (
+            has_table_privilege('panin_boundary_definer', 'public.mandal_versions', 'INSERT') OR
             has_table_privilege('panin_boundary_definer', 'public.mandal_versions', 'DELETE') OR
             has_table_privilege('panin_boundary_definer', 'public.mandal_versions', 'TRUNCATE') OR
             has_table_privilege('panin_boundary_definer', 'public.mandal_versions', 'REFERENCES') OR
@@ -297,7 +342,7 @@ SELECT
         WHEN c.check_id = 7 THEN 
             'AC 109 statutory intervals count = ' || c7.mulug_timeline_count::text
         WHEN c.check_id = 8 THEN 
-            'split lineage records count = ' || c8.split_lineage_count::text
+            'total_splits=' || c8.total_splits::text || ', mulugu_split=' || c8.mulugu_split_verified::text || ', narayanpet_split=' || c8.narayanpet_split_verified::text
         WHEN c.check_id = 9 THEN 
             'scenario_delimitation_draft_prop_1 status = ' || COALESCE(c9.scenario_status, 'NOT_FOUND')
         WHEN c.check_id = 10 THEN 
@@ -321,7 +366,7 @@ SELECT
         WHEN c.check_id = 19 THEN 
             'role_exists=' || c19.role_exists::text || ', login_ok=' || c19.canlogin_ok::text || ', super_ok=' || c19.super_ok::text || ', createdb_ok=' || c19.createdb_ok::text || ', createrole_ok=' || c19.createrole_ok::text || ', 0_inherited=' || c19.inherited_memberships_ok::text || ', usage_ok=' || c19.schema_usage_ok::text || ', no_create=' || c19.schema_no_create_ok::text || ', no_set_role=' || c19.current_user_no_set_role_ok::text || ', 0_members=' || c19.definer_has_no_members_ok::text
         WHEN c.check_id = 20 THEN 
-            'select_ok=' || c20.select_all_ok::text || ', no_insert=' || c20.mandal_versions_no_insert_ok::text || ', prohibited_info_schema=' || c20.prohibited_info_schema_count::text || ', any_prohibited=' || c20.any_prohibited_has_table_privilege::text
+            'select_ok=' || c20.select_all_ok::text || ', no_table_update=' || c20.no_table_level_update::text || ', prohibited_relacl_count=' || c20.prohibited_relacl_count::text || ', prohibited_info_schema_count=' || c20.prohibited_info_schema_count::text
         WHEN c.check_id = 21 THEN 
             'mandals_update_ok=' || c21.mandals_permitted_update_ok::text || ', mandals_unintended=' || c21.mandals_unintended_update_count::text || ', versions_update_ok=' || c21.versions_permitted_update_ok::text || ', versions_unintended=' || c21.versions_unintended_update_count::text
         WHEN c.check_id = 22 THEN 
@@ -345,7 +390,7 @@ SELECT
         WHEN c.check_id = 7 THEN 
             CASE WHEN c7.mulug_timeline_count = 3 THEN 'PASS' ELSE 'FAIL' END
         WHEN c.check_id = 8 THEN 
-            CASE WHEN c8.split_lineage_count >= 2 THEN 'PASS' ELSE 'FAIL' END
+            CASE WHEN c8.mulugu_split_verified AND c8.narayanpet_split_verified AND c8.total_splits >= 2 THEN 'PASS' ELSE 'FAIL' END
         WHEN c.check_id = 9 THEN 
             CASE WHEN c9.scenario_status IS NOT NULL AND c9.scenario_status <> 'CURRENT_LEGAL_REGIME' THEN 'PASS' ELSE 'FAIL' END
         WHEN c.check_id = 10 THEN 
@@ -369,7 +414,7 @@ SELECT
         WHEN c.check_id = 19 THEN 
             CASE WHEN c19.role_exists AND c19.canlogin_ok AND c19.super_ok AND c19.createdb_ok AND c19.createrole_ok AND c19.inherited_memberships_ok AND c19.schema_usage_ok AND c19.schema_no_create_ok AND c19.current_user_no_set_role_ok AND c19.definer_has_no_members_ok THEN 'PASS' ELSE 'FAIL' END
         WHEN c.check_id = 20 THEN 
-            CASE WHEN c20.select_all_ok AND c20.mandal_versions_no_insert_ok AND c20.prohibited_info_schema_count = 0 AND NOT c20.any_prohibited_has_table_privilege THEN 'PASS' ELSE 'FAIL' END
+            CASE WHEN c20.select_all_ok AND c20.no_table_level_update AND c20.prohibited_relacl_count = 0 AND c20.prohibited_info_schema_count = 0 AND NOT c20.any_prohibited_has_table_privilege THEN 'PASS' ELSE 'FAIL' END
         WHEN c.check_id = 21 THEN 
             CASE WHEN c21.mandals_permitted_update_ok AND c21.mandals_unintended_update_count = 0 AND c21.versions_permitted_update_ok AND c21.versions_unintended_update_count = 0 THEN 'PASS' ELSE 'FAIL' END
         WHEN c.check_id = 22 THEN 
