@@ -1,151 +1,147 @@
 {
-  "timestamp": "2026-09-25T02:15:25.749Z",
+  "timestamp": "2026-09-25T08:48:11.068Z",
   "target": "https://fkpigozcqnmcvofuksar.supabase.co",
-  "migration_status": "PACKAGE_PREPARED_PENDING_STAGING_EXECUTION",
-  "package_file": "supabase/staging_migration_package_041.sql",
-  "verification_file": "supabase/verify_staging_migration_package_041.sql",
-  "rollback_file": "supabase/rollback_staging_migration_package_041.sql",
   "summary": {
     "total": 15,
-    "passed": 0,
-    "failed": 0,
-    "pending": 15
+    "passed": 8,
+    "failed": 7,
+    "pending": 0
   },
   "tests": [
     {
       "id": "M1",
-      "name": "Assertion M1",
-      "requirement": "W014 Mandal Temporal Invariant M1",
-      "status": "TO-BE VERIFIED",
-      "expected": "Migration package execution on staging",
-      "observed": "Staging schema pending execution of supabase/staging_migration_package_041.sql (table: missing, column: missing)",
-      "details": "Atomic migration package prepared in supabase/staging_migration_package_041.sql"
+      "name": "Cross-Mandal Composite FK Enforcement",
+      "requirement": "mandals.current_version_id -> mandal_versions(id, mandal_id)",
+      "status": "PASS",
+      "expected": "23503 (foreign_key_violation)",
+      "observed": "23503: insert or update on table \"mandals\" violates foreign key constraint \"fk_mandals_current_version_same_anchor\"",
+      "details": "Cross-mandal assignment rejected by composite same-anchor FK"
     },
     {
       "id": "M2",
-      "name": "Assertion M2",
-      "requirement": "W014 Mandal Temporal Invariant M2",
-      "status": "TO-BE VERIFIED",
-      "expected": "Migration package execution on staging",
-      "observed": "Staging schema pending execution of supabase/staging_migration_package_041.sql (table: missing, column: missing)",
-      "details": "Atomic migration package prepared in supabase/staging_migration_package_041.sql"
+      "name": "Anchor Cannot Reference Inactive Version",
+      "requirement": "mandals.current_version_id requires is_current = true",
+      "status": "PASS",
+      "expected": "ERR-W014-001 (23514)",
+      "observed": "23514: INTEGRITY VIOLATION [ERR-W014-001]: mandals.current_version_id (60a0452a-8138-4198-b8e8-fc813bebefba) must reference an active version (is_current = true) belonging to mandal TS-MDL-7102",
+      "details": "Reference to inactive version fails closed via trg_guard_mandal_current_version"
     },
     {
       "id": "M3",
-      "name": "Assertion M3",
-      "requirement": "W014 Mandal Temporal Invariant M3",
-      "status": "TO-BE VERIFIED",
-      "expected": "Migration package execution on staging",
-      "observed": "Staging schema pending execution of supabase/staging_migration_package_041.sql (table: missing, column: missing)",
-      "details": "Atomic migration package prepared in supabase/staging_migration_package_041.sql"
+      "name": "Referenced Current Version Retirement Guard",
+      "requirement": "Cannot retire active version while referenced by current_version_id",
+      "status": "FAIL",
+      "expected": "ERR-W014-002 (23514)",
+      "observed": "SUCCESS (UNEXPECTED)",
+      "details": "Retirement guard trg_guard_mandal_version_retirement blocks deactivation"
     },
     {
       "id": "M4",
-      "name": "Assertion M4",
-      "requirement": "W014 Mandal Temporal Invariant M4",
-      "status": "TO-BE VERIFIED",
-      "expected": "Migration package execution on staging",
-      "observed": "Staging schema pending execution of supabase/staging_migration_package_041.sql (table: missing, column: missing)",
-      "details": "Atomic migration package prepared in supabase/staging_migration_package_041.sql"
+      "name": "Single Current Version per Mandal (Partial Unique Index)",
+      "requirement": "At most one is_current=true per mandal_id",
+      "status": "FAIL",
+      "expected": "23505 (unique_violation)",
+      "observed": "23P01: conflicting key value violates exclusion constraint \"uq_mandal_versions_no_overlap\"",
+      "details": "Second active version rejected with unique_violation"
     },
     {
       "id": "M5",
-      "name": "Assertion M5",
-      "requirement": "W014 Mandal Temporal Invariant M5",
-      "status": "TO-BE VERIFIED",
-      "expected": "Migration package execution on staging",
-      "observed": "Staging schema pending execution of supabase/staging_migration_package_041.sql (table: missing, column: missing)",
-      "details": "Atomic migration package prepared in supabase/staging_migration_package_041.sql"
+      "name": "Direct Invalid Mutation Fail-Closed",
+      "requirement": "Invalid FK and inverted temporal range rejected",
+      "status": "FAIL",
+      "expected": "FK 23503, Range 23514",
+      "observed": "FK: 23503, Range: 22000",
+      "details": "All invalid direct mutations fail-closed"
     },
     {
       "id": "M6",
-      "name": "Assertion M6",
-      "requirement": "W014 Mandal Temporal Invariant M6",
-      "status": "TO-BE VERIFIED",
-      "expected": "Migration package execution on staging",
-      "observed": "Staging schema pending execution of supabase/staging_migration_package_041.sql (table: missing, column: missing)",
-      "details": "Atomic migration package prepared in supabase/staging_migration_package_041.sql"
+      "name": "Atomic Valid Transition Succeeds",
+      "requirement": "fn_transition_mandal_current_version atomically transitions version and pointer",
+      "status": "FAIL",
+      "expected": "TRANSITION_COMPLETE",
+      "observed": null,
+      "details": "Atomic transition successfully retires previous version, activates new version, and updates pointer"
     },
     {
       "id": "M7",
-      "name": "Assertion M7",
-      "requirement": "W014 Mandal Temporal Invariant M7",
-      "status": "TO-BE VERIFIED",
-      "expected": "Migration package execution on staging",
-      "observed": "Staging schema pending execution of supabase/staging_migration_package_041.sql (table: missing, column: missing)",
-      "details": "Atomic migration package prepared in supabase/staging_migration_package_041.sql"
+      "name": "Candidate Versions Excluded from Canonical Truth",
+      "requirement": "Candidate is_current=false versions cannot be returned as canonical legal truth",
+      "status": "PASS",
+      "expected": "Excluded from canonical pointer and active views",
+      "observed": "isCanonical: false, isActive: false",
+      "details": "Candidate version completely isolated from canonical views"
     },
     {
       "id": "M8",
-      "name": "Assertion M8",
-      "requirement": "W014 Mandal Temporal Invariant M8",
-      "status": "TO-BE VERIFIED",
-      "expected": "Migration package execution on staging",
-      "observed": "Staging schema pending execution of supabase/staging_migration_package_041.sql (table: missing, column: missing)",
-      "details": "Atomic migration package prepared in supabase/staging_migration_package_041.sql"
+      "name": "Non-OFFICIAL Dataset Cannot Become Canonical",
+      "requirement": "mandals.current_version_id requires dataset_versions.default_status = OFFICIAL",
+      "status": "PASS",
+      "expected": "ERR-W014-003 (23514)",
+      "observed": "23514: AUTHORITY VIOLATION [ERR-W014-003]: mandals.current_version_id (21af75c3-8e0f-4204-8529-f29182c5f48c) references dataset version with status \"UNVERIFIED\". Canonical pointer requires W012 \"OFFICIAL\" authority.",
+      "details": "Trigger Layer 2 enforces W012 institutional authority"
     },
     {
       "id": "M9",
-      "name": "Assertion M9",
-      "requirement": "W014 Mandal Temporal Invariant M9",
-      "status": "TO-BE VERIFIED",
-      "expected": "Migration package execution on staging",
-      "observed": "Staging schema pending execution of supabase/staging_migration_package_041.sql (table: missing, column: missing)",
-      "details": "Atomic migration package prepared in supabase/staging_migration_package_041.sql"
+      "name": "Active Version with Non-Null valid_to Rejected",
+      "requirement": "chk_mandal_versions_current_invariants enforces is_current => valid_to IS NULL",
+      "status": "PASS",
+      "expected": "23514 (check_violation)",
+      "observed": "23514: new row for relation \"mandal_versions\" violates check constraint \"chk_mandal_versions_current_invariants\"",
+      "details": "Calendar-independent check constraint rejects valid_to on active version"
     },
     {
       "id": "M10",
-      "name": "Assertion M10",
-      "requirement": "W014 Mandal Temporal Invariant M10",
-      "status": "TO-BE VERIFIED",
-      "expected": "Migration package execution on staging",
-      "observed": "Staging schema pending execution of supabase/staging_migration_package_041.sql (table: missing, column: missing)",
-      "details": "Atomic migration package prepared in supabase/staging_migration_package_041.sql"
+      "name": "Direct Closure of Current Version Rejected",
+      "requirement": "Direct closure of referenced version rejected by check constraint & retirement trigger",
+      "status": "FAIL",
+      "expected": "23514 (check_violation & trigger failure)",
+      "observed": "Attempt 1: 23514, Attempt 2: undefined",
+      "details": "Bypassing transition function to directly close active version fails closed"
     },
     {
       "id": "M11",
-      "name": "Assertion M11",
-      "requirement": "W014 Mandal Temporal Invariant M11",
-      "status": "TO-BE VERIFIED",
-      "expected": "Migration package execution on staging",
-      "observed": "Staging schema pending execution of supabase/staging_migration_package_041.sql (table: missing, column: missing)",
-      "details": "Atomic migration package prepared in supabase/staging_migration_package_041.sql"
+      "name": "Valid OFFICIAL Open-Ended Transition",
+      "requirement": "Open-ended candidate on OFFICIAL dataset successfully transitions with full JSONB receipt",
+      "status": "FAIL",
+      "expected": "status: TRANSITION_COMPLETE",
+      "observed": "23503: VERSION_NOT_FOUND: mandal_version e17c84f5-eeb5-45b7-aebf-c9d4bbb9a3d4 does not exist",
+      "details": "Full transition lifecycle produces valid audit receipt"
     },
     {
       "id": "M12",
-      "name": "Assertion M12",
-      "requirement": "W014 Mandal Temporal Invariant M12",
-      "status": "TO-BE VERIFIED",
-      "expected": "Migration package execution on staging",
-      "observed": "Staging schema pending execution of supabase/staging_migration_package_041.sql (table: missing, column: missing)",
-      "details": "Atomic migration package prepared in supabase/staging_migration_package_041.sql"
+      "name": "UNVERIFIED Candidate Transition Rejected",
+      "requirement": "Transition function rejects candidate version from non-OFFICIAL dataset",
+      "status": "FAIL",
+      "expected": "ERR-W014-003 (23514)",
+      "observed": "23503: VERSION_NOT_FOUND: mandal_version 247fe0fe-8f64-4874-b994-ce760d882dda does not exist",
+      "details": "W012 dataset governance prevents elevation of UNVERIFIED candidate via transition function"
     },
     {
       "id": "M13",
-      "name": "Assertion M13",
-      "requirement": "W014 Mandal Temporal Invariant M13",
-      "status": "TO-BE VERIFIED",
-      "expected": "Migration package execution on staging",
-      "observed": "Staging schema pending execution of supabase/staging_migration_package_041.sql (table: missing, column: missing)",
-      "details": "Atomic migration package prepared in supabase/staging_migration_package_041.sql"
+      "name": "Privilege Boundary & ACL Enforcement",
+      "requirement": "PUBLIC/anon denied EXECUTE; anonymous DML denied by RLS",
+      "status": "PASS",
+      "expected": "42501 (insufficient_privilege)",
+      "observed": "RPC: 42501, DML: 42501",
+      "details": "PostgreSQL declarative ACL blocks anonymous transition function execution and DML"
     },
     {
       "id": "M14",
-      "name": "Assertion M14",
-      "requirement": "W014 Mandal Temporal Invariant M14",
-      "status": "TO-BE VERIFIED",
-      "expected": "Migration package execution on staging",
-      "observed": "Staging schema pending execution of supabase/staging_migration_package_041.sql (table: missing, column: missing)",
-      "details": "Atomic migration package prepared in supabase/staging_migration_package_041.sql"
+      "name": "p_operator Zero Privilege Matrix",
+      "requirement": "p_operator text parameter cannot elevate unauthorized caller",
+      "status": "PASS",
+      "expected": "Both 42501",
+      "observed": "Case 1: 42501, Case 2: 42501",
+      "details": "Caller authorization enforced exclusively by PostgreSQL EXECUTE ACL, p_operator is audit-only"
     },
     {
       "id": "M15",
-      "name": "Assertion M15",
-      "requirement": "W014 Mandal Temporal Invariant M15",
-      "status": "TO-BE VERIFIED",
-      "expected": "Migration package execution on staging",
-      "observed": "Staging schema pending execution of supabase/staging_migration_package_041.sql (table: missing, column: missing)",
-      "details": "Atomic migration package prepared in supabase/staging_migration_package_041.sql"
+      "name": "Provenance Existence Validation",
+      "requirement": "Supplied p_provenance_id must exist in public.provenance_records",
+      "status": "PASS",
+      "expected": "ERR-W014-005 (23503)",
+      "observed": "23503: PROVENANCE NOT FOUND [ERR-W014-005]: Specified provenance_id 00000000-0000-0000-0000-000000000001 does not exist in public.provenance_records",
+      "details": "Function verifies foreign key existence of provenance record when supplied"
     }
   ]
 }
