@@ -357,22 +357,31 @@ async function runTestSuite() {
       cleanupVersionIds.push(v6bId);
       m6SubResults.push('candidate_insert:PASS');
 
-      // 2b. Mandal Immutability: direct update attempting to mutate mandal_id fails with 23514 (ERR-W014-008)
+      // 2b. Mandal Immutability: direct update attempting to mutate mandal_id fails with exact SQLSTATE 23514
+      if (!mandalB || mandalA.id === mandalB.id) {
+        throw new Error(`M6 Setup Error: Distinct secondary mandal anchor mandalB is required for immutability test (mandalA=${mandalA?.id}, mandalB=${mandalB?.id})`);
+      }
+
       const { error: errMandalIdMut } = await adminClient.from('mandal_versions').update({
         mandal_id: mandalB.id
       }).eq('id', v6aId);
 
-      const isMandalIdImmutOk = errMandalIdMut && (
-        errMandalIdMut.code === '23514' ||
-        errMandalIdMut.message?.includes('23514') ||
-        errMandalIdMut.message?.includes('ERR-W014-008') ||
-        errMandalIdMut.message?.includes('IMMUTABILITY VIOLATION') ||
-        errMandalIdMut.message?.includes('immutable')
-      );
-      if (isMandalIdImmutOk) {
-        m6SubResults.push('mandal_id_immutability_23514:PASS');
+      // Verify row state in database: mandal_id MUST remain unchanged
+      const { data: v6aPostMut, error: errFetchPost } = await adminClient.from('mandal_versions').select('mandal_id').eq('id', v6aId).single();
+      if (errFetchPost || !v6aPostMut) {
+        throw new Error(`M6 Post-Mutation Check Error: Failed to re-fetch v6a to verify mandal_id persistence: ${errFetchPost?.message}`);
+      }
+
+      const rowAnchorUnchanged = v6aPostMut.mandal_id === mandalA.id;
+      const isSqlState23514 = errMandalIdMut?.code === '23514';
+      const isDiagnosticMessageMatched = errMandalIdMut?.message?.includes('ERR-W014-008') || errMandalIdMut?.message?.includes('IMMUTABILITY VIOLATION');
+
+      let isMandalIdImmutOk = false;
+      if (isSqlState23514 && rowAnchorUnchanged) {
+        isMandalIdImmutOk = true;
+        m6SubResults.push(`mandal_id_immutability_23514:PASS(sqlstate=${errMandalIdMut.code},anchor_persisted=${rowAnchorUnchanged},diagnostic_match=${isDiagnosticMessageMatched})`);
       } else {
-        m6SubResults.push(`mandal_id_immutability_23514:FAIL(${errMandalIdMut?.code || 'SUCCESS_UNEXPECTED'})`);
+        m6SubResults.push(`mandal_id_immutability_23514:FAIL(sqlstate=${errMandalIdMut?.code || 'NONE'},anchor_persisted=${rowAnchorUnchanged},err=${errMandalIdMut?.message || 'NO_ERROR'})`);
       }
 
       // 3. Direction A: Invalid direct write — closed historical version overlapping active current version fails with 23P01

@@ -191,20 +191,34 @@ In PostgreSQL, `UPDATE OF col1, col2, ...` fires the trigger **only if** at leas
 
 ## H. TEST SUITE IMPLICATIONS (TEST M6)
 
-In `tests/test_mandal_version_integrity.mjs`, Test M6 is updated to include sub-check 2b:
+In `tests/test_mandal_version_integrity.mjs`, Test M6 is hardened with strict SQLSTATE and row persistence checks:
 ```javascript
-// 2b. Mandal Immutability: direct update attempting to mutate mandal_id fails with 23514 (ERR-W014-008)
-const { error: errMandalIdMut } = await adminClient.from('mandal_versions').update({
-  mandal_id: mandalB.id
-}).eq('id', v6aId);
+      // 2b. Mandal Immutability: direct update attempting to mutate mandal_id fails with exact SQLSTATE 23514
+      if (!mandalB || mandalA.id === mandalB.id) {
+        throw new Error(`M6 Setup Error: Distinct secondary mandal anchor mandalB is required for immutability test (mandalA=${mandalA?.id}, mandalB=${mandalB?.id})`);
+      }
 
-const isMandalIdImmutOk = errMandalIdMut && (
-  errMandalIdMut.code === '23514' ||
-  errMandalIdMut.message?.includes('23514') ||
-  errMandalIdMut.message?.includes('ERR-W014-008') ||
-  errMandalIdMut.message?.includes('IMMUTABILITY VIOLATION') ||
-  errMandalIdMut.message?.includes('immutable')
-);
+      const { error: errMandalIdMut } = await adminClient.from('mandal_versions').update({
+        mandal_id: mandalB.id
+      }).eq('id', v6aId);
+
+      // Verify row state in database: mandal_id MUST remain unchanged
+      const { data: v6aPostMut, error: errFetchPost } = await adminClient.from('mandal_versions').select('mandal_id').eq('id', v6aId).single();
+      if (errFetchPost || !v6aPostMut) {
+        throw new Error(`M6 Post-Mutation Check Error: Failed to re-fetch v6a to verify mandal_id persistence: ${errFetchPost?.message}`);
+      }
+
+      const rowAnchorUnchanged = v6aPostMut.mandal_id === mandalA.id;
+      const isSqlState23514 = errMandalIdMut?.code === '23514';
+      const isDiagnosticMessageMatched = errMandalIdMut?.message?.includes('ERR-W014-008') || errMandalIdMut?.message?.includes('IMMUTABILITY VIOLATION');
+
+      let isMandalIdImmutOk = false;
+      if (isSqlState23514 && rowAnchorUnchanged) {
+        isMandalIdImmutOk = true;
+        m6SubResults.push(`mandal_id_immutability_23514:PASS(sqlstate=${errMandalIdMut.code},anchor_persisted=${rowAnchorUnchanged},diagnostic_match=${isDiagnosticMessageMatched})`);
+      } else {
+        m6SubResults.push(`mandal_id_immutability_23514:FAIL(sqlstate=${errMandalIdMut?.code || 'NONE'},anchor_persisted=${rowAnchorUnchanged},err=${errMandalIdMut?.message || 'NO_ERROR'})`);
+      }
 ```
 
 ### Fail-Closed Assertion Chain:
@@ -213,11 +227,15 @@ if (isMandalIdImmutOk && is23P01HistCurrent && transitionOk && boundaryEqualityO
   m6Passed = true;
 }
 ```
-If the mandal immutability check fails to throw `23514`, `isMandalIdImmutOk` evaluates to `false` and M6 fails closed.
+If the mandal immutability check fails to return exact SQLSTATE `23514` or if the stored row's `mandal_id` was modified, `isMandalIdImmutOk` evaluates to `false` and M6 fails closed.
 
 ---
 
-## I. ROLLBACK IMPLICATIONS
+## I. ROLLBACK IMPLICATIONS & GOVERNANCE INVARIANT
+
+> [!WARNING]
+> ### ROLLBACK GOVERNANCE STATEMENT
+> **Rollback restores the pre-M6 baseline and is NOT a safe steady-state configuration for the M6 invariant. M6 must be reapplied before the environment is considered W014-M6 compliant.**
 
 In `supabase/rollback_w014_m6_gist_boundary_041.sql`:
 ```sql
@@ -231,8 +249,8 @@ Because the `mandal_id` immutability check is encapsulated entirely inside `fn_g
 ## J. EXACT FILES REQUIRING MODIFICATION
 
 1. `supabase/remediation_w014_m6_gist_boundary_041.sql` (added Step 0 immutability check)
-2. `tests/test_mandal_version_integrity.mjs` (added sub-check 2b for `mandal_id` immutability in M6)
-3. `W014_M6_IMPLEMENTATION_PACKAGE.md` (updated documentation, descriptions, and SHA-256 hashes)
+2. `tests/test_mandal_version_integrity.mjs` (hardened sub-check 2b for `mandal_id` immutability in M6 with exact SQLSTATE 23514 and row persistence check)
+3. `W014_M6_IMPLEMENTATION_PACKAGE.md` (updated documentation, rollback governance invariant, and SHA-256 hashes)
 4. `W014_M6_MANDAL_ID_IMMUTABILITY_RECONCILIATION.md` (this report)
 
 ---
@@ -244,8 +262,8 @@ Because the `mandal_id` immutability check is encapsulated entirely inside `fn_g
 | `supabase/remediation_w014_m6_gist_boundary_041.sql` | `632AA64A1EEDC8D282EE08052B567DBCD4626E4BBBC03B8D9CEE152EE0E72DA1` |
 | `supabase/rollback_w014_m6_gist_boundary_041.sql` | `DF9D6CE37903E2AAFCCEB1AE991BB4A81AF37EAB77F6776670663F3CDCD6FFE9` |
 | `supabase/verification_w014_migration_041_23checks.sql` | `A4F31C66AE2C493E4D0277B3525412C88EB4B25ECE91EB767408DA0488DFFF82` |
-| `tests/test_mandal_version_integrity.mjs` | `9A22761B1FE1B915983BD22B5F0E529095CCDA211940C756D0B879A1A42A4705` |
-| `W014_M6_IMPLEMENTATION_PACKAGE.md` | `2996AA0FF4C8036B3A1131643D754DE3646A5DADC52DDD9A57726E5AE3CC6FAC` |
+| `tests/test_mandal_version_integrity.mjs` | `4D174F48CF42EDF617CDE5E5FA94487448D94A0160C9021BFF96A78746E05AB2` |
+| `W014_M6_IMPLEMENTATION_PACKAGE.md` | `279894B9B05CC53934D75BCBE4A9ECCB39E7ED82E3DB22EBB938C5367A93CF04` |
 
 ---
 

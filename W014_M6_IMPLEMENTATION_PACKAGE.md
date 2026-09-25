@@ -53,7 +53,7 @@ Following CTO authorization of **Option A: BEFORE ROW Immediate Trigger Architec
 | **Remediation DDL** | `supabase/remediation_w014_m6_gist_boundary_041.sql` | `632AA64A1EEDC8D282EE08052B567DBCD4626E4BBBC03B8D9CEE152EE0E72DA1` | **PREPARED / UNEXECUTED** |
 | **Rollback DDL** | `supabase/rollback_w014_m6_gist_boundary_041.sql` | `DF9D6CE37903E2AAFCCEB1AE991BB4A81AF37EAB77F6776670663F3CDCD6FFE9` | **PREPARED / UNEXECUTED** |
 | **23-Check Verifier** | `supabase/verification_w014_migration_041_23checks.sql` | `A4F31C66AE2C493E4D0277B3525412C88EB4B25ECE91EB767408DA0488DFFF82` | **PREPARED / UNEXECUTED** |
-| **Test Suite** | `tests/test_mandal_version_integrity.mjs` | `9A22761B1FE1B915983BD22B5F0E529095CCDA211940C756D0B879A1A42A4705` | **PREPARED / UNEXECUTED** |
+| **Test Suite** | `tests/test_mandal_version_integrity.mjs` | `4D174F48CF42EDF617CDE5E5FA94487448D94A0160C9021BFF96A78746E05AB2` | **PREPARED / UNEXECUTED** |
 
 ---
 
@@ -75,7 +75,7 @@ The remediation script executes inside a single atomic transaction block (`BEGIN
     WHERE (valid_to IS NOT NULL);
   ```
 - **Step 3: Trigger Function `fn_guard_mandal_version_temporal_bounds`**
-  Implements concurrency serialization (`mandals FOR UPDATE`), Direction A (closed historical vs active current), Direction B (active current vs closed historical), candidate permissibility, and adjacency validation.
+  Implements Step 0 mandal_id immutability (`ERR-W014-008` / `23514`), Step 1 concurrency serialization (`mandals FOR UPDATE`), Direction A (closed historical vs active current), Direction B (active current vs closed historical), candidate permissibility, and adjacency validation.
 - **Step 4: Trigger Definition `trg_guard_mandal_version_temporal_bounds`**
   Attaches `BEFORE INSERT OR UPDATE OF mandal_id, valid_from, valid_to, is_current ON public.mandal_versions FOR EACH ROW`.
 - **Step 5: Function Ownership & Security**
@@ -90,6 +90,10 @@ The remediation script executes inside a single atomic transaction block (`BEGIN
 ---
 
 ## 4. ROLLBACK DDL STRUCTURE (`rollback_w014_m6_gist_boundary_041.sql`)
+
+> [!WARNING]
+> ### ROLLBACK GOVERNANCE INVARIANT
+> **Rollback restores the pre-M6 baseline and is NOT a safe steady-state configuration for the M6 invariant. M6 must be reapplied before the environment is considered W014-M6 compliant.**
 
 The rollback script guarantees clean restoration of the Migration 041 baseline:
 1. **Pre-Rollback Fail-Closed Check:** Asserts that no mandal has multiple open-ended versions before attempting to re-impose the unconditional GiST constraint.
