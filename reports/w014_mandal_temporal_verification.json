@@ -1,5 +1,5 @@
 {
-  "timestamp": "2026-09-24T17:36:41.115Z",
+  "timestamp": "2026-09-25T02:15:25.749Z",
   "target": "https://fkpigozcqnmcvofuksar.supabase.co",
   "migration_status": "PACKAGE_PREPARED_PENDING_STAGING_EXECUTION",
   "package_file": "supabase/staging_migration_package_041.sql",
@@ -18,7 +18,7 @@
       "requirement": "W014 Mandal Temporal Invariant M1",
       "status": "TO-BE VERIFIED",
       "expected": "Migration package execution on staging",
-      "observed": "Table public.mandal_versions pending execution on staging",
+      "observed": "Staging schema pending execution of supabase/staging_migration_package_041.sql (table: missing, column: missing)",
       "details": "Atomic migration package prepared in supabase/staging_migration_package_041.sql"
     },
     {
@@ -27,7 +27,7 @@
       "requirement": "W014 Mandal Temporal Invariant M2",
       "status": "TO-BE VERIFIED",
       "expected": "Migration package execution on staging",
-      "observed": "Table public.mandal_versions pending execution on staging",
+      "observed": "Staging schema pending execution of supabase/staging_migration_package_041.sql (table: missing, column: missing)",
       "details": "Atomic migration package prepared in supabase/staging_migration_package_041.sql"
     },
     {
@@ -36,7 +36,7 @@
       "requirement": "W014 Mandal Temporal Invariant M3",
       "status": "TO-BE VERIFIED",
       "expected": "Migration package execution on staging",
-      "observed": "Table public.mandal_versions pending execution on staging",
+      "observed": "Staging schema pending execution of supabase/staging_migration_package_041.sql (table: missing, column: missing)",
       "details": "Atomic migration package prepared in supabase/staging_migration_package_041.sql"
     },
     {
@@ -45,7 +45,7 @@
       "requirement": "W014 Mandal Temporal Invariant M4",
       "status": "TO-BE VERIFIED",
       "expected": "Migration package execution on staging",
-      "observed": "Table public.mandal_versions pending execution on staging",
+      "observed": "Staging schema pending execution of supabase/staging_migration_package_041.sql (table: missing, column: missing)",
       "details": "Atomic migration package prepared in supabase/staging_migration_package_041.sql"
     },
     {
@@ -54,7 +54,7 @@
       "requirement": "W014 Mandal Temporal Invariant M5",
       "status": "TO-BE VERIFIED",
       "expected": "Migration package execution on staging",
-      "observed": "Table public.mandal_versions pending execution on staging",
+      "observed": "Staging schema pending execution of supabase/staging_migration_package_041.sql (table: missing, column: missing)",
       "details": "Atomic migration package prepared in supabase/staging_migration_package_041.sql"
     },
     {
@@ -63,7 +63,7 @@
       "requirement": "W014 Mandal Temporal Invariant M6",
       "status": "TO-BE VERIFIED",
       "expected": "Migration package execution on staging",
-      "observed": "Table public.mandal_versions pending execution on staging",
+      "observed": "Staging schema pending execution of supabase/staging_migration_package_041.sql (table: missing, column: missing)",
       "details": "Atomic migration package prepared in supabase/staging_migration_package_041.sql"
     },
     {
@@ -72,7 +72,7 @@
       "requirement": "W014 Mandal Temporal Invariant M7",
       "status": "TO-BE VERIFIED",
       "expected": "Migration package execution on staging",
-      "observed": "Table public.mandal_versions pending execution on staging",
+      "observed": "Staging schema pending execution of supabase/staging_migration_package_041.sql (table: missing, column: missing)",
       "details": "Atomic migration package prepared in supabase/staging_migration_package_041.sql"
     },
     {
@@ -81,7 +81,7 @@
       "requirement": "W014 Mandal Temporal Invariant M8",
       "status": "TO-BE VERIFIED",
       "expected": "Migration package execution on staging",
-      "observed": "Table public.mandal_versions pending execution on staging",
+      "observed": "Staging schema pending execution of supabase/staging_migration_package_041.sql (table: missing, column: missing)",
       "details": "Atomic migration package prepared in supabase/staging_migration_package_041.sql"
     },
     {
@@ -90,7 +90,7 @@
       "requirement": "W014 Mandal Temporal Invariant M9",
       "status": "TO-BE VERIFIED",
       "expected": "Migration package execution on staging",
-      "observed": "Table public.mandal_versions pending execution on staging",
+      "observed": "Staging schema pending execution of supabase/staging_migration_package_041.sql (table: missing, column: missing)",
       "details": "Atomic migration package prepared in supabase/staging_migration_package_041.sql"
     },
     {
@@ -99,7 +99,7 @@
       "requirement": "W014 Mandal Temporal Invariant M10",
       "status": "TO-BE VERIFIED",
       "expected": "Migration package execution on staging",
-      "observed": "Table public.mandal_versions pending execution on staging",
+      "observed": "Staging schema pending execution of supabase/staging_migration_package_041.sql (table: missing, column: missing)",
       "details": "Atomic migration package prepared in supabase/staging_migration_package_041.sql"
     },
     {
@@ -108,7 +108,7 @@
       "requirement": "W014 Mandal Temporal Invariant M11",
       "status": "TO-BE VERIFIED",
       "expected": "Migration package execution on staging",
-      "observed": "Table public.mandal_versions pending execution on staging",
+      "observed": "Staging schema pending execution of supabase/staging_migration_package_041.sql (table: missing, column: missing)",
       "details": "Atomic migration package prepared in supabase/staging_migration_package_041.sql"
     },
     {
@@ -117,7 +117,7 @@
       "requirement": "W014 Mandal Temporal Invariant M12",
       "status": "TO-BE VERIFIED",
       "expected": "Migration package execution on staging",
-      "observed": "Table public.mandal_versions pending execution on staging",
+      "observed": "Staging schema pending execution of supabase/staging_migration_package_041.sql (table: missing, column: missing)",
       "details": "Atomic migration package prepared in supabase/staging_migration_package_041.sql"
     },
     {
@@ -126,7 +126,7 @@
       "requirement": "W014 Mandal Temporal Invariant M13",
       "status": "TO-BE VERIFIED",
       "expected": "Migration package execution on staging",
-      "observed": "Table public.mandal_versions pending execution on staging",
+      "observed": "Staging schema pending execution of supabase/staging_migration_package_041.sql (table: missing, column: missing)",
       "details": "Atomic migration package prepared in supabase/staging_migration_package_041.sql"
     },
     {
@@ -135,7 +135,7 @@
       "requirement": "W014 Mandal Temporal Invariant M14",
       "status": "TO-BE VERIFIED",
       "expected": "Migration package execution on staging",
-      "observed": "Table public.mandal_versions pending execution on staging",
+      "observed": "Staging schema pending execution of supabase/staging_migration_package_041.sql (table: missing, column: missing)",
       "details": "Atomic migration package prepared in supabase/staging_migration_package_041.sql"
     },
     {
@@ -144,7 +144,7 @@
       "requirement": "W014 Mandal Temporal Invariant M15",
       "status": "TO-BE VERIFIED",
       "expected": "Migration package execution on staging",
-      "observed": "Table public.mandal_versions pending execution on staging",
+      "observed": "Staging schema pending execution of supabase/staging_migration_package_041.sql (table: missing, column: missing)",
       "details": "Atomic migration package prepared in supabase/staging_migration_package_041.sql"
     }
   ]
