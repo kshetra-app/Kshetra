@@ -25,7 +25,7 @@ WITH checks (check_id, check_name, expected) AS (
         (14, 'Mandal Versions Historical GiST Exclusion Constraint', 'uq_mandal_versions_historical_no_overlap on public.mandal_versions, contype=x, am=gist, index predicate exactly (valid_to IS NOT NULL)'),
         (15, 'Mandal Versions Single Current Unique Index', 'uq_mandal_versions_single_current unique index exists on public.mandal_versions'),
         (16, 'Mandal Versions Currentness Invariants Constraint', 'chk_mandal_versions_current_invariants check constraint exists on public.mandal_versions'),
-        (17, 'Deferred Currentness & Retirement Constraint Triggers', 'Both trg_guard_mandal_current_version and trg_guard_mandal_version_retirement triggers exist'),
+        (17, 'Mandals & Versions Bidirectional Constraint & Temporal Boundary Triggers', 'trg_guard_mandal_current_version (mandals), trg_guard_mandal_version_retirement (mandal_versions), and trg_guard_mandal_version_temporal_bounds (mandal_versions BEFORE ROW INSERT/UPDATE on mandal_id,valid_from,valid_to,is_current, prosecdef=true, owner=panin_boundary_definer, search_path=public, pg_temp, strict least-privilege ACL) all verified'),
         (18, 'Transition Function Identity, Security Definer & Pinning', 'public.fn_transition_mandal_current_version(text,uuid,date,text,uuid) exists, prosecdef=true, owner=panin_boundary_definer, search_path=public, pg_temp'),
         (19, 'Boundary Definer Role Attributes & Schema Security', 'panin_boundary_definer has rolcanlogin=false, rolsuper=false, rolcreatedb=false, rolcreaterole=false, 0 inherited roles, USAGE on public, NO CREATE on public, application roles cannot SET ROLE, 0 unauthorized members'),
         (20, 'Boundary Definer Table-Level Least-Privilege Allocation', 'SELECT only on dataset_versions, provenance_records, mandals, mandal_versions (NO table-level UPDATE, zero INSERT, zero DELETE/TRUNCATE/REFERENCES/TRIGGER)'),
@@ -174,16 +174,89 @@ c16 AS (
         WHERE conrelid = to_regclass('public.mandal_versions') AND conname = 'chk_mandal_versions_current_invariants'
     ) AS chk_exists
 ),
+c17_bounds_proc AS (
+    SELECT 
+        p.oid,
+        p.proowner,
+        pg_get_userbyid(p.proowner) AS owner_name,
+        p.prosecdef,
+        p.proconfig,
+        COALESCE(p.proacl, acldefault('f', p.proowner)) AS effective_proacl
+    FROM (SELECT to_regprocedure('public.fn_guard_mandal_version_temporal_bounds()') AS proc_oid) po
+    LEFT JOIN pg_proc p ON p.oid = po.proc_oid
+),
+c17_bounds_acl_entries AS (
+    SELECT 
+        acl.grantee,
+        COALESCE(pg_get_userbyid(acl.grantee), 'PUBLIC') AS grantee_name,
+        acl.privilege_type
+    FROM c17_bounds_proc
+    CROSS JOIN LATERAL aclexplode(c17_bounds_proc.effective_proacl) acl
+),
 c17 AS (
     SELECT 
+        -- 17.1: Anchor Guard Trigger on mandals (Layer 2)
         EXISTS (
             SELECT 1 FROM pg_trigger 
-            WHERE tgrelid = to_regclass('public.mandals') AND tgname = 'trg_guard_mandal_current_version'
+            WHERE tgrelid = to_regclass('public.mandals') 
+              AND tgname = 'trg_guard_mandal_current_version'
+              AND (tgtype & 2) = 0 -- AFTER trigger
+              AND (tgtype & 1) = 1 -- ROW trigger
         ) AS trg_mandal_exists,
+
+        -- 17.2: Retirement Guard Trigger on mandal_versions (Layer 3)
         EXISTS (
             SELECT 1 FROM pg_trigger 
-            WHERE tgrelid = to_regclass('public.mandal_versions') AND tgname = 'trg_guard_mandal_version_retirement'
-        ) AS trg_version_exists
+            WHERE tgrelid = to_regclass('public.mandal_versions') 
+              AND tgname = 'trg_guard_mandal_version_retirement'
+              AND (tgtype & 2) = 0 -- AFTER trigger
+              AND (tgtype & 1) = 1 -- ROW trigger
+        ) AS trg_retirement_exists,
+
+        -- 17.3: Temporal Bounds Guard Trigger on mandal_versions (Layer 1B)
+        (
+            SELECT count(*)::int = 1
+            FROM pg_trigger t
+            WHERE t.tgrelid = to_regclass('public.mandal_versions') 
+              AND t.tgname = 'trg_guard_mandal_version_temporal_bounds'
+              AND (t.tgtype & 2) = 2 -- BEFORE trigger
+              AND (t.tgtype & 1) = 1 -- ROW trigger
+              AND (t.tgtype & 4) = 4 -- INSERT event
+              AND (t.tgtype & 16) = 16 -- UPDATE event
+              AND ARRAY(
+                  SELECT a.attname::text
+                  FROM pg_attribute a
+                  WHERE a.attrelid = t.tgrelid
+                    AND a.attnum = ANY(string_to_array(t.tgattr::text, ' ')::smallint[])
+                  ORDER BY a.attname
+              ) = ARRAY['is_current', 'mandal_id', 'valid_from', 'valid_to']
+        ) AS trg_bounds_trigger_ok,
+
+        -- 17.4: Function identity, Security Definer, Owner, Search Path
+        (
+            bp.oid IS NOT NULL
+            AND bp.prosecdef = true
+            AND bp.owner_name = 'panin_boundary_definer'
+            AND bp.proconfig = ARRAY['search_path=public, pg_temp']
+        ) AS trg_bounds_func_ok,
+
+        -- 17.5: Function ACL Boundary
+        (
+            CASE WHEN bp.oid IS NULL THEN false ELSE has_function_privilege('service_role', bp.oid, 'EXECUTE') END
+            AND CASE WHEN bp.oid IS NULL THEN false ELSE has_function_privilege('panin_boundary_admin', bp.oid, 'EXECUTE') END
+            AND CASE WHEN bp.oid IS NULL THEN true ELSE NOT has_function_privilege('anon', bp.oid, 'EXECUTE') END
+            AND CASE WHEN bp.oid IS NULL THEN true ELSE NOT has_function_privilege('authenticated', bp.oid, 'EXECUTE') END
+            AND NOT EXISTS (
+                SELECT 1 FROM c17_bounds_acl_entries 
+                WHERE grantee = 0 AND privilege_type = 'EXECUTE'
+            )
+            AND NOT EXISTS (
+                SELECT 1 FROM c17_bounds_acl_entries
+                WHERE privilege_type = 'EXECUTE'
+                  AND grantee_name NOT IN ('panin_boundary_definer', 'service_role', 'panin_boundary_admin')
+            )
+        ) AS trg_bounds_acl_ok
+    FROM c17_bounds_proc bp
 ),
 c18 AS (
     SELECT 
@@ -388,7 +461,7 @@ SELECT
         WHEN c.check_id = 16 THEN 
             'chk_mandal_versions_current_invariants constraint exists = ' || c16.chk_exists::text
         WHEN c.check_id = 17 THEN 
-            'trg_guard_mandal_current_version = ' || c17.trg_mandal_exists::text || ', trg_guard_mandal_version_retirement = ' || c17.trg_version_exists::text
+            'trg_mandal=' || c17.trg_mandal_exists::text || ', trg_retirement=' || c17.trg_retirement_exists::text || ', trg_bounds=' || c17.trg_bounds_trigger_ok::text || ', func_ok=' || c17.trg_bounds_func_ok::text || ', acl_ok=' || c17.trg_bounds_acl_ok::text
         WHEN c.check_id = 18 THEN 
             'fn exists = ' || (c18.oid IS NOT NULL)::text || ', prosecdef = ' || COALESCE(c18.prosecdef::text, 'NULL') || ', owner = ' || COALESCE(c18.function_owner, 'NULL') || ', proconfig = ' || COALESCE(array_to_string(c18.proconfig, ','), 'NULL')
         WHEN c.check_id = 19 THEN 
@@ -436,7 +509,7 @@ SELECT
         WHEN c.check_id = 16 THEN 
             CASE WHEN c16.chk_exists THEN 'PASS' ELSE 'FAIL' END
         WHEN c.check_id = 17 THEN 
-            CASE WHEN c17.trg_mandal_exists AND c17.trg_version_exists THEN 'PASS' ELSE 'FAIL' END
+            CASE WHEN c17.trg_mandal_exists AND c17.trg_retirement_exists AND c17.trg_bounds_trigger_ok AND c17.trg_bounds_func_ok AND c17.trg_bounds_acl_ok THEN 'PASS' ELSE 'FAIL' END
         WHEN c.check_id = 18 THEN 
             CASE WHEN c18.is_valid THEN 'PASS' ELSE 'FAIL' END
         WHEN c.check_id = 19 THEN 

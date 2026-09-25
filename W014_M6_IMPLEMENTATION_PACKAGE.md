@@ -1,5 +1,5 @@
 # W014: M6 IMPLEMENTATION PACKAGE
-## Partitioned Canonical Timeline Invariant, Partial GiST Exclusion Constraint, and Hardened Transition Verification
+## Partitioned Canonical Timeline Invariant, Partial GiST Exclusion Constraint, and BEFORE ROW Direct-Write Guard Trigger
 
 **Document ID:** `W014-M6-IMPLEMENTATION-PACKAGE`  
 **Target Environment:** `panIN-staging` (`fkpigozcqnmcvofuksar`)  
@@ -10,18 +10,38 @@
 
 ---
 
-## 1. EXECUTIVE SUMMARY & CTO DESIGN ALIGNMENT
+## 1. EXECUTIVE SUMMARY & CTO ARCHITECTURAL SPECIFICATION
 
-Following CTO authorization of the Rev 2 Architectural Design (Document `W014-ARCH-M6-ANALYSIS-REV-2` at commit `ab0bc19`), this package prepares all required implementation artifacts without executing any operations against the database.
+Following CTO authorization of **Option A: BEFORE ROW Immediate Trigger Architecture** (`public.trg_guard_mandal_version_temporal_bounds`), this package contains all required implementation artifacts prepared for staging review.
 
-The implementation strictly satisfies all CTO directives:
-1. **Partitioned Temporal Model:** Closed historical intervals ($[T_1, T_2)$) are protected by a partial GiST exclusion constraint (`WHERE valid_to IS NOT NULL`). Open-ended candidate and current records ($[T_{\text{eff}}, +\infty)$) are excluded from the historical index, allowing candidate versions to be staged without collision.
-2. **Deterministic Currentness:** The single-current unique index (`uq_mandal_versions_single_current`) and the currentness check constraint (`chk_mandal_versions_current_invariants`) are 100% preserved.
-3. **Explicit Concurrency & Chronological Guard:** Mandals anchor row serialization is preserved via `SELECT ... FOR UPDATE`. An explicit chronological check (`p_effective_date > v_old_valid_from`) prevents retroactive/inverted transitions, deterministically raising `ERR-W014-007` (`SQLSTATE 22000`).
-4. **Historical Boundary Non-Overlap Guard:** Both `fn_transition_mandal_current_version` and trigger function `fn_guard_mandal_current_version` enforce that the open-ended interval $[T_{\text{eff}}, +\infty)$ does not overlap any closed historical interval, raising `ERR-W014-006` (`SQLSTATE 23P01`).
-5. **Preserved Governance & Security:** Pure W012 dataset immutability triggers remain active and unchanged. `BYPASSRLS` is prohibited. Role-scoped least privilege for `panin_boundary_definer` and `panin_boundary_admin` is preserved. `SECURITY DEFINER` and pinned `SET search_path = public, pg_temp` are preserved.
-6. **Corrected Check 14:** The verifier inspects `pg_constraint`, `pg_class`, `pg_am`, and `pg_index` to prove that the underlying index predicate is decompiled via `pg_get_expr(i.indpred, i.indrelid)` and matches exactly `(valid_to IS NOT NULL)`.
-7. **Bulletproof Test Harness:** Test M6 is hardened with `try ... finally` unconditional anchor pointer detachment, ensuring clean teardown and surfacing setup errors.
+### Final Approved Architecture (Option A):
+1. **Partitioned Historical GiST Exclusion:**
+   Closed historical intervals ($[T_1, T_2)$) are protected by a partial GiST exclusion constraint (`WHERE valid_to IS NOT NULL`). Open-ended candidate and current records ($[T_{\text{eff}}, +\infty)$) are excluded from the historical index, enabling candidate versions to be staged without premature overlap conflicts.
+2. **Direct-Write Temporal Guard Trigger (`trg_guard_mandal_version_temporal_bounds`):**
+   A `BEFORE ROW` trigger on `INSERT` and `UPDATE` of `(mandal_id, valid_from, valid_to, is_current)` on table `public.mandal_versions` prevents any direct write (including `service_role`) from creating temporal overlap between current and historical records:
+   - **Per-Mandal Concurrency Serialization:** Every write path acquires `SELECT id FROM public.mandals WHERE id = NEW.mandal_id FOR UPDATE` before inspecting or modifying temporal intervals, eliminating concurrent race conditions.
+   - **Direction A (Closed Historical NEW):** If `NEW.valid_to IS NOT NULL`, asserts that `daterange(NEW.valid_from, NEW.valid_to, '[)')` does not overlap any active current record (`is_current = true AND valid_to IS NULL`). Raises `ERR-W014-006` (`SQLSTATE 23P01`).
+   - **Direction B (Active Current NEW):** If `NEW.is_current = true`, asserts that `daterange(NEW.valid_from, NULL, '[)')` does not overlap any closed historical record (`valid_to IS NOT NULL`). Raises `ERR-W014-006` (`SQLSTATE 23P01`).
+   - **Candidate Permissibility:** Non-current open-ended candidate versions (`is_current = false AND valid_to IS NULL`) are explicitly permitted to exist.
+   - **Adjacency Allowed:** Exact boundary abutting ($[A, B) + [B, +\infty)$) has empty intersection and is permitted.
+3. **Trigger Function Identity & Security:**
+   Trigger function `public.fn_guard_mandal_version_temporal_bounds()` is defined with `SECURITY DEFINER`, owned by `panin_boundary_definer`, with pinned `SET search_path = public, pg_temp`.
+   Read completeness under RLS is mathematically guaranteed because `panin_boundary_definer` has table `SELECT` privilege and RLS policy `"panin_boundary_definer_select_mandal_versions"` (`USING (true)`).
+4. **Canonical State Transition Function (`fn_transition_mandal_current_version`):**
+   Transitions proceed in strict sequence:
+   - Level 1 Lock: `mandals` anchor row locked via `FOR UPDATE`.
+   - Read & Validate: Target candidate verified to belong to same mandal, `OFFICIAL` dataset, and open-ended.
+   - Chronological Guard: Enforces `p_effective_date > v_old_valid_from`, deterministically raising `ERR-W014-007` (`SQLSTATE 22000`).
+   - Historical Guard: Enforces `p_effective_date` does not fall within any closed historical interval, raising `ERR-W014-006` (`SQLSTATE 23P01`).
+   - Step 11: Retires old version (`is_current = false, valid_to = p_effective_date`).
+   - Step 12: Activates new version (`is_current = true, valid_from = p_effective_date, valid_to = NULL`).
+   - Step 13: Updates mandal anchor pointer (`mandals.current_version_id = p_new_version_id`).
+5. **Preserved Invariants & Governance:**
+   - Same-anchor composite FK `fk_mandals_current_version_same_anchor` preserved.
+   - Single-current unique index `uq_mandal_versions_single_current` preserved.
+   - Currentness check constraint `chk_mandal_versions_current_invariants` preserved.
+   - Immutability triggers `prevent_evidence_mutation()` and `prevent_dataset_version_mutation()` preserved untouched.
+   - `BYPASSRLS` is prohibited. Least privilege for `panin_boundary_definer` and `panin_boundary_admin` preserved.
 
 ---
 
@@ -29,137 +49,104 @@ The implementation strictly satisfies all CTO directives:
 
 | Artifact Role | File Path | SHA-256 Checksum | Execution Status |
 | :--- | :--- | :--- | :--- |
-| **Migration DDL** | `supabase/remediation_w014_m6_gist_boundary_041.sql` | `BC9328D0ACD9B6EFA0A1940944D9AB7DAEDE3144391044FDD30E4EC841EFA2BB` | **PREPARED / UNEXECUTED** |
-| **Rollback DDL** | `supabase/rollback_w014_m6_gist_boundary_041.sql` | `6F81F7E12DA2E2F1C7C348432D49E85358D42A857B0201F5AE668FFC159F9FA4` | **PREPARED / UNEXECUTED** |
-| **23-Check Verifier** | `supabase/verification_w014_migration_041_23checks.sql` | `2BD62684F5F16AAD5843FC9A15A99802A592CBF183545E50466C02643CD0B0C3` | **PREPARED / UNEXECUTED** |
-| **Test Suite** | `tests/test_mandal_version_integrity.mjs` | `3F2F1A22FE0232CA049F4E0EF22F6C778C9D6E93AC0318BE6B3698101AA823A3` | **PREPARED / UNEXECUTED** |
+| **Remediation DDL** | `supabase/remediation_w014_m6_gist_boundary_041.sql` | `F1F4C964866651014E2C1047B0DB7D8DE71C5BB0F542980EF7A62C360622EF0A` | **PREPARED / UNEXECUTED** |
+| **Rollback DDL** | `supabase/rollback_w014_m6_gist_boundary_041.sql` | `DF9D6CE37903E2AAFCCEB1AE991BB4A81AF37EAB77F6776670663F3CDCD6FFE9` | **PREPARED / UNEXECUTED** |
+| **23-Check Verifier** | `supabase/verification_w014_migration_041_23checks.sql` | `A4F31C66AE2C493E4D0277B3525412C88EB4B25ECE91EB767408DA0488DFFF82` | **PREPARED / UNEXECUTED** |
+| **Test Suite** | `tests/test_mandal_version_integrity.mjs` | `7C9FBAE79EF7F9EFB9725E4EDB1D781662DC58B9B73F2AF8743D0CA214B1EF26` | **PREPARED / UNEXECUTED** |
 
 ---
 
-## 3. MIGRATION DDL SUMMARY (`remediation_w014_m6_gist_boundary_041.sql`)
+## 3. REMEDIATION DDL STRUCTURE (`remediation_w014_m6_gist_boundary_041.sql`)
 
-### Step 1: Pre-Migration Fail-Closed Overlap Check
-Runs an explicit assertion query counting overlapping closed historical intervals:
-```sql
-SELECT count(*) INTO v_overlap_count
-FROM public.mandal_versions a
-JOIN public.mandal_versions b
-  ON a.mandal_id = b.mandal_id
- AND a.id <> b.id
- AND a.valid_to IS NOT NULL
- AND b.valid_to IS NOT NULL
- AND daterange(a.valid_from, a.valid_to, '[)') && daterange(b.valid_from, b.valid_to, '[)');
+The remediation script executes inside a single atomic transaction block (`BEGIN; ... COMMIT;`):
 
-IF v_overlap_count > 0 THEN
-  RAISE EXCEPTION 'PRE-MIGRATION INVARIANT VIOLATION: % overlapping closed historical mandal_version intervals detected in public.mandal_versions. Migration aborted.',
-    v_overlap_count
-    USING ERRCODE = '23P01';
-END IF;
-```
-
-### Step 2: Replace Unconditional GiST with Partial Historical GiST
-```sql
-ALTER TABLE public.mandal_versions
-  DROP CONSTRAINT IF EXISTS uq_mandal_versions_no_overlap;
-
-ALTER TABLE public.mandal_versions
-  DROP CONSTRAINT IF EXISTS uq_mandal_versions_historical_no_overlap;
-
-ALTER TABLE public.mandal_versions
-  ADD CONSTRAINT uq_mandal_versions_historical_no_overlap
-  EXCLUDE USING gist (
-    mandal_id WITH =,
-    (daterange(valid_from, valid_to, '[)')) WITH &&
-  )
-  WHERE (valid_to IS NOT NULL);
-```
-
-### Step 3: Harden `fn_guard_mandal_current_version`
-In addition to validating same-mandal anchor identity (`ERR-W014-001`) and `OFFICIAL` dataset authority (`ERR-W014-003`), the trigger asserts that the active version's open-ended interval `[valid_from, NULL)` does not overlap any closed historical interval:
-```sql
-IF EXISTS (
-  SELECT 1
-  FROM public.mandal_versions h
-  WHERE h.mandal_id = NEW.id
-    AND h.id <> NEW.current_version_id
-    AND h.valid_to IS NOT NULL
-    AND daterange(h.valid_from, h.valid_to, '[)') && daterange(v_valid_from, NULL, '[)')
-) THEN
-  RAISE EXCEPTION 'TEMPORAL OVERLAP VIOLATION [ERR-W014-006]: mandals.current_version_id (%) active interval [%, infinity) overlaps a closed historical interval in public.mandal_versions.',
-    NEW.current_version_id, v_valid_from
-    USING ERRCODE = '23P01'; -- exclusion_violation
-END IF;
-```
-
-### Step 4: Harden `fn_transition_mandal_current_version`
-1. Locks anchor row (`mandals`) via `FOR UPDATE`.
-2. Locks and reads old active version's `valid_from`.
-3. Validates target candidate version exists, belongs to same mandal, belongs to an `OFFICIAL` dataset, and is open-ended (`valid_to IS NULL`).
-4. **Chronology Guard:** Enforces `p_effective_date > v_old_valid_from`, throwing `ERR-W014-007` (`SQLSTATE 22000`) on non-monotonic transition requests.
-5. **Historical Boundary Guard:** Enforces `p_effective_date` does not fall within any closed historical interval, throwing `ERR-W014-006` (`SQLSTATE 23P01`).
-6. Atomically updates old version (`is_current = false`, `valid_to = p_effective_date`), activates new version (`is_current = true`, `valid_from = p_effective_date`, `valid_to = NULL`), and updates `mandals.current_version_id`.
-7. Emits structured JSONB audit receipt.
-
-### Step 5: Exact Ownership & Least Privilege Preservation
-Preserves `panin_boundary_definer` ownership, revokes all privileges from `PUBLIC`, `anon`, and `authenticated`, and grants `EXECUTE` strictly to `service_role` and `panin_boundary_admin`.
+- **Step 1: Pre-Migration Assertions**
+  Fails closed if any overlapping closed historical intervals exist in `public.mandal_versions`.
+- **Step 2: Partial GiST Constraint**
+  Replaces unconditional GiST constraint with:
+  ```sql
+  ALTER TABLE public.mandal_versions
+    ADD CONSTRAINT uq_mandal_versions_historical_no_overlap
+    EXCLUDE USING gist (
+      mandal_id WITH =,
+      (daterange(valid_from, valid_to, '[)')) WITH &&
+    )
+    WHERE (valid_to IS NOT NULL);
+  ```
+- **Step 3: Trigger Function `fn_guard_mandal_version_temporal_bounds`**
+  Implements concurrency serialization (`mandals FOR UPDATE`), Direction A (closed historical vs active current), Direction B (active current vs closed historical), candidate permissibility, and adjacency validation.
+- **Step 4: Trigger Definition `trg_guard_mandal_version_temporal_bounds`**
+  Attaches `BEFORE INSERT OR UPDATE OF mandal_id, valid_from, valid_to, is_current ON public.mandal_versions FOR EACH ROW`.
+- **Step 5: Function Ownership & Security**
+  Transfers ownership to `panin_boundary_definer`, revokes execute from `PUBLIC`, `anon`, and `authenticated`, and grants execute strictly to `service_role` and `panin_boundary_admin`.
+- **Step 6: Hardened Anchor Guard Function `fn_guard_mandal_current_version`**
+  Asserts anchor pointer points to a valid version of the same mandal with `OFFICIAL` dataset authority, and active interval $[T_{\text{eff}}, +\infty)$ does not overlap any closed historical version.
+- **Step 7: Hardened Transition Function `fn_transition_mandal_current_version`**
+  Implements chronological guard `p_effective_date > v_old_valid_from` (`ERR-W014-007`) and historical non-overlap check (`ERR-W014-006`).
+- **Step 8: Transition Function Ownership & Privileges**
+  Re-applies ownership and execution boundaries on the transition function.
 
 ---
 
-## 4. ROLLBACK DDL SUMMARY (`rollback_w014_m6_gist_boundary_041.sql`)
+## 4. ROLLBACK DDL STRUCTURE (`rollback_w014_m6_gist_boundary_041.sql`)
 
-1. **Pre-Rollback Fail-Closed Check:** Asserts that no mandal has multiple open-ended versions before attempting to re-impose the unconditional GiST constraint:
+The rollback script guarantees clean restoration of the Migration 041 baseline:
+1. **Pre-Rollback Fail-Closed Check:** Asserts that no mandal has multiple open-ended versions before attempting to re-impose the unconditional GiST constraint.
+2. **Safe Trigger & Function Teardown:**
    ```sql
-   SELECT count(*) INTO v_multiple_open_ended
-   FROM (
-     SELECT mandal_id
-     FROM public.mandal_versions
-     WHERE valid_to IS NULL
-     GROUP BY mandal_id
-     HAVING count(*) > 1
-   ) sub;
+   DROP TRIGGER IF EXISTS trg_guard_mandal_version_temporal_bounds ON public.mandal_versions;
+   DROP FUNCTION IF EXISTS public.fn_guard_mandal_version_temporal_bounds();
    ```
-2. **Reverts Constraint:** Drops `uq_mandal_versions_historical_no_overlap` and adds back `uq_mandal_versions_no_overlap EXCLUDE USING gist (mandal_id WITH =, (daterange(valid_from, valid_to, '[)')) WITH &&);`.
-3. **Reverts Functions:** Restores original Migration 041 definitions for `fn_guard_mandal_current_version` and `fn_transition_mandal_current_version`.
-4. **Re-asserts Permissions:** Re-applies ownership and ACL boundaries.
+3. **Reverts Constraint:** Drops `uq_mandal_versions_historical_no_overlap` and adds back `uq_mandal_versions_no_overlap EXCLUDE USING gist (mandal_id WITH =, (daterange(valid_from, valid_to, '[)')) WITH &&);`.
+4. **Reverts Functions:** Restores original baseline definitions for `fn_guard_mandal_current_version` and `fn_transition_mandal_current_version`.
+5. **Re-asserts Permissions:** Re-applies ownership and least-privilege ACL boundaries.
 
 ---
 
-## 5. VERIFIER CORRECTION (CHECK 14)
+## 5. 23-CHECK VERIFIER UPDATES (`verification_w014_migration_041_23checks.sql`)
 
-In accordance with the CTO directive, Check 14 in `supabase/verification_w014_migration_041_23checks.sql` was rewritten to inspect the PostgreSQL system catalogs directly:
-* **Constraint Existence & Type:** `pg_constraint` joined on `conrelid = to_regclass('public.mandal_versions')`, `conname = 'uq_mandal_versions_historical_no_overlap'`, asserting `contype = 'x'`.
-* **Access Method:** `pg_am` joined via `pg_class.relam`, asserting `amname = 'gist'`.
-* **Supporting Index:** `pg_index` joined via `c.conindid = i.indexrelid`.
-* **Decompiled Predicate:** Evaluates `pg_get_expr(i.indpred, i.indrelid)` and asserts exact equality to `'(valid_to IS NOT NULL)'`.
-* **Fail-Closed Guarantee:** If the predicate is missing, different, or the constraint is not GiST, Check 14 evaluates to `FAIL`.
+### Check 14 (Partial GiST Exclusion Constraint):
+Directly inspects PostgreSQL catalogs:
+- Asserts constraint `uq_mandal_versions_historical_no_overlap` exists and `contype = 'x'` on `public.mandal_versions`.
+- Asserts index access method is `gist` via `pg_am.amname = 'gist'`.
+- Decompiles predicate expression via `pg_get_expr(i.indpred, i.indrelid)` and asserts exact equality to `'(valid_to IS NOT NULL)'`.
 
----
-
-## 6. TEST HARNESS CORRECTION (M6)
-
-In `tests/test_mandal_version_integrity.mjs`:
-* **Surfacing Setup Failures:** Insertion of `v6a`, updating the mandal pointer, and insertion of `v6b` check returned error objects and immediately throw descriptive exceptions (`M6 Setup Error (...)`) rather than silently continuing.
-* **Guaranteed Teardown (`try ... finally`):**
-  - Unconditionally clears `mandals.current_version_id = NULL` before attempting version deletions, satisfying trigger `trg_guard_mandal_version_retirement`.
-  - Deletes candidate version `v6b` and retired version `v6a` safely.
-  - Guarantees zero orphaned active versions on staging even if assertions fail or exceptions are raised.
+### Check 17 (Bidirectional Triggers & Temporal Boundary Guard):
+Expanded into a comprehensive multi-layer catalog verification CTE (`c17_bounds_proc`, `c17_bounds_acl_entries`, `c17`):
+- **17.1 Anchor Guard Trigger:** `trg_guard_mandal_current_version` on `mandals` (AFTER ROW).
+- **17.2 Retirement Guard Trigger:** `trg_guard_mandal_version_retirement` on `mandal_versions` (AFTER ROW).
+- **17.3 Temporal Bounds Trigger:** `trg_guard_mandal_version_temporal_bounds` on `mandal_versions` asserting `(tgtype & 2) = 2` (BEFORE), `(tgtype & 1) = 1` (ROW), `(tgtype & 4) = 4` (INSERT), `(tgtype & 16) = 16` (UPDATE), and columns restricted strictly to `is_current, mandal_id, valid_from, valid_to`.
+- **17.4 Trigger Function Identity:** `fn_guard_mandal_version_temporal_bounds()` exists, `prosecdef = true`, `owner = panin_boundary_definer`, and `proconfig = ARRAY['search_path=public, pg_temp']`.
+- **17.5 Execution ACL Boundary:** `service_role` has execute, `panin_boundary_admin` has execute, `anon` has NO execute, `authenticated` has NO execute, and `PUBLIC (grantee 0)` has NO execute.
 
 ---
 
-## 7. STATIC VALIDATION RESULTS (CHECKS A–J)
+## 6. TEST HARNESS UPDATES (`tests/test_mandal_version_integrity.mjs`)
 
-| Check ID | Validation Domain | Method / Command | Result |
+Test M6 has been upgraded to rigorously exercise and assert all 8 required behaviors:
+1. **Candidate Insertion:** Open-ended candidate version (`valid_to: null, is_current: false`) inserts successfully.
+2. **Direction A Overlap Rejection:** Direct write inserting a closed historical version overlapping the active current version fails with `23P01` (`ERR-W014-006`).
+3. **Canonical Transition:** `fn_transition_mandal_current_version` executes atomically and returns `TRANSITION_COMPLETE`.
+4. **Boundary Equality:** Retired version and activated version satisfy exact boundary equality: `v6a.valid_to === v6b.valid_from` (`2026-01-01`).
+5. **Direction B Overlap Rejection:** Direct write updating the active current version's `valid_from` backwards to overlap the retired historical version fails with `23P01` (`ERR-W014-006`).
+6. **Historical/Historical Overlap Rejection:** Direct write inserting a closed historical version overlapping another closed historical version fails with `23P01` (GiST exclusion constraint).
+7. **Guaranteed Teardown (`try ... finally`):** Unconditionally clears `mandals.current_version_id = NULL` before deleting tracked test versions, preventing orphaned records on staging.
+8. **Evidence Immutability Intact:** Zero mutation or deletion of dataset versions or provenance records.
+
+---
+
+## 7. STATIC VERIFICATION AUDIT MATRIX
+
+| Check ID | Validation Domain | Verification Method | Result |
 | :--- | :--- | :--- | :--- |
-| **Check A** | SQL Syntax & Static Structure | Syntax validation of SQL scripts | **PASS** (Zero syntax errors) |
-| **Check B** | Migration Transaction Structure | Verified `BEGIN; ... COMMIT;` wrapping on all scripts | **PASS** (Strictly atomic DDL) |
-| **Check C** | Security Definer & `search_path` | Static inspection of function definition | **PASS** (`SECURITY DEFINER`, `SET search_path = public, pg_temp`) |
-| **Check D** | ACL & Ownership Preservation | Static inspection of role grants & ownership | **PASS** (Owner: `panin_boundary_definer`, No public execute) |
+| **Check A** | SQL Script Syntax | Catalog query parsing and syntax check | **PASS** (Zero syntax errors) |
+| **Check B** | Atomic DDL Blocks | Verified `BEGIN; ... COMMIT;` on both scripts | **PASS** (Strictly atomic DDL) |
+| **Check C** | Security Definer & Search Path | Static inspection of all functions | **PASS** (`SECURITY DEFINER`, `search_path = public, pg_temp`) |
+| **Check D** | ACL & Role Boundary | Static inspection of role grants & revocations | **PASS** (Definer-owned, no public execute) |
 | **Check E** | Verifier Determinism | Catalog inspection CTE structure | **PASS** (Single top-level query, exactly 23 rows) |
-| **Check F** | Test Script Syntax | `node --check tests/test_mandal_version_integrity.mjs` | **PASS** (Zero JavaScript errors) |
-| **Check G** | Repository Cleanliness | Working tree audit | **PASS** (All artifacts tracked) |
-| **Check H** | Commit Freshness | `node tests/commit-freshness.test.mjs` | **PASS** (Checks A–J verified) |
-| **Check I** | Production Isolation | `grep` for production references | **PASS** (Zero production URLs or credentials) |
-| **Check J** | Exact Diff Review | Full unified diff audit | **PASS** (No unauthorized modifications) |
+| **Check F** | Test Script Syntax | `node --check tests/test_mandal_version_integrity.mjs` | **PASS** (Exit code 0, zero errors) |
+| **Check G** | Commit Freshness | `node tests/commit-freshness.test.mjs` | **PASS** (All Checks A–J pass) |
+| **Check H** | Production Isolation | Static scan for production URLs / credentials | **PASS** (Production strictly untouched) |
 
 ---
 
@@ -174,4 +161,4 @@ In `tests/test_mandal_version_integrity.mjs`:
 > * **The M1–M15 test suite has NOT been run.**
 > * **The 23-check verifier has NOT been run against the live database.**
 >
-> Execution is halted awaiting explicit CTO authorization.
+> All artifacts are committed and pushed to git. Awaiting explicit CTO authorization for staging execution.

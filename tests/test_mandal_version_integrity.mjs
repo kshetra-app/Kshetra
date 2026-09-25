@@ -307,10 +307,15 @@ async function runTestSuite() {
     let m6Observed = null;
     const testCodeM6a = `M6-V1-${Date.now()}`;
     const testCodeM6b = `M6-V2-${Date.now()}`;
+    const testCodeM6c = `M6-V3-HIST-OVERLAP-${Date.now()}`;
+    const testCodeM6d = `M6-V4-GIST-OVERLAP-${Date.now()}`;
     let v6aId = null;
     let v6bId = null;
+    const cleanupVersionIds = [];
+    const m6SubResults = [];
 
     try {
+      // 1. Setup initial active current version (v6a)
       const { data: v6a, error: errV6a } = await adminClient.from('mandal_versions').insert({
         mandal_id: mandalA.id,
         district_id: mandalA.district_id,
@@ -326,12 +331,14 @@ async function runTestSuite() {
         throw new Error(`M6 Setup Error (v6a insert): ${errV6a?.code}: ${errV6a?.message}`);
       }
       v6aId = v6a.id;
+      cleanupVersionIds.push(v6aId);
 
       const { error: errPtrA } = await adminClient.from('mandals').update({ current_version_id: v6aId }).eq('id', mandalA.id);
       if (errPtrA) {
         throw new Error(`M6 Setup Error (mandal pointer update to v6a): ${errPtrA?.code}: ${errPtrA?.message}`);
       }
 
+      // 2. Candidate Insertion: open-ended non-current candidate succeeds
       const { data: v6b, error: errV6b } = await adminClient.from('mandal_versions').insert({
         mandal_id: mandalA.id,
         district_id: mandalA.district_id,
@@ -344,10 +351,35 @@ async function runTestSuite() {
       }).select('id').single();
 
       if (errV6b || !v6b) {
-        throw new Error(`M6 Setup Error (v6b insert): ${errV6b?.code}: ${errV6b?.message}`);
+        throw new Error(`M6 Candidate Insert Error (v6b insert): ${errV6b?.code}: ${errV6b?.message}`);
       }
       v6bId = v6b.id;
+      cleanupVersionIds.push(v6bId);
+      m6SubResults.push('candidate_insert:PASS');
 
+      // 3. Direction A: Invalid direct write — closed historical version overlapping active current version fails with 23P01
+      const { data: v6cBad, error: errV6cBad } = await adminClient.from('mandal_versions').insert({
+        mandal_id: mandalA.id,
+        district_id: mandalA.district_id,
+        version_code: testCodeM6c,
+        name: 'M6 V3 Bad Historical Overlap',
+        valid_from: '2015-01-01',
+        valid_to: '2020-01-01',
+        is_current: false,
+        primary_dataset_version_id: testOfficialDsId
+      }).select('id').single();
+
+      if (v6cBad?.id) {
+        cleanupVersionIds.push(v6cBad.id);
+      }
+      const is23P01HistCurrent = errV6cBad && (errV6cBad.code === '23P01' || errV6cBad.message?.includes('23P01') || errV6cBad.message?.includes('ERR-W014-006') || errV6cBad.message?.includes('exclusion_violation'));
+      if (is23P01HistCurrent) {
+        m6SubResults.push('hist_overlapping_current_23P01:PASS');
+      } else {
+        m6SubResults.push(`hist_overlapping_current_23P01:FAIL(${errV6cBad?.code || 'SUCCESS_UNEXPECTED'})`);
+      }
+
+      // 4. Canonical Transition: fn_transition_mandal_current_version succeeds atomically
       const { data: transReceipt, error: transErr } = await adminClient.rpc('fn_transition_mandal_current_version', {
         p_mandal_id: mandalA.id,
         p_new_version_id: v6bId,
@@ -356,21 +388,69 @@ async function runTestSuite() {
         p_provenance_id: null
       });
 
-      m6Observed = transErr ? `${transErr.code}: ${transErr.message}` : JSON.stringify(transReceipt);
+      let transitionOk = false;
+      let boundaryEqualityOk = false;
       if (!transErr && transReceipt && transReceipt.status === 'TRANSITION_COMPLETE') {
-        // Verify database state: pointer points to v6b, v6a retired
+        transitionOk = true;
+        m6SubResults.push('transition:PASS');
+
+        // 5. Boundary Equality: v6a.valid_to === v6b.valid_from
         const { data: mCheck } = await adminClient.from('mandals').select('current_version_id').eq('id', mandalA.id).single();
         const { data: v6aCheck } = await adminClient.from('mandal_versions').select('is_current, valid_to').eq('id', v6aId).single();
-        const { data: v6bCheck } = await adminClient.from('mandal_versions').select('is_current, valid_to').eq('id', v6bId).single();
+        const { data: v6bCheck } = await adminClient.from('mandal_versions').select('is_current, valid_from, valid_to').eq('id', v6bId).single();
 
         if (mCheck?.current_version_id === v6bId &&
             v6aCheck?.is_current === false && v6aCheck?.valid_to === '2026-01-01' &&
-            v6bCheck?.is_current === true && v6bCheck?.valid_to === null) {
-          m6Passed = true;
+            v6bCheck?.is_current === true && v6bCheck?.valid_from === '2026-01-01' && v6bCheck?.valid_to === null) {
+          boundaryEqualityOk = true;
+          m6SubResults.push('boundary_equality:PASS');
+        } else {
+          m6SubResults.push(`boundary_equality:FAIL(v6a_to=${v6aCheck?.valid_to}, v6b_from=${v6bCheck?.valid_from})`);
         }
+      } else {
+        m6SubResults.push(`transition:FAIL(${transErr?.code || 'no_receipt'})`);
+      }
+
+      // 6. Direction B: Invalid direct write — active current version updated to overlap closed historical version fails with 23P01
+      const { error: errCurrentOverlap } = await adminClient.from('mandal_versions').update({
+        valid_from: '2020-01-01' // Overlaps retired v6a [2010-01-01, 2026-01-01)
+      }).eq('id', v6bId);
+
+      const is23P01CurrentHist = errCurrentOverlap && (errCurrentOverlap.code === '23P01' || errCurrentOverlap.message?.includes('23P01') || errCurrentOverlap.message?.includes('ERR-W014-006') || errCurrentOverlap.message?.includes('exclusion_violation'));
+      if (is23P01CurrentHist) {
+        m6SubResults.push('current_overlapping_hist_23P01:PASS');
+      } else {
+        m6SubResults.push(`current_overlapping_hist_23P01:FAIL(${errCurrentOverlap?.code || 'SUCCESS_UNEXPECTED'})`);
+      }
+
+      // 7. Historical/Historical GiST exclusion: closed historical version overlapping existing closed historical version fails with 23P01
+      const { data: v6dBad, error: errV6dBad } = await adminClient.from('mandal_versions').insert({
+        mandal_id: mandalA.id,
+        district_id: mandalA.district_id,
+        version_code: testCodeM6d,
+        name: 'M6 V4 Bad GiST Historical Overlap',
+        valid_from: '2015-01-01',
+        valid_to: '2020-01-01',
+        is_current: false,
+        primary_dataset_version_id: testOfficialDsId
+      }).select('id').single();
+
+      if (v6dBad?.id) {
+        cleanupVersionIds.push(v6dBad.id);
+      }
+      const is23P01Gist = errV6dBad && (errV6dBad.code === '23P01' || errV6dBad.message?.includes('23P01') || errV6dBad.message?.includes('uq_mandal_versions_historical_no_overlap') || errV6dBad.message?.includes('exclusion'));
+      if (is23P01Gist) {
+        m6SubResults.push('hist_overlapping_hist_gist_23P01:PASS');
+      } else {
+        m6SubResults.push(`hist_overlapping_hist_gist_23P01:FAIL(${errV6dBad?.code || 'SUCCESS_UNEXPECTED'})`);
+      }
+
+      m6Observed = m6SubResults.join(', ');
+      if (is23P01HistCurrent && transitionOk && boundaryEqualityOk && is23P01CurrentHist && is23P01Gist) {
+        m6Passed = true;
       }
     } catch (err) {
-      m6Observed = `M6 EXCEPTION: ${err.message}`;
+      m6Observed = `M6 EXCEPTION: ${err.message}; SubResults: ${m6SubResults.join(', ')}`;
     } finally {
       // Unconditional teardown: Clear anchor pointer first to satisfy reciprocal trigger trg_guard_mandal_version_retirement
       try {
@@ -378,22 +458,23 @@ async function runTestSuite() {
       } catch (e) {
         console.error('Failed to detach mandal pointer during M6 teardown:', e.message);
       }
-      if (v6bId) {
+      for (const id of cleanupVersionIds.reverse()) {
         try {
-          await adminClient.from('mandal_versions').delete().eq('id', v6bId);
+          await adminClient.from('mandal_versions').delete().eq('id', id);
         } catch (e) {
-          console.error('Failed to delete v6b during M6 teardown:', e.message);
-        }
-      }
-      if (v6aId) {
-        try {
-          await adminClient.from('mandal_versions').delete().eq('id', v6aId);
-        } catch (e) {
-          console.error('Failed to delete v6a during M6 teardown:', e.message);
+          console.error(`Failed to delete mandal_version ${id} during M6 teardown:`, e.message);
         }
       }
     }
-    recordTest('M6', 'Atomic Valid Transition Succeeds', 'fn_transition_mandal_current_version atomically transitions version and pointer', m6Passed ? 'PASS' : 'FAIL', 'TRANSITION_COMPLETE', m6Observed, 'Atomic transition successfully retires previous version, activates new version, and updates pointer');
+    recordTest(
+      'M6',
+      'Atomic Valid Transition Succeeds',
+      'fn_transition_mandal_current_version atomically transitions version and pointer with strict temporal boundary enforcement',
+      m6Passed ? 'PASS' : 'FAIL',
+      'Candidate allowed, 23P01 on overlap, TRANSITION_COMPLETE, boundary equality',
+      m6Observed,
+      'Verified candidate insertion, transition, boundary equality, and reciprocal 23P01 overlap rejection'
+    );
 
     // -------------------------------------------------------------------------
     // M7: Candidate versions excluded from canonical legal truth

@@ -1,21 +1,23 @@
 -- ==============================================================================
--- W014: MIGRATION ROLLBACK — REVERT PARTITIONED GIST TO UNCONDITIONAL GIST
+-- W014: MIGRATION ROLLBACK — REVERT PARTITIONED GIST & BOUNDARY TRIGGER
 -- File: supabase/rollback_w014_m6_gist_boundary_041.sql
 -- Target: panIN-staging (fkpigozcqnmcvofuksar)
 -- Status: PREPARED / UNEXECUTED — REQUIRES EXPLICIT CTO AUTHORIZATION
 --
 -- PURPOSE:
 -- 1. Pre-rollback assertion: Fail closed if multiple open-ended versions exist on any mandal,
---    as unconditional GiST would immediately fail to build.
--- 2. Drop partitioned historical constraint `uq_mandal_versions_historical_no_overlap`.
--- 3. Re-create original Migration 041 unconditional exclusion constraint `uq_mandal_versions_no_overlap`:
+--    as unconditional GiST exclusion would immediately fail to build.
+-- 2. Drop `trg_guard_mandal_version_temporal_bounds` on public.mandal_versions.
+-- 3. Drop `fn_guard_mandal_version_temporal_bounds()`.
+-- 4. Drop partitioned historical constraint `uq_mandal_versions_historical_no_overlap`.
+-- 5. Re-create original Migration 041 unconditional exclusion constraint `uq_mandal_versions_no_overlap`:
 --      EXCLUDE USING gist (
 --        mandal_id WITH =,
 --        (daterange(valid_from, valid_to, '[)')) WITH &&
 --      );
--- 4. Revert `fn_transition_mandal_current_version` to original Migration 041 definition.
--- 5. Revert `fn_guard_mandal_current_version` to original Migration 041 definition.
--- 6. Preserve function ownership and strict ACL boundary.
+-- 6. Revert `fn_guard_mandal_current_version` to original Migration 041 definition.
+-- 7. Revert `fn_transition_mandal_current_version` to original Migration 041 definition.
+-- 8. Preserve function ownership and strict ACL boundary.
 -- ==============================================================================
 
 BEGIN;
@@ -44,7 +46,13 @@ BEGIN
 END $$;
 
 -- -----------------------------------------------------------------------------
--- Step 2: Revert Constraint to Unconditional GiST Exclusion
+-- Step 2: Drop Temporal Bounds Guard Trigger and Function (Option A Removals)
+-- -----------------------------------------------------------------------------
+DROP TRIGGER IF EXISTS trg_guard_mandal_version_temporal_bounds ON public.mandal_versions;
+DROP FUNCTION IF EXISTS public.fn_guard_mandal_version_temporal_bounds();
+
+-- -----------------------------------------------------------------------------
+-- Step 3: Revert Constraint to Unconditional GiST Exclusion
 -- -----------------------------------------------------------------------------
 ALTER TABLE public.mandal_versions
   DROP CONSTRAINT IF EXISTS uq_mandal_versions_historical_no_overlap;
@@ -63,7 +71,7 @@ COMMENT ON CONSTRAINT uq_mandal_versions_no_overlap ON public.mandal_versions IS
   'Temporal non-overlapping interval exclusion (Migration 041 Unconditional Baseline)';
 
 -- -----------------------------------------------------------------------------
--- Step 3: Revert Trigger Function fn_guard_mandal_current_version
+-- Step 4: Revert Trigger Function fn_guard_mandal_current_version
 -- -----------------------------------------------------------------------------
 CREATE OR REPLACE FUNCTION public.fn_guard_mandal_current_version()
 RETURNS TRIGGER AS $$
@@ -95,7 +103,7 @@ END;
 $$ LANGUAGE plpgsql;
 
 -- -----------------------------------------------------------------------------
--- Step 4: Revert Transition Function fn_transition_mandal_current_version
+-- Step 5: Revert Transition Function fn_transition_mandal_current_version
 -- -----------------------------------------------------------------------------
 CREATE OR REPLACE FUNCTION public.fn_transition_mandal_current_version(
   p_mandal_id TEXT,
@@ -220,7 +228,7 @@ END;
 $$;
 
 -- -----------------------------------------------------------------------------
--- Step 5: Exact Function Ownership & Least-Privilege ACL Boundary Preservation
+-- Step 6: Exact Function Ownership & Least-Privilege ACL Boundary Preservation
 -- -----------------------------------------------------------------------------
 GRANT panin_boundary_definer TO CURRENT_USER;
 GRANT CREATE ON SCHEMA public TO panin_boundary_definer;
