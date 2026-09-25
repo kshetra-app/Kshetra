@@ -44,12 +44,13 @@ Key implementation guarantees delivered:
 
 | File Path | Purpose | SHA-256 Checksum |
 |---|---|---|
-| `supabase/migrations/041_geography_versioning_and_temporal_validity.sql` | Canonical Migration 041 | `ff8d1bded5e892d9266dd9ad01b18937ee922451fe71990c032b43574e8d5c5e` |
-| `supabase/staging_migration_package_041.sql` | Atomic Staging Migration Package | `ff8d1bded5e892d9266dd9ad01b18937ee922451fe71990c032b43574e8d5c5e` |
+| `supabase/migrations/041_geography_versioning_and_temporal_validity.sql` | Canonical Migration 041 | `99d5cb32f76965fa753b9047bb7b797278341739e5a5b3b8143be189f9270000` |
+| `supabase/staging_migration_package_041.sql` | Atomic Staging Migration Package | `99d5cb32f76965fa753b9047bb7b797278341739e5a5b3b8143be189f9270000` |
 | `supabase/verify_staging_migration_package_041.sql` | 23-Check SQL Verification Script | `bce98521a6a785b12132a926fadeaac848276e15aa5c609750ca86fa189bb889` |
 | `supabase/rollback_staging_migration_package_041.sql` | Deterministic Rollback Package | `29ae29413c9655d8c8974534f3faecb7056d12968f53c2a0136451345b05caf2` |
-| `scripts/verify_w014_temporal_validity.mjs` | Static Preflight & Integrity Validator | `04de70053a114e3ea5a0320d971b312a0e232c9ff30bd47452707f404df69f8a` |
+| `scripts/verify_w014_temporal_validity.mjs` | Static Preflight & Integrity Validator | `b6634fb5594af2aaadc60c804358d05c14710463a367600d449310b573ec94b5` |
 | `tests/test_mandal_version_integrity.mjs` | Live Staging M1–M15 Acceptance Test Battery | `9e4d4e3ebb0a9009c7d70289792f90eff7a0ddcf07824412098587acca7a34ba` |
+| `tests/test_dataset_version_reconciliation.mjs` | W012 10-Field Immutable Reconciliation Semantic Test | `cf12077deb1826c246d8c05fb74655855ecccadca184957d62f812748338f423` |
 | `reports/w014_staging_migration_application_package.md` | Staging Application Package Guide | *Recorded in git tree* |
 
 ---

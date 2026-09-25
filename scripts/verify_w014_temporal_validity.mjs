@@ -37,7 +37,37 @@ for (const file of migrationFiles) {
   check(`Scenario regime is not OFFICIAL in ${file}`, !content.includes("'scenario_delimitation_draft_prop_1', 'OFFICIAL'"));
   check(`AC 109 chronology present in ${file}`, content.includes('Mulug') && content.includes('Warangal'));
   check(`Zero ON CONFLICT DO UPDATE on dataset_versions in ${file}`, !content.includes('ON CONFLICT (id) DO UPDATE SET\n  dataset_id = EXCLUDED.dataset_id') && content.includes('ON CONFLICT (id) DO NOTHING;'));
-  check(`Post-registration reconciliation assertion present in ${file}`, content.includes('RECONCILIATION FAILURE: Expected dataset_version'));
+
+  // W012 Complete Immutable-Field Reconciliation Coverage Checks
+  const w014DsVersions = [
+    'ts_districts_2014_v1',
+    'ts_districts_2021_renames_v1',
+    'eci_delimitation_1976_v1',
+    'eci_delimitation_post2026_projected_v1',
+    'scenario_delimitation_draft_prop_1_v1'
+  ];
+  const w012ImmutableFields = [
+    'dataset_id',
+    'version_tag',
+    'effective_from',
+    'effective_to',
+    'record_count',
+    'checksum_sha256',
+    'storage_path',
+    'default_status',
+    'verification_evidence_id',
+    'metadata'
+  ];
+
+  for (const dsId of w014DsVersions) {
+    check(`Reconciliation block present for ${dsId} in ${file}`, content.includes(`SELECT * INTO v_rec FROM public.dataset_versions WHERE id = '${dsId}'`));
+    for (const f of w012ImmutableFields) {
+      check(`Reconciliation of ${dsId} checks ${f} via IS DISTINCT FROM in ${file}`, content.includes(`v_rec.${f} IS DISTINCT FROM`));
+    }
+  }
+  check(`Reconciliation raises explicit field mismatch exception in ${file}`, content.includes('RECONCILIATION FAILURE: dataset_version % field "') && content.includes('mismatch: existing="%", expected="%"'));
+  check(`Zero retrieved_at comparison against NOW() in reconciliation in ${file}`, !content.includes('retrieved_at = now()') && !content.includes('retrieved_at IS DISTINCT FROM now()'));
+
 
   // Mandal Temporal Version Model Checks
   check(`mandal_versions table definition present in ${file}`, content.includes('CREATE TABLE IF NOT EXISTS public.mandal_versions'));

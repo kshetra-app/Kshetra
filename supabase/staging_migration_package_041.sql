@@ -99,75 +99,266 @@ VALUES
 ON CONFLICT (id) DO NOTHING;
 
 -- Deterministic Post-Registration Reconciliation Assertion for W014 Dataset Versions
--- Verifies that all expected W014 dataset_versions exist and their immutable fields match expected definition.
--- If any field differs, fails closed with an explicit reconciliation exception without mutating the snapshot.
+-- Authoritative W012 Immutable Fields Reconciled:
+--   1. dataset_id (TEXT NOT NULL)
+--   2. version_tag (TEXT NOT NULL)
+--   3. effective_from (DATE NULLABLE)
+--   4. effective_to (DATE NULLABLE)
+--   5. record_count (INTEGER NOT NULL)
+--   6. checksum_sha256 (TEXT NULLABLE)
+--   7. storage_path (TEXT NULLABLE)
+--   8. default_status (data_status_enum NOT NULL)
+--   9. verification_evidence_id (UUID NULLABLE)
+--  10. metadata (JSONB NOT NULL)
+-- Classification of retrieved_at: W012 acquisition timestamp; immutable on existing snapshots, never compared to NOW().
+-- Failure behavior: FAIL CLOSED if any field differs; NEVER mutate existing snapshots.
 DO $$
 DECLARE
   v_rec RECORD;
 BEGIN
+  -- =========================================================================
   -- 1. ts_districts_2014_v1
+  -- =========================================================================
   SELECT * INTO v_rec FROM public.dataset_versions WHERE id = 'ts_districts_2014_v1';
   IF NOT FOUND THEN
-    RAISE EXCEPTION 'RECONCILIATION FAILURE: Expected dataset_version ts_districts_2014_v1 not found';
-  END IF;
-  IF v_rec.dataset_id <> 'ts_revenue_districts' OR
-     v_rec.version_tag <> '2014_state_formation' OR
-     v_rec.effective_from <> '2014-06-02'::date OR
-     v_rec.default_status <> 'UNVERIFIED' THEN
-    RAISE EXCEPTION 'RECONCILIATION FAILURE: Existing dataset_version ts_districts_2014_v1 has conflicting immutable fields (dataset_id=%, version_tag=%, effective_from=%, default_status=%)',
-      v_rec.dataset_id, v_rec.version_tag, v_rec.effective_from, v_rec.default_status;
+    RAISE EXCEPTION 'RECONCILIATION FAILURE: dataset_version % not found', 'ts_districts_2014_v1';
   END IF;
 
+  IF v_rec.dataset_id IS DISTINCT FROM 'ts_revenue_districts' THEN
+    RAISE EXCEPTION 'RECONCILIATION FAILURE: dataset_version % field "dataset_id" mismatch: existing="%", expected="%"',
+      'ts_districts_2014_v1', v_rec.dataset_id, 'ts_revenue_districts';
+  END IF;
+  IF v_rec.version_tag IS DISTINCT FROM '2014_state_formation' THEN
+    RAISE EXCEPTION 'RECONCILIATION FAILURE: dataset_version % field "version_tag" mismatch: existing="%", expected="%"',
+      'ts_districts_2014_v1', v_rec.version_tag, '2014_state_formation';
+  END IF;
+  IF v_rec.effective_from IS DISTINCT FROM '2014-06-02'::date THEN
+    RAISE EXCEPTION 'RECONCILIATION FAILURE: dataset_version % field "effective_from" mismatch: existing="%", expected="%"',
+      'ts_districts_2014_v1', v_rec.effective_from, '2014-06-02';
+  END IF;
+  IF v_rec.effective_to IS DISTINCT FROM NULL::date THEN
+    RAISE EXCEPTION 'RECONCILIATION FAILURE: dataset_version % field "effective_to" mismatch: existing="%", expected="%"',
+      'ts_districts_2014_v1', v_rec.effective_to, 'NULL';
+  END IF;
+  IF v_rec.record_count IS DISTINCT FROM 10 THEN
+    RAISE EXCEPTION 'RECONCILIATION FAILURE: dataset_version % field "record_count" mismatch: existing="%", expected="%"',
+      'ts_districts_2014_v1', v_rec.record_count, '10';
+  END IF;
+  IF v_rec.checksum_sha256 IS DISTINCT FROM NULL::text THEN
+    RAISE EXCEPTION 'RECONCILIATION FAILURE: dataset_version % field "checksum_sha256" mismatch: existing="%", expected="%"',
+      'ts_districts_2014_v1', v_rec.checksum_sha256, 'NULL';
+  END IF;
+  IF v_rec.storage_path IS DISTINCT FROM NULL::text THEN
+    RAISE EXCEPTION 'RECONCILIATION FAILURE: dataset_version % field "storage_path" mismatch: existing="%", expected="%"',
+      'ts_districts_2014_v1', v_rec.storage_path, 'NULL';
+  END IF;
+  IF v_rec.default_status IS DISTINCT FROM 'UNVERIFIED'::data_status_enum THEN
+    RAISE EXCEPTION 'RECONCILIATION FAILURE: dataset_version % field "default_status" mismatch: existing="%", expected="%"',
+      'ts_districts_2014_v1', v_rec.default_status, 'UNVERIFIED';
+  END IF;
+  IF v_rec.verification_evidence_id IS DISTINCT FROM NULL::uuid THEN
+    RAISE EXCEPTION 'RECONCILIATION FAILURE: dataset_version % field "verification_evidence_id" mismatch: existing="%", expected="%"',
+      'ts_districts_2014_v1', v_rec.verification_evidence_id, 'NULL';
+  END IF;
+  IF v_rec.metadata IS DISTINCT FROM '{"statutory_reference": "Andhra Pradesh Reorganisation Act, 2014 (Act No. 6 of 2014), Section 3", "district_count": 10, "evidence_state": "statutory_act"}'::jsonb THEN
+    RAISE EXCEPTION 'RECONCILIATION FAILURE: dataset_version % field "metadata" mismatch: existing="%", expected="%"',
+      'ts_districts_2014_v1', v_rec.metadata, '{"statutory_reference": "Andhra Pradesh Reorganisation Act, 2014 (Act No. 6 of 2014), Section 3", "district_count": 10, "evidence_state": "statutory_act"}';
+  END IF;
+
+  -- =========================================================================
   -- 2. ts_districts_2021_renames_v1
+  -- =========================================================================
   SELECT * INTO v_rec FROM public.dataset_versions WHERE id = 'ts_districts_2021_renames_v1';
   IF NOT FOUND THEN
-    RAISE EXCEPTION 'RECONCILIATION FAILURE: Expected dataset_version ts_districts_2021_renames_v1 not found';
-  END IF;
-  IF v_rec.dataset_id <> 'ts_revenue_districts' OR
-     v_rec.version_tag <> '2021_renames' OR
-     v_rec.effective_from <> '2021-08-12'::date OR
-     v_rec.default_status <> 'UNVERIFIED' THEN
-    RAISE EXCEPTION 'RECONCILIATION FAILURE: Existing dataset_version ts_districts_2021_renames_v1 has conflicting immutable fields (dataset_id=%, version_tag=%, effective_from=%, default_status=%)',
-      v_rec.dataset_id, v_rec.version_tag, v_rec.effective_from, v_rec.default_status;
+    RAISE EXCEPTION 'RECONCILIATION FAILURE: dataset_version % not found', 'ts_districts_2021_renames_v1';
   END IF;
 
+  IF v_rec.dataset_id IS DISTINCT FROM 'ts_revenue_districts' THEN
+    RAISE EXCEPTION 'RECONCILIATION FAILURE: dataset_version % field "dataset_id" mismatch: existing="%", expected="%"',
+      'ts_districts_2021_renames_v1', v_rec.dataset_id, 'ts_revenue_districts';
+  END IF;
+  IF v_rec.version_tag IS DISTINCT FROM '2021_renames' THEN
+    RAISE EXCEPTION 'RECONCILIATION FAILURE: dataset_version % field "version_tag" mismatch: existing="%", expected="%"',
+      'ts_districts_2021_renames_v1', v_rec.version_tag, '2021_renames';
+  END IF;
+  IF v_rec.effective_from IS DISTINCT FROM '2021-08-12'::date THEN
+    RAISE EXCEPTION 'RECONCILIATION FAILURE: dataset_version % field "effective_from" mismatch: existing="%", expected="%"',
+      'ts_districts_2021_renames_v1', v_rec.effective_from, '2021-08-12';
+  END IF;
+  IF v_rec.effective_to IS DISTINCT FROM NULL::date THEN
+    RAISE EXCEPTION 'RECONCILIATION FAILURE: dataset_version % field "effective_to" mismatch: existing="%", expected="%"',
+      'ts_districts_2021_renames_v1', v_rec.effective_to, 'NULL';
+  END IF;
+  IF v_rec.record_count IS DISTINCT FROM 2 THEN
+    RAISE EXCEPTION 'RECONCILIATION FAILURE: dataset_version % field "record_count" mismatch: existing="%", expected="%"',
+      'ts_districts_2021_renames_v1', v_rec.record_count, '2';
+  END IF;
+  IF v_rec.checksum_sha256 IS DISTINCT FROM NULL::text THEN
+    RAISE EXCEPTION 'RECONCILIATION FAILURE: dataset_version % field "checksum_sha256" mismatch: existing="%", expected="%"',
+      'ts_districts_2021_renames_v1', v_rec.checksum_sha256, 'NULL';
+  END IF;
+  IF v_rec.storage_path IS DISTINCT FROM NULL::text THEN
+    RAISE EXCEPTION 'RECONCILIATION FAILURE: dataset_version % field "storage_path" mismatch: existing="%", expected="%"',
+      'ts_districts_2021_renames_v1', v_rec.storage_path, 'NULL';
+  END IF;
+  IF v_rec.default_status IS DISTINCT FROM 'UNVERIFIED'::data_status_enum THEN
+    RAISE EXCEPTION 'RECONCILIATION FAILURE: dataset_version % field "default_status" mismatch: existing="%", expected="%"',
+      'ts_districts_2021_renames_v1', v_rec.default_status, 'UNVERIFIED';
+  END IF;
+  IF v_rec.verification_evidence_id IS DISTINCT FROM NULL::uuid THEN
+    RAISE EXCEPTION 'RECONCILIATION FAILURE: dataset_version % field "verification_evidence_id" mismatch: existing="%", expected="%"',
+      'ts_districts_2021_renames_v1', v_rec.verification_evidence_id, 'NULL';
+  END IF;
+  IF v_rec.metadata IS DISTINCT FROM '{"statutory_reference": "G.O.Ms.No. 74, Revenue (DA) Dept, dated 12.08.2021 (Warangal/Hanamkonda)", "evidence_state": "statutory_gazette"}'::jsonb THEN
+    RAISE EXCEPTION 'RECONCILIATION FAILURE: dataset_version % field "metadata" mismatch: existing="%", expected="%"',
+      'ts_districts_2021_renames_v1', v_rec.metadata, '{"statutory_reference": "G.O.Ms.No. 74, Revenue (DA) Dept, dated 12.08.2021 (Warangal/Hanamkonda)", "evidence_state": "statutory_gazette"}';
+  END IF;
+
+  -- =========================================================================
   -- 3. eci_delimitation_1976_v1
+  -- =========================================================================
   SELECT * INTO v_rec FROM public.dataset_versions WHERE id = 'eci_delimitation_1976_v1';
   IF NOT FOUND THEN
-    RAISE EXCEPTION 'RECONCILIATION FAILURE: Expected dataset_version eci_delimitation_1976_v1 not found';
-  END IF;
-  IF v_rec.dataset_id <> 'eci_delimitation_orders' OR
-     v_rec.version_tag <> '1976_order' OR
-     v_rec.effective_from <> '1976-01-01'::date OR
-     v_rec.default_status <> 'UNVERIFIED' THEN
-    RAISE EXCEPTION 'RECONCILIATION FAILURE: Existing dataset_version eci_delimitation_1976_v1 has conflicting immutable fields (dataset_id=%, version_tag=%, effective_from=%, default_status=%)',
-      v_rec.dataset_id, v_rec.version_tag, v_rec.effective_from, v_rec.default_status;
+    RAISE EXCEPTION 'RECONCILIATION FAILURE: dataset_version % not found', 'eci_delimitation_1976_v1';
   END IF;
 
+  IF v_rec.dataset_id IS DISTINCT FROM 'eci_delimitation_orders' THEN
+    RAISE EXCEPTION 'RECONCILIATION FAILURE: dataset_version % field "dataset_id" mismatch: existing="%", expected="%"',
+      'eci_delimitation_1976_v1', v_rec.dataset_id, 'eci_delimitation_orders';
+  END IF;
+  IF v_rec.version_tag IS DISTINCT FROM '1976_order' THEN
+    RAISE EXCEPTION 'RECONCILIATION FAILURE: dataset_version % field "version_tag" mismatch: existing="%", expected="%"',
+      'eci_delimitation_1976_v1', v_rec.version_tag, '1976_order';
+  END IF;
+  IF v_rec.effective_from IS DISTINCT FROM '1976-01-01'::date THEN
+    RAISE EXCEPTION 'RECONCILIATION FAILURE: dataset_version % field "effective_from" mismatch: existing="%", expected="%"',
+      'eci_delimitation_1976_v1', v_rec.effective_from, '1976-01-01';
+  END IF;
+  IF v_rec.effective_to IS DISTINCT FROM NULL::date THEN
+    RAISE EXCEPTION 'RECONCILIATION FAILURE: dataset_version % field "effective_to" mismatch: existing="%", expected="%"',
+      'eci_delimitation_1976_v1', v_rec.effective_to, 'NULL';
+  END IF;
+  IF v_rec.record_count IS DISTINCT FROM 0 THEN
+    RAISE EXCEPTION 'RECONCILIATION FAILURE: dataset_version % field "record_count" mismatch: existing="%", expected="%"',
+      'eci_delimitation_1976_v1', v_rec.record_count, '0';
+  END IF;
+  IF v_rec.checksum_sha256 IS DISTINCT FROM NULL::text THEN
+    RAISE EXCEPTION 'RECONCILIATION FAILURE: dataset_version % field "checksum_sha256" mismatch: existing="%", expected="%"',
+      'eci_delimitation_1976_v1', v_rec.checksum_sha256, 'NULL';
+  END IF;
+  IF v_rec.storage_path IS DISTINCT FROM NULL::text THEN
+    RAISE EXCEPTION 'RECONCILIATION FAILURE: dataset_version % field "storage_path" mismatch: existing="%", expected="%"',
+      'eci_delimitation_1976_v1', v_rec.storage_path, 'NULL';
+  END IF;
+  IF v_rec.default_status IS DISTINCT FROM 'UNVERIFIED'::data_status_enum THEN
+    RAISE EXCEPTION 'RECONCILIATION FAILURE: dataset_version % field "default_status" mismatch: existing="%", expected="%"',
+      'eci_delimitation_1976_v1', v_rec.default_status, 'UNVERIFIED';
+  END IF;
+  IF v_rec.verification_evidence_id IS DISTINCT FROM NULL::uuid THEN
+    RAISE EXCEPTION 'RECONCILIATION FAILURE: dataset_version % field "verification_evidence_id" mismatch: existing="%", expected="%"',
+      'eci_delimitation_1976_v1', v_rec.verification_evidence_id, 'NULL';
+  END IF;
+  IF v_rec.metadata IS DISTINCT FROM '{"statutory_reference": "Delimitation Commission of India Order, 1976", "legal_status": "SUPERSEDED", "evidence_state": "historical_order"}'::jsonb THEN
+    RAISE EXCEPTION 'RECONCILIATION FAILURE: dataset_version % field "metadata" mismatch: existing="%", expected="%"',
+      'eci_delimitation_1976_v1', v_rec.metadata, '{"statutory_reference": "Delimitation Commission of India Order, 1976", "legal_status": "SUPERSEDED", "evidence_state": "historical_order"}';
+  END IF;
+
+  -- =========================================================================
   -- 4. eci_delimitation_post2026_projected_v1
+  -- =========================================================================
   SELECT * INTO v_rec FROM public.dataset_versions WHERE id = 'eci_delimitation_post2026_projected_v1';
   IF NOT FOUND THEN
-    RAISE EXCEPTION 'RECONCILIATION FAILURE: Expected dataset_version eci_delimitation_post2026_projected_v1 not found';
-  END IF;
-  IF v_rec.dataset_id <> 'eci_delimitation_orders' OR
-     v_rec.version_tag <> 'post2026_anticipated' OR
-     v_rec.effective_from <> '2026-01-01'::date OR
-     v_rec.default_status <> 'UNVERIFIED' THEN
-    RAISE EXCEPTION 'RECONCILIATION FAILURE: Existing dataset_version eci_delimitation_post2026_projected_v1 has conflicting immutable fields (dataset_id=%, version_tag=%, effective_from=%, default_status=%)',
-      v_rec.dataset_id, v_rec.version_tag, v_rec.effective_from, v_rec.default_status;
+    RAISE EXCEPTION 'RECONCILIATION FAILURE: dataset_version % not found', 'eci_delimitation_post2026_projected_v1';
   END IF;
 
+  IF v_rec.dataset_id IS DISTINCT FROM 'eci_delimitation_orders' THEN
+    RAISE EXCEPTION 'RECONCILIATION FAILURE: dataset_version % field "dataset_id" mismatch: existing="%", expected="%"',
+      'eci_delimitation_post2026_projected_v1', v_rec.dataset_id, 'eci_delimitation_orders';
+  END IF;
+  IF v_rec.version_tag IS DISTINCT FROM 'post2026_anticipated' THEN
+    RAISE EXCEPTION 'RECONCILIATION FAILURE: dataset_version % field "version_tag" mismatch: existing="%", expected="%"',
+      'eci_delimitation_post2026_projected_v1', v_rec.version_tag, 'post2026_anticipated';
+  END IF;
+  IF v_rec.effective_from IS DISTINCT FROM '2026-01-01'::date THEN
+    RAISE EXCEPTION 'RECONCILIATION FAILURE: dataset_version % field "effective_from" mismatch: existing="%", expected="%"',
+      'eci_delimitation_post2026_projected_v1', v_rec.effective_from, '2026-01-01';
+  END IF;
+  IF v_rec.effective_to IS DISTINCT FROM NULL::date THEN
+    RAISE EXCEPTION 'RECONCILIATION FAILURE: dataset_version % field "effective_to" mismatch: existing="%", expected="%"',
+      'eci_delimitation_post2026_projected_v1', v_rec.effective_to, 'NULL';
+  END IF;
+  IF v_rec.record_count IS DISTINCT FROM 0 THEN
+    RAISE EXCEPTION 'RECONCILIATION FAILURE: dataset_version % field "record_count" mismatch: existing="%", expected="%"',
+      'eci_delimitation_post2026_projected_v1', v_rec.record_count, '0';
+  END IF;
+  IF v_rec.checksum_sha256 IS DISTINCT FROM NULL::text THEN
+    RAISE EXCEPTION 'RECONCILIATION FAILURE: dataset_version % field "checksum_sha256" mismatch: existing="%", expected="%"',
+      'eci_delimitation_post2026_projected_v1', v_rec.checksum_sha256, 'NULL';
+  END IF;
+  IF v_rec.storage_path IS DISTINCT FROM NULL::text THEN
+    RAISE EXCEPTION 'RECONCILIATION FAILURE: dataset_version % field "storage_path" mismatch: existing="%", expected="%"',
+      'eci_delimitation_post2026_projected_v1', v_rec.storage_path, 'NULL';
+  END IF;
+  IF v_rec.default_status IS DISTINCT FROM 'UNVERIFIED'::data_status_enum THEN
+    RAISE EXCEPTION 'RECONCILIATION FAILURE: dataset_version % field "default_status" mismatch: existing="%", expected="%"',
+      'eci_delimitation_post2026_projected_v1', v_rec.default_status, 'UNVERIFIED';
+  END IF;
+  IF v_rec.verification_evidence_id IS DISTINCT FROM NULL::uuid THEN
+    RAISE EXCEPTION 'RECONCILIATION FAILURE: dataset_version % field "verification_evidence_id" mismatch: existing="%", expected="%"',
+      'eci_delimitation_post2026_projected_v1', v_rec.verification_evidence_id, 'NULL';
+  END IF;
+  IF v_rec.metadata IS DISTINCT FROM '{"statutory_reference": "Constitution of India, Articles 82 & 170 (Post-2026 Delimitation Freeze)", "legal_status": "PROSPECTIVE_UNENACTED", "evidence_state": "constitutional_mandate"}'::jsonb THEN
+    RAISE EXCEPTION 'RECONCILIATION FAILURE: dataset_version % field "metadata" mismatch: existing="%", expected="%"',
+      'eci_delimitation_post2026_projected_v1', v_rec.metadata, '{"statutory_reference": "Constitution of India, Articles 82 & 170 (Post-2026 Delimitation Freeze)", "legal_status": "PROSPECTIVE_UNENACTED", "evidence_state": "constitutional_mandate"}';
+  END IF;
+
+  -- =========================================================================
   -- 5. scenario_delimitation_draft_prop_1_v1
+  -- =========================================================================
   SELECT * INTO v_rec FROM public.dataset_versions WHERE id = 'scenario_delimitation_draft_prop_1_v1';
   IF NOT FOUND THEN
-    RAISE EXCEPTION 'RECONCILIATION FAILURE: Expected dataset_version scenario_delimitation_draft_prop_1_v1 not found';
+    RAISE EXCEPTION 'RECONCILIATION FAILURE: dataset_version % not found', 'scenario_delimitation_draft_prop_1_v1';
   END IF;
-  IF v_rec.dataset_id <> 'panin_delimitation_scenarios' OR
-     v_rec.version_tag <> 'draft_prop_1' OR
-     v_rec.effective_from <> '2026-01-01'::date OR
-     v_rec.default_status <> 'UNVERIFIED' THEN
-    RAISE EXCEPTION 'RECONCILIATION FAILURE: Existing dataset_version scenario_delimitation_draft_prop_1_v1 has conflicting immutable fields (dataset_id=%, version_tag=%, effective_from=%, default_status=%)',
-      v_rec.dataset_id, v_rec.version_tag, v_rec.effective_from, v_rec.default_status;
+
+  IF v_rec.dataset_id IS DISTINCT FROM 'panin_delimitation_scenarios' THEN
+    RAISE EXCEPTION 'RECONCILIATION FAILURE: dataset_version % field "dataset_id" mismatch: existing="%", expected="%"',
+      'scenario_delimitation_draft_prop_1_v1', v_rec.dataset_id, 'panin_delimitation_scenarios';
+  END IF;
+  IF v_rec.version_tag IS DISTINCT FROM 'draft_prop_1' THEN
+    RAISE EXCEPTION 'RECONCILIATION FAILURE: dataset_version % field "version_tag" mismatch: existing="%", expected="%"',
+      'scenario_delimitation_draft_prop_1_v1', v_rec.version_tag, 'draft_prop_1';
+  END IF;
+  IF v_rec.effective_from IS DISTINCT FROM '2026-01-01'::date THEN
+    RAISE EXCEPTION 'RECONCILIATION FAILURE: dataset_version % field "effective_from" mismatch: existing="%", expected="%"',
+      'scenario_delimitation_draft_prop_1_v1', v_rec.effective_from, '2026-01-01';
+  END IF;
+  IF v_rec.effective_to IS DISTINCT FROM NULL::date THEN
+    RAISE EXCEPTION 'RECONCILIATION FAILURE: dataset_version % field "effective_to" mismatch: existing="%", expected="%"',
+      'scenario_delimitation_draft_prop_1_v1', v_rec.effective_to, 'NULL';
+  END IF;
+  IF v_rec.record_count IS DISTINCT FROM 0 THEN
+    RAISE EXCEPTION 'RECONCILIATION FAILURE: dataset_version % field "record_count" mismatch: existing="%", expected="%"',
+      'scenario_delimitation_draft_prop_1_v1', v_rec.record_count, '0';
+  END IF;
+  IF v_rec.checksum_sha256 IS DISTINCT FROM NULL::text THEN
+    RAISE EXCEPTION 'RECONCILIATION FAILURE: dataset_version % field "checksum_sha256" mismatch: existing="%", expected="%"',
+      'scenario_delimitation_draft_prop_1_v1', v_rec.checksum_sha256, 'NULL';
+  END IF;
+  IF v_rec.storage_path IS DISTINCT FROM NULL::text THEN
+    RAISE EXCEPTION 'RECONCILIATION FAILURE: dataset_version % field "storage_path" mismatch: existing="%", expected="%"',
+      'scenario_delimitation_draft_prop_1_v1', v_rec.storage_path, 'NULL';
+  END IF;
+  IF v_rec.default_status IS DISTINCT FROM 'UNVERIFIED'::data_status_enum THEN
+    RAISE EXCEPTION 'RECONCILIATION FAILURE: dataset_version % field "default_status" mismatch: existing="%", expected="%"',
+      'scenario_delimitation_draft_prop_1_v1', v_rec.default_status, 'UNVERIFIED';
+  END IF;
+  IF v_rec.verification_evidence_id IS DISTINCT FROM NULL::uuid THEN
+    RAISE EXCEPTION 'RECONCILIATION FAILURE: dataset_version % field "verification_evidence_id" mismatch: existing="%", expected="%"',
+      'scenario_delimitation_draft_prop_1_v1', v_rec.verification_evidence_id, 'NULL';
+  END IF;
+  IF v_rec.metadata IS DISTINCT FROM '{"simulation_name": "Hypothetical Population-Based Seat Reallocation Model 1", "legal_status": "NON_STATUTORY_SIMULATION", "evidence_state": "simulation_model"}'::jsonb THEN
+    RAISE EXCEPTION 'RECONCILIATION FAILURE: dataset_version % field "metadata" mismatch: existing="%", expected="%"',
+      'scenario_delimitation_draft_prop_1_v1', v_rec.metadata, '{"simulation_name": "Hypothetical Population-Based Seat Reallocation Model 1", "legal_status": "NON_STATUTORY_SIMULATION", "evidence_state": "simulation_model"}';
   END IF;
 END $$;
 
