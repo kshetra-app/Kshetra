@@ -44,12 +44,13 @@ Key implementation guarantees delivered:
 
 | File Path | Purpose | SHA-256 Checksum |
 |---|---|---|
-| `supabase/migrations/041_geography_versioning_and_temporal_validity.sql` | Canonical Migration 041 | `8831f216c774df2ab3ab73abbde892cf209c5f6a86141059618ecd83183e25a6` |
-| `supabase/staging_migration_package_041.sql` | Atomic Staging Migration Package | `8831f216c774df2ab3ab73abbde892cf209c5f6a86141059618ecd83183e25a6` |
+| `supabase/remediation_w014_function_acl_041.sql` | Standalone Check 22 Remediation Package | `3949bdc2721737bdabf9df26b92b65ffa07c46e115d179ee36790e589b92d12e` |
+| `supabase/migrations/041_geography_versioning_and_temporal_validity.sql` | Canonical Migration 041 | `a2a74731eecf235ac35c4b6d351d77acf6083c3d326cdd17aa79128158350f03` |
+| `supabase/staging_migration_package_041.sql` | Atomic Staging Migration Package | `a2a74731eecf235ac35c4b6d351d77acf6083c3d326cdd17aa79128158350f03` |
 | `supabase/verify_staging_migration_package_041.sql` | 23-Check SQL Verification Script | `aef25c7b667c97af175f8a03766f33a58b95509b4df0f8fa8316ac7a428eee27` |
 | `supabase/rollback_staging_migration_package_041.sql` | Deterministic Rollback Package | `29ae29413c9655d8c8974534f3faecb7056d12968f53c2a0136451345b05caf2` |
-| `scripts/verify_w014_temporal_validity.mjs` | Static Preflight & Integrity Validator | `8f068140cc0309047ba238bbfbdae0514849696665a0449f14e32a294bd89c33` |
-| `tests/test_mandal_version_integrity.mjs` | Live Staging M1–M15 Acceptance Test Battery | `9e4d4e3ebb0a9009c7d70289792f90eff7a0ddcf07824412098587acca7a34ba` |
+| `scripts/verify_w014_temporal_validity.mjs` | Static Preflight & Integrity Validator | `c82ff741b487d351c4e8a59f61eeb4769afe15a38e57ec3e2dace9eb801db56e` |
+| `tests/test_mandal_version_integrity.mjs` | Live Staging M1–M15 Acceptance Test Battery | `3a24c64ef7d2fd2f8d70ce466093cb789d9d1190369428af8a404fc605d32cfa` |
 | `tests/test_dataset_version_reconciliation.mjs` | 10-field W014 dataset-definition reconciliation Semantic Test | `844c7fd72b675fb8461029d7d9a3c75563710e71e5108625b11b79e940ed7dab` |
 | `reports/w014_staging_migration_application_package.md` | Staging Application Package Guide | *Recorded in git tree* |
 

@@ -123,15 +123,9 @@ async function runTestSuite() {
   const mandalA = mandals[0];
   const mandalB = mandals[1];
 
-  // Helper: Ensure test official dataset exists during test battery
-  const testOfficialDsId = 'test_w014_official_ds';
-  await adminClient.from('dataset_versions').upsert({
-    id: testOfficialDsId,
-    dataset_id: 'geo_assembly_boundaries',
-    version_tag: 'w014_runtime_official_test',
-    default_status: 'OFFICIAL'
-  });
-
+  // Reference pre-existing authoritative OFFICIAL dataset version (ts_districts_2014_v1)
+  // Note: dataset_versions is immutable under W012; we reference existing verified snapshots.
+  const testOfficialDsId = 'ts_districts_2014_v1';
   const unverifiedDsId = 'ts_districts_2016_v1'; // Standard UNVERIFIED dataset
 
   try {
@@ -637,8 +631,7 @@ async function runTestSuite() {
     recordTest('M15', 'Provenance Existence Validation', 'Supplied p_provenance_id must exist in public.provenance_records', m15Passed ? 'PASS' : 'FAIL', 'ERR-W014-005 (23503)', m15Observed, 'Function verifies foreign key existence of provenance record when supplied');
 
   } finally {
-    // Revert temporary test dataset status back to UNVERIFIED
-    await adminClient.from('dataset_versions').update({ default_status: 'UNVERIFIED' }).eq('id', testOfficialDsId);
+    // Test execution complete. No mutation to immutable dataset_versions performed.
   }
 
   // Save report

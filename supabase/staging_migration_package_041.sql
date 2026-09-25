@@ -1232,15 +1232,19 @@ ALTER FUNCTION public.fn_transition_mandal_current_version(TEXT, UUID, DATE, TEX
   OWNER TO panin_boundary_definer;
 
 REVOKE CREATE ON SCHEMA public FROM panin_boundary_definer;
-REVOKE panin_boundary_definer FROM CURRENT_USER;
 
 -- Explicit Declarative ACL Configuration
+-- Executed while CURRENT_USER holds membership in panin_boundary_definer to satisfy
+-- PostgreSQL kernel authorization checks for GRANT/REVOKE on owner-restricted functions.
 REVOKE ALL ON FUNCTION public.fn_transition_mandal_current_version(TEXT, UUID, DATE, TEXT, UUID) FROM PUBLIC;
 REVOKE ALL ON FUNCTION public.fn_transition_mandal_current_version(TEXT, UUID, DATE, TEXT, UUID) FROM anon;
 REVOKE ALL ON FUNCTION public.fn_transition_mandal_current_version(TEXT, UUID, DATE, TEXT, UUID) FROM authenticated;
 
 GRANT EXECUTE ON FUNCTION public.fn_transition_mandal_current_version(TEXT, UUID, DATE, TEXT, UUID) TO service_role;
 GRANT EXECUTE ON FUNCTION public.fn_transition_mandal_current_version(TEXT, UUID, DATE, TEXT, UUID) TO panin_boundary_admin;
+
+-- Revoke temporary role membership strictly after all owner-level operations complete
+REVOKE panin_boundary_definer FROM CURRENT_USER;
 
 -- H. Row Level Security for mandal_versions
 ALTER TABLE public.mandal_versions ENABLE ROW LEVEL SECURITY;

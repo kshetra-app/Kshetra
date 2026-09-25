@@ -105,10 +105,37 @@ for (const file of migrationFiles) {
   const grantSchemaIdx = content.indexOf('GRANT CREATE ON SCHEMA public TO panin_boundary_definer;');
   const ownerIdx = content.indexOf('OWNER TO panin_boundary_definer;');
   const revokeSchemaIdx = content.indexOf('REVOKE CREATE ON SCHEMA public FROM panin_boundary_definer;');
+  const grantAclPublicIdx = content.indexOf('REVOKE ALL ON FUNCTION public.fn_transition_mandal_current_version(TEXT, UUID, DATE, TEXT, UUID) FROM PUBLIC;');
+  const grantAclServiceIdx = content.indexOf('GRANT EXECUTE ON FUNCTION public.fn_transition_mandal_current_version(TEXT, UUID, DATE, TEXT, UUID) TO service_role;');
   const revokeRoleIdx = content.indexOf('REVOKE panin_boundary_definer FROM CURRENT_USER;');
-  check(`Strict transactional bootstrap ordering (GRANTS < OWNER < REVOKES) in ${file}`,
-    grantRoleIdx !== -1 && grantSchemaIdx !== -1 && ownerIdx !== -1 && revokeSchemaIdx !== -1 && revokeRoleIdx !== -1 &&
-    grantRoleIdx < ownerIdx && grantSchemaIdx < ownerIdx && ownerIdx < revokeSchemaIdx && ownerIdx < revokeRoleIdx
+  check(`Strict transactional bootstrap ordering (GRANTS < OWNER < ACL CONFIG < REVOKE ROLE) in ${file}`,
+    grantRoleIdx !== -1 && grantSchemaIdx !== -1 && ownerIdx !== -1 && revokeSchemaIdx !== -1 &&
+    grantAclPublicIdx !== -1 && grantAclServiceIdx !== -1 && revokeRoleIdx !== -1 &&
+    grantRoleIdx < ownerIdx && grantSchemaIdx < ownerIdx && ownerIdx < revokeSchemaIdx &&
+    ownerIdx < grantAclPublicIdx && grantAclServiceIdx < revokeRoleIdx
+  );
+}
+
+const remediationFile = 'supabase/remediation_w014_function_acl_041.sql';
+if (fs.existsSync(remediationFile)) {
+  const content = fs.readFileSync(remediationFile, 'utf8');
+  check(`No BOM in ${remediationFile}`, !content.startsWith('\uFEFF'));
+  check(`Transactional BEGIN/COMMIT in ${remediationFile}`, content.includes('BEGIN;') && content.includes('COMMIT;'));
+  check(`GRANT panin_boundary_definer TO CURRENT_USER in ${remediationFile}`, content.includes('GRANT panin_boundary_definer TO CURRENT_USER;'));
+  check(`REVOKE ALL FROM PUBLIC in ${remediationFile}`, content.includes('REVOKE ALL ON FUNCTION public.fn_transition_mandal_current_version(TEXT, UUID, DATE, TEXT, UUID) FROM PUBLIC;'));
+  check(`REVOKE ALL FROM anon in ${remediationFile}`, content.includes('REVOKE ALL ON FUNCTION public.fn_transition_mandal_current_version(TEXT, UUID, DATE, TEXT, UUID) FROM anon;'));
+  check(`REVOKE ALL FROM authenticated in ${remediationFile}`, content.includes('REVOKE ALL ON FUNCTION public.fn_transition_mandal_current_version(TEXT, UUID, DATE, TEXT, UUID) FROM authenticated;'));
+  check(`GRANT EXECUTE TO service_role in ${remediationFile}`, content.includes('GRANT EXECUTE ON FUNCTION public.fn_transition_mandal_current_version(TEXT, UUID, DATE, TEXT, UUID) TO service_role;'));
+  check(`GRANT EXECUTE TO panin_boundary_admin in ${remediationFile}`, content.includes('GRANT EXECUTE ON FUNCTION public.fn_transition_mandal_current_version(TEXT, UUID, DATE, TEXT, UUID) TO panin_boundary_admin;'));
+  check(`REVOKE panin_boundary_definer FROM CURRENT_USER in ${remediationFile}`, content.includes('REVOKE panin_boundary_definer FROM CURRENT_USER;'));
+
+  const remGrantRole = content.indexOf('GRANT panin_boundary_definer TO CURRENT_USER;');
+  const remRevokePublic = content.indexOf('REVOKE ALL ON FUNCTION public.fn_transition_mandal_current_version(TEXT, UUID, DATE, TEXT, UUID) FROM PUBLIC;');
+  const remGrantAdmin = content.indexOf('GRANT EXECUTE ON FUNCTION public.fn_transition_mandal_current_version(TEXT, UUID, DATE, TEXT, UUID) TO panin_boundary_admin;');
+  const remRevokeRole = content.indexOf('REVOKE panin_boundary_definer FROM CURRENT_USER;');
+  check(`Strict transactional ordering in ${remediationFile} (GRANT ROLE < ACL < REVOKE ROLE)`,
+    remGrantRole !== -1 && remRevokePublic !== -1 && remGrantAdmin !== -1 && remRevokeRole !== -1 &&
+    remGrantRole < remRevokePublic && remGrantAdmin < remRevokeRole
   );
 }
 
