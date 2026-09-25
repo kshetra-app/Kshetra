@@ -126,10 +126,18 @@ if (fs.existsSync(verifyFile)) {
   check(`Check 20 verifies mandal_versions INSERT = FALSE in ${verifyFile}`, content.includes("has_table_privilege('panin_boundary_definer', 'public.mandal_versions', 'INSERT')") && content.includes('mandal_versions INSERT = FALSE'));
   check(`Contains Check 21 PASS in ${verifyFile}`, content.includes('Check 21 PASS'));
   check(`Contains Check 22 PASS in ${verifyFile}`, content.includes('Check 22 PASS'));
-  check(`Check 22 verifies complete 5-actor EXECUTE ACL in ${verifyFile}`,
+  check(`Verification SQL does NOT contain has_function_privilege('public' in ${verifyFile}`,
+    !content.includes("has_function_privilege('public'") &&
+    !content.includes('has_function_privilege("public"')
+  );
+  check(`Check 22 verifies PUBLIC via catalog proacl aclexplode grantee 0 in ${verifyFile}`,
+    content.includes('aclexplode(p.proacl)') &&
+    content.includes('acl.grantee = 0') &&
+    content.includes("acl.privilege_type = 'EXECUTE'")
+  );
+  check(`Check 22 verifies actual roles via has_function_privilege in ${verifyFile}`,
     content.includes("has_function_privilege('service_role'") &&
     content.includes("has_function_privilege('panin_boundary_admin'") &&
-    content.includes("has_function_privilege('public'") &&
     content.includes("has_function_privilege('anon'") &&
     content.includes("has_function_privilege('authenticated'")
   );

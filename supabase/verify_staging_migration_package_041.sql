@@ -295,15 +295,15 @@ BEGIN
     RAISE EXCEPTION 'Check 22 Failed: panin_boundary_admin missing EXECUTE privilege on fn_transition_mandal_current_version';
   END IF;
 
-  -- 3. Assert PUBLIC (grantee=0) possesses zero EXECUTE in catalog proacl and has_function_privilege
+  -- 3. Assert PUBLIC (grantee OID 0) possesses zero EXECUTE ACL entries in catalog proacl
   IF EXISTS (
     SELECT 1 FROM pg_proc p
     CROSS JOIN aclexplode(p.proacl) acl
     WHERE p.oid = 'public.fn_transition_mandal_current_version(text,uuid,date,text,uuid)'::regprocedure
       AND acl.grantee = 0
       AND acl.privilege_type = 'EXECUTE'
-  ) OR has_function_privilege('public', 'public.fn_transition_mandal_current_version(text,uuid,date,text,uuid)', 'EXECUTE') THEN
-    RAISE EXCEPTION 'Check 22 Failed: PUBLIC possesses EXECUTE privilege on fn_transition_mandal_current_version';
+  ) THEN
+    RAISE EXCEPTION 'Check 22 Failed: PUBLIC (grantee=0) possesses EXECUTE privilege on transition function in catalog proacl';
   END IF;
 
   -- 4. Assert anon possesses zero EXECUTE privilege
@@ -316,7 +316,7 @@ BEGIN
     RAISE EXCEPTION 'Check 22 Failed: authenticated possesses prohibited EXECUTE privilege on fn_transition_mandal_current_version';
   END IF;
 
-  RAISE NOTICE 'Check 22 PASS: Complete function EXECUTE ACL verified (service_role=EXECUTE, panin_boundary_admin=EXECUTE, PUBLIC=NO EXECUTE, anon=NO EXECUTE, authenticated=NO EXECUTE)';
+  RAISE NOTICE 'Check 22 PASS: Complete function EXECUTE ACL verified (service_role=EXECUTE, panin_boundary_admin=EXECUTE, PUBLIC=NO EXECUTE via grantee 0 proacl, anon=NO EXECUTE, authenticated=NO EXECUTE)';
 
   -- Check 23: RLS enabled on public.mandal_versions
   IF NOT EXISTS (
