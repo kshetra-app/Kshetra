@@ -186,7 +186,16 @@ BEGIN
   IF EXISTS (SELECT 1 FROM pg_auth_members WHERE member = 'panin_boundary_definer'::regrole) THEN
     RAISE EXCEPTION 'Check 19 Failed: panin_boundary_definer inherits unintended role memberships';
   END IF;
-  RAISE NOTICE 'Check 19 PASS: panin_boundary_definer role attributes and 0 memberships verified';
+  -- Empirical check: verify CURRENT_USER cannot SET ROLE to panin_boundary_definer (no temporary delegation leak)
+  BEGIN
+    SET LOCAL ROLE panin_boundary_definer;
+    RESET ROLE;
+    RAISE EXCEPTION 'Check 19 Failed: CURRENT_USER retains active SET ROLE authority on panin_boundary_definer';
+  EXCEPTION
+    WHEN insufficient_privilege THEN
+      NULL; -- Expected: fail-closed because temporary migration delegation was revoked
+  END;
+  RAISE NOTICE 'Check 19 PASS: panin_boundary_definer role attributes, 0 memberships, and clean SET ROLE revocation verified';
 
   -- Check 20: Table-level privileges on panin_boundary_definer
   IF NOT (

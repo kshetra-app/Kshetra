@@ -86,6 +86,16 @@ for (const file of migrationFiles) {
   check(`REVOKE ALL FROM PUBLIC on transition function present in ${file}`, content.includes('REVOKE ALL ON FUNCTION public.fn_transition_mandal_current_version(TEXT, UUID, DATE, TEXT, UUID) FROM PUBLIC;'));
   check(`GRANT EXECUTE TO service_role present in ${file}`, content.includes('GRANT EXECUTE ON FUNCTION public.fn_transition_mandal_current_version(TEXT, UUID, DATE, TEXT, UUID) TO service_role;'));
   check(`RLS enabled on mandal_versions in ${file}`, content.includes('ALTER TABLE public.mandal_versions ENABLE ROW LEVEL SECURITY;'));
+
+  // Security Definer Role Bootstrap & Clean Ownership Hand-off Assertions
+  check(`Temporary GRANT panin_boundary_definer TO CURRENT_USER present in ${file}`, content.includes('GRANT panin_boundary_definer TO CURRENT_USER;'));
+  check(`ALTER FUNCTION ... OWNER TO panin_boundary_definer present in ${file}`, content.includes('OWNER TO panin_boundary_definer;'));
+  check(`REVOKE panin_boundary_definer FROM CURRENT_USER cleanup present in ${file}`, content.includes('REVOKE panin_boundary_definer FROM CURRENT_USER;'));
+
+  const grantIdx = content.indexOf('GRANT panin_boundary_definer TO CURRENT_USER;');
+  const ownerIdx = content.indexOf('OWNER TO panin_boundary_definer;');
+  const revokeIdx = content.indexOf('REVOKE panin_boundary_definer FROM CURRENT_USER;');
+  check(`Strict transactional bootstrap ordering (GRANT < OWNER < REVOKE) in ${file}`, grantIdx !== -1 && ownerIdx !== -1 && revokeIdx !== -1 && grantIdx < ownerIdx && ownerIdx < revokeIdx);
 }
 
 const verifyFile = 'supabase/verify_staging_migration_package_041.sql';
@@ -94,6 +104,9 @@ if (fs.existsSync(verifyFile)) {
   check(`No BOM in ${verifyFile}`, !content.startsWith('\uFEFF'));
   check(`Contains DO $$ block in ${verifyFile}`, content.includes('DO $$') && content.includes('END $$;'));
   check(`Contains Check 10 PASS in ${verifyFile}`, content.includes('Check 10 PASS'));
+  check(`Contains Check 18 PASS in ${verifyFile}`, content.includes('Check 18 PASS: Transition function identity, SECURITY DEFINER, and owner verified'));
+  check(`Contains Check 19 PASS in ${verifyFile}`, content.includes('Check 19 PASS: panin_boundary_definer role attributes, 0 memberships, and clean SET ROLE revocation verified'));
+  check(`Check 19 contains empirical SET LOCAL ROLE test in ${verifyFile}`, content.includes('SET LOCAL ROLE panin_boundary_definer;') && content.includes('WHEN insufficient_privilege THEN'));
   check(`Contains Check 23 PASS in ${verifyFile}`, content.includes('Check 23 PASS'));
 }
 

@@ -1217,9 +1217,18 @@ BEGIN
 END;
 $$;
 
--- Set ownership to dedicated non-login boundary owner
+-- Set ownership to dedicated non-login boundary owner.
+-- In PostgreSQL 16+ / managed database environments (such as Supabase SQL Editor executing as 'postgres'),
+-- altering object ownership to another role requires the executing session role to hold SET ROLE authority
+-- on the target role. We grant temporary membership in panin_boundary_definer to CURRENT_USER for the
+-- duration of the ownership assignment, then immediately revoke it so that zero permanent delegation or
+-- unintended role membership persists.
+GRANT panin_boundary_definer TO CURRENT_USER;
+
 ALTER FUNCTION public.fn_transition_mandal_current_version(TEXT, UUID, DATE, TEXT, UUID) 
   OWNER TO panin_boundary_definer;
+
+REVOKE panin_boundary_definer FROM CURRENT_USER;
 
 -- Explicit Declarative ACL Configuration
 REVOKE ALL ON FUNCTION public.fn_transition_mandal_current_version(TEXT, UUID, DATE, TEXT, UUID) FROM PUBLIC;
