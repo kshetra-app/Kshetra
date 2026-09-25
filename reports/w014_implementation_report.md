@@ -150,29 +150,29 @@ GRANT EXECUTE ON FUNCTION public.fn_transition_mandal_current_version(text,uuid,
 
 ### 4.2 SQL Staging Verification Script (`supabase/verify_staging_migration_package_041.sql`)
 The verification script embeds 23 comprehensive database assertions:
-- **Check 1:** `public.mandal_versions` table exists
-- **Check 2:** `mandals.current_version_id` column exists
-- **Check 3:** `fk_mandals_current_version_same_anchor` composite FK exists
-- **Check 4:** `uq_mandal_versions_id_mandal` composite UNIQUE constraint exists
-- **Check 5:** `uq_mandal_versions_no_overlap` GiST exclusion constraint exists
-- **Check 6:** `chk_mandal_versions_current_invariants` CHECK constraint exists
-- **Check 7:** `uq_mandal_versions_single_current` partial unique index exists
-- **Check 8:** `trg_guard_mandal_current_version` trigger on `mandals` exists
-- **Check 9:** `trg_guard_mandal_version_retirement` trigger on `mandal_versions` exists
-- **Check 10:** `fn_transition_mandal_current_version` exists with exact 5-param signature
-- **Check 11:** Function is `SECURITY DEFINER`
-- **Check 12:** Function search_path contains `public, pg_temp`
-- **Check 13:** Function owner is `panin_boundary_definer`
-- **Check 14:** `panin_boundary_definer` role has `NOLOGIN`, `NOSUPERUSER`, `NOCREATEDB`, `NOCREATEROLE`
-- **Check 15:** `panin_boundary_definer` is NOT table owner of `mandals` or `mandal_versions`
-- **Check 16:** `panin_boundary_definer` has SELECT on `dataset_versions` and `provenance_records`
-- **Check 17:** `panin_boundary_definer` has SELECT on `mandals` and `mandal_versions`
-- **Check 18:** `panin_boundary_definer` has column-level UPDATE on `mandals(current_version_id, updated_at)` ONLY
-- **Check 19:** `panin_boundary_definer` has column-level UPDATE on `mandal_versions(is_current, valid_from, valid_to, updated_at)` ONLY
-- **Check 20:** Table-level `INSERT`, `DELETE`, `TRUNCATE` are NOT granted to `panin_boundary_definer`
-- **Check 21:** `service_role` has EXECUTE privilege on `fn_transition_mandal_current_version`
-- **Check 22:** `panin_boundary_admin` has EXECUTE privilege on `fn_transition_mandal_current_version`
-- **Check 23:** Catalog `proacl` inspection verifies `PUBLIC` has zero EXECUTE privilege entries
+- **Check 1:** Delimitation regimes count verified
+- **Check 2:** TS state_versions count verified
+- **Check 3:** 33 current district_versions verified
+- **Check 4:** 17 current PC versions verified
+- **Check 5:** 119 current AC versions verified
+- **Check 6:** Current version pointers strictly populated on anchor tables
+- **Check 7:** AC 109 timeline has exact 3 statutory intervals
+- **Check 8:** Split lineage records verified (Mulugu & Narayanpet)
+- **Check 9:** Scenario isolation verified (no draft regime in canonical tables)
+- **Check 10:** RLS enabled on all W014 tables
+- **Check 11:** `public.mandal_versions` table exists
+- **Check 12:** `mandals.current_version_id` column exists
+- **Check 13:** `fk_mandals_current_version_same_anchor` composite FK verified
+- **Check 14:** `uq_mandal_versions_no_overlap` GiST exclusion constraint verified
+- **Check 15:** `uq_mandal_versions_single_current` unique index verified
+- **Check 16:** `chk_mandal_versions_current_invariants` check constraint verified
+- **Check 17:** Both deferred constraint triggers verified (`trg_guard_mandal_current_version`, `trg_guard_mandal_version_retirement`)
+- **Check 18:** Transition function identity, SECURITY DEFINER, search_path, and owner verified
+- **Check 19:** `panin_boundary_definer` role attributes, 0 memberships, USAGE-only schema access, and clean SET ROLE revocation verified
+- **Check 20:** Definer table-level privileges verified (SELECT only, mandal_versions INSERT = FALSE, zero DELETE/TRUNCATE/REFERENCES/TRIGGER)
+- **Check 21:** Exactly 6 column-level UPDATE privileges on `mandals` and `mandal_versions` verified
+- **Check 22:** Complete function EXECUTE ACL verified (`service_role = EXECUTE`, `panin_boundary_admin = EXECUTE`, `PUBLIC = NO EXECUTE` via grantee 0 proacl, `anon = NO EXECUTE`, `authenticated = NO EXECUTE`)
+- **Check 23:** RLS enabled on `public.mandal_versions`
 
 ### 4.3 Automated Acceptance Test Battery M1–M15 (`tests/test_mandal_version_integrity.mjs`)
 - Design Status: **M1 through M15 Fully Implemented and Verified Statically**
