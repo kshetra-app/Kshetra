@@ -5,8 +5,8 @@
 -- Mode: Strictly READ-ONLY (Zero DDL / DML / Privilege modifications)
 --
 -- Guaranteed Row Return Contract:
--- 1. Result Set 1: Exactly 9 verification checks driven by static check set.
---    Even if target function does not exist, returns 9 FAIL rows (never 0 rows).
+-- 1. Result Set 1: Exactly 9 verification checks driven by static check table.
+--    If exact target function does not exist, returns 9 FAIL rows (never 0 rows).
 -- 2. Result Set 2: Exactly 1 catalog inspection row driven by dummy singleton.
 -- ============================================================================
 
@@ -22,8 +22,8 @@ WITH checks (check_id, check_name, expected) AS (
         (5, 'panin_boundary_admin Execution Privilege', 'has_function_privilege = true'),
         (6, 'Function Owner Identity & NOLOGIN', 'owner = panin_boundary_definer AND rolcanlogin = false'),
         (7, 'SECURITY DEFINER Flag', 'prosecdef = true'),
-        (8, 'Secure search_path Pinning', 'search_path=public, pg_temp'),
-        (9, 'No Unintended Effective EXECUTE Grants', 'Zero unintended non-admin roles have effective EXECUTE; only authorized explicit grantees in proacl')
+        (8, 'Secure search_path Pinning', 'search_path=public, pg_temp (exact pinned setting, zero additional parameters)'),
+        (9, 'No Unintended Effective EXECUTE Grants', 'Explicit EXECUTE grantees strictly service_role and panin_boundary_admin; zero unauthorized grantees')
 ),
 fn AS (
     SELECT 
@@ -39,9 +39,7 @@ fn AS (
         COALESCE(p.proacl, acldefault('f', p.proowner)) AS effective_acl
     FROM pg_proc p
     LEFT JOIN pg_roles r ON r.oid = p.proowner
-    WHERE p.proname = 'fn_transition_mandal_current_version'
-      AND p.pronamespace = 'public'::regnamespace
-    LIMIT 1
+    WHERE p.oid = to_regprocedure('public.fn_transition_mandal_current_version(text,uuid,date,text,uuid)')
 ),
 effective_acl_entries AS (
     SELECT 
@@ -51,19 +49,25 @@ effective_acl_entries AS (
     FROM fn,
     LATERAL aclexplode(fn.effective_acl) acl
 ),
-unintended_roles AS (
+unintended_effective_roles AS (
     SELECT string_agg(r.rolname, ', ') AS unintended_list
     FROM pg_roles r, fn
     WHERE r.rolsuper = false
       AND r.rolname NOT IN ('service_role', 'panin_boundary_admin', 'panin_boundary_definer', 'postgres', 'supabase_admin')
       AND has_function_privilege(r.rolname, fn.oid, 'EXECUTE')
+),
+unintended_explicit_grantees AS (
+    SELECT string_agg(grantee_name || ':' || privilege_type, ', ') AS unauthorized_entries
+    FROM effective_acl_entries
+    WHERE privilege_type = 'EXECUTE'
+      AND grantee_name NOT IN ('service_role', 'panin_boundary_admin')
 )
 SELECT 
     c.check_id,
     c.check_name,
     c.expected,
     CASE 
-        WHEN fn.oid IS NULL THEN 'FAIL: Target function public.fn_transition_mandal_current_version does not exist in catalog'
+        WHEN fn.oid IS NULL THEN 'FAIL: Target function public.fn_transition_mandal_current_version(text,uuid,date,text,uuid) does not exist in catalog'
         WHEN c.check_id = 1 THEN 
             CASE 
                 WHEN fn.proacl_is_null THEN 'FAIL: proacl IS NULL (default privileges active; PUBLIC possesses implicit EXECUTE)'
@@ -89,14 +93,15 @@ SELECT
             COALESCE(array_to_string(fn.proconfig, ', '), '<NULL>')
         WHEN c.check_id = 9 THEN 
             CASE 
-                WHEN (SELECT unintended_list FROM unintended_roles) IS NOT NULL 
-                    THEN 'FAIL: Unintended roles have effective EXECUTE: ' || (SELECT unintended_list FROM unintended_roles)
-                WHEN EXISTS (
-                    SELECT 1 FROM effective_acl_entries 
-                    WHERE privilege_type = 'EXECUTE' 
-                      AND grantee_name NOT IN ('service_role', 'panin_boundary_admin', 'panin_boundary_definer')
-                ) THEN 'FAIL: Unexpected explicit grantee in proacl'
-                ELSE 'PASS: Zero unintended roles have effective EXECUTE; proacl contains only authorized operational roles'
+                WHEN (SELECT unauthorized_entries FROM unintended_explicit_grantees) IS NOT NULL 
+                    THEN 'FAIL: Unauthorized explicit EXECUTE grantees in proacl: ' || (SELECT unauthorized_entries FROM unintended_explicit_grantees)
+                WHEN (SELECT unintended_list FROM unintended_effective_roles) IS NOT NULL 
+                    THEN 'FAIL: Unintended roles have effective EXECUTE: ' || (SELECT unintended_list FROM unintended_effective_roles)
+                WHEN NOT EXISTS (SELECT 1 FROM effective_acl_entries WHERE privilege_type = 'EXECUTE' AND grantee_name = 'service_role')
+                    THEN 'FAIL: service_role missing from explicit EXECUTE ACL'
+                WHEN NOT EXISTS (SELECT 1 FROM effective_acl_entries WHERE privilege_type = 'EXECUTE' AND grantee_name = 'panin_boundary_admin')
+                    THEN 'FAIL: panin_boundary_admin missing from explicit EXECUTE ACL'
+                ELSE 'PASS: Explicit EXECUTE grantees are strictly service_role and panin_boundary_admin; zero unauthorized grantees'
             END
     END AS observed,
     CASE 
@@ -122,15 +127,13 @@ SELECT
         WHEN c.check_id = 7 THEN 
             CASE WHEN fn.prosecdef = true THEN 'PASS' ELSE 'FAIL' END
         WHEN c.check_id = 8 THEN 
-            CASE WHEN array_to_string(fn.proconfig, ', ') ILIKE '%search_path=public, pg_temp%' THEN 'PASS' ELSE 'FAIL' END
+            CASE WHEN fn.proconfig = ARRAY['search_path=public, pg_temp'] THEN 'PASS' ELSE 'FAIL' END
         WHEN c.check_id = 9 THEN 
             CASE 
-                WHEN (SELECT unintended_list FROM unintended_roles) IS NULL
-                 AND NOT EXISTS (
-                    SELECT 1 FROM effective_acl_entries 
-                    WHERE privilege_type = 'EXECUTE' 
-                      AND grantee_name NOT IN ('service_role', 'panin_boundary_admin', 'panin_boundary_definer')
-                 )
+                WHEN (SELECT unauthorized_entries FROM unintended_explicit_grantees) IS NULL
+                 AND (SELECT unintended_list FROM unintended_effective_roles) IS NULL
+                 AND EXISTS (SELECT 1 FROM effective_acl_entries WHERE privilege_type = 'EXECUTE' AND grantee_name = 'service_role')
+                 AND EXISTS (SELECT 1 FROM effective_acl_entries WHERE privilege_type = 'EXECUTE' AND grantee_name = 'panin_boundary_admin')
                 THEN 'PASS' ELSE 'FAIL'
             END
     END AS verdict
@@ -165,5 +168,4 @@ SELECT
     ) AS explicit_acl_entries
 FROM (SELECT 1) dummy
 LEFT JOIN pg_proc p 
-  ON p.proname = 'fn_transition_mandal_current_version' 
- AND p.pronamespace = 'public'::regnamespace;
+  ON p.oid = to_regprocedure('public.fn_transition_mandal_current_version(text,uuid,date,text,uuid)');
