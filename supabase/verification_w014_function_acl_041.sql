@@ -1,21 +1,15 @@
 -- ============================================================================
--- W014 PATH A: AUTHORITATIVE READ-ONLY FUNCTION ACL & CATALOG VERIFICATION
+-- W014 PATH A: DETERMINISTIC SINGLE-STATEMENT FUNCTION ACL VERIFICATION
 -- Target: panIN-staging (fkpigozcqnmcvofuksar)
 -- Function: public.fn_transition_mandal_current_version(text,uuid,date,text,uuid)
--- Mode: Strictly READ-ONLY (Zero DDL / DML / Privilege modifications)
---
--- Guaranteed Row Return Contract:
--- 1. Result Set 1: Exactly 9 verification checks driven by static check table.
---    If exact target function does not exist, returns 9 FAIL rows (never 0 rows).
--- 2. Result Set 2: Exactly 1 catalog inspection row driven by dummy singleton.
+-- Mode: Strictly READ-ONLY (Single top-level SELECT statement)
+-- Result Set: Exactly 9 rows (check_id, check_name, expected, observed, verdict)
+-- Guaranteed Row Return: Driven by static 9-row table LEFT JOINed to catalog
 -- ============================================================================
 
--- ----------------------------------------------------------------------------
--- RESULT SET 1: 9-CRITERIA EFFECTIVE & CATALOG VERIFICATION BATTERY
--- ----------------------------------------------------------------------------
 WITH checks (check_id, check_name, expected) AS (
     VALUES
-        (1, 'PUBLIC Execution Privilege', 'proacl IS NOT NULL; grantee=0 has NO EXECUTE in effective ACL; unprivileged roles inherit no EXECUTE'),
+        (1, 'PUBLIC Execution Privilege', 'proacl IS NOT NULL, grantee=0 has NO EXECUTE in effective ACL, unprivileged roles inherit no EXECUTE'),
         (2, 'anon Execution Privilege', 'has_function_privilege = false'),
         (3, 'authenticated Execution Privilege', 'has_function_privilege = false'),
         (4, 'service_role Execution Privilege', 'has_function_privilege = true'),
@@ -23,7 +17,7 @@ WITH checks (check_id, check_name, expected) AS (
         (6, 'Function Owner Identity & NOLOGIN', 'owner = panin_boundary_definer AND rolcanlogin = false'),
         (7, 'SECURITY DEFINER Flag', 'prosecdef = true'),
         (8, 'Secure search_path Pinning', 'search_path=public, pg_temp (exact pinned setting, zero additional parameters)'),
-        (9, 'No Unintended Effective EXECUTE Grants', 'Explicit EXECUTE grantees strictly panin_boundary_definer, service_role, and panin_boundary_admin; zero unauthorized grantees')
+        (9, 'No Unintended Effective EXECUTE Grants', 'Explicit EXECUTE grantees strictly panin_boundary_definer, service_role, and panin_boundary_admin (zero unauthorized grantees)')
 ),
 fn AS (
     SELECT 
@@ -70,12 +64,12 @@ SELECT
         WHEN fn.oid IS NULL THEN 'FAIL: Target function public.fn_transition_mandal_current_version(text,uuid,date,text,uuid) does not exist in catalog'
         WHEN c.check_id = 1 THEN 
             CASE 
-                WHEN fn.proacl_is_null THEN 'FAIL: proacl IS NULL (default privileges active; PUBLIC possesses implicit EXECUTE)'
+                WHEN fn.proacl_is_null THEN 'FAIL: proacl IS NULL (default privileges active, PUBLIC possesses implicit EXECUTE)'
                 WHEN EXISTS (SELECT 1 FROM effective_acl_entries WHERE grantee = 0 AND privilege_type = 'EXECUTE')
                     THEN 'FAIL: PUBLIC (grantee=0) possesses explicit EXECUTE in proacl'
                 WHEN has_function_privilege('anon', fn.oid, 'EXECUTE') OR has_function_privilege('authenticated', fn.oid, 'EXECUTE')
                     THEN 'FAIL: unprivileged roles inherit effective EXECUTE from PUBLIC'
-                ELSE 'PASS: proacl IS NOT NULL; grantee 0 has 0 EXECUTE entries; anon/authenticated inherit no EXECUTE'
+                ELSE 'PASS: proacl IS NOT NULL, grantee 0 has 0 EXECUTE entries, anon/authenticated inherit no EXECUTE'
             END
         WHEN c.check_id = 2 THEN 
             'has_function_privilege = ' || has_function_privilege('anon', fn.oid, 'EXECUTE')::text
@@ -103,7 +97,7 @@ SELECT
                     THEN 'FAIL: panin_boundary_admin missing from explicit EXECUTE ACL'
                 WHEN NOT EXISTS (SELECT 1 FROM effective_acl_entries WHERE privilege_type = 'EXECUTE' AND grantee_name = 'panin_boundary_definer')
                     THEN 'FAIL: panin_boundary_definer missing from explicit EXECUTE ACL'
-                ELSE 'PASS: Explicit EXECUTE grantees are strictly panin_boundary_definer, service_role, and panin_boundary_admin; zero unauthorized grantees'
+                ELSE 'PASS: Explicit EXECUTE grantees are strictly panin_boundary_definer, service_role, and panin_boundary_admin (zero unauthorized grantees)'
             END
     END AS observed,
     CASE 
@@ -143,32 +137,3 @@ SELECT
 FROM checks c
 LEFT JOIN fn ON true
 ORDER BY c.check_id;
-
--- ----------------------------------------------------------------------------
--- RESULT SET 2: RAW CATALOG INSPECTION (GUARANTEED SINGLETON ROW)
--- ----------------------------------------------------------------------------
-SELECT 
-    COALESCE(p.oid::regprocedure::text, 'FUNCTION_NOT_FOUND') AS function_identity,
-    COALESCE(pg_get_userbyid(p.proowner), 'N/A') AS function_owner,
-    CASE 
-        WHEN p.oid IS NULL THEN NULL 
-        ELSE (p.proacl IS NULL) 
-    END AS proacl_is_null,
-    COALESCE(p.proacl::text, CASE WHEN p.oid IS NULL THEN 'N/A' ELSE '<NULL: default privileges apply>' END) AS raw_proacl_catalog_string,
-    COALESCE(
-        (
-            SELECT string_agg(
-                format('%s=%s/%s', 
-                    CASE WHEN acl.grantee = 0 THEN 'PUBLIC (OID 0)' ELSE pg_get_userbyid(acl.grantee) END,
-                    acl.privilege_type,
-                    pg_get_userbyid(acl.grantor)
-                ), 
-                ', '
-            )
-            FROM aclexplode(p.proacl) acl
-        ),
-        CASE WHEN p.oid IS NULL THEN 'N/A' ELSE '<No explicit ACL entries>' END
-    ) AS explicit_acl_entries
-FROM (SELECT 1) dummy
-LEFT JOIN pg_proc p 
-  ON p.oid = to_regprocedure('public.fn_transition_mandal_current_version(text,uuid,date,text,uuid)');
