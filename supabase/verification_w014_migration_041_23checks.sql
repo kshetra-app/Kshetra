@@ -27,7 +27,7 @@ WITH checks (check_id, check_name, expected) AS (
         (16, 'Mandal Versions Currentness Invariants Constraint', 'chk_mandal_versions_current_invariants check constraint exists on public.mandal_versions'),
         (17, 'Deferred Currentness & Retirement Constraint Triggers', 'Both trg_guard_mandal_current_version and trg_guard_mandal_version_retirement triggers exist'),
         (18, 'Transition Function Identity, Security Definer & Pinning', 'public.fn_transition_mandal_current_version(text,uuid,date,text,uuid) exists, prosecdef=true, owner=panin_boundary_definer, search_path=public, pg_temp'),
-        (19, 'Boundary Definer Role Attributes & Schema Security', 'panin_boundary_definer has rolcanlogin=false, rolsuper=false, rolcreatedb=false, rolcreaterole=false, 0 inherited roles, USAGE on public, NO CREATE on public, CURRENT_USER cannot SET ROLE'),
+        (19, 'Boundary Definer Role Attributes & Schema Security', 'panin_boundary_definer has rolcanlogin=false, rolsuper=false, rolcreatedb=false, rolcreaterole=false, 0 inherited roles, USAGE on public, NO CREATE on public, application roles cannot SET ROLE, 0 unauthorized members'),
         (20, 'Boundary Definer Table-Level Least-Privilege Allocation', 'SELECT only on dataset_versions, provenance_records, mandals, mandal_versions (NO table-level UPDATE, zero INSERT, zero DELETE/TRUNCATE/REFERENCES/TRIGGER)'),
         (21, 'Boundary Definer Column-Level UPDATE Privilege Pinning', 'UPDATE permitted strictly on mandals(current_version_id, updated_at) and mandal_versions(is_current, valid_from, valid_to, updated_at) (zero unintended column UPDATE grants)'),
         (22, 'Complete Transition Function EXECUTE Privilege Boundary', 'service_role=EXECUTE, panin_boundary_admin=EXECUTE, panin_boundary_definer=EXECUTE (owner), PUBLIC=NO EXECUTE, anon=NO EXECUTE, authenticated=NO EXECUTE (zero unauthorized grantees)'),
@@ -190,8 +190,18 @@ c19 AS (
         COALESCE((SELECT count(*)::int FROM pg_auth_members WHERE member = r.oid), 0) = 0 AS inherited_memberships_ok,
         has_schema_privilege('panin_boundary_definer', 'public', 'USAGE') AS schema_usage_ok,
         NOT has_schema_privilege('panin_boundary_definer', 'public', 'CREATE') AS schema_no_create_ok,
-        NOT pg_has_role(CURRENT_USER, 'panin_boundary_definer', 'MEMBER') AS current_user_no_set_role_ok,
-        COALESCE((SELECT count(*)::int FROM pg_auth_members WHERE roleid = r.oid), 0) = 0 AS definer_has_no_members_ok
+        (
+            NOT pg_has_role('anon', 'panin_boundary_definer', 'MEMBER') AND
+            NOT pg_has_role('authenticated', 'panin_boundary_definer', 'MEMBER') AND
+            NOT pg_has_role('service_role', 'panin_boundary_definer', 'MEMBER') AND
+            NOT pg_has_role('panin_boundary_admin', 'panin_boundary_definer', 'MEMBER')
+        ) AS app_roles_no_set_role_ok,
+        NOT EXISTS (
+            SELECT 1 FROM pg_auth_members am
+            JOIN pg_roles m ON m.oid = am.member
+            WHERE am.roleid = r.oid
+              AND m.rolname NOT IN ('postgres', 'supabase_admin')
+        ) AS no_unauthorized_members_ok
     FROM (SELECT 1) dummy
     LEFT JOIN pg_roles r ON r.rolname = 'panin_boundary_definer'
 ),
@@ -364,7 +374,7 @@ SELECT
         WHEN c.check_id = 18 THEN 
             'fn exists = ' || (c18.oid IS NOT NULL)::text || ', prosecdef = ' || COALESCE(c18.prosecdef::text, 'NULL') || ', owner = ' || COALESCE(c18.function_owner, 'NULL') || ', proconfig = ' || COALESCE(array_to_string(c18.proconfig, ','), 'NULL')
         WHEN c.check_id = 19 THEN 
-            'role_exists=' || c19.role_exists::text || ', login_ok=' || c19.canlogin_ok::text || ', super_ok=' || c19.super_ok::text || ', createdb_ok=' || c19.createdb_ok::text || ', createrole_ok=' || c19.createrole_ok::text || ', 0_inherited=' || c19.inherited_memberships_ok::text || ', usage_ok=' || c19.schema_usage_ok::text || ', no_create=' || c19.schema_no_create_ok::text || ', no_set_role=' || c19.current_user_no_set_role_ok::text || ', 0_members=' || c19.definer_has_no_members_ok::text
+            'role_exists=' || c19.role_exists::text || ', login_ok=' || c19.canlogin_ok::text || ', super_ok=' || c19.super_ok::text || ', createdb_ok=' || c19.createdb_ok::text || ', createrole_ok=' || c19.createrole_ok::text || ', 0_inherited=' || c19.inherited_memberships_ok::text || ', usage_ok=' || c19.schema_usage_ok::text || ', no_create=' || c19.schema_no_create_ok::text || ', app_no_set_role=' || c19.app_roles_no_set_role_ok::text || ', 0_unauthorized_members=' || c19.no_unauthorized_members_ok::text
         WHEN c.check_id = 20 THEN 
             'select_ok=' || c20.select_all_ok::text || ', no_table_update=' || c20.no_table_level_update::text || ', prohibited_relacl_count=' || c20.prohibited_relacl_count::text || ', prohibited_info_schema_count=' || c20.prohibited_info_schema_count::text
         WHEN c.check_id = 21 THEN 
@@ -412,7 +422,7 @@ SELECT
         WHEN c.check_id = 18 THEN 
             CASE WHEN c18.is_valid THEN 'PASS' ELSE 'FAIL' END
         WHEN c.check_id = 19 THEN 
-            CASE WHEN c19.role_exists AND c19.canlogin_ok AND c19.super_ok AND c19.createdb_ok AND c19.createrole_ok AND c19.inherited_memberships_ok AND c19.schema_usage_ok AND c19.schema_no_create_ok AND c19.current_user_no_set_role_ok AND c19.definer_has_no_members_ok THEN 'PASS' ELSE 'FAIL' END
+            CASE WHEN c19.role_exists AND c19.canlogin_ok AND c19.super_ok AND c19.createdb_ok AND c19.createrole_ok AND c19.inherited_memberships_ok AND c19.schema_usage_ok AND c19.schema_no_create_ok AND c19.app_roles_no_set_role_ok AND c19.no_unauthorized_members_ok THEN 'PASS' ELSE 'FAIL' END
         WHEN c.check_id = 20 THEN 
             CASE WHEN c20.select_all_ok AND c20.no_table_level_update AND c20.prohibited_relacl_count = 0 AND c20.prohibited_info_schema_count = 0 AND NOT c20.any_prohibited_has_table_privilege THEN 'PASS' ELSE 'FAIL' END
         WHEN c.check_id = 21 THEN 
