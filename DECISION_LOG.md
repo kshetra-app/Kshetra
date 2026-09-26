@@ -1158,4 +1158,21 @@
   7. **Enum Compliance:** Migration 043 includes a preflight DO block that validates all enum literals against `pg_enum` at migration time, preventing runtime enum value failures.
   8. **No Scope Creep into W016/W017:** Zero PostGIS spatial operations (ST_Contains, ST_Intersects), zero quantitative overlap calculations, zero H3 hexagonal references, zero automated anomaly engines, zero customer-facing hierarchy traversal APIs.
 
+---
+
+### DEC-064: W014-M6 MANDAL VERSION TEMPORAL INTEGRITY, TEST HARNESS HARDENING & CLOSURE RECONCILIATION
+- **Date:** 2026-09-26
+- **Status:** SUBMITTED FOR CTO RATIFICATION (Live Technical Acceptance: ACCEPTED / COMPLETE)
+- **Authority:** CTO Decision — W014-M6 Final Closure & Evidence Reconciliation
+- **Context:** Following authorized staging execution of the W014-M6 remediation package (`supabase/remediation_w014_m6_gist_boundary_041.sql`) at baseline commit `4676dce`, initial live execution of the M1–M15 test suite resulted in 13/15 PASS, with M11 and M13 failing. A read-only forensic root cause analysis confirmed both failures were test-harness defects with zero database defects. CTO authorized surgical test harness remediation in `tests/test_mandal_version_integrity.mjs` (commit `b72752d`). Live re-execution on `panIN-staging` yielded 15/15 PASS.
+- **Key Decisions & Technical Evidence:**
+  1. **Option A Immediate Temporal Guard Verified:** Partitioned GiST exclusion constraint (`uq_mandal_versions_historical_no_overlap` on `valid_to IS NOT NULL`) and BEFORE ROW trigger (`trg_guard_mandal_version_temporal_bounds`) verified live on `panIN-staging`. Candidate staging (`is_current = false AND valid_to IS NULL`) admitted cleanly; reciprocal temporal overlap rejected with `23P01`.
+  2. **Mandal ID Immutability Enforced:** Cross-mandal version mutations permanently blocked via `ERR-W014-008 / 23514` immutability guard.
+  3. **M11 Harness Resolution:** Canonical JSONB return receipt from `public.fn_transition_mandal_current_version` keys the newly active version as `current_version_id`. Harness corrected to canonical contract `r11.current_version_id === v11.id` (zero fallback).
+  4. **M13 Privilege Boundary & Multi-Condition Proof:** Verified that anonymous execution of `fn_transition_mandal_current_version` is blocked with `42501` (`permission denied`). Verified that anonymous DML fails closed with `23503` as `BEFORE INSERT` trigger attempts anchor lock under unprivileged `anon` context. Verified via authorized `adminClient` that attempted row was NOT persisted.
+  5. **Live Acceptance Result:** Full M1–M15 battery achieves 15/15 PASS (0 failed, 0 pending) on `panIN-staging` at live timestamp `2026-09-26T04:03:24.354Z`.
+  6. **Prior Structural Checks:** 23/23 structural/security checks PASS via `supabase/verify_remediation_w014_m6_gist_boundary_041.sql`.
+  7. **Governance Boundaries:** Zero additional database remediation required; zero rollbacks executed; zero SQL executed during test-harness remediation; zero DB implementation changes after baseline `4676dce`; production remains 100% untouched and air-gapped.
+  8. **CTO Acceptance Boundary:** Submitted for final CTO ratification without agent self-acceptance.
+
 

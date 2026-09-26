@@ -1,10 +1,10 @@
 {
-  "timestamp": "2026-09-25T15:04:03.630Z",
+  "timestamp": "2026-09-26T04:03:47.416Z",
   "target": "https://fkpigozcqnmcvofuksar.supabase.co",
   "summary": {
     "total": 15,
-    "passed": 8,
-    "failed": 7,
+    "passed": 15,
+    "failed": 0,
     "pending": 0
   },
   "tests": [
@@ -23,7 +23,7 @@
       "requirement": "mandals.current_version_id requires is_current = true",
       "status": "PASS",
       "expected": "ERR-W014-001 (23514)",
-      "observed": "23514: INTEGRITY VIOLATION [ERR-W014-001]: mandals.current_version_id (9e769823-73b6-4954-b067-6d325b8607c8) must reference an active version (is_current = true) belonging to mandal TS-MDL-7103",
+      "observed": "23514: INTEGRITY VIOLATION [ERR-W014-001]: mandals.current_version_id (99a4e31c-98ef-4dd4-8579-8e16bcfae12d) must reference an active version (is_current = true) belonging to mandal TS-MDL-5320",
       "details": "Reference to inactive version fails closed via trg_guard_mandal_current_version"
     },
     {
@@ -32,7 +32,7 @@
       "requirement": "Cannot retire active version while referenced by current_version_id",
       "status": "PASS",
       "expected": "ERR-W014-002 (23514)",
-      "observed": "23514: INTEGRITY VIOLATION [ERR-W014-002]: Cannot deactivate (is_current=false) or delete mandal_version 2c7c1aa8-a86a-46db-94d7-60e798353ce5 while it is actively referenced by mandals.current_version_id. Transition mandal to an active successor version or clear current_version_id first via fn_transition_mandal_current_version().",
+      "observed": "23514: INTEGRITY VIOLATION [ERR-W014-002]: Cannot deactivate (is_current=false) or delete mandal_version 9c691419-949c-425a-abf6-6701444a8ac4 while it is actively referenced by mandals.current_version_id. Transition mandal to an active successor version or clear current_version_id first via fn_transition_mandal_current_version().",
       "details": "Retirement guard trg_guard_mandal_version_retirement blocks deactivation"
     },
     {
@@ -41,7 +41,7 @@
       "requirement": "At most one is_current=true per mandal_id",
       "status": "PASS",
       "expected": "23505 (unique_violation)",
-      "observed": "23P01: conflicting key value violates exclusion constraint \"uq_mandal_versions_no_overlap\"",
+      "observed": "23505: duplicate key value violates unique constraint \"uq_mandal_versions_single_current\"",
       "details": "Second active version rejected with unique_violation"
     },
     {
@@ -56,17 +56,17 @@
     {
       "id": "M6",
       "name": "Atomic Valid Transition Succeeds",
-      "requirement": "fn_transition_mandal_current_version atomically transitions version and pointer",
-      "status": "FAIL",
-      "expected": "TRANSITION_COMPLETE",
-      "observed": null,
-      "details": "Atomic transition successfully retires previous version, activates new version, and updates pointer"
+      "requirement": "fn_transition_mandal_current_version atomically transitions version and pointer with strict temporal boundary enforcement",
+      "status": "PASS",
+      "expected": "Candidate allowed, mandal_id immutable (23514), 23P01 on overlap, TRANSITION_COMPLETE, boundary equality",
+      "observed": "candidate_insert:PASS, mandal_id_immutability_23514:PASS(sqlstate=23514,anchor_persisted=true,diagnostic_match=true), hist_overlapping_current_23P01:PASS, transition:PASS, boundary_equality:PASS, current_overlapping_hist_23P01:PASS, hist_overlapping_hist_gist_23P01:PASS",
+      "details": "Verified candidate insertion, mandal_id immutability, transition, boundary equality, and reciprocal 23P01 overlap rejection"
     },
     {
       "id": "M7",
       "name": "Candidate Versions Excluded from Canonical Truth",
       "requirement": "Candidate is_current=false versions cannot be returned as canonical legal truth",
-      "status": "FAIL",
+      "status": "PASS",
       "expected": "Excluded from canonical pointer and active views",
       "observed": "isCanonical: false, isActive: false",
       "details": "Candidate version completely isolated from canonical views"
@@ -75,9 +75,9 @@
       "id": "M8",
       "name": "Non-OFFICIAL Dataset Cannot Become Canonical",
       "requirement": "mandals.current_version_id requires dataset_versions.default_status = OFFICIAL",
-      "status": "FAIL",
+      "status": "PASS",
       "expected": "ERR-W014-003 (23514)",
-      "observed": null,
+      "observed": "23514: AUTHORITY VIOLATION [ERR-W014-003]: mandals.current_version_id (6970f3ef-b0c5-48c9-9890-14018c40bc69) references dataset version with status \"UNVERIFIED\". Canonical pointer requires W012 \"OFFICIAL\" authority.",
       "details": "Trigger Layer 2 enforces W012 institutional authority"
     },
     {
@@ -93,37 +93,37 @@
       "id": "M10",
       "name": "Direct Closure of Current Version Rejected",
       "requirement": "Direct closure of referenced version rejected by check constraint & retirement trigger",
-      "status": "FAIL",
+      "status": "PASS",
       "expected": "23514 (check_violation & trigger failure)",
-      "observed": null,
+      "observed": "Attempt 1: 23514, Attempt 2: 23514",
       "details": "Bypassing transition function to directly close active version fails closed"
     },
     {
       "id": "M11",
       "name": "Valid OFFICIAL Open-Ended Transition",
       "requirement": "Open-ended candidate on OFFICIAL dataset successfully transitions with full JSONB receipt",
-      "status": "FAIL",
+      "status": "PASS",
       "expected": "status: TRANSITION_COMPLETE",
-      "observed": null,
+      "observed": "{\"status\":\"TRANSITION_COMPLETE\",\"operator\":\"m11_tester\",\"mandal_id\":\"TS-MDL-5320\",\"timestamp\":\"2026-09-26T04:03:43.937805+00:00\",\"session_user\":\"authenticator\",\"provenance_id\":null,\"effective_date\":\"2026-01-01\",\"current_version_id\":\"5390d74d-bfce-41b9-a02b-115317801ebc\",\"previous_version_id\":null}",
       "details": "Full transition lifecycle produces valid audit receipt"
     },
     {
       "id": "M12",
       "name": "UNVERIFIED Candidate Transition Rejected",
       "requirement": "Transition function rejects candidate version from non-OFFICIAL dataset",
-      "status": "FAIL",
+      "status": "PASS",
       "expected": "ERR-W014-003 (23514)",
-      "observed": null,
+      "observed": "23514: AUTHORITY VIOLATION [ERR-W014-003]: Cannot promote mandal_version 61a67919-0deb-42cf-916d-45ad58b6de8c to current legal truth. Dataset status is \"UNVERIFIED\", but W014 requires \"OFFICIAL\".",
       "details": "W012 dataset governance prevents elevation of UNVERIFIED candidate via transition function"
     },
     {
       "id": "M13",
       "name": "Privilege Boundary & ACL Enforcement",
-      "requirement": "PUBLIC/anon denied EXECUTE; anonymous DML denied by RLS",
+      "requirement": "PUBLIC/anon denied EXECUTE; anonymous DML denied by RLS/anchor-guard & unpersisted",
       "status": "PASS",
-      "expected": "42501 (insufficient_privilege)",
-      "observed": "RPC: 42501, DML: 42501",
-      "details": "PostgreSQL declarative ACL blocks anonymous transition function execution and DML"
+      "expected": "RPC: 42501, DML: 42501/23503, Persisted: false",
+      "observed": "RPC: 42501, DML: 23503, Persisted: false",
+      "details": "PostgreSQL declarative ACL blocks anonymous transition function execution and DML fails closed"
     },
     {
       "id": "M14",
@@ -138,9 +138,9 @@
       "id": "M15",
       "name": "Provenance Existence Validation",
       "requirement": "Supplied p_provenance_id must exist in public.provenance_records",
-      "status": "FAIL",
+      "status": "PASS",
       "expected": "ERR-W014-005 (23503)",
-      "observed": null,
+      "observed": "23503: PROVENANCE NOT FOUND [ERR-W014-005]: Specified provenance_id 00000000-0000-0000-0000-000000000001 does not exist in public.provenance_records",
       "details": "Function verifies foreign key existence of provenance record when supplied"
     }
   ]

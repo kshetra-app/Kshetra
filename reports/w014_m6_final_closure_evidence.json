@@ -1,0 +1,40 @@
+{
+  "milestone": "W014-M6",
+  "name": "Mandal Version Temporal Boundary & Invariant Reconciliation",
+  "status": "SUBMITTED_FOR_CTO_RATIFICATION",
+  "technical_acceptance": "ACCEPTED_COMPLETE",
+  "target_environment": "panIN-staging",
+  "target_url": "https://fkpigozcqnmcvofuksar.supabase.co",
+  "execution_timestamp": "2026-09-26T04:03:24.354Z",
+  "report_timestamp": "2026-09-26T04:03:47.416Z",
+  "implementation_baseline_commit": "4676dcec3592e01b843e225f0745e7224fb3fc3e",
+  "test_harness_commit": "b72752d6283fd42753c685c5b5f7958f4b40952f",
+  "battery_results": {
+    "total": 15,
+    "passed": 15,
+    "failed": 0,
+    "pending": 0,
+    "pass_rate_pct": 100.0
+  },
+  "prior_structural_verification": {
+    "script": "supabase/verify_remediation_w014_m6_gist_boundary_041.sql",
+    "total_checks": 23,
+    "passed_checks": 23,
+    "failed_checks": 0
+  },
+  "forensic_rca_summary": {
+    "m11_classification": "TEST_HARNESS_DEFECT",
+    "m11_correction": "Replaced r11.new_version_id with canonical contract r11.current_version_id (zero fallback)",
+    "m13_classification": "TEST_HARNESS_DEFECT",
+    "m13_correction": "Bounded fail-closed error acceptance (42501/23503) combined with authorized adminClient unpersisted row verification",
+    "m13_observed": "RPC: 42501, DML: 23503, Persisted: false"
+  },
+  "governance_invariants": {
+    "additional_db_remediation_required": false,
+    "rollback_executed": false,
+    "production_untouched": true,
+    "sql_executed_during_harness_remediation": false,
+    "db_implementation_changes_after_baseline": false,
+    "cto_acceptance_authority_self_assigned": false
+  }
+}

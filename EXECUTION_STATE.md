@@ -57,6 +57,19 @@ ACCEPTED_W014_MIGRATION:                041_geography_versioning_and_temporal_va
 W014_STAGING_CHECKS:                    9/9 PASSED (100%)
 W014_STATUS:                            ACCEPTED_COMPLETE
 
+# W014-M6 SUBMITTED COORDINATES (LIVE ACCEPTANCE COMPLETE — PENDING CTO RATIFICATION)
+W014_M6_IMPLEMENTATION_BASELINE:        4676dcec3592e01b843e225f0745e7224fb3fc3e
+W014_M6_TEST_HARNESS_COMMIT:            b72752d6283fd42753c685c5b5f7958f4b40952f
+W014_M6_REMEDIATION_SQL:                supabase/remediation_w014_m6_gist_boundary_041.sql
+W014_M6_STRUCTURAL_CHECKS:              23/23 PASSED (100%)
+W014_M6_BATTERY:                        15/15 PASSED (M1..M15, 0 failed, 0 pending)
+W014_M6_LIVE_EXECUTION_TIMESTAMP:       2026-09-26T04:03:24.354Z
+W014_M6_CLOSURE_REPORT:                 reports/w014_m6_final_closure_report.md
+W014_M6_CLOSURE_EVIDENCE:               reports/w014_m6_final_closure_evidence.json
+W014_M6_VERIFICATION_JSON:              reports/w014_mandal_temporal_verification.json
+W014_M6_STATUS:                         SUBMITTED_FOR_CTO_RATIFICATION
+W014_M6_CTO_ACCEPTANCE:                 PENDING_FINAL_RATIFICATION
+
 # W011 SUBMITTED COORDINATES (PENDING CTO ACCEPTANCE)
 W011_HEAD_COMMIT:                       ca062d1
 W011_IMPLEMENTATION_COMMIT:             cd6f04e
