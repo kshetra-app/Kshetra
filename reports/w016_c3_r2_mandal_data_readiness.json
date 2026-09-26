@@ -1,0 +1,234 @@
+{
+  "job": "W016-C3-R2",
+  "title": "Mandal Statutory Identity & Historical-Version Data Readiness Audit",
+  "authority": "CTO Directive — W016-C3-R2 EXECUTE NOW",
+  "timestamp": "2026-09-26T07:55:00.000Z",
+  "disposition": "DATA READINESS BLOCKED — AUTHORITATIVE SOURCE GAP",
+  "targetEnvironment": {
+    "projectRef": "fkpigozcqnmcvofuksar",
+    "name": "panIN-staging",
+    "url": "https://fkpigozcqnmcvofuksar.supabase.co",
+    "inspectionMode": "READ-ONLY SELECT & PostgREST Schema Inspection",
+    "mutationsAttempted": 0,
+    "mutationsExecuted": 0
+  },
+  "productionEnvironment": {
+    "projectRef": "ehfafcnimmjusyvplbah",
+    "name": "panIN-production",
+    "status": "STRICTLY AIR-GAPPED & UNTOUCHED",
+    "queriesExecuted": 0
+  },
+  "sourceInventory": [
+    {
+      "sourceName": "TGRAC Candidate Geospatial Layer",
+      "artifactPath": "data/geo/candidate_authoritative/tgrac_mandals_raw.json",
+      "sizeBytes": 26843665,
+      "sha256": "aca53eefa290570ce4010fa8c26a75dce995de3e3180ac9f0873f78fb41512db",
+      "authority": "Telangana State Remote Sensing Applications Centre (TGRAC / TRAC)",
+      "retrievalDate": "2026-09-24",
+      "effectivePeriod": "2016-10-11 to ~2017",
+      "featureCount": 589,
+      "statutoryStatus": "UNVERIFIED_STATE_GIS_CANDIDATE (Cartographic only, non-statutory)",
+      "identifierType": "Internal GIS FID / s_no (Lacks statutory LGD and Census codes)",
+      "attributesPresent": ["FID", "Area", "s_no", "mandal_nam", "dist_name", "rev_div_na", "tot_p", "tot_m", "tot_f", "p_sc", "p_st"]
+    },
+    {
+      "sourceName": "MoPR Local Government Directory (Pilot Slice)",
+      "artifactPath": "data/evidence/w015_b2/mopr_lgd_subdistrict_directory_ts.json",
+      "sizeBytes": 3411,
+      "sha256": "7163cf2935f246cac07a33dd348345fcee174b9583ee5f969afbfd44250bff62",
+      "authority": "Ministry of Panchayati Raj, Government of India",
+      "retrievalDate": "2026-09-22",
+      "effectivePeriod": "2023-01-01 (Current)",
+      "subdistrictCount": 12,
+      "statutoryStatus": "OFFICIAL STATUTORY DIRECTORY (Pilot Scope Only)",
+      "identifierType": "Statutory LGD subdistrict code & Census 2011 code",
+      "coverage": "12 mandals across Kumuram Bheem Asifabad and Mancherial only"
+    },
+    {
+      "sourceName": "W014 Staging Acceptance Infrastructure Fixture",
+      "datasetVersionId": "ts_lgd_mandals_staging_official_v1",
+      "authority": "Ministry of Panchayati Raj (Declared in fixture metadata)",
+      "registeredRecordCount": 589,
+      "actualUnderlyingArtifact": "data/evidence/w015_b2/mopr_lgd_subdistrict_directory_ts.json",
+      "reality": "Synthetic testing fixture created for W014 staging verification; underlying JSON contains only 12 mandals, NOT 589 mandals."
+    },
+    {
+      "sourceName": "Telangana State Gazettes (Revenue DA Department)",
+      "authority": "Government of Telangana (Revenue DA Department)",
+      "keyEnactments": [
+        "G.O.Ms.No. 220–250 (11.10.2016): Initial 31-district reorganisation establishing 584/589 mandals",
+        "G.O.Ms.No. 18–19 (16.02.2019): Mulugu and Narayanpet creation (594 mandals)",
+        "G.O.Ms.No. 110 (2020): Masaipet bifurcation",
+        "Revenue DA Gazette (26.09.2022): 13 new mandals notified (607 mandals)",
+        "Revenue DA Notifications (2023): Final 5 mandals reaching statutory 612"
+      ],
+      "repositoryStatus": "Partial text excerpts in data/evidence/w015_b2/; full statewide statutory schedule not archived."
+    }
+  ],
+  "discrepancyReconciliation589vs612": {
+    "statutoryCurrentTotal": 612,
+    "historicalTgracSnapshotTotal": 589,
+    "divergenceCount": 23,
+    "status": "NON_FABRICATED_HISTORICAL_DIVERGENCE",
+    "missingMandals": [
+      { "name": "Endapalli", "district": "Jagtial", "notificationDate": "2022-09-26", "carvedFrom": "Velgatoor" },
+      { "name": "Bheemaram", "district": "Jagtial", "notificationDate": "2022-09-26", "carvedFrom": "Medapalli" },
+      { "name": "Nizampet", "district": "Sangareddy", "notificationDate": "2022-09-26", "carvedFrom": "Narayankhed / Shankarampet" },
+      { "name": "Gattuppal", "district": "Nalgonda", "notificationDate": "2022-09-26", "carvedFrom": "Chandur / Munugode / Choutuppal" },
+      { "name": "Seerole", "district": "Mahabubabad", "notificationDate": "2022-09-26", "carvedFrom": "Kuravi / Mahabubabad" },
+      { "name": "Inugurthy", "district": "Mahabubabad", "notificationDate": "2022-09-26", "carvedFrom": "Kesamudram" },
+      { "name": "Akbarpet-Bhoompally", "district": "Siddipet", "notificationDate": "2022-09-26", "carvedFrom": "Mirdoddi" },
+      { "name": "Kukunoorpally", "district": "Siddipet", "notificationDate": "2022-09-26", "carvedFrom": "Kondapak" },
+      { "name": "Dongli", "district": "Kamareddy", "notificationDate": "2022-09-26", "carvedFrom": "Madnoor" },
+      { "name": "Koukuntla", "district": "Mahabubnagar", "notificationDate": "2022-09-26", "carvedFrom": "Devarakadra" },
+      { "name": "Aloor", "district": "Nizamabad", "notificationDate": "2022-09-26", "carvedFrom": "Armoor" },
+      { "name": "Donkeshwar", "district": "Nizamabad", "notificationDate": "2022-09-26", "carvedFrom": "Nandipet / Armoor" },
+      { "name": "Saloora", "district": "Nizamabad", "notificationDate": "2022-09-26", "carvedFrom": "Bodhan" },
+      { "name": "Gundumal", "district": "Narayanpet", "notificationDate": "2022-2023", "carvedFrom": "Kosgi / Maddur" },
+      { "name": "Kothapalle", "district": "Narayanpet", "notificationDate": "2022-2023", "carvedFrom": "Maddur" },
+      { "name": "Dudyal", "district": "Vikarabad", "notificationDate": "2022-2023", "carvedFrom": "Bomraspet / Kodangal" },
+      { "name": "Masaipet", "district": "Medak", "notificationDate": "2020", "carvedFrom": "Yeldurthy / Chegunta" },
+      { "name": "Sonala", "district": "Adilabad", "notificationDate": "2020-2022", "carvedFrom": "Boath" },
+      { "name": "Kothapalligori", "district": "Jayashankar Bhupalpally", "notificationDate": "2021-2022", "carvedFrom": "Regonda" },
+      { "name": "Irwin", "district": "Rangareddy", "notificationDate": "2021-2022", "carvedFrom": "Madgul" },
+      { "name": "Bheemaram", "district": "Mancherial", "notificationDate": "2018-2020", "carvedFrom": "Jaipur" },
+      { "name": "Adilabad Rural", "district": "Adilabad", "notificationDate": "Post-2016", "carvedFrom": "Adilabad Urban" },
+      { "name": "Nirmal Rural", "district": "Nirmal", "notificationDate": "Post-2016", "carvedFrom": "Nirmal Urban" }
+    ]
+  },
+  "historicalVersionModelRequirements": {
+    "targetRelation": "public.mandal_versions",
+    "interval": "[2016-10-11, 2022-09-01)",
+    "fieldMapping": [
+      { "field": "id", "type": "uuid", "sourceStatus": "SYSTEM_GENERATED", "sourceAvailability": "AVAILABLE" },
+      { "field": "mandal_id", "type": "text", "sourceStatus": "STATUTORY_IDENTIFIER", "sourceAvailability": "BLOCKED (Requires MoPR LGD code TS-MDL-<lgd_code>)" },
+      { "field": "district_id", "type": "uuid", "sourceStatus": "FK_RELATIONAL", "sourceAvailability": "AVAILABLE (Maps to 31/33 districts in public.districts)" },
+      { "field": "version_code", "type": "varchar(50)", "sourceStatus": "SYSTEM_DERIVED", "sourceAvailability": "AVAILABLE (TS-MDL-<code/name>-2016-V1)" },
+      { "field": "name", "type": "text", "sourceStatus": "SOURCE_DERIVED", "sourceAvailability": "AVAILABLE in TGRAC (mandal_nam)" },
+      { "field": "name_te", "type": "text", "sourceStatus": "STATUTORY_LOCAL_NAME", "sourceAvailability": "UNAVAILABLE in TGRAC (Requires LGD)" },
+      { "field": "headquarters", "type": "text", "sourceStatus": "STATUTORY_ATTRIBUTE", "sourceAvailability": "UNAVAILABLE in TGRAC (Requires LGD)" },
+      { "field": "lgd_code", "type": "integer", "sourceStatus": "STATUTORY_KEY", "sourceAvailability": "UNAVAILABLE in TGRAC for 577/589 mandals (Requires LGD)" },
+      { "field": "census_code_2011", "type": "varchar(20)", "sourceStatus": "CENSUS_KEY", "sourceAvailability": "UNAVAILABLE in TGRAC (Requires LGD / Census)" },
+      { "field": "valid_from", "type": "date", "sourceStatus": "STATUTORY_INTERVAL_START", "sourceAvailability": "2016-10-11 (G.O.Ms. 220-250)" },
+      { "field": "valid_to", "type": "date", "sourceStatus": "STATUTORY_INTERVAL_END", "sourceAvailability": "2022-09-01 (Pre-2022 additions)" },
+      { "field": "is_current", "type": "boolean", "sourceStatus": "TEMPORAL_FLAG", "sourceAvailability": "false" },
+      { "field": "primary_dataset_version_id", "type": "text", "sourceStatus": "W012_FK", "sourceAvailability": "BLOCKED (Requires historical W012 dataset version)" }
+    ]
+  },
+  "readinessMatrix": [
+    {
+      "num": 1,
+      "requirement": "Authoritative statutory mandal source identified",
+      "result": "FAIL",
+      "evidence": "Repository lacks statewide MoPR LGD subdistrict directory artifact for Telangana; only 12-mandal pilot slice exists."
+    },
+    {
+      "num": 2,
+      "requirement": "Source authority established",
+      "result": "PASS",
+      "evidence": "Ministry of Panchayati Raj (MoPR LGD) and Government of Telangana Revenue Dept established as legal authorities."
+    },
+    {
+      "num": 3,
+      "requirement": "589 historical population identified",
+      "result": "PASS",
+      "evidence": "Acquired in data/geo/candidate_authoritative/tgrac_mandals_raw.json (589 features, SHA-256 aca53eef...)."
+    },
+    {
+      "num": 4,
+      "requirement": "589-vs-612 discrepancy reconciled",
+      "result": "PASS",
+      "evidence": "Exhaustively reconciled in docs/w016_c2_candidate_geometry_reconciliation.md; all 23 missing mandals identified."
+    },
+    {
+      "num": 5,
+      "requirement": "No fabricated 23 entities",
+      "result": "PASS",
+      "evidence": "Zero synthetic records created; 23 mandals documented as post-2016 bifurcations."
+    },
+    {
+      "num": 6,
+      "requirement": "Historical identity mapping established",
+      "result": "FAIL",
+      "evidence": "577 out of 589 mandals in docs/w016_c2_mandal_identifier_mapping.csv record NOT_PRESENT_IN_SOURCE for LGD code."
+    },
+    {
+      "num": 7,
+      "requirement": "W014 version representation defined",
+      "result": "PASS",
+      "evidence": "public.mandal_versions table schema on staging verified with 16 columns and Option A temporal triggers."
+    },
+    {
+      "num": 8,
+      "requirement": "2016-10-11 -> 2022-09-01 interval supported",
+      "result": "PASS",
+      "evidence": "Migration 044 partial GiST index (uq_mandal_versions_historical_no_overlap) accommodates closed-open historical intervals."
+    },
+    {
+      "num": 9,
+      "requirement": "W012 dataset available",
+      "result": "FAIL",
+      "evidence": "No historical W012 dataset version exists in dataset_versions for the 2016 mandal baseline (e.g. ts_lgd_mandals_2016_v1)."
+    },
+    {
+      "num": 10,
+      "requirement": "W012 evidence available",
+      "result": "FAIL",
+      "evidence": "No statewide MoPR LGD subdistrict export or G.O.Ms. 220–250 statutory schedule is archived in data/evidence/."
+    },
+    {
+      "num": 11,
+      "requirement": "W012 provenance path available",
+      "result": "PASS",
+      "evidence": "dataset_versions, evidence_records, and provenance_records infrastructure is live and verified on staging."
+    },
+    {
+      "num": 12,
+      "requirement": "All required W014 fields source-supported",
+      "result": "FAIL",
+      "evidence": "TGRAC candidate layer lacks lgd_code, name_te, and census_code_2011; cannot populate public.mandals or mandal_versions without LGD."
+    },
+    {
+      "num": 13,
+      "requirement": "Split/merge/lineage cases resolved",
+      "result": "PASS",
+      "evidence": "Temporal model correctly attributes 2016 area to parent mandals; child bifurcations start on their post-2016 gazette dates."
+    },
+    {
+      "num": 14,
+      "requirement": "Staging implementation can proceed safely",
+      "result": "FAIL",
+      "evidence": "Prerequisites BLK-W016-DATA-01 and BLK-W016-DATA-02 must be resolved before any DML data load can be authorized."
+    }
+  ],
+  "blockers": [
+    {
+      "id": "BLK-W016-DATA-01",
+      "category": "AUTHORITATIVE_SOURCE_GAP",
+      "title": "Absence of Authoritative Statewide MoPR LGD Subdistrict Directory Artifact",
+      "severity": "CRITICAL / HARD STOP",
+      "description": "The repository currently contains only a 12-mandal pilot slice in data/evidence/w015_b2/mopr_lgd_subdistrict_directory_ts.json. The TGRAC candidate geospatial layer contains 589 features and English names, but completely lacks statutory integer LGD subdistrict codes. Without acquiring the complete statewide LGD directory from lgdirectory.gov.in, canonical mandal IDs (TS-MDL-<lgd_code>) cannot be generated without data fabrication or unverified inference."
+    },
+    {
+      "id": "BLK-W016-DATA-02",
+      "category": "W012_GOVERNANCE_DATASET_GAP",
+      "title": "Missing Historical 2016 Mandal W012 Dataset Version",
+      "severity": "CRITICAL / HARD STOP",
+      "description": "There is currently no W012 dataset version in public.dataset_versions governing the 2016 post-reorganisation mandals (e.g. ts_lgd_mandals_2016_v1). The existing fixture ts_lgd_mandals_staging_official_v1 has effective_from = '2023-01-01' and points to the 12-mandal pilot JSON. A dedicated W012 dataset version backed by an authoritative LGD/Gazette evidence artifact must be registered."
+    }
+  ],
+  "remediationPlanForCTO": {
+    "step1": "Acquire official MoPR LGD subdistrict directory export for all 612 mandals of Telangana from lgdirectory.gov.in.",
+    "step2": "Archive the export as data/evidence/w016/mopr_lgd_subdistrict_directory_telangana_all.json with SHA-256 digest.",
+    "step3": "Construct deterministic join between TGRAC 589 features and MoPR LGD records on (district, normalized_mandal_name).",
+    "step4": "Register W012 evidence_record and dataset_version ts_lgd_mandals_2016_v1.",
+    "step5": "Generate deterministic, non-fabricated SQL migration/seed script to insert 589 mandals into public.mandals and historical versions into public.mandal_versions."
+  },
+  "complianceStatements": {
+    "zeroGeometryIngested": true,
+    "productionUntouched": true,
+    "zeroDdlDmlExecuted": true,
+    "noSelfAcceptance": true
+  }
+}
