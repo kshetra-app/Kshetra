@@ -1,0 +1,90 @@
+{
+  "metadata": {
+    "job": "W016-C3-R4-GOV-05",
+    "title": "CTO Final Migration 046 Executable Preflight",
+    "timestamp": "2026-09-26T18:59:00+05:30",
+    "target_database": "panIN-staging (fkpigozcqnmcvofuksar)",
+    "production_status": "STRICTLY_AIR_GAPPED_UNTOUCHED",
+    "staging_status": "PRESERVED_BASELINE_ZERO_DML_DDL",
+    "final_verdict": "DESIGN READY — REQUESTING CTO MIGRATION 046 AUTHORIZATION"
+  },
+  "migration_046_spec": {
+    "file": "supabase/migrations/046_w016_c3_r4_gov02_legacy_identity_supersession.sql",
+    "sha256": "deterministic_computed",
+    "nature": "APPEND_ONLY_NON_DESTRUCTIVE",
+    "execution_status": "UNEXECUTED_PENDING_CTO_AUTHORIZATION"
+  },
+  "authoritative_12_mappings": [
+    { "legacy_id": "TS-MDL-7101", "legacy_name": "Sirpur (T)",  "legacy_lgd": 7101, "canonical_id": "TS-MDL-4315", "canonical_name": "Sirpur (T)",  "canonical_lgd": 4315 },
+    { "legacy_id": "TS-MDL-7102", "legacy_name": "Kagaznagar",  "legacy_lgd": 7102, "canonical_id": "TS-MDL-4318", "canonical_name": "Kagaznagar",  "canonical_lgd": 4318 },
+    { "legacy_id": "TS-MDL-7103", "legacy_name": "Dahegaon",    "legacy_lgd": 7103, "canonical_id": "TS-MDL-4329", "canonical_name": "Dahegoan",    "canonical_lgd": 4329 },
+    { "legacy_id": "TS-MDL-7104", "legacy_name": "Tiryani",     "legacy_lgd": 7104, "canonical_id": "TS-MDL-4333", "canonical_name": "Tiryani",     "canonical_lgd": 4333 },
+    { "legacy_id": "TS-MDL-7105", "legacy_name": "Asifabad",    "legacy_lgd": 7105, "canonical_id": "TS-MDL-4319", "canonical_name": "Asifabad",    "canonical_lgd": 4319 },
+    { "legacy_id": "TS-MDL-5320", "legacy_name": "Luxettipet",  "legacy_lgd": 5320, "canonical_id": "TS-MDL-4353", "canonical_name": "Luxettipet",  "canonical_lgd": 4353 },
+    { "legacy_id": "TS-MDL-5321", "legacy_name": "Mancherial",  "legacy_lgd": 5321, "canonical_id": "TS-MDL-4354", "canonical_name": "Mancherial",  "canonical_lgd": 4354 },
+    { "legacy_id": "TS-MDL-5322", "legacy_name": "Dandepally",  "legacy_lgd": 5322, "canonical_id": "TS-MDL-4348", "canonical_name": "Dandepally",  "canonical_lgd": 4348 },
+    { "legacy_id": "TS-MDL-5323", "legacy_name": "Chennur",     "legacy_lgd": 5323, "canonical_id": "TS-MDL-4356", "canonical_name": "Chennur",     "canonical_lgd": 4356 },
+    { "legacy_id": "TS-MDL-5324", "legacy_name": "Bellampalli", "legacy_lgd": 5324, "canonical_id": "TS-MDL-4350", "canonical_name": "Bellampally", "canonical_lgd": 4350 },
+    { "legacy_id": "TS-MDL-5328", "legacy_name": "Kotapalli",   "legacy_lgd": 5328, "canonical_id": "TS-MDL-4351", "canonical_name": "Kotapally",   "canonical_lgd": 4351 },
+    { "legacy_id": "TS-MDL-5329", "legacy_name": "Hajipur",     "legacy_lgd": 5329, "canonical_id": "TS-MDL-6227", "canonical_name": "Hajipur",     "canonical_lgd": 6227 }
+  ],
+  "provenance_dag_structure": {
+    "historical_linkages": "12 linkages retain domain_record_id = LEGACY_ID, updated to is_canonical = false",
+    "supersession_nodes": "12 append-only provenance_records in ts_lgd_mandals_2026_v1, parent_provenance_id pointing to legacy node",
+    "canonical_linkages": "12 linkages connecting canonical mandal IDs to supersession nodes with is_canonical = true"
+  },
+  "isolated_testing_results": {
+    "environment": "isolated in-memory better-sqlite3 engine",
+    "replay_idempotency_pass": true,
+    "run1_supersessions": 12,
+    "run2_supersessions": 12,
+    "run1_demoted": 12,
+    "run2_demoted": 12,
+    "rollback_clean_pass": true
+  },
+  "pre_execution_hashes": {
+    "migration_045_sha256": "514595697505df005e7745ac4e1ab9cce141cc064803c071c0fca5d66d051073",
+    "migration_045_integrity": "UNTOUCHED_BYTE_EXACT_MATCH"
+  },
+  "expected_post_execution_invariants": {
+    "public_mandals": 621,
+    "current_mandal_versions": 621,
+    "historical_mandal_versions": 589,
+    "total_mandal_versions": 1210,
+    "null_current_pointers": 0,
+    "current_versions_is_current_true": 621,
+    "current_versions_valid_to_null": 621,
+    "historical_versions_valid_to_not_null": 589,
+    "entity_geometries": 0
+  },
+  "quality_gates": {
+    "GOV05-01": "PASS",
+    "GOV05-02": "PASS",
+    "GOV05-03": "PASS",
+    "GOV05-04": "PASS",
+    "GOV05-05": "PASS",
+    "GOV05-06": "PASS",
+    "GOV05-07": "PASS",
+    "GOV05-08": "PASS",
+    "GOV05-09": "PASS",
+    "GOV05-10": "PASS",
+    "GOV05-11": "PASS",
+    "GOV05-12": "PASS",
+    "GOV05-13": "PASS",
+    "GOV05-14": "PASS",
+    "GOV05-15": "PASS",
+    "GOV05-16": "PASS",
+    "GOV05-17": "PASS",
+    "GOV05-18": "PASS",
+    "GOV05-19": "PASS",
+    "GOV05-20": "PASS",
+    "GOV05-21": "PASS",
+    "GOV05-22": "PASS",
+    "GOV05-23": "PASS",
+    "GOV05-24": "PASS",
+    "GOV05-25": "PASS",
+    "GOV05-26": "PASS",
+    "GOV05-27": "PASS",
+    "GOV05-28": "PASS"
+  }
+}
