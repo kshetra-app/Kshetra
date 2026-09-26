@@ -1,0 +1,124 @@
+{
+  "metadata": {
+    "job": "W016-C3-R4-GOV-03",
+    "title": "W012 Schema-Grounded Legacy Pilot Lineage Remediation Redesign",
+    "timestamp": "2026-09-26T15:48:00+05:30",
+    "target_database": "panIN-staging (fkpigozcqnmcvofuksar)",
+    "production_status": "STRICTLY_AIR_GAPPED_UNTOUCHED",
+    "final_verdict": "DESIGN COMPLETE — READY FOR CTO REMEDIATION AUTHORIZATION"
+  },
+  "blocker_resolution": {
+    "blocker_1_is_canonical": {
+      "finding": "COLUMN_EXISTS_IN_LIVE_SCHEMA_AND_MIGRATION_039",
+      "evidence": "Migration 039 (line 168) explicitly created public.record_provenance_linkages with 'is_canonical BOOLEAN NOT NULL DEFAULT true'. Live staging OpenAPI schema and PostgreSQL catalog confirm property 'is_canonical' exists with format boolean and default true. It is indexed via idx_record_provenance_lookup(domain_table, domain_record_id, is_canonical).",
+      "resolution": "No schema modification needed. is_canonical is a native, pre-existing primitive of W012."
+    },
+    "blocker_2_dataset_versions_immutability": {
+      "finding": "TRIGGER_PREVENTS_MUTATION_OF_SNAPSHOT_FIELDS",
+      "evidence": "Migration 039 trigger trg_prevent_dataset_version_mutation (lines 231-245) strictly blocks updates to id, dataset_id, version_tag, effective_from, effective_to, retrieved_at, record_count, checksum_sha256, storage_path, metadata, created_at with exception 'IMMUTABILITY VIOLATION: Historical dataset version snapshots cannot be modified in place. Register a new version snapshot instead.'",
+      "resolution": "Zero UPDATE statements will be executed against dataset_versions. ts_lgd_mandals_2023_v1 remains completely untouched as an immutable historical snapshot. Supersession is represented purely at the provenance DAG level and in the incoming official dataset version ts_lgd_mandals_2026_v1."
+    }
+  },
+  "mandatory_questions": {
+    "Q1_is_canonical_exists": {
+      "answer": "YES",
+      "evidence": "Migration 039 line 168; verified live on panIN-staging via PostgREST OpenAPI schema and catalog query."
+    },
+    "Q2_canonical_distinction_mechanism": {
+      "answer": "record_provenance_linkages.is_canonical (true for canonical active links, false for historical/superseded pilot links), combined with provenance_records DAG parent_provenance_id and transformation_type."
+    },
+    "Q3_provenance_records_insertion": {
+      "answer": "YES, 100% compliant. transformation_type is unconstrained TEXT, and parent_provenance_id is a valid self-referential FK. prevent_provenance_mutation only blocks UPDATE/DELETE, not INSERT."
+    },
+    "Q4_supersession_dataset_version": {
+      "answer": "ts_lgd_mandals_2026_v1 (the active authoritative dataset establishing the canonical identities), with parent_provenance_id pointing back to the pilot nodes in ts_lgd_mandals_2023_v1."
+    },
+    "Q5_dataset_version_supersession_without_mutation": {
+      "answer": "YES. In W012, dataset versions are immutable snapshots. Supersession is modeled by registering the incoming official version (ts_lgd_mandals_2026_v1) and connecting provenance nodes across versions via parent_provenance_id. Zero updates to ts_lgd_mandals_2023_v1 are required."
+    },
+    "Q6_status_metadata_convention": {
+      "answer": "Incoming dataset versions document supersession in metadata (e.g. metadata->>'supersedes'). Old versions remain UNVERIFIED or are left untouched in their historical state."
+    },
+    "Q7_status_change_evidence_requirement": {
+      "answer": "Elevating status to OFFICIAL requires authoritative evidence_records (Migration 039 line 271). Transitioning to DEPRECATED does not, but to respect snapshot immutability, ts_lgd_mandals_2023_v1 default_status is left UNCHANGED (UNVERIFIED) with zero DML."
+    },
+    "Q8_legacy_records_represented_exclusively_through_provenance": {
+      "answer": "YES. record_provenance_linkages has no FK to public.mandals (polymorphic loose string domain_record_id). Legacy pilot IDs can remain in record_provenance_linkages with is_canonical = false while public.mandals contains strictly the 621 canonical statutory entities."
+    },
+    "Q9_geography_entity_lineage_metadata_representation": {
+      "answer": "Update row 68e465c2-a00b-478d-8082-e0cf1f3bbe67: update predecessor_internal_id and successor_internal_id to canonical UUIDs (md5('mandals:TS-MDL-4354')::uuid and md5('mandals:TS-MDL-6227')::uuid); merge metadata to store canonical IDs while preserving legacy pilot IDs as audit history in metadata->'legacy_pilot_ids'."
+    },
+    "Q10_exact_provenance_dag": {
+      "structure": "Pilot Node (ts_lgd_mandals_2023_v1, status UNVERIFIED) -> Parent of -> Supersession Node (ts_lgd_mandals_2026_v1, status OFFICIAL, transformation_type 'identity_superseded_by_canonical') -> Canonical Linkage (is_canonical = true, domain_record_id = TS-MDL-canonical). Historical linkage to TS-MDL-pilot updated to is_canonical = false."
+    }
+  },
+  "canonical_621_proof": {
+    "current_mandals_count": 621,
+    "proof_perspectives": {
+      "current_state": "All 621 rows are active with valid current_version_id pointers and 0 nulls.",
+      "stable_identity_architecture": "TS-MDL-<inception_code> uniquely maps to physical administrative units; the 12 pilot units already exist under canonical codes.",
+      "production_provenance": "Production never executed Migration 042; keeping 633 on staging creates permanent production drift.",
+      "w014_semantics": "Keeping 12 pilot anchors with null current_version_id violates W014; binding them to canonical versions violates fn_guard_mandal_current_version cross-mandal checks.",
+      "absence_of_statutory_entities": "The 12 pilot IDs do not represent separate or dissolved entities; they are synthetic labels for continuing mandals."
+    }
+  },
+  "reference_inventory": {
+    "total_remaining_occurrences": 16,
+    "occurrences": [
+      {
+        "table": "record_provenance_linkages",
+        "column": "domain_record_id",
+        "count": 12,
+        "action": "UPDATE is_canonical = false WHERE domain_table = 'mandals' AND domain_record_id IN (...)"
+      },
+      {
+        "table": "geography_entity_lineage",
+        "column": "metadata",
+        "count": 2,
+        "action": "UPDATE metadata and internal UUIDs to canonical IDs while preserving pilot IDs in metadata->'legacy_pilot_ids'"
+      },
+      {
+        "table": "provenance_records",
+        "column": "metadata",
+        "count": 2,
+        "action": "UPDATE metadata of row 8c350901-a5d8-fe3d-c5b2-6ffe37601908 to reference canonical IDs while retaining pilot IDs"
+      }
+    ]
+  },
+  "prohibited_operations": [
+    "NO UPDATE to dataset_versions (effective_to, metadata, default_status).",
+    "NO DELETE from provenance_records or evidence_records.",
+    "NO ALTER TABLE to add or drop columns.",
+    "NO modification, squashing, or rewriting of Migration 045.",
+    "NO DML execution during this design phase.",
+    "NO creation or execution of Migration 046.",
+    "NO geometry ingestion.",
+    "NO connection to production."
+  ],
+  "staging_preservation_verification": {
+    "mandals": 621,
+    "historical_versions": 589,
+    "current_versions": 621,
+    "total_versions": 1210,
+    "null_pointers": 0,
+    "entity_geometries": 0,
+    "status": "PRESERVED_UNTOUCHED"
+  },
+  "quality_gates": {
+    "GOV03-01": "PASS",
+    "GOV03-02": "PASS",
+    "GOV03-03": "PASS",
+    "GOV03-04": "PASS",
+    "GOV03-05": "PASS",
+    "GOV03-06": "PASS",
+    "GOV03-07": "PASS",
+    "GOV03-08": "PASS",
+    "GOV03-09": "PASS",
+    "GOV03-10": "PASS",
+    "GOV03-11": "PASS",
+    "GOV03-12": "PASS",
+    "GOV03-13": "PASS",
+    "GOV03-14": "PASS",
+    "GOV03-15": "PASS"
+  }
+}
