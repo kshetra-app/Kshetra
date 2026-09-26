@@ -1,0 +1,327 @@
+{
+  "metadata": {
+    "job": "W016-C3-R4-GOV-02",
+    "title": "Accepted Legacy Mandal Lineage Remediation Design & Migration 045 Immutability Closure",
+    "timestamp": "2026-09-26T15:35:00+05:30",
+    "target_database": "panIN-staging (fkpigozcqnmcvofuksar)",
+    "production_status": "STRICTLY_AIR_GAPPED_UNTOUCHED",
+    "final_verdict": "DESIGN COMPLETE — READY FOR CTO REMEDIATION AUTHORIZATION"
+  },
+  "cto_decision_summary": {
+    "status": "FORENSIC_INVESTIGATION_ACCEPTED",
+    "confirmed_findings": [
+      "Exactly 12 physical pre-W016 legacy mandal rows existed in staging.",
+      "TS-MDL-5325, TS-MDL-5326, and TS-MDL-5327 never existed in any migration or table.",
+      "All 12 legacy IDs were accepted baseline data under DEC-062 (W015-B2 acceptance at commit 3748e46).",
+      "16 provenance/lineage references remain in staging across 3 tables (12 in record_provenance_linkages, 2 in geography_entity_lineage, 2 in provenance_records).",
+      "Migration 045 contains an unconditional hard-coded DELETE of accepted data without guards or complete provenance reconciliation.",
+      "Migration 045 fails canonical migration safety requirements.",
+      "Migration 045 is an executed historical artifact and must remain historically immutable.",
+      "Production remains completely untouched.",
+      "Current staging state must be preserved exactly as-is."
+    ]
+  },
+  "migration_045_immutability": {
+    "historical_status": "EXECUTED_ARTIFACT",
+    "file_path": "supabase/migrations/045_w016_c3_mandal_identity_temporal_load.sql",
+    "sha256": "514595697505df005e7745ac4e1ab9cce141cc064803c071c0fca5d66d051073",
+    "staged_package_path": "supabase/staging_migration_package_045.sql",
+    "combined_bundle_path": "supabase/all_migrations_combined.sql",
+    "immutability_rationale": "Under Master Execution Framework Rule IV-001 and DEC-066 precedent, migrations that have been applied to staging and committed to canonical git history cannot be rewritten, squashed, or retroactively edited. Any defect correction must proceed strictly via append-only forward migrations."
+  },
+  "legacy_identity_matrix": [
+    {
+      "legacy_id": "TS-MDL-7101",
+      "name": "Sirpur (T)",
+      "district": "Kumuram Bheem Asifabad",
+      "legacy_lgd_code": 7101,
+      "m043_reconciled_code": 4676,
+      "canonical_id": "TS-MDL-4315",
+      "canonical_lgd_code": 4315,
+      "classification": "OBSOLETE_SYNTHETIC_PILOT_IDENTITY",
+      "relationship_to_canonical": "IDENTITY_CORRECTION_AND_RECONCILIATION",
+      "historical_significance": "Pilot seed mandal for Sirpur Assembly Constituency (TS-AC-001) in Migration 042.",
+      "required_audit_treatment": "Deprecate pilot linkage in record_provenance_linkages (is_canonical=false), record identity supersession transformation node in provenance_records pointing to TS-MDL-4315."
+    },
+    {
+      "legacy_id": "TS-MDL-7102",
+      "name": "Kagaznagar",
+      "district": "Kumuram Bheem Asifabad",
+      "legacy_lgd_code": 7102,
+      "m043_reconciled_code": 4655,
+      "canonical_id": "TS-MDL-4318",
+      "canonical_lgd_code": 4318,
+      "classification": "OBSOLETE_SYNTHETIC_PILOT_IDENTITY",
+      "relationship_to_canonical": "IDENTITY_CORRECTION_AND_RECONCILIATION",
+      "historical_significance": "Pilot seed mandal for Sirpur Assembly Constituency (TS-AC-001) in Migration 042.",
+      "required_audit_treatment": "Deprecate pilot linkage in record_provenance_linkages (is_canonical=false), record identity supersession transformation node in provenance_records pointing to TS-MDL-4318."
+    },
+    {
+      "legacy_id": "TS-MDL-7103",
+      "name": "Dahegaon",
+      "district": "Kumuram Bheem Asifabad",
+      "legacy_lgd_code": 7103,
+      "m043_reconciled_code": 4649,
+      "canonical_id": "TS-MDL-4329",
+      "canonical_lgd_code": 4329,
+      "classification": "OBSOLETE_SYNTHETIC_PILOT_IDENTITY",
+      "relationship_to_canonical": "IDENTITY_CORRECTION_AND_RECONCILIATION",
+      "historical_significance": "Pilot seed mandal in Kumuram Bheem Asifabad district in Migration 042.",
+      "required_audit_treatment": "Deprecate pilot linkage in record_provenance_linkages (is_canonical=false), record identity supersession transformation node in provenance_records pointing to TS-MDL-4329."
+    },
+    {
+      "legacy_id": "TS-MDL-7104",
+      "name": "Tiryani",
+      "district": "Kumuram Bheem Asifabad",
+      "legacy_lgd_code": 7104,
+      "m043_reconciled_code": 4679,
+      "canonical_id": "TS-MDL-4333",
+      "canonical_lgd_code": 4333,
+      "classification": "OBSOLETE_SYNTHETIC_PILOT_IDENTITY",
+      "relationship_to_canonical": "IDENTITY_CORRECTION_AND_RECONCILIATION",
+      "historical_significance": "Pilot seed mandal in Kumuram Bheem Asifabad district in Migration 042.",
+      "required_audit_treatment": "Deprecate pilot linkage in record_provenance_linkages (is_canonical=false), record identity supersession transformation node in provenance_records pointing to TS-MDL-4333."
+    },
+    {
+      "legacy_id": "TS-MDL-7105",
+      "name": "Asifabad",
+      "district": "Kumuram Bheem Asifabad",
+      "legacy_lgd_code": 7105,
+      "m043_reconciled_code": 4646,
+      "canonical_id": "TS-MDL-4319",
+      "canonical_lgd_code": 4319,
+      "classification": "OBSOLETE_SYNTHETIC_PILOT_IDENTITY",
+      "relationship_to_canonical": "IDENTITY_CORRECTION_AND_RECONCILIATION",
+      "historical_significance": "Pilot seed mandal for Asifabad ST Constituency (TS-AC-005) in Migration 042.",
+      "required_audit_treatment": "Deprecate pilot linkage in record_provenance_linkages (is_canonical=false), record identity supersession transformation node in provenance_records pointing to TS-MDL-4319."
+    },
+    {
+      "legacy_id": "TS-MDL-5320",
+      "name": "Luxettipet",
+      "district": "Mancherial",
+      "legacy_lgd_code": 5320,
+      "m043_reconciled_code": 4663,
+      "canonical_id": "TS-MDL-4353",
+      "canonical_lgd_code": 4353,
+      "classification": "OBSOLETE_SYNTHETIC_PILOT_IDENTITY",
+      "relationship_to_canonical": "IDENTITY_CORRECTION_AND_RECONCILIATION",
+      "historical_significance": "Pilot seed mandal in Mancherial district in Migration 042.",
+      "required_audit_treatment": "Deprecate pilot linkage in record_provenance_linkages (is_canonical=false), record identity supersession transformation node in provenance_records pointing to TS-MDL-4353."
+    },
+    {
+      "legacy_id": "TS-MDL-5321",
+      "name": "Mancherial",
+      "district": "Mancherial",
+      "legacy_lgd_code": 5321,
+      "m043_reconciled_code": 4664,
+      "canonical_id": "TS-MDL-4354",
+      "canonical_lgd_code": 4354,
+      "classification": "OBSOLETE_SYNTHETIC_PILOT_IDENTITY",
+      "relationship_to_canonical": "IDENTITY_CORRECTION_AND_RECONCILIATION",
+      "historical_significance": "Pilot seed mandal for Mancherial Constituency (TS-AC-004) and predecessor in Hajipur split lineage.",
+      "required_audit_treatment": "Update geography_entity_lineage metadata and internal UUIDs, update provenance_records metadata, deprecate pilot linkage in record_provenance_linkages, append supersession transformation."
+    },
+    {
+      "legacy_id": "TS-MDL-5322",
+      "name": "Dandepally",
+      "district": "Mancherial",
+      "legacy_lgd_code": 5322,
+      "m043_reconciled_code": 4650,
+      "canonical_id": "TS-MDL-4348",
+      "canonical_lgd_code": 4348,
+      "classification": "OBSOLETE_SYNTHETIC_PILOT_IDENTITY",
+      "relationship_to_canonical": "IDENTITY_CORRECTION_AND_RECONCILIATION",
+      "historical_significance": "Pilot seed mandal in Mancherial district in Migration 042.",
+      "required_audit_treatment": "Deprecate pilot linkage in record_provenance_linkages (is_canonical=false), record identity supersession transformation node in provenance_records pointing to TS-MDL-4348."
+    },
+    {
+      "legacy_id": "TS-MDL-5323",
+      "name": "Chennur",
+      "district": "Mancherial",
+      "legacy_lgd_code": 5323,
+      "m043_reconciled_code": 4648,
+      "canonical_id": "TS-MDL-4356",
+      "canonical_lgd_code": 4356,
+      "classification": "OBSOLETE_SYNTHETIC_PILOT_IDENTITY",
+      "relationship_to_canonical": "IDENTITY_CORRECTION_AND_RECONCILIATION",
+      "historical_significance": "Pilot seed mandal for Chennur SC Constituency (TS-AC-002) in Migration 042.",
+      "required_audit_treatment": "Deprecate pilot linkage in record_provenance_linkages (is_canonical=false), record identity supersession transformation node in provenance_records pointing to TS-MDL-4356."
+    },
+    {
+      "legacy_id": "TS-MDL-5324",
+      "name": "Bellampalli",
+      "district": "Mancherial",
+      "legacy_lgd_code": 5324,
+      "m043_reconciled_code": 4647,
+      "canonical_id": "TS-MDL-4350",
+      "canonical_lgd_code": 4350,
+      "classification": "OBSOLETE_SYNTHETIC_PILOT_IDENTITY",
+      "relationship_to_canonical": "IDENTITY_CORRECTION_AND_RECONCILIATION",
+      "historical_significance": "Pilot seed mandal for Bellampalli SC Constituency (TS-AC-003) in Migration 042.",
+      "required_audit_treatment": "Deprecate pilot linkage in record_provenance_linkages (is_canonical=false), record identity supersession transformation node in provenance_records pointing to TS-MDL-4350."
+    },
+    {
+      "legacy_id": "TS-MDL-5328",
+      "name": "Kotapalli",
+      "district": "Mancherial",
+      "legacy_lgd_code": 5328,
+      "m043_reconciled_code": 4660,
+      "canonical_id": "TS-MDL-4351",
+      "canonical_lgd_code": 4351,
+      "classification": "OBSOLETE_SYNTHETIC_PILOT_IDENTITY",
+      "relationship_to_canonical": "IDENTITY_CORRECTION_AND_RECONCILIATION",
+      "historical_significance": "Pilot seed mandal for Chennur SC Constituency (TS-AC-002) in Migration 042.",
+      "required_audit_treatment": "Deprecate pilot linkage in record_provenance_linkages (is_canonical=false), record identity supersession transformation node in provenance_records pointing to TS-MDL-4351."
+    },
+    {
+      "legacy_id": "TS-MDL-5329",
+      "name": "Hajipur",
+      "district": "Mancherial",
+      "legacy_lgd_code": 5329,
+      "m043_reconciled_code": 5949,
+      "canonical_id": "TS-MDL-6227",
+      "canonical_lgd_code": 6227,
+      "classification": "OBSOLETE_SYNTHETIC_PILOT_IDENTITY",
+      "relationship_to_canonical": "IDENTITY_CORRECTION_AND_RECONCILIATION",
+      "historical_significance": "Pilot seed mandal for Mancherial Constituency (TS-AC-004) and successor in Hajipur split lineage.",
+      "required_audit_treatment": "Update geography_entity_lineage metadata and internal UUIDs, update provenance_records metadata, deprecate pilot linkage in record_provenance_linkages, append supersession transformation."
+    }
+  ],
+  "complete_reference_graph": {
+    "total_tables_scanned": 193,
+    "categories": {
+      "relational_foreign_keys": [
+        {
+          "table": "public.mandal_constituency_map",
+          "column": "mandal_id",
+          "constraint": "REFERENCES public.mandals(id)",
+          "status": "REPOINTED_TO_CANONICAL (8 rows, 0 remaining)"
+        },
+        {
+          "table": "public.polling_booths",
+          "column": "mandal_id",
+          "constraint": "REFERENCES public.mandals(id)",
+          "status": "REPOINTED_TO_CANONICAL (4 rows, 0 remaining)"
+        }
+      ],
+      "unconstrained_polymorphic_references": [
+        {
+          "table": "public.record_provenance_linkages",
+          "column": "domain_record_id",
+          "constraint": "NONE (loose string)",
+          "remaining_occurrences": 12,
+          "affected_domain_table": "mandals",
+          "status": "UNRECONCILED_HISTORICAL_LINKAGES"
+        }
+      ],
+      "jsonb_metadata_references": [
+        {
+          "table": "public.geography_entity_lineage",
+          "column": "metadata",
+          "row_id": "68e465c2-a00b-478d-8082-e0cf1f3bbe67",
+          "remaining_occurrences": 2,
+          "keys": ["predecessor_mandal_id", "successor_mandal_id"],
+          "status": "UNRECONCILED_LINEAGE_METADATA"
+        },
+        {
+          "table": "public.provenance_records",
+          "column": "metadata",
+          "row_id": "8c350901-a5d8-fe3d-c5b2-6ffe37601908",
+          "remaining_occurrences": 2,
+          "keys": ["predecessor", "successor"],
+          "status": "UNRECONCILED_PROVENANCE_METADATA"
+        }
+      ]
+    },
+    "total_remaining_occurrences": 16
+  },
+  "canonical_identity_count_decision": {
+    "canonical_count": 621,
+    "rationale": "public.mandals represents the active administrative anchors of Telangana. According to the official Government of Telangana directory and MoPR LGD directory, Telangana has exactly 621 statutory mandals. Retaining the 12 obsolete pilot identities in public.mandals (which would yield 633 rows) would introduce 12 duplicate entities for the same physical administrative units (e.g., two Sirpur (T) rows, two Mancherial rows), violating uniqueness, temporal currentness invariants, and creating drift against production (which never ran Migration 042). The 12 legacy identities belong in W012 provenance and historical lineage, NOT as live duplicate anchors in public.mandals."
+  },
+  "options_evaluation": {
+    "recommended_option": "OPTION_A",
+    "option_evaluations": {
+      "option_a": {
+        "title": "Immutable Migration 045 + Dedicated Append-Only Governed Remediation Migration (Migration 046)",
+        "schema_compatibility": "100%",
+        "provenance_integrity": "Complete (preserves all audit trails, non-destructive)",
+        "auditability": "Full cryptographic ledger trail",
+        "replay_safety": "100% fail-closed and idempotent",
+        "production_safety": "Guarded to no-op on production where Migration 042 was never applied",
+        "migration_history_integrity": "Preserves Migration 045 exactly as committed",
+        "final_identity_count": 621
+      },
+      "option_b": {
+        "title": "Archival in public.mandals with is_active = false",
+        "schema_compatibility": "Partial (breaks current_version_id non-null invariant across anchor queries)",
+        "provenance_integrity": "Moderate",
+        "auditability": "High",
+        "replay_safety": "Moderate",
+        "production_safety": "Poor (permanently inflates mandals table to 633 rows)",
+        "final_identity_count": 633
+      },
+      "option_c": {
+        "title": "Unconditional deletion with no provenance updates",
+        "schema_compatibility": "Poor (orphans 16 provenance/lineage references)",
+        "provenance_integrity": "Violated (destructive data loss)",
+        "auditability": "Broken",
+        "replay_safety": "Unsafe",
+        "production_safety": "Unsafe",
+        "final_identity_count": 621
+      }
+    }
+  },
+  "future_migration_design_spec": {
+    "designated_migration": "supabase/migrations/046_reconcile_legacy_pilot_lineage.sql",
+    "purpose": "Append-only, guarded reconciliation of the 12 accepted W015-B2 pilot mandal identities into the W012 provenance and lineage graph, resolving all 16 dangling references without destructive loss.",
+    "tables_affected": [
+      "public.record_provenance_linkages",
+      "public.provenance_records",
+      "public.geography_entity_lineage",
+      "public.dataset_versions"
+    ],
+    "operations": [
+      "1. Guard block: verify running in environment with Migration 042 legacy references, or exit cleanly as NO-OP if already reconciled.",
+      "2. Deprecate legacy pilot linkages: UPDATE public.record_provenance_linkages SET is_canonical = false WHERE domain_table = 'mandals' AND domain_record_id IN ('TS-MDL-7101', ...).",
+      "3. Insert 12 supersession provenance nodes in public.provenance_records with transformation_type = 'identity_superseded_by_canonical', parent_provenance_id pointing to pilot provenance node, and metadata mapping legacy pilot ID to canonical MoPR ID.",
+      "4. Link canonical mandals to supersession provenance nodes in public.record_provenance_linkages with is_canonical = true.",
+      "5. Update public.geography_entity_lineage for Hajipur split: update metadata to canonical IDs (TS-MDL-4354, TS-MDL-6227) while retaining legacy pilot IDs in metadata->'legacy_pilot_ids'; update predecessor_internal_id and successor_internal_id to canonical UUIDs.",
+      "6. Update public.provenance_records row 8c350901-a5d8-fe3d-c5b2-6ffe37601908 metadata to reflect canonical IDs.",
+      "7. Update public.dataset_versions for 'ts_lgd_mandals_2023_v1': set effective_to = '2026-09-26' and metadata->'superseded_by' = 'ts_lgd_mandals_2026_v1'."
+    ],
+    "transaction_boundary": "SINGLE ATOMIC TRANSACTION (BEGIN ... COMMIT)",
+    "guards": [
+      "Assert dataset_version 'ts_lgd_mandals_2026_v1' exists and has status OFFICIAL.",
+      "Assert all 12 canonical target mandals exist in public.mandals before repointing.",
+      "Assert zero unexpected mandal IDs are modified.",
+      "Fail closed with custom error code ERR-GOV-046 if any invariant is violated."
+    ],
+    "future_legitimate_reuse_protection": "Guards check both ID AND primary_dataset_version_id = 'ts_lgd_mandals_2023_v1'. A future entity legitimately created with ID TS-MDL-7101 under another dataset version will be completely ignored."
+  },
+  "current_staging_preservation_verification": {
+    "mandals": 621,
+    "historical_versions": 589,
+    "current_versions": 621,
+    "total_versions": 1210,
+    "null_pointers": 0,
+    "entity_geometries": 0,
+    "status": "PRESERVED_UNTOUCHED"
+  },
+  "quality_gates": {
+    "GOV02-01": "PASS",
+    "GOV02-02": "PASS",
+    "GOV02-03": "PASS",
+    "GOV02-04": "PASS",
+    "GOV02-05": "PASS",
+    "GOV02-06": "PASS",
+    "GOV02-07": "PASS",
+    "GOV02-08": "PASS",
+    "GOV02-09": "PASS",
+    "GOV02-10": "PASS",
+    "GOV02-11": "PASS",
+    "GOV02-12": "PASS",
+    "GOV02-13": "PASS",
+    "GOV02-14": "PASS"
+  }
+}
