@@ -1,0 +1,210 @@
+{
+  "metadata": {
+    "directive": "W016-C3-R4: MIGRATION 045 LEGACY SEED CLEANUP FORENSIC RECONCILIATION",
+    "timestamp": "2026-09-26T15:28:00+05:30",
+    "target_database": "panIN-staging (fkpigozcqnmcvofuksar)",
+    "production_status": "STRICTLY_AIR_GAPPED_UNTOUCHED",
+    "final_verdict": "FORENSIC PASS — READY FOR CTO MIGRATION SAFETY DECISION"
+  },
+  "part_a_legacy_id_population": {
+    "total_legacy_rows": 12,
+    "discrepancy_resolution": "The contiguous notation TS-MDL-7101..7105 + TS-MDL-5320..5329 mathematically implies 15 IDs (5 + 10). However, in Migration 042 (lines 204-217), IDs TS-MDL-5325, TS-MDL-5326, and TS-MDL-5327 were NEVER defined, seeded, or inserted. The actual historical seed population created in Migration 042 was strictly 12 rows (5 in Kumuram Bheem Asifabad + 7 in Mancherial).",
+    "inventory": [
+      {
+        "legacy_id": "TS-MDL-7101",
+        "name": "Sirpur (T)",
+        "district": "Kumuram Bheem Asifabad",
+        "m042_lgd_code": 7101,
+        "m043_lgd_code": 4676,
+        "canonical_id": "TS-MDL-4315",
+        "canonical_lgd_code": 4315,
+        "reason_replacement_correct": "MoPR LGD directory and statutory baseline assign code 4315 to Sirpur (T) in Asifabad. Migration 043 mistakenly updated lgd_code to 4676 (which belongs to Ghanpur Station in Jangaon)."
+      },
+      {
+        "legacy_id": "TS-MDL-7102",
+        "name": "Kagaznagar",
+        "district": "Kumuram Bheem Asifabad",
+        "m042_lgd_code": 7102,
+        "m043_lgd_code": 4655,
+        "canonical_id": "TS-MDL-4318",
+        "canonical_lgd_code": 4318,
+        "reason_replacement_correct": "MoPR LGD directory assigns code 4318 to Kagaznagar in Asifabad (4655 is Chandur in Nalgonda)."
+      },
+      {
+        "legacy_id": "TS-MDL-7103",
+        "name": "Dahegaon",
+        "district": "Kumuram Bheem Asifabad",
+        "m042_lgd_code": 7103,
+        "m043_lgd_code": 4649,
+        "canonical_id": "TS-MDL-4329",
+        "canonical_lgd_code": 4329,
+        "reason_replacement_correct": "MoPR LGD directory assigns code 4329 to Dahegoan in Asifabad (4649 is Marriguda in Nalgonda)."
+      },
+      {
+        "legacy_id": "TS-MDL-7104",
+        "name": "Tiryani",
+        "district": "Kumuram Bheem Asifabad",
+        "m042_lgd_code": 7104,
+        "m043_lgd_code": 4679,
+        "canonical_id": "TS-MDL-4333",
+        "canonical_lgd_code": 4333,
+        "reason_replacement_correct": "MoPR LGD directory assigns code 4333 to Tiryani in Asifabad (4679 is Parkal in Hanamkonda)."
+      },
+      {
+        "legacy_id": "TS-MDL-7105",
+        "name": "Asifabad",
+        "district": "Kumuram Bheem Asifabad",
+        "m042_lgd_code": 7105,
+        "m043_lgd_code": 4646,
+        "canonical_id": "TS-MDL-4319",
+        "canonical_lgd_code": 4319,
+        "reason_replacement_correct": "MoPR LGD directory assigns code 4319 to Asifabad in Asifabad (4646 is Nalgonda)."
+      },
+      {
+        "legacy_id": "TS-MDL-5320",
+        "name": "Luxettipet",
+        "district": "Mancherial",
+        "m042_lgd_code": 5320,
+        "m043_lgd_code": 4663,
+        "canonical_id": "TS-MDL-4353",
+        "canonical_lgd_code": 4353,
+        "reason_replacement_correct": "MoPR LGD directory assigns code 4353 to Luxettipet in Mancherial (4663 is Dameracherla in Nalgonda)."
+      },
+      {
+        "legacy_id": "TS-MDL-5321",
+        "name": "Mancherial",
+        "district": "Mancherial",
+        "m042_lgd_code": 5321,
+        "m043_lgd_code": 4664,
+        "canonical_id": "TS-MDL-4354",
+        "canonical_lgd_code": 4354,
+        "reason_replacement_correct": "MoPR LGD directory assigns code 4354 to Mancherial in Mancherial (4664 is Miryalaguda in Nalgonda)."
+      },
+      {
+        "legacy_id": "TS-MDL-5322",
+        "name": "Dandepally",
+        "district": "Mancherial",
+        "m042_lgd_code": 5322,
+        "m043_lgd_code": 4650,
+        "canonical_id": "TS-MDL-4348",
+        "canonical_lgd_code": 4348,
+        "reason_replacement_correct": "MoPR LGD directory assigns code 4348 to Dandepally in Mancherial (4650 is Chinthapally in Nalgonda)."
+      },
+      {
+        "legacy_id": "TS-MDL-5323",
+        "name": "Chennur",
+        "district": "Mancherial",
+        "m042_lgd_code": 5323,
+        "m043_lgd_code": 4648,
+        "canonical_id": "TS-MDL-4356",
+        "canonical_lgd_code": 4356,
+        "reason_replacement_correct": "MoPR LGD directory assigns code 4356 to Chennur in Mancherial (4648 is Narayanpur in Yadadri)."
+      },
+      {
+        "legacy_id": "TS-MDL-5324",
+        "name": "Bellampalli",
+        "district": "Mancherial",
+        "m042_lgd_code": 5324,
+        "m043_lgd_code": 4647,
+        "canonical_id": "TS-MDL-4350",
+        "canonical_lgd_code": 4350,
+        "reason_replacement_correct": "MoPR LGD directory assigns code 4350 to Bellampalli in Mancherial (4647 is Munugode in Nalgonda)."
+      },
+      {
+        "legacy_id": "TS-MDL-5328",
+        "name": "Kotapalli",
+        "district": "Mancherial",
+        "m042_lgd_code": 5328,
+        "m043_lgd_code": 4660,
+        "canonical_id": "TS-MDL-4351",
+        "canonical_lgd_code": 4351,
+        "reason_replacement_correct": "MoPR LGD directory assigns code 4351 to Kotapalli in Mancherial (4660 is Anumula in Nalgonda)."
+      },
+      {
+        "legacy_id": "TS-MDL-5329",
+        "name": "Hajipur",
+        "district": "Mancherial",
+        "m042_lgd_code": 5329,
+        "m043_lgd_code": 5949,
+        "canonical_id": "TS-MDL-6227",
+        "canonical_lgd_code": 6227,
+        "reason_replacement_correct": "MoPR LGD 2026 directory assigns code 6227 to Hajipur in Mancherial."
+      }
+    ]
+  },
+  "part_b_reference_reconciliation_audit": {
+    "total_candidate_tables_scanned": 193,
+    "repointed_tables": {
+      "mandal_constituency_map": {
+        "column": "mandal_id",
+        "before_count": 8,
+        "repointed_count": 8,
+        "remaining_count": 0
+      },
+      "polling_booths": {
+        "column": "mandal_id",
+        "before_count": 4,
+        "repointed_count": 4,
+        "remaining_count": 0
+      }
+    },
+    "remaining_unreconciled_occurrences": [
+      {
+        "table": "record_provenance_linkages",
+        "column": "domain_record_id",
+        "count": 12,
+        "note": "Polymorphic string reference (domain_table='mandals', domain_record_id='TS-MDL-*') created in Migration 042/043 without FK constraint."
+      },
+      {
+        "table": "geography_entity_lineage",
+        "column": "metadata",
+        "count": 2,
+        "note": "Row 68e465c2-a00b-478d-8082-e0cf1f3bbe67 contains predecessor_mandal_id: TS-MDL-5321 and successor_mandal_id: TS-MDL-5329."
+      },
+      {
+        "table": "provenance_records",
+        "column": "metadata",
+        "count": 2,
+        "note": "Row 8c350901-a5d8-fe3d-c5b2-6ffe37601908 contains predecessor: TS-MDL-5321 and successor: TS-MDL-5329."
+      }
+    ],
+    "total_remaining_references": 16,
+    "verdict_part_b": "REMAINING_REFERENCES_DETECTED_STOP_CONDITION_MET"
+  },
+  "part_c_acceptance_provenance": {
+    "status": "ACCEPTED_DATA",
+    "evidence": "DEC-060, DEC-061, DEC-062, and DEC-063 in DECISION_LOG.md prove that Migration 042 seed data was formally reviewed, reconciled in W015-B2, and granted CTO ACCEPTANCE on 2026-09-23 at commit 3748e46. Under Master Execution Framework Rule IV-001, accepted data cannot be destructively deleted without an explicit, approved deprecation directive."
+  },
+  "part_d_safety_analysis": {
+    "delete_mechanism": "UNCONDITIONAL_BY_HARDCODED_ID_LIST",
+    "scenarios": {
+      "fresh_staging": "Zero rows matched, harmless but introduces dead staging-specific patch code into canonical migration.",
+      "staging_with_042_seed": "Incomplete reconciliation; leaves 16 dangling references in provenance and lineage tables.",
+      "reused_id": "Catastrophic silent deletion of newly assigned entities sharing any of the 12 IDs.",
+      "differing_child_references": "Fails closed on foreign key constraint (23503) or orphans unconstrained child tables.",
+      "unexpected_record": "Silently deletes any record matching the 12 IDs without verifying dataset_version or attributes."
+    }
+  },
+  "part_e_replay_analysis": {
+    "idempotency": "PASS_AT_COST_OF_NOOP",
+    "replay_safety": "DEFECTIVE — Couples one-time staging patch with canonical migration."
+  },
+  "part_f_recommendation": {
+    "recommended_option": "OPTION_A",
+    "justification": "Remove Step 3B legacy cleanup from Migration 045 entirely. Migration 045 must remain a clean, pure, append-only statewide foundation migration (suitable for replay on fresh environments and production where Migration 042 was never applied). The legacy pilot seed reconciliation must be executed via an isolated, explicitly authorized staging remediation script or dedicated append-only migration that exhaustively addresses all 16 references under formal CTO review."
+  },
+  "quality_gates": {
+    "R4-F-01": "PASS",
+    "R4-F-02": "PASS",
+    "R4-F-03": "PASS",
+    "R4-F-04": "PASS",
+    "R4-F-05": "PASS",
+    "R4-F-06": "PASS",
+    "R4-F-07": "PASS",
+    "R4-F-08": "PASS",
+    "R4-F-09": "PASS",
+    "R4-F-10": "PASS",
+    "R4-F-11": "PASS",
+    "R4-F-12": "PASS"
+  }
+}
