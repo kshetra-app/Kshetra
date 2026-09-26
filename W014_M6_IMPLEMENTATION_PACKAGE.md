@@ -29,72 +29,53 @@ Following CTO authorization of **Option A: BEFORE ROW Immediate Trigger Architec
    Trigger function `public.fn_guard_mandal_version_temporal_bounds()` is defined with `SECURITY DEFINER`, owned by `panin_boundary_definer`, with pinned `SET search_path = public, pg_temp`.
    Read completeness under RLS is mathematically guaranteed because `panin_boundary_definer` has table `SELECT` privilege and RLS policy `"panin_boundary_definer_select_mandal_versions"` (`USING (true)`).
 4. **Canonical State Transition Function (`fn_transition_mandal_current_version`):**
-   Transitions proceed in strict sequence:
-   - Level 1 Lock: `mandals` anchor row locked via `FOR UPDATE`.
-   - Read & Validate: Target candidate verified to belong to same mandal, `OFFICIAL` dataset, and open-ended.
-   - Chronological Guard: Enforces `p_effective_date > v_old_valid_from`, deterministically raising `ERR-W014-007` (`SQLSTATE 22000`).
-   - Historical Guard: Enforces `p_effective_date` does not fall within any closed historical interval, raising `ERR-W014-006` (`SQLSTATE 23P01`).
-   - Step 11: Retires old version (`is_current = false, valid_to = p_effective_date`).
-   - Step 12: Activates new version (`is_current = true, valid_from = p_effective_date, valid_to = NULL`).
-   - Step 13: Updates mandal anchor pointer (`mandals.current_version_id = p_new_version_id`).
+Already fully deployed, hardened, and verified under Migration 041 (with same-anchor `FOR UPDATE` serialization, chronological guard `ERR-W014-007`, historical guard `ERR-W014-006`, and verified least-privilege catalog ACLs).
+**M6 intentionally leaves this function completely untouched.** Redundant re-declarations were eliminated per CTO acceptance of RCA.
 5. **Preserved Invariants & Governance:**
-   - Same-anchor composite FK `fk_mandals_current_version_same_anchor` preserved.
-   - Single-current unique index `uq_mandal_versions_single_current` preserved.
-   - Currentness check constraint `chk_mandal_versions_current_invariants` preserved.
-   - Immutability triggers `prevent_evidence_mutation()` and `prevent_dataset_version_mutation()` preserved untouched.
-   - `BYPASSRLS` is prohibited. Least privilege for `panin_boundary_definer` and `panin_boundary_admin` preserved.
-
+- Same-anchor composite FK `fk_mandals_current_version_same_anchor` preserved.
+- Single-current unique index `uq_mandal_versions_single_current` preserved.
+- Currentness check constraint `chk_mandal_versions_current_invariants` preserved.
+- Immutability triggers `prevent_evidence_mutation()` and `prevent_dataset_version_mutation()` preserved untouched.
+- `BYPASSRLS` is prohibited. Least privilege for `panin_boundary_definer` and `panin_boundary_admin` preserved.
 ---
-
 ## 2. ARTIFACT MANIFEST & CRYPTOGRAPHIC CHECKSUMS
-
 | Artifact Role | File Path | SHA-256 Checksum | Execution Status |
 | :--- | :--- | :--- | :--- |
-| **Remediation DDL** | `supabase/remediation_w014_m6_gist_boundary_041.sql` | `632AA64A1EEDC8D282EE08052B567DBCD4626E4BBBC03B8D9CEE152EE0E72DA1` | **PREPARED / UNEXECUTED** |
-| **Rollback DDL** | `supabase/rollback_w014_m6_gist_boundary_041.sql` | `DF9D6CE37903E2AAFCCEB1AE991BB4A81AF37EAB77F6776670663F3CDCD6FFE9` | **PREPARED / UNEXECUTED** |
+| **Remediation DDL** | `supabase/remediation_w014_m6_gist_boundary_041.sql` | `74456886221FACBA9A71B536762EB7FE44EF8961E208072720FF8CDFDB15DAD7` | **PREPARED / UNEXECUTED** |
+| **Rollback DDL** | `supabase/rollback_w014_m6_gist_boundary_041.sql` | `A77FE892A37588CDEE165FD593C9724215CFFB8EA1BAD60131C9FE220C43983F` | **PREPARED / UNEXECUTED** |
 | **23-Check Verifier** | `supabase/verification_w014_migration_041_23checks.sql` | `A4F31C66AE2C493E4D0277B3525412C88EB4B25ECE91EB767408DA0488DFFF82` | **PREPARED / UNEXECUTED** |
 | **Test Suite** | `tests/test_mandal_version_integrity.mjs` | `4D174F48CF42EDF617CDE5E5FA94487448D94A0160C9021BFF96A78746E05AB2` | **PREPARED / UNEXECUTED** |
-
 ---
-
 ## 3. REMEDIATION DDL STRUCTURE (`remediation_w014_m6_gist_boundary_041.sql`)
-
 The remediation script executes inside a single atomic transaction block (`BEGIN; ... COMMIT;`):
-
 - **Step 1: Pre-Migration Assertions**
-  Fails closed if any overlapping closed historical intervals exist in `public.mandal_versions`.
+Fails closed if any overlapping closed historical intervals exist in `public.mandal_versions`.
 - **Step 2: Partial GiST Constraint**
-  Replaces unconditional GiST constraint with:
-  ```sql
-  ALTER TABLE public.mandal_versions
-    ADD CONSTRAINT uq_mandal_versions_historical_no_overlap
-    EXCLUDE USING gist (
-      mandal_id WITH =,
-      (daterange(valid_from, valid_to, '[)')) WITH &&
-    )
-    WHERE (valid_to IS NOT NULL);
-  ```
+Replaces unconditional GiST constraint with:
+```sql
+ALTER TABLE public.mandal_versions
+ADD CONSTRAINT uq_mandal_versions_historical_no_overlap
+EXCLUDE USING gist (
+mandal_id WITH =,
+(daterange(valid_from, valid_to, '[)')) WITH &&
+)
+WHERE (valid_to IS NOT NULL);
+```
 - **Step 3: Trigger Function `fn_guard_mandal_version_temporal_bounds`**
-  Implements Step 0 mandal_id immutability (`ERR-W014-008` / `23514`), Step 1 concurrency serialization (`mandals FOR UPDATE`), Direction A (closed historical vs active current), Direction B (active current vs closed historical), candidate permissibility, and adjacency validation.
+Implements Step 0 mandal_id immutability (`ERR-W014-008` / `23514`), Step 1 concurrency serialization (`mandals FOR UPDATE`), Direction A (closed historical vs active current), Direction B (active current vs closed historical), candidate permissibility, and adjacency validation.
 - **Step 4: Trigger Definition `trg_guard_mandal_version_temporal_bounds`**
-  Attaches `BEFORE INSERT OR UPDATE OF mandal_id, valid_from, valid_to, is_current ON public.mandal_versions FOR EACH ROW`.
+Attaches `BEFORE INSERT OR UPDATE OF mandal_id, valid_from, valid_to, is_current ON public.mandal_versions FOR EACH ROW`.
 - **Step 5: Function Ownership & Security**
-  Transfers ownership to `panin_boundary_definer`, revokes execute from `PUBLIC`, `anon`, and `authenticated`, and grants execute strictly to `service_role` and `panin_boundary_admin`.
+Transfers ownership to `panin_boundary_definer`, revokes execute from `PUBLIC`, `anon`, and `authenticated`, and grants execute strictly to `service_role` and `panin_boundary_admin`.
 - **Step 6: Hardened Anchor Guard Function `fn_guard_mandal_current_version`**
-  Asserts anchor pointer points to a valid version of the same mandal with `OFFICIAL` dataset authority, and active interval $[T_{\text{eff}}, +\infty)$ does not overlap any closed historical version.
-- **Step 7: Hardened Transition Function `fn_transition_mandal_current_version`**
-  Implements chronological guard `p_effective_date > v_old_valid_from` (`ERR-W014-007`) and historical non-overlap check (`ERR-W014-006`).
-- **Step 8: Transition Function Ownership & Privileges**
-  Re-applies ownership and execution boundaries on the transition function.
-
+Asserts anchor pointer points to a valid version of the same mandal with `OFFICIAL` dataset authority, and active interval $[T_{\text{eff}}, +\infty)$ does not overlap any closed historical version.
+- **Steps 7 & 8 Removed:**
+Transition function `fn_transition_mandal_current_version` is already deployed, verified, and active on staging. It is intentionally untouched.
 ---
-
 ## 4. ROLLBACK DDL STRUCTURE (`rollback_w014_m6_gist_boundary_041.sql`)
-
 > [!WARNING]
 > ### ROLLBACK GOVERNANCE INVARIANT
 > **Rollback restores the pre-M6 baseline and is NOT a safe steady-state configuration for the M6 invariant. M6 must be reapplied before the environment is considered W014-M6 compliant.**
-
 The rollback script guarantees clean restoration of the Migration 041 baseline:
 1. **Pre-Rollback Fail-Closed Check:** Asserts that no mandal has multiple open-ended versions before attempting to re-impose the unconditional GiST constraint.
 2. **Safe Trigger & Function Teardown:**
@@ -102,9 +83,9 @@ The rollback script guarantees clean restoration of the Migration 041 baseline:
    DROP TRIGGER IF EXISTS trg_guard_mandal_version_temporal_bounds ON public.mandal_versions;
    DROP FUNCTION IF EXISTS public.fn_guard_mandal_version_temporal_bounds();
    ```
-3. **Reverts Constraint:** Drops `uq_mandal_versions_historical_no_overlap` and adds back `uq_mandal_versions_no_overlap EXCLUDE USING gist (mandal_id WITH =, (daterange(valid_from, valid_to, '[)')) WITH &&);`.
-4. **Reverts Functions:** Restores original baseline definitions for `fn_guard_mandal_current_version` and `fn_transition_mandal_current_version`.
-5. **Re-asserts Permissions:** Re-applies ownership and least-privilege ACL boundaries.
+3. **Restore Unconditional GiST Constraint:** Drops `uq_mandal_versions_historical_no_overlap` and adds back `uq_mandal_versions_no_overlap EXCLUDE USING gist (mandal_id WITH =, (daterange(valid_from, valid_to, '[)')) WITH &&);`.
+4. **Revert Anchor Guard Function:** Restores `fn_guard_mandal_current_version` to its original Migration 041 definition.
+5. **Transition Function Untouched:** `fn_transition_mandal_current_version` is untouched by rollback, preserving complete forward/rollback symmetry.
 
 ---
 
