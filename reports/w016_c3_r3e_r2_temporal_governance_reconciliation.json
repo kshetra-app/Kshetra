@@ -1,0 +1,198 @@
+{
+  "metadata": {
+    "directive": "W016-C3-R3E-R1-R2",
+    "title": "Current LGD Dataset Epoch + Per-Entity Statutory Validity Reconciliation",
+    "generated_at": "2026-09-26T14:38:14.992217",
+    "status": "TEMPORAL GOVERNANCE PASS \u2014 READY FOR CTO LOAD AUTHORIZATION",
+    "zero_database_mutations": true
+  },
+  "part_a_dataset_versions_temporal_semantics": {
+    "table": "dataset_versions (Migration 039)",
+    "effective_from_definition": "Package-level statutory or operational epoch start date; nullable when package is a composite compilation of heterogeneous statutory dates.",
+    "effective_to_definition": "Package-level statutory or operational epoch termination date; NULL for active/ongoing dataset snapshots.",
+    "retrieved_at_definition": "Exact ISO timestamp when external data artifact was downloaded or fetched (independent of legal validity).",
+    "distinction_proof": "Migration 039 seeds demonstrate: geo_assembly_boundaries_v2008 effective_from='2008-01-01', telangana_2023_mla_v1 effective_from='2023-12-03', civic_schemes_v1 effective_from=NULL. Retrieved_at is captured independently."
+  },
+  "part_b_dataset_package_reconciliation": {
+    "ts_lgd_mandals_2026_v1": {
+      "dataset_id": "ts_lgd_mandals",
+      "version_tag": "2026_v1",
+      "record_count": 621,
+      "retrieved_at": "2026-09-26T13:37:12+05:30",
+      "default_status": "OFFICIAL",
+      "effective_from": null,
+      "effective_from_rationale": "UNKNOWN at package level because the 621 records represent a composite snapshot containing heterogeneous statutory effective dates (2016-10-11, 2020-09-24, 2022-09-26, and 9 dates in 2022-2023). Package-level effective_from is honestly set to NULL to prevent conflation with entity-level statutory validity.",
+      "effective_to": null,
+      "storage_path": "data/evidence/w016/downloadDir2026_09_26_13_37_12_734.zip",
+      "checksum_sha256": "66DF38221528657662DA5A3BD3EE66D26442657478EEFD2C40CFD789B109DC0A"
+    },
+    "ts_lgd_mandals_2016_v1": {
+      "dataset_id": "ts_lgd_mandals",
+      "version_tag": "2016_v1",
+      "record_count": 589,
+      "retrieved_at": "2026-09-26T14:00:00+05:30",
+      "default_status": "OFFICIAL",
+      "effective_from": "2016-10-11",
+      "effective_to": "2022-09-26",
+      "effective_rationale": "Closed historical statutory baseline snapshot defined by G.O.Ms. Nos. 214-245 (2016-10-11) and terminating prior to the statewide 2022 reorganisation.",
+      "storage_path": "data/geo/candidate_authoritative/tgrac_mandals_raw.json",
+      "checksum_sha256": "19C61A0DF55A3837D972CF20E37782A79AECE4F5BD70C157E3725F706B079D9D"
+    }
+  },
+  "part_c_current_versions_breakdown": {
+    "total_current_versions": 621,
+    "category_counts": {
+      "surviving_historical_baseline_undivided": 548,
+      "surviving_historical_baseline_split_2020": 8,
+      "surviving_historical_baseline_split_2022": 24,
+      "surviving_historical_baseline_split_post_2022": 9,
+      "2020_successor_current": 5,
+      "2022_successor_current": 18,
+      "post_2022_creation_current": 9
+    },
+    "post_2022_creations_statutory_dates": [
+      {
+        "name": "Pothangal",
+        "lgd_code": 7534,
+        "effective_date": "2022-11-22",
+        "order": "G.O.Ms.No. 95, Revenue (DA) Dept"
+      },
+      {
+        "name": "Gudipally",
+        "lgd_code": 7527,
+        "effective_date": "2023-03-15",
+        "order": "G.O.Ms.No. 22, Revenue (DA) Dept"
+      },
+      {
+        "name": "Palwancha",
+        "lgd_code": 7519,
+        "effective_date": "2023-04-18",
+        "order": "G.O.Ms.No. 31, Revenue (DA) Dept"
+      },
+      {
+        "name": "Mohammadnagar",
+        "lgd_code": 7520,
+        "effective_date": "2023-04-18",
+        "order": "G.O.Ms.No. 32, Revenue (DA) Dept"
+      },
+      {
+        "name": "Yedula",
+        "lgd_code": 7533,
+        "effective_date": "2023-05-12",
+        "order": "G.O.Ms.No. 40, Revenue (DA) Dept"
+      },
+      {
+        "name": "Yerravalli",
+        "lgd_code": 7517,
+        "effective_date": "2023-06-15",
+        "order": "G.O.Ms.No. 48, Revenue (DA) Dept"
+      },
+      {
+        "name": "Bhoraj",
+        "lgd_code": 7529,
+        "effective_date": "2023-08-15",
+        "order": "G.O.Ms.No. 65, Revenue (DA) Dept"
+      },
+      {
+        "name": "Sathnala",
+        "lgd_code": 7515,
+        "effective_date": "2023-08-15",
+        "order": "G.O.Ms.No. 66, Revenue (DA) Dept"
+      },
+      {
+        "name": "Mallampally",
+        "lgd_code": 7536,
+        "effective_date": "2023-09-10",
+        "order": "G.O.Ms.No. 74, Revenue (DA) Dept"
+      }
+    ]
+  },
+  "part_e_temporal_dimensions_orthogonality": [
+    {
+      "dimension": "Dataset Package Epoch",
+      "meaning": "Temporal scope of the data package as an aggregate compilation in W012",
+      "source_field": "dataset_versions.effective_from / effective_to",
+      "example": "ts_lgd_mandals_2016_v1: [2016-10-11, 2022-09-26); ts_lgd_mandals_2026_v1: NULL (composite)"
+    },
+    {
+      "dimension": "Individual Statutory Validity",
+      "meaning": "Exact legal interval during which an individual mandal version was officially active",
+      "source_field": "mandal_versions.valid_from / valid_to",
+      "example": "Pothangal (7534): [2022-11-22, NULL); Chowdapur (7186): [2020-09-24, NULL)"
+    },
+    {
+      "dimension": "Geometry Snapshot Date",
+      "meaning": "Physical survey date of the spatial cadastral boundary capture",
+      "source_field": "entity_geometries.metadata->>'snapshot_date'",
+      "example": "2016-10-11 (TGRAC spatial survey baseline)"
+    },
+    {
+      "dimension": "Source Retrieval Date",
+      "meaning": "Audit timestamp when the raw evidence artifact was fetched from the authority portal",
+      "source_field": "dataset_versions.retrieved_at",
+      "example": "2026-09-26 13:37:12+05:30 (MoPR portal export)"
+    }
+  ],
+  "quality_gates": {
+    "R3E-R2-01": {
+      "name": "dataset_versions temporal semantics established",
+      "status": "PASS",
+      "evidence": "Verified via Migration 039 DDL and existing seed rows"
+    },
+    "R3E-R2-02": {
+      "name": "current dataset effective interval supported",
+      "status": "PASS",
+      "evidence": "effective_from is honestly set to NULL (composite package); retrieved_at captures snapshot date"
+    },
+    "R3E-R2-03": {
+      "name": "621 current records reconciled",
+      "status": "PASS",
+      "evidence": "Complete 621-row current records matrix generated and verified"
+    },
+    "R3E-R2-04": {
+      "name": "every current version has evidence-backed valid_from",
+      "status": "PASS",
+      "evidence": "Every row carries actual statutory date (2016-10-11, 2020-09-24, 2022-09-26, or gazette date)"
+    },
+    "R3E-R2-05": {
+      "name": "9 post-2022 entities individually reconciled",
+      "status": "PASS",
+      "evidence": "Exact G.O.Ms. dates from R3C assigned; zero 2022-09-26 synthetic dates"
+    },
+    "R3E-R2-06": {
+      "name": "2020 parent termination dates correct",
+      "status": "PASS",
+      "evidence": "All 8 parents terminate Version 1 at 2020-09-24"
+    },
+    "R3E-R2-07": {
+      "name": "2022 parent termination dates correct",
+      "status": "PASS",
+      "evidence": "All 24 parents terminate Version 1 at 2022-09-26"
+    },
+    "R3E-R2-08": {
+      "name": "geometry snapshot date remains independent",
+      "status": "PASS",
+      "evidence": "2016-10-11 spatial capture decoupled from statutory validity"
+    },
+    "R3E-R2-09": {
+      "name": "dataset retrieval date remains independent",
+      "status": "PASS",
+      "evidence": "retrieved_at captures 2026-09-26 13:37:12 independently"
+    },
+    "R3E-R2-10": {
+      "name": "no invented temporal dates",
+      "status": "PASS",
+      "evidence": "Zero synthetic dates; unknown package dates marked NULL"
+    },
+    "R3E-R2-11": {
+      "name": "stable identity count remains evidence-backed",
+      "status": "PASS",
+      "evidence": "621 distinct statutory identities proven with legal instruments"
+    },
+    "R3E-R2-12": {
+      "name": "zero DB mutation",
+      "status": "PASS",
+      "evidence": "Zero SQL queries executed; strictly analysis and matrix artifacts"
+    }
+  }
+}
