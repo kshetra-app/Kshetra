@@ -1,0 +1,541 @@
+{
+  "directive": "W016-C3-R4-GOV-10 — AUTHORIZED W012 LIFECYCLE EVIDENCE REMEDIATION",
+  "executionTimestamp": "2026-09-26T17:16:19.813Z",
+  "environment": {
+    "target": "panIN-staging (fkpigozcqnmcvofuksar)",
+    "productionIsolation": "ehfafcnimmjusyvplbah (STRICTLY AIR-GAPPED & UNTOUCHED)",
+    "databaseUrl": "https://fkpigozcqnmcvofuksar.supabase.co"
+  },
+  "authorizationScope": {
+    "directive": "W016-C3-R4-GOV-10",
+    "allowedOperation": "Scoped UPDATE of verification_evidence_id and verified_by on exact 12 supersession provenance UUIDs",
+    "forbiddenOperations": [
+      "Broad transformation_type UPDATE",
+      "Update of Hajipur canonical reconciliation provenance row",
+      "Mutation of Classification-A immutable fields",
+      "Mutation of record_provenance_linkages",
+      "Mutation of dataset_versions",
+      "Mutation of evidence_records",
+      "Mutation of mandals or mandal_versions",
+      "Geometry ingestion / entity_geometries mutation",
+      "Production modification"
+    ]
+  },
+  "evidencePrecondition": {
+    "evidenceId": "e0160000-0000-0000-0000-000000002026",
+    "artifactName": "mopr_lgd_subdistrict_directory_telangana_all.json",
+    "artifactSha256": "54d512e55b97fde163d100053dd48044cec6a744fb4bed392580282bcede1509",
+    "verificationAuthority": "Ministry of Panchayati Raj / Local Government Directory (MoPR/LGD)",
+    "verifiedBy": "CTO / LGD Statewide Export Verification",
+    "datasetVersionId": null,
+    "matchesExpected": true
+  },
+  "forensicBeforeAfterProof": [
+    {
+      "legacyId": "TS-MDL-7101",
+      "legacyName": "Sirpur (T)",
+      "canonicalId": "TS-MDL-4315",
+      "canonicalName": "Sirpur (T)",
+      "provenanceId": "2e5a417a-df4a-988a-5326-010cd5192d33",
+      "before": {
+        "status": "OFFICIAL",
+        "verification_evidence_id": null,
+        "verified_by": null
+      },
+      "after": {
+        "status": "OFFICIAL",
+        "verification_evidence_id": "e0160000-0000-0000-0000-000000002026",
+        "verified_by": "CTO / LGD Statewide Export Verification"
+      },
+      "immutableFieldsVerified": {
+        "id": "2e5a417a-df4a-988a-5326-010cd5192d33",
+        "dataset_version_id": "ts_lgd_mandals_2026_v1",
+        "source_record_id": "LGD-MANDAL-4315",
+        "parent_provenance_id": "251ef2cf-4a5d-b010-ba96-a74a4ec9241b",
+        "transformation_type": "pilot_to_statutory_supersession",
+        "transform_version": "1.0",
+        "operator": "system:w016_c3_r4_supersession",
+        "created_at": "2026-09-26T16:44:51.851677+00:00",
+        "metadataMatches": true
+      }
+    },
+    {
+      "legacyId": "TS-MDL-7102",
+      "legacyName": "Kagaznagar",
+      "canonicalId": "TS-MDL-4318",
+      "canonicalName": "Kagaznagar",
+      "provenanceId": "5e867050-d4f4-caa7-c838-965f55e8f623",
+      "before": {
+        "status": "OFFICIAL",
+        "verification_evidence_id": null,
+        "verified_by": null
+      },
+      "after": {
+        "status": "OFFICIAL",
+        "verification_evidence_id": "e0160000-0000-0000-0000-000000002026",
+        "verified_by": "CTO / LGD Statewide Export Verification"
+      },
+      "immutableFieldsVerified": {
+        "id": "5e867050-d4f4-caa7-c838-965f55e8f623",
+        "dataset_version_id": "ts_lgd_mandals_2026_v1",
+        "source_record_id": "LGD-MANDAL-4318",
+        "parent_provenance_id": "07d06766-c729-dc17-a00f-317fac6f800f",
+        "transformation_type": "pilot_to_statutory_supersession",
+        "transform_version": "1.0",
+        "operator": "system:w016_c3_r4_supersession",
+        "created_at": "2026-09-26T16:44:51.851677+00:00",
+        "metadataMatches": true
+      }
+    },
+    {
+      "legacyId": "TS-MDL-7103",
+      "legacyName": "Dahegaon",
+      "canonicalId": "TS-MDL-4329",
+      "canonicalName": "Dahegoan",
+      "provenanceId": "7a8b07ec-59ac-c65f-0fc4-94e73c36f6ac",
+      "before": {
+        "status": "OFFICIAL",
+        "verification_evidence_id": null,
+        "verified_by": null
+      },
+      "after": {
+        "status": "OFFICIAL",
+        "verification_evidence_id": "e0160000-0000-0000-0000-000000002026",
+        "verified_by": "CTO / LGD Statewide Export Verification"
+      },
+      "immutableFieldsVerified": {
+        "id": "7a8b07ec-59ac-c65f-0fc4-94e73c36f6ac",
+        "dataset_version_id": "ts_lgd_mandals_2026_v1",
+        "source_record_id": "LGD-MANDAL-4329",
+        "parent_provenance_id": "f0d1157e-fa94-560d-2220-8f61540f13cc",
+        "transformation_type": "pilot_to_statutory_supersession",
+        "transform_version": "1.0",
+        "operator": "system:w016_c3_r4_supersession",
+        "created_at": "2026-09-26T16:44:51.851677+00:00",
+        "metadataMatches": true
+      }
+    },
+    {
+      "legacyId": "TS-MDL-7104",
+      "legacyName": "Tiryani",
+      "canonicalId": "TS-MDL-4333",
+      "canonicalName": "Tiryani",
+      "provenanceId": "c5226d74-8492-b850-9306-b6f0172bad65",
+      "before": {
+        "status": "OFFICIAL",
+        "verification_evidence_id": null,
+        "verified_by": null
+      },
+      "after": {
+        "status": "OFFICIAL",
+        "verification_evidence_id": "e0160000-0000-0000-0000-000000002026",
+        "verified_by": "CTO / LGD Statewide Export Verification"
+      },
+      "immutableFieldsVerified": {
+        "id": "c5226d74-8492-b850-9306-b6f0172bad65",
+        "dataset_version_id": "ts_lgd_mandals_2026_v1",
+        "source_record_id": "LGD-MANDAL-4333",
+        "parent_provenance_id": "07ecfa1b-7ef1-120f-35cc-d8b2f95c8c17",
+        "transformation_type": "pilot_to_statutory_supersession",
+        "transform_version": "1.0",
+        "operator": "system:w016_c3_r4_supersession",
+        "created_at": "2026-09-26T16:44:51.851677+00:00",
+        "metadataMatches": true
+      }
+    },
+    {
+      "legacyId": "TS-MDL-7105",
+      "legacyName": "Asifabad",
+      "canonicalId": "TS-MDL-4319",
+      "canonicalName": "Asifabad",
+      "provenanceId": "fe9e32df-b654-5c88-6f9b-5ea023a34872",
+      "before": {
+        "status": "OFFICIAL",
+        "verification_evidence_id": null,
+        "verified_by": null
+      },
+      "after": {
+        "status": "OFFICIAL",
+        "verification_evidence_id": "e0160000-0000-0000-0000-000000002026",
+        "verified_by": "CTO / LGD Statewide Export Verification"
+      },
+      "immutableFieldsVerified": {
+        "id": "fe9e32df-b654-5c88-6f9b-5ea023a34872",
+        "dataset_version_id": "ts_lgd_mandals_2026_v1",
+        "source_record_id": "LGD-MANDAL-4319",
+        "parent_provenance_id": "8328a0db-a5a7-645d-f161-c5cfbc274a48",
+        "transformation_type": "pilot_to_statutory_supersession",
+        "transform_version": "1.0",
+        "operator": "system:w016_c3_r4_supersession",
+        "created_at": "2026-09-26T16:44:51.851677+00:00",
+        "metadataMatches": true
+      }
+    },
+    {
+      "legacyId": "TS-MDL-5320",
+      "legacyName": "Luxettipet",
+      "canonicalId": "TS-MDL-4353",
+      "canonicalName": "Luxettipet",
+      "provenanceId": "7b3fb40f-4705-a5d1-6875-baedf09b608b",
+      "before": {
+        "status": "OFFICIAL",
+        "verification_evidence_id": null,
+        "verified_by": null
+      },
+      "after": {
+        "status": "OFFICIAL",
+        "verification_evidence_id": "e0160000-0000-0000-0000-000000002026",
+        "verified_by": "CTO / LGD Statewide Export Verification"
+      },
+      "immutableFieldsVerified": {
+        "id": "7b3fb40f-4705-a5d1-6875-baedf09b608b",
+        "dataset_version_id": "ts_lgd_mandals_2026_v1",
+        "source_record_id": "LGD-MANDAL-4353",
+        "parent_provenance_id": "2f1771fb-51b4-861f-8c68-622bdb7cdc65",
+        "transformation_type": "pilot_to_statutory_supersession",
+        "transform_version": "1.0",
+        "operator": "system:w016_c3_r4_supersession",
+        "created_at": "2026-09-26T16:44:51.851677+00:00",
+        "metadataMatches": true
+      }
+    },
+    {
+      "legacyId": "TS-MDL-5321",
+      "legacyName": "Mancherial",
+      "canonicalId": "TS-MDL-4354",
+      "canonicalName": "Mancherial",
+      "provenanceId": "f5dbaa0a-395a-2396-4c39-ffd73db413bf",
+      "before": {
+        "status": "OFFICIAL",
+        "verification_evidence_id": null,
+        "verified_by": null
+      },
+      "after": {
+        "status": "OFFICIAL",
+        "verification_evidence_id": "e0160000-0000-0000-0000-000000002026",
+        "verified_by": "CTO / LGD Statewide Export Verification"
+      },
+      "immutableFieldsVerified": {
+        "id": "f5dbaa0a-395a-2396-4c39-ffd73db413bf",
+        "dataset_version_id": "ts_lgd_mandals_2026_v1",
+        "source_record_id": "LGD-MANDAL-4354",
+        "parent_provenance_id": "3040f578-fd6e-ea04-a3ab-0cbc6403cc1e",
+        "transformation_type": "pilot_to_statutory_supersession",
+        "transform_version": "1.0",
+        "operator": "system:w016_c3_r4_supersession",
+        "created_at": "2026-09-26T16:44:51.851677+00:00",
+        "metadataMatches": true
+      }
+    },
+    {
+      "legacyId": "TS-MDL-5322",
+      "legacyName": "Dandepally",
+      "canonicalId": "TS-MDL-4348",
+      "canonicalName": "Dandepally",
+      "provenanceId": "146cfa88-c2b4-38c2-6d05-5fe03dda5b5d",
+      "before": {
+        "status": "OFFICIAL",
+        "verification_evidence_id": null,
+        "verified_by": null
+      },
+      "after": {
+        "status": "OFFICIAL",
+        "verification_evidence_id": "e0160000-0000-0000-0000-000000002026",
+        "verified_by": "CTO / LGD Statewide Export Verification"
+      },
+      "immutableFieldsVerified": {
+        "id": "146cfa88-c2b4-38c2-6d05-5fe03dda5b5d",
+        "dataset_version_id": "ts_lgd_mandals_2026_v1",
+        "source_record_id": "LGD-MANDAL-4348",
+        "parent_provenance_id": "d9ca1e4e-4913-673b-efa1-1fdb0c74a17a",
+        "transformation_type": "pilot_to_statutory_supersession",
+        "transform_version": "1.0",
+        "operator": "system:w016_c3_r4_supersession",
+        "created_at": "2026-09-26T16:44:51.851677+00:00",
+        "metadataMatches": true
+      }
+    },
+    {
+      "legacyId": "TS-MDL-5323",
+      "legacyName": "Chennur",
+      "canonicalId": "TS-MDL-4356",
+      "canonicalName": "Chennur",
+      "provenanceId": "06317aee-6165-6452-c9b5-0d7553fb7625",
+      "before": {
+        "status": "OFFICIAL",
+        "verification_evidence_id": null,
+        "verified_by": null
+      },
+      "after": {
+        "status": "OFFICIAL",
+        "verification_evidence_id": "e0160000-0000-0000-0000-000000002026",
+        "verified_by": "CTO / LGD Statewide Export Verification"
+      },
+      "immutableFieldsVerified": {
+        "id": "06317aee-6165-6452-c9b5-0d7553fb7625",
+        "dataset_version_id": "ts_lgd_mandals_2026_v1",
+        "source_record_id": "LGD-MANDAL-4356",
+        "parent_provenance_id": "f5660741-308b-314c-b59b-5ae404000c91",
+        "transformation_type": "pilot_to_statutory_supersession",
+        "transform_version": "1.0",
+        "operator": "system:w016_c3_r4_supersession",
+        "created_at": "2026-09-26T16:44:51.851677+00:00",
+        "metadataMatches": true
+      }
+    },
+    {
+      "legacyId": "TS-MDL-5324",
+      "legacyName": "Bellampalli",
+      "canonicalId": "TS-MDL-4350",
+      "canonicalName": "Bellampally",
+      "provenanceId": "fcfc5d9f-9527-4221-da29-ba5691271d00",
+      "before": {
+        "status": "OFFICIAL",
+        "verification_evidence_id": null,
+        "verified_by": null
+      },
+      "after": {
+        "status": "OFFICIAL",
+        "verification_evidence_id": "e0160000-0000-0000-0000-000000002026",
+        "verified_by": "CTO / LGD Statewide Export Verification"
+      },
+      "immutableFieldsVerified": {
+        "id": "fcfc5d9f-9527-4221-da29-ba5691271d00",
+        "dataset_version_id": "ts_lgd_mandals_2026_v1",
+        "source_record_id": "LGD-MANDAL-4350",
+        "parent_provenance_id": "2785156c-5b34-50e8-1e9a-7d21ec78a842",
+        "transformation_type": "pilot_to_statutory_supersession",
+        "transform_version": "1.0",
+        "operator": "system:w016_c3_r4_supersession",
+        "created_at": "2026-09-26T16:44:51.851677+00:00",
+        "metadataMatches": true
+      }
+    },
+    {
+      "legacyId": "TS-MDL-5328",
+      "legacyName": "Kotapalli",
+      "canonicalId": "TS-MDL-4351",
+      "canonicalName": "Kotapally",
+      "provenanceId": "509db02e-c7bd-149c-9f10-48c47070e2e3",
+      "before": {
+        "status": "OFFICIAL",
+        "verification_evidence_id": null,
+        "verified_by": null
+      },
+      "after": {
+        "status": "OFFICIAL",
+        "verification_evidence_id": "e0160000-0000-0000-0000-000000002026",
+        "verified_by": "CTO / LGD Statewide Export Verification"
+      },
+      "immutableFieldsVerified": {
+        "id": "509db02e-c7bd-149c-9f10-48c47070e2e3",
+        "dataset_version_id": "ts_lgd_mandals_2026_v1",
+        "source_record_id": "LGD-MANDAL-4351",
+        "parent_provenance_id": "1df7c30c-208c-6cfe-ed50-719dc914701b",
+        "transformation_type": "pilot_to_statutory_supersession",
+        "transform_version": "1.0",
+        "operator": "system:w016_c3_r4_supersession",
+        "created_at": "2026-09-26T16:44:51.851677+00:00",
+        "metadataMatches": true
+      }
+    },
+    {
+      "legacyId": "TS-MDL-5329",
+      "legacyName": "Hajipur",
+      "canonicalId": "TS-MDL-6227",
+      "canonicalName": "Hajipur",
+      "provenanceId": "1c709e2a-884a-ad3f-ead5-643cf46fc2ac",
+      "before": {
+        "status": "OFFICIAL",
+        "verification_evidence_id": null,
+        "verified_by": null
+      },
+      "after": {
+        "status": "OFFICIAL",
+        "verification_evidence_id": "e0160000-0000-0000-0000-000000002026",
+        "verified_by": "CTO / LGD Statewide Export Verification"
+      },
+      "immutableFieldsVerified": {
+        "id": "1c709e2a-884a-ad3f-ead5-643cf46fc2ac",
+        "dataset_version_id": "ts_lgd_mandals_2026_v1",
+        "source_record_id": "LGD-MANDAL-6227",
+        "parent_provenance_id": "23806a9a-5532-3613-e8ce-cebe1800467e",
+        "transformation_type": "pilot_to_statutory_supersession",
+        "transform_version": "1.0",
+        "operator": "system:w016_c3_r4_supersession",
+        "created_at": "2026-09-26T16:44:51.851677+00:00",
+        "metadataMatches": true
+      }
+    }
+  ],
+  "hajipurDisposition": {
+    "id": "d63eee74-2927-5184-050b-3559f628f8ae",
+    "transformation_type": "gazette_lineage_canonical_reconciliation",
+    "status": "OFFICIAL",
+    "verification_evidence_id": null,
+    "verified_by": null,
+    "parent_provenance_id": "8c350901-a5d8-fe3d-c5b2-6ffe37601908",
+    "metadata": {
+      "effective_date": "2016-10-11",
+      "source_document": "Telangana Gazette Extraordinary, Part I (G.O.Ms.No. 222)",
+      "source_authority": "Government of Telangana, Revenue (DA-CMRF) Department",
+      "supersession_note": "Canonical cross-reference for historical Hajipur split from Mancherial",
+      "canonical_lgd_code": 6227,
+      "successor_canonical_id": "TS-MDL-6227",
+      "predecessor_canonical_id": "TS-MDL-4354",
+      "legacy_pilot_successor_id": "TS-MDL-5329",
+      "legacy_pilot_predecessor_id": "TS-MDL-5321"
+    },
+    "remediationStatus": "EXPLICITLY EXCLUDED / UNTOUCHED (Historical legal evidence pending)"
+  },
+  "batteryResults": [
+    {
+      "id": "A",
+      "name": "public.mandals count",
+      "expected": 621,
+      "observed": 621,
+      "pass": true
+    },
+    {
+      "id": "B",
+      "name": "public.mandal_versions count",
+      "expected": 1210,
+      "observed": 1210,
+      "pass": true
+    },
+    {
+      "id": "C",
+      "name": "current versions count",
+      "expected": 621,
+      "observed": 621,
+      "pass": true
+    },
+    {
+      "id": "D",
+      "name": "historical versions count",
+      "expected": 589,
+      "observed": 589,
+      "pass": true
+    },
+    {
+      "id": "E",
+      "name": "null current version pointers",
+      "expected": 0,
+      "observed": 0,
+      "pass": true
+    },
+    {
+      "id": "F",
+      "name": "entity_geometries count",
+      "expected": 0,
+      "observed": 0,
+      "pass": true
+    },
+    {
+      "id": "G",
+      "name": "legacy is_canonical=false rows",
+      "expected": 12,
+      "observed": 12,
+      "pass": true
+    },
+    {
+      "id": "H",
+      "name": "canonical replacement is_canonical=true rows",
+      "expected": 12,
+      "observed": 12,
+      "pass": true
+    },
+    {
+      "id": "I",
+      "name": "supersession provenance rows count",
+      "expected": 12,
+      "observed": 12,
+      "pass": true
+    },
+    {
+      "id": "J",
+      "name": "all 12 supersession rows status = OFFICIAL",
+      "expected": "OFFICIAL (12/12)",
+      "observed": "OFFICIAL (12/12)",
+      "pass": true
+    },
+    {
+      "id": "K",
+      "name": "all 12 supersession rows verification_evidence_id = expected UUID",
+      "expected": "e0160000-0000-0000-0000-000000002026",
+      "observed": "12/12 match",
+      "pass": true
+    },
+    {
+      "id": "L",
+      "name": "all 12 supersession rows verified_by = expected verifier",
+      "expected": "CTO / LGD Statewide Export Verification",
+      "observed": "12/12 match",
+      "pass": true
+    },
+    {
+      "id": "M",
+      "name": "immutable provenance fields unchanged",
+      "expected": "100% concordance across Class A fields",
+      "observed": "All 8 Class A columns + metadata bitwise verified against pre-state schema",
+      "pass": true
+    },
+    {
+      "id": "N",
+      "name": "historical provenance records unchanged",
+      "expected": "13 records in ts_lgd_mandals_2023_v1 unchanged",
+      "observed": "13 records intact, 0 mutated, 0 deleted",
+      "pass": true
+    },
+    {
+      "id": "O",
+      "name": "historical Hajipur lineage unchanged",
+      "expected": "1 record in ts_lgd_mandals_2023_v1 unchanged",
+      "observed": "1 records intact (68e465c2-a00b-478d-8082-e0cf1f3bbe67)",
+      "pass": true
+    },
+    {
+      "id": "P",
+      "name": "dataset_versions unchanged",
+      "expected": "2 versions registered with zero mutation",
+      "observed": "2 versions verified unchanged",
+      "pass": true
+    },
+    {
+      "id": "Q",
+      "name": "Migration 045 SHA unchanged",
+      "expected": "514595697505df005e7745ac4e1ab9cce141cc064803c071c0fca5d66d051073",
+      "observed": "514595697505df005e7745ac4e1ab9cce141cc064803c071c0fca5d66d051073",
+      "pass": true
+    },
+    {
+      "id": "R",
+      "name": "Migration 046 SHA unchanged",
+      "expected": "559a6f428a7c704ccf87b011cae70f67543feb8e4e0533e321a7828425fde012",
+      "observed": "559a6f428a7c704ccf87b011cae70f67543feb8e4e0533e321a7828425fde012",
+      "pass": true
+    },
+    {
+      "id": "S",
+      "name": "W014 controls unchanged",
+      "expected": "Valid current pointers, no cross-mandal mismatch, function ACL intact",
+      "observed": "Zero null pointers, 621 open/589 closed intervals, hardened ACL intact",
+      "pass": true
+    },
+    {
+      "id": "T",
+      "name": "production untouched",
+      "expected": "ehfafcnimmjusyvplbah 100% air-gapped",
+      "observed": "Zero production connections; production credentials untouched",
+      "pass": true
+    }
+  ],
+  "governanceSummary": {
+    "allBatteryPassed": true,
+    "remediatedRowsCount": 12,
+    "immutableFieldsAltered": 0,
+    "classificationAConcordance": "100% bitwise concordance",
+    "w012TriggerResult": "Trigger trg_prevent_provenance_mutation and trg_check_provenance_status_transition passed cleanly",
+    "finalStatus": "REMEDIATION EXECUTED / VERIFIED / SUBMITTED FOR CTO ACCEPTANCE"
+  }
+}
