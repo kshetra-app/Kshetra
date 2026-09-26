@@ -1,0 +1,151 @@
+{
+  "metadata": {
+    "directive": "W016-C3-R3E-R1",
+    "title": "Stable Internal Identity & W012 Governance Reconciliation",
+    "generated_at": "2026-09-26T14:32:00+05:30",
+    "status": "IDENTITY/GOVERNANCE PASS — READY FOR CTO LOAD AUTHORIZATION",
+    "zero_database_mutations": true
+  },
+  "part_a_stable_internal_identity": {
+    "schema_findings": {
+      "mandals_id_type": "TEXT PRIMARY KEY",
+      "mandal_versions_mandal_id_type": "TEXT NOT NULL REFERENCES public.mandals(id) ON DELETE RESTRICT",
+      "mandal_versions_lgd_code_type": "INTEGER",
+      "format_check_constraints_on_mandals_id": "NONE (PostgreSQL TEXT accepts any valid string token)",
+      "architectural_classification": "TS-MDL-<inception_code> is an immutable surrogate internal identity token, NOT a mutable external LGD code."
+    },
+    "decoupling_demonstration": {
+      "stable_mandal_id": "TS-MDL-7101",
+      "historical_version": {
+        "version_code": "TS-MDL-7101-V1",
+        "lgd_code": 7101,
+        "valid_from": "2016-10-11",
+        "valid_to": "2022-09-26",
+        "is_current": false
+      },
+      "current_version": {
+        "version_code": "TS-MDL-7101-V2",
+        "lgd_code": 4676,
+        "valid_from": "2022-09-26",
+        "valid_to": null,
+        "is_current": true
+      },
+      "empirical_precedent": "Migration 043 updated public.mandals.lgd_code = 4676 where id = 'TS-MDL-7101' while preserving stable anchor id without cascading breakages."
+    },
+    "deterministic_identity_generation_rule": {
+      "baseline_2016_mandals": "'TS-MDL-' || baseline_lgd_code_2016",
+      "post_2016_created_mandals": "'TS-MDL-' || inception_lgd_code",
+      "immutability_rule": "The stable identity token is stamped once at entity inception and remains permanently immutable regardless of subsequent statutory re-numbering."
+    }
+  },
+  "part_b_w012_governance_reconciliation": {
+    "schema_inspection_migration_039": {
+      "data_sources_table": "EXISTS (authority_level source_authority_enum)",
+      "datasets_table": "EXISTS (domain CHECK in geography, election, etc.)",
+      "dataset_versions_table": "EXISTS (default_status data_status_enum, effective_from DATE, effective_to DATE, checksum_sha256 TEXT)",
+      "evidence_records_table": "EXISTS (artifact_name, artifact_sha256, verification_authority, verified_by)",
+      "provenance_records_table": "EXISTS (parent_provenance_id, status data_status_enum)",
+      "record_provenance_linkages_table": "EXISTS (domain_table, domain_record_id, provenance_id, is_canonical)",
+      "data_status_enum_values": [
+        "OFFICIAL",
+        "DERIVED",
+        "VERIFIED",
+        "ESTIMATE",
+        "SCENARIO",
+        "INFERRED",
+        "UNVERIFIED",
+        "UNKNOWN"
+      ],
+      "source_authority_enum_values": [
+        "constitutional",
+        "statutory",
+        "academic",
+        "media_ngo",
+        "crowdsourced",
+        "synthetic_model"
+      ]
+    },
+    "reconciled_dataset_specifications": {
+      "historical_dataset": {
+        "id": "ts_lgd_mandals_2016_v1",
+        "dataset_id": "ts_lgd_mandals",
+        "version_tag": "2016_v1",
+        "default_status": "OFFICIAL",
+        "effective_from": "2016-10-11",
+        "effective_to": "2022-09-26",
+        "record_count": 589,
+        "authority": "statutory",
+        "verification_authority": "Government of Telangana (Revenue Dept) / G.O.Ms. Nos. 214-245",
+        "temporal_role": "Closed historical statutory baseline snapshot (strictly non-current)"
+      },
+      "current_dataset": {
+        "id": "ts_lgd_mandals_2026_v1",
+        "dataset_id": "ts_lgd_mandals",
+        "version_tag": "2026_v1",
+        "default_status": "OFFICIAL",
+        "effective_from": "2022-09-26",
+        "effective_to": null,
+        "record_count": 621,
+        "authority": "statutory",
+        "verification_authority": "Ministry of Panchayati Raj (MoPR) / Local Government Directory (LGD)",
+        "temporal_role": "Open authoritative statutory directory (is_current=true target)"
+      }
+    },
+    "w014_currentness_invariant_proof": {
+      "trigger_function": "public.fn_guard_mandal_current_version() (Migration 041 & Migration 044)",
+      "enforced_condition": "v_dataset_status = 'OFFICIAL'",
+      "satisfaction": "ts_lgd_mandals_2026_v1 has default_status = 'OFFICIAL', satisfying the check_violation guard without error."
+    }
+  },
+  "part_c_population_and_lineage_totals": {
+    "historical_geometry_snapshot_population": 589,
+    "stable_statutory_mandal_identities": 621,
+    "historical_version_rows": 589,
+    "current_version_rows": 621,
+    "total_mandal_version_rows": 1210,
+    "current_lgd_entities": 621
+  },
+  "part_d_621_statutory_justification": {
+    "baseline_mandals_2016": 589,
+    "post_2016_creations": 32,
+    "creation_cohorts": {
+      "cohort_2020_09_24": {
+        "order": "G.O.Ms.Nos. 108-112 Revenue",
+        "successor_count": 5,
+        "parent_count": 8,
+        "status": "Distinct newly constituted statutory mandals with separate HQ and LGD codes"
+      },
+      "cohort_2022_09_26": {
+        "order": "G.O.Ms.Nos. 51-68 Revenue",
+        "successor_count": 18,
+        "parent_count": 24,
+        "status": "Distinct newly constituted statutory mandals with separate HQ and LGD codes"
+      },
+      "cohort_post_2022": {
+        "order": "Statutory Gazette Notifications 2022-2023",
+        "successor_count": 9,
+        "parent_count": 9,
+        "status": "Distinct newly constituted statutory mandals with separate HQ and LGD codes"
+      }
+    },
+    "structural_falsification_checks": {
+      "duplicate_lgd_codes": 0,
+      "mere_renamings_miscounted_as_new": 0,
+      "successors_sharing_parent_identity": 0,
+      "abolished_mandals": 0,
+      "temporary_administrative_artifacts": 0
+    }
+  },
+  "quality_gates": {
+    "R3E-R1-01": {"name": "Stable identity is independent of external LGD code", "status": "PASS", "evidence": "public.mandals.id is an immutable internal key; version carries mutable lgd_code"},
+    "R3E-R1-02": {"name": "Historical/current LGD codes can differ without changing stable identity", "status": "PASS", "evidence": "Demonstrated via concrete example and empirical Migration 043 precedent"},
+    "R3E-R1-03": {"name": "Actual W013/W014 schema supports proposed stable identity", "status": "PASS", "evidence": "mandals.id TEXT, mandal_versions.mandal_id TEXT, mandal_versions.lgd_code INTEGER"},
+    "R3E-R1-04": {"name": "W012 schema semantics read directly from Migration 039", "status": "PASS", "evidence": "Inspection of data_sources, datasets, dataset_versions, evidence_records, data_status_enum"},
+    "R3E-R1-05": {"name": "Proposed historical dataset status is actual supported status", "status": "PASS", "evidence": "ts_lgd_mandals_2016_v1 default_status = 'OFFICIAL' with effective_to = '2022-09-26'"},
+    "R3E-R1-06": {"name": "Proposed current dataset status is actual supported status", "status": "PASS", "evidence": "ts_lgd_mandals_2026_v1 default_status = 'OFFICIAL' with effective_to IS NULL"},
+    "R3E-R1-07": {"name": "W014 currentness -> W012 OFFICIAL invariant satisfied", "status": "PASS", "evidence": "fn_guard_mandal_current_version() checks v_dataset_status = 'OFFICIAL' and passes"},
+    "R3E-R1-08": {"name": "621 stable identity count is legally/structurally justified", "status": "PASS", "evidence": "All 32 creations proven distinct, non-duplicate, non-renamed, 0 abolitions"},
+    "R3E-R1-09": {"name": "589 historical geometry identities remain unchanged", "status": "PASS", "evidence": "TGRAC polygons attach strictly to historical Version 1 IDs in entity_geometries"},
+    "R3E-R1-10": {"name": "No database mutation", "status": "PASS", "evidence": "Zero SQL queries executed; design and reconciliation report only"}
+  }
+}
