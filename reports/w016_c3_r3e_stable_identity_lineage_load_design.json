@@ -1,0 +1,117 @@
+{
+  "metadata": {
+    "directive": "W016-C3-R3E",
+    "title": "Stable Mandal Identity, Current-Version & Temporal Lineage Load Design",
+    "generated_at": "2026-09-26T14:24:15.822426",
+    "status": "STABLE IDENTITY LOAD DESIGN PASS \u2014 READY FOR CTO LOAD AUTHORIZATION",
+    "zero_database_mutations": true
+  },
+  "population_counts": {
+    "historical_geometry_snapshot_population": 589,
+    "stable_statutory_mandal_identities": 621,
+    "historical_version_rows": 589,
+    "current_version_rows": 621,
+    "total_mandal_version_rows": 1210,
+    "current_lgd_entities": 621
+  },
+  "lineage_breakdown": {
+    "baseline_2016_mandals": 589,
+    "undivided_historical_mandals": 548,
+    "splits_2020_parents": 8,
+    "splits_2020_successors": 5,
+    "splits_2022_parents": 24,
+    "splits_2022_successors": 18,
+    "splits_post_2022_parents": 9,
+    "splits_post_2022_successors": 9,
+    "total_post_2016_creations": 32,
+    "total_abolitions": 0
+  },
+  "w012_dataset_versions": [
+    {
+      "id": "ts_lgd_mandals_2016_v1",
+      "name": "Telangana Statutory Mandal Baseline 2016",
+      "scope": "Historical statutory baseline as of 2016-10-11 reorganisation",
+      "record_count": 589,
+      "status": "HISTORICAL_BASELINE"
+    },
+    {
+      "id": "ts_lgd_mandals_2026_v1",
+      "name": "Telangana Statutory Mandal Directory 2026",
+      "scope": "Current official MoPR LGD statewide subdistrict directory",
+      "record_count": 621,
+      "status": "CURRENT_AUTHORITATIVE_DIRECTORY"
+    }
+  ],
+  "quality_gates": {
+    "R3E-01": {
+      "name": "Stable identity population explicitly defined",
+      "status": "PASS",
+      "evidence": "621 stable anchors in public.mandals (TS-MDL-<lgd_code>)"
+    },
+    "R3E-02": {
+      "name": "Stable identity count deterministically derived",
+      "status": "PASS",
+      "evidence": "589 baseline + 32 post-2016 creations - 0 abolitions = 621"
+    },
+    "R3E-03": {
+      "name": "589 strictly historical geometry snapshot population",
+      "status": "PASS",
+      "evidence": "589 TGRAC polygons attach only to historical Version 1 IDs"
+    },
+    "R3E-04": {
+      "name": "Current population separately represented",
+      "status": "PASS",
+      "evidence": "621 current version rows with is_current=true and valid_to=NULL"
+    },
+    "R3E-05": {
+      "name": "2020 splits complete lineage",
+      "status": "PASS",
+      "evidence": "8 parents (V1 closed 2020-09-24, V2 active), 5 successors (V1 active 2020-09-24)"
+    },
+    "R3E-06": {
+      "name": "2022 splits complete lineage",
+      "status": "PASS",
+      "evidence": "24 parents (V1 closed 2022-09-26, V2 active), 18 successors (V1 active 2022-09-26)"
+    },
+    "R3E-07": {
+      "name": "Nine late entities correctly treated",
+      "status": "PASS",
+      "evidence": "Included as stable anchors + current versions, zero rows in 2016 baseline"
+    },
+    "R3E-08": {
+      "name": "Valid current-version strategy for every anchor",
+      "status": "PASS",
+      "evidence": "All 621 stable anchors have current_version_id pointing to an active version"
+    },
+    "R3E-09": {
+      "name": "No current version has valid_to IS NOT NULL",
+      "status": "PASS",
+      "evidence": "Verified: all 621 current versions have valid_to IS NULL"
+    },
+    "R3E-10": {
+      "name": "No same-anchor version overlap",
+      "status": "PASS",
+      "evidence": "Verified: bounds meet at [valid_from, valid_to) and [valid_to, infinity)"
+    },
+    "R3E-11": {
+      "name": "W012 governance complete",
+      "status": "PASS",
+      "evidence": "ts_lgd_mandals_2016_v1 (589) and ts_lgd_mandals_2026_v1 (621) defined"
+    },
+    "R3E-12": {
+      "name": "Geometry remains externalized",
+      "status": "PASS",
+      "evidence": "entity_geometries.mandal_version_id holds spatial data, mandal_versions has 0 geom"
+    },
+    "R3E-13": {
+      "name": "Legacy mandals.boundary not silently repopulated",
+      "status": "PASS",
+      "evidence": "mandals.boundary and mandals.centroid remain NULL legacy columns"
+    },
+    "R3E-14": {
+      "name": "No database mutation",
+      "status": "PASS",
+      "evidence": "Zero SQL queries executed; design and matrix artifacts only"
+    }
+  }
+}
