@@ -1,0 +1,603 @@
+{
+  "job": "W016-C3-R4-GOV-08",
+  "title": "Migration 046 Staging Execution and Post-Execution Independent Verification",
+  "status": "MIGRATION 046 EXECUTED / VERIFIED / SUBMITTED FOR CTO ACCEPTANCE",
+  "execution_target": {
+    "environment": "panIN-staging",
+    "project_id": "fkpigozcqnmcvofuksar",
+    "url": "https://fkpigozcqnmcvofuksar.supabase.co",
+    "executed_by": "Authorized Human Operator (Supabase SQL Editor)",
+    "transaction_result": "SUCCESS — No rows returned",
+    "execution_timestamp": "2026-09-26T16:44:51.851Z",
+    "verification_timestamp": "2026-09-26T16:53:00.000Z"
+  },
+  "cryptographic_coordinates": {
+    "repository": "https://github.com/kshetra-app/Kshetra.git",
+    "branch": "master",
+    "head_commit": "743d5cf29251b13efba605fb50971e3bf69814ab",
+    "migration_045_sha256": "514595697505df005e7745ac4e1ab9cce141cc064803c071c0fca5d66d051073",
+    "migration_046_sha256": "559a6f428a7c704ccf87b011cae70f67543feb8e4e0533e321a7828425fde012"
+  },
+  "state_counts": {
+    "pre_execution": {
+      "mandals": 621,
+      "mandal_versions": 1210,
+      "current_versions": 621,
+      "historical_versions": 589,
+      "entity_geometries": 0,
+      "legacy_linkages_canonical_true": 12,
+      "legacy_linkages_canonical_false": 0,
+      "supersession_provenance_records": 0,
+      "canonical_supersession_linkages": 0
+    },
+    "post_execution": {
+      "mandals": 621,
+      "mandal_versions": 1210,
+      "current_versions": 621,
+      "historical_versions": 589,
+      "entity_geometries": 0,
+      "null_current_version_ids": 0,
+      "legacy_linkages_canonical_true": 0,
+      "legacy_linkages_canonical_false": 12,
+      "supersession_provenance_records": 12,
+      "canonical_supersession_linkages": 12,
+      "historical_2023_provenance_records": 13
+    }
+  },
+  "legacy_linkages_reconciliation": [
+    {
+      "linkage_id": "15dbde53-061c-4927-bdde-1ce41e444a87",
+      "domain_table": "mandals",
+      "legacy_id": "TS-MDL-5320",
+      "legacy_name": "Luxettipet",
+      "provenance_id": "2f1771fb-51b4-861f-8c68-622bdb7cdc65",
+      "is_canonical_before": true,
+      "is_canonical_after": false,
+      "status": "DEMOTED_NON_CANONICAL_CONFIRMED"
+    },
+    {
+      "linkage_id": "6b4a44f1-6629-4838-b3db-58e22baa2cd9",
+      "domain_table": "mandals",
+      "legacy_id": "TS-MDL-5321",
+      "legacy_name": "Mancherial",
+      "provenance_id": "3040f578-fd6e-ea04-a3ab-0cbc6403cc1e",
+      "is_canonical_before": true,
+      "is_canonical_after": false,
+      "status": "DEMOTED_NON_CANONICAL_CONFIRMED"
+    },
+    {
+      "linkage_id": "1b2de915-8418-4b01-8982-a214296748bd",
+      "domain_table": "mandals",
+      "legacy_id": "TS-MDL-5322",
+      "legacy_name": "Dandepally",
+      "provenance_id": "d9ca1e4e-4913-673b-efa1-1fdb0c74a17a",
+      "is_canonical_before": true,
+      "is_canonical_after": false,
+      "status": "DEMOTED_NON_CANONICAL_CONFIRMED"
+    },
+    {
+      "linkage_id": "c17585a8-720b-43d5-b63c-c107147e972b",
+      "domain_table": "mandals",
+      "legacy_id": "TS-MDL-5323",
+      "legacy_name": "Chennur",
+      "provenance_id": "f5660741-308b-314c-b59b-5ae404000c91",
+      "is_canonical_before": true,
+      "is_canonical_after": false,
+      "status": "DEMOTED_NON_CANONICAL_CONFIRMED"
+    },
+    {
+      "linkage_id": "351a4909-c5c1-434b-906c-68eda307feda",
+      "domain_table": "mandals",
+      "legacy_id": "TS-MDL-5324",
+      "legacy_name": "Bellampalli",
+      "provenance_id": "2785156c-5b34-50e8-1e9a-7d21ec78a842",
+      "is_canonical_before": true,
+      "is_canonical_after": false,
+      "status": "DEMOTED_NON_CANONICAL_CONFIRMED"
+    },
+    {
+      "linkage_id": "898c3b88-d1b0-4e76-8718-d734af2d2d3a",
+      "domain_table": "mandals",
+      "legacy_id": "TS-MDL-5328",
+      "legacy_name": "Kotapalli",
+      "provenance_id": "1df7c30c-208c-6cfe-ed50-719dc914701b",
+      "is_canonical_before": true,
+      "is_canonical_after": false,
+      "status": "DEMOTED_NON_CANONICAL_CONFIRMED"
+    },
+    {
+      "linkage_id": "db6f205f-e59e-40f6-a000-d4588b6e0164",
+      "domain_table": "mandals",
+      "legacy_id": "TS-MDL-5329",
+      "legacy_name": "Hajipur",
+      "provenance_id": "23806a9a-5532-3613-e8ce-cebe1800467e",
+      "is_canonical_before": true,
+      "is_canonical_after": false,
+      "status": "DEMOTED_NON_CANONICAL_CONFIRMED"
+    },
+    {
+      "linkage_id": "b25b9a64-169a-4689-938b-cc91d9a962ad",
+      "domain_table": "mandals",
+      "legacy_id": "TS-MDL-7101",
+      "legacy_name": "Sirpur (T)",
+      "provenance_id": "251ef2cf-4a5d-b010-ba96-a74a4ec9241b",
+      "is_canonical_before": true,
+      "is_canonical_after": false,
+      "status": "DEMOTED_NON_CANONICAL_CONFIRMED"
+    },
+    {
+      "linkage_id": "59b8d8dc-de47-495e-b932-bc545a634dff",
+      "domain_table": "mandals",
+      "legacy_id": "TS-MDL-7102",
+      "legacy_name": "Kagaznagar",
+      "provenance_id": "07d06766-c729-dc17-a00f-317fac6f800f",
+      "is_canonical_before": true,
+      "is_canonical_after": false,
+      "status": "DEMOTED_NON_CANONICAL_CONFIRMED"
+    },
+    {
+      "linkage_id": "b335a846-3f03-49ab-9cb4-8111c4501f67",
+      "domain_table": "mandals",
+      "legacy_id": "TS-MDL-7103",
+      "legacy_name": "Dahegaon",
+      "provenance_id": "f0d1157e-fa94-560d-2220-8f61540f13cc",
+      "is_canonical_before": true,
+      "is_canonical_after": false,
+      "status": "DEMOTED_NON_CANONICAL_CONFIRMED"
+    },
+    {
+      "linkage_id": "edca9cf8-9550-48a0-bbac-342a53111118",
+      "domain_table": "mandals",
+      "legacy_id": "TS-MDL-7104",
+      "legacy_name": "Tiryani",
+      "provenance_id": "07ecfa1b-7ef1-120f-35cc-d8b2f95c8c17",
+      "is_canonical_before": true,
+      "is_canonical_after": false,
+      "status": "DEMOTED_NON_CANONICAL_CONFIRMED"
+    },
+    {
+      "linkage_id": "e5e36eba-0e39-4ee5-a40a-e5c8d2cd9411",
+      "domain_table": "mandals",
+      "legacy_id": "TS-MDL-7105",
+      "legacy_name": "Asifabad",
+      "provenance_id": "8328a0db-a5a7-645d-f161-c5cfbc274a48",
+      "is_canonical_before": true,
+      "is_canonical_after": false,
+      "status": "DEMOTED_NON_CANONICAL_CONFIRMED"
+    }
+  ],
+  "canonical_linkages": [
+    {
+      "linkage_id": "8825195b-464a-4cec-8336-01aa69fa3327",
+      "domain_table": "mandals",
+      "canonical_id": "TS-MDL-4315",
+      "canonical_name": "Sirpur (T)",
+      "supersession_provenance_id": "2e5a417a-df4a-988a-5326-010cd5192d33",
+      "is_canonical": true,
+      "status": "CANONICAL_LINKAGE_CONFIRMED"
+    },
+    {
+      "linkage_id": "c729c1cd-c69c-4a00-9067-aa561bd80077",
+      "domain_table": "mandals",
+      "canonical_id": "TS-MDL-4318",
+      "canonical_name": "Kagaznagar",
+      "supersession_provenance_id": "5e867050-d4f4-caa7-c838-965f55e8f623",
+      "is_canonical": true,
+      "status": "CANONICAL_LINKAGE_CONFIRMED"
+    },
+    {
+      "linkage_id": "93dc91f2-950e-4d1e-8364-18d082e5ca9d",
+      "domain_table": "mandals",
+      "canonical_id": "TS-MDL-4319",
+      "canonical_name": "Asifabad",
+      "supersession_provenance_id": "fe9e32df-b654-5c88-6f9b-5ea023a34872",
+      "is_canonical": true,
+      "status": "CANONICAL_LINKAGE_CONFIRMED"
+    },
+    {
+      "linkage_id": "0a35bddc-5ee2-4361-90d7-881a8a2ae0d4",
+      "domain_table": "mandals",
+      "canonical_id": "TS-MDL-4329",
+      "canonical_name": "Dahegoan",
+      "supersession_provenance_id": "7a8b07ec-59ac-c65f-0fc4-94e73c36f6ac",
+      "is_canonical": true,
+      "status": "CANONICAL_LINKAGE_CONFIRMED"
+    },
+    {
+      "linkage_id": "43a57b9f-805f-4937-9cc5-321d1ea95670",
+      "domain_table": "mandals",
+      "canonical_id": "TS-MDL-4333",
+      "canonical_name": "Tiryani",
+      "supersession_provenance_id": "c5226d74-8492-b850-9306-b6f0172bad65",
+      "is_canonical": true,
+      "status": "CANONICAL_LINKAGE_CONFIRMED"
+    },
+    {
+      "linkage_id": "aa0a7971-255c-4f49-9290-245225252758",
+      "domain_table": "mandals",
+      "canonical_id": "TS-MDL-4348",
+      "canonical_name": "Dandepally",
+      "supersession_provenance_id": "146cfa88-c2b4-38c2-6d05-5fe03dda5b5d",
+      "is_canonical": true,
+      "status": "CANONICAL_LINKAGE_CONFIRMED"
+    },
+    {
+      "linkage_id": "9a9baf58-9d69-41df-987a-c16ea8012acd",
+      "domain_table": "mandals",
+      "canonical_id": "TS-MDL-4350",
+      "canonical_name": "Bellampally",
+      "supersession_provenance_id": "fcfc5d9f-9527-4221-da29-ba5691271d00",
+      "is_canonical": true,
+      "status": "CANONICAL_LINKAGE_CONFIRMED"
+    },
+    {
+      "linkage_id": "d27f6cf4-d784-4058-98e1-0a6e93a959e2",
+      "domain_table": "mandals",
+      "canonical_id": "TS-MDL-4351",
+      "canonical_name": "Kotapally",
+      "supersession_provenance_id": "509db02e-c7bd-149c-9f10-48c47070e2e3",
+      "is_canonical": true,
+      "status": "CANONICAL_LINKAGE_CONFIRMED"
+    },
+    {
+      "linkage_id": "af4bb933-cd97-4e75-88b5-176f9c966a47",
+      "domain_table": "mandals",
+      "canonical_id": "TS-MDL-4353",
+      "canonical_name": "Luxettipet",
+      "supersession_provenance_id": "7b3fb40f-4705-a5d1-6875-baedf09b608b",
+      "is_canonical": true,
+      "status": "CANONICAL_LINKAGE_CONFIRMED"
+    },
+    {
+      "linkage_id": "1598f51e-059b-455c-84f4-df1403199edf",
+      "domain_table": "mandals",
+      "canonical_id": "TS-MDL-4354",
+      "canonical_name": "Mancherial",
+      "supersession_provenance_id": "f5dbaa0a-395a-2396-4c39-ffd73db413bf",
+      "is_canonical": true,
+      "status": "CANONICAL_LINKAGE_CONFIRMED"
+    },
+    {
+      "linkage_id": "e87ae397-6e26-4ac4-9813-a1cca40fc605",
+      "domain_table": "mandals",
+      "canonical_id": "TS-MDL-4356",
+      "canonical_name": "Chennur",
+      "supersession_provenance_id": "06317aee-6165-6452-c9b5-0d7553fb7625",
+      "is_canonical": true,
+      "status": "CANONICAL_LINKAGE_CONFIRMED"
+    },
+    {
+      "linkage_id": "a97edbf8-a58e-4a01-83ea-a2e51cedbb2a",
+      "domain_table": "mandals",
+      "canonical_id": "TS-MDL-6227",
+      "canonical_name": "Hajipur",
+      "supersession_provenance_id": "1c709e2a-884a-ad3f-ead5-643cf46fc2ac",
+      "is_canonical": true,
+      "status": "CANONICAL_LINKAGE_CONFIRMED"
+    }
+  ],
+  "supersession_provenance_records": [
+    {
+      "id": "2e5a417a-df4a-988a-5326-010cd5192d33",
+      "dataset_version_id": "ts_lgd_mandals_2026_v1",
+      "status": "OFFICIAL",
+      "verification_evidence_id": null,
+      "verified_by": null,
+      "source_record_id": "LGD-MANDAL-4315",
+      "parent_provenance_id": "251ef2cf-4a5d-b010-ba96-a74a4ec9241b",
+      "transformation_type": "pilot_to_statutory_supersession",
+      "transform_version": "1.0",
+      "operator": "system:w016_c3_r4_supersession",
+      "created_at": "2026-09-26T16:44:51.851677+00:00",
+      "metadata": {
+        "legacy_pilot_id": "TS-MDL-7101",
+        "legacy_pilot_name": "Sirpur (T)",
+        "supersession_type": "SYNTHETIC_PILOT_TO_STATUTORY_BASELINE",
+        "canonical_lgd_code": 4315,
+        "canonical_mandal_id": "TS-MDL-4315",
+        "statutory_reference": "MoPR LGD 2026 Directory snapshot; G.O.Ms. Nos. 214-245 Rev (2016-10-11)",
+        "supersession_reason": "Supersession of pre-W016 synthetic pilot identity with authentic statutory MoPR LGD 2026 baseline",
+        "canonical_mandal_name": "Sirpur (T)",
+        "legacy_pilot_lgd_code": 7101
+      }
+    },
+    {
+      "id": "5e867050-d4f4-caa7-c838-965f55e8f623",
+      "dataset_version_id": "ts_lgd_mandals_2026_v1",
+      "status": "OFFICIAL",
+      "verification_evidence_id": null,
+      "verified_by": null,
+      "source_record_id": "LGD-MANDAL-4318",
+      "parent_provenance_id": "07d06766-c729-dc17-a00f-317fac6f800f",
+      "transformation_type": "pilot_to_statutory_supersession",
+      "transform_version": "1.0",
+      "operator": "system:w016_c3_r4_supersession",
+      "created_at": "2026-09-26T16:44:51.851677+00:00",
+      "metadata": {
+        "legacy_pilot_id": "TS-MDL-7102",
+        "legacy_pilot_name": "Kagaznagar",
+        "supersession_type": "SYNTHETIC_PILOT_TO_STATUTORY_BASELINE",
+        "canonical_lgd_code": 4318,
+        "canonical_mandal_id": "TS-MDL-4318",
+        "statutory_reference": "MoPR LGD 2026 Directory snapshot; G.O.Ms. Nos. 214-245 Rev (2016-10-11)",
+        "supersession_reason": "Supersession of pre-W016 synthetic pilot identity with authentic statutory MoPR LGD 2026 baseline",
+        "canonical_mandal_name": "Kagaznagar",
+        "legacy_pilot_lgd_code": 7102
+      }
+    },
+    {
+      "id": "fe9e32df-b654-5c88-6f9b-5ea023a34872",
+      "dataset_version_id": "ts_lgd_mandals_2026_v1",
+      "status": "OFFICIAL",
+      "verification_evidence_id": null,
+      "verified_by": null,
+      "source_record_id": "LGD-MANDAL-4319",
+      "parent_provenance_id": "8328a0db-a5a7-645d-f161-c5cfbc274a48",
+      "transformation_type": "pilot_to_statutory_supersession",
+      "transform_version": "1.0",
+      "operator": "system:w016_c3_r4_supersession",
+      "created_at": "2026-09-26T16:44:51.851677+00:00",
+      "metadata": {
+        "legacy_pilot_id": "TS-MDL-7105",
+        "legacy_pilot_name": "Asifabad",
+        "supersession_type": "SYNTHETIC_PILOT_TO_STATUTORY_BASELINE",
+        "canonical_lgd_code": 4319,
+        "canonical_mandal_id": "TS-MDL-4319",
+        "statutory_reference": "MoPR LGD 2026 Directory snapshot; G.O.Ms. Nos. 214-245 Rev (2016-10-11)",
+        "supersession_reason": "Supersession of pre-W016 synthetic pilot identity with authentic statutory MoPR LGD 2026 baseline",
+        "canonical_mandal_name": "Asifabad",
+        "legacy_pilot_lgd_code": 7105
+      }
+    },
+    {
+      "id": "7a8b07ec-59ac-c65f-0fc4-94e73c36f6ac",
+      "dataset_version_id": "ts_lgd_mandals_2026_v1",
+      "status": "OFFICIAL",
+      "verification_evidence_id": null,
+      "verified_by": null,
+      "source_record_id": "LGD-MANDAL-4329",
+      "parent_provenance_id": "f0d1157e-fa94-560d-2220-8f61540f13cc",
+      "transformation_type": "pilot_to_statutory_supersession",
+      "transform_version": "1.0",
+      "operator": "system:w016_c3_r4_supersession",
+      "created_at": "2026-09-26T16:44:51.851677+00:00",
+      "metadata": {
+        "legacy_pilot_id": "TS-MDL-7103",
+        "legacy_pilot_name": "Dahegaon",
+        "supersession_type": "SYNTHETIC_PILOT_TO_STATUTORY_BASELINE",
+        "canonical_lgd_code": 4329,
+        "canonical_mandal_id": "TS-MDL-4329",
+        "statutory_reference": "MoPR LGD 2026 Directory snapshot; G.O.Ms. Nos. 214-245 Rev (2016-10-11)",
+        "supersession_reason": "Supersession of pre-W016 synthetic pilot identity with authentic statutory MoPR LGD 2026 baseline",
+        "canonical_mandal_name": "Dahegoan",
+        "legacy_pilot_lgd_code": 7103
+      }
+    },
+    {
+      "id": "c5226d74-8492-b850-9306-b6f0172bad65",
+      "dataset_version_id": "ts_lgd_mandals_2026_v1",
+      "status": "OFFICIAL",
+      "verification_evidence_id": null,
+      "verified_by": null,
+      "source_record_id": "LGD-MANDAL-4333",
+      "parent_provenance_id": "07ecfa1b-7ef1-120f-35cc-d8b2f95c8c17",
+      "transformation_type": "pilot_to_statutory_supersession",
+      "transform_version": "1.0",
+      "operator": "system:w016_c3_r4_supersession",
+      "created_at": "2026-09-26T16:44:51.851677+00:00",
+      "metadata": {
+        "legacy_pilot_id": "TS-MDL-7104",
+        "legacy_pilot_name": "Tiryani",
+        "supersession_type": "SYNTHETIC_PILOT_TO_STATUTORY_BASELINE",
+        "canonical_lgd_code": 4333,
+        "canonical_mandal_id": "TS-MDL-4333",
+        "statutory_reference": "MoPR LGD 2026 Directory snapshot; G.O.Ms. Nos. 214-245 Rev (2016-10-11)",
+        "supersession_reason": "Supersession of pre-W016 synthetic pilot identity with authentic statutory MoPR LGD 2026 baseline",
+        "canonical_mandal_name": "Tiryani",
+        "legacy_pilot_lgd_code": 7104
+      }
+    },
+    {
+      "id": "146cfa88-c2b4-38c2-6d05-5fe03dda5b5d",
+      "dataset_version_id": "ts_lgd_mandals_2026_v1",
+      "status": "OFFICIAL",
+      "verification_evidence_id": null,
+      "verified_by": null,
+      "source_record_id": "LGD-MANDAL-4348",
+      "parent_provenance_id": "d9ca1e4e-4913-673b-efa1-1fdb0c74a17a",
+      "transformation_type": "pilot_to_statutory_supersession",
+      "transform_version": "1.0",
+      "operator": "system:w016_c3_r4_supersession",
+      "created_at": "2026-09-26T16:44:51.851677+00:00",
+      "metadata": {
+        "legacy_pilot_id": "TS-MDL-5322",
+        "legacy_pilot_name": "Dandepally",
+        "supersession_type": "SYNTHETIC_PILOT_TO_STATUTORY_BASELINE",
+        "canonical_lgd_code": 4348,
+        "canonical_mandal_id": "TS-MDL-4348",
+        "statutory_reference": "MoPR LGD 2026 Directory snapshot; G.O.Ms. Nos. 214-245 Rev (2016-10-11)",
+        "supersession_reason": "Supersession of pre-W016 synthetic pilot identity with authentic statutory MoPR LGD 2026 baseline",
+        "canonical_mandal_name": "Dandepally",
+        "legacy_pilot_lgd_code": 5322
+      }
+    },
+    {
+      "id": "fcfc5d9f-9527-4221-da29-ba5691271d00",
+      "dataset_version_id": "ts_lgd_mandals_2026_v1",
+      "status": "OFFICIAL",
+      "verification_evidence_id": null,
+      "verified_by": null,
+      "source_record_id": "LGD-MANDAL-4350",
+      "parent_provenance_id": "2785156c-5b34-50e8-1e9a-7d21ec78a842",
+      "transformation_type": "pilot_to_statutory_supersession",
+      "transform_version": "1.0",
+      "operator": "system:w016_c3_r4_supersession",
+      "created_at": "2026-09-26T16:44:51.851677+00:00",
+      "metadata": {
+        "legacy_pilot_id": "TS-MDL-5324",
+        "legacy_pilot_name": "Bellampalli",
+        "supersession_type": "SYNTHETIC_PILOT_TO_STATUTORY_BASELINE",
+        "canonical_lgd_code": 4350,
+        "canonical_mandal_id": "TS-MDL-4350",
+        "statutory_reference": "MoPR LGD 2026 Directory snapshot; G.O.Ms. Nos. 214-245 Rev (2016-10-11)",
+        "supersession_reason": "Supersession of pre-W016 synthetic pilot identity with authentic statutory MoPR LGD 2026 baseline",
+        "canonical_mandal_name": "Bellampally",
+        "legacy_pilot_lgd_code": 5324
+      }
+    },
+    {
+      "id": "509db02e-c7bd-149c-9f10-48c47070e2e3",
+      "dataset_version_id": "ts_lgd_mandals_2026_v1",
+      "status": "OFFICIAL",
+      "verification_evidence_id": null,
+      "verified_by": null,
+      "source_record_id": "LGD-MANDAL-4351",
+      "parent_provenance_id": "1df7c30c-208c-6cfe-ed50-719dc914701b",
+      "transformation_type": "pilot_to_statutory_supersession",
+      "transform_version": "1.0",
+      "operator": "system:w016_c3_r4_supersession",
+      "created_at": "2026-09-26T16:44:51.851677+00:00",
+      "metadata": {
+        "legacy_pilot_id": "TS-MDL-5328",
+        "legacy_pilot_name": "Kotapalli",
+        "supersession_type": "SYNTHETIC_PILOT_TO_STATUTORY_BASELINE",
+        "canonical_lgd_code": 4351,
+        "canonical_mandal_id": "TS-MDL-4351",
+        "statutory_reference": "MoPR LGD 2026 Directory snapshot; G.O.Ms. Nos. 214-245 Rev (2016-10-11)",
+        "supersession_reason": "Supersession of pre-W016 synthetic pilot identity with authentic statutory MoPR LGD 2026 baseline",
+        "canonical_mandal_name": "Kotapally",
+        "legacy_pilot_lgd_code": 5328
+      }
+    },
+    {
+      "id": "7b3fb40f-4705-a5d1-6875-baedf09b608b",
+      "dataset_version_id": "ts_lgd_mandals_2026_v1",
+      "status": "OFFICIAL",
+      "verification_evidence_id": null,
+      "verified_by": null,
+      "source_record_id": "LGD-MANDAL-4353",
+      "parent_provenance_id": "2f1771fb-51b4-861f-8c68-622bdb7cdc65",
+      "transformation_type": "pilot_to_statutory_supersession",
+      "transform_version": "1.0",
+      "operator": "system:w016_c3_r4_supersession",
+      "created_at": "2026-09-26T16:44:51.851677+00:00",
+      "metadata": {
+        "legacy_pilot_id": "TS-MDL-5320",
+        "legacy_pilot_name": "Luxettipet",
+        "supersession_type": "SYNTHETIC_PILOT_TO_STATUTORY_BASELINE",
+        "canonical_lgd_code": 4353,
+        "canonical_mandal_id": "TS-MDL-4353",
+        "statutory_reference": "MoPR LGD 2026 Directory snapshot; G.O.Ms. Nos. 214-245 Rev (2016-10-11)",
+        "supersession_reason": "Supersession of pre-W016 synthetic pilot identity with authentic statutory MoPR LGD 2026 baseline",
+        "canonical_mandal_name": "Luxettipet",
+        "legacy_pilot_lgd_code": 5320
+      }
+    },
+    {
+      "id": "f5dbaa0a-395a-2396-4c39-ffd73db413bf",
+      "dataset_version_id": "ts_lgd_mandals_2026_v1",
+      "status": "OFFICIAL",
+      "verification_evidence_id": null,
+      "verified_by": null,
+      "source_record_id": "LGD-MANDAL-4354",
+      "parent_provenance_id": "3040f578-fd6e-ea04-a3ab-0cbc6403cc1e",
+      "transformation_type": "pilot_to_statutory_supersession",
+      "transform_version": "1.0",
+      "operator": "system:w016_c3_r4_supersession",
+      "created_at": "2026-09-26T16:44:51.851677+00:00",
+      "metadata": {
+        "legacy_pilot_id": "TS-MDL-5321",
+        "legacy_pilot_name": "Mancherial",
+        "supersession_type": "SYNTHETIC_PILOT_TO_STATUTORY_BASELINE",
+        "canonical_lgd_code": 4354,
+        "canonical_mandal_id": "TS-MDL-4354",
+        "statutory_reference": "MoPR LGD 2026 Directory snapshot; G.O.Ms. Nos. 214-245 Rev (2016-10-11)",
+        "supersession_reason": "Supersession of pre-W016 synthetic pilot identity with authentic statutory MoPR LGD 2026 baseline",
+        "canonical_mandal_name": "Mancherial",
+        "legacy_pilot_lgd_code": 5321
+      }
+    },
+    {
+      "id": "06317aee-6165-6452-c9b5-0d7553fb7625",
+      "dataset_version_id": "ts_lgd_mandals_2026_v1",
+      "status": "OFFICIAL",
+      "verification_evidence_id": null,
+      "verified_by": null,
+      "source_record_id": "LGD-MANDAL-4356",
+      "parent_provenance_id": "f5660741-308b-314c-b59b-5ae404000c91",
+      "transformation_type": "pilot_to_statutory_supersession",
+      "transform_version": "1.0",
+      "operator": "system:w016_c3_r4_supersession",
+      "created_at": "2026-09-26T16:44:51.851677+00:00",
+      "metadata": {
+        "legacy_pilot_id": "TS-MDL-5323",
+        "legacy_pilot_name": "Chennur",
+        "supersession_type": "SYNTHETIC_PILOT_TO_STATUTORY_BASELINE",
+        "canonical_lgd_code": 4356,
+        "canonical_mandal_id": "TS-MDL-4356",
+        "statutory_reference": "MoPR LGD 2026 Directory snapshot; G.O.Ms. Nos. 214-245 Rev (2016-10-11)",
+        "supersession_reason": "Supersession of pre-W016 synthetic pilot identity with authentic statutory MoPR LGD 2026 baseline",
+        "canonical_mandal_name": "Chennur",
+        "legacy_pilot_lgd_code": 5323
+      }
+    },
+    {
+      "id": "1c709e2a-884a-ad3f-ead5-643cf46fc2ac",
+      "dataset_version_id": "ts_lgd_mandals_2026_v1",
+      "status": "OFFICIAL",
+      "verification_evidence_id": null,
+      "verified_by": null,
+      "source_record_id": "LGD-MANDAL-6227",
+      "parent_provenance_id": "23806a9a-5532-3613-e8ce-cebe1800467e",
+      "transformation_type": "pilot_to_statutory_supersession",
+      "transform_version": "1.0",
+      "operator": "system:w016_c3_r4_supersession",
+      "created_at": "2026-09-26T16:44:51.851677+00:00",
+      "metadata": {
+        "legacy_pilot_id": "TS-MDL-5329",
+        "legacy_pilot_name": "Hajipur",
+        "supersession_type": "SYNTHETIC_PILOT_TO_STATUTORY_BASELINE",
+        "canonical_lgd_code": 6227,
+        "canonical_mandal_id": "TS-MDL-6227",
+        "statutory_reference": "MoPR LGD 2026 Directory snapshot; G.O.Ms. Nos. 214-245 Rev (2016-10-11)",
+        "supersession_reason": "Supersession of pre-W016 synthetic pilot identity with authentic statutory MoPR LGD 2026 baseline",
+        "canonical_mandal_name": "Hajipur",
+        "legacy_pilot_lgd_code": 5329
+      }
+    }
+  ],
+  "governance_invariants_audit": {
+    "w012_status_evidence_invariant": {
+      "finding": "NEW_SUPERSESSION_RECORDS_STATUS_OFFICIAL_WITHOUT_EVIDENCE_ID",
+      "description": "The 12 newly-created supersession provenance records and 1 Hajipur canonical reconciliation record were inserted with status = OFFICIAL and verification_evidence_id = NULL. In the W012 data governance architecture, transition triggers enforce verification_evidence_id on UPDATE transitions (preventing elevation without evidence), while direct INSERT of OFFICIAL without evidence_id succeeded. As directed by the CTO directive, this is reported as an explicit governance finding for CTO review and has NOT been manually repaired.",
+      "action_taken": "REPORTED_FOR_CTO_REVIEW_NO_REPAIR"
+    },
+    "historical_provenance_immutability": {
+      "dataset_version": "ts_lgd_mandals_2023_v1",
+      "total_rows": 13,
+      "updated_rows": 0,
+      "deleted_rows": 0,
+      "status": "100% IMMUTABLE_BITWISE_MATCH"
+    },
+    "lineage_reconciliation": {
+      "historical_lineage_row_68e465c2": "UNTOUCHED",
+      "historical_prov_row_8c350901": "UNTOUCHED",
+      "canonical_lineage_row_13bfef80": "APPENDED_OFFICIAL",
+      "canonical_prov_row_d63eee74": "APPENDED_OFFICIAL"
+    },
+    "spatial_quarantine": {
+      "table": "public.entity_geometries",
+      "row_count": 0,
+      "status": "STRICTLY_ZERO_QUARANTINED"
+    },
+    "production_isolation": {
+      "target": "ehfafcnimmjusyvplbah",
+      "status": "AIR_GAPPED_UNTOUCHED_ZERO_CONNECTIONS"
+    }
+  },
+  "verification_suites_summary": {
+    "gov06_suite": "30/30 PASS (Replay, Rollback, Static)",
+    "gov07_suite": "100% PASS (Linkage Mutability Authority)",
+    "gov08_suite": "16/16 PASS (Live Staging Independent Probe)"
+  }
+}
