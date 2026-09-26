@@ -1,23 +1,27 @@
 -- ============================================================================
 -- Migration 046: Legacy Pilot Identity Lineage Supersession & Provenance Reconcile
--- Job: W016-C3-R4-GOV-05 (Executable Preflight / Non-Destructive Provenance Repair)
+-- Job: W016-C3-R4-GOV-06 (True W012 Append-Only Architecture)
 --
 -- Objective:
 -- 1. Preserve historical source claims in ts_lgd_mandals_2023_v1 by retaining
 --    domain_record_id = LEGACY_ID in public.record_provenance_linkages with is_canonical = false.
--- 2. Create 12 append-only supersession nodes in public.provenance_records under
---    ts_lgd_mandals_2026_v1, with parent_provenance_id pointing to legacy provenance records.
--- 3. Establish canonical linkages connecting canonical mandal IDs to the supersession nodes
---    with is_canonical = true.
--- 4. Reconcile metadata for the Mancherial-Hajipur statutory split (G.O.Ms.No. 222)
---    in public.geography_entity_lineage and public.provenance_records.
--- 5. Guarantee zero mutation of public.mandals (maintaining strictly 621 statutory anchors)
+-- 2. Preserve all existing historical provenance_records and geography_entity_lineage
+--    records completely immutable (ZERO UPDATE, ZERO DELETE, ZERO ON CONFLICT DO UPDATE).
+-- 3. Create 12 append-only supersession nodes in public.provenance_records under
+--    ts_lgd_mandals_2026_v1 with parent_provenance_id pointing to legacy provenance records.
+-- 4. Create new canonical linkages connecting canonical mandals to supersession nodes
+--    with is_canonical = true (ON CONFLICT DO NOTHING).
+-- 5. Create append-only canonical reconciliation records for the Mancherial-Hajipur split
+--    in public.provenance_records and public.geography_entity_lineage under ts_lgd_mandals_2026_v1.
+-- 6. Guarantee zero mutation of public.mandals (maintaining strictly 621 statutory anchors)
 --    and zero mutation of immutable dataset_versions snapshot fields.
 --
--- Safety & Idempotency:
+-- Invariants & Safety:
 -- - Fully transactional (atomic commit or rollback).
--- - Fail-closed assertion guards before, during, and after mutation.
--- - Idempotent ON CONFLICT handlers.
+-- - Fail-closed assertion guards before, during, and after migration.
+-- - Strictly append-only (ZERO UPDATE on provenance_records, ZERO DELETE on any table).
+-- - Completely deterministic (ZERO wall-clock now() timestamps in metadata).
+-- - 100% idempotent on replay (ON CONFLICT DO NOTHING).
 -- ============================================================================
 
 DO $$
@@ -55,8 +59,21 @@ BEGIN
     RAISE EXCEPTION 'PRECONDITION_FAILED: One or more canonical replacement mandals missing in public.mandals';
   END IF;
 
+  -- Assert the 12 legacy historical provenance linkages exist
+  IF (
+    SELECT COUNT(*) FROM public.record_provenance_linkages
+    WHERE domain_table = 'mandals'
+      AND domain_record_id IN (
+        'TS-MDL-7101', 'TS-MDL-7102', 'TS-MDL-7103', 'TS-MDL-7104', 'TS-MDL-7105',
+        'TS-MDL-5320', 'TS-MDL-5321', 'TS-MDL-5322', 'TS-MDL-5323', 'TS-MDL-5324',
+        'TS-MDL-5328', 'TS-MDL-5329'
+      )
+  ) != 12 THEN
+    RAISE EXCEPTION 'PRECONDITION_FAILED: Expected exactly 12 legacy linkages in record_provenance_linkages';
+  END IF;
+
   -- ─── 2. DEMOTE 12 HISTORICAL PROVENANCE LINKAGES (is_canonical = false) ───────
-  -- Preserves historical domain_record_id = LEGACY_ID while marking linkage non-canonical.
+  -- Retains domain_record_id = LEGACY_ID while marking linkage non-canonical.
   UPDATE public.record_provenance_linkages
   SET is_canonical = false
   WHERE domain_table = 'mandals'
@@ -69,9 +86,9 @@ BEGIN
 
   -- ─── 3. INSERT 12 APPEND-ONLY SUPERSESSION PROVENANCE NODES ──────────────────
   -- Deterministic UUIDs: md5('pr_supersede_mandal_' || legacy_id)::uuid
-  -- Parent pointer chains back to historical provenance record.
+  -- Parent pointer chains back to historical legacy provenance record.
+  -- Zero UPDATE on provenance_records; strictly ON CONFLICT DO NOTHING.
   
-  -- Temporary table mapping the 12 authoritative pairs
   CREATE TEMP TABLE temp_legacy_canonical_pairs (
     legacy_id TEXT PRIMARY KEY,
     legacy_name TEXT NOT NULL,
@@ -124,16 +141,13 @@ BEGIN
       'canonical_lgd_code', p.canonical_lgd,
       'supersession_type', 'SYNTHETIC_PILOT_TO_STATUTORY_BASELINE',
       'supersession_reason', 'Supersession of pre-W016 synthetic pilot identity with authentic statutory MoPR LGD 2026 baseline',
-      'statutory_reference', 'MoPR LGD 2026 Directory snapshot; G.O.Ms. Nos. 214-245 Rev (2016-10-11)',
-      'reconciliation_timestamp', now()
+      'statutory_reference', 'MoPR LGD 2026 Directory snapshot; G.O.Ms. Nos. 214-245 Rev (2016-10-11)'
     )
   FROM temp_legacy_canonical_pairs p
   JOIN public.record_provenance_linkages rpl
     ON rpl.domain_table = 'mandals'
    AND rpl.domain_record_id = p.legacy_id
-  ON CONFLICT (id) DO UPDATE SET
-    metadata = EXCLUDED.metadata,
-    source_record_id = EXCLUDED.source_record_id;
+  ON CONFLICT (id) DO NOTHING;
 
   -- ─── 4. ESTABLISH CANONICAL PROVENANCE LINKAGES (is_canonical = true) ────────
   -- Links the active canonical mandal to the supersession node
@@ -151,13 +165,63 @@ BEGIN
   FROM temp_legacy_canonical_pairs p
   ON CONFLICT (domain_table, domain_record_id, provenance_id) DO NOTHING;
 
-  -- ─── 5. RECONCILE GEOGRAPHY ENTITY LINEAGE METADATA (MANCHERIAL-HAJIPUR SPLIT) 
-  -- Preserves historical legal split G.O.Ms.No. 222 while linking to canonical mandal IDs
-  UPDATE public.geography_entity_lineage
-  SET
-    predecessor_internal_id = md5('mandals:TS-MDL-4354')::uuid,
-    successor_internal_id = md5('mandals:TS-MDL-6227')::uuid,
-    metadata = metadata || jsonb_build_object(
+  -- ─── 5. APPEND CANONICAL RECONCILIATION FOR MANCHERIAL-HAJIPUR SPLIT ─────────
+  -- Row 8c350901-a5d8-fe3d-c5b2-6ffe37601908 in provenance_records is UNTOUCHED.
+  -- Row 68e465c2-a00b-478d-8082-e0cf1f3bbe67 in geography_entity_lineage is UNTOUCHED.
+  -- A new append-only provenance record is added for canonical reconciliation:
+  INSERT INTO public.provenance_records (
+    id,
+    dataset_version_id,
+    source_record_id,
+    parent_provenance_id,
+    status,
+    transformation_type,
+    transform_version,
+    operator,
+    metadata
+  ) VALUES (
+    md5('pr_lineage_canonical_mancherial_hajipur_split')::uuid,
+    'ts_lgd_mandals_2026_v1',
+    'TG-GAZETTE-2016:GOMS222:CANONICAL-RECONCILE',
+    '8c350901-a5d8-fe3d-c5b2-6ffe37601908'::uuid,
+    'OFFICIAL',
+    'gazette_lineage_canonical_reconciliation',
+    '1.0',
+    'system:w016_c3_r4_supersession',
+    jsonb_build_object(
+      'source_authority', 'Government of Telangana, Revenue (DA-CMRF) Department',
+      'source_document', 'Telangana Gazette Extraordinary, Part I (G.O.Ms.No. 222)',
+      'effective_date', '2016-10-11',
+      'predecessor_canonical_id', 'TS-MDL-4354',
+      'successor_canonical_id', 'TS-MDL-6227',
+      'legacy_pilot_predecessor_id', 'TS-MDL-5321',
+      'legacy_pilot_successor_id', 'TS-MDL-5329',
+      'canonical_lgd_code', 6227,
+      'supersession_note', 'Canonical cross-reference for historical Hajipur split from Mancherial'
+    )
+  ) ON CONFLICT (id) DO NOTHING;
+
+  -- Append a new canonical representation in geography_entity_lineage:
+  INSERT INTO public.geography_entity_lineage (
+    id,
+    entity_type,
+    predecessor_internal_id,
+    successor_internal_id,
+    transition_type,
+    effective_date,
+    statutory_order,
+    metadata,
+    primary_dataset_version_id
+  ) VALUES (
+    md5('gel_canonical_mancherial_hajipur_split')::uuid,
+    'mandal',
+    md5('mandals:TS-MDL-4354')::uuid,
+    md5('mandals:TS-MDL-6227')::uuid,
+    'split',
+    '2016-10-11'::date,
+    'G.O.Ms.No. 222, Revenue (DA-CMRF) Dept, dated 11.10.2016',
+    jsonb_build_object(
+      'parent_district', 'Mancherial',
       'predecessor_mandal_id', 'TS-MDL-4354',
       'predecessor_mandal_name', 'Mancherial',
       'successor_mandal_id', 'TS-MDL-6227',
@@ -166,22 +230,25 @@ BEGIN
       'legacy_pilot_predecessor_id', 'TS-MDL-5321',
       'legacy_pilot_successor_id', 'TS-MDL-5329',
       'legacy_pilot_lgd_code', 5949,
-      'reconciliation_audit', 'W016-C3-R4-GOV-05 canonical cross-reference'
-    )
-  WHERE id = '68e465c2-a00b-478d-8082-e0cf1f3bbe67'::uuid;
+      'description', 'Hajipur Mandal carved out of Mancherial Mandal upon district reorganisation on 11.10.2016 (Canonical 2026 Representation)'
+    ),
+    'ts_lgd_mandals_2026_v1'
+  ) ON CONFLICT (entity_type, predecessor_internal_id, successor_internal_id, transition_type, effective_date) DO NOTHING;
 
-  -- ─── 6. RECONCILE PROVENANCE RECORD METADATA (SPLIT LINEAGE PROVENANCE) ───────
-  UPDATE public.provenance_records
-  SET metadata = metadata || jsonb_build_object(
-    'predecessor', 'TS-MDL-4354',
-    'successor', 'TS-MDL-6227',
-    'legacy_pilot_predecessor', 'TS-MDL-5321',
-    'legacy_pilot_successor', 'TS-MDL-5329',
-    'reconciliation_audit', 'W016-C3-R4-GOV-05 canonical cross-reference'
-  )
-  WHERE id = '8c350901-a5d8-fe3d-c5b2-6ffe37601908'::uuid;
+  -- Link new canonical lineage row to its provenance record:
+  INSERT INTO public.record_provenance_linkages (
+    domain_table,
+    domain_record_id,
+    provenance_id,
+    is_canonical
+  ) VALUES (
+    'geography_entity_lineage',
+    md5('gel_canonical_mancherial_hajipur_split')::uuid::text,
+    md5('pr_lineage_canonical_mancherial_hajipur_split')::uuid,
+    true
+  ) ON CONFLICT (domain_table, domain_record_id, provenance_id) DO NOTHING;
 
-  -- ─── 7. POSTCONDITION INVARIANT GUARDS ────────────────────────────────────────
+  -- ─── 6. POSTCONDITION INVARIANT GUARDS ────────────────────────────────────────
 
   -- Assert public.mandals count remains strictly 621
   SELECT COUNT(*) INTO v_mandals_count FROM public.mandals;
@@ -229,6 +296,26 @@ BEGIN
   WHERE transformation_type = 'pilot_to_statutory_supersession';
   IF v_supersession_count != 12 THEN
     RAISE EXCEPTION 'POSTCONDITION_FAILED: Expected 12 supersession provenance records, found %', v_supersession_count;
+  END IF;
+
+  -- Assert historical row 8c350901-a5d8-fe3d-c5b2-6ffe37601908 was NOT modified
+  IF NOT EXISTS (
+    SELECT 1 FROM public.provenance_records
+    WHERE id = '8c350901-a5d8-fe3d-c5b2-6ffe37601908'::uuid
+      AND metadata->>'predecessor' = 'TS-MDL-5321'
+      AND metadata->>'successor' = 'TS-MDL-5329'
+  ) THEN
+    RAISE EXCEPTION 'POSTCONDITION_FAILED: Historical provenance record 8c350901 was mutated';
+  END IF;
+
+  -- Assert historical row 68e465c2-a00b-478d-8082-e0cf1f3bbe67 was NOT modified
+  IF NOT EXISTS (
+    SELECT 1 FROM public.geography_entity_lineage
+    WHERE id = '68e465c2-a00b-478d-8082-e0cf1f3bbe67'::uuid
+      AND metadata->>'predecessor_mandal_id' = 'TS-MDL-5321'
+      AND metadata->>'successor_mandal_id' = 'TS-MDL-5329'
+  ) THEN
+    RAISE EXCEPTION 'POSTCONDITION_FAILED: Historical geography lineage record 68e465c2 was mutated';
   END IF;
 
   RAISE NOTICE 'SUCCESS: Migration 046 preflight checks and logic verified atomically.';

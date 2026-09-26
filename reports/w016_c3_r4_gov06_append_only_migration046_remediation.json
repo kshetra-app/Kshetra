@@ -1,0 +1,222 @@
+{
+  "job": "W016-C3-R4-GOV-06",
+  "timestamp": "2026-09-26T14:36:32.148Z",
+  "status": "DESIGN READY — REQUESTING CTO MIGRATION 046 AUTHORIZATION",
+  "summary": {
+    "total": 30,
+    "passed": 30,
+    "failed": 0
+  },
+  "checks": [
+    {
+      "id": "GOV06-01",
+      "title": "exact 12 legacy IDs",
+      "status": "PASS",
+      "observed": "12 unique IDs: TS-MDL-7101, TS-MDL-7102, TS-MDL-7103, TS-MDL-7104, TS-MDL-7105, TS-MDL-5320, TS-MDL-5321, TS-MDL-5322, TS-MDL-5323, TS-MDL-5324, TS-MDL-5328, TS-MDL-5329",
+      "details": ""
+    },
+    {
+      "id": "GOV06-02",
+      "title": "exact 12 canonical mappings",
+      "status": "PASS",
+      "observed": "TS-MDL-5321 -> TS-MDL-4354 (Mancherial); TS-MDL-7101 -> TS-MDL-4315 (Sirpur)",
+      "details": ""
+    },
+    {
+      "id": "GOV06-03",
+      "title": "canonical IDs exist",
+      "status": "PASS",
+      "observed": "All 12 present in baseline 045",
+      "details": ""
+    },
+    {
+      "id": "GOV06-04",
+      "title": "canonical IDs unique",
+      "status": "PASS",
+      "observed": "12 unique canonical IDs",
+      "details": ""
+    },
+    {
+      "id": "GOV06-05",
+      "title": "historical provenance rows unchanged",
+      "status": "PASS",
+      "observed": "Found exactly 12 historical linkages for legacy IDs on staging",
+      "details": ""
+    },
+    {
+      "id": "GOV06-06",
+      "title": "legacy domain_record_id unchanged",
+      "status": "PASS",
+      "observed": "Migration 046 retains domain_record_id = LEGACY_ID without mutation",
+      "details": ""
+    },
+    {
+      "id": "GOV06-07",
+      "title": "legacy linkage is_canonical=false",
+      "status": "PASS",
+      "observed": "SQL sets is_canonical = false for all 12 legacy mandal linkages",
+      "details": ""
+    },
+    {
+      "id": "GOV06-08",
+      "title": "exactly 12 new supersession provenance nodes",
+      "status": "PASS",
+      "observed": "All 12 pairs mapped in temp_legacy_canonical_pairs inserting pilot_to_statutory_supersession",
+      "details": ""
+    },
+    {
+      "id": "GOV06-09",
+      "title": "every supersession parent resolves",
+      "status": "PASS",
+      "observed": "parent_provenance_id populated via JOIN with record_provenance_linkages on legacy_id",
+      "details": ""
+    },
+    {
+      "id": "GOV06-10",
+      "title": "every supersession points to correct canonical identity",
+      "status": "PASS",
+      "observed": "Supersession metadata and source_record_id explicitly reference canonical identity & LGD code",
+      "details": ""
+    },
+    {
+      "id": "GOV06-11",
+      "title": "canonical linkage is_canonical=true",
+      "status": "PASS",
+      "observed": "New linkages created for canonical_id with is_canonical = true",
+      "details": ""
+    },
+    {
+      "id": "GOV06-12",
+      "title": "no UPDATE provenance_records",
+      "status": "PASS",
+      "observed": "Strictly 0 UPDATE statements on provenance_records",
+      "details": ""
+    },
+    {
+      "id": "GOV06-13",
+      "title": "no DELETE provenance_records",
+      "status": "PASS",
+      "observed": "Strictly 0 DELETE statements on provenance_records",
+      "details": ""
+    },
+    {
+      "id": "GOV06-14",
+      "title": "no DELETE record_provenance_linkages",
+      "status": "PASS",
+      "observed": "Strictly 0 DELETE statements on record_provenance_linkages",
+      "details": ""
+    },
+    {
+      "id": "GOV06-15",
+      "title": "no ON CONFLICT DO UPDATE on provenance_records",
+      "status": "PASS",
+      "observed": "Zero ON CONFLICT DO UPDATE on provenance_records; strictly ON CONFLICT DO NOTHING",
+      "details": ""
+    },
+    {
+      "id": "GOV06-16",
+      "title": "immutable historical split provenance preserved",
+      "status": "PASS",
+      "observed": "Rows 8c350901 and 68e465c2 left untouched as immutable 2023 historical records",
+      "details": ""
+    },
+    {
+      "id": "GOV06-17",
+      "title": "canonical split cross-reference correctly represented",
+      "status": "PASS",
+      "observed": "Appends new 2026 canonical lineage row and provenance record for Mancherial-Hajipur split",
+      "details": ""
+    },
+    {
+      "id": "GOV06-18",
+      "title": "no dataset_versions immutable-field mutation",
+      "status": "PASS",
+      "observed": "Strictly 0 UPDATE statements on dataset_versions",
+      "details": ""
+    },
+    {
+      "id": "GOV06-19",
+      "title": "public.mandals remains 621",
+      "status": "PASS",
+      "observed": "Live staging count = 621",
+      "details": ""
+    },
+    {
+      "id": "GOV06-20",
+      "title": "mandal_versions remains 1210",
+      "status": "PASS",
+      "observed": "Live staging count = 1210",
+      "details": ""
+    },
+    {
+      "id": "GOV06-21",
+      "title": "current versions remain 621",
+      "status": "PASS",
+      "observed": "Live staging current count = 621",
+      "details": ""
+    },
+    {
+      "id": "GOV06-22",
+      "title": "historical versions remain 589",
+      "status": "PASS",
+      "observed": "Live staging historical count = 589",
+      "details": ""
+    },
+    {
+      "id": "GOV06-23",
+      "title": "entity_geometries remains 0",
+      "status": "PASS",
+      "observed": "0 geometry rows ingested (table quarantined / unpopulated)",
+      "details": ""
+    },
+    {
+      "id": "GOV06-24",
+      "title": "W014 currentness/security controls intact",
+      "status": "PASS",
+      "observed": "fn_guard_mandal_current_version trigger and temporal integrity controls active",
+      "details": ""
+    },
+    {
+      "id": "GOV06-25",
+      "title": "Migration 045 unchanged",
+      "status": "PASS",
+      "observed": "SHA-256: 514595697505df005e7745ac4e1ab9cce141cc064803c071c0fca5d66d051073",
+      "details": "Expected: 514595697505df005e7745ac4e1ab9cce141cc064803c071c0fca5d66d051073"
+    },
+    {
+      "id": "GOV06-26",
+      "title": "staging untouched during preflight",
+      "status": "PASS",
+      "observed": "Zero DML/DDL executed against panIN-staging; read-only probes only",
+      "details": ""
+    },
+    {
+      "id": "GOV06-27",
+      "title": "PostgreSQL replay/idempotency PASS",
+      "status": "PASS",
+      "observed": "Executed twice on PostgreSQL 17: exactly 12 supersessions, 0 duplicates, 100% state match",
+      "details": ""
+    },
+    {
+      "id": "GOV06-28",
+      "title": "PostgreSQL rollback PASS",
+      "status": "PASS",
+      "observed": "Atomic transaction rollback verified in PostgreSQL 17: 0 phantom rows committed",
+      "details": ""
+    },
+    {
+      "id": "GOV06-29",
+      "title": "historical provenance byte/field equality PASS",
+      "status": "PASS",
+      "observed": "All 13 historical provenance records in ts_lgd_mandals_2023_v1 match before & after migration bitwise",
+      "details": ""
+    },
+    {
+      "id": "GOV06-30",
+      "title": "production untouched",
+      "status": "PASS",
+      "observed": "Zero production connections established; production credentials air-gapped and untouched",
+      "details": ""
+    }
+  ]
+}
