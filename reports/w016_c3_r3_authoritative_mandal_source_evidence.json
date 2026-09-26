@@ -1,0 +1,95 @@
+{
+  "job": "W016-C3-R3",
+  "title": "Authoritative Mandal Source Acquisition & Reconciliation Audit",
+  "authority": "CTO Directive — W016-C3-R3 EXECUTE NOW",
+  "timestamp": "2026-09-26T08:00:00.000Z",
+  "disposition": "EXTERNAL AUTHORITATIVE SOURCE ACCESS BLOCKER",
+  "targetEnvironment": {
+    "projectRef": "fkpigozcqnmcvofuksar",
+    "name": "panIN-staging",
+    "url": "https://fkpigozcqnmcvofuksar.supabase.co",
+    "inspectionMode": "READ-ONLY",
+    "mutationsAttempted": 0,
+    "mutationsExecuted": 0
+  },
+  "productionEnvironment": {
+    "projectRef": "ehfafcnimmjusyvplbah",
+    "name": "panIN-production",
+    "status": "STRICTLY AIR-GAPPED & UNTOUCHED",
+    "queriesExecuted": 0
+  },
+  "externalAccessAudit": {
+    "targetAuthority": "Ministry of Panchayati Raj — Local Government Directory (LGD)",
+    "officialPortalUrl": "https://lgdirectory.gov.in",
+    "probedEndpoints": [
+      {
+        "url": "https://lgdirectory.gov.in/downloadDirectory.do",
+        "httpStatus": 200,
+        "csrfTokenRequired": true,
+        "sessionCookieRequired": true,
+        "captchaEnforced": true,
+        "captchaInputName": "captchaAnswer",
+        "captchaInputType": "text (maxlength=6)",
+        "captchaImageHandler": "/captchaImageId",
+        "automatedAccessStatus": "BLOCKED_BY_CAPTCHA"
+      },
+      {
+        "url": "https://lgdirectory.gov.in/globalviewsubdistrictforcitizen.do",
+        "httpStatus": 200,
+        "csrfTokenRequired": true,
+        "sessionCookieRequired": true,
+        "captchaEnforced": true,
+        "captchaInputName": "captchaAnswer",
+        "captchaInputType": "text (maxlength=6)",
+        "automatedAccessStatus": "BLOCKED_BY_CAPTCHA"
+      }
+    ],
+    "accessBlockerClassification": "EXTERNAL AUTHORITATIVE SOURCE ACCESS BLOCKER",
+    "ruleInvoked": "Directive Section: EXTERNAL ACCESS FAILURE — Mandatory Halt upon CAPTCHA / Website Restriction",
+    "prohibitionRespected": "Zero unauthorized web-scraping, zero CAPTCHA bypass, zero substitution of third-party mirrors, GitHub copies, or Wikipedia data."
+  },
+  "exactUserActionRequired": {
+    "portalUrl": "https://lgdirectory.gov.in/downloadDirectory.do",
+    "step1": "Open browser and navigate to https://lgdirectory.gov.in/downloadDirectory.do",
+    "step2": "Select 'State Wise Download' radio option",
+    "step3": "Select State: 'Telangana' (State Code 36)",
+    "step4": "Select Entity: 'All Sub-Districts of a State' (subDistrictofSpecificState)",
+    "step5": "Select Format: 'Excel (xls)' or 'CSV'",
+    "step6": "Enter the visual CAPTCHA characters shown on screen",
+    "step7": "Download the file and save to repository at: data/evidence/w016/mopr_lgd_subdistrict_directory_telangana_all.xls (or .csv)"
+  },
+  "preliminarySourceReconciliation": {
+    "candidateCartographicFeatures": 589,
+    "statutoryCurrentTotal": 612,
+    "statutoryDivergenceCount": 23,
+    "candidateAttributesAvailable": ["FID", "Area", "s_no", "mandal_nam", "dist_name", "rev_div_na", "tot_p", "tot_m", "tot_f", "p_sc", "p_st"],
+    "statutoryAttributesRequiredFromLgd": ["lgd_subdistrict_code", "subdistrict_name_en", "subdistrict_name_te", "census_2011_code", "district_lgd_code"]
+  },
+  "governancePackageDesign": {
+    "proposedDatasetId": "ts_lgd_mandals",
+    "proposedDatasetVersionId": "ts_lgd_mandals_2016_v1",
+    "proposedEvidenceArtifact": "data/evidence/w016/mopr_lgd_subdistrict_directory_telangana_all.json",
+    "proposedAuthority": "Ministry of Panchayati Raj, Government of India",
+    "semanticInterval": "[2016-10-11, 2022-09-01)"
+  },
+  "qualityGates": {
+    "authoritativeSourceVerified": false,
+    "rawArtifactPreserved": false,
+    "checksumRecorded": false,
+    "statewideCoverageVerified": false,
+    "statutoryLgdIdentifiersPresent": false,
+    "historicalFeaturesReconciled": false,
+    "zeroFabricatedIdentities": true,
+    "divergencePreserved": true,
+    "historicalValidityEvidenced": true,
+    "governancePackageDefined": true,
+    "unresolvedMappingsListed": true,
+    "noDatabaseMutationPerformed": true
+  },
+  "complianceStatements": {
+    "zeroGeometryIngested": true,
+    "productionUntouched": true,
+    "zeroDdlDmlExecuted": true,
+    "noSelfAcceptance": true
+  }
+}
