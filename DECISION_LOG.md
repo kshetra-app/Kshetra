@@ -1162,7 +1162,7 @@
 
 ### DEC-064: W014-M6 MANDAL VERSION TEMPORAL INTEGRITY, TEST HARNESS HARDENING & CLOSURE RECONCILIATION
 - **Date:** 2026-09-26
-- **Status:** SUBMITTED FOR CTO RATIFICATION (Live Technical Acceptance: ACCEPTED / COMPLETE)
+- **Status:** RATIFIED / ACCEPTED / COMPLETE / CLOSED (2026-09-26)
 - **Authority:** CTO Decision — W014-M6 Final Closure & Evidence Reconciliation
 - **Context:** Following authorized staging execution of the W014-M6 remediation package (`supabase/remediation_w014_m6_gist_boundary_041.sql`) at baseline commit `4676dce`, initial live execution of the M1–M15 test suite resulted in 13/15 PASS, with M11 and M13 failing. A read-only forensic root cause analysis confirmed both failures were test-harness defects with zero database defects. CTO authorized surgical test harness remediation in `tests/test_mandal_version_integrity.mjs` (commit `b72752d`). Live re-execution on `panIN-staging` yielded 15/15 PASS.
 - **Key Decisions & Technical Evidence:**
@@ -1173,6 +1173,21 @@
   5. **Live Acceptance Result:** Full M1–M15 battery achieves 15/15 PASS (0 failed, 0 pending) on `panIN-staging` at live timestamp `2026-09-26T04:03:24.354Z`.
   6. **Prior Structural Checks:** 23/23 structural/security checks PASS via `supabase/verify_remediation_w014_m6_gist_boundary_041.sql`.
   7. **Governance Boundaries:** Zero additional database remediation required; zero rollbacks executed; zero SQL executed during test-harness remediation; zero DB implementation changes after baseline `4676dce`; production remains 100% untouched and air-gapped.
-  8. **CTO Acceptance Boundary:** Submitted for final CTO ratification without agent self-acceptance.
+  8. **CTO Acceptance Boundary:** Formally ratified, accepted, and closed by CTO.
+
+---
+
+### DEC-065: CANONICAL MIGRATION 044 CREATION & REPOSITORY MIGRATION LINEAGE CONSOLIDATION
+- **Date:** 2026-09-26
+- **Status:** IMPLEMENTED / STATICALLY_VALIDATED (Repository Artifact Created; Pending Staging Execution Authorization)
+- **Authority:** CTO Decision — W014-GOV-01 Migration Lineage Decision (Option B Authorized)
+- **Context:** Following the ratification and closure of W014-M6 (15/15 PASS live on `panIN-staging`), a migration lineage audit evaluated whether to consolidate the accepted M6 changes into historical Migration 041 (Option A) or create sequential canonical Migration 044 (Option B). CTO formally authorized Option B under the append-only migration governance model.
+- **Key Decisions & Technical Architecture:**
+  1. **Canonical Migration 044 Authored:** Created `supabase/migrations/044_mandal_temporal_boundary_remediation.sql` representing the accepted M6 database architecture (Option A Before-Row Immediate Trigger).
+  2. **Historical Immutability Preserved:** Historical migrations `041_geography_versioning_and_temporal_validity.sql`, `042_geography_relationship_engine.sql`, and `043_w015_b2_source_reconciliation.sql` remain byte-for-byte identical and untouched.
+  3. **Strict Exclusion of Transition Function:** `public.fn_transition_mandal_current_version(...)` is strictly excluded from Migration 044. The RCA established that this function is already deployed and verified in Migration 041, preventing redundant re-definitions and 42501 ownership clashes.
+  4. **Migration Bundler Synchronized:** `scripts/bundle_migrations.mjs` updated to include migrations 038 through 044 in its canonical `ORDERED_FILES` manifest.
+  5. **Air-Gap & Non-Execution Invariant:** Migration 044 is strictly NOT executed against staging or production during this phase. Static validation only. Production remains untouched.
+  6. **Lifecycle State:** Status recorded as `IMPLEMENTED / STATICALLY_VALIDATED`, pending independent verification and CTO review.
 
 
