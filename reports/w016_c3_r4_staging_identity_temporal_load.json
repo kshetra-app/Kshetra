@@ -1,0 +1,204 @@
+{
+  "metadata": {
+    "directive": "W016-C3-R4: CONTROLLED STAGING MANDAL IDENTITY + TEMPORAL VERSION LOAD",
+    "target": "panIN-staging (fkpigozcqnmcvofuksar)",
+    "production_status": "AIR_GAPPED_UNTOUCHED",
+    "timestamp": "2026-09-26T09:49:24.396Z",
+    "migration_file": "supabase/migrations/045_w016_c3_mandal_identity_temporal_load.sql",
+    "migration_sha256": "514595697505df005e7745ac4e1ab9cce141cc064803c071c0fca5d66d051073",
+    "overall_status": "STAGING LOAD IMPLEMENTED / TESTED / VERIFIED / SUBMITTED FOR CTO ACCEPTANCE"
+  },
+  "counts": {
+    "mandals": 621,
+    "historical_versions": 589,
+    "current_versions": 621,
+    "total_versions": 1210,
+    "provenance_records": 1254,
+    "linkages": 2030,
+    "entity_geometries": 0
+  },
+  "checks": [
+    {
+      "id": "R4-01",
+      "title": "Stable mandal count = 621",
+      "status": "PASS",
+      "observed": "count = 621",
+      "details": "public.mandals contains exactly 621 stable identities"
+    },
+    {
+      "id": "R4-02",
+      "title": "Historical version count = 589",
+      "status": "PASS",
+      "observed": "count = 589",
+      "details": "public.mandal_versions historical rows (is_current = false) count equals 589"
+    },
+    {
+      "id": "R4-03",
+      "title": "Current version count = 621",
+      "status": "PASS",
+      "observed": "count = 621",
+      "details": "public.mandal_versions current rows (is_current = true) count equals 621"
+    },
+    {
+      "id": "R4-04",
+      "title": "Total version count = 1210",
+      "status": "PASS",
+      "observed": "count = 1210",
+      "details": "589 historical + 621 current = 1210 total rows in public.mandal_versions"
+    },
+    {
+      "id": "R4-05",
+      "title": "All 621 stable anchors have non-null current_version_id",
+      "status": "PASS",
+      "observed": "null_pointers = 0",
+      "details": "Every mandal anchor has an assigned current_version_id pointer"
+    },
+    {
+      "id": "R4-06",
+      "title": "All current pointers resolve to same mandal anchor",
+      "status": "PASS",
+      "observed": "mismatches = 0",
+      "details": "All current_version_id pointers match their anchor mandal_id"
+    },
+    {
+      "id": "R4-07",
+      "title": "All current versions have is_current = true and valid_to IS NULL",
+      "status": "PASS",
+      "observed": "invalid_count = 0",
+      "details": "Zero open-ended or terminating discrepancies in current versions"
+    },
+    {
+      "id": "R4-08",
+      "title": "All historical versions have is_current = false and valid_to IS NOT NULL",
+      "status": "PASS",
+      "observed": "invalid_count = 0",
+      "details": "All historical versions are closed temporal intervals"
+    },
+    {
+      "id": "R4-09",
+      "title": "All current versions reference ts_lgd_mandals_2026_v1",
+      "status": "PASS",
+      "observed": "mismatches = 0",
+      "details": "100% of current mandal versions linked to 2026 directory dataset version"
+    },
+    {
+      "id": "R4-10",
+      "title": "All historical versions reference ts_lgd_mandals_2016_v1",
+      "status": "PASS",
+      "observed": "mismatches = 0",
+      "details": "100% of historical mandal versions linked to 2016 baseline dataset version"
+    },
+    {
+      "id": "R4-11",
+      "title": "All current dataset statuses resolve to OFFICIAL",
+      "status": "PASS",
+      "observed": "status = OFFICIAL",
+      "details": "ts_lgd_mandals_2026_v1 default_status is OFFICIAL"
+    },
+    {
+      "id": "R4-12",
+      "title": "All historical dataset statuses resolve to OFFICIAL",
+      "status": "PASS",
+      "observed": "status = OFFICIAL",
+      "details": "ts_lgd_mandals_2016_v1 default_status is OFFICIAL"
+    },
+    {
+      "id": "R4-13",
+      "title": "2020 parent historical termination dates = 2020-09-24",
+      "status": "PASS",
+      "observed": "count = 8",
+      "details": "Exactly 8 parent mandals terminated on 2020-09-24 statutory split date"
+    },
+    {
+      "id": "R4-14",
+      "title": "2022 parent and undivided historical termination dates = 2022-09-26",
+      "status": "PASS",
+      "observed": "count = 572",
+      "details": "548 undivided baseline + 24 split parents terminated on 2022-09-26"
+    },
+    {
+      "id": "R4-15",
+      "title": "Nine post-2022 parent historical termination dates match R3E-R2",
+      "status": "PASS",
+      "observed": "All 9 matched",
+      "details": "Kotagiri(2022-11-22), Miryalaguda(2023-03-15), Machareddy/Nizamsagar/Nagi_Reddypet(2023-04-18), Gopalpet(2023-05-12), Itikyal(2023-06-15), Jainad(2023-08-15), Mulug(2023-09-10)"
+    },
+    {
+      "id": "R4-16",
+      "title": "Nine post-2022 current valid_from dates match R3E-R2",
+      "status": "PASS",
+      "observed": "All 9 matched",
+      "details": "Pothangal(2022-11-22), Gudipally(2023-03-15), Palwancha/Mohammadnagar(2023-04-18), Yedula(2023-05-12), Yerravalli(2023-06-15), Bhoraj/Sathnala(2023-08-15), Mallampally(2023-09-10)"
+    },
+    {
+      "id": "R4-17",
+      "title": "548 undivided historical rows terminate 2022-09-26",
+      "status": "PASS",
+      "observed": "total_at_2022_09_26 = 572 (548 undivided + 24 split parents)",
+      "details": "Terminating historical rows prior to 2022 reorganisation"
+    },
+    {
+      "id": "R4-18",
+      "title": "No current row has a 2016 geometry snapshot treated as current geometry",
+      "status": "PASS",
+      "observed": "ZERO geometry bindings to current versions",
+      "details": "Spatial snapshot isolation preserved; current versions have no attached geometry"
+    },
+    {
+      "id": "R4-19",
+      "title": "No entity_geometries rows created by Migration 045",
+      "status": "PASS",
+      "observed": "entity_geometries_count = 0",
+      "details": "entity_geometries table remains completely untouched"
+    },
+    {
+      "id": "R4-20",
+      "title": "Provenance coverage complete for all loaded records",
+      "status": "PASS",
+      "observed": "provenance_records = 1254, linkages = 2030",
+      "details": "Every version and anchor has canonical W012 provenance lineage"
+    },
+    {
+      "id": "R4-21",
+      "title": "No duplicate stable identities",
+      "status": "PASS",
+      "observed": "unique_ids = 621, total = 621",
+      "details": "Zero duplicate primary keys in public.mandals"
+    },
+    {
+      "id": "R4-22",
+      "title": "No duplicate current versions",
+      "status": "PASS",
+      "observed": "unique_current_mandals = 621, total = 621",
+      "details": "Exactly one current version per stable mandal identity"
+    },
+    {
+      "id": "R4-23",
+      "title": "No duplicate historical versions",
+      "status": "PASS",
+      "observed": "unique_historical_codes = 589, total = 589",
+      "details": "Zero duplicate historical version codes"
+    },
+    {
+      "id": "R4-24",
+      "title": "mandals.lgd_code equals current version lgd_code for all 621 anchors",
+      "status": "PASS",
+      "observed": "mismatches = 0",
+      "details": "Denormalized lgd_code matches active version lgd_code across 100% of anchors"
+    },
+    {
+      "id": "R4-25",
+      "title": "W014 currentness/security triggers remain active",
+      "status": "PASS",
+      "observed": "Trigger rejected invalid pointer",
+      "details": "fn_guard_mandal_current_version actively guarding public.mandals"
+    },
+    {
+      "id": "R4-26",
+      "title": "Production remains untouched and air-gapped",
+      "status": "PASS",
+      "observed": "target = https://fkpigozcqnmcvofuksar.supabase.co",
+      "details": "Production (ehfafcnimmjusyvplbah) has zero connections, 0 mutations"
+    }
+  ]
+}

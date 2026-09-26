@@ -1207,5 +1207,27 @@
   7. **W014 Master State:** W014-M6: ACCEPTED / COMPLETE / CLOSED. W014-GOV-01: ACCEPTED / COMPLETE / CLOSED. W014-REL-01: REMAINS OPEN / NOT AUTHORIZED. W014 master lifecycle: `STAGING ACCEPTED / PENDING EXPLICIT PRODUCTION RELEASE AUTHORIZATION`.
   8. **Strict Production Air-Gap:** Production execution of Migration 044 is strictly NOT AUTHORIZED. Production database (`ehfafcnimmjusyvplbah`) remains 100% air-gapped, untouched, and uncontacted.
 
+---
+
+### DEC-067: W016-C3-R4 CONTROLLED STAGING MANDAL IDENTITY + TEMPORAL VERSION LOAD
+- **Date:** 2026-09-26
+- **Status:** SUBMITTED FOR CTO ACCEPTANCE (2026-09-26)
+- **Authority:** CTO Decision — W016-C3-R4 (Controlled Staging Mandal Identity + Temporal Version Load; Production Strictly Air-Gapped)
+- **Context:** Following the acceptance of the R3E/R2 evidence package establishing the deterministic population of 621 stable identities, 589 historical versions, and 621 current versions, CTO granted staging-only data-load authorization. Append-only Migration 045 was generated, pre-execution static validated (21/21 PASS), applied on `panIN-staging` (`fkpigozcqnmcvofuksar`), and comprehensively verified across a 26-check semantic battery (26/26 PASS).
+- **Key Decisions & Acceptance Basis:**
+  1. **Canonical Migration 045 Authored:** Created `supabase/migrations/045_w016_c3_mandal_identity_temporal_load.sql` (SHA-256: `514595697505df005e7745ac4e1ab9cce141cc064803c071c0fca5d66d051073`), bitwise identical to `supabase/staging_migration_package_045.sql`.
+  2. **W012 Evidence Records & Dataset Versions:** Registered 13 statutory evidence records and 2 W012 dataset versions (`ts_lgd_mandals_2016_v1` and `ts_lgd_mandals_2026_v1`), both with `default_status = 'OFFICIAL'`.
+  3. **621 Stable Administrative Identities:** Loaded into `public.mandals` using immutable `TS-MDL-<inception_code>` convention.
+  4. **589 Historical Versions:** Loaded into `public.mandal_versions` (`is_current = false`, `valid_to IS NOT NULL`, `ts_lgd_mandals_2016_v1`). Terminations accurately match: 8 parents at `2020-09-24`, 572 at `2022-09-26` (548 undivided + 24 parents), and 9 post-2022 parents.
+  5. **621 Current Versions:** Loaded into `public.mandal_versions` (`is_current = true`, `valid_to IS NULL`, `ts_lgd_mandals_2026_v1`). Valid from dates accurately match: 588 baseline at `2022-09-26`, 24 split products at `2022-09-26`, and 9 post-2022 creations.
+  6. **Pre-W016 Synthetic Seed Reconciliation:** Repointed child foreign keys in `mandal_constituency_map` (8 rows) and `polling_booths` (4 rows) from legacy test IDs (`TS-MDL-7101`..`7105`, `TS-MDL-5320`..`5329`) to authentic MoPR LGD identities (`TS-MDL-4315`, etc.), and deleted the 12 orphaned seed rows from `public.mandals`.
+  7. **Anchor Current-Version Pointers:** All 621 stable anchors in `public.mandals` updated with non-null `current_version_id` matching their active version UUID, and denormalized `lgd_code` matching their active version.
+  8. **Provenance Lineage:** 1,254 provenance records and 2,030 record provenance linkages established.
+  9. **Spatial Geometry Quarantine:** Exactly 0 rows in `public.entity_geometries`. Zero geometry functions executed.
+  10. **Strict Production Air-Gap:** Production (`ehfafcnimmjusyvplbah`) remains completely uncontacted, air-gapped, and untouched.
+  11. **Verification Gate:** Pre-execution static suite (21/21 PASS) and post-load semantic suite `tests/verify_w016_c3_r4_staging_load.mjs` (26/26 PASS).
+  12. **Master State:** `SUBMITTED FOR CTO ACCEPTANCE`.
+
+
 
 

@@ -52,12 +52,13 @@ const ORDERED_FILES = [
   '042_geography_relationship_engine.sql',
   '043_w015_b2_source_reconciliation.sql',
   '044_mandal_temporal_boundary_remediation.sql',
+  '045_w016_c3_mandal_identity_temporal_load.sql',
 ];
 
 console.log(`Combining ${ORDERED_FILES.length} migrations...`);
 
 let combinedSql = `-- ========================================================\n`;
-combinedSql += `-- KSHETRA ALL MIGRATIONS COMBINED (001 - 044, ${ORDERED_FILES.length} FILES)\n`;
+combinedSql += `-- KSHETRA ALL MIGRATIONS COMBINED (001 - 045, ${ORDERED_FILES.length} FILES)\n`;
 combinedSql += `-- Generated at: ${new Date().toISOString()}\n`;
 combinedSql += `-- Run this script in the Supabase SQL Editor to provision\n`;
 combinedSql += `-- the entire database schema, roles, RLS, and seed data.\n`;
