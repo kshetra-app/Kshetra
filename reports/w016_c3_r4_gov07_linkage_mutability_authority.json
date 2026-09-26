@@ -1,0 +1,81 @@
+{
+  "job": "W016-C3-R4-GOV-07",
+  "timestamp": "2026-09-26T14:58:07.024Z",
+  "determination": "PATH A: LINKAGE MUTABILITY — AUTHORIZED",
+  "status": "DESIGN READY — FINAL CTO AUTHORIZATION REQUEST",
+  "evidence": {
+    "staging": {
+      "mandalsCount": 621,
+      "versionsCount": 1210,
+      "legacyLinkagesCount": 12,
+      "allLegacyPreserved": true,
+      "stagingUntouched": true
+    },
+    "migration039": {
+      "hasRplDef": true,
+      "hasIsCanonical": true,
+      "hasLookupIdx": true,
+      "hasPrTrigger": true,
+      "hasEvTrigger": true,
+      "hasDvTrigger": true,
+      "hasRplTriggerIn039": false,
+      "hasServiceRoleGrant": true,
+      "hasServiceRoleRls": true
+    },
+    "catalog": {
+      "triggers": [
+        {
+          "name": "RI_ConstraintTrigger_c_55015",
+          "fn": "RI_FKey_check_ins"
+        },
+        {
+          "name": "RI_ConstraintTrigger_c_55016",
+          "fn": "RI_FKey_check_upd"
+        }
+      ],
+      "constraints": [
+        {
+          "name": "record_provenance_linkages_pkey",
+          "type": "p",
+          "def": "PRIMARY KEY (id)"
+        },
+        {
+          "name": "record_provenance_linkages_domain_table_domain_record_id_pr_key",
+          "type": "u",
+          "def": "UNIQUE (domain_table, domain_record_id, provenance_id)"
+        },
+        {
+          "name": "record_provenance_linkages_provenance_id_fkey",
+          "type": "f",
+          "def": "FOREIGN KEY (provenance_id) REFERENCES provenance_records(id) ON DELETE RESTRICT"
+        }
+      ],
+      "policies": [
+        {
+          "name": "Public read record_provenance_linkages",
+          "cmd": "r",
+          "roles": "{anon,authenticated}"
+        },
+        {
+          "name": "Service role full access on record_provenance_linkages",
+          "cmd": "*",
+          "roles": "{service_role}"
+        }
+      ],
+      "serviceRoleUpdateGrant": true,
+      "userDefinedTriggerCount": 0
+    },
+    "updateAudit": {
+      "exact12Scope": true,
+      "rowsRun1": 12,
+      "rowsRun2": 0,
+      "unrelatedRowsAffected": 0,
+      "isIdempotent": true
+    },
+    "hashes": {
+      "migration045": "514595697505df005e7745ac4e1ab9cce141cc064803c071c0fca5d66d051073",
+      "migration045Match": true,
+      "migration046": "559a6f428a7c704ccf87b011cae70f67543feb8e4e0533e321a7828425fde012"
+    }
+  }
+}
