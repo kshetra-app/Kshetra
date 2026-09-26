@@ -1,0 +1,392 @@
+{
+  "report_metadata": {
+    "job": "W016-C3-R3B",
+    "title": "LGD Artifact Verification & Historical Reconciliation Evidence Report",
+    "date": "2026-09-26T13:55:00+05:30",
+    "author": "Antigravity Assistant (Governed Data Track)",
+    "git_branch": "master",
+    "outcome": "LGD RECONCILIATION PASS \u2014 READY FOR CTO DATA GOVERNANCE"
+  },
+  "artifacts_verified": {
+    "mopr_lgd_zip": {
+      "path": "data/evidence/w016/downloadDir2026_09_26_13_37_12_734.zip",
+      "size_bytes": 4626818,
+      "sha256": "3e80dfc5ad0cb80621e876585f5561219ac5fc609f6e0d02d956e1d38c06a67f",
+      "source_authority": "Ministry of Panchayati Raj (MoPR), Government of India",
+      "retrieval_timestamp": "2026-09-26T13:37:12+05:30"
+    },
+    "mopr_lgd_subdistrict_xls": {
+      "path": "data/evidence/w016/mopr_lgd_subdistrict_directory_telangana_all.xls",
+      "size_bytes": 553001,
+      "sha256": "a94bc0946038373992d80609157b9801019e500ab17daf2f9e9a1e0536fa495a",
+      "format": "SpreadsheetML 2003 XML",
+      "record_count": 621,
+      "state_code": 36,
+      "state_name": "Telangana",
+      "districts_count": 33
+    },
+    "tgrac_candidate_geojson": {
+      "path": "data/geo/candidate_authoritative/tgrac_mandals_raw.json",
+      "sha256": "aca53eefa290570ce4010fa8c26a75dce995de3e3180ac9f0873f78fb41512db",
+      "feature_count": 589,
+      "source_authority": "Telangana Remote Sensing Applications Centre (TGRAC)",
+      "temporal_snapshot": "2016-10-11 post-reorganisation baseline"
+    },
+    "reconciliation_csv": {
+      "path": "docs/w016_c3_lgd_tgrac_historical_reconciliation.csv",
+      "row_count": 589,
+      "columns_count": 11
+    }
+  },
+  "reconciliation_arithmetic": {
+    "historical_tgrac_geometries": 589,
+    "intermediate_statutory_count": 612,
+    "current_lgd_export_count": 621,
+    "post_2016_to_sep2022_mandals": 23,
+    "late_2022_to_2023_mandals": 9,
+    "total_unmatched_lgd_records": 32,
+    "formula": "589 (2016 TGRAC features) + 23 (2016-Sep2022 creations) = 612; 612 + 9 (Late 2022-2023 creations) = 621 (Current LGD)"
+  },
+  "matching_status_breakdown": {
+    "RESOLVED_DIRECT": 477,
+    "RESOLVED_DETERMINISTIC": 102,
+    "RESOLVED_LEGAL_LINEAGE": 10,
+    "UNRESOLVED": 0,
+    "total_matched": 589,
+    "total_unique_lgd_codes_mapped": 589
+  },
+  "post_2016_created_mandals_list": [
+    {
+      "lgd_code": "7524",
+      "name": "Akberpet-Bhoompally",
+      "district": "Siddipet",
+      "version": "1",
+      "census_2001": "",
+      "temporal_epoch": "2016-2022_CREATION"
+    },
+    {
+      "lgd_code": "7528",
+      "name": "Aloor",
+      "district": "Nizamabad",
+      "version": "1",
+      "census_2001": "",
+      "temporal_epoch": "2016-2022_CREATION"
+    },
+    {
+      "lgd_code": "7541",
+      "name": "Bheemaram (20)",
+      "district": "Jagitial",
+      "version": "1",
+      "census_2001": "",
+      "temporal_epoch": "2016-2022_CREATION"
+    },
+    {
+      "lgd_code": "7186",
+      "name": "Chowdapur",
+      "district": "Vikarabad",
+      "version": "4",
+      "census_2001": "",
+      "temporal_epoch": "2016-2022_CREATION"
+    },
+    {
+      "lgd_code": "7188",
+      "name": "Chowtakur",
+      "district": "Sangareddy",
+      "version": "1",
+      "census_2001": "",
+      "temporal_epoch": "2016-2022_CREATION"
+    },
+    {
+      "lgd_code": "7189",
+      "name": "Dhoolmitta",
+      "district": "Siddipet",
+      "version": "1",
+      "census_2001": "",
+      "temporal_epoch": "2016-2022_CREATION"
+    },
+    {
+      "lgd_code": "7525",
+      "name": "Dongli",
+      "district": "Kamareddy",
+      "version": "1",
+      "census_2001": "",
+      "temporal_epoch": "2016-2022_CREATION"
+    },
+    {
+      "lgd_code": "7530",
+      "name": "Donkeshwar",
+      "district": "Nizamabad",
+      "version": "1",
+      "census_2001": "",
+      "temporal_epoch": "2016-2022_CREATION"
+    },
+    {
+      "lgd_code": "7540",
+      "name": "Dudyal",
+      "district": "Vikarabad",
+      "version": "2",
+      "census_2001": "",
+      "temporal_epoch": "2016-2022_CREATION"
+    },
+    {
+      "lgd_code": "7539",
+      "name": "Endapalli",
+      "district": "Jagitial",
+      "version": "2",
+      "census_2001": "",
+      "temporal_epoch": "2016-2022_CREATION"
+    },
+    {
+      "lgd_code": "7526",
+      "name": "Gattuppal",
+      "district": "Nalgonda",
+      "version": "1",
+      "census_2001": "",
+      "temporal_epoch": "2016-2022_CREATION"
+    },
+    {
+      "lgd_code": "7523",
+      "name": "Gundumal",
+      "district": "Narayanpet",
+      "version": "1",
+      "census_2001": "",
+      "temporal_epoch": "2016-2022_CREATION"
+    },
+    {
+      "lgd_code": "7538",
+      "name": "Inugurthy",
+      "district": "Mahabubabad",
+      "version": "1",
+      "census_2001": "",
+      "temporal_epoch": "2016-2022_CREATION"
+    },
+    {
+      "lgd_code": "7537",
+      "name": "Kothapally (15)",
+      "district": "Narayanpet",
+      "version": "1",
+      "census_2001": "",
+      "temporal_epoch": "2016-2022_CREATION"
+    },
+    {
+      "lgd_code": "7531",
+      "name": "Kothapallygori",
+      "district": "Jayashankar Bhupalapally",
+      "version": "1",
+      "census_2001": "",
+      "temporal_epoch": "2016-2022_CREATION"
+    },
+    {
+      "lgd_code": "7522",
+      "name": "Koukuntla",
+      "district": "Mahabubnagar",
+      "version": "1",
+      "census_2001": "",
+      "temporal_epoch": "2016-2022_CREATION"
+    },
+    {
+      "lgd_code": "7521",
+      "name": "Kukunoorpally",
+      "district": "Siddipet",
+      "version": "1",
+      "census_2001": "",
+      "temporal_epoch": "2016-2022_CREATION"
+    },
+    {
+      "lgd_code": "7190",
+      "name": "Masaipet",
+      "district": "Medak",
+      "version": "1",
+      "census_2001": "",
+      "temporal_epoch": "2016-2022_CREATION"
+    },
+    {
+      "lgd_code": "7187",
+      "name": "Mohammadabad",
+      "district": "Mahabubnagar",
+      "version": "1",
+      "census_2001": "",
+      "temporal_epoch": "2016-2022_CREATION"
+    },
+    {
+      "lgd_code": "7535",
+      "name": "Nizampet (28)",
+      "district": "Sangareddy",
+      "version": "2",
+      "census_2001": "",
+      "temporal_epoch": "2016-2022_CREATION"
+    },
+    {
+      "lgd_code": "7532",
+      "name": "Saloora",
+      "district": "Nizamabad",
+      "version": "1",
+      "census_2001": "",
+      "temporal_epoch": "2016-2022_CREATION"
+    },
+    {
+      "lgd_code": "7518",
+      "name": "Seerole",
+      "district": "Mahabubabad",
+      "version": "1",
+      "census_2001": "",
+      "temporal_epoch": "2016-2022_CREATION"
+    },
+    {
+      "lgd_code": "7516",
+      "name": "Sonala",
+      "district": "Adilabad",
+      "version": "1",
+      "census_2001": "",
+      "temporal_epoch": "2016-2022_CREATION"
+    }
+  ],
+  "late_2022_2023_created_mandals_list": [
+    {
+      "lgd_code": "7529",
+      "name": "Bhoraj",
+      "district": "Adilabad",
+      "version": "1",
+      "census_2001": "",
+      "temporal_epoch": "2022-2023_CREATION"
+    },
+    {
+      "lgd_code": "7527",
+      "name": "Gudipally",
+      "district": "Nalgonda",
+      "version": "1",
+      "census_2001": "",
+      "temporal_epoch": "2022-2023_CREATION"
+    },
+    {
+      "lgd_code": "7536",
+      "name": "Mallampally",
+      "district": "Mulugu",
+      "version": "1",
+      "census_2001": "",
+      "temporal_epoch": "2022-2023_CREATION"
+    },
+    {
+      "lgd_code": "7520",
+      "name": "Mohammadnagar",
+      "district": "Kamareddy",
+      "version": "1",
+      "census_2001": "",
+      "temporal_epoch": "2022-2023_CREATION"
+    },
+    {
+      "lgd_code": "7519",
+      "name": "Palwancha",
+      "district": "Kamareddy",
+      "version": "1",
+      "census_2001": "",
+      "temporal_epoch": "2022-2023_CREATION"
+    },
+    {
+      "lgd_code": "7534",
+      "name": "Pothangal",
+      "district": "Nizamabad",
+      "version": "1",
+      "census_2001": "",
+      "temporal_epoch": "2022-2023_CREATION"
+    },
+    {
+      "lgd_code": "7515",
+      "name": "Sathnala",
+      "district": "Adilabad",
+      "version": "1",
+      "census_2001": "",
+      "temporal_epoch": "2022-2023_CREATION"
+    },
+    {
+      "lgd_code": "7533",
+      "name": "Yedula",
+      "district": "Wanaparthy",
+      "version": "2",
+      "census_2001": "",
+      "temporal_epoch": "2022-2023_CREATION"
+    },
+    {
+      "lgd_code": "7517",
+      "name": "Yerravalli",
+      "district": "Jogulamba Gadwal",
+      "version": "2",
+      "census_2001": "",
+      "temporal_epoch": "2022-2023_CREATION"
+    }
+  ],
+  "quality_gates": [
+    {
+      "gate": "QG-01",
+      "name": "Raw LGD ZIP Preservation & Checksum",
+      "status": "PASS",
+      "details": "Bitwise preserved, SHA-256: 3e80dfc5ad0cb806..."
+    },
+    {
+      "gate": "QG-02",
+      "name": "Raw LGD Sub-district XLS Extraction",
+      "status": "PASS",
+      "details": "Bitwise preserved, SHA-256: a94bc09460383739..."
+    },
+    {
+      "gate": "QG-03",
+      "name": "LGD Sub-district Total Row Count",
+      "status": "PASS",
+      "details": "Exactly 621 subdistrict rows verified"
+    },
+    {
+      "gate": "QG-04",
+      "name": "LGD Unique Subdistrict Codes",
+      "status": "PASS",
+      "details": "621 unique integer LGD codes, 0 duplicates, 0 nulls"
+    },
+    {
+      "gate": "QG-05",
+      "name": "LGD District Completeness",
+      "status": "PASS",
+      "details": "All 33 Telangana districts present and validated"
+    },
+    {
+      "gate": "QG-06",
+      "name": "TGRAC 589 1-to-1 Coverage",
+      "status": "PASS",
+      "details": "Exactly 589/589 candidate features resolved uniquely"
+    },
+    {
+      "gate": "QG-07",
+      "name": "No Overlapping LGD Mappings",
+      "status": "PASS",
+      "details": "589 distinct LGD codes mapped, 0 collisions"
+    },
+    {
+      "gate": "QG-08",
+      "name": "Arithmetic Reconciliation 589+23=612",
+      "status": "PASS",
+      "details": "23 post-2016 gazetted mandals verified with blank 2001 codes"
+    },
+    {
+      "gate": "QG-09",
+      "name": "Arithmetic Reconciliation 612+9=621",
+      "status": "PASS",
+      "details": "9 late-2022/2023 gazetted mandals verified with blank 2001 codes"
+    },
+    {
+      "gate": "QG-10",
+      "name": "Temporal Validity Interval Defined",
+      "status": "PASS",
+      "details": "[2016-10-11, 2022-09-01) established for 2016 historical snapshot"
+    },
+    {
+      "gate": "QG-11",
+      "name": "Zero Database Mutation / DDL Enforcement",
+      "status": "PASS",
+      "details": "Zero staging/prod mutations executed; strictly read-only evidence track"
+    },
+    {
+      "gate": "QG-12",
+      "name": "Governance Package Specification Readiness",
+      "status": "PASS",
+      "details": "W012 dataset ts_lgd_mandals_2016_v1 and DML load specifications ready for CTO approval"
+    }
+  ]
+}
