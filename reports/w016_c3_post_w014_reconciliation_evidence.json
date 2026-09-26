@@ -1,0 +1,224 @@
+{
+  "job": "W016-C3-R1",
+  "title": "Post-W014 Geography Reconciliation & Revalidation Evidence",
+  "authority": "CTO Directive — W016-C3-R1 EXECUTE NOW",
+  "timestamp": "2026-09-26T05:40:00.000Z",
+  "disposition": "RECONCILIATION_PASS — READY FOR CTO AUTHORIZATION",
+  "targetEnvironment": {
+    "projectRef": "fkpigozcqnmcvofuksar",
+    "name": "panIN-staging",
+    "url": "https://fkpigozcqnmcvofuksar.supabase.co",
+    "inspectionMode": "READ-ONLY SELECT & PostgREST Schema Inspection",
+    "mutationsAttempted": 0,
+    "mutationsExecuted": 0
+  },
+  "productionEnvironment": {
+    "projectRef": "ehfafcnimmjusyvplbah",
+    "name": "panIN-production",
+    "status": "STRICTLY AIR-GAPPED & UNTOUCHED",
+    "queriesExecuted": 0
+  },
+  "gitCoordinates": {
+    "headSha": "346de48ea471487f8c62b2e9c3bdedd31349ac38",
+    "originMasterSha": "346de48ea471487f8c62b2e9c3bdedd31349ac38",
+    "synchronized": true,
+    "workingTreeStatus": "CLEAN",
+    "uncommittedChanges": false
+  },
+  "phase1_repositoryReconciliation": {
+    "migration044": {
+      "file": "supabase/migrations/044_mandal_temporal_boundary_remediation.sql",
+      "exists": true,
+      "sha256": "58CF6BA83B0F86E403934B59D20CE12B2064A42B9F68A90B072C397CBA46C148",
+      "commit": "1405fb821791963ebc76c882d83522a0788223aa",
+      "status": "RATIFIED / ACCEPTED / COMPLETE / CLOSED (DEC-066)"
+    },
+    "migrationCount": 46,
+    "latestMigration": "044_mandal_temporal_boundary_remediation.sql",
+    "entityGeometriesInMigrations": false,
+    "geometryIngestionCodeInRepo": false,
+    "uncommittedW014OrW016Changes": false,
+    "w016Artifacts": [
+      { "path": "docs/w016_c3_geometry_ingestion_preflight.md", "sizeBytes": 32043, "status": "EXISTS" },
+      { "path": "docs/w016_c3_geometry_ingestion_preflight.json", "sizeBytes": 24983, "status": "EXISTS" },
+      { "path": "docs/w016_c2_candidate_geometry_reconciliation.md", "sizeBytes": 16899, "status": "EXISTS" },
+      { "path": "docs/w016_c2_candidate_geometry_reconciliation.json", "sizeBytes": 10736, "status": "EXISTS" },
+      { "path": "docs/w016_c1_authoritative_geometry_acquisition.md", "sizeBytes": 20324, "status": "EXISTS" },
+      { "path": "docs/w016_c1_authoritative_geometry_acquisition.json", "sizeBytes": 14133, "status": "EXISTS" },
+      { "path": "docs/w016_b2_technical_spatial_rehearsal.md", "sizeBytes": 19119, "status": "EXISTS" },
+      { "path": "docs/w016_b2_technical_spatial_rehearsal.json", "sizeBytes": 12542, "status": "EXISTS" },
+      { "path": "docs/w016_b1_authoritative_geometry_source_preflight.md", "sizeBytes": 39051, "status": "EXISTS" },
+      { "path": "docs/w016_b1_authoritative_geometry_source_preflight.json", "sizeBytes": 17595, "status": "EXISTS" }
+    ]
+  },
+  "phase2_liveStagingReconciliation": {
+    "temporalObjects": {
+      "mandals": {
+        "exists": true,
+        "rowCount": 12,
+        "columns": [
+          "id", "name", "local_name", "state_code", "district", "lgd_code", "type",
+          "headquarters", "area_sq_km", "population_2011", "centroid", "boundary",
+          "created_at", "updated_at", "district_id", "primary_dataset_version_id",
+          "current_version_id", "is_active"
+        ],
+        "hasCurrentVersionId": true,
+        "hasDistrictId": true
+      },
+      "mandal_versions": {
+        "exists": true,
+        "rowCount": 0,
+        "columns": [
+          "id", "mandal_id", "district_id", "version_code", "name", "name_te",
+          "headquarters", "lgd_code", "census_code_2011", "valid_from", "valid_to",
+          "is_current", "primary_dataset_version_id", "metadata", "created_at", "updated_at"
+        ],
+        "hasValidFrom": true,
+        "hasValidTo": true,
+        "hasIsCurrent": true,
+        "hasMandalId": true,
+        "hasDatasetVersionId": true
+      },
+      "state_versions": { "exists": true, "rowCount": 1 },
+      "district_versions": { "exists": true, "rowCount": 33 },
+      "parliamentary_constituency_versions": { "exists": true, "rowCount": 17 },
+      "constituency_versions": { "exists": true, "rowCount": 119 }
+    },
+    "constraintsAndTriggers": {
+      "unconditionalGistNoOverlap": "ABSENT (Verified via 18-check verifier)",
+      "partialHistoricalGistNoOverlap": "PRESENT (uq_mandal_versions_historical_no_overlap with valid_to IS NOT NULL)",
+      "fn_guard_mandal_version_temporal_bounds": "PRESENT (Owner: panin_boundary_definer, SECURITY DEFINER)",
+      "trg_guard_mandal_version_temporal_bounds": "PRESENT (BEFORE INSERT/UPDATE ON mandal_versions)",
+      "fn_guard_mandal_current_version": "PRESENT (Reciprocal ERR-W014-006 protection active)",
+      "fn_transition_mandal_current_version": "PRESENT (Owner: panin_boundary_definer, SECURITY DEFINER)",
+      "mandalVersionsRls": "ENABLED & FORCED (rowsecurity=true, relforcerowsecurity=true)"
+    }
+  },
+  "phase3_w016C3ModelRevalidation": {
+    "architectureStatus": "VALID_AND_CONSISTENT",
+    "targetRelation": "public.entity_geometries",
+    "fkTargeting": "Typed nullable FK mandal_version_id -> public.mandal_versions(id) ON DELETE RESTRICT",
+    "noStableMandalShortcut": true,
+    "checkExactOneTarget": "CHECK (num_nonnulls(constituency_version_id, district_version_id, state_version_id, pc_version_id, mandal_version_id) = 1)",
+    "checkTypeAlignment": "CHECK (entity_type matches populated version FK)",
+    "noDynamicClockExpressions": "CHECK (Zero CURRENT_DATE / now() in CHECK constraints; static interval evaluation)",
+    "currentInvariants": "is_current = true REQUIRES (status = 'OFFICIAL' AND valid_to IS NULL)",
+    "quarantineEnforcement": "Candidate vectors quarantined under status = 'UNVERIFIED_STATE_GIS_CANDIDATE' and is_current = false",
+    "compatibilityWithW014Schema": "100% structurally and semantically compatible with live public.mandal_versions"
+  },
+  "phase4_mandalVersionCompatibility": {
+    "historicalSnapshotInterval": "[2016-10-11, 2022-09-01)",
+    "liveStagingMandalVersionsCount": 0,
+    "liveStagingMandalsCount": 12,
+    "requiredHistoricalRowsExist": false,
+    "orphanedVersionRows": 0,
+    "discrepancy589vs612Preserved": true,
+    "fabricatedEntities": 0,
+    "reconciliationFinding": "The 589 TGRAC historical mandal geometries cannot be mapped to live mandal_versions.id at this time because public.mandal_versions contains 0 rows on staging. This is a DATA READINESS GAP (Category F), not an architectural flaw. The W016-C3 model correctly dictates that geometry ingestion must be preceded by canonical mandal and mandal_versions data ingestion."
+  },
+  "phase5_w012W015Compatibility": {
+    "w012Compatibility": {
+      "dataset_versions": "EXISTS (Includes W014 acceptance fixture ts_lgd_mandals_staging_official_v1 with record_count=589)",
+      "evidence_records": "EXISTS (Includes fixture e0140000-0000-0000-0000-000000000041)",
+      "provenance_records": "EXISTS (Strict immutability triggers active)",
+      "immutableLineagePreserved": true
+    },
+    "w015Compatibility": {
+      "mandal_constituency_map": "EXISTS (8 rows, anchored directly to mandals.id)",
+      "polling_booths": "EXISTS (4 rows, anchored directly to mandals.id)",
+      "mandalsDistrictId": "EXISTS (Foreign key to districts.id preserved)",
+      "relationalPrimacyRule": "PROVEN: geometry -> mandal_version -> mandals (spatial temporal representation) vs W015 relation -> mandals (statutory operational relation). Zero weakening of W015 stable relational identity."
+    }
+  },
+  "phase6_readinessMatrix": [
+    {
+      "requirement": "W014 mandal_versions exists",
+      "result": "PASS",
+      "evidence": "Catalog definition in OpenAPI and pg_catalog confirms public.mandal_versions exists with 16 columns."
+    },
+    {
+      "requirement": "Historical versions resolvable",
+      "result": "FAIL",
+      "evidence": "Staging query returns count=0 in public.mandal_versions; historical interval rows [2016-10-11, 2022-09-01) not yet ingested."
+    },
+    {
+      "requirement": "Stable mandal identity resolvable",
+      "result": "FAIL",
+      "evidence": "Staging public.mandals contains only 12 seed records; 589 statutory mandal identities not yet populated on staging."
+    },
+    {
+      "requirement": "W012 dataset linkage available",
+      "result": "PASS",
+      "evidence": "public.dataset_versions table exists; acceptance fixture ts_lgd_mandals_staging_official_v1 (589 records) and baseline versions active."
+    },
+    {
+      "requirement": "W012 provenance linkage available",
+      "result": "PASS",
+      "evidence": "public.provenance_records and public.evidence_records tables exist with verified FKs and immutability triggers."
+    },
+    {
+      "requirement": "Exact historical temporal interval available",
+      "result": "PASS",
+      "evidence": "W014 schema and Migration 044 partial GiST index accommodate closed-open historical intervals [valid_from, valid_to)."
+    },
+    {
+      "requirement": "No fabricated 23 missing mandals",
+      "result": "PASS",
+      "evidence": "Reconciliation preserves the 589-geometry boundary without synthesizing the 23 divergent mandals; documented in C2/C3."
+    },
+    {
+      "requirement": "Candidate geometry can remain quarantined",
+      "result": "PASS",
+      "evidence": "W016-C3 status UNVERIFIED_STATE_GIS_CANDIDATE is structurally isolated from canonical reads via status and is_current=false."
+    },
+    {
+      "requirement": "Current legal geometry isolation",
+      "result": "PASS",
+      "evidence": "chk_geometry_current_invariants enforces that non-OFFICIAL or bounded geometries cannot have is_current=true."
+    },
+    {
+      "requirement": "Scenario isolation",
+      "result": "PASS",
+      "evidence": "Delimitation regime and temporal classification architecture prevents contamination of legal geographic truth."
+    },
+    {
+      "requirement": "W015 relational primacy preserved",
+      "result": "PASS",
+      "evidence": "W015 relations (mandal_constituency_map, polling_booths) remain directly keyed to mandals.id, entirely independent of geometry."
+    },
+    {
+      "requirement": "Migration 044 prerequisite satisfied",
+      "result": "PASS",
+      "evidence": "Migration 044 applied and ratified on panIN-staging (18/18 Category-A SELECT checks passed, Option A guard active)."
+    },
+    {
+      "requirement": "Geometry ingestion implementation authorized",
+      "result": "MUST REMAIN NOT AUTHORIZED",
+      "evidence": "CTO directive commands RECONCILIATION ONLY; zero geometry ingestion or migration execution is authorized."
+    }
+  ],
+  "phase7_blockersEvaluation": [
+    {
+      "category": "A. NO ISSUE",
+      "finding": "W014 prerequisite satisfaction and Migration 044 Option A boundary remediation are complete and ratified on staging."
+    },
+    {
+      "category": "B. W016-C3 DESIGN REMAINS VALID",
+      "finding": "Unified entity_geometries model with typed nullable version foreign keys and strict currentness invariants remains 100% compatible with W014 schema."
+    },
+    {
+      "category": "F. DATA READINESS GAP",
+      "finding": "The 589 historical mandal geometries cannot be mapped to live database versions because public.mandals (12 rows) and public.mandal_versions (0 rows) have not yet been populated with historical entities. Future ingestion sequence must ingest mandal versions before geometry."
+    },
+    {
+      "category": "D. IMPLEMENTATION GAP",
+      "finding": "Migration 045 (entity_geometries DDL) and geometry ingestion pipelines have not been authored or applied, pending explicit CTO authorization."
+    }
+  ],
+  "complianceStatements": {
+    "zeroGeometryIngested": true,
+    "productionUntouched": true,
+    "noNewMigrationCreatedOrExecuted": true,
+    "noSelfAcceptance": true
+  }
+}
