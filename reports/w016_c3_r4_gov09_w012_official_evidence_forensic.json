@@ -1,0 +1,381 @@
+{
+  "job": "W016-C3-R4-GOV-09",
+  "title": "W012 OFFICIAL-Provenance Evidence Governance Remediation Forensic Investigation",
+  "status": "DESIGN COMPLETE — READY FOR CTO REMEDIATION AUTHORIZATION",
+  "investigation_mode": "READ-ONLY FORENSIC / ZERO MUTATION",
+  "summary": {
+    "affected_rows_count": 12,
+    "root_cause": "Migration 046 directly INSERTed 12 supersession provenance records with status = OFFICIAL and verification_evidence_id = NULL. Because trg_check_provenance_status_transition is a BEFORE UPDATE trigger, PostgreSQL kernel accepted the INSERT, leaving the records in an architecturally non-compliant OFFICIAL state without an authoritative evidence pointer.",
+    "recommended_path": "PATH A: AUTHORIZED UPDATE OF CLASSIFICATION B LIFECYCLE FIELDS",
+    "remediation_sql_proposal": "UPDATE public.provenance_records\nSET verification_evidence_id = 'e0160000-0000-0000-0000-000000002026'::uuid,\n    verified_by = 'CTO / LGD Statewide Export Verification'\nWHERE transformation_type = 'pilot_to_statutory_supersession'\n  AND verification_evidence_id IS NULL;",
+    "dml_executed_during_job": false,
+    "ddl_executed_during_job": false
+  },
+  "quality_gates": {
+    "GOV09-01": {
+      "pass": true,
+      "title": "12 affected rows identified exactly",
+      "details": "All 12 supersession provenance UUIDs enumerated with exact parent linkages"
+    },
+    "GOV09-02": {
+      "pass": true,
+      "title": "actual provenance mutation trigger/function inspected",
+      "details": "prevent_provenance_mutation() and check_status_transition_invariant() inspected from catalog"
+    },
+    "GOV09-03": {
+      "pass": true,
+      "title": "field-level UPDATE permissions proven",
+      "details": "Proven that verification_evidence_id and verified_by are Class B lifecycle fields permitted for UPDATE"
+    },
+    "GOV09-04": {
+      "pass": true,
+      "title": "append-only semantics proven",
+      "details": "Class A historical fields proven strictly immutable by trigger; update of lifecycle fields is W012-native"
+    },
+    "GOV09-05": {
+      "pass": true,
+      "title": "evidence artifact inspected from actual catalog",
+      "details": "Row e016...2026 inspected directly from staging evidence_records"
+    },
+    "GOV09-06": {
+      "pass": true,
+      "title": "evidence applicability evaluated for all 12",
+      "details": "12-row applicability matrix completed with 100% YES concordance"
+    },
+    "GOV09-07": {
+      "pass": true,
+      "title": "no invented evidence",
+      "details": "Only established catalog evidence artifact e016...2026 utilized"
+    },
+    "GOV09-08": {
+      "pass": true,
+      "title": "no DML executed",
+      "details": "Zero INSERT/UPDATE/DELETE/TRUNCATE executed against staging"
+    },
+    "GOV09-09": {
+      "pass": true,
+      "title": "no DDL executed",
+      "details": "Zero schema/trigger/index modifications"
+    },
+    "GOV09-10": {
+      "pass": true,
+      "title": "no dataset_versions mutation",
+      "details": "Dataset versions 2023 and 2026 remain untouched"
+    },
+    "GOV09-11": {
+      "pass": true,
+      "title": "no provenance_records mutation",
+      "details": "All provenance records remain in their exact post-046 state"
+    },
+    "GOV09-12": {
+      "pass": true,
+      "title": "no lineage mutation",
+      "details": "Geography entity lineage rows remain completely untouched"
+    },
+    "GOV09-13": {
+      "pass": true,
+      "title": "no geometry",
+      "details": "public.entity_geometries row count remains strictly 0"
+    },
+    "GOV09-14": {
+      "pass": true,
+      "title": "staging counts unchanged",
+      "details": "mandals=621, mandal_versions=1210, current=621, historical=589, geometries=0"
+    },
+    "GOV09-15": {
+      "pass": true,
+      "title": "Migration 045 unchanged",
+      "details": "SHA-256 remains 514595697505df005e7745ac4e1ab9cce141cc064803c071c0fca5d66d051073"
+    },
+    "GOV09-16": {
+      "pass": true,
+      "title": "Migration 046 unchanged",
+      "details": "SHA-256 remains 559a6f428a7c704ccf87b011cae70f67543feb8e4e0533e321a7828425fde012"
+    },
+    "GOV09-17": {
+      "pass": true,
+      "title": "production untouched",
+      "details": "Zero connections to ehfafcnimmjusyvplbah"
+    },
+    "GOV09-18": {
+      "pass": true,
+      "title": "exact remediation path established or explicitly BLOCKED",
+      "details": "Path A established with empirical PostgreSQL 17 proof; ready for CTO authorization"
+    },
+    "GOV09-19": {
+      "pass": true,
+      "title": "no speculative schema redesign",
+      "details": "Uses existing W012 Classification B lifecycle update capability"
+    },
+    "GOV09-20": {
+      "pass": true,
+      "title": "no self-acceptance",
+      "details": "Submitted strictly for CTO review and authorization"
+    }
+  },
+  "mutation_matrix": [
+    {
+      "column": "id",
+      "insert_allowed": true,
+      "update_allowed": false,
+      "delete_allowed": false,
+      "trigger_restriction": "prevent_provenance_mutation() IMMUTABILITY VIOLATION",
+      "classification": "Class A (Immutable Historical Field)"
+    },
+    {
+      "column": "dataset_version_id",
+      "insert_allowed": true,
+      "update_allowed": false,
+      "delete_allowed": false,
+      "trigger_restriction": "prevent_provenance_mutation() IMMUTABILITY VIOLATION",
+      "classification": "Class A (Immutable Historical Field)"
+    },
+    {
+      "column": "source_record_id",
+      "insert_allowed": true,
+      "update_allowed": false,
+      "delete_allowed": false,
+      "trigger_restriction": "prevent_provenance_mutation() IMMUTABILITY VIOLATION",
+      "classification": "Class A (Immutable Historical Field)"
+    },
+    {
+      "column": "parent_provenance_id",
+      "insert_allowed": true,
+      "update_allowed": false,
+      "delete_allowed": false,
+      "trigger_restriction": "prevent_provenance_mutation() IMMUTABILITY VIOLATION",
+      "classification": "Class A (Immutable Historical Field)"
+    },
+    {
+      "column": "status",
+      "insert_allowed": true,
+      "update_allowed": true,
+      "delete_allowed": false,
+      "trigger_restriction": "check_status_transition_invariant() (SCENARIO->OFFICIAL blocked; elevation to OFFICIAL requires evidence)",
+      "classification": "Class B (Controlled Lifecycle Field)"
+    },
+    {
+      "column": "transformation_type",
+      "insert_allowed": true,
+      "update_allowed": false,
+      "delete_allowed": false,
+      "trigger_restriction": "prevent_provenance_mutation() IMMUTABILITY VIOLATION",
+      "classification": "Class A (Immutable Historical Field)"
+    },
+    {
+      "column": "transform_version",
+      "insert_allowed": true,
+      "update_allowed": false,
+      "delete_allowed": false,
+      "trigger_restriction": "prevent_provenance_mutation() IMMUTABILITY VIOLATION",
+      "classification": "Class A (Immutable Historical Field)"
+    },
+    {
+      "column": "operator",
+      "insert_allowed": true,
+      "update_allowed": false,
+      "delete_allowed": false,
+      "trigger_restriction": "prevent_provenance_mutation() IMMUTABILITY VIOLATION",
+      "classification": "Class A (Immutable Historical Field)"
+    },
+    {
+      "column": "verified_by",
+      "insert_allowed": true,
+      "update_allowed": true,
+      "delete_allowed": false,
+      "trigger_restriction": "Not checked by prevent_provenance_mutation(); restricted to service_role",
+      "classification": "Class B (Controlled Lifecycle Field)"
+    },
+    {
+      "column": "verification_evidence_id",
+      "insert_allowed": true,
+      "update_allowed": true,
+      "delete_allowed": false,
+      "trigger_restriction": "Not checked by prevent_provenance_mutation(); must satisfy FK evidence_records(id)",
+      "classification": "Class B (Controlled Lifecycle Field)"
+    },
+    {
+      "column": "metadata",
+      "insert_allowed": true,
+      "update_allowed": true,
+      "delete_allowed": false,
+      "trigger_restriction": "Not checked by prevent_provenance_mutation(); JSONB dictionary",
+      "classification": "Controlled Extended Metadata"
+    },
+    {
+      "column": "created_at",
+      "insert_allowed": true,
+      "update_allowed": false,
+      "delete_allowed": false,
+      "trigger_restriction": "prevent_provenance_mutation() IMMUTABILITY VIOLATION",
+      "classification": "Class A (Immutable Historical Field)"
+    }
+  ],
+  "evidence_artifact": {
+    "id": "e0160000-0000-0000-0000-000000002026",
+    "artifact_name": "mopr_lgd_subdistrict_directory_telangana_all.json",
+    "artifact_sha256": "54d512e55b97fde163d100053dd48044cec6a744fb4bed392580282bcede1509",
+    "verification_authority": "Ministry of Panchayati Raj / Local Government Directory (MoPR/LGD)",
+    "verified_by": "CTO / LGD Statewide Export Verification",
+    "verification_notes": "Official MoPR/LGD Telangana statewide export retrieved 2026-09-26 containing 621 sub-districts",
+    "verified_at": "2026-09-26T08:07:12+00:00",
+    "dataset_version_linkage": "ts_lgd_mandals_2026_v1"
+  },
+  "applicability_matrix": [
+    {
+      "legacy_id": "TS-MDL-7101",
+      "canonical_id": "TS-MDL-4315",
+      "legacy_provenance_id": "251ef2cf-4a5d-b010-ba96-a74a4ec9241b",
+      "supersession_provenance_id": "2e5a417a-df4a-988a-5326-010cd5192d33",
+      "candidate_evidence_id": "e0160000-0000-0000-0000-000000002026",
+      "evidence_source": "Ministry of Panchayati Raj / Local Government Directory (MoPR/LGD)",
+      "evidence_checksum": "54d512e55b97fde163d100053dd48044cec6a744fb4bed392580282bcede1509",
+      "evidence_supports_identity_replacement": "YES",
+      "evidence_supports_supersession_transformation": "YES",
+      "reason": "Authoritative MoPR/LGD 2026 statewide directory export establishes authentic statutory LGD code 4315 and subdistrict name 'Sirpur (T)' replacing pre-W016 synthetic pilot code 7101"
+    },
+    {
+      "legacy_id": "TS-MDL-7102",
+      "canonical_id": "TS-MDL-4318",
+      "legacy_provenance_id": "07d06766-c729-dc17-a00f-317fac6f800f",
+      "supersession_provenance_id": "5e867050-d4f4-caa7-c838-965f55e8f623",
+      "candidate_evidence_id": "e0160000-0000-0000-0000-000000002026",
+      "evidence_source": "Ministry of Panchayati Raj / Local Government Directory (MoPR/LGD)",
+      "evidence_checksum": "54d512e55b97fde163d100053dd48044cec6a744fb4bed392580282bcede1509",
+      "evidence_supports_identity_replacement": "YES",
+      "evidence_supports_supersession_transformation": "YES",
+      "reason": "Authoritative MoPR/LGD 2026 statewide directory export establishes authentic statutory LGD code 4318 and subdistrict name 'Kagaznagar' replacing pre-W016 synthetic pilot code 7102"
+    },
+    {
+      "legacy_id": "TS-MDL-7103",
+      "canonical_id": "TS-MDL-4329",
+      "legacy_provenance_id": "f0d1157e-fa94-560d-2220-8f61540f13cc",
+      "supersession_provenance_id": "7a8b07ec-59ac-c65f-0fc4-94e73c36f6ac",
+      "candidate_evidence_id": "e0160000-0000-0000-0000-000000002026",
+      "evidence_source": "Ministry of Panchayati Raj / Local Government Directory (MoPR/LGD)",
+      "evidence_checksum": "54d512e55b97fde163d100053dd48044cec6a744fb4bed392580282bcede1509",
+      "evidence_supports_identity_replacement": "YES",
+      "evidence_supports_supersession_transformation": "YES",
+      "reason": "Authoritative MoPR/LGD 2026 statewide directory export establishes authentic statutory LGD code 4329 and subdistrict name 'Dahegoan' replacing pre-W016 synthetic pilot code 7103"
+    },
+    {
+      "legacy_id": "TS-MDL-7104",
+      "canonical_id": "TS-MDL-4333",
+      "legacy_provenance_id": "07ecfa1b-7ef1-120f-35cc-d8b2f95c8c17",
+      "supersession_provenance_id": "c5226d74-8492-b850-9306-b6f0172bad65",
+      "candidate_evidence_id": "e0160000-0000-0000-0000-000000002026",
+      "evidence_source": "Ministry of Panchayati Raj / Local Government Directory (MoPR/LGD)",
+      "evidence_checksum": "54d512e55b97fde163d100053dd48044cec6a744fb4bed392580282bcede1509",
+      "evidence_supports_identity_replacement": "YES",
+      "evidence_supports_supersession_transformation": "YES",
+      "reason": "Authoritative MoPR/LGD 2026 statewide directory export establishes authentic statutory LGD code 4333 and subdistrict name 'Tiryani' replacing pre-W016 synthetic pilot code 7104"
+    },
+    {
+      "legacy_id": "TS-MDL-7105",
+      "canonical_id": "TS-MDL-4319",
+      "legacy_provenance_id": "8328a0db-a5a7-645d-f161-c5cfbc274a48",
+      "supersession_provenance_id": "fe9e32df-b654-5c88-6f9b-5ea023a34872",
+      "candidate_evidence_id": "e0160000-0000-0000-0000-000000002026",
+      "evidence_source": "Ministry of Panchayati Raj / Local Government Directory (MoPR/LGD)",
+      "evidence_checksum": "54d512e55b97fde163d100053dd48044cec6a744fb4bed392580282bcede1509",
+      "evidence_supports_identity_replacement": "YES",
+      "evidence_supports_supersession_transformation": "YES",
+      "reason": "Authoritative MoPR/LGD 2026 statewide directory export establishes authentic statutory LGD code 4319 and subdistrict name 'Asifabad' replacing pre-W016 synthetic pilot code 7105"
+    },
+    {
+      "legacy_id": "TS-MDL-5320",
+      "canonical_id": "TS-MDL-4353",
+      "legacy_provenance_id": "2f1771fb-51b4-861f-8c68-622bdb7cdc65",
+      "supersession_provenance_id": "7b3fb40f-4705-a5d1-6875-baedf09b608b",
+      "candidate_evidence_id": "e0160000-0000-0000-0000-000000002026",
+      "evidence_source": "Ministry of Panchayati Raj / Local Government Directory (MoPR/LGD)",
+      "evidence_checksum": "54d512e55b97fde163d100053dd48044cec6a744fb4bed392580282bcede1509",
+      "evidence_supports_identity_replacement": "YES",
+      "evidence_supports_supersession_transformation": "YES",
+      "reason": "Authoritative MoPR/LGD 2026 statewide directory export establishes authentic statutory LGD code 4353 and subdistrict name 'Luxettipet' replacing pre-W016 synthetic pilot code 5320"
+    },
+    {
+      "legacy_id": "TS-MDL-5321",
+      "canonical_id": "TS-MDL-4354",
+      "legacy_provenance_id": "3040f578-fd6e-ea04-a3ab-0cbc6403cc1e",
+      "supersession_provenance_id": "f5dbaa0a-395a-2396-4c39-ffd73db413bf",
+      "candidate_evidence_id": "e0160000-0000-0000-0000-000000002026",
+      "evidence_source": "Ministry of Panchayati Raj / Local Government Directory (MoPR/LGD)",
+      "evidence_checksum": "54d512e55b97fde163d100053dd48044cec6a744fb4bed392580282bcede1509",
+      "evidence_supports_identity_replacement": "YES",
+      "evidence_supports_supersession_transformation": "YES",
+      "reason": "Authoritative MoPR/LGD 2026 statewide directory export establishes authentic statutory LGD code 4354 and subdistrict name 'Mancherial' replacing pre-W016 synthetic pilot code 5321"
+    },
+    {
+      "legacy_id": "TS-MDL-5322",
+      "canonical_id": "TS-MDL-4348",
+      "legacy_provenance_id": "d9ca1e4e-4913-673b-efa1-1fdb0c74a17a",
+      "supersession_provenance_id": "146cfa88-c2b4-38c2-6d05-5fe03dda5b5d",
+      "candidate_evidence_id": "e0160000-0000-0000-0000-000000002026",
+      "evidence_source": "Ministry of Panchayati Raj / Local Government Directory (MoPR/LGD)",
+      "evidence_checksum": "54d512e55b97fde163d100053dd48044cec6a744fb4bed392580282bcede1509",
+      "evidence_supports_identity_replacement": "YES",
+      "evidence_supports_supersession_transformation": "YES",
+      "reason": "Authoritative MoPR/LGD 2026 statewide directory export establishes authentic statutory LGD code 4348 and subdistrict name 'Dandepally' replacing pre-W016 synthetic pilot code 5322"
+    },
+    {
+      "legacy_id": "TS-MDL-5323",
+      "canonical_id": "TS-MDL-4356",
+      "legacy_provenance_id": "f5660741-308b-314c-b59b-5ae404000c91",
+      "supersession_provenance_id": "06317aee-6165-6452-c9b5-0d7553fb7625",
+      "candidate_evidence_id": "e0160000-0000-0000-0000-000000002026",
+      "evidence_source": "Ministry of Panchayati Raj / Local Government Directory (MoPR/LGD)",
+      "evidence_checksum": "54d512e55b97fde163d100053dd48044cec6a744fb4bed392580282bcede1509",
+      "evidence_supports_identity_replacement": "YES",
+      "evidence_supports_supersession_transformation": "YES",
+      "reason": "Authoritative MoPR/LGD 2026 statewide directory export establishes authentic statutory LGD code 4356 and subdistrict name 'Chennur' replacing pre-W016 synthetic pilot code 5323"
+    },
+    {
+      "legacy_id": "TS-MDL-5324",
+      "canonical_id": "TS-MDL-4350",
+      "legacy_provenance_id": "2785156c-5b34-50e8-1e9a-7d21ec78a842",
+      "supersession_provenance_id": "fcfc5d9f-9527-4221-da29-ba5691271d00",
+      "candidate_evidence_id": "e0160000-0000-0000-0000-000000002026",
+      "evidence_source": "Ministry of Panchayati Raj / Local Government Directory (MoPR/LGD)",
+      "evidence_checksum": "54d512e55b97fde163d100053dd48044cec6a744fb4bed392580282bcede1509",
+      "evidence_supports_identity_replacement": "YES",
+      "evidence_supports_supersession_transformation": "YES",
+      "reason": "Authoritative MoPR/LGD 2026 statewide directory export establishes authentic statutory LGD code 4350 and subdistrict name 'Bellampally' replacing pre-W016 synthetic pilot code 5324"
+    },
+    {
+      "legacy_id": "TS-MDL-5328",
+      "canonical_id": "TS-MDL-4351",
+      "legacy_provenance_id": "1df7c30c-208c-6cfe-ed50-719dc914701b",
+      "supersession_provenance_id": "509db02e-c7bd-149c-9f10-48c47070e2e3",
+      "candidate_evidence_id": "e0160000-0000-0000-0000-000000002026",
+      "evidence_source": "Ministry of Panchayati Raj / Local Government Directory (MoPR/LGD)",
+      "evidence_checksum": "54d512e55b97fde163d100053dd48044cec6a744fb4bed392580282bcede1509",
+      "evidence_supports_identity_replacement": "YES",
+      "evidence_supports_supersession_transformation": "YES",
+      "reason": "Authoritative MoPR/LGD 2026 statewide directory export establishes authentic statutory LGD code 4351 and subdistrict name 'Kotapally' replacing pre-W016 synthetic pilot code 5328"
+    },
+    {
+      "legacy_id": "TS-MDL-5329",
+      "canonical_id": "TS-MDL-6227",
+      "legacy_provenance_id": "23806a9a-5532-3613-e8ce-cebe1800467e",
+      "supersession_provenance_id": "1c709e2a-884a-ad3f-ead5-643cf46fc2ac",
+      "candidate_evidence_id": "e0160000-0000-0000-0000-000000002026",
+      "evidence_source": "Ministry of Panchayati Raj / Local Government Directory (MoPR/LGD)",
+      "evidence_checksum": "54d512e55b97fde163d100053dd48044cec6a744fb4bed392580282bcede1509",
+      "evidence_supports_identity_replacement": "YES",
+      "evidence_supports_supersession_transformation": "YES",
+      "reason": "Authoritative MoPR/LGD 2026 statewide directory export establishes authentic statutory LGD code 6227 and subdistrict name 'Hajipur' replacing pre-W016 synthetic pilot code 5329"
+    }
+  ],
+  "live_staging_state": {
+    "mandals": 621,
+    "mandal_versions": 1210,
+    "current_versions": 621,
+    "historical_versions": 589,
+    "entity_geometries": 0,
+    "null_current_version_ids": 0,
+    "legacy_linkages_demoted_count": 12,
+    "canonical_linkages_count": 12,
+    "supersession_provenance_count": 12
+  }
+}
