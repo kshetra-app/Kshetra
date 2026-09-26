@@ -1190,4 +1190,22 @@
   5. **Air-Gap & Non-Execution Invariant:** Migration 044 is strictly NOT executed against staging or production during this phase. Static validation only. Production remains untouched.
   6. **Lifecycle State:** Status recorded as `IMPLEMENTED / STATICALLY_VALIDATED`, pending independent verification and CTO review.
 
+---
+
+### DEC-066: W014-GOV-01 CANONICAL MIGRATION 044 STAGING EXECUTION, FINAL CATEGORY-A VERIFICATION & CTO RATIFICATION
+- **Date:** 2026-09-26
+- **Status:** ACCEPTED / COMPLETE / CLOSED (2026-09-26)
+- **Authority:** CTO Ratification Directive — W014-GOV-01
+- **Context:** Following controlled staging execution of canonical Migration 044 (`supabase/migrations/044_mandal_temporal_boundary_remediation.sql`) on `panIN-staging` (`fkpigozcqnmcvofuksar`) at canonical commit `1405fb8` (SHA-256 `58CF6BA83B0F86E403934B59D20CE12B2064A42B9F68A90B072C397CBA46C148`), a verification-boundary deviation was disclosed and resolved via an accepted forensic RCA. A final Category-A SELECT-only verification battery was authored, statically validated, committed (`59367ad`), and executed. CTO formally accepted the complete evidence chain and ratified W014-GOV-01 closure.
+- **Key Decisions & Acceptance Basis:**
+  1. **Canonical Migration 044 Coordinates Ratified:** Migration 044 canonical file at `supabase/migrations/044_mandal_temporal_boundary_remediation.sql`, commit `1405fb821791963ebc76c882d83522a0788223aa`, SHA-256 `58CF6BA83B0F86E403934B59D20CE12B2064A42B9F68A90B072C397CBA46C148`.
+  2. **Staging Execution Accepted:** Migration 044 DDL execution on `panIN-staging` confirmed successful.
+  3. **Verification Boundary Deviation Resolution:** Initial post-execution behavioral verification performed Category-C controlled staging mutations. Forensic RCA was reviewed and formally accepted by CTO: controlled staging mutations occurred during behavioral verification and were subsequently cleaned up, with no production impact and no unresolved technical defects.
+  4. **Category-A SELECT-Only Verification:** Pure catalog verifier authored at `supabase/verification_w014_migration_044_select_only.sql` (commit `59367ad`, SHA-256 `07CC41703AE0C78E33BE3F4E3ACF958989044FFDE1B1D4BB2DA834481E97E573`). Mechanical static audit (`scripts/audit_w014_m044_select_verifier.mjs`) confirmed 10/10 PASS (100% SELECT statement purity). Final live verification battery achieved 18/18 PASS (0 fail, 0 pending, 0 anomalies).
+  5. **Repository Immutability Confirmed:** Historical migrations 041, 042, 043 remain byte-for-byte identical and untouched. Canonical Migration 044 checksum matches exactly.
+  6. **Mandatory Ledger Statement Enforced:** Preserved verbatim: *"Migration 044 execution success is verified, but database-side migration-ledger registration is not independently evidenced."* Repository ordering and bundling in `scripts/bundle_migrations.mjs` (45 migrations, Migration 044 at line 54) recorded separately as repository governance evidence.
+  7. **W014 Master State:** W014-M6: ACCEPTED / COMPLETE / CLOSED. W014-GOV-01: ACCEPTED / COMPLETE / CLOSED. W014-REL-01: REMAINS OPEN / NOT AUTHORIZED. W014 master lifecycle: `STAGING ACCEPTED / PENDING EXPLICIT PRODUCTION RELEASE AUTHORIZATION`.
+  8. **Strict Production Air-Gap:** Production execution of Migration 044 is strictly NOT AUTHORIZED. Production database (`ehfafcnimmjusyvplbah`) remains 100% air-gapped, untouched, and uncontacted.
+
+
 

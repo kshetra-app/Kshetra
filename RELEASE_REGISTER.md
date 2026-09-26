@@ -21,8 +21,10 @@
 | `v0.1.0-w009-b5` | Staging | Railway API + Supabase | Backend Gateway + Staging DB | N/A | v1 (0.1.0) | `45ebb7d` | W009-B5 Accepted (Migrations 035-037, Provider Sandbox/Mock, Lineage Closure) | BE+DEVOPS | PASS (CTO Accepted 2026-09-21) |
 | `v0.1.0-w010` | Staging DB / Monorepo | Security Baseline & RLS Hardening (Migration 038, Batches L1–L3, DEF-014..DEF-017) | N/A | 100% 13-locale parity (2,371 keys) | v1 (0.1.0) | `75b0ba2` | W010 Accepted / Complete | SEC+ARCH | PASS (CTO Accepted 2026-09-21; 36/36 security tests pass; Checks 1–7 pass) |
 | `v0.1.0-w015` | Staging DB | Geography Relationship Engine (Migrations 042+043; W015-B1 + B2) | N/A | N/A | v1 (0.1.0) | `3748e46` | W015 Accepted / Complete — STAGING ONLY (Production deployment NOT PERFORMED) | DATA+BE | PASS (CTO Accepted 2026-09-23; 9/9 W015, 6/6 B2, 13/13 W013, 9/9 W014) |
+| `v0.1.0-w014-gov01` | Staging DB | Mandal Temporal Boundary Remediation (Migration 044; W014-GOV-01) | N/A | N/A | v1 (0.1.0) | `1405fb8 (impl) / 59367ad (verify)` | W014-GOV-01 Accepted / Complete — STAGING ONLY. Production Release (W014-REL-01): STRICTLY NOT AUTHORIZED / REMAINS OPEN | DATA+BE | PASS (CTO Accepted 2026-09-26; 18/18 Category-A SELECT-only checks PASS; 0 prod mutations) |
 
 ---
+
 
 ### Release Size & Performance Gates
 - **Max Consumer AAB:** 30 MB (Target: ≤ 25 MB)
