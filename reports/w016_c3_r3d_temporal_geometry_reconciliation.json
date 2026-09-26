@@ -1,0 +1,375 @@
+{
+  "report_metadata": {
+    "job": "W016-C3-R3D",
+    "title": "Temporal Legal Identity vs Historical Geometry Snapshot Reconciliation",
+    "timestamp": "2026-09-26T14:35:00+05:30",
+    "verdict": "TEMPORAL MODEL PASS \u2014 READY FOR CTO DATA-LOAD DESIGN",
+    "git_branch": "master"
+  },
+  "phase_1_actual_w014_schema": {
+    "mandals_table": {
+      "source_migration": "022_administrative_hierarchy.sql / 041_geography_versioning_and_temporal_validity.sql",
+      "columns": [
+        {
+          "name": "id",
+          "type": "TEXT PRIMARY KEY",
+          "format": "<state_code>-MDL-<lgd_code>"
+        },
+        {
+          "name": "name",
+          "type": "TEXT NOT NULL"
+        },
+        {
+          "name": "local_name",
+          "type": "TEXT"
+        },
+        {
+          "name": "state_code",
+          "type": "TEXT NOT NULL REFERENCES states(code)"
+        },
+        {
+          "name": "district",
+          "type": "TEXT NOT NULL"
+        },
+        {
+          "name": "lgd_code",
+          "type": "INTEGER"
+        },
+        {
+          "name": "type",
+          "type": "TEXT NOT NULL DEFAULT 'mandal'"
+        },
+        {
+          "name": "headquarters",
+          "type": "TEXT"
+        },
+        {
+          "name": "area_sq_km",
+          "type": "NUMERIC(10,2)"
+        },
+        {
+          "name": "population_2011",
+          "type": "INTEGER"
+        },
+        {
+          "name": "centroid",
+          "type": "GEOMETRY(Point, 4326)"
+        },
+        {
+          "name": "boundary",
+          "type": "GEOMETRY(MultiPolygon, 4326)"
+        },
+        {
+          "name": "created_at",
+          "type": "TIMESTAMPTZ NOT NULL DEFAULT now()"
+        },
+        {
+          "name": "updated_at",
+          "type": "TIMESTAMPTZ NOT NULL DEFAULT now()"
+        },
+        {
+          "name": "current_version_id",
+          "type": "UUID"
+        },
+        {
+          "name": "is_active",
+          "type": "BOOLEAN NOT NULL DEFAULT true"
+        }
+      ],
+      "foreign_keys": [
+        {
+          "name": "fk_mandals_state",
+          "references": "states(code)"
+        },
+        {
+          "name": "fk_mandals_current_version_same_anchor",
+          "references": "public.mandal_versions(id, mandal_id) ON DELETE RESTRICT"
+        }
+      ]
+    },
+    "mandal_versions_table": {
+      "source_migration": "041_geography_versioning_and_temporal_validity.sql / 044_mandal_temporal_boundary_remediation.sql",
+      "columns": [
+        {
+          "name": "id",
+          "type": "UUID PRIMARY KEY DEFAULT gen_random_uuid()"
+        },
+        {
+          "name": "mandal_id",
+          "type": "TEXT NOT NULL REFERENCES public.mandals(id) ON DELETE RESTRICT"
+        },
+        {
+          "name": "district_id",
+          "type": "UUID NOT NULL REFERENCES public.districts(id) ON DELETE RESTRICT"
+        },
+        {
+          "name": "version_code",
+          "type": "VARCHAR(50) NOT NULL UNIQUE"
+        },
+        {
+          "name": "name",
+          "type": "TEXT NOT NULL"
+        },
+        {
+          "name": "name_te",
+          "type": "TEXT"
+        },
+        {
+          "name": "headquarters",
+          "type": "TEXT"
+        },
+        {
+          "name": "lgd_code",
+          "type": "INTEGER"
+        },
+        {
+          "name": "census_code_2011",
+          "type": "VARCHAR(20)"
+        },
+        {
+          "name": "valid_from",
+          "type": "DATE NOT NULL"
+        },
+        {
+          "name": "valid_to",
+          "type": "DATE"
+        },
+        {
+          "name": "is_current",
+          "type": "BOOLEAN NOT NULL DEFAULT false"
+        },
+        {
+          "name": "primary_dataset_version_id",
+          "type": "TEXT NOT NULL REFERENCES public.dataset_versions(id) ON DELETE RESTRICT"
+        },
+        {
+          "name": "metadata",
+          "type": "JSONB NOT NULL DEFAULT '{}'::jsonb"
+        },
+        {
+          "name": "created_at",
+          "type": "TIMESTAMPTZ NOT NULL DEFAULT now()"
+        },
+        {
+          "name": "updated_at",
+          "type": "TIMESTAMPTZ NOT NULL DEFAULT now()"
+        }
+      ],
+      "constraints": [
+        {
+          "name": "uq_mandal_versions_code",
+          "type": "UNIQUE (version_code)"
+        },
+        {
+          "name": "uq_mandal_versions_id_mandal",
+          "type": "UNIQUE (id, mandal_id)"
+        },
+        {
+          "name": "uq_mandal_versions_historical_no_overlap",
+          "type": "EXCLUDE USING gist (mandal_id WITH =, (daterange(valid_from, valid_to, '[)')) WITH &&) WHERE (valid_to IS NOT NULL)"
+        },
+        {
+          "name": "chk_mandal_versions_current_invariants",
+          "type": "CHECK ((is_current = false) OR (is_current = true AND valid_to IS NULL))"
+        }
+      ],
+      "triggers": [
+        {
+          "name": "trg_guard_mandal_version_temporal_bounds",
+          "type": "BEFORE INSERT OR UPDATE, SECDEF owner=panin_boundary_definer"
+        }
+      ],
+      "geometry_storage_note": "CRITICAL: NO geometry column exists in public.mandal_versions. Spatial data is strictly externalized via entity_geometries."
+    }
+  },
+  "phase_2_actual_w016_geometry_schema": {
+    "design_table": "public.entity_geometries",
+    "intended_foreign_key": "mandal_version_id UUID REFERENCES public.mandal_versions(id) ON DELETE RESTRICT",
+    "exact_one_target_constraint": "chk_entity_geometries_exact_one_target (num_nonnulls(constituency_version_id, district_version_id, state_version_id, pc_version_id, mandal_version_id) = 1)",
+    "spatial_columns": [
+      "geom GEOMETRY(Geometry, 4326)",
+      "centroid GEOMETRY(Point, 4326)",
+      "area_sq_m NUMERIC(16,2)"
+    ],
+    "status": "DESIGN_RECONCILED \u2014 MIGRATION_045_NOT_YET_AUTHORED"
+  },
+  "phase_3_five_2020_split_cases": [
+    {
+      "child_name": "Chowdapur",
+      "child_lgd": "7186",
+      "effective_date": "2020-09-24",
+      "statutory_order": "G.O.Ms.No. 108, Revenue Dept",
+      "affected_parents": [
+        {
+          "parent_name": "Kulkacharla",
+          "parent_lgd": "4539",
+          "version_1_valid_from": "2016-10-11",
+          "version_1_valid_to": "2020-09-24",
+          "version_2_valid_from": "2020-09-24"
+        },
+        {
+          "parent_name": "Nawabpet",
+          "parent_lgd": "4514",
+          "version_1_valid_from": "2016-10-11",
+          "version_1_valid_to": "2020-09-24",
+          "version_2_valid_from": "2020-09-24"
+        }
+      ]
+    },
+    {
+      "child_name": "Mohammadabad",
+      "child_lgd": "7187",
+      "effective_date": "2020-09-24",
+      "statutory_order": "G.O.Ms.No. 109, Revenue Dept",
+      "affected_parents": [
+        {
+          "parent_name": "Gandeed",
+          "parent_lgd": "4538",
+          "version_1_valid_from": "2016-10-11",
+          "version_1_valid_to": "2020-09-24",
+          "version_2_valid_from": "2020-09-24"
+        }
+      ]
+    },
+    {
+      "child_name": "Chowtakur",
+      "child_lgd": "7188",
+      "effective_date": "2020-09-24",
+      "statutory_order": "G.O.Ms.No. 111, Revenue Dept",
+      "affected_parents": [
+        {
+          "parent_name": "Pulkal",
+          "parent_lgd": "4478",
+          "version_1_valid_from": "2016-10-11",
+          "version_1_valid_to": "2020-09-24",
+          "version_2_valid_from": "2020-09-24"
+        }
+      ]
+    },
+    {
+      "child_name": "Dhoolmitta",
+      "child_lgd": "7189",
+      "effective_date": "2020-09-24",
+      "statutory_order": "G.O.Ms.No. 112, Revenue Dept",
+      "affected_parents": [
+        {
+          "parent_name": "Maddur",
+          "parent_lgd": "4673",
+          "version_1_valid_from": "2016-10-11",
+          "version_1_valid_to": "2020-09-24",
+          "version_2_valid_from": "2020-09-24"
+        },
+        {
+          "parent_name": "Cherial",
+          "parent_lgd": "4672",
+          "version_1_valid_from": "2016-10-11",
+          "version_1_valid_to": "2020-09-24",
+          "version_2_valid_from": "2020-09-24"
+        }
+      ]
+    },
+    {
+      "child_name": "Masaipet",
+      "child_lgd": "7190",
+      "effective_date": "2020-09-24",
+      "statutory_order": "G.O.Ms.No. 110, Revenue Dept",
+      "affected_parents": [
+        {
+          "parent_name": "Chegunta",
+          "parent_lgd": "4466",
+          "version_1_valid_from": "2016-10-11",
+          "version_1_valid_to": "2020-09-24",
+          "version_2_valid_from": "2020-09-24"
+        },
+        {
+          "parent_name": "Yeldurthy",
+          "parent_lgd": "4481",
+          "version_1_valid_from": "2016-10-11",
+          "version_1_valid_to": "2020-09-24",
+          "version_2_valid_from": "2020-09-24"
+        }
+      ]
+    }
+  ],
+  "phase_4_eighteen_2022_splits": {
+    "final_statutory_date": "2022-09-26",
+    "statutory_orders": "G.O.Ms. Nos. 80-84",
+    "affected_parent_count": 24,
+    "relation_to_historical_interval": "All 18 mandals took effect on 2022-09-26, which is strictly AFTER 2022-09-01. Therefore, their 2016 parent versions remained 100% legally undivided throughout [2016-10-11, 2022-09-01)."
+  },
+  "phase_5_geometry_snapshot_semantics": {
+    "source": "TGRAC (Telangana Remote Sensing Applications Centre)",
+    "file": "data/geo/candidate_authoritative/tgrac_mandals_raw.json",
+    "sha256": "aca53eefa290570ce4010fa8c26a75dce995de3e3180ac9f0873f78fb41512db",
+    "feature_count": 589,
+    "authoritative_semantic": "2016-10-11 Statutory Baseline Spatial Snapshot",
+    "prohibited_claim": "Continuous legal boundary geometry throughout 2016-2022",
+    "permitted_claim": "Planar cadastral boundary snapshot representing the state's territorial partition on 2016-10-11 under G.O.Ms. 220-250. For mandals split in 2020 and 2022, the 2016 polygons represent the unified parent territorial envelope."
+  },
+  "phase_6_reconciliation_breakdown": {
+    "total_tgrac_entities": 589,
+    "entities_with_valid_to_2020_09_24": 8,
+    "entities_with_valid_to_2022_09_26": 581,
+    "geometry_snapshot_date_for_all": "2016-10-11"
+  },
+  "phase_7_dataset_semantics": {
+    "dataset_key": "ts_lgd_mandals_2016_v1",
+    "semantic_separation": {
+      "dataset_effective_period": "2016-10-11 to 2022-09-26 (Published epoch)",
+      "legal_version_validity": "Row-specific: [2016-10-11, 2020-09-24) for 2020 parents; [2016-10-11, 2022-09-26) for others",
+      "geometry_snapshot_date": "2016-10-11 (Surveyed cadastral capture date)"
+    }
+  },
+  "quality_gates": [
+    {
+      "gate": "QG-R3D-01",
+      "name": "No Legal Version Extends Beyond Actual Statutory Validity",
+      "status": "PASS"
+    },
+    {
+      "gate": "QG-R3D-02",
+      "name": "2016 Geometry Snapshot Not Falsely Claimed Continuously Valid",
+      "status": "PASS"
+    },
+    {
+      "gate": "QG-R3D-03",
+      "name": "2020 Parent Splits Represented Correctly (valid_to = 2020-09-24)",
+      "status": "PASS"
+    },
+    {
+      "gate": "QG-R3D-04",
+      "name": "2022-09-26 Creations Not Back-Projected",
+      "status": "PASS"
+    },
+    {
+      "gate": "QG-R3D-05",
+      "name": "9 Late Mandals Excluded from 2016 Layer",
+      "status": "PASS"
+    },
+    {
+      "gate": "QG-R3D-06",
+      "name": "W014 Schema Used Exactly as Implemented",
+      "status": "PASS"
+    },
+    {
+      "gate": "QG-R3D-07",
+      "name": "Geometry Externalized via entity_geometries Design",
+      "status": "PASS"
+    },
+    {
+      "gate": "QG-R3D-08",
+      "name": "W012 Dataset Semantics Remain Truthful",
+      "status": "PASS"
+    },
+    {
+      "gate": "QG-R3D-09",
+      "name": "No Fabricated Identities or Legal Dates",
+      "status": "PASS"
+    },
+    {
+      "gate": "QG-R3D-10",
+      "name": "Zero Database Mutation Enforced",
+      "status": "PASS"
+    }
+  ]
+}
