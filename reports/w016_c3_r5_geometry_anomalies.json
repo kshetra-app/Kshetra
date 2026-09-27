@@ -1,0 +1,235 @@
+{
+  "schema_version": "1.0.0",
+  "job": "W016-C3-R5",
+  "title": "TGRAC 2016 Spatial Artifact Geometric & Topological Anomaly Assessment",
+  "timestamp": "2026-09-27T17:44:43.269Z",
+  "artifact_path": "data/geo/candidate_authoritative/tgrac_mandals_raw.json",
+  "artifact_sha256": "aca53eefa290570ce4010fa8c26a75dce995de3e3180ac9f0873f78fb41512db",
+  "total_features_scanned": 589,
+  "critical_anomalies_detected": {
+    "null_geometries": 0,
+    "empty_geometries": 0,
+    "nan_infinity_coordinates": 0,
+    "zero_area_polygons": 0,
+    "unclosed_rings": 0,
+    "duplicate_geometries": 0,
+    "out_of_telangana_bounds": 0
+  },
+  "informational_topological_observations": {
+    "multi_ring_features_count": 15,
+    "features": [
+      {
+        "fid": 111,
+        "mandal_name": "Gangadhara",
+        "district_name": "Karimnagar",
+        "revenue_division": "Jagtial",
+        "rings_count": 3,
+        "points_per_ring": [
+          1871,
+          589,
+          414
+        ],
+        "anomaly_type": "MULTI_RING_TOPOLOGY",
+        "severity": "INFORMATIONAL_EXPECTED",
+        "explanation": "Legitimate multipart geometry representing administrative exclaves/islands or donut holes (e.g. rural mandals completely circumscribing municipal urban mandals such as Nirmal Rural or Nizamabad Rural)."
+      },
+      {
+        "fid": 135,
+        "mandal_name": "Chunchupally",
+        "district_name": "Bhadradri Kothagudem",
+        "revenue_division": "Kothagudem",
+        "rings_count": 2,
+        "points_per_ring": [
+          224,
+          184
+        ],
+        "anomaly_type": "MULTI_RING_TOPOLOGY",
+        "severity": "INFORMATIONAL_EXPECTED",
+        "explanation": "Legitimate multipart geometry representing administrative exclaves/islands or donut holes (e.g. rural mandals completely circumscribing municipal urban mandals such as Nirmal Rural or Nizamabad Rural)."
+      },
+      {
+        "fid": 253,
+        "mandal_name": "Khanapur",
+        "district_name": "Nirmal",
+        "revenue_division": "Metpalle",
+        "rings_count": 2,
+        "points_per_ring": [
+          676,
+          233
+        ],
+        "anomaly_type": "MULTI_RING_TOPOLOGY",
+        "severity": "INFORMATIONAL_EXPECTED",
+        "explanation": "Legitimate multipart geometry representing administrative exclaves/islands or donut holes (e.g. rural mandals completely circumscribing municipal urban mandals such as Nirmal Rural or Nizamabad Rural)."
+      },
+      {
+        "fid": 270,
+        "mandal_name": "Yadagirigutta",
+        "district_name": "Yadadri Bhuvanagiri",
+        "revenue_division": "Bhongiri",
+        "rings_count": 2,
+        "points_per_ring": [
+          892,
+          4
+        ],
+        "anomaly_type": "MULTI_RING_TOPOLOGY",
+        "severity": "INFORMATIONAL_EXPECTED",
+        "explanation": "Legitimate multipart geometry representing administrative exclaves/islands or donut holes (e.g. rural mandals completely circumscribing municipal urban mandals such as Nirmal Rural or Nizamabad Rural)."
+      },
+      {
+        "fid": 304,
+        "mandal_name": "Mahabubabad",
+        "district_name": "Mahabubabad",
+        "revenue_division": "Mahabubabad",
+        "rings_count": 2,
+        "points_per_ring": [
+          871,
+          4
+        ],
+        "anomaly_type": "MULTI_RING_TOPOLOGY",
+        "severity": "INFORMATIONAL_EXPECTED",
+        "explanation": "Legitimate multipart geometry representing administrative exclaves/islands or donut holes (e.g. rural mandals completely circumscribing municipal urban mandals such as Nirmal Rural or Nizamabad Rural)."
+      },
+      {
+        "fid": 322,
+        "mandal_name": "Nirmal Rural",
+        "district_name": "Nirmal",
+        "revenue_division": "Adilabad",
+        "rings_count": 2,
+        "points_per_ring": [
+          832,
+          792
+        ],
+        "anomaly_type": "MULTI_RING_TOPOLOGY",
+        "severity": "INFORMATIONAL_EXPECTED",
+        "explanation": "Legitimate multipart geometry representing administrative exclaves/islands or donut holes (e.g. rural mandals completely circumscribing municipal urban mandals such as Nirmal Rural or Nizamabad Rural)."
+      },
+      {
+        "fid": 323,
+        "mandal_name": "Nizamabad Rural",
+        "district_name": "Nizamabad",
+        "revenue_division": "Bodhan",
+        "rings_count": 2,
+        "points_per_ring": [
+          1524,
+          359
+        ],
+        "anomaly_type": "MULTI_RING_TOPOLOGY",
+        "severity": "INFORMATIONAL_EXPECTED",
+        "explanation": "Legitimate multipart geometry representing administrative exclaves/islands or donut holes (e.g. rural mandals completely circumscribing municipal urban mandals such as Nirmal Rural or Nizamabad Rural)."
+      },
+      {
+        "fid": 350,
+        "mandal_name": "Mendora",
+        "district_name": "Nizamabad",
+        "revenue_division": "Nirmal",
+        "rings_count": 2,
+        "points_per_ring": [
+          701,
+          5
+        ],
+        "anomaly_type": "MULTI_RING_TOPOLOGY",
+        "severity": "INFORMATIONAL_EXPECTED",
+        "explanation": "Legitimate multipart geometry representing administrative exclaves/islands or donut holes (e.g. rural mandals completely circumscribing municipal urban mandals such as Nirmal Rural or Nizamabad Rural)."
+      },
+      {
+        "fid": 415,
+        "mandal_name": "Nizamabad North",
+        "district_name": "Nizamabad",
+        "revenue_division": "Nizamabad",
+        "rings_count": 2,
+        "points_per_ring": [
+          151,
+          171
+        ],
+        "anomaly_type": "MULTI_RING_TOPOLOGY",
+        "severity": "INFORMATIONAL_EXPECTED",
+        "explanation": "Legitimate multipart geometry representing administrative exclaves/islands or donut holes (e.g. rural mandals completely circumscribing municipal urban mandals such as Nirmal Rural or Nizamabad Rural)."
+      },
+      {
+        "fid": 465,
+        "mandal_name": "Vemulawada Rural",
+        "district_name": "Rajanna Sircilla",
+        "revenue_division": "Jagtial",
+        "rings_count": 2,
+        "points_per_ring": [
+          1500,
+          404
+        ],
+        "anomaly_type": "MULTI_RING_TOPOLOGY",
+        "severity": "INFORMATIONAL_EXPECTED",
+        "explanation": "Legitimate multipart geometry representing administrative exclaves/islands or donut holes (e.g. rural mandals completely circumscribing municipal urban mandals such as Nirmal Rural or Nizamabad Rural)."
+      },
+      {
+        "fid": 494,
+        "mandal_name": "Shaligouraram",
+        "district_name": "Nalgonda",
+        "revenue_division": "Bhongiri",
+        "rings_count": 2,
+        "points_per_ring": [
+          1298,
+          4
+        ],
+        "anomaly_type": "MULTI_RING_TOPOLOGY",
+        "severity": "INFORMATIONAL_EXPECTED",
+        "explanation": "Legitimate multipart geometry representing administrative exclaves/islands or donut holes (e.g. rural mandals completely circumscribing municipal urban mandals such as Nirmal Rural or Nizamabad Rural)."
+      },
+      {
+        "fid": 524,
+        "mandal_name": "Mupkal",
+        "district_name": "Nizamabad",
+        "revenue_division": "Nirmal",
+        "rings_count": 2,
+        "points_per_ring": [
+          1202,
+          5
+        ],
+        "anomaly_type": "MULTI_RING_TOPOLOGY",
+        "severity": "INFORMATIONAL_EXPECTED",
+        "explanation": "Legitimate multipart geometry representing administrative exclaves/islands or donut holes (e.g. rural mandals completely circumscribing municipal urban mandals such as Nirmal Rural or Nizamabad Rural)."
+      },
+      {
+        "fid": 536,
+        "mandal_name": "Dharmasagar",
+        "district_name": "Warangal_Urban",
+        "revenue_division": "Ganpur_stn",
+        "rings_count": 2,
+        "points_per_ring": [
+          1379,
+          399
+        ],
+        "anomaly_type": "MULTI_RING_TOPOLOGY",
+        "severity": "INFORMATIONAL_EXPECTED",
+        "explanation": "Legitimate multipart geometry representing administrative exclaves/islands or donut holes (e.g. rural mandals completely circumscribing municipal urban mandals such as Nirmal Rural or Nizamabad Rural)."
+      },
+      {
+        "fid": 547,
+        "mandal_name": "Kothur",
+        "district_name": "Rangareddy",
+        "revenue_division": "Chevella",
+        "rings_count": 2,
+        "points_per_ring": [
+          950,
+          765
+        ],
+        "anomaly_type": "MULTI_RING_TOPOLOGY",
+        "severity": "INFORMATIONAL_EXPECTED",
+        "explanation": "Legitimate multipart geometry representing administrative exclaves/islands or donut holes (e.g. rural mandals completely circumscribing municipal urban mandals such as Nirmal Rural or Nizamabad Rural)."
+      },
+      {
+        "fid": 554,
+        "mandal_name": "Undavelly",
+        "district_name": "Jogulamba Gadwal",
+        "revenue_division": "Gadwal",
+        "rings_count": 2,
+        "points_per_ring": [
+          1282,
+          218
+        ],
+        "anomaly_type": "MULTI_RING_TOPOLOGY",
+        "severity": "INFORMATIONAL_EXPECTED",
+        "explanation": "Legitimate multipart geometry representing administrative exclaves/islands or donut holes (e.g. rural mandals completely circumscribing municipal urban mandals such as Nirmal Rural or Nizamabad Rural)."
+      }
+    ]
+  },
+  "verdict": "ALL 589 GEOMETRIES STRUCTURALLY VALID — ZERO BLOCKING ANOMALIES"
+}

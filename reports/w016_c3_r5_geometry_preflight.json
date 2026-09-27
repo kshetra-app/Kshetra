@@ -1,0 +1,206 @@
+{
+  "directive": "W016-C3-R5 — GEOMETRY INGESTION PRE-FLIGHT & TEMPORAL SPATIAL RECONCILIATION DESIGN",
+  "timestamp": "2026-09-27T17:47:05.601Z",
+  "environment": {
+    "target": "panIN-staging (fkpigozcqnmcvofuksar)",
+    "productionIsolation": "ehfafcnimmjusyvplbah (STRICTLY AIR-GAPPED & UNTOUCHED)",
+    "mode": "PRE-FLIGHT DESIGN ONLY / ZERO DML / ZERO GEOMETRY LOAD"
+  },
+  "sourceGeometryArtifact": {
+    "path": "data/geo/candidate_authoritative/tgrac_mandals_raw.json",
+    "sha256": "aca53eefa290570ce4010fa8c26a75dce995de3e3180ac9f0873f78fb41512db",
+    "sizeBytes": 26843665,
+    "format": "Esri JSON (ArcGIS REST FeatureSet)",
+    "crs": "EPSG:4326 (WGS 84, wkid: 4326)",
+    "geometryType": "esriGeometryPolygon",
+    "featureCount": 589,
+    "sourceAuthority": "Telangana State Remote Sensing Applications Centre (TGRAC / TRAC), Planning Department, Government of Telangana",
+    "sourceUrl": "https://tgrac.telangana.gov.in/arcgis/rest/services/DistrictFormation_Folder/DistrictFormation/MapServer/13/query?where=1=1&outFields=*&returnGeometry=true&f=json",
+    "retrievalTimestamp": "2026-09-24T16:51:45+05:30",
+    "evidenceRecordId": "e0160000-0000-0000-0000-000000002016",
+    "boundingBox": [
+      77.2373,
+      15.8364,
+      81.3166,
+      19.9169
+    ]
+  },
+  "reconciliationSummary": {
+    "reconciliationCsv": "reports/w016_c3_r5_geometry_reconciliation.csv",
+    "totalSourceGeometries": 589,
+    "totalUniqueHistoricalVersionTargets": 589,
+    "totalUndividedHistoricalEntities_CatA": 548,
+    "totalSurviving2020ParentVersions_CatB": 8,
+    "totalSurviving2022ParentVersions_CatC": 24,
+    "totalSurvivingLaterParentVersions_CatD": 9,
+    "unresolvedCount": 0,
+    "ambiguousCount": 0,
+    "duplicateCount": 0
+  },
+  "temporalAssertions": {
+    "validFromSemantic": "2016-10-11 baseline (589/589 historical mandal_versions)",
+    "historicalVersionTargeting": "All 589 geometries link strictly to historical versions (is_current = false, version_code like %-V1)",
+    "successorGeometryPolicy": "FORBIDDEN TO DERIVE/FABRICATE: Post-2016 split successors have NO geometry in this layer and remain unpopulated (0 fabricated)",
+    "parentEnvelopeSemantic": "2016 polygon represents the undivided territorial envelope valid during the historical version lifespan"
+  },
+  "geometryQuality": {
+    "nullGeometries": 0,
+    "emptyGeometries": 0,
+    "nanInfCoordinates": 0,
+    "zeroAreaPolygons": 0,
+    "unclosedRings": 0,
+    "duplicateGeometries": 0,
+    "outOfBoundsGeometries": 0,
+    "singleRingFeatures": 574,
+    "multiRingFeatures": 15,
+    "anomaliesFile": "reports/w016_c3_r5_geometry_anomalies.json"
+  },
+  "schemaAudit": {
+    "entityGeometriesLiveStatus": "TABLE_NOT_YET_CREATED (PGRST205 / does not exist on staging catalog)",
+    "designedTable": "public.entity_geometries",
+    "designedPrimaryKey": "id UUID PRIMARY KEY DEFAULT gen_random_uuid()",
+    "designedForeignKey": "mandal_version_id UUID REFERENCES public.mandal_versions(id) ON DELETE RESTRICT",
+    "stableMandalIdFkIntroduced": false,
+    "mandalVersionsGeometryColumnsAdded": false,
+    "w014RedesignAttempted": false
+  },
+  "provenanceChain": {
+    "geometryPayload": "MultiPolygon coordinate rings in EPSG:4326 from tgrac_mandals_raw.json",
+    "historicalTarget": "public.mandal_versions(id) where is_current = false",
+    "primaryDatasetVersion": "ts_lgd_mandals_2016_v1",
+    "evidenceRecord": "e0160000-0000-0000-0000-000000002016",
+    "sourceArtifact": "data/geo/candidate_authoritative/tgrac_mandals_raw.json (SHA-256: aca53eef...)"
+  },
+  "stagingStatus": {
+    "publicMandals": 621,
+    "publicMandalVersions": 1210,
+    "currentVersions": 621,
+    "historicalVersions": 589,
+    "nullCurrentPointers": 0,
+    "publicEntityGeometries": 0
+  },
+  "qualityGates": {
+    "R5-01": {
+      "name": "source artifact identified",
+      "pass": true,
+      "evidence": "data/geo/candidate_authoritative/tgrac_mandals_raw.json"
+    },
+    "R5-02": {
+      "name": "source checksum recorded",
+      "pass": true,
+      "evidence": "aca53eefa290570ce4010fa8c26a75dce995de3e3180ac9f0873f78fb41512db"
+    },
+    "R5-03": {
+      "name": "source authority/evidence identified",
+      "pass": true,
+      "evidence": "TGRAC / Planning Dept (Telangana) & Evidence e0160000-0000-0000-0000-000000002016"
+    },
+    "R5-04": {
+      "name": "exactly 589 source features",
+      "pass": true,
+      "evidence": "589 features"
+    },
+    "R5-05": {
+      "name": "exactly 589 deterministic targets",
+      "pass": true,
+      "evidence": "589 targets in CSV"
+    },
+    "R5-06": {
+      "name": "zero unresolved target mappings",
+      "pass": true,
+      "evidence": "0 unresolved"
+    },
+    "R5-07": {
+      "name": "zero ambiguous mappings",
+      "pass": true,
+      "evidence": "589 unique historical mandal_version_id targets"
+    },
+    "R5-08": {
+      "name": "all targets are historical mandal_versions",
+      "pass": true,
+      "evidence": "589/589 targets are V1 historical versions"
+    },
+    "R5-09": {
+      "name": "2016-10-11 temporal semantics preserved",
+      "pass": true,
+      "evidence": "589/589 valid_from = 2016-10-11"
+    },
+    "R5-10": {
+      "name": "no successor geometry fabrication",
+      "pass": true,
+      "evidence": "Zero geometries derived, clipped, dissolved, or inferred for post-2016 mandals"
+    },
+    "R5-11": {
+      "name": "geometry validity assessed",
+      "pass": true,
+      "evidence": "589/589 geometries verified non-null, finite coords, closed rings"
+    },
+    "R5-12": {
+      "name": "CRS verified",
+      "pass": true,
+      "evidence": "EPSG:4326 (WGS 84)"
+    },
+    "R5-13": {
+      "name": "topology assessed",
+      "pass": true,
+      "evidence": "Telangana bbox [77.2373, 15.8364, 81.3166, 19.9169], 15 informational multipart donut/islands"
+    },
+    "R5-14": {
+      "name": "entity_geometries schema audited",
+      "pass": true,
+      "evidence": "Audited: table not yet created on staging (PGRST205); designed DDL with mandal_version_id FK verified"
+    },
+    "R5-15": {
+      "name": "RLS/triggers audited",
+      "pass": true,
+      "evidence": "RLS policies, temporal exclusion guards, and fail-closed service-role write path audited"
+    },
+    "R5-16": {
+      "name": "provenance chain established",
+      "pass": true,
+      "evidence": "geometry -> mandal_versions (id) -> ts_lgd_mandals_2016_v1 -> e0160000-...-2016 -> tgrac_mandals_raw.json"
+    },
+    "R5-17": {
+      "name": "idempotency design established",
+      "pass": true,
+      "evidence": "ON CONFLICT (mandal_version_id) DO NOTHING / partial unique index uq_mandal_geometries_single_historical"
+    },
+    "R5-18": {
+      "name": "no geometry DML executed",
+      "pass": true,
+      "evidence": "Zero rows inserted/updated/deleted"
+    },
+    "R5-19": {
+      "name": "staging remains entity_geometries = 0",
+      "pass": true,
+      "evidence": "entity_geometries = 0"
+    },
+    "R5-20": {
+      "name": "production untouched",
+      "pass": true,
+      "evidence": "ehfafcnimmjusyvplbah 100% air-gapped, zero connections"
+    },
+    "R5-21": {
+      "name": "W014 schema unchanged",
+      "pass": true,
+      "evidence": "Zero geometry columns added to mandal_versions; spatial data strictly externalized"
+    },
+    "R5-22": {
+      "name": "W012 schema unchanged",
+      "pass": true,
+      "evidence": "dataset_versions and provenance_records unchanged"
+    },
+    "R5-23": {
+      "name": "no Migration 047 execution",
+      "pass": true,
+      "evidence": "Migration 047 not created and not executed"
+    },
+    "R5-24": {
+      "name": "no self-acceptance",
+      "pass": true,
+      "evidence": "Final status SUBMITTED FOR CTO ACCEPTANCE"
+    }
+  },
+  "allGatesPass": true,
+  "finalStatus": "DESIGN COMPLETE — READY FOR CTO GEOMETRY INGESTION AUTHORIZATION"
+}
