@@ -1,0 +1,217 @@
+{
+  "schema_version": "1.0.0",
+  "job": "W016-C3-R5-R2",
+  "title": "Spatial Evidence & Dataset Governance Reconciliation Verification Report",
+  "execution_timestamp": "2026-09-27T18:13:09.758Z",
+  "final_status": "SPATIAL GOVERNANCE RECONCILIATION COMPLETE — READY FOR CTO REVIEW",
+  "target_environment": {
+    "name": "panIN-staging",
+    "url": "https://fkpigozcqnmcvofuksar.supabase.co",
+    "project_ref": "fkpigozcqnmcvofuksar",
+    "isolation": "CONFIRMED_NON_PRODUCTION",
+    "production_host": "ehfafcnimmjusyvplbah",
+    "production_air_gap": "100% AIR-GAPPED & UNTOUCHED"
+  },
+  "canonical_spatial_artifact": {
+    "path": "data/geo/candidate_authoritative/tgrac_mandals_raw.json",
+    "byte_size": 26843665,
+    "sha256": "aca53eefa290570ce4010fa8c26a75dce995de3e3180ac9f0873f78fb41512db",
+    "feature_count": 589,
+    "source_authority": "Telangana State Remote Sensing Applications Centre (TGRAC / TRAC), Planning Department, Government of Telangana",
+    "acquisition_timestamp": "2026-09-24T16:51:45+05:30",
+    "spatial_reference": "EPSG:4326 (WGS 84)",
+    "source_service_url": "https://tgrac.telangana.gov.in/arcgis/rest/services/DistrictFormation_Folder/DistrictFormation/MapServer/13/query?where=1=1&outFields=*&returnGeometry=true&f=json",
+    "repository_provenance": {
+      "commit": "46d4bcba381df1972608b3b5e7005f1f5169f736",
+      "blob": "537d1471efe5f8a6c6c88715c30637dac58ecb53"
+    }
+  },
+  "migration_artifact": {
+    "path": "supabase/migrations/047_w016_c3_r5_r2_spatial_governance_reconciliation.sql",
+    "migration_number": "047",
+    "byte_size": 426184,
+    "sha256": "600486f4777af947a9ef682d8983b5433947fe3983c95deeddbfbb347758fdb2",
+    "scope": "APPEND_ONLY_GOVERNANCE_ONLY",
+    "geometry_dml_present": false,
+    "entity_geometries_table_created": false
+  },
+  "governance_entities": {
+    "primary_data_source": {
+      "id": "tgrac",
+      "name": "Telangana State Remote Sensing Applications Centre (TGRAC)",
+      "publisher": "Planning Department, Government of Telangana",
+      "authority_level": "statutory"
+    },
+    "spatial_evidence": {
+      "id": "e0160000-0000-0000-0000-000000001013",
+      "artifact_name": "tgrac_mandals_raw.json",
+      "artifact_sha256": "aca53eefa290570ce4010fa8c26a75dce995de3e3180ac9f0873f78fb41512db",
+      "verification_authority": "Telangana State Remote Sensing Applications Centre (TGRAC / TRAC), Planning Department, Government of Telangana",
+      "verified_by": "CTO / Spatial Cadastral Ingest Verification",
+      "dataset_version_id": null
+    },
+    "spatial_dataset": {
+      "id": "geo_mandal_boundaries",
+      "name": "Telangana Mandal Boundaries GeoJSON",
+      "domain": "geography",
+      "source_id": "tgrac"
+    },
+    "spatial_dataset_version": {
+      "id": "tgrac_mandals_2016_v1",
+      "dataset_id": "geo_mandal_boundaries",
+      "version_tag": "2016_v1",
+      "effective_from": "2016-10-11",
+      "effective_to": null,
+      "record_count": 589,
+      "checksum_sha256": "aca53eefa290570ce4010fa8c26a75dce995de3e3180ac9f0873f78fb41512db",
+      "storage_path": "data/geo/candidate_authoritative/tgrac_mandals_raw.json",
+      "default_status": "OFFICIAL",
+      "verification_evidence_id": "e0160000-0000-0000-0000-000000001013",
+      "metadata": {
+        "authority": "TGRAC / TRAC, Planning Department, Government of Telangana",
+        "feature_count": 589,
+        "snapshot_date": "2016-10-11",
+        "temporal_scope": "Historical statutory baseline spatial snapshot as of 2016-10-11; feature-level legal validity governed independently by mandal_versions temporal columns.",
+        "spatial_reference": "EPSG:4326",
+        "source_service_url": "https://tgrac.telangana.gov.in/arcgis/rest/services/DistrictFormation_Folder/DistrictFormation/MapServer/13/query?where=1=1&outFields=*&returnGeometry=true&f=json"
+      }
+    }
+  },
+  "provenance_lineage": {
+    "spatial_provenance_count": 589,
+    "legal_baseline_2016_provenance_count": 589,
+    "statutory_current_2026_provenance_count": 634,
+    "total_database_provenance_count": 1856,
+    "spatial_record_linkages_count": 589,
+    "total_record_linkages_count": 2632,
+    "provenance_contract_verified": true,
+    "status_distribution": {
+      "OFFICIAL": 589
+    }
+  },
+  "immutability_and_isolation": {
+    "legal_evidence_e016_2016_immutable": true,
+    "baseline_dataset_ts_lgd_mandals_2016_v1_immutable": true,
+    "public_mandals_count": 621,
+    "public_mandal_versions_count": 1210,
+    "current_versions_count": 621,
+    "historical_versions_count": 589,
+    "entity_geometries_table_absent": true,
+    "geometry_rows_written": 0,
+    "idempotency_replay_clean": true
+  },
+  "temporal_forensics": {
+    "historical_mandal_versions_total": 589,
+    "late_parent_cohort_audit": [
+      {
+        "lgdCode": 4607,
+        "mandalName": "Itikyala",
+        "childMandal": "Yerravalli",
+        "versionCode": "TS-MDL-4607-V1",
+        "validFrom": "2016-10-11",
+        "validTo": "2023-06-15",
+        "expectedTermination": "2023-06-15",
+        "match": true
+      },
+      {
+        "lgdCode": 4596,
+        "mandalName": "Gopalpeta",
+        "childMandal": "Yedula",
+        "versionCode": "TS-MDL-4596-V1",
+        "validFrom": "2016-10-11",
+        "validTo": "2023-05-12",
+        "expectedTermination": "2023-05-12",
+        "match": true
+      },
+      {
+        "lgdCode": 4307,
+        "mandalName": "Jainath",
+        "childMandal": "Bhoraj/Sathnala",
+        "versionCode": "TS-MDL-4307-V1",
+        "validFrom": "2016-10-11",
+        "validTo": "2023-08-15",
+        "expectedTermination": "2023-08-15",
+        "match": true
+      },
+      {
+        "lgdCode": 4371,
+        "mandalName": "Kotagiri",
+        "childMandal": "Pothangal",
+        "versionCode": "TS-MDL-4371-V1",
+        "validFrom": "2016-10-11",
+        "validTo": "2022-11-22",
+        "expectedTermination": "2022-11-22",
+        "match": true
+      },
+      {
+        "lgdCode": 4664,
+        "mandalName": "Miryalaguda",
+        "childMandal": "Gudipally",
+        "versionCode": "TS-MDL-4664-V1",
+        "validFrom": "2016-10-11",
+        "validTo": "2023-03-15",
+        "expectedTermination": "2023-03-15",
+        "match": true
+      },
+      {
+        "lgdCode": 4380,
+        "mandalName": "Machareddy",
+        "childMandal": "Mohammadnagar",
+        "versionCode": "TS-MDL-4380-V1",
+        "validFrom": "2016-10-11",
+        "validTo": "2023-04-18",
+        "expectedTermination": "2023-04-18",
+        "match": true
+      },
+      {
+        "lgdCode": 4385,
+        "mandalName": "Nizamsagar",
+        "childMandal": "Palwancha",
+        "versionCode": "TS-MDL-4385-V1",
+        "validFrom": "2016-10-11",
+        "validTo": "2023-04-18",
+        "expectedTermination": "2023-04-18",
+        "match": true
+      },
+      {
+        "lgdCode": 4689,
+        "mandalName": "Mulug",
+        "childMandal": "Mallampally",
+        "versionCode": "TS-MDL-4689-V1",
+        "validFrom": "2016-10-11",
+        "validTo": "2023-09-10",
+        "expectedTermination": "2023-09-10",
+        "match": true
+      },
+      {
+        "lgdCode": 4387,
+        "mandalName": "Nagireddypet",
+        "childMandal": "Palwancha",
+        "versionCode": "TS-MDL-4387-V1",
+        "validFrom": "2016-10-11",
+        "validTo": "2023-04-18",
+        "expectedTermination": "2023-04-18",
+        "match": true
+      }
+    ],
+    "all_late_parents_matched": true
+  },
+  "battery_verification": {
+    "BATTERY_A_artifact_sha": "PASS",
+    "BATTERY_B_spatial_evidence_exists": "PASS",
+    "BATTERY_C_spatial_evidence_sha": "PASS",
+    "BATTERY_D_legal_evidence_unchanged": "PASS",
+    "BATTERY_E_baseline_dataset_unchanged": "PASS",
+    "BATTERY_F_dedicated_spatial_dataset_exists": "PASS",
+    "BATTERY_G_spatial_dataset_references_evidence": "PASS",
+    "BATTERY_H_spatial_dataset_record_count": "PASS",
+    "BATTERY_I_spatial_dataset_checksum": "PASS",
+    "BATTERY_J_589_spatial_provenance_records": "PASS",
+    "BATTERY_K_official_spatial_provenance_valid": "PASS",
+    "BATTERY_L_no_mandal_versions_changed": "PASS",
+    "BATTERY_M_no_legal_provenance_changed": "PASS",
+    "BATTERY_N_entity_geometries_table_state": "PASS",
+    "BATTERY_O_entity_geometries_zero_rows": "PASS",
+    "BATTERY_P_production_air_gap_preserved": "PASS"
+  }
+}
