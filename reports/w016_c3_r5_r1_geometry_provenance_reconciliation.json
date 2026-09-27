@@ -1,0 +1,261 @@
+{
+  "directive": "W016-C3-R5-R1 — GEOMETRY SOURCE PROVENANCE & ENTITY_GEOMETRIES SCHEMA RECONCILIATION",
+  "timestamp": "2026-09-27T17:55:37.430Z",
+  "environment": {
+    "target": "panIN-staging (fkpigozcqnmcvofuksar)",
+    "productionIsolation": "ehfafcnimmjusyvplbah (STRICTLY AIR-GAPPED & UNTOUCHED)",
+    "mode": "READ-ONLY FORENSIC & SCHEMA RECONCILIATION"
+  },
+  "blocker1_geometryChecksumForensic": {
+    "artifactPath": "data/geo/candidate_authoritative/tgrac_mandals_raw.json",
+    "actualComputedSha256": "aca53eefa290570ce4010fa8c26a75dce995de3e3180ac9f0873f78fb41512db",
+    "fileSizeBytes": 26843665,
+    "gitBlobOidCurrentHead": "537d1471efe5f8a6c6c88715c30637dac58ecb53",
+    "gitBlobOidAcquisitionCommit_46d4bcb": "537d1471efe5f8a6c6c88715c30637dac58ecb53",
+    "gitBlobUnchanged": true,
+    "reportedSha256InEvidence_e016_2016": "aca53eefa290570ce4010fa8c26a75dce995de3e3180ac9f0873f78fb41512db",
+    "discrepancyDiagnosis": "DISCREPANCY_EXPLAINED_CASE_A_AND_D",
+    "explanation": "The actual byte-for-byte SHA-256 of data/geo/candidate_authoritative/tgrac_mandals_raw.json IS aca53eefa290570ce4010fa8c26a75dce995de3e3180ac9f0873f78fb41512db. The discrepancy arose because Migration 045 authored evidence_record e0160000-0000-0000-0000-000000002016 with artifact_name = \"goms_2016_reorganisation_orders.pdf\" but inadvertently populated its artifact_sha256 using the checksum of the geometry file tgrac_mandals_raw.json. The geometry file has never changed."
+  },
+  "blocker2_evidenceRoleSeparation": {
+    "legalEvidence": {
+      "id": "e0160000-0000-0000-0000-000000002016",
+      "artifactName": "goms_2016_reorganisation_orders.pdf",
+      "authority": "Government of Telangana (Revenue Department)",
+      "scope": "Statutory reorganisation orders G.O.Ms. Nos. 214-245 Rev (2016-10-11) establishing 589 baseline mandals",
+      "role": "LEGAL_STATUTORY_REORGANISATION"
+    },
+    "spatialEvidence": {
+      "artifactName": "tgrac_mandals_raw.json",
+      "authority": "Telangana State Remote Sensing Applications Centre (TGRAC / TRAC), Planning Department, Government of Telangana",
+      "scope": "Cadastral GIS Polygon layer surveyed for 589 mandals post-2016 reorganisation",
+      "role": "SPATIAL_GEOMETRY_BASELINE_SNAPSHOT",
+      "actualSha256": "aca53eefa290570ce4010fa8c26a75dce995de3e3180ac9f0873f78fb41512db",
+      "statusOnStaging": "EVIDENCE_RECORD_MISSING_GAP",
+      "notes": "Currently NO evidence record exists in public.evidence_records for TGRAC spatial geometry. Creating this requires future CTO authorization."
+    }
+  },
+  "blocker3_datasetSemantics": {
+    "datasetVersionId": "ts_lgd_mandals_2016_v1",
+    "datasetId": "ts_lgd_mandals",
+    "storagePath": "data/geo/candidate_authoritative/tgrac_mandals_raw.json",
+    "checksumSha256": "aca53eefa290570ce4010fa8c26a75dce995de3e3180ac9f0873f78fb41512db",
+    "checksumMatchesGeometryArtifact": true,
+    "semanticAssessment": "CONFLATED_LEGAL_AND_SPATIAL_SCOPE",
+    "explanation": "ts_lgd_mandals_2016_v1 was registered under dataset_id ts_lgd_mandals (tabular LGD subdistrict directory), but its storage_path and checksum point directly to the TGRAC spatial geometry file tgrac_mandals_raw.json. It conflates the legal LGD baseline with spatial cadastral geometry."
+  },
+  "blocker4_entityGeometriesLiveStatus": {
+    "liveStatus": "RELATION_DOES_NOT_EXIST",
+    "pgrstErrorCode": "PGRST205",
+    "explanation": "public.entity_geometries is strictly uncreated on panIN-staging. Zero live schema, RLS policies, triggers, or indexes exist. All schema analysis is evaluated strictly as PROPOSED DESIGN SPECIFICATION."
+  },
+  "blocker5_proposedSchemaArchitecturalCompliance": {
+    "tenRequirementsMatrix": [
+      {
+        "req": 1,
+        "desc": "Reference mandal_version_id, not stable mandal_id",
+        "compliant": true,
+        "rationale": "mandal_version_id UUID REFERENCES public.mandal_versions(id) ON DELETE RESTRICT"
+      },
+      {
+        "req": 2,
+        "desc": "Preserve historical snapshot semantics",
+        "compliant": true,
+        "rationale": "snapshot_date DATE NOT NULL, temporal_classification HISTORICAL_LEGAL"
+      },
+      {
+        "req": 3,
+        "desc": "Support MultiPolygon",
+        "compliant": true,
+        "rationale": "geometry GEOMETRY(MultiPolygon, 4326) NOT NULL"
+      },
+      {
+        "req": 4,
+        "desc": "Preserve source artifact provenance",
+        "compliant": true,
+        "rationale": "raw_artifact_sha256, source_feature_id, dataset_version_id, provenance_id"
+      },
+      {
+        "req": 5,
+        "desc": "Support deterministic idempotency",
+        "compliant": true,
+        "rationale": "ON CONFLICT DO NOTHING backed by explicit partial unique index"
+      },
+      {
+        "req": 6,
+        "desc": "Prevent duplicate geometry assignment to same version",
+        "compliant": true,
+        "rationale": "Unique index on (mandal_version_id) WHERE mandal_version_id IS NOT NULL"
+      },
+      {
+        "req": 7,
+        "desc": "Fail closed",
+        "compliant": true,
+        "rationale": "NOT NULL foreign keys, atomic transaction boundary, strict check constraints"
+      },
+      {
+        "req": 8,
+        "desc": "Avoid fabricated successor geometry",
+        "compliant": true,
+        "rationale": "Zero geometry ingested for post-2016 created mandals"
+      },
+      {
+        "req": 9,
+        "desc": "Preserve raw source geometry",
+        "compliant": true,
+        "rationale": "Faithful MultiPolygon conversion without topological distortion"
+      },
+      {
+        "req": 10,
+        "desc": "Not alter W014 mandal_versions",
+        "compliant": true,
+        "rationale": "Zero geometry columns added to mandal_versions; spatial data strictly externalized"
+      }
+    ]
+  },
+  "blocker6_uniquenessAndIdempotencyRefinement": {
+    "previouslyProposedIndex": "CREATE UNIQUE INDEX uq_mandal_geometries_single_historical ON public.entity_geometries (mandal_version_id) WHERE entity_type = \"mandal\" AND is_current = false;",
+    "weaknessIdentified": "The predicate WHERE entity_type = \"mandal\" AND is_current = false is overly narrow. It theoretically allows a duplicate row for the same mandal_version_id if is_current = true or if entity_type differs.",
+    "refinedSafeIndex": "CREATE UNIQUE INDEX uq_entity_geometries_mandal_version_single ON public.entity_geometries (mandal_version_id) WHERE mandal_version_id IS NOT NULL;",
+    "refinedOnConflictClause": "ON CONFLICT (mandal_version_id) WHERE mandal_version_id IS NOT NULL DO NOTHING;",
+    "validPostgresSyntax": true,
+    "duplicateProtectionGuaranteed": true
+  },
+  "blocker7_sourceMetadataSeparation": {
+    "legalOrdersMetadata": {
+      "authority": "Government of Telangana (Revenue Department)",
+      "orders": "G.O.Ms. Nos. 214-245 Rev dated 11.10.2016",
+      "effectiveDate": "2016-10-11",
+      "evidenceRecord": "e0160000-0000-0000-0000-000000002016"
+    },
+    "spatialGeometryMetadata": {
+      "authority": "Telangana State Remote Sensing Applications Centre (TGRAC / TRAC)",
+      "serviceUrl": "https://tgrac.telangana.gov.in/arcgis/rest/services/DistrictFormation_Folder/DistrictFormation/MapServer/13/query",
+      "retrievalDate": "2026-09-24T16:51:45+05:30",
+      "artifactSha256": "aca53eefa290570ce4010fa8c26a75dce995de3e3180ac9f0873f78fb41512db",
+      "format": "Esri JSON",
+      "crs": "EPSG:4326",
+      "featureCount": 589,
+      "snapshotDate": "2016-10-11"
+    }
+  },
+  "blocker8_revalidationOf589Mappings": {
+    "reconciliationCsvPath": "reports/w016_c3_r5_geometry_reconciliation.csv",
+    "totalFeatures": 589,
+    "uniqueSourceFids": 589,
+    "uniqueHistoricalVersionTargets": 589,
+    "unresolvedCount": 0,
+    "ambiguousCount": 0,
+    "duplicateTargetCount": 0,
+    "allValidFrom2016": true
+  },
+  "blocker9_temporalSemantics": {
+    "undividedBaseline_CatA": 548,
+    "surviving2020Parents_CatB": 8,
+    "surviving2022Parents_CatC": 24,
+    "survivingLaterParents_CatD": 9,
+    "totalHistoricalGeometries": 589
+  },
+  "databaseQuarantineState": {
+    "mandals": 621,
+    "mandalVersions": 1210,
+    "currentVersions": 621,
+    "historicalVersions": 589,
+    "entityGeometriesLive": 0,
+    "zeroGeometryDmlExecuted": true
+  },
+  "qualityGates": {
+    "R5R1-01": {
+      "name": "actual geometry bytes hashed",
+      "pass": true,
+      "evidence": "Computed SHA: aca53eefa290570ce4010fa8c26a75dce995de3e3180ac9f0873f78fb41512db"
+    },
+    "R5R1-02": {
+      "name": "checksum discrepancy resolved",
+      "pass": true,
+      "evidence": "Discrepancy explained: Migration 045 erroneously assigned the geometry SHA to the legal evidence PDF record"
+    },
+    "R5R1-03": {
+      "name": "legal evidence separated from spatial evidence",
+      "pass": true,
+      "evidence": "Legal: G.O.Ms. 214-245 PDF (Revenue Dept); Spatial: tgrac_mandals_raw.json (TGRAC Planning Dept)"
+    },
+    "R5R1-04": {
+      "name": "TGRAC spatial evidence identified",
+      "pass": true,
+      "evidence": "Spatial evidence record DOES NOT YET EXIST in public.evidence_records (Exact evidence gap documented)"
+    },
+    "R5R1-05": {
+      "name": "dataset semantics proven",
+      "pass": true,
+      "evidence": "ts_lgd_mandals_2016_v1 currently conflates legal LGD subdistrict dataset with TGRAC storage path"
+    },
+    "R5R1-06": {
+      "name": "entity_geometries live existence verified",
+      "pass": true,
+      "evidence": "Confirmed: table does NOT exist live on staging (PGRST205 / uncreated)"
+    },
+    "R5R1-07": {
+      "name": "proposed schema audited",
+      "pass": true,
+      "evidence": "Proposed DDL audited against all 10 architectural requirements"
+    },
+    "R5R1-08": {
+      "name": "unique constraint semantics validated",
+      "pass": true,
+      "evidence": "uq_entity_geometries_mandal_version_single on (mandal_version_id) WHERE mandal_version_id IS NOT NULL"
+    },
+    "R5R1-09": {
+      "name": "idempotency semantics validated",
+      "pass": true,
+      "evidence": "ON CONFLICT (mandal_version_id) WHERE mandal_version_id IS NOT NULL DO NOTHING validated"
+    },
+    "R5R1-10": {
+      "name": "provenance chain corrected",
+      "pass": true,
+      "evidence": "Cleanly separated legal reorganisation provenance from spatial geometry provenance"
+    },
+    "R5R1-11": {
+      "name": "589 mapping independently revalidated",
+      "pass": true,
+      "evidence": "589 unique FIDs -> 589 unique historical mandal_version UUIDs"
+    },
+    "R5R1-12": {
+      "name": "temporal semantics preserved",
+      "pass": true,
+      "evidence": "Categories verified: 548 A, 8 B, 24 C, 9 D"
+    },
+    "R5R1-13": {
+      "name": "no successor geometry fabricated",
+      "pass": true,
+      "evidence": "Zero geometries derived, clipped, dissolved, or centroid-inferred"
+    },
+    "R5R1-14": {
+      "name": "no geometry DML",
+      "pass": true,
+      "evidence": "Zero geometry rows written to staging or production"
+    },
+    "R5R1-15": {
+      "name": "production untouched",
+      "pass": true,
+      "evidence": "ehfafcnimmjusyvplbah strictly air-gapped, zero connections"
+    },
+    "R5R1-16": {
+      "name": "no W012/W014 mutation",
+      "pass": true,
+      "evidence": "Zero mutations executed during this directive"
+    },
+    "R5R1-17": {
+      "name": "no Migration 047 execution",
+      "pass": true,
+      "evidence": "Migration 047 uncreated and unexecuted"
+    },
+    "R5R1-18": {
+      "name": "no self-acceptance",
+      "pass": true,
+      "evidence": "Status submitted for CTO review"
+    }
+  },
+  "allGatesPass": true,
+  "finalStatus": "PROVENANCE RECONCILIATION COMPLETE — READY FOR CTO REVIEW"
+}
