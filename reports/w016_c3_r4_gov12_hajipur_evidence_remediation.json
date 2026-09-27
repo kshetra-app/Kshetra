@@ -1,0 +1,301 @@
+{
+  "directive": "W016-C3-R4-GOV-12 — CTO AUTHORIZATION: HAJIPUR HISTORICAL LEGAL EVIDENCE REMEDIATION",
+  "timestamp": "2026-09-27T17:28:22.883Z",
+  "environment": {
+    "target": "panIN-staging (fkpigozcqnmcvofuksar)",
+    "productionIsolation": "ehfafcnimmjusyvplbah (STRICTLY AIR-GAPPED & UNTOUCHED)",
+    "geometryStatus": "QUARANTINED (0 geometries, strictly blocked)"
+  },
+  "ctoAuthorization": {
+    "directive": "W016-C3-R4-GOV-12",
+    "gov11Decision": "ACCEPTED",
+    "remediationAuthorized": true,
+    "targetScope": "Exact single provenance UUID d63eee74-2927-5184-050b-3559f628f8ae"
+  },
+  "evidencePrecondition": {
+    "evidenceId": "e0160000-0000-0000-0000-000000002016",
+    "artifactName": "goms_2016_reorganisation_orders.pdf",
+    "artifactSha256": "aca53eefa290570ce4010fa8c26a75dce995de3e3180ac9f0873f78fb41512db",
+    "verificationAuthority": "Government of Telangana (Revenue Department)",
+    "verifiedBy": "CTO / Statutory Gazette Reconciliation",
+    "verificationNotes": "Statutory reorganisation orders G.O.Ms. Nos. 214-245 Rev (2016-10-11) establishing 589 baseline mandals",
+    "preconditionPassed": true,
+    "repositoryEvidence": {
+      "path": "data/evidence/w015_b2/telangana_gazette_2016_goms_222_mancherial.txt",
+      "sha256": "c4f0ac9317f13f1ca596ad0ef6fcdda15c88c60b9e581b30bf5fecb91929fd1c",
+      "order": "G.O.Ms.No. 222, Revenue (DA-CMRF) Dept, dated 11.10.2016",
+      "effectiveDate": "2016-10-11",
+      "predecessor": "TS-MDL-4354 / Mancherial (legacy TS-MDL-5321)",
+      "successor": "TS-MDL-6227 / Hajipur (legacy TS-MDL-5329)"
+    }
+  },
+  "executedMutation": {
+    "endpoint": "https://fkpigozcqnmcvofuksar.supabase.co/rest/v1/provenance_records?id=eq.d63eee74-2927-5184-050b-3559f628f8ae",
+    "method": "PATCH",
+    "payload": {
+      "verification_evidence_id": "e0160000-0000-0000-0000-000000002016",
+      "verified_by": "CTO / Statutory Gazette Reconciliation"
+    },
+    "updatedRowCount": 1,
+    "triggerEvaluation": {
+      "trg_prevent_provenance_mutation": "PASSED (0 immutable Class A columns modified)",
+      "trg_check_provenance_status_transition": "PASSED (OLD.status = OFFICIAL and NEW.status = OFFICIAL -> transition check skipped cleanly)"
+    }
+  },
+  "forensicComparisonMatrix": [
+    {
+      "field": "id",
+      "pre": "d63eee74-2927-5184-050b-3559f628f8ae",
+      "post": "d63eee74-2927-5184-050b-3559f628f8ae",
+      "classification": "Class A (Immutable)",
+      "changed": false,
+      "status": "VERIFIED UNCHANGED"
+    },
+    {
+      "field": "dataset_version_id",
+      "pre": "ts_lgd_mandals_2026_v1",
+      "post": "ts_lgd_mandals_2026_v1",
+      "classification": "Class A (Immutable)",
+      "changed": false,
+      "status": "VERIFIED UNCHANGED"
+    },
+    {
+      "field": "source_record_id",
+      "pre": "TG-GAZETTE-2016:GOMS222:CANONICAL-RECONCILE",
+      "post": "TG-GAZETTE-2016:GOMS222:CANONICAL-RECONCILE",
+      "classification": "Class A (Immutable)",
+      "changed": false,
+      "status": "VERIFIED UNCHANGED"
+    },
+    {
+      "field": "parent_provenance_id",
+      "pre": "8c350901-a5d8-fe3d-c5b2-6ffe37601908",
+      "post": "8c350901-a5d8-fe3d-c5b2-6ffe37601908",
+      "classification": "Class A (Immutable)",
+      "changed": false,
+      "status": "VERIFIED UNCHANGED"
+    },
+    {
+      "field": "status",
+      "pre": "OFFICIAL",
+      "post": "OFFICIAL",
+      "classification": "Class B (Lifecycle)",
+      "changed": false,
+      "status": "VERIFIED UNCHANGED (OFFICIAL)"
+    },
+    {
+      "field": "transformation_type",
+      "pre": "gazette_lineage_canonical_reconciliation",
+      "post": "gazette_lineage_canonical_reconciliation",
+      "classification": "Class A (Immutable)",
+      "changed": false,
+      "status": "VERIFIED UNCHANGED"
+    },
+    {
+      "field": "transform_version",
+      "pre": "1.0",
+      "post": "1.0",
+      "classification": "Class A (Immutable)",
+      "changed": false,
+      "status": "VERIFIED UNCHANGED"
+    },
+    {
+      "field": "operator",
+      "pre": "system:w016_c3_r4_supersession",
+      "post": "system:w016_c3_r4_supersession",
+      "classification": "Class A (Immutable)",
+      "changed": false,
+      "status": "VERIFIED UNCHANGED"
+    },
+    {
+      "field": "created_at",
+      "pre": "2026-09-26T16:44:51.851677+00:00",
+      "post": "2026-09-26T16:44:51.851677+00:00",
+      "classification": "Class A (Immutable)",
+      "changed": false,
+      "status": "VERIFIED UNCHANGED"
+    },
+    {
+      "field": "metadata",
+      "pre": "{\"effective_date\":\"2016-10-11\",\"source_document\":\"Telangana Gazette Extraordinary, Part I (G.O.Ms.No. 222)\",\"source_authority\":\"Government of Telangana, Revenue (DA-CMRF) Department\",\"supersession_note\":\"Canonical cross-reference for historical Hajipur split from Mancherial\",\"canonical_lgd_code\":6227,\"successor_canonical_id\":\"TS-MDL-6227\",\"predecessor_canonical_id\":\"TS-MDL-4354\",\"legacy_pilot_successor_id\":\"TS-MDL-5329\",\"legacy_pilot_predecessor_id\":\"TS-MDL-5321\"}",
+      "post": "{\"effective_date\":\"2016-10-11\",\"source_document\":\"Telangana Gazette Extraordinary, Part I (G.O.Ms.No. 222)\",\"source_authority\":\"Government of Telangana, Revenue (DA-CMRF) Department\",\"supersession_note\":\"Canonical cross-reference for historical Hajipur split from Mancherial\",\"canonical_lgd_code\":6227,\"successor_canonical_id\":\"TS-MDL-6227\",\"predecessor_canonical_id\":\"TS-MDL-4354\",\"legacy_pilot_successor_id\":\"TS-MDL-5329\",\"legacy_pilot_predecessor_id\":\"TS-MDL-5321\"}",
+      "classification": "Metadata Dictionary",
+      "changed": false,
+      "status": "VERIFIED UNCHANGED (BITWISE)"
+    },
+    {
+      "field": "verification_evidence_id",
+      "pre": null,
+      "post": "e0160000-0000-0000-0000-000000002016",
+      "classification": "Class B (Lifecycle)",
+      "changed": true,
+      "status": "REMEDIATED (BOUND TO 2016 GAZETTE EVIDENCE)"
+    },
+    {
+      "field": "verified_by",
+      "pre": null,
+      "post": "CTO / Statutory Gazette Reconciliation",
+      "classification": "Class B (Lifecycle)",
+      "changed": true,
+      "status": "REMEDIATED (POPULATED)"
+    }
+  ],
+  "integrityBattery": {
+    "battery": [
+      {
+        "id": "A",
+        "name": "public.mandals count",
+        "expected": 621,
+        "observed": 621,
+        "pass": true
+      },
+      {
+        "id": "B",
+        "name": "public.mandal_versions count",
+        "expected": 1210,
+        "observed": 1210,
+        "pass": true
+      },
+      {
+        "id": "C",
+        "name": "current versions count",
+        "expected": 621,
+        "observed": 621,
+        "pass": true
+      },
+      {
+        "id": "D",
+        "name": "historical versions count",
+        "expected": 589,
+        "observed": 589,
+        "pass": true
+      },
+      {
+        "id": "E",
+        "name": "null current version pointers",
+        "expected": 0,
+        "observed": 0,
+        "pass": true
+      },
+      {
+        "id": "F",
+        "name": "public.entity_geometries count",
+        "expected": 0,
+        "observed": 0,
+        "pass": true
+      },
+      {
+        "id": "G",
+        "name": "legacy pilot linkages is_canonical=false",
+        "expected": 12,
+        "observed": 12,
+        "pass": true
+      },
+      {
+        "id": "H",
+        "name": "canonical replacement linkages is_canonical=true",
+        "expected": 12,
+        "observed": 12,
+        "pass": true
+      },
+      {
+        "id": "I",
+        "name": "supersession provenance records count",
+        "expected": 12,
+        "observed": 12,
+        "pass": true
+      },
+      {
+        "id": "J",
+        "name": "all 12 supersession records status = OFFICIAL",
+        "expected": "OFFICIAL (12/12)",
+        "observed": "OFFICIAL (12/12)",
+        "pass": true
+      },
+      {
+        "id": "K",
+        "name": "all 12 supersession records evidence = 2026 LGD UUID",
+        "expected": "e0160000-0000-0000-0000-000000002026 (12/12)",
+        "observed": "12/12 match",
+        "pass": true
+      },
+      {
+        "id": "L",
+        "name": "all 12 supersession records verified_by = CTO / LGD",
+        "expected": "CTO / LGD Statewide Export Verification (12/12)",
+        "observed": "12/12 match",
+        "pass": true
+      },
+      {
+        "id": "M",
+        "name": "Hajipur reconciliation exactly 1 record",
+        "expected": 1,
+        "observed": 1,
+        "pass": true
+      },
+      {
+        "id": "N",
+        "name": "Hajipur reconciliation status = OFFICIAL",
+        "expected": "OFFICIAL",
+        "observed": "OFFICIAL",
+        "pass": true
+      },
+      {
+        "id": "O",
+        "name": "Hajipur reconciliation verification_evidence_id",
+        "expected": "e0160000-0000-0000-0000-000000002016",
+        "observed": "e0160000-0000-0000-0000-000000002016",
+        "pass": true
+      },
+      {
+        "id": "P",
+        "name": "Hajipur reconciliation verified_by",
+        "expected": "CTO / Statutory Gazette Reconciliation",
+        "observed": "CTO / Statutory Gazette Reconciliation",
+        "pass": true
+      },
+      {
+        "id": "Q",
+        "name": "Historical provenance record 8c350901 intact",
+        "expected": "ts_lgd_mandals_2023_v1 UNVERIFIED intact",
+        "observed": "ts_lgd_mandals_2023_v1 / UNVERIFIED (intact)",
+        "pass": true
+      },
+      {
+        "id": "R",
+        "name": "Historical lineage record 68e465c2 intact",
+        "expected": "split transition 2016-10-11 intact",
+        "observed": "split / 2016-10-11 (intact)",
+        "pass": true
+      },
+      {
+        "id": "S",
+        "name": "dataset_versions unchanged",
+        "expected": "2 versions registered with zero mutation",
+        "observed": "2 versions verified unchanged",
+        "pass": true
+      },
+      {
+        "id": "T",
+        "name": "Migration 045 & 046 SHAs immutable & Production air-gapped",
+        "expected": "100% SHA match, zero prod connections",
+        "observed": "045=true, 046=true, prod=air-gapped",
+        "pass": true
+      }
+    ],
+    "allPassed": true
+  },
+  "productionIsolationConfirmation": {
+    "productionTarget": "ehfafcnimmjusyvplbah",
+    "connectionAttempted": false,
+    "mutationsExecuted": 0,
+    "airGapIntact": true
+  },
+  "geometryQuarantineConfirmation": {
+    "publicEntityGeometries": 0,
+    "migration047Created": false,
+    "spatialReconciliationBegun": false,
+    "quarantineIntact": true
+  },
+  "finalStatus": "REMEDIATION EXECUTED / VERIFIED / SUBMITTED FOR CTO ACCEPTANCE"
+}
