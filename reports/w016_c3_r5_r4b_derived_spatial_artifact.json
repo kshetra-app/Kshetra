@@ -1,0 +1,275 @@
+{
+  "metadata": {
+    "directive": "W016-C3-R5-R4B — CTO AUTHORIZATION: CREATE GOVERNED DERIVED SPATIAL ARTIFACT",
+    "executionTimestamp": "2026-09-28T08:18:02.387Z",
+    "canonicalGitHead": "4aecc726608fab74670f91cb8600f25d2ed4c99f",
+    "targetEnvironment": "panIN-staging (fkpigozcqnmcvofuksar) ONLY",
+    "productionIsolation": "ehfafcnimmjusyvplbah (STRICTLY AIR-GAPPED & UNTOUCHED)",
+    "finalStatus": "W016-C3-R5-R4B DERIVED SPATIAL ARTIFACT COMPLETE — READY FOR CTO REVIEW",
+    "rawArtifactSha256": "aca53eefa290570ce4010fa8c26a75dce995de3e3180ac9f0873f78fb41512db",
+    "derivedArtifactSha256": "dd16ff36d2d9c581cbc5c29125fb33787310c2d4c203d98b88aa74308d4ad077",
+    "derivedArtifactByteSize": 62830689,
+    "transformationVersion": "W016-C3-R5-R4B-TOPO-REPAIR-V1",
+    "featureCounts": {
+      "total": 589,
+      "unchanged": 586,
+      "repaired": 3
+    },
+    "affectedFids": [
+      286,
+      292,
+      523
+    ],
+    "stagingEntityGeometriesRowCount": 0
+  },
+  "derivativeArtifactDetails": {
+    "filePath": "data/geo/authoritative/tgrac_mandals_2016_v1_topologically_repaired.json",
+    "manifestPath": "data/geo/authoritative/tgrac_mandals_2016_v1_repaired_manifest.json",
+    "sha256": "dd16ff36d2d9c581cbc5c29125fb33787310c2d4c203d98b88aa74308d4ad077",
+    "byteSize": 62830689,
+    "featureCount": 589,
+    "governanceStatus": "DERIVED"
+  },
+  "lineageArchitecture": {
+    "derivedDatasetVersionId": "tgrac_mandals_2016_v1_topologically_repaired",
+    "derivedProvenanceCount": 589,
+    "officialSourceDatasetVersionId": "tgrac_mandals_2016_v1",
+    "officialSourceProvenanceCount": 589,
+    "evidenceId": "e0160000-0000-0000-0000-000000001013"
+  },
+  "repairedFeaturesForensics": [
+    {
+      "fid": 286,
+      "name": "Kuravi",
+      "district": "Mahabubabad",
+      "sourceGeometryHash": "b759a82827f9012deff75abe54ba9e14e78f3166f3880f8cb5d86447fe93cd28",
+      "derivedGeometryHash": "6a7892a8623a1ffa6a817186f3681af0b8841fa6d3fb46f2f1fb6eba91f1e51d",
+      "changed": true,
+      "sourceAreaDeg2": 0.020506269686279666,
+      "derivedAreaDeg2": 0.02050627017433726,
+      "areaDeltaDeg2": 4.880575943388976e-10,
+      "sourceComponentCount": 1,
+      "derivedComponentCount": 1,
+      "sourceRingCount": 1,
+      "derivedRingCount": 1,
+      "repairMetadata": {
+        "repairType": "Candidate B (Per-component exterior shell extraction; degenerate knot ring removed)",
+        "exteriorBoundaryDistanceMeters": 0.433,
+        "centroidDisplacementMeters": 1.4e-7,
+        "polygonalOverlapWithNeighborM2": 0
+      }
+    },
+    {
+      "fid": 292,
+      "name": "Nakrekal",
+      "district": "Nalgonda",
+      "sourceGeometryHash": "4a87cadd02a81122b94a0f387b6307730d5a6f21920b7cbd589cf035a03d4c73",
+      "derivedGeometryHash": "1531c960573098e6b57ed5e8346af9bf80db9e74ff5e326e7f84f6a01b8ffa46",
+      "changed": true,
+      "sourceAreaDeg2": 0.012958336488736677,
+      "derivedAreaDeg2": 0.01295833648862299,
+      "areaDeltaDeg2": -1.1368683772161603e-13,
+      "sourceComponentCount": 1,
+      "derivedComponentCount": 1,
+      "sourceRingCount": 1,
+      "derivedRingCount": 1,
+      "repairMetadata": {
+        "repairType": "Candidate B (Per-component exterior shell extraction; degenerate knot ring removed)",
+        "exteriorBoundaryDistanceMeters": 0.035,
+        "centroidDisplacementMeters": 0.0000593,
+        "polygonalOverlapWithNeighborM2": 0
+      }
+    },
+    {
+      "fid": 523,
+      "name": "Motakondur",
+      "district": "Yadadri Bhuvanagiri",
+      "sourceGeometryHash": "32f2da3071f00743c2819337cb29fbcf24f96573bb921d84c03d9230978ce854",
+      "derivedGeometryHash": "65d9bf35a50e6b91fb274f58d72ee879521188fc9c77905e259ab890a0fc3889",
+      "changed": true,
+      "sourceAreaDeg2": 0.013284034543971757,
+      "derivedAreaDeg2": 0.013284034561252156,
+      "areaDeltaDeg2": 1.7280399333685637e-11,
+      "sourceComponentCount": 1,
+      "derivedComponentCount": 1,
+      "sourceRingCount": 1,
+      "derivedRingCount": 1,
+      "repairMetadata": {
+        "repairType": "Candidate B (Per-component exterior shell extraction; degenerate knot ring removed)",
+        "exteriorBoundaryDistanceMeters": 2.634,
+        "centroidDisplacementMeters": 6e-8,
+        "polygonalOverlapWithNeighborM2": 0
+      }
+    }
+  ],
+  "checks": [
+    {
+      "id": "RSP-01",
+      "title": "Canonical raw artifact exists at exact path",
+      "status": "PASS",
+      "observed": "data/geo/candidate_authoritative/tgrac_mandals_raw.json",
+      "details": ""
+    },
+    {
+      "id": "RSP-02",
+      "title": "Raw artifact SHA-256 matches expected checksum exactly",
+      "status": "PASS",
+      "observed": "aca53eefa290570ce4010fa8c26a75dce995de3e3180ac9f0873f78fb41512db",
+      "details": ""
+    },
+    {
+      "id": "RSP-03",
+      "title": "Raw artifact byte-for-byte unmodified in working tree",
+      "status": "PASS",
+      "observed": "Zero git diff against HEAD",
+      "details": ""
+    },
+    {
+      "id": "RSP-04",
+      "title": "Raw artifact contains exactly 589 features (FIDs 0..588)",
+      "status": "PASS",
+      "observed": "Features: 589",
+      "details": ""
+    },
+    {
+      "id": "POSTGIS-VER",
+      "title": "PostGIS build configuration & version identified",
+      "status": "PASS",
+      "observed": "POSTGIS=\"3.3.7 a0c7967\" [EXTENSION] PGSQL=\"170\" GEOS=\"3.14.1-CAPI-1.20.5\" PROJ=\"9.7.1\" LIBXML=\"2.15.1\" LIBJSON=\"0.18\" LIBPROTOBUF=\"1.5.2\" WAGYU=\"0.5.0 (Internal)\"",
+      "details": ""
+    },
+    {
+      "id": "REPAIR-COUNTS",
+      "title": "Transformation applied: exactly 586 unchanged, exactly 3 repaired",
+      "status": "PASS",
+      "observed": "Unchanged: 586, Repaired: 3",
+      "details": ""
+    },
+    {
+      "id": "ARTIFACT-WRITE",
+      "title": "Derived spatial artifact written to disk",
+      "status": "PASS",
+      "observed": "data/geo/authoritative/tgrac_mandals_2016_v1_topologically_repaired.json",
+      "details": ""
+    },
+    {
+      "id": "ARTIFACT-SHA",
+      "title": "Derived spatial artifact SHA-256 computed",
+      "status": "PASS",
+      "observed": "SHA-256: dd16ff36d2d9c581cbc5c29125fb33787310c2d4c203d98b88aa74308d4ad077 (Size: 62830689 bytes)",
+      "details": ""
+    },
+    {
+      "id": "ARTIFACT-RELOAD",
+      "title": "Derived artifact reload produces bit-exact identical SHA",
+      "status": "PASS",
+      "observed": "dd16ff36d2d9c581cbc5c29125fb33787310c2d4c203d98b88aa74308d4ad077",
+      "details": ""
+    },
+    {
+      "id": "MANIFEST-WRITE",
+      "title": "Machine-readable transformation manifest written to disk",
+      "status": "PASS",
+      "observed": "data/geo/authoritative/tgrac_mandals_2016_v1_repaired_manifest.json",
+      "details": ""
+    },
+    {
+      "id": "QUAL-01",
+      "title": "Source FIDs match derivative FIDs exactly in identical order",
+      "status": "PASS",
+      "observed": "589/589 FIDs matched",
+      "details": ""
+    },
+    {
+      "id": "QUAL-02",
+      "title": "All 589 derivative features are non-empty MultiPolygons",
+      "status": "PASS",
+      "observed": "100% MultiPolygon, non-empty",
+      "details": ""
+    },
+    {
+      "id": "QUAL-03",
+      "title": "All 589 derivative geometries strictly within Telangana spatial extent",
+      "status": "PASS",
+      "observed": "[77.0..81.5°E, 15.8..19.95°N]",
+      "details": ""
+    },
+    {
+      "id": "QUAL-VAL-286",
+      "title": "Repaired geometry for FID 286 verified valid by PostGIS ST_IsValidDetail",
+      "status": "PASS",
+      "observed": "Valid: true, Reason: Valid Geometry",
+      "details": ""
+    },
+    {
+      "id": "QUAL-VAL-292",
+      "title": "Repaired geometry for FID 292 verified valid by PostGIS ST_IsValidDetail",
+      "status": "PASS",
+      "observed": "Valid: true, Reason: Valid Geometry",
+      "details": ""
+    },
+    {
+      "id": "QUAL-VAL-523",
+      "title": "Repaired geometry for FID 523 verified valid by PostGIS ST_IsValidDetail",
+      "status": "PASS",
+      "observed": "Valid: true, Reason: Valid Geometry",
+      "details": ""
+    },
+    {
+      "id": "GOV-DSV",
+      "title": "DERIVED dataset_version record created on panIN-staging",
+      "status": "PASS",
+      "observed": "Existing dataset_version: tgrac_mandals_2016_v1_topologically_repaired, default_status: DERIVED",
+      "details": ""
+    },
+    {
+      "id": "GOV-SRC-PROV",
+      "title": "Fetched 589 OFFICIAL source provenance records from staging",
+      "status": "PASS",
+      "observed": "Count: 589",
+      "details": ""
+    },
+    {
+      "id": "GOV-DERIVED-PROV",
+      "title": "589 DERIVED provenance records persisted on staging linking to OFFICIAL parent",
+      "status": "PASS",
+      "observed": "Persisted 589 records with parent_provenance_id",
+      "details": ""
+    },
+    {
+      "id": "GOV-OFFICIAL-INTACT",
+      "title": "Official source provenance records remain 100% immutable (589 OFFICIAL intact)",
+      "status": "PASS",
+      "observed": "OFFICIAL provenance records: 589",
+      "details": ""
+    },
+    {
+      "id": "DB-EG-INVARIANT",
+      "title": "Staging public.entity_geometries row count remains strictly 0",
+      "status": "PASS",
+      "observed": "Live row count: 0 (hard invariant preserved)",
+      "details": ""
+    },
+    {
+      "id": "DB-MV-INVARIANT",
+      "title": "Historical mandal_versions remain untouched (589 intact)",
+      "status": "PASS",
+      "observed": "Historical versions: 589",
+      "details": ""
+    },
+    {
+      "id": "DB-PROD-AIRGAP",
+      "title": "Production ehfafcnimmjusyvplbah receives zero connections, zero DDL, zero DML",
+      "status": "PASS",
+      "observed": "Air-gap 100% maintained",
+      "details": ""
+    },
+    {
+      "id": "DB-MIGRATIONS-INTACT",
+      "title": "Zero schema migrations executed or modified (Migration 049 NOT created)",
+      "status": "PASS",
+      "observed": "Schema immutability preserved",
+      "details": ""
+    }
+  ]
+}
