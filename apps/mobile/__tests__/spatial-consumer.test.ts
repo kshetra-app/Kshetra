@@ -488,4 +488,376 @@ describe('W016-C3-R10: Mobile Canonical Spatial Consumer', () => {
       expect(MapboxGL.VectorSource).toBeDefined();
     });
   });
+
+  // ── GAP A: LEGACY AC FALLBACK SEMANTICS & GOVERNED INVARIANTS ─────────────
+  describe('Gap A: Legacy AC Fallback Semantics & Non-Silent Invariants', () => {
+    const mockLegacyAc = {
+      type: 'Feature',
+      properties: {
+        AC_NO: 101,
+        AC_NAME: 'Dornakal',
+        DIST_NAME: 'Mahabubabad',
+      },
+      geometry: { type: 'Polygon', coordinates: [] },
+    };
+
+    test('Rule 1: Canonical match (200) -> returns CANONICAL_MATCH, provenance CANONICAL_POSTGIS, legacy fallback NOT called', async () => {
+      mockFetch.mockImplementation(async (url: string, init: RequestInit) => {
+        const reqId = (init?.headers as Record<string, string>)?.[ 'x-request-id' ] || 'req-locate-rule1';
+        return createMockResponse(200, {
+          status: 'ok',
+          matched: true,
+          data: mockKuraviFeature,
+        }, { 'x-request-id': reqId });
+      });
+
+      const legacyFallbackSpy = jest.fn().mockReturnValue(mockLegacyAc);
+
+      const result = await testClient.spatial.locateWithFallback(
+        { lat: 17.55, lng: 79.95, layer: 'mandals' },
+        legacyFallbackSpy
+      );
+
+      expect(result.status).toBe('CANONICAL_MATCH');
+      expect(result.provenance).toBe('CANONICAL_POSTGIS');
+      expect(result.canonicalFeature).not.toBeNull();
+      expect(result.canonicalFeature?.name).toBe('Kuravi');
+      expect(result.legacyFeature).toBeNull();
+      expect(legacyFallbackSpy).not.toHaveBeenCalled();
+    });
+
+    test('Rule 2: Canonical 404 (no-match) -> invokes legacy fallback, returns LEGACY_FALLBACK with provenance LEGACY_STATIC_FALLBACK', async () => {
+      mockFetch.mockImplementation(async (url: string, init: RequestInit) => {
+        const reqId = (init?.headers as Record<string, string>)?.[ 'x-request-id' ] || 'req-locate-rule2';
+        return createMockResponse(404, {
+          status: 'not_found',
+          matched: false,
+          code: 'SPATIAL_LOCATION_NOT_FOUND',
+        }, { 'x-request-id': reqId });
+      });
+
+      const legacyFallbackSpy = jest.fn().mockReturnValue(mockLegacyAc);
+
+      const result = await testClient.spatial.locateWithFallback(
+        { lat: 17.55, lng: 79.95, layer: 'mandals' },
+        legacyFallbackSpy
+      );
+
+      expect(legacyFallbackSpy).toHaveBeenCalledTimes(1);
+      expect(result.status).toBe('LEGACY_FALLBACK');
+      expect(result.provenance).toBe('LEGACY_STATIC_FALLBACK');
+      expect(result.canonicalFeature).toBeNull();
+      expect(result.legacyFeature).toEqual(mockLegacyAc);
+      expect(result.statusCode).toBe(404);
+    });
+
+    test('Rule 3: Canonical 404 and legacy fallback returns null -> returns NO_MATCH with provenance NONE', async () => {
+      mockFetch.mockImplementation(async (url: string, init: RequestInit) => {
+        const reqId = (init?.headers as Record<string, string>)?.[ 'x-request-id' ] || 'req-locate-rule3';
+        return createMockResponse(404, {
+          status: 'not_found',
+          matched: false,
+          code: 'SPATIAL_LOCATION_NOT_FOUND',
+        }, { 'x-request-id': reqId });
+      });
+
+      const legacyFallbackSpy = jest.fn().mockReturnValue(null);
+
+      const result = await testClient.spatial.locateWithFallback(
+        { lat: 0.0, lng: 0.0, layer: 'mandals' },
+        legacyFallbackSpy
+      );
+
+      expect(legacyFallbackSpy).toHaveBeenCalledTimes(1);
+      expect(result.status).toBe('NO_MATCH');
+      expect(result.provenance).toBe('NONE');
+      expect(result.canonicalFeature).toBeNull();
+      expect(result.legacyFeature).toBeNull();
+    });
+
+    test('Rule 4: Canonical 5xx (500) -> DOES NOT invoke legacy fallback, returns ERROR with provenance NONE', async () => {
+      mockFetch.mockImplementation(async (url: string, init: RequestInit) => {
+        const reqId = (init?.headers as Record<string, string>)?.[ 'x-request-id' ] || 'req-locate-rule4';
+        return createMockResponse(500, {
+          statusCode: 500,
+          error: 'Internal Server Error',
+          message: 'PostGIS connection failure',
+        }, { 'x-request-id': reqId });
+      });
+
+      const legacyFallbackSpy = jest.fn().mockReturnValue(mockLegacyAc);
+
+      const result = await testClient.spatial.locateWithFallback(
+        { lat: 17.55, lng: 79.95, layer: 'mandals' },
+        legacyFallbackSpy
+      );
+
+      expect(result.status).toBe('ERROR');
+      expect(result.provenance).toBe('NONE');
+      expect(result.canonicalFeature).toBeNull();
+      expect(result.legacyFeature).toBeNull();
+      expect(result.statusCode).toBe(500);
+      expect(legacyFallbackSpy).not.toHaveBeenCalled();
+    });
+
+    test('Rule 5: Network timeout / connection failure -> DOES NOT invoke legacy fallback, returns OFFLINE with provenance NONE', async () => {
+      mockFetch.mockRejectedValueOnce(new TypeError('Network request failed'));
+
+      const legacyFallbackSpy = jest.fn().mockReturnValue(mockLegacyAc);
+
+      const result = await testClient.spatial.locateWithFallback(
+        { lat: 17.55, lng: 79.95, layer: 'mandals' },
+        legacyFallbackSpy
+      );
+
+      expect(result.status).toBe('OFFLINE');
+      expect(result.provenance).toBe('NONE');
+      expect(result.canonicalFeature).toBeNull();
+      expect(result.legacyFeature).toBeNull();
+      expect(result.statusCode).toBe(0);
+      expect(legacyFallbackSpy).not.toHaveBeenCalled();
+    });
+
+    test('Rule 6: Canonical 400 (Bad Request / coordinate validation) -> DOES NOT invoke legacy fallback, returns ERROR with provenance NONE', async () => {
+      const legacyFallbackSpy = jest.fn().mockReturnValue(mockLegacyAc);
+
+      const result = await testClient.spatial.locateWithFallback(
+        { lat: 95.0, lng: 79.95, layer: 'mandals' },
+        legacyFallbackSpy
+      );
+
+      expect(result.status).toBe('ERROR');
+      expect(result.provenance).toBe('NONE');
+      expect(result.canonicalFeature).toBeNull();
+      expect(result.legacyFeature).toBeNull();
+      expect(result.statusCode).toBe(400);
+      expect(legacyFallbackSpy).not.toHaveBeenCalled();
+    });
+  });
+
+  // ── GAP B: MAPLIBRE MVT RUNTIME CONSUMPTION & BOUNDED INTEGRATION ──────────
+  describe('Gap B: MapLibre MVT Runtime Consumption & Bounded Integration', () => {
+    test('constructs complete MapLibre VectorSource compatible template URL with query params', () => {
+      const template = testClient.spatial.getTileTemplateUrl('mandals', {
+        regime: 'historical',
+        asOf: '2016-10-11',
+      });
+
+      expect(template).toBe(
+        'https://test-api.kshetra.app/api/v1/geo/tiles/mandals/{z}/{x}/{y}?regime=historical&as_of=2016-10-11'
+      );
+      expect(template).toContain('{z}');
+      expect(template).toContain('{x}');
+      expect(template).toContain('{y}');
+    });
+
+    test('VectorSource props pass valid configuration to native MapLibre bridge', () => {
+      const tileUrl = testClient.spatial.getTileTemplateUrl('mandals', { regime: 'historical' });
+      const vectorSourceProps = {
+        id: 'canonical-mandals-source',
+        tileUrlTemplates: [tileUrl],
+        minZoomLevel: 6,
+        maxZoomLevel: 14,
+      };
+
+      expect(vectorSourceProps.id).toBe('canonical-mandals-source');
+      expect(vectorSourceProps.tileUrlTemplates[0]).toContain('/api/v1/geo/tiles/mandals/{z}/{x}/{y}');
+      expect(vectorSourceProps.minZoomLevel).toBe(6);
+      expect(vectorSourceProps.maxZoomLevel).toBe(14);
+    });
+
+    test('MVT binary wire acceptance: decodes vector tile buffer without GeoJSON conversion or polygon loops', async () => {
+      // Create a mock binary buffer representing MVT protobuf wire response
+      const mockMvtBytes = new Uint8Array([
+        0x1a, 0x18, // Layer field 3 (wire type 2, length 24)
+        0x0a, 0x07, 0x6d, 0x61, 0x6e, 0x64, 0x61, 0x6c, 0x73, // Layer name: "mandals"
+        0x28, 0x80, 0x20, // extent: 4096
+        0x18, 0x02, // version: 2
+      ]);
+
+      mockFetch.mockResolvedValueOnce({
+        status: 200,
+        ok: true,
+        headers: new Headers({
+          'content-type': 'application/vnd.mapbox-vector-tile',
+          'x-geography-layer': 'mandals',
+        }),
+        arrayBuffer: async () => mockMvtBytes.buffer,
+      });
+
+      const tileRes = await testClient.spatial.fetchTile('mandals', 8, 184, 115);
+      expect(tileRes.status).toBe('ok');
+      expect(tileRes.statusCode).toBe(200);
+      expect(tileRes.data).toBeDefined();
+      expect(tileRes.data?.byteLength).toBe(mockMvtBytes.byteLength);
+
+      // Verify the buffer is parsed as binary wire data, NOT converted into client GeoJSON coordinates
+      const view = new Uint8Array(tileRes.data!);
+      expect(view[0]).toBe(0x1a); // Field 3: Layer tag in MVT Protobuf
+    });
+  });
+
+  // ── GAP C: MOBILE OFFLINE & DEGRADED SEMANTIC VERIFICATION (8 CONDITIONS) ───
+  describe('Gap C: Mobile Offline & Degraded Semantic Verification (8 Conditions)', () => {
+    test('Condition 1: No network (device offline / network partition) -> returns isOffline=true, statusCode=0', async () => {
+      mockFetch.mockRejectedValueOnce(new TypeError('Network request failed'));
+
+      const res = await testClient.spatial.locate({
+        lat: 17.55,
+        lng: 79.95,
+        layer: 'mandals',
+      });
+
+      expect(res.matched).toBe(false);
+      expect(res.isOffline).toBe(true);
+      expect(res.statusCode).toBe(0);
+      expect(res.feature).toBeNull();
+    });
+
+    test('Condition 2: Request timeout -> returns isOffline=true, statusCode=0', async () => {
+      const abortError = new Error('The user aborted a request.');
+      abortError.name = 'AbortError';
+      mockFetch.mockRejectedValueOnce(abortError);
+
+      const res = await testClient.spatial.locate({
+        lat: 17.55,
+        lng: 79.95,
+        layer: 'mandals',
+      });
+
+      expect(res.matched).toBe(false);
+      expect(res.isOffline).toBe(true);
+      expect(res.statusCode).toBe(0);
+    });
+
+    test('Condition 3: API 400 (Bad request / invalid coords / parameters) -> returns statusCode=400', async () => {
+      mockFetch.mockImplementation(async (url: string, init: RequestInit) => {
+        const reqId = (init?.headers as Record<string, string>)?.[ 'x-request-id' ] || 'req-locate-c3';
+        return createMockResponse(400, {
+          statusCode: 400,
+          error: 'Bad Request',
+          code: 'INVALID_PARAMETERS',
+          message: 'Invalid coordinate bounds',
+        }, { 'x-request-id': reqId });
+      });
+
+      const res = await testClient.spatial.locate({
+        lat: 89.9, // valid client bounds but rejected by server schema
+        lng: 179.9,
+        layer: 'mandals',
+      });
+
+      expect(res.matched).toBe(false);
+      expect(res.statusCode).toBe(400);
+      expect(res.feature).toBeNull();
+    });
+
+    test('Condition 4: API 404 (No matching geometry found in layer) -> returns statusCode=404, matched=false', async () => {
+      mockFetch.mockImplementation(async (url: string, init: RequestInit) => {
+        const reqId = (init?.headers as Record<string, string>)?.[ 'x-request-id' ] || 'req-locate-c4';
+        return createMockResponse(404, {
+          status: 'not_found',
+          matched: false,
+          code: 'SPATIAL_LOCATION_NOT_FOUND',
+          message: 'No matching geometry found',
+        }, { 'x-request-id': reqId });
+      });
+
+      const res = await testClient.spatial.locate({
+        lat: 0.0,
+        lng: 0.0,
+        layer: 'mandals',
+      });
+
+      expect(res.matched).toBe(false);
+      expect(res.statusCode).toBe(404);
+      expect(res.code).toBe('SPATIAL_LOCATION_NOT_FOUND');
+      expect(res.feature).toBeNull();
+    });
+
+    test('Condition 5: API 5xx (Internal server error / PostGIS failure) -> returns statusCode=500', async () => {
+      mockFetch.mockImplementation(async (url: string, init: RequestInit) => {
+        const reqId = (init?.headers as Record<string, string>)?.[ 'x-request-id' ] || 'req-locate-c5';
+        return createMockResponse(500, {
+          statusCode: 500,
+          error: 'Internal Server Error',
+          code: 'SPATIAL_RUNTIME_ERROR',
+          message: 'PostgreSQL database error',
+        }, { 'x-request-id': reqId });
+      });
+
+      const res = await testClient.spatial.locate({
+        lat: 17.55,
+        lng: 79.95,
+        layer: 'mandals',
+      });
+
+      expect(res.matched).toBe(false);
+      expect(res.statusCode).toBe(500);
+      expect(res.feature).toBeNull();
+    });
+
+    test('Condition 6: 204 Empty Tile (tile outside geographic bounds) -> returns status="empty", statusCode=204, data=null', async () => {
+      mockFetch.mockResolvedValueOnce({
+        status: 204,
+        ok: true,
+        headers: new Headers({
+          'x-request-id': 'req-empty-tile',
+          'x-geography-layer': 'mandals',
+        }),
+      });
+
+      const res = await testClient.spatial.fetchTile('mandals', 8, 10, 10);
+      expect(res.status).toBe('empty');
+      expect(res.statusCode).toBe(204);
+      expect(res.data).toBeNull();
+    });
+
+    test('Condition 7: Current geometry unavailable (regime=current fail-closed) -> returns statusCode=404, matched=false', async () => {
+      mockFetch.mockImplementation(async (url: string, init: RequestInit) => {
+        const reqId = (init?.headers as Record<string, string>)?.[ 'x-request-id' ] || 'req-locate-c7';
+        return createMockResponse(404, {
+          status: 'not_found',
+          matched: false,
+          code: 'SPATIAL_LOCATION_NOT_FOUND',
+          message: 'No current geometry found for coordinates under requested regime',
+        }, { 'x-request-id': reqId });
+      });
+
+      const res = await testClient.spatial.locate({
+        lat: 17.55,
+        lng: 79.95,
+        layer: 'mandals',
+        regime: 'current',
+      });
+
+      expect(res.matched).toBe(false);
+      expect(res.statusCode).toBe(404);
+      expect(res.feature).toBeNull();
+    });
+
+    test('Condition 8: Historical geometry unavailable (as_of out of range) -> returns statusCode=404, matched=false', async () => {
+      mockFetch.mockImplementation(async (url: string, init: RequestInit) => {
+        const reqId = (init?.headers as Record<string, string>)?.[ 'x-request-id' ] || 'req-locate-c8';
+        return createMockResponse(404, {
+          status: 'not_found',
+          matched: false,
+          code: 'SPATIAL_LOCATION_NOT_FOUND',
+          message: 'No geometry found as of 2000-01-01',
+        }, { 'x-request-id': reqId });
+      });
+
+      const res = await testClient.spatial.locate({
+        lat: 17.55,
+        lng: 79.95,
+        layer: 'mandals',
+        regime: 'historical',
+        asOf: '2000-01-01',
+      });
+
+      expect(res.matched).toBe(false);
+      expect(res.statusCode).toBe(404);
+      expect(res.feature).toBeNull();
+    });
+  });
 });

@@ -27,7 +27,7 @@ import { usePreferencesStore } from '../../stores/preferences';
 import { useFeedStore } from '../../stores/feed';
 import { isStateSupported, getStateData } from '../../lib/stateRegistry';
 import { MapboxGL, mapboxAvailable } from '../../lib/maplibreCompat';
-import { apiClient } from '../../lib/api';
+import { apiClient, type SpatialProvenance } from '../../lib/api';
 import { telemetry } from '../../lib/telemetry';
 import { useEnrichedGeo } from '../../lib/useEnrichedGeo';
 import { computeDistrictDensityMap } from '../../lib/delimitationDensity';
@@ -184,6 +184,7 @@ function FullMapScreen() {
   const bottomSheetRef = useRef<BottomSheet>(null);
   const [selected, setSelected] = useState<SelectedConstituency | null>(null);
   const selectedRef = useRef<SelectedConstituency | null>(null);
+  const [spatialProvenance, setSpatialProvenance] = useState<SpatialProvenance>('NONE');
   const [userMarker, setUserMarker] = useState<[number, number] | null>(null);
   const [colorMode, setColorMode] = useState<MapColorMode>('party');
   const { loading: locating, requestLocation } = useUserLocation();
@@ -914,31 +915,6 @@ function FullMapScreen() {
     const coord: [number, number] = [loc.longitude, loc.latitude];
     setUserMarker(coord);
 
-    // ── CANONICAL SPATIAL LOCATE (JOB W016-C3-R10) ──
-    // Canonical PostGIS Point-in-Polygon via Fastify API.
-    // Zero mobile in-memory polygon loops for canonical spatial layers.
-    try {
-      const canonicalMatch = await apiClient.spatial.locate({
-        lat: loc.latitude,
-        lng: loc.longitude,
-        layer: 'mandals',
-        regime: 'historical',
-        asOf: '2016-10-11',
-      });
-      if (canonicalMatch.matched && canonicalMatch.feature) {
-        telemetry.info('Canonical spatial locate matched', {
-          layer: 'mandals',
-          source_feature_id: canonicalMatch.feature.source_feature_id,
-          geometry_id: canonicalMatch.feature.geometry_id,
-          version_id: canonicalMatch.feature.version_id,
-          entity_id: canonicalMatch.feature.entity_id,
-          name: canonicalMatch.feature.name,
-        });
-      }
-    } catch (err) {
-      telemetry.warn('Canonical spatial locate lookup failed', { error: String(err) });
-    }
-
     if (stateCode === 'IN') {
       // NON-CANONICAL / LEGACY COMPATIBILITY:
       // State boundary hit-test during national overview mode
@@ -959,15 +935,55 @@ function FullMapScreen() {
       return;
     }
 
-    // NON-CANONICAL / LEGACY COMPATIBILITY:
-    // Existing assembly constituency view fallback during transition period
-    const found = activeGeoJSON ? findConstituencyAtPoint(
-      loc.longitude,
-      loc.latitude,
-      activeGeoJSON,
-    ) : null;
+    // ── CANONICAL SPATIAL LOCATE WITH GOVERNED FALLBACK (W016-C3-R10 GAP A) ──
+    // Invariants enforced:
+    // 1. Canonical locate success -> use canonical result, ZERO legacy fallback invoked.
+    // 2. Canonical 404 (no-match) -> explicit fallback for existing AC view, classified as LEGACY_STATIC_FALLBACK.
+    // 3. Canonical 5xx / error -> NEVER silently substitute legacy data as canonical.
+    // 4. Network offline / timeout -> NEVER silently substitute legacy data as canonical.
+    const locateOutcome = await apiClient.spatial.locateWithFallback(
+      {
+        lat: loc.latitude,
+        lng: loc.longitude,
+        layer: 'mandals',
+        regime: 'historical',
+        asOf: '2016-10-11',
+      },
+      () => {
+        // Explicit NON-CANONICAL / LEGACY COMPATIBILITY fallback:
+        // Assembly Constituency (AC) polygon hit-test for state-level electoral profile sheet
+        if (activeGeoJSON) {
+          return findConstituencyAtPoint(loc.longitude, loc.latitude, activeGeoJSON);
+        }
+        return null;
+      }
+    );
 
-    if (found) {
+    setSpatialProvenance(locateOutcome.provenance);
+
+    if (locateOutcome.status === 'CANONICAL_MATCH' && locateOutcome.canonicalFeature) {
+      telemetry.info('Canonical PostGIS locate matched', {
+        source_feature_id: locateOutcome.canonicalFeature.source_feature_id,
+        geometry_id: locateOutcome.canonicalFeature.geometry_id,
+        version_id: locateOutcome.canonicalFeature.version_id,
+        entity_id: locateOutcome.canonicalFeature.entity_id,
+        name: locateOutcome.canonicalFeature.name,
+        provenance: locateOutcome.provenance,
+      });
+      // Clear legacy AC selection so legacy candidate card is not confused with canonical mandal
+      setSelected(null);
+      setCompareSelected(null);
+      cameraRef.current?.setCamera({
+        centerCoordinate: coord,
+        zoomLevel: 11, // High resolution mandal boundary zoom
+        animationDuration: 800,
+      });
+      return;
+    }
+
+    if (locateOutcome.status === 'LEGACY_FALLBACK' && locateOutcome.legacyFeature) {
+      // Governed non-canonical AC fallback: select legacy AC with explicit degraded provenance
+      const found = locateOutcome.legacyFeature as any;
       selectConstituency(
         found.properties.AC_NO,
         found.properties.AC_NAME,
@@ -978,7 +994,15 @@ function FullMapScreen() {
         zoomLevel: CONSTITUENCY_ZOOM,
         animationDuration: 800,
       });
-    } else {
+      return;
+    }
+
+    if (locateOutcome.status === 'OFFLINE' || locateOutcome.status === 'ERROR') {
+      telemetry.warn('Canonical spatial locate degraded/offline - zero silent legacy substitution', {
+        status: locateOutcome.status,
+        error: locateOutcome.error,
+        provenance: locateOutcome.provenance,
+      });
       setSelected(null);
       setCompareSelected(null);
       cameraRef.current?.setCamera({
@@ -986,7 +1010,17 @@ function FullMapScreen() {
         zoomLevel: 8,
         animationDuration: 800,
       });
+      return;
     }
+
+    // NO_MATCH (404 on both canonical and legacy)
+    setSelected(null);
+    setCompareSelected(null);
+    cameraRef.current?.setCamera({
+      centerCoordinate: coord,
+      zoomLevel: 8,
+      animationDuration: 800,
+    });
   }, [requestLocation, selectConstituency, activeGeoJSON, stateCode, setStateCode]);
 
   const handleViewDetail = useCallback(() => {

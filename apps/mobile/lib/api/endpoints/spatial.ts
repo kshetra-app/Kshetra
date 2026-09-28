@@ -17,11 +17,25 @@ import { telemetry } from '../../telemetry';
 
 export type SpatialRegime = 'current' | 'historical' | 'version';
 
+export type SpatialProvenance =
+  | 'CANONICAL_POSTGIS'
+  | 'LEGACY_STATIC_FALLBACK'
+  | 'NONE';
+
 export interface SpatialIdentityMapping {
   source_reference: string;
   geometry_id: string;
   version_id: string;
   entity_id: string | null;
+}
+
+export interface LocateWithFallbackResult<TLegacy = unknown> {
+  provenance: SpatialProvenance;
+  canonicalFeature: GovernedSpatialFeature | null;
+  legacyFeature: TLegacy | null;
+  status: 'CANONICAL_MATCH' | 'LEGACY_FALLBACK' | 'NO_MATCH' | 'ERROR' | 'OFFLINE';
+  error?: string;
+  statusCode: number;
 }
 
 export interface GovernedSpatialFeature {
@@ -463,5 +477,82 @@ export class SpatialEndpoint {
         error: err instanceof Error ? err.message : String(err),
       };
     }
+  }
+
+  /**
+   * Executes canonical locate with strictly governed, non-silent legacy fallback semantics (JOB W016-C3-R10 GAP A).
+   * Invariants:
+   * 1. Canonical success -> returns canonical match, ZERO legacy fallback invoked.
+   * 2. Canonical 404 (no-match) -> invokes legacyFallbackFn, classifies resulting data explicitly as LEGACY_STATIC_FALLBACK (never canonical).
+   * 3. Canonical 5xx / 4xx error -> DOES NOT silently substitute legacy data; reports ERROR state with provenance NONE.
+   * 4. Network timeout / offline -> DOES NOT silently substitute legacy data; reports OFFLINE state with provenance NONE.
+   */
+  async locateWithFallback<TLegacy = unknown>(
+    params: LocateRequestParams,
+    legacyFallbackFn?: () => TLegacy | null | undefined
+  ): Promise<LocateWithFallbackResult<TLegacy>> {
+    const canonicalRes = await this.locate(params);
+
+    // 1. Successful canonical locate -> USE CANONICAL, DO NOT INVOKE FALLBACK
+    if (canonicalRes.matched && canonicalRes.feature) {
+      return {
+        provenance: 'CANONICAL_POSTGIS',
+        canonicalFeature: canonicalRes.feature,
+        legacyFeature: null,
+        status: 'CANONICAL_MATCH',
+        statusCode: 200,
+      };
+    }
+
+    // 2. Network / timeout / offline -> DO NOT silently substitute legacy data as canonical
+    if (canonicalRes.isOffline) {
+      telemetry.warn('Spatial locate offline/timeout - zero legacy substitution', { error: canonicalRes.error });
+      return {
+        provenance: 'NONE',
+        canonicalFeature: null,
+        legacyFeature: null,
+        status: 'OFFLINE',
+        error: canonicalRes.error || 'Network connection unavailable or request timed out',
+        statusCode: 0,
+      };
+    }
+
+    // 3. Canonical 5xx / non-404 error -> DO NOT silently substitute legacy data as canonical
+    if (canonicalRes.statusCode >= 500 || (canonicalRes.statusCode !== 404 && canonicalRes.statusCode !== 200)) {
+      telemetry.warn(`Spatial locate API error ${canonicalRes.statusCode} - zero legacy substitution`, { error: canonicalRes.error });
+      return {
+        provenance: 'NONE',
+        canonicalFeature: null,
+        legacyFeature: null,
+        status: 'ERROR',
+        error: canonicalRes.error || `Canonical spatial API returned error ${canonicalRes.statusCode}`,
+        statusCode: canonicalRes.statusCode,
+      };
+    }
+
+    // 4. Canonical 404 / no-match -> ONLY here may explicit legacy fallback be invoked
+    if (canonicalRes.statusCode === 404 && legacyFallbackFn) {
+      const legacy = legacyFallbackFn();
+      if (legacy) {
+        telemetry.info('Spatial locate: canonical returned 404 no-match, explicit LEGACY_STATIC_FALLBACK invoked', {
+          provenance: 'LEGACY_STATIC_FALLBACK',
+        });
+        return {
+          provenance: 'LEGACY_STATIC_FALLBACK',
+          canonicalFeature: null,
+          legacyFeature: legacy,
+          status: 'LEGACY_FALLBACK',
+          statusCode: 404,
+        };
+      }
+    }
+
+    return {
+      provenance: 'NONE',
+      canonicalFeature: null,
+      legacyFeature: null,
+      status: 'NO_MATCH',
+      statusCode: canonicalRes.statusCode || 404,
+    };
   }
 }
