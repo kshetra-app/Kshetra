@@ -3,12 +3,12 @@
     "job": "W008",
     "title": "Fastify API Route Contract Inventory",
     "specification": "Master Execution Framework Amendment v1.5-A / DEC-041",
-    "timestamp": "2026-09-21T16:28:07.778Z"
+    "timestamp": "2026-09-28T14:18:48.573Z"
   },
   "summary": {
-    "totalRoutesRegistered": 144,
+    "totalRoutesRegistered": 147,
     "pioneerAndPhase1Routes": 56,
-    "schemaCoveredRoutes": 114
+    "schemaCoveredRoutes": 117
   },
   "routes": [
     {
@@ -699,6 +699,33 @@
       "method": "GET",
       "path": "/geo/:file",
       "file": "geo.ts",
+      "phase": "Phase 2-4",
+      "schemaDefined": true,
+      "preValidationDefined": false,
+      "standardizedEnvelope": true
+    },
+    {
+      "method": "GET",
+      "path": "/geo/tiles/:layer/:z/:x/:y",
+      "file": "geoRuntime.ts",
+      "phase": "Phase 2-4",
+      "schemaDefined": true,
+      "preValidationDefined": false,
+      "standardizedEnvelope": true
+    },
+    {
+      "method": "GET",
+      "path": "/geo/locate",
+      "file": "geoRuntime.ts",
+      "phase": "Phase 2-4",
+      "schemaDefined": true,
+      "preValidationDefined": false,
+      "standardizedEnvelope": true
+    },
+    {
+      "method": "GET",
+      "path": "/geo/features/:layer/:id",
+      "file": "geoRuntime.ts",
       "phase": "Phase 2-4",
       "schemaDefined": true,
       "preValidationDefined": false,
