@@ -1,0 +1,497 @@
+{
+  "metadata": {
+    "directive": "W016-C3-R5-R4A — CTO AUTHORIZATION: GOVERNED TOPOLOGICAL REPAIR FORENSIC PREFLIGHT",
+    "executionTimestamp": "2026-09-28T06:07:37.920Z",
+    "canonicalGitHead": "97111aeddac9e0c0947a314a102e3e1e9560f1dc",
+    "targetEnvironment": "panIN-staging (fkpigozcqnmcvofuksar) ONLY (Read-Only Forensic)",
+    "productionIsolation": "ehfafcnimmjusyvplbah (STRICTLY AIR-GAPPED & UNTOUCHED)",
+    "finalStatus": "W016-C3-R5-R4A REPAIR FORENSIC PREFLIGHT COMPLETE — READY FOR CTO REVIEW",
+    "rawArtifactSha256": "aca53eefa290570ce4010fa8c26a75dce995de3e3180ac9f0873f78fb41512db",
+    "sourceFeaturesCount": 589,
+    "stagingEntityGeometriesRowCount": 0
+  },
+  "rawSourcePreservation": {
+    "path": "data/geo/candidate_authoritative/tgrac_mandals_raw.json",
+    "sha256": "aca53eefa290570ce4010fa8c26a75dce995de3e3180ac9f0873f78fb41512db",
+    "verifiedGitClean": true,
+    "featureCount": 589
+  },
+  "reproducedDefects": [
+    {
+      "fid": 286,
+      "name": "Kuravi",
+      "district": "Mahabubabad",
+      "targetMandalVersionId": "9c1ebb72-2a15-5aae-ab7d-d3ef8806d28b",
+      "versionCode": "TS-MDL-4721-V1",
+      "stIsValid": false,
+      "stIsValidReason": "Ring Self-intersection",
+      "defectCoordinate": [
+        79.94888665600001,
+        17.514169435999975
+      ],
+      "geometryType": "MultiPolygon",
+      "polygonCount": 1,
+      "ringCount": 1,
+      "areaDeg2": 0.020506269686279666,
+      "sourceAttributeAreaSqKm": 240.90129796,
+      "boundingBox": [
+        79.89569772599998,
+        17.36986128799998,
+        80.09869417700003,
+        17.58828827100001
+      ],
+      "envelopeWkt": "POLYGON((79.89569772599998 17.36986128799998, 80.09869417700003 17.36986128799998, 80.09869417700003 17.58828827100001, 79.89569772599998 17.58828827100001, 79.89569772599998 17.36986128799998))"
+    },
+    {
+      "fid": 292,
+      "name": "Nakrekal",
+      "district": "Nalgonda",
+      "targetMandalVersionId": "40151d58-be3f-55c5-9424-0670c4e27093",
+      "versionCode": "TS-MDL-4636-V1",
+      "stIsValid": false,
+      "stIsValidReason": "Ring Self-intersection",
+      "defectCoordinate": [
+        79.424871978,
+        17.222727554000016
+      ],
+      "geometryType": "MultiPolygon",
+      "polygonCount": 1,
+      "ringCount": 1,
+      "areaDeg2": 0.012958336488736677,
+      "sourceAttributeAreaSqKm": 152.5586324,
+      "boundingBox": [
+        79.36271400099997,
+        17.074334116999978,
+        79.51356132299998,
+        17.266310999999973
+      ],
+      "envelopeWkt": "POLYGON((79.36271400099997 17.074334116999978, 79.51356132299998 17.074334116999978, 79.51356132299998 17.266310999999973, 79.36271400099997 17.266310999999973, 79.36271400099997 17.074334116999978))"
+    },
+    {
+      "fid": 523,
+      "name": "Motakondur",
+      "district": "Yadadri Bhuvanagiri",
+      "targetMandalVersionId": "bf88ae00-a796-5082-8bbb-51f20d2b9f11",
+      "versionCode": "TS-MDL-6309-V1",
+      "stIsValid": false,
+      "stIsValidReason": "Ring Self-intersection",
+      "defectCoordinate": [
+        79.03225856799997,
+        17.594265163999978
+      ],
+      "geometryType": "MultiPolygon",
+      "polygonCount": 1,
+      "ringCount": 1,
+      "areaDeg2": 0.013284034543971757,
+      "sourceAttributeAreaSqKm": 156.13900952,
+      "boundingBox": [
+        79.02044102999997,
+        17.447681138999997,
+        79.18832298000001,
+        17.614164877000007
+      ],
+      "envelopeWkt": "POLYGON((79.02044102999997 17.447681138999997, 79.18832298000001 17.447681138999997, 79.18832298000001 17.614164877000007, 79.02044102999997 17.614164877000007, 79.02044102999997 17.447681138999997))"
+    }
+  ],
+  "postgisEnvironment": {
+    "postgisVersion": "POSTGIS=\"3.3.7 a0c7967\" [EXTENSION] PGSQL=\"170\" GEOS=\"3.14.1-CAPI-1.20.5\" PROJ=\"9.7.1\" LIBXML=\"2.15.1\" LIBJSON=\"0.18\" LIBPROTOBUF=\"1.5.2\" WAGYU=\"0.5.0 (Internal)\"",
+    "candidateTransformation": "ST_Multi(ST_CollectionExtract(ST_MakeValid(geometry), 3))",
+    "geosMethod": "method=linework (PostGIS GEOS 3.14.1 default)"
+  },
+  "forensicComparisons": [
+    {
+      "fid": 286,
+      "name": "Kuravi",
+      "district": "Mahabubabad",
+      "targetMandalVersionId": "9c1ebb72-2a15-5aae-ab7d-d3ef8806d28b",
+      "versionCode": "TS-MDL-4721-V1",
+      "sourceGeometrySha256": "b759a82827f9012deff75abe54ba9e14e78f3166f3880f8cb5d86447fe93cd28",
+      "repairedGeometrySha256": "a7704433084f67ca93ff077ae4c89fa5c7d606deff9cc14db4332c5ae8cca4e2",
+      "stIsValidBefore": false,
+      "stIsValidAfter": true,
+      "stIsValidReasonBefore": "Ring Self-intersection",
+      "stIsValidReasonAfter": "Valid Geometry",
+      "geometryTypeBefore": "MultiPolygon",
+      "geometryTypeAfter": "MultiPolygon",
+      "polygonCountBefore": 1,
+      "polygonCountAfter": 1,
+      "ringCountBefore": 1,
+      "ringCountAfter": 2,
+      "areaDeg2Before": 0.020506269686279666,
+      "areaDeg2After": 0.020506269686279666,
+      "areaDeltaDeg2": 0,
+      "relativeAreaDelta": 0,
+      "perimeterBeforeDeg": 0.9229619475664677,
+      "perimeterAfterDeg": 0.9229619475664677,
+      "centroidBefore": [
+        80.0118203854702,
+        17.495346968995094
+      ],
+      "centroidAfter": [
+        80.01182038546905,
+        17.495346968995708
+      ],
+      "centroidDisplacementDegrees": 1.304890986520119e-12,
+      "centroidDisplacementMeters": 1.4525981217392638e-7,
+      "boundingBoxBefore": [
+        79.89569772599998,
+        17.36986128799998,
+        80.09869417700003,
+        17.58828827100001
+      ],
+      "boundingBoxAfter": [
+        79.89569772599998,
+        17.36986128799998,
+        80.09869417700003,
+        17.58828827100001
+      ],
+      "boundingBoxDelta": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "envelopeWktBefore": "POLYGON((79.89569772599998 17.36986128799998, 80.09869417700003 17.36986128799998, 80.09869417700003 17.58828827100001, 79.89569772599998 17.58828827100001, 79.89569772599998 17.36986128799998))",
+      "envelopeWktAfter": "POLYGON((79.89569772599998 17.36986128799998, 80.09869417700003 17.36986128799998, 80.09869417700003 17.58828827100001, 79.89569772599998 17.58828827100001, 79.89569772599998 17.36986128799998))",
+      "componentCountBefore": 1,
+      "componentCountAfter": 1,
+      "vertexCountBefore": 975,
+      "vertexCountAfter": 976,
+      "hausdorffDistanceDegrees": 0,
+      "maximumObservedBoundaryDisplacement": "0.0 degrees (coincident boundary)"
+    },
+    {
+      "fid": 292,
+      "name": "Nakrekal",
+      "district": "Nalgonda",
+      "targetMandalVersionId": "40151d58-be3f-55c5-9424-0670c4e27093",
+      "versionCode": "TS-MDL-4636-V1",
+      "sourceGeometrySha256": "4a87cadd02a81122b94a0f387b6307730d5a6f21920b7cbd589cf035a03d4c73",
+      "repairedGeometrySha256": "8f6cdecb18eb37d10e6393dc1e293ec73370e35bf89dc379114db3c4b9d99478",
+      "stIsValidBefore": false,
+      "stIsValidAfter": true,
+      "stIsValidReasonBefore": "Ring Self-intersection",
+      "stIsValidReasonAfter": "Valid Geometry",
+      "geometryTypeBefore": "MultiPolygon",
+      "geometryTypeAfter": "MultiPolygon",
+      "polygonCountBefore": 1,
+      "polygonCountAfter": 1,
+      "ringCountBefore": 1,
+      "ringCountAfter": 2,
+      "areaDeg2Before": 0.012958336488736677,
+      "areaDeg2After": 0.012958336488509303,
+      "areaDeltaDeg2": -2.2737367544323206e-13,
+      "relativeAreaDelta": 1.754651730496921e-11,
+      "perimeterBeforeDeg": 0.8165881460295982,
+      "perimeterAfterDeg": 0.8165881460295984,
+      "centroidBefore": [
+        79.4314783089707,
+        17.168401750885003
+      ],
+      "centroidAfter": [
+        79.43147830949174,
+        17.168401750997386
+      ],
+      "centroidDisplacementDegrees": 5.330231216005031e-10,
+      "centroidDisplacementMeters": 0.000059335867385007203,
+      "boundingBoxBefore": [
+        79.36271400099997,
+        17.074334116999978,
+        79.51356132299998,
+        17.266310999999973
+      ],
+      "boundingBoxAfter": [
+        79.36271400099997,
+        17.074334116999978,
+        79.51356132299998,
+        17.266310999999973
+      ],
+      "boundingBoxDelta": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "envelopeWktBefore": "POLYGON((79.36271400099997 17.074334116999978, 79.51356132299998 17.074334116999978, 79.51356132299998 17.266310999999973, 79.36271400099997 17.266310999999973, 79.36271400099997 17.074334116999978))",
+      "envelopeWktAfter": "POLYGON((79.36271400099997 17.074334116999978, 79.51356132299998 17.074334116999978, 79.51356132299998 17.266310999999973, 79.36271400099997 17.266310999999973, 79.36271400099997 17.074334116999978))",
+      "componentCountBefore": 1,
+      "componentCountAfter": 1,
+      "vertexCountBefore": 2167,
+      "vertexCountAfter": 2168,
+      "hausdorffDistanceDegrees": 0,
+      "maximumObservedBoundaryDisplacement": "0.0 degrees (coincident boundary)"
+    },
+    {
+      "fid": 523,
+      "name": "Motakondur",
+      "district": "Yadadri Bhuvanagiri",
+      "targetMandalVersionId": "bf88ae00-a796-5082-8bbb-51f20d2b9f11",
+      "versionCode": "TS-MDL-6309-V1",
+      "sourceGeometrySha256": "32f2da3071f00743c2819337cb29fbcf24f96573bb921d84c03d9230978ce854",
+      "repairedGeometrySha256": "bb4f86e86d301eef9b19a8d4ba1107d9d98551c148d100dc1452448c22b89ae7",
+      "stIsValidBefore": false,
+      "stIsValidAfter": true,
+      "stIsValidReasonBefore": "Ring Self-intersection",
+      "stIsValidReasonAfter": "Valid Geometry",
+      "geometryTypeBefore": "MultiPolygon",
+      "geometryTypeAfter": "MultiPolygon",
+      "polygonCountBefore": 1,
+      "polygonCountAfter": 1,
+      "ringCountBefore": 1,
+      "ringCountAfter": 2,
+      "areaDeg2Before": 0.013284034543971757,
+      "areaDeg2After": 0.013284034543971757,
+      "areaDeltaDeg2": 0,
+      "relativeAreaDelta": 0,
+      "perimeterBeforeDeg": 0.7221095726558999,
+      "perimeterAfterDeg": 0.7221095726558998,
+      "centroidBefore": [
+        79.08556421270389,
+        17.53663662816982
+      ],
+      "centroidAfter": [
+        79.0855642127035,
+        17.536636628169408
+      ],
+      "centroidDisplacementDegrees": 5.630799011032352e-13,
+      "centroidDisplacementMeters": 6.268177305086159e-8,
+      "boundingBoxBefore": [
+        79.02044102999997,
+        17.447681138999997,
+        79.18832298000001,
+        17.614164877000007
+      ],
+      "boundingBoxAfter": [
+        79.02044102999997,
+        17.447681138999997,
+        79.18832298000001,
+        17.614164877000007
+      ],
+      "boundingBoxDelta": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "envelopeWktBefore": "POLYGON((79.02044102999997 17.447681138999997, 79.18832298000001 17.447681138999997, 79.18832298000001 17.614164877000007, 79.02044102999997 17.614164877000007, 79.02044102999997 17.447681138999997))",
+      "envelopeWktAfter": "POLYGON((79.02044102999997 17.447681138999997, 79.18832298000001 17.447681138999997, 79.18832298000001 17.614164877000007, 79.02044102999997 17.614164877000007, 79.02044102999997 17.447681138999997))",
+      "componentCountBefore": 1,
+      "componentCountAfter": 1,
+      "vertexCountBefore": 1229,
+      "vertexCountAfter": 1230,
+      "hausdorffDistanceDegrees": 0,
+      "maximumObservedBoundaryDisplacement": "0.0 degrees (coincident boundary)"
+    }
+  ],
+  "topologicalSemantics": {
+    "producesOneEquivalentPolygon": true,
+    "producesMultiplePolygons": false,
+    "requiresCollectionExtract": false,
+    "changedTopologySummary": "Resolves sub-centimeter digitizing knot; converts single self-intersecting ring into 1 clean exterior ring + 1 microscopic 4-point degenerate ring (Ring 1, ~10^-10 to 10^-13 deg²).",
+    "materialAreaDifferences": false,
+    "unexpectedGeometryOutsideEnvelope": false,
+    "sharedBoundaryAnalysis": [
+      {
+        "fid": 286,
+        "name": "Kuravi",
+        "neighborFid": 304,
+        "neighborName": "Mahabubabad",
+        "defectCoord": [
+          79.94888665600001,
+          17.514169435999975
+        ],
+        "nature": "Snapping artifact loop at boundary vertex shared with Mahabubabad (FID 304 vertex 0/870). Neighbor boundary itself is clean."
+      },
+      {
+        "fid": 292,
+        "name": "Nakrekal",
+        "neighborFid": 494,
+        "neighborName": "Shaligouraram",
+        "defectCoord": [
+          79.424871978,
+          17.222727554000016
+        ],
+        "nature": "1.1 cm digitizing loop at vertex 1..4 shared with Shaligouraram (FID 494 vertex 0/1297). Neighbor boundary itself is clean."
+      },
+      {
+        "fid": 523,
+        "name": "Motakondur",
+        "neighborFid": 270,
+        "neighborName": "Yadagirigutta",
+        "defectCoord": [
+          79.03225856799997,
+          17.594265163999978
+        ],
+        "nature": "Digitizing loop at vertex 1..4 shared with Yadagirigutta (FID 270 vertex 0/891). Neighbor boundary itself is clean."
+      }
+    ],
+    "administrativeSignificanceConclusion": "The defects are sub-centimeter digitizing knots occurring at vertex closures. ST_MakeValid resolves the knot without shifting centroids (> 60 micrometers) or modifying bounding boxes (delta = [0,0,0,0]). However, because ST_MakeValid introduces a degenerate microscopic interior ring (Ring 1) representing the collapsed knot, an architectural decision is required on whether Ring 1 is retained as a formal hole or purged to preserve a single closed exterior polygon."
+  },
+  "rehearsalSummary": {
+    "totalFeatures": 589,
+    "unchangedFeatures": 586,
+    "transformedFeatures": 3,
+    "allMultiPolygon": true,
+    "allInBounds": true,
+    "candidateDerivativeSha256": "291426fcad91e74948d7fdc34d3e218d5681f366974a63dc5a3c2208a58c19d1"
+  },
+  "derivativeArtifactDesign": {
+    "targetArtifactPath": "data/geo/authoritative/tgrac_mandals_2016_v1_topologically_repaired.json",
+    "candidateDerivativeSha256": "291426fcad91e74948d7fdc34d3e218d5681f366974a63dc5a3c2208a58c19d1",
+    "generationProcedure": "Deterministic in-memory pass: 586 valid features preserved verbatim; FIDs 286, 292, 523 repaired via ST_MakeValid(geometry, \"method=linework\").",
+    "governanceSemantics": {
+      "rawSourceStatus": "OFFICIAL",
+      "derivativeStatus": "DERIVED",
+      "prohibition": "Derivative MUST NOT be labelled or promoted to OFFICIAL without explicit governance authorization."
+    },
+    "lineageArchitecture": [
+      "DERIVED spatial artifact (tgrac_mandals_2016_v1_topologically_repaired.json)",
+      "  └── derived provenance records (status = DERIVED)",
+      "        └── source spatial provenance records (tgrac_mandals_2016_v1, status = OFFICIAL)",
+      "              └── TGRAC raw artifact (tgrac_mandals_raw.json, SHA aca53...12db)",
+      "                    └── evidence e0160000-0000-0000-0000-000000001013"
+    ]
+  },
+  "checks": [
+    {
+      "id": "RSP-01",
+      "title": "Canonical raw artifact exists on disk",
+      "status": "PASS",
+      "observed": "data/geo/candidate_authoritative/tgrac_mandals_raw.json",
+      "details": ""
+    },
+    {
+      "id": "RSP-02",
+      "title": "Raw artifact SHA-256 matches expected checksum exactly",
+      "status": "PASS",
+      "observed": "aca53eefa290570ce4010fa8c26a75dce995de3e3180ac9f0873f78fb41512db",
+      "details": ""
+    },
+    {
+      "id": "RSP-03",
+      "title": "Raw artifact has zero git diff against HEAD (unmodified)",
+      "status": "PASS",
+      "observed": "Byte-for-byte unmodified",
+      "details": ""
+    },
+    {
+      "id": "RSP-04",
+      "title": "Raw artifact contains exactly 589 features (FIDs 0..588)",
+      "status": "PASS",
+      "observed": "Features count: 589",
+      "details": ""
+    },
+    {
+      "id": "DEF-286",
+      "title": "Independently reproduced failure for FID 286 (Kuravi)",
+      "status": "PASS",
+      "observed": "Reason: Ring Self-intersection at [79.94888665600001, 17.514169435999975]",
+      "details": ""
+    },
+    {
+      "id": "DEF-292",
+      "title": "Independently reproduced failure for FID 292 (Nakrekal)",
+      "status": "PASS",
+      "observed": "Reason: Ring Self-intersection at [79.424871978, 17.222727554000016]",
+      "details": ""
+    },
+    {
+      "id": "DEF-523",
+      "title": "Independently reproduced failure for FID 523 (Motakondur)",
+      "status": "PASS",
+      "observed": "Reason: Ring Self-intersection at [79.03225856799997, 17.594265163999978]",
+      "details": ""
+    },
+    {
+      "id": "POSTGIS-VER",
+      "title": "PostGIS build configuration & version identified",
+      "status": "PASS",
+      "observed": "POSTGIS=\"3.3.7 a0c7967\" [EXTENSION] PGSQL=\"170\" GEOS=\"3.14.1-CAPI-1.20.5\" PROJ=\"9.7.1\" LIBXML=\"2.15.1\" LIBJSON=\"0.18\" LIBPROTOBUF=\"1.5.2\" WAGYU=\"0.5.0 (Internal)\"",
+      "details": ""
+    },
+    {
+      "id": "COMP-286",
+      "title": "Forensic before/after comparison computed for FID 286 (Kuravi)",
+      "status": "PASS",
+      "observed": "Repaired ST_IsValid: true, HausdorffDist: 0, RelAreaDelta: 0.0000e+0",
+      "details": ""
+    },
+    {
+      "id": "COMP-292",
+      "title": "Forensic before/after comparison computed for FID 292 (Nakrekal)",
+      "status": "PASS",
+      "observed": "Repaired ST_IsValid: true, HausdorffDist: 0, RelAreaDelta: 1.7547e-11",
+      "details": ""
+    },
+    {
+      "id": "COMP-523",
+      "title": "Forensic before/after comparison computed for FID 523 (Motakondur)",
+      "status": "PASS",
+      "observed": "Repaired ST_IsValid: true, HausdorffDist: 0, RelAreaDelta: 0.0000e+0",
+      "details": ""
+    },
+    {
+      "id": "TOPO-01",
+      "title": "Topological semantics evaluated: 1 equivalent polygon produced per feature",
+      "status": "PASS",
+      "observed": "Zero extraneous detached polygons created",
+      "details": ""
+    },
+    {
+      "id": "REHEARSAL-01",
+      "title": "589-feature derivative rehearsal: exactly 586 unchanged, 3 transformed",
+      "status": "PASS",
+      "observed": "Unchanged: 586, Transformed: 3",
+      "details": ""
+    },
+    {
+      "id": "REHEARSAL-02",
+      "title": "All 589 rehearsal outputs are valid MultiPolygons within Telangana bounds",
+      "status": "PASS",
+      "observed": "MultiPolygon: true, Bounds: true",
+      "details": ""
+    },
+    {
+      "id": "DESIGN-01",
+      "title": "Derivative artifact specification designed with independent SHA-256",
+      "status": "PASS",
+      "observed": "Candidate SHA-256: 291426fcad91e74948d7fdc34d3e218d5681f366974a63dc5a3c2208a58c19d1",
+      "details": ""
+    },
+    {
+      "id": "DESIGN-02",
+      "title": "Explicit DERIVED -> OFFICIAL provenance lineage model established",
+      "status": "PASS",
+      "observed": "Preserves immutable OFFICIAL provenance nodes intact",
+      "details": ""
+    },
+    {
+      "id": "DB-01",
+      "title": "Staging public.entity_geometries row count remains strictly 0",
+      "status": "PASS",
+      "observed": "Live row count: 0",
+      "details": ""
+    },
+    {
+      "id": "DB-02",
+      "title": "Historical mandal_versions remain untouched (589 versions intact)",
+      "status": "PASS",
+      "observed": "Historical versions count: 589",
+      "details": ""
+    },
+    {
+      "id": "DB-03",
+      "title": "Production ehfafcnimmjusyvplbah receives zero connections, zero DDL, zero DML",
+      "status": "PASS",
+      "observed": "Air-gap 100% maintained",
+      "details": ""
+    },
+    {
+      "id": "DB-04",
+      "title": "Zero database modifications executed (Migration 049 NOT created, Migrations 039–048 unmodified)",
+      "status": "PASS",
+      "observed": "Read-only preflight strictly respected",
+      "details": ""
+    }
+  ]
+}
