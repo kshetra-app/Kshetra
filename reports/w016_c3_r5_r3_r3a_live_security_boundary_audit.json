@@ -1,8 +1,8 @@
 {
   "metadata": {
     "directive": "W016-C3-R5-R3-R3A — CTO AUTHORIZATION: TARGETED LIVE FUNCTION / PRIVILEGE / RLS SECURITY AUDIT",
-    "executionTimestamp": "2026-09-28T05:21:45.058Z",
-    "canonicalGitHead": "313907e3a2a5e53b63f862938dcdfd5a289d9d64",
+    "executionTimestamp": "2026-09-28T05:22:24.542Z",
+    "canonicalGitHead": "ce03596c3d07e1d56a0447ae13e6f457de5f83b3",
     "targetEnvironment": "panIN-staging (fkpigozcqnmcvofuksar) ONLY",
     "productionIsolation": "ehfafcnimmjusyvplbah (STRICTLY AIR-GAPPED & UNTOUCHED)",
     "mode": "READ-ONLY SECURITY & PRIVILEGE VERIFICATION",
@@ -144,7 +144,7 @@
       "id": "PRE-01",
       "title": "Git HEAD matches accepted R2B commit or descendant",
       "status": "PASS",
-      "observed": "313907e3a2a5e53b63f862938dcdfd5a289d9d64",
+      "observed": "ce03596c3d07e1d56a0447ae13e6f457de5f83b3",
       "details": ""
     },
     {

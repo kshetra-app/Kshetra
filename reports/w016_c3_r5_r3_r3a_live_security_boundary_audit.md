@@ -1,8 +1,8 @@
 # W016-C3-R5-R3-R3A: Targeted Live Function / Privilege / RLS Security Audit Report
 
 **Directive:** W016-C3-R5-R3-R3A — CTO AUTHORIZATION: TARGETED LIVE FUNCTION / PRIVILEGE / RLS SECURITY AUDIT  
-**Execution Timestamp:** 2026-09-28T05:21:45.058Z  
-**Canonical Git HEAD:** `313907e3a2a5e53b63f862938dcdfd5a289d9d64`  
+**Execution Timestamp:** 2026-09-28T05:22:24.542Z  
+**Canonical Git HEAD:** `ce03596c3d07e1d56a0447ae13e6f457de5f83b3`  
 **Target Environment:** `panIN-staging` (`fkpigozcqnmcvofuksar`) ONLY  
 **Production Isolation:** `ehfafcnimmjusyvplbah` (**STRICTLY AIR-GAPPED & UNTOUCHED**)  
 **Audit Mode:** **READ-ONLY SECURITY & PRIVILEGE VERIFICATION**  
@@ -133,7 +133,7 @@ This report provides a forensic catalog and live behavioral audit of the functio
 
 | Check ID | Description | Status | Observed Value / Details |
 | :--- | :--- | :---: | :--- |
-| **PRE-01** | Git HEAD matches accepted R2B commit or descendant | **PASS** | 313907e3a2a5e53b63f862938dcdfd5a289d9d64 |
+| **PRE-01** | Git HEAD matches accepted R2B commit or descendant | **PASS** | ce03596c3d07e1d56a0447ae13e6f457de5f83b3 |
 | **PRE-02** | Target is strictly panIN-staging (fkpigozcqnmcvofuksar) | **PASS** | https://fkpigozcqnmcvofuksar.supabase.co |
 | **PRE-03** | Production ehfafcnimmjusyvplbah is air-gapped and untouched | **PASS** | Zero connections, zero DDL, zero DML |
 | **FUNC-01** | Function 1: public.fn_validate_entity_geometry_lineage() catalog profile verified | **PASS** | SECURITY INVOKER, returns trigger, owner postgres |
