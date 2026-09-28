@@ -1,4 +1,13 @@
 import { createClient, type SupabaseClient } from '@supabase/supabase-js';
+import dotenv from 'dotenv';
+import path from 'path';
+
+if (!process.env.SUPABASE_URL) {
+  dotenv.config({ path: path.resolve(__dirname, '../../.env') });
+  if (!process.env.SUPABASE_URL) {
+    dotenv.config({ path: path.resolve(__dirname, '../../../../.env.staging') });
+  }
+}
 
 const supabaseUrl = process.env.SUPABASE_URL ?? '';
 const rawServiceKey = (process.env.SUPABASE_SERVICE_ROLE_KEY ?? '').trim();

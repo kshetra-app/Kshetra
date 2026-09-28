@@ -16,6 +16,7 @@ import { campaignRoutes } from './routes/campaign';
 import { civicRoutes } from './routes/civic';
 import { broadcastRoutes } from './routes/broadcast';
 import { geoRoutes } from './routes/geo';
+import { geoRuntimeRoutes } from './routes/geoRuntime';
 import { newsRoutes } from './routes/news';
 import { lmxRoutes } from './routes/lmx';
 import { configRoutes } from './routes/config';
@@ -212,6 +213,7 @@ export async function buildApp() {
 
   await app.register(healthRoutes, { prefix: '/api' });
   await app.register(constituencyRoutes, { prefix: '/api/v1' });
+  await app.register(geoRuntimeRoutes, { prefix: '/api/v1' });
   await app.register(aiRoutes);
   await app.register(notificationRoutes);
   await app.register(moderationRoutes);

@@ -1,0 +1,305 @@
+{
+  "job": "W016-C3-R9",
+  "title": "CANONICAL SPATIAL RUNTIME READ PATH",
+  "timestamp": "2026-09-28T14:15:12.820Z",
+  "target": "panIN-staging (fkpigozcqnmcvofuksar)",
+  "productionAirGapped": true,
+  "baseline": {
+    "expectedRows": 589,
+    "observedRows": 589,
+    "expectedDigest": "f839fa02980318a8f35f932ebe72fa1d3ad6325dc86a624bf159d932fe5f613b",
+    "observedDigest": "f839fa02980318a8f35f932ebe72fa1d3ad6325dc86a624bf159d932fe5f613b",
+    "allStatusDerived": true,
+    "allIsCurrentFalse": true,
+    "allTemporalBaseline": true
+  },
+  "operations": {
+    "operationA_tile": {
+      "endpoint": "GET /api/v1/geo/tiles/:layer/:z/:x/:y",
+      "contentType": "application/vnd.mapbox-vector-tile",
+      "sampleTile": "8/184/115",
+      "sampleTileBytes": 139277,
+      "latencyMs": 12886,
+      "emptyTileStatus": 204,
+      "failClosedCurrentStatus": 204
+    },
+    "operationB_locate": {
+      "endpoint": "GET /api/v1/geo/locate",
+      "engine": "PostGIS RPC st_intersects",
+      "samplePoint": {
+        "lat": 17.487869,
+        "lng": 79.997883
+      },
+      "matchedFID": "286",
+      "identity": {
+        "level1_entity_id": "TS-MDL-4721",
+        "level2_version_id": "9c1ebb72-2a15-5aae-ab7d-d3ef8806d28b",
+        "level3_geometry_id": "c3691ae8-1473-483c-96b0-c4b6fc46714c",
+        "nonEquationVerified": true
+      },
+      "genericDecoupledEntityId": null,
+      "outsidePointStatus": 404,
+      "failClosedCurrentStatus": 404,
+      "latencyMs": 1038
+    },
+    "operationC_detail": {
+      "endpoint": "GET /api/v1/geo/features/:layer/:id",
+      "sampleFID": "286",
+      "matched": "286",
+      "status": "DERIVED",
+      "temporal_classification": "historical_statutory_baseline",
+      "latencyMs": 3
+    }
+  },
+  "performanceBenchmarks": {
+    "tileGenerationMs": 12886,
+    "locateMs": 1038,
+    "detailMs": 3
+  },
+  "legacyCompatibility": {
+    "manifestEndpointStatus": 200,
+    "constituenciesLocateStatus": 200,
+    "classification": "NON-CANONICAL / LEGACY COMPATIBILITY",
+    "mobileConsumerCutover": "DEFERRED_UNTIL_NATIONWIDE_VECTOR_TILE_ROLLOUT"
+  },
+  "summary": {
+    "totalChecks": 20,
+    "passedChecks": 20,
+    "failedChecks": 0,
+    "verdict": "PASS",
+    "terminalStatus": "W016-C3-R9 IMPLEMENTED / TESTED / VERIFIED — SUBMITTED FOR CTO ACCEPTANCE"
+  },
+  "checks": [
+    {
+      "id": "R9-AIRGAP-01",
+      "classification": "SECURITY",
+      "description": "Production database ehfafcnimmjusyvplbah is strictly air-gapped; staging fkpigozcqnmcvofuksar targeted",
+      "passed": true,
+      "observed": {
+        "supabaseUrl": "https://fkpigozcqnmcvofuksar.supabase.co",
+        "airGapped": true
+      },
+      "details": ""
+    },
+    {
+      "id": "R9-DATA-01",
+      "classification": "DATA_INTEGRITY",
+      "description": "public.entity_geometries contains exactly 589 canonical mandal rows",
+      "passed": true,
+      "observed": {
+        "rowCount": 589,
+        "expected": 589
+      },
+      "details": ""
+    },
+    {
+      "id": "R9-DATA-02",
+      "classification": "GOVERNANCE",
+      "description": "All 589 rows maintain status=DERIVED, is_current=false, temporal_classification=historical_statutory_baseline",
+      "passed": true,
+      "observed": {
+        "allDerived": true,
+        "allNotCurrent": true,
+        "allHistoricalBaseline": true,
+        "count": 589
+      },
+      "details": ""
+    },
+    {
+      "id": "R9-DATA-03",
+      "classification": "LINEAGE_DIGEST",
+      "description": "Canonical 589-row set bitwise digest matches accepted R5-R5 baseline",
+      "passed": true,
+      "observed": {
+        "calculatedDigest": "f839fa02980318a8f35f932ebe72fa1d3ad6325dc86a624bf159d932fe5f613b",
+        "expected": "f839fa02980318a8f35f932ebe72fa1d3ad6325dc86a624bf159d932fe5f613b"
+      },
+      "details": ""
+    },
+    {
+      "id": "R9-TILE-01",
+      "classification": "RUNTIME_OPERATION_A",
+      "description": "GET /geo/tiles/mandals/8/184/115 returns 200 with vector-tile content-type, headers, and payload",
+      "passed": true,
+      "observed": {
+        "statusCode": 200,
+        "contentType": "application/vnd.mapbox-vector-tile",
+        "layer": "mandals",
+        "regime": "historical",
+        "bytes": 139277,
+        "latencyMs": 12886
+      },
+      "details": ""
+    },
+    {
+      "id": "R9-TILE-02",
+      "classification": "RUNTIME_OPERATION_A",
+      "description": "GET /geo/tiles/mandals/8/10/10 (empty ocean tile) returns 204 No Content",
+      "passed": true,
+      "observed": {
+        "statusCode": 204,
+        "payloadLength": 0
+      },
+      "details": ""
+    },
+    {
+      "id": "R9-TILE-03",
+      "classification": "RUNTIME_OPERATION_A",
+      "description": "GET /geo/tiles/mandals/8/184/115?regime=current returns 204 No Content (fail-closed isolation)",
+      "passed": true,
+      "observed": {
+        "statusCode": 204
+      },
+      "details": ""
+    },
+    {
+      "id": "R9-TILE-04",
+      "classification": "RUNTIME_OPERATION_A",
+      "description": "GET /geo/tiles/mandals/8/9999/9999 returns 400 Bad Request with INVALID_TILE_COORDINATES",
+      "passed": true,
+      "observed": {
+        "statusCode": 400
+      },
+      "details": ""
+    },
+    {
+      "id": "R9-TILE-05",
+      "classification": "RUNTIME_OPERATION_A",
+      "description": "GET /geo/tiles/unknown_layer/8/184/115 returns 404 Not Found with LAYER_NOT_FOUND",
+      "passed": true,
+      "observed": {
+        "statusCode": 404
+      },
+      "details": ""
+    },
+    {
+      "id": "R9-LOCATE-01",
+      "classification": "RUNTIME_OPERATION_B",
+      "description": "GET /geo/locate resolves known coordinate to PostGIS geometry FID 286 (Kuravi) with 3-level identity",
+      "passed": true,
+      "observed": {
+        "statusCode": 200,
+        "matched": true,
+        "source_feature_id": "286",
+        "entity_id": "TS-MDL-4721",
+        "version_id": "9c1ebb72-2a15-5aae-ab7d-d3ef8806d28b",
+        "geometry_id": "c3691ae8-1473-483c-96b0-c4b6fc46714c",
+        "nonEquation": true,
+        "latencyMs": 1038
+      },
+      "details": ""
+    },
+    {
+      "id": "R9-LOCATE-02",
+      "classification": "RUNTIME_OPERATION_B",
+      "description": "GET /geo/locate with bypass_adapter=true returns entity_id=null (proving generic engine decoupling)",
+      "passed": true,
+      "observed": {
+        "statusCode": 200,
+        "entity_id": null,
+        "geometry_id": "c3691ae8-1473-483c-96b0-c4b6fc46714c"
+      },
+      "details": ""
+    },
+    {
+      "id": "R9-LOCATE-03",
+      "classification": "RUNTIME_OPERATION_B",
+      "description": "GET /geo/locate for point outside geometries returns 404 SPATIAL_LOCATION_NOT_FOUND",
+      "passed": true,
+      "observed": {
+        "statusCode": 404,
+        "code": "SPATIAL_LOCATION_NOT_FOUND"
+      },
+      "details": ""
+    },
+    {
+      "id": "R9-LOCATE-04",
+      "classification": "RUNTIME_OPERATION_B",
+      "description": "GET /geo/locate with regime=current returns 404 SPATIAL_LOCATION_NOT_FOUND (fail-closed)",
+      "passed": true,
+      "observed": {
+        "statusCode": 404,
+        "code": "SPATIAL_LOCATION_NOT_FOUND"
+      },
+      "details": ""
+    },
+    {
+      "id": "R9-LOCATE-05",
+      "classification": "RUNTIME_OPERATION_B",
+      "description": "GET /geo/locate with out-of-range coordinates returns 400 Bad Request",
+      "passed": true,
+      "observed": {
+        "statusCode": 400
+      },
+      "details": ""
+    },
+    {
+      "id": "R9-DETAIL-01",
+      "classification": "RUNTIME_OPERATION_C",
+      "description": "GET /geo/features/mandals/286 resolves governed feature detail by authoritative source_feature_id",
+      "passed": true,
+      "observed": {
+        "statusCode": 200,
+        "source_feature_id": "286",
+        "entity_id": "TS-MDL-4721",
+        "status": "DERIVED",
+        "temporal_classification": "historical_statutory_baseline",
+        "latencyMs": 3
+      },
+      "details": ""
+    },
+    {
+      "id": "R9-DETAIL-02",
+      "classification": "RUNTIME_OPERATION_C",
+      "description": "GET /geo/features/mandals/286 with bypass_adapter=true returns entity_id=null (pure generic identity)",
+      "passed": true,
+      "observed": {
+        "statusCode": 200,
+        "entity_id": null
+      },
+      "details": ""
+    },
+    {
+      "id": "R9-DETAIL-03",
+      "classification": "RUNTIME_OPERATION_C",
+      "description": "GET /geo/features/mandals/nonexistent returns 404 FEATURE_NOT_FOUND",
+      "passed": true,
+      "observed": {
+        "statusCode": 404,
+        "code": "FEATURE_NOT_FOUND"
+      },
+      "details": ""
+    },
+    {
+      "id": "R9-DETAIL-04",
+      "classification": "RUNTIME_OPERATION_C",
+      "description": "GET /geo/features/unknown_layer/286 returns 404 LAYER_NOT_FOUND",
+      "passed": true,
+      "observed": {
+        "statusCode": 404,
+        "code": "LAYER_NOT_FOUND"
+      },
+      "details": ""
+    },
+    {
+      "id": "R9-LEGACY-01",
+      "classification": "BACKWARD_COMPATIBILITY",
+      "description": "GET /geo/manifest.json remains operational for legacy compatibility",
+      "passed": true,
+      "observed": {
+        "statusCode": 200
+      },
+      "details": ""
+    },
+    {
+      "id": "R9-LEGACY-02",
+      "classification": "BACKWARD_COMPATIBILITY",
+      "description": "GET /api/v1/constituencies/locate remains operational for legacy compatibility",
+      "passed": true,
+      "observed": {
+        "statusCode": 200
+      },
+      "details": ""
+    }
+  ]
+}
