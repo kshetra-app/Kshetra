@@ -238,9 +238,10 @@ export function computeGeometryBBox(geom: any): BoundingBox {
 
 // ─── 3. THREE-LEVEL IDENTITY & GOVERNED TYPES ─────────────────────────────────
 export interface GovernedFeatureProperties {
-  geometry_id: string; // Level 3: Physical Geometry Row Identity
+  entity_id: string | null; // Level 1: Stable Geographic Entity Identity (null if adapter decoupled)
   version_id: string; // Level 2: Temporal Version Identity (UUID)
-  source_feature_id: string; // Authoritative source ID
+  geometry_id: string; // Level 3: Physical Geometry Row Identity (UUID)
+  source_feature_id: string; // Source-Artifact Lookup Reference (NOT authoritative geographic identity)
   entity_type: string;
   status: string; // 'DERIVED'
   is_current: boolean;
@@ -248,9 +249,14 @@ export interface GovernedFeatureProperties {
   authority_classification: string;
   valid_from: string;
   valid_to: string | null;
-  entity_id: string | null; // Level 1: Stable Geographic Entity Identity
   name?: string;
   district_id?: string;
+  identity_mapping?: {
+    source_reference: string;
+    geometry_id: string;
+    version_id: string;
+    entity_id: string | null;
+  };
 }
 
 export interface MetadataAdapter {
@@ -281,17 +287,18 @@ export class MandalMetadataAdapter implements MetadataAdapter {
 
   enrichFeatureProperties(base: GovernedFeatureProperties): GovernedFeatureProperties {
     const mv = this.cache.get(base.version_id);
-    if (!mv) {
-      return {
-        ...base,
-        entity_id: `TS-MDL-UNKNOWN-${base.source_feature_id}`,
-      };
-    }
+    const entityId = mv ? mv.mandal_id : `TS-MDL-UNKNOWN-${base.source_feature_id}`;
     return {
       ...base,
-      entity_id: mv.mandal_id,
-      name: mv.name,
-      district_id: mv.district_id,
+      entity_id: entityId,
+      name: mv?.name,
+      district_id: mv?.district_id,
+      identity_mapping: {
+        source_reference: base.source_feature_id,
+        geometry_id: base.geometry_id,
+        version_id: base.version_id,
+        entity_id: entityId,
+      },
     };
   }
 }
@@ -340,27 +347,11 @@ export class SpatialRuntimeService {
     this.adapters.set(entityType, adapter);
   }
 
-  private rawRowsCache = new Map<string, Array<any>>();
-
-  async getRawRows(entityType: string): Promise<Array<any>> {
-    if (this.rawRowsCache.has(entityType)) {
-      return this.rawRowsCache.get(entityType)!;
-    }
-    const { data: rows, error } = await supabase
-      .from('entity_geometries')
-      .select('id, mandal_version_id, source_feature_id, entity_type, status, is_current, temporal_classification, authority_classification, valid_from, valid_to, geometry')
-      .eq('entity_type', entityType);
-    if (error || !rows) {
-      throw new Error(`DATABASE_QUERY_ERROR: ${error?.message ?? 'No data returned'}`);
-    }
-    this.rawRowsCache.set(entityType, rows);
-    return rows;
-  }
-
   /**
    * Pure Generic Spatial Selection Layer.
    * STRICT INVARIANT: ZERO references to mandal_versions, mandals, district_id, or mandal_id.
-   * Depends solely on public.entity_geometries and spatial/temporal bounding.
+   * Depends solely on public.entity_geometries and spatial/temporal PostGIS operators.
+   * Eliminates in-memory polygon loops and executes database-side PostGIS GiST index queries.
    */
   async selectGenericSpatialFeatures(params: {
     entityType: string;
@@ -379,84 +370,97 @@ export class SpatialRuntimeService {
       throw new Error(`INVALID_REGIME: Unsupported regime '${regime}'`);
     }
 
-    const allRows = await this.getRawRows(expectedType);
-    let rows = allRows;
+    let query = supabase
+      .from('entity_geometries')
+      .select('id, mandal_version_id, source_feature_id, entity_type, status, is_current, temporal_classification, authority_classification, valid_from, valid_to, geometry')
+      .eq('entity_type', expectedType);
 
-    if (id) {
-      // Allow lookup by geometry_id (primary key) or version_id or source_feature_id
-      if (id.length === 36) {
-        rows = rows.filter((r) => r.id === id || r.mandal_version_id === id);
-      } else {
-        rows = rows.filter((r) => String(r.source_feature_id) === String(id));
+    // 1. Database-Side Temporal Filtering
+    const currentDate = new Date().toISOString().slice(0, 10);
+    if (regime === 'current') {
+      query = query.eq('is_current', true).or(`valid_to.is.null,valid_to.gt.${currentDate}`);
+    } else if (regime === 'historical') {
+      if (asOf) {
+        query = query.lte('valid_from', asOf).or(`valid_to.is.null,valid_to.gt.${asOf}`);
+      }
+    } else if (regime === 'version') {
+      if (versionId) {
+        query = query.eq('mandal_version_id', versionId);
       }
     }
 
-    const currentDate = new Date().toISOString().slice(0, 10);
-    const matched: Array<{ geometry: any; properties: GovernedFeatureProperties }> = [];
-
-    for (const row of rows) {
-      // 1. Strict Temporal Window Verification
-      const validFrom = String(row.valid_from).slice(0, 10);
-      const validTo = row.valid_to ? String(row.valid_to).slice(0, 10) : null;
-
-      if (regime === 'current') {
-        if (!row.is_current) continue;
-        if (validTo && validTo <= currentDate) continue;
-      } else if (regime === 'historical') {
-        if (asOf) {
-          if (validFrom > asOf) continue;
-          if (validTo && validTo <= asOf) continue;
-        }
-      } else if (regime === 'version') {
-        if (versionId && row.mandal_version_id !== versionId) continue;
+    // 2. Database-Side Identifier Filtering
+    if (id) {
+      if (/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(id)) {
+        query = query.or(`id.eq.${id},mandal_version_id.eq.${id}`);
+      } else {
+        query = query.eq('source_feature_id', id);
       }
+    }
 
-      // Compute bounding box
-      const geomBBox = computeGeometryBBox(row.geometry);
+    // 3. Database-Side PostGIS Spatial Filtering (using GiST index operator 'ov' / &&)
+    if (point) {
+      const pointWkt = `SRID=4326;POINT(${point.lng} ${point.lat})`;
+      query = query.filter('geometry', 'ov', pointWkt);
+    } else if (tileBBox) {
+      const polygonWkt = `SRID=4326;POLYGON((${tileBBox.minX} ${tileBBox.minY},${tileBBox.maxX} ${tileBBox.minY},${tileBBox.maxX} ${tileBBox.maxY},${tileBBox.minX} ${tileBBox.maxY},${tileBBox.minX} ${tileBBox.minY}))`;
+      query = query.filter('geometry', 'ov', polygonWkt);
+    }
 
-      // 2. Spatial Intersection Verification
-      if (tileBBox) {
-        if (!bboxIntersects(geomBBox, tileBBox)) continue;
-      }
+    const { data: rows, error } = await query;
+    if (error || !rows) {
+      throw new Error(`DATABASE_QUERY_ERROR: ${error?.message ?? 'No data returned'}`);
+    }
 
-      // 3. Point Containment Verification via PostGIS RPC
-      if (point) {
-        if (!pointInBBox(point.lng, point.lat, geomBBox)) continue;
+    if (rows.length === 0) {
+      return [];
+    }
 
-        // PostGIS point-in-polygon verification
-        const pointGeoJSON = {
-          type: 'Point',
-          crs: { type: 'name', properties: { name: 'EPSG:4326' } },
-          coordinates: [point.lng, point.lat],
-        };
+    // 4. Exact Spatial Containment Verification via PostGIS RPC (if point query)
+    const matchedRows: typeof rows = [];
+    if (point) {
+      const pointGeoJSON = {
+        type: 'Point',
+        crs: { type: 'name', properties: { name: 'EPSG:4326' } },
+        coordinates: [point.lng, point.lat],
+      };
 
+      for (const row of rows) {
         const { data: intersects, error: rpcErr } = await supabase.rpc('st_intersects', {
           geom1: JSON.stringify(row.geometry),
           geom2: JSON.stringify(pointGeoJSON),
         });
 
-        if (rpcErr || !intersects) continue;
+        if (!rpcErr && intersects) {
+          matchedRows.push(row);
+        }
       }
-
-      matched.push({
-        geometry: row.geometry,
-        properties: {
-          geometry_id: row.id,
-          version_id: row.mandal_version_id,
-          source_feature_id: String(row.source_feature_id),
-          entity_type: row.entity_type,
-          status: row.status,
-          is_current: Boolean(row.is_current),
-          temporal_classification: row.temporal_classification,
-          authority_classification: row.authority_classification,
-          valid_from: String(row.valid_from).slice(0, 10),
-          valid_to: row.valid_to ? String(row.valid_to).slice(0, 10) : null,
-          entity_id: null, // Pure generic selection leaves entity_id null
-        },
-      });
+    } else {
+      matchedRows.push(...rows);
     }
 
-    return matched;
+    return matchedRows.map((row) => ({
+      geometry: row.geometry,
+      properties: {
+        entity_id: null, // Pure generic selection leaves entity_id null (decoupled)
+        version_id: row.mandal_version_id,
+        geometry_id: row.id,
+        source_feature_id: String(row.source_feature_id),
+        entity_type: row.entity_type,
+        status: row.status,
+        is_current: Boolean(row.is_current),
+        temporal_classification: row.temporal_classification,
+        authority_classification: row.authority_classification,
+        valid_from: String(row.valid_from).slice(0, 10),
+        valid_to: row.valid_to ? String(row.valid_to).slice(0, 10) : null,
+        identity_mapping: {
+          source_reference: String(row.source_feature_id),
+          geometry_id: row.id,
+          version_id: row.mandal_version_id,
+          entity_id: null,
+        },
+      },
+    }));
   }
 
   /**

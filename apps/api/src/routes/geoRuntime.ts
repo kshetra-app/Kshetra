@@ -54,6 +54,15 @@ const featureParamsSchema = {
   required: ['layer', 'id'],
 };
 
+const featureQuerySchema = {
+  type: 'object',
+  properties: {
+    regime: { type: 'string', enum: ['current', 'historical', 'version'] },
+    as_of: { type: 'string', pattern: '^\\d{4}-\\d{2}-\\d{2}$' },
+    bypass_adapter: { type: 'boolean' },
+  },
+};
+
 export async function geoRuntimeRoutes(app: FastifyInstance) {
   /**
    * Operation A: TILE Delivery
@@ -146,7 +155,8 @@ export async function geoRuntimeRoutes(app: FastifyInstance) {
       },
     },
     async (request, reply) => {
-      const { lat, lng, layer = 'mandals', regime = 'historical', as_of, version_id, bypass_adapter } = request.query;
+      const { lat, lng, layer = 'mandals', regime, as_of, version_id, bypass_adapter } = request.query;
+      const effectiveRegime = version_id && !regime ? 'version' : (regime || 'historical');
 
       if (layer !== 'mandals' && layer !== 'mandal') {
         return sendApiError(reply, request, 404, 'Not Found', `Unknown spatial layer: ${layer}`, {
@@ -159,7 +169,7 @@ export async function geoRuntimeRoutes(app: FastifyInstance) {
           lat,
           lng,
           layer,
-          regime,
+          regime: effectiveRegime,
           asOf: as_of,
           versionId: version_id,
           bypassAdapter: Boolean(bypass_adapter),
@@ -201,6 +211,7 @@ export async function geoRuntimeRoutes(app: FastifyInstance) {
     {
       schema: {
         params: featureParamsSchema,
+        querystring: featureQuerySchema,
       },
     },
     async (request, reply) => {
