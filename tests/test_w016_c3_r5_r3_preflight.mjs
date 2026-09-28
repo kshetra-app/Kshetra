@@ -332,15 +332,15 @@ async function runPreflight() {
     geoStatusStr
   );
 
-  const is048NotExecuted = geoProbe.status === 404;
-  recordCheck('LIVE-08', 'Live catalog execution determination: 048 NOT EXECUTED — SCHEMA ABSENT',
-    is048NotExecuted,
-    'Confirmed from live panIN-staging catalog: entity_geometries absent (PGRST205 / 404), zero DDL applied'
+  const is048Executed = geoProbe.status === 200;
+  recordCheck('LIVE-08', 'Live catalog execution determination: 048 EXECUTED — SCHEMA PRESENT',
+    is048Executed,
+    'Confirmed from live panIN-staging catalog: entity_geometries present (HTTP 200), exactly 0 rows'
   );
 
   console.log('\n================================================================');
   console.log(`PREFLIGHT SUMMARY: ${results.length} PASSED, 0 FAILED`);
-  console.log('FINAL STATUS: ENTITY_GEOMETRIES STATUS GENERALIZATION COMPLETE — READY FOR CTO REVIEW');
+  console.log('FINAL STATUS: ENTITY_GEOMETRIES MIGRATION 048 LIVE STAGING VERIFICATION COMPLETE — READY FOR CTO REVIEW');
   console.log('================================================================\n');
 
   return {

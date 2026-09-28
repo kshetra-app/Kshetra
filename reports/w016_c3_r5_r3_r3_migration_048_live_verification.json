@@ -1,0 +1,422 @@
+{
+  "metadata": {
+    "directive": "W016-C3-R5-R3-R3 — CTO AUTHORIZATION: MIGRATION 048 STAGING EXECUTION & LIVE SCHEMA VERIFICATION",
+    "executionTimestamp": "2026-09-28T05:02:44.858Z",
+    "canonicalGitHead": "b98dc13e2a8d8af0518fd1ce6a016cf8861394ca",
+    "targetEnvironment": "panIN-staging (fkpigozcqnmcvofuksar)",
+    "productionIsolation": "ehfafcnimmjusyvplbah (STRICTLY AIR-GAPPED & UNTOUCHED)",
+    "finalStatus": "ENTITY_GEOMETRIES MIGRATION 048 LIVE STAGING VERIFICATION COMPLETE — READY FOR CTO REVIEW",
+    "verificationClassification": "LIVE STAGING VERIFIED (Live catalog inspected, synthetic tests A–O executed, 0 real geometries ingested)"
+  },
+  "preExecutionArtifactCoordinates": {
+    "migration048Path": "supabase/migrations/048_w016_c3_r5_r3_entity_geometries_schema.sql",
+    "migration048Sha256": "34ef993153c675024d014d2fd210df3295235627f609e1feec8e7f5541a955ed",
+    "stagingPackagePath": "supabase/staging_migration_package_048.sql",
+    "stagingPackageSha256": "34ef993153c675024d014d2fd210df3295235627f609e1feec8e7f5541a955ed",
+    "byteExactMatch": true,
+    "authorizedR2BCommit": "b98dc13e2a8d8af0518fd1ce6a016cf8861394ca",
+    "currentGitHead": "b98dc13e2a8d8af0518fd1ce6a016cf8861394ca"
+  },
+  "liveCatalogVerification": {
+    "tableExists": true,
+    "columnCount": 19,
+    "columns": [
+      "id",
+      "entity_type",
+      "mandal_version_id",
+      "dataset_version_id",
+      "provenance_id",
+      "geometry",
+      "geometry_type",
+      "status",
+      "authority_classification",
+      "temporal_classification",
+      "source_feature_id",
+      "raw_artifact_sha256",
+      "snapshot_date",
+      "valid_from",
+      "valid_to",
+      "is_current",
+      "metadata",
+      "created_at",
+      "updated_at"
+    ],
+    "geometryFormat": "public.geometry(MultiPolygon,4326)",
+    "statusFormat": "public.data_status_enum",
+    "statusDefault": "UNKNOWN",
+    "statusEnumValues": [
+      "OFFICIAL",
+      "DERIVED",
+      "VERIFIED",
+      "ESTIMATE",
+      "SCENARIO",
+      "INFERRED",
+      "UNVERIFIED",
+      "UNKNOWN"
+    ],
+    "emptyTableInvariantVerified": true,
+    "liveRowCountPostTest": 0
+  },
+  "syntheticBehavioralTests": [
+    {
+      "id": "TEST-A",
+      "title": "Generic VERIFIED status insertion succeeds",
+      "status": "PASS",
+      "observed": "Inserted successfully",
+      "details": ""
+    },
+    {
+      "id": "TEST-D",
+      "title": "Status mutation fails closed with SQLSTATE 23514",
+      "status": "PASS",
+      "observed": "23514: IMMUTABILITY VIOLATION: status cannot be mutated (OLD: VERIFIED, NEW: OFFICIAL)",
+      "details": ""
+    },
+    {
+      "id": "TEST-E",
+      "title": "Geometry mutation fails closed with SQLSTATE 23514",
+      "status": "PASS",
+      "observed": "23514: IMMUTABILITY VIOLATION: Authoritative geometry coordinates cannot be mutated",
+      "details": ""
+    },
+    {
+      "id": "TEST-I",
+      "title": "Historical baseline cannot become is_current=true (SQLSTATE 23514)",
+      "status": "PASS",
+      "observed": "23514: LIFECYCLE VIOLATION: historical statutory baseline geometry cannot be set to is_current = true",
+      "details": ""
+    },
+    {
+      "id": "TEST-J",
+      "title": "Closed valid_to cannot be shifted (SQLSTATE 23514)",
+      "status": "PASS",
+      "observed": "23514: LIFECYCLE VIOLATION: valid_to is already closed and cannot be altered",
+      "details": ""
+    },
+    {
+      "id": "TEST-B",
+      "title": "Generic DERIVED status insertion succeeds",
+      "status": "PASS",
+      "observed": "Inserted successfully",
+      "details": ""
+    },
+    {
+      "id": "TEST-C",
+      "title": "Generic UNVERIFIED status insertion succeeds",
+      "status": "PASS",
+      "observed": "Inserted successfully",
+      "details": ""
+    },
+    {
+      "id": "TEST-F",
+      "title": "Dataset/provenance mismatch fails closed with SQLSTATE 23514",
+      "status": "PASS",
+      "observed": "23514: PROVENANCE DATASET MISMATCH: entity_geometries.dataset_version_id (ts_lgd_mandals_2023_v1) does not match provenance_records.dataset_version_id (tgrac_mandals_2016_v1)",
+      "details": ""
+    },
+    {
+      "id": "TEST-G",
+      "title": "Missing provenance evidence fails closed with SQLSTATE 23514",
+      "status": "PASS",
+      "observed": "23514: PROVENANCE EVIDENCE MISSING: referenced provenance record a0000000-0000-0000-0000-000000000001 has NULL verification_evidence_id",
+      "details": ""
+    },
+    {
+      "id": "TEST-H",
+      "title": "Non-existent provenance / missing evidence fails with SQLSTATE 23503",
+      "status": "PASS",
+      "observed": "23503: PROVENANCE NOT FOUND: referenced provenance_record 00000000-0000-0000-0000-ffffffffffff does not exist",
+      "details": ""
+    },
+    {
+      "id": "TEST-K",
+      "title": "NULL valid_to -> valid date succeeds where permitted",
+      "status": "PASS",
+      "observed": "Transitioned to 2022-09-26",
+      "details": ""
+    },
+    {
+      "id": "TEST-L",
+      "title": "Exact replay identity verified (no duplicate created)",
+      "status": "PASS",
+      "observed": "Row persisted with exact ID 1079d589-3b88-4a07-b6c2-54cfccc82e6c",
+      "details": ""
+    },
+    {
+      "id": "TEST-M",
+      "title": "Conflicting replay rejected with unique violation (SQLSTATE 23505)",
+      "status": "PASS",
+      "observed": "23505: duplicate key value violates unique constraint \"uq_entity_geometries_mandal_version\"",
+      "details": ""
+    },
+    {
+      "id": "TEST-N",
+      "title": "Source-FID collision contract pre-check asserts 1:1 mapping fail-closed",
+      "status": "PASS",
+      "observed": "Ingestion contract pre-check detects conflicting FID before insert",
+      "details": ""
+    },
+    {
+      "id": "TEST-O",
+      "title": "W016 OFFICIAL requirement enforced by W016 contract, not generic table CHECK",
+      "status": "PASS",
+      "observed": "Generic schema permits DERIVED (tested in TEST-B); W016 ingestion contract pre-check gates statutory baseline",
+      "details": ""
+    }
+  ],
+  "rlsSecurityVerification": [
+    {
+      "id": "RLS-01",
+      "title": "Public anon SELECT succeeds via RLS policy (Public read entity_geometries)",
+      "status": "PASS",
+      "observed": "Rows returned: 0",
+      "details": ""
+    },
+    {
+      "id": "RLS-02",
+      "title": "Public anon INSERT strictly rejected with 42501 (Permission Denied)",
+      "status": "PASS",
+      "observed": "42501: permission denied for table entity_geometries",
+      "details": ""
+    }
+  ],
+  "provenanceEvidenceDistinction": {
+    "spatialEvidenceRecordId": "e0160000-0000-0000-0000-000000001013",
+    "sampleSpatialProvenanceId": "c674ea3c-3a18-58a8-82e2-e72695813f1f",
+    "verificationEvidenceId": "e0160000-0000-0000-0000-000000001013",
+    "distinctionConfirmed": true
+  },
+  "productionIsolation": {
+    "productionProject": "ehfafcnimmjusyvplbah",
+    "isolationStatus": "STRICTLY AIR-GAPPED & UNTOUCHED",
+    "connections": 0,
+    "sqlExecutions": 0,
+    "mutations": 0
+  },
+  "allChecks": [
+    {
+      "id": "PRE-01",
+      "title": "Git HEAD matches accepted R2B commit or descendant",
+      "status": "PASS",
+      "observed": "b98dc13e2a8d8af0518fd1ce6a016cf8861394ca",
+      "details": ""
+    },
+    {
+      "id": "PRE-02",
+      "title": "Migration 048 SHA matches authorized R2B checksum",
+      "status": "PASS",
+      "observed": "34ef993153c675024d014d2fd210df3295235627f609e1feec8e7f5541a955ed",
+      "details": ""
+    },
+    {
+      "id": "PRE-03",
+      "title": "Staging package is byte-for-byte identical to Migration 048",
+      "status": "PASS",
+      "observed": "Package SHA: 34ef993153c675024d014d2fd210df3295235627f609e1feec8e7f5541a955ed",
+      "details": ""
+    },
+    {
+      "id": "PRE-04",
+      "title": "Production remains unreachable and air-gapped",
+      "status": "PASS",
+      "observed": "ehfafcnimmjusyvplbah air-gapped",
+      "details": ""
+    },
+    {
+      "id": "LIVE-01",
+      "title": "public.entity_geometries EXISTS in live catalog",
+      "status": "PASS",
+      "observed": "Table registered in OpenAPI schema and PostgREST endpoint",
+      "details": ""
+    },
+    {
+      "id": "LIVE-02",
+      "title": "Exactly 19 intended columns exist in live catalog",
+      "status": "PASS",
+      "observed": "Found 19 columns: id, entity_type, mandal_version_id, dataset_version_id, provenance_id, geometry, geometry_type, status, authority_classification, temporal_classification, source_feature_id, raw_artifact_sha256, snapshot_date, valid_from, valid_to, is_current, metadata, created_at, updated_at",
+      "details": ""
+    },
+    {
+      "id": "LIVE-03",
+      "title": "geometry column is MultiPolygon SRID 4326",
+      "status": "PASS",
+      "observed": "Format: public.geometry(MultiPolygon,4326)",
+      "details": ""
+    },
+    {
+      "id": "LIVE-04",
+      "title": "status column typed as canonical public.data_status_enum with DEFAULT UNKNOWN",
+      "status": "PASS",
+      "observed": "format: public.data_status_enum, default: UNKNOWN",
+      "details": ""
+    },
+    {
+      "id": "LIVE-05",
+      "title": "Exact 8 canonical W012 enum values verified (zero invented values)",
+      "status": "PASS",
+      "observed": "Values: OFFICIAL, DERIVED, VERIFIED, ESTIMATE, SCENARIO, INFERRED, UNVERIFIED, UNKNOWN",
+      "details": ""
+    },
+    {
+      "id": "EMPTY-01",
+      "title": "public.entity_geometries row count is strictly 0",
+      "status": "PASS",
+      "observed": "Row count: 0",
+      "details": ""
+    },
+    {
+      "id": "TEST-A",
+      "title": "Generic VERIFIED status insertion succeeds",
+      "status": "PASS",
+      "observed": "Inserted successfully",
+      "details": ""
+    },
+    {
+      "id": "TEST-D",
+      "title": "Status mutation fails closed with SQLSTATE 23514",
+      "status": "PASS",
+      "observed": "23514: IMMUTABILITY VIOLATION: status cannot be mutated (OLD: VERIFIED, NEW: OFFICIAL)",
+      "details": ""
+    },
+    {
+      "id": "TEST-E",
+      "title": "Geometry mutation fails closed with SQLSTATE 23514",
+      "status": "PASS",
+      "observed": "23514: IMMUTABILITY VIOLATION: Authoritative geometry coordinates cannot be mutated",
+      "details": ""
+    },
+    {
+      "id": "TEST-I",
+      "title": "Historical baseline cannot become is_current=true (SQLSTATE 23514)",
+      "status": "PASS",
+      "observed": "23514: LIFECYCLE VIOLATION: historical statutory baseline geometry cannot be set to is_current = true",
+      "details": ""
+    },
+    {
+      "id": "TEST-J",
+      "title": "Closed valid_to cannot be shifted (SQLSTATE 23514)",
+      "status": "PASS",
+      "observed": "23514: LIFECYCLE VIOLATION: valid_to is already closed and cannot be altered",
+      "details": ""
+    },
+    {
+      "id": "TEST-B",
+      "title": "Generic DERIVED status insertion succeeds",
+      "status": "PASS",
+      "observed": "Inserted successfully",
+      "details": ""
+    },
+    {
+      "id": "TEST-C",
+      "title": "Generic UNVERIFIED status insertion succeeds",
+      "status": "PASS",
+      "observed": "Inserted successfully",
+      "details": ""
+    },
+    {
+      "id": "TEST-F",
+      "title": "Dataset/provenance mismatch fails closed with SQLSTATE 23514",
+      "status": "PASS",
+      "observed": "23514: PROVENANCE DATASET MISMATCH: entity_geometries.dataset_version_id (ts_lgd_mandals_2023_v1) does not match provenance_records.dataset_version_id (tgrac_mandals_2016_v1)",
+      "details": ""
+    },
+    {
+      "id": "TEST-G",
+      "title": "Missing provenance evidence fails closed with SQLSTATE 23514",
+      "status": "PASS",
+      "observed": "23514: PROVENANCE EVIDENCE MISSING: referenced provenance record a0000000-0000-0000-0000-000000000001 has NULL verification_evidence_id",
+      "details": ""
+    },
+    {
+      "id": "TEST-H",
+      "title": "Non-existent provenance / missing evidence fails with SQLSTATE 23503",
+      "status": "PASS",
+      "observed": "23503: PROVENANCE NOT FOUND: referenced provenance_record 00000000-0000-0000-0000-ffffffffffff does not exist",
+      "details": ""
+    },
+    {
+      "id": "TEST-K",
+      "title": "NULL valid_to -> valid date succeeds where permitted",
+      "status": "PASS",
+      "observed": "Transitioned to 2022-09-26",
+      "details": ""
+    },
+    {
+      "id": "TEST-L",
+      "title": "Exact replay identity verified (no duplicate created)",
+      "status": "PASS",
+      "observed": "Row persisted with exact ID 1079d589-3b88-4a07-b6c2-54cfccc82e6c",
+      "details": ""
+    },
+    {
+      "id": "TEST-M",
+      "title": "Conflicting replay rejected with unique violation (SQLSTATE 23505)",
+      "status": "PASS",
+      "observed": "23505: duplicate key value violates unique constraint \"uq_entity_geometries_mandal_version\"",
+      "details": ""
+    },
+    {
+      "id": "TEST-N",
+      "title": "Source-FID collision contract pre-check asserts 1:1 mapping fail-closed",
+      "status": "PASS",
+      "observed": "Ingestion contract pre-check detects conflicting FID before insert",
+      "details": ""
+    },
+    {
+      "id": "TEST-O",
+      "title": "W016 OFFICIAL requirement enforced by W016 contract, not generic table CHECK",
+      "status": "PASS",
+      "observed": "Generic schema permits DERIVED (tested in TEST-B); W016 ingestion contract pre-check gates statutory baseline",
+      "details": ""
+    },
+    {
+      "id": "RLS-01",
+      "title": "Public anon SELECT succeeds via RLS policy (Public read entity_geometries)",
+      "status": "PASS",
+      "observed": "Rows returned: 0",
+      "details": ""
+    },
+    {
+      "id": "RLS-02",
+      "title": "Public anon INSERT strictly rejected with 42501 (Permission Denied)",
+      "status": "PASS",
+      "observed": "42501: permission denied for table entity_geometries",
+      "details": ""
+    },
+    {
+      "id": "EMPTY-02",
+      "title": "public.entity_geometries row count is strictly 0 post-test cleanup",
+      "status": "PASS",
+      "observed": "Count: 0",
+      "details": ""
+    },
+    {
+      "id": "AUDIT-01",
+      "title": "W016 evidence UUID e016...1013 is evidence_records.id, NOT provenance_records.id",
+      "status": "PASS",
+      "observed": "provenance_id: c674ea3c-3a18-58a8-82e2-e72695813f1f -> verification_evidence_id: e0160000-0000-0000-0000-000000001013",
+      "details": ""
+    },
+    {
+      "id": "PROD-01",
+      "title": "Production ehfafcnimmjusyvplbah received 0 connections",
+      "status": "PASS",
+      "observed": "Zero network calls",
+      "details": ""
+    },
+    {
+      "id": "PROD-02",
+      "title": "Production ehfafcnimmjusyvplbah received 0 SQL executions",
+      "status": "PASS",
+      "observed": "Zero DDL / DML",
+      "details": ""
+    },
+    {
+      "id": "PROD-03",
+      "title": "Production ehfafcnimmjusyvplbah received 0 mutations",
+      "status": "PASS",
+      "observed": "Air-gap 100% maintained",
+      "details": ""
+    }
+  ]
+}
