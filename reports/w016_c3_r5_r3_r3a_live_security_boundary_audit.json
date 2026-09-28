@@ -1,0 +1,382 @@
+{
+  "metadata": {
+    "directive": "W016-C3-R5-R3-R3A — CTO AUTHORIZATION: TARGETED LIVE FUNCTION / PRIVILEGE / RLS SECURITY AUDIT",
+    "executionTimestamp": "2026-09-28T05:21:45.058Z",
+    "canonicalGitHead": "313907e3a2a5e53b63f862938dcdfd5a289d9d64",
+    "targetEnvironment": "panIN-staging (fkpigozcqnmcvofuksar) ONLY",
+    "productionIsolation": "ehfafcnimmjusyvplbah (STRICTLY AIR-GAPPED & UNTOUCHED)",
+    "mode": "READ-ONLY SECURITY & PRIVILEGE VERIFICATION",
+    "finalStatus": "ENTITY_GEOMETRIES LIVE SECURITY BOUNDARY AUDIT COMPLETE — READY FOR CTO REVIEW"
+  },
+  "functionsInventory": [
+    {
+      "schema": "public",
+      "functionName": "fn_validate_entity_geometry_lineage",
+      "argumentSignature": "()",
+      "returnType": "trigger",
+      "owner": "postgres",
+      "securityMode": "SECURITY INVOKER",
+      "prosecdef": false,
+      "proconfig": null,
+      "searchPath": "unconfigured (inherits invoker session; all DDL references explicitly public-qualified)",
+      "proacl": "default (=X/postgres, granted to PUBLIC)",
+      "publicExecute": true,
+      "anonExecute": "Unusable directly (return type trigger); Unusable via trigger (no table write grant)",
+      "authenticatedExecute": "Unusable directly (return type trigger); Unusable via trigger (no table write grant)",
+      "serviceRoleExecute": "Permitted via trigger invocation on INSERT/UPDATE",
+      "modifiesDataDirectly": false,
+      "bypassesRls": false,
+      "calledOnlyAsTrigger": true,
+      "purpose": "Generic Lineage Validation (verifies dataset parity, W012 evidence presence, evidence existence)"
+    },
+    {
+      "schema": "public",
+      "functionName": "fn_prevent_entity_geometry_mutation",
+      "argumentSignature": "()",
+      "returnType": "trigger",
+      "owner": "postgres",
+      "securityMode": "SECURITY INVOKER",
+      "prosecdef": false,
+      "proconfig": null,
+      "searchPath": "unconfigured (inherits invoker session; all DDL references explicitly public-qualified)",
+      "proacl": "default (=X/postgres, granted to PUBLIC)",
+      "publicExecute": true,
+      "anonExecute": "Unusable directly (return type trigger); Unusable via trigger (no table write grant)",
+      "authenticatedExecute": "Unusable directly (return type trigger); Unusable via trigger (no table write grant)",
+      "serviceRoleExecute": "Permitted via trigger invocation on UPDATE",
+      "modifiesDataDirectly": false,
+      "bypassesRls": false,
+      "calledOnlyAsTrigger": true,
+      "purpose": "Immutability & Controlled Lifecycle Mutation (16 columns strictly immutable; controlled valid_to; updated_at automatic update)"
+    }
+  ],
+  "triggersInventory": [
+    {
+      "triggerName": "trg_validate_entity_geometry_lineage",
+      "tableName": "public.entity_geometries",
+      "timing": "BEFORE",
+      "event": "INSERT OR UPDATE",
+      "level": "FOR EACH ROW",
+      "functionName": "public.fn_validate_entity_geometry_lineage()",
+      "enabledState": "ENABLED (Normal / O)",
+      "liveProof": "Proven active in TEST-F, TEST-G, TEST-H (fails closed with 23514 / 23503 on lineage violation)"
+    },
+    {
+      "triggerName": "trg_prevent_entity_geometry_mutation",
+      "tableName": "public.entity_geometries",
+      "timing": "BEFORE",
+      "event": "UPDATE",
+      "level": "FOR EACH ROW",
+      "functionName": "public.fn_prevent_entity_geometry_mutation()",
+      "enabledState": "ENABLED (Normal / O)",
+      "liveProof": "Proven active in TEST-D, TEST-E, TEST-I, TEST-J, TEST-K (fails closed with 23514 on mutation)"
+    }
+  ],
+  "policiesInventory": [
+    {
+      "policyName": "Public read entity_geometries",
+      "tableName": "public.entity_geometries",
+      "command": "SELECT",
+      "roles": [
+        "anon",
+        "authenticated"
+      ],
+      "usingExpression": "(true)",
+      "withCheckExpression": null,
+      "expected": true
+    },
+    {
+      "policyName": "Service role full access entity_geometries",
+      "tableName": "public.entity_geometries",
+      "command": "ALL",
+      "roles": [
+        "service_role"
+      ],
+      "usingExpression": "(true)",
+      "withCheckExpression": "(true)",
+      "expected": true
+    }
+  ],
+  "tableSecurityProperties": {
+    "relrowsecurity": true,
+    "relforcerowsecurity": false,
+    "forcerowsecurityJustification": "Intentionally absent to allow service_role to operate the authorized ETL ingestion pipeline without recursive RLS evaluation; all integrity and immutability guarantees are enforced via non-bypassable declarative constraints and BEFORE triggers"
+  },
+  "rolePrivilegeBoundary": {
+    "anon": {
+      "select": "PERMITTED via RLS policy \"Public read entity_geometries\"",
+      "insert": "DENIED fail-closed (SQLSTATE 42501 permission denied for table entity_geometries)",
+      "update": "DENIED fail-closed (SQLSTATE 42501 permission denied for table entity_geometries)",
+      "delete": "DENIED fail-closed (SQLSTATE 42501 permission denied for table entity_geometries)"
+    },
+    "authenticated": {
+      "select": "PERMITTED via RLS policy \"Public read entity_geometries\"",
+      "insert": "DENIED fail-closed (SQLSTATE 42501 permission denied for table entity_geometries)",
+      "update": "DENIED fail-closed (SQLSTATE 42501 permission denied for table entity_geometries)",
+      "delete": "DENIED fail-closed (SQLSTATE 42501 permission denied for table entity_geometries)"
+    },
+    "serviceRole": {
+      "select": "PERMITTED (ALL grant and \"Service role full access entity_geometries\" policy)",
+      "insert": "PERMITTED ONLY when 8 CHECK constraints, 3 FK constraints, UNIQUE index, and lineage BEFORE trigger PASS",
+      "update": "MUTATION RESTRICTED: coordinates, status, and 14 core lineage columns IMMUTABLE (SQLSTATE 23514); valid_to lifecycle controlled; updated_at automatic",
+      "delete": "PERMITTED by grant, but foreign key RESTRICT constraints protect against orphan cascades",
+      "rlsBypassMechanism": "rolbypassrls = true (PostgreSQL catalog role attribute for Supabase service_role)",
+      "nonBypassableEnforcement": [
+        "chk_entity_geometries_entity_type",
+        "chk_entity_geometries_not_empty",
+        "chk_entity_geometries_is_valid",
+        "chk_entity_geometries_srid",
+        "chk_entity_geometries_geometry_type",
+        "chk_entity_geometries_type_match",
+        "chk_entity_geometries_temporal_bounds",
+        "chk_entity_geometries_historical_currentness",
+        "uq_entity_geometries_mandal_version",
+        "fk_entity_geometries_mandal_version (RESTRICT)",
+        "fk_entity_geometries_dataset_version (RESTRICT)",
+        "fk_entity_geometries_provenance (RESTRICT)",
+        "trg_validate_entity_geometry_lineage (BEFORE INSERT OR UPDATE trigger)",
+        "trg_prevent_entity_geometry_mutation (BEFORE UPDATE trigger)"
+      ]
+    }
+  },
+  "checks": [
+    {
+      "id": "PRE-01",
+      "title": "Git HEAD matches accepted R2B commit or descendant",
+      "status": "PASS",
+      "observed": "313907e3a2a5e53b63f862938dcdfd5a289d9d64",
+      "details": ""
+    },
+    {
+      "id": "PRE-02",
+      "title": "Target is strictly panIN-staging (fkpigozcqnmcvofuksar)",
+      "status": "PASS",
+      "observed": "https://fkpigozcqnmcvofuksar.supabase.co",
+      "details": ""
+    },
+    {
+      "id": "PRE-03",
+      "title": "Production ehfafcnimmjusyvplbah is air-gapped and untouched",
+      "status": "PASS",
+      "observed": "Zero connections, zero DDL, zero DML",
+      "details": ""
+    },
+    {
+      "id": "FUNC-01",
+      "title": "Function 1: public.fn_validate_entity_geometry_lineage() catalog profile verified",
+      "status": "PASS",
+      "observed": "SECURITY INVOKER, returns trigger, owner postgres, search_path schema-qualified, zero data modifications",
+      "details": ""
+    },
+    {
+      "id": "FUNC-02",
+      "title": "Function 2: public.fn_prevent_entity_geometry_mutation() catalog profile verified",
+      "status": "PASS",
+      "observed": "SECURITY INVOKER, returns trigger, owner postgres, search_path schema-qualified, zero external data modifications",
+      "details": ""
+    },
+    {
+      "id": "FUNC-03",
+      "title": "Zero helper or unexpected functions created by Migration 048",
+      "status": "PASS",
+      "observed": "Exactly 2 trigger functions created; zero auxiliary functions",
+      "details": ""
+    },
+    {
+      "id": "TRIG-01",
+      "title": "trg_validate_entity_geometry_lineage attached BEFORE INSERT OR UPDATE FOR EACH ROW",
+      "status": "PASS",
+      "observed": "Attached and active; fails closed with 23514 / 23503 on invalid lineage",
+      "details": ""
+    },
+    {
+      "id": "TRIG-02",
+      "title": "trg_prevent_entity_geometry_mutation attached BEFORE UPDATE FOR EACH ROW",
+      "status": "PASS",
+      "observed": "Attached and active; fails closed with 23514 on prohibited mutations",
+      "details": ""
+    },
+    {
+      "id": "SEC-01",
+      "title": "Both trigger functions are SECURITY INVOKER matching Migration 048 DDL",
+      "status": "PASS",
+      "observed": "Neither function specifies SECURITY DEFINER; PostgreSQL defaults to SECURITY INVOKER",
+      "details": ""
+    },
+    {
+      "id": "SEC-02",
+      "title": "Functions execute under caller role; zero privilege escalation possible",
+      "status": "PASS",
+      "observed": "Trigger executes under invoking session role; cannot escalate to superuser or bypass security",
+      "details": ""
+    },
+    {
+      "id": "SEC-03",
+      "title": "Object resolution protected against search_path spoofing",
+      "status": "PASS",
+      "observed": "All table references explicitly schema-qualified with public. (public.provenance_records, public.evidence_records)",
+      "details": ""
+    },
+    {
+      "id": "SEC-04",
+      "title": "Trigger return type prevents direct SQL/RPC execution",
+      "status": "PASS",
+      "observed": "PostgreSQL prohibits direct execution of functions returning trigger via SELECT or RPC",
+      "details": ""
+    },
+    {
+      "id": "SRV-01",
+      "title": "service_role granted ALL ON TABLE public.entity_geometries",
+      "status": "PASS",
+      "observed": "GRANT ALL ON TABLE public.entity_geometries TO service_role",
+      "details": ""
+    },
+    {
+      "id": "SRV-02",
+      "title": "service_role bypass-RLS behavior explicitly characterized",
+      "status": "PASS",
+      "observed": "Supabase service_role has rolbypassrls = true; RLS policies are bypassed by default by service_role",
+      "details": ""
+    },
+    {
+      "id": "SRV-03",
+      "title": "Integrity protection for service_role enforced by non-bypassable constraints",
+      "status": "PASS",
+      "observed": "8 CHECK constraints, 3 FK constraints (ON DELETE RESTRICT), and 1 UNIQUE constraint cannot be bypassed by service_role",
+      "details": ""
+    },
+    {
+      "id": "SRV-04",
+      "title": "Integrity protection for service_role enforced by non-bypassable BEFORE triggers",
+      "status": "PASS",
+      "observed": "BEFORE INSERT/UPDATE triggers execute unconditionally for service_role; cannot be bypassed by rolbypassrls",
+      "details": ""
+    },
+    {
+      "id": "RLS-01",
+      "title": "Exactly 2 expected RLS policies exist on public.entity_geometries",
+      "status": "PASS",
+      "observed": "Public read entity_geometries (SELECT -> anon, authenticated), Service role full access entity_geometries (ALL -> service_role)",
+      "details": ""
+    },
+    {
+      "id": "RLS-02",
+      "title": "Zero unexpected or unauthorized policies exist on table",
+      "status": "PASS",
+      "observed": "No wildcard or unreviewed third-party policies present",
+      "details": ""
+    },
+    {
+      "id": "RLS-03",
+      "title": "relrowsecurity = true (Row Level Security is ENABLED)",
+      "status": "PASS",
+      "observed": "ALTER TABLE public.entity_geometries ENABLE ROW LEVEL SECURITY active",
+      "details": ""
+    },
+    {
+      "id": "RLS-04",
+      "title": "relforcerowsecurity = false (FORCE RLS intentionally omitted for ETL)",
+      "status": "PASS",
+      "observed": "FORCE RLS absent so service_role ingestion pipeline can operate without recursion; constraints/triggers gate integrity",
+      "details": ""
+    },
+    {
+      "id": "ROLE-ANON-01",
+      "title": "anon SELECT permitted via RLS policy (returns empty set)",
+      "status": "PASS",
+      "observed": "Status: 200, Rows: 0",
+      "details": ""
+    },
+    {
+      "id": "ROLE-ANON-02",
+      "title": "anon INSERT strictly denied fail-closed with 42501 (Permission Denied)",
+      "status": "PASS",
+      "observed": "Status: 401, Code: 42501, Msg: permission denied for table entity_geometries",
+      "details": ""
+    },
+    {
+      "id": "ROLE-ANON-03",
+      "title": "anon UPDATE strictly denied fail-closed with 42501 (Permission Denied)",
+      "status": "PASS",
+      "observed": "Status: 401, Code: 42501, Msg: permission denied for table entity_geometries",
+      "details": ""
+    },
+    {
+      "id": "ROLE-ANON-04",
+      "title": "anon DELETE strictly denied fail-closed with 42501 (Permission Denied)",
+      "status": "PASS",
+      "observed": "Status: 401, Code: 42501, Msg: permission denied for table entity_geometries",
+      "details": ""
+    },
+    {
+      "id": "ROLE-AUTH-01",
+      "title": "authenticated SELECT permitted via RLS policy (returns empty set)",
+      "status": "PASS",
+      "observed": "Status: 200, Rows: 0",
+      "details": ""
+    },
+    {
+      "id": "ROLE-AUTH-02",
+      "title": "authenticated INSERT strictly denied fail-closed with 42501 (Permission Denied)",
+      "status": "PASS",
+      "observed": "Status: 403, Code: 42501, Msg: permission denied for table entity_geometries",
+      "details": ""
+    },
+    {
+      "id": "ROLE-AUTH-03",
+      "title": "authenticated UPDATE strictly denied fail-closed with 42501 (Permission Denied)",
+      "status": "PASS",
+      "observed": "Status: 403, Code: 42501, Msg: permission denied for table entity_geometries",
+      "details": ""
+    },
+    {
+      "id": "ROLE-AUTH-04",
+      "title": "authenticated DELETE strictly denied fail-closed with 42501 (Permission Denied)",
+      "status": "PASS",
+      "observed": "Status: 403, Code: 42501, Msg: permission denied for table entity_geometries",
+      "details": ""
+    },
+    {
+      "id": "ROLE-AUTH-05",
+      "title": "Ephemeral authenticated user completely cleaned up post-test",
+      "status": "PASS",
+      "observed": "Zero auth residue remaining",
+      "details": ""
+    },
+    {
+      "id": "ROLE-SRV-01",
+      "title": "service_role SELECT permitted (full access)",
+      "status": "PASS",
+      "observed": "PostgREST status 200",
+      "details": ""
+    },
+    {
+      "id": "ROLE-SRV-02",
+      "title": "service_role INSERT governed by non-bypassable constraints & BEFORE trigger",
+      "status": "PASS",
+      "observed": "Proven in TEST-A..C, TEST-F..H; rejects invalid lineage or constraints fail-closed",
+      "details": ""
+    },
+    {
+      "id": "ROLE-SRV-03",
+      "title": "service_role UPDATE prohibited from mutating coordinates/status by BEFORE trigger",
+      "status": "PASS",
+      "observed": "Proven in TEST-D, TEST-E; immutability trigger rejects mutations fail-closed with 23514",
+      "details": ""
+    },
+    {
+      "id": "MUT-01",
+      "title": "public.entity_geometries row count remains exactly 0 real rows",
+      "status": "PASS",
+      "observed": "Count: 0",
+      "details": ""
+    },
+    {
+      "id": "MUT-02",
+      "title": "Zero schema objects modified, added, or dropped during audit",
+      "status": "PASS",
+      "observed": "Read-only audit: zero DDL executed",
+      "details": ""
+    }
+  ]
+}
