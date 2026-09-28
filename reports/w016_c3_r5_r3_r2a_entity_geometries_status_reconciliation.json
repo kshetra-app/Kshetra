@@ -1,0 +1,155 @@
+{
+  "metadata": {
+    "directive": "W016-C3-R5-R3-R2A — CTO AUTHORIZATION: W012 STATUS SEMANTICS RECONCILIATION FOR ENTITY_GEOMETRIES",
+    "executionTimestamp": "2026-09-28T03:59:44.603Z",
+    "repositoryHead": "0cfcf1fddb2e3f7aec7893ad83f9b9a4c565d130",
+    "targetEnvironment": "panIN-staging (fkpigozcqnmcvofuksar)",
+    "productionIsolation": "ehfafcnimmjusyvplbah (STRICTLY AIR-GAPPED & UNTOUCHED)",
+    "finalStatus": "ENTITY_GEOMETRIES STATUS RECONCILIATION COMPLETE — READY FOR CTO REVIEW",
+    "verificationClassification": "STATIC / ISOLATED-PACKAGE VERIFICATION ONLY",
+    "liveStateDetermination": "048 NOT EXECUTED — SCHEMA ABSENT",
+    "liveGeometryRowCount": 0
+  },
+  "canonicalW012Evidence": {
+    "sourceFile": "supabase/migrations/039_data_governance_foundation.sql",
+    "typeDefinitionLines": "32-42",
+    "enumTypeName": "public.data_status_enum",
+    "canonicalEnumValues": [
+      "OFFICIAL",
+      "DERIVED",
+      "VERIFIED",
+      "ESTIMATE",
+      "SCENARIO",
+      "INFERRED",
+      "UNVERIFIED",
+      "UNKNOWN"
+    ],
+    "nonExistentValuesConfirmed": [
+      "SUPERSEDED",
+      "DEPRECATED",
+      "PROVISIONAL"
+    ],
+    "architecturalFact": "public.data_status_enum defines epistemic/governance credibility and must not be overloaded with temporal lifecycle states."
+  },
+  "nonCanonicalStatusTermInventory": [
+    {
+      "term": "SUPERSEDED",
+      "previousLocation": "supabase/migrations/048_w016_c3_r5_r3_entity_geometries_schema.sql lines 230, 233",
+      "classification": "1. Removed from executable SQL",
+      "resolution": "Removed from trigger fn_prevent_entity_geometry_mutation(). status is strictly IMMUTABLE (OFFICIAL). Temporal supersession is modeled exclusively via valid_to and is_current."
+    },
+    {
+      "term": "DEPRECATED",
+      "previousLocation": "supabase/migrations/048_w016_c3_r5_r3_entity_geometries_schema.sql lines 230, 233",
+      "classification": "1. Removed from executable SQL",
+      "resolution": "Removed from trigger fn_prevent_entity_geometry_mutation(). status is strictly IMMUTABLE (OFFICIAL)."
+    },
+    {
+      "term": "PROVISIONAL",
+      "previousLocation": "supabase/verify_staging_migration_package_048.sql line 215",
+      "classification": "1. Removed from executable SQL",
+      "resolution": "Replaced with canonical W012 value UNVERIFIED in synthetic test fixture."
+    },
+    {
+      "term": "SUPERSEDED / DEPRECATED in verification tests",
+      "previousLocation": "supabase/verify_staging_migration_package_048.sql lines 463-484 (Tests M1, M2)",
+      "classification": "3. Requiring architectural correction",
+      "resolution": "Replaced with Test M1 (valid_to closure: NULL -> DATE >= valid_from) and Test M2 (rejection of status mutation with SQLSTATE 23514)."
+    },
+    {
+      "term": "SUPERSEDED / DEPRECATED in preflight test assertion",
+      "previousLocation": "tests/test_w016_c3_r5_r3_preflight.mjs lines 194-198 (IDEMP-10)",
+      "classification": "3. Requiring architectural correction",
+      "resolution": "Replaced assertion with check for status immutability and valid_to/is_current lifecycle rules."
+    }
+  ],
+  "correctedLifecycleModel": {
+    "separationOfConcerns": {
+      "dataGovernanceStatus": {
+        "field": "status",
+        "enum": "public.data_status_enum",
+        "role": "Represents governance/epistemic credibility of the record.",
+        "behavior": "IMMUTABLE. For authoritative gazetted geometries, status is OFFICIAL at birth and remains OFFICIAL perpetually. An official 2016 baseline never becomes un-official."
+      },
+      "temporalSupersessionLifecycle": {
+        "fields": [
+          "valid_to",
+          "is_current"
+        ],
+        "role": "Represents temporal active/superseded status in the spatial timeline.",
+        "behavior": "valid_to closes open-ended boundaries (NULL -> DATE >= valid_from). is_current transitions from true -> false upon supersession (for historical baseline, strictly false at birth)."
+      }
+    },
+    "fieldLifecycleRules": [
+      {
+        "field": "status",
+        "classification": "IMMUTABLE",
+        "permittedTransitions": "None. Value remains OFFICIAL indefinitely.",
+        "forbiddenTransitions": "Any mutation of status triggers SQLSTATE 23514.",
+        "enforcement": "fn_prevent_entity_geometry_mutation() BEFORE UPDATE trigger"
+      },
+      {
+        "field": "is_current",
+        "classification": "CONTROLLED LIFECYCLE MUTABLE",
+        "permittedTransitions": "true -> false (active geometry retired upon adoption of superseding boundary order).",
+        "forbiddenTransitions": "false -> true prohibited for historical statutory baselines.",
+        "enforcement": "chk_entity_geometries_historical_currentness CHECK constraint + trigger"
+      },
+      {
+        "field": "valid_from",
+        "classification": "IMMUTABLE",
+        "permittedTransitions": "None. Fixed statutory gazette epoch date.",
+        "forbiddenTransitions": "Any mutation triggers SQLSTATE 23514.",
+        "enforcement": "fn_prevent_entity_geometry_mutation() BEFORE UPDATE trigger"
+      },
+      {
+        "field": "valid_to",
+        "classification": "CONTROLLED LIFECYCLE MUTABLE",
+        "permittedTransitions": "NULL -> closed DATE >= valid_from (when open-ended boundary is superseded).",
+        "forbiddenTransitions": "Altering an already-closed valid_to date; setting valid_to < valid_from.",
+        "enforcement": "chk_entity_geometries_temporal_bounds CHECK constraint + trigger"
+      },
+      {
+        "field": "updated_at",
+        "classification": "CONTROLLED LIFECYCLE MUTABLE",
+        "permittedTransitions": "Automatically set to now() on permitted valid_to or is_current updates.",
+        "forbiddenTransitions": "Manual tampering prohibited.",
+        "enforcement": "fn_prevent_entity_geometry_mutation() BEFORE UPDATE trigger"
+      }
+    ]
+  },
+  "artifacts": {
+    "migration048File": "supabase/migrations/048_w016_c3_r5_r3_entity_geometries_schema.sql",
+    "migration048Sha256": "a62911903ea65a9d147217dc66be595d4e489aee8c93beb939b0f09930011877",
+    "stagingPackage048File": "supabase/staging_migration_package_048.sql",
+    "stagingPackage048Sha256": "a62911903ea65a9d147217dc66be595d4e489aee8c93beb939b0f09930011877",
+    "verificationPackageFile": "supabase/verify_staging_migration_package_048.sql",
+    "verificationPackageSha256": "7e0fc04e0d181e81610e77bf844a3a487bf7acd99699edd4240afc698968c8ec",
+    "preflightTestRunnerFile": "tests/test_w016_c3_r5_r3_preflight.mjs",
+    "preflightTestRunnerSha256": "35180fe7d48227fbabfe133d6ede63f5d7fe84ce85084831c0cf16afe0dfb881",
+    "byteMatchMigrationAndStagingPackage": true
+  },
+  "liveCatalogState": {
+    "determination": "048 NOT EXECUTED — SCHEMA ABSENT",
+    "tableExists": false,
+    "httpStatus": 404,
+    "openApiDefinitionsPresent": false,
+    "openApiPathsPresent": false,
+    "entityGeometriesRowCount": 0,
+    "mandalsCount": 621,
+    "mandalVersionsTotal": 1210,
+    "mandalVersionsCurrent": 621,
+    "mandalVersionsHistorical": 589
+  },
+  "sourceFidCollisionHandling": {
+    "architecturalAnalysis": "Within the generic entity_geometries schema, mandal_version_id has a UNIQUE index (uq_entity_geometries_mandal_version). A table-wide unique constraint on (dataset_version_id, source_feature_id) is deliberately avoided to prevent imposing cadastral FID uniqueness assumptions on future non-cadastral or multi-part datasets.",
+    "enforcementMechanism": "The W016 Ingestion Contract enforces source-FID collision prevention transactionally and fail-closed: inside the ingestion transaction, an explicit assertion query verifies that no existing record with the same dataset_version_id and source_feature_id is mapped to a different mandal_version_id. If any collision is detected, the transaction immediately fails closed with SQLSTATE 23514."
+  },
+  "staticTestResults": {
+    "testRunner": "tests/test_w016_c3_r5_r3_preflight.mjs",
+    "totalChecks": 36,
+    "passedChecks": 36,
+    "failedChecks": 0,
+    "classification": "STATIC / ISOLATED-PACKAGE VERIFICATION ONLY (Executed without mutating staging catalog)"
+  }
+}

@@ -191,11 +191,11 @@ async function runPreflight() {
     migContent.includes('PROVENANCE EVIDENCE NOT FOUND'),
     'Guarantees entity_geometries.dataset_version_id = provenance_records.dataset_version_id and verifies W012 evidence presence'
   );
-  recordCheck('IDEMP-10', 'Controlled lifecycle mutability enforced on status, valid_to, is_current',
-    migContent.includes('LIFECYCLE VIOLATION: Invalid status transition') &&
+  recordCheck('IDEMP-10', 'Controlled lifecycle mutability enforced on valid_to, is_current, and status immutability',
+    migContent.includes('IMMUTABILITY VIOLATION: status cannot be mutated') &&
     migContent.includes('LIFECYCLE VIOLATION: valid_to is already closed') &&
     migContent.includes('LIFECYCLE VIOLATION: historical statutory baseline geometry cannot be set to is_current = true'),
-    'Enforces explicit transitions: status OFFICIAL->SUPERSEDED/DEPRECATED, closed valid_to immutable, is_current protected'
+    'Enforces explicit transitions: status strictly immutable OFFICIAL, closed valid_to immutable, is_current protected'
   );
   recordCheck('IDEMP-11', 'Zero W016-specific hardcoding in Migration 048 generic schema',
     !migContent.includes('e0160000-0000-0000-0000-000000001013') &&
@@ -297,7 +297,7 @@ async function runPreflight() {
 
   console.log('\n================================================================');
   console.log(`PREFLIGHT SUMMARY: ${results.length} PASSED, 0 FAILED`);
-  console.log('FINAL STATUS: ENTITY_GEOMETRIES LINEAGE & IDEMPOTENCY RECONCILIATION COMPLETE — READY FOR CTO REVIEW');
+  console.log('FINAL STATUS: ENTITY_GEOMETRIES STATUS RECONCILIATION COMPLETE — READY FOR CTO REVIEW');
   console.log('================================================================\n');
 
   return {

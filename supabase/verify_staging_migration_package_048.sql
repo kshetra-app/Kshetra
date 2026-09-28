@@ -46,6 +46,7 @@ DECLARE
   c_empty_geom GEOMETRY;
   v_test_id UUID;
   v_replay_id UUID;
+  v_lifecycle_id UUID;
 BEGIN
   RAISE NOTICE '=== STARTING MIGRATION 048 VERIFICATION SUITE (W016-C3-R5-R3-R2) ===';
 
@@ -212,7 +213,7 @@ BEGIN
     source_checksum, transformation_notes, verification_evidence_id, status, verified_at, verified_by
   ) VALUES (
     c_no_ev_prov_id, c_test_dv_id, c_test_mv_id, 'mandal_versions', 'statutory_cartographic',
-    'https://example.gov.in/raw.json', c_test_sha, 'Missing evidence test node', NULL, 'PROVISIONAL', now(), 'CTO'
+    'https://example.gov.in/raw.json', c_test_sha, 'Missing evidence test node', NULL, 'UNVERIFIED', now(), 'CTO'
   );
 
   -- Test L1: matching dataset_version + matching provenance -> PASS
@@ -460,33 +461,44 @@ BEGIN
   -- ─── PART 4: CONTROLLED LIFECYCLE MUTABILITY TESTS (M1–M5) ─────────────────────
   RAISE NOTICE '--- Starting Controlled Lifecycle Mutability Tests ---';
 
-  -- Test M1: Permitted lifecycle update: status OFFICIAL -> SUPERSEDED (PASS)
+  -- Create an open-ended test row (valid_to = NULL) on c_test_mv_id2 to test lifecycle closure
+  INSERT INTO public.entity_geometries (
+    id, entity_type, mandal_version_id, dataset_version_id, provenance_id,
+    geometry, geometry_type, status, authority_classification, temporal_classification,
+    source_feature_id, raw_artifact_sha256, snapshot_date, valid_from, valid_to, is_current
+  ) VALUES (
+    gen_random_uuid(), 'mandal', c_test_mv_id2, c_test_dv_id, c_test_prov_id,
+    c_valid_geom, 'MultiPolygon', 'OFFICIAL', 'statutory_cartographic', 'historical_statutory_baseline',
+    '1', c_test_sha, '2016-10-11', '2016-10-11', NULL, false
+  ) RETURNING id INTO v_lifecycle_id;
+
+  -- Test M1: Permitted lifecycle update: valid_to closure from NULL -> DATE >= valid_from (PASS)
   UPDATE public.entity_geometries
-  SET status = 'SUPERSEDED'
-  WHERE id = v_test_id;
+  SET valid_to = '2022-09-26'::date
+  WHERE id = v_lifecycle_id;
 
-  SELECT status INTO v_geo_record FROM public.entity_geometries WHERE id = v_test_id;
-  IF v_geo_record.status <> 'SUPERSEDED' THEN
-    RAISE EXCEPTION 'TEST M1 FAILED: status transition to SUPERSEDED failed';
+  SELECT valid_to INTO v_geo_record FROM public.entity_geometries WHERE id = v_lifecycle_id;
+  IF v_geo_record.valid_to IS DISTINCT FROM '2022-09-26'::date THEN
+    RAISE EXCEPTION 'TEST M1 FAILED: valid_to transition to 2022-09-26 failed';
   END IF;
-  RAISE NOTICE '[PASS] Test M1: Permitted lifecycle transition OFFICIAL -> SUPERSEDED succeeded';
+  RAISE NOTICE '[PASS] Test M1: Permitted lifecycle transition valid_to closure succeeded';
 
-  -- Test M2: Forbidden lifecycle update: status SUPERSEDED -> OFFICIAL or PROVISIONAL (FAIL 23514)
+  -- Test M2: Forbidden lifecycle update: status mutation rejected by immutability trigger (FAIL 23514)
   BEGIN
     UPDATE public.entity_geometries
-    SET status = 'PROVISIONAL'
-    WHERE id = v_test_id;
-    RAISE EXCEPTION 'TEST M2 FAILED: Invalid status transition did not trigger exception';
+    SET status = 'VERIFIED'
+    WHERE id = v_lifecycle_id;
+    RAISE EXCEPTION 'TEST M2 FAILED: Status mutation did not trigger exception';
   EXCEPTION WHEN check_violation THEN
     GET STACKED DIAGNOSTICS v_sqlstate = RETURNED_SQLSTATE;
-    RAISE NOTICE '[PASS] Test M2: Invalid status transition rejected with SQLSTATE %', v_sqlstate;
+    RAISE NOTICE '[PASS] Test M2: Forbidden status mutation rejected with SQLSTATE %', v_sqlstate;
   END;
 
   -- Test M3: Forbidden coordinate alteration rejected by immutability trigger (FAIL 23514)
   BEGIN
     UPDATE public.entity_geometries
     SET geometry = c_alt_geom
-    WHERE id = v_test_id;
+    WHERE id = v_lifecycle_id;
     RAISE EXCEPTION 'TEST M3 FAILED: Coordinate mutation did not trigger exception';
   EXCEPTION WHEN check_violation THEN
     GET STACKED DIAGNOSTICS v_sqlstate = RETURNED_SQLSTATE;
@@ -497,7 +509,7 @@ BEGIN
   BEGIN
     UPDATE public.entity_geometries
     SET valid_to = '2025-01-01'::date
-    WHERE id = v_test_id;
+    WHERE id = v_lifecycle_id;
     RAISE EXCEPTION 'TEST M4 FAILED: Shifting closed valid_to did not trigger exception';
   EXCEPTION WHEN check_violation THEN
     GET STACKED DIAGNOSTICS v_sqlstate = RETURNED_SQLSTATE;
@@ -508,7 +520,7 @@ BEGIN
   BEGIN
     UPDATE public.entity_geometries
     SET is_current = true
-    WHERE id = v_test_id;
+    WHERE id = v_lifecycle_id;
     RAISE EXCEPTION 'TEST M5 FAILED: Setting is_current=true on historical baseline did not trigger exception';
   EXCEPTION WHEN check_violation THEN
     GET STACKED DIAGNOSTICS v_sqlstate = RETURNED_SQLSTATE;

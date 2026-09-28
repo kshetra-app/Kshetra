@@ -117,8 +117,8 @@ CREATE TRIGGER trg_validate_entity_geometry_lineage
   EXECUTE FUNCTION public.fn_validate_entity_geometry_lineage();
 
 -- ─── 6. IMMUTABILITY & CONTROLLED LIFECYCLE MUTATION TRIGGER ───────────────────
--- Enforces strict immutability on 15 core identity/spatial/lineage columns.
--- Enforces explicit, controlled lifecycle transitions on status, valid_to, is_current.
+-- Enforces strict immutability on 16 core identity/spatial/lineage/status columns.
+-- Enforces explicit, controlled lifecycle transitions on valid_to, is_current.
 CREATE OR REPLACE FUNCTION public.fn_prevent_entity_geometry_mutation()
 RETURNS TRIGGER AS $$
 BEGIN
@@ -226,15 +226,11 @@ BEGIN
       END IF;
     END IF;
 
-    -- D. CONTROLLED LIFECYCLE MUTABILITY: status
-    -- Allowed transitions: OFFICIAL -> SUPERSEDED, OFFICIAL -> DEPRECATED.
-    -- Reversion or transition to provisional/pending is strictly rejected.
+    -- W012 Data Status is strictly immutable: an OFFICIAL statutory record remains OFFICIAL
     IF NEW.status IS DISTINCT FROM OLD.status THEN
-      IF NOT (OLD.status = 'OFFICIAL' AND NEW.status IN ('SUPERSEDED', 'DEPRECATED')) THEN
-        RAISE EXCEPTION 'LIFECYCLE VIOLATION: Invalid status transition from % to %',
-          OLD.status, NEW.status
-          USING ERRCODE = '23514';
-      END IF;
+      RAISE EXCEPTION 'IMMUTABILITY VIOLATION: status cannot be mutated (OLD: %, NEW: %)',
+        OLD.status, NEW.status
+        USING ERRCODE = '23514';
     END IF;
 
     -- E. AUTOMATIC UPDATE: updated_at
