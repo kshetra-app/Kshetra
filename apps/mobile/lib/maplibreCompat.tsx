@@ -163,6 +163,25 @@ try {
     return <ML.GeoJSONSource data={shape} onPress={wrappedOnPress} {...rest} />;
   };
 
+  // VectorSource compat — provides MapLibre vector tile source support for canonical PostGIS MVT
+  const VectorSourceCompat = (props: any) => {
+    const { url, tileUrlTemplates, onPress, ...rest } = props;
+    const wrappedOnPress = onPress
+      ? (e: any) => {
+          const coords = extractLngLat(e);
+          const ne = e?.nativeEvent ?? e;
+          onPress({
+            geometry: coords ? { coordinates: coords } : undefined,
+            coordinates: coords,
+            lngLat: coords,
+            features: ne?.features ?? [],
+            ...ne,
+          });
+        }
+      : undefined;
+    return <ML.VectorSource url={url} tileUrlTemplates={tileUrlTemplates} onPress={wrappedOnPress} {...rest} />;
+  };
+
   // FillLayer compat — uses deprecated `style` prop (camelCase, works in v11)
   const FillLayerCompat = (props: any) => {
     const { style: layerStyle, ...rest } = props;
@@ -223,6 +242,7 @@ try {
     MapView: MapViewCompat,
     Camera: CameraCompat,
     ShapeSource: ShapeSourceCompat,
+    VectorSource: VectorSourceCompat,
     FillLayer: FillLayerCompat,
     FillExtrusionLayer: FillExtrusionLayerCompat,
     LineLayer: LineLayerCompat,
@@ -240,6 +260,7 @@ try {
     MapView: NullComponent,
     Camera: NullComponent,
     ShapeSource: NullComponent,
+    VectorSource: NullComponent,
     FillLayer: NullComponent,
     FillExtrusionLayer: NullComponent,
     LineLayer: NullComponent,

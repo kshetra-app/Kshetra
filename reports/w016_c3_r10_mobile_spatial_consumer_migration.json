@@ -1,0 +1,278 @@
+{
+  "directive": "W016-C3-R10",
+  "title": "Mobile Canonical Spatial Consumer Migration",
+  "timestamp": "2026-09-28T15:24:10.360Z",
+  "environment": {
+    "target": "panIN-staging (fkpigozcqnmcvofuksar)",
+    "productionAirGap": "ehfafcnimmjusyvplbah (STRICTLY AIR-GAPPED & UNTOUCHED)",
+    "databaseUrl": "https://fkpigozcqnmcvofuksar.supabase.co"
+  },
+  "canonicalSpatialBaseline": {
+    "table": "public.entity_geometries",
+    "rowCount": 589,
+    "status": "DERIVED",
+    "isCurrent": false,
+    "temporalClassification": "historical_statutory_baseline",
+    "digest": "f839fa02980318a8f35f932ebe72fa1d3ad6325dc86a624bf159d932fe5f613b"
+  },
+  "summary": {
+    "totalChecks": 21,
+    "passedChecks": 21,
+    "allPassed": true,
+    "status": "PASS"
+  },
+  "checks": [
+    {
+      "id": "R10-AIRGAP-01",
+      "classification": "SECURITY",
+      "description": "Production database ehfafcnimmjusyvplbah is strictly air-gapped; staging fkpigozcqnmcvofuksar targeted",
+      "passed": true,
+      "observed": {
+        "supabaseUrl": "https://fkpigozcqnmcvofuksar.supabase.co",
+        "airGapped": true
+      },
+      "details": ""
+    },
+    {
+      "id": "R10-DATA-01",
+      "classification": "DATA_INTEGRITY",
+      "description": "public.entity_geometries contains exactly 589 canonical mandal rows",
+      "passed": true,
+      "observed": {
+        "rowCount": 589,
+        "expected": 589
+      },
+      "details": ""
+    },
+    {
+      "id": "R10-DATA-02",
+      "classification": "GOVERNANCE",
+      "description": "All 589 rows maintain status=DERIVED, is_current=false, temporal_classification=historical_statutory_baseline",
+      "passed": true,
+      "observed": {
+        "allDerived": true,
+        "allNotCurrent": true,
+        "allHistoricalBaseline": true,
+        "count": 589
+      },
+      "details": ""
+    },
+    {
+      "id": "R10-DATA-03",
+      "classification": "LINEAGE_DIGEST",
+      "description": "Canonical 589-row set bitwise digest matches accepted baseline",
+      "passed": true,
+      "observed": {
+        "calculatedDigest": "f839fa02980318a8f35f932ebe72fa1d3ad6325dc86a624bf159d932fe5f613b",
+        "expected": "f839fa02980318a8f35f932ebe72fa1d3ad6325dc86a624bf159d932fe5f613b"
+      },
+      "details": ""
+    },
+    {
+      "id": "R10-MOBILE-01",
+      "classification": "CODE_AUDIT",
+      "description": "apps/mobile/lib/api/endpoints/spatial.ts exists and implements SpatialEndpoint",
+      "passed": true,
+      "observed": {
+        "exists": true,
+        "hasClass": true
+      },
+      "details": ""
+    },
+    {
+      "id": "R10-MOBILE-02",
+      "classification": "CODE_AUDIT",
+      "description": "SpatialEndpoint exposes getTileUrl, getTileTemplateUrl, fetchTile, locate, and getFeatureDetail",
+      "passed": true,
+      "observed": {
+        "hasGetTileUrl": true,
+        "hasGetTileTemplateUrl": true,
+        "hasFetchTile": true,
+        "hasLocate": true,
+        "hasGetFeatureDetail": true
+      },
+      "details": ""
+    },
+    {
+      "id": "R10-MOBILE-03",
+      "classification": "CODE_AUDIT",
+      "description": "apps/mobile/lib/api/client.ts wires readonly spatial: SpatialEndpoint",
+      "passed": true,
+      "observed": {
+        "clientWiresSpatial": true
+      },
+      "details": ""
+    },
+    {
+      "id": "R10-MOBILE-04",
+      "classification": "CODE_AUDIT",
+      "description": "apps/mobile/lib/api/index.ts re-exports ./endpoints/spatial",
+      "passed": true,
+      "observed": {
+        "indexReExportsSpatial": true
+      },
+      "details": ""
+    },
+    {
+      "id": "R10-MOBILE-05",
+      "classification": "CODE_AUDIT",
+      "description": "apps/mobile/lib/maplibreCompat.tsx exposes MapboxGL.VectorSource",
+      "passed": true,
+      "observed": {
+        "maplibreHasVectorSource": true
+      },
+      "details": ""
+    },
+    {
+      "id": "R10-MOBILE-06",
+      "classification": "CODE_AUDIT",
+      "description": "apps/mobile/app/(tabs)/index.tsx delegates locate to apiClient.spatial.locate",
+      "passed": true,
+      "observed": {
+        "mapScreenUsesSpatialLocate": true
+      },
+      "details": ""
+    },
+    {
+      "id": "R10-MOBILE-07",
+      "classification": "ARCH_INVARIANT",
+      "description": "SpatialEndpoint contains zero client-side point-in-polygon math or coordinate loops",
+      "passed": true,
+      "observed": {
+        "hasPolygonLoop": false
+      },
+      "details": ""
+    },
+    {
+      "id": "R10-LEGACY-01",
+      "classification": "BACKWARD_COMPAT",
+      "description": "Legacy static delivery files remain intact and non-deleted",
+      "passed": true,
+      "observed": {
+        "legacyFiles": [
+          "apps/mobile/lib/remoteGeoLoader.ts",
+          "apps/mobile/lib/geoLoader.ts",
+          "apps/mobile/lib/geoManifest.ts",
+          "apps/api/public/geo/manifest.json"
+        ],
+        "allExist": true
+      },
+      "details": ""
+    },
+    {
+      "id": "R10-API-01",
+      "classification": "API_RUNTIME",
+      "description": "GET /api/v1/geo/tiles/mandals/8/184/115 returns 200 with vector-tile Content-Type",
+      "passed": true,
+      "observed": {
+        "statusCode": 200,
+        "contentType": "application/vnd.mapbox-vector-tile",
+        "bytes": 140160
+      },
+      "details": ""
+    },
+    {
+      "id": "R10-API-02",
+      "classification": "API_RUNTIME",
+      "description": "GET /api/v1/geo/tiles/mandals/8/10/10 returns 204 No Content for empty tile",
+      "passed": true,
+      "observed": {
+        "statusCode": 204,
+        "bytes": 0
+      },
+      "details": ""
+    },
+    {
+      "id": "R10-API-03",
+      "classification": "API_RUNTIME",
+      "description": "GET /api/v1/geo/locate returns 200 with Kuravi (FID 286) and 3-level identity",
+      "passed": true,
+      "observed": {
+        "statusCode": 200,
+        "matched": true,
+        "source_feature_id": "286",
+        "name": "Kuravi",
+        "district_id": "3b1d1d54-fa62-4528-89d8-f6c4e4044dfb",
+        "geometry_id": "c3691ae8-1473-483c-96b0-c4b6fc46714c",
+        "version_id": "9c1ebb72-2a15-5aae-ab7d-d3ef8806d28b",
+        "entity_id": "TS-MDL-4721",
+        "latencyMs": 1431
+      },
+      "details": ""
+    },
+    {
+      "id": "R10-API-04",
+      "classification": "API_RUNTIME",
+      "description": "GET /api/v1/geo/locate for out-of-bounds (0,0) returns 404 SPATIAL_LOCATION_NOT_FOUND",
+      "passed": true,
+      "observed": {
+        "statusCode": 404,
+        "code": "SPATIAL_LOCATION_NOT_FOUND"
+      },
+      "details": ""
+    },
+    {
+      "id": "R10-API-05",
+      "classification": "API_RUNTIME",
+      "description": "GET /api/v1/geo/locate?regime=current returns 404 (historical statutory fail-closed)",
+      "passed": true,
+      "observed": {
+        "statusCode": 404,
+        "matched": false
+      },
+      "details": ""
+    },
+    {
+      "id": "R10-API-06",
+      "classification": "API_RUNTIME",
+      "description": "GET /api/v1/geo/features/mandals/286 returns 200 with Kuravi detail",
+      "passed": true,
+      "observed": {
+        "statusCode": 200,
+        "matched": true,
+        "name": "Kuravi",
+        "source_feature_id": "286"
+      },
+      "details": ""
+    },
+    {
+      "id": "R10-API-07",
+      "classification": "API_RUNTIME",
+      "description": "GET /api/v1/geo/features/mandals/:uuid returns 200 by geometry_id UUID",
+      "passed": true,
+      "observed": {
+        "statusCode": 200,
+        "geometry_id": "c3691ae8-1473-483c-96b0-c4b6fc46714c"
+      },
+      "details": ""
+    },
+    {
+      "id": "R10-API-08",
+      "classification": "API_RUNTIME",
+      "description": "GET /api/v1/geo/features/mandals/999999 returns 404 FEATURE_NOT_FOUND",
+      "passed": true,
+      "observed": {
+        "statusCode": 404,
+        "code": "FEATURE_NOT_FOUND"
+      },
+      "details": ""
+    },
+    {
+      "id": "R10-IDENTITY-01",
+      "classification": "IDENTITY_INVARIANT",
+      "description": "Governed response enforces 3-level identity: entity_id (TS-MDL-KURAVI) != source_feature_id (286)",
+      "passed": true,
+      "observed": {
+        "entity_id": "TS-MDL-4721",
+        "source_feature_id": "286",
+        "identity_mapping": {
+          "source_reference": "286",
+          "geometry_id": "c3691ae8-1473-483c-96b0-c4b6fc46714c",
+          "version_id": "9c1ebb72-2a15-5aae-ab7d-d3ef8806d28b",
+          "entity_id": "TS-MDL-4721"
+        }
+      },
+      "details": ""
+    }
+  ]
+}

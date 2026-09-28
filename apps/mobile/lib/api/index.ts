@@ -28,6 +28,7 @@ export * from './endpoints/news';
 export * from './endpoints/states';
 export * from './endpoints/civic';
 export * from './endpoints/politician';
+export * from './endpoints/spatial';
 export {
   resolveRequestId,
   injectTracingHeaders,

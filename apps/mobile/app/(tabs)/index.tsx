@@ -27,6 +27,8 @@ import { usePreferencesStore } from '../../stores/preferences';
 import { useFeedStore } from '../../stores/feed';
 import { isStateSupported, getStateData } from '../../lib/stateRegistry';
 import { MapboxGL, mapboxAvailable } from '../../lib/maplibreCompat';
+import { apiClient } from '../../lib/api';
+import { telemetry } from '../../lib/telemetry';
 import { useEnrichedGeo } from '../../lib/useEnrichedGeo';
 import { computeDistrictDensityMap } from '../../lib/delimitationDensity';
 import {
@@ -912,7 +914,34 @@ function FullMapScreen() {
     const coord: [number, number] = [loc.longitude, loc.latitude];
     setUserMarker(coord);
 
+    // ── CANONICAL SPATIAL LOCATE (JOB W016-C3-R10) ──
+    // Canonical PostGIS Point-in-Polygon via Fastify API.
+    // Zero mobile in-memory polygon loops for canonical spatial layers.
+    try {
+      const canonicalMatch = await apiClient.spatial.locate({
+        lat: loc.latitude,
+        lng: loc.longitude,
+        layer: 'mandals',
+        regime: 'historical',
+        asOf: '2016-10-11',
+      });
+      if (canonicalMatch.matched && canonicalMatch.feature) {
+        telemetry.info('Canonical spatial locate matched', {
+          layer: 'mandals',
+          source_feature_id: canonicalMatch.feature.source_feature_id,
+          geometry_id: canonicalMatch.feature.geometry_id,
+          version_id: canonicalMatch.feature.version_id,
+          entity_id: canonicalMatch.feature.entity_id,
+          name: canonicalMatch.feature.name,
+        });
+      }
+    } catch (err) {
+      telemetry.warn('Canonical spatial locate lookup failed', { error: String(err) });
+    }
+
     if (stateCode === 'IN') {
+      // NON-CANONICAL / LEGACY COMPATIBILITY:
+      // State boundary hit-test during national overview mode
       const found = activeGeoJSON ? findConstituencyAtPoint(
         loc.longitude,
         loc.latitude,
@@ -930,6 +959,8 @@ function FullMapScreen() {
       return;
     }
 
+    // NON-CANONICAL / LEGACY COMPATIBILITY:
+    // Existing assembly constituency view fallback during transition period
     const found = activeGeoJSON ? findConstituencyAtPoint(
       loc.longitude,
       loc.latitude,
