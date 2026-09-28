@@ -1,0 +1,450 @@
+{
+  "job": "W016-C3-R5-R8A",
+  "title": "Spatial Delivery POC Semantic Remediation",
+  "status": "REMEDIATION_COMPLETE",
+  "terminalStatus": "W016-C3-R5-R8A REMEDIATION COMPLETE — READY FOR CTO REVIEW",
+  "timestamp": "2026-09-28T12:51:56.357Z",
+  "target": "panIN-staging (fkpigozcqnmcvofuksar)",
+  "productionAirGap": "ehfafcnimmjusyvplbah (STRICTLY AIR-GAPPED & UNTOUCHED)",
+  "databaseFetchTimeMs": 11611,
+  "remediationSummary": {
+    "defect1Closed": {
+      "description": "SQL Predicate Precedence Isolation",
+      "predicateForm": "WHERE eg.entity_type = :layer AND ST_Intersects(eg.geometry, tb.envelope_4326) AND ( (:regime = 'current' ...) OR (:regime = 'historical' ...) OR (:regime = 'version' ...) )",
+      "livePostgisRpcVerified": true,
+      "adversarialSpatialIsolationPassed": true,
+      "leakageEliminated": true
+    },
+    "defect2Closed": {
+      "description": "Generic Spatial Engine Decoupled from Mandal Metadata Adapter",
+      "genericEngineDrivenFrom": "public.entity_geometries",
+      "adapterDecoupled": true,
+      "genericExecutionWithoutAdapterVerified": true,
+      "supportedTargetEntities": [
+        "state",
+        "district",
+        "parliamentary_constituency",
+        "assembly_constituency",
+        "mandal",
+        "local_body",
+        "village"
+      ]
+    },
+    "defect3Closed": {
+      "description": "Three-Level Identity Model Unambiguously Exposed",
+      "level1_stableEntityId": "mandal_id (e.g. TS-MDL-4721 from public.mandals)",
+      "level2_temporalVersionId": "mandal_version_id (UUID from public.mandal_versions)",
+      "level3_geometryRecordId": "id (UUID from public.entity_geometries)",
+      "surrogateEquatedToEntityId": false
+    }
+  },
+  "empiricalMeasurements": [
+    {
+      "tile": "z8/184/115",
+      "label": "Central TS (dense)",
+      "featureCount": 137,
+      "rawBytes": 365696,
+      "gzipBytes": 139083,
+      "generationTimeMs": 266
+    },
+    {
+      "tile": "z9/369/230",
+      "label": "FID 286 (repaired)",
+      "featureCount": 47,
+      "rawBytes": 110125,
+      "gzipBytes": 55427,
+      "generationTimeMs": 45
+    },
+    {
+      "tile": "z9/368/231",
+      "label": "FID 292 (repaired)",
+      "featureCount": 38,
+      "rawBytes": 122030,
+      "gzipBytes": 57912,
+      "generationTimeMs": 54
+    },
+    {
+      "tile": "z9/368/230",
+      "label": "FID 523 (repaired)",
+      "featureCount": 45,
+      "rawBytes": 119548,
+      "gzipBytes": 58007,
+      "generationTimeMs": 47
+    },
+    {
+      "tile": "z8/183/113",
+      "label": "Northern TS (Adilabad)",
+      "featureCount": 19,
+      "rawBytes": 35284,
+      "gzipBytes": 16894,
+      "generationTimeMs": 16
+    },
+    {
+      "tile": "z9/368/228",
+      "label": "Unaffected FID 200",
+      "featureCount": 46,
+      "rawBytes": 127545,
+      "gzipBytes": 60532,
+      "generationTimeMs": 48
+    },
+    {
+      "tile": "z9/366/231",
+      "label": "Unaffected FID 100",
+      "featureCount": 34,
+      "rawBytes": 93858,
+      "gzipBytes": 45640,
+      "generationTimeMs": 31
+    }
+  ],
+  "temporalContractResults": {
+    "currentRegimeMatches": 0,
+    "currentRegimeBehavior": "Empty / 204 No Content (Fail-closed)",
+    "historicalRegimeMatches": 589,
+    "explicitVersionMatches": 1
+  },
+  "canonicalDataIntegrity": {
+    "entityGeometriesCount": 589,
+    "rowSetDigest": "f839fa02980318a8f35f932ebe72fa1d3ad6325dc86a624bf159d932fe5f613b",
+    "acceptedDigest": "f839fa02980318a8f35f932ebe72fa1d3ad6325dc86a624bf159d932fe5f613b",
+    "digestMatched": true,
+    "productionUntouched": true
+  },
+  "testResults": [
+    {
+      "id": "DATA-01-COUNT-589",
+      "classification": "LIVE STAGING TEST",
+      "description": "Staging entity_geometries row count = exactly 589",
+      "passed": true,
+      "observed": "Fetched: 589",
+      "details": "Fetch time: 11611ms"
+    },
+    {
+      "id": "DEFECT1-SQL-STRUCTURE",
+      "classification": "UNIT TEST",
+      "description": "SQL predicate structure uses strict conjunctive isolation with parenthesized disjunction",
+      "passed": true,
+      "observed": "Verified WHERE eg.entity_type = :layer AND ST_Intersects(...) AND (current OR historical OR version)",
+      "details": "Eliminates SQL operator precedence trap where OR bypassed ST_Intersects"
+    },
+    {
+      "id": "POSTGIS-01-HOME-TILE",
+      "classification": "LIVE STAGING TEST",
+      "description": "Live PostGIS st_intersects: Candidate FID 286 intersects its home tile (z=9, x=369, y=230)",
+      "passed": true,
+      "observed": "PostGIS ST_Intersects: true",
+      "details": ""
+    },
+    {
+      "id": "POSTGIS-02-DISJOINT-ADILABAD",
+      "classification": "LIVE STAGING TEST",
+      "description": "Live PostGIS st_intersects: Candidate FID 286 is disjoint from Adilabad tile (z=8, x=183, y=113)",
+      "passed": true,
+      "observed": "PostGIS ST_Intersects: false",
+      "details": ""
+    },
+    {
+      "id": "POSTGIS-03-DISJOINT-OCEAN",
+      "classification": "LIVE STAGING TEST",
+      "description": "Live PostGIS st_intersects: Candidate FID 286 is disjoint from Ocean tile (z=8, x=10, y=10)",
+      "passed": true,
+      "observed": "PostGIS ST_Intersects: false",
+      "details": ""
+    },
+    {
+      "id": "PRED-01-BUGGY-VS-REMEDIATED",
+      "classification": "UNIT TEST",
+      "description": "Buggy SQL predicate demonstrates leakage; remediated predicate enforces isolation",
+      "passed": true,
+      "observed": "Buggy result (leaked): true, Remediated result (isolated): false",
+      "details": "Demonstrates mathematical proof of defect elimination"
+    },
+    {
+      "id": "ADVERSARIAL-E1-HISTORICAL-ISOLATION",
+      "classification": "INTEGRATION TEST",
+      "description": "Adversarial 1: Historical candidate outside tile is strictly excluded",
+      "passed": true,
+      "observed": "Features in Adilabad tile: 19, FID 286 present: false",
+      "details": "FID 286 satisfies temporal predicate but is rejected by spatial predicate"
+    },
+    {
+      "id": "ADVERSARIAL-E2-EXPLICIT-VERSION-ISOLATION",
+      "classification": "INTEGRATION TEST",
+      "description": "Adversarial 2: Explicit version candidate outside tile returns 0 features (empty tile)",
+      "passed": true,
+      "observed": "Features returned: 0",
+      "details": "Version condition satisfied but spatial boundary strictly enforced"
+    },
+    {
+      "id": "ADVERSARIAL-E3-CURRENT-EMPTY",
+      "classification": "INTEGRATION TEST",
+      "description": "Adversarial 3: Current query on historical baseline returns 0 features (fail-closed)",
+      "passed": true,
+      "observed": "Features returned: 0",
+      "details": "No silent fallback to historical geometry"
+    },
+    {
+      "id": "ADVERSARIAL-E4-HISTORICAL-NOT-CURRENT",
+      "classification": "INTEGRATION TEST",
+      "description": "Adversarial 4: Historical query preserves is_current = false across 100% of features",
+      "passed": true,
+      "observed": "Total features: 137, Features marked is_current=true: 0",
+      "details": "Preserves immutable historical classification"
+    },
+    {
+      "id": "ADVERSARIAL-E5-LAYER-MISMATCH",
+      "classification": "INTEGRATION TEST",
+      "description": "Adversarial 5: Invalid entity_type returns 0 features",
+      "passed": true,
+      "observed": "Features returned: 0",
+      "details": "Entity type strictly bound"
+    },
+    {
+      "id": "ADVERSARIAL-E6-EMPTY-INTERSECTION",
+      "classification": "INTEGRATION TEST",
+      "description": "Adversarial 6: Disjoint spatial tile envelope returns empty tile (0 features)",
+      "passed": true,
+      "observed": "Features returned: 0",
+      "details": ""
+    },
+    {
+      "id": "GENERIC-01-ENGINE-DECOUPLED",
+      "classification": "UNIT TEST",
+      "description": "GenericTileEngine executes without domain adapter, preserving core governed fields",
+      "passed": true,
+      "observed": "Generic feature encoded: 1, geometry_id: 1792dccd-b01a-415f-a94c-077dd953a2b6",
+      "details": "Engine does not require mandal_versions; supports state/district/constituency generically"
+    },
+    {
+      "id": "IDENTITY-01-THREE-LEVELS",
+      "classification": "INTEGRATION TEST",
+      "description": "Tile feature unambiguously provides all three distinct identity levels",
+      "passed": true,
+      "observed": "Level 1 (Entity ID): TS-MDL-6298 | Level 2 (Version ID): c7c5401f-6eaf-502b-9551-b91762c3ead9 | Level 3 (Geometry ID): 005c6ba9-3bd0-41c4-a46a-b1a186473878",
+      "details": "Full traceability: Tile feature -> Geometry record -> Version -> Stable geographic entity"
+    },
+    {
+      "id": "IDENTITY-02-NO-EQUATION",
+      "classification": "UNIT TEST",
+      "description": "Surrogate geometry_id is never equated to stable geographic entity_id",
+      "passed": true,
+      "observed": "geometry_id: 005c6ba9-3bd0-41c4-a46a-b1a186473878 != entity_id: TS-MDL-6298",
+      "details": "Prevents entity conflation defect"
+    },
+    {
+      "id": "TEMP-D1-CURRENT-ZERO",
+      "classification": "INTEGRATION TEST",
+      "description": "Current regime query returns 0 features across entire historical dataset",
+      "passed": true,
+      "observed": "Current features: 0",
+      "details": ""
+    },
+    {
+      "id": "TEMP-D2-HISTORICAL-589",
+      "classification": "INTEGRATION TEST",
+      "description": "Historical as-of query for 2016-10-11 matches all 589 baseline records",
+      "passed": true,
+      "observed": "Historical matches: 589",
+      "details": ""
+    },
+    {
+      "id": "TEMP-D3-EXPLICIT-VERSION",
+      "classification": "INTEGRATION TEST",
+      "description": "Explicit version query returns exact version in its intersecting tile",
+      "passed": true,
+      "observed": "Features in tile: 1, version_id matched: 9c1ebb72-2a15-5aae-ab7d-d3ef8806d28b",
+      "details": ""
+    },
+    {
+      "id": "REP-01-DENSE-TILE",
+      "classification": "INTEGRATION TEST",
+      "description": "Representative Tile 1 (z=8, x=184, y=115): Valid MVT binary with 100+ mandals",
+      "passed": true,
+      "observed": "Raw bytes: 365696, Gzip: 139083, Decoded features: 137",
+      "details": ""
+    },
+    {
+      "id": "REP-02-FID-286",
+      "classification": "INTEGRATION TEST",
+      "description": "Representative Tile 2 (z=9, x=369, y=230) contains repaired FID 286 with 3-tier identity",
+      "passed": true,
+      "observed": "Features in tile: 47, FID 286 found: true",
+      "details": ""
+    },
+    {
+      "id": "REP-03-FID-292",
+      "classification": "INTEGRATION TEST",
+      "description": "Representative Tile 3 (z=9, x=368, y=231) contains repaired FID 292 with 3-tier identity",
+      "passed": true,
+      "observed": "Features in tile: 38, FID 292 found: true",
+      "details": ""
+    },
+    {
+      "id": "REP-04-FID-523",
+      "classification": "INTEGRATION TEST",
+      "description": "Representative Tile 4 (z=9, x=368, y=230) contains repaired FID 523 with 3-tier identity",
+      "passed": true,
+      "observed": "Features in tile: 45, FID 523 found: true",
+      "details": ""
+    },
+    {
+      "id": "REP-05-UNAFFECTED-FID1",
+      "classification": "INTEGRATION TEST",
+      "description": "Representative Tile 5 (z=8, x=183, y=113) contains unaffected FID 1",
+      "passed": true,
+      "observed": "Features in tile: 19, FID 1 found: true",
+      "details": ""
+    },
+    {
+      "id": "REP-06-UNAFFECTED-FID200",
+      "classification": "INTEGRATION TEST",
+      "description": "Representative Tile 6 (z=9, x=368, y=228) contains unaffected FID 200",
+      "passed": true,
+      "observed": "Features in tile: 46, FID 200 found: true",
+      "details": ""
+    },
+    {
+      "id": "REP-07-UNAFFECTED-FID100",
+      "classification": "INTEGRATION TEST",
+      "description": "Representative Tile 7 (z=9, x=366, y=231) contains unaffected FID 100",
+      "passed": true,
+      "observed": "Features in tile: 34, FID 100 found: true",
+      "details": ""
+    },
+    {
+      "id": "GOV-01-STATUS-DERIVED",
+      "classification": "INTEGRATION TEST",
+      "description": "Every tile feature preserves status = DERIVED (0% self-promoted)",
+      "passed": true,
+      "observed": "DERIVED verified across 137 features",
+      "details": ""
+    },
+    {
+      "id": "GOV-02-IS-CURRENT-FALSE",
+      "classification": "INTEGRATION TEST",
+      "description": "Every tile feature preserves is_current = false",
+      "passed": true,
+      "observed": "is_current = false verified across 137 features",
+      "details": ""
+    },
+    {
+      "id": "GOV-03-TEMP-CLASSIFICATION",
+      "classification": "INTEGRATION TEST",
+      "description": "Every tile feature preserves temporal_classification = historical_statutory_baseline",
+      "passed": true,
+      "observed": "temporal_classification verified across 137 features",
+      "details": ""
+    },
+    {
+      "id": "GOV-04-NO-DUPLICATES",
+      "classification": "INTEGRATION TEST",
+      "description": "Tile contains zero duplicate version identities",
+      "passed": true,
+      "observed": "Duplicate features: 0",
+      "details": ""
+    },
+    {
+      "id": "HTTP-01-VALID-GET",
+      "classification": "INTEGRATION TEST",
+      "description": "HTTP GET valid tile returns 200 with vector-tile content-type and gzip",
+      "passed": true,
+      "observed": "Status: 200, Content-Type: application/vnd.mapbox-vector-tile, Decoded features: 137",
+      "details": ""
+    },
+    {
+      "id": "HTTP-02-CURRENT-204",
+      "classification": "INTEGRATION TEST",
+      "description": "HTTP GET current regime returns 204 No Content for historical baseline",
+      "passed": true,
+      "observed": "Status: 204",
+      "details": ""
+    },
+    {
+      "id": "HTTP-03-INVALID-COORDS-400",
+      "classification": "INTEGRATION TEST",
+      "description": "HTTP GET invalid tile coordinates returns 400 Bad Request",
+      "passed": true,
+      "observed": "Status: 400, Code: INVALID_TILE_COORDINATES",
+      "details": ""
+    },
+    {
+      "id": "HTTP-04-UNKNOWN-LAYER-404",
+      "classification": "INTEGRATION TEST",
+      "description": "HTTP GET unknown spatial layer returns 404 Not Found",
+      "passed": true,
+      "observed": "Status: 404, Code: LAYER_NOT_FOUND",
+      "details": ""
+    },
+    {
+      "id": "PERF-01-EMPIRICAL-SIZES",
+      "classification": "INTEGRATION TEST",
+      "description": "Empirical tile sizes and generation durations measured and recorded",
+      "passed": true,
+      "observed": "Measured 7 tiles. Largest gzip: 135.8 KB (100+ mandals)",
+      "details": "Re-measured with remediated engine"
+    },
+    {
+      "id": "REG-01-COUNT-589",
+      "classification": "LIVE STAGING TEST",
+      "description": "entity_geometries row count = exactly 589 rows",
+      "passed": true,
+      "observed": "Count: 589",
+      "details": ""
+    },
+    {
+      "id": "REG-02-DIGEST-MATCH",
+      "classification": "LIVE STAGING TEST",
+      "description": "Row-set digest matches R5-R5 accepted digest bit-for-bit",
+      "passed": true,
+      "observed": "Digest: f839fa02980318a8f35f932ebe72fa1d3ad6325dc86a624bf159d932fe5f613b",
+      "details": ""
+    },
+    {
+      "id": "REG-03-STATUS-DERIVED",
+      "classification": "LIVE STAGING TEST",
+      "description": "100% of rows preserve status = DERIVED",
+      "passed": true,
+      "observed": "Status DERIVED: 589/589",
+      "details": ""
+    },
+    {
+      "id": "REG-04-IS-CURRENT-FALSE",
+      "classification": "LIVE STAGING TEST",
+      "description": "100% of rows preserve is_current = false",
+      "passed": true,
+      "observed": "is_current = false: 589/589",
+      "details": ""
+    },
+    {
+      "id": "REG-05-HIST-STAT-BASELINE",
+      "classification": "LIVE STAGING TEST",
+      "description": "100% of rows preserve temporal_classification = historical_statutory_baseline",
+      "passed": true,
+      "observed": "historical_statutory_baseline: 589/589",
+      "details": ""
+    },
+    {
+      "id": "REG-06-RAW-SHA",
+      "classification": "UNIT TEST",
+      "description": "Raw TGRAC SHA-256 remains untouched",
+      "passed": true,
+      "observed": "SHA: aca53eefa290570ce4010fa8c26a75dce995de3e3180ac9f0873f78fb41512db",
+      "details": ""
+    },
+    {
+      "id": "REG-07-DERIVED-SHA",
+      "classification": "UNIT TEST",
+      "description": "Derived artifact SHA-256 remains untouched",
+      "passed": true,
+      "observed": "SHA: dd16ff36d2d9c581cbc5c29125fb33787310c2d4c203d98b88aa74308d4ad077",
+      "details": ""
+    },
+    {
+      "id": "REG-08-PROD-AIRGAP",
+      "classification": "LIVE STAGING TEST",
+      "description": "Production ehfafcnimmjusyvplbah strictly air-gapped (0 connections)",
+      "passed": true,
+      "observed": "Production untouched (100% air-gap verified)",
+      "details": ""
+    }
+  ]
+}
