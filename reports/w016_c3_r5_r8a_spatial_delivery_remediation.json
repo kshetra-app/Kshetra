@@ -3,39 +3,32 @@
   "title": "Spatial Delivery POC Semantic Remediation",
   "status": "REMEDIATION_COMPLETE",
   "terminalStatus": "W016-C3-R5-R8A REMEDIATION COMPLETE — READY FOR CTO REVIEW",
-  "timestamp": "2026-09-28T12:51:56.357Z",
+  "timestamp": "2026-09-28T13:17:28.157Z",
   "target": "panIN-staging (fkpigozcqnmcvofuksar)",
   "productionAirGap": "ehfafcnimmjusyvplbah (STRICTLY AIR-GAPPED & UNTOUCHED)",
-  "databaseFetchTimeMs": 11611,
-  "remediationSummary": {
-    "defect1Closed": {
-      "description": "SQL Predicate Precedence Isolation",
-      "predicateForm": "WHERE eg.entity_type = :layer AND ST_Intersects(eg.geometry, tb.envelope_4326) AND ( (:regime = 'current' ...) OR (:regime = 'historical' ...) OR (:regime = 'version' ...) )",
-      "livePostgisRpcVerified": true,
-      "adversarialSpatialIsolationPassed": true,
-      "leakageEliminated": true
+  "databaseFetchTimeMs": 21556,
+  "architecturalDecoupling": {
+    "genericSelectionLayer": {
+      "table": "public.entity_geometries",
+      "containsDomainJoins": false,
+      "referencesMandalVersions": false,
+      "referencesDistrictId": false,
+      "referencesMandalId": false,
+      "structuralVerificationPassed": true
     },
-    "defect2Closed": {
-      "description": "Generic Spatial Engine Decoupled from Mandal Metadata Adapter",
-      "genericEngineDrivenFrom": "public.entity_geometries",
-      "adapterDecoupled": true,
-      "genericExecutionWithoutAdapterVerified": true,
-      "supportedTargetEntities": [
-        "state",
-        "district",
-        "parliamentary_constituency",
-        "assembly_constituency",
-        "mandal",
-        "local_body",
-        "village"
-      ]
-    },
-    "defect3Closed": {
-      "description": "Three-Level Identity Model Unambiguously Exposed",
-      "level1_stableEntityId": "mandal_id (e.g. TS-MDL-4721 from public.mandals)",
-      "level2_temporalVersionId": "mandal_version_id (UUID from public.mandal_versions)",
-      "level3_geometryRecordId": "id (UUID from public.entity_geometries)",
-      "surrogateEquatedToEntityId": false
+    "twoPathDemonstration": {
+      "pathA_genericNoAdapter": {
+        "executed": true,
+        "featureCount": 137,
+        "entityIdIsNull": true,
+        "governedFieldsPreserved": true
+      },
+      "pathB_mandalAdapter": {
+        "executed": true,
+        "featureCount": 137,
+        "entityIdResolved": true,
+        "adapterIsOptional": true
+      }
     }
   },
   "empiricalMeasurements": [
@@ -45,7 +38,7 @@
       "featureCount": 137,
       "rawBytes": 365696,
       "gzipBytes": 139083,
-      "generationTimeMs": 266
+      "generationTimeMs": 183
     },
     {
       "tile": "z9/369/230",
@@ -53,7 +46,7 @@
       "featureCount": 47,
       "rawBytes": 110125,
       "gzipBytes": 55427,
-      "generationTimeMs": 45
+      "generationTimeMs": 44
     },
     {
       "tile": "z9/368/231",
@@ -61,7 +54,7 @@
       "featureCount": 38,
       "rawBytes": 122030,
       "gzipBytes": 57912,
-      "generationTimeMs": 54
+      "generationTimeMs": 45
     },
     {
       "tile": "z9/368/230",
@@ -69,7 +62,7 @@
       "featureCount": 45,
       "rawBytes": 119548,
       "gzipBytes": 58007,
-      "generationTimeMs": 47
+      "generationTimeMs": 40
     },
     {
       "tile": "z8/183/113",
@@ -77,7 +70,7 @@
       "featureCount": 19,
       "rawBytes": 35284,
       "gzipBytes": 16894,
-      "generationTimeMs": 16
+      "generationTimeMs": 12
     },
     {
       "tile": "z9/368/228",
@@ -85,7 +78,7 @@
       "featureCount": 46,
       "rawBytes": 127545,
       "gzipBytes": 60532,
-      "generationTimeMs": 48
+      "generationTimeMs": 50
     },
     {
       "tile": "z9/366/231",
@@ -93,12 +86,12 @@
       "featureCount": 34,
       "rawBytes": 93858,
       "gzipBytes": 45640,
-      "generationTimeMs": 31
+      "generationTimeMs": 35
     }
   ],
   "temporalContractResults": {
     "currentRegimeMatches": 0,
-    "currentRegimeBehavior": "Empty / 204 No Content (Fail-closed)",
+    "currentRegimeBehavior": "0 features / HTTP 204 No Content (Expected Fail-Closed Behavior)",
     "historicalRegimeMatches": 589,
     "explicitVersionMatches": 1
   },
@@ -116,7 +109,15 @@
       "description": "Staging entity_geometries row count = exactly 589",
       "passed": true,
       "observed": "Fetched: 589",
-      "details": "Fetch time: 11611ms"
+      "details": "Fetch time: 21556ms"
+    },
+    {
+      "id": "SQL-NO-DOMAIN-JOIN",
+      "classification": "UNIT TEST",
+      "description": "Generic PostGIS SQL selection contains zero domain JOINs (no mandal_versions, no mandals)",
+      "passed": true,
+      "observed": "Generic PostGIS SQL selection queries only public.entity_geometries",
+      "details": ""
     },
     {
       "id": "DEFECT1-SQL-STRUCTURE",
@@ -124,7 +125,47 @@
       "description": "SQL predicate structure uses strict conjunctive isolation with parenthesized disjunction",
       "passed": true,
       "observed": "Verified WHERE eg.entity_type = :layer AND ST_Intersects(...) AND (current OR historical OR version)",
-      "details": "Eliminates SQL operator precedence trap where OR bypassed ST_Intersects"
+      "details": ""
+    },
+    {
+      "id": "STRUCTURAL-NO-MANDAL_VERSIONS",
+      "classification": "UNIT TEST",
+      "description": "Generic selection layer contains zero mandatory references to 'mandal_versions'",
+      "passed": true,
+      "observed": "Reference to 'mandal_versions' found: false",
+      "details": "Guarantees pure spatial/governance selection independence"
+    },
+    {
+      "id": "STRUCTURAL-NO-DISTRICT_ID",
+      "classification": "UNIT TEST",
+      "description": "Generic selection layer contains zero mandatory references to 'district_id'",
+      "passed": true,
+      "observed": "Reference to 'district_id' found: false",
+      "details": "Guarantees pure spatial/governance selection independence"
+    },
+    {
+      "id": "STRUCTURAL-NO-MANDAL_ID",
+      "classification": "UNIT TEST",
+      "description": "Generic selection layer contains zero mandatory references to 'mandal_id'",
+      "passed": true,
+      "observed": "Reference to 'mandal_id' found: false",
+      "details": "Guarantees pure spatial/governance selection independence"
+    },
+    {
+      "id": "PATH-A-GENERIC-NO-ADAPTER",
+      "classification": "INTEGRATION TEST",
+      "description": "Path A: Generic selection produces valid MVT with governed fields and entity_id = null",
+      "passed": true,
+      "observed": "Features: 137, entity_id: null, status: DERIVED",
+      "details": "Engine operates completely without adapter dependency"
+    },
+    {
+      "id": "PATH-B-MANDAL-ADAPTER",
+      "classification": "INTEGRATION TEST",
+      "description": "Path B: Mandal adapter resolves version_id -> stable mandal_id with name and district_id",
+      "passed": true,
+      "observed": "Level 1 (entity_id): TS-MDL-6298 | Level 2: c7c5401f-6eaf-502b-9551-b91762c3ead9 | Level 3: 005c6ba9-3bd0-41c4-a46a-b1a186473878",
+      "details": "Adapter enriches after generic selection; adapter is confirmed optional"
     },
     {
       "id": "POSTGIS-01-HOME-TILE",
@@ -151,20 +192,12 @@
       "details": ""
     },
     {
-      "id": "PRED-01-BUGGY-VS-REMEDIATED",
-      "classification": "UNIT TEST",
-      "description": "Buggy SQL predicate demonstrates leakage; remediated predicate enforces isolation",
-      "passed": true,
-      "observed": "Buggy result (leaked): true, Remediated result (isolated): false",
-      "details": "Demonstrates mathematical proof of defect elimination"
-    },
-    {
       "id": "ADVERSARIAL-E1-HISTORICAL-ISOLATION",
       "classification": "INTEGRATION TEST",
-      "description": "Adversarial 1: Historical candidate outside tile is strictly excluded",
+      "description": "Adversarial 1: Historical candidate outside tile is strictly absent",
       "passed": true,
       "observed": "Features in Adilabad tile: 19, FID 286 present: false",
-      "details": "FID 286 satisfies temporal predicate but is rejected by spatial predicate"
+      "details": "Temporal predicate satisfied, but spatial intersection rejected"
     },
     {
       "id": "ADVERSARIAL-E2-EXPLICIT-VERSION-ISOLATION",
@@ -172,23 +205,23 @@
       "description": "Adversarial 2: Explicit version candidate outside tile returns 0 features (empty tile)",
       "passed": true,
       "observed": "Features returned: 0",
-      "details": "Version condition satisfied but spatial boundary strictly enforced"
+      "details": "Version matched, but spatial intersection rejected"
     },
     {
-      "id": "ADVERSARIAL-E3-CURRENT-EMPTY",
+      "id": "ADVERSARIAL-E3-CURRENT-FAIL-CLOSED",
       "classification": "INTEGRATION TEST",
-      "description": "Adversarial 3: Current query on historical baseline returns 0 features (fail-closed)",
+      "description": "Adversarial 3: Current request cannot return historical geometry (fail-closed, 0 features)",
       "passed": true,
-      "observed": "Features returned: 0",
-      "details": "No silent fallback to historical geometry"
+      "observed": "Features returned: 0 (HTTP 204 No Content)",
+      "details": "Temporal predicate NOT SATISFIED (is_current = false) -> Expected fail-closed behavior"
     },
     {
       "id": "ADVERSARIAL-E4-HISTORICAL-NOT-CURRENT",
       "classification": "INTEGRATION TEST",
       "description": "Adversarial 4: Historical query preserves is_current = false across 100% of features",
       "passed": true,
-      "observed": "Total features: 137, Features marked is_current=true: 0",
-      "details": "Preserves immutable historical classification"
+      "observed": "Features marked is_current=true: 0 / 137",
+      "details": ""
     },
     {
       "id": "ADVERSARIAL-E5-LAYER-MISMATCH",
@@ -196,7 +229,7 @@
       "description": "Adversarial 5: Invalid entity_type returns 0 features",
       "passed": true,
       "observed": "Features returned: 0",
-      "details": "Entity type strictly bound"
+      "details": ""
     },
     {
       "id": "ADVERSARIAL-E6-EMPTY-INTERSECTION",
@@ -207,19 +240,11 @@
       "details": ""
     },
     {
-      "id": "GENERIC-01-ENGINE-DECOUPLED",
-      "classification": "UNIT TEST",
-      "description": "GenericTileEngine executes without domain adapter, preserving core governed fields",
-      "passed": true,
-      "observed": "Generic feature encoded: 1, geometry_id: 1792dccd-b01a-415f-a94c-077dd953a2b6",
-      "details": "Engine does not require mandal_versions; supports state/district/constituency generically"
-    },
-    {
       "id": "IDENTITY-01-THREE-LEVELS",
       "classification": "INTEGRATION TEST",
       "description": "Tile feature unambiguously provides all three distinct identity levels",
       "passed": true,
-      "observed": "Level 1 (Entity ID): TS-MDL-6298 | Level 2 (Version ID): c7c5401f-6eaf-502b-9551-b91762c3ead9 | Level 3 (Geometry ID): 005c6ba9-3bd0-41c4-a46a-b1a186473878",
+      "observed": "Level 1 (entity_id): TS-MDL-6298 | Level 2 (version_id): c7c5401f-6eaf-502b-9551-b91762c3ead9 | Level 3 (geometry_id): 005c6ba9-3bd0-41c4-a46a-b1a186473878",
       "details": "Full traceability: Tile feature -> Geometry record -> Version -> Stable geographic entity"
     },
     {
@@ -228,7 +253,7 @@
       "description": "Surrogate geometry_id is never equated to stable geographic entity_id",
       "passed": true,
       "observed": "geometry_id: 005c6ba9-3bd0-41c4-a46a-b1a186473878 != entity_id: TS-MDL-6298",
-      "details": "Prevents entity conflation defect"
+      "details": ""
     },
     {
       "id": "TEMP-D1-CURRENT-ZERO",
@@ -380,7 +405,7 @@
       "description": "Empirical tile sizes and generation durations measured and recorded",
       "passed": true,
       "observed": "Measured 7 tiles. Largest gzip: 135.8 KB (100+ mandals)",
-      "details": "Re-measured with remediated engine"
+      "details": "Bounded POC measurement only — zero production readiness claim"
     },
     {
       "id": "REG-01-COUNT-589",
