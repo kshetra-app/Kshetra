@@ -1,0 +1,267 @@
+{
+  "metadata": {
+    "directive": "W016-C3-R5-R4 — CTO AUTHORIZATION: 589 MANDAL GEOMETRY INGESTION INTO STAGING",
+    "executionTimestamp": "2026-09-28T05:43:29.357Z",
+    "canonicalGitHead": "cc9362b075a13cddf70e7afb09a84db1b8626442",
+    "targetEnvironment": "panIN-staging (fkpigozcqnmcvofuksar) ONLY",
+    "productionIsolation": "ehfafcnimmjusyvplbah (STRICTLY AIR-GAPPED & UNTOUCHED)",
+    "finalStatus": "W016-C3-R5-R4 GEOMETRY INGESTION BLOCKED — CANONICAL ARTIFACT OGC SELF-INTERSECTION DEFECTS (FID 286 KURAVI, FID 292 NAKREKAL, FID 523 MOTAKONDUR)",
+    "rawArtifactSha256": "aca53eefa290570ce4010fa8c26a75dce995de3e3180ac9f0873f78fb41512db",
+    "sourceFeaturesCount": 589,
+    "preIngestionRowCount": 0,
+    "postIngestionRowCount": 0,
+    "remediationRequired": true
+  },
+  "blockingDefectSummary": {
+    "status": "BLOCKED",
+    "reason": "PostGIS topological validation failure (ST_IsValid = false) due to OGC ring self-intersections present in the raw authoritative TGRAC government GIS artifact.",
+    "failingFeaturesCount": 3,
+    "passingFeaturesCount": 586,
+    "failingFeatures": [
+      {
+        "fid": 286,
+        "name": "Kuravi",
+        "district": "Mahabubabad",
+        "targetMandalVersionId": "9c1ebb72-2a15-5aae-ab7d-d3ef8806d28b",
+        "versionCode": "TS-MDL-4721-V1",
+        "violationType": "Ring Self-intersection",
+        "intersectionCoordinate": [
+          79.94888665600001,
+          17.514169435999975
+        ],
+        "enforcedConstraint": "chk_entity_geometries_is_valid (ST_IsValid(geometry))",
+        "sqlstate": "23514"
+      },
+      {
+        "fid": 292,
+        "name": "Nakrekal",
+        "district": "Nalgonda",
+        "targetMandalVersionId": "40151d58-be3f-55c5-9424-0670c4e27093",
+        "versionCode": "TS-MDL-4636-V1",
+        "violationType": "Ring Self-intersection",
+        "intersectionCoordinate": [
+          79.424871978,
+          17.222727554000016
+        ],
+        "enforcedConstraint": "chk_entity_geometries_is_valid (ST_IsValid(geometry))",
+        "sqlstate": "23514"
+      },
+      {
+        "fid": 523,
+        "name": "Motakondur",
+        "district": "Yadadri Bhuvanagiri",
+        "targetMandalVersionId": "bf88ae00-a796-5082-8bbb-51f20d2b9f11",
+        "versionCode": "TS-MDL-6309-V1",
+        "violationType": "Ring Self-intersection",
+        "intersectionCoordinate": [
+          79.03225856799997,
+          17.594265163999978
+        ],
+        "enforcedConstraint": "chk_entity_geometries_is_valid (ST_IsValid(geometry))",
+        "sqlstate": "23514"
+      }
+    ]
+  },
+  "failClosedProof": {
+    "atomicRollbackTriggered": true,
+    "partialRowsRemaining": 0,
+    "emptyTableInvariantPreserved": true,
+    "adHocRepairAttempted": false,
+    "productionTouchCount": 0
+  },
+  "spatialGovernance": {
+    "evidenceId": "e0160000-0000-0000-0000-000000001013",
+    "datasetVersionId": "tgrac_mandals_2016_v1",
+    "snapshotDate": "2016-10-11",
+    "crs": "EPSG:4326",
+    "geometryType": "MultiPolygon",
+    "status": "OFFICIAL",
+    "authorityClassification": "statutory_cartographic",
+    "temporalClassification": "historical_statutory_baseline",
+    "isCurrent": false
+  },
+  "checks": [
+    {
+      "id": "PRE-01",
+      "title": "Git HEAD matches accepted R2B commit or descendant",
+      "status": "PASS",
+      "observed": "cc9362b075a13cddf70e7afb09a84db1b8626442",
+      "details": ""
+    },
+    {
+      "id": "PRE-02",
+      "title": "Target is strictly panIN-staging (fkpigozcqnmcvofuksar)",
+      "status": "PASS",
+      "observed": "https://fkpigozcqnmcvofuksar.supabase.co",
+      "details": ""
+    },
+    {
+      "id": "PRE-03",
+      "title": "Production ehfafcnimmjusyvplbah is air-gapped and untouched",
+      "status": "PASS",
+      "observed": "Zero connections, zero DDL, zero DML",
+      "details": ""
+    },
+    {
+      "id": "PRE-FC-01",
+      "title": "Verify source SHA-256 exactly matches canonical checksum",
+      "status": "PASS",
+      "observed": "aca53eefa290570ce4010fa8c26a75dce995de3e3180ac9f0873f78fb41512db",
+      "details": ""
+    },
+    {
+      "id": "PRE-FC-02",
+      "title": "Verify exactly 589 source features in artifact",
+      "status": "PASS",
+      "observed": "Features: 589",
+      "details": ""
+    },
+    {
+      "id": "PRE-FC-03",
+      "title": "Verify 589 unique source FIDs (0..588)",
+      "status": "PASS",
+      "observed": "Unique FIDs: 589, Range: [0..588]",
+      "details": ""
+    },
+    {
+      "id": "PRE-FC-04",
+      "title": "Verify 589 spatial provenance nodes exist on staging for tgrac_mandals_2016_v1",
+      "status": "PASS",
+      "observed": "Count: 589",
+      "details": ""
+    },
+    {
+      "id": "PRE-FC-05",
+      "title": "Verify all 589 provenance nodes link to spatial evidence e016...1013",
+      "status": "PASS",
+      "observed": "Evidence: e0160000-0000-0000-0000-000000001013",
+      "details": ""
+    },
+    {
+      "id": "PRE-FC-06",
+      "title": "Verify all 589 provenance nodes have status OFFICIAL",
+      "status": "PASS",
+      "observed": "100% OFFICIAL",
+      "details": ""
+    },
+    {
+      "id": "PRE-FC-07",
+      "title": "Verify 589 unique target mandal_version UUIDs in provenance mapping",
+      "status": "PASS",
+      "observed": "Unique versions: 589",
+      "details": ""
+    },
+    {
+      "id": "PRE-FC-08",
+      "title": "Verify all 589 target mandal_versions exist on staging",
+      "status": "PASS",
+      "observed": "Found: 589",
+      "details": ""
+    },
+    {
+      "id": "PRE-FC-09",
+      "title": "Verify all 589 target mandal_versions are historical (is_current = false)",
+      "status": "PASS",
+      "observed": "100% is_current = false",
+      "details": ""
+    },
+    {
+      "id": "PRE-FC-10",
+      "title": "Verify all target versions have statutory valid_from = 2016-10-11 and valid_to",
+      "status": "PASS",
+      "observed": "All valid_from = 2016-10-11 and closed valid_to",
+      "details": ""
+    },
+    {
+      "id": "PRE-FC-11",
+      "title": "Verify all 589 geometries are non-empty MultiPolygons with closed rings",
+      "status": "PASS",
+      "observed": "Prepared 589 rows",
+      "details": ""
+    },
+    {
+      "id": "PRE-FC-12",
+      "title": "Verify all coordinates fall strictly within Telangana spatial bounds",
+      "status": "PASS",
+      "observed": "Out of bounds coordinate points: 0",
+      "details": ""
+    },
+    {
+      "id": "PRE-FC-13",
+      "title": "Check pre-ingestion entity_geometries row count",
+      "status": "PASS",
+      "observed": "Pre-ingestion row count: 0",
+      "details": ""
+    },
+    {
+      "id": "PRE-FC-14",
+      "title": "PostGIS OGC topological validity audit detects 3 canonical artifact defects",
+      "status": "PASS",
+      "observed": "586 valid features, exactly 3 defective features (FIDs 286, 292, 523)",
+      "details": "FIDs 286 (Kuravi), 292 (Nakrekal), 523 (Motakondur) contain raw government GIS ring self-intersections"
+    },
+    {
+      "id": "PRE-FC-15",
+      "title": "Fail-closed boundary check: Unauthorized ad-hoc repair strictly prohibited",
+      "status": "PASS",
+      "observed": "ST_MakeValid and ad-hoc polygon alteration disallowed without CTO authorization",
+      "details": ""
+    },
+    {
+      "id": "INGEST-01",
+      "title": "Live PostGIS constraint chk_entity_geometries_is_valid rejects FID 286 fail-closed",
+      "status": "PASS",
+      "observed": "23514: new row for relation \"entity_geometries\" violates check constraint \"chk_entity_geometries_is_valid\"",
+      "details": ""
+    },
+    {
+      "id": "ROLLBACK-01",
+      "title": "Fail-closed atomic rollback executed: public.entity_geometries count = exactly 0",
+      "status": "PASS",
+      "observed": "Live row count: 0 (zero partial rows)",
+      "details": ""
+    },
+    {
+      "id": "POST-M",
+      "title": "Historical temporal records remain unchanged (589 historical mandal_versions intact)",
+      "status": "PASS",
+      "observed": "Historical versions count: 589",
+      "details": ""
+    },
+    {
+      "id": "POST-N",
+      "title": "W014/W012 canonical objects remain unchanged",
+      "status": "PASS",
+      "observed": "Districts: 33, ACs: 119",
+      "details": ""
+    },
+    {
+      "id": "POST-O",
+      "title": "Migrations 039–048 remain unchanged",
+      "status": "PASS",
+      "observed": "Zero schema migrations modified, Migration 049 NOT created",
+      "details": ""
+    },
+    {
+      "id": "POST-P",
+      "title": "No unrelated tables mutated (public.mandals count remains exactly 621)",
+      "status": "PASS",
+      "observed": "Mandals count: 621",
+      "details": ""
+    },
+    {
+      "id": "POST-Q",
+      "title": "RLS/security behavior active (anon read permitted, anon insert rejected with 42501)",
+      "status": "PASS",
+      "observed": "Anon read: 200, Anon write: 401 (42501)",
+      "details": ""
+    },
+    {
+      "id": "POST-R",
+      "title": "Production ehfafcnimmjusyvplbah receives zero connections, zero DDL, zero DML, zero mutations",
+      "status": "PASS",
+      "observed": "Air-gap 100% maintained",
+      "details": ""
+    }
+  ]
+}
