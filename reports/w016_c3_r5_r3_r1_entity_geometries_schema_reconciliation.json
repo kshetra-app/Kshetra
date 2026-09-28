@@ -1,0 +1,549 @@
+{
+  "metadata": {
+    "directive": "W016-C3-R5-R3-R1 — ENTITY_GEOMETRIES SCHEMA FORENSIC CORRECTION & LIVE-STATE RECONCILIATION",
+    "executionTimestamp": "2026-09-28T03:11:21.593Z",
+    "repositoryHead": "6f39c09d5bb0e1e78338965698a2fa4a00c997a9",
+    "targetEnvironment": "panIN-staging (fkpigozcqnmcvofuksar)",
+    "productionIsolation": "ehfafcnimmjusyvplbah (STRICTLY AIR-GAPPED & UNTOUCHED)",
+    "finalStatus": "ENTITY_GEOMETRIES SCHEMA RECONCILIATION COMPLETE — READY FOR CTO REVIEW",
+    "liveStateDetermination": "048 NOT EXECUTED — SCHEMA ABSENT",
+    "liveGeometryRowCount": 0
+  },
+  "liveCatalogAudit": {
+    "determination": "048 NOT EXECUTED — SCHEMA ABSENT",
+    "tableExists": false,
+    "httpStatus": 404,
+    "httpResponseSnippet": "{\"code\":\"PGRST205\",\"details\":null,\"hint\":\"Perhaps you meant the table 'public.constituency_development_index'\",\"message\":\"Could not find the table 'public.entity_geometries' in the schema cache\"}",
+    "openApiDefinitionsPresent": false,
+    "openApiPathsPresent": false,
+    "summary": "Direct inspection of the live panIN-staging PostgREST schema cache and OpenAPI definitions proves that Migration 048 has NOT been executed. The public.entity_geometries table, its constraints, indexes, triggers, and policies do not exist in the live database catalog. Exactly 0 rows exist because the table is uncreated."
+  },
+  "migration": {
+    "number": "048",
+    "canonicalFile": "supabase/migrations/048_w016_c3_r5_r3_entity_geometries_schema.sql",
+    "canonicalSha256": "0d6452259c1126204fc9f2d4831a492a6c56bdf62f847604da2019d6c28f8e8e",
+    "sizeBytes": 9234,
+    "stagingPackageFile": "supabase/staging_migration_package_048.sql",
+    "stagingPackageSha256": "0d6452259c1126204fc9f2d4831a492a6c56bdf62f847604da2019d6c28f8e8e",
+    "byteMatch": true,
+    "verificationScriptFile": "supabase/verify_staging_migration_package_048.sql",
+    "verificationScriptSha256": "bfbba0c8353db08edbd2c3062b0f7aae661a32629e9c6d87380826d7e53090c3"
+  },
+  "schemaReconciliation": {
+    "tableName": "public.entity_geometries",
+    "correctionsApplied": [
+      {
+        "target": "raw_artifact_sha256 pinning",
+        "issue": "R5-R3 erroneously placed a table-wide CHECK (raw_artifact_sha256 = \"aca53eef...\") in table DDL, preventing future spatial datasets or revisions from utilizing the table.",
+        "resolution": "Removed table-wide check constraint from table DDL. Retained row-level raw_artifact_sha256 TEXT NOT NULL column with cryptographic validation occurring per-dataset and during ingestion."
+      },
+      {
+        "target": "Immutability trigger geometry comparison",
+        "issue": "R5-R3 used ST_Equals(NEW.geometry, OLD.geometry) in the immutability trigger, which evaluates topological equality rather than bitwise/coordinate immutability and incurs performance overhead on large MultiPolygons.",
+        "resolution": "Replaced with strict NEW.geometry IS DISTINCT FROM OLD.geometry immutability check, rejecting ANY coordinate or vertex alteration with SQLSTATE 23514."
+      },
+      {
+        "target": "Explicit entity_type constraint",
+        "issue": "entity_type lacked a CHECK constraint restricting allowed values.",
+        "resolution": "Added CONSTRAINT chk_entity_geometries_entity_type CHECK (entity_type = \"mandal\") to strictly bind table instances to mandal entities."
+      },
+      {
+        "target": "Temporal bounds integrity",
+        "issue": "valid_from and valid_to lacked relational bounds verification.",
+        "resolution": "Added CONSTRAINT chk_entity_geometries_temporal_bounds CHECK (valid_to IS NULL OR valid_to >= valid_from)."
+      },
+      {
+        "target": "Historical baseline currentness invariant",
+        "issue": "Missing check to ensure historical baseline geometries cannot be asserted as current.",
+        "resolution": "Added CONSTRAINT chk_entity_geometries_historical_currentness CHECK (temporal_classification != \"historical_statutory_baseline\" OR is_current = false)."
+      },
+      {
+        "target": "Provenance and dataset consistency trigger",
+        "issue": "Missing validation that entity_geometries.dataset_version_id matches provenance_records.dataset_version_id and links to dedicated spatial evidence.",
+        "resolution": "Implemented BEFORE INSERT OR UPDATE trigger trg_validate_entity_geometry_lineage executing fn_validate_entity_geometry_lineage() to guarantee dataset_version_id matches provenance_records and verification_evidence_id is e0160000-0000-0000-0000-000000001013."
+      },
+      {
+        "target": "Speculative index pruning",
+        "issue": "R5-R3 introduced speculative indexes idx_entity_geometries_source_feature and idx_entity_geometries_status without proven access paths.",
+        "resolution": "Removed speculative indexes. Retained strictly 4 necessary indexes: uq_entity_geometries_mandal_version, idx_entity_geometries_spatial, idx_entity_geometries_dataset_version, and idx_entity_geometries_provenance."
+      }
+    ],
+    "columns": [
+      {
+        "name": "id",
+        "type": "UUID",
+        "nullable": false,
+        "default": "gen_random_uuid()",
+        "description": "Surrogate primary key"
+      },
+      {
+        "name": "entity_type",
+        "type": "TEXT",
+        "nullable": false,
+        "default": "'mandal'",
+        "description": "Entity classification (enforced = mandal)"
+      },
+      {
+        "name": "mandal_version_id",
+        "type": "UUID",
+        "nullable": false,
+        "references": "public.mandal_versions(id)",
+        "on_delete": "RESTRICT",
+        "description": "Foreign key to temporal mandal version (W014)"
+      },
+      {
+        "name": "dataset_version_id",
+        "type": "TEXT",
+        "nullable": false,
+        "references": "public.dataset_versions(id)",
+        "on_delete": "RESTRICT",
+        "description": "Dedicated spatial dataset version (tgrac_mandals_2016_v1)"
+      },
+      {
+        "name": "provenance_id",
+        "type": "UUID",
+        "nullable": false,
+        "references": "public.provenance_records(id)",
+        "on_delete": "RESTRICT",
+        "description": "Dedicated spatial provenance lineage node"
+      },
+      {
+        "name": "geometry",
+        "type": "GEOMETRY(MultiPolygon, 4326)",
+        "nullable": false,
+        "description": "PostGIS EPSG:4326 2D MultiPolygon coordinate boundaries"
+      },
+      {
+        "name": "geometry_type",
+        "type": "TEXT",
+        "nullable": false,
+        "default": "'MultiPolygon'",
+        "description": "Enforced MultiPolygon type"
+      },
+      {
+        "name": "status",
+        "type": "public.data_status_enum",
+        "nullable": false,
+        "default": "'OFFICIAL'",
+        "description": "W012 governance data status"
+      },
+      {
+        "name": "authority_classification",
+        "type": "TEXT",
+        "nullable": false,
+        "default": "'statutory_cartographic'",
+        "description": "Authority classification"
+      },
+      {
+        "name": "temporal_classification",
+        "type": "TEXT",
+        "nullable": false,
+        "default": "'historical_statutory_baseline'",
+        "description": "Temporal classification"
+      },
+      {
+        "name": "source_feature_id",
+        "type": "TEXT",
+        "nullable": false,
+        "description": "Source cadastral feature FID (0-588)"
+      },
+      {
+        "name": "raw_artifact_sha256",
+        "type": "TEXT",
+        "nullable": false,
+        "description": "Row-level cryptographic binding to raw source artifact"
+      },
+      {
+        "name": "snapshot_date",
+        "type": "DATE",
+        "nullable": false,
+        "default": "'2016-10-11'",
+        "description": "Statutory snapshot epoch"
+      },
+      {
+        "name": "valid_from",
+        "type": "DATE",
+        "nullable": false,
+        "default": "'2016-10-11'",
+        "description": "Effective spatial boundary start"
+      },
+      {
+        "name": "valid_to",
+        "type": "DATE",
+        "nullable": true,
+        "description": "Statutory boundary termination date"
+      },
+      {
+        "name": "is_current",
+        "type": "BOOLEAN",
+        "nullable": false,
+        "default": false,
+        "description": "Currentness flag (strictly false for historical baseline)"
+      },
+      {
+        "name": "metadata",
+        "type": "JSONB",
+        "nullable": false,
+        "default": "'{}'::jsonb",
+        "description": "Structured cartographic metadata"
+      },
+      {
+        "name": "created_at",
+        "type": "TIMESTAMPTZ",
+        "nullable": false,
+        "default": "now()",
+        "description": "Audit creation timestamp"
+      },
+      {
+        "name": "updated_at",
+        "type": "TIMESTAMPTZ",
+        "nullable": false,
+        "default": "now()",
+        "description": "Audit update timestamp"
+      }
+    ],
+    "constraints": [
+      {
+        "name": "pk_entity_geometries",
+        "type": "PRIMARY KEY",
+        "columns": [
+          "id"
+        ]
+      },
+      {
+        "name": "fk_entity_geometries_mandal_version",
+        "type": "FOREIGN KEY",
+        "columns": [
+          "mandal_version_id"
+        ],
+        "references": "public.mandal_versions(id)",
+        "on_delete": "RESTRICT"
+      },
+      {
+        "name": "fk_entity_geometries_dataset_version",
+        "type": "FOREIGN KEY",
+        "columns": [
+          "dataset_version_id"
+        ],
+        "references": "public.dataset_versions(id)",
+        "on_delete": "RESTRICT"
+      },
+      {
+        "name": "fk_entity_geometries_provenance",
+        "type": "FOREIGN KEY",
+        "columns": [
+          "provenance_id"
+        ],
+        "references": "public.provenance_records(id)",
+        "on_delete": "RESTRICT"
+      },
+      {
+        "name": "chk_entity_geometries_not_empty",
+        "type": "CHECK",
+        "expression": "NOT ST_IsEmpty(geometry)"
+      },
+      {
+        "name": "chk_entity_geometries_is_valid",
+        "type": "CHECK",
+        "expression": "ST_IsValid(geometry)"
+      },
+      {
+        "name": "chk_entity_geometries_srid",
+        "type": "CHECK",
+        "expression": "ST_SRID(geometry) = 4326"
+      },
+      {
+        "name": "chk_entity_geometries_geometry_type",
+        "type": "CHECK",
+        "expression": "GeometryType(geometry) = 'MULTIPOLYGON'"
+      },
+      {
+        "name": "chk_entity_geometries_type_match",
+        "type": "CHECK",
+        "expression": "geometry_type = 'MultiPolygon'"
+      },
+      {
+        "name": "chk_entity_geometries_entity_type",
+        "type": "CHECK",
+        "expression": "entity_type = 'mandal'"
+      },
+      {
+        "name": "chk_entity_geometries_temporal_bounds",
+        "type": "CHECK",
+        "expression": "valid_to IS NULL OR valid_to >= valid_from"
+      },
+      {
+        "name": "chk_entity_geometries_historical_currentness",
+        "type": "CHECK",
+        "expression": "temporal_classification != 'historical_statutory_baseline' OR is_current = false"
+      }
+    ],
+    "indexes": [
+      {
+        "name": "uq_entity_geometries_mandal_version",
+        "type": "UNIQUE BTREE",
+        "columns": [
+          "mandal_version_id"
+        ],
+        "purpose": "Guarantees at most ONE geometry row per temporal mandal_version_id"
+      },
+      {
+        "name": "idx_entity_geometries_spatial",
+        "type": "GIST",
+        "columns": [
+          "geometry"
+        ],
+        "purpose": "Spatial 2D bounding box accelerator for PostGIS queries"
+      },
+      {
+        "name": "idx_entity_geometries_dataset_version",
+        "type": "BTREE",
+        "columns": [
+          "dataset_version_id"
+        ],
+        "purpose": "FK join and dataset-level filtering accelerator"
+      },
+      {
+        "name": "idx_entity_geometries_provenance",
+        "type": "BTREE",
+        "columns": [
+          "provenance_id"
+        ],
+        "purpose": "FK join and lineage verification accelerator"
+      }
+    ],
+    "triggers": [
+      {
+        "name": "trg_validate_entity_geometry_lineage",
+        "event": "BEFORE INSERT OR UPDATE",
+        "timing": "FOR EACH ROW",
+        "function": "public.fn_validate_entity_geometry_lineage()",
+        "purpose": "Enforces dataset_version_id matches provenance_records.dataset_version_id and verifies dedicated spatial evidence e0160000-0000-0000-0000-000000001013"
+      },
+      {
+        "name": "trg_prevent_entity_geometry_mutation",
+        "event": "BEFORE UPDATE",
+        "timing": "FOR EACH ROW",
+        "function": "public.fn_prevent_entity_geometry_mutation()",
+        "purpose": "Rejects modifications to coordinates (NEW.geometry IS DISTINCT FROM OLD.geometry) and authoritative lineage columns with SQLSTATE 23514"
+      }
+    ],
+    "security": {
+      "rlsEnabled": true,
+      "rlsForced": true,
+      "serviceRoleBypassDocumented": true,
+      "serviceRoleBypassDetails": "In PostgreSQL / Supabase, the service_role superuser role has rolbypassrls = true. Therefore, Row Level Security policies do not restrict service_role writes. Database integrity against service_role is strictly guaranteed through Schema Constraints (PK, FK RESTRICT, NOT NULL, CHECK) and BEFORE triggers (trg_validate_entity_geometry_lineage, trg_prevent_entity_geometry_mutation), which execute uniformly across all roles.",
+      "policies": [
+        {
+          "name": "Public read entity_geometries",
+          "for": "SELECT",
+          "to": [
+            "anon",
+            "authenticated"
+          ],
+          "using": "true"
+        },
+        {
+          "name": "Service role full access entity_geometries",
+          "for": "ALL",
+          "to": [
+            "service_role"
+          ],
+          "using": "true",
+          "with_check": "true"
+        }
+      ],
+      "privileges": {
+        "public": "REVOKED_ALL",
+        "anon": [
+          "SELECT"
+        ],
+        "authenticated": [
+          "SELECT"
+        ],
+        "service_role": [
+          "SELECT",
+          "INSERT",
+          "UPDATE",
+          "DELETE",
+          "TRUNCATE",
+          "REFERENCES",
+          "TRIGGER"
+        ]
+      }
+    }
+  },
+  "behavioralVerificationSuite": {
+    "scriptFile": "supabase/verify_staging_migration_package_048.sql",
+    "scriptSha256": "bfbba0c8353db08edbd2c3062b0f7aae661a32629e9c6d87380826d7e53090c3",
+    "checks": [
+      {
+        "id": "Check A",
+        "name": "Table existence verification",
+        "target": "public.entity_geometries exists in information_schema"
+      },
+      {
+        "id": "Check B",
+        "name": "Column inventory verification",
+        "target": "All 19 required columns exist"
+      },
+      {
+        "id": "Check C",
+        "name": "Foreign key constraints verification",
+        "target": "FKs on mandal_version_id, dataset_version_id, provenance_id exist"
+      },
+      {
+        "id": "Check D",
+        "name": "Check constraints verification",
+        "target": "All 7 check constraints exist and are verified"
+      },
+      {
+        "id": "Check E",
+        "name": "Index verification",
+        "target": "uq_entity_geometries_mandal_version, idx_entity_geometries_spatial, idx_entity_geometries_dataset_version, idx_entity_geometries_provenance exist"
+      },
+      {
+        "id": "Check F",
+        "name": "Trigger verification",
+        "target": "trg_validate_entity_geometry_lineage and trg_prevent_entity_geometry_mutation exist"
+      },
+      {
+        "id": "Check G",
+        "name": "RLS verification",
+        "target": "relrowsecurity = true on public.entity_geometries"
+      },
+      {
+        "id": "Check H",
+        "name": "Behavioral Test: Rejects invalid mandal_version_id",
+        "expectedSqlstate": "23503"
+      },
+      {
+        "id": "Check I",
+        "name": "Behavioral Test: Rejects invalid dataset_version_id",
+        "expectedSqlstate": "23503"
+      },
+      {
+        "id": "Check J",
+        "name": "Behavioral Test: Rejects invalid provenance_id",
+        "expectedSqlstate": "23503"
+      },
+      {
+        "id": "Check K",
+        "name": "Behavioral Test: Rejects NULL geometry",
+        "expectedSqlstate": "23502"
+      },
+      {
+        "id": "Check L",
+        "name": "Behavioral Test: Rejects wrong SRID",
+        "expectedSqlstate": "23514"
+      },
+      {
+        "id": "Check M",
+        "name": "Behavioral Test: Rejects invalid/empty geometry",
+        "expectedSqlstate": "23514"
+      },
+      {
+        "id": "Check N",
+        "name": "Behavioral Test: Rejects non-mandal entity_type",
+        "expectedSqlstate": "23514"
+      },
+      {
+        "id": "Check O",
+        "name": "Behavioral Test: Rejects inverted temporal bounds",
+        "expectedSqlstate": "23514"
+      },
+      {
+        "id": "Check P",
+        "name": "Behavioral Test: Rejects is_current=true on historical baseline",
+        "expectedSqlstate": "23514"
+      },
+      {
+        "id": "Check Q",
+        "name": "Behavioral Test: Rejects dataset/provenance lineage mismatch",
+        "expectedSqlstate": "23514"
+      },
+      {
+        "id": "Check R",
+        "name": "Behavioral Test: Rejects coordinate alteration (immutability trigger)",
+        "expectedSqlstate": "23514"
+      },
+      {
+        "id": "Check S",
+        "name": "Behavioral Test: Rejects version/dataset/provenance reassignment",
+        "expectedSqlstate": "23514"
+      },
+      {
+        "id": "Check T",
+        "name": "Behavioral Test: Rejects duplicate mandal_version_id",
+        "expectedSqlstate": "23505"
+      }
+    ]
+  },
+  "realDataProvenancePreflight": {
+    "rawArtifact": {
+      "path": "data/geo/candidate_authoritative/tgrac_mandals_raw.json",
+      "sha256": "aca53eefa290570ce4010fa8c26a75dce995de3e3180ac9f0873f78fb41512db",
+      "sizeBytes": 26843665,
+      "featureCount": 589
+    },
+    "reconciliationMatrix": {
+      "path": "reports/w016_c3_r5_geometry_reconciliation.csv",
+      "rowCount": 589,
+      "uniqueFids": 589,
+      "uniqueTargetUuids": 589,
+      "unresolvedCount": 0,
+      "ambiguousCount": 0,
+      "cohorts": {
+        "A": 548,
+        "B": 8,
+        "C": 24,
+        "D": 9
+      }
+    },
+    "governanceLinkage": {
+      "spatialEvidenceId": "e0160000-0000-0000-0000-000000001013",
+      "spatialDatasetId": "geo_mandal_boundaries",
+      "spatialDatasetVersionId": "tgrac_mandals_2016_v1",
+      "snapshotDate": "2016-10-11",
+      "legalEvidenceId": "e0160000-0000-0000-0000-000000002016"
+    }
+  },
+  "idempotencyContract": {
+    "case1_sameSourceReplayedUnchanged": {
+      "action": "IDEMPOTENT_NOOP",
+      "handler": "ON CONFLICT (mandal_version_id) DO NOTHING"
+    },
+    "case2_sameMandalVersionIdenticalGeom": {
+      "action": "IDEMPOTENT_NOOP",
+      "handler": "ON CONFLICT (mandal_version_id) DO NOTHING"
+    },
+    "case3_sameMandalVersionDifferentGeom": {
+      "action": "FAIL_CLOSED",
+      "handler": "Unique index rejects duplicate; Trigger rejects coordinate update"
+    },
+    "case4_sameFidDifferentMandalVersion": {
+      "action": "FAIL_CLOSED",
+      "handler": "Deterministic mapping violation caught by preflight matrix"
+    },
+    "case5_changedProvenanceOrDataset": {
+      "action": "FAIL_CLOSED",
+      "handler": "Lineage trigger rejects dataset/provenance mismatch; FK restricts foreign nodes"
+    },
+    "case6_attemptedUpdate": {
+      "action": "FAIL_CLOSED",
+      "handler": "Immutability trigger rejects any mutation to geometry or lineage columns"
+    }
+  },
+  "liveStagingState": {
+    "mandals": 621,
+    "mandalVersionsTotal": 1210,
+    "mandalVersionsCurrent": 621,
+    "mandalVersionsHistorical": 589,
+    "spatialEvidenceExists": true,
+    "spatialDatasetVersionExists": true,
+    "spatialProvenanceNodes": 589,
+    "spatialRecordLinkages": null,
+    "entityGeometriesRowCount": 0,
+    "entityGeometriesLiveDetermination": "048 NOT EXECUTED — SCHEMA ABSENT"
+  }
+}

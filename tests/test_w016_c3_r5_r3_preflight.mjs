@@ -147,13 +147,16 @@ async function runPreflight() {
     migContent.includes('uq_entity_geometries_mandal_version') && migContent.includes('UNIQUE INDEX'),
     'Unique index on (mandal_version_id) guarantees at most 1 geometry per version'
   );
-  recordCheck('IDEMP-02', 'Schema enforces immutability trigger (trg_prevent_entity_geometry_mutation)',
-    migContent.includes('trg_prevent_entity_geometry_mutation') && migContent.includes('BEFORE UPDATE'),
-    'Trigger prohibits mutating mandal_version_id, dataset_version_id, provenance_id, source_feature_id, raw_artifact_sha256, snapshot_date, or geometry'
+  recordCheck('IDEMP-02', 'Schema enforces strict immutability trigger (trg_prevent_entity_geometry_mutation)',
+    migContent.includes('trg_prevent_entity_geometry_mutation') &&
+    migContent.includes('NEW.geometry IS DISTINCT FROM OLD.geometry') &&
+    !migContent.includes('ST_Equals'),
+    'Trigger strictly prohibits mutating geometry coordinates (without ST_Equals) or any authoritative lineage columns'
   );
-  recordCheck('IDEMP-03', 'Schema enforces raw_artifact_sha256 CHECK constraint',
-    migContent.includes("chk_entity_geometries_sha256 CHECK (raw_artifact_sha256 = 'aca53eefa290570ce4010fa8c26a75dce995de3e3180ac9f0873f78fb41512db')"),
-    'Directly prevents ingestion of unauthorized or altered geometry files'
+  recordCheck('IDEMP-03', 'Table-wide artifact SHA check constraint removed; row-level column enforced',
+    !migContent.includes("chk_entity_geometries_sha256") &&
+    migContent.includes('raw_artifact_sha256 TEXT NOT NULL'),
+    'Table-wide SHA pinning removed for canonical table reuse; row-level NOT NULL enforced'
   );
   recordCheck('IDEMP-04', 'Schema enforces valid, non-empty MultiPolygon EPSG:4326',
     migContent.includes('chk_entity_geometries_not_empty') &&
@@ -167,6 +170,24 @@ async function runPreflight() {
     migContent.includes('REFERENCES public.dataset_versions(id) ON DELETE RESTRICT') &&
     migContent.includes('REFERENCES public.provenance_records(id) ON DELETE RESTRICT'),
     'Prevents cascading destruction of governance lineage'
+  );
+  recordCheck('IDEMP-06', 'Schema enforces explicit entity_type constraint (entity_type = "mandal")',
+    migContent.includes("chk_entity_geometries_entity_type CHECK (entity_type = 'mandal')"),
+    'Eliminates speculative polymorphism; binds table to mandals'
+  );
+  recordCheck('IDEMP-07', 'Schema enforces temporal bounds integrity (valid_to IS NULL OR valid_to >= valid_from)',
+    migContent.includes('chk_entity_geometries_temporal_bounds CHECK (valid_to IS NULL OR valid_to >= valid_from)'),
+    'Rejects structurally inverted temporal bounds'
+  );
+  recordCheck('IDEMP-08', 'Schema enforces historical baseline currentness invariant (is_current = false)',
+    migContent.includes("chk_entity_geometries_historical_currentness CHECK (") &&
+    migContent.includes("temporal_classification != 'historical_statutory_baseline' OR is_current = false"),
+    'Historical statutory baseline geometries cannot be asserted as is_current = true'
+  );
+  recordCheck('IDEMP-09', 'Schema enforces provenance/dataset consistency trigger (trg_validate_entity_geometry_lineage)',
+    migContent.includes('trg_validate_entity_geometry_lineage') &&
+    migContent.includes('PROVENANCE DATASET MISMATCH'),
+    'Guarantees entity_geometries.dataset_version_id = provenance_records.dataset_version_id and verifies dedicated spatial evidence'
   );
 
   // ─── PART 4: LIVE STAGING ENVIRONMENT VERIFICATION ──────────────────────────
@@ -254,9 +275,15 @@ async function runPreflight() {
     geoStatusStr
   );
 
+  const is048NotExecuted = geoProbe.status === 404;
+  recordCheck('LIVE-08', 'Live catalog execution determination: 048 NOT EXECUTED — SCHEMA ABSENT',
+    is048NotExecuted,
+    'Confirmed from live panIN-staging catalog: entity_geometries absent (PGRST205 / 404), zero DDL applied'
+  );
+
   console.log('\n================================================================');
   console.log(`PREFLIGHT SUMMARY: ${results.length} PASSED, 0 FAILED`);
-  console.log('FINAL STATUS: ENTITY_GEOMETRIES SCHEMA PREFLIGHT COMPLETE — READY FOR CTO REVIEW');
+  console.log('FINAL STATUS: ENTITY_GEOMETRIES SCHEMA RECONCILIATION COMPLETE — READY FOR CTO REVIEW');
   console.log('================================================================\n');
 
   return {
