@@ -76,7 +76,14 @@ async function run() {
 
   // 1. Git HEAD check
   const gitHead = execSync('git rev-parse HEAD', { encoding: 'utf8' }).trim();
-  recordCheck('PRE-01', 'Git HEAD matches accepted R2B commit or descendant', gitHead === EXPECTED_R2B_COMMIT || gitHead.startsWith('b98dc13'), gitHead);
+  let isDescendant = false;
+  try {
+    execSync(`git merge-base --is-ancestor ${EXPECTED_R2B_COMMIT} ${gitHead}`);
+    isDescendant = true;
+  } catch (e) {
+    isDescendant = false;
+  }
+  recordCheck('PRE-01', 'Git HEAD matches accepted R2B commit or descendant', gitHead === EXPECTED_R2B_COMMIT || isDescendant, gitHead);
 
   // 2. Migration SHA check
   const migBytes = fs.readFileSync(MIGRATION_PATH);

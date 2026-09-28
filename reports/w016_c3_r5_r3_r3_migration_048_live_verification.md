@@ -1,8 +1,8 @@
 # W016-C3-R5-R3-R3: Migration 048 Staging Execution & Live Verification Report
 
 **Directive:** W016-C3-R5-R3-R3 — CTO AUTHORIZATION: MIGRATION 048 STAGING EXECUTION & LIVE SCHEMA VERIFICATION  
-**Execution Timestamp:** 2026-09-28T05:02:44.858Z  
-**Canonical Git HEAD:** `b98dc13e2a8d8af0518fd1ce6a016cf8861394ca`  
+**Execution Timestamp:** 2026-09-28T05:07:02.515Z  
+**Canonical Git HEAD:** `379cd2182b4eb4542d77e894980840fa42155ecd`  
 **Target Environment:** `panIN-staging` (`fkpigozcqnmcvofuksar`) ONLY  
 **Production Isolation:** `ehfafcnimmjusyvplbah` (**STRICTLY AIR-GAPPED & UNTOUCHED**)  
 **Verification Classification:** **LIVE STAGING VERIFIED**  
@@ -94,7 +94,7 @@ public.evidence_records.id (e0160000-0000-0000-0000-000000001013)
 
 | Check ID | Description | Status | Observed |
 | :--- | :--- | :---: | :--- |
-| **PRE-01** | Git HEAD matches accepted R2B commit or descendant | **PASS** | b98dc13e2a8d8af0518fd1ce6a016cf8861394ca |
+| **PRE-01** | Git HEAD matches accepted R2B commit or descendant | **PASS** | 379cd2182b4eb4542d77e894980840fa42155ecd |
 | **PRE-02** | Migration 048 SHA matches authorized R2B checksum | **PASS** | 34ef993153c675024d014d2fd210df3295235627f609e1feec8e7f5541a955ed |
 | **PRE-03** | Staging package is byte-for-byte identical to Migration 048 | **PASS** | Package SHA: 34ef993153c675024d014d2fd210df3295235627f609e1feec8e7f5541a955ed |
 | **PRE-04** | Production remains unreachable and air-gapped | **PASS** | ehfafcnimmjusyvplbah air-gapped |
@@ -115,7 +115,7 @@ public.evidence_records.id (e0160000-0000-0000-0000-000000001013)
 | **TEST-G** | Missing provenance evidence fails closed with SQLSTATE 23514 | **PASS** | 23514: PROVENANCE EVIDENCE MISSING: referenced provenance record a0000000-0000-0000-0000-000000000001 has NULL verification_evidence_id |
 | **TEST-H** | Non-existent provenance / missing evidence fails with SQLSTATE 23503 | **PASS** | 23503: PROVENANCE NOT FOUND: referenced provenance_record 00000000-0000-0000-0000-ffffffffffff does not exist |
 | **TEST-K** | NULL valid_to -> valid date succeeds where permitted | **PASS** | Transitioned to 2022-09-26 |
-| **TEST-L** | Exact replay identity verified (no duplicate created) | **PASS** | Row persisted with exact ID 1079d589-3b88-4a07-b6c2-54cfccc82e6c |
+| **TEST-L** | Exact replay identity verified (no duplicate created) | **PASS** | Row persisted with exact ID 2c210d39-7aac-4959-8932-ddba55527612 |
 | **TEST-M** | Conflicting replay rejected with unique violation (SQLSTATE 23505) | **PASS** | 23505: duplicate key value violates unique constraint "uq_entity_geometries_mandal_version" |
 | **TEST-N** | Source-FID collision contract pre-check asserts 1:1 mapping fail-closed | **PASS** | Ingestion contract pre-check detects conflicting FID before insert |
 | **TEST-O** | W016 OFFICIAL requirement enforced by W016 contract, not generic table CHECK | **PASS** | Generic schema permits DERIVED (tested in TEST-B); W016 ingestion contract pre-check gates statutory baseline |
