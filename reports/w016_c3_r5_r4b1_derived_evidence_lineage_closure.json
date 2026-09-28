@@ -1,0 +1,269 @@
+{
+  "metadata": {
+    "job": "W016-C3-R5-R4B-1",
+    "directive": "W016-C3-R5-R4B-1 — CTO AUTHORIZATION: DERIVED ARTIFACT EVIDENCE BINDING & LINEAGE CLOSURE",
+    "timestamp": "2026-09-28T08:50:44.286Z",
+    "gitHead": "aa60b3462438dc762ba284fc2fc180552cbb22d4",
+    "targetEnvironment": "panIN-staging (fkpigozcqnmcvofuksar)",
+    "productionIsolation": "ehfafcnimmjusyvplbah (AIR-GAPPED — 0 CONNECTIONS, 0 DDL, 0 DML)",
+    "entityGeometriesRowCount": 0,
+    "derivedDatasetVersionId": "tgrac_mandals_2016_v1_topologically_repaired",
+    "sourceDatasetVersionId": "tgrac_mandals_2016_v1",
+    "dedicatedDerivedEvidenceId": "e0160000-0000-0000-0000-000000001014",
+    "officialSourceEvidenceId": "e0160000-0000-0000-0000-000000001013",
+    "derivedArtifactSha256": "dd16ff36d2d9c581cbc5c29125fb33787310c2d4c203d98b88aa74308d4ad077",
+    "sourceArtifactSha256": "aca53eefa290570ce4010fa8c26a75dce995de3e3180ac9f0873f78fb41512db",
+    "featureCount": 589,
+    "unchangedCount": 586,
+    "repairedCount": 3,
+    "affectedFids": [
+      286,
+      292,
+      523
+    ],
+    "finalStatus": "W016-C3-R5-R4B-1 DERIVED EVIDENCE LINEAGE CLOSURE COMPLETE — READY FOR CTO REVIEW"
+  },
+  "checks": [
+    {
+      "id": "RAW-IMMUTABLE",
+      "title": "Raw TGRAC source artifact byte-for-byte unchanged",
+      "status": "PASS",
+      "observed": "SHA: aca53eefa290570ce4010fa8c26a75dce995de3e3180ac9f0873f78fb41512db",
+      "details": ""
+    },
+    {
+      "id": "DERIVED-IMMUTABLE",
+      "title": "Canonical DERIVED spatial artifact byte-for-byte unchanged",
+      "status": "PASS",
+      "observed": "SHA: dd16ff36d2d9c581cbc5c29125fb33787310c2d4c203d98b88aa74308d4ad077 (Size: 62830689 bytes)",
+      "details": ""
+    },
+    {
+      "id": "MANIFEST-VERIFY",
+      "title": "Machine-readable transformation manifest valid and intact",
+      "status": "PASS",
+      "observed": "Features: 589, Repaired: 3",
+      "details": ""
+    },
+    {
+      "id": "PROV-COUNT",
+      "title": "Fetched exactly 589 canonical DERIVED provenance records from staging",
+      "status": "PASS",
+      "observed": "Count: 589",
+      "details": ""
+    },
+    {
+      "id": "AUDIT-STATUS",
+      "title": "All 589 records have status = DERIVED",
+      "status": "PASS",
+      "observed": "589/589",
+      "details": ""
+    },
+    {
+      "id": "AUDIT-DSV",
+      "title": "All 589 records reference derived dataset_version_id",
+      "status": "PASS",
+      "observed": "589/589",
+      "details": ""
+    },
+    {
+      "id": "AUDIT-PARENT-NOTNULL",
+      "title": "All 589 records have parent_provenance_id NOT NULL",
+      "status": "PASS",
+      "observed": "589/589",
+      "details": ""
+    },
+    {
+      "id": "AUDIT-PARENT-RESOLVES",
+      "title": "All 589 records parent_provenance_id resolves to expected OFFICIAL source record",
+      "status": "PASS",
+      "observed": "589/589",
+      "details": ""
+    },
+    {
+      "id": "AUDIT-TRANS-TYPE",
+      "title": "All 589 records have populated transformation_type",
+      "status": "PASS",
+      "observed": "589/589",
+      "details": ""
+    },
+    {
+      "id": "AUDIT-TRANS-VER",
+      "title": "All 589 records have transform_version = W016-C3-R5-R4B-TOPO-REPAIR-V1",
+      "status": "PASS",
+      "observed": "589/589",
+      "details": ""
+    },
+    {
+      "id": "AUDIT-EVID-NOTNULL",
+      "title": "All 589 records have verification_evidence_id NOT NULL",
+      "status": "PASS",
+      "observed": "589/589",
+      "details": ""
+    },
+    {
+      "id": "SRC-EVID-INTACT",
+      "title": "OFFICIAL source evidence record remains intact and unmodified",
+      "status": "PASS",
+      "observed": "ID: e0160000-0000-0000-0000-000000001013, Artifact: tgrac_mandals_raw.json",
+      "details": ""
+    },
+    {
+      "id": "DERIVED-EVID-RECORD",
+      "title": "Dedicated DERIVED verification evidence record exists and verified",
+      "status": "PASS",
+      "observed": "Existing DERIVED evidence: e0160000-0000-0000-0000-000000001014, SHA: dd16ff36d2d9c581cbc5c29125fb33787310c2d4c203d98b88aa74308d4ad077",
+      "details": ""
+    },
+    {
+      "id": "DSV-EVID-BIND",
+      "title": "DERIVED dataset_version record bound to dedicated DERIVED evidence",
+      "status": "PASS",
+      "observed": "Evidence ID: e0160000-0000-0000-0000-000000001014",
+      "details": ""
+    },
+    {
+      "id": "PROV-EVID-BIND",
+      "title": "All 589 DERIVED provenance records updated with dedicated evidence link",
+      "status": "PASS",
+      "observed": "Updated: 589/589",
+      "details": ""
+    },
+    {
+      "id": "LINEAGE-DAG-589",
+      "title": "Complete 8-tier Lineage DAG verified for all 589 features",
+      "status": "PASS",
+      "observed": "589/589 fully reconciled",
+      "details": ""
+    },
+    {
+      "id": "EG-COMPAT-1",
+      "title": "Dataset version parity contract satisfied for 100% of features",
+      "status": "PASS",
+      "observed": "dataset_version_id: tgrac_mandals_2016_v1_topologically_repaired",
+      "details": ""
+    },
+    {
+      "id": "EG-COMPAT-2",
+      "title": "verification_evidence_id NOT NULL contract satisfied for 100% of features",
+      "status": "PASS",
+      "observed": "Evidence ID: e0160000-0000-0000-0000-000000001014",
+      "details": ""
+    },
+    {
+      "id": "EG-COMPAT-3",
+      "title": "Referenced evidence record exists in PostgreSQL catalog",
+      "status": "PASS",
+      "observed": "Evidence ID: e0160000-0000-0000-0000-000000001014",
+      "details": ""
+    },
+    {
+      "id": "DB-EG-INVARIANT",
+      "title": "Staging public.entity_geometries row count remains strictly 0",
+      "status": "PASS",
+      "observed": "Live row count: 0 (hard invariant preserved)",
+      "details": ""
+    },
+    {
+      "id": "DB-MANDALS-INVARIANT",
+      "title": "Mandals remain untouched (621 statutory mandals intact)",
+      "status": "PASS",
+      "observed": "Statutory mandals: 621",
+      "details": ""
+    },
+    {
+      "id": "DB-MV-INVARIANT",
+      "title": "Historical mandal_versions remain untouched (589 baseline 2016, 1210 total intact)",
+      "status": "PASS",
+      "observed": "2016 baseline versions: 589, Total versions: 1210",
+      "details": ""
+    },
+    {
+      "id": "DB-OFFICIAL-DSV-INTACT",
+      "title": "OFFICIAL TGRAC dataset version record remains intact and unmodified",
+      "status": "PASS",
+      "observed": "ID: tgrac_mandals_2016_v1, Status: OFFICIAL, Records: 589",
+      "details": ""
+    },
+    {
+      "id": "DB-OFFICIAL-PROV-INTACT",
+      "title": "Historical OFFICIAL source provenance records remain untouched (589 intact)",
+      "status": "PASS",
+      "observed": "OFFICIAL records: 589",
+      "details": ""
+    },
+    {
+      "id": "DB-PROD-AIRGAP",
+      "title": "Production ehfafcnimmjusyvplbah receives zero connections, zero DDL, zero DML",
+      "status": "PASS",
+      "observed": "Air-gap 100% maintained",
+      "details": ""
+    },
+    {
+      "id": "DB-MIGRATIONS-INTACT",
+      "title": "Zero schema migrations executed or modified (Migration 049 NOT created)",
+      "status": "PASS",
+      "observed": "Schema immutability preserved",
+      "details": ""
+    }
+  ],
+  "repairedFeaturesLineage": [
+    {
+      "fid": 292,
+      "mandal_version_id": "TS-MDL-4636-V1",
+      "derived_provenance_id": "0492ee1b-c861-5a61-8bce-d0c0caa1299d",
+      "derived_dataset_version": "tgrac_mandals_2016_v1_topologically_repaired",
+      "derived_evidence_id": "e0160000-0000-0000-0000-000000001014",
+      "parent_provenance_id": "268a3492-82b9-5cb0-a07c-a015a9a9aec6",
+      "parent_status": "OFFICIAL",
+      "parent_dataset_version": "tgrac_mandals_2016_v1",
+      "parent_evidence_id": "e0160000-0000-0000-0000-000000001013",
+      "is_repaired": true,
+      "repair_semantics": "Candidate B (ST_MakeValid component exterior shell extraction; degenerate knot ring removed)"
+    },
+    {
+      "fid": 286,
+      "mandal_version_id": "TS-MDL-4721-V1",
+      "derived_provenance_id": "8ba5927f-4371-51ab-9d0f-97198c67ae60",
+      "derived_dataset_version": "tgrac_mandals_2016_v1_topologically_repaired",
+      "derived_evidence_id": "e0160000-0000-0000-0000-000000001014",
+      "parent_provenance_id": "b5fc5792-9db9-5488-8349-c5b63f5f5009",
+      "parent_status": "OFFICIAL",
+      "parent_dataset_version": "tgrac_mandals_2016_v1",
+      "parent_evidence_id": "e0160000-0000-0000-0000-000000001013",
+      "is_repaired": true,
+      "repair_semantics": "Candidate B (ST_MakeValid component exterior shell extraction; degenerate knot ring removed)"
+    },
+    {
+      "fid": 523,
+      "mandal_version_id": "TS-MDL-6309-V1",
+      "derived_provenance_id": "2e513ebb-c026-53d4-a939-527545b02674",
+      "derived_dataset_version": "tgrac_mandals_2016_v1_topologically_repaired",
+      "derived_evidence_id": "e0160000-0000-0000-0000-000000001014",
+      "parent_provenance_id": "6b408578-4f08-5706-977b-3e9d7dd0824f",
+      "parent_status": "OFFICIAL",
+      "parent_dataset_version": "tgrac_mandals_2016_v1",
+      "parent_evidence_id": "e0160000-0000-0000-0000-000000001013",
+      "is_repaired": true,
+      "repair_semantics": "Candidate B (ST_MakeValid component exterior shell extraction; degenerate knot ring removed)"
+    }
+  ],
+  "lineageArchitecture": {
+    "dag": [
+      "DERIVED provenance_records (589 records, status: DERIVED)",
+      "  ↓ dataset_version_id",
+      "DERIVED dataset_versions (id: tgrac_mandals_2016_v1_topologically_repaired, status: DERIVED)",
+      "  ↓ verification_evidence_id",
+      "DERIVED evidence_records (id: e0160000-0000-0000-0000-000000001014)",
+      "  ↓ artifact_sha256: dd16ff36d2d9c581cbc5c29125fb33787310c2d4c203d98b88aa74308d4ad077",
+      "parent_provenance_id",
+      "  ↓",
+      "OFFICIAL source provenance_records (589 records, status: OFFICIAL)",
+      "  ↓ dataset_version_id",
+      "OFFICIAL dataset_versions (id: tgrac_mandals_2016_v1, status: OFFICIAL)",
+      "  ↓ verification_evidence_id",
+      "OFFICIAL source evidence_records (id: e0160000-0000-0000-0000-000000001013)",
+      "  ↓ artifact_sha256: aca53eefa290570ce4010fa8c26a75dce995de3e3180ac9f0873f78fb41512db"
+    ]
+  }
+}
