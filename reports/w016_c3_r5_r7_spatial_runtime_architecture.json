@@ -1,15 +1,15 @@
 {
-  "job": "W016-C3-R5-R7",
-  "title": "Spatial Runtime Architecture Decision & India-Wide Delivery Design",
-  "status": "DESIGN_COMPLETE",
-  "terminalStatus": "W016-C3-R5-R7 DESIGN COMPLETE — READY FOR CTO ARCHITECTURE DECISION",
-  "createdAt": "2026-09-28T17:35:00.000Z",
+  "job": "W016-C3-R5-R7A",
+  "title": "Spatial Runtime Architecture Decision & India-Wide Delivery Design (Revised)",
+  "status": "DESIGN_REVISION_COMPLETE",
+  "terminalStatus": "W016-C3-R5-R7A DESIGN REVISION COMPLETE — READY FOR CTO DECISION",
+  "createdAt": "2026-09-28T17:48:00.000Z",
   "governance": {
     "framework": "Master Execution Framework Amendment v1.5-A",
     "target": "panIN-staging (fkpigozcqnmcvofuksar) ONLY",
     "productionAirGap": "ehfafcnimmjusyvplbah (STRICTLY AIR-GAPPED & UNTOUCHED)",
     "implementationAuthorized": false,
-    "scope": "DESIGN / RECONNAISSANCE ONLY"
+    "disclaimer": "NO IMPLEMENTATION AUTHORIZED BY THIS DOCUMENT. DESIGN / RECONNAISSANCE ONLY."
   },
   "baseline": {
     "acceptedBaselineJob": "W016-C3-R5-R5",
@@ -17,7 +17,8 @@
     "discoveryStopConditionJob": "W016-C3-R5-R6",
     "discoveryOutcome": "BLOCKED — NO EXISTING CANONICAL RUNTIME READ PATH (ACCEPTED)",
     "stagingGeometryCount": 589,
-    "stagingRowSetDigest": "f839fa02980318a8f35f932ebe72fa1d3ad6325dc86a624bf159d932fe5f613b"
+    "stagingRowSetDigest": "f839fa02980318a8f35f932ebe72fa1d3ad6325dc86a624bf159d932fe5f613b",
+    "fixtureNature": "The 589 Telangana mandal dataset in staging is strictly a validation fixture, not an architectural boundary."
   },
   "currentArchitectureAudit": {
     "staticGeometryPipeline": {
@@ -26,7 +27,7 @@
       "evidencePath": "scripts/build-geo-assets.mjs:1-202"
     },
     "assemblyGeometryEndpoints": {
-      "finding": "apps/api/src/routes/geo.ts exposes GET /geo/manifest.json and GET /geo/:file (strictly /^[a-z0-9-]+\\.json$/). In addition, apps/api/src/routes/constituencies.ts exposes GET /constituencies/locate performing in-memory point-in-polygon lookup strictly for Telangana using a hardcoded local file.",
+      "finding": "apps/api/src/routes/geo.ts exposes GET /geo/manifest.json and GET /geo/:file (strictly /^[a-z0-9-]+\\.json$/). In addition, apps/api/src/routes/constituencies.ts exposes GET /constituencies/locate performing in-memory point-in-polygon lookup strictly for a single state fixture using a hardcoded local file.",
       "classification": "SOURCE CODE FACT",
       "evidencePath": "apps/api/src/routes/geo.ts:1-118, apps/api/src/routes/constituencies.ts:598-636"
     },
@@ -36,7 +37,7 @@
       "evidencePath": "apps/mobile/lib/geoLoader.ts:1-99, apps/mobile/lib/remoteGeoLoader.ts:1-122, apps/mobile/lib/enrichedGeoCache.ts:1-155"
     },
     "geometryFileFormats": {
-      "finding": "Standard WGS84 (SRID 4326) GeoJSON FeatureCollections containing Polygon or MultiPolygon geometries. Features contain basic properties (AC_NO, AC_NAME, ST_NAME, etc.). Sanitized at load time via sanitizeGeoJSON() to eliminate rings with <4 positions to prevent native MapLibre crashes.",
+      "finding": "Standard WGS84 (SRID 4326) GeoJSON FeatureCollections containing Polygon or MultiPolygon geometries. Features contain basic properties. Sanitized at load time via sanitizeGeoJSON() to eliminate rings with <4 positions to prevent native MapLibre crashes.",
       "classification": "SOURCE CODE FACT",
       "evidencePath": "apps/mobile/lib/geoLoader.ts:22-59, data/geo/ATTRIBUTION.md:1-23"
     },
@@ -51,14 +52,14 @@
       "evidencePath": "apps/api/src/routes/geo.ts:77-82, apps/api/src/server.ts:129-136"
     },
     "cdnRailwayBehavior": {
-      "finding": "Production API is hosted directly on Railway (kshetra-api-production-9f06.up.railway.app). No dedicated edge CDN (e.g. Cloudflare / CloudFront) is currently evidenced in code or configuration fronting the /geo routes.",
+      "finding": "Production API is hosted on Railway (kshetra-api-production-9f06.up.railway.app). No dedicated edge CDN is currently evidenced in code or DNS configuration in the repository. Fastify acts as direct origin.",
       "classification": "CONFIGURATION FACT",
       "evidencePath": "apps/mobile/lib/constants.ts:17-30"
     },
     "apiAuthenticationModel": {
-      "finding": "Public routes (/geo/*, /states/*, /constituencies/*) permit unauthenticated public access. Administrative routes require Bearer tokens or debug bypass secrets. PostgREST public.entity_geometries has RLS enabled with GRANT SELECT TO anon, authenticated.",
+      "finding": "Public spatial routes permit unauthenticated public access. Administrative routes require Bearer tokens or debug bypass secrets. PostgREST public.entity_geometries has RLS enabled with GRANT SELECT TO anon, authenticated and REVOKE INSERT, UPDATE, DELETE.",
       "classification": "SOURCE CODE FACT",
-      "evidencePath": "apps/api/src/routes/debug.ts, apps/api/src/routes/metrics.ts, supabase/migrations/048_w016_c3_r5_r3_entity_geometries_schema.sql:252-272"
+      "evidencePath": "apps/api/src/server.ts, supabase/migrations/048_w016_c3_r5_r3_entity_geometries_schema.sql:252-272"
     },
     "publicReadPatterns": {
       "finding": "Mobile app reads static GeoJSON and state/constituency feeds anonymously without auth headers. All geographic boundaries currently rendered in UI are public-domain cartographic datasets.",
@@ -66,224 +67,111 @@
       "evidencePath": "apps/mobile/lib/remoteGeoLoader.ts:74-79"
     },
     "errorLoadingEmptySemantics": {
-      "finding": "Fastify returns standard structured errors (sendApiError with code NOT_FOUND). remoteGeoLoader throws on non-200 responses. enrichedGeoCache falls back to un-enriched raw GeoJSON if data enrichment throws. MapLibre renders a blank canvas if malformed geometry is passed.",
+      "finding": "Fastify returns structured errors via sendApiError. remoteGeoLoader throws on non-200. enrichedGeoCache falls back to un-enriched raw GeoJSON if data enrichment throws. MapLibre renders a blank canvas if malformed geometry is passed.",
       "classification": "SOURCE CODE FACT",
       "evidencePath": "apps/api/src/lib/replyHelper.ts, apps/mobile/lib/enrichedGeoCache.ts:44-48, apps/mobile/lib/geoLoader.ts:28-33"
     },
     "mobileMemoryPerformanceConstraints": {
-      "finding": "Mobile app parses entire per-state GeoJSON files (UP is 6.97 MB plain text, ~25MB JS heap AST) into JavaScript memory. No LRU eviction exists in memCache. Passing large GeoJSON across React Native bridge to MapLibre ShapeSource causes UI thread hitches on lower-end devices.",
+      "finding": "Mobile app parses entire per-state GeoJSON files into JavaScript memory. No LRU eviction exists in memCache. Passing large GeoJSON across React Native bridge to MapLibre ShapeSource causes UI thread pauses on lower-end devices.",
       "classification": "INFERENCE",
       "evidencePath": "apps/mobile/lib/enrichedGeoCache.ts:16, apps/mobile/lib/remoteGeoLoader.ts:19"
     },
     "databaseAccessPatterns": {
-      "finding": "Mobile client queries Supabase PostgREST directly for 22 Class-A read models. Fastify backend connects directly to PostgreSQL. public.entity_geometries is currently untouched by any application route or mobile service.",
+      "finding": "Mobile client queries Supabase PostgREST directly for 22 Class-A read models. Fastify backend connects directly to PostgreSQL. public.entity_geometries is currently untouched by application routes or mobile services.",
       "classification": "RUNTIME EVIDENCE",
       "evidencePath": "reports/w016_c3_r5_r6_spatial_runtime_integration.json"
     }
   },
-  "sourceOfTruthAudit": {
-    "currentStaticAssemblySource": "datta07/INDIAN-SHAPEFILES (Third-party open-source GitHub repository)",
-    "currentStaticAssemblyStatus": "DELIVERY ARTIFACT ONLY — NOT STATUTORY AUTHORITATIVE DATA",
-    "attributionEvidence": "data/geo/ATTRIBUTION.md:1-23",
-    "riskAssessment": "The existing static assembly GeoJSON files lack W012 provenance, lack ECI/Survey of India lineage, and are unverified cartographic approximations. They must not be treated as canonical spatial source of truth."
+  "staticAssemblyPipelineAudit": {
+    "currentDeliveryArtifact": "32 state assembly GeoJSON files in apps/api/public/geo/",
+    "sourceOfTruthStatus": "UNOFFICIAL / EXTERNAL (datta07/INDIAN-SHAPEFILES open-source repository)",
+    "governanceStatus": "UNVERIFIED DELIVERY ARTIFACT (Zero W012 provenance, zero statutory gazette backing)",
+    "replacementStatus": "COEXIST TEMPORARILY. No replacement authorized yet. In Stage 5, regenerate from canonical PostGIS once official ECI/SOI boundaries are ingested."
   },
-  "requirementsMatrix": [
-    {
-      "id": "REQ-01",
-      "title": "Small map viewport request (localized zoom)",
-      "targetDelivery": "Vector Tiles (MVT) or Bounding-Box API query",
-      "rationale": "Downloading an entire state GeoJSON to view 3 mandals in a city causes 95%+ wasted bandwidth. Tiling or BBOX filtering allows sub-50KB payloads."
+  "versionSelectionContract": {
+    "regimeA_Current": {
+      "description": "Default active statutory geography currently in legal effect",
+      "sqlPredicate": "is_current = true AND (valid_to IS NULL OR valid_to > CURRENT_DATE) AND temporal_classification != 'scenario'",
+      "failClosedRule": "Returns 404 if entity has no active statutory version; never substitutes historical or scenario version."
     },
-    {
-      "id": "REQ-02",
-      "title": "Large district/state map",
-      "targetDelivery": "Simplified Vector Tiles or Pre-simplified GeoJSON",
-      "rationale": "High-vertex geometries must be generalized (simplified) at low zoom levels (z4-z8) to avoid memory crashes while maintaining outline fidelity."
+    "regimeB_Historical": {
+      "description": "Statutory geography as it legally existed on a specific historical date",
+      "sqlPredicate": "valid_from <= :as_of_date::date AND (valid_to > :as_of_date::date OR valid_to IS NULL) AND temporal_classification = 'historical_statutory_baseline'",
+      "failClosedRule": "Returns 404 if entity was unformed or dissolved at as_of_date. Header x-geography-temporal-classification: historical."
     },
-    {
-      "id": "REQ-03",
-      "title": "Assembly constituency map (4,123 ACs nationwide)",
-      "targetDelivery": "Pre-generated Vector Tiles / Static Cache generated from PostGIS",
-      "rationale": "AC boundaries change only during decennial delimitation regimes. Pre-generating tiles/assets from canonical PostGIS yields sub-millisecond edge response."
+    "regimeC_ExplicitVersion": {
+      "description": "Direct fetch of a specific immutable version record by UUID or version code",
+      "sqlPredicate": "id = :version_uuid OR version_code = :version_code",
+      "failClosedRule": "Strict 404 if record does not exist."
     },
-    {
-      "id": "REQ-04",
-      "title": "Mandal map (6,500+ mandals nationwide)",
-      "targetDelivery": "Vector Tiles (MVT) backed by PostGIS ST_AsMVT",
-      "rationale": "6,500+ mandals across India would exceed 250MB as raw GeoJSON. Vector tiles sliced by zoom/tile grid (z8-z14) keep tile payloads under 100KB."
+    "regimeD_FutureRegime": {
+      "description": "Statutorily enacted future geography regime not yet in active effect",
+      "sqlPredicate": "delimitation_regime_id = :regime_id AND valid_from > CURRENT_DATE AND is_current = false",
+      "failClosedRule": "Header x-geography-regime: future_enacted. Prohibited from mixing with active current geography."
     },
-    {
-      "id": "REQ-05",
-      "title": "Historical map (e.g. 2016 statutory baseline vs 2014 or 2024)",
-      "targetDelivery": "API Mediation / Parameterized Tile Endpoint (?as_of=YYYY-MM-DD or ?version_id=...)",
-      "rationale": "Historical data cannot be served from unversioned static files. Must query PostGIS entity_geometries filtered by valid_from <= date AND (valid_to > date OR valid_to IS NULL)."
-    },
-    {
-      "id": "REQ-06",
-      "title": "Current map (active statutory boundaries)",
-      "targetDelivery": "Vector Tiles / Edge-cached Static Representations with is_current=true",
-      "rationale": "Default map queries must strictly filter is_current = true to prevent displaying obsolete or historical boundaries as active."
-    },
-    {
-      "id": "REQ-07",
-      "title": "Multiple geography layers simultaneously (e.g. Mandals + ACs + Districts)",
-      "targetDelivery": "Multi-layer Vector Tiles (MVT)",
-      "rationale": "A single MVT tile can contain multiple named layers ('districts', 'constituencies', 'mandals') in one compressed binary payload, rendered with distinct styling in MapLibre."
-    },
-    {
-      "id": "REQ-08",
-      "title": "Feature identification / click (point tap inspection)",
-      "targetDelivery": "MVT Feature Attributes + Lazy Fastify Entity Detail API",
-      "rationale": "Vector tiles carry lightweight identifiers and display labels in feature properties. Clicking triggers client-side highlight instantly, with optional lazy fetch of deep statistics."
-    },
-    {
-      "id": "REQ-09",
-      "title": "Bounding-box queries (viewport intersections)",
-      "targetDelivery": "PostGIS GiST Index Query (ST_Intersects / ST_TileEnvelope)",
-      "rationale": "Spatial queries require GiST-indexed database execution (idx_entity_geometries_spatial) or spatial tile envelope mapping."
-    },
-    {
-      "id": "REQ-10",
-      "title": "Search by geography identity (LGD code, ECI code, name, UUID)",
-      "targetDelivery": "Fastify REST API mediated query on anchor/version tables",
-      "rationale": "Attribute lookup is relational, not spatial. Must query mandal_versions, districts, constituencies, or states tables and return metadata with bounding box."
-    },
-    {
-      "id": "REQ-11",
-      "title": "Offline / degraded mobile behavior",
-      "targetDelivery": "Local Device Disk Cache (SQLite / FileSystem cache) + Bundled National Overview",
-      "rationale": "Previously viewed tiles/regions must be cached on device to support offline browsing; national overview ('IN') must ship bundled."
-    },
-    {
-      "id": "REQ-12",
-      "title": "Low-bandwidth mobile (rural 2G/3G/spotty 4G)",
-      "targetDelivery": "Gzip/Brotli Protocol Buffers (MVT) or Simplified Gzipped GeoJSON",
-      "rationale": "Binary MVT is 70-80% smaller than raw GeoJSON and requires zero JSON text parsing on the mobile device."
-    },
-    {
-      "id": "REQ-13",
-      "title": "Large geometry payloads (complex multi-vertex polygons)",
-      "targetDelivery": "Multi-resolution simplification (ST_SimplifyPreserveTopology) in PostGIS",
-      "rationale": "Simplification must occur at geometry generation time in PostGIS, not inside the mobile React Native JavaScript thread."
-    },
-    {
-      "id": "REQ-14",
-      "title": "Geometry simplification across zoom levels",
-      "targetDelivery": "Zoom-tiered geometry resolution (z0-z5: tolerance 0.05, z6-z9: 0.005, z10+: 0.0001 or unsimplified)",
-      "rationale": "Delivers appropriate visual detail without transmitting millions of unnecessary vertices."
-    },
-    {
-      "id": "REQ-15",
-      "title": "Caching (Edge CDN, Gateway, Device)",
-      "targetDelivery": "Content-addressed URLs with immutable HTTP Cache-Control headers",
-      "rationale": "Tiles and versioned assets with ?v=<hash> are cached for 1 year (immutable); dynamic/current feeds use short TTL with SWR."
-    },
-    {
-      "id": "REQ-16",
-      "title": "CDN delivery across India",
-      "targetDelivery": "Edge CDN (Cloudflare / CloudFront) caching /geo/* endpoints",
-      "rationale": "Edge nodes in Mumbai, Delhi, Chennai, Hyderabad, Bangalore ensure <30ms latency for 95% of Indian mobile users."
-    },
-    {
-      "id": "REQ-17",
-      "title": "Temporal version selection",
-      "targetDelivery": "PostGIS bitemporal query engine (valid_from, valid_to, snapshot_date)",
-      "rationale": "Runtime queries must explicitly pass temporal parameters and enforce non-overlapping interval lookups."
-    },
-    {
-      "id": "REQ-18",
-      "title": "Provenance/status visibility (OFFICIAL vs DERIVED)",
-      "targetDelivery": "Mandatory Governance Envelope embedded in feature attributes",
-      "rationale": "Every delivered feature must retain status, provenance_id, and authority_classification so UI can badge data correctly."
-    },
-    {
-      "id": "REQ-19",
-      "title": "Security / RLS (Zero unauthorized writes, scenario isolation)",
-      "targetDelivery": "PostgreSQL RLS + Fastify API Mediation + REVOKE on client roles",
-      "rationale": "anon and authenticated roles have REVOKE ALL except SELECT; scenario geometries are quarantined by dataset_version_id and security policies."
-    },
-    {
-      "id": "REQ-20",
-      "title": "Future nationwide scale (28 states, 8 UTs, 6,500+ mandals)",
-      "targetDelivery": "Decoupled PostGIS Canonical Store + Hierarchical Tile Distribution",
-      "rationale": "Architecture must scale horizontally to millions of features without architectural refactoring."
-    }
-  ],
-  "architectureOptionsEvaluation": {
-    "optionA": {
-      "name": "Static / Generated GeoJSON Asset Pipeline",
-      "description": "Pre-generate static GeoJSON files per state/district/constituency from PostGIS and serve them as static compressed files via CDN/Fastify.",
-      "pros": [
-        "Zero runtime database load during map rendering",
-        "Trivial edge CDN caching and offline disk storage",
-        "Lowest operational complexity; no dynamic GIS servers needed",
-        "Drop-in compatibility with existing mobile remoteGeoLoader pipeline"
-      ],
-      "cons": [
-        "Cannot support arbitrary bounding-box or point-in-polygon queries without downloading full file",
-        "Severe mobile memory consumption when loading large states or mandals (e.g. 589 mandals = ~16MB)",
-        "Combinatorial explosion of pre-generated static files for historical dates, scenarios, and hierarchy combinations",
-        "Does not scale to village / polling station level (>600,000 files)"
-      ],
-      "suitability": "SUITABLE FOR HIGH-LEVEL STATIC BOUNDARIES (States, Districts, Assembly Constituencies) BUT UNSUITABLE FOR NATIONWIDE MANDALS OR DYNAMIC SPATIAL QUERIES"
-    },
-    "optionB": {
-      "name": "Canonical Fastify / PostGIS Dynamic Geometry API",
-      "description": "Dynamic REST endpoints in Fastify (/api/v1/geo/...) executing parameterized SQL against PostGIS entity_geometries (ST_AsGeoJSON, ST_Simplify, ST_Intersects).",
-      "pros": [
-        "Full dynamic flexibility: arbitrary BBOX filters, point-in-polygon, temporal as_of queries, and on-the-fly simplification",
-        "Guaranteed single source of truth: queries read directly from governed PostgreSQL tables",
-        "Fine-grained governance filtering (status, temporal_classification, dataset_version_id)",
-        "Zero pre-generation build steps"
-      ],
-      "cons": [
-        "High database CPU and memory load under concurrent mobile map pan/zoom traffic",
-        "GeoJSON text serialization (ST_AsGeoJSON) is notoriously slow in PostgreSQL compared to binary",
-        "Difficult to cache dynamically at the edge without strict parameter normalization",
-        "Increased latency (100-300ms roundtrip) compared to CDN static delivery (<30ms)"
-      ],
-      "suitability": "ESSENTIAL FOR ATTRIBUTE, POINT-IN-POLYGON (LOCATE), AND TEMPORAL AUDIT QUERIES, BUT UNSUITABLE AS THE EXCLUSIVE BULK MAP RENDERING PIPELINE UNDER LOAD"
-    },
-    "optionC": {
-      "name": "Vector Tile / Tile-Based Spatial Delivery (MVT / PMTiles)",
-      "description": "Serve Mapbox Vector Tiles (MVT) generated via PostGIS ST_AsMVT / ST_TileEnvelope or static PMTiles pyramids, sliced by standard slippy map zoom/x/y coordinates.",
-      "pros": [
-        "Industry standard for mobile GIS (MapLibre native hardware-accelerated rendering)",
-        "Micro-payloads: individual tiles are typically 10KB - 80KB gzipped",
-        "Only visible viewport data is transferred; zero wasted bytes for off-screen geography",
-        "Multi-layer support: single tile can combine state, district, AC, and mandal boundaries",
-        "Extremely cacheable at Edge CDN (fixed /z/x/y URL grid with immutable version hashes)",
-        "Native attribute filtering and layer styling in MapLibre without JS bridge overhead"
-      ],
-      "cons": [
-        "Requires tile generation pipeline (either dynamic Fastify MVT endpoint or pre-rendered PMTiles)",
-        "Does not replace point-based coordinate lookup (reverse geocoding / locate still needs API)",
-        "Requires mobile UI transition from ShapeSource (GeoJSON) to VectorSource (MVT)"
-      ],
-      "suitability": "HIGHLY RECOMMENDED FOR VISUAL MAP RENDERING AND PAN-INDIA MULTI-LAYER SCALE"
-    },
-    "recommendedHybridArchitecture": {
-      "name": "Governed Multi-Tier Hybrid Architecture (PostGIS Master + Dual-Path Runtime)",
-      "summary": "Decouple the CANONICAL DATA STORE from the DELIVERY REPRESENTATION. PostGIS (public.entity_geometries) is the sole canonical source of truth. Runtime delivery uses a dual-path: (1) Vector Tiles (MVT / PMTiles) via Edge CDN for high-performance visual map rendering across all zoom levels; (2) Fastify Spatial Query API for point-in-polygon ('locate'), entity bounding-box lookup, and temporal time-travel inspection.",
-      "score": "OPTIMAL — Satisfies all 20 requirements, maintains strict governance, eliminates mobile memory bottlenecks, and scales smoothly to all of India."
+    "regimeE_Scenario": {
+      "description": "Hypothetical simulation or draft boundary proposal",
+      "sqlPredicate": "dataset_version_id = :scenario_dataset_id AND status = 'SCENARIO'",
+      "failClosedRule": "Quarantined into dedicated /api/v1/geo/scenarios/* routes; prohibited from default public routes."
     }
   },
-  "governancePreservationModel": {
-    "preventionOfStatusEscalation": {
-      "rule": "DERIVED must NEVER become OFFICIAL.",
-      "mechanism": "1. Database trigger trg_prevent_entity_geometry_mutation prohibits mutation of status column. 2. All delivery pipelines (MVT generator, GeoJSON builder, API serializers) must project status directly from entity_geometries.status. 3. Mobile UI must inspect feature.properties.status and display an explicit [DERIVED] indicator when status == 'DERIVED'."
+  "geometrySeparation": {
+    "canonicalGeometry": {
+      "store": "PostgreSQL / PostGIS public.entity_geometries",
+      "authority": "Authoritative single source of truth; immutable coordinates protected by trigger",
+      "governance": "Anchored to W012 provenance records and dataset versions"
     },
-    "preventionOfTemporalEscalation": {
-      "rule": "HISTORICAL must NEVER become CURRENT.",
-      "mechanism": "1. Database check constraint chk_entity_geometries_historical_currentness enforces is_current = false when temporal_classification = 'historical_statutory_baseline'. 2. Default runtime endpoints (/api/v1/geo/current/...) enforce WHERE is_current = true AND valid_to IS NULL. 3. Historical requests require explicit temporal parameters (?as_of=YYYY-MM-DD or ?version_id=...) and return response header 'x-geography-temporal-classification: historical'."
-    },
-    "preventionOfScenarioPollution": {
-      "rule": "SCENARIO boundaries must NEVER be presented as statutory legal geography.",
-      "mechanism": "1. Scenario entities are quarantined under separate dataset_version_id prefixes (e.g. scenario_delimitation_*) with temporal_classification = 'scenario' and status = 'SYNTHETIC'. 2. Default public routes omit scenario datasets. 3. Scenario viewing requires explicit route /api/v1/geo/scenarios/:scenarioId and emits watermarked visual overlays."
-    },
-    "mandatoryGovernanceEnvelope": [
+    "deliveryGeometry": {
+      "store": "Derived Vector Tiles (MVT / PMTiles) or simplified GeoJSON",
+      "derivationMetadata": [
+        "source_entity_id",
+        "source_version_id",
+        "source_geometry_hash",
+        "transformation_algorithm",
+        "transformation_parameters",
+        "transformation_version",
+        "output_representation",
+        "reproducibility_hash",
+        "rebuild_rules"
+      ],
+      "authority": "Downstream delivery representation; never an independent source of truth"
+    }
+  },
+  "governanceEnvelope": {
+    "canonicalDatabaseFields": [
+      "id",
+      "entity_type",
+      "mandal_version_id",
+      "dataset_version_id",
+      "provenance_id",
+      "geometry",
+      "geometry_type",
+      "status",
+      "authority_classification",
+      "temporal_classification",
+      "source_feature_id",
+      "raw_artifact_sha256",
+      "snapshot_date",
+      "valid_from",
+      "valid_to",
+      "is_current",
+      "metadata",
+      "created_at",
+      "updated_at"
+    ],
+    "tier1_TileFeatureProperties": [
       "entity_id",
       "version_id",
+      "name",
+      "status",
+      "is_current",
+      "regime_type"
+    ],
+    "tier2_DetailApiFields": [
+      "entity_id",
+      "entity_type",
+      "version_id",
+      "version_code",
       "dataset_version_id",
       "provenance_id",
       "status",
@@ -291,96 +179,75 @@
       "temporal_classification",
       "valid_from",
       "valid_to",
-      "is_current"
+      "is_current",
+      "source_feature_id",
+      "raw_artifact_sha256",
+      "snapshot_date",
+      "verification_evidence_id",
+      "verification_evidence_sha256",
+      "gazette_citation",
+      "lineage_summary"
     ]
   },
-  "panIndiaScaleModel": {
-    "administrativeHierarchy": {
-      "nation": "India (1)",
-      "statesAndUTs": "28 States + 8 Union Territories (36 total)",
-      "districts": "~788 Administrative Districts",
-      "subDistricts": "~6,500+ Sub-Districts (Mandals in TS/AP, Tehsils in UP/MP/RJ/MH, Taluks in KA/TN/KL/GJ, Blocks in WB/BR, Circles in NE)",
-      "localBodies": "~255,000 Gram Panchayats / Urban Municipal Wards",
-      "villages": "~650,000 Census Villages"
-    },
-    "electoralHierarchy": {
-      "parliamentaryConstituencies": "543 Lok Sabha Seats",
-      "assemblyConstituencies": "4,123 Vidhan Sabha Seats",
-      "pollingStations": "~1,200,000 Polling Stations / Booths"
-    },
-    "payloadSizeComparison": {
-      "rawGeoJsonNationwideMandals": "~250 MB - 350 MB (Unviable on mobile)",
-      "gzippedGeoJsonNationwideMandals": "~45 MB - 65 MB (Excessive mobile memory footprint)",
-      "vectorTilesNationwide": "~80 KB - 150 KB per viewport tile (Only visible features loaded, negligible memory impact)"
-    }
+  "edgeLayerRequirements": {
+    "protocolSupport": "HTTP/2 and HTTP/3 with TLS 1.3",
+    "rangeRequests": "Strict compliance with RFC 7233 (HTTP 206 Partial Content) for PMTiles byte-range serving",
+    "compression": "Brotli and Gzip compression on dynamic and static responses",
+    "cacheControl": "Strict obedience to origin Cache-Control headers (immutable, s-maxage, stale-while-revalidate)",
+    "geographicPoPs": "Point-of-Presence coverage across major Indian internet exchange hubs (Mumbai, Delhi, Chennai, Bangalore, Hyderabad)",
+    "performanceTarget": "Future measurable acceptance target: P95 < 50ms at edge PoP under 1,000 req/sec"
   },
-  "currentStaticAssemblyPipelineVerdict": {
-    "verdict": "COEXIST IN SHORT TERM, REGENERATE FROM POSTGIS IN MID TERM, UNIFY UNDER VECTOR TILES IN TARGET ARCHITECTURE",
-    "rationale": "Existing assembly files in apps/api/public/geo/ are delivery artifacts sourced from third-party repo datta07/INDIAN-SHAPEFILES. They work well today for the mobile assembly view and should NOT be ripped out prematurely. However, they must be recognized as unverified delivery artifacts. In Stage 3, when assembly geometries are ingested into canonical PostGIS with official ECI/SOI provenance, the static assembly files must be regenerated from PostGIS, and ultimately unified into the vector tile pipeline."
+  "qualitativeCostOperations": {
+    "postGisCompute": "Minimized by offloading map rendering to pre-generated tiles; DB handles only point queries",
+    "apiCompute": "Lightweight Fastify node instances handle reverse geocoding and metadata queries",
+    "objectStorage": "Highly cost-effective storage of compressed PMTiles archives or MVT directories",
+    "cdnLayer": "High cache-hit ratio (>95%) drastically lowers origin bandwidth and compute bills",
+    "tileGeneration": "Batch compute executed upon new dataset version ingestion, not on customer request paths",
+    "bandwidth": "Binary Protocol Buffers reduce mobile wire transfer by 70-80% compared to GeoJSON",
+    "observability": "Standard OpenTelemetry metrics and error tracking integrated with Fastify server"
   },
-  "recommendedTargetArchitectureSpecification": {
-    "canonicalDataStore": "PostgreSQL 15+ / PostGIS in Supabase (public.entity_geometries, public.mandal_versions, public.districts, public.constituencies, public.states). Strictly immutable via triggers.",
-    "deliveryRepresentation": "Hybrid: (1) Vector Tiles (MVT) for visual map rendering; (2) Fastify Spatial Query API for point locate and temporal queries; (3) Edge CDN for static asset distribution.",
-    "simplificationOwnership": "Owned entirely by the database/asset generation tier via PostGIS ST_SimplifyPreserveTopology(). Three discrete zoom bands: Macro (z0-z5, tolerance 0.05 deg), Meso (z6-z9, tolerance 0.005 deg), Micro (z10+, tolerance 0.0001 deg or unsimplified).",
-    "cachingArchitecture": "Tier 1: Cloudflare Edge CDN (1-year immutable cache for versioned tiles/assets); Tier 2: Fastify in-memory/Redis cache for dynamic spatial queries; Tier 3: Mobile SQLite/Disk cache for offline resilience.",
-    "writeSecurity": "REVOKE ALL on public.entity_geometries from anon, authenticated. Writes strictly restricted to service_role within controlled migrations or CTO-authorized ingestion scripts.",
-    "readPerformance": "P95 tile delivery < 30ms from Edge CDN; P95 dynamic spatial query < 80ms from Fastify/PostGIS."
-  },
-  "stagedMigrationPath": {
-    "stage0": {
+  "stagedMigrationPath": [
+    {
+      "stage": 0,
       "title": "Current Baseline State",
-      "description": "Static assembly GeoJSON in apps/api/public/geo/ + 589 derived mandal geometries stored in staging PostGIS public.entity_geometries + Zero canonical mandal runtime path.",
+      "description": "Static assembly GeoJSON active + 589 staging derived geometries in PostGIS + No runtime mandal path.",
       "status": "COMPLETED"
     },
-    "stage1": {
+    {
+      "stage": 1,
       "title": "Architecture Foundation & Generic Contract Specification",
-      "description": "Define generic OpenAPI contract for spatial queries (/api/v1/geo/...) and TileJSON specifications. Define mandatory governance property schemas. Zero product code changes.",
+      "description": "Formalize OpenAPI and TileJSON specifications. Define Ajv validation schemas for Version Selection Contract. Zero code changes.",
       "status": "READY FOR CTO AUTHORIZATION"
     },
-    "stage2": {
+    {
+      "stage": 2,
       "title": "Controlled Staging Implementation",
-      "description": "Implement read-only Fastify spatial routes (/api/v1/geo/locate, /api/v1/geo/mvt/:z/:x/:y, /api/v1/geo/mandals) connecting strictly to panIN-staging. Validate RLS enforcement and governance preservation.",
+      "description": "Implement read-only Fastify routes (/api/v1/geo/locate, /api/v1/geo/mvt/..., /api/v1/geo/entities/:id) against panIN-staging. Validate RLS.",
       "status": "PENDING CTO APPROVAL"
     },
-    "stage3": {
+    {
+      "stage": 3,
       "title": "Runtime Integration & Mobile Prototype",
-      "description": "Wire mobile MapLibre to consume vector tiles / spatial API alongside existing assembly layers. Implement offline disk caching and verify memory usage on low-end devices.",
+      "description": "Connect mobile MapLibre to vector tiles alongside existing raster/shape layers. Validate offline caching and memory stability.",
       "status": "PENDING"
     },
-    "stage4": {
+    {
+      "stage": 4,
       "title": "Performance & Load Verification",
-      "description": "Execute synthetic load testing against staging spatial endpoints. Verify P95 latency, CDN cache hit ratio (>95%), and bandwidth consumption under simulated 3G network.",
+      "description": "Execute synthetic k6 load testing against staging spatial endpoints. Measure latency, CDN cache hit ratio, and low-bandwidth resilience.",
       "status": "PENDING"
     },
-    "stage5": {
-      "title": "Broader Geography Rollout & Assembly Pipeline Unification",
-      "description": "Ingest official parliamentary and assembly constituency geometries into canonical PostGIS entity_geometries with W012 provenance. Regenerate static assembly files from PostGIS and decommission unverified third-party shapefiles.",
+    {
+      "stage": 5,
+      "title": "Broader Geography Rollout & Pipeline Unification",
+      "description": "Ingest statutory PC and AC boundaries into canonical PostGIS entity_geometries with W012 provenance. Regenerate static fallback assets from PostGIS.",
       "status": "PENDING"
     },
-    "stage6": {
+    {
+      "stage": 6,
       "title": "Production Authorization & Cutover",
-      "description": "Formal CTO authorization gate. Apply spatial schema migration and verified datasets to production (ehfafcnimmjusyvplbah) with full air-gap protocol and CDN activation.",
+      "description": "Formal CTO authorization gate. Apply spatial schema migration and verified datasets to production (ehfafcnimmjusyvplbah) with full air-gap protocol.",
       "status": "PENDING"
-    }
-  },
-  "explicitDecisionPointsForCtO": [
-    {
-      "id": "DEC-POINT-1",
-      "topic": "Delivery Format Strategy for Mandals / Sub-Districts",
-      "question": "Should PANIN deliver mandal boundaries via Vector Tiles (MVT / PMTiles) or via State-sliced GeoJSON files?",
-      "recommendation": "Adopt Vector Tiles (MVT). State-sliced GeoJSON for 6,500+ mandals will exhaust mobile memory and bandwidth on lower-end devices."
-    },
-    {
-      "id": "DEC-POINT-2",
-      "topic": "Existing Static Assembly Pipeline Fate",
-      "question": "Should the existing static assembly GeoJSON files (datta07/INDIAN-SHAPEFILES) be retained temporarily or immediately replaced?",
-      "recommendation": "Retain temporarily during Stages 0-2 to preserve active mobile features; regenerate from canonical PostGIS in Stage 5 once authoritative AC boundaries are ingested."
-    },
-    {
-      "id": "DEC-POINT-3",
-      "topic": "Edge CDN Architecture",
-      "question": "Should PANIN provision a dedicated Cloudflare / CloudFront distribution in front of Railway to cache spatial tiles and assets across India?",
-      "recommendation": "Yes. Railway origin servers should not serve raw static tiles directly under mobile scale; an edge CDN in India (Mumbai, Chennai, Delhi) is required for sub-30ms performance."
     }
   ]
 }

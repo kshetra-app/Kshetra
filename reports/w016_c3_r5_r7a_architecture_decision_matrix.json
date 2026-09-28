@@ -1,0 +1,169 @@
+{
+  "job": "W016-C3-R5-R7A",
+  "title": "Spatial Runtime Architecture Decision Matrix & Technology Trade-Off Evaluation",
+  "status": "DESIGN_REVISION_COMPLETE",
+  "terminalStatus": "W016-C3-R5-R7A DESIGN REVISION COMPLETE — READY FOR CTO DECISION",
+  "createdAt": "2026-09-28T17:48:00.000Z",
+  "governance": {
+    "framework": "Master Execution Framework Amendment v1.5-A",
+    "target": "panIN-staging (fkpigozcqnmcvofuksar) ONLY",
+    "productionAirGap": "ehfafcnimmjusyvplbah (STRICTLY AIR-GAPPED & UNTOUCHED)",
+    "implementationAuthorized": false,
+    "disclaimer": "NO IMPLEMENTATION AUTHORIZED BY THIS DOCUMENT. DESIGN / RECONNAISSANCE ONLY."
+  },
+  "technologyOptions": {
+    "optionA_DynamicMVT": {
+      "name": "Dynamic MVT via Fastify + PostGIS (ST_AsMVT)",
+      "latency": "Moderate (50-250ms cold execution depending on complexity and index)",
+      "databaseLoad": "High (every unique pan/zoom tile runs SQL spatial query unless cached at API/edge)",
+      "apiLoad": "High (Fastify serializes and compresses tile buffers per request)",
+      "cacheability": "High at edge if tiles are version-keyed, but low during cold navigation",
+      "coldCacheBehavior": "Noticeable latency spikes on first visits to dense geographic regions",
+      "operationalComplexity": "Moderate (relies on existing Fastify backend and PostGIS database)",
+      "storageRequirements": "Minimal (only PostGIS table storage; zero pre-generated tile files)",
+      "invalidationStrategy": "Automatic when cache keys include dataset_version_id or entity updated_at",
+      "geographyVersionHandling": "Excellent (parameters can filter any valid_from/valid_to or version_id on the fly)",
+      "provenanceSupport": "Direct (reads directly from governed database columns)",
+      "historicalGeographySupport": "Seamless (query parameterized with ?as_of=... or ?version_id=...)",
+      "mobilePerformance": "Excellent once tiles arrive (hardware-accelerated MapLibre rendering)",
+      "nationwideScaling": "Poor under sudden nationwide load spikes without massive database replicas",
+      "failureModes": "Database pool exhaustion, query timeouts on unindexed or complex geometry intersections",
+      "qualitativeCost": "High database compute costs (CPU/RAM scaling required on PostgreSQL)"
+    },
+    "optionB_PregeneratedMVT": {
+      "name": "Pre-Generated Versioned MVT Directory / S3 Artifacts Behind CDN",
+      "latency": "Very Low (15-50ms at edge PoP, zero database involvement)",
+      "databaseLoad": "Zero during runtime serving; high burst during batch build process",
+      "apiLoad": "Zero (served directly from object storage / static web origin via CDN)",
+      "cacheability": "Maximum (files are immutable, content-addressed, cached permanently)",
+      "coldCacheBehavior": "Fast (edge CDN pulls single static tile from object storage, ~50-80ms once)",
+      "operationalComplexity": "High (requires batch tile generation pipeline, tile storage management, build orchestration)",
+      "storageRequirements": "High (millions of small individual .mvt files across zoom levels z0-z14)",
+      "invalidationStrategy": "Trivial (new versions are written to new content-addressed path; old never mutated)",
+      "geographyVersionHandling": "Good, but requires separate pre-generated tile tree per statutory version",
+      "provenanceSupport": "Baked at build time (immutable metadata in tile properties)",
+      "historicalGeographySupport": "Requires pre-generating tiles for each historical regime; combinatorial storage growth",
+      "mobilePerformance": "Excellent (MapLibre vector source native)",
+      "nationwideScaling": "Virtually infinite at edge CDN (100k+ concurrent users with zero database load)",
+      "failureModes": "Missing tile files (404), stale CDN caches if cache keys are misconfigured",
+      "qualitativeCost": "Low database compute; moderate object storage file-count and CDN bandwidth costs"
+    },
+    "optionC_PMTiles": {
+      "name": "Single-File PMTiles Archive on Object Storage with HTTP Range Requests",
+      "latency": "Very Low to Low (20-70ms; 2 roundtrips for initial header/directory lookup, 1 for cached leaf)",
+      "databaseLoad": "Zero during runtime serving; batch build only",
+      "apiLoad": "Zero (client directly fetches byte ranges from CDN / object storage, or lightweight proxy)",
+      "cacheability": "High (range requests are cacheable by modern CDNs that support 206 Partial Content)",
+      "coldCacheBehavior": "Moderate (first tile in an area requires reading PMTiles directory header)",
+      "operationalComplexity": "Moderate (single archive file per state/country/regime instead of millions of small files)",
+      "storageRequirements": "Low to Moderate (highly optimized archive format, deduplicates identical tiles)",
+      "invalidationStrategy": "Atomic (uploading a new .pmtiles file replaces the entire archive instantly)",
+      "geographyVersionHandling": "Clean (one PMTiles archive per dataset_version_id or statutory regime)",
+      "provenanceSupport": "Baked at archive creation time with root metadata header",
+      "historicalGeographySupport": "Clean (one static archive per historical regime, loaded on demand)",
+      "mobilePerformance": "Excellent (MapLibre native integration via maplibre-react-native / protocol handler)",
+      "nationwideScaling": "Excellent (scales with object storage read bandwidth and edge CDN range caching)",
+      "failureModes": "CDN edge failing to handle HTTP 206 Range requests; corrupt archive header",
+      "qualitativeCost": "Lowest storage and compute cost; pay only for S3 storage and egress"
+    },
+    "optionD_HybridArchitecture": {
+      "name": "Governed Multi-Tier Hybrid (PostGIS Master + Pre-Rendered PMTiles/MVT for Maps + Dynamic Fastify for Spatial Queries)",
+      "latency": "Optimal (<30ms visual map rendering from edge; <80ms for dynamic spatial queries)",
+      "databaseLoad": "Low (database handles only point-locate, search, and detail queries; zero tile load)",
+      "apiLoad": "Low (Fastify handles business logic, auth, and spatial queries; does not stream millions of tiles)",
+      "cacheability": "Optimal (visual tiles immutable; query endpoints use short TTL + SWR)",
+      "coldCacheBehavior": "Fast and graceful",
+      "operationalComplexity": "Moderate (controlled build job for PMTiles/MVT upon dataset ingestion; standard API for queries)",
+      "storageRequirements": "Moderate (canonical DB tables + compressed PMTiles archives)",
+      "invalidationStrategy": "Content-addressed versions and clear separation between static tiles and dynamic queries",
+      "geographyVersionHandling": "Comprehensive (handles Current, Historical, Explicit Version, and Scenarios)",
+      "provenanceSupport": "100% compliant with W012 (provenance anchored in DB and referenced in tile headers)",
+      "historicalGeographySupport": "Full (historical archives for rendering + historical DB queries for audit)",
+      "mobilePerformance": "Maximum (native vector tiles in MapLibre + lightweight JSON for point queries)",
+      "nationwideScaling": "Unbounded (scales to all of India without database bottlenecks)",
+      "failureModes": "Isolated (if tile CDN is degraded, point queries still work; if API is degraded, cached map still renders)",
+      "qualitativeCost": "Balanced and cost-efficient (minimizes high-cost DB compute, leverages low-cost CDN/storage)"
+    }
+  },
+  "versionSelectionContract": {
+    "regimeA_Current": {
+      "description": "Default active statutory geography currently in legal effect",
+      "selectionCriteria": "is_current = true AND (valid_to IS NULL OR valid_to > CURRENT_DATE) AND temporal_classification != 'scenario'",
+      "fallbackBehavior": "Fail-closed (returns 404 / empty if no current version exists; never substitutes historical or scenario)"
+    },
+    "regimeB_Historical": {
+      "description": "Statutory geography as it legally existed on a specific historical date",
+      "selectionCriteria": "valid_from <= as_of_date AND (valid_to > as_of_date OR valid_to IS NULL) AND temporal_classification = 'historical_statutory_baseline'",
+      "fallbackBehavior": "Fail-closed (returns 404 / empty if entity was not yet formed or already dissolved at as_of_date)"
+    },
+    "regimeC_ExplicitVersion": {
+      "description": "Direct fetch of a specific immutable version record by UUID or version code",
+      "selectionCriteria": "mandal_version_id = :uuid OR version_code = :code",
+      "fallbackBehavior": "Strict 404 if record does not exist"
+    },
+    "regimeD_FutureRegime": {
+      "description": "Statutorily enacted future geography regime not yet in active effect (e.g. pending delimitation)",
+      "selectionCriteria": "delimitation_regime_id = :regime_id AND valid_from > CURRENT_DATE AND is_current = false",
+      "fallbackBehavior": "Explicitly labelled as FUTURE_ENACTED; never mixed with active current geography"
+    },
+    "regimeE_Scenario": {
+      "description": "Hypothetical simulation or draft boundary proposal",
+      "selectionCriteria": "dataset_version_id LIKE 'scenario_%' AND status = 'SCENARIO'",
+      "fallbackBehavior": "Strictly quarantined; inaccessible via standard public endpoints; requires dedicated scenario routes"
+    }
+  },
+  "governanceEnvelopeTaxonomy": {
+    "tier1_TileFeatureProperties": {
+      "purpose": "Minimal properties embedded in every binary vector tile feature (bandwidth-optimized)",
+      "fields": [
+        "entity_id",
+        "version_id",
+        "name",
+        "status",
+        "is_current",
+        "regime_type"
+      ],
+      "rationale": "Keeps tile payload under 50-80 KB while preserving client rendering, filtering, and status display"
+    },
+    "tier2_DetailedMetadataPayload": {
+      "purpose": "Comprehensive governance metadata fetched lazily on entity tap/click via API endpoint",
+      "fields": [
+        "entity_id",
+        "version_id",
+        "version_code",
+        "dataset_version_id",
+        "provenance_id",
+        "status",
+        "authority_classification",
+        "temporal_classification",
+        "valid_from",
+        "valid_to",
+        "is_current",
+        "source_feature_id",
+        "raw_artifact_sha256",
+        "snapshot_date",
+        "verification_evidence_id",
+        "verification_evidence_sha256",
+        "gazette_citation"
+      ],
+      "rationale": "Provides full statutory lineage and audit evidence without bloating the map streaming pipeline"
+    }
+  },
+  "degradedAndOfflineMatrix": {
+    "cdnUnavailable": {
+      "behavior": "Mobile falls back to local disk cache (Expo FileSystem / SQLite); if uncached, displays offline banner and bundled national overview ('IN'). Never substitutes mismatched tiles."
+    },
+    "apiUnavailable": {
+      "behavior": "Map rendering continues seamlessly using cached tiles. Interactive point inspection ('locate') displays 'Service temporarily unavailable' without crashing the map canvas."
+    },
+    "databaseUnavailable": {
+      "behavior": "Static tiles and cached API responses continue serving from edge CDN and Redis. Dynamic writes/queries fail gracefully with HTTP 503 DATABASE_FAILURE."
+    },
+    "tileUnavailable": {
+      "behavior": "MapLibre leaves unretrievable tile blank with retry affordance. Never stretches adjacent tiles or substitutes adjacent regions."
+    },
+    "geometryVersionUnavailable": {
+      "behavior": "Returns HTTP 404 NOT_FOUND with explicit error code. Never substitutes a different temporal version silently."
+    }
+  }
+}
