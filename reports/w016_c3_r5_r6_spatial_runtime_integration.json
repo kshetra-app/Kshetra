@@ -1,0 +1,254 @@
+{
+  "metadata": {
+    "job": "W016-C3-R5-R6",
+    "directive": "W016-C3-R5-R6 — CTO AUTHORIZATION: SPATIAL RUNTIME INTEGRATION & ACCEPTANCE VERIFICATION",
+    "timestamp": "2026-09-28T10:43:20.432Z",
+    "gitHead": "0ba2171130856b36d12f7cfbeed503fab0a5a10c",
+    "targetEnvironment": "panIN-staging (fkpigozcqnmcvofuksar)",
+    "productionIsolation": "ehfafcnimmjusyvplbah (STRICTLY AIR-GAPPED — 0 CONNECTIONS, 0 DDL, 0 DML, 0 MUTATIONS)",
+    "finalStatus": "W016-C3-R5-R6 BLOCKED — NO EXISTING CANONICAL RUNTIME READ PATH",
+    "stopConditionTriggered": true,
+    "exactBlocker": "NO EXISTING CANONICAL RUNTIME READ PATH"
+  },
+  "phaseADiscovery": {
+    "discoverySummary": "Thorough inspection of apps/api, apps/mobile, packages/shared, and apps/web-admin demonstrates that public.entity_geometries has zero application-level read paths, routes, data service methods, or consumers.",
+    "questions": {
+      "q1_read_path_exists": false,
+      "q2_owning_component": null,
+      "q3_path_classification": "NON_EXISTENT",
+      "q4_exposure_transformation": "N/A (No application read path exists)",
+      "q5_rls_application": "Database-level RLS enabled (pol_entity_geometries_read); Application-level mediation absent",
+      "q6_temporal_distinction": "Application layer lacks read path to distinguish historical vs current geometry"
+    },
+    "inspectedLocations": [
+      {
+        "path": "apps/api/src/routes/",
+        "findings": "Zero routes reference entity_geometries or mandal_versions. geo.ts serves static boundary files from disk only."
+      },
+      {
+        "path": "apps/mobile/lib/supabaseDataService.ts",
+        "findings": "All 85 data service methods audited; none reference entity_geometries or mandal_versions."
+      },
+      {
+        "path": "apps/mobile/lib/geoLoader.ts",
+        "findings": "Inlines or loads state assembly constituency GeoJSON (IN, TS); no mandal geometry."
+      },
+      {
+        "path": "apps/mobile/lib/remoteGeoLoader.ts",
+        "findings": "Streams static /geo/:file from Fastify disk assets; no database connection."
+      },
+      {
+        "path": "packages/shared/",
+        "findings": "Contains Mandal types and hierarchy models; zero client or database query paths."
+      }
+    ]
+  },
+  "postgrestBaselineProbe": {
+    "anonSelectStatus": "PERMITTED (200 OK)",
+    "anonInsertStatus": "DENIED (401 / 42501)",
+    "notes": "PostgREST exposes the table directly per Migration 048 RLS policy, but this database-level interface is not wired to any application service or API route."
+  },
+  "phaseHDataIntegrity": {
+    "rowCount": 589,
+    "uniqueMandalVersions": 589,
+    "uniqueSourceFeatures": 589,
+    "statusDerived": 589,
+    "isCurrentFalse": 589,
+    "temporalClassification": 589,
+    "canonicalRowSetDigest": "f839fa02980318a8f35f932ebe72fa1d3ad6325dc86a624bf159d932fe5f613b",
+    "expectedDigest": "f839fa02980318a8f35f932ebe72fa1d3ad6325dc86a624bf159d932fe5f613b",
+    "digestMatches": true,
+    "productionAirGapIntact": true
+  },
+  "checks": [
+    {
+      "id": "DISC-API-ENTITY-GEOM",
+      "title": "Inspection of apps/api for entity_geometries read paths",
+      "status": "PASS",
+      "observed": "Matches: 0",
+      "details": "apps/api contains zero routes or services referencing entity_geometries"
+    },
+    {
+      "id": "DISC-MOBILE-ENTITY-GEOM",
+      "title": "Inspection of apps/mobile for entity_geometries read paths",
+      "status": "PASS",
+      "observed": "Matches: 0",
+      "details": "apps/mobile contains zero services, stores, or hooks referencing entity_geometries"
+    },
+    {
+      "id": "DISC-PKG-ENTITY-GEOM",
+      "title": "Inspection of packages/ for entity_geometries references",
+      "status": "PASS",
+      "observed": "Matches: 0",
+      "details": "packages/ contains zero references to entity_geometries"
+    },
+    {
+      "id": "DISC-GEO-ROUTE-STATIC",
+      "title": "Inspection of apps/api/src/routes/geo.ts",
+      "status": "PASS",
+      "observed": "Static disk GeoJSON only",
+      "details": "geo.ts serves static filesystem .json/.gz files only; does not query database or mandal geometries"
+    },
+    {
+      "id": "DISC-MOBILE-DATA-SERVICE",
+      "title": "Inspection of apps/mobile/lib/supabaseDataService.ts",
+      "status": "PASS",
+      "observed": "Zero entity_geometries methods",
+      "details": "None of the 85 audited data service methods query entity_geometries or mandal_versions"
+    },
+    {
+      "id": "PHASE-A-CANONICAL-READ-PATH",
+      "title": "Determination of canonical application read path for entity_geometries",
+      "status": "PASS",
+      "observed": "NO EXISTING CANONICAL RUNTIME READ PATH",
+      "details": "Neither Fastify API nor mobile client has an existing service/route to consume public.entity_geometries"
+    },
+    {
+      "id": "PROBE-POSTGREST-ANON-SELECT",
+      "title": "PostgREST anon SELECT on entity_geometries",
+      "status": "PASS",
+      "observed": "Status: 200 OK, Sample rows: 3",
+      "details": ""
+    },
+    {
+      "id": "PROBE-POSTGREST-ANON-INSERT",
+      "title": "PostgREST anon INSERT on entity_geometries denied by RLS",
+      "status": "PASS",
+      "observed": "Status: 42501 (permission denied for table entity_geometries)",
+      "details": ""
+    },
+    {
+      "id": "REG-01-COUNT-589",
+      "title": "entity_geometries = exactly 589 rows",
+      "status": "PASS",
+      "observed": "Count: 589",
+      "details": ""
+    },
+    {
+      "id": "REG-02-UNIQUE-MVID",
+      "title": "unique mandal_version_id = exactly 589",
+      "status": "PASS",
+      "observed": "Unique: 589",
+      "details": ""
+    },
+    {
+      "id": "REG-03-UNIQUE-FID",
+      "title": "unique source_feature_id = exactly 589",
+      "status": "PASS",
+      "observed": "Unique: 589",
+      "details": ""
+    },
+    {
+      "id": "REG-04-UNIQUE-PROV",
+      "title": "unique provenance_id = exactly 589",
+      "status": "PASS",
+      "observed": "Unique: 589",
+      "details": ""
+    },
+    {
+      "id": "REG-05-STATUS-DERIVED",
+      "title": "status = DERIVED for 100% of rows (0 self-promoted to OFFICIAL)",
+      "status": "PASS",
+      "observed": "Status DERIVED: 589",
+      "details": ""
+    },
+    {
+      "id": "REG-06-IS-CURRENT-FALSE",
+      "title": "is_current = false for 100% of rows",
+      "status": "PASS",
+      "observed": "is_current = false: 589",
+      "details": ""
+    },
+    {
+      "id": "REG-07-HIST-STAT-BASELINE",
+      "title": "temporal_classification = historical_statutory_baseline for 100% of rows",
+      "status": "PASS",
+      "observed": "historical_statutory_baseline: 589",
+      "details": ""
+    },
+    {
+      "id": "REG-08-STAT-CARTO",
+      "title": "authority_classification = statutory_cartographic for 100% of rows",
+      "status": "PASS",
+      "observed": "statutory_cartographic: 589",
+      "details": ""
+    },
+    {
+      "id": "REG-09-MULTIPOLYGON",
+      "title": "geometry type = MultiPolygon for 100% of rows",
+      "status": "PASS",
+      "observed": "MultiPolygon: 589",
+      "details": ""
+    },
+    {
+      "id": "REG-10-SRID-4326",
+      "title": "SRID = 4326 for 100% of rows (enforced by chk_entity_geometries_srid)",
+      "status": "PASS",
+      "observed": "SRID 4326 enforced by DB constraint",
+      "details": ""
+    },
+    {
+      "id": "REG-11-ST-ISVALID",
+      "title": "ST_IsValid = true for 100% of rows (enforced by chk_entity_geometries_is_valid)",
+      "status": "PASS",
+      "observed": "ST_IsValid enforced by DB constraint",
+      "details": ""
+    },
+    {
+      "id": "REG-12-AFFECTED-FIDS",
+      "title": "Candidate B affected FIDs remain exactly [286, 292, 523]",
+      "status": "PASS",
+      "observed": "FIDs: 286, 292, 523",
+      "details": ""
+    },
+    {
+      "id": "REG-13-RAW-SHA",
+      "title": "Raw TGRAC SHA-256 remains untouched",
+      "status": "PASS",
+      "observed": "SHA: aca53eefa290570ce4010fa8c26a75dce995de3e3180ac9f0873f78fb41512db",
+      "details": ""
+    },
+    {
+      "id": "REG-14-DERIVED-SHA",
+      "title": "Derived artifact SHA-256 remains untouched",
+      "status": "PASS",
+      "observed": "SHA: dd16ff36d2d9c581cbc5c29125fb33787310c2d4c203d98b88aa74308d4ad077",
+      "details": ""
+    },
+    {
+      "id": "REG-15-586-UNCHANGED",
+      "title": "586 source/derived geometries remain hash-identical",
+      "status": "PASS",
+      "observed": "Unchanged: 586",
+      "details": ""
+    },
+    {
+      "id": "REG-16-3-TRANSFORMED",
+      "title": "Exactly 3 geometries transformed (Candidate B)",
+      "status": "PASS",
+      "observed": "Transformed: 3",
+      "details": ""
+    },
+    {
+      "id": "REG-17-OFFICIAL-PROV",
+      "title": "Source OFFICIAL provenance unchanged (589 intact bound to e016...1013)",
+      "status": "PASS",
+      "observed": "Count: 589",
+      "details": ""
+    },
+    {
+      "id": "REG-18-ROWSET-DIGEST",
+      "title": "Canonical row-set digest matches accepted R5-R5 digest bit-for-bit",
+      "status": "PASS",
+      "observed": "Digest: f839fa02980318a8f35f932ebe72fa1d3ad6325dc86a624bf159d932fe5f613b",
+      "details": ""
+    },
+    {
+      "id": "REG-19-PROD-AIRGAP",
+      "title": "Production ehfafcnimmjusyvplbah strictly air-gapped (0 connections, 0 DDL, 0 DML, 0 mutations)",
+      "status": "PASS",
+      "observed": "Production host untouched (100% air-gap)",
+      "details": ""
+    }
+  ]
+}
