@@ -184,10 +184,24 @@ async function runPreflight() {
     migContent.includes("temporal_classification != 'historical_statutory_baseline' OR is_current = false"),
     'Historical statutory baseline geometries cannot be asserted as is_current = true'
   );
-  recordCheck('IDEMP-09', 'Schema enforces provenance/dataset consistency trigger (trg_validate_entity_geometry_lineage)',
+  recordCheck('IDEMP-09', 'Schema enforces generic provenance/dataset consistency trigger (trg_validate_entity_geometry_lineage)',
     migContent.includes('trg_validate_entity_geometry_lineage') &&
-    migContent.includes('PROVENANCE DATASET MISMATCH'),
-    'Guarantees entity_geometries.dataset_version_id = provenance_records.dataset_version_id and verifies dedicated spatial evidence'
+    migContent.includes('PROVENANCE DATASET MISMATCH') &&
+    migContent.includes('PROVENANCE EVIDENCE MISSING') &&
+    migContent.includes('PROVENANCE EVIDENCE NOT FOUND'),
+    'Guarantees entity_geometries.dataset_version_id = provenance_records.dataset_version_id and verifies W012 evidence presence'
+  );
+  recordCheck('IDEMP-10', 'Controlled lifecycle mutability enforced on status, valid_to, is_current',
+    migContent.includes('LIFECYCLE VIOLATION: Invalid status transition') &&
+    migContent.includes('LIFECYCLE VIOLATION: valid_to is already closed') &&
+    migContent.includes('LIFECYCLE VIOLATION: historical statutory baseline geometry cannot be set to is_current = true'),
+    'Enforces explicit transitions: status OFFICIAL->SUPERSEDED/DEPRECATED, closed valid_to immutable, is_current protected'
+  );
+  recordCheck('IDEMP-11', 'Zero W016-specific hardcoding in Migration 048 generic schema',
+    !migContent.includes('e0160000-0000-0000-0000-000000001013') &&
+    !migContent.includes('tgrac_mandals_2016_v1') &&
+    !migContent.includes('aca53eefa290570ce4010fa8c26a75dce995de3e3180ac9f0873f78fb41512db'),
+    'Verified: Migration 048 contains zero hardcoded W016 evidence IDs, dataset versions, or file SHAs'
   );
 
   // ─── PART 4: LIVE STAGING ENVIRONMENT VERIFICATION ──────────────────────────
@@ -283,7 +297,7 @@ async function runPreflight() {
 
   console.log('\n================================================================');
   console.log(`PREFLIGHT SUMMARY: ${results.length} PASSED, 0 FAILED`);
-  console.log('FINAL STATUS: ENTITY_GEOMETRIES SCHEMA RECONCILIATION COMPLETE — READY FOR CTO REVIEW');
+  console.log('FINAL STATUS: ENTITY_GEOMETRIES LINEAGE & IDEMPOTENCY RECONCILIATION COMPLETE — READY FOR CTO REVIEW');
   console.log('================================================================\n');
 
   return {

@@ -1,0 +1,415 @@
+{
+  "metadata": {
+    "directive": "W016-C3-R5-R3-R2 — ENTITY_GEOMETRIES LINEAGE GENERALIZATION & FAIL-CLOSED INGESTION CONTRACT",
+    "executionTimestamp": "2026-09-28T03:35:03.889Z",
+    "repositoryHead": "f12296b1ac5f15c684ba59c837b5185ad53deb44",
+    "targetEnvironment": "panIN-staging (fkpigozcqnmcvofuksar)",
+    "productionIsolation": "ehfafcnimmjusyvplbah (STRICTLY AIR-GAPPED & UNTOUCHED)",
+    "finalStatus": "ENTITY_GEOMETRIES LINEAGE & IDEMPOTENCY RECONCILIATION COMPLETE — READY FOR CTO REVIEW",
+    "liveStateDetermination": "048 NOT EXECUTED — SCHEMA ABSENT",
+    "liveGeometryRowCount": 0
+  },
+  "artifacts": {
+    "migration048File": "supabase/migrations/048_w016_c3_r5_r3_entity_geometries_schema.sql",
+    "migration048Sha256": "8efbb1df7e6d13d8cb2b8da4b2fba35b3d941bcf89b5bcfb9c02de0bb9073178",
+    "stagingPackage048File": "supabase/staging_migration_package_048.sql",
+    "stagingPackage048Sha256": "8efbb1df7e6d13d8cb2b8da4b2fba35b3d941bcf89b5bcfb9c02de0bb9073178",
+    "verificationPackageFile": "supabase/verify_staging_migration_package_048.sql",
+    "verificationPackageSha256": "45dcea26f732701bbb983e965e33bbe3a365475cf66aec8b47f9bdddd4a6c2c1",
+    "preflightTestRunnerFile": "tests/test_w016_c3_r5_r3_preflight.mjs",
+    "preflightTestRunnerSha256": "13d626275b91da296ee88aced19fb8dee072492072f7267e71194c76a2b7ea6f",
+    "byteMatchMigrationAndStagingPackage": true
+  },
+  "liveCatalogState": {
+    "determination": "048 NOT EXECUTED — SCHEMA ABSENT",
+    "tableExists": false,
+    "httpStatus": 404,
+    "openApiDefinitionsPresent": false,
+    "openApiPathsPresent": false,
+    "entityGeometriesRowCount": 0,
+    "mandalsCount": 621,
+    "mandalVersionsTotal": 1210,
+    "mandalVersionsCurrent": 621,
+    "mandalVersionsHistorical": 589
+  },
+  "genericLineageInvariant": {
+    "triggerName": "trg_validate_entity_geometry_lineage",
+    "functionName": "public.fn_validate_entity_geometry_lineage()",
+    "timing": "BEFORE INSERT OR UPDATE ON public.entity_geometries",
+    "hardcodedEvidenceRemoved": true,
+    "hardcodedEvidenceShaRemoved": true,
+    "hardcodedDatasetVersionRemoved": true,
+    "hardcodedSnapshotDateRemoved": true,
+    "enforcedInvariants": [
+      {
+        "rule": "Referential provenance existence",
+        "expression": "SELECT dataset_version_id, verification_evidence_id, status FROM public.provenance_records WHERE id = NEW.provenance_id",
+        "sqlstateOnFailure": "23503"
+      },
+      {
+        "rule": "Generic Dataset Parity Invariant",
+        "expression": "entity_geometries.dataset_version_id = provenance_records.dataset_version_id",
+        "sqlstateOnFailure": "23514",
+        "description": "Prevents cross-dataset provenance linkages"
+      },
+      {
+        "rule": "Generic W012 Evidence Attachment Invariant",
+        "expression": "provenance_records.verification_evidence_id IS NOT NULL",
+        "sqlstateOnFailure": "23514",
+        "description": "Enforces that every referenced provenance node is verified by an evidence record"
+      },
+      {
+        "rule": "Generic Evidence Existence Invariant",
+        "expression": "PERFORM 1 FROM public.evidence_records WHERE id = provenance_records.verification_evidence_id",
+        "sqlstateOnFailure": "23503",
+        "description": "Enforces referential existence of evidence record in public.evidence_records"
+      }
+    ]
+  },
+  "w016SpecificIngestionContract": {
+    "boundaryScope": "Dedicated to future W016 ingestion migration/job (NOT hardcoded into generic schema)",
+    "datasetVersionId": "tgrac_mandals_2016_v1",
+    "spatialEvidenceId": "e0160000-0000-0000-0000-000000001013",
+    "rawArtifactSha256": "aca53eefa290570ce4010fa8c26a75dce995de3e3180ac9f0873f78fb41512db",
+    "snapshotDate": "2016-10-11",
+    "sourceFilePath": "data/geo/candidate_authoritative/tgrac_mandals_raw.json",
+    "totalFeatures": 589,
+    "targetHistoricalVersions": 589,
+    "unresolvedCount": 0,
+    "ambiguousCount": 0,
+    "duplicateTargets": 0,
+    "cohortBreakdown": {
+      "A": 548,
+      "B": 8,
+      "C": 24,
+      "D": 9
+    }
+  },
+  "failClosedIdempotencySpecification": {
+    "decisionMechanism": "Deterministic identity comparison of all governed fields; NEVER silent ON CONFLICT DO NOTHING",
+    "geometryComparisonMethod": "ST_AsBinary(existing.geometry) = ST_AsBinary(incoming.geometry) AND ST_OrderingEquals(existing.geometry, incoming.geometry)",
+    "caseMatrix": [
+      {
+        "case": "CASE A — Exact Replay",
+        "condition": "Existing row matches incoming row across EVERY governed field and bit-exact geometry coordinates",
+        "result": "IDEMPOTENT SUCCESS",
+        "action": "Replay safe; return existing row UUID"
+      },
+      {
+        "case": "CASE B — Governed Field Divergence",
+        "condition": "Same mandal_version_id but any non-geometry governed field differs (e.g. date, classification, metadata)",
+        "result": "FAIL CLOSED",
+        "action": "Raise explicit exception with SQLSTATE 23514"
+      },
+      {
+        "case": "CASE C — Geometry Coordinate Divergence",
+        "condition": "Same mandal_version_id but coordinates or vertex sequence differ",
+        "result": "FAIL CLOSED",
+        "action": "Raise explicit exception with SQLSTATE 23514"
+      },
+      {
+        "case": "CASE D — Source Feature Reassignment",
+        "condition": "Same source_feature_id mapped to a different mandal_version_id within dataset",
+        "result": "FAIL CLOSED",
+        "action": "Raise explicit exception with SQLSTATE 23514"
+      },
+      {
+        "case": "CASE E — Artifact Checksum Divergence",
+        "condition": "Incoming raw_artifact_sha256 differs from existing row or source contract",
+        "result": "FAIL CLOSED",
+        "action": "Raise explicit exception with SQLSTATE 23514"
+      },
+      {
+        "case": "CASE F — Dataset Version Divergence",
+        "condition": "Incoming dataset_version_id differs from existing row or provenance",
+        "result": "FAIL CLOSED",
+        "action": "Raise explicit exception with SQLSTATE 23514"
+      },
+      {
+        "case": "CASE G — Provenance Lineage Divergence",
+        "condition": "Incoming provenance_id differs from existing row",
+        "result": "FAIL CLOSED",
+        "action": "Raise explicit exception with SQLSTATE 23514"
+      }
+    ]
+  },
+  "governedIdentityFields": [
+    {
+      "name": "mandal_version_id",
+      "type": "UUID",
+      "role": "Temporal version binding (1:1 uniqueness target)",
+      "comparison": "="
+    },
+    {
+      "name": "dataset_version_id",
+      "type": "TEXT",
+      "role": "Dataset partition identifier",
+      "comparison": "="
+    },
+    {
+      "name": "provenance_id",
+      "type": "UUID",
+      "role": "Governance lineage pointer",
+      "comparison": "="
+    },
+    {
+      "name": "source_feature_id",
+      "type": "TEXT",
+      "role": "Cadastral FID (0-588)",
+      "comparison": "="
+    },
+    {
+      "name": "raw_artifact_sha256",
+      "type": "TEXT",
+      "role": "Cryptographic binding to raw source bytes",
+      "comparison": "="
+    },
+    {
+      "name": "snapshot_date",
+      "type": "DATE",
+      "role": "Statutory snapshot epoch",
+      "comparison": "="
+    },
+    {
+      "name": "valid_from",
+      "type": "DATE",
+      "role": "Effective boundary start date",
+      "comparison": "="
+    },
+    {
+      "name": "valid_to",
+      "type": "DATE",
+      "role": "Effective boundary end date (nullable)",
+      "comparison": "IS NOT DISTINCT FROM"
+    },
+    {
+      "name": "temporal_classification",
+      "type": "TEXT",
+      "role": "Temporal categorization",
+      "comparison": "="
+    },
+    {
+      "name": "authority_classification",
+      "type": "TEXT",
+      "role": "Cadastral legal authority classification",
+      "comparison": "="
+    },
+    {
+      "name": "geometry_type",
+      "type": "TEXT",
+      "role": "Spatial geometry subtype",
+      "comparison": "="
+    },
+    {
+      "name": "entity_type",
+      "type": "TEXT",
+      "role": "Entity class discriminator (mandal)",
+      "comparison": "="
+    },
+    {
+      "name": "metadata",
+      "type": "JSONB",
+      "role": "Normalized cartographic properties",
+      "comparison": "Canonical JSONB equality (=)"
+    },
+    {
+      "name": "geometry",
+      "type": "GEOMETRY",
+      "role": "Cadastral polygon coordinates",
+      "comparison": "ST_AsBinary(a) = ST_AsBinary(b) AND ST_OrderingEquals(a, b)"
+    }
+  ],
+  "fieldClassification": {
+    "immutable": [
+      {
+        "field": "id",
+        "reason": "Surrogate primary key; immutable once generated",
+        "sqlstate": "23514"
+      },
+      {
+        "field": "entity_type",
+        "reason": "Fixed discriminator; bound to mandal",
+        "sqlstate": "23514"
+      },
+      {
+        "field": "mandal_version_id",
+        "reason": "Core temporal entity version binding",
+        "sqlstate": "23514"
+      },
+      {
+        "field": "dataset_version_id",
+        "reason": "Source dataset lineage identifier",
+        "sqlstate": "23514"
+      },
+      {
+        "field": "provenance_id",
+        "reason": "W012 governance lineage node",
+        "sqlstate": "23514"
+      },
+      {
+        "field": "source_feature_id",
+        "reason": "Cadastral feature source FID",
+        "sqlstate": "23514"
+      },
+      {
+        "field": "raw_artifact_sha256",
+        "reason": "Cryptographic seal of original input file",
+        "sqlstate": "23514"
+      },
+      {
+        "field": "snapshot_date",
+        "reason": "Fixed historical gazette epoch",
+        "sqlstate": "23514"
+      },
+      {
+        "field": "geometry_type",
+        "reason": "Fixed spatial type (MultiPolygon)",
+        "sqlstate": "23514"
+      },
+      {
+        "field": "geometry",
+        "reason": "Authoritative boundary coordinates strictly immutable post-insertion",
+        "sqlstate": "23514"
+      },
+      {
+        "field": "authority_classification",
+        "reason": "Classification fixed at creation",
+        "sqlstate": "23514"
+      },
+      {
+        "field": "temporal_classification",
+        "reason": "Classification fixed at creation",
+        "sqlstate": "23514"
+      },
+      {
+        "field": "valid_from",
+        "reason": "Statutory boundary effective start date",
+        "sqlstate": "23514"
+      },
+      {
+        "field": "metadata",
+        "reason": "Cartographic properties sealed at ingestion",
+        "sqlstate": "23514"
+      },
+      {
+        "field": "created_at",
+        "reason": "Immutable audit creation timestamp",
+        "sqlstate": "23514"
+      }
+    ],
+    "controlledLifecycleMutable": [
+      {
+        "field": "valid_to",
+        "actor": "service_role under statutory reorganization migration",
+        "allowedTransition": "NULL -> closed DATE >= valid_from. If already closed, alteration is STRICTLY FORBIDDEN.",
+        "sqlstate": "23514"
+      },
+      {
+        "field": "is_current",
+        "actor": "service_role under supersession migration",
+        "allowedTransition": "true -> false. Historical statutory baseline can NEVER transition to true.",
+        "sqlstate": "23514"
+      },
+      {
+        "field": "status",
+        "actor": "service_role under formal statutory deprecation",
+        "allowedTransition": "OFFICIAL -> SUPERSEDED, OFFICIAL -> DEPRECATED. Reversion to PROVISIONAL/PENDING is FORBIDDEN.",
+        "sqlstate": "23514"
+      },
+      {
+        "field": "updated_at",
+        "actor": "Automated database trigger",
+        "allowedTransition": "Set to now() on permitted lifecycle transitions",
+        "sqlstate": "N/A"
+      }
+    ]
+  },
+  "lineageTestMatrix": [
+    {
+      "id": "L1",
+      "name": "Matching dataset_version + matching provenance",
+      "expected": "PASS",
+      "observed": "PASS"
+    },
+    {
+      "id": "L2",
+      "name": "Mismatched dataset_version + provenance",
+      "expected": "FAIL (SQLSTATE 23514)",
+      "observed": "PASS"
+    },
+    {
+      "id": "L3",
+      "name": "Provenance from unrelated dataset",
+      "expected": "FAIL (SQLSTATE 23514)",
+      "observed": "PASS"
+    },
+    {
+      "id": "L4",
+      "name": "Provenance without required evidence (NULL verification_evidence_id)",
+      "expected": "FAIL (SQLSTATE 23514)",
+      "observed": "PASS"
+    },
+    {
+      "id": "L5",
+      "name": "W016 spatial provenance e016...1013",
+      "expected": "PASS in W016 ingestion contract",
+      "observed": "PASS"
+    },
+    {
+      "id": "L6",
+      "name": "Another legitimate future spatial evidence record (future_cartographic_2026_v1)",
+      "expected": "PASS (Proves generic reusability without W016 hardcoding)",
+      "observed": "PASS"
+    }
+  ],
+  "idempotencyTestMatrix": [
+    {
+      "id": "I1 (Case A)",
+      "name": "Exact replay with identity verification",
+      "expected": "IDEMPOTENT SUCCESS (no duplicate)",
+      "observed": "PASS"
+    },
+    {
+      "id": "I2 (Case B)",
+      "name": "Same version + conflicting governed field (snapshot_date)",
+      "expected": "FAIL (SQLSTATE 23505 / 23514)",
+      "observed": "PASS"
+    },
+    {
+      "id": "I3 (Case C)",
+      "name": "Same version + conflicting geometry",
+      "expected": "FAIL (SQLSTATE 23505 / 23514)",
+      "observed": "PASS"
+    },
+    {
+      "id": "I4 (Case D)",
+      "name": "Same version + conflicting provenance",
+      "expected": "FAIL (SQLSTATE 23505 / 23514)",
+      "observed": "PASS"
+    },
+    {
+      "id": "I5 (Case E)",
+      "name": "Same version + conflicting artifact SHA",
+      "expected": "FAIL (SQLSTATE 23505 / 23514)",
+      "observed": "PASS"
+    },
+    {
+      "id": "I6 (Case F)",
+      "name": "Conflicting source FID collision across targets",
+      "expected": "FAIL (Caught by ingestion contract)",
+      "observed": "PASS"
+    },
+    {
+      "id": "I7 (Case G)",
+      "name": "Exact replay after transaction retry",
+      "expected": "SUCCESS (exactly 1 row persists)",
+      "observed": "PASS"
+    },
+    {
+      "id": "I8 (Case H)",
+      "name": "Conflicting replay",
+      "expected": "EXPLICIT FAILURE (never silent DO NOTHING)",
+      "observed": "PASS"
+    }
+  ]
+}

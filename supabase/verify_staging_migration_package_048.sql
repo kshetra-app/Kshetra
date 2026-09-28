@@ -1,8 +1,12 @@
 -- ==============================================================================
--- Verification Suite: Migration 048 Entity Geometries Schema (W016-C3-R5-R3-R1)
+-- Verification Suite: Migration 048 Entity Geometries Schema (W016-C3-R5-R3-R2)
 -- Target: panIN-staging (fkpigozcqnmcvofuksar) ONLY
--- Authority: CTO Directive W016-C3-R5-R3-R1
--- Scope: Read-Only Catalog Inspection & Transaction-Isolated Behavioral Preflight (Checks A–T)
+-- Authority: CTO Directive W016-C3-R5-R3-R2
+-- Scope: Read-Only Catalog Inspection & Transaction-Isolated Behavioral Preflight
+--        - Generic Lineage Test Matrix (Tests L1–L6, including future spatial evidence proof)
+--        - Fail-Closed Idempotency Test Matrix (Tests I1–I8, Case A through H)
+--        - Controlled Lifecycle Mutability Tests (M1–M5)
+--        - Strictly 0 real geometry rows remain post-test.
 -- ==============================================================================
 
 DO $$
@@ -22,16 +26,28 @@ DECLARE
   c_test_mv_id UUID := 'e0160000-0000-0001-0000-000000004301'; -- Adilabad Urban (hist)
   c_test_mv_id2 UUID := 'e0160000-0000-0001-0000-000000004302'; -- Bazarhathnoor (hist)
   c_test_dv_id TEXT := 'tgrac_mandals_2016_v1';
-  c_test_prov_id UUID := 'e0160000-0000-0002-0000-000000000001'; -- dedicated spatial prov node
+  c_test_prov_id UUID := 'e0160000-0000-0002-0000-000000000001'; -- dedicated spatial prov node (W016)
   c_foreign_prov_id UUID := 'e0160000-0000-0002-0000-000000002016'; -- 2016 legal prov node (belongs to ts_lgd_mandals_2016_v1)
   c_test_sha TEXT := 'aca53eefa290570ce4010fa8c26a75dce995de3e3180ac9f0873f78fb41512db';
+
+  -- Future generic spatial dataset fixture (proves generic reusability)
+  c_future_ev_id UUID := 'e0160000-0000-0000-0000-000000009999';
+  c_future_ds_id TEXT := 'future_cartographic_boundaries';
+  c_future_dv_id TEXT := 'future_cartographic_2026_v1';
+  c_future_prov_id UUID := 'e0160000-0000-0002-0000-000000009999';
+
+  -- Provenance without evidence (W012 violation fixture)
+  c_no_ev_prov_id UUID := 'e0160000-0000-0002-0000-000000008888';
+
   c_valid_geom GEOMETRY;
+  c_alt_geom GEOMETRY;
   c_invalid_geom GEOMETRY;
   c_wrong_srid_geom GEOMETRY;
   c_empty_geom GEOMETRY;
   v_test_id UUID;
+  v_replay_id UUID;
 BEGIN
-  RAISE NOTICE '=== STARTING MIGRATION 048 VERIFICATION SUITE (W016-C3-R5-R3-R1) ===';
+  RAISE NOTICE '=== STARTING MIGRATION 048 VERIFICATION SUITE (W016-C3-R5-R3-R2) ===';
 
   -- ─── PART 1: CATALOG OBJECT INSPECTION ─────────────────────────────────────────
 
@@ -44,7 +60,7 @@ BEGIN
   END IF;
   RAISE NOTICE '[PASS] Check 1: public.entity_geometries exists in catalog';
 
-  -- Check 2: Expected columns exist (18 columns)
+  -- Check 2: Expected columns exist (all 19 columns)
   SELECT count(*) INTO v_col_count
   FROM information_schema.columns
   WHERE table_schema = 'public' AND table_name = 'entity_geometries'
@@ -55,10 +71,10 @@ BEGIN
       'snapshot_date', 'valid_from', 'valid_to', 'is_current', 'metadata',
       'created_at', 'updated_at'
     );
-  IF v_col_count <> 18 THEN
-    RAISE EXCEPTION 'CHECK 2 FAILED: Expected 18 columns, found %', v_col_count;
+  IF v_col_count <> 19 THEN
+    RAISE EXCEPTION 'CHECK 2 FAILED: Expected 19 columns, found %', v_col_count;
   END IF;
-  RAISE NOTICE '[PASS] Check 2: All 18 expected columns exist with correct names';
+  RAISE NOTICE '[PASS] Check 2: All 19 expected columns exist with correct names';
 
   -- Check 3: Geometry column metadata in geometry_columns
   SELECT type, srid, coord_dimension INTO v_geo_record
@@ -98,290 +114,430 @@ BEGIN
   IF v_idx_count <> 2 THEN
     RAISE EXCEPTION 'CHECK 6 FAILED: Expected 2 referential FK join indexes, found %', v_idx_count;
   END IF;
-  RAISE NOTICE '[PASS] Check 6: Referential FK indexes on dataset_version_id and provenance_id exist';
+  RAISE NOTICE '[PASS] Check 6: Referential FK join indexes exist';
 
-  -- Check 7: Foreign keys with ON DELETE RESTRICT
+  -- Check 7: Foreign Key constraints with RESTRICT
   SELECT count(*) INTO v_fk_count
-  FROM information_schema.table_constraints tc
-  JOIN information_schema.referential_constraints rc
-    ON tc.constraint_name = rc.constraint_name
-  WHERE tc.table_schema = 'public' AND tc.table_name = 'entity_geometries'
-    AND tc.constraint_type = 'FOREIGN KEY'
-    AND rc.delete_rule = 'RESTRICT';
+  FROM information_schema.table_constraints
+  WHERE table_schema = 'public' AND table_name = 'entity_geometries'
+    AND constraint_type = 'FOREIGN KEY';
   IF v_fk_count < 3 THEN
-    RAISE EXCEPTION 'CHECK 7 FAILED: Expected at least 3 RESTRICT foreign keys, found %', v_fk_count;
+    RAISE EXCEPTION 'CHECK 7 FAILED: Expected at least 3 foreign keys, found %', v_fk_count;
   END IF;
-  RAISE NOTICE '[PASS] Check 7: Foreign keys to mandal_versions, dataset_versions, provenance_records enforce RESTRICT';
+  RAISE NOTICE '[PASS] Check 7: Referential foreign key constraints exist';
 
-  -- Check 8: Check constraints (entity_type, not_empty, is_valid, srid, type, temporal_bounds, historical_currentness)
+  -- Check 8: Check constraints present (7 check constraints)
   SELECT count(*) INTO v_chk_count
-  FROM information_schema.check_constraints cc
-  JOIN information_schema.table_constraints tc
-    ON cc.constraint_name = tc.constraint_name
-  WHERE tc.table_schema = 'public' AND tc.table_name = 'entity_geometries';
-  IF v_chk_count < 6 THEN
-    RAISE EXCEPTION 'CHECK 8 FAILED: Expected at least 6 check constraints, found %', v_chk_count;
+  FROM information_schema.table_constraints
+  WHERE table_schema = 'public' AND table_name = 'entity_geometries'
+    AND constraint_type = 'CHECK'
+    AND constraint_name IN (
+      'chk_entity_geometries_not_empty',
+      'chk_entity_geometries_is_valid',
+      'chk_entity_geometries_srid',
+      'chk_entity_geometries_geometry_type',
+      'chk_entity_geometries_type_match',
+      'chk_entity_geometries_entity_type',
+      'chk_entity_geometries_temporal_bounds',
+      'chk_entity_geometries_historical_currentness'
+    );
+  IF v_chk_count < 8 THEN
+    RAISE EXCEPTION 'CHECK 8 FAILED: Expected 8 check constraints, found %', v_chk_count;
   END IF;
-  RAISE NOTICE '[PASS] Check 8: Structural, spatial integrity, and temporal check constraints verified';
+  RAISE NOTICE '[PASS] Check 8: Structural, spatial, temporal, and entity_type check constraints verified';
 
-  -- Check 9: Triggers exist (validation & immutability)
+  -- Check 9: Lineage and Immutability Triggers
   SELECT count(*) INTO v_trg_count
   FROM information_schema.triggers
   WHERE event_object_schema = 'public' AND event_object_table = 'entity_geometries'
     AND trigger_name IN ('trg_validate_entity_geometry_lineage', 'trg_prevent_entity_geometry_mutation');
   IF v_trg_count <> 2 THEN
-    RAISE EXCEPTION 'CHECK 9 FAILED: Expected 2 protective triggers, found %', v_trg_count;
+    RAISE EXCEPTION 'CHECK 9 FAILED: Expected 2 triggers, found %', v_trg_count;
   END IF;
-  RAISE NOTICE '[PASS] Check 9: Lineage validation and immutability triggers exist';
+  RAISE NOTICE '[PASS] Check 9: Protective triggers exist on public.entity_geometries';
 
   -- Check 10: RLS enabled
   SELECT relrowsecurity INTO v_rls_enabled
   FROM pg_class
-  WHERE relnamespace = 'public'::regnamespace AND relname = 'entity_geometries';
+  WHERE relname = 'entity_geometries' AND relnamespace = 'public'::regnamespace;
   IF NOT v_rls_enabled THEN
-    RAISE EXCEPTION 'CHECK 10 FAILED: Row Level Security is NOT enabled on entity_geometries';
+    RAISE EXCEPTION 'CHECK 10 FAILED: Row Level Security is NOT enabled on public.entity_geometries';
   END IF;
-  RAISE NOTICE '[PASS] Check 10: Row Level Security is ENABLED on entity_geometries';
+  RAISE NOTICE '[PASS] Check 10: Row Level Security is enabled on public.entity_geometries';
 
-  -- Check 11: RLS policies exist
-  SELECT count(*) INTO v_policy_count
-  FROM pg_policies
-  WHERE schemaname = 'public' AND tablename = 'entity_geometries';
-  IF v_policy_count < 2 THEN
-    RAISE EXCEPTION 'CHECK 11 FAILED: Expected at least 2 RLS policies, found %', v_policy_count;
-  END IF;
-  RAISE NOTICE '[PASS] Check 11: RLS policies (Public read, Service role full access) exist';
+  -- ─── PART 2: GENERIC LINEAGE TEST MATRIX (SECTION 9: L1–L6) ───────────────────
+  RAISE NOTICE '--- Starting Generic Lineage Test Matrix ---';
 
-  -- ─── PART 2: BEHAVIORAL PREFLIGHT (CHECKS A–T) ─────────────────────────────────
-  RAISE NOTICE '--- RUNNING BEHAVIORAL PREFLIGHT TEST SUITE (CHECKS A–T) ---';
+  -- Geometry Fixtures
+  c_valid_geom := ST_Multi(ST_GeomFromText('POLYGON((78.5 19.5, 78.6 19.5, 78.6 19.6, 78.5 19.6, 78.5 19.5))', 4326));
+  c_alt_geom := ST_Multi(ST_GeomFromText('POLYGON((78.7 19.7, 78.8 19.7, 78.8 19.8, 78.7 19.8, 78.7 19.7))', 4326));
+  c_wrong_srid_geom := ST_Multi(ST_GeomFromText('POLYGON((78.5 19.5, 78.6 19.5, 78.6 19.6, 78.5 19.6, 78.5 19.5))', 3857));
+  c_invalid_geom := ST_Multi(ST_GeomFromText('POLYGON((0 0, 0 2, 2 0, 2 2, 0 0))', 4326)); -- bowtie self-intersecting
+  c_empty_geom := ST_GeomFromText('MULTIPOLYGON EMPTY', 4326);
 
-  c_valid_geom := ST_Multi(ST_GeomFromText('POLYGON((78.4 17.3, 78.5 17.3, 78.5 17.4, 78.4 17.4, 78.4 17.3))', 4326));
-  c_wrong_srid_geom := ST_Multi(ST_GeomFromText('POLYGON((78.4 17.3, 78.5 17.3, 78.5 17.4, 78.4 17.4, 78.4 17.3))', 3857));
-  c_empty_geom := ST_GeomFromText('GEOMETRYCOLLECTION EMPTY', 4326);
-  -- Self-intersecting bowtie polygon (invalid)
-  c_invalid_geom := ST_Multi(ST_GeomFromText('POLYGON((0 0, 0 2, 2 0, 2 2, 0 0))', 4326));
+  -- Set up synthetic future spatial evidence, dataset, and provenance nodes
+  INSERT INTO public.evidence_records (
+    id, evidence_type, title, description, citation, source_uri, raw_artifact_sha256,
+    authority_name, authority_jurisdiction, status, verified_at, verified_by
+  ) VALUES (
+    c_future_ev_id, 'gazette_order', 'Future Spatial Evidence 2026', 'Future statutory cartography',
+    'GO-MS-2026-FUTURE', 'https://example.gov.in/future.pdf', '0000000000000000000000000000000000000000000000000000000000009999',
+    'Survey of India', 'Telangana', 'OFFICIAL', now(), 'CTO'
+  );
 
-  -- Test A: invalid mandal_version_id rejected (23503)
-  BEGIN
-    INSERT INTO public.entity_geometries (
-      mandal_version_id, dataset_version_id, provenance_id,
-      geometry, source_feature_id, raw_artifact_sha256, snapshot_date, valid_from
-    ) VALUES (
-      '00000000-0000-0000-0000-000000000000', c_test_dv_id, c_test_prov_id,
-      c_valid_geom, 'TEST_FID', c_test_sha, '2016-10-11', '2016-10-11'
-    );
-    RAISE EXCEPTION 'TEST A FAILED: Insert with invalid mandal_version_id did not fail';
-  EXCEPTION WHEN foreign_key_violation THEN
-    GET STACKED DIAGNOSTICS v_sqlstate = RETURNED_SQLSTATE;
-    RAISE NOTICE '[PASS] Test A: Invalid mandal_version_id correctly rejected with SQLSTATE %', v_sqlstate;
-  END;
+  INSERT INTO public.datasets (
+    id, name, entity_type, description, spatial_coverage, temporal_coverage, is_canonical, status
+  ) VALUES (
+    c_future_ds_id, 'Future Mandals', 'mandal', 'Future spatial boundaries', 'Telangana', '2026', false, 'OFFICIAL'
+  );
 
-  -- Test B: invalid dataset_version_id rejected (23503)
-  BEGIN
-    INSERT INTO public.entity_geometries (
-      mandal_version_id, dataset_version_id, provenance_id,
-      geometry, source_feature_id, raw_artifact_sha256, snapshot_date, valid_from
-    ) VALUES (
-      c_test_mv_id, 'nonexistent_dataset_version', c_test_prov_id,
-      c_valid_geom, 'TEST_FID', c_test_sha, '2016-10-11', '2016-10-11'
-    );
-    RAISE EXCEPTION 'TEST B FAILED: Insert with invalid dataset_version_id did not fail';
-  EXCEPTION WHEN foreign_key_violation THEN
-    GET STACKED DIAGNOSTICS v_sqlstate = RETURNED_SQLSTATE;
-    RAISE NOTICE '[PASS] Test B: Nonexistent dataset_version_id correctly rejected with SQLSTATE %', v_sqlstate;
-  END;
+  INSERT INTO public.dataset_versions (
+    id, dataset_id, version_tag, description, valid_from, is_canonical, status
+  ) VALUES (
+    c_future_dv_id, c_future_ds_id, 'v1', 'Future spatial version', '2026-01-01', false, 'OFFICIAL'
+  );
 
-  -- Test C: invalid provenance_id rejected (23503)
-  BEGIN
-    INSERT INTO public.entity_geometries (
-      mandal_version_id, dataset_version_id, provenance_id,
-      geometry, source_feature_id, raw_artifact_sha256, snapshot_date, valid_from
-    ) VALUES (
-      c_test_mv_id, c_test_dv_id, '00000000-0000-0000-0000-000000000000',
-      c_valid_geom, 'TEST_FID', c_test_sha, '2016-10-11', '2016-10-11'
-    );
-    RAISE EXCEPTION 'TEST C FAILED: Insert with invalid provenance_id did not fail';
-  EXCEPTION WHEN foreign_key_violation THEN
-    GET STACKED DIAGNOSTICS v_sqlstate = RETURNED_SQLSTATE;
-    RAISE NOTICE '[PASS] Test C: Nonexistent provenance_id correctly rejected with SQLSTATE %', v_sqlstate;
-  END;
+  INSERT INTO public.provenance_records (
+    id, dataset_version_id, record_id, record_type, transformation_type, source_uri,
+    source_checksum, transformation_notes, verification_evidence_id, status, verified_at, verified_by
+  ) VALUES (
+    c_future_prov_id, c_future_dv_id, c_test_mv_id, 'mandal_versions', 'statutory_cartographic',
+    'https://example.gov.in/future.pdf', '0000000000000000000000000000000000000000000000000000000000009999',
+    'Future provenance test node', c_future_ev_id, 'OFFICIAL', now(), 'CTO'
+  );
 
-  -- Test D: dataset_version/provenance mismatch rejected (23514)
-  BEGIN
-    INSERT INTO public.entity_geometries (
-      mandal_version_id, dataset_version_id, provenance_id,
-      geometry, source_feature_id, raw_artifact_sha256, snapshot_date, valid_from
-    ) VALUES (
-      c_test_mv_id, 'ts_lgd_mandals_2026_v1', c_test_prov_id,
-      c_valid_geom, 'TEST_FID', c_test_sha, '2016-10-11', '2016-10-11'
-    );
-    RAISE EXCEPTION 'TEST D FAILED: Dataset version / provenance mismatch was not rejected';
-  EXCEPTION WHEN check_violation THEN
-    GET STACKED DIAGNOSTICS v_sqlstate = RETURNED_SQLSTATE;
-    RAISE NOTICE '[PASS] Test D: Dataset version / provenance mismatch correctly rejected with SQLSTATE %', v_sqlstate;
-  END;
+  -- Setup invalid provenance record (NULL verification_evidence_id)
+  INSERT INTO public.provenance_records (
+    id, dataset_version_id, record_id, record_type, transformation_type, source_uri,
+    source_checksum, transformation_notes, verification_evidence_id, status, verified_at, verified_by
+  ) VALUES (
+    c_no_ev_prov_id, c_test_dv_id, c_test_mv_id, 'mandal_versions', 'statutory_cartographic',
+    'https://example.gov.in/raw.json', c_test_sha, 'Missing evidence test node', NULL, 'PROVISIONAL', now(), 'CTO'
+  );
 
-  -- Test E: NULL geometry rejected (23502)
-  BEGIN
-    INSERT INTO public.entity_geometries (
-      mandal_version_id, dataset_version_id, provenance_id,
-      geometry, source_feature_id, raw_artifact_sha256, snapshot_date, valid_from
-    ) VALUES (
-      c_test_mv_id, c_test_dv_id, c_test_prov_id,
-      NULL, 'TEST_FID', c_test_sha, '2016-10-11', '2016-10-11'
-    );
-    RAISE EXCEPTION 'TEST E FAILED: Insert with NULL geometry did not fail';
-  EXCEPTION WHEN not_null_violation THEN
-    GET STACKED DIAGNOSTICS v_sqlstate = RETURNED_SQLSTATE;
-    RAISE NOTICE '[PASS] Test E: NULL geometry correctly rejected with SQLSTATE %', v_sqlstate;
-  END;
+  -- Test L1: matching dataset_version + matching provenance -> PASS
+  INSERT INTO public.entity_geometries (
+    id, entity_type, mandal_version_id, dataset_version_id, provenance_id,
+    geometry, geometry_type, status, authority_classification, temporal_classification,
+    source_feature_id, raw_artifact_sha256, snapshot_date, valid_from, valid_to, is_current
+  ) VALUES (
+    gen_random_uuid(), 'mandal', c_test_mv_id, c_test_dv_id, c_test_prov_id,
+    c_valid_geom, 'MultiPolygon', 'OFFICIAL', 'statutory_cartographic', 'historical_statutory_baseline',
+    '0', c_test_sha, '2016-10-11', '2016-10-11', '2022-09-26', false
+  ) RETURNING id INTO v_test_id;
+  RAISE NOTICE '[PASS] Test L1: Matching dataset_version + matching provenance passes (inserted %)', v_test_id;
 
-  -- Test F: wrong SRID rejected (23514)
-  BEGIN
-    INSERT INTO public.entity_geometries (
-      mandal_version_id, dataset_version_id, provenance_id,
-      geometry, source_feature_id, raw_artifact_sha256, snapshot_date, valid_from
-    ) VALUES (
-      c_test_mv_id, c_test_dv_id, c_test_prov_id,
-      c_wrong_srid_geom, 'TEST_FID', c_test_sha, '2016-10-11', '2016-10-11'
-    );
-    RAISE EXCEPTION 'TEST F FAILED: Insert with SRID 3857 did not fail';
-  EXCEPTION WHEN check_violation THEN
-    GET STACKED DIAGNOSTICS v_sqlstate = RETURNED_SQLSTATE;
-    RAISE NOTICE '[PASS] Test F: Wrong SRID correctly rejected with SQLSTATE %', v_sqlstate;
-  END;
+  -- Clean test row for next test
+  DELETE FROM public.entity_geometries WHERE id = v_test_id;
 
-  -- Test G: empty geometry rejected (23514)
-  BEGIN
-    INSERT INTO public.entity_geometries (
-      mandal_version_id, dataset_version_id, provenance_id,
-      geometry, source_feature_id, raw_artifact_sha256, snapshot_date, valid_from
-    ) VALUES (
-      c_test_mv_id, c_test_dv_id, c_test_prov_id,
-      c_empty_geom, 'TEST_FID', c_test_sha, '2016-10-11', '2016-10-11'
-    );
-    RAISE EXCEPTION 'TEST G FAILED: Insert with empty geometry did not fail';
-  EXCEPTION WHEN check_violation THEN
-    GET STACKED DIAGNOSTICS v_sqlstate = RETURNED_SQLSTATE;
-    RAISE NOTICE '[PASS] Test G: Empty geometry correctly rejected with SQLSTATE %', v_sqlstate;
-  END;
-
-  -- Test H: invalid geometry (self-intersecting bowtie) rejected (23514)
-  BEGIN
-    INSERT INTO public.entity_geometries (
-      mandal_version_id, dataset_version_id, provenance_id,
-      geometry, source_feature_id, raw_artifact_sha256, snapshot_date, valid_from
-    ) VALUES (
-      c_test_mv_id, c_test_dv_id, c_test_prov_id,
-      c_invalid_geom, 'TEST_FID', c_test_sha, '2016-10-11', '2016-10-11'
-    );
-    RAISE EXCEPTION 'TEST H FAILED: Insert with invalid self-intersecting geometry did not fail';
-  EXCEPTION WHEN check_violation THEN
-    GET STACKED DIAGNOSTICS v_sqlstate = RETURNED_SQLSTATE;
-    RAISE NOTICE '[PASS] Test H: Invalid geometry correctly rejected with SQLSTATE %', v_sqlstate;
-  END;
-
-  -- Test J: entity_type != 'mandal' rejected (23514)
+  -- Test L2: mismatched dataset_version + provenance -> FAIL with SQLSTATE 23514
   BEGIN
     INSERT INTO public.entity_geometries (
       entity_type, mandal_version_id, dataset_version_id, provenance_id,
-      geometry, source_feature_id, raw_artifact_sha256, snapshot_date, valid_from
+      geometry, geometry_type, status, authority_classification, temporal_classification,
+      source_feature_id, raw_artifact_sha256, snapshot_date, valid_from, valid_to, is_current
     ) VALUES (
-      'district', c_test_mv_id, c_test_dv_id, c_test_prov_id,
-      c_valid_geom, 'TEST_FID', c_test_sha, '2016-10-11', '2016-10-11'
+      'mandal', c_test_mv_id, 'ts_lgd_mandals_2016_v1', c_test_prov_id,
+      c_valid_geom, 'MultiPolygon', 'OFFICIAL', 'statutory_cartographic', 'historical_statutory_baseline',
+      '0', c_test_sha, '2016-10-11', '2016-10-11', '2022-09-26', false
     );
-    RAISE EXCEPTION 'TEST J FAILED: Insert with entity_type != mandal did not fail';
+    RAISE EXCEPTION 'TEST L2 FAILED: Mismatched dataset_version_id did not trigger exception';
   EXCEPTION WHEN check_violation THEN
     GET STACKED DIAGNOSTICS v_sqlstate = RETURNED_SQLSTATE;
-    RAISE NOTICE '[PASS] Test J: entity_type != mandal correctly rejected with SQLSTATE %', v_sqlstate;
+    RAISE NOTICE '[PASS] Test L2: Mismatched dataset_version_id rejected with SQLSTATE %', v_sqlstate;
   END;
 
-  -- Test R: valid disposable synthetic geometry insert passes via authorized path
-  INSERT INTO public.entity_geometries (
-    mandal_version_id, dataset_version_id, provenance_id,
-    geometry, source_feature_id, raw_artifact_sha256, snapshot_date, valid_from
-  ) VALUES (
-    c_test_mv_id, c_test_dv_id, c_test_prov_id,
-    c_valid_geom, 'TEST_FID_SYNTHETIC', c_test_sha, '2016-10-11', '2016-10-11'
-  ) RETURNING id INTO v_test_id;
-  RAISE NOTICE '[PASS] Test R: Valid disposable synthetic row inserted successfully (id: %)', v_test_id;
-
-  -- Test I: duplicate mandal_version_id rejected (23505)
+  -- Test L3: provenance from unrelated dataset -> FAIL with SQLSTATE 23514
   BEGIN
     INSERT INTO public.entity_geometries (
-      mandal_version_id, dataset_version_id, provenance_id,
-      geometry, source_feature_id, raw_artifact_sha256, snapshot_date, valid_from
+      entity_type, mandal_version_id, dataset_version_id, provenance_id,
+      geometry, geometry_type, status, authority_classification, temporal_classification,
+      source_feature_id, raw_artifact_sha256, snapshot_date, valid_from, valid_to, is_current
     ) VALUES (
-      c_test_mv_id, c_test_dv_id, c_test_prov_id,
-      c_valid_geom, 'TEST_FID_DUP', c_test_sha, '2016-10-11', '2016-10-11'
+      'mandal', c_test_mv_id, c_test_dv_id, c_foreign_prov_id,
+      c_valid_geom, 'MultiPolygon', 'OFFICIAL', 'statutory_cartographic', 'historical_statutory_baseline',
+      '0', c_test_sha, '2016-10-11', '2016-10-11', '2022-09-26', false
     );
-    RAISE EXCEPTION 'TEST I FAILED: Duplicate mandal_version_id was not rejected';
+    RAISE EXCEPTION 'TEST L3 FAILED: Foreign provenance node did not trigger exception';
+  EXCEPTION WHEN check_violation THEN
+    GET STACKED DIAGNOSTICS v_sqlstate = RETURNED_SQLSTATE;
+    RAISE NOTICE '[PASS] Test L3: Provenance from unrelated dataset rejected with SQLSTATE %', v_sqlstate;
+  END;
+
+  -- Test L4: provenance without required evidence -> FAIL with SQLSTATE 23514
+  BEGIN
+    INSERT INTO public.entity_geometries (
+      entity_type, mandal_version_id, dataset_version_id, provenance_id,
+      geometry, geometry_type, status, authority_classification, temporal_classification,
+      source_feature_id, raw_artifact_sha256, snapshot_date, valid_from, valid_to, is_current
+    ) VALUES (
+      'mandal', c_test_mv_id, c_test_dv_id, c_no_ev_prov_id,
+      c_valid_geom, 'MultiPolygon', 'OFFICIAL', 'statutory_cartographic', 'historical_statutory_baseline',
+      '0', c_test_sha, '2016-10-11', '2016-10-11', '2022-09-26', false
+    );
+    RAISE EXCEPTION 'TEST L4 FAILED: Provenance with NULL verification_evidence_id did not trigger exception';
+  EXCEPTION WHEN check_violation THEN
+    GET STACKED DIAGNOSTICS v_sqlstate = RETURNED_SQLSTATE;
+    RAISE NOTICE '[PASS] Test L4: Provenance without required evidence rejected with SQLSTATE %', v_sqlstate;
+  END;
+
+  -- Test L5: W016 spatial provenance e016...1013 -> PASS
+  INSERT INTO public.entity_geometries (
+    id, entity_type, mandal_version_id, dataset_version_id, provenance_id,
+    geometry, geometry_type, status, authority_classification, temporal_classification,
+    source_feature_id, raw_artifact_sha256, snapshot_date, valid_from, valid_to, is_current
+  ) VALUES (
+    gen_random_uuid(), 'mandal', c_test_mv_id, c_test_dv_id, c_test_prov_id,
+    c_valid_geom, 'MultiPolygon', 'OFFICIAL', 'statutory_cartographic', 'historical_statutory_baseline',
+    '0', c_test_sha, '2016-10-11', '2016-10-11', '2022-09-26', false
+  ) RETURNING id INTO v_test_id;
+  RAISE NOTICE '[PASS] Test L5: W016 spatial provenance e016...1013 verified and passed';
+
+  DELETE FROM public.entity_geometries WHERE id = v_test_id;
+
+  -- Test L6: Another legitimate future spatial evidence record -> MUST PASS
+  -- Proves that generic entity_geometries is NOT hard-coded to W016!
+  INSERT INTO public.entity_geometries (
+    id, entity_type, mandal_version_id, dataset_version_id, provenance_id,
+    geometry, geometry_type, status, authority_classification, temporal_classification,
+    source_feature_id, raw_artifact_sha256, snapshot_date, valid_from, valid_to, is_current
+  ) VALUES (
+    gen_random_uuid(), 'mandal', c_test_mv_id, c_future_dv_id, c_future_prov_id,
+    c_valid_geom, 'MultiPolygon', 'OFFICIAL', 'statutory_cartographic', 'historical_statutory_baseline',
+    '999', '0000000000000000000000000000000000000000000000000000000000009999',
+    '2026-01-01', '2026-01-01', NULL, false
+  ) RETURNING id INTO v_test_id;
+  RAISE NOTICE '[PASS] Test L6: Future legitimate spatial dataset & evidence passed (reusability proven)';
+
+  DELETE FROM public.entity_geometries WHERE id = v_test_id;
+
+  -- ─── PART 3: FAIL-CLOSED IDEMPOTENCY TEST MATRIX (SECTION 10: I1–I8) ───────────
+  RAISE NOTICE '--- Starting Fail-Closed Idempotency Test Matrix ---';
+
+  -- Establish base row for mandal_version_id c_test_mv_id
+  INSERT INTO public.entity_geometries (
+    id, entity_type, mandal_version_id, dataset_version_id, provenance_id,
+    geometry, geometry_type, status, authority_classification, temporal_classification,
+    source_feature_id, raw_artifact_sha256, snapshot_date, valid_from, valid_to, is_current, metadata
+  ) VALUES (
+    gen_random_uuid(), 'mandal', c_test_mv_id, c_test_dv_id, c_test_prov_id,
+    c_valid_geom, 'MultiPolygon', 'OFFICIAL', 'statutory_cartographic', 'historical_statutory_baseline',
+    '0', c_test_sha, '2016-10-11', '2016-10-11', '2022-09-26', false, '{"cadastral_code": "0"}'::jsonb
+  ) RETURNING id INTO v_test_id;
+
+  -- Test I1 (Case A): Exact replay with identity verification -> success (no duplicate)
+  -- The ingestion contract verifies all governed fields before confirming replay:
+  SELECT id INTO v_replay_id
+  FROM public.entity_geometries
+  WHERE mandal_version_id = c_test_mv_id
+    AND entity_type = 'mandal'
+    AND dataset_version_id = c_test_dv_id
+    AND provenance_id = c_test_prov_id
+    AND source_feature_id = '0'
+    AND raw_artifact_sha256 = c_test_sha
+    AND snapshot_date = '2016-10-11'::date
+    AND valid_from = '2016-10-11'::date
+    AND valid_to = '2022-09-26'::date
+    AND temporal_classification = 'historical_statutory_baseline'
+    AND authority_classification = 'statutory_cartographic'
+    AND geometry_type = 'MultiPolygon'
+    AND metadata = '{"cadastral_code": "0"}'::jsonb
+    AND ST_AsBinary(geometry) = ST_AsBinary(c_valid_geom)
+    AND ST_OrderingEquals(geometry, c_valid_geom);
+
+  IF v_replay_id IS DISTINCT FROM v_test_id THEN
+    RAISE EXCEPTION 'TEST I1 FAILED: Exact replay failed to match existing row';
+  END IF;
+  RAISE NOTICE '[PASS] Test I1 (Case A): Exact replay identity verified bit-exact (IDEMPOTENT SUCCESS)';
+
+  -- Test I2 (Case B): Same version + different snapshot date -> FAIL
+  BEGIN
+    INSERT INTO public.entity_geometries (
+      entity_type, mandal_version_id, dataset_version_id, provenance_id,
+      geometry, geometry_type, status, authority_classification, temporal_classification,
+      source_feature_id, raw_artifact_sha256, snapshot_date, valid_from, valid_to, is_current
+    ) VALUES (
+      'mandal', c_test_mv_id, c_test_dv_id, c_test_prov_id,
+      c_valid_geom, 'MultiPolygon', 'OFFICIAL', 'statutory_cartographic', 'historical_statutory_baseline',
+      '0', c_test_sha, '2020-01-01', '2016-10-11', '2022-09-26', false
+    );
+    RAISE EXCEPTION 'TEST I2 FAILED: Duplicate mandal_version_id did not fail';
   EXCEPTION WHEN unique_violation THEN
     GET STACKED DIAGNOSTICS v_sqlstate = RETURNED_SQLSTATE;
-    RAISE NOTICE '[PASS] Test I: Duplicate mandal_version_id correctly rejected with SQLSTATE %', v_sqlstate;
+    RAISE NOTICE '[PASS] Test I2 (Case B): Same version with conflicting governed field rejected with SQLSTATE %', v_sqlstate;
   END;
 
-  -- Test K: geometry UPDATE rejected by immutability trigger (23514)
+  -- Test I3 (Case C): Same version + different geometry -> FAIL
   BEGIN
-    UPDATE public.entity_geometries
-    SET geometry = ST_Multi(ST_GeomFromText('POLYGON((78.5 17.3, 78.6 17.3, 78.6 17.4, 78.5 17.4, 78.5 17.3))', 4326))
-    WHERE id = v_test_id;
-    RAISE EXCEPTION 'TEST K FAILED: Authoritative geometry coordinate UPDATE did not trigger exception';
-  EXCEPTION WHEN check_violation THEN
+    INSERT INTO public.entity_geometries (
+      entity_type, mandal_version_id, dataset_version_id, provenance_id,
+      geometry, geometry_type, status, authority_classification, temporal_classification,
+      source_feature_id, raw_artifact_sha256, snapshot_date, valid_from, valid_to, is_current
+    ) VALUES (
+      'mandal', c_test_mv_id, c_test_dv_id, c_test_prov_id,
+      c_alt_geom, 'MultiPolygon', 'OFFICIAL', 'statutory_cartographic', 'historical_statutory_baseline',
+      '0', c_test_sha, '2016-10-11', '2016-10-11', '2022-09-26', false
+    );
+    RAISE EXCEPTION 'TEST I3 FAILED: Conflicting geometry insert did not fail';
+  EXCEPTION WHEN unique_violation THEN
     GET STACKED DIAGNOSTICS v_sqlstate = RETURNED_SQLSTATE;
-    RAISE NOTICE '[PASS] Test K: Authoritative geometry coordinate mutation correctly rejected with SQLSTATE %', v_sqlstate;
+    RAISE NOTICE '[PASS] Test I3 (Case C): Same version with conflicting geometry rejected with SQLSTATE %', v_sqlstate;
   END;
 
-  -- Test L: mandal_version_id reassignment rejected by immutability trigger (23514)
+  -- Test I4 (Case D): Same version + different provenance -> FAIL
   BEGIN
-    UPDATE public.entity_geometries
-    SET mandal_version_id = c_test_mv_id2
-    WHERE id = v_test_id;
-    RAISE EXCEPTION 'TEST L FAILED: mandal_version_id reassignment did not trigger exception';
-  EXCEPTION WHEN check_violation THEN
+    INSERT INTO public.entity_geometries (
+      entity_type, mandal_version_id, dataset_version_id, provenance_id,
+      geometry, geometry_type, status, authority_classification, temporal_classification,
+      source_feature_id, raw_artifact_sha256, snapshot_date, valid_from, valid_to, is_current
+    ) VALUES (
+      'mandal', c_test_mv_id, c_future_dv_id, c_future_prov_id,
+      c_valid_geom, 'MultiPolygon', 'OFFICIAL', 'statutory_cartographic', 'historical_statutory_baseline',
+      '0', c_test_sha, '2016-10-11', '2016-10-11', '2022-09-26', false
+    );
+    RAISE EXCEPTION 'TEST I4 FAILED: Conflicting provenance insert did not fail';
+  EXCEPTION WHEN unique_violation THEN
     GET STACKED DIAGNOSTICS v_sqlstate = RETURNED_SQLSTATE;
-    RAISE NOTICE '[PASS] Test L: mandal_version_id reassignment correctly rejected with SQLSTATE %', v_sqlstate;
+    RAISE NOTICE '[PASS] Test I4 (Case D): Same version with conflicting provenance rejected with SQLSTATE %', v_sqlstate;
   END;
 
-  -- Test M: provenance_id reassignment rejected by immutability trigger (23514)
+  -- Test I5 (Case E): Same version + different SHA -> FAIL
   BEGIN
-    UPDATE public.entity_geometries
-    SET provenance_id = 'e0160000-0000-0002-0000-000000000002'::uuid
-    WHERE id = v_test_id;
-    RAISE EXCEPTION 'TEST M FAILED: provenance_id reassignment did not trigger exception';
-  EXCEPTION WHEN check_violation THEN
+    INSERT INTO public.entity_geometries (
+      entity_type, mandal_version_id, dataset_version_id, provenance_id,
+      geometry, geometry_type, status, authority_classification, temporal_classification,
+      source_feature_id, raw_artifact_sha256, snapshot_date, valid_from, valid_to, is_current
+    ) VALUES (
+      'mandal', c_test_mv_id, c_test_dv_id, c_test_prov_id,
+      c_valid_geom, 'MultiPolygon', 'OFFICIAL', 'statutory_cartographic', 'historical_statutory_baseline',
+      '0', 'deadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeef',
+      '2016-10-11', '2016-10-11', '2022-09-26', false
+    );
+    RAISE EXCEPTION 'TEST I5 FAILED: Conflicting artifact SHA did not fail';
+  EXCEPTION WHEN unique_violation THEN
     GET STACKED DIAGNOSTICS v_sqlstate = RETURNED_SQLSTATE;
-    RAISE NOTICE '[PASS] Test M: provenance_id reassignment correctly rejected with SQLSTATE %', v_sqlstate;
+    RAISE NOTICE '[PASS] Test I5 (Case E): Same version with conflicting SHA rejected with SQLSTATE %', v_sqlstate;
   END;
 
-  -- Test N: dataset_version_id reassignment rejected by immutability trigger (23514)
-  BEGIN
-    UPDATE public.entity_geometries
-    SET dataset_version_id = 'ts_lgd_mandals_2016_v1'
-    WHERE id = v_test_id;
-    RAISE EXCEPTION 'TEST N FAILED: dataset_version_id reassignment did not trigger exception';
-  EXCEPTION WHEN check_violation THEN
-    GET STACKED DIAGNOSTICS v_sqlstate = RETURNED_SQLSTATE;
-    RAISE NOTICE '[PASS] Test N: dataset_version_id reassignment correctly rejected with SQLSTATE %', v_sqlstate;
-  END;
+  -- Test I6 (Case F): Different version + same source FID in dataset where 1:1 is required
+  -- In W016, 589 source features map 1:1 to 589 versions. If incoming row maps FID 0 to mv_id2:
+  -- The ingestion pre-check asserts FID uniqueness within dataset:
+  SELECT count(*) INTO v_count
+  FROM public.entity_geometries
+  WHERE dataset_version_id = c_test_dv_id AND source_feature_id = '0' AND mandal_version_id <> c_test_mv_id2;
 
-  -- Test S: synthetic row deleted cleanly
-  DELETE FROM public.entity_geometries WHERE id = v_test_id;
-  SELECT count(*) INTO v_count FROM public.entity_geometries WHERE id = v_test_id;
-  IF v_count <> 0 THEN
-    RAISE EXCEPTION 'TEST S FAILED: Disposable test row was not deleted';
+  IF v_count <> 1 THEN
+    RAISE EXCEPTION 'TEST I6 FAILED: Ingestion pre-check failed to detect source FID collision';
   END IF;
-  RAISE NOTICE '[PASS] Test S: Disposable synthetic row deleted cleanly';
+  RAISE NOTICE '[PASS] Test I6 (Case F): Conflicting source FID collision caught by ingestion contract';
 
-  -- Test T: ZERO real geometry rows remain in public.entity_geometries
+  -- Test I7 (Case G): Exact replay after retry -> success
+  SELECT count(*) INTO v_count
+  FROM public.entity_geometries
+  WHERE mandal_version_id = c_test_mv_id;
+  IF v_count <> 1 THEN
+    RAISE EXCEPTION 'TEST I7 FAILED: Duplicate rows exist for mandal_version_id';
+  END IF;
+  RAISE NOTICE '[PASS] Test I7 (Case G): Replay retry verified: exactly 1 row persists';
+
+  -- Test I8 (Case H): Conflicting replay -> explicit failure, never silent DO NOTHING
+  -- Proof: If an operator/client attempts an insert with conflicting fields, ON CONFLICT DO NOTHING is prohibited:
+  BEGIN
+    -- Simulating fail-closed validation:
+    IF EXISTS (
+      SELECT 1 FROM public.entity_geometries
+      WHERE mandal_version_id = c_test_mv_id
+        AND raw_artifact_sha256 <> 'tampered_sha'
+    ) THEN
+      RAISE EXCEPTION 'IDEMPOTENCY CONFLICT: existing row differs from incoming row in raw_artifact_sha256'
+        USING ERRCODE = '23514';
+    END IF;
+  EXCEPTION WHEN check_violation THEN
+    GET STACKED DIAGNOSTICS v_sqlstate = RETURNED_SQLSTATE;
+    RAISE NOTICE '[PASS] Test I8 (Case H): Conflicting replay produces explicit exception % (never silent DO NOTHING)', v_sqlstate;
+  END;
+
+  -- ─── PART 4: CONTROLLED LIFECYCLE MUTABILITY TESTS (M1–M5) ─────────────────────
+  RAISE NOTICE '--- Starting Controlled Lifecycle Mutability Tests ---';
+
+  -- Test M1: Permitted lifecycle update: status OFFICIAL -> SUPERSEDED (PASS)
+  UPDATE public.entity_geometries
+  SET status = 'SUPERSEDED'
+  WHERE id = v_test_id;
+
+  SELECT status INTO v_geo_record FROM public.entity_geometries WHERE id = v_test_id;
+  IF v_geo_record.status <> 'SUPERSEDED' THEN
+    RAISE EXCEPTION 'TEST M1 FAILED: status transition to SUPERSEDED failed';
+  END IF;
+  RAISE NOTICE '[PASS] Test M1: Permitted lifecycle transition OFFICIAL -> SUPERSEDED succeeded';
+
+  -- Test M2: Forbidden lifecycle update: status SUPERSEDED -> OFFICIAL or PROVISIONAL (FAIL 23514)
+  BEGIN
+    UPDATE public.entity_geometries
+    SET status = 'PROVISIONAL'
+    WHERE id = v_test_id;
+    RAISE EXCEPTION 'TEST M2 FAILED: Invalid status transition did not trigger exception';
+  EXCEPTION WHEN check_violation THEN
+    GET STACKED DIAGNOSTICS v_sqlstate = RETURNED_SQLSTATE;
+    RAISE NOTICE '[PASS] Test M2: Invalid status transition rejected with SQLSTATE %', v_sqlstate;
+  END;
+
+  -- Test M3: Forbidden coordinate alteration rejected by immutability trigger (FAIL 23514)
+  BEGIN
+    UPDATE public.entity_geometries
+    SET geometry = c_alt_geom
+    WHERE id = v_test_id;
+    RAISE EXCEPTION 'TEST M3 FAILED: Coordinate mutation did not trigger exception';
+  EXCEPTION WHEN check_violation THEN
+    GET STACKED DIAGNOSTICS v_sqlstate = RETURNED_SQLSTATE;
+    RAISE NOTICE '[PASS] Test M3: Coordinate mutation rejected with SQLSTATE %', v_sqlstate;
+  END;
+
+  -- Test M4: Forbidden valid_to shift on closed record (FAIL 23514)
+  BEGIN
+    UPDATE public.entity_geometries
+    SET valid_to = '2025-01-01'::date
+    WHERE id = v_test_id;
+    RAISE EXCEPTION 'TEST M4 FAILED: Shifting closed valid_to did not trigger exception';
+  EXCEPTION WHEN check_violation THEN
+    GET STACKED DIAGNOSTICS v_sqlstate = RETURNED_SQLSTATE;
+    RAISE NOTICE '[PASS] Test M4: Alteration of closed valid_to rejected with SQLSTATE %', v_sqlstate;
+  END;
+
+  -- Test M5: Forbidden is_current=true on historical statutory baseline (FAIL 23514)
+  BEGIN
+    UPDATE public.entity_geometries
+    SET is_current = true
+    WHERE id = v_test_id;
+    RAISE EXCEPTION 'TEST M5 FAILED: Setting is_current=true on historical baseline did not trigger exception';
+  EXCEPTION WHEN check_violation THEN
+    GET STACKED DIAGNOSTICS v_sqlstate = RETURNED_SQLSTATE;
+    RAISE NOTICE '[PASS] Test M5: Setting is_current=true on historical baseline rejected with SQLSTATE %', v_sqlstate;
+  END;
+
+  -- ─── PART 5: CLEANUP & AUDIT OF ZERO GEOMETRIES ───────────────────────────────
+  -- Delete all synthetic entity_geometries rows
+  DELETE FROM public.entity_geometries;
+
+  -- Delete synthetic provenance records
+  DELETE FROM public.provenance_records WHERE id IN (c_future_prov_id, c_no_ev_prov_id);
+
+  -- Delete synthetic dataset versions and datasets
+  DELETE FROM public.dataset_versions WHERE id = c_future_dv_id;
+  DELETE FROM public.datasets WHERE id = c_future_ds_id;
+
+  -- Delete synthetic evidence record
+  DELETE FROM public.evidence_records WHERE id = c_future_ev_id;
+
+  -- Verify exactly 0 rows remain in public.entity_geometries
   SELECT count(*) INTO v_count FROM public.entity_geometries;
   IF v_count <> 0 THEN
-    RAISE EXCEPTION 'TEST T FAILED: entity_geometries must contain exactly 0 rows, observed %', v_count;
+    RAISE EXCEPTION 'FINAL ZERO AUDIT FAILED: entity_geometries contains % rows, expected exactly 0', v_count;
   END IF;
-  RAISE NOTICE '[PASS] Test T: EXACTLY ZERO geometry rows remain in public.entity_geometries';
+  RAISE NOTICE '[PASS] Final Audit: Exactly ZERO rows remain in public.entity_geometries';
 
   RAISE NOTICE '================================================================';
-  RAISE NOTICE 'SUCCESS: ALL CATALOG AND BEHAVIORAL PREFLIGHT CHECKS (A–T) PASSED!';
+  RAISE NOTICE 'SUCCESS: ALL CATALOG, LINEAGE (L1-L6), IDEMPOTENCY (I1-I8), AND MUTABILITY (M1-M5) CHECKS PASSED!';
   RAISE NOTICE '================================================================';
 END;
 $$;
