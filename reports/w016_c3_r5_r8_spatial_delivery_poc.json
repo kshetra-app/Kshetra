@@ -1,0 +1,307 @@
+{
+  "job": "W016-C3-R5-R8",
+  "title": "Controlled Spatial Delivery Proof-of-Concept",
+  "status": "POC_COMPLETE",
+  "terminalStatus": "W016-C3-R5-R8 POC COMPLETE — READY FOR CTO REVIEW",
+  "timestamp": "2026-09-28T12:29:55.270Z",
+  "target": "panIN-staging (fkpigozcqnmcvofuksar)",
+  "productionAirGap": "ehfafcnimmjusyvplbah (STRICTLY AIR-GAPPED & UNTOUCHED)",
+  "databaseFetchTimeMs": 11449,
+  "empiricalMeasurements": [
+    {
+      "tile": "z8/184/115",
+      "label": "Central TS (dense)",
+      "featureCount": 137,
+      "rawBytes": 359437,
+      "gzipBytes": 135457,
+      "generationTimeMs": 414
+    },
+    {
+      "tile": "z9/369/230",
+      "label": "FID 286 (repaired)",
+      "featureCount": 47,
+      "rawBytes": 107944,
+      "gzipBytes": 53979,
+      "generationTimeMs": 72
+    },
+    {
+      "tile": "z9/368/231",
+      "label": "FID 292 (repaired)",
+      "featureCount": 38,
+      "rawBytes": 120254,
+      "gzipBytes": 56687,
+      "generationTimeMs": 59
+    },
+    {
+      "tile": "z9/368/230",
+      "label": "FID 523 (repaired)",
+      "featureCount": 45,
+      "rawBytes": 117457,
+      "gzipBytes": 56620,
+      "generationTimeMs": 59
+    },
+    {
+      "tile": "z8/183/113",
+      "label": "Northern TS (Adilabad)",
+      "featureCount": 19,
+      "rawBytes": 34383,
+      "gzipBytes": 16168,
+      "generationTimeMs": 12
+    },
+    {
+      "tile": "z9/368/228",
+      "label": "Unaffected FID 200",
+      "featureCount": 46,
+      "rawBytes": 125409,
+      "gzipBytes": 59047,
+      "generationTimeMs": 52
+    },
+    {
+      "tile": "z9/366/231",
+      "label": "Unaffected FID 100",
+      "featureCount": 34,
+      "rawBytes": 92262,
+      "gzipBytes": 44805,
+      "generationTimeMs": 33
+    }
+  ],
+  "temporalContractResults": {
+    "currentRegimeMatches": 0,
+    "currentRegimeBehavior": "Empty / 204 No Content (Fail-closed)",
+    "historicalRegimeMatches": 589,
+    "explicitVersionMatches": 1
+  },
+  "governanceVerification": {
+    "allDerived": true,
+    "allIsCurrentFalse": true,
+    "allHistoricalBaseline": true,
+    "zeroSelfPromotion": true,
+    "zeroUnrelatedSubstitution": true
+  },
+  "canonicalDataIntegrity": {
+    "entityGeometriesCount": 589,
+    "rowSetDigest": "f839fa02980318a8f35f932ebe72fa1d3ad6325dc86a624bf159d932fe5f613b",
+    "acceptedDigest": "f839fa02980318a8f35f932ebe72fa1d3ad6325dc86a624bf159d932fe5f613b",
+    "digestMatched": true,
+    "productionUntouched": true
+  },
+  "testResults": [
+    {
+      "id": "DATA-01-COUNT-589",
+      "description": "Staging entity_geometries row count",
+      "passed": true,
+      "observed": "Fetched: 589",
+      "details": "Database fetch time: 11449ms"
+    },
+    {
+      "id": "PHASE-B-SQL-CONTRACT",
+      "description": "Canonical PostGIS SQL query specification",
+      "passed": true,
+      "observed": "PostGIS ST_AsMVT / ST_TileEnvelope query specified",
+      "details": "Preserves canonical geometry without modifying database"
+    },
+    {
+      "id": "TEMP-D1-CURRENT-EMPTY",
+      "description": "Current regime query on historical dataset returns empty",
+      "passed": true,
+      "observed": "Current features: 0",
+      "details": "Fail-closed: Returns NO MATCH / EMPTY (204 No Content). Never substitutes historical geometry."
+    },
+    {
+      "id": "TEMP-D2-HISTORICAL-MATCH",
+      "description": "Historical as-of query for 2016-10-11 matches baseline",
+      "passed": true,
+      "observed": "Historical matches: 589",
+      "details": "Successfully matches 589 historical statutory baseline records"
+    },
+    {
+      "id": "TEMP-D3-EXPLICIT-VERSION",
+      "description": "Explicit version query returns exact single version",
+      "passed": true,
+      "observed": "Explicit match: 1 (ID: c7c5401f-6eaf-502b-9551-b91762c3ead9)",
+      "details": "Matches exact immutable version record without regime leakage"
+    },
+    {
+      "id": "TILE-01-BINARY-VALID",
+      "description": "Representative Tile 1 (z=8, x=184, y=115) produces valid MVT binary",
+      "passed": true,
+      "observed": "Raw bytes: 359437, Gzip bytes: 135457, Features: 137",
+      "details": "Decoded layer name: mandals, Feature count: 137"
+    },
+    {
+      "id": "TILE-02-FID-286",
+      "description": "Representative Tile 2 (z=9, x=369, y=230) contains repaired FID 286",
+      "passed": true,
+      "observed": "Features in tile: 47, FID 286 found: true",
+      "details": "Raw bytes: 107944, Gzip bytes: 53979"
+    },
+    {
+      "id": "TILE-03-FID-292",
+      "description": "Representative Tile 3 (z=9, x=368, y=231) contains repaired FID 292",
+      "passed": true,
+      "observed": "Features in tile: 38, FID 292 found: true",
+      "details": "Raw bytes: 120254, Gzip bytes: 56687"
+    },
+    {
+      "id": "TILE-04-FID-523",
+      "description": "Representative Tile 4 (z=9, x=368, y=230) contains repaired FID 523",
+      "passed": true,
+      "observed": "Features in tile: 45, FID 523 found: true",
+      "details": "Raw bytes: 117457, Gzip bytes: 56620"
+    },
+    {
+      "id": "TILE-05-UNAFFECTED-FID1",
+      "description": "Representative Tile 5 (z=8, x=183, y=113) contains unaffected FID 1",
+      "passed": true,
+      "observed": "Features in tile: 19, FID 1 found: true",
+      "details": "Raw bytes: 34383, Gzip bytes: 16168"
+    },
+    {
+      "id": "TILE-06-UNAFFECTED-FID200",
+      "description": "Representative Tile 6 (z=9, x=368, y=228) contains unaffected FID 200",
+      "passed": true,
+      "observed": "Features in tile: 46, FID 200 found: true",
+      "details": "Raw bytes: 125409, Gzip bytes: 59047"
+    },
+    {
+      "id": "TILE-07-UNAFFECTED-FID100",
+      "description": "Representative Tile 7 (z=9, x=366, y=231) contains unaffected FID 100",
+      "passed": true,
+      "observed": "Features in tile: 34, FID 100 found: true",
+      "details": "Raw bytes: 92262, Gzip bytes: 44805"
+    },
+    {
+      "id": "GOV-01-STATUS-DERIVED",
+      "description": "Every tile feature preserves status = DERIVED (0% promoted)",
+      "passed": true,
+      "observed": "DERIVED verified across 137 features",
+      "details": "Zero features self-promoted to OFFICIAL"
+    },
+    {
+      "id": "GOV-02-IS-CURRENT-FALSE",
+      "description": "Every tile feature preserves is_current = false",
+      "passed": true,
+      "observed": "is_current = false verified across 137 features",
+      "details": "Historical status preserved"
+    },
+    {
+      "id": "GOV-03-TEMP-CLASSIFICATION",
+      "description": "Every tile feature preserves temporal_classification = historical_statutory_baseline",
+      "passed": true,
+      "observed": "temporal_classification verified across 137 features",
+      "details": "Statutory baseline preserved"
+    },
+    {
+      "id": "GOV-04-MULTI-DISTRICT",
+      "description": "Representative tile covers multiple districts",
+      "passed": true,
+      "observed": "Unique districts in tile: 12",
+      "details": "Multi-district spatial integrity verified"
+    },
+    {
+      "id": "GOV-05-NO-DUPLICATES",
+      "description": "Tile contains zero duplicate feature identities",
+      "passed": true,
+      "observed": "Duplicate features: 0",
+      "details": "Uniqueness guaranteed within tile"
+    },
+    {
+      "id": "HTTP-01-VALID-TILE-GET",
+      "description": "HTTP GET valid tile returns 200 with vector-tile content-type",
+      "passed": true,
+      "observed": "Status: 200, Content-Type: application/vnd.mapbox-vector-tile, Decoded features: 137",
+      "details": "Runtime HTTP wire contract verified"
+    },
+    {
+      "id": "HTTP-02-CURRENT-REGIME-204",
+      "description": "HTTP GET current regime returns 204 No Content for historical baseline",
+      "passed": true,
+      "observed": "Status: 204",
+      "details": "Proves fail-closed invariant: Never substitutes historical geometry for current"
+    },
+    {
+      "id": "FAIL-01-INVALID-COORDS-400",
+      "description": "Failure Semantics: Invalid tile coordinates return 400 Bad Request",
+      "passed": true,
+      "observed": "Status: 400, Code: INVALID_TILE_COORDINATES",
+      "details": "Error contract verified"
+    },
+    {
+      "id": "FAIL-02-UNKNOWN-LAYER-404",
+      "description": "Failure Semantics: Unknown spatial layer returns 404 Not Found",
+      "passed": true,
+      "observed": "Status: 404, Code: LAYER_NOT_FOUND",
+      "details": "Layer validation verified"
+    },
+    {
+      "id": "FAIL-03-EMPTY-TILE-204",
+      "description": "Failure Semantics: Out-of-bounds tile returns 204 No Content (empty tile)",
+      "passed": true,
+      "observed": "Status: 204",
+      "details": "Zero features returned for uninhabited ocean tile"
+    },
+    {
+      "id": "PERF-01-EMPIRICAL-SIZES",
+      "description": "Empirical tile sizes measured and recorded",
+      "passed": true,
+      "observed": "Measured 7 tiles. Largest gzip: 132.3 KB (100+ mandals)",
+      "details": "Proves compressed tile micro-payloads"
+    },
+    {
+      "id": "REG-01-COUNT-589",
+      "description": "entity_geometries = exactly 589 rows",
+      "passed": true,
+      "observed": "Count: 589",
+      "details": ""
+    },
+    {
+      "id": "REG-02-DIGEST-MATCH",
+      "description": "Row-set digest matches R5-R5 accepted digest bit-for-bit",
+      "passed": true,
+      "observed": "Digest: f839fa02980318a8f35f932ebe72fa1d3ad6325dc86a624bf159d932fe5f613b",
+      "details": ""
+    },
+    {
+      "id": "REG-03-STATUS-DERIVED",
+      "description": "100% of rows preserve status = DERIVED",
+      "passed": true,
+      "observed": "Status DERIVED: 589",
+      "details": ""
+    },
+    {
+      "id": "REG-04-IS-CURRENT-FALSE",
+      "description": "100% of rows preserve is_current = false",
+      "passed": true,
+      "observed": "is_current = false: 589",
+      "details": ""
+    },
+    {
+      "id": "REG-05-HIST-STAT-BASELINE",
+      "description": "100% of rows preserve temporal_classification = historical_statutory_baseline",
+      "passed": true,
+      "observed": "historical_statutory_baseline: 589",
+      "details": ""
+    },
+    {
+      "id": "REG-06-RAW-SHA",
+      "description": "Raw TGRAC SHA-256 remains untouched",
+      "passed": true,
+      "observed": "SHA: aca53eefa290570ce4010fa8c26a75dce995de3e3180ac9f0873f78fb41512db",
+      "details": ""
+    },
+    {
+      "id": "REG-07-DERIVED-SHA",
+      "description": "Derived artifact SHA-256 remains untouched",
+      "passed": true,
+      "observed": "SHA: dd16ff36d2d9c581cbc5c29125fb33787310c2d4c203d98b88aa74308d4ad077",
+      "details": ""
+    },
+    {
+      "id": "REG-08-PROD-AIRGAP",
+      "description": "Production ehfafcnimmjusyvplbah strictly air-gapped (0 connections)",
+      "passed": true,
+      "observed": "Production untouched (100% air-gap verified)",
+      "details": ""
+    }
+  ]
+}
