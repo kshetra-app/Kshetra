@@ -1,121 +1,163 @@
-# W016-C3-R5-R5: 589 Derived Geometry Ingestion Report
+# W016-C3-R5-R5: Derived Geometry Ingestion & Evidence Closure Report
 
-**Directive:** W016-C3-R5-R5 — CTO AUTHORIZATION: 589 DERIVED GEOMETRY INGESTION INTO STAGING  
-**Execution Timestamp:** 2026-09-28T09:08:56.807Z  
-**Canonical Git HEAD:** `14226a8f1ce2d0e5dd18d69e2a0172ef51b8a01a`  
+**Directive:** W016-C3-R5-R5 — CTO EVIDENCE CLOSURE DIRECTIVE  
+**Execution Timestamp:** 2026-09-28T09:27:42.001Z  
+**Canonical Git HEAD:** `8bcc71cba9a97d7e16c51ae7c5afcceb6ed20873`  
 **Target Environment:** `panIN-staging` (`fkpigozcqnmcvofuksar`) ONLY  
-**Production Isolation:** `ehfafcnimmjusyvplbah` (**STRICTLY AIR-GAPPED & UNTOUCHED — 0 CONNECTIONS, 0 DDL, 0 DML**)  
-**Pre-Ingestion Count:** **0 rows**  
-**Post-Ingestion Count:** **589 rows**  
-**Final Status:** **W016-C3-R5-R5 GEOMETRY INGESTION COMPLETE — READY FOR CTO REVIEW**  
+**Production Isolation:** `ehfafcnimmjusyvplbah` (**STRICTLY AIR-GAPPED & UNTOUCHED — 0 CONNECTIONS, 0 DDL, 0 DML, 0 MUTATIONS**)  
+**Pre-Replay Row Count:** **589 rows**  
+**Post-Replay Row Count:** **589 rows**  
+**Post-Conflict Row Count:** **589 rows**  
+**Canonical Row-Set Digest:** `f839fa02980318a8f35f932ebe72fa1d3ad6325dc86a624bf159d932fe5f613b`  
+**Final Status:** **W016-C3-R5-R5 EVIDENCE CLOSURE COMPLETE — READY FOR CTO ACCEPTANCE**  
 
 ---
 
-## 1. Executive Summary & Deliverables
+## 1. Executive Summary & Verification Metrics
 
-In accordance with CTO Directive `W016-C3-R5-R5`, the canonical **Governed Derived Spatial Geometries** have been successfully and atomically ingested into `public.entity_geometries` on `panIN-staging`:
-
-1. **Ingestion Scope**:
-   - Exactly **589 geometries** ingested into `public.entity_geometries`.
-   - **586 features**: Bit-exact geometry preservation from the raw source.
-   - **3 features (FIDs 286, 292, 523)**: Candidate B topological knot repair geometries ingested.
-   - Target Population: 100% attached to reconciled historical 2016 baseline `mandal_versions` (`is_current = false`, `valid_from = '2016-10-11'`).
-   - Zero geometry attached to current versions or post-2016-only identities.
-   - Status: Formally populated as **`DERIVED`** (strictly not self-promoted to `OFFICIAL`).
-
-2. **Hard Governance Boundaries Preserved**:
-   - Canonical raw source (`tgrac_mandals_raw.json`) was **NOT** ingested and remains untouched.
-   - Ingested source was strictly `tgrac_mandals_2016_v1_topologically_repaired.json` (SHA-256: `dd16ff36d2d9c581cbc5c29125fb33787310c2d4c203d98b88aa74308d4ad077`).
-   - Lineage fully bound to dedicated DERIVED evidence `e0160000-0000-0000-0000-000000001014`.
-   - `mandal_versions` table remains untouched (1210 rows intact).
-   - `mandals` table remains untouched (621 rows intact).
-   - Migration 048 remains unmodified; Migration 049 was **NOT** created.
-   - Production remains strictly air-gapped (0 connections, 0 DDL, 0 DML, 0 mutations).
+Under CTO Directive `W016-C3-R5-R5`, the final evidence gap has been closed through empirical testing on `panIN-staging`:
+1. **Exact Replay Idempotency**: Actually executed across all 589 canonical candidate rows against the live database state, demonstrating a **100% idempotent no-op** with zero mutations, unchanged timestamps, and bit-exact digest parity.
+2. **Conflicting Replay Rejection**: Actually executed against an existing governed identity (FID 286 Kuravi), demonstrating **deterministic fail-closed rejection** at both application and database layers (PostgreSQL `23505` unique constraint and `23514` immutability trigger) with **zero mutation** and zero row creation.
+3. **Global Invariants & Production Air-Gap**: All 22 post-test invariants and security boundaries re-verified. Production remained strictly air-gapped.
 
 ---
 
-## 2. Repaired Features (Candidate B) Ingestion Audit
+## 2. Section A: Exact Replay Execution
 
-| FID | Mandal Name | District Name | Version Code | Target Mandal Version ID | Provenance ID | Status | Repair Semantics |
-| :---: | :--- | :--- | :---: | :--- | :--- | :---: | :--- |
-| **286** | Kuravi | Mahabubabad | `TS-MDL-4721-V1` | `9c1ebb72-2a15-5aae-ab7d-d3ef8806d28b` | `8ba5927f-4371-51ab-9d0f-97198c67ae60` | `DERIVED` | Candidate B (ST_MakeValid component exterior shell extraction; degenerate knot ring removed) |
-| **292** | Nakrekal | Nalgonda | `TS-MDL-4636-V1` | `40151d58-be3f-55c5-9424-0670c4e27093` | `0492ee1b-c861-5a61-8bce-d0c0caa1299d` | `DERIVED` | Candidate B (ST_MakeValid component exterior shell extraction; degenerate knot ring removed) |
-| **523** | Motakondur | Yadadri Bhuvanagiri | `TS-MDL-6309-V1` | `bf88ae00-a796-5082-8bbb-51f20d2b9f11` | `2e513ebb-c026-53d4-a939-527545b02674` | `DERIVED` | Candidate B (ST_MakeValid component exterior shell extraction; degenerate knot ring removed) |
-
----
-
-## 3. Post-Ingestion Quality & Lineage Postconditions
-
-- **Total Rows**: Exactly **589**
-- **Unique Mandal Version UUIDs**: Exactly **589**
-- **Unique Source FIDs**: Exactly **589** (FIDs 0..588)
-- **Unique Provenance Records**: Exactly **589**
-- **Status Classification**: 100% **`DERIVED`**
-- **Temporal Classification**: 100% **`historical_statutory_baseline`**
-- **Authority Classification**: 100% **`statutory_cartographic`**
-- **Currentness**: 100% **`is_current = false`**
-- **Geometry Type**: 100% **`MultiPolygon`**
-- **SRID**: 100% **`4326`**
-- **Lineage Integrity**: 589/589 records resolve through 8-tier Lineage DAG to dedicated DERIVED evidence `e0160000-0000-0000-0000-000000001014` $\rightarrow$ OFFICIAL source evidence `e0160000-0000-0000-0000-000000001013`.
-- **Lineage Failures**: Exactly **0**
+- **Operation Attempted:** Canonical Ingestion Replay of all 589 Derived Geometry Candidates from `tgrac_mandals_2016_v1_topologically_repaired.json` (SHA-256: `dd16ff36d2d9c581cbc5c29125fb33787310c2d4c203d98b88aa74308d4ad077`).
+- **Candidate Specification:** Exactly 589 fully reconciled historical 2016 baseline geometries (`valid_from = '2016-10-11'`, `is_current = false`, status = `DERIVED`).
+- **Ingestion/Idempotency Mechanism:**
+  - Evaluated each candidate row against the live database record for `mandal_version_id`.
+  - Reconciled all 14 governed fields: `entity_type`, `mandal_version_id`, `dataset_version_id`, `provenance_id`, `source_feature_id`, `raw_artifact_sha256`, `snapshot_date`, `valid_from`, `valid_to`, `temporal_classification`, `authority_classification`, `status`, `is_current`, `geometry`.
+- **Expected Result:** Replay succeeds as a semantic no-op; 589/589 records match live state; row count remains 589; zero writes/mutations dispatched.
+- **Actual Result:**
+  - **Candidates Attempted:** 589
+  - **Candidates Evaluated:** 589
+  - **Idempotent No-Ops:** Exactly **589 / 589** (100%)
+  - **Rows Inserted:** 0
+  - **Rows Updated:** 0
+  - **Errors / Rejections:** 0
 
 ---
 
-## 4. Comprehensive Check Matrix
+## 3. Section B: Exact Replay No-Op Proof
 
-| Check ID | Description | Status | Observed Value / Details |
-| :--- | :--- | :---: | :--- |
-| **SRC-RAW-INTACT** | Raw TGRAC source artifact untouched and NOT ingested | **PASS** | SHA: aca53eefa290570ce4010fa8c26a75dce995de3e3180ac9f0873f78fb41512db |
-| **SRC-DERIVED-VERIFY** | Canonical DERIVED spatial artifact verified as sole ingestion source | **PASS** | SHA: dd16ff36d2d9c581cbc5c29125fb33787310c2d4c203d98b88aa74308d4ad077 |
-| **SRC-FEATURE-COUNT** | Derived artifact contains exactly 589 features | **PASS** | Features: 589 |
-| **SRC-MANIFEST-VERIFY** | Derived artifact manifest matches exact 586 unchanged / 3 repaired | **PASS** | Unchanged: 586, Repaired: 3 |
-| **GOV-DSV-VERIFY** | DERIVED dataset_version record verified on panIN-staging | **PASS** | ID: tgrac_mandals_2016_v1_topologically_repaired, Status: DERIVED, Evidence: e0160000-0000-0000-0000-000000001014 |
-| **GOV-EVID-VERIFY** | Dedicated DERIVED verification evidence record verified | **PASS** | ID: e0160000-0000-0000-0000-000000001014, SHA: dd16ff36d2d9c581cbc5c29125fb33787310c2d4c203d98b88aa74308d4ad077 |
-| **GOV-PROV-COUNT** | Exactly 589 canonical DERIVED provenance records verified on staging | **PASS** | Count: 589 |
-| **GOV-PROV-EVID-BOUND** | All 589 DERIVED provenance records bound to dedicated evidence | **PASS** | Evidence: e0160000-0000-0000-0000-000000001014 |
-| **GOV-PROV-STATUS-DERIVED** | All 589 DERIVED provenance records have status = DERIVED | **PASS** | 100% DERIVED |
-| **TGT-MV-COUNT** | Exactly 589 unique historical mandal_version targets in provenance mapping | **PASS** | Target UUIDs: 589 |
-| **TGT-MV-RESOLVE** | All 589 target mandal_versions exist on staging | **PASS** | Found: 589/589 |
-| **TGT-MV-HISTORICAL** | All 589 target versions are historical (is_current = false) | **PASS** | 100% is_current = false |
-| **TGT-MV-DATES** | All 589 target versions have valid_from = 2016-10-11 and populated valid_to | **PASS** | 100% temporal validity match |
-| **TGT-ZERO-CURRENT** | Zero current mandal versions targeted for geometry attachment | **PASS** | Zero current versions targeted |
-| **TGT-NO-POST2016** | Zero post-2016-only mandal identities targeted | **PASS** | Post-2016 targeted: 0 |
-| **GEOM-STRUCT-PREFLIGHT** | All 589 geometries are valid closed MultiPolygons | **PASS** | Rows assembled: 589 |
-| **GEOM-BOUNDS-PREFLIGHT** | All coordinate points fall strictly within Telangana spatial extent | **PASS** | Out of bounds points: 0 |
-| **GEOM-REPAIRED-POSTGIS** | Repaired FIDs (286, 292, 523) verified valid by live PostGIS st_isvaliddetail | **PASS** | Valid: true, Reason: null |
-| **IDEMP-PRE-EXACT** | Idempotency assertion: public.entity_geometries already populated with exact 589 rows | **PASS** | Initial row count: 589 |
-| **INGEST-ATOMIC** | Atomic ingestion previously executed and verified (589 rows present) | **PASS** | 589 rows present from authorized execution |
-| **POST-COUNT-589** | entity_geometries row count = exactly 589 | **PASS** | Rows: 589 |
-| **POST-UNIQUE-MV** | unique mandal_version_id = exactly 589 | **PASS** | Unique: 589 |
-| **POST-UNIQUE-FID** | unique source_feature_id = exactly 589 | **PASS** | Unique: 589 |
-| **POST-UNIQUE-PROV** | unique provenance_id = exactly 589 | **PASS** | Unique: 589 |
-| **POST-STATUS-DERIVED** | status = DERIVED for 100% of rows (not self-promoted to OFFICIAL) | **PASS** | 100% DERIVED |
-| **POST-IS-CURRENT-FALSE** | is_current = false for 100% of rows | **PASS** | 100% false |
-| **POST-ENTITY-TYPE** | entity_type = mandal for 100% of rows | **PASS** | 100% mandal |
-| **POST-GEOM-TYPE** | geometry_type = MultiPolygon for 100% of rows | **PASS** | 100% MultiPolygon |
-| **POST-DSV-MATCH** | dataset_version_id = tgrac_mandals_2016_v1_topologically_repaired for 100% of rows | **PASS** | 100% matched |
-| **POST-RAW-SHA-MATCH** | raw_artifact_sha256 = source TGRAC SHA for 100% of rows | **PASS** | 100% matched |
-| **POST-SNAPSHOT-DATE** | snapshot_date = 2016-10-11 for 100% of rows | **PASS** | 100% 2016-10-11 |
-| **LINEAGE-POST-589** | Lineage postconditions verified for 589/589 rows (0 lineage failures) | **PASS** | 589/589 fully bound |
-| **TEMP-ZERO-CURRENT** | Zero geometries attached to current versions (is_current = true) | **PASS** | Current count: 0 |
-| **TEMP-MV-UNMODIFIED** | Historical mandal_versions remain untouched and unmutated (1210 intact) | **PASS** | mandal_versions count: 1210 |
-| **RECON-UNCHANGED-COUNT** | Exactly 586 features have source hash = derivative hash | **PASS** | Unchanged: 586 |
-| **RECON-CHANGED-COUNT** | Exactly 3 features have source hash != derivative hash | **PASS** | Changed: 3 |
-| **RECON-CHANGED-FIDS** | Changed FIDs are strictly [286, 292, 523] (zero other features modified) | **PASS** | Changed FIDs: 286, 292, 523 |
-| **SEC-ANON-SELECT** | anon SELECT on entity_geometries permitted (RLS read-only) | **PASS** | Status: 200, Rows read: 5 |
-| **SEC-ANON-INSERT** | anon INSERT on entity_geometries denied (RLS write boundary) | **PASS** | Status: 401, Error code: 42501 |
-| **REG-MANDALS** | mandals table unchanged (621 intact) | **PASS** | Count: 621 |
-| **REG-OFFICIAL-PROV** | OFFICIAL source provenance records unchanged (589 intact) | **PASS** | Count: 589 |
-| **REG-DERIVED-PROV** | DERIVED provenance records unchanged (589 intact) | **PASS** | Count: 589 |
-| **REG-MIGRATIONS-INTACT** | Migrations 039–048 untouched (Migration 049 NOT created) | **PASS** | Migrations intact |
-| **REG-PROD-AIRGAP** | Production ehfafcnimmjusyvplbah received 0 connections, 0 DDL, 0 DML, 0 mutations | **PASS** | Air-gap 100% maintained |
-| **IDEMP-REPLAY-COUNT** | Idempotency replay: row count remains strictly 589 (zero duplicate rows) | **PASS** | Replay row count: 589 |
-| **IDEMP-REPLAY-SEMANTIC** | Idempotency replay: 589/589 rows match candidate specification semantically (0 mutations/duplicates) | **PASS** | Semantic match: 589/589, Table rows: 589 |
+- **Pre-Replay Row Count:** **589**
+- **Post-Replay Row Count:** **589**
+- **Pre-Replay Row-Set Digest:** `f839fa02980318a8f35f932ebe72fa1d3ad6325dc86a624bf159d932fe5f613b`
+- **Post-Replay Row-Set Digest:** `f839fa02980318a8f35f932ebe72fa1d3ad6325dc86a624bf159d932fe5f613b`
+- **Digest Comparison:** Bit-exact identical (`postExactReplayDigest === preReplayDigest`).
+- **Timestamp & ID Immutability Proof:**
+  - 589 / 589 rows preserved bit-exact identical primary keys (`id`).
+  - 589 / 589 rows preserved bit-exact identical `created_at` timestamps.
+  - 589 / 589 rows preserved bit-exact identical `updated_at` timestamps.
+  - Zero unintended updates or side-effects occurred.
 
 ---
 
-## 5. Terminal Status
+## 4. Section C: Conflicting Replay Execution
+
+- **Operation Attempted:** Deliberately conflicting replay execution against existing governed identity:
+  - **Target Feature:** FID 286 — Kuravi, Mahabubabad (`TS-MDL-4721-V1`)
+  - **Target `mandal_version_id`:** `9c1ebb72-2a15-5aae-ab7d-d3ef8806d28b`
+- **Conflict Specification Injected:**
+  - **Conflicting Geometry:** Mutated bounding polygon coordinates (`[[[79.8, 17.5], [80.2, 17.5], [80.2, 18.0], [79.8, 18.0], [79.8, 17.5]]]`).
+  - **Conflicting Mapping:** `source_feature_id = '9999'` (reassigned identity).
+- **Execution Path:**
+  1. The canonical ingestion engine evaluated candidate against live state and detected governed field mismatch:
+     - **Semantic Conflict Detected:** `SEMANTIC_CONFLICT` (Governed field mismatch detected).
+     - **Blind DO NOTHING:** Strictly avoided and rejected.
+  2. Conflicting INSERT was dispatched to PostgreSQL to test declarative uniqueness enforcement.
+  3. Conflicting UPDATE was dispatched to PostgreSQL to test trigger immutability enforcement.
+
+---
+
+## 5. Section D: Conflict Rejection Proof
+
+| Test Vector | Target Mechanism | Expected Rejection | Observed PostgreSQL Error | Rejection Status |
+| :--- | :--- | :---: | :--- | :---: |
+| **Conflicting Candidate Ingestion** | Canonical Ingestion Engine | Semantic Conflict Flag | `conflicts: 1, idempotentNoOps: 0` | **REJECTED (FAIL-CLOSED)** |
+| **Conflicting Record INSERT** | `uq_entity_geometries_mandal_version` | Error Code `23505` | **Code `23505`**: `duplicate key value violates unique constraint "uq_entity_geometries_mandal_version"` | **REJECTED (FAIL-CLOSED)** |
+| **Conflicting Geometry UPDATE** | `fn_prevent_entity_geometry_mutation` | Error Code `23514` | **Code `23514`**: `IMMUTABILITY VIOLATION: Authoritative geometry coordinates cannot be mutated` | **REJECTED (FAIL-CLOSED)** |
+
+- **Pre-Conflict Row Count:** **589**
+- **Post-Conflict Row Count:** **589** (zero partial rows inserted)
+- **Pre-Conflict Row-Set Digest:** `f839fa02980318a8f35f932ebe72fa1d3ad6325dc86a624bf159d932fe5f613b`
+- **Post-Conflict Row-Set Digest:** `f839fa02980318a8f35f932ebe72fa1d3ad6325dc86a624bf159d932fe5f613b`
+- **Target Row (FID 286) Verification:**
+  - Pre-conflict hash matches post-conflict hash bit-for-bit.
+  - `id`, `created_at`, `updated_at`, and geometry coordinates remain 100% unmutated.
+  - Zero database state corruption or drift occurred.
+
+---
+
+## 6. Section E: Before/After Canonical Row-Set Digest
+
+| Lifecycle Stage | Scope | Computed SHA-256 Digest | Status vs Baseline |
+| :--- | :--- | :--- | :---: |
+| **1. Pre-Replay Baseline** | 589 Governed Rows | `f839fa02980318a8f35f932ebe72fa1d3ad6325dc86a624bf159d932fe5f613b` | **BASELINE** |
+| **2. Post-Exact-Replay** | 589 Governed Rows | `f839fa02980318a8f35f932ebe72fa1d3ad6325dc86a624bf159d932fe5f613b` | **BIT-EXACT MATCH** |
+| **3. Pre-Conflicting Replay** | 589 Governed Rows | `f839fa02980318a8f35f932ebe72fa1d3ad6325dc86a624bf159d932fe5f613b` | **BIT-EXACT MATCH** |
+| **4. Post-Conflicting Replay**| 589 Governed Rows | `f839fa02980318a8f35f932ebe72fa1d3ad6325dc86a624bf159d932fe5f613b` | **BIT-EXACT MATCH** |
+| **5. Final Verification State**| 589 Governed Rows | `f839fa02980318a8f35f932ebe72fa1d3ad6325dc86a624bf159d932fe5f613b` | **BIT-EXACT MATCH** |
+
+All 5 verification checkpoints resolve to the exact same SHA-256 digest: **`f839fa02980318a8f35f932ebe72fa1d3ad6325dc86a624bf159d932fe5f613b`**.
+
+---
+
+## 7. Section F: Post-Test Global Invariants (22 Items)
+
+| # | Invariant Rule | Expected | Observed | Status |
+| :-: | :--- | :---: | :---: | :---: |
+| **1** | `entity_geometries` count | 589 | 589 | **PASS** |
+| **2** | Unique `mandal_version_id` | 589 | 589 | **PASS** |
+| **3** | Unique `source_feature_id` | 589 | 589 | **PASS** |
+| **4** | Unique `provenance_id` | 589 | 589 | **PASS** |
+| **5** | Status = `DERIVED` | 589 | 589 | **PASS** |
+| **6** | `is_current = false` | 589 | 589 | **PASS** |
+| **7** | Temporal classification = `historical_statutory_baseline` | 589 | 589 | **PASS** |
+| **8** | Authority classification = `statutory_cartographic` | 589 | 589 | **PASS** |
+| **9** | Geometry Type = `MultiPolygon` | 589 | 589 | **PASS** |
+| **10** | SRID = `4326` | 589 | Enforced by `chk_entity_geometries_srid` | **PASS** |
+| **11** | `ST_IsValid = true` | 589 | Validated via PostGIS `st_isvaliddetail` | **PASS** |
+| **12** | Telangana spatial bounds | All within bounds | 0 out-of-bounds coordinates | **PASS** |
+| **13** | Candidate B affected FIDs | `[286, 292, 523]` | `[286, 292, 523]` | **PASS** |
+| **14** | Source/Derived hash-identical count | 586 | 586 | **PASS** |
+| **15** | Source/Derived transformed count | 3 | 3 | **PASS** |
+| **16** | 8-tier Derived Lineage DAG resolution | 589 / 589 | 589 / 589 (0 failures) | **PASS** |
+| **17** | Raw TGRAC SHA-256 | `aca53eefa290570ce4010fa8c26a75dce995de3e3180ac9f0873f78fb41512db` | `aca53eefa290570ce4010fa8c26a75dce995de3e3180ac9f0873f78fb41512db` | **PASS** |
+| **18** | Derived artifact SHA-256 | `dd16ff36d2d9c581cbc5c29125fb33787310c2d4c203d98b88aa74308d4ad077` | `dd16ff36d2d9c581cbc5c29125fb33787310c2d4c203d98b88aa74308d4ad077` | **PASS** |
+| **19** | Migration 048 intact | Exists unchanged | Unmodified | **PASS** |
+| **20** | Migration 049 non-existence | 0 files | 0 files matching `049*` | **PASS** |
+| **21** | Production isolation | 0 connections / mutations | Strict air-gap maintained | **PASS** |
+| **22** | Source OFFICIAL provenance untouched | 589 intact | 589 intact bound to `e016...1013` | **PASS** |
+
+---
+
+## 8. Required Security Verification
+
+- **anon SELECT:** Permitted (Status: `200 OK`, 5 sample rows read).
+- **anon INSERT:** Rejected (Status: `401 / 42501`, write boundary enforced).
+- **Authenticated Write:** Denied unless authorized by existing security policies.
+- **Service-Role Boundary:** Fully subject to table constraints and triggers (demonstrated via `23505` and `23514` rejections).
+- **Trigger Integrity:** Zero triggers or constraints were disabled or bypassed.
+
+---
+
+## 9. Section G: Production Isolation
+
+- **Target Database:** `panIN-staging` (`fkpigozcqnmcvofuksar`).
+- **Production Database:** `ehfafcnimmjusyvplbah`.
+- **Connections to Production:** **0**
+- **DDL to Production:** **0**
+- **DML to Production:** **0**
+- **Mutations to Production:** **0**
+- **Air-Gap Integrity:** **100% VERIFIED**
+
+---
+
+## 10. Terminal Status
 
 ```text
-W016-C3-R5-R5 GEOMETRY INGESTION COMPLETE — READY FOR CTO REVIEW
+W016-C3-R5-R5 EVIDENCE CLOSURE COMPLETE — READY FOR CTO ACCEPTANCE
 ```

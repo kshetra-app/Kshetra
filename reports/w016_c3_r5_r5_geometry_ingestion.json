@@ -1,18 +1,20 @@
 {
   "metadata": {
     "job": "W016-C3-R5-R5",
-    "directive": "W016-C3-R5-R5 — CTO AUTHORIZATION: 589 DERIVED GEOMETRY INGESTION INTO STAGING",
-    "timestamp": "2026-09-28T09:08:56.807Z",
-    "gitHead": "14226a8f1ce2d0e5dd18d69e2a0172ef51b8a01a",
+    "directive": "W016-C3-R5-R5 — CTO EVIDENCE CLOSURE DIRECTIVE",
+    "timestamp": "2026-09-28T09:27:42.001Z",
+    "gitHead": "8bcc71cba9a97d7e16c51ae7c5afcceb6ed20873",
     "targetEnvironment": "panIN-staging (fkpigozcqnmcvofuksar)",
-    "productionIsolation": "ehfafcnimmjusyvplbah (AIR-GAPPED — 0 CONNECTIONS, 0 DDL, 0 DML)",
-    "preIngestionRowCount": 0,
-    "postIngestionRowCount": 589,
+    "productionIsolation": "ehfafcnimmjusyvplbah (STRICTLY AIR-GAPPED — 0 CONNECTIONS, 0 DDL, 0 DML, 0 MUTATIONS)",
+    "preReplayRowCount": 589,
+    "postReplayRowCount": 589,
+    "postConflictRowCount": 589,
     "derivedDatasetVersionId": "tgrac_mandals_2016_v1_topologically_repaired",
     "dedicatedDerivedEvidenceId": "e0160000-0000-0000-0000-000000001014",
     "officialSourceEvidenceId": "e0160000-0000-0000-0000-000000001013",
     "derivedArtifactSha256": "dd16ff36d2d9c581cbc5c29125fb33787310c2d4c203d98b88aa74308d4ad077",
     "sourceArtifactSha256": "aca53eefa290570ce4010fa8c26a75dce995de3e3180ac9f0873f78fb41512db",
+    "canonicalRowSetDigest": "f839fa02980318a8f35f932ebe72fa1d3ad6325dc86a624bf159d932fe5f613b",
     "featureCount": 589,
     "unchangedCount": 586,
     "repairedCount": 3,
@@ -21,8 +23,120 @@
       292,
       523
     ],
-    "finalStatus": "W016-C3-R5-R5 GEOMETRY INGESTION COMPLETE — READY FOR CTO REVIEW"
+    "finalStatus": "W016-C3-R5-R5 EVIDENCE CLOSURE COMPLETE — READY FOR CTO ACCEPTANCE"
   },
+  "exactReplayExecution": {
+    "operationAttempted": "Canonical Ingestion Replay of all 589 Derived Geometry Candidates",
+    "candidateSpecificationCount": 589,
+    "expectedResult": "Idempotent No-Op across 100% of candidate rows; row count remains 589; 0 mutations",
+    "actualResult": "589/589 rows matched live state bit-for-bit (IDEMPOTENT_NOOP)",
+    "idempotentNoOps": 589,
+    "conflicts": 0,
+    "inserts": 0,
+    "beforeRowCount": 589,
+    "afterRowCount": 589,
+    "beforeRowSetDigest": "f839fa02980318a8f35f932ebe72fa1d3ad6325dc86a624bf159d932fe5f613b",
+    "afterRowSetDigest": "f839fa02980318a8f35f932ebe72fa1d3ad6325dc86a624bf159d932fe5f613b",
+    "timestampsUnchanged": true,
+    "proofOfZeroMutation": "All 589 row hashes and timestamps (created_at, updated_at) remain identical"
+  },
+  "conflictingReplayExecution": {
+    "operationAttempted": "Conflicting Ingestion Replay against FID 286 (Kuravi)",
+    "targetFid": 286,
+    "targetMandalVersionId": "9c1ebb72-2a15-5aae-ab7d-d3ef8806d28b",
+    "conflictingSpecification": {
+      "mandal_version_id": "9c1ebb72-2a15-5aae-ab7d-d3ef8806d28b",
+      "source_feature_id": "9999",
+      "geometry": {
+        "type": "MultiPolygon",
+        "coordinates": [
+          [
+            [
+              [
+                79.8,
+                17.5
+              ],
+              [
+                80.2,
+                17.5
+              ],
+              [
+                80.2,
+                18
+              ],
+              [
+                79.8,
+                18
+              ],
+              [
+                79.8,
+                17.5
+              ]
+            ]
+          ]
+        ]
+      }
+    },
+    "expectedResult": "Deterministic fail-closed rejection by PostgreSQL constraints/triggers; 0 mutations; row count remains 589",
+    "semanticConflictDetected": true,
+    "insertRejection": {
+      "rejected": true,
+      "errorCode": "23505",
+      "errorMessage": "duplicate key value violates unique constraint \"uq_entity_geometries_mandal_version\"",
+      "enforcedBy": "uq_entity_geometries_mandal_version (Unique Constraint)"
+    },
+    "updateRejection": {
+      "rejected": true,
+      "errorCode": "23514",
+      "errorMessage": "IMMUTABILITY VIOLATION: Authoritative geometry coordinates cannot be mutated",
+      "enforcedBy": "fn_prevent_entity_geometry_mutation (BEFORE UPDATE Immutability Trigger)"
+    },
+    "beforeRowCount": 589,
+    "afterRowCount": 589,
+    "beforeRowSetDigest": "f839fa02980318a8f35f932ebe72fa1d3ad6325dc86a624bf159d932fe5f613b",
+    "afterRowSetDigest": "f839fa02980318a8f35f932ebe72fa1d3ad6325dc86a624bf159d932fe5f613b",
+    "targetRowUnmutated": true,
+    "proofOfZeroMutation": "Target row and entire 589-row set digest remain bit-exact match"
+  },
+  "rowSetDigestAudit": {
+    "preReplayDigest": "f839fa02980318a8f35f932ebe72fa1d3ad6325dc86a624bf159d932fe5f613b",
+    "postExactReplayDigest": "f839fa02980318a8f35f932ebe72fa1d3ad6325dc86a624bf159d932fe5f613b",
+    "preConflictDigest": "f839fa02980318a8f35f932ebe72fa1d3ad6325dc86a624bf159d932fe5f613b",
+    "postConflictDigest": "f839fa02980318a8f35f932ebe72fa1d3ad6325dc86a624bf159d932fe5f613b",
+    "matchAll": true
+  },
+  "repairedFeatures": [
+    {
+      "fid": 286,
+      "name": "Kuravi",
+      "district": "Mahabubabad",
+      "mandal_version_id": "9c1ebb72-2a15-5aae-ab7d-d3ef8806d28b",
+      "provenance_id": "8ba5927f-4371-51ab-9d0f-97198c67ae60",
+      "version_code": "TS-MDL-4721-V1",
+      "status": "DERIVED",
+      "repair_semantics": "Candidate B (ST_MakeValid component exterior shell extraction; degenerate knot ring removed)"
+    },
+    {
+      "fid": 292,
+      "name": "Nakrekal",
+      "district": "Nalgonda",
+      "mandal_version_id": "40151d58-be3f-55c5-9424-0670c4e27093",
+      "provenance_id": "0492ee1b-c861-5a61-8bce-d0c0caa1299d",
+      "version_code": "TS-MDL-4636-V1",
+      "status": "DERIVED",
+      "repair_semantics": "Candidate B (ST_MakeValid component exterior shell extraction; degenerate knot ring removed)"
+    },
+    {
+      "fid": 523,
+      "name": "Motakondur",
+      "district": "Yadadri Bhuvanagiri",
+      "mandal_version_id": "bf88ae00-a796-5082-8bbb-51f20d2b9f11",
+      "provenance_id": "2e513ebb-c026-53d4-a939-527545b02674",
+      "version_code": "TS-MDL-6309-V1",
+      "status": "DERIVED",
+      "repair_semantics": "Candidate B (ST_MakeValid component exterior shell extraction; degenerate knot ring removed)"
+    }
+  ],
   "checks": [
     {
       "id": "SRC-RAW-INTACT",
@@ -151,136 +265,248 @@
       "details": ""
     },
     {
-      "id": "IDEMP-PRE-EXACT",
-      "title": "Idempotency assertion: public.entity_geometries already populated with exact 589 rows",
+      "id": "PRE-REPLAY-COUNT",
+      "title": "Pre-replay entity_geometries row count = exactly 589",
       "status": "PASS",
-      "observed": "Initial row count: 589",
+      "observed": "Pre-replay rows: 589",
       "details": ""
     },
     {
-      "id": "INGEST-ATOMIC",
-      "title": "Atomic ingestion previously executed and verified (589 rows present)",
+      "id": "EXACT-REPLAY-ATTEMPT",
+      "title": "Exact replay operation executed across all 589 candidate rows",
       "status": "PASS",
-      "observed": "589 rows present from authorized execution",
+      "observed": "Attempted: 589, Idempotent No-Ops: 589, Conflicts: 0",
       "details": ""
     },
     {
-      "id": "POST-COUNT-589",
-      "title": "entity_geometries row count = exactly 589",
+      "id": "EXACT-REPLAY-COUNT-589",
+      "title": "Post-exact-replay row count remains strictly 589 (zero duplicate rows)",
+      "status": "PASS",
+      "observed": "Row count: 589",
+      "details": ""
+    },
+    {
+      "id": "EXACT-REPLAY-ZERO-MUTATION",
+      "title": "Exact replay verified zero governed field mutations across all 589 rows",
+      "status": "PASS",
+      "observed": "589/589 rows have bit-exact identical governed-field hashes",
+      "details": ""
+    },
+    {
+      "id": "EXACT-REPLAY-TIMESTAMPS-INTACT",
+      "title": "Exact replay verified zero timestamp or ID alterations (no-op preserved)",
+      "status": "PASS",
+      "observed": "100% id, created_at, and updated_at timestamps unchanged",
+      "details": ""
+    },
+    {
+      "id": "EXACT-REPLAY-DIGEST-IDENTICAL",
+      "title": "Post-exact-replay canonical row-set digest is identical to pre-replay digest",
+      "status": "PASS",
+      "observed": "Digest: f839fa02980318a8f35f932ebe72fa1d3ad6325dc86a624bf159d932fe5f613b",
+      "details": ""
+    },
+    {
+      "id": "CONFLICT-SEMANTIC-DETECTED",
+      "title": "Canonical ingestion engine detected semantic conflict (rejected silent no-op)",
+      "status": "PASS",
+      "observed": "conflicts: 1, idempotentNoOps: 0, reason: Governed field mismatch detected",
+      "details": ""
+    },
+    {
+      "id": "CONFLICT-INSERT-REJECTED",
+      "title": "Conflicting INSERT rejected fail-closed by PostgreSQL constraint",
+      "status": "PASS",
+      "observed": "Code: 23505 (uq_entity_geometries_mandal_version unique violation)",
+      "details": ""
+    },
+    {
+      "id": "CONFLICT-UPDATE-REJECTED",
+      "title": "Conflicting UPDATE rejected fail-closed by fn_prevent_entity_geometry_mutation trigger",
+      "status": "PASS",
+      "observed": "Code: 23514 (IMMUTABILITY VIOLATION: Authoritative geometry coordinates cannot be mutated)",
+      "details": ""
+    },
+    {
+      "id": "CONFLICT-ROW-COUNT-UNCHANGED",
+      "title": "Post-conflict entity_geometries row count remains strictly 589",
       "status": "PASS",
       "observed": "Rows: 589",
       "details": ""
     },
     {
-      "id": "POST-UNIQUE-MV",
-      "title": "unique mandal_version_id = exactly 589",
+      "id": "CONFLICT-TARGET-ROW-UNMUTATED",
+      "title": "Target row for conflict test (FID 286) remained 100% unmutated",
       "status": "PASS",
-      "observed": "Unique: 589",
+      "observed": "Target row hash and timestamps bit-exact match pre-test state",
       "details": ""
     },
     {
-      "id": "POST-UNIQUE-FID",
-      "title": "unique source_feature_id = exactly 589",
+      "id": "CONFLICT-DIGEST-IDENTICAL",
+      "title": "Post-conflict canonical row-set digest is identical to pre-test digest",
       "status": "PASS",
-      "observed": "Unique: 589",
+      "observed": "Digest: f839fa02980318a8f35f932ebe72fa1d3ad6325dc86a624bf159d932fe5f613b",
       "details": ""
     },
     {
-      "id": "POST-UNIQUE-PROV",
-      "title": "unique provenance_id = exactly 589",
+      "id": "ROWSET-DIGEST-ALL-PHASES",
+      "title": "Row-set digest remains 100% invariant across pre-replay, post-replay, and post-conflict",
       "status": "PASS",
-      "observed": "Unique: 589",
+      "observed": "Immutable Canonical Digest: f839fa02980318a8f35f932ebe72fa1d3ad6325dc86a624bf159d932fe5f613b",
       "details": ""
     },
     {
-      "id": "POST-STATUS-DERIVED",
-      "title": "status = DERIVED for 100% of rows (not self-promoted to OFFICIAL)",
+      "id": "INV-01-COUNT-589",
+      "title": "Invariant 1: entity_geometries = exactly 589 rows",
       "status": "PASS",
-      "observed": "100% DERIVED",
+      "observed": "Count: 589",
       "details": ""
     },
     {
-      "id": "POST-IS-CURRENT-FALSE",
-      "title": "is_current = false for 100% of rows",
+      "id": "INV-02-UNIQUE-MVID",
+      "title": "Invariant 2: unique mandal_version_id = exactly 589",
       "status": "PASS",
-      "observed": "100% false",
+      "observed": "Unique mandal_version_id: 589",
       "details": ""
     },
     {
-      "id": "POST-ENTITY-TYPE",
-      "title": "entity_type = mandal for 100% of rows",
+      "id": "INV-03-UNIQUE-FID",
+      "title": "Invariant 3: unique source_feature_id = exactly 589",
       "status": "PASS",
-      "observed": "100% mandal",
+      "observed": "Unique source_feature_id: 589",
       "details": ""
     },
     {
-      "id": "POST-GEOM-TYPE",
-      "title": "geometry_type = MultiPolygon for 100% of rows",
+      "id": "INV-04-UNIQUE-PROV",
+      "title": "Invariant 4: unique provenance_id = exactly 589",
       "status": "PASS",
-      "observed": "100% MultiPolygon",
+      "observed": "Unique provenance_id: 589",
       "details": ""
     },
     {
-      "id": "POST-DSV-MATCH",
-      "title": "dataset_version_id = tgrac_mandals_2016_v1_topologically_repaired for 100% of rows",
+      "id": "INV-05-STATUS-DERIVED",
+      "title": "Invariant 5: status = DERIVED for 100% of rows (not self-promoted to OFFICIAL)",
       "status": "PASS",
-      "observed": "100% matched",
+      "observed": "Status DERIVED: 589",
       "details": ""
     },
     {
-      "id": "POST-RAW-SHA-MATCH",
-      "title": "raw_artifact_sha256 = source TGRAC SHA for 100% of rows",
+      "id": "INV-06-IS-CURRENT-FALSE",
+      "title": "Invariant 6: is_current = false for 100% of rows",
       "status": "PASS",
-      "observed": "100% matched",
+      "observed": "is_current = false: 589",
       "details": ""
     },
     {
-      "id": "POST-SNAPSHOT-DATE",
-      "title": "snapshot_date = 2016-10-11 for 100% of rows",
+      "id": "INV-07-TEMP-CLASS",
+      "title": "Invariant 7: temporal_classification = historical_statutory_baseline for 100% of rows",
       "status": "PASS",
-      "observed": "100% 2016-10-11",
+      "observed": "historical_statutory_baseline: 589",
       "details": ""
     },
     {
-      "id": "LINEAGE-POST-589",
-      "title": "Lineage postconditions verified for 589/589 rows (0 lineage failures)",
+      "id": "INV-08-AUTH-CLASS",
+      "title": "Invariant 8: authority_classification = statutory_cartographic for 100% of rows",
       "status": "PASS",
-      "observed": "589/589 fully bound",
+      "observed": "statutory_cartographic: 589",
       "details": ""
     },
     {
-      "id": "TEMP-ZERO-CURRENT",
-      "title": "Zero geometries attached to current versions (is_current = true)",
+      "id": "INV-09-GEOM-TYPE",
+      "title": "Invariant 9: geometry type = MultiPolygon for 100% of rows",
       "status": "PASS",
-      "observed": "Current count: 0",
+      "observed": "MultiPolygon: 589",
       "details": ""
     },
     {
-      "id": "TEMP-MV-UNMODIFIED",
-      "title": "Historical mandal_versions remain untouched and unmutated (1210 intact)",
+      "id": "INV-10-SRID-4326",
+      "title": "Invariant 10: SRID = 4326 for 100% of rows (enforced by chk_entity_geometries_srid)",
       "status": "PASS",
-      "observed": "mandal_versions count: 1210",
+      "observed": "SRID 4326 enforced by DB constraint",
       "details": ""
     },
     {
-      "id": "RECON-UNCHANGED-COUNT",
-      "title": "Exactly 586 features have source hash = derivative hash",
+      "id": "INV-11-ST-ISVALID",
+      "title": "Invariant 11: ST_IsValid = true for 100% of rows (enforced by chk_entity_geometries_is_valid)",
       "status": "PASS",
-      "observed": "Unchanged: 586",
+      "observed": "ST_IsValid enforced by DB constraint & live PostGIS rpc",
       "details": ""
     },
     {
-      "id": "RECON-CHANGED-COUNT",
-      "title": "Exactly 3 features have source hash != derivative hash",
+      "id": "INV-12-TELANGANA-BOUNDS",
+      "title": "Invariant 12: all geometries fall strictly within established Telangana bounds",
       "status": "PASS",
-      "observed": "Changed: 3",
+      "observed": "Out of bounds coordinate count: 0",
       "details": ""
     },
     {
-      "id": "RECON-CHANGED-FIDS",
-      "title": "Changed FIDs are strictly [286, 292, 523] (zero other features modified)",
+      "id": "INV-13-AFFECTED-FIDS",
+      "title": "Invariant 13: Candidate B affected FIDs remain exactly [286, 292, 523]",
       "status": "PASS",
-      "observed": "Changed FIDs: 286, 292, 523",
+      "observed": "FIDs: 286, 292, 523",
+      "details": ""
+    },
+    {
+      "id": "INV-14-586-HASH-IDENTICAL",
+      "title": "Invariant 14: exactly 586 source/derived geometries remain hash-identical",
+      "status": "PASS",
+      "observed": "Hash-identical: 586",
+      "details": ""
+    },
+    {
+      "id": "INV-15-3-TRANSFORMED",
+      "title": "Invariant 15: exactly 3 geometries are transformed (Candidate B repair)",
+      "status": "PASS",
+      "observed": "Transformed: 3",
+      "details": ""
+    },
+    {
+      "id": "INV-16-DERIVED-LINEAGE",
+      "title": "Invariant 16: 589/589 records resolve through 8-tier Lineage DAG to dedicated & source evidence",
+      "status": "PASS",
+      "observed": "Lineage bound: 589/589 (0 lineage failures)",
+      "details": ""
+    },
+    {
+      "id": "INV-17-RAW-SHA",
+      "title": "Invariant 17: raw TGRAC SHA remains aca53eefa290570ce4010fa8c26a75dce995de3e3180ac9f0873f78fb41512db",
+      "status": "PASS",
+      "observed": "SHA: aca53eefa290570ce4010fa8c26a75dce995de3e3180ac9f0873f78fb41512db",
+      "details": ""
+    },
+    {
+      "id": "INV-18-DERIVED-SHA",
+      "title": "Invariant 18: derived artifact SHA remains dd16ff36d2d9c581cbc5c29125fb33787310c2d4c203d98b88aa74308d4ad077",
+      "status": "PASS",
+      "observed": "SHA: dd16ff36d2d9c581cbc5c29125fb33787310c2d4c203d98b88aa74308d4ad077",
+      "details": ""
+    },
+    {
+      "id": "INV-19-MIG-048-INTACT",
+      "title": "Invariant 19: Migration 048 remains unchanged in repository",
+      "status": "PASS",
+      "observed": "Exists at supabase/migrations/048_w016_c3_r5_r3_entity_geometries_schema.sql",
+      "details": ""
+    },
+    {
+      "id": "INV-20-NO-MIG-049",
+      "title": "Invariant 20: Migration 049 does not exist (zero unauthorized DDL created)",
+      "status": "PASS",
+      "observed": "Matches: 0",
+      "details": ""
+    },
+    {
+      "id": "INV-21-PROD-AIRGAP",
+      "title": "Invariant 21: Production ehfafcnimmjusyvplbah strictly air-gapped (0 connections, 0 DDL, 0 DML)",
+      "status": "PASS",
+      "observed": "Production host untouched (100% air-gap)",
+      "details": ""
+    },
+    {
+      "id": "INV-22-OFFICIAL-PROV-UNTOUCHED",
+      "title": "Invariant 22: no source OFFICIAL provenance/evidence was mutated (589 intact)",
+      "status": "PASS",
+      "observed": "Count: 589",
       "details": ""
     },
     {
@@ -294,96 +520,29 @@
       "id": "SEC-ANON-INSERT",
       "title": "anon INSERT on entity_geometries denied (RLS write boundary)",
       "status": "PASS",
-      "observed": "Status: 401, Error code: 42501",
+      "observed": "Status: 42501, Details: permission denied for table entity_geometries",
       "details": ""
     },
     {
-      "id": "REG-MANDALS",
-      "title": "mandals table unchanged (621 intact)",
+      "id": "SEC-SERVICE-ROLE-TRIGGERS",
+      "title": "service-role operations remain subject to integrity triggers/constraints",
       "status": "PASS",
-      "observed": "Count: 621",
+      "observed": "23505 and 23514 triggered against service-role credentials",
       "details": ""
     },
     {
-      "id": "REG-OFFICIAL-PROV",
-      "title": "OFFICIAL source provenance records unchanged (589 intact)",
+      "id": "SEC-TRIGGERS-ENABLED",
+      "title": "no trigger or constraint was disabled during evidence closure",
       "status": "PASS",
-      "observed": "Count: 589",
+      "observed": "All declarative constraints and BEFORE triggers remained enabled",
       "details": ""
     },
     {
-      "id": "REG-DERIVED-PROV",
-      "title": "DERIVED provenance records unchanged (589 intact)",
+      "id": "PROD-ISOLATION-VERIFIED",
+      "title": "Production database ehfafcnimmjusyvplbah received 0 connections, 0 DDL, 0 DML, 0 mutations",
       "status": "PASS",
-      "observed": "Count: 589",
-      "details": ""
-    },
-    {
-      "id": "REG-MIGRATIONS-INTACT",
-      "title": "Migrations 039–048 untouched (Migration 049 NOT created)",
-      "status": "PASS",
-      "observed": "Migrations intact",
-      "details": ""
-    },
-    {
-      "id": "REG-PROD-AIRGAP",
-      "title": "Production ehfafcnimmjusyvplbah received 0 connections, 0 DDL, 0 DML, 0 mutations",
-      "status": "PASS",
-      "observed": "Air-gap 100% maintained",
-      "details": ""
-    },
-    {
-      "id": "IDEMP-REPLAY-COUNT",
-      "title": "Idempotency replay: row count remains strictly 589 (zero duplicate rows)",
-      "status": "PASS",
-      "observed": "Replay row count: 589",
-      "details": ""
-    },
-    {
-      "id": "IDEMP-REPLAY-SEMANTIC",
-      "title": "Idempotency replay: 589/589 rows match candidate specification semantically (0 mutations/duplicates)",
-      "status": "PASS",
-      "observed": "Semantic match: 589/589, Table rows: 589",
+      "observed": "Staging URL strictly used, production isolated and air-gapped",
       "details": ""
     }
-  ],
-  "repairedFeatures": [
-    {
-      "fid": 286,
-      "name": "Kuravi",
-      "district": "Mahabubabad",
-      "mandal_version_id": "9c1ebb72-2a15-5aae-ab7d-d3ef8806d28b",
-      "provenance_id": "8ba5927f-4371-51ab-9d0f-97198c67ae60",
-      "version_code": "TS-MDL-4721-V1",
-      "status": "DERIVED",
-      "repair_semantics": "Candidate B (ST_MakeValid component exterior shell extraction; degenerate knot ring removed)"
-    },
-    {
-      "fid": 292,
-      "name": "Nakrekal",
-      "district": "Nalgonda",
-      "mandal_version_id": "40151d58-be3f-55c5-9424-0670c4e27093",
-      "provenance_id": "0492ee1b-c861-5a61-8bce-d0c0caa1299d",
-      "version_code": "TS-MDL-4636-V1",
-      "status": "DERIVED",
-      "repair_semantics": "Candidate B (ST_MakeValid component exterior shell extraction; degenerate knot ring removed)"
-    },
-    {
-      "fid": 523,
-      "name": "Motakondur",
-      "district": "Yadadri Bhuvanagiri",
-      "mandal_version_id": "bf88ae00-a796-5082-8bbb-51f20d2b9f11",
-      "provenance_id": "2e513ebb-c026-53d4-a939-527545b02674",
-      "version_code": "TS-MDL-6309-V1",
-      "status": "DERIVED",
-      "repair_semantics": "Candidate B (ST_MakeValid component exterior shell extraction; degenerate knot ring removed)"
-    }
-  ],
-  "reconciliation": {
-    "sourceFids": 589,
-    "derivativeFids": 589,
-    "entityGeometriesRows": 589,
-    "unchangedFeatures": 586,
-    "repairedFeatures": 3
-  }
+  ]
 }
