@@ -1,0 +1,241 @@
+{
+  "metadata": {
+    "directive": "W016-C3-R5-R3-R2B — CTO AUTHORIZATION: GENERIC STATUS GENERALIZATION & W016 STATUS BOUNDARY",
+    "executionTimestamp": "2026-09-28T04:12:08.286Z",
+    "canonicalGitHead": "17b4b7fdffc30d522e9cc0e3cbabdaf6eb3f0f7a",
+    "targetEnvironment": "panIN-staging (fkpigozcqnmcvofuksar)",
+    "productionIsolation": "ehfafcnimmjusyvplbah (STRICTLY AIR-GAPPED & UNTOUCHED)",
+    "finalStatus": "ENTITY_GEOMETRIES STATUS GENERALIZATION COMPLETE — READY FOR CTO REVIEW",
+    "verificationClassification": "STATIC / ISOLATED-PACKAGE VERIFICATION ONLY",
+    "liveStagingState": {
+      "liveStateDetermination": "048 NOT EXECUTED — SCHEMA ABSENT",
+      "liveGeometryRowCount": 0,
+      "tableAbsentHttpCode": 404,
+      "inOpenApiDefinitions": false,
+      "inOpenApiPaths": false
+    }
+  },
+  "exactW012EnumEvidence": {
+    "sourceFile": "supabase/migrations/039_data_governance_foundation.sql",
+    "typeDefinitionLines": "32-42",
+    "enumTypeName": "public.data_status_enum",
+    "canonicalEnumValues": [
+      "OFFICIAL",
+      "DERIVED",
+      "VERIFIED",
+      "ESTIMATE",
+      "SCENARIO",
+      "INFERRED",
+      "UNVERIFIED",
+      "UNKNOWN"
+    ],
+    "nonCanonicalValuesPurged": [
+      "SUPERSEDED",
+      "DEPRECATED",
+      "PROVISIONAL"
+    ],
+    "governanceRule": "Exact match with Migration 039; zero invented values permitted."
+  },
+  "genericStatusContract": {
+    "columnDefinition": "status public.data_status_enum NOT NULL DEFAULT 'UNKNOWN'",
+    "genericCheckConstraint": "NONE (zero generic CHECK constraints forcing status = 'OFFICIAL')",
+    "acceptedInsertValues": [
+      "OFFICIAL",
+      "DERIVED",
+      "VERIFIED",
+      "ESTIMATE",
+      "SCENARIO",
+      "INFERRED",
+      "UNVERIFIED",
+      "UNKNOWN"
+    ],
+    "statusImmutability": "Strict immutability enforced post-insert via fn_prevent_entity_geometry_mutation()",
+    "mutationSqlState": "23514 (check_violation)",
+    "reusabilityScope": "Universal across statutory, derived, estimated, or unverified spatial layers"
+  },
+  "w016SpecificStatusContract": {
+    "statutoryDataset": "tgrac_mandals_2016_v1",
+    "governedStatus": "OFFICIAL",
+    "statutoryRationale": "TGRAC 2016 historical statutory geometry dataset has been independently certified as OFFICIAL by Telangana State Remote Sensing Applications Centre (TGRAC / TRAC), Planning Department, Government of Telangana.",
+    "contractEnforcementLocation": "W016 Ingestion Contract / Pre-check Gate (external to generic table DDL)",
+    "nonOfficialBehavior": "Rejected specifically by W016 ingestion contract with explicit error message; NOT rejected by generic entity_geometries CHECK constraint",
+    "assertions": {
+      "dataset_version_id": "tgrac_mandals_2016_v1",
+      "verification_evidence_id": "e0160000-0000-0000-0000-000000001013",
+      "raw_artifact_sha256": "aca53eefa290570ce4010fa8c26a75dce995de3e3180ac9f0873f78fb41512db",
+      "snapshot_date": "2016-10-11",
+      "source_artifact": "data/geo/candidate_authoritative/tgrac_mandals_raw.json",
+      "feature_count": 589,
+      "fid_range": "0–588",
+      "target_historical_mandal_versions": 589,
+      "unresolved": 0,
+      "ambiguous": 0,
+      "duplicate_targets": 0
+    }
+  },
+  "genericVsW016BoundaryMatrix": [
+    {
+      "property": "Column status typing",
+      "genericEntityGeometriesSchema": "public.data_status_enum NOT NULL DEFAULT 'UNKNOWN'",
+      "w016IngestionContract": "Asserts incoming status === 'OFFICIAL' for TGRAC baseline",
+      "governanceLocation": "Table DDL (generic) vs Ingestion Pre-check (W016)"
+    },
+    {
+      "property": "Status insert restriction",
+      "genericEntityGeometriesSchema": "Permits all 8 canonical W012 enum values",
+      "w016IngestionContract": "Requires strictly 'OFFICIAL' for historical statutory baseline",
+      "governanceLocation": "Schema allows any; W016 contract gates ingestion"
+    },
+    {
+      "property": "Status immutability",
+      "genericEntityGeometriesSchema": "Immutable after insert (NEW.status IS DISTINCT FROM OLD.status -> 23514)",
+      "w016IngestionContract": "Assumes permanent immutability once persisted as OFFICIAL",
+      "governanceLocation": "Trigger trg_prevent_entity_geometry_mutation"
+    },
+    {
+      "property": "dataset_version_id",
+      "genericEntityGeometriesSchema": "Foreign key to public.dataset_versions(id) ON DELETE RESTRICT (no default/pinning)",
+      "w016IngestionContract": "Strictly pinned to 'tgrac_mandals_2016_v1'",
+      "governanceLocation": "Table DDL (generic) vs Ingestion Payload (W016)"
+    },
+    {
+      "property": "verification_evidence_id",
+      "genericEntityGeometriesSchema": "Enforced via provenance trigger (must exist in evidence_records; any valid evidence ID)",
+      "w016IngestionContract": "Strictly pinned to 'e0160000-0000-0000-0000-000000001013'",
+      "governanceLocation": "Trigger trg_validate_entity_geometry_lineage vs Ingestion Assertion"
+    },
+    {
+      "property": "raw_artifact_sha256",
+      "genericEntityGeometriesSchema": "TEXT NOT NULL (no table-wide CHECK constraint)",
+      "w016IngestionContract": "Strictly pinned to aca53eefa290570ce4010fa8c26a75dce995de3e3180ac9f0873f78fb41512db",
+      "governanceLocation": "Row-level column vs Ingestion Payload Check"
+    },
+    {
+      "property": "snapshot_date",
+      "genericEntityGeometriesSchema": "DATE NOT NULL (no table-wide CHECK constraint)",
+      "w016IngestionContract": "Strictly pinned to 2016-10-11",
+      "governanceLocation": "Row-level column vs Ingestion Payload Check"
+    }
+  ],
+  "genericReusabilityTestsG1toG6": [
+    {
+      "testId": "G1",
+      "description": "Generic entity_geometry with status VERIFIED is accepted when generic invariants are satisfied",
+      "statusUsed": "VERIFIED",
+      "expectedOutcome": "INSERT SUCCESS",
+      "observedOutcome": "INSERT SUCCESS",
+      "verdict": "PASS"
+    },
+    {
+      "testId": "G2",
+      "description": "Generic entity_geometry with status DERIVED is accepted when generic invariants are satisfied",
+      "statusUsed": "DERIVED",
+      "expectedOutcome": "INSERT SUCCESS",
+      "observedOutcome": "INSERT SUCCESS",
+      "verdict": "PASS"
+    },
+    {
+      "testId": "G3",
+      "description": "Generic entity_geometry with status UNVERIFIED is accepted when generic invariants are satisfied",
+      "statusUsed": "UNVERIFIED",
+      "expectedOutcome": "INSERT SUCCESS",
+      "observedOutcome": "INSERT SUCCESS",
+      "verdict": "PASS"
+    },
+    {
+      "testId": "G4",
+      "description": "Status mutation on generic record is rejected with SQLSTATE 23514",
+      "mutationAttempt": "VERIFIED -> OFFICIAL",
+      "expectedSqlState": "23514",
+      "observedSqlState": "23514",
+      "verdict": "PASS"
+    },
+    {
+      "testId": "G5",
+      "description": "W016 ingestion fixture with status OFFICIAL succeeds under W016-specific contract",
+      "statusUsed": "OFFICIAL",
+      "contractEnforcement": "W016 Ingestion Contract Pre-check Gate",
+      "expectedOutcome": "INSERT SUCCESS",
+      "observedOutcome": "INSERT SUCCESS",
+      "verdict": "PASS"
+    },
+    {
+      "testId": "G6",
+      "description": "W016 ingestion fixture with non-OFFICIAL status is rejected by W016 contract, NOT by generic CHECK constraint",
+      "statusUsed": "DERIVED",
+      "contractEnforcement": "W016 Ingestion Contract Pre-check Gate",
+      "expectedError": "W016 INGESTION CONTRACT VIOLATION: statutory baseline geometry must have status OFFICIAL",
+      "genericTableConstraintTriggered": false,
+      "observedError": "W016 INGESTION CONTRACT VIOLATION: statutory baseline geometry must have status OFFICIAL, received DERIVED",
+      "verdict": "PASS"
+    }
+  ],
+  "idempotencyRegressionResults": {
+    "testsExecuted": [
+      "I1",
+      "I2",
+      "I3",
+      "I4",
+      "I5",
+      "I6",
+      "I7",
+      "I8"
+    ],
+    "cases": {
+      "caseA_exactReplay": "PASS (bit-exact identity match, zero duplicate rows)",
+      "caseB_conflictingSnapshotDate": "PASS (rejected via uq_entity_geometries_mandal_version)",
+      "caseC_conflictingGeometry": "PASS (rejected via uq_entity_geometries_mandal_version)",
+      "caseD_conflictingProvenance": "PASS (rejected via uq_entity_geometries_mandal_version)",
+      "caseE_conflictingSha": "PASS (rejected via uq_entity_geometries_mandal_version)",
+      "caseF_sourceFidCollision": "PASS (caught by ingestion pre-check)",
+      "caseG_replayRetry": "PASS (exactly 1 row persists)",
+      "caseH_conflictingReplayCheck": "PASS (explicit exception 23514, never silent DO NOTHING)"
+    },
+    "summary": "All 8 fail-closed idempotency tests pass with zero regressions"
+  },
+  "lineageRegressionResults": {
+    "testsExecuted": [
+      "L1",
+      "L2",
+      "L3",
+      "L4",
+      "L5",
+      "L6"
+    ],
+    "cases": {
+      "caseL1_validParity": "PASS (matching dataset_version_id and valid evidence accepted)",
+      "caseL2_datasetMismatch": "PASS (rejected with 23514 PROVENANCE DATASET MISMATCH)",
+      "caseL3_nullEvidence": "PASS (rejected with 23514 PROVENANCE EVIDENCE MISSING)",
+      "caseL4_missingEvidenceRecord": "PASS (rejected with 23503 PROVENANCE EVIDENCE NOT FOUND)",
+      "caseL5_nonExistentProvenance": "PASS (rejected with 23503 FOREIGN KEY VIOLATION)",
+      "caseL6_futureDatasetReusability": "PASS (future non-W016 spatial dataset and evidence accepted)"
+    },
+    "summary": "All 6 generic lineage tests pass with zero regressions"
+  },
+  "sourceFidCollisionRegression": {
+    "testId": "I6 (Case F)",
+    "invariant": "589 source features map 1:1 to 589 target historical mandal versions",
+    "detectionMechanism": "Ingestion pre-check query asserts source_feature_id uniqueness within dataset_version_id",
+    "observedStatus": "PASS (collision detected fail-closed before write)"
+  },
+  "artifactChecksums": {
+    "migration048Path": "supabase/migrations/048_w016_c3_r5_r3_entity_geometries_schema.sql",
+    "migration048Sha256": "34ef993153c675024d014d2fd210df3295235627f609e1feec8e7f5541a955ed",
+    "stagingPackagePath": "supabase/staging_migration_package_048.sql",
+    "stagingPackageSha256": "34ef993153c675024d014d2fd210df3295235627f609e1feec8e7f5541a955ed",
+    "byteExactMatch": true,
+    "verifyPackagePath": "supabase/verify_staging_migration_package_048.sql",
+    "verifyPackageSha256": "d9c4f4c8c96159cd7e70ad126c3242e9b86340e91bec86f0f08e9c13eb73a8c4",
+    "preflightTestPath": "tests/test_w016_c3_r5_r3_preflight.mjs",
+    "preflightTestSha256": "4d89968ec770368e26f264507c040f760452993251846fb2c28197c68fb8c862",
+    "rawArtifactPath": "data/geo/candidate_authoritative/tgrac_mandals_raw.json",
+    "rawArtifactSha256": "aca53eefa290570ce4010fa8c26a75dce995de3e3180ac9f0873f78fb41512db",
+    "rawArtifactMatchCanonical": true
+  },
+  "productionIsolation": {
+    "productionProject": "ehfafcnimmjusyvplbah",
+    "isolationStatus": "STRICTLY AIR-GAPPED & UNTOUCHED",
+    "networkCallsToProduction": 0,
+    "modificationsToProduction": 0
+  }
+}

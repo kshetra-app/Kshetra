@@ -1,11 +1,12 @@
 -- ==============================================================================
--- Verification Suite: Migration 048 Entity Geometries Schema (W016-C3-R5-R3-R2)
+-- Verification Suite: Migration 048 Entity Geometries Schema (W016-C3-R5-R3-R2B)
 -- Target: panIN-staging (fkpigozcqnmcvofuksar) ONLY
--- Authority: CTO Directive W016-C3-R5-R3-R2
+-- Authority: CTO Directive W016-C3-R5-R3-R2B
 -- Scope: Read-Only Catalog Inspection & Transaction-Isolated Behavioral Preflight
 --        - Generic Lineage Test Matrix (Tests L1–L6, including future spatial evidence proof)
 --        - Fail-Closed Idempotency Test Matrix (Tests I1–I8, Case A through H)
 --        - Controlled Lifecycle Mutability Tests (M1–M5)
+--        - Generic Status Generalization & W016 Boundary Tests (G1–G6)
 --        - Strictly 0 real geometry rows remain post-test.
 -- ==============================================================================
 
@@ -21,6 +22,7 @@ DECLARE
   v_rls_enabled BOOLEAN;
   v_policy_count INTEGER;
   v_sqlstate TEXT;
+  v_err_msg TEXT;
 
   -- Test fixture references (historical mandal versions & verified spatial provenance)
   c_test_mv_id UUID := 'e0160000-0000-0001-0000-000000004301'; -- Adilabad Urban (hist)
@@ -47,8 +49,12 @@ DECLARE
   v_test_id UUID;
   v_replay_id UUID;
   v_lifecycle_id UUID;
+  v_g_test_id UUID;
+  v_g_status public.data_status_enum;
+  v_w016_status public.data_status_enum;
+  v_w016_bad_status public.data_status_enum;
 BEGIN
-  RAISE NOTICE '=== STARTING MIGRATION 048 VERIFICATION SUITE (W016-C3-R5-R3-R2) ===';
+  RAISE NOTICE '=== STARTING MIGRATION 048 VERIFICATION SUITE (W016-C3-R5-R3-R2B) ===';
 
   -- ─── PART 1: CATALOG OBJECT INSPECTION ─────────────────────────────────────────
 
@@ -527,7 +533,142 @@ BEGIN
     RAISE NOTICE '[PASS] Test M5: Setting is_current=true on historical baseline rejected with SQLSTATE %', v_sqlstate;
   END;
 
-  -- ─── PART 5: CLEANUP & AUDIT OF ZERO GEOMETRIES ───────────────────────────────
+  -- ─── PART 5: GENERIC STATUS GENERALIZATION & W016 STATUS BOUNDARY (G1–G6) ──────
+  RAISE NOTICE '--- Starting Generic Status Generalization & W016 Boundary Tests (G1–G6) ---';
+
+  -- Clean up previous test row before G-series
+  DELETE FROM public.entity_geometries;
+
+  -- Test G1: Legitimate generic entity_geometry with status VERIFIED is accepted
+  INSERT INTO public.entity_geometries (
+    id, entity_type, mandal_version_id, dataset_version_id, provenance_id,
+    geometry, geometry_type, status, authority_classification, temporal_classification,
+    source_feature_id, raw_artifact_sha256, snapshot_date, valid_from, valid_to, is_current
+  ) VALUES (
+    gen_random_uuid(), 'mandal', c_test_mv_id, c_future_dv_id, c_future_prov_id,
+    c_valid_geom, 'MultiPolygon', 'VERIFIED', 'statutory_cartographic', 'historical_statutory_baseline',
+    'g1_feat', '0000000000000000000000000000000000000000000000000000000000000001',
+    '2026-01-01', '2026-01-01', NULL, false
+  ) RETURNING id INTO v_g_test_id;
+
+  SELECT status INTO v_g_status FROM public.entity_geometries WHERE id = v_g_test_id;
+  IF v_g_status IS DISTINCT FROM 'VERIFIED'::public.data_status_enum THEN
+    RAISE EXCEPTION 'TEST G1 FAILED: Expected status VERIFIED, found %', v_g_status;
+  END IF;
+  RAISE NOTICE '[PASS] Test G1: Generic entity_geometry with status VERIFIED accepted by generic schema';
+
+  -- Test G4: Status mutation on generic record is rejected with SQLSTATE 23514
+  BEGIN
+    UPDATE public.entity_geometries
+    SET status = 'OFFICIAL'
+    WHERE id = v_g_test_id;
+    RAISE EXCEPTION 'TEST G4 FAILED: Status mutation from VERIFIED to OFFICIAL did not fail';
+  EXCEPTION WHEN check_violation THEN
+    GET STACKED DIAGNOSTICS v_sqlstate = RETURNED_SQLSTATE;
+    IF v_sqlstate <> '23514' THEN
+      RAISE EXCEPTION 'TEST G4 FAILED: Expected SQLSTATE 23514, got %', v_sqlstate;
+    END IF;
+    RAISE NOTICE '[PASS] Test G4: Status mutation rejected with SQLSTATE 23514 (universal status immutability)';
+  END;
+
+  DELETE FROM public.entity_geometries WHERE id = v_g_test_id;
+
+  -- Test G2: Legitimate generic entity_geometry with status DERIVED is accepted
+  INSERT INTO public.entity_geometries (
+    id, entity_type, mandal_version_id, dataset_version_id, provenance_id,
+    geometry, geometry_type, status, authority_classification, temporal_classification,
+    source_feature_id, raw_artifact_sha256, snapshot_date, valid_from, valid_to, is_current
+  ) VALUES (
+    gen_random_uuid(), 'mandal', c_test_mv_id, c_future_dv_id, c_future_prov_id,
+    c_valid_geom, 'MultiPolygon', 'DERIVED', 'statutory_cartographic', 'historical_statutory_baseline',
+    'g2_feat', '0000000000000000000000000000000000000000000000000000000000000002',
+    '2026-01-01', '2026-01-01', NULL, false
+  ) RETURNING id INTO v_g_test_id;
+
+  SELECT status INTO v_g_status FROM public.entity_geometries WHERE id = v_g_test_id;
+  IF v_g_status IS DISTINCT FROM 'DERIVED'::public.data_status_enum THEN
+    RAISE EXCEPTION 'TEST G2 FAILED: Expected status DERIVED, found %', v_g_status;
+  END IF;
+  RAISE NOTICE '[PASS] Test G2: Generic entity_geometry with status DERIVED accepted by generic schema';
+
+  DELETE FROM public.entity_geometries WHERE id = v_g_test_id;
+
+  -- Test G3: Legitimate generic entity_geometry with status UNVERIFIED is accepted
+  INSERT INTO public.entity_geometries (
+    id, entity_type, mandal_version_id, dataset_version_id, provenance_id,
+    geometry, geometry_type, status, authority_classification, temporal_classification,
+    source_feature_id, raw_artifact_sha256, snapshot_date, valid_from, valid_to, is_current
+  ) VALUES (
+    gen_random_uuid(), 'mandal', c_test_mv_id, c_future_dv_id, c_future_prov_id,
+    c_valid_geom, 'MultiPolygon', 'UNVERIFIED', 'statutory_cartographic', 'historical_statutory_baseline',
+    'g3_feat', '0000000000000000000000000000000000000000000000000000000000000003',
+    '2026-01-01', '2026-01-01', NULL, false
+  ) RETURNING id INTO v_g_test_id;
+
+  SELECT status INTO v_g_status FROM public.entity_geometries WHERE id = v_g_test_id;
+  IF v_g_status IS DISTINCT FROM 'UNVERIFIED'::public.data_status_enum THEN
+    RAISE EXCEPTION 'TEST G3 FAILED: Expected status UNVERIFIED, found %', v_g_status;
+  END IF;
+  RAISE NOTICE '[PASS] Test G3: Generic entity_geometry with status UNVERIFIED accepted by generic schema';
+
+  DELETE FROM public.entity_geometries WHERE id = v_g_test_id;
+
+  -- Test G5: W016 ingestion fixture with status OFFICIAL succeeds under W016-specific contract
+  v_w016_status := 'OFFICIAL'::public.data_status_enum;
+  -- W016 Ingestion Contract Pre-check:
+  IF v_w016_status IS DISTINCT FROM 'OFFICIAL'::public.data_status_enum THEN
+    RAISE EXCEPTION 'W016 INGESTION CONTRACT VIOLATION: statutory baseline geometry must have status OFFICIAL, received %', v_w016_status
+      USING ERRCODE = '23514';
+  END IF;
+
+  INSERT INTO public.entity_geometries (
+    id, entity_type, mandal_version_id, dataset_version_id, provenance_id,
+    geometry, geometry_type, status, authority_classification, temporal_classification,
+    source_feature_id, raw_artifact_sha256, snapshot_date, valid_from, valid_to, is_current
+  ) VALUES (
+    gen_random_uuid(), 'mandal', c_test_mv_id, c_test_dv_id, c_test_prov_id,
+    c_valid_geom, 'MultiPolygon', v_w016_status, 'statutory_cartographic', 'historical_statutory_baseline',
+    '0', c_test_sha, '2016-10-11', '2016-10-11', '2022-09-26', false
+  ) RETURNING id INTO v_g_test_id;
+
+  SELECT status INTO v_g_status FROM public.entity_geometries WHERE id = v_g_test_id;
+  IF v_g_status IS DISTINCT FROM 'OFFICIAL'::public.data_status_enum THEN
+    RAISE EXCEPTION 'TEST G5 FAILED: Expected status OFFICIAL, found %', v_g_status;
+  END IF;
+  RAISE NOTICE '[PASS] Test G5: W016 ingestion fixture with status OFFICIAL succeeds under W016 contract';
+
+  DELETE FROM public.entity_geometries WHERE id = v_g_test_id;
+
+  -- Test G6: W016 ingestion fixture with non-OFFICIAL status is rejected by W016 contract, NOT by generic CHECK constraint
+  v_w016_bad_status := 'DERIVED'::public.data_status_enum;
+  BEGIN
+    -- W016 Ingestion Contract Pre-check Gate (independent of generic table DDL):
+    IF v_w016_bad_status IS DISTINCT FROM 'OFFICIAL'::public.data_status_enum THEN
+      RAISE EXCEPTION 'W016 INGESTION CONTRACT VIOLATION: statutory baseline geometry must have status OFFICIAL, received %', v_w016_bad_status
+        USING ERRCODE = '23514';
+    END IF;
+
+    -- Generic insert would NOT fail on status (proven by G2), but contract halts execution before write
+    INSERT INTO public.entity_geometries (
+      id, entity_type, mandal_version_id, dataset_version_id, provenance_id,
+      geometry, geometry_type, status, authority_classification, temporal_classification,
+      source_feature_id, raw_artifact_sha256, snapshot_date, valid_from, valid_to, is_current
+    ) VALUES (
+      gen_random_uuid(), 'mandal', c_test_mv_id, c_test_dv_id, c_test_prov_id,
+      c_valid_geom, 'MultiPolygon', v_w016_bad_status, 'statutory_cartographic', 'historical_statutory_baseline',
+      '0', c_test_sha, '2016-10-11', '2016-10-11', '2022-09-26', false
+    );
+    RAISE EXCEPTION 'TEST G6 FAILED: Non-OFFICIAL status was not rejected by W016 ingestion contract';
+  EXCEPTION
+    WHEN OTHERS THEN
+      GET STACKED DIAGNOSTICS v_err_msg = MESSAGE_TEXT, v_sqlstate = RETURNED_SQLSTATE;
+      IF v_err_msg NOT LIKE 'W016 INGESTION CONTRACT VIOLATION%' THEN
+        RAISE EXCEPTION 'TEST G6 FAILED: Rejection was NOT from W016 ingestion contract, got: %', v_err_msg;
+      END IF;
+      RAISE NOTICE '[PASS] Test G6: Non-OFFICIAL status rejected specifically by W016 ingestion contract (not by generic table constraint)';
+  END;
+
+  -- ─── PART 6: CLEANUP & AUDIT OF ZERO GEOMETRIES ───────────────────────────────
   -- Delete all synthetic entity_geometries rows
   DELETE FROM public.entity_geometries;
 
@@ -549,7 +690,7 @@ BEGIN
   RAISE NOTICE '[PASS] Final Audit: Exactly ZERO rows remain in public.entity_geometries';
 
   RAISE NOTICE '================================================================';
-  RAISE NOTICE 'SUCCESS: ALL CATALOG, LINEAGE (L1-L6), IDEMPOTENCY (I1-I8), AND MUTABILITY (M1-M5) CHECKS PASSED!';
+  RAISE NOTICE 'SUCCESS: ALL CATALOG, LINEAGE (L1-L6), IDEMPOTENCY (I1-I8), MUTABILITY (M1-M5), AND GENERIC STATUS (G1-G6) CHECKS PASSED!';
   RAISE NOTICE '================================================================';
 END;
 $$;

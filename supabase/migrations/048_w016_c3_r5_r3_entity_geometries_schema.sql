@@ -22,7 +22,7 @@ CREATE TABLE IF NOT EXISTS public.entity_geometries (
   provenance_id UUID NOT NULL REFERENCES public.provenance_records(id) ON DELETE RESTRICT,
   geometry GEOMETRY(MultiPolygon, 4326) NOT NULL,
   geometry_type TEXT NOT NULL DEFAULT 'MultiPolygon',
-  status public.data_status_enum NOT NULL DEFAULT 'OFFICIAL',
+  status public.data_status_enum NOT NULL DEFAULT 'UNKNOWN',
   authority_classification TEXT NOT NULL DEFAULT 'statutory_cartographic',
   temporal_classification TEXT NOT NULL DEFAULT 'historical_statutory_baseline',
   source_feature_id TEXT NOT NULL,
@@ -226,7 +226,7 @@ BEGIN
       END IF;
     END IF;
 
-    -- W012 Data Status is strictly immutable: an OFFICIAL statutory record remains OFFICIAL
+    -- W012 Data Status is strictly immutable: once inserted, status cannot be mutated
     IF NEW.status IS DISTINCT FROM OLD.status THEN
       RAISE EXCEPTION 'IMMUTABILITY VIOLATION: status cannot be mutated (OLD: %, NEW: %)',
         OLD.status, NEW.status

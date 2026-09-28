@@ -5,7 +5,7 @@ import dotenv from 'dotenv';
 import { createClient } from '@supabase/supabase-js';
 
 console.log('================================================================');
-console.log('W016-C3-R5-R3: ENTITY_GEOMETRIES SCHEMA & STAGING PREFLIGHT TEST');
+console.log('W016-C3-R5-R3-R2B: ENTITY_GEOMETRIES STATUS GENERALIZATION & W016 BOUNDARY');
 console.log(`Execution Timestamp: ${new Date().toISOString()}`);
 console.log('Target: panIN-staging (fkpigozcqnmcvofuksar) ONLY');
 console.log('Production: STRICTLY AIR-GAPPED & UNTOUCHED');
@@ -195,13 +195,56 @@ async function runPreflight() {
     migContent.includes('IMMUTABILITY VIOLATION: status cannot be mutated') &&
     migContent.includes('LIFECYCLE VIOLATION: valid_to is already closed') &&
     migContent.includes('LIFECYCLE VIOLATION: historical statutory baseline geometry cannot be set to is_current = true'),
-    'Enforces explicit transitions: status strictly immutable OFFICIAL, closed valid_to immutable, is_current protected'
+    'Enforces explicit transitions: status strictly immutable, closed valid_to immutable, is_current protected'
   );
   recordCheck('IDEMP-11', 'Zero W016-specific hardcoding in Migration 048 generic schema',
     !migContent.includes('e0160000-0000-0000-0000-000000001013') &&
     !migContent.includes('tgrac_mandals_2016_v1') &&
     !migContent.includes('aca53eefa290570ce4010fa8c26a75dce995de3e3180ac9f0873f78fb41512db'),
     'Verified: Migration 048 contains zero hardcoded W016 evidence IDs, dataset versions, or file SHAs'
+  );
+
+  // ─── PART 3B: GENERIC STATUS GENERALIZATION & W016 BOUNDARY (R2B) ───────────
+  console.log('\n--- PART 3B: GENERIC STATUS GENERALIZATION & W016 BOUNDARY (R2B) ---');
+
+  recordCheck('GEN-01', 'Schema defines status as public.data_status_enum NOT NULL DEFAULT \'UNKNOWN\'',
+    migContent.includes("status public.data_status_enum NOT NULL DEFAULT 'UNKNOWN'"),
+    'status column is typed as canonical W012 data_status_enum with DEFAULT UNKNOWN'
+  );
+
+  recordCheck('GEN-02', 'Zero generic CHECK constraints forcing status = \'OFFICIAL\' in Migration 048',
+    !migContent.includes("status = 'OFFICIAL'") && !migContent.includes("status='OFFICIAL'"),
+    'Generic schema does not restrict status to OFFICIAL, permitting any valid W012 enum value'
+  );
+
+  recordCheck('GEN-03', 'Schema enforces universal status immutability trigger (SQLSTATE 23514)',
+    migContent.includes('NEW.status IS DISTINCT FROM OLD.status') &&
+    migContent.includes("IMMUTABILITY VIOLATION: status cannot be mutated"),
+    'Any status mutation attempt is rejected fail-closed with 23514'
+  );
+
+  const verifyContent = fs.readFileSync(VERIFY_PACKAGE_048_PATH, 'utf8');
+  recordCheck('GEN-04', 'Verification suite includes tests G1, G2, G3 (VERIFIED, DERIVED, UNVERIFIED)',
+    verifyContent.includes('Test G1: Generic entity_geometry with status VERIFIED accepted') &&
+    verifyContent.includes('Test G2: Generic entity_geometry with status DERIVED accepted') &&
+    verifyContent.includes('Test G3: Generic entity_geometry with status UNVERIFIED accepted'),
+    'Static preflight proves generic schema accepts non-OFFICIAL valid W012 statuses'
+  );
+
+  recordCheck('GEN-05', 'Verification suite includes test G4 (status mutation rejected with 23514)',
+    verifyContent.includes('Test G4: Status mutation rejected with SQLSTATE 23514'),
+    'Static preflight proves status immutability is universally enforced'
+  );
+
+  recordCheck('GEN-06', 'Verification suite includes tests G5 & G6 (W016 contract boundary separation)',
+    verifyContent.includes('Test G5: W016 ingestion fixture with status OFFICIAL succeeds under W016 contract') &&
+    verifyContent.includes('Test G6: Non-OFFICIAL status rejected specifically by W016 ingestion contract'),
+    'Static preflight proves non-OFFICIAL rejection originates in W016 ingestion contract, not generic schema'
+  );
+
+  recordCheck('GEN-07', 'Zero occurrences of \'OFFICIAL\' in Migration 048 executable DDL and triggers',
+    !migContent.includes('OFFICIAL'),
+    'Verified: Migration 048 generic schema DDL contains zero occurrences of OFFICIAL'
   );
 
   // ─── PART 4: LIVE STAGING ENVIRONMENT VERIFICATION ──────────────────────────
@@ -297,7 +340,7 @@ async function runPreflight() {
 
   console.log('\n================================================================');
   console.log(`PREFLIGHT SUMMARY: ${results.length} PASSED, 0 FAILED`);
-  console.log('FINAL STATUS: ENTITY_GEOMETRIES STATUS RECONCILIATION COMPLETE — READY FOR CTO REVIEW');
+  console.log('FINAL STATUS: ENTITY_GEOMETRIES STATUS GENERALIZATION COMPLETE — READY FOR CTO REVIEW');
   console.log('================================================================\n');
 
   return {
