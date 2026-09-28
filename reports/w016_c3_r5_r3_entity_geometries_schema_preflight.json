@@ -1,0 +1,492 @@
+{
+  "metadata": {
+    "directive": "W016-C3-R5-R3 — ENTITY_GEOMETRIES SCHEMA IMPLEMENTATION & STAGING PREFLIGHT",
+    "executionTimestamp": "2026-09-28T03:03:07.975Z",
+    "repositoryHead": "b50d3265cf8aca54651a310ae028ab4477f6f3aa",
+    "targetEnvironment": "panIN-staging (fkpigozcqnmcvofuksar)",
+    "productionIsolation": "ehfafcnimmjusyvplbah (STRICTLY AIR-GAPPED & UNTOUCHED)",
+    "finalStatus": "ENTITY_GEOMETRIES SCHEMA PREFLIGHT COMPLETE — READY FOR CTO REVIEW",
+    "liveGeometryRowCount": 0
+  },
+  "migration": {
+    "number": "048",
+    "canonicalFile": "supabase/migrations/048_w016_c3_r5_r3_entity_geometries_schema.sql",
+    "canonicalSha256": "6f816ff3699f0fcf5dce1777f9551c35c632a57e9321a3b9f8a5e6725c55fa9f",
+    "sizeBytes": 7212,
+    "stagingPackageFile": "supabase/staging_migration_package_048.sql",
+    "stagingPackageSha256": "6f816ff3699f0fcf5dce1777f9551c35c632a57e9321a3b9f8a5e6725c55fa9f",
+    "byteMatch": true,
+    "verificationScriptFile": "supabase/verify_staging_migration_package_048.sql",
+    "verificationScriptSha256": "8b31710564347e53729b88709e9bba9ce10a4c9acd6c9ebefe80d87e171c20bc"
+  },
+  "schema": {
+    "tableName": "public.entity_geometries",
+    "columns": [
+      {
+        "name": "id",
+        "type": "UUID",
+        "nullable": false,
+        "default": "gen_random_uuid()",
+        "description": "Surrogate primary key"
+      },
+      {
+        "name": "entity_type",
+        "type": "TEXT",
+        "nullable": false,
+        "default": "'mandal'",
+        "description": "Entity classification"
+      },
+      {
+        "name": "mandal_version_id",
+        "type": "UUID",
+        "nullable": false,
+        "references": "public.mandal_versions(id)",
+        "on_delete": "RESTRICT",
+        "description": "Foreign key to temporal mandal version (W014)"
+      },
+      {
+        "name": "dataset_version_id",
+        "type": "TEXT",
+        "nullable": false,
+        "references": "public.dataset_versions(id)",
+        "on_delete": "RESTRICT",
+        "description": "Dedicated spatial dataset version"
+      },
+      {
+        "name": "provenance_id",
+        "type": "UUID",
+        "nullable": false,
+        "references": "public.provenance_records(id)",
+        "on_delete": "RESTRICT",
+        "description": "Dedicated spatial provenance lineage node"
+      },
+      {
+        "name": "geometry",
+        "type": "GEOMETRY(MultiPolygon, 4326)",
+        "nullable": false,
+        "description": "PostGIS EPSG:4326 2D MultiPolygon coordinate boundaries"
+      },
+      {
+        "name": "geometry_type",
+        "type": "TEXT",
+        "nullable": false,
+        "default": "'MultiPolygon'",
+        "description": "Enforced MultiPolygon type"
+      },
+      {
+        "name": "status",
+        "type": "public.data_status_enum",
+        "nullable": false,
+        "default": "'OFFICIAL'",
+        "description": "W012 governance data status"
+      },
+      {
+        "name": "authority_classification",
+        "type": "TEXT",
+        "nullable": false,
+        "default": "'statutory_cartographic'",
+        "description": "Authority classification"
+      },
+      {
+        "name": "temporal_classification",
+        "type": "TEXT",
+        "nullable": false,
+        "default": "'historical_statutory_baseline'",
+        "description": "Temporal classification"
+      },
+      {
+        "name": "source_feature_id",
+        "type": "TEXT",
+        "nullable": false,
+        "description": "Source cadastral feature FID (0-588)"
+      },
+      {
+        "name": "raw_artifact_sha256",
+        "type": "TEXT",
+        "nullable": false,
+        "check": "raw_artifact_sha256 = 'aca53eefa290570ce4010fa8c26a75dce995de3e3180ac9f0873f78fb41512db'",
+        "description": "Enforced cryptographic binding to TGRAC artifact"
+      },
+      {
+        "name": "snapshot_date",
+        "type": "DATE",
+        "nullable": false,
+        "default": "'2016-10-11'",
+        "description": "Statutory snapshot epoch"
+      },
+      {
+        "name": "valid_from",
+        "type": "DATE",
+        "nullable": false,
+        "default": "'2016-10-11'",
+        "description": "Effective spatial boundary start"
+      },
+      {
+        "name": "valid_to",
+        "type": "DATE",
+        "nullable": true,
+        "description": "Statutory boundary termination date"
+      },
+      {
+        "name": "is_current",
+        "type": "BOOLEAN",
+        "nullable": false,
+        "default": false,
+        "description": "Currentness flag (strictly false for historical baseline)"
+      },
+      {
+        "name": "metadata",
+        "type": "JSONB",
+        "nullable": false,
+        "default": "'{}'::jsonb",
+        "description": "Structured cartographic metadata"
+      },
+      {
+        "name": "created_at",
+        "type": "TIMESTAMPTZ",
+        "nullable": false,
+        "default": "now()",
+        "description": "Audit creation timestamp"
+      },
+      {
+        "name": "updated_at",
+        "type": "TIMESTAMPTZ",
+        "nullable": false,
+        "default": "now()",
+        "description": "Audit update timestamp"
+      }
+    ],
+    "constraints": [
+      {
+        "name": "pk_entity_geometries",
+        "type": "PRIMARY KEY",
+        "columns": [
+          "id"
+        ]
+      },
+      {
+        "name": "fk_entity_geometries_mandal_version",
+        "type": "FOREIGN KEY",
+        "columns": [
+          "mandal_version_id"
+        ],
+        "references": "public.mandal_versions(id)",
+        "on_delete": "RESTRICT"
+      },
+      {
+        "name": "fk_entity_geometries_dataset_version",
+        "type": "FOREIGN KEY",
+        "columns": [
+          "dataset_version_id"
+        ],
+        "references": "public.dataset_versions(id)",
+        "on_delete": "RESTRICT"
+      },
+      {
+        "name": "fk_entity_geometries_provenance",
+        "type": "FOREIGN KEY",
+        "columns": [
+          "provenance_id"
+        ],
+        "references": "public.provenance_records(id)",
+        "on_delete": "RESTRICT"
+      },
+      {
+        "name": "chk_entity_geometries_not_empty",
+        "type": "CHECK",
+        "expression": "NOT ST_IsEmpty(geometry)"
+      },
+      {
+        "name": "chk_entity_geometries_is_valid",
+        "type": "CHECK",
+        "expression": "ST_IsValid(geometry)"
+      },
+      {
+        "name": "chk_entity_geometries_srid",
+        "type": "CHECK",
+        "expression": "ST_SRID(geometry) = 4326"
+      },
+      {
+        "name": "chk_entity_geometries_geometry_type",
+        "type": "CHECK",
+        "expression": "GeometryType(geometry) = 'MULTIPOLYGON'"
+      },
+      {
+        "name": "chk_entity_geometries_type_match",
+        "type": "CHECK",
+        "expression": "geometry_type = 'MultiPolygon'"
+      },
+      {
+        "name": "chk_entity_geometries_sha256",
+        "type": "CHECK",
+        "expression": "raw_artifact_sha256 = 'aca53eefa290570ce4010fa8c26a75dce995de3e3180ac9f0873f78fb41512db'"
+      }
+    ],
+    "indexes": [
+      {
+        "name": "uq_entity_geometries_mandal_version",
+        "type": "UNIQUE BTREE",
+        "columns": [
+          "mandal_version_id"
+        ],
+        "uniquenessRule": "At most ONE entity_geometries row per mandal_version_id"
+      },
+      {
+        "name": "idx_entity_geometries_spatial",
+        "type": "GIST",
+        "columns": [
+          "geometry"
+        ],
+        "description": "Spatial 2D bounding box accelerator"
+      },
+      {
+        "name": "idx_entity_geometries_dataset_version",
+        "type": "BTREE",
+        "columns": [
+          "dataset_version_id"
+        ],
+        "description": "FK join accelerator"
+      },
+      {
+        "name": "idx_entity_geometries_provenance",
+        "type": "BTREE",
+        "columns": [
+          "provenance_id"
+        ],
+        "description": "FK join accelerator"
+      },
+      {
+        "name": "idx_entity_geometries_source_feature",
+        "type": "BTREE",
+        "columns": [
+          "source_feature_id"
+        ],
+        "description": "Cadastral FID lookup accelerator"
+      },
+      {
+        "name": "idx_entity_geometries_status",
+        "type": "BTREE",
+        "columns": [
+          "status"
+        ],
+        "description": "Governance status filter"
+      }
+    ],
+    "triggers": [
+      {
+        "name": "trg_prevent_entity_geometry_mutation",
+        "event": "BEFORE UPDATE",
+        "timing": "FOR EACH ROW",
+        "function": "public.fn_prevent_entity_geometry_mutation()",
+        "protectedColumns": [
+          "mandal_version_id",
+          "dataset_version_id",
+          "provenance_id",
+          "source_feature_id",
+          "raw_artifact_sha256",
+          "snapshot_date",
+          "geometry"
+        ],
+        "violationSqlstate": "23514",
+        "description": "Rejects mutations or reassignments of authoritative geometry records"
+      }
+    ],
+    "security": {
+      "rlsEnabled": true,
+      "rlsForced": true,
+      "policies": [
+        {
+          "name": "Public read entity_geometries",
+          "for": "SELECT",
+          "to": [
+            "anon",
+            "authenticated"
+          ],
+          "using": "true"
+        },
+        {
+          "name": "Service role full access entity_geometries",
+          "for": "ALL",
+          "to": [
+            "service_role"
+          ],
+          "using": "true",
+          "with_check": "true"
+        }
+      ],
+      "privileges": {
+        "public": "REVOKED_ALL",
+        "anon": [
+          "SELECT"
+        ],
+        "authenticated": [
+          "SELECT"
+        ],
+        "service_role": [
+          "SELECT",
+          "INSERT",
+          "UPDATE",
+          "DELETE",
+          "TRUNCATE",
+          "REFERENCES",
+          "TRIGGER"
+        ]
+      }
+    }
+  },
+  "behavioralPreflight": {
+    "tests": [
+      {
+        "id": "A",
+        "name": "invalid mandal_version_id rejected",
+        "expectedSqlstate": "23503",
+        "description": "Foreign key violation when mandal_version_id does not exist"
+      },
+      {
+        "id": "B",
+        "name": "nonexistent dataset_version_id rejected",
+        "expectedSqlstate": "23503",
+        "description": "Foreign key violation when dataset_version_id does not exist"
+      },
+      {
+        "id": "C",
+        "name": "nonexistent provenance_id rejected",
+        "expectedSqlstate": "23503",
+        "description": "Foreign key violation when provenance_id does not exist"
+      },
+      {
+        "id": "D",
+        "name": "NULL geometry rejected",
+        "expectedSqlstate": "23502",
+        "description": "Not-null violation when geometry is omitted or NULL"
+      },
+      {
+        "id": "E",
+        "name": "wrong SRID rejected",
+        "expectedSqlstate": "23514",
+        "description": "Check constraint violation when geometry SRID is not 4326"
+      },
+      {
+        "id": "F",
+        "name": "invalid/empty geometry rejected",
+        "expectedSqlstate": "23514",
+        "description": "Check constraint violation when geometry is empty or invalid"
+      },
+      {
+        "id": "G",
+        "name": "duplicate mandal_version_id rejected",
+        "expectedSqlstate": "23505",
+        "description": "Unique constraint violation on duplicate mandal_version_id"
+      },
+      {
+        "id": "H",
+        "name": "unauthorized anon INSERT rejected",
+        "expectedSqlstate": "42501",
+        "description": "Permission denied for anon role on INSERT"
+      },
+      {
+        "id": "I",
+        "name": "unauthorized authenticated INSERT rejected",
+        "expectedSqlstate": "42501",
+        "description": "Permission denied for authenticated role on INSERT"
+      },
+      {
+        "id": "J",
+        "name": "protected authoritative geometry UPDATE rejected",
+        "expectedSqlstate": "23514",
+        "description": "Immutability trigger rejects coordinate modifications"
+      },
+      {
+        "id": "K",
+        "name": "protected mandal_version reassignment rejected",
+        "expectedSqlstate": "23514",
+        "description": "Immutability trigger rejects mandal_version_id reassignment"
+      },
+      {
+        "id": "L",
+        "name": "valid synthetic geometry insert passes via authorized path",
+        "expectedResult": "INSERT_SUCCESS",
+        "description": "Disposable test row created with valid MultiPolygon"
+      },
+      {
+        "id": "M",
+        "name": "synthetic row deleted cleanly",
+        "expectedResult": "DELETE_SUCCESS",
+        "description": "Disposable test row removed cleanly"
+      },
+      {
+        "id": "N",
+        "name": "no real geometry rows remain after tests",
+        "expectedResult": "ROW_COUNT_0",
+        "description": "Live table row count strictly 0"
+      }
+    ]
+  },
+  "realDataProvenancePreflight": {
+    "rawArtifact": {
+      "path": "data/geo/candidate_authoritative/tgrac_mandals_raw.json",
+      "sha256": "aca53eefa290570ce4010fa8c26a75dce995de3e3180ac9f0873f78fb41512db",
+      "sizeBytes": 26843665,
+      "featureCount": 589
+    },
+    "reconciliationMatrix": {
+      "path": "reports/w016_c3_r5_geometry_reconciliation.csv",
+      "rowCount": 589,
+      "uniqueFids": 589,
+      "uniqueTargetUuids": 589,
+      "unresolvedCount": 0,
+      "ambiguousCount": 0,
+      "cohorts": {
+        "A": 548,
+        "B": 8,
+        "C": 24,
+        "D": 9
+      }
+    },
+    "governanceLinkage": {
+      "spatialEvidenceId": "e0160000-0000-0000-0000-000000001013",
+      "spatialDatasetId": "geo_mandal_boundaries",
+      "spatialDatasetVersionId": "tgrac_mandals_2016_v1",
+      "snapshotDate": "2016-10-11",
+      "legalEvidenceId": "e0160000-0000-0000-0000-000000002016"
+    }
+  },
+  "idempotencyContract": {
+    "case1_sameSourceReplayedUnchanged": {
+      "action": "IDEMPOTENT_NOOP",
+      "handler": "ON CONFLICT (mandal_version_id) DO NOTHING"
+    },
+    "case2_sameMandalVersionIdenticalGeom": {
+      "action": "IDEMPOTENT_NOOP",
+      "handler": "ON CONFLICT (mandal_version_id) DO NOTHING"
+    },
+    "case3_sameMandalVersionDifferentGeom": {
+      "action": "FAIL_CLOSED",
+      "handler": "Unique index rejects duplicate; Trigger rejects coordinate update"
+    },
+    "case4_sameFidDifferentMandalVersion": {
+      "action": "FAIL_CLOSED",
+      "handler": "Deterministic mapping violation caught by preflight matrix"
+    },
+    "case5_changedArtifactSha": {
+      "action": "FAIL_CLOSED",
+      "handler": "chk_entity_geometries_sha256 rejects foreign artifact bytes"
+    },
+    "case6_changedProvenance": {
+      "action": "FAIL_CLOSED",
+      "handler": "Trigger rejects provenance_id mutation; FK restricts invalid lineage"
+    }
+  },
+  "liveStagingState": {
+    "mandals": 621,
+    "mandalVersionsTotal": 1210,
+    "mandalVersionsCurrent": 621,
+    "mandalVersionsHistorical": 589,
+    "spatialEvidenceExists": true,
+    "spatialDatasetVersionExists": true,
+    "spatialProvenanceNodes": 589,
+    "spatialRecordLinkages": null,
+    "entityGeometriesRowCount": 0,
+    "entityGeometriesLiveStatus": "UNCREATED_OR_ABSENT (PGRST205 / 404)"
+  }
+}
