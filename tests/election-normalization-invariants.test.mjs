@@ -8,14 +8,18 @@
  * - Master Execution Framework Amendments v1.2, v1.4, v1.5-A, v1.6 (DEC-074, DEC-075, DEC-076)
  * - Strict Separation of Verification Planes:
  *   1. Database Catalog & Schema Integrity (W019-SCH-01..13)
- *   2. Electoral Accounting Semantics (W019-ACCT-01..07)
+ *   2. Electoral Accounting Semantics (W019-ACCT-01..10)
  *   3. Mathematical Accounting & Turnout Balance (W019-MTH-01..06)
  *   4. Edge Case Invariant Proofs (W019-EDG-01..08)
  *   5. Authoritative ECI Form 21E Benchmarks (W019-ECI-01..06)
  *   6. W014 Geography Identity Compatibility (W019-GEO-01..02)
  *   7. Authoritative W012 Provenance & Lineage Integrity (W019-PRV-01..03)
- *   8. Staging PostGIS 589 Geometry Baseline (W019-STG-01..02)
- *   9. Production Air-Gap Invariant (W019-PRD-01)
+ *   8. Raw-Source Reconciliation (W019-SRC-01..02)
+ *   9. Authoritative Source-Artifact Provenance Closure (W019-SRC-PROV-01..14)
+ *   10. Persistence Semantics & Unknown Value Invariants (W019-SEM-01..12)
+ *   11. Candidate-Granularity Invariants (W019-CAND-01..12)
+ *   12. Staging PostGIS 589 Geometry Baseline (W019-STG-01..02)
+ *   13. Production Air-Gap Invariant (W019-PRD-01)
  */
 
 import fs from 'node:fs';
@@ -1713,8 +1717,259 @@ async function runMasterBattery() {
     `NOTA candidacies count: ${sem12NotaInCandidacies}`
   );
 
-  // ─── 11. STAGING POSTGIS 589 GEOMETRY BASELINE INTEGRITY (W019-STG-01..02) ──
-  console.log('\n--- 11. STAGING 589 GEOMETRY BASELINE INTEGRITY ---');
+  // ─── 11. CANDIDATE-GRANULARITY INVARIANTS (W019-CAND-01..12) ──────────────────
+  console.log('\n--- 11. CANDIDATE-GRANULARITY INVARIANTS ---');
+
+  // W019-CAND-01: No two candidates in the same contest may have the same rank
+  const cand01DupRanks = queryLocalPsql(`
+    SELECT contest_id || ': rank ' || rank || ' count ' || count(*)
+    FROM public.candidacies
+    WHERE contest_id IN (
+      SELECT id FROM public.election_contests WHERE contest_code IN ('TS_LA_2023_GEN_TS-AC-065', 'TS_LA_2023_GEN_TS-AC-040')
+    )
+    GROUP BY contest_id, rank
+    HAVING count(*) > 1;
+  `);
+  const cand01Pass = cand01DupRanks.trim().length === 0;
+  recordCheck(
+    'W019-CAND-01',
+    'CAND-01: No two candidates in the same contest may have the same rank (unique rank per contest)',
+    cand01Pass,
+    cand01Pass ? 'Zero duplicate ranks across both contests' : `Duplicates found: ${cand01DupRanks}`
+  );
+
+  // W019-CAND-02: Every authoritative candidate has exactly one rank (rank IS NOT NULL and >= 1)
+  const cand02NullRanks = queryLocalPsql(`
+    SELECT COUNT(*) FROM public.candidacies
+    WHERE contest_id IN (
+      SELECT id FROM public.election_contests WHERE contest_code IN ('TS_LA_2023_GEN_TS-AC-065', 'TS_LA_2023_GEN_TS-AC-040')
+    )
+    AND (rank IS NULL OR rank < 1);
+  `);
+  const cand02Pass = Number(cand02NullRanks) === 0;
+  recordCheck(
+    'W019-CAND-02',
+    'CAND-02: Every authoritative candidate has exactly one rank (rank IS NOT NULL and >= 1)',
+    cand02Pass,
+    `Invalid rank count: ${cand02NullRanks}`
+  );
+
+  // W019-CAND-03: Rank ordering matches authoritative result evidence (monotonically non-increasing votes matching rank 1..N)
+  const cand03Contests = queryLocalPsql(`
+    SELECT ec.contest_code || '|' || array_to_string(array_agg(c.rank ORDER BY c.rank), ',') || '|' ||
+           array_to_string(array_agg(c.votes_received ORDER BY c.rank), ',')
+    FROM public.candidacies c
+    JOIN public.election_contests ec ON ec.id = c.contest_id
+    WHERE ec.contest_code IN ('TS_LA_2023_GEN_TS-AC-065', 'TS_LA_2023_GEN_TS-AC-040')
+    GROUP BY ec.contest_code;
+  `);
+  const cand03Lines = cand03Contests.split('\n').map(s => s.trim()).filter(Boolean);
+  const cand03Pass = cand03Lines.length === 2 && cand03Lines.every(line => {
+    const [, ranksStr, votesStr] = line.split('|');
+    const ranks = ranksStr.split(',').map(Number);
+    const votes = votesStr.split(',').map(Number);
+    const ranksContinuous = ranks.every((r, idx) => r === idx + 1);
+    const votesMonotonic = votes.every((v, idx) => idx === 0 || votes[idx - 1] >= v);
+    return ranksContinuous && votesMonotonic;
+  });
+  recordCheck(
+    'W019-CAND-03',
+    'CAND-03: Rank ordering matches authoritative result evidence (monotonically descending votes matching rank 1..N)',
+    cand03Pass,
+    `Contests verified: ${cand03Lines.length}`
+  );
+
+  // W019-CAND-04: Rank 1 is authoritative winner (result = won, matches contest winning_candidacy_id)
+  const cand04Winners = queryLocalPsql(`
+    SELECT ec.contest_code || '|' || c.id || '|' || ec.winning_candidacy_id || '|' || c.result || '|' || p.canonical_name || '|' || c.votes_received
+    FROM public.election_contests ec
+    JOIN public.candidacies c ON c.contest_id = ec.id AND c.rank = 1
+    JOIN public.canonical_persons p ON p.id = c.person_id
+    WHERE ec.contest_code IN ('TS_LA_2023_GEN_TS-AC-065', 'TS_LA_2023_GEN_TS-AC-040');
+  `);
+  const cand04Lines = cand04Winners.split('\n').map(s => s.trim()).filter(Boolean);
+  const cand04Pass = cand04Lines.length === 2 && cand04Lines.every(line => {
+    const [code, candId, winId, result, name, votes] = line.split('|');
+    const idMatch = candId === winId;
+    const isWon = result === 'won';
+    const expected = code === 'TS_LA_2023_GEN_TS-AC-065' 
+      ? (name === 'Anumula Revanth Reddy' && Number(votes) === 107429)
+      : (name === 'Kalvakuntla Chandrashekar Rao' && Number(votes) === 111684);
+    return idMatch && isWon && expected;
+  });
+  recordCheck(
+    'W019-CAND-04',
+    'CAND-04: Rank 1 is authoritative winner (result = won, matches contest winning_candidacy_id)',
+    cand04Pass,
+    cand04Lines.join('; ')
+  );
+
+  // W019-CAND-05: Rank 2 is authoritative runner-up (result = lost, matches contest runner_up_candidacy_id)
+  const cand05Runners = queryLocalPsql(`
+    SELECT ec.contest_code || '|' || c.id || '|' || ec.runner_up_candidacy_id || '|' || c.result || '|' || p.canonical_name || '|' || c.votes_received
+    FROM public.election_contests ec
+    JOIN public.candidacies c ON c.contest_id = ec.id AND c.rank = 2
+    JOIN public.canonical_persons p ON p.id = c.person_id
+    WHERE ec.contest_code IN ('TS_LA_2023_GEN_TS-AC-065', 'TS_LA_2023_GEN_TS-AC-040');
+  `);
+  const cand05Lines = cand05Runners.split('\n').map(s => s.trim()).filter(Boolean);
+  const cand05Pass = cand05Lines.length === 2 && cand05Lines.every(line => {
+    const [code, candId, runnerId, result, name, votes] = line.split('|');
+    const idMatch = candId === runnerId;
+    const isLost = result === 'lost';
+    const expected = code === 'TS_LA_2023_GEN_TS-AC-065'
+      ? (name === 'Patnam Narender Reddy' && Number(votes) === 74897)
+      : (name === 'Eatala Rajender' && Number(votes) === 66653);
+    return idMatch && isLost && expected;
+  });
+  recordCheck(
+    'W019-CAND-05',
+    'CAND-05: Rank 2 is authoritative runner-up (result = lost, matches contest runner_up_candidacy_id)',
+    cand05Pass,
+    cand05Lines.join('; ')
+  );
+
+  // W019-CAND-06: Rank 3 is authoritative third-place candidate (result = lost, correctly designated and identified)
+  const cand06Thirds = queryLocalPsql(`
+    SELECT ec.contest_code || '|' || c.rank || '|' || c.result || '|' || p.canonical_name || '|' || c.votes_received
+    FROM public.election_contests ec
+    JOIN public.candidacies c ON c.contest_id = ec.id AND c.rank = 3
+    JOIN public.canonical_persons p ON p.id = c.person_id
+    WHERE ec.contest_code IN ('TS_LA_2023_GEN_TS-AC-065', 'TS_LA_2023_GEN_TS-AC-040');
+  `);
+  const cand06Lines = cand06Thirds.split('\n').map(s => s.trim()).filter(Boolean);
+  const cand06Pass = cand06Lines.length === 2 && cand06Lines.every(line => {
+    const [code, rank, result, name, votes] = line.split('|');
+    const rankOk = Number(rank) === 3;
+    const isLost = result === 'lost';
+    const expected = code === 'TS_LA_2023_GEN_TS-AC-065'
+      ? (name === 'Bantu Ramesh Kumar' && Number(votes) === 3988)
+      : (name === 'Tumkunta Narsa Reddy' && Number(votes) === 32568);
+    return rankOk && isLost && expected;
+  });
+  recordCheck(
+    'W019-CAND-06',
+    'CAND-06: Rank 3 is authoritative third-place candidate (result = lost, correctly designated and identified)',
+    cand06Pass,
+    cand06Lines.join('; ')
+  );
+
+  // W019-CAND-07: Rank 4+ remain individually represented (Kodangal has exactly 13, Gajwel has exactly 16 individual candidates)
+  const cand07Counts = queryLocalPsql(`
+    SELECT ec.contest_code || '|' || COUNT(c.id) || '|' || COUNT(DISTINCT c.person_id)
+    FROM public.election_contests ec
+    JOIN public.candidacies c ON c.contest_id = ec.id
+    WHERE ec.contest_code IN ('TS_LA_2023_GEN_TS-AC-065', 'TS_LA_2023_GEN_TS-AC-040')
+    GROUP BY ec.contest_code;
+  `);
+  const cand07Lines = cand07Counts.split('\n').map(s => s.trim()).filter(Boolean);
+  const cand07Pass = cand07Lines.length === 2 && cand07Lines.every(line => {
+    const [code, count, distinctPersons] = line.split('|');
+    const c = Number(count);
+    const dp = Number(distinctPersons);
+    if (code === 'TS_LA_2023_GEN_TS-AC-065') return c === 13 && dp === 13;
+    if (code === 'TS_LA_2023_GEN_TS-AC-040') return c === 16 && dp === 16;
+    return false;
+  });
+  recordCheck(
+    'W019-CAND-07',
+    'CAND-07: Rank 4+ remain individually represented (Kodangal has exactly 13, Gajwel has exactly 16 individual candidates)',
+    cand07Pass,
+    cand07Lines.join('; ')
+  );
+
+  // W019-CAND-08: NOTA has no candidate rank (0 candidacies, exists exclusively as ballot_choices row)
+  const cand08NotaCands = queryLocalPsql(`
+    SELECT COUNT(*) FROM public.candidacies c
+    JOIN public.canonical_persons p ON p.id = c.person_id
+    WHERE p.canonical_name ILIKE '%NOTA%' OR p.canonical_name ILIKE '%None of the above%';
+  `);
+  const cand08NotaChoices = queryLocalPsql(`
+    SELECT ec.contest_code || '|' || bc.choice_type || '|' || bc.votes_received
+    FROM public.ballot_choices bc
+    JOIN public.election_contests ec ON ec.id = bc.contest_id
+    WHERE ec.contest_code IN ('TS_LA_2023_GEN_TS-AC-065', 'TS_LA_2023_GEN_TS-AC-040')
+    AND bc.choice_type = 'NOTA';
+  `);
+  const cand08ChoiceLines = cand08NotaChoices.split('\n').map(s => s.trim()).filter(Boolean);
+  const cand08Pass = Number(cand08NotaCands) === 0 && cand08ChoiceLines.length === 2;
+  recordCheck(
+    'W019-CAND-08',
+    'CAND-08: NOTA has no candidate rank (0 candidacies, exists exclusively as ballot_choices row)',
+    cand08Pass,
+    `Candidacies: ${cand08NotaCands}, Ballot choices: ${cand08ChoiceLines.join('; ')}`
+  );
+
+  // W019-CAND-09: Candidate vote totals equal EVM + postal where channels are broken down (chk_candidate_votes_sum)
+  const cand09Violations = queryLocalPsql(`
+    SELECT c.id || ': ' || c.votes_received || ' != ' || (c.evm_votes + c.postal_votes)
+    FROM public.candidacies c
+    WHERE (c.evm_votes > 0 OR c.postal_votes > 0)
+    AND c.votes_received <> (c.evm_votes + c.postal_votes);
+  `);
+  const cand09Pass = cand09Violations.trim().length === 0;
+  recordCheck(
+    'W019-CAND-09',
+    'CAND-09: Candidate vote totals equal EVM + postal where channels are broken down (chk_candidate_votes_sum)',
+    cand09Pass,
+    cand09Pass ? 'All candidates with channel breakdown conserve votes' : `Violations: ${cand09Violations}`
+  );
+
+  // W019-CAND-10: Sum of all individually represented candidate valid votes equals the candidate-valid component (Kodangal: 193,161; Gajwel: 226,870)
+  const cand10Sums = queryLocalPsql(`
+    SELECT ec.contest_code || '|' || SUM(c.votes_received) || '|' || (ec.total_valid_votes - ec.total_nota_votes)
+    FROM public.candidacies c
+    JOIN public.election_contests ec ON ec.id = c.contest_id
+    WHERE ec.contest_code IN ('TS_LA_2023_GEN_TS-AC-065', 'TS_LA_2023_GEN_TS-AC-040')
+    GROUP BY ec.contest_code, ec.total_valid_votes, ec.total_nota_votes;
+  `);
+  const cand10Lines = cand10Sums.split('\n').map(s => s.trim()).filter(Boolean);
+  const cand10Pass = cand10Lines.length === 2 && cand10Lines.every(line => {
+    const [code, sum, expected] = line.split('|').map(x => isNaN(Number(x)) ? x : Number(x));
+    if (code === 'TS_LA_2023_GEN_TS-AC-065') return sum === 193161 && expected === 193161;
+    if (code === 'TS_LA_2023_GEN_TS-AC-040') return sum === 226870 && expected === 226870;
+    return false;
+  });
+  recordCheck(
+    'W019-CAND-10',
+    'CAND-10: Sum of all individually represented candidate valid votes equals candidate-valid component (Kodangal: 193,161; Gajwel: 226,870)',
+    cand10Pass,
+    cand10Lines.join('; ')
+  );
+
+  // W019-CAND-11: No candidate pool/aggregate placeholder is used as a substitute for individual records (0 pool/aggregate persons)
+  const cand11PoolNames = queryLocalPsql(`
+    SELECT p.canonical_name
+    FROM public.candidacies c
+    JOIN public.canonical_persons p ON p.id = c.person_id
+    WHERE p.canonical_name ILIKE '%Pool%'
+       OR p.canonical_name ILIKE '%Other%'
+       OR p.canonical_name ILIKE '%Independent Candidates%';
+  `);
+  const cand11Pass = cand11PoolNames.trim().length === 0;
+  recordCheck(
+    'W019-CAND-11',
+    'CAND-11: No candidate pool/aggregate placeholder is used as a substitute for individual records (0 pool/aggregate persons)',
+    cand11Pass,
+    cand11Pass ? 'Zero pool/aggregate candidate records found' : `Found pool persons: ${cand11PoolNames}`
+  );
+
+  // W019-CAND-12: Superseded candidate data remains in provenance history and is preserved in audit trail
+  const benchPath = path.resolve('data/evidence/w019/canonical_benchmarks.json');
+  const benchData = JSON.parse(fs.readFileSync(benchPath, 'utf8'));
+  const supersededList = benchData?.provenance_metadata?.superseded_artifacts || [];
+  const hasSuperseded = supersededList.length >= 2 && supersededList.some(s => s.reason.includes('pool expanded'));
+  const reconFileExists = fs.existsSync(path.resolve('reports/w019_candidate_granularity_reconciliation.json'));
+  const cand12Pass = hasSuperseded && reconFileExists;
+  recordCheck(
+    'W019-CAND-12',
+    'CAND-12: Superseded candidate data remains in provenance history and is preserved in audit trail',
+    cand12Pass,
+    `Superseded artifacts: ${supersededList.length}, Reconciliation report exists: ${reconFileExists}`
+  );
+
+  // ─── 12. STAGING POSTGIS 589 GEOMETRY BASELINE INTEGRITY (W019-STG-01..02) ──
+  console.log('\n--- 12. STAGING 589 GEOMETRY BASELINE INTEGRITY ---');
 
   const EXPECTED_ROW_COUNT = 589;
   const EXPECTED_DIGEST = 'f839fa02980318a8f35f932ebe72fa1d3ad6325dc86a624bf159d932fe5f613b';
@@ -1786,8 +2041,8 @@ async function runMasterBattery() {
     `Digest: ${currentDigest}`
   );
 
-  // ─── 11. PRODUCTION AIR-GAP INVARIANT (W019-PRD-01) ──────────────────────────
-  console.log('\n--- 11. PRODUCTION AIR-GAP INVARIANT ---');
+  // ─── 13. PRODUCTION AIR-GAP INVARIANT (W019-PRD-01) ──────────────────────────
+  console.log('\n--- 13. PRODUCTION AIR-GAP INVARIANT ---');
 
   const prdUntouched = !supabaseUrl.includes('ehfafcnimmjusyvplbah');
   recordCheck(

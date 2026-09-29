@@ -1,11 +1,18 @@
 -- =============================================================================
--- Seed Script: W019 Official Historical Election Benchmarks (ECI Form 21E)
+-- Migration 053: W019 Complete Candidate Granularity Remediation
 -- =============================================================================
+-- Directive: CTO FINAL W019 CANDIDATE-GRANULARITY REMEDIATION
 -- Milestone: W019 — Election Data Normalization
--- Authoritative Sources:
--- 1. Kodangal (TS-AC-065) — ECI Form 21E / Telangana Gazette No. 2023/AC/141
--- 2. Gajwel (TS-AC-040) — ECI Form 21E / Statistical Report 2023
--- Complete Candidate Granularity: All 13 Kodangal & 16 Gajwel individual candidates
+--
+-- Mandate:
+-- 1. Eliminate candidate pools ("Independent Candidates Pool (10)" and "(13)").
+-- 2. Expand every authoritative candidate into an individual canonical candidacy row.
+-- 3. Connect every candidate to public.canonical_persons.
+-- 4. Preserve exact source spelling and known name variants.
+-- 5. Guarantee complete candidate ranking:
+--    Rank 1 = Winner, Rank 2 = Runner-up, Rank 3 = Third-place candidate,
+--    Rank 4+ = Fourth-place candidate ... through the final candidate.
+-- 6. Maintain NOTA as a separate ballot choice without candidate rank.
 -- =============================================================================
 
 DO $$
@@ -15,12 +22,12 @@ DECLARE
   v_kodangal_contest_id UUID := '01900000-0000-0000-0000-000000000003'::uuid;
   v_gajwel_contest_id UUID := '01900000-0000-0000-0000-000000000004'::uuid;
 BEGIN
-  -- 1. Provenance Record
+  -- 1. Ensure Provenance Record Exists
   INSERT INTO public.provenance_records (id)
   VALUES (v_provenance_id)
   ON CONFLICT (id) DO NOTHING;
 
-  -- 2. Political Organizations
+  -- 2. Political Organizations for All Candidates
   INSERT INTO public.political_organizations (
     id, org_type, name, short_name, recognition_level, headquarters_state, provenance_id, data_status
   ) VALUES
@@ -42,7 +49,7 @@ BEGIN
     name = EXCLUDED.name,
     short_name = EXCLUDED.short_name;
 
-  -- 3. Delete Historical Pool Records If Present
+  -- 3. Delete Historical Pool Candidacies and Pool Persons
   DELETE FROM public.candidacies
   WHERE id IN (
     '01900000-0000-0000-0000-000000000027'::uuid,
@@ -55,7 +62,7 @@ BEGIN
     '01900000-0000-0000-0000-000000000018'::uuid
   );
 
-  -- 4. Canonical Persons (Kodangal & Gajwel Top 3)
+  -- 4. Update/Insert Canonical Persons (Top 3 in both contests)
   INSERT INTO public.canonical_persons (
     id, canonical_name, aliases, data_status, provenance_id
   ) VALUES
@@ -69,7 +76,7 @@ BEGIN
     canonical_name = EXCLUDED.canonical_name,
     aliases = EXCLUDED.aliases;
 
-  -- 5. Canonical Persons (Kodangal Ranks 4 to 13)
+  -- 5. Insert Individual Canonical Persons for Kodangal (Ranks 4 to 13)
   INSERT INTO public.canonical_persons (
     id, canonical_name, aliases, data_status, provenance_id
   ) VALUES
@@ -87,7 +94,7 @@ BEGIN
     canonical_name = EXCLUDED.canonical_name,
     aliases = EXCLUDED.aliases;
 
-  -- 6. Canonical Persons (Gajwel Ranks 4 to 16)
+  -- 6. Insert Individual Canonical Persons for Gajwel (Ranks 4 to 16)
   INSERT INTO public.canonical_persons (
     id, canonical_name, aliases, data_status, provenance_id
   ) VALUES
@@ -108,111 +115,7 @@ BEGIN
     canonical_name = EXCLUDED.canonical_name,
     aliases = EXCLUDED.aliases;
 
-  -- 7. Benchmark Constituencies
-  INSERT INTO public.constituencies (
-    id, ac_no, name, state_code, district, reservation_status
-  ) VALUES
-    ('TS-AC-065', 65, 'Kodangal', 'TS', 'Vikarabad', 'GEN'),
-    ('TS-AC-040', 40, 'Gajwel', 'TS', 'Siddipet', 'GEN')
-  ON CONFLICT (id) DO UPDATE SET
-    name = EXCLUDED.name,
-    district = EXCLUDED.district;
-
-  -- 8. Election Event: TS_LA_2023_GEN
-  INSERT INTO public.election_events (
-    id, election_code, state_code, election_type, election_year, title,
-    notification_date, polling_date, counting_date, status,
-    total_constituencies, total_electors, total_votes_polled, turnout_percentage,
-    data_status, provenance_id
-  ) VALUES (
-    v_election_id,
-    'TS_LA_2023_GEN',
-    'TS',
-    'assembly',
-    2023,
-    'Telangana Legislative Assembly General Election 2023',
-    '2023-11-03',
-    '2023-11-30',
-    '2023-12-03',
-    'completed',
-    119,
-    32618205,
-    23259256,
-    71.31,
-    'OFFICIAL',
-    v_provenance_id
-  ) ON CONFLICT (election_code) DO UPDATE SET
-    title = EXCLUDED.title,
-    turnout_percentage = EXCLUDED.turnout_percentage;
-
-  -- 9. Election Contests
-  -- Contest 1: Kodangal (TS-AC-065)
-  INSERT INTO public.election_contests (
-    id, election_id, contest_code, constituency_id, constituency_name,
-    reservation_status, status, is_uncontested,
-    total_electors, total_votes_polled, total_valid_votes, total_rejected_votes, total_nota_votes,
-    turnout_percentage, victory_margin, data_status, provenance_id
-  ) VALUES (
-    v_kodangal_contest_id,
-    v_election_id,
-    'TS_LA_2023_GEN_TS-AC-065',
-    'TS-AC-065',
-    'Kodangal',
-    'GEN',
-    'completed',
-    false,
-    240490,
-    195287,
-    195163,
-    124,
-    2002,
-    81.20,
-    32532,
-    'OFFICIAL',
-    v_provenance_id
-  ) ON CONFLICT (contest_code) DO UPDATE SET
-    total_electors = EXCLUDED.total_electors,
-    total_votes_polled = EXCLUDED.total_votes_polled,
-    total_valid_votes = EXCLUDED.total_valid_votes,
-    total_rejected_votes = EXCLUDED.total_rejected_votes,
-    total_nota_votes = EXCLUDED.total_nota_votes,
-    turnout_percentage = EXCLUDED.turnout_percentage,
-    victory_margin = EXCLUDED.victory_margin;
-
-  -- Contest 2: Gajwel (TS-AC-040)
-  INSERT INTO public.election_contests (
-    id, election_id, contest_code, constituency_id, constituency_name,
-    reservation_status, status, is_uncontested,
-    total_electors, total_votes_polled, total_valid_votes, total_rejected_votes, total_nota_votes,
-    turnout_percentage, victory_margin, data_status, provenance_id
-  ) VALUES (
-    v_gajwel_contest_id,
-    v_election_id,
-    'TS_LA_2023_GEN_TS-AC-040',
-    'TS-AC-040',
-    'Gajwel',
-    'GEN',
-    'completed',
-    false,
-    267882,
-    232417,
-    227702,
-    NULL,
-    832,
-    86.76,
-    45031,
-    'OFFICIAL',
-    v_provenance_id
-  ) ON CONFLICT (contest_code) DO UPDATE SET
-    total_electors = EXCLUDED.total_electors,
-    total_votes_polled = EXCLUDED.total_votes_polled,
-    total_valid_votes = EXCLUDED.total_valid_votes,
-    total_rejected_votes = EXCLUDED.total_rejected_votes,
-    total_nota_votes = EXCLUDED.total_nota_votes,
-    turnout_percentage = EXCLUDED.turnout_percentage,
-    victory_margin = EXCLUDED.victory_margin;
-
-  -- 10. Individual Candidacies for Kodangal (All 13 Candidates)
+  -- 7. Upsert All 13 Candidacies for Kodangal (AC-065)
   INSERT INTO public.candidacies (
     id, contest_id, person_id, election_year, election_type, constituency_type, constituency_id,
     party_id, is_independent, result, votes_received, vote_share, rank,
@@ -251,7 +154,7 @@ BEGIN
     vote_share = EXCLUDED.vote_share,
     rank = EXCLUDED.rank;
 
-  -- 11. Individual Candidacies for Gajwel (All 16 Candidates)
+  -- 8. Upsert All 16 Candidacies for Gajwel (AC-040)
   INSERT INTO public.candidacies (
     id, contest_id, person_id, election_year, election_type, constituency_type, constituency_id,
     party_id, is_independent, result, votes_received, vote_share, rank,
@@ -296,20 +199,9 @@ BEGIN
     vote_share = EXCLUDED.vote_share,
     rank = EXCLUDED.rank;
 
-  -- 12. Ballot Choices (NOTA - strictly valid non-candidate ballot choice)
-  INSERT INTO public.ballot_choices (
-    contest_id, choice_type, is_valid_vote, votes_received, vote_share
-  ) VALUES
-    (v_kodangal_contest_id, 'NOTA', true, 2002, 1.03),
-    (v_gajwel_contest_id, 'NOTA', true, 832, 0.37)
-  ON CONFLICT (contest_id, choice_type) DO UPDATE SET
-    is_valid_vote = EXCLUDED.is_valid_vote,
-    votes_received = EXCLUDED.votes_received,
-    vote_share = EXCLUDED.vote_share;
-
-  -- 13. Refresh Contest Metrics
+  -- 9. Refresh Contest Metrics
   PERFORM public.fn_refresh_contest_metrics(v_kodangal_contest_id);
   PERFORM public.fn_refresh_contest_metrics(v_gajwel_contest_id);
 
-  RAISE NOTICE 'SUCCESS: Seeded W019 ECI Form 21E Benchmarks with Complete Candidate Granularity';
+  RAISE NOTICE 'SUCCESS: Migration 053 Candidate Granularity Remediation applied cleanly.';
 END $$;

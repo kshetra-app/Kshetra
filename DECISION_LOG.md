@@ -1690,6 +1690,55 @@
   - The implementation agent explicitly does NOT self-certify or self-accept.
   - Milestone W020 remains **STRICTLY NOT AUTHORIZED**.
 
+---
+
+### DEC-082: W019 CANDIDATE-GRANULARITY REMEDIATION & RESULT PRESERVATION
+- **Date:** 2026-09-29
+- **Status:** IMPLEMENTED / REMEDIATED / 100% VERIFIED / SUBMITTED FOR FINAL CTO ACCEPTANCE
+- **Authority:** CTO FINAL W019 CANDIDATE-GRANULARITY REMEDIATION DIRECTIVE, Master Product Blueprint, AI Agent Master Execution Job Book, MEF Amendments v1.2, v1.4, v1.5-A, v1.6
+- **Context:** Following the accepted persistence-semantics remediation (DEC-081), the CTO issued a final candidate-granularity remediation directive prohibiting aggregate candidate pools (`"Independent Candidates Pool (10)"` for Kodangal and `"Independent Candidates Pool (13)"` for Gajwel). PANIN's constitutional data requirement mandates complete candidate result preservation. Every authoritative candidate must be represented as an individual canonical candidacy and canonical person record, with strict ranking hierarchy, exact name/variant preservation, and W018 canonical person integration.
+- **Remediation Outcomes:**
+  1. **Candidate Pool Elimination & Complete Candidate Expansion (Migration 053):**
+     - Completely eliminated historical aggregate candidate placeholders (`01900000-0000-0000-0000-000000000027` and `01900000-0000-0000-0000-000000000028`) and their synthetic canonical person records (`01900000-0000-0000-0000-000000000017` and `01900000-0000-0000-0000-000000000018`).
+     - Seeded 11 required political organizations (`ORG-PARTY-BSP`, `ORG-PARTY-YTP`, `ORG-PARTY-DHSP`, `ORG-PARTY-BMP`, `ORG-PARTY-TERS`, `ORG-PARTY-AABAAD`, `ORG-PARTY-PPP`, `ORG-PARTY-IPBP`, `ORG-PARTY-SPI`, `ORG-PARTY-MTRSP`, `ORG-PARTY-SAPS`).
+     - Inserted 23 individual canonical persons for lower-ranked candidates in Kodangal (Ranks 4..13) and Gajwel (Ranks 4..16) with exact aliases and name variants (e.g. `Thoomkunta Narsa Reddy` vs `Tumkunta Narsa Reddy`).
+     - Inserted individual candidacies for all 13 candidates in Kodangal (totaling 193,161 votes received, vote shares, results, designations) and all 16 candidates in Gajwel (totaling 226,870 votes received, vote shares, results, designations).
+  2. **Mandatory Ranking & Designation Hierarchy:**
+     - Rank 1 = Winner (`result = 'won'`, matches `election_contests.winning_candidacy_id`).
+     - Rank 2 = Runner-up (`result = 'lost'`, matches `election_contests.runner_up_candidacy_id`).
+     - Rank 3 = Third-place candidate (`result = 'lost'`).
+     - Rank 4+ = Exact ordinal designation through the final candidate (`Fourth-place candidate`, `Fifth-place candidate`, etc.).
+     - NOTA has NO candidate rank and is preserved strictly in `ballot_choices` as a valid non-candidate choice (`choice_type = 'NOTA'`).
+  3. **Preservation of Accepted Persistence Semantics:**
+     - `total_rejected_votes NULL = UNKNOWN` honestly preserved; anti-derivation rule enforced ($232,417 - 227,702 = 4,715$ strictly prohibited).
+     - Kodangal rejected votes = 124 (direct Form 20 postal return evidence).
+     - Gajwel rejected votes = NULL (UNKNOWN).
+     - Conditional conservation and explicit API null serialization preserved intact.
+  4. **Master Verification & Invariant Battery (92/92 Checks PASS — 100%):**
+     - Expanded `tests/election-normalization-invariants.test.mjs` with Section 11 (`W019-CAND-01..12`) covering all 12 candidate-granularity rules.
+     - Database Catalog & Schema Integrity (`W019-SCH-01..13`): 13/13 PASS.
+     - Electoral Accounting Semantics (`W019-ACCT-01..10`): 10/10 PASS.
+     - Mathematical Accounting & Turnout Balance (`W019-MTH-01..06`): 6/6 PASS.
+     - Edge Case Invariant Proofs (`W019-EDG-01..08`): 8/8 PASS.
+     - Authoritative ECI Form 21E Benchmarks (`W019-ECI-01..06`): 6/6 PASS.
+     - W014 Geography Identity Compatibility (`W019-GEO-01..02`): 2/2 PASS.
+     - Authoritative W012 Provenance & Lineage Integrity (`W019-PRV-01..03`): 3/3 PASS.
+     - Raw-Source Reconciliation (`W019-SRC-01..02`): 2/2 PASS.
+     - Authoritative Source-Artifact Provenance Closure (`W019-SRC-PROV-01..14`): 14/14 PASS.
+     - Persistence Semantics & Unknown Value Invariants (`W019-SEM-01..12`): 12/12 PASS.
+     - Candidate-Granularity Invariants (`W019-CAND-01..12`): 12/12 PASS.
+     - Staging PostGIS 589 Geometry Baseline (`W019-STG-01..02`): 2/2 PASS (589 rows, exact SHA-256 digest `f839fa02980318a8f35f932ebe72fa1d3ad6325dc86a624bf159d932fe5f613b`).
+     - Production Air-Gap Invariant (`W019-PRD-01`): 1/1 PASS (`ehfafcnimmjusyvplbah` untouched).
+     - Fastify API Integration Tests (`apps/api/src/__tests__/elections.test.ts`): 10/10 PASS.
+     - Regression Suite (`tests/political-entities-invariants.test.mjs`): 53/53 PASS.
+     - Declared API Contract Drift Check: 9/9 MATCH (100% parity, 0 drift).
+     - TypeScript builds (`apps/api` and `apps/mobile`): EXIT 0 (0 errors).
+  5. **Governance & Milestone Gate Status:**
+     - Milestone W019 is submitted for formal CTO acceptance review.
+     - The implementation agent explicitly does NOT self-certify or self-accept.
+     - Milestone W020 remains **STRICTLY NOT AUTHORIZED**.
+     - Production database remains completely air-gapped and untouched.
+
 
 
 
