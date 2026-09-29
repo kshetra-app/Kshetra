@@ -7,21 +7,17 @@
 ## 1. Project & Execution Coordinates
 ```text
 PROJECT:               PANIN (formerly Kshetra)
-CURRENT_JOB:           W018 (Political Entity Model — ROUND 2 REMEDIATION COMPLETE & RESUBMITTED)
-LAST_COMPLETED_JOB:    W017 (Spatial Gateway, Boundary Diff & Spatial Query Engine — ACCEPTED / COMPLETE)
-NEXT_PERMITTED_JOB:    W018 (Submitted for Formal Final CTO Acceptance Review; W019/W020 STRICTLY NOT AUTHORIZED)
+CURRENT_JOB:           W019 (Election Data Normalization — PREFLIGHT & PLANNING SPECIFICATION)
+LAST_COMPLETED_JOB:    W018 (Canonical Political Entity Model — ACCEPTED / COMPLETE)
+NEXT_PERMITTED_JOB:    W019 (PREFLIGHT & PLANNING ONLY; IMPLEMENTATION STRICTLY NOT AUTHORIZED; W020 STRICTLY NOT AUTHORIZED)
 
-W018_STATUS:           ROUND 2 REMEDIATED / 53/53 PASS / RESUBMITTED FOR FINAL CTO REVIEW
-W018_IMPLEMENTATION:   REMEDIATED (Migration 050, Fastify API, Shared Types, Immutability Guards, Org Relations, Temporal Affiliations)
-W018_PLAN:             PLAN-W018-REV-1.0.md (RATIFIED & EXECUTED)
+W018_STATUS:           ACCEPTED / COMPLETE (Canonical Commit: 080344c580ad9df92586a7a0e68989fb50e7cf3d)
+W018_CTO_ACCEPTANCE:   GRANTED (2026-09-29)
 W018_EVIDENCE_PACKAGE: reports/w018_political_entities_verification.json
-W018_REPORT:           reports/w018_implementation_report.md
-W018_REMEDIATION_REP:  reports/w018_remediation_report.md
-W018_ROUND2_REP:       reports/w018_remediation_round2_report.md
-W018_BLOCKERS_CLEARED: 9/9 (Round 1 Blockers 1..5 cleared; Round 2 Blockers A, B, C, D cleared)
 W018_MASTER_BATTERY:   53/53 PASS (100% Invariants Verified)
-W019_STATUS:           STRICTLY NOT AUTHORIZED
-W020_STATUS:           STRICTLY NOT AUTHORIZED
+W019_STATUS:           PREFLIGHT & PLANNING SPECIFICATION SUBMITTED (PLAN-W019-MASTER-REV-1.md)
+W019_IMPLEMENTATION:   STRICTLY NOT AUTHORIZED (Awaiting CTO Plan Ratification)
+W020_STATUS:           STRICTLY NOT AUTHORIZED (Delimitation Engine Foundation)
 W017_STATUS:           ACCEPTED / COMPLETE
 W017_CTO_ACCEPTANCE:   GRANTED (2026-09-29)
 PRODUCTION_STATUS:     UNTOUCHED / AIR-GAPPED

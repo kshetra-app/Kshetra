@@ -1384,6 +1384,20 @@
   - W018 is submitted for formal CTO acceptance review. The implementation agent explicitly does NOT self-certify or self-accept.
   - W019 and W020 remain strictly unauthorized.
 
+---
+
+### DEC-074: W018 FORMAL CTO ACCEPTANCE & W019 PREFLIGHT PLANNING DIRECTIVE
+- **Date:** 2026-09-29
+- **Status:** RATIFIED / ACTIVE
+- **Authority:** CTO Final Acceptance + Next-Job Directive
+- **Context:** Milestone W018 (Canonical Political Entity Model) was formally reviewed and granted final CTO acceptance at canonical commit `080344c580ad9df92586a7a0e68989fb50e7cf3d`. Authorization was simultaneously given to begin Preflight and Planning ONLY for Milestone W019.
+- **Decisions:**
+  1. **W018 Closed as ACCEPTED / COMPLETE:** Commit `080344c580ad9df92586a7a0e68989fb50e7cf3d` is recorded as the authoritative accepted baseline for W018.
+  2. **Job Nomenclature Reconciliation:** Formally reconciled the milestone sequence: W019 is definitively established as **Election Data Normalization**, and W020 is definitively established as **Delimitation Engine Foundation**. The informal shorthand "Party Hierarchy & Alliance Modeling" was recognized as non-authoritative drafting notes that were already fully resolved inside W018 via `organization_relationships`, `elected_tenures`, and `tenure_party_switches`.
+  3. **W019 Preflight Planning Ratification:** Authored and submitted `PLAN-W019-MASTER-REV-1.md` providing a comprehensive architectural specification, answering all 20 Mandatory Plan Questions, and establishing ECI Form 20/21E benchmarks for Kodangal AC-065 and Gajwel AC-040.
+  4. **Strict Boundary & Stop State Enforcement:** W019 implementation is strictly NOT AUTHORIZED. W020 is strictly NOT AUTHORIZED. Zero code changes and zero database migrations are permitted until the CTO formally reviews and ratifies `PLAN-W019-MASTER-REV-1`. Production database (`ehfafcnimmjusyvplbah`) remains 100% air-gapped and untouched.
+
+
 
 
 
