@@ -2,7 +2,8 @@
  * @module politicalEntities
  * @description
  * Canonical type contracts for the Political Entity Model (W018).
- * Supports canonical persons, organizations, roles, candidacies, tenures, and linkages.
+ * Supports canonical persons, organizations, organization relationships,
+ * person roles, party affiliations, candidacies, tenures, party switches, and linkages.
  */
 
 export type GovernanceDataStatus =
@@ -36,8 +37,15 @@ export type PersonOrgRelationshipType =
   | 'member_of'
   | 'affiliated_with'
   | 'contested_for'
-  | 'employed_by'
-  | 'alliance_with';
+  | 'employed_by';
+
+export type OrganizationRelationshipType =
+  | 'alliance_with'
+  | 'coalition_partner'
+  | 'parent_of'
+  | 'subsidiary_of'
+  | 'merged_into'
+  | 'other';
 
 export type OfficeTypeEnum =
   | 'mp_lok_sabha'
@@ -109,6 +117,21 @@ export interface PoliticalOrganization {
   updatedAt: string;
 }
 
+export interface OrganizationRelationship {
+  id: string;
+  sourceOrgId: string;
+  targetOrgId: string;
+  relationshipType: OrganizationRelationshipType;
+  validFrom: string;
+  validTo?: string | null;
+  isCurrent: boolean;
+  metadata: Record<string, unknown>;
+  dataStatus: GovernanceDataStatus;
+  provenanceId?: string | null;
+  createdAt: string;
+  updatedAt: string;
+}
+
 export interface PersonRole {
   id: string;
   personId: string;
@@ -119,6 +142,21 @@ export interface PersonRole {
   validTo?: string | null;
   isCurrent: boolean;
   roleMetadata: Record<string, unknown>;
+  dataStatus: GovernanceDataStatus;
+  provenanceId?: string | null;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface PersonPartyAffiliation {
+  id: string;
+  personId: string;
+  partyId: string;
+  validFrom: string;
+  validTo?: string | null;
+  isCurrent: boolean;
+  affiliationType: 'primary_member' | 'office_bearer' | 'associated' | 'expelled' | 'resigned' | 'suspended';
+  notes?: string | null;
   dataStatus: GovernanceDataStatus;
   provenanceId?: string | null;
   createdAt: string;
@@ -165,6 +203,21 @@ export interface ElectedTenure {
   updatedAt: string;
 }
 
+export interface TenurePartySwitch {
+  id: string;
+  tenureId: string;
+  personId: string;
+  fromPartyId: string;
+  toPartyId: string;
+  effectiveDate: string;
+  switchType: 'defection' | 'merger' | 'expulsion' | 'resignation' | 'unaligned';
+  gazetteReference?: string | null;
+  notes?: string | null;
+  dataStatus: GovernanceDataStatus;
+  provenanceId?: string | null;
+  createdAt: string;
+}
+
 export interface PersonIdentityLinkage {
   id: string;
   personId: string;
@@ -182,7 +235,9 @@ export interface PersonIdentityLinkage {
 export interface PoliticalCareerTimeline {
   person: CanonicalPerson;
   activeRoles: PersonRole[];
+  affiliations: PersonPartyAffiliation[];
   tenures: ElectedTenure[];
+  partySwitches: TenurePartySwitch[];
   candidacies: Candidacy[];
-  linkages: PersonIdentityLinkage[];
+  linkages?: PersonIdentityLinkage[];
 }

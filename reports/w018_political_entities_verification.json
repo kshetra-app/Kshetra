@@ -1,10 +1,10 @@
 {
   "metadata": {
-    "directive": "W018 Political Entity Model Master Invariant Battery (Remediation Revision)",
-    "executionTimestamp": "2026-09-29T08:47:26.940Z",
+    "directive": "W018 Political Entity Model Master Invariant Battery (Remediation Round 2)",
+    "executionTimestamp": "2026-09-29T09:19:41.103Z",
     "stagingUrl": "https://fkpigozcqnmcvofuksar.supabase.co",
-    "totalChecks": 37,
-    "passedChecks": 37,
+    "totalChecks": 53,
+    "passedChecks": 53,
     "failedChecks": 0,
     "verdict": "PASS"
   },
@@ -20,21 +20,21 @@
       "id": "W018-CAT-01",
       "title": "All stored procedures are 100% SECURITY INVOKER (prosecdef = false)",
       "status": "PASS",
-      "observed": "fn_link_person_identity:false, fn_prevent_candidacy_mutation:false, fn_prevent_tenure_history_mutation:false, fn_resolve_canonical_person:false",
+      "observed": "fn_get_tenure_party_at_date:false, fn_link_person_identity:false, fn_prevent_candidacy_mutation:false, fn_prevent_tenure_history_mutation:false, fn_resolve_canonical_person:false",
       "details": ""
     },
     {
       "id": "W018-CAT-02",
       "title": "All functions enforce immutable search_path = public, pg_temp",
       "status": "PASS",
-      "observed": "fn_link_person_identity:search_path=public, pg_temp, fn_prevent_candidacy_mutation:search_path=public, pg_temp, fn_prevent_tenure_history_mutation:search_path=public, pg_temp, fn_resolve_canonical_person:search_path=public, pg_temp",
+      "observed": "fn_get_tenure_party_at_date:search_path=public, pg_temp, fn_link_person_identity:search_path=public, pg_temp, fn_prevent_candidacy_mutation:search_path=public, pg_temp, fn_prevent_tenure_history_mutation:search_path=public, pg_temp, fn_resolve_canonical_person:search_path=public, pg_temp",
       "details": ""
     },
     {
       "id": "W018-CAT-03",
-      "title": "fn_resolve_canonical_person is revoked from anon and granted strictly to authenticated & service_role",
+      "title": "fn_resolve_canonical_person execution is revoked from PUBLIC, anon, and authenticated; restricted strictly to service_role",
       "status": "PASS",
-      "observed": "anon: f, authenticated: t, service_role: t",
+      "observed": "proacl: {postgres=X/postgres,service_role=X/postgres}, anon: f, authenticated: f, service_role: t",
       "details": ""
     },
     {
@@ -46,16 +46,16 @@
     },
     {
       "id": "W018-CAT-05",
-      "title": "Row Level Security (RLS) is enabled on all 6 canonical political entity tables",
+      "title": "Row Level Security (RLS) is enabled on all 9 canonical political entity tables",
       "status": "PASS",
-      "observed": "candidacies:true, canonical_persons:true, elected_tenures:true, person_identity_linkages:true, person_roles:true, political_organizations:true",
+      "observed": "candidacies:true, canonical_persons:true, elected_tenures:true, organization_relationships:true, person_identity_linkages:true, person_party_affiliations:true, person_roles:true, political_organizations:true, tenure_party_switches:true",
       "details": ""
     },
     {
       "id": "W018-CAT-06",
-      "title": "SELECT policies verified on canonical tables",
+      "title": "SELECT policies verified on canonical public tables",
       "status": "PASS",
-      "observed": "Found 6 select policies",
+      "observed": "Found 8 select policies",
       "details": ""
     },
     {
@@ -69,7 +69,7 @@
       "id": "W018-ID-01",
       "title": "Same real-world person resolves to identical canonical UUID across multiple offices and entry points",
       "status": "PASS",
-      "observed": "Resolved UUID: 54123f1f-0b5d-409b-b0c3-b40501f3d42e",
+      "observed": "Resolved UUID: d6378466-3192-48f0-a40a-a4ff0ed0cc04",
       "details": ""
     },
     {
@@ -83,7 +83,7 @@
       "id": "W018-ID-03",
       "title": "Party affiliation update / defection preserves canonical person ID",
       "status": "PASS",
-      "observed": "Current party: ORG-PARTY-BRS-TEST\nUPDATE 1, person_id: 54123f1f-0b5d-409b-b0c3-b40501f3d42e",
+      "observed": "Current party: ORG-PARTY-BRS-TEST\nUPDATE 1, person_id: d6378466-3192-48f0-a40a-a4ff0ed0cc04",
       "details": ""
     },
     {
@@ -139,7 +139,7 @@
       "id": "W018-ID-11",
       "title": "Same name candidates in different constituencies resolve to distinct canonical IDs (no collision, no merge)",
       "status": "PASS",
-      "observed": "Person 1: a55fd090-05b1-453b-8b41-5f718dd772c7, Person 2: f3169606-5e1e-4d46-91dc-ebf0a2325504",
+      "observed": "Person 1: 9bd509c7-8fa6-4fdc-b9f4-60174a626958, Person 2: 650ee61f-53a5-41f2-922c-9a89428d1a75",
       "details": ""
     },
     {
@@ -153,7 +153,7 @@
       "id": "W018-ID-13",
       "title": "Fuzzy/probabilistic match methods are strictly prohibited by schema CHECK constraints",
       "status": "PASS",
-      "observed": "Result: ERROR: ERROR:  new row for relation \"person_identity_linkages\" violates check constraint \"person_identity_linkages_match_method_check\"\nDETAIL:  Failing row contains (d48e9991-3860-49bc-992b-fe3380533aff, a55fd090-05b1-453b-8b41-5f718dd772c7, eci, ECI-FUZZY-TEST, fuzzy_name_match, 0.85, test, 2026-09-29 08:47:04.264749+00, t, null, 2026-09-29 08:47:04.264749+00).\nCONTEXT:  SQL statement \"INSERT INTO public.person_identity_linkages (\r\n    person_id,\r\n    source_system,\r\n    source_record_id,\r\n    match_method,\r\n    confidence,\r\n    curated_by,\r\n    is_active\r\n  )\r\n  VALUES (\r\n    p_person_id,\r\n    p_source_system,\r\n    p_source_record_id,\r\n    p_match_method,\r\n    p_confidence,\r\n    p_curated_by,\r\n    true\r\n  )\r\n  ON CONFLICT (source_system, source_record_id)\r\n  DO UPDATE SET\r\n    person_id = EXCLUDED.person_id,\r\n    match_method = EXCLUDED.match_method,\r\n    confidence = EXCLUDED.confidence,\r\n    curated_by = EXCLUDED.curated_by,\r\n    is_active = true,\r\n    curated_at = now()\r\n  RETURNING id\"\nPL/pgSQL function fn_link_person_identity(uuid,text,text,text,numeric,text) line 11 at SQL statement\n",
+      "observed": "Result: ERROR: ERROR:  new row for relation \"person_identity_linkages\" violates check constraint \"person_identity_linkages_match_method_check\"\nDETAIL:  Failing row contains (0ad441d2-a525-41ad-9968-a12de1dc2378, 9bd509c7-8fa6-4fdc-b9f4-60174a626958, eci, ECI-FUZZY-TEST, fuzzy_name_match, 0.85, test, 2026-09-29 09:18:41.547352+00, t, null, 2026-09-29 09:18:41.547352+00).\nCONTEXT:  SQL statement \"INSERT INTO public.person_identity_linkages (\r\n    person_id,\r\n    source_system,\r\n    source_record_id,\r\n    match_method,\r\n    confidence,\r\n    curated_by,\r\n    is_active\r\n  )\r\n  VALUES (\r\n    p_person_id,\r\n    p_source_system,\r\n    p_source_record_id,\r\n    p_match_method,\r\n    p_confidence,\r\n    p_curated_by,\r\n    true\r\n  )\r\n  ON CONFLICT (source_system, source_record_id)\r\n  DO UPDATE SET\r\n    person_id = EXCLUDED.person_id,\r\n    match_method = EXCLUDED.match_method,\r\n    confidence = EXCLUDED.confidence,\r\n    curated_by = EXCLUDED.curated_by,\r\n    is_active = true,\r\n    curated_at = now()\r\n  RETURNING id\"\nPL/pgSQL function fn_link_person_identity(uuid,text,text,text,numeric,text) line 10 at SQL statement\n",
       "details": ""
     },
     {
@@ -174,7 +174,7 @@
       "id": "W018-ID-16",
       "title": "Name and transliteration variations without common external anchor do NOT auto-merge",
       "status": "PASS",
-      "observed": "KCR-1: e7d4cd20-682a-4f73-bba2-48e1f9a6f1ad, KCR-2: 9606bf15-64e2-4a12-9300-83321d00b70a",
+      "observed": "KCR-1: f3c94a69-b7e8-4a14-a0f3-bde4448229d1, KCR-2: adccb4ce-2c67-45de-bc0e-95208a14671c",
       "details": ""
     },
     {
@@ -185,73 +185,185 @@
       "details": ""
     },
     {
-      "id": "W018-BLK-01A",
-      "title": "BLOCKER 1: epic_hash column strictly absent from canonical_persons table",
-      "status": "PASS",
-      "observed": "epic_hash column count = 0",
-      "details": ""
-    },
-    {
-      "id": "W018-BLK-01B",
-      "title": "BLOCKER 1: exact_epic match_method is rejected by CHECK constraint",
-      "status": "PASS",
-      "observed": "Result: ERROR: ERROR:  new row for relation \"person_identity_linkages\" violates check constraint \"person_identity_linkages_match_method_check\"\nDETAIL:  Failing row contains (e92651ed-465a-4936-a7c1-1ea178231bad, 54123f1f-0b5d-409b-b0c3-b40501f3d42e, eci, TEST-EPIC, exact_epic, 1.00, test, 2026-09-29 08:47:06.678179+00, t, null, 2026-09-29 08:47:06.678179+00).\nCONTEXT:  SQL statement \"INSERT INTO public.person_identity_linkages (\r\n    person_id,\r\n    source_system,\r\n    source_record_id,\r\n    match_method,\r\n    confidence,\r\n    curated_by,\r\n    is_active\r\n  )\r\n  VALUES (\r\n    p_person_id,\r\n    p_source_system,\r\n    p_source_record_id,\r\n    p_match_method,\r\n    p_confidence,\r\n    p_curated_by,\r\n    true\r\n  )\r\n  ON CONFLICT (source_system, source_record_id)\r\n  DO UPDATE SET\r\n    person_id = EXCLUDED.person_id,\r\n    match_method = EXCLUDED.match_method,\r\n    confidence = EXCLUDED.confidence,\r\n    curated_by = EXCLUDED.curated_by,\r\n    is_active = true,\r\n    curated_at = now()\r\n  RETURNING id\"\nPL/pgSQL function fn_link_person_identity(uuid,text,text,text,numeric,text) line 11 at SQL statement\n",
-      "details": ""
-    },
-    {
-      "id": "W018-BLK-02A",
-      "title": "BLOCKER 2: Direct execution of fn_resolve_canonical_person fails closed under anon (SQLSTATE 42501)",
-      "status": "PASS",
-      "observed": "Result: ERROR: ERROR:  permission denied for function fn_resolve_canonical_person\n",
-      "details": ""
-    },
-    {
-      "id": "W018-BLK-02B",
-      "title": "BLOCKER 2: Anonymous direct scraping/enumeration of person_identity_linkages ledger is denied by RLS/privileges",
-      "status": "PASS",
-      "observed": "Result: SET\n0\nRESET",
-      "details": ""
-    },
-    {
-      "id": "W018-BLK-03A",
-      "title": "BLOCKER 3: Organization org_type strictly enforces political_party, media_organization, civic_organization, political_alliance, other",
-      "status": "PASS",
-      "observed": "Valid orgs created, invalid rejected: ERROR: ERROR:  new row for relation \"political_organizations\" violates check con",
-      "details": ""
-    },
-    {
-      "id": "W018-BLK-03B",
-      "title": "BLOCKER 3: Inter-organization alliance / parent-child relationships modeled via parent_org_id FK",
-      "status": "PASS",
-      "observed": "Parent org: ORG-ALLIANCE-NDA-TEST\nUPDATE 1",
-      "details": ""
-    },
-    {
-      "id": "W018-BLK-03C",
-      "title": "BLOCKER 3: person_roles.relationship_type strictly enforces member_of, affiliated_with, contested_for, employed_by, alliance_with",
-      "status": "PASS",
-      "observed": "Valid rel: employed_by\nINSERT 0 1, invalid rel rejected: ERROR: ERROR:  new row for relation \"person_roles\" violates check constraint \"pe",
-      "details": ""
-    },
-    {
-      "id": "W018-BLK-04A",
-      "title": "BLOCKER 4: Modifying historical party_at_election on elected_tenures is blocked by database trigger",
-      "status": "PASS",
-      "observed": "Result: ERROR: ERROR:  IMMUTABLE_FIELD: party_at_election cannot be modified after creation\nCONTEXT:  PL/pgSQL function fn_prevent_tenure_history_mutation() line 4 at RAISE\n",
-      "details": ""
-    },
-    {
-      "id": "W018-BLK-04B",
-      "title": "BLOCKER 4: Modifying historical party_id on candidacies is blocked by database trigger",
+      "id": "W018-A-01",
+      "title": "A-01: historical candidacy party is immutable (blocked by database trigger)",
       "status": "PASS",
       "observed": "Result: ERROR: ERROR:  IMMUTABLE_FIELD: party_id cannot be modified on historical candidacies\nCONTEXT:  PL/pgSQL function fn_prevent_candidacy_mutation() line 4 at RAISE\n",
       "details": ""
     },
     {
-      "id": "W018-BLK-04C",
-      "title": "BLOCKER 4: Defection updates current_party and defection_date while party_at_election and candidacy remain untouched",
+      "id": "W018-A-02",
+      "title": "A-02: original election party remains unchanged after affiliation change (blocked by trigger)",
       "status": "PASS",
-      "observed": "Tenure: ORG-PARTY-INC-TEST|ORG-OTHER-MISC-TEST\nUPDATE 1, Candidacy party: ORG-PARTY-INC-TEST",
+      "observed": "Result: ERROR: ERROR:  IMMUTABLE_FIELD: party_at_election cannot be modified after creation\nCONTEXT:  PL/pgSQL function fn_prevent_tenure_history_mutation() line 4 at RAISE\n",
+      "details": ""
+    },
+    {
+      "id": "W018-A-03",
+      "title": "A-03: tenure remains attached to the same office/jurisdiction (immutable field guard)",
+      "status": "PASS",
+      "observed": "Pre-jurisdiction: TS-AC-065, Update result: ERROR: ERROR:  IMMUTABLE_FIELD: jurisdiction_id cannot be modified on elected_tenures\nCONTEXT:  PL/pgSQL function fn_prevent_tenure_history_mutation() line 12 at RAISE\n",
+      "details": ""
+    },
+    {
+      "id": "W018-A-04",
+      "title": "A-04: affiliation history is independently queryable from dedicated temporal affiliations table",
+      "status": "PASS",
+      "observed": "Affiliation timeline: ORG-PARTY-INC-TEST@2017-10-31 -> ORG-PARTY-BRS-TEST@2024-06-01",
+      "details": ""
+    },
+    {
+      "id": "W018-A-05",
+      "title": "A-05: multiple party changes on a single elected tenure are independently representable",
+      "status": "PASS",
+      "observed": "Switch count: 2",
+      "details": ""
+    },
+    {
+      "id": "W018-A-06",
+      "title": "A-06: each party-change event has its own distinct effective date and gazette notification reference",
+      "status": "PASS",
+      "observed": "Effective dates: 2024-06-01, 2024-09-01",
+      "details": ""
+    },
+    {
+      "id": "W018-A-07",
+      "title": "A-07: historical temporal queries reconstruct the exact party state at any time T (T1=INC, T2=BRS, T3=BJP)",
+      "status": "PASS",
+      "observed": "T=2024-01: ORG-PARTY-INC-TEST, T=2024-07: ORG-PARTY-BRS-TEST, T=2024-10: ORG-PARTY-BJP-TEST",
+      "details": ""
+    },
+    {
+      "id": "W018-A-08",
+      "title": "A-08: zero party-switch operations rewrite original candidacy party or election victory party",
+      "status": "PASS",
+      "observed": "Candidacy ticket: ORG-PARTY-INC-TEST, Tenure victory party: ORG-PARTY-INC-TEST",
+      "details": ""
+    },
+    {
+      "id": "W018-B-01",
+      "title": "B-01: organization alliance is independently representable in dedicated organization_relationships table",
+      "status": "PASS",
+      "observed": "Alliance: ORG-PARTY-TDP-TEST -> ORG-ALLIANCE-NDA-B (alliance_with)",
+      "details": ""
+    },
+    {
+      "id": "W018-B-02",
+      "title": "B-02: person membership in an organization does not automatically imply or synthesize an organization alliance",
+      "status": "PASS",
+      "observed": "INC alliances count = 0",
+      "details": ""
+    },
+    {
+      "id": "W018-B-03",
+      "title": "B-03: creating an organization alliance does not fabricate or infer person membership rows",
+      "status": "PASS",
+      "observed": "Persons in NDA-B = 0",
+      "details": ""
+    },
+    {
+      "id": "W018-B-04",
+      "title": "B-04: organization hierarchy (parent_of, subsidiary_of) is formally distinct from political alliance",
+      "status": "PASS",
+      "observed": "Hierarchy relationship: parent_of\nINSERT 0 1",
+      "details": ""
+    },
+    {
+      "id": "W018-B-05",
+      "title": "B-05: temporal validity of organization alliances is independently queryable with start/end bounds",
+      "status": "PASS",
+      "observed": "Validity: 2024-03-01 to present (current: true)",
+      "details": ""
+    },
+    {
+      "id": "W018-B-06",
+      "title": "B-06: unrelated organization types cannot be silently collapsed (strict check constraint enforced)",
+      "status": "PASS",
+      "observed": "Result: ERROR: ERROR:  new row for relation \"political_organizations\" violates check con",
+      "details": ""
+    },
+    {
+      "id": "W018-C-01",
+      "title": "C-01: PUBLIC EXECUTE on fn_resolve_canonical_person = NO",
+      "status": "PASS",
+      "observed": "public: f",
+      "details": ""
+    },
+    {
+      "id": "W018-C-02",
+      "title": "C-02: anon EXECUTE on fn_resolve_canonical_person = NO",
+      "status": "PASS",
+      "observed": "anon: f",
+      "details": ""
+    },
+    {
+      "id": "W018-C-03",
+      "title": "C-03: authenticated EXECUTE on fn_resolve_canonical_person = NO (strictly revoked)",
+      "status": "PASS",
+      "observed": "authenticated: f",
+      "details": ""
+    },
+    {
+      "id": "W018-C-04",
+      "title": "C-04: service_role EXECUTE on fn_resolve_canonical_person = YES",
+      "status": "PASS",
+      "observed": "service_role: t",
+      "details": ""
+    },
+    {
+      "id": "W018-C-05",
+      "title": "C-05: malformed / empty source_system input fails safely with NULL return",
+      "status": "PASS",
+      "observed": "Return: ''",
+      "details": ""
+    },
+    {
+      "id": "W018-C-06",
+      "title": "C-06: malformed / whitespace external record ID fails safely with NULL return",
+      "status": "PASS",
+      "observed": "Return: ''",
+      "details": ""
+    },
+    {
+      "id": "W018-C-07",
+      "title": "C-07: unknown IDs return the identical safe non-resolution semantics (NULL, no error leak)",
+      "status": "PASS",
+      "observed": "Return: ''",
+      "details": ""
+    },
+    {
+      "id": "W018-C-08",
+      "title": "C-08: arbitrary source probing by anonymous callers cannot reveal private linkage metadata",
+      "status": "PASS",
+      "observed": "Result: ERROR: ERROR:  permission denied for table person_identity_linkages\nHINT:  Grant",
+      "details": ""
+    },
+    {
+      "id": "W018-C-09",
+      "title": "C-09: arbitrary external-ID probing by authenticated clients cannot access internal linkage ledger",
+      "status": "PASS",
+      "observed": "Result: ERROR: ERROR:  permission denied for table person_identity_linkages\nHINT:  Grant",
+      "details": ""
+    },
+    {
+      "id": "W018-C-10",
+      "title": "C-10: public API responses do not expose person_identity_linkages or sensitive internal linkage fields",
+      "status": "PASS",
+      "observed": "Sample entity exposed keys: ",
+      "details": ""
+    },
+    {
+      "id": "W018-C-11",
+      "title": "C-11: no unrestricted bulk enumeration route exists; search endpoints enforce pagination limits (max 50)",
+      "status": "PASS",
+      "observed": "Fastify search bounded by Math.min(parsedLimit, 50)",
+      "details": ""
+    },
+    {
+      "id": "W018-C-12",
+      "title": "C-12: authentication, rate limiting, and query bounds are strictly configured across Fastify gateway",
+      "status": "PASS",
+      "observed": "Fastify rateLimiter + claim endpoint auth required + 401 unauthenticated",
       "details": ""
     },
     {

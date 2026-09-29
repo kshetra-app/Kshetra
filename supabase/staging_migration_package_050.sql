@@ -8,9 +8,11 @@
 --   2. Explicit immutable search_path pinned: SET search_path = public, pg_temp.
 --   3. Row-Level Security (RLS) enabled on all tables.
 --   4. Identity claim mutations strictly restricted to service_role / verified admins.
---   5. Deterministic identity linkage ledger restricted to authenticated callers.
---   6. Full adherence to Migration 039 Data Governance & Provenance standards.
---   7. Strict immutability triggers for candidacy and tenure election party history.
+--   5. Internal deterministic identity linkage ledger restricted 100% to service_role.
+--   6. Public canonical resolution strictly mediated via authenticated API layer.
+--   7. Full adherence to Migration 039 Data Governance & Provenance standards.
+--   8. Strict database immutability triggers for candidacy and tenure election party history.
+--   9. Independent entity modeling for party affiliation, tenure party switches, and org relationships.
 -- ==============================================================================
 
 BEGIN;
@@ -42,6 +44,8 @@ CREATE TABLE IF NOT EXISTS public.pages (
   created_at TIMESTAMPTZ NOT NULL DEFAULT now()
 );
 
+-- ─── 1. CANONICAL PERSONS ───────────────────────────────────────────────────────
+
 CREATE TABLE IF NOT EXISTS public.canonical_persons (
   id                  UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   canonical_name      TEXT NOT NULL CHECK (char_length(canonical_name) BETWEEN 2 AND 150),
@@ -69,7 +73,7 @@ CREATE INDEX IF NOT EXISTS idx_canonical_persons_eci_id ON public.canonical_pers
 CREATE INDEX IF NOT EXISTS idx_canonical_persons_sansad ON public.canonical_persons(sansad_member_id) WHERE sansad_member_id IS NOT NULL;
 
 
--- ─── 2. POLITICAL ORGANIZATIONS (Parties, Media Houses, Alliances) ─────────────
+-- ─── 2. POLITICAL ORGANIZATIONS (Parties, Media Houses, Civic Bodies) ──────────
 
 CREATE TABLE IF NOT EXISTS public.political_organizations (
   id                  TEXT PRIMARY KEY,  -- e.g. 'ORG-PARTY-INC', 'ORG-PARTY-BJP', 'ORG-MEDIA-TV9'
@@ -97,6 +101,32 @@ CREATE INDEX IF NOT EXISTS idx_political_orgs_parent ON public.political_organiz
 CREATE INDEX IF NOT EXISTS idx_political_orgs_ec_code ON public.political_organizations(ec_party_code) WHERE ec_party_code IS NOT NULL;
 
 
+-- ─── 2B. ORGANIZATION-TO-ORGANIZATION RELATIONSHIPS (Alliances, Coalitions) ────
+
+CREATE TABLE IF NOT EXISTS public.organization_relationships (
+  id                  UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  source_org_id       TEXT NOT NULL REFERENCES public.political_organizations(id) ON DELETE RESTRICT,
+  target_org_id       TEXT NOT NULL REFERENCES public.political_organizations(id) ON DELETE RESTRICT,
+  relationship_type   TEXT NOT NULL CHECK (relationship_type IN ('alliance_with', 'coalition_partner', 'parent_of', 'subsidiary_of', 'merged_into', 'other')),
+  valid_from          DATE NOT NULL,
+  valid_to            DATE,
+  is_current          BOOLEAN NOT NULL DEFAULT true,
+  metadata            JSONB NOT NULL DEFAULT '{}'::jsonb,
+  data_status         public.data_status_enum NOT NULL DEFAULT 'OFFICIAL',
+  provenance_id       UUID REFERENCES public.provenance_records(id) ON DELETE RESTRICT,
+  created_at          TIMESTAMPTZ NOT NULL DEFAULT now(),
+  updated_at          TIMESTAMPTZ NOT NULL DEFAULT now(),
+  CONSTRAINT chk_org_rel_distinct CHECK (source_org_id <> target_org_id)
+);
+
+COMMENT ON TABLE public.organization_relationships IS 'Explicit organization-to-organization relationships (alliances, coalitions, parent-subsidiary) distinct from person roles.';
+
+CREATE INDEX IF NOT EXISTS idx_org_relationships_source ON public.organization_relationships(source_org_id);
+CREATE INDEX IF NOT EXISTS idx_org_relationships_target ON public.organization_relationships(target_org_id);
+CREATE INDEX IF NOT EXISTS idx_org_relationships_type ON public.organization_relationships(relationship_type);
+CREATE INDEX IF NOT EXISTS idx_org_relationships_current ON public.organization_relationships(is_current) WHERE is_current = true;
+
+
 -- ─── 3. PERSON ROLES (Temporal hats worn by a person) ──────────────────────────
 
 CREATE TABLE IF NOT EXISTS public.person_roles (
@@ -104,7 +134,7 @@ CREATE TABLE IF NOT EXISTS public.person_roles (
   person_id           UUID NOT NULL REFERENCES public.canonical_persons(id) ON DELETE RESTRICT,
   role_type           TEXT NOT NULL CHECK (role_type IN ('mp', 'mla', 'mlc', 'local_representative', 'candidate', 'aspirant', 'journalist', 'party_official')),
   organization_id     TEXT REFERENCES public.political_organizations(id) ON DELETE RESTRICT,
-  relationship_type   TEXT NOT NULL DEFAULT 'member_of' CHECK (relationship_type IN ('member_of', 'affiliated_with', 'contested_for', 'employed_by', 'alliance_with')),
+  relationship_type   TEXT NOT NULL DEFAULT 'member_of' CHECK (relationship_type IN ('member_of', 'affiliated_with', 'contested_for', 'employed_by')),
   valid_from          DATE NOT NULL,
   valid_to            DATE,
   is_current          BOOLEAN NOT NULL DEFAULT true,
@@ -115,13 +145,37 @@ CREATE TABLE IF NOT EXISTS public.person_roles (
   updated_at          TIMESTAMPTZ NOT NULL DEFAULT now()
 );
 
-COMMENT ON TABLE public.person_roles IS 'Temporal roles held by a person (e.g. journalist, aspirant, party secretary) with explicit relationship semantics.';
+COMMENT ON TABLE public.person_roles IS 'Temporal roles held by a person (e.g. journalist, aspirant, party secretary) with person-to-organization relationship semantics.';
 
 CREATE INDEX IF NOT EXISTS idx_person_roles_person ON public.person_roles(person_id);
 CREATE INDEX IF NOT EXISTS idx_person_roles_type ON public.person_roles(role_type);
 CREATE INDEX IF NOT EXISTS idx_person_roles_rel ON public.person_roles(relationship_type);
 CREATE INDEX IF NOT EXISTS idx_person_roles_org ON public.person_roles(organization_id) WHERE organization_id IS NOT NULL;
 CREATE INDEX IF NOT EXISTS idx_person_roles_current ON public.person_roles(is_current) WHERE is_current = true;
+
+
+-- ─── 3B. PERSON PARTY AFFILIATIONS (Independent Temporal Party Lineage) ────────
+
+CREATE TABLE IF NOT EXISTS public.person_party_affiliations (
+  id                  UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  person_id           UUID NOT NULL REFERENCES public.canonical_persons(id) ON DELETE RESTRICT,
+  party_id            TEXT NOT NULL REFERENCES public.political_organizations(id) ON DELETE RESTRICT,
+  valid_from          DATE NOT NULL,
+  valid_to            DATE,
+  is_current          BOOLEAN NOT NULL DEFAULT true,
+  affiliation_type    TEXT NOT NULL DEFAULT 'primary_member' CHECK (affiliation_type IN ('primary_member', 'office_bearer', 'associated', 'expelled', 'resigned', 'suspended')),
+  notes               TEXT,
+  data_status         public.data_status_enum NOT NULL DEFAULT 'VERIFIED',
+  provenance_id       UUID REFERENCES public.provenance_records(id) ON DELETE RESTRICT,
+  created_at          TIMESTAMPTZ NOT NULL DEFAULT now(),
+  updated_at          TIMESTAMPTZ NOT NULL DEFAULT now()
+);
+
+COMMENT ON TABLE public.person_party_affiliations IS 'Independent temporal political party affiliations for canonical persons, decoupled from office tenures.';
+
+CREATE INDEX IF NOT EXISTS idx_person_party_affil_person ON public.person_party_affiliations(person_id);
+CREATE INDEX IF NOT EXISTS idx_person_party_affil_party ON public.person_party_affiliations(party_id);
+CREATE INDEX IF NOT EXISTS idx_person_party_affil_dates ON public.person_party_affiliations(valid_from, valid_to);
 
 
 -- ─── 4. CANDIDACIES (Attaching a person to an election contest) ────────────────
@@ -147,7 +201,7 @@ CREATE TABLE IF NOT EXISTS public.candidacies (
   UNIQUE(person_id, election_year, election_type, constituency_id)
 );
 
-COMMENT ON TABLE public.candidacies IS 'Historical election contest participation by a canonical person.';
+COMMENT ON TABLE public.candidacies IS 'Historical election contest participation by a canonical person. party_id is strictly immutable.';
 
 CREATE INDEX IF NOT EXISTS idx_candidacies_person ON public.candidacies(person_id);
 CREATE INDEX IF NOT EXISTS idx_candidacies_election ON public.candidacies(election_year, election_type);
@@ -177,7 +231,7 @@ CREATE TABLE IF NOT EXISTS public.elected_tenures (
   updated_at              TIMESTAMPTZ NOT NULL DEFAULT now()
 );
 
-COMMENT ON TABLE public.elected_tenures IS 'Sovereign elected office terms held by canonical persons with temporal and party shift tracking.';
+COMMENT ON TABLE public.elected_tenures IS 'Sovereign elected office terms held by canonical persons. party_at_election is strictly immutable.';
 
 CREATE INDEX IF NOT EXISTS idx_elected_tenures_person ON public.elected_tenures(person_id);
 CREATE INDEX IF NOT EXISTS idx_elected_tenures_office ON public.elected_tenures(office_type);
@@ -185,7 +239,31 @@ CREATE INDEX IF NOT EXISTS idx_elected_tenures_jurisdiction ON public.elected_te
 CREATE INDEX IF NOT EXISTS idx_elected_tenures_current ON public.elected_tenures(is_current) WHERE is_current = true;
 
 
--- ─── 5B. IMMUTABILITY GUARDS FOR CANDIDACIES & ELECTED TENURES ─────────────────
+-- ─── 5B. TENURE PARTY SWITCHES / DEFECTION EVENTS ──────────────────────────────
+
+CREATE TABLE IF NOT EXISTS public.tenure_party_switches (
+  id                  UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  tenure_id           UUID NOT NULL REFERENCES public.elected_tenures(id) ON DELETE CASCADE,
+  person_id           UUID NOT NULL REFERENCES public.canonical_persons(id) ON DELETE RESTRICT,
+  from_party_id       TEXT NOT NULL REFERENCES public.political_organizations(id) ON DELETE RESTRICT,
+  to_party_id         TEXT NOT NULL REFERENCES public.political_organizations(id) ON DELETE RESTRICT,
+  effective_date      DATE NOT NULL,
+  switch_type         TEXT NOT NULL DEFAULT 'defection' CHECK (switch_type IN ('defection', 'merger', 'expulsion', 'resignation', 'unaligned')),
+  gazette_reference   TEXT,
+  notes               TEXT,
+  data_status         public.data_status_enum NOT NULL DEFAULT 'OFFICIAL',
+  provenance_id       UUID REFERENCES public.provenance_records(id) ON DELETE RESTRICT,
+  created_at          TIMESTAMPTZ NOT NULL DEFAULT now()
+);
+
+COMMENT ON TABLE public.tenure_party_switches IS 'First-class log of party-switch / defection events tied to elected tenures, supporting multiple switches per tenure.';
+
+CREATE INDEX IF NOT EXISTS idx_tenure_switches_tenure ON public.tenure_party_switches(tenure_id);
+CREATE INDEX IF NOT EXISTS idx_tenure_switches_person ON public.tenure_party_switches(person_id);
+CREATE INDEX IF NOT EXISTS idx_tenure_switches_date ON public.tenure_party_switches(effective_date);
+
+
+-- ─── 5C. IMMUTABILITY GUARDS FOR CANDIDACIES & ELECTED TENURES ─────────────────
 
 CREATE OR REPLACE FUNCTION public.fn_prevent_candidacy_mutation()
 RETURNS TRIGGER
@@ -245,6 +323,46 @@ CREATE TRIGGER trg_elected_tenures_immutable_fields
   BEFORE UPDATE ON public.elected_tenures
   FOR EACH ROW
   EXECUTE FUNCTION public.fn_prevent_tenure_history_mutation();
+
+
+-- ─── 5D. HISTORICAL PARTY STATE QUERY FUNCTION ─────────────────────────────────
+
+CREATE OR REPLACE FUNCTION public.fn_get_tenure_party_at_date(
+  p_tenure_id UUID,
+  p_date      DATE
+)
+RETURNS TEXT
+LANGUAGE plpgsql
+SECURITY INVOKER
+STABLE
+SET search_path = public, pg_temp
+AS $$
+DECLARE
+  v_party_at_election TEXT;
+  v_switched_party    TEXT;
+BEGIN
+  SELECT party_at_election
+    INTO v_party_at_election
+    FROM public.elected_tenures
+   WHERE id = p_tenure_id;
+
+  IF v_party_at_election IS NULL THEN
+    RETURN NULL;
+  END IF;
+
+  SELECT to_party_id
+    INTO v_switched_party
+    FROM public.tenure_party_switches
+   WHERE tenure_id = p_tenure_id
+     AND effective_date <= p_date
+   ORDER BY effective_date DESC, created_at DESC
+   LIMIT 1;
+
+  RETURN COALESCE(v_switched_party, v_party_at_election);
+END;
+$$;
+
+COMMENT ON FUNCTION public.fn_get_tenure_party_at_date(UUID, DATE) IS 'Reconstructs the active political party affiliation for an elected tenure at historical time T.';
 
 
 -- ─── 6. PERSON IDENTITY LINKAGES (Multi-table Resolution Ledger) ────────────────
@@ -321,7 +439,6 @@ AS $$
 DECLARE
   v_link_id UUID;
 BEGIN
-  -- Assert person exists
   IF NOT EXISTS (SELECT 1 FROM public.canonical_persons WHERE id = p_person_id) THEN
     RAISE EXCEPTION 'PERSON_NOT_FOUND: Canonical person % does not exist', p_person_id
       USING ERRCODE = 'P0002';
@@ -366,19 +483,28 @@ COMMENT ON FUNCTION public.fn_link_person_identity(UUID, TEXT, TEXT, TEXT, NUMER
 
 ALTER TABLE public.canonical_persons ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.political_organizations ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.organization_relationships ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.person_roles ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.person_party_affiliations ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.candidacies ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.elected_tenures ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.tenure_party_switches ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.person_identity_linkages ENABLE ROW LEVEL SECURITY;
 
--- Public SELECT policies (canonical public registry open to authenticated & anon)
+-- Public SELECT policies (canonical public registries open to authenticated & anon)
 CREATE POLICY canonical_persons_select_policy ON public.canonical_persons
   FOR SELECT USING (true);
 
 CREATE POLICY political_organizations_select_policy ON public.political_organizations
   FOR SELECT USING (true);
 
+CREATE POLICY organization_relationships_select_policy ON public.organization_relationships
+  FOR SELECT USING (true);
+
 CREATE POLICY person_roles_select_policy ON public.person_roles
+  FOR SELECT USING (true);
+
+CREATE POLICY person_party_affiliations_select_policy ON public.person_party_affiliations
   FOR SELECT USING (true);
 
 CREATE POLICY candidacies_select_policy ON public.candidacies
@@ -387,9 +513,12 @@ CREATE POLICY candidacies_select_policy ON public.candidacies
 CREATE POLICY elected_tenures_select_policy ON public.elected_tenures
   FOR SELECT USING (true);
 
--- Internal identity linkage ledger is restricted: authenticated callers & service_role only (no public anonymous scraping)
-CREATE POLICY person_identity_linkages_select_policy ON public.person_identity_linkages
-  FOR SELECT TO authenticated, service_role USING (true);
+CREATE POLICY tenure_party_switches_select_policy ON public.tenure_party_switches
+  FOR SELECT USING (true);
+
+-- Internal identity linkage ledger is restricted 100% to service_role (zero direct client query access)
+CREATE POLICY person_identity_linkages_service_role_all ON public.person_identity_linkages
+  FOR ALL TO service_role USING (true) WITH CHECK (true);
 
 -- Mutations restricted strictly to service_role (via RLS default denial for anon/authenticated)
 CREATE POLICY canonical_persons_service_role_all ON public.canonical_persons
@@ -398,7 +527,13 @@ CREATE POLICY canonical_persons_service_role_all ON public.canonical_persons
 CREATE POLICY political_organizations_service_role_all ON public.political_organizations
   FOR ALL TO service_role USING (true) WITH CHECK (true);
 
+CREATE POLICY organization_relationships_service_role_all ON public.organization_relationships
+  FOR ALL TO service_role USING (true) WITH CHECK (true);
+
 CREATE POLICY person_roles_service_role_all ON public.person_roles
+  FOR ALL TO service_role USING (true) WITH CHECK (true);
+
+CREATE POLICY person_party_affiliations_service_role_all ON public.person_party_affiliations
   FOR ALL TO service_role USING (true) WITH CHECK (true);
 
 CREATE POLICY candidacies_service_role_all ON public.candidacies
@@ -407,38 +542,50 @@ CREATE POLICY candidacies_service_role_all ON public.candidacies
 CREATE POLICY elected_tenures_service_role_all ON public.elected_tenures
   FOR ALL TO service_role USING (true) WITH CHECK (true);
 
-CREATE POLICY person_identity_linkages_service_role_all ON public.person_identity_linkages
+CREATE POLICY tenure_party_switches_service_role_all ON public.tenure_party_switches
   FOR ALL TO service_role USING (true) WITH CHECK (true);
 
 -- Explicit Grants
 GRANT SELECT ON public.canonical_persons TO anon, authenticated;
 GRANT SELECT ON public.political_organizations TO anon, authenticated;
+GRANT SELECT ON public.organization_relationships TO anon, authenticated;
 GRANT SELECT ON public.person_roles TO anon, authenticated;
+GRANT SELECT ON public.person_party_affiliations TO anon, authenticated;
 GRANT SELECT ON public.candidacies TO anon, authenticated;
 GRANT SELECT ON public.elected_tenures TO anon, authenticated;
-GRANT SELECT ON public.person_identity_linkages TO authenticated; -- anon revoked for enumeration protection
+GRANT SELECT ON public.tenure_party_switches TO anon, authenticated;
+
+-- person_identity_linkages: Revoked from PUBLIC, anon, AND authenticated; strictly service_role ONLY
+REVOKE ALL ON public.person_identity_linkages FROM PUBLIC, anon, authenticated;
+GRANT ALL ON public.person_identity_linkages TO service_role;
 
 GRANT ALL ON public.canonical_persons TO service_role;
 GRANT ALL ON public.political_organizations TO service_role;
+GRANT ALL ON public.organization_relationships TO service_role;
 GRANT ALL ON public.person_roles TO service_role;
+GRANT ALL ON public.person_party_affiliations TO service_role;
 GRANT ALL ON public.candidacies TO service_role;
 GRANT ALL ON public.elected_tenures TO service_role;
-GRANT ALL ON public.person_identity_linkages TO service_role;
+GRANT ALL ON public.tenure_party_switches TO service_role;
 
 -- Stored function execution grants
--- fn_resolve_canonical_person: Revoked from PUBLIC and anon; granted to authenticated & service_role
-REVOKE ALL ON FUNCTION public.fn_resolve_canonical_person(TEXT, TEXT) FROM PUBLIC, anon;
-GRANT EXECUTE ON FUNCTION public.fn_resolve_canonical_person(TEXT, TEXT) TO authenticated, service_role;
+-- fn_resolve_canonical_person: Revoked from PUBLIC, anon, AND authenticated; strictly service_role ONLY
+REVOKE ALL ON FUNCTION public.fn_resolve_canonical_person(TEXT, TEXT) FROM PUBLIC, anon, authenticated;
+GRANT EXECUTE ON FUNCTION public.fn_resolve_canonical_person(TEXT, TEXT) TO service_role;
 
 -- fn_link_person_identity: Restricted strictly to service_role
 REVOKE ALL ON FUNCTION public.fn_link_person_identity(UUID, TEXT, TEXT, TEXT, NUMERIC, TEXT) FROM PUBLIC, anon, authenticated;
 GRANT EXECUTE ON FUNCTION public.fn_link_person_identity(UUID, TEXT, TEXT, TEXT, NUMERIC, TEXT) TO service_role;
 
 -- Immutability guard functions: executable by authenticated & service_role
-REVOKE ALL ON FUNCTION public.fn_prevent_candidacy_mutation() FROM PUBLIC;
+REVOKE ALL ON FUNCTION public.fn_prevent_candidacy_mutation() FROM PUBLIC, anon;
 GRANT EXECUTE ON FUNCTION public.fn_prevent_candidacy_mutation() TO authenticated, service_role;
 
-REVOKE ALL ON FUNCTION public.fn_prevent_tenure_history_mutation() FROM PUBLIC;
+REVOKE ALL ON FUNCTION public.fn_prevent_tenure_history_mutation() FROM PUBLIC, anon;
 GRANT EXECUTE ON FUNCTION public.fn_prevent_tenure_history_mutation() TO authenticated, service_role;
+
+-- Historical party state query function: executable by authenticated & service_role
+REVOKE ALL ON FUNCTION public.fn_get_tenure_party_at_date(UUID, DATE) FROM PUBLIC, anon;
+GRANT EXECUTE ON FUNCTION public.fn_get_tenure_party_at_date(UUID, DATE) TO authenticated, service_role;
 
 COMMIT;

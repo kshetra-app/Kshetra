@@ -1345,6 +1345,46 @@
   - Staging PostGIS 589 baseline: 589 rows, exact SHA-256 digest `f839fa02980318a8f35f932ebe72fa1d3ad6325dc86a624bf159d932fe5f613b`.
   - Production database `ehfafcnimmjusyvplbah` strictly air-gapped and untouched.
 
+---
+
+### DEC-073: W018 CANONICAL POLITICAL ENTITY MODEL ROUND 2 REMEDIATION & FINAL CTO ACCEPTANCE CLOSURE
+- **Date:** 2026-09-29
+- **Status:** REMEDIATED / 100% VERIFIED / RESUBMITTED FOR FINAL CTO ACCEPTANCE
+- **Authority:** CTO Final Acceptance Directive — W018 Remediation Round 2
+- **Context:** Following the independent review of W018 Remediation Round 1 (placing W018 into "CONDITIONALLY ACCEPTED / NOT COMPLETE"), four specific technical blockers (Blockers A, B, C, and D) were remediated without discarding Migration 050, redesigning the milestone, modifying `entity_geometries`, contacting production, or proceeding to W019/W020.
+- **Architectural Solutions & Remediations:**
+  1. **Blocker A (Independent Party Affiliation / Defection Semantics — A-01..A-08):**
+     - Decoupled party affiliation and defection semantics across 8 distinct models: Person (`canonical_persons`), Party Affiliation (`person_party_affiliations`), Candidacy (`candidacies`), Election (`elections`), Election Result (`candidacies.result`), Elected Tenure (`elected_tenures`), Office/Jurisdiction (`elected_tenures.jurisdiction_id`), and Party-Switch / Defection Event (`tenure_party_switches`).
+     - Added dedicated table `public.person_party_affiliations` with temporal bounds (`valid_from`, `valid_to`, `is_current`, `affiliation_type`).
+     - Added dedicated table `public.tenure_party_switches` supporting 0, 1, or multiple defection/merger events per tenure with discrete effective dates and gazette references.
+     - Added 100% `SECURITY INVOKER` function `public.fn_get_tenure_party_at_date(p_tenure_id UUID, p_date DATE)` with immutable `SET search_path = public, pg_temp;` to reconstruct exact tenure party state at any historical moment T.
+     - Database triggers `trg_candidacies_immutable_fields` and `trg_elected_tenures_immutable_fields` strictly guarantee zero party-switch operations can rewrite historical candidacy tickets, election victory parties, or office jurisdictions.
+  2. **Blocker B (Organization-to-Organization Relationship Semantics — B-01..B-06):**
+     - Completely separated person-to-org relationships from org-to-org relationships.
+     - Created dedicated table `public.organization_relationships` with fields `(id, source_org_id, target_org_id, relationship_type, valid_from, valid_to, is_current, metadata, data_status, provenance_id, created_at)`.
+     - Strict check constraint enforces `relationship_type IN ('alliance_with', 'coalition_partner', 'parent_of', 'subsidiary_of', 'merged_into', 'other')`.
+     - Removed `alliance_with` from `person_roles.relationship_type`, leaving person roles strictly scoped to `('member_of', 'affiliated_with', 'contested_for', 'employed_by')`.
+     - Proved that organization alliance is independent, person membership does not synthesize an alliance, alliances do not fabricate person memberships, and organization hierarchy is formally distinct from political alliances.
+  3. **Blocker C & D (Authenticated Resolver & API Boundary Semantics — C-01..C-12):**
+     - Revoked `EXECUTE` on `fn_resolve_canonical_person` from `PUBLIC`, `anon`, and `authenticated`; granted strictly to `service_role`.
+     - Corrected contradictory verifier wording in W018-CAT-03 and established authoritative pg_proc `proacl` state: `{postgres=X/postgres,service_role=X/postgres}` (`PUBLIC = f`, `anon = f`, `authenticated = f`, `service_role = t`).
+     - Revoked `SELECT` on `person_identity_linkages` from `PUBLIC`, `anon`, and `authenticated`; granted strictly to `service_role`.
+     - Public entity queries are mediated strictly through Fastify API endpoints (`/api/v1/entities/...`), which enforce pagination bounds (`Math.min(parsedLimit, 50)`), rate limiting, and omit internal linkage ledgers.
+     - Verified safe non-resolution behavior (malformed/empty source_system returns NULL, whitespace IDs return NULL, unknown IDs return NULL without error leakage).
+- **Verification Battery Results (53/53 PASS — 100%):**
+  - Master Invariant Suite (`tests/political-entities-invariants.test.mjs`): 53/53 PASS (CAT-01..07: 7/7, ID-01..17: 17/17, A-01..08: 8/8, B-01..06: 6/6, C-01..12: 12/12, STG-01..02: 2/2, PRD-01: 1/1).
+  - Fastify Political Entity API Tests (`apps/api/src/__tests__/political-entities.test.ts`): 10/10 PASS.
+  - Fastify Spatial Analytics Tests (`apps/api/src/__tests__/spatial-analytics.test.ts`): 13/13 PASS.
+  - Declared API Contract Drift Check (`scripts/check-api-contract-drift.mjs`): 9/9 MATCH (100% parity, 0 drift).
+  - Fastify API TypeScript Build (`npm run build --prefix apps/api`): PASS (`tsc --noEmit` exit 0).
+  - Mobile TypeScript Check (`npx tsc --noEmit -p apps/mobile/tsconfig.json`): PASS (`tsc --noEmit` exit 0).
+  - Staging PostGIS 589 Geometries: 589 rows, exact SHA-256 digest `f839fa02980318a8f35f932ebe72fa1d3ad6325dc86a624bf159d932fe5f613b` verified byte-exact.
+  - Production database `ehfafcnimmjusyvplbah`: strictly air-gapped, zero connections, zero mutations.
+- **Milestone Status Declaration:**
+  - W018 is submitted for formal CTO acceptance review. The implementation agent explicitly does NOT self-certify or self-accept.
+  - W019 and W020 remain strictly unauthorized.
+
+
 
 
 

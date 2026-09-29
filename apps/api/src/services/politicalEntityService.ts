@@ -15,8 +15,10 @@ import type {
   CanonicalPerson,
   PoliticalOrganization,
   PersonRole,
+  PersonPartyAffiliation,
   Candidacy,
   ElectedTenure,
+  TenurePartySwitch,
   PersonIdentityLinkage,
   PoliticalCareerTimeline,
   IdentityMatchMethod,
@@ -92,6 +94,40 @@ function mapDbPersonRole(row: any): PersonRole {
     provenanceId: row.provenance_id ?? null,
     createdAt: row.created_at,
     updatedAt: row.updated_at,
+  };
+}
+
+function mapDbPersonPartyAffiliation(row: any): PersonPartyAffiliation {
+  return {
+    id: row.id,
+    personId: row.person_id,
+    partyId: row.party_id,
+    validFrom: row.valid_from,
+    validTo: row.valid_to ?? null,
+    isCurrent: Boolean(row.is_current),
+    affiliationType: row.affiliation_type,
+    notes: row.notes ?? null,
+    dataStatus: row.data_status,
+    provenanceId: row.provenance_id ?? null,
+    createdAt: row.created_at,
+    updatedAt: row.updated_at,
+  };
+}
+
+function mapDbTenurePartySwitch(row: any): TenurePartySwitch {
+  return {
+    id: row.id,
+    tenureId: row.tenure_id,
+    personId: row.person_id,
+    fromPartyId: row.from_party_id,
+    toPartyId: row.to_party_id,
+    effectiveDate: row.effective_date,
+    switchType: row.switch_type,
+    gazetteReference: row.gazette_reference ?? null,
+    notes: row.notes ?? null,
+    dataStatus: row.data_status,
+    provenanceId: row.provenance_id ?? null,
+    createdAt: row.created_at,
   };
 }
 
@@ -271,24 +307,27 @@ export class PoliticalEntityService {
   async getPersonCareerTimeline(personId: string): Promise<PoliticalCareerTimeline> {
     const person = await this.getPersonById(personId);
 
-    const [rolesRes, tenuresRes, candidaciesRes, linkagesRes] = await Promise.all([
+    const [rolesRes, affilsRes, tenuresRes, switchesRes, candidaciesRes] = await Promise.all([
       supabase.from('person_roles').select('*').eq('person_id', personId).order('valid_from', { ascending: false }),
+      supabase.from('person_party_affiliations').select('*').eq('person_id', personId).order('valid_from', { ascending: false }),
       supabase.from('elected_tenures').select('*').eq('person_id', personId).order('term_start', { ascending: false }),
+      supabase.from('tenure_party_switches').select('*').eq('person_id', personId).order('effective_date', { ascending: false }),
       supabase.from('candidacies').select('*').eq('person_id', personId).order('election_year', { ascending: false }),
-      supabase.from('person_identity_linkages').select('*').eq('person_id', personId).eq('is_active', true),
     ]);
 
     if (rolesRes.error) throw new Error(`TIMELINE_ROLES_ERROR: ${rolesRes.error.message}`);
+    if (affilsRes.error) throw new Error(`TIMELINE_AFFILIATIONS_ERROR: ${affilsRes.error.message}`);
     if (tenuresRes.error) throw new Error(`TIMELINE_TENURES_ERROR: ${tenuresRes.error.message}`);
+    if (switchesRes.error) throw new Error(`TIMELINE_SWITCHES_ERROR: ${switchesRes.error.message}`);
     if (candidaciesRes.error) throw new Error(`TIMELINE_CANDIDACIES_ERROR: ${candidaciesRes.error.message}`);
-    if (linkagesRes.error) throw new Error(`TIMELINE_LINKAGES_ERROR: ${linkagesRes.error.message}`);
 
     return {
       person,
       activeRoles: (rolesRes.data || []).map(mapDbPersonRole),
+      affiliations: (affilsRes.data || []).map(mapDbPersonPartyAffiliation),
       tenures: (tenuresRes.data || []).map(mapDbElectedTenure),
+      partySwitches: (switchesRes.data || []).map(mapDbTenurePartySwitch),
       candidacies: (candidaciesRes.data || []).map(mapDbCandidacy),
-      linkages: (linkagesRes.data || []).map(mapDbPersonIdentityLinkage),
     };
   }
 

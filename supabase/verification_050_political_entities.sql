@@ -12,43 +12,52 @@ DECLARE
   v_epic_hash_col_count INTEGER;
   v_parent_org_col_count INTEGER;
   v_rel_type_col_count INTEGER;
+  v_anon_resolve BOOLEAN;
+  v_auth_resolve BOOLEAN;
+  v_service_resolve BOOLEAN;
 BEGIN
-  -- 1. Verify all 6 tables exist
+  -- 1. Verify all 9 tables exist
   SELECT count(*) INTO v_table_count
     FROM information_schema.tables
    WHERE table_schema = 'public'
      AND table_name IN (
        'canonical_persons',
        'political_organizations',
+       'organization_relationships',
        'person_roles',
+       'person_party_affiliations',
        'candidacies',
        'elected_tenures',
+       'tenure_party_switches',
        'person_identity_linkages'
      );
 
-  IF v_table_count != 6 THEN
-    RAISE EXCEPTION 'VERIFICATION_FAILED: Expected 6 political entity tables, found %', v_table_count;
+  IF v_table_count != 9 THEN
+    RAISE EXCEPTION 'VERIFICATION_FAILED: Expected 9 political entity tables, found %', v_table_count;
   END IF;
 
-  -- 2. Verify all 6 tables have RLS enabled
+  -- 2. Verify all 9 tables have RLS enabled
   SELECT count(*) INTO v_rls_count
     FROM pg_tables
    WHERE schemaname = 'public'
      AND tablename IN (
        'canonical_persons',
        'political_organizations',
+       'organization_relationships',
        'person_roles',
+       'person_party_affiliations',
        'candidacies',
        'elected_tenures',
+       'tenure_party_switches',
        'person_identity_linkages'
      )
      AND rowsecurity = true;
 
-  IF v_rls_count != 6 THEN
-    RAISE EXCEPTION 'VERIFICATION_FAILED: Expected 6 tables with RLS enabled, found %', v_rls_count;
+  IF v_rls_count != 9 THEN
+    RAISE EXCEPTION 'VERIFICATION_FAILED: Expected 9 tables with RLS enabled, found %', v_rls_count;
   END IF;
 
-  -- 3. Verify functions exist (4 total: 2 identity + 2 immutability guards)
+  -- 3. Verify functions exist (5 total: 2 identity + 2 immutability guards + 1 temporal query)
   SELECT count(*) INTO v_func_count
     FROM pg_proc p
     JOIN pg_namespace n ON p.pronamespace = n.oid
@@ -57,11 +66,12 @@ BEGIN
        'fn_resolve_canonical_person',
        'fn_link_person_identity',
        'fn_prevent_candidacy_mutation',
-       'fn_prevent_tenure_history_mutation'
+       'fn_prevent_tenure_history_mutation',
+       'fn_get_tenure_party_at_date'
      );
 
-  IF v_func_count != 4 THEN
-    RAISE EXCEPTION 'VERIFICATION_FAILED: Expected 4 stored functions, found %', v_func_count;
+  IF v_func_count != 5 THEN
+    RAISE EXCEPTION 'VERIFICATION_FAILED: Expected 5 stored functions, found %', v_func_count;
   END IF;
 
   -- 4. Verify 100% SECURITY INVOKER (prosecdef = false)
@@ -73,7 +83,8 @@ BEGIN
        'fn_resolve_canonical_person',
        'fn_link_person_identity',
        'fn_prevent_candidacy_mutation',
-       'fn_prevent_tenure_history_mutation'
+       'fn_prevent_tenure_history_mutation',
+       'fn_get_tenure_party_at_date'
      )
      AND p.prosecdef = true;
 
@@ -112,6 +123,21 @@ BEGIN
 
   IF v_rel_type_col_count != 1 THEN
     RAISE EXCEPTION 'VERIFICATION_FAILED: Expected relationship_type column on person_roles.';
+  END IF;
+
+  -- 8. Verify ACLs for fn_resolve_canonical_person: service_role ONLY
+  SELECT has_function_privilege('anon', 'public.fn_resolve_canonical_person(TEXT, TEXT)', 'EXECUTE') INTO v_anon_resolve;
+  SELECT has_function_privilege('authenticated', 'public.fn_resolve_canonical_person(TEXT, TEXT)', 'EXECUTE') INTO v_auth_resolve;
+  SELECT has_function_privilege('service_role', 'public.fn_resolve_canonical_person(TEXT, TEXT)', 'EXECUTE') INTO v_service_resolve;
+
+  IF v_anon_resolve = true THEN
+    RAISE EXCEPTION 'SECURITY_VIOLATION: anon has EXECUTE on fn_resolve_canonical_person. Must be revoked.';
+  END IF;
+  IF v_auth_resolve = true THEN
+    RAISE EXCEPTION 'SECURITY_VIOLATION: authenticated has EXECUTE on fn_resolve_canonical_person. Must be revoked.';
+  END IF;
+  IF v_service_resolve != true THEN
+    RAISE EXCEPTION 'VERIFICATION_FAILED: service_role lacks EXECUTE on fn_resolve_canonical_person.';
   END IF;
 
   RAISE NOTICE 'SUCCESS: Migration 050 political entity model verified cleanly.';

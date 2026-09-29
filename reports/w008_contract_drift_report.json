@@ -3,7 +3,7 @@
     "job": "W008",
     "title": "API Contract Drift Report (D0-D9 Taxonomy)",
     "specification": "Master Execution Framework Amendment v1.5-A / DEC-041",
-    "timestamp": "2026-09-29T08:47:38.194Z"
+    "timestamp": "2026-09-29T09:23:04.844Z"
   },
   "taxonomyLegend": {
     "D0": "IN_SYNC — No contract drift detected",
