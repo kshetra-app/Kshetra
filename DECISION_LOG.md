@@ -1277,6 +1277,23 @@
   8. **Deferred Milestone Integrity:** W016-C3-R10 Gap B remains deferred to W023 APK/device testing; W016-C3-R11 remains strictly blocked.
   9. **Governance Disposition:** Milestone W017 is ACCEPTED / COMPLETE. Production release is strictly NOT AUTHORIZED (air-gapped).
 
+---
+
+### DEC-070: W018 POLITICAL ENTITY MODEL PREFLIGHT & MASTER IMPLEMENTATION PLAN SUBMITTED
+- **Date:** 2026-09-29
+- **Status:** DRAFT / SUBMITTED FOR CTO RATIFICATION (Implementation Strictly NOT AUTHORIZED)
+- **Authority:** CTO Directive — Begin W018 Preparation (2026-09-29)
+- **Context:** Following the technical closure of W017, the CTO authorized preflight forensics and architectural planning for Milestone W018 (Political Entity Model). No database, API, migration, or mobile implementation was authorized.
+- **Key Forensic Findings & Architecture Plan:**
+  1. **Comprehensive Current-System Inspection:** Completed 22-point repository-wide audit spanning all 51 migrations, Fastify backend routes, mobile models/stores, and static data seeds.
+  2. **Core Relational Model Established:** Designed 4-tier bounded relational model separating `canonical_persons`, `political_organizations`, `person_roles`, `candidacies`, `elected_tenures`, and `person_identity_linkages`.
+  3. **Preservation of Existing Schemas:** All existing tables (`legislator_profiles`, `candidate_affidavits`, `representatives`, `aspirant_profiles`, `journalist_profiles`, `pages`) remain backwards-compatible and resolve to `canonical_persons` via deterministic linkage mapping.
+  4. **Temporal Geography Integration:** Candidacies and tenures bind to W014/W016 temporal versions (`constituency_versions`, `parliamentary_constituency_versions`, `mandal_versions`).
+  5. **Data Truth & Provenance:** Full adherence to Migration 039 rules (`data_sources`, `provenance_records`, `data_status_enum`). Zero AI-inferred entities.
+  6. **Security & Least Privilege:** 100% `SECURITY INVOKER` functions with fixed `search_path = public, pg_temp;`. EPIC number salted hash (`epic_hash`) for privacy.
+  7. **Governance Boundaries Preserved:** Production database `ehfafcnimmjusyvplbah` remains 100% air-gapped and untouched; 589 geometry baseline remains frozen and verified; zero code or schema mutations occurred.
+
+
 
 
 
