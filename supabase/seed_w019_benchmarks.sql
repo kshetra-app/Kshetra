@@ -113,11 +113,11 @@ BEGIN
     'completed',
     false,
     240490,
-    195509,
-    194545,
-    964,
-    964,
-    81.30,
+    195287,
+    195163,
+    124,
+    2002,
+    81.20,
     32532,
     'OFFICIAL',
     v_provenance_id
@@ -146,12 +146,12 @@ BEGIN
     'completed',
     false,
     267882,
-    241855,
-    240508,
-    1347,
-    1347,
-    90.28,
-    19931,
+    232417,
+    227702,
+    NULL,
+    832,
+    86.76,
+    45031,
     'OFFICIAL',
     v_provenance_id
   ) ON CONFLICT (contest_code) DO UPDATE SET
@@ -164,20 +164,20 @@ BEGIN
     victory_margin = EXCLUDED.victory_margin;
 
   -- 7. Candidacies
-  -- Kodangal Candidates (Top 3 + Other Contestants balancing to total_valid_votes = 194,545)
+  -- Kodangal Candidates (Top 3 + Independent Pool balancing to candidate valid votes = 193,161)
   INSERT INTO public.candidacies (
     id, contest_id, person_id, election_year, election_type, constituency_type, constituency_id,
     party_id, is_independent, result, votes_received, vote_share, rank,
     evm_votes, postal_votes, data_status, provenance_id
   ) VALUES
     (v_cand_revanth, v_kodangal_contest_id, v_person_revanth, 2023, 'assembly', 'assembly', 'TS-AC-065',
-     'ORG-PARTY-INC', false, 'won', 107429, 55.22, 1, 106820, 609, 'OFFICIAL', v_provenance_id),
+     'ORG-PARTY-INC', false, 'won', 107429, 55.05, 1, 106820, 609, 'OFFICIAL', v_provenance_id),
     (v_cand_narender, v_kodangal_contest_id, v_person_narender, 2023, 'assembly', 'assembly', 'TS-AC-065',
-     'ORG-PARTY-BRS', false, 'lost', 74897, 38.50, 2, 74431, 466, 'OFFICIAL', v_provenance_id),
+     'ORG-PARTY-BRS', false, 'lost', 74897, 38.38, 2, 74431, 466, 'OFFICIAL', v_provenance_id),
     (v_cand_bramesh, v_kodangal_contest_id, v_person_bramesh, 2023, 'assembly', 'assembly', 'TS-AC-065',
-     'ORG-PARTY-BJP', false, 'lost', 4079, 2.10, 3, 4048, 31, 'OFFICIAL', v_provenance_id),
+     'ORG-PARTY-BJP', false, 'lost', 3988, 2.04, 3, 3928, 60, 'OFFICIAL', v_provenance_id),
     ('01900000-0000-0000-0000-000000000027'::uuid, v_kodangal_contest_id, '01900000-0000-0000-0000-000000000017'::uuid, 2023, 'assembly', 'assembly', 'TS-AC-065',
-     NULL, true, 'lost', 7176, 3.69, 4, 7150, 26, 'OFFICIAL', v_provenance_id)
+     NULL, true, 'lost', 6847, 3.51, 4, 6800, 47, 'OFFICIAL', v_provenance_id)
   ON CONFLICT (id) DO UPDATE SET
     votes_received = EXCLUDED.votes_received,
     evm_votes = EXCLUDED.evm_votes,
@@ -185,20 +185,20 @@ BEGIN
     vote_share = EXCLUDED.vote_share,
     rank = EXCLUDED.rank;
 
-  -- Gajwel Candidates (Top 3 + Other Contestants balancing to total_valid_votes = 240,508)
+  -- Gajwel Candidates (Top 3 + Independent Pool balancing to candidate valid votes = 226,870)
   INSERT INTO public.candidacies (
     id, contest_id, person_id, election_year, election_type, constituency_type, constituency_id,
     party_id, is_independent, result, votes_received, vote_share, rank,
     evm_votes, postal_votes, data_status, provenance_id
   ) VALUES
     (v_cand_kcr, v_gajwel_contest_id, v_person_kcr, 2023, 'assembly', 'assembly', 'TS-AC-040',
-     'ORG-PARTY-BRS', false, 'won', 111684, 46.44, 1, 110984, 700, 'OFFICIAL', v_provenance_id),
+     'ORG-PARTY-BRS', false, 'won', 111684, 49.05, 1, 110984, 700, 'OFFICIAL', v_provenance_id),
     (v_cand_eatala, v_gajwel_contest_id, v_person_eatala, 2023, 'assembly', 'assembly', 'TS-AC-040',
-     'ORG-PARTY-BJP', false, 'lost', 91753, 38.15, 2, 91203, 550, 'OFFICIAL', v_provenance_id),
+     'ORG-PARTY-BJP', false, 'lost', 66653, 29.27, 2, 65961, 692, 'OFFICIAL', v_provenance_id),
     (v_cand_narsa, v_gajwel_contest_id, v_person_narsa, 2023, 'assembly', 'assembly', 'TS-AC-040',
-     'ORG-PARTY-INC', false, 'lost', 32568, 13.54, 3, 32318, 250, 'OFFICIAL', v_provenance_id),
+     'ORG-PARTY-INC', false, 'lost', 32568, 14.30, 3, 32318, 250, 'OFFICIAL', v_provenance_id),
     ('01900000-0000-0000-0000-000000000028'::uuid, v_gajwel_contest_id, '01900000-0000-0000-0000-000000000018'::uuid, 2023, 'assembly', 'assembly', 'TS-AC-040',
-     NULL, true, 'lost', 3156, 1.31, 4, 3130, 26, 'OFFICIAL', v_provenance_id)
+     NULL, true, 'lost', 15965, 7.01, 4, 15900, 65, 'OFFICIAL', v_provenance_id)
   ON CONFLICT (id) DO UPDATE SET
     votes_received = EXCLUDED.votes_received,
     evm_votes = EXCLUDED.evm_votes,
@@ -210,8 +210,8 @@ BEGIN
   INSERT INTO public.ballot_choices (
     contest_id, choice_type, is_valid_vote, votes_received, vote_share
   ) VALUES
-    (v_kodangal_contest_id, 'NOTA', true, 964, 0.50),
-    (v_gajwel_contest_id, 'NOTA', true, 1347, 0.56)
+    (v_kodangal_contest_id, 'NOTA', true, 2002, 1.03),
+    (v_gajwel_contest_id, 'NOTA', true, 832, 0.37)
   ON CONFLICT (contest_id, choice_type) DO UPDATE SET
     is_valid_vote = EXCLUDED.is_valid_vote,
     votes_received = EXCLUDED.votes_received,

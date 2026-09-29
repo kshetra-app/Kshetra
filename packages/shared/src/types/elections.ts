@@ -65,7 +65,8 @@ export interface ElectionContest {
   totalElectors: number;
   totalVotesPolled: number;
   totalValidVotes: number;
-  totalRejectedVotes: number;
+  /** Count of rejected ballots. NULL indicates UNKNOWN / not independently established by authoritative evidence (NOT zero). */
+  totalRejectedVotes: number | null;
   totalNotaVotes: number;
   turnoutPercentage: number;
   victoryMargin: number;

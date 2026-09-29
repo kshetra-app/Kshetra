@@ -1647,6 +1647,50 @@
   - The implementation agent explicitly does NOT self-certify or self-accept.
   - Milestone W020 remains **STRICTLY NOT AUTHORIZED** pending written CTO acceptance.
 
+---
+
+### DEC-081: W019 PERSISTENCE SEMANTICS REMEDIATION (UNKNOWN != ZERO, NULLABLE REJECTED VOTES, CONDITIONAL CONSERVATION)
+- **Date:** 2026-09-29
+- **Status:** REMEDIATED / SUBMITTED FOR CTO REVIEW (W019 NOT COMPLETE / W020 STRICTLY NOT AUTHORIZED)
+- **Authority:** CTO FINAL W019 PERSISTENCE SEMANTICS REMEDIATION DIRECTIVE, Master Product Blueprint, MEF Amendments v1.2, v1.4, v1.5-A, v1.6
+- **Context:** Following the authoritative statutory reconciliation (DEC-080), the CTO mandated honest persistence semantics for unknown authoritative election figures (e.g. Gajwel `total_rejected_votes` is UNKNOWN and must never be derived via 232,417 - 227,702 = 4,715 or fabricated as 0).
+- **Core Architectural & Persistence Decisions:**
+  1. **Nullable Representation for Unknown Statutory Quantities:**
+     - `public.election_contests.total_rejected_votes` altered to `INTEGER NULL DEFAULT NULL` in append-only migration `052_w019_persistence_semantics_remediation.sql`.
+     - Explicit semantic rule: `NULL = UNKNOWN / not independently established by authoritative evidence`.
+     - `UNKNOWN != ZERO`. Magic numeric sentinels are strictly prohibited.
+  2. **Conditional Conservation Invariant:**
+     - Database check constraint `check_contest_votes_conservation` updated from unconditional balance to conditional conservation:
+       `CHECK (status <> 'completed'::text OR total_rejected_votes IS NULL OR total_votes_polled = (total_valid_votes + total_rejected_votes) OR total_votes_polled = 0)`.
+     - Kodangal: `total_rejected_votes` = 124 -> conservation is verified and passes (195,163 + 124 = 195,287).
+     - Gajwel: `total_rejected_votes` is NULL -> conservation is honestly recorded as UNRESOLVED.
+  3. **Anti-Derivation Invariant:**
+     - Absolute prohibition against deriving `rejected = polled - valid` or fabricating values to satisfy arithmetic equations.
+     - Anti-derivation guard in test suite actively rejects any attempted arithmetic substitution.
+  4. **API and Type Contract Integrity:**
+     - `packages/shared/src/types/elections.ts` updated to `totalRejectedVotes: number | null`.
+     - `apps/api/src/services/electionService.ts` updated to serialize explicit `null` (not 0, false, empty string, or omitted).
+     - Jest API suite updated with explicit tests verifying `totalRejectedVotes: null` serialization and candidate ranking.
+  5. **Canonical Benchmark Artifacts & Historical Preservation:**
+     - Canonical benchmarks consolidated in `data/evidence/w019/canonical_benchmarks.json` pointing to authoritative statutory figures.
+     - Historical draft artifacts (`eci_form21e_telangana_2023_kodangal_ac065.json` and `eci_form21e_telangana_2023_gajwel_ac040.json`) preserved intact with explicit supersession lineage.
+  6. **Verification Battery Results:**
+     - 80/80 master invariants PASS (`tests/election-normalization-invariants.test.mjs`, including 12 new SEM tests `W019-SEM-01..12`).
+     - 10/10 elections API tests PASS (`apps/api/src/__tests__/elections.test.ts`).
+     - 53/53 W018 political entity invariants PASS.
+     - 9/9 declared API contract drift checks match (100% parity).
+     - Full API build clean (`npm run build --prefix apps/api`).
+     - Full mobile TypeScript clean (`npx tsc --noEmit -p apps/mobile/tsconfig.json`).
+     - Repository evidence integrity PASS (all commits verified; dirty tree check passes upon git commit).
+     - Commit freshness audit PASS across all coordinates.
+     - Staging PostGIS 589 geometries frozen with digest `f839fa02980318a8f35f932ebe72fa1d3ad6325dc86a624bf159d932fe5f613b`.
+     - Production database `ehfafcnimmjusyvplbah` strictly air-gapped and untouched.
+- **Milestone Gate Status:**
+  - W019 remains NOT COMPLETE and BLOCKED pending CTO review and written acceptance.
+  - The implementation agent explicitly does NOT self-certify or self-accept.
+  - Milestone W020 remains **STRICTLY NOT AUTHORIZED**.
+
+
 
 
 

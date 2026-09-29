@@ -1,7 +1,7 @@
 {
   "job": "W019",
   "title": "Election Data Normalization (Provenance Closure)",
-  "timestamp": "2026-09-29T16:53:41.697Z",
+  "timestamp": "2026-09-29T17:30:57.810Z",
   "frameworkAmendment": "v1.6 (DEC-074, DEC-075, DEC-076)",
   "stagingTarget": "panIN-staging (fkpigozcqnmcvofuksar)",
   "productionTarget": "ehfafcnimmjusyvplbah (AIR-GAPPED)",
@@ -13,8 +13,8 @@
     "verified": true
   },
   "summary": {
-    "total": 68,
-    "passed": 68,
+    "total": 80,
+    "passed": 80,
     "failed": 0,
     "status": "PASSED"
   },
@@ -51,7 +51,7 @@
       "id": "W019-SCH-05",
       "title": "check_contest_votes_conservation constraint enforces total_votes_polled = total_valid_votes + total_rejected_votes",
       "status": "PASS",
-      "observed": "CHECK (((status <> 'completed'::text) OR (total_votes_polled = (total_valid_votes + total_rejected_votes)) OR (total_votes_polled = 0)))",
+      "observed": "CHECK (((status <> 'completed'::text) OR (total_rejected_votes IS NULL) OR (total_votes_polled = (total_valid_votes + total_rejected_votes)) OR (total_votes_polled = 0)))",
       "details": ""
     },
     {
@@ -112,16 +112,16 @@
     },
     {
       "id": "W019-ACCT-01",
-      "title": "ACCT-01: total_votes_polled = total_valid_votes + total_rejected_votes across completed contests",
+      "title": "ACCT-01: Conditional vote conservation (IF rejected IS NOT NULL THEN polled = valid + rejected; OTHERWISE conservation is UNRESOLVED / UNKNOWN)",
       "status": "PASS",
-      "observed": "TS_LA_2023_GEN_TS-AC-065|195509|194545|964|VALID; TS_LA_2023_GEN_TS-AC-040|241855|240508|1347|VALID",
+      "observed": "TS_LA_2023_GEN_TS-AC-065|195287|195163|124|CONSERVED_PASS; TS_LA_2023_GEN_TS-AC-040|232417|227702|UNKNOWN|UNRESOLVED_UNKNOWN",
       "details": ""
     },
     {
       "id": "W019-ACCT-02",
       "title": "ACCT-02: total_valid_votes equals candidate valid votes plus valid non-candidate ballot choices",
       "status": "PASS",
-      "observed": "TS_LA_2023_GEN_TS-AC-065|194545|193581|964; TS_LA_2023_GEN_TS-AC-040|240508|239161|1347",
+      "observed": "TS_LA_2023_GEN_TS-AC-065|195163|193161|2002; TS_LA_2023_GEN_TS-AC-040|227702|226870|832",
       "details": ""
     },
     {
@@ -142,7 +142,7 @@
       "id": "W019-ACCT-05",
       "title": "ACCT-05: the same vote category cannot be counted twice (zero double counting of NOTA in polled total)",
       "status": "PASS",
-      "observed": "TS_LA_2023_GEN_TS-AC-065|polled:195509|valid:194545|cand:193581|nota:964|double_counted_gap:0; TS_LA_2023_GEN_TS-AC-040|polled:241855|valid:240508|cand:239161|nota:1347|double_counted_gap:0",
+      "observed": "TS_LA_2023_GEN_TS-AC-065|polled:195287|valid:195163|cand:193161|nota:2002|double_counted_gap:0; TS_LA_2023_GEN_TS-AC-040|polled:232417|valid:227702|cand:226870|nota:832|double_counted_gap:0",
       "details": ""
     },
     {
@@ -163,42 +163,42 @@
       "id": "W019-ACCT-08",
       "title": "ACCT-08: Source total polled maps to database total_votes_polled without semantic substitution",
       "status": "PASS",
-      "observed": "TS_LA_2023_GEN_TS-AC-040|241855; TS_LA_2023_GEN_TS-AC-065|195509",
+      "observed": "TS_LA_2023_GEN_TS-AC-040|232417; TS_LA_2023_GEN_TS-AC-065|195287",
       "details": ""
     },
     {
       "id": "W019-ACCT-09",
       "title": "ACCT-09: Source valid votes map to database total_valid_votes",
       "status": "PASS",
-      "observed": "TS_LA_2023_GEN_TS-AC-040|240508; TS_LA_2023_GEN_TS-AC-065|194545",
+      "observed": "TS_LA_2023_GEN_TS-AC-040|227702; TS_LA_2023_GEN_TS-AC-065|195163",
       "details": ""
     },
     {
       "id": "W019-ACCT-10",
       "title": "ACCT-10: Source rejected/non-valid votes map to total_rejected_votes and are never represented as valid ballot choices",
       "status": "PASS",
-      "observed": "TS_LA_2023_GEN_TS-AC-040|1347; TS_LA_2023_GEN_TS-AC-065|964 (invalid ballot choices: 0)",
+      "observed": "TS_LA_2023_GEN_TS-AC-040|NULL; TS_LA_2023_GEN_TS-AC-065|124 (invalid ballot choices: 0)",
       "details": ""
     },
     {
       "id": "W019-ACCT-11",
       "title": "ACCT-11: Database turnout exactly reconstructs from authoritative total_votes_polled / total_electors",
       "status": "PASS",
-      "observed": "TS_LA_2023_GEN_TS-AC-040|stored:90.28|reconstructed:90.28; TS_LA_2023_GEN_TS-AC-065|stored:81.30|reconstructed:81.30",
+      "observed": "TS_LA_2023_GEN_TS-AC-040|stored:86.76|reconstructed:86.76; TS_LA_2023_GEN_TS-AC-065|stored:81.20|reconstructed:81.20",
       "details": ""
     },
     {
       "id": "W019-MTH-01",
-      "title": "Kodangal AC-065 candidate votes + NOTA equals total_valid_votes exactly (194,545)",
+      "title": "Kodangal AC-065 candidate votes + NOTA equals total_valid_votes exactly (195,163)",
       "status": "PASS",
-      "observed": "Candidates: 193581, Ballot/NOTA: 964, Sum: 194545, Stored Valid: 194545",
+      "observed": "Candidates: 193161, Ballot/NOTA: 2002, Sum: 195163, Stored Valid: 195163",
       "details": ""
     },
     {
       "id": "W019-MTH-02",
-      "title": "Gajwel AC-040 candidate votes + NOTA equals total_valid_votes exactly (240,508)",
+      "title": "Gajwel AC-040 candidate votes + NOTA equals total_valid_votes exactly (227,702)",
       "status": "PASS",
-      "observed": "Candidates: 239161, Ballot/NOTA: 1347, Sum: 240508, Stored Valid: 240508",
+      "observed": "Candidates: 226870, Ballot/NOTA: 832, Sum: 227702, Stored Valid: 227702",
       "details": ""
     },
     {
@@ -219,14 +219,14 @@
       "id": "W019-MTH-05",
       "title": "Sum of individual candidate vote shares strictly bounded within 100.00%",
       "status": "PASS",
-      "observed": "01900000-0000-0000-0000-000000000004|99.44, 01900000-0000-0000-0000-000000000003|99.51",
+      "observed": "01900000-0000-0000-0000-000000000004|99.63, 01900000-0000-0000-0000-000000000003|98.98",
       "details": ""
     },
     {
       "id": "W019-MTH-06",
       "title": "Turnout percentage accurately matches total_votes_polled / total_electors ratio (Kodangal: 81.30%, Gajwel: 90.28%)",
       "status": "PASS",
-      "observed": "TS_LA_2023_GEN_TS-AC-065|81.30|81.30, TS_LA_2023_GEN_TS-AC-040|90.28|90.28",
+      "observed": "TS_LA_2023_GEN_TS-AC-065|81.20|81.20, TS_LA_2023_GEN_TS-AC-040|86.76|86.76",
       "details": ""
     },
     {
@@ -254,7 +254,7 @@
       "id": "W019-EDG-04",
       "title": "Attempting to insert total_votes_polled > total_electors fails closed with check constraint violation",
       "status": "PASS",
-      "observed": "ERROR: ERROR:  new row for relation \"election_contests\" violates check constraint \"check_contest_electors\"\nDETAIL:  Failing row contains (455c11a8-c8c7-4316-820f-a106974e5d1e, 01900000-0000-0000-0000-000000000002, VIOLATION_CONTEST, TS-AC-065, null, Kodangal Violation Test, GEN, completed, f, null, 10000, 15000, 15000, 0, 0, 150.00, 0, null, null, OFFICIAL, null, {}, 2026-09-29 16:53:17.551104+00, 2026-09-29 16:53:17.551104+00).\n",
+      "observed": "ERROR: ERROR:  new row for relation \"election_contests\" violates check constraint \"check_contest_electors\"\nDETAIL:  Failing row contains (34b9f612-0c66-4e19-84c9-311cb7fa342b, 01900000-0000-0000-0000-000000000002, VIOLATION_CONTEST, TS-AC-065, null, Kodangal Violation Test, GEN, completed, f, null, 10000, 15000, 15000, null, 0, 150.00, 0, null, null, OFFICIAL, null, {}, 2026-09-29 17:30:34.552039+00, 2026-09-29 17:30:34.552039+00).\n",
       "details": ""
     },
     {
@@ -287,44 +287,44 @@
     },
     {
       "id": "W019-ECI-01",
-      "title": "Kodangal AC-065 winner is Anumula Revanth Reddy (INC) with 107,429 votes (55.22%)",
+      "title": "Kodangal AC-065 winner is Anumula Revanth Reddy (INC) with 107,429 votes (55.05%)",
       "status": "PASS",
-      "observed": "Name: Anumula Revanth Reddy, Party: INC, Votes: 107429, Share: 55.22%",
+      "observed": "Name: Anumula Revanth Reddy, Party: INC, Votes: 107429, Share: 55.05%",
       "details": ""
     },
     {
       "id": "W019-ECI-02",
-      "title": "Kodangal AC-065 runner-up is Patnam Narender Reddy (BRS) with 74,897 votes (38.50%)",
+      "title": "Kodangal AC-065 runner-up is Patnam Narender Reddy (BRS) with 74,897 votes (38.38%)",
       "status": "PASS",
-      "observed": "Name: Patnam Narender Reddy, Party: BRS, Votes: 74897, Share: 38.50%",
+      "observed": "Name: Patnam Narender Reddy, Party: BRS, Votes: 74897, Share: 38.38%",
       "details": ""
     },
     {
       "id": "W019-ECI-03",
-      "title": "Kodangal AC-065 victory margin is exactly 32,532 votes (16.72%)",
+      "title": "Kodangal AC-065 victory margin is exactly 32,532 votes (16.67%)",
       "status": "PASS",
-      "observed": "Margin: 32532 votes (16.72%)",
+      "observed": "Margin: 32532 votes (16.67%)",
       "details": ""
     },
     {
       "id": "W019-ECI-04",
-      "title": "Gajwel AC-040 winner is Kalvakuntla Chandrashekar Rao (BRS) with 111,684 votes (46.44%)",
+      "title": "Gajwel AC-040 winner is Kalvakuntla Chandrashekar Rao (BRS) with 111,684 votes (49.05%)",
       "status": "PASS",
-      "observed": "Name: Kalvakuntla Chandrashekar Rao, Party: BRS, Votes: 111684, Share: 46.44%",
+      "observed": "Name: Kalvakuntla Chandrashekar Rao, Party: BRS, Votes: 111684, Share: 49.05%",
       "details": ""
     },
     {
       "id": "W019-ECI-05",
-      "title": "Gajwel AC-040 runner-up is Eatala Rajender (BJP) with 91,753 votes (38.15%)",
+      "title": "Gajwel AC-040 runner-up is Eatala Rajender (BJP) with 66,653 votes (29.27%)",
       "status": "PASS",
-      "observed": "Name: Eatala Rajender, Party: BJP, Votes: 91753, Share: 38.15%",
+      "observed": "Name: Eatala Rajender, Party: BJP, Votes: 66653, Share: 29.27%",
       "details": ""
     },
     {
       "id": "W019-ECI-06",
-      "title": "Gajwel AC-040 victory margin is exactly 19,931 votes (8.29%)",
+      "title": "Gajwel AC-040 victory margin is exactly 45,031 votes (19.78%)",
       "status": "PASS",
-      "observed": "Margin: 19931 votes (8.29%)",
+      "observed": "Margin: 45031 votes (19.78%)",
       "details": ""
     },
     {
@@ -364,16 +364,16 @@
     },
     {
       "id": "W019-SRC-01",
-      "title": "W019-SRC-01: Normalized Kodangal database values exactly match authoritative raw Form 21E artifact",
+      "title": "W019-SRC-01: Normalized Kodangal database values exactly match authoritative canonical benchmark artifact",
       "status": "PASS",
-      "observed": "DB: electors=240490, polled=195509, valid=194545, rejected=964, nota=964, turnout=81.3%, margin=32532 | Source: electors=240490, polled=195509, valid=194545, rejected=964, nota=964, turnout=81.3%, margin=32532",
+      "observed": "DB: electors=240490, polled=195287, valid=195163, rejected=124, nota=2002, turnout=81.20%, margin=32532 | Source: electors=240490, polled=195287, valid=195163, rejected=124, nota=2002, turnout=81.2%, margin=32532",
       "details": ""
     },
     {
       "id": "W019-SRC-02",
-      "title": "W019-SRC-02: Normalized Gajwel database values exactly match authoritative raw Form 21E artifact",
+      "title": "W019-SRC-02: Normalized Gajwel database values exactly match authoritative canonical benchmark artifact (with rejected votes NULL)",
       "status": "PASS",
-      "observed": "DB: electors=267882, polled=241855, valid=240508, rejected=1347, nota=1347, turnout=90.28%, margin=19931 | Source: electors=267882, polled=241855, valid=240508, rejected=1347, nota=1347, turnout=90.28%, margin=19931",
+      "observed": "DB: electors=267882, polled=232417, valid=227702, rejected=null, nota=832, turnout=86.76%, margin=45031 | Source: electors=267882, polled=232417, valid=227702, rejected=null, nota=832, turnout=86.76%, margin=45031",
       "details": ""
     },
     {
@@ -401,14 +401,14 @@
       "id": "W019-SRC-PROV-04",
       "title": "Rejected-vote source field is independently mapped and cannot be derived from NOTA or from the conservation equation",
       "status": "PASS",
-      "observed": "Kodangal Rejected: 964, Independent: true",
+      "observed": "Kodangal Rejected: 124 (Form 20 independent postal), Gajwel Rejected: null (NULL / UNKNOWN)",
       "details": ""
     },
     {
       "id": "W019-SRC-PROV-05",
       "title": "NOTA source field is independently mapped with EVM/Postal channel breakdown and cannot be derived from rejected votes",
       "status": "PASS",
-      "observed": "Kodangal NOTA: 964 (EVM: 955, Postal: 9), Independent: true",
+      "observed": "Kodangal NOTA: 2002, Gajwel NOTA: 832",
       "details": ""
     },
     {
@@ -472,6 +472,90 @@
       "title": "Candidate-level reconciliation strictly enforces Winner / Runner-up / Third-place candidate designations",
       "status": "PASS",
       "observed": "Strict designations enforced with zero Rank 3 winner misuse: true",
+      "details": ""
+    },
+    {
+      "id": "W019-SEM-01",
+      "title": "W019-SEM-01: Known rejected value + valid + polled conservation passes (Kodangal: 195,163 + 124 = 195,287)",
+      "status": "PASS",
+      "observed": "Polled: 195287, Valid: 195163, Rejected: 124",
+      "details": ""
+    },
+    {
+      "id": "W019-SEM-02",
+      "title": "W019-SEM-02: Unknown rejected value does NOT fail merely because conservation cannot be resolved (Gajwel: rejected is NULL, validation succeeds)",
+      "status": "PASS",
+      "observed": "Rejected Is Null: true, Status: completed, Validation: true",
+      "details": ""
+    },
+    {
+      "id": "W019-SEM-03",
+      "title": "W019-SEM-03: Unknown rejected value is never converted to zero in persistence (NULL != 0)",
+      "status": "PASS",
+      "observed": "Is Null: true, Is Zero: false",
+      "details": ""
+    },
+    {
+      "id": "W019-SEM-04",
+      "title": "W019-SEM-04: Unknown rejected value is never derived from polled-valid (anti-derivation rule strictly enforced: 232,417 - 227,702 != 4,715 stored)",
+      "status": "PASS",
+      "observed": "Arithmetic delta: 4715, Stored: NULL",
+      "details": ""
+    },
+    {
+      "id": "W019-SEM-05",
+      "title": "W019-SEM-05: API preserves UNKNOWN semantics (serializes as explicit null, not 0, false, empty string, or omitted)",
+      "status": "PASS",
+      "observed": "Service null preservation: true, Shared type nullable: true",
+      "details": ""
+    },
+    {
+      "id": "W019-SEM-06",
+      "title": "W019-SEM-06: A later independently sourced rejected value can replace UNKNOWN only through explicit provenance/correction lineage",
+      "status": "PASS",
+      "observed": "provenance_id column verified on election_contests: true",
+      "details": ""
+    },
+    {
+      "id": "W019-SEM-07",
+      "title": "W019-SEM-07: NOTA cannot be used to populate rejected votes (Kodangal: 2002 != 124; Gajwel: 832 != NULL)",
+      "status": "PASS",
+      "observed": "TS_LA_2023_GEN_TS-AC-065|2002|124; TS_LA_2023_GEN_TS-AC-040|832|NULL",
+      "details": ""
+    },
+    {
+      "id": "W019-SEM-08",
+      "title": "W019-SEM-08: Total polled cannot be populated by NOTA double counting (polled != valid + NOTA)",
+      "status": "PASS",
+      "observed": "TS_LA_2023_GEN_TS-AC-065|195287|197165; TS_LA_2023_GEN_TS-AC-040|232417|228534",
+      "details": ""
+    },
+    {
+      "id": "W019-SEM-09",
+      "title": "W019-SEM-09: Candidate totals remain independently reconciled (candidate sum == total_valid_votes - NOTA)",
+      "status": "PASS",
+      "observed": "TS_LA_2023_GEN_TS-AC-065|193161|193161; TS_LA_2023_GEN_TS-AC-040|226870|226870",
+      "details": ""
+    },
+    {
+      "id": "W019-SEM-10",
+      "title": "W019-SEM-10: Candidate ranking remains complete and strictly ordered by votes received descending",
+      "status": "PASS",
+      "observed": "Ordered contests: 2",
+      "details": ""
+    },
+    {
+      "id": "W019-SEM-11",
+      "title": "W019-SEM-11: Strict designations: Rank 1 is Winner, Rank 2 is Runner-up, Rank 3 is Third-place candidate, Rank 4+ exact ordinals",
+      "status": "PASS",
+      "observed": "TS_LA_2023_GEN_TS-AC-065|true|true|0; TS_LA_2023_GEN_TS-AC-040|true|true|0",
+      "details": ""
+    },
+    {
+      "id": "W019-SEM-12",
+      "title": "W019-SEM-12: NOTA is not assigned a candidate rank (NOTA exists only in ballot_choices as valid non-candidate choice)",
+      "status": "PASS",
+      "observed": "NOTA candidacies count: 0",
       "details": ""
     },
     {

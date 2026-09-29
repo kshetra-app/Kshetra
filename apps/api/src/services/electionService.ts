@@ -77,7 +77,7 @@ function mapDbElectionContest(row: any): ElectionContest {
     totalElectors: row.total_electors ?? 0,
     totalVotesPolled: row.total_votes_polled ?? 0,
     totalValidVotes: row.total_valid_votes ?? 0,
-    totalRejectedVotes: row.total_rejected_votes ?? 0,
+    totalRejectedVotes: row.total_rejected_votes === null || row.total_rejected_votes === undefined ? null : Number(row.total_rejected_votes),
     totalNotaVotes: row.total_nota_votes ?? 0,
     turnoutPercentage: Number(row.turnout_percentage ?? 0),
     victoryMargin: row.victory_margin ?? 0,

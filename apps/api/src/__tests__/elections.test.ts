@@ -125,11 +125,11 @@ describe('Election Data Normalization API (W019)', () => {
 
     expect(detail.contestCode).toBe('TS_LA_2023_GEN_TS-AC-065');
     expect(detail.totalElectors).toBe(240490);
-    expect(detail.totalVotesPolled).toBe(195509);
-    expect(detail.totalValidVotes).toBe(194545);
-    expect(detail.totalRejectedVotes).toBe(964);
-    expect(detail.totalNotaVotes).toBe(964);
-    expect(detail.turnoutPercentage).toBe(81.30);
+    expect(detail.totalVotesPolled).toBe(195287);
+    expect(detail.totalValidVotes).toBe(195163);
+    expect(detail.totalRejectedVotes).toBe(124);
+    expect(detail.totalNotaVotes).toBe(2002);
+    expect(detail.turnoutPercentage).toBe(81.20);
     expect(detail.victoryMargin).toBe(32532);
 
     // Candidates
@@ -140,21 +140,21 @@ describe('Election Data Normalization API (W019)', () => {
     expect(detail.winner).toBeDefined();
     expect(detail.winner.person.canonicalName).toBe('Anumula Revanth Reddy');
     expect(detail.winner.candidacy.votesReceived).toBe(107429);
-    expect(detail.winner.candidacy.voteShare).toBe(55.22);
+    expect(detail.winner.candidacy.voteShare).toBe(55.05);
     expect(detail.winner.party.shortName).toBe('INC');
 
     // Runner-up verification
     expect(detail.runnerUp).toBeDefined();
     expect(detail.runnerUp.person.canonicalName).toBe('Patnam Narender Reddy');
     expect(detail.runnerUp.candidacy.votesReceived).toBe(74897);
-    expect(detail.runnerUp.candidacy.voteShare).toBe(38.50);
+    expect(detail.runnerUp.candidacy.voteShare).toBe(38.38);
     expect(detail.runnerUp.party.shortName).toBe('BRS');
 
     // Ballot choices (NOTA)
     expect(detail.ballotChoices.length).toBeGreaterThanOrEqual(1);
     const nota = detail.ballotChoices.find((b: any) => b.choiceType === 'NOTA');
     expect(nota).toBeDefined();
-    expect(nota.votesReceived).toBe(964);
+    expect(nota.votesReceived).toBe(2002);
     expect(nota.isValidVote).toBe(true);
   });
 
@@ -168,20 +168,22 @@ describe('Election Data Normalization API (W019)', () => {
 
     expect(detail.contestCode).toBe('TS_LA_2023_GEN_TS-AC-040');
     expect(detail.totalElectors).toBe(267882);
-    expect(detail.totalVotesPolled).toBe(241855);
-    expect(detail.totalValidVotes).toBe(240508);
-    expect(detail.totalRejectedVotes).toBe(1347);
-    expect(detail.turnoutPercentage).toBe(90.28);
-    expect(detail.victoryMargin).toBe(19931);
+    expect(detail.totalVotesPolled).toBe(232417);
+    expect(detail.totalValidVotes).toBe(227702);
+    expect(detail.totalRejectedVotes).toBeNull();
+    expect(detail.turnoutPercentage).toBe(86.76);
+    expect(detail.victoryMargin).toBe(45031);
 
     // Winner verification
     expect(detail.winner.person.canonicalName).toBe('Kalvakuntla Chandrashekar Rao');
     expect(detail.winner.candidacy.votesReceived).toBe(111684);
+    expect(detail.winner.candidacy.voteShare).toBe(49.05);
     expect(detail.winner.party.shortName).toBe('BRS');
 
     // Runner-up verification
     expect(detail.runnerUp.person.canonicalName).toBe('Eatala Rajender');
-    expect(detail.runnerUp.candidacy.votesReceived).toBe(91753);
+    expect(detail.runnerUp.candidacy.votesReceived).toBe(66653);
+    expect(detail.runnerUp.candidacy.voteShare).toBe(29.27);
     expect(detail.runnerUp.party.shortName).toBe('BJP');
   });
 
