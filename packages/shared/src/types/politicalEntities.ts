@@ -18,8 +18,9 @@ export type GovernanceDataStatus =
 export type PoliticalOrgType =
   | 'political_party'
   | 'media_organization'
-  | 'civic_ngo'
-  | 'alliance';
+  | 'civic_organization'
+  | 'political_alliance'
+  | 'other';
 
 export type PoliticalRoleType =
   | 'mp'
@@ -30,6 +31,13 @@ export type PoliticalRoleType =
   | 'aspirant'
   | 'journalist'
   | 'party_official';
+
+export type PersonOrgRelationshipType =
+  | 'member_of'
+  | 'affiliated_with'
+  | 'contested_for'
+  | 'employed_by'
+  | 'alliance_with';
 
 export type OfficeTypeEnum =
   | 'mp_lok_sabha'
@@ -56,7 +64,6 @@ export type ElectionResultEnum =
   | 'pending';
 
 export type IdentityMatchMethod =
-  | 'exact_epic'
   | 'exact_eci_id'
   | 'exact_sansad_id'
   | 'user_verified_claim'
@@ -71,7 +78,6 @@ export interface CanonicalPerson {
   dob?: string | null;
   dobEstimated: boolean;
   photoUrl?: string | null;
-  epicHash?: string | null;
   eciCandidateId?: string | null;
   sansadMemberId?: string | null;
   primaryUserId?: string | null;
@@ -90,6 +96,7 @@ export interface PoliticalOrganization {
   ecPartyCode?: string | null;
   recognitionLevel?: 'national' | 'state' | 'unrecognized' | 'independent' | null;
   headquartersState?: string | null;
+  parentOrgId?: string | null;
   symbolUrl?: string | null;
   brandColors: {
     primary?: string;
@@ -107,6 +114,7 @@ export interface PersonRole {
   personId: string;
   roleType: PoliticalRoleType;
   organizationId?: string | null;
+  relationshipType: PersonOrgRelationshipType;
   validFrom: string;
   validTo?: string | null;
   isCurrent: boolean;

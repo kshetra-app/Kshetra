@@ -1317,6 +1317,35 @@
   7. **Frozen 589 Geometry Baseline Untouched:** Staging PostGIS `public.entity_geometries` row count = 589 and SHA-256 digest `f839fa02980318a8f35f932ebe72fa1d3ad6325dc86a624bf159d932fe5f613b` verified byte-exact.
   8. **Strict Production Air-Gap:** Production database `ehfafcnimmjusyvplbah` remains 100% air-gapped, untouched, and uncontacted.
 
+---
+
+### DEC-072: W018 CANONICAL POLITICAL ENTITY MODEL REMEDIATION & BLOCKER RESOLUTION COMPLETE
+- **Date:** 2026-09-29
+- **Status:** REMEDIATED / VERIFIED / RESUBMITTED FOR FINAL CTO ACCEPTANCE
+- **Authority:** CTO Acceptance Directive — W018 Remediation Review
+- **Context:** In response to the CTO Remediation Review placing W018 into "CONDITIONALLY ACCEPTED / ACCEPTANCE BLOCKED PENDING BOUNDED REMEDIATION", exactly five targeted architectural remediations were implemented and empirically proven without discarding Migration 050.
+- **Remediation Actions & Structural Solutions:**
+  1. **Blocker 1 (EPIC_HASH Semantics & Elimination):** Completely removed `epic_hash` column from `public.canonical_persons` and dropped `exact_epic` from `person_identity_linkages.match_method`. Retracted all mathematical claims of "collision-free hashing". Electoral/voter roll deduplication is strictly decoupled from the political actor identity model.
+  2. **Blocker 2 (Canonical Resolution Hardening & Anti-Enumeration):** Revoked `EXECUTE` on `fn_resolve_canonical_person` from `PUBLIC` and `anon`; granted strictly to `authenticated` and `service_role`. Revoked `SELECT` on `person_identity_linkages` from `anon`. The resolution ledger cannot be scraped or probed via public/anonymous oracle attacks. Public callers resolve entities via authenticated Fastify API routes.
+  3. **Blocker 3 (Organization Semantics & Relationship Typing):** Expanded `political_organizations.org_type` check constraint to strictly enforce `('political_party', 'media_organization', 'civic_organization', 'political_alliance', 'other')`. Added self-referencing foreign key `parent_org_id` to model alliances and party federations. Added `relationship_type` to `person_roles` strictly enforcing `('member_of', 'affiliated_with', 'contested_for', 'employed_by', 'alliance_with')`.
+  4. **Blocker 4 (Candidacy / Office / Affiliation / Defection Separation & Immutability):** Installed database immutability triggers (`trg_candidacies_immutable_fields` and `trg_elected_tenures_immutable_fields`) that block modifications to `party_id` on historical candidacies and `party_at_election` on elected tenures. Defections update `current_party` and `defection_date` without rewriting historical candidacy tickets or election victory parties.
+  5. **Blocker 5 (Safe Non-Resolution & Ambiguity Invariants):** Implemented and verified seven non-resolution invariant tests (`W018-ID-11` through `W018-ID-17`):
+     - Same name candidates in different constituencies resolve to distinct canonical IDs (no collision, no merge).
+     - Distinct candidate linkages are isolated without cross-contamination.
+     - Fuzzy/probabilistic match methods are rejected by schema CHECK constraints.
+     - Conflicting assignment of existing external ID to another person fails closed on unique constraint.
+     - Missing external IDs yield zero fabricated linkages.
+     - Name/transliteration variations without common external anchor do not auto-merge.
+     - Ambiguous/empty queries fail closed with NULL return (zero probabilistic guessing).
+- **Verification Evidence:**
+  - `tests/political-entities-invariants.test.mjs`: 37/37 PASS (100%).
+  - `apps/api/src/__tests__/political-entities.test.ts`: 10/10 PASS (100%).
+  - `scripts/check-api-contract-drift.mjs`: 9/9 MATCH (100%).
+  - TypeScript Compilation: `apps/api` (exit 0), `apps/mobile` (exit 0).
+  - Staging PostGIS 589 baseline: 589 rows, exact SHA-256 digest `f839fa02980318a8f35f932ebe72fa1d3ad6325dc86a624bf159d932fe5f613b`.
+  - Production database `ehfafcnimmjusyvplbah` strictly air-gapped and untouched.
+
+
 
 
 

@@ -5,6 +5,12 @@
 
 BEGIN;
 
+DROP TRIGGER IF EXISTS trg_candidacies_immutable_fields ON public.candidacies;
+DROP FUNCTION IF EXISTS public.fn_prevent_candidacy_mutation();
+
+DROP TRIGGER IF EXISTS trg_elected_tenures_immutable_fields ON public.elected_tenures;
+DROP FUNCTION IF EXISTS public.fn_prevent_tenure_history_mutation();
+
 DROP FUNCTION IF EXISTS public.fn_link_person_identity(UUID, TEXT, TEXT, TEXT, NUMERIC, TEXT);
 DROP FUNCTION IF EXISTS public.fn_resolve_canonical_person(TEXT, TEXT);
 

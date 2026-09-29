@@ -2,6 +2,15 @@
 -- Staging Migration Package: 050_political_entity_model.sql
 -- Target: Staging Supabase (fkpigozcqnmcvofuksar)
 -- Authoritative Plan: PLAN-W018-REV-1.0.md
+--
+-- Security Baseline:
+--   1. 100% SECURITY INVOKER for all stored functions (prosecdef = false).
+--   2. Explicit immutable search_path pinned: SET search_path = public, pg_temp.
+--   3. Row-Level Security (RLS) enabled on all tables.
+--   4. Identity claim mutations strictly restricted to service_role / verified admins.
+--   5. Deterministic identity linkage ledger restricted to authenticated callers.
+--   6. Full adherence to Migration 039 Data Governance & Provenance standards.
+--   7. Strict immutability triggers for candidacy and tenure election party history.
 -- ==============================================================================
 
 BEGIN;
@@ -41,7 +50,6 @@ CREATE TABLE IF NOT EXISTS public.canonical_persons (
   dob                 DATE,
   dob_estimated       BOOLEAN NOT NULL DEFAULT false,
   photo_url           TEXT,
-  epic_hash           TEXT UNIQUE,
   eci_candidate_id    TEXT UNIQUE,
   sansad_member_id    TEXT UNIQUE,
   primary_user_id     UUID REFERENCES auth.users(id) ON DELETE SET NULL UNIQUE,
@@ -53,7 +61,6 @@ CREATE TABLE IF NOT EXISTS public.canonical_persons (
 );
 
 COMMENT ON TABLE public.canonical_persons IS 'Core canonical human identity for political actors across all offices, elections, and civic roles.';
-COMMENT ON COLUMN public.canonical_persons.epic_hash IS 'Salted SHA-256 hash of Election Photo Identity Card (EPIC/Voter ID) for collision-free deduplication without cleartext exposure.';
 COMMENT ON COLUMN public.canonical_persons.primary_user_id IS 'Verified mobile user account claim. Can only be bound via authorized verification review.';
 
 CREATE INDEX IF NOT EXISTS idx_canonical_persons_name ON public.canonical_persons(canonical_name);
@@ -65,13 +72,14 @@ CREATE INDEX IF NOT EXISTS idx_canonical_persons_sansad ON public.canonical_pers
 -- ─── 2. POLITICAL ORGANIZATIONS (Parties, Media Houses, Alliances) ─────────────
 
 CREATE TABLE IF NOT EXISTS public.political_organizations (
-  id                  TEXT PRIMARY KEY,
-  org_type            TEXT NOT NULL CHECK (org_type IN ('political_party', 'media_organization', 'civic_ngo', 'alliance')),
+  id                  TEXT PRIMARY KEY,  -- e.g. 'ORG-PARTY-INC', 'ORG-PARTY-BJP', 'ORG-MEDIA-TV9'
+  org_type            TEXT NOT NULL CHECK (org_type IN ('political_party', 'media_organization', 'civic_organization', 'political_alliance', 'other')),
   name                TEXT NOT NULL CHECK (char_length(name) BETWEEN 2 AND 150),
   short_name          TEXT NOT NULL CHECK (char_length(short_name) BETWEEN 1 AND 30),
   ec_party_code       TEXT UNIQUE,
   recognition_level   TEXT CHECK (recognition_level IN ('national', 'state', 'unrecognized', 'independent')),
   headquarters_state  TEXT REFERENCES public.states(code) ON DELETE RESTRICT,
+  parent_org_id       TEXT REFERENCES public.political_organizations(id) ON DELETE SET NULL,
   symbol_url          TEXT,
   brand_colors        JSONB NOT NULL DEFAULT '{}'::jsonb,
   page_id             UUID REFERENCES public.pages(id) ON DELETE SET NULL,
@@ -81,10 +89,11 @@ CREATE TABLE IF NOT EXISTS public.political_organizations (
   updated_at          TIMESTAMPTZ NOT NULL DEFAULT now()
 );
 
-COMMENT ON TABLE public.political_organizations IS 'Canonical registry of political parties, media organizations, and civic alliances.';
+COMMENT ON TABLE public.political_organizations IS 'Canonical registry of political parties, media organizations, civic organizations, and alliances.';
 
 CREATE INDEX IF NOT EXISTS idx_political_orgs_type ON public.political_organizations(org_type);
 CREATE INDEX IF NOT EXISTS idx_political_orgs_short ON public.political_organizations(short_name);
+CREATE INDEX IF NOT EXISTS idx_political_orgs_parent ON public.political_organizations(parent_org_id) WHERE parent_org_id IS NOT NULL;
 CREATE INDEX IF NOT EXISTS idx_political_orgs_ec_code ON public.political_organizations(ec_party_code) WHERE ec_party_code IS NOT NULL;
 
 
@@ -95,6 +104,7 @@ CREATE TABLE IF NOT EXISTS public.person_roles (
   person_id           UUID NOT NULL REFERENCES public.canonical_persons(id) ON DELETE RESTRICT,
   role_type           TEXT NOT NULL CHECK (role_type IN ('mp', 'mla', 'mlc', 'local_representative', 'candidate', 'aspirant', 'journalist', 'party_official')),
   organization_id     TEXT REFERENCES public.political_organizations(id) ON DELETE RESTRICT,
+  relationship_type   TEXT NOT NULL DEFAULT 'member_of' CHECK (relationship_type IN ('member_of', 'affiliated_with', 'contested_for', 'employed_by', 'alliance_with')),
   valid_from          DATE NOT NULL,
   valid_to            DATE,
   is_current          BOOLEAN NOT NULL DEFAULT true,
@@ -105,10 +115,11 @@ CREATE TABLE IF NOT EXISTS public.person_roles (
   updated_at          TIMESTAMPTZ NOT NULL DEFAULT now()
 );
 
-COMMENT ON TABLE public.person_roles IS 'Temporal roles held by a person (e.g. journalist, aspirant, party secretary).';
+COMMENT ON TABLE public.person_roles IS 'Temporal roles held by a person (e.g. journalist, aspirant, party secretary) with explicit relationship semantics.';
 
 CREATE INDEX IF NOT EXISTS idx_person_roles_person ON public.person_roles(person_id);
 CREATE INDEX IF NOT EXISTS idx_person_roles_type ON public.person_roles(role_type);
+CREATE INDEX IF NOT EXISTS idx_person_roles_rel ON public.person_roles(relationship_type);
 CREATE INDEX IF NOT EXISTS idx_person_roles_org ON public.person_roles(organization_id) WHERE organization_id IS NOT NULL;
 CREATE INDEX IF NOT EXISTS idx_person_roles_current ON public.person_roles(is_current) WHERE is_current = true;
 
@@ -174,6 +185,68 @@ CREATE INDEX IF NOT EXISTS idx_elected_tenures_jurisdiction ON public.elected_te
 CREATE INDEX IF NOT EXISTS idx_elected_tenures_current ON public.elected_tenures(is_current) WHERE is_current = true;
 
 
+-- ─── 5B. IMMUTABILITY GUARDS FOR CANDIDACIES & ELECTED TENURES ─────────────────
+
+CREATE OR REPLACE FUNCTION public.fn_prevent_candidacy_mutation()
+RETURNS TRIGGER
+LANGUAGE plpgsql
+SECURITY INVOKER
+SET search_path = public, pg_temp
+AS $$
+BEGIN
+  IF OLD.party_id IS DISTINCT FROM NEW.party_id THEN
+    RAISE EXCEPTION 'IMMUTABLE_FIELD: party_id cannot be modified on historical candidacies'
+      USING ERRCODE = '23514';
+  END IF;
+  IF OLD.person_id IS DISTINCT FROM NEW.person_id THEN
+    RAISE EXCEPTION 'IMMUTABLE_FIELD: person_id cannot be modified on candidacies'
+      USING ERRCODE = '23514';
+  END IF;
+  IF OLD.election_year IS DISTINCT FROM NEW.election_year OR OLD.constituency_id IS DISTINCT FROM NEW.constituency_id THEN
+    RAISE EXCEPTION 'IMMUTABLE_FIELD: election coordinate cannot be modified on candidacies'
+      USING ERRCODE = '23514';
+  END IF;
+  RETURN NEW;
+END;
+$$;
+
+DROP TRIGGER IF EXISTS trg_candidacies_immutable_fields ON public.candidacies;
+CREATE TRIGGER trg_candidacies_immutable_fields
+  BEFORE UPDATE ON public.candidacies
+  FOR EACH ROW
+  EXECUTE FUNCTION public.fn_prevent_candidacy_mutation();
+
+
+CREATE OR REPLACE FUNCTION public.fn_prevent_tenure_history_mutation()
+RETURNS TRIGGER
+LANGUAGE plpgsql
+SECURITY INVOKER
+SET search_path = public, pg_temp
+AS $$
+BEGIN
+  IF OLD.party_at_election IS DISTINCT FROM NEW.party_at_election THEN
+    RAISE EXCEPTION 'IMMUTABLE_FIELD: party_at_election cannot be modified after creation'
+      USING ERRCODE = '23514';
+  END IF;
+  IF OLD.person_id IS DISTINCT FROM NEW.person_id THEN
+    RAISE EXCEPTION 'IMMUTABLE_FIELD: person_id cannot be modified on elected_tenures'
+      USING ERRCODE = '23514';
+  END IF;
+  IF OLD.jurisdiction_id IS DISTINCT FROM NEW.jurisdiction_id THEN
+    RAISE EXCEPTION 'IMMUTABLE_FIELD: jurisdiction_id cannot be modified on elected_tenures'
+      USING ERRCODE = '23514';
+  END IF;
+  RETURN NEW;
+END;
+$$;
+
+DROP TRIGGER IF EXISTS trg_elected_tenures_immutable_fields ON public.elected_tenures;
+CREATE TRIGGER trg_elected_tenures_immutable_fields
+  BEFORE UPDATE ON public.elected_tenures
+  FOR EACH ROW
+  EXECUTE FUNCTION public.fn_prevent_tenure_history_mutation();
+
+
 -- ─── 6. PERSON IDENTITY LINKAGES (Multi-table Resolution Ledger) ────────────────
 
 CREATE TABLE IF NOT EXISTS public.person_identity_linkages (
@@ -181,7 +254,7 @@ CREATE TABLE IF NOT EXISTS public.person_identity_linkages (
   person_id           UUID NOT NULL REFERENCES public.canonical_persons(id) ON DELETE CASCADE,
   source_system       TEXT NOT NULL CHECK (source_system IN ('legislator_profiles', 'candidate_affidavits', 'representatives', 'aspirant_profiles', 'journalist_profiles', 'politician_portal_profiles', 'myneta', 'sansad', 'eci')),
   source_record_id    TEXT NOT NULL,
-  match_method        TEXT NOT NULL CHECK (match_method IN ('exact_epic', 'exact_eci_id', 'exact_sansad_id', 'user_verified_claim', 'manual_curated', 'deterministic_biographic_tuple')),
+  match_method        TEXT NOT NULL CHECK (match_method IN ('exact_eci_id', 'exact_sansad_id', 'user_verified_claim', 'manual_curated', 'deterministic_biographic_tuple')),
   confidence          NUMERIC(3,2) NOT NULL CHECK (confidence BETWEEN 0.00 AND 1.00),
   curated_by          TEXT NOT NULL DEFAULT 'system',
   curated_at          TIMESTAMPTZ NOT NULL DEFAULT now(),
@@ -213,6 +286,10 @@ AS $$
 DECLARE
   v_person_id UUID;
 BEGIN
+  IF p_source_system IS NULL OR p_source_record_id IS NULL OR trim(p_source_system) = '' OR trim(p_source_record_id) = '' THEN
+    RETURN NULL;
+  END IF;
+
   SELECT person_id
     INTO v_person_id
     FROM public.person_identity_linkages
@@ -224,7 +301,7 @@ BEGIN
 END;
 $$;
 
-COMMENT ON FUNCTION public.fn_resolve_canonical_person(TEXT, TEXT) IS 'Resolves an external or source-table record ID to its canonical person UUID. Returns NULL if unmapped (fails closed).';
+COMMENT ON FUNCTION public.fn_resolve_canonical_person(TEXT, TEXT) IS 'Resolves an external or source-table record ID to its canonical person UUID. Returns NULL if unmapped or invalid (fails closed).';
 
 
 CREATE OR REPLACE FUNCTION public.fn_link_person_identity(
@@ -294,6 +371,7 @@ ALTER TABLE public.candidacies ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.elected_tenures ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.person_identity_linkages ENABLE ROW LEVEL SECURITY;
 
+-- Public SELECT policies (canonical public registry open to authenticated & anon)
 CREATE POLICY canonical_persons_select_policy ON public.canonical_persons
   FOR SELECT USING (true);
 
@@ -309,9 +387,11 @@ CREATE POLICY candidacies_select_policy ON public.candidacies
 CREATE POLICY elected_tenures_select_policy ON public.elected_tenures
   FOR SELECT USING (true);
 
+-- Internal identity linkage ledger is restricted: authenticated callers & service_role only (no public anonymous scraping)
 CREATE POLICY person_identity_linkages_select_policy ON public.person_identity_linkages
-  FOR SELECT USING (true);
+  FOR SELECT TO authenticated, service_role USING (true);
 
+-- Mutations restricted strictly to service_role (via RLS default denial for anon/authenticated)
 CREATE POLICY canonical_persons_service_role_all ON public.canonical_persons
   FOR ALL TO service_role USING (true) WITH CHECK (true);
 
@@ -330,12 +410,13 @@ CREATE POLICY elected_tenures_service_role_all ON public.elected_tenures
 CREATE POLICY person_identity_linkages_service_role_all ON public.person_identity_linkages
   FOR ALL TO service_role USING (true) WITH CHECK (true);
 
+-- Explicit Grants
 GRANT SELECT ON public.canonical_persons TO anon, authenticated;
 GRANT SELECT ON public.political_organizations TO anon, authenticated;
 GRANT SELECT ON public.person_roles TO anon, authenticated;
 GRANT SELECT ON public.candidacies TO anon, authenticated;
 GRANT SELECT ON public.elected_tenures TO anon, authenticated;
-GRANT SELECT ON public.person_identity_linkages TO anon, authenticated;
+GRANT SELECT ON public.person_identity_linkages TO authenticated; -- anon revoked for enumeration protection
 
 GRANT ALL ON public.canonical_persons TO service_role;
 GRANT ALL ON public.political_organizations TO service_role;
@@ -344,10 +425,20 @@ GRANT ALL ON public.candidacies TO service_role;
 GRANT ALL ON public.elected_tenures TO service_role;
 GRANT ALL ON public.person_identity_linkages TO service_role;
 
-REVOKE ALL ON FUNCTION public.fn_resolve_canonical_person(TEXT, TEXT) FROM PUBLIC;
-GRANT EXECUTE ON FUNCTION public.fn_resolve_canonical_person(TEXT, TEXT) TO anon, authenticated, service_role;
+-- Stored function execution grants
+-- fn_resolve_canonical_person: Revoked from PUBLIC and anon; granted to authenticated & service_role
+REVOKE ALL ON FUNCTION public.fn_resolve_canonical_person(TEXT, TEXT) FROM PUBLIC, anon;
+GRANT EXECUTE ON FUNCTION public.fn_resolve_canonical_person(TEXT, TEXT) TO authenticated, service_role;
 
+-- fn_link_person_identity: Restricted strictly to service_role
 REVOKE ALL ON FUNCTION public.fn_link_person_identity(UUID, TEXT, TEXT, TEXT, NUMERIC, TEXT) FROM PUBLIC, anon, authenticated;
 GRANT EXECUTE ON FUNCTION public.fn_link_person_identity(UUID, TEXT, TEXT, TEXT, NUMERIC, TEXT) TO service_role;
+
+-- Immutability guard functions: executable by authenticated & service_role
+REVOKE ALL ON FUNCTION public.fn_prevent_candidacy_mutation() FROM PUBLIC;
+GRANT EXECUTE ON FUNCTION public.fn_prevent_candidacy_mutation() TO authenticated, service_role;
+
+REVOKE ALL ON FUNCTION public.fn_prevent_tenure_history_mutation() FROM PUBLIC;
+GRANT EXECUTE ON FUNCTION public.fn_prevent_tenure_history_mutation() TO authenticated, service_role;
 
 COMMIT;

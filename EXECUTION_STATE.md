@@ -7,15 +7,17 @@
 ## 1. Project & Execution Coordinates
 ```text
 PROJECT:               PANIN (formerly Kshetra)
-CURRENT_JOB:           W018 (Political Entity Model — IMPLEMENTATION & VERIFICATION COMPLETE)
+CURRENT_JOB:           W018 (Political Entity Model — REMEDIATION COMPLETE & RESUBMITTED)
 LAST_COMPLETED_JOB:    W017 (Spatial Gateway, Boundary Diff & Spatial Query Engine — ACCEPTED / COMPLETE)
-NEXT_PERMITTED_JOB:    W018 (Submitted for Formal CTO Acceptance Review)
+NEXT_PERMITTED_JOB:    W018 (Submitted for Formal Final CTO Acceptance Review)
 
-W018_STATUS:           IMPLEMENTED / TESTED / VERIFIED / SUBMITTED FOR CTO REVIEW
-W018_IMPLEMENTATION:   COMPLETE (Migration 050, Fastify API, Shared Types)
+W018_STATUS:           REMEDIATED / VERIFIED / RESUBMITTED FOR FINAL CTO REVIEW
+W018_IMPLEMENTATION:   REMEDIATED (Migration 050, Fastify API, Shared Types, Immutability Guards)
 W018_PLAN:             PLAN-W018-REV-1.0.md (RATIFIED & EXECUTED)
 W018_EVIDENCE_PACKAGE: reports/w018_political_entities_verification.json
 W018_REPORT:           reports/w018_implementation_report.md
+W018_REMEDIATION_REP:  reports/w018_remediation_report.md
+W018_BLOCKERS_CLEARED: 5/5 (Blockers 1..5 cleared: epic_hash removed, resolution secured, org semantics, immutability triggers, W018-ID-11..17)
 W017_STATUS:           ACCEPTED / COMPLETE
 W017_CTO_ACCEPTANCE:   GRANTED (2026-09-29)
 PRODUCTION_STATUS:     UNTOUCHED / AIR-GAPPED
