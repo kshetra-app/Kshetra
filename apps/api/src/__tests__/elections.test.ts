@@ -140,6 +140,8 @@ describe('Election Data Normalization API (W019)', () => {
     expect(detail.winner).toBeDefined();
     expect(detail.winner.person.canonicalName).toBe('Anumula Revanth Reddy');
     expect(detail.winner.candidacy.votesReceived).toBe(107429);
+    expect(detail.winner.candidacy.evmVotes).toBe(106820);
+    expect(detail.winner.candidacy.postalVotes).toBe(609);
     expect(detail.winner.candidacy.voteShare).toBe(55.05);
     expect(detail.winner.party.shortName).toBe('INC');
 
@@ -147,8 +149,17 @@ describe('Election Data Normalization API (W019)', () => {
     expect(detail.runnerUp).toBeDefined();
     expect(detail.runnerUp.person.canonicalName).toBe('Patnam Narender Reddy');
     expect(detail.runnerUp.candidacy.votesReceived).toBe(74897);
+    expect(detail.runnerUp.candidacy.evmVotes).toBe(74431);
+    expect(detail.runnerUp.candidacy.postalVotes).toBe(466);
     expect(detail.runnerUp.candidacy.voteShare).toBe(38.38);
     expect(detail.runnerUp.party.shortName).toBe('BRS');
+
+    // Rank 4+ channel UNKNOWN null verification (Case B)
+    const rank4K = detail.candidates.find((c: any) => c.rank === 4);
+    expect(rank4K).toBeDefined();
+    expect(rank4K.votesReceived).toBe(2173);
+    expect(rank4K.evmVotes).toBeNull();
+    expect(rank4K.postalVotes).toBeNull();
 
     // Ballot choices (NOTA)
     expect(detail.ballotChoices.length).toBeGreaterThanOrEqual(1);
@@ -177,14 +188,25 @@ describe('Election Data Normalization API (W019)', () => {
     // Winner verification
     expect(detail.winner.person.canonicalName).toBe('Kalvakuntla Chandrashekar Rao');
     expect(detail.winner.candidacy.votesReceived).toBe(111684);
+    expect(detail.winner.candidacy.evmVotes).toBe(110984);
+    expect(detail.winner.candidacy.postalVotes).toBe(700);
     expect(detail.winner.candidacy.voteShare).toBe(49.05);
     expect(detail.winner.party.shortName).toBe('BRS');
 
     // Runner-up verification
     expect(detail.runnerUp.person.canonicalName).toBe('Eatala Rajender');
     expect(detail.runnerUp.candidacy.votesReceived).toBe(66653);
+    expect(detail.runnerUp.candidacy.evmVotes).toBe(65961);
+    expect(detail.runnerUp.candidacy.postalVotes).toBe(692);
     expect(detail.runnerUp.candidacy.voteShare).toBe(29.27);
     expect(detail.runnerUp.party.shortName).toBe('BJP');
+
+    // Rank 4+ channel UNKNOWN null verification (Case B)
+    const rank4G = detail.candidates.find((c: any) => c.rank === 4);
+    expect(rank4G).toBeDefined();
+    expect(rank4G.votesReceived).toBe(2743);
+    expect(rank4G.evmVotes).toBeNull();
+    expect(rank4G.postalVotes).toBeNull();
   });
 
   it('9. GET /api/v1/elections/:id/contests/UNKNOWN_AC returns 404 NOT_FOUND', async () => {

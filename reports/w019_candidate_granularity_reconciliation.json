@@ -2,12 +2,13 @@
   "report_identity": "W019-CANDIDATE-GRANULARITY-RECONCILIATION",
   "report_version": "1.0.0",
   "generated_at": "2026-09-29T18:15:00Z",
-  "authority": "CTO FINAL W019 CANDIDATE-GRANULARITY REMEDIATION DIRECTIVE",
+  "authority": "CTO FINAL W019 EVIDENCE-SEMANTICS CLOSURE",
   "governing_directives": [
     "CTO FINAL W019 CANDIDATE-GRANULARITY REMEDIATION",
     "CTO FINAL W019 PERSISTENCE SEMANTICS REMEDIATION",
     "CTO FINAL W019 DIRECTIVE — SOURCE-OF-TRUTH RECONCILIATION ROUND",
-    "Master Execution Framework Amendments v1.2, v1.4, v1.5-A, v1.6 (DEC-074, DEC-075, DEC-076, DEC-080, DEC-081, DEC-082)"
+    "Master Execution Framework Amendments v1.2, v1.4, v1.5-A, v1.6 (DEC-074, DEC-075, DEC-076, DEC-080, DEC-081, DEC-082)",
+    "CTO FINAL W019 EVIDENCE-SEMANTICS CLOSURE"
   ],
   "reconciliation_status": "COMPLETE_SUBMITTED_FOR_CTO_DETERMINATION",
   "w019_milestone_status": "IN_REMEDIATION_BLOCKED_PENDING_FINAL_CTO_ACCEPTANCE",
@@ -32,6 +33,40 @@
       "kodangal_total_rejected_votes": 124,
       "gajwel_total_rejected_votes": null,
       "anti_derivation_enforced": true
+    },
+    "channel_decomposition_breakdown": {
+      "case_a_directly_sourced_evm_postal_count": 6,
+      "case_b_unknown_channel_count": 23,
+      "zero_magic_zeros_verified": true,
+      "zero_fabricated_splits_verified": true,
+      "candidate_channel_subtotals": {
+        "Kodangal_AC065": {
+          "case_a_candidates_count": 3,
+          "case_a_evm_subtotal": 185179,
+          "case_a_postal_subtotal": 1135,
+          "case_a_votes_total": 186314,
+          "case_b_candidates_count": 10,
+          "case_b_unknown_channel_votes_total": 7947,
+          "total_candidate_valid_votes": 193161,
+          "nota_valid_votes": 2002,
+          "total_valid_votes": 195163,
+          "total_rejected_votes": 124,
+          "total_votes_polled": 195287
+        },
+        "Gajwel_AC040": {
+          "case_a_candidates_count": 3,
+          "case_a_evm_subtotal": 209263,
+          "case_a_postal_subtotal": 1642,
+          "case_a_votes_total": 210905,
+          "case_b_candidates_count": 13,
+          "case_b_unknown_channel_votes_total": 15965,
+          "total_candidate_valid_votes": 226870,
+          "nota_valid_votes": 832,
+          "total_valid_votes": 227702,
+          "total_rejected_votes": null,
+          "total_votes_polled": 232417
+        }
+      }
     }
   },
   "candidate_level_reconciliation": {
@@ -51,7 +86,13 @@
         "result": "won",
         "source_document": "ECI Form 20 Final Result Sheet / Form 21E",
         "source_location": "Item 1, Form 21E Kodangal",
-        "identity_confidence": "HIGH"
+        "identity_confidence": "HIGH",
+        "channel_decomposition_status": "DIRECTLY_SOURCED",
+        "channel_provenance": {
+          "total_votes": "DIRECTLY_SOURCED",
+          "evm_votes": "DIRECTLY_SOURCED",
+          "postal_votes": "DIRECTLY_SOURCED"
+        }
       },
       {
         "rank": 2,
@@ -68,7 +109,13 @@
         "result": "lost",
         "source_document": "ECI Form 20 Final Result Sheet / Form 21E",
         "source_location": "Item 2, Form 21E Kodangal",
-        "identity_confidence": "HIGH"
+        "identity_confidence": "HIGH",
+        "channel_decomposition_status": "DIRECTLY_SOURCED",
+        "channel_provenance": {
+          "total_votes": "DIRECTLY_SOURCED",
+          "evm_votes": "DIRECTLY_SOURCED",
+          "postal_votes": "DIRECTLY_SOURCED"
+        }
       },
       {
         "rank": 3,
@@ -85,7 +132,13 @@
         "result": "lost",
         "source_document": "ECI Form 20 Final Result Sheet / Form 21E",
         "source_location": "Item 3, Form 21E Kodangal",
-        "identity_confidence": "HIGH"
+        "identity_confidence": "HIGH",
+        "channel_decomposition_status": "DIRECTLY_SOURCED",
+        "channel_provenance": {
+          "total_votes": "DIRECTLY_SOURCED",
+          "evm_votes": "DIRECTLY_SOURCED",
+          "postal_votes": "DIRECTLY_SOURCED"
+        }
       },
       {
         "rank": 4,
@@ -95,14 +148,20 @@
         "party_org_id": "ORG-PARTY-IND",
         "is_independent": true,
         "votes_received": 2173,
-        "evm_votes": 0,
-        "postal_votes": 0,
+        "evm_votes": null,
+        "postal_votes": null,
         "vote_share": 1.11,
         "designation": "Fourth-place candidate",
         "result": "lost",
         "source_document": "ECI Form 20 Final Result Sheet / Statistical Report 2023",
         "source_location": "Candidate 4, Kodangal AC-065 Result Sheet",
-        "identity_confidence": "HIGH"
+        "identity_confidence": "HIGH",
+        "channel_decomposition_status": "UNKNOWN",
+        "channel_provenance": {
+          "total_votes": "DIRECTLY_SOURCED",
+          "evm_votes": "UNKNOWN",
+          "postal_votes": "UNKNOWN"
+        }
       },
       {
         "rank": 5,
@@ -112,14 +171,20 @@
         "party_org_id": "ORG-PARTY-BSP",
         "is_independent": false,
         "votes_received": 2133,
-        "evm_votes": 0,
-        "postal_votes": 0,
+        "evm_votes": null,
+        "postal_votes": null,
         "vote_share": 1.09,
         "designation": "Fifth-place candidate",
         "result": "lost",
         "source_document": "ECI Form 20 Final Result Sheet / Statistical Report 2023",
         "source_location": "Candidate 5, Kodangal AC-065 Result Sheet",
-        "identity_confidence": "HIGH"
+        "identity_confidence": "HIGH",
+        "channel_decomposition_status": "UNKNOWN",
+        "channel_provenance": {
+          "total_votes": "DIRECTLY_SOURCED",
+          "evm_votes": "UNKNOWN",
+          "postal_votes": "UNKNOWN"
+        }
       },
       {
         "rank": 6,
@@ -129,14 +194,20 @@
         "party_org_id": "ORG-PARTY-IND",
         "is_independent": true,
         "votes_received": 770,
-        "evm_votes": 0,
-        "postal_votes": 0,
+        "evm_votes": null,
+        "postal_votes": null,
         "vote_share": 0.39,
         "designation": "Sixth-place candidate",
         "result": "lost",
         "source_document": "ECI Form 20 Final Result Sheet / Statistical Report 2023",
         "source_location": "Candidate 6, Kodangal AC-065 Result Sheet",
-        "identity_confidence": "HIGH"
+        "identity_confidence": "HIGH",
+        "channel_decomposition_status": "UNKNOWN",
+        "channel_provenance": {
+          "total_votes": "DIRECTLY_SOURCED",
+          "evm_votes": "UNKNOWN",
+          "postal_votes": "UNKNOWN"
+        }
       },
       {
         "rank": 7,
@@ -146,14 +217,20 @@
         "party_org_id": "ORG-PARTY-IND",
         "is_independent": true,
         "votes_received": 463,
-        "evm_votes": 0,
-        "postal_votes": 0,
+        "evm_votes": null,
+        "postal_votes": null,
         "vote_share": 0.24,
         "designation": "Seventh-place candidate",
         "result": "lost",
         "source_document": "ECI Form 20 Final Result Sheet / Statistical Report 2023",
         "source_location": "Candidate 7, Kodangal AC-065 Result Sheet",
-        "identity_confidence": "HIGH"
+        "identity_confidence": "HIGH",
+        "channel_decomposition_status": "UNKNOWN",
+        "channel_provenance": {
+          "total_votes": "DIRECTLY_SOURCED",
+          "evm_votes": "UNKNOWN",
+          "postal_votes": "UNKNOWN"
+        }
       },
       {
         "rank": 8,
@@ -163,14 +240,20 @@
         "party_org_id": "ORG-PARTY-IND",
         "is_independent": true,
         "votes_received": 380,
-        "evm_votes": 0,
-        "postal_votes": 0,
+        "evm_votes": null,
+        "postal_votes": null,
         "vote_share": 0.19,
         "designation": "Eighth-place candidate",
         "result": "lost",
         "source_document": "ECI Form 20 Final Result Sheet / Statistical Report 2023",
         "source_location": "Candidate 8, Kodangal AC-065 Result Sheet",
-        "identity_confidence": "HIGH"
+        "identity_confidence": "HIGH",
+        "channel_decomposition_status": "UNKNOWN",
+        "channel_provenance": {
+          "total_votes": "DIRECTLY_SOURCED",
+          "evm_votes": "UNKNOWN",
+          "postal_votes": "UNKNOWN"
+        }
       },
       {
         "rank": 9,
@@ -180,14 +263,20 @@
         "party_org_id": "ORG-PARTY-IND",
         "is_independent": true,
         "votes_received": 273,
-        "evm_votes": 0,
-        "postal_votes": 0,
+        "evm_votes": null,
+        "postal_votes": null,
         "vote_share": 0.14,
         "designation": "Ninth-place candidate",
         "result": "lost",
         "source_document": "ECI Form 20 Final Result Sheet / Statistical Report 2023",
         "source_location": "Candidate 9, Kodangal AC-065 Result Sheet",
-        "identity_confidence": "HIGH"
+        "identity_confidence": "HIGH",
+        "channel_decomposition_status": "UNKNOWN",
+        "channel_provenance": {
+          "total_votes": "DIRECTLY_SOURCED",
+          "evm_votes": "UNKNOWN",
+          "postal_votes": "UNKNOWN"
+        }
       },
       {
         "rank": 10,
@@ -197,14 +286,20 @@
         "party_org_id": "ORG-PARTY-DHSP",
         "is_independent": false,
         "votes_received": 215,
-        "evm_votes": 0,
-        "postal_votes": 0,
+        "evm_votes": null,
+        "postal_votes": null,
         "vote_share": 0.11,
         "designation": "Tenth-place candidate",
         "result": "lost",
         "source_document": "ECI Form 20 Final Result Sheet / Statistical Report 2023",
         "source_location": "Candidate 10, Kodangal AC-065 Result Sheet",
-        "identity_confidence": "HIGH"
+        "identity_confidence": "HIGH",
+        "channel_decomposition_status": "UNKNOWN",
+        "channel_provenance": {
+          "total_votes": "DIRECTLY_SOURCED",
+          "evm_votes": "UNKNOWN",
+          "postal_votes": "UNKNOWN"
+        }
       },
       {
         "rank": 11,
@@ -214,14 +309,20 @@
         "party_org_id": "ORG-PARTY-BMP",
         "is_independent": false,
         "votes_received": 161,
-        "evm_votes": 0,
-        "postal_votes": 0,
+        "evm_votes": null,
+        "postal_votes": null,
         "vote_share": 0.08,
         "designation": "Eleventh-place candidate",
         "result": "lost",
         "source_document": "ECI Form 20 Final Result Sheet / Statistical Report 2023",
         "source_location": "Candidate 11, Kodangal AC-065 Result Sheet",
-        "identity_confidence": "HIGH"
+        "identity_confidence": "HIGH",
+        "channel_decomposition_status": "UNKNOWN",
+        "channel_provenance": {
+          "total_votes": "DIRECTLY_SOURCED",
+          "evm_votes": "UNKNOWN",
+          "postal_votes": "UNKNOWN"
+        }
       },
       {
         "rank": 12,
@@ -231,14 +332,20 @@
         "party_org_id": "ORG-PARTY-TERS",
         "is_independent": false,
         "votes_received": 152,
-        "evm_votes": 0,
-        "postal_votes": 0,
+        "evm_votes": null,
+        "postal_votes": null,
         "vote_share": 0.08,
         "designation": "Twelfth-place candidate",
         "result": "lost",
         "source_document": "ECI Form 20 Final Result Sheet / Statistical Report 2023",
         "source_location": "Candidate 12, Kodangal AC-065 Result Sheet",
-        "identity_confidence": "HIGH"
+        "identity_confidence": "HIGH",
+        "channel_decomposition_status": "UNKNOWN",
+        "channel_provenance": {
+          "total_votes": "DIRECTLY_SOURCED",
+          "evm_votes": "UNKNOWN",
+          "postal_votes": "UNKNOWN"
+        }
       },
       {
         "rank": 13,
@@ -248,14 +355,20 @@
         "party_org_id": "ORG-PARTY-IND",
         "is_independent": true,
         "votes_received": 127,
-        "evm_votes": 0,
-        "postal_votes": 0,
+        "evm_votes": null,
+        "postal_votes": null,
         "vote_share": 0.07,
         "designation": "Thirteenth-place candidate",
         "result": "lost",
         "source_document": "ECI Form 20 Final Result Sheet / Statistical Report 2023",
         "source_location": "Candidate 13, Kodangal AC-065 Result Sheet",
-        "identity_confidence": "HIGH"
+        "identity_confidence": "HIGH",
+        "channel_decomposition_status": "UNKNOWN",
+        "channel_provenance": {
+          "total_votes": "DIRECTLY_SOURCED",
+          "evm_votes": "UNKNOWN",
+          "postal_votes": "UNKNOWN"
+        }
       }
     ],
     "Gajwel_AC040": [
@@ -274,7 +387,13 @@
         "result": "won",
         "source_document": "ECI Detailed Results 2023 / Form 20",
         "source_location": "Item 1, Gajwel AC-040 Result Sheet",
-        "identity_confidence": "HIGH"
+        "identity_confidence": "HIGH",
+        "channel_decomposition_status": "DIRECTLY_SOURCED",
+        "channel_provenance": {
+          "total_votes": "DIRECTLY_SOURCED",
+          "evm_votes": "DIRECTLY_SOURCED",
+          "postal_votes": "DIRECTLY_SOURCED"
+        }
       },
       {
         "rank": 2,
@@ -291,7 +410,13 @@
         "result": "lost",
         "source_document": "ECI Detailed Results 2023 / Form 20",
         "source_location": "Item 2, Gajwel AC-040 Result Sheet",
-        "identity_confidence": "HIGH"
+        "identity_confidence": "HIGH",
+        "channel_decomposition_status": "DIRECTLY_SOURCED",
+        "channel_provenance": {
+          "total_votes": "DIRECTLY_SOURCED",
+          "evm_votes": "DIRECTLY_SOURCED",
+          "postal_votes": "DIRECTLY_SOURCED"
+        }
       },
       {
         "rank": 3,
@@ -303,13 +428,22 @@
         "votes_received": 32568,
         "evm_votes": 32318,
         "postal_votes": 250,
-        "vote_share": 14.30,
+        "vote_share": 14.3,
         "designation": "Third-place candidate",
         "result": "lost",
-        "name_variants": ["Thoomkunta Narsa Reddy", "T. Narsa Reddy"],
+        "name_variants": [
+          "Thoomkunta Narsa Reddy",
+          "T. Narsa Reddy"
+        ],
         "source_document": "ECI Detailed Results 2023 / Form 20",
         "source_location": "Item 3, Gajwel AC-040 Result Sheet",
-        "identity_confidence": "HIGH"
+        "identity_confidence": "HIGH",
+        "channel_decomposition_status": "DIRECTLY_SOURCED",
+        "channel_provenance": {
+          "total_votes": "DIRECTLY_SOURCED",
+          "evm_votes": "DIRECTLY_SOURCED",
+          "postal_votes": "DIRECTLY_SOURCED"
+        }
       },
       {
         "rank": 4,
@@ -319,14 +453,20 @@
         "party_org_id": "ORG-PARTY-BSP",
         "is_independent": false,
         "votes_received": 2743,
-        "evm_votes": 0,
-        "postal_votes": 0,
-        "vote_share": 1.20,
+        "evm_votes": null,
+        "postal_votes": null,
+        "vote_share": 1.2,
         "designation": "Fourth-place candidate",
         "result": "lost",
         "source_document": "ECI Detailed Results 2023 / Statistical Report 2023",
         "source_location": "Candidate 4, Gajwel AC-040 Result Sheet",
-        "identity_confidence": "HIGH"
+        "identity_confidence": "HIGH",
+        "channel_decomposition_status": "UNKNOWN",
+        "channel_provenance": {
+          "total_votes": "DIRECTLY_SOURCED",
+          "evm_votes": "UNKNOWN",
+          "postal_votes": "UNKNOWN"
+        }
       },
       {
         "rank": 5,
@@ -336,14 +476,20 @@
         "party_org_id": "ORG-PARTY-YTP",
         "is_independent": false,
         "votes_received": 2232,
-        "evm_votes": 0,
-        "postal_votes": 0,
+        "evm_votes": null,
+        "postal_votes": null,
         "vote_share": 0.98,
         "designation": "Fifth-place candidate",
         "result": "lost",
         "source_document": "ECI Detailed Results 2023 / Statistical Report 2023",
         "source_location": "Candidate 5, Gajwel AC-040 Result Sheet",
-        "identity_confidence": "HIGH"
+        "identity_confidence": "HIGH",
+        "channel_decomposition_status": "UNKNOWN",
+        "channel_provenance": {
+          "total_votes": "DIRECTLY_SOURCED",
+          "evm_votes": "UNKNOWN",
+          "postal_votes": "UNKNOWN"
+        }
       },
       {
         "rank": 6,
@@ -353,14 +499,20 @@
         "party_org_id": "ORG-PARTY-IND",
         "is_independent": true,
         "votes_received": 1998,
-        "evm_votes": 0,
-        "postal_votes": 0,
+        "evm_votes": null,
+        "postal_votes": null,
         "vote_share": 0.88,
         "designation": "Sixth-place candidate",
         "result": "lost",
         "source_document": "ECI Detailed Results 2023 / Statistical Report 2023",
         "source_location": "Candidate 6, Gajwel AC-040 Result Sheet",
-        "identity_confidence": "HIGH"
+        "identity_confidence": "HIGH",
+        "channel_decomposition_status": "UNKNOWN",
+        "channel_provenance": {
+          "total_votes": "DIRECTLY_SOURCED",
+          "evm_votes": "UNKNOWN",
+          "postal_votes": "UNKNOWN"
+        }
       },
       {
         "rank": 7,
@@ -370,14 +522,20 @@
         "party_org_id": "ORG-PARTY-IND",
         "is_independent": true,
         "votes_received": 1400,
-        "evm_votes": 0,
-        "postal_votes": 0,
+        "evm_votes": null,
+        "postal_votes": null,
         "vote_share": 0.61,
         "designation": "Seventh-place candidate",
         "result": "lost",
         "source_document": "ECI Detailed Results 2023 / Statistical Report 2023",
         "source_location": "Candidate 7, Gajwel AC-040 Result Sheet",
-        "identity_confidence": "HIGH"
+        "identity_confidence": "HIGH",
+        "channel_decomposition_status": "UNKNOWN",
+        "channel_provenance": {
+          "total_votes": "DIRECTLY_SOURCED",
+          "evm_votes": "UNKNOWN",
+          "postal_votes": "UNKNOWN"
+        }
       },
       {
         "rank": 8,
@@ -387,14 +545,20 @@
         "party_org_id": "ORG-PARTY-IND",
         "is_independent": true,
         "votes_received": 1371,
-        "evm_votes": 0,
-        "postal_votes": 0,
-        "vote_share": 0.60,
+        "evm_votes": null,
+        "postal_votes": null,
+        "vote_share": 0.6,
         "designation": "Eighth-place candidate",
         "result": "lost",
         "source_document": "ECI Detailed Results 2023 / Statistical Report 2023",
         "source_location": "Candidate 8, Gajwel AC-040 Result Sheet",
-        "identity_confidence": "HIGH"
+        "identity_confidence": "HIGH",
+        "channel_decomposition_status": "UNKNOWN",
+        "channel_provenance": {
+          "total_votes": "DIRECTLY_SOURCED",
+          "evm_votes": "UNKNOWN",
+          "postal_votes": "UNKNOWN"
+        }
       },
       {
         "rank": 9,
@@ -404,14 +568,20 @@
         "party_org_id": "ORG-PARTY-AABAAD",
         "is_independent": false,
         "votes_received": 1281,
-        "evm_votes": 0,
-        "postal_votes": 0,
+        "evm_votes": null,
+        "postal_votes": null,
         "vote_share": 0.56,
         "designation": "Ninth-place candidate",
         "result": "lost",
         "source_document": "ECI Detailed Results 2023 / Statistical Report 2023",
         "source_location": "Candidate 9, Gajwel AC-040 Result Sheet",
-        "identity_confidence": "HIGH"
+        "identity_confidence": "HIGH",
+        "channel_decomposition_status": "UNKNOWN",
+        "channel_provenance": {
+          "total_votes": "DIRECTLY_SOURCED",
+          "evm_votes": "UNKNOWN",
+          "postal_votes": "UNKNOWN"
+        }
       },
       {
         "rank": 10,
@@ -421,14 +591,20 @@
         "party_org_id": "ORG-PARTY-PPP",
         "is_independent": false,
         "votes_received": 1049,
-        "evm_votes": 0,
-        "postal_votes": 0,
+        "evm_votes": null,
+        "postal_votes": null,
         "vote_share": 0.46,
         "designation": "Tenth-place candidate",
         "result": "lost",
         "source_document": "ECI Detailed Results 2023 / Statistical Report 2023",
         "source_location": "Candidate 10, Gajwel AC-040 Result Sheet",
-        "identity_confidence": "HIGH"
+        "identity_confidence": "HIGH",
+        "channel_decomposition_status": "UNKNOWN",
+        "channel_provenance": {
+          "total_votes": "DIRECTLY_SOURCED",
+          "evm_votes": "UNKNOWN",
+          "postal_votes": "UNKNOWN"
+        }
       },
       {
         "rank": 11,
@@ -438,14 +614,20 @@
         "party_org_id": "ORG-PARTY-IPBP",
         "is_independent": false,
         "votes_received": 967,
-        "evm_votes": 0,
-        "postal_votes": 0,
+        "evm_votes": null,
+        "postal_votes": null,
         "vote_share": 0.42,
         "designation": "Eleventh-place candidate",
         "result": "lost",
         "source_document": "ECI Detailed Results 2023 / Statistical Report 2023",
         "source_location": "Candidate 11, Gajwel AC-040 Result Sheet",
-        "identity_confidence": "HIGH"
+        "identity_confidence": "HIGH",
+        "channel_decomposition_status": "UNKNOWN",
+        "channel_provenance": {
+          "total_votes": "DIRECTLY_SOURCED",
+          "evm_votes": "UNKNOWN",
+          "postal_votes": "UNKNOWN"
+        }
       },
       {
         "rank": 12,
@@ -455,14 +637,20 @@
         "party_org_id": "ORG-PARTY-SPI",
         "is_independent": false,
         "votes_received": 721,
-        "evm_votes": 0,
-        "postal_votes": 0,
+        "evm_votes": null,
+        "postal_votes": null,
         "vote_share": 0.32,
         "designation": "Twelfth-place candidate",
         "result": "lost",
         "source_document": "ECI Detailed Results 2023 / Statistical Report 2023",
         "source_location": "Candidate 12, Gajwel AC-040 Result Sheet",
-        "identity_confidence": "HIGH"
+        "identity_confidence": "HIGH",
+        "channel_decomposition_status": "UNKNOWN",
+        "channel_provenance": {
+          "total_votes": "DIRECTLY_SOURCED",
+          "evm_votes": "UNKNOWN",
+          "postal_votes": "UNKNOWN"
+        }
       },
       {
         "rank": 13,
@@ -472,14 +660,20 @@
         "party_org_id": "ORG-PARTY-MTRSP",
         "is_independent": false,
         "votes_received": 647,
-        "evm_votes": 0,
-        "postal_votes": 0,
+        "evm_votes": null,
+        "postal_votes": null,
         "vote_share": 0.28,
         "designation": "Thirteenth-place candidate",
         "result": "lost",
         "source_document": "ECI Detailed Results 2023 / Statistical Report 2023",
         "source_location": "Candidate 13, Gajwel AC-040 Result Sheet",
-        "identity_confidence": "HIGH"
+        "identity_confidence": "HIGH",
+        "channel_decomposition_status": "UNKNOWN",
+        "channel_provenance": {
+          "total_votes": "DIRECTLY_SOURCED",
+          "evm_votes": "UNKNOWN",
+          "postal_votes": "UNKNOWN"
+        }
       },
       {
         "rank": 14,
@@ -489,14 +683,20 @@
         "party_org_id": "ORG-PARTY-IND",
         "is_independent": true,
         "votes_received": 553,
-        "evm_votes": 0,
-        "postal_votes": 0,
+        "evm_votes": null,
+        "postal_votes": null,
         "vote_share": 0.24,
         "designation": "Fourteenth-place candidate",
         "result": "lost",
         "source_document": "ECI Detailed Results 2023 / Statistical Report 2023",
         "source_location": "Candidate 14, Gajwel AC-040 Result Sheet",
-        "identity_confidence": "HIGH"
+        "identity_confidence": "HIGH",
+        "channel_decomposition_status": "UNKNOWN",
+        "channel_provenance": {
+          "total_votes": "DIRECTLY_SOURCED",
+          "evm_votes": "UNKNOWN",
+          "postal_votes": "UNKNOWN"
+        }
       },
       {
         "rank": 15,
@@ -506,14 +706,20 @@
         "party_org_id": "ORG-PARTY-SAPS",
         "is_independent": false,
         "votes_received": 508,
-        "evm_votes": 0,
-        "postal_votes": 0,
+        "evm_votes": null,
+        "postal_votes": null,
         "vote_share": 0.22,
         "designation": "Fifteenth-place candidate",
         "result": "lost",
         "source_document": "ECI Detailed Results 2023 / Statistical Report 2023",
         "source_location": "Candidate 15, Gajwel AC-040 Result Sheet",
-        "identity_confidence": "HIGH"
+        "identity_confidence": "HIGH",
+        "channel_decomposition_status": "UNKNOWN",
+        "channel_provenance": {
+          "total_votes": "DIRECTLY_SOURCED",
+          "evm_votes": "UNKNOWN",
+          "postal_votes": "UNKNOWN"
+        }
       },
       {
         "rank": 16,
@@ -523,14 +729,20 @@
         "party_org_id": "ORG-PARTY-YTP",
         "is_independent": false,
         "votes_received": 495,
-        "evm_votes": 0,
-        "postal_votes": 0,
+        "evm_votes": null,
+        "postal_votes": null,
         "vote_share": 0.22,
         "designation": "Sixteenth-place candidate",
         "result": "lost",
         "source_document": "ECI Detailed Results 2023 / Statistical Report 2023",
         "source_location": "Candidate 16, Gajwel AC-040 Result Sheet",
-        "identity_confidence": "HIGH"
+        "identity_confidence": "HIGH",
+        "channel_decomposition_status": "UNKNOWN",
+        "channel_provenance": {
+          "total_votes": "DIRECTLY_SOURCED",
+          "evm_votes": "UNKNOWN",
+          "postal_votes": "UNKNOWN"
+        }
       }
     ]
   },
@@ -542,7 +754,10 @@
       "source_name": "ANUMULA REVANTH REDDY",
       "canonical_name": "Anumula Revanth Reddy",
       "canonical_person_id": "01900000-0000-0000-0000-000000000011",
-      "name_variants": ["A. Revanth Reddy", "Revanth Reddy"],
+      "name_variants": [
+        "A. Revanth Reddy",
+        "Revanth Reddy"
+      ],
       "party_code": "INC",
       "party_id": "ORG-PARTY-INC",
       "resolution_status": "RESOLVED_CANONICAL_PERSON",
@@ -555,7 +770,9 @@
       "source_name": "PATNAM NARENDER REDDY",
       "canonical_name": "Patnam Narender Reddy",
       "canonical_person_id": "01900000-0000-0000-0000-000000000012",
-      "name_variants": ["P. Narender Reddy"],
+      "name_variants": [
+        "P. Narender Reddy"
+      ],
       "party_code": "BRS",
       "party_id": "ORG-PARTY-BRS",
       "resolution_status": "RESOLVED_CANONICAL_PERSON",
@@ -568,7 +785,10 @@
       "source_name": "BANTU RAMESH KUMAR",
       "canonical_name": "Bantu Ramesh Kumar",
       "canonical_person_id": "01900000-0000-0000-0000-000000000013",
-      "name_variants": ["Bantu Ramesh", "B. Ramesh Kumar"],
+      "name_variants": [
+        "Bantu Ramesh",
+        "B. Ramesh Kumar"
+      ],
       "party_code": "BJP",
       "party_id": "ORG-PARTY-BJP",
       "resolution_status": "RESOLVED_CANONICAL_PERSON",
@@ -581,7 +801,9 @@
       "source_name": "M. MADHUSUDHAN REDDY",
       "canonical_name": "M. Madhusudhan Reddy",
       "canonical_person_id": "01900000-0000-0000-0001-000000000065",
-      "name_variants": ["Madhusudhan Reddy M"],
+      "name_variants": [
+        "Madhusudhan Reddy M"
+      ],
       "party_code": "IND",
       "party_id": "ORG-PARTY-IND",
       "resolution_status": "RESOLVED_CANONICAL_PERSON",
@@ -594,7 +816,9 @@
       "source_name": "KURVA NARMADA KISTAPPA",
       "canonical_name": "Kurva Narmada Kistappa",
       "canonical_person_id": "01900000-0000-0000-0002-000000000065",
-      "name_variants": ["Narmada Kistappa Kurva"],
+      "name_variants": [
+        "Narmada Kistappa Kurva"
+      ],
       "party_code": "BSP",
       "party_id": "ORG-PARTY-BSP",
       "resolution_status": "RESOLVED_CANONICAL_PERSON",
@@ -607,7 +831,9 @@
       "source_name": "PRABHAKAR MUDIRAJ",
       "canonical_name": "Prabhakar Mudiraj",
       "canonical_person_id": "01900000-0000-0000-0003-000000000065",
-      "name_variants": ["Mudiraj Prabhakar"],
+      "name_variants": [
+        "Mudiraj Prabhakar"
+      ],
       "party_code": "IND",
       "party_id": "ORG-PARTY-IND",
       "resolution_status": "RESOLVED_CANONICAL_PERSON",
@@ -620,7 +846,9 @@
       "source_name": "VENKAT RAMULU KANDEDI",
       "canonical_name": "Venkat Ramulu Kandedi",
       "canonical_person_id": "01900000-0000-0000-0004-000000000065",
-      "name_variants": ["Kandedi Venkat Ramulu"],
+      "name_variants": [
+        "Kandedi Venkat Ramulu"
+      ],
       "party_code": "IND",
       "party_id": "ORG-PARTY-IND",
       "resolution_status": "RESOLVED_CANONICAL_PERSON",
@@ -633,7 +861,9 @@
       "source_name": "PYATA NARENDER REDDY",
       "canonical_name": "Pyata Narender Reddy",
       "canonical_person_id": "01900000-0000-0000-0005-000000000065",
-      "name_variants": ["Narender Reddy Pyata"],
+      "name_variants": [
+        "Narender Reddy Pyata"
+      ],
       "party_code": "IND",
       "party_id": "ORG-PARTY-IND",
       "resolution_status": "RESOLVED_CANONICAL_PERSON",
@@ -646,7 +876,9 @@
       "source_name": "GOTTIMUKKALA ANJILAIAH",
       "canonical_name": "Gottimukkala Anjilaiah",
       "canonical_person_id": "01900000-0000-0000-0006-000000000065",
-      "name_variants": ["Anjilaiah Gottimukkala"],
+      "name_variants": [
+        "Anjilaiah Gottimukkala"
+      ],
       "party_code": "IND",
       "party_id": "ORG-PARTY-IND",
       "resolution_status": "RESOLVED_CANONICAL_PERSON",
@@ -659,7 +891,9 @@
       "source_name": "KRISHNA NAIK",
       "canonical_name": "Krishna Naik",
       "canonical_person_id": "01900000-0000-0000-0007-000000000065",
-      "name_variants": ["K. Krishna Naik"],
+      "name_variants": [
+        "K. Krishna Naik"
+      ],
       "party_code": "DHSP",
       "party_id": "ORG-PARTY-DHSP",
       "resolution_status": "RESOLVED_CANONICAL_PERSON",
@@ -672,7 +906,9 @@
       "source_name": "RATHOD SURYA NAIK",
       "canonical_name": "Rathod Surya Naik",
       "canonical_person_id": "01900000-0000-0000-0008-000000000065",
-      "name_variants": ["Surya Naik Rathod"],
+      "name_variants": [
+        "Surya Naik Rathod"
+      ],
       "party_code": "BMP",
       "party_id": "ORG-PARTY-BMP",
       "resolution_status": "RESOLVED_CANONICAL_PERSON",
@@ -685,7 +921,9 @@
       "source_name": "KOTIKE RAMU MUDHIRAJ",
       "canonical_name": "Kotike Ramu Mudhiraj",
       "canonical_person_id": "01900000-0000-0000-0009-000000000065",
-      "name_variants": ["Ramu Mudhiraj Kotike"],
+      "name_variants": [
+        "Ramu Mudhiraj Kotike"
+      ],
       "party_code": "TERS",
       "party_id": "ORG-PARTY-TERS",
       "resolution_status": "RESOLVED_CANONICAL_PERSON",
@@ -698,7 +936,9 @@
       "source_name": "KURA VENKATAIAH",
       "canonical_name": "Kura Venkataiah",
       "canonical_person_id": "01900000-0000-0000-0010-000000000065",
-      "name_variants": ["Venkataiah Kura"],
+      "name_variants": [
+        "Venkataiah Kura"
+      ],
       "party_code": "IND",
       "party_id": "ORG-PARTY-IND",
       "resolution_status": "RESOLVED_CANONICAL_PERSON",
@@ -711,7 +951,10 @@
       "source_name": "KALVAKUNTLA CHANDRASHEKAR RAO",
       "canonical_name": "Kalvakuntla Chandrashekar Rao",
       "canonical_person_id": "01900000-0000-0000-0000-000000000014",
-      "name_variants": ["K. Chandrashekar Rao", "KCR"],
+      "name_variants": [
+        "K. Chandrashekar Rao",
+        "KCR"
+      ],
       "party_code": "BRS",
       "party_id": "ORG-PARTY-BRS",
       "resolution_status": "RESOLVED_CANONICAL_PERSON",
@@ -724,7 +967,10 @@
       "source_name": "EATALA RAJENDER",
       "canonical_name": "Eatala Rajender",
       "canonical_person_id": "01900000-0000-0000-0000-000000000015",
-      "name_variants": ["Etela Rajender", "Etala Rajender"],
+      "name_variants": [
+        "Etela Rajender",
+        "Etala Rajender"
+      ],
       "party_code": "BJP",
       "party_id": "ORG-PARTY-BJP",
       "resolution_status": "RESOLVED_CANONICAL_PERSON",
@@ -737,7 +983,10 @@
       "source_name": "THOOMKUNTA NARSA REDDY",
       "canonical_name": "Tumkunta Narsa Reddy",
       "canonical_person_id": "01900000-0000-0000-0000-000000000016",
-      "name_variants": ["Thoomkunta Narsa Reddy", "T. Narsa Reddy"],
+      "name_variants": [
+        "Thoomkunta Narsa Reddy",
+        "T. Narsa Reddy"
+      ],
       "party_code": "INC",
       "party_id": "ORG-PARTY-INC",
       "resolution_status": "RESOLVED_CANONICAL_PERSON",
@@ -750,7 +999,9 @@
       "source_name": "JAKKANI SANJAY KUMAR",
       "canonical_name": "Jakkani Sanjay Kumar",
       "canonical_person_id": "01900000-0000-0000-0001-000000000040",
-      "name_variants": ["Sanjay Kumar Jakkani"],
+      "name_variants": [
+        "Sanjay Kumar Jakkani"
+      ],
       "party_code": "BSP",
       "party_id": "ORG-PARTY-BSP",
       "resolution_status": "RESOLVED_CANONICAL_PERSON",
@@ -763,7 +1014,9 @@
       "source_name": "MEKALA RAGHUMA REDDY",
       "canonical_name": "Mekala Raghuma Reddy",
       "canonical_person_id": "01900000-0000-0000-0002-000000000040",
-      "name_variants": ["Raghuma Reddy Mekala"],
+      "name_variants": [
+        "Raghuma Reddy Mekala"
+      ],
       "party_code": "YTP",
       "party_id": "ORG-PARTY-YTP",
       "resolution_status": "RESOLVED_CANONICAL_PERSON",
@@ -776,7 +1029,9 @@
       "source_name": "KINNERA YADAIAH",
       "canonical_name": "Kinnera Yadaiah",
       "canonical_person_id": "01900000-0000-0000-0003-000000000040",
-      "name_variants": ["Yadaiah Kinnera"],
+      "name_variants": [
+        "Yadaiah Kinnera"
+      ],
       "party_code": "IND",
       "party_id": "ORG-PARTY-IND",
       "resolution_status": "RESOLVED_CANONICAL_PERSON",
@@ -789,7 +1044,9 @@
       "source_name": "NIRUDI SWAMY",
       "canonical_name": "Nirudi Swamy",
       "canonical_person_id": "01900000-0000-0000-0004-000000000040",
-      "name_variants": ["Swamy Nirudi"],
+      "name_variants": [
+        "Swamy Nirudi"
+      ],
       "party_code": "IND",
       "party_id": "ORG-PARTY-IND",
       "resolution_status": "RESOLVED_CANONICAL_PERSON",
@@ -802,7 +1059,9 @@
       "source_name": "R. NIKHIL",
       "canonical_name": "R. Nikhil",
       "canonical_person_id": "01900000-0000-0000-0005-000000000040",
-      "name_variants": ["Nikhil R"],
+      "name_variants": [
+        "Nikhil R"
+      ],
       "party_code": "IND",
       "party_id": "ORG-PARTY-IND",
       "resolution_status": "RESOLVED_CANONICAL_PERSON",
@@ -815,7 +1074,9 @@
       "source_name": "POREDDY VENUGOPAL",
       "canonical_name": "Poreddy Venugopal",
       "canonical_person_id": "01900000-0000-0000-0006-000000000040",
-      "name_variants": ["Venugopal Poreddy"],
+      "name_variants": [
+        "Venugopal Poreddy"
+      ],
       "party_code": "AABAAD",
       "party_id": "ORG-PARTY-AABAAD",
       "resolution_status": "RESOLVED_CANONICAL_PERSON",
@@ -828,7 +1089,9 @@
       "source_name": "V. SADANANDA REDDY",
       "canonical_name": "V. Sadananda Reddy",
       "canonical_person_id": "01900000-0000-0000-0007-000000000040",
-      "name_variants": ["Sadananda Reddy V"],
+      "name_variants": [
+        "Sadananda Reddy V"
+      ],
       "party_code": "PPP",
       "party_id": "ORG-PARTY-PPP",
       "resolution_status": "RESOLVED_CANONICAL_PERSON",
@@ -841,7 +1104,9 @@
       "source_name": "RANGANNAGARI JYOTHI",
       "canonical_name": "Rangannagari Jyothi",
       "canonical_person_id": "01900000-0000-0000-0008-000000000040",
-      "name_variants": ["Jyothi Rangannagari"],
+      "name_variants": [
+        "Jyothi Rangannagari"
+      ],
       "party_code": "IPBP",
       "party_id": "ORG-PARTY-IPBP",
       "resolution_status": "RESOLVED_CANONICAL_PERSON",
@@ -854,7 +1119,9 @@
       "source_name": "RACHA SUBHADRA REDDY",
       "canonical_name": "Racha Subhadra Reddy",
       "canonical_person_id": "01900000-0000-0000-0009-000000000040",
-      "name_variants": ["Subhadra Reddy Racha"],
+      "name_variants": [
+        "Subhadra Reddy Racha"
+      ],
       "party_code": "SPI",
       "party_id": "ORG-PARTY-SPI",
       "resolution_status": "RESOLVED_CANONICAL_PERSON",
@@ -867,7 +1134,9 @@
       "source_name": "ASHOK POTHU",
       "canonical_name": "Ashok Pothu",
       "canonical_person_id": "01900000-0000-0000-0010-000000000040",
-      "name_variants": ["Pothu Ashok"],
+      "name_variants": [
+        "Pothu Ashok"
+      ],
       "party_code": "MTRSP",
       "party_id": "ORG-PARTY-MTRSP",
       "resolution_status": "RESOLVED_CANONICAL_PERSON",
@@ -880,7 +1149,9 @@
       "source_name": "NAVNANANDI LIMBAREDDY",
       "canonical_name": "Navnanandi Limbareddy",
       "canonical_person_id": "01900000-0000-0000-0011-000000000040",
-      "name_variants": ["Limbareddy Navnanandi"],
+      "name_variants": [
+        "Limbareddy Navnanandi"
+      ],
       "party_code": "IND",
       "party_id": "ORG-PARTY-IND",
       "resolution_status": "RESOLVED_CANONICAL_PERSON",
@@ -893,7 +1164,9 @@
       "source_name": "VOLLALA PRAVEEN KUMAR RAO",
       "canonical_name": "Vollala Praveen Kumar Rao",
       "canonical_person_id": "01900000-0000-0000-0012-000000000040",
-      "name_variants": ["Praveen Kumar Rao Vollala"],
+      "name_variants": [
+        "Praveen Kumar Rao Vollala"
+      ],
       "party_code": "SAPS",
       "party_id": "ORG-PARTY-SAPS",
       "resolution_status": "RESOLVED_CANONICAL_PERSON",
@@ -906,7 +1179,9 @@
       "source_name": "PAGIDIPALA RAMA RAJU",
       "canonical_name": "Pagidipala Rama Raju",
       "canonical_person_id": "01900000-0000-0000-0013-000000000040",
-      "name_variants": ["Rama Raju Pagidipala"],
+      "name_variants": [
+        "Rama Raju Pagidipala"
+      ],
       "party_code": "YTP",
       "party_id": "ORG-PARTY-YTP",
       "resolution_status": "RESOLVED_CANONICAL_PERSON",
@@ -960,6 +1235,306 @@
       }
     ],
     "migration_script": "supabase/migrations/053_w019_candidate_granularity_remediation.sql",
-    "seed_synchronization": "supabase/seed_w019_benchmarks.sql"
+    "seed_synchronization": "supabase/seed_w019_benchmarks.sql",
+    "migration_scripts": [
+      "supabase/migrations/053_w019_candidate_granularity_remediation.sql",
+      "supabase/migrations/054_w019_candidate_channel_unknown_semantics.sql"
+    ]
+  },
+  "channel_decomposition_matrix": {
+    "case_a_candidates": [
+      {
+        "contest": "Kodangal AC-065",
+        "rank": 1,
+        "name": "Anumula Revanth Reddy",
+        "party": "INC",
+        "total": 107429,
+        "evm": 106820,
+        "postal": 609,
+        "status": "DIRECTLY_SOURCED"
+      },
+      {
+        "contest": "Kodangal AC-065",
+        "rank": 2,
+        "name": "Patnam Narender Reddy",
+        "party": "BRS",
+        "total": 74897,
+        "evm": 74431,
+        "postal": 466,
+        "status": "DIRECTLY_SOURCED"
+      },
+      {
+        "contest": "Kodangal AC-065",
+        "rank": 3,
+        "name": "Bantu Ramesh Kumar",
+        "party": "BJP",
+        "total": 3988,
+        "evm": 3928,
+        "postal": 60,
+        "status": "DIRECTLY_SOURCED"
+      },
+      {
+        "contest": "Gajwel AC-040",
+        "rank": 1,
+        "name": "Kalvakuntla Chandrashekar Rao",
+        "party": "BRS",
+        "total": 111684,
+        "evm": 110984,
+        "postal": 700,
+        "status": "DIRECTLY_SOURCED"
+      },
+      {
+        "contest": "Gajwel AC-040",
+        "rank": 2,
+        "name": "Eatala Rajender",
+        "party": "BJP",
+        "total": 66653,
+        "evm": 65961,
+        "postal": 692,
+        "status": "DIRECTLY_SOURCED"
+      },
+      {
+        "contest": "Gajwel AC-040",
+        "rank": 3,
+        "name": "Tumkunta Narsa Reddy",
+        "party": "INC",
+        "total": 32568,
+        "evm": 32318,
+        "postal": 250,
+        "status": "DIRECTLY_SOURCED"
+      }
+    ],
+    "case_b_candidates": [
+      {
+        "contest": "Kodangal AC-065",
+        "rank": 4,
+        "name": "M. Madhusudhan Reddy",
+        "party": "IND",
+        "total": 2173,
+        "evm": null,
+        "postal": null,
+        "status": "UNKNOWN"
+      },
+      {
+        "contest": "Kodangal AC-065",
+        "rank": 5,
+        "name": "Kurva Narmada Kistappa",
+        "party": "BSP",
+        "total": 2133,
+        "evm": null,
+        "postal": null,
+        "status": "UNKNOWN"
+      },
+      {
+        "contest": "Kodangal AC-065",
+        "rank": 6,
+        "name": "Prabhakar Mudiraj",
+        "party": "IND",
+        "total": 770,
+        "evm": null,
+        "postal": null,
+        "status": "UNKNOWN"
+      },
+      {
+        "contest": "Kodangal AC-065",
+        "rank": 7,
+        "name": "Venkat Ramulu Kandedi",
+        "party": "IND",
+        "total": 463,
+        "evm": null,
+        "postal": null,
+        "status": "UNKNOWN"
+      },
+      {
+        "contest": "Kodangal AC-065",
+        "rank": 8,
+        "name": "Pyata Narender Reddy",
+        "party": "IND",
+        "total": 380,
+        "evm": null,
+        "postal": null,
+        "status": "UNKNOWN"
+      },
+      {
+        "contest": "Kodangal AC-065",
+        "rank": 9,
+        "name": "Gottimukkala Anjilaiah",
+        "party": "IND",
+        "total": 273,
+        "evm": null,
+        "postal": null,
+        "status": "UNKNOWN"
+      },
+      {
+        "contest": "Kodangal AC-065",
+        "rank": 10,
+        "name": "Krishna Naik",
+        "party": "DHSP",
+        "total": 215,
+        "evm": null,
+        "postal": null,
+        "status": "UNKNOWN"
+      },
+      {
+        "contest": "Kodangal AC-065",
+        "rank": 11,
+        "name": "Rathod Surya Naik",
+        "party": "BMP",
+        "total": 161,
+        "evm": null,
+        "postal": null,
+        "status": "UNKNOWN"
+      },
+      {
+        "contest": "Kodangal AC-065",
+        "rank": 12,
+        "name": "Kotike Ramu Mudhiraj",
+        "party": "TERS",
+        "total": 152,
+        "evm": null,
+        "postal": null,
+        "status": "UNKNOWN"
+      },
+      {
+        "contest": "Kodangal AC-065",
+        "rank": 13,
+        "name": "Kura Venkataiah",
+        "party": "IND",
+        "total": 127,
+        "evm": null,
+        "postal": null,
+        "status": "UNKNOWN"
+      },
+      {
+        "contest": "Gajwel AC-040",
+        "rank": 4,
+        "name": "Jakkani Sanjay Kumar",
+        "party": "BSP",
+        "total": 2743,
+        "evm": null,
+        "postal": null,
+        "status": "UNKNOWN"
+      },
+      {
+        "contest": "Gajwel AC-040",
+        "rank": 5,
+        "name": "Mekala Raghuma Reddy",
+        "party": "YTP",
+        "total": 2232,
+        "evm": null,
+        "postal": null,
+        "status": "UNKNOWN"
+      },
+      {
+        "contest": "Gajwel AC-040",
+        "rank": 6,
+        "name": "Kinnera Yadaiah",
+        "party": "IND",
+        "total": 1998,
+        "evm": null,
+        "postal": null,
+        "status": "UNKNOWN"
+      },
+      {
+        "contest": "Gajwel AC-040",
+        "rank": 7,
+        "name": "Nirudi Swamy",
+        "party": "IND",
+        "total": 1400,
+        "evm": null,
+        "postal": null,
+        "status": "UNKNOWN"
+      },
+      {
+        "contest": "Gajwel AC-040",
+        "rank": 8,
+        "name": "R. Nikhil",
+        "party": "IND",
+        "total": 1371,
+        "evm": null,
+        "postal": null,
+        "status": "UNKNOWN"
+      },
+      {
+        "contest": "Gajwel AC-040",
+        "rank": 9,
+        "name": "Poreddy Venugopal",
+        "party": "AABAAD",
+        "total": 1281,
+        "evm": null,
+        "postal": null,
+        "status": "UNKNOWN"
+      },
+      {
+        "contest": "Gajwel AC-040",
+        "rank": 10,
+        "name": "V. Sadananda Reddy",
+        "party": "PPP",
+        "total": 1049,
+        "evm": null,
+        "postal": null,
+        "status": "UNKNOWN"
+      },
+      {
+        "contest": "Gajwel AC-040",
+        "rank": 11,
+        "name": "Rangannagari Jyothi",
+        "party": "IPBP",
+        "total": 967,
+        "evm": null,
+        "postal": null,
+        "status": "UNKNOWN"
+      },
+      {
+        "contest": "Gajwel AC-040",
+        "rank": 12,
+        "name": "Racha Subhadra Reddy",
+        "party": "SPI",
+        "total": 721,
+        "evm": null,
+        "postal": null,
+        "status": "UNKNOWN"
+      },
+      {
+        "contest": "Gajwel AC-040",
+        "rank": 13,
+        "name": "Ashok Pothu",
+        "party": "MTRSP",
+        "total": 647,
+        "evm": null,
+        "postal": null,
+        "status": "UNKNOWN"
+      },
+      {
+        "contest": "Gajwel AC-040",
+        "rank": 14,
+        "name": "Navnanandi Limbareddy",
+        "party": "IND",
+        "total": 553,
+        "evm": null,
+        "postal": null,
+        "status": "UNKNOWN"
+      },
+      {
+        "contest": "Gajwel AC-040",
+        "rank": 15,
+        "name": "Vollala Praveen Kumar Rao",
+        "party": "SAPS",
+        "total": 508,
+        "evm": null,
+        "postal": null,
+        "status": "UNKNOWN"
+      },
+      {
+        "contest": "Gajwel AC-040",
+        "rank": 16,
+        "name": "Pagidipala Rama Raju",
+        "party": "YTP",
+        "total": 495,
+        "evm": null,
+        "postal": null,
+        "status": "UNKNOWN"
+      }
+    ]
   }
 }

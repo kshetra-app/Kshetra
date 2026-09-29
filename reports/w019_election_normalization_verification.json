@@ -1,7 +1,7 @@
 {
   "job": "W019",
   "title": "Election Data Normalization (Provenance Closure)",
-  "timestamp": "2026-09-29T17:57:19.627Z",
+  "timestamp": "2026-09-29T21:35:04.998Z",
   "frameworkAmendment": "v1.6 (DEC-074, DEC-075, DEC-076)",
   "stagingTarget": "panIN-staging (fkpigozcqnmcvofuksar)",
   "productionTarget": "ehfafcnimmjusyvplbah (AIR-GAPPED)",
@@ -13,8 +13,8 @@
     "verified": true
   },
   "summary": {
-    "total": 92,
-    "passed": 92,
+    "total": 93,
+    "passed": 93,
     "failed": 0,
     "status": "PASSED"
   },
@@ -91,9 +91,9 @@
     },
     {
       "id": "W019-SCH-11",
-      "title": "candidacies enforces channel breakdown conservation: votes_received = evm_votes + postal_votes",
+      "title": "candidacies enforces channel breakdown conservation with UNKNOWN null semantics: (evm IS NULL AND postal IS NULL) OR (votes_received = evm + postal)",
       "status": "PASS",
-      "observed": "CHECK (((votes_received = (evm_votes + postal_votes)) OR ((evm_votes = 0) AND (postal_votes = 0))))",
+      "observed": "CHECK ((((evm_votes IS NULL) AND (postal_votes IS NULL)) OR ((evm_votes IS NOT NULL) AND (postal_votes IS NOT NULL) AND (votes_received = (evm_votes + postal_votes)))))",
       "details": ""
     },
     {
@@ -147,7 +147,7 @@
     },
     {
       "id": "W019-ACCT-06",
-      "title": "ACCT-06: postal vote values are an EVM/Postal channel breakdown of candidate votes and cannot duplicate categories",
+      "title": "ACCT-06: postal vote values are an EVM/Postal channel breakdown of candidate votes with strict UNKNOWN null semantics",
       "status": "PASS",
       "observed": "Mismatched candidacies: 0",
       "details": ""
@@ -254,7 +254,7 @@
       "id": "W019-EDG-04",
       "title": "Attempting to insert total_votes_polled > total_electors fails closed with check constraint violation",
       "status": "PASS",
-      "observed": "ERROR: ERROR:  new row for relation \"election_contests\" violates check constraint \"check_contest_electors\"\nDETAIL:  Failing row contains (001d8298-6e59-44a0-b6cf-759fbb808ade, 01900000-0000-0000-0000-000000000002, VIOLATION_CONTEST, TS-AC-065, null, Kodangal Violation Test, GEN, completed, f, null, 10000, 15000, 15000, null, 0, 150.00, 0, null, null, OFFICIAL, null, {}, 2026-09-29 17:56:49.76948+00, 2026-09-29 17:56:49.76948+00).\n",
+      "observed": "ERROR: ERROR:  new row for relation \"election_contests\" violates check constraint \"check_contest_electors\"\nDETAIL:  Failing row contains (50f87510-326a-4fa8-83d5-9f68e00b6196, 01900000-0000-0000-0000-000000000002, VIOLATION_CONTEST, TS-AC-065, null, Kodangal Violation Test, GEN, completed, f, null, 10000, 15000, 15000, null, 0, 150.00, 0, null, null, OFFICIAL, null, {}, 2026-09-29 21:34:43.322222+00, 2026-09-29 21:34:43.322222+00).\n",
       "details": ""
     },
     {
@@ -615,10 +615,17 @@
       "details": ""
     },
     {
-      "id": "W019-CAND-09",
-      "title": "CAND-09: Candidate vote totals equal EVM + postal where channels are broken down (chk_candidate_votes_sum)",
+      "id": "W019-CAND-09A",
+      "title": "CAND-09A: Where EVM and postal components are independently sourced, total = EVM + postal (Case A: 6 candidates)",
       "status": "PASS",
-      "observed": "All candidates with channel breakdown conserve votes",
+      "observed": "6 candidates independently evidenced: 1:Kalvakuntla Chandrashekar Rao:111684:110984:700; 2:Eatala Rajender:66653:65961:692; 3:Tumkunta Narsa Reddy:32568:32318:250; 1:Anumula Revanth Reddy:107429:106820:609; 2:Patnam Narender Reddy:74897:74431:466; 3:Bantu Ramesh Kumar:3988:3928:60",
+      "details": ""
+    },
+    {
+      "id": "W019-CAND-09B",
+      "title": "CAND-09B: Where channel decomposition is unavailable, EVM and postal remain UNKNOWN (NULL) and zero fabricated splits exist (Case B: 23 candidates)",
+      "status": "PASS",
+      "observed": "23 candidates verified UNKNOWN null (10 Kodangal, 13 Gajwel); 0 magic zeros; 0 fabricated splits",
       "details": ""
     },
     {

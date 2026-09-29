@@ -7,7 +7,7 @@
 ## 1. Project & Execution Coordinates
 ```text
 PROJECT:               PANIN (formerly Kshetra)
-CURRENT_JOB:           W019 (Election Data Normalization — CANDIDATE GRANULARITY REMEDIATED / SUBMITTED FOR CTO REVIEW)
+CURRENT_JOB:           W019 (Election Data Normalization — EVIDENCE-SEMANTICS REMEDIATED / SUBMITTED FOR CTO REVIEW)
 LAST_COMPLETED_JOB:    W018 (Canonical Political Entity Model — ACCEPTED / COMPLETE)
 NEXT_PERMITTED_JOB:    W020 (Delimitation Engine Foundation — STRICTLY NOT AUTHORIZED / BLOCKED PENDING FINAL CTO ACCEPTANCE OF W019)
 
@@ -15,9 +15,9 @@ W018_STATUS:           ACCEPTED / COMPLETE (Canonical Commit: 080344c580ad9df925
 W018_CTO_ACCEPTANCE:   GRANTED (2026-09-29)
 W018_EVIDENCE_PACKAGE: reports/w018_political_entities_verification.json
 W018_MASTER_BATTERY:   53/53 PASS (100% Invariants Verified)
-W019_STATUS:           CANDIDATE GRANULARITY REMEDIATED / SUBMITTED FOR CTO ACCEPTANCE REVIEW (W019 NOT COMPLETE / W020 STRICTLY NOT AUTHORIZED)
+W019_STATUS:           EVIDENCE-SEMANTICS REMEDIATED / SUBMITTED FOR CTO ACCEPTANCE REVIEW (W019 NOT COMPLETE / W020 STRICTLY NOT AUTHORIZED)
 W019_EVIDENCE_PACKAGE: reports/w019_candidate_granularity_reconciliation.md, reports/w019_candidate_granularity_reconciliation.json, reports/w019_election_normalization_verification.json, data/evidence/w019/canonical_benchmarks.json, data/evidence/w019/authoritative/
-W019_MASTER_BATTERY:   92/92 PASS (100% Invariants Verified across 13 verification planes including W019-CAND-01..12 and W019-SEM-01..12)
+W019_MASTER_BATTERY:   93/93 PASS (100% Invariants Verified across 13 verification planes including W019-CAND-01..12, W019-CAND-09A/B, and W019-SEM-01..12)
 W019_API_BATTERY:      10/10 PASS (apps/api/src/__tests__/elections.test.ts)
 W020_STATUS:           STRICTLY NOT AUTHORIZED (Delimitation Engine Foundation — BLOCKED PENDING CTO ACCEPTANCE)
 

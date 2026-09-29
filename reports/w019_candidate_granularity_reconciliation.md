@@ -1,10 +1,10 @@
-# Milestone W019 — Candidate Granularity & Result Preservation Reconciliation Report
+# Milestone W019 — Candidate Granularity & Evidence-Semantics Reconciliation Report
 
-**Document ID:** `W019-CAND-GRAN-RECON-001`  
-**Framework Amendment:** `v1.6 (DEC-074, DEC-075, DEC-076, DEC-080, DEC-081, DEC-082)`  
-**Directive:** `CTO FINAL W019 CANDIDATE-GRANULARITY REMEDIATION`  
+**Document ID:** `W019-CAND-GRAN-RECON-002`  
+**Framework Amendment:** `v1.6 (DEC-074, DEC-075, DEC-076, DEC-080, DEC-081, DEC-082, DEC-083)`  
+**Directive:** `CTO FINAL W019 EVIDENCE-SEMANTICS CLOSURE`  
 **Status:** `SUBMITTED FOR CTO REVIEW — W019 REMAINS NOT COMPLETE — W020 STRICTLY NOT AUTHORIZED`  
-**Execution Timestamp:** `2026-09-29T18:15:00Z`  
+**Execution Timestamp:** `2026-09-30T00:00:00Z`  
 **Canonical Branch:** `master`  
 **Production Air-Gap Status:** `ehfafcnimmjusyvplbah STRICTLY AIR-GAPPED & UNTOUCHED`  
 **PostGIS Baseline:** `589 Geometries, SHA-256 f839fa02980318a8f35f932ebe72fa1d3ad6325dc86a624bf159d932fe5f613b`  
@@ -13,25 +13,32 @@
 
 ## 1. Executive Summary & Directive Response
 
-In accordance with the **CTO FINAL W019 CANDIDATE-GRANULARITY REMEDIATION** directive:
-1. **Candidate Pool Elimination:** All historical aggregate candidate placeholders—specifically `"Independent Candidates Pool (10)"` for Kodangal and `"Independent Candidates Pool (13)"` for Gajwel—have been completely eliminated.
-2. **Complete Individual Candidate Granularity:** Every single authoritative candidate from the statutory returns is now individually represented as a distinct canonical person in `public.canonical_persons` and an individual candidacy record in `public.candidacies`.
-   - **Kodangal (AC-065):** 13 individual candidate candidacies (totaling 193,161 votes) + 1 NOTA ballot choice (2,002 votes) = 195,163 valid votes.
-   - **Gajwel (AC-040):** 16 individual candidate candidacies (totaling 226,870 votes) + 1 NOTA ballot choice (832 votes) = 227,702 valid votes.
-3. **Mandatory Ranking & Designation Hierarchy:**
-   - **Rank 1 = Winner** (`result = 'won'`, matches `election_contests.winning_candidacy_id`)
-   - **Rank 2 = Runner-up** (`result = 'lost'`, matches `election_contests.runner_up_candidacy_id`)
-   - **Rank 3 = Third-place candidate** (`result = 'lost'`)
-   - **Rank 4+ = Exact ordinal designation** (`Fourth-place candidate`, `Fifth-place candidate`, ..., through the final candidate)
-   - **NOTA has NO candidate rank** and exists exclusively in `public.ballot_choices` (`choice_type = 'NOTA'`).
-4. **Preservation of Accepted Persistence Semantics:**
-   - `total_rejected_votes NULL = UNKNOWN`
-   - Arithmetic derivation of rejected votes is strictly prohibited ($232,417 - 227,702 = 4,715$ anti-derivation rule enforced)
-   - Gajwel rejected votes remain `NULL` (UNKNOWN)
-   - Kodangal rejected votes remain `124` (direct statutory Form 20 postal evidence)
-   - Conditional conservation enforced in schema and functions
-   - 589 geometries frozen and verified
-   - Production database completely air-gapped
+In accordance with the **CTO FINAL W019 EVIDENCE-SEMANTICS CLOSURE** directive (DEC-083):
+
+1. **Closed & Non-Redesigned Baseline:**
+   - Candidate pools eliminated; all 13 Kodangal & 16 Gajwel candidates individually represented.
+   - Strict ranking hierarchy: Rank 1 = Winner, Rank 2 = Runner-up, Rank 3 = Third-place candidate, Rank 4+ = exact ordinals.
+   - NOTA separate from candidate ranking (`public.ballot_choices`).
+   - Canonical person linkage (`public.canonical_persons`).
+   - Gajwel Eatala Rajender correction (66,653; 29.27%).
+   - Kodangal NOTA (2,002) / Gajwel NOTA (832) corrections.
+   - Gajwel rejected-vote UNKNOWN semantics (`total_rejected_votes NULL = UNKNOWN`).
+   - NULL persistence/API semantics; conditional conservation.
+   - W018 53/53 regression; 589 geometry digest (`f839fa02980318a8f35f932ebe72fa1d3ad6325dc86a624bf159d932fe5f613b`).
+   - Production database (`ehfafcnimmjusyvplbah`) strictly air-gapped.
+
+2. **Resolution of the Evidence-Semantics Gap (EVM/Postal Channel Breakdown):**
+   - **Case A (Independently Evidenced EVM + Postal): 6 candidates**
+     - Top-3 candidates across both contests have independently sourced EVM and Postal channels from Form 20 / Form 21E.
+     - For these 6 candidates, the database and API strictly enforce and preserve: `votes_received = evm_votes + postal_votes`.
+   - **Case B (Directly Sourced Total Votes, UNKNOWN Channel Breakdown): 23 candidates**
+     - Lower-ranked candidates (Rank 4..13 in Kodangal: 10 candidates; Rank 4..16 in Gajwel: 13 candidates) have authoritative total votes from the statutory returns, but channel decomposition was not reported in the available summary schedule.
+     - In earlier seeds, these candidates had sentinel zeros (`evm_votes = 0, postal_votes = 0`). Under Migration 054, these magic zeros have been eliminated.
+     - Case B candidates now store `evm_votes = NULL` and `postal_votes = NULL` (UNKNOWN).
+     - The anti-fabrication / anti-derivation rule is strictly enforced: Case B candidates are NOT mathematically split (e.g. EVM = total, Postal = 0), preventing invented data.
+   - **Split Invariant Formulation:**
+     - `W019-CAND-09A`: Where EVM and postal components are independently sourced, candidate total = EVM + postal (6 candidates).
+     - `W019-CAND-09B`: Where channel decomposition is unavailable, EVM and postal remain UNKNOWN (`NULL`) and zero fabricated splits exist (23 candidates).
 
 ---
 
@@ -45,24 +52,33 @@ In accordance with the **CTO FINAL W019 CANDIDATE-GRANULARITY REMEDIATION** dire
 - **Victory Margin:** 32,532 votes (16.67%)
 - **Conservation Equation:** $195,163 + 124 = 195,287$ (PASS)
 
-| Rank | Candidate Name | Party | EVM Votes | Postal Votes | Total Votes | Vote Share (%) | Designation | Result | Canonical Person ID |
+| Rank | Candidate Name | Party | EVM Votes | Postal Votes | Total Votes | Vote Share (%) | Designation | Channel Status | Canonical Person ID |
 |:---:|:---|:---:|:---:|:---:|:---:|:---:|:---|:---:|:---|
-| **1** | **Anumula Revanth Reddy** | INC | 106,820 | 609 | **107,429** | 55.05% | **Winner** | `won` | `01900000-0000-0000-0000-000000000011` |
-| **2** | **Patnam Narender Reddy** | BRS | 74,431 | 466 | **74,897** | 38.38% | **Runner-up** | `lost` | `01900000-0000-0000-0000-000000000012` |
-| **3** | **Bantu Ramesh Kumar** | BJP | 3,928 | 60 | **3,988** | 2.04% | **Third-place candidate** | `lost` | `01900000-0000-0000-0000-000000000013` |
-| 4 | M. Madhusudhan Reddy | IND | — | — | 2,173 | 1.11% | Fourth-place candidate | `lost` | `01900000-0000-0000-0001-000000000065` |
-| 5 | Kurva Narmada Kistappa | BSP | — | — | 2,133 | 1.09% | Fifth-place candidate | `lost` | `01900000-0000-0000-0002-000000000065` |
-| 6 | Prabhakar Mudiraj | IND | — | — | 770 | 0.39% | Sixth-place candidate | `lost` | `01900000-0000-0000-0003-000000000065` |
-| 7 | Venkat Ramulu Kandedi | IND | — | — | 463 | 0.24% | Seventh-place candidate | `lost` | `01900000-0000-0000-0004-000000000065` |
-| 8 | Pyata Narender Reddy | IND | — | — | 380 | 0.19% | Eighth-place candidate | `lost` | `01900000-0000-0000-0005-000000000065` |
-| 9 | Gottimukkala Anjilaiah | IND | — | — | 273 | 0.14% | Ninth-place candidate | `lost` | `01900000-0000-0000-0006-000000000065` |
-| 10 | Krishna Naik | DHSP | — | — | 215 | 0.11% | Tenth-place candidate | `lost` | `01900000-0000-0000-0007-000000000065` |
-| 11 | Rathod Surya Naik | BMP | — | — | 161 | 0.08% | Eleventh-place candidate | `lost` | `01900000-0000-0000-0008-000000000065` |
-| 12 | Kotike Ramu Mudhiraj | TERS | — | — | 152 | 0.08% | Twelfth-place candidate | `lost` | `01900000-0000-0000-0009-000000000065` |
-| 13 | Kura Venkataiah | IND | — | — | 127 | 0.07% | Thirteenth-place candidate | `lost` | `01900000-0000-0000-0010-000000000065` |
-| — | *Subtotal (13 Candidates)* | — | *185,179* | *1,135* | ***193,161*** | *98.97%* | — | — | — |
-| — | **NOTA** (Ballot Choice) | — | 1,986 | 16 | **2,002** | 1.03% | *Valid Non-Candidate Choice* | — | `ballot_choices` row |
+| **1** | **Anumula Revanth Reddy** | INC | 106,820 | 609 | **107,429** | 55.05% | **Winner** | DIRECTLY_SOURCED | `01900000-0000-0000-0000-000000000011` |
+| **2** | **Patnam Narender Reddy** | BRS | 74,431 | 466 | **74,897** | 38.38% | **Runner-up** | DIRECTLY_SOURCED | `01900000-0000-0000-0000-000000000012` |
+| **3** | **Bantu Ramesh Kumar** | BJP | 3,928 | 60 | **3,988** | 2.04% | **Third-place candidate** | DIRECTLY_SOURCED | `01900000-0000-0000-0000-000000000013` |
+| 4 | M. Madhusudhan Reddy | IND | *NULL* | *NULL* | 2,173 | 1.11% | Fourth-place candidate | UNKNOWN | `01900000-0000-0000-0001-000000000065` |
+| 5 | Kurva Narmada Kistappa | BSP | *NULL* | *NULL* | 2,133 | 1.09% | Fifth-place candidate | UNKNOWN | `01900000-0000-0000-0002-000000000065` |
+| 6 | Prabhakar Mudiraj | IND | *NULL* | *NULL* | 770 | 0.39% | Sixth-place candidate | UNKNOWN | `01900000-0000-0000-0003-000000000065` |
+| 7 | Venkat Ramulu Kandedi | IND | *NULL* | *NULL* | 463 | 0.24% | Seventh-place candidate | UNKNOWN | `01900000-0000-0000-0004-000000000065` |
+| 8 | Pyata Narender Reddy | IND | *NULL* | *NULL* | 380 | 0.19% | Eighth-place candidate | UNKNOWN | `01900000-0000-0000-0005-000000000065` |
+| 9 | Gottimukkala Anjilaiah | IND | *NULL* | *NULL* | 273 | 0.14% | Ninth-place candidate | UNKNOWN | `01900000-0000-0000-0006-000000000065` |
+| 10 | Krishna Naik | DHSP | *NULL* | *NULL* | 215 | 0.11% | Tenth-place candidate | UNKNOWN | `01900000-0000-0000-0007-000000000065` |
+| 11 | Rathod Surya Naik | BMP | *NULL* | *NULL* | 161 | 0.08% | Eleventh-place candidate | UNKNOWN | `01900000-0000-0000-0008-000000000065` |
+| 12 | Kotike Ramu Mudhiraj | TERS | *NULL* | *NULL* | 152 | 0.08% | Twelfth-place candidate | UNKNOWN | `01900000-0000-0000-0009-000000000065` |
+| 13 | Kura Venkataiah | IND | *NULL* | *NULL* | 127 | 0.07% | Thirteenth-place candidate | UNKNOWN | `01900000-0000-0000-0010-000000000065` |
+| — | **Case A Subtotal (Top 3)** | — | **185,179** | **1,135** | **186,314** | **95.47%** | — | — | — |
+| — | **Case B Subtotal (Rank 4..13)** | — | *UNKNOWN* | *UNKNOWN* | **7,947** | **4.07%** | — | — | — |
+| — | **Candidate Valid Votes Total** | — | *Unbroken (185,179 + UNK)* | *Unbroken (1,135 + UNK)* | ***193,161*** | **98.97%** | — | — | — |
+| — | **NOTA (Ballot Choice)** | — | 1,986 | 16 | **2,002** | 1.03% | *Valid Non-Candidate Choice* | DIRECTLY_SOURCED | `ballot_choices` row |
 | — | **Total Valid Votes** | — | **187,165** | **1,151** | ***195,163*** | **100.00%** | — | — | — |
+| — | **Total Rejected Votes** | — | 0 | 124 | **124** | — | *Postal Rejected (Form 20)* | DIRECTLY_SOURCED | `election_contests` col |
+| — | **Total Votes Polled** | — | **187,165** | **1,275** | ***195,287*** | **81.20%** | — | — | — |
+
+*Statutory Accounting Reconciliation:*
+$$\text{Case A Candidates (186,314)} + \text{Case B Candidates (7,947)} = \text{Candidate Valid Votes (193,161)}$$
+$$\text{Candidate Valid (193,161)} + \text{NOTA (2,002)} = \text{Total Valid (195,163)}$$
+$$\text{Total Valid (195,163)} + \text{Rejected (124)} = \text{Total Polled (195,287)}$$
 
 ---
 
@@ -70,31 +86,40 @@ In accordance with the **CTO FINAL W019 CANDIDATE-GRANULARITY REMEDIATION** dire
 - **Statutory Electorate:** 267,882
 - **Total Votes Polled:** 232,417 (Turnout: 86.76%)
 - **Total Valid Votes:** 227,702 (Candidates: 226,870 + NOTA: 832)
-- **Total Rejected Votes:** `NULL` (UNKNOWN — Anti-derivation rule enforced)
+- **Total Rejected Votes:** `NULL` (UNKNOWN — Anti-derivation rule strictly enforced)
 - **Victory Margin:** 45,031 votes (19.78%)
 - **Conservation Equation:** `UNRESOLVED` ($227,702 + \text{NULL} = 232,417$)
 
-| Rank | Candidate Name | Party | EVM Votes | Postal Votes | Total Votes | Vote Share (%) | Designation | Result | Canonical Person ID |
+| Rank | Candidate Name | Party | EVM Votes | Postal Votes | Total Votes | Vote Share (%) | Designation | Channel Status | Canonical Person ID |
 |:---:|:---|:---:|:---:|:---:|:---:|:---:|:---|:---:|:---|
-| **1** | **Kalvakuntla Chandrashekar Rao** | BRS | 110,984 | 700 | **111,684** | 49.05% | **Winner** | `won` | `01900000-0000-0000-0000-000000000014` |
-| **2** | **Eatala Rajender** | BJP | 65,961 | 692 | **66,653** | 29.27% | **Runner-up** | `lost` | `01900000-0000-0000-0000-000000000015` |
-| **3** | **Tumkunta Narsa Reddy** | INC | 32,318 | 250 | **32,568** | 14.30% | **Third-place candidate** | `lost` | `01900000-0000-0000-0000-000000000016` |
-| 4 | Jakkani Sanjay Kumar | BSP | — | — | 2,743 | 1.20% | Fourth-place candidate | `lost` | `01900000-0000-0000-0001-000000000040` |
-| 5 | Mekala Raghuma Reddy | YTP | — | — | 2,232 | 0.98% | Fifth-place candidate | `lost` | `01900000-0000-0000-0002-000000000040` |
-| 6 | Kinnera Yadaiah | IND | — | — | 1,998 | 0.88% | Sixth-place candidate | `lost` | `01900000-0000-0000-0003-000000000040` |
-| 7 | Nirudi Swamy | IND | — | — | 1,400 | 0.61% | Seventh-place candidate | `lost` | `01900000-0000-0000-0004-000000000040` |
-| 8 | R. Nikhil | IND | — | — | 1,371 | 0.60% | Eighth-place candidate | `lost` | `01900000-0000-0000-0005-000000000040` |
-| 9 | Poreddy Venugopal | AABAAD | — | — | 1,281 | 0.56% | Ninth-place candidate | `lost` | `01900000-0000-0000-0006-000000000040` |
-| 10 | V. Sadananda Reddy | PPP | — | — | 1,049 | 0.46% | Tenth-place candidate | `lost` | `01900000-0000-0000-0007-000000000040` |
-| 11 | Rangannagari Jyothi | IPBP | — | — | 967 | 0.42% | Eleventh-place candidate | `lost` | `01900000-0000-0000-0008-000000000040` |
-| 12 | Racha Subhadra Reddy | SPI | — | — | 721 | 0.32% | Twelfth-place candidate | `lost` | `01900000-0000-0000-0009-000000000040` |
-| 13 | Ashok Pothu | MTRSP | — | — | 647 | 0.28% | Thirteenth-place candidate | `lost` | `01900000-0000-0000-0010-000000000040` |
-| 14 | Navnanandi Limbareddy | IND | — | — | 553 | 0.24% | Fourteenth-place candidate | `lost` | `01900000-0000-0000-0011-000000000040` |
-| 15 | Vollala Praveen Kumar Rao | SAPS | — | — | 508 | 0.22% | Fifteenth-place candidate | `lost` | `01900000-0000-0000-0012-000000000040` |
-| 16 | Pagidipala Rama Raju | YTP | — | — | 495 | 0.22% | Sixteenth-place candidate | `lost` | `01900000-0000-0000-0013-000000000040` |
-| — | *Subtotal (16 Candidates)* | — | *209,263* | *1,642* | ***226,870*** | *99.63%* | — | — | — |
-| — | **NOTA** (Ballot Choice) | — | 818 | 14 | **832** | 0.37% | *Valid Non-Candidate Choice* | — | `ballot_choices` row |
+| **1** | **Kalvakuntla Chandrashekar Rao** | BRS | 110,984 | 700 | **111,684** | 49.05% | **Winner** | DIRECTLY_SOURCED | `01900000-0000-0000-0000-000000000014` |
+| **2** | **Eatala Rajender** | BJP | 65,961 | 692 | **66,653** | 29.27% | **Runner-up** | DIRECTLY_SOURCED | `01900000-0000-0000-0000-000000000015` |
+| **3** | **Tumkunta Narsa Reddy** | INC | 32,318 | 250 | **32,568** | 14.30% | **Third-place candidate** | DIRECTLY_SOURCED | `01900000-0000-0000-0000-000000000016` |
+| 4 | Jakkani Sanjay Kumar | BSP | *NULL* | *NULL* | 2,743 | 1.20% | Fourth-place candidate | UNKNOWN | `01900000-0000-0000-0001-000000000040` |
+| 5 | Mekala Raghuma Reddy | YTP | *NULL* | *NULL* | 2,232 | 0.98% | Fifth-place candidate | UNKNOWN | `01900000-0000-0000-0002-000000000040` |
+| 6 | Kinnera Yadaiah | IND | *NULL* | *NULL* | 1,998 | 0.88% | Sixth-place candidate | UNKNOWN | `01900000-0000-0000-0003-000000000040` |
+| 7 | Nirudi Swamy | IND | *NULL* | *NULL* | 1,400 | 0.61% | Seventh-place candidate | UNKNOWN | `01900000-0000-0000-0004-000000000040` |
+| 8 | R. Nikhil | IND | *NULL* | *NULL* | 1,371 | 0.60% | Eighth-place candidate | UNKNOWN | `01900000-0000-0000-0005-000000000040` |
+| 9 | Poreddy Venugopal | AABAAD | *NULL* | *NULL* | 1,281 | 0.56% | Ninth-place candidate | UNKNOWN | `01900000-0000-0000-0006-000000000040` |
+| 10 | V. Sadananda Reddy | PPP | *NULL* | *NULL* | 1,049 | 0.46% | Tenth-place candidate | UNKNOWN | `01900000-0000-0000-0007-000000000040` |
+| 11 | Rangannagari Jyothi | IPBP | *NULL* | *NULL* | 967 | 0.42% | Eleventh-place candidate | UNKNOWN | `01900000-0000-0000-0008-000000000040` |
+| 12 | Racha Subhadra Reddy | SPI | *NULL* | *NULL* | 721 | 0.32% | Twelfth-place candidate | UNKNOWN | `01900000-0000-0000-0009-000000000040` |
+| 13 | Ashok Pothu | MTRSP | *NULL* | *NULL* | 647 | 0.28% | Thirteenth-place candidate | UNKNOWN | `01900000-0000-0000-0010-000000000040` |
+| 14 | Navnanandi Limbareddy | IND | *NULL* | *NULL* | 553 | 0.24% | Fourteenth-place candidate | UNKNOWN | `01900000-0000-0000-0011-000000000040` |
+| 15 | Vollala Praveen Kumar Rao | SAPS | *NULL* | *NULL* | 508 | 0.22% | Fifteenth-place candidate | UNKNOWN | `01900000-0000-0000-0012-000000000040` |
+| 16 | Pagidipala Rama Raju | YTP | *NULL* | *NULL* | 495 | 0.22% | Sixteenth-place candidate | UNKNOWN | `01900000-0000-0000-0013-000000000040` |
+| — | **Case A Subtotal (Top 3)** | — | **209,263** | **1,642** | **210,905** | **92.62%** | — | — | — |
+| — | **Case B Subtotal (Rank 4..16)** | — | *UNKNOWN* | *UNKNOWN* | **15,965** | **7.01%** | — | — | — |
+| — | **Candidate Valid Votes Total** | — | *Unbroken (209,263 + UNK)* | *Unbroken (1,642 + UNK)* | ***226,870*** | **99.63%** | — | — | — |
+| — | **NOTA (Ballot Choice)** | — | 818 | 14 | **832** | 0.37% | *Valid Non-Candidate Choice* | DIRECTLY_SOURCED | `ballot_choices` row |
 | — | **Total Valid Votes** | — | **210,081** | **1,656** | ***227,702*** | **100.00%** | — | — | — |
+| — | **Total Rejected Votes** | — | *NULL* | *NULL* | ***NULL*** | — | *UNKNOWN (Anti-derivation)* | UNKNOWN | `election_contests` col |
+| — | **Total Votes Polled** | — | — | — | ***232,417*** | **86.76%** | — | — | — |
+
+*Statutory Accounting Reconciliation:*
+$$\text{Case A Candidates (210,905)} + \text{Case B Candidates (15,965)} = \text{Candidate Valid Votes (226,870)}$$
+$$\text{Candidate Valid (226,870)} + \text{NOTA (832)} = \text{Total Valid (227,702)}$$
+$$\text{Total Valid (227,702)} + \text{Rejected (NULL)} = \text{Conservation UNRESOLVED (Polled: 232,417)}$$
 
 ---
 
@@ -146,12 +171,17 @@ All 29 candidate personas strictly integrate with W018 `public.canonical_persons
    - `01900000-0000-0000-0000-000000000018` ("Independent Candidates Pool (13)")
 3. **Registered Political Organizations Seeded:**
    - BSP (`ORG-PARTY-BSP`), YTP (`ORG-PARTY-YTP`), DHSP (`ORG-PARTY-DHSP`), BMP (`ORG-PARTY-BMP`), TERS (`ORG-PARTY-TERS`), AABAAD (`ORG-PARTY-AABAAD`), PPP (`ORG-PARTY-PPP`), IPBP (`ORG-PARTY-IPBP`), SPI (`ORG-PARTY-SPI`), MTRSP (`ORG-PARTY-MTRSP`), SAPS (`ORG-PARTY-SAPS`).
+4. **Governing Migrations:**
+   - `supabase/migrations/053_w019_candidate_granularity_remediation.sql` (pool elimination, individual candidates, mandatory designations)
+   - `supabase/migrations/054_w019_candidate_channel_unknown_semantics.sql` (drop default 0, candidate channel UNKNOWN null semantics, `chk_candidate_votes_sum` update, `fn_validate_contest_totals` update)
 
 ---
 
-## 5. Verification Invariant Battery Coverage (CAND-01..12)
+## 5. Verification Invariant Battery Coverage (93 Checks — 100% PASS)
 
-The master invariant test suite `tests/election-normalization-invariants.test.mjs` explicitly covers all 12 mandatory candidate-granularity rules:
+The master invariant test suite `tests/election-normalization-invariants.test.mjs` explicitly covers all 93 checks including:
+- **`W019-SCH-11`**: `candidacies` enforces channel breakdown conservation with UNKNOWN null semantics: `(evm IS NULL AND postal IS NULL) OR (votes_received = evm + postal)`.
+- **`W019-ACCT-06`**: postal vote values are an EVM/Postal channel breakdown of candidate votes with strict UNKNOWN null semantics (disallowing magic zeros).
 - **`W019-CAND-01`**: No two candidates in the same contest have the same rank (unique rank per contest).
 - **`W019-CAND-02`**: Every authoritative candidate has exactly one rank ($1 \le \text{rank} \le N$).
 - **`W019-CAND-03`**: Rank ordering matches authoritative result evidence (monotonically descending votes matching rank $1 \dots N$).
@@ -160,16 +190,20 @@ The master invariant test suite `tests/election-normalization-invariants.test.mj
 - **`W019-CAND-06`**: Rank 3 is the authoritative third-place candidate (`result = 'lost'`, correct designation and identity).
 - **`W019-CAND-07`**: Rank 4+ remain individually represented (13 individual candidates for Kodangal, 16 individual candidates for Gajwel).
 - **`W019-CAND-08`**: NOTA has no candidate rank (0 candidacies; exists exclusively as `ballot_choices` row).
-- **`W019-CAND-09`**: Candidate vote totals equal EVM + postal where channels are broken down (`chk_candidate_votes_sum`).
+- **`W019-CAND-09A`**: Where EVM and postal components are independently sourced, candidate total = EVM + postal (Case A: 6 candidates).
+- **`W019-CAND-09B`**: Where channel decomposition is unavailable, EVM and postal remain UNKNOWN (`NULL`) and zero fabricated splits exist (Case B: 23 candidates).
 - **`W019-CAND-10`**: Sum of all individually represented candidate valid votes equals the candidate-valid component ($193,161$ for Kodangal, $226,870$ for Gajwel).
 - **`W019-CAND-11`**: No candidate pool/aggregate placeholder is used as a substitute for individual records ($0$ pool/aggregate persons in database).
 - **`W019-CAND-12`**: Superseded candidate data remains in provenance history and is preserved in audit trail.
+- **`W019-STG-01..02`**: PostGIS 589 geometries frozen (589 rows, digest `f839fa02980318a8f35f932ebe72fa1d3ad6325dc86a624bf159d932fe5f613b`).
+- **`W019-PRD-01`**: Production database `ehfafcnimmjusyvplbah` strictly air-gapped.
 
 ---
 
 ## 6. Current Governance Boundaries & Standing Orders
 
 - **W019 Milestone Status:** `NOT COMPLETE / IN REMEDIATION` (submitted for user acceptance review).
+- **Implementation Agent Role:** Does **NOT** self-certify or self-accept.
 - **W020 Milestone Status:** `STRICTLY NOT AUTHORIZED`.
 - **W018 State Preservation:** 53/53 political entity invariant tests passing with zero regression.
 - **PostGIS Geometries:** 589 rows, SHA-256 digest `f839fa02980318a8f35f932ebe72fa1d3ad6325dc86a624bf159d932fe5f613b` preserved byte-for-byte.

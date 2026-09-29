@@ -219,14 +219,15 @@ async function runMasterBattery() {
     candUniqChk
   );
 
-  // W019-SCH-11: Candidacy vote breakdown conservation: votes_received = evm_votes + postal_votes
+  // W019-SCH-11: Candidacy vote breakdown conservation with UNKNOWN null semantics:
+  // (evm_votes IS NULL AND postal_votes IS NULL) OR (evm_votes IS NOT NULL AND postal_votes IS NOT NULL AND votes_received = evm_votes + postal_votes)
   const candVoteSumChk = queryLocalPsql(
     "SELECT pg_get_constraintdef(oid) FROM pg_constraint WHERE conname = 'chk_candidate_votes_sum';"
   );
-  const hasCandVoteSum = candVoteSumChk.includes('votes_received') && candVoteSumChk.includes('evm_votes') && candVoteSumChk.includes('postal_votes');
+  const hasCandVoteSum = candVoteSumChk.includes('votes_received') && candVoteSumChk.includes('evm_votes') && candVoteSumChk.includes('postal_votes') && candVoteSumChk.includes('IS NULL');
   recordCheck(
     'W019-SCH-11',
-    'candidacies enforces channel breakdown conservation: votes_received = evm_votes + postal_votes',
+    'candidacies enforces channel breakdown conservation with UNKNOWN null semantics: (evm IS NULL AND postal IS NULL) OR (votes_received = evm + postal)',
     hasCandVoteSum,
     candVoteSumChk
   );
@@ -366,16 +367,19 @@ async function runMasterBattery() {
     acct05Lines.join('; ')
   );
 
-  // W019-ACCT-06: postal vote values cannot silently duplicate another vote category
+  // W019-ACCT-06: postal vote values cannot silently duplicate another vote category (null semantics enforced)
   const acct06Raw = queryLocalPsql(`
     SELECT count(*) 
     FROM public.candidacies 
-    WHERE contest_id IS NOT NULL AND NOT (votes_received = evm_votes + postal_votes OR (evm_votes = 0 AND postal_votes = 0));
+    WHERE contest_id IS NOT NULL AND NOT (
+      (evm_votes IS NULL AND postal_votes IS NULL)
+      OR (evm_votes IS NOT NULL AND postal_votes IS NOT NULL AND votes_received = (evm_votes + postal_votes))
+    );
   `);
   const acct06Passed = Number(acct06Raw) === 0;
   recordCheck(
     'W019-ACCT-06',
-    'ACCT-06: postal vote values are an EVM/Postal channel breakdown of candidate votes and cannot duplicate categories',
+    'ACCT-06: postal vote values are an EVM/Postal channel breakdown of candidate votes with strict UNKNOWN null semantics',
     acct06Passed,
     `Mismatched candidacies: ${acct06Raw}`
   );
@@ -1900,19 +1904,60 @@ async function runMasterBattery() {
     `Candidacies: ${cand08NotaCands}, Ballot choices: ${cand08ChoiceLines.join('; ')}`
   );
 
-  // W019-CAND-09: Candidate vote totals equal EVM + postal where channels are broken down (chk_candidate_votes_sum)
-  const cand09Violations = queryLocalPsql(`
-    SELECT c.id || ': ' || c.votes_received || ' != ' || (c.evm_votes + c.postal_votes)
+  // W019-CAND-09A: Where EVM and postal components are independently sourced, candidate total = EVM + postal (Case A: 6 candidates)
+  const cand09aRows = queryLocalPsql(`
+    SELECT ec.contest_code || '|' || c.rank || '|' || p.canonical_name || '|' || c.votes_received || '|' || c.evm_votes || '|' || c.postal_votes
     FROM public.candidacies c
-    WHERE (c.evm_votes > 0 OR c.postal_votes > 0)
-    AND c.votes_received <> (c.evm_votes + c.postal_votes);
+    JOIN public.election_contests ec ON ec.id = c.contest_id
+    JOIN public.canonical_persons p ON p.id = c.person_id
+    WHERE ec.contest_code IN ('TS_LA_2023_GEN_TS-AC-065', 'TS_LA_2023_GEN_TS-AC-040')
+      AND c.evm_votes IS NOT NULL AND c.postal_votes IS NOT NULL
+    ORDER BY ec.contest_code, c.rank;
   `);
-  const cand09Pass = cand09Violations.trim().length === 0;
+  const cand09aLines = cand09aRows.split('\n').map((s) => s.trim()).filter(Boolean);
+  const cand09aCount = cand09aLines.length;
+  const cand09aConserved = cand09aCount === 6 && cand09aLines.every((l) => {
+    const parts = l.split('|');
+    const total = Number(parts[3]);
+    const evm = Number(parts[4]);
+    const postal = Number(parts[5]);
+    return total === evm + postal;
+  });
   recordCheck(
-    'W019-CAND-09',
-    'CAND-09: Candidate vote totals equal EVM + postal where channels are broken down (chk_candidate_votes_sum)',
-    cand09Pass,
-    cand09Pass ? 'All candidates with channel breakdown conserve votes' : `Violations: ${cand09Violations}`
+    'W019-CAND-09A',
+    'CAND-09A: Where EVM and postal components are independently sourced, total = EVM + postal (Case A: 6 candidates)',
+    cand09aConserved,
+    cand09aConserved ? `6 candidates independently evidenced: ${cand09aLines.map(l => l.split('|').slice(1).join(':')).join('; ')}` : `Conservation failure in Case A: ${cand09aRows}`
+  );
+
+  // W019-CAND-09B: Where channel decomposition is unavailable, EVM and postal remain UNKNOWN (NULL) and zero fabricated splits exist (Case B: 23 candidates)
+  const cand09bRows = queryLocalPsql(`
+    SELECT ec.contest_code || '|' || c.rank || '|' || p.canonical_name || '|' || c.votes_received || '|' || COALESCE(c.evm_votes::text, 'NULL') || '|' || COALESCE(c.postal_votes::text, 'NULL')
+    FROM public.candidacies c
+    JOIN public.election_contests ec ON ec.id = c.contest_id
+    JOIN public.canonical_persons p ON p.id = c.person_id
+    WHERE ec.contest_code IN ('TS_LA_2023_GEN_TS-AC-065', 'TS_LA_2023_GEN_TS-AC-040')
+      AND (c.evm_votes IS NULL OR c.postal_votes IS NULL)
+    ORDER BY ec.contest_code, c.rank;
+  `);
+  const cand09bLines = cand09bRows.split('\n').map((s) => s.trim()).filter(Boolean);
+  const cand09bCount = cand09bLines.length;
+  const zeroMagicZeros = Number(queryLocalPsql(`
+    SELECT count(*) FROM public.candidacies
+    WHERE contest_id IN (SELECT id FROM public.election_contests WHERE contest_code IN ('TS_LA_2023_GEN_TS-AC-065', 'TS_LA_2023_GEN_TS-AC-040'))
+      AND evm_votes = 0 AND postal_votes = 0 AND votes_received > 0;
+  `)) === 0;
+  const zeroFabricatedSplits = Number(queryLocalPsql(`
+    SELECT count(*) FROM public.candidacies
+    WHERE contest_id IN (SELECT id FROM public.election_contests WHERE contest_code IN ('TS_LA_2023_GEN_TS-AC-065', 'TS_LA_2023_GEN_TS-AC-040'))
+      AND rank >= 4 AND (evm_votes IS NOT NULL OR postal_votes IS NOT NULL);
+  `)) === 0;
+  const cand09bPass = cand09bCount === 23 && zeroMagicZeros && zeroFabricatedSplits && cand09bLines.every(l => l.endsWith('|NULL|NULL'));
+  recordCheck(
+    'W019-CAND-09B',
+    'CAND-09B: Where channel decomposition is unavailable, EVM and postal remain UNKNOWN (NULL) and zero fabricated splits exist (Case B: 23 candidates)',
+    cand09bPass,
+    cand09bPass ? `23 candidates verified UNKNOWN null (10 Kodangal, 13 Gajwel); 0 magic zeros; 0 fabricated splits` : `Violations in Case B: ${cand09bRows}`
   );
 
   // W019-CAND-10: Sum of all individually represented candidate valid votes equals the candidate-valid component (Kodangal: 193,161; Gajwel: 226,870)

@@ -176,8 +176,8 @@ export interface Candidacy {
   isIndependent: boolean;
   result: ElectionResultEnum;
   votesReceived: number;
-  evmVotes?: number;
-  postalVotes?: number;
+  evmVotes?: number | null;
+  postalVotes?: number | null;
   voteShare: number;
   rank: number;
   affidavitId?: string | null;

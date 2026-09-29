@@ -1739,17 +1739,47 @@
      - Milestone W020 remains **STRICTLY NOT AUTHORIZED**.
      - Production database remains completely air-gapped and untouched.
 
+---
 
-
-
-
-
-
-
-
-
-
-
-
-
+### DEC-083: W019 CANDIDATE CHANNEL UNKNOWN EVIDENCE-SEMANTICS CLOSURE
+- **Date:** 2026-09-30
+- **Status:** IMPLEMENTED & SUBMITTED FOR CTO DETERMINATION (W019 NOT COMPLETE / W020 STRICTLY NOT AUTHORIZED)
+- **Authority:** CTO Directive: "CTO FINAL W019 EVIDENCE-SEMANTICS CLOSURE"
+- **Context:** While candidate granularity was accepted, the report previously claimed blanket invariant W019-CAND-09 ("Candidate vote totals equal EVM + postal channel breakdown") while displaying "—" for Rank 4+ candidates because their channel breakdown was UNKNOWN. Earlier seeds had sentinel zeros (`evm_votes = 0, postal_votes = 0`), which violated anti-derivation rules. The CTO required distinguishing Case A (independently evidenced EVM/postal) from Case B (authoritative total votes, UNKNOWN channel decomposition), enforcing explicit null persistence/API semantics, barring magic zeros, and replacing W019-CAND-09 with W019-CAND-09A and W019-CAND-09B.
+- **Remediation Outcomes:**
+  1. **Schema & Constraint Hardening (Migration 054):**
+     - Dropped default `0` from `candidacies.evm_votes` and `candidacies.postal_votes`.
+     - Migrated existing lower-ranked candidates with `evm_votes = 0 AND postal_votes = 0 AND votes_received > 0` to `NULL`.
+     - Replaced check constraint `chk_candidate_votes_sum` with:
+       `CHECK ((evm_votes IS NULL AND postal_votes IS NULL) OR (evm_votes IS NOT NULL AND postal_votes IS NOT NULL AND votes_received = (evm_votes + postal_votes)))`.
+     - Updated `public.fn_validate_contest_totals` to enforce candidate channel consistency with UNKNOWN null semantics.
+  2. **Case Classification & Statutory Accounting:**
+     - **Case A (Independently Evidenced EVM + Postal): 6 candidates**
+       - Kodangal: Rank 1 Revanth Reddy (106,820 + 609 = 107,429), Rank 2 Narender Reddy (74,431 + 466 = 74,897), Rank 3 Bantu Ramesh Kumar (3,928 + 60 = 3,988).
+       - Gajwel: Rank 1 KCR (110,984 + 700 = 111,684), Rank 2 Eatala Rajender (65,961 + 692 = 66,653), Rank 3 Tumkunta Narsa Reddy (32,318 + 250 = 32,568).
+     - **Case B (Directly Sourced Total Votes, UNKNOWN Channel Decomposition): 23 candidates**
+       - Kodangal Ranks 4..13: 10 candidates (totaling 7,947 votes). `evm_votes = NULL`, `postal_votes = NULL`.
+       - Gajwel Ranks 4..16: 13 candidates (totaling 15,965 votes). `evm_votes = NULL`, `postal_votes = NULL`.
+       - Zero arithmetic decomposition performed; anti-fabrication enforced.
+     - **Channel Subtotal Reconciliations:**
+       - Kodangal: Case A EVM subtotal ($185,179$) + Postal subtotal ($1,135$) = $186,314$; with $7,947$ UNKNOWN channel votes = $193,161$ candidate valid total; + NOTA ($2,002$) = $195,163$ total valid; + rejected ($124$) = $195,287$ total polled.
+       - Gajwel: Case A EVM subtotal ($209,263$) + Postal subtotal ($1,642$) = $210,905$; with $15,965$ UNKNOWN channel votes = $226,870$ candidate valid total; + NOTA ($832$) = $227,702$ total valid; total polled = $232,417$; total rejected = `NULL` (UNKNOWN).
+  3. **Shared Types & Fastify API Hardening:**
+     - `Candidacy.evmVotes?: number | null;` and `Candidacy.postalVotes?: number | null;` in `packages/shared/src/types/politicalEntities.ts`.
+     - Preserved explicit `null` mapping in `apps/api/src/services/electionService.ts` (`evmVotes: row.evm_votes === null ? null : ...`).
+     - Added test assertions in `apps/api/src/__tests__/elections.test.ts` for Case A vs Case B channel outputs (10/10 PASS).
+  4. **Master Verification & Invariants Battery (93/93 Checks PASS — 100%):**
+     - Updated `W019-SCH-11` (allows null channels).
+     - Updated `W019-ACCT-06` (enforces null semantics, fails closed on magic zeros).
+     - Split `W019-CAND-09` into `W019-CAND-09A` (Case A: 6 candidates conserve $EVM + Postal = Total$) and `W019-CAND-09B` (Case B: 23 candidates preserve $NULL$ channels with 0 magic zeros and 0 fabricated splits).
+     - PostGIS 589 geometries frozen (`f839fa02980318a8f35f932ebe72fa1d3ad6325dc86a624bf159d932fe5f613b`).
+     - Production air-gap preserved (`ehfafcnimmjusyvplbah` untouched).
+     - W018 political entities regression: 53/53 PASS.
+     - Declared contract check: 9/9 MATCH.
+     - TypeScript compilation: 0 errors across API and Mobile.
+  5. **Governance & Milestone Gate Status:**
+     - Milestone W019 is submitted for formal CTO acceptance review.
+     - The implementation agent explicitly does NOT self-certify or self-accept.
+     - Milestone W020 remains **STRICTLY NOT AUTHORIZED**.
+     - Production database remains completely air-gapped and untouched.
 
