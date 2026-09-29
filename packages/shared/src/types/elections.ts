@@ -27,9 +27,7 @@ export type ContestStatusEnum =
   | 're_polled';
 
 export type BallotChoiceType =
-  | 'NOTA'
-  | 'REJECTED_POSTAL'
-  | 'DISPUTED_VOTES';
+  | 'NOTA';
 
 export interface ElectionEvent {
   id: string;
@@ -84,6 +82,7 @@ export interface BallotChoice {
   id: string;
   contestId: string;
   choiceType: BallotChoiceType;
+  isValidVote: boolean;
   votesReceived: number;
   voteShare: number;
   createdAt: string;

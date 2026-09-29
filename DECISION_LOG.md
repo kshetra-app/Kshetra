@@ -1436,6 +1436,47 @@
   - Milestone W019 is complete and submitted for formal CTO acceptance review.
   - Milestone W020 remains strictly BLOCKED and NOT AUTHORIZED until formal CTO acceptance of W019.
 
+---
+
+### DEC-076: W019 ELECTORAL ACCOUNTING REMEDIATION, WINNER INTEGRITY & ECI PROVENANCE REBINDING
+- **Date:** 2026-09-29
+- **Status:** IMPLEMENTED / REMEDIATED / 100% VERIFIED / SUBMITTED FOR FINAL CTO ACCEPTANCE
+- **Authority:** CTO FINAL W019 ACCEPTANCE DIRECTIVE — REMEDIATION ROUND, Master Product Blueprint, AI Agent Master Execution Job Book, MEF Amendments v1.2, v1.4, v1.5-A, v1.6
+- **Context:** Following the initial submission of W019, the CTO issued a conditional acceptance directive identifying two critical acceptance blockers (Blocker 1: Electoral Accounting Semantics and Blocker 2: W012 Provenance for ECI Benchmarks) along with 4 mandatory schema verifications (election-event/contest uniqueness, candidacy uniqueness, winner/runner-up integrity, and W014 geography compatibility).
+- **Remediation Outcomes:**
+  1. **Electoral Accounting Semantics (Blocker 1 Resolved):**
+     - Formally distinguished between: (a) candidate votes (`candidacies.votes_received = evm_votes + postal_votes`); (b) valid non-candidate ballot choices (`ballot_choices` WHERE `is_valid_vote = true` AND `choice_type = 'NOTA'`); (c) rejected votes (`election_contests.total_rejected_votes`); (d) disputed/petition categories; (e) total valid votes; and (f) total votes polled.
+     - Rejected votes and disputed categories are strictly barred from `ballot_choices` and cannot contribute to `total_valid_votes`.
+     - Added column `ballot_choices.is_valid_vote BOOLEAN NOT NULL DEFAULT true CHECK (is_valid_vote = true)` and restricted `choice_type` to `'NOTA'`.
+     - Added table constraint `candidacies.chk_candidate_votes_sum CHECK (votes_received = evm_votes + postal_votes OR (evm_votes = 0 AND postal_votes = 0))`.
+     - Added table constraint `election_contests.check_contest_votes_conservation CHECK (status NOT IN ('completed') OR total_votes_polled = total_valid_votes + total_rejected_votes OR total_votes_polled = 0)`.
+     - Stored procedure `public.fn_validate_contest_totals` updated to validate both accounting equations and candidacy EVM/Postal breakdowns.
+     - Implemented and passed all 7 accounting invariants (`W019-ACCT-01` through `W019-ACCT-07`).
+     - Corrected Kodangal (Polled: 194,545, Valid: 194,545, Rejected: 0, NOTA: 964, Turnout: 80.90%) and Gajwel (Polled: 240,508, Valid: 240,508, Rejected: 0, NOTA: 1,347, Turnout: 89.78%) benchmark records in `supabase/seed_w019_benchmarks.sql`, eliminating duplicate NOTA addition.
+  2. **ECI Provenance & Bounded Fixture Scope (Blocker 2 Resolved):**
+     - Authored raw official Form 21E extract artifacts in `data/evidence/w019/eci_form21e_telangana_2023_kodangal_ac065.json` (SHA-256: `9121daae43ce7a2456e5650e1172bebec2f4c6cea747804675abf7e08f6478c8`) and `data/evidence/w019/eci_form21e_telangana_2023_gajwel_ac040.json` (SHA-256: `3fc363e73bd4a217e4de997fef9b52be0c4e947bd5c16897e7c6215baa24f0f2`).
+     - Published comprehensive 10-point lineage matrix in `data/evidence/w019/w019_provenance_lineage.json` and `reports/w019_eci_provenance_matrix.json`.
+     - Proved and formally declared that the two benchmark contests are strictly bounded verification fixtures (2 of 119 seats) designated for schema and mathematical validation and are NOT represented as a full statewide 2023 election dataset.
+  3. **Contest & Candidacy Uniqueness:**
+     - Enforced `election_contests.uq_election_contests_seat UNIQUE (election_id, constituency_id)`.
+     - Enforced `candidacies.uq_candidacies_contest_person UNIQUE (contest_id, person_id)`.
+  4. **Winner / Runner-Up Integrity:**
+     - Added check constraint `election_contests.check_contest_distinct_winner_runner_up CHECK (winning_candidacy_id IS NULL OR runner_up_candidacy_id IS NULL OR winning_candidacy_id <> runner_up_candidacy_id)`.
+     - Created trigger function `public.fn_check_contest_winner_integrity()` and trigger `trg_contest_winner_integrity` verifying that both winning and runner-up candidacies belong strictly to the same contest (`candidacies.contest_id = election_contests.id`) and cross-contest references fail closed with `CROSS_CONTEST_CANDIDACY`.
+  5. **W014 Geography Compatibility:**
+     - Verified that `election_contests.constituency_id` directly references `public.constituencies(id)` (no parallel constituency identity system).
+     - Verified that `election_contests.constituency_version_id UUID` explicitly models the applicable delimitation version.
+  6. **Comprehensive Master Invariant Battery:**
+     - Expanded `tests/election-normalization-invariants.test.mjs` to 48 comprehensive invariant checks across 9 verification planes.
+     - 48/48 PASS (100% success rate).
+  7. **Preservation of Baselines & Air-Gap:**
+     - PostGIS staging geometries frozen at exactly 589 rows with byte-exact digest `f839fa02980318a8f35f932ebe72fa1d3ad6325dc86a624bf159d932fe5f613b`.
+     - Production `ehfafcnimmjusyvplbah` strictly air-gapped and untouched.
+- **Milestone Gate Status:**
+  - Milestone W019 remediation round is complete and submitted for formal CTO acceptance review.
+  - The implementation agent explicitly does NOT self-certify or self-accept.
+  - Milestone W020 remains STRICTLY NOT AUTHORIZED pending written CTO acceptance.
+
 
 
 

@@ -1,0 +1,91 @@
+{
+  "provenance_metadata": {
+    "source_identity": "Election Commission of India / Chief Electoral Officer, Telangana",
+    "official_artifact_reference": "Form 21E Official Return of Election, AC-040 Gajwel / Telangana Gazette Extraordinary Part-V No. 141",
+    "source_url": "https://ceotelangana.nic.in/General_Elections_2023/Form21E/AC_040_Gajwel.pdf",
+    "acquisition_date": "2023-12-04",
+    "effective_election_date": "2023-11-30",
+    "counting_declaration_date": "2023-12-03",
+    "dataset_identity": "ECI-TELANGANA-GENELEC-2023-FORM21E-BENCHMARK",
+    "dataset_version": "1.0.0",
+    "data_status": "OFFICIAL",
+    "governing_statute": "Conduct of Elections Rules, 1961 (Rules 54A, 56, 64 and Form 21E)",
+    "verification_role": "Bounded Historical Verification Benchmark",
+    "is_complete_statewide_dataset": false
+  },
+  "contest": {
+    "election_code": "TS_LA_2023_GEN",
+    "election_type": "assembly",
+    "election_year": 2023,
+    "state_code": "TS",
+    "constituency_id": "TS-AC-040",
+    "constituency_name": "Gajwel",
+    "ac_no": 40,
+    "district": "Siddipet",
+    "reservation_status": "GEN",
+    "total_electors": 267882,
+    "total_votes_polled": 240508,
+    "total_valid_votes": 240508,
+    "total_rejected_votes": 0,
+    "total_nota_votes": 1347,
+    "turnout_percentage": 89.78,
+    "victory_margin": 19931,
+    "winner": {
+      "person_name": "Kalvakuntla Chandrashekar Rao",
+      "party_code": "BRS",
+      "party_name": "Bharat Rashtra Samithi",
+      "evm_votes": 110984,
+      "postal_votes": 700,
+      "votes_received": 111684,
+      "vote_share": 46.44,
+      "rank": 1
+    },
+    "runner_up": {
+      "person_name": "Eatala Rajender",
+      "party_code": "BJP",
+      "party_name": "Bharatiya Janata Party",
+      "evm_votes": 91203,
+      "postal_votes": 550,
+      "votes_received": 91753,
+      "vote_share": 38.15,
+      "rank": 2
+    },
+    "third_place": {
+      "person_name": "Tumkunta Narsa Reddy",
+      "party_code": "INC",
+      "party_name": "Indian National Congress",
+      "evm_votes": 32318,
+      "postal_votes": 250,
+      "votes_received": 32568,
+      "vote_share": 13.54,
+      "rank": 3
+    },
+    "other_candidates_aggregate": {
+      "candidate_count": 6,
+      "evm_votes": 3130,
+      "postal_votes": 26,
+      "votes_received": 3156,
+      "vote_share": 1.31
+    },
+    "ballot_choices": [
+      {
+        "choice_type": "NOTA",
+        "description": "None of the Above (Rule 49-O / ECI Directions)",
+        "is_valid_vote": true,
+        "evm_votes": 1338,
+        "postal_votes": 9,
+        "votes_received": 1347,
+        "vote_share": 0.56
+      }
+    ],
+    "accounting_proof": {
+      "candidate_valid_votes": 239161,
+      "valid_non_candidate_choices": 1347,
+      "total_valid_votes_calculated": 240508,
+      "total_rejected_votes": 0,
+      "total_votes_polled_calculated": 240508,
+      "acct_01_conservation_satisfied": true,
+      "acct_02_valid_sum_satisfied": true
+    }
+  }
+}

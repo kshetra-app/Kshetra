@@ -2,17 +2,20 @@
  * tests/election-normalization-invariants.test.mjs
  *
  * Milestone W019 — Election Data Normalization
- * Master Verification & Invariant Test Battery
+ * Master Verification & Invariant Test Battery (Remediation Round)
  *
  * Directives:
- * - Master Execution Framework Amendments v1.2, v1.4, v1.5-A, v1.6 (DEC-074, DEC-075)
+ * - Master Execution Framework Amendments v1.2, v1.4, v1.5-A, v1.6 (DEC-074, DEC-075, DEC-076)
  * - Strict Separation of Verification Planes:
- *   1. Schema Invariants (W019-SCH-01..08)
- *   2. Mathematical Accounting & Turnout Balance (W019-MTH-01..06)
- *   3. Edge Case Invariant Proofs (W019-EDG-01..04)
- *   4. Authoritative ECI Form 21E Benchmarks (W019-ECI-01..06)
- *   5. Staging PostGIS 589 Geometry Baseline (W019-STG-01..02)
- *   6. Production Air-Gap Invariant (W019-PRD-01)
+ *   1. Database Catalog & Schema Integrity (W019-SCH-01..13)
+ *   2. Electoral Accounting Semantics (W019-ACCT-01..07)
+ *   3. Mathematical Accounting & Turnout Balance (W019-MTH-01..06)
+ *   4. Edge Case Invariant Proofs (W019-EDG-01..08)
+ *   5. Authoritative ECI Form 21E Benchmarks (W019-ECI-01..06)
+ *   6. W014 Geography Identity Compatibility (W019-GEO-01..02)
+ *   7. Authoritative W012 Provenance & Lineage Integrity (W019-PRV-01..03)
+ *   8. Staging PostGIS 589 Geometry Baseline (W019-STG-01..02)
+ *   9. Production Air-Gap Invariant (W019-PRD-01)
  */
 
 import fs from 'node:fs';
@@ -23,7 +26,7 @@ import dotenv from 'dotenv';
 import { createClient } from '@supabase/supabase-js';
 
 console.log('================================================================');
-console.log('W019: ELECTION DATA NORMALIZATION');
+console.log('W019: ELECTION DATA NORMALIZATION (REMEDIATION ROUND)');
 console.log('MASTER INVARIANT & VERIFICATION BATTERY');
 console.log(`Execution Timestamp: ${new Date().toISOString()}`);
 console.log('Staging Project: panIN-staging (fkpigozcqnmcvofuksar)');
@@ -85,7 +88,7 @@ function queryLocalPsql(sql) {
 }
 
 async function runMasterBattery() {
-  // ─── 1. DATABASE CATALOG & SCHEMA INTEGRITY (W019-SCH-01..08) ───────────────
+  // ─── 1. DATABASE CATALOG & SCHEMA INTEGRITY (W019-SCH-01..13) ───────────────
   console.log('\n--- 1. DATABASE CATALOG & SCHEMA INTEGRITY ---');
 
   // W019-SCH-01: Public election tables exist
@@ -136,16 +139,16 @@ async function runMasterBattery() {
     turnoutChk
   );
 
-  // W019-SCH-05: Check constraint check_contest_votes_polled enforces valid + rejected <= polled
-  const validPolledChk = queryLocalPsql(
-    "SELECT pg_get_constraintdef(oid) FROM pg_constraint WHERE conname = 'check_contest_votes_polled';"
+  // W019-SCH-05: Check constraint check_contest_votes_conservation enforces total_votes_polled = total_valid_votes + total_rejected_votes
+  const conservationChk = queryLocalPsql(
+    "SELECT pg_get_constraintdef(oid) FROM pg_constraint WHERE conname = 'check_contest_votes_conservation';"
   );
-  const hasValidPolledChk = validPolledChk.includes('total_valid_votes') && validPolledChk.includes('total_votes_polled');
+  const hasConservationChk = conservationChk.includes('total_votes_polled') && conservationChk.includes('total_valid_votes') && conservationChk.includes('total_rejected_votes');
   recordCheck(
     'W019-SCH-05',
-    'check_contest_votes_polled constraint enforces valid + rejected <= total_votes_polled',
-    hasValidPolledChk,
-    validPolledChk
+    'check_contest_votes_conservation constraint enforces total_votes_polled = total_valid_votes + total_rejected_votes',
+    hasConservationChk,
+    conservationChk
   );
 
   // W019-SCH-06: Check constraint check_contest_electors enforces polled <= electors
@@ -162,15 +165,15 @@ async function runMasterBattery() {
 
   // W019-SCH-07: Stored functions are 100% SECURITY INVOKER with pinned search_path
   const fnSecRaw = queryLocalPsql(
-    "SELECT proname || ':' || prosecdef || ':' || proconfig[1] FROM pg_proc WHERE proname IN ('fn_validate_contest_totals', 'fn_refresh_contest_metrics') ORDER BY proname;"
+    "SELECT proname || ':' || prosecdef || ':' || proconfig[1] FROM pg_proc WHERE proname IN ('fn_validate_contest_totals', 'fn_refresh_contest_metrics', 'fn_check_contest_winner_integrity') ORDER BY proname;"
   );
   const fnLines = fnSecRaw.split('\n').map((s) => s.trim()).filter(Boolean);
   const allInvokerAndPinned =
-    fnLines.length === 2 &&
+    fnLines.length === 3 &&
     fnLines.every((l) => (l.includes(':false:') || l.includes(':f:')) && l.includes('search_path=public, pg_temp'));
   recordCheck(
     'W019-SCH-07',
-    'Validation and metrics functions are 100% SECURITY INVOKER with search_path = public, pg_temp',
+    'Validation, metrics, and trigger functions are 100% SECURITY INVOKER with search_path = public, pg_temp',
     allInvokerAndPinned,
     fnLines.join('; ')
   );
@@ -188,8 +191,221 @@ async function runMasterBattery() {
     rlsLines.join(', ')
   );
 
-  // ─── 2. MATHEMATICAL ACCOUNTING & TURNOUT BALANCE (W019-MTH-01..06) ────────
-  console.log('\n--- 2. MATHEMATICAL ACCOUNTING & TURNOUT BALANCE ---');
+  // W019-SCH-09: Contest uniqueness: UNIQUE (election_id, constituency_id)
+  const contestUniqChk = queryLocalPsql(
+    "SELECT pg_get_constraintdef(oid) FROM pg_constraint WHERE conname = 'uq_election_contests_seat';"
+  );
+  const hasContestUniq = contestUniqChk.includes('election_id') && contestUniqChk.includes('constituency_id');
+  recordCheck(
+    'W019-SCH-09',
+    'election_contests enforces seat-level uniqueness UNIQUE (election_id, constituency_id)',
+    hasContestUniq,
+    contestUniqChk
+  );
+
+  // W019-SCH-10: Candidacy uniqueness: UNIQUE (contest_id, person_id)
+  const candUniqChk = queryLocalPsql(
+    "SELECT pg_get_constraintdef(oid) FROM pg_constraint WHERE conname = 'uq_candidacies_contest_person';"
+  );
+  const hasCandUniq = candUniqChk.includes('contest_id') && candUniqChk.includes('person_id');
+  recordCheck(
+    'W019-SCH-10',
+    'candidacies enforces candidate uniqueness UNIQUE (contest_id, person_id)',
+    hasCandUniq,
+    candUniqChk
+  );
+
+  // W019-SCH-11: Candidacy vote breakdown conservation: votes_received = evm_votes + postal_votes
+  const candVoteSumChk = queryLocalPsql(
+    "SELECT pg_get_constraintdef(oid) FROM pg_constraint WHERE conname = 'chk_candidate_votes_sum';"
+  );
+  const hasCandVoteSum = candVoteSumChk.includes('votes_received') && candVoteSumChk.includes('evm_votes') && candVoteSumChk.includes('postal_votes');
+  recordCheck(
+    'W019-SCH-11',
+    'candidacies enforces channel breakdown conservation: votes_received = evm_votes + postal_votes',
+    hasCandVoteSum,
+    candVoteSumChk
+  );
+
+  // W019-SCH-12: ballot_choices enforces is_valid_vote = true and choice_type IN ('NOTA')
+  const ballotChoiceChk = queryLocalPsql(
+    "SELECT pg_get_constraintdef(oid) FROM pg_constraint WHERE conrelid = 'public.ballot_choices'::regclass AND conname = 'ballot_choices_choice_type_check';"
+  );
+  const ballotValidCol = queryLocalPsql(
+    "SELECT column_name || ':' || is_nullable FROM information_schema.columns WHERE table_schema = 'public' AND table_name = 'ballot_choices' AND column_name = 'is_valid_vote';"
+  );
+  const hasBallotValid = ballotChoiceChk.includes('NOTA') && !ballotChoiceChk.includes('REJECTED_POSTAL') && ballotValidCol.includes('is_valid_vote:NO');
+  recordCheck(
+    'W019-SCH-12',
+    'ballot_choices restricts choice_type strictly to valid choices (NOTA) with is_valid_vote = true',
+    hasBallotValid,
+    `Choice type chk: ${ballotChoiceChk}, Column: ${ballotValidCol}`
+  );
+
+  // W019-SCH-13: Contest distinct winner and runner-up check
+  const distinctWinnerChk = queryLocalPsql(
+    "SELECT pg_get_constraintdef(oid) FROM pg_constraint WHERE conname = 'check_contest_distinct_winner_runner_up';"
+  );
+  const hasDistinctWinner = distinctWinnerChk.includes('winning_candidacy_id') && distinctWinnerChk.includes('runner_up_candidacy_id');
+  recordCheck(
+    'W019-SCH-13',
+    'election_contests enforces winning_candidacy_id <> runner_up_candidacy_id',
+    hasDistinctWinner,
+    distinctWinnerChk
+  );
+
+  // ─── 2. ELECTORAL ACCOUNTING SEMANTICS (W019-ACCT-01..07) ─────────────────
+  console.log('\n--- 2. ELECTORAL ACCOUNTING SEMANTICS ---');
+
+  // W019-ACCT-01: total_votes_polled = total_valid_votes + total_rejected_votes
+  const acct01Raw = queryLocalPsql(`
+    SELECT 
+      contest_code || '|' || total_votes_polled || '|' || total_valid_votes || '|' || total_rejected_votes || '|' ||
+      CASE WHEN total_votes_polled = (total_valid_votes + total_rejected_votes) THEN 'VALID' ELSE 'INVALID' END
+    FROM public.election_contests
+    WHERE status = 'completed';
+  `);
+  const acct01Lines = acct01Raw.split('\n').map((s) => s.trim()).filter(Boolean);
+  const acct01Passed = acct01Lines.length >= 2 && acct01Lines.every((l) => l.endsWith('|VALID'));
+  recordCheck(
+    'W019-ACCT-01',
+    'ACCT-01: total_votes_polled = total_valid_votes + total_rejected_votes across completed contests',
+    acct01Passed,
+    acct01Lines.join('; ')
+  );
+
+  // W019-ACCT-02: total_valid_votes equals candidate valid votes plus valid non-candidate ballot choices
+  const acct02Raw = queryLocalPsql(`
+    SELECT 
+      c.contest_code || '|' || c.total_valid_votes || '|' ||
+      COALESCE((SELECT sum(votes_received) FROM public.candidacies WHERE contest_id = c.id), 0) || '|' ||
+      COALESCE((SELECT sum(votes_received) FROM public.ballot_choices WHERE contest_id = c.id AND is_valid_vote = true), 0)
+    FROM public.election_contests c
+    WHERE c.status = 'completed';
+  `);
+  const acct02Lines = acct02Raw.split('\n').map((s) => s.trim()).filter(Boolean);
+  const acct02Passed = acct02Lines.length >= 2 && acct02Lines.every((l) => {
+    const [, valid, cand, nota] = l.split('|').map(Number);
+    return Number(valid) === Number(cand) + Number(nota);
+  });
+  recordCheck(
+    'W019-ACCT-02',
+    'ACCT-02: total_valid_votes equals candidate valid votes plus valid non-candidate ballot choices',
+    acct02Passed,
+    acct02Lines.join('; ')
+  );
+
+  // W019-ACCT-03: rejected votes cannot contribute to total_valid_votes
+  const acct03Raw = queryLocalPsql(`
+    SELECT count(*) 
+    FROM public.ballot_choices 
+    WHERE choice_type LIKE '%REJECTED%' OR is_valid_vote = false;
+  `);
+  const acct03ContestRaw = queryLocalPsql(`
+    SELECT count(*) 
+    FROM public.election_contests 
+    WHERE total_rejected_votes > 0 AND total_valid_votes = total_votes_polled;
+  `);
+  const acct03Passed = Number(acct03Raw) === 0 && Number(acct03ContestRaw) === 0;
+  recordCheck(
+    'W019-ACCT-03',
+    'ACCT-03: rejected votes cannot contribute to total_valid_votes and are never stored as valid ballot choices',
+    acct03Passed,
+    `Invalid ballot choices: ${acct03Raw}, Poll-Valid conflicts with rejected: ${acct03ContestRaw}`
+  );
+
+  // W019-ACCT-04: NOTA is represented as a valid non-candidate ballot choice
+  const acct04Raw = queryLocalPsql(`
+    SELECT choice_type || '|' || is_valid_vote || '|' || count(*)
+    FROM public.ballot_choices
+    WHERE choice_type = 'NOTA'
+    GROUP BY choice_type, is_valid_vote;
+  `);
+  const acct04Passed = acct04Raw.startsWith('NOTA|t|') || acct04Raw.startsWith('NOTA|true|');
+  recordCheck(
+    'W019-ACCT-04',
+    'ACCT-04: NOTA is represented as a valid non-candidate ballot choice with is_valid_vote = true',
+    acct04Passed,
+    acct04Raw
+  );
+
+  // W019-ACCT-05: the same vote category cannot be counted twice
+  const acct05Raw = queryLocalPsql(`
+    SELECT 
+      c.contest_code || '|polled:' || c.total_votes_polled || '|valid:' || c.total_valid_votes || '|cand:' ||
+      COALESCE((SELECT sum(votes_received) FROM public.candidacies WHERE contest_id = c.id), 0) || '|nota:' ||
+      c.total_nota_votes || '|double_counted_gap:' || (c.total_votes_polled - c.total_valid_votes - c.total_rejected_votes)
+    FROM public.election_contests c
+    WHERE c.status = 'completed';
+  `);
+  const acct05Lines = acct05Raw.split('\n').map((s) => s.trim()).filter(Boolean);
+  const acct05Passed = acct05Lines.length >= 2 && acct05Lines.every((l) => l.endsWith('|double_counted_gap:0'));
+  recordCheck(
+    'W019-ACCT-05',
+    'ACCT-05: the same vote category cannot be counted twice (zero double counting of NOTA in polled total)',
+    acct05Passed,
+    acct05Lines.join('; ')
+  );
+
+  // W019-ACCT-06: postal vote values cannot silently duplicate another vote category
+  const acct06Raw = queryLocalPsql(`
+    SELECT count(*) 
+    FROM public.candidacies 
+    WHERE contest_id IS NOT NULL AND NOT (votes_received = evm_votes + postal_votes OR (evm_votes = 0 AND postal_votes = 0));
+  `);
+  const acct06Passed = Number(acct06Raw) === 0;
+  recordCheck(
+    'W019-ACCT-06',
+    'ACCT-06: postal vote values are an EVM/Postal channel breakdown of candidate votes and cannot duplicate categories',
+    acct06Passed,
+    `Mismatched candidacies: ${acct06Raw}`
+  );
+
+  // W019-ACCT-07: an accounting-invalid contest fails closed
+  const acct07Raw = queryLocalPsql(`
+    DO $$
+    DECLARE
+      v_elec UUID;
+      v_cont UUID;
+      v_valid BOOLEAN;
+    BEGIN
+      INSERT INTO public.election_events (
+        election_code, state_code, election_year, election_type, title, polling_date, data_status
+      ) VALUES (
+        'TEST_ELEC_ACCT_07', 'TS', 2024, 'assembly', 'Acct Test 7', '2024-05-13', 'OFFICIAL'
+      ) RETURNING id INTO v_elec;
+
+      -- Attempt insertion violating polled = valid + rejected (polled: 1000, valid: 900, rejected: 0) -> gap of 100
+      BEGIN
+        INSERT INTO public.election_contests (
+          election_id, contest_code, constituency_id, constituency_name,
+          total_electors, total_votes_polled, total_valid_votes, total_rejected_votes,
+          turnout_percentage, victory_margin, status, data_status
+        ) VALUES (
+          v_elec, 'TEST_CONTEST_INVALID_ACCT', 'TS-AC-065', 'Kodangal Bad Acct',
+          2000, 1000, 900, 0,
+          50.00, 0, 'completed', 'OFFICIAL'
+        );
+        RAISE EXCEPTION 'CHECK_CONSERVATION_FAILED_TO_CATCH_IMBALANCE';
+      EXCEPTION WHEN OTHERS THEN
+        IF SQLERRM NOT LIKE '%check_contest_votes_conservation%' THEN
+          RAISE EXCEPTION 'UNEXPECTED_ERROR: %', SQLERRM;
+        END IF;
+      END;
+
+      DELETE FROM public.election_events WHERE id = v_elec;
+    END $$;
+  `);
+  const acct07Passed = !acct07Raw.startsWith('ERROR');
+  recordCheck(
+    'W019-ACCT-07',
+    'ACCT-07: an accounting-invalid contest fails closed via check_contest_votes_conservation',
+    acct07Passed,
+    acct07Raw ? acct07Raw : 'Constraint caught violation and cleanly rejected'
+  );
+
+  // ─── 3. MATHEMATICAL ACCOUNTING & TURNOUT BALANCE (W019-MTH-01..06) ────────
+  console.log('\n--- 3. MATHEMATICAL ACCOUNTING & TURNOUT BALANCE ---');
 
   // W019-MTH-01: Kodangal AC-065 candidate votes + NOTA == total_valid_votes (194,545)
   const kodangalMath = queryLocalPsql(`
@@ -200,7 +416,7 @@ async function runMasterBattery() {
     FROM public.election_contests c
     WHERE c.contest_code = 'TS_LA_2023_GEN_TS-AC-065';
   `);
-  const [kValid, kCand, kBallot] = (kodangalMath.split('|').map(Number));
+  const [kValid, kCand, kBallot] = kodangalMath.split('|').map(Number);
   const kSum = kCand + kBallot;
   recordCheck(
     'W019-MTH-01',
@@ -218,7 +434,7 @@ async function runMasterBattery() {
     FROM public.election_contests c
     WHERE c.contest_code = 'TS_LA_2023_GEN_TS-AC-040';
   `);
-  const [gValid, gCand, gBallot] = (gajwelMath.split('|').map(Number));
+  const [gValid, gCand, gBallot] = gajwelMath.split('|').map(Number);
   const gSum = gCand + gBallot;
   recordCheck(
     'W019-MTH-02',
@@ -287,13 +503,13 @@ async function runMasterBattery() {
   });
   recordCheck(
     'W019-MTH-06',
-    'Turnout percentage accurately matches total_votes_polled / total_electors ratio',
+    'Turnout percentage accurately matches total_votes_polled / total_electors ratio (Kodangal: 80.90%, Gajwel: 89.78%)',
     turnoutsAccurate,
     turnoutLines.join(', ')
   );
 
-  // ─── 3. EDGE CASE INVARIANT PROOFS (W019-EDG-01..04) ────────────────────────
-  console.log('\n--- 3. EDGE CASE INVARIANT PROOFS ---');
+  // ─── 4. EDGE CASE INVARIANT PROOFS (W019-EDG-01..08) ────────────────────────
+  console.log('\n--- 4. EDGE CASE INVARIANT PROOFS ---');
 
   // W019-EDG-01: Uncontested election contest representation
   const uncontestedTest = queryLocalPsql(`
@@ -317,11 +533,11 @@ async function runMasterBattery() {
       INSERT INTO public.election_contests (
         election_id, contest_code, constituency_id, constituency_name,
         total_electors, total_votes_polled, total_valid_votes, turnout_percentage,
-        victory_margin, data_status
+        victory_margin, status, data_status
       ) VALUES (
         v_elec, 'TEST_UNCONTESTED_AC', 'TS-AC-065', 'Kodangal Test',
         50000, 0, 0, 0.00,
-        0, 'OFFICIAL'
+        0, 'completed', 'OFFICIAL'
       ) RETURNING id INTO v_cont;
 
       INSERT INTO public.candidacies (
@@ -375,11 +591,11 @@ async function runMasterBattery() {
       INSERT INTO public.election_contests (
         election_id, contest_code, constituency_id, constituency_name,
         total_electors, total_votes_polled, total_valid_votes, turnout_percentage,
-        victory_margin, data_status
+        victory_margin, status, data_status
       ) VALUES (
         v_elec, 'TEST_TIE_AC', 'TS-AC-065', 'Kodangal Tie Test',
         10000, 8000, 8000, 80.00,
-        0, 'OFFICIAL'
+        0, 'completed', 'OFFICIAL'
       ) RETURNING id INTO v_cont;
 
       INSERT INTO public.candidacies (
@@ -423,14 +639,15 @@ async function runMasterBattery() {
       VALUES ('Imbalance Candidate', 'OFFICIAL') RETURNING id INTO v_p1;
 
       -- Deliberately declare total_valid_votes = 10000, but insert candidate with 9000 votes (1000 missing)
+      -- status = 'ongoing' to bypass completion conservation check during test setup
       INSERT INTO public.election_contests (
         election_id, contest_code, constituency_id, constituency_name,
         total_electors, total_votes_polled, total_valid_votes, turnout_percentage,
-        victory_margin, data_status
+        victory_margin, status, data_status
       ) VALUES (
         v_elec, 'TEST_IMBALANCE_AC', 'TS-AC-065', 'Kodangal Imbalance Test',
         20000, 10000, 10000, 50.00,
-        9000, 'OFFICIAL'
+        9000, 'scheduled', 'OFFICIAL'
       ) RETURNING id INTO v_cont;
 
       INSERT INTO public.candidacies (
@@ -477,8 +694,128 @@ async function runMasterBattery() {
     turnoutViolation
   );
 
-  // ─── 4. AUTHORITATIVE EXTERNAL ECI BENCHMARK EVIDENCE (W019-ECI-01..06) ─────
-  console.log('\n--- 4. AUTHORITATIVE EXTERNAL ECI BENCHMARK EVIDENCE ---');
+  // W019-EDG-05: Cross-contest winner reference fails closed via trigger trg_contest_winner_integrity
+  const crossContestTest = queryLocalPsql(`
+    DO $$
+    DECLARE
+      v_c1 UUID;
+      v_c2 UUID;
+      v_cand1 UUID;
+    BEGIN
+      SELECT id INTO v_c1 FROM public.election_contests WHERE contest_code = 'TS_LA_2023_GEN_TS-AC-065';
+      SELECT id INTO v_c2 FROM public.election_contests WHERE contest_code = 'TS_LA_2023_GEN_TS-AC-040';
+      SELECT id INTO v_cand1 FROM public.candidacies WHERE contest_id = v_c1 LIMIT 1;
+
+      -- Attempt to assign candidate from contest 1 as winner of contest 2
+      BEGIN
+        UPDATE public.election_contests SET winning_candidacy_id = v_cand1 WHERE id = v_c2;
+        RAISE EXCEPTION 'CROSS_CONTEST_CHECK_FAILED';
+      EXCEPTION WHEN OTHERS THEN
+        IF SQLERRM NOT LIKE '%CROSS_CONTEST_CANDIDACY%' THEN
+          RAISE EXCEPTION 'UNEXPECTED_ERROR: %', SQLERRM;
+        END IF;
+      END;
+    END $$;
+  `);
+  recordCheck(
+    'W019-EDG-05',
+    'Cross-contest winner reference strictly rejected by trg_contest_winner_integrity trigger',
+    !crossContestTest.startsWith('ERROR'),
+    crossContestTest ? crossContestTest : 'Cross-contest assignment correctly blocked with CROSS_CONTEST_CANDIDACY'
+  );
+
+  // W019-EDG-06: Identical winner and runner-up fails closed via trigger & check constraint
+  const duplicateWinnerTest = queryLocalPsql(`
+    DO $$
+    DECLARE
+      v_c1 UUID;
+      v_cand1 UUID;
+    BEGIN
+      SELECT id INTO v_c1 FROM public.election_contests WHERE contest_code = 'TS_LA_2023_GEN_TS-AC-065';
+      SELECT id INTO v_cand1 FROM public.candidacies WHERE contest_id = v_c1 LIMIT 1;
+
+      -- Attempt to assign same candidacy as both winner and runner-up
+      BEGIN
+        UPDATE public.election_contests SET winning_candidacy_id = v_cand1, runner_up_candidacy_id = v_cand1 WHERE id = v_c1;
+        RAISE EXCEPTION 'DUPLICATE_WINNER_CHECK_FAILED';
+      EXCEPTION WHEN OTHERS THEN
+        IF SQLERRM NOT LIKE '%check_contest_distinct_winner_runner_up%' AND SQLERRM NOT LIKE '%DUPLICATE_WINNER_RUNNER_UP%' THEN
+          RAISE EXCEPTION 'UNEXPECTED_ERROR: %', SQLERRM;
+        END IF;
+      END;
+    END $$;
+  `);
+  recordCheck(
+    'W019-EDG-06',
+    'Attempting to set winning_candidacy_id = runner_up_candidacy_id fails closed via trigger/check constraint',
+    !duplicateWinnerTest.startsWith('ERROR'),
+    duplicateWinnerTest ? duplicateWinnerTest : 'Duplicate winner/runner-up correctly rejected'
+  );
+
+  // W019-EDG-07: Duplicate candidacy for same person in same contest fails closed
+  const dupCandTest = queryLocalPsql(`
+    DO $$
+    DECLARE
+      v_c1 UUID;
+      v_p1 UUID;
+    BEGIN
+      SELECT id INTO v_c1 FROM public.election_contests WHERE contest_code = 'TS_LA_2023_GEN_TS-AC-065';
+      SELECT person_id INTO v_p1 FROM public.candidacies WHERE contest_id = v_c1 LIMIT 1;
+
+      BEGIN
+        INSERT INTO public.candidacies (
+          contest_id, person_id, election_year, election_type, constituency_type,
+          constituency_id, party_id, is_independent, result, votes_received, rank, data_status
+        ) VALUES (
+          v_c1, v_p1, 2023, 'assembly', 'assembly',
+          'TS-AC-065', 'ORG-PARTY-BJP', false, 'lost', 500, 99, 'OFFICIAL'
+        );
+        RAISE EXCEPTION 'DUPLICATE_CANDIDACY_NOT_CAUGHT';
+      EXCEPTION WHEN OTHERS THEN
+        IF SQLERRM NOT LIKE '%uq_candidacies_contest_person%' AND SQLERRM NOT LIKE '%unique constraint%' THEN
+          RAISE EXCEPTION 'UNEXPECTED_ERROR: %', SQLERRM;
+        END IF;
+      END;
+    END $$;
+  `);
+  recordCheck(
+    'W019-EDG-07',
+    'One person cannot receive duplicate candidacy records for the same contest (uq_candidacies_contest_person)',
+    !dupCandTest.startsWith('ERROR'),
+    dupCandTest ? dupCandTest : 'Duplicate candidacy for same person in same contest strictly blocked'
+  );
+
+  // W019-EDG-08: Duplicate contest for same seat and election fails closed
+  const dupContestTest = queryLocalPsql(`
+    DO $$
+    DECLARE
+      v_elec UUID;
+    BEGIN
+      SELECT id INTO v_elec FROM public.election_events WHERE election_code = 'TS_LA_2023_GEN';
+
+      BEGIN
+        INSERT INTO public.election_contests (
+          election_id, contest_code, constituency_id, constituency_name, data_status
+        ) VALUES (
+          v_elec, 'TS_LA_2023_GEN_DUPLICATE_KODANGAL', 'TS-AC-065', 'Kodangal Dup', 'OFFICIAL'
+        );
+        RAISE EXCEPTION 'DUPLICATE_CONTEST_NOT_CAUGHT';
+      EXCEPTION WHEN OTHERS THEN
+        IF SQLERRM NOT LIKE '%uq_election_contests_seat%' AND SQLERRM NOT LIKE '%unique constraint%' THEN
+          RAISE EXCEPTION 'UNEXPECTED_ERROR: %', SQLERRM;
+        END IF;
+      END;
+    END $$;
+  `);
+  recordCheck(
+    'W019-EDG-08',
+    'Accidental duplicate contest record for same election and constituency fails closed (uq_election_contests_seat)',
+    !dupContestTest.startsWith('ERROR'),
+    dupContestTest ? dupContestTest : 'Duplicate seat contest strictly blocked'
+  );
+
+  // ─── 5. AUTHORITATIVE EXTERNAL ECI BENCHMARK EVIDENCE (W019-ECI-01..06) ─────
+  console.log('\n--- 5. AUTHORITATIVE EXTERNAL ECI BENCHMARK EVIDENCE ---');
 
   // W019-ECI-01: Kodangal winner is Anumula Revanth Reddy (INC) with 107,429 votes (55.22%)
   const kWinner = queryLocalPsql(`
@@ -576,8 +913,107 @@ async function runMasterBattery() {
     `Margin: ${gmVotes} votes (${gmShare}%)`
   );
 
-  // ─── 5. STAGING POSTGIS 589 GEOMETRY BASELINE INTEGRITY (W019-STG-01..02) ──
-  console.log('\n--- 5. STAGING 589 GEOMETRY BASELINE INTEGRITY ---');
+  // ─── 6. W014 GEOGRAPHY IDENTITY COMPATIBILITY (W019-GEO-01..02) ───────────
+  console.log('\n--- 6. W014 GEOGRAPHY IDENTITY COMPATIBILITY ---');
+
+  // W019-GEO-01: Stable constituency identity references public.constituencies(id)
+  const geoFkRaw = queryLocalPsql(`
+    SELECT pg_get_constraintdef(oid) 
+    FROM pg_constraint 
+    WHERE conrelid = 'public.election_contests'::regclass AND conname = 'election_contests_constituency_id_fkey';
+  `);
+  const geoFkValid = geoFkRaw.includes('constituencies(id)');
+  recordCheck(
+    'W019-GEO-01',
+    'election_contests.constituency_id references canonical public.constituencies(id) without parallel identity systems',
+    geoFkValid,
+    geoFkRaw
+  );
+
+  // W019-GEO-02: Applicable delimitation version explicitly distinguished via constituency_version_id
+  const geoVerCol = queryLocalPsql(`
+    SELECT column_name || ':' || data_type 
+    FROM information_schema.columns 
+    WHERE table_schema = 'public' AND table_name = 'election_contests' AND column_name = 'constituency_version_id';
+  `);
+  const geoVerValid = geoVerCol === 'constituency_version_id:uuid';
+  recordCheck(
+    'W019-GEO-02',
+    'election_contests explicitly distinguishes stable constituency identity from applicable delimitation version via constituency_version_id UUID',
+    geoVerValid,
+    geoVerCol
+  );
+
+  // ─── 7. AUTHORITATIVE W012 PROVENANCE & LINEAGE INTEGRITY (W019-PRV-01..03) 
+  console.log('\n--- 7. AUTHORITATIVE W012 PROVENANCE & LINEAGE INTEGRITY ---');
+
+  // W019-PRV-01: Authoritative 10-point lineage matrix in data/evidence/w019/w019_provenance_lineage.json
+  const lineageFile = path.resolve('data/evidence/w019/w019_provenance_lineage.json');
+  let lineageJson = null;
+  let has10Points = false;
+  if (fs.existsSync(lineageFile)) {
+    lineageJson = JSON.parse(fs.readFileSync(lineageFile, 'utf8'));
+    has10Points =
+      lineageJson.benchmarks_provenance_matrix &&
+      lineageJson.benchmarks_provenance_matrix.length === 2 &&
+      lineageJson.benchmarks_provenance_matrix.every((b) => {
+        const keys = Object.keys(b.lineage);
+        return (
+          keys.length === 10 &&
+          b.lineage['1_source_identity'] &&
+          b.lineage['2_official_source_artifact_reference'] &&
+          b.lineage['3_acquisition_retrieval_date'] &&
+          b.lineage['4_election_effective_date'] &&
+          b.lineage['5_dataset_identity'] &&
+          b.lineage['6_dataset_version'] &&
+          b.lineage['7_evidence_record'] &&
+          b.lineage['8_provenance_record'] &&
+          b.lineage['9_normalized_record_linkage'] &&
+          b.lineage['10_transformation_lineage']
+        );
+      });
+  }
+  recordCheck(
+    'W019-PRV-01',
+    'Complete 10-point data-truth lineage verified for Kodangal and Gajwel Form 21E benchmarks',
+    has10Points,
+    `Benchmarks recorded: ${lineageJson?.benchmarks_provenance_matrix?.length || 0} / 2`
+  );
+
+  // W019-PRV-02: Evidence artifact SHA-256 digests verified
+  const kFile = path.resolve('data/evidence/w019/eci_form21e_telangana_2023_kodangal_ac065.json');
+  const gFile = path.resolve('data/evidence/w019/eci_form21e_telangana_2023_gajwel_ac040.json');
+  let artifactsValid = false;
+  let kHash = '';
+  let gHash = '';
+  if (fs.existsSync(kFile) && fs.existsSync(gFile)) {
+    kHash = crypto.createHash('sha256').update(fs.readFileSync(kFile)).digest('hex');
+    gHash = crypto.createHash('sha256').update(fs.readFileSync(gFile)).digest('hex');
+    artifactsValid =
+      kHash === lineageJson?.benchmarks_provenance_matrix[0]?.lineage?.['7_evidence_record']?.sha256 &&
+      gHash === lineageJson?.benchmarks_provenance_matrix[1]?.lineage?.['7_evidence_record']?.sha256;
+  }
+  recordCheck(
+    'W019-PRV-02',
+    'Evidence artifact SHA-256 digests byte-exact match authoritative provenance records in data/evidence/w019/',
+    artifactsValid,
+    `Kodangal: ${kHash.slice(0, 16)}..., Gajwel: ${gHash.slice(0, 16)}...`
+  );
+
+  // W019-PRV-03: Bounded verification fixture boundary proof
+  const isBoundedFixture =
+    lineageJson?.bounded_fixture_scope?.is_complete_state_dataset === false &&
+    lineageJson?.bounded_fixture_scope?.benchmark_constituencies_count === 2 &&
+    lineageJson?.bounded_fixture_scope?.total_telangana_constituencies_2023 === 119;
+  recordCheck(
+    'W019-PRV-03',
+    'Benchmark contests verified as strictly bounded verification fixtures and NOT represented as complete 119-seat dataset',
+    isBoundedFixture,
+    `Scope: ${lineageJson?.bounded_fixture_scope?.benchmark_constituencies_count} of ${lineageJson?.bounded_fixture_scope?.total_telangana_constituencies_2023} seats (is_complete_state_dataset: false)`
+  );
+
+  // ─── 8. STAGING POSTGIS 589 GEOMETRY BASELINE INTEGRITY (W019-STG-01..02) ──
+  console.log('\n--- 8. STAGING 589 GEOMETRY BASELINE INTEGRITY ---');
 
   const EXPECTED_ROW_COUNT = 589;
   const EXPECTED_DIGEST = 'f839fa02980318a8f35f932ebe72fa1d3ad6325dc86a624bf159d932fe5f613b';
@@ -649,8 +1085,8 @@ async function runMasterBattery() {
     `Digest: ${currentDigest}`
   );
 
-  // ─── 6. PRODUCTION AIR-GAP INVARIANT (W019-PRD-01) ───────────────────────────
-  console.log('\n--- 6. PRODUCTION AIR-GAP INVARIANT ---');
+  // ─── 9. PRODUCTION AIR-GAP INVARIANT (W019-PRD-01) ───────────────────────────
+  console.log('\n--- 9. PRODUCTION AIR-GAP INVARIANT ---');
 
   const prdUntouched = !supabaseUrl.includes('ehfafcnimmjusyvplbah');
   recordCheck(
@@ -670,9 +1106,9 @@ async function runMasterBattery() {
 
   const reportPayload = {
     job: 'W019',
-    title: 'Election Data Normalization',
+    title: 'Election Data Normalization (Remediation Round)',
     timestamp: new Date().toISOString(),
-    frameworkAmendment: 'v1.6 (DEC-074, DEC-075)',
+    frameworkAmendment: 'v1.6 (DEC-074, DEC-075, DEC-076)',
     stagingTarget: 'panIN-staging (fkpigozcqnmcvofuksar)',
     productionTarget: 'ehfafcnimmjusyvplbah (AIR-GAPPED)',
     geometryBaseline: {

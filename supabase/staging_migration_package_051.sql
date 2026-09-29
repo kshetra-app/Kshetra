@@ -74,7 +74,8 @@ CREATE TABLE IF NOT EXISTS public.election_contests (
   updated_at TIMESTAMPTZ NOT NULL DEFAULT now(),
   CONSTRAINT uq_election_contests_seat UNIQUE (election_id, constituency_id),
   CONSTRAINT check_contest_electors CHECK (total_votes_polled <= total_electors OR total_electors = 0),
-  CONSTRAINT check_contest_votes_polled CHECK (total_valid_votes + total_rejected_votes <= total_votes_polled OR total_votes_polled = 0)
+  CONSTRAINT check_contest_votes_conservation CHECK (status NOT IN ('completed') OR total_votes_polled = total_valid_votes + total_rejected_votes OR total_votes_polled = 0),
+  CONSTRAINT check_contest_distinct_winner_runner_up CHECK (winning_candidacy_id IS NULL OR runner_up_candidacy_id IS NULL OR winning_candidacy_id <> runner_up_candidacy_id)
 );
 
 CREATE INDEX IF NOT EXISTS idx_election_contests_election ON public.election_contests(election_id);
@@ -82,18 +83,38 @@ CREATE INDEX IF NOT EXISTS idx_election_contests_constituency ON public.election
 CREATE INDEX IF NOT EXISTS idx_election_contests_code ON public.election_contests(contest_code);
 CREATE INDEX IF NOT EXISTS idx_election_contests_winning ON public.election_contests(winning_candidacy_id);
 
+ALTER TABLE public.election_contests DROP CONSTRAINT IF EXISTS check_contest_votes_polled;
+ALTER TABLE public.election_contests DROP CONSTRAINT IF EXISTS check_contest_votes_conservation;
+ALTER TABLE public.election_contests ADD CONSTRAINT check_contest_votes_conservation
+  CHECK (status NOT IN ('completed') OR total_votes_polled = total_valid_votes + total_rejected_votes OR total_votes_polled = 0);
+
+ALTER TABLE public.election_contests DROP CONSTRAINT IF EXISTS check_contest_distinct_winner_runner_up;
+ALTER TABLE public.election_contests ADD CONSTRAINT check_contest_distinct_winner_runner_up
+  CHECK (winning_candidacy_id IS NULL OR runner_up_candidacy_id IS NULL OR winning_candidacy_id <> runner_up_candidacy_id);
+
 -- -----------------------------------------------------------------------------
--- 3. NON-PERSON BALLOT CHOICES (NOTA, Rejected Postal, Disputed Votes)
+-- 3. VALID NON-CANDIDATE BALLOT CHOICES (NOTA)
 -- -----------------------------------------------------------------------------
+-- Statutory ballot choices placed before the elector (e.g. NOTA under Rule 49-O / ECI Directions).
+-- Rejected votes (rejected postal ballots under Rule 54A) and disputed categories are NOT
+-- valid ballot choices and are recorded in election_contests.total_rejected_votes or metadata.
 CREATE TABLE IF NOT EXISTS public.ballot_choices (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   contest_id UUID NOT NULL REFERENCES public.election_contests(id) ON DELETE CASCADE,
-  choice_type TEXT NOT NULL CHECK (choice_type IN ('NOTA', 'REJECTED_POSTAL', 'DISPUTED_VOTES')),
+  choice_type TEXT NOT NULL CHECK (choice_type IN ('NOTA')),
+  is_valid_vote BOOLEAN NOT NULL DEFAULT true CHECK (is_valid_vote = true),
   votes_received INTEGER NOT NULL DEFAULT 0 CHECK (votes_received >= 0),
   vote_share NUMERIC(5,2) DEFAULT 0.0 CHECK (vote_share >= 0 AND vote_share <= 100),
   created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
   CONSTRAINT uq_ballot_choice_contest_type UNIQUE (contest_id, choice_type)
 );
+
+ALTER TABLE public.ballot_choices
+  ADD COLUMN IF NOT EXISTS is_valid_vote BOOLEAN NOT NULL DEFAULT true CHECK (is_valid_vote = true);
+
+ALTER TABLE public.ballot_choices DROP CONSTRAINT IF EXISTS ballot_choices_choice_type_check;
+ALTER TABLE public.ballot_choices ADD CONSTRAINT ballot_choices_choice_type_check
+  CHECK (choice_type IN ('NOTA'));
 
 CREATE INDEX IF NOT EXISTS idx_ballot_choices_contest ON public.ballot_choices(contest_id);
 
@@ -117,6 +138,16 @@ ALTER TABLE public.candidacies DROP CONSTRAINT IF EXISTS candidacies_independent
 ALTER TABLE public.candidacies ADD CONSTRAINT candidacies_independent_party_check
   CHECK ((is_independent = true AND party_id IS NULL) OR (is_independent = false AND party_id IS NOT NULL));
 
+-- Candidacy uniqueness: one person cannot receive duplicate candidacy records in the same contest
+ALTER TABLE public.candidacies DROP CONSTRAINT IF EXISTS uq_candidacies_contest_person;
+ALTER TABLE public.candidacies ADD CONSTRAINT uq_candidacies_contest_person
+  UNIQUE (contest_id, person_id);
+
+-- Candidacy vote breakdown conservation: votes_received = evm_votes + postal_votes
+ALTER TABLE public.candidacies DROP CONSTRAINT IF EXISTS chk_candidate_votes_sum;
+ALTER TABLE public.candidacies ADD CONSTRAINT chk_candidate_votes_sum
+  CHECK (votes_received = evm_votes + postal_votes OR (evm_votes = 0 AND postal_votes = 0));
+
 -- -----------------------------------------------------------------------------
 -- 5. STORED PROCEDURES (100% SECURITY INVOKER)
 -- -----------------------------------------------------------------------------
@@ -132,10 +163,21 @@ DECLARE
   v_contest RECORD;
   v_candidate_votes INTEGER := 0;
   v_nota_votes INTEGER := 0;
-  v_total_counted INTEGER := 0;
+  v_total_valid_counted INTEGER := 0;
+  v_invalid_candidacies INTEGER := 0;
 BEGIN
   SELECT * INTO v_contest FROM public.election_contests WHERE id = p_contest_id;
   IF NOT FOUND THEN
+    RETURN FALSE;
+  END IF;
+
+  -- Verify candidate votes EVM/Postal channel breakdown
+  SELECT COUNT(*) INTO v_invalid_candidacies
+  FROM public.candidacies
+  WHERE contest_id = p_contest_id
+    AND NOT (votes_received = evm_votes + postal_votes OR (evm_votes = 0 AND postal_votes = 0));
+
+  IF v_invalid_candidacies > 0 THEN
     RETURN FALSE;
   END IF;
 
@@ -144,21 +186,30 @@ BEGIN
   FROM public.candidacies
   WHERE contest_id = p_contest_id;
 
-  -- Sum NOTA votes from ballot_choices
+  -- Sum NOTA votes from ballot_choices (strictly valid non-candidate choices)
   SELECT COALESCE(SUM(votes_received), 0) INTO v_nota_votes
   FROM public.ballot_choices
-  WHERE contest_id = p_contest_id AND choice_type = 'NOTA';
+  WHERE contest_id = p_contest_id AND choice_type = 'NOTA' AND is_valid_vote = true;
 
   -- If ballot_choices has 0, fall back to total_nota_votes on contest
   IF v_nota_votes = 0 THEN
-    v_nota_votes := v_contest.total_nota_votes;
+    v_nota_votes := COALESCE(v_contest.total_nota_votes, 0);
   END IF;
 
-  v_total_counted := v_candidate_votes + v_nota_votes;
+  v_total_valid_counted := v_candidate_votes + v_nota_votes;
 
-  -- If total_valid_votes is recorded, verify statutory match within 1 vote tolerance (for rounding discrepancies)
+  -- ACCT-02: Total valid votes must equal candidate valid votes + valid non-candidate ballot choices
   IF v_contest.total_valid_votes > 0 THEN
-    RETURN ABS(v_total_counted - v_contest.total_valid_votes) <= 1;
+    IF ABS(v_total_valid_counted - v_contest.total_valid_votes) > 1 THEN
+      RETURN FALSE;
+    END IF;
+  END IF;
+
+  -- ACCT-01: Total votes polled must equal total_valid_votes + total_rejected_votes
+  IF v_contest.status = 'completed' AND v_contest.total_votes_polled > 0 THEN
+    IF v_contest.total_votes_polled <> (v_contest.total_valid_votes + v_contest.total_rejected_votes) THEN
+      RETURN FALSE;
+    END IF;
   END IF;
 
   RETURN TRUE;
@@ -183,6 +234,7 @@ DECLARE
   v_turnout NUMERIC(5,2) := 0.0;
   v_electors INTEGER := 0;
   v_polled INTEGER := 0;
+  v_rejected INTEGER := 0;
 BEGIN
   -- Top 2 candidates
   SELECT id, votes_received INTO v_winner_id, v_winner_votes
@@ -201,33 +253,85 @@ BEGIN
     v_margin := v_winner_votes - v_runner_up_votes;
   END IF;
 
-  -- Extract electors and polled
-  SELECT total_electors, total_votes_polled, total_nota_votes
-  INTO v_electors, v_polled, v_total_nota
+  -- Extract electors, polled, rejected, nota
+  SELECT total_electors, total_votes_polled, total_rejected_votes, total_nota_votes
+  INTO v_electors, v_polled, v_rejected, v_total_nota
   FROM public.election_contests WHERE id = p_contest_id;
-
-  IF v_electors > 0 AND v_polled > 0 THEN
-    v_turnout := ROUND((v_polled::NUMERIC / v_electors::NUMERIC) * 100.0, 2);
-  END IF;
 
   -- Calculate total valid votes
   SELECT COALESCE(SUM(votes_received), 0) INTO v_total_valid
   FROM public.candidacies
   WHERE contest_id = p_contest_id;
 
+  -- Prefer NOTA from ballot_choices
+  SELECT COALESCE(SUM(votes_received), v_total_nota) INTO v_total_nota
+  FROM public.ballot_choices
+  WHERE contest_id = p_contest_id AND choice_type = 'NOTA' AND is_valid_vote = true;
+
   v_total_valid := v_total_valid + COALESCE(v_total_nota, 0);
+
+  -- Conserve total_votes_polled = total_valid + total_rejected if polled is unassigned
+  IF v_polled = 0 THEN
+    v_polled := v_total_valid + COALESCE(v_rejected, 0);
+  END IF;
+
+  IF v_electors > 0 AND v_polled > 0 THEN
+    v_turnout := ROUND((v_polled::NUMERIC / v_electors::NUMERIC) * 100.0, 2);
+  END IF;
 
   UPDATE public.election_contests
   SET
     winning_candidacy_id = v_winner_id,
     runner_up_candidacy_id = v_runner_up_id,
     victory_margin = v_margin,
-    total_valid_votes = CASE WHEN total_valid_votes = 0 THEN v_total_valid ELSE total_valid_votes END,
-    turnout_percentage = CASE WHEN turnout_percentage = 0.0 AND v_turnout > 0 THEN v_turnout ELSE turnout_percentage END,
+    total_valid_votes = v_total_valid,
+    total_votes_polled = v_polled,
+    total_nota_votes = COALESCE(v_total_nota, total_nota_votes),
+    turnout_percentage = CASE WHEN v_turnout > 0 THEN v_turnout ELSE turnout_percentage END,
     updated_at = now()
   WHERE id = p_contest_id;
 END;
 $$;
+
+-- Procedure C: Winner and runner-up contest integrity trigger
+CREATE OR REPLACE FUNCTION public.fn_check_contest_winner_integrity()
+RETURNS TRIGGER
+LANGUAGE plpgsql
+SECURITY INVOKER
+SET search_path = public, pg_temp
+AS $$
+DECLARE
+  v_w_contest UUID;
+  v_r_contest UUID;
+BEGIN
+  IF NEW.winning_candidacy_id IS NOT NULL THEN
+    SELECT contest_id INTO v_w_contest FROM public.candidacies WHERE id = NEW.winning_candidacy_id;
+    IF v_w_contest IS DISTINCT FROM NEW.id THEN
+      RAISE EXCEPTION 'CROSS_CONTEST_CANDIDACY: winning_candidacy_id % belongs to contest %, not %', NEW.winning_candidacy_id, v_w_contest, NEW.id;
+    END IF;
+  END IF;
+
+  IF NEW.runner_up_candidacy_id IS NOT NULL THEN
+    SELECT contest_id INTO v_r_contest FROM public.candidacies WHERE id = NEW.runner_up_candidacy_id;
+    IF v_r_contest IS DISTINCT FROM NEW.id THEN
+      RAISE EXCEPTION 'CROSS_CONTEST_CANDIDACY: runner_up_candidacy_id % belongs to contest %, not %', NEW.runner_up_candidacy_id, v_r_contest, NEW.id;
+    END IF;
+  END IF;
+
+  IF NEW.winning_candidacy_id IS NOT NULL AND NEW.runner_up_candidacy_id IS NOT NULL AND NEW.winning_candidacy_id = NEW.runner_up_candidacy_id THEN
+    RAISE EXCEPTION 'DUPLICATE_WINNER_RUNNER_UP: winning_candidacy_id cannot be identical to runner_up_candidacy_id';
+  END IF;
+
+  RETURN NEW;
+END;
+$$;
+
+DROP TRIGGER IF EXISTS trg_contest_winner_integrity ON public.election_contests;
+CREATE TRIGGER trg_contest_winner_integrity
+  BEFORE INSERT OR UPDATE OF winning_candidacy_id, runner_up_candidacy_id, id
+  ON public.election_contests
+  FOR EACH ROW
+  EXECUTE FUNCTION public.fn_check_contest_winner_integrity();
 
 -- -----------------------------------------------------------------------------
 -- 6. BACKWARD-COMPATIBLE VIEW (Exposing Legacy election_results Format)

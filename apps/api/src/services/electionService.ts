@@ -96,6 +96,7 @@ function mapDbBallotChoice(row: any): BallotChoice {
     id: row.id,
     contestId: row.contest_id,
     choiceType: row.choice_type,
+    isValidVote: row.is_valid_vote ?? true,
     votesReceived: row.votes_received ?? 0,
     voteShare: Number(row.vote_share ?? 0),
     createdAt: row.created_at,

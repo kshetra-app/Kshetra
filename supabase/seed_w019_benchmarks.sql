@@ -113,11 +113,11 @@ BEGIN
     'completed',
     false,
     240490,
-    195509,
+    194545,
     194545,
     0,
     964,
-    81.29,
+    80.90,
     32532,
     'OFFICIAL',
     v_provenance_id
@@ -125,7 +125,9 @@ BEGIN
     total_electors = EXCLUDED.total_electors,
     total_votes_polled = EXCLUDED.total_votes_polled,
     total_valid_votes = EXCLUDED.total_valid_votes,
+    total_rejected_votes = EXCLUDED.total_rejected_votes,
     total_nota_votes = EXCLUDED.total_nota_votes,
+    turnout_percentage = EXCLUDED.turnout_percentage,
     victory_margin = EXCLUDED.victory_margin;
 
   -- Contest 2: Gajwel (TS-AC-040)
@@ -144,11 +146,11 @@ BEGIN
     'completed',
     false,
     267882,
-    241855,
+    240508,
     240508,
     0,
     1347,
-    90.28,
+    89.78,
     19931,
     'OFFICIAL',
     v_provenance_id
@@ -156,7 +158,9 @@ BEGIN
     total_electors = EXCLUDED.total_electors,
     total_votes_polled = EXCLUDED.total_votes_polled,
     total_valid_votes = EXCLUDED.total_valid_votes,
+    total_rejected_votes = EXCLUDED.total_rejected_votes,
     total_nota_votes = EXCLUDED.total_nota_votes,
+    turnout_percentage = EXCLUDED.turnout_percentage,
     victory_margin = EXCLUDED.victory_margin;
 
   -- 7. Candidacies
@@ -176,6 +180,8 @@ BEGIN
      NULL, true, 'lost', 7176, 3.69, 4, 7150, 26, 'OFFICIAL', v_provenance_id)
   ON CONFLICT (id) DO UPDATE SET
     votes_received = EXCLUDED.votes_received,
+    evm_votes = EXCLUDED.evm_votes,
+    postal_votes = EXCLUDED.postal_votes,
     vote_share = EXCLUDED.vote_share,
     rank = EXCLUDED.rank;
 
@@ -195,16 +201,19 @@ BEGIN
      NULL, true, 'lost', 3156, 1.31, 4, 3130, 26, 'OFFICIAL', v_provenance_id)
   ON CONFLICT (id) DO UPDATE SET
     votes_received = EXCLUDED.votes_received,
+    evm_votes = EXCLUDED.evm_votes,
+    postal_votes = EXCLUDED.postal_votes,
     vote_share = EXCLUDED.vote_share,
     rank = EXCLUDED.rank;
 
-  -- 8. Ballot Choices (NOTA)
+  -- 8. Ballot Choices (NOTA - strictly valid non-candidate ballot choice)
   INSERT INTO public.ballot_choices (
-    contest_id, choice_type, votes_received, vote_share
+    contest_id, choice_type, is_valid_vote, votes_received, vote_share
   ) VALUES
-    (v_kodangal_contest_id, 'NOTA', 964, 0.49),
-    (v_gajwel_contest_id, 'NOTA', 1347, 0.56)
+    (v_kodangal_contest_id, 'NOTA', true, 964, 0.50),
+    (v_gajwel_contest_id, 'NOTA', true, 1347, 0.56)
   ON CONFLICT (contest_id, choice_type) DO UPDATE SET
+    is_valid_vote = EXCLUDED.is_valid_vote,
     votes_received = EXCLUDED.votes_received,
     vote_share = EXCLUDED.vote_share;
 

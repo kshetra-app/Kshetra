@@ -125,10 +125,10 @@ describe('Election Data Normalization API (W019)', () => {
 
     expect(detail.contestCode).toBe('TS_LA_2023_GEN_TS-AC-065');
     expect(detail.totalElectors).toBe(240490);
-    expect(detail.totalVotesPolled).toBe(195509);
+    expect(detail.totalVotesPolled).toBe(194545);
     expect(detail.totalValidVotes).toBe(194545);
     expect(detail.totalNotaVotes).toBe(964);
-    expect(detail.turnoutPercentage).toBe(81.29);
+    expect(detail.turnoutPercentage).toBe(80.90);
     expect(detail.victoryMargin).toBe(32532);
 
     // Candidates
@@ -154,6 +154,7 @@ describe('Election Data Normalization API (W019)', () => {
     const nota = detail.ballotChoices.find((b: any) => b.choiceType === 'NOTA');
     expect(nota).toBeDefined();
     expect(nota.votesReceived).toBe(964);
+    expect(nota.isValidVote).toBe(true);
   });
 
   it('8. GET /api/v1/elections/:id/contests/TS-AC-040 returns full Gajwel contest details', async () => {
@@ -166,9 +167,9 @@ describe('Election Data Normalization API (W019)', () => {
 
     expect(detail.contestCode).toBe('TS_LA_2023_GEN_TS-AC-040');
     expect(detail.totalElectors).toBe(267882);
-    expect(detail.totalVotesPolled).toBe(241855);
+    expect(detail.totalVotesPolled).toBe(240508);
     expect(detail.totalValidVotes).toBe(240508);
-    expect(detail.turnoutPercentage).toBe(90.28);
+    expect(detail.turnoutPercentage).toBe(89.78);
     expect(detail.victoryMargin).toBe(19931);
 
     // Winner verification
