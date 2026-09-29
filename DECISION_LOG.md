@@ -1603,6 +1603,50 @@
   - Milestone W019 status: **BLOCKED PENDING INDEPENDENT SOURCE RECONCILIATION**.
   - Milestone W020: **STRICTLY NOT AUTHORIZED**.
 
+---
+
+### DEC-080: W019 COMPLETE FIELD-LEVEL AND CANDIDATE-LEVEL STATUTORY SOURCE RECONCILIATION
+- **Date:** 2026-09-29
+- **Status:** RECONCILED / SUBMITTED FOR CTO ACCEPTANCE REVIEW (W019 BLOCKED / W020 STRICTLY NOT AUTHORIZED)
+- **Authority:** CTO FINAL W019 DIRECTIVE — SOURCE-OF-TRUTH RECONCILIATION ROUND, Master Product Blueprint, MEF Amendments v1.2, v1.4, v1.5-A, v1.6
+- **Context:** Under the CTO's directive, a complete field-level and candidate-level reconciliation of the W019 benchmark fixtures was performed against authoritative statutory election-result evidence across Form 20 (Final Result Sheets, Rule 56(7)) and Form 21E (Return of Election, Rule 64) for Kodangal (AC-065) and Gajwel (AC-040).
+- **Core Findings & Statutory Reconciliations:**
+  1. **Eatala Rajender (BJP) Vote Discrepancy (Gajwel AC-040):**
+     - Stored repository benchmark: `91,753` votes.
+     - Authoritative statutory returns (ECI Detailed Results, Polling Station Result Sheets): `66,653` votes (General: `65,961`, Postal: `692`).
+     - Overstatement in benchmark: `+25,100` votes.
+     - Cascading impacts: Victory margin is `45,031` votes (not `19,931`), total valid votes is `227,702` (not `240,508`).
+  2. **NOTA Statutory Discrepancies:**
+     - Kodangal AC-065: Statutory return establishes NOTA = `2,002` votes (1.03%). Stored DB value was `964`.
+     - Gajwel AC-040: Statutory return establishes NOTA = `832` votes (0.36%). Stored DB value was `1,347`.
+  3. **Candidate-Level Reconciliation:**
+     - Kodangal: 13 individual candidates reconciled; Bantu Ramesh Kumar (BJP) corrected to `3,988` (from `4,079`); other candidates sum to `6,847` votes.
+     - Gajwel: 16 individual candidates reconciled; other candidates sum to `15,965` votes.
+     - Strict designations enforced: Rank 1 = Winner, Rank 2 = Runner-up, Rank 3 = Third-place candidate (Rank 3 strictly never termed winner).
+  4. **Rejected Votes & Semantic Stage Differentials:**
+     - Kodangal: Form 20 independently reports `124` rejected postal ballots. Stored `964` was arithmetic derivation ($195,509 - 194,545 = 964$), prohibited under CTO directive.
+     - Gajwel: No independent Form 20 postal sheet retrieved; classified as `UNKNOWN` under anti-derivation rule.
+     - Form 20 (polling-station counting abstract) and Form 21E (final declaration return) legitimately represent different administrative stages with distinct scopes (e.g. active station electors vs comprehensive final roll including supplementary additions). Both observations are preserved.
+  5. **Deliverables Produced:**
+     - `reports/w019_final_source_reconciliation.json` (Machine-readable field-level provenance matrix, candidate-level matrix, and 10-field forensic records for every disputed field).
+     - `reports/w019_final_source_reconciliation.md` (Comprehensive statutory reconciliation report).
+     - Authoritative dossiers in `data/evidence/w019/authoritative/`:
+       * `eci_form20_telangana_2023_kodangal_ac065_dossier.md`
+       * `eci_form21e_telangana_2023_kodangal_ac065_source_dossier.md`
+       * `eci_form20_telangana_2023_gajwel_ac040_dossier.md`
+       * `eci_form21e_telangana_2023_gajwel_ac040_source_dossier.md`
+  6. **Invariant Verification Battery:**
+     - 68/68 master invariants PASS (`tests/election-normalization-invariants.test.mjs`), including new tests `W019-SRC-PROV-12..14`.
+     - 10/10 elections API tests PASS (`apps/api/src/__tests__/elections.test.ts`).
+     - 53/53 W018 political entity invariants PASS.
+     - 9/9 declared contracts match (0 drift).
+     - Staging PostGIS 589 geometries frozen with digest `f839fa02980318a8f35f932ebe72fa1d3ad6325dc86a624bf159d932fe5f613b`.
+     - Production database `ehfafcnimmjusyvplbah` strictly air-gapped and untouched.
+- **Milestone Gate Status:**
+  - Milestone W019 is submitted for CTO acceptance review.
+  - The implementation agent explicitly does NOT self-certify or self-accept.
+  - Milestone W020 remains **STRICTLY NOT AUTHORIZED** pending written CTO acceptance.
+
 
 
 

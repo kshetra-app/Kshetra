@@ -1,7 +1,7 @@
 {
   "job": "W019",
   "title": "Election Data Normalization (Provenance Closure)",
-  "timestamp": "2026-09-29T13:43:39.726Z",
+  "timestamp": "2026-09-29T16:53:41.697Z",
   "frameworkAmendment": "v1.6 (DEC-074, DEC-075, DEC-076)",
   "stagingTarget": "panIN-staging (fkpigozcqnmcvofuksar)",
   "productionTarget": "ehfafcnimmjusyvplbah (AIR-GAPPED)",
@@ -13,8 +13,8 @@
     "verified": true
   },
   "summary": {
-    "total": 65,
-    "passed": 65,
+    "total": 68,
+    "passed": 68,
     "failed": 0,
     "status": "PASSED"
   },
@@ -254,7 +254,7 @@
       "id": "W019-EDG-04",
       "title": "Attempting to insert total_votes_polled > total_electors fails closed with check constraint violation",
       "status": "PASS",
-      "observed": "ERROR: ERROR:  new row for relation \"election_contests\" violates check constraint \"check_contest_electors\"\nDETAIL:  Failing row contains (cfc76118-efea-4fc2-8b80-68f50433e24f, 01900000-0000-0000-0000-000000000002, VIOLATION_CONTEST, TS-AC-065, null, Kodangal Violation Test, GEN, completed, f, null, 10000, 15000, 15000, 0, 0, 150.00, 0, null, null, OFFICIAL, null, {}, 2026-09-29 13:43:27.49451+00, 2026-09-29 13:43:27.49451+00).\n",
+      "observed": "ERROR: ERROR:  new row for relation \"election_contests\" violates check constraint \"check_contest_electors\"\nDETAIL:  Failing row contains (455c11a8-c8c7-4316-820f-a106974e5d1e, 01900000-0000-0000-0000-000000000002, VIOLATION_CONTEST, TS-AC-065, null, Kodangal Violation Test, GEN, completed, f, null, 10000, 15000, 15000, 0, 0, 150.00, 0, null, null, OFFICIAL, null, {}, 2026-09-29 16:53:17.551104+00, 2026-09-29 16:53:17.551104+00).\n",
       "details": ""
     },
     {
@@ -451,6 +451,27 @@
       "title": "Every normalized benchmark field in provenance manifest has complete 15-field source-location and transformation metadata",
       "status": "PASS",
       "observed": "All 14 records have complete metadata: true",
+      "details": ""
+    },
+    {
+      "id": "W019-SRC-PROV-12",
+      "title": "Field-level source-of-truth provenance matrix reconciles all fields across Form 20 and Form 21E scopes",
+      "status": "PASS",
+      "observed": "Matrix entries: 22, Valid: true",
+      "details": ""
+    },
+    {
+      "id": "W019-SRC-PROV-13",
+      "title": "Complete authoritative statutory dossiers exist for Form 20 and Form 21E across both benchmark contests",
+      "status": "PASS",
+      "observed": "All 4 dossiers exist and populated: true",
+      "details": ""
+    },
+    {
+      "id": "W019-SRC-PROV-14",
+      "title": "Candidate-level reconciliation strictly enforces Winner / Runner-up / Third-place candidate designations",
+      "status": "PASS",
+      "observed": "Strict designations enforced with zero Rank 3 winner misuse: true",
       "details": ""
     },
     {

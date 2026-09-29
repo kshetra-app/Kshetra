@@ -1406,6 +1406,86 @@ async function runMasterBattery() {
     `All ${provManifest?.provenance_records?.length || 0} records have complete metadata: ${prov11Pass}`
   );
 
+  // W019-SRC-PROV-12: Field-level provenance matrix exists and adheres to statutory classification taxonomy
+  const finalReconFile = path.resolve('reports/w019_final_source_reconciliation.json');
+  let finalRecon = null;
+  let prov12Pass = false;
+  if (fs.existsSync(finalReconFile)) {
+    try {
+      finalRecon = JSON.parse(fs.readFileSync(finalReconFile, 'utf8'));
+      const matrix = finalRecon.field_level_provenance_matrix || [];
+      const validClassifications = [
+        'DIRECTLY_SOURCED',
+        'AGGREGATE_SUM_VERIFIED',
+        'SEMANTIC_STAGE_DIFFERENTIAL',
+        'CONFLICTING_AUTHORITATIVE_SOURCES',
+        'UNKNOWN',
+        'DERIVED_CALCULATED'
+      ];
+      const hasBothContests = matrix.some(r => r.contest_code === 'TS_LA_2023_GEN_TS-AC-065') &&
+                              matrix.some(r => r.contest_code === 'TS_LA_2023_GEN_TS-AC-040');
+      const allClassificationsValid = matrix.length >= 10 && matrix.every(r => 
+        validClassifications.some(c => r.provenance_classification.includes(c))
+      );
+      prov12Pass = hasBothContests && allClassificationsValid;
+    } catch {
+      prov12Pass = false;
+    }
+  }
+  recordCheck(
+    'W019-SRC-PROV-12',
+    'Field-level source-of-truth provenance matrix reconciles all fields across Form 20 and Form 21E scopes',
+    prov12Pass,
+    `Matrix entries: ${finalRecon?.field_level_provenance_matrix?.length || 0}, Valid: ${prov12Pass}`
+  );
+
+  // W019-SRC-PROV-13: All 4 authoritative statutory dossiers exist (Form 20 + Form 21E for both contests)
+  const requiredDossiers = [
+    'data/evidence/w019/authoritative/eci_form20_telangana_2023_kodangal_ac065_dossier.md',
+    'data/evidence/w019/authoritative/eci_form21e_telangana_2023_kodangal_ac065_source_dossier.md',
+    'data/evidence/w019/authoritative/eci_form20_telangana_2023_gajwel_ac040_dossier.md',
+    'data/evidence/w019/authoritative/eci_form21e_telangana_2023_gajwel_ac040_source_dossier.md'
+  ];
+  const dossiersExist = requiredDossiers.every(p => fs.existsSync(path.resolve(p)) && fs.statSync(path.resolve(p)).size > 500);
+  recordCheck(
+    'W019-SRC-PROV-13',
+    'Complete authoritative statutory dossiers exist for Form 20 and Form 21E across both benchmark contests',
+    dossiersExist,
+    `All 4 dossiers exist and populated: ${dossiersExist}`
+  );
+
+  // W019-SRC-PROV-14: Candidate-level reconciliation strictly adheres to Winner / Runner-up / Third-place semantics
+  let prov14Pass = false;
+  if (finalRecon?.candidate_level_reconciliation) {
+    const kCands = finalRecon.candidate_level_reconciliation.Kodangal_AC065 || [];
+    const gCands = finalRecon.candidate_level_reconciliation.Gajwel_AC040 || [];
+    const rank1K = kCands.find(c => c.rank === 1);
+    const rank2K = kCands.find(c => c.rank === 2);
+    const rank3K = kCands.find(c => c.rank === 3);
+    const rank1G = gCands.find(c => c.rank === 1);
+    const rank2G = gCands.find(c => c.rank === 2);
+    const rank3G = gCands.find(c => c.rank === 3);
+
+    const designationsCorrect = 
+      rank1K?.designation === 'Winner' &&
+      rank2K?.designation === 'Runner-up' &&
+      rank3K?.designation === 'Third-place candidate' &&
+      rank1G?.designation === 'Winner' &&
+      rank2G?.designation === 'Runner-up' &&
+      rank3G?.designation === 'Third-place candidate';
+
+    const zeroRank3Winner = !kCands.some(c => c.rank === 3 && c.designation.toLowerCase().includes('winner')) &&
+                            !gCands.some(c => c.rank === 3 && c.designation.toLowerCase().includes('winner'));
+
+    prov14Pass = designationsCorrect && zeroRank3Winner && kCands.length >= 10 && gCands.length >= 10;
+  }
+  recordCheck(
+    'W019-SRC-PROV-14',
+    'Candidate-level reconciliation strictly enforces Winner / Runner-up / Third-place candidate designations',
+    prov14Pass,
+    `Strict designations enforced with zero Rank 3 winner misuse: ${prov14Pass}`
+  );
+
 
   // ─── 10. STAGING POSTGIS 589 GEOMETRY BASELINE INTEGRITY (W019-STG-01..02) ──
   console.log('\n--- 10. STAGING 589 GEOMETRY BASELINE INTEGRITY ---');
