@@ -1,0 +1,102 @@
+{
+  "milestone": "W017",
+  "title": "Spatial Gateway, Boundary Diff & Spatial Query Engine",
+  "document": "reports/w017_preflight_reconciliation.json",
+  "date": "2026-09-29",
+  "revision": "1.1-SEC-CORRECTED",
+  "status": "PLANNING_PREFLIGHT_FINAL_FOR_CTO_AUTHORIZATION",
+  "implementationAuthorized": false,
+  "productionStatus": "STRICTLY_AIR_GAPPED_UNTOUCHED",
+  "prerequisites": {
+    "W011": "ACCEPTED_COMPLETE (DEC-068)",
+    "W012": "ACCEPTED_COMPLETE (Migration 039)",
+    "W013": "ACCEPTED_COMPLETE (Migration 040/041)",
+    "W014": "ACCEPTED_COMPLETE (Migration 041/044 on Staging)",
+    "W015": "ACCEPTED_COMPLETE (Migration 042/043, DEC-062)",
+    "W016_C3_R4": "ACCEPTED_COMPLETE (Migration 045)",
+    "W016_C3_R5_R8A": "ACCEPTED_COMPLETE (589 geometries, SHA-256 f839fa02980318a8f35f932ebe72fa1d3ad6325dc86a624bf159d932fe5f613b)",
+    "W016_C3_R9": "ACCEPTED_COMPLETE (Fastify spatial runtime)",
+    "W016_C3_R10": "CONDITIONALLY_ACCEPTED (Gap B native renderer deferred to W023)",
+    "W016_C3_R11": "STRICTLY_BLOCKED"
+  },
+  "canonicalBaseline": {
+    "entityGeometriesTable": "public.entity_geometries",
+    "rowCount": 589,
+    "digest": "f839fa02980318a8f35f932ebe72fa1d3ad6325dc86a624bf159d932fe5f613b",
+    "temporalClassification": "historical_statutory_baseline",
+    "snapshotDate": "2016-10-11",
+    "isCurrent": false,
+    "immutabilityEnforced": true
+  },
+  "architecturalResolutions": {
+    "securityModel": {
+      "executionMode": "100% SECURITY INVOKER across ALL spatial functions (fn_spatial_calculate_overlap, fn_spatial_boundary_diff, fn_spatial_detect_anomalies). Audit proves SECURITY DEFINER is completely unnecessary because service_role and authenticated already hold SELECT grants and USING (true) RLS policies on public.entity_geometries and public.mandal_versions.",
+      "privilegeEscalationRisk": "ZERO (0). No superuser or postgres ownership elevation; no bypass of RLS; no search_path vulnerability.",
+      "acl": "Per-function least privilege: REVOKE ALL FROM PUBLIC; fn_spatial_calculate_overlap and fn_spatial_boundary_diff granted to authenticated and service_role; fn_spatial_detect_anomalies granted strictly to service_role. Zero grants to anon.",
+      "resourceCeilings": "SET LOCAL statement_timeout = '5000ms'; Max 100 features evaluated per query; Max 2.0x2.0 degree bounding box for anomaly scans."
+    },
+    "temporalRegimeSeparation": {
+      "standard": "Typed spatial-selection model reconciled with W014/W016 architecture. 589 TGRAC polygons represent the 2016-10-11 snapshot only and do NOT imply continuous legal validity through 2022.",
+      "selectionModes": [
+        "current (active operational legal regime)",
+        "as_of (point-in-time statutory snapshot via valid_from <= d AND (valid_to IS NULL OR valid_to > d))",
+        "version (explicit mandal_versions.id UUID selection)",
+        "future (statutorily gazetted or anticipated post-2026 delimitation regime)",
+        "scenario (analytical/hypothetical proposed redistricting regime)"
+      ],
+      "failClosedRule": "Queries with missing temporal or regime data fail closed. Cross-regime comparisons are explicitly tagged."
+    },
+    "identityDisambiguation": {
+      "entityId": "Stable internal primary key mandals.id (UUID or canonical entity ID; distinct from mutable external LGD codes)",
+      "versionId": "Temporal version UUID in mandal_versions.id",
+      "geometryId": "Physical geometry row UUID in entity_geometries.id",
+      "sourceFeatureId": "Source artifact feature identifier in original dataset (e.g. GeoJSON/shapefile FID)"
+    },
+    "areaCalculationMethodology": {
+      "primaryStandard": "ST_Area(geom::geography) in square meters on WGS84 spheroid",
+      "projectedStandard": "Projected planar CRS (e.g. ST_Transform(geom, 32644) for UTM Zone 44N) only when specifically justified per regional extent for planar computational efficiency",
+      "prohibition": "Raw EPSG:4326 angular degree area strictly forbidden",
+      "units": "Square meters (m^2)",
+      "precision": "Double precision IEEE 754; overlap percentages formatted to 4 decimal places",
+      "zeroAreaBehavior": "Disjoint geometries, dimension < 2 intersections (point/linestring), or invalid geometries yield 0.0 m^2"
+    },
+    "overlapCalculationRules": {
+      "numerator": "ST_Area(ST_Intersection(geom_a, geom_b)::geography) in m^2",
+      "denominator": "ST_Area(geom_a::geography) or ST_Area(geom_b::geography)",
+      "precheck": "Mandatory bounding box pre-filtering (geom_a && geom_b) prior to geometric intersection",
+      "zeroOverlap": "0.0000% when bounding boxes are disjoint or intersection dimension < 2"
+    },
+    "anomalyDetectionScope": {
+      "classification": "Governed detection heuristics, NOT legal boundary determinations",
+      "mode": "READ_ONLY diagnostic reporting",
+      "healing": "Automated geometry repair, vertex snapping, or boundary shifting is strictly forbidden",
+      "configurability": "Configurable and versioned anomaly detection threshold profiles"
+    },
+    "migrationPackaging049": {
+      "classification": "Additive stored functions and analytical views only",
+      "newTables": 0,
+      "modifiedColumns": 0,
+      "reusedIndexes": "Leverages existing idx_entity_geometries_spatial (GiST) from Migration 048 without redundant index creation"
+    }
+  },
+  "plannedEndpoints": [
+    {
+      "method": "POST",
+      "path": "/api/v1/spatial/analytics/overlap",
+      "auth": "authenticated / service_role",
+      "description": "Compute intersection area and quantitative overlap percentage between two entity versions"
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/spatial/analytics/boundary-diff",
+      "auth": "authenticated / service_role",
+      "description": "Compute geometric diff (added/removed areas) across entity versions or regimes"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/spatial/quality/anomalies",
+      "auth": "service_role only",
+      "description": "Detect topological slivers, gaps, and invalid boundaries using governed heuristic profiles (read-only)"
+    }
+  ]
+}

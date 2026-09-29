@@ -1,0 +1,195 @@
+{
+  "metadata": {
+    "directive": "W017 Spatial Gateway, Boundary Diff & Spatial Query Engine Master Invariant Battery",
+    "executionTimestamp": "2026-09-29T05:32:49.101Z",
+    "stagingUrl": "https://fkpigozcqnmcvofuksar.supabase.co",
+    "totalChecks": 25,
+    "passedChecks": 25,
+    "failedChecks": 0,
+    "verdict": "PASS"
+  },
+  "stagingBaseline": {
+    "rowCount": 589,
+    "expectedRowCount": 589,
+    "sha256Digest": "f839fa02980318a8f35f932ebe72fa1d3ad6325dc86a624bf159d932fe5f613b",
+    "expectedDigest": "f839fa02980318a8f35f932ebe72fa1d3ad6325dc86a624bf159d932fe5f613b",
+    "mutationDetected": false
+  },
+  "checks": [
+    {
+      "id": "SEC-01",
+      "title": "All 3 spatial analytical procedures are 100% SECURITY INVOKER (prosecdef = false)",
+      "status": "PASS",
+      "observed": "fn_spatial_boundary_diff:false, fn_spatial_calculate_overlap:false, fn_spatial_detect_anomalies:false",
+      "details": ""
+    },
+    {
+      "id": "SEC-02",
+      "title": "All 3 functions enforce immutable search_path = public, pg_temp",
+      "status": "PASS",
+      "observed": "fn_spatial_boundary_diff:search_path=public, pg_temp, fn_spatial_calculate_overlap:search_path=public, pg_temp, fn_spatial_detect_anomalies:search_path=public, pg_temp",
+      "details": ""
+    },
+    {
+      "id": "SEC-03",
+      "title": "EXECUTE privilege is strictly REVOKED from anon role across all 3 functions",
+      "status": "PASS",
+      "observed": "fn_spatial_boundary_diff:false, fn_spatial_calculate_overlap:false, fn_spatial_detect_anomalies:false",
+      "details": ""
+    },
+    {
+      "id": "SEC-04",
+      "title": "fn_spatial_detect_anomalies is strictly restricted to service_role (authenticated = false, service_role = true)",
+      "status": "PASS",
+      "observed": "authenticated: f, service_role: t",
+      "details": ""
+    },
+    {
+      "id": "SEC-05",
+      "title": "Direct unauthorized invocation of fn_spatial_detect_anomalies fails closed with SQLSTATE 42501",
+      "status": "PASS",
+      "observed": "ERROR: ERROR:  permission denied for function fn_spatial_detect_anomalies\n",
+      "details": ""
+    },
+    {
+      "id": "MATH-01",
+      "title": "Symmetry Invariant: Area(A ∩ B) == Area(B ∩ A)",
+      "status": "PASS",
+      "observed": "Area(A∩B)=117567475.68 m², Area(B∩A)=117567475.68 m²",
+      "details": ""
+    },
+    {
+      "id": "MATH-02",
+      "title": "Identity Invariant: Overlap(A, A) == 100.0000% and is_disjoint = false",
+      "status": "PASS",
+      "observed": "Overlap=100%, is_disjoint=false",
+      "details": ""
+    },
+    {
+      "id": "MATH-03",
+      "title": "Disjoint Invariant: Overlap(A, B) == 0.0000% and is_disjoint = true",
+      "status": "PASS",
+      "observed": "Overlap=0%, is_disjoint=true",
+      "details": ""
+    },
+    {
+      "id": "MATH-04",
+      "title": "Qualified Partition Invariant: Sum(Area(P_i)) == Area(A) (exact in planar UTM 44N)",
+      "status": "PASS",
+      "observed": "Base Area=400000000.00 m², Sum of Parts=400000000.00 m²",
+      "details": ""
+    },
+    {
+      "id": "TEMP-01",
+      "title": "2016 baseline geometries have is_current = false and fail closed under current regime",
+      "status": "PASS",
+      "observed": "source_feature_id: 286, is_current: false, valid_from: 2016-10-11",
+      "details": ""
+    },
+    {
+      "id": "TEMP-02",
+      "title": "Temporal selection resolves intended historical baseline version without leakage",
+      "status": "PASS",
+      "observed": "Resolved version 6a533ce4-5f7c-535d-9897-96437a275af9 (valid_from: 2016-10-11)",
+      "details": ""
+    },
+    {
+      "id": "TEMP-03",
+      "title": "Split boundary resolution preserves component entity lineage and parent-child linkages",
+      "status": "PASS",
+      "observed": "Recorded 4 split transitions in geography_entity_lineage",
+      "details": ""
+    },
+    {
+      "id": "TEMP-04",
+      "title": "Future mandal non-leakage: zero future boundaries active before effective date",
+      "status": "PASS",
+      "observed": "Active future rows: 0",
+      "details": ""
+    },
+    {
+      "id": "TEMP-05",
+      "title": "Scenario boundary isolation: zero scenario geometries active in legal current regime",
+      "status": "PASS",
+      "observed": "Active scenario rows: 0",
+      "details": ""
+    },
+    {
+      "id": "ID-01",
+      "title": "Stable entity_id is decoupled from mutable external LGD code",
+      "status": "PASS",
+      "observed": "entity_id: TS-MDL-6310 != lgd_code: 6310",
+      "details": ""
+    },
+    {
+      "id": "ID-02",
+      "title": "Physical geometry_id is decoupled from stable entity_id",
+      "status": "PASS",
+      "observed": "geometry_id: c3691ae8-1473-483c-96b0-c4b6fc46714c != entity_id: TS-MDL-6310",
+      "details": ""
+    },
+    {
+      "id": "ID-03",
+      "title": "Source feature ID is decoupled from entity_id",
+      "status": "PASS",
+      "observed": "source_feature_id: 286 != entity_id: TS-MDL-6310",
+      "details": ""
+    },
+    {
+      "id": "ID-04",
+      "title": "Temporal version_id is decoupled from physical geometry_id",
+      "status": "PASS",
+      "observed": "geometry_id: 17e9fc1b-54c8-4b12-a552-4ea3bd6b1227 != mandal_version_id: 6a533ce4-5f7c-535d-9897-96437a275af9",
+      "details": ""
+    },
+    {
+      "id": "REGIME-01",
+      "title": "Cross-regime comparisons are explicitly tagged with isCrossRegime: true and warning",
+      "status": "PASS",
+      "observed": "isCrossRegime: true",
+      "details": ""
+    },
+    {
+      "id": "REGIME-02",
+      "title": "Cross-regime diff results are explicitly flagged as non-unified legal boundaries",
+      "status": "PASS",
+      "observed": "CROSS_REGIME_COMPARISON: Base selection differs from comparison selection.",
+      "details": ""
+    },
+    {
+      "id": "GUARD-01",
+      "title": "Bounding box query complexity ceiling: rejects queries > 2.0 x 2.0 degrees",
+      "status": "PASS",
+      "observed": "Query dimensions: 3x3 deg > 2.0x2.0 deg limit",
+      "details": ""
+    },
+    {
+      "id": "GUARD-02",
+      "title": "PostgreSQL statement_timeout = 5000ms enforced inside analytical procedures",
+      "status": "PASS",
+      "observed": "SET LOCAL statement_timeout = '5000ms'",
+      "details": ""
+    },
+    {
+      "id": "STG-01",
+      "title": "public.entity_geometries row count strictly preserved at exactly 589 rows",
+      "status": "PASS",
+      "observed": "Observed: 589 / Expected: 589",
+      "details": ""
+    },
+    {
+      "id": "STG-02",
+      "title": "public.entity_geometries SHA-256 digest byte-exact match (zero mutation of 589 geometries)",
+      "status": "PASS",
+      "observed": "Digest: f839fa02980318a8f35f932ebe72fa1d3ad6325dc86a624bf159d932fe5f613b",
+      "details": ""
+    },
+    {
+      "id": "PRD-01",
+      "title": "Production database ehfafcnimmjusyvplbah strictly air-gapped with zero connections and zero mutations",
+      "status": "PASS",
+      "observed": "ehfafcnimmjusyvplbah untouched",
+      "details": ""
+    }
+  ]
+}

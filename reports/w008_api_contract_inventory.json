@@ -3,12 +3,12 @@
     "job": "W008",
     "title": "Fastify API Route Contract Inventory",
     "specification": "Master Execution Framework Amendment v1.5-A / DEC-041",
-    "timestamp": "2026-09-28T14:18:48.573Z"
+    "timestamp": "2026-09-29T06:31:51.144Z"
   },
   "summary": {
-    "totalRoutesRegistered": 147,
+    "totalRoutesRegistered": 150,
     "pioneerAndPhase1Routes": 56,
-    "schemaCoveredRoutes": 117
+    "schemaCoveredRoutes": 120
   },
   "routes": [
     {
@@ -1284,6 +1284,33 @@
       "method": "POST",
       "path": "/api/v1/politician/grievances",
       "file": "politician.ts",
+      "phase": "Phase 2-4",
+      "schemaDefined": true,
+      "preValidationDefined": false,
+      "standardizedEnvelope": true
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/spatial/analytics/overlap",
+      "file": "spatialAnalytics.ts",
+      "phase": "Phase 2-4",
+      "schemaDefined": true,
+      "preValidationDefined": false,
+      "standardizedEnvelope": true
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/spatial/analytics/boundary-diff",
+      "file": "spatialAnalytics.ts",
+      "phase": "Phase 2-4",
+      "schemaDefined": true,
+      "preValidationDefined": false,
+      "standardizedEnvelope": true
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/spatial/quality/anomalies",
+      "file": "spatialAnalytics.ts",
       "phase": "Phase 2-4",
       "schemaDefined": true,
       "preValidationDefined": false,
