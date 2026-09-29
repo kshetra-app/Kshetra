@@ -2,6 +2,7 @@ export * from './types/constituency';
 export * from './types/hierarchy';
 export * from './types/spatialAnalytics';
 export * from './types/politicalEntities';
+export * from './types/elections';
 export * from './constants/parties';
 export * from './constants/states';
 export * from './geo/point-in-polygon';

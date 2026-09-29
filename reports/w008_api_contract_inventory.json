@@ -3,12 +3,12 @@
     "job": "W008",
     "title": "Fastify API Route Contract Inventory",
     "specification": "Master Execution Framework Amendment v1.5-A / DEC-041",
-    "timestamp": "2026-09-29T10:27:30.086Z"
+    "timestamp": "2026-09-29T11:49:16.345Z"
   },
   "summary": {
-    "totalRoutesRegistered": 156,
+    "totalRoutesRegistered": 161,
     "pioneerAndPhase1Routes": 56,
-    "schemaCoveredRoutes": 126
+    "schemaCoveredRoutes": 131
   },
   "routes": [
     {
@@ -681,6 +681,51 @@
       "method": "POST",
       "path": "/api/v1/dm/block-report",
       "file": "dm.ts",
+      "phase": "Phase 2-4",
+      "schemaDefined": true,
+      "preValidationDefined": false,
+      "standardizedEnvelope": true
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/elections",
+      "file": "elections.ts",
+      "phase": "Phase 2-4",
+      "schemaDefined": true,
+      "preValidationDefined": false,
+      "standardizedEnvelope": true
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/elections/:id",
+      "file": "elections.ts",
+      "phase": "Phase 2-4",
+      "schemaDefined": true,
+      "preValidationDefined": false,
+      "standardizedEnvelope": true
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/elections/:id/contests",
+      "file": "elections.ts",
+      "phase": "Phase 2-4",
+      "schemaDefined": true,
+      "preValidationDefined": false,
+      "standardizedEnvelope": true
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/elections/:id/contests/:constituencyId",
+      "file": "elections.ts",
+      "phase": "Phase 2-4",
+      "schemaDefined": true,
+      "preValidationDefined": false,
+      "standardizedEnvelope": true
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/elections/persons/:personId",
+      "file": "elections.ts",
       "phase": "Phase 2-4",
       "schemaDefined": true,
       "preValidationDefined": false,

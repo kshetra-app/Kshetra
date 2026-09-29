@@ -1,0 +1,212 @@
+{
+  "job": "W019",
+  "title": "Election Data Normalization",
+  "timestamp": "2026-09-29T11:54:35.425Z",
+  "frameworkAmendment": "v1.6 (DEC-074, DEC-075)",
+  "stagingTarget": "panIN-staging (fkpigozcqnmcvofuksar)",
+  "productionTarget": "ehfafcnimmjusyvplbah (AIR-GAPPED)",
+  "geometryBaseline": {
+    "expectedRows": 589,
+    "observedRows": 589,
+    "expectedDigest": "f839fa02980318a8f35f932ebe72fa1d3ad6325dc86a624bf159d932fe5f613b",
+    "observedDigest": "f839fa02980318a8f35f932ebe72fa1d3ad6325dc86a624bf159d932fe5f613b",
+    "verified": true
+  },
+  "summary": {
+    "total": 27,
+    "passed": 27,
+    "failed": 0,
+    "status": "PASSED"
+  },
+  "results": [
+    {
+      "id": "W019-SCH-01",
+      "title": "Core normalized election tables exist in public schema",
+      "status": "PASS",
+      "observed": "Tables found: ballot_choices, election_contests, election_events",
+      "details": ""
+    },
+    {
+      "id": "W019-SCH-02",
+      "title": "candidacies table extended with contest_id, evm_votes, postal_votes",
+      "status": "PASS",
+      "observed": "Columns: contest_id:uuid, evm_votes:integer, postal_votes:integer",
+      "details": ""
+    },
+    {
+      "id": "W019-SCH-03",
+      "title": "candidacies.result check constraint permits won_uncontested",
+      "status": "PASS",
+      "observed": "CHECK ((result = ANY (ARRAY['won'::text, 'lost'::text, 'forfeited_deposit'::text, 'withdrawn'::text, 'pending'::text, 'won_uncontested'::text])))",
+      "details": ""
+    },
+    {
+      "id": "W019-SCH-04",
+      "title": "Turnout constraint enforces 0 <= turnout_percentage <= 100",
+      "status": "PASS",
+      "observed": "CHECK (((turnout_percentage >= (0)::numeric) AND (turnout_percentage <= (100)::numeric)))",
+      "details": ""
+    },
+    {
+      "id": "W019-SCH-05",
+      "title": "check_contest_votes_polled constraint enforces valid + rejected <= total_votes_polled",
+      "status": "PASS",
+      "observed": "CHECK ((((total_valid_votes + total_rejected_votes) <= total_votes_polled) OR (total_votes_polled = 0)))",
+      "details": ""
+    },
+    {
+      "id": "W019-SCH-06",
+      "title": "check_contest_electors constraint enforces total_votes_polled <= total_electors",
+      "status": "PASS",
+      "observed": "CHECK (((total_votes_polled <= total_electors) OR (total_electors = 0)))",
+      "details": ""
+    },
+    {
+      "id": "W019-SCH-07",
+      "title": "Validation and metrics functions are 100% SECURITY INVOKER with search_path = public, pg_temp",
+      "status": "PASS",
+      "observed": "fn_refresh_contest_metrics:false:search_path=public, pg_temp; fn_validate_contest_totals:false:search_path=public, pg_temp",
+      "details": ""
+    },
+    {
+      "id": "W019-SCH-08",
+      "title": "Row Level Security enabled across all 3 election tables",
+      "status": "PASS",
+      "observed": "ballot_choices:true, election_contests:true, election_events:true",
+      "details": ""
+    },
+    {
+      "id": "W019-MTH-01",
+      "title": "Kodangal AC-065 candidate votes + NOTA equals total_valid_votes exactly (194,545)",
+      "status": "PASS",
+      "observed": "Candidates: 193581, Ballot/NOTA: 964, Sum: 194545, Stored Valid: 194545",
+      "details": ""
+    },
+    {
+      "id": "W019-MTH-02",
+      "title": "Gajwel AC-040 candidate votes + NOTA equals total_valid_votes exactly (240,508)",
+      "status": "PASS",
+      "observed": "Candidates: 239161, Ballot/NOTA: 1347, Sum: 240508, Stored Valid: 240508",
+      "details": ""
+    },
+    {
+      "id": "W019-MTH-03",
+      "title": "fn_validate_contest_totals returns TRUE for Kodangal AC-065",
+      "status": "PASS",
+      "observed": "Return: t",
+      "details": ""
+    },
+    {
+      "id": "W019-MTH-04",
+      "title": "fn_validate_contest_totals returns TRUE for Gajwel AC-040",
+      "status": "PASS",
+      "observed": "Return: t",
+      "details": ""
+    },
+    {
+      "id": "W019-MTH-05",
+      "title": "Sum of individual candidate vote shares strictly bounded within 100.00%",
+      "status": "PASS",
+      "observed": "01900000-0000-0000-0000-000000000003|99.51, 01900000-0000-0000-0000-000000000004|99.44",
+      "details": ""
+    },
+    {
+      "id": "W019-MTH-06",
+      "title": "Turnout percentage accurately matches total_votes_polled / total_electors ratio",
+      "status": "PASS",
+      "observed": "TS_LA_2023_GEN_TS-AC-065|81.29|81.30, TS_LA_2023_GEN_TS-AC-040|90.28|90.28",
+      "details": ""
+    },
+    {
+      "id": "W019-EDG-01",
+      "title": "Uncontested election contest with won_uncontested candidacy supported without constraint violation",
+      "status": "PASS",
+      "observed": "DO",
+      "details": ""
+    },
+    {
+      "id": "W019-EDG-02",
+      "title": "Tie result scenario (margin = 0, equal votes) representable without schema collision",
+      "status": "PASS",
+      "observed": "DO",
+      "details": ""
+    },
+    {
+      "id": "W019-EDG-03",
+      "title": "fn_validate_contest_totals correctly returns FALSE and catches vote discrepancy in unbalanced contest",
+      "status": "PASS",
+      "observed": "DO",
+      "details": ""
+    },
+    {
+      "id": "W019-EDG-04",
+      "title": "Attempting to insert total_votes_polled > total_electors fails closed with check constraint violation",
+      "status": "PASS",
+      "observed": "ERROR: ERROR:  new row for relation \"election_contests\" violates check constraint \"check_contest_electors\"\nDETAIL:  Failing row contains (b0f6c4c5-e06b-483d-bb66-d71faab462ae, 01900000-0000-0000-0000-000000000002, VIOLATION_CONTEST, TS-AC-065, null, Kodangal Violation Test, GEN, completed, f, null, 10000, 15000, 15000, 0, 0, 150.00, 0, null, null, OFFICIAL, null, {}, 2026-09-29 11:54:18.095882+00, 2026-09-29 11:54:18.095882+00).\n",
+      "details": ""
+    },
+    {
+      "id": "W019-ECI-01",
+      "title": "Kodangal AC-065 winner is Anumula Revanth Reddy (INC) with 107,429 votes (55.22%)",
+      "status": "PASS",
+      "observed": "Name: Anumula Revanth Reddy, Party: INC, Votes: 107429, Share: 55.22%",
+      "details": ""
+    },
+    {
+      "id": "W019-ECI-02",
+      "title": "Kodangal AC-065 runner-up is Patnam Narender Reddy (BRS) with 74,897 votes (38.50%)",
+      "status": "PASS",
+      "observed": "Name: Patnam Narender Reddy, Party: BRS, Votes: 74897, Share: 38.50%",
+      "details": ""
+    },
+    {
+      "id": "W019-ECI-03",
+      "title": "Kodangal AC-065 victory margin is exactly 32,532 votes (16.72%)",
+      "status": "PASS",
+      "observed": "Margin: 32532 votes (16.72%)",
+      "details": ""
+    },
+    {
+      "id": "W019-ECI-04",
+      "title": "Gajwel AC-040 winner is Kalvakuntla Chandrashekar Rao (BRS) with 111,684 votes (46.44%)",
+      "status": "PASS",
+      "observed": "Name: Kalvakuntla Chandrashekar Rao, Party: BRS, Votes: 111684, Share: 46.44%",
+      "details": ""
+    },
+    {
+      "id": "W019-ECI-05",
+      "title": "Gajwel AC-040 runner-up is Eatala Rajender (BJP) with 91,753 votes (38.15%)",
+      "status": "PASS",
+      "observed": "Name: Eatala Rajender, Party: BJP, Votes: 91753, Share: 38.15%",
+      "details": ""
+    },
+    {
+      "id": "W019-ECI-06",
+      "title": "Gajwel AC-040 victory margin is exactly 19,931 votes (8.29%)",
+      "status": "PASS",
+      "observed": "Margin: 19931 votes (8.29%)",
+      "details": ""
+    },
+    {
+      "id": "W019-STG-01",
+      "title": "public.entity_geometries row count strictly preserved at exactly 589 rows on staging",
+      "status": "PASS",
+      "observed": "Observed: 589 / Expected: 589",
+      "details": ""
+    },
+    {
+      "id": "W019-STG-02",
+      "title": "public.entity_geometries SHA-256 digest byte-exact match (zero mutation of 589 geometries)",
+      "status": "PASS",
+      "observed": "Digest: f839fa02980318a8f35f932ebe72fa1d3ad6325dc86a624bf159d932fe5f613b",
+      "details": ""
+    },
+    {
+      "id": "W019-PRD-01",
+      "title": "Production database ehfafcnimmjusyvplbah strictly air-gapped with zero connections and zero mutations",
+      "status": "PASS",
+      "observed": "ehfafcnimmjusyvplbah untouched",
+      "details": ""
+    }
+  ]
+}

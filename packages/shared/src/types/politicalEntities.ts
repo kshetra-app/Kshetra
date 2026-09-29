@@ -69,7 +69,8 @@ export type ElectionResultEnum =
   | 'lost'
   | 'forfeited_deposit'
   | 'withdrawn'
-  | 'pending';
+  | 'pending'
+  | 'won_uncontested';
 
 export type IdentityMatchMethod =
   | 'exact_eci_id'
@@ -165,6 +166,7 @@ export interface PersonPartyAffiliation {
 
 export interface Candidacy {
   id: string;
+  contestId?: string | null;
   personId: string;
   electionYear: number;
   electionType: ElectionTypeEnum;
@@ -174,6 +176,8 @@ export interface Candidacy {
   isIndependent: boolean;
   result: ElectionResultEnum;
   votesReceived: number;
+  evmVotes?: number;
+  postalVotes?: number;
   voteShare: number;
   rank: number;
   affidavitId?: string | null;
