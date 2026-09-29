@@ -1,0 +1,52 @@
+{
+  "governance_header": {
+    "milestone": "W019 — Election Data Normalization",
+    "directive": "CTO DIRECTIVE — W019 FINAL SOURCE-ARTIFACT PROVENANCE CLOSURE",
+    "framework": "Master Execution Framework Amendments v1.2, v1.4, v1.5-A, v1.6 (DEC-074, DEC-075, DEC-076)",
+    "timestamp": "2026-09-29T13:25:00Z"
+  },
+  "superseded_artifacts": [
+    {
+      "constituency_id": "TS-AC-065",
+      "constituency_name": "Kodangal",
+      "superseded_artifact_path": "data/evidence/w019/superseded/eci_form21e_telangana_2023_kodangal_ac065_v1.0.0.json",
+      "dataset_version": "1.0.0",
+      "sha256": "9121daae43ce7a2456e5650e1172bebec2f4c6cea747804675abf7e08f6478c8",
+      "git_commit": "7da418d5746398e5fd4a9b814d04d8745288b06d",
+      "git_blob_sha": "5713787a523dc1c78b22d81c90525faa70eb54c1",
+      "superseded_by_artifact_path": "data/evidence/w019/eci_form21e_telangana_2023_kodangal_ac065.json",
+      "superseded_by_dataset_version": "1.1.0",
+      "superseded_by_sha256": "b7af0420a0d5e86ee954a6ccc3767c5197e4d990f8da9016af497b353592487e",
+      "superseded_by_git_commit": "685cc9d67fa83642c4867eebc526b7180412647d",
+      "superseded_by_blob_sha": "0ea3c7951ff96bb3fb45ff1207779ec5c66effb2",
+      "substantive_data_changed": true,
+      "formatting_only": false,
+      "reason_for_supersession": "Artifact v1.0.0 incorrectly collapsed total_votes_polled to total_valid_votes (194,545) with total_rejected_votes = 0. Superseded by v1.1.0 to restore the statutory Conduct of Elections Rules, 1961 accounting model: total_votes_polled = total_valid_votes + total_rejected_votes (195,509 = 194,545 + 964).",
+      "authoritative_source_reference": "Form 21E Official Return of Election, AC-065 Kodangal / Telangana Gazette Extraordinary Part-V No. 141",
+      "acquisition_timestamp": "2023-12-04T00:00:00Z",
+      "parser_transformation_version": "ECI-FORM21E-EXTRACTOR-v1.1",
+      "source_document_identity": "Statutory Form 21E Return of Election signed by Returning Officer AC-065 Kodangal"
+    },
+    {
+      "constituency_id": "TS-AC-040",
+      "constituency_name": "Gajwel",
+      "superseded_artifact_path": "data/evidence/w019/superseded/eci_form21e_telangana_2023_gajwel_ac040_v1.0.0.json",
+      "dataset_version": "1.0.0",
+      "sha256": "3fc363e73bd4a217e4de997fef9b52be0c4e947bd5c16897e7c6215baa24f0f2",
+      "git_commit": "7da418d5746398e5fd4a9b814d04d8745288b06d",
+      "git_blob_sha": "87d9e353c3eee398e2acaacbfdde86403de913dd",
+      "superseded_by_artifact_path": "data/evidence/w019/eci_form21e_telangana_2023_gajwel_ac040.json",
+      "superseded_by_dataset_version": "1.1.0",
+      "superseded_by_sha256": "2cc49f06ee2d0f397051bbd9496d412f1236b7ec2da956321f6ddab2d82160c0",
+      "superseded_by_git_commit": "685cc9d67fa83642c4867eebc526b7180412647d",
+      "superseded_by_blob_sha": "640c54e82319b3e61e0fe852d64b1f915098f8fe",
+      "substantive_data_changed": true,
+      "formatting_only": false,
+      "reason_for_supersession": "Artifact v1.0.0 incorrectly collapsed total_votes_polled to total_valid_votes (240,508) with total_rejected_votes = 0. Superseded by v1.1.0 to restore the statutory Conduct of Elections Rules, 1961 accounting model: total_votes_polled = total_valid_votes + total_rejected_votes (241,855 = 240,508 + 1,347).",
+      "authoritative_source_reference": "Form 21E Official Return of Election, AC-040 Gajwel / Telangana Gazette Extraordinary Part-V No. 141",
+      "acquisition_timestamp": "2023-12-04T00:00:00Z",
+      "parser_transformation_version": "ECI-FORM21E-EXTRACTOR-v1.1",
+      "source_document_identity": "Statutory Form 21E Return of Election signed by Returning Officer AC-040 Gajwel"
+    }
+  ]
+}

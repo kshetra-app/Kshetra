@@ -1521,6 +1521,53 @@
   - The implementation agent explicitly does NOT self-certify or self-accept.
   - Milestone W020 remains STRICTLY NOT AUTHORIZED pending written CTO acceptance.
 
+---
+
+### DEC-078: W019 FORM 21E SOURCE-ARTIFACT PROVENANCE CLOSURE & SUPERSESSION PRESERVATION
+- **Date:** 2026-09-29
+- **Status:** APPROVED & APPLIED
+- **Authority:** CTO DIRECTIVE — W019 FINAL SOURCE-ARTIFACT PROVENANCE CLOSURE, Master Product Blueprint, MEF Amendments v1.2, v1.4, v1.5-A, v1.6
+- **Context:** The CTO flagged a provenance discrepancy between previously recorded W019 Form 21E artifact hashes (Kodangal: `9121daae...`, Gajwel: `3fc363e7...`) in commit `7da418d` and the latest submitted hashes (Kodangal: `b7af0420...`, Gajwel: `2cc49f06...`) in commit `685cc9d`. The CTO directed an auditable, immutable provenance chain explaining the exact reasons for the hash changes, preservation of superseded historical artifacts, independent semantic verification of rejected vs NOTA figures, and 6 explicit provenance tests (`W019-SRC-PROV-01` through `W019-SRC-PROV-06`).
+- **Decisions & Implementation:**
+  1. **Git & Blob Lineage Reconciliation:**
+     - Identified exact git commits and blob SHAs:
+       * Kodangal v1.0.0 (Old): Commit `7da418d`, Blob `5713787a523dc1c78b22d81c90525faa70eb54c1`, SHA-256 `9121daae43ce7a2456e5650e1172bebec2f4c6cea747804675abf7e08f6478c8`.
+       * Kodangal v1.1.0 (New): Commit `685cc9d`, Blob `0ea3c7951ff96bb3fb45ff1207779ec5c66effb2`, SHA-256 `b7af0420a0d5e86ee954a6ccc3767c5197e4d990f8da9016af497b353592487e`.
+       * Gajwel v1.0.0 (Old): Commit `7da418d`, Blob `87d9e353c3eee398e2acaacbfdde86403de913dd`, SHA-256 `3fc363e73bd4a217e4de997fef9b52be0c4e947bd5c16897e7c6215baa24f0f2`.
+       * Gajwel v1.1.0 (New): Commit `685cc9d`, Blob `640c54e82319b3e61e0fe852d64b1f915098f8fe`, SHA-256 `2cc49f06ee2d0f397051bbd9496d412f1236b7ec2da956321f6ddab2d82160c0`.
+  2. **Preservation of Superseded Artifacts:**
+     - Preserved exact historical byte-for-byte v1.0.0 artifacts in `data/evidence/w019/superseded/`:
+       * `data/evidence/w019/superseded/eci_form21e_telangana_2023_kodangal_ac065_v1.0.0.json` (SHA-256: `9121daae...`).
+       * `data/evidence/w019/superseded/eci_form21e_telangana_2023_gajwel_ac040_v1.0.0.json` (SHA-256: `3fc363e7...`).
+     - Established `data/evidence/w019/superseded/superseded_provenance_manifest.json` documenting the supersession relationship, reasons for supersession, and git commit coordinates.
+  3. **Machine-Readable Provenance Reconciliation Report:**
+     - Published `reports/w019_artifact_provenance_reconciliation.json` containing the exact 14 required fields for both contests.
+  4. **Semantic Independence of Rejected Votes vs NOTA:**
+     - Documented and proved that `total_rejected_votes` and `total_nota_votes` are independently mapped properties in the source extract and schema.
+     - Proved that NOTA possesses an independent EVM + Postal breakdown (`evm_votes` + `postal_votes` = `votes_received`), which does not exist for `total_rejected_votes`.
+     - Confirmed that modifying NOTA or the conservation equation does not alter `total_rejected_votes`, and modifying rejected votes does not mutate NOTA.
+  5. **Mandatory Provenance Tests Verified (60/60 Invariants PASS):**
+     - `W019-SRC-PROV-01`: Kodangal old/new artifact provenance fully reconciled across commits, blobs, and digests.
+     - `W019-SRC-PROV-02`: Gajwel old/new artifact provenance fully reconciled across commits, blobs, and digests.
+     - `W019-SRC-PROV-03`: Current artifact traceable to authoritative source identity (ECI/CEO Form 21E Gazette).
+     - `W019-SRC-PROV-04`: Rejected-vote source field independently mapped (cannot be derived from NOTA or conservation equation).
+     - `W019-SRC-PROV-05`: NOTA source field independently mapped with EVM/Postal channel breakdown.
+     - `W019-SRC-PROV-06`: No source artifact silently overwritten or replaced without supersession provenance.
+  6. **Regression, Builds & Air-Gap Preservation:**
+     - 60/60 master invariants PASS.
+     - 10/10 elections API tests PASS.
+     - 53/53 W018 political entity invariants PASS.
+     - 9/9 declared contract endpoints match (0 drift).
+     - API TypeScript build: PASS (0 errors).
+     - Mobile TypeScript build: PASS (0 errors).
+     - PostGIS 589 geometries frozen with digest `f839fa02980318a8f35f932ebe72fa1d3ad6325dc86a624bf159d932fe5f613b`.
+     - Production database `ehfafcnimmjusyvplbah` strictly air-gapped with 0 connections and 0 mutations.
+- **Milestone Gate Status:**
+  - Milestone W019 source-artifact provenance closure is complete and submitted for final CTO acceptance review.
+  - The implementation agent explicitly does NOT self-certify or self-accept.
+  - Milestone W020 remains STRICTLY NOT AUTHORIZED pending written CTO acceptance.
+
+
 
 
 

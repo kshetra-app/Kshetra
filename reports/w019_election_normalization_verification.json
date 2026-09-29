@@ -1,7 +1,7 @@
 {
   "job": "W019",
-  "title": "Election Data Normalization (Remediation Round)",
-  "timestamp": "2026-09-29T12:52:07.594Z",
+  "title": "Election Data Normalization (Provenance Closure)",
+  "timestamp": "2026-09-29T13:26:07.665Z",
   "frameworkAmendment": "v1.6 (DEC-074, DEC-075, DEC-076)",
   "stagingTarget": "panIN-staging (fkpigozcqnmcvofuksar)",
   "productionTarget": "ehfafcnimmjusyvplbah (AIR-GAPPED)",
@@ -13,8 +13,8 @@
     "verified": true
   },
   "summary": {
-    "total": 54,
-    "passed": 54,
+    "total": 60,
+    "passed": 60,
     "failed": 0,
     "status": "PASSED"
   },
@@ -254,7 +254,7 @@
       "id": "W019-EDG-04",
       "title": "Attempting to insert total_votes_polled > total_electors fails closed with check constraint violation",
       "status": "PASS",
-      "observed": "ERROR: ERROR:  new row for relation \"election_contests\" violates check constraint \"check_contest_electors\"\nDETAIL:  Failing row contains (d8f564d2-6921-4223-9a75-b5656109892b, 01900000-0000-0000-0000-000000000002, VIOLATION_CONTEST, TS-AC-065, null, Kodangal Violation Test, GEN, completed, f, null, 10000, 15000, 15000, 0, 0, 150.00, 0, null, null, OFFICIAL, null, {}, 2026-09-29 12:49:25.452804+00, 2026-09-29 12:49:25.452804+00).\n",
+      "observed": "ERROR: ERROR:  new row for relation \"election_contests\" violates check constraint \"check_contest_electors\"\nDETAIL:  Failing row contains (1eae85d2-67aa-4073-a1b2-8280c1121e8b, 01900000-0000-0000-0000-000000000002, VIOLATION_CONTEST, TS-AC-065, null, Kodangal Violation Test, GEN, completed, f, null, 10000, 15000, 15000, 0, 0, 150.00, 0, null, null, OFFICIAL, null, {}, 2026-09-29 13:25:42.202821+00, 2026-09-29 13:25:42.202821+00).\n",
       "details": ""
     },
     {
@@ -374,6 +374,48 @@
       "title": "W019-SRC-02: Normalized Gajwel database values exactly match authoritative raw Form 21E artifact",
       "status": "PASS",
       "observed": "DB: electors=267882, polled=241855, valid=240508, rejected=1347, nota=1347, turnout=90.28%, margin=19931 | Source: electors=267882, polled=241855, valid=240508, rejected=1347, nota=1347, turnout=90.28%, margin=19931",
+      "details": ""
+    },
+    {
+      "id": "W019-SRC-PROV-01",
+      "title": "Old/new Kodangal artifact provenance is fully reconciled across commits, blobs, and digests",
+      "status": "PASS",
+      "observed": "Old SHA: 9121daae43ce7a24..., New SHA: b7af0420a0d5e86e...",
+      "details": ""
+    },
+    {
+      "id": "W019-SRC-PROV-02",
+      "title": "Old/new Gajwel artifact provenance is fully reconciled across commits, blobs, and digests",
+      "status": "PASS",
+      "observed": "Old SHA: 3fc363e73bd4a217..., New SHA: 2cc49f06ee2d0f39...",
+      "details": ""
+    },
+    {
+      "id": "W019-SRC-PROV-03",
+      "title": "Current artifact is traceable to authoritative source identity (ECI/CEO Telangana Form 21E Gazette)",
+      "status": "PASS",
+      "observed": "Ref: Form 21E Official Return of Election, AC-065 Kodangal / Telangana Gazette Extraordinary Part-V No. 141",
+      "details": ""
+    },
+    {
+      "id": "W019-SRC-PROV-04",
+      "title": "Rejected-vote source field is independently mapped and cannot be derived from NOTA or from the conservation equation",
+      "status": "PASS",
+      "observed": "Kodangal Rejected: 964, Independent: true",
+      "details": ""
+    },
+    {
+      "id": "W019-SRC-PROV-05",
+      "title": "NOTA source field is independently mapped with EVM/Postal channel breakdown and cannot be derived from rejected votes",
+      "status": "PASS",
+      "observed": "Kodangal NOTA: 964 (EVM: 955, Postal: 9), Independent: true",
+      "details": ""
+    },
+    {
+      "id": "W019-SRC-PROV-06",
+      "title": "No source artifact is silently overwritten or replaced without supersession provenance and byte-exact superseded preservation",
+      "status": "PASS",
+      "observed": "Manifest verified: true (2 superseded artifacts preserved)",
       "details": ""
     },
     {

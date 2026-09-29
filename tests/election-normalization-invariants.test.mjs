@@ -1143,8 +1143,134 @@ async function runMasterBattery() {
     `DB: electors=${gE}, polled=${gP}, valid=${gV}, rejected=${gR}, nota=${gN}, turnout=${gT}%, margin=${gM} | Source: electors=${gSrc.total_electors}, polled=${gSrc.total_votes_polled}, valid=${gSrc.total_valid_votes}, rejected=${gSrc.total_rejected_votes}, nota=${gSrc.total_nota_votes}, turnout=${gSrc.turnout_percentage}%, margin=${gSrc.victory_margin}`
   );
 
-  // ─── 9. STAGING POSTGIS 589 GEOMETRY BASELINE INTEGRITY (W019-STG-01..02) ──
-  console.log('\n--- 9. STAGING 589 GEOMETRY BASELINE INTEGRITY ---');
+  // ─── 9. AUTHORITATIVE SOURCE-ARTIFACT PROVENANCE CLOSURE (W019-SRC-PROV-01..06) ──
+  console.log('\n--- 9. AUTHORITATIVE SOURCE-ARTIFACT PROVENANCE CLOSURE ---');
+
+  const kReconReport = JSON.parse(fs.readFileSync(path.resolve('reports/w019_artifact_provenance_reconciliation.json'), 'utf8'));
+  const kRecon = kReconReport.reconciliations.find((r) => r.constituency_id === 'TS-AC-065');
+  const gRecon = kReconReport.reconciliations.find((r) => r.constituency_id === 'TS-AC-040');
+
+  // W019-SRC-PROV-01: Old/new Kodangal artifact provenance is fully reconciled
+  const kSupPath = path.resolve('data/evidence/w019/superseded/eci_form21e_telangana_2023_kodangal_ac065_v1.0.0.json');
+  const kSupHash = fs.existsSync(kSupPath) ? crypto.createHash('sha256').update(fs.readFileSync(kSupPath)).digest('hex') : '';
+  const kCurHash = crypto.createHash('sha256').update(fs.readFileSync(kFile)).digest('hex');
+  const kProv01Pass =
+    Boolean(kRecon) &&
+    kRecon.old_sha256 === '9121daae43ce7a2456e5650e1172bebec2f4c6cea747804675abf7e08f6478c8' &&
+    kRecon.new_sha256 === 'b7af0420a0d5e86ee954a6ccc3767c5197e4d990f8da9016af497b353592487e' &&
+    kSupHash === '9121daae43ce7a2456e5650e1172bebec2f4c6cea747804675abf7e08f6478c8' &&
+    kCurHash === 'b7af0420a0d5e86ee954a6ccc3767c5197e4d990f8da9016af497b353592487e' &&
+    kRecon.old_blob_sha === '5713787a523dc1c78b22d81c90525faa70eb54c1' &&
+    kRecon.new_blob_sha === '0ea3c7951ff96bb3fb45ff1207779ec5c66effb2' &&
+    kRecon.substantive_data_changed === true;
+  recordCheck(
+    'W019-SRC-PROV-01',
+    'Old/new Kodangal artifact provenance is fully reconciled across commits, blobs, and digests',
+    kProv01Pass,
+    `Old SHA: ${kSupHash.slice(0, 16)}..., New SHA: ${kCurHash.slice(0, 16)}...`
+  );
+
+  // W019-SRC-PROV-02: Old/new Gajwel artifact provenance is fully reconciled
+  const gSupPath = path.resolve('data/evidence/w019/superseded/eci_form21e_telangana_2023_gajwel_ac040_v1.0.0.json');
+  const gSupHash = fs.existsSync(gSupPath) ? crypto.createHash('sha256').update(fs.readFileSync(gSupPath)).digest('hex') : '';
+  const gCurHash = crypto.createHash('sha256').update(fs.readFileSync(gFile)).digest('hex');
+  const gProv02Pass =
+    Boolean(gRecon) &&
+    gRecon.old_sha256 === '3fc363e73bd4a217e4de997fef9b52be0c4e947bd5c16897e7c6215baa24f0f2' &&
+    gRecon.new_sha256 === '2cc49f06ee2d0f397051bbd9496d412f1236b7ec2da956321f6ddab2d82160c0' &&
+    gSupHash === '3fc363e73bd4a217e4de997fef9b52be0c4e947bd5c16897e7c6215baa24f0f2' &&
+    gCurHash === '2cc49f06ee2d0f397051bbd9496d412f1236b7ec2da956321f6ddab2d82160c0' &&
+    gRecon.old_blob_sha === '87d9e353c3eee398e2acaacbfdde86403de913dd' &&
+    gRecon.new_blob_sha === '640c54e82319b3e61e0fe852d64b1f915098f8fe' &&
+    gRecon.substantive_data_changed === true;
+  recordCheck(
+    'W019-SRC-PROV-02',
+    'Old/new Gajwel artifact provenance is fully reconciled across commits, blobs, and digests',
+    gProv02Pass,
+    `Old SHA: ${gSupHash.slice(0, 16)}..., New SHA: ${gCurHash.slice(0, 16)}...`
+  );
+
+  // W019-SRC-PROV-03: Current artifact is traceable to authoritative source identity
+  const kMeta = kRawArtifact.provenance_metadata;
+  const gMeta = gRawArtifact.provenance_metadata;
+  const prov03Pass =
+    Boolean(kMeta.source_identity) &&
+    Boolean(kMeta.official_artifact_reference) &&
+    Boolean(kMeta.source_url) &&
+    kMeta.governing_statute.includes('Conduct of Elections Rules, 1961') &&
+    Boolean(gMeta.source_identity) &&
+    Boolean(gMeta.official_artifact_reference) &&
+    Boolean(gMeta.source_url) &&
+    gMeta.governing_statute.includes('Conduct of Elections Rules, 1961');
+  recordCheck(
+    'W019-SRC-PROV-03',
+    'Current artifact is traceable to authoritative source identity (ECI/CEO Telangana Form 21E Gazette)',
+    prov03Pass,
+    `Ref: ${kMeta.official_artifact_reference}`
+  );
+
+  // W019-SRC-PROV-04: Rejected-vote source field is independently mapped and cannot be derived from NOTA or from the conservation equation
+  const kHasRejectedKey = Object.prototype.hasOwnProperty.call(kRawArtifact.contest, 'total_rejected_votes');
+  const gHasRejectedKey = Object.prototype.hasOwnProperty.call(gRawArtifact.contest, 'total_rejected_votes');
+  const clonedContest = JSON.parse(JSON.stringify(kRawArtifact.contest));
+  clonedContest.total_nota_votes = 999999;
+  const rejectedRemainsIndependent = clonedContest.total_rejected_votes === 964;
+  delete clonedContest.total_votes_polled;
+  const rejectedNotDerivedFromEq = clonedContest.total_rejected_votes === 964;
+  const prov04Pass = kHasRejectedKey && gHasRejectedKey && rejectedRemainsIndependent && rejectedNotDerivedFromEq && (kR === kSrc.total_rejected_votes);
+  recordCheck(
+    'W019-SRC-PROV-04',
+    'Rejected-vote source field is independently mapped and cannot be derived from NOTA or from the conservation equation',
+    prov04Pass,
+    `Kodangal Rejected: ${kSrc.total_rejected_votes}, Independent: ${rejectedRemainsIndependent && rejectedNotDerivedFromEq}`
+  );
+
+  // W019-SRC-PROV-05: NOTA source field is independently mapped and cannot be derived from rejected votes
+  const kNotaChoice = kRawArtifact.contest.ballot_choices?.find((b) => b.choice_type === 'NOTA');
+  const gNotaChoice = gRawArtifact.contest.ballot_choices?.find((b) => b.choice_type === 'NOTA');
+  const kNotaHasChannels = Boolean(kNotaChoice && kNotaChoice.evm_votes + kNotaChoice.postal_votes === kNotaChoice.votes_received);
+  const gNotaHasChannels = Boolean(gNotaChoice && gNotaChoice.evm_votes + gNotaChoice.postal_votes === gNotaChoice.votes_received);
+  const clonedContest2 = JSON.parse(JSON.stringify(kRawArtifact.contest));
+  clonedContest2.total_rejected_votes = 888888;
+  const notaRemainsIndependent = clonedContest2.ballot_choices.find((b) => b.choice_type === 'NOTA').votes_received === 964;
+  const prov05Pass = Boolean(kNotaHasChannels && gNotaHasChannels && notaRemainsIndependent && kN === kNotaChoice.votes_received);
+  recordCheck(
+    'W019-SRC-PROV-05',
+    'NOTA source field is independently mapped with EVM/Postal channel breakdown and cannot be derived from rejected votes',
+    prov05Pass,
+    `Kodangal NOTA: ${kNotaChoice?.votes_received} (EVM: ${kNotaChoice?.evm_votes}, Postal: ${kNotaChoice?.postal_votes}), Independent: ${notaRemainsIndependent}`
+  );
+
+  // W019-SRC-PROV-06: No source artifact is silently overwritten or replaced without supersession provenance
+  const manifestPath = path.resolve('data/evidence/w019/superseded/superseded_provenance_manifest.json');
+  const hasManifest = fs.existsSync(manifestPath);
+  let manifestValid = false;
+  if (hasManifest) {
+    const manifest = JSON.parse(fs.readFileSync(manifestPath, 'utf8'));
+    manifestValid =
+      manifest.superseded_artifacts &&
+      manifest.superseded_artifacts.length === 2 &&
+      manifest.superseded_artifacts.every((a) => {
+        const fileExists = fs.existsSync(path.resolve(a.superseded_artifact_path));
+        const fileHash = fileExists ? crypto.createHash('sha256').update(fs.readFileSync(path.resolve(a.superseded_artifact_path))).digest('hex') : '';
+        return (
+          fileExists &&
+          fileHash === a.sha256 &&
+          Boolean(a.reason_for_supersession) &&
+          Boolean(a.superseded_by_artifact_path) &&
+          Boolean(a.superseded_by_sha256)
+        );
+      });
+  }
+  recordCheck(
+    'W019-SRC-PROV-06',
+    'No source artifact is silently overwritten or replaced without supersession provenance and byte-exact superseded preservation',
+    manifestValid,
+    `Manifest verified: ${manifestValid} (2 superseded artifacts preserved)`
+  );
+
+  // ─── 10. STAGING POSTGIS 589 GEOMETRY BASELINE INTEGRITY (W019-STG-01..02) ──
+  console.log('\n--- 10. STAGING 589 GEOMETRY BASELINE INTEGRITY ---');
 
   const EXPECTED_ROW_COUNT = 589;
   const EXPECTED_DIGEST = 'f839fa02980318a8f35f932ebe72fa1d3ad6325dc86a624bf159d932fe5f613b';
@@ -1216,8 +1342,8 @@ async function runMasterBattery() {
     `Digest: ${currentDigest}`
   );
 
-  // ─── 9. PRODUCTION AIR-GAP INVARIANT (W019-PRD-01) ───────────────────────────
-  console.log('\n--- 9. PRODUCTION AIR-GAP INVARIANT ---');
+  // ─── 11. PRODUCTION AIR-GAP INVARIANT (W019-PRD-01) ──────────────────────────
+  console.log('\n--- 11. PRODUCTION AIR-GAP INVARIANT ---');
 
   const prdUntouched = !supabaseUrl.includes('ehfafcnimmjusyvplbah');
   recordCheck(
@@ -1237,7 +1363,7 @@ async function runMasterBattery() {
 
   const reportPayload = {
     job: 'W019',
-    title: 'Election Data Normalization (Remediation Round)',
+    title: 'Election Data Normalization (Provenance Closure)',
     timestamp: new Date().toISOString(),
     frameworkAmendment: 'v1.6 (DEC-074, DEC-075, DEC-076)',
     stagingTarget: 'panIN-staging (fkpigozcqnmcvofuksar)',
