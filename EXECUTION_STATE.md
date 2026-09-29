@@ -1,5 +1,5 @@
 # EXECUTION STATE: PANIN / KSHETRA
-**Last Updated:** 2026-09-23
+**Last Updated:** 2026-09-29
 **Authority:** Master Product Blueprint, AI Agent Master Execution Job Book, Amendment v1.2 (`AMENDMENT_v1.2.md`), Amendment v1.3 (`AMENDMENT_v1.3.md`), Amendment v1.4 (`AMENDMENT_v1.4.md`), Amendment v1.5 (`AMENDMENT_v1.5.md`), Amendment v1.5-A (`AMENDMENT_v1.5-A.md`) & `AGENT_EXECUTION_PROTOCOL.md`
 
 ---
@@ -7,14 +7,22 @@
 ## 1. Project & Execution Coordinates
 ```text
 PROJECT:               PANIN (formerly Kshetra)
-CURRENT_JOB:           W016-C3-R4 (Controlled Staging Mandal Identity + Temporal Version Load — SUBMITTED FOR CTO ACCEPTANCE)
-LAST_COMPLETED_JOB:    W015 (Geography Relationship Engine - ACCEPTED / COMPLETE)
-NEXT_PERMITTED_JOB:    W016-C3 Geometry Ingestion (PENDING CTO REVIEW & ACCEPTANCE OF W016-C3-R4)
-IMPLEMENTATION_AUTHORIZATION_W016: STAGING IDENTITY LOAD AUTHORIZED & EXECUTED; GEOMETRY INGESTION NOT AUTHORIZED
+CURRENT_JOB:           W017 (Spatial Gateway, Boundary Diff & Spatial Query Engine — ACCEPTED / COMPLETE)
+LAST_COMPLETED_JOB:    W017 (Spatial Gateway, Boundary Diff & Spatial Query Engine — ACCEPTED / COMPLETE)
+NEXT_PERMITTED_JOB:    W018 (Pending CTO Milestone Directive; Implementation Strictly NOT AUTHORIZED)
+IMPLEMENTATION_AUTHORIZATION_W017: GRANTED (PLAN-W017-REV-1.1 APPROVED BY CTO)
 
-PLAN_STATUS:                          APPROVED
-IMPLEMENTATION_AUTHORIZATION:         YES
-IMPLEMENTATION_AUTHORIZATION_COMMIT:  bb7c6ec6abebe478a2b5d2c1839b68521dfa855a
+W017_STATUS:           ACCEPTED / COMPLETE
+W017_IMPLEMENTATION:   COMPLETE
+W017_TESTING:          COMPLETE
+W017_VERIFICATION:     COMPLETE
+W017_CTO_ACCEPTANCE:   GRANTED (2026-09-29)
+PRODUCTION_STATUS:     UNTOUCHED / AIR-GAPPED
+GEOMETRY_BASELINE:     589 ROWS / FROZEN / VERIFIED (SHA-256: f839fa02980318a8f35f932ebe72fa1d3ad6325dc86a624bf159d932fe5f613b)
+R10_GAP_B:             DEFERRED TO W023 (APK / Device Validation Stage)
+R11_STATUS:            STRICTLY BLOCKED
+W017_EVIDENCE:         reports/w017_spatial_engine_verification.json, reports/w017_implementation_report.md
+```
 
 AUTHORIZED_JOB:        W015 (Geography Relationship Engine)
 W015_STATUS:           ACCEPTED_COMPLETE
@@ -39,6 +47,31 @@ W014_CTO_ACCEPTANCE:   ACCEPTED_COMPLETE
 ACCEPTED_W014_COMMIT:  bb7c6ec
 W013_STATUS:           ACCEPTED_COMPLETE
 ACCEPTED_W013_COMMIT:  4bc539a
+
+# W017 ACCEPTED COORDINATES (ACCEPTED / COMPLETE BY CTO — DEC-069)
+W017_STATUS:                            ACCEPTED / COMPLETE
+W017_IMPLEMENTATION:                    COMPLETE
+W017_TESTING:                           COMPLETE
+W017_VERIFICATION:                      COMPLETE
+W017_CTO_ACCEPTANCE:                    GRANTED (2026-09-29)
+W017_CANONICAL_MIGRATION_049:           supabase/migrations/049_spatial_gateway_and_boundary_diff.sql
+W017_STAGING_PACKAGE_049:               supabase/staging_migration_package_049.sql
+W017_SECURITY_INVOKER:                  100% (prosecdef = false on all 3 functions)
+W017_ANOMALIES_EXECUTE:                 service_role ONLY (verified with 42501 negative test)
+W017_SEARCH_PATH:                       SET search_path = public, pg_temp (all 3 functions)
+W017_BATTERY_INVARIANTS:                25/25 PASS (tests/spatial-invariants.test.mjs)
+W017_API_SUITE:                         13/13 PASS (apps/api/src/__tests__/spatial-analytics.test.ts)
+W017_GEO_RUNTIME_SUITE:                 19/19 PASS (apps/api/src/__tests__/geo-runtime.test.ts)
+W017_API_BUILD:                         PASS (tsc --noEmit exit 0)
+W017_MOBILE_TYPECHECK:                  PASS (tsc --noEmit exit 0)
+W017_CONTRACT_DRIFT:                    9/9 MATCH (150 Fastify routes registered)
+W017_COMMIT_FRESHNESS:                  A–J PASS
+W017_GEOMETRY_BASELINE:                 589 ROWS / FROZEN / VERIFIED (SHA-256: f839fa02980318a8f35f932ebe72fa1d3ad6325dc86a624bf159d932fe5f613b)
+W017_EVIDENCE_JSON:                     reports/w017_spatial_engine_verification.json
+W017_IMPLEMENTATION_REPORT:             reports/w017_implementation_report.md
+PRODUCTION_STATUS:                      UNTOUCHED / AIR-GAPPED
+R10_GAP_B:                              DEFERRED TO W023 (APK / Device Validation Stage)
+R11_STATUS:                             STRICTLY BLOCKED
 
 # W015 ACCEPTED COORDINATES (ACCEPTED / COMPLETE BY CTO)
 W015_HEAD_COMMIT:                       3748e46
@@ -102,15 +135,19 @@ MIGRATION_044_CATEGORY_C_DEVIATION:     DISCLOSED_RCA_ACCEPTED_NO_UNRESOLVED_TEC
 MIGRATION_044_LEDGER_STATUS:            Migration 044 execution success is verified, but database-side migration-ledger registration is not independently evidenced.
 MIGRATION_044_CTO_ACCEPTANCE:           GRANTED (2026-09-26)
 
-# W011 SUBMITTED COORDINATES (PENDING CTO ACCEPTANCE)
+# W011 ACCEPTED COORDINATES (ACCEPTED / COMPLETE BY CTO — DEC-068)
 W011_HEAD_COMMIT:                       ca062d1
 W011_IMPLEMENTATION_COMMIT:             cd6f04e
 W011_PREFLIGHT_REPORT:                  reports/w011_preflight_inspection_report.md
 W011_DISCOVERY_INVENTORY:               docs/ENGAGEMENT_INFRASTRUCTURE_INVENTORY.md (cd4a050)
 W011_IMPLEMENTATION_REPORT:             reports/w011_implementation_report.md
+W011_CLOSURE_REPORTS:                   reports/w011_cto_governance_closure.*, reports/w011_gate6_evidence_closure.*
+W011_GATE6_STATUS:                      8/8 PASS
+W011_MOBILE_MUTATIONS:                  10/10 PASS
+W011_CIVIC_MUTATIONS:                   22/22 PASS
 W011_DEFECTS_RESOLVED:                  DEF-005 (RESOLVED / VERIFIED)
-W011_STATUS:                            SUBMITTED_FOR_ACCEPTANCE
-W011_CTO_ACCEPTANCE:                    PENDING
+W011_STATUS:                            ACCEPTED_COMPLETE
+W011_CTO_ACCEPTANCE:                    GRANTED (2026-09-29 / DEC-068)
 
 
 # W010 ACCEPTED COORDINATES (ACCEPTED / COMPLETE BY CTO)
@@ -269,12 +306,13 @@ REMOTE_SYNC:           Up to date with origin/master
 | **W009-B5** | Provider Sandbox/Mock Readiness & Staging Closure | **ACCEPTED / COMPLETE** | 2026-09-21 | Staging DB migrations 035-037 applied; Railway staging connected; 27/27 staging runtime & sandbox checks PASS; deployment lineage closed; accepted by CTO |
 | **W009** | External Provider Abstraction & Strangler Migration | **ACCEPTED / COMPLETE** | 2026-09-21 | W009-B1 through W009-B5 all complete and accepted by CTO |
 | **W010** | Security Baseline & RLS Hardening | **ACCEPTED / COMPLETE** | 2026-09-21 | Migration 038 applied & verified on panIN-staging (Checks 1–7 PASS); 36/36 penetration tests PASS; 21/21 tables RLS forced; DEF-014..DEF-017 resolved; DEF-003 & DEF-006 deferred; 0 prod mutations; accepted by CTO |
-| **W011** | Deceptive Fallback Remediation | SUBMITTED / PENDING CTO | - | NEXT (Implementation Authorization NOT YET GRANTED) |
+| **W011** | Production Fallback Repair / Mutation Integrity | **ACCEPTED / COMPLETE** | 2026-09-29 | Batches W011-B1..B4 implemented; Gate 6 isolated (8/8 PASS); mobile mutations (10/10 PASS); civic mutations (22/22 PASS); DEC-068; formally accepted by CTO |
 | **W012** | Data Provenance & Governance Foundation | ACCEPTED / COMPLETE | 2026-09-21 | (Foundation schema established in Migration 039) |
 | **W013** | Canonical Geography Model | ACCEPTED / COMPLETE | 2026-09-21 | (Canonical model established in Migration 040/041) |
 | **W014** | Geography Versioning & Temporal Validity | ACCEPTED / COMPLETE | 2026-09-21 | (Temporal model established in Migration 041) |
 | **W015** | Geography Relationship Engine | **ACCEPTED / COMPLETE** | 2026-09-23 | W015-B1 preflight accepted; W015-B2 Migration 043 executed/verified on staging; 6/6 B2, 9/9 W015, 13/13 W013, 9/9 W014; evidence `3748e46`; CTO accepted |
-| **W016** | Spatial Geometry & Topology | NOT_STARTED | - | NEXT_PERMITTED_JOB (Implementation Authorization NOT YET GRANTED — Preflight Required) |
+| **W016** | Spatial Geometry & Topology | CONDITIONALLY ACCEPTED / CLOSED | 2026-09-29 | R4 identity/temporal load (Migration 045), R5-R8A 589 geometries ingested (digest verified), R9 spatial runtime, R10 mobile consumer conditionally accepted (Gap B deferred to W023). R11 strictly blocked. |
+| **W017** | Spatial Gateway, Boundary Diff & Spatial Query Engine | **ACCEPTED / COMPLETE** | 2026-09-29 | Migration 049 deployed & verified on panIN-staging (100% SECURITY INVOKER); 3 procedures; 589 baseline verified; Fastify routes operational; 25/25 Invariants PASS; Production air-gapped; CTO accepted |
 | **W051** | API Customer Acquisition | NOT_STARTED | - | Commercial API/SaaS customer onboarding |
 | **W051.5** | Compliance, DPDP & Data Governance Readiness | NOT_STARTED | - | **NEW JOB (Amendment v1.2 Part 2)**: DPDP Act 2023, personal data inventory, retention, deletion, consent, 13-lang privacy UI. Owners: COMPLIANCE+ARCH+SEC |
 | **W052** | Professional Broadcast Architecture | NOT_STARTED | - | Studio broadcast ingestion and distribution |

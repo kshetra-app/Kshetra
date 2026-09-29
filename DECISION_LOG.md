@@ -1228,6 +1228,57 @@
   11. **Verification Gate:** Pre-execution static suite (21/21 PASS) and post-load semantic suite `tests/verify_w016_c3_r4_staging_load.mjs` (26/26 PASS).
   12. **Master State:** `SUBMITTED FOR CTO ACCEPTANCE`.
 
+---
+
+### DEC-068: W011 CTO FORMAL ACCEPTANCE — PRODUCTION FALLBACK REPAIR & MUTATION INTEGRITY COMPLETE
+- **Date:** 2026-09-29
+- **Status:** ACCEPTED / COMPLETE
+- **Authority:** CTO Directive — Formal Acceptance of W011 (2026-09-29)
+- **Context:** Following the completion of Batches W011-B1..B4 and the subsequent resolution of the Gate 6 test-harness isolation defect via `setSupabaseConfiguredForTesting(false)` in `apps/api/src/__tests__/w011-fail-closed.test.ts`, the full regression suite achieved 100% pass rate. CTO formally granted final technical acceptance and closure for Job W011.
+- **CTO Acceptance Basis:**
+  1. **Gate 6 (Backend Fail-Closed):** 8/8 PASS on canonical HEAD `1540ba3` under strict test isolation.
+  2. **Mobile Mutation Gate:** 10/10 PASS on `apps/mobile/__tests__/w011-mobile-mutations.test.ts`.
+  3. **Civic Mutation Gate:** 22/22 PASS on `apps/api/src/__tests__/civic-mutations.test.ts`.
+  4. **TypeScript Builds:** API build (`tsc --noEmit`) and Mobile typecheck clean with 0 errors.
+  5. **API Contract Drift:** 9/9 declared contracts matched (100% parity).
+  6. **Commit Freshness:** Checks A through J pass 100%.
+  7. **Production Air-Gap:** Zero production DDL, zero DML, zero migrations, zero deployments. Production database `ehfafcnimmjusyvplbah` remained 100% air-gapped and untouched.
+  8. **Governance Reconciliation:** `EXECUTION_STATE.md` and `ACCEPTANCE_REGISTER.md` updated to reflect `ACCEPTED / COMPLETE`.
+  9. **Scope Isolation:** Zero W017 implementation occurred; R10 remained unchanged (renderer verification deferred to W023); R11 remains strictly blocked.
+- **Milestone Lineage:**
+  - Audited Code Commit: `cd6f04e`
+  - Evidence Commits: `ca062d1` / `1540ba3`
+  - Evidence Reports: `reports/w011_implementation_report.*`, `reports/w011_gate6_evidence_closure.*`
+- **Next Authorized Milestone:** Phase 3 — Authoring `PLAN-W017-REV-1.0.md` (Implementation strictly NOT authorized).
+
+---
+
+### DEC-069: W017 SPATIAL GATEWAY, BOUNDARY DIFF & SPATIAL QUERY ENGINE IMPLEMENTATION & VERIFICATION
+- **Date:** 2026-09-29
+- **Status:** ACCEPTED / COMPLETE (CTO Accepted 2026-09-29)
+- **Authority:** CTO Final Implementation Authorization & Formal Acceptance — W017 (2026-09-29)
+- **Context:** Following the ratification of `PLAN-W017-REV-1.1.md`, Milestone W017 was implemented across the database schema, shared type contracts, and Fastify server analytical layer. On 2026-09-29, the CTO formally reviewed the verification evidence and granted technical acceptance.
+- **CTO Acceptance Basis:**
+  1. **Canonical Migration 049 Deployed & Verified:** `supabase/migrations/049_spatial_gateway_and_boundary_diff.sql`, byte-identical `supabase/staging_migration_package_049.sql`, and associated verification/rollback artifacts verified.
+  2. **100% SECURITY INVOKER Architecture:** Verified `prosecdef = false` across all 3 stored procedures (`fn_spatial_calculate_overlap`, `fn_spatial_boundary_diff`, `fn_spatial_detect_anomalies`). All 3 procedures pin immutable `SET search_path = public, pg_temp;`. All EXECUTE grants are revoked from `PUBLIC` and `anon`. Execution of `fn_spatial_detect_anomalies` is restricted strictly to `service_role` (verified with negative SQLSTATE 42501 tests).
+  3. **Zero Mutation Invariant on Frozen 589 Geometry Baseline:** Re-verified staging `public.entity_geometries` row count strictly at 589 rows and SHA-256 digest `f839fa02980318a8f35f932ebe72fa1d3ad6325dc86a624bf159d932fe5f613b` byte-exact match (zero DDL/DML mutation).
+  4. **Fastify Spatial Gateway Endpoints:** Implemented `POST /api/v1/spatial/analytics/overlap`, `POST /api/v1/spatial/analytics/boundary-diff`, and `GET /api/v1/spatial/quality/anomalies` with full ECC-001 error envelopes, 401 unauth guard, 403 `service_role` guard, and explicit `x-spatial-cross-regime` response headers.
+  5. **Shared TypeScript Contracts:** Implemented in `packages/shared/src/types/spatialAnalytics.ts` and exported in `@kshetra/shared`.
+  6. **Verification Battery Results:**
+     - Master Invariant Battery (`tests/spatial-invariants.test.mjs`): 25/25 PASS (100%).
+     - Fastify API Integration Suite (`apps/api/src/__tests__/spatial-analytics.test.ts`): 13/13 PASS (100%).
+     - Geo Runtime Suite (`apps/api/src/__tests__/geo-runtime.test.ts`): 19/19 PASS (100%).
+     - Fail-Closed Suite (`apps/api/src/__tests__/w011-fail-closed.test.ts`): 8/8 PASS (100%).
+     - API Build (`npm run build --prefix apps/api`): PASS (`tsc --noEmit` exit 0).
+     - Mobile TypeScript (`npx tsc --noEmit -p apps/mobile`): PASS (`tsc --noEmit` exit 0).
+     - Contract Drift Check (`node scripts/check-api-contract-drift.mjs`): 9/9 MATCH (100%, 150 Fastify routes registered).
+     - Commit Freshness (`node tests/commit-freshness.test.mjs`): Checks A–J PASS (100%).
+  7. **Strict Production Air-Gap:** Production database `ehfafcnimmjusyvplbah` remained 100% air-gapped, untouched, and uncontacted.
+  8. **Deferred Milestone Integrity:** W016-C3-R10 Gap B remains deferred to W023 APK/device testing; W016-C3-R11 remains strictly blocked.
+  9. **Governance Disposition:** Milestone W017 is ACCEPTED / COMPLETE. Production release is strictly NOT AUTHORIZED (air-gapped).
+
+
+
 
 
 
