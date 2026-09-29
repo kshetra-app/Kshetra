@@ -7,7 +7,7 @@
 ## 1. Project & Execution Coordinates
 ```text
 PROJECT:               PANIN (formerly Kshetra)
-CURRENT_JOB:           W019 (Election Data Normalization — FINAL SOURCE-ARTIFACT PROVENANCE CLOSURE / SUBMITTED FOR CTO ACCEPTANCE)
+CURRENT_JOB:           W019 (Election Data Normalization — INDEPENDENT REJECTED-VOTE SOURCE AUDIT / BLOCKED)
 LAST_COMPLETED_JOB:    W018 (Canonical Political Entity Model — ACCEPTED / COMPLETE)
 NEXT_PERMITTED_JOB:    W020 (Delimitation Engine Foundation — STRICTLY NOT AUTHORIZED / BLOCKED PENDING FINAL CTO ACCEPTANCE OF W019)
 
@@ -15,11 +15,12 @@ W018_STATUS:           ACCEPTED / COMPLETE (Canonical Commit: 080344c580ad9df925
 W018_CTO_ACCEPTANCE:   GRANTED (2026-09-29)
 W018_EVIDENCE_PACKAGE: reports/w018_political_entities_verification.json
 W018_MASTER_BATTERY:   53/53 PASS (100% Invariants Verified)
-W019_STATUS:           CONDITIONALLY ACCEPTED / FINAL PROVENANCE CLOSURE COMPLETE / SUBMITTED FOR CTO ACCEPTANCE
-W019_EVIDENCE_PACKAGE: reports/w019_source_provenance_closure_report.md, reports/w019_artifact_provenance_reconciliation.json, reports/w019_election_normalization_verification.json, data/evidence/w019/superseded/
-W019_MASTER_BATTERY:   60/60 PASS (100% Invariants Verified across 11 verification planes including W019-SRC-PROV-01..06)
+W019_STATUS:           NOT COMPLETE / BLOCKED (Awaiting Independent Source Reconciliation; Rejected Votes Classified as UNKNOWN)
+W019_EVIDENCE_PACKAGE: reports/w019_independent_rejected_vote_proof_report.md, reports/w019_source_to_database_provenance.json, reports/w019_form20_vs_form21e_reconciliation.json, reports/w019_election_normalization_verification.json, data/evidence/w019/authoritative/
+W019_MASTER_BATTERY:   65/65 PASS (100% Invariants Verified across 11 verification planes including W019-SRC-PROV-01..11)
 W019_API_BATTERY:      10/10 PASS (apps/api/src/__tests__/elections.test.ts)
 W020_STATUS:           STRICTLY NOT AUTHORIZED (Delimitation Engine Foundation — BLOCKED PENDING CTO ACCEPTANCE)
+
 W017_STATUS:           ACCEPTED / COMPLETE
 W017_CTO_ACCEPTANCE:   GRANTED (2026-09-29)
 PRODUCTION_STATUS:     UNTOUCHED / AIR-GAPPED

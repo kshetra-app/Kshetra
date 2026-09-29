@@ -1,0 +1,67 @@
+{
+  "governance_header": {
+    "milestone": "W019 — Election Data Normalization",
+    "directive": "CTO FINAL W019 BLOCKER — INDEPENDENT REJECTED-VOTE SOURCE PROOF",
+    "framework": "Master Execution Framework Amendments v1.2, v1.4, v1.5-A, v1.6 (DEC-074..DEC-079)",
+    "timestamp": "2026-09-29T13:40:00Z"
+  },
+  "discrepancies": [
+    {
+      "constituency_id": "TS-AC-065",
+      "constituency_name": "Kodangal",
+      "form20_reference": "ECI/CEO Telangana Form 20 Final Result Sheet, AC-065 Kodangal",
+      "form21e_reference": "Form 21E Official Return of Election, AC-065 Kodangal, Telangana Gazette Extraordinary Part-V No. 141",
+      "fields": {
+        "total_electors": {
+          "form20_value": 236789,
+          "form21e_benchmark_value": 240490,
+          "discrepancy": 3701,
+          "reason": "Form 20 reflects polled polling stations; Form 21E header includes overseas/service/supplementary rolls."
+        },
+        "total_valid_votes": {
+          "form20_value": 195163,
+          "form21e_benchmark_value": 194545,
+          "discrepancy": -618,
+          "reason": "Form 20 aggregates candidate valid votes (193,161) + NOTA (2,002). Benchmark extract used candidate votes (193,581) + NOTA (964)."
+        },
+        "total_nota_votes": {
+          "form20_value": 2002,
+          "form21e_benchmark_value": 964,
+          "discrepancy": -1038,
+          "reason": "Statutory Form 20 recorded 2,002 NOTA votes (1.03%). Benchmark extract v1.1.0 retained draft/interim extract figure of 964."
+        },
+        "total_rejected_votes": {
+          "form20_value": 124,
+          "form21e_benchmark_value": 964,
+          "discrepancy": 840,
+          "reason": "Statutory Form 20 records exactly 124 rejected postal votes. Benchmark extract 964 was manufactured arithmetically via 195,509 - 194,545.",
+          "status": "UNKNOWN_ON_FORM21E / ARITHMETICALLY_DERIVED_IN_BENCHMARK"
+        },
+        "total_votes_polled": {
+          "form20_value": 195287,
+          "form21e_benchmark_value": 195509,
+          "discrepancy": 222,
+          "reason": "Form 20 sums valid (195,163) + rejected postal (124). Benchmark 195,509 originated from double-counting NOTA in commit 26ff6b5."
+        },
+        "winner_votes": {
+          "form20_value": 107429,
+          "form21e_benchmark_value": 107429,
+          "discrepancy": 0,
+          "reason": "Zero discrepancy; 100% agreement across all statutory records."
+        },
+        "runner_up_votes": {
+          "form20_value": 74897,
+          "form21e_benchmark_value": 74897,
+          "discrepancy": 0,
+          "reason": "Zero discrepancy; 100% agreement across all statutory records."
+        },
+        "victory_margin": {
+          "form20_value": 32532,
+          "form21e_benchmark_value": 32532,
+          "discrepancy": 0,
+          "reason": "Zero discrepancy; 100% agreement across all statutory records."
+        }
+      }
+    }
+  ]
+}

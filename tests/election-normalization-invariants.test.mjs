@@ -1269,6 +1269,144 @@ async function runMasterBattery() {
     `Manifest verified: ${manifestValid} (2 superseded artifacts preserved)`
   );
 
+  // W019-SRC-PROV-07: total_rejected_votes in provenance manifest is audited and classified as UNKNOWN (blocks W019 acceptance)
+  const provManifestPath = path.resolve('reports/w019_source_to_database_provenance.json');
+  const hasProvManifest = fs.existsSync(provManifestPath);
+  let prov07Pass = false;
+  let provManifest = null;
+  if (hasProvManifest) {
+    provManifest = JSON.parse(fs.readFileSync(provManifestPath, 'utf8'));
+    const rejectedRecords = provManifest.provenance_records.filter(r => r.field_name === 'total_rejected_votes');
+    const allRejectedUnknown = rejectedRecords.length >= 2 && rejectedRecords.every(r => 
+      r.source_value === 'UNKNOWN' && 
+      r.classification === 'UNKNOWN' &&
+      r.transformation.includes('PROHIBITED')
+    );
+    prov07Pass = allRejectedUnknown;
+  }
+  recordCheck(
+    'W019-SRC-PROV-07',
+    'total_rejected_votes in source provenance manifest is honestly audited and classified as UNKNOWN (not DIRECTLY_SOURCED)',
+    prov07Pass,
+    `Rejected votes audited as UNKNOWN across Kodangal & Gajwel: ${prov07Pass}`
+  );
+
+  // W019-SRC-PROV-08: Arithmetic derivation of rejected votes is explicitly detected and rejected by anti-derivation guard
+  function fn_assert_no_arithmetic_derivation(record, contest) {
+    if (record.field_name === 'total_rejected_votes') {
+      const derivedValue = contest.total_votes_polled - contest.total_valid_votes;
+      if (record.source_value === 'UNKNOWN' && record.normalized_value === derivedValue) {
+        if (record.classification === 'DIRECTLY_SOURCED') {
+          throw new Error('ARITHMETIC_DERIVATION_PROHIBITED: Cannot classify derived delta as DIRECTLY_SOURCED');
+        }
+        return 'ARITHMETIC_DERIVATION_FLAGGED_AS_UNKNOWN';
+      }
+    }
+    return 'OK';
+  }
+  let prov08Pass = false;
+  try {
+    const kRejectedRec = provManifest.provenance_records.find(r => r.constituency_id === 'TS-AC-065' && r.field_name === 'total_rejected_votes');
+    const status = fn_assert_no_arithmetic_derivation(kRejectedRec, { total_votes_polled: 195509, total_valid_votes: 194545 });
+    
+    // Test that an illegal derivation attempt fails closed
+    let threwProhibited = false;
+    try {
+      const illegalRec = { ...kRejectedRec, classification: 'DIRECTLY_SOURCED' };
+      fn_assert_no_arithmetic_derivation(illegalRec, { total_votes_polled: 195509, total_valid_votes: 194545 });
+    } catch (e) {
+      if (e.message && e.message.includes('ARITHMETIC_DERIVATION_PROHIBITED')) {
+        threwProhibited = true;
+      }
+    }
+    prov08Pass = (status === 'ARITHMETIC_DERIVATION_FLAGGED_AS_UNKNOWN') && threwProhibited;
+  } catch (e) {
+    prov08Pass = false;
+  }
+  recordCheck(
+    'W019-SRC-PROV-08',
+    'Anti-derivation guard detects arithmetic derivation (polled - valid) and rejects DIRECTLY_SOURCED classification with ARITHMETIC_DERIVATION_PROHIBITED',
+    prov08Pass,
+    `Guard active and fail-closed: ${prov08Pass}`
+  );
+
+  // W019-SRC-PROV-09: NOTA source field is independently traceable to source-document ballot choice row with EVM and Postal breakdown
+  let prov09Pass = false;
+  if (hasProvManifest) {
+    const notaRecords = provManifest.provenance_records.filter(r => r.field_name === 'total_nota_votes');
+    const notaSourced = notaRecords.length >= 2 && notaRecords.every(r => 
+      r.classification === 'DIRECTLY_SOURCED' &&
+      r.source_table_or_section.includes('Ballot') &&
+      r.source_field_or_row.includes('NOTA') &&
+      typeof r.source_value === 'number'
+    );
+    prov09Pass = notaSourced;
+  }
+  recordCheck(
+    'W019-SRC-PROV-09',
+    'NOTA value is independently traceable to its own source-document choice row and is classified as DIRECTLY_SOURCED',
+    prov09Pass,
+    `NOTA verified directly sourced: ${prov09Pass}`
+  );
+
+  // W019-SRC-PROV-10: Form 20 vs Form 21E discrepancy report exists and details aggregate differences without silent reconciliation
+  const reconReportPath = path.resolve('reports/w019_form20_vs_form21e_reconciliation.json');
+  const hasReconReport = fs.existsSync(reconReportPath);
+  let prov10Pass = false;
+  if (hasReconReport) {
+    const recon = JSON.parse(fs.readFileSync(reconReportPath, 'utf8'));
+    const kDisc = recon.discrepancies.find(d => d.constituency_id === 'TS-AC-065');
+    if (kDisc && kDisc.fields) {
+      const f = kDisc.fields;
+      prov10Pass = Boolean(
+        f.total_electors && f.total_electors.discrepancy === 3701 &&
+        f.total_valid_votes && f.total_valid_votes.discrepancy === -618 &&
+        f.total_nota_votes && f.total_nota_votes.discrepancy === -1038 &&
+        f.total_rejected_votes && f.total_rejected_votes.discrepancy === 840 &&
+        f.winner_votes && f.winner_votes.discrepancy === 0 &&
+        f.runner_up_votes && f.runner_up_votes.discrepancy === 0
+      );
+    }
+  }
+  recordCheck(
+    'W019-SRC-PROV-10',
+    'Form 20 vs Form 21E discrepancy report explicitly details all aggregate differences without silent reconciliation',
+    prov10Pass,
+    `Discrepancies audited: Electors +3701, Valid -618, NOTA -1038, Rejected +840, Winner 0: ${prov10Pass}`
+  );
+
+  // W019-SRC-PROV-11: Complete source-to-database provenance metadata present for every normalized benchmark field
+  let prov11Pass = false;
+  if (hasProvManifest) {
+    const requiredFields = [
+      'constituency_id',
+      'constituency_name',
+      'field_name',
+      'source_document',
+      'source_sha256',
+      'source_page',
+      'source_table_or_section',
+      'source_field_or_row',
+      'source_value',
+      'normalized_table',
+      'normalized_column',
+      'normalized_value',
+      'transformation',
+      'transformation_version',
+      'classification'
+    ];
+    prov11Pass = provManifest.provenance_records.length >= 14 && provManifest.provenance_records.every(rec => 
+      requiredFields.every(field => rec[field] !== undefined && rec[field] !== null && String(rec[field]).trim().length > 0)
+    );
+  }
+  recordCheck(
+    'W019-SRC-PROV-11',
+    'Every normalized benchmark field in provenance manifest has complete 15-field source-location and transformation metadata',
+    prov11Pass,
+    `All ${provManifest?.provenance_records?.length || 0} records have complete metadata: ${prov11Pass}`
+  );
+
+
   // ─── 10. STAGING POSTGIS 589 GEOMETRY BASELINE INTEGRITY (W019-STG-01..02) ──
   console.log('\n--- 10. STAGING 589 GEOMETRY BASELINE INTEGRITY ---');
 

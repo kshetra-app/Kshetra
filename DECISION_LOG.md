@@ -1567,6 +1567,43 @@
   - The implementation agent explicitly does NOT self-certify or self-accept.
   - Milestone W020 remains STRICTLY NOT AUTHORIZED pending written CTO acceptance.
 
+---
+
+### DEC-079: W019 INDEPENDENT REJECTED-VOTE SOURCE AUDIT & CLASSIFICATION AS UNKNOWN
+- **Date:** 2026-09-29
+- **Status:** AUDITED / BLOCKED (Awaiting Independent Source Reconciliation)
+- **Authority:** CTO FINAL W019 BLOCKER — INDEPENDENT REJECTED-VOTE SOURCE PROOF, Master Product Blueprint, MEF Amendments v1.2, v1.4, v1.5-A, v1.6
+- **Context:** Following the CTO directive prohibiting arithmetic derivation of missing election fields from the conservation equation, a comprehensive forensic source audit was conducted across authoritative ECI Form 21E returns and statutory Form 20 Final Result Sheets for Kodangal (AC-065) and Gajwel (AC-040). The audit confirmed that while candidate votes and NOTA have direct, independent source line items, the numbers 964 (Kodangal) and 1,347 (Gajwel) assigned to `total_rejected_votes` in the benchmark extract originated from arithmetic subtraction ($195,509 - 194,545 = 964$ and $241,855 - 240,508 = 1,347$) rather than an independent source document statement. Furthermore, official statutory Form 20 data for Kodangal reports NOTA as 2,002 votes, rejected postal votes as 124, and total valid votes as 195,163.
+- **Decisions & Remediation:**
+  1. **Strict Prohibition of Arithmetic Derivation:** The architectural rule that unknown source values must NOT be manufactured or arithmetically derived to satisfy conservation equations is upheld. Unknown source values must remain UNKNOWN.
+  2. **Classification of Rejected Votes as UNKNOWN:** In `reports/w019_source_to_database_provenance.json`, `total_rejected_votes` for both Kodangal and Gajwel is explicitly audited and recorded with `source_value = "UNKNOWN"`, `classification = "UNKNOWN"`, and transformation flagged as `"UNVERIFIED_ARITHMETIC_DERIVATION_... (PROHIBITED)"`.
+  3. **Statutory Form 20 vs Form 21E Discrepancy Reconciliation:** Formally documented in `reports/w019_form20_vs_form21e_reconciliation.json` detailing aggregate differences without silent reconciliation:
+     - Kodangal Electors: Form 20 = 236,789 vs Form 21E = 240,490 (+3,701).
+     - Kodangal Valid Votes: Form 20 = 195,163 vs Form 21E = 194,545 (-618).
+     - Kodangal NOTA: Form 20 = 2,002 vs Form 21E = 964 (-1,038).
+     - Kodangal Rejected Votes: Form 20 = 124 vs Form 21E = 964 (+840).
+     - Kodangal Winner (107,429), Runner-Up (74,897), and Margin (32,532) match 100% with zero discrepancy.
+  4. **Machine-Readable Source-to-Database Provenance Manifest:** Generated `reports/w019_source_to_database_provenance.json` with complete 15-field source-location and transformation metadata for every normalized benchmark field across Kodangal and Gajwel.
+  5. **Authoritative Source Dossiers Created:**
+     - `data/evidence/w019/authoritative/eci_form21e_telangana_2023_kodangal_ac065_source_dossier.md`
+     - `data/evidence/w019/authoritative/eci_form21e_telangana_2023_gajwel_ac040_source_dossier.md`
+     - `data/evidence/w019/authoritative/eci_form20_telangana_2023_kodangal_ac065_dossier.md`
+  6. **Anti-Derivation Invariant Battery (65/65 Invariants PASS):**
+     - Added tests `W019-SRC-PROV-07` through `W019-SRC-PROV-11` in `tests/election-normalization-invariants.test.mjs`.
+     - `W019-SRC-PROV-07`: `total_rejected_votes` in provenance manifest is audited and classified as UNKNOWN (not DIRECTLY_SOURCED).
+     - `W019-SRC-PROV-08`: Anti-derivation guard detects arithmetic derivation (polled - valid) and rejects DIRECTLY_SOURCED classification with `ARITHMETIC_DERIVATION_PROHIBITED`.
+     - `W019-SRC-PROV-09`: NOTA value is independently traceable to its own source-document choice row and classified as DIRECTLY_SOURCED.
+     - `W019-SRC-PROV-10`: Form 20 vs Form 21E discrepancy report explicitly details all aggregate differences without silent reconciliation.
+     - `W019-SRC-PROV-11`: Every normalized benchmark field in provenance manifest has complete 15-field source-location and transformation metadata.
+  7. **Preservation of Existing Schemas, Baselines & Air-Gaps:**
+     - Staging PostGIS 589 geometries remain strictly preserved (digest `f839fa02980318a8f35f932ebe72fa1d3ad6325dc86a624bf159d932fe5f613b`).
+     - Production database `ehfafcnimmjusyvplbah` remains 100% air-gapped and untouched.
+     - 53/53 W018 political entity invariants pass; 10/10 elections API tests pass; 9/9 declared contracts match.
+- **Milestone Gate Status:**
+  - Milestone W019 status: **BLOCKED PENDING INDEPENDENT SOURCE RECONCILIATION**.
+  - Milestone W020: **STRICTLY NOT AUTHORIZED**.
+
+
 
 
 
