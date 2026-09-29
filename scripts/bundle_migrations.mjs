@@ -53,6 +53,10 @@ const ORDERED_FILES = [
   '043_w015_b2_source_reconciliation.sql',
   '044_mandal_temporal_boundary_remediation.sql',
   '045_w016_c3_mandal_identity_temporal_load.sql',
+  '046_w016_c3_r4_gov02_legacy_identity_supersession.sql',
+  '047_w016_c3_r5_r2_spatial_governance_reconciliation.sql',
+  '048_w016_c3_r5_r3_entity_geometries_schema.sql',
+  '049_spatial_gateway_and_boundary_diff.sql',
 ];
 
 console.log(`Combining ${ORDERED_FILES.length} migrations...`);
