@@ -1,14 +1,24 @@
 import { buildApp } from '../server';
 import type { FastifyInstance } from 'fastify';
+import { isSupabaseConfigured, setSupabaseConfiguredForTesting } from '../lib/supabase';
 
 describe('W011 Backend Fail-Closed Remediation (JOB 011 / DEF-005)', () => {
   let app: FastifyInstance;
+  let originalConfigured: boolean;
 
   beforeAll(async () => {
+    originalConfigured = isSupabaseConfigured;
+    setSupabaseConfiguredForTesting(false);
     app = await buildApp();
+    await app.ready();
+  });
+
+  beforeEach(() => {
+    setSupabaseConfiguredForTesting(false);
   });
 
   afterAll(async () => {
+    setSupabaseConfiguredForTesting(originalConfigured);
     await app.close();
   });
 

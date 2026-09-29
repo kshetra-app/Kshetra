@@ -1,0 +1,148 @@
+{
+  "job": "W011",
+  "jobName": "Production Fallback Repair / Mutation Integrity",
+  "document": "reports/w011_cto_governance_closure.json",
+  "closureDate": "2026-09-29",
+  "classification": "CONDITIONALLY_READY_SPECIFIC_EVIDENCE_GAP",
+  "classificationCode": "B",
+  "authoritativeCoordinates": {
+    "baseCommit": "f80b585a8c1dcb2458f1964255b0d8e9bc200285",
+    "substantiveImplementationCommit": "cd6f04e70ffa339cdb452487e8002881efb344e5",
+    "submittedHeadCommit": "ca062d131f456c64ff3f39a44976c66cf0cf1d3d",
+    "currentHeadCommit": "1540ba3a7717d2f6b81777a947ca1fc21f7e0ff1",
+    "ancestryVerified": true,
+    "targetBranch": "master",
+    "targetDatabase": "panIN-staging (fkpigozcqnmcvofuksar)",
+    "productionDatabase": "ehfafcnimmjusyvplbah (STRICTLY AIR-GAPPED / UNTOUCHED)"
+  },
+  "implementationInventory": {
+    "batchW011B1": {
+      "name": "Backend Fail-Closed Remediation",
+      "commits": ["453255ff4de85681a16ad8dfdfefd6bade26d81d", "cd6f04e70ffa339cdb452487e8002881efb344e5"],
+      "remediatedFiles": [
+        "apps/api/src/routes/campaign.ts",
+        "apps/api/src/routes/politicalAds.ts",
+        "apps/api/src/routes/moderation.ts",
+        "apps/api/src/routes/politician.ts",
+        "apps/api/src/routes/civic.ts",
+        "apps/api/src/routes/manage.ts",
+        "apps/api/src/routes/dm.ts"
+      ],
+      "status": "IMPLEMENTED_VERIFIED_IN_SOURCE"
+    },
+    "batchW011B2": {
+      "name": "Elimination of Synthetic Entity Identifiers Across Mobile Forms and Stores",
+      "commit": "3d7a9b5",
+      "remediatedFiles": [
+        "apps/mobile/components/ComposeSheet.tsx",
+        "apps/mobile/components/PostDetailModal.tsx",
+        "apps/mobile/components/ReportIssueSheet.tsx",
+        "apps/mobile/components/RegisterAspirantModal.tsx",
+        "apps/mobile/stores/feed.ts",
+        "apps/mobile/stores/promises.ts",
+        "apps/mobile/stores/politicalShorts.ts",
+        "apps/mobile/stores/aspirant.ts",
+        "apps/mobile/stores/civic.ts"
+      ],
+      "status": "IMPLEMENTED_VERIFIED_BY_TESTS"
+    },
+    "batchW011B3": {
+      "name": "Canonical Four-State Synchronization Lifecycle",
+      "commit": "88fb107",
+      "remediatedFiles": [
+        "apps/mobile/lib/offlineSync.ts",
+        "apps/mobile/lib/feedTypes.ts",
+        "apps/mobile/lib/civicTypes.ts",
+        "apps/mobile/lib/promiseTypes.ts"
+      ],
+      "status": "IMPLEMENTED_VERIFIED_BY_TESTS"
+    },
+    "batchW011B4": {
+      "name": "Canonical API Client Routing & Fail-Closed Moderation Seam",
+      "commit": "31427f8",
+      "remediatedFiles": [
+        "apps/mobile/lib/supabaseDataService.ts",
+        "apps/mobile/__tests__/w011-mobile-mutations.test.ts"
+      ],
+      "status": "IMPLEMENTED_VERIFIED_BY_TESTS"
+    }
+  },
+  "acceptanceGatesEvaluation": {
+    "gate1_compilation": {
+      "name": "API & Mobile TypeScript Compilation",
+      "status": "PASS",
+      "evidence": "apps/api build clean (0 errors), apps/mobile typecheck clean (0 errors)"
+    },
+    "gate2_contractDrift": {
+      "name": "API Contract Drift Parity",
+      "status": "PASS",
+      "evidence": "node scripts/check-api-contract-drift.mjs verified 9/9 declared contracts (100% match)"
+    },
+    "gate3_evidenceIntegrity": {
+      "name": "Repository & Evidence Integrity",
+      "status": "PASS",
+      "evidence": "node scripts/check-repo-evidence-integrity.mjs verified 37/37 commits, working tree clean"
+    },
+    "gate4_commitFreshness": {
+      "name": "Commit Freshness Validator",
+      "status": "PASS",
+      "evidence": "node tests/commit-freshness.test.mjs passed Checks A through J"
+    },
+    "gate5_mobileMutationsSuite": {
+      "name": "Mobile Mutation & Lifecycle Test Suite",
+      "status": "PASS",
+      "evidence": "npm test --prefix apps/mobile -- __tests__/w011-mobile-mutations.test.ts (10/10 PASS)"
+    },
+    "gate6_backendFailClosedSuite": {
+      "name": "Backend Fail-Closed Behavior Suite",
+      "status": "EVIDENCE_GAP_TEST_HARNESS_LEAKAGE",
+      "evidence": "apps/api/src/__tests__/w011-fail-closed.test.ts failed (6 failed, 2 passed). Root cause: test harness assumes isSupabaseConfigured = false, but apps/api/.env loads live staging credentials into process.env, triggering database paths instead of unconfigured 503 fallback paths."
+    },
+    "gate7_zeroOpportunisticFeatures": {
+      "name": "Zero Opportunistic Engagement Features",
+      "status": "PASS",
+      "evidence": "docs/ENGAGEMENT_INFRASTRUCTURE_INVENTORY.md honored; 0 unauthorized features added"
+    },
+    "gate8_productionAirGap": {
+      "name": "Production Safety & Air-Gap Invariant",
+      "status": "PASS",
+      "evidence": "0 production migrations, 0 production mutations, 0 production deployments. Production database remains untouched."
+    },
+    "gate9_independentAcceptance": {
+      "name": "Non-Self Acceptance Boundary",
+      "status": "PASS",
+      "evidence": "Status maintained strictly as SUBMITTED / PENDING CTO ACCEPTANCE across all registers"
+    }
+  },
+  "defectsDisposition": {
+    "DEF-005": {
+      "title": "Ambiguous dual-backend calling convention & deceptive mock-success fallbacks",
+      "status": "RESOLVED_IN_CODE",
+      "note": "Client-side synthetic IDs and mock success eliminated. Backend routes fail closed when DB unconfigured. Harness test w011-fail-closed.test.ts requires environment isolation to turn green in runner."
+    }
+  },
+  "registerReconciliation": {
+    "ACCEPTANCE_REGISTER": {
+      "currentEntry": "Line 40: SUBMITTED / IMPLEMENTED / ca062d1 / PENDING CTO ACCEPTANCE",
+      "consistency": "CONSISTENT"
+    },
+    "EXECUTION_STATE": {
+      "currentJobLine": "Line 10: Lists W016-C3-R4 (stale relative to W016-C3-R10)",
+      "w011Section": "Lines 105-114: Accurately records ca062d1, cd6f04e, SUBMITTED_FOR_ACCEPTANCE, PENDING",
+      "w011Table": "Line 272: Contains outdated note 'Implementation Authorization NOT YET GRANTED'",
+      "consistency": "MINOR_TEXT_RECONCILIATION_NEEDED"
+    },
+    "DECISION_LOG": {
+      "currentEntry": "DEC-059 records W011 Implementation Submission on 2026-09-21",
+      "consistency": "CONSISTENT"
+    },
+    "RELEASE_REGISTER": {
+      "currentEntry": "No release entry (correct for code-hardening milestone)",
+      "consistency": "CONSISTENT"
+    }
+  },
+  "recommendationForCTO": {
+    "classification": "B. CONDITIONALLY READY — SPECIFIC EVIDENCE GAP",
+    "recommendedAction": "Authorize surgical test harness fix in apps/api/src/__tests__/w011-fail-closed.test.ts to call setSupabaseConfiguredForTesting(false) in beforeEach and restore in afterEach. Re-run suite to verify 8/8 PASS, then formally grant CTO Acceptance via DEC decision log entry."
+  }
+}

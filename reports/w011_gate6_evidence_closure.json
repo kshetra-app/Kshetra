@@ -1,0 +1,98 @@
+{
+  "job": "W011",
+  "jobName": "Production Fallback Repair / Mutation Integrity",
+  "document": "reports/w011_gate6_evidence_closure.json",
+  "remediationDate": "2026-09-29",
+  "classification": "READY_FOR_CTO_ACCEPTANCE",
+  "authoritativeCoordinates": {
+    "auditedCodeCommit": "cd6f04e70ffa339cdb452487e8002881efb344e5",
+    "submittedHeadCommit": "ca062d131f456c64ff3f39a44976c66cf0cf1d3d",
+    "baseHead": "1540ba3a7717d2f6b81777a947ca1fc21f7e0ff1",
+    "targetBranch": "master",
+    "targetDatabase": "panIN-staging (fkpigozcqnmcvofuksar)",
+    "productionDatabase": "ehfafcnimmjusyvplbah (STRICTLY AIR-GAPPED / UNTOUCHED)"
+  },
+  "gate6Remediation": {
+    "testSuite": "apps/api/src/__tests__/w011-fail-closed.test.ts",
+    "originalFailure": {
+      "status": "FAIL",
+      "summary": "6 failed, 2 passed, 8 total",
+      "failures": [
+        "PATCH /api/v1/campaign/booths/b-54: expected 503, received 403",
+        "POST /api/v1/campaign/volunteers: expected 503, received 403",
+        "GET /api/v1/dm/unread-count: expected 503, received 200",
+        "POST /api/v1/moderation/verify-request: expected 503, received 500",
+        "POST /api/v1/moderation/block: expected 503, received 500",
+        "DELETE /api/v1/moderation/block/:userId: expected 503, received 200"
+      ]
+    },
+    "rootCause": "w011-fail-closed.test.ts was designed to verify unconfigured fail-closed 503 branches (if (!isSupabaseConfigured)), but omitted explicit test isolation. Because apps/api/.env contains live staging Supabase credentials in the test runner, isSupabaseConfigured evaluated to true, routing test calls through live database handlers rather than the intended unconfigured fallback branch.",
+    "exactCorrection": "Imported isSupabaseConfigured and setSupabaseConfiguredForTesting from ../lib/supabase. In beforeAll and beforeEach, explicitly set setSupabaseConfiguredForTesting(false). In afterAll, restored originalConfigured state and closed app. Zero production or application code was altered.",
+    "isolationMechanism": "Repository-supported setSupabaseConfiguredForTesting(false) test helper with deterministic cleanup.",
+    "finalExecutionResult": {
+      "status": "PASS",
+      "passed": 8,
+      "failed": 0,
+      "total": 8,
+      "passRate": "100%",
+      "executionDuration": "10.097s"
+    }
+  },
+  "regressionBatteryResults": {
+    "apiBuild": {
+      "command": "npm run build --prefix apps/api",
+      "result": "PASS (0 errors, tsc --noEmit)"
+    },
+    "mobileTypecheck": {
+      "command": "npx tsc --noEmit -p apps/mobile/tsconfig.json",
+      "result": "PASS (0 errors)"
+    },
+    "contractDrift": {
+      "command": "node scripts/check-api-contract-drift.mjs",
+      "result": "PASS (9/9 matched, 100% parity)"
+    },
+    "commitFreshness": {
+      "command": "node tests/commit-freshness.test.mjs",
+      "result": "PASS (Checks A through J passed 100%)"
+    },
+    "mobileMutationsSuite": {
+      "command": "npm test --prefix apps/mobile -- __tests__/w011-mobile-mutations.test.ts",
+      "result": "PASS (10/10 passed, 100%)"
+    },
+    "civicMutationsSuite": {
+      "command": "npm test --prefix apps/api -- src/__tests__/civic-mutations.test.ts",
+      "result": "PASS (22/22 passed, 100%)"
+    }
+  },
+  "productionSafety": {
+    "productionDatabase": "ehfafcnimmjusyvplbah",
+    "connectionsAttempted": 0,
+    "ddlExecuted": 0,
+    "dmlExecuted": 0,
+    "migrationsCreated": 0,
+    "deploymentsTriggered": 0,
+    "productionUntouched": true
+  },
+  "governanceReconciliation": {
+    "executionStateUpdated": true,
+    "reconciledFields": [
+      "CURRENT_JOB updated to reflect W011 Gate 6 Remediation & Governance Closure",
+      "LAST_COMPLETED_JOB updated to W016-C3-R10 (Gap B deferred to W023)",
+      "NEXT_PERMITTED_JOB updated to W017 (Pending CTO acceptance of W011)",
+      "W011 row in job execution table reconciled to SUBMITTED / IMPLEMENTED",
+      "W016 row in job execution table reconciled to CONDITIONALLY ACCEPTED / CLOSED"
+    ],
+    "acceptanceRegisterModified": false,
+    "acceptanceDecisionReservedForCTO": true
+  },
+  "filesModified": [
+    "apps/api/src/__tests__/w011-fail-closed.test.ts",
+    "EXECUTION_STATE.md"
+  ],
+  "w017Status": {
+    "workStarted": false,
+    "codeCreated": false,
+    "migrationsCreated": false,
+    "awaitingPlanRatification": true
+  }
+}
