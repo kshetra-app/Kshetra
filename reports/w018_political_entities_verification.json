@@ -1,0 +1,167 @@
+{
+  "metadata": {
+    "directive": "W018 Political Entity Model Master Invariant Battery",
+    "executionTimestamp": "2026-09-29T08:21:38.015Z",
+    "stagingUrl": "https://fkpigozcqnmcvofuksar.supabase.co",
+    "totalChecks": 21,
+    "passedChecks": 21,
+    "failedChecks": 0,
+    "verdict": "PASS"
+  },
+  "stagingBaseline": {
+    "rowCount": 589,
+    "expectedRowCount": 589,
+    "sha256Digest": "f839fa02980318a8f35f932ebe72fa1d3ad6325dc86a624bf159d932fe5f613b",
+    "expectedDigest": "f839fa02980318a8f35f932ebe72fa1d3ad6325dc86a624bf159d932fe5f613b",
+    "mutationDetected": false
+  },
+  "checks": [
+    {
+      "id": "W018-CAT-01",
+      "title": "All stored procedures are 100% SECURITY INVOKER (prosecdef = false)",
+      "status": "PASS",
+      "observed": "fn_link_person_identity:false, fn_resolve_canonical_person:false",
+      "details": ""
+    },
+    {
+      "id": "W018-CAT-02",
+      "title": "All functions enforce immutable search_path = public, pg_temp",
+      "status": "PASS",
+      "observed": "fn_link_person_identity:search_path=public, pg_temp, fn_resolve_canonical_person:search_path=public, pg_temp",
+      "details": ""
+    },
+    {
+      "id": "W018-CAT-03",
+      "title": "fn_resolve_canonical_person is executable by anon and authenticated callers for public resolution",
+      "status": "PASS",
+      "observed": "anon execute = t",
+      "details": ""
+    },
+    {
+      "id": "W018-CAT-04",
+      "title": "fn_link_person_identity is revoked from anon and restricted strictly to service_role",
+      "status": "PASS",
+      "observed": "anon: f, service_role: t",
+      "details": ""
+    },
+    {
+      "id": "W018-CAT-05",
+      "title": "Row Level Security (RLS) is enabled on all 6 canonical political entity tables",
+      "status": "PASS",
+      "observed": "candidacies:true, canonical_persons:true, elected_tenures:true, person_identity_linkages:true, person_roles:true, political_organizations:true",
+      "details": ""
+    },
+    {
+      "id": "W018-CAT-06",
+      "title": "Public SELECT policies verified on canonical tables",
+      "status": "PASS",
+      "observed": "Found 6 select policies",
+      "details": ""
+    },
+    {
+      "id": "W018-ID-01",
+      "title": "Same real-world person resolves to identical canonical UUID across multiple offices and entry points",
+      "status": "PASS",
+      "observed": "Resolved UUID: ebb58cd0-49b0-4188-ab43-37e1c7071ffc",
+      "details": ""
+    },
+    {
+      "id": "W018-ID-02",
+      "title": "Role change preserves canonical person ID without creating duplicate person record",
+      "status": "PASS",
+      "observed": "Total roles attached to single person: 2",
+      "details": ""
+    },
+    {
+      "id": "W018-ID-03",
+      "title": "Party affiliation update / defection preserves canonical person ID",
+      "status": "PASS",
+      "observed": "Current party: ORG-PARTY-BRS-TEST\nUPDATE 1, person_id: ebb58cd0-49b0-4188-ab43-37e1c7071ffc",
+      "details": ""
+    },
+    {
+      "id": "W018-ID-04",
+      "title": "Multiple election contests link to single canonical person record",
+      "status": "PASS",
+      "observed": "Candidacies count = 3 (expected 3)",
+      "details": ""
+    },
+    {
+      "id": "W018-ID-05",
+      "title": "Historical representative tenures preserve geographic jurisdictions without temporal collision",
+      "status": "PASS",
+      "observed": "Jurisdictions: TS-PC-007, TS-AC-065",
+      "details": ""
+    },
+    {
+      "id": "W018-ID-06",
+      "title": "Complete career progression lifecycle captured on single entity lineage",
+      "status": "PASS",
+      "observed": "Career timeline roles: mla -> aspirant",
+      "details": ""
+    },
+    {
+      "id": "W018-ID-07",
+      "title": "Political Organization and Person entity spaces are strictly decoupled (zero ID collisions)",
+      "status": "PASS",
+      "observed": "Collision count = 0",
+      "details": ""
+    },
+    {
+      "id": "W018-ID-08",
+      "title": "Account decoupled from Person: Unauthenticated or non-admin caller cannot claim person identity",
+      "status": "PASS",
+      "observed": "Result: ERROR: ERROR:  permission denied for table canonical_persons\nHINT:  Grant the required privileges to the current role with: GRANT UPDATE ON public.canonical_persons TO anon;\n",
+      "details": ""
+    },
+    {
+      "id": "W018-ID-09",
+      "title": "Unknown or ambiguous external record ID fails closed (returns NULL, zero false positive matches)",
+      "status": "PASS",
+      "observed": "Unmapped return = ''",
+      "details": ""
+    },
+    {
+      "id": "W018-ID-10",
+      "title": "Canonical person entity carries official data_status according to Migration 039 standards",
+      "status": "PASS",
+      "observed": "data_status = OFFICIAL",
+      "details": ""
+    },
+    {
+      "id": "W018-SEC-01",
+      "title": "Unauthorized mutation of person_identity_linkages fails closed with RLS denial",
+      "status": "PASS",
+      "observed": "Result: ERROR: ERROR:  permission denied for table person_identity_linkages\nHINT:  Grant the required privileges to the current role with: GRANT INSERT ON public.person_identity_linkages TO anon;\n",
+      "details": ""
+    },
+    {
+      "id": "W018-SEC-02",
+      "title": "Direct execution of fn_link_person_identity fails closed under anon role (SQLSTATE 42501)",
+      "status": "PASS",
+      "observed": "Result: ERROR: ERROR:  permission denied for function fn_link_person_identity\n",
+      "details": ""
+    },
+    {
+      "id": "W018-STG-01",
+      "title": "public.entity_geometries row count strictly preserved at exactly 589 rows on staging",
+      "status": "PASS",
+      "observed": "Observed: 589 / Expected: 589",
+      "details": ""
+    },
+    {
+      "id": "W018-STG-02",
+      "title": "public.entity_geometries SHA-256 digest byte-exact match (zero mutation of 589 geometries)",
+      "status": "PASS",
+      "observed": "Digest: f839fa02980318a8f35f932ebe72fa1d3ad6325dc86a624bf159d932fe5f613b",
+      "details": ""
+    },
+    {
+      "id": "W018-PRD-01",
+      "title": "Production database ehfafcnimmjusyvplbah strictly air-gapped with zero connections and zero mutations",
+      "status": "PASS",
+      "observed": "ehfafcnimmjusyvplbah untouched",
+      "details": ""
+    }
+  ]
+}

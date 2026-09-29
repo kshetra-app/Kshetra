@@ -3,12 +3,12 @@
     "job": "W008",
     "title": "Fastify API Route Contract Inventory",
     "specification": "Master Execution Framework Amendment v1.5-A / DEC-041",
-    "timestamp": "2026-09-29T06:31:51.144Z"
+    "timestamp": "2026-09-29T08:21:55.236Z"
   },
   "summary": {
-    "totalRoutesRegistered": 150,
+    "totalRoutesRegistered": 156,
     "pioneerAndPhase1Routes": 56,
-    "schemaCoveredRoutes": 120
+    "schemaCoveredRoutes": 126
   },
   "routes": [
     {
@@ -1207,6 +1207,60 @@
       "schemaDefined": false,
       "preValidationDefined": false,
       "standardizedEnvelope": false
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/entities/search",
+      "file": "politicalEntities.ts",
+      "phase": "Phase 2-4",
+      "schemaDefined": true,
+      "preValidationDefined": false,
+      "standardizedEnvelope": true
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/entities/persons/:id",
+      "file": "politicalEntities.ts",
+      "phase": "Phase 2-4",
+      "schemaDefined": true,
+      "preValidationDefined": false,
+      "standardizedEnvelope": true
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/entities/persons/:id/timeline",
+      "file": "politicalEntities.ts",
+      "phase": "Phase 2-4",
+      "schemaDefined": true,
+      "preValidationDefined": false,
+      "standardizedEnvelope": true
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/entities/organizations/:id",
+      "file": "politicalEntities.ts",
+      "phase": "Phase 2-4",
+      "schemaDefined": true,
+      "preValidationDefined": false,
+      "standardizedEnvelope": true
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/entities/legislators",
+      "file": "politicalEntities.ts",
+      "phase": "Phase 2-4",
+      "schemaDefined": true,
+      "preValidationDefined": false,
+      "standardizedEnvelope": true
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/entities/persons/:id/claim",
+      "file": "politicalEntities.ts",
+      "phase": "Phase 2-4",
+      "schemaDefined": true,
+      "preValidationDefined": false,
+      "standardizedEnvelope": true
     },
     {
       "method": "GET",

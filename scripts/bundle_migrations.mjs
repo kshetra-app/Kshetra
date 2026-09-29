@@ -57,6 +57,7 @@ const ORDERED_FILES = [
   '047_w016_c3_r5_r2_spatial_governance_reconciliation.sql',
   '048_w016_c3_r5_r3_entity_geometries_schema.sql',
   '049_spatial_gateway_and_boundary_diff.sql',
+  '050_political_entity_model.sql',
 ];
 
 console.log(`Combining ${ORDERED_FILES.length} migrations...`);
