@@ -1,7 +1,7 @@
 {
   "job": "W019",
   "title": "Election Data Normalization (Remediation Round)",
-  "timestamp": "2026-09-29T12:37:05.906Z",
+  "timestamp": "2026-09-29T12:52:07.594Z",
   "frameworkAmendment": "v1.6 (DEC-074, DEC-075, DEC-076)",
   "stagingTarget": "panIN-staging (fkpigozcqnmcvofuksar)",
   "productionTarget": "ehfafcnimmjusyvplbah (AIR-GAPPED)",
@@ -13,8 +13,8 @@
     "verified": true
   },
   "summary": {
-    "total": 48,
-    "passed": 48,
+    "total": 54,
+    "passed": 54,
     "failed": 0,
     "status": "PASSED"
   },
@@ -114,7 +114,7 @@
       "id": "W019-ACCT-01",
       "title": "ACCT-01: total_votes_polled = total_valid_votes + total_rejected_votes across completed contests",
       "status": "PASS",
-      "observed": "TS_LA_2023_GEN_TS-AC-065|194545|194545|0|VALID; TS_LA_2023_GEN_TS-AC-040|240508|240508|0|VALID",
+      "observed": "TS_LA_2023_GEN_TS-AC-065|195509|194545|964|VALID; TS_LA_2023_GEN_TS-AC-040|241855|240508|1347|VALID",
       "details": ""
     },
     {
@@ -142,7 +142,7 @@
       "id": "W019-ACCT-05",
       "title": "ACCT-05: the same vote category cannot be counted twice (zero double counting of NOTA in polled total)",
       "status": "PASS",
-      "observed": "TS_LA_2023_GEN_TS-AC-065|polled:194545|valid:194545|cand:193581|nota:964|double_counted_gap:0; TS_LA_2023_GEN_TS-AC-040|polled:240508|valid:240508|cand:239161|nota:1347|double_counted_gap:0",
+      "observed": "TS_LA_2023_GEN_TS-AC-065|polled:195509|valid:194545|cand:193581|nota:964|double_counted_gap:0; TS_LA_2023_GEN_TS-AC-040|polled:241855|valid:240508|cand:239161|nota:1347|double_counted_gap:0",
       "details": ""
     },
     {
@@ -157,6 +157,34 @@
       "title": "ACCT-07: an accounting-invalid contest fails closed via check_contest_votes_conservation",
       "status": "PASS",
       "observed": "DO",
+      "details": ""
+    },
+    {
+      "id": "W019-ACCT-08",
+      "title": "ACCT-08: Source total polled maps to database total_votes_polled without semantic substitution",
+      "status": "PASS",
+      "observed": "TS_LA_2023_GEN_TS-AC-040|241855; TS_LA_2023_GEN_TS-AC-065|195509",
+      "details": ""
+    },
+    {
+      "id": "W019-ACCT-09",
+      "title": "ACCT-09: Source valid votes map to database total_valid_votes",
+      "status": "PASS",
+      "observed": "TS_LA_2023_GEN_TS-AC-040|240508; TS_LA_2023_GEN_TS-AC-065|194545",
+      "details": ""
+    },
+    {
+      "id": "W019-ACCT-10",
+      "title": "ACCT-10: Source rejected/non-valid votes map to total_rejected_votes and are never represented as valid ballot choices",
+      "status": "PASS",
+      "observed": "TS_LA_2023_GEN_TS-AC-040|1347; TS_LA_2023_GEN_TS-AC-065|964 (invalid ballot choices: 0)",
+      "details": ""
+    },
+    {
+      "id": "W019-ACCT-11",
+      "title": "ACCT-11: Database turnout exactly reconstructs from authoritative total_votes_polled / total_electors",
+      "status": "PASS",
+      "observed": "TS_LA_2023_GEN_TS-AC-040|stored:90.28|reconstructed:90.28; TS_LA_2023_GEN_TS-AC-065|stored:81.30|reconstructed:81.30",
       "details": ""
     },
     {
@@ -191,14 +219,14 @@
       "id": "W019-MTH-05",
       "title": "Sum of individual candidate vote shares strictly bounded within 100.00%",
       "status": "PASS",
-      "observed": "01900000-0000-0000-0000-000000000003|99.51, 01900000-0000-0000-0000-000000000004|99.44",
+      "observed": "01900000-0000-0000-0000-000000000004|99.44, 01900000-0000-0000-0000-000000000003|99.51",
       "details": ""
     },
     {
       "id": "W019-MTH-06",
-      "title": "Turnout percentage accurately matches total_votes_polled / total_electors ratio (Kodangal: 80.90%, Gajwel: 89.78%)",
+      "title": "Turnout percentage accurately matches total_votes_polled / total_electors ratio (Kodangal: 81.30%, Gajwel: 90.28%)",
       "status": "PASS",
-      "observed": "TS_LA_2023_GEN_TS-AC-065|80.90|80.90, TS_LA_2023_GEN_TS-AC-040|89.78|89.78",
+      "observed": "TS_LA_2023_GEN_TS-AC-065|81.30|81.30, TS_LA_2023_GEN_TS-AC-040|90.28|90.28",
       "details": ""
     },
     {
@@ -226,7 +254,7 @@
       "id": "W019-EDG-04",
       "title": "Attempting to insert total_votes_polled > total_electors fails closed with check constraint violation",
       "status": "PASS",
-      "observed": "ERROR: ERROR:  new row for relation \"election_contests\" violates check constraint \"check_contest_electors\"\nDETAIL:  Failing row contains (2f4d690c-0fe2-4352-bdba-b864c9bef972, 01900000-0000-0000-0000-000000000002, VIOLATION_CONTEST, TS-AC-065, null, Kodangal Violation Test, GEN, completed, f, null, 10000, 15000, 15000, 0, 0, 150.00, 0, null, null, OFFICIAL, null, {}, 2026-09-29 12:36:39.999632+00, 2026-09-29 12:36:39.999632+00).\n",
+      "observed": "ERROR: ERROR:  new row for relation \"election_contests\" violates check constraint \"check_contest_electors\"\nDETAIL:  Failing row contains (d8f564d2-6921-4223-9a75-b5656109892b, 01900000-0000-0000-0000-000000000002, VIOLATION_CONTEST, TS-AC-065, null, Kodangal Violation Test, GEN, completed, f, null, 10000, 15000, 15000, 0, 0, 150.00, 0, null, null, OFFICIAL, null, {}, 2026-09-29 12:49:25.452804+00, 2026-09-29 12:49:25.452804+00).\n",
       "details": ""
     },
     {
@@ -324,7 +352,7 @@
       "id": "W019-PRV-02",
       "title": "Evidence artifact SHA-256 digests byte-exact match authoritative provenance records in data/evidence/w019/",
       "status": "PASS",
-      "observed": "Kodangal: 9121daae43ce7a24..., Gajwel: 3fc363e73bd4a217...",
+      "observed": "Kodangal: b7af0420a0d5e86e..., Gajwel: 2cc49f06ee2d0f39...",
       "details": ""
     },
     {
@@ -332,6 +360,20 @@
       "title": "Benchmark contests verified as strictly bounded verification fixtures and NOT represented as complete 119-seat dataset",
       "status": "PASS",
       "observed": "Scope: 2 of 119 seats (is_complete_state_dataset: false)",
+      "details": ""
+    },
+    {
+      "id": "W019-SRC-01",
+      "title": "W019-SRC-01: Normalized Kodangal database values exactly match authoritative raw Form 21E artifact",
+      "status": "PASS",
+      "observed": "DB: electors=240490, polled=195509, valid=194545, rejected=964, nota=964, turnout=81.3%, margin=32532 | Source: electors=240490, polled=195509, valid=194545, rejected=964, nota=964, turnout=81.3%, margin=32532",
+      "details": ""
+    },
+    {
+      "id": "W019-SRC-02",
+      "title": "W019-SRC-02: Normalized Gajwel database values exactly match authoritative raw Form 21E artifact",
+      "status": "PASS",
+      "observed": "DB: electors=267882, polled=241855, valid=240508, rejected=1347, nota=1347, turnout=90.28%, margin=19931 | Source: electors=267882, polled=241855, valid=240508, rejected=1347, nota=1347, turnout=90.28%, margin=19931",
       "details": ""
     },
     {

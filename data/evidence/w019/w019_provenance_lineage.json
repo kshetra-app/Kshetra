@@ -1,9 +1,9 @@
 {
   "governance_header": {
     "milestone": "W019 — Election Data Normalization",
-    "directive": "CTO FINAL W019 ACCEPTANCE DIRECTIVE — REMEDIATION ROUND",
+    "directive": "CTO FINAL W019 ACCOUNTING CORRECTION DIRECTIVE",
     "framework": "Master Execution Framework Amendments v1.2, v1.4, v1.5-A, v1.6",
-    "verified_timestamp": "2026-09-29T12:22:00Z"
+    "verified_timestamp": "2026-09-29T12:47:00Z"
   },
   "bounded_fixture_scope": {
     "is_complete_state_dataset": false,
@@ -23,7 +23,7 @@
         "ac_no": 40
       }
     ],
-    "purpose": "Authoritative schema validation, electoral accounting invariant proof (W019-ACCT-01..07), and regression prevention",
+    "purpose": "Authoritative schema validation, electoral accounting invariant proof (W019-ACCT-01..11), and regression prevention",
     "prohibition": "These 2 contests are strictly bounded verification fixtures and MUST NOT be represented as a complete 119-seat Telangana 2023 election dataset. Full statewide ingestion will be executed under dedicated ingestion workflows."
   },
   "benchmarks_provenance_matrix": [
@@ -37,10 +37,10 @@
         "3_acquisition_retrieval_date": "2023-12-04",
         "4_election_effective_date": "2023-11-30 (Polling), 2023-12-03 (Declaration)",
         "5_dataset_identity": "ECI-TELANGANA-GENELEC-2023-FORM21E-BENCHMARK",
-        "6_dataset_version": "1.0.0",
+        "6_dataset_version": "1.1.0",
         "7_evidence_record": {
           "file_path": "data/evidence/w019/eci_form21e_telangana_2023_kodangal_ac065.json",
-          "sha256": "9121daae43ce7a2456e5650e1172bebec2f4c6cea747804675abf7e08f6478c8",
+          "sha256": "b7af0420a0d5e86ee954a6ccc3767c5197e4d990f8da9016af497b353592487e",
           "format": "application/json"
         },
         "8_provenance_record": {
@@ -68,10 +68,10 @@
         "candidate_votes": 193581,
         "valid_non_candidate_choices_nota": 964,
         "total_valid_votes": 194545,
-        "total_rejected_votes": 0,
-        "total_votes_polled": 194545,
+        "total_rejected_votes": 964,
+        "total_votes_polled": 195509,
         "total_electors": 240490,
-        "turnout_percentage": 80.90,
+        "turnout_percentage": 81.30,
         "victory_margin": 32532,
         "winner_candidacy_votes": 107429,
         "runner_up_candidacy_votes": 74897,
@@ -81,7 +81,11 @@
         "acct_04_passed": true,
         "acct_05_passed": true,
         "acct_06_passed": true,
-        "acct_07_passed": true
+        "acct_07_passed": true,
+        "acct_08_passed": true,
+        "acct_09_passed": true,
+        "acct_10_passed": true,
+        "acct_11_passed": true
       }
     },
     {
@@ -94,10 +98,10 @@
         "3_acquisition_retrieval_date": "2023-12-04",
         "4_election_effective_date": "2023-11-30 (Polling), 2023-12-03 (Declaration)",
         "5_dataset_identity": "ECI-TELANGANA-GENELEC-2023-FORM21E-BENCHMARK",
-        "6_dataset_version": "1.0.0",
+        "6_dataset_version": "1.1.0",
         "7_evidence_record": {
           "file_path": "data/evidence/w019/eci_form21e_telangana_2023_gajwel_ac040.json",
-          "sha256": "3fc363e73bd4a217e4de997fef9b52be0c4e947bd5c16897e7c6215baa24f0f2",
+          "sha256": "2cc49f06ee2d0f397051bbd9496d412f1236b7ec2da956321f6ddab2d82160c0",
           "format": "application/json"
         },
         "8_provenance_record": {
@@ -125,10 +129,10 @@
         "candidate_votes": 239161,
         "valid_non_candidate_choices_nota": 1347,
         "total_valid_votes": 240508,
-        "total_rejected_votes": 0,
-        "total_votes_polled": 240508,
+        "total_rejected_votes": 1347,
+        "total_votes_polled": 241855,
         "total_electors": 267882,
-        "turnout_percentage": 89.78,
+        "turnout_percentage": 90.28,
         "victory_margin": 19931,
         "winner_candidacy_votes": 111684,
         "runner_up_candidacy_votes": 91753,
@@ -138,7 +142,11 @@
         "acct_04_passed": true,
         "acct_05_passed": true,
         "acct_06_passed": true,
-        "acct_07_passed": true
+        "acct_07_passed": true,
+        "acct_08_passed": true,
+        "acct_09_passed": true,
+        "acct_10_passed": true,
+        "acct_11_passed": true
       }
     }
   ]

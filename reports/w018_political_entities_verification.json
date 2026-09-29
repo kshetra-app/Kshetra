@@ -1,7 +1,7 @@
 {
   "metadata": {
     "directive": "W018 Political Entity Model Master Invariant Battery (Remediation Round 2)",
-    "executionTimestamp": "2026-09-29T12:36:15.300Z",
+    "executionTimestamp": "2026-09-29T12:55:10.485Z",
     "stagingUrl": "https://fkpigozcqnmcvofuksar.supabase.co",
     "totalChecks": 53,
     "passedChecks": 53,
@@ -69,7 +69,7 @@
       "id": "W018-ID-01",
       "title": "Same real-world person resolves to identical canonical UUID across multiple offices and entry points",
       "status": "PASS",
-      "observed": "Resolved UUID: edd00021-fe9e-426f-9829-0cb17a8b0a20",
+      "observed": "Resolved UUID: 323d559c-bc08-438d-a533-60559378ee86",
       "details": ""
     },
     {
@@ -83,7 +83,7 @@
       "id": "W018-ID-03",
       "title": "Party affiliation update / defection preserves canonical person ID",
       "status": "PASS",
-      "observed": "Current party: ORG-PARTY-BRS-TEST\nUPDATE 1, person_id: edd00021-fe9e-426f-9829-0cb17a8b0a20",
+      "observed": "Current party: ORG-PARTY-BRS-TEST\nUPDATE 1, person_id: 323d559c-bc08-438d-a533-60559378ee86",
       "details": ""
     },
     {
@@ -139,7 +139,7 @@
       "id": "W018-ID-11",
       "title": "Same name candidates in different constituencies resolve to distinct canonical IDs (no collision, no merge)",
       "status": "PASS",
-      "observed": "Person 1: 77160737-5f39-4a9c-b032-56b1ebbb0386, Person 2: f840f35b-ffc8-4e20-97ab-e60ba6a8109b",
+      "observed": "Person 1: 94370b6c-7340-4bc2-9f29-41612c5dd820, Person 2: 7d6aca64-ad52-4c27-8692-8ead4e7e9ae1",
       "details": ""
     },
     {
@@ -153,7 +153,7 @@
       "id": "W018-ID-13",
       "title": "Fuzzy/probabilistic match methods are strictly prohibited by schema CHECK constraints",
       "status": "PASS",
-      "observed": "Result: ERROR: ERROR:  new row for relation \"person_identity_linkages\" violates check constraint \"person_identity_linkages_match_method_check\"\nDETAIL:  Failing row contains (08f8e446-48ff-464a-bee2-80b7823b6fbd, 77160737-5f39-4a9c-b032-56b1ebbb0386, eci, ECI-FUZZY-TEST, fuzzy_name_match, 0.85, test, 2026-09-29 12:35:39.3498+00, t, null, 2026-09-29 12:35:39.3498+00).\nCONTEXT:  SQL statement \"INSERT INTO public.person_identity_linkages (\r\n    person_id,\r\n    source_system,\r\n    source_record_id,\r\n    match_method,\r\n    confidence,\r\n    curated_by,\r\n    is_active\r\n  )\r\n  VALUES (\r\n    p_person_id,\r\n    p_source_system,\r\n    p_source_record_id,\r\n    p_match_method,\r\n    p_confidence,\r\n    p_curated_by,\r\n    true\r\n  )\r\n  ON CONFLICT (source_system, source_record_id)\r\n  DO UPDATE SET\r\n    person_id = EXCLUDED.person_id,\r\n    match_method = EXCLUDED.match_method,\r\n    confidence = EXCLUDED.confidence,\r\n    curated_by = EXCLUDED.curated_by,\r\n    is_active = true,\r\n    curated_at = now()\r\n  RETURNING id\"\nPL/pgSQL function fn_link_person_identity(uuid,text,text,text,numeric,text) line 10 at SQL statement\n",
+      "observed": "Result: ERROR: ERROR:  new row for relation \"person_identity_linkages\" violates check constraint \"person_identity_linkages_match_method_check\"\nDETAIL:  Failing row contains (2673ddbf-7d0f-4634-90c5-f18db7b248c8, 94370b6c-7340-4bc2-9f29-41612c5dd820, eci, ECI-FUZZY-TEST, fuzzy_name_match, 0.85, test, 2026-09-29 12:54:42.51437+00, t, null, 2026-09-29 12:54:42.51437+00).\nCONTEXT:  SQL statement \"INSERT INTO public.person_identity_linkages (\r\n    person_id,\r\n    source_system,\r\n    source_record_id,\r\n    match_method,\r\n    confidence,\r\n    curated_by,\r\n    is_active\r\n  )\r\n  VALUES (\r\n    p_person_id,\r\n    p_source_system,\r\n    p_source_record_id,\r\n    p_match_method,\r\n    p_confidence,\r\n    p_curated_by,\r\n    true\r\n  )\r\n  ON CONFLICT (source_system, source_record_id)\r\n  DO UPDATE SET\r\n    person_id = EXCLUDED.person_id,\r\n    match_method = EXCLUDED.match_method,\r\n    confidence = EXCLUDED.confidence,\r\n    curated_by = EXCLUDED.curated_by,\r\n    is_active = true,\r\n    curated_at = now()\r\n  RETURNING id\"\nPL/pgSQL function fn_link_person_identity(uuid,text,text,text,numeric,text) line 10 at SQL statement\n",
       "details": ""
     },
     {
@@ -174,7 +174,7 @@
       "id": "W018-ID-16",
       "title": "Name and transliteration variations without common external anchor do NOT auto-merge",
       "status": "PASS",
-      "observed": "KCR-1: 4ccae4e0-d886-4f08-ab94-da18ee3dc279, KCR-2: 970b61fe-2189-4b2c-bd9a-8f83baacea1f",
+      "observed": "KCR-1: 0e9bfd0c-935e-454b-8164-e0b11aa1642a, KCR-2: 144a1573-f949-4cc2-b1de-5277bb629723",
       "details": ""
     },
     {

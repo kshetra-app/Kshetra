@@ -404,6 +404,86 @@ async function runMasterBattery() {
     acct07Raw ? acct07Raw : 'Constraint caught violation and cleanly rejected'
   );
 
+  // W019-ACCT-08: Source total polled maps to database total_votes_polled without semantic substitution
+  const acct08Raw = queryLocalPsql(`
+    SELECT contest_code || '|' || total_votes_polled
+    FROM public.election_contests
+    WHERE contest_code IN ('TS_LA_2023_GEN_TS-AC-065', 'TS_LA_2023_GEN_TS-AC-040')
+    ORDER BY contest_code;
+  `);
+  const acct08Lines = acct08Raw.split('\n').map((s) => s.trim()).filter(Boolean);
+  const acct08Passed =
+    acct08Lines.length === 2 &&
+    acct08Lines[0] === 'TS_LA_2023_GEN_TS-AC-040|241855' &&
+    acct08Lines[1] === 'TS_LA_2023_GEN_TS-AC-065|195509';
+  recordCheck(
+    'W019-ACCT-08',
+    'ACCT-08: Source total polled maps to database total_votes_polled without semantic substitution',
+    acct08Passed,
+    acct08Lines.join('; ')
+  );
+
+  // W019-ACCT-09: Source valid votes map to database total_valid_votes
+  const acct09Raw = queryLocalPsql(`
+    SELECT contest_code || '|' || total_valid_votes
+    FROM public.election_contests
+    WHERE contest_code IN ('TS_LA_2023_GEN_TS-AC-065', 'TS_LA_2023_GEN_TS-AC-040')
+    ORDER BY contest_code;
+  `);
+  const acct09Lines = acct09Raw.split('\n').map((s) => s.trim()).filter(Boolean);
+  const acct09Passed =
+    acct09Lines.length === 2 &&
+    acct09Lines[0] === 'TS_LA_2023_GEN_TS-AC-040|240508' &&
+    acct09Lines[1] === 'TS_LA_2023_GEN_TS-AC-065|194545';
+  recordCheck(
+    'W019-ACCT-09',
+    'ACCT-09: Source valid votes map to database total_valid_votes',
+    acct09Passed,
+    acct09Lines.join('; ')
+  );
+
+  // W019-ACCT-10: Source rejected/non-valid votes map to total_rejected_votes and are never represented as valid ballot choices
+  const acct10Raw = queryLocalPsql(`
+    SELECT contest_code || '|' || total_rejected_votes
+    FROM public.election_contests
+    WHERE contest_code IN ('TS_LA_2023_GEN_TS-AC-065', 'TS_LA_2023_GEN_TS-AC-040')
+    ORDER BY contest_code;
+  `);
+  const acct10BallotCount = Number(queryLocalPsql(`
+    SELECT count(*) FROM public.ballot_choices WHERE choice_type LIKE '%REJECTED%' OR is_valid_vote = false;
+  `));
+  const acct10Lines = acct10Raw.split('\n').map((s) => s.trim()).filter(Boolean);
+  const acct10Passed =
+    acct10Lines.length === 2 &&
+    acct10Lines[0] === 'TS_LA_2023_GEN_TS-AC-040|1347' &&
+    acct10Lines[1] === 'TS_LA_2023_GEN_TS-AC-065|964' &&
+    acct10BallotCount === 0;
+  recordCheck(
+    'W019-ACCT-10',
+    'ACCT-10: Source rejected/non-valid votes map to total_rejected_votes and are never represented as valid ballot choices',
+    acct10Passed,
+    `${acct10Lines.join('; ')} (invalid ballot choices: ${acct10BallotCount})`
+  );
+
+  // W019-ACCT-11: Database turnout exactly reconstructs from authoritative total_votes_polled / total_electors
+  const acct11Raw = queryLocalPsql(`
+    SELECT contest_code || '|stored:' || turnout_percentage || '|reconstructed:' || round((total_votes_polled::numeric / total_electors::numeric) * 100.0, 2)
+    FROM public.election_contests
+    WHERE contest_code IN ('TS_LA_2023_GEN_TS-AC-065', 'TS_LA_2023_GEN_TS-AC-040')
+    ORDER BY contest_code;
+  `);
+  const acct11Lines = acct11Raw.split('\n').map((s) => s.trim()).filter(Boolean);
+  const acct11Passed =
+    acct11Lines.length === 2 &&
+    acct11Lines[0] === 'TS_LA_2023_GEN_TS-AC-040|stored:90.28|reconstructed:90.28' &&
+    acct11Lines[1] === 'TS_LA_2023_GEN_TS-AC-065|stored:81.30|reconstructed:81.30';
+  recordCheck(
+    'W019-ACCT-11',
+    'ACCT-11: Database turnout exactly reconstructs from authoritative total_votes_polled / total_electors',
+    acct11Passed,
+    acct11Lines.join('; ')
+  );
+
   // ─── 3. MATHEMATICAL ACCOUNTING & TURNOUT BALANCE (W019-MTH-01..06) ────────
   console.log('\n--- 3. MATHEMATICAL ACCOUNTING & TURNOUT BALANCE ---');
 
@@ -503,7 +583,7 @@ async function runMasterBattery() {
   });
   recordCheck(
     'W019-MTH-06',
-    'Turnout percentage accurately matches total_votes_polled / total_electors ratio (Kodangal: 80.90%, Gajwel: 89.78%)',
+    'Turnout percentage accurately matches total_votes_polled / total_electors ratio (Kodangal: 81.30%, Gajwel: 90.28%)',
     turnoutsAccurate,
     turnoutLines.join(', ')
   );
@@ -1012,8 +1092,59 @@ async function runMasterBattery() {
     `Scope: ${lineageJson?.bounded_fixture_scope?.benchmark_constituencies_count} of ${lineageJson?.bounded_fixture_scope?.total_telangana_constituencies_2023} seats (is_complete_state_dataset: false)`
   );
 
-  // ─── 8. STAGING POSTGIS 589 GEOMETRY BASELINE INTEGRITY (W019-STG-01..02) ──
-  console.log('\n--- 8. STAGING 589 GEOMETRY BASELINE INTEGRITY ---');
+  // ─── 8. RAW-SOURCE RECONCILIATION (W019-SRC-01..02) ────────────────────────
+  console.log('\n--- 8. RAW-SOURCE RECONCILIATION ---');
+
+  // W019-SRC-01: Prove normalized Kodangal values exactly match raw authoritative artifact
+  const kRawArtifact = JSON.parse(fs.readFileSync(path.resolve('data/evidence/w019/eci_form21e_telangana_2023_kodangal_ac065.json'), 'utf8'));
+  const kDbRaw = queryLocalPsql(`
+    SELECT total_electors || '|' || total_votes_polled || '|' || total_valid_votes || '|' || total_rejected_votes || '|' || total_nota_votes || '|' || turnout_percentage || '|' || victory_margin
+    FROM public.election_contests
+    WHERE contest_code = 'TS_LA_2023_GEN_TS-AC-065';
+  `).trim();
+  const [kE, kP, kV, kR, kN, kT, kM] = kDbRaw.split('|').map(Number);
+  const kSrc = kRawArtifact.contest;
+  const kSrcMatch =
+    kE === kSrc.total_electors &&
+    kP === kSrc.total_votes_polled &&
+    kV === kSrc.total_valid_votes &&
+    kR === kSrc.total_rejected_votes &&
+    kN === kSrc.total_nota_votes &&
+    Math.abs(kT - kSrc.turnout_percentage) < 0.05 &&
+    kM === kSrc.victory_margin;
+  recordCheck(
+    'W019-SRC-01',
+    'W019-SRC-01: Normalized Kodangal database values exactly match authoritative raw Form 21E artifact',
+    kSrcMatch,
+    `DB: electors=${kE}, polled=${kP}, valid=${kV}, rejected=${kR}, nota=${kN}, turnout=${kT}%, margin=${kM} | Source: electors=${kSrc.total_electors}, polled=${kSrc.total_votes_polled}, valid=${kSrc.total_valid_votes}, rejected=${kSrc.total_rejected_votes}, nota=${kSrc.total_nota_votes}, turnout=${kSrc.turnout_percentage}%, margin=${kSrc.victory_margin}`
+  );
+
+  // W019-SRC-02: Prove normalized Gajwel values exactly match raw authoritative artifact
+  const gRawArtifact = JSON.parse(fs.readFileSync(path.resolve('data/evidence/w019/eci_form21e_telangana_2023_gajwel_ac040.json'), 'utf8'));
+  const gDbRaw = queryLocalPsql(`
+    SELECT total_electors || '|' || total_votes_polled || '|' || total_valid_votes || '|' || total_rejected_votes || '|' || total_nota_votes || '|' || turnout_percentage || '|' || victory_margin
+    FROM public.election_contests
+    WHERE contest_code = 'TS_LA_2023_GEN_TS-AC-040';
+  `).trim();
+  const [gE, gP, gV, gR, gN, gT, gM] = gDbRaw.split('|').map(Number);
+  const gSrc = gRawArtifact.contest;
+  const gSrcMatch =
+    gE === gSrc.total_electors &&
+    gP === gSrc.total_votes_polled &&
+    gV === gSrc.total_valid_votes &&
+    gR === gSrc.total_rejected_votes &&
+    gN === gSrc.total_nota_votes &&
+    Math.abs(gT - gSrc.turnout_percentage) < 0.05 &&
+    gM === gSrc.victory_margin;
+  recordCheck(
+    'W019-SRC-02',
+    'W019-SRC-02: Normalized Gajwel database values exactly match authoritative raw Form 21E artifact',
+    gSrcMatch,
+    `DB: electors=${gE}, polled=${gP}, valid=${gV}, rejected=${gR}, nota=${gN}, turnout=${gT}%, margin=${gM} | Source: electors=${gSrc.total_electors}, polled=${gSrc.total_votes_polled}, valid=${gSrc.total_valid_votes}, rejected=${gSrc.total_rejected_votes}, nota=${gSrc.total_nota_votes}, turnout=${gSrc.turnout_percentage}%, margin=${gSrc.victory_margin}`
+  );
+
+  // ─── 9. STAGING POSTGIS 589 GEOMETRY BASELINE INTEGRITY (W019-STG-01..02) ──
+  console.log('\n--- 9. STAGING 589 GEOMETRY BASELINE INTEGRITY ---');
 
   const EXPECTED_ROW_COUNT = 589;
   const EXPECTED_DIGEST = 'f839fa02980318a8f35f932ebe72fa1d3ad6325dc86a624bf159d932fe5f613b';
