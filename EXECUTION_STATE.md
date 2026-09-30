@@ -27,7 +27,8 @@ W020_G5_PLAN:          PLAN-W020-G5-REV-1.2.md, reports/w020_g5_plan_manifest.js
 W020_G5_VERIFICATION:  reports/w020_g5_acceptance_remediation_r2.md, reports/w020_g5_acceptance_remediation_r2.json
 W020_G5_INVARIANTS:    34/34 PASS (tests/delimitation-g5-invariants.test.mjs)
 W020_G5_API_TESTS:     33/33 PASS (apps/api/src/__tests__/delimitation.test.ts)
-W020_G6_STATUS:        PLANNING ONLY / IMPLEMENTATION NOT AUTHORIZED
+W020_G6_STATUS:        PLANNING REV-1.1 SUBMITTED / IMPLEMENTATION STRICTLY NOT AUTHORIZED
+W020_G6_PLAN:          PLAN-W020-G6-REV-1.1.md, reports/w020_g6_plan_review_manifest.json
 
 W017_STATUS:           ACCEPTED / COMPLETE
 W017_CTO_ACCEPTANCE:   GRANTED (2026-09-29)
@@ -37,7 +38,7 @@ R10_GAP_B:             DEFERRED TO W023 (APK / Device Validation Stage)
 R11_STATUS:            STRICTLY BLOCKED
 ```
 
-PLAN_STATUS:                          APPROVED (REV-1.2) / G6 PLANNING IN PROGRESS
+PLAN_STATUS:                          APPROVED (G5) / G6 PLANNING REV-1.1 SUBMITTED
 IMPLEMENTATION_AUTHORIZATION:         NO (W020-G6 Implementation NOT Authorized)
 W020_AUTHORIZATION:                   W020-G5 ACCEPTED / COMPLETE (W020-G6+ IMPLEMENTATION STRICTLY NOT AUTHORIZED)
 IMPLEMENTATION_AUTHORIZATION_COMMIT:  505ae56ba8839a44b1171b1edcb45aec33c65c04

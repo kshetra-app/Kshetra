@@ -2073,3 +2073,51 @@
 - **Mandated Next Action:**
   - Authorize preparation of `PLAN-W020-G6.md` only.
   - Implementation of W020-G6 remains **STRICTLY NOT AUTHORIZED** until CTO formal ratification.
+
+---
+
+### DEC-092: W020-G6 REVISED PLAN REV-1.1 SUBMISSION (CONSTITUENCY MAPPING EVIDENCE GATE & ZERO SPECULATIVE LINEAGE)
+- **Date:** 2026-09-30
+- **Status:** SUBMITTED FOR CTO RATIFICATION (PLANNING ONLY / IMPLEMENTATION STRICTLY NOT AUTHORIZED)
+- **Authority:** CTO DIRECTIVE — PLAN-W020-G6 REVISION REQUIRED
+- **Context:** Following CTO review of the initial G6 plan, the CTO rejected speculative predecessor/successor mappings for Pinapaka (AC-110), Bhadrachalam (AC-119), and Aswaraopeta (AC-118). The authoritative ECI Notification No. 282/AP/2018(DEL) (22 Sept 2018) explicitly amended Andhra Pradesh constituency extents under Schedule II (53-Rampachodavaram & 67-Polavaram), NOT Telangana Schedule XXXI. The CTO mandated an evidence gate for every proposed `public.constituency_mapping` row, established that `ADMINISTRATIVE_TRANSFER_ONLY != PREDECESSOR_SUCCESSOR`, required 2008 baseline tracing, enforced strict provenance separation across 6 distinct legal/demographic instruments, formalized the Proposal Bridge, and expanded the planned invariant battery to 24 checks.
+- **Key Plan Decisions in REV-1.1:**
+  1. **12-Field Evidence Gate for Constituency Mapping:**
+     - Every proposed `public.constituency_mapping` row must satisfy 12 required fields: predecessor version ID, successor/current version ID, predecessor/successor identities, exact territorial relationship, legal source, document date, schedule/table/page evidence location, provenance record, evidence record, relationship type, temporal validity, and confidence/status classification.
+     - Permitted relationship classifications: `PREDECESSOR_SUCCESSOR`, `TERRITORIAL_EXTENT_UPDATE`, `CONTINUING_UNCHANGED`, `ADMINISTRATIVE_TRANSFER_ONLY`, `UNKNOWN`.
+  2. **Proof of Zero Authoritative Telangana Constituency Lineage from Territorial Transfers:**
+     - G.S.R. 311(E) (23 April 2015) transferred administrative revenue territory (specified villages and mandals) from Khammam District (Telangana) to East Godavari and West Godavari Districts (Andhra Pradesh).
+     - ECI Notification No. 282/AP/2018(DEL) updated Andhra Pradesh constituency extents under Delimitation Order 2008 Schedule II (53-Rampachodavaram and 67-Polavaram).
+     - No statutory notification dissolved, reconstituted, or created successor constituency versions for Telangana ACs 110, 118, or 119.
+     - Strict rule: `ADMINISTRATIVE_TRANSFER_ONLY != PREDECESSOR_SUCCESSOR`.
+     - Therefore, `public.constituency_mapping` planned row count is **0 rows**.
+     - Administrative revenue transfers are preserved exclusively in `public.provenance_records` and raw evidence dossiers; unresolved constituency lineage is classified as `UNKNOWN`.
+  3. **2008 Baseline:**
+     - Original constituency extents trace strictly to Delimitation Order 2008.
+     - A continuing AC number does not imply a new version or predecessor/successor relationship.
+  4. **Strict Provenance Separation (6 Distinct Sources):**
+     - Delimitation Order 2008 (19 Feb 2008) -> Original constituency extents.
+     - AP Reorganisation Act 2014 (1 Mar 2014) -> Successor-state territorial division (Schedule XXXI: TS 119 ACs).
+     - G.S.R. 311(E) (23 Apr 2015) -> Specified administrative revenue territorial transfer.
+     - ECI Notification No. 282/AP/2018(DEL) (22 Sept 2018) -> Documented AP constituency extent amendments.
+     - Census 2011 Primary Census Abstract -> Demographic input totals.
+     - PANIN Simulation Specification -> PANIN computational apportionment methodology.
+  5. **Proposal Bridge (Orthogonal Field Separation):**
+     - Proposal 1: Statutory baseline (119 total / 19 SC / 12 ST / 88 General; status `final`, `STATUTORY_FACT`, `OFFICIAL`, `CURRENT_LEGAL_REGIME`, `isScenario: false`).
+     - Proposal 2: PANIN simulation (119 total / 18 SC / 10 ST / 91 General; status `draft`, `DETERMINISTIC_DERIVED`, `DERIVED`, `SCENARIO_PROPOSED_REGIME`, `isScenario: true`).
+     - Proposal status is strictly orthogonal to W012 `data_status`, W014 `legal_status`, and output classification.
+  6. **Planned 24-Invariant Battery Design:**
+     - Mapping Evidence Gate Plane (`MAP-01` through `MAP-08`).
+     - Provenance Plane (`PRV-01` through `PRV-06`).
+     - Regime & Scenario Plane (`REG-01` through `REG-04`).
+     - Proposal Plane (`PROP-01` through `PROP-06`).
+     - Security & Access Plane (`SEC-01` through `SEC-03`).
+  7. **Deliverables Authored:**
+     - `PLAN-W020-G6-REV-1.1.md` (Comprehensive 10-section revised plan).
+     - `reports/w020_g6_plan_review_manifest.json` (Machine-readable evidence matrices, proposal provenance, and unknown claims register).
+  8. **Strict Governance & Implementation Prohibition:**
+     - Zero product code, database schema migrations, staging DDL/DML, or seed data executed.
+     - 589 PostGIS geometry baseline frozen (`f839fa02980318a8f35f932ebe72fa1d3ad6325dc86a624bf159d932fe5f613b`).
+     - Production database `ehfafcnimmjusyvplbah` strictly air-gapped and untouched.
+     - Mobile codebase (`apps/mobile/**`) strictly frozen.
+     - Halted awaiting CTO review and formal ratification.
