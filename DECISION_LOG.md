@@ -2314,3 +2314,28 @@
   - `PLAN-W020-G8-REV-1.1` submitted for CTO review and ratification.
   - Implementation authorization: **STRICTLY NOT AUTHORIZED (NO)**.
   - Mandatory governance halt enforced.
+
+---
+
+### DEC-099: PLAN REMEDIATION — PLAN-W020-G8-REV-1.2 (LEGAL APPLICABILITY MODEL)
+- **Date:** 2026-09-30
+- **Status:** DRAFT / SUBMITTED FOR CTO RATIFICATION (PLANNING ONLY)
+- **Authority:** CTO PLAN REMEDIATION DIRECTIVE — W020-G8 REV-1.2
+- **Context:** Remediated PLAN-W020-G8 to REV-1.2 replacing the hardcoded "Article 170 exception list" with a principled Legal Applicability Model.
+- **Key Remediations & Technical Clarifications:**
+  1. **Legal Applicability Model Adopted:**
+     - Seat-count legal constraints must resolve dynamically from six orthogonal coordinates: (1) entity type, (2) selected W014 legal regime, (3) applicable constitutional provision, (4) applicable statutory provision, (5) temporal validity, and (6) authoritative evidence/provenance.
+     - Article 170(1) ($60 \le S \le 500$) applies strictly where the selected legal context makes Article 170 the governing provision (standard State Legislative Assemblies).
+     - Special constitutional regimes operating notwithstanding other constitutional provisions (e.g. Sikkim Art. 371F floor of 30, Mizoram Art. 371G floor of 40, Goa Art. 371-I floor of 30) are resolved through their own typed legal rules, not as ad-hoc exceptions. (Specifically eliminated incorrect characterization of Goa as a 40-seat exception under Art. 371-I).
+     - Union Territory Assemblies (e.g. Puducherry) governed by the Government of Union Territories Act framework are modeled as statutory entities, never as Article 170 State Assemblies.
+  2. **Preservation of the Six Planes:**
+     - Maintained full separation of the six semantic planes.
+     - Confirmed `MAX_SAFE_REQUESTED_SEATS = 10000` is solely a computational resource-safety / DoS protection with zero constitutional or statutory force.
+  3. **Preservation of Mock Data Rules, Boundaries, and Regression Total:**
+     - Retained strict mock data replacement protocol: unavailable values resolve to `UNKNOWN` / `NULL` / explicit unsupported state without fabrication.
+     - Preserved all boundaries: 0 migrations, 0 DDL, 0 DML, 0 new persistence, production air-gapped, mobile frozen, geometry digest frozen (`f839fa02...`), `constituency_mapping = 0`, AC-110/118/119 = `UNKNOWN`.
+     - Preserved 322 aggregate regression count across 9 test suites.
+- **Milestone Gate Status:**
+  - `PLAN-W020-G8-REV-1.2` submitted for CTO review and ratification.
+  - Implementation authorization: **STRICTLY NOT AUTHORIZED (NO)**.
+  - Mandatory governance halt enforced.
