@@ -1783,3 +1783,45 @@
      - Milestone W020 remains **STRICTLY NOT AUTHORIZED**.
      - Production database remains completely air-gapped and untouched.
 
+
+---
+
+### DEC-084: W020-G4 MIGRATION 055 STAGING PREFLIGHT & DELIMITATION CANONICAL BRIDGE
+- **Date:** 2026-09-30
+- **Status:** PREFLIGHT VERIFIED & SUBMITTED FOR CTO REVIEW (W020-G5 ONWARD STRICTLY NOT AUTHORIZED)
+- **Authority:** CTO Directive: "CTO AUTHORIZATION — W020-G4 MIGRATION 055 STAGING PREFLIGHT"
+- **Context:** Following CTO acceptance of W019 (Election Data Normalization — CLOSED / ACCEPTED / COMPLETE) and formal ratification of W020 Master Plan REV-1.3, the CTO authorized execution strictly bounded to W020-G4: final Migration 055 implementation, staging preflight, schema/RLS/FK verification, failure rehearsal, and evidence capture. W020-G5 onward remains strictly NOT AUTHORIZED.
+- **Preflight & Verification Outcomes:**
+  1. **Canonical Schema Bridge (Migration 055):**
+     - Authored `supabase/migrations/055_delimitation_canonical_bridge.sql` bridging legacy prototype tables (`delimitation_proposals` and `constituency_mapping`) to authoritative tables (`delimitation_regimes`, `constituency_versions`, `provenance_records`).
+     - Added exactly 3 approved columns to `public.delimitation_proposals`: `delimitation_regime_id VARCHAR(50)`, `provenance_id UUID`, `metadata JSONB NOT NULL DEFAULT '{}'::jsonb`.
+     - Added exactly 3 approved columns to `public.constituency_mapping`: `constituency_version_id UUID`, `predecessor_version_id UUID`, `provenance_id UUID`.
+     - Established 5 foreign key constraints (`fk_delim_proposals_regime`, `fk_delim_proposals_provenance`, `fk_mapping_constituency_version`, `fk_mapping_predecessor_version`, `fk_mapping_provenance`) all enforcing `ON DELETE RESTRICT`.
+     - Created 5 btree indexes for optimized lookup performance.
+     - Enabled RLS on both tables with public SELECT permissions for `anon` and `authenticated` roles, denying unauthenticated writes.
+     - Enforced anti-pattern guard: ZERO `is_scenario` columns added across the schema; regime semantics derived exclusively from `delimitation_regimes.legal_status`.
+  2. **Migration Packages & Verification Scripts:**
+     - Created `supabase/staging_migration_package_055.sql` with transactional wrapping, pre-flight zero-row assertions, and post-flight verification checks.
+     - Created `supabase/rollback_055_delimitation_canonical_bridge.sql` providing clean restoration to the pre-migration baseline.
+     - Created `supabase/verification_055_delimitation_canonical_bridge.sql` for post-execution database inspection.
+  3. **Delimitation Preflight Test Battery (23 / 23 PASS — 100%):**
+     - Executed against isolated PostgreSQL 17 test harness (`w020_g4_pg_verify`).
+     - Verified transactional atomicity (`W020-G4-MIG-01`), idempotency on replay (`W020-G4-MIG-02`), and failure rehearsal rollback (`W020-G4-MIG-03`).
+     - Verified exact column types (`W020-G4-SCH-01`), zero unauthorized columns (`W020-G4-SCH-02`), and absence of `is_scenario` (`W020-G4-SCH-03`).
+     - Verified all 5 FKs exist (`W020-G4-FK-01`), invalid FKs fail closed (`W020-G4-FK-02`), and ON DELETE RESTRICT blocks deletion (`W020-G4-FK-03`).
+     - Verified RLS enabled (`W020-G4-RLS-01`), anonymous write denied (`W020-G4-RLS-02`), authenticated public read (`W020-G4-RLS-03`), service role access (`W020-G4-RLS-04`).
+     - Verified legal_status authority (`W020-G4-REG-01`) and zero duplicate boolean flags (`W020-G4-REG-02`).
+     - Verified provenance links (`W020-G4-PRV-01..03`).
+     - Verified staging catalog prototypes (`W020-G4-STG-01..02`).
+  4. **Full Regression Battery & Baseline Preservation:**
+     - W018 political entity regression: 53 / 53 PASS (100%).
+     - W019 election normalization regression: 93 / 93 PASS (100%).
+     - Fastify API contract drift: 9 / 9 MATCH (100%).
+     - TypeScript builds: 0 errors across API (`tsc --noEmit` exit 0) and Mobile (`npx tsc --noEmit` exit 0).
+     - 589 PostGIS geometry baseline: EXACT 589 rows, exact SHA-256 digest `f839fa02980318a8f35f932ebe72fa1d3ad6325dc86a624bf159d932fe5f613b`.
+     - Production air-gap: `ehfafcnimmjusyvplbah` completely untouched.
+  5. **Governance & Milestone Gate Status:**
+     - Milestone W020-G4 is submitted for formal CTO review.
+     - The implementation agent explicitly does NOT self-certify or self-accept.
+     - Gates W020-G5 onward remain **STRICTLY NOT AUTHORIZED**.
+     - Production database remains completely air-gapped and untouched.

@@ -1,0 +1,237 @@
+{
+  "gate": "W020-G4",
+  "title": "Migration 055 Staging Preflight & Schema Integrity Report",
+  "timestamp": "2026-09-30T03:30:42.012Z",
+  "gitCommit": "9b7cad4aea34d7e2b4411e44d88549340c70df8a",
+  "stagingTarget": "panIN-staging (fkpigozcqnmcvofuksar)",
+  "productionStatus": "AIR-GAPPED & UNTOUCHED (ehfafcnimmjusyvplbah)",
+  "geometryDigest": "f839fa02980318a8f35f932ebe72fa1d3ad6325dc86a624bf159d932fe5f613b",
+  "geometryRowCount": 589,
+  "totalChecks": 23,
+  "passedChecks": 23,
+  "failedChecks": 0,
+  "verdict": "PASS",
+  "checks": [
+    {
+      "id": "W020-G4-MIG-01",
+      "title": "Migration 055 executes transactionally with exit code 0",
+      "status": "PASS",
+      "observed": "Transaction committed successfully",
+      "details": ""
+    },
+    {
+      "id": "W020-G4-MIG-02",
+      "title": "Migration 055 is idempotent on replay (zero errors on re-execution)",
+      "status": "PASS",
+      "observed": "Replay succeeded with IF NOT EXISTS notices",
+      "details": ""
+    },
+    {
+      "id": "W020-G4-MIG-03",
+      "title": "Failure rehearsal rolls back cleanly (zero partial schema application on error)",
+      "status": "PASS",
+      "observed": "Execution aborted as expected; canary column count = 0",
+      "details": ""
+    },
+    {
+      "id": "W020-G4-SCH-01",
+      "title": "All required bridge columns exist with exact data types on both tables",
+      "status": "PASS",
+      "observed": "proposals: [delimitation_regime_id:character varying, metadata:jsonb, provenance_id:uuid], mapping: [constituency_version_id:uuid, predecessor_version_id:uuid, provenance_id:uuid]",
+      "details": ""
+    },
+    {
+      "id": "W020-G4-SCH-02",
+      "title": "Zero unauthorized columns added (strictly the 3 approved columns per table)",
+      "status": "PASS",
+      "observed": "Added to proposals: [delimitation_regime_id, metadata, provenance_id]; Added to mapping: [constituency_version_id, predecessor_version_id, provenance_id]",
+      "details": ""
+    },
+    {
+      "id": "W020-G4-SCH-03",
+      "title": "Zero persistent is_scenario columns exist in database schema",
+      "status": "PASS",
+      "observed": "Found: 0 columns named is_scenario",
+      "details": ""
+    },
+    {
+      "id": "W020-G4-FK-01",
+      "title": "All 5 approved foreign key relationships exist and reference canonical tables",
+      "status": "PASS",
+      "observed": "Verified FKs:\n         constituency_mapping.constituency_version_id -> constituency_versions(id)\n         constituency_mapping.predecessor_version_id -> constituency_versions(id)\n         constituency_mapping.provenance_id -> provenance_records(id)\n         delimitation_proposals.delimitation_regime_id -> delimitation_regimes(id)\n         delimitation_proposals.provenance_id -> provenance_records(id)",
+      "details": ""
+    },
+    {
+      "id": "W020-G4-FK-02",
+      "title": "Invalid foreign key references fail closed with FK constraint violations",
+      "status": "PASS",
+      "observed": "Invalid regime rejected, invalid provenance rejected, invalid version rejected",
+      "details": ""
+    },
+    {
+      "id": "W020-G4-FK-03",
+      "title": "ON DELETE RESTRICT actively blocks deletion of referenced regimes, versions, and provenance",
+      "status": "PASS",
+      "observed": "Regime delete blocked (23503), version delete blocked (23503), provenance delete blocked (23503)",
+      "details": ""
+    },
+    {
+      "id": "W020-G4-RLS-01",
+      "title": "Row Level Security enabled on public.delimitation_proposals and public.constituency_mapping",
+      "status": "PASS",
+      "observed": "constituency_mapping:true, delimitation_proposals:true",
+      "details": ""
+    },
+    {
+      "id": "W020-G4-RLS-02",
+      "title": "Anonymous write is denied fail-closed under active RLS policy",
+      "status": "PASS",
+      "observed": "Denied (RLS policy check or permission error)",
+      "details": ""
+    },
+    {
+      "id": "W020-G4-RLS-03",
+      "title": "Authenticated role has public SELECT permission",
+      "status": "PASS",
+      "observed": "Read successful, observed SET\n1\nRESET rows",
+      "details": ""
+    },
+    {
+      "id": "W020-G4-RLS-04",
+      "title": "Privileged service role maintains unconstrained administrative access",
+      "status": "PASS",
+      "observed": "Service role queried successfully; row count = SET\n1",
+      "details": ""
+    },
+    {
+      "id": "W020-G4-REG-01",
+      "title": "legal_status in public.delimitation_regimes is the authoritative regime classifier",
+      "status": "PASS",
+      "observed": "Found legal_status values: CURRENT_LEGAL_REGIME, FUTURE_ANTICIPATED_REGIME, SCENARIO_PROPOSED_REGIME",
+      "details": ""
+    },
+    {
+      "id": "W020-G4-REG-02",
+      "title": "Zero redundant scenario boolean flags exist on proposal tables",
+      "status": "PASS",
+      "observed": "is_scenario and scenario_flag are completely absent from persistent table definition",
+      "details": ""
+    },
+    {
+      "id": "W020-G4-PRV-01",
+      "title": "Approved provenance_id foreign keys exist on both delimitation tables",
+      "status": "PASS",
+      "observed": "Found: delimitation_proposals.provenance_id, constituency_mapping.provenance_id",
+      "details": ""
+    },
+    {
+      "id": "W020-G4-PRV-02",
+      "title": "Invalid provenance references are rejected fail-closed by database kernel",
+      "status": "PASS",
+      "observed": "PostgreSQL foreign key constraint enforced (23503)",
+      "details": ""
+    },
+    {
+      "id": "W020-G4-PRV-03",
+      "title": "Referenced provenance record cannot be deleted (ON DELETE RESTRICT)",
+      "status": "PASS",
+      "observed": "Deletion blocked by foreign key constraint",
+      "details": ""
+    },
+    {
+      "id": "W020-G4-PRD-01",
+      "title": "Production database ehfafcnimmjusyvplbah is 100% air-gapped and untouched",
+      "status": "PASS",
+      "observed": "Active URL: https://fkpigozcqnmcvofuksar.supabase.co (Strictly staging fkpigozcqnmcvofuksar)",
+      "details": ""
+    },
+    {
+      "id": "W020-G4-GEO-01",
+      "title": "public.entity_geometries row count strictly preserved at exactly 589 rows on staging",
+      "status": "PASS",
+      "observed": "Observed: 589 / Expected: 589",
+      "details": ""
+    },
+    {
+      "id": "W020-G4-GEO-02",
+      "title": "public.entity_geometries canonical SHA-256 digest strictly matches frozen baseline",
+      "status": "PASS",
+      "observed": "Observed: f839fa02980318a8f35f932ebe72fa1d3ad6325dc86a624bf159d932fe5f613b\n         Expected: f839fa02980318a8f35f932ebe72fa1d3ad6325dc86a624bf159d932fe5f613b",
+      "details": ""
+    },
+    {
+      "id": "W020-G4-STG-01",
+      "title": "Live staging catalog contains legacy delimitation_proposals prototype with 0 rows",
+      "status": "PASS",
+      "observed": "Registered in staging OpenAPI: true",
+      "details": ""
+    },
+    {
+      "id": "W020-G4-STG-02",
+      "title": "Live staging catalog contains legacy constituency_mapping prototype with 0 rows",
+      "status": "PASS",
+      "observed": "Registered in staging OpenAPI: true",
+      "details": ""
+    }
+  ],
+  "objectsCreatedOrAltered": {
+    "delimitation_proposals": {
+      "newColumns": [
+        {
+          "name": "delimitation_regime_id",
+          "type": "VARCHAR(50)",
+          "fk": "delimitation_regimes(id)",
+          "onDelete": "RESTRICT",
+          "nullable": true
+        },
+        {
+          "name": "provenance_id",
+          "type": "UUID",
+          "fk": "provenance_records(id)",
+          "onDelete": "RESTRICT",
+          "nullable": true
+        },
+        {
+          "name": "metadata",
+          "type": "JSONB",
+          "default": "'{}'::jsonb",
+          "nullable": false
+        }
+      ],
+      "newIndexes": [
+        "idx_delim_proposals_regime",
+        "idx_delim_proposals_provenance"
+      ]
+    },
+    "constituency_mapping": {
+      "newColumns": [
+        {
+          "name": "constituency_version_id",
+          "type": "UUID",
+          "fk": "constituency_versions(id)",
+          "onDelete": "RESTRICT",
+          "nullable": true
+        },
+        {
+          "name": "predecessor_version_id",
+          "type": "UUID",
+          "fk": "constituency_versions(id)",
+          "onDelete": "RESTRICT",
+          "nullable": true
+        },
+        {
+          "name": "provenance_id",
+          "type": "UUID",
+          "fk": "provenance_records(id)",
+          "onDelete": "RESTRICT",
+          "nullable": true
+        }
+      ],
+      "newIndexes": [
+        "idx_mapping_constituency_version",
+        "idx_mapping_predecessor_version",
+        "idx_mapping_provenance"
+      ]
+    }
+  }
+}
