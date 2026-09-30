@@ -1825,3 +1825,41 @@
      - The implementation agent explicitly does NOT self-certify or self-accept.
      - Gates W020-G5 onward remain **STRICTLY NOT AUTHORIZED**.
      - Production database remains completely air-gapped and untouched.
+
+---
+
+### DEC-085: W020-G4 CTO CLOSURE & W020-G5 BOUNDED PLANNING SUBMISSION
+- **Date:** 2026-09-30
+- **Status:** APPROVED & RECORDED (W020-G4 CLOSED / W020-G5 PLANNING SUBMITTED)
+- **Authority:** CTO Final Determination ("CTO FINAL DETERMINATION — W020-G4: STATUS: W020-G4 = ACCEPTED / COMPLETE / CLOSED. NEXT STEP: BOUNDED W020-G5 PLAN / PREFLIGHT PACKAGE ONLY.")
+- **Context:** Following the execution and live staging verification of Migration 055 on panIN-staging (fkpigozcqnmcvofuksar) under commit 46d9558, the CTO reviewed the live database catalog, foreign keys, RLS security, zero-row table state, PostGIS geometry baseline digest, and regression test evidence. The CTO formally declared Milestone W020-G4 as ACCEPTED / COMPLETE / CLOSED and authorized the formulation of a bounded planning specification for Milestone W020-G5.
+- **Decisions & Planning Outcomes:**
+  1. **Formal Acceptance of Milestone W020-G4:**
+     - W020-G4 is formally closed as ACCEPTED / COMPLETE / CLOSED.
+     - Verified elements: Migration 055 staging package execution, approved columns added, 5 foreign keys with ON DELETE RESTRICT, 5 indexes present, RLS active, anonymous writes denied, zero is_scenario column, 0 rows in proposals and mappings, 589 PostGIS geometry baseline preserved (f839fa02980318a8f35f932ebe72fa1d3ad6325dc86a624bf159d932fe5f613b), production database air-gapped, W018 (53/53), W019 (93/93), contract drift (9/9), clean TypeScript compilation.
+  2. **Bounded W020-G5 Plan Authored (PLAN-W020-G5-REV-1.0.md):**
+     - Authored comprehensive 22-section planning document conforming strictly to Amendment v1.5-A Section 26.
+     - Documented field-separated 5-stage legal succession chain:
+       1. Delimitation Order 2008 (Schedule II: State of Andhra Pradesh, 294 ACs / 42 PCs).
+       2. APRA 2014 (Section 15, Schedule XXXI: Telangana 119 ACs / 17 PCs, Schedule II: AP 175 ACs / 25 PCs).
+       3. AP Reorganisation (Removal of Difficulties) Order, 2015: G.S.R. 311(E), 23 April 2015, comes into force at once (Polavaram territory transfers).
+       4. Commission's Notification No. 282/AP/2018(DEL), dated 22 September 2018 (published 24 September 2018).
+       5. Current Telangana Geography (Schedule XXXI).
+     - Defined demographic boundaries: Census 2011 (historical baseline), Census 2027 (in-progress census operation, population unavailable), Future Delimitation (statutory post-Census 2027), Scenario Projections (research models).
+     - Formulated architecture for dedicated service layer (apps/api/src/services/delimitationService.ts) separating domain models, statutory timelines, and apportionment algorithms from HTTP handlers.
+     - Specified complete hardening of all 14 Fastify endpoints in apps/api/src/routes/delimitation.ts with Ajv input schemas and standard ECC-001 response envelopes (ApiSuccessEnvelope<T> and sendApiError()).
+     - Established 6-tier Mathematical Classification Taxonomy: CONSTITUTIONAL_STATUTORY_INVARIANT, CURRENT_LEGAL_DATA, DERIVED_CALCULATION, HEURISTIC, SCENARIO_PROJECTION, UNKNOWN_UNAVAILABLE.
+     - Specified apportionment mathematics: Hamilton/Hare-Niemeyer largest-remainder method, Webster/Sainte-Laguë successive-quotient method, Article 332 SC/ST quota allocation with strict conservation invariants.
+     - Enforced 10 mandatory metadata attributes on all scenario emissions.
+     - Designed 30-check acceptance test battery (tests/delimitation-g5-invariants.test.mjs and apps/api/src/__tests__/delimitation.test.ts).
+  3. **Machine-Readable Plan Manifest Created:**
+     - Created reports/w020_g5_plan_manifest.json recording plan metadata, legal instruments, demographic taxonomies, planned file modifications, and invariant gates.
+  4. **Strict Non-Scope & Invariant Boundaries Maintained:**
+     - ZERO product code or schema modifications performed in this step.
+     - ZERO mobile code modifications (apps/mobile/** remains strictly frozen until W020-G7).
+     - 589 PostGIS geometry baseline remains frozen (f839fa02...).
+     - Production database ehfafcnimmjusyvplbah remains 100% air-gapped.
+  5. **Governance & Milestone Gate Status:**
+     - Milestone W020-G5 plan is submitted for formal CTO review and ratification.
+     - Implementation of W020-G5 remains STRICTLY NOT AUTHORIZED.
+     - Execution is halted awaiting written CTO authorization.

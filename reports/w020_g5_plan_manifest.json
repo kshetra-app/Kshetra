@@ -1,0 +1,118 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "milestone": "W020-G5",
+  "title": "Delimitation Engine Foundation — Core Logic, Mathematical Models & Hardened Read APIs",
+  "planVersion": "REV-1.0",
+  "document": "PLAN-W020-G5-REV-1.0.md",
+  "planStatus": "SUBMITTED_FOR_CTO_RATIFICATION",
+  "implementationAuthorization": "STRICTLY_NOT_AUTHORIZED",
+  "generatedTimestamp": "2026-09-30T04:30:00.000Z",
+  "predecessors": {
+    "W018": {
+      "status": "ACCEPTED_COMPLETE",
+      "canonicalCommit": "080344c580ad9df92586a7a0e68989fb50e7cf3d"
+    },
+    "W019": {
+      "status": "ACCEPTED_COMPLETE_CLOSED",
+      "decision": "DEC-083"
+    },
+    "W020_G4": {
+      "status": "ACCEPTED_COMPLETE_CLOSED",
+      "decision": "DEC-084",
+      "stagingMigrationPackage": "supabase/staging_migration_package_055.sql",
+      "preflightResult": "23/23 PASS"
+    }
+  },
+  "invariants": {
+    "frozenGeometryBaseline": {
+      "count": 589,
+      "sha256": "f839fa02980318a8f35f932ebe72fa1d3ad6325dc86a624bf159d932fe5f613b"
+    },
+    "productionDatabase": {
+      "ref": "ehfafcnimmjusyvplbah",
+      "status": "AIR_GAPPED_UNTOUCHED",
+      "connections": 0,
+      "mutations": 0
+    },
+    "mobileClient": {
+      "path": "apps/mobile",
+      "status": "STRICTLY_FROZEN",
+      "authorizedGate": "W020-G7"
+    },
+    "databaseSchema": {
+      "status": "FROZEN_AT_MIGRATION_055",
+      "newDDL": false,
+      "isScenarioPersistentColumn": false
+    }
+  },
+  "legalInstruments": [
+    {
+      "stage": 1,
+      "instrument": "Delimitation of Parliamentary and Assembly Constituencies Order, 2008",
+      "date": "2008-02-19",
+      "statutorySchedule": "Schedule II (State of Andhra Pradesh)",
+      "acs": 294,
+      "pcs": 42
+    },
+    {
+      "stage": 2,
+      "instrument": "Andhra Pradesh Reorganisation Act, 2014 (Act No. 6 of 2014)",
+      "appointedDay": "2014-06-02",
+      "statutorySchedule": "Schedule XXXI (Telangana: 119 ACs / 17 PCs) and Schedule II (Residuary AP: 175 ACs / 25 PCs)"
+    },
+    {
+      "stage": 3,
+      "instrument": "Andhra Pradesh Reorganisation (Removal of Difficulties) Order, 2015",
+      "identifier": "G.S.R. 311(E)",
+      "orderDate": "2015-04-23",
+      "commencement": "Comes into force at once (2015-04-23)",
+      "territoryImpact": "Transfer of specified Khammam mandals/villages to AP"
+    },
+    {
+      "stage": 4,
+      "instrument": "Commission's Notification No. 282/AP/2018(DEL)",
+      "promulgationDate": "2018-09-22",
+      "gazettePublicationDate": "2018-09-24",
+      "authority": "Election Commission of India under Sec 9(1)(b) Delim Act 2002 & Sec 15/26 APRA 2014"
+    },
+    {
+      "stage": 5,
+      "instrument": "Current Telangana Geography (Schedule XXXI)",
+      "acs": 119,
+      "pcs": 17,
+      "versioningRegime": "eci_delimitation_2008"
+    }
+  ],
+  "demographicClassification": {
+    "historicalBaseline": "Census 2011 (Verified statutory data)",
+    "currentOperation": "Census 2027 (Enumeration pending, final results NOT available)",
+    "statutoryFuture": "Future Anticipated Regime (Articles 82 & 170 post-Census 2027)",
+    "simulation": "Scenario Proposed Regime (Research models, strictly non-statutory)"
+  },
+  "plannedScope": {
+    "serviceLayer": "apps/api/src/services/delimitationService.ts",
+    "routeModule": "apps/api/src/routes/delimitation.ts",
+    "sharedContracts": "packages/shared/src/contracts/delimitation.ts",
+    "endpointCount": 14,
+    "responseEnvelope": "ECC-001 (ApiSuccessEnvelope<T>)",
+    "errorHelper": "sendApiError",
+    "scenarioMetadataCount": 10
+  },
+  "plannedTestBattery": {
+    "totalChecks": 30,
+    "testFiles": [
+      "tests/delimitation-g5-invariants.test.mjs",
+      "apps/api/src/__tests__/delimitation.test.ts"
+    ],
+    "planes": [
+      "Legal & Succession Invariants (W020-G5-LEG-01..06)",
+      "Demographic & Scenario Taxonomy (W020-G5-TAX-01..06)",
+      "Apportionment & Mathematical Invariants (W020-G5-MTH-01..08)",
+      "API Contract & Security Hardening (W020-G5-API-01..10)"
+    ]
+  },
+  "stopState": {
+    "declared": true,
+    "reason": "Awaiting formal CTO review and ratification of PLAN-W020-G5-REV-1.0.md before any implementation begins."
+  }
+}

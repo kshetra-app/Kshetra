@@ -7,19 +7,22 @@
 ## 1. Project & Execution Coordinates
 ```text
 PROJECT:               PANIN (formerly Kshetra)
-CURRENT_JOB:           W019 (Election Data Normalization — EVIDENCE-SEMANTICS REMEDIATED / SUBMITTED FOR CTO REVIEW)
-LAST_COMPLETED_JOB:    W018 (Canonical Political Entity Model — ACCEPTED / COMPLETE)
-NEXT_PERMITTED_JOB:    W020 (Delimitation Engine Foundation — STRICTLY NOT AUTHORIZED / BLOCKED PENDING FINAL CTO ACCEPTANCE OF W019)
+CURRENT_JOB:           W020-G5 (Delimitation Engine Foundation — PLANNING SUBMITTED FOR CTO REVIEW)
+LAST_COMPLETED_JOB:    W020-G4 (Delimitation Canonical Bridge Preflight & Staging Execution — ACCEPTED / COMPLETE / CLOSED)
+NEXT_PERMITTED_JOB:    W020-G5 (STRICTLY NOT AUTHORIZED PENDING CTO PLAN RATIFICATION)
 
 W018_STATUS:           ACCEPTED / COMPLETE (Canonical Commit: 080344c580ad9df92586a7a0e68989fb50e7cf3d)
 W018_CTO_ACCEPTANCE:   GRANTED (2026-09-29)
 W018_EVIDENCE_PACKAGE: reports/w018_political_entities_verification.json
 W018_MASTER_BATTERY:   53/53 PASS (100% Invariants Verified)
-W019_STATUS:           EVIDENCE-SEMANTICS REMEDIATED / SUBMITTED FOR CTO ACCEPTANCE REVIEW (W019 NOT COMPLETE / W020 STRICTLY NOT AUTHORIZED)
+W019_STATUS:           ACCEPTED / COMPLETE / CLOSED (DEC-083)
 W019_EVIDENCE_PACKAGE: reports/w019_candidate_granularity_reconciliation.md, reports/w019_candidate_granularity_reconciliation.json, reports/w019_election_normalization_verification.json, data/evidence/w019/canonical_benchmarks.json, data/evidence/w019/authoritative/
 W019_MASTER_BATTERY:   93/93 PASS (100% Invariants Verified across 13 verification planes including W019-CAND-01..12, W019-CAND-09A/B, and W019-SEM-01..12)
 W019_API_BATTERY:      10/10 PASS (apps/api/src/__tests__/elections.test.ts)
-W020_STATUS:           STRICTLY NOT AUTHORIZED (Delimitation Engine Foundation — BLOCKED PENDING CTO ACCEPTANCE)
+W020_G4_STATUS:        ACCEPTED / COMPLETE / CLOSED (DEC-084 / DEC-085)
+W020_G4_EVIDENCE:      reports/w020_g4_staging_execution.json, reports/w020_g4_migration_preflight.json
+W020_G5_STATUS:        PLANNING SUBMITTED / IMPLEMENTATION STRICTLY NOT AUTHORIZED (REV-1.0)
+W020_G5_PLAN:          PLAN-W020-G5-REV-1.0.md, reports/w020_g5_plan_manifest.json
 
 W017_STATUS:           ACCEPTED / COMPLETE
 W017_CTO_ACCEPTANCE:   GRANTED (2026-09-29)
@@ -31,7 +34,7 @@ R11_STATUS:            STRICTLY BLOCKED
 
 PLAN_STATUS:                          APPROVED
 IMPLEMENTATION_AUTHORIZATION:         YES
-W020_AUTHORIZATION:                   BOUNDED G4 ONLY (G5+ STRICTLY BLOCKED)
+W020_AUTHORIZATION:                   BOUNDED G4 CLOSED (G5 PLANNING ONLY / G5 IMPLEMENTATION STRICTLY BLOCKED)
 IMPLEMENTATION_AUTHORIZATION_COMMIT:  9b7cad4aea34d7e2b4411e44d88549340c70df8a
 
 AUTHORIZED_JOB:        W015 (Geography Relationship Engine)
