@@ -47,6 +47,8 @@ import type {
   BoundarySimulationDTO,
   NationalReservationDTO,
   StateReservationDetailDTO,
+  StatutoryReservationBaseline,
+  Article332DerivationDetail,
   StateComparisonDTO,
   MlaImpactDTO,
   PartyProjectionsDTO,
@@ -107,6 +109,38 @@ export const ECI_NOTIFICATION_2018_PROVENANCE: DatasetVersionProvenance = {
   sourceAuthority: 'Election Commission of India',
   publicationDate: '2018-09-22',
   checksum: 'd4e5f6a7b8c9d0e1f2a3b4c5d6e7f8a9b0c1d2e3f4a5b6c7d8e9f0a1b2c3d4e5',
+};
+
+// ─── AUTHORITATIVE STATUTORY RESERVATION BASELINES (Delimitation Order 2008 & APRA 2014) ───
+// Directives G5-05, G5-18 & Remediation R1: Current legal baselines MUST NOT be confused with
+// mathematical derivations on Census 2011 population data.
+export const STATUTORY_RESERVATION_BASELINES: Record<
+  string,
+  {
+    total: number;
+    scReserved: number;
+    stReserved: number;
+    general: number;
+    source: string;
+    censusBasis: string;
+  }
+> = {
+  TS: {
+    total: 119,
+    scReserved: 19,
+    stReserved: 12,
+    general: 88,
+    source: 'Delimitation of Parliamentary and Assembly Constituencies Order, 2008 read with Andhra Pradesh Reorganisation Act, 2014 (Schedule XXXI)',
+    censusBasis: 'Census 2001 (Frozen by 84th Constitutional Amendment Articles 82 & 170)',
+  },
+  AP: {
+    total: 175,
+    scReserved: 29,
+    stReserved: 7,
+    general: 139,
+    source: 'Delimitation of Parliamentary and Assembly Constituencies Order, 2008 read with Andhra Pradesh Reorganisation Act, 2014 (Schedule II)',
+    censusBasis: 'Census 2001 (Frozen by 84th Constitutional Amendment Articles 82 & 170)',
+  },
 };
 
 // ─── PIN CODE DIRECTORY (Postal Index Number mapping) ───
@@ -454,8 +488,8 @@ export class DelimitationService {
     return {
       censusYear: 2011,
       model: isExpansionSafe ? 'expansion_safe' : 'constitutional_proportional',
-      methodology: 'Article 170 & 81 equal-population principle with Article 332 proportional SC/ST quotas',
-      disclaimer: 'Projections derived from official Census of India district-level population registers.',
+      methodology: 'Generic Multi-State Apportionment Algorithm (Article 170 & 81 equal-population quotient across Census 2011 benchmark records)',
+      disclaimer: 'This endpoint executes a generic mathematical apportionment algorithm across benchmark demographic records to validate multi-state quotient behavior. It does NOT claim governed national delimitation coverage or gazetted statutory seat orders. Authoritative governed delimitation geography in W020 is strictly bounded to the State of Telangana.',
       summary: {
         statesAnalyzed: projections.length,
         totalCurrentSeats: projections.reduce((s, p) => s + p.currentSeats, 0),
@@ -908,9 +942,16 @@ export class DelimitationService {
     }));
 
     const provenance = this.buildProvenance(
-      'ARTICLE_332_NATIONAL_RESERVATION_ANALYSIS',
+      'GENERIC_ARTICLE_332_MULTI_STATE_SIMULATION',
       'DETERMINISTIC_DERIVED',
-      'DERIVED'
+      'DERIVED',
+      [CENSUS_2011_PCA_PROVENANCE],
+      'SIMULATION_PROPOSED',
+      '1.2.0',
+      [
+        'Constitution of India Article 332 (Generic Algorithm Multi-State Simulation)',
+        'Authoritative governed delimitation scope in W020 is strictly bounded to the State of Telangana',
+      ]
     );
 
     return {
@@ -935,29 +976,70 @@ export class DelimitationService {
     const state = CENSUS_2011_STATES.find((s) => s.stateCode === code);
     if (!state) return null;
 
+    // Fail-closed for jurisdictions without governed statutory reservation baseline (Directive G5-20 & Remediation R1)
+    const statutory = STATUTORY_RESERVATION_BASELINES[code];
+    if (!statutory) {
+      return null;
+    }
+
     const p = this.computeStateProjection(state);
-    const currentQuota = this.allocateArticle332(
-      p.currentSeats,
+
+    // 1. Authoritative Statutory Reality (Delimitation Order 2008 / APRA 2014)
+    const currentStatutory: StatutoryReservationBaseline = {
+      total: statutory.total,
+      scReserved: statutory.scReserved,
+      stReserved: statutory.stReserved,
+      general: statutory.general,
+      source: statutory.source,
+      censusBasis: statutory.censusBasis,
+      outputClassification: 'STATUTORY_FACT',
+      dataStatus: 'OFFICIAL',
+    };
+
+    // 2. PANIN Census 2011 Mathematical Derivation (Hamilton Largest Remainder sequence applied to Census 2011)
+    const qSC = statutory.total * (state.scPopulation / state.totalPopulation);
+    const qST = statutory.total * (state.stPopulation / state.totalPopulation);
+    const derivationQuota = this.allocateArticle332(
+      statutory.total,
       state.totalPopulation,
       state.scPopulation,
       state.stPopulation
     );
 
+    const baseSC = Math.floor(qSC);
+    const baseST = Math.floor(qST);
+    const rTarget = Math.floor(qSC + qST + 0.5);
+    const surplusDistributed = Math.max(0, rTarget - (baseSC + baseST));
+
+    const census2011MathematicalDerivation: Article332DerivationDetail = {
+      total: statutory.total,
+      scReserved: derivationQuota.scReserved,
+      stReserved: derivationQuota.stReserved,
+      general: derivationQuota.general,
+      quotaSC: Math.round(qSC * 10000) / 10000,
+      quotaST: Math.round(qST * 10000) / 10000,
+      remainderSC: Math.round((qSC - baseSC) * 10000) / 10000,
+      remainderST: Math.round((qST - baseST) * 10000) / 10000,
+      surplusSeatsDistributed: surplusDistributed,
+      censusBasis: 'Census 2011 (Demographic totals from Registrar General & Census Commissioner)',
+      methodology: 'Article 332 Hamilton / Largest Remainder Quota sequence applied to Census 2011 demographics',
+      outputClassification: 'DETERMINISTIC_DERIVED',
+      dataStatus: 'DERIVED',
+      disclaimer: 'This value is a PANIN academic mathematical derivation applying Article 332 to Census 2011 demographics. It does NOT represent the gazetted current statutory reservation baseline.',
+    };
+
     const provenance = this.buildProvenance(
-      'ARTICLE_332_STATE_RESERVATION_DETAIL',
-      'DETERMINISTIC_DERIVED',
-      'DERIVED'
+      'ARTICLE_332_STATUTORY_VS_DERIVED_RESERVATION_ANALYSIS',
+      'STATUTORY_FACT',
+      'OFFICIAL',
+      [DELIMITATION_2008_REGIME_PROVENANCE, APRA_2014_PROVENANCE, CENSUS_2011_PCA_PROVENANCE]
     );
 
     return {
       stateCode: p.stateCode,
       stateName: p.stateName,
-      current: {
-        total: p.currentSeats,
-        scReserved: currentQuota.scReserved,
-        stReserved: currentQuota.stReserved,
-        general: currentQuota.general,
-      },
+      current: currentStatutory,
+      census2011MathematicalDerivation,
       projected: {
         total: p.projectedSeats,
         scReserved: p.reservedSC,
@@ -965,8 +1047,8 @@ export class DelimitationService {
         general: p.general,
       },
       change: {
-        scChange: p.reservedSC - currentQuota.scReserved,
-        stChange: p.reservedST - currentQuota.stReserved,
+        scChange: p.reservedSC - statutory.scReserved,
+        stChange: p.reservedST - statutory.stReserved,
       },
       provenance,
     };

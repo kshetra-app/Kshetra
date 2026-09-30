@@ -21,10 +21,10 @@ W019_MASTER_BATTERY:   93/93 PASS (100% Invariants Verified across 13 verificati
 W019_API_BATTERY:      10/10 PASS (apps/api/src/__tests__/elections.test.ts)
 W020_G4_STATUS:        ACCEPTED / COMPLETE / CLOSED (DEC-084 / DEC-085)
 W020_G4_EVIDENCE:      reports/w020_g4_staging_execution.json, reports/w020_g4_migration_preflight.json
-W020_G5_STATUS:        IMPLEMENTED / SUBMITTED FOR CTO ACCEPTANCE (PLAN-W020-G5-REV-1.2)
+W020_G5_STATUS:        REMEDIATED (R1) / VERIFIED / SUBMITTED FOR CTO ACCEPTANCE (PLAN-W020-G5-REV-1.2 / DEC-089)
 W020_G5_PLAN:          PLAN-W020-G5-REV-1.2.md, reports/w020_g5_plan_manifest.json
-W020_G5_VERIFICATION:  reports/w020_g5_verification_report.md, reports/w020_g5_verification_report.json
-W020_G5_INVARIANTS:    30/30 PASS (tests/delimitation-g5-invariants.test.mjs)
+W020_G5_VERIFICATION:  reports/w020_g5_acceptance_remediation_r1.md, reports/w020_g5_acceptance_remediation_r1.json
+W020_G5_INVARIANTS:    32/32 PASS (tests/delimitation-g5-invariants.test.mjs)
 W020_G5_API_TESTS:     27/27 PASS (apps/api/src/__tests__/delimitation.test.ts)
 
 W017_STATUS:           ACCEPTED / COMPLETE

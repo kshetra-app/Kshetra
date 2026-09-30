@@ -349,7 +349,7 @@ describe('Delimitation Engine Foundation Routes (W020-G5)', () => {
   });
 
   describe('Route 10: GET /api/v1/delimitation/reservation/:stateCode', () => {
-    it('returns 200 for Telangana with Article 332 conservation', async () => {
+    it('returns 200 for Telangana with distinct statutory baseline (19 SC, 12 ST) and Census 2011 derivation (18 SC, 10 ST)', async () => {
       const res = await app.inject({
         method: 'GET',
         url: '/api/v1/delimitation/reservation/TS',
@@ -359,8 +359,33 @@ describe('Delimitation Engine Foundation Routes (W020-G5)', () => {
       const json = JSON.parse(res.payload);
       expect(json.success).toBe(true);
       expect(json.data.stateCode).toBe('TS');
-      expect(json.data.current.total).toBe(119);
-      expect(json.data.current.scReserved + json.data.current.stReserved + json.data.current.general).toBe(119);
+
+      // 1. Authoritative Statutory Baseline (Delimitation Order 2008 & APRA 2014)
+      const current = json.data.current;
+      expect(current.total).toBe(119);
+      expect(current.scReserved).toBe(19);
+      expect(current.stReserved).toBe(12);
+      expect(current.general).toBe(88);
+      expect(current.scReserved + current.stReserved + current.general).toBe(119);
+      expect(current.outputClassification).toBe('STATUTORY_FACT');
+      expect(current.dataStatus).toBe('OFFICIAL');
+      expect(current.censusBasis).toContain('Census 2001');
+
+      // 2. PANIN Census 2011 Mathematical Derivation (Hamilton sequence on 2011 demographics)
+      const derived = json.data.census2011MathematicalDerivation;
+      expect(derived).toBeDefined();
+      expect(derived.total).toBe(119);
+      expect(derived.scReserved).toBe(18);
+      expect(derived.stReserved).toBe(10);
+      expect(derived.general).toBe(91);
+      expect(derived.scReserved + derived.stReserved + derived.general).toBe(119);
+      expect(derived.outputClassification).toBe('DETERMINISTIC_DERIVED');
+      expect(derived.dataStatus).toBe('DERIVED');
+      expect(derived.disclaimer).toContain('PANIN academic mathematical derivation');
+
+      // Verify mathematical derivation is NOT exposed as statutory fact
+      expect(derived.outputClassification).not.toBe('STATUTORY_FACT');
+      expect(derived.dataStatus).not.toBe('OFFICIAL');
     });
 
     it('returns 404 UNSUPPORTED_GEOGRAPHY for unregistered state', async () => {

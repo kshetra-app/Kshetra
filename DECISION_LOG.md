@@ -1966,3 +1966,40 @@
   - Milestone W020-G5 is transitioned to **`IMPLEMENTED / SUBMITTED FOR CTO ACCEPTANCE`**.
   - All evidence reports generated: `reports/w020_g5_verification_report.md` and `reports/w020_g5_verification_report.json`.
   - Milestone W020-G6+ remains **STRICTLY NOT AUTHORIZED** pending written CTO technical acceptance.
+
+---
+
+### DEC-089: W020-G5 REMEDIATION R1 — NATIONAL SCOPE OVER-CLAIM REMOVAL & ARTICLE 332 STATUTORY VS DERIVED RECONCILIATION
+- **Date:** 2026-09-30
+- **Status:** REMEDIATED / VERIFIED / SUBMITTED FOR CTO ACCEPTANCE
+- **Authority:** CTO DIRECTIVE — W020-G5 ACCEPTANCE REMEDIATION R1
+- **Context:** Following technical review of the W020-G5 submission, CTO acceptance was blocked on two semantic/scope issues:
+  1. Remediation 1: National Scope / Route Scope over-claims in API descriptions and invariant test assertions (e.g. claiming dynamic seat projections across all 36 Census 2011 states as governed national computation).
+  2. Remediation 2: Article 332 Semantic Integrity regarding Telangana's reservation numbers (reconciling statutory 19 SC / 12 ST / 88 General vs PANIN Census 2011 mathematical derivation 18 SC / 10 ST / 91 General).
+- **Remediation & Forensic Audit Findings:**
+  1. **Remediation 1 (National Scope Audit & Scope Correction):**
+     - Forensic audit confirmed zero national factual dataset or national GIS boundary data was ingested under G5.
+     - Multi-state routes execute generic demographic apportionment quotients ($Pop / Divisor$) across benchmark demographic records (`india-district-population-2011.ts`).
+     - Clarified terminology across documentation, DTO disclaimers, and tests: multi-state routes validate generic multi-jurisdiction algorithm behavior across benchmark demographic totals, not national factual coverage.
+     - Governed factual geography remains strictly bounded to Telangana (119 ACs, 17 PCs, Census 2011 baseline; unmapped jurisdictions fail closed with structured 404 `UNSUPPORTED_GEOGRAPHY`).
+     - Test `W020-G5-API-02` updated to assert generic multi-jurisdiction algorithm validation without national statutory claims.
+  2. **Remediation 2 (Article 332 Semantic Separation & Provenance):**
+     - Established exact 16-field mathematical provenance record for Telangana Census 2011 derivation: 119 total, 18 SC, 10 ST, 91 General; $Base(SC)=18, Base(ST)=10, Rem(SC)=0.0986, Rem(ST)=0.3848, K=0$. Classified as `DETERMINISTIC_DERIVED` and `DERIVED` under `SIMULATION_PROPOSED`.
+     - Reconciled official current statutory baseline under Delimitation Order 2008 read with APRA 2014 (Schedule XXXI): 119 total, 19 SC, 12 ST, 88 General; `STATUTORY_FACT`, `OFFICIAL`, `STATUTORY_ENACTED_REGIME`, Census basis: `Census 2001 (Frozen by 84th Constitutional Amendment Articles 82 & 170)`.
+     - Hardened shared contracts and API service: `StateReservationDetailDTO` strictly separates `current` (Statutory Fact: 19/12/88) from `census2011MathematicalDerivation` (Derived Model: 18/10/91).
+     - Added `W020-G5-API-11` asserting this strict separation in invariant battery.
+  3. **Apportionment Invariant Hardening (W020-G5-MTH-09):**
+     - Added 100-run stability test, candidate/district input permutation order-independence, and floating-point epsilon safety check.
+- **Verification Battery Results:**
+  - `tests/delimitation-g5-invariants.test.mjs`: 32 / 32 PASS (100%).
+  - `apps/api/src/__tests__/delimitation.test.ts`: 27 / 27 PASS (100%).
+  - W018 regression: 53 / 53 PASS.
+  - W019 regression: 93 / 93 PASS.
+  - W020-G4 preflight: 23 / 23 PASS.
+  - API contract drift: 9 / 9 MATCH.
+  - TypeScript builds: API (exit 0), Shared (exit 0), Mobile (exit 0).
+  - Staging PostGIS geometry: 589 rows, exact SHA-256 match `f839fa02980318a8f35f932ebe72fa1d3ad6325dc86a624bf159d932fe5f613b`.
+  - Production database `ehfafcnimmjusyvplbah` remains 100% air-gapped and untouched.
+- **Milestone Gate Status:**
+  - W020-G5 Remediation R1 is complete, verified, and re-submitted for CTO Technical Acceptance Review.
+  - W020-G6+ remains **STRICTLY NOT AUTHORIZED**.

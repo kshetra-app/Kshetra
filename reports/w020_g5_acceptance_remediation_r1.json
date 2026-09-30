@@ -1,0 +1,221 @@
+{
+  "milestone": "W020-G5",
+  "remediationId": "R1",
+  "timestamp": "2026-09-30T08:30:00Z",
+  "target": "panIN-staging (fkpigozcqnmcvofuksar)",
+  "production": "ehfafcnimmjusyvplbah (STRICTLY AIR-GAPPED & UNTOUCHED)",
+  "canonicalBranch": "master",
+  "status": "REMEDIATED_AND_VERIFIED",
+  "remediation1_national_scope": {
+    "status": "RESOLVED",
+    "findings": "Forensic audit determined that no unauthorized national factual dataset or national geography ingestion was added under W020-G5. All multi-state routes execute generic mathematical algorithms across pre-existing Census 2011 demographic benchmark totals (data/census/india-district-population-2011.ts). Terminology has been rigorously corrected to remove claims of governed national factual computation. W020-G5-API-02 invariant test description updated to explicitly state generic multi-jurisdiction algorithm validation without claiming national statutory coverage.",
+    "jurisdictionScope": {
+      "governedJurisdiction": "Telangana (TS)",
+      "governedAssemblySeats": 119,
+      "governedParliamentarySeats": 17,
+      "unsupportedJurisdictionBehavior": "Structured 404 UNSUPPORTED_GEOGRAPHY fail-closed"
+    },
+    "routeClassification": [
+      {
+        "route": "GET /api/v1/delimitation/projections",
+        "function": "getProjections()",
+        "category": "A",
+        "nature": "Generic multi-jurisdiction apportionment quotient across demographic benchmark records; zero GIS dependency",
+        "authorizedByPlan": true
+      },
+      {
+        "route": "GET /api/v1/delimitation/projections/:stateCode",
+        "function": "getStateProjection()",
+        "category": "B",
+        "nature": "Governed for TS (119 seats); fails closed with 404 UNSUPPORTED_GEOGRAPHY for unmapped states",
+        "authorizedByPlan": true
+      },
+      {
+        "route": "GET /api/v1/delimitation/timeline",
+        "function": "getTimeline()",
+        "category": "B",
+        "nature": "Governed 5-stage legal succession chain (2008 Order, APRA 2014, G.S.R. 311(E), Notification 282/AP/2018(DEL))",
+        "authorizedByPlan": true
+      },
+      {
+        "route": "GET /api/v1/delimitation/status",
+        "function": "getStatus()",
+        "category": "B",
+        "nature": "Governed constitutional freeze status (Articles 82 & 170) and Census 2027 tracking",
+        "authorizedByPlan": true
+      },
+      {
+        "route": "GET /api/v1/delimitation/gainers-losers",
+        "function": "getGainersLosers()",
+        "category": "A",
+        "nature": "Generic mathematical differential sorting",
+        "authorizedByPlan": true
+      },
+      {
+        "route": "POST /api/v1/delimitation/monitor-webhook",
+        "function": "processMonitorWebhook()",
+        "category": "B",
+        "nature": "Governed security hardening; fail-closed Bearer auth",
+        "authorizedByPlan": true
+      },
+      {
+        "route": "GET /api/v1/delimitation/impact/:pinCode",
+        "function": "getCitizenImpact()",
+        "category": "B",
+        "nature": "Governed Telangana constituency mapping + spatial heuristic centroid caveat",
+        "authorizedByPlan": true
+      },
+      {
+        "route": "GET /api/v1/delimitation/simulate/:stateCode",
+        "function": "simulateBoundaries()",
+        "category": "B",
+        "nature": "Governed Telangana district population baselines (TS_DISTRICTS); Hamilton largest-remainder district apportionment",
+        "authorizedByPlan": true
+      },
+      {
+        "route": "GET /api/v1/delimitation/reservation",
+        "function": "getNationalReservations()",
+        "category": "A",
+        "nature": "Generic multi-state Article 332 Hamilton quota simulation; explicit disclaimer; no statutory claim",
+        "authorizedByPlan": true
+      },
+      {
+        "route": "GET /api/v1/delimitation/reservation/:stateCode",
+        "function": "getStateReservationDetail()",
+        "category": "B",
+        "nature": "Governed Telangana statutory baseline (19 SC, 12 ST; STATUTORY_FACT) vs Census 2011 PANIN derivation (18 SC, 10 ST; DETERMINISTIC_DERIVED)",
+        "authorizedByPlan": true
+      },
+      {
+        "route": "GET /api/v1/delimitation/compare",
+        "function": "compareStates()",
+        "category": "A",
+        "nature": "Generic multi-state comparative simulation across queried codes",
+        "authorizedByPlan": true
+      },
+      {
+        "route": "GET /api/v1/delimitation/mla-impact/:stateCode",
+        "function": "getMlaImpact()",
+        "category": "B",
+        "nature": "Governed Telangana MLA incumbent profiles + POLITICAL_HEURISTIC provenance",
+        "authorizedByPlan": true
+      },
+      {
+        "route": "GET /api/v1/delimitation/party-projections/:stateCode",
+        "function": "getPartyProjections()",
+        "category": "B",
+        "nature": "Governed Telangana 2018/2023 election history seat shares + STATISTICAL_PROJECTION provenance",
+        "authorizedByPlan": true
+      },
+      {
+        "route": "GET /api/v1/delimitation/methodology",
+        "function": "getMethodology()",
+        "category": "A",
+        "nature": "Constitutional articles disclosure and MAX_SAFE_REQUESTED_SEATS computational safety policy",
+        "authorizedByPlan": true
+      }
+    ]
+  },
+  "remediation2_article_332_integrity": {
+    "status": "RESOLVED",
+    "statutoryBaseline": {
+      "jurisdiction": "Telangana (TS)",
+      "totalSeats": 119,
+      "scReserved": 19,
+      "stReserved": 12,
+      "general": 88,
+      "outputClassification": "STATUTORY_FACT",
+      "dataStatus": "OFFICIAL",
+      "legalStatus": "STATUTORY_ENACTED_REGIME",
+      "censusBasis": "Census 2001 (Frozen by 84th Constitutional Amendment Articles 82 & 170)",
+      "source": "Delimitation of Parliamentary and Assembly Constituencies Order, 2008 read with Andhra Pradesh Reorganisation Act, 2014 (Schedule XXXI)"
+    },
+    "paninMathematicalDerivation": {
+      "jurisdiction": "Telangana (TS)",
+      "totalSeats": 119,
+      "scReserved": 18,
+      "stReserved": 10,
+      "general": 91,
+      "outputClassification": "DETERMINISTIC_DERIVED",
+      "dataStatus": "DERIVED",
+      "legalStatus": "SIMULATION_PROPOSED",
+      "isScenario": false,
+      "fieldLevelProvenance": {
+        "sourceDatasetVersion": "census_2011_pca_v1.0",
+        "censusYear": 2011,
+        "scNumerator": 5260976,
+        "stNumerator": 3018710,
+        "totalPopulationDenominator": 34591425,
+        "eligiblePopulationDefinition": "Total Enumerated Resident Population (Census 2011 Primary Census Abstract)",
+        "exactQuotaFormula": "Q_c = S * (Pop_c / Pop_Total)",
+        "quotaSC": 18.0986,
+        "quotaST": 10.3848,
+        "baseAllocation": { "SC": 18, "ST": 10 },
+        "remainderAllocation": { "SC": 0.0986, "ST": 0.3848 },
+        "targetReservedSeats": 28,
+        "surplusSeatsDistributed": 0,
+        "tieBreakSequence": "Population magnitude, then lexicographical ('SC' before 'ST') [Not invoked because surplus K = 0]",
+        "conservationCheck": "18 + 10 + 91 === 119 (Exact bitwise match)"
+      },
+      "disclaimer": "This value is a PANIN academic mathematical derivation applying Article 332 to Census 2011 demographics. It does NOT represent the gazetted current statutory reservation baseline."
+    }
+  },
+  "verificationSuites": {
+    "delimitationG5Invariants": {
+      "passed": 32,
+      "failed": 0,
+      "total": 32,
+      "status": "PASS"
+    },
+    "delimitationRouteIntegration": {
+      "passed": 27,
+      "failed": 0,
+      "total": 27,
+      "status": "PASS"
+    },
+    "politicalEntitiesInvariantsW018": {
+      "passed": 53,
+      "failed": 0,
+      "total": 53,
+      "status": "PASS"
+    },
+    "electionNormalizationInvariantsW019": {
+      "passed": 93,
+      "failed": 0,
+      "total": 93,
+      "status": "PASS"
+    },
+    "delimitationPreflightW020G4": {
+      "passed": 23,
+      "failed": 0,
+      "total": 23,
+      "status": "PASS"
+    },
+    "apiContractParity": {
+      "matched": 9,
+      "total": 9,
+      "status": "PASS"
+    },
+    "typeScriptBuildApi": {
+      "exitCode": 0,
+      "status": "PASS"
+    },
+    "typeScriptBuildShared": {
+      "exitCode": 0,
+      "status": "PASS"
+    },
+    "typeScriptMobileCheck": {
+      "exitCode": 0,
+      "status": "PASS"
+    },
+    "postgisGeometryBaseline": {
+      "rowCount": 589,
+      "expectedDigest": "f839fa02980318a8f35f932ebe72fa1d3ad6325dc86a624bf159d932fe5f613b",
+      "observedDigest": "f839fa02980318a8f35f932ebe72fa1d3ad6325dc86a624bf159d932fe5f613b",
+      "status": "PASS"
+    },
+    "productionAirGap": {
+      "status": "VERIFIED_AIR_GAPPED"
+    }
+  }
+}

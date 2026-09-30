@@ -282,15 +282,39 @@ export interface NationalReservationDTO {
   provenance: MathematicalProvenance;
 }
 
+export interface StatutoryReservationBaseline {
+  total: number;
+  scReserved: number;
+  stReserved: number;
+  general: number;
+  source: string;
+  censusBasis: string;
+  outputClassification: 'STATUTORY_FACT';
+  dataStatus: 'OFFICIAL';
+}
+
+export interface Article332DerivationDetail {
+  total: number;
+  scReserved: number;
+  stReserved: number;
+  general: number;
+  quotaSC: number;
+  quotaST: number;
+  remainderSC: number;
+  remainderST: number;
+  surplusSeatsDistributed: number;
+  censusBasis: string;
+  methodology: string;
+  outputClassification: 'DETERMINISTIC_DERIVED';
+  dataStatus: 'DERIVED';
+  disclaimer: string;
+}
+
 export interface StateReservationDetailDTO {
   stateCode: string;
   stateName: string;
-  current: {
-    total: number;
-    scReserved: number;
-    stReserved: number;
-    general: number;
-  };
+  current: StatutoryReservationBaseline;
+  census2011MathematicalDerivation: Article332DerivationDetail;
   projected: {
     total: number;
     scReserved: number;
