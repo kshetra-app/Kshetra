@@ -1,0 +1,100 @@
+{
+  "milestone": "W020-G5",
+  "title": "Delimitation Engine Foundation — Core Logic, Mathematical Models, Service Layer & Hardened Read APIs",
+  "specification": "PLAN-W020-G5-REV-1.2.md",
+  "generatedAt": "2026-09-30T07:59:00.000Z",
+  "targetBranch": "master",
+  "auditedCodeCommit": "505ae56ba8839a44b1171b1edcb45aec33c65c04",
+  "preG5BaselineCommit": "46d9558727fe03fd724ba39149a7d51b9e50b1d4",
+  "stagingProject": "fkpigozcqnmcvofuksar",
+  "productionDatabase": "ehfafcnimmjusyvplbah",
+  "productionAirGapVerified": true,
+  "summary": {
+    "totalPlanes": 4,
+    "masterInvariantChecks": {
+      "total": 30,
+      "passed": 30,
+      "failed": 0,
+      "verdict": "PASS"
+    },
+    "fastifyIntegrationTests": {
+      "total": 27,
+      "passed": 27,
+      "failed": 0,
+      "verdict": "PASS"
+    },
+    "regressions": {
+      "w018": { "total": 53, "passed": 53, "failed": 0, "verdict": "PASS" },
+      "w019": { "total": 93, "passed": 93, "failed": 0, "verdict": "PASS" },
+      "w020_g4": { "total": 23, "passed": 23, "failed": 0, "verdict": "PASS" }
+    },
+    "apiContractDrift": {
+      "declaredEndpoints": 9,
+      "matched": 9,
+      "parityPercentage": 100,
+      "verdict": "PASS"
+    },
+    "typecheck": {
+      "appsApi": "PASS",
+      "appsMobile": "PASS",
+      "packagesShared": "PASS"
+    },
+    "postgisGeometryBaseline": {
+      "expectedCount": 589,
+      "observedCount": 589,
+      "expectedSha256": "f839fa02980318a8f35f932ebe72fa1d3ad6325dc86a624bf159d932fe5f613b",
+      "observedSha256": "f839fa02980318a8f35f932ebe72fa1d3ad6325dc86a624bf159d932fe5f613b",
+      "verdict": "PASS"
+    },
+    "mobileCodeFrozen": {
+      "modifications": 0,
+      "verdict": "PASS"
+    },
+    "databaseMutations": {
+      "migrationsAdded": 0,
+      "stagingDdlExecuted": 0,
+      "verdict": "PASS"
+    }
+  },
+  "planeResults": {
+    "plane1_legal_and_succession": [
+      { "id": "W020-G5-LEG-01", "description": "2008 Delimitation Order baseline (119 ACs Telangana, 175 ACs AP under Schedule II)", "passed": true },
+      { "id": "W020-G5-LEG-02", "description": "APRA 2014 Sec 15, Schedule XXXI & Schedule II statutory succession", "passed": true },
+      { "id": "W020-G5-LEG-03", "description": "AP Reorganisation Order 2015: G.S.R. 311(E), 23 April 2015 (comes into force at once)", "passed": true },
+      { "id": "W020-G5-LEG-04", "description": "ECI Statutory Notification No. 282/AP/2018(DEL), dated 22 September 2018", "passed": true },
+      { "id": "W020-G5-LEG-05", "description": "Census 2027 tracking record exists with final population marked UNAVAILABLE", "passed": true },
+      { "id": "W020-G5-LEG-06", "description": "Future Anticipated Delimitation regime exists with active tracking and zero fabricated boundaries", "passed": true }
+    ],
+    "plane2_demographic_and_scenario_taxonomy": [
+      { "id": "W020-G5-TAX-01", "description": "Orthogonal taxonomy model: outputClassification (7 values) and W012 dataStatus (8 values) are independent fields", "passed": true },
+      { "id": "W020-G5-TAX-02", "description": "Anti-derivation rule: unavailable Census 2027 population yields UNKNOWN_UNAVAILABLE without synthetic zero-fills", "passed": true },
+      { "id": "W020-G5-TAX-03", "description": "Scenario enclosure contains all 10 mandatory metadata fields", "passed": true },
+      { "id": "W020-G5-TAX-04", "description": "isScenario is derived-only from legalStatus === SCENARIO_PROPOSED_REGIME (zero persistent db column)", "passed": true },
+      { "id": "W020-G5-TAX-05", "description": "Sitting MLA vulnerability heuristic is classified as POLITICAL_HEURISTIC + INFERRED", "passed": true },
+      { "id": "W020-G5-TAX-06", "description": "PIN code impact lookup has GEOGRAPHIC_APPROXIMATION + ESTIMATE and discloses spatial caveat", "passed": true }
+    ],
+    "plane3_apportionment_and_mathematics": [
+      { "id": "W020-G5-MTH-01", "description": "Article 332 proportionality principle (RES-LEGAL-01) is separated from Hamilton algorithm (RES-ALLOC-01)", "passed": true },
+      { "id": "W020-G5-MTH-02", "description": "Article 332 8-step sequence produces exact deterministic quotas for Telangana (18 SC, 10 ST, 91 General)", "passed": true },
+      { "id": "W020-G5-MTH-03", "description": "Seat conservation law: S_SC + S_ST + S_General === S holds bitwise across all 31 assembly states in Census 2011", "passed": true },
+      { "id": "W020-G5-MTH-04", "description": "District Hare-Niemeyer seat allocation conservation: sum(s_d) === S_target (119 seats across districts)", "passed": true },
+      { "id": "W020-G5-MTH-05", "description": "Hamilton district allocation domain bound guard: requires S >= N (11 districts), fails closed if S < N", "passed": true },
+      { "id": "W020-G5-MTH-06", "description": "Ingress computational safety limit: MAX_SAFE_REQUESTED_SEATS = 10000 enforced against overflow", "passed": true },
+      { "id": "W020-G5-MTH-07", "description": "MAX_SAFE_REQUESTED_SEATS explicitly documented as solely computational protection with zero legal meaning", "passed": true },
+      { "id": "W020-G5-MTH-08", "description": "Synthetic tie-breaking verification: deterministic tie-break allocates to SC before ST lexicographically", "passed": true }
+    ],
+    "plane4_api_contract_and_security": [
+      { "id": "W020-G5-API-01", "description": "All 14 routes return standardized ECC-001 ApiSuccessEnvelope<T>", "passed": true },
+      { "id": "W020-G5-API-02", "description": "Route 1 (/projections) dynamically computes seat projections across all 36 Census 2011 states", "passed": true },
+      { "id": "W020-G5-API-03", "description": "Route 2 (/projections/:stateCode) returns projection for TS and null (UNSUPPORTED_GEOGRAPHY) for ZZ", "passed": true },
+      { "id": "W020-G5-API-04", "description": "Route 3 (/timeline) exposes the complete 5-stage legal succession chain", "passed": true },
+      { "id": "W020-G5-API-05", "description": "Route 4 (/status) returns constitutional freeze status and Census 2027 tracking", "passed": true },
+      { "id": "W020-G5-API-06", "description": "Route 6 (/monitor-webhook) rejects unauthenticated access with HTTP 401 UNAUTHORIZED (fail-closed)", "passed": true },
+      { "id": "W020-G5-API-07", "description": "Route 6 (/monitor-webhook) accepts valid Bearer secret tokens and processes alerts", "passed": true },
+      { "id": "W020-G5-API-08", "description": "Route 7 (/impact/:pinCode) rejects malformed PIN codes (< 6 digits) with 400 FST_ERR_VALIDATION", "passed": true },
+      { "id": "W020-G5-API-09", "description": "Route 8 (/simulate/:stateCode) rejects seats > 10000 with computational overflow guard", "passed": true },
+      { "id": "W020-G5-API-10", "description": "Production ehfafcnimmjusyvplbah air-gapped; PostGIS geometry strictly frozen (589 rows, exact SHA-256 match)", "passed": true }
+    ]
+  },
+  "overallVerdict": "IMPLEMENTED / SUBMITTED FOR CTO ACCEPTANCE"
+}

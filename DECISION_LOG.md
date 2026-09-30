@@ -1918,3 +1918,51 @@
   - Milestone W020-G5 plan REV-1.2 (`PLAN-W020-G5-REV-1.2.md`) is submitted for formal CTO review and ratification.
   - Implementation of W020-G5 remains **STRICTLY NOT AUTHORIZED**.
   - Execution is halted awaiting written CTO authorization.
+
+---
+
+### DEC-088: W020-G5 DELIMITATION ENGINE FOUNDATION IMPLEMENTATION & MASTER INVARIANT VERIFICATION
+- **Date:** 2026-09-30
+- **Status:** IMPLEMENTED / SUBMITTED FOR CTO ACCEPTANCE
+- **Authority:** CTO FINAL RATIFICATION — W020-G5 REV-1.2
+- **Context:** Following formal CTO ratification of PLAN-W020-G5-REV-1.2, bounded implementation of milestone W020-G5 was authorized under strict governance rules: generic engine architecture bounded to authoritative Telangana geography, `MAX_SAFE_REQUESTED_SEATS = 10000` solely as computational resource protection without legal meaning, orthogonal output classification and W012 data status, Article 332 8-step quota allocation, derived `isScenario`, zero mobile modifications, zero database schema migrations, frozen 589 PostGIS geometry baseline, and 100% air-gapped production.
+- **Implementation & Verification Achievements:**
+  1. **Shared Contract Layer (`packages/shared/src/contracts/delimitation.ts`):**
+     - Established complete type system: `DelimitationOutputClassification` (7 values), `DelimitationSelectionMode` (5 values), `DatasetVersionProvenance`, `MathematicalProvenance`, `Article332AllocationResult`, `SeatConservationAssertion`, and route DTOs.
+     - Enforced strict orthogonality between `OUTPUT_CLASSIFICATION` and `W012 DATA_STATUS`.
+     - Re-exported in `packages/shared/src/contracts/index.ts` and compiled cleanly via `npm run build --prefix packages/shared`.
+  2. **Delimitation Domain Service (`apps/api/src/services/delimitationService.ts`):**
+     - Implemented Article 332 8-step computational quota sequence (`RES-LEGAL-01` through `RES-UNKNOWN-01`) producing deterministic allocations for Telangana (18 SC, 10 ST, 91 General) under Census 2011 PCA baselines.
+     - Implemented Hamilton/Hare-Niemeyer largest-remainder district apportionment with strict $S \ge N$ domain guard and seat conservation assertion ($\sum s_d \equiv S_{\text{target}}$).
+     - Enforced `MAX_SAFE_REQUESTED_SEATS = 10000` computational overflow guard against runaway resource consumption.
+     - Implemented byte-exact 5-stage legal succession chain (Delimitation Order 2008, APRA 2014, AP Reorganisation Order 2015 G.S.R. 311(E), ECI Notification 2018, and Census 2027 tracking).
+     - Derived `isScenario` exclusively from `legalStatus === 'SCENARIO_PROPOSED_REGIME'`.
+  3. **Hardened Route Layer (`apps/api/src/routes/delimitation.ts`):**
+     - Refactored all 14 routes to consume `delimitationService`.
+     - Standardized response format to ECC-001 `ApiSuccessEnvelope<T>` and `sendApiError()`.
+     - Added native Fastify Ajv JSON schemas for params, queries, and bodies.
+     - Hardened prototype `/monitor-webhook` with fail-closed Bearer auth against `KSHETRA_MONITOR_SECRET`.
+     - Structured unsupported geography queries as 404 `UNSUPPORTED_GEOGRAPHY`.
+  4. **Master Invariant Battery (30 / 30 PASS across 4 Planes):**
+     - Verified via `tests/delimitation-g5-invariants.test.mjs`:
+       - Plane 1 (Legal & Succession): 6/6 PASS.
+       - Plane 2 (Demographic & Scenario Taxonomy): 6/6 PASS.
+       - Plane 3 (Apportionment & Mathematics): 8/8 PASS.
+       - Plane 4 (API Contract & Security): 10/10 PASS.
+  5. **Fastify Route Integration Tests (27 / 27 PASS):**
+     - Verified via Jest in `apps/api/src/__tests__/delimitation.test.ts` covering all 14 route modules with authentication, validation, domain calculation, and error scenarios.
+  6. **Full Regressions & Builds:**
+     - W018 regression: 53/53 PASS (`tests/political-entities-invariants.test.mjs`).
+     - W019 regression: 93/93 PASS (`tests/election-normalization-invariants.test.mjs`).
+     - W020-G4 preflight: 23/23 PASS (`tests/delimitation-migration-055-preflight.test.mjs`).
+     - API contract drift: 9/9 MATCH (`scripts/check-api-contract-drift.mjs`).
+     - TypeScript builds: `apps/api` (exit 0), `apps/mobile` (exit 0), `packages/shared` (exit 0).
+  7. **Strict Non-Scope Boundaries Verified:**
+     - Zero mobile code modifications (`git diff -- apps/mobile` is empty).
+     - Zero database schema migrations added (`supabase/migrations/**` unchanged).
+     - Live staging PostGIS geometry baseline matches 589 rows, SHA-256 `f839fa02980318a8f35f932ebe72fa1d3ad6325dc86a624bf159d932fe5f613b`.
+     - Production database `ehfafcnimmjusyvplbah` remains 100% air-gapped and untouched.
+- **Governance & Milestone Gate Status:**
+  - Milestone W020-G5 is transitioned to **`IMPLEMENTED / SUBMITTED FOR CTO ACCEPTANCE`**.
+  - All evidence reports generated: `reports/w020_g5_verification_report.md` and `reports/w020_g5_verification_report.json`.
+  - Milestone W020-G6+ remains **STRICTLY NOT AUTHORIZED** pending written CTO technical acceptance.

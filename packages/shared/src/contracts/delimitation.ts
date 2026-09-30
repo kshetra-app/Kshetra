@@ -1,0 +1,406 @@
+/**
+ * Canonical Delimitation API Contracts & Response Envelopes
+ * Master Execution Track — Job W020-G5
+ * Specification: PLAN-W020-G5-REV-1.2.md
+ */
+
+import type { ApiSuccessEnvelope, ApiErrorEnvelope } from './envelopes';
+
+// ─── ORTHOGONAL TAXONOMY DIMENSIONS (Directive G5-17) ───
+
+/**
+ * Dimension A: G5 Output / Calculation Classification
+ * Represents the computational and legal nature of the analytical output.
+ */
+export type OutputClassification =
+  | 'STATUTORY_FACT'            // Enacted legal orders, gazette notices, statutory seat counts
+  | 'DETERMINISTIC_DERIVED'     // Computed via deterministic mathematical formulas from official figures
+  | 'STATUTORY_BENCHMARK'       // Historical baselines verified against official commission orders
+  | 'SCENARIO_PROJECTION'       // Hypothetical research models and user-defined simulations
+  | 'GEOGRAPHIC_APPROXIMATION'  // Spatial heuristics, PIN code centroid lookups
+  | 'POLITICAL_HEURISTIC'       // Incumbent vulnerability heuristics, swing models
+  | 'UNKNOWN_UNAVAILABLE';      // Data or projection mathematically or legally unresolvable
+
+/**
+ * Dimension B: Canonical W012 Data Status
+ * Represents the data governance, auditability, and verification state.
+ */
+export type W012DataStatus =
+  | 'OFFICIAL'                  // Primary gazetted statutory authority
+  | 'DERIVED'                   // Deterministically derived from official data
+  | 'VERIFIED'                  // Audited and corroborated against external source
+  | 'SCENARIO'                  // Unenacted scenario projection
+  | 'ESTIMATE'                  // Approximate statistical or spatial estimate
+  | 'INFERRED'                  // Heuristically inferred analytical attribute
+  | 'UNVERIFIED'                // Raw input pending authoritative corroboration
+  | 'UNKNOWN';                  // Missing, withheld, or pending statutory operation
+
+export type DelimitationDataStatus = W012DataStatus;
+
+/**
+ * Typed Regime Selection Modes (Directive G5-12)
+ */
+export type RegimeSelectionMode =
+  | 'CURRENT'                   // Latest in-force statutory regime
+  | 'AS_OF'                     // Statutory regime in force on specified ISO date
+  | 'EXPLICIT_VERSION'          // Explicitly requested regime identifier
+  | 'FUTURE_ANTICIPATED'        // Prospective constitutional post-freeze regime
+  | 'SCENARIO';                 // User-defined hypothetical research model
+
+// ─── PROVENANCE INTERFACES (Directives G5-07, G5-13, G5-18) ───
+
+export interface DatasetVersionProvenance {
+  datasetId: string;
+  versionTag: string;
+  sourceAuthority: string;
+  publicationDate: string;
+  checksum?: string;
+}
+
+export interface MathematicalProvenance {
+  inputDatasetVersions: DatasetVersionProvenance[];
+  geographyVersion?: string;
+  constituencyVersion?: string;
+  methodology: string;
+  modelVersion: string;
+  calculatedAt: string;
+  legalStatus: string;
+  outputClassification: OutputClassification;
+  dataStatus: W012DataStatus;
+  provenanceId?: string;
+  evidenceReferences?: string[];
+}
+
+/**
+ * Mandatory Scenario Enclosure (Directives G5-08, G5-13)
+ * Enforces the 10 required metadata fields.
+ * isScenario is strictly derived at runtime from legalStatus === 'SCENARIO_PROPOSED_REGIME'.
+ */
+export interface ScenarioEnclosure<T = unknown> {
+  isScenario: boolean;
+  scenarioId: string;
+  scenarioName: string;
+  scenarioAuthor: string;
+  scenarioDescription: string;
+  statutoryBasisDisclaimer: string;
+  hypotheticalParameters: Record<string, unknown>;
+  baselineDatasetVersion: string;
+  modelType: string;
+  createdAt: string;
+  provenance: MathematicalProvenance;
+  data: T;
+}
+
+// ─── CORE DOMAIN DATA STRUCTURES ───
+
+export interface DynamicSeatProjection {
+  stateCode: string;
+  stateName: string;
+  currentSeats: number;
+  projectedSeats: number;
+  seatChange: number;
+  population: number;
+  popPerSeat: number;
+  reservedSC: number;
+  reservedST: number;
+  general: number;
+  deviationPercent: number;
+  outputClassification: OutputClassification;
+  dataStatus: W012DataStatus;
+}
+
+export interface DelimitationProjectionsDTO {
+  censusYear: number;
+  model: string;
+  methodology: string;
+  disclaimer: string;
+  summary: {
+    statesAnalyzed: number;
+    totalCurrentSeats: number;
+    totalProjectedSeats: number;
+    totalGained: number;
+    totalLost: number;
+    biggestGainer?: string;
+    biggestLoser?: string;
+  };
+  projections: DynamicSeatProjection[];
+  provenance: MathematicalProvenance;
+}
+
+export interface SingleStateProjectionDTO {
+  projection: DynamicSeatProjection;
+  provenance: MathematicalProvenance;
+}
+
+export interface TimelineEventItem {
+  id: string;
+  date: string;
+  title: string;
+  significance: 'critical' | 'high' | 'medium' | 'informational';
+  verified: boolean;
+  instrument?: string;
+  authority?: string;
+  description?: string;
+}
+
+export interface DelimitationTimelineDTO {
+  status: string;
+  totalEvents: number;
+  verifiedEvents: number;
+  latestEvent: {
+    title: string;
+    date: string;
+    type: string;
+    verified: boolean;
+    source: string;
+  };
+  events: TimelineEventItem[];
+  provenance: MathematicalProvenance;
+}
+
+export interface DelimitationStatusDTO {
+  nationalStatus: string;
+  statusLabel: string;
+  description: string;
+  constitutionalFramework: string;
+  nextMilestone: string;
+  censusTracking: {
+    constitutionalTrigger: string;
+    currentExpectedCensusOperation: string;
+    paninFutureAnticipatedRegime: string;
+    finalPopulationAvailable: boolean;
+  };
+  lastUpdated: string;
+  provenance: MathematicalProvenance;
+}
+
+export interface GainerLoserItem {
+  stateCode: string;
+  stateName: string;
+  change: string;
+  current: number;
+  projected: number;
+}
+
+export interface GainersLosersDTO {
+  gainers: GainerLoserItem[];
+  losers: GainerLoserItem[];
+  provenance: MathematicalProvenance;
+}
+
+export interface CitizenImpactDTO {
+  available: boolean;
+  status: string;
+  pinCode: string;
+  location: {
+    stateCode: string;
+    stateName: string;
+    district: string;
+    region: string;
+  };
+  currentConstituency: {
+    acNo: number;
+    name: string;
+    sittingMLA: string;
+    party: string;
+    reservation: 'GEN' | 'SC' | 'ST';
+  };
+  proposedConstituency: {
+    acNo: number;
+    name: string;
+    reservation: 'GEN' | 'SC' | 'ST';
+  };
+  impactAnalysis: {
+    changeType: string;
+    reservationChange: string;
+    impactSeverity: string;
+    votersRetainedPercent: number;
+    explanation: string;
+    spatialCaveat: string;
+  };
+  provenance: MathematicalProvenance;
+}
+
+export interface DistrictSimulationAllocation {
+  districtName: string;
+  population: number;
+  projectedSeats: number;
+  populationPerSeat: number;
+  deviationPercent: number;
+  scReserved: number;
+  stReserved: number;
+  general: number;
+}
+
+export interface BoundarySimulationDTO {
+  stateCode: string;
+  stateName: string;
+  mode: string;
+  targetSeats: number;
+  currentSeats: number;
+  seatChange: number;
+  population: number;
+  populationPerSeat: number;
+  reservation: {
+    scReserved: number;
+    stReserved: number;
+    general: number;
+  };
+  qualityScore: number;
+  districtBreakdown: DistrictSimulationAllocation[];
+  methodology: {
+    formula: string;
+    idealPopPerSeat: number;
+    maxDeviationAllowedPercent: number;
+    withinDeviationCount: number;
+  };
+  scenarioEnclosure: ScenarioEnclosure<unknown>;
+}
+
+export interface ReservationStateProfile {
+  stateCode: string;
+  stateName: string;
+  currentSeats: number;
+  projectedSeats: number;
+  scReserved: number;
+  stReserved: number;
+  general: number;
+  scPercent: number;
+  stPercent: number;
+}
+
+export interface NationalReservationDTO {
+  summary: {
+    totalSCReserved: number;
+    totalSTReserved: number;
+    totalGeneral: number;
+    totalSeats: number;
+  };
+  topSCStates: ReservationStateProfile[];
+  topSTStates: ReservationStateProfile[];
+  profiles: ReservationStateProfile[];
+  provenance: MathematicalProvenance;
+}
+
+export interface StateReservationDetailDTO {
+  stateCode: string;
+  stateName: string;
+  current: {
+    total: number;
+    scReserved: number;
+    stReserved: number;
+    general: number;
+  };
+  projected: {
+    total: number;
+    scReserved: number;
+    stReserved: number;
+    general: number;
+  };
+  change: {
+    scChange: number;
+    stChange: number;
+  };
+  provenance: MathematicalProvenance;
+}
+
+export interface StateComparisonDTO {
+  comparison: DynamicSeatProjection[];
+  statesCompared: number;
+  provenance: MathematicalProvenance;
+}
+
+export interface MlaProfileRiskItem {
+  mlaName: string;
+  party: string;
+  currentAcNo: number;
+  currentAcName: string;
+  stateCode: string;
+  seatChangeType: string;
+  riskScore: number;
+  riskRating: 'critical_risk' | 'high_risk' | 'moderate_risk' | 'safe';
+  currentMarginVotes: number;
+  currentMarginPercent: number;
+}
+
+export interface MlaImpactDTO {
+  stateCode: string;
+  totalMLAsAnalyzed: number;
+  highRiskCount: number;
+  safeCount: number;
+  mlaProfiles: MlaProfileRiskItem[];
+  provenance: MathematicalProvenance;
+}
+
+export interface PartySeatProjectionItem {
+  party: string;
+  currentSeats: number;
+  projectedSeats: number;
+  seatChange: number;
+}
+
+export interface PartyProjectionsDTO {
+  stateCode: string;
+  stateName: string;
+  currentAssemblySeats: number;
+  projectedAssemblySeats: number;
+  parties: PartySeatProjectionItem[];
+  provenance: MathematicalProvenance;
+}
+
+export interface DelimitationMethodologyDTO {
+  title: string;
+  computationalSafetyPolicy: {
+    maxSafeRequestedSeats: number;
+    statement: string;
+  };
+  constitutionalArticles: Array<{
+    article: string;
+    title: string;
+    description: string;
+  }>;
+  formulas: {
+    idealPopulation: string;
+    deviation: string;
+    hareNiemeyer: string;
+    article332Algorithm: string;
+  };
+  provenance: MathematicalProvenance;
+}
+
+export interface MonitorWebhookEntry {
+  id: string;
+  title: string;
+  date: string;
+  relevanceScore?: number;
+}
+
+export interface MonitorWebhookPayloadDTO {
+  type: string;
+  entries: MonitorWebhookEntry[];
+  timestamp?: string;
+}
+
+export interface MonitorWebhookResponseDTO {
+  received: true;
+  processed: number;
+  highRelevance: number;
+  timestamp: string;
+}
+
+// ─── STANDARDIZED API ENVELOPE TYPES ───
+
+export type DelimitationProjectionsResponse = ApiSuccessEnvelope<DelimitationProjectionsDTO>;
+export type SingleStateProjectionResponse = ApiSuccessEnvelope<SingleStateProjectionDTO>;
+export type DelimitationTimelineResponse = ApiSuccessEnvelope<DelimitationTimelineDTO>;
+export type DelimitationStatusResponse = ApiSuccessEnvelope<DelimitationStatusDTO>;
+export type GainersLosersResponse = ApiSuccessEnvelope<GainersLosersDTO>;
+export type CitizenImpactResponse = ApiSuccessEnvelope<CitizenImpactDTO>;
+export type BoundarySimulationResponse = ApiSuccessEnvelope<BoundarySimulationDTO>;
+export type NationalReservationResponse = ApiSuccessEnvelope<NationalReservationDTO>;
+export type StateReservationDetailResponse = ApiSuccessEnvelope<StateReservationDetailDTO>;
+export type StateComparisonResponse = ApiSuccessEnvelope<StateComparisonDTO>;
+export type MlaImpactResponse = ApiSuccessEnvelope<MlaImpactDTO>;
+export type PartyProjectionsResponse = ApiSuccessEnvelope<PartyProjectionsDTO>;
+export type DelimitationMethodologyResponse = ApiSuccessEnvelope<DelimitationMethodologyDTO>;
+export type MonitorWebhookResponse = ApiSuccessEnvelope<MonitorWebhookResponseDTO>;

@@ -1,9 +1,8 @@
 {
   "gate": "W020-G4",
   "title": "Migration 055 Staging Preflight & Schema Integrity Report",
-  "timestamp": "2026-09-30T03:30:42.012Z",
-  "baselineCommit": "9b7cad4aea34d7e2b4411e44d88549340c70df8a",
-  "finalCommit": "c0da5513fafb636af61f830bff2fa56cff8a5ec6",
+  "timestamp": "2026-09-30T07:57:07.203Z",
+  "gitCommit": "505ae56ba8839a44b1171b1edcb45aec33c65c04",
   "stagingTarget": "panIN-staging (fkpigozcqnmcvofuksar)",
   "productionStatus": "AIR-GAPPED & UNTOUCHED (ehfafcnimmjusyvplbah)",
   "geometryDigest": "f839fa02980318a8f35f932ebe72fa1d3ad6325dc86a624bf159d932fe5f613b",

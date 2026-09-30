@@ -1,148 +1,46 @@
 /**
- * Delimitation API Routes
+ * apps/api/src/routes/delimitation.ts
+ *
+ * Milestone W020-G5 — Delimitation API Routes
+ * Specification: PLAN-W020-G5-REV-1.2.md
  *
  * 100% functional, mathematically rigorous, zero-stub endpoints for:
- * - Seat projections (dynamically calculated from Census 2011 data across all states)
- * - Citizen personal delimitation impact lookup by PIN code
- * - Boundary simulation with multiple algorithmic modes and district Hare-Niemeyer seat distributions
- * - SC/ST Reservation analysis under constitutional Articles 330 & 332
- * - Sitting MLA risk assessment
- * - Party seat projections under redrawn boundaries
- * - Delimitation methodology, formulas, and constitutional basis
- * - State comparative analysis
- * - Monitor webhook
+ * 1.  GET  /api/v1/delimitation/projections — Seat projections across states
+ * 2.  GET  /api/v1/delimitation/projections/:stateCode — Single state seat projection
+ * 3.  GET  /api/v1/delimitation/timeline — Statutory & constitutional timeline
+ * 4.  GET  /api/v1/delimitation/status — Current constitutional status
+ * 5.  GET  /api/v1/delimitation/gainers-losers — Summary of gainer and loser states
+ * 6.  POST /api/v1/delimitation/monitor-webhook — Fail-closed authenticated cron alert receiver
+ * 7.  GET  /api/v1/delimitation/impact/:pinCode — Citizen personal delimitation impact lookup
+ * 8.  GET  /api/v1/delimitation/simulate/:stateCode — Boundary simulation with Hamilton district distribution
+ * 9.  GET  /api/v1/delimitation/reservation — National SC/ST reservation analysis
+ * 10. GET  /api/v1/delimitation/reservation/:stateCode — State SC/ST reservation detail
+ * 11. GET  /api/v1/delimitation/compare — Comparative seat and reservation analysis across states
+ * 12. GET  /api/v1/delimitation/mla-impact/:stateCode — Sitting MLA risk and boundary shift assessment
+ * 13. GET  /api/v1/delimitation/party-projections/:stateCode — Projected party seat share under redrawn boundaries
+ * 14. GET  /api/v1/delimitation/methodology — Delimitation methodology, formulas, and constitutional basis
+ *
+ * Key Hardening Standards:
+ * - All responses wrapped in canonical ECC-001 ApiSuccessEnvelope<T> or ApiErrorEnvelope
+ * - Ingress validation via Fastify native JSON schema (Ajv)
+ * - Ingress computational safety limit: MAX_SAFE_REQUESTED_SEATS = 10000 (no constitutional meaning)
+ * - Fail-closed authentication on monitor-webhook via KSHETRA_MONITOR_SECRET / MONITOR_WEBHOOK_SECRET
+ * - Explicit UNSUPPORTED_GEOGRAPHY structured 404 responses for unregistered jurisdictions
  */
 
-import type { FastifyInstance } from 'fastify';
+import type { FastifyInstance, FastifyReply, FastifyRequest } from 'fastify';
+import type {
+  ApiSuccessEnvelope,
+  MonitorWebhookPayloadDTO,
+} from '@kshetra/shared';
 import {
-  CENSUS_2011_STATES,
-  INDIA_TOTAL_POPULATION_2011,
-  IDEAL_POP_PER_AC_SEAT_2011,
-  type CensusStateData,
-} from '../../../../data/census/india-district-population-2011';
-import { getConstituencies as getStateConstituencies } from '../services/stateData';
+  delimitationService,
+  MAX_SAFE_REQUESTED_SEATS,
+  MIN_SAFE_REQUESTED_SEATS,
+} from '../services/delimitationService';
 import { sendApiError } from '../lib/replyHelper';
 
-interface DynamicSeatProjection {
-  stateCode: string;
-  stateName: string;
-  currentSeats: number;
-  projectedSeats: number;
-  seatChange: number;
-  population: number;
-  popPerSeat: number;
-  reservedSC: number;
-  reservedST: number;
-  general: number;
-  deviationPercent: number;
-}
-
-/**
- * Compute real seat projection dynamically from census population data.
- */
-function calculateStateProjection(state: CensusStateData, idealDivisor = IDEAL_POP_PER_AC_SEAT_2011, isExpansionSafe = false): DynamicSeatProjection {
-  const currentSeats = state.currentAssemblySeats;
-  let projectedSeats = Math.round(state.totalPopulation / idealDivisor);
-
-  // Apply constitutional limits (Article 170: 60 - 500 seats)
-  const minSeats = state.totalPopulation > 10_000_000 ? 60 : 30;
-  if (projectedSeats < minSeats) projectedSeats = minSeats;
-  if (projectedSeats > 500) projectedSeats = 500;
-
-  if (isExpansionSafe && projectedSeats < currentSeats) {
-    projectedSeats = currentSeats;
-  }
-
-  const seatChange = projectedSeats - currentSeats;
-  const popPerSeat = projectedSeats > 0 ? Math.round(state.totalPopulation / projectedSeats) : 0;
-  const deviation = idealDivisor > 0 ? Math.round(((popPerSeat - idealDivisor) / idealDivisor) * 1000) / 10 : 0;
-
-  // Article 332 proportional reservation
-  const reservedSC = Math.round(projectedSeats * (state.scPopulation / state.totalPopulation));
-  const reservedST = Math.round(projectedSeats * (state.stPopulation / state.totalPopulation));
-  const general = Math.max(0, projectedSeats - reservedSC - reservedST);
-
-  return {
-    stateCode: state.stateCode,
-    stateName: state.stateName,
-    currentSeats,
-    projectedSeats,
-    seatChange,
-    population: state.totalPopulation,
-    popPerSeat,
-    reservedSC,
-    reservedST,
-    general,
-    deviationPercent: deviation,
-  };
-}
-
-function getAllProjections(isExpansionSafe = false): DynamicSeatProjection[] {
-  return CENSUS_2011_STATES.map((s) => calculateStateProjection(s, IDEAL_POP_PER_AC_SEAT_2011, isExpansionSafe))
-    .sort((a, b) => b.seatChange - a.seatChange);
-}
-
-// ─── PIN CODE DIRECTORY (Postal Index Number mapping) ───
-const PIN_PREFIX_MAPPING: Record<string, { stateCode: string; stateName: string; district: string; region: string }> = {
-  // Telangana
-  '500': { stateCode: 'TS', stateName: 'Telangana', district: 'Hyderabad', region: 'Hyderabad Urban' },
-  '501': { stateCode: 'TS', stateName: 'Telangana', district: 'Rangareddy', region: 'Rangareddy Outer' },
-  '502': { stateCode: 'TS', stateName: 'Telangana', district: 'Sangareddy', region: 'Medak / Sangareddy' },
-  '503': { stateCode: 'TS', stateName: 'Telangana', district: 'Nizamabad', region: 'Nizamabad' },
-  '504': { stateCode: 'TS', stateName: 'Telangana', district: 'Adilabad', region: 'North Telangana' },
-  '505': { stateCode: 'TS', stateName: 'Telangana', district: 'Karimnagar', region: 'Karimnagar' },
-  '506': { stateCode: 'TS', stateName: 'Telangana', district: 'Warangal', region: 'Warangal' },
-  '507': { stateCode: 'TS', stateName: 'Telangana', district: 'Khammam', region: 'Khammam' },
-  '508': { stateCode: 'TS', stateName: 'Telangana', district: 'Nalgonda', region: 'Nalgonda' },
-  '509': { stateCode: 'TS', stateName: 'Telangana', district: 'Mahbubnagar', region: 'Mahbubnagar' },
-
-  // Andhra Pradesh
-  '515': { stateCode: 'AP', stateName: 'Andhra Pradesh', district: 'Anantapur', region: 'Rayalaseema West' },
-  '516': { stateCode: 'AP', stateName: 'Andhra Pradesh', district: 'YSR Kadapa', region: 'Rayalaseema Central' },
-  '517': { stateCode: 'AP', stateName: 'Andhra Pradesh', district: 'Chittoor', region: 'Rayalaseema South' },
-  '518': { stateCode: 'AP', stateName: 'Andhra Pradesh', district: 'Kurnool', region: 'Rayalaseema North' },
-  '520': { stateCode: 'AP', stateName: 'Andhra Pradesh', district: 'Krishna', region: 'Vijayawada Urban' },
-  '522': { stateCode: 'AP', stateName: 'Andhra Pradesh', district: 'Guntur', region: 'Guntur Central' },
-  '523': { stateCode: 'AP', stateName: 'Andhra Pradesh', district: 'Prakasam', region: 'Ongole' },
-  '524': { stateCode: 'AP', stateName: 'Andhra Pradesh', district: 'Nellore', region: 'South Coastal' },
-  '530': { stateCode: 'AP', stateName: 'Andhra Pradesh', district: 'Visakhapatnam', region: 'Visakhapatnam' },
-  '532': { stateCode: 'AP', stateName: 'Andhra Pradesh', district: 'Srikakulam', region: 'North Coastal' },
-  '533': { stateCode: 'AP', stateName: 'Andhra Pradesh', district: 'East Godavari', region: 'East Godavari' },
-  '534': { stateCode: 'AP', stateName: 'Andhra Pradesh', district: 'West Godavari', region: 'West Godavari' },
-  '535': { stateCode: 'AP', stateName: 'Andhra Pradesh', district: 'Vizianagaram', region: 'Vizianagaram' },
-
-  // Karnataka
-  '560': { stateCode: 'KA', stateName: 'Karnataka', district: 'Bengaluru Urban', region: 'Bangalore' },
-  '561': { stateCode: 'KA', stateName: 'Karnataka', district: 'Bengaluru Rural', region: 'Bangalore Rural' },
-  '570': { stateCode: 'KA', stateName: 'Karnataka', district: 'Mysuru', region: 'Mysuru' },
-  '575': { stateCode: 'KA', stateName: 'Karnataka', district: 'Dakshina Kannada', region: 'Mangalore' },
-  '580': { stateCode: 'KA', stateName: 'Karnataka', district: 'Dharwad', region: 'Hubli-Dharwad' },
-  '585': { stateCode: 'KA', stateName: 'Karnataka', district: 'Kalaburagi', region: 'Gulbarga' },
-  '590': { stateCode: 'KA', stateName: 'Karnataka', district: 'Belagavi', region: 'Belgaum' },
-
-  // Maharashtra
-  '400': { stateCode: 'MH', stateName: 'Maharashtra', district: 'Mumbai', region: 'Mumbai' },
-  '401': { stateCode: 'MH', stateName: 'Maharashtra', district: 'Thane', region: 'Thane' },
-  '411': { stateCode: 'MH', stateName: 'Maharashtra', district: 'Pune', region: 'Pune' },
-  '422': { stateCode: 'MH', stateName: 'Maharashtra', district: 'Nashik', region: 'Nashik' },
-  '431': { stateCode: 'MH', stateName: 'Maharashtra', district: 'Aurangabad', region: 'Aurangabad' },
-  '440': { stateCode: 'MH', stateName: 'Maharashtra', district: 'Nagpur', region: 'Nagpur' },
-
-  // Delhi & NCR
-  '110': { stateCode: 'DL', stateName: 'Delhi', district: 'New Delhi', region: 'NCT Delhi' },
-  '201': { stateCode: 'UP', stateName: 'Uttar Pradesh', district: 'Ghaziabad', region: 'NCR UP' },
-  '226': { stateCode: 'UP', stateName: 'Uttar Pradesh', district: 'Lucknow', region: 'Lucknow Capital' },
-  '221': { stateCode: 'UP', stateName: 'Uttar Pradesh', district: 'Varanasi', region: 'Varanasi' },
-  '800': { stateCode: 'BR', stateName: 'Bihar', district: 'Patna', region: 'Patna Metro' },
-  '600': { stateCode: 'TN', stateName: 'Tamil Nadu', district: 'Chennai', region: 'Chennai Metro' },
-  '695': { stateCode: 'KL', stateName: 'Kerala', district: 'Thiruvananthapuram', region: 'Thiruvananthapuram' },
-  '700': { stateCode: 'WB', stateName: 'West Bengal', district: 'Kolkata', region: 'Kolkata Metro' },
-  '302': { stateCode: 'RJ', stateName: 'Rajasthan', district: 'Jaipur', region: 'Jaipur' },
-  '380': { stateCode: 'GJ', stateName: 'Gujarat', district: 'Ahmedabad', region: 'Ahmedabad' },
-  '452': { stateCode: 'MP', stateName: 'Madhya Pradesh', district: 'Indore', region: 'Indore' },
-};
-
-// ─── AJV SCHEMAS FOR DELIMITATION ROUTES ───
+// ─── AJV SCHEMAS FOR DELIMITATION INGRESS VALIDATION ───
 
 const projectionsQuerySchema = {
   querystring: {
@@ -158,7 +56,7 @@ const stateCodeParamSchema = {
     type: 'object',
     required: ['stateCode'],
     properties: {
-      stateCode: { type: 'string', pattern: '^[A-Z]{2}$' },
+      stateCode: { type: 'string', pattern: '^[A-Za-z]{2}$' },
     },
   },
 };
@@ -178,14 +76,14 @@ const simulateQuerySchema = {
     type: 'object',
     required: ['stateCode'],
     properties: {
-      stateCode: { type: 'string', pattern: '^[A-Z]{2}$' },
+      stateCode: { type: 'string', pattern: '^[A-Za-z]{2}$' },
     },
   },
   querystring: {
     type: 'object',
     properties: {
       mode: { type: 'string', enum: ['equal_population', 'compactness', 'administrative_contiguity'] },
-      seats: { type: 'string', pattern: '^\\d{1,4}$' },
+      seats: { type: 'string', pattern: '^\\d{1,5}$' },
       maxDeviation: { type: 'string' },
     },
   },
@@ -225,152 +123,145 @@ const monitorWebhookSchema = {
   },
 };
 
+// ─── ENVELOPE HELPER ───
+
+function sendSuccess<T>(reply: FastifyReply, request: FastifyRequest, data: T) {
+  const envelope: ApiSuccessEnvelope<T> = {
+    success: true,
+    data,
+    requestId: request.id,
+    timestamp: new Date().toISOString(),
+  };
+  return reply.status(200).send(envelope);
+}
+
+// ─── DELIMITATION ROUTE REGISTRATION ───
+
 export async function delimitationRoutes(app: FastifyInstance) {
 
-  /** 1. GET /api/v1/delimitation/projections — All state seat projections dynamically calculated */
-  app.get('/api/v1/delimitation/projections', { schema: projectionsQuerySchema }, async (request) => {
-    const query = request.query as { model?: string };
-    const isExpansionSafe = query.model === 'expansion_safe';
-    const projections = getAllProjections(isExpansionSafe);
-
-    const totalGained = projections.filter((s) => s.seatChange > 0).reduce((s, p) => s + p.seatChange, 0);
-    const totalLost = projections.filter((s) => s.seatChange < 0).reduce((s, p) => s + p.seatChange, 0);
-
-    return {
-      censusYear: 2011,
-      model: isExpansionSafe ? 'expansion_safe' : 'constitutional_proportional',
-      methodology: 'Article 170 & 81 equal-population principle with Article 332 proportional SC/ST quotas',
-      disclaimer: 'Projections derived from official Census of India district-level population registers.',
-      summary: {
-        statesAnalyzed: projections.length,
-        totalCurrentSeats: projections.reduce((s, p) => s + p.currentSeats, 0),
-        totalProjectedSeats: projections.reduce((s, p) => s + p.projectedSeats, 0),
-        totalGained,
-        totalLost,
-        biggestGainer: projections[0]?.stateCode,
-        biggestLoser: projections[projections.length - 1]?.stateCode,
-      },
-      projections,
-    };
-  });
-
-  /** 2. GET /api/v1/delimitation/projections/:stateCode — Single state projection */
-  app.get<{ Params: { stateCode: string } }>('/api/v1/delimitation/projections/:stateCode', { schema: stateCodeParamSchema }, async (request, reply) => {
-    const { stateCode } = request.params;
-    const code = stateCode.toUpperCase();
-    const state = CENSUS_2011_STATES.find((s) => s.stateCode === code);
-
-    if (!state) {
-      return sendApiError(reply, request, 404, 'Not Found', `No projection data for state: ${stateCode}`, {
-        code: 'NOT_FOUND',
+  /**
+   * 1. GET /api/v1/delimitation/projections
+   * All state seat projections dynamically calculated from verified Census 2011 figures.
+   */
+  app.get('/api/v1/delimitation/projections', { schema: projectionsQuerySchema }, async (request, reply) => {
+    try {
+      const query = request.query as { model?: string };
+      const result = delimitationService.getProjections(query.model);
+      return sendSuccess(reply, request, result);
+    } catch (err: any) {
+      return sendApiError(reply, request, 500, 'Internal Server Error', err.message || 'Error generating seat projections', {
+        code: 'PROJECTION_CALCULATION_ERROR',
       });
     }
-
-    const projection = calculateStateProjection(state, IDEAL_POP_PER_AC_SEAT_2011);
-    return { projection };
   });
 
-  /** 3. GET /api/v1/delimitation/timeline — Timeline events */
-  app.get('/api/v1/delimitation/timeline', async () => {
-    return {
-      status: 'pre_census',
-      totalEvents: 15,
-      verifiedEvents: 9,
-      latestEvent: {
-        title: 'Census enumeration scheduled',
-        date: '2025-10-01',
-        type: 'census_notification',
-        verified: true,
-        source: 'Census Commissioner of India',
-      },
-      events: [
-        { id: '1', date: '2002-06-12', title: 'Delimitation Act 2002 enacted', significance: 'critical', verified: true },
-        { id: '2', date: '2008-02-19', title: 'Final Delimitation Orders published (Census 2001)', significance: 'critical', verified: true },
-        { id: '3', date: '2020-03-25', title: 'Census 2021 postponed due to COVID-19', significance: 'high', verified: true },
-        { id: '4', date: '2025-02-10', title: 'Parliament debate on Southern states representation and delimitation freeze', significance: 'critical', verified: true },
-        { id: '5', date: '2025-10-01', title: 'Preparations for digital Census enumeration commence', significance: 'high', verified: true },
-      ],
-    };
+  /**
+   * 2. GET /api/v1/delimitation/projections/:stateCode
+   * Single state seat projection for a governed jurisdiction.
+   */
+  app.get<{ Params: { stateCode: string } }>('/api/v1/delimitation/projections/:stateCode', { schema: stateCodeParamSchema }, async (request, reply) => {
+    try {
+      const { stateCode } = request.params;
+      const result = delimitationService.getStateProjection(stateCode);
+
+      if (!result) {
+        return sendApiError(reply, request, 404, 'Not Found', `Jurisdiction is not registered in governed delimitation baselines: ${stateCode}`, {
+          code: 'UNSUPPORTED_GEOGRAPHY',
+        });
+      }
+
+      return sendSuccess(reply, request, result);
+    } catch (err: any) {
+      return sendApiError(reply, request, 500, 'Internal Server Error', err.message || 'Error retrieving state projection', {
+        code: 'STATE_PROJECTION_ERROR',
+      });
+    }
   });
 
-  /** 4. GET /api/v1/delimitation/status — Current national delimitation status */
-  app.get('/api/v1/delimitation/status', async () => {
-    return {
-      nationalStatus: 'pre_census',
-      statusLabel: 'Pre-Census',
-      description: 'Census has not yet been finalized. The Delimitation Commission will be constituted under Article 82 following publication of the Census.',
-      constitutionalFramework: 'Articles 81, 82, 170, 330, and 332 of the Constitution of India',
-      nextMilestone: 'Census enumeration & population data release',
-      estimatedDate: '2025-2026',
-      lastUpdated: new Date().toISOString(),
-    };
+  /**
+   * 3. GET /api/v1/delimitation/timeline
+   * Governed statutory timeline events from 2002 to Post-2026 window.
+   */
+  app.get('/api/v1/delimitation/timeline', async (request, reply) => {
+    try {
+      const result = delimitationService.getTimeline();
+      return sendSuccess(reply, request, result);
+    } catch (err: any) {
+      return sendApiError(reply, request, 500, 'Internal Server Error', err.message || 'Error retrieving timeline', {
+        code: 'TIMELINE_RETRIEVAL_ERROR',
+      });
+    }
   });
 
-  /** 5. GET /api/v1/delimitation/gainers-losers — Quick gainers/losers summary */
-  app.get('/api/v1/delimitation/gainers-losers', async () => {
-    const projections = getAllProjections();
-    const gainers = projections.filter((p) => p.seatChange > 0).sort((a, b) => b.seatChange - a.seatChange);
-    const losers = projections.filter((p) => p.seatChange < 0).sort((a, b) => a.seatChange - b.seatChange);
-
-    return {
-      gainers: gainers.map((g) => ({
-        stateCode: g.stateCode,
-        stateName: g.stateName,
-        change: `+${g.seatChange}`,
-        current: g.currentSeats,
-        projected: g.projectedSeats,
-      })),
-      losers: losers.map((l) => ({
-        stateCode: l.stateCode,
-        stateName: l.stateName,
-        change: `${l.seatChange}`,
-        current: l.currentSeats,
-        projected: l.projectedSeats,
-      })),
-    };
+  /**
+   * 4. GET /api/v1/delimitation/status
+   * Current national and constitutional delimitation status.
+   */
+  app.get('/api/v1/delimitation/status', async (request, reply) => {
+    try {
+      const result = delimitationService.getStatus();
+      return sendSuccess(reply, request, result);
+    } catch (err: any) {
+      return sendApiError(reply, request, 500, 'Internal Server Error', err.message || 'Error retrieving status', {
+        code: 'STATUS_RETRIEVAL_ERROR',
+      });
+    }
   });
 
-  /** 6. POST /api/v1/delimitation/monitor-webhook — Receive alerts from cron monitors */
+  /**
+   * 5. GET /api/v1/delimitation/gainers-losers
+   * State seat gainers and losers summary under equal-population principle.
+   */
+  app.get('/api/v1/delimitation/gainers-losers', async (request, reply) => {
+    try {
+      const result = delimitationService.getGainersLosers();
+      return sendSuccess(reply, request, result);
+    } catch (err: any) {
+      return sendApiError(reply, request, 500, 'Internal Server Error', err.message || 'Error retrieving gainers and losers', {
+        code: 'GAINERS_LOSERS_ERROR',
+      });
+    }
+  });
+
+  /**
+   * 6. POST /api/v1/delimitation/monitor-webhook
+   * Receive alerts from cron monitors with fail-closed Bearer authentication.
+   */
   app.post('/api/v1/delimitation/monitor-webhook', { schema: monitorWebhookSchema }, async (request, reply) => {
-    const auth = request.headers.authorization;
-    const expectedSecret = process.env.KSHETRA_MONITOR_SECRET;
+    const authHeader = request.headers.authorization;
+    const expectedSecret = process.env.KSHETRA_MONITOR_SECRET || process.env.MONITOR_WEBHOOK_SECRET;
 
-    if (expectedSecret && auth !== `Bearer ${expectedSecret}`) {
+    // Fail-closed authentication guard: secret must be configured AND token must match
+    if (!expectedSecret || authHeader !== `Bearer ${expectedSecret}`) {
       return sendApiError(reply, request, 401, 'Unauthorized', 'Unauthorized monitor webhook access', {
         code: 'UNAUTHORIZED',
       });
     }
 
-    const body = request.body as {
-      type: string;
-      entries: Array<{ id: string; title: string; date: string; relevanceScore?: number }>;
-      timestamp?: string;
-    };
+    try {
+      const body = request.body as MonitorWebhookPayloadDTO;
+      const result = delimitationService.processMonitorWebhook(body, authHeader);
 
-    if (!body.type || !body.entries) {
-      return sendApiError(reply, request, 400, 'Bad Request', 'type and entries required', {
-        code: 'FST_ERR_VALIDATION',
+      app.log.info({
+        msg: 'Delimitation monitor webhook processed',
+        type: body.type,
+        entryCount: body.entries.length,
+        highRelevance: result.highRelevance,
+      });
+
+      return sendSuccess(reply, request, result);
+    } catch (err: any) {
+      const status = err.statusCode || 400;
+      const errorTitle = status === 401 ? 'Unauthorized' : 'Bad Request';
+      return sendApiError(reply, request, status, errorTitle, err.message || 'Malformed webhook payload', {
+        code: err.code || 'WEBHOOK_PROCESSING_ERROR',
       });
     }
-
-    app.log.info({
-      msg: 'Delimitation monitor webhook received',
-      type: body.type,
-      entryCount: body.entries.length,
-      highRelevance: body.entries.filter((e) => (e.relevanceScore ?? 0) >= 50).length,
-    });
-
-    return {
-      received: true,
-      processed: body.entries.length,
-      highRelevance: body.entries.filter((e) => (e.relevanceScore ?? 0) >= 50).length,
-      timestamp: new Date().toISOString(),
-    };
   });
 
   /**
-   * 7. GET /api/v1/delimitation/impact/:pinCode — 100% Functional Citizen impact lookup
-   * No stubs, no dummies: resolves PIN code to state/district/constituency and calculates transition impact.
+   * 7. GET /api/v1/delimitation/impact/:pinCode
+   * Citizen personal delimitation impact lookup by PIN code.
    */
   app.get<{ Params: { pinCode: string } }>('/api/v1/delimitation/impact/:pinCode', { schema: pinCodeParamSchema }, async (request, reply) => {
     const { pinCode } = request.params;
@@ -381,238 +272,113 @@ export async function delimitationRoutes(app: FastifyInstance) {
       });
     }
 
-    const prefix3 = pinCode.substring(0, 3);
-    const matched = PIN_PREFIX_MAPPING[prefix3] ?? {
-      stateCode: 'TS',
-      stateName: 'Telangana',
-      district: 'Hyderabad',
-      region: 'Central Region',
-    };
-
-    const stateConstituencies = getStateConstituencies(matched.stateCode);
-    const pinSuffix = parseInt(pinCode.slice(-2), 10) || 0;
-    const selectedAC = stateConstituencies.length > 0
-      ? stateConstituencies[pinSuffix % stateConstituencies.length]
-      : { id: `${matched.stateCode}-AC-1`, name: `${matched.district} Central`, acNo: 1, type: 'GEN', winnerName: 'Sitting Legislator', winnerParty: 'INC' };
-
-    const acNo = (selectedAC as any).acNo ?? (pinSuffix % 50 + 1);
-    const acName = selectedAC.name;
-    const currentReservation = ((selectedAC as any).type ?? 'GEN') as 'GEN' | 'SC' | 'ST';
-
-    // Model boundary shift
-    const isUrban = ['hyderabad', 'bengaluru', 'mumbai', 'pune', 'chennai', 'delhi']
-      .some((city) => matched.district.toLowerCase().includes(city));
-
-    let changeType = 'minor_adjust';
-    let proposedAcName = acName;
-    let proposedReservation: 'GEN' | 'SC' | 'ST' = currentReservation;
-    let severity = 'low';
-
-    if (isUrban && (acNo % 2 === 0)) {
-      changeType = 'split';
-      proposedAcName = `${acName} North`;
-      severity = 'high';
-    } else if (acNo % 5 === 0) {
-      changeType = 'major_redraw';
-      proposedAcName = `${acName} Realigned`;
-      severity = 'medium';
+    try {
+      const result = delimitationService.getCitizenImpact(pinCode);
+      return sendSuccess(reply, request, result);
+    } catch (err: any) {
+      return sendApiError(reply, request, 500, 'Internal Server Error', err.message || 'Error resolving citizen impact', {
+        code: 'CITIZEN_IMPACT_ERROR',
+      });
     }
-
-    // Reservation change simulation
-    if (currentReservation === 'GEN' && acNo % 11 === 0) {
-      proposedReservation = 'SC';
-      severity = 'critical';
-    }
-
-    return {
-      available: true,
-      status: 'resolved',
-      pinCode,
-      location: {
-        stateCode: matched.stateCode,
-        stateName: matched.stateName,
-        district: matched.district,
-        region: matched.region,
-      },
-      currentConstituency: {
-        acNo,
-        name: acName,
-        sittingMLA: (selectedAC as any).winnerName ?? (selectedAC as any).mlaName ?? 'Incumbent Legislator',
-        party: (selectedAC as any).winnerParty ?? (selectedAC as any).currentParty ?? 'INC',
-        reservation: currentReservation,
-      },
-      proposedConstituency: {
-        acNo: Math.round(acNo * 1.15),
-        name: proposedAcName,
-        reservation: proposedReservation,
-      },
-      impactAnalysis: {
-        changeType,
-        reservationChange: currentReservation === proposedReservation ? 'unchanged' : `${currentReservation.toLowerCase()}_to_${proposedReservation.toLowerCase()}`,
-        impactSeverity: severity,
-        votersRetainedPercent: changeType === 'split' ? 55 : changeType === 'major_redraw' ? 70 : 92,
-        explanation: `Constituency boundaries for ${acName} are reconfigured under Article 170 to balance demographic shifts from Census data. You are allocated to ${proposedAcName}.`,
-      },
-    };
   });
 
   /**
-   * 8. GET /api/v1/delimitation/simulate/:stateCode — 100% Functional boundary simulation
-   * Calculates Hare-Niemeyer seat allocation and district breakdown across multiple simulation modes.
+   * 8. GET /api/v1/delimitation/simulate/:stateCode
+   * Boundary simulation with Hare-Niemeyer seat allocation across districts.
    */
-  app.get<{ Params: { stateCode: string }; Querystring: { mode?: string; seats?: string; maxDeviation?: string } }>('/api/v1/delimitation/simulate/:stateCode', { schema: simulateQuerySchema }, async (request, reply) => {
+  app.get<{
+    Params: { stateCode: string };
+    Querystring: { mode?: string; seats?: string; maxDeviation?: string };
+  }>('/api/v1/delimitation/simulate/:stateCode', { schema: simulateQuerySchema }, async (request, reply) => {
     const { stateCode } = request.params;
     const query = request.query;
-    const code = stateCode.toUpperCase();
-    const state = CENSUS_2011_STATES.find((s) => s.stateCode === code);
 
-    if (!state) {
-      return sendApiError(reply, request, 404, 'Not Found', `No simulation data for state: ${stateCode}`, {
-        code: 'NOT_FOUND',
-      });
+    let targetSeats: number | undefined;
+    if (query.seats !== undefined) {
+      const parsed = parseInt(query.seats, 10);
+      if (isNaN(parsed) || parsed < MIN_SAFE_REQUESTED_SEATS || parsed > MAX_SAFE_REQUESTED_SEATS) {
+        return sendApiError(
+          reply,
+          request,
+          400,
+          'Bad Request',
+          `Requested seats must be an integer between ${MIN_SAFE_REQUESTED_SEATS} and ${MAX_SAFE_REQUESTED_SEATS}. Note: MAX_SAFE_REQUESTED_SEATS is solely an ingress computational resource protection, not a constitutional seat limit.`,
+          { code: 'VALIDATION_ERROR' }
+        );
+      }
+      targetSeats = parsed;
     }
 
-    const defaultProj = calculateStateProjection(state);
-    const targetSeats = query.seats ? Math.max(30, Math.min(500, parseInt(query.seats, 10))) : defaultProj.projectedSeats;
-    const mode = query.mode ?? 'equal_population';
-    const idealPopPerSeat = Math.round(state.totalPopulation / targetSeats);
+    let maxDev: number | undefined;
+    if (query.maxDeviation !== undefined) {
+      const parsedDev = parseFloat(query.maxDeviation);
+      if (!isNaN(parsedDev)) {
+        maxDev = parsedDev;
+      }
+    }
 
-    // Hare-Niemeyer (Largest Remainder) distribution across districts
-    const rawDistricts = state.districts.map((d) => {
-      const quota = idealPopPerSeat > 0 ? d.totalPopulation / idealPopPerSeat : 1;
-      return {
-        districtName: d.districtName,
-        population: d.totalPopulation,
-        quota,
-        baseSeats: Math.max(1, Math.floor(quota)),
-        remainder: quota - Math.floor(quota),
-        scPop: d.scPopulation,
-        stPop: d.stPopulation,
-      };
-    });
+    try {
+      const result = delimitationService.simulateBoundaries(stateCode, {
+        mode: query.mode,
+        seats: query.seats,
+        maxDeviation: query.maxDeviation,
+      });
 
-    const totalBase = rawDistricts.reduce((s, d) => s + d.baseSeats, 0);
-    let extraSeats = targetSeats - totalBase;
-    const sortedByRem = [...rawDistricts].sort((a, b) => b.remainder - a.remainder);
-
-    const districtBreakdown = rawDistricts.map((d) => {
-      let allocatedSeats = d.baseSeats;
-      const isRecipient = sortedByRem.slice(0, extraSeats).some((rem) => rem.districtName === d.districtName);
-      if (isRecipient) allocatedSeats += 1;
-
-      const popPerSeat = allocatedSeats > 0 ? Math.round(d.population / allocatedSeats) : 0;
-      const deviation = idealPopPerSeat > 0 ? Math.round(((popPerSeat - idealPopPerSeat) / idealPopPerSeat) * 1000) / 10 : 0;
-      const scSeats = Math.round(allocatedSeats * (d.scPop / d.population));
-      const stSeats = Math.round(allocatedSeats * (d.stPop / d.population));
-
-      return {
-        districtName: d.districtName,
-        population: d.population,
-        projectedSeats: allocatedSeats,
-        populationPerSeat: popPerSeat,
-        deviationPercent: deviation,
-        scReserved: scSeats,
-        stReserved: stSeats,
-        general: Math.max(0, allocatedSeats - scSeats - stSeats),
-      };
-    });
-
-    // Overall reservation totals
-    const scQuota = Math.round(targetSeats * (state.scPopulation / state.totalPopulation));
-    const stQuota = Math.round(targetSeats * (state.stPopulation / state.totalPopulation));
-
-    return {
-      stateCode: state.stateCode,
-      stateName: state.stateName,
-      mode,
-      targetSeats,
-      currentSeats: state.currentAssemblySeats,
-      seatChange: targetSeats - state.currentAssemblySeats,
-      population: state.totalPopulation,
-      populationPerSeat: idealPopPerSeat,
-      reservation: {
-        scReserved: scQuota,
-        stReserved: stQuota,
-        general: targetSeats - scQuota - stQuota,
-      },
-      qualityScore: 94,
-      districtBreakdown,
-      methodology: {
-        formula: 'Hare-Niemeyer Largest Remainder method with Article 332 SC/ST reservation',
-        idealPopPerSeat,
-        maxDeviationAllowedPercent: 10,
-        withinDeviationCount: districtBreakdown.filter((d) => Math.abs(d.deviationPercent) <= 10).length,
-      },
-    };
+      return sendSuccess(reply, request, result);
+    } catch (err: any) {
+      if (err.code === 'UNSUPPORTED_GEOGRAPHY' || err.statusCode === 404) {
+        return sendApiError(reply, request, 404, 'Not Found', err.message, {
+          code: 'UNSUPPORTED_GEOGRAPHY',
+        });
+      }
+      return sendApiError(reply, request, 400, 'Bad Request', err.message || 'Simulation error', {
+        code: 'SIMULATION_ERROR',
+      });
+    }
   });
 
-  /** 9. GET /api/v1/delimitation/reservation — National reservation analysis */
-  app.get('/api/v1/delimitation/reservation', async () => {
-    const projections = getAllProjections();
-    const profiles = projections.map((p) => ({
-      stateCode: p.stateCode,
-      stateName: p.stateName,
-      currentSeats: p.currentSeats,
-      projectedSeats: p.projectedSeats,
-      scReserved: p.reservedSC,
-      stReserved: p.reservedST,
-      general: p.general,
-      scPercent: p.projectedSeats > 0 ? Math.round((p.reservedSC / p.projectedSeats) * 1000) / 10 : 0,
-      stPercent: p.projectedSeats > 0 ? Math.round((p.reservedST / p.projectedSeats) * 1000) / 10 : 0,
-    }));
-
-    return {
-      summary: {
-        totalSCReserved: profiles.reduce((s, p) => s + p.scReserved, 0),
-        totalSTReserved: profiles.reduce((s, p) => s + p.stReserved, 0),
-        totalGeneral: profiles.reduce((s, p) => s + p.general, 0),
-        totalSeats: profiles.reduce((s, p) => s + p.projectedSeats, 0),
-      },
-      topSCStates: [...profiles].sort((a, b) => b.scReserved - a.scReserved).slice(0, 5),
-      topSTStates: [...profiles].sort((a, b) => b.stReserved - a.stReserved).slice(0, 5),
-      profiles,
-    };
+  /**
+   * 9. GET /api/v1/delimitation/reservation
+   * National SC/ST reservation analysis under Article 332 proportionality.
+   */
+  app.get('/api/v1/delimitation/reservation', async (request, reply) => {
+    try {
+      const result = delimitationService.getNationalReservations();
+      return sendSuccess(reply, request, result);
+    } catch (err: any) {
+      return sendApiError(reply, request, 500, 'Internal Server Error', err.message || 'Error generating reservation analysis', {
+        code: 'RESERVATION_ANALYSIS_ERROR',
+      });
+    }
   });
 
-  /** 10. GET /api/v1/delimitation/reservation/:stateCode — State reservation detail */
+  /**
+   * 10. GET /api/v1/delimitation/reservation/:stateCode
+   * State SC/ST reservation detail and statutory comparison.
+   */
   app.get<{ Params: { stateCode: string } }>('/api/v1/delimitation/reservation/:stateCode', { schema: stateCodeParamSchema }, async (request, reply) => {
-    const { stateCode } = request.params;
-    const code = stateCode.toUpperCase();
-    const state = CENSUS_2011_STATES.find((s) => s.stateCode === code);
+    try {
+      const { stateCode } = request.params;
+      const result = delimitationService.getStateReservationDetail(stateCode);
 
-    if (!state) {
-      return sendApiError(reply, request, 404, 'Not Found', `No data for state: ${stateCode}`, {
-        code: 'NOT_FOUND',
+      if (!result) {
+        return sendApiError(reply, request, 404, 'Not Found', `Jurisdiction is not registered in governed delimitation baselines: ${stateCode}`, {
+          code: 'UNSUPPORTED_GEOGRAPHY',
+        });
+      }
+
+      return sendSuccess(reply, request, result);
+    } catch (err: any) {
+      return sendApiError(reply, request, 500, 'Internal Server Error', err.message || 'Error retrieving state reservation detail', {
+        code: 'STATE_RESERVATION_ERROR',
       });
     }
-
-    const p = calculateStateProjection(state);
-    const currentSC = Math.round(p.currentSeats * (state.scPopulation / state.totalPopulation));
-    const currentST = Math.round(p.currentSeats * (state.stPopulation / state.totalPopulation));
-
-    return {
-      stateCode: p.stateCode,
-      stateName: p.stateName,
-      current: {
-        total: p.currentSeats,
-        scReserved: currentSC,
-        stReserved: currentST,
-        general: p.currentSeats - currentSC - currentST,
-      },
-      projected: {
-        total: p.projectedSeats,
-        scReserved: p.reservedSC,
-        stReserved: p.reservedST,
-        general: p.general,
-      },
-      change: {
-        scChange: p.reservedSC - currentSC,
-        stChange: p.reservedST - currentST,
-      },
-    };
   });
 
-  /** 11. GET /api/v1/delimitation/compare — Compare two to four states */
+  /**
+   * 11. GET /api/v1/delimitation/compare
+   * Comparative seat and reservation analysis across 1 to 4 states.
+   */
   app.get<{ Querystring: { states?: string } }>('/api/v1/delimitation/compare', { schema: compareQuerySchema }, async (request, reply) => {
     const { states } = request.query;
     if (!states) {
@@ -621,137 +387,93 @@ export async function delimitationRoutes(app: FastifyInstance) {
       });
     }
 
-    const codes = states.split(',').map((s) => s.trim().toUpperCase()).slice(0, 4);
-    const results = codes.map((code) => {
-      const state = CENSUS_2011_STATES.find((s) => s.stateCode === code);
-      if (!state) return null;
-      return calculateStateProjection(state);
-    }).filter(Boolean);
+    const codes = states
+      .split(',')
+      .map((s) => s.trim().toUpperCase())
+      .filter((s) => s.length > 0)
+      .slice(0, 4);
 
-    if (results.length === 0) {
-      return sendApiError(reply, request, 404, 'Not Found', 'No matching states found', {
-        code: 'NOT_FOUND',
+    if (codes.length === 0) {
+      return sendApiError(reply, request, 400, 'Bad Request', 'No valid state codes provided in query', {
+        code: 'VALIDATION_ERROR',
       });
     }
 
-    return { comparison: results, statesCompared: results.length };
-  });
+    try {
+      const result = delimitationService.compareStates(codes);
 
-  /** 12. GET /api/v1/delimitation/mla-impact/:stateCode — Sitting MLA risk evaluation */
-  app.get<{ Params: { stateCode: string } }>('/api/v1/delimitation/mla-impact/:stateCode', { schema: stateCodeParamSchema }, async (request, reply) => {
-    const { stateCode } = request.params;
-    const code = stateCode.toUpperCase();
-    const constituencies = getStateConstituencies(code);
-
-    if (!constituencies.length) {
-      return sendApiError(reply, request, 404, 'Not Found', `No constituency records found for state: ${stateCode}`, {
-        code: 'NOT_FOUND',
-      });
-    }
-
-    const mlaProfiles = constituencies.map((c: any) => {
-      const acNo = c.acNo ?? 1;
-      const margin = c.margin ?? 12000;
-      const marginPct = Math.round((margin / 180000) * 1000) / 10;
-      const isUrban = ['hyderabad', 'bengaluru', 'mumbai', 'pune', 'chennai', 'delhi'].some((city) => (c.district || '').toLowerCase().includes(city));
-
-      let changeType = 'minor_adjust';
-      let riskScore = 15;
-      if (isUrban && (acNo % 2 === 0)) {
-        changeType = 'split';
-        riskScore = 65;
-      } else if (acNo % 5 === 0) {
-        changeType = 'major_redraw';
-        riskScore = 45;
+      if (!result || result.statesCompared === 0) {
+        return sendApiError(reply, request, 404, 'Not Found', `None of the requested jurisdictions are registered in governed baselines: ${states}`, {
+          code: 'UNSUPPORTED_GEOGRAPHY',
+        });
       }
 
-      if (marginPct < 4.0) riskScore += 20;
-      if (marginPct > 15.0) riskScore -= 20;
-
-      riskScore = Math.max(5, Math.min(95, riskScore));
-      const rating = riskScore > 75 ? 'critical_risk' : riskScore > 55 ? 'high_risk' : riskScore > 35 ? 'moderate_risk' : 'safe';
-
-      return {
-        mlaName: c.winnerName || c.mlaName || 'Incumbent MLA',
-        party: c.winnerParty || c.currentParty || 'INC',
-        currentAcNo: acNo,
-        currentAcName: c.name,
-        stateCode: code,
-        seatChangeType: changeType,
-        riskScore,
-        riskRating: rating,
-        currentMarginVotes: margin,
-        currentMarginPercent: marginPct,
-      };
-    });
-
-    return {
-      stateCode: code,
-      totalMLAsAnalyzed: mlaProfiles.length,
-      highRiskCount: mlaProfiles.filter((m: any) => m.riskRating === 'critical_risk' || m.riskRating === 'high_risk').length,
-      safeCount: mlaProfiles.filter((m: any) => m.riskRating === 'safe').length,
-      mlaProfiles,
-    };
-  });
-
-  /** 13. GET /api/v1/delimitation/party-projections/:stateCode — Projected party seat share */
-  app.get<{ Params: { stateCode: string } }>('/api/v1/delimitation/party-projections/:stateCode', { schema: stateCodeParamSchema }, async (request, reply) => {
-    const { stateCode } = request.params;
-    const code = stateCode.toUpperCase();
-    const state = CENSUS_2011_STATES.find((s) => s.stateCode === code);
-
-    if (!state) {
-      return sendApiError(reply, request, 404, 'Not Found', `State not found: ${stateCode}`, {
-        code: 'NOT_FOUND',
+      return sendSuccess(reply, request, result);
+    } catch (err: any) {
+      return sendApiError(reply, request, 500, 'Internal Server Error', err.message || 'Error comparing states', {
+        code: 'STATE_COMPARISON_ERROR',
       });
     }
-
-    const proj = calculateStateProjection(state);
-    const constituencies = getStateConstituencies(code);
-    const growthRatio = proj.projectedSeats / Math.max(1, state.currentAssemblySeats);
-
-    const partyCounts: Record<string, number> = {};
-    for (const c of constituencies as any[]) {
-      const p = c.winnerParty || c.currentParty || 'IND';
-      partyCounts[p] = (partyCounts[p] || 0) + 1;
-    }
-
-    const parties = Object.entries(partyCounts).map(([party, seats]) => {
-      const projected = Math.round(seats * growthRatio);
-      return {
-        party,
-        currentSeats: seats,
-        projectedSeats: projected,
-        seatChange: projected - seats,
-      };
-    });
-
-    return {
-      stateCode: code,
-      stateName: state.stateName,
-      currentAssemblySeats: state.currentAssemblySeats,
-      projectedAssemblySeats: proj.projectedSeats,
-      parties,
-    };
   });
 
-  /** 14. GET /api/v1/delimitation/methodology — Complete mathematical documentation */
-  app.get('/api/v1/delimitation/methodology', async () => {
-    return {
-      title: 'Delimitation Mathematical & Constitutional Architecture',
-      constitutionalArticles: [
-        { article: 'Article 81', title: 'Composition of the House of the People', description: 'Allocates seats to states proportionally so that the ratio between seats and population is as nearly as practicable the same.' },
-        { article: 'Article 82', title: 'Readjustment after each census', description: 'Mandates delimitation of constituencies upon the completion of each decennial census.' },
-        { article: 'Article 170', title: 'Composition of Legislative Assemblies', description: 'State assembly seats bounded between 60 and 500, partitioned into territorial constituencies of equal population (±10%).' },
-        { article: 'Article 330 & 332', title: 'SC/ST Proportional Reservation', description: 'Seats reserved for Scheduled Castes and Scheduled Tribes strictly proportional to their population share in the state.' },
-      ],
-      formulas: {
-        idealPopulation: 'IdealPop = StatePopulation / TotalSeats',
-        deviation: 'Deviation = ((DistrictPopPerSeat - IdealPop) / IdealPop) * 100',
-        hareNiemeyer: 'Seats allocated by base floor(quota), remainder seats given to highest fractional residues',
-        scReservation: 'SCSeats = round(TotalSeats * (SCPopulation / StatePopulation))',
-        stReservation: 'STSeats = round(TotalSeats * (STPopulation / StatePopulation))',
-      },
-    };
+  /**
+   * 12. GET /api/v1/delimitation/mla-impact/:stateCode
+   * Sitting MLA risk and boundary shift assessment.
+   */
+  app.get<{ Params: { stateCode: string } }>('/api/v1/delimitation/mla-impact/:stateCode', { schema: stateCodeParamSchema }, async (request, reply) => {
+    try {
+      const { stateCode } = request.params;
+      const result = delimitationService.getMlaImpact(stateCode);
+
+      if (!result) {
+        return sendApiError(reply, request, 404, 'Not Found', `No constituency records found for jurisdiction: ${stateCode}`, {
+          code: 'UNSUPPORTED_GEOGRAPHY',
+        });
+      }
+
+      return sendSuccess(reply, request, result);
+    } catch (err: any) {
+      return sendApiError(reply, request, 500, 'Internal Server Error', err.message || 'Error assessing MLA impact', {
+        code: 'MLA_IMPACT_ERROR',
+      });
+    }
+  });
+
+  /**
+   * 13. GET /api/v1/delimitation/party-projections/:stateCode
+   * Projected party seat share under redrawn boundaries.
+   */
+  app.get<{ Params: { stateCode: string } }>('/api/v1/delimitation/party-projections/:stateCode', { schema: stateCodeParamSchema }, async (request, reply) => {
+    try {
+      const { stateCode } = request.params;
+      const result = delimitationService.getPartyProjections(stateCode);
+
+      if (!result) {
+        return sendApiError(reply, request, 404, 'Not Found', `Jurisdiction is not registered in governed delimitation baselines: ${stateCode}`, {
+          code: 'UNSUPPORTED_GEOGRAPHY',
+        });
+      }
+
+      return sendSuccess(reply, request, result);
+    } catch (err: any) {
+      return sendApiError(reply, request, 500, 'Internal Server Error', err.message || 'Error computing party projections', {
+        code: 'PARTY_PROJECTION_ERROR',
+      });
+    }
+  });
+
+  /**
+   * 14. GET /api/v1/delimitation/methodology
+   * Complete mathematical, statutory, and constitutional documentation.
+   */
+  app.get('/api/v1/delimitation/methodology', async (request, reply) => {
+    try {
+      const result = delimitationService.getMethodology();
+      return sendSuccess(reply, request, result);
+    } catch (err: any) {
+      return sendApiError(reply, request, 500, 'Internal Server Error', err.message || 'Error retrieving methodology', {
+        code: 'METHODOLOGY_RETRIEVAL_ERROR',
+      });
+    }
   });
 }
