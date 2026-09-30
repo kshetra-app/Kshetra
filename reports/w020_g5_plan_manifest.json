@@ -2,11 +2,11 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "milestone": "W020-G5",
   "title": "Delimitation Engine Foundation — Core Logic, Mathematical Models & Hardened Read APIs",
-  "planVersion": "REV-1.1",
-  "document": "PLAN-W020-G5-REV-1.1.md",
+  "planVersion": "REV-1.2",
+  "document": "PLAN-W020-G5-REV-1.2.md",
   "planStatus": "SUBMITTED_FOR_CTO_RATIFICATION",
   "implementationAuthorization": "STRICTLY_NOT_AUTHORIZED",
-  "generatedTimestamp": "2026-09-30T05:15:00.000Z",
+  "generatedTimestamp": "2026-09-30T05:30:00.000Z",
   "predecessors": {
     "W018": {
       "status": "ACCEPTED_COMPLETE",
@@ -45,58 +45,80 @@
       "isScenarioPersistentColumn": false
     }
   },
-  "validationArchitecture": {
-    "framework": "Fastify Native JSON Schema (Ajv)",
-    "rationale": "100% consistency across all 34 API routes; JIT compiled; zero overhead; clear separation between HTTP boundary and TypeScript DTOs; zero new dependencies",
-    "universalSeatsCheckRemoved": true,
-    "validationPlanes": [
-      "SYNTAX_VALIDATION",
-      "LEGAL_CURRENT_REGIME_VALIDATION",
-      "SCENARIO_VALIDATION",
-      "ALGORITHM_DOMAIN_VALIDATION",
-      "UNSUPPORTED_UNKNOWN_HANDLING"
+  "computationalSafetyPolicy": {
+    "maxSafeRequestedSeats": 10000,
+    "policyStatement": "This value has NO constitutional, statutory, electoral, geographic, or legal meaning. It is solely a computational resource/overflow protection.",
+    "apiExposure": "Exposed strictly as an ingress computational overflow error guard; never as a legal seat threshold"
+  },
+  "orthogonalTaxonomies": {
+    "statement": "The G5 mathematical/output classification does not replace, derive, or determine W012 data_status by itself. They are two orthogonal dimensions modeled as separate fields.",
+    "outputClassifications": [
+      "STATUTORY_FACT",
+      "DETERMINISTIC_DERIVED",
+      "STATUTORY_BENCHMARK",
+      "SCENARIO_PROJECTION",
+      "GEOGRAPHIC_APPROXIMATION",
+      "POLITICAL_HEURISTIC",
+      "UNKNOWN_UNAVAILABLE"
+    ],
+    "w012DataStatuses": [
+      "OFFICIAL",
+      "DERIVED",
+      "VERIFIED",
+      "SCENARIO",
+      "ESTIMATE",
+      "INFERRED",
+      "UNVERIFIED",
+      "UNKNOWN"
+    ],
+    "exemplarCombinations": [
+      { "outputClassification": "DETERMINISTIC_DERIVED", "dataStatus": "DERIVED" },
+      { "outputClassification": "DETERMINISTIC_DERIVED", "dataStatus": "UNKNOWN" },
+      { "outputClassification": "HEURISTIC", "dataStatus": "INFERRED" },
+      { "outputClassification": "STATUTORY_FACT", "dataStatus": "OFFICIAL" },
+      { "outputClassification": "SCENARIO_PROJECTION", "dataStatus": "SCENARIO" },
+      { "outputClassification": "UNKNOWN_UNAVAILABLE", "dataStatus": "UNKNOWN" }
     ]
   },
-  "stagingObjectReconciliation": {
+  "stagingObjectProvenance": {
     "object": "eci_delimitation_post2026",
-    "table": "public.delimitation_regimes",
-    "datasetVersion": "eci_delimitation_post2026_projected_v1",
-    "legalStatus": "FUTURE_ANTICIPATED_REGIME",
-    "recordCount": 0,
+    "migration": "supabase/migrations/041_geography_versioning_and_temporal_validity.sql",
+    "insertLinesDatasetVersions": "82-89",
+    "insertLinesDelimitationRegimes": "426-437",
+    "introducingCommit": "a4804d356c9eae28f8a9508ed95c74021c940789",
+    "reconciliationCommits": ["8107243", "d00df00", "bb7c6ec"],
+    "currentRecordCount": 0,
     "stagingRetention": "UNMODIFIED",
     "apiDisplayLabel": "Future Anticipated Delimitation (Post-Census 2027 Operation)",
     "statutoryReconciliationMilestone": "W021+"
   },
-  "article332Model": {
-    "populationSource": "Census 2011 Primary Census Abstract (PCA)",
-    "denominator": "State Total Population (Census 2011 PCA)",
-    "proportionalFormulas": {
-      "sc": "S * (PopSC / PopTotal)",
-      "st": "S * (PopST / PopTotal)"
-    },
-    "rounding": "Nearest integer with fractional remainder ranking",
-    "exactConservation": "SC + ST + General === TargetSeats",
+  "article332Algorithm": {
+    "constitutionalRequirement": "RES-LEGAL-01 (Article 332(3) Proportionality)",
+    "paninAlgorithm": "RES-ALLOC-01 (Hamilton / Largest Remainder Method)",
+    "executionSequence": [
+      "1. Quota Calculation (Pop_Category / Pop_Total * S)",
+      "2. Integer / Base Allocation (floor quotas, R_base sum)",
+      "3. Remaining-Seat Calculation (round(sum quotas) - R_base)",
+      "4. Remainder Calculation (quota - floor quota)",
+      "5. Remainder Ordering (sort remainders descending)",
+      "6. Deterministic Tie-Break (larger absolute population, then lexicographic SC before ST)",
+      "7. Final Allocation (distribute surplus seats to top categories)",
+      "8. Seat Conservation Assertion (SC + ST + General === S bitwise)"
+    ],
     "invariantIdentifiers": [
-      "RES-POP-01",
+      "RES-LEGAL-01",
       "RES-ALLOC-01",
-      "RES-CONS-01",
       "RES-ROUND-01",
       "RES-TIE-01",
+      "RES-CONS-01",
       "RES-DATA-01",
       "RES-UNKNOWN-01"
     ]
   },
-  "mathematicalClassificationTaxonomy": {
-    "statement": "The G5 mathematical classification taxonomy does not replace the canonical W012 data-status model; it refines analytical outputs while preserving direct 1-to-1 mapping to W012 statuses.",
-    "mappings": [
-      { "g5Class": "STATUTORY_FACT", "w012Status": "OFFICIAL" },
-      { "g5Class": "DETERMINISTIC_DERIVED", "w012Status": "DERIVED" },
-      { "g5Class": "STATUTORY_BENCHMARK", "w012Status": "VERIFIED" },
-      { "g5Class": "SCENARIO_PROJECTION", "w012Status": "SCENARIO" },
-      { "g5Class": "GEOGRAPHIC_APPROXIMATION", "w012Status": "ESTIMATE" },
-      { "g5Class": "POLITICAL_HEURISTIC", "w012Status": "INFERRED" }
-    ],
-    "unmappedW012Statuses": ["UNVERIFIED", "UNKNOWN"]
+  "governedJurisdictionArchitecture": {
+    "architecturePattern": "GENERIC ENGINE ARCHITECTURE + GOVERNED JURISDICTION DATA + EXPLICIT UNSUPPORTED/UNKNOWN SEMANTICS",
+    "w020ScopeBoundary": "Authoritative Telangana Assembly Geography (119 ACs, 17 PCs, Schedule XXXI APRA 2014)",
+    "nationalScopePolicy": "Zero hardcoded national seat-count validation lists in engine; unconfigured jurisdictions fail closed with UNSUPPORTED_GEOGRAPHY"
   },
   "legalInstruments": [
     {
@@ -136,13 +158,6 @@
       "versioningRegime": "eci_delimitation_2008"
     }
   ],
-  "operationalDomains": [
-    "DOMAIN_A_STATUTORY_READ_ONLY",
-    "DOMAIN_B_HISTORICAL_AS_OF",
-    "DOMAIN_C_DETERMINISTIC_DERIVED",
-    "DOMAIN_D_SCENARIO_PROJECTIONS",
-    "DOMAIN_E_GEOMETRIC_POLITICAL_HEURISTICS"
-  ],
   "demographicClassification": {
     "historicalBaseline": "Census 2011 (Verified statutory data)",
     "currentOperation": "Census 2027 (Enumeration pending, final results NOT available)",
@@ -175,6 +190,6 @@
   },
   "stopState": {
     "declared": true,
-    "reason": "Awaiting formal CTO review and ratification of PLAN-W020-G5-REV-1.1.md before any implementation begins."
+    "reason": "Awaiting formal CTO review and ratification of PLAN-W020-G5-REV-1.2.md before any implementation begins."
   }
 }

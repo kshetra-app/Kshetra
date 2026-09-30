@@ -1891,3 +1891,30 @@
   - Milestone W020-G5 plan REV-1.1 (`PLAN-W020-G5-REV-1.1.md`) is submitted for formal CTO review and ratification.
   - Implementation of W020-G5 remains **STRICTLY NOT AUTHORIZED**.
   - Execution is halted awaiting written CTO authorization.
+
+---
+
+### DEC-087: W020-G5 MASTER PLAN REV-1.2 REVISION & FORENSIC PROVENANCE RECONCILIATION
+- **Date:** 2026-09-30
+- **Status:** APPROVED & RECORDED (REV-1.2 SUBMITTED FOR CTO REVIEW / IMPLEMENTATION STRICTLY NOT AUTHORIZED)
+- **Authority:** CTO Directive ("CTO DECISION — W020-G5 REV-1.1: STATUS: NOT RATIFIED. ACTION: Prepare PLAN-W020-G5-REV-1.2 ONLY. IMPLEMENTATION: STRICTLY NOT AUTHORIZED.")
+- **Context:** Following independent CTO review of PLAN-W020-G5-REV-1.1, the CTO issued 5 mandatory correction directives (G5-16 through G5-20) covering computational limit clarification, rebuilding the orthogonal W012 status relationship, formalizing the Article 332 mathematical algorithm sequence, proving forensic provenance of `eci_delimitation_post2026` from repository evidence, and replacing national seat-count hardcodes with generic engine architecture and governed jurisdiction data. PLAN-W020-G5-REV-1.2 was authored strictly adhering to these requirements with zero code, schema, or staging mutations.
+- **Mandatory Reconciliations (Directives G5-16 through G5-20):**
+  1. **G5-16 (Clarify 1..10,000 Seat Limit / `MAX_SAFE_REQUESTED_SEATS`):** Renamed the ingress boundary to `MAX_SAFE_REQUESTED_SEATS = 10000`. Explicitly declared: "This value has NO constitutional, statutory, electoral, geographic, or legal meaning. It is solely a computational resource/overflow protection." Derived strictly from computational memory/CPU safety policies to prevent runaway quotient generation loops. Forbidden from being exposed through the API as a legal seat threshold.
+  2. **G5-17 (Rebuild Orthogonal W012 Status Relationship):** Eliminated all 1-to-1 status equivalences. Structured the schema around two orthogonal dimensions: `OUTPUT_CLASSIFICATION` (Class 1–6 plus `UNKNOWN_UNAVAILABLE`) and `DATA_STATUS` (W012 8 statuses), paired with separate `PROVENANCE` and `EVIDENCE` fields. Formally documented: "The G5 mathematical/output classification does not replace, derive, or determine W012 data_status by itself." Provided 6 canonical combination examples (e.g. `DETERMINISTIC_DERIVED + DERIVED`, `DETERMINISTIC_DERIVED + UNKNOWN`, `HEURISTIC + INFERRED`, `CURRENT_LEGAL_DATA + OFFICIAL`, `SCENARIO_PROJECTION + SCENARIO`, `UNKNOWN_UNAVAILABLE + UNKNOWN`). Prohibited forcing a data status when evidence is unavailable.
+  3. **G5-18 (Formalize Article 332 Reservation Algorithm):** Decoupled constitutional proportionality (`RES-LEGAL-01`) from PANIN's Hamilton / Largest Remainder computational implementation (`RES-ALLOC-01`). Formalized the exact 8-step mathematical execution sequence: (1) Quota Calculation, (2) Integer/Base Allocation, (3) Remaining-Seat Calculation, (4) Remainder Calculation (`RES-ROUND-01`), (5) Remainder Ordering, (6) Deterministic Tie-Break (`RES-TIE-01` by population then lexicographic), (7) Final Allocation, and (8) Seat Conservation Assertion (`RES-CONS-01`: $S_{SC} + S_{ST} + S_{General} \equiv S$). Enforced `RES-DATA-01` (PCA inputs) and `RES-UNKNOWN-01` (fail-closed zero synthetic fallback).
+  4. **G5-19 (Prove `eci_delimitation_post2026` Forensic Provenance):** Established provenance directly from repository Git history and source files:
+     - Exact migration: `supabase/migrations/041_geography_versioning_and_temporal_validity.sql` (and staging package 041).
+     - Exact insertion locations: `public.dataset_versions` (lines 82–89) and `public.delimitation_regimes` (lines 426–437).
+     - Introducing commit SHA: `a4804d356c9eae28f8a9508ed95c74021c940789` (`a4804d3`, 22 Sep 2026).
+     - Reconciled in W014 commits: `8107243`, `d00df00`, `bb7c6ec`.
+     - Current record count: exactly 0 records (`record_count = 0`).
+     - Foreign keys: referenced by `dataset_versions` and Migration 055 `delimitation_proposals.delimitation_regime_id` with `ON DELETE RESTRICT`.
+     - Tests referencing it: `tests/verify_w014_temporal_validity.mjs`.
+     - Original semantic meaning: models prospective post-freeze window under 84th Amendment (Articles 82 & 170), `is_active = false`, zero records.
+     - Retention: preserved unmodified on staging with zero DDL, mapping API display to "Future Anticipated Delimitation (Post-Census 2027 Operation)".
+  5. **G5-20 (Generic Engine Architecture & Governed Jurisdiction Data):** Removed hardcoded national seat-count validation lists (AP 175, TS 119, Sikkim 32, Goa 40, Mizoram 40, Puducherry 30). Established architectural pattern: `GENERIC ENGINE ARCHITECTURE + GOVERNED JURISDICTION DATA + EXPLICIT UNSUPPORTED/UNKNOWN SEMANTICS`. Bounded W020 implementation scope to authoritative Telangana geography (119 ACs, 17 PCs, Schedule XXXI APRA 2014) and verified Census 2011 baselines. Unconfigured jurisdictions return structured `UNSUPPORTED_GEOGRAPHY` rather than relying on hardcoded national fallback tables.
+- **Governance & Milestone Gate Status:**
+  - Milestone W020-G5 plan REV-1.2 (`PLAN-W020-G5-REV-1.2.md`) is submitted for formal CTO review and ratification.
+  - Implementation of W020-G5 remains **STRICTLY NOT AUTHORIZED**.
+  - Execution is halted awaiting written CTO authorization.
