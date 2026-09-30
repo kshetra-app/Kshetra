@@ -2171,6 +2171,32 @@
   - Production Database `ehfafcnimmjusyvplbah`: **100% Air-Gapped and Untouched**
   - Mobile Codebase `apps/mobile/**`: **100% Frozen (0 file modifications)**
 - **Milestone Gate Status:**
-  - Milestone W020-G6 is `IMPLEMENTED / TESTED / VERIFIED / SUBMITTED FOR CTO ACCEPTANCE`.
-  - Milestone W020-G7 remains strictly BLOCKED until formal CTO acceptance of W020-G6.
-  - Execution strictly HALTED. No self-acceptance.
+  - Milestone W020-G6 is `ACCEPTED / COMPLETE / CLOSED` (Accepted Commit: `ef3232191d217e6c85182fef34e4b6425738285d`).
+  - Formally accepted by CTO per written directive `CTO AUTHORIZATION — W020-G6 FINAL ACCEPTANCE + W020-G7 PLANNING` (2026-09-30).
+
+---
+
+### DEC-094: FORMAL CTO ACCEPTANCE OF MILESTONE W020-G6 & AUTHORIZATION OF W020-G7 MASTER PLANNING
+- **Date:** 2026-09-30
+- **Status:** ACCEPTED / COMPLETE / CLOSED (W020-G6) & PLANNING AUTHORIZED (W020-G7)
+- **Authority:** CTO AUTHORIZATION — W020-G6 FINAL ACCEPTANCE + W020-G7 PLANNING
+- **Context:** Following the completion of the evidence semantic remediation and full test/regression battery pass, the CTO formally reviewed and accepted Milestone W020-G6. Implementation authorization was closed, and authorization for W020-G7 master planning was granted.
+- **Formal Acceptance Lifecycle Closure:**
+  - Stage progression: `IMPLEMENTED → TESTED → VERIFIED → ACCEPTED → COMPLETE`.
+  - Canonical remediation commit: `ef3232191d217e6c85182fef34e4b6425738285d` (`ef32321`).
+- **Accepted Invariants & Baseline Truth:**
+  1. `public.constituency_mapping` = strictly **0 rows**.
+  2. Telangana AC-110 (Pinapaka), AC-118 (Aswaraopeta), and AC-119 (Bhadrachalam) lineage = strictly **`UNKNOWN`**.
+  3. Proposal 1 = 119 total / 19 SC / 12 ST / 88 General (`final`, `STATUTORY_FACT`, `OFFICIAL`, `CURRENT_LEGAL_REGIME`, `isScenario: false`).
+  4. Proposal 2 = 119 total / 18 SC / 10 ST / 91 General (`draft`, `DETERMINISTIC_DERIVED`, `DERIVED`, `SCENARIO_PROPOSED_REGIME`, `isScenario: true`).
+  5. `isScenario` remains derived-only from `(legalStatus === 'SCENARIO_PROPOSED_REGIME')`.
+  6. PostGIS 589 geometry baseline unchanged (exact SHA-256 `f839fa02980318a8f35f932ebe72fa1d3ad6325dc86a624bf159d932fe5f613b`).
+  7. Production database `ehfafcnimmjusyvplbah` strictly air-gapped and untouched.
+  8. Mobile codebase `apps/mobile/**` strictly frozen.
+  9. All 27 G6, 34 G5, 33 API, 53 W018, 93 W019, 23 G4 invariants and 9 contract drift checks verified passing.
+- **W020-G7 Planning Authorization & Boundaries:**
+  - Authorization scope: **MASTER PLANNING ONLY**.
+  - W020-G7 implementation: **STRICTLY NOT AUTHORIZED (NO)**.
+  - Zero database mutations, zero migrations, zero staging DDL/DML, zero API changes, zero mobile changes, zero geometry changes, zero production access, zero APK/device work.
+  - No national ingestion expansion without explicit G7 plan authorization and subsequent CTO ratification.
+  - Mandatory governance halt enforced upon plan submission.

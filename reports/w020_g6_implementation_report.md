@@ -5,7 +5,7 @@
 **Directive:** CTO FINAL RATIFICATION — W020-G6 REV-1.1  
 **Implementation Authorization:** GRANTED — BOUNDED ONLY TO PLAN-W020-G6-REV-1.1  
 **Accepted Planning Commit:** `4c01c9ffe0b845fb46eca05996d9d37f9722ad91`  
-**Governance Status:** `IMPLEMENTED / TESTED / VERIFIED / RESUBMITTED FOR CTO ACCEPTANCE`  
+**Governance Status:** `ACCEPTED / COMPLETE / CLOSED (CTO Accepted: 2026-09-30)`  
 **Timestamp:** 2026-09-30T10:35:00.000Z  
 **Canonical Branch:** `master`  
 **Target Environment:** `panIN-staging` (`fkpigozcqnmcvofuksar`)  
@@ -144,7 +144,7 @@ MANDATORY GOVERNANCE HALT — W020-G6 REMEDIATION COMPLETE
 - 589 PostGIS geometry baseline digest verified unchanged.
 - Production database ehfafcnimmjusyvplbah verified 100% air-gapped and untouched.
 - Mobile codebase apps/mobile/** verified 100% frozen.
-- Governance Status: RESUBMITTED FOR CTO ACCEPTANCE REVIEW.
+- Governance Status: ACCEPTED / COMPLETE / CLOSED (CTO Accepted: 2026-09-30).
 - STRICT HALT: Do NOT self-accept or self-certify.
 ================================================================================
 ```
