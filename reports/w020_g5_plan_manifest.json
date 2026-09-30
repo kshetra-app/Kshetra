@@ -2,11 +2,11 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "milestone": "W020-G5",
   "title": "Delimitation Engine Foundation — Core Logic, Mathematical Models & Hardened Read APIs",
-  "planVersion": "REV-1.0",
-  "document": "PLAN-W020-G5-REV-1.0.md",
+  "planVersion": "REV-1.1",
+  "document": "PLAN-W020-G5-REV-1.1.md",
   "planStatus": "SUBMITTED_FOR_CTO_RATIFICATION",
   "implementationAuthorization": "STRICTLY_NOT_AUTHORIZED",
-  "generatedTimestamp": "2026-09-30T04:30:00.000Z",
+  "generatedTimestamp": "2026-09-30T05:15:00.000Z",
   "predecessors": {
     "W018": {
       "status": "ACCEPTED_COMPLETE",
@@ -44,6 +44,59 @@
       "newDDL": false,
       "isScenarioPersistentColumn": false
     }
+  },
+  "validationArchitecture": {
+    "framework": "Fastify Native JSON Schema (Ajv)",
+    "rationale": "100% consistency across all 34 API routes; JIT compiled; zero overhead; clear separation between HTTP boundary and TypeScript DTOs; zero new dependencies",
+    "universalSeatsCheckRemoved": true,
+    "validationPlanes": [
+      "SYNTAX_VALIDATION",
+      "LEGAL_CURRENT_REGIME_VALIDATION",
+      "SCENARIO_VALIDATION",
+      "ALGORITHM_DOMAIN_VALIDATION",
+      "UNSUPPORTED_UNKNOWN_HANDLING"
+    ]
+  },
+  "stagingObjectReconciliation": {
+    "object": "eci_delimitation_post2026",
+    "table": "public.delimitation_regimes",
+    "datasetVersion": "eci_delimitation_post2026_projected_v1",
+    "legalStatus": "FUTURE_ANTICIPATED_REGIME",
+    "recordCount": 0,
+    "stagingRetention": "UNMODIFIED",
+    "apiDisplayLabel": "Future Anticipated Delimitation (Post-Census 2027 Operation)",
+    "statutoryReconciliationMilestone": "W021+"
+  },
+  "article332Model": {
+    "populationSource": "Census 2011 Primary Census Abstract (PCA)",
+    "denominator": "State Total Population (Census 2011 PCA)",
+    "proportionalFormulas": {
+      "sc": "S * (PopSC / PopTotal)",
+      "st": "S * (PopST / PopTotal)"
+    },
+    "rounding": "Nearest integer with fractional remainder ranking",
+    "exactConservation": "SC + ST + General === TargetSeats",
+    "invariantIdentifiers": [
+      "RES-POP-01",
+      "RES-ALLOC-01",
+      "RES-CONS-01",
+      "RES-ROUND-01",
+      "RES-TIE-01",
+      "RES-DATA-01",
+      "RES-UNKNOWN-01"
+    ]
+  },
+  "mathematicalClassificationTaxonomy": {
+    "statement": "The G5 mathematical classification taxonomy does not replace the canonical W012 data-status model; it refines analytical outputs while preserving direct 1-to-1 mapping to W012 statuses.",
+    "mappings": [
+      { "g5Class": "STATUTORY_FACT", "w012Status": "OFFICIAL" },
+      { "g5Class": "DETERMINISTIC_DERIVED", "w012Status": "DERIVED" },
+      { "g5Class": "STATUTORY_BENCHMARK", "w012Status": "VERIFIED" },
+      { "g5Class": "SCENARIO_PROJECTION", "w012Status": "SCENARIO" },
+      { "g5Class": "GEOGRAPHIC_APPROXIMATION", "w012Status": "ESTIMATE" },
+      { "g5Class": "POLITICAL_HEURISTIC", "w012Status": "INFERRED" }
+    ],
+    "unmappedW012Statuses": ["UNVERIFIED", "UNKNOWN"]
   },
   "legalInstruments": [
     {
@@ -83,6 +136,13 @@
       "versioningRegime": "eci_delimitation_2008"
     }
   ],
+  "operationalDomains": [
+    "DOMAIN_A_STATUTORY_READ_ONLY",
+    "DOMAIN_B_HISTORICAL_AS_OF",
+    "DOMAIN_C_DETERMINISTIC_DERIVED",
+    "DOMAIN_D_SCENARIO_PROJECTIONS",
+    "DOMAIN_E_GEOMETRIC_POLITICAL_HEURISTICS"
+  ],
   "demographicClassification": {
     "historicalBaseline": "Census 2011 (Verified statutory data)",
     "currentOperation": "Census 2027 (Enumeration pending, final results NOT available)",
@@ -90,13 +150,15 @@
     "simulation": "Scenario Proposed Regime (Research models, strictly non-statutory)"
   },
   "plannedScope": {
-    "serviceLayer": "apps/api/src/services/delimitationService.ts",
-    "routeModule": "apps/api/src/routes/delimitation.ts",
-    "sharedContracts": "packages/shared/src/contracts/delimitation.ts",
+    "serviceLayer": "apps/api/src/services/delimitationService.ts (PROPOSED CHANGE - DOES NOT EXIST YET)",
+    "routeModule": "apps/api/src/routes/delimitation.ts (EXISTING 758 LINES TO BE HARDENED)",
+    "sharedContracts": "packages/shared/src/contracts/delimitation.ts (PROPOSED CHANGE - DOES NOT EXIST YET)",
+    "webhookPrototype": "POST /api/v1/delimitation/monitor-webhook (EXISTING PROTOTYPE TO BE AUTH-HARDENED)",
     "endpointCount": 14,
     "responseEnvelope": "ECC-001 (ApiSuccessEnvelope<T>)",
     "errorHelper": "sendApiError",
-    "scenarioMetadataCount": 10
+    "scenarioMetadataCount": 10,
+    "dynamicDatasetProvenance": true
   },
   "plannedTestBattery": {
     "totalChecks": 30,
@@ -113,6 +175,6 @@
   },
   "stopState": {
     "declared": true,
-    "reason": "Awaiting formal CTO review and ratification of PLAN-W020-G5-REV-1.0.md before any implementation begins."
+    "reason": "Awaiting formal CTO review and ratification of PLAN-W020-G5-REV-1.1.md before any implementation begins."
   }
 }
