@@ -7,9 +7,9 @@
 ## 1. Project & Execution Coordinates
 ```text
 PROJECT:               PANIN (formerly Kshetra)
-CURRENT_JOB:           W020-G6 (Historical Delimitation Data Ingestion & Canonical Bridge Population — PLANNING ONLY / NOT AUTHORIZED FOR IMPLEMENTATION)
+CURRENT_JOB:           W020-G6 (Historical Delimitation Data Ingestion & Canonical Bridge Population — SUBMITTED FOR CTO ACCEPTANCE)
 LAST_COMPLETED_JOB:    W020-G5 (Delimitation Engine Foundation — ACCEPTED / COMPLETE / CLOSED)
-NEXT_PERMITTED_JOB:    PLAN-W020-G6 (PLANNING ONLY; IMPLEMENTATION STRICTLY NOT AUTHORIZED)
+NEXT_PERMITTED_JOB:    W020-G6 CTO ACCEPTANCE REVIEW (W020-G7 STRICTLY BLOCKED PENDING ACCEPTANCE)
 
 W018_STATUS:           ACCEPTED / COMPLETE (Canonical Commit: 080344c580ad9df92586a7a0e68989fb50e7cf3d)
 W018_CTO_ACCEPTANCE:   GRANTED (2026-09-29)
@@ -27,8 +27,11 @@ W020_G5_PLAN:          PLAN-W020-G5-REV-1.2.md, reports/w020_g5_plan_manifest.js
 W020_G5_VERIFICATION:  reports/w020_g5_acceptance_remediation_r2.md, reports/w020_g5_acceptance_remediation_r2.json
 W020_G5_INVARIANTS:    34/34 PASS (tests/delimitation-g5-invariants.test.mjs)
 W020_G5_API_TESTS:     33/33 PASS (apps/api/src/__tests__/delimitation.test.ts)
-W020_G6_STATUS:        PLANNING REV-1.1 SUBMITTED / IMPLEMENTATION STRICTLY NOT AUTHORIZED
-W020_G6_PLAN:          PLAN-W020-G6-REV-1.1.md, reports/w020_g6_plan_review_manifest.json
+W020_G6_STATUS:        IMPLEMENTED / TESTED / VERIFIED / SUBMITTED FOR CTO ACCEPTANCE (DEC-093)
+W020_G6_PLAN:          PLAN-W020-G6-REV-1.1.md (RATIFIED, Commit 4c01c9ffe0b845fb46eca05996d9d37f9722ad91)
+W020_G6_EVIDENCE:      reports/w020_g6_implementation_report.md, reports/w020_g6_implementation_report.json
+W020_G6_INVARIANTS:    27/27 PASS (tests/delimitation-g6-ingestion.test.mjs)
+W020_G6_REGRESSION:    G5 34/34, Jest 33/33, W018 53/53, W019 93/93, G4 23/23, Drift 9/9, Builds Clean
 
 W017_STATUS:           ACCEPTED / COMPLETE
 W017_CTO_ACCEPTANCE:   GRANTED (2026-09-29)
@@ -38,10 +41,10 @@ R10_GAP_B:             DEFERRED TO W023 (APK / Device Validation Stage)
 R11_STATUS:            STRICTLY BLOCKED
 ```
 
-PLAN_STATUS:                          APPROVED (G5) / G6 PLANNING REV-1.1 SUBMITTED
-IMPLEMENTATION_AUTHORIZATION:         NO (W020-G6 Implementation NOT Authorized)
-W020_AUTHORIZATION:                   W020-G5 ACCEPTED / COMPLETE (W020-G6+ IMPLEMENTATION STRICTLY NOT AUTHORIZED)
-IMPLEMENTATION_AUTHORIZATION_COMMIT:  505ae56ba8839a44b1171b1edcb45aec33c65c04
+PLAN_STATUS:                          RATIFIED (PLAN-W020-G6-REV-1.1)
+IMPLEMENTATION_AUTHORIZATION:         GRANTED (Bounded strictly to PLAN-W020-G6-REV-1.1)
+W020_AUTHORIZATION:                   W020-G6 IMPLEMENTATION COMPLETE (W020-G7+ STRICTLY NOT AUTHORIZED)
+IMPLEMENTATION_AUTHORIZATION_COMMIT:  4c01c9ffe0b845fb46eca05996d9d37f9722ad91
 
 AUTHORIZED_JOB:        PLAN-W020-G6 (Planning Only; Implementation NOT Authorized)
 W015_STATUS:           ACCEPTED_COMPLETE

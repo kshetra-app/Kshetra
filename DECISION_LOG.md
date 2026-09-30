@@ -2121,3 +2121,56 @@
      - Production database `ehfafcnimmjusyvplbah` strictly air-gapped and untouched.
      - Mobile codebase (`apps/mobile/**`) strictly frozen.
      - Halted awaiting CTO review and formal ratification.
+
+---
+
+### DEC-093: W020-G6 HISTORICAL DELIMITATION EVIDENCE INGESTION & CANONICAL BRIDGE POPULATION
+- **Date:** 2026-09-30
+- **Status:** IMPLEMENTED / TESTED / VERIFIED / SUBMITTED FOR CTO ACCEPTANCE
+- **Authority:** CTO FINAL RATIFICATION — W020-G6 REV-1.1, PLAN-W020-G6-REV-1.1, DEC-092, Master Execution Framework Amendments v1.2, v1.4, v1.5-A, v1.6
+- **Context:** Following formal written ratification by the CTO of `PLAN-W020-G6-REV-1.1` (Commit `4c01c9ffe0b845fb46eca05996d9d37f9722ad91`), implementation authorization was granted strictly bounded to the plan. All historical delimitation evidence was ingested, canonical bridge relationships established, and the full invariant battery verified.
+- **Architectural Implementation Details:**
+  1. **Evidence-Gated Constituency Mapping Invariant (0 Rows Enforced):**
+     - Canonical rule enforced: `AUTHORITATIVE CONSTITUENCY-LEVEL EVIDENCE -> constituency_mapping`; `ADMINISTRATIVE TERRITORIAL TRANSFER != PREDECESSOR_SUCCESSOR`.
+     - Verified that G.S.R. 311(E) (23 April 2015) was a statutory territorial transfer of specified mandals/villages, and ECI Notification No. 282/AP/2018(DEL) updated Andhra Pradesh extents under Schedule II (AC 53 & AC 67).
+     - Confirmed zero statutory dissolution, recreation, or predecessor/successor lineage enacted for Telangana Schedule XXXI constituencies.
+     - Lineage for Telangana ACs 110 (Pinapaka), 118 (Aswaraopeta), and 119 (Bhadrachalam) is strictly classified as `UNKNOWN`.
+     - Table `public.constituency_mapping` remains strictly at **0 rows** on both staging and test harness.
+  2. **Standardized Legal Terminology:**
+     - Enforced mandatory terminology throughout dossiers, evidence records, scripts, and reports:
+       *"statutory territorial transfer of specified mandals/villages under the Andhra Pradesh Reorganisation (Removal of Difficulties) Order, 2015."*
+     - Codified architectural principle: *territorial transfer != constituency lineage*.
+  3. **Six-Source Evidence Partitioning & Authoritative Dossiers:**
+     - Created 6 verified source dossiers in `data/evidence/w020/authoritative/`:
+       - `eci_delimitation_order_2008_source_dossier.md` (`ECI-DELIM-2008-AP`, Schedule II composite AP 294 ACs).
+       - `mha_apra_2014_source_dossier.md` (`MHA-APRA-2014`, Schedule XXXI Telangana 119 ACs).
+       - `mha_gsr_311e_2015_source_dossier.md` (`MHA-APORD-2015-GSR311E`, statutory territorial transfer).
+       - `eci_notification_282_ap_2018_source_dossier.md` (`ECI-NOT-2018-282AP`, AP Schedule II extent updates).
+       - `census_2011_pca_source_dossier.md` (`RGI-CENSUS-2011`, 34,591,425 total, 5,260,976 SC, 3,018,710 ST).
+       - `panin_article_332_simulation_dossier.md` (`PANIN-SIM-01`, Hamilton/Largest Remainder deterministic quota allocation).
+     - Verified 6 provenance records (`02000000-0000-0000-0000-000000000001..0006`) and 5 evidence records (`e0200000-0000-0000-0000-000000000001..0005`) on `panIN-staging` (`fkpigozcqnmcvofuksar`).
+  4. **Canonical Delimitation Regimes Verification:**
+     - Verified all 4 W014 canonical regimes on staging: `eci_delimitation_1976` (HISTORICAL_LEGAL_REGIME), `eci_delimitation_2008` (CURRENT_LEGAL_REGIME, active), `eci_delimitation_post2026` (FUTURE_ANTICIPATED_REGIME, inactive), `scenario_delimitation_draft_prop_1` (SCENARIO_PROPOSED_REGIME, inactive).
+     - Confirmed zero `SIMULATION_PROPOSED` or `SIMULATION_PROPOSED_REGIME` entries.
+  5. **Canonical Proposals Bridge Population:**
+     - **Proposal 1:** 119 total / 19 SC / 12 ST / 88 General, `final`, `STATUTORY_FACT`, `OFFICIAL`, `CURRENT_LEGAL_REGIME`, `isScenario: false`.
+     - **Proposal 2:** 119 total / 18 SC / 10 ST / 91 General, `draft`, `DETERMINISTIC_DERIVED`, `DERIVED`, `SCENARIO_PROPOSED_REGIME`, `isScenario: true`.
+     - Enforced `isScenario === (legalStatus === 'SCENARIO_PROPOSED_REGIME')`.
+     - Verified stored generated column `seat_change = proposed_seats - current_seats = 0`.
+     - Enforced `ON DELETE RESTRICT` foreign keys linking proposals to `delimitation_regimes` and `provenance_records`.
+- **Verification Results (100% Pass across all batteries):**
+  - W020-G6 Invariant Battery (`tests/delimitation-g6-ingestion.test.mjs`): **27 / 27 PASS (100%)**
+  - W020-G5 Master Invariants (`tests/delimitation-g5-invariants.test.mjs`): **34 / 34 PASS (100%)**
+  - Delimitation Jest Route Integration (`apps/api/src/__tests__/delimitation.test.ts`): **33 / 33 PASS (100%)**
+  - W018 Political Entities Invariants (`tests/political-entities-invariants.test.mjs`): **53 / 53 PASS (100%)**
+  - W019 Election Normalization Invariants (`tests/election-normalization-invariants.test.mjs`): **93 / 93 PASS (100%)**
+  - W020-G4 Migration 055 Preflight (`tests/delimitation-migration-055-preflight.test.mjs`): **23 / 23 PASS (100%)**
+  - Declared API Contract Drift (`scripts/check-api-contract-drift.mjs`): **9 / 9 MATCH (100%)**
+  - TypeScript builds (`packages/shared`, `apps/api`, `apps/mobile`): **EXIT 0 (Clean)**
+  - PostGIS 589 Geometry Baseline: **589 rows, exact SHA-256 `f839fa02980318a8f35f932ebe72fa1d3ad6325dc86a624bf159d932fe5f613b`**
+  - Production Database `ehfafcnimmjusyvplbah`: **100% Air-Gapped and Untouched**
+  - Mobile Codebase `apps/mobile/**`: **100% Frozen (0 file modifications)**
+- **Milestone Gate Status:**
+  - Milestone W020-G6 is `IMPLEMENTED / TESTED / VERIFIED / SUBMITTED FOR CTO ACCEPTANCE`.
+  - Milestone W020-G7 remains strictly BLOCKED until formal CTO acceptance of W020-G6.
+  - Execution strictly HALTED. No self-acceptance.
