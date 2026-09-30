@@ -1,9 +1,9 @@
 # PLAN-W020-G7: DELIMITATION CANONICAL QUERY SURFACE & TYPED REGIME SELECTION
 
-**Document Identifier:** `PLAN-W020-G7-REV-1.0`  
+**Document Identifier:** `PLAN-W020-G7-REV-1.1`  
 **Milestone:** W020-G7 (Delimitation Canonical Query Surface & Typed Regime Selection Integration)  
 **Parent Job:** W020 (Delimitation Engine Foundation & Canonical Bridge)  
-**Authority Directive:** `CTO AUTHORIZATION — W020-G6 FINAL ACCEPTANCE + W020-G7 PLANNING` (2026-09-30)  
+**Authority Directive:** `CTO PLAN REMEDIATION DIRECTIVE — W020-G7 REV-1.1` (2026-09-30)  
 **Status:** `DRAFT / SUBMITTED FOR CTO RATIFICATION`  
 **Implementation Authorization:** `STRICTLY NOT AUTHORIZED (NO)`  
 **Accepted Prerequisite Milestones:**
@@ -90,8 +90,9 @@ W020-G7 implements an explicit typed regime resolution pipeline in `apps/api/src
 ┌─────────────────────────────────────────────────────────────────────────────┐
 │                      W014 TYPED REGIME SELECTION MODES                      │
 ├──────────────────────┬──────────────────────────────────────────────────────┤
-│ 1. Current Regime    │ Returns active statutory regime (eci_delimitation_   │
-│    (Default)         │ 2008). Invariant: is_active = true.                  │
+│ 1. Current Regime    │ W014 typed semantic selection mode representing the  │
+│    (Default)         │ canonical current legal regime subject to legal and  │
+│                      │ temporal validity. Decoupled from is_active boolean. │
 ├──────────────────────┼──────────────────────────────────────────────────────┤
 │ 2. As-Of Regime      │ Evaluates temporal bounds: effective_from <= T AND   │
 │    (Temporal Query)  │ (effective_to IS NULL OR effective_to > T).          │
@@ -103,19 +104,44 @@ W020-G7 implements an explicit typed regime resolution pipeline in `apps/api/src
 │ 4. Future Anticipated│ Queries eci_delimitation_post2026. Population        │
 │    (Tracking Mode)   │ explicitly marked UNAVAILABLE. Zero boundaries.      │
 ├──────────────────────┼──────────────────────────────────────────────────────┤
-│ 5. Scenario Proposed │ Queries scenario_delimitation_draft_prop_1.          │
-│    (Simulation Mode) │ Returns full 10-field scenario enclosure.            │
+│ 5. Scenario Proposed │ Resolves strictly through canonical proposal ID OR   │
+│    (Simulation Mode) │ canonical W014 scenario regime identifier.           │
+│                      │ Returns full 10-field scenario enclosure.            │
 └──────────────────────┴──────────────────────────────────────────────────────┘
 ```
 
-### 3.1 Formal Selection Resolution Contract
+### 3.1 Current Legal Regime Semantics
+1. **Semantic Definition:** "current" is a W014 typed semantic selection mode representing the canonical current legal regime subject to its legal and temporal validity under the prevailing constitutional and statutory order.
+2. **Decoupling from `is_active`:** `is_active` is an operational implementation-level attribute/column in PostgreSQL, but **MUST NOT** be defined as the semantic meaning of "current".
+3. **Statutory and Temporal Validity:** The resolver selects the canonical regime whose `regime_type` is strictly `'CURRENT_LEGAL_REGIME'` and whose temporal validity encompasses the query evaluation instant (`effective_from <= NOW() AND (effective_to IS NULL OR effective_to > NOW())`). In the current legal order, this resolves to `eci_delimitation_2008` (enacted under the Delimitation Act, 2002, Schedule II composite AP order as inherited by Telangana Schedule XXXI under the Andhra Pradesh Reorganisation Act, 2014).
+4. **Structural Protection Against Errant Promotion:** Future anticipated regimes (`FUTURE_ANTICIPATED_REGIME`), scenario/simulation regimes (`SCENARIO_PROPOSED_REGIME`), and historical regimes (`HISTORICAL_LEGAL_REGIME`) are structurally and semantically prohibited from resolving as "current", even if an `is_active` boolean on their database row were mutated or toggled to `true`.
+5. **Fail-Closed Invariant Guard:** If a query resolves any regime where `is_active === true` but `regime_type !== 'CURRENT_LEGAL_REGIME'`, the query engine rejects the state as an invariant violation (`500 INVALID_CURRENT_REGIME_STATE`) rather than erroneously promoting a future or scenario regime to current status.
+
+### 3.2 Scenario Selector Identity & Canonical Resolution
+Scenario selection is strictly bounded to the existing canonical W014/W020 identity plane:
+1. **Allowed Identifiers:**
+   - **Explicit Proposal ID:** `public.delimitation_proposals.id` (UUID, primary key, e.g. `02010000-0000-0000-0000-000000000002` for Proposal 2).
+   - **Canonical W014 Scenario Regime Identifier:** `public.delimitation_regimes.id` (VARCHAR(64), primary key, e.g. `scenario_delimitation_draft_prop_1` where `regime_type === 'SCENARIO_PROPOSED_REGIME'`).
+2. **Strict Elimination of Undefined "Scenario Key":**
+   - No column `scenario_key` exists in the database schema or repository. All references to ad-hoc "scenario keys" are formally removed.
+   - ZERO new scenario identity namespaces.
+   - ZERO ad-hoc string identities.
+   - ZERO duplicate scenario identity fields.
+   - ZERO client-controlled scenario flags.
+3. **Fail-Closed Resolution:** If an incoming scenario query supplies an identifier that does not match an existing canonical proposal UUID or canonical scenario regime ID, or if the resolved entity does not have `legal_status === 'SCENARIO_PROPOSED_REGIME'`, the resolver fails closed with structured `404 SCENARIO_NOT_FOUND` or `400 INVALID_SCENARIO_SELECTOR`.
+
+### 3.3 Formal Selection Resolution Contract
 ```typescript
+export type ScenarioSelector =
+  | { type: 'proposal_id'; proposalId: string }
+  | { type: 'regime_id'; regimeId: string };
+
 export type RegimeSelectionMode =
   | { mode: 'current' }
   | { mode: 'as_of'; date: string }
   | { mode: 'explicit'; regimeId: string }
   | { mode: 'future_anticipated' }
-  | { mode: 'scenario'; scenarioId: string };
+  | { mode: 'scenario'; selector: ScenarioSelector };
 
 export interface ResolvedRegimeResult {
   regime: DelimitationRegimeRow;
@@ -126,11 +152,13 @@ export interface ResolvedRegimeResult {
 }
 ```
 
-### 3.2 Fail-Closed Resolution Rules
+### 3.4 Fail-Closed Resolution Rules
 1. **Invalid Date in `as_of`:** If `as_of` is not a valid ISO 8601 date, reject immediately with `400 INVALID_TEMPORAL_PARAMETER`.
 2. **Unmatched Regime:** If no regime satisfies the temporal interval or explicit ID, fail closed with `404 REGIME_NOT_FOUND` (never fallback to default).
-3. **Client-Supplied Scenario Override:** Any request containing `isScenario`, `is_scenario`, or `simulation` query or body parameters is rejected with `400 SCENARIO_INPUT_FORBIDDEN`.
-4. **Forbidden Regimes:** Any request attempting to resolve `SIMULATION_PROPOSED` or `SIMULATION_PROPOSED_REGIME` fails closed with `400 INVALID_REGIME_IDENTIFIER`.
+3. **Invalid Current Regime State:** If `is_active: true` is attached to a non-`CURRENT_LEGAL_REGIME` row, fail closed with `500 INVALID_CURRENT_REGIME_STATE`.
+4. **Client-Supplied Scenario Override:** Any request containing `isScenario`, `is_scenario`, or `simulation` query or body parameters is rejected with `400 SCENARIO_INPUT_FORBIDDEN`.
+5. **Forbidden Regimes:** Any request attempting to resolve `SIMULATION_PROPOSED` or `SIMULATION_PROPOSED_REGIME` fails closed with `400 INVALID_REGIME_IDENTIFIER`.
+6. **Unresolved Scenario Selector:** Any scenario selection specifying an invalid proposal UUID or non-scenario regime identifier fails closed with `404 SCENARIO_NOT_FOUND`.
 
 ---
 
@@ -242,9 +270,9 @@ W020-G7 query service verifies mathematical determinism on all returned proposal
 W020-G7 will introduce 25 non-tautological semantic invariant checks across 5 planes:
 
 ### Plane 1: Typed Regime Selection Semantics
-- `W020-G7-REG-01`: Mode `current` resolves active `eci_delimitation_2008` regime with Proposal 1 (119/19/12/88).
+- `W020-G7-REG-01`: Mode `current` resolves canonical `CURRENT_LEGAL_REGIME` (`eci_delimitation_2008`) based on statutory/temporal validity; asserts non-`CURRENT_LEGAL_REGIME` rows cannot become current even if `is_active` is toggled.
 - `W020-G7-REG-02`: Mode `as_of(2010-01-01)` resolves `eci_delimitation_2008` based on temporal interval.
-- `W020-G7-REG-03`: Mode `explicit(scenario_delimitation_draft_prop_1)` resolves Proposal 2 (119/18/10/91).
+- `W020-G7-REG-03`: Mode `scenario` resolves Proposal 2 via either explicit proposal ID (`02010000-0000-0000-0000-000000000002`) or canonical scenario regime ID (`scenario_delimitation_draft_prop_1`); rejects ad-hoc keys or client scenario flags.
 - `W020-G7-REG-04`: Mode `future_anticipated` resolves `eci_delimitation_post2026` with population marked `UNAVAILABLE`.
 - `W020-G7-REG-05`: Unknown regime ID or unresolvable temporal date fails closed with structured 404 / 400 error.
 
@@ -278,24 +306,42 @@ W020-G7 will introduce 25 non-tautological semantic invariant checks across 5 pl
 
 ---
 
-## 10. Master Regression Gates (263 Invariant Checks)
+## 10. Master Regression Gates (272 Total Regression Checks/Tests Required)
 
 Prior to submitting W020-G7 for CTO acceptance, the full regression battery must pass with zero failures:
-1. **W020-G7 Query Surface Invariants:** 25 / 25 PASS (`tests/delimitation-g7-query-surface.test.mjs`).
-2. **W020-G6 Invariant Battery:** 27 / 27 PASS (`tests/delimitation-g6-ingestion.test.mjs`).
-3. **W020-G5 Master Invariants:** 34 / 34 PASS (`tests/delimitation-g5-invariants.test.mjs`).
-4. **Delimitation Fastify Route Tests:** 33 / 33 PASS (`apps/api/src/__tests__/delimitation.test.ts`).
-5. **W018 Political Entities Invariants:** 53 / 53 PASS (`tests/political-entities-invariants.test.mjs`).
-6. **W019 Election Normalization Invariants:** 93 / 93 PASS (`tests/election-normalization-invariants.test.mjs`).
-7. **W020-G4 Migration Preflight:** 23 / 23 PASS (`tests/delimitation-migration-055-preflight.test.mjs`).
-8. **Declared API Contract Drift:** 9 / 9 MATCH (`scripts/check-api-contract-drift.mjs`).
-9. **TypeScript Compiler Diagnostic Gates:**
+1. **W020-G6 Historical Delimitation Evidence Ingestion:** 27 / 27 PASS (`tests/delimitation-g6-ingestion.test.mjs`).
+2. **W020-G5 Delimitation Engine Invariants:** 34 / 34 PASS (`tests/delimitation-g5-invariants.test.mjs`).
+3. **W020-G5 Delimitation Fastify Route Integration:** 33 / 33 PASS (`apps/api/src/__tests__/delimitation.test.ts`).
+4. **W018 Canonical Political Entities Invariants:** 53 / 53 PASS (`tests/political-entities-invariants.test.mjs`).
+5. **W019 Election Data Normalization Invariants:** 93 / 93 PASS (`tests/election-normalization-invariants.test.mjs`).
+6. **W020-G4 Migration 055 Preflight:** 23 / 23 PASS (`tests/delimitation-migration-055-preflight.test.mjs`).
+7. **Declared API Contract Drift:** 9 / 9 MATCH (`scripts/check-api-contract-drift.mjs`).
+
+### Required Regression Arithmetic:
+$$\begin{aligned}
+\text{W018 Canonical Political Entities} &= 53 \\
+\text{W019 Election Data Normalization} &= 93 \\
+\text{W020-G4 Migration 055 Preflight} &= 23 \\
+\text{W020-G5 Delimitation Engine Invariants} &= 34 \\
+\text{W020-G5 Fastify Route Integration} &= 33 \\
+\text{W020-G6 Evidence Ingestion} &= 27 \\
+\text{Declared API Contract Drift} &= 9 \\
+\hline
+\mathbf{\text{Total Regression Checks/Tests Required}} &= \mathbf{272}
+\end{aligned}$$
+
+Therefore:
+**"272 total regression checks/tests required"** across all historical and prerequisite suites.
+
+*(Upon W020-G7 implementation, the addition of the 25 new query surface invariant checks in `tests/delimitation-g7-query-surface.test.mjs` yields a combined total of **297 checks** required to pass with zero failures).*
+
+8. **TypeScript Compiler Diagnostic Gates:**
    - `packages/shared`: `tsc` clean (exit 0).
    - `apps/api`: `tsc --noEmit` clean (exit 0).
    - `apps/mobile`: `tsc --noEmit -p apps/mobile/tsconfig.json` clean (exit 0).
-10. **Commit Freshness & Repository Integrity:**
-    - `tests/commit-freshness.test.mjs`: Checks A–J PASS.
-    - `scripts/check-repo-evidence-integrity.mjs`: All commits verified, clean tree.
+9. **Commit Freshness & Repository Integrity:**
+   - `tests/commit-freshness.test.mjs`: Checks A–J PASS.
+   - `scripts/check-repo-evidence-integrity.mjs`: All commits verified, clean tree.
 
 ---
 
@@ -321,7 +367,7 @@ Before W020-G7 can be submitted for CTO acceptance review, the following evidenc
 1. `reports/w020_g7_implementation_report.md` (Detailed implementation narrative).
 2. `reports/w020_g7_implementation_report.json` (Machine-readable invariant results).
 3. `reports/w020_g7_plan_review_manifest.json` (Formal evidence cross-tabulation).
-4. Full execution logs proving 25/25 G7 invariants pass and 263/263 regression tests pass.
+4. Full execution logs proving 25/25 G7 invariants pass and 272/272 regression checks pass (297 total checks passing with zero failures).
 5. Verification of 589 PostGIS geometry baseline digest match.
 
 ---
@@ -330,19 +376,22 @@ Before W020-G7 can be submitted for CTO acceptance review, the following evidenc
 
 ```text
 ================================================================================
-MANDATORY GOVERNANCE STOP STATE — W020-G7 PLANNING COMPLETE
+MANDATORY GOVERNANCE STOP STATE — PLAN-W020-G7-REV-1.1 SUBMITTED
 ================================================================================
-W020-G7 IMPLEMENTATION AUTHORIZATION: STRICTLY NOT AUTHORIZED (NO)
 W020-G7 STATUS:                        DRAFT / SUBMITTED FOR CTO RATIFICATION
+W020-G7 IMPLEMENTATION AUTHORIZATION: STRICTLY NOT AUTHORIZED (NO)
 
 - W020-G6 is formally ACCEPTED / COMPLETE / CLOSED (Accepted Commit: ef32321).
-- W020-G7 Master Plan has been prepared and submitted for CTO review.
+- PLAN-W020-G7-REV-1.1 has been remediated per CTO directive and submitted for ratification.
+- Required regression total corrected: 272 regression checks (plus 25 G7 invariants = 297 total).
+- "current" regime semantics decoupled from is_active boolean; bound to CURRENT_LEGAL_REGIME validity.
+- Scenario identity bounded strictly to canonical proposal ID or canonical W014 scenario regime ID.
 - ZERO code, database, migration, API, mobile, or geometry mutations have been executed.
 - Production database ehfafcnimmjusyvplbah remains 100% air-gapped and untouched.
 - Mobile codebase apps/mobile/** remains 100% frozen.
 - PostGIS 589 geometry baseline remains frozen and verified.
 
 STRICT HALT: Execution stops here. No implementation may begin until the CTO
-issues formal written ratification of PLAN-W020-G7.
+issues formal written ratification of PLAN-W020-G7-REV-1.1.
 ================================================================================
 ```

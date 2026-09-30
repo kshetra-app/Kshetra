@@ -7,7 +7,7 @@
 ## 1. Project & Execution Coordinates
 ```text
 PROJECT:               PANIN (formerly Kshetra)
-CURRENT_JOB:           PLAN-W020-G7 (Master Planning — Delimitation Canonical Query Surface & Typed Regime Selection)
+CURRENT_JOB:           PLAN-W020-G7-REV-1.1 (Master Planning — Delimitation Canonical Query Surface & Typed Regime Selection)
 LAST_COMPLETED_JOB:    W020-G6 (Historical Delimitation Evidence Ingestion & Canonical Bridge Population — ACCEPTED / COMPLETE / CLOSED)
 NEXT_PERMITTED_JOB:    W020-G7 CTO PLAN RATIFICATION (W020-G7 IMPLEMENTATION STRICTLY NOT AUTHORIZED)
 
@@ -42,12 +42,12 @@ R10_GAP_B:             DEFERRED TO W023 (APK / Device Validation Stage)
 R11_STATUS:            STRICTLY BLOCKED
 ```
 
-PLAN_STATUS:                          SUBMITTED FOR CTO RATIFICATION (PLAN-W020-G7)
+PLAN_STATUS:                          SUBMITTED FOR CTO RATIFICATION (PLAN-W020-G7-REV-1.1)
 IMPLEMENTATION_AUTHORIZATION:         STRICTLY NOT AUTHORIZED (NO)
 W020_AUTHORIZATION:                   W020-G7 PLANNING ONLY (IMPLEMENTATION STRICTLY NOT AUTHORIZED)
 IMPLEMENTATION_AUTHORIZATION_COMMIT:  4c01c9ffe0b845fb46eca05996d9d37f9722ad91
 
-AUTHORIZED_JOB:        PLAN-W020-G7 (Planning Only; Implementation NOT Authorized)
+AUTHORIZED_JOB:        PLAN-W020-G7-REV-1.1 (Planning Only; Implementation NOT Authorized)
 W015_STATUS:           ACCEPTED_COMPLETE
 W015_CTO_ACCEPTANCE:   GRANTED (2026-09-23)
 W015_AUTHORIZED_BASELINE: bb7c6ec

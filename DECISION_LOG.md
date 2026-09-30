@@ -2200,3 +2200,31 @@
   - Zero database mutations, zero migrations, zero staging DDL/DML, zero API changes, zero mobile changes, zero geometry changes, zero production access, zero APK/device work.
   - No national ingestion expansion without explicit G7 plan authorization and subsequent CTO ratification.
   - Mandatory governance halt enforced upon plan submission.
+
+---
+
+### DEC-095: SUBMISSION OF REMEDIATED MASTER PLAN PLAN-W020-G7-REV-1.1
+- **Date:** 2026-09-30
+- **Status:** DRAFT / SUBMITTED FOR CTO RATIFICATION
+- **Authority:** CTO PLAN REMEDIATION DIRECTIVE — W020-G7 REV-1.1
+- **Context:** Remediated PLAN-W020-G7 per CTO directive addressing regression check arithmetic, semantic decoupling of current regime from `is_active`, and canonical bounding of scenario selector identity.
+- **Key Plan Remediations in REV-1.1:**
+  1. **Corrected Regression Count & Arithmetic:**
+     - Corrected aggregate regression suite total to exactly 272 checks:
+       W018 (53) + W019 (93) + W020-G4 (23) + W020-G5 Engine Invariants (34) + W020-G5 Fastify Route Integration (33) + W020-G6 Evidence Ingestion (27) + Declared API Contract Drift (9) = 272 total regression checks.
+       (Yielding 297 total invariant checks upon G7 implementation including 25 new query surface checks).
+  2. **Canonical Current Regime Semantics Decoupled from `is_active`:**
+     - Defined "current" strictly as a W014 typed semantic selection mode representing the canonical current legal regime subject to its statutory and temporal validity (`regime_type === 'CURRENT_LEGAL_REGIME'`).
+     - Clarified that `is_active` is an operational implementation-level attribute/column in PostgreSQL, but MUST NOT define the semantic meaning of "current".
+     - Future anticipated regimes, scenario regimes, and historical regimes are structurally prohibited from resolving as current, even if an `is_active` boolean is toggled to true.
+  3. **Canonical Scenario Selector Identity Bounded:**
+     - Bounded scenario selection strictly to canonical W014/W020 identity: explicit proposal ID (`public.delimitation_proposals.id`, UUID) or canonical W014 scenario regime ID (`public.delimitation_regimes.id`, VARCHAR(64), e.g. `scenario_delimitation_draft_prop_1`).
+     - Formally eliminated undefined "scenario key" from the plan; zero new scenario namespaces, zero ad-hoc string identities, zero duplicate columns.
+  4. **Preservation of All G6/G7 Invariants:**
+     - Zero migrations, zero DDL, zero DML.
+     - Production strictly air-gapped; mobile strictly frozen; 589 PostGIS geometry baseline digest unchanged.
+     - Negative evidence invariant preserved: AC-110, AC-118, AC-119 lineage remains strictly `UNKNOWN`; `constituency_mapping` remains strictly at 0 rows.
+- **Milestone Gate Status:**
+  - `PLAN-W020-G7-REV-1.1` submitted for CTO ratification.
+  - Implementation authorization: **STRICTLY NOT AUTHORIZED (NO)**.
+  - Execution halted pending formal written CTO ratification.
