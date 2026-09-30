@@ -3,12 +3,12 @@
     "job": "W008",
     "title": "Fastify API Route Contract Inventory",
     "specification": "Master Execution Framework Amendment v1.5-A / DEC-041",
-    "timestamp": "2026-09-30T13:34:55.682Z"
+    "timestamp": "2026-09-30T15:03:14.367Z"
   },
   "summary": {
-    "totalRoutesRegistered": 161,
+    "totalRoutesRegistered": 167,
     "pioneerAndPhase1Routes": 56,
-    "schemaCoveredRoutes": 131
+    "schemaCoveredRoutes": 134
   },
   "routes": [
     {
@@ -631,6 +631,60 @@
       "schemaDefined": false,
       "preValidationDefined": false,
       "standardizedEnvelope": false
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/delimitation/regimes",
+      "file": "delimitation.ts",
+      "phase": "Phase 2-4",
+      "schemaDefined": false,
+      "preValidationDefined": false,
+      "standardizedEnvelope": false
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/delimitation/regimes/resolve",
+      "file": "delimitation.ts",
+      "phase": "Phase 2-4",
+      "schemaDefined": true,
+      "preValidationDefined": false,
+      "standardizedEnvelope": true
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/delimitation/proposals",
+      "file": "delimitation.ts",
+      "phase": "Phase 2-4",
+      "schemaDefined": false,
+      "preValidationDefined": false,
+      "standardizedEnvelope": false
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/delimitation/proposals/:id",
+      "file": "delimitation.ts",
+      "phase": "Phase 2-4",
+      "schemaDefined": true,
+      "preValidationDefined": false,
+      "standardizedEnvelope": true
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/delimitation/mapping",
+      "file": "delimitation.ts",
+      "phase": "Phase 2-4",
+      "schemaDefined": false,
+      "preValidationDefined": false,
+      "standardizedEnvelope": false
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/delimitation/lineage/:acCode",
+      "file": "delimitation.ts",
+      "phase": "Phase 2-4",
+      "schemaDefined": true,
+      "preValidationDefined": false,
+      "standardizedEnvelope": true
     },
     {
       "method": "GET",

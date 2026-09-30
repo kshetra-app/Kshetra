@@ -438,3 +438,111 @@ export type MlaImpactResponse = ApiSuccessEnvelope<MlaImpactDTO>;
 export type PartyProjectionsResponse = ApiSuccessEnvelope<PartyProjectionsDTO>;
 export type DelimitationMethodologyResponse = ApiSuccessEnvelope<DelimitationMethodologyDTO>;
 export type MonitorWebhookResponse = ApiSuccessEnvelope<MonitorWebhookResponseDTO>;
+
+// ─── W020-G7 CANONICAL QUERY SURFACE & TYPED REGIME SELECTION (PLAN-W020-G7-REV-1.1) ───
+
+export type TypedRegimeSelectionMode =
+  | 'current'
+  | 'as_of'
+  | 'explicit'
+  | 'future_anticipated'
+  | 'scenario';
+
+export type ScenarioSelector =
+  | { type: 'proposal_id'; proposalId: string }
+  | { type: 'regime_id'; regimeId: string };
+
+export type RegimeSelectionQuery =
+  | { mode: 'current' }
+  | { mode: 'as_of'; date: string }
+  | { mode: 'explicit'; regimeId: string }
+  | { mode: 'future_anticipated' }
+  | { mode: 'scenario'; selector: ScenarioSelector };
+
+export interface DelimitationRegimeRecord {
+  id: string;
+  name: string;
+  regimeType: DelimitationLegalRegime;
+  description: string;
+  effectiveFrom: string;
+  effectiveTo: string | null;
+  authority: string;
+  isActive: boolean;
+  metadata: Record<string, unknown>;
+  createdAt: string;
+}
+
+export interface DelimitationProposalRecord {
+  id: string;
+  stateCode: string;
+  title: string;
+  description: string;
+  currentSeats: number;
+  proposedSeats: number;
+  seatChange: number;
+  reservedScSeats: number;
+  reservedStSeats: number;
+  generalSeats: number;
+  status: 'draft' | 'submitted' | 'under_review' | 'approved' | 'rejected' | 'final';
+  outputClassification: OutputClassification;
+  dataStatus: W012DataStatus;
+  legalStatus: DelimitationLegalRegime;
+  isScenario: boolean; // Strictly derived at runtime: (legalStatus === 'SCENARIO_PROPOSED_REGIME')
+  regimeId: string | null;
+  provenanceId: string | null;
+  metadata: Record<string, unknown>;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface ConstituencyMappingRecord {
+  id: string;
+  predecessorConstituencyVersionId: string;
+  successorConstituencyVersionId: string;
+  relationshipType: string;
+  effectiveDate: string;
+  source: string;
+  evidence: string;
+  provenanceId: string | null;
+  metadata: Record<string, unknown>;
+  createdAt: string;
+}
+
+export interface ConstituencyLineageClaim {
+  constituencyCode: string;
+  constituencyName: string;
+  lineageStatus: 'UNKNOWN';
+  statutoryTransferCitation: string;
+  mappingCount: number;
+  evidenceNote: string;
+}
+
+export interface ProvenanceDetailRecord {
+  id: string;
+  sourceAuthority: string;
+  methodology: string;
+  citation: string;
+  verificationNotes?: string;
+  metadata: Record<string, unknown>;
+}
+
+export interface ResolvedRegimeResult {
+  regime: DelimitationRegimeRecord;
+  proposals: DelimitationProposalRecord[];
+  provenance: ProvenanceDetailRecord | null;
+  isScenario: boolean; // Derived strictly: (regime.regimeType === 'SCENARIO_PROPOSED_REGIME')
+}
+
+export type DelimitationRegimesResponse = ApiSuccessEnvelope<DelimitationRegimeRecord[]>;
+export type DelimitationProposalsResponse = ApiSuccessEnvelope<DelimitationProposalRecord[]>;
+export type SingleProposalResponse = ApiSuccessEnvelope<{
+  proposal: DelimitationProposalRecord;
+  provenance: ProvenanceDetailRecord | null;
+}>;
+export type ConstituencyMappingResponse = ApiSuccessEnvelope<{
+  mappings: ConstituencyMappingRecord[];
+  claims: ConstituencyLineageClaim[];
+  count: number;
+}>;
+export type ConstituencyLineageResponse = ApiSuccessEnvelope<ConstituencyLineageClaim>;
+export type ResolvedRegimeResponse = ApiSuccessEnvelope<ResolvedRegimeResult>;

@@ -1,0 +1,139 @@
+{
+  "milestone": "W020-G7",
+  "documentIdentifier": "W020-G7-IMPLEMENTATION-REPORT",
+  "title": "Delimitation Canonical Query Surface & Typed Regime Selection Implementation Report",
+  "specification": "PLAN-W020-G7-REV-1.1.md",
+  "authority": "CTO FORMAL RATIFICATION — W020-G7 REV-1.1",
+  "timestamp": "2026-09-30T15:07:00Z",
+  "gitCoordinates": {
+    "canonicalBranch": "master",
+    "verifiedRemoteHead": "b7ee9ff284e06729b69caf539b2599478aa02dc2",
+    "auditedCodeCommit": "b7ee9ff284e06729b69caf539b2599478aa02dc2",
+    "evidenceCommit": "pending"
+  },
+  "environments": {
+    "stagingTarget": "panIN-staging (fkpigozcqnmcvofuksar)",
+    "localTestContainer": "docker supabase_db_Kshetra (w020_g6_pg_verify)",
+    "productionTarget": "ehfafcnimmjusyvplbah (STRICTLY AIR-GAPPED & UNTOUCHED)"
+  },
+  "invariants": {
+    "postgisGeometryBaseline": {
+      "expectedRows": 589,
+      "actualRows": 589,
+      "expectedDigest": "f839fa02980318a8f35f932ebe72fa1d3ad6325dc86a624bf159d932fe5f613b",
+      "actualDigest": "f839fa02980318a8f35f932ebe72fa1d3ad6325dc86a624bf159d932fe5f613b",
+      "verified": true
+    },
+    "mobileFreeze": {
+      "directory": "apps/mobile/**",
+      "modifiedFiles": 0,
+      "verified": true
+    },
+    "productionAirGap": {
+      "database": "ehfafcnimmjusyvplbah",
+      "networkCalls": 0,
+      "mutations": 0,
+      "verified": true
+    },
+    "schemaMutations": {
+      "migrations": 0,
+      "newTables": 0,
+      "newColumns": 0,
+      "ddlExecuted": false,
+      "dmlExecuted": false,
+      "verified": true
+    },
+    "constituencyMapping": {
+      "rowCount": 0,
+      "ac110Lineage": "UNKNOWN",
+      "ac118Lineage": "UNKNOWN",
+      "ac119Lineage": "UNKNOWN",
+      "statutoryTransferTerminology": "statutory territorial transfer of specified mandals/villages under the Andhra Pradesh Reorganisation (Removal of Difficulties) Order, 2015",
+      "verified": true
+    },
+    "regimeSelection": {
+      "modesSupported": ["current", "as_of", "explicit", "future_anticipated", "scenario"],
+      "failClosed": true,
+      "currentDecoupledFromIsActive": true,
+      "scenarioSelectorAllowed": ["proposal_id", "regime_id"],
+      "scenarioKeyProhibited": true,
+      "verified": true
+    },
+    "taxonomicOrthogonality": {
+      "planes": ["status", "outputClassification", "dataStatus", "legalStatus"],
+      "isScenarioDerivedOnly": true,
+      "clientOverrideBlocked": true,
+      "verified": true
+    }
+  },
+  "testExecutionSummary": {
+    "totalChecks": 297,
+    "passedChecks": 297,
+    "failedChecks": 0,
+    "passRate": "100.0%",
+    "suites": [
+      {
+        "name": "W020-G7 Canonical Query Surface Battery",
+        "file": "tests/delimitation-g7-query-surface.test.mjs",
+        "checks": 25,
+        "passed": 25,
+        "failed": 0
+      },
+      {
+        "name": "W020-G6 Historical Ingestion & Evidence Gate",
+        "file": "tests/delimitation-g6-ingestion.test.mjs",
+        "checks": 27,
+        "passed": 27,
+        "failed": 0
+      },
+      {
+        "name": "W020-G5 Delimitation Engine Invariants",
+        "file": "tests/delimitation-g5-invariants.test.mjs",
+        "checks": 34,
+        "passed": 34,
+        "failed": 0
+      },
+      {
+        "name": "W020-G5 Delimitation Fastify Route Integration",
+        "file": "apps/api/src/__tests__/delimitation.test.ts",
+        "checks": 33,
+        "passed": 33,
+        "failed": 0
+      },
+      {
+        "name": "W018 Political Entity Invariants Battery",
+        "file": "tests/political-entities-invariants.test.mjs",
+        "checks": 53,
+        "passed": 53,
+        "failed": 0
+      },
+      {
+        "name": "W019 Election Normalization Invariants Battery",
+        "file": "tests/election-normalization-invariants.test.mjs",
+        "checks": 93,
+        "passed": 93,
+        "failed": 0
+      },
+      {
+        "name": "W020-G4 Migration 055 Staging Preflight",
+        "file": "tests/delimitation-migration-055-preflight.test.mjs",
+        "checks": 23,
+        "passed": 23,
+        "failed": 0
+      },
+      {
+        "name": "API Contract Parity Audit",
+        "file": "scripts/check-api-contract-drift.mjs",
+        "checks": 9,
+        "passed": 9,
+        "failed": 0
+      }
+    ]
+  },
+  "builds": {
+    "packagesShared": "PASS (tsc clean, exit 0)",
+    "appsApi": "PASS (tsc --noEmit, exit 0)",
+    "appsMobile": "PASS (tsc --noEmit -p apps/mobile/tsconfig.json, exit 0)"
+  },
+  "status": "IMPLEMENTED / TESTED / VERIFIED / SUBMITTED FOR CTO ACCEPTANCE"
+}

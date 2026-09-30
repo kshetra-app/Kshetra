@@ -2228,3 +2228,36 @@
   - `PLAN-W020-G7-REV-1.1` submitted for CTO ratification.
   - Implementation authorization: **STRICTLY NOT AUTHORIZED (NO)**.
   - Execution halted pending formal written CTO ratification.
+
+---
+
+### DEC-096: W020-G7 CANONICAL QUERY SURFACE IMPLEMENTATION & VERIFICATION
+- **Date:** 2026-09-30
+- **Status:** IMPLEMENTED / TESTED / VERIFIED / SUBMITTED FOR CTO ACCEPTANCE
+- **Authority:** CTO FORMAL RATIFICATION — W020-G7 REV-1.1 (IMPLEMENTATION AUTHORIZATION = YES)
+- **Context:** Following formal CTO ratification of PLAN-W020-G7-REV-1.1, the canonical read-only query surface bridging W020-G5 calculation engine semantics with W020-G6 database persistence was implemented and verified across 297 comprehensive invariant checks.
+- **Key Implementation Decisions & Invariants:**
+  1. **Canonical Typed Selection Modes (W014 Standard):**
+     - Implemented `current`, `as_of(date)`, `explicit(regimeId)`, `future_anticipated`, and `scenario(selector)` in `apps/api/src/services/delimitationQueryService.ts`.
+     - "current" is decoupled from `is_active` and enforces `regimeType === 'CURRENT_LEGAL_REGIME'` with statutory and temporal validity. Any invalid active state fails closed with 500 `INVALID_CURRENT_REGIME_STATE`.
+     - Scenario selection is strictly restricted to canonical proposal ID (`public.delimitation_proposals.id`, UUID) or canonical W014 scenario regime ID (`public.delimitation_regimes.id`). Undefined "scenario keys" are completely absent.
+  2. **Quadruple-Plane Orthogonal Taxonomy:**
+     - Enforced complete independence among proposal `status`, `outputClassification`, `dataStatus`, and `legalStatus`.
+     - `isScenario` is derived strictly at runtime from `(legalStatus === 'SCENARIO_PROPOSED_REGIME')`.
+     - Client query overrides (`isScenario`, `is_scenario`, `simulation`) fail closed with HTTP 400 `SCENARIO_INPUT_FORBIDDEN`.
+  3. **Evidence-Gated Lineage Preservation:**
+     - `public.constituency_mapping` verified strictly at 0 rows.
+     - AC-110 (Pinapaka), AC-118 (Aswaraopeta), and AC-119 (Bhadrachalam) lineage strictly preserved as `UNKNOWN` with canonical citation to the Andhra Pradesh Reorganisation (Removal of Difficulties) Order, 2015 (G.S.R. 311(E), 23 April 2015).
+  4. **Strict Scope & Environmental Isolation:**
+     - Zero migrations, zero DDL, zero DML executed on staging database.
+     - Production database `ehfafcnimmjusyvplbah` verified 100% air-gapped and untouched.
+     - Mobile codebase `apps/mobile/**` verified 100% frozen (0 file modifications).
+     - PostGIS 589 geometry baseline verified strictly unchanged (`f839fa02980318a8f35f932ebe72fa1d3ad6325dc86a624bf159d932fe5f613b`).
+  5. **Comprehensive Verification Battery (297 / 297 Pass Rate):**
+     - 25 new W020-G7 query surface invariant checks: 25 / 25 PASS (100%).
+     - 272 prerequisite regression checks: W020-G6 (27/27), W020-G5 Engine (34/34), W020-G5 Routes (33/33), W018 (53/53), W019 (93/93), W020-G4 (23/23), API Drift (9/9).
+     - Full aggregate total: 297 / 297 CHECKS PASSED (100.0%).
+     - All TypeScript workspaces compile cleanly (`packages/shared`, `apps/api`, `apps/mobile`).
+- **Milestone Gate Status:**
+  - W020-G7 formally submitted for CTO acceptance review.
+  - Implementing agent does not self-accept. Mandatory governance halt enforced awaiting CTO review. W020-G8+ strictly blocked.

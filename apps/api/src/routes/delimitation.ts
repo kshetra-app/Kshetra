@@ -32,15 +32,53 @@ import type { FastifyInstance, FastifyReply, FastifyRequest } from 'fastify';
 import type {
   ApiSuccessEnvelope,
   MonitorWebhookPayloadDTO,
+  TypedRegimeSelectionMode,
+  RegimeSelectionQuery,
 } from '@kshetra/shared';
 import {
   delimitationService,
   MAX_SAFE_REQUESTED_SEATS,
   MIN_SAFE_REQUESTED_SEATS,
 } from '../services/delimitationService';
+import {
+  delimitationQueryService,
+  DelimitationQueryError,
+} from '../services/delimitationQueryService';
 import { sendApiError } from '../lib/replyHelper';
 
 // ─── AJV SCHEMAS FOR DELIMITATION INGRESS VALIDATION ───
+
+const regimeResolveSchema = {
+  querystring: {
+    type: 'object',
+    properties: {
+      mode: { type: 'string', enum: ['current', 'as_of', 'explicit', 'future_anticipated', 'scenario'] },
+      date: { type: 'string' },
+      regimeId: { type: 'string' },
+      proposalId: { type: 'string' },
+    },
+  },
+};
+
+const proposalParamSchema = {
+  params: {
+    type: 'object',
+    required: ['id'],
+    properties: {
+      id: { type: 'string' },
+    },
+  },
+};
+
+const lineageParamSchema = {
+  params: {
+    type: 'object',
+    required: ['acCode'],
+    properties: {
+      acCode: { type: 'string' },
+    },
+  },
+};
 
 const projectionsQuerySchema = {
   querystring: {
@@ -502,4 +540,195 @@ export async function delimitationRoutes(app: FastifyInstance) {
       });
     }
   });
+
+  /**
+   * 15. GET /api/v1/delimitation/regimes
+   * Retrieves all canonical delimitation regimes in the W014 catalog.
+   */
+  app.get('/api/v1/delimitation/regimes', async (request, reply) => {
+    try {
+      const regimes = await delimitationQueryService.getRegimes();
+      return sendSuccess(reply, request, regimes);
+    } catch (err: any) {
+      if (err instanceof DelimitationQueryError) {
+        return sendApiError(reply, request, err.statusCode, err.name, err.message, { code: err.code });
+      }
+      return sendApiError(reply, request, 500, 'Internal Server Error', err.message || 'Error retrieving regimes', {
+        code: 'REGIME_RETRIEVAL_ERROR',
+      });
+    }
+  });
+
+  /**
+   * 16. GET /api/v1/delimitation/regimes/resolve
+   * W014 typed regime selection resolver supporting 5 modes:
+   * current, as_of(date), explicit(regimeId), future_anticipated, scenario(selector).
+   */
+  app.get('/api/v1/delimitation/regimes/resolve', { schema: regimeResolveSchema }, async (request, reply) => {
+    try {
+      const q = (request.query || {}) as {
+        mode?: TypedRegimeSelectionMode;
+        date?: string;
+        regimeId?: string;
+        proposalId?: string;
+      };
+
+      const mode = q.mode || 'current';
+      let queryPayload: RegimeSelectionQuery;
+
+      if (mode === 'current') {
+        queryPayload = { mode: 'current' };
+      } else if (mode === 'as_of') {
+        if (!q.date) {
+          return sendApiError(reply, request, 400, 'Bad Request', 'Mode as_of requires date query parameter', {
+            code: 'INVALID_TEMPORAL_PARAMETER',
+          });
+        }
+        queryPayload = { mode: 'as_of', date: q.date };
+      } else if (mode === 'explicit') {
+        if (!q.regimeId) {
+          return sendApiError(reply, request, 400, 'Bad Request', 'Mode explicit requires regimeId query parameter', {
+            code: 'INVALID_REGIME_IDENTIFIER',
+          });
+        }
+        queryPayload = { mode: 'explicit', regimeId: q.regimeId };
+      } else if (mode === 'future_anticipated') {
+        queryPayload = { mode: 'future_anticipated' };
+      } else if (mode === 'scenario') {
+        if (q.proposalId && q.regimeId) {
+          return sendApiError(reply, request, 400, 'Bad Request', 'Ambiguous scenario selector: specify proposalId OR regimeId, not both', {
+            code: 'INVALID_SCENARIO_SELECTOR',
+          });
+        }
+        if (q.proposalId) {
+          queryPayload = {
+            mode: 'scenario',
+            selector: { type: 'proposal_id', proposalId: q.proposalId },
+          };
+        } else if (q.regimeId) {
+          queryPayload = {
+            mode: 'scenario',
+            selector: { type: 'regime_id', regimeId: q.regimeId },
+          };
+        } else {
+          return sendApiError(reply, request, 400, 'Bad Request', 'Scenario selection requires proposalId or regimeId', {
+            code: 'INVALID_SCENARIO_SELECTOR',
+          });
+        }
+      } else {
+        return sendApiError(reply, request, 400, 'Bad Request', `Unknown regime selection mode: ${mode}`, {
+          code: 'INVALID_REGIME_SELECTION_MODE',
+        });
+      }
+
+      const result = await delimitationQueryService.resolveRegime(queryPayload);
+      return sendSuccess(reply, request, result);
+    } catch (err: any) {
+      if (err instanceof DelimitationQueryError) {
+        return sendApiError(reply, request, err.statusCode, err.name, err.message, {
+          code: err.code,
+          details: err.details,
+        });
+      }
+      return sendApiError(reply, request, 500, 'Internal Server Error', err.message || 'Error resolving regime', {
+        code: 'REGIME_RESOLUTION_ERROR',
+      });
+    }
+  });
+
+  /**
+   * 17. GET /api/v1/delimitation/proposals
+   * Retrieves all canonical proposals, optionally filtered by stateCode or regimeId.
+   */
+  app.get<{ Querystring: { stateCode?: string; regimeId?: string } }>(
+    '/api/v1/delimitation/proposals',
+    async (request, reply) => {
+      try {
+        const { stateCode, regimeId } = request.query;
+        const proposals = await delimitationQueryService.getProposals({ stateCode, regimeId });
+        return sendSuccess(reply, request, proposals);
+      } catch (err: any) {
+        if (err instanceof DelimitationQueryError) {
+          return sendApiError(reply, request, err.statusCode, err.name, err.message, { code: err.code });
+        }
+        return sendApiError(reply, request, 500, 'Internal Server Error', err.message || 'Error retrieving proposals', {
+          code: 'PROPOSALS_RETRIEVAL_ERROR',
+        });
+      }
+    },
+  );
+
+  /**
+   * 18. GET /api/v1/delimitation/proposals/:id
+   * Retrieves a single proposal by UUID, resolving its associated provenance record.
+   */
+  app.get<{ Params: { id: string } }>(
+    '/api/v1/delimitation/proposals/:id',
+    { schema: proposalParamSchema },
+    async (request, reply) => {
+      try {
+        const { id } = request.params;
+        const result = await delimitationQueryService.getProposalById(id);
+        if (!result) {
+          return sendApiError(reply, request, 404, 'Not Found', `Delimitation proposal not found: ${id}`, {
+            code: 'PROPOSAL_NOT_FOUND',
+          });
+        }
+        return sendSuccess(reply, request, result);
+      } catch (err: any) {
+        if (err instanceof DelimitationQueryError) {
+          return sendApiError(reply, request, err.statusCode, err.name, err.message, { code: err.code });
+        }
+        return sendApiError(reply, request, 500, 'Internal Server Error', err.message || 'Error retrieving proposal', {
+          code: 'PROPOSAL_RETRIEVAL_ERROR',
+        });
+      }
+    },
+  );
+
+  /**
+   * 19. GET /api/v1/delimitation/mapping
+   * Queries constituency mappings. Enforces public.constituency_mapping = 0 rows and returns UNKNOWN claims.
+   */
+  app.get('/api/v1/delimitation/mapping', async (request, reply) => {
+    try {
+      const result = await delimitationQueryService.getConstituencyMappings();
+      return sendSuccess(reply, request, result);
+    } catch (err: any) {
+      if (err instanceof DelimitationQueryError) {
+        return sendApiError(reply, request, err.statusCode, err.name, err.message, { code: err.code });
+      }
+      return sendApiError(reply, request, 500, 'Internal Server Error', err.message || 'Error retrieving constituency mapping', {
+        code: 'MAPPING_RETRIEVAL_ERROR',
+      });
+    }
+  });
+
+  /**
+   * 20. GET /api/v1/delimitation/lineage/:acCode
+   * Retrieves lineage status and statutory transfer citations for a specific constituency.
+   */
+  app.get<{ Params: { acCode: string } }>(
+    '/api/v1/delimitation/lineage/:acCode',
+    { schema: lineageParamSchema },
+    async (request, reply) => {
+      try {
+        const { acCode } = request.params;
+        const claim = await delimitationQueryService.getConstituencyLineage(acCode);
+        if (!claim) {
+          return sendApiError(reply, request, 404, 'Not Found', `No delimitation lineage record or claim found for constituency: ${acCode}`, {
+            code: 'CONSTITUENCY_NOT_FOUND',
+          });
+        }
+        return sendSuccess(reply, request, claim);
+      } catch (err: any) {
+        if (err instanceof DelimitationQueryError) {
+          return sendApiError(reply, request, err.statusCode, err.name, err.message, { code: err.code });
+        }
+        return sendApiError(reply, request, 500, 'Internal Server Error', err.message || 'Error retrieving constituency lineage', {
+          code: 'LINEAGE_RETRIEVAL_ERROR',
+        });
+      }
+    },
+  );
 }
