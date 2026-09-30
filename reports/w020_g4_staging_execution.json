@@ -1,0 +1,123 @@
+{
+  "gate": "W020-G4",
+  "title": "Migration 055 Staging Execution & Verification Report",
+  "timestamp": "2026-09-30T04:12:00.000Z",
+  "directive": "CTO DECISION — W020-G4 PREFLIGHT ACCEPTED: BOUNDED STAGING APPLICATION + LIVE VERIFICATION ONLY",
+  "gitCommit": "d6c4513dcca21c5833113dcf16162f2cbb2cd43a",
+  "targetEnvironment": {
+    "projectRef": "fkpigozcqnmcvofuksar",
+    "name": "panIN-staging",
+    "url": "https://fkpigozcqnmcvofuksar.supabase.co",
+    "verifiedStaging": true
+  },
+  "productionAirGap": {
+    "target": "ehfafcnimmjusyvplbah",
+    "status": "STRICTLY AIR-GAPPED & UNTOUCHED",
+    "connectionCount": 0,
+    "mutationsCount": 0
+  },
+  "geometryBaseline": {
+    "rowCount": 589,
+    "expectedRowCount": 589,
+    "sha256": "f839fa02980318a8f35f932ebe72fa1d3ad6325dc86a624bf159d932fe5f613b",
+    "expectedSha256": "f839fa02980318a8f35f932ebe72fa1d3ad6325dc86a624bf159d932fe5f613b",
+    "frozen": true,
+    "status": "PASS"
+  },
+  "evidenceCategories": {
+    "preflight": {
+      "status": "ACCEPTED_BY_CTO",
+      "testSuite": "tests/delimitation-migration-055-preflight.test.mjs",
+      "totalChecks": 23,
+      "passedChecks": 23,
+      "failedChecks": 0,
+      "report": "reports/w020_g4_migration_preflight.md"
+    },
+    "stagingExecution": {
+      "package": "supabase/staging_migration_package_055.sql",
+      "executionMode": "Transactional atomic block (BEGIN ... COMMIT)",
+      "testHarnessExecution": {
+        "harness": "PostgreSQL 17.6 (w020_g4_pg_verify)",
+        "result": "SUCCESS",
+        "rawOutput": [
+          "BEGIN",
+          "NOTICE:  [MIGRATION 055] PRE-CHECK: delimitation_proposals row count = 0",
+          "NOTICE:  [MIGRATION 055] PRE-CHECK: constituency_mapping row count = 0",
+          "DO",
+          "ALTER TABLE",
+          "CREATE INDEX",
+          "CREATE INDEX",
+          "NOTICE:  [MIGRATION 055] STEP 1: Added delimitation_regime_id, provenance_id, metadata to public.delimitation_proposals",
+          "DO",
+          "ALTER TABLE",
+          "CREATE INDEX",
+          "CREATE INDEX",
+          "CREATE INDEX",
+          "NOTICE:  [MIGRATION 055] STEP 2: Added constituency_version_id, predecessor_version_id, provenance_id to public.constituency_mapping",
+          "DO",
+          "ALTER TABLE",
+          "ALTER TABLE",
+          "DO",
+          "GRANT",
+          "GRANT",
+          "NOTICE:  [MIGRATION 055] STEP 3: Created 5 FK indexes and enabled Row Level Security",
+          "NOTICE:  [MIGRATION 055] SUCCESS: Migration 055 applied successfully within transaction.",
+          "DO",
+          "COMMIT"
+        ]
+      },
+      "cloudStagingExecution": {
+        "status": "PENDING_OPERATOR_SQL_EDITOR_EXECUTION",
+        "reason": "PostgREST REST gateway does not expose DDL execution; standard W009/W014/W015/W016 protocol requires operator execution in Supabase Dashboard SQL Editor",
+        "actionRequired": "Operator paste and run supabase/staging_migration_package_055.sql in Supabase Dashboard SQL Editor for fkpigozcqnmcvofuksar"
+      }
+    },
+    "stagingVerification": {
+      "verificationScript": "supabase/verification_055_delimitation_canonical_bridge.sql",
+      "testHarnessVerification": {
+        "harness": "PostgreSQL 17.6 (w020_g4_pg_verify)",
+        "result": "ALL_CHECKS_PASSED",
+        "rawOutput": [
+          "NOTICE:  === EXECUTING VERIFICATION 055 CHECKS ===",
+          "NOTICE:  [PASS] delimitation_proposals has all 3 required columns",
+          "NOTICE:  [PASS] constituency_mapping has all 3 required columns",
+          "NOTICE:  [PASS] All 5 foreign key constraints verified",
+          "NOTICE:  [PASS] All 5 indexes verified",
+          "NOTICE:  [PASS] RLS is active on both tables",
+          "NOTICE:  [PASS] Zero persistent is_scenario columns detected",
+          "NOTICE:  === ALL VERIFICATION 055 SQL CHECKS PASSED ===",
+          "DO"
+        ]
+      },
+      "liveCloudStagingState": {
+        "endpoint": "https://fkpigozcqnmcvofuksar.supabase.co",
+        "delimitation_proposals": {
+          "tableExists": true,
+          "rowCount": 0,
+          "schemaStatus": "PRE_055_PROTOTYPE (Awaiting SQL Editor application)"
+        },
+        "constituency_mapping": {
+          "tableExists": true,
+          "rowCount": 0,
+          "schemaStatus": "PRE_055_PROTOTYPE (Awaiting SQL Editor application)"
+        },
+        "delimitation_regimes": {
+          "tableExists": true,
+          "rowCount": 4,
+          "records": [
+            { "id": "eci_delimitation_1976", "legal_status": "HISTORICAL_LEGAL_REGIME" },
+            { "id": "eci_delimitation_2008", "legal_status": "CURRENT_LEGAL_REGIME" },
+            { "id": "eci_delimitation_post2026", "legal_status": "FUTURE_ANTICIPATED_REGIME" },
+            { "id": "scenario_delimitation_draft_prop_1", "legal_status": "SCENARIO_PROPOSED_REGIME" }
+          ]
+        },
+        "entity_geometries": {
+          "rowCount": 589,
+          "sha256": "f839fa02980318a8f35f932ebe72fa1d3ad6325dc86a624bf159d932fe5f613b",
+          "frozen": true
+        }
+      }
+    }
+  },
+  "overallVerdict": "PREFLIGHT_VERIFIED_AND_HARNESS_APPLIED__CLOUD_MIGRATION_PACKAGE_PREPARED_FOR_OPERATOR"
+}
