@@ -7,9 +7,9 @@
 ## 1. Project & Execution Coordinates
 ```text
 PROJECT:               PANIN (formerly Kshetra)
-CURRENT_JOB:           W020-G5 (Delimitation Engine Foundation — IMPLEMENTED / TESTED / VERIFIED / SUBMITTED FOR CTO ACCEPTANCE)
-LAST_COMPLETED_JOB:    W020-G4 (Delimitation Canonical Bridge Preflight & Staging Execution — ACCEPTED / COMPLETE / CLOSED)
-NEXT_PERMITTED_JOB:    W020-G5 (SUBMITTED FOR CTO ACCEPTANCE; W020-G6+ STRICTLY NOT AUTHORIZED)
+CURRENT_JOB:           W020-G6 (Historical Delimitation Data Ingestion & Canonical Bridge Population — PLANNING ONLY / NOT AUTHORIZED FOR IMPLEMENTATION)
+LAST_COMPLETED_JOB:    W020-G5 (Delimitation Engine Foundation — ACCEPTED / COMPLETE / CLOSED)
+NEXT_PERMITTED_JOB:    PLAN-W020-G6 (PLANNING ONLY; IMPLEMENTATION STRICTLY NOT AUTHORIZED)
 
 W018_STATUS:           ACCEPTED / COMPLETE (Canonical Commit: 080344c580ad9df92586a7a0e68989fb50e7cf3d)
 W018_CTO_ACCEPTANCE:   GRANTED (2026-09-29)
@@ -21,11 +21,13 @@ W019_MASTER_BATTERY:   93/93 PASS (100% Invariants Verified across 13 verificati
 W019_API_BATTERY:      10/10 PASS (apps/api/src/__tests__/elections.test.ts)
 W020_G4_STATUS:        ACCEPTED / COMPLETE / CLOSED (DEC-084 / DEC-085)
 W020_G4_EVIDENCE:      reports/w020_g4_staging_execution.json, reports/w020_g4_migration_preflight.json
-W020_G5_STATUS:        REMEDIATED (R2) / TESTED / VERIFIED / SUBMITTED FOR CTO ACCEPTANCE (PLAN-W020-G5-REV-1.2 / DEC-090)
+W020_G5_STATUS:        ACCEPTED / COMPLETE / CLOSED (Accepted Commit: 32a0ed7f4e036ff309e60cc3ae36a45c78750165 / DEC-090 / DEC-091)
+W020_G5_CTO_ACCEPTANCE: GRANTED (2026-09-30)
 W020_G5_PLAN:          PLAN-W020-G5-REV-1.2.md, reports/w020_g5_plan_manifest.json
 W020_G5_VERIFICATION:  reports/w020_g5_acceptance_remediation_r2.md, reports/w020_g5_acceptance_remediation_r2.json
 W020_G5_INVARIANTS:    34/34 PASS (tests/delimitation-g5-invariants.test.mjs)
 W020_G5_API_TESTS:     33/33 PASS (apps/api/src/__tests__/delimitation.test.ts)
+W020_G6_STATUS:        PLANNING ONLY / IMPLEMENTATION NOT AUTHORIZED
 
 W017_STATUS:           ACCEPTED / COMPLETE
 W017_CTO_ACCEPTANCE:   GRANTED (2026-09-29)
@@ -35,12 +37,12 @@ R10_GAP_B:             DEFERRED TO W023 (APK / Device Validation Stage)
 R11_STATUS:            STRICTLY BLOCKED
 ```
 
-PLAN_STATUS:                          APPROVED (REV-1.2)
-IMPLEMENTATION_AUTHORIZATION:         YES
-W020_AUTHORIZATION:                   BOUNDED W020-G5 AUTHORIZED (W020-G6+ STRICTLY NOT AUTHORIZED)
+PLAN_STATUS:                          APPROVED (REV-1.2) / G6 PLANNING IN PROGRESS
+IMPLEMENTATION_AUTHORIZATION:         NO (W020-G6 Implementation NOT Authorized)
+W020_AUTHORIZATION:                   W020-G5 ACCEPTED / COMPLETE (W020-G6+ IMPLEMENTATION STRICTLY NOT AUTHORIZED)
 IMPLEMENTATION_AUTHORIZATION_COMMIT:  505ae56ba8839a44b1171b1edcb45aec33c65c04
 
-AUTHORIZED_JOB:        W020-G5 (Delimitation Engine Foundation)
+AUTHORIZED_JOB:        PLAN-W020-G6 (Planning Only; Implementation NOT Authorized)
 W015_STATUS:           ACCEPTED_COMPLETE
 W015_CTO_ACCEPTANCE:   GRANTED (2026-09-23)
 W015_AUTHORIZED_BASELINE: bb7c6ec

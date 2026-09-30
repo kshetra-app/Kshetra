@@ -2042,3 +2042,34 @@
 - **Milestone Gate Status:**
   - W020-G5 Remediation R2 is complete, tested, verified, and re-submitted for CTO Technical Acceptance Review.
   - W020-G6+ remains **STRICTLY NOT AUTHORIZED**.
+
+---
+
+### DEC-091: W020-G5 FORMAL CTO FINAL ACCEPTANCE & W020-G6 PLANNING AUTHORIZATION
+- **Date:** 2026-09-30
+- **Status:** ACCEPTED / COMPLETE / CLOSED
+- **Authority:** CTO FINAL ACCEPTANCE — W020-G5
+- **Accepted Commit:** `32a0ed7f4e036ff309e60cc3ae36a45c78750165`
+- **Summary of Formal CTO Acceptances:**
+  1. Generic algorithm vs governed Telangana scope separation.
+  2. Current statutory Telangana baseline: 119 total / 19 SC / 12 ST / 88 General (`STATUTORY_FACT`, `OFFICIAL`, `CURRENT_LEGAL_REGIME`).
+  3. Census-2011 mathematical derivation: 119 total / 18 SC / 10 ST / 91 General, explicitly `DETERMINISTIC_DERIVED` + `DERIVED`.
+  4. Article 332 constitutional principle separated from PANIN Hamilton/Largest Remainder computational method.
+  5. Canonical W014 legal-regime vocabulary (`HISTORICAL_LEGAL_REGIME`, `CURRENT_LEGAL_REGIME`, `FUTURE_ANTICIPATED_REGIME`, `SCENARIO_PROPOSED_REGIME`).
+  6. Derived-only `isScenario` semantics (`isScenario = (legalStatus === 'SCENARIO_PROPOSED_REGIME')`).
+  7. Client override prevention and `SCENARIO_INPUT_FORBIDDEN` fail-closed hook behavior.
+  8. Mathematical provenance and deterministic tie-breaking.
+  9. 34/34 W020-G5 invariant checks.
+  10. 33/33 route/semantic tests.
+  11. W018 53/53 regression.
+  12. W019 93/93 regression.
+  13. W020-G4 23/23 regression.
+  14. API contract parity 9/9.
+  15. Builds and TypeScript verification (API, Shared, Mobile).
+  16. Repository/evidence integrity (42/42 commits verified, clean tree).
+  17. Exact 589-row PostGIS geometry digest (`f839fa02980318a8f35f932ebe72fa1d3ad6325dc86a624bf159d932fe5f613b`).
+  18. Production air-gap (`ehfafcnimmjusyvplbah` untouched).
+  19. Mobile freeze (`apps/mobile/**` 100% frozen).
+- **Mandated Next Action:**
+  - Authorize preparation of `PLAN-W020-G6.md` only.
+  - Implementation of W020-G6 remains **STRICTLY NOT AUTHORIZED** until CTO formal ratification.
