@@ -7,7 +7,7 @@
 ## 1. Project & Execution Coordinates
 ```text
 PROJECT:               PANIN (formerly Kshetra)
-CURRENT_JOB:           W020-G6 (Historical Delimitation Data Ingestion & Canonical Bridge Population — SUBMITTED FOR CTO ACCEPTANCE)
+CURRENT_JOB:           W020-G6 (Historical Delimitation Data Ingestion & Canonical Bridge Population — RESUBMITTED FOR CTO ACCEPTANCE)
 LAST_COMPLETED_JOB:    W020-G5 (Delimitation Engine Foundation — ACCEPTED / COMPLETE / CLOSED)
 NEXT_PERMITTED_JOB:    W020-G6 CTO ACCEPTANCE REVIEW (W020-G7 STRICTLY BLOCKED PENDING ACCEPTANCE)
 
@@ -27,7 +27,7 @@ W020_G5_PLAN:          PLAN-W020-G5-REV-1.2.md, reports/w020_g5_plan_manifest.js
 W020_G5_VERIFICATION:  reports/w020_g5_acceptance_remediation_r2.md, reports/w020_g5_acceptance_remediation_r2.json
 W020_G5_INVARIANTS:    34/34 PASS (tests/delimitation-g5-invariants.test.mjs)
 W020_G5_API_TESTS:     33/33 PASS (apps/api/src/__tests__/delimitation.test.ts)
-W020_G6_STATUS:        IMPLEMENTED / TESTED / VERIFIED / SUBMITTED FOR CTO ACCEPTANCE (DEC-093)
+W020_G6_STATUS:        IMPLEMENTED / TESTED / VERIFIED / RESUBMITTED FOR CTO ACCEPTANCE (DEC-093)
 W020_G6_PLAN:          PLAN-W020-G6-REV-1.1.md (RATIFIED, Commit 4c01c9ffe0b845fb46eca05996d9d37f9722ad91)
 W020_G6_EVIDENCE:      reports/w020_g6_implementation_report.md, reports/w020_g6_implementation_report.json
 W020_G6_INVARIANTS:    27/27 PASS (tests/delimitation-g6-ingestion.test.mjs)

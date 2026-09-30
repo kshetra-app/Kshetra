@@ -35,5 +35,5 @@ In Table B of the notification:
 
 - **Does NOT Update Telangana Schedule XXXI (`MAP-06`):** The Notification contains zero amendments to Schedule XXXI (State of Telangana). It did **NOT** amend, dissolve, or reconstitute Telangana Assembly Constituencies **110 (Pinapaka)**, **118 (Aswaraopeta)**, or **119 (Bhadrachalam)**.
 - **Does NOT Create Predecessor/Successor Versions for Telangana:** The continuing existence of ACs 110, 118, 119 in Telangana under their existing numbers is NOT proof of a new version.
-- **Lineage Remains UNKNOWN (`MAP-07`):** Because no gazetted order enacted successor constituency versions for Telangana ACs 110, 118, 119 following the territorial transfer, any constituency lineage relationship remains strictly **`UNKNOWN`**.
+- **Lineage Remains UNKNOWN (`MAP-07`):** Within the authoritative sources and legal instruments examined for W020-G6, no constituency-level predecessor/successor evidence was identified for Telangana AC-110 Pinapaka, AC-118 Aswaraopeta, or AC-119 Bhadrachalam; any constituency lineage relationship remains strictly **`UNKNOWN`**.
 - **No Mapping Rows in `public.constituency_mapping` (`MAP-02`):** `public.constituency_mapping` MUST NOT be populated with speculative predecessor/successor entries for Telangana constituencies.

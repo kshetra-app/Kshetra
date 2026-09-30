@@ -892,7 +892,7 @@
 
 ### DEC-054: W010 SECURITY BASELINE & RLS HARDENING IMPLEMENTATION PREPARATION, TABLE-SCOPE RECONCILIATION & STAGING PACKAGE ASSEMBLY
 - **Date:** 2026-09-21
-- **Status:** IMPLEMENTED / TESTED / VERIFIED / SUBMITTED FOR CTO ACCEPTANCE
+- **Status:** IMPLEMENTED / TESTED / VERIFIED / RESUBMITTED FOR CTO ACCEPTANCE
 - **Authority:** CTO Directive (`CTO DIRECTIVE — W010 IMPLEMENTATION AUTHORIZATION`)
 - **Context:** Controlled implementation of W010 security baseline, RLS hardening, and defect remediation across DEF-014, DEF-015, DEF-016, DEF-017 under strict fail-closed governance.
 - **Decisions:**
@@ -2086,7 +2086,7 @@
      - Every proposed `public.constituency_mapping` row must satisfy 12 required fields: predecessor version ID, successor/current version ID, predecessor/successor identities, exact territorial relationship, legal source, document date, schedule/table/page evidence location, provenance record, evidence record, relationship type, temporal validity, and confidence/status classification.
      - Permitted relationship classifications: `PREDECESSOR_SUCCESSOR`, `TERRITORIAL_EXTENT_UPDATE`, `CONTINUING_UNCHANGED`, `ADMINISTRATIVE_TRANSFER_ONLY`, `UNKNOWN`.
   2. **Proof of Zero Authoritative Telangana Constituency Lineage from Territorial Transfers:**
-     - G.S.R. 311(E) (23 April 2015) transferred administrative revenue territory (specified villages and mandals) from Khammam District (Telangana) to East Godavari and West Godavari Districts (Andhra Pradesh).
+     - G.S.R. 311(E) (23 April 2015) enacted a statutory territorial transfer of specified mandals/villages under the Andhra Pradesh Reorganisation (Removal of Difficulties) Order, 2015 from Khammam District (Telangana) to East Godavari and West Godavari Districts (Andhra Pradesh).
      - ECI Notification No. 282/AP/2018(DEL) updated Andhra Pradesh constituency extents under Delimitation Order 2008 Schedule II (53-Rampachodavaram and 67-Polavaram).
      - No statutory notification dissolved, reconstituted, or created successor constituency versions for Telangana ACs 110, 118, or 119.
      - Strict rule: `ADMINISTRATIVE_TRANSFER_ONLY != PREDECESSOR_SUCCESSOR`.
@@ -2098,7 +2098,7 @@
   4. **Strict Provenance Separation (6 Distinct Sources):**
      - Delimitation Order 2008 (19 Feb 2008) -> Original constituency extents.
      - AP Reorganisation Act 2014 (1 Mar 2014) -> Successor-state territorial division (Schedule XXXI: TS 119 ACs).
-     - G.S.R. 311(E) (23 Apr 2015) -> Specified administrative revenue territorial transfer.
+     - G.S.R. 311(E) (23 Apr 2015) -> statutory territorial transfer of specified mandals/villages under the Andhra Pradesh Reorganisation (Removal of Difficulties) Order, 2015.
      - ECI Notification No. 282/AP/2018(DEL) (22 Sept 2018) -> Documented AP constituency extent amendments.
      - Census 2011 Primary Census Abstract -> Demographic input totals.
      - PANIN Simulation Specification -> PANIN computational apportionment methodology.
@@ -2133,7 +2133,7 @@
   1. **Evidence-Gated Constituency Mapping Invariant (0 Rows Enforced):**
      - Canonical rule enforced: `AUTHORITATIVE CONSTITUENCY-LEVEL EVIDENCE -> constituency_mapping`; `ADMINISTRATIVE TERRITORIAL TRANSFER != PREDECESSOR_SUCCESSOR`.
      - Verified that G.S.R. 311(E) (23 April 2015) was a statutory territorial transfer of specified mandals/villages, and ECI Notification No. 282/AP/2018(DEL) updated Andhra Pradesh extents under Schedule II (AC 53 & AC 67).
-     - Confirmed zero statutory dissolution, recreation, or predecessor/successor lineage enacted for Telangana Schedule XXXI constituencies.
+     - Within the authoritative sources and legal instruments examined for W020-G6, no constituency-level predecessor/successor evidence was identified for Telangana AC-110 Pinapaka, AC-118 Aswaraopeta, or AC-119 Bhadrachalam; confirmed zero predecessor/successor lineage enacted for Telangana Schedule XXXI constituencies within examined instruments.
      - Lineage for Telangana ACs 110 (Pinapaka), 118 (Aswaraopeta), and 119 (Bhadrachalam) is strictly classified as `UNKNOWN`.
      - Table `public.constituency_mapping` remains strictly at **0 rows** on both staging and test harness.
   2. **Standardized Legal Terminology:**

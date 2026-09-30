@@ -14,7 +14,7 @@
 
 Under Section 108(3) of the Andhra Pradesh Reorganisation Act, 2014, the President promulgated the Andhra Pradesh Reorganisation (Removal of Difficulties) Order, 2015 on 23 April 2015, coming into force at once.
 
-The Order effected an administrative revenue territorial transfer of specified areas:
+The Order effected a statutory territorial transfer of specified mandals/villages under the Andhra Pradesh Reorganisation (Removal of Difficulties) Order, 2015:
 1. **From Khammam District (Telangana) to East Godavari District (Andhra Pradesh):**
    - Kukunoor mandal (entire)
    - Velairpadu mandal (entire)

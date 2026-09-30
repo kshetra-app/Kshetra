@@ -5,7 +5,7 @@
 **Directive:** CTO FINAL RATIFICATION — W020-G6 REV-1.1  
 **Implementation Authorization:** GRANTED — BOUNDED ONLY TO PLAN-W020-G6-REV-1.1  
 **Accepted Planning Commit:** `4c01c9ffe0b845fb46eca05996d9d37f9722ad91`  
-**Governance Status:** `IMPLEMENTED / TESTED / VERIFIED / SUBMITTED FOR CTO ACCEPTANCE`  
+**Governance Status:** `IMPLEMENTED / TESTED / VERIFIED / RESUBMITTED FOR CTO ACCEPTANCE`  
 **Timestamp:** 2026-09-30T10:35:00.000Z  
 **Canonical Branch:** `master`  
 **Target Environment:** `panIN-staging` (`fkpigozcqnmcvofuksar`)  
@@ -24,9 +24,9 @@ In strict conformance with **CTO FINAL RATIFICATION — W020-G6 REV-1.1**, Miles
    - Strictly enforced the fundamental canonical invariant:
      $$\text{AUTHORITATIVE CONSTITUENCY-LEVEL EVIDENCE} \longrightarrow \text{constituency\_mapping}$$
      $$\text{ADMINISTRATIVE TERRITORIAL TRANSFER} \centernot\longrightarrow \text{constituency\_mapping}$$
-   - Verified that the 2015 Khammam territorial transfer under **G.S.R. 311(E)** was an administrative territorial transfer of specified mandals/villages.
-   - Verified that **ECI Notification No. 282/AP/2018(DEL)** explicitly amended Andhra Pradesh Assembly Constituency extents (**53-Rampachodavaram (ST)** and **67-Polavaram (ST)**) under Schedule II, and enacted **zero** amendments to Telangana Schedule XXXI.
-   - Preserved Telangana Assembly Constituencies **110-Pinapaka (ST)**, **118-Aswaraopeta (ST)**, and **119-Bhadrachalam (ST)** as lineage `UNKNOWN`.
+   - Verified that the 2015 Khammam territorial transfer under **G.S.R. 311(E)** was a statutory territorial transfer of specified mandals/villages under the Andhra Pradesh Reorganisation (Removal of Difficulties) Order, 2015.
+   - Verified that **ECI Notification No. 282/AP/2018(DEL)** explicitly amended Andhra Pradesh Assembly Constituency extents (**53-Rampachodavaram (ST)** and **67-Polavaram (ST)**) under Schedule II. Within the authoritative sources and legal instruments examined for W020-G6, no constituency-level predecessor/successor evidence was identified for Telangana AC-110 Pinapaka, AC-118 Aswaraopeta, or AC-119 Bhadrachalam.
+   - Preserved Telangana Assembly Constituencies **110-Pinapaka (ST)**, **118-Aswaraopeta (ST)**, and **119-Bhadrachalam (ST)** as lineage strictly **`UNKNOWN`**.
    - Maintained `public.constituency_mapping` strictly at **0 rows** on both `panIN-staging` and the verified PostgreSQL test harness.
 2. **Standardized Legal Terminology:**
    - Replaced all legacy phrasing with the required statutory term:
@@ -42,7 +42,7 @@ In strict conformance with **CTO FINAL RATIFICATION — W020-G6 REV-1.1**, Miles
      6. `PANIN-SIM-01`: PANIN computational methodology (Hamilton / Largest Remainder deterministic quota allocation).
 4. **Orthogonal Proposal Bridge Population:**
    - **Proposal 1 (Statutory Baseline):** 119 total / 19 SC / 12 ST / 88 General, `status: 'final'`, `outputClassification: 'STATUTORY_FACT'`, `dataStatus: 'OFFICIAL'`, `legalStatus: 'CURRENT_LEGAL_REGIME'`, `isScenario: false`.
-   - **Proposal 2 (Academic Simulation):** 119 total / 18 SC / 10 ST / 91 General, `status: 'draft'`, `outputClassification: 'DETERMINISTIC_DERIVED'`, `dataStatus: 'DERIVED'`, `legalStatus: 'SCENARIO_PROPOSED_REGIME'`, `isScenario: true`.
+   - **Proposal 2 (PANIN Article 332 Deterministic Simulation):** 119 total / 18 SC / 10 ST / 91 General, `status: 'draft'`, `outputClassification: 'DETERMINISTIC_DERIVED'`, `dataStatus: 'DERIVED'`, `legalStatus: 'SCENARIO_PROPOSED_REGIME'`, `isScenario: true`.
    - Fully decoupled proposal lifecycle `status` ('final'/'draft') from W012 `dataStatus` ('OFFICIAL'/'DERIVED') and W014 `legalStatus` ('CURRENT_LEGAL_REGIME'/'SCENARIO_PROPOSED_REGIME').
    - Confirmed derived-only `isScenario === (legalStatus === 'SCENARIO_PROPOSED_REGIME')`.
    - Enforced database-level `ON DELETE RESTRICT` foreign keys linking proposals to `delimitation_regimes` and `provenance_records`.
@@ -67,7 +67,7 @@ The complete 27-invariant verification battery was authored and executed in `tes
 | | `W020-G6-REG-04` | Zero `SIMULATION_PROPOSED` values in database | **PASS** | 0 forbidden regime entries found |
 | **Plane 3: Proposals** | `W020-G6-PROP-01` | Proposal 1 statutory baseline (119 / 19 / 12 / 88) | **PASS** | `final`, `STATUTORY_FACT`, `OFFICIAL`, `CURRENT_LEGAL_REGIME` |
 | | `W020-G6-PROP-02` | Proposal 1 `ON DELETE RESTRICT` foreign keys | **PASS** | Deleting referenced regime/provenance blocked with FK constraint |
-| | `W020-G6-PROP-03` | Proposal 2 academic simulation (119 / 18 / 10 / 91) | **PASS** | `draft`, `DETERMINISTIC_DERIVED`, `DERIVED`, `SCENARIO_PROPOSED_REGIME` |
+| | `W020-G6-PROP-03` | Proposal 2 PANIN Article 332 deterministic simulation (119 / 18 / 10 / 91) | **PASS** | `draft`, `DETERMINISTIC_DERIVED`, `DERIVED`, `SCENARIO_PROPOSED_REGIME` |
 | | `W020-G6-PROP-04` | Proposal 2 `ON DELETE RESTRICT` foreign keys | **PASS** | Deleting simulation provenance blocked with FK constraint |
 | | `W020-G6-PROP-05` | Proposal status, dataStatus & legalStatus orthogonal | **PASS** | `isScenario` derived exclusively from `legalStatus` |
 | | `W020-G6-PROP-06` | Generated `seat_change` evaluates correctly | **PASS** | $119 - 119 = 0$ for both proposals |
@@ -122,7 +122,7 @@ All regression suites passed with zero defects and zero regressions:
      `f839fa02980318a8f35f932ebe72fa1d3ad6325dc86a624bf159d932fe5f613b`
 4. **Constituency Mapping Table Gate:**
    - Table `public.constituency_mapping` contains strictly **0 rows**.
-   - No predecessor/successor lineage is inferred from administrative revenue territory transfers.
+   - No predecessor/successor lineage is inferred from statutory territorial transfers of specified mandals/villages under the Andhra Pradesh Reorganisation (Removal of Difficulties) Order, 2015.
 
 ---
 
@@ -130,9 +130,9 @@ All regression suites passed with zero defects and zero regressions:
 
 ```text
 ================================================================================
-MANDATORY GOVERNANCE HALT — W020-G6 IMPLEMENTATION COMPLETE
+MANDATORY GOVERNANCE HALT — W020-G6 REMEDIATION COMPLETE
 ================================================================================
-- Implementation strictly conforms to PLAN-W020-G6-REV-1.1.
+- Implementation strictly conforms to PLAN-W020-G6-REV-1.1 and CTO Closure Directive.
 - All 27/27 W020-G6 invariant checks verified PASS.
 - All 34/34 W020-G5 invariant checks verified PASS.
 - All 33/33 Jest route integration tests verified PASS.
@@ -144,7 +144,7 @@ MANDATORY GOVERNANCE HALT — W020-G6 IMPLEMENTATION COMPLETE
 - 589 PostGIS geometry baseline digest verified unchanged.
 - Production database ehfafcnimmjusyvplbah verified 100% air-gapped and untouched.
 - Mobile codebase apps/mobile/** verified 100% frozen.
-- Governance Status: SUBMITTED FOR CTO ACCEPTANCE REVIEW.
+- Governance Status: RESUBMITTED FOR CTO ACCEPTANCE REVIEW.
 - STRICT HALT: Do NOT self-accept or self-certify.
 ================================================================================
 ```

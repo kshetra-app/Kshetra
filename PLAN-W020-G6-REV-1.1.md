@@ -35,7 +35,7 @@ Following the formal CTO technical acceptance of **W020-G5** (Delimitation Engin
    - Explicitly partitioned the evidentiary role of every source:
      - 2008 ECI Order → Original constituency extent.
      - AP Reorganisation Act 2014 → Successor-state territorial division.
-     - G.S.R. 311(E), 23 April 2015 → Specified administrative territorial transfer.
+     - G.S.R. 311(E), 23 April 2015 → statutory territorial transfer of specified mandals/villages under the Andhra Pradesh Reorganisation (Removal of Difficulties) Order, 2015.
      - ECI 282/AP/2018(DEL), 22 September 2018 → Documented AP constituency extent amendments.
      - Census 2011 PCA → Demographic input totals.
      - PANIN simulation specification → PANIN computational methodology.
@@ -191,7 +191,7 @@ The proposed verification suite defines **24 non-tautological invariant checks a
 ### Plane 3: Proposals Canonical Bridge Invariants
 - `W020-G6-PROP-01`: Proposal 1 represents authoritative statutory baseline (119 seats, 19 SC, 12 ST, 88 General; status `final`).
 - `W020-G6-PROP-02`: Proposal 1 references `eci_delimitation_2008` and statutory `provenance_id` under ON DELETE RESTRICT.
-- `W020-G6-PROP-03`: Proposal 2 represents academic simulation (119 seats, 18 SC, 10 ST, 91 General; status `draft`).
+- W020-G6-PROP-03: Proposal 2 represents PANIN Article 332 deterministic simulation (119 seats, 18 SC, 10 ST, 91 General; status draft).
 - `W020-G6-PROP-04`: Proposal 2 references `scenario_delimitation_draft_prop_1` and simulation `provenance_id`.
 - `W020-G6-PROP-05`: Proposal status, W012 `data_status`, and W014 `legal_status` are strictly orthogonal.
 - `W020-G6-PROP-06`: Generated column `seat_change` evaluates correctly ($119 - 119 = 0$).

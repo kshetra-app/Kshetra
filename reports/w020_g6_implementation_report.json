@@ -3,7 +3,7 @@
   "title": "Historical Delimitation Evidence Ingestion & Canonical Bridge Implementation Report",
   "directive": "CTO FINAL RATIFICATION — W020-G6 REV-1.1",
   "authorization": "GRANTED — BOUNDED ONLY TO PLAN-W020-G6-REV-1.1",
-  "governanceStatus": "IMPLEMENTED / TESTED / VERIFIED / SUBMITTED FOR CTO ACCEPTANCE",
+  "governanceStatus": "IMPLEMENTED / TESTED / VERIFIED / RESUBMITTED FOR CTO ACCEPTANCE",
   "timestamp": "2026-09-30T10:35:00.000Z",
   "gitCoordinates": {
     "branch": "master",
@@ -106,7 +106,7 @@
     {
       "id": "02010000-0000-0000-0000-000000000002",
       "proposalNumber": "PANIN-SIM-2011-PROP1",
-      "title": "PANIN Academic Simulation Model 1: Census 2011 Pure Proportionality",
+      "title": "PANIN Article 332 Deterministic Simulation: Census 2011 Pure Proportionality",
       "status": "draft",
       "proposedSeats": 119,
       "scSeats": 18,

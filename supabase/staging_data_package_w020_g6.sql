@@ -10,7 +10,7 @@
 --
 -- Invariants Enforced:
 -- - MAP-01..08: No constituency mapping rows without authoritative constituency evidence
---   (Telangana AC-110, 118, 119 mapping rows = 0; administrative revenue transfer != constituency lineage)
+--   (Telangana AC-110, 118, 119 mapping rows = 0; statutory territorial transfer != constituency lineage)
 -- - PRV-01..06: Six distinct evidence sources with field-level scope separation
 -- - REG-01..04: Canonical W014 legal regimes (zero SIMULATION_PROPOSED)
 -- - PROP-01..06: Proposal 1 (statutory 119/19/12/88) and Proposal 2 (simulation 119/18/10/91)
@@ -218,7 +218,7 @@ BEGIN
       '02010000-0000-0000-0000-000000000002',
       'TS',
       'PANIN-SIM-2011-PROP1',
-      'PANIN Academic Simulation Model 1: Census 2011 Pure Proportionality',
+      'PANIN Article 332 Deterministic Simulation: Census 2011 Pure Proportionality',
       'Deterministic mathematical apportionment simulation applying Hamilton / Largest Remainder algorithm to the Article 332 proportionality principle using Census 2011 PCA population figures.',
       'draft',
       'PANIN-SIM-01',

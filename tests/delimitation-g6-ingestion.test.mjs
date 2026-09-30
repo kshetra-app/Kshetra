@@ -314,7 +314,7 @@ async function runG6Verification() {
     `Regime: ${fkReg1}, Provenance: ${fkPrv1}, Restrict Triggered: ${!delRegRes.ok}`
   );
 
-  // W020-G6-PROP-03: Proposal 2 represents academic simulation (119 seats, 18 SC, 10 ST, 91 Gen; status draft)
+  // W020-G6-PROP-03: Proposal 2 represents PANIN Article 332 deterministic simulation (119 seats, 18 SC, 10 ST, 91 Gen; status draft)
   const prop2Res = queryPsql(testDb, `
     SELECT proposed_seats, proposed_sc_seats, proposed_st_seats, (proposed_seats - proposed_sc_seats - proposed_st_seats) as gen_seats, status, metadata->>'outputClassification', metadata->>'dataStatus', metadata->>'legalStatus', metadata->>'isScenario'
     FROM delimitation_proposals
@@ -330,7 +330,7 @@ async function runG6Verification() {
     p2IsScenario === 'true';
   recordCheck(
     'W020-G6-PROP-03',
-    'Proposal 2 represents academic simulation (119 / 18 SC / 10 ST / 91 Gen; draft, DETERMINISTIC_DERIVED, DERIVED, SCENARIO_PROPOSED_REGIME)',
+    'Proposal 2 represents PANIN Article 332 deterministic simulation (119 / 18 SC / 10 ST / 91 Gen; draft, DETERMINISTIC_DERIVED, DERIVED, SCENARIO_PROPOSED_REGIME)',
     Boolean(prop03Pass),
     `Seats: ${p2Seats} (SC: ${p2Sc}, ST: ${p2St}, Gen: ${p2Gen}), Status: ${p2Status}, OutClass: ${p2OutClass}, DataStatus: ${p2DataStatus}, Legal: ${p2LegStatus}, isScenario: ${p2IsScenario}`
   );

@@ -42,4 +42,4 @@ The PANIN Delimitation Engine implements an 8-step deterministic execution seque
 
 - **Does NOT Mandate Algorithm via Article 332:** Article 332 supplies the constitutional proportionality principle; Hamilton / Largest Remainder is PANIN's deterministic computational allocation method applied to that principle. Article 332 does NOT itself legally prescribe or mandate Hamilton.
 - **NOT an Enacted Statutory Baseline:** This derivation (18 SC / 10 ST / 91 General) must **NEVER** be returned or represented as the current statutory reality of Telangana (which remains 19 SC / 12 ST / 88 General under APRA 2014).
-- **NOT Official Delimitation:** Represents an academic simulation model (`Proposal 2`).
+- **NOT Official Delimitation:** Represents a PANIN Article 332 deterministic simulation (`Proposal 2`).
