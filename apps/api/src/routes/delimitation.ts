@@ -138,6 +138,32 @@ function sendSuccess<T>(reply: FastifyReply, request: FastifyRequest, data: T) {
 // ─── DELIMITATION ROUTE REGISTRATION ───
 
 export async function delimitationRoutes(app: FastifyInstance) {
+  // Canonical Invariant: isScenario is strictly derived-only from legalStatus === 'SCENARIO_PROPOSED_REGIME'.
+  // Direct client provision or override of isScenario or simulation boolean is strictly forbidden (R2).
+  app.addHook('preValidation', async (request, reply) => {
+    const q = request.query as Record<string, unknown> | undefined;
+    if (q && ('isScenario' in q || 'is_scenario' in q || 'simulation' in q)) {
+      return sendApiError(
+        reply,
+        request,
+        400,
+        'Bad Request',
+        'Direct provision or override of isScenario or simulation boolean is strictly forbidden. isScenario is derived exclusively from canonical legalStatus.',
+        { code: 'SCENARIO_INPUT_FORBIDDEN' }
+      );
+    }
+    const b = request.body as Record<string, unknown> | undefined;
+    if (b && typeof b === 'object' && ('isScenario' in b || 'is_scenario' in b || 'simulation' in b)) {
+      return sendApiError(
+        reply,
+        request,
+        400,
+        'Bad Request',
+        'Direct provision or override of isScenario or simulation boolean is strictly forbidden. isScenario is derived exclusively from canonical legalStatus.',
+        { code: 'SCENARIO_INPUT_FORBIDDEN' }
+      );
+    }
+  });
 
   /**
    * 1. GET /api/v1/delimitation/projections

@@ -7,7 +7,7 @@
 ## 1. Project & Execution Coordinates
 ```text
 PROJECT:               PANIN (formerly Kshetra)
-CURRENT_JOB:           W020-G5 (Delimitation Engine Foundation — IMPLEMENTED / SUBMITTED FOR CTO ACCEPTANCE)
+CURRENT_JOB:           W020-G5 (Delimitation Engine Foundation — IMPLEMENTED / TESTED / VERIFIED / SUBMITTED FOR CTO ACCEPTANCE)
 LAST_COMPLETED_JOB:    W020-G4 (Delimitation Canonical Bridge Preflight & Staging Execution — ACCEPTED / COMPLETE / CLOSED)
 NEXT_PERMITTED_JOB:    W020-G5 (SUBMITTED FOR CTO ACCEPTANCE; W020-G6+ STRICTLY NOT AUTHORIZED)
 
@@ -21,11 +21,11 @@ W019_MASTER_BATTERY:   93/93 PASS (100% Invariants Verified across 13 verificati
 W019_API_BATTERY:      10/10 PASS (apps/api/src/__tests__/elections.test.ts)
 W020_G4_STATUS:        ACCEPTED / COMPLETE / CLOSED (DEC-084 / DEC-085)
 W020_G4_EVIDENCE:      reports/w020_g4_staging_execution.json, reports/w020_g4_migration_preflight.json
-W020_G5_STATUS:        REMEDIATED (R1) / VERIFIED / SUBMITTED FOR CTO ACCEPTANCE (PLAN-W020-G5-REV-1.2 / DEC-089)
+W020_G5_STATUS:        REMEDIATED (R2) / TESTED / VERIFIED / SUBMITTED FOR CTO ACCEPTANCE (PLAN-W020-G5-REV-1.2 / DEC-090)
 W020_G5_PLAN:          PLAN-W020-G5-REV-1.2.md, reports/w020_g5_plan_manifest.json
-W020_G5_VERIFICATION:  reports/w020_g5_acceptance_remediation_r1.md, reports/w020_g5_acceptance_remediation_r1.json
-W020_G5_INVARIANTS:    32/32 PASS (tests/delimitation-g5-invariants.test.mjs)
-W020_G5_API_TESTS:     27/27 PASS (apps/api/src/__tests__/delimitation.test.ts)
+W020_G5_VERIFICATION:  reports/w020_g5_acceptance_remediation_r2.md, reports/w020_g5_acceptance_remediation_r2.json
+W020_G5_INVARIANTS:    34/34 PASS (tests/delimitation-g5-invariants.test.mjs)
+W020_G5_API_TESTS:     33/33 PASS (apps/api/src/__tests__/delimitation.test.ts)
 
 W017_STATUS:           ACCEPTED / COMPLETE
 W017_CTO_ACCEPTANCE:   GRANTED (2026-09-29)

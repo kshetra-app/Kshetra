@@ -2003,3 +2003,42 @@
 - **Milestone Gate Status:**
   - W020-G5 Remediation R1 is complete, verified, and re-submitted for CTO Technical Acceptance Review.
   - W020-G6+ remains **STRICTLY NOT AUTHORIZED**.
+
+---
+
+### DEC-090: W020-G5 REMEDIATION R2 — CANONICAL SCENARIO DERIVATION & W014 LEGAL REGIME VOCABULARY ENFORCEMENT
+- **Date:** 2026-09-30
+- **Status:** REMEDIATED / TESTED / VERIFIED / SUBMITTED FOR CTO ACCEPTANCE
+- **Authority:** CTO DIRECTIVE — W020-G5 ACCEPTANCE REMEDIATION R2
+- **Context:** Following review of R1, CTO acceptance was blocked on one remaining semantic requirement:
+  1. `isScenario` must be strictly derived-only (`isScenario = (legalStatus === 'SCENARIO_PROPOSED_REGIME')`), with zero user-supplied boolean, zero persisted DB column, zero API overrides, and zero second source of truth.
+  2. Bounding all legal regimes strictly to the 4 canonical W014 regimes from Migration 041 (`HISTORICAL_LEGAL_REGIME`, `CURRENT_LEGAL_REGIME`, `FUTURE_ANTICIPATED_REGIME`, `SCENARIO_PROPOSED_REGIME`), eliminating ad-hoc `SIMULATION_PROPOSED` or `SIMULATION_PROPOSED_REGIME`.
+  3. Correcting Article 332 terminology: Article 332 supplies the constitutional proportionality principle; Hamilton / Largest Remainder is PANIN's deterministic computational allocation method applied to that principle (Article 332 does not itself mandate Hamilton).
+- **Remediation Details:**
+  1. **Scenario Derivation & Ingress Guard:**
+     - Enforced `isScenario = (provenance.legalStatus === 'SCENARIO_PROPOSED_REGIME')` across `buildScenarioEnclosure`.
+     - Added Fastify `preValidation` hook across all delimitation routes rejecting any query or body containing `isScenario`, `is_scenario`, or `simulation` with HTTP 400 `SCENARIO_INPUT_FORBIDDEN`.
+     - Verified zero persistent `is_scenario` DB columns exist.
+  2. **Canonical Legal Regime Enforcement:**
+     - Replaced all instances of `SIMULATION_PROPOSED` and `STATUTORY_ENACTED_REGIME` with `CURRENT_LEGAL_REGIME`.
+     - The Census-2011 mathematical derivation (119 total / 18 SC / 10 ST / 91 General) remains `DETERMINISTIC_DERIVED` + `DERIVED` under `CURRENT_LEGAL_REGIME` with `isScenario: false`.
+     - The statutory baseline (119 total / 19 SC / 12 ST / 88 General) remains `STATUTORY_FACT` + `OFFICIAL` under `CURRENT_LEGAL_REGIME` with `isScenario: false`.
+     - `SCENARIO_PROPOSED_REGIME` is used strictly for analytical simulations (`simulateBoundaries`), yielding `isScenario: true`.
+  3. **Article 332 Terminology Alignment:**
+     - Updated methodology and service descriptions: *"PANIN deterministic Hamilton/Largest Remainder allocation applied to the Article 332 proportionality principle, ensuring exact seat conservation."*
+  4. **Repository-Wide Semantic Scan:**
+     - Verified 0 active occurrences of `SIMULATION_PROPOSED` or `SIMULATION_PROPOSED_REGIME` across repository code/data.
+     - Confirmed `isScenario` is an exclusively derived runtime application DTO property.
+- **Verification Results:**
+  - `tests/delimitation-g5-invariants.test.mjs`: 34 / 34 PASS (100%).
+  - `apps/api/src/__tests__/delimitation.test.ts`: 33 / 33 PASS (100%).
+  - W018 regression: 53 / 53 PASS.
+  - W019 regression: 93 / 93 PASS.
+  - W020-G4 preflight: 23 / 23 PASS.
+  - API contract drift: 9 / 9 MATCH.
+  - TypeScript builds: API (exit 0), Shared (exit 0), Mobile (exit 0).
+  - Staging PostGIS geometry: 589 rows, exact SHA-256 match `f839fa02980318a8f35f932ebe72fa1d3ad6325dc86a624bf159d932fe5f613b`.
+  - Production database `ehfafcnimmjusyvplbah` remains 100% air-gapped and untouched.
+- **Milestone Gate Status:**
+  - W020-G5 Remediation R2 is complete, tested, verified, and re-submitted for CTO Technical Acceptance Review.
+  - W020-G6+ remains **STRICTLY NOT AUTHORIZED**.

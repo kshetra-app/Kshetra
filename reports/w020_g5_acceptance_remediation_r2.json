@@ -1,0 +1,120 @@
+{
+  "milestone": "W020-G5",
+  "remediationId": "R2",
+  "timestamp": "2026-09-30T09:00:00Z",
+  "directive": "CTO DIRECTIVE — W020-G5 ACCEPTANCE REMEDIATION R2",
+  "target": "panIN-staging (fkpigozcqnmcvofuksar)",
+  "production": "ehfafcnimmjusyvplbah (STRICTLY AIR-GAPPED & UNTOUCHED)",
+  "canonicalBranch": "master",
+  "status": "REMEDIATED_AND_VERIFIED",
+  "scenarioSourceOfTruthAudit": {
+    "rule": "isScenario = (legalStatus === 'SCENARIO_PROPOSED_REGIME')",
+    "enforcement": "Derived-only in application layer; client inputs rejected fail-closed; zero persistent DB columns",
+    "userSuppliedBooleanProhibited": true,
+    "persistedIsScenarioColumn": false,
+    "apiOverrideProhibited": true,
+    "secondSourceOfTruthEliminated": true,
+    "rejectionHook": "Fastify preValidation hook rejects ?isScenario=..., ?is_scenario=..., and ?simulation=... with HTTP 400 SCENARIO_INPUT_FORBIDDEN"
+  },
+  "legalRegimeEnumAudit": {
+    "canonicalW014Regimes": [
+      "HISTORICAL_LEGAL_REGIME",
+      "CURRENT_LEGAL_REGIME",
+      "FUTURE_ANTICIPATED_REGIME",
+      "SCENARIO_PROPOSED_REGIME"
+    ],
+    "prohibitedRegimesChecked": [
+      "SIMULATION_PROPOSED",
+      "SIMULATION_PROPOSED_REGIME",
+      "STATUTORY_ENACTED_REGIME"
+    ],
+    "prohibitedRegimesCountInCode": 0,
+    "telanganaDerivationLegalStatus": "CURRENT_LEGAL_REGIME",
+    "telanganaSimulationLegalStatus": "SCENARIO_PROPOSED_REGIME"
+  },
+  "article332TerminologyAudit": {
+    "principle": "Article 332 supplies the constitutional proportionality principle.",
+    "allocationMethod": "Hamilton / Largest Remainder is PANIN's deterministic computational allocation method applied to that principle.",
+    "mandateClarification": "Does NOT state or imply that Article 332 mandates the Hamilton algorithm.",
+    "standardFormulation": "PANIN deterministic Hamilton/Largest Remainder allocation applied to the Article 332 proportionality principle",
+    "statutoryBaseline": {
+      "total": 119,
+      "sc": 19,
+      "st": 12,
+      "general": 88,
+      "outputClassification": "STATUTORY_FACT",
+      "dataStatus": "OFFICIAL",
+      "legalStatus": "CURRENT_LEGAL_REGIME"
+    },
+    "census2011MathematicalDerivation": {
+      "total": 119,
+      "sc": 18,
+      "st": 10,
+      "general": 91,
+      "outputClassification": "DETERMINISTIC_DERIVED",
+      "dataStatus": "DERIVED",
+      "legalStatus": "CURRENT_LEGAL_REGIME",
+      "isScenario": false
+    }
+  },
+  "semanticScanResults": {
+    "SIMULATION_PROPOSED": "0 occurrences in active code or data; references exist only in historical R1 reports/DEC-089, negative assertions in tests, and contract documentation comments.",
+    "SIMULATION_PROPOSED_REGIME": "0 occurrences across repository code; present only in negative test assertions and contract comments.",
+    "isScenario": "Application DTO property derived strictly from (legalStatus === 'SCENARIO_PROPOSED_REGIME'). Zero database columns, zero client inputs.",
+    "SCENARIO_PROPOSED_REGIME": "Canonical W014 regime from Migration 041. Exclusively assigned to simulation endpoints (simulateBoundaries)."
+  },
+  "filesChanged": [
+    "packages/shared/src/contracts/delimitation.ts",
+    "apps/api/src/services/delimitationService.ts",
+    "apps/api/src/routes/delimitation.ts",
+    "apps/api/src/__tests__/delimitation.test.ts",
+    "tests/delimitation-g5-invariants.test.mjs"
+  ],
+  "verificationResults": {
+    "delimitationInvariants": {
+      "totalChecks": 34,
+      "passedChecks": 34,
+      "failedChecks": 0,
+      "status": "PASS"
+    },
+    "fastifyRouteIntegrationTests": {
+      "totalTests": 33,
+      "passedTests": 33,
+      "failedTests": 0,
+      "status": "PASS"
+    },
+    "w018Invariants": {
+      "totalChecks": 53,
+      "passedChecks": 53,
+      "status": "PASS"
+    },
+    "w019Invariants": {
+      "totalChecks": 93,
+      "passedChecks": 93,
+      "status": "PASS"
+    },
+    "w020G4Preflight": {
+      "totalChecks": 23,
+      "passedChecks": 23,
+      "status": "PASS"
+    },
+    "apiContractDrift": {
+      "declaredChecks": 9,
+      "matchedChecks": 9,
+      "status": "PASS"
+    },
+    "apiBuild": "EXIT_0",
+    "mobileTypeScript": "EXIT_0",
+    "sharedBuild": "EXIT_0"
+  },
+  "geometryBaseline": {
+    "rowCount": 589,
+    "sha256": "f839fa02980318a8f35f932ebe72fa1d3ad6325dc86a624bf159d932fe5f613b",
+    "status": "FROZEN_MATCH"
+  },
+  "airGapVerification": {
+    "productionUrl": "ehfafcnimmjusyvplbah",
+    "connectionsAttempted": 0,
+    "status": "STRICTLY_AIR_GAPPED"
+  }
+}

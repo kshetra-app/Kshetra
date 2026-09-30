@@ -31,7 +31,7 @@
 
 import { buildApp } from '../server';
 import type { FastifyInstance } from 'fastify';
-import { MAX_SAFE_REQUESTED_SEATS } from '../services/delimitationService';
+import { delimitationService, MAX_SAFE_REQUESTED_SEATS } from '../services/delimitationService';
 
 describe('Delimitation Engine Foundation Routes (W020-G5)', () => {
   let app: FastifyInstance;
@@ -505,6 +505,102 @@ describe('Delimitation Engine Foundation Routes (W020-G5)', () => {
       expect(json.data.computationalSafetyPolicy.statement).toContain('NO constitutional, statutory, electoral, geographic, or legal meaning');
       expect(json.data.provenance.outputClassification).toBe('STATUTORY_FACT');
       expect(json.data.provenance.dataStatus).toBe('OFFICIAL');
+    });
+  });
+
+  describe('R2 Semantic Hardening: isScenario Source of Truth & Article 332 Formulation', () => {
+    it('rejects request attempting to provide isScenario query parameter with HTTP 400 SCENARIO_INPUT_FORBIDDEN', async () => {
+      const res = await app.inject({
+        method: 'GET',
+        url: '/api/v1/delimitation/simulate/TS?isScenario=true',
+      });
+
+      expect(res.statusCode).toBe(400);
+      const json = JSON.parse(res.payload);
+      expect(json.code).toBe('SCENARIO_INPUT_FORBIDDEN');
+      expect(json.message).toContain('isScenario is derived exclusively');
+    });
+
+    it('rejects request attempting to override is_scenario with HTTP 400 SCENARIO_INPUT_FORBIDDEN', async () => {
+      const res = await app.inject({
+        method: 'GET',
+        url: '/api/v1/delimitation/projections?is_scenario=false',
+      });
+
+      expect(res.statusCode).toBe(400);
+      const json = JSON.parse(res.payload);
+      expect(json.code).toBe('SCENARIO_INPUT_FORBIDDEN');
+    });
+
+    it('rejects request attempting to provide simulation boolean with HTTP 400 SCENARIO_INPUT_FORBIDDEN', async () => {
+      const res = await app.inject({
+        method: 'GET',
+        url: '/api/v1/delimitation/simulate/TS?simulation=true',
+      });
+
+      expect(res.statusCode).toBe(400);
+      const json = JSON.parse(res.payload);
+      expect(json.code).toBe('SCENARIO_INPUT_FORBIDDEN');
+    });
+
+    it('proves isScenario is derived exclusively from (legalStatus === SCENARIO_PROPOSED_REGIME)', () => {
+      // 1. SCENARIO_PROPOSED_REGIME yields isScenario = true
+      const provScenario = delimitationService.buildProvenance(
+        'TEST_METHOD',
+        'SCENARIO_PROJECTION',
+        'SCENARIO',
+        [],
+        'SCENARIO_PROPOSED_REGIME'
+      );
+      const encTrue = delimitationService.buildScenarioEnclosure('s1', 'N', 'D', {}, provScenario, {});
+      expect(encTrue.isScenario).toBe(true);
+      expect(encTrue.provenance.legalStatus).toBe('SCENARIO_PROPOSED_REGIME');
+
+      // 2. All canonical non-scenario regimes yield isScenario = false
+      const nonScenarioRegimes = [
+        'CURRENT_LEGAL_REGIME',
+        'HISTORICAL_LEGAL_REGIME',
+        'FUTURE_ANTICIPATED_REGIME',
+      ] as const;
+
+      for (const regime of nonScenarioRegimes) {
+        const provNonScenario = delimitationService.buildProvenance(
+          'TEST_METHOD',
+          'DETERMINISTIC_DERIVED',
+          'DERIVED',
+          [],
+          regime
+        );
+        const encFalse = delimitationService.buildScenarioEnclosure('s2', 'N', 'D', {}, provNonScenario, {});
+        expect(encFalse.isScenario).toBe(false);
+        expect(encFalse.provenance.legalStatus).toBe(regime);
+      }
+    });
+
+    it('confirms methodology formulas state Hamilton is PANIN deterministic allocation applied to Article 332, not mandated by it', async () => {
+      const res = await app.inject({
+        method: 'GET',
+        url: '/api/v1/delimitation/methodology',
+      });
+
+      expect(res.statusCode).toBe(200);
+      const json = JSON.parse(res.payload);
+      const algoText = json.data.formulas.article332Algorithm;
+      expect(algoText).toContain('PANIN deterministic Hamilton/Largest Remainder allocation applied to the Article 332 proportionality principle');
+      expect(algoText).not.toContain('Article 332 mandates');
+    });
+
+    it('confirms national reservation analysis uses canonical CURRENT_LEGAL_REGIME (zero SIMULATION_PROPOSED)', async () => {
+      const res = await app.inject({
+        method: 'GET',
+        url: '/api/v1/delimitation/reservation',
+      });
+
+      expect(res.statusCode).toBe(200);
+      const json = JSON.parse(res.payload);
+      expect(json.data.provenance.legalStatus).toBe('CURRENT_LEGAL_REGIME');
+      expect(json.data.provenance.legalStatus).not.toBe('SIMULATION_PROPOSED');
+      expect(json.data.provenance.legalStatus).not.toBe('SIMULATION_PROPOSED_REGIME');
     });
   });
 });

@@ -35,7 +35,16 @@ export type W012DataStatus =
   | 'UNVERIFIED'                // Raw input pending authoritative corroboration
   | 'UNKNOWN';                  // Missing, withheld, or pending statutory operation
 
-export type DelimitationDataStatus = W012DataStatus;
+/**
+ * Canonical W014 Legal Regimes (Migration 041)
+ * Exactly four canonical legal regimes exist in the PANIN schema.
+ * Do NOT introduce SIMULATION_PROPOSED, SIMULATION_PROPOSED_REGIME, or other ad-hoc values.
+ */
+export type DelimitationLegalRegime =
+  | 'HISTORICAL_LEGAL_REGIME'
+  | 'CURRENT_LEGAL_REGIME'
+  | 'FUTURE_ANTICIPATED_REGIME'
+  | 'SCENARIO_PROPOSED_REGIME';
 
 /**
  * Typed Regime Selection Modes (Directive G5-12)
@@ -64,7 +73,7 @@ export interface MathematicalProvenance {
   methodology: string;
   modelVersion: string;
   calculatedAt: string;
-  legalStatus: string;
+  legalStatus: DelimitationLegalRegime;
   outputClassification: OutputClassification;
   dataStatus: W012DataStatus;
   provenanceId?: string;
@@ -72,9 +81,10 @@ export interface MathematicalProvenance {
 }
 
 /**
- * Mandatory Scenario Enclosure (Directives G5-08, G5-13)
+ * Mandatory Scenario Enclosure (Directives G5-08, G5-13, R2)
  * Enforces the 10 required metadata fields.
- * isScenario is strictly derived at runtime from legalStatus === 'SCENARIO_PROPOSED_REGIME'.
+ * isScenario is strictly derived at runtime from (legalStatus === 'SCENARIO_PROPOSED_REGIME').
+ * Zero client-supplied or persisted isScenario boolean.
  */
 export interface ScenarioEnclosure<T = unknown> {
   isScenario: boolean;

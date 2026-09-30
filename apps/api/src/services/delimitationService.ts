@@ -30,6 +30,7 @@ import {
 } from '../../../../data/census/india-district-population-2011';
 import { getConstituencies as getStateConstituencies } from './stateData';
 import type {
+  DelimitationLegalRegime,
   OutputClassification,
   W012DataStatus,
   DatasetVersionProvenance,
@@ -194,7 +195,7 @@ export class DelimitationService {
     outputClassification: OutputClassification,
     dataStatus: W012DataStatus,
     inputDatasetVersions: DatasetVersionProvenance[] = [CENSUS_2011_PCA_PROVENANCE, DELIMITATION_2008_REGIME_PROVENANCE],
-    legalStatus = 'STATUTORY_ENACTED_REGIME',
+    legalStatus: DelimitationLegalRegime = 'CURRENT_LEGAL_REGIME',
     modelVersion = '1.2.0',
     evidenceReferences?: string[]
   ): MathematicalProvenance {
@@ -480,7 +481,7 @@ export class DelimitationService {
       'DETERMINISTIC_DERIVED',
       'DERIVED',
       [CENSUS_2011_PCA_PROVENANCE, DELIMITATION_2008_REGIME_PROVENANCE],
-      'STATUTORY_ENACTED_REGIME',
+      'CURRENT_LEGAL_REGIME',
       '1.2.0',
       ['Constitution of India Articles 81, 82, 170, 332']
     );
@@ -902,7 +903,7 @@ export class DelimitationService {
       qualityScore: 94,
       districtBreakdown,
       methodology: {
-        formula: 'Hare-Niemeyer Largest Remainder method with Article 332 SC/ST reservation',
+        formula: 'Hare-Niemeyer Largest Remainder method with PANIN deterministic Hamilton allocation applied to the Article 332 proportionality principle',
         idealPopPerSeat,
         maxDeviationAllowedPercent: 10,
         withinDeviationCount: districtBreakdown.filter((d) => Math.abs(d.deviationPercent) <= 10).length,
@@ -946,10 +947,10 @@ export class DelimitationService {
       'DETERMINISTIC_DERIVED',
       'DERIVED',
       [CENSUS_2011_PCA_PROVENANCE],
-      'SIMULATION_PROPOSED',
+      'CURRENT_LEGAL_REGIME',
       '1.2.0',
       [
-        'Constitution of India Article 332 (Generic Algorithm Multi-State Simulation)',
+        'PANIN deterministic Hamilton/Largest Remainder allocation applied to the Article 332 proportionality principle (Generic Algorithm Multi-State Simulation)',
         'Authoritative governed delimitation scope in W020 is strictly bounded to the State of Telangana',
       ]
     );
@@ -1022,10 +1023,10 @@ export class DelimitationService {
       remainderST: Math.round((qST - baseST) * 10000) / 10000,
       surplusSeatsDistributed: surplusDistributed,
       censusBasis: 'Census 2011 (Demographic totals from Registrar General & Census Commissioner)',
-      methodology: 'Article 332 Hamilton / Largest Remainder Quota sequence applied to Census 2011 demographics',
+      methodology: 'PANIN deterministic Hamilton/Largest Remainder allocation applied to the Article 332 proportionality principle on Census 2011 demographics',
       outputClassification: 'DETERMINISTIC_DERIVED',
       dataStatus: 'DERIVED',
-      disclaimer: 'This value is a PANIN academic mathematical derivation applying Article 332 to Census 2011 demographics. It does NOT represent the gazetted current statutory reservation baseline.',
+      disclaimer: 'This value is a PANIN academic mathematical derivation applying Article 332 proportionality principle to Census 2011 demographics. It does NOT represent the gazetted current statutory reservation baseline.',
     };
 
     const provenance = this.buildProvenance(
@@ -1229,7 +1230,7 @@ export class DelimitationService {
         idealPopulation: 'IdealPop = StatePopulation / TotalSeats',
         deviation: 'Deviation = ((DistrictPopPerSeat - IdealPop) / IdealPop) * 100',
         hareNiemeyer: 'Seats allocated by base floor(quota), surplus seats distributed in descending order of fractional remainders.',
-        article332Algorithm: 'Hamilton / Largest Remainder Method applied to SC/ST population quotas, ensuring exact seat conservation.',
+        article332Algorithm: 'PANIN deterministic Hamilton/Largest Remainder allocation applied to the Article 332 proportionality principle, ensuring exact seat conservation.',
       },
       provenance,
     };

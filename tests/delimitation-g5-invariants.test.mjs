@@ -37,11 +37,12 @@ if (!process.execArgv.some((arg) => arg.includes('tsx'))) {
 const { delimitationService, MAX_SAFE_REQUESTED_SEATS, MIN_SAFE_REQUESTED_SEATS } = await import(
   '../apps/api/src/services/delimitationService.ts'
 );
+const { buildApp } = await import('../apps/api/src/server.ts');
 const { CENSUS_2011_STATES } = await import('../data/census/india-district-population-2011.ts');
 
 console.log('================================================================');
 console.log('W020-G5: DELIMITATION ENGINE FOUNDATION');
-console.log('MASTER INVARIANT & VERIFICATION BATTERY (30 CHECKS / 4 PLANES)');
+console.log('MASTER INVARIANT & VERIFICATION BATTERY (33 CHECKS / 4 PLANES)');
 console.log(`Execution Timestamp: ${new Date().toISOString()}`);
 console.log('Staging Project: panIN-staging (fkpigozcqnmcvofuksar)');
 console.log('Production: ehfafcnimmjusyvplbah (STRICTLY AIR-GAPPED & UNTOUCHED)');
@@ -234,14 +235,32 @@ recordCheck(
 );
 
 // W020-G5-TAX-04: isScenario is derived-only from legalStatus === 'SCENARIO_PROPOSED_REGIME'
+const nonScenarioRegimes = ['CURRENT_LEGAL_REGIME', 'HISTORICAL_LEGAL_REGIME', 'FUTURE_ANTICIPATED_REGIME'];
+let nonScenarioAllFalse = true;
+for (const regime of nonScenarioRegimes) {
+  const testProv = delimitationService.buildProvenance(
+    'Test Algorithm',
+    'DETERMINISTIC_DERIVED',
+    'DERIVED',
+    undefined,
+    regime
+  );
+  const testEnc = delimitationService.buildScenarioEnclosure('test-id', 'Test', 'Desc', {}, testProv, {});
+  if (testEnc.isScenario !== false) {
+    nonScenarioAllFalse = false;
+  }
+}
+
 const tax04Pass =
   enc.isScenario === true &&
-  enc.provenance.legalStatus === 'SCENARIO_PROPOSED_REGIME';
+  enc.provenance.legalStatus === 'SCENARIO_PROPOSED_REGIME' &&
+  nonScenarioAllFalse;
+
 recordCheck(
   'W020-G5-TAX-04',
-  'isScenario is derived-only from legalStatus === SCENARIO_PROPOSED_REGIME (zero persistent db column)',
+  'isScenario is derived-only from legalStatus === SCENARIO_PROPOSED_REGIME (zero persistent db column, false for non-scenario canonical regimes)',
   Boolean(tax04Pass),
-  `isScenario: ${enc.isScenario}, legalStatus: ${enc.provenance.legalStatus}`
+  `isScenario: ${enc.isScenario}, legalStatus: ${enc.provenance.legalStatus}, nonScenarioAllFalse: ${nonScenarioAllFalse}`
 );
 
 // W020-G5-TAX-05: Sitting MLA vulnerability heuristic has POLITICAL_HEURISTIC + INFERRED
@@ -277,14 +296,17 @@ recordCheck(
 console.log('\n--- PLANE 3: APPORTIONMENT & MATHEMATICAL INVARIANTS ---');
 
 // W020-G5-MTH-01: Proportionality principle (RES-LEGAL-01) distinct from Hamilton algorithm (RES-ALLOC-01)
+const algoText = methodology.formulas.article332Algorithm;
 const mth01Pass =
   methodology.constitutionalArticles.some((a) => a.article.includes('332')) &&
-  methodology.formulas.article332Algorithm.includes('Hamilton');
+  algoText.includes('Hamilton') &&
+  algoText.includes('applied to the Article 332 proportionality principle') &&
+  !algoText.includes('mandates');
 recordCheck(
   'W020-G5-MTH-01',
-  'Article 332 proportionality principle (RES-LEGAL-01) is separated from Hamilton algorithm (RES-ALLOC-01)',
+  'Article 332 supplies constitutional proportionality principle; Hamilton is PANIN deterministic allocation applied to it (not mandated by it)',
   Boolean(mth01Pass),
-  'Separation verified in methodology and domain architecture'
+  `Algorithm: "${algoText}"`
 );
 
 // W020-G5-MTH-02: Article 332 8-Step Execution Sequence (Census 2011 Mathematical Derivation)
@@ -703,6 +725,83 @@ recordCheck(
   tsResDetail
     ? `Statutory: ${tsResDetail.current.scReserved} SC, ${tsResDetail.current.stReserved} ST | Derived: ${tsResDetail.census2011MathematicalDerivation.scReserved} SC, ${tsResDetail.census2011MathematicalDerivation.stReserved} ST | ZZ: ${zzResDetail}`
     : 'Failed to retrieve TS reservation detail'
+);
+
+// W020-G5-API-12: Client cannot supply or override isScenario or simulation parameters (400 SCENARIO_INPUT_FORBIDDEN)
+const fastifyApp = await buildApp();
+let api12Pass = false;
+let api12Details = '';
+try {
+  const res1 = await fastifyApp.inject({
+    method: 'GET',
+    url: '/api/v1/delimitation/projections?isScenario=true',
+  });
+  const res2 = await fastifyApp.inject({
+    method: 'GET',
+    url: '/api/v1/delimitation/reservation?is_scenario=false',
+  });
+  const res3 = await fastifyApp.inject({
+    method: 'GET',
+    url: '/api/v1/delimitation/simulate/TS?simulation=true',
+  });
+  const json1 = JSON.parse(res1.payload);
+  const json2 = JSON.parse(res2.payload);
+  const json3 = JSON.parse(res3.payload);
+
+  const code1 = json1.code || json1.error?.code;
+  const code2 = json2.code || json2.error?.code;
+  const code3 = json3.code || json3.error?.code;
+
+  const p1 = res1.statusCode === 400 && code1 === 'SCENARIO_INPUT_FORBIDDEN';
+  const p2 = res2.statusCode === 400 && code2 === 'SCENARIO_INPUT_FORBIDDEN';
+  const p3 = res3.statusCode === 400 && code3 === 'SCENARIO_INPUT_FORBIDDEN';
+
+  api12Pass = p1 && p2 && p3;
+  api12Details = `isScenario: ${res1.statusCode} (${code1}), is_scenario: ${res2.statusCode} (${code2}), simulation: ${res3.statusCode} (${code3})`;
+} finally {
+  await fastifyApp.close();
+}
+
+recordCheck(
+  'W020-G5-API-12',
+  'Fail-closed rejection of client-supplied isScenario/simulation parameters (400 SCENARIO_INPUT_FORBIDDEN; zero second source of truth)',
+  Boolean(api12Pass),
+  api12Details
+);
+
+// W020-G5-API-13: Canonical Legal Regime Vocabulary: zero SIMULATION_PROPOSED, all legalStatus in W014 canonical regimes
+const CANONICAL_REGIMES = new Set([
+  'HISTORICAL_LEGAL_REGIME',
+  'CURRENT_LEGAL_REGIME',
+  'FUTURE_ANTICIPATED_REGIME',
+  'SCENARIO_PROPOSED_REGIME',
+]);
+
+const resList = delimitationService.getNationalReservations();
+const tsRes = delimitationService.getStateReservationDetail('TS');
+const simTs = delimitationService.simulateBoundaries('TS', { seats: '119' });
+const mlaTs = delimitationService.getMlaImpact('TS');
+const citTs = delimitationService.getCitizenImpact('500001');
+
+const allRegimes = [
+  resList.provenance.legalStatus,
+  tsRes.provenance.legalStatus,
+  simTs.scenarioEnclosure.provenance.legalStatus,
+  mlaTs.provenance.legalStatus,
+  citTs.provenance.legalStatus,
+];
+
+const forbiddenFound = allRegimes.some(
+  (r) => r === 'SIMULATION_PROPOSED' || r === 'SIMULATION_PROPOSED_REGIME'
+);
+const allCanonical = allRegimes.every((r) => CANONICAL_REGIMES.has(r));
+const api13Pass = !forbiddenFound && allCanonical && simTs.scenarioEnclosure.provenance.legalStatus === 'SCENARIO_PROPOSED_REGIME';
+
+recordCheck(
+  'W020-G5-API-13',
+  'Canonical W014 Legal Regime Vocabulary enforced across all engine outputs (zero SIMULATION_PROPOSED, valid canonical set)',
+  Boolean(api13Pass),
+  `Regimes: [${allRegimes.join(', ')}], Forbidden: ${forbiddenFound}`
 );
 
 // ═════════════════════════════════════════════════════════════════════════════
