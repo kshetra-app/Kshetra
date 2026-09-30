@@ -2288,3 +2288,29 @@
 - **Milestone Gate Status:**
   - W020-G7: **ACCEPTED / COMPLETE / CLOSED**.
   - W020-G8: **DRAFT / SUBMITTED FOR CTO RATIFICATION (PLANNING ONLY)**.
+
+---
+
+### DEC-098: PLAN REMEDIATION — PLAN-W020-G8-REV-1.1
+- **Date:** 2026-09-30
+- **Status:** DRAFT / SUBMITTED FOR CTO RATIFICATION (PLANNING ONLY)
+- **Authority:** CTO PLAN REMEDIATION DIRECTIVE — W020-G8 REV-1.1
+- **Context:** Remediated PLAN-W020-G8 to REV-1.1 resolving Blocker 1 (Article 170 semantic invariant scoping and plane separation) and Blocker 2 (strict mock data replacement and fail-closed sourcing semantics).
+- **Key Remediations & Technical Clarifications:**
+  1. **Separation of Six Semantic Planes:**
+     - Enforced strict distinction between: (1) Constitutional/statutory legal constraints, (2) Historical legal facts, (3) Current legal facts, (4) PANIN deterministic computational constraints, (5) Scenario/proposed outputs, and (6) Resource-safety/input validation.
+     - Article 170(1) assembly bounds ($60 \le S \le 500$) apply *conditionally* only where the selected legal regime and applicable constitutional/statutory rule actually govern the entity, noting constitutional exceptions for Sikkim (32, Art. 371F), Goa (40, Art. 371I), Mizoram (40, Art. 371G), and Puducherry (30, UT Act).
+     - Prohibited universal imposition of Article 170 bounds on historical regimes, scenario models, or hypothetical arithmetic.
+     - Confirmed `MAX_SAFE_REQUESTED_SEATS = 10000` is solely a computational resource-safety / DoS protection with zero constitutional or statutory force.
+     - Classified invariant assertions explicitly as `LEGAL_INVARIANT`, `COMPUTATIONAL_INVARIANT`, `DERIVED_MATHEMATICAL_INVARIANT`, or `SCENARIO_INVARIANT`.
+  2. **Mock Data Replacement & Fail-Closed Sourcing:**
+     - Mandated that existing mock/static values must be replaced *only* with verified canonical data or deterministic derivations with valid provenance.
+     - Where canonical data is absent, the engine must return `UNKNOWN` / `NULL` / explicit unavailable semantics (e.g. 404 `UNSUPPORTED_GEOGRAPHY`).
+     - Strictly prohibited fabricating substitute data or converting unevidenced mock values into `DERIVED` data.
+  3. **Preservation of All Boundaries & Regression Count:**
+     - Zero migrations, zero DDL, zero DML, zero new persistence, zero mobile edits, zero geometry alterations, zero production access.
+     - Preserved 322 aggregate regression count: W018 (53), W019 (93), W020-G4 (23), W020-G5 Engine (34), W020-G5 Routes (33), W020-G6 (27), W020-G7 (25), API Drift (9), W020-G8 (25).
+- **Milestone Gate Status:**
+  - `PLAN-W020-G8-REV-1.1` submitted for CTO review and ratification.
+  - Implementation authorization: **STRICTLY NOT AUTHORIZED (NO)**.
+  - Mandatory governance halt enforced.
