@@ -2261,3 +2261,30 @@
 - **Milestone Gate Status:**
   - W020-G7 formally submitted for CTO acceptance review.
   - Implementing agent does not self-accept. Mandatory governance halt enforced awaiting CTO review. W020-G8+ strictly blocked.
+
+---
+
+### DEC-097: FORMAL CTO ACCEPTANCE OF W020-G7 & COMMISSIONING OF PLAN-W020-G8
+- **Date:** 2026-09-30
+- **Status:** ACCEPTED / COMPLETE / CLOSED (W020-G7) & PLANNING ONLY (W020-G8)
+- **Authority:** CTO AUTHORIZATION — W020-G7 FINAL ACCEPTANCE + W020-G8 PLANNING
+- **Context:** The Chief Technology Officer formally ACCEPTED / COMPLETED / CLOSED Milestone W020-G7 at accepted implementation baseline commit `65c32c8d62a3d5c4a42efe4adb6de5a6e8629fca` and authorized preparation of `PLAN-W020-G8` under strict planning-only boundaries.
+- **Key Determinations & Governance Mandates:**
+  1. **Canonical Closure of W020-G7:**
+     - Acceptance lifecycle progression verified: `IMPLEMENTED -> TESTED -> VERIFIED -> ACCEPTED -> COMPLETE`.
+     - Read-only query surface bridging W020-G5 engine calculation semantics with W020-G6 database persistence accepted.
+     - 5 W014 typed selection modes (`current`, `as_of`, `explicit`, `future_anticipated`, `scenario`) verified fail-closed.
+     - "current" regime decoupled from `is_active`; scenario selectors bound strictly to `proposal_id` or `regime_id`.
+     - Quadruple-plane orthogonal taxonomy enforced (`status`, `outputClassification`, `dataStatus`, `legalStatus`).
+     - Negative evidence invariant preserved: `public.constituency_mapping` = 0 rows; AC-110, AC-118, AC-119 lineage = `UNKNOWN`.
+     - 297/297 automated tests verified passing (100.0%).
+     - Staging PostGIS 589 geometry baseline unchanged (`f839fa02...`).
+     - Production strictly air-gapped and untouched; mobile codebase 100% frozen.
+  2. **Commissioning of PLAN-W020-G8 (Planning Only):**
+     - Implementation Authorization: **STRICTLY NOT AUTHORIZED (NO)**.
+     - Scope bounded strictly to authoring `PLAN-W020-G8-REV-1.0.md`.
+     - Zero migrations, zero DDL, zero DML, zero application mutations, zero mobile edits, zero geometry alterations, zero production access, zero APK/device work.
+     - Mandatory governance halt enforced upon plan submission awaiting CTO review.
+- **Milestone Gate Status:**
+  - W020-G7: **ACCEPTED / COMPLETE / CLOSED**.
+  - W020-G8: **DRAFT / SUBMITTED FOR CTO RATIFICATION (PLANNING ONLY)**.
