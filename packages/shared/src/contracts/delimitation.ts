@@ -344,7 +344,7 @@ export interface StateComparisonDTO {
   provenance: MathematicalProvenance;
 }
 
-// ─── LEGAL APPLICABILITY MODEL (PLAN-W020-G8-REV-1.2) ───
+// ─── LEGAL APPLICABILITY MODEL (PLAN-W020-G8-REV-1.2 & CTO DIRECTIVE) ───
 
 export type PoliticalEntityType =
   | 'STATE_LEGISLATIVE_ASSEMBLY'
@@ -359,15 +359,56 @@ export type InvariantClassification =
   | 'DERIVED_MATHEMATICAL_INVARIANT'
   | 'SCENARIO_INVARIANT';
 
-export interface LegalApplicabilityConstraint {
+export interface TemporalValidity {
+  validFrom: string;
+  validTo?: string | null;
+  isCurrent: boolean;
+}
+
+export interface LegalProvenanceReference {
+  sourceAuthority: string;
+  citation: string;
+  gazetteNotification?: string;
+  evidenceReference?: string;
+  instrumentTitle?: string;
+}
+
+export interface LegalApplicabilityQuery {
   entityType: PoliticalEntityType;
   regimeType: DelimitationLegalRegime;
+  jurisdictionCode?: string;
+  asOfDate?: string;
+  evidenceReference?: string;
+}
+
+export interface LegalApplicabilityConstraint {
+  // Coordinate 1: Entity Type
+  entityType: PoliticalEntityType;
+  // Coordinate 2: Selected W014 Legal Regime
+  regimeType: DelimitationLegalRegime;
+  // Coordinate 3: Applicable Constitutional Provision
   constitutionalProvision?: string;
+  // Coordinate 4: Applicable Statutory Provision
   statutoryProvision?: string;
+  // Coordinate 5: Temporal Validity
+  temporalValidity: TemporalValidity;
+  // Coordinate 6: Authoritative Evidence / Provenance
+  provenance: LegalProvenanceReference;
+  // Distinct Semantic Planes
+  constitutionalFloor?: number;
+  constitutionalCeiling?: number;
+  statutoryExactSeats?: number;
+  currentFactualSeats?: number;
+  historicalFactualSeats?: number;
+  paninComputationalSafetyCeiling: number;
+  isStatutoryFact: boolean;
+  isScenario: boolean;
+  notwithstandingClause?: boolean;
+  jurisdictionCode?: string;
+  // Compatibility getters for existing consumers
   minSeats?: number;
   maxSeats?: number;
   exactSeats?: number;
-  notwithstandingClause?: boolean;
   citation?: string;
 }
 

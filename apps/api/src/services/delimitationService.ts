@@ -59,6 +59,7 @@ import type {
   MonitorWebhookResponseDTO,
   PoliticalEntityType,
   LegalApplicabilityConstraint,
+  LegalApplicabilityQuery,
   InvariantClassification,
 } from '@kshetra/shared';
 import { resolveLegalApplicability } from './delimitationQueryService';
@@ -196,7 +197,7 @@ export class DelimitationService {
   }
 
   /**
-   * LEGAL APPLICABILITY MODEL ASSERTION (Directive W020-G8 REV-1.2)
+   * LEGAL APPLICABILITY MODEL ASSERTION (Directive W020-G8 REV-1.2 & CTO DIRECTIVE)
    * Asserts seat bounds strictly against the resolved governing legal context:
    * - Standard State Assemblies under Article 170(1): 60 <= S <= 500
    * - Special Constitutional Regimes (Sikkim Art. 371F >= 30, Mizoram Art. 371G >= 40, Goa Art. 371-I >= 30)
@@ -205,11 +206,14 @@ export class DelimitationService {
    */
   public assertLegalAssemblyBounds(
     seats: number,
-    entityType: PoliticalEntityType = 'STATE_LEGISLATIVE_ASSEMBLY',
+    entityTypeOrQuery: PoliticalEntityType | LegalApplicabilityQuery = 'STATE_LEGISLATIVE_ASSEMBLY',
     stateCode?: string,
     regimeType: DelimitationLegalRegime = 'CURRENT_LEGAL_REGIME'
   ): void {
-    const constraint = resolveLegalApplicability(entityType, regimeType, stateCode);
+    const constraint =
+      typeof entityTypeOrQuery === 'object'
+        ? resolveLegalApplicability(entityTypeOrQuery)
+        : resolveLegalApplicability(entityTypeOrQuery, regimeType, stateCode);
 
     if (constraint.minSeats !== undefined && seats < constraint.minSeats) {
       throw new RangeError(
@@ -228,11 +232,11 @@ export class DelimitationService {
    * Resolves the governing legal constraint using the Legal Applicability Model.
    */
   public resolveLegalApplicability(
-    entityType: PoliticalEntityType = 'STATE_LEGISLATIVE_ASSEMBLY',
+    queryOrEntityType: PoliticalEntityType | LegalApplicabilityQuery = 'STATE_LEGISLATIVE_ASSEMBLY',
     regimeType: DelimitationLegalRegime = 'CURRENT_LEGAL_REGIME',
     stateCode?: string
   ): LegalApplicabilityConstraint {
-    return resolveLegalApplicability(entityType, regimeType, stateCode);
+    return resolveLegalApplicability(queryOrEntityType, regimeType, stateCode);
   }
 
   /**

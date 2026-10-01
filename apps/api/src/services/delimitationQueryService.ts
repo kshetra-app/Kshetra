@@ -31,6 +31,9 @@ import type {
   DelimitationStatusDTO,
   PoliticalEntityType,
   LegalApplicabilityConstraint,
+  LegalApplicabilityQuery,
+  LegalProvenanceReference,
+  TemporalValidity,
 } from '@kshetra/shared';
 
 export class DelimitationQueryError extends Error {
@@ -647,95 +650,343 @@ export class DelimitationQueryService {
     throw new DelimitationQueryError('INVALID_REGIME_SELECTION_MODE', 400, `Unknown regime selection mode: '${(query as any).mode}'`);
   }
 
-  /**
-   * LEGAL APPLICABILITY MODEL RESOLVER (Directive W020-G8 REV-1.2)
-   * Resolves seat constraints from entity type, selected regime, constitutional provisions,
-   * statutory provisions, and temporal validity without hardcoded exception lists.
-   */
-  resolveLegalApplicability(
-    entityType: PoliticalEntityType = 'STATE_LEGISLATIVE_ASSEMBLY',
-    regimeType: DelimitationLegalRegime = 'CURRENT_LEGAL_REGIME',
-    stateCode?: string
-  ): LegalApplicabilityConstraint {
-    const normState = stateCode?.toUpperCase();
-
-    if (entityType === 'STATE_LEGISLATIVE_ASSEMBLY') {
-      if (normState === 'SK') {
-        return {
-          entityType,
-          regimeType,
-          constitutionalProvision: 'Article 371F(f)',
-          statutoryProvision: 'Constitution (Thirty-sixth Amendment) Act, 1975',
-          minSeats: 30,
-          notwithstandingClause: true,
-          citation:
-            'Article 371F(f): Notwithstanding anything in this Constitution, the Legislative Assembly of the State of Sikkim shall consist of not less than thirty members.',
-        };
-      }
-      if (normState === 'MZ') {
-        return {
-          entityType,
-          regimeType,
-          constitutionalProvision: 'Article 371G(b)',
-          statutoryProvision: 'State of Mizoram Act, 1986',
-          minSeats: 40,
-          notwithstandingClause: true,
-          citation:
-            'Article 371G(b): Notwithstanding anything in this Constitution, the Legislative Assembly of the State of Mizoram shall consist of not less than forty members.',
-        };
-      }
-      if (normState === 'GA') {
-        return {
-          entityType,
-          regimeType,
-          constitutionalProvision: 'Article 371-I',
-          statutoryProvision: 'Goa, Daman and Diu Reorganisation Act, 1987 (Act No. 18 of 1987)',
-          minSeats: 30,
-          exactSeats: 40,
-          citation:
-            'Article 371-I: The Legislative Assembly of the State of Goa shall consist of not less than thirty members; Goa, Daman and Diu Reorganisation Act, 1987 Section 9 established 40 seats.',
-        };
-      }
-      // Standard State Assembly governed by Article 170(1)
-      return {
-        entityType,
-        regimeType,
-        constitutionalProvision: 'Article 170(1)',
-        statutoryProvision: 'Representation of the People Act, 1950',
-        minSeats: 60,
-        maxSeats: 500,
+  // ─── GOVERNED LEGAL APPLICABILITY RULE CATALOG (W020-G8 / PLAN-W020-G8-REV-1.2) ───
+  // Application-level governed legal rules catalog with explicit constitutional, statutory,
+  // temporal, and provenance coordinates. Not an exhaustive India-wide persistence source.
+  private static readonly GOVERNED_LEGAL_RULES: Array<{
+    ruleId: string;
+    entityType: PoliticalEntityType;
+    jurisdictionCode?: string;
+    regimeApplicability: DelimitationLegalRegime[];
+    constitutionalProvision?: string;
+    statutoryProvision?: string;
+    temporalValidity: TemporalValidity;
+    provenance: LegalProvenanceReference;
+    constitutionalFloor?: number;
+    constitutionalCeiling?: number;
+    statutoryExactSeats?: number;
+    currentFactualSeats?: number;
+    historicalFactualSeats?: number;
+    notwithstandingClause?: boolean;
+    isStatutoryFact: boolean;
+  }> = [
+    // Rule 1: Standard State Assembly under Article 170(1) (e.g. Telangana, Andhra Pradesh, generic States)
+    {
+      ruleId: 'RULE-CONST-ART170-STATE',
+      entityType: 'STATE_LEGISLATIVE_ASSEMBLY',
+      regimeApplicability: ['CURRENT_LEGAL_REGIME', 'HISTORICAL_LEGAL_REGIME'],
+      constitutionalProvision: 'Article 170(1)',
+      statutoryProvision: 'Representation of the People Act, 1950',
+      temporalValidity: { validFrom: '1950-01-26', isCurrent: true },
+      provenance: {
+        sourceAuthority: 'Constitution of India / Parliament of India',
         citation:
           'Article 170(1): Subject to the provisions of article 333, the Legislative Assembly of each State shall consist of not more than five hundred, and not less than sixty, members.',
-      };
-    }
-
-    if (entityType === 'UNION_TERRITORY_ASSEMBLY') {
-      return {
-        entityType,
-        regimeType,
-        constitutionalProvision: 'Article 239A',
-        statutoryProvision: 'Government of Union Territories Act, 1963 (Section 3)',
-        minSeats: 30,
-        exactSeats: normState === 'PY' ? 30 : undefined,
+        instrumentTitle: 'Constitution of India, Article 170(1)',
+        evidenceReference: 'CONST-IND-ART170',
+      },
+      constitutionalFloor: 60,
+      constitutionalCeiling: 500,
+      isStatutoryFact: true,
+    },
+    // Rule 2: Special Constitutional Regime for Sikkim under Article 371F(f)
+    {
+      ruleId: 'RULE-CONST-ART371F-SIKKIM',
+      entityType: 'STATE_LEGISLATIVE_ASSEMBLY',
+      jurisdictionCode: 'SK',
+      regimeApplicability: ['CURRENT_LEGAL_REGIME', 'HISTORICAL_LEGAL_REGIME'],
+      constitutionalProvision: 'Article 371F(f)',
+      statutoryProvision: 'Constitution (Thirty-sixth Amendment) Act, 1975',
+      temporalValidity: { validFrom: '1975-04-26', isCurrent: true },
+      provenance: {
+        sourceAuthority: 'Constitution of India (Thirty-sixth Amendment) Act, 1975',
         citation:
-          'Government of Union Territories Act, 1963, Section 3: The total number of assembly seats in the Union territory shall be thirty.',
-      };
-    }
+          'Article 371F(f): Notwithstanding anything in this Constitution, the Legislative Assembly of the State of Sikkim shall consist of not less than thirty members.',
+        instrumentTitle: 'Constitution (Thirty-sixth Amendment) Act, 1975',
+        evidenceReference: 'CONST-IND-ART371F',
+      },
+      constitutionalFloor: 30,
+      currentFactualSeats: 32,
+      notwithstandingClause: true,
+      isStatutoryFact: true,
+    },
+    // Rule 3: Special Constitutional Regime for Mizoram under Article 371G(b)
+    {
+      ruleId: 'RULE-CONST-ART371G-MIZORAM',
+      entityType: 'STATE_LEGISLATIVE_ASSEMBLY',
+      jurisdictionCode: 'MZ',
+      regimeApplicability: ['CURRENT_LEGAL_REGIME', 'HISTORICAL_LEGAL_REGIME'],
+      constitutionalProvision: 'Article 371G(b)',
+      statutoryProvision: 'State of Mizoram Act, 1986 (Act No. 34 of 1986)',
+      temporalValidity: { validFrom: '1987-02-20', isCurrent: true },
+      provenance: {
+        sourceAuthority: 'Constitution of India (Fifty-third Amendment) Act, 1986',
+        citation:
+          'Article 371G(b): Notwithstanding anything in this Constitution, the Legislative Assembly of the State of Mizoram shall consist of not less than forty members.',
+        instrumentTitle: 'Constitution (Fifty-third Amendment) Act, 1986',
+        evidenceReference: 'CONST-IND-ART371G',
+      },
+      constitutionalFloor: 40,
+      currentFactualSeats: 40,
+      notwithstandingClause: true,
+      isStatutoryFact: true,
+    },
+    // Rule 4: Special Constitutional Regime for Goa under Article 371-I & Statutory Rule under Reorganisation Act 1987 Sec 12
+    {
+      ruleId: 'RULE-CONST-ART371I-GOA',
+      entityType: 'STATE_LEGISLATIVE_ASSEMBLY',
+      jurisdictionCode: 'GA',
+      regimeApplicability: ['CURRENT_LEGAL_REGIME', 'HISTORICAL_LEGAL_REGIME'],
+      constitutionalProvision: 'Article 371-I',
+      statutoryProvision: 'Goa, Daman and Diu Reorganisation Act, 1987 (Act No. 18 of 1987), Section 12',
+      temporalValidity: { validFrom: '1987-05-30', isCurrent: true },
+      provenance: {
+        sourceAuthority: 'Parliament of India / Ministry of Law and Justice',
+        citation:
+          'Article 371-I: The Legislative Assembly of the State of Goa shall consist of not less than thirty members. Goa, Daman and Diu Reorganisation Act, 1987, Section 12 establishes 40 seats for the Legislative Assembly of the State of Goa.',
+        instrumentTitle: 'Goa, Daman and Diu Reorganisation Act, 1987 (Act No. 18 of 1987)',
+        evidenceReference: 'MHA-ACT-1987-18',
+        gazetteNotification: 'Act No. 18 of 1987',
+      },
+      constitutionalFloor: 30,
+      statutoryExactSeats: 40,
+      currentFactualSeats: 40,
+      notwithstandingClause: true,
+      isStatutoryFact: true,
+    },
+    // Rule 5: Union Territory Legislative Assembly under Government of Union Territories Act, 1963 (Section 3) (e.g. Puducherry)
+    {
+      ruleId: 'RULE-STAT-UT-ACT-1963-PY',
+      entityType: 'UNION_TERRITORY_ASSEMBLY',
+      jurisdictionCode: 'PY',
+      regimeApplicability: ['CURRENT_LEGAL_REGIME', 'HISTORICAL_LEGAL_REGIME'],
+      constitutionalProvision: 'Article 239A',
+      statutoryProvision: 'Government of Union Territories Act, 1963 (Section 3)',
+      temporalValidity: { validFrom: '1963-07-01', isCurrent: true },
+      provenance: {
+        sourceAuthority: 'Parliament of India / Government of Union Territories Act, 1963',
+        citation:
+          'Government of Union Territories Act, 1963, Section 3: The Legislative Assembly of the Union territory shall consist of thirty chosen by direct election.',
+        instrumentTitle: 'Government of Union Territories Act, 1963 (Act No. 20 of 1963)',
+        evidenceReference: 'MHA-UT-ACT-1963',
+      },
+      constitutionalFloor: 30,
+      statutoryExactSeats: 30,
+      currentFactualSeats: 30,
+      isStatutoryFact: true,
+    },
+    // Rule 6: House of the People (Lok Sabha) under Article 81
+    {
+      ruleId: 'RULE-CONST-ART81-LOK-SABHA',
+      entityType: 'HOUSE_OF_THE_PEOPLE',
+      regimeApplicability: ['CURRENT_LEGAL_REGIME', 'HISTORICAL_LEGAL_REGIME'],
+      constitutionalProvision: 'Article 81',
+      statutoryProvision: 'Representation of the People Act, 1950',
+      temporalValidity: { validFrom: '1950-01-26', isCurrent: true },
+      provenance: {
+        sourceAuthority: 'Constitution of India, Article 81',
+        citation: 'Article 81: Composition of the House of the People (max 550 members).',
+        instrumentTitle: 'Constitution of India, Article 81',
+        evidenceReference: 'CONST-IND-ART81',
+      },
+      constitutionalCeiling: 550,
+      isStatutoryFact: true,
+    },
+    // Rule 7: Historical Delimitation Regime for Andhra Pradesh (2008 Delimitation Order Schedule II)
+    {
+      ruleId: 'RULE-HIST-DELIM-2008-AP',
+      entityType: 'STATE_LEGISLATIVE_ASSEMBLY',
+      jurisdictionCode: 'AP_COMPOSITE',
+      regimeApplicability: ['HISTORICAL_LEGAL_REGIME'],
+      constitutionalProvision: 'Article 170(1)',
+      statutoryProvision: 'Delimitation Act, 2002 (Schedule II, 2008 Order)',
+      temporalValidity: { validFrom: '2008-02-19', validTo: '2014-06-01', isCurrent: false },
+      provenance: {
+        sourceAuthority: 'Delimitation Commission of India',
+        citation: 'Delimitation Order 2008, Schedule II (State of Andhra Pradesh), published 19 February 2008.',
+        instrumentTitle: 'Delimitation Order 2008, Schedule II',
+        evidenceReference: 'ECI-DELIM-2008-AP',
+      },
+      constitutionalFloor: 60,
+      constitutionalCeiling: 500,
+      historicalFactualSeats: 294,
+      isStatutoryFact: true,
+    },
+  ];
 
-    if (entityType === 'HOUSE_OF_THE_PEOPLE') {
+  /**
+   * LEGAL APPLICABILITY MODEL RESOLVER (Directive W020-G8 REV-1.2 & CTO DIRECTIVE)
+   * Resolves seat constraints from the six orthogonal coordinates:
+   * 1. Entity Type
+   * 2. Selected W014 Legal Regime
+   * 3. Applicable Constitutional Provision
+   * 4. Applicable Statutory Provision
+   * 5. Temporal Validity
+   * 6. Authoritative Evidence / Provenance
+   *
+   * Preserves strict separation between:
+   * - Constitutional floor/ceiling
+   * - Statutory exact seat count
+   * - Current factual seat count
+   * - Historical factual seat count
+   * - Scenario output
+   * - PANIN computational safety ceiling (MAX_SAFE_REQUESTED_SEATS = 10000)
+   */
+  resolveLegalApplicability(
+    queryOrEntityType: PoliticalEntityType | LegalApplicabilityQuery = 'STATE_LEGISLATIVE_ASSEMBLY',
+    regimeTypeArg: DelimitationLegalRegime = 'CURRENT_LEGAL_REGIME',
+    jurisdictionCodeArg?: string
+  ): LegalApplicabilityConstraint {
+    const query: LegalApplicabilityQuery =
+      typeof queryOrEntityType === 'object'
+        ? queryOrEntityType
+        : {
+            entityType: queryOrEntityType,
+            regimeType: regimeTypeArg,
+            jurisdictionCode: jurisdictionCodeArg,
+          };
+
+    const { entityType, regimeType, jurisdictionCode, asOfDate, evidenceReference } = query;
+    const normJurisdiction = jurisdictionCode?.toUpperCase();
+
+    // Computational safety limit is universal resource-safety only (Plane 6)
+    const paninComputationalSafetyCeiling = 10000;
+
+    // Coordinate 2 & Semantic Plane 5: SCENARIO_PROPOSED_REGIME
+    // Always strictly non-statutory; inherits no statutory force.
+    if (regimeType === 'SCENARIO_PROPOSED_REGIME') {
       return {
         entityType,
         regimeType,
-        constitutionalProvision: 'Article 81',
-        maxSeats: 550,
-        citation: 'Article 81: Composition of the House of the People.',
+        temporalValidity: { validFrom: asOfDate || new Date().toISOString(), isCurrent: false },
+        provenance: {
+          sourceAuthority: 'PANIN Delimitation Simulation Engine (Scenario Research Mode)',
+          citation: 'Non-statutory exploratory scenario projection. Carries zero legal or constitutional force.',
+          evidenceReference: evidenceReference || 'PANIN-SIM-SCENARIO',
+          instrumentTitle: 'PANIN Scenario Simulation',
+        },
+        paninComputationalSafetyCeiling,
+        isStatutoryFact: false,
+        isScenario: true,
+        jurisdictionCode: normJurisdiction,
+        citation: 'Non-statutory scenario projection',
       };
     }
+
+    // Coordinate 2 & Semantic Plane 2: FUTURE_ANTICIPATED_REGIME
+    // Prospective post-2026 delimitation tracking; does not become current legal fact.
+    if (regimeType === 'FUTURE_ANTICIPATED_REGIME') {
+      return {
+        entityType,
+        regimeType,
+        constitutionalProvision: 'Constitution of India Articles 82 & 170 (84th Amendment Proviso)',
+        statutoryProvision: 'Anticipated Delimitation Act post-Census 2027',
+        temporalValidity: { validFrom: '2026-01-01', isCurrent: false },
+        provenance: {
+          sourceAuthority: 'Government of India / Election Commission of India (Prospective)',
+          citation:
+            'Articles 82 and 170 provisos: Readjustment of seats freeze until first census after 2026. Non-enacted prospective regime.',
+          evidenceReference: 'ECI-POST-2026-TRACKING',
+          instrumentTitle: 'Post-2026 Prospective Delimitation Regime',
+        },
+        paninComputationalSafetyCeiling,
+        isStatutoryFact: false,
+        isScenario: false,
+        jurisdictionCode: normJurisdiction,
+        citation: 'Prospective future regime — not current statutory fact',
+      };
+    }
+
+    // Check for invalid entity / regime combination (Case J)
+    if (
+      !['STATE_LEGISLATIVE_ASSEMBLY', 'UNION_TERRITORY_ASSEMBLY', 'HOUSE_OF_THE_PEOPLE', 'COUNCIL_OF_STATES', 'LEGISLATIVE_COUNCIL'].includes(
+        entityType
+      )
+    ) {
+      throw new DelimitationQueryError('INVALID_ENTITY_TYPE', 400, `Unsupported political entity type: '${entityType}'`);
+    }
+
+    // Lookup matching rule from the Governed Legal Rules Catalog by legal context
+    // 1. First attempt exact match on (entityType, jurisdictionCode, regimeType)
+    let matchedRule = DelimitationQueryService.GOVERNED_LEGAL_RULES.find((rule) => {
+      if (rule.entityType !== entityType) return false;
+      if (!rule.regimeApplicability.includes(regimeType)) return false;
+      if (normJurisdiction && rule.jurisdictionCode && rule.jurisdictionCode === normJurisdiction) return true;
+      return false;
+    });
+
+    // 2. Fall back to generic entity rule (no jurisdiction filter) within the regime
+    if (!matchedRule) {
+      matchedRule = DelimitationQueryService.GOVERNED_LEGAL_RULES.find((rule) => {
+        if (rule.entityType !== entityType) return false;
+        if (!rule.regimeApplicability.includes(regimeType)) return false;
+        return !rule.jurisdictionCode;
+      });
+    }
+
+    // Case I: Missing legal evidence / uncataloged combination -> Fail closed
+    if (!matchedRule) {
+      throw new DelimitationQueryError(
+        'LEGAL_RULE_NOT_FOUND',
+        404,
+        `No authoritative legal rule evidenced for entity '${entityType}' under regime '${regimeType}'${
+          normJurisdiction ? ` in jurisdiction '${normJurisdiction}'` : ''
+        }`
+      );
+    }
+
+    // Coordinate 5: Temporal Validity Verification (Cases K & L)
+    if (asOfDate) {
+      const queryTime = new Date(asOfDate).getTime();
+      const validFromTime = new Date(matchedRule.temporalValidity.validFrom).getTime();
+      const validToTime = matchedRule.temporalValidity.validTo
+        ? new Date(matchedRule.temporalValidity.validTo).getTime()
+        : Infinity;
+
+      if (isNaN(queryTime) || queryTime < validFromTime || queryTime > validToTime) {
+        throw new DelimitationQueryError(
+          'TEMPORAL_VALIDITY_MISMATCH',
+          400,
+          `Legal rule '${matchedRule.ruleId}' is not temporally applicable as of '${asOfDate}'. Valid range: [${
+            matchedRule.temporalValidity.validFrom
+          } to ${matchedRule.temporalValidity.validTo || 'present'}].`
+        );
+      }
+    }
+
+    // Coordinate 6: Authoritative Evidence / Provenance reference validation
+    if (evidenceReference && matchedRule.provenance.evidenceReference !== evidenceReference) {
+      throw new DelimitationQueryError(
+        'EVIDENCE_PROVENANCE_MISMATCH',
+        400,
+        `Requested evidence reference '${evidenceReference}' does not match governing rule provenance '${matchedRule.provenance.evidenceReference}'.`
+      );
+    }
+
+    const isStatutory = matchedRule.isStatutoryFact && regimeType === 'CURRENT_LEGAL_REGIME';
 
     return {
-      entityType,
+      entityType: matchedRule.entityType,
       regimeType,
-      citation: 'Generic political entity seat composition rule',
+      constitutionalProvision: matchedRule.constitutionalProvision,
+      statutoryProvision: matchedRule.statutoryProvision,
+      temporalValidity: matchedRule.temporalValidity,
+      provenance: matchedRule.provenance,
+      constitutionalFloor: matchedRule.constitutionalFloor,
+      constitutionalCeiling: matchedRule.constitutionalCeiling,
+      statutoryExactSeats: matchedRule.statutoryExactSeats,
+      currentFactualSeats: matchedRule.currentFactualSeats,
+      historicalFactualSeats: matchedRule.historicalFactualSeats,
+      paninComputationalSafetyCeiling,
+      isStatutoryFact: isStatutory,
+      isScenario: false,
+      notwithstandingClause: matchedRule.notwithstandingClause,
+      jurisdictionCode: normJurisdiction,
+      // Compatibility fields for existing tests
+      minSeats: matchedRule.constitutionalFloor,
+      maxSeats: matchedRule.constitutionalCeiling,
+      exactSeats: matchedRule.statutoryExactSeats,
+      citation: matchedRule.provenance.citation,
     };
   }
 

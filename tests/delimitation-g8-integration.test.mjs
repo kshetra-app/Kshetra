@@ -125,13 +125,13 @@ async function runG8Verification() {
       recordCheck('W020-G8-INT-01', 'MLA impact cross-domain entity linkage', false, err.message);
     }
 
-    // W020-G8-INT-02: /party-projections/:stateCode binds to W019 certified election tallies
+    // W020-G8-INT-02: /party-projections/:stateCode binds to ECI-sourced 2023 Telangana election results
     try {
       const res = await app.inject({ method: 'GET', url: '/api/v1/delimitation/party-projections/TS' });
       const body = JSON.parse(res.body);
       const data = body.data;
       const parties = data?.parties || [];
-      // Canonical 2023 Telangana certified party results: INC:64, BRS:39, BJP:8, AIMIM:7, CPI:1
+      // Canonical 2023 Telangana election party results: INC:64, BRS:39, BJP:8, AIMIM:7, CPI:1
       const incParty = parties.find((p) => p.party === 'INC');
       const brsParty = parties.find((p) => p.party === 'BRS');
       const bjpParty = parties.find((p) => p.party === 'BJP');
@@ -149,13 +149,13 @@ async function runG8Verification() {
 
       recordCheck(
         'W020-G8-INT-02',
-        'Party projections bind to W019 normalized certified election tallies (INC:64, BRS:39, BJP:8, AIMIM:7, CPI:1)',
+        'Party projections bind to ECI-sourced 2023 Telangana election results/statistical data (INC:64, BRS:39, BJP:8, AIMIM:7, CPI:1)',
         int02Pass,
         `INC: ${incParty?.currentSeats}, BRS: ${brsParty?.currentSeats}, BJP: ${bjpParty?.currentSeats}, voteShare: ${incParty?.voteSharePercent}`,
-        'LEGAL_INVARIANT: Certified 2023 Telangana election results bound to party projections'
+        'LEGAL_INVARIANT: ECI-sourced 2023 Telangana election results bound to party projections'
       );
     } catch (err) {
-      recordCheck('W020-G8-INT-02', 'Party projections W019 certified binding', false, err.message);
+      recordCheck('W020-G8-INT-02', 'Party projections ECI-sourced election binding', false, err.message);
     }
 
     // W020-G8-INT-03: Unregistered jurisdictions fail closed with 404 UNSUPPORTED_GEOGRAPHY
@@ -203,7 +203,7 @@ async function runG8Verification() {
       recordCheck('W020-G8-INT-04', 'Missing MLA UNKNOWN semantics', false, err.message);
     }
 
-    // W020-G8-INT-05: Winning margins match official W019 certified results
+    // W020-G8-INT-05: Winning margins match ECI-sourced 2023 Telangana election results
     try {
       const res = await app.inject({ method: 'GET', url: '/api/v1/delimitation/mla-impact/TS' });
       const body = JSON.parse(res.body);
@@ -211,7 +211,7 @@ async function runG8Verification() {
       const kodangal = profiles.find((m) => m.currentAcNo === 65);
       const gajwel = profiles.find((m) => m.currentAcNo === 40);
 
-      // W019 certified: Kodangal margin=32532, Gajwel margin=45031
+      // ECI-sourced 2023: Kodangal margin=32532, Gajwel margin=45031
       const kodangalMatch = kodangal &&
         kodangal.mlaName === 'Anumula Revanth Reddy' &&
         kodangal.party === 'INC' &&
@@ -226,13 +226,13 @@ async function runG8Verification() {
 
       recordCheck(
         'W020-G8-INT-05',
-        'Winning margins match W019 certified results (Kodangal: 32532, Gajwel: 45031)',
+        'Winning margins match ECI-sourced 2023 Telangana election results (Kodangal: 32532, Gajwel: 45031)',
         int05Pass,
         `Kodangal: ${kodangal?.mlaName} (${kodangal?.party}) margin=${kodangal?.currentMarginVotes}, Gajwel: ${gajwel?.mlaName} (${gajwel?.party}) margin=${gajwel?.currentMarginVotes}`,
-        'LEGAL_INVARIANT: Official W019 certified election results integrity'
+        'LEGAL_INVARIANT: ECI-sourced 2023 Telangana election results integrity'
       );
     } catch (err) {
-      recordCheck('W020-G8-INT-05', 'W019 certified winning margins', false, err.message);
+      recordCheck('W020-G8-INT-05', 'ECI-sourced winning margins', false, err.message);
     }
 
     // ═══════════════════════════════════════════════════════════════════════════

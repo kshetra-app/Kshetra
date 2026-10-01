@@ -2370,3 +2370,37 @@
   - W020-G8: **SUBMITTED / IMPLEMENTED**.
   - W020-G9 and post-G8 features: **STRICTLY NOT AUTHORIZED / BLOCKED**.
   - Submitted for formal CTO acceptance review.
+
+---
+
+### DEC-101: REMEDIATION CLOSURE FOR BLOCKER G8-LEGAL-001 (LEGAL APPLICABILITY EVIDENCE)
+- **Date:** 2026-10-01
+- **Status:** SUBMITTED / IMPLEMENTED (Pending CTO Acceptance Review)
+- **Authority:** CTO REMEDIATION DIRECTIVE — W020-G8 LEGAL APPLICABILITY EVIDENCE
+- **Context:** Bounded remediation executed resolving Blocker G8-LEGAL-001. Eliminated hardcoded state-code if/else branches in `resolveLegalApplicability()` by implementing an application-level typed Governed Legal Rules Catalog resolving across all six orthogonal coordinates without database modifications.
+- **Key Remediations & Technical Clarifications:**
+  1. **Six-Coordinate Legal Applicability Engine:**
+     - Coordinate 1 (Entity Type): `STATE_LEGISLATIVE_ASSEMBLY`, `UNION_TERRITORY_ASSEMBLY`, `HOUSE_OF_THE_PEOPLE`, etc.
+     - Coordinate 2 (Legal Regime): `CURRENT_LEGAL_REGIME`, `HISTORICAL_LEGAL_REGIME`, `FUTURE_ANTICIPATED_REGIME`, `SCENARIO_PROPOSED_REGIME`.
+     - Coordinate 3 (Constitutional Provision): `Article 170(1)`, `Article 371F(f)`, `Article 371G(b)`, `Article 371-I`, `Article 239A`, `Article 81`.
+     - Coordinate 4 (Statutory Provision): `Representation of the People Act, 1950`, `Constitution (Thirty-sixth Amendment) Act, 1975`, `State of Mizoram Act, 1986`, `Goa, Daman and Diu Reorganisation Act, 1987 (Section 12)`, `Government of Union Territories Act, 1963 (Section 3)`.
+     - Coordinate 5 (Temporal Validity): Structured `temporalValidity: { validFrom, validTo, isCurrent }`. Temporal queries outside range fail closed with `TEMPORAL_VALIDITY_MISMATCH` (400).
+     - Coordinate 6 (Evidence / Provenance): Typed `provenance: { sourceAuthority, citation, instrumentTitle, evidenceReference, gazetteNotification }`.
+  2. **Plane Separation & Strict Distinctions:**
+     - Goa: Constitutional floor 30 under Article 371-I; statutory exact 40 under Reorganisation Act 1987 Section 12 (corrected from incorrect citation of Section 9); current factual 40. These planes remain strictly distinct.
+     - Puducherry: Governed by UT Act 1963 Section 3 (30 seats directly elected); strictly decoupled from State Article 170 logic.
+     - Scenario: Derived-only `isScenario === true` with zero statutory force; cannot masquerade as current statutory fact.
+     - Ceiling Separation: Article 170 ceiling (500) strictly separated from `MAX_SAFE_REQUESTED_SEATS` (10000).
+  3. **W019 Terminology Precision:**
+     - Replaced "W019 certified 2023 election results" with source-accurate "ECI-sourced 2023 Telangana election results/statistical data" across tests and reports.
+  4. **Master Regression & Additional Semantic Suite:**
+     - Baseline 322/322 regression battery verified 100% passing.
+     - Dedicated 16-case semantic suite (`tests/delimitation-legal-applicability.test.mjs`, Cases A–P) verified 16/16 passing.
+     - Combined total: 338/338 tests passing (100.0%).
+  5. **Zero Schema / Database Modifications:**
+     - 0 migrations, 0 DDL, 0 DML, 0 new persistence.
+     - Staging PostGIS 589 geometry baseline unchanged (SHA-256 `f839fa02...`).
+     - Production strictly air-gapped and untouched; mobile codebase 100% frozen.
+- **Milestone Gate Status:**
+  - W020-G8: **SUBMITTED FOR CTO ACCEPTANCE REVIEW**.
+  - W020-G9 and future features: **STRICTLY BLOCKED / NOT AUTHORIZED**.

@@ -17,15 +17,15 @@ All changes strictly adhered to the CTO execution directive:
 1. **Zero Database Modifications:** Zero new migrations, zero DDL, zero DML, zero schema alterations, zero new persistence.
 2. **Legal Applicability Model:** Seat constraints resolve from entity type, selected legal regime, governing constitutional provision, governing statutory provision, temporal validity, and authoritative provenance — replacing hardcoded exception lists with a structured model.
 3. **Six Semantic Planes:** Maintained strict distinction between constitutional/statutory legal constraints, historical legal facts, current legal facts, PANIN deterministic computational constraints, scenario/proposed outputs, and resource-safety input limits (`MAX_SAFE_REQUESTED_SEATS = 10000`).
-4. **Mock Data Replacement:** Static placeholders replaced with verified canonical data (W018 political entities, W019 certified 2023 election results) or deterministic derivations; unsupported geographies fail closed with structured `UNSUPPORTED_GEOGRAPHY` 404 envelopes without fabrication.
+4. **Mock Data Replacement:** Static placeholders replaced with verified canonical data (W018 political entities, ECI-sourced 2023 Telangana election results/statistical data) or deterministic derivations; unsupported geographies fail closed with structured `UNSUPPORTED_GEOGRAPHY` 404 envelopes without fabrication.
 5. **Mobile Codebase Frozen:** 0 files modified in `apps/mobile/**`.
 6. **Production Air-Gap:** 100% preserved.
 
 ---
 
-## 322-Test Regression Matrix Verification
+## Master Regression & Semantic Test Matrix Verification
 
-All 9 test suites across the master regression battery passed with a 100.0% success rate:
+All test suites across the master regression battery and the additional legal applicability semantic suite passed with a 100.0% success rate:
 
 | Test Suite | Command | Focus Area | Checks | Result |
 | :--- | :--- | :--- | :---: | :---: |
@@ -38,7 +38,10 @@ All 9 test suites across the master regression battery passed with a 100.0% succ
 | **W020-G7 Query Surface** | `node tests/delimitation-g7-query-surface.test.mjs` | Read-only typed regime query surface, UNKNOWN claims | 25 | **25/25 PASS** |
 | **API Contract Drift** | `node scripts/check-api-contract-drift.mjs` | Declared contract synchronization across routes | 9 | **9/9 PASS** |
 | **W020-G8 Integration Battery** | `node tests/delimitation-g8-integration.test.mjs` | Cross-domain legal, simulation, and evidence invariants | 25 | **25/25 PASS** |
-| **TOTAL** | — | — | **322** | **322/322 PASS (100.0%)** |
+| **G8-LEGAL-001 Semantic Matrix** | `node tests/delimitation-legal-applicability.test.mjs` | 16-case legal applicability model verification | 16 | **16/16 PASS** |
+| **BASELINE REGRESSION** | — | Master baseline regression suites | 322 | **322/322 PASS (100.0%)** |
+| **ADDITIONAL SEMANTIC** | — | Dedicated legal applicability semantic suite | 16 | **16/16 PASS (100.0%)** |
+| **COMBINED TOTAL** | — | Full verified test suite | **338** | **338/338 PASS (100.0%)** |
 
 ---
 
