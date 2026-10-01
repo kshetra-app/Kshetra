@@ -1,9 +1,9 @@
 # PLAN-W021-MASTER-REV-1.0: B2B POLITICAL SAAS & PUBLIC/PARTNER DEVELOPER API FOUNDATION
 ## Comprehensive Architectural Specification, Cryptographic Security Flow, Multi-Tenant Model, Data Contracts & Execution Gates
 **Milestone:** W021  
-**Revision:** 1.0 (Master Architectural Plan & Preflight Specification — Remediated per CTO Directive)  
+**Revision:** 1.0 (Master Architectural Plan & Preflight Specification — Remediated per Final CTO Directive)  
 **Date:** 2026-10-01  
-**Authority:** Master Product Blueprint, AI Agent Master Execution Job Book, Amendments v1.2–v1.6, CTO Remediation Directive (PLAN-W021-MASTER-REV-1.0)  
+**Authority:** Master Product Blueprint, AI Agent Master Execution Job Book, Amendments v1.2–v1.6, CTO Final Remediation Directive (PLAN-W021-MASTER-REV-1.0)  
 **Status:** DRAFT / SUBMITTED FOR CTO RE-RATIFICATION  
 **Implementation Authorization:** **STRICTLY NOT AUTHORIZED (PLANNING & PREFLIGHT SPECIFICATION ONLY)**  
 **Target Environment:** Staging Supabase (`fkpigozcqnmcvofuksar`) & Local API Workspace  
@@ -14,13 +14,13 @@
 
 ## 1. Executive Summary & Authorization Declaration
 
-In accordance with the **W021-G1 CTO REMEDIATION DIRECTIVE**, this document establishes the authoritative, mathematically sound, implementation-ready architectural blueprint for Milestone **W021: B2B Political SaaS & Public/Partner Developer API Foundation**.
+In accordance with the **W021-G1 CTO REMEDIATION DIRECTIVE (FINAL ROUND)**, this document establishes the authoritative, mathematically rigorous, implementation-ready architectural blueprint for Milestone **W021: B2B Political SaaS & Public/Partner Developer API Foundation**.
 
 Milestone W020 is formally **CLOSED / COMPLETE** at canonical baseline `51dc383353f09db518c770ae1b4e2cf3b17f4177`.
 
 ```text
 ================================================================================
-MILESTONE W021 MASTER IMPLEMENTATION PLAN — REVISION 1.0 (REMEDIATED)
+MILESTONE W021 MASTER IMPLEMENTATION PLAN — REVISION 1.0 (FINAL REMEDIATION)
 AUTHORIZATION STATUS: PLANNING ONLY / SUBMITTED FOR CTO RE-RATIFICATION
 ================================================================================
 PLAN STATUS:                         DRAFT / SUBMITTED FOR CTO RE-RATIFICATION
@@ -71,7 +71,7 @@ Every architectural capability and boundary in W021 is classified under the mand
 | :--- | :--- | :--- | :--- |
 | **API Perimeter** | Dedicated Partner Namespace `/api/vsaas/v1/...` | **REQUIRED** | Strict physical routing separation from internal mobile API. |
 | **API Perimeter** | Legacy Root Swagger Replacement | **EXCLUDED** | Internal mobile contracts in `openapi.yaml` must not be mingled with partner surface. |
-| **Authentication** | Cryptographic API Key Model (`panin_live_sk_...`) | **REQUIRED** | 256-bit CSPRNG entropy with constant-time digest comparison and SHA-256 indexed lookup. |
+| **Authentication** | Cryptographic API Key Model (`panin_live_sk_...`) | **REQUIRED** | 256-bit CSPRNG entropy encoded as 43 Base64URL chars with SHA-256 indexed seek. |
 | **Authentication** | OAuth2 / OIDC Authorization Code Flow | **DEFERRED** | Deferred to enterprise SSO milestone (W051). API Key satisfies machine-to-machine integrations. |
 | **Tenancy** | Organization & Application Isolation Model | **REQUIRED** | Foundation for multi-tenant billing, quotas, key management, and security boundaries. |
 | **Tenancy** | Complex RBAC / SCIM Provisioning | **DEFERRED** | Two-Tier Membership (`admin`, `developer`) sufficient for W021. |
@@ -79,7 +79,7 @@ Every architectural capability and boundary in W021 is classified under the mand
 | **Metering** | Hourly Usage Aggregation Ledger (`saas_usage_ledger`) | **REQUIRED** | Relational ledger for persistent historical usage accounting, auditability, and reconciliation. |
 | **Metering** | Live Financial Ledger Billing Integration | **DEFERRED** | Deferred to commercial onboarding (W051). Staging handles test-tier limits only. ₹0 real money. |
 | **External Surface**| Public Factual Electoral & Spatial Data | **REQUIRED** | Read-only delivery of normalized ECI contests, ACs, mandals, sitting tenures. |
-| **External Surface**| Governed Delimitation Simulation Endpoint | **REQUIRED** | Export of Hare-Niemeyer simulations strictly bound to `PANIN_SCENARIO` metadata. |
+| **External Surface**| Governed Delimitation Simulation Endpoint | **REQUIRED** | Export of Hare-Niemeyer simulations strictly bound to server-owned `PANIN_SCENARIO` metadata. |
 | **External Surface**| Direct Citizen Personal Data / PII Export | **EXCLUDED** | PANIN architectural privacy boundary. W021 SHALL expose zero citizen personal-data fields. |
 | **External Surface**| Partner Write/Mutation Endpoints | **EXCLUDED** | W021 Partner API is strictly READ-ONLY. Zero external mutation capability. |
 | **Webhooks** | Outbound Event Dispatching & Signatures | **DEFERRED** | High operational footprint (retry queues, SSRF risk). Deferred to dedicated event milestone (W022). |
@@ -125,7 +125,7 @@ W021 serves four distinct external institutional consumer personas:
 │    `/api/vsaas/v1/delim/reg.. │ (1976 / 2008 Orders) │ Delimitation Orders  │
 ├───────────────────────────────┼──────────────────────┼──────────────────────┤
 │ 5. Delimitation Scenarios     │ Governed Simulation  │ PANIN_SCENARIO       │
-│    `/api/vsaas/v1/delim/sim.. │ (Hamilton Algorithm) │ Explicit Disclaimer  │
+│    `/api/vsaas/v1/delim/sim.. │ (Hamilton Algorithm) │ Server-Owned Notice  │
 └───────────────────────────────┴──────────────────────┴──────────────────────┘
 ```
 
@@ -133,24 +133,27 @@ W021 serves four distinct external institutional consumer personas:
 
 ## 4. API Key Architecture & Cryptographic Construction
 
-### 4.1 Corrected 256-Bit Entropy Construction
-In response to CTO Review Remediation Item 1, the mathematical entropy specification is formally corrected and made internally consistent:
+### 4.1 Canonical 256-Bit Entropy Construction & Base64URL Encoding
+In response to Final CTO Directive Item 1, to eliminate ad-hoc, ambiguous, or non-injective Base62 formulations, the API key secret encoding is authoritatively specified using **RFC 4648 Base64URL (URL and Filename Safe Alphabet, Unpadded)**:
 
 1. **Target Entropy:** **Exactly 256 bits of cryptographic entropy**.
-2. **CSPRNG Source:** Node.js `crypto.randomBytes(32)` (or Web Cryptography API `crypto.getRandomValues(new Uint8Array(32))`), generating 32 raw bytes (256 bits) from the operating system's cryptographic entropy pool.
-3. **Encoding:** **Base62 Encoding** (`[0-9a-zA-Z]`, 62 characters) to produce URL-safe, compact, non-punctuated alphanumeric strings without ambiguous character substitutions.
-   * A 32-byte (256-bit) integer $N \in [0, 2^{256}-1]$ requires $\lceil 256 / \log_2(62) \rceil = \lceil 256 / 5.954 \rceil = 43$ Base62 characters to represent losslessly.
-   * To maintain fixed length and clean visual boundaries, the secret payload is zero-padded to exactly **44 Base62 characters** ($62^{44} \approx 7.02 \times 10^{78} > 2^{256} \approx 1.1579 \times 10^{77}$).
+2. **CSPRNG Source:** Node.js `crypto.randomBytes(32)` generating 32 raw bytes (256 bits) from the operating system's cryptographic entropy pool.
+3. **Encoding Definition (RFC 4648 §5 Base64URL Unpadded):**
+   * Standard alphabet: `A-Z`, `a-z`, `0-9`, `-`, `_` (64 symbols).
+   * Exact bit calculation: $32 \text{ bytes} \times 8 \text{ bits/byte} = 256 \text{ bits}$.
+   * Under Base64 encoding: $\lceil 256 / 6 \rceil = 43 \text{ characters}$ (with 2 trailing padding bits: $43 \times 6 = 258 \text{ bits}$).
+   * In unpadded Base64URL, the trailing `=` padding is stripped, yielding an **exact, immutable fixed width of 43 characters**.
+   * **Injective & Bijective Guarantee:** The mapping between the 32 raw bytes and the 43 unpadded Base64URL characters is completely deterministic, canonical, bijective, preserves leading zeroes losslessly, and guarantees zero truncation across all $2^{256}$ states.
 4. **Resulting Displayed Secret Format:**
    ```text
-   panin_{environment}_{keyType}_{randomSecret44}
+   panin_{environment}_{keyType}_{secret43}
    ```
-   * **Production Live Key:** `panin_live_sk_XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX` (Total length: 58 characters).
-   * **Staging / Test Key:** `panin_test_sk_YYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYY` (Total length: 58 characters).
+   * **Production Live Key:** `panin_live_sk_XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX` (14-char prefix + 43 Base64URL chars = 57 chars total).
+   * **Staging / Test Key:** `panin_test_sk_YYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYY` (14-char prefix + 43 Base64URL chars = 57 chars total).
 5. **Key Anatomy Breakdown:**
-   * Prefix: `panin_live_sk_` or `panin_test_sk_` (14 characters). Allows instant routing, regex credential detection in CI scanners, and environment validation.
-   * Key Hint: First 8 characters of the 44-character random string (e.g., `XXXXXXXX`). Stored in plaintext in the database to enable developer identification in consoles (e.g. `panin_live_sk_XXXXXXXX...`).
-   * Secret Entropy: The full 32 raw bytes (256 bits) encoded in the 44 Base62 characters.
+   * Prefix: `panin_live_sk_` or `panin_test_sk_` (14 characters). Enables automated regex secret scanning, environment matching, and credential classification.
+   * Key Hint: First 8 characters of the 43-character Base64URL string (e.g. `XXXXXXXX`). Stored in plaintext in the database solely to allow developer identification in management consoles (e.g. `panin_live_sk_XXXXXXXX...`).
+   * Secret Entropy: The complete 32 raw bytes (256 bits) preserved in the 43 Base64URL characters.
 
 ### 4.2 Complete SHA-256 API-Key Security Flow
 
@@ -158,8 +161,8 @@ In response to CTO Review Remediation Item 1, the mathematical entropy specifica
 ┌─────────────────────────────────────────────────────────────────────────────┐
 │                       API KEY GENERATION & STORAGE FLOW                     │
 ├─────────────────────────────────────────────────────────────────────────────┤
-│ 1. GENERATE:  raw_bytes = crypto.randomBytes(32)                            │
-│               secret_payload = base62Encode(raw_bytes)  // 44 chars         │
+│ 1. GENERATE:  raw_bytes = crypto.randomBytes(32)  // exactly 256 bits       │
+│               secret_payload = raw_bytes.toString('base64url')  // 43 chars │
 │               raw_api_key = "panin_" + env + "_sk_" + secret_payload        │
 │                                                                             │
 │ 2. DERIVE:    key_hint = secret_payload.substring(0, 8)  // 8 chars         │
@@ -183,7 +186,7 @@ In response to CTO Review Remediation Item 1, the mathematical entropy specifica
 │ 1. EXTRACT:   incoming_key = req.headers['x-api-key'] ||                    │
 │                              req.headers.authorization?.replace('Bearer ','')│
 │                                                                             │
-│ 2. VALIDATE:  Check format: /panin_(live|test)_sk_[0-9a-zA-Z]{44}/          │
+│ 2. VALIDATE:  Check format: /^panin_(live|test)_sk_[0-9a-zA-Z_-]{43}$/      │
 │               If invalid -> Fail closed: 401 Unauthorized (ECC-001)         │
 │                                                                             │
 │ 3. HASH:      incoming_hash = crypto.createHash('sha256')                   │
@@ -193,9 +196,10 @@ In response to CTO Review Remediation Item 1, the mathematical entropy specifica
 │ 4. LOOKUP:    Indexed B-Tree Seek in PostgreSQL:                            │
 │               SELECT * FROM saas_api_keys                                   │
 │               WHERE key_hash = incoming_hash AND status = 'active';         │
-│               * Note: DB index seek is fast (<1.5ms) but not constant-time. │
+│               * B-Tree index traversal depends on key tree location and is  │
+│                 NOT constant-time; leaks 0 info because hash is random.     │
 │                                                                             │
-│ 5. VERIFY:    If row found:                                                 │
+│ 5. VERIFY:    If candidate row found:                                       │
 │               stored_hash_buf = Buffer.from(row.key_hash, 'utf8');          │
 │               computed_hash_buf = Buffer.from(incoming_hash, 'utf8');       │
 │               is_valid = crypto.timingSafeEqual(stored_hash_buf,            │
@@ -209,10 +213,6 @@ In response to CTO Review Remediation Item 1, the mathematical entropy specifica
 └─────────────────────────────────────────────────────────────────────────────┘
 ```
 
-* **Clarification on Timing Safety:**
-  * Database lookup (`WHERE key_hash = incoming_hash`) relies on B-Tree index traversal; index seeks depend on key tree location and are **NOT constant-time**. However, because the searched key is a cryptographically pseudo-random SHA-256 digest, the timing of index seeks leaks zero information about the underlying raw secret.
-  * Once the candidate row is retrieved from the database, `crypto.timingSafeEqual()` is applied exclusively to the two fixed-length 64-byte UTF-8 buffers representing the hex digests, preventing byte-by-byte memory comparison timing leakage in the Node.js runtime.
-
 ### 4.3 Key Revocation, Expiration & Failure Handling
 * **Revocation:** Update `status = 'revoked', revoked_at = NOW()`. Subsequent lookups filter on `status = 'active'`, failing immediately.
 * **Compromise Mitigation:** Update `status = 'compromised'`. Any cached memory tokens are flushed.
@@ -224,10 +224,29 @@ In response to CTO Review Remediation Item 1, the mathematical entropy specifica
 
 ---
 
-## 5. Multi-Tenant Architecture & Threat Model
+## 5. Multi-Tenant Architecture & RLS / Service-Role Security Model
 
-### 5.1 Relational Tenancy Model
-W021 implements a clean, relational multi-tenant architecture:
+### 5.1 Clear Separation of Gateway Mediation vs PostgreSQL RLS
+In response to Final CTO Directive Item 3, the security model explicitly distinguishes between gateway authentication, service-role capabilities, and PostgreSQL Row Level Security:
+
+1. **Fastify Privileged Database Access (`service_role` Principal):**
+   * The Fastify API gateway connects to PostgreSQL using the dedicated `service_role` credentials.
+   * *BYPASSRLS Behavior:* In Supabase/PostgreSQL, the `service_role` user possesses the `BYPASSRLS` attribute. Therefore, **PostgreSQL RLS policies are NOT the mechanism that isolates tenants during Fastify API request handling**. It is architecturally false to claim that RLS policies isolate tenants when queried via `service_role`.
+2. **Gateway-Level Tenant Context Derivation:**
+   * Tenant isolation in the API gateway is enforced by **strict programmatic parameter binding**:
+     * Inbound requests present only an API key.
+     * The gateway resolves the API key to exactly one `(tenant_id, application_id)` tuple.
+     * **Caller-Controlled `tenant_id` Prohibition:** External clients are strictly prohibited from providing or overriding a `tenant_id` parameter in headers, query strings, or request bodies. Any client-supplied tenant identifier is rejected or discarded.
+     * All subsequent database queries executed on behalf of that tenant explicitly parameterize `WHERE tenant_id = resolved_tenant_id`.
+3. **Role of PostgreSQL RLS Policies:**
+   * RLS policies on `saas_tenants`, `saas_applications`, `saas_api_keys`, and `saas_usage_ledger` exist strictly to:
+     * Prevent unauthorized access if a future developer console connects via standard authenticated JWT (`authenticated` role).
+     * Enforce defense-in-depth across direct PostgREST or Supabase Studio connections.
+     * Ensure that the `anon` and `authenticated` roles have `REVOKE ALL` permissions by default, preventing any public enumeration of tenant accounts or API keys.
+4. **Gateway Compromise Boundary:**
+   * The gateway operates within a hardened perimeter. Because it holds `service_role` credentials, gateway processes must be strictly partitioned:
+     * Partner SaaS routes are purely read-only queries against public tables.
+     * Internal management/admin routes are physically separated and protected by privileged bypass secrets.
 
 ```mermaid
 erDiagram
@@ -273,121 +292,93 @@ erDiagram
     SAAS_USAGE_LEDGER {
         uuid id PK
         uuid tenant_id FK
-        uuid api_key_id FK
+        uuid api_key_id FK_NULLABLE
         timestamptz hour_bucket
         int request_count
         int error_count
     }
 ```
 
-### 5.2 Isolation & RLS Boundary
-1. **Service-Role Gateway Mediation:** The Fastify API gateway validates the API key via a dedicated service-role connection, establishes the verified `tenant_id`, and injects security context into the request (`request.tenant = { tenantId, appId, keyId, tier, scopes }`).
-2. **PostgreSQL RLS Policies on Tenant Data:**
-   * Tables `saas_tenants`, `saas_applications`, `saas_api_keys`, and `saas_usage_ledger` enable `ROW LEVEL SECURITY`.
-   * When queried in user/tenant context, policies enforce:
-     ```sql
-     CREATE POLICY "Tenants isolate own records" ON public.saas_tenants
-       FOR ALL USING (id = NULLIF(current_setting('app.current_tenant_id', true), '')::UUID);
+---
+
+## 6. Usage Ledger Architecture & Retention Semantics
+
+### 6.1 Dual-Mechanism Usage & Rate Control
+* **Synchronous Layer (Real-Time Enforcement):** Fastify in-memory token-bucket / sliding-window rate limiter clamps burst rates per minute and enforces monthly ceiling limits with sub-millisecond response. Exceeded thresholds return `429 Too Many Requests`.
+* **Asynchronous Layer (`saas_usage_ledger`):** **Classified as REQUIRED in W021.** Records hourly aggregated consumption per tenant and API key.
+
+### 6.2 Immutable Usage Ledger Retention Semantics
+In response to Final CTO Directive Item 4, the relationship between API key lifecycle and usage accounting is formally decoupled to prevent silent destruction of historical evidence:
+
+1. **Normal API Key Revocation (Soft-State):**
+   * Revoking an API key updates `status = 'revoked', revoked_at = NOW()`.
+   * **Zero physical deletion:** The API key row remains permanently in `saas_api_keys`.
+   * All historical usage records in `saas_usage_ledger` referencing that `api_key_id` remain intact and linked.
+2. **Physical Deletion Handling (`ON DELETE SET NULL`):**
+   * If an API key row is ever physically purged (e.g. regulatory scrub), `saas_usage_ledger.api_key_id` is defined with **`ON DELETE SET NULL`** (replacing the previous flawed `CASCADE`).
+   * *Audit Continuity:* The usage ledger record is **NEVER deleted**. It retains `tenant_id`, `hour_bucket`, `request_count`, and `error_count`, ensuring tenant consumption totals, invoicing records, and audit logs remain mathematically complete and immutable.
+3. **Tenant & Application Deletion Boundaries:**
+   * A tenant row cannot be deleted if active billing records exist. If an application is deleted, its historical usage ledger entries retain `tenant_id` and have `api_key_id` set to `NULL`.
+   * **Retention Policy:** `saas_usage_ledger` records are retained for a minimum of **7 years** to comply with statutory accounting and audit trail requirements.
+
+---
+
+## 7. Canonical Provenance Enum Reconciliation & Server-Owned Model
+
+### 7.1 Provenance Enum Reconciliation Against Source-of-Truth
+In response to Final CTO Directive Item 2, the delimitation provenance metadata is reconciled against the existing canonical shared contracts in `packages/shared/src/contracts/delimitation.ts`:
+
+* **`DelimitationAuthorityLayer` (Canonical):**
+  * `CURRENT_OPERATIVE_LAW` | `HISTORICAL_FACT` | `STATUTORY_CONDITIONAL` | `PROPOSED_LEGISLATIVE` | **`PANIN_SCENARIO`**
+  * For all non-official simulations: **`authorityLayer: "PANIN_SCENARIO"`**.
+* **`DelimitationComputationalType` (Canonical):**
+  * The canonical enum exports:
+    * `PRIMARY_GAZETTED_ORDER`
+    * `DETERMINISTIC_BENCHMARK`
+    * **`ACADEMIC_SIMULATION`** (Canonical algorithmic redistribution: Hare-Niemeyer / Expansion-Safe)
+    * `HEURISTIC_ESTIMATE`
+  * *Correction:* The previous draft token `DETERMINISTIC_DERIVED` was an unratified deviation. W021 formally reconciles with the existing canonical enum: **`computationalType: "ACADEMIC_SIMULATION"`**.
+* **`DelimitationLegalRegime` (Canonical):**
+  * `HISTORICAL_LEGAL_REGIME` | `CURRENT_LEGAL_REGIME` | `FUTURE_ANTICIPATED_REGIME` | **`SCENARIO_PROPOSED_REGIME`**
+  * For simulations: **`legalStatus: "SCENARIO_PROPOSED_REGIME"`**.
+
+### 7.2 Server-Owned Provenance Architecture
+In response to Final CTO Directive Item 5, the architecture guarantees that **provenance is derived and owned strictly by PANIN server-side**:
+
+1. **Client Parameter Prohibition:**
+   * External callers calling `/api/vsaas/v1/delimitation/simulate/:stateCode` CANNOT submit:
+     * `authorityLayer`
+     * `computationalType`
+     * `officialDelimitationOrder`
+     * `scenarioStatus`
+     * `statutoryDisclaimer`
+   * Fastify input validation schemas enforce strict parameter whitelisting. Any client attempt to inject or override provenance attributes is rejected with `400 Bad Request (SCENARIO_INPUT_FORBIDDEN)`.
+2. **Server-Side Construction:**
+   * The internal delimitation domain service constructs the immutable provenance block:
+     ```json
+     {
+       "provenance": {
+         "authorityLayer": "PANIN_SCENARIO",
+         "computationalType": "ACADEMIC_SIMULATION",
+         "officialDelimitationOrder": false,
+         "governingInstrument": "PANIN Algorithmic Simulation (Article 170 Framework)",
+         "constitutionalBasis": "Article 170(1)",
+         "legalStatus": "SCENARIO_PROPOSED_REGIME",
+         "sourceReference": "Census 2011 Primary Census Abstract (RGI)",
+         "effectiveVersion": "2026-PANIN-SIM-V1",
+         "generatedAt": "2026-10-01T22:05:00.000Z",
+         "statutoryDisclaimer": "This projection is a research simulation based on Census 2011 data and mathematical modeling. It does NOT represent an official order, draft proposal, or gazette notification of the Delimitation Commission of India or the Election Commission of India."
+       }
+     }
      ```
-   * Service-role retains bypass capability for gateway authentication seeks.
-3. **External Partner Route Isolation:** External partner routes (`/api/vsaas/v1/...`) are strictly READ-ONLY data lookups against public factual or governed scenario tables. Partner requests can NEVER view other tenants' keys, usage, or configurations.
-
-### 5.3 Threat Model Analysis
-
-| Threat ID | Threat Category | Attack Vector | Architectural Mitigation |
-| :--- | :--- | :--- | :--- |
-| **TH-01** | Credential Theft | Leaked API key in client-side code | Key prefix identification (`panin_live_sk_`), revocation API, IP allowlisting option. |
-| **TH-02** | Replay Attack | MITM intercept of API call | Strict TLS 1.3 requirement (`HSTS`), short ephemeral token expiry for write paths (when added). |
-| **TH-03** | Brute Force Key Guess | Repeated probes to API | $2^{256}$ keyspace makes brute force mathematically impossible. Rate limiter clamps to 429. |
-| **TH-04** | Scope Escalation | Key requesting unauthorized endpoints | Declarative route-level scope assertions (`requireScope('delimitation:simulate')`). |
-| **TH-05** | Quota Bypass | Concurrent requests evading limits | In-memory atomic sliding-window counters + hourly persistence ledger. |
-| **TH-06** | Timing Attack | Measuring string compare duration | Fixed-length SHA-256 digests compared via `crypto.timingSafeEqual()`. |
-| **TH-07** | PII Harvester | Scraping citizen info via SaaS API | Explicit route exclusion: zero citizen personal data exposed under `/api/vsaas/v1/`. |
-| **TH-08** | Internal ID Enumeration | Traversing UUIDs or internal PKs | Public SaaS APIs expose canonical external slugs (`TS-AC-065`) rather than internal primary keys. |
-
----
-
-## 6. Usage Metering, Quotas & Ledger Architecture
-
-### 6.1 Metering Architecture & Separation of Concerns
-In response to CTO Review Remediation Item 3, the classification and architectural roles of rate limiting and usage accounting are formally reconciled:
-
-* **Dual-Mechanism Architecture:**
-  1. **Real-Time Rate & Quota Enforcement (Synchronous):** Handled in-memory (via Fastify rate-limiter / token-bucket) to protect service availability and enforce per-minute bursts and monthly limits with sub-millisecond overhead.
-  2. **Hourly Usage Aggregation Ledger (`saas_usage_ledger`) (Asynchronous Persistence):** **Formally classified as REQUIRED in W021.**
-     * *Role:* Provides durable, persistent historical accounting of tenant consumption across hourly buckets (`hour_bucket`), enabling audit trails, offline quota reconciliation, tenant dashboard usage reporting, and future billing settlement export.
-     * *Execution:* Asynchronously flushes aggregated request and error counts to `saas_usage_ledger` without blocking the HTTP response cycle.
-
-### 6.2 Tier Quota Specification
-
-```text
-┌─────────────────────────────────────────────────────────────────────────────┐
-│                            TENANT QUOTA TIERS                               │
-├───────────────────┬──────────────┬───────────────┬──────────────────────────┤
-│ Tier              │ Rate Limit   │ Monthly Quota │ Permitted Scopes         │
-├───────────────────┼──────────────┼───────────────┼──────────────────────────┤
-│ 1. Free/Community │ 30 req/min   │ 10,000 req    │ `geo:read`, `election:rd`│
-├───────────────────┼──────────────┼───────────────┼──────────────────────────┤
-│ 2. Professional   │ 300 req/min  │ 250,000 req   │ `+ entities:read`        │
-├───────────────────┼──────────────┼───────────────┼──────────────────────────┤
-│ 3. Enterprise     │ 1,200 req/min│ 2,500,000 req │ `+ delimitation:simulate`│
-└───────────────────┴──────────────┴───────────────┴──────────────────────────┘
-```
-
-### 6.3 Quota Exhaustion Semantics (HTTP 429)
-When a tenant exceeds their minute rate limit or monthly consumption quota:
-* Status: `429 Too Many Requests`
-* Headers:
-  * `Retry-After: <seconds>`
-  * `X-RateLimit-Limit: <tier_limit>`
-  * `X-RateLimit-Remaining: 0`
-  * `X-RateLimit-Reset: <epoch_seconds>`
-* Body Envelope (ECC-001 Compliant):
-  ```json
-  {
-    "error": "Too Many Requests",
-    "message": "Monthly API quota exceeded for current tier. Upgrade or wait for billing cycle reset.",
-    "statusCode": 429,
-    "code": "QUOTA_EXHAUSTED",
-    "requestId": "f8a1...-...",
-    "timestamp": "2026-10-01T21:45:00.000Z"
-  }
-  ```
-
----
-
-## 7. External Provenance Contract & Source Truth Protection
-
-In response to CTO Review Remediation Item 6, every externally exposed delimitation scenario or projection MUST include the canonical, non-bypassable **10-Attribute Provenance Contract**:
-
-### 7.1 Mandatory Provenance Schema (`DelimitationProvenanceResponse`)
-```json
-{
-  "provenance": {
-    "authorityLayer": "PANIN_SCENARIO",
-    "computationalType": "DETERMINISTIC_DERIVED",
-    "officialDelimitationOrder": false,
-    "sourceReference": "Census 2011 Primary Census Abstract (RGI) & Delimitation Act 2002 Framework",
-    "effectiveVersion": "2026-PANIN-SIM-V1",
-    "scenarioStatus": "SCENARIO_PROPOSED_REGIME",
-    "mathematicalMethod": "Hamilton-Hare-Niemeyer Largest Remainder with Article 170 Clamping",
-    "generatedAt": "2026-10-01T21:50:00.000Z",
-    "schemaVersion": "1.0.0",
-    "statutoryDisclaimer": "This projection is a research simulation based on Census 2011 data and mathematical modeling. It does NOT represent an official order, draft proposal, or gazette notification of the Delimitation Commission of India or the Election Commission of India."
-  }
-}
-```
-
-### 7.2 Invariant Enforcement Rules
-1. **`officialDelimitationOrder: false`** is hardcoded on all simulation outputs.
-2. **`authorityLayer: "PANIN_SCENARIO"`** is non-overridable.
-3. Fastify serialization schemas enforce this contract; omitting the provenance block or setting `officialDelimitationOrder: true` throws a validation invariant violation (`500 INTERNAL_PROVENANCE_ERROR`).
+3. **Response Serializer Verification (Fail-Closed):**
+   * The Fastify response serialization hook asserts the server-constructed provenance block before emitting bytes to the network:
+     * If `officialDelimitationOrder !== false` on a scenario route $\rightarrow$ throws `500 INTERNAL_PROVENANCE_ERROR`.
+     * If `authorityLayer !== 'PANIN_SCENARIO'` $\rightarrow$ throws `500 INTERNAL_PROVENANCE_ERROR`.
 
 ---
 
 ## 8. Privacy & DPDP Compliance Boundary
-
-In response to CTO Review Remediation Item 5, the DPDP language is formally corrected to an architectural privacy boundary:
 
 * **Architectural Privacy Mandate:**
   * **W021 SHALL expose zero citizen personal-data fields through the external SaaS API.**
@@ -507,11 +498,11 @@ CREATE TABLE IF NOT EXISTS public.saas_api_keys (
 CREATE INDEX idx_saas_api_keys_lookup ON public.saas_api_keys(key_hash) WHERE status = 'active';
 CREATE INDEX idx_saas_api_keys_tenant ON public.saas_api_keys(tenant_id);
 
--- 4. Hourly Usage Aggregation Ledger
+-- 4. Hourly Usage Aggregation Ledger (Audited Retention: ON DELETE SET NULL)
 CREATE TABLE IF NOT EXISTS public.saas_usage_ledger (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   tenant_id UUID NOT NULL REFERENCES public.saas_tenants(id) ON DELETE CASCADE,
-  api_key_id UUID NOT NULL REFERENCES public.saas_api_keys(id) ON DELETE CASCADE,
+  api_key_id UUID REFERENCES public.saas_api_keys(id) ON DELETE SET NULL,
   hour_bucket TIMESTAMPTZ NOT NULL,
   request_count INT NOT NULL DEFAULT 0,
   error_count INT NOT NULL DEFAULT 0,
@@ -598,7 +589,7 @@ REVOKE ALL ON public.saas_usage_ledger FROM anon, authenticated, public;
 
 ## 16. Implementation Authorization Declaration
 
-* **Current Status:** `W021-G1 — PLAN REMEDIATION COMPLETE / SUBMITTED FOR CTO RE-RATIFICATION`
+* **Current Status:** `W021-G1 — PLAN COMPLETE / SUBMITTED FOR CTO RE-RATIFICATION`
 * **Implementation State:** **STRICTLY NOT AUTHORIZED.**
 * Zero lines of application code altered.
 * Zero migrations created.
