@@ -1,25 +1,31 @@
 {
   "gate": "W021-G2",
-  "status": "IMPLEMENTED / TESTED / VERIFIED / SUBMITTED FOR CTO ACCEPTANCE",
-  "timestamp": "2026-10-01T17:15:00.000Z",
+  "remediationStatus": "CTO_TENANT_ISOLATION_REMEDIATION_COMPLETE",
+  "status": "IMPLEMENTED / TESTED / VERIFIED / SUBMITTED FOR CTO RE-ACCEPTANCE",
+  "timestamp": "2026-10-01T17:42:00.000Z",
   "targetEnvironment": "panIN-staging (fkpigozcqnmcvofuksar / https://fkpigozcqnmcvofuksar.supabase.co)",
   "productionAirGapped": true,
   "productionDatabase": "ehfafcnimmjusyvplbah",
-  "baselineCommitSha": "dcc9f229c5b8652a9a974e6d3d26edb723e6740d",
   "migrationPackage": "supabase/staging_migration_package_056.sql",
   "verificationScript": "supabase/verification_056_saas_partner_foundation.sql",
+  "remediationHighlights": {
+    "compositeForeignKey": "saas_api_keys(tenant_id, application_id) -> saas_applications(tenant_id, id)",
+    "usageLedgerNullUniqueness": "UNIQUE NULLS NOT DISTINCT (tenant_id, api_key_id, hour_bucket)",
+    "revokedAtAuditColumn": "revoked_at TIMESTAMPTZ with check constraint chk_saas_api_keys_revoked_at"
+  },
   "preflightTestBattery": {
     "suite": "tests/saas-migration-056-preflight.test.mjs",
-    "totalChecks": 23,
-    "passed": 23,
+    "totalChecks": 28,
+    "passed": 28,
     "failed": 0,
     "passRate": "100.0%"
   },
   "securityProbes": {
-    "totalProbes": 14,
-    "passed": 14,
-    "failed": 0,
-    "passRate": "100.0%"
+    "authoritativeCrossTenantRejection": "PASS (fk_saas_api_keys_tenant_application violation)",
+    "authoritativeSameTenantSuccessA": "PASS (Tenant A + Application A)",
+    "authoritativeSameTenantSuccessB": "PASS (Tenant B + Application B)",
+    "nullUsageBucketRejection": "PASS (UNIQUE NULLS NOT DISTINCT violation)",
+    "revokedAtConsistencyEnforced": "PASS (chk_saas_api_keys_revoked_at)"
   },
   "geometryBaseline": {
     "count": 589,

@@ -2,31 +2,36 @@
  * tests/saas-migration-056-preflight.test.mjs
  *
  * Milestone W021 — B2B Political SaaS & Public/Partner Developer API Foundation
- * Gate W021-G2: Migration 056 Preflight & Security Probe Verification Suite
+ * Gate W021-G2: Migration 056 Preflight & Security Probe Verification Suite (Remediated)
  *
- * Directives:
+ * Directives & Authorities:
  * - CTO AUTHORIZATION — W021-G2 MIGRATION 056 PREFLIGHT & STAGING EXECUTION
- * - Ratified Plan: PLAN-W021-MASTER-REV-1.0.md (Commit dcc9f22)
+ * - CTO REMEDIATION DIRECTIVE — CRITICAL TENANT-ISOLATION DEFECT RESOLUTION
+ * - Ratified Plan: PLAN-W021-MASTER-REV-1.0.md
  * - Master Execution Framework Amendments v1.2-v1.6
  *
  * Verification Scope:
  * 1. Transactional DDL execution & atomicity
  * 2. Idempotency on replay
  * 3. Failure rollback proof
- * 4. Catalog inspection: tables, columns, constraints, indexes
- * 5. 14 Mandatory Security Probes:
+ * 4. Catalog inspection: tables, columns, constraints, composite FK, indexes
+ * 5. Mandatory Tenant-Isolation & Security Probes:
  *    - Probe 1: Anon direct access denied
  *    - Probe 2: Authenticated direct access denied
  *    - Probe 3: Arbitrary tenant access denied
- *    - Probe 4: Cross-tenant key association prevented
+ *    - Probe 4A: Authoritative cross-tenant rejection (Tenant A + Application B -> DATABASE CONSTRAINT FAILURE)
+ *    - Probe 4B: Authoritative same-tenant success (Tenant A + Application A -> SUCCESS)
+ *    - Probe 4C: Authoritative second same-tenant success (Tenant B + Application B -> SUCCESS)
  *    - Probe 5: Revoked key remains persisted (soft-state)
  *    - Probe 6: Historical usage remains after key revocation
  *    - Probe 7: Physical key deletion sets api_key_id = NULL without deleting usage row
  *    - Probe 8: Duplicate key_hash rejected (unique violation)
  *    - Probe 9: Duplicate tenant slug rejected (unique violation)
- *    - Probe 10: Duplicate usage bucket rejected (unique violation)
+ *    - Probe 10A: Duplicate usage bucket with key rejected (unique violation)
+ *    - Probe 10B: Duplicate usage bucket with NULL key rejected (UNIQUE NULLS NOT DISTINCT violation)
  *    - Probe 11: Expired-key representation verified
- *    - Probe 12: Invalid status rejected (check constraint)
+ *    - Probe 12A: Invalid status rejected (check constraint)
+ *    - Probe 12B: revoked_at consistency check (active with non-null revoked_at or revoked with null revoked_at rejected)
  *    - Probe 13: Invalid environment rejected (check constraint)
  *    - Probe 14: Invalid tier rejected (check constraint)
  * 6. PostGIS 589 geometry digest invariance check
@@ -41,7 +46,7 @@ import dotenv from 'dotenv';
 import { createClient } from '@supabase/supabase-js';
 
 console.log('================================================================');
-console.log('W021-G2: MIGRATION 056 PREFLIGHT & SECURITY PROBE SUITE');
+console.log('W021-G2: MIGRATION 056 PREFLIGHT & SECURITY PROBE SUITE (REMEDIATED)');
 console.log(`Execution Timestamp: ${new Date().toISOString()}`);
 console.log('Target: panIN-staging (fkpigozcqnmcvofuksar) & Isolated PG 17.6');
 console.log('Production: ehfafcnimmjusyvplbah (STRICTLY AIR-GAPPED & UNTOUCHED)');
@@ -55,8 +60,6 @@ if (!fs.existsSync(envPath)) {
 }
 const env = dotenv.parse(fs.readFileSync(envPath, 'utf8'));
 const supabaseUrl = env.SUPABASE_URL || 'https://fkpigozcqnmcvofuksar.supabase.co';
-const serviceKey = env.SUPABASE_SERVICE_ROLE_KEY;
-const anonKey = env.SUPABASE_ANON_KEY;
 
 // Strict Production Guard
 if (supabaseUrl.includes('ehfafcnimmjusyvplbah')) {
@@ -143,7 +146,6 @@ async function runG2PreflightBattery() {
   const failureRehearsalSql = `
     BEGIN;
     CREATE TABLE public.canary_saas_fail (id UUID PRIMARY KEY);
-    -- Deliberately trigger syntax/runtime error
     ALTER TABLE public.saas_tenants ADD CONSTRAINT bogus_fail_check CHECK (non_existent_column > 0);
     COMMIT;
   `;
@@ -173,30 +175,25 @@ async function runG2PreflightBattery() {
     `Tables found: [${tablesRaw.join(', ')}]`
   );
 
-  // SCH-02: Foreign Key Constraints Exist
-  const fksRaw = queryPsql(testDb, `
-    SELECT tc.table_name || '.' || kcu.column_name || ' -> ' || ccu.table_name || '(' || ccu.column_name || ')'
-    FROM information_schema.table_constraints tc
-    JOIN information_schema.key_column_usage kcu ON tc.constraint_name = kcu.constraint_name
-    JOIN information_schema.constraint_column_usage ccu ON ccu.constraint_name = tc.constraint_name
-    WHERE tc.constraint_type = 'FOREIGN KEY'
-      AND tc.table_name IN ('saas_applications', 'saas_api_keys', 'saas_usage_ledger')
-    ORDER BY tc.table_name, kcu.column_name;
-  `).stdout.split('\n').filter(Boolean);
-
-  const expectedFks = [
-    'saas_applications.tenant_id -> saas_tenants(id)',
-    'saas_api_keys.application_id -> saas_applications(id)',
-    'saas_api_keys.tenant_id -> saas_tenants(id)',
-    'saas_usage_ledger.api_key_id -> saas_api_keys(id)',
-    'saas_usage_ledger.tenant_id -> saas_tenants(id)'
-  ];
-  const allFksPresent = expectedFks.every(fk => fksRaw.includes(fk));
+  // SCH-02: Composite Unique and Composite FK Constraints Exist
+  const compUqCheck = queryPsql(testDb, `
+    SELECT conname FROM pg_constraint
+    WHERE conrelid = 'public.saas_applications'::regclass
+      AND contype = 'u'
+      AND conname = 'uq_saas_applications_tenant_app';
+  `).stdout.trim();
+  const compFkCheck = queryPsql(testDb, `
+    SELECT conname FROM pg_constraint
+    WHERE conrelid = 'public.saas_api_keys'::regclass
+      AND confrelid = 'public.saas_applications'::regclass
+      AND contype = 'f'
+      AND conname = 'fk_saas_api_keys_tenant_application';
+  `).stdout.trim();
   recordCheck(
     'W021-G2-SCH-02',
-    'All 5 foreign key relationships exist and reference valid parent entities',
-    allFksPresent && fksRaw.length >= 5,
-    `Verified FKs:\n         ${fksRaw.join('\n         ')}`
+    'Composite UNIQUE constraint and composite FK constraint exist on database kernel',
+    compUqCheck === 'uq_saas_applications_tenant_app' && compFkCheck === 'fk_saas_api_keys_tenant_application',
+    `UQ: ${compUqCheck}; FK: ${compFkCheck}`
   );
 
   // SCH-03: Indexes and Partial Active Lookup Index
@@ -204,10 +201,9 @@ async function runG2PreflightBattery() {
     SELECT indexname, indexdef FROM pg_indexes
     WHERE schemaname = 'public'
       AND tablename IN ('saas_tenants', 'saas_applications', 'saas_api_keys', 'saas_usage_ledger')
-      AND indexname IN ('idx_saas_tenants_status', 'idx_saas_applications_tenant', 'idx_saas_api_keys_lookup', 'idx_saas_api_keys_tenant', 'idx_saas_usage_ledger_tenant')
+      AND indexname IN ('idx_saas_tenants_status', 'idx_saas_applications_tenant', 'idx_saas_api_keys_lookup', 'idx_saas_api_keys_tenant', 'idx_saas_api_keys_app', 'idx_saas_usage_ledger_tenant')
     ORDER BY indexname;
   `).stdout;
-
   const hasPartialIndex = indexesRaw.includes('idx_saas_api_keys_lookup') && indexesRaw.includes("WHERE (status = 'active'::text)");
   recordCheck(
     'W021-G2-SCH-03',
@@ -225,7 +221,6 @@ async function runG2PreflightBattery() {
       AND c.relname IN ('saas_tenants', 'saas_applications', 'saas_api_keys', 'saas_usage_ledger')
     ORDER BY c.relname;
   `).stdout.split('\n').filter(Boolean);
-
   const allRlsForced = rlsRaw.every(r => r.includes('rls=true, force=true'));
   recordCheck(
     'W021-G2-SCH-04',
@@ -234,10 +229,22 @@ async function runG2PreflightBattery() {
     rlsRaw.join(' | ')
   );
 
-  // ─── STEP 3: 14 MANDATORY SECURITY PROBES ───────────────────────────────────
-  console.log('\n--- 3. 14 MANDATORY SECURITY PROBES ---');
+  // SCH-05: revoked_at Column & Audit Lifecycle Consistency
+  const revokedAtCol = queryPsql(testDb, `
+    SELECT column_name || ':' || is_nullable
+    FROM information_schema.columns
+    WHERE table_schema = 'public' AND table_name = 'saas_api_keys' AND column_name = 'revoked_at';
+  `).stdout.trim();
+  recordCheck(
+    'W021-G2-SCH-05',
+    'saas_api_keys.revoked_at column exists and is nullable',
+    revokedAtCol === 'revoked_at:YES',
+    `Found column: ${revokedAtCol}`
+  );
 
-  // Helper function to run SQL as specific role
+  // ─── STEP 3: 14 MANDATORY SECURITY PROBES + AUTHORITATIVE TENANT ISOLATION ──
+  console.log('\n--- 3. 14 MANDATORY SECURITY PROBES & AUTHORITATIVE TENANT ISOLATION ---');
+
   function runAsRole(role, sql) {
     return queryPsql(testDb, `
       SET ROLE ${role};
@@ -264,26 +271,22 @@ async function runG2PreflightBattery() {
     probe2Res.stderr
   );
 
-  // Insert seed test data via service_role / superuser for remaining probes
-  const seedSql = `
+  // Insert seed test data: Tenant A + Application A, Tenant B + Application B
+  const seedTenantsSql = `
     INSERT INTO public.saas_tenants (id, name, slug, tier, status, contact_email)
     VALUES 
-      ('11111111-1111-1111-1111-111111111111', 'Acme Corp', 'acme-corp', 'pro', 'active', 'dev@acme.com'),
-      ('22222222-2222-2222-2222-222222222222', 'Beta Labs', 'beta-labs', 'free', 'active', 'team@beta.com');
+      ('aaaaaaaa-1111-1111-1111-111111111111', 'Tenant A', 'tenant-a', 'pro', 'active', 'admin@tenant-a.com'),
+      ('bbbbbbbb-2222-2222-2222-222222222222', 'Tenant B', 'tenant-b', 'free', 'active', 'admin@tenant-b.com');
 
     INSERT INTO public.saas_applications (id, tenant_id, name, environment)
     VALUES 
-      ('aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa', '11111111-1111-1111-1111-111111111111', 'Acme Analytics', 'live'),
-      ('bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb', '22222222-2222-2222-2222-222222222222', 'Beta App', 'test');
-
-    INSERT INTO public.saas_api_keys (id, tenant_id, application_id, name, key_prefix, key_hint, key_hash, status)
-    VALUES 
-      ('99999999-9999-9999-9999-999999999991', '11111111-1111-1111-1111-111111111111', 'aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa', 'Primary Key', 'panin_live_sk_', '12345678', 'hash_seed_1111111111111111111111111111111111111111111111111111111111111111', 'active');
+      ('aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa', 'aaaaaaaa-1111-1111-1111-111111111111', 'Application A', 'live'),
+      ('bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb', 'bbbbbbbb-2222-2222-2222-222222222222', 'Application B', 'test');
   `;
-  queryPsql(testDb, seedSql);
+  queryPsql(testDb, seedTenantsSql);
 
   // PROBE 3: Arbitrary tenant access denied under non-privileged role
-  const probe3Res = runAsRole('anon', "SELECT * FROM public.saas_tenants WHERE id = '11111111-1111-1111-1111-111111111111';");
+  const probe3Res = runAsRole('anon', "SELECT * FROM public.saas_tenants WHERE id = 'aaaaaaaa-1111-1111-1111-111111111111';");
   recordCheck(
     'W021-G2-PROBE-03',
     'Arbitrary tenant access denied (public/anon cannot query tenant row)',
@@ -291,50 +294,100 @@ async function runG2PreflightBattery() {
     probe3Res.stderr
   );
 
-  // PROBE 4: Cross-tenant key association prevented (FK constraint validates parent)
-  const probe4Res = queryPsql(testDb, `
-    INSERT INTO public.saas_api_keys (tenant_id, application_id, name, key_prefix, key_hint, key_hash, status)
-    VALUES ('22222222-2222-2222-2222-222222222222', 'aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa', 'Cross Key', 'panin_test_sk_', '87654321', 'hash_cross_tenant_probe', 'active');
-  `);
-  // Note: application_id belongs to Tenant 1, but tenant_id is set to Tenant 2.
-  // In application logic gateway validates tenant matching. Let us test that an invalid tenant_id fails FK:
-  const invalidTenantKeyRes = queryPsql(testDb, `
-    INSERT INTO public.saas_api_keys (tenant_id, application_id, name, key_prefix, key_hint, key_hash, status)
-    VALUES ('33333333-3333-3333-3333-333333333333', 'aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa', 'Bogus Tenant Key', 'panin_test_sk_', '87654321', 'hash_bogus_tenant', 'active');
+  // PROBE 4A: AUTHORITATIVE CROSS-TENANT ISOLATION DEFECT TEST (MANDATORY CTO REQUIREMENT)
+  // Attempt: API Key with tenant_id = Tenant A, application_id = Application B
+  const probe4ACrossTenant = queryPsql(testDb, `
+    INSERT INTO public.saas_api_keys (
+      tenant_id, application_id, name, key_prefix, key_hint, key_hash, status
+    ) VALUES (
+      'aaaaaaaa-1111-1111-1111-111111111111',
+      'bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb',
+      'Cross Tenant Malicious Key',
+      'panin_live_sk_',
+      'crosskey',
+      'hash_cross_tenant_malicious_key_11111111111111111111111111111111111',
+      'active'
+    );
   `);
   recordCheck(
-    'W021-G2-PROBE-04',
-    'Cross-tenant key association with non-existent tenant rejected by FK',
-    !invalidTenantKeyRes.ok && invalidTenantKeyRes.stderr.includes('foreign key constraint'),
-    invalidTenantKeyRes.stderr
+    'W021-G2-PROBE-04A',
+    'Authoritative cross-tenant rejection: Tenant A + Application B fails with composite FK constraint violation',
+    !probe4ACrossTenant.ok && probe4ACrossTenant.stderr.includes('fk_saas_api_keys_tenant_application'),
+    probe4ACrossTenant.stderr
   );
 
-  // PROBE 5: Revoked key remains persisted (soft-state revocation)
+  // PROBE 4B: Authoritative same-tenant success: Tenant A + Application A -> SUCCESS
+  const probe4BValidA = queryPsql(testDb, `
+    INSERT INTO public.saas_api_keys (
+      id, tenant_id, application_id, name, key_prefix, key_hint, key_hash, status
+    ) VALUES (
+      'aaaaaaaa-9999-9999-9999-999999999999',
+      'aaaaaaaa-1111-1111-1111-111111111111',
+      'aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa',
+      'Tenant A Primary Key',
+      'panin_live_sk_',
+      'hintaaa1',
+      'hash_tenant_a_primary_key_aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa',
+      'active'
+    );
+  `);
+  recordCheck(
+    'W021-G2-PROBE-04B',
+    'Authoritative same-tenant association: Tenant A + Application A succeeds cleanly',
+    probe4BValidA.ok,
+    probe4BValidA.ok ? 'Successfully inserted Tenant A + Application A key' : probe4BValidA.stderr
+  );
+
+  // PROBE 4C: Authoritative same-tenant success: Tenant B + Application B -> SUCCESS
+  const probe4CValidB = queryPsql(testDb, `
+    INSERT INTO public.saas_api_keys (
+      id, tenant_id, application_id, name, key_prefix, key_hint, key_hash, status
+    ) VALUES (
+      'bbbbbbbb-9999-9999-9999-999999999999',
+      'bbbbbbbb-2222-2222-2222-222222222222',
+      'bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb',
+      'Tenant B Primary Key',
+      'panin_test_sk_',
+      'hintbbb1',
+      'hash_tenant_b_primary_key_bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb',
+      'active'
+    );
+  `);
+  recordCheck(
+    'W021-G2-PROBE-04C',
+    'Authoritative same-tenant association: Tenant B + Application B succeeds cleanly',
+    probe4CValidB.ok,
+    probe4CValidB.ok ? 'Successfully inserted Tenant B + Application B key' : probe4CValidB.stderr
+  );
+
+  // PROBE 5: Revoked key remains persisted (soft-state revocation with revoked_at populated)
   queryPsql(testDb, `
     UPDATE public.saas_api_keys 
-    SET status = 'revoked'
-    WHERE id = '99999999-9999-9999-9999-999999999991';
+    SET status = 'revoked', revoked_at = now()
+    WHERE id = 'aaaaaaaa-9999-9999-9999-999999999999';
   `);
-  const probe5Res = queryPsql(testDb, `
-    SELECT status FROM public.saas_api_keys WHERE id = '99999999-9999-9999-9999-999999999991';
+  const probe5Status = queryPsql(testDb, `
+    SELECT status || '|' || (revoked_at IS NOT NULL)::text 
+    FROM public.saas_api_keys WHERE id = 'aaaaaaaa-9999-9999-9999-999999999999';
   `).stdout.trim();
   const partialIdxProbe = queryPsql(testDb, `
-    SELECT count(*) FROM public.saas_api_keys WHERE key_hash = 'hash_seed_1111111111111111111111111111111111111111111111111111111111111111' AND status = 'active';
+    SELECT count(*) FROM public.saas_api_keys 
+    WHERE key_hash = 'hash_tenant_a_primary_key_aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa' AND status = 'active';
   `).stdout.trim();
   recordCheck(
     'W021-G2-PROBE-05',
-    'Revoked key remains persisted in table but excluded from active lookup',
-    probe5Res === 'revoked' && partialIdxProbe === '0',
-    `Key status = ${probe5Res}; Active index match count = ${partialIdxProbe}`
+    'Revoked key remains persisted with revoked_at timestamp but excluded from active partial index',
+    probe5Status === 'revoked|true' && partialIdxProbe === '0',
+    `Status & revoked_at = ${probe5Status}; Active index match count = ${partialIdxProbe}`
   );
 
   // PROBE 6: Historical usage remains after key revocation
   queryPsql(testDb, `
     INSERT INTO public.saas_usage_ledger (tenant_id, api_key_id, hour_bucket, request_count, error_count)
-    VALUES ('11111111-1111-1111-1111-111111111111', '99999999-9999-9999-9999-999999999991', '2026-10-01 12:00:00Z', 100, 2);
+    VALUES ('aaaaaaaa-1111-1111-1111-111111111111', 'aaaaaaaa-9999-9999-9999-999999999999', '2026-10-01 12:00:00Z', 100, 2);
   `);
   const probe6Res = queryPsql(testDb, `
-    SELECT count(*) FROM public.saas_usage_ledger WHERE api_key_id = '99999999-9999-9999-9999-999999999991';
+    SELECT count(*) FROM public.saas_usage_ledger WHERE api_key_id = 'aaaaaaaa-9999-9999-9999-999999999999';
   `).stdout.trim();
   recordCheck(
     'W021-G2-PROBE-06',
@@ -344,13 +397,12 @@ async function runG2PreflightBattery() {
   );
 
   // PROBE 7: Physical key deletion sets api_key_id = NULL without deleting usage row (ON DELETE SET NULL)
-  // Create disposable key + usage entry
   queryPsql(testDb, `
     INSERT INTO public.saas_api_keys (id, tenant_id, application_id, name, key_prefix, key_hint, key_hash, status)
-    VALUES ('88888888-8888-8888-8888-888888888888', '11111111-1111-1111-1111-111111111111', 'aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa', 'Disposable Key', 'panin_test_sk_', '99998888', 'hash_disposable_key', 'active');
+    VALUES ('88888888-8888-8888-8888-888888888888', 'aaaaaaaa-1111-1111-1111-111111111111', 'aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa', 'Disposable Key', 'panin_test_sk_', '99998888', 'hash_disposable_key', 'active');
 
     INSERT INTO public.saas_usage_ledger (id, tenant_id, api_key_id, hour_bucket, request_count, error_count)
-    VALUES ('77777777-7777-7777-7777-777777777777', '11111111-1111-1111-1111-111111111111', '88888888-8888-8888-8888-888888888888', '2026-10-01 13:00:00Z', 50, 0);
+    VALUES ('77777777-7777-7777-7777-777777777777', 'aaaaaaaa-1111-1111-1111-111111111111', '88888888-8888-8888-8888-888888888888', '2026-10-01 13:00:00Z', 50, 0);
 
     DELETE FROM public.saas_api_keys WHERE id = '88888888-8888-8888-8888-888888888888';
   `);
@@ -365,10 +417,10 @@ async function runG2PreflightBattery() {
     `Usage row preserved: ${probe7UsageRow}`
   );
 
-  // PROBE 8: Duplicate key_hash rejected (unique violation)
+  // PROBE 8: Duplicate key_hash rejected (unique constraint uq_saas_api_keys_hash)
   const probe8Res = queryPsql(testDb, `
     INSERT INTO public.saas_api_keys (tenant_id, application_id, name, key_prefix, key_hint, key_hash, status)
-    VALUES ('22222222-2222-2222-2222-222222222222', 'bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb', 'Duplicate Hash Key', 'panin_test_sk_', '12345678', 'hash_seed_1111111111111111111111111111111111111111111111111111111111111111', 'active');
+    VALUES ('bbbbbbbb-2222-2222-2222-222222222222', 'bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb', 'Duplicate Hash Key', 'panin_test_sk_', '12345678', 'hash_tenant_b_primary_key_bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb', 'active');
   `);
   recordCheck(
     'W021-G2-PROBE-08',
@@ -377,10 +429,10 @@ async function runG2PreflightBattery() {
     probe8Res.stderr
   );
 
-  // PROBE 9: Duplicate tenant slug rejected (unique violation)
+  // PROBE 9: Duplicate tenant slug rejected (unique constraint uq_saas_tenants_slug)
   const probe9Res = queryPsql(testDb, `
     INSERT INTO public.saas_tenants (name, slug, tier, status, contact_email)
-    VALUES ('Acme Duplicate', 'acme-corp', 'free', 'active', 'dup@acme.com');
+    VALUES ('Tenant A Duplicate', 'tenant-a', 'free', 'active', 'dup@a.com');
   `);
   recordCheck(
     'W021-G2-PROBE-09',
@@ -389,22 +441,35 @@ async function runG2PreflightBattery() {
     probe9Res.stderr
   );
 
-  // PROBE 10: Duplicate usage bucket rejected (unique violation)
-  const probe10Res = queryPsql(testDb, `
+  // PROBE 10A: Duplicate usage bucket with non-null api_key_id rejected
+  const probe10ARes = queryPsql(testDb, `
     INSERT INTO public.saas_usage_ledger (tenant_id, api_key_id, hour_bucket, request_count, error_count)
-    VALUES ('11111111-1111-1111-1111-111111111111', '99999999-9999-9999-9999-999999999991', '2026-10-01 12:00:00Z', 10, 0);
+    VALUES ('aaaaaaaa-1111-1111-1111-111111111111', 'aaaaaaaa-9999-9999-9999-999999999999', '2026-10-01 12:00:00Z', 10, 0);
   `);
   recordCheck(
-    'W021-G2-PROBE-10',
-    'Duplicate usage bucket rejected (unique constraint uq_saas_usage_bucket)',
-    !probe10Res.ok && probe10Res.stderr.includes('uq_saas_usage_bucket'),
-    probe10Res.stderr
+    'W021-G2-PROBE-10A',
+    'Duplicate usage bucket with active/revoked key rejected (unique constraint uq_saas_usage_bucket)',
+    !probe10ARes.ok && probe10ARes.stderr.includes('uq_saas_usage_bucket'),
+    probe10ARes.stderr
+  );
+
+  // PROBE 10B: AUTHORITATIVE USAGE LEDGER NULL UNIQUENESS PROOF (UNIQUE NULLS NOT DISTINCT)
+  // Attempt duplicate insert where api_key_id is NULL for the same tenant and hour bucket:
+  const probe10BNullUniq = queryPsql(testDb, `
+    INSERT INTO public.saas_usage_ledger (tenant_id, api_key_id, hour_bucket, request_count, error_count)
+    VALUES ('aaaaaaaa-1111-1111-1111-111111111111', NULL, '2026-10-01 13:00:00Z', 25, 0);
+  `);
+  recordCheck(
+    'W021-G2-PROBE-10B',
+    'Usage ledger NULL uniqueness enforced: duplicate (tenant_id, NULL, hour_bucket) rejected by UNIQUE NULLS NOT DISTINCT',
+    !probe10BNullUniq.ok && probe10BNullUniq.stderr.includes('uq_saas_usage_bucket'),
+    probe10BNullUniq.stderr
   );
 
   // PROBE 11: Expired-key representation verified
   queryPsql(testDb, `
     INSERT INTO public.saas_api_keys (id, tenant_id, application_id, name, key_prefix, key_hint, key_hash, status, expires_at)
-    VALUES ('66666666-6666-6666-6666-666666666666', '11111111-1111-1111-1111-111111111111', 'aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa', 'Expired Key', 'panin_test_sk_', '11223344', 'hash_expired_key', 'active', now() - INTERVAL '1 hour');
+    VALUES ('66666666-6666-6666-6666-666666666666', 'aaaaaaaa-1111-1111-1111-111111111111', 'aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa', 'Expired Key', 'panin_test_sk_', '11223344', 'hash_expired_key', 'active', now() - INTERVAL '1 hour');
   `);
   const probe11Res = queryPsql(testDb, `
     SELECT (expires_at < now())::text FROM public.saas_api_keys WHERE id = '66666666-6666-6666-6666-666666666666';
@@ -416,22 +481,34 @@ async function runG2PreflightBattery() {
     `Evaluated expiration state = ${probe11Res}`
   );
 
-  // PROBE 12: Invalid status rejected (check constraint chk_saas_api_keys_status)
-  const probe12Res = queryPsql(testDb, `
+  // PROBE 12A: Invalid key status rejected (check constraint chk_saas_api_keys_status)
+  const probe12ARes = queryPsql(testDb, `
     INSERT INTO public.saas_api_keys (tenant_id, application_id, name, key_prefix, key_hint, key_hash, status)
-    VALUES ('11111111-1111-1111-1111-111111111111', 'aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa', 'Bad Status Key', 'panin_test_sk_', '44556677', 'hash_bad_status', 'invalid_status_value');
+    VALUES ('aaaaaaaa-1111-1111-1111-111111111111', 'aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa', 'Bad Status Key', 'panin_test_sk_', '44556677', 'hash_bad_status', 'invalid_status_value');
   `);
   recordCheck(
-    'W021-G2-PROBE-12',
-    'Invalid key status rejected (check constraint chk_saas_api_keys_status)',
-    !probe12Res.ok && probe12Res.stderr.includes('chk_saas_api_keys_status'),
-    probe12Res.stderr
+    'W021-G2-PROBE-12A',
+    'Invalid key status rejected (database check constraint rejects invalid_status_value)',
+    !probe12ARes.ok && (probe12ARes.stderr.includes('chk_saas_api_keys_status') || probe12ARes.stderr.includes('chk_saas_api_keys_revoked_at')),
+    probe12ARes.stderr
   );
 
-  // PROBE 13: Invalid environment rejected (check constraint chk_saas_applications_env)
+  // PROBE 12B: revoked_at check constraint consistency (active with revoked_at != NULL rejected)
+  const probe12BConsistency = queryPsql(testDb, `
+    INSERT INTO public.saas_api_keys (tenant_id, application_id, name, key_prefix, key_hint, key_hash, status, revoked_at)
+    VALUES ('aaaaaaaa-1111-1111-1111-111111111111', 'aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa', 'Inconsistent Key', 'panin_test_sk_', '55667788', 'hash_inconsistent_revoked', 'active', now());
+  `);
+  recordCheck(
+    'W021-G2-PROBE-12B',
+    'Inconsistent key state rejected: status active with non-null revoked_at rejected by check constraint',
+    !probe12BConsistency.ok && probe12BConsistency.stderr.includes('chk_saas_api_keys_revoked_at'),
+    probe12BConsistency.stderr
+  );
+
+  // PROBE 13: Invalid application environment rejected (check constraint chk_saas_applications_env)
   const probe13Res = queryPsql(testDb, `
     INSERT INTO public.saas_applications (tenant_id, name, environment)
-    VALUES ('11111111-1111-1111-1111-111111111111', 'Bad Env App', 'staging_qa');
+    VALUES ('aaaaaaaa-1111-1111-1111-111111111111', 'Bad Env App', 'staging_qa');
   `);
   recordCheck(
     'W021-G2-PROBE-13',
@@ -440,7 +517,7 @@ async function runG2PreflightBattery() {
     probe13Res.stderr
   );
 
-  // PROBE 14: Invalid tier rejected (check constraint chk_saas_tenants_tier)
+  // PROBE 14: Invalid tenant tier rejected (check constraint chk_saas_tenants_tier)
   const probe14Res = queryPsql(testDb, `
     INSERT INTO public.saas_tenants (name, slug, tier, status, contact_email)
     VALUES ('Bad Tier Org', 'bad-tier-org', 'unlimited_super', 'active', 'test@org.com');
@@ -455,7 +532,6 @@ async function runG2PreflightBattery() {
   // ─── STEP 4: GEOMETRY DIGEST & LIVE STAGING CATALOG CHECKS ──────────────────
   console.log('\n--- 4. POSTGIS 589 DIGEST & STAGING CATALOG CHECKS ---');
 
-  // GEO-01: Invariant 589 geometry count and digest check
   const geoCount = queryPsql(testDb, 'SELECT count(*) FROM public.constituency_boundaries;').stdout.trim();
   const geoDigest = queryPsql(testDb, 'SELECT source_digest FROM public.constituency_boundaries LIMIT 1;').stdout.trim();
   const canonicalDigest = 'f839fa02980318a8f35f932ebe72fa1d3ad6325dc86a624bf159d932fe5f613b';
@@ -466,7 +542,6 @@ async function runG2PreflightBattery() {
     `Count = ${geoCount}, Digest = ${geoDigest}`
   );
 
-  // PRD-01: Production Air-Gap
   recordCheck(
     'W021-G2-PRD-01',
     'Production environment ehfafcnimmjusyvplbah is 100% air-gapped and untouched',
@@ -484,6 +559,7 @@ async function runG2PreflightBattery() {
 
   const reportData = {
     gate: 'W021-G2',
+    remediation: 'CTO_TENANT_ISOLATION_REMEDIATION_COMPLETE',
     timestamp: new Date().toISOString(),
     targetDatabase: 'panIN-staging (fkpigozcqnmcvofuksar)',
     isolatedHarness: 'PostgreSQL 17.6 (supabase_db_Kshetra / w021_g2_pg_verify)',

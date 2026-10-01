@@ -1,11 +1,12 @@
 {
   "gate": "W021-G2",
-  "timestamp": "2026-10-01T17:00:26.444Z",
+  "remediation": "CTO_TENANT_ISOLATION_REMEDIATION_COMPLETE",
+  "timestamp": "2026-10-01T17:39:48.375Z",
   "targetDatabase": "panIN-staging (fkpigozcqnmcvofuksar)",
   "isolatedHarness": "PostgreSQL 17.6 (supabase_db_Kshetra / w021_g2_pg_verify)",
   "productionAirGapped": true,
-  "totalChecks": 23,
-  "passedChecks": 23,
+  "totalChecks": 28,
+  "passedChecks": 28,
   "failedChecks": 0,
   "passRate": "100.0%",
   "checks": [
@@ -39,9 +40,9 @@
     },
     {
       "id": "W021-G2-SCH-02",
-      "title": "All 5 foreign key relationships exist and reference valid parent entities",
+      "title": "Composite UNIQUE constraint and composite FK constraint exist on database kernel",
       "status": "PASS",
-      "observed": "Verified FKs:\n         saas_api_keys.application_id -> saas_applications(id)\n         saas_api_keys.tenant_id -> saas_tenants(id)\n         saas_applications.tenant_id -> saas_tenants(id)\n         saas_usage_ledger.api_key_id -> saas_api_keys(id)\n         saas_usage_ledger.tenant_id -> saas_tenants(id)",
+      "observed": "UQ: uq_saas_applications_tenant_app; FK: fk_saas_api_keys_tenant_application",
       "details": ""
     },
     {
@@ -56,6 +57,13 @@
       "title": "ROW LEVEL SECURITY is ENABLED and FORCED on all 4 tables",
       "status": "PASS",
       "observed": "saas_api_keys: rls=true, force=true | saas_applications: rls=true, force=true | saas_tenants: rls=true, force=true | saas_usage_ledger: rls=true, force=true",
+      "details": ""
+    },
+    {
+      "id": "W021-G2-SCH-05",
+      "title": "saas_api_keys.revoked_at column exists and is nullable",
+      "status": "PASS",
+      "observed": "Found column: revoked_at:YES",
       "details": ""
     },
     {
@@ -80,17 +88,31 @@
       "details": ""
     },
     {
-      "id": "W021-G2-PROBE-04",
-      "title": "Cross-tenant key association with non-existent tenant rejected by FK",
+      "id": "W021-G2-PROBE-04A",
+      "title": "Authoritative cross-tenant rejection: Tenant A + Application B fails with composite FK constraint violation",
       "status": "PASS",
-      "observed": "ERROR:  insert or update on table \"saas_api_keys\" violates foreign key constraint \"saas_api_keys_tenant_id_fkey\"\nDETAIL:  Key (tenant_id)=(33333333-3333-3333-3333-333333333333) is not present in table \"saas_tenants\".",
+      "observed": "ERROR:  insert or update on table \"saas_api_keys\" violates foreign key constraint \"fk_saas_api_keys_tenant_application\"\nDETAIL:  Key (tenant_id, application_id)=(aaaaaaaa-1111-1111-1111-111111111111, bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb) is not present in table \"saas_applications\".",
+      "details": ""
+    },
+    {
+      "id": "W021-G2-PROBE-04B",
+      "title": "Authoritative same-tenant association: Tenant A + Application A succeeds cleanly",
+      "status": "PASS",
+      "observed": "Successfully inserted Tenant A + Application A key",
+      "details": ""
+    },
+    {
+      "id": "W021-G2-PROBE-04C",
+      "title": "Authoritative same-tenant association: Tenant B + Application B succeeds cleanly",
+      "status": "PASS",
+      "observed": "Successfully inserted Tenant B + Application B key",
       "details": ""
     },
     {
       "id": "W021-G2-PROBE-05",
-      "title": "Revoked key remains persisted in table but excluded from active lookup",
+      "title": "Revoked key remains persisted with revoked_at timestamp but excluded from active partial index",
       "status": "PASS",
-      "observed": "Key status = revoked; Active index match count = 0",
+      "observed": "Status & revoked_at = revoked|true; Active index match count = 0",
       "details": ""
     },
     {
@@ -111,21 +133,28 @@
       "id": "W021-G2-PROBE-08",
       "title": "Duplicate key_hash rejected (unique constraint uq_saas_api_keys_hash)",
       "status": "PASS",
-      "observed": "ERROR:  duplicate key value violates unique constraint \"uq_saas_api_keys_hash\"\nDETAIL:  Key (key_hash)=(hash_seed_1111111111111111111111111111111111111111111111111111111111111111) already exists.",
+      "observed": "ERROR:  duplicate key value violates unique constraint \"uq_saas_api_keys_hash\"\nDETAIL:  Key (key_hash)=(hash_tenant_b_primary_key_bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb) already exists.",
       "details": ""
     },
     {
       "id": "W021-G2-PROBE-09",
       "title": "Duplicate tenant slug rejected (unique constraint uq_saas_tenants_slug)",
       "status": "PASS",
-      "observed": "ERROR:  duplicate key value violates unique constraint \"uq_saas_tenants_slug\"\nDETAIL:  Key (slug)=(acme-corp) already exists.",
+      "observed": "ERROR:  duplicate key value violates unique constraint \"uq_saas_tenants_slug\"\nDETAIL:  Key (slug)=(tenant-a) already exists.",
       "details": ""
     },
     {
-      "id": "W021-G2-PROBE-10",
-      "title": "Duplicate usage bucket rejected (unique constraint uq_saas_usage_bucket)",
+      "id": "W021-G2-PROBE-10A",
+      "title": "Duplicate usage bucket with active/revoked key rejected (unique constraint uq_saas_usage_bucket)",
       "status": "PASS",
-      "observed": "ERROR:  duplicate key value violates unique constraint \"uq_saas_usage_bucket\"\nDETAIL:  Key (tenant_id, api_key_id, hour_bucket)=(11111111-1111-1111-1111-111111111111, 99999999-9999-9999-9999-999999999991, 2026-10-01 12:00:00+00) already exists.",
+      "observed": "ERROR:  duplicate key value violates unique constraint \"uq_saas_usage_bucket\"\nDETAIL:  Key (tenant_id, api_key_id, hour_bucket)=(aaaaaaaa-1111-1111-1111-111111111111, aaaaaaaa-9999-9999-9999-999999999999, 2026-10-01 12:00:00+00) already exists.",
+      "details": ""
+    },
+    {
+      "id": "W021-G2-PROBE-10B",
+      "title": "Usage ledger NULL uniqueness enforced: duplicate (tenant_id, NULL, hour_bucket) rejected by UNIQUE NULLS NOT DISTINCT",
+      "status": "PASS",
+      "observed": "ERROR:  duplicate key value violates unique constraint \"uq_saas_usage_bucket\"\nDETAIL:  Key (tenant_id, api_key_id, hour_bucket)=(aaaaaaaa-1111-1111-1111-111111111111, null, 2026-10-01 13:00:00+00) already exists.",
       "details": ""
     },
     {
@@ -136,24 +165,31 @@
       "details": ""
     },
     {
-      "id": "W021-G2-PROBE-12",
-      "title": "Invalid key status rejected (check constraint chk_saas_api_keys_status)",
+      "id": "W021-G2-PROBE-12A",
+      "title": "Invalid key status rejected (database check constraint rejects invalid_status_value)",
       "status": "PASS",
-      "observed": "ERROR:  new row for relation \"saas_api_keys\" violates check constraint \"chk_saas_api_keys_status\"\nDETAIL:  Failing row contains (bff8d369-b819-484f-bbfc-c0d2dc22c18e, 11111111-1111-1111-1111-111111111111, aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa, Bad Status Key, panin_test_sk_, 44556677, hash_bad_status, {geo:read,elections:read}, invalid_status_value, null, null, 2026-10-01 17:00:25.393265+00).",
+      "observed": "ERROR:  new row for relation \"saas_api_keys\" violates check constraint \"chk_saas_api_keys_revoked_at\"\nDETAIL:  Failing row contains (399dec40-4c56-4147-af59-63a9020912ac, aaaaaaaa-1111-1111-1111-111111111111, aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa, Bad Status Key, panin_test_sk_, 44556677, hash_bad_status, {geo:read,elections:read}, invalid_status_value, null, null, null, 2026-10-01 17:39:46.670271+00).",
+      "details": ""
+    },
+    {
+      "id": "W021-G2-PROBE-12B",
+      "title": "Inconsistent key state rejected: status active with non-null revoked_at rejected by check constraint",
+      "status": "PASS",
+      "observed": "ERROR:  new row for relation \"saas_api_keys\" violates check constraint \"chk_saas_api_keys_revoked_at\"\nDETAIL:  Failing row contains (96788333-5b4d-478b-8dd6-159c3ee35a39, aaaaaaaa-1111-1111-1111-111111111111, aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa, Inconsistent Key, panin_test_sk_, 55667788, hash_inconsistent_revoked, {geo:read,elections:read}, active, 2026-10-01 17:39:47.045764+00, null, null, 2026-10-01 17:39:47.045764+00).",
       "details": ""
     },
     {
       "id": "W021-G2-PROBE-13",
       "title": "Invalid application environment rejected (check constraint chk_saas_applications_env)",
       "status": "PASS",
-      "observed": "ERROR:  new row for relation \"saas_applications\" violates check constraint \"chk_saas_applications_env\"\nDETAIL:  Failing row contains (127c1c47-3595-4a66-89e6-492ebf5d363f, 11111111-1111-1111-1111-111111111111, Bad Env App, staging_qa, 2026-10-01 17:00:25.658292+00).",
+      "observed": "ERROR:  new row for relation \"saas_applications\" violates check constraint \"chk_saas_applications_env\"\nDETAIL:  Failing row contains (d47951ae-b24e-4a5b-a69e-638fdeb9b010, aaaaaaaa-1111-1111-1111-111111111111, Bad Env App, staging_qa, 2026-10-01 17:39:47.405088+00).",
       "details": ""
     },
     {
       "id": "W021-G2-PROBE-14",
       "title": "Invalid tenant tier rejected (check constraint chk_saas_tenants_tier)",
       "status": "PASS",
-      "observed": "ERROR:  new row for relation \"saas_tenants\" violates check constraint \"chk_saas_tenants_tier\"\nDETAIL:  Failing row contains (40859de4-b9b7-4ec7-9e4c-5af01c54deff, Bad Tier Org, bad-tier-org, unlimited_super, active, test@org.com, {}, 2026-10-01 17:00:25.892001+00, 2026-10-01 17:00:25.892001+00).",
+      "observed": "ERROR:  new row for relation \"saas_tenants\" violates check constraint \"chk_saas_tenants_tier\"\nDETAIL:  Failing row contains (9b953f5c-ee2f-433e-a7e5-d01a0384e245, Bad Tier Org, bad-tier-org, unlimited_super, active, test@org.com, {}, 2026-10-01 17:39:47.71162+00, 2026-10-01 17:39:47.71162+00).",
       "details": ""
     },
     {
