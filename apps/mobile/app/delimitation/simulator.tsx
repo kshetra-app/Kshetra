@@ -281,7 +281,7 @@ export default function SimulatorScreen() {
                 <Text style={styles.provenanceBadge}>DATA STATUS: PANIN SCENARIO</Text>
               </View>
               <Text style={[styles.provenanceText, { color: colors.textSecondary }]}>
-                State Assembly & Intra-State District Projection (Articles 170 / 81 Model).
+                State Assembly & Intra-State District Projection — Article 170 / applicable statutory framework.
                 This is an academic research simulation, NOT an official order of the Delimitation Commission of India.
               </Text>
             </View>
