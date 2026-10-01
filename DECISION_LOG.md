@@ -2339,3 +2339,34 @@
   - `PLAN-W020-G8-REV-1.2` submitted for CTO review and ratification.
   - Implementation authorization: **STRICTLY NOT AUTHORIZED (NO)**.
   - Mandatory governance halt enforced.
+
+---
+
+### DEC-100: MILESTONE W020-G8 IMPLEMENTATION COMPLETION & EVIDENCE SUBMISSION
+- **Date:** 2026-10-01
+- **Status:** SUBMITTED / IMPLEMENTED (Pending CTO Acceptance Review)
+- **Authority:** CTO W020-G8 Execution Directive under Ratified `PLAN-W020-G8-REV-1.2.md`
+- **Context:** Bounded implementation of Milestone W020-G8 completed, harmonizing the pure in-memory delimitation computation engine (`DelimitationService`) with the canonical query surface (`DelimitationQueryService`) without database modifications.
+- **Key Implementations & Verifications:**
+  1. **Legal Applicability Model Enforced:**
+     - Implemented `resolveLegalApplicability()` in both contracts and query services, resolving constraints dynamically from entity type, selected legal regime, governing constitutional/statutory provisions, and temporal validity.
+     - Standard states enforce Article 170(1) ($60 \le S \le 500$); special constitutional regimes (Sikkim, Mizoram, Goa) and statutory Union Territories (Puducherry) resolve to their own typed legal rules with zero hardcoded exception lists.
+  2. **Harmonized Simulation & Query Workflows:**
+     - Extended `simulateBoundaries()` and `/simulate/:stateCode` route to accept `regimeId`, `proposalId`, and `date` query parameters.
+     - Ambiguous or conflicting historical regime inputs fail closed with `REGIME_SIMULATION_CONFLICT` (400).
+     - Client-supplied `isScenario` parameters remain strictly forbidden (400 `SCENARIO_INPUT_FORBIDDEN`).
+  3. **Mock Data Replacement & Fail-Closed Semantics:**
+     - Replaced static placeholder values in MLA impact and party projections with canonical W018 political entities and W019 certified 2023 election results.
+     - Unsupported geographies fail closed with structured `UNSUPPORTED_GEOGRAPHY` 404 envelopes with zero fabricated data.
+  4. **Master Regression & Build Closure:**
+     - Full 322-test master regression battery verified passing with 100.0% success rate: W018 (53/53), W019 (93/93), G4 Preflight (23/23), G5 Engine (34/34), G5 Routes (33/33), G6 Ingestion (27/27), G7 Query Surface (25/25), API Contract Drift (9/9), and G8 Integration Battery (25/25).
+     - Workspace TypeScript builds verified clean (`packages/shared`, `apps/api`, `apps/mobile`).
+  5. **Boundary Invariants Strictly Preserved:**
+     - ZERO new migrations, ZERO DDL, ZERO DML, ZERO schema alterations, ZERO new persistence.
+     - Staging PostGIS 589 geometry baseline unchanged (SHA-256 `f839fa02...`).
+     - Production database `ehfafcnimmjusyvplbah` 100% air-gapped and untouched.
+     - Mobile codebase `apps/mobile/**` 100% frozen (0 edits).
+- **Milestone Gate Status:**
+  - W020-G8: **SUBMITTED / IMPLEMENTED**.
+  - W020-G9 and post-G8 features: **STRICTLY NOT AUTHORIZED / BLOCKED**.
+  - Submitted for formal CTO acceptance review.

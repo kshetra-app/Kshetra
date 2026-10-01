@@ -344,6 +344,33 @@ export interface StateComparisonDTO {
   provenance: MathematicalProvenance;
 }
 
+// ─── LEGAL APPLICABILITY MODEL (PLAN-W020-G8-REV-1.2) ───
+
+export type PoliticalEntityType =
+  | 'STATE_LEGISLATIVE_ASSEMBLY'
+  | 'UNION_TERRITORY_ASSEMBLY'
+  | 'HOUSE_OF_THE_PEOPLE'
+  | 'COUNCIL_OF_STATES'
+  | 'LEGISLATIVE_COUNCIL';
+
+export type InvariantClassification =
+  | 'LEGAL_INVARIANT'
+  | 'COMPUTATIONAL_INVARIANT'
+  | 'DERIVED_MATHEMATICAL_INVARIANT'
+  | 'SCENARIO_INVARIANT';
+
+export interface LegalApplicabilityConstraint {
+  entityType: PoliticalEntityType;
+  regimeType: DelimitationLegalRegime;
+  constitutionalProvision?: string;
+  statutoryProvision?: string;
+  minSeats?: number;
+  maxSeats?: number;
+  exactSeats?: number;
+  notwithstandingClause?: boolean;
+  citation?: string;
+}
+
 export interface MlaProfileRiskItem {
   mlaName: string;
   party: string;
@@ -355,6 +382,10 @@ export interface MlaProfileRiskItem {
   riskRating: 'critical_risk' | 'high_risk' | 'moderate_risk' | 'safe';
   currentMarginVotes: number;
   currentMarginPercent: number;
+  personId?: string | null;
+  orgId?: string | null;
+  contestId?: string | null;
+  tenureId?: string | null;
 }
 
 export interface MlaImpactDTO {
@@ -371,6 +402,8 @@ export interface PartySeatProjectionItem {
   currentSeats: number;
   projectedSeats: number;
   seatChange: number;
+  partyId?: string | null;
+  voteSharePercent?: number | null;
 }
 
 export interface PartyProjectionsDTO {

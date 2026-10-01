@@ -1,0 +1,61 @@
+{
+  "gate": "W020-G8",
+  "title": "Delimitation Engine Foundation & Canonical Integration Report",
+  "executionTimestamp": "2026-10-01T04:26:29.000Z",
+  "stagingTarget": "panIN-staging (fkpigozcqnmcvofuksar)",
+  "productionStatus": "AIR-GAPPED & UNTOUCHED (ehfafcnimmjusyvplbah)",
+  "geometryDigest": "f839fa02980318a8f35f932ebe72fa1d3ad6325dc86a624bf159d932fe5f613b",
+  "geometryRows": 589,
+  "mobileEdits": 0,
+  "databaseMutations": 0,
+  "regressionBattery": {
+    "totalChecks": 322,
+    "passedChecks": 322,
+    "failedChecks": 0,
+    "passRate": "100.0%",
+    "suites": [
+      { "name": "W018 Political Entities", "file": "tests/political-entities-invariants.test.mjs", "checks": 53, "status": "PASS" },
+      { "name": "W019 Election Normalization", "file": "tests/election-normalization-invariants.test.mjs", "checks": 93, "status": "PASS" },
+      { "name": "W020-G4 Bridge Preflight", "file": "tests/delimitation-migration-055-preflight.test.mjs", "checks": 23, "status": "PASS" },
+      { "name": "W020-G5 Engine Invariants", "file": "tests/delimitation-g5-invariants.test.mjs", "checks": 34, "status": "PASS" },
+      { "name": "W020-G5 Route Tests", "file": "apps/api/src/__tests__/delimitation.test.ts", "checks": 33, "status": "PASS" },
+      { "name": "W020-G6 Ingestion Invariants", "file": "tests/delimitation-g6-ingestion.test.mjs", "checks": 27, "status": "PASS" },
+      { "name": "W020-G7 Query Surface", "file": "tests/delimitation-g7-query-surface.test.mjs", "checks": 25, "status": "PASS" },
+      { "name": "API Contract Drift", "file": "scripts/check-api-contract-drift.mjs", "checks": 9, "status": "PASS" },
+      { "name": "W020-G8 Integration Battery", "file": "tests/delimitation-g8-integration.test.mjs", "checks": 25, "status": "PASS" }
+    ]
+  },
+  "g8Checks": [
+    { "id": "W020-G8-INT-01", "classification": "LEGAL_INVARIANT", "status": "PASS" },
+    { "id": "W020-G8-INT-02", "classification": "LEGAL_INVARIANT", "status": "PASS" },
+    { "id": "W020-G8-INT-03", "classification": "COMPUTATIONAL_INVARIANT", "status": "PASS" },
+    { "id": "W020-G8-INT-04", "classification": "LEGAL_INVARIANT", "status": "PASS" },
+    { "id": "W020-G8-INT-05", "classification": "LEGAL_INVARIANT", "status": "PASS" },
+    { "id": "W020-G8-SIM-01", "classification": "SCENARIO_INVARIANT", "status": "PASS" },
+    { "id": "W020-G8-SIM-02", "classification": "SCENARIO_INVARIANT", "status": "PASS" },
+    { "id": "W020-G8-SIM-03", "classification": "COMPUTATIONAL_INVARIANT", "status": "PASS" },
+    { "id": "W020-G8-SIM-04", "classification": "DERIVED_MATHEMATICAL_INVARIANT", "status": "PASS" },
+    { "id": "W020-G8-SIM-05", "classification": "SCENARIO_INVARIANT", "status": "PASS" },
+    { "id": "W020-G8-EVI-01", "classification": "LEGAL_INVARIANT", "status": "PASS" },
+    { "id": "W020-G8-EVI-02", "classification": "LEGAL_INVARIANT", "status": "PASS" },
+    { "id": "W020-G8-EVI-03", "classification": "LEGAL_INVARIANT", "status": "PASS" },
+    { "id": "W020-G8-EVI-04", "classification": "LEGAL_INVARIANT", "status": "PASS" },
+    { "id": "W020-G8-EVI-05", "classification": "LEGAL_INVARIANT", "status": "PASS" },
+    { "id": "W020-G8-NEG-01", "classification": "COMPUTATIONAL_INVARIANT", "status": "PASS" },
+    { "id": "W020-G8-NEG-02", "classification": "COMPUTATIONAL_INVARIANT", "status": "PASS" },
+    { "id": "W020-G8-NEG-03", "classification": "SCENARIO_INVARIANT", "status": "PASS" },
+    { "id": "W020-G8-NEG-04", "classification": "COMPUTATIONAL_INVARIANT", "status": "PASS" },
+    { "id": "W020-G8-NEG-05", "classification": "COMPUTATIONAL_INVARIANT", "status": "PASS" },
+    { "id": "W020-G8-ENV-01", "classification": "LEGAL_INVARIANT", "status": "PASS" },
+    { "id": "W020-G8-ENV-02", "classification": "LEGAL_INVARIANT", "status": "PASS" },
+    { "id": "W020-G8-ENV-03", "classification": "LEGAL_INVARIANT", "status": "PASS" },
+    { "id": "W020-G8-ENV-04", "classification": "LEGAL_INVARIANT", "status": "PASS" },
+    { "id": "W020-G8-ENV-05", "classification": "LEGAL_INVARIANT", "status": "PASS" }
+  ],
+  "builds": {
+    "packagesShared": "PASS",
+    "appsApi": "PASS",
+    "appsMobile": "PASS"
+  },
+  "verdict": "PASS"
+}

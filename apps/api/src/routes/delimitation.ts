@@ -120,9 +120,12 @@ const simulateQuerySchema = {
   querystring: {
     type: 'object',
     properties: {
-      mode: { type: 'string', enum: ['equal_population', 'compactness', 'administrative_contiguity'] },
+      mode: { type: 'string' },
       seats: { type: 'string', pattern: '^\\d{1,5}$' },
       maxDeviation: { type: 'string' },
+      regimeId: { type: 'string' },
+      proposalId: { type: 'string' },
+      date: { type: 'string' },
     },
   },
 };
@@ -352,7 +355,7 @@ export async function delimitationRoutes(app: FastifyInstance) {
    */
   app.get<{
     Params: { stateCode: string };
-    Querystring: { mode?: string; seats?: string; maxDeviation?: string };
+    Querystring: { mode?: string; seats?: string; maxDeviation?: string; regimeId?: string; proposalId?: string; date?: string };
   }>('/api/v1/delimitation/simulate/:stateCode', { schema: simulateQuerySchema }, async (request, reply) => {
     const { stateCode } = request.params;
     const query = request.query;
@@ -386,6 +389,9 @@ export async function delimitationRoutes(app: FastifyInstance) {
         mode: query.mode,
         seats: query.seats,
         maxDeviation: query.maxDeviation,
+        regimeId: query.regimeId,
+        proposalId: query.proposalId,
+        date: query.date,
       });
 
       return sendSuccess(reply, request, result);
@@ -395,8 +401,8 @@ export async function delimitationRoutes(app: FastifyInstance) {
           code: 'UNSUPPORTED_GEOGRAPHY',
         });
       }
-      return sendApiError(reply, request, 400, 'Bad Request', err.message || 'Simulation error', {
-        code: 'SIMULATION_ERROR',
+      return sendApiError(reply, request, err.statusCode || 400, 'Bad Request', err.message || 'Simulation error', {
+        code: err.code || 'SIMULATION_ERROR',
       });
     }
   });
