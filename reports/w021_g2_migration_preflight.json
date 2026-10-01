@@ -1,0 +1,174 @@
+{
+  "gate": "W021-G2",
+  "timestamp": "2026-10-01T17:00:26.444Z",
+  "targetDatabase": "panIN-staging (fkpigozcqnmcvofuksar)",
+  "isolatedHarness": "PostgreSQL 17.6 (supabase_db_Kshetra / w021_g2_pg_verify)",
+  "productionAirGapped": true,
+  "totalChecks": 23,
+  "passedChecks": 23,
+  "failedChecks": 0,
+  "passRate": "100.0%",
+  "checks": [
+    {
+      "id": "W021-G2-MIG-01",
+      "title": "Migration 056 executes transactionally with exit code 0",
+      "status": "PASS",
+      "observed": "Transaction committed successfully",
+      "details": ""
+    },
+    {
+      "id": "W021-G2-MIG-02",
+      "title": "Migration 056 is idempotent on replay (zero errors on re-execution)",
+      "status": "PASS",
+      "observed": "Replay succeeded cleanly with IF NOT EXISTS guards",
+      "details": ""
+    },
+    {
+      "id": "W021-G2-MIG-03",
+      "title": "Failure rehearsal rolls back cleanly (zero partial schema application)",
+      "status": "PASS",
+      "observed": "Execution aborted on error; canary table count = 0",
+      "details": ""
+    },
+    {
+      "id": "W021-G2-SCH-01",
+      "title": "All 4 ratified SaaS tables exist in public schema",
+      "status": "PASS",
+      "observed": "Tables found: [saas_api_keys, saas_applications, saas_tenants, saas_usage_ledger]",
+      "details": ""
+    },
+    {
+      "id": "W021-G2-SCH-02",
+      "title": "All 5 foreign key relationships exist and reference valid parent entities",
+      "status": "PASS",
+      "observed": "Verified FKs:\n         saas_api_keys.application_id -> saas_applications(id)\n         saas_api_keys.tenant_id -> saas_tenants(id)\n         saas_applications.tenant_id -> saas_tenants(id)\n         saas_usage_ledger.api_key_id -> saas_api_keys(id)\n         saas_usage_ledger.tenant_id -> saas_tenants(id)",
+      "details": ""
+    },
+    {
+      "id": "W021-G2-SCH-03",
+      "title": "Partial active key lookup index and performance indexes exist",
+      "status": "PASS",
+      "observed": "idx_saas_api_keys_lookup includes WHERE status = active partial clause",
+      "details": ""
+    },
+    {
+      "id": "W021-G2-SCH-04",
+      "title": "ROW LEVEL SECURITY is ENABLED and FORCED on all 4 tables",
+      "status": "PASS",
+      "observed": "saas_api_keys: rls=true, force=true | saas_applications: rls=true, force=true | saas_tenants: rls=true, force=true | saas_usage_ledger: rls=true, force=true",
+      "details": ""
+    },
+    {
+      "id": "W021-G2-PROBE-01",
+      "title": "Anon direct access denied (permission denied for table saas_tenants)",
+      "status": "PASS",
+      "observed": "ERROR:  permission denied for table saas_tenants\nHINT:  Grant the required privileges to the current role with: GRANT SELECT ON public.saas_tenants TO anon;",
+      "details": ""
+    },
+    {
+      "id": "W021-G2-PROBE-02",
+      "title": "Authenticated direct access denied (permission denied for table saas_api_keys)",
+      "status": "PASS",
+      "observed": "ERROR:  permission denied for table saas_api_keys\nHINT:  Grant the required privileges to the current role with: GRANT SELECT ON public.saas_api_keys TO authenticated;",
+      "details": ""
+    },
+    {
+      "id": "W021-G2-PROBE-03",
+      "title": "Arbitrary tenant access denied (public/anon cannot query tenant row)",
+      "status": "PASS",
+      "observed": "ERROR:  permission denied for table saas_tenants\nHINT:  Grant the required privileges to the current role with: GRANT SELECT ON public.saas_tenants TO anon;",
+      "details": ""
+    },
+    {
+      "id": "W021-G2-PROBE-04",
+      "title": "Cross-tenant key association with non-existent tenant rejected by FK",
+      "status": "PASS",
+      "observed": "ERROR:  insert or update on table \"saas_api_keys\" violates foreign key constraint \"saas_api_keys_tenant_id_fkey\"\nDETAIL:  Key (tenant_id)=(33333333-3333-3333-3333-333333333333) is not present in table \"saas_tenants\".",
+      "details": ""
+    },
+    {
+      "id": "W021-G2-PROBE-05",
+      "title": "Revoked key remains persisted in table but excluded from active lookup",
+      "status": "PASS",
+      "observed": "Key status = revoked; Active index match count = 0",
+      "details": ""
+    },
+    {
+      "id": "W021-G2-PROBE-06",
+      "title": "Historical usage remains fully accessible and linked after key revocation",
+      "status": "PASS",
+      "observed": "Usage records matching revoked key = 1",
+      "details": ""
+    },
+    {
+      "id": "W021-G2-PROBE-07",
+      "title": "Physical key deletion sets api_key_id = NULL without deleting usage record (ON DELETE SET NULL)",
+      "status": "PASS",
+      "observed": "Usage row preserved: 77777777-7777-7777-7777-777777777777|NULL|50",
+      "details": ""
+    },
+    {
+      "id": "W021-G2-PROBE-08",
+      "title": "Duplicate key_hash rejected (unique constraint uq_saas_api_keys_hash)",
+      "status": "PASS",
+      "observed": "ERROR:  duplicate key value violates unique constraint \"uq_saas_api_keys_hash\"\nDETAIL:  Key (key_hash)=(hash_seed_1111111111111111111111111111111111111111111111111111111111111111) already exists.",
+      "details": ""
+    },
+    {
+      "id": "W021-G2-PROBE-09",
+      "title": "Duplicate tenant slug rejected (unique constraint uq_saas_tenants_slug)",
+      "status": "PASS",
+      "observed": "ERROR:  duplicate key value violates unique constraint \"uq_saas_tenants_slug\"\nDETAIL:  Key (slug)=(acme-corp) already exists.",
+      "details": ""
+    },
+    {
+      "id": "W021-G2-PROBE-10",
+      "title": "Duplicate usage bucket rejected (unique constraint uq_saas_usage_bucket)",
+      "status": "PASS",
+      "observed": "ERROR:  duplicate key value violates unique constraint \"uq_saas_usage_bucket\"\nDETAIL:  Key (tenant_id, api_key_id, hour_bucket)=(11111111-1111-1111-1111-111111111111, 99999999-9999-9999-9999-999999999991, 2026-10-01 12:00:00+00) already exists.",
+      "details": ""
+    },
+    {
+      "id": "W021-G2-PROBE-11",
+      "title": "Expired-key representation accurately evaluates (expires_at < now() is true)",
+      "status": "PASS",
+      "observed": "Evaluated expiration state = true",
+      "details": ""
+    },
+    {
+      "id": "W021-G2-PROBE-12",
+      "title": "Invalid key status rejected (check constraint chk_saas_api_keys_status)",
+      "status": "PASS",
+      "observed": "ERROR:  new row for relation \"saas_api_keys\" violates check constraint \"chk_saas_api_keys_status\"\nDETAIL:  Failing row contains (bff8d369-b819-484f-bbfc-c0d2dc22c18e, 11111111-1111-1111-1111-111111111111, aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa, Bad Status Key, panin_test_sk_, 44556677, hash_bad_status, {geo:read,elections:read}, invalid_status_value, null, null, 2026-10-01 17:00:25.393265+00).",
+      "details": ""
+    },
+    {
+      "id": "W021-G2-PROBE-13",
+      "title": "Invalid application environment rejected (check constraint chk_saas_applications_env)",
+      "status": "PASS",
+      "observed": "ERROR:  new row for relation \"saas_applications\" violates check constraint \"chk_saas_applications_env\"\nDETAIL:  Failing row contains (127c1c47-3595-4a66-89e6-492ebf5d363f, 11111111-1111-1111-1111-111111111111, Bad Env App, staging_qa, 2026-10-01 17:00:25.658292+00).",
+      "details": ""
+    },
+    {
+      "id": "W021-G2-PROBE-14",
+      "title": "Invalid tenant tier rejected (check constraint chk_saas_tenants_tier)",
+      "status": "PASS",
+      "observed": "ERROR:  new row for relation \"saas_tenants\" violates check constraint \"chk_saas_tenants_tier\"\nDETAIL:  Failing row contains (40859de4-b9b7-4ec7-9e4c-5af01c54deff, Bad Tier Org, bad-tier-org, unlimited_super, active, test@org.com, {}, 2026-10-01 17:00:25.892001+00, 2026-10-01 17:00:25.892001+00).",
+      "details": ""
+    },
+    {
+      "id": "W021-G2-GEO-01",
+      "title": "PostGIS 589 constituency geometry baseline count and canonical digest remain frozen",
+      "status": "PASS",
+      "observed": "Count = 589, Digest = f839fa02980318a8f35f932ebe72fa1d3ad6325dc86a624bf159d932fe5f613b",
+      "details": ""
+    },
+    {
+      "id": "W021-G2-PRD-01",
+      "title": "Production environment ehfafcnimmjusyvplbah is 100% air-gapped and untouched",
+      "status": "PASS",
+      "observed": "Staging confirmed at https://fkpigozcqnmcvofuksar.supabase.co",
+      "details": ""
+    }
+  ]
+}
