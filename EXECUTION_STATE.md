@@ -7,9 +7,9 @@
 ## 1. Project & Execution Coordinates
 ```text
 PROJECT:               PANIN (formerly Kshetra)
-CURRENT_JOB:           W020-G9 (Verification Harness Hardening, Cross-Domain Audit Synthesis & Final Gate — IMPLEMENTED / SUBMITTED FOR CTO ACCEPTANCE REVIEW)
-LAST_COMPLETED_JOB:    W020-G8 (Delimitation Engine Foundation & Canonical Integration — ACCEPTED / COMPLETE / CLOSED)
-NEXT_PERMITTED_JOB:    W020-G9 CTO ACCEPTANCE (W021+ STRICTLY NOT AUTHORIZED)
+CURRENT_JOB:           W020-G9 (Verification Harness Hardening, Cross-Domain Audit Synthesis & Final Gate — ACCEPTED WITH FORMAL ENVIRONMENTAL PERFORMANCE EXCEPTION / COMPLETE)
+LAST_COMPLETED_JOB:    W020-G9 (Verification Harness Hardening, Cross-Domain Audit Synthesis & Final Gate — ACCEPTED / COMPLETE / CLOSED)
+NEXT_PERMITTED_JOB:    W021 PLANNING AUTHORIZATION (W021+ IMPLEMENTATION STRICTLY BLOCKED PENDING CTO AUTHORIZATION)
 
 W018_STATUS:           ACCEPTED / COMPLETE (Canonical Commit: 080344c580ad9df92586a7a0e68989fb50e7cf3d)
 W018_CTO_ACCEPTANCE:   GRANTED (2026-09-29)
@@ -51,14 +51,14 @@ W020_G8_LEGAL_TESTS:   30/30 PASS (tests/delimitation-legal-applicability.test.m
 W020_G8_REGRESSION:    352/352 PASS (Baseline 322/322 + Legal Semantic 16/16 + Temporal Boundary 14/14 = 352/352 PASS; 100.0%)
 W020_G8_BUILDS:        shared clean, api clean, mobile clean
 
-W020_G9_STATUS:        REMEDIATED / VERIFIED / SUBMITTED (Ratified Plan PLAN-W020-G9-REV-1.0 / DEC-105 / DEC-106)
-W020_G9_CTO_ACCEPTANCE: SUBMITTED (PENDING CTO REVIEW; NON-SELF-ACCEPTANCE INVARIANT ENFORCED)
+W020_G9_STATUS:        ACCEPTED WITH FORMAL ENVIRONMENTAL PERFORMANCE EXCEPTION / COMPLETE (DEC-107)
+W020_G9_CTO_ACCEPTANCE: GRANTED (2026-10-01, With Environmental Performance Exception)
 W020_G9_PLAN:          PLAN-W020-G9-REV-1.0.md (RATIFIED by CTO at Commit 30dc36d7a20b634c41c5e6c68e8d46dc4bda38f4)
-W020_G9_EVIDENCE:      reports/w020_master_audit_dossier.json, reports/w020_master_audit_dossier.md, reports/w020_g9_implementation_report.json, reports/w020_g9_governance_reconciliation.md
+W020_G9_EVIDENCE:      reports/w020_master_audit_dossier.json, reports/w020_master_audit_dossier.md, reports/w020_g9_postgrest_performance_adjudication.md, reports/w020_g9_implementation_report.json, reports/w020_g9_governance_reconciliation.md
 W020_G9_RUNNER:        scripts/run-w020-master-battery.mjs (Unified Non-Destructive Master Verification Harness)
 W020_G9_E2E_BATTERY:   15/15 PASS (tests/delimitation-g9-master-e2e.test.mjs: Concurrency, ECC-001, Anti-Tamper, Provenance, Cross-Domain)
 W020_G9_MASTER_TOTAL:  221 Suite Checks (9 Suites) + 53 W018 + 93 W019 = 367 Total Passing Checks (100.0% Pass Rate)
-W020_G9_PERF_SUMMARY:  In-Memory Apportionment P95=0.065ms (PASS), Concurrency 50 P95=21.85ms (PASS), RSS Delta=4.26MB (PASS), Staging WAN PostgREST P95=494.8ms (FAIL - truthfully reported without threshold relaxation)
+W020_G9_PERF_SUMMARY:  In-Memory Apportionment P95=0.065ms (PASS), Concurrency 50 P95=21.85ms (PASS), RSS Delta=4.26MB (PASS), Staging WAN PostgREST P95=446.65ms (FAIL - preserved without relaxation; Server Upstream P95=34.00ms IN-BUDGET; CTO Environmental Performance Exception Granted)
 W020_G9_BUILDS:        shared clean, api clean, mobile clean (frozen)
 
 W017_STATUS:           ACCEPTED / COMPLETE
@@ -363,6 +363,14 @@ REMOTE_SYNC:           Up to date with origin/master
 | **W015** | Geography Relationship Engine | **ACCEPTED / COMPLETE** | 2026-09-23 | W015-B1 preflight accepted; W015-B2 Migration 043 executed/verified on staging; 6/6 B2, 9/9 W015, 13/13 W013, 9/9 W014; evidence `3748e46`; CTO accepted |
 | **W016** | Spatial Geometry & Topology | CONDITIONALLY ACCEPTED / CLOSED | 2026-09-29 | R4 identity/temporal load (Migration 045), R5-R8A 589 geometries ingested (digest verified), R9 spatial runtime, R10 mobile consumer conditionally accepted (Gap B deferred to W023). R11 strictly blocked. |
 | **W017** | Spatial Gateway, Boundary Diff & Spatial Query Engine | **ACCEPTED / COMPLETE** | 2026-09-29 | Migration 049 deployed & verified on panIN-staging (100% SECURITY INVOKER); 3 procedures; 589 baseline verified; Fastify routes operational; 25/25 Invariants PASS; Production air-gapped; CTO accepted |
+| **W018** | Canonical Political Entity Model | **ACCEPTED / COMPLETE** | 2026-09-29 | Migration 050 remediated; 53/53 master invariants pass; 10/10 API tests pass; DEC-073, DEC-074; CTO accepted at commit `080344c` |
+| **W019** | Election Data Normalization | **ACCEPTED / COMPLETE** | 2026-09-30 | Migrations 051-054; 93/93 invariants pass; 10/10 API tests pass; canonical benchmarks verified; DEC-083; CTO accepted at commit `9b7cad4` |
+| **W020-G4** | Delimitation Canonical Bridge Preflight (Migration 055) | **ACCEPTED / COMPLETE** | 2026-09-30 | Migration 055 deployed on staging; 23/23 tests pass; DEC-084, DEC-085; CTO accepted at commit `46d9558` |
+| **W020-G5** | Delimitation Engine Foundation | **ACCEPTED / COMPLETE** | 2026-09-30 | Core Hamilton engine & read APIs; 34/34 invariants pass; 33/33 API tests pass; DEC-090, DEC-091; CTO accepted at commit `32a0ed7` |
+| **W020-G6** | Historical Delimitation Evidence Ingestion | **ACCEPTED / COMPLETE** | 2026-09-30 | Ingested AP Reorganisation Act 2014 & 2015 Order evidence; 27/27 invariants pass; DEC-093, DEC-094; CTO accepted at commit `ef32321` |
+| **W020-G7** | Delimitation Query Surface & Typed Selection | **ACCEPTED / COMPLETE** | 2026-09-30 | 5 typed query selection modes; 25/25 tests pass (297/297 regression); DEC-096, DEC-097; CTO accepted at commit `65c32c8` |
+| **W020-G8** | Delimitation Engine Foundation & Canonical Integration | **ACCEPTED / COMPLETE / CLOSED** | 2026-10-01 | Governed legal applicability catalog & W014 temporal validity; 352/352 tests pass (100.0%); DEC-103; CTO accepted at commit `f7fd1fa` |
+| **W020-G9** | Verification Harness Hardening & Cross-Domain Audit Synthesis | **ACCEPTED WITH FORMAL ENVIRONMENTAL PERFORMANCE EXCEPTION / COMPLETE** | 2026-10-01 | Unified non-destructive master runner `scripts/run-w020-master-battery.mjs`; 15/15 E2E checks pass; 367/367 functional checks pass (100.0%); benchmarks: in-memory apportionment P95=0.065ms (PASS), concurrency 50 P95=21.85ms (PASS), RSS delta=4.26MB (PASS), staging PostgREST lookup P95=446.65ms preserved as FAIL; server upstream P95=34.00ms within 50ms budget; closed with formal CTO Environmental Performance Exception (DEC-107); W021 remains blocked |
 | **W051** | API Customer Acquisition | NOT_STARTED | - | Commercial API/SaaS customer onboarding |
 | **W051.5** | Compliance, DPDP & Data Governance Readiness | NOT_STARTED | - | **NEW JOB (Amendment v1.2 Part 2)**: DPDP Act 2023, personal data inventory, retention, deletion, consent, 13-lang privacy UI. Owners: COMPLIANCE+ARCH+SEC |
 | **W052** | Professional Broadcast Architecture | NOT_STARTED | - | Studio broadcast ingestion and distribution |

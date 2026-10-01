@@ -2583,3 +2583,35 @@
 - **Milestone Gate Status:**
   - W020-G8: **ACCEPTED / COMPLETE / CLOSED**.
   - W020-G9: **REMEDIATED / SUBMITTED FOR CTO REVIEW & ACCEPTANCE**.
+
+---
+
+### DEC-107: W020-G9 FINAL CLOSURE WITH CTO FORMAL ENVIRONMENTAL PERFORMANCE EXCEPTION
+- **Date:** 2026-10-01
+- **Status:** ACCEPTED / COMPLETE / CLOSED
+- **Authority:** CTO DETERMINATION & FINAL PERFORMANCE EXCEPTION CLOSURE DIRECTIVE (2026-10-01)
+- **Context:** Following empirical decomposition of PostgREST staging latency (reports/w020_g9_postgrest_performance_adjudication.md), CTO completed formal review and issued the Final Performance Exception Closure Directive.
+- **Architectural & Governance Determinations:**
+  1. **HTTP Benchmark Verdict Preservation:**
+     - The ratified external HTTP PostgREST target remains `P95 < 50.0 ms`.
+     - Observed external HTTP benchmark remains `P95 = 446.65 ms`.
+     - The external HTTP benchmark formally remains **FAIL** and is strictly not relabeled as PASS.
+  2. **Server-Side Timing Qualification:**
+     - Controlled upstream-service timing (`x-envoy-upstream-service-time`) measured server-side execution at `P95 = 34.00 ms`, placing database and PostgREST engine execution within the 50 ms budget.
+  3. **Verified Environmental Exception:**
+     - The evidence does not establish a database/PostgREST server-side performance defect. The excess external latency (435.70 ms, representing 98.42% of observed P95 round trip) is predominantly attributable to the external network/edge path between the remote benchmark runner (India) and the cloud-hosted Supabase Staging origin.
+     - CTO formally authorizes W020-G9 milestone closure under **Case 1: VERIFIED ENVIRONMENTAL LIMITATION**.
+     - This exception does not modify the ratified performance target for future deployments or production architecture.
+  4. **Functional & Invariant Completeness:**
+     - All 367 functional checks (9 suites: 221 suite checks + 53 W018 invariants + 93 W019 invariants) verified passing (100.0%).
+     - All 15 cross-domain E2E assertions pass.
+  5. **Air-Gap & Codebase Safety:**
+     - Production (`ehfafcnimmjusyvplbah`) remained 100% air-gapped and untouched.
+     - Zero migrations, zero DDL, zero DML executed against schema.
+     - `apps/mobile/**` remained 100% frozen.
+  6. **Next Permitted Milestone:**
+     - W020-G9 is formally **ACCEPTED / COMPLETE / CLOSED**.
+     - W021 is **NOT STARTED / STRICTLY BLOCKED PENDING NEXT CTO AUTHORIZATION**.
+- **Milestone Gate Status:**
+  - W020-G9: **ACCEPTED WITH FORMAL ENVIRONMENTAL PERFORMANCE EXCEPTION / COMPLETE**.
+  - W021: **STRICTLY BLOCKED / NOT AUTHORIZED**.

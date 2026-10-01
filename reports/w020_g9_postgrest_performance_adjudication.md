@@ -35,9 +35,25 @@ In accordance with the CTO Directive *W020-G9 — POSTGREST PERFORMANCE GATE ADJ
   * **Pure External Network / WAN Overhead** ($\text{Total Round-Trip} - \text{Server Execution}$):
     * **P50: 409.8 ms**
     * **P95: 435.7 ms**
-    * Accounted for **~98%** of total observed client latency.
+    * Accounted for **98.42%** of total observed client latency (435.70 ms / 442.70 ms × 100 = 98.42%).
 
-The observed failure of the external HTTP PostgREST benchmark is conclusively driven by external network propagation delay across a transcontinental WAN path between the benchmark runner (India) and the Supabase Staging cloud origin, while database/server execution itself remains strictly within budget.
+The measured difference between client-observed round-trip latency and Envoy upstream-service time is predominantly attributable to the external network/edge path. The evidence does not isolate physical propagation delay alone. The remote runner-to-cloud topology acts as the primary environmental factor, while database/server execution itself remains strictly within budget.
+
+---
+
+## CTO PERFORMANCE EXCEPTION
+
+The ratified external HTTP PostgREST P95 target of <50 ms remains formally unmet, with observed P95 of 446.65 ms.
+
+Controlled upstream-service timing measured P95 of 34.00 ms, placing measured server-side upstream execution within the 50 ms budget.
+
+The evidence therefore does not establish a database/PostgREST server-side performance defect. The excess external latency is attributed to the verified execution topology/network-edge path, subject to the stated measurement limitations.
+
+The HTTP benchmark remains FAIL and is not being relabeled.
+
+CTO authorizes W020-G9 milestone closure with this environmental performance exception.
+
+This exception does not modify the ratified performance target for future deployments or production architecture.
 
 ---
 
@@ -126,9 +142,14 @@ Supabase's HTTP API Gateway (Envoy) emits the canonical `x-envoy-upstream-servic
 | **Max** | 442.70 ms | **34.00 ms** | 435.70 ms |
 
 #### Breakdown of Total Latency
-$$\text{Total Observed Latency (P50)} = 413.2\text{ ms}$$
-$$\text{Server Processing (P50)} = 2.0\text{ ms}\quad (\mathbf{0.48\%}\text{ of total latency})$$
-$$\text{Network WAN Transit (P50)} = 409.8\text{ ms}\quad (\mathbf{99.52\%}\text{ of total latency})$$
+* **At P50**:
+  * Total Observed Latency: 413.24 ms
+  * Server Processing: 2.00 ms (0.48% of total latency)
+  * Network WAN Transit: 409.84 ms (99.18% of total latency: 409.84 / 413.24 × 100 = 99.18%)
+* **At P95**:
+  * Total Observed Latency: 442.70 ms
+  * Server Processing: 34.00 ms (7.68% of total latency)
+  * Network WAN Transit: 435.70 ms (98.42% of total latency: 435.70 / 442.70 × 100 = 98.42%)
 
 #### Test 2: Existing Benchmark Query (`select=id,name,regime_type`)
 * **Status**: HTTP 400 Bad Request (`column delimitation_regimes.regime_type does not exist`)
@@ -166,9 +187,9 @@ The empirical evidence isolates the root cause of the benchmark failure:
 1. **Database & Server Performance (PASS)**:
    PostgreSQL index lookup and PostgREST schema processing require between **1.0 ms and 34.0 ms** (P50: 2.0 ms, P95: 34.0 ms). The database/server stack easily satisfies the ratified `< 50.0 ms` performance budget.
 2. **Network Topology Constraint (ENVIRONMENTAL)**:
-   The physical distance between the runner in India and the cloud-hosted Supabase Staging origin imposes a minimum round-trip physical propagation delay of ~380–420 ms.
+   The measured difference between client-observed round-trip latency and Envoy upstream-service time is predominantly attributable to the external network/edge path. The evidence does not isolate physical propagation delay alone. The remote runner-to-cloud topology acts as the primary environmental factor.
 3. **Threshold Applicability**:
-   A threshold of `P95 < 50.0 ms` for an HTTP endpoint is technically achievable only when the benchmark runner is deployed in the same cloud region or VPC as the database origin, or when testing over local IPC/loopback. Over transcontinental public WAN, speed-of-light propagation in optical fiber alone precludes `< 50 ms` round trips.
+   A threshold of `P95 < 50.0 ms` for an HTTP endpoint is technically achievable when the benchmark runner is deployed in the same cloud region or VPC as the database origin, or when testing over local IPC/loopback. Across an external transcontinental network path, public Internet edge routing and transit overhead preclude `< 50 ms` client round trips.
 
 ---
 
@@ -176,10 +197,10 @@ The empirical evidence isolates the root cause of the benchmark failure:
 
 | Evaluation Layer | Target | Observed P50 | Observed P95 | Pass/Fail Assessment | Primary Constraint |
 | :--- | :--- | :--- | :--- | :--- | :--- |
-| **External HTTP PostgREST (Existing)** | < 50.0 ms | 424.44 ms | 446.65 ms | **FAIL** | Transcontinental WAN Propagation |
-| **External HTTP PostgREST (Valid Column)** | < 50.0 ms | 413.24 ms | 442.70 ms | **FAIL** | Transcontinental WAN Propagation |
+| **External HTTP PostgREST (Existing)** | < 50.0 ms | 424.44 ms | 446.65 ms | **FAIL** | External Network / Edge Path |
+| **External HTTP PostgREST (Valid Column)** | < 50.0 ms | 413.24 ms | 442.70 ms | **FAIL** | External Network / Edge Path |
 | **Server-Side Upstream (`x-envoy`)** | < 50.0 ms | **2.00 ms** | **34.00 ms** | **PASS / IN-BUDGET** | Server Engine / DB Execution |
-| **WAN Round-Trip Delta ($\Delta$)** | N/A | 409.84 ms | 435.70 ms | N/A | Physical Fiber Transit (~400 ms) |
+| **WAN Round-Trip Delta ($\Delta$)** | N/A | 409.84 ms | 435.70 ms | N/A | External Network / Edge Transit |
 | **Connection Setup (DNS+TCP+TLS)** | N/A | ~85 ms | ~100 ms | N/A | Network Boundary Handshakes |
 
 ---
@@ -198,10 +219,13 @@ The empirical evidence isolates the root cause of the benchmark failure:
 
 ---
 
-## 9. Submission Status
+## 9. Final Gate & Closure Status
 
-**SUBMITTED FOR CTO PERFORMANCE-GATE ADJUDICATION — NOT SELF-ACCEPTED**
+**W020-G9 — ACCEPTED WITH FORMAL ENVIRONMENTAL PERFORMANCE EXCEPTION**
 
-* The benchmark gate remains recorded as **FAIL** against the ratified target.
-* The empirical decomposition conclusively identifies the failure as **Case 1: VERIFIED ENVIRONMENTAL LIMITATION**.
-* Awaiting CTO adjudication on whether to ratify the staging performance under the verified environmental limitation or mandate co-located runner topology.
+* **Milestone Status**: **COMPLETE**
+* **Functional & Invariant Tests**: 367/367 checks **PASS** (100.0%)
+* **External HTTP Benchmark**: **FAIL** (`P95 446.65 ms` against ratified `< 50.0 ms` target — preserved without relaxation or relabeling)
+* **Server-Side Timing**: **PASS / IN-BUDGET** (`P95 34.00 ms` within 50.0 ms budget)
+* **CTO Exception**: Formally authorized by CTO under Case 1 (`VERIFIED ENVIRONMENTAL / NETWORK-TOPOLOGY LIMITATION`).
+* **W021 Status**: `NOT STARTED / REMAINS BLOCKED PENDING NEXT CTO AUTHORIZATION`.
