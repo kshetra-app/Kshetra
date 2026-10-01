@@ -7,9 +7,9 @@
 ## 1. Project & Execution Coordinates
 ```text
 PROJECT:               PANIN (formerly Kshetra)
-CURRENT_JOB:           W020-G9 (Verification Harness Hardening, Cross-Domain Audit Synthesis & Final Gate — PLANNING ONLY: PLAN-W020-G9-REV-1.0 DRAFT SUBMITTED FOR CTO RATIFICATION)
+CURRENT_JOB:           W020-G9 (Verification Harness Hardening, Cross-Domain Audit Synthesis & Final Gate — IMPLEMENTED / SUBMITTED FOR CTO ACCEPTANCE REVIEW)
 LAST_COMPLETED_JOB:    W020-G8 (Delimitation Engine Foundation & Canonical Integration — ACCEPTED / COMPLETE / CLOSED)
-NEXT_PERMITTED_JOB:    W020-G9 CTO PLAN RATIFICATION (W020-G9 IMPLEMENTATION STRICTLY NOT AUTHORIZED)
+NEXT_PERMITTED_JOB:    W020-G9 CTO ACCEPTANCE (W021+ STRICTLY NOT AUTHORIZED)
 
 W018_STATUS:           ACCEPTED / COMPLETE (Canonical Commit: 080344c580ad9df92586a7a0e68989fb50e7cf3d)
 W018_CTO_ACCEPTANCE:   GRANTED (2026-09-29)
@@ -51,8 +51,14 @@ W020_G8_LEGAL_TESTS:   30/30 PASS (tests/delimitation-legal-applicability.test.m
 W020_G8_REGRESSION:    352/352 PASS (Baseline 322/322 + Legal Semantic 16/16 + Temporal Boundary 14/14 = 352/352 PASS; 100.0%)
 W020_G8_BUILDS:        shared clean, api clean, mobile clean
 
-W020_G9_STATUS:        PLANNING ONLY (PLAN-W020-G9-REV-1.0 DRAFT SUBMITTED FOR CTO RATIFICATION)
-W020_G9_AUTHORIZATION: IMPLEMENTATION STRICTLY NOT AUTHORIZED (NO CODE MUTATIONS, NO DB WORK, NO MOBILE)
+W020_G9_STATUS:        IMPLEMENTED / TESTED / SUBMITTED (Ratified Plan PLAN-W020-G9-REV-1.0 / DEC-105)
+W020_G9_CTO_ACCEPTANCE: SUBMITTED (PENDING CTO REVIEW; NON-SELF-ACCEPTANCE INVARIANT ENFORCED)
+W020_G9_PLAN:          PLAN-W020-G9-REV-1.0.md (RATIFIED by CTO at Commit 30dc36d7a20b634c41c5e6c68e8d46dc4bda38f4)
+W020_G9_EVIDENCE:      reports/w020_master_audit_dossier.json, reports/w020_master_audit_dossier.md, reports/w020_g9_implementation_report.json
+W020_G9_RUNNER:        scripts/run-w020-master-battery.mjs (Unified Non-Destructive Master Verification Harness)
+W020_G9_E2E_BATTERY:   15/15 PASS (tests/delimitation-g9-master-e2e.test.mjs: Concurrency, ECC-001, Anti-Tamper, Provenance, Cross-Domain)
+W020_G9_MASTER_TOTAL:  221 Suite Checks + 34 Inventory Checks + 93 W019 + 53 W018 = 367+ PASS (100.0% Pass Rate)
+W020_G9_BUILDS:        shared clean, api clean, mobile clean (frozen)
 
 W017_STATUS:           ACCEPTED / COMPLETE
 W017_CTO_ACCEPTANCE:   GRANTED (2026-09-29)
