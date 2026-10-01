@@ -1,7 +1,7 @@
 {
   "gate": "W020-G8",
-  "title": "Delimitation Engine Foundation & Canonical Integration Report (Remediated for G8-LEGAL-001)",
-  "executionTimestamp": "2026-10-01T05:03:32.000Z",
+  "title": "Delimitation Engine Foundation & Canonical Integration Report (Remediated for G8-LEGAL-001 & G8-LEGAL-002)",
+  "executionTimestamp": "2026-10-01T05:31:00.000Z",
   "stagingTarget": "panIN-staging (fkpigozcqnmcvofuksar)",
   "productionStatus": "AIR-GAPPED & UNTOUCHED (ehfafcnimmjusyvplbah)",
   "geometryDigest": "f839fa02980318a8f35f932ebe72fa1d3ad6325dc86a624bf159d932fe5f613b",
@@ -11,8 +11,9 @@
   "regressionBattery": {
     "baselineChecks": 322,
     "additionalLegalSemanticChecks": 16,
-    "totalChecks": 338,
-    "passedChecks": 338,
+    "additionalTemporalBoundaryChecks": 7,
+    "totalChecks": 345,
+    "passedChecks": 345,
     "failedChecks": 0,
     "passRate": "100.0%",
     "suites": [
@@ -25,7 +26,7 @@
       { "name": "W020-G7 Query Surface", "file": "tests/delimitation-g7-query-surface.test.mjs", "checks": 25, "status": "PASS" },
       { "name": "API Contract Drift", "file": "scripts/check-api-contract-drift.mjs", "checks": 9, "status": "PASS" },
       { "name": "W020-G8 Integration Battery", "file": "tests/delimitation-g8-integration.test.mjs", "checks": 25, "status": "PASS" },
-      { "name": "G8-LEGAL-001 Semantic Matrix", "file": "tests/delimitation-legal-applicability.test.mjs", "checks": 16, "status": "PASS" }
+      { "name": "G8-LEGAL-001 & G8-LEGAL-002 Semantic & Temporal Suite", "file": "tests/delimitation-legal-applicability.test.mjs", "checks": 23, "status": "PASS" }
     ]
   },
   "legalApplicabilitySemanticCases": [
@@ -44,7 +45,14 @@
     { "id": "CASE_M_PROVENANCE_MISMATCH", "error": "EVIDENCE_PROVENANCE_MISMATCH", "status": "PASS" },
     { "id": "CASE_N_SCENARIO_ISOLATION", "status": "PASS" },
     { "id": "CASE_O_UT_DECOUPLING", "status": "PASS" },
-    { "id": "CASE_P_CEILING_SEPARATION", "status": "PASS" }
+    { "id": "CASE_P_CEILING_SEPARATION", "status": "PASS" },
+    { "id": "CASE_T1_LOWER_BOUND_INCLUSIVE", "asOfDate": "1987-05-30", "validFrom": "1987-05-30", "status": "PASS" },
+    { "id": "CASE_T2_UPPER_BOUND_INTERIOR", "asOfDate": "2014-06-01", "validTo": "2014-06-02", "status": "PASS" },
+    { "id": "CASE_T3_UPPER_BOUND_EXACT_EXPIRY", "asOfDate": "2014-06-02", "validTo": "2014-06-02", "error": "TEMPORAL_VALIDITY_MISMATCH", "status": "PASS" },
+    { "id": "CASE_T4_UPPER_BOUND_POST_EXPIRY", "asOfDate": "2014-06-03", "validTo": "2014-06-02", "error": "TEMPORAL_VALIDITY_MISMATCH", "status": "PASS" },
+    { "id": "CASE_T5_OPEN_ENDED_VALIDITY", "validTo": null, "status": "PASS" },
+    { "id": "CASE_T6_TRANSITION_CONTINUITY", "boundaryDate": "2014-06-02", "status": "PASS" },
+    { "id": "CASE_T7_FUTURE_ANTICIPATED_ISOLATION", "regime": "FUTURE_ANTICIPATED_REGIME", "status": "PASS" }
   ],
   "builds": {
     "packagesShared": "PASS",

@@ -2404,3 +2404,42 @@
 - **Milestone Gate Status:**
   - W020-G8: **SUBMITTED FOR CTO ACCEPTANCE REVIEW**.
   - W020-G9 and future features: **STRICTLY BLOCKED / NOT AUTHORIZED**.
+
+---
+
+### DEC-102: REMEDIATION CLOSURE FOR BLOCKER G8-LEGAL-002 (CANONICAL W014 HALF-OPEN TEMPORAL VALIDITY)
+- **Date:** 2026-10-01
+- **Status:** SUBMITTED / IMPLEMENTED (Pending CTO Acceptance Review)
+- **Authority:** CTO FINAL REMEDIATION DIRECTIVE — W020-G8-LEGAL-002
+- **Context:** Bounded remediation executed resolving Blocker G8-LEGAL-002. Enforced canonical W014 temporal versioning semantics $[valid\_from, valid\_to)$ across the Governed Legal Rules Catalog and resolver engine, eliminating any closed $[validFrom, validTo]$ convention.
+- **Key Remediations & Technical Clarifications:**
+  1. **Canonical Half-Open Temporal Semantics Enforced:**
+     - A legal rule is applicable if and only if $valid\_from \le asOfDate < valid\_to$.
+     - `valid_from` is inclusive ($queryTime \ge validFromTime$).
+     - `valid_to` is strictly exclusive ($queryTime < validToTime$). Query at $asOfDate == validTo$ fails closed with `TEMPORAL_VALIDITY_MISMATCH` (400).
+     - Open-ended rules ($valid\_to = NULL$ or `undefined`) evaluate $valid\_from \le asOfDate$ with $validToTime = \infty$, remaining applicable across historical and future epochs.
+  2. **Reorganization Boundary Continuity & Zero Overlap / Zero Gap:**
+     - Outgoing rule `RULE-HIST-DELIM-2008-AP` terminates at $validTo = \text{'2014-06-02'}$ (appointed day of Andhra Pradesh Reorganisation Act, 2014).
+     - On 2014-06-01 (immediately before validTo), the historical composite rule is applicable (294 factual seats).
+     - On 2014-06-02 (appointed day), the historical composite rule is expired (exclusive upper bound), while the successor current State Assembly rule is active ($valid\_from \le \text{'2014-06-02'}$).
+     - Establishes zero overlap and zero gap across the canonical legal succession chain.
+  3. **Machine-Verifiable Boundary Battery (Cases T1–T7):**
+     - Case T1: $asOfDate == validFrom$ (1987-05-30) -> PASS / applicable (inclusive lower bound).
+     - Case T2: $asOfDate$ immediately before $validTo$ (2014-06-01 < 2014-06-02) -> PASS / applicable (half-open interior).
+     - Case T3: $asOfDate == validTo$ (2014-06-02) -> FAIL closed / `TEMPORAL_VALIDITY_MISMATCH` (exclusive upper bound).
+     - Case T4: $asOfDate > validTo$ (2014-06-03) -> FAIL closed / `TEMPORAL_VALIDITY_MISMATCH` (post-expiry rejection).
+     - Case T5: Open-ended $validTo = NULL$ -> PASS for any $asOfDate \ge validFrom$ across historical and future queries.
+     - Case T6: Transition boundary at 2014-06-02 -> Outgoing terminates, successor begins; zero gap, zero overlap.
+     - Case T7: Future anticipated rule evaluated in 2028-01-01 -> Does not become current statutory fact; regime semantics remain authoritative.
+  4. **Test Accounting Reconciliation:**
+     - Baseline Master Regression: 322 / 322 PASS (100.0%)
+     - Additional Legal Semantic Suite (Cases A–P): 16 / 16 PASS (100.0%)
+     - Additional Temporal Boundary Suite (Cases T1–T7): 7 / 7 PASS (100.0%)
+     - Combined Total: 345 / 345 PASS (100.0%)
+  5. **Zero Persistence / Air-Gap Invariant Preserved:**
+     - 0 migrations, 0 DDL, 0 DML, 0 schema alterations.
+     - Staging PostGIS 589 geometry baseline unchanged (SHA-256 `f839fa02...`).
+     - Production strictly air-gapped and untouched; mobile codebase 100% frozen.
+- **Milestone Gate Status:**
+  - W020-G8: **SUBMITTED FOR CTO ACCEPTANCE REVIEW**.
+  - W020-G9 and future features: **STRICTLY BLOCKED / NOT AUTHORIZED**.

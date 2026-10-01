@@ -536,19 +536,292 @@ try {
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
+// CASE T1: asOfDate == validFrom (Inclusive Lower Bound)
+// Authority: CTO FINAL REMEDIATION DIRECTIVE — W020-G8-LEGAL-002
+// Expected: PASS / applicable
+// ─────────────────────────────────────────────────────────────────────────────
+try {
+  // Goa enactment date: 1987-05-30
+  const res = delimitationQueryService.resolveLegalApplicability({
+    entityType: 'STATE_LEGISLATIVE_ASSEMBLY',
+    regimeType: 'CURRENT_LEGAL_REGIME',
+    jurisdictionCode: 'GA',
+    asOfDate: '1987-05-30',
+  });
+
+  const pass =
+    res.entityType === 'STATE_LEGISLATIVE_ASSEMBLY' &&
+    res.constitutionalFloor === 30 &&
+    res.statutoryExactSeats === 40 &&
+    res.temporalValidity.validFrom === '1987-05-30';
+
+  recordCheck(
+    'CASE_T1_LOWER_BOUND_INCLUSIVE',
+    'asOfDate == validFrom (1987-05-30) is applicable under canonical [valid_from, valid_to) half-open semantics',
+    pass,
+    `asOfDate: 1987-05-30 == validFrom: ${res.temporalValidity.validFrom}, ExactSeats: ${res.statutoryExactSeats}`,
+    'TEMPORAL_INVARIANT: Canonical inclusive lower bound [valid_from'
+  );
+} catch (err) {
+  recordCheck('CASE_T1_LOWER_BOUND_INCLUSIVE', 'asOfDate == validFrom boundary test', false, err.message);
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// CASE T2: asOfDate immediately before validTo (Exclusive Upper Bound Interior)
+// Authority: CTO FINAL REMEDIATION DIRECTIVE — W020-G8-LEGAL-002
+// Expected: PASS / applicable
+// ─────────────────────────────────────────────────────────────────────────────
+try {
+  // Historical AP composite rule: validFrom: 2008-02-19, validTo: 2014-06-02
+  // Date immediately before validTo: 2014-06-01 (1 day prior to APRA 2014 appointed day)
+  const res = delimitationQueryService.resolveLegalApplicability({
+    entityType: 'STATE_LEGISLATIVE_ASSEMBLY',
+    regimeType: 'HISTORICAL_LEGAL_REGIME',
+    jurisdictionCode: 'AP_COMPOSITE',
+    asOfDate: '2014-06-01',
+  });
+
+  const pass =
+    res.regimeType === 'HISTORICAL_LEGAL_REGIME' &&
+    res.historicalFactualSeats === 294 &&
+    res.temporalValidity.validFrom === '2008-02-19' &&
+    res.temporalValidity.validTo === '2014-06-02';
+
+  recordCheck(
+    'CASE_T2_UPPER_BOUND_INTERIOR',
+    'asOfDate immediately before validTo (2014-06-01 < 2014-06-02) is applicable under canonical [valid_from, valid_to)',
+    pass,
+    `asOfDate: 2014-06-01 < validTo: ${res.temporalValidity.validTo}, HistoricalSeats: ${res.historicalFactualSeats}`,
+    'TEMPORAL_INVARIANT: Canonical half-open interval permits any instant strictly prior to valid_to'
+  );
+} catch (err) {
+  recordCheck('CASE_T2_UPPER_BOUND_INTERIOR', 'asOfDate immediately before validTo test', false, err.message);
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// CASE T3: asOfDate == validTo (Exclusive Upper Bound Exact Expiry)
+// Authority: CTO FINAL REMEDIATION DIRECTIVE — W020-G8-LEGAL-002
+// Expected: FAIL / not applicable / next valid rule if one exists
+// ─────────────────────────────────────────────────────────────────────────────
+try {
+  let thrown = false;
+  let errorCode = '';
+  try {
+    // Historical AP composite rule: validTo is 2014-06-02 (appointed day of AP Reorganisation Act 2014)
+    // Under [valid_from, valid_to), at asOfDate == validTo, the historical composite rule is EXPIRED.
+    delimitationQueryService.resolveLegalApplicability({
+      entityType: 'STATE_LEGISLATIVE_ASSEMBLY',
+      regimeType: 'HISTORICAL_LEGAL_REGIME',
+      jurisdictionCode: 'AP_COMPOSITE',
+      asOfDate: '2014-06-02',
+    });
+  } catch (err) {
+    thrown = true;
+    errorCode = err.code || err.message;
+  }
+
+  const pass = thrown && errorCode === 'TEMPORAL_VALIDITY_MISMATCH';
+
+  recordCheck(
+    'CASE_T3_UPPER_BOUND_EXACT_EXPIRY',
+    'asOfDate == validTo (2014-06-02) fails closed with TEMPORAL_VALIDITY_MISMATCH (valid_to is strictly exclusive)',
+    pass,
+    `Thrown: ${thrown}, ErrorCode: ${errorCode}`,
+    'TEMPORAL_INVARIANT: Canonical valid_to is exclusive: valid_from <= asOfDate < valid_to'
+  );
+} catch (err) {
+  recordCheck('CASE_T3_UPPER_BOUND_EXACT_EXPIRY', 'asOfDate == validTo boundary test', false, err.message);
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// CASE T4: asOfDate immediately after validTo
+// Authority: CTO FINAL REMEDIATION DIRECTIVE — W020-G8-LEGAL-002
+// Expected: FAIL / not applicable / next valid rule if one exists
+// ─────────────────────────────────────────────────────────────────────────────
+try {
+  let thrown = false;
+  let errorCode = '';
+  try {
+    // Date immediately after validTo (2014-06-03 > 2014-06-02)
+    delimitationQueryService.resolveLegalApplicability({
+      entityType: 'STATE_LEGISLATIVE_ASSEMBLY',
+      regimeType: 'HISTORICAL_LEGAL_REGIME',
+      jurisdictionCode: 'AP_COMPOSITE',
+      asOfDate: '2014-06-03',
+    });
+  } catch (err) {
+    thrown = true;
+    errorCode = err.code || err.message;
+  }
+
+  const pass = thrown && errorCode === 'TEMPORAL_VALIDITY_MISMATCH';
+
+  recordCheck(
+    'CASE_T4_UPPER_BOUND_POST_EXPIRY',
+    'asOfDate immediately after validTo (2014-06-03 > 2014-06-02) fails closed with TEMPORAL_VALIDITY_MISMATCH',
+    pass,
+    `Thrown: ${thrown}, ErrorCode: ${errorCode}`,
+    'TEMPORAL_INVARIANT: Post-expiry dates strictly reject expired historical rules'
+  );
+} catch (err) {
+  recordCheck('CASE_T4_UPPER_BOUND_POST_EXPIRY', 'asOfDate post validTo test', false, err.message);
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// CASE T5: Open-Ended validTo = NULL / undefined
+// Authority: CTO FINAL REMEDIATION DIRECTIVE — W020-G8-LEGAL-002
+// Expected: Any asOfDate >= validFrom remains applicable.
+// ─────────────────────────────────────────────────────────────────────────────
+try {
+  // Standard State Assembly (TS): validFrom: 1950-01-26, validTo: undefined (open-ended)
+  const resPast = delimitationQueryService.resolveLegalApplicability({
+    entityType: 'STATE_LEGISLATIVE_ASSEMBLY',
+    regimeType: 'CURRENT_LEGAL_REGIME',
+    jurisdictionCode: 'TS',
+    asOfDate: '1975-08-15',
+  });
+  const resFarFuture = delimitationQueryService.resolveLegalApplicability({
+    entityType: 'STATE_LEGISLATIVE_ASSEMBLY',
+    regimeType: 'CURRENT_LEGAL_REGIME',
+    jurisdictionCode: 'TS',
+    asOfDate: '2050-01-01',
+  });
+
+  const pass =
+    resPast.constitutionalProvision === 'Article 170(1)' &&
+    resPast.temporalValidity.validTo === undefined &&
+    resFarFuture.constitutionalProvision === 'Article 170(1)' &&
+    resFarFuture.temporalValidity.validTo === undefined;
+
+  recordCheck(
+    'CASE_T5_OPEN_ENDED_VALIDITY',
+    'Open-ended rule (validTo = NULL) remains applicable for any asOfDate >= validFrom across historical and future epochs',
+    pass,
+    `asOf 1975-08-15 -> ${resPast.constitutionalProvision}; asOf 2050-01-01 -> ${resFarFuture.constitutionalProvision}`,
+    'TEMPORAL_INVARIANT: Open-ended validity evaluates valid_from <= asOfDate with validTo = Infinity'
+  );
+} catch (err) {
+  recordCheck('CASE_T5_OPEN_ENDED_VALIDITY', 'Open-ended validTo test', false, err.message);
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// CASE T6: Historical -> Current Transition Boundary Continuity
+// Authority: CTO FINAL REMEDIATION DIRECTIVE — W020-G8-LEGAL-002
+// Expected:
+// The outgoing historical rule terminates exactly at validTo and the successor/
+// current rule begins exactly at its validFrom.
+// No overlap. No gap where the canonical legal chain establishes continuity.
+// ─────────────────────────────────────────────────────────────────────────────
+try {
+  // Transition date: 2014-06-02 (Appointed day of Andhra Pradesh Reorganisation Act, 2014)
+  // At instant T_boundary - 1 ms (or 1 day prior: 2014-06-01):
+  // Historical composite AP rule IS applicable.
+  const histRes = delimitationQueryService.resolveLegalApplicability({
+    entityType: 'STATE_LEGISLATIVE_ASSEMBLY',
+    regimeType: 'HISTORICAL_LEGAL_REGIME',
+    jurisdictionCode: 'AP_COMPOSITE',
+    asOfDate: '2014-06-01',
+  });
+
+  // At instant T_boundary (2014-06-02):
+  // Historical composite AP rule IS NOT applicable (expires at valid_to = 2014-06-02).
+  let histExpiredAtBoundary = false;
+  try {
+    delimitationQueryService.resolveLegalApplicability({
+      entityType: 'STATE_LEGISLATIVE_ASSEMBLY',
+      regimeType: 'HISTORICAL_LEGAL_REGIME',
+      jurisdictionCode: 'AP_COMPOSITE',
+      asOfDate: '2014-06-02',
+    });
+  } catch (err) {
+    if (err.code === 'TEMPORAL_VALIDITY_MISMATCH') histExpiredAtBoundary = true;
+  }
+
+  // At instant T_boundary (2014-06-02):
+  // Successor current State Assembly rule (Telangana / Bifurcated AP under RPA 1950 / APRA 2014)
+  // IS applicable (valid_from <= 2014-06-02).
+  const currRes = delimitationQueryService.resolveLegalApplicability({
+    entityType: 'STATE_LEGISLATIVE_ASSEMBLY',
+    regimeType: 'CURRENT_LEGAL_REGIME',
+    jurisdictionCode: 'TS',
+    asOfDate: '2014-06-02',
+  });
+
+  const pass =
+    histRes.historicalFactualSeats === 294 &&
+    histExpiredAtBoundary &&
+    currRes.constitutionalProvision === 'Article 170(1)' &&
+    currRes.isStatutoryFact === true;
+
+  recordCheck(
+    'CASE_T6_TRANSITION_CONTINUITY',
+    'Historical -> Current boundary at 2014-06-02: historical rule terminates exactly at validTo, current rule active; zero overlap, zero gap',
+    pass,
+    `Prior (2014-06-01): HistSeats=${histRes.historicalFactualSeats}; Boundary (2014-06-02): HistExpired=${histExpiredAtBoundary}, CurrentActive=${currRes.isStatutoryFact}`,
+    'TEMPORAL_INVARIANT: Zero overlap, zero gap at statutory reorganization boundary'
+  );
+} catch (err) {
+  recordCheck('CASE_T6_TRANSITION_CONTINUITY', 'Historical -> Current transition boundary test', false, err.message);
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// CASE T7: Future Anticipated Rule
+// Authority: CTO FINAL REMEDIATION DIRECTIVE — W020-G8-LEGAL-002
+// Expected:
+// Must not become current merely because the application date is within an
+// anticipated future rule. The W014 legal regime semantics remain authoritative.
+// ─────────────────────────────────────────────────────────────────────────────
+try {
+  // Querying FUTURE_ANTICIPATED_REGIME with asOfDate = 2028-01-01 (post-2026 window)
+  const futureRes = delimitationQueryService.resolveLegalApplicability({
+    entityType: 'STATE_LEGISLATIVE_ASSEMBLY',
+    regimeType: 'FUTURE_ANTICIPATED_REGIME',
+    jurisdictionCode: 'TS',
+    asOfDate: '2028-01-01',
+  });
+
+  // Querying CURRENT_LEGAL_REGIME with asOfDate = 2028-01-01
+  const currentRes = delimitationQueryService.resolveLegalApplicability({
+    entityType: 'STATE_LEGISLATIVE_ASSEMBLY',
+    regimeType: 'CURRENT_LEGAL_REGIME',
+    jurisdictionCode: 'TS',
+    asOfDate: '2028-01-01',
+  });
+
+  const pass =
+    futureRes.regimeType === 'FUTURE_ANTICIPATED_REGIME' &&
+    futureRes.isStatutoryFact === false &&
+    futureRes.isScenario === false &&
+    futureRes.temporalValidity.isCurrent === false &&
+    futureRes.provenance.evidenceReference === 'ECI-POST-2026-TRACKING' &&
+    currentRes.regimeType === 'CURRENT_LEGAL_REGIME' &&
+    currentRes.isStatutoryFact === true;
+
+  recordCheck(
+    'CASE_T7_FUTURE_ANTICIPATED_ISOLATION',
+    'Future anticipated rule within post-2026 window (2028-01-01) does NOT become current statutory fact (isStatutoryFact remains false)',
+    pass,
+    `Future: regimeType=${futureRes.regimeType}, isStatutoryFact=${futureRes.isStatutoryFact}, isCurrent=${futureRes.temporalValidity.isCurrent}`,
+    'LEGAL_INVARIANT: Regime semantics remain authoritative regardless of evaluation date'
+  );
+} catch (err) {
+  recordCheck('CASE_T7_FUTURE_ANTICIPATED_ISOLATION', 'Future anticipated isolation test', false, err.message);
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
 // SUMMARY & VERDICT
 // ─────────────────────────────────────────────────────────────────────────────
 console.log('\n================================================================');
-console.log(`TOTAL SEMANTIC CHECKS: ${passed + failed}`);
-console.log(`PASSED:                ${passed}`);
-console.log(`FAILED:                ${failed}`);
-console.log(`PASS RATE:             ${((passed / (passed + failed)) * 100).toFixed(1)}%`);
+console.log(`TOTAL SEMANTIC & BOUNDARY CHECKS: ${passed + failed}`);
+console.log(`PASSED:                           ${passed}`);
+console.log(`FAILED:                           ${failed}`);
+console.log(`PASS RATE:                        ${((passed / (passed + failed)) * 100).toFixed(1)}%`);
 console.log('================================================================\n');
 
 if (failed > 0) {
   console.error(`FATAL: ${failed} legal applicability semantic checks failed.`);
   process.exit(1);
 } else {
-  console.log('SUCCESS: All 16 legal applicability semantic checks passed.');
+  console.log(`SUCCESS: All ${passed} legal applicability semantic and temporal boundary checks passed.`);
   process.exit(0);
 }

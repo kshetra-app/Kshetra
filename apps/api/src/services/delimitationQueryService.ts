@@ -800,7 +800,7 @@ export class DelimitationQueryService {
       regimeApplicability: ['HISTORICAL_LEGAL_REGIME'],
       constitutionalProvision: 'Article 170(1)',
       statutoryProvision: 'Delimitation Act, 2002 (Schedule II, 2008 Order)',
-      temporalValidity: { validFrom: '2008-02-19', validTo: '2014-06-01', isCurrent: false },
+      temporalValidity: { validFrom: '2008-02-19', validTo: '2014-06-02', isCurrent: false },
       provenance: {
         sourceAuthority: 'Delimitation Commission of India',
         citation: 'Delimitation Order 2008, Schedule II (State of Andhra Pradesh), published 19 February 2008.',
@@ -943,13 +943,15 @@ export class DelimitationQueryService {
         ? new Date(matchedRule.temporalValidity.validTo).getTime()
         : Infinity;
 
-      if (isNaN(queryTime) || queryTime < validFromTime || queryTime > validToTime) {
+      // Canonical W014 half-open temporal validity: [valid_from, valid_to)
+      // Rule is applicable exactly when: validFromTime <= queryTime && queryTime < validToTime
+      if (isNaN(queryTime) || queryTime < validFromTime || queryTime >= validToTime) {
         throw new DelimitationQueryError(
           'TEMPORAL_VALIDITY_MISMATCH',
           400,
-          `Legal rule '${matchedRule.ruleId}' is not temporally applicable as of '${asOfDate}'. Valid range: [${
+          `Legal rule '${matchedRule.ruleId}' is not temporally applicable as of '${asOfDate}'. Canonical half-open valid range: [${
             matchedRule.temporalValidity.validFrom
-          } to ${matchedRule.temporalValidity.validTo || 'present'}].`
+          }, ${matchedRule.temporalValidity.validTo || 'present'}).`
         );
       }
     }

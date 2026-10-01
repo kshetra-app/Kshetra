@@ -1,9 +1,9 @@
-# W020-G8 Remediation Report: Blocker G8-LEGAL-001 (Legal Applicability Evidence)
+# W020-G8 Remediation Report: Blocker G8-LEGAL-001 & G8-LEGAL-002
 
 - **Milestone:** W020-G8
-- **Blocker Addressed:** G8-LEGAL-001
+- **Blockers Addressed:** G8-LEGAL-001 (Six-Coordinate Legal Applicability) & G8-LEGAL-002 (Canonical W014 Half-Open Temporal Validity)
 - **Date:** 2026-10-01
-- **Authority:** CTO REMEDIATION DIRECTIVE — W020-G8 LEGAL APPLICABILITY EVIDENCE
+- **Authority:** CTO REMEDIATION DIRECTIVES — W020-G8 LEGAL APPLICABILITY EVIDENCE & W020-G8-LEGAL-002
 - **Execution Boundary:** panIN-staging (`fkpigozcqnmcvofuksar`) ONLY
 - **Production Status:** ehfafcnimmjusyvplbah (STRICTLY AIR-GAPPED & UNTOUCHED)
 - **Geometry Baseline:** 589 rows, SHA-256 `f839fa02980318a8f35f932ebe72fa1d3ad6325dc86a624bf159d932fe5f613b` (VERIFIED UNCHANGED)
@@ -12,9 +12,7 @@
 
 ## 1. Executive Summary & Defect Remediation
 
-Under CTO Directive G8-LEGAL-001, the implementation of `resolveLegalApplicability()` in `DelimitationQueryService` was audited. The inspection revealed that while the function outputted governing provisions, its internal resolution utilized hardcoded state-code conditional branches (`normState === 'SK'`, `'MZ'`, `'GA'`) inside the State Legislative Assembly path. Furthermore, the function signature lacked parameters to evaluate temporal validity, evidence provenance, and non-current regime contexts.
-
-### Actions Taken:
+### G8-LEGAL-001 Remediation:
 1. **Governed Legal Rules Catalog:** Replaced state-code branching with an application-level typed catalog (`GOVERNED_LEGAL_RULES`). Every rule defines all six orthogonal coordinates: Entity Type, Legal Regime applicability, Constitutional Provision, Statutory Provision, Temporal Validity, and Authoritative Provenance.
 2. **Context-Driven Dynamic Resolution:** `resolveLegalApplicability(query: LegalApplicabilityQuery)` resolves the applicable rule based on the typed query context. If an uncataloged, invalid, or temporally inapplicable combination is requested, it fails closed with structured error codes (`LEGAL_RULE_NOT_FOUND`, `TEMPORAL_VALIDITY_MISMATCH`, `INVALID_ENTITY_TYPE`).
 3. **Plane Separation & Goa Statutory Correction:**
@@ -22,7 +20,16 @@ Under CTO Directive G8-LEGAL-001, the implementation of `resolveLegalApplicabili
    - Preserved strict separation: Article 371-I sets a constitutional minimum of not less than 30; Section 12 sets the statutory exact seat count of 40; factual seats are 40.
 4. **Puducherry UT Decoupling:** Modeled as `UNION_TERRITORY_ASSEMBLY` governed by Section 3 of the Government of Union Territories Act, 1963; strictly decoupled from Article 170.
 5. **W019 Terminology Correction:** Updated wording across tests and reports from "W019 certified 2023 election results" to **"ECI-sourced 2023 Telangana election results/statistical data"**.
-6. **Dedicated 16-Case Semantic Test Suite:** Created `tests/delimitation-legal-applicability.test.mjs` verifying Cases A through P.
+
+### G8-LEGAL-002 Remediation (Canonical W014 Half-Open Temporal Semantics):
+1. **Half-Open Interval Invariant:** Enforced canonical W014 temporal validity $[valid\_from, valid\_to)$, where:
+   - `valid_from` is inclusive: $valid\_from \le asOfDate$
+   - `valid_to` is exclusive: $asOfDate < valid\_to$
+   - For open-ended rules ($valid\_to = NULL$), $valid\_from \le asOfDate$ applies indefinitely.
+2. **Implementation Path Correction:** In `apps/api/src/services/delimitationQueryService.ts`:
+   - Updated condition from `queryTime > validToTime` to `queryTime >= validToTime` (rejecting $asOfDate \ge valid\_to$).
+   - Synchronized rule catalog entry `RULE-HIST-DELIM-2008-AP` to `validTo: '2014-06-02'` (the appointed day of the Andhra Pradesh Reorganisation Act, 2014) so that on 2014-06-02 the historical composite rule terminates exclusively, handing off seamlessly to the successor state rule with zero overlap and zero gap.
+   - Updated error message text to format $[validFrom, validTo)$.
 
 ---
 
@@ -34,14 +41,14 @@ Under CTO Directive G8-LEGAL-001, the implementation of `resolveLegalApplicabili
 | **2** | **Legal Regime** | `query.regimeType` | Resolves `CURRENT_LEGAL_REGIME`, `HISTORICAL_LEGAL_REGIME`, `FUTURE_ANTICIPATED_REGIME`, `SCENARIO_PROPOSED_REGIME`. Scenarios return non-statutory outputs (`isScenario: true`, `isStatutoryFact: false`). | `res.regimeType`, `res.isScenario`, `res.isStatutoryFact` |
 | **3** | **Constitutional Provision** | Rule catalog match | Binds constitutional article (`Article 170(1)`, `Article 371F(f)`, `Article 371G(b)`, `Article 371-I`, `Article 239A`, `Article 81`). | `res.constitutionalProvision`, `res.constitutionalFloor`, `res.constitutionalCeiling` |
 | **4** | **Statutory Provision** | Rule catalog match | Binds enabling parliamentary enactment (`RPA 1950`, `36th Amendment 1975`, `Mizoram Act 1986`, `Goa Reorganisation Act 1987 Sec 12`, `UT Act 1963 Sec 3`). | `res.statutoryProvision`, `res.statutoryExactSeats` |
-| **5** | **Temporal Validity** | `query.asOfDate` vs `rule.temporalValidity` | Validates whether `asOfDate` falls within `[validFrom, validTo]`. Mismatch throws `TEMPORAL_VALIDITY_MISMATCH` (400). | `res.temporalValidity` (`validFrom`, `validTo`, `isCurrent`) |
+| **5** | **Temporal Validity** | `query.asOfDate` vs `rule.temporalValidity` | Validates canonical half-open interval $[valid\_from, valid\_to)$: rule applies if and only if $valid\_from \le asOfDate < valid\_to$. Mismatch throws `TEMPORAL_VALIDITY_MISMATCH` (400). | `res.temporalValidity` (`validFrom`, `validTo`, `isCurrent`) |
 | **6** | **Authoritative Provenance** | `rule.provenance` & `query.evidenceReference` | Validates requested evidence reference against rule citation, authority, and official gazette notice. Mismatch throws `EVIDENCE_PROVENANCE_MISMATCH`. | `res.provenance` (`sourceAuthority`, `citation`, `evidenceReference`, `instrumentTitle`) |
 
 ---
 
-## 3. Machine-Verifiable 16-Case Semantic Test Matrix
+## 3. Machine-Verifiable Semantic & Boundary Test Matrix (23 Checks)
 
-All 16 test cases in `tests/delimitation-legal-applicability.test.mjs` pass with 100% success rate:
+All 23 test cases in `tests/delimitation-legal-applicability.test.mjs` (16 Legal Semantic + 7 Temporal Boundary) pass with 100.0% success rate:
 
 | Case | Target Condition | Expected Resolution | Observed Result | Verdict |
 | :---: | :--- | :--- | :--- | :---: |
@@ -61,6 +68,13 @@ All 16 test cases in `tests/delimitation-legal-applicability.test.mjs` pass with
 | **N** | Scenario Isolation | Cannot masquerade as current statutory fact | Zero statutory provisions, strictly isolated | **PASS** |
 | **O** | UT vs State Decoupling | UT Assembly strictly decoupled from Art 170 | PY uses UT Act 1963; TS uses Article 170(1) | **PASS** |
 | **P** | Ceiling Separation | Art 170 ceiling (500) != safety ceiling (10000) | Const ceiling 500 strictly distinct from `MAX_SAFE = 10000` | **PASS** |
+| **T1** | $asOfDate == validFrom$ | PASS / applicable (inclusive lower bound) | $1987-05-30 == 1987-05-30$, ExactSeats: 40 | **PASS** |
+| **T2** | $asOfDate < validTo$ (immediately before) | PASS / applicable (interior of half-open range) | $2014-06-01 < 2014-06-02$, HistSeats: 294 | **PASS** |
+| **T3** | $asOfDate == validTo$ | FAIL closed / `TEMPORAL_VALIDITY_MISMATCH` | Throws `TEMPORAL_VALIDITY_MISMATCH` (exclusive upper bound) | **PASS** |
+| **T4** | $asOfDate > validTo$ (immediately after) | FAIL closed / `TEMPORAL_VALIDITY_MISMATCH` | $2014-06-03 > 2014-06-02$ throws `TEMPORAL_VALIDITY_MISMATCH` | **PASS** |
+| **T5** | Open-Ended $validTo = NULL$ | Applicable for any $asOfDate \ge validFrom$ | Both 1975-08-15 and 2050-01-01 evaluate cleanly | **PASS** |
+| **T6** | Reorganization Boundary Continuity | Outgoing terminates at `validTo`, successor active at `validFrom` | Boundary 2014-06-02: hist expired, successor active; 0 gap, 0 overlap | **PASS** |
+| **T7** | Future Anticipated Rule Isolation | Does NOT become current statutory fact | `regimeType: FUTURE_ANTICIPATED_REGIME`, `isStatutoryFact: false` | **PASS** |
 
 ---
 
@@ -70,8 +84,9 @@ All 16 test cases in `tests/delimitation-legal-applicability.test.mjs` pass with
 ================================================================================
 BASELINE MASTER REGRESSION:          322 / 322 PASS (100.0%)
 ADDITIONAL LEGAL SEMANTIC TESTS:      16 /  16 PASS (100.0%)
+ADDITIONAL TEMPORAL BOUNDARY TESTS:    7 /   7 PASS (100.0%)
 --------------------------------------------------------------------------------
-COMBINED VERIFIED TEST BATTERY:      338 / 338 PASS (100.0%)
+COMBINED VERIFIED TEST BATTERY:      345 / 345 PASS (100.0%)
 ================================================================================
 ```
 
@@ -85,7 +100,7 @@ COMBINED VERIFIED TEST BATTERY:      338 / 338 PASS (100.0%)
 7. `tests/delimitation-g7-query-surface.test.mjs` (W020-G7 Query): **25/25 PASS**
 8. `scripts/check-api-contract-drift.mjs` (API Drift): **9/9 PASS**
 9. `tests/delimitation-g8-integration.test.mjs` (W020-G8 Integration): **25/25 PASS**
-10. `tests/delimitation-legal-applicability.test.mjs` (G8-LEGAL-001 Semantic Suite): **16/16 PASS**
+10. `tests/delimitation-legal-applicability.test.mjs` (G8-LEGAL-001 & 002 Suite): **23/23 PASS**
 
 ---
 
