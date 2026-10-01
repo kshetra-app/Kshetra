@@ -7,9 +7,9 @@
 ## 1. Project & Execution Coordinates
 ```text
 PROJECT:               PANIN (formerly Kshetra)
-CURRENT_JOB:           W020-G8 (Delimitation Engine Foundation & Canonical Integration — IMPLEMENTED / SUBMITTED FOR REVIEW)
-LAST_COMPLETED_JOB:    W020-G7 (Delimitation Canonical Query Surface & Typed Regime Selection — ACCEPTED / COMPLETE / CLOSED)
-NEXT_PERMITTED_JOB:    W020-G8 CTO ACCEPTANCE REVIEW (W020-G9 STRICTLY NOT AUTHORIZED)
+CURRENT_JOB:           W020-G9 (Verification Harness Hardening, Cross-Domain Audit Synthesis & Final Gate — PLANNING ONLY: PLAN-W020-G9-REV-1.0 DRAFT SUBMITTED FOR CTO RATIFICATION)
+LAST_COMPLETED_JOB:    W020-G8 (Delimitation Engine Foundation & Canonical Integration — ACCEPTED / COMPLETE / CLOSED)
+NEXT_PERMITTED_JOB:    W020-G9 CTO PLAN RATIFICATION (W020-G9 IMPLEMENTATION STRICTLY NOT AUTHORIZED)
 
 W018_STATUS:           ACCEPTED / COMPLETE (Canonical Commit: 080344c580ad9df92586a7a0e68989fb50e7cf3d)
 W018_CTO_ACCEPTANCE:   GRANTED (2026-09-29)
@@ -42,14 +42,17 @@ W020_G7_INVARIANTS:    25/25 PASS (tests/delimitation-g7-query-surface.test.mjs)
 W020_G7_REGRESSION:    297/297 PASS (25 G7 + 27 G6 + 34 G5 + 33 API + 53 W018 + 93 W019 + 23 G4 + 9 Drift)
 W020_G7_BUILDS:        shared clean, api clean, mobile clean
 
-W020_G8_STATUS:        SUBMITTED / IMPLEMENTED (G8-LEGAL-001, G8-LEGAL-002 & G8-LEGAL-002-R2 Remediations Completed; Pending CTO Acceptance Review)
+W020_G8_STATUS:        ACCEPTED / COMPLETE / CLOSED (Canonical Commit: f7fd1fa / DEC-103)
+W020_G8_CTO_ACCEPTANCE: GRANTED (2026-10-01)
 W020_G8_PLAN:          PLAN-W020-G8-REV-1.2.md (RATIFIED)
 W020_G8_EVIDENCE:      reports/w020_g8_legal_applicability_remediation.md, reports/w020_g8_implementation_report.md, reports/w020_g8_implementation_report.json
 W020_G8_INVARIANTS:    25/25 PASS (tests/delimitation-g8-integration.test.mjs)
 W020_G8_LEGAL_TESTS:   30/30 PASS (tests/delimitation-legal-applicability.test.mjs: 16 legal semantic + 14 temporal boundary)
 W020_G8_REGRESSION:    352/352 PASS (Baseline 322/322 + Legal Semantic 16/16 + Temporal Boundary 14/14 = 352/352 PASS; 100.0%)
 W020_G8_BUILDS:        shared clean, api clean, mobile clean
-W020_G8_AUTHORIZATION: BOUNDED IMPLEMENTATION & REMEDIATION COMPLETED (W020-G9 STRICTLY BLOCKED)
+
+W020_G9_STATUS:        PLANNING ONLY (PLAN-W020-G9-REV-1.0 DRAFT SUBMITTED FOR CTO RATIFICATION)
+W020_G9_AUTHORIZATION: IMPLEMENTATION STRICTLY NOT AUTHORIZED (NO CODE MUTATIONS, NO DB WORK, NO MOBILE)
 
 W017_STATUS:           ACCEPTED / COMPLETE
 W017_CTO_ACCEPTANCE:   GRANTED (2026-09-29)

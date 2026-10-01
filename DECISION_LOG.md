@@ -2478,5 +2478,32 @@
      - Staging PostGIS 589 geometry baseline unchanged (SHA-256 `f839fa02980318a8f35f932ebe72fa1d3ad6325dc86a624bf159d932fe5f613b`).
      - Production strictly air-gapped and untouched; mobile codebase 100% frozen.
 - **Milestone Gate Status:**
-  - W020-G8: **SUBMITTED FOR CTO ACCEPTANCE REVIEW**.
-  - W020-G9 and future features: **STRICTLY BLOCKED / NOT AUTHORIZED**.
+  - W020-G8: **ACCEPTED / COMPLETE / CLOSED** (Canonical Commit `f7fd1fa` / Acceptance Date 2026-10-01).
+  - W020-G9 Planning: **AUTHORIZED / SUBMITTED FOR RATIFICATION**.
+  - W020-G9 Implementation: **STRICTLY BLOCKED / NOT AUTHORIZED**.
+
+---
+
+### DEC-104: W020-G8 FINAL ACCEPTANCE & W020-G9 PLANNING-ONLY AUTHORIZATION
+- **Date:** 2026-10-01
+- **Status:** RATIFIED / ACTIVE
+- **Authority:** CTO AUTHORIZATION — NEXT MILESTONE: W020-G9 PLANNING ONLY
+- **Context:** Milestone W020-G8 was formally accepted and closed by the CTO following the successful remediation and verification of G8-LEGAL-001, G8-LEGAL-002, and G8-LEGAL-002-R2 at canonical commit `f7fd1fa` (352/352 PASS, 100.0%). Next permitted action was restricted to authoring `PLAN-W020-G9-REV-1.0.md` covering all 20 required sections in strict adherence to governance.
+- **Key Decisions & Operational Boundaries:**
+  1. **Milestone W020-G8 Formally Closed:**
+     - Final acceptance confirmed at commit `f7fd1fa639d40427be3fc4d7f74149373cdd1108`.
+     - 352/352 passing tests verified (322 baseline + 16 legal semantic + 14 temporal boundary).
+     - Blockers G8-LEGAL-001, G8-LEGAL-002, and G8-LEGAL-002-R2 permanently closed.
+  2. **W020-G9 Scope Strictly Restricted to Master Planning:**
+     - Implementation of W020-G9 is STRICTLY NOT AUTHORIZED.
+     - Zero product code, zero database DDL/DML, zero migrations, zero mobile edits, zero APK generation, zero production access.
+     - Anti-Scope-Expansion Rule enforced: no national election ingestion, bulk geography ingestion, or speculative constituency lineage.
+  3. **Authoring of PLAN-W020-G9-REV-1.0.md:**
+     - All 20 mandatory sections authored addressing: Current Accepted Architecture, Exact G9 Objective, Why G9 is Required, Existing Capability Inventory, Gap Analysis, Dependencies on W014–W020, Data/Source Requirements, Legal/Data-Governance Implications, Security Model, API/Service Impact, Mobile Impact, Persistence Requirements, Performance Implications, Failure/Degraded Semantics, Provenance Requirements, Testing Strategy (367 test target), Evidence Strategy, Rollback/Non-Destructive Strategy, Production Deployment Gates, and Explicit Scope Exclusions.
+     - Status: `DRAFT / SUBMITTED FOR CTO RATIFICATION`.
+  4. **Strict Non-Self-Ratification:**
+     - `ACCEPTANCE_REGISTER.md` records W020-G8 accepted at `f7fd1fa`. No G9 acceptance row is added.
+     - Execution halted awaiting written CTO review and implementation authorization.
+- **Milestone Gate Status:**
+  - W020-G8: **ACCEPTED / COMPLETE / CLOSED**.
+  - W020-G9: **PLANNING ONLY (SUBMITTED FOR CTO RATIFICATION; IMPLEMENTATION STRICTLY NOT AUTHORIZED)**.
