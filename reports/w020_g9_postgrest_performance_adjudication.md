@@ -27,11 +27,12 @@ In accordance with the CTO Directive *W020-G9 — POSTGREST PERFORMANCE GATE ADJ
 ### Adjudication Classification
 * **Classification**: **CASE 1: VERIFIED ENVIRONMENTAL LIMITATION**
 * **Technical Determination**:
-  The underlying PostgreSQL database engine and PostgREST server stack execute the query comfortably within the intended 50.0 ms performance budget:
+  Measured Supabase upstream-service time was 34.00 ms P95, within the 50 ms budget. This evidence does not independently decompose PostgreSQL execution time from all other upstream service processing:
   * **Measured Server-Side Execution Time** (Envoy Gateway + PostgREST + PostgreSQL via `x-envoy-upstream-service-time`):
-    * **Min: 1.0 ms**
-    * **P50: 2.0 ms**
-    * **P95: 34.0 ms** (Well below the 50.0 ms threshold!)
+    * **Min: 1.00 ms**
+    * **P50: 2.00 ms**
+    * **P95: 34.00 ms**
+    * **Max: 34.00 ms** (within the 50.0 ms budget)
   * **Pure External Network / WAN Overhead** ($\text{Total Round-Trip} - \text{Server Execution}$):
     * **P50: 409.8 ms**
     * **P95: 435.7 ms**
@@ -184,8 +185,8 @@ When establishing fresh non-keepalive HTTPS connections:
 
 The empirical evidence isolates the root cause of the benchmark failure:
 
-1. **Database & Server Performance (PASS)**:
-   PostgreSQL index lookup and PostgREST schema processing require between **1.0 ms and 34.0 ms** (P50: 2.0 ms, P95: 34.0 ms). The database/server stack easily satisfies the ratified `< 50.0 ms` performance budget.
+1. **Server-Side Upstream Timing (IN-BUDGET)**:
+   Measured Supabase upstream-service time was 34.00 ms P95 (Min: 1.00 ms, P50: 2.00 ms, P95: 34.00 ms, Max: 34.00 ms), placing measured server-side upstream execution within the 50 ms budget. This evidence does not independently decompose PostgreSQL execution time from all other upstream service processing.
 2. **Network Topology Constraint (ENVIRONMENTAL)**:
    The measured difference between client-observed round-trip latency and Envoy upstream-service time is predominantly attributable to the external network/edge path. The evidence does not isolate physical propagation delay alone. The remote runner-to-cloud topology acts as the primary environmental factor.
 3. **Threshold Applicability**:
@@ -221,11 +222,10 @@ The empirical evidence isolates the root cause of the benchmark failure:
 
 ## 9. Final Gate & Closure Status
 
-**W020-G9 — ACCEPTED WITH FORMAL ENVIRONMENTAL PERFORMANCE EXCEPTION**
+**W020-G9 — READY FOR FINAL CTO CLOSURE**
 
-* **Milestone Status**: **COMPLETE**
-* **Functional & Invariant Tests**: 367/367 checks **PASS** (100.0%)
+* **Verification Accounting**: 221/221 W020 verification-suite checks passed across 9 W020 suites. Together with 53 W018 invariant checks and 93 W019 invariant checks, the unified accounting total is 367/367 passing checks.
 * **External HTTP Benchmark**: **FAIL** (`P95 446.65 ms` against ratified `< 50.0 ms` target — preserved without relaxation or relabeling)
-* **Server-Side Timing**: **PASS / IN-BUDGET** (`P95 34.00 ms` within 50.0 ms budget)
+* **Server-Side Timing**: Measured Supabase upstream-service time was 34.00 ms P95, within the 50 ms budget. This evidence does not independently decompose PostgreSQL execution time from all other upstream service processing.
 * **CTO Exception**: Formally authorized by CTO under Case 1 (`VERIFIED ENVIRONMENTAL / NETWORK-TOPOLOGY LIMITATION`).
 * **W021 Status**: `NOT STARTED / REMAINS BLOCKED PENDING NEXT CTO AUTHORIZATION`.

@@ -7,9 +7,9 @@
 ## 1. Project & Execution Coordinates
 ```text
 PROJECT:               PANIN (formerly Kshetra)
-CURRENT_JOB:           W020-G9 (Verification Harness Hardening, Cross-Domain Audit Synthesis & Final Gate — ACCEPTED WITH FORMAL ENVIRONMENTAL PERFORMANCE EXCEPTION / COMPLETE)
-LAST_COMPLETED_JOB:    W020-G9 (Verification Harness Hardening, Cross-Domain Audit Synthesis & Final Gate — ACCEPTED / COMPLETE / CLOSED)
-NEXT_PERMITTED_JOB:    W021 PLANNING AUTHORIZATION (W021+ IMPLEMENTATION STRICTLY BLOCKED PENDING CTO AUTHORIZATION)
+CURRENT_JOB:           W020-G9 (Verification Harness Hardening, Cross-Domain Audit Synthesis & Final Gate — READY FOR FINAL CTO CLOSURE)
+LAST_COMPLETED_JOB:    W020-G8 (Delimitation Engine Foundation & Canonical Integration — ACCEPTED / COMPLETE / CLOSED)
+NEXT_PERMITTED_JOB:    FINAL CTO CLOSURE OF W020-G9 (W021+ STRICTLY NOT AUTHORIZED)
 
 W018_STATUS:           ACCEPTED / COMPLETE (Canonical Commit: 080344c580ad9df92586a7a0e68989fb50e7cf3d)
 W018_CTO_ACCEPTANCE:   GRANTED (2026-09-29)
@@ -33,7 +33,6 @@ W020_G6_PLAN:          PLAN-W020-G6-REV-1.1.md (RATIFIED, Commit 4c01c9ffe0b845f
 W020_G6_EVIDENCE:      reports/w020_g6_implementation_report.md, reports/w020_g6_implementation_report.json
 W020_G6_INVARIANTS:    27/27 PASS (tests/delimitation-g6-ingestion.test.mjs)
 W020_G6_REGRESSION:    G5 34/34, Jest 33/33, W018 53/53, W019 93/93, G4 23/23, Drift 9/9, Builds Clean
-
 W020_G7_STATUS:        ACCEPTED / COMPLETE / CLOSED (Accepted Commit: 65c32c8d62a3d5c4a42efe4adb6de5a6e8629fca / DEC-097)
 W020_G7_CTO_ACCEPTANCE: GRANTED (2026-09-30)
 W020_G7_PLAN:          PLAN-W020-G7-REV-1.1.md (RATIFIED by CTO, 2026-09-30)
@@ -41,7 +40,6 @@ W020_G7_EVIDENCE:      reports/w020_g7_implementation_report.md, reports/w020_g7
 W020_G7_INVARIANTS:    25/25 PASS (tests/delimitation-g7-query-surface.test.mjs)
 W020_G7_REGRESSION:    297/297 PASS (25 G7 + 27 G6 + 34 G5 + 33 API + 53 W018 + 93 W019 + 23 G4 + 9 Drift)
 W020_G7_BUILDS:        shared clean, api clean, mobile clean
-
 W020_G8_STATUS:        ACCEPTED / COMPLETE / CLOSED (Canonical Commit: f7fd1fa / DEC-103)
 W020_G8_CTO_ACCEPTANCE: GRANTED (2026-10-01)
 W020_G8_PLAN:          PLAN-W020-G8-REV-1.2.md (RATIFIED)
@@ -51,14 +49,14 @@ W020_G8_LEGAL_TESTS:   30/30 PASS (tests/delimitation-legal-applicability.test.m
 W020_G8_REGRESSION:    352/352 PASS (Baseline 322/322 + Legal Semantic 16/16 + Temporal Boundary 14/14 = 352/352 PASS; 100.0%)
 W020_G8_BUILDS:        shared clean, api clean, mobile clean
 
-W020_G9_STATUS:        ACCEPTED WITH FORMAL ENVIRONMENTAL PERFORMANCE EXCEPTION / COMPLETE (DEC-107)
-W020_G9_CTO_ACCEPTANCE: GRANTED (2026-10-01, With Environmental Performance Exception)
+W020_G9_STATUS:        READY FOR FINAL CTO CLOSURE (DEC-107)
+W020_G9_CTO_ACCEPTANCE: SUBMITTED FOR FINAL CTO REVIEW (NON-SELF-ACCEPTANCE INVARIANT ENFORCED)
 W020_G9_PLAN:          PLAN-W020-G9-REV-1.0.md (RATIFIED by CTO at Commit 30dc36d7a20b634c41c5e6c68e8d46dc4bda38f4)
 W020_G9_EVIDENCE:      reports/w020_master_audit_dossier.json, reports/w020_master_audit_dossier.md, reports/w020_g9_postgrest_performance_adjudication.md, reports/w020_g9_implementation_report.json, reports/w020_g9_governance_reconciliation.md
 W020_G9_RUNNER:        scripts/run-w020-master-battery.mjs (Unified Non-Destructive Master Verification Harness)
 W020_G9_E2E_BATTERY:   15/15 PASS (tests/delimitation-g9-master-e2e.test.mjs: Concurrency, ECC-001, Anti-Tamper, Provenance, Cross-Domain)
-W020_G9_MASTER_TOTAL:  221 Suite Checks (9 Suites) + 53 W018 + 93 W019 = 367 Total Passing Checks (100.0% Pass Rate)
-W020_G9_PERF_SUMMARY:  In-Memory Apportionment P95=0.065ms (PASS), Concurrency 50 P95=21.85ms (PASS), RSS Delta=4.26MB (PASS), Staging WAN PostgREST P95=446.65ms (FAIL - preserved without relaxation; Server Upstream P95=34.00ms IN-BUDGET; CTO Environmental Performance Exception Granted)
+W020_G9_MASTER_TOTAL:  221/221 W020 verification-suite checks passed across 9 W020 suites. Together with 53 W018 invariant checks and 93 W019 invariant checks, the unified accounting total is 367/367 passing checks
+W020_G9_PERF_SUMMARY:  In-Memory Apportionment P95=0.065ms (PASS), Concurrency 50 P95=21.85ms (PASS), RSS Delta=4.26MB (PASS), Staging WAN PostgREST P95=446.65ms (FAIL - preserved without relaxation; Measured Supabase upstream-service time was 34.00 ms P95 within 50 ms budget; this evidence does not independently decompose PostgreSQL execution time from all other upstream service processing; CTO Environmental Performance Exception Granted)
 W020_G9_BUILDS:        shared clean, api clean, mobile clean (frozen)
 
 W017_STATUS:           ACCEPTED / COMPLETE
@@ -370,7 +368,7 @@ REMOTE_SYNC:           Up to date with origin/master
 | **W020-G6** | Historical Delimitation Evidence Ingestion | **ACCEPTED / COMPLETE** | 2026-09-30 | Ingested AP Reorganisation Act 2014 & 2015 Order evidence; 27/27 invariants pass; DEC-093, DEC-094; CTO accepted at commit `ef32321` |
 | **W020-G7** | Delimitation Query Surface & Typed Selection | **ACCEPTED / COMPLETE** | 2026-09-30 | 5 typed query selection modes; 25/25 tests pass (297/297 regression); DEC-096, DEC-097; CTO accepted at commit `65c32c8` |
 | **W020-G8** | Delimitation Engine Foundation & Canonical Integration | **ACCEPTED / COMPLETE / CLOSED** | 2026-10-01 | Governed legal applicability catalog & W014 temporal validity; 352/352 tests pass (100.0%); DEC-103; CTO accepted at commit `f7fd1fa` |
-| **W020-G9** | Verification Harness Hardening & Cross-Domain Audit Synthesis | **ACCEPTED WITH FORMAL ENVIRONMENTAL PERFORMANCE EXCEPTION / COMPLETE** | 2026-10-01 | Unified non-destructive master runner `scripts/run-w020-master-battery.mjs`; 15/15 E2E checks pass; 367/367 functional checks pass (100.0%); benchmarks: in-memory apportionment P95=0.065ms (PASS), concurrency 50 P95=21.85ms (PASS), RSS delta=4.26MB (PASS), staging PostgREST lookup P95=446.65ms preserved as FAIL; server upstream P95=34.00ms within 50ms budget; closed with formal CTO Environmental Performance Exception (DEC-107); W021 remains blocked |
+| **W020-G9** | Verification Harness Hardening & Cross-Domain Audit Synthesis | **READY FOR FINAL CTO CLOSURE** | - | Unified non-destructive master runner `scripts/run-w020-master-battery.mjs`; 15/15 E2E checks pass; 221/221 W020 verification-suite checks passed across 9 W020 suites. Together with 53 W018 invariant checks and 93 W019 invariant checks, the unified accounting total is 367/367 passing checks; benchmarks: in-memory apportionment P95=0.065ms (PASS), concurrency 50 P95=21.85ms (PASS), RSS delta=4.26MB (PASS), staging PostgREST lookup P95=446.65ms preserved as FAIL; measured Supabase upstream-service time was 34.00 ms P95 within 50 ms budget (this evidence does not independently decompose PostgreSQL execution time from all other upstream service processing); environmental performance exception authorized by CTO under DEC-107; W021 remains blocked |
 | **W051** | API Customer Acquisition | NOT_STARTED | - | Commercial API/SaaS customer onboarding |
 | **W051.5** | Compliance, DPDP & Data Governance Readiness | NOT_STARTED | - | **NEW JOB (Amendment v1.2 Part 2)**: DPDP Act 2023, personal data inventory, retention, deletion, consent, 13-lang privacy UI. Owners: COMPLIANCE+ARCH+SEC |
 | **W052** | Professional Broadcast Architecture | NOT_STARTED | - | Studio broadcast ingestion and distribution |

@@ -2597,21 +2597,21 @@
      - Observed external HTTP benchmark remains `P95 = 446.65 ms`.
      - The external HTTP benchmark formally remains **FAIL** and is strictly not relabeled as PASS.
   2. **Server-Side Timing Qualification:**
-     - Controlled upstream-service timing (`x-envoy-upstream-service-time`) measured server-side execution at `P95 = 34.00 ms`, placing database and PostgREST engine execution within the 50 ms budget.
+     - Measured Supabase upstream-service time was 34.00 ms P95 (Min: 1.00 ms, P50: 2.00 ms, P95: 34.00 ms, Max: 34.00 ms), within the 50 ms budget. This evidence does not independently decompose PostgreSQL execution time from all other upstream service processing.
   3. **Verified Environmental Exception:**
      - The evidence does not establish a database/PostgREST server-side performance defect. The excess external latency (435.70 ms, representing 98.42% of observed P95 round trip) is predominantly attributable to the external network/edge path between the remote benchmark runner (India) and the cloud-hosted Supabase Staging origin.
      - CTO formally authorizes W020-G9 milestone closure under **Case 1: VERIFIED ENVIRONMENTAL LIMITATION**.
      - This exception does not modify the ratified performance target for future deployments or production architecture.
   4. **Functional & Invariant Completeness:**
-     - All 367 functional checks (9 suites: 221 suite checks + 53 W018 invariants + 93 W019 invariants) verified passing (100.0%).
+     - 221/221 W020 verification-suite checks passed across 9 W020 suites. Together with 53 W018 invariant checks and 93 W019 invariant checks, the unified accounting total is 367/367 passing checks.
      - All 15 cross-domain E2E assertions pass.
   5. **Air-Gap & Codebase Safety:**
      - Production (`ehfafcnimmjusyvplbah`) remained 100% air-gapped and untouched.
      - Zero migrations, zero DDL, zero DML executed against schema.
      - `apps/mobile/**` remained 100% frozen.
   6. **Next Permitted Milestone:**
-     - W020-G9 is formally **ACCEPTED / COMPLETE / CLOSED**.
+     - W020-G9 is **READY FOR FINAL CTO CLOSURE**.
      - W021 is **NOT STARTED / STRICTLY BLOCKED PENDING NEXT CTO AUTHORIZATION**.
 - **Milestone Gate Status:**
-  - W020-G9: **ACCEPTED WITH FORMAL ENVIRONMENTAL PERFORMANCE EXCEPTION / COMPLETE**.
+  - W020-G9: **READY FOR FINAL CTO CLOSURE**.
   - W021: **STRICTLY BLOCKED / NOT AUTHORIZED**.
