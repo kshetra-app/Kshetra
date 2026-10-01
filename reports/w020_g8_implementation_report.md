@@ -64,4 +64,4 @@ All test suites across the master regression battery, the legal applicability se
 3. `apps/api/src/services/delimitationQueryService.ts` — Implemented canonical query surface methods with legal applicability resolution, Governed Legal Rules Catalog, canonical W014 half-open temporal validity $[valid\_from, valid\_to)$, and historical timeline events.
 4. `apps/api/src/routes/delimitation.ts` — Wired `regimeId`, `proposalId`, and `date` query parameters into `/simulate/:stateCode`, preserving fail-closed error codes.
 5. `tests/delimitation-g8-integration.test.mjs` — Comprehensive 25-check integration test battery across 5 verification planes.
-6. `tests/delimitation-legal-applicability.test.mjs` — Comprehensive 23-check semantic test suite (Cases A through P for G8-LEGAL-001, Cases T1 through T7 for G8-LEGAL-002).
+6. `tests/delimitation-legal-applicability.test.mjs` — Comprehensive 30-check semantic test suite (Cases A through P for G8-LEGAL-001, Cases T1 through T5, T6-A through T6-H, and T7 for G8-LEGAL-002 & G8-LEGAL-002-R2).

@@ -2443,3 +2443,40 @@
 - **Milestone Gate Status:**
   - W020-G8: **SUBMITTED FOR CTO ACCEPTANCE REVIEW**.
   - W020-G9 and future features: **STRICTLY BLOCKED / NOT AUTHORIZED**.
+
+---
+
+### DEC-103: REMEDIATION CLOSURE FOR BLOCKER G8-LEGAL-002-R2 (TELANGANA TEMPORAL ORIGIN & SUCCESSOR-BOUNDARY SEMANTICS)
+- **Date:** 2026-10-01
+- **Status:** SUBMITTED / IMPLEMENTED (Pending CTO Acceptance Review)
+- **Authority:** CTO REMEDIATION DIRECTIVE — W020-G8-LEGAL-002-R2
+- **Context:** Bounded remediation executed resolving Blocker G8-LEGAL-002-R2. Corrected Telangana State Assembly rule in `GOVERNED_LEGAL_RULES` to reflect its true statutory origin on the appointed day (2 June 2014) under the Andhra Pradesh Reorganisation Act, 2014, replaced Case T5 with a legally valid open-ended interval test, and implemented full machine-verifiable proof of successor-boundary resolution semantics via tests T6-A through T6-H.
+- **Key Remediations & Technical Clarifications:**
+  1. **Telangana Temporal Origin Correction:**
+     - Added explicit catalog rule `RULE-CONST-ART170-TS` with `validFrom: '2014-06-02'` (appointed day of Andhra Pradesh Reorganisation Act, 2014, Section 17 read with Schedule XXXI; 119 seats).
+     - Added successor Andhra Pradesh rule `RULE-CONST-ART170-AP` with `validFrom: '2014-06-02'` (175 seats).
+     - Distinguishes territorial/state existence from general constitutional rules: Telangana did not exist as a State prior to 2 June 2014. Queries for TS with $asOfDate < 2014-06-02$ (e.g. 1975-08-15) strictly fail closed with `TEMPORAL_VALIDITY_MISMATCH`.
+  2. **Case T5 Open-Ended Semantic Replacement:**
+     - Case T5 tests open-ended validity ($validTo = NULL$) using a legally valid entity: Standard State Assembly under Article 170(1) ($validFrom: 1950-01-26$), proving applicability at $validFrom$ ($1950-01-26$), current day ($2024-01-01$), and far future ($2050-01-01$).
+     - Concurrently verifies that querying Telangana prior to $2014-06-02$ fails closed, respecting territorial enactment boundaries.
+  3. **Successor-Boundary Resolution Semantics Battery (T6-A through T6-H):**
+     - Case T6-A: Query at 2014-06-01 ($T_{boundary} - 1d$) selects historical AP composite rule (294 seats, $[2008-02-19, 2014-06-02)$).
+     - Case T6-B: Query at 2014-06-02 ($T_{boundary}$) shows historical composite AP rule expired (exclusive valid_to) and successor rules (TS: 119 seats, AP: 175 seats) active on the appointed day.
+     - Case T6-C: Query at 2014-06-03 ($T_{boundary} + 1d$) confirms successor rules remain active.
+     - Case T6-D: Coordinate equality: `old.validTo === successor.validFrom` (`'2014-06-02' === '2014-06-02'`).
+     - Case T6-E: `old.validTo` is strictly exclusive (throws `TEMPORAL_VALIDITY_MISMATCH` at $asOfDate == validTo$).
+     - Case T6-F: `successor.validFrom` is strictly inclusive (succeeds at $asOfDate == validFrom$).
+     - Case T6-G: Mutual exclusivity / zero overlap verified (no instant where both historical and successor rules are concurrently active).
+     - Case T6-H: Zero temporal gap verified across unbroken continuous statutory chain from 2008-02-19 through present day.
+  4. **Test Accounting Reconciliation:**
+     - Baseline Master Regression: 322 / 322 PASS (100.0%)
+     - Additional Legal Semantic Suite (Cases A–P): 16 / 16 PASS (100.0%)
+     - Additional Temporal Boundary Suite (Cases T1–T5, T6-A..T6-H, T7): 14 / 14 PASS (100.0%)
+     - Combined Total: 352 / 352 PASS (100.0%)
+  5. **Zero Persistence / Air-Gap Invariant Preserved:**
+     - 0 migrations, 0 DDL, 0 DML, 0 schema alterations.
+     - Staging PostGIS 589 geometry baseline unchanged (SHA-256 `f839fa02980318a8f35f932ebe72fa1d3ad6325dc86a624bf159d932fe5f613b`).
+     - Production strictly air-gapped and untouched; mobile codebase 100% frozen.
+- **Milestone Gate Status:**
+  - W020-G8: **SUBMITTED FOR CTO ACCEPTANCE REVIEW**.
+  - W020-G9 and future features: **STRICTLY BLOCKED / NOT AUTHORIZED**.

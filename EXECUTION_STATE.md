@@ -42,12 +42,12 @@ W020_G7_INVARIANTS:    25/25 PASS (tests/delimitation-g7-query-surface.test.mjs)
 W020_G7_REGRESSION:    297/297 PASS (25 G7 + 27 G6 + 34 G5 + 33 API + 53 W018 + 93 W019 + 23 G4 + 9 Drift)
 W020_G7_BUILDS:        shared clean, api clean, mobile clean
 
-W020_G8_STATUS:        SUBMITTED / IMPLEMENTED (G8-LEGAL-001 & G8-LEGAL-002 Remediations Completed; Pending CTO Acceptance Review)
+W020_G8_STATUS:        SUBMITTED / IMPLEMENTED (G8-LEGAL-001, G8-LEGAL-002 & G8-LEGAL-002-R2 Remediations Completed; Pending CTO Acceptance Review)
 W020_G8_PLAN:          PLAN-W020-G8-REV-1.2.md (RATIFIED)
 W020_G8_EVIDENCE:      reports/w020_g8_legal_applicability_remediation.md, reports/w020_g8_implementation_report.md, reports/w020_g8_implementation_report.json
 W020_G8_INVARIANTS:    25/25 PASS (tests/delimitation-g8-integration.test.mjs)
-W020_G8_LEGAL_TESTS:   23/23 PASS (tests/delimitation-legal-applicability.test.mjs: 16 legal semantic + 7 temporal boundary)
-W020_G8_REGRESSION:    345/345 PASS (Baseline 322/322 + Legal Semantic 16/16 + Temporal Boundary 7/7 = 345/345 PASS; 100.0%)
+W020_G8_LEGAL_TESTS:   30/30 PASS (tests/delimitation-legal-applicability.test.mjs: 16 legal semantic + 14 temporal boundary)
+W020_G8_REGRESSION:    352/352 PASS (Baseline 322/322 + Legal Semantic 16/16 + Temporal Boundary 14/14 = 352/352 PASS; 100.0%)
 W020_G8_BUILDS:        shared clean, api clean, mobile clean
 W020_G8_AUTHORIZATION: BOUNDED IMPLEMENTATION & REMEDIATION COMPLETED (W020-G9 STRICTLY BLOCKED)
 

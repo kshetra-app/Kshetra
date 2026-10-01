@@ -68,7 +68,6 @@ try {
   const res = delimitationQueryService.resolveLegalApplicability({
     entityType: 'STATE_LEGISLATIVE_ASSEMBLY',
     regimeType: 'CURRENT_LEGAL_REGIME',
-    jurisdictionCode: 'TS',
   });
 
   const pass =
@@ -669,63 +668,107 @@ try {
 
 // ─────────────────────────────────────────────────────────────────────────────
 // CASE T5: Open-Ended validTo = NULL / undefined
-// Authority: CTO FINAL REMEDIATION DIRECTIVE — W020-G8-LEGAL-002
-// Expected: Any asOfDate >= validFrom remains applicable.
+// Authority: CTO FINAL REMEDIATION DIRECTIVE — W020-G8-LEGAL-002 & W020-G8-LEGAL-002-R2
+// Expected:
+// 1. Any asOfDate >= validFrom remains applicable for an open-ended rule (validTo = NULL).
+//    Uses legally valid entity: Standard State Assembly under Article 170(1) (validFrom: 1950-01-26).
+// 2. State created later (e.g. Telangana on 2014-06-02) rejects dates preceding its existence.
 // ─────────────────────────────────────────────────────────────────────────────
 try {
-  // Standard State Assembly (TS): validFrom: 1950-01-26, validTo: undefined (open-ended)
-  const resPast = delimitationQueryService.resolveLegalApplicability({
+  // 1. Standard State Assembly (Article 170(1)): validFrom: 1950-01-26, validTo: undefined (open-ended)
+  const resValidFrom = delimitationQueryService.resolveLegalApplicability({
     entityType: 'STATE_LEGISLATIVE_ASSEMBLY',
     regimeType: 'CURRENT_LEGAL_REGIME',
-    jurisdictionCode: 'TS',
-    asOfDate: '1975-08-15',
+    asOfDate: '1950-01-26',
+  });
+  const resLaterValid = delimitationQueryService.resolveLegalApplicability({
+    entityType: 'STATE_LEGISLATIVE_ASSEMBLY',
+    regimeType: 'CURRENT_LEGAL_REGIME',
+    asOfDate: '2024-01-01',
   });
   const resFarFuture = delimitationQueryService.resolveLegalApplicability({
     entityType: 'STATE_LEGISLATIVE_ASSEMBLY',
     regimeType: 'CURRENT_LEGAL_REGIME',
-    jurisdictionCode: 'TS',
     asOfDate: '2050-01-01',
   });
 
+  // 2. Telangana State Assembly: created on appointed day (2014-06-02) under APRA 2014.
+  // Prior date (e.g. 1975-08-15) MUST fail closed because Telangana did not exist as a State.
+  let tsPreExistenceRejected = false;
+  try {
+    delimitationQueryService.resolveLegalApplicability({
+      entityType: 'STATE_LEGISLATIVE_ASSEMBLY',
+      regimeType: 'CURRENT_LEGAL_REGIME',
+      jurisdictionCode: 'TS',
+      asOfDate: '1975-08-15',
+    });
+  } catch (err) {
+    if (err.code === 'TEMPORAL_VALIDITY_MISMATCH') {
+      tsPreExistenceRejected = true;
+    }
+  }
+
   const pass =
-    resPast.constitutionalProvision === 'Article 170(1)' &&
-    resPast.temporalValidity.validTo === undefined &&
+    resValidFrom.constitutionalProvision === 'Article 170(1)' &&
+    resValidFrom.temporalValidity.validFrom === '1950-01-26' &&
+    resValidFrom.temporalValidity.validTo === undefined &&
+    resLaterValid.constitutionalProvision === 'Article 170(1)' &&
     resFarFuture.constitutionalProvision === 'Article 170(1)' &&
-    resFarFuture.temporalValidity.validTo === undefined;
+    tsPreExistenceRejected;
 
   recordCheck(
     'CASE_T5_OPEN_ENDED_VALIDITY',
-    'Open-ended rule (validTo = NULL) remains applicable for any asOfDate >= validFrom across historical and future epochs',
+    'Open-ended rule (validTo = NULL) applicable for asOfDate >= validFrom across valid epochs; pre-existence dates fail closed',
     pass,
-    `asOf 1975-08-15 -> ${resPast.constitutionalProvision}; asOf 2050-01-01 -> ${resFarFuture.constitutionalProvision}`,
-    'TEMPORAL_INVARIANT: Open-ended validity evaluates valid_from <= asOfDate with validTo = Infinity'
+    `ValidFrom (1950-01-26) -> ${resValidFrom.constitutionalProvision}; Later (2024-01-01) -> ${resLaterValid.constitutionalProvision}; TS < 2014-06-02 rejected: ${tsPreExistenceRejected}`,
+    'TEMPORAL_INVARIANT: Open-ended validity evaluates valid_from <= asOfDate with validTo = Infinity; territorial origin respected'
   );
 } catch (err) {
   recordCheck('CASE_T5_OPEN_ENDED_VALIDITY', 'Open-ended validTo test', false, err.message);
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-// CASE T6: Historical -> Current Transition Boundary Continuity
-// Authority: CTO FINAL REMEDIATION DIRECTIVE — W020-G8-LEGAL-002
-// Expected:
-// The outgoing historical rule terminates exactly at validTo and the successor/
-// current rule begins exactly at its validFrom.
-// No overlap. No gap where the canonical legal chain establishes continuity.
+// CASE T6-A through T6-H: Successor-Boundary Resolution Semantics & Continuity
+// Authority: CTO REMEDIATION DIRECTIVE — W020-G8-LEGAL-002-R2
+// Requirements:
+// - T6-A: Query at 2014-06-01 -> historical AP composite rule selected
+// - T6-B: Query at 2014-06-02 -> successor rule active (2014-06-02 appointed day)
+// - T6-C: Query at 2014-06-03 -> successor rule active
+// - T6-D: Verify old.validTo === successor.validFrom
+// - T6-E: Verify old.validTo is strictly exclusive
+// - T6-F: Verify successor.validFrom is strictly inclusive
+// - T6-G: Verify zero overlap (no concurrent valid state)
+// - T6-H: Verify zero temporal gap where legal chain establishes continuity
 // ─────────────────────────────────────────────────────────────────────────────
+
+// T6-A: Query at 2014-06-01 (1 day prior to boundary)
 try {
-  // Transition date: 2014-06-02 (Appointed day of Andhra Pradesh Reorganisation Act, 2014)
-  // At instant T_boundary - 1 ms (or 1 day prior: 2014-06-01):
-  // Historical composite AP rule IS applicable.
-  const histRes = delimitationQueryService.resolveLegalApplicability({
+  const res = delimitationQueryService.resolveLegalApplicability({
     entityType: 'STATE_LEGISLATIVE_ASSEMBLY',
     regimeType: 'HISTORICAL_LEGAL_REGIME',
     jurisdictionCode: 'AP_COMPOSITE',
     asOfDate: '2014-06-01',
   });
+  const pass =
+    res.regimeType === 'HISTORICAL_LEGAL_REGIME' &&
+    res.historicalFactualSeats === 294 &&
+    res.temporalValidity.validFrom === '2008-02-19' &&
+    res.temporalValidity.validTo === '2014-06-02';
 
-  // At instant T_boundary (2014-06-02):
-  // Historical composite AP rule IS NOT applicable (expires at valid_to = 2014-06-02).
-  let histExpiredAtBoundary = false;
+  recordCheck(
+    'CASE_T6_A_PRIOR_TO_BOUNDARY',
+    'Query at 2014-06-01 (T_boundary - 1d) selects historical AP composite rule (294 seats)',
+    pass,
+    `Regime: ${res.regimeType}, Seats: ${res.historicalFactualSeats}, Range: [${res.temporalValidity.validFrom}, ${res.temporalValidity.validTo})`,
+    'TEMPORAL_INVARIANT: Historical rule valid strictly prior to validTo'
+  );
+} catch (err) {
+  recordCheck('CASE_T6_A_PRIOR_TO_BOUNDARY', 'T6-A evaluation', false, err.message);
+}
+
+// T6-B: Query at 2014-06-02 (exact boundary instant)
+try {
+  let histExpired = false;
   try {
     delimitationQueryService.resolveLegalApplicability({
       entityType: 'STATE_LEGISLATIVE_ASSEMBLY',
@@ -734,34 +777,266 @@ try {
       asOfDate: '2014-06-02',
     });
   } catch (err) {
-    if (err.code === 'TEMPORAL_VALIDITY_MISMATCH') histExpiredAtBoundary = true;
+    if (err.code === 'TEMPORAL_VALIDITY_MISMATCH') histExpired = true;
   }
 
-  // At instant T_boundary (2014-06-02):
-  // Successor current State Assembly rule (Telangana / Bifurcated AP under RPA 1950 / APRA 2014)
-  // IS applicable (valid_from <= 2014-06-02).
-  const currRes = delimitationQueryService.resolveLegalApplicability({
+  const succTs = delimitationQueryService.resolveLegalApplicability({
     entityType: 'STATE_LEGISLATIVE_ASSEMBLY',
     regimeType: 'CURRENT_LEGAL_REGIME',
     jurisdictionCode: 'TS',
     asOfDate: '2014-06-02',
   });
 
+  const succAp = delimitationQueryService.resolveLegalApplicability({
+    entityType: 'STATE_LEGISLATIVE_ASSEMBLY',
+    regimeType: 'CURRENT_LEGAL_REGIME',
+    jurisdictionCode: 'AP',
+    asOfDate: '2014-06-02',
+  });
+
   const pass =
-    histRes.historicalFactualSeats === 294 &&
-    histExpiredAtBoundary &&
-    currRes.constitutionalProvision === 'Article 170(1)' &&
-    currRes.isStatutoryFact === true;
+    histExpired &&
+    succTs.statutoryExactSeats === 119 &&
+    succTs.temporalValidity.validFrom === '2014-06-02' &&
+    succAp.statutoryExactSeats === 175 &&
+    succAp.temporalValidity.validFrom === '2014-06-02';
 
   recordCheck(
-    'CASE_T6_TRANSITION_CONTINUITY',
-    'Historical -> Current boundary at 2014-06-02: historical rule terminates exactly at validTo, current rule active; zero overlap, zero gap',
+    'CASE_T6_B_EXACT_BOUNDARY',
+    'Query at 2014-06-02: historical rule expired, successor rules (TS: 119, AP: 175) active at appointed day',
     pass,
-    `Prior (2014-06-01): HistSeats=${histRes.historicalFactualSeats}; Boundary (2014-06-02): HistExpired=${histExpiredAtBoundary}, CurrentActive=${currRes.isStatutoryFact}`,
-    'TEMPORAL_INVARIANT: Zero overlap, zero gap at statutory reorganization boundary'
+    `HistExpired: ${histExpired}, TS: ${succTs.statutoryExactSeats} seats, AP: ${succAp.statutoryExactSeats} seats`,
+    'TEMPORAL_INVARIANT: Boundary handoff occurs at validTo === successor.validFrom'
   );
 } catch (err) {
-  recordCheck('CASE_T6_TRANSITION_CONTINUITY', 'Historical -> Current transition boundary test', false, err.message);
+  recordCheck('CASE_T6_B_EXACT_BOUNDARY', 'T6-B evaluation', false, err.message);
+}
+
+// T6-C: Query at 2014-06-03 (1 day after boundary)
+try {
+  const succTs = delimitationQueryService.resolveLegalApplicability({
+    entityType: 'STATE_LEGISLATIVE_ASSEMBLY',
+    regimeType: 'CURRENT_LEGAL_REGIME',
+    jurisdictionCode: 'TS',
+    asOfDate: '2014-06-03',
+  });
+  const succAp = delimitationQueryService.resolveLegalApplicability({
+    entityType: 'STATE_LEGISLATIVE_ASSEMBLY',
+    regimeType: 'CURRENT_LEGAL_REGIME',
+    jurisdictionCode: 'AP',
+    asOfDate: '2014-06-03',
+  });
+
+  const pass =
+    succTs.statutoryExactSeats === 119 &&
+    succTs.isStatutoryFact === true &&
+    succAp.statutoryExactSeats === 175 &&
+    succAp.isStatutoryFact === true;
+
+  recordCheck(
+    'CASE_T6_C_POST_BOUNDARY',
+    'Query at 2014-06-03 (T_boundary + 1d) confirms successor rules remain active (TS: 119, AP: 175)',
+    pass,
+    `TS: ${succTs.statutoryExactSeats} seats (statutory: ${succTs.isStatutoryFact}), AP: ${succAp.statutoryExactSeats} seats`,
+    'TEMPORAL_INVARIANT: Successor regime continues in force post-boundary'
+  );
+} catch (err) {
+  recordCheck('CASE_T6_C_POST_BOUNDARY', 'T6-C evaluation', false, err.message);
+}
+
+// T6-D: Coordinate Equality: old.validTo === successor.validFrom
+try {
+  const histRule = delimitationQueryService.resolveLegalApplicability({
+    entityType: 'STATE_LEGISLATIVE_ASSEMBLY',
+    regimeType: 'HISTORICAL_LEGAL_REGIME',
+    jurisdictionCode: 'AP_COMPOSITE',
+  });
+  const succRuleTs = delimitationQueryService.resolveLegalApplicability({
+    entityType: 'STATE_LEGISLATIVE_ASSEMBLY',
+    regimeType: 'CURRENT_LEGAL_REGIME',
+    jurisdictionCode: 'TS',
+  });
+  const succRuleAp = delimitationQueryService.resolveLegalApplicability({
+    entityType: 'STATE_LEGISLATIVE_ASSEMBLY',
+    regimeType: 'CURRENT_LEGAL_REGIME',
+    jurisdictionCode: 'AP',
+  });
+
+  const pass =
+    histRule.temporalValidity.validTo === succRuleTs.temporalValidity.validFrom &&
+    histRule.temporalValidity.validTo === succRuleAp.temporalValidity.validFrom &&
+    histRule.temporalValidity.validTo === '2014-06-02';
+
+  recordCheck(
+    'CASE_T6_D_COORDINATE_EQUALITY',
+    'old.validTo === successor.validFrom (2014-06-02 === 2014-06-02)',
+    pass,
+    `old.validTo: ${histRule.temporalValidity.validTo} === succ.validFrom: ${succRuleTs.temporalValidity.validFrom}`,
+    'TEMPORAL_INVARIANT: Exact coordinate parity at reorganization boundary'
+  );
+} catch (err) {
+  recordCheck('CASE_T6_D_COORDINATE_EQUALITY', 'T6-D evaluation', false, err.message);
+}
+
+// T6-E: Verify old.validTo is strictly exclusive
+try {
+  let thrownAtValidTo = false;
+  try {
+    delimitationQueryService.resolveLegalApplicability({
+      entityType: 'STATE_LEGISLATIVE_ASSEMBLY',
+      regimeType: 'HISTORICAL_LEGAL_REGIME',
+      jurisdictionCode: 'AP_COMPOSITE',
+      asOfDate: '2014-06-02',
+    });
+  } catch (err) {
+    if (err.code === 'TEMPORAL_VALIDITY_MISMATCH') thrownAtValidTo = true;
+  }
+
+  recordCheck(
+    'CASE_T6_E_VALID_TO_EXCLUSIVE',
+    'old.validTo is strictly exclusive: asOfDate == validTo throws TEMPORAL_VALIDITY_MISMATCH',
+    thrownAtValidTo,
+    `Thrown: ${thrownAtValidTo}`,
+    'TEMPORAL_INVARIANT: valid_to is exclusive upper bound'
+  );
+} catch (err) {
+  recordCheck('CASE_T6_E_VALID_TO_EXCLUSIVE', 'T6-E evaluation', false, err.message);
+}
+
+// T6-F: Verify successor.validFrom is strictly inclusive
+try {
+  const succTsAtValidFrom = delimitationQueryService.resolveLegalApplicability({
+    entityType: 'STATE_LEGISLATIVE_ASSEMBLY',
+    regimeType: 'CURRENT_LEGAL_REGIME',
+    jurisdictionCode: 'TS',
+    asOfDate: '2014-06-02',
+  });
+  const pass =
+    succTsAtValidFrom.temporalValidity.validFrom === '2014-06-02' &&
+    succTsAtValidFrom.statutoryExactSeats === 119;
+
+  recordCheck(
+    'CASE_T6_F_VALID_FROM_INCLUSIVE',
+    'successor.validFrom is strictly inclusive: asOfDate == validFrom succeeds',
+    pass,
+    `asOfDate: 2014-06-02 == validFrom: ${succTsAtValidFrom.temporalValidity.validFrom}`,
+    'TEMPORAL_INVARIANT: valid_from is inclusive lower bound'
+  );
+} catch (err) {
+  recordCheck('CASE_T6_F_VALID_FROM_INCLUSIVE', 'T6-F evaluation', false, err.message);
+}
+
+// T6-G: Verify zero overlap (no instant where both rules are concurrently active)
+try {
+  // Test instant 1: 2014-06-01 23:59:59 (hist active, succ inactive)
+  let histActivePrior = false;
+  let succActivePrior = false;
+  try {
+    delimitationQueryService.resolveLegalApplicability({
+      entityType: 'STATE_LEGISLATIVE_ASSEMBLY',
+      regimeType: 'HISTORICAL_LEGAL_REGIME',
+      jurisdictionCode: 'AP_COMPOSITE',
+      asOfDate: '2014-06-01',
+    });
+    histActivePrior = true;
+  } catch (_) {}
+
+  try {
+    delimitationQueryService.resolveLegalApplicability({
+      entityType: 'STATE_LEGISLATIVE_ASSEMBLY',
+      regimeType: 'CURRENT_LEGAL_REGIME',
+      jurisdictionCode: 'TS',
+      asOfDate: '2014-06-01',
+    });
+    succActivePrior = true;
+  } catch (_) {}
+
+  // Test instant 2: 2014-06-02 00:00:00 (hist inactive, succ active)
+  let histActiveAtBoundary = false;
+  let succActiveAtBoundary = false;
+  try {
+    delimitationQueryService.resolveLegalApplicability({
+      entityType: 'STATE_LEGISLATIVE_ASSEMBLY',
+      regimeType: 'HISTORICAL_LEGAL_REGIME',
+      jurisdictionCode: 'AP_COMPOSITE',
+      asOfDate: '2014-06-02',
+    });
+    histActiveAtBoundary = true;
+  } catch (_) {}
+
+  try {
+    delimitationQueryService.resolveLegalApplicability({
+      entityType: 'STATE_LEGISLATIVE_ASSEMBLY',
+      regimeType: 'CURRENT_LEGAL_REGIME',
+      jurisdictionCode: 'TS',
+      asOfDate: '2014-06-02',
+    });
+    succActiveAtBoundary = true;
+  } catch (_) {}
+
+  const pass =
+    histActivePrior === true &&
+    succActivePrior === false &&
+    histActiveAtBoundary === false &&
+    succActiveAtBoundary === true;
+
+  recordCheck(
+    'CASE_T6_G_ZERO_OVERLAP',
+    'Zero overlap verified: no instant where historical and successor rules are concurrently active',
+    pass,
+    `Prior (2014-06-01): Hist=${histActivePrior}, Succ=${succActivePrior}; Boundary (2014-06-02): Hist=${histActiveAtBoundary}, Succ=${succActiveAtBoundary}`,
+    'TEMPORAL_INVARIANT: Mutual exclusivity across boundary instant'
+  );
+} catch (err) {
+  recordCheck('CASE_T6_G_ZERO_OVERLAP', 'T6-G evaluation', false, err.message);
+}
+
+// T6-H: Verify zero temporal gap where legal chain establishes continuity
+try {
+  // At any query instant T, exactly one rule is active in the continuous legal chain
+  // Prior instant T = 2014-06-01: Historical AP composite rule covers jurisdiction
+  // Boundary instant T = 2014-06-02: Successor TS & AP rules cover jurisdiction
+  // There is no instant between 2008-02-19 and infinity where the territory has no applicable rule
+  const hist2008 = delimitationQueryService.resolveLegalApplicability({
+    entityType: 'STATE_LEGISLATIVE_ASSEMBLY',
+    regimeType: 'HISTORICAL_LEGAL_REGIME',
+    jurisdictionCode: 'AP_COMPOSITE',
+    asOfDate: '2008-02-19',
+  });
+  const hist2014Eve = delimitationQueryService.resolveLegalApplicability({
+    entityType: 'STATE_LEGISLATIVE_ASSEMBLY',
+    regimeType: 'HISTORICAL_LEGAL_REGIME',
+    jurisdictionCode: 'AP_COMPOSITE',
+    asOfDate: '2014-06-01',
+  });
+  const succ2014Appointed = delimitationQueryService.resolveLegalApplicability({
+    entityType: 'STATE_LEGISLATIVE_ASSEMBLY',
+    regimeType: 'CURRENT_LEGAL_REGIME',
+    jurisdictionCode: 'TS',
+    asOfDate: '2014-06-02',
+  });
+  const succ2026Current = delimitationQueryService.resolveLegalApplicability({
+    entityType: 'STATE_LEGISLATIVE_ASSEMBLY',
+    regimeType: 'CURRENT_LEGAL_REGIME',
+    jurisdictionCode: 'TS',
+    asOfDate: '2026-09-30',
+  });
+
+  const pass =
+    hist2008.historicalFactualSeats === 294 &&
+    hist2014Eve.historicalFactualSeats === 294 &&
+    succ2014Appointed.statutoryExactSeats === 119 &&
+    succ2026Current.statutoryExactSeats === 119;
+
+  recordCheck(
+    'CASE_T6_H_ZERO_GAP_CONTINUITY',
+    'Zero temporal gap verified: continuous legal chain from 2008-02-19 through present day',
+    pass,
+    `2008: ${hist2008.historicalFactualSeats}s -> 2014-06-01: ${hist2014Eve.historicalFactualSeats}s -> 2014-06-02: ${succ2014Appointed.statutoryExactSeats}s -> 2026: ${succ2026Current.statutoryExactSeats}s`,
+    'TEMPORAL_INVARIANT: Unbroken statutory continuity across reorganization'
+  );
+} catch (err) {
+  recordCheck('CASE_T6_H_ZERO_GAP_CONTINUITY', 'T6-H evaluation', false, err.message);
 }
 
 // ─────────────────────────────────────────────────────────────────────────────

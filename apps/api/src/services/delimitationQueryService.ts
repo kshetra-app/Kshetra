@@ -812,6 +812,52 @@ export class DelimitationQueryService {
       historicalFactualSeats: 294,
       isStatutoryFact: true,
     },
+    // Rule 8: State Legislative Assembly of Telangana (Created on 2 June 2014 under APRA 2014)
+    {
+      ruleId: 'RULE-CONST-ART170-TS',
+      entityType: 'STATE_LEGISLATIVE_ASSEMBLY',
+      jurisdictionCode: 'TS',
+      regimeApplicability: ['CURRENT_LEGAL_REGIME'],
+      constitutionalProvision: 'Article 170(1)',
+      statutoryProvision: 'Andhra Pradesh Reorganisation Act, 2014 (Section 17 read with Schedule XXXI)',
+      temporalValidity: { validFrom: '2014-06-02', isCurrent: true },
+      provenance: {
+        sourceAuthority: 'Parliament of India / Ministry of Home Affairs',
+        citation:
+          'Andhra Pradesh Reorganisation Act, 2014 (Act No. 6 of 2014), Section 17: Allocation of 119 seats to the Legislative Assembly of the State of Telangana on the appointed day (2 June 2014).',
+        instrumentTitle: 'Andhra Pradesh Reorganisation Act, 2014 (Act No. 6 of 2014)',
+        evidenceReference: 'MHA-ACT-2014-6-TS',
+        gazetteNotification: 'Act No. 6 of 2014',
+      },
+      constitutionalFloor: 60,
+      constitutionalCeiling: 500,
+      statutoryExactSeats: 119,
+      currentFactualSeats: 119,
+      isStatutoryFact: true,
+    },
+    // Rule 9: Successor State Legislative Assembly of Andhra Pradesh (Post-Bifurcation from 2 June 2014)
+    {
+      ruleId: 'RULE-CONST-ART170-AP',
+      entityType: 'STATE_LEGISLATIVE_ASSEMBLY',
+      jurisdictionCode: 'AP',
+      regimeApplicability: ['CURRENT_LEGAL_REGIME'],
+      constitutionalProvision: 'Article 170(1)',
+      statutoryProvision: 'Andhra Pradesh Reorganisation Act, 2014 (Section 17)',
+      temporalValidity: { validFrom: '2014-06-02', isCurrent: true },
+      provenance: {
+        sourceAuthority: 'Parliament of India / Ministry of Home Affairs',
+        citation:
+          'Andhra Pradesh Reorganisation Act, 2014 (Act No. 6 of 2014), Section 17: Allocation of 175 seats to the Legislative Assembly of the successor State of Andhra Pradesh on the appointed day (2 June 2014).',
+        instrumentTitle: 'Andhra Pradesh Reorganisation Act, 2014 (Act No. 6 of 2014)',
+        evidenceReference: 'MHA-ACT-2014-6-AP',
+        gazetteNotification: 'Act No. 6 of 2014',
+      },
+      constitutionalFloor: 60,
+      constitutionalCeiling: 500,
+      statutoryExactSeats: 175,
+      currentFactualSeats: 175,
+      isStatutoryFact: true,
+    },
   ];
 
   /**
@@ -907,21 +953,23 @@ export class DelimitationQueryService {
     }
 
     // Lookup matching rule from the Governed Legal Rules Catalog by legal context
-    // 1. First attempt exact match on (entityType, jurisdictionCode, regimeType)
-    let matchedRule = DelimitationQueryService.GOVERNED_LEGAL_RULES.find((rule) => {
+    // 1. Gather candidate rules matching entityType and regimeApplicability
+    const candidateRules = DelimitationQueryService.GOVERNED_LEGAL_RULES.filter((rule) => {
       if (rule.entityType !== entityType) return false;
       if (!rule.regimeApplicability.includes(regimeType)) return false;
-      if (normJurisdiction && rule.jurisdictionCode && rule.jurisdictionCode === normJurisdiction) return true;
-      return false;
+      return true;
     });
 
-    // 2. Fall back to generic entity rule (no jurisdiction filter) within the regime
+    let matchedRule: (typeof DelimitationQueryService.GOVERNED_LEGAL_RULES)[0] | undefined;
+
+    // First: exact match on jurisdictionCode within the regime
+    if (normJurisdiction) {
+      matchedRule = candidateRules.find((r) => r.jurisdictionCode === normJurisdiction);
+    }
+
+    // Second: fallback to generic entity rule (no jurisdiction filter) within regime
     if (!matchedRule) {
-      matchedRule = DelimitationQueryService.GOVERNED_LEGAL_RULES.find((rule) => {
-        if (rule.entityType !== entityType) return false;
-        if (!rule.regimeApplicability.includes(regimeType)) return false;
-        return !rule.jurisdictionCode;
-      });
+      matchedRule = candidateRules.find((r) => !r.jurisdictionCode);
     }
 
     // Case I: Missing legal evidence / uncataloged combination -> Fail closed
@@ -935,7 +983,7 @@ export class DelimitationQueryService {
       );
     }
 
-    // Coordinate 5: Temporal Validity Verification (Cases K & L)
+    // Coordinate 5: Temporal Validity Verification (Cases K & L, T1-T4)
     if (asOfDate) {
       const queryTime = new Date(asOfDate).getTime();
       const validFromTime = new Date(matchedRule.temporalValidity.validFrom).getTime();

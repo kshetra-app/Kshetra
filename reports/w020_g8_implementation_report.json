@@ -1,7 +1,7 @@
 {
   "gate": "W020-G8",
-  "title": "Delimitation Engine Foundation & Canonical Integration Report (Remediated for G8-LEGAL-001 & G8-LEGAL-002)",
-  "executionTimestamp": "2026-10-01T05:31:00.000Z",
+  "title": "Delimitation Engine Foundation & Canonical Integration Report (Remediated for G8-LEGAL-001, G8-LEGAL-002 & G8-LEGAL-002-R2)",
+  "executionTimestamp": "2026-10-01T05:50:00.000Z",
   "stagingTarget": "panIN-staging (fkpigozcqnmcvofuksar)",
   "productionStatus": "AIR-GAPPED & UNTOUCHED (ehfafcnimmjusyvplbah)",
   "geometryDigest": "f839fa02980318a8f35f932ebe72fa1d3ad6325dc86a624bf159d932fe5f613b",
@@ -11,9 +11,9 @@
   "regressionBattery": {
     "baselineChecks": 322,
     "additionalLegalSemanticChecks": 16,
-    "additionalTemporalBoundaryChecks": 7,
-    "totalChecks": 345,
-    "passedChecks": 345,
+    "additionalTemporalBoundaryChecks": 14,
+    "totalChecks": 352,
+    "passedChecks": 352,
     "failedChecks": 0,
     "passRate": "100.0%",
     "suites": [
@@ -26,7 +26,7 @@
       { "name": "W020-G7 Query Surface", "file": "tests/delimitation-g7-query-surface.test.mjs", "checks": 25, "status": "PASS" },
       { "name": "API Contract Drift", "file": "scripts/check-api-contract-drift.mjs", "checks": 9, "status": "PASS" },
       { "name": "W020-G8 Integration Battery", "file": "tests/delimitation-g8-integration.test.mjs", "checks": 25, "status": "PASS" },
-      { "name": "G8-LEGAL-001 & G8-LEGAL-002 Semantic & Temporal Suite", "file": "tests/delimitation-legal-applicability.test.mjs", "checks": 23, "status": "PASS" }
+      { "name": "G8-LEGAL-001 & G8-LEGAL-002-R2 Semantic & Temporal Suite", "file": "tests/delimitation-legal-applicability.test.mjs", "checks": 30, "status": "PASS" }
     ]
   },
   "legalApplicabilitySemanticCases": [
@@ -51,13 +51,19 @@
     { "id": "CASE_T3_UPPER_BOUND_EXACT_EXPIRY", "asOfDate": "2014-06-02", "validTo": "2014-06-02", "error": "TEMPORAL_VALIDITY_MISMATCH", "status": "PASS" },
     { "id": "CASE_T4_UPPER_BOUND_POST_EXPIRY", "asOfDate": "2014-06-03", "validTo": "2014-06-02", "error": "TEMPORAL_VALIDITY_MISMATCH", "status": "PASS" },
     { "id": "CASE_T5_OPEN_ENDED_VALIDITY", "validTo": null, "status": "PASS" },
-    { "id": "CASE_T6_TRANSITION_CONTINUITY", "boundaryDate": "2014-06-02", "status": "PASS" },
+    { "id": "CASE_T6_A_PRIOR_TO_BOUNDARY", "asOfDate": "2014-06-01", "status": "PASS" },
+    { "id": "CASE_T6_B_EXACT_BOUNDARY", "asOfDate": "2014-06-02", "status": "PASS" },
+    { "id": "CASE_T6_C_POST_BOUNDARY", "asOfDate": "2014-06-03", "status": "PASS" },
+    { "id": "CASE_T6_D_COORDINATE_EQUALITY", "status": "PASS" },
+    { "id": "CASE_T6_E_VALID_TO_EXCLUSIVE", "status": "PASS" },
+    { "id": "CASE_T6_F_VALID_FROM_INCLUSIVE", "status": "PASS" },
+    { "id": "CASE_T6_G_ZERO_OVERLAP", "status": "PASS" },
+    { "id": "CASE_T6_H_ZERO_GAP_CONTINUITY", "status": "PASS" },
     { "id": "CASE_T7_FUTURE_ANTICIPATED_ISOLATION", "regime": "FUTURE_ANTICIPATED_REGIME", "status": "PASS" }
   ],
   "builds": {
     "packagesShared": "PASS",
     "appsApi": "PASS",
     "appsMobile": "PASS"
-  },
-  "verdict": "PASS"
+  }
 }
