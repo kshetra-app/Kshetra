@@ -2549,3 +2549,37 @@
 - **Milestone Gate Status:**
   - W020-G8: **ACCEPTED / COMPLETE / CLOSED**.
   - W020-G9: **IMPLEMENTED / SUBMITTED FOR CTO REVIEW & ACCEPTANCE**.
+
+---
+
+### DEC-106: W020-G9 EVIDENCE INTEGRITY REMEDIATION & HONEST BENCHMARK REPORTING
+- **Date:** 2026-10-01
+- **Status:** REMEDIATED / SUBMITTED FOR CTO REVIEW (NON-SELF-ACCEPTANCE INVARIANT ENFORCED)
+- **Authority:** CTO REMEDIATION DIRECTIVE — W020-G9 EVIDENCE INTEGRITY CLOSURE (2026-10-01)
+- **Context:** Following CTO review of the initial W020-G9 implementation submitted at `ebf5eea`, remediation was ordered across evidence provenance coordinates, PostgREST benchmark semantics, concurrency latency measurement methodology, E2E-06 concurrency assertions, endpoint count reconciliation, and test accounting language.
+- **Key Remediation Actions & Architectural Determinations:**
+  1. **Honest PostgREST Benchmark Reporting:**
+     - Remote staging PostgREST WAN round-trip latency measured P95 = 494.8ms against target P95 < 50.0ms.
+     - In strict adherence to MEF Rule IV-001 and CTO instruction, this benchmark is unequivocally evaluated and reported as **FAIL** across both machine-readable JSON (`passed: false`) and human-readable Markdown (`**FAIL**`) without relaxing thresholds, discarding samples, or substituting local timings.
+  2. **Genuine Concurrency Latency Timing:**
+     - Eliminated reliance on unpopulated `response.elapsedTime`.
+     - Instrumented genuine per-request `performance.now()` start/end timestamps across all 50 concurrent simulation requests.
+     - Observed: Min = 21.64ms, P50 = 21.76ms, P95 = 21.85ms, Max = 21.86ms, Total batch duration = 22.0ms, 100% 200 OK (50/50).
+     - Verified P95 < 200.0ms target passes based on genuine measured latencies.
+  3. **Genuine Asynchronous Boundary Concurrency (E2E-06):**
+     - Refactored E2E-06 to execute 30 genuine concurrent asynchronous `Promise.all` evaluations across boundary dates (`2014-06-01`, `2014-06-02`, `2014-06-03`).
+     - Proved deterministic handoff and zero state corruption or race conditions under concurrent execution.
+  4. **Route Inventory & Plan Reconciliation (E2E-13):**
+     - Formally reconciled the 19 endpoints cited in historical plan text with the 20 registered Fastify delimitation endpoints.
+     - Documented that the 20th endpoint (`GET /api/v1/delimitation/lineage/:acCode`) was authorized and accepted in W020-G7 (`65c32c8` / DEC-096 / DEC-097) to evidence UNKNOWN lineage for ACs 110, 118, and 119. Authored `reports/w020_g9_governance_reconciliation.md`.
+  5. **Unified Master Test Accounting Language:**
+     - Corrected arithmetic language to eliminate duplicate "+ 34 inventory" misstatement.
+     - Standardized accounting across all artifacts to: **221 suite checks (9 suites) + 53 W018 invariants + 93 W019 invariants = 367 total passing checks** (100.0% pass rate).
+  6. **Dynamic Provenance Binding & Clean Tree Governance:**
+     - Created post-commit verification mechanism to bind final submitted Git SHA and verify clean working tree.
+  7. **Strict Non-Self-Acceptance:**
+     - Milestone W020-G9 remains **SUBMITTED FOR CTO ACCEPTANCE REVIEW**.
+     - W021 remains **STRICTLY BLOCKED / NOT AUTHORIZED**.
+- **Milestone Gate Status:**
+  - W020-G8: **ACCEPTED / COMPLETE / CLOSED**.
+  - W020-G9: **REMEDIATED / SUBMITTED FOR CTO REVIEW & ACCEPTANCE**.

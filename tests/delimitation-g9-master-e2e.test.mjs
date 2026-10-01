@@ -98,29 +98,42 @@ export async function runG9MasterBattery() {
   // ─────────────────────────────────────────────────────────────────────────────
   try {
     const concurrency = 50;
-    const startTime = performance.now();
-    const promises = Array.from({ length: concurrency }, (_, i) =>
-      app.inject({
+    const batchStartTime = performance.now();
+    const promises = Array.from({ length: concurrency }, async () => {
+      const reqStart = performance.now();
+      const res = await app.inject({
         method: 'GET',
         url: '/api/v1/delimitation/simulate/TS?seats=150',
-      })
-    );
+      });
+      const elapsedMs = performance.now() - reqStart;
+      return { res, elapsedMs };
+    });
 
-    const responses = await Promise.all(promises);
-    const durationTotal = performance.now() - startTime;
-    const latencies = responses.map((r) => r.elapsedTime || 0);
-    latencies.sort((a, b) => a - b);
+    const executionResults = await Promise.all(promises);
+    const durationTotal = performance.now() - batchStartTime;
+    const responses = executionResults.map((r) => r.res);
+    const latencies = executionResults.map((r) => r.elapsedMs).sort((a, b) => a - b);
 
+    const minMs = latencies[0];
+    const maxMs = latencies[latencies.length - 1];
     const p50 = latencies[Math.floor(latencies.length * 0.5)];
     const p95 = latencies[Math.floor(latencies.length * 0.95)];
     const p99 = latencies[Math.floor(latencies.length * 0.99)];
 
+    const statusCounts = {};
+    for (const r of responses) {
+      statusCounts[r.statusCode] = (statusCounts[r.statusCode] || 0) + 1;
+    }
+
     performanceMetrics.concurrency50 = {
       concurrency,
       totalDurationMs: durationTotal,
+      minMs,
+      maxMs,
       p50Ms: p50,
       p95Ms: p95,
       p99Ms: p99,
+      statusDistribution: statusCounts,
       allStatus200: responses.every((r) => r.statusCode === 200),
     };
 
@@ -149,8 +162,8 @@ export async function runG9MasterBattery() {
       'E2E-01',
       'High-concurrency scenario stress test (50 concurrent requests: 100% 200 OK, bitwise identical, P95 < 200ms)',
       pass,
-      `Concurrency: ${concurrency}, Bitwise identical: ${identical}, P50: ${p50.toFixed(2)}ms, P95: ${p95.toFixed(2)}ms, P99: ${p99.toFixed(2)}ms`,
-      'PERFORMANCE_BENCHMARK: Concurrency safety and determinism verified'
+      `Concurrency: ${concurrency}, Bitwise identical: ${identical}, Min: ${minMs.toFixed(2)}ms, P50: ${p50.toFixed(2)}ms, P95: ${p95.toFixed(2)}ms, P99: ${p99.toFixed(2)}ms, Max: ${maxMs.toFixed(2)}ms, Total: ${durationTotal.toFixed(1)}ms`,
+      'PERFORMANCE_BENCHMARK: Concurrency safety and determinism verified with genuine per-request timings'
     );
   } catch (err) {
     recordCheck('E2E-01', 'High-concurrency stress test', false, err.message);
@@ -340,52 +353,75 @@ export async function runG9MasterBattery() {
   }
 
   // ─────────────────────────────────────────────────────────────────────────────
-  // E2E-06: Temporal boundary queries evaluate deterministically under interleaving
+  // E2E-06: Temporal boundary queries evaluate deterministically under concurrent execution
   // ─────────────────────────────────────────────────────────────────────────────
   try {
-    // Interleave 30 requests across boundary dates
+    // Concurrently execute 30 interleaved requests across boundary dates
     const dates = ['2014-06-01', '2014-06-02', '2014-06-03'];
-    const requests = Array.from({ length: 30 }, (_, i) => {
-      const date = dates[i % dates.length];
-      return {
-        date,
-        result: (() => {
-          try {
-            return delimitationQueryService.resolveLegalApplicability({
-              entityType: 'STATE_LEGISLATIVE_ASSEMBLY',
-              regimeType: date === '2014-06-01' ? 'HISTORICAL_LEGAL_REGIME' : 'CURRENT_LEGAL_REGIME',
-              jurisdictionCode: date === '2014-06-01' ? 'AP_COMPOSITE' : 'TS',
-              asOfDate: date,
-            });
-          } catch (e) {
-            return { error: e.code };
-          }
-        })(),
-      };
-    });
+    const requests = await Promise.all(
+      Array.from({ length: 30 }, async (_, i) => {
+        const date = dates[i % dates.length];
+        const jurisdiction = date === '2014-06-01' ? 'AP_COMPOSITE' : 'TS';
+        const regimeType = date === '2014-06-01' ? 'HISTORICAL_LEGAL_REGIME' : 'CURRENT_LEGAL_REGIME';
+
+        // Evaluate resolveLegalApplicability asynchronously to verify concurrent deterministic execution
+        const result = await new Promise((resolve) => {
+          setImmediate(() => {
+            try {
+              const res = delimitationQueryService.resolveLegalApplicability({
+                entityType: 'STATE_LEGISLATIVE_ASSEMBLY',
+                regimeType,
+                jurisdictionCode: jurisdiction,
+                asOfDate: date,
+              });
+              resolve(res);
+            } catch (e) {
+              resolve({ error: e.code, message: e.message });
+            }
+          });
+        });
+
+        return {
+          date,
+          result,
+        };
+      })
+    );
 
     const day1Ok = requests
       .filter((r) => r.date === '2014-06-01')
-      .every((r) => r.result.historicalFactualSeats === 294 && r.result.temporalValidity.isCurrent === false);
+      .every((r) =>
+        r.result.historicalFactualSeats === 294 &&
+        r.result.temporalValidity?.isCurrent === false &&
+        r.result.temporalValidity?.validTo === '2014-06-02'
+      );
 
     const day2Ok = requests
       .filter((r) => r.date === '2014-06-02')
-      .every((r) => r.result.statutoryExactSeats === 119 && r.result.temporalValidity.isCurrent === true);
+      .every((r) =>
+        r.result.statutoryExactSeats === 119 &&
+        r.result.temporalValidity?.isCurrent === true &&
+        r.result.temporalValidity?.validFrom === '2014-06-02'
+      );
 
     const day3Ok = requests
       .filter((r) => r.date === '2014-06-03')
-      .every((r) => r.result.statutoryExactSeats === 119 && r.result.temporalValidity.isCurrent === true);
+      .every((r) =>
+        r.result.statutoryExactSeats === 119 &&
+        r.result.temporalValidity?.isCurrent === true &&
+        r.result.temporalValidity?.validFrom === '2014-06-02'
+      );
 
     const pass = day1Ok && day2Ok && day3Ok;
     recordCheck(
       'E2E-06',
-      'Temporal boundary queries across 2014-06-01, 2014-06-02, 2014-06-03 evaluate deterministically under interleaving',
+      'Temporal boundary queries across 2014-06-01, 2014-06-02, 2014-06-03 evaluate deterministically under concurrent execution',
       pass,
-      `Day 1 (2014-06-01 AP Composite): ${day1Ok}, Day 2 (2014-06-02 TS Appointed Day): ${day2Ok}, Day 3 (2014-06-03 TS Current): ${day3Ok}`,
-      'TEMPORAL_INVARIANT: Zero state pollution or race conditions during interleaved date evaluations'
+      `Concurrent requests: ${requests.length}, Day 1 (2014-06-01 AP Composite): ${day1Ok}, Day 2 (2014-06-02 TS Appointed Day): ${day2Ok}, Day 3 (2014-06-03 TS Current): ${day3Ok}`,
+      'TEMPORAL_INVARIANT: Zero state pollution or race conditions during concurrent asynchronous boundary evaluations'
     );
   } catch (err) {
-    recordCheck('E2E-06', 'Temporal boundary interleaving', false, err.message);
+    recordCheck('E2E-06', 'Temporal boundary concurrent execution', false, err.message);
   }
 
   // ─────────────────────────────────────────────────────────────────────────────
@@ -671,10 +707,10 @@ export async function runG9MasterBattery() {
 
     recordCheck(
       'E2E-13',
-      'Fastify route registration audit: all 20 delimitation endpoints registered with active schemas',
+      'Fastify route registration audit: all 20 delimitation endpoints registered (19 ratified plan endpoints + 1 authorized G7 lineage endpoint)',
       pass,
-      `Total verified: ${registeredRoutes.length} (Expected: ${expectedEndpoints.length}), Missing: ${missing.length === 0 ? 'none' : missing.join(', ')}`,
-      'API_SURFACE: Complete route inventory operational'
+      `Total verified: ${registeredRoutes.length} (Ratified plan: 19, Reconciled total: 20 including /lineage/:acCode), Missing: ${missing.length === 0 ? 'none' : missing.join(', ')}`,
+      'API_SURFACE: Complete route inventory operational; /lineage/:acCode reconciled per G7 CTO authorization'
     );
   } catch (err) {
     recordCheck('E2E-13', 'Route registration audit', false, err.message);

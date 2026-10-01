@@ -2,16 +2,20 @@
   "metadata": {
     "milestone": "W020-G9",
     "title": "Delimitation Engine Foundation — Unified Master Verification Battery",
-    "frameworkAmendment": "v1.6 (DEC-074, DEC-075, DEC-076) & DEC-105",
+    "frameworkAmendment": "v1.6 (DEC-074, DEC-075, DEC-076) & DEC-105 / DEC-106",
     "ratifiedPlan": "PLAN-W020-G9-REV-1.0.md (Commit 30dc36d7a20b634c41c5e6c68e8d46dc4bda38f4)",
     "parentAcceptedBaseline": "W020-G8 (Commit f7fd1fa067ec8035bc9fef09db89a9da8a53e414)",
-    "executionTimestamp": "2026-10-01T08:06:46.200Z",
-    "executionDurationSeconds": 247.969,
+    "executionTimestamp": "2026-10-01T08:43:16.830Z",
+    "executionDurationSeconds": 274.708,
     "stagingTarget": "panIN-staging (fkpigozcqnmcvofuksar)",
     "productionTarget": "ehfafcnimmjusyvplbah (STRICTLY AIR-GAPPED & UNTOUCHED)",
     "gitCoordinates": {
-      "currentHead": "30dc36d7a20b634c41c5e6c68e8d46dc4bda38f4",
-      "workingTreeClean": false
+      "executionBaseHead": "ebf5eeac23f8c00897da2a87d9c82c0cbd466f48",
+      "parentAcceptedBaseline": "f7fd1fa067ec8035bc9fef09db89a9da8a53e414",
+      "ratifiedPlanCommit": "30dc36d7a20b634c41c5e6c68e8d46dc4bda38f4",
+      "evidenceGenerationState": "PRE_COMMIT_WORKING_TREE",
+      "workingTreeClean": false,
+      "postCommitVerificationNote": "Immutable post-commit verification will re-assert git clean tree and bind final submitted commit SHA."
     }
   },
   "summary": {
@@ -31,7 +35,7 @@
       "exitCode": 0,
       "passCount": 23,
       "failCount": 0,
-      "durationMs": 26024.219299999997
+      "durationMs": 33314.956699999995
     },
     {
       "suite": "W020-G5 Invariants (Hamilton Apportionment & Article 332 Quotas)",
@@ -39,7 +43,7 @@
       "exitCode": 0,
       "passCount": 34,
       "failCount": 0,
-      "durationMs": 26807.5348
+      "durationMs": 21385.8594
     },
     {
       "suite": "W020-G5 Fastify Route Integration (Jest)",
@@ -47,7 +51,7 @@
       "exitCode": 0,
       "passCount": 33,
       "failCount": 0,
-      "durationMs": 16151.515499999994
+      "durationMs": 11792.205600000001
     },
     {
       "suite": "W020-G6 Ingestion (Historical Regimes & Gazette Orders)",
@@ -55,7 +59,7 @@
       "exitCode": 0,
       "passCount": 27,
       "failCount": 0,
-      "durationMs": 28959.170599999998
+      "durationMs": 28704.100099999996
     },
     {
       "suite": "W020-G7 Query Surface (5 Typed Selection Modes)",
@@ -63,7 +67,7 @@
       "exitCode": 0,
       "passCount": 25,
       "failCount": 0,
-      "durationMs": 36291.22249999999
+      "durationMs": 40980.73360000001
     },
     {
       "suite": "W020-G8 Integration (MLA Profiles, Party Projections, Assembly Bounds)",
@@ -71,7 +75,7 @@
       "exitCode": 0,
       "passCount": 25,
       "failCount": 0,
-      "durationMs": 13739.950100000016
+      "durationMs": 26944.47650000002
     },
     {
       "suite": "W020-G8 Legal Applicability (6-Coordinate Model & T1-T6 Boundaries)",
@@ -79,7 +83,7 @@
       "exitCode": 0,
       "passCount": 30,
       "failCount": 0,
-      "durationMs": 898.7895999999892
+      "durationMs": 676.3778000000166
     },
     {
       "suite": "API Contract Drift (9 Declared Endpoints & Inventory Synchronization)",
@@ -87,7 +91,7 @@
       "exitCode": 0,
       "passCount": 9,
       "failCount": 0,
-      "durationMs": 191.92579999999725
+      "durationMs": 162.2216999999946
     },
     {
       "suite": "W020-G9 Master E2E & Concurrency (E2E-01 to E2E-15)",
@@ -95,41 +99,46 @@
       "exitCode": 0,
       "passCount": 15,
       "failCount": 0,
-      "durationMs": 73495.1592
+      "durationMs": 77825.8626
     }
   ],
   "performanceBenchmarks": {
     "inMemoryApportionment": {
       "target": "< 5.0 ms",
       "samples": 100,
-      "p50Ms": 0.029000000009546056,
-      "p95Ms": 0.061400000005960464,
-      "p99Ms": 1.871500000008382,
+      "p50Ms": 0.024399999994784594,
+      "p95Ms": 0.05919999998877756,
+      "p99Ms": 0.16079999998328276,
       "passed": true
     },
     "postgrestQueryLookup": {
       "target": "P95 < 50.0 ms",
       "samples": 20,
-      "p50Ms": 408.72320000000764,
-      "p95Ms": 427.2228999999934,
-      "p99Ms": 427.2228999999934,
+      "p50Ms": 464.245900000009,
+      "p95Ms": 527.7215999999898,
+      "p99Ms": 527.7215999999898,
       "passed": false
     },
     "concurrency50Requests": {
       "target": "P95 < 200.0 ms",
       "concurrency": 50,
-      "totalDurationMs": 37.096899999974994,
-      "p50Ms": 0,
-      "p95Ms": 0,
-      "p99Ms": 0,
+      "totalDurationMs": 21.99920000002021,
+      "minMs": 21.67980000001262,
+      "maxMs": 21.821400000015274,
+      "p50Ms": 21.75150000001304,
+      "p95Ms": 21.8179999999993,
+      "p99Ms": 21.821400000015274,
       "allStatus200": true,
+      "statusDistribution": {
+        "200": 50
+      },
       "passed": true
     },
     "memoryRssGrowth": {
       "target": "< 50.0 MB growth",
-      "initialRssMb": 150.109375,
-      "finalRssMb": 155.47265625,
-      "deltaMb": 5.36328125,
+      "initialRssMb": 151.75390625,
+      "finalRssMb": 156.00390625,
+      "deltaMb": 4.25,
       "passed": true
     }
   },
