@@ -488,16 +488,35 @@ export function getCensusDistricts(stateCode: string): CensusDistrictData[] {
 /** Total India population (Census 2011) */
 export const INDIA_TOTAL_POPULATION_2011 = 1_210_854_977;
 
-/** Total Lok Sabha seats (elected, excl. nominated) */
+/**
+ * Operative elected Lok Sabha strength resulting from Delimitation Order, 2008
+ * and Constitution (104th Amendment) Act, 2019 (Articles 81 & 82 freeze).
+ *
+ * NOTE: This is the CURRENT OPERATIVE BASELINE.
+ * It is NOT a future delimitation target, NOT a proposed ceiling,
+ * and NOT a PANIN projection denominator.
+ */
 export const TOTAL_LOK_SABHA_SEATS = 543;
 
-/** Total state assembly seats across India (approximate) */
+/** Alias making operative statutory baseline explicit */
+export const CURRENT_STATUTORY_LOK_SABHA_SEATS = TOTAL_LOK_SABHA_SEATS;
+
+/** Total state assembly seats across India (approximate baseline across all State Assemblies) */
 export const TOTAL_ASSEMBLY_SEATS_INDIA = 4_123;
 
-/** National ideal population per Lok Sabha seat (2011 Census) */
+/**
+ * Historical benchmark: 2011 Census population divided by operative 543 Lok Sabha seats (~2,229,936).
+ *
+ * NOTE: This is a static descriptive demographic benchmark only.
+ * It is NOT used by any active Lok Sabha projection engine because PANIN does NOT
+ * compute national or state-wise Lok Sabha projections.
+ */
 export const IDEAL_POP_PER_LS_SEAT_2011 = Math.round(INDIA_TOTAL_POPULATION_2011 / TOTAL_LOK_SABHA_SEATS);
 
-/** National ideal population per assembly seat (rough average) */
+/**
+ * Historical benchmark: 2011 Census population divided by 4,123 state assembly seats (~293,683).
+ * Used as benchmark quotient for State Assembly seat allocation scenarios (Articles 170 / 81).
+ */
 export const IDEAL_POP_PER_AC_SEAT_2011 = Math.round(INDIA_TOTAL_POPULATION_2011 / TOTAL_ASSEMBLY_SEATS_INDIA);
 
 /** Compute projected seat allocation for all states */

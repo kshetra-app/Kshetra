@@ -274,6 +274,18 @@ export default function SimulatorScreen() {
         {/* Results */}
         {showResults && quickSim && (
           <View>
+            {/* Provenance & Status Indicator (Directive W020 Source-Truth) */}
+            <View style={[styles.provenanceCard, { backgroundColor: colors.surface, borderColor: '#3B82F6' }]}>
+              <View style={styles.provenanceHeader}>
+                <Ionicons name="information-circle" size={16} color="#3B82F6" />
+                <Text style={styles.provenanceBadge}>DATA STATUS: PANIN SCENARIO</Text>
+              </View>
+              <Text style={[styles.provenanceText, { color: colors.textSecondary }]}>
+                State Assembly & Intra-State District Projection (Articles 170 / 81 Model).
+                This is an academic research simulation, NOT an official order of the Delimitation Commission of India.
+              </Text>
+            </View>
+
             {/* Before → After */}
             <Text style={[styles.sectionTitle, { color: colors.text }]}>
               {t('delimitationExtended.beforeAfter', { defaultValue: 'Before → After' })}
@@ -564,4 +576,10 @@ const styles = StyleSheet.create({
   // Disclaimer
   disclaimer: { flexDirection: 'row', borderRadius: 10, padding: 10, gap: 6, marginTop: 12, borderWidth: 1 },
   disclaimerText: { flex: 1, fontSize: 11, color: '#F59E0B', lineHeight: 15 },
+
+  // Provenance Card
+  provenanceCard: { borderRadius: 10, padding: 12, marginBottom: 14, borderWidth: 1, borderLeftWidth: 4 },
+  provenanceHeader: { flexDirection: 'row', alignItems: 'center', gap: 6, marginBottom: 4 },
+  provenanceBadge: { fontSize: 11, fontWeight: '800', color: '#3B82F6', letterSpacing: 0.5 },
+  provenanceText: { fontSize: 11, lineHeight: 15 },
 });

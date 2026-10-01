@@ -216,6 +216,18 @@ export interface DelimitationEvent {
   isVerified: boolean;
   significance: ImpactSeverity;
   relatedProposalId?: string;
+  billNumber?: string;
+  houseOfIntroduction?: 'LOK_SABHA' | 'RAJYA_SABHA';
+  legislativeEventType?: LegislativeEventType;
+  outcome?: LegislativeEventOutcome;
+  divisionAyes?: number;
+  divisionNoes?: number;
+  constitutionalArticleTarget?: string;
+  proposedCeiling?: number;
+  classification?: DelimitationAuthorityLayer;
+  officialSource?: string;
+  sourceReference?: string;
+  sourcePublicationMetadata?: string;
 }
 
 /** Citizen impact record — what changes for a specific location */
@@ -290,6 +302,22 @@ export interface PartyDelimitationImpact {
   loseConstituencies: string[];  // current ACs where party weakens
 }
 
+import type {
+  DelimitationAuthorityLayer,
+  DelimitationComputationalType,
+  DelimitationSeatProvenance,
+  LegislativeEventType,
+  LegislativeEventOutcome,
+} from '@kshetra/shared';
+
+export type {
+  DelimitationAuthorityLayer,
+  DelimitationComputationalType,
+  DelimitationSeatProvenance,
+  LegislativeEventType,
+  LegislativeEventOutcome,
+};
+
 /** Seat calculation result for a state */
 export interface SeatAllocation {
   stateCode: string;
@@ -306,6 +334,7 @@ export interface SeatAllocation {
   reservedST: number;
   general: number;
   model?: 'PROPORTIONAL' | 'EXPANSION_SAFE';
+  seatProvenance?: DelimitationSeatProvenance;
 }
 
 export type SeatCalculationModel = 'PROPORTIONAL' | 'EXPANSION_SAFE';
