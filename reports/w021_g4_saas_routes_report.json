@@ -150,7 +150,15 @@
     "rateLimiting": "Dual-layer: In-memory token-bucket burst (600 req/min for pro) + PostgreSQL durable monthly ledger quota (500,000 for pro)",
     "sqlSafety": "Strictly parameterized queries and Supabase PostgREST client; zero string-interpolated SQL",
     "piiZeroExposureProof": "Verified zero exposure of phone_number, voter_id, aadhaar, epic_number, password_hash, or service_role credentials",
-    "scenarioOverrideDefense": "Pre-validation hook strictly rejects caller isScenario, is_scenario, or simulation flags (400 SCENARIO_INPUT_FORBIDDEN)"
+    "scenarioOverrideDefense": "Pre-validation hook strictly rejects caller isScenario, is_scenario, or simulation flags (400 SCENARIO_INPUT_FORBIDDEN)",
+    "canonicalCredentialContract": {
+      "format": "panin_<env>_sk_<43-char Base64URL secret>",
+      "livePrefix": "panin_live_sk_",
+      "testPrefix": "panin_test_sk_",
+      "runtimeRegex": "^panin_(live|test)_sk_[0-9a-zA-Z_-]{43}$",
+      "disallowedAliases": ["kshetra_live_...", "kshetra_test_...", "panin_dev_sk_..."],
+      "failClosedEnforcement": "All malformed keys, invalid prefixes, or aliases fail-closed with HTTP 401 UNAUTHORIZED at pre-handler regex check before DB lookup"
+    }
   },
   "testExecutionResults": {
     "g4SaaSRouteSuite": {

@@ -332,6 +332,8 @@ describe('W021-G3: SaaS API Key Authentication & Security Gate', () => {
         'panin_live_pk_1234567890123456789012345678901234567890123',
         'invalid_prefix_1234567890123456789012345678901234567890123',
         'panin_live_sk_@@@special_chars_not_base64url$$$$$$$$$$$$$$$$$$$$',
+        'kshetra_live_sk_1234567890123456789012345678901234567890123',
+        'kshetra_test_sk_1234567890123456789012345678901234567890123',
       ];
 
       for (const badKey of malformedCases) {

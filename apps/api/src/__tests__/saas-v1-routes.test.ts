@@ -62,8 +62,10 @@ describe('W021-G4: Public/Partner SaaS API Routes (/api/vsaas/v1/...) Test Suite
   };
 
   const validKey = generateCryptographicApiKey('live');
+  const validTestKey = generateCryptographicApiKey('test');
   const revokedKey = generateCryptographicApiKey('live');
   const expiredKey = generateCryptographicApiKey('live');
+  const dbFailKey = generateCryptographicApiKey('live');
 
   beforeAll(async () => {
     // Setup Service Spies for isolated deterministic route execution
@@ -282,6 +284,22 @@ describe('W021-G4: Public/Partner SaaS API Routes (/api/vsaas/v1/...) Test Suite
       saas_applications: appA,
     });
 
+    // Populate active test key
+    mockDb.set(validTestKey.keyHash, {
+      id: 'k4444444-4444-4444-4444-444444444444',
+      tenant_id: tenantA.id,
+      application_id: appA.id,
+      key_prefix: validTestKey.keyPrefix,
+      key_hint: validTestKey.keyHint,
+      key_hash: validTestKey.keyHash,
+      scopes: ['geo:read', 'elections:read', 'entities:read', 'delim:read'],
+      status: 'active',
+      expires_at: null,
+      revoked_at: null,
+      saas_tenants: tenantA,
+      saas_applications: appA,
+    });
+
     // Populate revoked key
     mockDb.set(revokedKey.keyHash, {
       id: 'k2222222-2222-2222-2222-222222222222',
@@ -319,7 +337,7 @@ describe('W021-G4: Public/Partner SaaS API Routes (/api/vsaas/v1/...) Test Suite
     // Register G3 authentication plugin
     await app.register(saasAuthPlugin, {
       mockLookup: async (hash: string) => {
-        if (hash === 'DB_FAIL_SIMULATION_HASH') {
+        if (hash === dbFailKey.keyHash) {
           throw new Error('Simulated database network failure');
         }
         return mockDb.get(hash) || null;
@@ -358,16 +376,25 @@ describe('W021-G4: Public/Partner SaaS API Routes (/api/vsaas/v1/...) Test Suite
       expect(body.error).toBe('Unauthorized');
     });
 
-    it('2. Rejects request with malformed / invalid API key with 401 UNAUTHORIZED', async () => {
-      const res = await app.inject({
-        method: 'GET',
-        url: '/api/vsaas/v1/geo/states',
-        headers: { 'x-api-key': 'invalid_format_key_12345' },
-      });
-      expect(res.statusCode).toBe(401);
-      const body = JSON.parse(res.body);
-      expect(body.code).toBe('UNAUTHORIZED');
-      expect(body.error).toBe('Unauthorized');
+    it('2. Rejects request with malformed / invalid API key (including unauthorized kshetra_* aliases) with 401 UNAUTHORIZED', async () => {
+      const invalidKeys = [
+        'invalid_format_key_12345',
+        'kshetra_live_00000000000000000000000000000000',
+        'kshetra_test_00000000000000000000000000000000',
+        'panin_dev_sk_0123456789012345678901234567890123456789012',
+      ];
+
+      for (const badKey of invalidKeys) {
+        const res = await app.inject({
+          method: 'GET',
+          url: '/api/vsaas/v1/geo/states',
+          headers: { 'x-api-key': badKey },
+        });
+        expect(res.statusCode).toBe(401);
+        const body = JSON.parse(res.body);
+        expect(body.code).toBe('UNAUTHORIZED');
+        expect(body.error).toBe('Unauthorized');
+      }
     });
 
     it('3. Rejects request with revoked API key with 401 UNAUTHORIZED', async () => {
@@ -394,31 +421,48 @@ describe('W021-G4: Public/Partner SaaS API Routes (/api/vsaas/v1/...) Test Suite
       expect(body.error).toBe('Unauthorized');
     });
 
-    it('5. Allows valid active API key and returns 200 with standard envelope', async () => {
-      const res = await app.inject({
+    it('5. Allows valid active API keys (panin_live_sk and panin_test_sk) and returns 200 with standard envelope', async () => {
+      // 5A. Production live key via x-api-key header (panin_live_sk_<43 chars>)
+      expect(validKey.rawKey.startsWith('panin_live_sk_')).toBe(true);
+      expect(validKey.rawKey.length).toBe(57);
+      const resLive = await app.inject({
         method: 'GET',
         url: '/api/vsaas/v1/geo/states',
         headers: { 'x-api-key': validKey.rawKey },
       });
-      expect(res.statusCode).toBe(200);
-      const body = JSON.parse(res.body);
-      expect(body.success).toBe(true);
-      expect(body.requestId).toBeDefined();
-      expect(body.timestamp).toBeDefined();
-      expect(Array.isArray(body.data.states)).toBe(true);
-      expect(body.data.states.length).toBeGreaterThan(0);
+      expect(resLive.statusCode).toBe(200);
+      const bodyLive = JSON.parse(resLive.body);
+      expect(bodyLive.success).toBe(true);
+      expect(bodyLive.requestId).toBeDefined();
+      expect(bodyLive.timestamp).toBeDefined();
+      expect(Array.isArray(bodyLive.data.states)).toBe(true);
+      expect(bodyLive.data.states.length).toBeGreaterThan(0);
+
+      // 5B. Test environment key via Authorization: Bearer header (panin_test_sk_<43 chars>)
+      expect(validTestKey.rawKey.startsWith('panin_test_sk_')).toBe(true);
+      expect(validTestKey.rawKey.length).toBe(57);
+      const resTest = await app.inject({
+        method: 'GET',
+        url: '/api/vsaas/v1/geo/states',
+        headers: { authorization: `Bearer ${validTestKey.rawKey}` },
+      });
+      expect(resTest.statusCode).toBe(200);
+      const bodyTest = JSON.parse(resTest.body);
+      expect(bodyTest.success).toBe(true);
+      expect(Array.isArray(bodyTest.data.states)).toBe(true);
     });
 
     it('6. Fails closed (500 AUTH_DEPENDENCY_FAILURE) on database error during auth', async () => {
-      // Craft a key whose hash matches DB_FAIL_SIMULATION_HASH
-      const failKey = 'kshetra_live_00000000000000000000000000000000';
-      // In saasAuthPlugin mockLookup, hash is passed
+      expect(dbFailKey.rawKey.startsWith('panin_live_sk_')).toBe(true);
       const res = await app.inject({
         method: 'GET',
         url: '/api/vsaas/v1/geo/states',
-        headers: { 'x-api-key': failKey },
+        headers: { 'x-api-key': dbFailKey.rawKey },
       });
-      expect(res.statusCode).toBe(401); // Invalid format or lookup error
+      expect(res.statusCode).toBe(500);
+      const body = JSON.parse(res.body);
+      expect(body.code).toBe('AUTH_DEPENDENCY_FAILURE');
+      expect(body.error).toBe('Internal Server Error');
     });
 
     it('7. Rate limiting: Burst limit enforcement returns 429 when exhausted', async () => {

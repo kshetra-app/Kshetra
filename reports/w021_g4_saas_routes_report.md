@@ -51,15 +51,22 @@ A total of 15 SaaS endpoints across 4 institutional domains have been implemente
 
 ---
 
-## 3. Security, Authentication & Tenant Isolation Model
+### 3. Security, Authentication & Tenant Isolation Model
 
-1. **Authentication Boundary**: Every route executes behind `saasAuthPlugin`. API keys are validated using SHA-256 hash lookup and constant-time verification against active keys in `saas_api_keys`.
-2. **Tenant Context Immutability**: All operations bind directly to `request.saasAuth.tenantId`. Query parameters (`?tenant_id=...`), headers (`x-tenant-id`), or request body overrides are completely ignored.
-3. **Dual-Layer Rate Limiting**:
+1. **Canonical API-Key Credential Contract**:
+   - The authoritative runtime contract strictly accepts:
+     - `panin_live_sk_<43-char Base64URL secret>` (production live key)
+     - `panin_test_sk_<43-char Base64URL secret>` (testing/sandbox key)
+   - Runtime Regex: `^panin_(live|test)_sk_[0-9a-zA-Z_-]{43}$` (enforced in `apps/api/src/lib/saasCrypto.ts`).
+   - Credential transmission supported via `x-api-key: panin_...` header or `Authorization: Bearer panin_...` header.
+   - **Disallowed Credential Aliases**: Unauthorized prefixes (including `kshetra_live_...`, `kshetra_test_...`, `panin_dev_sk_...`) are rejected fail-closed with HTTP `401 Unauthorized` (`UNAUTHORIZED`) prior to database lookup or hash computation. No credential alias is accepted.
+2. **Authentication Boundary**: Every route executes behind `saasAuthPlugin`. API keys are validated using SHA-256 hash lookup and constant-time verification against active keys in `saas_api_keys`.
+3. **Tenant Context Immutability**: All operations bind directly to `request.saasAuth.tenantId`. Query parameters (`?tenant_id=...`), headers (`x-tenant-id`), or request body overrides are completely ignored.
+4. **Dual-Layer Rate Limiting**:
    - Local token-bucket burst protection (600 req/min for `pro` tier) returns `429 Too Many Requests` when exhausted.
    - Authoritative PostgreSQL monthly ledger (`saas_usage_ledger`) enforces durable tenant-level monthly ceilings (500,000 req/mo for `pro` tier).
-4. **Scenario Override Protection**: A Fastify pre-validation hook blocks any client attempts to pass `isScenario`, `is_scenario`, or `simulation` query flags (`400 Bad Request` with code `SCENARIO_INPUT_FORBIDDEN`).
-5. **Zero Citizen PII Leakage**: Explicitly tested and proven that no voter phone numbers, emails, voter IDs, Aadhaar numbers, EPIC numbers, password hashes, or service-role keys are returned in any response.
+5. **Scenario Override Protection**: A Fastify pre-validation hook blocks any client attempts to pass `isScenario`, `is_scenario`, or `simulation` query flags (`400 Bad Request` with code `SCENARIO_INPUT_FORBIDDEN`).
+6. **Zero Citizen PII Leakage**: Explicitly tested and proven that no voter phone numbers, emails, voter IDs, Aadhaar numbers, EPIC numbers, password hashes, or service-role keys are returned in any response.
 
 ---
 
