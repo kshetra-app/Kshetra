@@ -1,149 +1,221 @@
 {
   "gate": "W021-G5",
-  "status": "COMPLETED / VERIFIED / SUBMITTED FOR CTO ACCEPTANCE",
-  "timestamp": "2026-10-02T10:55:00.000Z",
+  "status": "REMEDIATED / VERIFIED / SUBMITTED FOR CTO ACCEPTANCE",
+  "timestamp": "2026-10-02T11:52:00.000Z",
   "specificationFile": "apps/api/openapi-saas-v1.yaml",
   "reconciledLegacyFile": "apps/api/openapi.yaml",
   "testSuite": "tests/saas-openapi-contract-drift.test.mjs",
   "openApiVersion": "3.1.0",
-  "totalRoutes": 15,
-  "routeInventory": [
-    {
-      "operationId": "listStates",
-      "method": "GET",
-      "fastifyPath": "/api/vsaas/v1/geo/states",
-      "openApiPath": "/api/vsaas/v1/geo/states",
-      "domain": "geography",
-      "provenance": "STATUTORY_FACT",
-      "authRequired": true
-    },
-    {
-      "operationId": "getStateByCode",
-      "method": "GET",
-      "fastifyPath": "/api/vsaas/v1/geo/states/:stateCode",
-      "openApiPath": "/api/vsaas/v1/geo/states/{stateCode}",
-      "domain": "geography",
-      "provenance": "STATUTORY_FACT",
-      "authRequired": true
-    },
-    {
-      "operationId": "listStateConstituencies",
-      "method": "GET",
-      "fastifyPath": "/api/vsaas/v1/geo/states/:stateCode/constituencies",
-      "openApiPath": "/api/vsaas/v1/geo/states/{stateCode}/constituencies",
-      "domain": "geography",
-      "provenance": "STATUTORY_FACT",
-      "authRequired": true
-    },
-    {
-      "operationId": "getConstituencyByAcNo",
-      "method": "GET",
-      "fastifyPath": "/api/vsaas/v1/geo/states/:stateCode/constituencies/:acNo",
-      "openApiPath": "/api/vsaas/v1/geo/states/{stateCode}/constituencies/{acNo}",
-      "domain": "geography",
-      "provenance": "STATUTORY_FACT",
-      "authRequired": true
-    },
-    {
-      "operationId": "listElectionEvents",
-      "method": "GET",
-      "fastifyPath": "/api/vsaas/v1/elections",
-      "openApiPath": "/api/vsaas/v1/elections",
-      "domain": "elections",
-      "provenance": "STATUTORY_FACT",
-      "authRequired": true
-    },
-    {
-      "operationId": "getElectionEventById",
-      "method": "GET",
-      "fastifyPath": "/api/vsaas/v1/elections/:id",
-      "openApiPath": "/api/vsaas/v1/elections/{id}",
-      "domain": "elections",
-      "provenance": "STATUTORY_FACT",
-      "authRequired": true
-    },
-    {
-      "operationId": "listElectionContests",
-      "method": "GET",
-      "fastifyPath": "/api/vsaas/v1/elections/:id/contests",
-      "openApiPath": "/api/vsaas/v1/elections/{id}/contests",
-      "domain": "elections",
-      "provenance": "STATUTORY_FACT",
-      "authRequired": true
-    },
-    {
-      "operationId": "getContestDetail",
-      "method": "GET",
-      "fastifyPath": "/api/vsaas/v1/elections/:id/contests/:constituencyId",
-      "openApiPath": "/api/vsaas/v1/elections/{id}/contests/{constituencyId}",
-      "domain": "elections",
-      "provenance": "STATUTORY_FACT",
-      "authRequired": true
-    },
-    {
-      "operationId": "searchPoliticalEntities",
-      "method": "GET",
-      "fastifyPath": "/api/vsaas/v1/entities/search",
-      "openApiPath": "/api/vsaas/v1/entities/search",
-      "domain": "political_entities",
-      "provenance": "STATUTORY_FACT",
-      "authRequired": true
-    },
-    {
-      "operationId": "getPersonById",
-      "method": "GET",
-      "fastifyPath": "/api/vsaas/v1/entities/persons/:id",
-      "openApiPath": "/api/vsaas/v1/entities/persons/{id}",
-      "domain": "political_entities",
-      "provenance": "STATUTORY_FACT",
-      "authRequired": true
-    },
-    {
-      "operationId": "getOrganizationById",
-      "method": "GET",
-      "fastifyPath": "/api/vsaas/v1/entities/organizations/:id",
-      "openApiPath": "/api/vsaas/v1/entities/organizations/{id}",
-      "domain": "political_entities",
-      "provenance": "STATUTORY_FACT",
-      "authRequired": true
-    },
-    {
-      "operationId": "listCurrentLegislators",
-      "method": "GET",
-      "fastifyPath": "/api/vsaas/v1/entities/legislators",
-      "openApiPath": "/api/vsaas/v1/entities/legislators",
-      "domain": "political_entities",
-      "provenance": "STATUTORY_FACT",
-      "authRequired": true
-    },
-    {
-      "operationId": "getDelimitationRegimes",
-      "method": "GET",
-      "fastifyPath": "/api/vsaas/v1/delim/regimes",
-      "openApiPath": "/api/vsaas/v1/delim/regimes",
-      "domain": "delimitation",
-      "provenance": "STATUTORY_FACT",
-      "authRequired": true
-    },
-    {
-      "operationId": "getDelimitationProjections",
-      "method": "GET",
-      "fastifyPath": "/api/vsaas/v1/delim/projections",
-      "openApiPath": "/api/vsaas/v1/delim/projections",
-      "domain": "delimitation",
-      "provenance": "PANIN_SCENARIO",
-      "authRequired": true
-    },
-    {
-      "operationId": "simulateStateBoundaries",
-      "method": "GET",
-      "fastifyPath": "/api/vsaas/v1/delim/simulate/:stateCode",
-      "openApiPath": "/api/vsaas/v1/delim/simulate/{stateCode}",
-      "domain": "delimitation",
-      "provenance": "PANIN_SCENARIO",
-      "authRequired": true
+  "serverTopology": {
+    "declaredServers": [
+      {
+        "url": "https://api.kshetra.io",
+        "description": "Production API Gateway (Isolated Fastify SaaS Service)"
+      },
+      {
+        "url": "http://localhost:3001",
+        "description": "Local Development Server (Fastify HTTP Listener)"
+      }
+    ],
+    "topologyAudit": {
+      "supabaseUrlExcluded": true,
+      "supabaseExclusionReason": "Supabase project URL (fkpigozcqnmcvofuksar.supabase.co) is an upstream database/PostgREST host, not the Fastify /api/vsaas/v1 SaaS API gateway",
+      "stagingServerOmissionRationale": "No externally reachable staging Fastify gateway exists; omitted per CTO directive rather than substituting Supabase project URL",
+      "regressionInvariantEnforced": "tests/saas-openapi-contract-drift.test.mjs (W021-G5-SRV-01, W021-G5-SRV-02)"
     }
-  ],
+  },
+  "provenanceReconciliation": {
+    "totalRoutes": 15,
+    "factualRoutesCount": 13,
+    "scenarioRoutesCount": 2,
+    "routeFieldMatrix": [
+      {
+        "routeIndex": 1,
+        "operationId": "listStates",
+        "method": "GET",
+        "openApiPath": "/api/vsaas/v1/geo/states",
+        "authorityLayer": "STATUTORY_FACT",
+        "dataStatus": "OFFICIAL",
+        "statutoryFactFields": ["stateCode", "name", "totalSeats"],
+        "derivedFields": ["loadedConstituencies"],
+        "scenarioFields": [],
+        "upstreamSource": "ECI Schedule XXXI / Delimitation of Parliamentary and Assembly Constituencies Order, 2008"
+      },
+      {
+        "routeIndex": 2,
+        "operationId": "getStateByCode",
+        "method": "GET",
+        "openApiPath": "/api/vsaas/v1/geo/states/{stateCode}",
+        "authorityLayer": "STATUTORY_FACT",
+        "dataStatus": "OFFICIAL",
+        "statutoryFactFields": ["stateCode", "name", "totalSeats"],
+        "derivedFields": ["loadedConstituencies", "hasSpatialBoundaries"],
+        "scenarioFields": [],
+        "upstreamSource": "ECI Schedule XXXI / Delimitation of Parliamentary and Assembly Constituencies Order, 2008"
+      },
+      {
+        "routeIndex": 3,
+        "operationId": "listStateConstituencies",
+        "method": "GET",
+        "openApiPath": "/api/vsaas/v1/geo/states/{stateCode}/constituencies",
+        "authorityLayer": "STATUTORY_FACT",
+        "dataStatus": "OFFICIAL",
+        "statutoryFactFields": ["acNo", "name", "stateCode", "district", "reservationStatus", "currentParty", "currentMLA"],
+        "derivedFields": ["id", "count"],
+        "scenarioFields": [],
+        "upstreamSource": "Delimitation Order, 2008 & State Gazette"
+      },
+      {
+        "routeIndex": 4,
+        "operationId": "getConstituencyByAcNo",
+        "method": "GET",
+        "openApiPath": "/api/vsaas/v1/geo/states/{stateCode}/constituencies/{acNo}",
+        "authorityLayer": "STATUTORY_FACT",
+        "dataStatus": "OFFICIAL",
+        "statutoryFactFields": ["acNo", "name", "stateCode", "district", "reservationStatus", "currentParty", "currentMLA"],
+        "derivedFields": ["id"],
+        "scenarioFields": [],
+        "upstreamSource": "ECI Official Gazette & Delimitation Order, 2008"
+      },
+      {
+        "routeIndex": 5,
+        "operationId": "listElectionEvents",
+        "method": "GET",
+        "openApiPath": "/api/vsaas/v1/elections",
+        "authorityLayer": "STATUTORY_FACT",
+        "dataStatus": "OFFICIAL",
+        "statutoryFactFields": ["stateCode", "electionYear", "electionType", "totalConstituencies", "notificationDate", "pollingDate", "countingDate", "totalElectors", "totalVotesPolled"],
+        "derivedFields": ["id", "overallTurnout"],
+        "scenarioFields": [],
+        "upstreamSource": "ECI Official Results Feed & Gazette Notification"
+      },
+      {
+        "routeIndex": 6,
+        "operationId": "getElectionEventById",
+        "method": "GET",
+        "openApiPath": "/api/vsaas/v1/elections/{id}",
+        "authorityLayer": "STATUTORY_FACT",
+        "dataStatus": "OFFICIAL",
+        "statutoryFactFields": ["stateCode", "electionYear", "electionType", "totalConstituencies", "notificationDate", "pollingDate", "countingDate", "totalElectors", "totalVotesPolled"],
+        "derivedFields": ["id", "overallTurnout"],
+        "scenarioFields": [],
+        "upstreamSource": "ECI Statistical Report"
+      },
+      {
+        "routeIndex": 7,
+        "operationId": "listElectionContests",
+        "method": "GET",
+        "openApiPath": "/api/vsaas/v1/elections/{id}/contests",
+        "authorityLayer": "STATUTORY_FACT",
+        "dataStatus": "OFFICIAL",
+        "statutoryFactFields": ["acNo", "constituencyName", "totalElectors", "totalVotesPolled", "totalValidVotes", "totalRejectedVotes", "notaVotes", "winner.name", "winner.party", "runnerUp.name", "runnerUp.party"],
+        "derivedFields": ["id", "electionId", "constituencyId", "margin", "turnoutPercentage", "marginPercentage"],
+        "scenarioFields": [],
+        "upstreamSource": "ECI Form 20 / Form 21E Gazette Entry"
+      },
+      {
+        "routeIndex": 8,
+        "operationId": "getContestDetail",
+        "method": "GET",
+        "openApiPath": "/api/vsaas/v1/elections/{id}/contests/{constituencyId}",
+        "authorityLayer": "STATUTORY_FACT",
+        "dataStatus": "OFFICIAL",
+        "statutoryFactFields": ["contest.acNo", "contest.constituencyName", "contest.totalElectors", "contest.totalVotesPolled", "contest.totalValidVotes", "contest.totalRejectedVotes", "contest.notaVotes", "candidates.candidateName", "candidates.party", "candidates.partyAtElection", "candidates.votesReceived", "candidates.evmVotes", "candidates.postalVotes", "candidates.result"],
+        "derivedFields": ["contest.turnoutPercentage", "contest.margin", "candidates.voteShare", "candidates.rank", "candidates.id"],
+        "scenarioFields": [],
+        "upstreamSource": "ECI Form 20 Final Result Sheet & ECI Form 21E Official Declaration of Result"
+      },
+      {
+        "routeIndex": 9,
+        "operationId": "searchPoliticalEntities",
+        "method": "GET",
+        "openApiPath": "/api/vsaas/v1/entities/search",
+        "authorityLayer": "STATUTORY_FACT",
+        "dataStatus": "OFFICIAL",
+        "statutoryFactFields": ["persons.canonicalName", "persons.aliases", "persons.gender", "persons.photoUrl", "persons.eciCandidateId", "persons.sansadMemberId", "organizations.name", "organizations.shortName", "organizations.orgType", "organizations.ecPartyCode", "organizations.recognitionLevel", "organizations.headquartersState", "organizations.symbolUrl"],
+        "derivedFields": ["persons.id", "organizations.id", "total"],
+        "scenarioFields": [],
+        "upstreamSource": "ECI Gazetted Affidavits, Parliamentary Secretariats & ECI Political Parties List"
+      },
+      {
+        "routeIndex": 10,
+        "operationId": "getPersonById",
+        "method": "GET",
+        "openApiPath": "/api/vsaas/v1/entities/persons/{id}",
+        "authorityLayer": "STATUTORY_FACT",
+        "dataStatus": "OFFICIAL",
+        "statutoryFactFields": ["canonicalName", "aliases", "gender", "photoUrl", "eciCandidateId", "sansadMemberId"],
+        "derivedFields": ["id"],
+        "scenarioFields": [],
+        "upstreamSource": "Official Gazette & Statutory Election Filing"
+      },
+      {
+        "routeIndex": 11,
+        "operationId": "getOrganizationById",
+        "method": "GET",
+        "openApiPath": "/api/vsaas/v1/entities/organizations/{id}",
+        "authorityLayer": "STATUTORY_FACT",
+        "dataStatus": "OFFICIAL",
+        "statutoryFactFields": ["name", "shortName", "orgType", "ecPartyCode", "recognitionLevel", "headquartersState", "symbolUrl"],
+        "derivedFields": ["id"],
+        "scenarioFields": [],
+        "upstreamSource": "ECI Notification of Recognized Political Parties and Election Symbols"
+      },
+      {
+        "routeIndex": 12,
+        "operationId": "listCurrentLegislators",
+        "method": "GET",
+        "openApiPath": "/api/vsaas/v1/entities/legislators",
+        "authorityLayer": "STATUTORY_FACT",
+        "dataStatus": "OFFICIAL",
+        "statutoryFactFields": ["officeName", "jurisdictionId", "stateCode", "person.canonicalName", "party.name", "startDate", "endDate"],
+        "derivedFields": ["tenureId", "isCurrent", "count"],
+        "scenarioFields": [],
+        "upstreamSource": "Legislative Assembly Secretariat Notification"
+      },
+      {
+        "routeIndex": 13,
+        "operationId": "getDelimitationRegimes",
+        "method": "GET",
+        "openApiPath": "/api/vsaas/v1/delim/regimes",
+        "authorityLayer": "STATUTORY_FACT",
+        "dataStatus": "OFFICIAL",
+        "statutoryFactFields": ["currentOperativeLaw.regimeId", "currentOperativeLaw.legalStatus", "currentOperativeLaw.orderName", "currentOperativeLaw.constitutionalFreeze", "constitutionalStatus", "timelineEvents"],
+        "derivedFields": [],
+        "scenarioFields": [],
+        "upstreamSource": "Constitution of India (Articles 81, 82, 170, 330, 332) & Delimitation Acts"
+      },
+      {
+        "routeIndex": 14,
+        "operationId": "getDelimitationProjections",
+        "method": "GET",
+        "openApiPath": "/api/vsaas/v1/delim/projections",
+        "authorityLayer": "PANIN_SCENARIO",
+        "computationalType": "ACADEMIC_SIMULATION",
+        "officialDelimitationOrder": false,
+        "legalStatus": "SCENARIO_PROPOSED_REGIME",
+        "statutoryFactFields": [],
+        "derivedFields": [],
+        "scenarioFields": ["model", "states", "totalSeats", "summary", "projections"],
+        "upstreamSource": "Census 2011 Primary Census Abstract (RGI) + PANIN Algorithmic Projection Engine"
+      },
+      {
+        "routeIndex": 15,
+        "operationId": "simulateStateBoundaries",
+        "method": "GET",
+        "openApiPath": "/api/vsaas/v1/delim/simulate/{stateCode}",
+        "authorityLayer": "PANIN_SCENARIO",
+        "computationalType": "ACADEMIC_SIMULATION",
+        "officialDelimitationOrder": false,
+        "legalStatus": "SCENARIO_PROPOSED_REGIME",
+        "effectiveVersion": "2026-PANIN-SIM-V1",
+        "statutoryFactFields": [],
+        "derivedFields": [],
+        "scenarioFields": ["stateCode", "mode", "seats", "districts", "summary", "methodology"],
+        "upstreamSource": "Census 2011 Primary Census Abstract (RGI) + Hare-Niemeyer / Hamilton Quota Method"
+      }
+    ]
+  },
   "securitySchemes": {
     "ApiKeyAuth": {
       "type": "apiKey",
@@ -174,8 +246,8 @@
   },
   "g5TestExecution": {
     "file": "tests/saas-openapi-contract-drift.test.mjs",
-    "totalChecks": 15,
-    "passed": 15,
+    "totalChecks": 19,
+    "passed": 19,
     "failed": 0,
     "passRate": "100.0%"
   },
@@ -230,8 +302,8 @@
       "passed": 19,
       "total": 19
     },
-    "totalRegressionChecks": 302,
-    "totalPassed": 302,
+    "totalRegressionChecks": 321,
+    "totalPassed": 321,
     "totalFailed": 0,
     "passRate": "100.0%"
   },

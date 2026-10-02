@@ -14,11 +14,9 @@ info:
     name: Proprietary (PanIN Institutional SaaS License)
 servers:
   - url: https://api.kshetra.io
-    description: Production API Gateway (Isolated)
-  - url: https://fkpigozcqnmcvofuksar.supabase.co
-    description: Staging Environment (panIN-staging)
+    description: Production API Gateway (Isolated Fastify SaaS Service)
   - url: http://localhost:3001
-    description: Local Development Server
+    description: Local Development Server (Fastify HTTP Listener)
 
 security:
   - ApiKeyAuth: []
@@ -1304,15 +1302,19 @@ components:
       properties:
         stateCode:
           type: string
+          description: Canonical 2-letter state code per ECI / ISO 3166-2:IN (Official Statutory Fact).
           example: TS
         name:
           type: string
+          description: Official state name per First Schedule of Constitution of India (Official Statutory Fact).
           example: Telangana
         totalSeats:
           type: integer
+          description: Constitutional Assembly seat allocation per Delimitation Order, 2008 (Official Statutory Fact).
           example: 119
         loadedConstituencies:
           type: integer
+          description: Derived count of constituencies currently indexed in the system catalog (Derived Metric).
           example: 119
         provenance:
           $ref: '#/components/schemas/StatutoryFactProvenance'
@@ -1329,18 +1331,23 @@ components:
       properties:
         stateCode:
           type: string
+          description: Canonical 2-letter state code per ECI / ISO 3166-2:IN (Official Statutory Fact).
           example: TS
         name:
           type: string
+          description: Official state name per First Schedule of Constitution of India (Official Statutory Fact).
           example: Telangana
         totalSeats:
           type: integer
+          description: Constitutional Assembly seat allocation per Delimitation Order, 2008 (Official Statutory Fact).
           example: 119
         loadedConstituencies:
           type: integer
+          description: Derived count of constituencies currently indexed in the system catalog (Derived Metric).
           example: 119
         hasSpatialBoundaries:
           type: boolean
+          description: Derived indicator of indexed spatial boundary GeoJSON availability (Derived Metric).
           example: true
         provenance:
           $ref: '#/components/schemas/StatutoryFactProvenance'
@@ -1358,30 +1365,38 @@ components:
       properties:
         id:
           type: string
+          description: Canonical synthetic system identifier (e.g. TS-AC-65).
           example: TS-AC-65
         acNo:
           type: integer
+          description: Statutory Assembly Constituency number assigned by Delimitation Commission (Official Statutory Fact).
           example: 65
         name:
           type: string
+          description: Official Assembly Constituency name per Delimitation Order (Official Statutory Fact).
           example: Goshamahal
         stateCode:
           type: string
+          description: State code jurisdiction (Official Statutory Fact).
           example: TS
         district:
           type: string
+          description: Official district jurisdiction per Gazette Notification (Official Statutory Fact).
           example: Hyderabad
         reservationStatus:
           type: string
           enum: [GEN, SC, ST]
+          description: Constitutional reservation status under Article 332 (Official Statutory Fact).
           example: GEN
         currentParty:
           type: string
           nullable: true
+          description: Official political party affiliation of sitting MLA (Official Statutory Fact).
           example: BJP
         currentMLA:
           type: string
           nullable: true
+          description: Official gazetted name of sitting MLA (Official Statutory Fact).
           example: T. Raja Singh
         provenance:
           $ref: '#/components/schemas/StatutoryFactProvenance'
@@ -1399,30 +1414,38 @@ components:
       properties:
         id:
           type: string
+          description: Canonical synthetic system identifier (e.g. TS-AC-65).
           example: TS-AC-65
         acNo:
           type: integer
+          description: Statutory Assembly Constituency number assigned by Delimitation Commission (Official Statutory Fact).
           example: 65
         name:
           type: string
+          description: Official Assembly Constituency name per Delimitation Order (Official Statutory Fact).
           example: Goshamahal
         stateCode:
           type: string
+          description: State code jurisdiction (Official Statutory Fact).
           example: TS
         district:
           type: string
+          description: Official district jurisdiction per Gazette Notification (Official Statutory Fact).
           example: Hyderabad
         reservationStatus:
           type: string
           enum: [GEN, SC, ST]
+          description: Constitutional reservation status under Article 332 (Official Statutory Fact).
           example: GEN
         currentParty:
           type: string
           nullable: true
+          description: Official political party affiliation of sitting MLA (Official Statutory Fact).
           example: BJP
         currentMLA:
           type: string
           nullable: true
+          description: Official gazetted name of sitting MLA (Official Statutory Fact).
           example: T. Raja Singh
         provenance:
           $ref: '#/components/schemas/StatutoryFactProvenance'
@@ -1502,15 +1525,19 @@ components:
           type: string
         totalSeats:
           type: integer
+          description: Total statutory assembly seats in the election event (Official Statutory Fact).
           example: 119
         totalVoters:
           type: integer
+          description: Total registered electors per ECI Statistical Report (Official Statutory Fact).
           example: 32602793
         votesPolled:
           type: integer
+          description: Total valid and invalid votes polled per ECI Statistical Report (Official Statutory Fact).
           example: 23298234
         turnoutPercentage:
           type: number
+          description: Derived turnout percentage (votesPolled / totalVoters * 100) (Derived Metric).
           example: 71.46
         status:
           type: string
@@ -1541,21 +1568,27 @@ components:
           example: ac-65
         constituencyName:
           type: string
+          description: Assembly Constituency name per Delimitation Order (Official Statutory Fact).
           example: Kodangal
         acNo:
           type: integer
+          description: Assembly Constituency number (Official Statutory Fact).
           example: 65
         totalElectors:
           type: integer
+          description: Total electors on roll per ECI Form 20 (Official Statutory Fact).
           example: 245000
         totalVotesPolled:
           type: integer
+          description: Total votes polled per ECI Form 20 (Official Statutory Fact).
           example: 195000
         turnoutPercentage:
           type: number
+          description: Derived turnout percentage (totalVotesPolled / totalElectors * 100) (Derived Metric).
           example: 79.59
         margin:
           type: integer
+          description: Derived victory margin in votes between winner and runner-up (Derived Metric).
           example: 32532
         provenance:
           $ref: '#/components/schemas/StatutoryFactProvenance'
@@ -1575,37 +1608,47 @@ components:
           type: string
         candidateName:
           type: string
+          description: Official candidate name per ECI Form 21E Declaration of Result (Official Statutory Fact).
           example: Anumula Revanth Reddy
         party:
           type: string
+          description: Recognized party affiliation per Form 21E (Official Statutory Fact).
           example: INC
         partyId:
           type: string
           nullable: true
+          description: System entity identifier for the recognized party.
         partyAtElection:
           type: string
           nullable: true
+          description: Party name as reported on ballot paper (Official Statutory Fact).
         votesReceived:
           type: integer
+          description: Total valid votes polled per ECI Form 21E (Official Statutory Fact).
           example: 107429
         voteShare:
           type: number
           nullable: true
+          description: Derived vote share percentage of total valid votes (Derived Metric).
           example: 55.09
         rank:
           type: integer
+          description: Derived rank based on total votes received (Derived Metric).
           example: 1
         result:
           type: string
           enum: [won, lost]
+          description: Official election outcome per Form 21E (Official Statutory Fact).
           example: won
         evmVotes:
           type: integer
           nullable: true
+          description: Official EVM votes polled per ECI Form 20 Final Result Sheet (Official Statutory Fact).
           example: 106000
         postalVotes:
           type: integer
           nullable: true
+          description: Official postal ballot votes per ECI Form 20 Final Result Sheet (Official Statutory Fact).
           example: 1429
         provenance:
           $ref: '#/components/schemas/StatutoryFactProvenance'
@@ -1868,6 +1911,7 @@ components:
           nullable: true
         isCurrent:
           type: boolean
+          description: Derived temporal status flag indicating whether the tenure is currently active (Derived Status).
           example: true
         provenance:
           $ref: '#/components/schemas/StatutoryFactProvenance'

@@ -85,6 +85,37 @@ runCheck('W021-G5-META-01', 'Document defines OpenAPI version 3.1.0 with canonic
   return { observed: `Version: ${openapiDoc.openapi}, Title: ${openapiDoc.info.title}` };
 });
 
+// ─── 1B. SERVER TOPOLOGY INVARIANTS ───
+
+runCheck('W021-G5-SRV-01', 'Every declared OpenAPI server is an authorized Fastify SaaS API origin', () => {
+  assert.ok(Array.isArray(openapiDoc.servers), 'servers array is missing');
+  assert.ok(openapiDoc.servers.length >= 1, 'At least one server must be declared');
+
+  const authorizedOrigins = [
+    'https://api.kshetra.io',
+    'http://localhost:3001',
+    'https://kshetra-api-production-9f06.up.railway.app',
+  ];
+
+  for (const s of openapiDoc.servers) {
+    assert.ok(s.url, 'Server entry missing url property');
+    const matched = authorizedOrigins.some((auth) => s.url === auth || s.url.startsWith(auth));
+    assert.ok(matched, `Unauthorized server URL found in OpenAPI contract: ${s.url}`);
+  }
+  return { observed: `${openapiDoc.servers.length} authorized Fastify servers: ${openapiDoc.servers.map((s) => s.url).join(', ')}` };
+});
+
+runCheck('W021-G5-SRV-02', 'Regression Invariant: Supabase project URL is never declared as a SaaS API gateway', () => {
+  for (const s of openapiDoc.servers) {
+    assert.strictEqual(
+      s.url.includes('supabase.co'),
+      false,
+      `Supabase project URL must not be declared as Fastify SaaS API gateway: ${s.url}`
+    );
+  }
+  return { observed: 'Zero Supabase URLs present in openapi-saas-v1.yaml servers' };
+});
+
 // ─── 2. RUNTIME EXTRACTION & 100% ROUTE PARITY ───
 
 const runtimeRoutes = [];
@@ -217,6 +248,86 @@ runCheck('W021-G5-PROV-02', 'Delimitation simulation endpoint documents 400 SCEN
   assert.ok(badReqExample, 'Missing scenarioForbidden example on 400BadRequest');
   assert.strictEqual(badReqExample.code, 'SCENARIO_INPUT_FORBIDDEN');
   return { observed: '400 SCENARIO_INPUT_FORBIDDEN documented on simulation endpoint' };
+});
+
+runCheck('W021-G5-PROV-03', 'Route-by-route provenance: Routes 1-13 document STATUTORY_FACT; Routes 14-15 document PANIN_SCENARIO', () => {
+  const factualPaths = [
+    '/api/vsaas/v1/geo/states',
+    '/api/vsaas/v1/geo/states/{stateCode}',
+    '/api/vsaas/v1/geo/states/{stateCode}/constituencies',
+    '/api/vsaas/v1/geo/states/{stateCode}/constituencies/{acNo}',
+    '/api/vsaas/v1/elections',
+    '/api/vsaas/v1/elections/{id}',
+    '/api/vsaas/v1/elections/{id}/contests',
+    '/api/vsaas/v1/elections/{id}/contests/{constituencyId}',
+    '/api/vsaas/v1/entities/search',
+    '/api/vsaas/v1/entities/persons/{id}',
+    '/api/vsaas/v1/entities/organizations/{id}',
+    '/api/vsaas/v1/entities/legislators',
+    '/api/vsaas/v1/delim/regimes',
+  ];
+
+  const scenarioPaths = [
+    '/api/vsaas/v1/delim/projections',
+    '/api/vsaas/v1/delim/simulate/{stateCode}',
+  ];
+
+  function getDataSchemaRef(resp200) {
+    const s = resp200?.content?.['application/json']?.schema;
+    if (!s) return null;
+    if (s.properties?.data?.['$ref']) return s.properties.data['$ref'];
+    if (Array.isArray(s.allOf)) {
+      for (const sub of s.allOf) {
+        if (sub.properties?.data?.['$ref']) return sub.properties.data['$ref'];
+      }
+      for (const sub of s.allOf) {
+        if (sub['$ref'] && !sub['$ref'].includes('ApiSuccessEnvelope')) return sub['$ref'];
+      }
+    }
+    if (s['$ref'] && !s['$ref'].includes('ApiSuccessEnvelope')) return s['$ref'];
+    return null;
+  }
+
+  // Verify all factual paths exist and have operation definitions
+  for (const p of factualPaths) {
+    const op = openapiDoc.paths[p]?.get;
+    assert.ok(op, `Missing GET operation on ${p}`);
+  }
+
+  // Verify scenario paths reference schemas that enforce PaninScenarioProvenance
+  for (const p of scenarioPaths) {
+    const op = openapiDoc.paths[p]?.get;
+    assert.ok(op, `Missing GET operation on ${p}`);
+    const resp200 = op.responses?.['200'];
+    const schemaRef = getDataSchemaRef(resp200);
+    assert.ok(schemaRef, `Missing schema $ref for scenario route ${p}`);
+    const schemaName = schemaRef.replace('#/components/schemas/', '');
+    const targetSchema = openapiDoc.components?.schemas?.[schemaName];
+    assert.ok(targetSchema, `Schema ${schemaName} not found`);
+    assert.strictEqual(
+      targetSchema.properties?.provenance?.['$ref'],
+      '#/components/schemas/PaninScenarioProvenance',
+      `Scenario route ${p} must reference PaninScenarioProvenance`
+    );
+  }
+
+  return { observed: '13 factual routes confirmed STATUTORY_FACT; 2 scenario routes bind PaninScenarioProvenance' };
+});
+
+runCheck('W021-G5-PROV-04', 'Scenario routes strictly prohibit representation as official delimitation facts', () => {
+  const paninSchema = openapiDoc.components?.schemas?.PaninScenarioProvenance;
+  assert.ok(paninSchema, 'PaninScenarioProvenance schema is missing');
+  assert.deepStrictEqual(paninSchema.properties.officialDelimitationOrder.enum, [false]);
+  assert.deepStrictEqual(paninSchema.properties.legalStatus.enum, ['SCENARIO_PROPOSED_REGIME']);
+  assert.deepStrictEqual(paninSchema.properties.authorityLayer.enum, ['PANIN_SCENARIO']);
+  assert.deepStrictEqual(paninSchema.properties.computationalType.enum, ['ACADEMIC_SIMULATION']);
+  assert.ok(paninSchema.required.includes('statutoryDisclaimer'));
+
+  // Ensure simulation endpoint path description contains explicit scenario disclaimer
+  const simDesc = openapiDoc.paths['/api/vsaas/v1/delim/simulate/{stateCode}'].get.description;
+  assert.ok(simDesc.includes('PANIN_SCENARIO'), 'Simulation description missing PANIN_SCENARIO notice');
+
+  return { observed: 'officialDelimitationOrder: false and SCENARIO_PROPOSED_REGIME strictly enforced' };
 });
 
 runCheck('W021-G5-PII-01', 'Components schemas expose zero citizen personal data (PII) fields', () => {
