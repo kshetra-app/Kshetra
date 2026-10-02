@@ -1,7 +1,7 @@
 {
   "gate": "W021-G5",
   "status": "REMEDIATED / VERIFIED / SUBMITTED FOR CTO ACCEPTANCE",
-  "timestamp": "2026-10-02T11:52:00.000Z",
+  "timestamp": "2026-10-02T12:20:00.000Z",
   "specificationFile": "apps/api/openapi-saas-v1.yaml",
   "reconciledLegacyFile": "apps/api/openapi.yaml",
   "testSuite": "tests/saas-openapi-contract-drift.test.mjs",
@@ -25,9 +25,19 @@
     }
   },
   "provenanceReconciliation": {
+    "mixedProvenanceModel": "Top-level provenance certifies originating statutory authorities and legal instruments, while individual response properties express precise property-level classifications (Statutory Facts, Derived Metrics, Current-State/Temporal Affiliations, Normalized Entities, Synthetic Identifiers, and Scenario Simulations).",
     "totalRoutes": 15,
     "factualRoutesCount": 13,
     "scenarioRoutesCount": 2,
+    "propertyClassificationTaxonomy": {
+      "OfficialStatutoryFact": "Raw immutable statutory facts directly cited from enacted orders, gazettes, or statutory filings (acNo, totalSeats, orderName, constitutionalFreeze, notificationDate, pollDate, countingDate, completionDate, votesReceived, evmVotes, postalVotes, result, totalElectors, totalVotesPolled, totalValidVotes, totalRejectedVotes, notaVotes, legalStatus: CURRENT_LEGAL_REGIME, eciCandidateId, sansadMemberId, ecPartyCode, orgType, recognitionLevel, headquartersState, officeName, jurisdictionId, startDate, endDate).",
+      "DerivedMetric": "Deterministically computed statistical aggregates or catalog flags from raw values (loadedConstituencies, hasSpatialBoundaries, overallTurnout, turnoutPercentage, margin, marginPercentage, voteShare, rank, count, total).",
+      "CurrentStateTemporal": "State attributes that change over time or represent current temporal office/jurisdiction binding (currentParty, currentMLA, isCurrent, party on legislator tenure).",
+      "NormalizedEntity": "Standardized/curated entity attributes across disparate statutory records (canonicalName, aliases, gender, electionCode, name, status).",
+      "SyntheticIdentifier": "Internal system UUIDs or synthetic keys, not external statutory IDs (id, tenureId, partyId, constituencyId, electionId).",
+      "PublicAssetMedia": "Publicly hosted media assets (photoUrl, symbolUrl).",
+      "ScenarioSimulation": "Algorithmic research simulations (model, states, seats, districts, methodology, officialDelimitationOrder: false, SCENARIO_PROPOSED_REGIME)."
+    },
     "routeFieldMatrix": [
       {
         "routeIndex": 1,
@@ -36,9 +46,13 @@
         "openApiPath": "/api/vsaas/v1/geo/states",
         "authorityLayer": "STATUTORY_FACT",
         "dataStatus": "OFFICIAL",
-        "statutoryFactFields": ["stateCode", "name", "totalSeats"],
-        "derivedFields": ["loadedConstituencies"],
-        "scenarioFields": [],
+        "statutoryFactProperties": ["stateCode", "name", "totalSeats"],
+        "derivedMetricProperties": ["loadedConstituencies"],
+        "temporalProperties": [],
+        "normalizedEntityProperties": [],
+        "syntheticIdProperties": [],
+        "publicAssetProperties": [],
+        "scenarioProperties": [],
         "upstreamSource": "ECI Schedule XXXI / Delimitation of Parliamentary and Assembly Constituencies Order, 2008"
       },
       {
@@ -48,9 +62,13 @@
         "openApiPath": "/api/vsaas/v1/geo/states/{stateCode}",
         "authorityLayer": "STATUTORY_FACT",
         "dataStatus": "OFFICIAL",
-        "statutoryFactFields": ["stateCode", "name", "totalSeats"],
-        "derivedFields": ["loadedConstituencies", "hasSpatialBoundaries"],
-        "scenarioFields": [],
+        "statutoryFactProperties": ["stateCode", "name", "totalSeats"],
+        "derivedMetricProperties": ["loadedConstituencies", "hasSpatialBoundaries"],
+        "temporalProperties": [],
+        "normalizedEntityProperties": [],
+        "syntheticIdProperties": [],
+        "publicAssetProperties": [],
+        "scenarioProperties": [],
         "upstreamSource": "ECI Schedule XXXI / Delimitation of Parliamentary and Assembly Constituencies Order, 2008"
       },
       {
@@ -60,10 +78,14 @@
         "openApiPath": "/api/vsaas/v1/geo/states/{stateCode}/constituencies",
         "authorityLayer": "STATUTORY_FACT",
         "dataStatus": "OFFICIAL",
-        "statutoryFactFields": ["acNo", "name", "stateCode", "district", "reservationStatus", "currentParty", "currentMLA"],
-        "derivedFields": ["id", "count"],
-        "scenarioFields": [],
-        "upstreamSource": "Delimitation Order, 2008 & State Gazette"
+        "statutoryFactProperties": ["acNo", "name", "stateCode", "district", "reservationStatus"],
+        "derivedMetricProperties": ["count"],
+        "temporalProperties": ["currentParty", "currentMLA"],
+        "normalizedEntityProperties": [],
+        "syntheticIdProperties": ["id"],
+        "publicAssetProperties": [],
+        "scenarioProperties": [],
+        "upstreamSource": "Delimitation Order, 2008 & State Gazette (with temporal MLA affiliation resolution)"
       },
       {
         "routeIndex": 4,
@@ -72,10 +94,14 @@
         "openApiPath": "/api/vsaas/v1/geo/states/{stateCode}/constituencies/{acNo}",
         "authorityLayer": "STATUTORY_FACT",
         "dataStatus": "OFFICIAL",
-        "statutoryFactFields": ["acNo", "name", "stateCode", "district", "reservationStatus", "currentParty", "currentMLA"],
-        "derivedFields": ["id"],
-        "scenarioFields": [],
-        "upstreamSource": "ECI Official Gazette & Delimitation Order, 2008"
+        "statutoryFactProperties": ["acNo", "name", "stateCode", "district", "reservationStatus"],
+        "derivedMetricProperties": [],
+        "temporalProperties": ["currentParty", "currentMLA"],
+        "normalizedEntityProperties": [],
+        "syntheticIdProperties": ["id"],
+        "publicAssetProperties": [],
+        "scenarioProperties": [],
+        "upstreamSource": "ECI Official Gazette & Delimitation Order, 2008 (with temporal MLA affiliation resolution)"
       },
       {
         "routeIndex": 5,
@@ -84,9 +110,13 @@
         "openApiPath": "/api/vsaas/v1/elections",
         "authorityLayer": "STATUTORY_FACT",
         "dataStatus": "OFFICIAL",
-        "statutoryFactFields": ["stateCode", "electionYear", "electionType", "totalConstituencies", "notificationDate", "pollingDate", "countingDate", "totalElectors", "totalVotesPolled"],
-        "derivedFields": ["id", "overallTurnout"],
-        "scenarioFields": [],
+        "statutoryFactProperties": ["stateCode", "electionType", "house", "notificationDate", "pollDate", "countingDate", "completionDate"],
+        "derivedMetricProperties": ["overallTurnout"],
+        "temporalProperties": [],
+        "normalizedEntityProperties": ["electionCode", "name", "status"],
+        "syntheticIdProperties": ["id"],
+        "publicAssetProperties": [],
+        "scenarioProperties": [],
         "upstreamSource": "ECI Official Results Feed & Gazette Notification"
       },
       {
@@ -96,9 +126,13 @@
         "openApiPath": "/api/vsaas/v1/elections/{id}",
         "authorityLayer": "STATUTORY_FACT",
         "dataStatus": "OFFICIAL",
-        "statutoryFactFields": ["stateCode", "electionYear", "electionType", "totalConstituencies", "notificationDate", "pollingDate", "countingDate", "totalElectors", "totalVotesPolled"],
-        "derivedFields": ["id", "overallTurnout"],
-        "scenarioFields": [],
+        "statutoryFactProperties": ["stateCode", "electionType", "house", "totalSeats", "totalVoters", "votesPolled"],
+        "derivedMetricProperties": ["turnoutPercentage"],
+        "temporalProperties": [],
+        "normalizedEntityProperties": ["electionCode", "name", "status"],
+        "syntheticIdProperties": ["id"],
+        "publicAssetProperties": [],
+        "scenarioProperties": [],
         "upstreamSource": "ECI Statistical Report"
       },
       {
@@ -108,9 +142,13 @@
         "openApiPath": "/api/vsaas/v1/elections/{id}/contests",
         "authorityLayer": "STATUTORY_FACT",
         "dataStatus": "OFFICIAL",
-        "statutoryFactFields": ["acNo", "constituencyName", "totalElectors", "totalVotesPolled", "totalValidVotes", "totalRejectedVotes", "notaVotes", "winner.name", "winner.party", "runnerUp.name", "runnerUp.party"],
-        "derivedFields": ["id", "electionId", "constituencyId", "margin", "turnoutPercentage", "marginPercentage"],
-        "scenarioFields": [],
+        "statutoryFactProperties": ["acNo", "constituencyName", "totalElectors", "totalVotesPolled", "totalValidVotes", "totalRejectedVotes", "notaVotes", "winner.name", "winner.party", "runnerUp.name", "runnerUp.party"],
+        "derivedMetricProperties": ["turnoutPercentage", "margin", "marginPercentage"],
+        "temporalProperties": [],
+        "normalizedEntityProperties": [],
+        "syntheticIdProperties": ["id", "electionId", "constituencyId"],
+        "publicAssetProperties": [],
+        "scenarioProperties": [],
         "upstreamSource": "ECI Form 20 / Form 21E Gazette Entry"
       },
       {
@@ -120,9 +158,13 @@
         "openApiPath": "/api/vsaas/v1/elections/{id}/contests/{constituencyId}",
         "authorityLayer": "STATUTORY_FACT",
         "dataStatus": "OFFICIAL",
-        "statutoryFactFields": ["contest.acNo", "contest.constituencyName", "contest.totalElectors", "contest.totalVotesPolled", "contest.totalValidVotes", "contest.totalRejectedVotes", "contest.notaVotes", "candidates.candidateName", "candidates.party", "candidates.partyAtElection", "candidates.votesReceived", "candidates.evmVotes", "candidates.postalVotes", "candidates.result"],
-        "derivedFields": ["contest.turnoutPercentage", "contest.margin", "candidates.voteShare", "candidates.rank", "candidates.id"],
-        "scenarioFields": [],
+        "statutoryFactProperties": ["contest.acNo", "contest.constituencyName", "contest.totalElectors", "contest.totalVotesPolled", "contest.totalValidVotes", "contest.totalRejectedVotes", "contest.notaVotes", "candidates.candidateName", "candidates.party", "candidates.partyAtElection", "candidates.votesReceived", "candidates.evmVotes", "candidates.postalVotes", "candidates.result", "ballotChoices.choiceType", "ballotChoices.votesReceived", "winner.candidateName", "winner.party", "winner.votes", "runnerUp.candidateName", "runnerUp.party", "runnerUp.votes"],
+        "derivedMetricProperties": ["contest.turnoutPercentage", "contest.margin", "candidates.voteShare", "candidates.rank"],
+        "temporalProperties": [],
+        "normalizedEntityProperties": [],
+        "syntheticIdProperties": ["contest.id", "contest.electionId", "contest.constituencyId", "candidates.id", "candidates.partyId"],
+        "publicAssetProperties": [],
+        "scenarioProperties": [],
         "upstreamSource": "ECI Form 20 Final Result Sheet & ECI Form 21E Official Declaration of Result"
       },
       {
@@ -132,9 +174,13 @@
         "openApiPath": "/api/vsaas/v1/entities/search",
         "authorityLayer": "STATUTORY_FACT",
         "dataStatus": "OFFICIAL",
-        "statutoryFactFields": ["persons.canonicalName", "persons.aliases", "persons.gender", "persons.photoUrl", "persons.eciCandidateId", "persons.sansadMemberId", "organizations.name", "organizations.shortName", "organizations.orgType", "organizations.ecPartyCode", "organizations.recognitionLevel", "organizations.headquartersState", "organizations.symbolUrl"],
-        "derivedFields": ["persons.id", "organizations.id", "total"],
-        "scenarioFields": [],
+        "statutoryFactProperties": ["persons.eciCandidateId", "persons.sansadMemberId", "organizations.name", "organizations.shortName", "organizations.orgType", "organizations.ecPartyCode", "organizations.recognitionLevel", "organizations.headquartersState"],
+        "derivedMetricProperties": ["total"],
+        "temporalProperties": [],
+        "normalizedEntityProperties": ["persons.canonicalName", "persons.aliases", "persons.gender"],
+        "syntheticIdProperties": ["persons.id", "organizations.id"],
+        "publicAssetProperties": ["persons.photoUrl", "organizations.symbolUrl"],
+        "scenarioProperties": [],
         "upstreamSource": "ECI Gazetted Affidavits, Parliamentary Secretariats & ECI Political Parties List"
       },
       {
@@ -144,9 +190,13 @@
         "openApiPath": "/api/vsaas/v1/entities/persons/{id}",
         "authorityLayer": "STATUTORY_FACT",
         "dataStatus": "OFFICIAL",
-        "statutoryFactFields": ["canonicalName", "aliases", "gender", "photoUrl", "eciCandidateId", "sansadMemberId"],
-        "derivedFields": ["id"],
-        "scenarioFields": [],
+        "statutoryFactProperties": ["eciCandidateId", "sansadMemberId"],
+        "derivedMetricProperties": [],
+        "temporalProperties": [],
+        "normalizedEntityProperties": ["canonicalName", "aliases", "gender"],
+        "syntheticIdProperties": ["id"],
+        "publicAssetProperties": ["photoUrl"],
+        "scenarioProperties": [],
         "upstreamSource": "Official Gazette & Statutory Election Filing"
       },
       {
@@ -156,9 +206,13 @@
         "openApiPath": "/api/vsaas/v1/entities/organizations/{id}",
         "authorityLayer": "STATUTORY_FACT",
         "dataStatus": "OFFICIAL",
-        "statutoryFactFields": ["name", "shortName", "orgType", "ecPartyCode", "recognitionLevel", "headquartersState", "symbolUrl"],
-        "derivedFields": ["id"],
-        "scenarioFields": [],
+        "statutoryFactProperties": ["name", "shortName", "orgType", "ecPartyCode", "recognitionLevel", "headquartersState"],
+        "derivedMetricProperties": [],
+        "temporalProperties": [],
+        "normalizedEntityProperties": [],
+        "syntheticIdProperties": ["id"],
+        "publicAssetProperties": ["symbolUrl"],
+        "scenarioProperties": [],
         "upstreamSource": "ECI Notification of Recognized Political Parties and Election Symbols"
       },
       {
@@ -168,10 +222,14 @@
         "openApiPath": "/api/vsaas/v1/entities/legislators",
         "authorityLayer": "STATUTORY_FACT",
         "dataStatus": "OFFICIAL",
-        "statutoryFactFields": ["officeName", "jurisdictionId", "stateCode", "person.canonicalName", "party.name", "startDate", "endDate"],
-        "derivedFields": ["tenureId", "isCurrent", "count"],
-        "scenarioFields": [],
-        "upstreamSource": "Legislative Assembly Secretariat Notification"
+        "statutoryFactProperties": ["officeName", "jurisdictionId", "stateCode", "party.name", "party.shortName", "startDate", "endDate"],
+        "derivedMetricProperties": ["count"],
+        "temporalProperties": ["isCurrent", "party"],
+        "normalizedEntityProperties": ["person.canonicalName"],
+        "syntheticIdProperties": ["tenureId", "person.id", "party.id"],
+        "publicAssetProperties": ["person.photoUrl"],
+        "scenarioProperties": [],
+        "upstreamSource": "Legislative Assembly Secretariat Notification (with temporal incumbency resolution)"
       },
       {
         "routeIndex": 13,
@@ -180,9 +238,13 @@
         "openApiPath": "/api/vsaas/v1/delim/regimes",
         "authorityLayer": "STATUTORY_FACT",
         "dataStatus": "OFFICIAL",
-        "statutoryFactFields": ["currentOperativeLaw.regimeId", "currentOperativeLaw.legalStatus", "currentOperativeLaw.orderName", "currentOperativeLaw.constitutionalFreeze", "constitutionalStatus", "timelineEvents"],
-        "derivedFields": [],
-        "scenarioFields": [],
+        "statutoryFactProperties": ["currentOperativeLaw.regimeId", "currentOperativeLaw.legalStatus", "currentOperativeLaw.orderName", "currentOperativeLaw.constitutionalFreeze", "constitutionalStatus", "timelineEvents"],
+        "derivedMetricProperties": [],
+        "temporalProperties": [],
+        "normalizedEntityProperties": [],
+        "syntheticIdProperties": [],
+        "publicAssetProperties": [],
+        "scenarioProperties": [],
         "upstreamSource": "Constitution of India (Articles 81, 82, 170, 330, 332) & Delimitation Acts"
       },
       {
@@ -194,9 +256,13 @@
         "computationalType": "ACADEMIC_SIMULATION",
         "officialDelimitationOrder": false,
         "legalStatus": "SCENARIO_PROPOSED_REGIME",
-        "statutoryFactFields": [],
-        "derivedFields": [],
-        "scenarioFields": ["model", "states", "totalSeats", "summary", "projections"],
+        "statutoryFactProperties": [],
+        "derivedMetricProperties": [],
+        "temporalProperties": [],
+        "normalizedEntityProperties": [],
+        "syntheticIdProperties": [],
+        "publicAssetProperties": [],
+        "scenarioProperties": ["model", "states", "totalSeats", "summary", "projections"],
         "upstreamSource": "Census 2011 Primary Census Abstract (RGI) + PANIN Algorithmic Projection Engine"
       },
       {
@@ -209,9 +275,13 @@
         "officialDelimitationOrder": false,
         "legalStatus": "SCENARIO_PROPOSED_REGIME",
         "effectiveVersion": "2026-PANIN-SIM-V1",
-        "statutoryFactFields": [],
-        "derivedFields": [],
-        "scenarioFields": ["stateCode", "mode", "seats", "districts", "summary", "methodology"],
+        "statutoryFactProperties": [],
+        "derivedMetricProperties": [],
+        "temporalProperties": [],
+        "normalizedEntityProperties": [],
+        "syntheticIdProperties": [],
+        "publicAssetProperties": [],
+        "scenarioProperties": ["stateCode", "mode", "seats", "districts", "summary", "methodology"],
         "upstreamSource": "Census 2011 Primary Census Abstract (RGI) + Hare-Niemeyer / Hamilton Quota Method"
       }
     ]
@@ -246,8 +316,8 @@
   },
   "g5TestExecution": {
     "file": "tests/saas-openapi-contract-drift.test.mjs",
-    "totalChecks": 19,
-    "passed": 19,
+    "totalChecks": 24,
+    "passed": 24,
     "failed": 0,
     "passRate": "100.0%"
   },

@@ -362,6 +362,115 @@ runCheck('W021-G5-RECON-01', 'Legacy apps/api/openapi.yaml is reconciled with cl
   return { observed: 'Deprecation and canonical delegation notice verified in legacy openapi.yaml' };
 });
 
+// ─── 6B. PROPERTY-LEVEL PROVENANCE SEMANTIC INVARIANTS ───
+
+runCheck('W021-G5-SEM-01', 'Derived Metrics invariant: turnout, margin, rank, voteShare, and counts are classified as [Derived Metric]', () => {
+  const schemas = openapiDoc.components?.schemas;
+  
+  // StateListItem / StateDetail: loadedConstituencies
+  assert.ok(schemas.StateListItem.properties.loadedConstituencies.description.includes('[Derived Metric]'), 'StateListItem.loadedConstituencies missing [Derived Metric]');
+  assert.ok(schemas.StateDetail.properties.loadedConstituencies.description.includes('[Derived Metric]'), 'StateDetail.loadedConstituencies missing [Derived Metric]');
+  assert.ok(schemas.StateDetail.properties.hasSpatialBoundaries.description.includes('[Derived Metric]'), 'StateDetail.hasSpatialBoundaries missing [Derived Metric]');
+
+  // ElectionEventDetail: turnoutPercentage
+  assert.ok(schemas.ElectionEventDetail.properties.turnoutPercentage.description.includes('[Derived Metric]'), 'ElectionEventDetail.turnoutPercentage missing [Derived Metric]');
+
+  // ContestSummary: turnoutPercentage, margin
+  assert.ok(schemas.ContestSummary.properties.turnoutPercentage.description.includes('[Derived Metric]'), 'ContestSummary.turnoutPercentage missing [Derived Metric]');
+  assert.ok(schemas.ContestSummary.properties.margin.description.includes('[Derived Metric]'), 'ContestSummary.margin missing [Derived Metric]');
+
+  // CandidateResultItem: voteShare, rank
+  assert.ok(schemas.CandidateResultItem.properties.voteShare.description.includes('[Derived Metric]'), 'CandidateResultItem.voteShare missing [Derived Metric]');
+  assert.ok(schemas.CandidateResultItem.properties.rank.description.includes('[Derived Metric]'), 'CandidateResultItem.rank missing [Derived Metric]');
+
+  // ContestDetail.contest: turnoutPercentage, margin
+  const contestProps = schemas.ContestDetail.properties.contest.properties;
+  assert.ok(contestProps.turnoutPercentage.description.includes('[Derived Metric]'), 'ContestDetail.contest.turnoutPercentage missing [Derived Metric]');
+  assert.ok(contestProps.margin.description.includes('[Derived Metric]'), 'ContestDetail.contest.margin missing [Derived Metric]');
+
+  return { observed: 'All 10 derived metric properties across 6 schemas strictly tagged [Derived Metric]' };
+});
+
+runCheck('W021-G5-SEM-02', 'Temporal / Current-State invariant: currentParty, currentMLA, and isCurrent are classified as Current-State / Temporal', () => {
+  const schemas = openapiDoc.components?.schemas;
+
+  // ConstituencySummary & ConstituencyDetail: currentParty, currentMLA
+  assert.ok(schemas.ConstituencySummary.properties.currentParty.description.includes('[Current-State / Temporal Affiliation]'), 'ConstituencySummary.currentParty missing [Current-State / Temporal Affiliation]');
+  assert.ok(schemas.ConstituencySummary.properties.currentMLA.description.includes('[Current-State / Incumbent]'), 'ConstituencySummary.currentMLA missing [Current-State / Incumbent]');
+
+  assert.ok(schemas.ConstituencyDetail.properties.currentParty.description.includes('[Current-State / Temporal Affiliation]'), 'ConstituencyDetail.currentParty missing [Current-State / Temporal Affiliation]');
+  assert.ok(schemas.ConstituencyDetail.properties.currentMLA.description.includes('[Current-State / Incumbent]'), 'ConstituencyDetail.currentMLA missing [Current-State / Incumbent]');
+
+  // LegislatorTenureItem: party, isCurrent
+  assert.ok(schemas.LegislatorTenureItem.properties.party.description.includes('[Current-State / Temporal Affiliation]'), 'LegislatorTenureItem.party missing [Current-State / Temporal Affiliation]');
+  assert.ok(schemas.LegislatorTenureItem.properties.isCurrent.description.includes('[Current-State / Temporal Status]'), 'LegislatorTenureItem.isCurrent missing [Current-State / Temporal Status]');
+
+  return { observed: 'All current-state properties strictly classified as Temporal/Current-State, NOT immutable statutory facts' };
+});
+
+runCheck('W021-G5-SEM-03', 'Synthetic Identifiers invariant: entity IDs and foreign keys are classified as [Synthetic Identifier]', () => {
+  const schemas = openapiDoc.components?.schemas;
+
+  // ConstituencySummary / Detail: id
+  assert.ok(schemas.ConstituencySummary.properties.id.description.includes('[Synthetic Identifier]'), 'ConstituencySummary.id missing [Synthetic Identifier]');
+  assert.ok(schemas.ConstituencyDetail.properties.id.description.includes('[Synthetic Identifier]'), 'ConstituencyDetail.id missing [Synthetic Identifier]');
+
+  // ElectionEvent / Detail: id
+  assert.ok(schemas.ElectionEvent.properties.id.description.includes('[Synthetic Identifier]'), 'ElectionEvent.id missing [Synthetic Identifier]');
+  assert.ok(schemas.ElectionEventDetail.properties.id.description.includes('[Synthetic Identifier]'), 'ElectionEventDetail.id missing [Synthetic Identifier]');
+
+  // ContestSummary: id, electionId, constituencyId
+  assert.ok(schemas.ContestSummary.properties.id.description.includes('[Synthetic Identifier]'), 'ContestSummary.id missing [Synthetic Identifier]');
+  assert.ok(schemas.ContestSummary.properties.electionId.description.includes('[Synthetic Identifier]'), 'ContestSummary.electionId missing [Synthetic Identifier]');
+  assert.ok(schemas.ContestSummary.properties.constituencyId.description.includes('[Synthetic Identifier]'), 'ContestSummary.constituencyId missing [Synthetic Identifier]');
+
+  // CandidateResultItem: id, partyId
+  assert.ok(schemas.CandidateResultItem.properties.id.description.includes('[Synthetic Identifier]'), 'CandidateResultItem.id missing [Synthetic Identifier]');
+  assert.ok(schemas.CandidateResultItem.properties.partyId.description.includes('[Synthetic Identifier]'), 'CandidateResultItem.partyId missing [Synthetic Identifier]');
+
+  // CanonicalPersonSummary / Detail: id
+  assert.ok(schemas.CanonicalPersonSummary.properties.id.description.includes('[Synthetic Identifier]'), 'CanonicalPersonSummary.id missing [Synthetic Identifier]');
+  assert.ok(schemas.CanonicalPersonProfile.properties.id.description.includes('[Synthetic Identifier]'), 'CanonicalPersonProfile.id missing [Synthetic Identifier]');
+
+  // CanonicalOrgSummary / Detail: id
+  assert.ok(schemas.CanonicalOrgSummary.properties.id.description.includes('[Synthetic Identifier]'), 'CanonicalOrgSummary.id missing [Synthetic Identifier]');
+  assert.ok(schemas.CanonicalOrgProfile.properties.id.description.includes('[Synthetic Identifier]'), 'CanonicalOrgProfile.id missing [Synthetic Identifier]');
+
+  // LegislatorTenureItem: tenureId, person.id, party.id
+  assert.ok(schemas.LegislatorTenureItem.properties.tenureId.description.includes('[Synthetic Identifier]'), 'LegislatorTenureItem.tenureId missing [Synthetic Identifier]');
+  assert.ok(schemas.LegislatorTenureItem.properties.person.properties.id.description.includes('[Synthetic Identifier]'), 'LegislatorTenureItem.person.id missing [Synthetic Identifier]');
+  assert.ok(schemas.LegislatorTenureItem.properties.party.properties.id.description.includes('[Synthetic Identifier]'), 'LegislatorTenureItem.party.id missing [Synthetic Identifier]');
+
+  return { observed: 'All internal synthetic keys strictly documented as [Synthetic Identifier], NOT statutory IDs' };
+});
+
+runCheck('W021-G5-SEM-04', 'External Statutory IDs invariant: eciCandidateId, sansadMemberId, ecPartyCode are classified as [Official Statutory Fact]', () => {
+  const schemas = openapiDoc.components?.schemas;
+
+  assert.ok(schemas.CanonicalPersonSummary.properties.eciCandidateId.description.includes('[Official Statutory Fact]'), 'CanonicalPersonSummary.eciCandidateId missing [Official Statutory Fact]');
+  assert.ok(schemas.CanonicalPersonProfile.properties.eciCandidateId.description.includes('[Official Statutory Fact]'), 'CanonicalPersonProfile.eciCandidateId missing [Official Statutory Fact]');
+  assert.ok(schemas.CanonicalPersonSummary.properties.sansadMemberId.description.includes('[Official Statutory Fact]'), 'CanonicalPersonSummary.sansadMemberId missing [Official Statutory Fact]');
+  assert.ok(schemas.CanonicalPersonProfile.properties.sansadMemberId.description.includes('[Official Statutory Fact]'), 'CanonicalPersonProfile.sansadMemberId missing [Official Statutory Fact]');
+
+  assert.ok(schemas.CanonicalOrgSummary.properties.ecPartyCode.description.includes('[Official Statutory Fact]'), 'CanonicalOrgSummary.ecPartyCode missing [Official Statutory Fact]');
+  assert.ok(schemas.CanonicalOrgProfile.properties.ecPartyCode.description.includes('[Official Statutory Fact]'), 'CanonicalOrgProfile.ecPartyCode missing [Official Statutory Fact]');
+
+  return { observed: 'All external statutory IDs classified as [Official Statutory Fact]' };
+});
+
+runCheck('W021-G5-SEM-05', 'Normalized Entities invariant: canonical names, aliases, and lifecycle status are classified as [Normalized Entity]', () => {
+  const schemas = openapiDoc.components?.schemas;
+
+  assert.ok(schemas.CanonicalPersonSummary.properties.canonicalName.description.includes('[Normalized Entity]'), 'CanonicalPersonSummary.canonicalName missing [Normalized Entity]');
+  assert.ok(schemas.CanonicalPersonProfile.properties.canonicalName.description.includes('[Normalized Entity]'), 'CanonicalPersonProfile.canonicalName missing [Normalized Entity]');
+  assert.ok(schemas.CanonicalPersonSummary.properties.aliases.description.includes('[Normalized Entity]'), 'CanonicalPersonSummary.aliases missing [Normalized Entity]');
+  assert.ok(schemas.CanonicalPersonProfile.properties.aliases.description.includes('[Normalized Entity]'), 'CanonicalPersonProfile.aliases missing [Normalized Entity]');
+  assert.ok(schemas.ElectionEvent.properties.name.description.includes('[Normalized Entity]'), 'ElectionEvent.name missing [Normalized Entity]');
+  assert.ok(schemas.ElectionEvent.properties.status.description.includes('[Normalized Entity]'), 'ElectionEvent.status missing [Normalized Entity]');
+
+  return { observed: 'Curated canonical entities and status codes classified as [Normalized Entity]' };
+});
+
 // ─── 8. AJV SCHEMA VALIDATION ───
 
 runCheck('W021-G5-AJV-01', 'All component schemas compile cleanly under Ajv (Draft 2020-12 / Draft 07 engine)', () => {
