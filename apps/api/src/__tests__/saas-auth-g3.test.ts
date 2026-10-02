@@ -204,7 +204,7 @@ describe('W021-G3: SaaS API Key Authentication & Security Gate', () => {
 
     app = Fastify({ logger: false });
 
-    // Register plugin with mock lookup function
+    // Register plugin with mock lookup function and mock usage recorder
     await app.register(saasAuthPlugin, {
       mockLookup: async (hash: string) => {
         if (hash === 'FAIL_DEPENDENCY_TRIGGER_HASH') {
@@ -212,6 +212,13 @@ describe('W021-G3: SaaS API Key Authentication & Security Gate', () => {
         }
         return mockDb.get(hash) || null;
       },
+      mockUsageRecorder: async () => ({
+        allowed: true,
+        currentMonthlyUsage: 1,
+        monthlyRemaining: 9999,
+        monthlyCeiling: 10000,
+        resetSeconds: 86400,
+      }),
     });
 
     // Test SaaS route family (/api/vsaas/v1/test-echo)

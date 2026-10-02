@@ -1,20 +1,22 @@
-# W021-G3: FASTIFY API-KEY AUTHENTICATION & SECURITY GATE REPORT
+# W021-G3: FASTIFY API-KEY AUTHENTICATION & DURABLE MONTHLY QUOTA SECURITY GATE REPORT
 
 ## 1. Executive Summary & Verification Coordinates
 
-Pursuant to **CTO AUTHORIZATION — W021-G3: API KEY AUTHENTICATION & SECURITY GATE**, this report records the implementation, cryptographic enforcements, tenant isolation, rate limiting, and test verification for the bounded Fastify SaaS API Key Authentication layer.
+Pursuant to **CTO AUTHORIZATION — W021-G3: API KEY AUTHENTICATION & SECURITY GATE** and **CTO REMEDIATION DIRECTIVE — W021-G3: MONTHLY QUOTA DURABILITY & MULTI-INSTANCE CORRECTNESS**, this report records the implementation, cryptographic enforcements, authoritative PostgreSQL durable monthly quota architecture, multi-instance correctness, tenant isolation, and test verification for the bounded Fastify SaaS API Key Authentication layer.
 
 | Coordinate Field | Value |
 |---|---|
-| **Milestone / Gate** | `W021-G3` (API Key Authentication & Security Gate) |
-| **Authority** | CTO AUTHORIZATION — W021-G3 |
+| **Milestone / Gate** | `W021-G3` (API Key Authentication & Security Gate — Remediated) |
+| **Authority** | CTO REMEDIATION DIRECTIVE — W021-G3 |
 | **Ratified Plan Reference** | `PLAN-W021-MASTER-REV-1.0.md` |
 | **Accepted G2 Baseline** | `e4923b69c620bf335d27083c29245a3697bbf299` |
-| **Execution Timestamp** | `2026-10-02T02:11:00.000Z` |
+| **Execution Timestamp** | `2026-10-02T03:36:00.000Z` |
 | **Target Staging Environment** | `panIN-staging` (`fkpigozcqnmcvofuksar` / `https://fkpigozcqnmcvofuksar.supabase.co`) |
 | **Production Air-Gap Status** | **100% AIR-GAPPED & UNTOUCHED** (`ehfafcnimmjusyvplbah`) |
-| **G3 Focused Test Suite** | **17 / 17 PASS (100.0%)** (`apps/api/src/__tests__/saas-auth-g3.test.ts`) |
+| **G3 Core Auth Test Suite** | **17 / 17 PASS (100.0%)** (`apps/api/src/__tests__/saas-auth-g3.test.ts`) |
+| **G3 Durable Quota Test Suite** | **11 / 11 PASS (100.0%)** (`apps/api/src/__tests__/saas-durable-quota.test.ts`) |
 | **Full Platform Regression** | **226 / 226 PASS (100.0%)** (W018: 53, W019: 93, W020: 48, W021-G2: 32) |
+| **Observability Regression** | **19 / 19 PASS (100.0%)** (`apps/api/src/__tests__/observability.test.ts`) |
 | **API TypeScript Build** | `tsc --noEmit` **0 errors (Clean)** |
 | **API Contract Drift Check** | `9 / 9 matched (100% parity)` |
 | **W021-G4 Onward Status** | **STRICTLY NOT AUTHORIZED / GATED** |
@@ -33,16 +35,24 @@ Pursuant to **CTO AUTHORIZATION — W021-G3: API KEY AUTHENTICATION & SECURITY G
 * **Storage Hashing**: Raw key is passed through SHA-256 (`crypto.createHash('sha256').update(rawKey).digest('hex')`) producing a 64-character hexadecimal digest.
 * **Timing-Safe Comparison**: `crypto.timingSafeEqual` verifies stored hash against incoming hash in constant time, eliminating timing analysis attack vectors.
 
-### 2.2 Rate Limiter Module (`apps/api/src/lib/saasRateLimiter.ts`)
-* In-memory token-bucket rate limiter enforcing burst ceilings per minute and monthly cumulative quotas:
-  - `free`: 60 requests/minute, 10,000 monthly ceiling.
-  - `pro`: 600 requests/minute, 500,000 monthly ceiling.
-  - `enterprise`: 3,000 requests/minute, 10,000,000 monthly ceiling.
-* Returns standard rate limit headers:
-  - `x-ratelimit-limit`
-  - `x-ratelimit-remaining`
-  - `x-ratelimit-reset`
-  - `Retry-After` (when 429 triggered)
+### 2.2 Dual-Mechanism Rate & Quota Controller (`apps/api/src/lib/saasRateLimiter.ts`)
+Per the CTO remediation directive, the rate limiting system is divided into two decoupled layers:
+1. **Synchronous Local Burst Layer (In-Memory Token Bucket)**:
+   - Clamps microbursts with sub-millisecond local overhead:
+     - `free`: 60 requests/minute.
+     - `pro`: 600 requests/minute.
+     - `enterprise`: 3,000 requests/minute.
+   - Emits standard burst rate limit headers (`x-ratelimit-limit`, `x-ratelimit-remaining`, `x-ratelimit-reset`).
+   - Returns HTTP 429 `RATE_LIMIT_EXCEEDED` if local minute burst is breached.
+2. **Authoritative Durable Monthly Quota Layer (PostgreSQL `public.saas_usage_ledger`)**:
+   - Monthly quotas are **never stored as ephemeral in-memory state**.
+   - Derived directly from `public.saas_usage_ledger` across all instances and process restarts:
+     - `free`: 10,000 / month.
+     - `pro`: 500,000 / month.
+     - `enterprise`: 10,000,000 / month.
+   - Usage queries aggregate `sum(request_count)` where `tenant_id = :tenant_id` and `hour_bucket >= start of current UTC month`.
+   - Increments are recorded into `(tenant_id, api_key_id, hour_bucket)`. Unique constraint collision (`23505`) is gracefully caught and re-evaluated, guaranteeing concurrency safety.
+   - Quota exhaustion triggers HTTP 429 `RATE_LIMIT_EXCEEDED`, `x-monthly-quota-limit`, `x-monthly-quota-remaining: 0`, and `Retry-After: <seconds_until_month_reset>`.
 
 ### 2.3 Fastify Authentication Plugin (`apps/api/src/lib/saasAuthPlugin.ts`)
 * Fastify `preHandler` hook scoping exclusively to the `/api/vsaas/` route namespace.
@@ -73,7 +83,27 @@ Pursuant to **CTO AUTHORIZATION — W021-G3: API KEY AUTHENTICATION & SECURITY G
 
 ---
 
-## 3. Test Battery Execution Output (17 / 17 PASS)
+## 3. Dedicated Durable Monthly Quota Test Battery (11 / 11 PASS)
+
+```text
+PASS src/__tests__/saas-durable-quota.test.ts
+  W021-G3 Remediation: Durable Monthly Quota Verification
+    √ Scenario 1: Durable usage increment creates and increments records in saas_usage_ledger
+    √ Scenario 2: Monthly aggregation sums across multiple hourly buckets in current UTC month
+    √ Scenario 3: Quota boundary accurately checks and computes remaining requests
+    √ Scenario 4: Quota exhaustion returns allowed=false, 0 remaining, and resetSeconds
+    √ Scenario 5: Concurrent quota race handles collisions safely via unique constraint retry
+    √ Scenario 6: Independent process / instance consistency derives state identically
+    √ Scenario 7: Restart persistence survives complete in-memory clearing
+    √ Scenario 8: Tenant isolation strictly segregates usage counts
+    √ Scenario 9: Database failure behavior fails closed with 500 AUTH_DEPENDENCY_FAILURE in Fastify
+    √ Scenario 10: API-Key deletion continuity (ON DELETE SET NULL) retains usage ledger rows
+    √ Scenario 11: End-to-end Fastify HTTP 429 and Retry-After header upon quota exhaustion
+```
+
+---
+
+## 4. G3 Core Authentication Test Battery (17 / 17 PASS)
 
 ```text
 PASS src/__tests__/saas-auth-g3.test.ts
@@ -106,21 +136,22 @@ PASS src/__tests__/saas-auth-g3.test.ts
 
 ---
 
-## 4. Full Platform Regression Summary
+## 5. Full Platform Regression Summary
 
-1. `tests/saas-auth-g3.test.ts`: **17 / 17 PASS** (G3 focused suite)
-2. `tests/political-entities-invariants.test.mjs`: **53 / 53 PASS** (W018)
-3. `tests/election-normalization-invariants.test.mjs`: **93 / 93 PASS** (W019)
-4. `tests/delimitation-migration-055-preflight.test.mjs`: **23 / 23 PASS** (W020)
-5. `tests/delimitation-g8-integration.test.mjs`: **25 / 25 PASS** (W020)
-6. `tests/saas-migration-056-preflight.test.mjs`: **32 / 32 PASS** (W021-G2)
-7. `apps/api/src/__tests__/observability.test.ts`: **19 / 19 PASS** (Observability)
-8. `scripts/check-api-contract-drift.mjs`: **9 / 9 matched (100% parity)**
-9. `apps/api` TypeScript compilation: **Clean (0 errors)**
+1. `apps/api/src/__tests__/saas-durable-quota.test.ts`: **11 / 11 PASS** (Durable quota battery)
+2. `apps/api/src/__tests__/saas-auth-g3.test.ts`: **17 / 17 PASS** (G3 core auth suite)
+3. `tests/political-entities-invariants.test.mjs`: **53 / 53 PASS** (W018)
+4. `tests/election-normalization-invariants.test.mjs`: **93 / 93 PASS** (W019)
+5. `tests/delimitation-migration-055-preflight.test.mjs`: **23 / 23 PASS** (W020)
+6. `tests/delimitation-g8-integration.test.mjs`: **25 / 25 PASS** (W020)
+7. `tests/saas-migration-056-preflight.test.mjs`: **32 / 32 PASS** (W021-G2)
+8. `apps/api/src/__tests__/observability.test.ts`: **19 / 19 PASS** (Observability)
+9. `scripts/check-api-contract-drift.mjs`: **9 / 9 matched (100% parity)**
+10. `apps/api` TypeScript compilation: **Clean (0 errors)**
 
 ---
 
-## 5. Prohibited Actions Compliance Verification
+## 6. Prohibited Actions Compliance Verification
 
 * W021-G4 routes (`/api/vsaas/v1/geo/...`, `/api/vsaas/v1/elections/...`, etc.): **NOT IMPLEMENTED**.
 * SaaS business endpoints: **NOT IMPLEMENTED**.

@@ -17,6 +17,15 @@ export interface SaasAuthPluginOptions {
   enforceRateLimit?: boolean;
   requiredScopes?: string[];
   mockLookup?: (keyHash: string) => Promise<any | null>;
+  mockUsageRecorder?: (params: { tenantId: string; apiKeyId?: string | null; tier: SaasTenantTier }) => Promise<{
+    allowed: boolean;
+    currentMonthlyUsage: number;
+    monthlyRemaining: number;
+    monthlyCeiling: number;
+    resetSeconds: number;
+    reason?: 'MONTHLY_CEILING_EXCEEDED';
+  }>;
+  customClient?: any;
 }
 
 /**
@@ -229,27 +238,76 @@ export async function authenticateSaasRequest(
     }
   }
 
-  // 9. Rate Limiting Check
+  // 9. Rate Limiting: Dual-Mechanism Burst & Durable Monthly Quota Check
   const tier = (tenant.tier || 'free') as SaasTenantTier;
-  const rateLimitResult = saasRateLimiter.checkLimit(tenant.id, tier);
+  const dbClient = options?.customClient || supabase;
 
-  reply.header('x-ratelimit-limit', rateLimitResult.limit);
-  reply.header('x-ratelimit-remaining', rateLimitResult.remaining);
-  reply.header('x-ratelimit-reset', rateLimitResult.resetSeconds);
+  // 9A. Local In-Memory Burst Check
+  const burstResult = saasRateLimiter.checkMinuteBurst(tenant.id, tier);
+  reply.header('x-ratelimit-limit', burstResult.limit);
+  reply.header('x-ratelimit-remaining', burstResult.remaining);
+  reply.header('x-ratelimit-reset', burstResult.resetSeconds);
 
-  if (options?.enforceRateLimit !== false && !rateLimitResult.allowed) {
+  if (options?.enforceRateLimit !== false && !burstResult.allowed) {
     request.log.warn({
-      event: 'SAAS_AUTH_RATE_LIMIT_EXCEEDED',
+      event: 'SAAS_AUTH_BURST_RATE_LIMIT_EXCEEDED',
       tenantId: tenant.id,
       tier,
-      reason: rateLimitResult.reason,
       url: request.url,
-    }, `Rate limit exceeded for tenant ${tenant.id}`);
+    }, `Minute burst limit exceeded for tenant ${tenant.id}`);
 
-    reply.header('Retry-After', rateLimitResult.resetSeconds);
+    reply.header('Retry-After', burstResult.resetSeconds);
     return sendApiError(reply, request, 429, 'Too Many Requests', 'Rate limit exceeded. Please retry after the designated cooldown window.', {
       code: 'RATE_LIMIT_EXCEEDED',
     });
+  }
+
+  // 9B. Authoritative Durable Monthly Quota Check & Ledger Increment
+  if (options?.enforceRateLimit !== false) {
+    try {
+      let durableResult;
+      if (options?.mockUsageRecorder) {
+        durableResult = await options.mockUsageRecorder({
+          tenantId: tenant.id,
+          apiKeyId: keyRecord.id,
+          tier,
+        });
+      } else {
+        durableResult = await saasRateLimiter.checkAndRecordDurableUsage({
+          tenantId: tenant.id,
+          apiKeyId: keyRecord.id,
+          tier,
+        }, dbClient);
+      }
+
+      reply.header('x-monthly-quota-limit', durableResult.monthlyCeiling);
+      reply.header('x-monthly-quota-remaining', durableResult.monthlyRemaining);
+
+      if (!durableResult.allowed) {
+        request.log.warn({
+          event: 'SAAS_AUTH_MONTHLY_QUOTA_EXCEEDED',
+          tenantId: tenant.id,
+          tier,
+          monthlyUsage: durableResult.currentMonthlyUsage,
+          ceiling: durableResult.monthlyCeiling,
+          url: request.url,
+        }, `Authoritative monthly quota exceeded for tenant ${tenant.id}`);
+
+        reply.header('Retry-After', durableResult.resetSeconds);
+        return sendApiError(reply, request, 429, 'Too Many Requests', 'Monthly quota exceeded. Please upgrade tier or await monthly window reset.', {
+          code: 'RATE_LIMIT_EXCEEDED',
+        });
+      }
+    } catch (err: any) {
+      request.log.error({
+        event: 'SAAS_AUTH_USAGE_LEDGER_ERROR',
+        errorMessage: err.message,
+        url: request.url,
+      }, 'Failed to record durable usage in saas_usage_ledger; failing closed');
+      return sendApiError(reply, request, 500, 'Internal Server Error', 'An unexpected error occurred. Please try again later.', {
+        code: 'AUTH_DEPENDENCY_FAILURE',
+      });
+    }
   }
 
   // 10. Bind Authenticated Context to Request
