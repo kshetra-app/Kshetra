@@ -44,8 +44,12 @@ describe('W021-G3 Remediation: Durable Monthly Quota Verification', () => {
   }
 
   let dbRows: UsageRow[] = [];
+  const tenantTiers: Record<string, string> = {};
 
   const mockDbClient = {
+    setTenantTier: (tenantId: string, tier: string) => {
+      tenantTiers[tenantId] = tier;
+    },
     from: (table: string) => {
       if (table !== 'saas_usage_ledger') {
         throw new Error(`Unexpected table: ${table}`);
@@ -126,22 +130,26 @@ describe('W021-G3 Remediation: Durable Monthly Quota Verification', () => {
         throw new Error(`Unknown RPC function: ${fnName}`);
       }
 
-      const { p_tenant_id, p_api_key_id, p_hour_bucket, p_month_start, p_monthly_ceiling } = args;
+      const { p_tenant_id, p_api_key_id, p_hour_bucket, p_month_start } = args;
 
       // 1. Serialization boundary: locks tenant row (simulated atomically in JS single thread or mutex)
+      // Derive ceiling internally from persisted tenant tier
+      const tier = tenantTiers[p_tenant_id] || 'free';
+      const monthlyCeiling = tier === 'enterprise' ? 10000000 : tier === 'pro' ? 500000 : 10000;
+
       // 2. Sum current monthly usage
       const currentUsage = dbRows
         .filter((r) => r.tenant_id === p_tenant_id && new Date(r.hour_bucket).getTime() >= new Date(p_month_start).getTime())
         .reduce((sum, r) => sum + r.request_count, 0);
 
       // 3. Invariant check: IF U + 1 > C -> reject without increment
-      if (currentUsage + 1 > p_monthly_ceiling) {
+      if (currentUsage + 1 > monthlyCeiling) {
         return {
           data: {
             allowed: false,
             reason: 'MONTHLY_CEILING_EXCEEDED',
             current_monthly_usage: currentUsage,
-            monthly_ceiling: p_monthly_ceiling,
+            monthly_ceiling: monthlyCeiling,
             monthly_remaining: 0,
           },
           error: null,
@@ -175,8 +183,8 @@ describe('W021-G3 Remediation: Durable Monthly Quota Verification', () => {
         data: {
           allowed: true,
           current_monthly_usage: newUsage,
-          monthly_ceiling: p_monthly_ceiling,
-          monthly_remaining: Math.max(0, p_monthly_ceiling - newUsage),
+          monthly_ceiling: monthlyCeiling,
+          monthly_remaining: Math.max(0, monthlyCeiling - newUsage),
         },
         error: null,
       };
@@ -186,6 +194,9 @@ describe('W021-G3 Remediation: Durable Monthly Quota Verification', () => {
   beforeEach(() => {
     rateLimiter = new SaasRateLimiter();
     dbRows = [];
+    for (const key of Object.keys(tenantTiers)) {
+      delete tenantTiers[key];
+    }
   });
 
   const tenantA = '11111111-1111-1111-1111-111111111111';
@@ -244,6 +255,9 @@ describe('W021-G3 Remediation: Durable Monthly Quota Verification', () => {
 
     const totalUsage = await rateLimiter.getDurableMonthlyUsage(tenantA, mockDbClient);
     expect(totalUsage).toBe(500);
+
+    // Set tenant tier to pro
+    mockDbClient.setTenantTier(tenantA, 'pro');
 
     // Increment in current hour
     const res = await rateLimiter.checkAndRecordDurableUsage(

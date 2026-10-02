@@ -1,25 +1,39 @@
 {
   "gate": "W021-G3",
-  "status": "REMEDIATED_ATOMIC_QUOTA / TESTED / VERIFIED / SUBMITTED FOR CTO ACCEPTANCE",
-  "timestamp": "2026-10-02T03:57:00.000Z",
+  "status": "REMEDIATED_SECURITY_DEFINER_PRIVILEGES / VERIFIED / SUBMITTED FOR CTO ACCEPTANCE",
+  "timestamp": "2026-10-02T04:20:00.000Z",
   "targetEnvironment": "panIN-staging (fkpigozcqnmcvofuksar / https://fkpigozcqnmcvofuksar.supabase.co)",
   "productionAirGapped": true,
   "productionDatabase": "ehfafcnimmjusyvplbah",
-  "remediationDirective": "CTO FINAL REMEDIATION DIRECTIVE — W021-G3: ATOMIC MONTHLY QUOTA ENFORCEMENT",
-  "atomicMechanism": {
+  "remediationDirective": "CTO FINAL SECURITY REMEDIATION — W021-G3: SECURITY DEFINER RPC PRIVILEGE BOUNDARY",
+  "securityDefinerExecutionBoundary": {
     "sqlFunction": "public.fn_check_and_increment_saas_quota",
-    "migration": "supabase/migrations/058_w021_saas_atomic_quota_enforcement.sql",
-    "serializationBoundary": "Tenant-level row lock via SELECT id FROM public.saas_tenants WHERE id = p_tenant_id FOR UPDATE",
-    "invariantGuaranteed": "For every tenant T: monthly_usage(T) <= monthly_quota(T) at all observable committed states",
-    "toctouElimination": "Quota evaluation and durable increment occur within the same transactional execution under tenant lock",
-    "behaviorIfExceeded": "IF U + 1 > C: reject with allowed=false, reason='MONTHLY_CEILING_EXCEEDED', NO usage increment",
-    "behaviorIfPermitted": "ELSE: atomically upsert increment into saas_usage_ledger and return allowed=true"
+    "signature": "fn_check_and_increment_saas_quota(UUID, UUID, TIMESTAMPTZ, TIMESTAMPTZ)",
+    "volatility": "VOLATILE",
+    "security": "SECURITY DEFINER",
+    "searchPath": "public, pg_temp (immutable schema-qualified references)",
+    "privilegeState": {
+      "PUBLIC": "EXECUTE DENIED (Explicitly revoked)",
+      "anon": "EXECUTE DENIED (42501 insufficient_privilege confirmed)",
+      "authenticated": "EXECUTE DENIED (42501 insufficient_privilege confirmed)",
+      "service_role": "EXECUTE ALLOWED (Exclusive grant)"
+    },
+    "catalogAclProof": "{postgres=X/postgres,service_role=X/postgres}",
+    "informationSchemaProof": [
+      { "grantee": "postgres", "privilege_type": "EXECUTE" },
+      { "grantee": "service_role", "privilege_type": "EXECUTE" }
+    ]
+  },
+  "defenseInDepth": {
+    "authoritativeTierCeilingDerivation": "Derived internally from saas_tenants.tier (free: 10,000, pro: 500,000, enterprise: 10,000,000); zero caller-supplied ceiling trusted",
+    "apiKeyTenantMismatchInvariant": "If p_api_key_id is supplied, SQL asserts saas_api_keys.tenant_id = p_tenant_id; mismatch returns allowed:false, error:KEY_TENANT_MISMATCH",
+    "serializationBoundary": "Tenant-level row lock via SELECT id, tier FROM public.saas_tenants WHERE id = p_tenant_id FOR UPDATE"
   },
   "testResults": {
     "atomicQuotaPostgreSqlSuite": {
       "file": "tests/saas-atomic-quota-pg.test.mjs",
-      "totalTests": 10,
-      "passed": 10,
+      "totalTests": 14,
+      "passed": 14,
       "failed": 0,
       "passRate": "100.0%"
     },

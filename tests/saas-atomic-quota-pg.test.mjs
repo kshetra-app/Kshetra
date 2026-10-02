@@ -2,7 +2,7 @@ import { execSync } from 'node:child_process';
 import assert from 'node:assert';
 
 function psql(sql) {
-  return execSync('docker exec -i supabase_db_Kshetra psql -U postgres -d w021_g3_durable_quota -t -A', {
+  return execSync('docker exec -i supabase_db_Kshetra psql -U postgres -d w021_g3_durable_quota -t -A 2>&1', {
     input: sql,
     encoding: 'utf8',
   }).trim();
@@ -36,12 +36,12 @@ assert.strictEqual(fnCheck, '1', 'fn_check_and_increment_saas_quota must exist i
     RETURNING id;
   `);
   const tid = rawTid.split('\n')[0].trim();
-  // Ceiling = 10,000. Seed usage = 9,999.
+  // Free tier ceiling = 10,000. Seed usage = 9,999.
   psql(`INSERT INTO public.saas_usage_ledger (tenant_id, hour_bucket, request_count) VALUES ('${tid}', now(), 9999);`);
 
   // Simulate two instances executing concurrently
-  const res1 = JSON.parse(psql(`SELECT public.fn_check_and_increment_saas_quota('${tid}'::uuid, NULL, now(), date_trunc('month', now()), 10000);`));
-  const res2 = JSON.parse(psql(`SELECT public.fn_check_and_increment_saas_quota('${tid}'::uuid, NULL, now(), date_trunc('month', now()), 10000);`));
+  const res1 = JSON.parse(psql(`SELECT public.fn_check_and_increment_saas_quota('${tid}'::uuid, NULL, now(), date_trunc('month', now()));`));
+  const res2 = JSON.parse(psql(`SELECT public.fn_check_and_increment_saas_quota('${tid}'::uuid, NULL, now(), date_trunc('month', now()));`));
 
   const finalUsage = psql(`SELECT COALESCE(SUM(request_count), 0) FROM public.saas_usage_ledger WHERE tenant_id = '${tid}';`);
   const pass = (res1.allowed !== res2.allowed) && (finalUsage === '10000');
@@ -56,13 +56,13 @@ assert.strictEqual(fnCheck, '1', 'fn_check_and_increment_saas_quota must exist i
     RETURNING id;
   `);
   const tid = rawTid.split('\n')[0].trim();
-  // Ceiling = 10,000. Seed usage = 9,997. Exactly 3 slots remaining.
+  // Free tier ceiling = 10,000. Seed usage = 9,997. Exactly 3 slots remaining.
   psql(`INSERT INTO public.saas_usage_ledger (tenant_id, hour_bucket, request_count) VALUES ('${tid}', now(), 9997);`);
 
   // Launch 10 requests racing for 3 slots
   const results = [];
   for (let i = 0; i < 10; i++) {
-    const out = psql(`SELECT public.fn_check_and_increment_saas_quota('${tid}'::uuid, NULL, now(), date_trunc('month', now()), 10000);`);
+    const out = psql(`SELECT public.fn_check_and_increment_saas_quota('${tid}'::uuid, NULL, now(), date_trunc('month', now()));`);
     results.push(JSON.parse(out));
   }
 
@@ -82,15 +82,15 @@ assert.strictEqual(fnCheck, '1', 'fn_check_and_increment_saas_quota must exist i
   `);
   const tid = rawTid.split('\n')[0].trim();
   const rawApp = psql(`INSERT INTO public.saas_applications (tenant_id, name) VALUES ('${tid}', 'App 3') RETURNING id;`).split('\n')[0].trim();
-  const rawK1 = psql(`INSERT INTO public.saas_api_keys (tenant_id, application_id, name, key_prefix, key_hint, key_hash) VALUES ('${tid}', '${rawApp}', 'Key 1', 'panin_test_sk_', 'hint1', 'hash3_1') RETURNING id;`).split('\n')[0].trim();
-  const rawK2 = psql(`INSERT INTO public.saas_api_keys (tenant_id, application_id, name, key_prefix, key_hint, key_hash) VALUES ('${tid}', '${rawApp}', 'Key 2', 'panin_test_sk_', 'hint2', 'hash3_2') RETURNING id;`).split('\n')[0].trim();
+  const rawK1 = psql(`INSERT INTO public.saas_api_keys (tenant_id, application_id, name, key_prefix, key_hint, key_hash) VALUES ('${tid}', '${rawApp}', 'Key 1', 'panin_test_sk_', 'hint1', 'hash3_1_' || gen_random_uuid()) RETURNING id;`).split('\n')[0].trim();
+  const rawK2 = psql(`INSERT INTO public.saas_api_keys (tenant_id, application_id, name, key_prefix, key_hint, key_hash) VALUES ('${tid}', '${rawApp}', 'Key 2', 'panin_test_sk_', 'hint2', 'hash3_2_' || gen_random_uuid()) RETURNING id;`).split('\n')[0].trim();
 
-  // Ceiling = 10,000. Seed usage = 9,999.
+  // Free tier ceiling = 10,000. Seed usage = 9,999.
   psql(`INSERT INTO public.saas_usage_ledger (tenant_id, api_key_id, hour_bucket, request_count) VALUES ('${tid}', '${rawK1}', now(), 9999);`);
 
   // Key 1 and Key 2 both make a request
-  const resK1 = JSON.parse(psql(`SELECT public.fn_check_and_increment_saas_quota('${tid}'::uuid, '${rawK1}'::uuid, now(), date_trunc('month', now()), 10000);`));
-  const resK2 = JSON.parse(psql(`SELECT public.fn_check_and_increment_saas_quota('${tid}'::uuid, '${rawK2}'::uuid, now(), date_trunc('month', now()), 10000);`));
+  const resK1 = JSON.parse(psql(`SELECT public.fn_check_and_increment_saas_quota('${tid}'::uuid, '${rawK1}'::uuid, now(), date_trunc('month', now()));`));
+  const resK2 = JSON.parse(psql(`SELECT public.fn_check_and_increment_saas_quota('${tid}'::uuid, '${rawK2}'::uuid, now(), date_trunc('month', now()));`));
 
   const finalUsage = psql(`SELECT COALESCE(SUM(request_count), 0) FROM public.saas_usage_ledger WHERE tenant_id = '${tid}';`);
   const pass = (resK1.allowed !== resK2.allowed) && (finalUsage === '10000');
@@ -106,29 +106,30 @@ assert.strictEqual(fnCheck, '1', 'fn_check_and_increment_saas_quota must exist i
   `);
   const tid = rawTid.split('\n')[0].trim();
   const rawApp = psql(`INSERT INTO public.saas_applications (tenant_id, name) VALUES ('${tid}', 'App 4') RETURNING id;`).split('\n')[0].trim();
-  const kA = psql(`INSERT INTO public.saas_api_keys (tenant_id, application_id, name, key_prefix, key_hint, key_hash) VALUES ('${tid}', '${rawApp}', 'Key A', 'panin_test_sk_', 'hintA', 'hash4_A') RETURNING id;`).split('\n')[0].trim();
-  const kB = psql(`INSERT INTO public.saas_api_keys (tenant_id, application_id, name, key_prefix, key_hint, key_hash) VALUES ('${tid}', '${rawApp}', 'Key B', 'panin_test_sk_', 'hintB', 'hash4_B') RETURNING id;`).split('\n')[0].trim();
+  const kA = psql(`INSERT INTO public.saas_api_keys (tenant_id, application_id, name, key_prefix, key_hint, key_hash) VALUES ('${tid}', '${rawApp}', 'Key A', 'panin_test_sk_', 'hintA', 'hash4_A_' || gen_random_uuid()) RETURNING id;`).split('\n')[0].trim();
+  const kB = psql(`INSERT INTO public.saas_api_keys (tenant_id, application_id, name, key_prefix, key_hint, key_hash) VALUES ('${tid}', '${rawApp}', 'Key B', 'panin_test_sk_', 'hintB', 'hash4_B_' || gen_random_uuid()) RETURNING id;`).split('\n')[0].trim();
 
-  // Ceiling = 5. Seed 0.
-  // Instance 1 uses Key A (3 req), Instance 2 uses Key B (3 req).
-  // Total 6 requests, exactly 5 allowed, 1 rejected.
+  // Free tier ceiling = 10,000. Seed at 9,995 (exactly 5 slots remaining).
+  psql(`INSERT INTO public.saas_usage_ledger (tenant_id, hour_bucket, request_count) VALUES ('${tid}', now(), 9995);`);
+
+  // Total 6 requests across 2 instances, exactly 5 allowed, 1 rejected.
   const instance1Reqs = [
-    psql(`SELECT public.fn_check_and_increment_saas_quota('${tid}'::uuid, '${kA}'::uuid, now(), date_trunc('month', now()), 5);`),
-    psql(`SELECT public.fn_check_and_increment_saas_quota('${tid}'::uuid, '${kA}'::uuid, now(), date_trunc('month', now()), 5);`),
-    psql(`SELECT public.fn_check_and_increment_saas_quota('${tid}'::uuid, '${kA}'::uuid, now(), date_trunc('month', now()), 5);`),
+    psql(`SELECT public.fn_check_and_increment_saas_quota('${tid}'::uuid, '${kA}'::uuid, now(), date_trunc('month', now()));`),
+    psql(`SELECT public.fn_check_and_increment_saas_quota('${tid}'::uuid, '${kA}'::uuid, now(), date_trunc('month', now()));`),
+    psql(`SELECT public.fn_check_and_increment_saas_quota('${tid}'::uuid, '${kA}'::uuid, now(), date_trunc('month', now()));`),
   ].map(JSON.parse);
 
   const instance2Reqs = [
-    psql(`SELECT public.fn_check_and_increment_saas_quota('${tid}'::uuid, '${kB}'::uuid, now(), date_trunc('month', now()), 5);`),
-    psql(`SELECT public.fn_check_and_increment_saas_quota('${tid}'::uuid, '${kB}'::uuid, now(), date_trunc('month', now()), 5);`),
-    psql(`SELECT public.fn_check_and_increment_saas_quota('${tid}'::uuid, '${kB}'::uuid, now(), date_trunc('month', now()), 5);`),
+    psql(`SELECT public.fn_check_and_increment_saas_quota('${tid}'::uuid, '${kB}'::uuid, now(), date_trunc('month', now()));`),
+    psql(`SELECT public.fn_check_and_increment_saas_quota('${tid}'::uuid, '${kB}'::uuid, now(), date_trunc('month', now()));`),
+    psql(`SELECT public.fn_check_and_increment_saas_quota('${tid}'::uuid, '${kB}'::uuid, now(), date_trunc('month', now()));`),
   ].map(JSON.parse);
 
   const allReqs = [...instance1Reqs, ...instance2Reqs];
   const allowed = allReqs.filter((r) => r.allowed).length;
   const rejected = allReqs.filter((r) => !r.allowed).length;
   const finalUsage = psql(`SELECT COALESCE(SUM(request_count), 0) FROM public.saas_usage_ledger WHERE tenant_id = '${tid}';`);
-  const pass = (allowed === 5) && (rejected === 1) && (finalUsage === '5');
+  const pass = (allowed === 5) && (rejected === 1) && (finalUsage === '10000');
   recordTest('TEST-4', 'Different API keys + different instances across shared tenant quota', pass, `allowed=${allowed}, rejected=${rejected}, finalUsage=${finalUsage}`);
 }
 
@@ -141,9 +142,11 @@ assert.strictEqual(fnCheck, '1', 'fn_check_and_increment_saas_quota must exist i
   `);
   const tid = rawTid.split('\n')[0].trim();
 
-  // Quota = 1
-  const first = JSON.parse(psql(`SELECT public.fn_check_and_increment_saas_quota('${tid}'::uuid, NULL, now(), date_trunc('month', now()), 1);`));
-  const second = JSON.parse(psql(`SELECT public.fn_check_and_increment_saas_quota('${tid}'::uuid, NULL, now(), date_trunc('month', now()), 1);`));
+  // Free tier ceiling = 10,000. Seed at 9,999. Exactly 1 slot remaining.
+  psql(`INSERT INTO public.saas_usage_ledger (tenant_id, hour_bucket, request_count) VALUES ('${tid}', now(), 9999);`);
+
+  const first = JSON.parse(psql(`SELECT public.fn_check_and_increment_saas_quota('${tid}'::uuid, NULL, now(), date_trunc('month', now()));`));
+  const second = JSON.parse(psql(`SELECT public.fn_check_and_increment_saas_quota('${tid}'::uuid, NULL, now(), date_trunc('month', now()));`));
 
   const pass = (first.allowed === true) && (second.allowed === false) && (second.reason === 'MONTHLY_CEILING_EXCEEDED');
   recordTest('TEST-5', 'Quota exhaustion after atomic increment', pass, `first=${first.allowed}, second=${second.allowed}, reason=${second.reason}`);
@@ -158,17 +161,17 @@ assert.strictEqual(fnCheck, '1', 'fn_check_and_increment_saas_quota must exist i
   `);
   const tid = rawTid.split('\n')[0].trim();
 
-  // Seed at ceiling 10
-  psql(`INSERT INTO public.saas_usage_ledger (tenant_id, hour_bucket, request_count) VALUES ('${tid}', now(), 10);`);
+  // Seed at ceiling 10,000
+  psql(`INSERT INTO public.saas_usage_ledger (tenant_id, hour_bucket, request_count) VALUES ('${tid}', now(), 10000);`);
 
   // Issue 5 rejected requests
   for (let i = 0; i < 5; i++) {
-    psql(`SELECT public.fn_check_and_increment_saas_quota('${tid}'::uuid, NULL, now(), date_trunc('month', now()), 10);`);
+    psql(`SELECT public.fn_check_and_increment_saas_quota('${tid}'::uuid, NULL, now(), date_trunc('month', now()));`);
   }
 
   const finalUsage = psql(`SELECT COALESCE(SUM(request_count), 0) FROM public.saas_usage_ledger WHERE tenant_id = '${tid}';`);
-  const pass = (finalUsage === '10');
-  recordTest('TEST-6', 'Rejected quota requests do NOT increment usage (zero leakage)', pass, `expected=10, observed=${finalUsage}`);
+  const pass = (finalUsage === '10000');
+  recordTest('TEST-6', 'Rejected quota requests do NOT increment usage (zero leakage)', pass, `expected=10000, observed=${finalUsage}`);
 }
 
 // ─── TEST 7: Tenant A cannot consume Tenant B quota ────────────────────────────
@@ -178,7 +181,7 @@ assert.strictEqual(fnCheck, '1', 'fn_check_and_increment_saas_quota must exist i
 
   // Consume 5 requests on Tenant A
   for (let i = 0; i < 5; i++) {
-    psql(`SELECT public.fn_check_and_increment_saas_quota('${rawA}'::uuid, NULL, now(), date_trunc('month', now()), 10);`);
+    psql(`SELECT public.fn_check_and_increment_saas_quota('${rawA}'::uuid, NULL, now(), date_trunc('month', now()));`);
   }
 
   const usageA = psql(`SELECT COALESCE(SUM(request_count), 0) FROM public.saas_usage_ledger WHERE tenant_id = '${rawA}';`);
@@ -191,7 +194,7 @@ assert.strictEqual(fnCheck, '1', 'fn_check_and_increment_saas_quota must exist i
 // ─── TEST 8: Database failure fails closed (non-existent tenant) ───────────────
 {
   const fakeTid = '00000000-0000-0000-0000-000000000000';
-  const res = JSON.parse(psql(`SELECT public.fn_check_and_increment_saas_quota('${fakeTid}'::uuid, NULL, now(), date_trunc('month', now()), 10);`));
+  const res = JSON.parse(psql(`SELECT public.fn_check_and_increment_saas_quota('${fakeTid}'::uuid, NULL, now(), date_trunc('month', now()));`));
   const pass = (res.allowed === false) && (res.error === 'TENANT_NOT_FOUND');
   recordTest('TEST-8', 'Database failure / missing entity fails closed safely', pass, `allowed=${res.allowed}, error=${res.error}`);
 }
@@ -200,10 +203,10 @@ assert.strictEqual(fnCheck, '1', 'fn_check_and_increment_saas_quota must exist i
 {
   const rawTid = psql(`INSERT INTO public.saas_tenants (name, slug, tier, status, contact_email) VALUES ('Del Tenant', 'delt-' || gen_random_uuid(), 'free', 'active', 'd@test.com') RETURNING id;`).split('\n')[0].trim();
   const rawApp = psql(`INSERT INTO public.saas_applications (tenant_id, name) VALUES ('${rawTid}', 'Del App') RETURNING id;`).split('\n')[0].trim();
-  const rawKey = psql(`INSERT INTO public.saas_api_keys (tenant_id, application_id, name, key_prefix, key_hint, key_hash) VALUES ('${rawTid}', '${rawApp}', 'Del Key', 'panin_test_sk_', 'hintDel', 'hashDel') RETURNING id;`).split('\n')[0].trim();
+  const rawKey = psql(`INSERT INTO public.saas_api_keys (tenant_id, application_id, name, key_prefix, key_hint, key_hash) VALUES ('${rawTid}', '${rawApp}', 'Del Key', 'panin_test_sk_', 'hintDel', 'hashDel_' || gen_random_uuid()) RETURNING id;`).split('\n')[0].trim();
 
   // Record usage with this key
-  psql(`SELECT public.fn_check_and_increment_saas_quota('${rawTid}'::uuid, '${rawKey}'::uuid, now(), date_trunc('month', now()), 10);`);
+  psql(`SELECT public.fn_check_and_increment_saas_quota('${rawTid}'::uuid, '${rawKey}'::uuid, now(), date_trunc('month', now()));`);
 
   // Delete the API key
   psql(`DELETE FROM public.saas_api_keys WHERE id = '${rawKey}';`);
@@ -226,12 +229,71 @@ assert.strictEqual(fnCheck, '1', 'fn_check_and_increment_saas_quota must exist i
     VALUES ('${rawTid}', now() - interval '40 days', 5000);
   `);
 
-  // Call quota increment for current month (ceiling = 10,000)
-  const res = JSON.parse(psql(`SELECT public.fn_check_and_increment_saas_quota('${rawTid}'::uuid, NULL, now(), date_trunc('month', now()), 10000);`));
+  // Call quota increment for current month
+  const res = JSON.parse(psql(`SELECT public.fn_check_and_increment_saas_quota('${rawTid}'::uuid, NULL, now(), date_trunc('month', now()));`));
 
   // The usage from last month must NOT count against current month quota
   const pass = (res.allowed === true) && (res.current_monthly_usage === 1) && (res.monthly_remaining === 9999);
   recordTest('TEST-10', 'Monthly window boundary remains correct in UTC (past months excluded)', pass, `usage=${res.current_monthly_usage}, remaining=${res.monthly_remaining}`);
+}
+
+// ─── TEST 11: Direct unauthorized invocation by 'anon' fails closed ─────────────
+{
+  const out = psql(`
+    DO $$
+    BEGIN
+      SET ROLE anon;
+      BEGIN
+        PERFORM public.fn_check_and_increment_saas_quota('00000000-0000-0000-0000-000000000000'::uuid, NULL, now(), now());
+        RAISE EXCEPTION 'anon was able to execute!';
+      EXCEPTION WHEN insufficient_privilege THEN
+        RAISE NOTICE 'SUCCESS_ANON_BLOCKED';
+      END;
+      RESET ROLE;
+    END $$;
+  `);
+  const pass = out.includes('SUCCESS_ANON_BLOCKED');
+  recordTest('TEST-11', 'Direct RPC security probe: anon execution fails with insufficient_privilege (42501)', pass, out);
+}
+
+// ─── TEST 12: Direct unauthorized invocation by 'authenticated' fails closed ─────
+{
+  const out = psql(`
+    DO $$
+    BEGIN
+      SET ROLE authenticated;
+      BEGIN
+        PERFORM public.fn_check_and_increment_saas_quota('00000000-0000-0000-0000-000000000000'::uuid, NULL, now(), now());
+        RAISE EXCEPTION 'authenticated was able to execute!';
+      EXCEPTION WHEN insufficient_privilege THEN
+        RAISE NOTICE 'SUCCESS_AUTHENTICATED_BLOCKED';
+      END;
+      RESET ROLE;
+    END $$;
+  `);
+  const pass = out.includes('SUCCESS_AUTHENTICATED_BLOCKED');
+  recordTest('TEST-12', 'Direct RPC security probe: authenticated execution fails with insufficient_privilege (42501)', pass, out);
+}
+
+// ─── TEST 13: Parameter defense-in-depth: cross-tenant key mismatch fails closed ──
+{
+  const rawTid1 = psql(`INSERT INTO public.saas_tenants (name, slug, tier, status, contact_email) VALUES ('T1', 't1-' || gen_random_uuid(), 'free', 'active', 't1@test.com') RETURNING id;`).split('\n')[0].trim();
+  const rawTid2 = psql(`INSERT INTO public.saas_tenants (name, slug, tier, status, contact_email) VALUES ('T2', 't2-' || gen_random_uuid(), 'free', 'active', 't2@test.com') RETURNING id;`).split('\n')[0].trim();
+  const rawApp2 = psql(`INSERT INTO public.saas_applications (tenant_id, name) VALUES ('${rawTid2}', 'App 2') RETURNING id;`).split('\n')[0].trim();
+  const rawKey2 = psql(`INSERT INTO public.saas_api_keys (tenant_id, application_id, name, key_prefix, key_hint, key_hash) VALUES ('${rawTid2}', '${rawApp2}', 'Key 2', 'panin_test_sk_', 'hint2', 'h2_' || gen_random_uuid()) RETURNING id;`).split('\n')[0].trim();
+
+  // Call function for Tenant 1 with Key belonging to Tenant 2
+  const res = JSON.parse(psql(`SELECT public.fn_check_and_increment_saas_quota('${rawTid1}'::uuid, '${rawKey2}'::uuid, now(), date_trunc('month', now()));`));
+  const pass = (res.allowed === false) && (res.error === 'KEY_TENANT_MISMATCH');
+  recordTest('TEST-13', 'Defense-in-depth: cross-tenant API key mismatch fails closed (KEY_TENANT_MISMATCH)', pass, `allowed=${res.allowed}, error=${res.error}`);
+}
+
+// ─── TEST 14: Tier ceiling derived internally from persisted tier (pro = 500,000) ─
+{
+  const rawPro = psql(`INSERT INTO public.saas_tenants (name, slug, tier, status, contact_email) VALUES ('Pro T', 'prot-' || gen_random_uuid(), 'pro', 'active', 'pro@test.com') RETURNING id;`).split('\n')[0].trim();
+  const res = JSON.parse(psql(`SELECT public.fn_check_and_increment_saas_quota('${rawPro}'::uuid, NULL, now(), date_trunc('month', now()));`));
+  const pass = (res.allowed === true) && (res.monthly_ceiling === 500000) && (res.monthly_remaining === 499999);
+  recordTest('TEST-14', 'Authoritative monthly ceiling derived internally from persisted tier (pro=500,000)', pass, `ceiling=${res.monthly_ceiling}, remaining=${res.monthly_remaining}`);
 }
 
 console.log('\n================================================================');

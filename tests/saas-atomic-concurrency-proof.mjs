@@ -29,7 +29,7 @@ console.log('Initial usage seeded at 9,999. Monthly ceiling = 10,000. Exactly 1 
 const promises = Array.from({ length: 10 }, (_, i) => {
   return new Promise((resolve) => {
     try {
-      const sql = `SELECT public.fn_check_and_increment_saas_quota('${tid}'::uuid, NULL, now(), date_trunc('month', now()), 10000);`;
+      const sql = `SELECT public.fn_check_and_increment_saas_quota('${tid}'::uuid, NULL, now(), date_trunc('month', now()));`;
       const out = psql(sql);
       resolve(JSON.parse(out));
     } catch (err) {

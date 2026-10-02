@@ -153,7 +153,6 @@ export class SaasRateLimiter {
         p_api_key_id: apiKeyId || null,
         p_hour_bucket: currentHourBucket.toISOString(),
         p_month_start: monthStart.toISOString(),
-        p_monthly_ceiling: limits.monthlyCeiling,
       });
 
       if (error) {
