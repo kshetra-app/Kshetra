@@ -33,6 +33,7 @@ import { metricsRoutes } from './routes/metrics';
 import { debugRoutes } from './routes/debug';
 import { metricsCollector } from './lib/metrics';
 import { errorTracker } from './lib/errorTracker';
+import { saasAuthPlugin } from './lib/saasAuthPlugin';
 import { startNewsScheduler } from './services/news/newsService';
 
 const envToLogger: Record<string, object | boolean> = {
@@ -241,6 +242,7 @@ export async function buildApp() {
   await app.register(politicalAdsRoutes);
   await app.register(metricsRoutes, { prefix: '/api' });
   await app.register(debugRoutes, { prefix: '/api' });
+  await app.register(saasAuthPlugin);
 
   return app;
 }

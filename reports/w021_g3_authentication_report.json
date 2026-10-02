@@ -1,0 +1,70 @@
+{
+  "gate": "W021-G3",
+  "status": "IMPLEMENTED / TESTED / VERIFIED / SUBMITTED FOR CTO ACCEPTANCE",
+  "timestamp": "2026-10-02T02:11:00.000Z",
+  "targetEnvironment": "panIN-staging (fkpigozcqnmcvofuksar / https://fkpigozcqnmcvofuksar.supabase.co)",
+  "productionAirGapped": true,
+  "productionDatabase": "ehfafcnimmjusyvplbah",
+  "componentsImplemented": {
+    "cryptoModule": "apps/api/src/lib/saasCrypto.ts",
+    "rateLimiter": "apps/api/src/lib/saasRateLimiter.ts",
+    "authPlugin": "apps/api/src/lib/saasAuthPlugin.ts",
+    "serverRegistration": "apps/api/src/server.ts",
+    "sharedContracts": "packages/shared/src/contracts/saas.ts",
+    "testSuite": "apps/api/src/__tests__/saas-auth-g3.test.ts"
+  },
+  "apiKeySpecification": {
+    "entropy": "256 bits (crypto.randomBytes(32))",
+    "encoding": "RFC 4648 Base64URL Unpadded (43 characters)",
+    "prefixes": ["panin_live_sk_", "panin_test_sk_"],
+    "totalLength": 57,
+    "hintLength": 8,
+    "hashing": "SHA-256 (64 hex characters)",
+    "comparison": "crypto.timingSafeEqual (constant-time)"
+  },
+  "tierRateLimits": {
+    "free": { "requestsPerMinute": 60, "monthlyCeiling": 10000 },
+    "pro": { "requestsPerMinute": 600, "monthlyCeiling": 500000 },
+    "enterprise": { "requestsPerMinute": 3000, "monthlyCeiling": 10000000 }
+  },
+  "testResults": {
+    "suite": "apps/api/src/__tests__/saas-auth-g3.test.ts",
+    "totalTests": 17,
+    "passed": 17,
+    "failed": 0,
+    "passRate": "100.0%"
+  },
+  "securityProbes": {
+    "validActiveKey": "PASS (context bound, 200)",
+    "malformedKey": "PASS (generic 401)",
+    "unknownKey": "PASS (generic 401, zero existence leak)",
+    "revokedKey": "PASS (generic 401, zero status leak)",
+    "compromisedKey": "PASS (generic 401)",
+    "expiredKey": "PASS (generic 401)",
+    "suspendedTenant": "PASS (generic 401)",
+    "crossTenantKey": "PASS (mismatch rejected, 401)",
+    "callerTenantSpoofing": "PASS (caller tenant_id ignored, authenticated context preserved)",
+    "rateLimitMinuteBurst": "PASS (429 with retry-after and x-ratelimit headers)",
+    "dependencyFailure": "PASS (500 AUTH_DEPENDENCY_FAILURE)",
+    "secretRedaction": "PASS (rawKey never in context/logs)"
+  },
+  "regressionBattery": {
+    "w018": "53/53 PASS",
+    "w019": "93/93 PASS",
+    "w020_preflight": "23/23 PASS",
+    "w020_g8_integration": "25/25 PASS",
+    "w021_g2_preflight": "32/32 PASS",
+    "observability": "19/19 PASS",
+    "contractDrift": "9/9 MATCHED",
+    "tscBuild": "CLEAN (0 errors)"
+  },
+  "prohibitedActionsComplied": {
+    "w021G4RoutesCreated": false,
+    "saasBusinessEndpointsCreated": false,
+    "openApiCreated": false,
+    "oauth2Implemented": false,
+    "webhooksImplemented": false,
+    "mobileModified": false,
+    "productionTouched": false
+  }
+}
