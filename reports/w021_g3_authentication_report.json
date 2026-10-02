@@ -1,69 +1,51 @@
 {
   "gate": "W021-G3",
-  "status": "REMEDIATED / TESTED / VERIFIED / SUBMITTED FOR CTO ACCEPTANCE",
-  "timestamp": "2026-10-02T03:36:00.000Z",
+  "status": "REMEDIATED_ATOMIC_QUOTA / TESTED / VERIFIED / SUBMITTED FOR CTO ACCEPTANCE",
+  "timestamp": "2026-10-02T03:57:00.000Z",
   "targetEnvironment": "panIN-staging (fkpigozcqnmcvofuksar / https://fkpigozcqnmcvofuksar.supabase.co)",
   "productionAirGapped": true,
   "productionDatabase": "ehfafcnimmjusyvplbah",
-  "remediationAddressed": "CTO REMEDIATION DIRECTIVE — W021-G3: MONTHLY QUOTA DURABILITY & MULTI-INSTANCE CORRECTNESS",
-  "componentsImplemented": {
-    "cryptoModule": "apps/api/src/lib/saasCrypto.ts",
-    "rateLimiter": "apps/api/src/lib/saasRateLimiter.ts",
-    "authPlugin": "apps/api/src/lib/saasAuthPlugin.ts",
-    "serverRegistration": "apps/api/src/server.ts",
-    "sharedContracts": "packages/shared/src/contracts/saas.ts",
-    "testSuiteG3Auth": "apps/api/src/__tests__/saas-auth-g3.test.ts",
-    "testSuiteDurableQuota": "apps/api/src/__tests__/saas-durable-quota.test.ts"
-  },
-  "quotaArchitecture": {
-    "layer1LocalBurst": "In-memory token-bucket clamping microbursts per minute per process",
-    "layer2DurableMonthly": "PostgreSQL public.saas_usage_ledger summing request_count across hour_bucket in UTC month",
-    "multiInstanceConsistent": true,
-    "restartPersistent": true,
-    "uniqueConstraintCollisionHandling": "Fallback retry on 23505 collision"
-  },
-  "apiKeySpecification": {
-    "entropy": "256 bits (crypto.randomBytes(32))",
-    "encoding": "RFC 4648 Base64URL Unpadded (43 characters)",
-    "prefixes": ["panin_live_sk_", "panin_test_sk_"],
-    "totalLength": 57,
-    "hintLength": 8,
-    "hashing": "SHA-256 (64 hex characters)",
-    "comparison": "crypto.timingSafeEqual (constant-time)"
-  },
-  "tierRateLimits": {
-    "free": { "requestsPerMinute": 60, "monthlyCeiling": 10000 },
-    "pro": { "requestsPerMinute": 600, "monthlyCeiling": 500000 },
-    "enterprise": { "requestsPerMinute": 3000, "monthlyCeiling": 10000000 }
+  "remediationDirective": "CTO FINAL REMEDIATION DIRECTIVE — W021-G3: ATOMIC MONTHLY QUOTA ENFORCEMENT",
+  "atomicMechanism": {
+    "sqlFunction": "public.fn_check_and_increment_saas_quota",
+    "migration": "supabase/migrations/058_w021_saas_atomic_quota_enforcement.sql",
+    "serializationBoundary": "Tenant-level row lock via SELECT id FROM public.saas_tenants WHERE id = p_tenant_id FOR UPDATE",
+    "invariantGuaranteed": "For every tenant T: monthly_usage(T) <= monthly_quota(T) at all observable committed states",
+    "toctouElimination": "Quota evaluation and durable increment occur within the same transactional execution under tenant lock",
+    "behaviorIfExceeded": "IF U + 1 > C: reject with allowed=false, reason='MONTHLY_CEILING_EXCEEDED', NO usage increment",
+    "behaviorIfPermitted": "ELSE: atomically upsert increment into saas_usage_ledger and return allowed=true"
   },
   "testResults": {
-    "authTestSuite": {
-      "file": "apps/api/src/__tests__/saas-auth-g3.test.ts",
-      "totalTests": 17,
-      "passed": 17,
+    "atomicQuotaPostgreSqlSuite": {
+      "file": "tests/saas-atomic-quota-pg.test.mjs",
+      "totalTests": 10,
+      "passed": 10,
       "failed": 0,
       "passRate": "100.0%"
     },
-    "durableQuotaTestSuite": {
+    "concurrencyProof10RacingRequests": {
+      "file": "tests/saas-atomic-concurrency-proof.mjs",
+      "racingRequests": 10,
+      "finalAvailableSlots": 1,
+      "allowedCount": 1,
+      "rejectedCount": 9,
+      "finalCommittedUsage": 10000,
+      "status": "PASS"
+    },
+    "jestDurableQuotaSuite": {
       "file": "apps/api/src/__tests__/saas-durable-quota.test.ts",
       "totalTests": 11,
       "passed": 11,
       "failed": 0,
       "passRate": "100.0%"
+    },
+    "jestCoreAuthSuite": {
+      "file": "apps/api/src/__tests__/saas-auth-g3.test.ts",
+      "totalTests": 17,
+      "passed": 17,
+      "failed": 0,
+      "passRate": "100.0%"
     }
-  },
-  "durableQuotaBatteryScenarios": {
-    "scenario1_durableUsageIncrement": "PASS",
-    "scenario2_monthlyAggregation": "PASS",
-    "scenario3_quotaBoundary": "PASS",
-    "scenario4_quotaExhaustion": "PASS",
-    "scenario5_concurrentQuotaRace": "PASS",
-    "scenario6_independentProcessConsistency": "PASS",
-    "scenario7_restartPersistence": "PASS",
-    "scenario8_tenantIsolation": "PASS",
-    "scenario9_databaseFailureFailClosed": "PASS",
-    "scenario10_apiKeyDeletionContinuity": "PASS",
-    "scenario11_fastifyHttp429AndRetryAfter": "PASS"
   },
   "regressionBattery": {
     "w018": "53/53 PASS",

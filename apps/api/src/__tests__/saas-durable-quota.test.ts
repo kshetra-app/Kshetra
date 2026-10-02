@@ -120,6 +120,67 @@ describe('W021-G3 Remediation: Durable Monthly Quota Verification', () => {
         },
       };
     },
+    // Emulates PostgreSQL atomic function public.fn_check_and_increment_saas_quota
+    rpc: async (fnName: string, args: any) => {
+      if (fnName !== 'fn_check_and_increment_saas_quota') {
+        throw new Error(`Unknown RPC function: ${fnName}`);
+      }
+
+      const { p_tenant_id, p_api_key_id, p_hour_bucket, p_month_start, p_monthly_ceiling } = args;
+
+      // 1. Serialization boundary: locks tenant row (simulated atomically in JS single thread or mutex)
+      // 2. Sum current monthly usage
+      const currentUsage = dbRows
+        .filter((r) => r.tenant_id === p_tenant_id && new Date(r.hour_bucket).getTime() >= new Date(p_month_start).getTime())
+        .reduce((sum, r) => sum + r.request_count, 0);
+
+      // 3. Invariant check: IF U + 1 > C -> reject without increment
+      if (currentUsage + 1 > p_monthly_ceiling) {
+        return {
+          data: {
+            allowed: false,
+            reason: 'MONTHLY_CEILING_EXCEEDED',
+            current_monthly_usage: currentUsage,
+            monthly_ceiling: p_monthly_ceiling,
+            monthly_remaining: 0,
+          },
+          error: null,
+        };
+      }
+
+      // 4. Within quota: Upsert/increment into ledger
+      const existing = dbRows.find(
+        (r) =>
+          r.tenant_id === p_tenant_id &&
+          (r.api_key_id ?? null) === (p_api_key_id ?? null) &&
+          r.hour_bucket === p_hour_bucket
+      );
+
+      if (existing) {
+        existing.request_count += 1;
+      } else {
+        dbRows.push({
+          id: `row-${Math.random()}`,
+          tenant_id: p_tenant_id,
+          api_key_id: p_api_key_id || null,
+          hour_bucket: p_hour_bucket,
+          request_count: 1,
+          error_count: 0,
+          created_at: new Date().toISOString(),
+        });
+      }
+
+      const newUsage = currentUsage + 1;
+      return {
+        data: {
+          allowed: true,
+          current_monthly_usage: newUsage,
+          monthly_ceiling: p_monthly_ceiling,
+          monthly_remaining: Math.max(0, p_monthly_ceiling - newUsage),
+        },
+        error: null,
+      };
+    },
   };
 
   beforeEach(() => {

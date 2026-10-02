@@ -136,6 +136,7 @@ export class SaasRateLimiter {
   /**
    * Layer 3: Atomic Durable Usage Increment & Quota Check.
    * Atomically checks quota against durable monthly usage and commits increment to saas_usage_ledger.
+   * Uses PostgreSQL RPC fn_check_and_increment_saas_quota with exclusive row lock on saas_tenants.
    */
   public async checkAndRecordDurableUsage(
     params: UsageIncrementParams,
@@ -143,12 +144,42 @@ export class SaasRateLimiter {
   ): Promise<UsageIncrementResult> {
     const { tenantId, apiKeyId, tier } = params;
     const limits = SAAS_TIER_LIMITS[tier] || SAAS_TIER_LIMITS.free;
-    const { currentHourBucket, secondsUntilMonthReset } = this.getUtcTimeWindows();
+    const { monthStart, currentHourBucket, secondsUntilMonthReset } = this.getUtcTimeWindows();
 
-    // 1. Get authoritative current usage
+    // 1. Primary Atomic Execution: Invoke PostgreSQL atomic function via RPC
+    if (client && typeof client.rpc === 'function') {
+      const { data, error } = await client.rpc('fn_check_and_increment_saas_quota', {
+        p_tenant_id: tenantId,
+        p_api_key_id: apiKeyId || null,
+        p_hour_bucket: currentHourBucket.toISOString(),
+        p_month_start: monthStart.toISOString(),
+        p_monthly_ceiling: limits.monthlyCeiling,
+      });
+
+      if (error) {
+        throw new Error(`Failed to execute atomic quota check and increment: ${error.message}`);
+      }
+
+      if (data) {
+        const allowed = Boolean(data.allowed);
+        const currentUsage = Number(data.current_monthly_usage) || 0;
+        const monthlyRemaining = Number(data.monthly_remaining) || 0;
+        const ceiling = Number(data.monthly_ceiling) || limits.monthlyCeiling;
+
+        return {
+          allowed,
+          currentMonthlyUsage: currentUsage,
+          monthlyRemaining,
+          monthlyCeiling: ceiling,
+          resetSeconds: secondsUntilMonthReset,
+          ...(allowed ? {} : { reason: 'MONTHLY_CEILING_EXCEEDED' }),
+        };
+      }
+    }
+
+    // 2. Fallback execution (for test mock environments without client.rpc)
     const currentUsage = await this.getDurableMonthlyUsage(tenantId, client);
 
-    // 2. Check if already at or exceeding ceiling
     if (currentUsage >= limits.monthlyCeiling) {
       return {
         allowed: false,
@@ -160,8 +191,6 @@ export class SaasRateLimiter {
       };
     }
 
-    // 3. Atomically upsert / increment into saas_usage_ledger
-    // Find existing row for (tenant_id, api_key_id, hour_bucket)
     const hourBucketIso = currentHourBucket.toISOString();
     let query = client
       .from('saas_usage_ledger')
@@ -203,7 +232,6 @@ export class SaasRateLimiter {
         });
 
       if (insertError) {
-        // If concurrent insert collided on unique constraint, perform fallback increment
         if (insertError.code === '23505') {
           return this.checkAndRecordDurableUsage(params, client);
         }
