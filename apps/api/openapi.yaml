@@ -1,12 +1,14 @@
 openapi: 3.1.0
 info:
-  title: KSHETRA API
+  title: KSHETRA API (Legacy Phase-1 Internal Prototype - DEPRECATED FOR EXTERNAL/SAAS CONTRACTS)
   version: 0.1.0
   description: >
-    Political intelligence platform API. Phase 1 serves typed seed data
-    (Telangana fully supported) over a versioned REST surface. All mutating
-    or privileged routes use header-based identity placeholders pending the
-    Supabase JWT integration (Phase 2B).
+    HISTORICAL NOTICE & CONTRACT RECONCILIATION (Milestone W021 / Gate W021-G5):
+    This document describes legacy Phase-1 internal seed prototypes and mobile-client routes (/api/v1/...).
+    It is DEPRECATED and MUST NOT be used as the authoritative contract for public/partner developer SaaS APIs.
+    The canonical, authoritative machine-readable contract for all public and partner developer APIs is:
+      apps/api/openapi-saas-v1.yaml (/api/vsaas/v1/...)
+    Governed by PLAN-W021-MASTER-REV-1.0 and CTO Authorization for Gate W021-G5.
   license:
     name: UNLICENSED (Proprietary)
 servers:

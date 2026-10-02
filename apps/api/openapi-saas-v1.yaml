@@ -1,0 +1,1951 @@
+openapi: 3.1.0
+info:
+  title: PanIN B2B Political SaaS & Public/Partner Developer API
+  version: 1.0.0
+  description: >
+    Canonical machine-readable contract for the PanIN B2B Political SaaS & Public/Partner Developer API.
+    Governed by Milestone W021 (Gates W021-G1 through W021-G5) under PLAN-W021-MASTER-REV-1.0.
+    Provides read-only statutory factual electoral, geographical, political entity data and governed delimitation scenario simulations.
+    All endpoints require cryptographic API-key authentication with strict tenant isolation, burst rate limiting, and durable monthly quota enforcement.
+  contact:
+    name: PanIN Partner Engineering Team
+    url: https://kshetra.io/developers
+  license:
+    name: Proprietary (PanIN Institutional SaaS License)
+servers:
+  - url: https://api.kshetra.io
+    description: Production API Gateway (Isolated)
+  - url: https://fkpigozcqnmcvofuksar.supabase.co
+    description: Staging Environment (panIN-staging)
+  - url: http://localhost:3001
+    description: Local Development Server
+
+security:
+  - ApiKeyAuth: []
+  - BearerAuth: []
+
+tags:
+  - name: Geography
+    description: Statutory geographical structures, states, Union Territories, and Assembly Constituencies.
+  - name: Normalized Elections
+    description: Authoritative ECI election events, assembly contests, candidate vote tallies, and margins.
+  - name: Canonical Political Entities
+    description: Canonical public records for political persons, recognized organizations, and sitting legislators.
+  - name: Delimitation Regimes & Scenarios
+    description: Statutory delimitation orders, constitutional timelines, and governed boundary redistricting simulations.
+
+paths:
+  # ════════════════════════════════════════════════════════════════════════════
+  # 1. GEOGRAPHY & CONSTITUENCY DATA FAMILY
+  # ════════════════════════════════════════════════════════════════════════════
+
+  /api/vsaas/v1/geo/states:
+    get:
+      operationId: listStates
+      tags:
+        - Geography
+      summary: List all states and Union Territories
+      description: Returns all supported Indian states and Union Territories with statutory seat totals, loaded constituency counts, and gazette citations.
+      responses:
+        '200':
+          description: Successful retrieval of states list.
+          headers:
+            x-request-id:
+              $ref: '#/components/headers/XRequestId'
+            x-response-time:
+              $ref: '#/components/headers/XResponseTime'
+            x-ratelimit-limit:
+              $ref: '#/components/headers/XRatelimitLimit'
+            x-ratelimit-remaining:
+              $ref: '#/components/headers/XRatelimitRemaining'
+            x-ratelimit-reset:
+              $ref: '#/components/headers/XRatelimitReset'
+            x-monthly-quota-limit:
+              $ref: '#/components/headers/XMonthlyQuotaLimit'
+            x-monthly-quota-remaining:
+              $ref: '#/components/headers/XMonthlyQuotaRemaining'
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/ApiSuccessEnvelope'
+                  - type: object
+                    properties:
+                      data:
+                        type: object
+                        required:
+                          - states
+                          - total
+                        properties:
+                          total:
+                            type: integer
+                            example: 1
+                          states:
+                            type: array
+                            items:
+                              $ref: '#/components/schemas/StateListItem'
+        '400':
+          $ref: '#/components/responses/400BadRequest'
+        '401':
+          $ref: '#/components/responses/401Unauthorized'
+        '429':
+          $ref: '#/components/responses/429TooManyRequests'
+        '500':
+          $ref: '#/components/responses/500InternalError'
+
+  /api/vsaas/v1/geo/states/{stateCode}:
+    get:
+      operationId: getStateByCode
+      tags:
+        - Geography
+      summary: Get state metadata by code
+      description: Returns single state metadata, assembly seat total, loaded constituencies, and spatial boundary availability. Accepts 2-letter state code (e.g. TS, TG).
+      parameters:
+        - $ref: '#/components/parameters/StateCodePathParam'
+      responses:
+        '200':
+          description: State details found.
+          headers:
+            x-request-id:
+              $ref: '#/components/headers/XRequestId'
+            x-response-time:
+              $ref: '#/components/headers/XResponseTime'
+            x-ratelimit-limit:
+              $ref: '#/components/headers/XRatelimitLimit'
+            x-ratelimit-remaining:
+              $ref: '#/components/headers/XRatelimitRemaining'
+            x-ratelimit-reset:
+              $ref: '#/components/headers/XRatelimitReset'
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/ApiSuccessEnvelope'
+                  - type: object
+                    properties:
+                      data:
+                        $ref: '#/components/schemas/StateDetail'
+        '400':
+          $ref: '#/components/responses/400BadRequest'
+        '401':
+          $ref: '#/components/responses/401Unauthorized'
+        '404':
+          $ref: '#/components/responses/404NotFound'
+        '429':
+          $ref: '#/components/responses/429TooManyRequests'
+        '500':
+          $ref: '#/components/responses/500InternalError'
+
+  /api/vsaas/v1/geo/states/{stateCode}/constituencies:
+    get:
+      operationId: listStateConstituencies
+      tags:
+        - Geography
+      summary: List assembly constituencies for a state
+      description: Returns complete roster of assembly constituencies for a state with reservation status and district names.
+      parameters:
+        - $ref: '#/components/parameters/StateCodePathParam'
+      responses:
+        '200':
+          description: List of assembly constituencies.
+          headers:
+            x-request-id:
+              $ref: '#/components/headers/XRequestId'
+            x-response-time:
+              $ref: '#/components/headers/XResponseTime'
+            x-ratelimit-limit:
+              $ref: '#/components/headers/XRatelimitLimit'
+            x-ratelimit-remaining:
+              $ref: '#/components/headers/XRatelimitRemaining'
+            x-ratelimit-reset:
+              $ref: '#/components/headers/XRatelimitReset'
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/ApiSuccessEnvelope'
+                  - type: object
+                    properties:
+                      data:
+                        type: object
+                        required:
+                          - stateCode
+                          - stateName
+                          - count
+                          - constituencies
+                        properties:
+                          stateCode:
+                            type: string
+                            example: TS
+                          stateName:
+                            type: string
+                            example: Telangana
+                          count:
+                            type: integer
+                            example: 119
+                          constituencies:
+                            type: array
+                            items:
+                              $ref: '#/components/schemas/ConstituencySummary'
+        '400':
+          $ref: '#/components/responses/400BadRequest'
+        '401':
+          $ref: '#/components/responses/401Unauthorized'
+        '404':
+          $ref: '#/components/responses/404NotFound'
+        '429':
+          $ref: '#/components/responses/429TooManyRequests'
+        '500':
+          $ref: '#/components/responses/500InternalError'
+
+  /api/vsaas/v1/geo/states/{stateCode}/constituencies/{acNo}:
+    get:
+      operationId: getConstituencyByAcNo
+      tags:
+        - Geography
+      summary: Get single constituency details by AC number
+      description: Returns high-precision statutory details for an assembly constituency identified by state code and constituency number (acNo >= 1).
+      parameters:
+        - $ref: '#/components/parameters/StateCodePathParam'
+        - $ref: '#/components/parameters/AcNoPathParam'
+      responses:
+        '200':
+          description: Constituency details found.
+          headers:
+            x-request-id:
+              $ref: '#/components/headers/XRequestId'
+            x-response-time:
+              $ref: '#/components/headers/XResponseTime'
+            x-ratelimit-limit:
+              $ref: '#/components/headers/XRatelimitLimit'
+            x-ratelimit-remaining:
+              $ref: '#/components/headers/XRatelimitRemaining'
+            x-ratelimit-reset:
+              $ref: '#/components/headers/XRatelimitReset'
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/ApiSuccessEnvelope'
+                  - type: object
+                    properties:
+                      data:
+                        $ref: '#/components/schemas/ConstituencyDetail'
+        '400':
+          $ref: '#/components/responses/400BadRequest'
+        '401':
+          $ref: '#/components/responses/401Unauthorized'
+        '404':
+          $ref: '#/components/responses/404NotFound'
+        '429':
+          $ref: '#/components/responses/429TooManyRequests'
+        '500':
+          $ref: '#/components/responses/500InternalError'
+
+  # ════════════════════════════════════════════════════════════════════════════
+  # 2. NORMALIZED ELECTIONS DATA FAMILY
+  # ════════════════════════════════════════════════════════════════════════════
+
+  /api/vsaas/v1/elections:
+    get:
+      operationId: listElectionEvents
+      tags:
+        - Normalized Elections
+      summary: List macro election events
+      description: Query macro election events filtered by state, year, and election type with pagination.
+      parameters:
+        - name: state
+          in: query
+          required: false
+          schema:
+            type: string
+            pattern: '^[A-Za-z]{2}$'
+          description: Two-letter state code filter (e.g. TG, TS).
+        - name: year
+          in: query
+          required: false
+          schema:
+            type: integer
+            minimum: 1947
+            maximum: 2100
+          description: Election year filter.
+        - name: type
+          in: query
+          required: false
+          schema:
+            type: string
+            enum: [assembly, parliamentary, local_body, by_election]
+          description: Classification type of the election.
+        - $ref: '#/components/parameters/LimitQueryParam'
+        - $ref: '#/components/parameters/OffsetQueryParam'
+      responses:
+        '200':
+          description: List of election events with statutory provenance.
+          headers:
+            x-request-id:
+              $ref: '#/components/headers/XRequestId'
+            x-response-time:
+              $ref: '#/components/headers/XResponseTime'
+            x-ratelimit-limit:
+              $ref: '#/components/headers/XRatelimitLimit'
+            x-ratelimit-remaining:
+              $ref: '#/components/headers/XRatelimitRemaining'
+            x-ratelimit-reset:
+              $ref: '#/components/headers/XRatelimitReset'
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/ApiSuccessEnvelope'
+                  - type: object
+                    properties:
+                      data:
+                        type: object
+                        required:
+                          - total
+                          - limit
+                          - offset
+                          - events
+                        properties:
+                          total:
+                            type: integer
+                            example: 1
+                          limit:
+                            type: integer
+                            example: 20
+                          offset:
+                            type: integer
+                            example: 0
+                          events:
+                            type: array
+                            items:
+                              $ref: '#/components/schemas/ElectionEvent'
+        '400':
+          $ref: '#/components/responses/400BadRequest'
+        '401':
+          $ref: '#/components/responses/401Unauthorized'
+        '429':
+          $ref: '#/components/responses/429TooManyRequests'
+        '500':
+          $ref: '#/components/responses/500InternalError'
+
+  /api/vsaas/v1/elections/{id}:
+    get:
+      operationId: getElectionEventById
+      tags:
+        - Normalized Elections
+      summary: Get election event details
+      description: Returns macro turnout totals, registered voters, votes polled, and gazette citations for a specific election event.
+      parameters:
+        - $ref: '#/components/parameters/EntityIdPathParam'
+      responses:
+        '200':
+          description: Election event details.
+          headers:
+            x-request-id:
+              $ref: '#/components/headers/XRequestId'
+            x-response-time:
+              $ref: '#/components/headers/XResponseTime'
+            x-ratelimit-limit:
+              $ref: '#/components/headers/XRatelimitLimit'
+            x-ratelimit-remaining:
+              $ref: '#/components/headers/XRatelimitRemaining'
+            x-ratelimit-reset:
+              $ref: '#/components/headers/XRatelimitReset'
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/ApiSuccessEnvelope'
+                  - type: object
+                    properties:
+                      data:
+                        $ref: '#/components/schemas/ElectionEventDetail'
+        '400':
+          $ref: '#/components/responses/400BadRequest'
+        '401':
+          $ref: '#/components/responses/401Unauthorized'
+        '404':
+          $ref: '#/components/responses/404NotFound'
+        '429':
+          $ref: '#/components/responses/429TooManyRequests'
+        '500':
+          $ref: '#/components/responses/500InternalError'
+
+  /api/vsaas/v1/elections/{id}/contests:
+    get:
+      operationId: listElectionContests
+      tags:
+        - Normalized Elections
+      summary: List assembly contests in an election event
+      description: Returns assembly constituency contests within an election event, including winner, runner-up, and turnout metrics.
+      parameters:
+        - $ref: '#/components/parameters/EntityIdPathParam'
+        - name: search
+          in: query
+          required: false
+          schema:
+            type: string
+          description: Free-text search on constituency name.
+        - name: party
+          in: query
+          required: false
+          schema:
+            type: string
+          description: Filter by winning political party code (e.g. INC, BRS, BJP).
+        - $ref: '#/components/parameters/LimitQueryParam'
+        - $ref: '#/components/parameters/OffsetQueryParam'
+      responses:
+        '200':
+          description: Contests list with statutory provenance.
+          headers:
+            x-request-id:
+              $ref: '#/components/headers/XRequestId'
+            x-response-time:
+              $ref: '#/components/headers/XResponseTime'
+            x-ratelimit-limit:
+              $ref: '#/components/headers/XRatelimitLimit'
+            x-ratelimit-remaining:
+              $ref: '#/components/headers/XRatelimitRemaining'
+            x-ratelimit-reset:
+              $ref: '#/components/headers/XRatelimitReset'
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/ApiSuccessEnvelope'
+                  - type: object
+                    properties:
+                      data:
+                        type: object
+                        required:
+                          - electionId
+                          - total
+                          - limit
+                          - offset
+                          - contests
+                        properties:
+                          electionId:
+                            type: string
+                          total:
+                            type: integer
+                          limit:
+                            type: integer
+                          offset:
+                            type: integer
+                          contests:
+                            type: array
+                            items:
+                              $ref: '#/components/schemas/ContestSummary'
+        '400':
+          $ref: '#/components/responses/400BadRequest'
+        '401':
+          $ref: '#/components/responses/401Unauthorized'
+        '404':
+          $ref: '#/components/responses/404NotFound'
+        '429':
+          $ref: '#/components/responses/429TooManyRequests'
+        '500':
+          $ref: '#/components/responses/500InternalError'
+
+  /api/vsaas/v1/elections/{id}/contests/{constituencyId}:
+    get:
+      operationId: getContestDetail
+      tags:
+        - Normalized Elections
+      summary: Get detailed contest results and candidate breakdown
+      description: Returns full statutory contest breakdown from ECI Form 20 and Form 21E, including candidate rankings, EVM/postal votes, vote shares, victory margins, and ballot choices (NOTA).
+      parameters:
+        - $ref: '#/components/parameters/EntityIdPathParam'
+        - name: constituencyId
+          in: path
+          required: true
+          schema:
+            type: string
+            minLength: 1
+          description: Constituency identifier (e.g. ac-65, TS-AC-065).
+      responses:
+        '200':
+          description: Full contest details with candidate results.
+          headers:
+            x-request-id:
+              $ref: '#/components/headers/XRequestId'
+            x-response-time:
+              $ref: '#/components/headers/XResponseTime'
+            x-ratelimit-limit:
+              $ref: '#/components/headers/XRatelimitLimit'
+            x-ratelimit-remaining:
+              $ref: '#/components/headers/XRatelimitRemaining'
+            x-ratelimit-reset:
+              $ref: '#/components/headers/XRatelimitReset'
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/ApiSuccessEnvelope'
+                  - type: object
+                    properties:
+                      data:
+                        $ref: '#/components/schemas/ContestDetail'
+        '400':
+          $ref: '#/components/responses/400BadRequest'
+        '401':
+          $ref: '#/components/responses/401Unauthorized'
+        '404':
+          $ref: '#/components/responses/404NotFound'
+        '429':
+          $ref: '#/components/responses/429TooManyRequests'
+        '500':
+          $ref: '#/components/responses/500InternalError'
+
+  # ════════════════════════════════════════════════════════════════════════════
+  # 3. CANONICAL POLITICAL ENTITY FAMILY
+  # ════════════════════════════════════════════════════════════════════════════
+
+  /api/vsaas/v1/entities/search:
+    get:
+      operationId: searchPoliticalEntities
+      tags:
+        - Canonical Political Entities
+      summary: Search canonical political persons and organizations
+      description: Search canonical political persons and recognized political organizations. Zero citizen personal data (PII) is exposed.
+      parameters:
+        - name: q
+          in: query
+          required: false
+          schema:
+            type: string
+            minLength: 1
+          description: Search term matching person name, aliases, or party name.
+        - name: type
+          in: query
+          required: false
+          schema:
+            type: string
+            enum: [person, organization]
+          description: Scope search strictly to persons or organizations.
+        - name: state
+          in: query
+          required: false
+          schema:
+            type: string
+            pattern: '^[A-Za-z]{2}$'
+          description: Two-letter state code filter.
+        - name: role
+          in: query
+          required: false
+          schema:
+            type: string
+          description: Filter by political role (e.g. MLA, MP).
+        - $ref: '#/components/parameters/LimitQueryParam'
+        - $ref: '#/components/parameters/OffsetQueryParam'
+      responses:
+        '200':
+          description: Search results containing persons and organizations.
+          headers:
+            x-request-id:
+              $ref: '#/components/headers/XRequestId'
+            x-response-time:
+              $ref: '#/components/headers/XResponseTime'
+            x-ratelimit-limit:
+              $ref: '#/components/headers/XRatelimitLimit'
+            x-ratelimit-remaining:
+              $ref: '#/components/headers/XRatelimitRemaining'
+            x-ratelimit-reset:
+              $ref: '#/components/headers/XRatelimitReset'
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/ApiSuccessEnvelope'
+                  - type: object
+                    properties:
+                      data:
+                        type: object
+                        required:
+                          - total
+                          - limit
+                          - offset
+                          - persons
+                          - organizations
+                        properties:
+                          total:
+                            type: integer
+                          limit:
+                            type: integer
+                          offset:
+                            type: integer
+                          persons:
+                            type: array
+                            items:
+                              $ref: '#/components/schemas/CanonicalPersonSummary'
+                          organizations:
+                            type: array
+                            items:
+                              $ref: '#/components/schemas/CanonicalOrgSummary'
+        '400':
+          $ref: '#/components/responses/400BadRequest'
+        '401':
+          $ref: '#/components/responses/401Unauthorized'
+        '429':
+          $ref: '#/components/responses/429TooManyRequests'
+        '500':
+          $ref: '#/components/responses/500InternalError'
+
+  /api/vsaas/v1/entities/persons/{id}:
+    get:
+      operationId: getPersonById
+      tags:
+        - Canonical Political Entities
+      summary: Get canonical profile of a political person
+      description: Returns the public gazetted profile of an elected representative or candidate, including official identifiers (ECI, Sansad). Contains zero private citizen contact details.
+      parameters:
+        - $ref: '#/components/parameters/EntityIdPathParam'
+      responses:
+        '200':
+          description: Canonical person profile found.
+          headers:
+            x-request-id:
+              $ref: '#/components/headers/XRequestId'
+            x-response-time:
+              $ref: '#/components/headers/XResponseTime'
+            x-ratelimit-limit:
+              $ref: '#/components/headers/XRatelimitLimit'
+            x-ratelimit-remaining:
+              $ref: '#/components/headers/XRatelimitRemaining'
+            x-ratelimit-reset:
+              $ref: '#/components/headers/XRatelimitReset'
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/ApiSuccessEnvelope'
+                  - type: object
+                    properties:
+                      data:
+                        $ref: '#/components/schemas/CanonicalPersonProfile'
+        '400':
+          $ref: '#/components/responses/400BadRequest'
+        '401':
+          $ref: '#/components/responses/401Unauthorized'
+        '404':
+          $ref: '#/components/responses/404NotFound'
+        '429':
+          $ref: '#/components/responses/429TooManyRequests'
+        '500':
+          $ref: '#/components/responses/500InternalError'
+
+  /api/vsaas/v1/entities/organizations/{id}:
+    get:
+      operationId: getOrganizationById
+      tags:
+        - Canonical Political Entities
+      summary: Get political organization profile
+      description: Returns recognized political party or alliance details, registration tier (national/state/unrecognized), and official election symbol metadata.
+      parameters:
+        - $ref: '#/components/parameters/EntityIdPathParam'
+      responses:
+        '200':
+          description: Political organization found.
+          headers:
+            x-request-id:
+              $ref: '#/components/headers/XRequestId'
+            x-response-time:
+              $ref: '#/components/headers/XResponseTime'
+            x-ratelimit-limit:
+              $ref: '#/components/headers/XRatelimitLimit'
+            x-ratelimit-remaining:
+              $ref: '#/components/headers/XRatelimitRemaining'
+            x-ratelimit-reset:
+              $ref: '#/components/headers/XRatelimitReset'
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/ApiSuccessEnvelope'
+                  - type: object
+                    properties:
+                      data:
+                        $ref: '#/components/schemas/CanonicalOrgProfile'
+        '400':
+          $ref: '#/components/responses/400BadRequest'
+        '401':
+          $ref: '#/components/responses/401Unauthorized'
+        '404':
+          $ref: '#/components/responses/404NotFound'
+        '429':
+          $ref: '#/components/responses/429TooManyRequests'
+        '500':
+          $ref: '#/components/responses/500InternalError'
+
+  /api/vsaas/v1/entities/legislators:
+    get:
+      operationId: listCurrentLegislators
+      tags:
+        - Canonical Political Entities
+      summary: Roster of current gazetted legislators
+      description: Returns roster of sitting elected legislators with tenure dates, jurisdictions, and party affiliations from official legislative secretariat gazettes.
+      parameters:
+        - name: state
+          in: query
+          required: false
+          schema:
+            type: string
+            pattern: '^[A-Za-z]{2}$'
+          description: Two-letter state code filter.
+        - name: house
+          in: query
+          required: false
+          schema:
+            type: string
+            enum: [assembly, parliament]
+          description: Legislative house (assembly or parliament).
+        - name: currentOnly
+          in: query
+          required: false
+          schema:
+            type: boolean
+            default: true
+          description: Filter for currently active tenures.
+      responses:
+        '200':
+          description: Legislator roster retrieved.
+          headers:
+            x-request-id:
+              $ref: '#/components/headers/XRequestId'
+            x-response-time:
+              $ref: '#/components/headers/XResponseTime'
+            x-ratelimit-limit:
+              $ref: '#/components/headers/XRatelimitLimit'
+            x-ratelimit-remaining:
+              $ref: '#/components/headers/XRatelimitRemaining'
+            x-ratelimit-reset:
+              $ref: '#/components/headers/XRatelimitReset'
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/ApiSuccessEnvelope'
+                  - type: object
+                    properties:
+                      data:
+                        type: object
+                        required:
+                          - count
+                          - legislators
+                        properties:
+                          count:
+                            type: integer
+                          legislators:
+                            type: array
+                            items:
+                              $ref: '#/components/schemas/LegislatorTenureItem'
+        '400':
+          $ref: '#/components/responses/400BadRequest'
+        '401':
+          $ref: '#/components/responses/401Unauthorized'
+        '429':
+          $ref: '#/components/responses/429TooManyRequests'
+        '500':
+          $ref: '#/components/responses/500InternalError'
+
+  # ════════════════════════════════════════════════════════════════════════════
+  # 4. DELIMITATION REGIMES & GOVERNED SCENARIOS
+  # ════════════════════════════════════════════════════════════════════════════
+
+  /api/vsaas/v1/delim/regimes:
+    get:
+      operationId: getDelimitationRegimes
+      tags:
+        - Delimitation Regimes & Scenarios
+      summary: Delimitation statutory orders and legal regimes
+      description: Returns operative legal status under the 2008 Delimitation Order, constitutional freeze information (Article 82 & 170, 84th Constitutional Amendment), and statutory timeline events.
+      responses:
+        '200':
+          description: Delimitation regimes and constitutional timeline.
+          headers:
+            x-request-id:
+              $ref: '#/components/headers/XRequestId'
+            x-response-time:
+              $ref: '#/components/headers/XResponseTime'
+            x-ratelimit-limit:
+              $ref: '#/components/headers/XRatelimitLimit'
+            x-ratelimit-remaining:
+              $ref: '#/components/headers/XRatelimitRemaining'
+            x-ratelimit-reset:
+              $ref: '#/components/headers/XRatelimitReset'
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/ApiSuccessEnvelope'
+                  - type: object
+                    properties:
+                      data:
+                        $ref: '#/components/schemas/DelimitationRegimesResponse'
+        '400':
+          $ref: '#/components/responses/400BadRequest'
+        '401':
+          $ref: '#/components/responses/401Unauthorized'
+        '429':
+          $ref: '#/components/responses/429TooManyRequests'
+        '500':
+          $ref: '#/components/responses/500InternalError'
+
+  /api/vsaas/v1/delim/projections:
+    get:
+      operationId: getDelimitationProjections
+      tags:
+        - Delimitation Regimes & Scenarios
+      summary: National seat apportionment projection models
+      description: National seat redistribution models across Indian states under Article 170 / Census 2011. Classified strictly as an academic research simulation (PANIN_SCENARIO). Does NOT constitute an official gazetted order.
+      parameters:
+        - name: model
+          in: query
+          required: false
+          schema:
+            type: string
+          description: Projection model identifier.
+      responses:
+        '200':
+          description: Seat projection model with server-owned PANIN_SCENARIO provenance and statutory disclaimer.
+          headers:
+            x-request-id:
+              $ref: '#/components/headers/XRequestId'
+            x-response-time:
+              $ref: '#/components/headers/XResponseTime'
+            x-ratelimit-limit:
+              $ref: '#/components/headers/XRatelimitLimit'
+            x-ratelimit-remaining:
+              $ref: '#/components/headers/XRatelimitRemaining'
+            x-ratelimit-reset:
+              $ref: '#/components/headers/XRatelimitReset'
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/ApiSuccessEnvelope'
+                  - type: object
+                    properties:
+                      data:
+                        $ref: '#/components/schemas/DelimitationProjectionsResponse'
+        '400':
+          $ref: '#/components/responses/400BadRequest'
+        '401':
+          $ref: '#/components/responses/401Unauthorized'
+        '429':
+          $ref: '#/components/responses/429TooManyRequests'
+        '500':
+          $ref: '#/components/responses/500InternalError'
+
+  /api/vsaas/v1/delim/simulate/{stateCode}:
+    get:
+      operationId: simulateStateBoundaries
+      tags:
+        - Delimitation Regimes & Scenarios
+      summary: Governed boundary redistribution simulation
+      description: >
+        Executes governed algorithmic boundary redistribution simulation (Hare-Niemeyer / Hamilton quota method) for an Indian state.
+        Governed strictly by server-owned PANIN_SCENARIO provenance metadata.
+        Client-supplied scenario override flags (isScenario, is_scenario, simulation) are strictly rejected with 400 SCENARIO_INPUT_FORBIDDEN.
+      parameters:
+        - $ref: '#/components/parameters/StateCodePathParam'
+        - name: seats
+          in: query
+          required: false
+          schema:
+            type: string
+          description: Target assembly seat total. Must be an integer between 10 and 10000 (ingress computational safety limit).
+        - name: maxDeviation
+          in: query
+          required: false
+          schema:
+            type: string
+          description: Maximum allowable population deviation percentage across constituencies.
+        - name: mode
+          in: query
+          required: false
+          schema:
+            type: string
+            enum: [current, as_of, explicit, future_anticipated, scenario]
+          description: Simulation regime mode.
+        - name: regimeId
+          in: query
+          required: false
+          schema:
+            type: string
+          description: Statutory or proposed delimitation regime identifier.
+        - name: proposalId
+          in: query
+          required: false
+          schema:
+            type: string
+          description: Delimitation proposal reference.
+        - name: date
+          in: query
+          required: false
+          schema:
+            type: string
+          description: Historical evaluation date (YYYY-MM-DD).
+      responses:
+        '200':
+          description: Boundary redistribution simulation results with server-owned PANIN_SCENARIO provenance and statutory disclaimer.
+          headers:
+            x-request-id:
+              $ref: '#/components/headers/XRequestId'
+            x-response-time:
+              $ref: '#/components/headers/XResponseTime'
+            x-ratelimit-limit:
+              $ref: '#/components/headers/XRatelimitLimit'
+            x-ratelimit-remaining:
+              $ref: '#/components/headers/XRatelimitRemaining'
+            x-ratelimit-reset:
+              $ref: '#/components/headers/XRatelimitReset'
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/ApiSuccessEnvelope'
+                  - type: object
+                    properties:
+                      data:
+                        $ref: '#/components/schemas/DelimitationSimulationResponse'
+        '400':
+          $ref: '#/components/responses/400BadRequest'
+        '401':
+          $ref: '#/components/responses/401Unauthorized'
+        '404':
+          $ref: '#/components/responses/404NotFound'
+        '429':
+          $ref: '#/components/responses/429TooManyRequests'
+        '500':
+          $ref: '#/components/responses/500InternalError'
+
+components:
+  # ════════════════════════════════════════════════════════════════════════════
+  # SECURITY SCHEMES
+  # ════════════════════════════════════════════════════════════════════════════
+  securitySchemes:
+    ApiKeyAuth:
+      type: apiKey
+      in: header
+      name: x-api-key
+      description: >
+        Primary cryptographic API key header.
+        Accepted formats strictly follow the 57-character pattern:
+          - panin_live_sk_<43-char Base64URL secret> (Production live key)
+          - panin_test_sk_<43-char Base64URL secret> (Testing / sandbox key)
+        Regex pattern: ^panin_(live|test)_sk_[0-9a-zA-Z_-]{43}$
+        CRITICAL: Prefixes starting with 'kshetra_live_', 'kshetra_test_', or unauthorized aliases are strictly REJECTED with 401 UNAUTHORIZED.
+
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: panin_api_key
+      description: >
+        Standard Authorization Bearer token header.
+        Value must be the exact raw API key:
+          Authorization: Bearer panin_live_sk_<43 chars>
+          Authorization: Bearer panin_test_sk_<43 chars>
+        Regex pattern: ^panin_(live|test)_sk_[0-9a-zA-Z_-]{43}$
+        CRITICAL: Prefixes starting with 'kshetra_live_', 'kshetra_test_', or unauthorized aliases are strictly REJECTED with 401 UNAUTHORIZED.
+
+  # ════════════════════════════════════════════════════════════════════════════
+  # COMMON RESPONSE HEADERS
+  # ════════════════════════════════════════════════════════════════════════════
+  headers:
+    XRequestId:
+      schema:
+        type: string
+        format: uuid
+      description: Unique correlation identifier generated or echoed by the API gateway.
+    XResponseTime:
+      schema:
+        type: string
+        example: 4.12ms
+      description: Total server-side execution duration in milliseconds.
+    XRatelimitLimit:
+      schema:
+        type: integer
+        example: 600
+      description: Maximum permitted requests in the current burst minute window.
+    XRatelimitRemaining:
+      schema:
+        type: integer
+        example: 599
+      description: Remaining burst requests available in the current minute window.
+    XRatelimitReset:
+      schema:
+        type: integer
+        example: 45
+      description: Seconds until the current burst rate-limit window resets.
+    XMonthlyQuotaLimit:
+      schema:
+        type: integer
+        example: 500000
+      description: Durable tenant monthly ledger request ceiling based on subscription tier.
+    XMonthlyQuotaRemaining:
+      schema:
+        type: integer
+        example: 499958
+      description: Remaining durable requests available in the current monthly billing period.
+
+  # ════════════════════════════════════════════════════════════════════════════
+  # COMMON PARAMETERS
+  # ════════════════════════════════════════════════════════════════════════════
+  parameters:
+    StateCodePathParam:
+      name: stateCode
+      in: path
+      required: true
+      schema:
+        type: string
+        pattern: '^[A-Za-z]{2}$'
+        example: TS
+      description: Standard 2-letter state code (case-insensitive; e.g. TS, TG for Telangana).
+
+    AcNoPathParam:
+      name: acNo
+      in: path
+      required: true
+      schema:
+        type: integer
+        minimum: 1
+        example: 65
+      description: Official assembly constituency number (acNo >= 1).
+
+    EntityIdPathParam:
+      name: id
+      in: path
+      required: true
+      schema:
+        type: string
+        minLength: 1
+      description: Canonical entity identifier (UUID or stable domain code).
+
+    LimitQueryParam:
+      name: limit
+      in: query
+      required: false
+      schema:
+        type: integer
+        minimum: 1
+        maximum: 50
+        default: 20
+      description: Number of records to return per page (1 to 50, default 20).
+
+    OffsetQueryParam:
+      name: offset
+      in: query
+      required: false
+      schema:
+        type: integer
+        minimum: 0
+        default: 0
+      description: Number of records to skip for pagination (default 0).
+
+  # ════════════════════════════════════════════════════════════════════════════
+  # RESPONSES
+  # ════════════════════════════════════════════════════════════════════════════
+  responses:
+    400BadRequest:
+      description: Request parameter validation failed or forbidden scenario override attempted.
+      headers:
+        x-request-id:
+          $ref: '#/components/headers/XRequestId'
+        x-response-time:
+          $ref: '#/components/headers/XResponseTime'
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ApiErrorEnvelope'
+          examples:
+            validationError:
+              summary: Parameter validation failure
+              value:
+                error: Bad Request
+                message: params/acNo must be >= 1
+                statusCode: 400
+                requestId: 81961fae-b2d9-43c2-a9ae-dfd8076db4f6
+                timestamp: '2026-10-02T12:00:00.000Z'
+            scenarioForbidden:
+              summary: Client-supplied scenario override rejected
+              value:
+                error: Bad Request
+                message: Direct provision or override of isScenario or simulation boolean is strictly forbidden. Provenance is derived exclusively by the server.
+                code: SCENARIO_INPUT_FORBIDDEN
+                statusCode: 400
+                requestId: c18da571-04bd-44ad-ab87-0b73cce4eb93
+                timestamp: '2026-10-02T12:00:00.000Z'
+
+    401Unauthorized:
+      description: Missing, malformed, inactive, expired, or disallowed API key credentials.
+      headers:
+        x-request-id:
+          $ref: '#/components/headers/XRequestId'
+        x-response-time:
+          $ref: '#/components/headers/XResponseTime'
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ApiErrorEnvelope'
+          example:
+            error: Unauthorized
+            message: Invalid or inactive API key provided.
+            code: UNAUTHORIZED
+            statusCode: 401
+            requestId: a31b6e6f-fb94-43cb-b092-297eb06fe8ec
+            timestamp: '2026-10-02T12:00:00.000Z'
+
+    404NotFound:
+      description: The requested resource, constituency, or entity does not exist.
+      headers:
+        x-request-id:
+          $ref: '#/components/headers/XRequestId'
+        x-response-time:
+          $ref: '#/components/headers/XResponseTime'
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ApiErrorEnvelope'
+          example:
+            error: Not Found
+            message: State with code 'ZZ' is not supported or not found.
+            code: STATE_NOT_FOUND
+            statusCode: 404
+            requestId: 2b037617-1f1d-4091-a1e6-239aa8067b45
+            timestamp: '2026-10-02T12:00:00.000Z'
+
+    429TooManyRequests:
+      description: Rate limit exceeded (in-memory burst limit or PostgreSQL monthly quota ceiling).
+      headers:
+        x-request-id:
+          $ref: '#/components/headers/XRequestId'
+        x-response-time:
+          $ref: '#/components/headers/XResponseTime'
+        Retry-After:
+          schema:
+            type: integer
+          description: Seconds until rate limit window resets.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ApiErrorEnvelope'
+          example:
+            error: Too Many Requests
+            message: Rate limit exceeded. Please retry after the designated cooldown window.
+            code: RATE_LIMIT_EXCEEDED
+            statusCode: 429
+            requestId: d1274941-eeef-4e31-8ca3-36aa3664d990
+            timestamp: '2026-10-02T12:00:00.000Z'
+
+    500InternalError:
+      description: Internal server error or upstream database dependency failure.
+      headers:
+        x-request-id:
+          $ref: '#/components/headers/XRequestId'
+        x-response-time:
+          $ref: '#/components/headers/XResponseTime'
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ApiErrorEnvelope'
+          example:
+            error: Internal Server Error
+            message: An unexpected error occurred. Please try again later.
+            code: AUTH_DEPENDENCY_FAILURE
+            statusCode: 500
+            requestId: e055679f-6e8d-4e92-b43e-a61250280eb4
+            timestamp: '2026-10-02T12:00:00.000Z'
+
+  # ════════════════════════════════════════════════════════════════════════════
+  # SCHEMAS
+  # ════════════════════════════════════════════════════════════════════════════
+  schemas:
+    # ─── CANONICAL ENVELOPES ───
+    ApiSuccessEnvelope:
+      type: object
+      required:
+        - success
+        - data
+        - requestId
+        - timestamp
+      properties:
+        success:
+          type: boolean
+          enum: [true]
+          example: true
+        data:
+          description: The payload returned by the specific endpoint.
+        requestId:
+          type: string
+          format: uuid
+          example: 6a66a1a1-9a77-4b71-bdfc-8c1cb27f0001
+        timestamp:
+          type: string
+          format: date-time
+          example: '2026-10-02T12:00:00.000Z'
+
+    ApiErrorEnvelope:
+      type: object
+      required:
+        - error
+        - message
+        - statusCode
+        - requestId
+        - timestamp
+      properties:
+        error:
+          type: string
+          example: Bad Request
+        message:
+          type: string
+          example: Invalid state code provided.
+        statusCode:
+          type: integer
+          example: 400
+        code:
+          type: string
+          example: VALIDATION_ERROR
+        requestId:
+          type: string
+          format: uuid
+          example: 8b88b2b2-0b88-5c82-cefd-9d2dc38f0002
+        timestamp:
+          type: string
+          format: date-time
+          example: '2026-10-02T12:00:00.000Z'
+        details:
+          type: array
+          items:
+            type: object
+            properties:
+              path:
+                type: string
+              message:
+                type: string
+
+    # ─── PROVENANCE OBJECTS ───
+    StatutoryFactProvenance:
+      type: object
+      required:
+        - authorityLayer
+        - dataStatus
+        - sourceReference
+      properties:
+        authorityLayer:
+          type: string
+          enum: [STATUTORY_FACT]
+          example: STATUTORY_FACT
+        dataStatus:
+          type: string
+          enum: [OFFICIAL]
+          example: OFFICIAL
+        sourceReference:
+          type: string
+          example: ECI Schedule XXXI / Delimitation of Parliamentary and Assembly Constituencies Order, 2008
+
+    PaninScenarioProvenance:
+      type: object
+      required:
+        - authorityLayer
+        - computationalType
+        - officialDelimitationOrder
+        - governingInstrument
+        - constitutionalBasis
+        - legalStatus
+        - sourceReference
+        - statutoryDisclaimer
+      properties:
+        authorityLayer:
+          type: string
+          enum: [PANIN_SCENARIO]
+          example: PANIN_SCENARIO
+        computationalType:
+          type: string
+          enum: [ACADEMIC_SIMULATION]
+          example: ACADEMIC_SIMULATION
+        officialDelimitationOrder:
+          type: boolean
+          enum: [false]
+          example: false
+        governingInstrument:
+          type: string
+          example: PANIN Algorithmic Simulation (Article 170 Framework)
+        constitutionalBasis:
+          type: string
+          example: Article 170(1)
+        legalStatus:
+          type: string
+          enum: [SCENARIO_PROPOSED_REGIME]
+          example: SCENARIO_PROPOSED_REGIME
+        sourceReference:
+          type: string
+          example: Census 2011 Primary Census Abstract (RGI)
+        effectiveVersion:
+          type: string
+          example: 2026-PANIN-SIM-V1
+        generatedAt:
+          type: string
+          format: date-time
+        statutoryDisclaimer:
+          type: string
+          example: This projection is a research simulation based on Census 2011 data and mathematical modeling. It does NOT represent an official order, draft proposal, or gazette notification of the Delimitation Commission of India or the Election Commission of India.
+
+    # ─── GEOGRAPHY ENTITIES ───
+    StateListItem:
+      type: object
+      required:
+        - stateCode
+        - name
+        - totalSeats
+        - loadedConstituencies
+        - provenance
+      properties:
+        stateCode:
+          type: string
+          example: TS
+        name:
+          type: string
+          example: Telangana
+        totalSeats:
+          type: integer
+          example: 119
+        loadedConstituencies:
+          type: integer
+          example: 119
+        provenance:
+          $ref: '#/components/schemas/StatutoryFactProvenance'
+
+    StateDetail:
+      type: object
+      required:
+        - stateCode
+        - name
+        - totalSeats
+        - loadedConstituencies
+        - hasSpatialBoundaries
+        - provenance
+      properties:
+        stateCode:
+          type: string
+          example: TS
+        name:
+          type: string
+          example: Telangana
+        totalSeats:
+          type: integer
+          example: 119
+        loadedConstituencies:
+          type: integer
+          example: 119
+        hasSpatialBoundaries:
+          type: boolean
+          example: true
+        provenance:
+          $ref: '#/components/schemas/StatutoryFactProvenance'
+
+    ConstituencySummary:
+      type: object
+      required:
+        - id
+        - acNo
+        - name
+        - stateCode
+        - district
+        - reservationStatus
+        - provenance
+      properties:
+        id:
+          type: string
+          example: TS-AC-65
+        acNo:
+          type: integer
+          example: 65
+        name:
+          type: string
+          example: Goshamahal
+        stateCode:
+          type: string
+          example: TS
+        district:
+          type: string
+          example: Hyderabad
+        reservationStatus:
+          type: string
+          enum: [GEN, SC, ST]
+          example: GEN
+        currentParty:
+          type: string
+          nullable: true
+          example: BJP
+        currentMLA:
+          type: string
+          nullable: true
+          example: T. Raja Singh
+        provenance:
+          $ref: '#/components/schemas/StatutoryFactProvenance'
+
+    ConstituencyDetail:
+      type: object
+      required:
+        - id
+        - acNo
+        - name
+        - stateCode
+        - district
+        - reservationStatus
+        - provenance
+      properties:
+        id:
+          type: string
+          example: TS-AC-65
+        acNo:
+          type: integer
+          example: 65
+        name:
+          type: string
+          example: Goshamahal
+        stateCode:
+          type: string
+          example: TS
+        district:
+          type: string
+          example: Hyderabad
+        reservationStatus:
+          type: string
+          enum: [GEN, SC, ST]
+          example: GEN
+        currentParty:
+          type: string
+          nullable: true
+          example: BJP
+        currentMLA:
+          type: string
+          nullable: true
+          example: T. Raja Singh
+        provenance:
+          $ref: '#/components/schemas/StatutoryFactProvenance'
+
+    # ─── ELECTIONS ENTITIES ───
+    ElectionEvent:
+      type: object
+      required:
+        - id
+        - electionCode
+        - name
+        - electionType
+        - house
+        - stateCode
+        - status
+        - provenance
+      properties:
+        id:
+          type: string
+          example: e1111111-1111-1111-1111-111111111111
+        electionCode:
+          type: string
+          example: AE_TG_2023
+        name:
+          type: string
+          example: Telangana Legislative Assembly General Election 2023
+        electionType:
+          type: string
+          example: general
+        house:
+          type: string
+          example: assembly
+        stateCode:
+          type: string
+          example: TG
+        notificationDate:
+          type: string
+          nullable: true
+        pollDate:
+          type: string
+          nullable: true
+        countingDate:
+          type: string
+          nullable: true
+        completionDate:
+          type: string
+          nullable: true
+        status:
+          type: string
+          example: completed
+        provenance:
+          $ref: '#/components/schemas/StatutoryFactProvenance'
+
+    ElectionEventDetail:
+      type: object
+      required:
+        - id
+        - electionCode
+        - name
+        - electionType
+        - house
+        - stateCode
+        - status
+        - provenance
+      properties:
+        id:
+          type: string
+        electionCode:
+          type: string
+        name:
+          type: string
+        electionType:
+          type: string
+        house:
+          type: string
+        stateCode:
+          type: string
+        totalSeats:
+          type: integer
+          example: 119
+        totalVoters:
+          type: integer
+          example: 32602793
+        votesPolled:
+          type: integer
+          example: 23298234
+        turnoutPercentage:
+          type: number
+          example: 71.46
+        status:
+          type: string
+          example: completed
+        provenance:
+          $ref: '#/components/schemas/StatutoryFactProvenance'
+
+    ContestSummary:
+      type: object
+      required:
+        - id
+        - electionId
+        - constituencyId
+        - constituencyName
+        - acNo
+        - totalElectors
+        - totalVotesPolled
+        - turnoutPercentage
+        - margin
+        - provenance
+      properties:
+        id:
+          type: string
+        electionId:
+          type: string
+        constituencyId:
+          type: string
+          example: ac-65
+        constituencyName:
+          type: string
+          example: Kodangal
+        acNo:
+          type: integer
+          example: 65
+        totalElectors:
+          type: integer
+          example: 245000
+        totalVotesPolled:
+          type: integer
+          example: 195000
+        turnoutPercentage:
+          type: number
+          example: 79.59
+        margin:
+          type: integer
+          example: 32532
+        provenance:
+          $ref: '#/components/schemas/StatutoryFactProvenance'
+
+    CandidateResultItem:
+      type: object
+      required:
+        - id
+        - candidateName
+        - party
+        - votesReceived
+        - rank
+        - result
+        - provenance
+      properties:
+        id:
+          type: string
+        candidateName:
+          type: string
+          example: Anumula Revanth Reddy
+        party:
+          type: string
+          example: INC
+        partyId:
+          type: string
+          nullable: true
+        partyAtElection:
+          type: string
+          nullable: true
+        votesReceived:
+          type: integer
+          example: 107429
+        voteShare:
+          type: number
+          nullable: true
+          example: 55.09
+        rank:
+          type: integer
+          example: 1
+        result:
+          type: string
+          enum: [won, lost]
+          example: won
+        evmVotes:
+          type: integer
+          nullable: true
+          example: 106000
+        postalVotes:
+          type: integer
+          nullable: true
+          example: 1429
+        provenance:
+          $ref: '#/components/schemas/StatutoryFactProvenance'
+
+    ContestDetail:
+      type: object
+      required:
+        - contest
+        - candidates
+        - ballotChoices
+      properties:
+        contest:
+          type: object
+          properties:
+            id:
+              type: string
+            electionId:
+              type: string
+            constituencyId:
+              type: string
+            constituencyName:
+              type: string
+            acNo:
+              type: integer
+            totalElectors:
+              type: integer
+            totalVotesPolled:
+              type: integer
+            turnoutPercentage:
+              type: number
+            margin:
+              type: integer
+            provenance:
+              $ref: '#/components/schemas/StatutoryFactProvenance'
+        candidates:
+          type: array
+          items:
+            $ref: '#/components/schemas/CandidateResultItem'
+        ballotChoices:
+          type: array
+          items:
+            type: object
+            properties:
+              choiceType:
+                type: string
+                example: NOTA
+              votesReceived:
+                type: integer
+                example: 2002
+        winner:
+          type: object
+          nullable: true
+          properties:
+            candidateName:
+              type: string
+            party:
+              type: string
+            votes:
+              type: integer
+        runnerUp:
+          type: object
+          nullable: true
+          properties:
+            candidateName:
+              type: string
+            party:
+              type: string
+            votes:
+              type: integer
+
+    # ─── CANONICAL POLITICAL ENTITIES ───
+    CanonicalPersonSummary:
+      type: object
+      required:
+        - id
+        - canonicalName
+        - provenance
+      properties:
+        id:
+          type: string
+          example: p1111111-1111-1111-1111-111111111111
+        canonicalName:
+          type: string
+          example: Anumula Revanth Reddy
+        aliases:
+          type: array
+          items:
+            type: string
+          example: [Revanth Reddy]
+        gender:
+          type: string
+          nullable: true
+          example: male
+        photoUrl:
+          type: string
+          nullable: true
+        eciCandidateId:
+          type: string
+          nullable: true
+          example: ECI-1234
+        sansadMemberId:
+          type: string
+          nullable: true
+        provenance:
+          $ref: '#/components/schemas/StatutoryFactProvenance'
+
+    CanonicalPersonProfile:
+      type: object
+      required:
+        - id
+        - canonicalName
+        - provenance
+      properties:
+        id:
+          type: string
+          example: p1111111-1111-1111-1111-111111111111
+        canonicalName:
+          type: string
+          example: Anumula Revanth Reddy
+        aliases:
+          type: array
+          items:
+            type: string
+        gender:
+          type: string
+          nullable: true
+        photoUrl:
+          type: string
+          nullable: true
+        eciCandidateId:
+          type: string
+          nullable: true
+        sansadMemberId:
+          type: string
+          nullable: true
+        provenance:
+          $ref: '#/components/schemas/StatutoryFactProvenance'
+
+    CanonicalOrgSummary:
+      type: object
+      required:
+        - id
+        - name
+        - provenance
+      properties:
+        id:
+          type: string
+          example: o1111111-1111-1111-1111-111111111111
+        name:
+          type: string
+          example: Indian National Congress
+        shortName:
+          type: string
+          nullable: true
+          example: INC
+        orgType:
+          type: string
+          example: party
+        ecPartyCode:
+          type: string
+          nullable: true
+          example: INC
+        recognitionLevel:
+          type: string
+          nullable: true
+          example: national
+        headquartersState:
+          type: string
+          nullable: true
+          example: DL
+        symbolUrl:
+          type: string
+          nullable: true
+        provenance:
+          $ref: '#/components/schemas/StatutoryFactProvenance'
+
+    CanonicalOrgProfile:
+      type: object
+      required:
+        - id
+        - name
+        - provenance
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        shortName:
+          type: string
+          nullable: true
+        orgType:
+          type: string
+        ecPartyCode:
+          type: string
+          nullable: true
+        recognitionLevel:
+          type: string
+          nullable: true
+        headquartersState:
+          type: string
+          nullable: true
+        symbolUrl:
+          type: string
+          nullable: true
+        provenance:
+          $ref: '#/components/schemas/StatutoryFactProvenance'
+
+    LegislatorTenureItem:
+      type: object
+      required:
+        - tenureId
+        - officeName
+        - jurisdictionId
+        - stateCode
+        - person
+        - isCurrent
+        - provenance
+      properties:
+        tenureId:
+          type: string
+        officeName:
+          type: string
+          example: Member of Legislative Assembly
+        jurisdictionId:
+          type: string
+          example: ac-65
+        stateCode:
+          type: string
+          example: TG
+        person:
+          type: object
+          required:
+            - id
+            - canonicalName
+          properties:
+            id:
+              type: string
+            canonicalName:
+              type: string
+            photoUrl:
+              type: string
+              nullable: true
+        party:
+          type: object
+          nullable: true
+          properties:
+            id:
+              type: string
+            name:
+              type: string
+            shortName:
+              type: string
+              nullable: true
+        startDate:
+          type: string
+          nullable: true
+          example: '2023-12-07'
+        endDate:
+          type: string
+          nullable: true
+        isCurrent:
+          type: boolean
+          example: true
+        provenance:
+          $ref: '#/components/schemas/StatutoryFactProvenance'
+
+    # ─── DELIMITATION ENTITIES ───
+    DelimitationRegimesResponse:
+      type: object
+      required:
+        - currentOperativeLaw
+        - constitutionalStatus
+        - timelineEvents
+        - provenance
+      properties:
+        currentOperativeLaw:
+          type: object
+          required:
+            - regimeId
+            - legalStatus
+            - orderName
+            - constitutionalFreeze
+          properties:
+            regimeId:
+              type: string
+              example: eci_delimitation_2008
+            legalStatus:
+              type: string
+              example: CURRENT_LEGAL_REGIME
+            orderName:
+              type: string
+              example: Delimitation of Parliamentary and Assembly Constituencies Order, 2008
+            constitutionalFreeze:
+              type: string
+              example: Article 82 & 170 (84th Constitutional Amendment freeze until first census after 2026)
+        constitutionalStatus:
+          type: object
+        timelineEvents:
+          type: array
+          items:
+            type: object
+        provenance:
+          $ref: '#/components/schemas/StatutoryFactProvenance'
+
+    DelimitationProjectionsResponse:
+      type: object
+      required:
+        - summary
+        - projections
+        - provenance
+      properties:
+        summary:
+          type: object
+        projections:
+          type: array
+          items:
+            type: object
+        provenance:
+          $ref: '#/components/schemas/PaninScenarioProvenance'
+
+    DelimitationSimulationResponse:
+      type: object
+      required:
+        - stateCode
+        - methodology
+        - districtBreakdown
+        - provenance
+      properties:
+        stateCode:
+          type: string
+          example: TS
+        methodology:
+          type: object
+          properties:
+            formula:
+              type: string
+              example: Hare-Niemeyer / Hamilton Method
+        districtBreakdown:
+          type: array
+          items:
+            type: object
+        provenance:
+          $ref: '#/components/schemas/PaninScenarioProvenance'

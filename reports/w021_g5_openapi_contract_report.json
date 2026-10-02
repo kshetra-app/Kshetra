@@ -1,0 +1,255 @@
+{
+  "gate": "W021-G5",
+  "status": "COMPLETED / VERIFIED / SUBMITTED FOR CTO ACCEPTANCE",
+  "timestamp": "2026-10-02T10:55:00.000Z",
+  "specificationFile": "apps/api/openapi-saas-v1.yaml",
+  "reconciledLegacyFile": "apps/api/openapi.yaml",
+  "testSuite": "tests/saas-openapi-contract-drift.test.mjs",
+  "openApiVersion": "3.1.0",
+  "totalRoutes": 15,
+  "routeInventory": [
+    {
+      "operationId": "listStates",
+      "method": "GET",
+      "fastifyPath": "/api/vsaas/v1/geo/states",
+      "openApiPath": "/api/vsaas/v1/geo/states",
+      "domain": "geography",
+      "provenance": "STATUTORY_FACT",
+      "authRequired": true
+    },
+    {
+      "operationId": "getStateByCode",
+      "method": "GET",
+      "fastifyPath": "/api/vsaas/v1/geo/states/:stateCode",
+      "openApiPath": "/api/vsaas/v1/geo/states/{stateCode}",
+      "domain": "geography",
+      "provenance": "STATUTORY_FACT",
+      "authRequired": true
+    },
+    {
+      "operationId": "listStateConstituencies",
+      "method": "GET",
+      "fastifyPath": "/api/vsaas/v1/geo/states/:stateCode/constituencies",
+      "openApiPath": "/api/vsaas/v1/geo/states/{stateCode}/constituencies",
+      "domain": "geography",
+      "provenance": "STATUTORY_FACT",
+      "authRequired": true
+    },
+    {
+      "operationId": "getConstituencyByAcNo",
+      "method": "GET",
+      "fastifyPath": "/api/vsaas/v1/geo/states/:stateCode/constituencies/:acNo",
+      "openApiPath": "/api/vsaas/v1/geo/states/{stateCode}/constituencies/{acNo}",
+      "domain": "geography",
+      "provenance": "STATUTORY_FACT",
+      "authRequired": true
+    },
+    {
+      "operationId": "listElectionEvents",
+      "method": "GET",
+      "fastifyPath": "/api/vsaas/v1/elections",
+      "openApiPath": "/api/vsaas/v1/elections",
+      "domain": "elections",
+      "provenance": "STATUTORY_FACT",
+      "authRequired": true
+    },
+    {
+      "operationId": "getElectionEventById",
+      "method": "GET",
+      "fastifyPath": "/api/vsaas/v1/elections/:id",
+      "openApiPath": "/api/vsaas/v1/elections/{id}",
+      "domain": "elections",
+      "provenance": "STATUTORY_FACT",
+      "authRequired": true
+    },
+    {
+      "operationId": "listElectionContests",
+      "method": "GET",
+      "fastifyPath": "/api/vsaas/v1/elections/:id/contests",
+      "openApiPath": "/api/vsaas/v1/elections/{id}/contests",
+      "domain": "elections",
+      "provenance": "STATUTORY_FACT",
+      "authRequired": true
+    },
+    {
+      "operationId": "getContestDetail",
+      "method": "GET",
+      "fastifyPath": "/api/vsaas/v1/elections/:id/contests/:constituencyId",
+      "openApiPath": "/api/vsaas/v1/elections/{id}/contests/{constituencyId}",
+      "domain": "elections",
+      "provenance": "STATUTORY_FACT",
+      "authRequired": true
+    },
+    {
+      "operationId": "searchPoliticalEntities",
+      "method": "GET",
+      "fastifyPath": "/api/vsaas/v1/entities/search",
+      "openApiPath": "/api/vsaas/v1/entities/search",
+      "domain": "political_entities",
+      "provenance": "STATUTORY_FACT",
+      "authRequired": true
+    },
+    {
+      "operationId": "getPersonById",
+      "method": "GET",
+      "fastifyPath": "/api/vsaas/v1/entities/persons/:id",
+      "openApiPath": "/api/vsaas/v1/entities/persons/{id}",
+      "domain": "political_entities",
+      "provenance": "STATUTORY_FACT",
+      "authRequired": true
+    },
+    {
+      "operationId": "getOrganizationById",
+      "method": "GET",
+      "fastifyPath": "/api/vsaas/v1/entities/organizations/:id",
+      "openApiPath": "/api/vsaas/v1/entities/organizations/{id}",
+      "domain": "political_entities",
+      "provenance": "STATUTORY_FACT",
+      "authRequired": true
+    },
+    {
+      "operationId": "listCurrentLegislators",
+      "method": "GET",
+      "fastifyPath": "/api/vsaas/v1/entities/legislators",
+      "openApiPath": "/api/vsaas/v1/entities/legislators",
+      "domain": "political_entities",
+      "provenance": "STATUTORY_FACT",
+      "authRequired": true
+    },
+    {
+      "operationId": "getDelimitationRegimes",
+      "method": "GET",
+      "fastifyPath": "/api/vsaas/v1/delim/regimes",
+      "openApiPath": "/api/vsaas/v1/delim/regimes",
+      "domain": "delimitation",
+      "provenance": "STATUTORY_FACT",
+      "authRequired": true
+    },
+    {
+      "operationId": "getDelimitationProjections",
+      "method": "GET",
+      "fastifyPath": "/api/vsaas/v1/delim/projections",
+      "openApiPath": "/api/vsaas/v1/delim/projections",
+      "domain": "delimitation",
+      "provenance": "PANIN_SCENARIO",
+      "authRequired": true
+    },
+    {
+      "operationId": "simulateStateBoundaries",
+      "method": "GET",
+      "fastifyPath": "/api/vsaas/v1/delim/simulate/:stateCode",
+      "openApiPath": "/api/vsaas/v1/delim/simulate/{stateCode}",
+      "domain": "delimitation",
+      "provenance": "PANIN_SCENARIO",
+      "authRequired": true
+    }
+  ],
+  "securitySchemes": {
+    "ApiKeyAuth": {
+      "type": "apiKey",
+      "in": "header",
+      "name": "x-api-key",
+      "credentialRegex": "^panin_(live|test)_sk_[0-9a-zA-Z_-]{43}$",
+      "disallowedAliases": ["kshetra_live_...", "kshetra_test_...", "panin_dev_sk_..."]
+    },
+    "BearerAuth": {
+      "type": "http",
+      "scheme": "bearer",
+      "bearerFormat": "panin_api_key",
+      "credentialRegex": "^panin_(live|test)_sk_[0-9a-zA-Z_-]{43}$",
+      "disallowedAliases": ["kshetra_live_...", "kshetra_test_...", "panin_dev_sk_..."]
+    }
+  },
+  "schemaValidationResult": {
+    "engine": "Ajv (Draft 2020-12 / Draft 07)",
+    "schemasCompiled": 21,
+    "cleanCompilation": true
+  },
+  "contractDriftResult": {
+    "runtimeFastifyRoutes": 15,
+    "openApiRoutesMatched": 15,
+    "orphanedRoutesInOpenApi": 0,
+    "driftCount": 0,
+    "parityPercentage": "100.0%"
+  },
+  "g5TestExecution": {
+    "file": "tests/saas-openapi-contract-drift.test.mjs",
+    "totalChecks": 15,
+    "passed": 15,
+    "failed": 0,
+    "passRate": "100.0%"
+  },
+  "fullRegressionBattery": {
+    "g4SaaSRouteSuite": {
+      "file": "apps/api/src/__tests__/saas-v1-routes.test.ts",
+      "passed": 34,
+      "total": 34
+    },
+    "saasAuthG3Suite": {
+      "file": "apps/api/src/__tests__/saas-auth-g3.test.ts",
+      "passed": 17,
+      "total": 17
+    },
+    "saasDurableQuotaSuite": {
+      "file": "apps/api/src/__tests__/saas-durable-quota.test.ts",
+      "passed": 11,
+      "total": 11
+    },
+    "saasAtomicQuotaPgSuite": {
+      "file": "tests/saas-atomic-quota-pg.test.mjs",
+      "passed": 14,
+      "total": 14
+    },
+    "saasMigration056Preflight": {
+      "file": "tests/saas-migration-056-preflight.test.mjs",
+      "passed": 32,
+      "total": 32
+    },
+    "politicalEntitiesInvariants": {
+      "file": "tests/political-entities-invariants.test.mjs",
+      "passed": 53,
+      "total": 53
+    },
+    "electionNormalizationInvariants": {
+      "file": "tests/election-normalization-invariants.test.mjs",
+      "passed": 93,
+      "total": 93
+    },
+    "delimitationMigration055Preflight": {
+      "file": "tests/delimitation-migration-055-preflight.test.mjs",
+      "passed": 23,
+      "total": 23
+    },
+    "delimitationG8Integration": {
+      "file": "tests/delimitation-g8-integration.test.mjs",
+      "passed": 25,
+      "total": 25
+    },
+    "observabilitySuite": {
+      "file": "apps/api/src/__tests__/observability.test.ts",
+      "passed": 19,
+      "total": 19
+    },
+    "totalRegressionChecks": 302,
+    "totalPassed": 302,
+    "totalFailed": 0,
+    "passRate": "100.0%"
+  },
+  "apiBuild": {
+    "command": "npm run build --prefix apps/api",
+    "exitCode": 0,
+    "status": "CLEAN"
+  },
+  "contractDriftLegacyCheck": {
+    "command": "node scripts/check-api-contract-drift.mjs",
+    "matched": 9,
+    "total": 9,
+    "passRate": "100.0%"
+  },
+  "productionAirGap": {
+    "database": "ehfafcnimmjusyvplbah",
+    "airGapped": true,
+    "activeConnections": 0,
+    "mutations": 0
+  }
+}
