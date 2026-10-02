@@ -1,34 +1,49 @@
 {
   "gate": "W021-G2",
-  "remediation": "CTO_TENANT_ISOLATION_REMEDIATION_COMPLETE",
-  "timestamp": "2026-10-01T17:39:48.375Z",
+  "remediation": "CTO_TENANT_ISOLATION_AND_PROVENANCE_REMEDIATION_COMPLETE",
+  "strategy": "PATH_B_FORWARD_REMEDIATION_MIGRATION_057",
+  "timestamp": "2026-10-02T01:15:12.741Z",
   "targetDatabase": "panIN-staging (fkpigozcqnmcvofuksar)",
   "isolatedHarness": "PostgreSQL 17.6 (supabase_db_Kshetra / w021_g2_pg_verify)",
   "productionAirGapped": true,
-  "totalChecks": 28,
-  "passedChecks": 28,
+  "totalChecks": 32,
+  "passedChecks": 32,
   "failedChecks": 0,
   "passRate": "100.0%",
   "checks": [
     {
       "id": "W021-G2-MIG-01",
-      "title": "Migration 056 executes transactionally with exit code 0",
+      "title": "Historical Migration 056 executes transactionally with exit code 0",
       "status": "PASS",
-      "observed": "Transaction committed successfully",
+      "observed": "Historical Migration 056 transaction committed successfully",
       "details": ""
     },
     {
       "id": "W021-G2-MIG-02",
-      "title": "Migration 056 is idempotent on replay (zero errors on re-execution)",
+      "title": "Forward Remediation Migration 057 executes transactionally over 056 with exit code 0",
       "status": "PASS",
-      "observed": "Replay succeeded cleanly with IF NOT EXISTS guards",
+      "observed": "Migration 057 transaction committed successfully",
       "details": ""
     },
     {
       "id": "W021-G2-MIG-03",
+      "title": "Staging package 057 is idempotent on replay (zero errors on re-execution)",
+      "status": "PASS",
+      "observed": "Replay succeeded cleanly with IF NOT EXISTS and guarded constraints",
+      "details": ""
+    },
+    {
+      "id": "W021-G2-MIG-04",
       "title": "Failure rehearsal rolls back cleanly (zero partial schema application)",
       "status": "PASS",
       "observed": "Execution aborted on error; canary table count = 0",
+      "details": ""
+    },
+    {
+      "id": "W021-G2-MIG-05",
+      "title": "Verification script verification_057 executes and verifies all constraints",
+      "status": "PASS",
+      "observed": "DO",
       "details": ""
     },
     {
@@ -168,28 +183,28 @@
       "id": "W021-G2-PROBE-12A",
       "title": "Invalid key status rejected (database check constraint rejects invalid_status_value)",
       "status": "PASS",
-      "observed": "ERROR:  new row for relation \"saas_api_keys\" violates check constraint \"chk_saas_api_keys_revoked_at\"\nDETAIL:  Failing row contains (399dec40-4c56-4147-af59-63a9020912ac, aaaaaaaa-1111-1111-1111-111111111111, aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa, Bad Status Key, panin_test_sk_, 44556677, hash_bad_status, {geo:read,elections:read}, invalid_status_value, null, null, null, 2026-10-01 17:39:46.670271+00).",
+      "observed": "ERROR:  new row for relation \"saas_api_keys\" violates check constraint \"chk_saas_api_keys_revoked_at\"\nDETAIL:  Failing row contains (8d4cde1f-f292-49fd-adef-51bbdedf360e, aaaaaaaa-1111-1111-1111-111111111111, aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa, Bad Status Key, panin_test_sk_, 44556677, hash_bad_status, {geo:read,elections:read}, invalid_status_value, null, null, 2026-10-02 01:15:07.183197+00, null).",
       "details": ""
     },
     {
       "id": "W021-G2-PROBE-12B",
       "title": "Inconsistent key state rejected: status active with non-null revoked_at rejected by check constraint",
       "status": "PASS",
-      "observed": "ERROR:  new row for relation \"saas_api_keys\" violates check constraint \"chk_saas_api_keys_revoked_at\"\nDETAIL:  Failing row contains (96788333-5b4d-478b-8dd6-159c3ee35a39, aaaaaaaa-1111-1111-1111-111111111111, aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa, Inconsistent Key, panin_test_sk_, 55667788, hash_inconsistent_revoked, {geo:read,elections:read}, active, 2026-10-01 17:39:47.045764+00, null, null, 2026-10-01 17:39:47.045764+00).",
+      "observed": "ERROR:  new row for relation \"saas_api_keys\" violates check constraint \"chk_saas_api_keys_revoked_at\"\nDETAIL:  Failing row contains (851a06de-54e7-4143-bbc7-a09753b03e0e, aaaaaaaa-1111-1111-1111-111111111111, aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa, Inconsistent Key, panin_test_sk_, 55667788, hash_inconsistent_revoked, {geo:read,elections:read}, active, null, null, 2026-10-02 01:15:07.411181+00, 2026-10-02 01:15:07.411181+00).",
       "details": ""
     },
     {
       "id": "W021-G2-PROBE-13",
       "title": "Invalid application environment rejected (check constraint chk_saas_applications_env)",
       "status": "PASS",
-      "observed": "ERROR:  new row for relation \"saas_applications\" violates check constraint \"chk_saas_applications_env\"\nDETAIL:  Failing row contains (d47951ae-b24e-4a5b-a69e-638fdeb9b010, aaaaaaaa-1111-1111-1111-111111111111, Bad Env App, staging_qa, 2026-10-01 17:39:47.405088+00).",
+      "observed": "ERROR:  new row for relation \"saas_applications\" violates check constraint \"chk_saas_applications_env\"\nDETAIL:  Failing row contains (2100f12f-ffbb-4498-84a4-f8f107973cc2, aaaaaaaa-1111-1111-1111-111111111111, Bad Env App, staging_qa, 2026-10-02 01:15:07.691155+00).",
       "details": ""
     },
     {
       "id": "W021-G2-PROBE-14",
       "title": "Invalid tenant tier rejected (check constraint chk_saas_tenants_tier)",
       "status": "PASS",
-      "observed": "ERROR:  new row for relation \"saas_tenants\" violates check constraint \"chk_saas_tenants_tier\"\nDETAIL:  Failing row contains (9b953f5c-ee2f-433e-a7e5-d01a0384e245, Bad Tier Org, bad-tier-org, unlimited_super, active, test@org.com, {}, 2026-10-01 17:39:47.71162+00, 2026-10-01 17:39:47.71162+00).",
+      "observed": "ERROR:  new row for relation \"saas_tenants\" violates check constraint \"chk_saas_tenants_tier\"\nDETAIL:  Failing row contains (e8fd28fe-44c2-4a07-a63a-11282834e39e, Bad Tier Org, bad-tier-org, unlimited_super, active, test@org.com, {}, 2026-10-02 01:15:07.950972+00, 2026-10-02 01:15:07.950972+00).",
       "details": ""
     },
     {
@@ -204,6 +219,20 @@
       "title": "Production environment ehfafcnimmjusyvplbah is 100% air-gapped and untouched",
       "status": "PASS",
       "observed": "Staging confirmed at https://fkpigozcqnmcvofuksar.supabase.co",
+      "details": ""
+    },
+    {
+      "id": "W021-G2-EQUIV-01",
+      "title": "Catalog columns and data types bitwise match between fresh replay and incremental upgrade",
+      "status": "PASS",
+      "observed": "100% catalog equivalence verified",
+      "details": ""
+    },
+    {
+      "id": "W021-G2-EQUIV-02",
+      "title": "Catalog constraints and definitions bitwise match between fresh replay and incremental upgrade",
+      "status": "PASS",
+      "observed": "100% constraint equivalence verified",
       "details": ""
     }
   ]

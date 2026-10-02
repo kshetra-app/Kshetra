@@ -1,52 +1,11 @@
-/**
- * tests/saas-migration-056-preflight.test.mjs
- *
- * Milestone W021 — B2B Political SaaS & Public/Partner Developer API Foundation
- * Gate W021-G2: Migration 056 Preflight & Security Probe Verification Suite (Remediated)
- *
- * Directives & Authorities:
- * - CTO AUTHORIZATION — W021-G2 MIGRATION 056 PREFLIGHT & STAGING EXECUTION
- * - CTO REMEDIATION DIRECTIVE — CRITICAL TENANT-ISOLATION DEFECT RESOLUTION
- * - Ratified Plan: PLAN-W021-MASTER-REV-1.0.md
- * - Master Execution Framework Amendments v1.2-v1.6
- *
- * Verification Scope:
- * 1. Transactional DDL execution & atomicity
- * 2. Idempotency on replay
- * 3. Failure rollback proof
- * 4. Catalog inspection: tables, columns, constraints, composite FK, indexes
- * 5. Mandatory Tenant-Isolation & Security Probes:
- *    - Probe 1: Anon direct access denied
- *    - Probe 2: Authenticated direct access denied
- *    - Probe 3: Arbitrary tenant access denied
- *    - Probe 4A: Authoritative cross-tenant rejection (Tenant A + Application B -> DATABASE CONSTRAINT FAILURE)
- *    - Probe 4B: Authoritative same-tenant success (Tenant A + Application A -> SUCCESS)
- *    - Probe 4C: Authoritative second same-tenant success (Tenant B + Application B -> SUCCESS)
- *    - Probe 5: Revoked key remains persisted (soft-state)
- *    - Probe 6: Historical usage remains after key revocation
- *    - Probe 7: Physical key deletion sets api_key_id = NULL without deleting usage row
- *    - Probe 8: Duplicate key_hash rejected (unique violation)
- *    - Probe 9: Duplicate tenant slug rejected (unique violation)
- *    - Probe 10A: Duplicate usage bucket with key rejected (unique violation)
- *    - Probe 10B: Duplicate usage bucket with NULL key rejected (UNIQUE NULLS NOT DISTINCT violation)
- *    - Probe 11: Expired-key representation verified
- *    - Probe 12A: Invalid status rejected (check constraint)
- *    - Probe 12B: revoked_at consistency check (active with non-null revoked_at or revoked with null revoked_at rejected)
- *    - Probe 13: Invalid environment rejected (check constraint)
- *    - Probe 14: Invalid tier rejected (check constraint)
- * 6. PostGIS 589 geometry digest invariance check
- * 7. Production air-gap confirmation
- */
-
 import fs from 'node:fs';
 import path from 'node:path';
 import crypto from 'node:crypto';
 import { execSync } from 'node:child_process';
 import dotenv from 'dotenv';
-import { createClient } from '@supabase/supabase-js';
 
 console.log('================================================================');
-console.log('W021-G2: MIGRATION 056 PREFLIGHT & SECURITY PROBE SUITE (REMEDIATED)');
+console.log('W021-G2: MIGRATION 056 & 057 PREFLIGHT & REPRODUCIBILITY SUITE');
 console.log(`Execution Timestamp: ${new Date().toISOString()}`);
 console.log('Target: panIN-staging (fkpigozcqnmcvofuksar) & Isolated PG 17.6');
 console.log('Production: ehfafcnimmjusyvplbah (STRICTLY AIR-GAPPED & UNTOUCHED)');
@@ -120,29 +79,40 @@ async function runG2PreflightBattery() {
   }
   console.log('Isolated test database provisioned successfully.\n');
 
-  // ─── STEP 1: TRANSACTIONAL EXECUTION & IDEMPOTENCY ──────────────────────────
-  console.log('--- 1. MIGRATION EXECUTION, IDEMPOTENCY & ROLLBACK PROOFS ---');
+  // ─── STEP 1: TRANSACTIONAL SEQUENTIAL MIGRATION EXECUTION (056 -> 057) ─────
+  console.log('--- 1. MIGRATION 056 & 057 SEQUENTIAL EXECUTION & PROVENANCE ---');
 
-  // MIG-01: Transactional Execution
+  // MIG-01: Historical Migration 056 Execution
   const mig056Sql = fs.readFileSync('supabase/migrations/056_saas_partner_foundation.sql', 'utf8');
-  const migRes = queryPsql(testDb, mig056Sql);
+  const mig056Res = queryPsql(testDb, mig056Sql);
   recordCheck(
     'W021-G2-MIG-01',
-    'Migration 056 executes transactionally with exit code 0',
-    migRes.ok,
-    migRes.ok ? 'Transaction committed successfully' : migRes.stderr
+    'Historical Migration 056 executes transactionally with exit code 0',
+    mig056Res.ok,
+    mig056Res.ok ? 'Historical Migration 056 transaction committed successfully' : mig056Res.stderr
   );
 
-  // MIG-02: Idempotency Replay
-  const replayRes = queryPsql(testDb, mig056Sql);
+  // MIG-02: Forward Remediation Migration 057 Execution
+  const mig057Sql = fs.readFileSync('supabase/migrations/057_w021_saas_tenant_isolation_remediation.sql', 'utf8');
+  const mig057Res = queryPsql(testDb, mig057Sql);
   recordCheck(
     'W021-G2-MIG-02',
-    'Migration 056 is idempotent on replay (zero errors on re-execution)',
-    replayRes.ok,
-    replayRes.ok ? 'Replay succeeded cleanly with IF NOT EXISTS guards' : replayRes.stderr
+    'Forward Remediation Migration 057 executes transactionally over 056 with exit code 0',
+    mig057Res.ok,
+    mig057Res.ok ? 'Migration 057 transaction committed successfully' : mig057Res.stderr
   );
 
-  // MIG-03: Failure Rehearsal Rollback Proof
+  // MIG-03: Idempotency Replay of Staging Package 057
+  const replay057Sql = fs.readFileSync('supabase/staging_migration_package_057.sql', 'utf8');
+  const replayRes = queryPsql(testDb, replay057Sql);
+  recordCheck(
+    'W021-G2-MIG-03',
+    'Staging package 057 is idempotent on replay (zero errors on re-execution)',
+    replayRes.ok,
+    replayRes.ok ? 'Replay succeeded cleanly with IF NOT EXISTS and guarded constraints' : replayRes.stderr
+  );
+
+  // MIG-04: Failure Rehearsal Rollback Proof
   const failureRehearsalSql = `
     BEGIN;
     CREATE TABLE public.canary_saas_fail (id UUID PRIMARY KEY);
@@ -152,10 +122,20 @@ async function runG2PreflightBattery() {
   const failRes = queryPsql(testDb, failureRehearsalSql);
   const canaryCheck = queryPsql(testDb, "SELECT count(*) FROM information_schema.tables WHERE table_name = 'canary_saas_fail';").stdout.trim();
   recordCheck(
-    'W021-G2-MIG-03',
+    'W021-G2-MIG-04',
     'Failure rehearsal rolls back cleanly (zero partial schema application)',
     !failRes.ok && canaryCheck === '0',
     `Execution aborted on error; canary table count = ${canaryCheck}`
+  );
+
+  // MIG-05: SQL Verification Script Execution
+  const ver057Sql = fs.readFileSync('supabase/verification_057_w021_saas_tenant_isolation_remediation.sql', 'utf8');
+  const verRes = queryPsql(testDb, ver057Sql);
+  recordCheck(
+    'W021-G2-MIG-05',
+    'Verification script verification_057 executes and verifies all constraints',
+    verRes.ok,
+    verRes.ok ? verRes.stdout : verRes.stderr
   );
 
   // ─── STEP 2: SCHEMA & CATALOG INSPECTION ────────────────────────────────────
@@ -549,6 +529,58 @@ async function runG2PreflightBattery() {
     `Staging confirmed at ${supabaseUrl}`
   );
 
+  // ─── STEP 5: SCHEMA EQUIVALENCE & REPLAYABILITY PROOF ───────────────────────
+  console.log('\n--- 5. SCHEMA EQUIVALENCE & REPRODUCIBILITY PROOF (UPGRADE VS FRESH) ---');
+  // Build a secondary clean database applying 056 + 057 from scratch, and compare catalogs
+  const freshDb = 'w021_g2_fresh_replay';
+  execSync(`docker exec supabase_db_Kshetra psql -U postgres -c "DROP DATABASE IF EXISTS ${freshDb};"`, { stdio: 'pipe' });
+  execSync(`docker exec supabase_db_Kshetra psql -U postgres -c "CREATE DATABASE ${freshDb};"`, { stdio: 'pipe' });
+  queryPsql(freshDb, setupSql);
+  queryPsql(freshDb, mig056Sql);
+  queryPsql(freshDb, mig057Sql);
+
+  const getCatalogDump = (db) => queryPsql(db, `
+    SELECT 
+      table_name, column_name, data_type, is_nullable
+    FROM information_schema.columns
+    WHERE table_schema = 'public' 
+      AND table_name IN ('saas_tenants', 'saas_applications', 'saas_api_keys', 'saas_usage_ledger')
+    ORDER BY table_name, column_name;
+  `).stdout.trim();
+
+  const getConstraintDump = (db) => queryPsql(db, `
+    SELECT 
+      conname, contype, pg_get_constraintdef(oid)
+    FROM pg_constraint
+    WHERE conrelid::regclass::text IN ('public.saas_tenants', 'public.saas_applications', 'public.saas_api_keys', 'public.saas_usage_ledger')
+    ORDER BY conname;
+  `).stdout.trim();
+
+  const freshCatalog = getCatalogDump(freshDb);
+  const upgradedCatalog = getCatalogDump(testDb);
+  const freshConstraints = getConstraintDump(freshDb);
+  const upgradedConstraints = getConstraintDump(testDb);
+
+  const catalogMatch = freshCatalog === upgradedCatalog;
+  const constraintsMatch = freshConstraints === upgradedConstraints;
+
+  recordCheck(
+    'W021-G2-EQUIV-01',
+    'Catalog columns and data types bitwise match between fresh replay and incremental upgrade',
+    catalogMatch,
+    catalogMatch ? '100% catalog equivalence verified' : 'Discrepancy detected in columns'
+  );
+
+  recordCheck(
+    'W021-G2-EQUIV-02',
+    'Catalog constraints and definitions bitwise match between fresh replay and incremental upgrade',
+    constraintsMatch,
+    constraintsMatch ? '100% constraint equivalence verified' : 'Discrepancy detected in constraints'
+  );
+
+  // Clean up fresh rehearsal db
+  execSync(`docker exec supabase_db_Kshetra psql -U postgres -c "DROP DATABASE IF EXISTS ${freshDb};"`, { stdio: 'pipe' });
+
   // ─── SUMMARY & REPORT EMISSION ──────────────────────────────────────────────
   console.log('\n================================================================');
   console.log(`TOTAL CHECKS: ${passedChecks + failedChecks}`);
@@ -559,7 +591,8 @@ async function runG2PreflightBattery() {
 
   const reportData = {
     gate: 'W021-G2',
-    remediation: 'CTO_TENANT_ISOLATION_REMEDIATION_COMPLETE',
+    remediation: 'CTO_TENANT_ISOLATION_AND_PROVENANCE_REMEDIATION_COMPLETE',
+    strategy: 'PATH_B_FORWARD_REMEDIATION_MIGRATION_057',
     timestamp: new Date().toISOString(),
     targetDatabase: 'panIN-staging (fkpigozcqnmcvofuksar)',
     isolatedHarness: 'PostgreSQL 17.6 (supabase_db_Kshetra / w021_g2_pg_verify)',

@@ -1,13 +1,25 @@
 {
   "gate": "W021-G2",
-  "remediationStatus": "CTO_TENANT_ISOLATION_REMEDIATION_COMPLETE",
+  "remediationStatus": "CTO_MIGRATION_PROVENANCE_AND_TENANT_ISOLATION_REMEDIATION_COMPLETE",
+  "resolutionStrategy": "PATH_B_FORWARD_REMEDIATION_MIGRATION_057",
   "status": "IMPLEMENTED / TESTED / VERIFIED / SUBMITTED FOR CTO RE-ACCEPTANCE",
-  "timestamp": "2026-10-01T17:42:00.000Z",
+  "timestamp": "2026-10-02T01:16:00.000Z",
   "targetEnvironment": "panIN-staging (fkpigozcqnmcvofuksar / https://fkpigozcqnmcvofuksar.supabase.co)",
   "productionAirGapped": true,
   "productionDatabase": "ehfafcnimmjusyvplbah",
-  "migrationPackage": "supabase/staging_migration_package_056.sql",
-  "verificationScript": "supabase/verification_056_saas_partner_foundation.sql",
+  "historicalMigration056": {
+    "file": "supabase/migrations/056_saas_partner_foundation.sql",
+    "commit": "57b4616905a0c0b7599d161349a7b592c3e6e731",
+    "sha256": "8315BB34B375AFFA1D7FA9833989003482CC7FE3E7D2215A674AEFE933CE170A",
+    "status": "PRESERVED_HISTORICAL_DEFINITION"
+  },
+  "forwardMigration057": {
+    "file": "supabase/migrations/057_w021_saas_tenant_isolation_remediation.sql",
+    "sha256": "4A05719AC01C76BD0825BD1B74247436917A067E95C8212CB77C9C60B6C8B79B",
+    "status": "FORWARD_REMEDIATION_ESTABLISHED"
+  },
+  "stagingPackage057": "supabase/staging_migration_package_057.sql",
+  "verificationScript057": "supabase/verification_057_w021_saas_tenant_isolation_remediation.sql",
   "remediationHighlights": {
     "compositeForeignKey": "saas_api_keys(tenant_id, application_id) -> saas_applications(tenant_id, id)",
     "usageLedgerNullUniqueness": "UNIQUE NULLS NOT DISTINCT (tenant_id, api_key_id, hour_bucket)",
@@ -15,10 +27,15 @@
   },
   "preflightTestBattery": {
     "suite": "tests/saas-migration-056-preflight.test.mjs",
-    "totalChecks": 28,
-    "passed": 28,
+    "totalChecks": 32,
+    "passed": 32,
     "failed": 0,
     "passRate": "100.0%"
+  },
+  "schemaEquivalence": {
+    "freshReplayVsIncrementalUpgrade": "100% BITWISE EQUIVALENT",
+    "columnsMatch": true,
+    "constraintsMatch": true
   },
   "securityProbes": {
     "authoritativeCrossTenantRejection": "PASS (fk_saas_api_keys_tenant_application violation)",

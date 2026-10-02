@@ -4,7 +4,7 @@
 -- Milestone: W021 — B2B Political SaaS & Public/Partner Developer API Foundation
 -- Gate: W021-G2 — Migration 056 Preflight & Staging Execution
 -- Authority: Master Execution Framework Amendments v1.2-v1.6, CTO Directive W021-G2
--- Remediation: CTO Remediation Directive — Critical Tenant-Isolation Defect Resolution
+-- Ratified Plan: PLAN-W021-MASTER-REV-1.0.md (Commit dcc9f22)
 -- Target: panIN-staging (fkpigozcqnmcvofuksar) ONLY
 -- Production: STRICTLY PROHIBITED & AIR-GAPPED (ehfafcnimmjusyvplbah)
 -- ==============================================================================
@@ -16,6 +16,7 @@ DO $$
 DECLARE
   v_table_count INTEGER;
 BEGIN
+  -- Verify that none of the 4 target tables exist in the public schema prior to application
   SELECT count(*) INTO v_table_count
   FROM information_schema.tables
   WHERE table_schema = 'public'
@@ -58,7 +59,6 @@ CREATE TABLE IF NOT EXISTS public.saas_applications (
   name TEXT NOT NULL,
   environment TEXT NOT NULL DEFAULT 'test',
   created_at TIMESTAMPTZ NOT NULL DEFAULT timezone('utc', now()),
-  CONSTRAINT uq_saas_applications_tenant_app UNIQUE (tenant_id, id),
   CONSTRAINT chk_saas_applications_env CHECK (environment IN ('live', 'test'))
 );
 
@@ -66,43 +66,33 @@ CREATE INDEX IF NOT EXISTS idx_saas_applications_tenant ON public.saas_applicati
 
 DO $$
 BEGIN
-  RAISE NOTICE '[MIGRATION 056] STEP 2: Created public.saas_applications table with composite unique constraint (tenant_id, id)';
+  RAISE NOTICE '[MIGRATION 056] STEP 2: Created public.saas_applications table and tenant index';
 END $$;
 
 -- ─── 3. SAAS API KEYS ─────────────────────────────────────────────────────────
 CREATE TABLE IF NOT EXISTS public.saas_api_keys (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   tenant_id UUID NOT NULL REFERENCES public.saas_tenants(id) ON DELETE CASCADE,
-  application_id UUID NOT NULL,
+  application_id UUID NOT NULL REFERENCES public.saas_applications(id) ON DELETE CASCADE,
   name TEXT NOT NULL,
   key_prefix TEXT NOT NULL,
   key_hint TEXT NOT NULL,
   key_hash TEXT NOT NULL,
   scopes TEXT[] NOT NULL DEFAULT ARRAY['geo:read', 'elections:read']::TEXT[],
   status TEXT NOT NULL DEFAULT 'active',
-  revoked_at TIMESTAMPTZ,
   expires_at TIMESTAMPTZ,
   last_used_at TIMESTAMPTZ,
   created_at TIMESTAMPTZ NOT NULL DEFAULT timezone('utc', now()),
   CONSTRAINT uq_saas_api_keys_hash UNIQUE (key_hash),
-  CONSTRAINT chk_saas_api_keys_status CHECK (status IN ('active', 'revoked', 'compromised')),
-  CONSTRAINT chk_saas_api_keys_revoked_at CHECK (
-    (status = 'active' AND revoked_at IS NULL) OR
-    (status IN ('revoked', 'compromised') AND revoked_at IS NOT NULL)
-  ),
-  CONSTRAINT fk_saas_api_keys_tenant_application
-    FOREIGN KEY (tenant_id, application_id)
-    REFERENCES public.saas_applications(tenant_id, id)
-    ON DELETE CASCADE
+  CONSTRAINT chk_saas_api_keys_status CHECK (status IN ('active', 'revoked', 'compromised'))
 );
 
 CREATE INDEX IF NOT EXISTS idx_saas_api_keys_lookup ON public.saas_api_keys(key_hash) WHERE status = 'active';
 CREATE INDEX IF NOT EXISTS idx_saas_api_keys_tenant ON public.saas_api_keys(tenant_id);
-CREATE INDEX IF NOT EXISTS idx_saas_api_keys_app ON public.saas_api_keys(application_id);
 
 DO $$
 BEGIN
-  RAISE NOTICE '[MIGRATION 056] STEP 3: Created public.saas_api_keys table with composite foreign key (tenant_id, application_id) and revoked_at audit column';
+  RAISE NOTICE '[MIGRATION 056] STEP 3: Created public.saas_api_keys table and active lookup index';
 END $$;
 
 -- ─── 4. HOURLY USAGE AGGREGATION LEDGER ───────────────────────────────────────
@@ -114,14 +104,14 @@ CREATE TABLE IF NOT EXISTS public.saas_usage_ledger (
   request_count INT NOT NULL DEFAULT 0,
   error_count INT NOT NULL DEFAULT 0,
   created_at TIMESTAMPTZ NOT NULL DEFAULT timezone('utc', now()),
-  CONSTRAINT uq_saas_usage_bucket UNIQUE NULLS NOT DISTINCT (tenant_id, api_key_id, hour_bucket)
+  CONSTRAINT uq_saas_usage_bucket UNIQUE (tenant_id, api_key_id, hour_bucket)
 );
 
 CREATE INDEX IF NOT EXISTS idx_saas_usage_ledger_tenant ON public.saas_usage_ledger(tenant_id, hour_bucket DESC);
 
 DO $$
 BEGIN
-  RAISE NOTICE '[MIGRATION 056] STEP 4: Created public.saas_usage_ledger with ON DELETE SET NULL and UNIQUE NULLS NOT DISTINCT';
+  RAISE NOTICE '[MIGRATION 056] STEP 4: Created public.saas_usage_ledger with ON DELETE SET NULL retention';
 END $$;
 
 -- ─── 5. ROW LEVEL SECURITY & DEFENSE-IN-DEPTH ─────────────────────────────────

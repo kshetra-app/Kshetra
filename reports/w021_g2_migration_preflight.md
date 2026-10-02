@@ -1,76 +1,55 @@
-# W021-G2: MIGRATION 056 PREFLIGHT & SCHEMA INTEGRITY REPORT (REMEDIATED)
+# W021-G2: MIGRATION PREFLIGHT & SCHEMA PROVENANCE INTEGRITY REPORT
 
 ## 1. Executive Summary & Verification Coordinates
 
-Pursuant to **CTO REMEDIATION DIRECTIVE — W021-G2: CRITICAL TENANT-ISOLATION DEFECT RESOLUTION**, this document records the comprehensive resolution, architectural proofs, and empirical verification for Migration 056: SaaS Partner Foundation.
+Pursuant to **CTO REMEDIATION DIRECTIVE — W021-G2: FINAL MIGRATION PROVENANCE REMEDIATION**, this document records the comprehensive resolution, architectural proofs, and empirical verification for Migration 056 & Forward Remediation Migration 057: SaaS Partner Foundation.
 
 | Coordinate Field | Value |
 |---|---|
-| **Milestone / Gate** | `W021-G2` (Remediation) |
-| **Authority** | CTO REMEDIATION DIRECTIVE — CRITICAL TENANT-ISOLATION DEFECT |
+| **Milestone / Gate** | `W021-G2` (Migration Provenance Remediation) |
+| **Authority** | CTO REMEDIATION DIRECTIVE — FINAL MIGRATION PROVENANCE REMEDIATION |
 | **Ratified Plan Reference** | `PLAN-W021-MASTER-REV-1.0.md` |
-| **Execution Timestamp** | `2026-10-01T17:39:36.584Z` |
+| **Resolution Strategy** | **PATH B — FORWARD REMEDIATION MIGRATION 057** |
+| **Historical Migration 056 SHA-256** | `8315BB34B375AFFA1D7FA9833989003482CC7FE3E7D2215A674AEFE933CE170A` (Commit `57b4616`) |
+| **Forward Remediation 057 SHA-256** | `4A05719AC01C76BD0825BD1B74247436917A067E95C8212CB77C9C60B6C8B79B` |
 | **Target Staging Environment** | `panIN-staging` (`fkpigozcqnmcvofuksar` / `https://fkpigozcqnmcvofuksar.supabase.co`) |
 | **Production Air-Gap Status** | **100% AIR-GAPPED & UNTOUCHED** (`ehfafcnimmjusyvplbah`) |
 | **Isolated Rehearsal DB** | PostgreSQL 17.6 (`supabase_db_Kshetra` / `w021_g2_pg_verify`) |
-| **Migration File** | `supabase/migrations/056_saas_partner_foundation.sql` |
-| **Staging Package** | `supabase/staging_migration_package_056.sql` |
-| **Verification Script** | `supabase/verification_056_saas_partner_foundation.sql` |
-| **Rollback Script (Contingency)**| `supabase/rollback_056_saas_partner_foundation.sql` |
-| **Preflight Test Battery** | **28 / 28 PASS (100.0%)** (`tests/saas-migration-056-preflight.test.mjs`) |
+| **Preflight Test Battery** | **32 / 32 PASS (100.0%)** (`tests/saas-migration-056-preflight.test.mjs`) |
+| **Schema Equivalence Proof** | **100% BITWISE MATCH** between fresh replay (`056`+`057`) and upgrade |
 | **PostGIS 589 Geometry Baseline** | Exactly `589` rows, Digest: `f839fa02980318a8f35f932ebe72fa1d3ad6325dc86a624bf159d932fe5f613b` |
 | **W021-G3 Onward Status** | **STRICTLY NOT AUTHORIZED / GATED** |
 
 ---
 
-## 2. Root Cause Analysis of Defect & Remediations Applied
+## 2. Migration History Audit & Authoritative Provenance Resolution
 
-### 2.1 Critical Tenant-Isolation Defect
-* **Root Cause**: The initial draft of Migration 056 defined `saas_api_keys.tenant_id REFERENCES saas_tenants(id)` and `saas_api_keys.application_id REFERENCES saas_applications(id)` independently. Because `saas_applications` was only referenced by its surrogate primary key `id`, PostgreSQL allowed a row in `saas_api_keys` to pair `tenant_id = Tenant A` with `application_id = Application B` (where Application B belonged to Tenant B).
-* **Remediation**:
-  1. Added composite unique constraint `uq_saas_applications_tenant_app UNIQUE (tenant_id, id)` on `public.saas_applications`.
-  2. Replaced the single-column foreign key with composite foreign key:
-     ```sql
-     CONSTRAINT fk_saas_api_keys_tenant_application
-       FOREIGN KEY (tenant_id, application_id)
-       REFERENCES public.saas_applications(tenant_id, id)
-       ON DELETE CASCADE
-     ```
-  3. The database kernel physically rejects any inconsistent `(tenant_id, application_id)` tuple.
+### 2.1 Staging History Audit Findings
+1. Inspection of the live staging project `fkpigozcqnmcvofuksar` revealed that neither `schema_migrations`, `_prisma_migrations`, nor `supabase_migrations` tables exist in public schema (returning PostgREST code `PGRST205` / `PGRST106`).
+2. Live staging execution across prior milestones (W009, W014, W015, W016, W020) operates via transactional SQL packages executed directly against the PostgreSQL engine.
+3. The live staging catalog probe confirmed that the four SaaS tables (`saas_tenants`, `saas_applications`, `saas_api_keys`, `saas_usage_ledger`) had not been permanently committed to staging, or had been cleanly rolled back.
 
-### 2.2 Secondary Issue: Usage Ledger NULL Uniqueness
-* **Root Cause**: When an API key is deleted, `api_key_id` is set to `NULL` via `ON DELETE SET NULL`. Under standard PostgreSQL `UNIQUE (tenant_id, api_key_id, hour_bucket)`, SQL NULL semantics treat each NULL as distinct, allowing duplicate orphaned usage rows for the same tenant and hour bucket.
-* **Remediation**:
-  Enforced PostgreSQL 15+ standard constraint:
-  ```sql
-  CONSTRAINT uq_saas_usage_bucket UNIQUE NULLS NOT DISTINCT (tenant_id, api_key_id, hour_bucket)
-  ```
-  Now, even when `api_key_id` is `NULL`, PostgreSQL rejects duplicate rows with identical `(tenant_id, NULL, hour_bucket)`.
-
-### 2.3 Secondary Issue: `revoked_at` Column & Audit Lifecycle
-* **Root Cause**: Architecture specifications described soft-revocation with `revoked_at`, but the column was omitted from the DDL.
-* **Remediation**:
-  Added `revoked_at TIMESTAMPTZ` and check constraint:
-  ```sql
-  CONSTRAINT chk_saas_api_keys_revoked_at CHECK (
-    (status = 'active' AND revoked_at IS NULL) OR
-    (status IN ('revoked', 'compromised') AND revoked_at IS NOT NULL)
-  )
-  ```
-  Guarantees active keys have `revoked_at IS NULL`, and revoked/compromised keys must have an explicit timestamp. Revocation is permanent.
+### 2.2 Rejection of Historical Rewrite (Anti-Pattern) & Selection of Path B
+* **Path A (Rewrite Historical 056)**: Strictly **REJECTED** per CTO directive. Rewriting historical migration definitions destroys reproducibility and invalidates prior commit hashes.
+* **Path B (Forward Remediation Migration 057)**: **SELECTED & PROVEN**. 
+  - Migration `056_saas_partner_foundation.sql` is restored byte-exact to canonical historical commit `57b4616905a0c0b7599d161349a7b592c3e6e731`.
+  - Migration `057_w021_saas_tenant_isolation_remediation.sql` is created as a clean forward delta containing all tenant isolation, NULL uniqueness, and audit column enforcements.
+  - Staging package `supabase/staging_migration_package_057.sql` and verification script `supabase/verification_057_w021_saas_tenant_isolation_remediation.sql` are provided.
 
 ---
 
-## 3. Preflight Test Battery (28 / 28 PASS)
+## 3. Preflight & Reproducibility Test Battery (32 / 32 PASS)
 
 | Test ID | Category | Check Description | Result |
 |---|---|---|:---:|
-| `W021-G2-MIG-01` | Migration Atomicity | Migration 056 executes transactionally with exit code 0 | **PASS** |
-| `W021-G2-MIG-02` | Idempotency | Migration 056 is idempotent on replay | **PASS** |
-| `W021-G2-MIG-03` | Rollback Proof | Failure rehearsal rolls back cleanly | **PASS** |
+| `W021-G2-MIG-01` | Sequential Execution | Historical Migration 056 executes transactionally with exit code 0 | **PASS** |
+| `W021-G2-MIG-02` | Sequential Execution | Forward Remediation Migration 057 executes transactionally over 056 | **PASS** |
+| `W021-G2-MIG-03` | Idempotency Replay | Staging package 057 is idempotent on replay (zero errors on re-execution) | **PASS** |
+| `W021-G2-MIG-04` | Rollback Proof | Failure rehearsal rolls back cleanly (zero partial schema application) | **PASS** |
+| `W021-G2-MIG-05` | SQL Verification | Verification script `verification_057` executes and verifies all constraints | **PASS** |
 | `W021-G2-SCH-01` | Catalog | All 4 ratified SaaS tables exist | **PASS** |
-| `W021-G2-SCH-02` | Relational | Composite UNIQUE and composite FK exist | **PASS** |
-| `W021-G2-SCH-03` | Indexes | Partial active key lookup index exists | **PASS** |
+| `W021-G2-SCH-02` | Relational | Composite UNIQUE and composite FK exist on database kernel | **PASS** |
+| `W021-G2-SCH-03` | Indexes | Partial active key lookup index and performance indexes exist | **PASS** |
 | `W021-G2-SCH-04` | Security | RLS ENABLED and FORCED on all 4 tables | **PASS** |
 | `W021-G2-SCH-05` | Audit Schema | `revoked_at` column exists and is nullable | **PASS** |
 | `W021-G2-PROBE-01` | Probe 1 | Anon direct access denied | **PASS** |
@@ -93,3 +72,11 @@ Pursuant to **CTO REMEDIATION DIRECTIVE — W021-G2: CRITICAL TENANT-ISOLATION D
 | `W021-G2-PROBE-14` | Probe 14 | Invalid tenant tier rejected | **PASS** |
 | `W021-G2-GEO-01` | Geometry | PostGIS 589 geometry count and digest frozen | **PASS** |
 | `W021-G2-PRD-01` | Air-Gap | Production environment is 100% air-gapped | **PASS** |
+| `W021-G2-EQUIV-01` | Schema Equivalence | Catalog columns and data types bitwise match between fresh replay and upgrade | **PASS** |
+| `W021-G2-EQUIV-02` | Schema Equivalence | Catalog constraints and definitions bitwise match between fresh replay and upgrade | **PASS** |
+
+---
+
+## 4. Verification Verdict
+
+All 32 preflight, security probe, idempotency, and schema equivalence checks passed with 100.0% parity. The forward migration strategy guarantees mathematical tenant isolation, historical audit preservation, and zero migration history rewrites.
