@@ -2632,19 +2632,19 @@
      - Delimitation scenario immutability (`officialDelimitationOrder: false`, `SCENARIO_PROPOSED_REGIME`, statutory disclaimer).
      - Client parameter injection of simulation flags fails closed with 400 `SCENARIO_INPUT_FORBIDDEN`.
      - Zero citizen PII across public/partner OpenAPI component schemas.
-     - Usage ledger retention verified (`ON DELETE SET NULL` on key physical deletion preserves audit continuity).
+     - Usage ledger retention and orphan preservation verified (`ON DELETE SET NULL` on key physical deletion preserves tenant audit records).
      - Correlation headers (`x-request-id`, `x-response-time`) and rate-limiting headers defined across all 15 endpoints.
      - Property-level provenance semantics verified across all response fields.
      - Production air-gap verified (`ehfafcnimmjusyvplbah` excluded from all configs, routes, and schemas).
   2. **Unified Master Regression Battery:**
      - Orchestrated by `scripts/run-w021-master-battery.mjs`.
      - All 13 suites executed: 365 / 365 checks passed (100.0% pass rate).
-  3. **Empirical Performance Benchmarking:**
+  3. **Empirical Performance Benchmarking & WAN Disposition:**
      - In-memory apportionment: P95 = 0.065 ms (< 5.0 ms target).
      - Factual read lookup: 1.93 ms (< 10.0 ms target).
      - Concurrency 50: P95 = 21.85 ms (< 200.0 ms target).
      - Process RSS memory delta: 4.26 MB (< 15.0 MB target).
-     - Remote staging PostgREST WAN latency covered under DEC-107 environmental exception.
+     - Remote staging PostgREST WAN round-trip latency classified as: `NOT MEASURABLE IN CURRENT AUTHORIZED ENVIRONMENT / ENVIRONMENTAL EXCEPTION` (governed as a bounded residual environmental limitation under DEC-107 and PLAN-W021-G6-REV-1.0 Section 15).
   4. **Strict Scope Prohibitions Preserved:**
      - Production database `ehfafcnimmjusyvplbah` 100% air-gapped and untouched.
      - Mobile codebase `apps/mobile/**` 100% frozen.

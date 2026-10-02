@@ -218,9 +218,9 @@ runProbe('G6-SEC-07', 'Zero Citizen Personal Data (PII): Zero phone numbers, ema
   return { observed: '0 forbidden citizen PII fields exposed across all public/partner OpenAPI schemas' };
 });
 
-// ─── 6. CORRELATION & AUDIT CONTINUITY ───
+// ─── 6. CORRELATION & AUDIT LEDGER PRESERVATION ───
 
-runProbe('G6-SEC-08', 'Audit continuity: On API key physical deletion, usage ledger rows preserve tenant consumption (ON DELETE SET NULL)', () => {
+runProbe('G6-SEC-08', 'Usage-ledger retention: On API key physical deletion, usage ledger rows preserve tenant consumption (ON DELETE SET NULL orphan preservation)', () => {
   const migration056Path = path.resolve('supabase/staging_migration_package_056.sql');
   const migrationSql = fs.readFileSync(migration056Path, 'utf8');
 
@@ -229,7 +229,7 @@ runProbe('G6-SEC-08', 'Audit continuity: On API key physical deletion, usage led
     'Usage ledger does not specify ON DELETE SET NULL on api_key_id'
   );
 
-  return { observed: 'saas_usage_ledger.api_key_id uses ON DELETE SET NULL to preserve immutable historical ledger' };
+  return { observed: 'saas_usage_ledger.api_key_id uses ON DELETE SET NULL to preserve tenant usage records when key is deleted' };
 });
 
 runProbe('G6-SEC-09', 'Correlation headers: UUID x-request-id, x-response-time, and rate-limiting headers defined on all 15 routes', () => {

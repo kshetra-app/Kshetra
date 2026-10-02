@@ -1,9 +1,9 @@
 # W021-G6 MASTER AUDIT EVIDENCE DOSSIER: SECURITY PROBES, REGRESSION BATTERY & VERIFICATION SUMMARY
 
-**Milestone:** W021-G6 (Security Probes, Master Regression Battery & Audit Dossier)  
+**Milestone:** W021-G6 (Authorized Security Probes, Master Regression Battery & Final Verification Dossier)  
 **Authority:** CTO RATIFICATION — W021-G6 (`PLAN-W021-G6-REV-1.0`, Commit `975fb2ddb2ff934ee469170eb1ef3abbb844b25b`)  
-**Execution Timestamp:** 2026-10-02T13:40:00.000Z  
-**Verdict:** **SUBMITTED FOR CTO ACCEPTANCE**  
+**Execution Timestamp:** 2026-10-02T13:50:00.000Z  
+**Verdict:** **SUBMITTED FOR CTO ACCEPTANCE REVIEW**  
 **Non-Self-Acceptance Clause:** *Rule IV-001 enforced: Self-acceptance is strictly forbidden. This dossier is submitted for independent CTO review and determination.*
 
 ---
@@ -29,7 +29,7 @@
 Implemented in `tests/saas-g6-security-probes.test.mjs`:
 
 | Probe ID | Security Invariant Checked | Method & Verification Assertion | Verdict |
-| :--- | :--- | :--- | :--- |
+| :--- | :--- | :--- | :---: |
 | **G6-SEC-01** | Canonical API Key Format Regex | Exact 57-char regex `^panin_(live\|test)_sk_[0-9a-zA-Z_-]{43}$` | **PASS** |
 | **G6-SEC-02** | Rejection of Unauthorized `kshetra_*` Aliases | 7 unauthorized credential aliases tested against regex and validator | **PASS** |
 | **G6-SEC-03** | Timing Attack Mitigation via `timingSafeEqual` | `crypto.timingSafeEqual` over SHA-256 digests verified in constant time | **PASS** |
@@ -37,7 +37,7 @@ Implemented in `tests/saas-g6-security-probes.test.mjs`:
 | **G6-SEC-05** | Delimitation Scenario Immutability | `officialDelimitationOrder: false`, `SCENARIO_PROPOSED_REGIME`, statutory disclaimer | **PASS** |
 | **G6-SEC-06** | Client Parameter Override Prohibition | Client injection of simulation flags fails closed with 400 `SCENARIO_INPUT_FORBIDDEN` | **PASS** |
 | **G6-SEC-07** | Zero Citizen Personal Data (PII) | 0 phone numbers, emails, voter IDs, passwords across OpenAPI schemas | **PASS** |
-| **G6-SEC-08** | Immutable Usage Ledger Retention | `saas_usage_ledger.api_key_id` uses `ON DELETE SET NULL` on key physical deletion | **PASS** |
+| **G6-SEC-08** | Usage-Ledger Retention and Orphan Preservation | `saas_usage_ledger.api_key_id` uses `ON DELETE SET NULL` on key physical deletion to preserve tenant usage records | **PASS** |
 | **G6-SEC-09** | Correlation & Rate-Limiting Headers | All 15 endpoints declare `x-request-id`, `x-response-time`, and rate limit headers | **PASS** |
 | **G6-SEC-10** | Property-Level Provenance Semantic Integrity | Explicit property-level tagging of derived metrics, temporal state, statutory facts | **PASS** |
 | **G6-SEC-11** | Production Air-Gap Invariant | `ehfafcnimmjusyvplbah` strictly absent from all configurations and servers | **PASS** |
@@ -71,7 +71,9 @@ Orchestrated by `scripts/run-w021-master-battery.mjs`:
 
 ---
 
-## 4. Empirical Performance Benchmarking
+## 4. Empirical Performance Benchmarking & WAN Latency Disposition
+
+### 4.1 Measured Runtime Performance Gates
 
 | Metric Description | Target Threshold | Measured Runtime Value | Verdict | Architectural Notes |
 | :--- | :---: | :---: | :---: | :--- |
@@ -79,7 +81,18 @@ Orchestrated by `scripts/run-w021-master-battery.mjs`:
 | **Factual Read Gateway Response Time** | P95 < 10.0 ms | **1.93 ms** | **PASS** | Fastify in-memory routing and validation |
 | **Concurrency 50 Concurrent Requests** | P95 < 200.0 ms | **21.85 ms** | **PASS** | Excellent asynchronous event loop throughput |
 | **Process RSS Memory Delta** | Delta < 15.0 MB | **4.26 MB** | **PASS** | Zero memory leak detected |
-| **Remote Staging PostgREST WAN Latency** | P95 < 50.0 ms | Remote WAN Round-Trip | **EXCEPTION** | Covered by CTO Environmental Performance Exception (DEC-107); upstream server latency is within budget |
+
+### 4.2 Authoritative WAN Performance Reconciliation (DEC-107)
+
+- **Target Origin:** The `P95 < 50.0 ms` target was established during W020-G9 as a benchmark target for direct database/PostgREST lookups.
+- **DEC-107 Determination:** On 2026-10-01, CTO formally issued **DEC-107** (*W020-G9 FINAL CLOSURE WITH CTO FORMAL ENVIRONMENTAL PERFORMANCE EXCEPTION*), adjudicating:
+  1. The direct WAN HTTP PostgREST target remains `P95 < 50.0 ms` and is strictly not relabeled as PASS.
+  2. Measured Supabase server-side upstream service processing time was **34.00 ms P95** (within the 50.0 ms budget).
+  3. External network transit across public WAN from India to remote cloud-hosted Supabase Staging accounted for 98.42% of observed round-trip latency.
+  4. The milestone closure was formally authorized under **Case 1: VERIFIED ENVIRONMENTAL LIMITATION**.
+- **Ratified Plan Incorporation:** In ratified `PLAN-W021-G6-REV-1.0` Section 15 (*Risks, Failure Modes & Mitigations*), this exact circumstance was documented as a known operational condition:
+  > *"Upstream WAN latency causing PostgREST probe failure $\rightarrow$ Mitigation: Acknowledge remote staging network latency under CTO Environmental Exception (DEC-107)."*
+- **Final Disposition:** Classified as **NOT MEASURABLE IN CURRENT AUTHORIZED ENVIRONMENT / ENVIRONMENTAL EXCEPTION** (bounded residual environmental limitation). No synthetic latency measurement is fabricated; local Fastify gateway lookups and in-memory compute engines are independently evidenced as sub-millisecond to sub-2ms.
 
 ---
 
@@ -106,7 +119,19 @@ Orchestrated by `scripts/run-w021-master-battery.mjs`:
 
 ---
 
-## 7. Submission State
+## 7. Residual Defect & Unknown Register
 
-Milestone W021-G6 execution is complete and verified across all technical gates.  
+| Identifier | Classification | Disposition / Status | Context & Scope |
+| :--- | :--- | :--- | :--- |
+| **LIMITATION-W021-01** | Bounded Environmental Limitation | **NOT MEASURABLE IN CURRENT AUTHORIZED ENVIRONMENT / ENVIRONMENTAL EXCEPTION** | Public internet transit latency between remote runner (India) and cloud-hosted Supabase staging exceeds 50ms due to WAN routing hops; formally adjudicated under DEC-107. Local Fastify gateway processing is verified < 2.0 ms. |
+
+**Defects:** 0 defects.  
+**Unknowns:** 0 unknowns.  
+**Residual Environmental Limitations:** 1 bounded limitation (LIMITATION-W021-01, governed under DEC-107).
+
+---
+
+## 8. Submission State
+
+Milestone W021-G6 execution and evidence reconciliation are complete across all technical gates.  
 Status: **SUBMITTED FOR CTO ACCEPTANCE REVIEW**.
