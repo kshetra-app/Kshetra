@@ -1,0 +1,226 @@
+{
+  "gate": "W021-G4",
+  "status": "COMPLETED / VERIFIED / SUBMITTED FOR CTO ACCEPTANCE",
+  "timestamp": "2026-10-02T06:30:00.000Z",
+  "targetEnvironment": "panIN-staging (fkpigozcqnmcvofuksar / https://fkpigozcqnmcvofuksar.supabase.co)",
+  "productionAirGapped": true,
+  "productionDatabase": "ehfafcnimmjusyvplbah",
+  "authorization": "CTO AUTHORIZATION — W021-G4: PUBLIC/PARTNER SAAS API ROUTES",
+  "routePrefix": "/api/vsaas/v1",
+  "endpoints": [
+    {
+      "method": "GET",
+      "path": "/api/vsaas/v1/geo/states",
+      "domain": "geography",
+      "description": "List all states and Union Territories with statutory totals and provenance",
+      "authRequired": true,
+      "provenanceLayer": "STATUTORY_FACT",
+      "dataStatus": "OFFICIAL"
+    },
+    {
+      "method": "GET",
+      "path": "/api/vsaas/v1/geo/states/:stateCode",
+      "domain": "geography",
+      "description": "Single state metadata, seat totals, and spatial boundary availability",
+      "authRequired": true,
+      "provenanceLayer": "STATUTORY_FACT",
+      "dataStatus": "OFFICIAL"
+    },
+    {
+      "method": "GET",
+      "path": "/api/vsaas/v1/geo/states/:stateCode/constituencies",
+      "domain": "geography",
+      "description": "List assembly constituencies for a state with reservation status and gazetted details",
+      "authRequired": true,
+      "provenanceLayer": "STATUTORY_FACT",
+      "dataStatus": "OFFICIAL"
+    },
+    {
+      "method": "GET",
+      "path": "/api/vsaas/v1/geo/states/:stateCode/constituencies/:acNo",
+      "domain": "geography",
+      "description": "Single constituency details by state and assembly constituency number",
+      "authRequired": true,
+      "provenanceLayer": "STATUTORY_FACT",
+      "dataStatus": "OFFICIAL"
+    },
+    {
+      "method": "GET",
+      "path": "/api/vsaas/v1/elections",
+      "domain": "elections",
+      "description": "List macro election events filtered by state, year, or election type",
+      "authRequired": true,
+      "provenanceLayer": "STATUTORY_FACT",
+      "dataStatus": "OFFICIAL"
+    },
+    {
+      "method": "GET",
+      "path": "/api/vsaas/v1/elections/:id",
+      "domain": "elections",
+      "description": "Single election event details, voter counts, and aggregate turnout metrics",
+      "authRequired": true,
+      "provenanceLayer": "STATUTORY_FACT",
+      "dataStatus": "OFFICIAL"
+    },
+    {
+      "method": "GET",
+      "path": "/api/vsaas/v1/elections/:id/contests",
+      "domain": "elections",
+      "description": "List assembly contests within an election event with search and pagination",
+      "authRequired": true,
+      "provenanceLayer": "STATUTORY_FACT",
+      "dataStatus": "OFFICIAL"
+    },
+    {
+      "method": "GET",
+      "path": "/api/vsaas/v1/elections/:id/contests/:constituencyId",
+      "domain": "elections",
+      "description": "Detailed contest results, candidate breakdown, EVM/postal votes, and margins",
+      "authRequired": true,
+      "provenanceLayer": "STATUTORY_FACT",
+      "dataStatus": "OFFICIAL"
+    },
+    {
+      "method": "GET",
+      "path": "/api/vsaas/v1/entities/search",
+      "domain": "political_entities",
+      "description": "Search canonical political persons and recognized political organizations",
+      "authRequired": true,
+      "provenanceLayer": "STATUTORY_FACT",
+      "dataStatus": "OFFICIAL"
+    },
+    {
+      "method": "GET",
+      "path": "/api/vsaas/v1/entities/persons/:id",
+      "domain": "political_entities",
+      "description": "Canonical public profile of an elected representative or candidate",
+      "authRequired": true,
+      "provenanceLayer": "STATUTORY_FACT",
+      "dataStatus": "OFFICIAL"
+    },
+    {
+      "method": "GET",
+      "path": "/api/vsaas/v1/entities/organizations/:id",
+      "domain": "political_entities",
+      "description": "Political organization profile, recognition level, and symbol metadata",
+      "authRequired": true,
+      "provenanceLayer": "STATUTORY_FACT",
+      "dataStatus": "OFFICIAL"
+    },
+    {
+      "method": "GET",
+      "path": "/api/vsaas/v1/entities/legislators",
+      "domain": "political_entities",
+      "description": "Roster of current gazetted legislators with tenure dates and jurisdiction",
+      "authRequired": true,
+      "provenanceLayer": "STATUTORY_FACT",
+      "dataStatus": "OFFICIAL"
+    },
+    {
+      "method": "GET",
+      "path": "/api/vsaas/v1/delim/regimes",
+      "domain": "delimitation",
+      "description": "Statutory delimitation orders, historical legal regimes, and constitutional timelines",
+      "authRequired": true,
+      "provenanceLayer": "STATUTORY_FACT",
+      "dataStatus": "OFFICIAL"
+    },
+    {
+      "method": "GET",
+      "path": "/api/vsaas/v1/delim/projections",
+      "domain": "delimitation",
+      "description": "National seat projection models under Article 170 / Census 2011",
+      "authRequired": true,
+      "provenanceLayer": "PANIN_SCENARIO",
+      "dataStatus": "SCENARIO"
+    },
+    {
+      "method": "GET",
+      "path": "/api/vsaas/v1/delim/simulate/:stateCode",
+      "domain": "delimitation",
+      "description": "Governed boundary redistribution simulation (Hare-Niemeyer / Hamilton method)",
+      "authRequired": true,
+      "provenanceLayer": "PANIN_SCENARIO",
+      "dataStatus": "SCENARIO"
+    }
+  ],
+  "securityAndGovernance": {
+    "authLayer": "G3 saasAuthPlugin with SHA-256 key hashing, constant-time verification, active key partial index",
+    "tenantContextDerivation": "Strictly server-derived from request.saasAuth.tenantId (caller query/header/body ignored)",
+    "rateLimiting": "Dual-layer: In-memory token-bucket burst (600 req/min for pro) + PostgreSQL durable monthly ledger quota (500,000 for pro)",
+    "sqlSafety": "Strictly parameterized queries and Supabase PostgREST client; zero string-interpolated SQL",
+    "piiZeroExposureProof": "Verified zero exposure of phone_number, voter_id, aadhaar, epic_number, password_hash, or service_role credentials",
+    "scenarioOverrideDefense": "Pre-validation hook strictly rejects caller isScenario, is_scenario, or simulation flags (400 SCENARIO_INPUT_FORBIDDEN)"
+  },
+  "testExecutionResults": {
+    "g4SaaSRouteSuite": {
+      "file": "apps/api/src/__tests__/saas-v1-routes.test.ts",
+      "totalTests": 34,
+      "passed": 34,
+      "failed": 0,
+      "passRate": "100.0%"
+    },
+    "fullRegressionBattery": {
+      "saasAuthG3Suite": {
+        "file": "apps/api/src/__tests__/saas-auth-g3.test.ts",
+        "passed": 17,
+        "total": 17
+      },
+      "saasDurableQuotaSuite": {
+        "file": "apps/api/src/__tests__/saas-durable-quota.test.ts",
+        "passed": 11,
+        "total": 11
+      },
+      "saasAtomicQuotaPgSuite": {
+        "file": "tests/saas-atomic-quota-pg.test.mjs",
+        "passed": 14,
+        "total": 14
+      },
+      "saasMigration056Preflight": {
+        "file": "tests/saas-migration-056-preflight.test.mjs",
+        "passed": 32,
+        "total": 32
+      },
+      "politicalEntitiesInvariants": {
+        "file": "tests/political-entities-invariants.test.mjs",
+        "passed": 53,
+        "total": 53
+      },
+      "electionNormalizationInvariants": {
+        "file": "tests/election-normalization-invariants.test.mjs",
+        "passed": 93,
+        "total": 93
+      },
+      "delimitationMigration055Preflight": {
+        "file": "tests/delimitation-migration-055-preflight.test.mjs",
+        "passed": 23,
+        "total": 23
+      },
+      "delimitationG8Integration": {
+        "file": "tests/delimitation-g8-integration.test.mjs",
+        "passed": 25,
+        "total": 25
+      },
+      "observabilitySuite": {
+        "file": "apps/api/src/__tests__/observability.test.ts",
+        "passed": 19,
+        "total": 19
+      },
+      "totalRegressionChecks": 287,
+      "totalPassed": 287,
+      "totalFailed": 0,
+      "passRate": "100.0%"
+    },
+    "typeScriptBuild": {
+      "command": "npm run build --prefix apps/api",
+      "exitCode": 0,
+      "status": "CLEAN"
+    },
+    "apiContractDrift": {
+      "command": "node scripts/check-api-contract-drift.mjs",
+      "matched": 9,
+      "total": 9,
+      "passRate": "100.0%"
+    }
+  }
+}
