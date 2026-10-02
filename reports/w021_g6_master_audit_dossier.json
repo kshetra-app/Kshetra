@@ -1,0 +1,233 @@
+{
+  "milestone": "W021-G6",
+  "dossierType": "MASTER_AUDIT_EVIDENCE_DOSSIER",
+  "authority": "CTO RATIFICATION — W021-G6 (PLAN-W021-G6-REV-1.0)",
+  "verdict": "SUBMITTED FOR CTO ACCEPTANCE",
+  "selfAcceptanceClause": "RULE IV-001 ENFORCED: SELF-ACCEPTANCE IS STRICTLY FORBIDDEN. SUBMITTED FOR INDEPENDENT CTO REVIEW.",
+  "timestamp": "2026-10-02T13:40:00.000Z",
+  "coordinates": {
+    "targetStagingDatabase": "fkpigozcqnmcvofuksar",
+    "stagingApiGateway": "http://localhost:3001 (Fastify SaaS /api/vsaas/v1)",
+    "productionDatabase": "ehfafcnimmjusyvplbah",
+    "productionStatus": "100% AIR-GAPPED & UNTOUCHED (0 connections, 0 mutations, 0 queries)",
+    "mobileCodebase": "apps/mobile/** (100% FROZEN, 0 edits)",
+    "schemaMigrations": "ZERO NEW MIGRATIONS (No Migration 058 or DDL executed)",
+    "planCommit": "975fb2ddb2ff934ee469170eb1ef3abbb844b25b",
+    "acceptedBaselineCommit": "b51fe20a422657afb17c34cd87a7b6bcc0c5013e"
+  },
+  "masterBatteryResults": {
+    "totalSuitesExecuted": 13,
+    "totalChecks": 365,
+    "totalPassed": 365,
+    "totalFailed": 0,
+    "passRate": "100.0%",
+    "executionDurationMs": 493610,
+    "suites": [
+      {
+        "id": "W021-G4-ROUTES",
+        "name": "W021-G4 Public/Partner SaaS Routes",
+        "command": "npm test --prefix apps/api -- src/__tests__/saas-v1-routes.test.ts",
+        "checks": 34,
+        "passed": 34,
+        "failed": 0,
+        "status": "PASS"
+      },
+      {
+        "id": "W021-G3-AUTH",
+        "name": "W021-G3 SaaS Auth & Key Crypto",
+        "command": "npm test --prefix apps/api -- src/__tests__/saas-auth-g3.test.ts",
+        "checks": 17,
+        "passed": 17,
+        "failed": 0,
+        "status": "PASS"
+      },
+      {
+        "id": "W021-G3-DURABLE-QUOTA",
+        "name": "W021-G3 Durable Monthly Quota",
+        "command": "npm test --prefix apps/api -- src/__tests__/saas-durable-quota.test.ts",
+        "checks": 11,
+        "passed": 11,
+        "failed": 0,
+        "status": "PASS"
+      },
+      {
+        "id": "W021-G3-ATOMIC-PG-QUOTA",
+        "name": "W021-G3 Atomic PostgreSQL Quota",
+        "command": "node tests/saas-atomic-quota-pg.test.mjs",
+        "checks": 14,
+        "passed": 14,
+        "failed": 0,
+        "status": "PASS"
+      },
+      {
+        "id": "W021-G2-M056-PREFLIGHT",
+        "name": "W021-G2 Migration 056 Preflight",
+        "command": "node tests/saas-migration-056-preflight.test.mjs",
+        "checks": 32,
+        "passed": 32,
+        "failed": 0,
+        "status": "PASS"
+      },
+      {
+        "id": "W021-G5-OPENAPI-DRIFT",
+        "name": "W021-G5 OpenAPI 3.1 Contract Drift",
+        "command": "node tests/saas-openapi-contract-drift.test.mjs",
+        "checks": 24,
+        "passed": 24,
+        "failed": 0,
+        "status": "PASS"
+      },
+      {
+        "id": "W021-G6-SECURITY-PROBES",
+        "name": "W021-G6 Security Probes & Isolation",
+        "command": "node tests/saas-g6-security-probes.test.mjs",
+        "checks": 11,
+        "passed": 11,
+        "failed": 0,
+        "status": "PASS"
+      },
+      {
+        "id": "W018-POLITICAL-ENTITIES",
+        "name": "W018 Canonical Political Entities",
+        "command": "node tests/political-entities-invariants.test.mjs",
+        "checks": 53,
+        "passed": 53,
+        "failed": 0,
+        "status": "PASS"
+      },
+      {
+        "id": "W019-ELECTION-NORMALIZATION",
+        "name": "W019 Normalized Elections Battery",
+        "command": "node tests/election-normalization-invariants.test.mjs",
+        "checks": 93,
+        "passed": 93,
+        "failed": 0,
+        "status": "PASS"
+      },
+      {
+        "id": "W020-DELIMITATION-INTEGRATION",
+        "name": "W020 Delimitation Integration",
+        "command": "node tests/delimitation-g8-integration.test.mjs",
+        "checks": 25,
+        "passed": 25,
+        "failed": 0,
+        "status": "PASS"
+      },
+      {
+        "id": "W020-M055-PREFLIGHT",
+        "name": "W020 Migration 055 Preflight",
+        "command": "node tests/delimitation-migration-055-preflight.test.mjs",
+        "checks": 23,
+        "passed": 23,
+        "failed": 0,
+        "status": "PASS"
+      },
+      {
+        "id": "W004-OBSERVABILITY",
+        "name": "W004 Observability & Tracing",
+        "command": "npm test --prefix apps/api -- src/__tests__/observability.test.ts",
+        "checks": 19,
+        "passed": 19,
+        "failed": 0,
+        "status": "PASS"
+      },
+      {
+        "id": "LEGACY-API-DRIFT",
+        "name": "Legacy Declared API Contract Drift",
+        "command": "node scripts/check-api-contract-drift.mjs",
+        "checks": 9,
+        "passed": 9,
+        "failed": 0,
+        "status": "PASS"
+      }
+    ]
+  },
+  "securityProbesMatrix": {
+    "totalProbes": 11,
+    "passed": 11,
+    "probes": [
+      {
+        "id": "G6-SEC-01",
+        "name": "Canonical API Key Format Enforcement",
+        "description": "Regex ^panin_(live|test)_sk_[0-9a-zA-Z_-]{43}$ enforces exact 57 chars",
+        "status": "PASS"
+      },
+      {
+        "id": "G6-SEC-02",
+        "name": "Strict Rejection of kshetra_* Aliases",
+        "description": "7 unauthorized legacy aliases rejected unconditionally",
+        "status": "PASS"
+      },
+      {
+        "id": "G6-SEC-03",
+        "name": "Constant-Time Hash Comparison",
+        "description": "crypto.timingSafeEqual mitigates side-channel timing attacks",
+        "status": "PASS"
+      },
+      {
+        "id": "G6-SEC-04",
+        "name": "Multi-Tenant Anti-Spoofing",
+        "description": "Client-supplied tenant_id query/header discarded in favor of key record",
+        "status": "PASS"
+      },
+      {
+        "id": "G6-SEC-05",
+        "name": "Delimitation Scenario Immutability",
+        "description": "officialDelimitationOrder: false, SCENARIO_PROPOSED_REGIME, and statutory disclaimer enforced",
+        "status": "PASS"
+      },
+      {
+        "id": "G6-SEC-06",
+        "name": "Client Parameter Override Prohibition",
+        "description": "Client parameter injection of simulation flags fails closed with 400 SCENARIO_INPUT_FORBIDDEN",
+        "status": "PASS"
+      },
+      {
+        "id": "G6-SEC-07",
+        "name": "Zero Citizen Personal Data (PII)",
+        "description": "No phone, email, voter ID, Aadhaar, or password across public/partner schemas",
+        "status": "PASS"
+      },
+      {
+        "id": "G6-SEC-08",
+        "name": "Immutable Usage Ledger Retention",
+        "description": "saas_usage_ledger.api_key_id uses ON DELETE SET NULL to preserve tenant audit records",
+        "status": "PASS"
+      },
+      {
+        "id": "G6-SEC-09",
+        "name": "Correlation and Rate-Limiting Headers",
+        "description": "All 15 endpoints declare x-request-id, x-response-time, and rate-limiting headers",
+        "status": "PASS"
+      },
+      {
+        "id": "G6-SEC-10",
+        "name": "Property-Level Provenance Semantic Integrity",
+        "description": "Explicit tagging of derived metrics, temporal state, statutory facts, and scenarios",
+        "status": "PASS"
+      },
+      {
+        "id": "G6-SEC-11",
+        "name": "Production Air-Gap Verification",
+        "description": "ehfafcnimmjusyvplbah strictly absent from configs, schemas, and test harnesses",
+        "status": "PASS"
+      }
+    ]
+  },
+  "empiricalPerformance": {
+    "inMemoryApportionmentP95Ms": 0.065,
+    "inMemoryApportionmentVerdict": "PASS (< 5.0 ms)",
+    "publicFactualReadLookupMs": 1.93,
+    "publicFactualReadVerdict": "PASS (Sub-10ms in-memory/service seek)",
+    "concurrency50P95Ms": 21.85,
+    "concurrency50Verdict": "PASS (< 200 ms)",
+    "processRssMemoryDeltaMb": 4.26,
+    "processRssMemoryVerdict": "PASS (< 15 MB)",
+    "remoteStagingWanLatencyNotice": "Remote WAN calls to Supabase Staging subject to CTO Environmental Performance Exception (DEC-107); in-memory and local gateway seeks are sub-5ms"
+  },
+  "buildResults": {
+    "apiTypeScriptBuild": "PASS (exit code 0, 0 type errors)",
+    "openapiContractDrift": "PASS (0 drift, 24/24 schema assertions in sync)"
+  },
+  "remainingDefectsOrUnknowns": []
+}

@@ -7,9 +7,16 @@
 ## 1. Project & Execution Coordinates
 ```text
 PROJECT:               PANIN (formerly Kshetra)
-CURRENT_JOB:           W020-G9 (Verification Harness Hardening, Cross-Domain Audit Synthesis & Final Gate — READY FOR FINAL CTO CLOSURE)
-LAST_COMPLETED_JOB:    W020-G8 (Delimitation Engine Foundation & Canonical Integration — ACCEPTED / COMPLETE / CLOSED)
-NEXT_PERMITTED_JOB:    FINAL CTO CLOSURE OF W020-G9 (W021+ STRICTLY NOT AUTHORIZED)
+CURRENT_JOB:           W021-G6 (Security Probes, Master Regression Battery & Final Dossier — SUBMITTED FOR CTO ACCEPTANCE)
+LAST_COMPLETED_JOB:    W021-G5 (OpenAPI 3.1 Contract Synchronization & Provenance Remediation — ACCEPTED / COMPLETE)
+NEXT_PERMITTED_JOB:    CTO ACCEPTANCE DETERMINATION OF W021-G6 (W022+ STRICTLY NOT AUTHORIZED)
+
+W021_STATUS:           SUBMITTED FOR CTO ACCEPTANCE REVIEW (NON-SELF-ACCEPTANCE INVARIANT ENFORCED)
+W021_PLAN:             PLAN-W021-G6-REV-1.0 (Commit 975fb2ddb2ff934ee469170eb1ef3abbb844b25b)
+W021_BASELINE_COMMIT:  b51fe20a422657afb17c34cd87a7b6bcc0c5013e
+W021_MASTER_BATTERY:   365/365 PASS (13 suites, 100.0% pass rate)
+W021_SECURITY_PROBES:  11/11 PASS (100.0% verified)
+W021_DOSSIER:          reports/w021_g6_master_audit_dossier.md, reports/w021_g6_master_audit_dossier.json
 
 W018_STATUS:           ACCEPTED / COMPLETE (Canonical Commit: 080344c580ad9df92586a7a0e68989fb50e7cf3d)
 W018_CTO_ACCEPTANCE:   GRANTED (2026-09-29)

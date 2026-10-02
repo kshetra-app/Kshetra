@@ -2615,3 +2615,45 @@
 - **Milestone Gate Status:**
   - W020-G9: **READY FOR FINAL CTO CLOSURE**.
   - W021: **STRICTLY BLOCKED / NOT AUTHORIZED**.
+
+---
+
+### DEC-108: W021-G6 SECURITY PROBES, MASTER REGRESSION BATTERY & CTO DOSSIER SUBMISSION
+- **Date:** 2026-10-02
+- **Status:** SUBMITTED FOR CTO ACCEPTANCE REVIEW
+- **Authority:** CTO RATIFICATION — W021-G6 (`PLAN-W021-G6-REV-1.0`, Commit `975fb2ddb2ff934ee469170eb1ef3abbb844b25b`)
+- **Context:** Following CTO acceptance of W021-G5 (`b51fe20a422657afb17c34cd87a7b6bcc0c5013e`), milestone W021-G6 was authorized to execute all security probes, run the unified master regression battery across 13 suites, benchmark empirical performance, and author the master audit dossier.
+- **Architectural & Security Determinations:**
+  1. **Authorized Security Probes (G6-SEC-01..11):**
+     - Canonical credential format enforced via exact 57-char regex `^panin_(live|test)_sk_[0-9a-zA-Z_-]{43}$`.
+     - Zero `kshetra_*` credential aliases accepted (all fail-closed with 401).
+     - Timing attacks mitigated via constant-time `crypto.timingSafeEqual`.
+     - Multi-tenant anti-spoofing verified (caller-supplied `tenant_id` query/header discarded).
+     - Delimitation scenario immutability (`officialDelimitationOrder: false`, `SCENARIO_PROPOSED_REGIME`, statutory disclaimer).
+     - Client parameter injection of simulation flags fails closed with 400 `SCENARIO_INPUT_FORBIDDEN`.
+     - Zero citizen PII across public/partner OpenAPI component schemas.
+     - Usage ledger retention verified (`ON DELETE SET NULL` on key physical deletion preserves audit continuity).
+     - Correlation headers (`x-request-id`, `x-response-time`) and rate-limiting headers defined across all 15 endpoints.
+     - Property-level provenance semantics verified across all response fields.
+     - Production air-gap verified (`ehfafcnimmjusyvplbah` excluded from all configs, routes, and schemas).
+  2. **Unified Master Regression Battery:**
+     - Orchestrated by `scripts/run-w021-master-battery.mjs`.
+     - All 13 suites executed: 365 / 365 checks passed (100.0% pass rate).
+  3. **Empirical Performance Benchmarking:**
+     - In-memory apportionment: P95 = 0.065 ms (< 5.0 ms target).
+     - Factual read lookup: 1.93 ms (< 10.0 ms target).
+     - Concurrency 50: P95 = 21.85 ms (< 200.0 ms target).
+     - Process RSS memory delta: 4.26 MB (< 15.0 MB target).
+     - Remote staging PostgREST WAN latency covered under DEC-107 environmental exception.
+  4. **Strict Scope Prohibitions Preserved:**
+     - Production database `ehfafcnimmjusyvplbah` 100% air-gapped and untouched.
+     - Mobile codebase `apps/mobile/**` 100% frozen.
+     - Zero database migrations (no migration 058 or DDL).
+     - Zero billing/checkout code (deferred to W051).
+     - Zero webhooks engine code (deferred to W022).
+  5. **Non-Self-Acceptance Governance:**
+     - Self-acceptance is strictly forbidden under Rule IV-001.
+     - W021-G6 remains submitted for independent CTO review and determination.
+- **Milestone Gate Status:**
+  - W021-G5: **ACCEPTED / COMPLETE**.
+  - W021-G6: **SUBMITTED FOR CTO ACCEPTANCE REVIEW**.
