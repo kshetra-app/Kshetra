@@ -1,0 +1,600 @@
+{
+  "milestone": "W021.5-B1-R2",
+  "title": "National AC<->PC Completeness & Temporal Integrity Closure Report",
+  "timestamp": "2026-10-03T05:13:52.424Z",
+  "baseline": "9fa5ecc1ba63e6fcb0493d068e75a88a6aff65ad",
+  "summary": {
+    "totalJurisdictions": 36,
+    "totalAssemblyConstituencies": 4123,
+    "totalMappedAssemblyConstituencies": 4123,
+    "totalUnmappedAssemblyConstituencies": 0,
+    "nationalMappingCoverage": "100.00%",
+    "totalParliamentaryConstituencies": 543,
+    "assemblyJurisdictions": 31,
+    "nonAssemblyJurisdictions": 5,
+    "temporalExclusionConstraint": "ENFORCED (uq_cpm_no_temporal_overlap)",
+    "chronologicalCheckConstraint": "ENFORCED (chk_cpm_dates)",
+    "singleCurrentMappingIndex": "ENFORCED (uq_cpm_single_current_ac)"
+  },
+  "jurisdictions": [
+    {
+      "stateCode": "AP",
+      "name": "Andhra Pradesh",
+      "type": "STATE",
+      "expectedAc": 175,
+      "expectedPc": 25,
+      "mappedAc": 175,
+      "unmappedAc": 0,
+      "coveragePct": "100.00%",
+      "conforms": true
+    },
+    {
+      "stateCode": "AR",
+      "name": "Arunachal Pradesh",
+      "type": "STATE",
+      "expectedAc": 60,
+      "expectedPc": 2,
+      "mappedAc": 60,
+      "unmappedAc": 0,
+      "coveragePct": "100.00%",
+      "conforms": true
+    },
+    {
+      "stateCode": "AS",
+      "name": "Assam",
+      "type": "STATE",
+      "expectedAc": 126,
+      "expectedPc": 14,
+      "mappedAc": 126,
+      "unmappedAc": 0,
+      "coveragePct": "100.00%",
+      "conforms": true
+    },
+    {
+      "stateCode": "BR",
+      "name": "Bihar",
+      "type": "STATE",
+      "expectedAc": 243,
+      "expectedPc": 40,
+      "mappedAc": 243,
+      "unmappedAc": 0,
+      "coveragePct": "100.00%",
+      "conforms": true
+    },
+    {
+      "stateCode": "CG",
+      "name": "Chhattisgarh",
+      "type": "STATE",
+      "expectedAc": 90,
+      "expectedPc": 11,
+      "mappedAc": 90,
+      "unmappedAc": 0,
+      "coveragePct": "100.00%",
+      "conforms": true
+    },
+    {
+      "stateCode": "GA",
+      "name": "Goa",
+      "type": "STATE",
+      "expectedAc": 40,
+      "expectedPc": 2,
+      "mappedAc": 40,
+      "unmappedAc": 0,
+      "coveragePct": "100.00%",
+      "conforms": true
+    },
+    {
+      "stateCode": "GJ",
+      "name": "Gujarat",
+      "type": "STATE",
+      "expectedAc": 182,
+      "expectedPc": 26,
+      "mappedAc": 182,
+      "unmappedAc": 0,
+      "coveragePct": "100.00%",
+      "conforms": true
+    },
+    {
+      "stateCode": "HR",
+      "name": "Haryana",
+      "type": "STATE",
+      "expectedAc": 90,
+      "expectedPc": 10,
+      "mappedAc": 90,
+      "unmappedAc": 0,
+      "coveragePct": "100.00%",
+      "conforms": true
+    },
+    {
+      "stateCode": "HP",
+      "name": "Himachal Pradesh",
+      "type": "STATE",
+      "expectedAc": 68,
+      "expectedPc": 4,
+      "mappedAc": 68,
+      "unmappedAc": 0,
+      "coveragePct": "100.00%",
+      "conforms": true
+    },
+    {
+      "stateCode": "JH",
+      "name": "Jharkhand",
+      "type": "STATE",
+      "expectedAc": 81,
+      "expectedPc": 14,
+      "mappedAc": 81,
+      "unmappedAc": 0,
+      "coveragePct": "100.00%",
+      "conforms": true
+    },
+    {
+      "stateCode": "KA",
+      "name": "Karnataka",
+      "type": "STATE",
+      "expectedAc": 224,
+      "expectedPc": 28,
+      "mappedAc": 224,
+      "unmappedAc": 0,
+      "coveragePct": "100.00%",
+      "conforms": true
+    },
+    {
+      "stateCode": "KL",
+      "name": "Kerala",
+      "type": "STATE",
+      "expectedAc": 140,
+      "expectedPc": 20,
+      "mappedAc": 140,
+      "unmappedAc": 0,
+      "coveragePct": "100.00%",
+      "conforms": true
+    },
+    {
+      "stateCode": "MP",
+      "name": "Madhya Pradesh",
+      "type": "STATE",
+      "expectedAc": 230,
+      "expectedPc": 29,
+      "mappedAc": 230,
+      "unmappedAc": 0,
+      "coveragePct": "100.00%",
+      "conforms": true
+    },
+    {
+      "stateCode": "MH",
+      "name": "Maharashtra",
+      "type": "STATE",
+      "expectedAc": 288,
+      "expectedPc": 48,
+      "mappedAc": 288,
+      "unmappedAc": 0,
+      "coveragePct": "100.00%",
+      "conforms": true
+    },
+    {
+      "stateCode": "MN",
+      "name": "Manipur",
+      "type": "STATE",
+      "expectedAc": 60,
+      "expectedPc": 2,
+      "mappedAc": 60,
+      "unmappedAc": 0,
+      "coveragePct": "100.00%",
+      "conforms": true
+    },
+    {
+      "stateCode": "ML",
+      "name": "Meghalaya",
+      "type": "STATE",
+      "expectedAc": 60,
+      "expectedPc": 2,
+      "mappedAc": 60,
+      "unmappedAc": 0,
+      "coveragePct": "100.00%",
+      "conforms": true
+    },
+    {
+      "stateCode": "MZ",
+      "name": "Mizoram",
+      "type": "STATE",
+      "expectedAc": 40,
+      "expectedPc": 1,
+      "mappedAc": 40,
+      "unmappedAc": 0,
+      "coveragePct": "100.00%",
+      "conforms": true
+    },
+    {
+      "stateCode": "NL",
+      "name": "Nagaland",
+      "type": "STATE",
+      "expectedAc": 60,
+      "expectedPc": 1,
+      "mappedAc": 60,
+      "unmappedAc": 0,
+      "coveragePct": "100.00%",
+      "conforms": true
+    },
+    {
+      "stateCode": "OD",
+      "name": "Odisha",
+      "type": "STATE",
+      "expectedAc": 147,
+      "expectedPc": 21,
+      "mappedAc": 147,
+      "unmappedAc": 0,
+      "coveragePct": "100.00%",
+      "conforms": true
+    },
+    {
+      "stateCode": "PB",
+      "name": "Punjab",
+      "type": "STATE",
+      "expectedAc": 117,
+      "expectedPc": 13,
+      "mappedAc": 117,
+      "unmappedAc": 0,
+      "coveragePct": "100.00%",
+      "conforms": true
+    },
+    {
+      "stateCode": "RJ",
+      "name": "Rajasthan",
+      "type": "STATE",
+      "expectedAc": 200,
+      "expectedPc": 25,
+      "mappedAc": 200,
+      "unmappedAc": 0,
+      "coveragePct": "100.00%",
+      "conforms": true
+    },
+    {
+      "stateCode": "SK",
+      "name": "Sikkim",
+      "type": "STATE",
+      "expectedAc": 32,
+      "expectedPc": 1,
+      "mappedAc": 32,
+      "unmappedAc": 0,
+      "coveragePct": "100.00%",
+      "conforms": true
+    },
+    {
+      "stateCode": "TN",
+      "name": "Tamil Nadu",
+      "type": "STATE",
+      "expectedAc": 234,
+      "expectedPc": 39,
+      "mappedAc": 234,
+      "unmappedAc": 0,
+      "coveragePct": "100.00%",
+      "conforms": true
+    },
+    {
+      "stateCode": "TS",
+      "name": "Telangana",
+      "type": "STATE",
+      "expectedAc": 119,
+      "expectedPc": 17,
+      "mappedAc": 119,
+      "unmappedAc": 0,
+      "coveragePct": "100.00%",
+      "conforms": true
+    },
+    {
+      "stateCode": "TR",
+      "name": "Tripura",
+      "type": "STATE",
+      "expectedAc": 60,
+      "expectedPc": 2,
+      "mappedAc": 60,
+      "unmappedAc": 0,
+      "coveragePct": "100.00%",
+      "conforms": true
+    },
+    {
+      "stateCode": "UP",
+      "name": "Uttar Pradesh",
+      "type": "STATE",
+      "expectedAc": 403,
+      "expectedPc": 80,
+      "mappedAc": 403,
+      "unmappedAc": 0,
+      "coveragePct": "100.00%",
+      "conforms": true
+    },
+    {
+      "stateCode": "UK",
+      "name": "Uttarakhand",
+      "type": "STATE",
+      "expectedAc": 70,
+      "expectedPc": 5,
+      "mappedAc": 70,
+      "unmappedAc": 0,
+      "coveragePct": "100.00%",
+      "conforms": true
+    },
+    {
+      "stateCode": "WB",
+      "name": "West Bengal",
+      "type": "STATE",
+      "expectedAc": 294,
+      "expectedPc": 42,
+      "mappedAc": 294,
+      "unmappedAc": 0,
+      "coveragePct": "100.00%",
+      "conforms": true
+    },
+    {
+      "stateCode": "DL",
+      "name": "Delhi",
+      "type": "UT_WITH_ASSEMBLY",
+      "expectedAc": 70,
+      "expectedPc": 7,
+      "mappedAc": 70,
+      "unmappedAc": 0,
+      "coveragePct": "100.00%",
+      "conforms": true
+    },
+    {
+      "stateCode": "JK",
+      "name": "Jammu & Kashmir",
+      "type": "UT_WITH_ASSEMBLY",
+      "expectedAc": 90,
+      "expectedPc": 5,
+      "mappedAc": 90,
+      "unmappedAc": 0,
+      "coveragePct": "100.00%",
+      "conforms": true
+    },
+    {
+      "stateCode": "PY",
+      "name": "Puducherry",
+      "type": "UT_WITH_ASSEMBLY",
+      "expectedAc": 30,
+      "expectedPc": 1,
+      "mappedAc": 30,
+      "unmappedAc": 0,
+      "coveragePct": "100.00%",
+      "conforms": true
+    },
+    {
+      "stateCode": "AN",
+      "name": "Andaman & Nicobar Islands",
+      "type": "UT_WITHOUT_ASSEMBLY",
+      "expectedAc": 0,
+      "expectedPc": 1,
+      "mappedAc": 0,
+      "unmappedAc": 0,
+      "coveragePct": "100.00%",
+      "conforms": true
+    },
+    {
+      "stateCode": "CH",
+      "name": "Chandigarh",
+      "type": "UT_WITHOUT_ASSEMBLY",
+      "expectedAc": 0,
+      "expectedPc": 1,
+      "mappedAc": 0,
+      "unmappedAc": 0,
+      "coveragePct": "100.00%",
+      "conforms": true
+    },
+    {
+      "stateCode": "DH",
+      "name": "Dadra & Nagar Haveli and Daman & Diu",
+      "type": "UT_WITHOUT_ASSEMBLY",
+      "expectedAc": 0,
+      "expectedPc": 2,
+      "mappedAc": 0,
+      "unmappedAc": 0,
+      "coveragePct": "100.00%",
+      "conforms": true
+    },
+    {
+      "stateCode": "LA",
+      "name": "Ladakh",
+      "type": "UT_WITHOUT_ASSEMBLY",
+      "expectedAc": 0,
+      "expectedPc": 1,
+      "mappedAc": 0,
+      "unmappedAc": 0,
+      "coveragePct": "100.00%",
+      "conforms": true
+    },
+    {
+      "stateCode": "LD",
+      "name": "Lakshadweep",
+      "type": "UT_WITHOUT_ASSEMBLY",
+      "expectedAc": 0,
+      "expectedPc": 1,
+      "mappedAc": 0,
+      "unmappedAc": 0,
+      "coveragePct": "100.00%",
+      "conforms": true
+    }
+  ],
+  "checks": [
+    {
+      "id": "B1-R2-CHK-01",
+      "category": "MIGRATION_INTEGRITY",
+      "title": "Migration 061 SQL exists and is atomically wrapped in BEGIN ... COMMIT",
+      "passed": true,
+      "details": {
+        "path": "C:\\Users\\Laven\\OneDrive\\Desktop\\Kshetra\\supabase\\migrations\\061_canonical_national_ac_pc_mappings.sql"
+      }
+    },
+    {
+      "id": "B1-R2-CHK-02",
+      "category": "TEMPORAL_CONSTRAINTS",
+      "title": "Database exclusion constraint (uq_cpm_no_temporal_overlap) prevents overlapping AC mapping intervals",
+      "passed": true,
+      "details": {
+        "constraint": "uq_cpm_no_temporal_overlap"
+      }
+    },
+    {
+      "id": "B1-R2-CHK-03",
+      "category": "TEMPORAL_CONSTRAINTS",
+      "title": "Chronological check constraint (chk_cpm_dates) enforces effective_from < effective_to",
+      "passed": true,
+      "details": {
+        "constraint": "chk_cpm_dates"
+      }
+    },
+    {
+      "id": "B1-R2-CHK-04",
+      "category": "MAPPING_UNIQUENESS",
+      "title": "Unique partial index (uq_cpm_single_current_ac) guarantees exactly 1 current PC per AC",
+      "passed": true,
+      "details": {
+        "index": "uq_cpm_single_current_ac"
+      }
+    },
+    {
+      "id": "B1-R2-CHK-05",
+      "category": "MAPPING_COMPLETENESS",
+      "title": "National AC->PC mapping completeness: exactly 4,123 ACs mapped with 0 duplicates",
+      "passed": true,
+      "details": {
+        "mappedCount": 4123,
+        "uniqueCount": 4123
+      }
+    },
+    {
+      "id": "B1-R2-CHK-06",
+      "category": "JURISDICTION_MATRIX",
+      "title": "All 36 States and Union Territories audited: 31 assemblies have 100% mapped ACs, 5 UTs have 0 ACs",
+      "passed": true,
+      "details": {
+        "jurisdictionCount": 36
+      }
+    },
+    {
+      "id": "B1-R2-CHK-07",
+      "category": "STATUTORY_INVARIANTS",
+      "title": "Andhra Pradesh statutory partition: exactly 25 PCs with exactly 7 ACs each (175 ACs)",
+      "passed": true,
+      "details": {
+        "pcCount": 25,
+        "counts": [
+          7,
+          7,
+          7,
+          7,
+          7,
+          7,
+          7,
+          7,
+          7,
+          7,
+          7,
+          7,
+          7,
+          7,
+          7,
+          7,
+          7,
+          7,
+          7,
+          7,
+          7,
+          7,
+          7,
+          7,
+          7
+        ]
+      }
+    },
+    {
+      "id": "B1-R2-CHK-08",
+      "category": "STATUTORY_INVARIANTS",
+      "title": "Telangana statutory partition: exactly 17 PCs with exactly 7 ACs each (119 ACs)",
+      "passed": true,
+      "details": {
+        "pcCount": 17,
+        "counts": [
+          7,
+          7,
+          7,
+          7,
+          7,
+          7,
+          7,
+          7,
+          7,
+          7,
+          7,
+          7,
+          7,
+          7,
+          7,
+          7,
+          7
+        ]
+      }
+    },
+    {
+      "id": "B1-R2-CHK-09",
+      "category": "STATUTORY_INVARIANTS",
+      "title": "Jammu & Kashmir 2022 Delimitation Order: exactly 5 PCs with exactly 18 ACs each (90 ACs)",
+      "passed": true,
+      "details": {
+        "pcCount": 5,
+        "counts": [
+          18,
+          18,
+          18,
+          18,
+          18
+        ]
+      }
+    },
+    {
+      "id": "B1-R2-CHK-10",
+      "category": "STATUTORY_INVARIANTS",
+      "title": "All 5 non-assembly Union Territories (6 PCs) formally catalogued with zero assembly constituencies",
+      "passed": true,
+      "details": {
+        "nonAssemblyUts": [
+          "AN",
+          "CH",
+          "DH",
+          "LA",
+          "LD"
+        ]
+      }
+    },
+    {
+      "id": "B1-R2-CHK-11",
+      "category": "PROVENANCE_INTEGRITY",
+      "title": "All AC->PC mappings reference valid first-class statutory delimitation regimes and datasets",
+      "passed": true,
+      "details": {
+        "requiredRegimes": [
+          "eci_delimitation_2008",
+          "eci_delimitation_2014_ap_ts",
+          "eci_delimitation_2022_jk"
+        ]
+      }
+    },
+    {
+      "id": "B1-R2-CHK-12",
+      "category": "LEGACY_PRESERVATION",
+      "title": "Zero mutation of World-A legacy seed files in data/seed/**",
+      "passed": true,
+      "details": {
+        "seedCount": 199
+      }
+    },
+    {
+      "id": "B1-R2-CHK-13",
+      "category": "PRODUCTION_ISOLATION",
+      "title": "Production database ehfafcnimmjusyvplbah strictly air-gapped and untouched",
+      "passed": true,
+      "details": {
+        "airGapped": true
+      }
+    }
+  ]
+}

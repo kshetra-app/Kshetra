@@ -1,0 +1,1458 @@
+[
+  {
+    "acNo": 1,
+    "acName": "Abdasa",
+    "reservation": "None",
+    "district": "Kachchh",
+    "lokSabha": "Kachchh",
+    "electors": "253,367"
+  },
+  {
+    "acNo": 2,
+    "acName": "Mandvi (Kachchh)",
+    "reservation": "None",
+    "district": "Kachchh",
+    "lokSabha": "Kachchh",
+    "electors": "257,598"
+  },
+  {
+    "acNo": 3,
+    "acName": "Bhuj",
+    "reservation": "None",
+    "district": "Kachchh",
+    "lokSabha": "Kachchh",
+    "electors": "291,337"
+  },
+  {
+    "acNo": 4,
+    "acName": "Anjar",
+    "reservation": "None",
+    "district": "Kachchh",
+    "lokSabha": "Kachchh",
+    "electors": "271,050"
+  },
+  {
+    "acNo": 5,
+    "acName": "Gandhidham",
+    "reservation": "SC",
+    "district": "Kachchh",
+    "lokSabha": "Kachchh",
+    "electors": "315,306"
+  },
+  {
+    "acNo": 6,
+    "acName": "Rapar",
+    "reservation": "None",
+    "district": "Kachchh",
+    "lokSabha": "Kachchh",
+    "electors": "247,657"
+  },
+  {
+    "acNo": 7,
+    "acName": "Vav",
+    "reservation": "None",
+    "district": "Vav-Tharad",
+    "lokSabha": "Banaskantha",
+    "electors": "302,189"
+  },
+  {
+    "acNo": 8,
+    "acName": "Tharad",
+    "reservation": "None",
+    "district": "Vav-Tharad",
+    "lokSabha": "Banaskantha",
+    "electors": "248,450"
+  },
+  {
+    "acNo": 9,
+    "acName": "Dhanera",
+    "reservation": "None",
+    "district": "Vav-Tharad",
+    "lokSabha": "Banaskantha",
+    "electors": "268,872"
+  },
+  {
+    "acNo": 10,
+    "acName": "Danta",
+    "reservation": "ST",
+    "district": "Banaskantha",
+    "lokSabha": "Banaskantha",
+    "electors": "257,978"
+  },
+  {
+    "acNo": 11,
+    "acName": "Vadgam",
+    "reservation": "SC",
+    "district": "Banaskantha",
+    "lokSabha": "Patan",
+    "electors": "295,918"
+  },
+  {
+    "acNo": 12,
+    "acName": "Palanpur",
+    "reservation": "None",
+    "district": "Banaskantha",
+    "lokSabha": "Banaskantha",
+    "electors": "284,941"
+  },
+  {
+    "acNo": 13,
+    "acName": "Deesa",
+    "reservation": "None",
+    "district": "Banaskantha",
+    "lokSabha": "Banaskantha",
+    "electors": "289,681"
+  },
+  {
+    "acNo": 14,
+    "acName": "Deodar",
+    "reservation": "None",
+    "district": "Vav-Tharad",
+    "lokSabha": "Banaskantha",
+    "electors": "253,414"
+  },
+  {
+    "acNo": 15,
+    "acName": "Kankrej",
+    "reservation": "None",
+    "district": "Vav-Tharad",
+    "lokSabha": "Patan",
+    "electors": "291,577"
+  },
+  {
+    "acNo": 16,
+    "acName": "Radhanpur",
+    "reservation": "None",
+    "district": "Patan",
+    "lokSabha": "Patan",
+    "electors": "302,907"
+  },
+  {
+    "acNo": 17,
+    "acName": "Chanasma",
+    "reservation": "None",
+    "district": "Patan",
+    "lokSabha": "Patan",
+    "electors": "292,600"
+  },
+  {
+    "acNo": 18,
+    "acName": "Patan",
+    "reservation": "None",
+    "district": "Patan",
+    "lokSabha": "Patan",
+    "electors": "306,328"
+  },
+  {
+    "acNo": 19,
+    "acName": "Sidhpur",
+    "reservation": "None",
+    "district": "Patan",
+    "lokSabha": "Patan",
+    "electors": "271,304"
+  },
+  {
+    "acNo": 20,
+    "acName": "Kheralu",
+    "reservation": "None",
+    "district": "Mahesana",
+    "lokSabha": "Patan",
+    "electors": "224,735"
+  },
+  {
+    "acNo": 21,
+    "acName": "Unjha",
+    "reservation": "None",
+    "district": "Mahesana",
+    "lokSabha": "Mahesana",
+    "electors": "232,996"
+  },
+  {
+    "acNo": 22,
+    "acName": "Visnagar",
+    "reservation": "None",
+    "district": "Mahesana",
+    "lokSabha": "Mahesana",
+    "electors": "229,768"
+  },
+  {
+    "acNo": 23,
+    "acName": "Bechraji",
+    "reservation": "None",
+    "district": "Mahesana",
+    "lokSabha": "Mahesana",
+    "electors": "258,103"
+  },
+  {
+    "acNo": 24,
+    "acName": "Kadi",
+    "reservation": "SC",
+    "district": "Mahesana",
+    "lokSabha": "Mahesana",
+    "electors": "280,517"
+  },
+  {
+    "acNo": 25,
+    "acName": "Mahesana",
+    "reservation": "None",
+    "district": "Mahesana",
+    "lokSabha": "Mahesana",
+    "electors": "280,757"
+  },
+  {
+    "acNo": 26,
+    "acName": "Vijapur",
+    "reservation": "None",
+    "district": "Mahesana",
+    "lokSabha": "Mahesana",
+    "electors": "224,589"
+  },
+  {
+    "acNo": 27,
+    "acName": "Himatnagar",
+    "reservation": "None",
+    "district": "Sabarkantha",
+    "lokSabha": "Sabarkantha",
+    "electors": "281,583"
+  },
+  {
+    "acNo": 28,
+    "acName": "Idar",
+    "reservation": "SC",
+    "district": "Sabarkantha",
+    "lokSabha": "Sabarkantha",
+    "electors": "287,336"
+  },
+  {
+    "acNo": 29,
+    "acName": "Khedbrahma",
+    "reservation": "ST",
+    "district": "Sabarkantha",
+    "lokSabha": "Sabarkantha",
+    "electors": "284,148"
+  },
+  {
+    "acNo": 30,
+    "acName": "Bhiloda",
+    "reservation": "ST",
+    "district": "Aravalli",
+    "lokSabha": "Sabarkantha",
+    "electors": "316,274"
+  },
+  {
+    "acNo": 31,
+    "acName": "Modasa",
+    "reservation": "None",
+    "district": "Aravalli",
+    "lokSabha": "Sabarkantha",
+    "electors": "270,447"
+  },
+  {
+    "acNo": 32,
+    "acName": "Bayad",
+    "reservation": "None",
+    "district": "Aravalli",
+    "lokSabha": "Sabarkantha",
+    "electors": "246,019"
+  },
+  {
+    "acNo": 33,
+    "acName": "Prantij",
+    "reservation": "None",
+    "district": "Sabarkantha",
+    "lokSabha": "Sabarkantha",
+    "electors": "259,317"
+  },
+  {
+    "acNo": 34,
+    "acName": "Dahegam",
+    "reservation": "None",
+    "district": "Gandhinagar",
+    "lokSabha": "Ahmedabad East",
+    "electors": "220,928"
+  },
+  {
+    "acNo": 35,
+    "acName": "Gandhinagar South",
+    "reservation": "None",
+    "district": "Gandhinagar",
+    "lokSabha": "Ahmedabad East",
+    "electors": "373,521"
+  },
+  {
+    "acNo": 36,
+    "acName": "Gandhinagar North",
+    "reservation": "None",
+    "district": "Gandhinagar",
+    "lokSabha": "Gandhinagar",
+    "electors": "254,109"
+  },
+  {
+    "acNo": 37,
+    "acName": "Mansa",
+    "reservation": "None",
+    "district": "Gandhinagar",
+    "lokSabha": "Mahesana",
+    "electors": "231,203"
+  },
+  {
+    "acNo": 38,
+    "acName": "Kalol (Gandhinagar)",
+    "reservation": "None",
+    "district": "Gandhinagar",
+    "lokSabha": "Gandhinagar",
+    "electors": "248,159"
+  },
+  {
+    "acNo": 39,
+    "acName": "Viramgam",
+    "reservation": "None",
+    "district": "Ahmedabad",
+    "lokSabha": "Surendranagar",
+    "electors": "302,819"
+  },
+  {
+    "acNo": 40,
+    "acName": "Sanand",
+    "reservation": "None",
+    "district": "Ahmedabad",
+    "lokSabha": "Gandhinagar",
+    "electors": "281,385"
+  },
+  {
+    "acNo": 41,
+    "acName": "Ghatlodia",
+    "reservation": "None",
+    "district": "Ahmedabad",
+    "lokSabha": "Gandhinagar",
+    "electors": "428,583"
+  },
+  {
+    "acNo": 42,
+    "acName": "Vejalpur",
+    "reservation": "None",
+    "district": "Ahmedabad",
+    "lokSabha": "Gandhinagar",
+    "electors": "388,893"
+  },
+  {
+    "acNo": 43,
+    "acName": "Vatva",
+    "reservation": "None",
+    "district": "Ahmedabad",
+    "lokSabha": "Ahmedabad East",
+    "electors": "399,033"
+  },
+  {
+    "acNo": 44,
+    "acName": "Ellisbridge",
+    "reservation": "None",
+    "district": "Ahmedabad",
+    "lokSabha": "Ahmedabad West",
+    "electors": "266,516"
+  },
+  {
+    "acNo": 45,
+    "acName": "Naranpura",
+    "reservation": "None",
+    "district": "Ahmedabad",
+    "lokSabha": "Gandhinagar",
+    "electors": "250,238"
+  },
+  {
+    "acNo": 46,
+    "acName": "Nikol",
+    "reservation": "None",
+    "district": "Ahmedabad",
+    "lokSabha": "Ahmedabad East",
+    "electors": "257,046"
+  },
+  {
+    "acNo": 47,
+    "acName": "Naroda",
+    "reservation": "None",
+    "district": "Ahmedabad",
+    "lokSabha": "Ahmedabad East",
+    "electors": "296,792"
+  },
+  {
+    "acNo": 48,
+    "acName": "Thakkarbapa Nagar",
+    "reservation": "None",
+    "district": "Ahmedabad",
+    "lokSabha": "Ahmedabad East",
+    "electors": "243,623"
+  },
+  {
+    "acNo": 49,
+    "acName": "Bapunagar",
+    "reservation": "None",
+    "district": "Ahmedabad",
+    "lokSabha": "Ahmedabad East",
+    "electors": "207,631"
+  },
+  {
+    "acNo": 50,
+    "acName": "Amraiwadi",
+    "reservation": "None",
+    "district": "Ahmedabad",
+    "lokSabha": "Ahmedabad West",
+    "electors": "296,798"
+  },
+  {
+    "acNo": 51,
+    "acName": "Dariapur",
+    "reservation": "None",
+    "district": "Ahmedabad",
+    "lokSabha": "Ahmedabad West",
+    "electors": "209,940"
+  },
+  {
+    "acNo": 52,
+    "acName": "Jamalpur-Khadiya",
+    "reservation": "None",
+    "district": "Ahmedabad",
+    "lokSabha": "Ahmedabad West",
+    "electors": "217,940"
+  },
+  {
+    "acNo": 53,
+    "acName": "Maninagar",
+    "reservation": "None",
+    "district": "Ahmedabad",
+    "lokSabha": "Ahmedabad West",
+    "electors": "277,187"
+  },
+  {
+    "acNo": 54,
+    "acName": "Danilimda",
+    "reservation": "SC",
+    "district": "Ahmedabad",
+    "lokSabha": "Ahmedabad West",
+    "electors": "266,617"
+  },
+  {
+    "acNo": 55,
+    "acName": "Sabarmati",
+    "reservation": "None",
+    "district": "Ahmedabad",
+    "lokSabha": "Gandhinagar",
+    "electors": "279,208"
+  },
+  {
+    "acNo": 56,
+    "acName": "Asarwa",
+    "reservation": "SC",
+    "district": "Ahmedabad",
+    "lokSabha": "Ahmedabad West",
+    "electors": "218,193"
+  },
+  {
+    "acNo": 57,
+    "acName": "Daskroi",
+    "reservation": "None",
+    "district": "Ahmedabad",
+    "lokSabha": "Kheda",
+    "electors": "391,597"
+  },
+  {
+    "acNo": 58,
+    "acName": "Dholka",
+    "reservation": "None",
+    "district": "Ahmedabad",
+    "lokSabha": "Kheda",
+    "electors": "253,826"
+  },
+  {
+    "acNo": 59,
+    "acName": "Dhandhuka",
+    "reservation": "None",
+    "district": "Ahmedabad",
+    "lokSabha": "Surendranagar",
+    "electors": "274,194"
+  },
+  {
+    "acNo": 60,
+    "acName": "Dasada",
+    "reservation": "SC",
+    "district": "Surendranagar",
+    "lokSabha": "Surendranagar",
+    "electors": "264,687"
+  },
+  {
+    "acNo": 61,
+    "acName": "Limdi",
+    "reservation": "None",
+    "district": "Surendranagar",
+    "lokSabha": "Surendranagar",
+    "electors": "288,069"
+  },
+  {
+    "acNo": 62,
+    "acName": "Wadhwan",
+    "reservation": "None",
+    "district": "Surendranagar",
+    "lokSabha": "Surendranagar",
+    "electors": "300,511"
+  },
+  {
+    "acNo": 63,
+    "acName": "Chotila",
+    "reservation": "None",
+    "district": "Surendranagar",
+    "lokSabha": "Surendranagar",
+    "electors": "261,940"
+  },
+  {
+    "acNo": 64,
+    "acName": "Dhangadhra",
+    "reservation": "None",
+    "district": "Surendranagar",
+    "lokSabha": "Surendranagar",
+    "electors": "309,241"
+  },
+  {
+    "acNo": 65,
+    "acName": "Morbi",
+    "reservation": "None",
+    "district": "Morbi",
+    "lokSabha": "Kachchh",
+    "electors": "286,905"
+  },
+  {
+    "acNo": 66,
+    "acName": "Tankara",
+    "reservation": "None",
+    "district": "Morbi",
+    "lokSabha": "Rajkot",
+    "electors": "249,585"
+  },
+  {
+    "acNo": 67,
+    "acName": "Wankaner",
+    "reservation": "None",
+    "district": "Morbi",
+    "lokSabha": "Rajkot",
+    "electors": "281,487"
+  },
+  {
+    "acNo": 68,
+    "acName": "Rajkot East",
+    "reservation": "None",
+    "district": "Rajkot",
+    "lokSabha": "Rajkot",
+    "electors": "297,640"
+  },
+  {
+    "acNo": 69,
+    "acName": "Rajkot West",
+    "reservation": "None",
+    "district": "Rajkot",
+    "lokSabha": "Rajkot",
+    "electors": "354,378"
+  },
+  {
+    "acNo": 70,
+    "acName": "Rajkot South-",
+    "reservation": "None",
+    "district": "Rajkot",
+    "lokSabha": "Rajkot",
+    "electors": "258,831"
+  },
+  {
+    "acNo": 71,
+    "acName": "Rajkot Rural",
+    "reservation": "SC",
+    "district": "Rajkot",
+    "lokSabha": "Rajkot",
+    "electors": "367,494"
+  },
+  {
+    "acNo": 72,
+    "acName": "Jasdan",
+    "reservation": "None",
+    "district": "Rajkot",
+    "lokSabha": "Rajkot",
+    "electors": "256,485"
+  },
+  {
+    "acNo": 73,
+    "acName": "Gondal",
+    "reservation": "None",
+    "district": "Rajkot",
+    "lokSabha": "Porbandar",
+    "electors": "228,608"
+  },
+  {
+    "acNo": 74,
+    "acName": "Jetpur (Rajkot)",
+    "reservation": "None",
+    "district": "Rajkot",
+    "lokSabha": "Porbandar",
+    "electors": "275,769"
+  },
+  {
+    "acNo": 75,
+    "acName": "Dhoraji",
+    "reservation": "None",
+    "district": "Rajkot",
+    "lokSabha": "Porbandar",
+    "electors": "268,706"
+  },
+  {
+    "acNo": 76,
+    "acName": "Kalavad",
+    "reservation": "SC",
+    "district": "Jamnagar",
+    "lokSabha": "Jamnagar",
+    "electors": "233,479"
+  },
+  {
+    "acNo": 77,
+    "acName": "Jamnagar Rural",
+    "reservation": "None",
+    "district": "Jamnagar",
+    "lokSabha": "Jamnagar",
+    "electors": "253,660"
+  },
+  {
+    "acNo": 78,
+    "acName": "Jamnagar North",
+    "reservation": "None",
+    "district": "Jamnagar",
+    "lokSabha": "Jamnagar",
+    "electors": "263,673"
+  },
+  {
+    "acNo": 79,
+    "acName": "Jamnagar South",
+    "reservation": "None",
+    "district": "Jamnagar",
+    "lokSabha": "Jamnagar",
+    "electors": "230,816"
+  },
+  {
+    "acNo": 80,
+    "acName": "Jamjodhpur",
+    "reservation": "None",
+    "district": "Jamnagar",
+    "lokSabha": "Jamnagar",
+    "electors": "227,720"
+  },
+  {
+    "acNo": 81,
+    "acName": "Khambhaliya",
+    "reservation": "None",
+    "district": "DevbhoomiDwarka",
+    "lokSabha": "Jamnagar",
+    "electors": "302,785"
+  },
+  {
+    "acNo": 82,
+    "acName": "Dwarka",
+    "reservation": "None",
+    "district": "DevbhoomiDwarka",
+    "lokSabha": "Jamnagar",
+    "electors": "292,843"
+  },
+  {
+    "acNo": 83,
+    "acName": "Porbandar",
+    "reservation": "None",
+    "district": "Porbandar",
+    "lokSabha": "Porbandar",
+    "electors": "266,218"
+  },
+  {
+    "acNo": 84,
+    "acName": "Kutiyana",
+    "reservation": "None",
+    "district": "Porbandar",
+    "lokSabha": "Porbandar",
+    "electors": "225,997"
+  },
+  {
+    "acNo": 85,
+    "acName": "Manavadar",
+    "reservation": "None",
+    "district": "Junagadh",
+    "lokSabha": "Porbandar",
+    "electors": "248,763"
+  },
+  {
+    "acNo": 86,
+    "acName": "Junagadh",
+    "reservation": "None",
+    "district": "Junagadh",
+    "lokSabha": "Junagadh",
+    "electors": "287,816"
+  },
+  {
+    "acNo": 87,
+    "acName": "Visavadar",
+    "reservation": "None",
+    "district": "Junagadh",
+    "lokSabha": "Junagadh",
+    "electors": "259,296"
+  },
+  {
+    "acNo": 88,
+    "acName": "Keshod",
+    "reservation": "None",
+    "district": "Junagadh",
+    "lokSabha": "Porbandar",
+    "electors": "246,818"
+  },
+  {
+    "acNo": 89,
+    "acName": "Mangrol (Junagadh)",
+    "reservation": "None",
+    "district": "Junagadh",
+    "lokSabha": "Junagadh",
+    "electors": "230,886"
+  },
+  {
+    "acNo": 90,
+    "acName": "Somnath",
+    "reservation": "None",
+    "district": "Gir Somnath",
+    "lokSabha": "Junagadh",
+    "electors": "263,176"
+  },
+  {
+    "acNo": 91,
+    "acName": "Talala",
+    "reservation": "None",
+    "district": "Gir Somnath",
+    "lokSabha": "Junagadh",
+    "electors": "235,040"
+  },
+  {
+    "acNo": 92,
+    "acName": "Kodinar",
+    "reservation": "SC",
+    "district": "Gir Somnath",
+    "lokSabha": "Junagadh",
+    "electors": "234,831"
+  },
+  {
+    "acNo": 93,
+    "acName": "Una",
+    "reservation": "None",
+    "district": "Gir Somnath",
+    "lokSabha": "Junagadh",
+    "electors": "267,382"
+  },
+  {
+    "acNo": 94,
+    "acName": "Dhari",
+    "reservation": "None",
+    "district": "Amreli",
+    "lokSabha": "Amreli",
+    "electors": "223,141"
+  },
+  {
+    "acNo": 95,
+    "acName": "Amreli",
+    "reservation": "None",
+    "district": "Amreli",
+    "lokSabha": "Amreli",
+    "electors": "283,793"
+  },
+  {
+    "acNo": 96,
+    "acName": "Lathi",
+    "reservation": "None",
+    "district": "Amreli",
+    "lokSabha": "Amreli",
+    "electors": "223,713"
+  },
+  {
+    "acNo": 97,
+    "acName": "Savarkundla",
+    "reservation": "None",
+    "district": "Amreli",
+    "lokSabha": "Amreli",
+    "electors": "254,336"
+  },
+  {
+    "acNo": 98,
+    "acName": "Rajula",
+    "reservation": "None",
+    "district": "Amreli",
+    "lokSabha": "Amreli",
+    "electors": "274,855"
+  },
+  {
+    "acNo": 99,
+    "acName": "Mahuva (Bhavnagar)",
+    "reservation": "None",
+    "district": "Bhavnagar",
+    "lokSabha": "Amreli",
+    "electors": "243,370"
+  },
+  {
+    "acNo": 100,
+    "acName": "Talaja",
+    "reservation": "None",
+    "district": "Bhavnagar",
+    "lokSabha": "Bhavnagar",
+    "electors": "253,947"
+  },
+  {
+    "acNo": 101,
+    "acName": "Gariadhar",
+    "reservation": "None",
+    "district": "Bhavnagar",
+    "lokSabha": "Amreli",
+    "electors": "228,987"
+  },
+  {
+    "acNo": 102,
+    "acName": "Palitana",
+    "reservation": "None",
+    "district": "Bhavnagar",
+    "lokSabha": "Bhavnagar",
+    "electors": "280,875"
+  },
+  {
+    "acNo": 103,
+    "acName": "Bhavnagar Rural",
+    "reservation": "None",
+    "district": "Bhavnagar",
+    "lokSabha": "Bhavnagar",
+    "electors": "296,290"
+  },
+  {
+    "acNo": 104,
+    "acName": "Bhavnagar East",
+    "reservation": "None",
+    "district": "Bhavnagar",
+    "lokSabha": "Bhavnagar",
+    "electors": "265,877"
+  },
+  {
+    "acNo": 105,
+    "acName": "Bhavnagar West",
+    "reservation": "None",
+    "district": "Bhavnagar",
+    "lokSabha": "Bhavnagar",
+    "electors": "264,681"
+  },
+  {
+    "acNo": 106,
+    "acName": "Gadhada",
+    "reservation": "SC",
+    "district": "Botad",
+    "lokSabha": "Bhavnagar",
+    "electors": "263,958"
+  },
+  {
+    "acNo": 107,
+    "acName": "Botad",
+    "reservation": "None",
+    "district": "Botad",
+    "lokSabha": "Bhavnagar",
+    "electors": "291,347"
+  },
+  {
+    "acNo": 108,
+    "acName": "Khambhat",
+    "reservation": "None",
+    "district": "Anand",
+    "lokSabha": "Anand",
+    "electors": "233,488"
+  },
+  {
+    "acNo": 109,
+    "acName": "Borsad",
+    "reservation": "None",
+    "district": "Anand",
+    "lokSabha": "Anand",
+    "electors": "261,464"
+  },
+  {
+    "acNo": 110,
+    "acName": "Anklav",
+    "reservation": "None",
+    "district": "Anand",
+    "lokSabha": "Anand",
+    "electors": "225,231"
+  },
+  {
+    "acNo": 111,
+    "acName": "Umreth",
+    "reservation": "None",
+    "district": "Anand",
+    "lokSabha": "Anand",
+    "electors": "271,249"
+  },
+  {
+    "acNo": 112,
+    "acName": "Anand",
+    "reservation": "None",
+    "district": "Anand",
+    "lokSabha": "Anand",
+    "electors": "314,855"
+  },
+  {
+    "acNo": 113,
+    "acName": "Petlad",
+    "reservation": "None",
+    "district": "Anand",
+    "lokSabha": "Anand",
+    "electors": "239,530"
+  },
+  {
+    "acNo": 114,
+    "acName": "Sojitra",
+    "reservation": "None",
+    "district": "Anand",
+    "lokSabha": "Anand",
+    "electors": "220,898"
+  },
+  {
+    "acNo": 115,
+    "acName": "Matar",
+    "reservation": "None",
+    "district": "Kheda",
+    "lokSabha": "Kheda",
+    "electors": "252,366"
+  },
+  {
+    "acNo": 116,
+    "acName": "Nadiad",
+    "reservation": "None",
+    "district": "Kheda",
+    "lokSabha": "Kheda",
+    "electors": "274,166"
+  },
+  {
+    "acNo": 117,
+    "acName": "Mehmedabad",
+    "reservation": "None",
+    "district": "Kheda",
+    "lokSabha": "Kheda",
+    "electors": "250,686"
+  },
+  {
+    "acNo": 118,
+    "acName": "Mahudha",
+    "reservation": "None",
+    "district": "Kheda",
+    "lokSabha": "Kheda",
+    "electors": "252,337"
+  },
+  {
+    "acNo": 119,
+    "acName": "Thasra",
+    "reservation": "None",
+    "district": "Kheda",
+    "lokSabha": "Panchmahal",
+    "electors": "273,310"
+  },
+  {
+    "acNo": 120,
+    "acName": "Kapadvanj",
+    "reservation": "None",
+    "district": "Kheda",
+    "lokSabha": "Kheda",
+    "electors": "299,625"
+  },
+  {
+    "acNo": 121,
+    "acName": "Balasinor",
+    "reservation": "None",
+    "district": "Kheda",
+    "lokSabha": "Panchmahal",
+    "electors": "288,570"
+  },
+  {
+    "acNo": 122,
+    "acName": "Lunawada",
+    "reservation": "None",
+    "district": "Mahisagar",
+    "lokSabha": "Panchmahal",
+    "electors": "288,346"
+  },
+  {
+    "acNo": 123,
+    "acName": "Santrampur",
+    "reservation": "ST",
+    "district": "Mahisagar",
+    "lokSabha": "Dahod",
+    "electors": "238,708"
+  },
+  {
+    "acNo": 124,
+    "acName": "Shehra",
+    "reservation": "None",
+    "district": "Panchmahal",
+    "lokSabha": "Panchmahal",
+    "electors": "261,060"
+  },
+  {
+    "acNo": 125,
+    "acName": "Morva Hadaf",
+    "reservation": "ST",
+    "district": "Panchmahal",
+    "lokSabha": "Panchmahal",
+    "electors": "228,526"
+  },
+  {
+    "acNo": 126,
+    "acName": "Godhra",
+    "reservation": "None",
+    "district": "Panchmahal",
+    "lokSabha": "Panchmahal",
+    "electors": "279,773"
+  },
+  {
+    "acNo": 127,
+    "acName": "Kalol (Panchmahal)",
+    "reservation": "None",
+    "district": "Panchmahal",
+    "lokSabha": "Panchmahal",
+    "electors": "258,639"
+  },
+  {
+    "acNo": 128,
+    "acName": "Halol",
+    "reservation": "None",
+    "district": "Panchmahal",
+    "lokSabha": "Chhota Udaipur",
+    "electors": "273,045"
+  },
+  {
+    "acNo": 129,
+    "acName": "Fatepura",
+    "reservation": "ST",
+    "district": "Dahod",
+    "lokSabha": "Dahod",
+    "electors": "255,069"
+  },
+  {
+    "acNo": 130,
+    "acName": "Jhalod",
+    "reservation": "ST",
+    "district": "Dahod",
+    "lokSabha": "Dahod",
+    "electors": "271,919"
+  },
+  {
+    "acNo": 131,
+    "acName": "Limkheda",
+    "reservation": "ST",
+    "district": "Dahod",
+    "lokSabha": "Dahod",
+    "electors": "223,066"
+  },
+  {
+    "acNo": 132,
+    "acName": "Dahod",
+    "reservation": "ST",
+    "district": "Dahod",
+    "lokSabha": "Dahod",
+    "electors": "278,867"
+  },
+  {
+    "acNo": 133,
+    "acName": "Garbada",
+    "reservation": "ST",
+    "district": "Dahod",
+    "lokSabha": "Dahod",
+    "electors": "290,727"
+  },
+  {
+    "acNo": 134,
+    "acName": "Devgadhbariya",
+    "reservation": "None",
+    "district": "Dahod",
+    "lokSabha": "Dahod",
+    "electors": "266,264"
+  },
+  {
+    "acNo": 135,
+    "acName": "Savli",
+    "reservation": "None",
+    "district": "Vadodara",
+    "lokSabha": "Vadodara",
+    "electors": "230,722"
+  },
+  {
+    "acNo": 136,
+    "acName": "Vaghodiya",
+    "reservation": "None",
+    "district": "Vadodara",
+    "lokSabha": "Vadodara",
+    "electors": "246,625"
+  },
+  {
+    "acNo": 137,
+    "acName": "Chhota Udaipur",
+    "reservation": "ST",
+    "district": "Chhota Udaipur",
+    "lokSabha": "Chhota Udaipur",
+    "electors": "271,787"
+  },
+  {
+    "acNo": 138,
+    "acName": "Jetpur (Chhota Udaipur)",
+    "reservation": "ST",
+    "district": "Chhota Udaipur",
+    "lokSabha": "Chhota Udaipur",
+    "electors": "271,247"
+  },
+  {
+    "acNo": 139,
+    "acName": "Sankheda",
+    "reservation": "ST",
+    "district": "Chhota Udaipur",
+    "lokSabha": "Chhota Udaipur",
+    "electors": "276,363"
+  },
+  {
+    "acNo": 140,
+    "acName": "Dabhoi",
+    "reservation": "None",
+    "district": "Vadodara",
+    "lokSabha": "Chhota Udaipur",
+    "electors": "232,674"
+  },
+  {
+    "acNo": 141,
+    "acName": "Vadodara City",
+    "reservation": "SC",
+    "district": "Vadodara",
+    "lokSabha": "Vadodara",
+    "electors": "306,810"
+  },
+  {
+    "acNo": 142,
+    "acName": "Sayajigunj",
+    "reservation": "None",
+    "district": "Vadodara",
+    "lokSabha": "Vadodara",
+    "electors": "301,098"
+  },
+  {
+    "acNo": 143,
+    "acName": "Akota",
+    "reservation": "None",
+    "district": "Vadodara",
+    "lokSabha": "Vadodara",
+    "electors": "276,031"
+  },
+  {
+    "acNo": 144,
+    "acName": "Raopura",
+    "reservation": "None",
+    "district": "Vadodara",
+    "lokSabha": "Vadodara",
+    "electors": "297,989"
+  },
+  {
+    "acNo": 145,
+    "acName": "Manjalpur",
+    "reservation": "None",
+    "district": "Vadodara",
+    "lokSabha": "Vadodara",
+    "electors": "263,602"
+  },
+  {
+    "acNo": 146,
+    "acName": "Padra",
+    "reservation": "None",
+    "district": "Vadodara",
+    "lokSabha": "Chhota Udaipur",
+    "electors": "238,186"
+  },
+  {
+    "acNo": 147,
+    "acName": "Karjan",
+    "reservation": "None",
+    "district": "Vadodara",
+    "lokSabha": "Bharuch",
+    "electors": "213,356"
+  },
+  {
+    "acNo": 148,
+    "acName": "Nandod",
+    "reservation": "ST",
+    "district": "Narmada",
+    "lokSabha": "Chhota Udaipur",
+    "electors": "235,260"
+  },
+  {
+    "acNo": 149,
+    "acName": "Dediapada",
+    "reservation": "ST",
+    "district": "Narmada",
+    "lokSabha": "Bharuch",
+    "electors": "222,807"
+  },
+  {
+    "acNo": 150,
+    "acName": "Jambusar",
+    "reservation": "None",
+    "district": "Bharuch",
+    "lokSabha": "Bharuch",
+    "electors": "241,860"
+  },
+  {
+    "acNo": 151,
+    "acName": "Vagra",
+    "reservation": "None",
+    "district": "Bharuch",
+    "lokSabha": "Bharuch",
+    "electors": "222,644"
+  },
+  {
+    "acNo": 152,
+    "acName": "Jhagadiya",
+    "reservation": "ST",
+    "district": "Bharuch",
+    "lokSabha": "Bharuch",
+    "electors": "258,955"
+  },
+  {
+    "acNo": 153,
+    "acName": "Bharuch",
+    "reservation": "None",
+    "district": "Bharuch",
+    "lokSabha": "Bharuch",
+    "electors": "293,510"
+  },
+  {
+    "acNo": 154,
+    "acName": "Ankleshwar",
+    "reservation": "None",
+    "district": "Bharuch",
+    "lokSabha": "Bharuch",
+    "electors": "250,790"
+  },
+  {
+    "acNo": 155,
+    "acName": "Olpad",
+    "reservation": "None",
+    "district": "Surat",
+    "lokSabha": "Surat",
+    "electors": "455,559"
+  },
+  {
+    "acNo": 156,
+    "acName": "Mangrol (Surat)",
+    "reservation": "ST",
+    "district": "Surat",
+    "lokSabha": "Bardoli",
+    "electors": "225,733"
+  },
+  {
+    "acNo": 157,
+    "acName": "Mandvi (Surat)",
+    "reservation": "ST",
+    "district": "Surat",
+    "lokSabha": "Bardoli",
+    "electors": "246,979"
+  },
+  {
+    "acNo": 158,
+    "acName": "Kamrej",
+    "reservation": "None",
+    "district": "Surat",
+    "lokSabha": "Bardoli",
+    "electors": "547,634"
+  },
+  {
+    "acNo": 159,
+    "acName": "Surat East",
+    "reservation": "None",
+    "district": "Surat",
+    "lokSabha": "Surat",
+    "electors": "215,031"
+  },
+  {
+    "acNo": 160,
+    "acName": "Surat North",
+    "reservation": "None",
+    "district": "Surat",
+    "lokSabha": "Surat",
+    "electors": "163,190"
+  },
+  {
+    "acNo": 161,
+    "acName": "Varachha Road",
+    "reservation": "None",
+    "district": "Surat",
+    "lokSabha": "Surat",
+    "electors": "215,926"
+  },
+  {
+    "acNo": 162,
+    "acName": "Karanj",
+    "reservation": "None",
+    "district": "Surat",
+    "lokSabha": "Surat",
+    "electors": "176,589"
+  },
+  {
+    "acNo": 163,
+    "acName": "Limbayat",
+    "reservation": "None",
+    "district": "Surat",
+    "lokSabha": "Navsari",
+    "electors": "305,333"
+  },
+  {
+    "acNo": 164,
+    "acName": "Udhana",
+    "reservation": "None",
+    "district": "Surat",
+    "lokSabha": "Navsari",
+    "electors": "270,734"
+  },
+  {
+    "acNo": 165,
+    "acName": "Majura",
+    "reservation": "None",
+    "district": "Surat",
+    "lokSabha": "Navsari",
+    "electors": "278,984"
+  },
+  {
+    "acNo": 166,
+    "acName": "Katargam",
+    "reservation": "None",
+    "district": "Surat",
+    "lokSabha": "Surat",
+    "electors": "322,246"
+  },
+  {
+    "acNo": 167,
+    "acName": "Surat West",
+    "reservation": "None",
+    "district": "Surat",
+    "lokSabha": "Surat",
+    "electors": "256,881"
+  },
+  {
+    "acNo": 168,
+    "acName": "Choryasi",
+    "reservation": "None",
+    "district": "Surat",
+    "lokSabha": "Navsari",
+    "electors": "566,545"
+  },
+  {
+    "acNo": 169,
+    "acName": "Bardoli",
+    "reservation": "SC",
+    "district": "Surat",
+    "lokSabha": "Bardoli",
+    "electors": "270,071"
+  },
+  {
+    "acNo": 170,
+    "acName": "Mahuva (Surat)",
+    "reservation": "ST",
+    "district": "Surat",
+    "lokSabha": "Bardoli",
+    "electors": "228,967"
+  },
+  {
+    "acNo": 171,
+    "acName": "Vyara",
+    "reservation": "ST",
+    "district": "Tapi",
+    "lokSabha": "Bardoli",
+    "electors": "223,141"
+  },
+  {
+    "acNo": 172,
+    "acName": "Nizar",
+    "reservation": "ST",
+    "district": "Tapi",
+    "lokSabha": "Bardoli",
+    "electors": "282,687"
+  },
+  {
+    "acNo": 173,
+    "acName": "Dangs",
+    "reservation": "ST",
+    "district": "Dang",
+    "lokSabha": "Valsad",
+    "electors": "193,369"
+  },
+  {
+    "acNo": 174,
+    "acName": "Jalalpore",
+    "reservation": "None",
+    "district": "Navsari",
+    "lokSabha": "Navsari",
+    "electors": "236,244"
+  },
+  {
+    "acNo": 175,
+    "acName": "Navsari",
+    "reservation": "None",
+    "district": "Navsari",
+    "lokSabha": "Navsari",
+    "electors": "250,089"
+  },
+  {
+    "acNo": 176,
+    "acName": "Gandevi",
+    "reservation": "ST",
+    "district": "Navsari",
+    "lokSabha": "Navsari",
+    "electors": "292,704"
+  },
+  {
+    "acNo": 177,
+    "acName": "Vansda",
+    "reservation": "ST",
+    "district": "Navsari",
+    "lokSabha": "Valsad",
+    "electors": "299,690"
+  },
+  {
+    "acNo": 178,
+    "acName": "Dharampur",
+    "reservation": "ST",
+    "district": "Valsad",
+    "lokSabha": "Valsad",
+    "electors": "251,137"
+  },
+  {
+    "acNo": 179,
+    "acName": "Valsad",
+    "reservation": "None",
+    "district": "Valsad",
+    "lokSabha": "Valsad",
+    "electors": "264,457"
+  },
+  {
+    "acNo": 180,
+    "acName": "Pardi",
+    "reservation": "None",
+    "district": "Valsad",
+    "lokSabha": "Valsad",
+    "electors": "260,648"
+  },
+  {
+    "acNo": 181,
+    "acName": "Kaprada",
+    "reservation": "ST",
+    "district": "Valsad",
+    "lokSabha": "Valsad",
+    "electors": "266,835"
+  },
+  {
+    "acNo": 182,
+    "acName": "Umbergaon",
+    "reservation": "ST",
+    "district": "Valsad",
+    "lokSabha": "Valsad",
+    "electors": "286,027"
+  }
+]
