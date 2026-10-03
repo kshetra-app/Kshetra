@@ -1,0 +1,33 @@
+{
+  "milestone": "W021.5-B2.2-E",
+  "status": "POPULATION_COMPLETE_AND_VERIFIED",
+  "auditTimestamp": "2026-10-03T17:03:05.743Z",
+  "targetEnvironment": "Isolated Staging Target (https://fkpigozcqnmcvofuksar.supabase.co)",
+  "productionDatabaseStatus": {
+    "host": "ehfafcnimmjusyvplbah",
+    "status": "AIR-GAPPED AND UNTOUCHED",
+    "connected": false,
+    "modified": false
+  },
+  "batchProvenanceId": "0215b22e-0000-0000-0000-000000000001",
+  "approvedPopulationCounts": {
+    "E0_Provenance_Record": 1,
+    "E1_Candidate_Affidavits": 4524,
+    "E2_Constituency_Lineage": 154,
+    "E3_Constituency_Demographics": 4142,
+    "E4_State_Election_History_Turnout": 48,
+    "TOTAL_ACTUAL_INSERTS": 8869
+  },
+  "upstreamAncestryPreservation": {
+    "b22c_total_rows": 1207,
+    "b22d_total_rows": 48284,
+    "modified": false
+  },
+  "foreignKeyIntegrity": {
+    "affidavit_to_canonical_person": "4524/4524 (100.00%)",
+    "affidavit_to_candidacy": "4524/4524 (100.00%)",
+    "lineage_to_dataset_version": "154/154 (100.00%)",
+    "demographics_to_provenance": "4142/4142 (100.00%)",
+    "orphanEntities": 0
+  }
+}

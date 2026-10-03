@@ -1,0 +1,33 @@
+{
+  "milestone": "W021.5-B2.2-E",
+  "auditTimestamp": "2026-10-03T17:03:05.751Z",
+  "teardown": {
+    "timestamp": "2026-10-03T17:03:05.722Z",
+    "deleted": {
+      "E4_turnout": 48,
+      "E3_demographics": 4142,
+      "E2_delimitation": 154,
+      "E1_affidavits": 4524,
+      "E0_provenance": 1
+    },
+    "actualDbDeletions": 8869,
+    "residualB22ERows": 0,
+    "preservedUpstreamRows": {
+      "b22c_total_rows": 1207,
+      "b22d_total_rows": 48284
+    }
+  },
+  "restoration": {
+    "phaseTag": "RESTORE_FINAL",
+    "inserts": {
+      "E0_provenance": 1,
+      "E1_affidavits": 4524,
+      "E2_delimitation": 154,
+      "E3_demographics": 4142,
+      "E4_turnout": 48
+    },
+    "actualDbInserts": 8869,
+    "timestamp": "2026-10-03T17:03:05.723Z"
+  },
+  "rollbackPrecisionInvariantSatisfied": true
+}

@@ -1,0 +1,32 @@
+{
+  "milestone": "W021.5-B2.2-E",
+  "auditTimestamp": "2026-10-03T17:03:05.753Z",
+  "candidateAffidavits": {
+    "total": 4524,
+    "validPersonFKs": 4524,
+    "validCandidacyFKs": 4524,
+    "validProvenanceFKs": 4524,
+    "orphans": 0
+  },
+  "constituencyLineage": {
+    "total": 154,
+    "validRegimeReferences": 154,
+    "validDatasetVersionFKs": 154,
+    "validProvenanceFKs": 154,
+    "orphans": 0
+  },
+  "constituencyDemographics": {
+    "total": 4142,
+    "validStateCodes": 4142,
+    "validAcNumbers": 4142,
+    "validProvenanceFKs": 4142,
+    "orphans": 0
+  },
+  "stateElectionHistoryTurnout": {
+    "total": 48,
+    "validStateCodes": 48,
+    "validYears": 48,
+    "validProvenanceFKs": 48,
+    "orphans": 0
+  }
+}

@@ -1,0 +1,41 @@
+{
+  "milestone": "W021.5-B2.2-E",
+  "auditTimestamp": "2026-10-03T17:03:05.749Z",
+  "initialRun": {
+    "phaseTag": "RUN_1",
+    "inserts": {
+      "E0_provenance": 1,
+      "E1_affidavits": 4524,
+      "E2_delimitation": 154,
+      "E3_demographics": 4142,
+      "E4_turnout": 48
+    },
+    "actualDbInserts": 8869,
+    "timestamp": "2026-10-03T17:03:05.691Z"
+  },
+  "idempotentRun2": {
+    "phaseTag": "RUN_2",
+    "inserts": {
+      "E0_provenance": 0,
+      "E1_affidavits": 0,
+      "E2_delimitation": 0,
+      "E3_demographics": 0,
+      "E4_turnout": 0
+    },
+    "actualDbInserts": 0,
+    "timestamp": "2026-10-03T17:03:05.715Z"
+  },
+  "idempotentRun3": {
+    "phaseTag": "RUN_3",
+    "inserts": {
+      "E0_provenance": 0,
+      "E1_affidavits": 0,
+      "E2_delimitation": 0,
+      "E3_demographics": 0,
+      "E4_turnout": 0
+    },
+    "actualDbInserts": 0,
+    "timestamp": "2026-10-03T17:03:05.718Z"
+  },
+  "idempotencyInvariantSatisfied": true
+}

@@ -1,0 +1,14 @@
+{
+  "auditDate": "2026-10-03T17:02:33.928Z",
+  "milestone": "W021.5-B2.2-E",
+  "totalSourceFilesScanned": 94,
+  "summaryCounts": {
+    "affidavitDisclosures": 4524,
+    "delimitationLineage": 154,
+    "constituencyDemographics": 4142,
+    "electionHistoryCycles": 48,
+    "totalDownstreamCivicEntities": 8868
+  },
+  "foreignKeyResolutionRate": "100.00%",
+  "orphanedEntities": 0
+}

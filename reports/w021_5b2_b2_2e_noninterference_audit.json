@@ -1,0 +1,33 @@
+{
+  "milestone": "W021.5-B2.2-E",
+  "auditTimestamp": "2026-10-03T17:03:05.752Z",
+  "upstreamAncestry": {
+    "b22c": {
+      "canonicalOrganizations": 107,
+      "organizationAliases": 1043,
+      "multilingualIdentities": 27,
+      "symbols": 19,
+      "relationships": 10,
+      "provenanceAnchor": 1,
+      "total": 1207,
+      "preserved": true
+    },
+    "b22d": {
+      "canonicalPersons": 9083,
+      "multilingualIdentities": 9172,
+      "candidacies": 11334,
+      "electedTenures": 9553,
+      "personPartyAffiliations": 9083,
+      "tenurePartySwitches": 58,
+      "provenanceAnchor": 1,
+      "total": 48284,
+      "preserved": true
+    }
+  },
+  "seedFilesPreserved": {
+    "path": "data/seed/**",
+    "fileCount": 199,
+    "modifiedCount": 0,
+    "preserved": true
+  }
+}
