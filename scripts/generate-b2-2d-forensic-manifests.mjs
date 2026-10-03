@@ -849,15 +849,24 @@ for (const file of timelineFiles) {
 
       if (idM && typeM && ['DEFECTION', 'PARTY_MERGER'].includes(typeM[1])) {
         const members = membersM ? (membersM[1].match(/['"]([^'"]+)['"]/g) || []).map(n => n.replace(/['"]/g, '').trim()) : [];
-        for (const m of members) {
+        const sStateCode = stateCodeMap[state] || 'IN';
+        for (const rawM of members) {
           const fromOrg = orgResolutionMap.get(debitM ? debitM[1] : '')?.orgId || null;
           const toOrg = orgResolutionMap.get(creditM ? creditM[1] : '')?.orgId || null;
 
+          // Clean parenthetical constituency annotations (e.g. 'A. Revanth Reddy (Kodangal)' -> 'A. Revanth Reddy')
+          const cleanM = rawM.replace(/\s*\([^)]*\)/, '').trim();
+          const normClean = normalizeName(cleanM);
+
+          // Find matching personCluster within the state context
+          const personKey = `CP-${sStateCode}-${normClean.replace(/\s+/g, '_')}`;
+
           switchManifest.push({
             switchId: `0215b22d-switch-${String(switchManifest.length + 1).padStart(8, '0')}`,
-            personName: m,
-            normalizedName: normalizeName(m),
-            stateCode: stateCodeMap[state] || 'IN',
+            personName: cleanM,
+            normalizedName: normClean,
+            personKey,
+            stateCode: sStateCode,
             fromPartyRaw: debitM ? debitM[1] : 'UNKNOWN',
             toPartyRaw: creditM ? creditM[1] : 'UNKNOWN',
             fromPartyId: fromOrg,

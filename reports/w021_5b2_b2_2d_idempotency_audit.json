@@ -1,0 +1,8 @@
+{
+  "milestone": "W021.5-B2.2-D",
+  "batchProvenanceId": "0215b22d-0000-0000-0000-000000000001",
+  "run1Inserts": 48284,
+  "run2Inserts": 0,
+  "run3Inserts": 0,
+  "isFullyIdempotent": true
+}

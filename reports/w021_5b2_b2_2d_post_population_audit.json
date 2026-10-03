@@ -1,0 +1,61 @@
+{
+  "executionTimestamp": "2026-10-03T16:25:51.228Z",
+  "milestone": "W021.5-B2.2-D Canonical Person, Candidacy & Elected Tenure Migration",
+  "targetEnvironment": "Isolated Staging Target (https://fkpigozcqnmcvofuksar.supabase.co)",
+  "productionDatabaseStatus": {
+    "host": "ehfafcnimmjusyvplbah",
+    "status": "AIR-GAPPED AND UNTOUCHED",
+    "connected": false,
+    "modified": false
+  },
+  "batchProvenanceId": "0215b22d-0000-0000-0000-000000000001",
+  "approvedPopulationCounts": {
+    "D0_Provenance_Record": 1,
+    "D1_Canonical_Persons": 9083,
+    "D2_Multilingual_Person_Identities": 9172,
+    "D3_Candidacies": 11334,
+    "D4_Elected_Tenures": 9553,
+    "D5_Person_Party_Affiliations": 9083,
+    "D6_Tenure_Party_Switches": 58,
+    "TOTAL_ACTUAL_DATABASE_INSERTS": 48284
+  },
+  "classificationAccounting": {
+    "canonicalOrganizationFk": 10163,
+    "independent": 1152,
+    "nominated": 4,
+    "provisionalQuarantined": 15,
+    "totalCandidacies": 11334
+  },
+  "personResolutionAccounting": {
+    "verified": 8980,
+    "reconciled": 88,
+    "provisionalQuarantined": 15,
+    "conflicting": 0,
+    "unresolved": 0,
+    "totalPersons": 9083
+  },
+  "crossStateCollisionIntegrity": {
+    "totalCollisionClusters": 102,
+    "unintendedMerges": 0,
+    "disposition": "SEPARATE_CANONICAL_PERSONS_ENFORCED"
+  },
+  "idempotencyResults": {
+    "run1Inserts": 48284,
+    "run2NewInserts": 0,
+    "run3NewInserts": 0,
+    "isFullyIdempotent": true
+  },
+  "rollbackResults": {
+    "rowsDeleted": 48284,
+    "isDependencySafe": true,
+    "residualBatchRows": 0,
+    "preExistingB22CRowsPreserved": true,
+    "preExistingRowsCount": 1207
+  },
+  "nonInterferenceProof": {
+    "b22cRowsUnmodified": 1207,
+    "seedFilesUnmodified": 199,
+    "productionUntouched": true
+  },
+  "verdict": "W021.5-B2.2-D POPULATION EXECUTED & VERIFIED — READY FOR CTO CLOSURE AUDIT"
+}

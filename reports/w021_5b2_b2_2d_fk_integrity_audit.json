@@ -1,0 +1,13 @@
+{
+  "milestone": "W021.5-B2.2-D",
+  "totalCandidaciesAudited": 11334,
+  "invalidPersonFkCount": 0,
+  "invalidOrganizationFkCount": 0,
+  "totalTenuresAudited": 9553,
+  "invalidTenurePersonFkCount": 0,
+  "invalidTenurePartyFkCount": 0,
+  "totalSwitchesAudited": 58,
+  "invalidSwitchPersonFkCount": 0,
+  "invalidSwitchOrgFkCount": 0,
+  "status": "100% REFERENTIAL INTEGRITY PROVEN"
+}
