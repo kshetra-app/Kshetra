@@ -1,0 +1,53 @@
+{
+  "milestone": "W021.5-A",
+  "auditTitle": "Post-W021 Repository & Data-Truth Audit",
+  "governingBaselineCommit": "73df0a9c56be9ebbc0ed5e857d3e790b2ab9e8cc",
+  "status": "AUDIT COMPLETE - SUBMITTED FOR CTO REVIEW",
+  "implementationAuthorized": false,
+  "productionAirGapped": true,
+  "timestamp": "2026-10-02T15:40:00.000Z",
+  "summary": {
+    "totalDomainsAudited": 29,
+    "totalConfirmedDefects": 4,
+    "totalUnknowns": 2,
+    "filesPreservedCount": 12,
+    "filesToModifyCount": 7,
+    "filesToDeprecateCount": 6
+  },
+  "baselineVerification": {
+    "localHead": "73df0a9c56be9ebbc0ed5e857d3e790b2ab9e8cc",
+    "remoteOriginMaster": "73df0a9c56be9ebbc0ed5e857d3e790b2ab9e8cc",
+    "divergence": 0,
+    "cleanWorkingTree": true
+  },
+  "confirmedDefects": [
+    {
+      "id": "DEF-W021.5-01",
+      "severity": "HIGH",
+      "file": "apps/api/src/services/stateData.ts",
+      "line": 55,
+      "description": "Mutable winner fallback chain flattens temporal representation into static constituency property"
+    },
+    {
+      "id": "DEF-W021.5-02",
+      "severity": "HIGH",
+      "file": "apps/mobile/stores/delimitation.ts",
+      "line": 15,
+      "description": "Mobile client runs duplicate mock delimitation calculations, bypassing Fastify engine"
+    },
+    {
+      "id": "DEF-W021.5-03",
+      "severity": "MEDIUM",
+      "file": "apps/mobile/app/legislator/[id].tsx",
+      "line": 188,
+      "description": "Hardcoded isCurrentMember=true renders deceased or resigned MLAs as sitting"
+    },
+    {
+      "id": "DEF-W021.5-04",
+      "severity": "HIGH",
+      "file": "repository root",
+      "line": 0,
+      "description": "Zero automated cron jobs or background data refresh pipelines exist"
+    }
+  ]
+}

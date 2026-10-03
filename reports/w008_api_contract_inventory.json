@@ -3,12 +3,12 @@
     "job": "W008",
     "title": "Fastify API Route Contract Inventory",
     "specification": "Master Execution Framework Amendment v1.5-A / DEC-041",
-    "timestamp": "2026-10-01T08:05:07.285Z"
+    "timestamp": "2026-10-03T02:46:50.284Z"
   },
   "summary": {
-    "totalRoutesRegistered": 167,
-    "pioneerAndPhase1Routes": 56,
-    "schemaCoveredRoutes": 134
+    "totalRoutesRegistered": 182,
+    "pioneerAndPhase1Routes": 60,
+    "schemaCoveredRoutes": 146
   },
   "routes": [
     {
@@ -1437,6 +1437,141 @@
       "method": "POST",
       "path": "/api/v1/politician/grievances",
       "file": "politician.ts",
+      "phase": "Phase 2-4",
+      "schemaDefined": true,
+      "preValidationDefined": false,
+      "standardizedEnvelope": true
+    },
+    {
+      "method": "GET",
+      "path": "/api/vsaas/v1/geo/states",
+      "file": "saasV1.ts",
+      "phase": "Phase 1 (Standardized)",
+      "schemaDefined": false,
+      "preValidationDefined": false,
+      "standardizedEnvelope": false
+    },
+    {
+      "method": "GET",
+      "path": "/api/vsaas/v1/geo/states/:stateCode",
+      "file": "saasV1.ts",
+      "phase": "Phase 1 (Standardized)",
+      "schemaDefined": true,
+      "preValidationDefined": false,
+      "standardizedEnvelope": true
+    },
+    {
+      "method": "GET",
+      "path": "/api/vsaas/v1/geo/states/:stateCode/constituencies",
+      "file": "saasV1.ts",
+      "phase": "Phase 1 (Standardized)",
+      "schemaDefined": true,
+      "preValidationDefined": false,
+      "standardizedEnvelope": true
+    },
+    {
+      "method": "GET",
+      "path": "/api/vsaas/v1/geo/states/:stateCode/constituencies/:acNo",
+      "file": "saasV1.ts",
+      "phase": "Phase 1 (Standardized)",
+      "schemaDefined": true,
+      "preValidationDefined": false,
+      "standardizedEnvelope": true
+    },
+    {
+      "method": "GET",
+      "path": "/api/vsaas/v1/elections",
+      "file": "saasV1.ts",
+      "phase": "Phase 2-4",
+      "schemaDefined": true,
+      "preValidationDefined": false,
+      "standardizedEnvelope": true
+    },
+    {
+      "method": "GET",
+      "path": "/api/vsaas/v1/elections/:id",
+      "file": "saasV1.ts",
+      "phase": "Phase 2-4",
+      "schemaDefined": true,
+      "preValidationDefined": false,
+      "standardizedEnvelope": true
+    },
+    {
+      "method": "GET",
+      "path": "/api/vsaas/v1/elections/:id/contests",
+      "file": "saasV1.ts",
+      "phase": "Phase 2-4",
+      "schemaDefined": true,
+      "preValidationDefined": false,
+      "standardizedEnvelope": true
+    },
+    {
+      "method": "GET",
+      "path": "/api/vsaas/v1/elections/:id/contests/:constituencyId",
+      "file": "saasV1.ts",
+      "phase": "Phase 2-4",
+      "schemaDefined": true,
+      "preValidationDefined": false,
+      "standardizedEnvelope": true
+    },
+    {
+      "method": "GET",
+      "path": "/api/vsaas/v1/entities/search",
+      "file": "saasV1.ts",
+      "phase": "Phase 2-4",
+      "schemaDefined": true,
+      "preValidationDefined": false,
+      "standardizedEnvelope": true
+    },
+    {
+      "method": "GET",
+      "path": "/api/vsaas/v1/entities/persons/:id",
+      "file": "saasV1.ts",
+      "phase": "Phase 2-4",
+      "schemaDefined": true,
+      "preValidationDefined": false,
+      "standardizedEnvelope": true
+    },
+    {
+      "method": "GET",
+      "path": "/api/vsaas/v1/entities/organizations/:id",
+      "file": "saasV1.ts",
+      "phase": "Phase 2-4",
+      "schemaDefined": true,
+      "preValidationDefined": false,
+      "standardizedEnvelope": true
+    },
+    {
+      "method": "GET",
+      "path": "/api/vsaas/v1/entities/legislators",
+      "file": "saasV1.ts",
+      "phase": "Phase 2-4",
+      "schemaDefined": true,
+      "preValidationDefined": false,
+      "standardizedEnvelope": true
+    },
+    {
+      "method": "GET",
+      "path": "/api/vsaas/v1/delim/regimes",
+      "file": "saasV1.ts",
+      "phase": "Phase 2-4",
+      "schemaDefined": false,
+      "preValidationDefined": false,
+      "standardizedEnvelope": false
+    },
+    {
+      "method": "GET",
+      "path": "/api/vsaas/v1/delim/projections",
+      "file": "saasV1.ts",
+      "phase": "Phase 2-4",
+      "schemaDefined": false,
+      "preValidationDefined": false,
+      "standardizedEnvelope": false
+    },
+    {
+      "method": "GET",
+      "path": "/api/vsaas/v1/delim/simulate/:stateCode",
+      "file": "saasV1.ts",
       "phase": "Phase 2-4",
       "schemaDefined": true,
       "preValidationDefined": false,

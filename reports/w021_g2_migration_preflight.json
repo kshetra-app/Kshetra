@@ -2,7 +2,7 @@
   "gate": "W021-G2",
   "remediation": "CTO_TENANT_ISOLATION_AND_PROVENANCE_REMEDIATION_COMPLETE",
   "strategy": "PATH_B_FORWARD_REMEDIATION_MIGRATION_057",
-  "timestamp": "2026-10-02T01:15:12.741Z",
+  "timestamp": "2026-10-03T02:44:41.438Z",
   "targetDatabase": "panIN-staging (fkpigozcqnmcvofuksar)",
   "isolatedHarness": "PostgreSQL 17.6 (supabase_db_Kshetra / w021_g2_pg_verify)",
   "productionAirGapped": true,
@@ -183,28 +183,28 @@
       "id": "W021-G2-PROBE-12A",
       "title": "Invalid key status rejected (database check constraint rejects invalid_status_value)",
       "status": "PASS",
-      "observed": "ERROR:  new row for relation \"saas_api_keys\" violates check constraint \"chk_saas_api_keys_revoked_at\"\nDETAIL:  Failing row contains (8d4cde1f-f292-49fd-adef-51bbdedf360e, aaaaaaaa-1111-1111-1111-111111111111, aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa, Bad Status Key, panin_test_sk_, 44556677, hash_bad_status, {geo:read,elections:read}, invalid_status_value, null, null, 2026-10-02 01:15:07.183197+00, null).",
+      "observed": "ERROR:  new row for relation \"saas_api_keys\" violates check constraint \"chk_saas_api_keys_revoked_at\"\nDETAIL:  Failing row contains (78154b23-a01e-4a78-8dc2-b7e8c93a0a0a, aaaaaaaa-1111-1111-1111-111111111111, aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa, Bad Status Key, panin_test_sk_, 44556677, hash_bad_status, {geo:read,elections:read}, invalid_status_value, null, null, 2026-10-03 02:44:34.805775+00, null).",
       "details": ""
     },
     {
       "id": "W021-G2-PROBE-12B",
       "title": "Inconsistent key state rejected: status active with non-null revoked_at rejected by check constraint",
       "status": "PASS",
-      "observed": "ERROR:  new row for relation \"saas_api_keys\" violates check constraint \"chk_saas_api_keys_revoked_at\"\nDETAIL:  Failing row contains (851a06de-54e7-4143-bbc7-a09753b03e0e, aaaaaaaa-1111-1111-1111-111111111111, aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa, Inconsistent Key, panin_test_sk_, 55667788, hash_inconsistent_revoked, {geo:read,elections:read}, active, null, null, 2026-10-02 01:15:07.411181+00, 2026-10-02 01:15:07.411181+00).",
+      "observed": "ERROR:  new row for relation \"saas_api_keys\" violates check constraint \"chk_saas_api_keys_revoked_at\"\nDETAIL:  Failing row contains (57266081-e3c7-4123-905d-c204488c9c51, aaaaaaaa-1111-1111-1111-111111111111, aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa, Inconsistent Key, panin_test_sk_, 55667788, hash_inconsistent_revoked, {geo:read,elections:read}, active, null, null, 2026-10-03 02:44:35.12974+00, 2026-10-03 02:44:35.12974+00).",
       "details": ""
     },
     {
       "id": "W021-G2-PROBE-13",
       "title": "Invalid application environment rejected (check constraint chk_saas_applications_env)",
       "status": "PASS",
-      "observed": "ERROR:  new row for relation \"saas_applications\" violates check constraint \"chk_saas_applications_env\"\nDETAIL:  Failing row contains (2100f12f-ffbb-4498-84a4-f8f107973cc2, aaaaaaaa-1111-1111-1111-111111111111, Bad Env App, staging_qa, 2026-10-02 01:15:07.691155+00).",
+      "observed": "ERROR:  new row for relation \"saas_applications\" violates check constraint \"chk_saas_applications_env\"\nDETAIL:  Failing row contains (86f0e607-5530-4f60-af2b-4ee72ea12008, aaaaaaaa-1111-1111-1111-111111111111, Bad Env App, staging_qa, 2026-10-03 02:44:35.537061+00).",
       "details": ""
     },
     {
       "id": "W021-G2-PROBE-14",
       "title": "Invalid tenant tier rejected (check constraint chk_saas_tenants_tier)",
       "status": "PASS",
-      "observed": "ERROR:  new row for relation \"saas_tenants\" violates check constraint \"chk_saas_tenants_tier\"\nDETAIL:  Failing row contains (e8fd28fe-44c2-4a07-a63a-11282834e39e, Bad Tier Org, bad-tier-org, unlimited_super, active, test@org.com, {}, 2026-10-02 01:15:07.950972+00, 2026-10-02 01:15:07.950972+00).",
+      "observed": "ERROR:  new row for relation \"saas_tenants\" violates check constraint \"chk_saas_tenants_tier\"\nDETAIL:  Failing row contains (8d77dc54-6bd0-491e-8ecd-a97ace1e82fd, Bad Tier Org, bad-tier-org, unlimited_super, active, test@org.com, {}, 2026-10-03 02:44:35.810818+00, 2026-10-03 02:44:35.810818+00).",
       "details": ""
     },
     {

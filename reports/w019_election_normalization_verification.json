@@ -1,7 +1,7 @@
 {
   "job": "W019",
   "title": "Election Data Normalization (Provenance Closure)",
-  "timestamp": "2026-10-01T07:31:10.017Z",
+  "timestamp": "2026-10-03T02:45:47.052Z",
   "frameworkAmendment": "v1.6 (DEC-074, DEC-075, DEC-076)",
   "stagingTarget": "panIN-staging (fkpigozcqnmcvofuksar)",
   "productionTarget": "ehfafcnimmjusyvplbah (AIR-GAPPED)",
@@ -254,7 +254,7 @@
       "id": "W019-EDG-04",
       "title": "Attempting to insert total_votes_polled > total_electors fails closed with check constraint violation",
       "status": "PASS",
-      "observed": "ERROR: ERROR:  new row for relation \"election_contests\" violates check constraint \"check_contest_electors\"\nDETAIL:  Failing row contains (f6ca4b33-96fd-4d74-8ab8-50d6604c1392, 01900000-0000-0000-0000-000000000002, VIOLATION_CONTEST, TS-AC-065, null, Kodangal Violation Test, GEN, completed, f, null, 10000, 15000, 15000, null, 0, 150.00, 0, null, null, OFFICIAL, null, {}, 2026-10-01 07:30:42.913283+00, 2026-10-01 07:30:42.913283+00).\n",
+      "observed": "ERROR: ERROR:  new row for relation \"election_contests\" violates check constraint \"check_contest_electors\"\nDETAIL:  Failing row contains (68a7ebe6-b237-4501-84d6-040f397fd689, 01900000-0000-0000-0000-000000000002, VIOLATION_CONTEST, TS-AC-065, null, Kodangal Violation Test, GEN, completed, f, null, 10000, 15000, 15000, null, 0, 150.00, 0, null, null, OFFICIAL, null, {}, 2026-10-03 02:45:27.637372+00, 2026-10-03 02:45:27.637372+00).\n",
       "details": ""
     },
     {
