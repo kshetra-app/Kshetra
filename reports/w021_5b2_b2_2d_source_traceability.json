@@ -1,0 +1,12 @@
+{
+  "milestone": "W021.5-B2.2-D",
+  "sourceFilesCount": 102,
+  "totalRawOccurrencesAudited": 12508,
+  "sources": {
+    "mlaProfiles": 4050,
+    "mpProfiles": 685,
+    "historicalResults": 1994,
+    "constituencies": 5779,
+    "politicalTimelines": 58
+  }
+}

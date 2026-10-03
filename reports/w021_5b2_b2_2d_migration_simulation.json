@@ -1,0 +1,16 @@
+{
+  "milestone": "W021.5-B2.2-D",
+  "run1Inserts": {
+    "D0_provenance_records": 1,
+    "D1_canonical_persons": 9083,
+    "D2_person_multilingual_identities": 9172,
+    "D3_candidacies": 11334,
+    "D4_elected_tenures": 9553,
+    "D5_person_party_affiliations": 9083,
+    "D6_tenure_party_switches": 58,
+    "total": 48284
+  },
+  "run2Inserts": 0,
+  "run3Inserts": 0,
+  "isIdempotent": true
+}

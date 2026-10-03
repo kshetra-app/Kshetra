@@ -1,0 +1,16 @@
+{
+  "milestone": "W021.5-B2.2-D",
+  "targetProvenanceId": "0215b22d-0000-0000-0000-000000000001",
+  "expectedRowsDeleted": 48284,
+  "preExistingRowsPreserved": 1207,
+  "residualB22DRows": 0,
+  "rollbackOrder": [
+    "tenure_party_switches",
+    "elected_tenures",
+    "person_party_affiliations",
+    "candidacies",
+    "person_multilingual_identities",
+    "canonical_persons",
+    "provenance_records"
+  ]
+}

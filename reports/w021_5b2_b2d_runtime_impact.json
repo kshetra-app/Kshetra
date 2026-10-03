@@ -1,0 +1,33 @@
+{
+  "milestone": "W021.5-B2.2-D",
+  "totalConsumersScanned": 28,
+  "classifications": {
+    "SAFE": 22,
+    "MIGRATION_REQUIRED": 4,
+    "LEGACY": 2,
+    "AMBIGUOUS": 0,
+    "BLOCKER": 0
+  },
+  "impactedConsumers": [
+    {
+      "module": "apps/api/src/services/politicalEntityService.ts",
+      "status": "MIGRATION_REQUIRED",
+      "notes": "Maps canonical_persons to API DTOs"
+    },
+    {
+      "module": "apps/api/src/services/delimitationQueryService.ts",
+      "status": "MIGRATION_REQUIRED",
+      "notes": "Queries sitting MLAs via elected_tenures join"
+    },
+    {
+      "module": "apps/api/src/routes/constituencies.ts",
+      "status": "SAFE",
+      "notes": "Currently served from seed, seamless cutover"
+    },
+    {
+      "module": "apps/mobile/lib/stateDataAdapter.ts",
+      "status": "LEGACY",
+      "notes": "Legacy seed adapter to be strangler-migrated"
+    }
+  ]
+}

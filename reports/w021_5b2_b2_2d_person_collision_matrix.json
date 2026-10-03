@@ -1,0 +1,3217 @@
+{
+  "milestone": "W021.5-B2.2-D",
+  "totalCollidingClusters": 102,
+  "collisionMatrix": [
+    {
+      "normalizedName": "kishori lal",
+      "clusterCount": 2,
+      "states": [
+        "UP",
+        "HP"
+      ],
+      "details": [
+        {
+          "personKey": "CP-UP-kishori_lal",
+          "state": "UP",
+          "displayName": "Kishori Lal",
+          "candidacyCount": 1,
+          "offices": [
+            "mp_lok_sabha"
+          ]
+        },
+        {
+          "personKey": "CP-HP-kishori_lal",
+          "state": "HP",
+          "displayName": "Kishori Lal",
+          "candidacyCount": 2,
+          "offices": [
+            "mla"
+          ]
+        }
+      ],
+      "disposition": "SEPARATE_CANONICAL_PERSONS_ENFORCED",
+      "dispositionRationale": "Under MEF Rule IV-001 (Zero False Merges Invariant), identical names in different states are strictly preserved as distinct canonical humans unless authenticated national MP biography proves singular identity."
+    },
+    {
+      "normalizedName": "bishnu pada ray",
+      "clusterCount": 2,
+      "states": [
+        "AN",
+        "WB"
+      ],
+      "details": [
+        {
+          "personKey": "CP-AN-bishnu_pada_ray",
+          "state": "AN",
+          "displayName": "Bishnu Pada Ray",
+          "candidacyCount": 1,
+          "offices": [
+            "mp_lok_sabha"
+          ]
+        },
+        {
+          "personKey": "CP-WB-bishnu_pada_ray",
+          "state": "WB",
+          "displayName": "Bishnu Pada Ray",
+          "candidacyCount": 1,
+          "offices": [
+            "mla"
+          ]
+        }
+      ],
+      "disposition": "SEPARATE_CANONICAL_PERSONS_ENFORCED",
+      "dispositionRationale": "Under MEF Rule IV-001 (Zero False Merges Invariant), identical names in different states are strictly preserved as distinct canonical humans unless authenticated national MP biography proves singular identity."
+    },
+    {
+      "normalizedName": "pradeep kumar singh",
+      "clusterCount": 2,
+      "states": [
+        "BR",
+        "UP"
+      ],
+      "details": [
+        {
+          "personKey": "CP-BR-pradeep_kumar_singh",
+          "state": "BR",
+          "displayName": "Pradeep Kumar Singh",
+          "candidacyCount": 1,
+          "offices": [
+            "mp_lok_sabha"
+          ]
+        },
+        {
+          "personKey": "CP-UP-pradeep_kumar_singh",
+          "state": "UP",
+          "displayName": "Pradeep Kumar Singh",
+          "candidacyCount": 1,
+          "offices": [
+            "mla"
+          ]
+        }
+      ],
+      "disposition": "SEPARATE_CANONICAL_PERSONS_ENFORCED",
+      "dispositionRationale": "Under MEF Rule IV-001 (Zero False Merges Invariant), identical names in different states are strictly preserved as distinct canonical humans unless authenticated national MP biography proves singular identity."
+    },
+    {
+      "normalizedName": "abhay kumar sinha",
+      "clusterCount": 2,
+      "states": [
+        "MH",
+        "BR"
+      ],
+      "details": [
+        {
+          "personKey": "CP-MH-abhay_kumar_sinha",
+          "state": "MH",
+          "displayName": "Abhay Kumar Sinha",
+          "candidacyCount": 1,
+          "offices": [
+            "mp_lok_sabha"
+          ]
+        },
+        {
+          "personKey": "CP-BR-abhay_kumar_sinha",
+          "state": "BR",
+          "displayName": "Abhay Kumar Sinha",
+          "candidacyCount": 1,
+          "offices": [
+            "mla"
+          ]
+        }
+      ],
+      "disposition": "SEPARATE_CANONICAL_PERSONS_ENFORCED",
+      "dispositionRationale": "Under MEF Rule IV-001 (Zero False Merges Invariant), identical names in different states are strictly preserved as distinct canonical humans unless authenticated national MP biography proves singular identity."
+    },
+    {
+      "normalizedName": "birendra singh",
+      "clusterCount": 2,
+      "states": [
+        "UP",
+        "BR"
+      ],
+      "details": [
+        {
+          "personKey": "CP-UP-birendra_singh",
+          "state": "UP",
+          "displayName": "Birendra Singh",
+          "candidacyCount": 1,
+          "offices": [
+            "mp_lok_sabha"
+          ]
+        },
+        {
+          "personKey": "CP-BR-birendra_singh",
+          "state": "BR",
+          "displayName": "Birendra Singh",
+          "candidacyCount": 2,
+          "offices": [
+            "mla"
+          ]
+        }
+      ],
+      "disposition": "SEPARATE_CANONICAL_PERSONS_ENFORCED",
+      "dispositionRationale": "Under MEF Rule IV-001 (Zero False Merges Invariant), identical names in different states are strictly preserved as distinct canonical humans unless authenticated national MP biography proves singular identity."
+    },
+    {
+      "normalizedName": "amar singh",
+      "clusterCount": 3,
+      "states": [
+        "PB",
+        "UP",
+        "RJ"
+      ],
+      "details": [
+        {
+          "personKey": "CP-PB-amar_singh",
+          "state": "PB",
+          "displayName": "Amar Singh",
+          "candidacyCount": 1,
+          "offices": [
+            "mp_lok_sabha"
+          ]
+        },
+        {
+          "personKey": "CP-UP-amar_singh",
+          "state": "UP",
+          "displayName": "Amar Singh",
+          "candidacyCount": 1,
+          "offices": [
+            "mla"
+          ]
+        },
+        {
+          "personKey": "CP-RJ-amar_singh",
+          "state": "RJ",
+          "displayName": "Amar Singh",
+          "candidacyCount": 1,
+          "offices": [
+            "mla"
+          ]
+        }
+      ],
+      "disposition": "SEPARATE_CANONICAL_PERSONS_ENFORCED",
+      "dispositionRationale": "Under MEF Rule IV-001 (Zero False Merges Invariant), identical names in different states are strictly preserved as distinct canonical humans unless authenticated national MP biography proves singular identity."
+    },
+    {
+      "normalizedName": "anurag sharma",
+      "clusterCount": 2,
+      "states": [
+        "UP",
+        "HP"
+      ],
+      "details": [
+        {
+          "personKey": "CP-UP-anurag_sharma",
+          "state": "UP",
+          "displayName": "Anurag Sharma",
+          "candidacyCount": 1,
+          "offices": [
+            "mp_lok_sabha"
+          ]
+        },
+        {
+          "personKey": "CP-HP-anurag_sharma",
+          "state": "HP",
+          "displayName": "Anurag Sharma",
+          "candidacyCount": 1,
+          "offices": [
+            "mp_rajya_sabha"
+          ]
+        }
+      ],
+      "disposition": "SEPARATE_CANONICAL_PERSONS_ENFORCED",
+      "dispositionRationale": "Under MEF Rule IV-001 (Zero False Merges Invariant), identical names in different states are strictly preserved as distinct canonical humans unless authenticated national MP biography proves singular identity."
+    },
+    {
+      "normalizedName": "manohar lal",
+      "clusterCount": 2,
+      "states": [
+        "HR",
+        "UP"
+      ],
+      "details": [
+        {
+          "personKey": "CP-HR-manohar_lal",
+          "state": "HR",
+          "displayName": "Manohar Lal",
+          "candidacyCount": 1,
+          "offices": [
+            "mp_lok_sabha"
+          ]
+        },
+        {
+          "personKey": "CP-UP-manohar_lal",
+          "state": "UP",
+          "displayName": "Manohar Lal",
+          "candidacyCount": 2,
+          "offices": [
+            "mla"
+          ]
+        }
+      ],
+      "disposition": "SEPARATE_CANONICAL_PERSONS_ENFORCED",
+      "dispositionRationale": "Under MEF Rule IV-001 (Zero False Merges Invariant), identical names in different states are strictly preserved as distinct canonical humans unless authenticated national MP biography proves singular identity."
+    },
+    {
+      "normalizedName": "manoj tiwari",
+      "clusterCount": 2,
+      "states": [
+        "DL",
+        "UP"
+      ],
+      "details": [
+        {
+          "personKey": "CP-DL-manoj_tiwari",
+          "state": "DL",
+          "displayName": "Manoj Tiwari",
+          "candidacyCount": 1,
+          "offices": [
+            "mp_lok_sabha"
+          ]
+        },
+        {
+          "personKey": "CP-UP-manoj_tiwari",
+          "state": "UP",
+          "displayName": "Manoj Tiwari",
+          "candidacyCount": 1,
+          "offices": [
+            "mla"
+          ]
+        }
+      ],
+      "disposition": "SEPARATE_CANONICAL_PERSONS_ENFORCED",
+      "dispositionRationale": "Under MEF Rule IV-001 (Zero False Merges Invariant), identical names in different states are strictly preserved as distinct canonical humans unless authenticated national MP biography proves singular identity."
+    },
+    {
+      "normalizedName": "rahul gandhi",
+      "clusterCount": 2,
+      "states": [
+        "UP",
+        "KL"
+      ],
+      "details": [
+        {
+          "personKey": "CP-UP-rahul_gandhi",
+          "state": "UP",
+          "displayName": "Rahul Gandhi",
+          "candidacyCount": 1,
+          "offices": [
+            "mp_lok_sabha"
+          ]
+        },
+        {
+          "personKey": "CP-KL-rahul_gandhi",
+          "state": "KL",
+          "displayName": "Rahul Gandhi",
+          "candidacyCount": 1,
+          "offices": [
+            "mp_lok_sabha"
+          ]
+        }
+      ],
+      "disposition": "SEPARATE_CANONICAL_PERSONS_ENFORCED",
+      "dispositionRationale": "Under MEF Rule IV-001 (Zero False Merges Invariant), identical names in different states are strictly preserved as distinct canonical humans unless authenticated national MP biography proves singular identity."
+    },
+    {
+      "normalizedName": "santosh pandey",
+      "clusterCount": 2,
+      "states": [
+        "CG",
+        "UP"
+      ],
+      "details": [
+        {
+          "personKey": "CP-CG-santosh_pandey",
+          "state": "CG",
+          "displayName": "Santosh Pandey",
+          "candidacyCount": 1,
+          "offices": [
+            "mp_lok_sabha"
+          ]
+        },
+        {
+          "personKey": "CP-UP-santosh_pandey",
+          "state": "UP",
+          "displayName": "Santosh Pandey",
+          "candidacyCount": 1,
+          "offices": [
+            "mla"
+          ]
+        }
+      ],
+      "disposition": "SEPARATE_CANONICAL_PERSONS_ENFORCED",
+      "dispositionRationale": "Under MEF Rule IV-001 (Zero False Merges Invariant), identical names in different states are strictly preserved as distinct canonical humans unless authenticated national MP biography proves singular identity."
+    },
+    {
+      "normalizedName": "sanjay seth",
+      "clusterCount": 2,
+      "states": [
+        "JH",
+        "UP"
+      ],
+      "details": [
+        {
+          "personKey": "CP-JH-sanjay_seth",
+          "state": "JH",
+          "displayName": "Sanjay Seth",
+          "candidacyCount": 1,
+          "offices": [
+            "mp_lok_sabha"
+          ]
+        },
+        {
+          "personKey": "CP-UP-sanjay_seth",
+          "state": "UP",
+          "displayName": "Sanjay Seth",
+          "candidacyCount": 1,
+          "offices": [
+            "mp_rajya_sabha"
+          ]
+        }
+      ],
+      "disposition": "SEPARATE_CANONICAL_PERSONS_ENFORCED",
+      "dispositionRationale": "Under MEF Rule IV-001 (Zero False Merges Invariant), identical names in different states are strictly preserved as distinct canonical humans unless authenticated national MP biography proves singular identity."
+    },
+    {
+      "normalizedName": "manoj kumar",
+      "clusterCount": 4,
+      "states": [
+        "BR",
+        "RJ",
+        "HR",
+        "UP"
+      ],
+      "details": [
+        {
+          "personKey": "CP-BR-manoj_kumar",
+          "state": "BR",
+          "displayName": "Manoj Kumar",
+          "candidacyCount": 3,
+          "offices": [
+            "mp_lok_sabha",
+            "mla"
+          ]
+        },
+        {
+          "personKey": "CP-RJ-manoj_kumar",
+          "state": "RJ",
+          "displayName": "Manoj Kumar",
+          "candidacyCount": 1,
+          "offices": [
+            "mla"
+          ]
+        },
+        {
+          "personKey": "CP-HR-manoj_kumar",
+          "state": "HR",
+          "displayName": "Manoj Kumar",
+          "candidacyCount": 1,
+          "offices": [
+            "mla"
+          ]
+        },
+        {
+          "personKey": "CP-UP-manoj_kumar",
+          "state": "UP",
+          "displayName": "Dr. Manoj Kumar",
+          "candidacyCount": 2,
+          "offices": [
+            "mla"
+          ]
+        }
+      ],
+      "disposition": "SEPARATE_CANONICAL_PERSONS_ENFORCED",
+      "dispositionRationale": "Under MEF Rule IV-001 (Zero False Merges Invariant), identical names in different states are strictly preserved as distinct canonical humans unless authenticated national MP biography proves singular identity."
+    },
+    {
+      "normalizedName": "virendra kumar",
+      "clusterCount": 2,
+      "states": [
+        "MP",
+        "UK"
+      ],
+      "details": [
+        {
+          "personKey": "CP-MP-virendra_kumar",
+          "state": "MP",
+          "displayName": "Dr. Virendra Kumar",
+          "candidacyCount": 1,
+          "offices": [
+            "mp_lok_sabha"
+          ]
+        },
+        {
+          "personKey": "CP-UK-virendra_kumar",
+          "state": "UK",
+          "displayName": "Virendra Kumar",
+          "candidacyCount": 1,
+          "offices": [
+            "mla"
+          ]
+        }
+      ],
+      "disposition": "SEPARATE_CANONICAL_PERSONS_ENFORCED",
+      "dispositionRationale": "Under MEF Rule IV-001 (Zero False Merges Invariant), identical names in different states are strictly preserved as distinct canonical humans unless authenticated national MP biography proves singular identity."
+    },
+    {
+      "normalizedName": "jitendra singh",
+      "clusterCount": 2,
+      "states": [
+        "JK",
+        "BR"
+      ],
+      "details": [
+        {
+          "personKey": "CP-JK-jitendra_singh",
+          "state": "JK",
+          "displayName": "Dr Jitendra Singh",
+          "candidacyCount": 1,
+          "offices": [
+            "mp_lok_sabha"
+          ]
+        },
+        {
+          "personKey": "CP-BR-jitendra_singh",
+          "state": "BR",
+          "displayName": "Jitendra Singh",
+          "candidacyCount": 1,
+          "offices": [
+            "mla"
+          ]
+        }
+      ],
+      "disposition": "SEPARATE_CANONICAL_PERSONS_ENFORCED",
+      "dispositionRationale": "Under MEF Rule IV-001 (Zero False Merges Invariant), identical names in different states are strictly preserved as distinct canonical humans unless authenticated national MP biography proves singular identity."
+    },
+    {
+      "normalizedName": "arun singh",
+      "clusterCount": 2,
+      "states": [
+        "UP",
+        "BR"
+      ],
+      "details": [
+        {
+          "personKey": "CP-UP-arun_singh",
+          "state": "UP",
+          "displayName": "Arun Singh",
+          "candidacyCount": 1,
+          "offices": [
+            "mp_rajya_sabha"
+          ]
+        },
+        {
+          "personKey": "CP-BR-arun_singh",
+          "state": "BR",
+          "displayName": "Arun Singh",
+          "candidacyCount": 2,
+          "offices": [
+            "mla"
+          ]
+        }
+      ],
+      "disposition": "SEPARATE_CANONICAL_PERSONS_ENFORCED",
+      "dispositionRationale": "Under MEF Rule IV-001 (Zero False Merges Invariant), identical names in different states are strictly preserved as distinct canonical humans unless authenticated national MP biography proves singular identity."
+    },
+    {
+      "normalizedName": "devendra pratap singh",
+      "clusterCount": 2,
+      "states": [
+        "CG",
+        "UP"
+      ],
+      "details": [
+        {
+          "personKey": "CP-CG-devendra_pratap_singh",
+          "state": "CG",
+          "displayName": "Devendra Pratap Singh",
+          "candidacyCount": 1,
+          "offices": [
+            "mp_rajya_sabha"
+          ]
+        },
+        {
+          "personKey": "CP-UP-devendra_pratap_singh",
+          "state": "UP",
+          "displayName": "Devendra Pratap Singh",
+          "candidacyCount": 1,
+          "offices": [
+            "mla"
+          ]
+        }
+      ],
+      "disposition": "SEPARATE_CANONICAL_PERSONS_ENFORCED",
+      "dispositionRationale": "Under MEF Rule IV-001 (Zero False Merges Invariant), identical names in different states are strictly preserved as distinct canonical humans unless authenticated national MP biography proves singular identity."
+    },
+    {
+      "normalizedName": "sanjay yadav",
+      "clusterCount": 3,
+      "states": [
+        "BR",
+        "UP",
+        "MP"
+      ],
+      "details": [
+        {
+          "personKey": "CP-BR-sanjay_yadav",
+          "state": "BR",
+          "displayName": "Sanjay Yadav",
+          "candidacyCount": 1,
+          "offices": [
+            "mp_rajya_sabha"
+          ]
+        },
+        {
+          "personKey": "CP-UP-sanjay_yadav",
+          "state": "UP",
+          "displayName": "Sanjay Yadav",
+          "candidacyCount": 2,
+          "offices": [
+            "mla"
+          ]
+        },
+        {
+          "personKey": "CP-MP-sanjay_yadav",
+          "state": "MP",
+          "displayName": "Sanjay Yadav",
+          "candidacyCount": 1,
+          "offices": [
+            "mla"
+          ]
+        }
+      ],
+      "disposition": "SEPARATE_CANONICAL_PERSONS_ENFORCED",
+      "dispositionRationale": "Under MEF Rule IV-001 (Zero False Merges Invariant), identical names in different states are strictly preserved as distinct canonical humans unless authenticated national MP biography proves singular identity."
+    },
+    {
+      "normalizedName": "k s babu",
+      "clusterCount": 2,
+      "states": [
+        "AP",
+        "KA"
+      ],
+      "details": [
+        {
+          "personKey": "CP-AP-k_s_babu",
+          "state": "AP",
+          "displayName": "K S Babu",
+          "candidacyCount": 1,
+          "offices": [
+            "mla"
+          ]
+        },
+        {
+          "personKey": "CP-KA-k_s_babu",
+          "state": "KA",
+          "displayName": "K S Babu",
+          "candidacyCount": 1,
+          "offices": [
+            "mla"
+          ]
+        }
+      ],
+      "disposition": "SEPARATE_CANONICAL_PERSONS_ENFORCED",
+      "dispositionRationale": "Under MEF Rule IV-001 (Zero False Merges Invariant), identical names in different states are strictly preserved as distinct canonical humans unless authenticated national MP biography proves singular identity."
+    },
+    {
+      "normalizedName": "jitendra kumar",
+      "clusterCount": 2,
+      "states": [
+        "BR",
+        "UP"
+      ],
+      "details": [
+        {
+          "personKey": "CP-BR-jitendra_kumar",
+          "state": "BR",
+          "displayName": "Jitendra Kumar",
+          "candidacyCount": 2,
+          "offices": [
+            "mla"
+          ]
+        },
+        {
+          "personKey": "CP-UP-jitendra_kumar",
+          "state": "UP",
+          "displayName": "Jitendra Kumar",
+          "candidacyCount": 1,
+          "offices": [
+            "mla"
+          ]
+        }
+      ],
+      "disposition": "SEPARATE_CANONICAL_PERSONS_ENFORCED",
+      "dispositionRationale": "Under MEF Rule IV-001 (Zero False Merges Invariant), identical names in different states are strictly preserved as distinct canonical humans unless authenticated national MP biography proves singular identity."
+    },
+    {
+      "normalizedName": "ram singh",
+      "clusterCount": 2,
+      "states": [
+        "BR",
+        "UP"
+      ],
+      "details": [
+        {
+          "personKey": "CP-BR-ram_singh",
+          "state": "BR",
+          "displayName": "Ram Singh",
+          "candidacyCount": 2,
+          "offices": [
+            "mla"
+          ]
+        },
+        {
+          "personKey": "CP-UP-ram_singh",
+          "state": "UP",
+          "displayName": "Ram Singh",
+          "candidacyCount": 2,
+          "offices": [
+            "mla"
+          ]
+        }
+      ],
+      "disposition": "SEPARATE_CANONICAL_PERSONS_ENFORCED",
+      "dispositionRationale": "Under MEF Rule IV-001 (Zero False Merges Invariant), identical names in different states are strictly preserved as distinct canonical humans unless authenticated national MP biography proves singular identity."
+    },
+    {
+      "normalizedName": "raghvendra pratap singh",
+      "clusterCount": 2,
+      "states": [
+        "BR",
+        "UP"
+      ],
+      "details": [
+        {
+          "personKey": "CP-BR-raghvendra_pratap_singh",
+          "state": "BR",
+          "displayName": "Raghvendra Pratap Singh",
+          "candidacyCount": 2,
+          "offices": [
+            "mla"
+          ]
+        },
+        {
+          "personKey": "CP-UP-raghvendra_pratap_singh",
+          "state": "UP",
+          "displayName": "Raghvendra Pratap Singh",
+          "candidacyCount": 2,
+          "offices": [
+            "mla"
+          ]
+        }
+      ],
+      "disposition": "SEPARATE_CANONICAL_PERSONS_ENFORCED",
+      "dispositionRationale": "Under MEF Rule IV-001 (Zero False Merges Invariant), identical names in different states are strictly preserved as distinct canonical humans unless authenticated national MP biography proves singular identity."
+    },
+    {
+      "normalizedName": "anil kumar",
+      "clusterCount": 2,
+      "states": [
+        "BR",
+        "UP"
+      ],
+      "details": [
+        {
+          "personKey": "CP-BR-anil_kumar",
+          "state": "BR",
+          "displayName": "Anil Kumar",
+          "candidacyCount": 6,
+          "offices": [
+            "mla"
+          ]
+        },
+        {
+          "personKey": "CP-UP-anil_kumar",
+          "state": "UP",
+          "displayName": "Anil Kumar",
+          "candidacyCount": 3,
+          "offices": [
+            "mla"
+          ]
+        }
+      ],
+      "disposition": "SEPARATE_CANONICAL_PERSONS_ENFORCED",
+      "dispositionRationale": "Under MEF Rule IV-001 (Zero False Merges Invariant), identical names in different states are strictly preserved as distinct canonical humans unless authenticated national MP biography proves singular identity."
+    },
+    {
+      "normalizedName": "ajay kumar",
+      "clusterCount": 2,
+      "states": [
+        "BR",
+        "UP"
+      ],
+      "details": [
+        {
+          "personKey": "CP-BR-ajay_kumar",
+          "state": "BR",
+          "displayName": "Ajay Kumar",
+          "candidacyCount": 2,
+          "offices": [
+            "mla"
+          ]
+        },
+        {
+          "personKey": "CP-UP-ajay_kumar",
+          "state": "UP",
+          "displayName": "Ajay Kumar",
+          "candidacyCount": 2,
+          "offices": [
+            "mla"
+          ]
+        }
+      ],
+      "disposition": "SEPARATE_CANONICAL_PERSONS_ENFORCED",
+      "dispositionRationale": "Under MEF Rule IV-001 (Zero False Merges Invariant), identical names in different states are strictly preserved as distinct canonical humans unless authenticated national MP biography proves singular identity."
+    },
+    {
+      "normalizedName": "vinay kumar",
+      "clusterCount": 3,
+      "states": [
+        "BR",
+        "UP",
+        "HP"
+      ],
+      "details": [
+        {
+          "personKey": "CP-BR-vinay_kumar",
+          "state": "BR",
+          "displayName": "Vinay Kumar",
+          "candidacyCount": 2,
+          "offices": [
+            "mla"
+          ]
+        },
+        {
+          "personKey": "CP-UP-vinay_kumar",
+          "state": "UP",
+          "displayName": "Vinay Kumar",
+          "candidacyCount": 2,
+          "offices": [
+            "mla"
+          ]
+        },
+        {
+          "personKey": "CP-HP-vinay_kumar",
+          "state": "HP",
+          "displayName": "Vinay Kumar",
+          "candidacyCount": 1,
+          "offices": [
+            "mla"
+          ]
+        }
+      ],
+      "disposition": "SEPARATE_CANONICAL_PERSONS_ENFORCED",
+      "dispositionRationale": "Under MEF Rule IV-001 (Zero False Merges Invariant), identical names in different states are strictly preserved as distinct canonical humans unless authenticated national MP biography proves singular identity."
+    },
+    {
+      "normalizedName": "manoj kumar yadav",
+      "clusterCount": 2,
+      "states": [
+        "BR",
+        "JH"
+      ],
+      "details": [
+        {
+          "personKey": "CP-BR-manoj_kumar_yadav",
+          "state": "BR",
+          "displayName": "Manoj Kumar Yadav",
+          "candidacyCount": 2,
+          "offices": [
+            "mla"
+          ]
+        },
+        {
+          "personKey": "CP-JH-manoj_kumar_yadav",
+          "state": "JH",
+          "displayName": "Manoj Kumar Yadav",
+          "candidacyCount": 2,
+          "offices": [
+            "mla"
+          ]
+        }
+      ],
+      "disposition": "SEPARATE_CANONICAL_PERSONS_ENFORCED",
+      "dispositionRationale": "Under MEF Rule IV-001 (Zero False Merges Invariant), identical names in different states are strictly preserved as distinct canonical humans unless authenticated national MP biography proves singular identity."
+    },
+    {
+      "normalizedName": "sanjay kumar singh",
+      "clusterCount": 2,
+      "states": [
+        "BR",
+        "WB"
+      ],
+      "details": [
+        {
+          "personKey": "CP-BR-sanjay_kumar_singh",
+          "state": "BR",
+          "displayName": "Sanjay Kumar Singh",
+          "candidacyCount": 2,
+          "offices": [
+            "mla"
+          ]
+        },
+        {
+          "personKey": "CP-WB-sanjay_kumar_singh",
+          "state": "WB",
+          "displayName": "Sanjay Kumar Singh",
+          "candidacyCount": 2,
+          "offices": [
+            "mla"
+          ]
+        }
+      ],
+      "disposition": "SEPARATE_CANONICAL_PERSONS_ENFORCED",
+      "dispositionRationale": "Under MEF Rule IV-001 (Zero False Merges Invariant), identical names in different states are strictly preserved as distinct canonical humans unless authenticated national MP biography proves singular identity."
+    },
+    {
+      "normalizedName": "rajesh kumar singh",
+      "clusterCount": 2,
+      "states": [
+        "BR",
+        "UP"
+      ],
+      "details": [
+        {
+          "personKey": "CP-BR-rajesh_kumar_singh",
+          "state": "BR",
+          "displayName": "Rajesh Kumar Singh",
+          "candidacyCount": 3,
+          "offices": [
+            "mla"
+          ]
+        },
+        {
+          "personKey": "CP-UP-rajesh_kumar_singh",
+          "state": "UP",
+          "displayName": "Rajesh Kumar Singh",
+          "candidacyCount": 1,
+          "offices": [
+            "mla"
+          ]
+        }
+      ],
+      "disposition": "SEPARATE_CANONICAL_PERSONS_ENFORCED",
+      "dispositionRationale": "Under MEF Rule IV-001 (Zero False Merges Invariant), identical names in different states are strictly preserved as distinct canonical humans unless authenticated national MP biography proves singular identity."
+    },
+    {
+      "normalizedName": "ashok kumar singh",
+      "clusterCount": 2,
+      "states": [
+        "BR",
+        "UP"
+      ],
+      "details": [
+        {
+          "personKey": "CP-BR-ashok_kumar_singh",
+          "state": "BR",
+          "displayName": "Ashok Kumar Singh",
+          "candidacyCount": 3,
+          "offices": [
+            "mla"
+          ]
+        },
+        {
+          "personKey": "CP-UP-ashok_kumar_singh",
+          "state": "UP",
+          "displayName": "Ashok Kumar Singh",
+          "candidacyCount": 1,
+          "offices": [
+            "mla"
+          ]
+        }
+      ],
+      "disposition": "SEPARATE_CANONICAL_PERSONS_ENFORCED",
+      "dispositionRationale": "Under MEF Rule IV-001 (Zero False Merges Invariant), identical names in different states are strictly preserved as distinct canonical humans unless authenticated national MP biography proves singular identity."
+    },
+    {
+      "normalizedName": "rajesh kumar gupta",
+      "clusterCount": 2,
+      "states": [
+        "BR",
+        "DL"
+      ],
+      "details": [
+        {
+          "personKey": "CP-BR-rajesh_kumar_gupta",
+          "state": "BR",
+          "displayName": "Rajesh Kumar Gupta",
+          "candidacyCount": 2,
+          "offices": [
+            "mla"
+          ]
+        },
+        {
+          "personKey": "CP-DL-rajesh_kumar_gupta",
+          "state": "DL",
+          "displayName": "Rajesh Kumar Gupta",
+          "candidacyCount": 1,
+          "offices": [
+            "mla"
+          ]
+        }
+      ],
+      "disposition": "SEPARATE_CANONICAL_PERSONS_ENFORCED",
+      "dispositionRationale": "Under MEF Rule IV-001 (Zero False Merges Invariant), identical names in different states are strictly preserved as distinct canonical humans unless authenticated national MP biography proves singular identity."
+    },
+    {
+      "normalizedName": "vijay kumar",
+      "clusterCount": 4,
+      "states": [
+        "BR",
+        "DL",
+        "JK",
+        "UP"
+      ],
+      "details": [
+        {
+          "personKey": "CP-BR-vijay_kumar",
+          "state": "BR",
+          "displayName": "Vijay Kumar",
+          "candidacyCount": 2,
+          "offices": [
+            "mla"
+          ]
+        },
+        {
+          "personKey": "CP-DL-vijay_kumar",
+          "state": "DL",
+          "displayName": "Vijay Kumar",
+          "candidacyCount": 1,
+          "offices": [
+            "mla"
+          ]
+        },
+        {
+          "personKey": "CP-JK-vijay_kumar",
+          "state": "JK",
+          "displayName": "Vijay Kumar",
+          "candidacyCount": 1,
+          "offices": [
+            "mla"
+          ]
+        },
+        {
+          "personKey": "CP-UP-vijay_kumar",
+          "state": "UP",
+          "displayName": "Vijay Kumar",
+          "candidacyCount": 2,
+          "offices": [
+            "mla"
+          ]
+        }
+      ],
+      "disposition": "SEPARATE_CANONICAL_PERSONS_ENFORCED",
+      "dispositionRationale": "Under MEF Rule IV-001 (Zero False Merges Invariant), identical names in different states are strictly preserved as distinct canonical humans unless authenticated national MP biography proves singular identity."
+    },
+    {
+      "normalizedName": "dilip ray",
+      "clusterCount": 2,
+      "states": [
+        "BR",
+        "OD"
+      ],
+      "details": [
+        {
+          "personKey": "CP-BR-dilip_ray",
+          "state": "BR",
+          "displayName": "Dilip Ray",
+          "candidacyCount": 2,
+          "offices": [
+            "mla"
+          ]
+        },
+        {
+          "personKey": "CP-OD-dilip_ray",
+          "state": "OD",
+          "displayName": "Dilip Ray",
+          "candidacyCount": 1,
+          "offices": [
+            "mla"
+          ]
+        }
+      ],
+      "disposition": "SEPARATE_CANONICAL_PERSONS_ENFORCED",
+      "dispositionRationale": "Under MEF Rule IV-001 (Zero False Merges Invariant), identical names in different states are strictly preserved as distinct canonical humans unless authenticated national MP biography proves singular identity."
+    },
+    {
+      "normalizedName": "ashok kumar",
+      "clusterCount": 4,
+      "states": [
+        "BR",
+        "JH",
+        "RJ",
+        "UP"
+      ],
+      "details": [
+        {
+          "personKey": "CP-BR-ashok_kumar",
+          "state": "BR",
+          "displayName": "Ashok Kumar",
+          "candidacyCount": 4,
+          "offices": [
+            "mla"
+          ]
+        },
+        {
+          "personKey": "CP-JH-ashok_kumar",
+          "state": "JH",
+          "displayName": "Ashok Kumar",
+          "candidacyCount": 1,
+          "offices": [
+            "mla"
+          ]
+        },
+        {
+          "personKey": "CP-RJ-ashok_kumar",
+          "state": "RJ",
+          "displayName": "Ashok Kumar",
+          "candidacyCount": 1,
+          "offices": [
+            "mla"
+          ]
+        },
+        {
+          "personKey": "CP-UP-ashok_kumar",
+          "state": "UP",
+          "displayName": "Ashok Kumar",
+          "candidacyCount": 1,
+          "offices": [
+            "mla"
+          ]
+        }
+      ],
+      "disposition": "SEPARATE_CANONICAL_PERSONS_ENFORCED",
+      "dispositionRationale": "Under MEF Rule IV-001 (Zero False Merges Invariant), identical names in different states are strictly preserved as distinct canonical humans unless authenticated national MP biography proves singular identity."
+    },
+    {
+      "normalizedName": "rajeev kumar singh",
+      "clusterCount": 2,
+      "states": [
+        "BR",
+        "UP"
+      ],
+      "details": [
+        {
+          "personKey": "CP-BR-rajeev_kumar_singh",
+          "state": "BR",
+          "displayName": "Rajeev Kumar Singh",
+          "candidacyCount": 1,
+          "offices": [
+            "mla"
+          ]
+        },
+        {
+          "personKey": "CP-UP-rajeev_kumar_singh",
+          "state": "UP",
+          "displayName": "Rajeev Kumar Singh",
+          "candidacyCount": 1,
+          "offices": [
+            "mla"
+          ]
+        }
+      ],
+      "disposition": "SEPARATE_CANONICAL_PERSONS_ENFORCED",
+      "dispositionRationale": "Under MEF Rule IV-001 (Zero False Merges Invariant), identical names in different states are strictly preserved as distinct canonical humans unless authenticated national MP biography proves singular identity."
+    },
+    {
+      "normalizedName": "shashi yadav",
+      "clusterCount": 2,
+      "states": [
+        "DL",
+        "BR"
+      ],
+      "details": [
+        {
+          "personKey": "CP-DL-shashi_yadav",
+          "state": "DL",
+          "displayName": "Shashi Yadav",
+          "candidacyCount": 1,
+          "offices": [
+            "mla"
+          ]
+        },
+        {
+          "personKey": "CP-BR-shashi_yadav",
+          "state": "BR",
+          "displayName": "Shashi Yadav",
+          "candidacyCount": 1,
+          "offices": [
+            "mla"
+          ]
+        }
+      ],
+      "disposition": "SEPARATE_CANONICAL_PERSONS_ENFORCED",
+      "dispositionRationale": "Under MEF Rule IV-001 (Zero False Merges Invariant), identical names in different states are strictly preserved as distinct canonical humans unless authenticated national MP biography proves singular identity."
+    },
+    {
+      "normalizedName": "neelam",
+      "clusterCount": 2,
+      "states": [
+        "DL",
+        "UP"
+      ],
+      "details": [
+        {
+          "personKey": "CP-DL-neelam",
+          "state": "DL",
+          "displayName": "Neelam",
+          "candidacyCount": 2,
+          "offices": [
+            "mla"
+          ]
+        },
+        {
+          "personKey": "CP-UP-neelam",
+          "state": "UP",
+          "displayName": "Neelam",
+          "candidacyCount": 1,
+          "offices": [
+            "mla"
+          ]
+        }
+      ],
+      "disposition": "SEPARATE_CANONICAL_PERSONS_ENFORCED",
+      "dispositionRationale": "Under MEF Rule IV-001 (Zero False Merges Invariant), identical names in different states are strictly preserved as distinct canonical humans unless authenticated national MP biography proves singular identity."
+    },
+    {
+      "normalizedName": "umed singh",
+      "clusterCount": 2,
+      "states": [
+        "DL",
+        "HR"
+      ],
+      "details": [
+        {
+          "personKey": "CP-DL-umed_singh",
+          "state": "DL",
+          "displayName": "Umed Singh",
+          "candidacyCount": 1,
+          "offices": [
+            "mla"
+          ]
+        },
+        {
+          "personKey": "CP-HR-umed_singh",
+          "state": "HR",
+          "displayName": "Umed Singh",
+          "candidacyCount": 2,
+          "offices": [
+            "mla"
+          ]
+        }
+      ],
+      "disposition": "SEPARATE_CANONICAL_PERSONS_ENFORCED",
+      "dispositionRationale": "Under MEF Rule IV-001 (Zero False Merges Invariant), identical names in different states are strictly preserved as distinct canonical humans unless authenticated national MP biography proves singular identity."
+    },
+    {
+      "normalizedName": "pankaj gupta",
+      "clusterCount": 2,
+      "states": [
+        "DL",
+        "UP"
+      ],
+      "details": [
+        {
+          "personKey": "CP-DL-pankaj_gupta",
+          "state": "DL",
+          "displayName": "Pankaj Gupta",
+          "candidacyCount": 1,
+          "offices": [
+            "mla"
+          ]
+        },
+        {
+          "personKey": "CP-UP-pankaj_gupta",
+          "state": "UP",
+          "displayName": "Pankaj Gupta",
+          "candidacyCount": 2,
+          "offices": [
+            "mla"
+          ]
+        }
+      ],
+      "disposition": "SEPARATE_CANONICAL_PERSONS_ENFORCED",
+      "dispositionRationale": "Under MEF Rule IV-001 (Zero False Merges Invariant), identical names in different states are strictly preserved as distinct canonical humans unless authenticated national MP biography proves singular identity."
+    },
+    {
+      "normalizedName": "manisha singh",
+      "clusterCount": 2,
+      "states": [
+        "DL",
+        "MP"
+      ],
+      "details": [
+        {
+          "personKey": "CP-DL-manisha_singh",
+          "state": "DL",
+          "displayName": "Manisha Singh",
+          "candidacyCount": 1,
+          "offices": [
+            "mla"
+          ]
+        },
+        {
+          "personKey": "CP-MP-manisha_singh",
+          "state": "MP",
+          "displayName": "Manisha Singh",
+          "candidacyCount": 1,
+          "offices": [
+            "mla"
+          ]
+        }
+      ],
+      "disposition": "SEPARATE_CANONICAL_PERSONS_ENFORCED",
+      "dispositionRationale": "Under MEF Rule IV-001 (Zero False Merges Invariant), identical names in different states are strictly preserved as distinct canonical humans unless authenticated national MP biography proves singular identity."
+    },
+    {
+      "normalizedName": "shimla devi",
+      "clusterCount": 2,
+      "states": [
+        "DL",
+        "RJ"
+      ],
+      "details": [
+        {
+          "personKey": "CP-DL-shimla_devi",
+          "state": "DL",
+          "displayName": "Shimla Devi",
+          "candidacyCount": 1,
+          "offices": [
+            "mla"
+          ]
+        },
+        {
+          "personKey": "CP-RJ-shimla_devi",
+          "state": "RJ",
+          "displayName": "Shimla Devi",
+          "candidacyCount": 1,
+          "offices": [
+            "mla"
+          ]
+        }
+      ],
+      "disposition": "SEPARATE_CANONICAL_PERSONS_ENFORCED",
+      "dispositionRationale": "Under MEF Rule IV-001 (Zero False Merges Invariant), identical names in different states are strictly preserved as distinct canonical humans unless authenticated national MP biography proves singular identity."
+    },
+    {
+      "normalizedName": "pawan kumar",
+      "clusterCount": 2,
+      "states": [
+        "DL",
+        "UP"
+      ],
+      "details": [
+        {
+          "personKey": "CP-DL-pawan_kumar",
+          "state": "DL",
+          "displayName": "Pawan Kumar",
+          "candidacyCount": 1,
+          "offices": [
+            "mla"
+          ]
+        },
+        {
+          "personKey": "CP-UP-pawan_kumar",
+          "state": "UP",
+          "displayName": "Pawan Kumar",
+          "candidacyCount": 1,
+          "offices": [
+            "mla"
+          ]
+        }
+      ],
+      "disposition": "SEPARATE_CANONICAL_PERSONS_ENFORCED",
+      "dispositionRationale": "Under MEF Rule IV-001 (Zero False Merges Invariant), identical names in different states are strictly preserved as distinct canonical humans unless authenticated national MP biography proves singular identity."
+    },
+    {
+      "normalizedName": "rajesh kumar",
+      "clusterCount": 3,
+      "states": [
+        "DL",
+        "WB",
+        "BR"
+      ],
+      "details": [
+        {
+          "personKey": "CP-DL-rajesh_kumar",
+          "state": "DL",
+          "displayName": "Rajesh Kumar",
+          "candidacyCount": 1,
+          "offices": [
+            "mla"
+          ]
+        },
+        {
+          "personKey": "CP-WB-rajesh_kumar",
+          "state": "WB",
+          "displayName": "Dr. Rajesh Kumar",
+          "candidacyCount": 1,
+          "offices": [
+            "mla"
+          ]
+        },
+        {
+          "personKey": "CP-BR-rajesh_kumar",
+          "state": "BR",
+          "displayName": "Rajesh Kumar",
+          "candidacyCount": 1,
+          "offices": [
+            "mla"
+          ]
+        }
+      ],
+      "disposition": "SEPARATE_CANONICAL_PERSONS_ENFORCED",
+      "dispositionRationale": "Under MEF Rule IV-001 (Zero False Merges Invariant), identical names in different states are strictly preserved as distinct canonical humans unless authenticated national MP biography proves singular identity."
+    },
+    {
+      "normalizedName": "yogesh verma",
+      "clusterCount": 2,
+      "states": [
+        "DL",
+        "UP"
+      ],
+      "details": [
+        {
+          "personKey": "CP-DL-yogesh_verma",
+          "state": "DL",
+          "displayName": "Yogesh Verma",
+          "candidacyCount": 1,
+          "offices": [
+            "mla"
+          ]
+        },
+        {
+          "personKey": "CP-UP-yogesh_verma",
+          "state": "UP",
+          "displayName": "Yogesh Verma",
+          "candidacyCount": 3,
+          "offices": [
+            "mla"
+          ]
+        }
+      ],
+      "disposition": "SEPARATE_CANONICAL_PERSONS_ENFORCED",
+      "dispositionRationale": "Under MEF Rule IV-001 (Zero False Merges Invariant), identical names in different states are strictly preserved as distinct canonical humans unless authenticated national MP biography proves singular identity."
+    },
+    {
+      "normalizedName": "pooja",
+      "clusterCount": 2,
+      "states": [
+        "DL",
+        "HR"
+      ],
+      "details": [
+        {
+          "personKey": "CP-DL-pooja",
+          "state": "DL",
+          "displayName": "Pooja",
+          "candidacyCount": 1,
+          "offices": [
+            "mla"
+          ]
+        },
+        {
+          "personKey": "CP-HR-pooja",
+          "state": "HR",
+          "displayName": "Pooja",
+          "candidacyCount": 2,
+          "offices": [
+            "mla"
+          ]
+        }
+      ],
+      "disposition": "SEPARATE_CANONICAL_PERSONS_ENFORCED",
+      "dispositionRationale": "Under MEF Rule IV-001 (Zero False Merges Invariant), identical names in different states are strictly preserved as distinct canonical humans unless authenticated national MP biography proves singular identity."
+    },
+    {
+      "normalizedName": "om prakash yadav",
+      "clusterCount": 2,
+      "states": [
+        "HR",
+        "BR"
+      ],
+      "details": [
+        {
+          "personKey": "CP-HR-om_prakash_yadav",
+          "state": "HR",
+          "displayName": "Om Prakash Yadav",
+          "candidacyCount": 2,
+          "offices": [
+            "mla"
+          ]
+        },
+        {
+          "personKey": "CP-BR-om_prakash_yadav",
+          "state": "BR",
+          "displayName": "Om Prakash Yadav",
+          "candidacyCount": 1,
+          "offices": [
+            "mla"
+          ]
+        }
+      ],
+      "disposition": "SEPARATE_CANONICAL_PERSONS_ENFORCED",
+      "dispositionRationale": "Under MEF Rule IV-001 (Zero False Merges Invariant), identical names in different states are strictly preserved as distinct canonical humans unless authenticated national MP biography proves singular identity."
+    },
+    {
+      "normalizedName": "jarnail singh",
+      "clusterCount": 2,
+      "states": [
+        "HR",
+        "DL"
+      ],
+      "details": [
+        {
+          "personKey": "CP-HR-jarnail_singh",
+          "state": "HR",
+          "displayName": "Jarnail Singh",
+          "candidacyCount": 2,
+          "offices": [
+            "mla"
+          ]
+        },
+        {
+          "personKey": "CP-DL-jarnail_singh",
+          "state": "DL",
+          "displayName": "Jarnail Singh",
+          "candidacyCount": 1,
+          "offices": [
+            "mla"
+          ]
+        }
+      ],
+      "disposition": "SEPARATE_CANONICAL_PERSONS_ENFORCED",
+      "dispositionRationale": "Under MEF Rule IV-001 (Zero False Merges Invariant), identical names in different states are strictly preserved as distinct canonical humans unless authenticated national MP biography proves singular identity."
+    },
+    {
+      "normalizedName": "sanjay",
+      "clusterCount": 2,
+      "states": [
+        "HP",
+        "UP"
+      ],
+      "details": [
+        {
+          "personKey": "CP-HP-sanjay",
+          "state": "HP",
+          "displayName": "Sanjay",
+          "candidacyCount": 1,
+          "offices": [
+            "mla"
+          ]
+        },
+        {
+          "personKey": "CP-UP-sanjay",
+          "state": "UP",
+          "displayName": "Sanjay",
+          "candidacyCount": 1,
+          "offices": [
+            "mla"
+          ]
+        }
+      ],
+      "disposition": "SEPARATE_CANONICAL_PERSONS_ENFORCED",
+      "dispositionRationale": "Under MEF Rule IV-001 (Zero False Merges Invariant), identical names in different states are strictly preserved as distinct canonical humans unless authenticated national MP biography proves singular identity."
+    },
+    {
+      "normalizedName": "bikram singh",
+      "clusterCount": 2,
+      "states": [
+        "HP",
+        "PB"
+      ],
+      "details": [
+        {
+          "personKey": "CP-HP-bikram_singh",
+          "state": "HP",
+          "displayName": "Bikram Singh",
+          "candidacyCount": 2,
+          "offices": [
+            "mla"
+          ]
+        },
+        {
+          "personKey": "CP-PB-bikram_singh",
+          "state": "PB",
+          "displayName": "Bikram Singh",
+          "candidacyCount": 1,
+          "offices": [
+            "mla"
+          ]
+        }
+      ],
+      "disposition": "SEPARATE_CANONICAL_PERSONS_ENFORCED",
+      "dispositionRationale": "Under MEF Rule IV-001 (Zero False Merges Invariant), identical names in different states are strictly preserved as distinct canonical humans unless authenticated national MP biography proves singular identity."
+    },
+    {
+      "normalizedName": "vinod kumar",
+      "clusterCount": 4,
+      "states": [
+        "HP",
+        "RJ",
+        "UP",
+        "BR"
+      ],
+      "details": [
+        {
+          "personKey": "CP-HP-vinod_kumar",
+          "state": "HP",
+          "displayName": "Vinod Kumar",
+          "candidacyCount": 2,
+          "offices": [
+            "mla"
+          ]
+        },
+        {
+          "personKey": "CP-RJ-vinod_kumar",
+          "state": "RJ",
+          "displayName": "Vinod Kumar",
+          "candidacyCount": 1,
+          "offices": [
+            "mla"
+          ]
+        },
+        {
+          "personKey": "CP-UP-vinod_kumar",
+          "state": "UP",
+          "displayName": "Vinod Kumar",
+          "candidacyCount": 2,
+          "offices": [
+            "mla"
+          ]
+        },
+        {
+          "personKey": "CP-BR-vinod_kumar",
+          "state": "BR",
+          "displayName": "Vinod Kumar",
+          "candidacyCount": 1,
+          "offices": [
+            "mla"
+          ]
+        }
+      ],
+      "disposition": "SEPARATE_CANONICAL_PERSONS_ENFORCED",
+      "dispositionRationale": "Under MEF Rule IV-001 (Zero False Merges Invariant), identical names in different states are strictly preserved as distinct canonical humans unless authenticated national MP biography proves singular identity."
+    },
+    {
+      "normalizedName": "ranbir singh",
+      "clusterCount": 2,
+      "states": [
+        "HP",
+        "PB"
+      ],
+      "details": [
+        {
+          "personKey": "CP-HP-ranbir_singh",
+          "state": "HP",
+          "displayName": "Ranbir Singh",
+          "candidacyCount": 2,
+          "offices": [
+            "mla"
+          ]
+        },
+        {
+          "personKey": "CP-PB-ranbir_singh",
+          "state": "PB",
+          "displayName": "Ranbir Singh",
+          "candidacyCount": 2,
+          "offices": [
+            "mla"
+          ]
+        }
+      ],
+      "disposition": "SEPARATE_CANONICAL_PERSONS_ENFORCED",
+      "dispositionRationale": "Under MEF Rule IV-001 (Zero False Merges Invariant), identical names in different states are strictly preserved as distinct canonical humans unless authenticated national MP biography proves singular identity."
+    },
+    {
+      "normalizedName": "rakesh kumar",
+      "clusterCount": 2,
+      "states": [
+        "HP",
+        "BR"
+      ],
+      "details": [
+        {
+          "personKey": "CP-HP-rakesh_kumar",
+          "state": "HP",
+          "displayName": "Rakesh Kumar",
+          "candidacyCount": 1,
+          "offices": [
+            "mla"
+          ]
+        },
+        {
+          "personKey": "CP-BR-rakesh_kumar",
+          "state": "BR",
+          "displayName": "Rakesh Kumar",
+          "candidacyCount": 1,
+          "offices": [
+            "mla"
+          ]
+        }
+      ],
+      "disposition": "SEPARATE_CANONICAL_PERSONS_ENFORCED",
+      "dispositionRationale": "Under MEF Rule IV-001 (Zero False Merges Invariant), identical names in different states are strictly preserved as distinct canonical humans unless authenticated national MP biography proves singular identity."
+    },
+    {
+      "normalizedName": "sunil kumar sharma",
+      "clusterCount": 2,
+      "states": [
+        "JK",
+        "UP"
+      ],
+      "details": [
+        {
+          "personKey": "CP-JK-sunil_kumar_sharma",
+          "state": "JK",
+          "displayName": "Sunil Kumar Sharma",
+          "candidacyCount": 1,
+          "offices": [
+            "mla"
+          ]
+        },
+        {
+          "personKey": "CP-UP-sunil_kumar_sharma",
+          "state": "UP",
+          "displayName": "Sunil Kumar Sharma",
+          "candidacyCount": 2,
+          "offices": [
+            "mla"
+          ]
+        }
+      ],
+      "disposition": "SEPARATE_CANONICAL_PERSONS_ENFORCED",
+      "dispositionRationale": "Under MEF Rule IV-001 (Zero False Merges Invariant), identical names in different states are strictly preserved as distinct canonical humans unless authenticated national MP biography proves singular identity."
+    },
+    {
+      "normalizedName": "rajeev kumar",
+      "clusterCount": 3,
+      "states": [
+        "JK",
+        "UP",
+        "BR"
+      ],
+      "details": [
+        {
+          "personKey": "CP-JK-rajeev_kumar",
+          "state": "JK",
+          "displayName": "Rajeev Kumar",
+          "candidacyCount": 1,
+          "offices": [
+            "mla"
+          ]
+        },
+        {
+          "personKey": "CP-UP-rajeev_kumar",
+          "state": "UP",
+          "displayName": "Rajeev Kumar",
+          "candidacyCount": 2,
+          "offices": [
+            "mla"
+          ]
+        },
+        {
+          "personKey": "CP-BR-rajeev_kumar",
+          "state": "BR",
+          "displayName": "Rajeev Kumar",
+          "candidacyCount": 1,
+          "offices": [
+            "mla"
+          ]
+        }
+      ],
+      "disposition": "SEPARATE_CANONICAL_PERSONS_ENFORCED",
+      "dispositionRationale": "Under MEF Rule IV-001 (Zero False Merges Invariant), identical names in different states are strictly preserved as distinct canonical humans unless authenticated national MP biography proves singular identity."
+    },
+    {
+      "normalizedName": "mamta devi",
+      "clusterCount": 2,
+      "states": [
+        "JH",
+        "BR"
+      ],
+      "details": [
+        {
+          "personKey": "CP-JH-mamta_devi",
+          "state": "JH",
+          "displayName": "Mamta Devi",
+          "candidacyCount": 2,
+          "offices": [
+            "mla"
+          ]
+        },
+        {
+          "personKey": "CP-BR-mamta_devi",
+          "state": "BR",
+          "displayName": "Mamta Devi",
+          "candidacyCount": 1,
+          "offices": [
+            "mla"
+          ]
+        }
+      ],
+      "disposition": "SEPARATE_CANONICAL_PERSONS_ENFORCED",
+      "dispositionRationale": "Under MEF Rule IV-001 (Zero False Merges Invariant), identical names in different states are strictly preserved as distinct canonical humans unless authenticated national MP biography proves singular identity."
+    },
+    {
+      "normalizedName": "amit kumar",
+      "clusterCount": 2,
+      "states": [
+        "JH",
+        "BR"
+      ],
+      "details": [
+        {
+          "personKey": "CP-JH-amit_kumar",
+          "state": "JH",
+          "displayName": "Amit Kumar",
+          "candidacyCount": 2,
+          "offices": [
+            "mla"
+          ]
+        },
+        {
+          "personKey": "CP-BR-amit_kumar",
+          "state": "BR",
+          "displayName": "Amit Kumar",
+          "candidacyCount": 1,
+          "offices": [
+            "mla"
+          ]
+        }
+      ],
+      "disposition": "SEPARATE_CANONICAL_PERSONS_ENFORCED",
+      "dispositionRationale": "Under MEF Rule IV-001 (Zero False Merges Invariant), identical names in different states are strictly preserved as distinct canonical humans unless authenticated national MP biography proves singular identity."
+    },
+    {
+      "normalizedName": "p  prasad",
+      "clusterCount": 2,
+      "states": [
+        "KA",
+        "KL"
+      ],
+      "details": [
+        {
+          "personKey": "CP-KA-p_prasad",
+          "state": "KA",
+          "displayName": "P. Prasad",
+          "candidacyCount": 1,
+          "offices": [
+            "mla"
+          ]
+        },
+        {
+          "personKey": "CP-KL-p_prasad",
+          "state": "KL",
+          "displayName": "P. Prasad",
+          "candidacyCount": 1,
+          "offices": [
+            "mla"
+          ]
+        }
+      ],
+      "disposition": "SEPARATE_CANONICAL_PERSONS_ENFORCED",
+      "dispositionRationale": "Under MEF Rule IV-001 (Zero False Merges Invariant), identical names in different states are strictly preserved as distinct canonical humans unless authenticated national MP biography proves singular identity."
+    },
+    {
+      "normalizedName": "g  r  anil",
+      "clusterCount": 2,
+      "states": [
+        "KA",
+        "KL"
+      ],
+      "details": [
+        {
+          "personKey": "CP-KA-g_r_anil",
+          "state": "KA",
+          "displayName": "G. R. Anil",
+          "candidacyCount": 1,
+          "offices": [
+            "mla"
+          ]
+        },
+        {
+          "personKey": "CP-KL-g_r_anil",
+          "state": "KL",
+          "displayName": "G. R. Anil",
+          "candidacyCount": 1,
+          "offices": [
+            "mla"
+          ]
+        }
+      ],
+      "disposition": "SEPARATE_CANONICAL_PERSONS_ENFORCED",
+      "dispositionRationale": "Under MEF Rule IV-001 (Zero False Merges Invariant), identical names in different states are strictly preserved as distinct canonical humans unless authenticated national MP biography proves singular identity."
+    },
+    {
+      "normalizedName": "ajay singh",
+      "clusterCount": 3,
+      "states": [
+        "KA",
+        "RJ",
+        "UP"
+      ],
+      "details": [
+        {
+          "personKey": "CP-KA-ajay_singh",
+          "state": "KA",
+          "displayName": "Ajay Singh",
+          "candidacyCount": 3,
+          "offices": [
+            "mla"
+          ]
+        },
+        {
+          "personKey": "CP-RJ-ajay_singh",
+          "state": "RJ",
+          "displayName": "Ajay Singh",
+          "candidacyCount": 1,
+          "offices": [
+            "mla"
+          ]
+        },
+        {
+          "personKey": "CP-UP-ajay_singh",
+          "state": "UP",
+          "displayName": "Ajay Singh",
+          "candidacyCount": 1,
+          "offices": [
+            "mla"
+          ]
+        }
+      ],
+      "disposition": "SEPARATE_CANONICAL_PERSONS_ENFORCED",
+      "dispositionRationale": "Under MEF Rule IV-001 (Zero False Merges Invariant), identical names in different states are strictly preserved as distinct canonical humans unless authenticated national MP biography proves singular identity."
+    },
+    {
+      "normalizedName": "babasaheb patil",
+      "clusterCount": 2,
+      "states": [
+        "KA",
+        "MH"
+      ],
+      "details": [
+        {
+          "personKey": "CP-KA-babasaheb_patil",
+          "state": "KA",
+          "displayName": "Babasaheb Patil",
+          "candidacyCount": 2,
+          "offices": [
+            "mla"
+          ]
+        },
+        {
+          "personKey": "CP-MH-babasaheb_patil",
+          "state": "MH",
+          "displayName": "Babasaheb Patil",
+          "candidacyCount": 2,
+          "offices": [
+            "mla"
+          ]
+        }
+      ],
+      "disposition": "SEPARATE_CANONICAL_PERSONS_ENFORCED",
+      "dispositionRationale": "Under MEF Rule IV-001 (Zero False Merges Invariant), identical names in different states are strictly preserved as distinct canonical humans unless authenticated national MP biography proves singular identity."
+    },
+    {
+      "normalizedName": "m b patil",
+      "clusterCount": 2,
+      "states": [
+        "KA",
+        "MH"
+      ],
+      "details": [
+        {
+          "personKey": "CP-KA-m_b_patil",
+          "state": "KA",
+          "displayName": "M B Patil",
+          "candidacyCount": 4,
+          "offices": [
+            "mla"
+          ]
+        },
+        {
+          "personKey": "CP-MH-m_b_patil",
+          "state": "MH",
+          "displayName": "M B Patil",
+          "candidacyCount": 1,
+          "offices": [
+            "mla"
+          ]
+        }
+      ],
+      "disposition": "SEPARATE_CANONICAL_PERSONS_ENFORCED",
+      "dispositionRationale": "Under MEF Rule IV-001 (Zero False Merges Invariant), identical names in different states are strictly preserved as distinct canonical humans unless authenticated national MP biography proves singular identity."
+    },
+    {
+      "normalizedName": "manjula gavit",
+      "clusterCount": 2,
+      "states": [
+        "KA",
+        "MH"
+      ],
+      "details": [
+        {
+          "personKey": "CP-KA-manjula_gavit",
+          "state": "KA",
+          "displayName": "Manjula Gavit",
+          "candidacyCount": 1,
+          "offices": [
+            "mla"
+          ]
+        },
+        {
+          "personKey": "CP-MH-manjula_gavit",
+          "state": "MH",
+          "displayName": "Manjula Gavit",
+          "candidacyCount": 2,
+          "offices": [
+            "mla"
+          ]
+        }
+      ],
+      "disposition": "SEPARATE_CANONICAL_PERSONS_ENFORCED",
+      "dispositionRationale": "Under MEF Rule IV-001 (Zero False Merges Invariant), identical names in different states are strictly preserved as distinct canonical humans unless authenticated national MP biography proves singular identity."
+    },
+    {
+      "normalizedName": "ashok kumar rana",
+      "clusterCount": 2,
+      "states": [
+        "KA",
+        "UP"
+      ],
+      "details": [
+        {
+          "personKey": "CP-KA-ashok_kumar_rana",
+          "state": "KA",
+          "displayName": "Ashok Kumar Rana",
+          "candidacyCount": 1,
+          "offices": [
+            "mla"
+          ]
+        },
+        {
+          "personKey": "CP-UP-ashok_kumar_rana",
+          "state": "UP",
+          "displayName": "Ashok Kumar Rana",
+          "candidacyCount": 3,
+          "offices": [
+            "mla"
+          ]
+        }
+      ],
+      "disposition": "SEPARATE_CANONICAL_PERSONS_ENFORCED",
+      "dispositionRationale": "Under MEF Rule IV-001 (Zero False Merges Invariant), identical names in different states are strictly preserved as distinct canonical humans unless authenticated national MP biography proves singular identity."
+    },
+    {
+      "normalizedName": "s suresh kumar",
+      "clusterCount": 2,
+      "states": [
+        "KA",
+        "UP"
+      ],
+      "details": [
+        {
+          "personKey": "CP-KA-s_suresh_kumar",
+          "state": "KA",
+          "displayName": "S Suresh Kumar",
+          "candidacyCount": 2,
+          "offices": [
+            "mla"
+          ]
+        },
+        {
+          "personKey": "CP-UP-s_suresh_kumar",
+          "state": "UP",
+          "displayName": "S Suresh Kumar",
+          "candidacyCount": 1,
+          "offices": [
+            "mla"
+          ]
+        }
+      ],
+      "disposition": "SEPARATE_CANONICAL_PERSONS_ENFORCED",
+      "dispositionRationale": "Under MEF Rule IV-001 (Zero False Merges Invariant), identical names in different states are strictly preserved as distinct canonical humans unless authenticated national MP biography proves singular identity."
+    },
+    {
+      "normalizedName": "a  p  anil kumar",
+      "clusterCount": 2,
+      "states": [
+        "KL",
+        "UP"
+      ],
+      "details": [
+        {
+          "personKey": "CP-KL-a_p_anil_kumar",
+          "state": "KL",
+          "displayName": "A. P. Anil Kumar",
+          "candidacyCount": 1,
+          "offices": [
+            "mla"
+          ]
+        },
+        {
+          "personKey": "CP-UP-a_p_anil_kumar",
+          "state": "UP",
+          "displayName": "A. P. Anil Kumar",
+          "candidacyCount": 1,
+          "offices": [
+            "mla"
+          ]
+        }
+      ],
+      "disposition": "SEPARATE_CANONICAL_PERSONS_ENFORCED",
+      "dispositionRationale": "Under MEF Rule IV-001 (Zero False Merges Invariant), identical names in different states are strictly preserved as distinct canonical humans unless authenticated national MP biography proves singular identity."
+    },
+    {
+      "normalizedName": "dhirendra bahadur singh",
+      "clusterCount": 2,
+      "states": [
+        "MP",
+        "UP"
+      ],
+      "details": [
+        {
+          "personKey": "CP-MP-dhirendra_bahadur_singh",
+          "state": "MP",
+          "displayName": "Dhirendra Bahadur Singh",
+          "candidacyCount": 2,
+          "offices": [
+            "mla"
+          ]
+        },
+        {
+          "personKey": "CP-UP-dhirendra_bahadur_singh",
+          "state": "UP",
+          "displayName": "Dhirendra Bahadur Singh",
+          "candidacyCount": 2,
+          "offices": [
+            "mla"
+          ]
+        }
+      ],
+      "disposition": "SEPARATE_CANONICAL_PERSONS_ENFORCED",
+      "dispositionRationale": "Under MEF Rule IV-001 (Zero False Merges Invariant), identical names in different states are strictly preserved as distinct canonical humans unless authenticated national MP biography proves singular identity."
+    },
+    {
+      "normalizedName": "rajendra kumar",
+      "clusterCount": 2,
+      "states": [
+        "MP",
+        "UP"
+      ],
+      "details": [
+        {
+          "personKey": "CP-MP-rajendra_kumar",
+          "state": "MP",
+          "displayName": "Rajendra Kumar",
+          "candidacyCount": 1,
+          "offices": [
+            "mla"
+          ]
+        },
+        {
+          "personKey": "CP-UP-rajendra_kumar",
+          "state": "UP",
+          "displayName": "Rajendra Kumar",
+          "candidacyCount": 2,
+          "offices": [
+            "mla"
+          ]
+        }
+      ],
+      "disposition": "SEPARATE_CANONICAL_PERSONS_ENFORCED",
+      "dispositionRationale": "Under MEF Rule IV-001 (Zero False Merges Invariant), identical names in different states are strictly preserved as distinct canonical humans unless authenticated national MP biography proves singular identity."
+    },
+    {
+      "normalizedName": "rajesh kumar verma",
+      "clusterCount": 2,
+      "states": [
+        "MP",
+        "UP"
+      ],
+      "details": [
+        {
+          "personKey": "CP-MP-rajesh_kumar_verma",
+          "state": "MP",
+          "displayName": "Rajesh Kumar Verma",
+          "candidacyCount": 2,
+          "offices": [
+            "mla"
+          ]
+        },
+        {
+          "personKey": "CP-UP-rajesh_kumar_verma",
+          "state": "UP",
+          "displayName": "Rajesh Kumar Verma",
+          "candidacyCount": 1,
+          "offices": [
+            "mla"
+          ]
+        }
+      ],
+      "disposition": "SEPARATE_CANONICAL_PERSONS_ENFORCED",
+      "dispositionRationale": "Under MEF Rule IV-001 (Zero False Merges Invariant), identical names in different states are strictly preserved as distinct canonical humans unless authenticated national MP biography proves singular identity."
+    },
+    {
+      "normalizedName": "rakesh singh",
+      "clusterCount": 2,
+      "states": [
+        "MP",
+        "UP"
+      ],
+      "details": [
+        {
+          "personKey": "CP-MP-rakesh_singh",
+          "state": "MP",
+          "displayName": "Rakesh Singh",
+          "candidacyCount": 1,
+          "offices": [
+            "mla"
+          ]
+        },
+        {
+          "personKey": "CP-UP-rakesh_singh",
+          "state": "UP",
+          "displayName": "Rakesh Singh",
+          "candidacyCount": 2,
+          "offices": [
+            "mla"
+          ]
+        }
+      ],
+      "disposition": "SEPARATE_CANONICAL_PERSONS_ENFORCED",
+      "dispositionRationale": "Under MEF Rule IV-001 (Zero False Merges Invariant), identical names in different states are strictly preserved as distinct canonical humans unless authenticated national MP biography proves singular identity."
+    },
+    {
+      "normalizedName": "vikram singh",
+      "clusterCount": 2,
+      "states": [
+        "MP",
+        "UP"
+      ],
+      "details": [
+        {
+          "personKey": "CP-MP-vikram_singh",
+          "state": "MP",
+          "displayName": "Vikram Singh",
+          "candidacyCount": 2,
+          "offices": [
+            "mla"
+          ]
+        },
+        {
+          "personKey": "CP-UP-vikram_singh",
+          "state": "UP",
+          "displayName": "Vikram Singh",
+          "candidacyCount": 4,
+          "offices": [
+            "mla"
+          ]
+        }
+      ],
+      "disposition": "SEPARATE_CANONICAL_PERSONS_ENFORCED",
+      "dispositionRationale": "Under MEF Rule IV-001 (Zero False Merges Invariant), identical names in different states are strictly preserved as distinct canonical humans unless authenticated national MP biography proves singular identity."
+    },
+    {
+      "normalizedName": "sangram jagtap",
+      "clusterCount": 2,
+      "states": [
+        "MH",
+        "UP"
+      ],
+      "details": [
+        {
+          "personKey": "CP-MH-sangram_jagtap",
+          "state": "MH",
+          "displayName": "Sangram Jagtap",
+          "candidacyCount": 3,
+          "offices": [
+            "mla"
+          ]
+        },
+        {
+          "personKey": "CP-UP-sangram_jagtap",
+          "state": "UP",
+          "displayName": "Sangram Jagtap",
+          "candidacyCount": 1,
+          "offices": [
+            "mla"
+          ]
+        }
+      ],
+      "disposition": "SEPARATE_CANONICAL_PERSONS_ENFORCED",
+      "dispositionRationale": "Under MEF Rule IV-001 (Zero False Merges Invariant), identical names in different states are strictly preserved as distinct canonical humans unless authenticated national MP biography proves singular identity."
+    },
+    {
+      "normalizedName": "ashok bada patil",
+      "clusterCount": 2,
+      "states": [
+        "MH",
+        "KA"
+      ],
+      "details": [
+        {
+          "personKey": "CP-MH-ashok_bada_patil",
+          "state": "MH",
+          "displayName": "Ashok Bada Patil",
+          "candidacyCount": 1,
+          "offices": [
+            "mla"
+          ]
+        },
+        {
+          "personKey": "CP-KA-ashok_bada_patil",
+          "state": "KA",
+          "displayName": "Ashok Bada Patil",
+          "candidacyCount": 1,
+          "offices": [
+            "mla"
+          ]
+        }
+      ],
+      "disposition": "SEPARATE_CANONICAL_PERSONS_ENFORCED",
+      "dispositionRationale": "Under MEF Rule IV-001 (Zero False Merges Invariant), identical names in different states are strictly preserved as distinct canonical humans unless authenticated national MP biography proves singular identity."
+    },
+    {
+      "normalizedName": "manisha chaudhary",
+      "clusterCount": 2,
+      "states": [
+        "MH",
+        "UP"
+      ],
+      "details": [
+        {
+          "personKey": "CP-MH-manisha_chaudhary",
+          "state": "MH",
+          "displayName": "Manisha Chaudhary",
+          "candidacyCount": 2,
+          "offices": [
+            "mla"
+          ]
+        },
+        {
+          "personKey": "CP-UP-manisha_chaudhary",
+          "state": "UP",
+          "displayName": "Manisha Chaudhary",
+          "candidacyCount": 1,
+          "offices": [
+            "mla"
+          ]
+        }
+      ],
+      "disposition": "SEPARATE_CANONICAL_PERSONS_ENFORCED",
+      "dispositionRationale": "Under MEF Rule IV-001 (Zero False Merges Invariant), identical names in different states are strictly preserved as distinct canonical humans unless authenticated national MP biography proves singular identity."
+    },
+    {
+      "normalizedName": "pankaj bhoyar",
+      "clusterCount": 2,
+      "states": [
+        "MH",
+        "UP"
+      ],
+      "details": [
+        {
+          "personKey": "CP-MH-pankaj_bhoyar",
+          "state": "MH",
+          "displayName": "Pankaj Bhoyar",
+          "candidacyCount": 2,
+          "offices": [
+            "mla"
+          ]
+        },
+        {
+          "personKey": "CP-UP-pankaj_bhoyar",
+          "state": "UP",
+          "displayName": "Pankaj Bhoyar",
+          "candidacyCount": 1,
+          "offices": [
+            "mla"
+          ]
+        }
+      ],
+      "disposition": "SEPARATE_CANONICAL_PERSONS_ENFORCED",
+      "dispositionRationale": "Under MEF Rule IV-001 (Zero False Merges Invariant), identical names in different states are strictly preserved as distinct canonical humans unless authenticated national MP biography proves singular identity."
+    },
+    {
+      "normalizedName": "sanjay sharma",
+      "clusterCount": 2,
+      "states": [
+        "RJ",
+        "MP"
+      ],
+      "details": [
+        {
+          "personKey": "CP-RJ-sanjay_sharma",
+          "state": "RJ",
+          "displayName": "Sanjay Sharma",
+          "candidacyCount": 1,
+          "offices": [
+            "mla"
+          ]
+        },
+        {
+          "personKey": "CP-MP-sanjay_sharma",
+          "state": "MP",
+          "displayName": "Sanjay Sharma",
+          "candidacyCount": 1,
+          "offices": [
+            "mla"
+          ]
+        }
+      ],
+      "disposition": "SEPARATE_CANONICAL_PERSONS_ENFORCED",
+      "dispositionRationale": "Under MEF Rule IV-001 (Zero False Merges Invariant), identical names in different states are strictly preserved as distinct canonical humans unless authenticated national MP biography proves singular identity."
+    },
+    {
+      "normalizedName": "sanjay kumar",
+      "clusterCount": 3,
+      "states": [
+        "RJ",
+        "UP",
+        "HR"
+      ],
+      "details": [
+        {
+          "personKey": "CP-RJ-sanjay_kumar",
+          "state": "RJ",
+          "displayName": "Sanjay Kumar",
+          "candidacyCount": 1,
+          "offices": [
+            "mla"
+          ]
+        },
+        {
+          "personKey": "CP-UP-sanjay_kumar",
+          "state": "UP",
+          "displayName": "Sanjay Kumar",
+          "candidacyCount": 3,
+          "offices": [
+            "mla"
+          ]
+        },
+        {
+          "personKey": "CP-HR-sanjay_kumar",
+          "state": "HR",
+          "displayName": "Sanjay Kumar",
+          "candidacyCount": 1,
+          "offices": [
+            "mla"
+          ]
+        }
+      ],
+      "disposition": "SEPARATE_CANONICAL_PERSONS_ENFORCED",
+      "dispositionRationale": "Under MEF Rule IV-001 (Zero False Merges Invariant), identical names in different states are strictly preserved as distinct canonical humans unless authenticated national MP biography proves singular identity."
+    },
+    {
+      "normalizedName": "sanjeev kumar",
+      "clusterCount": 2,
+      "states": [
+        "RJ",
+        "UP"
+      ],
+      "details": [
+        {
+          "personKey": "CP-RJ-sanjeev_kumar",
+          "state": "RJ",
+          "displayName": "Sanjeev Kumar",
+          "candidacyCount": 1,
+          "offices": [
+            "mla"
+          ]
+        },
+        {
+          "personKey": "CP-UP-sanjeev_kumar",
+          "state": "UP",
+          "displayName": "Sanjeev Kumar",
+          "candidacyCount": 3,
+          "offices": [
+            "mla"
+          ]
+        }
+      ],
+      "disposition": "SEPARATE_CANONICAL_PERSONS_ENFORCED",
+      "dispositionRationale": "Under MEF Rule IV-001 (Zero False Merges Invariant), identical names in different states are strictly preserved as distinct canonical humans unless authenticated national MP biography proves singular identity."
+    },
+    {
+      "normalizedName": "vijay singh",
+      "clusterCount": 2,
+      "states": [
+        "RJ",
+        "UP"
+      ],
+      "details": [
+        {
+          "personKey": "CP-RJ-vijay_singh",
+          "state": "RJ",
+          "displayName": "Vijay Singh",
+          "candidacyCount": 1,
+          "offices": [
+            "mla"
+          ]
+        },
+        {
+          "personKey": "CP-UP-vijay_singh",
+          "state": "UP",
+          "displayName": "Vijay Singh",
+          "candidacyCount": 2,
+          "offices": [
+            "mla"
+          ]
+        }
+      ],
+      "disposition": "SEPARATE_CANONICAL_PERSONS_ENFORCED",
+      "dispositionRationale": "Under MEF Rule IV-001 (Zero False Merges Invariant), identical names in different states are strictly preserved as distinct canonical humans unless authenticated national MP biography proves singular identity."
+    },
+    {
+      "normalizedName": "abhimanyu",
+      "clusterCount": 2,
+      "states": [
+        "RJ",
+        "HR"
+      ],
+      "details": [
+        {
+          "personKey": "CP-RJ-abhimanyu",
+          "state": "RJ",
+          "displayName": "Abhimanyu",
+          "candidacyCount": 1,
+          "offices": [
+            "mla"
+          ]
+        },
+        {
+          "personKey": "CP-HR-abhimanyu",
+          "state": "HR",
+          "displayName": "Capt. Abhimanyu",
+          "candidacyCount": 1,
+          "offices": [
+            "mla"
+          ]
+        }
+      ],
+      "disposition": "SEPARATE_CANONICAL_PERSONS_ENFORCED",
+      "dispositionRationale": "Under MEF Rule IV-001 (Zero False Merges Invariant), identical names in different states are strictly preserved as distinct canonical humans unless authenticated national MP biography proves singular identity."
+    },
+    {
+      "normalizedName": "sonam lama",
+      "clusterCount": 2,
+      "states": [
+        "SK",
+        "WB"
+      ],
+      "details": [
+        {
+          "personKey": "CP-SK-sonam_lama",
+          "state": "SK",
+          "displayName": "Sonam Lama",
+          "candidacyCount": 2,
+          "offices": [
+            "mla"
+          ]
+        },
+        {
+          "personKey": "CP-WB-sonam_lama",
+          "state": "WB",
+          "displayName": "Sonam Lama",
+          "candidacyCount": 1,
+          "offices": [
+            "mla"
+          ]
+        }
+      ],
+      "disposition": "SEPARATE_CANONICAL_PERSONS_ENFORCED",
+      "dispositionRationale": "Under MEF Rule IV-001 (Zero False Merges Invariant), identical names in different states are strictly preserved as distinct canonical humans unless authenticated national MP biography proves singular identity."
+    },
+    {
+      "normalizedName": "ramesh",
+      "clusterCount": 2,
+      "states": [
+        "TN",
+        "UP"
+      ],
+      "details": [
+        {
+          "personKey": "CP-TN-ramesh",
+          "state": "TN",
+          "displayName": "Ramesh",
+          "candidacyCount": 1,
+          "offices": [
+            "mla"
+          ]
+        },
+        {
+          "personKey": "CP-UP-ramesh",
+          "state": "UP",
+          "displayName": "Ramesh",
+          "candidacyCount": 1,
+          "offices": [
+            "mla"
+          ]
+        }
+      ],
+      "disposition": "SEPARATE_CANONICAL_PERSONS_ENFORCED",
+      "dispositionRationale": "Under MEF Rule IV-001 (Zero False Merges Invariant), identical names in different states are strictly preserved as distinct canonical humans unless authenticated national MP biography proves singular identity."
+    },
+    {
+      "normalizedName": "jaiveer singh",
+      "clusterCount": 2,
+      "states": [
+        "UP",
+        "HR"
+      ],
+      "details": [
+        {
+          "personKey": "CP-UP-jaiveer_singh",
+          "state": "UP",
+          "displayName": "Jaiveer Singh",
+          "candidacyCount": 1,
+          "offices": [
+            "mla"
+          ]
+        },
+        {
+          "personKey": "CP-HR-jaiveer_singh",
+          "state": "HR",
+          "displayName": "Jaiveer Singh",
+          "candidacyCount": 1,
+          "offices": [
+            "mla"
+          ]
+        }
+      ],
+      "disposition": "SEPARATE_CANONICAL_PERSONS_ENFORCED",
+      "dispositionRationale": "Under MEF Rule IV-001 (Zero False Merges Invariant), identical names in different states are strictly preserved as distinct canonical humans unless authenticated national MP biography proves singular identity."
+    },
+    {
+      "normalizedName": "m  s  arun kumar",
+      "clusterCount": 2,
+      "states": [
+        "UP",
+        "KL"
+      ],
+      "details": [
+        {
+          "personKey": "CP-UP-m_s_arun_kumar",
+          "state": "UP",
+          "displayName": "M. S. Arun Kumar",
+          "candidacyCount": 1,
+          "offices": [
+            "mla"
+          ]
+        },
+        {
+          "personKey": "CP-KL-m_s_arun_kumar",
+          "state": "KL",
+          "displayName": "M. S. Arun Kumar",
+          "candidacyCount": 1,
+          "offices": [
+            "mla"
+          ]
+        }
+      ],
+      "disposition": "SEPARATE_CANONICAL_PERSONS_ENFORCED",
+      "dispositionRationale": "Under MEF Rule IV-001 (Zero False Merges Invariant), identical names in different states are strictly preserved as distinct canonical humans unless authenticated national MP biography proves singular identity."
+    },
+    {
+      "normalizedName": "g sudhakar",
+      "clusterCount": 2,
+      "states": [
+        "UP",
+        "KA"
+      ],
+      "details": [
+        {
+          "personKey": "CP-UP-g_sudhakar",
+          "state": "UP",
+          "displayName": "G Sudhakar",
+          "candidacyCount": 1,
+          "offices": [
+            "mla"
+          ]
+        },
+        {
+          "personKey": "CP-KA-g_sudhakar",
+          "state": "KA",
+          "displayName": "G Sudhakar",
+          "candidacyCount": 1,
+          "offices": [
+            "mla"
+          ]
+        }
+      ],
+      "disposition": "SEPARATE_CANONICAL_PERSONS_ENFORCED",
+      "dispositionRationale": "Under MEF Rule IV-001 (Zero False Merges Invariant), identical names in different states are strictly preserved as distinct canonical humans unless authenticated national MP biography proves singular identity."
+    },
+    {
+      "normalizedName": "rajesh kumar s",
+      "clusterCount": 2,
+      "states": [
+        "UP",
+        "TN"
+      ],
+      "details": [
+        {
+          "personKey": "CP-UP-rajesh_kumar_s",
+          "state": "UP",
+          "displayName": "RAJESH KUMAR S",
+          "candidacyCount": 1,
+          "offices": [
+            "mla"
+          ]
+        },
+        {
+          "personKey": "CP-TN-rajesh_kumar_s",
+          "state": "TN",
+          "displayName": "Rajesh Kumar S",
+          "candidacyCount": 2,
+          "offices": [
+            "mla"
+          ]
+        }
+      ],
+      "disposition": "SEPARATE_CANONICAL_PERSONS_ENFORCED",
+      "dispositionRationale": "Under MEF Rule IV-001 (Zero False Merges Invariant), identical names in different states are strictly preserved as distinct canonical humans unless authenticated national MP biography proves singular identity."
+    },
+    {
+      "normalizedName": "m  m  mani",
+      "clusterCount": 2,
+      "states": [
+        "UP",
+        "KL"
+      ],
+      "details": [
+        {
+          "personKey": "CP-UP-m_m_mani",
+          "state": "UP",
+          "displayName": "M. M. Mani",
+          "candidacyCount": 1,
+          "offices": [
+            "mla"
+          ]
+        },
+        {
+          "personKey": "CP-KL-m_m_mani",
+          "state": "KL",
+          "displayName": "M. M. Mani",
+          "candidacyCount": 1,
+          "offices": [
+            "mla"
+          ]
+        }
+      ],
+      "disposition": "SEPARATE_CANONICAL_PERSONS_ENFORCED",
+      "dispositionRationale": "Under MEF Rule IV-001 (Zero False Merges Invariant), identical names in different states are strictly preserved as distinct canonical humans unless authenticated national MP biography proves singular identity."
+    },
+    {
+      "normalizedName": "rama shankar singh",
+      "clusterCount": 2,
+      "states": [
+        "UP",
+        "MP"
+      ],
+      "details": [
+        {
+          "personKey": "CP-UP-rama_shankar_singh",
+          "state": "UP",
+          "displayName": "Rama Shankar Singh",
+          "candidacyCount": 2,
+          "offices": [
+            "mla"
+          ]
+        },
+        {
+          "personKey": "CP-MP-rama_shankar_singh",
+          "state": "MP",
+          "displayName": "Rama Shankar Singh",
+          "candidacyCount": 1,
+          "offices": [
+            "mla"
+          ]
+        }
+      ],
+      "disposition": "SEPARATE_CANONICAL_PERSONS_ENFORCED",
+      "dispositionRationale": "Under MEF Rule IV-001 (Zero False Merges Invariant), identical names in different states are strictly preserved as distinct canonical humans unless authenticated national MP biography proves singular identity."
+    },
+    {
+      "normalizedName": "brajesh kumar",
+      "clusterCount": 2,
+      "states": [
+        "UP",
+        "BR"
+      ],
+      "details": [
+        {
+          "personKey": "CP-UP-brajesh_kumar",
+          "state": "UP",
+          "displayName": "Brajesh Kumar",
+          "candidacyCount": 2,
+          "offices": [
+            "mla"
+          ]
+        },
+        {
+          "personKey": "CP-BR-brajesh_kumar",
+          "state": "BR",
+          "displayName": "Brajesh Kumar",
+          "candidacyCount": 1,
+          "offices": [
+            "mla"
+          ]
+        }
+      ],
+      "disposition": "SEPARATE_CANONICAL_PERSONS_ENFORCED",
+      "dispositionRationale": "Under MEF Rule IV-001 (Zero False Merges Invariant), identical names in different states are strictly preserved as distinct canonical humans unless authenticated national MP biography proves singular identity."
+    },
+    {
+      "normalizedName": "p rajeev",
+      "clusterCount": 2,
+      "states": [
+        "UP",
+        "KA"
+      ],
+      "details": [
+        {
+          "personKey": "CP-UP-p_rajeev",
+          "state": "UP",
+          "displayName": "P Rajeev",
+          "candidacyCount": 1,
+          "offices": [
+            "mla"
+          ]
+        },
+        {
+          "personKey": "CP-KA-p_rajeev",
+          "state": "KA",
+          "displayName": "P Rajeev",
+          "candidacyCount": 2,
+          "offices": [
+            "mla"
+          ]
+        }
+      ],
+      "disposition": "SEPARATE_CANONICAL_PERSONS_ENFORCED",
+      "dispositionRationale": "Under MEF Rule IV-001 (Zero False Merges Invariant), identical names in different states are strictly preserved as distinct canonical humans unless authenticated national MP biography proves singular identity."
+    },
+    {
+      "normalizedName": "mohan singh bisht",
+      "clusterCount": 2,
+      "states": [
+        "UK",
+        "DL"
+      ],
+      "details": [
+        {
+          "personKey": "CP-UK-mohan_singh_bisht",
+          "state": "UK",
+          "displayName": "Dr. Mohan Singh Bisht",
+          "candidacyCount": 1,
+          "offices": [
+            "mla"
+          ]
+        },
+        {
+          "personKey": "CP-DL-mohan_singh_bisht",
+          "state": "DL",
+          "displayName": "Mohan Singh Bisht",
+          "candidacyCount": 1,
+          "offices": [
+            "mla"
+          ]
+        }
+      ],
+      "disposition": "SEPARATE_CANONICAL_PERSONS_ENFORCED",
+      "dispositionRationale": "Under MEF Rule IV-001 (Zero False Merges Invariant), identical names in different states are strictly preserved as distinct canonical humans unless authenticated national MP biography proves singular identity."
+    },
+    {
+      "normalizedName": "rajendra prasad singh",
+      "clusterCount": 2,
+      "states": [
+        "WB",
+        "BR"
+      ],
+      "details": [
+        {
+          "personKey": "CP-WB-rajendra_prasad_singh",
+          "state": "WB",
+          "displayName": "Rajendra Prasad Singh",
+          "candidacyCount": 1,
+          "offices": [
+            "mla"
+          ]
+        },
+        {
+          "personKey": "CP-BR-rajendra_prasad_singh",
+          "state": "BR",
+          "displayName": "Rajendra Prasad Singh",
+          "candidacyCount": 1,
+          "offices": [
+            "mla"
+          ]
+        }
+      ],
+      "disposition": "SEPARATE_CANONICAL_PERSONS_ENFORCED",
+      "dispositionRationale": "Under MEF Rule IV-001 (Zero False Merges Invariant), identical names in different states are strictly preserved as distinct canonical humans unless authenticated national MP biography proves singular identity."
+    },
+    {
+      "normalizedName": "anil kumar yadav",
+      "clusterCount": 2,
+      "states": [
+        "AP",
+        "BR"
+      ],
+      "details": [
+        {
+          "personKey": "CP-AP-anil_kumar_yadav",
+          "state": "AP",
+          "displayName": "Anil Kumar Yadav",
+          "candidacyCount": 1,
+          "offices": [
+            "mla"
+          ]
+        },
+        {
+          "personKey": "CP-BR-anil_kumar_yadav",
+          "state": "BR",
+          "displayName": "Anil Kumar Yadav",
+          "candidacyCount": 1,
+          "offices": [
+            "mla"
+          ]
+        }
+      ],
+      "disposition": "SEPARATE_CANONICAL_PERSONS_ENFORCED",
+      "dispositionRationale": "Under MEF Rule IV-001 (Zero False Merges Invariant), identical names in different states are strictly preserved as distinct canonical humans unless authenticated national MP biography proves singular identity."
+    },
+    {
+      "normalizedName": "suresh kumar",
+      "clusterCount": 2,
+      "states": [
+        "UP",
+        "HP"
+      ],
+      "details": [
+        {
+          "personKey": "CP-UP-suresh_kumar",
+          "state": "UP",
+          "displayName": "Suresh Kumar",
+          "candidacyCount": 4,
+          "offices": [
+            "mla"
+          ]
+        },
+        {
+          "personKey": "CP-HP-suresh_kumar",
+          "state": "HP",
+          "displayName": "Suresh Kumar",
+          "candidacyCount": 1,
+          "offices": [
+            "mla"
+          ]
+        }
+      ],
+      "disposition": "SEPARATE_CANONICAL_PERSONS_ENFORCED",
+      "dispositionRationale": "Under MEF Rule IV-001 (Zero False Merges Invariant), identical names in different states are strictly preserved as distinct canonical humans unless authenticated national MP biography proves singular identity."
+    },
+    {
+      "normalizedName": "anil singh",
+      "clusterCount": 2,
+      "states": [
+        "UP",
+        "BR"
+      ],
+      "details": [
+        {
+          "personKey": "CP-UP-anil_singh",
+          "state": "UP",
+          "displayName": "Anil Singh",
+          "candidacyCount": 1,
+          "offices": [
+            "mla"
+          ]
+        },
+        {
+          "personKey": "CP-BR-anil_singh",
+          "state": "BR",
+          "displayName": "Anil Singh",
+          "candidacyCount": 1,
+          "offices": [
+            "mla"
+          ]
+        }
+      ],
+      "disposition": "SEPARATE_CANONICAL_PERSONS_ENFORCED",
+      "dispositionRationale": "Under MEF Rule IV-001 (Zero False Merges Invariant), identical names in different states are strictly preserved as distinct canonical humans unless authenticated national MP biography proves singular identity."
+    },
+    {
+      "normalizedName": "arjun singh",
+      "clusterCount": 2,
+      "states": [
+        "WB",
+        "UP"
+      ],
+      "details": [
+        {
+          "personKey": "CP-WB-arjun_singh",
+          "state": "WB",
+          "displayName": "Arjun Singh",
+          "candidacyCount": 1,
+          "offices": [
+            "mla"
+          ]
+        },
+        {
+          "personKey": "CP-UP-arjun_singh",
+          "state": "UP",
+          "displayName": "Arjun Singh",
+          "candidacyCount": 1,
+          "offices": [
+            "mla"
+          ]
+        }
+      ],
+      "disposition": "SEPARATE_CANONICAL_PERSONS_ENFORCED",
+      "dispositionRationale": "Under MEF Rule IV-001 (Zero False Merges Invariant), identical names in different states are strictly preserved as distinct canonical humans unless authenticated national MP biography proves singular identity."
+    },
+    {
+      "normalizedName": "abdul mannan",
+      "clusterCount": 2,
+      "states": [
+        "WB",
+        "UP"
+      ],
+      "details": [
+        {
+          "personKey": "CP-WB-abdul_mannan",
+          "state": "WB",
+          "displayName": "Abdul Mannan",
+          "candidacyCount": 1,
+          "offices": [
+            "mla"
+          ]
+        },
+        {
+          "personKey": "CP-UP-abdul_mannan",
+          "state": "UP",
+          "displayName": "Abdul Mannan",
+          "candidacyCount": 1,
+          "offices": [
+            "mla"
+          ]
+        }
+      ],
+      "disposition": "SEPARATE_CANONICAL_PERSONS_ENFORCED",
+      "dispositionRationale": "Under MEF Rule IV-001 (Zero False Merges Invariant), identical names in different states are strictly preserved as distinct canonical humans unless authenticated national MP biography proves singular identity."
+    },
+    {
+      "normalizedName": "rajesh singh",
+      "clusterCount": 2,
+      "states": [
+        "BR",
+        "UP"
+      ],
+      "details": [
+        {
+          "personKey": "CP-BR-rajesh_singh",
+          "state": "BR",
+          "displayName": "Rajesh Singh",
+          "candidacyCount": 1,
+          "offices": [
+            "mla"
+          ]
+        },
+        {
+          "personKey": "CP-UP-rajesh_singh",
+          "state": "UP",
+          "displayName": "Dr. Rajesh Singh",
+          "candidacyCount": 1,
+          "offices": [
+            "mla"
+          ]
+        }
+      ],
+      "disposition": "SEPARATE_CANONICAL_PERSONS_ENFORCED",
+      "dispositionRationale": "Under MEF Rule IV-001 (Zero False Merges Invariant), identical names in different states are strictly preserved as distinct canonical humans unless authenticated national MP biography proves singular identity."
+    },
+    {
+      "normalizedName": "randhir kumar singh",
+      "clusterCount": 2,
+      "states": [
+        "BR",
+        "JH"
+      ],
+      "details": [
+        {
+          "personKey": "CP-BR-randhir_kumar_singh",
+          "state": "BR",
+          "displayName": "Randhir Kumar Singh",
+          "candidacyCount": 1,
+          "offices": [
+            "mla"
+          ]
+        },
+        {
+          "personKey": "CP-JH-randhir_kumar_singh",
+          "state": "JH",
+          "displayName": "Randhir Kumar Singh",
+          "candidacyCount": 1,
+          "offices": [
+            "mla"
+          ]
+        }
+      ],
+      "disposition": "SEPARATE_CANONICAL_PERSONS_ENFORCED",
+      "dispositionRationale": "Under MEF Rule IV-001 (Zero False Merges Invariant), identical names in different states are strictly preserved as distinct canonical humans unless authenticated national MP biography proves singular identity."
+    },
+    {
+      "normalizedName": "ranvijay singh",
+      "clusterCount": 2,
+      "states": [
+        "BR",
+        "UP"
+      ],
+      "details": [
+        {
+          "personKey": "CP-BR-ranvijay_singh",
+          "state": "BR",
+          "displayName": "Ranvijay Singh",
+          "candidacyCount": 1,
+          "offices": [
+            "mla"
+          ]
+        },
+        {
+          "personKey": "CP-UP-ranvijay_singh",
+          "state": "UP",
+          "displayName": "Ranvijay Singh",
+          "candidacyCount": 1,
+          "offices": [
+            "mla"
+          ]
+        }
+      ],
+      "disposition": "SEPARATE_CANONICAL_PERSONS_ENFORCED",
+      "dispositionRationale": "Under MEF Rule IV-001 (Zero False Merges Invariant), identical names in different states are strictly preserved as distinct canonical humans unless authenticated national MP biography proves singular identity."
+    },
+    {
+      "normalizedName": "surendra kumar",
+      "clusterCount": 2,
+      "states": [
+        "DL",
+        "UP"
+      ],
+      "details": [
+        {
+          "personKey": "CP-DL-surendra_kumar",
+          "state": "DL",
+          "displayName": "Surendra Kumar",
+          "candidacyCount": 1,
+          "offices": [
+            "mla"
+          ]
+        },
+        {
+          "personKey": "CP-UP-surendra_kumar",
+          "state": "UP",
+          "displayName": "Surendra Kumar",
+          "candidacyCount": 1,
+          "offices": [
+            "mla"
+          ]
+        }
+      ],
+      "disposition": "SEPARATE_CANONICAL_PERSONS_ENFORCED",
+      "dispositionRationale": "Under MEF Rule IV-001 (Zero False Merges Invariant), identical names in different states are strictly preserved as distinct canonical humans unless authenticated national MP biography proves singular identity."
+    },
+    {
+      "normalizedName": "om prakash",
+      "clusterCount": 2,
+      "states": [
+        "HR",
+        "UP"
+      ],
+      "details": [
+        {
+          "personKey": "CP-HR-om_prakash",
+          "state": "HR",
+          "displayName": "Om Prakash",
+          "candidacyCount": 1,
+          "offices": [
+            "mla"
+          ]
+        },
+        {
+          "personKey": "CP-UP-om_prakash",
+          "state": "UP",
+          "displayName": "Om Prakash",
+          "candidacyCount": 1,
+          "offices": [
+            "mla"
+          ]
+        }
+      ],
+      "disposition": "SEPARATE_CANONICAL_PERSONS_ENFORCED",
+      "dispositionRationale": "Under MEF Rule IV-001 (Zero False Merges Invariant), identical names in different states are strictly preserved as distinct canonical humans unless authenticated national MP biography proves singular identity."
+    },
+    {
+      "normalizedName": "neeraj sharma",
+      "clusterCount": 2,
+      "states": [
+        "HR",
+        "MP"
+      ],
+      "details": [
+        {
+          "personKey": "CP-HR-neeraj_sharma",
+          "state": "HR",
+          "displayName": "Neeraj Sharma",
+          "candidacyCount": 1,
+          "offices": [
+            "mla"
+          ]
+        },
+        {
+          "personKey": "CP-MP-neeraj_sharma",
+          "state": "MP",
+          "displayName": "Neeraj Sharma",
+          "candidacyCount": 1,
+          "offices": [
+            "mla"
+          ]
+        }
+      ],
+      "disposition": "SEPARATE_CANONICAL_PERSONS_ENFORCED",
+      "dispositionRationale": "Under MEF Rule IV-001 (Zero False Merges Invariant), identical names in different states are strictly preserved as distinct canonical humans unless authenticated national MP biography proves singular identity."
+    },
+    {
+      "normalizedName": "rajkumar patel",
+      "clusterCount": 2,
+      "states": [
+        "MP",
+        "MH"
+      ],
+      "details": [
+        {
+          "personKey": "CP-MP-rajkumar_patel",
+          "state": "MP",
+          "displayName": "Rajkumar Patel",
+          "candidacyCount": 1,
+          "offices": [
+            "mla"
+          ]
+        },
+        {
+          "personKey": "CP-MH-rajkumar_patel",
+          "state": "MH",
+          "displayName": "Rajkumar Patel",
+          "candidacyCount": 1,
+          "offices": [
+            "mla"
+          ]
+        }
+      ],
+      "disposition": "SEPARATE_CANONICAL_PERSONS_ENFORCED",
+      "dispositionRationale": "Under MEF Rule IV-001 (Zero False Merges Invariant), identical names in different states are strictly preserved as distinct canonical humans unless authenticated national MP biography proves singular identity."
+    }
+  ]
+}
