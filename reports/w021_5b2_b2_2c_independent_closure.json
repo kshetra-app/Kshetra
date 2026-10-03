@@ -1,0 +1,120 @@
+{
+  "auditTimestamp": "2026-10-03T15:05:00.000Z",
+  "milestone": "W021.5-B2.2-C",
+  "auditType": "INDEPENDENT_POST_POPULATION_CLOSURE_AUDIT",
+  "governanceRule": "Rule IV-001 (Non-Self-Acceptance)",
+  "verdict": "PASS — INDEPENDENT CLOSURE READY",
+  "baselineCoordinates": {
+    "preExecutionSha": "140b8168cefd665b6e44ed43c60b752bb7c5edd8",
+    "executionSha": "157ad9ecd52ccf4f2d9d3a06e8a01494ddacfdfb",
+    "currentHeadSha": "157ad9ecd52ccf4f2d9d3a06e8a01494ddacfdfb",
+    "originMasterSha": "157ad9ecd52ccf4f2d9d3a06e8a01494ddacfdfb",
+    "workingTreeStatus": "CLEAN"
+  },
+  "databaseTargetAudit": {
+    "targetEnvironment": "Isolated Staging / Local PostgreSQL Workspace",
+    "stagingProjectId": "fkpigozcqnmcvofuksar",
+    "productionProjectId": "ehfafcnimmjusyvplbah",
+    "productionAirGapIntact": true,
+    "productionDatabaseTouched": false,
+    "productionCredentialsUsed": false
+  },
+  "actualDatabaseRowCountAudit": {
+    "provenanceRecords": {
+      "expected": 1,
+      "observed": 1,
+      "status": "PASS",
+      "provenanceId": "0215b22c-0000-0000-0000-000000000001"
+    },
+    "politicalOrganizations": {
+      "expected": 107,
+      "observed": 107,
+      "status": "PASS",
+      "uniqueIdsCount": 107,
+      "alliancesCount": 1,
+      "partiesCount": 106
+    },
+    "organizationRelationships": {
+      "expected": 10,
+      "observed": 10,
+      "status": "PASS",
+      "relationships": [
+        "TRS -> BRS (renamed_to)",
+        "SHS -> SHSUBT (split_from)",
+        "NCP -> NCPSP (split_from)",
+        "LJP -> LJPRV (split_from)",
+        "LJD -> RJD (merged_into)",
+        "PDF -> NPP (merged_into)",
+        "BJP -> NDA (coalition_partner)",
+        "TDP -> NDA (coalition_partner)",
+        "JSP -> NDA (coalition_partner)",
+        "JDU -> NDA (coalition_partner)"
+      ]
+    },
+    "multilingualNames": {
+      "expected": 27,
+      "observed": 27,
+      "status": "PASS",
+      "languagesCovered": 11,
+      "scriptsCovered": 9
+    },
+    "organizationSymbols": {
+      "expected": 19,
+      "observed": 19,
+      "status": "PASS",
+      "currentSymbols": 16,
+      "historicalSymbols": 3
+    },
+    "organizationAliases": {
+      "expected": 1043,
+      "observed": 1043,
+      "status": "PASS",
+      "uniqueNormalizedKeys": 1043,
+      "duplicateKeys": 0
+    },
+    "totalActualDatabaseInserts": {
+      "expected": 1207,
+      "observed": 1207,
+      "status": "PASS",
+      "formula": "1 + 107 + 10 + 27 + 19 + 1043 = 1207"
+    }
+  },
+  "rawStringDispositionAudit": {
+    "totalRawStrings": 1096,
+    "totalOccurrences": 16011,
+    "partition": {
+      "VERIFIED_ORGANIZATION_ALIAS": 1030,
+      "RECONCILED_ORGANIZATION_ALIAS": 13,
+      "RECONCILED_MP_CODE": 9,
+      "INDEPENDENT": 25,
+      "PROVISIONAL": 14,
+      "NON_ORGANIZATION": 4,
+      "NOMINATED": 1
+    },
+    "partitionSum": 1096,
+    "remainder": 0,
+    "canonicalAliasesCount": 1043,
+    "nullDispositionCount": 53
+  },
+  "preExistingDataProtection": {
+    "benchmarkConstituenciesUntouched": true,
+    "territorialCatalogUntouched": true,
+    "seedFilesMutated": 0,
+    "seedFilesCount": 199
+  },
+  "securityAndRlsAudit": {
+    "rlsEnabledOnAllChildTables": true,
+    "publicSelectPoliciesVerified": true,
+    "unauthorizedWritePoliciesPresent": false
+  },
+  "regressionBattery": {
+    "testsDiscovered": 92,
+    "testsExecuted": 92,
+    "testsPassed": 92,
+    "testsFailed": 0,
+    "testsSkipped": 0,
+    "sharedBuild": "PASS",
+    "apiBuild": "PASS",
+    "apiContractDrift": "PASS (9/9 Matched)"
+  }
+}
