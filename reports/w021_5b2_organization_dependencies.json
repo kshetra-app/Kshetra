@@ -1,0 +1,31 @@
+{
+  "auditedAt": "2026-10-03T11:17:43.523Z",
+  "runtimeDependencies": {
+    "consumerFiles": [
+      {
+        "file": "packages/shared/src/constants/parties.ts",
+        "role": "UI Party Colors and Short Names",
+        "status": "NEEDS_SYNCHRONIZATION_WITH_CANONICAL_ORGS",
+        "action": "Ensure all canonical party codes match PARTY_CONFIG keys; add missing state parties."
+      },
+      {
+        "file": "data/seed/*-mla-profiles.ts (31 files)",
+        "role": "Legacy MLA Profiles",
+        "status": "MUST_BE_MIGRATED_VIA_RECONCILIATION_LEDGER",
+        "action": "During B2 person/candidacy migration, pass party field through reconciliation engine."
+      },
+      {
+        "file": "data/seed/mp-profiles.ts",
+        "role": "Legacy MP Profiles",
+        "status": "REQUIRES_REPAIR_BEFORE_MIGRATION",
+        "action": "Resolve 37 single-letter truncated party strings using candidate names and houses."
+      },
+      {
+        "file": "data/seed/*-constituencies.ts (31 files)",
+        "role": "Legacy Constituency Winner Summaries",
+        "status": "COMPOUND_RUNNERUP_STRINGS_MUST_BE_PARSED",
+        "action": "Strip candidate names from compound strings (e.g. \"INC - Gulab Kamro\" -> party: INC, candidate: Gulab Kamro)."
+      }
+    ]
+  }
+}

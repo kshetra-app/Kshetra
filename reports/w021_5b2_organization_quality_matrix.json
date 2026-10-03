@@ -1,0 +1,114 @@
+{
+  "auditedAt": "2026-10-03T11:17:43.521Z",
+  "qualityMatrix": {
+    "totalRawStringsAudited": 1096,
+    "totalOccurrencesAudited": 16011,
+    "byResolutionType": {
+      "EXACT_MATCH": 97,
+      "INDEPENDENT_REPRESENTATION": 2,
+      "STANDARD_ALIAS": 49,
+      "CORRUPTED_1LETTER_CODE": 11,
+      "CORRUPTED_TRUNCATED_STRING": 13,
+      "GENERIC_BUCKET_LABEL": 2,
+      "STATUTORY_BALLOT_OPTION": 2,
+      "SYNTHETIC_CODE_ALIAS": 11,
+      "ALLIANCE_ENTITY": 2,
+      "COMPOUND_CANDIDATE_STRING": 836,
+      "FULL_NAME_MATCH": 70,
+      "MALFORMED_PLACEHOLDER_STRING": 1
+    },
+    "compoundCandidatesCount": 836,
+    "independentStringsCount": 24,
+    "notaStringsCount": 2,
+    "allianceStringsCount": 2,
+    "corruptedSingleLetterCount": 11,
+    "corruptedTruncatedCount": 13,
+    "malformedPlaceholderCount": 1,
+    "standardAliasesCount": 49,
+    "exactCanonicalMatchesCount": 167,
+    "genericBucketCount": 2,
+    "unresolvedCount": 0
+  },
+  "organizationLineage": [
+    {
+      "sourceOrgId": "ORG-PARTY-TRS",
+      "targetOrgId": "ORG-PARTY-BRS",
+      "relationshipType": "renamed_to",
+      "effectiveDate": "2022-10-05",
+      "legalInstrument": "ECI Notification No. 56/2022",
+      "description": "Telangana Rashtra Samithi officially renamed to Bharat Rashtra Samithi."
+    },
+    {
+      "sourceOrgId": "ORG-PARTY-SHS",
+      "targetOrgId": "ORG-PARTY-SHSUBT",
+      "relationshipType": "split_into",
+      "effectiveDate": "2022-06-25",
+      "legalInstrument": "ECI Order 56/Dispute/2022",
+      "description": "Shiv Sena split into Eknath Shinde faction (awarded Bow & Arrow + SHS name) and Uddhav Thackeray faction (SHSUBT)."
+    },
+    {
+      "sourceOrgId": "ORG-PARTY-NCP",
+      "targetOrgId": "ORG-PARTY-NCPSP",
+      "relationshipType": "split_into",
+      "effectiveDate": "2023-07-02",
+      "legalInstrument": "ECI Order 56/Dispute/2023",
+      "description": "Nationalist Congress Party split into Ajit Pawar faction (awarded Clock + NCP name) and Sharad Pawar faction (NCPSP)."
+    },
+    {
+      "sourceOrgId": "ORG-PARTY-LJP",
+      "targetOrgId": "ORG-PARTY-LJPRV",
+      "relationshipType": "split_into",
+      "effectiveDate": "2021-10-05",
+      "legalInstrument": "ECI Order 56/Dispute/2021",
+      "description": "Lok Janshakti Party split into LJP(RV) led by Chirag Paswan and Rashtriya Lok Janshakti Party led by Pashupati Paras."
+    },
+    {
+      "sourceOrgId": "ORG-PARTY-LJD",
+      "targetOrgId": "ORG-PARTY-RJD",
+      "relationshipType": "merged_into",
+      "effectiveDate": "2022-03-20",
+      "legalInstrument": "National Party Convention Resolution",
+      "description": "Loktantrik Janata Dal led by Sharad Yadav merged into Rashtriya Janata Dal."
+    },
+    {
+      "sourceOrgId": "ORG-PARTY-PDF",
+      "targetOrgId": "ORG-PARTY-NPP",
+      "relationshipType": "merged_into",
+      "effectiveDate": "2023-05-06",
+      "legalInstrument": "General Council Resolution",
+      "description": "People's Democratic Front (Meghalaya) merged into National People's Party."
+    },
+    {
+      "sourceOrgId": "ORG-PARTY-BJP",
+      "targetOrgId": "ORG-ALLIANCE-NDA",
+      "relationshipType": "coalition_partner",
+      "effectiveDate": "1998-05-01",
+      "legalInstrument": "National Democratic Alliance Charter",
+      "description": "BJP is the founding and lead member of NDA."
+    },
+    {
+      "sourceOrgId": "ORG-PARTY-TDP",
+      "targetOrgId": "ORG-ALLIANCE-NDA",
+      "relationshipType": "alliance_with",
+      "effectiveDate": "2024-03-09",
+      "legalInstrument": "Joint Electoral Declaration 2024",
+      "description": "TDP re-joined NDA for 2024 General and Andhra Pradesh Assembly elections."
+    },
+    {
+      "sourceOrgId": "ORG-PARTY-JSP",
+      "targetOrgId": "ORG-ALLIANCE-NDA",
+      "relationshipType": "alliance_with",
+      "effectiveDate": "2024-03-09",
+      "legalInstrument": "Joint Electoral Declaration 2024",
+      "description": "JSP electoral alliance with NDA."
+    },
+    {
+      "sourceOrgId": "ORG-PARTY-JDU",
+      "targetOrgId": "ORG-ALLIANCE-NDA",
+      "relationshipType": "alliance_with",
+      "effectiveDate": "2024-01-28",
+      "legalInstrument": "NDA Alliance Agreement",
+      "description": "JD(U) rejoined NDA in January 2024."
+    }
+  ]
+}

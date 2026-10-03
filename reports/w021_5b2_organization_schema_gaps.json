@@ -1,0 +1,53 @@
+{
+  "auditedAt": "2026-10-03T11:17:43.522Z",
+  "schemaGaps": {
+    "inspectedTable": "public.political_organizations",
+    "currentColumns": [
+      "id",
+      "org_type",
+      "name",
+      "short_name",
+      "ec_party_code",
+      "recognition_level",
+      "headquarters_state",
+      "parent_org_id",
+      "symbol_url",
+      "brand_colors",
+      "page_id",
+      "data_status",
+      "provenance_id",
+      "created_at",
+      "updated_at"
+    ],
+    "identifiedGaps": [
+      {
+        "gapId": "GAP-ORG-001",
+        "title": "Multilingual Native Script Names Missing",
+        "severity": "HIGH",
+        "description": "Parties have legal names in local scripts (e.g., Telugu, Hindi, Tamil, Bengali). The current table only has a single text `name` column.",
+        "remediationRequired": "Create `public.organization_multilingual_identities` or add `native_names JSONB NOT NULL DEFAULT '{}'::jsonb` to public.political_organizations."
+      },
+      {
+        "gapId": "GAP-ORG-002",
+        "title": "Explicit Alias Registry Missing",
+        "severity": "HIGH",
+        "description": "Historical results and seed data contain over 40 distinct naming variants and legacy codes (e.g. CPI(M) vs CPIM, SHS vs SHSUBT, TRS vs BRS, AIMM vs AIMIM). Without a formal alias table or aliases array column, raw queries will fail or create duplicate rows.",
+        "remediationRequired": "Add `aliases TEXT[] NOT NULL DEFAULT '{}'` to `public.political_organizations` with a GIN index."
+      },
+      {
+        "gapId": "GAP-ORG-003",
+        "title": "Historical Symbol Temporal Tracking Missing",
+        "severity": "MEDIUM",
+        "description": "Political parties change election symbols over time (e.g., Congress had Two Bullocks with Yoke (1952-1969), Calf and Cow (1971-1977), Hand (1978-present)). `symbol_url` is currently a single static text column.",
+        "remediationRequired": "Create `public.organization_symbols` with valid_from/valid_to dates, or model historical symbols in metadata."
+      },
+      {
+        "gapId": "GAP-ORG-004",
+        "title": "Independent Candidate Modeling Clarification",
+        "severity": "CRITICAL",
+        "description": "The `recognition_level` ENUM in Migration 050 includes `independent`. This is an architectural trap that tempts developers to create synthetic organizations like `ORG-INDEPENDENT`. Independents are NOT organizations.",
+        "remediationRequired": "Deprecate `recognition_level = independent`. Prohibit creating independent rows in public.political_organizations. Represent independence strictly on `candidacies.is_independent = true`."
+      }
+    ]
+  }
+}
