@@ -1,0 +1,51 @@
+{
+  "executionTimestamp": "2026-10-03T13:58:04.502Z",
+  "milestone": "W021.5-B2.2-C National Political Organization Population",
+  "targetEnvironment": "Staging Database / Local Workspace (Strictly Air-gapped from Production)",
+  "productionDatabaseStatus": {
+    "host": "ehfafcnimmjusyvplbah",
+    "status": "AIR-GAPPED AND UNTOUCHED",
+    "connected": false,
+    "modified": false
+  },
+  "batchProvenanceId": "0215b22c-0000-0000-0000-000000000001",
+  "populationCounts": {
+    "C0_Provenance_Record": 1,
+    "C1_Political_Organizations": 107,
+    "C2_Organization_Relationships": 10,
+    "C3_Multilingual_Names": 27,
+    "C4_Organization_Symbols": 19,
+    "C5_Organization_Aliases": 1043,
+    "C6_Provisional_Quarantine_DB_Inserts": 0,
+    "C7_Raw_String_Disposition_DB_Inserts": 0,
+    "TOTAL_ACTUAL_DATABASE_INSERTS": 1207
+  },
+  "idempotencyResults": {
+    "run2NewInserts": 0,
+    "run3NewInserts": 0,
+    "isFullyIdempotent": true
+  },
+  "rollbackResults": {
+    "rowsDeleted": 1207,
+    "isDependencySafe": true,
+    "residualBatchRows": 0,
+    "preExistingDataProtected": true
+  },
+  "rawStringDispositionsAudit": {
+    "totalRawStrings": 1096,
+    "canonicalAliasesResolved": 1043,
+    "nonOrganizationNullCount": 53,
+    "exactRemainder": 0
+  },
+  "invariantsConfirmed": {
+    "all107OrganizationsPopulated": true,
+    "all1043AliasesPopulated": true,
+    "all10RelationshipsPopulated": true,
+    "all27MultilingualNamesPopulated": true,
+    "all19SymbolsPopulated": true,
+    "exactTotal1207Inserts": true,
+    "zeroSyntheticIndependentOrgs": true,
+    "provisionalQuarantinedPreserved": true,
+    "productionUntouched": true
+  }
+}
