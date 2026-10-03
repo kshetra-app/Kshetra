@@ -1,0 +1,1010 @@
+[
+  {
+    "acNo": 1,
+    "acCode": "AS-AC-001",
+    "acName": "Gossaigaon",
+    "reservation": "GEN",
+    "district": "Kokrajhar",
+    "pcName": "Kokrajhar"
+  },
+  {
+    "acNo": 2,
+    "acCode": "AS-AC-002",
+    "acName": "Dotma",
+    "reservation": "ST",
+    "district": "Kokrajhar",
+    "pcName": "Kokrajhar"
+  },
+  {
+    "acNo": 3,
+    "acCode": "AS-AC-003",
+    "acName": "Kokrajhar",
+    "reservation": "ST",
+    "district": "Kokrajhar",
+    "pcName": "Kokrajhar"
+  },
+  {
+    "acNo": 4,
+    "acCode": "AS-AC-004",
+    "acName": "Baokhungri",
+    "reservation": "GEN",
+    "district": "Kokrajhar",
+    "pcName": "Kokrajhar"
+  },
+  {
+    "acNo": 5,
+    "acCode": "AS-AC-005",
+    "acName": "Parbatjhora",
+    "reservation": "GEN",
+    "district": "Kokrajhar",
+    "pcName": "Kokrajhar"
+  },
+  {
+    "acNo": 6,
+    "acCode": "AS-AC-006",
+    "acName": "Golakganj",
+    "reservation": "GEN",
+    "district": "Dhubri",
+    "pcName": "Dhubri"
+  },
+  {
+    "acNo": 7,
+    "acCode": "AS-AC-007",
+    "acName": "Gauripur",
+    "reservation": "GEN",
+    "district": "Dhubri",
+    "pcName": "Dhubri"
+  },
+  {
+    "acNo": 8,
+    "acCode": "AS-AC-008",
+    "acName": "Dhubri",
+    "reservation": "GEN",
+    "district": "Dhubri",
+    "pcName": "Dhubri"
+  },
+  {
+    "acNo": 9,
+    "acCode": "AS-AC-009",
+    "acName": "Birsing Jarua",
+    "reservation": "GEN",
+    "district": "Dhubri",
+    "pcName": "Dhubri"
+  },
+  {
+    "acNo": 10,
+    "acCode": "AS-AC-010",
+    "acName": "Bilasipara",
+    "reservation": "GEN",
+    "district": "Dhubri",
+    "pcName": "Dhubri"
+  },
+  {
+    "acNo": 11,
+    "acCode": "AS-AC-011",
+    "acName": "Mankachar",
+    "reservation": "GEN",
+    "district": "South Salmara-Mankachar",
+    "pcName": "Dhubri"
+  },
+  {
+    "acNo": 12,
+    "acCode": "AS-AC-012",
+    "acName": "Jaleshwar",
+    "reservation": "GEN",
+    "district": "Goalpara",
+    "pcName": "Dhubri"
+  },
+  {
+    "acNo": 13,
+    "acCode": "AS-AC-013",
+    "acName": "Goalpara West",
+    "reservation": "ST",
+    "district": "Goalpara",
+    "pcName": "Guwahati"
+  },
+  {
+    "acNo": 14,
+    "acCode": "AS-AC-014",
+    "acName": "Goalpara East",
+    "reservation": "GEN",
+    "district": "Goalpara",
+    "pcName": "Dhubri"
+  },
+  {
+    "acNo": 15,
+    "acCode": "AS-AC-015",
+    "acName": "Dudhnai",
+    "reservation": "ST",
+    "district": "Goalpara",
+    "pcName": "Guwahati"
+  },
+  {
+    "acNo": 16,
+    "acCode": "AS-AC-016",
+    "acName": "Abhayapuri",
+    "reservation": "GEN",
+    "district": "Bongaigaon",
+    "pcName": "Barpeta"
+  },
+  {
+    "acNo": 17,
+    "acCode": "AS-AC-017",
+    "acName": "Srijangram",
+    "reservation": "GEN",
+    "district": "Bongaigaon",
+    "pcName": "Dhubri"
+  },
+  {
+    "acNo": 18,
+    "acCode": "AS-AC-018",
+    "acName": "Bongaigaon",
+    "reservation": "GEN",
+    "district": "Bongaigaon",
+    "pcName": "Barpeta"
+  },
+  {
+    "acNo": 19,
+    "acCode": "AS-AC-019",
+    "acName": "Sidli-Chirang",
+    "reservation": "ST",
+    "district": "Chirang",
+    "pcName": "Kokrajhar"
+  },
+  {
+    "acNo": 20,
+    "acCode": "AS-AC-020",
+    "acName": "Bijni",
+    "reservation": "GEN",
+    "district": "Chirang",
+    "pcName": "Kokrajhar"
+  },
+  {
+    "acNo": 21,
+    "acCode": "AS-AC-021",
+    "acName": "Bhowanipur-Sorbhog",
+    "reservation": "GEN",
+    "district": "Bajali",
+    "pcName": "Barpeta"
+  },
+  {
+    "acNo": 22,
+    "acCode": "AS-AC-022",
+    "acName": "Mandia",
+    "reservation": "GEN",
+    "district": "Barpeta",
+    "pcName": "Dhubri"
+  },
+  {
+    "acNo": 23,
+    "acCode": "AS-AC-023",
+    "acName": "Chenga",
+    "reservation": "GEN",
+    "district": "Barpeta",
+    "pcName": "Dhubri"
+  },
+  {
+    "acNo": 24,
+    "acCode": "AS-AC-024",
+    "acName": "Barpeta",
+    "reservation": "SC",
+    "district": "Barpeta",
+    "pcName": "Barpeta"
+  },
+  {
+    "acNo": 25,
+    "acCode": "AS-AC-025",
+    "acName": "Pakabetbari",
+    "reservation": "GEN",
+    "district": "Barpeta",
+    "pcName": "Barpeta"
+  },
+  {
+    "acNo": 26,
+    "acCode": "AS-AC-026",
+    "acName": "Bajali",
+    "reservation": "GEN",
+    "district": "Bajali",
+    "pcName": "Barpeta"
+  },
+  {
+    "acNo": 27,
+    "acCode": "AS-AC-027",
+    "acName": "Chamaria",
+    "reservation": "GEN",
+    "district": "Kamrup",
+    "pcName": "Guwahati"
+  },
+  {
+    "acNo": 28,
+    "acCode": "AS-AC-028",
+    "acName": "Boko-Chaygaon",
+    "reservation": "ST",
+    "district": "Kamrup",
+    "pcName": "Guwahati"
+  },
+  {
+    "acNo": 29,
+    "acCode": "AS-AC-029",
+    "acName": "Palasbari",
+    "reservation": "GEN",
+    "district": "Kamrup",
+    "pcName": "Guwahati"
+  },
+  {
+    "acNo": 30,
+    "acCode": "AS-AC-030",
+    "acName": "Hajo-Sualkuchi",
+    "reservation": "SC",
+    "district": "Kamrup",
+    "pcName": "Barpeta"
+  },
+  {
+    "acNo": 31,
+    "acCode": "AS-AC-031",
+    "acName": "Rangiya",
+    "reservation": "GEN",
+    "district": "Kamrup",
+    "pcName": "Darrang-Udalguri"
+  },
+  {
+    "acNo": 32,
+    "acCode": "AS-AC-032",
+    "acName": "Kamalpur",
+    "reservation": "GEN",
+    "district": "Kamrup",
+    "pcName": "Darrang-Udalguri"
+  },
+  {
+    "acNo": 33,
+    "acCode": "AS-AC-033",
+    "acName": "Dispur",
+    "reservation": "GEN",
+    "district": "Kamrup Metropolitan",
+    "pcName": "Guwahati"
+  },
+  {
+    "acNo": 34,
+    "acCode": "AS-AC-034",
+    "acName": "Dimoria",
+    "reservation": "SC",
+    "district": "Kamrup Metropolitan",
+    "pcName": "Guwahati"
+  },
+  {
+    "acNo": 35,
+    "acCode": "AS-AC-035",
+    "acName": "New Guwahati",
+    "reservation": "GEN",
+    "district": "Kamrup Metropolitan",
+    "pcName": "Guwahati"
+  },
+  {
+    "acNo": 36,
+    "acCode": "AS-AC-036",
+    "acName": "Guwahati Central",
+    "reservation": "GEN",
+    "district": "Kamrup Metropolitan",
+    "pcName": "Guwahati"
+  },
+  {
+    "acNo": 37,
+    "acCode": "AS-AC-037",
+    "acName": "Jalukbari",
+    "reservation": "GEN",
+    "district": "Kamrup Metropolitan",
+    "pcName": "Guwahati"
+  },
+  {
+    "acNo": 38,
+    "acCode": "AS-AC-038",
+    "acName": "Barkhetri",
+    "reservation": "GEN",
+    "district": "Nalbari",
+    "pcName": "Barpeta"
+  },
+  {
+    "acNo": 39,
+    "acCode": "AS-AC-039",
+    "acName": "Nalbari",
+    "reservation": "GEN",
+    "district": "Nalbari",
+    "pcName": "Barpeta"
+  },
+  {
+    "acNo": 40,
+    "acCode": "AS-AC-040",
+    "acName": "Tihu",
+    "reservation": "GEN",
+    "district": "Nalbari",
+    "pcName": "Barpeta"
+  },
+  {
+    "acNo": 41,
+    "acCode": "AS-AC-041",
+    "acName": "Manas",
+    "reservation": "GEN",
+    "district": "Baksa",
+    "pcName": "Kokrajhar"
+  },
+  {
+    "acNo": 42,
+    "acCode": "AS-AC-042",
+    "acName": "Baksa",
+    "reservation": "ST",
+    "district": "Baksa",
+    "pcName": "Kokrajhar"
+  },
+  {
+    "acNo": 43,
+    "acCode": "AS-AC-043",
+    "acName": "Tamulpur",
+    "reservation": "ST",
+    "district": "Tamulpur",
+    "pcName": "Darrang-Udalguri"
+  },
+  {
+    "acNo": 44,
+    "acCode": "AS-AC-044",
+    "acName": "Goreshwar",
+    "reservation": "GEN",
+    "district": "Tamulpur",
+    "pcName": "Darrang-Udalguri"
+  },
+  {
+    "acNo": 45,
+    "acCode": "AS-AC-045",
+    "acName": "Bhergaon",
+    "reservation": "GEN",
+    "district": "Udalguri",
+    "pcName": "Darrang-Udalguri"
+  },
+  {
+    "acNo": 46,
+    "acCode": "AS-AC-046",
+    "acName": "Udalguri",
+    "reservation": "ST",
+    "district": "Udalguri",
+    "pcName": "Darrang-Udalguri"
+  },
+  {
+    "acNo": 47,
+    "acCode": "AS-AC-047",
+    "acName": "Majbat",
+    "reservation": "GEN",
+    "district": "Udalguri",
+    "pcName": "Darrang-Udalguri"
+  },
+  {
+    "acNo": 48,
+    "acCode": "AS-AC-048",
+    "acName": "Tangla",
+    "reservation": "GEN",
+    "district": "Udalguri",
+    "pcName": "Darrang-Udalguri"
+  },
+  {
+    "acNo": 49,
+    "acCode": "AS-AC-049",
+    "acName": "Sipajhar",
+    "reservation": "GEN",
+    "district": "Darrang",
+    "pcName": "Darrang-Udalguri"
+  },
+  {
+    "acNo": 50,
+    "acCode": "AS-AC-050",
+    "acName": "Mangaldai",
+    "reservation": "GEN",
+    "district": "Darrang",
+    "pcName": "Darrang-Udalguri"
+  },
+  {
+    "acNo": 51,
+    "acCode": "AS-AC-051",
+    "acName": "Dalgaon",
+    "reservation": "GEN",
+    "district": "Darrang",
+    "pcName": "Darrang-Udalguri"
+  },
+  {
+    "acNo": 52,
+    "acCode": "AS-AC-052",
+    "acName": "Jagiroad",
+    "reservation": "SC",
+    "district": "Morigaon",
+    "pcName": "Nagaon"
+  },
+  {
+    "acNo": 53,
+    "acCode": "AS-AC-053",
+    "acName": "Laharighat",
+    "reservation": "GEN",
+    "district": "Morigaon",
+    "pcName": "Nagaon"
+  },
+  {
+    "acNo": 54,
+    "acCode": "AS-AC-054",
+    "acName": "Morigaon",
+    "reservation": "GEN",
+    "district": "Morigaon",
+    "pcName": "Nagaon"
+  },
+  {
+    "acNo": 55,
+    "acCode": "AS-AC-055",
+    "acName": "Dhing",
+    "reservation": "GEN",
+    "district": "Nagaon",
+    "pcName": "Nagaon"
+  },
+  {
+    "acNo": 56,
+    "acCode": "AS-AC-056",
+    "acName": "Rupohihat",
+    "reservation": "GEN",
+    "district": "Nagaon",
+    "pcName": "Nagaon"
+  },
+  {
+    "acNo": 57,
+    "acCode": "AS-AC-057",
+    "acName": "Kaliabor",
+    "reservation": "GEN",
+    "district": "Nagaon",
+    "pcName": "Kaziranga"
+  },
+  {
+    "acNo": 58,
+    "acCode": "AS-AC-058",
+    "acName": "Samaguri",
+    "reservation": "GEN",
+    "district": "Nagaon",
+    "pcName": "Nagaon"
+  },
+  {
+    "acNo": 59,
+    "acCode": "AS-AC-059",
+    "acName": "Barhampur",
+    "reservation": "GEN",
+    "district": "Nagaon",
+    "pcName": "Kaziranga"
+  },
+  {
+    "acNo": 60,
+    "acCode": "AS-AC-060",
+    "acName": "Nagaon-Batadraba",
+    "reservation": "GEN",
+    "district": "Nagaon",
+    "pcName": "Nagaon"
+  },
+  {
+    "acNo": 61,
+    "acCode": "AS-AC-061",
+    "acName": "Raha",
+    "reservation": "SC",
+    "district": "Nagaon",
+    "pcName": "Nagaon"
+  },
+  {
+    "acNo": 62,
+    "acCode": "AS-AC-062",
+    "acName": "Binnakandi",
+    "reservation": "GEN",
+    "district": "Hojai",
+    "pcName": "Kaziranga"
+  },
+  {
+    "acNo": 63,
+    "acCode": "AS-AC-063",
+    "acName": "Hojai",
+    "reservation": "GEN",
+    "district": "Hojai",
+    "pcName": "Kaziranga"
+  },
+  {
+    "acNo": 64,
+    "acCode": "AS-AC-064",
+    "acName": "Lumding",
+    "reservation": "GEN",
+    "district": "Hojai",
+    "pcName": "Kaziranga"
+  },
+  {
+    "acNo": 65,
+    "acCode": "AS-AC-065",
+    "acName": "Dhekiajuli",
+    "reservation": "GEN",
+    "district": "Sonitpur",
+    "pcName": "Sonitpur"
+  },
+  {
+    "acNo": 66,
+    "acCode": "AS-AC-066",
+    "acName": "Barchalla",
+    "reservation": "GEN",
+    "district": "Sonitpur",
+    "pcName": "Sonitpur"
+  },
+  {
+    "acNo": 67,
+    "acCode": "AS-AC-067",
+    "acName": "Tezpur",
+    "reservation": "GEN",
+    "district": "Sonitpur",
+    "pcName": "Sonitpur"
+  },
+  {
+    "acNo": 68,
+    "acCode": "AS-AC-068",
+    "acName": "Rangapara",
+    "reservation": "GEN",
+    "district": "Sonitpur",
+    "pcName": "Sonitpur"
+  },
+  {
+    "acNo": 69,
+    "acCode": "AS-AC-069",
+    "acName": "Nadaur",
+    "reservation": "GEN",
+    "district": "Sonitpur",
+    "pcName": "Sonitpur"
+  },
+  {
+    "acNo": 70,
+    "acCode": "AS-AC-070",
+    "acName": "Biswanath",
+    "reservation": "GEN",
+    "district": "Biswanath",
+    "pcName": "Sonitpur"
+  },
+  {
+    "acNo": 71,
+    "acCode": "AS-AC-071",
+    "acName": "Behali",
+    "reservation": "SC",
+    "district": "Biswanath",
+    "pcName": "Sonitpur"
+  },
+  {
+    "acNo": 72,
+    "acCode": "AS-AC-072",
+    "acName": "Gohpur",
+    "reservation": "GEN",
+    "district": "Biswanath",
+    "pcName": "Sonitpur"
+  },
+  {
+    "acNo": 73,
+    "acCode": "AS-AC-073",
+    "acName": "Bihpuria",
+    "reservation": "GEN",
+    "district": "Lakhimpur",
+    "pcName": "Sonitpur"
+  },
+  {
+    "acNo": 74,
+    "acCode": "AS-AC-074",
+    "acName": "Rongonadi",
+    "reservation": "GEN",
+    "district": "Lakhimpur",
+    "pcName": "Lakhimpur"
+  },
+  {
+    "acNo": 75,
+    "acCode": "AS-AC-075",
+    "acName": "Naoboicha",
+    "reservation": "SC",
+    "district": "Lakhimpur",
+    "pcName": "Lakhimpur"
+  },
+  {
+    "acNo": 76,
+    "acCode": "AS-AC-076",
+    "acName": "Lakhimpur",
+    "reservation": "GEN",
+    "district": "Lakhimpur",
+    "pcName": "Lakhimpur"
+  },
+  {
+    "acNo": 77,
+    "acCode": "AS-AC-077",
+    "acName": "Dhakuakhana",
+    "reservation": "ST",
+    "district": "Lakhimpur",
+    "pcName": "Lakhimpur"
+  },
+  {
+    "acNo": 78,
+    "acCode": "AS-AC-078",
+    "acName": "Dhemaji",
+    "reservation": "ST",
+    "district": "Dhemaji",
+    "pcName": "Lakhimpur"
+  },
+  {
+    "acNo": 79,
+    "acCode": "AS-AC-079",
+    "acName": "Sissiborgaon",
+    "reservation": "GEN",
+    "district": "Dhemaji",
+    "pcName": "Lakhimpur"
+  },
+  {
+    "acNo": 80,
+    "acCode": "AS-AC-080",
+    "acName": "Jonai",
+    "reservation": "ST",
+    "district": "Dhemaji",
+    "pcName": "Lakhimpur"
+  },
+  {
+    "acNo": 81,
+    "acCode": "AS-AC-081",
+    "acName": "Sadiya",
+    "reservation": "GEN",
+    "district": "Tinsukia",
+    "pcName": "Lakhimpur"
+  },
+  {
+    "acNo": 82,
+    "acCode": "AS-AC-082",
+    "acName": "Doom Dooma",
+    "reservation": "GEN",
+    "district": "Tinsukia",
+    "pcName": "Lakhimpur"
+  },
+  {
+    "acNo": 83,
+    "acCode": "AS-AC-083",
+    "acName": "Margherita",
+    "reservation": "GEN",
+    "district": "Tinsukia",
+    "pcName": "Dibrugarh"
+  },
+  {
+    "acNo": 84,
+    "acCode": "AS-AC-084",
+    "acName": "Digboi",
+    "reservation": "GEN",
+    "district": "Tinsukia",
+    "pcName": "Dibrugarh"
+  },
+  {
+    "acNo": 85,
+    "acCode": "AS-AC-085",
+    "acName": "Makum",
+    "reservation": "GEN",
+    "district": "Tinsukia",
+    "pcName": "Dibrugarh"
+  },
+  {
+    "acNo": 86,
+    "acCode": "AS-AC-086",
+    "acName": "Tinsukia",
+    "reservation": "GEN",
+    "district": "Tinsukia",
+    "pcName": "Dibrugarh"
+  },
+  {
+    "acNo": 87,
+    "acCode": "AS-AC-087",
+    "acName": "Chabua-Lahowal",
+    "reservation": "GEN",
+    "district": "Dibrugarh",
+    "pcName": "Dibrugarh"
+  },
+  {
+    "acNo": 88,
+    "acCode": "AS-AC-088",
+    "acName": "Dibrugarh",
+    "reservation": "GEN",
+    "district": "Dibrugarh",
+    "pcName": "Dibrugarh"
+  },
+  {
+    "acNo": 89,
+    "acCode": "AS-AC-089",
+    "acName": "Khowang",
+    "reservation": "GEN",
+    "district": "Dibrugarh",
+    "pcName": "Dibrugarh"
+  },
+  {
+    "acNo": 90,
+    "acCode": "AS-AC-090",
+    "acName": "Duliajan",
+    "reservation": "GEN",
+    "district": "Dibrugarh",
+    "pcName": "Dibrugarh"
+  },
+  {
+    "acNo": 91,
+    "acCode": "AS-AC-091",
+    "acName": "Tingkhong",
+    "reservation": "GEN",
+    "district": "Dibrugarh",
+    "pcName": "Dibrugarh"
+  },
+  {
+    "acNo": 92,
+    "acCode": "AS-AC-092",
+    "acName": "Naharkatia",
+    "reservation": "GEN",
+    "district": "Dibrugarh",
+    "pcName": "Dibrugarh"
+  },
+  {
+    "acNo": 93,
+    "acCode": "AS-AC-093",
+    "acName": "Sonari",
+    "reservation": "GEN",
+    "district": "Charaideo",
+    "pcName": "Jorhat"
+  },
+  {
+    "acNo": 94,
+    "acCode": "AS-AC-094",
+    "acName": "Mahmora",
+    "reservation": "GEN",
+    "district": "Charaideo",
+    "pcName": "Jorhat"
+  },
+  {
+    "acNo": 95,
+    "acCode": "AS-AC-095",
+    "acName": "Demow",
+    "reservation": "GEN",
+    "district": "Sibsagar",
+    "pcName": "Jorhat"
+  },
+  {
+    "acNo": 96,
+    "acCode": "AS-AC-096",
+    "acName": "Sibsagar",
+    "reservation": "GEN",
+    "district": "Sibsagar",
+    "pcName": "Jorhat"
+  },
+  {
+    "acNo": 97,
+    "acCode": "AS-AC-097",
+    "acName": "Nazira",
+    "reservation": "GEN",
+    "district": "Sibsagar",
+    "pcName": "Jorhat"
+  },
+  {
+    "acNo": 98,
+    "acCode": "AS-AC-098",
+    "acName": "Majuli",
+    "reservation": "ST",
+    "district": "Majuli",
+    "pcName": "Jorhat"
+  },
+  {
+    "acNo": 99,
+    "acCode": "AS-AC-099",
+    "acName": "Teok",
+    "reservation": "GEN",
+    "district": "Jorhat",
+    "pcName": "Jorhat"
+  },
+  {
+    "acNo": 100,
+    "acCode": "AS-AC-100",
+    "acName": "Jorhat",
+    "reservation": "GEN",
+    "district": "Jorhat",
+    "pcName": "Jorhat"
+  },
+  {
+    "acNo": 101,
+    "acCode": "AS-AC-101",
+    "acName": "Mariani",
+    "reservation": "GEN",
+    "district": "Jorhat",
+    "pcName": "Jorhat"
+  },
+  {
+    "acNo": 102,
+    "acCode": "AS-AC-102",
+    "acName": "Titabor",
+    "reservation": "GEN",
+    "district": "Jorhat",
+    "pcName": "Jorhat"
+  },
+  {
+    "acNo": 103,
+    "acCode": "AS-AC-103",
+    "acName": "Golaghat",
+    "reservation": "GEN",
+    "district": "Golaghat",
+    "pcName": "Kaziranga"
+  },
+  {
+    "acNo": 104,
+    "acCode": "AS-AC-104",
+    "acName": "Dergaon",
+    "reservation": "GEN",
+    "district": "Golaghat",
+    "pcName": "Kaziranga"
+  },
+  {
+    "acNo": 105,
+    "acCode": "AS-AC-105",
+    "acName": "Bokakhat",
+    "reservation": "GEN",
+    "district": "Golaghat",
+    "pcName": "Kaziranga"
+  },
+  {
+    "acNo": 106,
+    "acCode": "AS-AC-106",
+    "acName": "Khumtai",
+    "reservation": "GEN",
+    "district": "Golaghat",
+    "pcName": "Kaziranga"
+  },
+  {
+    "acNo": 107,
+    "acCode": "AS-AC-107",
+    "acName": "Sarupathar",
+    "reservation": "GEN",
+    "district": "Golaghat",
+    "pcName": "Kaziranga"
+  },
+  {
+    "acNo": 108,
+    "acCode": "AS-AC-108",
+    "acName": "Bokajan",
+    "reservation": "ST",
+    "district": "Karbi Anglong",
+    "pcName": "Diphu"
+  },
+  {
+    "acNo": 109,
+    "acCode": "AS-AC-109",
+    "acName": "Howraghat",
+    "reservation": "ST",
+    "district": "Karbi Anglong",
+    "pcName": "Diphu"
+  },
+  {
+    "acNo": 110,
+    "acCode": "AS-AC-110",
+    "acName": "Diphu",
+    "reservation": "ST",
+    "district": "Karbi Anglong",
+    "pcName": "Diphu"
+  },
+  {
+    "acNo": 111,
+    "acCode": "AS-AC-111",
+    "acName": "Rongkhang",
+    "reservation": "ST",
+    "district": "West Karbi Anglong",
+    "pcName": "Diphu"
+  },
+  {
+    "acNo": 112,
+    "acCode": "AS-AC-112",
+    "acName": "Amri",
+    "reservation": "ST",
+    "district": "West Karbi Anglong",
+    "pcName": "Diphu"
+  },
+  {
+    "acNo": 113,
+    "acCode": "AS-AC-113",
+    "acName": "Haflong",
+    "reservation": "ST",
+    "district": "Dima Hasao",
+    "pcName": "Diphu"
+  },
+  {
+    "acNo": 114,
+    "acCode": "AS-AC-114",
+    "acName": "Lakhipur",
+    "reservation": "GEN",
+    "district": "Cachar",
+    "pcName": "Silchar"
+  },
+  {
+    "acNo": 115,
+    "acCode": "AS-AC-115",
+    "acName": "Udharbond",
+    "reservation": "GEN",
+    "district": "Cachar",
+    "pcName": "Silchar"
+  },
+  {
+    "acNo": 116,
+    "acCode": "AS-AC-116",
+    "acName": "Katigorah",
+    "reservation": "GEN",
+    "district": "Cachar",
+    "pcName": "Silchar"
+  },
+  {
+    "acNo": 117,
+    "acCode": "AS-AC-117",
+    "acName": "Borkhola",
+    "reservation": "GEN",
+    "district": "Cachar",
+    "pcName": "Silchar"
+  },
+  {
+    "acNo": 118,
+    "acCode": "AS-AC-118",
+    "acName": "Silchar",
+    "reservation": "GEN",
+    "district": "Cachar",
+    "pcName": "Silchar"
+  },
+  {
+    "acNo": 119,
+    "acCode": "AS-AC-119",
+    "acName": "Sonai",
+    "reservation": "GEN",
+    "district": "Cachar",
+    "pcName": "Silchar"
+  },
+  {
+    "acNo": 120,
+    "acCode": "AS-AC-120",
+    "acName": "Dholai",
+    "reservation": "SC",
+    "district": "Cachar",
+    "pcName": "Silchar"
+  },
+  {
+    "acNo": 121,
+    "acCode": "AS-AC-121",
+    "acName": "Hailakandi",
+    "reservation": "GEN",
+    "district": "Hailakandi",
+    "pcName": "Karimganj"
+  },
+  {
+    "acNo": 122,
+    "acCode": "AS-AC-122",
+    "acName": "Algapur-Katlicherra",
+    "reservation": "GEN",
+    "district": "Hailakandi",
+    "pcName": "Karimganj"
+  },
+  {
+    "acNo": 123,
+    "acCode": "AS-AC-123",
+    "acName": "Karimganj North",
+    "reservation": "GEN",
+    "district": "Sribhumi",
+    "pcName": "Karimganj"
+  },
+  {
+    "acNo": 124,
+    "acCode": "AS-AC-124",
+    "acName": "Karimganj South",
+    "reservation": "GEN",
+    "district": "Sribhumi",
+    "pcName": "Karimganj"
+  },
+  {
+    "acNo": 125,
+    "acCode": "AS-AC-125",
+    "acName": "Patharkandi",
+    "reservation": "GEN",
+    "district": "Sribhumi",
+    "pcName": "Karimganj"
+  },
+  {
+    "acNo": 126,
+    "acCode": "AS-AC-126",
+    "acName": "Ram Krishna Nagar",
+    "reservation": "SC",
+    "district": "Sribhumi",
+    "pcName": "Karimganj"
+  }
+]
