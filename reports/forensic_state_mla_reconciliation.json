@@ -1,0 +1,1070 @@
+{
+  "sumAcs": 4123,
+  "sumPcs": 543,
+  "totalProfiles": 4050,
+  "stateAuditResults": [
+    {
+      "code": "AP",
+      "name": "Andhra Pradesh",
+      "statutoryAcCount": 175,
+      "profileCount": 172,
+      "diff": -3,
+      "uniqueAcsCovered": 172,
+      "missingCount": 3,
+      "duplicateCount": 0,
+      "outOfRangeCount": 0,
+      "missingAcs": [
+        85,
+        93,
+        156
+      ],
+      "duplicateAcs": [],
+      "outOfRangeAcs": []
+    },
+    {
+      "code": "AR",
+      "name": "Arunachal Pradesh",
+      "statutoryAcCount": 60,
+      "profileCount": 53,
+      "diff": -7,
+      "uniqueAcsCovered": 53,
+      "missingCount": 7,
+      "duplicateCount": 0,
+      "outOfRangeCount": 0,
+      "missingAcs": [
+        54,
+        55,
+        56,
+        57,
+        58,
+        59,
+        60
+      ],
+      "duplicateAcs": [],
+      "outOfRangeAcs": []
+    },
+    {
+      "code": "AS",
+      "name": "Assam",
+      "statutoryAcCount": 126,
+      "profileCount": 112,
+      "diff": -14,
+      "uniqueAcsCovered": 112,
+      "missingCount": 14,
+      "duplicateCount": 0,
+      "outOfRangeCount": 0,
+      "missingAcs": [
+        113,
+        114,
+        115,
+        116,
+        117,
+        118,
+        119,
+        120,
+        121,
+        122
+      ],
+      "duplicateAcs": [],
+      "outOfRangeAcs": []
+    },
+    {
+      "code": "BR",
+      "name": "Bihar",
+      "statutoryAcCount": 243,
+      "profileCount": 227,
+      "diff": -16,
+      "uniqueAcsCovered": 227,
+      "missingCount": 16,
+      "duplicateCount": 0,
+      "outOfRangeCount": 0,
+      "missingAcs": [
+        228,
+        229,
+        230,
+        231,
+        232,
+        233,
+        234,
+        235,
+        236,
+        237
+      ],
+      "duplicateAcs": [],
+      "outOfRangeAcs": []
+    },
+    {
+      "code": "CG",
+      "name": "Chhattisgarh",
+      "statutoryAcCount": 90,
+      "profileCount": 81,
+      "diff": -9,
+      "uniqueAcsCovered": 81,
+      "missingCount": 9,
+      "duplicateCount": 0,
+      "outOfRangeCount": 0,
+      "missingAcs": [
+        82,
+        83,
+        84,
+        85,
+        86,
+        87,
+        88,
+        89,
+        90
+      ],
+      "duplicateAcs": [],
+      "outOfRangeAcs": []
+    },
+    {
+      "code": "GA",
+      "name": "Goa",
+      "statutoryAcCount": 40,
+      "profileCount": 34,
+      "diff": -6,
+      "uniqueAcsCovered": 34,
+      "missingCount": 6,
+      "duplicateCount": 0,
+      "outOfRangeCount": 0,
+      "missingAcs": [
+        35,
+        36,
+        37,
+        38,
+        39,
+        40
+      ],
+      "duplicateAcs": [],
+      "outOfRangeAcs": []
+    },
+    {
+      "code": "GJ",
+      "name": "Gujarat",
+      "statutoryAcCount": 182,
+      "profileCount": 169,
+      "diff": -13,
+      "uniqueAcsCovered": 169,
+      "missingCount": 13,
+      "duplicateCount": 0,
+      "outOfRangeCount": 0,
+      "missingAcs": [
+        170,
+        171,
+        172,
+        173,
+        174,
+        175,
+        176,
+        177,
+        178,
+        179
+      ],
+      "duplicateAcs": [],
+      "outOfRangeAcs": []
+    },
+    {
+      "code": "HR",
+      "name": "Haryana",
+      "statutoryAcCount": 90,
+      "profileCount": 80,
+      "diff": -10,
+      "uniqueAcsCovered": 80,
+      "missingCount": 10,
+      "duplicateCount": 0,
+      "outOfRangeCount": 0,
+      "missingAcs": [
+        81,
+        82,
+        83,
+        84,
+        85,
+        86,
+        87,
+        88,
+        89,
+        90
+      ],
+      "duplicateAcs": [],
+      "outOfRangeAcs": []
+    },
+    {
+      "code": "HP",
+      "name": "Himachal Pradesh",
+      "statutoryAcCount": 68,
+      "profileCount": 70,
+      "diff": 2,
+      "uniqueAcsCovered": 70,
+      "missingCount": 0,
+      "duplicateCount": 0,
+      "outOfRangeCount": 2,
+      "missingAcs": [],
+      "duplicateAcs": [],
+      "outOfRangeAcs": [
+        69,
+        70
+      ]
+    },
+    {
+      "code": "JH",
+      "name": "Jharkhand",
+      "statutoryAcCount": 81,
+      "profileCount": 73,
+      "diff": -8,
+      "uniqueAcsCovered": 73,
+      "missingCount": 8,
+      "duplicateCount": 0,
+      "outOfRangeCount": 0,
+      "missingAcs": [
+        74,
+        75,
+        76,
+        77,
+        78,
+        79,
+        80,
+        81
+      ],
+      "duplicateAcs": [],
+      "outOfRangeAcs": []
+    },
+    {
+      "code": "KA",
+      "name": "Karnataka",
+      "statutoryAcCount": 224,
+      "profileCount": 215,
+      "diff": -9,
+      "uniqueAcsCovered": 171,
+      "missingCount": 53,
+      "duplicateCount": 37,
+      "outOfRangeCount": 0,
+      "missingAcs": [
+        4,
+        15,
+        16,
+        21,
+        22,
+        32,
+        35,
+        37,
+        40,
+        45
+      ],
+      "duplicateAcs": [
+        {
+          "acNo": 1,
+          "count": 2
+        },
+        {
+          "acNo": 3,
+          "count": 2
+        },
+        {
+          "acNo": 11,
+          "count": 2
+        },
+        {
+          "acNo": 12,
+          "count": 2
+        },
+        {
+          "acNo": 14,
+          "count": 2
+        },
+        {
+          "acNo": 19,
+          "count": 3
+        },
+        {
+          "acNo": 23,
+          "count": 2
+        },
+        {
+          "acNo": 27,
+          "count": 2
+        },
+        {
+          "acNo": 28,
+          "count": 2
+        },
+        {
+          "acNo": 31,
+          "count": 4
+        },
+        {
+          "acNo": 36,
+          "count": 2
+        },
+        {
+          "acNo": 38,
+          "count": 2
+        },
+        {
+          "acNo": 39,
+          "count": 2
+        },
+        {
+          "acNo": 56,
+          "count": 2
+        },
+        {
+          "acNo": 62,
+          "count": 2
+        },
+        {
+          "acNo": 64,
+          "count": 2
+        },
+        {
+          "acNo": 66,
+          "count": 4
+        },
+        {
+          "acNo": 79,
+          "count": 2
+        },
+        {
+          "acNo": 96,
+          "count": 2
+        },
+        {
+          "acNo": 99,
+          "count": 2
+        },
+        {
+          "acNo": 109,
+          "count": 2
+        },
+        {
+          "acNo": 112,
+          "count": 2
+        },
+        {
+          "acNo": 119,
+          "count": 3
+        },
+        {
+          "acNo": 121,
+          "count": 2
+        },
+        {
+          "acNo": 129,
+          "count": 2
+        },
+        {
+          "acNo": 130,
+          "count": 2
+        },
+        {
+          "acNo": 134,
+          "count": 2
+        },
+        {
+          "acNo": 135,
+          "count": 2
+        },
+        {
+          "acNo": 148,
+          "count": 2
+        },
+        {
+          "acNo": 160,
+          "count": 2
+        },
+        {
+          "acNo": 162,
+          "count": 2
+        },
+        {
+          "acNo": 170,
+          "count": 3
+        },
+        {
+          "acNo": 173,
+          "count": 2
+        },
+        {
+          "acNo": 176,
+          "count": 2
+        },
+        {
+          "acNo": 190,
+          "count": 2
+        },
+        {
+          "acNo": 196,
+          "count": 2
+        },
+        {
+          "acNo": 202,
+          "count": 2
+        }
+      ],
+      "outOfRangeAcs": []
+    },
+    {
+      "code": "KL",
+      "name": "Kerala",
+      "statutoryAcCount": 140,
+      "profileCount": 140,
+      "diff": 0,
+      "uniqueAcsCovered": 140,
+      "missingCount": 0,
+      "duplicateCount": 0,
+      "outOfRangeCount": 0,
+      "missingAcs": [],
+      "duplicateAcs": [],
+      "outOfRangeAcs": []
+    },
+    {
+      "code": "MP",
+      "name": "Madhya Pradesh",
+      "statutoryAcCount": 230,
+      "profileCount": 208,
+      "diff": -22,
+      "uniqueAcsCovered": 208,
+      "missingCount": 22,
+      "duplicateCount": 0,
+      "outOfRangeCount": 0,
+      "missingAcs": [
+        209,
+        210,
+        211,
+        212,
+        213,
+        214,
+        215,
+        216,
+        217,
+        218
+      ],
+      "duplicateAcs": [],
+      "outOfRangeAcs": []
+    },
+    {
+      "code": "MH",
+      "name": "Maharashtra",
+      "statutoryAcCount": 288,
+      "profileCount": 268,
+      "diff": -20,
+      "uniqueAcsCovered": 240,
+      "missingCount": 48,
+      "duplicateCount": 27,
+      "outOfRangeCount": 0,
+      "missingAcs": [
+        18,
+        21,
+        32,
+        33,
+        36,
+        44,
+        47,
+        49,
+        64,
+        66
+      ],
+      "duplicateAcs": [
+        {
+          "acNo": 13,
+          "count": 2
+        },
+        {
+          "acNo": 27,
+          "count": 2
+        },
+        {
+          "acNo": 31,
+          "count": 2
+        },
+        {
+          "acNo": 34,
+          "count": 2
+        },
+        {
+          "acNo": 37,
+          "count": 2
+        },
+        {
+          "acNo": 41,
+          "count": 2
+        },
+        {
+          "acNo": 67,
+          "count": 2
+        },
+        {
+          "acNo": 75,
+          "count": 2
+        },
+        {
+          "acNo": 82,
+          "count": 2
+        },
+        {
+          "acNo": 93,
+          "count": 2
+        },
+        {
+          "acNo": 98,
+          "count": 2
+        },
+        {
+          "acNo": 99,
+          "count": 2
+        },
+        {
+          "acNo": 102,
+          "count": 2
+        },
+        {
+          "acNo": 105,
+          "count": 2
+        },
+        {
+          "acNo": 107,
+          "count": 2
+        },
+        {
+          "acNo": 121,
+          "count": 3
+        },
+        {
+          "acNo": 123,
+          "count": 2
+        },
+        {
+          "acNo": 130,
+          "count": 2
+        },
+        {
+          "acNo": 134,
+          "count": 2
+        },
+        {
+          "acNo": 153,
+          "count": 2
+        },
+        {
+          "acNo": 155,
+          "count": 2
+        },
+        {
+          "acNo": 168,
+          "count": 2
+        },
+        {
+          "acNo": 202,
+          "count": 2
+        },
+        {
+          "acNo": 208,
+          "count": 2
+        },
+        {
+          "acNo": 236,
+          "count": 2
+        },
+        {
+          "acNo": 246,
+          "count": 2
+        },
+        {
+          "acNo": 281,
+          "count": 2
+        }
+      ],
+      "outOfRangeAcs": []
+    },
+    {
+      "code": "MN",
+      "name": "Manipur",
+      "statutoryAcCount": 60,
+      "profileCount": 60,
+      "diff": 0,
+      "uniqueAcsCovered": 60,
+      "missingCount": 0,
+      "duplicateCount": 0,
+      "outOfRangeCount": 0,
+      "missingAcs": [],
+      "duplicateAcs": [],
+      "outOfRangeAcs": []
+    },
+    {
+      "code": "ML",
+      "name": "Meghalaya",
+      "statutoryAcCount": 60,
+      "profileCount": 60,
+      "diff": 0,
+      "uniqueAcsCovered": 60,
+      "missingCount": 0,
+      "duplicateCount": 0,
+      "outOfRangeCount": 0,
+      "missingAcs": [],
+      "duplicateAcs": [],
+      "outOfRangeAcs": []
+    },
+    {
+      "code": "MZ",
+      "name": "Mizoram",
+      "statutoryAcCount": 40,
+      "profileCount": 35,
+      "diff": -5,
+      "uniqueAcsCovered": 35,
+      "missingCount": 5,
+      "duplicateCount": 0,
+      "outOfRangeCount": 0,
+      "missingAcs": [
+        36,
+        37,
+        38,
+        39,
+        40
+      ],
+      "duplicateAcs": [],
+      "outOfRangeAcs": []
+    },
+    {
+      "code": "NL",
+      "name": "Nagaland",
+      "statutoryAcCount": 60,
+      "profileCount": 60,
+      "diff": 0,
+      "uniqueAcsCovered": 60,
+      "missingCount": 0,
+      "duplicateCount": 0,
+      "outOfRangeCount": 0,
+      "missingAcs": [],
+      "duplicateAcs": [],
+      "outOfRangeAcs": []
+    },
+    {
+      "code": "OD",
+      "name": "Odisha",
+      "statutoryAcCount": 147,
+      "profileCount": 132,
+      "diff": -15,
+      "uniqueAcsCovered": 132,
+      "missingCount": 15,
+      "duplicateCount": 0,
+      "outOfRangeCount": 0,
+      "missingAcs": [
+        133,
+        134,
+        135,
+        136,
+        137,
+        138,
+        139,
+        140,
+        141,
+        142
+      ],
+      "duplicateAcs": [],
+      "outOfRangeAcs": []
+    },
+    {
+      "code": "PB",
+      "name": "Punjab",
+      "statutoryAcCount": 117,
+      "profileCount": 111,
+      "diff": -6,
+      "uniqueAcsCovered": 111,
+      "missingCount": 6,
+      "duplicateCount": 0,
+      "outOfRangeCount": 0,
+      "missingAcs": [
+        112,
+        113,
+        114,
+        115,
+        116,
+        117
+      ],
+      "duplicateAcs": [],
+      "outOfRangeAcs": []
+    },
+    {
+      "code": "RJ",
+      "name": "Rajasthan",
+      "statutoryAcCount": 200,
+      "profileCount": 187,
+      "diff": -13,
+      "uniqueAcsCovered": 187,
+      "missingCount": 13,
+      "duplicateCount": 0,
+      "outOfRangeCount": 0,
+      "missingAcs": [
+        188,
+        189,
+        190,
+        191,
+        192,
+        193,
+        194,
+        195,
+        196,
+        197
+      ],
+      "duplicateAcs": [],
+      "outOfRangeAcs": []
+    },
+    {
+      "code": "SK",
+      "name": "Sikkim",
+      "statutoryAcCount": 32,
+      "profileCount": 31,
+      "diff": -1,
+      "uniqueAcsCovered": 31,
+      "missingCount": 1,
+      "duplicateCount": 0,
+      "outOfRangeCount": 0,
+      "missingAcs": [
+        32
+      ],
+      "duplicateAcs": [],
+      "outOfRangeAcs": []
+    },
+    {
+      "code": "TN",
+      "name": "Tamil Nadu",
+      "statutoryAcCount": 234,
+      "profileCount": 234,
+      "diff": 0,
+      "uniqueAcsCovered": 234,
+      "missingCount": 0,
+      "duplicateCount": 0,
+      "outOfRangeCount": 0,
+      "missingAcs": [],
+      "duplicateAcs": [],
+      "outOfRangeAcs": []
+    },
+    {
+      "code": "TS",
+      "name": "Telangana",
+      "statutoryAcCount": 119,
+      "profileCount": 119,
+      "diff": 0,
+      "uniqueAcsCovered": 119,
+      "missingCount": 0,
+      "duplicateCount": 0,
+      "outOfRangeCount": 0,
+      "missingAcs": [],
+      "duplicateAcs": [],
+      "outOfRangeAcs": []
+    },
+    {
+      "code": "TR",
+      "name": "Tripura",
+      "statutoryAcCount": 60,
+      "profileCount": 60,
+      "diff": 0,
+      "uniqueAcsCovered": 60,
+      "missingCount": 0,
+      "duplicateCount": 0,
+      "outOfRangeCount": 0,
+      "missingAcs": [],
+      "duplicateAcs": [],
+      "outOfRangeAcs": []
+    },
+    {
+      "code": "UP",
+      "name": "Uttar Pradesh",
+      "statutoryAcCount": 403,
+      "profileCount": 357,
+      "diff": -46,
+      "uniqueAcsCovered": 344,
+      "missingCount": 59,
+      "duplicateCount": 12,
+      "outOfRangeCount": 0,
+      "missingAcs": [
+        13,
+        20,
+        24,
+        42,
+        51,
+        54,
+        58,
+        60,
+        63,
+        67
+      ],
+      "duplicateAcs": [
+        {
+          "acNo": 1,
+          "count": 2
+        },
+        {
+          "acNo": 15,
+          "count": 2
+        },
+        {
+          "acNo": 29,
+          "count": 2
+        },
+        {
+          "acNo": 34,
+          "count": 2
+        },
+        {
+          "acNo": 37,
+          "count": 2
+        },
+        {
+          "acNo": 136,
+          "count": 2
+        },
+        {
+          "acNo": 139,
+          "count": 2
+        },
+        {
+          "acNo": 173,
+          "count": 3
+        },
+        {
+          "acNo": 292,
+          "count": 2
+        },
+        {
+          "acNo": 354,
+          "count": 2
+        },
+        {
+          "acNo": 395,
+          "count": 2
+        },
+        {
+          "acNo": 403,
+          "count": 2
+        }
+      ],
+      "outOfRangeAcs": []
+    },
+    {
+      "code": "UK",
+      "name": "Uttarakhand",
+      "statutoryAcCount": 70,
+      "profileCount": 70,
+      "diff": 0,
+      "uniqueAcsCovered": 70,
+      "missingCount": 0,
+      "duplicateCount": 0,
+      "outOfRangeCount": 0,
+      "missingAcs": [],
+      "duplicateAcs": [],
+      "outOfRangeAcs": []
+    },
+    {
+      "code": "WB",
+      "name": "West Bengal",
+      "statutoryAcCount": 294,
+      "profileCount": 294,
+      "diff": 0,
+      "uniqueAcsCovered": 294,
+      "missingCount": 0,
+      "duplicateCount": 0,
+      "outOfRangeCount": 0,
+      "missingAcs": [],
+      "duplicateAcs": [],
+      "outOfRangeAcs": []
+    },
+    {
+      "code": "DL",
+      "name": "Delhi",
+      "statutoryAcCount": 70,
+      "profileCount": 221,
+      "diff": 151,
+      "uniqueAcsCovered": 221,
+      "missingCount": 0,
+      "duplicateCount": 0,
+      "outOfRangeCount": 151,
+      "missingAcs": [],
+      "duplicateAcs": [],
+      "outOfRangeAcs": [
+        71,
+        72,
+        73,
+        74,
+        75,
+        76,
+        77,
+        78,
+        79,
+        80,
+        81,
+        82,
+        83,
+        84,
+        85,
+        86,
+        87,
+        88,
+        89,
+        90,
+        91,
+        92,
+        93,
+        94,
+        95,
+        96,
+        97,
+        98,
+        99,
+        100,
+        101,
+        102,
+        103,
+        104,
+        105,
+        106,
+        107,
+        108,
+        109,
+        110,
+        111,
+        112,
+        113,
+        114,
+        115,
+        116,
+        117,
+        118,
+        119,
+        120,
+        121,
+        122,
+        123,
+        124,
+        125,
+        126,
+        127,
+        128,
+        129,
+        130,
+        131,
+        132,
+        133,
+        134,
+        135,
+        136,
+        137,
+        138,
+        139,
+        140,
+        141,
+        142,
+        143,
+        144,
+        145,
+        146,
+        147,
+        148,
+        149,
+        150,
+        151,
+        152,
+        153,
+        154,
+        155,
+        156,
+        157,
+        158,
+        159,
+        160,
+        161,
+        162,
+        163,
+        164,
+        165,
+        166,
+        167,
+        168,
+        169,
+        170,
+        171,
+        172,
+        173,
+        174,
+        175,
+        176,
+        177,
+        178,
+        179,
+        180,
+        181,
+        182,
+        183,
+        184,
+        185,
+        186,
+        187,
+        188,
+        189,
+        190,
+        191,
+        192,
+        193,
+        194,
+        195,
+        196,
+        197,
+        198,
+        199,
+        200,
+        201,
+        202,
+        203,
+        204,
+        205,
+        206,
+        207,
+        208,
+        209,
+        210,
+        211,
+        212,
+        213,
+        214,
+        215,
+        216,
+        217,
+        218,
+        219,
+        220,
+        221
+      ]
+    },
+    {
+      "code": "JK",
+      "name": "Jammu & Kashmir",
+      "statutoryAcCount": 90,
+      "profileCount": 90,
+      "diff": 0,
+      "uniqueAcsCovered": 90,
+      "missingCount": 0,
+      "duplicateCount": 0,
+      "outOfRangeCount": 0,
+      "missingAcs": [],
+      "duplicateAcs": [],
+      "outOfRangeAcs": []
+    },
+    {
+      "code": "PY",
+      "name": "Puducherry",
+      "statutoryAcCount": 30,
+      "profileCount": 27,
+      "diff": -3,
+      "uniqueAcsCovered": 27,
+      "missingCount": 3,
+      "duplicateCount": 0,
+      "outOfRangeCount": 0,
+      "missingAcs": [
+        2,
+        17,
+        27
+      ],
+      "duplicateAcs": [],
+      "outOfRangeAcs": []
+    }
+  ]
+}

@@ -1,0 +1,196 @@
+{
+  "totalConstInSeeds": 4123,
+  "totalMlaNamesInSeeds": 5023,
+  "constSummary": [
+    {
+      "state": "andhra-pradesh",
+      "file": "andhra-pradesh-constituencies.ts",
+      "constituencies": 175,
+      "winnerNames": 175
+    },
+    {
+      "state": "arunachal-pradesh",
+      "file": "arunachal-pradesh-constituencies.ts",
+      "constituencies": 60,
+      "winnerNames": 120
+    },
+    {
+      "state": "assam",
+      "file": "assam-constituencies.ts",
+      "constituencies": 126,
+      "winnerNames": 126
+    },
+    {
+      "state": "bihar",
+      "file": "bihar-constituencies.ts",
+      "constituencies": 243,
+      "winnerNames": 243
+    },
+    {
+      "state": "chhattisgarh",
+      "file": "chhattisgarh-constituencies.ts",
+      "constituencies": 90,
+      "winnerNames": 90
+    },
+    {
+      "state": "delhi",
+      "file": "delhi-constituencies.ts",
+      "constituencies": 70,
+      "winnerNames": 140
+    },
+    {
+      "state": "goa",
+      "file": "goa-constituencies.ts",
+      "constituencies": 40,
+      "winnerNames": 40
+    },
+    {
+      "state": "gujarat",
+      "file": "gujarat-constituencies.ts",
+      "constituencies": 182,
+      "winnerNames": 182
+    },
+    {
+      "state": "haryana",
+      "file": "haryana-constituencies.ts",
+      "constituencies": 90,
+      "winnerNames": 90
+    },
+    {
+      "state": "himachal-pradesh",
+      "file": "himachal-pradesh-constituencies.ts",
+      "constituencies": 68,
+      "winnerNames": 68
+    },
+    {
+      "state": "jammu-kashmir",
+      "file": "jammu-kashmir-constituencies.ts",
+      "constituencies": 90,
+      "winnerNames": 90
+    },
+    {
+      "state": "jharkhand",
+      "file": "jharkhand-constituencies.ts",
+      "constituencies": 81,
+      "winnerNames": 81
+    },
+    {
+      "state": "karnataka",
+      "file": "karnataka-constituencies.ts",
+      "constituencies": 224,
+      "winnerNames": 224
+    },
+    {
+      "state": "kerala",
+      "file": "kerala-constituencies.ts",
+      "constituencies": 140,
+      "winnerNames": 280
+    },
+    {
+      "state": "madhya-pradesh",
+      "file": "madhya-pradesh-constituencies.ts",
+      "constituencies": 230,
+      "winnerNames": 230
+    },
+    {
+      "state": "maharashtra",
+      "file": "maharashtra-constituencies.ts",
+      "constituencies": 288,
+      "winnerNames": 288
+    },
+    {
+      "state": "manipur",
+      "file": "manipur-constituencies.ts",
+      "constituencies": 60,
+      "winnerNames": 60
+    },
+    {
+      "state": "meghalaya",
+      "file": "meghalaya-constituencies.ts",
+      "constituencies": 60,
+      "winnerNames": 60
+    },
+    {
+      "state": "mizoram",
+      "file": "mizoram-constituencies.ts",
+      "constituencies": 40,
+      "winnerNames": 80
+    },
+    {
+      "state": "nagaland",
+      "file": "nagaland-constituencies.ts",
+      "constituencies": 60,
+      "winnerNames": 60
+    },
+    {
+      "state": "odisha",
+      "file": "odisha-constituencies.ts",
+      "constituencies": 147,
+      "winnerNames": 147
+    },
+    {
+      "state": "puducherry",
+      "file": "puducherry-constituencies.ts",
+      "constituencies": 30,
+      "winnerNames": 60
+    },
+    {
+      "state": "punjab",
+      "file": "punjab-constituencies.ts",
+      "constituencies": 117,
+      "winnerNames": 117
+    },
+    {
+      "state": "rajasthan",
+      "file": "rajasthan-constituencies.ts",
+      "constituencies": 200,
+      "winnerNames": 200
+    },
+    {
+      "state": "sikkim",
+      "file": "sikkim-constituencies.ts",
+      "constituencies": 32,
+      "winnerNames": 64
+    },
+    {
+      "state": "tamil-nadu",
+      "file": "tamil-nadu-constituencies.ts",
+      "constituencies": 234,
+      "winnerNames": 468
+    },
+    {
+      "state": "telangana",
+      "file": "telangana-constituencies.ts",
+      "constituencies": 119,
+      "winnerNames": 119
+    },
+    {
+      "state": "tripura",
+      "file": "tripura-constituencies.ts",
+      "constituencies": 60,
+      "winnerNames": 60
+    },
+    {
+      "state": "uttar-pradesh",
+      "file": "uttar-pradesh-constituencies.ts",
+      "constituencies": 403,
+      "winnerNames": 403
+    },
+    {
+      "state": "uttarakhand",
+      "file": "uttarakhand-constituencies.ts",
+      "constituencies": 70,
+      "winnerNames": 70
+    },
+    {
+      "state": "west-bengal",
+      "file": "west-bengal-constituencies.ts",
+      "constituencies": 294,
+      "winnerNames": 588
+    }
+  ],
+  "houseFreq": {
+    "lok_sabha": 543,
+    "rajya_sabha": 142
+  }
+}
