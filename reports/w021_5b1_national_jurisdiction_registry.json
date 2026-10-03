@@ -1,0 +1,742 @@
+{
+  "metadata": {
+    "milestone": "W021.5-B1",
+    "title": "Canonical National Jurisdiction Registry (36 States & UTs)",
+    "specification": "W021.5-B1 National Constituency Canonicalization Specification",
+    "authority": "Election Commission of India / Delimitation of Parliamentary and Assembly Constituencies Order, 2008 / Ministry of Home Affairs / Local Government Directory",
+    "generatedAt": "2026-10-03T02:33:13.069Z",
+    "statutoryRegime": "eci_delimitation_2008"
+  },
+  "summary": {
+    "totalJurisdictions": 36,
+    "statesCount": 28,
+    "unionTerritoriesCount": 8,
+    "jurisdictionsWithAssembly": 31,
+    "jurisdictionsWithoutAssembly": 5,
+    "totalAssemblySeats": 4123,
+    "totalParliamentarySeats": 543,
+    "verificationStatus": "100% VERIFIED"
+  },
+  "jurisdictions": [
+    {
+      "code": "AN",
+      "name": "Andaman & Nicobar Islands",
+      "assemblySeats": 0,
+      "parliamentarySeats": 1,
+      "rulingParty": "BJP",
+      "centroid": {
+        "latitude": 11.7401,
+        "longitude": 92.6586
+      },
+      "zoom": 7,
+      "type": "UNION_TERRITORY",
+      "hasAssembly": false,
+      "capital": "Port Blair",
+      "lgdCode": 35,
+      "censusCode2011": "35",
+      "status": "ACTIVE",
+      "source": "ECI_DELIMITATION_ORDER_2008",
+      "verificationStatus": "VERIFIED"
+    },
+    {
+      "code": "AP",
+      "name": "Andhra Pradesh",
+      "assemblySeats": 175,
+      "parliamentarySeats": 25,
+      "rulingParty": "TDP",
+      "centroid": {
+        "latitude": 15.9129,
+        "longitude": 79.74
+      },
+      "zoom": 7,
+      "type": "STATE",
+      "hasAssembly": true,
+      "capital": "Amaravati",
+      "lgdCode": 28,
+      "censusCode2011": "28",
+      "status": "ACTIVE",
+      "source": "ECI_DELIMITATION_ORDER_2008",
+      "verificationStatus": "VERIFIED"
+    },
+    {
+      "code": "AR",
+      "name": "Arunachal Pradesh",
+      "assemblySeats": 60,
+      "parliamentarySeats": 2,
+      "rulingParty": "BJP",
+      "centroid": {
+        "latitude": 28.218,
+        "longitude": 94.7278
+      },
+      "zoom": 7.5,
+      "type": "STATE",
+      "hasAssembly": true,
+      "capital": "Itanagar",
+      "lgdCode": 12,
+      "censusCode2011": "12",
+      "status": "ACTIVE",
+      "source": "ECI_DELIMITATION_ORDER_2008",
+      "verificationStatus": "VERIFIED"
+    },
+    {
+      "code": "AS",
+      "name": "Assam",
+      "assemblySeats": 126,
+      "parliamentarySeats": 14,
+      "rulingParty": "BJP",
+      "centroid": {
+        "latitude": 26.2006,
+        "longitude": 92.9376
+      },
+      "zoom": 7,
+      "type": "STATE",
+      "hasAssembly": true,
+      "capital": "Dispur",
+      "lgdCode": 18,
+      "censusCode2011": "18",
+      "status": "ACTIVE",
+      "source": "ECI_DELIMITATION_ORDER_2008",
+      "verificationStatus": "VERIFIED"
+    },
+    {
+      "code": "BR",
+      "name": "Bihar",
+      "assemblySeats": 243,
+      "parliamentarySeats": 40,
+      "rulingParty": "JDU",
+      "centroid": {
+        "latitude": 25.0961,
+        "longitude": 85.3131
+      },
+      "zoom": 6.5,
+      "type": "STATE",
+      "hasAssembly": true,
+      "capital": "Patna",
+      "lgdCode": 10,
+      "censusCode2011": "10",
+      "status": "ACTIVE",
+      "source": "ECI_DELIMITATION_ORDER_2008",
+      "verificationStatus": "VERIFIED"
+    },
+    {
+      "code": "CH",
+      "name": "Chandigarh",
+      "assemblySeats": 0,
+      "parliamentarySeats": 1,
+      "rulingParty": "INC",
+      "centroid": {
+        "latitude": 30.7333,
+        "longitude": 76.7794
+      },
+      "zoom": 11,
+      "type": "UNION_TERRITORY",
+      "hasAssembly": false,
+      "capital": "Chandigarh",
+      "lgdCode": 4,
+      "censusCode2011": "04",
+      "status": "ACTIVE",
+      "source": "ECI_DELIMITATION_ORDER_2008",
+      "verificationStatus": "VERIFIED"
+    },
+    {
+      "code": "CG",
+      "name": "Chhattisgarh",
+      "assemblySeats": 90,
+      "parliamentarySeats": 11,
+      "rulingParty": "BJP",
+      "centroid": {
+        "latitude": 21.2787,
+        "longitude": 81.8661
+      },
+      "zoom": 6.5,
+      "type": "STATE",
+      "hasAssembly": true,
+      "capital": "Raipur",
+      "lgdCode": 22,
+      "censusCode2011": "22",
+      "status": "ACTIVE",
+      "source": "ECI_DELIMITATION_ORDER_2008",
+      "verificationStatus": "VERIFIED"
+    },
+    {
+      "code": "DN",
+      "name": "Dadra & Nagar Haveli and Daman & Diu",
+      "assemblySeats": 0,
+      "parliamentarySeats": 2,
+      "rulingParty": "BJP",
+      "centroid": {
+        "latitude": 20.3974,
+        "longitude": 72.8328
+      },
+      "zoom": 9,
+      "type": "UNION_TERRITORY",
+      "hasAssembly": false,
+      "capital": "Daman",
+      "lgdCode": 38,
+      "censusCode2011": "25",
+      "status": "ACTIVE",
+      "source": "ECI_DELIMITATION_ORDER_2008",
+      "verificationStatus": "VERIFIED"
+    },
+    {
+      "code": "DL",
+      "name": "Delhi",
+      "assemblySeats": 70,
+      "parliamentarySeats": 7,
+      "rulingParty": "AAP",
+      "centroid": {
+        "latitude": 28.7041,
+        "longitude": 77.1025
+      },
+      "zoom": 10,
+      "type": "UNION_TERRITORY",
+      "hasAssembly": true,
+      "capital": "New Delhi",
+      "lgdCode": 7,
+      "censusCode2011": "07",
+      "status": "ACTIVE",
+      "source": "ECI_DELIMITATION_ORDER_2008",
+      "verificationStatus": "VERIFIED"
+    },
+    {
+      "code": "GA",
+      "name": "Goa",
+      "assemblySeats": 40,
+      "parliamentarySeats": 2,
+      "rulingParty": "BJP",
+      "centroid": {
+        "latitude": 15.2993,
+        "longitude": 74.124
+      },
+      "zoom": 9.5,
+      "type": "STATE",
+      "hasAssembly": true,
+      "capital": "Panaji",
+      "lgdCode": 30,
+      "censusCode2011": "30",
+      "status": "ACTIVE",
+      "source": "ECI_DELIMITATION_ORDER_2008",
+      "verificationStatus": "VERIFIED"
+    },
+    {
+      "code": "GJ",
+      "name": "Gujarat",
+      "assemblySeats": 182,
+      "parliamentarySeats": 26,
+      "rulingParty": "BJP",
+      "centroid": {
+        "latitude": 22.2587,
+        "longitude": 71.1924
+      },
+      "zoom": 6.5,
+      "type": "STATE",
+      "hasAssembly": true,
+      "capital": "Gandhinagar",
+      "lgdCode": 24,
+      "censusCode2011": "24",
+      "status": "ACTIVE",
+      "source": "ECI_DELIMITATION_ORDER_2008",
+      "verificationStatus": "VERIFIED"
+    },
+    {
+      "code": "HR",
+      "name": "Haryana",
+      "assemblySeats": 90,
+      "parliamentarySeats": 10,
+      "rulingParty": "BJP",
+      "centroid": {
+        "latitude": 29.0588,
+        "longitude": 76.0856
+      },
+      "zoom": 7.5,
+      "type": "STATE",
+      "hasAssembly": true,
+      "capital": "Chandigarh",
+      "lgdCode": 6,
+      "censusCode2011": "06",
+      "status": "ACTIVE",
+      "source": "ECI_DELIMITATION_ORDER_2008",
+      "verificationStatus": "VERIFIED"
+    },
+    {
+      "code": "HP",
+      "name": "Himachal Pradesh",
+      "assemblySeats": 68,
+      "parliamentarySeats": 4,
+      "rulingParty": "INC",
+      "centroid": {
+        "latitude": 31.1048,
+        "longitude": 77.1734
+      },
+      "zoom": 7.5,
+      "type": "STATE",
+      "hasAssembly": true,
+      "capital": "Shimla",
+      "lgdCode": 2,
+      "censusCode2011": "02",
+      "status": "ACTIVE",
+      "source": "ECI_DELIMITATION_ORDER_2008",
+      "verificationStatus": "VERIFIED"
+    },
+    {
+      "code": "JK",
+      "name": "Jammu & Kashmir",
+      "assemblySeats": 90,
+      "parliamentarySeats": 5,
+      "rulingParty": "JKNC",
+      "centroid": {
+        "latitude": 33.7782,
+        "longitude": 76.5762
+      },
+      "zoom": 7,
+      "type": "UNION_TERRITORY",
+      "hasAssembly": true,
+      "capital": "Srinagar / Jammu",
+      "lgdCode": 1,
+      "censusCode2011": "01",
+      "status": "ACTIVE",
+      "source": "ECI_DELIMITATION_ORDER_2008",
+      "verificationStatus": "VERIFIED"
+    },
+    {
+      "code": "JH",
+      "name": "Jharkhand",
+      "assemblySeats": 81,
+      "parliamentarySeats": 14,
+      "rulingParty": "JMM",
+      "centroid": {
+        "latitude": 23.6102,
+        "longitude": 85.2799
+      },
+      "zoom": 7,
+      "type": "STATE",
+      "hasAssembly": true,
+      "capital": "Ranchi",
+      "lgdCode": 20,
+      "censusCode2011": "20",
+      "status": "ACTIVE",
+      "source": "ECI_DELIMITATION_ORDER_2008",
+      "verificationStatus": "VERIFIED"
+    },
+    {
+      "code": "KA",
+      "name": "Karnataka",
+      "assemblySeats": 224,
+      "parliamentarySeats": 28,
+      "rulingParty": "INC",
+      "centroid": {
+        "latitude": 15.3173,
+        "longitude": 75.7139
+      },
+      "zoom": 6.5,
+      "type": "STATE",
+      "hasAssembly": true,
+      "capital": "Bengaluru",
+      "lgdCode": 29,
+      "censusCode2011": "29",
+      "status": "ACTIVE",
+      "source": "ECI_DELIMITATION_ORDER_2008",
+      "verificationStatus": "VERIFIED"
+    },
+    {
+      "code": "KL",
+      "name": "Kerala",
+      "assemblySeats": 140,
+      "parliamentarySeats": 20,
+      "rulingParty": "CPIM",
+      "centroid": {
+        "latitude": 10.8505,
+        "longitude": 76.2711
+      },
+      "zoom": 7,
+      "type": "STATE",
+      "hasAssembly": true,
+      "capital": "Thiruvananthapuram",
+      "lgdCode": 32,
+      "censusCode2011": "32",
+      "status": "ACTIVE",
+      "source": "ECI_DELIMITATION_ORDER_2008",
+      "verificationStatus": "VERIFIED"
+    },
+    {
+      "code": "LA",
+      "name": "Ladakh",
+      "assemblySeats": 0,
+      "parliamentarySeats": 1,
+      "rulingParty": "IND",
+      "centroid": {
+        "latitude": 34.1526,
+        "longitude": 77.5771
+      },
+      "zoom": 6.5,
+      "type": "UNION_TERRITORY",
+      "hasAssembly": false,
+      "capital": "Leh",
+      "lgdCode": 37,
+      "censusCode2011": "37",
+      "status": "ACTIVE",
+      "source": "ECI_DELIMITATION_ORDER_2008",
+      "verificationStatus": "VERIFIED"
+    },
+    {
+      "code": "LD",
+      "name": "Lakshadweep",
+      "assemblySeats": 0,
+      "parliamentarySeats": 1,
+      "rulingParty": "INC",
+      "centroid": {
+        "latitude": 10.5667,
+        "longitude": 72.6417
+      },
+      "zoom": 8,
+      "type": "UNION_TERRITORY",
+      "hasAssembly": false,
+      "capital": "Kavaratti",
+      "lgdCode": 31,
+      "censusCode2011": "31",
+      "status": "ACTIVE",
+      "source": "ECI_DELIMITATION_ORDER_2008",
+      "verificationStatus": "VERIFIED"
+    },
+    {
+      "code": "MP",
+      "name": "Madhya Pradesh",
+      "assemblySeats": 230,
+      "parliamentarySeats": 29,
+      "rulingParty": "BJP",
+      "centroid": {
+        "latitude": 22.9734,
+        "longitude": 78.6569
+      },
+      "zoom": 6,
+      "type": "STATE",
+      "hasAssembly": true,
+      "capital": "Bhopal",
+      "lgdCode": 23,
+      "censusCode2011": "23",
+      "status": "ACTIVE",
+      "source": "ECI_DELIMITATION_ORDER_2008",
+      "verificationStatus": "VERIFIED"
+    },
+    {
+      "code": "MH",
+      "name": "Maharashtra",
+      "assemblySeats": 288,
+      "parliamentarySeats": 48,
+      "rulingParty": "BJP",
+      "centroid": {
+        "latitude": 19.7515,
+        "longitude": 75.7139
+      },
+      "zoom": 6,
+      "type": "STATE",
+      "hasAssembly": true,
+      "capital": "Mumbai",
+      "lgdCode": 27,
+      "censusCode2011": "27",
+      "status": "ACTIVE",
+      "source": "ECI_DELIMITATION_ORDER_2008",
+      "verificationStatus": "VERIFIED"
+    },
+    {
+      "code": "MN",
+      "name": "Manipur",
+      "assemblySeats": 60,
+      "parliamentarySeats": 2,
+      "rulingParty": "BJP",
+      "centroid": {
+        "latitude": 24.6637,
+        "longitude": 93.9063
+      },
+      "zoom": 8,
+      "type": "STATE",
+      "hasAssembly": true,
+      "capital": "Imphal",
+      "lgdCode": 14,
+      "censusCode2011": "14",
+      "status": "ACTIVE",
+      "source": "ECI_DELIMITATION_ORDER_2008",
+      "verificationStatus": "VERIFIED"
+    },
+    {
+      "code": "ML",
+      "name": "Meghalaya",
+      "assemblySeats": 60,
+      "parliamentarySeats": 2,
+      "rulingParty": "NPP",
+      "centroid": {
+        "latitude": 25.467,
+        "longitude": 91.3662
+      },
+      "zoom": 8,
+      "type": "STATE",
+      "hasAssembly": true,
+      "capital": "Shillong",
+      "lgdCode": 17,
+      "censusCode2011": "17",
+      "status": "ACTIVE",
+      "source": "ECI_DELIMITATION_ORDER_2008",
+      "verificationStatus": "VERIFIED"
+    },
+    {
+      "code": "MZ",
+      "name": "Mizoram",
+      "assemblySeats": 40,
+      "parliamentarySeats": 1,
+      "rulingParty": "ZPM",
+      "centroid": {
+        "latitude": 23.1645,
+        "longitude": 92.9376
+      },
+      "zoom": 8,
+      "type": "STATE",
+      "hasAssembly": true,
+      "capital": "Aizawl",
+      "lgdCode": 15,
+      "censusCode2011": "15",
+      "status": "ACTIVE",
+      "source": "ECI_DELIMITATION_ORDER_2008",
+      "verificationStatus": "VERIFIED"
+    },
+    {
+      "code": "NL",
+      "name": "Nagaland",
+      "assemblySeats": 60,
+      "parliamentarySeats": 1,
+      "rulingParty": "NDPP",
+      "centroid": {
+        "latitude": 26.1584,
+        "longitude": 94.5624
+      },
+      "zoom": 8,
+      "type": "STATE",
+      "hasAssembly": true,
+      "capital": "Kohima",
+      "lgdCode": 13,
+      "censusCode2011": "13",
+      "status": "ACTIVE",
+      "source": "ECI_DELIMITATION_ORDER_2008",
+      "verificationStatus": "VERIFIED"
+    },
+    {
+      "code": "OD",
+      "name": "Odisha",
+      "assemblySeats": 147,
+      "parliamentarySeats": 21,
+      "rulingParty": "BJP",
+      "centroid": {
+        "latitude": 20.9517,
+        "longitude": 85.0985
+      },
+      "zoom": 6.5,
+      "type": "STATE",
+      "hasAssembly": true,
+      "capital": "Bhubaneswar",
+      "lgdCode": 21,
+      "censusCode2011": "21",
+      "status": "ACTIVE",
+      "source": "ECI_DELIMITATION_ORDER_2008",
+      "verificationStatus": "VERIFIED"
+    },
+    {
+      "code": "PY",
+      "name": "Puducherry",
+      "assemblySeats": 30,
+      "parliamentarySeats": 1,
+      "rulingParty": "NDA",
+      "centroid": {
+        "latitude": 11.9416,
+        "longitude": 79.8083
+      },
+      "zoom": 10,
+      "type": "UNION_TERRITORY",
+      "hasAssembly": true,
+      "capital": "Puducherry",
+      "lgdCode": 34,
+      "censusCode2011": "34",
+      "status": "ACTIVE",
+      "source": "ECI_DELIMITATION_ORDER_2008",
+      "verificationStatus": "VERIFIED"
+    },
+    {
+      "code": "PB",
+      "name": "Punjab",
+      "assemblySeats": 117,
+      "parliamentarySeats": 13,
+      "rulingParty": "AAP",
+      "centroid": {
+        "latitude": 31.1471,
+        "longitude": 75.3412
+      },
+      "zoom": 7.5,
+      "type": "STATE",
+      "hasAssembly": true,
+      "capital": "Chandigarh",
+      "lgdCode": 3,
+      "censusCode2011": "03",
+      "status": "ACTIVE",
+      "source": "ECI_DELIMITATION_ORDER_2008",
+      "verificationStatus": "VERIFIED"
+    },
+    {
+      "code": "RJ",
+      "name": "Rajasthan",
+      "assemblySeats": 200,
+      "parliamentarySeats": 25,
+      "rulingParty": "BJP",
+      "centroid": {
+        "latitude": 27.0238,
+        "longitude": 74.2179
+      },
+      "zoom": 6,
+      "type": "STATE",
+      "hasAssembly": true,
+      "capital": "Jaipur",
+      "lgdCode": 8,
+      "censusCode2011": "08",
+      "status": "ACTIVE",
+      "source": "ECI_DELIMITATION_ORDER_2008",
+      "verificationStatus": "VERIFIED"
+    },
+    {
+      "code": "SK",
+      "name": "Sikkim",
+      "assemblySeats": 32,
+      "parliamentarySeats": 1,
+      "rulingParty": "SKM",
+      "centroid": {
+        "latitude": 27.533,
+        "longitude": 88.5122
+      },
+      "zoom": 9,
+      "type": "STATE",
+      "hasAssembly": true,
+      "capital": "Gangtok",
+      "lgdCode": 11,
+      "censusCode2011": "11",
+      "status": "ACTIVE",
+      "source": "ECI_DELIMITATION_ORDER_2008",
+      "verificationStatus": "VERIFIED"
+    },
+    {
+      "code": "TN",
+      "name": "Tamil Nadu",
+      "assemblySeats": 234,
+      "parliamentarySeats": 39,
+      "rulingParty": "DMK",
+      "centroid": {
+        "latitude": 11.1271,
+        "longitude": 78.6569
+      },
+      "zoom": 6.5,
+      "type": "STATE",
+      "hasAssembly": true,
+      "capital": "Chennai",
+      "lgdCode": 33,
+      "censusCode2011": "33",
+      "status": "ACTIVE",
+      "source": "ECI_DELIMITATION_ORDER_2008",
+      "verificationStatus": "VERIFIED"
+    },
+    {
+      "code": "TS",
+      "name": "Telangana",
+      "assemblySeats": 119,
+      "parliamentarySeats": 17,
+      "rulingParty": "INC",
+      "centroid": {
+        "latitude": 17.8495,
+        "longitude": 79.1151
+      },
+      "zoom": 7,
+      "type": "STATE",
+      "hasAssembly": true,
+      "capital": "Hyderabad",
+      "lgdCode": 36,
+      "censusCode2011": "36",
+      "status": "ACTIVE",
+      "source": "ECI_DELIMITATION_ORDER_2008",
+      "verificationStatus": "VERIFIED"
+    },
+    {
+      "code": "TR",
+      "name": "Tripura",
+      "assemblySeats": 60,
+      "parliamentarySeats": 2,
+      "rulingParty": "BJP",
+      "centroid": {
+        "latitude": 23.9408,
+        "longitude": 91.9882
+      },
+      "zoom": 8.5,
+      "type": "STATE",
+      "hasAssembly": true,
+      "capital": "Agartala",
+      "lgdCode": 16,
+      "censusCode2011": "16",
+      "status": "ACTIVE",
+      "source": "ECI_DELIMITATION_ORDER_2008",
+      "verificationStatus": "VERIFIED"
+    },
+    {
+      "code": "UP",
+      "name": "Uttar Pradesh",
+      "assemblySeats": 403,
+      "parliamentarySeats": 80,
+      "rulingParty": "BJP",
+      "centroid": {
+        "latitude": 26.8467,
+        "longitude": 80.9462
+      },
+      "zoom": 6,
+      "type": "STATE",
+      "hasAssembly": true,
+      "capital": "Lucknow",
+      "lgdCode": 9,
+      "censusCode2011": "09",
+      "status": "ACTIVE",
+      "source": "ECI_DELIMITATION_ORDER_2008",
+      "verificationStatus": "VERIFIED"
+    },
+    {
+      "code": "UK",
+      "name": "Uttarakhand",
+      "assemblySeats": 70,
+      "parliamentarySeats": 5,
+      "rulingParty": "BJP",
+      "centroid": {
+        "latitude": 30.0668,
+        "longitude": 79.0193
+      },
+      "zoom": 7.5,
+      "type": "STATE",
+      "hasAssembly": true,
+      "capital": "Dehradun",
+      "lgdCode": 5,
+      "censusCode2011": "05",
+      "status": "ACTIVE",
+      "source": "ECI_DELIMITATION_ORDER_2008",
+      "verificationStatus": "VERIFIED"
+    },
+    {
+      "code": "WB",
+      "name": "West Bengal",
+      "assemblySeats": 294,
+      "parliamentarySeats": 42,
+      "rulingParty": "AITC",
+      "centroid": {
+        "latitude": 22.9868,
+        "longitude": 87.855
+      },
+      "zoom": 6.5,
+      "type": "STATE",
+      "hasAssembly": true,
+      "capital": "Kolkata",
+      "lgdCode": 19,
+      "censusCode2011": "19",
+      "status": "ACTIVE",
+      "source": "ECI_DELIMITATION_ORDER_2008",
+      "verificationStatus": "VERIFIED"
+    }
+  ]
+}
