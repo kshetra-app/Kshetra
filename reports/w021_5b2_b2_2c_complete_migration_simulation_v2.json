@@ -1,0 +1,59 @@
+{
+  "simulatedAt": "2026-10-03T13:43:42.692Z",
+  "milestone": "W021.5-B2.2-C Complete Migration Simulation v2 (Authoritative C0-C7)",
+  "verdict": "CORRECTED_DATABASE_INSERTION_AND_IDEMPOTENCY_CONFIRMED",
+  "authoritativeDatabaseInsertionAccounting": {
+    "C0_Provenance_Record": 1,
+    "C1_Political_Organizations": 107,
+    "C2_Organization_Relationships": 10,
+    "C3_Multilingual_Names": 27,
+    "C4_Organization_Symbols": 19,
+    "C5_Organization_Aliases": 1043,
+    "C6_Provisional_Quarantine": 0,
+    "C7_Disposition_Assertion": 0,
+    "ACTUAL_DATABASE_INSERTS_RUN_1": 1207
+  },
+  "run1ExecutionDetails": {
+    "actualDbInserts": 1207,
+    "stageDbInserts": {
+      "C0_provenance": 1,
+      "C1_organizations": 107,
+      "C2_relationships": 10,
+      "C3_multilingual": 27,
+      "C4_symbols": 19,
+      "C5_aliases": 1043,
+      "C6_provisional_quarantine_db_inserts": 0,
+      "C7_raw_string_disposition_db_inserts": 0
+    },
+    "verificationAndAssertionOperations": {
+      "C6_quarantinedRecordsAudited": 14,
+      "C7_rawStringsDisposed": 1096,
+      "C7_organizationFkResolutions": 1043,
+      "C7_nonOrganizationDispositions": 53
+    }
+  },
+  "idempotencyReruns": {
+    "run2NewDbInserts": 0,
+    "run3NewDbInserts": 0,
+    "unexpectedDuplicates": 0,
+    "idempotentRowStability": true
+  },
+  "finalDatabaseEntities": {
+    "provenance": 1,
+    "organizations": 107,
+    "relationships": 10,
+    "multilingual": 27,
+    "symbols": 19,
+    "aliases": 1043
+  },
+  "invariants": {
+    "exactDbInsertsEqual1207": true,
+    "c6ProvisionalZeroDbInserts": true,
+    "c7AssertionZeroDbInserts": true,
+    "c7RawStringsDisposed1096": true,
+    "c7OrganizationFkResolutions1043": true,
+    "c7NonOrgDispositions53": true,
+    "run2ZeroNewInserts": true,
+    "run3ZeroNewInserts": true
+  }
+}

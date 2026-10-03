@@ -1,31 +1,50 @@
 /**
  * tests/b2-2c-final-forensic-reconciliation.test.mjs
  * 
- * CTO DIRECTIVE — W021.5-B2.2-C RECONCILIATION & FINAL EXECUTION GATE TEST SUITE
+ * CTO DIRECTIVE — W021.5-B2.2-C RECONCILIATION CORRECTION & FINAL RE-GATE TEST SUITE
  * 
- * Verifies all 22 mandatory forensic invariants with mathematical completeness:
+ * Authoritative Tests covering all directives:
  * 1. Exact raw party string count = 1,096
  * 2. Exact total raw string occurrence count = 16,011
- * 3. Exact disposition partition: 1,030 VERIFIED + 25 INDEPENDENT + 22 RECONCILED + 14 PROVISIONAL + 4 NON_ORGANIZATION + 1 NOMINATED = 1,096 (Remainder = 0)
- * 4. Exact 39-string disposition accounted for without omission
- * 5. Exactly 107 canonical organizations
- * 6. Exactly 1,043 aliases mapped to canonical organizations
- * 7. Foreign key soundness: zero dangling org pointers
- * 8. Exactly 14 provisional records quarantined and excluded from migration
- * 9. Exactly 27 multilingual identities audited across 11+ languages
- * 10. Exactly 19 statutory symbols audited
- * 11. Exactly 10 statutory relationships audited (splits, mergers, renames)
- * 12. TRS -> BRS temporal resolution at 2022-10-05
- * 13. High-risk alias collision safety (NCP/NCPSP, SHS/SHSUBT, INC/Congress)
- * 14. Independent candidacy model separation (is_independent = true, org_id = null)
- * 15. Nominated MP model separation (Art 80(1)(a), org_id = null)
- * 16. Statutory ballot options separation (NOTA non-party)
- * 17. Generic summary buckets separation (OTH/Other)
- * 18. C0–C7 dry-run simulation row counts match exactly (1,221 total inserts)
- * 19. Simulation idempotency: Run 2 and Run 3 produce exactly 0 new inserts
- * 20. Rollback simulation teardown strictly scoped to batch 0215b22c-0000-0000-0000-000000000001
- * 21. Runtime non-interference: zero unmediated API inserts to political_organizations
- * 22. Air-gap integrity: production database ehfafcnimmjusyvplbah untouched
+ * 3. Authoritative Decomposition of all 1,096 strings:
+ *    - 1,030 VERIFIED_ORGANIZATION_ALIAS
+ *    -    13 RECONCILED_ORGANIZATION_ALIAS
+ *    -     9 RECONCILED_MP_CODE
+ *    -    25 INDEPENDENT
+ *    -    14 PROVISIONAL
+ *    -     4 NON_ORGANIZATION
+ *    -     1 NOMINATED
+ *    Total = 1,096 (Remainder = 0)
+ * 4. Authoritative Canonical Organization Aliases Count: 1,030 + 13 = 1,043
+ * 5. Reconciled MP Single-Letter Code Contextual Separation: 9 codes (J, C, K, U, P, S, D, A, M) with org_id = null
+ * 6. Exact 39-String Unaccounted Set Disposition:
+ *    - 25 INDEPENDENT
+ *    -  9 RECONCILED_MP_CODE
+ *    -  2 NOTA
+ *    -  2 OTH
+ *    -  1 NOMINATED
+ *    Total = 39 (Zero remainder)
+ * 7. Exactly 107 Canonical Organizations adhering to ID conventions
+ * 8. Foreign key linkage completeness and target integrity (0 dangling pointers)
+ * 9. Exactly 14 Provisional Records Quarantined (Fail-closed; 0 DB inserts)
+ * 10. Exactly 27 Multilingual Benchmark Identities Audited across 11+ languages
+ * 11. Exactly 19 Statutory Symbols Audited
+ * 12. Exactly 10 Statutory Lineage Relationships Audited (mergers, splits, renames)
+ * 13. TRS -> BRS Temporal Lineage Resolution at 2022-10-05
+ * 14. High-risk alias collision safety (NCP/NCPSP, SHS/SHSUBT, INC/Congress)
+ * 15. Independent Candidacy Model Separation (is_independent = true, org_id = null)
+ * 16. Nominated MP Model Separation (Article 80(1)(a), org_id = null)
+ * 17. Statutory Ballot Options & Generic Buckets Separation (NOTA, OTH)
+ * 18. Authoritative C0–C7 Database Insertion Accounting:
+ *     C0 (1) + C1 (107) + C2 (10) + C3 (27) + C4 (19) + C5 (1,043) = EXACTLY 1,207 ACTUAL DB INSERTS
+ *     C6 Provisional = 0 DB Inserts
+ *     C7 Disposition Assertion = 0 DB Inserts
+ * 19. C7 Semantic Invariant: 1,096 raw strings disposed, 1,043 org FK resolutions, 53 non-org dispositions
+ * 20. Simulation Idempotency: Run 2 and Run 3 produce exactly 0 new DB inserts
+ * 21. Rollback Simulation Teardown: Exactly 1,207 rows removed, dependency-safe, scoped to batch provenance
+ * 22. Zero Leakage Invariant: Non-org / Independent / Nominated / NOTA / Provisional produce 0 synthetic orgs
+ * 23. Runtime Non-Interference: Zero unmediated API route inserts
+ * 24. Air-Gap Integrity: Production database ehfafcnimmjusyvplbah untouched
  */
 
 import test from 'node:test';
@@ -36,56 +55,83 @@ import path from 'node:path';
 const REPO_ROOT = process.cwd();
 const REPORTS_DIR = path.join(REPO_ROOT, 'reports');
 
-const dispositionPath = path.join(REPORTS_DIR, 'w021_5b2_b2_2c_1096_disposition_ledger.json');
+const dispositionV2Path = path.join(REPORTS_DIR, 'w021_5b2_b2_2c_1096_disposition_ledger_v2.json');
+const setDiffV2Path = path.join(REPORTS_DIR, 'w021_5b2_b2_2c_set_difference_audit_v2.json');
 const manifestPath = path.join(REPORTS_DIR, 'w021_5b2_b2_2c_final_organization_manifest.json');
-const fkAuditPath = path.join(REPORTS_DIR, 'w021_5b2_b2_2c_fk_linkage_audit.json');
+const fkAuditV2Path = path.join(REPORTS_DIR, 'w021_5b2_b2_2c_fk_linkage_audit_v2.json');
 const temporalAuditPath = path.join(REPORTS_DIR, 'w021_5b2_b2_2c_temporal_lineage_audit.json');
 const collisionAuditPath = path.join(REPORTS_DIR, 'w021_5b2_b2_2c_alias_collision_audit.json');
 const provQuarantinePath = path.join(REPORTS_DIR, 'w021_5b2_b2_2c_provisional_quarantine.json');
-const provenanceAuditPath = path.join(REPORTS_DIR, 'w021_5b2_b2_2c_provenance_audit.json');
 const runtimeAuditPath = path.join(REPORTS_DIR, 'w021_5b2_b2_2c_runtime_noninterference.json');
-const simPath = path.join(REPORTS_DIR, 'w021_5b2_b2_2c_complete_migration_simulation.json');
-const rollbackPath = path.join(REPORTS_DIR, 'w021_5b2_b2_2c_rollback_simulation.json');
-const diffPath = path.join(REPORTS_DIR, 'w021_5b2_b2_2c_set_difference_audit.json');
+const simV2Path = path.join(REPORTS_DIR, 'w021_5b2_b2_2c_complete_migration_simulation_v2.json');
+const rollbackV2Path = path.join(REPORTS_DIR, 'w021_5b2_b2_2c_rollback_simulation_v2.json');
 
-test('Invariant 1: Exact Raw Party String Count = 1,096', () => {
-  const disp = JSON.parse(fs.readFileSync(dispositionPath, 'utf8'));
-  assert.strictEqual(disp.totalRawStrings, 1096, 'Total raw unique strings must be exactly 1,096');
-  assert.strictEqual(disp.ledger.length, 1096, 'Ledger length must be exactly 1,096');
+test('Test 1: Exact Raw Party String Count = 1,096', () => {
+  const disp = JSON.parse(fs.readFileSync(dispositionV2Path, 'utf8'));
+  assert.strictEqual(disp.totalRawStrings, 1096);
+  assert.strictEqual(disp.ledger.length, 1096);
 });
 
-test('Invariant 2: Exact Total Raw String Occurrence Count = 16,011', () => {
-  const disp = JSON.parse(fs.readFileSync(dispositionPath, 'utf8'));
-  assert.strictEqual(disp.totalOccurrences, 16011, 'Total raw string occurrences must be exactly 16,011');
+test('Test 2: Exact Total Raw String Occurrence Count = 16,011', () => {
+  const disp = JSON.parse(fs.readFileSync(dispositionV2Path, 'utf8'));
+  assert.strictEqual(disp.totalOccurrences, 16011);
 });
 
-test('Invariant 3: Exact Disposition Partition Mathematical Parity (Remainder = 0)', () => {
-  const disp = JSON.parse(fs.readFileSync(dispositionPath, 'utf8'));
-  const counts = disp.dispositionCounts;
-  assert.strictEqual(counts.VERIFIED, 1030);
+test('Test 3: Authoritative 7-Class Reconciliation Partition (Remainder = 0)', () => {
+  const disp = JSON.parse(fs.readFileSync(dispositionV2Path, 'utf8'));
+  const counts = disp.dispositionClassCounts;
+  assert.strictEqual(counts.VERIFIED_ORGANIZATION_ALIAS, 1030);
+  assert.strictEqual(counts.RECONCILED_ORGANIZATION_ALIAS, 13);
+  assert.strictEqual(counts.RECONCILED_MP_CODE, 9);
   assert.strictEqual(counts.INDEPENDENT, 25);
-  assert.strictEqual(counts.RECONCILED, 22);
   assert.strictEqual(counts.PROVISIONAL, 14);
   assert.strictEqual(counts.NON_ORGANIZATION, 4);
   assert.strictEqual(counts.NOMINATED, 1);
 
-  const sum = counts.VERIFIED + counts.INDEPENDENT + counts.RECONCILED + counts.PROVISIONAL + counts.NON_ORGANIZATION + counts.NOMINATED;
-  assert.strictEqual(sum, 1096, 'Sum of all partition categories must equal 1,096');
-  assert.strictEqual(1096 - sum, 0, 'Mathematical remainder must be exactly 0');
+  const sum = counts.VERIFIED_ORGANIZATION_ALIAS +
+              counts.RECONCILED_ORGANIZATION_ALIAS +
+              counts.RECONCILED_MP_CODE +
+              counts.INDEPENDENT +
+              counts.PROVISIONAL +
+              counts.NON_ORGANIZATION +
+              counts.NOMINATED;
+  assert.strictEqual(sum, 1096);
+  assert.strictEqual(disp.mathematicalParity.remainder, 0);
+  assert.strictEqual(disp.mathematicalParity.isEqual, true);
 });
 
-test('Invariant 4: Exact 39-String Disposition Accounted For Without Omission', () => {
-  const diff = JSON.parse(fs.readFileSync(diffPath, 'utf8'));
-  assert.strictEqual(diff.unaccountedSetCount, 39, 'Difference between 1,096 and 1,057 must be exactly 39');
-  assert.strictEqual(diff.unaccountedCategorization.independentCandidacies, 25);
-  assert.strictEqual(diff.unaccountedCategorization.corruptedMpSingleLetters, 9);
-  assert.strictEqual(diff.unaccountedCategorization.statutoryBallotOptionsNota, 2);
-  assert.strictEqual(diff.unaccountedCategorization.genericBucketLabels, 2);
-  assert.strictEqual(diff.unaccountedCategorization.nominatedRajyaSabhaCode, 1);
-  assert.strictEqual(diff.unaccountedStringsList.length, 39, 'Zero strings unaccounted for in 39-list');
+test('Test 4: Authoritative Canonical Organization Aliases Count (1,030 + 13 = 1,043)', () => {
+  const disp = JSON.parse(fs.readFileSync(dispositionV2Path, 'utf8'));
+  const counts = disp.dispositionClassCounts;
+  const canonicalAliases = counts.VERIFIED_ORGANIZATION_ALIAS + counts.RECONCILED_ORGANIZATION_ALIAS;
+  assert.strictEqual(canonicalAliases, 1043);
+  assert.strictEqual(disp.canonicalAliasesEligibleCount, 1043);
 });
 
-test('Invariant 5: Exactly 107 Canonical Organizations Adhere to ID Convention', () => {
+test('Test 5: Reconciled MP Single-Letter Code Contextual Separation (9 codes)', () => {
+  const disp = JSON.parse(fs.readFileSync(dispositionV2Path, 'utf8'));
+  const mpCodes = disp.ledger.filter(r => r.disposition_class === 'RECONCILED_MP_CODE');
+  assert.strictEqual(mpCodes.length, 9);
+  const expectedCodes = new Set(['J', 'C', 'K', 'U', 'P', 'S', 'D', 'A', 'M']);
+  for (const row of mpCodes) {
+    assert.ok(expectedCodes.has(row.raw_string));
+    assert.strictEqual(row.organization_id, null, `MP single-letter code '${row.raw_string}' must have null organization_id`);
+    assert.strictEqual(row.organization_resolution_status, 'RECONCILED_VIA_CANDIDACY_CONTEXT');
+  }
+});
+
+test('Test 6: Exact 39-String Unaccounted Set Decomposition', () => {
+  const setDiff = JSON.parse(fs.readFileSync(setDiffV2Path, 'utf8'));
+  assert.strictEqual(setDiff.unaccountedSetCount, 39);
+  assert.strictEqual(setDiff.unaccountedCategorizationOf39Strings.independentCandidacies, 25);
+  assert.strictEqual(setDiff.unaccountedCategorizationOf39Strings.reconciledMpSingleLetterCodes, 9);
+  assert.strictEqual(setDiff.unaccountedCategorizationOf39Strings.statutoryBallotOptionsNota, 2);
+  assert.strictEqual(setDiff.unaccountedCategorizationOf39Strings.genericBucketLabels, 2);
+  assert.strictEqual(setDiff.unaccountedCategorizationOf39Strings.nominatedRajyaSabhaCode, 1);
+  assert.strictEqual(setDiff.unaccountedStringsList.length, 39);
+});
+
+test('Test 7: Exactly 107 Canonical Organizations adhering to ID conventions', () => {
   const manifest = JSON.parse(fs.readFileSync(manifestPath, 'utf8'));
   assert.strictEqual(manifest.summary.exactCanonicalOrganizations, 107);
   assert.strictEqual(manifest.canonicalOrganizations.length, 107);
@@ -97,38 +143,39 @@ test('Invariant 5: Exactly 107 Canonical Organizations Adhere to ID Convention',
   }
 });
 
-test('Invariant 6: Exactly 1,043 Aliases Mapped to Canonical Organizations', () => {
-  const manifest = JSON.parse(fs.readFileSync(manifestPath, 'utf8'));
-  assert.strictEqual(manifest.summary.exactRawAliasesMapped, 1043);
-});
-
-test('Invariant 7: Foreign Key Linkage and Target Integrity Soundness', () => {
-  const fkAudit = JSON.parse(fs.readFileSync(fkAuditPath, 'utf8'));
-  assert.strictEqual(fkAudit.summary.danglingForeignKeyPointers, 0, 'Zero dangling foreign keys permitted');
+test('Test 8: Foreign Key Linkage Soundness (0 Dangling Pointers)', () => {
+  const fkAudit = JSON.parse(fs.readFileSync(fkAuditV2Path, 'utf8'));
+  assert.strictEqual(fkAudit.summary.danglingForeignKeyPointers, 0);
   assert.strictEqual(fkAudit.summary.isForeignKeyCompleteAndSound, true);
+  assert.strictEqual(fkAudit.summary.validCanonicalOrgPointers, 1043);
+  assert.strictEqual(fkAudit.summary.validNullPointersAccountedFor, 53);
   assert.strictEqual(fkAudit.summary.validCanonicalOrgPointers + fkAudit.summary.validNullPointersAccountedFor, 1096);
 });
 
-test('Invariant 8: Exactly 14 Provisional Records Quarantined', () => {
+test('Test 9: Exactly 14 Provisional Records Quarantined (Fail-Closed, 0 DB Inserts)', () => {
   const provAudit = JSON.parse(fs.readFileSync(provQuarantinePath, 'utf8'));
-  assert.strictEqual(provAudit.totalQuarantinedRecords, 14, 'Must quarantine exactly 14 records');
-  for (const q of provAudit.quarantinedRecords) {
-    assert.strictEqual(q.migrationAction, 'RETAIN_IN_PROVISIONAL_AUDIT_LOG_EXCLUDE_FROM_MIGRATION');
+  assert.strictEqual(provAudit.totalQuarantinedRecords, 14);
+  const disp = JSON.parse(fs.readFileSync(dispositionV2Path, 'utf8'));
+  const provRows = disp.ledger.filter(r => r.disposition_class === 'PROVISIONAL');
+  assert.strictEqual(provRows.length, 14);
+  for (const r of provRows) {
+    assert.strictEqual(r.organization_id, null);
+    assert.strictEqual(r.organization_resolution_status, 'QUARANTINED_PENDING_FORM_21E');
   }
 });
 
-test('Invariant 9: Exactly 27 Multilingual Benchmark Identities Audited', () => {
+test('Test 10: Exactly 27 Multilingual Benchmark Identities Audited across 11+ Languages', () => {
   const multi = JSON.parse(fs.readFileSync(path.join(REPORTS_DIR, 'w021_5b2_b2_2c_multilingual_matrix.json'), 'utf8'));
   assert.strictEqual(multi.totalIdentitiesAudited, 27);
   assert.ok(multi.languagesCovered.length >= 11);
 });
 
-test('Invariant 10: Exactly 19 Statutory Symbols Audited', () => {
+test('Test 11: Exactly 19 Statutory Symbols Audited', () => {
   const symbols = JSON.parse(fs.readFileSync(path.join(REPORTS_DIR, 'w021_5b2_b2_2c_symbol_matrix.json'), 'utf8'));
   assert.strictEqual(symbols.totalSymbolsAudited, 19);
 });
 
-test('Invariant 11: Exactly 10 Statutory Relationships Audited', () => {
+test('Test 12: Exactly 10 Statutory Lineage Relationships Audited', () => {
   const temporal = JSON.parse(fs.readFileSync(temporalAuditPath, 'utf8'));
   assert.strictEqual(temporal.totalStatutoryRelationships, 10);
   assert.strictEqual(temporal.lineageInvariantsVerified.allSourceOrganizationsExist, true);
@@ -137,92 +184,104 @@ test('Invariant 11: Exactly 10 Statutory Relationships Audited', () => {
   assert.strictEqual(temporal.lineageInvariantsVerified.zeroSelfReferentialLineages, true);
 });
 
-test('Invariant 12: TRS -> BRS Temporal Resolution at 2022-10-05', () => {
+test('Test 13: TRS -> BRS Temporal Lineage Resolution at 2022-10-05', () => {
   const temporal = JSON.parse(fs.readFileSync(temporalAuditPath, 'utf8'));
   assert.strictEqual(temporal.temporalQuerySimulation.TRS_at_2018_Assembly_Election, 'ORG-PARTY-TRS');
   assert.strictEqual(temporal.temporalQuerySimulation.BRS_at_2023_Assembly_Election, 'ORG-PARTY-BRS');
   assert.strictEqual(temporal.temporalQuerySimulation.transitionDate, '2022-10-05');
 });
 
-test('Invariant 13: High-Risk Alias Collision Safety and Disambiguation', () => {
+test('Test 14: High-Risk Alias Collision Safety and Disambiguation', () => {
   const colAudit = JSON.parse(fs.readFileSync(collisionAuditPath, 'utf8'));
   assert.strictEqual(colAudit.disambiguationInvariants.zeroCrossOrgAliasCollisions, true);
   assert.strictEqual(colAudit.disambiguationInvariants.quarantinePreservedForAmbiguousStrings, true);
 });
 
-test('Invariant 14: Independent Candidacy Model Separation', () => {
-  const disp = JSON.parse(fs.readFileSync(dispositionPath, 'utf8'));
-  const indEntries = disp.ledger.filter(e => e.disposition === 'INDEPENDENT');
+test('Test 15: Independent Candidacy Model Separation (25 entries, org_id = null)', () => {
+  const disp = JSON.parse(fs.readFileSync(dispositionV2Path, 'utf8'));
+  const indEntries = disp.ledger.filter(r => r.disposition_class === 'INDEPENDENT');
   assert.strictEqual(indEntries.length, 25);
-  for (const entry of indEntries) {
-    assert.strictEqual(entry.proposedOrganizationId, null, `Independent entry ${entry.rawString} must have null org ID`);
+  for (const r of indEntries) {
+    assert.strictEqual(r.organization_id, null);
+    assert.strictEqual(r.organization_resolution_status, 'NOT_APPLICABLE_INDEPENDENT_CANDIDACY');
   }
 });
 
-test('Invariant 15: Nominated MP Model Separation (Art 80(1)(a))', () => {
-  const disp = JSON.parse(fs.readFileSync(dispositionPath, 'utf8'));
-  const nomEntry = disp.ledger.find(e => e.rawString === 'N');
+test('Test 16: Nominated MP Model Separation (Article 80(1)(a), org_id = null)', () => {
+  const disp = JSON.parse(fs.readFileSync(dispositionV2Path, 'utf8'));
+  const nomEntry = disp.ledger.find(r => r.raw_string === 'N');
   assert.ok(nomEntry);
-  assert.strictEqual(nomEntry.disposition, 'NOMINATED');
-  assert.strictEqual(nomEntry.proposedOrganizationId, null);
+  assert.strictEqual(nomEntry.disposition_class, 'NOMINATED');
+  assert.strictEqual(nomEntry.organization_id, null);
+  assert.strictEqual(nomEntry.organization_resolution_status, 'NOT_APPLICABLE_CONSTITUTIONAL_NOMINEE');
 });
 
-test('Invariant 16: Statutory Ballot Options Separation (NOTA)', () => {
-  const disp = JSON.parse(fs.readFileSync(dispositionPath, 'utf8'));
-  const notaEntries = disp.ledger.filter(e => e.rawString === 'NOTA' || e.rawString === 'None of the Above');
-  assert.strictEqual(notaEntries.length, 2);
-  for (const entry of notaEntries) {
-    assert.strictEqual(entry.disposition, 'NON_ORGANIZATION');
-    assert.strictEqual(entry.proposedOrganizationId, null);
+test('Test 17: Statutory Ballot Options & Generic Buckets Separation (NOTA, OTH)', () => {
+  const disp = JSON.parse(fs.readFileSync(dispositionV2Path, 'utf8'));
+  const nonOrg = disp.ledger.filter(r => r.disposition_class === 'NON_ORGANIZATION');
+  assert.strictEqual(nonOrg.length, 4);
+  for (const r of nonOrg) {
+    assert.strictEqual(r.organization_id, null);
   }
 });
 
-test('Invariant 17: Generic Summary Buckets Separation (OTH / Other)', () => {
-  const disp = JSON.parse(fs.readFileSync(dispositionPath, 'utf8'));
-  const othEntries = disp.ledger.filter(e => e.rawString === 'OTH' || e.rawString === 'Other');
-  assert.strictEqual(othEntries.length, 2);
-  for (const entry of othEntries) {
-    assert.strictEqual(entry.disposition, 'NON_ORGANIZATION');
-    assert.strictEqual(entry.proposedOrganizationId, null);
-  }
+test('Test 18: Authoritative Database Insertion Accounting (Exact 1,207 DB Inserts)', () => {
+  const sim = JSON.parse(fs.readFileSync(simV2Path, 'utf8'));
+  assert.strictEqual(sim.run1ExecutionDetails.actualDbInserts, 1207);
+  assert.strictEqual(sim.authoritativeDatabaseInsertionAccounting.C0_Provenance_Record, 1);
+  assert.strictEqual(sim.authoritativeDatabaseInsertionAccounting.C1_Political_Organizations, 107);
+  assert.strictEqual(sim.authoritativeDatabaseInsertionAccounting.C2_Organization_Relationships, 10);
+  assert.strictEqual(sim.authoritativeDatabaseInsertionAccounting.C3_Multilingual_Names, 27);
+  assert.strictEqual(sim.authoritativeDatabaseInsertionAccounting.C4_Organization_Symbols, 19);
+  assert.strictEqual(sim.authoritativeDatabaseInsertionAccounting.C5_Organization_Aliases, 1043);
+  assert.strictEqual(sim.authoritativeDatabaseInsertionAccounting.C6_Provisional_Quarantine, 0);
+  assert.strictEqual(sim.authoritativeDatabaseInsertionAccounting.C7_Disposition_Assertion, 0);
+  assert.strictEqual(sim.authoritativeDatabaseInsertionAccounting.ACTUAL_DATABASE_INSERTS_RUN_1, 1207);
 });
 
-test('Invariant 18: Full Simulation Insertion Counts (1,221 Total Operations)', () => {
-  const sim = JSON.parse(fs.readFileSync(simPath, 'utf8'));
-  assert.strictEqual(sim.run1Inserts, 1221);
-  assert.strictEqual(sim.stageCountsRun1.C0, 1);
-  assert.strictEqual(sim.stageCountsRun1.C1, 107);
-  assert.strictEqual(sim.stageCountsRun1.C2, 10);
-  assert.strictEqual(sim.stageCountsRun1.C3, 27);
-  assert.strictEqual(sim.stageCountsRun1.C4, 19);
-  assert.strictEqual(sim.stageCountsRun1.C5, 1043);
-  assert.strictEqual(sim.stageCountsRun1.C6, 14);
-  assert.strictEqual(sim.stageCountsRun1.C7, 1096);
+test('Test 19: C7 Semantic Invariant (1,096 Disposed, 1,043 Org FKs, 53 Non-Org)', () => {
+  const sim = JSON.parse(fs.readFileSync(simV2Path, 'utf8'));
+  const ops = sim.run1ExecutionDetails.verificationAndAssertionOperations;
+  assert.strictEqual(ops.C7_rawStringsDisposed, 1096);
+  assert.strictEqual(ops.C7_organizationFkResolutions, 1043);
+  assert.strictEqual(ops.C7_nonOrganizationDispositions, 53);
+  assert.ok(ops.C7_organizationFkResolutions < 1096);
 });
 
-test('Invariant 19: Full Simulation Idempotency Across Repeated Runs (Runs 2 & 3: 0 Inserts)', () => {
-  const sim = JSON.parse(fs.readFileSync(simPath, 'utf8'));
-  assert.strictEqual(sim.run2NewInserts, 0);
-  assert.strictEqual(sim.run3NewInserts, 0);
-  assert.strictEqual(sim.verdict, 'FULL_PIPELINE_IDEMPOTENCY_CONFIRMED');
-  assert.strictEqual(sim.invariants.run2ZeroDuplicateRows, true);
-  assert.strictEqual(sim.invariants.run3ZeroDuplicateRows, true);
+test('Test 20: Idempotency Across Repeated Runs (Runs 2 & 3: 0 New DB Inserts)', () => {
+  const sim = JSON.parse(fs.readFileSync(simV2Path, 'utf8'));
+  assert.strictEqual(sim.idempotencyReruns.run2NewDbInserts, 0);
+  assert.strictEqual(sim.idempotencyReruns.run3NewDbInserts, 0);
+  assert.strictEqual(sim.idempotencyReruns.unexpectedDuplicates, 0);
+  assert.strictEqual(sim.idempotencyReruns.idempotentRowStability, true);
 });
 
-test('Invariant 20: Rollback Scoped Strictly to Provenance Batch ID', () => {
-  const rb = JSON.parse(fs.readFileSync(rollbackPath, 'utf8'));
+test('Test 21: Rollback Teardown Safety (Exact 1,207 Rows Removed, Dependency-Safe)', () => {
+  const rb = JSON.parse(fs.readFileSync(rollbackV2Path, 'utf8'));
   assert.strictEqual(rb.targetProvenanceId, '0215b22c-0000-0000-0000-000000000001');
-  assert.strictEqual(rb.preExistingRowsPreserved.benchmarkConstituencyRowsProvenance, '01900000-0000-0000-0000-000000000001');
+  assert.strictEqual(rb.authoritativeDatabaseRowsSubjectToRollback.TOTAL_ROWS_REMOVED, 1207);
   assert.strictEqual(rb.dependencySafeTeardownOrder.length, 6);
-  assert.strictEqual(rb.failureModeSimulations[0].residualRows, 0);
+  assert.strictEqual(rb.postRollbackState.residualBatchRowsUnderProvenance, 0);
+  assert.strictEqual(rb.postRollbackState.preExistingBenchmarkRowsIntact, true);
+  assert.strictEqual(rb.postRollbackState.isTeardownOrderDependencySafe, true);
 });
 
-test('Invariant 21: Runtime Non-Interference (Zero Unmediated Route Inserts)', () => {
+test('Test 22: Zero Leakage Invariant (No Synthetic Orgs Generated for Non-Orgs)', () => {
+  const disp = JSON.parse(fs.readFileSync(dispositionV2Path, 'utf8'));
+  const manifest = JSON.parse(fs.readFileSync(manifestPath, 'utf8'));
+  const nonOrgStrings = disp.ledger.filter(r => r.organization_id === null).map(r => r.raw_string.toLowerCase());
+  const orgShortNames = new Set(manifest.canonicalOrganizations.map(o => o.shortName.toLowerCase()));
+  for (const bad of ['ind', 'independent', 'nota', 'oth', 'other', 'n']) {
+    assert.strictEqual(orgShortNames.has(bad), false, `Synthetic organization created for '${bad}'`);
+  }
+});
+
+test('Test 23: Runtime Non-Interference (0 Unmediated API Inserts)', () => {
   const runtime = JSON.parse(fs.readFileSync(runtimeAuditPath, 'utf8'));
   assert.strictEqual(runtime.runtimeRouteIntegrity.unmediatedRuntimeInsertsDetected, false);
 });
 
-test('Invariant 22: Air-Gap Integrity and Zero Premature Seed/Entity Mutation', () => {
+test('Test 24: Air-Gap Integrity and Zero Premature Seed/Entity Mutation', () => {
   const runtime = JSON.parse(fs.readFileSync(runtimeAuditPath, 'utf8'));
   assert.strictEqual(runtime.airGapStatus.isAirGapStrictlyMaintained, true);
   assert.strictEqual(runtime.airGapStatus.productionDatabaseConnected, false);

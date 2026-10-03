@@ -1,0 +1,28 @@
+{
+  "auditName": "W021.5-B2.2-C Foreign Key Linkage and Target Integrity Audit v2",
+  "generatedAt": "2026-10-03T13:44:20.340Z",
+  "targetCanonicalOrganizationRegistrySize": 107,
+  "totalDispositionEntriesAudited": 1096,
+  "summary": {
+    "validCanonicalOrgPointers": 1043,
+    "validNullPointersAccountedFor": 53,
+    "danglingForeignKeyPointers": 0,
+    "isForeignKeyCompleteAndSound": true
+  },
+  "semanticBreakdown": {
+    "organizationBearingResolutionsCount": 1043,
+    "organizationBearingClasses": {
+      "VERIFIED_ORGANIZATION_ALIAS": 1030,
+      "RECONCILED_ORGANIZATION_ALIAS": 13
+    },
+    "nonOrganizationNullCount": 53,
+    "nonOrganizationClasses": {
+      "INDEPENDENT": 25,
+      "PROVISIONAL": 14,
+      "RECONCILED_MP_CODE": 9,
+      "NON_ORGANIZATION": 4,
+      "NOMINATED": 1
+    }
+  },
+  "invalidEntries": []
+}

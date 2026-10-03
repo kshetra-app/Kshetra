@@ -1,0 +1,416 @@
+{
+  "auditedAt": "2026-10-03T13:43:10.939Z",
+  "totalRawStrings": 1096,
+  "canonicalOrganizationAliasesCount": 1043,
+  "provisionalQuarantinedCount": 14,
+  "nonAliasSetDifferenceCount": 53,
+  "unaccountedSetCount": 39,
+  "breakdownOfAll1096Strings": {
+    "verifiedOrganizationAliases": 1030,
+    "reconciledOrganizationAliases": 13,
+    "reconciledMpSingleLetterCodes": 9,
+    "independentCandidacies": 25,
+    "provisionalQuarantined": 14,
+    "nonOrganizationStatutoryAndBuckets": 4,
+    "nominatedRajyaSabhaCode": 1
+  },
+  "unaccountedCategorizationOf39Strings": {
+    "independentCandidacies": 25,
+    "reconciledMpSingleLetterCodes": 9,
+    "statutoryBallotOptionsNota": 2,
+    "genericBucketLabels": 2,
+    "nominatedRajyaSabhaCode": 1
+  },
+  "unaccountedStringsList": [
+    {
+      "raw_string": "IND",
+      "disposition_class": "INDEPENDENT",
+      "occurrence_count": 250,
+      "organization_id": null,
+      "is_independent": true,
+      "is_nominated": false,
+      "is_nota": false,
+      "notes": "Independent candidacy; modeled via candidacies.is_independent = true with organization_id = null."
+    },
+    {
+      "raw_string": "J",
+      "disposition_class": "RECONCILED_MP_CODE",
+      "occurrence_count": 20,
+      "organization_id": null,
+      "is_independent": false,
+      "is_nominated": false,
+      "is_nota": false,
+      "notes": "Single letter truncated party code 'J' in mp-profiles.ts. Reconciled via individual candidate MP records."
+    },
+    {
+      "raw_string": "OTH",
+      "disposition_class": "NON_ORGANIZATION",
+      "occurrence_count": 7,
+      "organization_id": null,
+      "is_independent": false,
+      "is_nominated": false,
+      "is_nota": false,
+      "notes": "Generic aggregation bucket for minor parties in summary tables; excluded from organization tables."
+    },
+    {
+      "raw_string": "NOTA",
+      "disposition_class": "NON_ORGANIZATION",
+      "occurrence_count": 5,
+      "organization_id": null,
+      "is_independent": false,
+      "is_nominated": false,
+      "is_nota": true,
+      "notes": "None of the Above (NOTA) statutory non-candidate ballot option; modeled as election counter."
+    },
+    {
+      "raw_string": "N",
+      "disposition_class": "NOMINATED",
+      "occurrence_count": 5,
+      "organization_id": null,
+      "is_independent": false,
+      "is_nominated": true,
+      "is_nota": false,
+      "notes": "Nominated Rajya Sabha member under Article 80(1)(a); holds no political party affiliation."
+    },
+    {
+      "raw_string": "I",
+      "disposition_class": "INDEPENDENT",
+      "occurrence_count": 3,
+      "organization_id": null,
+      "is_independent": true,
+      "is_nominated": false,
+      "is_nota": false,
+      "notes": "Independent candidacy; modeled via candidacies.is_independent = true with organization_id = null."
+    },
+    {
+      "raw_string": "C",
+      "disposition_class": "RECONCILED_MP_CODE",
+      "occurrence_count": 2,
+      "organization_id": null,
+      "is_independent": false,
+      "is_nominated": false,
+      "is_nota": false,
+      "notes": "Single letter truncated party code 'C' in mp-profiles.ts. Reconciled via individual candidate MP records."
+    },
+    {
+      "raw_string": "Other",
+      "disposition_class": "NON_ORGANIZATION",
+      "occurrence_count": 2,
+      "organization_id": null,
+      "is_independent": false,
+      "is_nominated": false,
+      "is_nota": false,
+      "notes": "Generic aggregation bucket for minor parties in summary tables; excluded from organization tables."
+    },
+    {
+      "raw_string": "IND - Chitra Sarwara",
+      "disposition_class": "INDEPENDENT",
+      "occurrence_count": 1,
+      "organization_id": null,
+      "is_independent": true,
+      "is_nominated": false,
+      "is_nota": false,
+      "notes": "Independent candidacy; modeled via candidacies.is_independent = true with organization_id = null."
+    },
+    {
+      "raw_string": "IND - Satbir Bhana",
+      "disposition_class": "INDEPENDENT",
+      "occurrence_count": 1,
+      "organization_id": null,
+      "is_independent": true,
+      "is_nominated": false,
+      "is_nota": false,
+      "notes": "Independent candidacy; modeled via candidacies.is_independent = true with organization_id = null."
+    },
+    {
+      "raw_string": "IND - Kapoor Singh Narwal",
+      "disposition_class": "INDEPENDENT",
+      "occurrence_count": 1,
+      "organization_id": null,
+      "is_independent": true,
+      "is_nominated": false,
+      "is_nota": false,
+      "notes": "Independent candidacy; modeled via candidacies.is_independent = true with organization_id = null."
+    },
+    {
+      "raw_string": "IND - Naveen Goyal",
+      "disposition_class": "INDEPENDENT",
+      "occurrence_count": 1,
+      "organization_id": null,
+      "is_independent": true,
+      "is_nominated": false,
+      "is_nota": false,
+      "notes": "Independent candidacy; modeled via candidacies.is_independent = true with organization_id = null."
+    },
+    {
+      "raw_string": "IND - Rahish Khan",
+      "disposition_class": "INDEPENDENT",
+      "occurrence_count": 1,
+      "organization_id": null,
+      "is_independent": true,
+      "is_nominated": false,
+      "is_nota": false,
+      "notes": "Independent candidacy; modeled via candidacies.is_independent = true with organization_id = null."
+    },
+    {
+      "raw_string": "IND - Sharda Rathore",
+      "disposition_class": "INDEPENDENT",
+      "occurrence_count": 1,
+      "organization_id": null,
+      "is_independent": true,
+      "is_nominated": false,
+      "is_nota": false,
+      "notes": "Independent candidacy; modeled via candidacies.is_independent = true with organization_id = null."
+    },
+    {
+      "raw_string": "IND - Lalit Nagar S/O Late Bharat Singh Nagar",
+      "disposition_class": "INDEPENDENT",
+      "occurrence_count": 1,
+      "organization_id": null,
+      "is_independent": true,
+      "is_nominated": false,
+      "is_nota": false,
+      "notes": "Independent candidacy; modeled via candidacies.is_independent = true with organization_id = null."
+    },
+    {
+      "raw_string": "IND - Devendra Kumar Singh",
+      "disposition_class": "INDEPENDENT",
+      "occurrence_count": 1,
+      "organization_id": null,
+      "is_independent": true,
+      "is_nominated": false,
+      "is_nota": false,
+      "notes": "Independent candidacy; modeled via candidacies.is_independent = true with organization_id = null."
+    },
+    {
+      "raw_string": "IND - Antar Singh Darbar",
+      "disposition_class": "INDEPENDENT",
+      "occurrence_count": 1,
+      "organization_id": null,
+      "is_independent": true,
+      "is_nominated": false,
+      "is_nota": false,
+      "notes": "Independent candidacy; modeled via candidacies.is_independent = true with organization_id = null."
+    },
+    {
+      "raw_string": "IND - Premchand Guddu",
+      "disposition_class": "INDEPENDENT",
+      "occurrence_count": 1,
+      "organization_id": null,
+      "is_independent": true,
+      "is_nominated": false,
+      "is_nota": false,
+      "notes": "Independent candidacy; modeled via candidacies.is_independent = true with organization_id = null."
+    },
+    {
+      "raw_string": "IND - Shyam Lal Jokchand",
+      "disposition_class": "INDEPENDENT",
+      "occurrence_count": 1,
+      "organization_id": null,
+      "is_independent": true,
+      "is_nominated": false,
+      "is_nota": false,
+      "notes": "Independent candidacy; modeled via candidacies.is_independent = true with organization_id = null."
+    },
+    {
+      "raw_string": "K",
+      "disposition_class": "RECONCILED_MP_CODE",
+      "occurrence_count": 1,
+      "organization_id": null,
+      "is_independent": false,
+      "is_nominated": false,
+      "is_nota": false,
+      "notes": "Single letter truncated party code 'K' in mp-profiles.ts. Reconciled via individual candidate MP records."
+    },
+    {
+      "raw_string": "U",
+      "disposition_class": "RECONCILED_MP_CODE",
+      "occurrence_count": 1,
+      "organization_id": null,
+      "is_independent": false,
+      "is_nominated": false,
+      "is_nota": false,
+      "notes": "Single letter truncated party code 'U' in mp-profiles.ts. Reconciled via individual candidate MP records."
+    },
+    {
+      "raw_string": "P",
+      "disposition_class": "RECONCILED_MP_CODE",
+      "occurrence_count": 1,
+      "organization_id": null,
+      "is_independent": false,
+      "is_nominated": false,
+      "is_nota": false,
+      "notes": "Single letter truncated party code 'P' in mp-profiles.ts. Reconciled via individual candidate MP records."
+    },
+    {
+      "raw_string": "S",
+      "disposition_class": "RECONCILED_MP_CODE",
+      "occurrence_count": 1,
+      "organization_id": null,
+      "is_independent": false,
+      "is_nominated": false,
+      "is_nota": false,
+      "notes": "Single letter truncated party code 'S' in mp-profiles.ts. Reconciled via individual candidate MP records."
+    },
+    {
+      "raw_string": "D",
+      "disposition_class": "RECONCILED_MP_CODE",
+      "occurrence_count": 1,
+      "organization_id": null,
+      "is_independent": false,
+      "is_nominated": false,
+      "is_nota": false,
+      "notes": "Single letter truncated party code 'D' in mp-profiles.ts. Reconciled via individual candidate MP records."
+    },
+    {
+      "raw_string": "A",
+      "disposition_class": "RECONCILED_MP_CODE",
+      "occurrence_count": 1,
+      "organization_id": null,
+      "is_independent": false,
+      "is_nominated": false,
+      "is_nota": false,
+      "notes": "Single letter truncated party code 'A' in mp-profiles.ts. Reconciled via individual candidate MP records."
+    },
+    {
+      "raw_string": "M",
+      "disposition_class": "RECONCILED_MP_CODE",
+      "occurrence_count": 1,
+      "organization_id": null,
+      "is_independent": false,
+      "is_nominated": false,
+      "is_nota": false,
+      "notes": "Single letter truncated party code 'M' in mp-profiles.ts. Reconciled via individual candidate MP records."
+    },
+    {
+      "raw_string": "IND - Soumya Ranjan Patnaik",
+      "disposition_class": "INDEPENDENT",
+      "occurrence_count": 1,
+      "organization_id": null,
+      "is_independent": true,
+      "is_nominated": false,
+      "is_nota": false,
+      "notes": "Independent candidacy; modeled via candidacies.is_independent = true with organization_id = null."
+    },
+    {
+      "raw_string": "IND - Ghasiram Majhi",
+      "disposition_class": "INDEPENDENT",
+      "occurrence_count": 1,
+      "organization_id": null,
+      "is_independent": true,
+      "is_nominated": false,
+      "is_nota": false,
+      "notes": "Independent candidacy; modeled via candidacies.is_independent = true with organization_id = null."
+    },
+    {
+      "raw_string": "IND - Om Bishnoi",
+      "disposition_class": "INDEPENDENT",
+      "occurrence_count": 1,
+      "organization_id": null,
+      "is_independent": true,
+      "is_nominated": false,
+      "is_nota": false,
+      "notes": "Independent candidacy; modeled via candidacies.is_independent = true with organization_id = null."
+    },
+    {
+      "raw_string": "IND - Karuna Ashok Chandak",
+      "disposition_class": "INDEPENDENT",
+      "occurrence_count": 1,
+      "organization_id": null,
+      "is_independent": true,
+      "is_nominated": false,
+      "is_nota": false,
+      "notes": "Independent candidacy; modeled via candidacies.is_independent = true with organization_id = null."
+    },
+    {
+      "raw_string": "IND - Rajakaran Choudhary",
+      "disposition_class": "INDEPENDENT",
+      "occurrence_count": 1,
+      "organization_id": null,
+      "is_independent": true,
+      "is_nominated": false,
+      "is_nota": false,
+      "notes": "Independent candidacy; modeled via candidacies.is_independent = true with organization_id = null."
+    },
+    {
+      "raw_string": "IND - Alok Beniwal",
+      "disposition_class": "INDEPENDENT",
+      "occurrence_count": 1,
+      "organization_id": null,
+      "is_independent": true,
+      "is_nominated": false,
+      "is_nota": false,
+      "notes": "Independent candidacy; modeled via candidacies.is_independent = true with organization_id = null."
+    },
+    {
+      "raw_string": "IND - Mukhtyar Ahmed",
+      "disposition_class": "INDEPENDENT",
+      "occurrence_count": 1,
+      "organization_id": null,
+      "is_independent": true,
+      "is_nominated": false,
+      "is_nota": false,
+      "notes": "Independent candidacy; modeled via candidacies.is_independent = true with organization_id = null."
+    },
+    {
+      "raw_string": "IND - Suresh Tak",
+      "disposition_class": "INDEPENDENT",
+      "occurrence_count": 1,
+      "organization_id": null,
+      "is_independent": true,
+      "is_nominated": false,
+      "is_nota": false,
+      "notes": "Independent candidacy; modeled via candidacies.is_independent = true with organization_id = null."
+    },
+    {
+      "raw_string": "IND - Fateh Khan",
+      "disposition_class": "INDEPENDENT",
+      "occurrence_count": 1,
+      "organization_id": null,
+      "is_independent": true,
+      "is_nominated": false,
+      "is_nota": false,
+      "notes": "Independent candidacy; modeled via candidacies.is_independent = true with organization_id = null."
+    },
+    {
+      "raw_string": "IND - Sunil Parihar",
+      "disposition_class": "INDEPENDENT",
+      "occurrence_count": 1,
+      "organization_id": null,
+      "is_independent": true,
+      "is_nominated": false,
+      "is_nota": false,
+      "notes": "Independent candidacy; modeled via candidacies.is_independent = true with organization_id = null."
+    },
+    {
+      "raw_string": "IND - Kailash Chand",
+      "disposition_class": "INDEPENDENT",
+      "occurrence_count": 1,
+      "organization_id": null,
+      "is_independent": true,
+      "is_nominated": false,
+      "is_nota": false,
+      "notes": "Independent candidacy; modeled via candidacies.is_independent = true with organization_id = null."
+    },
+    {
+      "raw_string": "None of the Above",
+      "disposition_class": "NON_ORGANIZATION",
+      "occurrence_count": 1,
+      "organization_id": null,
+      "is_independent": false,
+      "is_nominated": false,
+      "is_nota": true,
+      "notes": "None of the Above (NOTA) statutory non-candidate ballot option; modeled as election counter."
+    },
+    {
+      "raw_string": "Independent",
+      "disposition_class": "INDEPENDENT",
+      "occurrence_count": 1,
+      "organization_id": null,
+      "is_independent": true,
+      "is_nominated": false,
+      "is_nota": false,
+      "notes": "Independent candidacy; modeled via candidacies.is_independent = true with organization_id = null."
+    }
+  ]
+}
