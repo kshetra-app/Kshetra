@@ -1,0 +1,80 @@
+{
+  "milestone": "W021.5-B1-R4",
+  "generatedAt": "2026-10-03T06:09:25.185Z",
+  "table": "public.constituency_lineage",
+  "totalCurrentRows": 0,
+  "isSemanticallyCorrect": true,
+  "architecturalStatus": "STRUCTURAL_CAPABILITY_DEPLOYED_AWAITING_HISTORICAL_VERSIONS",
+  "definitions": {
+    "constituency": "The persistent canonical electoral seat identity (UUID).",
+    "constituency_version": "The statutory territorial representation of that seat during a specific delimitation regime/time period.",
+    "constituency_lineage": "A directed relationship (source_version_id -> target_version_id) modeling territorial transformations (split, merge, rename, renumber, abolish)."
+  },
+  "scenarios": [
+    {
+      "scenario": "2008_NATIONAL_DELIMITATION",
+      "description": "Establishment of 2008 Delimitation baseline nationwide (4,120 ACs / 543 PCs)",
+      "old_version": "PRE_2008_DELIMITATION_REGIME (1976 Order)",
+      "new_version": "DELIM_2008_NATIONAL_BASELINE",
+      "territorial_identity_preserved": false,
+      "lineage_required": false,
+      "lineage_row_exists": false,
+      "status": "NOT_YET_MODELED",
+      "reason": "Pre-2008 historical constituency versions (1976 Order) have not been ingested into public.constituency_versions. Lineage requires both predecessor and successor version records to exist in the database.",
+      "source": "ECI Delimitation of Parliamentary and Assembly Constituencies Order, 2008",
+      "future_data_required": "Ingestion of 1976 Delimitation Order constituency version records in future historical expansion stages."
+    },
+    {
+      "scenario": "2014_AP_TELANGANA_REORGANISATION",
+      "description": "Bifurcation of unified Andhra Pradesh into residual AP and Telangana",
+      "old_version": "AP_STATE_UNIFIED_2008",
+      "new_version": "AP_2014_AND_TS_2014",
+      "territorial_identity_preserved": true,
+      "lineage_required": false,
+      "lineage_row_exists": false,
+      "status": "NOT_YET_MODELED",
+      "reason": "Under Section 15 & Schedule XXXI of the AP Reorganisation Act 2014, individual constituency boundaries were NOT redrawn; rather, existing 2008 constituencies were allocated intact between states (119 to TS, 175 to AP). Therefore, individual AC boundary split/merge lineage does not apply; jurisdictional attribution changed at the State level.",
+      "source": "Andhra Pradesh Reorganisation Act, 2014 (Act No. 6 of 2014)",
+      "future_data_required": "State-level reorganisation event linkage (already captured via valid_from 2014-06-02 in public.states and public.delimitation_regimes)."
+    },
+    {
+      "scenario": "2019_DNH_DD_MERGER",
+      "description": "Merger of Dadra & Nagar Haveli and Daman & Diu into single Union Territory",
+      "old_version": "DN_UT_2008_AND_DD_UT_2008",
+      "new_version": "DN_UT_MERGED_2020",
+      "territorial_identity_preserved": true,
+      "lineage_required": false,
+      "lineage_row_exists": false,
+      "status": "NOT_YET_MODELED",
+      "reason": "Both predecessor UTs had 0 assembly constituencies. Both parliamentary constituencies (DN-PC-01 and DD-PC-01) were retained intact without boundary modifications. Constituency lineage applies to constituency-version splits/mergers.",
+      "source": "Dadra and Nagar Haveli and Daman and Diu (Merger of Union Territories) Act, 2019",
+      "future_data_required": "None for ACs (non-assembly UT). PC-level lineage can link DD-PC-01 to DN-PC-02 when multi-version PCs are ingested."
+    },
+    {
+      "scenario": "2022_JK_DELIMITATION",
+      "description": "Reconstitution of Jammu & Kashmir assembly from 87 to 90 seats",
+      "old_version": "JK_PRE_2019_CONSTITUENCY_VERSIONS",
+      "new_version": "JK_2022_DELIMITATION_ORDER_NO_2",
+      "territorial_identity_preserved": false,
+      "lineage_required": false,
+      "lineage_row_exists": false,
+      "status": "NOT_YET_MODELED",
+      "reason": "Pre-2019 J&K state constituency versions (87 seats under J&K Constitution) have not been ingested into public.constituency_versions. Lineage requires both predecessor and successor version records.",
+      "source": "Delimitation Commission Order No. 2, 2022",
+      "future_data_required": "Ingestion of pre-2019 J&K Assembly Constituency versions in future historical stages."
+    },
+    {
+      "scenario": "2023_ASSAM_DELIMITATION",
+      "description": "Internal boundary reconstitution of Assam 126 ACs / 14 PCs under Order 282/AS/2023",
+      "old_version": "AS_2008_DELIMITATION_ORDER_VERSIONS",
+      "new_version": "AS_2023_FINAL_ORDER_VERSIONS",
+      "territorial_identity_preserved": false,
+      "lineage_required": false,
+      "lineage_row_exists": false,
+      "status": "NOT_YET_MODELED",
+      "reason": "In Migration 059, Assam ACs were canonicalized under the 2008 statutory baseline. The 2023 post-delimitation polygon versions will be ingested during the upcoming geospatial polygon migration, at which point 2008 -> 2023 lineage rows will be populated.",
+      "source": "ECI Final Order No. 282/AS/2023 dated 2023-08-11",
+      "future_data_required": "Post-2023 Assam constituency version ingestion during geospatial boundary phase."
+    }
+  ]
+}

@@ -200,6 +200,9 @@ CREATE TABLE IF NOT EXISTS public.constituency_lineage (
   created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
   CONSTRAINT uq_constituency_lineage UNIQUE (
     source_constituency_version_id, target_constituency_version_id, relationship_type, effective_date
+  ),
+  CONSTRAINT chk_constituency_lineage_no_self_link CHECK (
+    source_constituency_version_id <> target_constituency_version_id
   )
 );
 

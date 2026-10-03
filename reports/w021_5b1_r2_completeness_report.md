@@ -4,7 +4,7 @@
 **Substage:** W021.5-B1-R2 — National AC↔PC Completeness & Temporal Integrity Closure  
 **Parent Milestone:** W021.5-B1  
 **Baseline Commit:** `9fa5ecc1ba63e6fcb0493d068e75a88a6aff65ad`  
-**Generated At:** 2026-10-03T05:13:52.424Z  
+**Generated At:** 2026-10-03T06:50:52.589Z  
 **Production Isolation:** STRICTLY AIR-GAPPED & UNTOUCHED (`ehfafcnimmjusyvplbah`)  
 **Artifact Link:** [`reports/w021_5b1_r2_completeness_report.json`](file:///reports/w021_5b1_r2_completeness_report.json)
 
