@@ -1,0 +1,530 @@
+{
+  "auditedAt": "2026-10-03T12:34:37.092Z",
+  "mpSingleLetterExceptions": [
+    {
+      "id": "LS_036",
+      "name": "Sudama Prasad",
+      "letter": "C",
+      "state": "BR",
+      "house": "lok_sabha",
+      "resolvedPartyId": "ORG-PARTY-CPIML",
+      "resolvedPartyCode": "CPIML",
+      "confidence": "VERIFIED",
+      "evidence": "Elected MP for Arrah (BR) 2024 on CPI(ML)L ticket"
+    },
+    {
+      "id": "LS_061",
+      "name": "Giridhari Yadav",
+      "letter": "J",
+      "state": "BR",
+      "house": "lok_sabha",
+      "resolvedPartyId": "ORG-PARTY-JDU",
+      "resolvedPartyCode": "JDU",
+      "confidence": "VERIFIED",
+      "evidence": "Elected MP for Banka (BR) 2024 on JD(U) ticket"
+    },
+    {
+      "id": "LS_089",
+      "name": "Ajay Kumar Mandal",
+      "letter": "J",
+      "state": "BR",
+      "house": "lok_sabha",
+      "resolvedPartyId": "ORG-PARTY-JDU",
+      "resolvedPartyCode": "JDU",
+      "confidence": "VERIFIED",
+      "evidence": "Elected MP for Bhagalpur (BR) 2024 on JD(U) ticket"
+    },
+    {
+      "id": "LS_165",
+      "name": "Nalin Soren",
+      "letter": "J",
+      "state": "JH",
+      "house": "lok_sabha",
+      "resolvedPartyId": "ORG-PARTY-JMM",
+      "resolvedPartyCode": "JMM",
+      "confidence": "VERIFIED",
+      "evidence": "Elected MP for Dumka (JH) 2024 on JMM ticket"
+    },
+    {
+      "id": "LS_195",
+      "name": "Dr. Alok Kumar Suman",
+      "letter": "J",
+      "state": "BR",
+      "house": "lok_sabha",
+      "resolvedPartyId": "ORG-PARTY-JDU",
+      "resolvedPartyCode": "JDU",
+      "confidence": "VERIFIED",
+      "evidence": "Elected MP for Gopalganj (BR) 2024 on JD(U) ticket"
+    },
+    {
+      "id": "LS_247",
+      "name": "Ramprit Mandal",
+      "letter": "J",
+      "state": "BR",
+      "house": "lok_sabha",
+      "resolvedPartyId": "ORG-PARTY-JDU",
+      "resolvedPartyCode": "JDU",
+      "confidence": "VERIFIED",
+      "evidence": "Elected MP for Jhanjharpur (BR) 2024 on JD(U) ticket"
+    },
+    {
+      "id": "LS_271",
+      "name": "Raja Ram Singh",
+      "letter": "C",
+      "state": "BR",
+      "house": "lok_sabha",
+      "resolvedPartyId": "ORG-PARTY-CPIML",
+      "resolvedPartyCode": "CPIML",
+      "confidence": "VERIFIED",
+      "evidence": "Elected MP for Karakat (BR) 2024 on CPI(ML)L ticket"
+    },
+    {
+      "id": "LS_322",
+      "name": "Dinesh Chandra Yadav",
+      "letter": "J",
+      "state": "BR",
+      "house": "lok_sabha",
+      "resolvedPartyId": "ORG-PARTY-JDU",
+      "resolvedPartyCode": "JDU",
+      "confidence": "VERIFIED",
+      "evidence": "Elected MP for Madhepura (BR) 2024 on JD(U) ticket"
+    },
+    {
+      "id": "LS_361",
+      "name": "Rajiv Ranjan Singh Alias Lalan Singh",
+      "letter": "J",
+      "state": "BR",
+      "house": "lok_sabha",
+      "resolvedPartyId": "ORG-PARTY-JDU",
+      "resolvedPartyCode": "JDU",
+      "confidence": "VERIFIED",
+      "evidence": "Elected MP for Munger (BR) 2024 on JD(U) ticket"
+    },
+    {
+      "id": "LS_375",
+      "name": "Kaushalendra Kumar",
+      "letter": "J",
+      "state": "BR",
+      "house": "lok_sabha",
+      "resolvedPartyId": "ORG-PARTY-JDU",
+      "resolvedPartyCode": "JDU",
+      "confidence": "VERIFIED",
+      "evidence": "Elected MP for Nalanda (BR) 2024 on JD(U) ticket"
+    },
+    {
+      "id": "LS_432",
+      "name": "Vijay Kumar Hansdak",
+      "letter": "J",
+      "state": "JH",
+      "house": "lok_sabha",
+      "resolvedPartyId": "ORG-PARTY-JMM",
+      "resolvedPartyCode": "JMM",
+      "confidence": "VERIFIED",
+      "evidence": "Elected MP for Rajmahal (JH) 2024 on JMM ticket"
+    },
+    {
+      "id": "LS_464",
+      "name": "Lovely Anand",
+      "letter": "J",
+      "state": "BR",
+      "house": "lok_sabha",
+      "resolvedPartyId": "ORG-PARTY-JDU",
+      "resolvedPartyCode": "JDU",
+      "confidence": "VERIFIED",
+      "evidence": "Elected MP for Sheohar (BR) 2024 on JD(U) ticket"
+    },
+    {
+      "id": "LS_475",
+      "name": "Joba Majhi",
+      "letter": "J",
+      "state": "JH",
+      "house": "lok_sabha",
+      "resolvedPartyId": "ORG-PARTY-JMM",
+      "resolvedPartyCode": "JMM",
+      "confidence": "VERIFIED",
+      "evidence": "Elected MP for Singhbhum (JH) 2024 on JMM ticket"
+    },
+    {
+      "id": "LS_477",
+      "name": "Devesh Chandra Thakur",
+      "letter": "J",
+      "state": "BR",
+      "house": "lok_sabha",
+      "resolvedPartyId": "ORG-PARTY-JDU",
+      "resolvedPartyCode": "JDU",
+      "confidence": "VERIFIED",
+      "evidence": "Elected MP for Sitamarhi (BR) 2024 on JD(U) ticket"
+    },
+    {
+      "id": "LS_480",
+      "name": "Vijaylakshmi Devi",
+      "letter": "J",
+      "state": "BR",
+      "house": "lok_sabha",
+      "resolvedPartyId": "ORG-PARTY-JDU",
+      "resolvedPartyCode": "JDU",
+      "confidence": "VERIFIED",
+      "evidence": "Elected MP for Siwan (BR) 2024 on JD(U) ticket"
+    },
+    {
+      "id": "LS_492",
+      "name": "Dileshwar Kamait",
+      "letter": "J",
+      "state": "BR",
+      "house": "lok_sabha",
+      "resolvedPartyId": "ORG-PARTY-JDU",
+      "resolvedPartyCode": "JDU",
+      "confidence": "VERIFIED",
+      "evidence": "Elected MP for Supaul (BR) 2024 on JD(U) ticket"
+    },
+    {
+      "id": "LS_528",
+      "name": "Sunil Kumar",
+      "letter": "J",
+      "state": "BR",
+      "house": "lok_sabha",
+      "resolvedPartyId": "ORG-PARTY-JDU",
+      "resolvedPartyCode": "JDU",
+      "confidence": "VERIFIED",
+      "evidence": "Elected MP for Valmiki Nagar (BR) 2024 on JD(U) ticket"
+    },
+    {
+      "id": "RS_005",
+      "name": "Khiru Mahto",
+      "letter": "J",
+      "state": "BR",
+      "house": "rajya_sabha",
+      "resolvedPartyId": "ORG-PARTY-JDU",
+      "resolvedPartyCode": "JDU",
+      "confidence": "VERIFIED",
+      "evidence": "Elected Rajya Sabha MP from Bihar 2022 on JD(U) ticket"
+    },
+    {
+      "id": "RS_006",
+      "name": "Mahua Maji",
+      "letter": "J",
+      "state": "JH",
+      "house": "rajya_sabha",
+      "resolvedPartyId": "ORG-PARTY-JMM",
+      "resolvedPartyCode": "JMM",
+      "confidence": "VERIFIED",
+      "evidence": "Elected Rajya Sabha MP from Jharkhand 2022 on JMM ticket"
+    },
+    {
+      "id": "RS_012",
+      "name": "Jose K. Mani",
+      "letter": "K",
+      "state": "KL",
+      "house": "rajya_sabha",
+      "resolvedPartyId": "ORG-PARTY-KCM",
+      "resolvedPartyCode": "KC(M)",
+      "confidence": "VERIFIED",
+      "evidence": "Chairman KC(M), elected Rajya Sabha MP 2024"
+    },
+    {
+      "id": "RS_022",
+      "name": "Sudha Murty",
+      "letter": "N",
+      "state": "NO",
+      "house": "rajya_sabha",
+      "resolvedPartyId": null,
+      "resolvedPartyCode": null,
+      "isNominated": true,
+      "confidence": "VERIFIED",
+      "evidence": "Nominated by President of India under Art 80(1)(a) March 2024; non-party member"
+    },
+    {
+      "id": "RS_028",
+      "name": "Rwngwra Narzary",
+      "letter": "U",
+      "state": "AS",
+      "house": "rajya_sabha",
+      "resolvedPartyId": "ORG-PARTY-UPPL",
+      "resolvedPartyCode": "UPPL",
+      "confidence": "VERIFIED",
+      "evidence": "Working President UPPL, elected Rajya Sabha MP from Assam 2022"
+    },
+    {
+      "id": "RS_036",
+      "name": "Gurwinder Singh Oberoi",
+      "letter": "J",
+      "state": "JK",
+      "house": "rajya_sabha",
+      "resolvedPartyId": "ORG-PARTY-JKNC",
+      "resolvedPartyCode": "JKNC",
+      "confidence": "VERIFIED",
+      "evidence": "Treasurer JKNC, elected Rajya Sabha MP from Jammu & Kashmir 2025"
+    },
+    {
+      "id": "RS_045",
+      "name": "Sharadchandra Pawar",
+      "letter": "N",
+      "state": "MH",
+      "house": "rajya_sabha",
+      "resolvedPartyId": "ORG-PARTY-NCPSP",
+      "resolvedPartyCode": "NCP(SP)",
+      "confidence": "VERIFIED",
+      "evidence": "Founder President NCP(SP), elected Rajya Sabha MP from Maharashtra"
+    },
+    {
+      "id": "RS_049",
+      "name": "V. Vijayendra Prasad",
+      "letter": "N",
+      "state": "NO",
+      "house": "rajya_sabha",
+      "resolvedPartyId": null,
+      "resolvedPartyCode": null,
+      "isNominated": true,
+      "confidence": "VERIFIED",
+      "evidence": "Nominated by President under Art 80(1)(a) July 2022; non-party member"
+    },
+    {
+      "id": "RS_055",
+      "name": "Anbumani Ramadoss",
+      "letter": "P",
+      "state": "TN",
+      "house": "rajya_sabha",
+      "resolvedPartyId": "ORG-PARTY-PMK",
+      "resolvedPartyCode": "PMK",
+      "confidence": "VERIFIED",
+      "evidence": "President PMK, elected Rajya Sabha MP from Tamil Nadu"
+    },
+    {
+      "id": "RS_059",
+      "name": "Chowdry Mohammad Ramzan",
+      "letter": "J",
+      "state": "JK",
+      "house": "rajya_sabha",
+      "resolvedPartyId": "ORG-PARTY-JKNC",
+      "resolvedPartyCode": "JKNC",
+      "confidence": "VERIFIED",
+      "evidence": "Additional General Secretary JKNC, elected Rajya Sabha MP from J&K 2025"
+    },
+    {
+      "id": "RS_062",
+      "name": "Sanjay Raut",
+      "letter": "S",
+      "state": "MH",
+      "house": "rajya_sabha",
+      "resolvedPartyId": "ORG-PARTY-SHSUBT",
+      "resolvedPartyCode": "SHS(UBT)",
+      "confidence": "VERIFIED",
+      "evidence": "Leader SHS(UBT), elected Rajya Sabha MP from Maharashtra"
+    },
+    {
+      "id": "RS_064",
+      "name": "Dilip Kumar Ray",
+      "letter": "I",
+      "state": "OD",
+      "house": "rajya_sabha",
+      "resolvedPartyId": null,
+      "resolvedPartyCode": null,
+      "isIndependent": true,
+      "confidence": "VERIFIED",
+      "evidence": "Elected Rajya Sabha MP from Odisha March 2026 as Independent candidate"
+    },
+    {
+      "id": "RS_084",
+      "name": "Kartikeya Sharma",
+      "letter": "I",
+      "state": "HR",
+      "house": "rajya_sabha",
+      "resolvedPartyId": null,
+      "resolvedPartyCode": null,
+      "isIndependent": true,
+      "confidence": "VERIFIED",
+      "evidence": "Elected Rajya Sabha MP from Haryana 2022 as Independent candidate"
+    },
+    {
+      "id": "RS_088",
+      "name": "Shri Harivansh",
+      "letter": "N",
+      "state": "NO",
+      "house": "rajya_sabha",
+      "resolvedPartyId": null,
+      "resolvedPartyCode": null,
+      "isNominated": true,
+      "confidence": "VERIFIED",
+      "evidence": "Nominated by President of India April 2026 (Journalism quota); Deputy Chairman RS"
+    },
+    {
+      "id": "RS_091",
+      "name": "Kapil Sibal",
+      "letter": "I",
+      "state": "UP",
+      "house": "rajya_sabha",
+      "resolvedPartyId": null,
+      "resolvedPartyCode": null,
+      "isIndependent": true,
+      "confidence": "VERIFIED",
+      "evidence": "Elected Rajya Sabha MP from UP 2022 as Independent candidate supported by SP"
+    },
+    {
+      "id": "RS_115",
+      "name": "L. K. Sudhish",
+      "letter": "D",
+      "state": "TN",
+      "house": "rajya_sabha",
+      "resolvedPartyId": "ORG-PARTY-DMDK",
+      "resolvedPartyCode": "DMDK",
+      "confidence": "VERIFIED",
+      "evidence": "DMDK leader, elected Rajya Sabha MP from Tamil Nadu March 2026"
+    },
+    {
+      "id": "RS_122",
+      "name": "Ram Nath Thakur",
+      "letter": "J",
+      "state": "BR",
+      "house": "rajya_sabha",
+      "resolvedPartyId": "ORG-PARTY-JDU",
+      "resolvedPartyCode": "JDU",
+      "confidence": "VERIFIED",
+      "evidence": "JD(U) leader, elected Rajya Sabha MP from Bihar 2020"
+    },
+    {
+      "id": "RS_124",
+      "name": "M. Thambi Durai",
+      "letter": "A",
+      "state": "TN",
+      "house": "rajya_sabha",
+      "resolvedPartyId": "ORG-PARTY-AIADMK",
+      "resolvedPartyCode": "AIADMK",
+      "confidence": "VERIFIED",
+      "evidence": "AIADMK leader, elected Rajya Sabha MP from Tamil Nadu 2020"
+    },
+    {
+      "id": "RS_129",
+      "name": "P. T. Usha",
+      "letter": "N",
+      "state": "NO",
+      "house": "rajya_sabha",
+      "resolvedPartyId": null,
+      "resolvedPartyCode": null,
+      "isNominated": true,
+      "confidence": "VERIFIED",
+      "evidence": "Nominated by President of India under Art 80(1)(a) July 2022; non-party member"
+    },
+    {
+      "id": "RS_132",
+      "name": "K. Vanlalvena",
+      "letter": "M",
+      "state": "MZ",
+      "house": "rajya_sabha",
+      "resolvedPartyId": "ORG-PARTY-MNF",
+      "resolvedPartyCode": "MNF",
+      "confidence": "VERIFIED",
+      "evidence": "MNF leader, elected Rajya Sabha MP from Mizoram 2020"
+    }
+  ],
+  "mlaTruncatedExceptions": [
+    {
+      "raw": "AIMM",
+      "occurrences": 7,
+      "file": "bihar-mla-profiles.ts",
+      "resolvedPartyId": "ORG-PARTY-AIMIM",
+      "confidence": "VERIFIED",
+      "evidence": "All 7 candidates won/contested on AIMIM symbol in Seemanchal Bihar 2020"
+    },
+    {
+      "raw": "CPI(ML",
+      "occurrences": 15,
+      "file": "bihar-mla-profiles.ts",
+      "resolvedPartyId": "ORG-PARTY-CPIML",
+      "confidence": "VERIFIED",
+      "evidence": "All 15 MLAs (e.g. Sandeep Saurav, Gopal Ravidas) are elected members of CPI-ML Liberation"
+    },
+    {
+      "raw": "Apna Dal (",
+      "occurrences": 13,
+      "file": "uttar-pradesh-mla-profiles.ts",
+      "resolvedPartyId": "ORG-PARTY-ADAL",
+      "confidence": "VERIFIED",
+      "evidence": "All 13 MLAs (e.g. Vachaspati, Jay Kumar Singh) are elected members of Apna Dal (Sonelal)"
+    },
+    {
+      "raw": "Jansatta D",
+      "occurrences": 1,
+      "file": "uttar-pradesh-mla-profiles.ts",
+      "resolvedPartyId": "ORG-PARTY-JSD",
+      "confidence": "VERIFIED",
+      "evidence": "MLA Lokendra Pratap Singh contested on Jansatta Dal (Loktantrik)"
+    },
+    {
+      "raw": "RPI(",
+      "occurrences": 2,
+      "file": "nagaland-mla-profiles.ts",
+      "resolvedPartyId": "ORG-PARTY-RPIA",
+      "confidence": "VERIFIED",
+      "evidence": "MLAs Y. Lima Onen Chang (AC-51) & Imtichoba (AC-54) won on Republican Party of India (Athawale)"
+    },
+    {
+      "raw": "CONGRESS(",
+      "occurrences": 1,
+      "file": "kerala-mla-profiles.ts",
+      "resolvedPartyId": "ORG-PARTY-CS",
+      "confidence": "VERIFIED",
+      "evidence": "MLA Kadannappalli Ramachandran won Kannur AC-11 on Congress (Secular)"
+    },
+    {
+      "raw": "LOKTANTRIK",
+      "occurrences": 1,
+      "file": "kerala-mla-profiles.ts",
+      "resolvedPartyId": "ORG-PARTY-LJD",
+      "confidence": "VERIFIED",
+      "evidence": "MLA K. P. Mohanan won Kuthuparamba AC-14 on Loktantrik Janata Dal"
+    },
+    {
+      "raw": "NATIONALS",
+      "occurrences": 1,
+      "file": "kerala-mla-profiles.ts",
+      "resolvedPartyId": "ORG-PARTY-NSC",
+      "confidence": "VERIFIED",
+      "evidence": "MLA V. Abdurahman won Tanur AC-44 on Nationalist Secular Conference (LDF)"
+    },
+    {
+      "raw": "RASHTRIYA",
+      "occurrences": 1,
+      "file": "west-bengal-mla-profiles.ts",
+      "resolvedPartyId": "ORG-PARTY-ISF",
+      "confidence": "VERIFIED",
+      "evidence": "MLA Md Nawsad Siddique won Bhangar AC-148 on Rashtriya Secular Majlis / Indian Secular Front"
+    },
+    {
+      "raw": "Jan Surajy",
+      "occurrences": 2,
+      "file": "maharashtra-mla-profiles.ts",
+      "resolvedPartyId": "ORG-PARTY-JSS",
+      "confidence": "VERIFIED",
+      "evidence": "MLAs Vinay Kore (Shahuwadi) & Ashokrao Mane won on Jan Surajya Shakti"
+    },
+    {
+      "raw": "Peasants A",
+      "occurrences": 1,
+      "file": "maharashtra-mla-profiles.ts",
+      "resolvedPartyId": "ORG-PARTY-PWPI",
+      "confidence": "VERIFIED",
+      "evidence": "MLA Babasaheb Deshmukh won Loha on Peasants and Workers Party of India"
+    },
+    {
+      "raw": "Rashtriya ",
+      "occurrences": 2,
+      "file": "maharashtra-mla-profiles.ts",
+      "resolvedPartyId": "ORG-PARTY-YYP",
+      "confidence": "RECONCILED",
+      "evidence": "Ravi Rana (Badnera) heads Yuva Swabhiman Party; Ratnakar Gutte (Gangakhed) contested RSPP"
+    },
+    {
+      "raw": "Kalyana Ra",
+      "occurrences": 1,
+      "file": "karnataka-mla-profiles.ts",
+      "resolvedPartyId": "ORG-PARTY-KRPP",
+      "confidence": "VERIFIED",
+      "evidence": "MLA Janardhan Reddy won Gangawati on Kalyana Rajya Pragathi Paksha"
+    }
+  ],
+  "placeholderException": {
+    "raw": "SHORTNAM - Baljeet Yadav",
+    "status": "PROVISIONAL",
+    "reason": "Requires Form 21E historical gazette audit before canonical elevation."
+  }
+}

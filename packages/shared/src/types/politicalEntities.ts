@@ -45,6 +45,11 @@ export type OrganizationRelationshipType =
   | 'parent_of'
   | 'subsidiary_of'
   | 'merged_into'
+  | 'renamed_to'
+  | 'succeeded_by'
+  | 'predecessor_of'
+  | 'split_from'
+  | 'faction_of'
   | 'other';
 
 export type OfficeTypeEnum =
@@ -103,7 +108,7 @@ export interface PoliticalOrganization {
   name: string;
   shortName: string;
   ecPartyCode?: string | null;
-  recognitionLevel?: 'national' | 'state' | 'unrecognized' | 'independent' | null;
+  recognitionLevel?: 'national' | 'state' | 'unrecognized' | 'registered_unrecognized' | null;
   headquartersState?: string | null;
   parentOrgId?: string | null;
   symbolUrl?: string | null;
@@ -279,6 +284,56 @@ export interface PersonIdentityLinkage {
   createdAt: string;
 }
 
+export interface OrganizationMultilingualName {
+  id: string;
+  organizationId: string;
+  languageCode: string;
+  scriptCode: string;
+  representationType: 'OFFICIAL' | 'PREFERRED' | 'SOURCE_NATIVE' | 'TRANSLITERATION' | 'ALIAS' | 'HISTORICAL';
+  nameValue: string;
+  shortNameValue?: string | null;
+  isPreferred: boolean;
+  isOfficial: boolean;
+  validFrom: string;
+  validTo?: string | null;
+  source?: string | null;
+  dataStatus: GovernanceDataStatus;
+  provenanceId?: string | null;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface OrganizationAlias {
+  id: string;
+  rawLookupKey: string;
+  rawOriginalString: string;
+  organizationId: string;
+  aliasType: 'STANDARD_ABBREVIATION' | 'TYPOGRAPHIC_VARIANT' | 'HISTORICAL_PREDECESSOR' | 'ECI_PARTY_CODE' | 'REGIONAL_VARIANT' | 'POPULAR_NAME';
+  jurisdictionScope?: string | null;
+  validFrom: string;
+  validTo?: string | null;
+  confidence: 'VERIFIED' | 'RECONCILED' | 'PROVISIONAL' | 'CONFLICTING';
+  provenanceId?: string | null;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface OrganizationSymbol {
+  id: string;
+  organizationId: string;
+  symbolName: string;
+  symbolUrl?: string | null;
+  jurisdictionScope?: string | null;
+  validFrom: string;
+  validTo?: string | null;
+  isCurrent: boolean;
+  statutoryOrderRef?: string | null;
+  dataStatus: GovernanceDataStatus;
+  provenanceId?: string | null;
+  createdAt: string;
+  updatedAt: string;
+}
+
 export interface PoliticalCareerTimeline {
   person: CanonicalPerson;
   activeRoles: PersonRole[];
@@ -290,4 +345,5 @@ export interface PoliticalCareerTimeline {
   multilingualIdentities?: PersonMultilingualIdentity[];
   vacancies?: TenureVacancy[];
 }
+
 

@@ -1,0 +1,432 @@
+{
+  "auditedAt": "2026-10-03T12:34:37.095Z",
+  "migrationFile": "supabase/migrations/064_political_organization_governance_remediation.sql",
+  "multilingualIdentitiesCount": 27,
+  "multilingualIdentities": [
+    {
+      "orgId": "ORG-PARTY-BJP",
+      "lang": "hi",
+      "script": "Deva",
+      "type": "OFFICIAL",
+      "name": "भारतीय जनता पार्टी",
+      "short": "भाजपा",
+      "isOfficial": true,
+      "isPreferred": true
+    },
+    {
+      "orgId": "ORG-PARTY-BJP",
+      "lang": "te",
+      "script": "Telu",
+      "type": "OFFICIAL",
+      "name": "భారతీయ జనతా పార్టీ",
+      "short": "భాజపా",
+      "isOfficial": true,
+      "isPreferred": true
+    },
+    {
+      "orgId": "ORG-PARTY-BJP",
+      "lang": "ta",
+      "script": "Taml",
+      "type": "OFFICIAL",
+      "name": "பாரதிய ஜனதா கட்சி",
+      "short": "பாஜக",
+      "isOfficial": true,
+      "isPreferred": true
+    },
+    {
+      "orgId": "ORG-PARTY-INC",
+      "lang": "hi",
+      "script": "Deva",
+      "type": "OFFICIAL",
+      "name": "भारतीय राष्ट्रीय कांग्रेस",
+      "short": "कांग्रेस",
+      "isOfficial": true,
+      "isPreferred": true
+    },
+    {
+      "orgId": "ORG-PARTY-INC",
+      "lang": "te",
+      "script": "Telu",
+      "type": "OFFICIAL",
+      "name": "భారత జాతీయ కాంగ్రెస్",
+      "short": "కాంగ్రెస్",
+      "isOfficial": true,
+      "isPreferred": true
+    },
+    {
+      "orgId": "ORG-PARTY-INC",
+      "lang": "ta",
+      "script": "Taml",
+      "type": "OFFICIAL",
+      "name": "இந்திய தேசிய காங்கிரசு",
+      "short": "காங்கிரஸ்",
+      "isOfficial": true,
+      "isPreferred": true
+    },
+    {
+      "orgId": "ORG-PARTY-BRS",
+      "lang": "te",
+      "script": "Telu",
+      "type": "OFFICIAL",
+      "name": "భారత్ రాష్ట్ర సమితి",
+      "short": "బీఆర్ఎస్",
+      "isOfficial": true,
+      "isPreferred": true
+    },
+    {
+      "orgId": "ORG-PARTY-TRS",
+      "lang": "te",
+      "script": "Telu",
+      "type": "HISTORICAL",
+      "name": "తెలంగాణ రాష్ట్ర సమితి",
+      "short": "తెరాస",
+      "isOfficial": true,
+      "isPreferred": true
+    },
+    {
+      "orgId": "ORG-PARTY-TDP",
+      "lang": "te",
+      "script": "Telu",
+      "type": "OFFICIAL",
+      "name": "తెలుగుదేశం పార్టీ",
+      "short": "తెదేపా",
+      "isOfficial": true,
+      "isPreferred": true
+    },
+    {
+      "orgId": "ORG-PARTY-YSRCP",
+      "lang": "te",
+      "script": "Telu",
+      "type": "OFFICIAL",
+      "name": "వైఎస్సార్ కాంగ్రెస్ పార్టీ",
+      "short": "వైసీపీ",
+      "isOfficial": true,
+      "isPreferred": true
+    },
+    {
+      "orgId": "ORG-PARTY-JSP",
+      "lang": "te",
+      "script": "Telu",
+      "type": "OFFICIAL",
+      "name": "జనసేన పార్టీ",
+      "short": "జనసేన",
+      "isOfficial": true,
+      "isPreferred": true
+    },
+    {
+      "orgId": "ORG-PARTY-AIMIM",
+      "lang": "ur",
+      "script": "Arab",
+      "type": "OFFICIAL",
+      "name": "کل ہند مجلس اتحاد المسلمین",
+      "short": "مجلس",
+      "isOfficial": true,
+      "isPreferred": true
+    },
+    {
+      "orgId": "ORG-PARTY-DMK",
+      "lang": "ta",
+      "script": "Taml",
+      "type": "OFFICIAL",
+      "name": "திராவிட முன்னேற்றக் கழகம்",
+      "short": "திமுக",
+      "isOfficial": true,
+      "isPreferred": true
+    },
+    {
+      "orgId": "ORG-PARTY-AIADMK",
+      "lang": "ta",
+      "script": "Taml",
+      "type": "OFFICIAL",
+      "name": "அனைத்திந்திய அண்ணா திராவிட முன்னேற்றக் கழகம்",
+      "short": "அதிமுக",
+      "isOfficial": true,
+      "isPreferred": true
+    },
+    {
+      "orgId": "ORG-PARTY-AITC",
+      "lang": "bn",
+      "script": "Beng",
+      "type": "OFFICIAL",
+      "name": "সর্বভারতীয় তৃণমূল কংগ্রেস",
+      "short": "তৃণমূল",
+      "isOfficial": true,
+      "isPreferred": true
+    },
+    {
+      "orgId": "ORG-PARTY-CPIM",
+      "lang": "bn",
+      "script": "Beng",
+      "type": "OFFICIAL",
+      "name": "ভারতের কমিউনিস্ট পার্টি (মার্ক্সবাদী)",
+      "short": "সিপিআই(এম)",
+      "isOfficial": true,
+      "isPreferred": true
+    },
+    {
+      "orgId": "ORG-PARTY-CPIM",
+      "lang": "ml",
+      "script": "Mlym",
+      "type": "OFFICIAL",
+      "name": "കമ്യൂണിസ്റ്റ് പാർട്ടി ഓഫ് ഇന്ത്യ (മാർക്സിസ്റ്റ്)",
+      "short": "സിപിഐ(എം)",
+      "isOfficial": true,
+      "isPreferred": true
+    },
+    {
+      "orgId": "ORG-PARTY-SHS",
+      "lang": "mr",
+      "script": "Deva",
+      "type": "OFFICIAL",
+      "name": "शिवसेना",
+      "short": "शिवसेना",
+      "isOfficial": true,
+      "isPreferred": true
+    },
+    {
+      "orgId": "ORG-PARTY-SHSUBT",
+      "lang": "mr",
+      "script": "Deva",
+      "type": "OFFICIAL",
+      "name": "शिवसेना (उद्धव बाळासाहेब ठाकरे)",
+      "short": "शिवसेना (उबाठा)",
+      "isOfficial": true,
+      "isPreferred": true
+    },
+    {
+      "orgId": "ORG-PARTY-NCP",
+      "lang": "mr",
+      "script": "Deva",
+      "type": "OFFICIAL",
+      "name": "राष्ट्रवादी काँग्रेस पक्ष",
+      "short": "राकाँप",
+      "isOfficial": true,
+      "isPreferred": true
+    },
+    {
+      "orgId": "ORG-PARTY-NCPSP",
+      "lang": "mr",
+      "script": "Deva",
+      "type": "OFFICIAL",
+      "name": "राष्ट्रवादी काँग्रेस पक्ष (शरदचंद्र पवार)",
+      "short": "राकाँप (शप)",
+      "isOfficial": true,
+      "isPreferred": true
+    },
+    {
+      "orgId": "ORG-PARTY-AAP",
+      "lang": "hi",
+      "script": "Deva",
+      "type": "OFFICIAL",
+      "name": "आम आदमी पार्टी",
+      "short": "आप",
+      "isOfficial": true,
+      "isPreferred": true
+    },
+    {
+      "orgId": "ORG-PARTY-AAP",
+      "lang": "pa",
+      "script": "Guru",
+      "type": "OFFICIAL",
+      "name": "ਆਮ ਆਦਮੀ ਪਾਰਟੀ",
+      "short": "ਆਪ",
+      "isOfficial": true,
+      "isPreferred": true
+    },
+    {
+      "orgId": "ORG-PARTY-SAD",
+      "lang": "pa",
+      "script": "Guru",
+      "type": "OFFICIAL",
+      "name": "ਸ਼੍ਰੋਮਣੀ ਅਕਾਲੀ ਦਲ",
+      "short": "ਅਕਾਲੀ ਦਲ",
+      "isOfficial": true,
+      "isPreferred": true
+    },
+    {
+      "orgId": "ORG-PARTY-JDS",
+      "lang": "kn",
+      "script": "Knda",
+      "type": "OFFICIAL",
+      "name": "ಜನತಾ ದಳ (ಜಾತ್ಯತೀತ)",
+      "short": "ಜೆಡಿಎಸ್",
+      "isOfficial": true,
+      "isPreferred": true
+    },
+    {
+      "orgId": "ORG-PARTY-BJD",
+      "lang": "or",
+      "script": "Orya",
+      "type": "OFFICIAL",
+      "name": "ବିଜୁ ଜନତା ଦଳ",
+      "short": "ବିଜେଡି",
+      "isOfficial": true,
+      "isPreferred": true
+    },
+    {
+      "orgId": "ORG-PARTY-AGP",
+      "lang": "as",
+      "script": "Beng",
+      "type": "OFFICIAL",
+      "name": "অসম গণ পৰিষদ",
+      "short": "অগপ",
+      "isOfficial": true,
+      "isPreferred": true
+    }
+  ],
+  "temporalSymbolsCount": 19,
+  "temporalSymbols": [
+    {
+      "orgId": "ORG-PARTY-BJP",
+      "symbolName": "Lotus",
+      "validFrom": "1980-04-06",
+      "validTo": null,
+      "isCurrent": true,
+      "statutoryOrderRef": "ECI Allotment Order"
+    },
+    {
+      "orgId": "ORG-PARTY-INC",
+      "symbolName": "Hand",
+      "validFrom": "1978-01-01",
+      "validTo": null,
+      "isCurrent": true,
+      "statutoryOrderRef": "ECI Notification No. 56/1978"
+    },
+    {
+      "orgId": "ORG-PARTY-INC",
+      "symbolName": "Calf and Cow",
+      "validFrom": "1971-01-01",
+      "validTo": "1977-12-31",
+      "isCurrent": false,
+      "statutoryOrderRef": "ECI Historical Symbol"
+    },
+    {
+      "orgId": "ORG-PARTY-INC",
+      "symbolName": "Two Bullocks with Yoke",
+      "validFrom": "1952-01-01",
+      "validTo": "1969-11-12",
+      "isCurrent": false,
+      "statutoryOrderRef": "ECI Historical Symbol"
+    },
+    {
+      "orgId": "ORG-PARTY-AAP",
+      "symbolName": "Broom",
+      "validFrom": "2012-11-26",
+      "validTo": null,
+      "isCurrent": true,
+      "statutoryOrderRef": "ECI Order 2012"
+    },
+    {
+      "orgId": "ORG-PARTY-BSP",
+      "symbolName": "Elephant",
+      "validFrom": "1984-04-14",
+      "validTo": null,
+      "isCurrent": true,
+      "statutoryOrderRef": "ECI Order 1984"
+    },
+    {
+      "orgId": "ORG-PARTY-CPIM",
+      "symbolName": "Hammer, Sickle and Star",
+      "validFrom": "1964-11-07",
+      "validTo": null,
+      "isCurrent": true,
+      "statutoryOrderRef": "ECI Order 1964"
+    },
+    {
+      "orgId": "ORG-PARTY-CPI",
+      "symbolName": "Ears of Corn and Sickle",
+      "validFrom": "1952-01-01",
+      "validTo": null,
+      "isCurrent": true,
+      "statutoryOrderRef": "ECI Order 1952"
+    },
+    {
+      "orgId": "ORG-PARTY-TDP",
+      "symbolName": "Bicycle",
+      "validFrom": "1982-03-29",
+      "validTo": null,
+      "isCurrent": true,
+      "statutoryOrderRef": "ECI Order 1982"
+    },
+    {
+      "orgId": "ORG-PARTY-BRS",
+      "symbolName": "Car",
+      "validFrom": "2022-10-05",
+      "validTo": null,
+      "isCurrent": true,
+      "statutoryOrderRef": "ECI Notification No. 56/2022"
+    },
+    {
+      "orgId": "ORG-PARTY-TRS",
+      "symbolName": "Car",
+      "validFrom": "2001-04-27",
+      "validTo": "2022-10-04",
+      "isCurrent": false,
+      "statutoryOrderRef": "ECI Order 2001"
+    },
+    {
+      "orgId": "ORG-PARTY-YSRCP",
+      "symbolName": "Ceiling Fan",
+      "validFrom": "2011-03-12",
+      "validTo": null,
+      "isCurrent": true,
+      "statutoryOrderRef": "ECI Order 2011"
+    },
+    {
+      "orgId": "ORG-PARTY-JSP",
+      "symbolName": "Glass Tumbler",
+      "validFrom": "2014-03-14",
+      "validTo": null,
+      "isCurrent": true,
+      "statutoryOrderRef": "ECI Order 2014"
+    },
+    {
+      "orgId": "ORG-PARTY-AIMIM",
+      "symbolName": "Kite",
+      "validFrom": "1958-03-02",
+      "validTo": null,
+      "isCurrent": true,
+      "statutoryOrderRef": "ECI Order 1958"
+    },
+    {
+      "orgId": "ORG-PARTY-SHS",
+      "symbolName": "Bow and Arrow",
+      "validFrom": "2023-02-17",
+      "validTo": null,
+      "isCurrent": true,
+      "statutoryOrderRef": "ECI Order No. 56/Dispute/2022"
+    },
+    {
+      "orgId": "ORG-PARTY-SHSUBT",
+      "symbolName": "Flaming Torch",
+      "validFrom": "2022-10-10",
+      "validTo": null,
+      "isCurrent": true,
+      "statutoryOrderRef": "ECI Notification 56/Dispute/2022"
+    },
+    {
+      "orgId": "ORG-PARTY-NCP",
+      "symbolName": "Clock",
+      "validFrom": "2024-02-06",
+      "validTo": null,
+      "isCurrent": true,
+      "statutoryOrderRef": "ECI Order No. 56/Dispute/2023"
+    },
+    {
+      "orgId": "ORG-PARTY-NCPSP",
+      "symbolName": "Man Blowing Turha (Tutari)",
+      "validFrom": "2024-02-22",
+      "validTo": null,
+      "isCurrent": true,
+      "statutoryOrderRef": "ECI Notification 56/Dispute/2023"
+    },
+    {
+      "orgId": "ORG-PARTY-LJPRV",
+      "symbolName": "Helicopter",
+      "validFrom": "2021-10-05",
+      "validTo": null,
+      "isCurrent": true,
+      "statutoryOrderRef": "ECI Notification 56/Dispute/2021"
+    }
+  ]
+}

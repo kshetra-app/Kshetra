@@ -1,0 +1,143 @@
+{
+  "auditedAt": "2026-10-03T12:34:37.094Z",
+  "relationshipsCount": 10,
+  "relationships": [
+    {
+      "sourceOrgId": "ORG-PARTY-TRS",
+      "targetOrgId": "ORG-PARTY-BRS",
+      "relationshipType": "renamed_to",
+      "validFrom": "2022-10-05",
+      "validTo": null,
+      "isCurrent": true,
+      "metadata": {
+        "legalInstrument": "ECI Notification No. 56/2022",
+        "previousName": "Telangana Rashtra Samithi"
+      },
+      "dataStatus": "OFFICIAL",
+      "notes": "Telangana Rashtra Samithi officially renamed to Bharat Rashtra Samithi."
+    },
+    {
+      "sourceOrgId": "ORG-PARTY-SHS",
+      "targetOrgId": "ORG-PARTY-SHSUBT",
+      "relationshipType": "split_from",
+      "validFrom": "2022-06-25",
+      "validTo": null,
+      "isCurrent": true,
+      "metadata": {
+        "legalInstrument": "ECI Order 56/Dispute/2022",
+        "awardedOriginalName": "Eknath Shinde Faction"
+      },
+      "dataStatus": "OFFICIAL",
+      "notes": "Shiv Sena split into original SHS and Uddhav Thackeray faction (SHSUBT)."
+    },
+    {
+      "sourceOrgId": "ORG-PARTY-NCP",
+      "targetOrgId": "ORG-PARTY-NCPSP",
+      "relationshipType": "split_from",
+      "validFrom": "2023-07-02",
+      "validTo": null,
+      "isCurrent": true,
+      "metadata": {
+        "legalInstrument": "ECI Order 56/Dispute/2023",
+        "awardedOriginalName": "Ajit Pawar Faction"
+      },
+      "dataStatus": "OFFICIAL",
+      "notes": "Nationalist Congress Party split into original NCP and Sharadchandra Pawar faction (NCPSP)."
+    },
+    {
+      "sourceOrgId": "ORG-PARTY-LJP",
+      "targetOrgId": "ORG-PARTY-LJPRV",
+      "relationshipType": "split_from",
+      "validFrom": "2021-10-05",
+      "validTo": null,
+      "isCurrent": true,
+      "metadata": {
+        "legalInstrument": "ECI Order 56/Dispute/2021",
+        "leader": "Chirag Paswan"
+      },
+      "dataStatus": "OFFICIAL",
+      "notes": "Lok Janshakti Party split into LJP(RV) and Rashtriya Lok Janshakti Party."
+    },
+    {
+      "sourceOrgId": "ORG-PARTY-LJD",
+      "targetOrgId": "ORG-PARTY-RJD",
+      "relationshipType": "merged_into",
+      "validFrom": "2022-03-20",
+      "validTo": null,
+      "isCurrent": true,
+      "metadata": {
+        "legalInstrument": "National Party Convention Resolution",
+        "leader": "Sharad Yadav"
+      },
+      "dataStatus": "OFFICIAL",
+      "notes": "Loktantrik Janata Dal led by Sharad Yadav merged into Rashtriya Janata Dal."
+    },
+    {
+      "sourceOrgId": "ORG-PARTY-PDF",
+      "targetOrgId": "ORG-PARTY-NPP",
+      "relationshipType": "merged_into",
+      "validFrom": "2023-05-06",
+      "validTo": null,
+      "isCurrent": true,
+      "metadata": {
+        "legalInstrument": "General Council Resolution",
+        "state": "ML"
+      },
+      "dataStatus": "OFFICIAL",
+      "notes": "People's Democratic Front (Meghalaya) merged into National People's Party."
+    },
+    {
+      "sourceOrgId": "ORG-PARTY-BJP",
+      "targetOrgId": "ORG-ALLIANCE-NDA",
+      "relationshipType": "coalition_partner",
+      "validFrom": "1998-05-01",
+      "validTo": null,
+      "isCurrent": true,
+      "metadata": {
+        "allianceName": "National Democratic Alliance",
+        "role": "Lead Partner"
+      },
+      "dataStatus": "OFFICIAL",
+      "notes": "BJP founded and leads the National Democratic Alliance."
+    },
+    {
+      "sourceOrgId": "ORG-PARTY-TDP",
+      "targetOrgId": "ORG-ALLIANCE-NDA",
+      "relationshipType": "alliance_with",
+      "validFrom": "2024-03-09",
+      "validTo": null,
+      "isCurrent": true,
+      "metadata": {
+        "agreement": "2024 General & AP Assembly Alliance Declaration"
+      },
+      "dataStatus": "OFFICIAL",
+      "notes": "TDP re-joined NDA alliance in March 2024."
+    },
+    {
+      "sourceOrgId": "ORG-PARTY-JSP",
+      "targetOrgId": "ORG-ALLIANCE-NDA",
+      "relationshipType": "alliance_with",
+      "validFrom": "2024-03-09",
+      "validTo": null,
+      "isCurrent": true,
+      "metadata": {
+        "agreement": "2024 General & AP Assembly Alliance Declaration"
+      },
+      "dataStatus": "OFFICIAL",
+      "notes": "JSP electoral alliance with NDA."
+    },
+    {
+      "sourceOrgId": "ORG-PARTY-JDU",
+      "targetOrgId": "ORG-ALLIANCE-NDA",
+      "relationshipType": "alliance_with",
+      "validFrom": "2024-01-28",
+      "validTo": null,
+      "isCurrent": true,
+      "metadata": {
+        "agreement": "NDA Re-entry Agreement 2024"
+      },
+      "dataStatus": "OFFICIAL",
+      "notes": "JD(U) rejoined NDA in January 2024."
+    }
+  ]
+}
