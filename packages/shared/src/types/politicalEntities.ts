@@ -187,6 +187,15 @@ export interface Candidacy {
   updatedAt: string;
 }
 
+export type TenureStatusEnum =
+  | 'ACTIVE'
+  | 'COMPLETED'
+  | 'VACATED_RESIGNATION'
+  | 'VACATED_DEATH'
+  | 'VACATED_DISQUALIFICATION'
+  | 'ANNULLED'
+  | 'PROVISIONAL';
+
 export interface ElectedTenure {
   id: string;
   personId: string;
@@ -197,6 +206,7 @@ export interface ElectedTenure {
   termStart: string;
   termEnd?: string | null;
   isCurrent: boolean;
+  tenureStatus?: TenureStatusEnum;
   partyAtElection?: string | null;
   currentParty?: string | null;
   defectionDate?: string | null;
@@ -222,6 +232,39 @@ export interface TenurePartySwitch {
   createdAt: string;
 }
 
+export interface PersonMultilingualIdentity {
+  id: string;
+  personId: string;
+  languageCode: string;
+  scriptCode: string;
+  representationType: 'OFFICIAL' | 'PREFERRED' | 'SOURCE_NATIVE' | 'TRANSLITERATION' | 'ALIAS' | 'HISTORICAL';
+  representationValue: string;
+  isPreferred: boolean;
+  isOfficial: boolean;
+  validFrom: string;
+  validTo?: string | null;
+  source?: string | null;
+  dataStatus: GovernanceDataStatus;
+  provenanceId?: string | null;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface TenureVacancy {
+  id: string;
+  tenureId: string;
+  personId: string;
+  vacancyReason: 'DEATH' | 'RESIGNATION' | 'DISQUALIFICATION_TENTH_SCHEDULE' | 'DISQUALIFICATION_RPA_SEC_8' | 'ELECTION_ANNULLED_COURT_ORDER' | 'EXPULSION' | 'VACANCY_GAZETTED';
+  effectiveDate: string;
+  notifyingAuthority: string;
+  gazetteNotificationRef?: string | null;
+  notes?: string | null;
+  dataStatus: GovernanceDataStatus;
+  provenanceId?: string | null;
+  createdAt: string;
+  updatedAt: string;
+}
+
 export interface PersonIdentityLinkage {
   id: string;
   personId: string;
@@ -244,4 +287,7 @@ export interface PoliticalCareerTimeline {
   partySwitches: TenurePartySwitch[];
   candidacies: Candidacy[];
   linkages?: PersonIdentityLinkage[];
+  multilingualIdentities?: PersonMultilingualIdentity[];
+  vacancies?: TenureVacancy[];
 }
+
