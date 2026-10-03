@@ -301,18 +301,18 @@ const markdownReport = `# KSHETRA W021.5-B1 — NATIONAL CONSTITUENCY CANONICALI
 
 ## 1. National Electoral Universe Summary
 
-| Dimension | Statutory Reality | Canonicalized Count | Verification Status |
+| Dimension | Statutory Reality | Canonicalized Count | Status Taxonomy |
 | :--- | :--- | :--- | :--- |
 | **Total Jurisdictions** | 36 (28 States + 8 UTs) | 36 | **VERIFIED (100%)** |
 | **States** | 28 | 28 | **VERIFIED (100%)** |
 | **Union Territories** | 8 | 8 | **VERIFIED (100%)** |
 | **Legislative Assemblies** | 31 (28 States + DL, JK, PY) | 31 | **VERIFIED (100%)** |
 | **UTs without Assembly** | 5 (AN, CH, DN, LA, LD) | 5 | **VERIFIED (100%)** |
-| **Parliamentary Constituencies (PC)** | 543 | 543 | **VERIFIED (100%)** |
-| **PC Delimitation Versions** | 543 | 543 | **VERIFIED (100%)** |
-| **Assembly Constituencies (AC)** | 4,123 | 4,123 | **VERIFIED (100%)** |
-| **AC Delimitation Versions** | 4,123 | 4,123 | **VERIFIED (100%)** |
-| **Delimitation Regime** | Delimitation Order 2008 | \`eci_delimitation_2008\` | **VERIFIED (100%)** |
+| **Parliamentary Constituencies (PC)** | 543 | 543 | **VERIFIED (543/543)** |
+| **PC Delimitation Versions** | 543 | 543 | **VERIFIED (543/543)** |
+| **Assembly Constituencies (AC)** | 4,123 | 4,123 | **RECONCILED (294 VERIFIED, 3,829 RECONCILED)** |
+| **AC Delimitation Versions** | 4,123 | 4,123 | **RECONCILED (294 VERIFIED, 3,829 RECONCILED)** |
+| **Delimitation Regimes** | Statutory Orders | 5 Regimes | **RECONCILED (2008, 2014, 2019, 2022, 2023)** |
 
 ---
 
