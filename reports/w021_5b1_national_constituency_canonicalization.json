@@ -1,0 +1,173 @@
+{
+  "milestone": "W021.5-B1",
+  "auditType": "NATIONAL_CONSTITUENCY_CANONICALIZATION_AUDIT",
+  "timestamp": "2026-10-03T02:37:59.821Z",
+  "target": "fkpigozcqnmcvofuksar / local master",
+  "productionGuarded": "ehfafcnimmjusyvplbah (AIR-GAPPED)",
+  "summary": {
+    "totalChecks": 15,
+    "passedChecks": 15,
+    "failedChecks": 0,
+    "verdict": "PASS"
+  },
+  "nationalUniverse": {
+    "jurisdictions": 36,
+    "states": 28,
+    "unionTerritories": 8,
+    "legislativeAssemblies": 31,
+    "parliamentaryConstituencies": 543,
+    "assemblyConstituencies": 4123,
+    "delimitationRegime": "2008 Statutory Order"
+  },
+  "checks": [
+    {
+      "id": "B1-CHK-01",
+      "category": "MIGRATION_INTEGRITY",
+      "title": "Migration 059 SQL file exists and exceeds 800 KB",
+      "passed": true,
+      "details": {
+        "path": "C:\\Users\\Laven\\OneDrive\\Desktop\\Kshetra\\supabase\\migrations\\059_canonical_national_constituency_registry.sql",
+        "sizeBytes": 836237
+      }
+    },
+    {
+      "id": "B1-CHK-02",
+      "category": "MIGRATION_INTEGRITY",
+      "title": "Migration 059 is strictly wrapped in an atomic BEGIN ... COMMIT transaction",
+      "passed": true,
+      "details": {
+        "hasBegin": true,
+        "hasCommit": true
+      }
+    },
+    {
+      "id": "B1-CHK-03",
+      "category": "DATASET_PROVENANCE",
+      "title": "Authoritative national dataset versions registered (MHA 2024, ECI PC 2008, ECI AC 2008)",
+      "passed": true,
+      "details": {
+        "hasJurisdictionVersion": true,
+        "hasPcVersion": true,
+        "hasAcVersion": true
+      }
+    },
+    {
+      "id": "B1-CHK-04",
+      "category": "SCHEMA_INFRASTRUCTURE",
+      "title": "Migration conflict tracking table (public.migration_conflicts) deployed",
+      "passed": true,
+      "details": {
+        "hasConflictTable": true
+      }
+    },
+    {
+      "id": "B1-CHK-05",
+      "category": "JURISDICTION_REGISTRY",
+      "title": "Migration 059 registers exactly 36 States & UTs with 4,123 ACs and 543 PCs",
+      "passed": true,
+      "details": {
+        "jurisdictionCount": 36,
+        "totalAcInStates": 4123,
+        "totalPcInStates": 543
+      }
+    },
+    {
+      "id": "B1-CHK-06",
+      "category": "PARLIAMENTARY_REGISTRY",
+      "title": "Migration 059 inserts exactly 543 unique Parliamentary Constituencies",
+      "passed": true,
+      "details": {
+        "totalInserted": 543,
+        "uniqueCodes": 543
+      }
+    },
+    {
+      "id": "B1-CHK-07",
+      "category": "PARLIAMENTARY_VERSIONS",
+      "title": "Migration 059 creates 543 PC Delimitation 2008 versions and updates current_version_id FKs",
+      "passed": true,
+      "details": {
+        "hasPcVersionsSelect": true,
+        "hasPcCurrentVersionUpdate": true
+      }
+    },
+    {
+      "id": "B1-CHK-08",
+      "category": "ASSEMBLY_REGISTRY",
+      "title": "Migration 059 inserts exactly 4,123 unique Assembly Constituencies across 31 assemblies",
+      "passed": true,
+      "details": {
+        "totalInserted": 4123,
+        "uniqueCodes": 4123
+      }
+    },
+    {
+      "id": "B1-CHK-09",
+      "category": "ASSEMBLY_VERSIONS",
+      "title": "Migration 059 creates constituency versions and updates current_version_id FKs",
+      "passed": true,
+      "details": {
+        "hasAcVersionsSelect": true,
+        "hasCurrentVersionUpdate": true
+      }
+    },
+    {
+      "id": "B1-CHK-10",
+      "category": "CONFLICT_AUDITABILITY",
+      "title": "3 legacy MP seed misattributions (Hamirpur HP, Maharajganj UP, Aurangabad BR) audited and recorded in migration_conflicts",
+      "passed": true,
+      "details": {
+        "hasHamirpurReconciled": true,
+        "hasMaharajganjReconciled": true,
+        "hasAurangabadReconciled": true
+      }
+    },
+    {
+      "id": "B1-CHK-11",
+      "category": "PROVENANCE_LINKAGE",
+      "title": "Authoritative provenance UUIDs linked across states, PCs, and ACs",
+      "passed": true,
+      "details": {
+        "hasStateProvenance": true,
+        "hasPcProvenance": true,
+        "hasAcProvenance": true
+      }
+    },
+    {
+      "id": "B1-CHK-12",
+      "category": "IDEMPOTENCY",
+      "title": "Migration 059 employs strict ON CONFLICT clauses across all DML operations (count >= 7)",
+      "passed": true,
+      "details": {
+        "onConflictCount": 21
+      }
+    },
+    {
+      "id": "B1-CHK-13",
+      "category": "LEGACY_PRESERVATION",
+      "title": "Legacy seed directory data/seed/** is completely preserved untouched",
+      "passed": true,
+      "details": {
+        "legacyFileCount": 199
+      }
+    },
+    {
+      "id": "B1-CHK-14",
+      "category": "PRODUCTION_ISOLATION",
+      "title": "Zero reference or connection to production database ehfafcnimmjusyvplbah",
+      "passed": true,
+      "details": {
+        "productionUntouched": true
+      }
+    },
+    {
+      "id": "B1-CHK-15",
+      "category": "TEXT_SANITY",
+      "title": "Constituency and jurisdiction names are clean with zero HTML or wiki formatting residue",
+      "passed": true,
+      "details": {
+        "cleanText": true
+      }
+    }
+  ]
+}
